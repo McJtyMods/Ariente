@@ -32,16 +32,18 @@ public class ArienteChunkGenerator implements IChunkGenerator {
     private MapGenBase caveGenerator = new MapGenCaves();
 //    private MapGenLowTendrils tendrilGenerator = new MapGenLowTendrils(BlockRegister.hardDirtBlock.getDefaultState());
     private ArienteTerrainGenerator terraingen = new ArienteTerrainGenerator();
-    private IslandTerrainGenerator islandgen = new IslandTerrainGenerator(IslandTerrainGenerator.PLATEAUS);
-    private IslandTerrainGenerator island2gen = new IslandTerrainGenerator(IslandTerrainGenerator.PLATEAUS);
+//    private IslandTerrainGenerator islandgen = new IslandTerrainGenerator(IslandTerrainGenerator.ISLANDS);
+    private IslandsTerrainGenerator islandsGen = new IslandsTerrainGenerator();
+//    private IslandTerrainGenerator island2gen = new IslandTerrainGenerator(IslandTerrainGenerator.PLATEAUS);
 
     public ArienteChunkGenerator(World worldObj) {
         this.worldObj = worldObj;
         long seed = 0x1fff; // @todo
         this.random = new Random((seed + 516) * 314);
         terraingen.setup(worldObj, random, ModBlocks.darkstone.getDefaultState());
-        islandgen.setup(worldObj, random, this, 25);
-        island2gen.setup(worldObj, new Random((seed + 314) * 516), this, 40);
+        islandsGen.setup(worldObj, worldObj.getSeed());
+//        islandgen.setup(worldObj, random, this, 40);
+//        island2gen.setup(worldObj, new Random((seed + 314) * 516), this, 40);
         caveGenerator = TerrainGen.getModdedMapGen(caveGenerator, CAVE);
     }
 
@@ -52,8 +54,9 @@ public class ArienteChunkGenerator implements IChunkGenerator {
 
         this.biomesForGeneration = worldObj.getBiomeProvider().getBiomesForGeneration(this.biomesForGeneration, x * 4 - 2, z * 4 - 2, 10, 10);
         terraingen.generate(x, z, chunkprimer, this.biomesForGeneration);
-        islandgen.generate(x, z, chunkprimer);
-        island2gen.generate(x, z, chunkprimer);
+        islandsGen.setBlocksInChunk(x, z, chunkprimer);
+//        islandgen.generate(x, z, chunkprimer);
+//        island2gen.generate(x, z, chunkprimer);
 
         this.biomesForGeneration = worldObj.getBiomeProvider().getBiomes(this.biomesForGeneration, x * 16, z * 16, 16, 16);
         terraingen.replaceBiomeBlocks(x, z, chunkprimer, biomesForGeneration);
