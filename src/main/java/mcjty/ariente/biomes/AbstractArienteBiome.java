@@ -27,7 +27,7 @@ public abstract class AbstractArienteBiome extends Biome {
 
     @Override
     public int getGrassColorAtPos(BlockPos pos) {
-        return 0x447766;
+        return 0x557766;
     }
 
     protected final void generateBlocks(World worldIn, Random rand, ChunkPrimer chunkPrimerIn, int x, int z, double noiseVal) {

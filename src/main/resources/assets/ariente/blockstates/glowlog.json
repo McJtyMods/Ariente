@@ -1,0 +1,19 @@
+{
+  "forge_marker": 1,
+  "defaults": {
+    "model": "cube",
+    "textures": {
+      "particle": "ariente:blocks/glowlog",
+      "down": "ariente:blocks/glowlog_top",
+      "up": "ariente:blocks/glowlog_top",
+      "north": "ariente:blocks/glowlog",
+      "east": "ariente:blocks/glowlog",
+      "south": "ariente:blocks/glowlog",
+      "west": "ariente:blocks/glowlog"
+    }
+  },
+  "variants": {
+    "normal": [{}],
+    "inventory": [{}]
+  }
+}

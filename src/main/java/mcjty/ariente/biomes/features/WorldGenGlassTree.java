@@ -1,8 +1,6 @@
 package mcjty.ariente.biomes.features;
 
-import net.minecraft.block.BlockOldLeaf;
-import net.minecraft.block.BlockOldLog;
-import net.minecraft.block.BlockPlanks;
+import mcjty.ariente.blocks.ModBlocks;
 import net.minecraft.block.state.IBlockState;
 import net.minecraft.init.Blocks;
 import net.minecraft.util.math.BlockPos;
@@ -13,8 +11,8 @@ import java.util.Random;
 
 public class WorldGenGlassTree extends WorldGenAbstractTree {
 
-    private static final IBlockState LOG = Blocks.DIAMOND_BLOCK.getDefaultState();
-    private static final IBlockState LEAF = Blocks.GLASS.getDefaultState();
+    private static final IBlockState LOG = ModBlocks.glowlog.getDefaultState();
+    private static final IBlockState LEAF = ModBlocks.glowleaves.getDefaultState();
 //    private static final IBlockState LOG = Blocks.LOG.getDefaultState().withProperty(BlockOldLog.VARIANT, BlockPlanks.EnumType.BIRCH);
 //    private static final IBlockState LEAF = Blocks.LEAVES.getDefaultState().withProperty(BlockOldLeaf.VARIANT, BlockPlanks.EnumType.BIRCH).withProperty(BlockOldLeaf.CHECK_DECAY, Boolean.valueOf(false));
     private final boolean useExtraRandomHeight;

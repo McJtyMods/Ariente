@@ -79,6 +79,12 @@ public class ArienteChunkGenerator implements IChunkGenerator {
         int i = x * 16;
         int j = z * 16;
         BlockPos blockpos = new BlockPos(i, 0, j);
+
+        this.random.setSeed(this.worldObj.getSeed());
+        long k = this.random.nextLong() / 2L * 2L + 1L;
+        long l = this.random.nextLong() / 2L * 2L + 1L;
+        this.random.setSeed((long)x * k + (long)z * l ^ this.worldObj.getSeed());
+
         Biome biome = this.worldObj.getBiome(blockpos.add(16, 0, 16));
         biome.decorate(this.worldObj, this.random, new BlockPos(i, 0, j));
         WorldEntitySpawner.performWorldGenSpawning(this.worldObj, biome, i + 8, j + 8, 16, 16, this.random);

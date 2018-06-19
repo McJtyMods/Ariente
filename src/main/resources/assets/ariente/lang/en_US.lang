@@ -21,4 +21,7 @@ tile.ariente.platinumore.name=Platinum Ore
 tile.ariente.posirite.name=Posirite Ore
 tile.ariente.negarite.name=Negarite Ore
 
+tile.ariente.glowlog.name=Glowing Log
+tile.ariente.glowleaves.name=Glowing Leaves
+
 itemGroup.ariente=Ariente

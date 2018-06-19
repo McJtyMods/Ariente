@@ -3,6 +3,7 @@ package mcjty.ariente.blocks;
 import mcjty.ariente.Ariente;
 import mcjty.lib.blocks.BaseBlock;
 import mcjty.lib.builder.BaseBlockBuilder;
+import mcjty.lib.builder.BlockFlags;
 import net.minecraftforge.fml.relauncher.Side;
 import net.minecraftforge.fml.relauncher.SideOnly;
 import net.minecraftforge.oredict.OreDictionary;
@@ -29,6 +30,9 @@ public class ModBlocks {
     public static BaseBlock platinumore;
     public static BaseBlock posirite;
     public static BaseBlock negarite;
+
+    public static BaseBlock glowlog;
+    public static BaseBlock glowleaves;
 
     public static void init() {
         graymarble = new BaseBlockBuilder<>(Ariente.instance, "graymarble")
@@ -109,12 +113,25 @@ public class ModBlocks {
                 .creativeTabs(Ariente.creativeTab)
                 .build();
 
+        glowlog = new BaseBlockBuilder<>(Ariente.instance, "glowlog")
+                .rotationType(BaseBlock.RotationType.NONE)
+                .creativeTabs(Ariente.creativeTab)
+                .lightValue(10)
+                .build();
+        glowleaves = new BaseBlockBuilder<>(Ariente.instance, "glowleaves")
+                .rotationType(BaseBlock.RotationType.NONE)
+                .creativeTabs(Ariente.creativeTab)
+                .lightValue(10)
+                .flags(BlockFlags.NON_OPAQUE, BlockFlags.RENDER_TRANSLUCENT)
+                .build();
+
         OreDictionary.registerOre("oreSilver", silverore);
         OreDictionary.registerOre("orePlatinum", platinumore);
         OreDictionary.registerOre("oreSilicon", siliconore);
         OreDictionary.registerOre("oreManganese", manganeseore);
         OreDictionary.registerOre("oreLithium", lithiumore);
         OreDictionary.registerOre("blockMarble", whitemarble);
+        OreDictionary.registerOre("logWood", glowlog);
     }
 
     @SideOnly(Side.CLIENT)
@@ -138,5 +155,7 @@ public class ModBlocks {
         platinumore.initModel();
         posirite.initModel();
         negarite.initModel();
+        glowlog.initModel();
+        glowleaves.initModel();
     }
 }
