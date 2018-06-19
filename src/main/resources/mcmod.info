@@ -1,0 +1,15 @@
+[
+{
+  "modid": "ariente",
+  "name": "Ariente",
+  "description": "Ariente: a tech mod with a twist",
+  "version": "${version}",
+  "mcversion": "${mcversion}",
+  "url": "",
+  "updateUrl": "",
+  "authorList": ["McJty"],
+  "credits": "McJty",
+  "logoFile": "",
+  "screenshots": []
+}
+]
