@@ -219,7 +219,7 @@ public class IslandTerrainGenerator {
     }
 
     public void generate(int chunkX, int chunkZ, ChunkPrimer primer) {
-        IBlockState baseBlock = ModBlocks.darkstone.getDefaultState();
+        IBlockState baseBlock = ModBlocks.graymarble.getDefaultState();
 
         byte b0 = 2;
         int k = b0 + 1;
@@ -301,7 +301,7 @@ public class IslandTerrainGenerator {
     }
 
     public final void genBiomeTerrain(Biome Biome, ChunkPrimer primer, int x, int z, double noise) {
-        IBlockState baseBlock = ModBlocks.darkstone.getDefaultState();
+        IBlockState baseBlock = ModBlocks.graymarble.getDefaultState();
         Block baseLiquid = Blocks.WATER;
 
         IBlockState block = Biome.topBlock;

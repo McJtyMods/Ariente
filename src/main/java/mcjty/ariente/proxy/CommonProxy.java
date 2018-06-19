@@ -5,6 +5,8 @@ import mcjty.ariente.ForgeEventHandlers;
 import mcjty.ariente.TerrainGenEventHandlers;
 import mcjty.ariente.blocks.ModBlocks;
 import mcjty.ariente.dimension.DimensionRegister;
+import mcjty.ariente.oregen.WorldGen;
+import mcjty.ariente.oregen.WorldTickHandler;
 import mcjty.lib.base.GeneralConfig;
 import mcjty.lib.network.PacketHandler;
 import mcjty.lib.proxy.AbstractCommonProxy;
@@ -37,7 +39,7 @@ public class CommonProxy extends AbstractCommonProxy {
 //        FluidSetup.preInitFluids();
         ModBlocks.init();
 //        ModItems.init();
-//            WorldGen.init();
+        WorldGen.init();
     }
 
     @Override
@@ -45,6 +47,7 @@ public class CommonProxy extends AbstractCommonProxy {
         super.init(e);
 
 //        EntityRegistry.registerModEntity(new ResourceLocation(AquaMunda.MODID, "fresh_water_falling"), EntityFallingFreshWaterBlock.class, "fresh_water_falling", 1, AquaMunda.instance, 250, 5, true);
+        MinecraftForge.EVENT_BUS.register(WorldTickHandler.instance);
 
 //        ConfigSetup.readRecipesConfig();
     }

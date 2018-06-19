@@ -1,8 +1,6 @@
 package mcjty.ariente.biomes;
 
-import net.minecraft.world.biome.Biome;
-
-public class BiomeArienteOcean extends Biome {
+public class BiomeArienteOcean extends AbstractArienteBiome {
 
     public BiomeArienteOcean(BiomeProperties properties) {
         super(properties);

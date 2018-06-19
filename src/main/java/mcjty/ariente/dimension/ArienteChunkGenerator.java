@@ -3,7 +3,6 @@ package mcjty.ariente.dimension;
 import com.google.common.collect.ImmutableList;
 import mcjty.ariente.blocks.ModBlocks;
 import net.minecraft.entity.EnumCreatureType;
-import net.minecraft.init.Biomes;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.World;
 import net.minecraft.world.WorldEntitySpawner;
@@ -40,7 +39,7 @@ public class ArienteChunkGenerator implements IChunkGenerator {
         this.worldObj = worldObj;
         long seed = 0x1fff; // @todo
         this.random = new Random((seed + 516) * 314);
-        terraingen.setup(worldObj, random, ModBlocks.darkstone.getDefaultState());
+        terraingen.setup(worldObj, random, ModBlocks.graymarble.getDefaultState());
         islandsGen.setup(worldObj, worldObj.getSeed());
 //        islandgen.setup(worldObj, random, this, 40);
 //        island2gen.setup(worldObj, new Random((seed + 314) * 516), this, 40);

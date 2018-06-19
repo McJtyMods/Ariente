@@ -1,14 +1,26 @@
 package mcjty.ariente.biomes;
 
-import net.minecraft.world.biome.Biome;
+import mcjty.ariente.biomes.features.WorldGenGlassTree;
+import net.minecraft.world.gen.feature.WorldGenAbstractTree;
 
-public class BiomeArientePlains extends Biome {
+import java.util.Random;
+
+public class BiomeArientePlains extends AbstractArienteBiome {
+
+    private static final WorldGenGlassTree GLASS_TREE = new WorldGenGlassTree(false, true);
 
     public BiomeArientePlains(BiomeProperties properties) {
         super(properties);
-        this.decorator.treesPerChunk = 0;
-        this.decorator.extraTreeChance = 0;
+        this.decorator.treesPerChunk = 1;
+        this.decorator.extraTreeChance = 0.1F;
         this.decorator.flowersPerChunk = 0;
         this.decorator.grassPerChunk = 0;
     }
+
+    @Override
+    public WorldGenAbstractTree getRandomTreeFeature(Random rand) {
+        return GLASS_TREE;
+    }
+
+
 }

@@ -48,7 +48,7 @@ public class Ariente implements ModBase {
     @Mod.EventHandler
     public void preInit(FMLPreInitializationEvent event){
         logger = event.getModLog();
-        creativeTab = new CreativeTabs("Ariente") {
+        creativeTab = new CreativeTabs("ariente") {
             @Override
             public ItemStack getTabIconItem() {
                 return new ItemStack(Items.WATER_BUCKET);   // @todo
