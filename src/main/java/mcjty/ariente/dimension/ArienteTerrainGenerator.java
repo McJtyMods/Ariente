@@ -223,6 +223,8 @@ public class ArienteTerrainGenerator {
                                     setBlockState(primer, index, Blocks.BEDROCK.getDefaultState());
                                 } else if ((d15 += d16) > 0.0D) {
                                     setBlockState(primer, index, baseBlock);
+                                } else if (height32 * 8 + h < 63) {
+                                    setBlockState(primer, index, Blocks.WATER.getDefaultState());
                                 } else {
                                     setBlockState(primer, index, Blocks.AIR.getDefaultState());
                                 }

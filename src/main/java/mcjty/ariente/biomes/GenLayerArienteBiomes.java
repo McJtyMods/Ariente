@@ -8,7 +8,8 @@ public class GenLayerArienteBiomes extends GenLayer {
 
     protected Biome commonBiomes[] = (new Biome[]{
             ModBiomes.arientePlains,
-            ModBiomes.arienteHills
+            ModBiomes.arienteHills,
+            ModBiomes.arienteOcean
     });
 
     public GenLayerArienteBiomes(long l) {

@@ -14,22 +14,29 @@ public class ModBiomes {
     @GameRegistry.ObjectHolder(Ariente.MODID + ":ariente_hills")
     public static BiomeArienteHills arienteHills;
 
+    @GameRegistry.ObjectHolder(Ariente.MODID + ":ariente_ocean")
+    public static BiomeArienteOcean arienteOcean;
+
 
     public static void registerBiomes(IForgeRegistry<Biome> registry) {
         setupBiome(registry, "ariente_plains", new BiomeArientePlains(
-                new Biome.BiomeProperties("Ariente Plains")
-                        .setBaseHeight(0.125F)
-                        .setHeightVariation(0.05F)
-                        .setTemperature(0.8F)
-                        .setRainfall(0.4F)),
+                        new Biome.BiomeProperties("Ariente Plains")
+                                .setBaseHeight(0.125F)
+                                .setHeightVariation(0.05F)
+                                .setTemperature(0.8F)
+                                .setRainfall(0.4F)),
                 BiomeDictionary.Type.DEAD);
-        setupBiome(registry, "ariente_hills", new BiomeArientePlains(
-                new Biome.BiomeProperties("Ariente Hills")
-                        .setBaseHeight(0.45F)
-                        .setHeightVariation(0.3F)
-                        .setTemperature(0.8F)
-                        .setRainfall(0.4F)),
+        setupBiome(registry, "ariente_hills", new BiomeArienteHills(
+                        new Biome.BiomeProperties("Ariente Hills")
+                                .setBaseHeight(0.45F)
+                                .setHeightVariation(0.3F)
+                                .setTemperature(0.8F)
+                                .setRainfall(0.4F)),
                 BiomeDictionary.Type.DEAD, BiomeDictionary.Type.HILLS);
+        setupBiome(registry, "ariente_ocean", new BiomeArienteOcean(
+                        new Biome.BiomeProperties("Ariente Ocean")
+                                .setBaseHeight(-1.0F).setHeightVariation(0.1F)),
+                BiomeDictionary.Type.DEAD, BiomeDictionary.Type.OCEAN);
     }
 
     private static void setupBiome(IForgeRegistry<Biome> registry, String name, Biome biome, BiomeDictionary.Type... types) {
