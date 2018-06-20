@@ -7,7 +7,7 @@ import java.util.Random;
 
 public class BiomeArientePlains extends AbstractArienteBiome {
 
-    private static final WorldGenGlassTree GLASS_TREE = new WorldGenGlassTree(false, true);
+    private static final WorldGenGlassTree GLASS_TREE = new WorldGenGlassTree(false);
 
     public BiomeArientePlains(BiomeProperties properties) {
         super(properties);

@@ -117,6 +117,7 @@ public class ModBlocks {
                 .rotationType(BaseBlock.RotationType.NONE)
                 .creativeTabs(Ariente.creativeTab)
                 .lightValue(10)
+                .flags(BlockFlags.NON_OPAQUE, BlockFlags.RENDER_TRANSLUCENT)
                 .build();
         glowleaves = new BaseBlockBuilder<>(Ariente.instance, "glowleaves")
                 .rotationType(BaseBlock.RotationType.NONE)
