@@ -33,6 +33,8 @@ public class ModBlocks {
 
     public static BaseBlock glowlog;
     public static BaseBlock glowleaves;
+    public static BaseBlock bluelog;
+    public static BaseBlock blueleaves;
 
     public static void init() {
         graymarble = new BaseBlockBuilder<>(Ariente.instance, "graymarble")
@@ -117,13 +119,22 @@ public class ModBlocks {
                 .rotationType(BaseBlock.RotationType.NONE)
                 .creativeTabs(Ariente.creativeTab)
                 .lightValue(10)
-                .flags(BlockFlags.NON_OPAQUE, BlockFlags.RENDER_TRANSLUCENT)
+                .flags(BlockFlags.NON_OPAQUE, BlockFlags.RENDER_TRANSLUCENT, BlockFlags.RENDER_NOSIDES)
                 .build();
         glowleaves = new BaseBlockBuilder<>(Ariente.instance, "glowleaves")
                 .rotationType(BaseBlock.RotationType.NONE)
                 .creativeTabs(Ariente.creativeTab)
                 .lightValue(10)
                 .flags(BlockFlags.NON_OPAQUE, BlockFlags.RENDER_TRANSLUCENT)
+                .build();
+        bluelog = new BaseBlockBuilder<>(Ariente.instance, "bluelog")
+                .rotationType(BaseBlock.RotationType.NONE)
+                .creativeTabs(Ariente.creativeTab)
+                .build();
+        blueleaves = new BaseBlockBuilder<>(Ariente.instance, "blueleaves")
+                .rotationType(BaseBlock.RotationType.NONE)
+                .creativeTabs(Ariente.creativeTab)
+                .flags(BlockFlags.NON_OPAQUE, BlockFlags.RENDER_CUTOUT)
                 .build();
 
         OreDictionary.registerOre("oreSilver", silverore);
@@ -133,6 +144,7 @@ public class ModBlocks {
         OreDictionary.registerOre("oreLithium", lithiumore);
         OreDictionary.registerOre("blockMarble", whitemarble);
         OreDictionary.registerOre("logWood", glowlog);
+        OreDictionary.registerOre("logWood", bluelog);
     }
 
     @SideOnly(Side.CLIENT)
@@ -158,5 +170,7 @@ public class ModBlocks {
         negarite.initModel();
         glowlog.initModel();
         glowleaves.initModel();
+        bluelog.initModel();
+        blueleaves.initModel();
     }
 }

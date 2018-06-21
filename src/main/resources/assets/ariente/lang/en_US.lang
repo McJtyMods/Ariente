@@ -23,5 +23,7 @@ tile.ariente.negarite.name=Negarite Ore
 
 tile.ariente.glowlog.name=Glowing Log
 tile.ariente.glowleaves.name=Glowing Leaves
+tile.ariente.bluelog.name=Blue Log
+tile.ariente.blueleaves.name=Blue Leaves
 
 itemGroup.ariente=Ariente

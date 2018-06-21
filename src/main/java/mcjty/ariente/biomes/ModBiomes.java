@@ -17,6 +17,9 @@ public class ModBiomes {
     @GameRegistry.ObjectHolder(Ariente.MODID + ":ariente_ocean")
     public static BiomeArienteOcean arienteOcean;
 
+    @GameRegistry.ObjectHolder(Ariente.MODID + ":ariente_forest")
+    public static BiomeArienteForest arienteForest;
+
 
     public static void registerBiomes(IForgeRegistry<Biome> registry) {
         setupBiome(registry, "ariente_plains", new BiomeArientePlains(
@@ -26,6 +29,13 @@ public class ModBiomes {
                                 .setTemperature(0.8F)
                                 .setRainfall(0.4F)),
                 BiomeDictionary.Type.DEAD);
+        setupBiome(registry, "ariente_forest", new BiomeArienteForest(
+                        new Biome.BiomeProperties("Ariente Forest")
+                                .setBaseHeight(0.125F)
+                                .setHeightVariation(0.05F)
+                                .setTemperature(0.8F)
+                                .setRainfall(0.4F)),
+                BiomeDictionary.Type.FOREST);
         setupBiome(registry, "ariente_hills", new BiomeArienteHills(
                         new Biome.BiomeProperties("Ariente Hills")
                                 .setBaseHeight(0.45F)

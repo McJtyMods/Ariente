@@ -1,0 +1,19 @@
+{
+  "forge_marker": 1,
+  "defaults": {
+    "model": "cube",
+    "textures": {
+      "particle": "ariente:blocks/bluelog",
+      "down": "ariente:blocks/bluelog_top",
+      "up": "ariente:blocks/bluelog_top",
+      "north": "ariente:blocks/bluelog",
+      "east": "ariente:blocks/bluelog",
+      "south": "ariente:blocks/bluelog",
+      "west": "ariente:blocks/bluelog"
+    }
+  },
+  "variants": {
+    "normal": [{}],
+    "inventory": [{}]
+  }
+}

@@ -7,6 +7,5 @@ public class BiomeArienteOcean extends AbstractArienteBiome {
         this.decorator.treesPerChunk = 0;
         this.decorator.extraTreeChance = 0;
         this.decorator.flowersPerChunk = 0;
-        this.decorator.grassPerChunk = 0;
     }
 }

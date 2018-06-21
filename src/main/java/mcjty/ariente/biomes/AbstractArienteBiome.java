@@ -1,5 +1,7 @@
 package mcjty.ariente.biomes;
 
+import mcjty.ariente.biomes.features.WorldGenBlueTree;
+import mcjty.ariente.biomes.features.WorldGenGlassTree;
 import mcjty.ariente.blocks.ModBlocks;
 import net.minecraft.block.BlockSand;
 import net.minecraft.block.material.Material;
@@ -9,10 +11,16 @@ import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.World;
 import net.minecraft.world.biome.Biome;
 import net.minecraft.world.chunk.ChunkPrimer;
+import net.minecraft.world.gen.feature.WorldGenAbstractTree;
+import net.minecraft.world.gen.feature.WorldGenHugeTrees;
 
 import java.util.Random;
 
 public abstract class AbstractArienteBiome extends Biome {
+
+    protected static final WorldGenGlassTree GLASS_TREE = new WorldGenGlassTree(false);
+    protected static final WorldGenHugeTrees HUGE_TREE = new WorldGenBlueTree(false,
+            10, 20, ModBlocks.bluelog.getDefaultState(), ModBlocks.blueleaves.getDefaultState());
 
     public AbstractArienteBiome(BiomeProperties properties) {
         super(properties);
@@ -26,8 +34,19 @@ public abstract class AbstractArienteBiome extends Biome {
     }
 
     @Override
+    public WorldGenAbstractTree getRandomTreeFeature(Random rand) {
+        return rand.nextInt(10) == 0 ? HUGE_TREE : GLASS_TREE;
+    }
+
+    @Override
     public int getGrassColorAtPos(BlockPos pos) {
-        return 0x557766;
+        return 0x448877;
+//        return 0x3377aa;
+    }
+
+    @Override
+    public int getFoliageColorAtPos(BlockPos pos) {
+        return 0x224477;
     }
 
     protected final void generateBlocks(World worldIn, Random rand, ChunkPrimer chunkPrimerIn, int x, int z, double noiseVal) {
