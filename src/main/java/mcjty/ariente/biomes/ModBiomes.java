@@ -20,6 +20,9 @@ public class ModBiomes {
     @GameRegistry.ObjectHolder(Ariente.MODID + ":ariente_forest")
     public static BiomeArienteForest arienteForest;
 
+    @GameRegistry.ObjectHolder(Ariente.MODID + ":ariente_rough")
+    public static BiomeArienteRough arienteRough;
+
 
     public static void registerBiomes(IForgeRegistry<Biome> registry) {
         setupBiome(registry, "ariente_plains", new BiomeArientePlains(
@@ -28,7 +31,7 @@ public class ModBiomes {
                                 .setHeightVariation(0.05F)
                                 .setTemperature(0.8F)
                                 .setRainfall(0.4F)),
-                BiomeDictionary.Type.DEAD);
+                BiomeDictionary.Type.SPARSE);
         setupBiome(registry, "ariente_forest", new BiomeArienteForest(
                         new Biome.BiomeProperties("Ariente Forest")
                                 .setBaseHeight(0.125F)
@@ -40,6 +43,13 @@ public class ModBiomes {
                         new Biome.BiomeProperties("Ariente Hills")
                                 .setBaseHeight(0.45F)
                                 .setHeightVariation(0.3F)
+                                .setTemperature(0.8F)
+                                .setRainfall(0.4F)),
+                BiomeDictionary.Type.HILLS);
+        setupBiome(registry, "ariente_rough", new BiomeArienteRough(
+                        new Biome.BiomeProperties("Ariente Rough")
+                                .setBaseHeight(0.25F)
+                                .setHeightVariation(0.5F)
                                 .setTemperature(0.8F)
                                 .setRainfall(0.4F)),
                 BiomeDictionary.Type.DEAD, BiomeDictionary.Type.HILLS);

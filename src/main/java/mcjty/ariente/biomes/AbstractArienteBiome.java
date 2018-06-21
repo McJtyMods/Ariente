@@ -45,6 +45,11 @@ public abstract class AbstractArienteBiome extends Biome {
     }
 
     @Override
+    public int getWaterColorMultiplier() {
+        return 0x55ff88;
+    }
+
+    @Override
     public int getFoliageColorAtPos(BlockPos pos) {
         return 0x224477;
     }

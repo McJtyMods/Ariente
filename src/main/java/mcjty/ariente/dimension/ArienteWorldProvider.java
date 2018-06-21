@@ -42,14 +42,14 @@ public class ArienteWorldProvider extends WorldProvider {
     @SideOnly(Side.CLIENT)
     public Vec3d getSkyColor(net.minecraft.entity.Entity cameraEntity, float partialTicks) {
         Vec3d v = world.getSkyColorBody(cameraEntity, partialTicks);
-        return new Vec3d(0, v.y, v.z);
+        return new Vec3d(Math.max(1.0f, v.x * 2.5f), v.y, Math.max(1.0f, v.z * 1.2f));
     }
 
     @Override
     @SideOnly(Side.CLIENT)
     public Vec3d getFogColor(float p_76562_1_, float p_76562_2_) {
         Vec3d v = super.getFogColor(p_76562_1_, p_76562_2_);
-        return new Vec3d(0, v.y, v.z);
+        return new Vec3d(v.x * .8f, v.y, v.z * .8f);
     }
 
     @Nullable
