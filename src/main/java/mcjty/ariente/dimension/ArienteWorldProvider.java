@@ -1,11 +1,16 @@
 package mcjty.ariente.dimension;
 
 import mcjty.ariente.biomes.ArienteBiomeProvider;
+import net.minecraft.util.math.Vec3d;
 import net.minecraft.world.DimensionType;
 import net.minecraft.world.WorldProvider;
 import net.minecraft.world.gen.IChunkGenerator;
+import net.minecraftforge.client.IRenderHandler;
+import net.minecraftforge.fml.relauncher.Side;
+import net.minecraftforge.fml.relauncher.SideOnly;
 
 import javax.annotation.Nonnull;
+import javax.annotation.Nullable;
 
 public class ArienteWorldProvider extends WorldProvider {
 
@@ -33,4 +38,26 @@ public class ArienteWorldProvider extends WorldProvider {
         this.biomeProvider = new ArienteBiomeProvider(world);
     }
 
+    @Override
+    @SideOnly(Side.CLIENT)
+    public Vec3d getSkyColor(net.minecraft.entity.Entity cameraEntity, float partialTicks) {
+        Vec3d v = world.getSkyColorBody(cameraEntity, partialTicks);
+        return new Vec3d(0, v.y, v.z);
+    }
+
+    @Override
+    @SideOnly(Side.CLIENT)
+    public Vec3d getFogColor(float p_76562_1_, float p_76562_2_) {
+        Vec3d v = super.getFogColor(p_76562_1_, p_76562_2_);
+        return new Vec3d(0, v.y, v.z);
+    }
+
+    @Nullable
+    @Override
+    public IRenderHandler getSkyRenderer() {
+        if (super.getSkyRenderer() == null) {
+            setSkyRenderer(new ArienteSkyRenderer());
+        }
+        return super.getSkyRenderer();
+    }
 }
