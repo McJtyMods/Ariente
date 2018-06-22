@@ -1,6 +1,7 @@
 package mcjty.ariente;
 
 
+import mcjty.ariente.commands.CommandExportPart;
 import mcjty.ariente.proxy.CommonProxy;
 import mcjty.lib.base.ModBase;
 import net.minecraft.creativetab.CreativeTabs;
@@ -13,6 +14,7 @@ import net.minecraftforge.fml.common.SidedProxy;
 import net.minecraftforge.fml.common.event.FMLInitializationEvent;
 import net.minecraftforge.fml.common.event.FMLPostInitializationEvent;
 import net.minecraftforge.fml.common.event.FMLPreInitializationEvent;
+import net.minecraftforge.fml.common.event.FMLServerStartingEvent;
 import org.apache.logging.log4j.Logger;
 
 
@@ -69,7 +71,13 @@ public class Ariente implements ModBase {
         proxy.postInit(e);
     }
 
-        @Override
+    @Mod.EventHandler
+    public void serverLoad(FMLServerStartingEvent event) {
+        event.registerServerCommand(new CommandExportPart());
+    }
+
+
+    @Override
     public String getModId() {
         return Ariente.MODID;
     }

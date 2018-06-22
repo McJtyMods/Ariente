@@ -4,6 +4,8 @@ import mcjty.ariente.Ariente;
 import mcjty.ariente.ForgeEventHandlers;
 import mcjty.ariente.TerrainGenEventHandlers;
 import mcjty.ariente.blocks.ModBlocks;
+import mcjty.ariente.cities.AssetRegistries;
+import mcjty.ariente.config.ArienteConfiguration;
 import mcjty.ariente.dimension.DimensionRegister;
 import mcjty.ariente.oregen.WorldGen;
 import mcjty.ariente.oregen.WorldTickHandler;
@@ -15,6 +17,11 @@ import net.minecraftforge.fml.common.event.FMLInitializationEvent;
 import net.minecraftforge.fml.common.event.FMLPostInitializationEvent;
 import net.minecraftforge.fml.common.event.FMLPreInitializationEvent;
 import net.minecraftforge.fml.common.network.simpleimpl.SimpleNetworkWrapper;
+
+import java.io.File;
+import java.io.IOException;
+import java.io.InputStream;
+import java.io.UncheckedIOException;
 
 /**
  * Created by jorrit on 16.12.16.
@@ -56,5 +63,21 @@ public class CommonProxy extends AbstractCommonProxy {
     public void postInit(FMLPostInitializationEvent e) {
 //        ConfigSetup.postInit();
 //        ModBlocks.postInit();
+
+        AssetRegistries.reset();
+        for (String path : ArienteConfiguration.ASSETS) {
+            if (path.startsWith("/")) {
+                try(InputStream inputstream = Ariente.class.getResourceAsStream(path)) {
+                    AssetRegistries.load(inputstream, path);
+                } catch (IOException ex) {
+                    throw new UncheckedIOException(ex);
+                }
+            } else if (path.startsWith("$")) {
+                File file = new File(modConfigDir.getPath() + File.separator + path.substring(1));
+                AssetRegistries.load(file);
+            } else {
+                throw new RuntimeException("Invalid path for ariente resource in 'assets' config!");
+            }
+        }
     }
 }

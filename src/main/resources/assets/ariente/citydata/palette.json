@@ -1,0 +1,20 @@
+[
+  {
+    "type": "palette",
+    "name": "main",
+    "palette": [
+      {
+        "char": "g",
+        "block": "ariente:graymarble_smooth"
+      },
+      {
+        "char": "b",
+        "block": "ariente:bluemarble_smooth"
+      },
+      {
+        "char": "w",
+        "block": "ariente:whitemarble_smooth"
+      }
+    ]
+  }
+]
