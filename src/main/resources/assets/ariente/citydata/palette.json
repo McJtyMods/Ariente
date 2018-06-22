@@ -4,6 +4,10 @@
     "name": "main",
     "palette": [
       {
+        "char": " ",
+        "block": "minecraft:air"
+      },
+      {
         "char": "g",
         "block": "ariente:graymarble_smooth"
       },

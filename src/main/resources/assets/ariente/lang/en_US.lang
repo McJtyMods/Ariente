@@ -1,5 +1,11 @@
 fluid.fresh_water=Fresh Water
 
+tile.ariente.blackmarble_techpath1.name=Black Marble Pattern 1
+
+tile.ariente.blackmarble.name=Black Marble
+tile.ariente.blackmarble_smooth.name=Smooth Black Marble
+tile.ariente.blackmarble_pilar.name=Black Marble Pilar
+tile.ariente.blackmarble_bricks.name=Black Marble Bricks
 tile.ariente.graymarble.name=Gray Marble
 tile.ariente.graymarble_smooth.name=Smooth Gray Marble
 tile.ariente.graymarble_pilar.name=Gray Marble Pilar

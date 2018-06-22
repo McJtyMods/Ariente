@@ -5,7 +5,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-public class AbstractAssetRegistry<T extends ILostCityAsset> {
+public class AbstractAssetRegistry<T extends IAsset> {
 
     private final Map<String, T> assets = new HashMap<>();
     private final List<String> assetNames = new ArrayList<>();

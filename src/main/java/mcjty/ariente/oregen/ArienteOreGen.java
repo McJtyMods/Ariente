@@ -39,6 +39,8 @@ public class ArienteOreGen implements IWorldGenerator {
         if (world.provider.getDimension() == 222) { // @todo config
             addOreSpawn(ModBlocks.bluemarble, (byte) 0, ModBlocks.graymarble, world, random, chunkX * 16, chunkZ * 16,
                     20, 50, 4, 16, 70);
+            addOreSpawn(ModBlocks.blackmarble, (byte) 0, ModBlocks.graymarble, world, random, chunkX * 16, chunkZ * 16,
+                    20, 50, 3, 10, 40);
             addOreSpawn(ModBlocks.whitemarble, (byte) 0, ModBlocks.graymarble, world, random, chunkX * 16, chunkZ * 16,
                     20, 50, 4, 16, 70);
             addOreSpawn(ModBlocks.lithiumore, (byte) 0, ModBlocks.graymarble, world, random, chunkX * 16, chunkZ * 16,

@@ -16,7 +16,7 @@ import java.util.Map;
 /**
  * A palette of materials as used by building parts
  */
-public class Palette implements ILostCityAsset {
+public class Palette implements IAsset {
 
     private String name;
     final Map<Character, Object> palette = new HashMap<>();

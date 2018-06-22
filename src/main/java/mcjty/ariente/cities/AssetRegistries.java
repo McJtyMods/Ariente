@@ -14,10 +14,12 @@ public class AssetRegistries {
 
     public static final AbstractAssetRegistry<BuildingPart> PARTS = new AbstractAssetRegistry<>();
     public static final AbstractAssetRegistry<Palette> PALETTES = new AbstractAssetRegistry<>();
+    public static final AbstractAssetRegistry<CityPlan> CITYPLANS = new AbstractAssetRegistry<>();
 
     public static final void reset() {
         PARTS.reset();
         PALETTES.reset();
+        CITYPLANS.reset();
     }
 
     public static void load(File file) {
@@ -119,6 +121,8 @@ public class AssetRegistries {
                     PALETTES.register(new Palette(object));
                 } else if ("part".equals(type)) {
                     PARTS.register(new BuildingPart(object));
+                } else if ("plan".equals(type)) {
+                    CITYPLANS.register(new CityPlan(object));
                 } else {
                     throw new RuntimeException("Unknown type '" + type + " in " + filename + "'!");
                 }

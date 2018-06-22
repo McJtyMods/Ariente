@@ -37,13 +37,14 @@ public class ArienteChunkGenerator implements IChunkGenerator {
 
     public ArienteChunkGenerator(World worldObj) {
         this.worldObj = worldObj;
-        long seed = 0x1fff; // @todo
+        long seed = worldObj.getSeed();
         this.random = new Random((seed + 516) * 314);
         terraingen.setup(worldObj, random, ModBlocks.graymarble.getDefaultState());
         islandsGen.setup(worldObj, worldObj.getSeed());
 //        islandgen.setup(worldObj, random, this, 40);
 //        island2gen.setup(worldObj, new Random((seed + 314) * 516), this, 40);
         caveGenerator = TerrainGen.getModdedMapGen(caveGenerator, CAVE);
+        ArienteCityGenerator.initialize();
     }
 
 
@@ -54,14 +55,13 @@ public class ArienteChunkGenerator implements IChunkGenerator {
         this.biomesForGeneration = worldObj.getBiomeProvider().getBiomesForGeneration(this.biomesForGeneration, x * 4 - 2, z * 4 - 2, 10, 10);
         terraingen.generate(x, z, chunkprimer, this.biomesForGeneration);
         islandsGen.setBlocksInChunk(x, z, chunkprimer);
-//        islandgen.generate(x, z, chunkprimer);
-//        island2gen.generate(x, z, chunkprimer);
 
         this.biomesForGeneration = worldObj.getBiomeProvider().getBiomes(this.biomesForGeneration, x * 16, z * 16, 16, 16);
         terraingen.replaceBiomeBlocks(x, z, chunkprimer, biomesForGeneration);
 
-//        tendrilGenerator.generate(this.worldObj, x, z, chunkprimer);
         this.caveGenerator.generate(this.worldObj, x, z, chunkprimer);
+
+        ArienteCityGenerator.generate(this.worldObj, x, z, chunkprimer);
 
         Chunk chunk = new Chunk(this.worldObj, chunkprimer, x, z);
 

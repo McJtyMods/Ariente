@@ -13,7 +13,7 @@ import java.util.Map;
 /**
  * A structure part
  */
-public class BuildingPart implements ILostCityAsset {
+public class BuildingPart implements IAsset {
 
     private String name;
 
