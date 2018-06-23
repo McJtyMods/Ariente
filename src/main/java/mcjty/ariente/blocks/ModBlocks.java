@@ -13,18 +13,9 @@ public class ModBlocks {
     public static BlackTechBlock blackmarble_techpat;
 
     public static MarbleBlock marble;
-    public static BaseBlock graymarble_smooth;
-    public static BaseBlock graymarble_pilar;
-    public static BaseBlock graymarble_bricks;
-    public static BaseBlock blackmarble_smooth;
-    public static BaseBlock blackmarble_pilar;
-    public static BaseBlock blackmarble_bricks;
-    public static BaseBlock whitemarble_smooth;
-    public static BaseBlock whitemarble_pilar;
-    public static BaseBlock whitemarble_bricks;
-    public static BaseBlock bluemarble_smooth;
-    public static BaseBlock bluemarble_pilar;
-    public static BaseBlock bluemarble_bricks;
+    public static MarbleBlock marble_smooth;
+    public static MarbleBlock marble_pilar;
+    public static MarbleBlock marble_bricks;
 
     public static BaseBlock lithiumore;
     public static BaseBlock manganeseore;
@@ -43,55 +34,10 @@ public class ModBlocks {
 
         blackmarble_techpat = new BlackTechBlock("blacktech");
         marble = new MarbleBlock("marble");
+        marble_smooth = new MarbleBlock("marble_smooth");
+        marble_pilar = new MarbleBlock("marble_pilar");
+        marble_bricks = new MarbleBlock("marble_bricks");
 
-        graymarble_smooth = new BaseBlockBuilder<>(Ariente.instance, "graymarble_smooth")
-                .rotationType(BaseBlock.RotationType.NONE)
-                .creativeTabs(Ariente.creativeTab)
-                .build();
-        graymarble_pilar = new BaseBlockBuilder<>(Ariente.instance, "graymarble_pilar")
-                .rotationType(BaseBlock.RotationType.NONE)
-                .creativeTabs(Ariente.creativeTab)
-                .build();
-        graymarble_bricks = new BaseBlockBuilder<>(Ariente.instance, "graymarble_bricks")
-                .rotationType(BaseBlock.RotationType.NONE)
-                .creativeTabs(Ariente.creativeTab)
-                .build();
-        blackmarble_smooth = new BaseBlockBuilder<>(Ariente.instance, "blackmarble_smooth")
-                .rotationType(BaseBlock.RotationType.NONE)
-                .creativeTabs(Ariente.creativeTab)
-                .build();
-        blackmarble_pilar = new BaseBlockBuilder<>(Ariente.instance, "blackmarble_pilar")
-                .rotationType(BaseBlock.RotationType.NONE)
-                .creativeTabs(Ariente.creativeTab)
-                .build();
-        blackmarble_bricks = new BaseBlockBuilder<>(Ariente.instance, "blackmarble_bricks")
-                .rotationType(BaseBlock.RotationType.NONE)
-                .creativeTabs(Ariente.creativeTab)
-                .build();
-        bluemarble_smooth = new BaseBlockBuilder<>(Ariente.instance, "bluemarble_smooth")
-                .rotationType(BaseBlock.RotationType.NONE)
-                .creativeTabs(Ariente.creativeTab)
-                .build();
-        bluemarble_pilar = new BaseBlockBuilder<>(Ariente.instance, "bluemarble_pilar")
-                .rotationType(BaseBlock.RotationType.NONE)
-                .creativeTabs(Ariente.creativeTab)
-                .build();
-        bluemarble_bricks = new BaseBlockBuilder<>(Ariente.instance, "bluemarble_bricks")
-                .rotationType(BaseBlock.RotationType.NONE)
-                .creativeTabs(Ariente.creativeTab)
-                .build();
-        whitemarble_smooth = new BaseBlockBuilder<>(Ariente.instance, "whitemarble_smooth")
-                .rotationType(BaseBlock.RotationType.NONE)
-                .creativeTabs(Ariente.creativeTab)
-                .build();
-        whitemarble_pilar = new BaseBlockBuilder<>(Ariente.instance, "whitemarble_pilar")
-                .rotationType(BaseBlock.RotationType.NONE)
-                .creativeTabs(Ariente.creativeTab)
-                .build();
-        whitemarble_bricks = new BaseBlockBuilder<>(Ariente.instance, "whitemarble_bricks")
-                .rotationType(BaseBlock.RotationType.NONE)
-                .creativeTabs(Ariente.creativeTab)
-                .build();
 
         lithiumore = new BaseBlockBuilder<>(Ariente.instance, "lithiumore")
                 .rotationType(BaseBlock.RotationType.NONE)
@@ -160,19 +106,10 @@ public class ModBlocks {
     public static void initModels() {
         blackmarble_techpat.initModel();
         marble.initModel();
+        marble_smooth.initModel();
+        marble_pilar.initModel();
+        marble_bricks.initModel();
 
-        blackmarble_smooth.initModel();
-        blackmarble_pilar.initModel();
-        blackmarble_bricks.initModel();
-        graymarble_smooth.initModel();
-        graymarble_pilar.initModel();
-        graymarble_bricks.initModel();
-        whitemarble_smooth.initModel();
-        whitemarble_pilar.initModel();
-        whitemarble_bricks.initModel();
-        bluemarble_smooth.initModel();
-        bluemarble_pilar.initModel();
-        bluemarble_bricks.initModel();
         lithiumore.initModel();
         manganeseore.initModel();
         siliconore.initModel();

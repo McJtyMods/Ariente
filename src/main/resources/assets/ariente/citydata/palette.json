@@ -9,15 +9,15 @@
       },
       {
         "char": "g",
-        "block": "ariente:graymarble_smooth"
+        "block": "ariente:marble_smooth@0"
       },
       {
         "char": "b",
-        "block": "ariente:bluemarble_smooth"
+        "block": "ariente:marble_smooth@2"
       },
       {
         "char": "w",
-        "block": "ariente:whitemarble_smooth"
+        "block": "ariente:emarble_smooth@1"
       }
     ]
   }

@@ -1,0 +1,16 @@
+{
+  "forge_marker": 1,
+  "defaults": {
+    "model": "cube_all"
+  },
+  "variants": {
+    "normal": [{}],
+    "inventory": [{}],
+    "type": {
+      "gray": { "textures": { "all": "ariente:blocks/graymarble_bricks" } },
+      "black": { "textures": { "all": "ariente:blocks/blackmarble_bricks" } },
+      "blue": { "textures": { "all": "ariente:blocks/bluemarble_bricks" } },
+      "white": { "textures": { "all": "ariente:blocks/whitemarble_bricks" } }
+    }
+  }
+}

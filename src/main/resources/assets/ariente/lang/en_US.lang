@@ -1,23 +1,11 @@
 fluid.fresh_water=Fresh Water
 
-tile.ariente.blackmarble_techpath1.name=Black Marble Pattern 1
+tile.ariente.blacktech.name=Marble Tech Block
 
-tile.ariente.blackmarble.name=Black Marble
-tile.ariente.blackmarble_smooth.name=Smooth Black Marble
-tile.ariente.blackmarble_pilar.name=Black Marble Pilar
-tile.ariente.blackmarble_bricks.name=Black Marble Bricks
-tile.ariente.graymarble.name=Gray Marble
-tile.ariente.graymarble_smooth.name=Smooth Gray Marble
-tile.ariente.graymarble_pilar.name=Gray Marble Pilar
-tile.ariente.graymarble_bricks.name=Gray Marble Bricks
-tile.ariente.bluemarble.name=Blue Marble
-tile.ariente.bluemarble_smooth.name=Smooth Blue Marble
-tile.ariente.bluemarble_pilar.name=Blue Marble Pilar
-tile.ariente.bluemarble_bricks.name=Blue Marble Bricks
-tile.ariente.whitemarble.name=White Marble
-tile.ariente.whitemarble_smooth.name=Smooth White Marble
-tile.ariente.whitemarble_pilar.name=White Marble Pilar
-tile.ariente.whitemarble_bricks.name=White Marble Bricks
+tile.ariente.marble.name=Marble
+tile.ariente.marble_smooth.name=Smooth Marble
+tile.ariente.marble_pilar.name=Black Pilar
+tile.ariente.marble_bricks.name=Black Bricks
 
 tile.ariente.lithiumore.name=Lithium Ore
 tile.ariente.manganeseore.name=Manganese Ore

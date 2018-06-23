@@ -6,7 +6,7 @@
   "variants": {
     "normal": [{}],
     "inventory": [{}],
-    "color": {
+    "type": {
       "gray": { "textures": { "all": "ariente:blocks/graymarble" } },
       "black": { "textures": { "all": "ariente:blocks/blackmarble" } },
       "blue": { "textures": { "all": "ariente:blocks/bluemarble" } },
