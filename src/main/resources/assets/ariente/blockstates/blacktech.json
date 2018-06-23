@@ -1,0 +1,14 @@
+{
+  "forge_marker": 1,
+  "defaults": {
+    "model": "ariente:fullblock_glow"
+  },
+  "variants": {
+    "normal": [{}],
+    "inventory": [{}],
+    "type": {
+      "dots": { "textures": { "all": "ariente:blocks/blacktech_dots", "glow":  "ariente:blocks/blacktech_dots_glow" } },
+      "lines": { "textures": { "all": "ariente:blocks/blacktech_lines", "glow":  "ariente:blocks/blacktech_lines_glow" } }
+    }
+  }
+}

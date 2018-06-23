@@ -11,7 +11,6 @@ import net.minecraft.client.renderer.block.model.ModelResourceLocation;
 import net.minecraft.creativetab.CreativeTabs;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
-import net.minecraft.util.BlockRenderLayer;
 import net.minecraft.util.NonNullList;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.World;
@@ -19,11 +18,10 @@ import net.minecraftforge.client.model.ModelLoader;
 import net.minecraftforge.fml.relauncher.Side;
 import net.minecraftforge.fml.relauncher.SideOnly;
 
-public class MarbleBlock extends BaseBlock {
+public class BlackTechBlock extends BaseBlock {
+    public static final PropertyEnum<TechType> TYPE = PropertyEnum.create("type", TechType.class);
 
-    public static final PropertyEnum<MarbleColor> COLOR = PropertyEnum.create("color", MarbleColor.class);
-
-    public MarbleBlock(String name) {
+    public BlackTechBlock(String name) {
         super(Ariente.instance, Material.ROCK, name, DamageMetadataItemBlock::new);
         setHardness(2.0f);
         setResistance(4.0f);
@@ -38,40 +36,37 @@ public class MarbleBlock extends BaseBlock {
 
     @SideOnly(Side.CLIENT)
     public void initModel() {
-        for (MarbleColor color : MarbleColor.VALUES) {
-            ModelLoader.setCustomModelResourceLocation(Item.getItemFromBlock(this), color.ordinal(), new ModelResourceLocation(getRegistryName(), "color=" + color.getName()));
+        for (TechType type : TechType.VALUES) {
+            ModelLoader.setCustomModelResourceLocation(Item.getItemFromBlock(this), type.ordinal(), new ModelResourceLocation(getRegistryName(), "type=" + type.getName()));
         }
     }
 
     @Override
     public void getSubBlocks(CreativeTabs itemIn, NonNullList<ItemStack> tab) {
-        for (MarbleColor color : MarbleColor.VALUES) {
-            tab.add(new ItemStack(this, 1, color.ordinal()));
+        for (TechType type : TechType.VALUES) {
+            tab.add(new ItemStack(this, 1, type.ordinal()));
         }
     }
 
     @Override
     public ItemStack getItem(World worldIn, BlockPos pos, IBlockState state) {
-        return new ItemStack(this, 1, state.getValue(COLOR).ordinal());
+        return new ItemStack(this, 1, state.getValue(TYPE).ordinal());
     }
 
     @Override
     public int getMetaFromState(IBlockState state) {
-        return state.getValue(COLOR).ordinal();
+        return state.getValue(TYPE).ordinal();
     }
 
     @Override
     public IBlockState getStateFromMeta(int meta) {
-        return getDefaultState().withProperty(COLOR, MarbleColor.VALUES[meta]);
+        return getDefaultState().withProperty(TYPE, TechType.VALUES[meta]);
     }
 
     @Override
     protected BlockStateContainer createBlockState() {
-        return new BlockStateContainer(this, COLOR);
+        return new BlockStateContainer(this, TYPE);
     }
 
-    @Override
-    public boolean canRenderInLayer(IBlockState state, BlockRenderLayer layer) {
-        return layer == getBlockLayer() || layer == BlockRenderLayer.CUTOUT;
-    }
+
 }

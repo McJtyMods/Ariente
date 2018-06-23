@@ -10,7 +10,7 @@ import net.minecraftforge.oredict.OreDictionary;
 
 public class ModBlocks {
 
-    public static BaseBlock blackmarble_techpat1;
+    public static BlackTechBlock blackmarble_techpat;
 
     public static MarbleBlock marble;
     public static BaseBlock graymarble_smooth;
@@ -40,13 +40,10 @@ public class ModBlocks {
     public static BaseBlock blueleaves;
 
     public static void init() {
-        blackmarble_techpat1 = new BaseBlockBuilder<>(Ariente.instance, "blackmarble_techpat1")
-                .rotationType(BaseBlock.RotationType.NONE)
-                .creativeTabs(Ariente.creativeTab)
-                .flags(BlockFlags.RENDER_CUTOUT , BlockFlags.RENDER_SOLID)
-                .build();
 
+        blackmarble_techpat = new BlackTechBlock("blacktech");
         marble = new MarbleBlock("marble");
+
         graymarble_smooth = new BaseBlockBuilder<>(Ariente.instance, "graymarble_smooth")
                 .rotationType(BaseBlock.RotationType.NONE)
                 .creativeTabs(Ariente.creativeTab)
@@ -161,9 +158,9 @@ public class ModBlocks {
 
     @SideOnly(Side.CLIENT)
     public static void initModels() {
-        blackmarble_techpat1.initModel();
-
+        blackmarble_techpat.initModel();
         marble.initModel();
+
         blackmarble_smooth.initModel();
         blackmarble_pilar.initModel();
         blackmarble_bricks.initModel();
