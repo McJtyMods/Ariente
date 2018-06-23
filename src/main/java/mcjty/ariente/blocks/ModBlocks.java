@@ -12,19 +12,16 @@ public class ModBlocks {
 
     public static BaseBlock blackmarble_techpat1;
 
-    public static BaseBlock graymarble;
+    public static MarbleBlock marble;
     public static BaseBlock graymarble_smooth;
     public static BaseBlock graymarble_pilar;
     public static BaseBlock graymarble_bricks;
-    public static BaseBlock blackmarble;
     public static BaseBlock blackmarble_smooth;
     public static BaseBlock blackmarble_pilar;
     public static BaseBlock blackmarble_bricks;
-    public static BaseBlock whitemarble;
     public static BaseBlock whitemarble_smooth;
     public static BaseBlock whitemarble_pilar;
     public static BaseBlock whitemarble_bricks;
-    public static BaseBlock bluemarble;
     public static BaseBlock bluemarble_smooth;
     public static BaseBlock bluemarble_pilar;
     public static BaseBlock bluemarble_bricks;
@@ -49,10 +46,7 @@ public class ModBlocks {
                 .flags(BlockFlags.RENDER_CUTOUT , BlockFlags.RENDER_SOLID)
                 .build();
 
-        graymarble = new BaseBlockBuilder<>(Ariente.instance, "graymarble")
-                .rotationType(BaseBlock.RotationType.NONE)
-                .creativeTabs(Ariente.creativeTab)
-                .build();
+        marble = new MarbleBlock("marble");
         graymarble_smooth = new BaseBlockBuilder<>(Ariente.instance, "graymarble_smooth")
                 .rotationType(BaseBlock.RotationType.NONE)
                 .creativeTabs(Ariente.creativeTab)
@@ -62,10 +56,6 @@ public class ModBlocks {
                 .creativeTabs(Ariente.creativeTab)
                 .build();
         graymarble_bricks = new BaseBlockBuilder<>(Ariente.instance, "graymarble_bricks")
-                .rotationType(BaseBlock.RotationType.NONE)
-                .creativeTabs(Ariente.creativeTab)
-                .build();
-        blackmarble = new BaseBlockBuilder<>(Ariente.instance, "blackmarble")
                 .rotationType(BaseBlock.RotationType.NONE)
                 .creativeTabs(Ariente.creativeTab)
                 .build();
@@ -81,10 +71,6 @@ public class ModBlocks {
                 .rotationType(BaseBlock.RotationType.NONE)
                 .creativeTabs(Ariente.creativeTab)
                 .build();
-        bluemarble = new BaseBlockBuilder<>(Ariente.instance, "bluemarble")
-                .rotationType(BaseBlock.RotationType.NONE)
-                .creativeTabs(Ariente.creativeTab)
-                .build();
         bluemarble_smooth = new BaseBlockBuilder<>(Ariente.instance, "bluemarble_smooth")
                 .rotationType(BaseBlock.RotationType.NONE)
                 .creativeTabs(Ariente.creativeTab)
@@ -94,10 +80,6 @@ public class ModBlocks {
                 .creativeTabs(Ariente.creativeTab)
                 .build();
         bluemarble_bricks = new BaseBlockBuilder<>(Ariente.instance, "bluemarble_bricks")
-                .rotationType(BaseBlock.RotationType.NONE)
-                .creativeTabs(Ariente.creativeTab)
-                .build();
-        whitemarble = new BaseBlockBuilder<>(Ariente.instance, "whitemarble")
                 .rotationType(BaseBlock.RotationType.NONE)
                 .creativeTabs(Ariente.creativeTab)
                 .build();
@@ -164,16 +146,15 @@ public class ModBlocks {
                 .creativeTabs(Ariente.creativeTab)
                 .flags(BlockFlags.NON_OPAQUE, BlockFlags.RENDER_CUTOUT)
                 .build();
+    }
 
+    public static void initOreDict() {
         OreDictionary.registerOre("oreSilver", silverore);
         OreDictionary.registerOre("orePlatinum", platinumore);
         OreDictionary.registerOre("oreSilicon", siliconore);
         OreDictionary.registerOre("oreManganese", manganeseore);
         OreDictionary.registerOre("oreLithium", lithiumore);
-        OreDictionary.registerOre("blockMarble", whitemarble);
-        OreDictionary.registerOre("blockMarble", graymarble);
-        OreDictionary.registerOre("blockMarble", bluemarble);
-        OreDictionary.registerOre("blockMarble", blackmarble);
+        OreDictionary.registerOre("blockMarble", marble);
         OreDictionary.registerOre("logWood", glowlog);
         OreDictionary.registerOre("logWood", bluelog);
     }
@@ -182,19 +163,16 @@ public class ModBlocks {
     public static void initModels() {
         blackmarble_techpat1.initModel();
 
-        blackmarble.initModel();
+        marble.initModel();
         blackmarble_smooth.initModel();
         blackmarble_pilar.initModel();
         blackmarble_bricks.initModel();
-        graymarble.initModel();
         graymarble_smooth.initModel();
         graymarble_pilar.initModel();
         graymarble_bricks.initModel();
-        whitemarble.initModel();
         whitemarble_smooth.initModel();
         whitemarble_pilar.initModel();
         whitemarble_bricks.initModel();
-        bluemarble.initModel();
         bluemarble_smooth.initModel();
         bluemarble_pilar.initModel();
         bluemarble_bricks.initModel();

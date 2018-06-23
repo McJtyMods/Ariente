@@ -72,11 +72,11 @@ public abstract class AbstractArienteBiome extends Biome {
 
                 if (iblockstate2.getMaterial() == Material.AIR) {
                     j = -1;
-                } else if (iblockstate2.getBlock() == ModBlocks.graymarble) {
+                } else if (iblockstate2.getBlock() == ModBlocks.marble) {
                     if (j == -1) {
                         if (k <= 0) {
                             iblockstate = AIR;
-                            iblockstate1 = ModBlocks.graymarble.getDefaultState();
+                            iblockstate1 = ModBlocks.marble.getDefaultState();
                         } else if (j1 >= i - 4 && j1 <= i + 1) {
                             iblockstate = this.topBlock;
                             iblockstate1 = this.fillerBlock;
@@ -96,7 +96,7 @@ public abstract class AbstractArienteBiome extends Biome {
                             chunkPrimerIn.setBlockState(i1, j1, l, iblockstate);
                         } else if (j1 < i - 7 - k) {
                             iblockstate = AIR;
-                            iblockstate1 = ModBlocks.graymarble.getDefaultState();
+                            iblockstate1 = ModBlocks.marble.getDefaultState();
                             chunkPrimerIn.setBlockState(i1, j1, l, GRAVEL);
                         } else {
                             chunkPrimerIn.setBlockState(i1, j1, l, iblockstate1);

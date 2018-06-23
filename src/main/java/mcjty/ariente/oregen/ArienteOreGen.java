@@ -1,5 +1,6 @@
 package mcjty.ariente.oregen;
 
+import mcjty.ariente.blocks.MarbleColor;
 import mcjty.ariente.blocks.ModBlocks;
 import net.minecraft.block.Block;
 import net.minecraft.block.state.pattern.BlockMatcher;
@@ -37,25 +38,25 @@ public class ArienteOreGen implements IWorldGenerator {
         }
 
         if (world.provider.getDimension() == 222) { // @todo config
-            addOreSpawn(ModBlocks.bluemarble, (byte) 0, ModBlocks.graymarble, world, random, chunkX * 16, chunkZ * 16,
+            addOreSpawn(ModBlocks.marble, (byte) MarbleColor.BLUE.ordinal(), ModBlocks.marble, world, random, chunkX * 16, chunkZ * 16,
                     20, 50, 4, 16, 70);
-            addOreSpawn(ModBlocks.blackmarble, (byte) 0, ModBlocks.graymarble, world, random, chunkX * 16, chunkZ * 16,
+            addOreSpawn(ModBlocks.marble, (byte) MarbleColor.BLACK.ordinal(), ModBlocks.marble, world, random, chunkX * 16, chunkZ * 16,
                     20, 50, 3, 10, 40);
-            addOreSpawn(ModBlocks.whitemarble, (byte) 0, ModBlocks.graymarble, world, random, chunkX * 16, chunkZ * 16,
+            addOreSpawn(ModBlocks.marble, (byte) MarbleColor.WHITE.ordinal(), ModBlocks.marble, world, random, chunkX * 16, chunkZ * 16,
                     20, 50, 4, 16, 70);
-            addOreSpawn(ModBlocks.lithiumore, (byte) 0, ModBlocks.graymarble, world, random, chunkX * 16, chunkZ * 16,
+            addOreSpawn(ModBlocks.lithiumore, (byte) 0, ModBlocks.marble, world, random, chunkX * 16, chunkZ * 16,
                     2, 3, 2, 8, 20);
-            addOreSpawn(ModBlocks.manganeseore, (byte) 0, ModBlocks.graymarble, world, random, chunkX * 16, chunkZ * 16,
+            addOreSpawn(ModBlocks.manganeseore, (byte) 0, ModBlocks.marble, world, random, chunkX * 16, chunkZ * 16,
                     3, 7, 4, 20, 50);
-            addOreSpawn(ModBlocks.platinumore, (byte) 0, ModBlocks.graymarble, world, random, chunkX * 16, chunkZ * 16,
+            addOreSpawn(ModBlocks.platinumore, (byte) 0, ModBlocks.marble, world, random, chunkX * 16, chunkZ * 16,
                     3, 7, 4, 30, 80);
-            addOreSpawn(ModBlocks.siliconore, (byte) 0, ModBlocks.graymarble, world, random, chunkX * 16, chunkZ * 16,
+            addOreSpawn(ModBlocks.siliconore, (byte) 0, ModBlocks.marble, world, random, chunkX * 16, chunkZ * 16,
                     3, 7, 4, 30, 60);
-            addOreSpawn(ModBlocks.silverore, (byte) 0, ModBlocks.graymarble, world, random, chunkX * 16, chunkZ * 16,
+            addOreSpawn(ModBlocks.silverore, (byte) 0, ModBlocks.marble, world, random, chunkX * 16, chunkZ * 16,
                     2, 4, 4, 10, 20);
-            addOreSpawn(ModBlocks.negarite, (byte) 0, ModBlocks.graymarble, world, random, chunkX * 16, chunkZ * 16,
+            addOreSpawn(ModBlocks.negarite, (byte) 0, ModBlocks.marble, world, random, chunkX * 16, chunkZ * 16,
                     4, 8, 5, 6, 30);
-            addOreSpawn(ModBlocks.posirite, (byte) 0, ModBlocks.graymarble, world, random, chunkX * 16, chunkZ * 16,
+            addOreSpawn(ModBlocks.posirite, (byte) 0, ModBlocks.marble, world, random, chunkX * 16, chunkZ * 16,
                     4, 8, 5, 6, 30);
         }
 

@@ -39,7 +39,7 @@ public class ArienteChunkGenerator implements IChunkGenerator {
         this.worldObj = worldObj;
         long seed = worldObj.getSeed();
         this.random = new Random((seed + 516) * 314);
-        terraingen.setup(worldObj, random, ModBlocks.graymarble.getDefaultState());
+        terraingen.setup(worldObj, random, ModBlocks.marble.getDefaultState());
         islandsGen.setup(worldObj, worldObj.getSeed());
 //        islandgen.setup(worldObj, random, this, 40);
 //        island2gen.setup(worldObj, new Random((seed + 314) * 516), this, 40);
