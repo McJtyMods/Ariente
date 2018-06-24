@@ -5,7 +5,8 @@ import net.minecraft.util.IStringSerializable;
 public enum TechType implements IStringSerializable {
     DOTS("dots"),
     LINES("lines"),
-    VAR1("var1");
+    VAR1("var1"),
+    LINES_GLOW("lines_glow");
 
     public static final TechType[] VALUES = new TechType[TechType.values().length];
 
