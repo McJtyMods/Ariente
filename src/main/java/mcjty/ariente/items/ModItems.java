@@ -11,11 +11,17 @@ public class ModItems {
     public static GenericItem manganeseIngot;
     public static GenericItem silverIngot;
 
+    public static GenericItem negariteDust;
+    public static GenericItem posiriteDust;
+
     public static void init() {
         platinumIngot = new GenericItem("ingot_platinum");
         lithiumIngot = new GenericItem("ingot_lithium");
         manganeseIngot = new GenericItem("ingot_manganese");
         silverIngot = new GenericItem("ingot_silver");
+
+        negariteDust = new GenericItem("dust_negarite");
+        posiriteDust = new GenericItem("dust_posirite");
     }
 
     public static void initOreDict() {
@@ -31,6 +37,8 @@ public class ModItems {
         lithiumIngot.initModel();
         manganeseIngot.initModel();
         silverIngot.initModel();
+        negariteDust.initModel();
+        posiriteDust.initModel();
     }
 
 }
