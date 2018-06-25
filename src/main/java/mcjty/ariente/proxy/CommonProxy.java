@@ -8,6 +8,7 @@ import mcjty.ariente.cities.AssetRegistries;
 import mcjty.ariente.config.ArienteConfiguration;
 import mcjty.ariente.dimension.DimensionRegister;
 import mcjty.ariente.items.ModItems;
+import mcjty.ariente.network.ArienteMessages;
 import mcjty.ariente.oregen.WorldGen;
 import mcjty.ariente.oregen.WorldTickHandler;
 import mcjty.lib.base.GeneralConfig;
@@ -38,7 +39,7 @@ public class CommonProxy extends AbstractCommonProxy {
 
         SimpleNetworkWrapper network = PacketHandler.registerMessages(Ariente.MODID, "ariente");
         GeneralConfig.preInit(e);
-//        AMPacketHandler.registerMessages(network);
+        ArienteMessages.registerNetworkMessages(network);
 
         DimensionRegister.init();
 

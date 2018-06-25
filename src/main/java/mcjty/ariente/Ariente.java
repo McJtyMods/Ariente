@@ -6,6 +6,7 @@ import mcjty.ariente.commands.CommandInfo;
 import mcjty.ariente.commands.CommandSaveCity;
 import mcjty.ariente.proxy.CommonProxy;
 import mcjty.lib.base.ModBase;
+import mcjty.lib.compat.MainCompatHandler;
 import net.minecraft.creativetab.CreativeTabs;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.init.Items;
@@ -59,8 +60,8 @@ public class Ariente implements ModBase {
             }
         };
         proxy.preInit(event);
-//        MainCompatHandler.registerWaila();
-//        MainCompatHandler.registerTOP();
+        MainCompatHandler.registerWaila();
+        MainCompatHandler.registerTOP();
     }
 
     @Mod.EventHandler

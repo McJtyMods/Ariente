@@ -1,0 +1,39 @@
+container {
+    slot('specificitem') {
+        items('ariente:dust_negarite')
+        pos(82,24)
+    }
+    playerslots(10,70)
+}
+window {
+    size(180,152)
+
+    event('redstone','negarite_gen.setRsMode')
+
+    panel('','positional') {
+        bg1('ariente:textures/gui/negarite_generator.png')
+        imagechoicelabel('redstone') {
+            channel('redstone')
+            hint(154,46,16,16)
+            image('ariente:textures/gui/guielements.png')
+            dim(32,0,256,256)
+            choices {
+                choice('Ignored') {
+                    uv(0,0)
+                    tooltips('Redstone mode:','Ignored')
+                    image('ariente:textures/gui/guielements.png')
+                }
+                choice('Off') {
+                    uv(16,0)
+                    tooltips('Redstone mode:','Off to activate')
+                    image('ariente:textures/gui/guielements.png')
+                }
+                choice('On') {
+                    uv(32,0)
+                    tooltips('Redstone mode:','On to activate')
+                    image('ariente:textures/gui/guielements.png')
+                }
+            }
+        }
+    }
+}

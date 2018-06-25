@@ -1,0 +1,19 @@
+{
+  "parent": "ariente:block/util_cube_glow_2",
+  "ambientocclusion": false,
+  "textures": {
+    "particle": "#front",
+    "down": "ariente:blocks/base/machinebottom",
+    "up": "ariente:blocks/base/machinetop",
+    "north": "#front",
+    "east": "ariente:blocks/base/machineside",
+    "south": "ariente:blocks/base/machineside",
+    "west": "ariente:blocks/base/machineside",
+    "glow_down": "ariente:blocks/base/empty_glow",
+    "glow_up": "ariente:blocks/base/empty_glow",
+    "glow_north": "#frontglow",
+    "glow_east": "ariente:blocks/base/machineside_glow",
+    "glow_south": "ariente:blocks/base/machineside_glow",
+    "glow_west": "ariente:blocks/base/machineside_glow"
+  }
+}

@@ -1,3 +1,4 @@
+#PARSE_ESCAPES
 fluid.fresh_water=Fresh Water
 
 item.ariente.ingot_platinum.name=Platinum Ingot
@@ -8,6 +9,8 @@ item.ariente.dust_negarite.name=Negarite Dust
 item.ariente.dust_posirite.name=Posirite Dust
 
 tile.ariente.blacktech.name=Marble Tech Block
+
+tile.ariente.negarite_generator.name=Negarite Generator
 
 tile.ariente.marble.name=Marble
 tile.ariente.marble_smooth.name=Smooth Marble
@@ -28,3 +31,11 @@ tile.ariente.bluelog.name=Blue Log
 tile.ariente.blueleaves.name=Blue Leaves
 
 itemGroup.ariente=Ariente
+
+# Messages
+message.ariente.shiftmessage=<Press Shift>
+message.ariente.negarite_generator=\
+    @fThis machine produces negarite\n\
+    @fflux when fed with negarite dust.\n\
+    @fThis block needs negarite infusion\n\
+    @ftubes above it to work
