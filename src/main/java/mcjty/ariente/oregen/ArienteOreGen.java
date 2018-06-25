@@ -1,10 +1,9 @@
 package mcjty.ariente.oregen;
 
-import mcjty.ariente.blocks.MarbleColor;
+import mcjty.ariente.blocks.decorative.MarbleColor;
 import mcjty.ariente.blocks.ModBlocks;
 import net.minecraft.block.Block;
 import net.minecraft.block.state.pattern.BlockMatcher;
-import net.minecraft.init.Blocks;
 import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.nbt.NBTTagList;
 import net.minecraft.util.math.BlockPos;

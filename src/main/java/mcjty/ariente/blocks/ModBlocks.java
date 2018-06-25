@@ -1,6 +1,8 @@
 package mcjty.ariente.blocks;
 
 import mcjty.ariente.Ariente;
+import mcjty.ariente.blocks.decorative.BlackTechBlock;
+import mcjty.ariente.blocks.decorative.MarbleBlock;
 import mcjty.lib.blocks.BaseBlock;
 import mcjty.lib.builder.BaseBlockBuilder;
 import mcjty.lib.builder.BlockFlags;

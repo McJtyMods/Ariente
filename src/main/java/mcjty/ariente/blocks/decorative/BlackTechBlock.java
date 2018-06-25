@@ -1,5 +1,6 @@
-package mcjty.ariente.blocks;
+package mcjty.ariente.blocks.decorative;
 
+import mcjty.ariente.blocks.BaseVariantBlock;
 import net.minecraft.block.properties.PropertyEnum;
 
 public class BlackTechBlock extends BaseVariantBlock<TechType> {

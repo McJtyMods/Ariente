@@ -1,4 +1,4 @@
-package mcjty.ariente.blocks;
+package mcjty.ariente.blocks.decorative;
 
 import net.minecraft.util.IStringSerializable;
 
