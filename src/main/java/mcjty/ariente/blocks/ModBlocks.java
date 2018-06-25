@@ -33,14 +33,44 @@ public class ModBlocks {
     public static BaseBlock blueleaves;
 
     public static void init() {
+        initDecorative();
+        initOres();
+        initPlants();
+    }
 
+    private static void initPlants() {
+        glowlog = new BaseBlockBuilder<>(Ariente.instance, "glowlog")
+                .rotationType(BaseBlock.RotationType.NONE)
+                .creativeTabs(Ariente.creativeTab)
+                .lightValue(10)
+                .flags(BlockFlags.NON_OPAQUE, BlockFlags.RENDER_TRANSLUCENT, BlockFlags.RENDER_NOSIDES)
+                .build();
+        glowleaves = new BaseBlockBuilder<>(Ariente.instance, "glowleaves")
+                .rotationType(BaseBlock.RotationType.NONE)
+                .creativeTabs(Ariente.creativeTab)
+                .lightValue(10)
+                .flags(BlockFlags.NON_OPAQUE, BlockFlags.RENDER_TRANSLUCENT)
+                .build();
+        bluelog = new BaseBlockBuilder<>(Ariente.instance, "bluelog")
+                .rotationType(BaseBlock.RotationType.NONE)
+                .creativeTabs(Ariente.creativeTab)
+                .build();
+        blueleaves = new BaseBlockBuilder<>(Ariente.instance, "blueleaves")
+                .rotationType(BaseBlock.RotationType.NONE)
+                .creativeTabs(Ariente.creativeTab)
+                .flags(BlockFlags.NON_OPAQUE, BlockFlags.RENDER_CUTOUT)
+                .build();
+    }
+
+    private static void initDecorative() {
         blackmarble_techpat = new BlackTechBlock("blacktech");
         marble = new MarbleBlock("marble");
         marble_smooth = new MarbleBlock("marble_smooth");
         marble_pilar = new MarbleBlock("marble_pilar");
         marble_bricks = new MarbleBlock("marble_bricks");
+    }
 
-
+    private static void initOres() {
         lithiumore = new BaseBlockBuilder<>(Ariente.instance, "lithiumore")
                 .rotationType(BaseBlock.RotationType.NONE)
                 .creativeTabs(Ariente.creativeTab)
@@ -68,28 +98,6 @@ public class ModBlocks {
         negarite = new BaseBlockBuilder<>(Ariente.instance, "negarite")
                 .rotationType(BaseBlock.RotationType.NONE)
                 .creativeTabs(Ariente.creativeTab)
-                .build();
-
-        glowlog = new BaseBlockBuilder<>(Ariente.instance, "glowlog")
-                .rotationType(BaseBlock.RotationType.NONE)
-                .creativeTabs(Ariente.creativeTab)
-                .lightValue(10)
-                .flags(BlockFlags.NON_OPAQUE, BlockFlags.RENDER_TRANSLUCENT, BlockFlags.RENDER_NOSIDES)
-                .build();
-        glowleaves = new BaseBlockBuilder<>(Ariente.instance, "glowleaves")
-                .rotationType(BaseBlock.RotationType.NONE)
-                .creativeTabs(Ariente.creativeTab)
-                .lightValue(10)
-                .flags(BlockFlags.NON_OPAQUE, BlockFlags.RENDER_TRANSLUCENT)
-                .build();
-        bluelog = new BaseBlockBuilder<>(Ariente.instance, "bluelog")
-                .rotationType(BaseBlock.RotationType.NONE)
-                .creativeTabs(Ariente.creativeTab)
-                .build();
-        blueleaves = new BaseBlockBuilder<>(Ariente.instance, "blueleaves")
-                .rotationType(BaseBlock.RotationType.NONE)
-                .creativeTabs(Ariente.creativeTab)
-                .flags(BlockFlags.NON_OPAQUE, BlockFlags.RENDER_CUTOUT)
                 .build();
     }
 
