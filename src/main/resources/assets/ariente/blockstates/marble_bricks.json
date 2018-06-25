@@ -7,10 +7,10 @@
     "normal": [{}],
     "inventory": [{}],
     "type": {
-      "gray": { "textures": { "all": "ariente:blocks/graymarble_bricks" } },
-      "black": { "textures": { "all": "ariente:blocks/blackmarble_bricks" } },
-      "blue": { "textures": { "all": "ariente:blocks/bluemarble_bricks" } },
-      "white": { "textures": { "all": "ariente:blocks/whitemarble_bricks" } }
+      "gray": { "textures": { "all": "ariente:blocks/marble/graymarble_bricks" } },
+      "black": { "textures": { "all": "ariente:blocks/marble/blackmarble_bricks" } },
+      "blue": { "textures": { "all": "ariente:blocks/marble/bluemarble_bricks" } },
+      "white": { "textures": { "all": "ariente:blocks/marble/whitemarble_bricks" } }
     }
   }
 }

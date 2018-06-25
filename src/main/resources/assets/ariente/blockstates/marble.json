@@ -7,10 +7,10 @@
     "normal": [{}],
     "inventory": [{}],
     "type": {
-      "gray": { "textures": { "all": "ariente:blocks/graymarble" } },
-      "black": { "textures": { "all": "ariente:blocks/blackmarble" } },
-      "blue": { "textures": { "all": "ariente:blocks/bluemarble" } },
-      "white": { "textures": { "all": "ariente:blocks/whitemarble" } }
+      "gray": { "textures": { "all": "ariente:blocks/marble/graymarble" } },
+      "black": { "textures": { "all": "ariente:blocks/marble/blackmarble" } },
+      "blue": { "textures": { "all": "ariente:blocks/marble/bluemarble" } },
+      "white": { "textures": { "all": "ariente:blocks/marble/whitemarble" } }
     }
   }
 }

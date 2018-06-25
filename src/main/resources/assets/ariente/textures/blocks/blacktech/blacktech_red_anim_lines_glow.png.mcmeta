@@ -1,4 +1,7 @@
 {
+    "animation": {
+      "frametime": 5
+    },
     "ctm":{
         "ctm_version": 1,
         "layer":"CUTOUT",
@@ -8,7 +11,7 @@
         },
         "type": "ctm",
         "textures": [
-            "ariente:blocks/blacktech_red_var1-ctm_glow"
+            "ariente:blocks/blacktech/blacktech_red_anim_lines-ctm_glow"
         ]
     }
 }

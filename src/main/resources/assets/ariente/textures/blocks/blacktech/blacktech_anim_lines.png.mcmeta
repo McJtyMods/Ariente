@@ -9,7 +9,7 @@
             "connect_inside": true
         },
         "textures": [
-            "ariente:blocks/blacktech_anim_lines-ctm"
+            "ariente:blocks/blacktech/blacktech_anim_lines-ctm"
         ]
     }
 }

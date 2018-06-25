@@ -7,13 +7,13 @@
     "normal": [{}],
     "inventory": [{}],
     "type": {
-      "dots": { "textures": { "all": "ariente:blocks/blacktech_dots", "glow":  "ariente:blocks/blacktech_dots_glow" } },
-      "lines": { "textures": { "all": "ariente:blocks/blacktech_lines", "glow":  "ariente:blocks/blacktech_lines_glow" } },
-      "var1": { "textures": { "all": "ariente:blocks/blacktech_var1", "glow":  "ariente:blocks/blacktech_var1_glow" } },
-      "red_var1": { "textures": { "all": "ariente:blocks/blacktech_red_var1", "glow":  "ariente:blocks/blacktech_red_var1_glow" } },
-      "lines_glow": { "textures": { "all": "ariente:blocks/blacktech_anim_lines", "glow":  "ariente:blocks/blacktech_anim_lines_glow" } },
-      "red_lines_glow": { "textures": { "all": "ariente:blocks/blacktech_red_anim_lines", "glow":  "ariente:blocks/blacktech_red_anim_lines_glow" } },
-      "panel": { "textures": { "all": "ariente:blocks/blacktech_panel", "glow":  "ariente:blocks/blacktech_panel_glow" } }
+      "dots": { "textures": { "all": "ariente:blocks/blacktech/blacktech_dots", "glow":  "ariente:blocks/blacktech/blacktech_dots_glow" } },
+      "lines": { "textures": { "all": "ariente:blocks/blacktech/blacktech_lines", "glow":  "ariente:blocks/blacktech/blacktech_lines_glow" } },
+      "var1": { "textures": { "all": "ariente:blocks/blacktech/blacktech_var1", "glow":  "ariente:blocks/blacktech/blacktech_var1_glow" } },
+      "red_var1": { "textures": { "all": "ariente:blocks/blacktech/blacktech_red_var1", "glow":  "ariente:blocks/blacktech/blacktech_red_var1_glow" } },
+      "lines_glow": { "textures": { "all": "ariente:blocks/blacktech/blacktech_anim_lines", "glow":  "ariente:blocks/blacktech/blacktech_anim_lines_glow" } },
+      "red_lines_glow": { "textures": { "all": "ariente:blocks/blacktech/blacktech_red_anim_lines", "glow":  "ariente:blocks/blacktech/blacktech_red_anim_lines_glow" } },
+      "panel": { "textures": { "all": "ariente:blocks/blacktech/blacktech_panel", "glow":  "ariente:blocks/blacktech/blacktech_panel_glow" } }
     }
   }
 }

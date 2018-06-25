@@ -7,6 +7,7 @@ import mcjty.ariente.blocks.ModBlocks;
 import mcjty.ariente.cities.AssetRegistries;
 import mcjty.ariente.config.ArienteConfiguration;
 import mcjty.ariente.dimension.DimensionRegister;
+import mcjty.ariente.items.ModItems;
 import mcjty.ariente.oregen.WorldGen;
 import mcjty.ariente.oregen.WorldTickHandler;
 import mcjty.lib.base.GeneralConfig;
@@ -45,7 +46,7 @@ public class CommonProxy extends AbstractCommonProxy {
 
 //        FluidSetup.preInitFluids();
         ModBlocks.init();
-//        ModItems.init();
+        ModItems.init();
         WorldGen.init();
     }
 

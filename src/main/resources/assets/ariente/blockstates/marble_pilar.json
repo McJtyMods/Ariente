@@ -7,10 +7,10 @@
     "normal": [{}],
     "inventory": [{}],
     "type": {
-      "gray": { "textures": { "all": "ariente:blocks/graymarble_pilar" } },
-      "black": { "textures": { "all": "ariente:blocks/blackmarble_pilar" } },
-      "blue": { "textures": { "all": "ariente:blocks/bluemarble_pilar" } },
-      "white": { "textures": { "all": "ariente:blocks/whitemarble_pilar" } }
+      "gray": { "textures": { "all": "ariente:blocks/marble/graymarble_pilar" } },
+      "black": { "textures": { "all": "ariente:blocks/marble/blackmarble_pilar" } },
+      "blue": { "textures": { "all": "ariente:blocks/marble/bluemarble_pilar" } },
+      "white": { "textures": { "all": "ariente:blocks/marble/whitemarble_pilar" } }
     }
   }
 }

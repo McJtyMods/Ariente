@@ -6,7 +6,7 @@
             "connect_inside": true
         },
         "textures": [
-            "ariente:blocks/blacktech_red_var1-ctm"
+            "ariente:blocks/blacktech/blacktech_red_var1-ctm"
         ]
     }
 }

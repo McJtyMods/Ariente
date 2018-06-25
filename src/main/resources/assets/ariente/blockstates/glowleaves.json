@@ -3,7 +3,7 @@
   "defaults": {
     "model": "cube_all",
     "textures": {
-      "all": "ariente:blocks/glowleaves"
+      "all": "ariente:blocks/plants/glowleaves"
     }
   },
   "variants": {

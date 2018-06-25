@@ -1,14 +1,12 @@
 {
     "ctm":{
         "ctm_version": 1,
-        "layer":"CUTOUT",
+        "type": "ctm",
         "extra": {
-            "light": 14,
             "connect_inside": true
         },
-        "type": "ctm",
         "textures": [
-            "ariente:blocks/blacktech_lines-ctm_glow"
+            "ariente:blocks/blacktech/blacktech_lines-ctm"
         ]
     }
 }

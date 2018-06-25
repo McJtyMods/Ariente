@@ -2,6 +2,7 @@ package mcjty.ariente;
 
 import mcjty.ariente.biomes.ModBiomes;
 import mcjty.ariente.blocks.ModBlocks;
+import mcjty.ariente.items.ModItems;
 import mcjty.lib.McJtyRegister;
 import net.minecraft.block.Block;
 import net.minecraft.item.Item;
@@ -21,6 +22,7 @@ public class ForgeEventHandlers {
     public void registerItems(RegistryEvent.Register<Item> event) {
         McJtyRegister.registerItems(Ariente.instance, event.getRegistry());
         ModBlocks.initOreDict();
+        ModItems.initOreDict();
     }
 
     @SubscribeEvent
