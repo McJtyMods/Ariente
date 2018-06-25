@@ -1,6 +1,6 @@
 {
   "parent": "item/generated",
   "textures": {
-    "layer0": "ariente:items/ingots/ingot_platinum"
+    "layer0": "ariente:items/ingots/ingot_silver"
   }
 }

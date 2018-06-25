@@ -1,6 +1,9 @@
 fluid.fresh_water=Fresh Water
 
 item.ariente.ingot_platinum.name=Platinum Ingot
+item.ariente.ingot_lithium.name=Lithium Ingot
+item.ariente.ingot_manganese.name=Manganese Ingot
+item.ariente.ingot_silver.name=Silver Ingot
 
 tile.ariente.blacktech.name=Marble Tech Block
 

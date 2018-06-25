@@ -1,24 +1,36 @@
 package mcjty.ariente.items;
 
-import net.minecraft.item.Item;
 import net.minecraftforge.fml.relauncher.Side;
 import net.minecraftforge.fml.relauncher.SideOnly;
+import net.minecraftforge.oredict.OreDictionary;
 
 public class ModItems {
 
     public static GenericItem platinumIngot;
+    public static GenericItem lithiumIngot;
+    public static GenericItem manganeseIngot;
+    public static GenericItem silverIngot;
 
     public static void init() {
         platinumIngot = new GenericItem("ingot_platinum");
+        lithiumIngot = new GenericItem("ingot_lithium");
+        manganeseIngot = new GenericItem("ingot_manganese");
+        silverIngot = new GenericItem("ingot_silver");
     }
 
     public static void initOreDict() {
-//        OreDictionary.registerOre("oreSilver", silverore);
+        OreDictionary.registerOre("ingotSilver", silverIngot);
+        OreDictionary.registerOre("ingotPlatinum", platinumIngot);
+        OreDictionary.registerOre("ingotManganese", manganeseIngot);
+        OreDictionary.registerOre("ingotLithium", lithiumIngot);
     }
 
     @SideOnly(Side.CLIENT)
     public static void initModels() {
         platinumIngot.initModel();
+        lithiumIngot.initModel();
+        manganeseIngot.initModel();
+        silverIngot.initModel();
     }
 
 }
