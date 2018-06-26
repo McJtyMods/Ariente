@@ -1,6 +1,7 @@
 package mcjty.ariente.blocks.generators;
 
 import mcjty.ariente.Ariente;
+import mcjty.ariente.blocks.ModBlocks;
 import mcjty.ariente.items.ModItems;
 import mcjty.lib.container.ContainerFactory;
 import mcjty.lib.container.DefaultSidedInventory;
@@ -25,6 +26,7 @@ import net.minecraft.network.play.server.SPacketUpdateTileEntity;
 import net.minecraft.util.EnumFacing;
 import net.minecraft.util.ITickable;
 import net.minecraft.util.ResourceLocation;
+import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.World;
 import net.minecraftforge.fml.common.Optional;
 import net.minecraftforge.fml.relauncher.Side;
@@ -60,11 +62,20 @@ public class NegariteGeneratorTile extends GenericTileEntity implements ITickabl
 
         super.onDataPacket(net, packet);
 
-        if (getWorld().isRemote) {
+        if (world.isRemote) {
             // If needed send a render update.
             boolean newWorking = isWorking();
             if (newWorking != working) {
-                getWorld().markBlockRangeForRenderUpdate(getPos(), getPos());
+                world.markBlockRangeForRenderUpdate(getPos(), getPos());
+                BlockPos p = pos.up();
+                IBlockState state = world.getBlockState(p);
+                while (state.getBlock() == ModBlocks.negariteTankBlock) {
+                    world.markBlockRangeForRenderUpdate(p, p);
+                    p = p.up();
+                    state = world.getBlockState(p);
+                }
+
+
             }
         }
     }
@@ -83,7 +94,7 @@ public class NegariteGeneratorTile extends GenericTileEntity implements ITickabl
         markDirtyClient();
     }
 
-    private boolean isWorking() {
+    public boolean isWorking() {
         return working;
     }
 

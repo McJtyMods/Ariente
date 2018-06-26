@@ -5,6 +5,8 @@ import mcjty.ariente.blocks.decorative.BlackTechBlock;
 import mcjty.ariente.blocks.decorative.MarbleBlock;
 import mcjty.ariente.blocks.generators.NegariteGeneratorGui;
 import mcjty.ariente.blocks.generators.NegariteGeneratorTile;
+import mcjty.ariente.blocks.generators.NegariteTankRenderer;
+import mcjty.ariente.blocks.generators.NegariteTankTile;
 import mcjty.ariente.gui.GuiProxy;
 import mcjty.lib.blocks.BaseBlock;
 import mcjty.lib.blocks.GenericBlock;
@@ -12,6 +14,7 @@ import mcjty.lib.builder.BaseBlockBuilder;
 import mcjty.lib.builder.BlockFlags;
 import mcjty.lib.builder.GenericBlockBuilderFactory;
 import mcjty.lib.container.GenericContainer;
+import net.minecraftforge.fml.client.registry.ClientRegistry;
 import net.minecraftforge.fml.relauncher.Side;
 import net.minecraftforge.fml.relauncher.SideOnly;
 import net.minecraftforge.oredict.OreDictionary;
@@ -41,6 +44,7 @@ public class ModBlocks {
     public static BaseBlock blueleaves;
 
     public static GenericBlock<NegariteGeneratorTile, GenericContainer> negariteGeneratorBlock;
+    public static GenericBlock<NegariteTankTile, GenericContainer> negariteTankBlock;
 
     public static GenericBlockBuilderFactory builderFactory;
 
@@ -62,12 +66,21 @@ public class ModBlocks {
                 .flags(BlockFlags.REDSTONE_CHECK, BlockFlags.RENDER_SOLID, BlockFlags.RENDER_CUTOUT)
                 .property(NegariteGeneratorTile.WORKING)
                 .guiId(GuiProxy.GUI_NEGARITE_GENERATOR)
-                .infusable()
                 .info("message.ariente.shiftmessage")
                 .infoExtended("message.ariente.negarite_generator")
 //                .infoExtendedParameter(stack -> Long.toString(CoalGeneratorConfiguration.rfPerTick))
                 .build();
 
+        negariteTankBlock = ModBlocks.builderFactory.<NegariteTankTile> builder("negarite_tank")
+                .tileEntityClass(NegariteTankTile.class)
+                .emptyContainer()
+                .flags(BlockFlags.NON_OPAQUE, BlockFlags.RENDER_SOLID, BlockFlags.RENDER_TRANSLUCENT)
+                .property(NegariteTankTile.LOWER)
+                .property(NegariteTankTile.UPPER)
+                .rotationType(BaseBlock.RotationType.NONE)
+                .info("message.ariente.shiftmessage")
+                .infoExtended("message.ariente.negarite_tank")
+                .build();
     }
 
     private static void initPlants() {
@@ -158,6 +171,8 @@ public class ModBlocks {
     public static void initModels() {
         negariteGeneratorBlock.initModel();
         negariteGeneratorBlock.setGuiFactory(NegariteGeneratorGui::new);
+        negariteTankBlock.initModel();
+        ClientRegistry.bindTileEntitySpecialRenderer(NegariteTankTile.class, new NegariteTankRenderer());
 
         blackmarble_techpat.initModel();
         marble.initModel();

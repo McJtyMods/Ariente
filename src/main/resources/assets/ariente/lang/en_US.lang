@@ -10,7 +10,8 @@ item.ariente.dust_posirite.name=Posirite Dust
 
 tile.ariente.blacktech.name=Marble Tech Block
 
-tile.ariente.negarite_generator.name=Negarite Generator
+tile.ariente.negarite_generator.name=Negarite Flux Generator
+tile.ariente.negarite_tank.name=Negarite Tank
 
 tile.ariente.marble.name=Marble
 tile.ariente.marble_smooth.name=Smooth Marble
@@ -41,3 +42,6 @@ message.ariente.negarite_generator=\
     @fflux when fed with negarite dust.\n\
     @fThis block needs negarite infusion\n\
     @ftubes above it to work
+message.ariente.negarite_tank=\
+    @fPlace one or more tanks on top\n\
+    @fof a Negarite Flux Generator
