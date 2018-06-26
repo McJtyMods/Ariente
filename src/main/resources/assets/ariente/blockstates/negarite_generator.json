@@ -4,7 +4,7 @@
     "model": "ariente:frontblock_glow",
     "textures": {
       "front": "ariente:blocks/machines/negarite_generator",
-      "frontglow": "ariente:blocks/machines/empty_glow"
+      "frontglow": "ariente:blocks/base/empty_glow"
     }
   },
   "variants": {
@@ -15,13 +15,16 @@
       "south": {"y": 180},
       "west": {"y": 270},
       "east": {"y": 90}
-    }
-  },
-  "working": {
-    "false": {},
-    "true": { "textures": {
-        "front": "ariente:blocks/machines/negarite_generator_on",
-        "frontglow": "ariente:blocks/machines/negarite_generator_on_glow"
+    },
+    "working": {
+      "false": {
+      },
+      "true": {
+        "model": "ariente:frontblock_glow",
+        "textures": {
+          "front": "ariente:blocks/machines/negarite_generator_on",
+          "frontglow": "ariente:blocks/machines/negarite_generator_on_glow"
+        }
       }
     }
   }

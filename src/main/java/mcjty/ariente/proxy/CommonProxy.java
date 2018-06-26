@@ -7,6 +7,7 @@ import mcjty.ariente.blocks.ModBlocks;
 import mcjty.ariente.cities.AssetRegistries;
 import mcjty.ariente.config.ArienteConfiguration;
 import mcjty.ariente.dimension.DimensionRegister;
+import mcjty.ariente.gui.GuiProxy;
 import mcjty.ariente.items.ModItems;
 import mcjty.ariente.network.ArienteMessages;
 import mcjty.ariente.oregen.WorldGen;
@@ -18,6 +19,7 @@ import net.minecraftforge.common.MinecraftForge;
 import net.minecraftforge.fml.common.event.FMLInitializationEvent;
 import net.minecraftforge.fml.common.event.FMLPostInitializationEvent;
 import net.minecraftforge.fml.common.event.FMLPreInitializationEvent;
+import net.minecraftforge.fml.common.network.NetworkRegistry;
 import net.minecraftforge.fml.common.network.simpleimpl.SimpleNetworkWrapper;
 
 import java.io.File;
@@ -57,6 +59,7 @@ public class CommonProxy extends AbstractCommonProxy {
 
 //        EntityRegistry.registerModEntity(new ResourceLocation(AquaMunda.MODID, "fresh_water_falling"), EntityFallingFreshWaterBlock.class, "fresh_water_falling", 1, AquaMunda.instance, 250, 5, true);
         MinecraftForge.EVENT_BUS.register(WorldTickHandler.instance);
+        NetworkRegistry.INSTANCE.registerGuiHandler(Ariente.instance, new GuiProxy());
 
 //        ConfigSetup.readRecipesConfig();
     }

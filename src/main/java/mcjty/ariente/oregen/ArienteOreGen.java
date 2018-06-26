@@ -53,6 +53,10 @@ public class ArienteOreGen implements IWorldGenerator {
                     3, 7, 4, 30, 60);
             addOreSpawn(ModBlocks.silverore, (byte) 0, ModBlocks.marble, world, random, chunkX * 16, chunkZ * 16,
                     2, 4, 4, 10, 20);
+            addOreSpawn(ModBlocks.lapisore, (byte) 0, ModBlocks.marble, world, random, chunkX * 16, chunkZ * 16,
+                    3, 6, 4, 10, 30);
+            addOreSpawn(ModBlocks.glowstoneore, (byte) 0, ModBlocks.marble, world, random, chunkX * 16, chunkZ * 16,
+                    2, 3, 3, 10, 30);
             addOreSpawn(ModBlocks.negarite, (byte) 0, ModBlocks.marble, world, random, chunkX * 16, chunkZ * 16,
                     4, 8, 5, 6, 30);
             addOreSpawn(ModBlocks.posirite, (byte) 0, ModBlocks.marble, world, random, chunkX * 16, chunkZ * 16,

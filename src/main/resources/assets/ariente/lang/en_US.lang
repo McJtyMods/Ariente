@@ -17,6 +17,8 @@ tile.ariente.marble_smooth.name=Smooth Marble
 tile.ariente.marble_pilar.name=Black Pilar
 tile.ariente.marble_bricks.name=Black Bricks
 
+tile.ariente.lapisore.name=Lapis Ore
+tile.ariente.glowstoneore.name=Glowstone Ore
 tile.ariente.lithiumore.name=Lithium Ore
 tile.ariente.manganeseore.name=Manganese Ore
 tile.ariente.siliconore.name=Silicon Ore

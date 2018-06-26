@@ -25,6 +25,8 @@ public class ModBlocks {
     public static MarbleBlock marble_pilar;
     public static MarbleBlock marble_bricks;
 
+    public static BaseBlock lapisore;
+    public static BaseBlock glowstoneore;
     public static BaseBlock lithiumore;
     public static BaseBlock manganeseore;
     public static BaseBlock siliconore;
@@ -101,6 +103,15 @@ public class ModBlocks {
     }
 
     private static void initOres() {
+        lapisore = new BaseBlockBuilder<>(Ariente.instance, "lapisore")
+                .rotationType(BaseBlock.RotationType.NONE)
+                .creativeTabs(Ariente.creativeTab)
+                .build();
+        glowstoneore = new BaseBlockBuilder<>(Ariente.instance, "glowstoneore")
+                .rotationType(BaseBlock.RotationType.NONE)
+                .creativeTabs(Ariente.creativeTab)
+                .lightValue(13)
+                .build();
         lithiumore = new BaseBlockBuilder<>(Ariente.instance, "lithiumore")
                 .rotationType(BaseBlock.RotationType.NONE)
                 .creativeTabs(Ariente.creativeTab)
@@ -132,6 +143,7 @@ public class ModBlocks {
     }
 
     public static void initOreDict() {
+        OreDictionary.registerOre("oreLapis", lapisore);
         OreDictionary.registerOre("oreSilver", silverore);
         OreDictionary.registerOre("orePlatinum", platinumore);
         OreDictionary.registerOre("oreSilicon", siliconore);
@@ -153,6 +165,8 @@ public class ModBlocks {
         marble_pilar.initModel();
         marble_bricks.initModel();
 
+        lapisore.initModel();
+        glowstoneore.initModel();
         lithiumore.initModel();
         manganeseore.initModel();
         siliconore.initModel();
