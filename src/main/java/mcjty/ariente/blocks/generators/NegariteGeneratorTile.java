@@ -84,7 +84,7 @@ public class NegariteGeneratorTile extends GenericTileEntity implements ITickabl
     }
 
     private boolean isWorking() {
-        return false;
+        return working;
     }
 
     @Override
