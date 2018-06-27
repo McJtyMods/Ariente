@@ -78,6 +78,10 @@ public class ModBlocks {
                 .property(NegariteTankTile.LOWER)
                 .property(NegariteTankTile.UPPER)
                 .rotationType(BaseBlock.RotationType.NONE)
+                .activateAction((world, pos, player, hand, side, hitX, hitY, hitZ) -> {
+                    System.out.println("ModBlocks.initTechnical");
+                    return true;
+                })
                 .info("message.ariente.shiftmessage")
                 .infoExtended("message.ariente.negarite_tank")
                 .build();

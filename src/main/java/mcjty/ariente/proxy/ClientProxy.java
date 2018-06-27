@@ -3,6 +3,7 @@ package mcjty.ariente.proxy;
 import com.google.common.util.concurrent.ListenableFuture;
 import mcjty.ariente.Ariente;
 import mcjty.ariente.blocks.ModBlocks;
+import mcjty.ariente.entities.ModEntities;
 import mcjty.ariente.items.ModItems;
 import mcjty.lib.McJtyLibClient;
 import net.minecraft.client.Minecraft;
@@ -40,6 +41,7 @@ public class ClientProxy extends CommonProxy {
     public void registerModels(ModelRegistryEvent event) {
         ModBlocks.initModels();
         ModItems.initModels();
+        ModEntities.initModels();
     }
 
 

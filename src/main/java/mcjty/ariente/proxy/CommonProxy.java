@@ -7,6 +7,7 @@ import mcjty.ariente.blocks.ModBlocks;
 import mcjty.ariente.cities.AssetRegistries;
 import mcjty.ariente.config.ArienteConfiguration;
 import mcjty.ariente.dimension.DimensionRegister;
+import mcjty.ariente.entities.ModEntities;
 import mcjty.ariente.gui.GuiProxy;
 import mcjty.ariente.items.ModItems;
 import mcjty.ariente.network.ArienteMessages;
@@ -51,6 +52,7 @@ public class CommonProxy extends AbstractCommonProxy {
         ModBlocks.init();
         ModItems.init();
         WorldGen.init();
+        ModEntities.init();
     }
 
     @Override
