@@ -8,6 +8,7 @@ import mcjty.ariente.blocks.generators.NegariteGeneratorTile;
 import mcjty.ariente.blocks.generators.NegariteTankRenderer;
 import mcjty.ariente.blocks.generators.NegariteTankTile;
 import mcjty.ariente.gui.GuiProxy;
+import mcjty.ariente.gui.HoloGuiHandler;
 import mcjty.lib.blocks.BaseBlock;
 import mcjty.lib.blocks.GenericBlock;
 import mcjty.lib.builder.BaseBlockBuilder;
@@ -79,7 +80,7 @@ public class ModBlocks {
                 .property(NegariteTankTile.UPPER)
                 .rotationType(BaseBlock.RotationType.NONE)
                 .activateAction((world, pos, player, hand, side, hitX, hitY, hitZ) -> {
-                    System.out.println("ModBlocks.initTechnical");
+                    HoloGuiHandler.openHoloGui(world, pos, player);
                     return true;
                 })
                 .info("message.ariente.shiftmessage")
