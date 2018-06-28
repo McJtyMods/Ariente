@@ -17,7 +17,7 @@ public class HoloGuiHandler {
         System.out.println("pos = " + pos);
 //        entity.setPosition(pos.getX()+1, pos.getY()+1, pos.getZ()+1);
         double x = player.posX;
-        double y = player.posY+player.eyeHeight;
+        double y = player.posY+player.eyeHeight - .5;
         double z = player.posZ;
         Vec3d lookVec = player.getLookVec();
         x += lookVec.x;
