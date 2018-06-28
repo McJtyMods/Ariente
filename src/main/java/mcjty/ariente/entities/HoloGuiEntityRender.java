@@ -1,6 +1,7 @@
 package mcjty.ariente.entities;
 
 import mcjty.ariente.Ariente;
+import mcjty.ariente.gui.IGuiTile;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.renderer.BufferBuilder;
 import net.minecraft.client.renderer.GlStateManager;
@@ -8,11 +9,12 @@ import net.minecraft.client.renderer.Tessellator;
 import net.minecraft.client.renderer.entity.Render;
 import net.minecraft.client.renderer.entity.RenderManager;
 import net.minecraft.client.renderer.vertex.DefaultVertexFormats;
+import net.minecraft.tileentity.TileEntity;
 import net.minecraft.util.ResourceLocation;
 import net.minecraft.util.math.AxisAlignedBB;
+import net.minecraft.util.math.BlockPos;
 import net.minecraftforge.fml.client.registry.IRenderFactory;
 import org.lwjgl.opengl.GL11;
-import org.lwjgl.opengl.GLSync;
 
 import javax.annotation.Nullable;
 
@@ -32,6 +34,82 @@ public class HoloGuiEntityRender extends Render<HoloGuiEntity> {
         GlStateManager.pushMatrix();
         GlStateManager.translate(x, y, z);
 
+//        renderDebugOutline(entity, t, builder);
+
+        GlStateManager.rotate(180.0F - entityYaw, 0.0F, 1.0F, 0.0F);
+        GlStateManager.translate(0, .5, 0);
+
+        GlStateManager.enableTexture2D();
+        GlStateManager.disableLighting();
+        GlStateManager.enableBlend();
+        GlStateManager.color(1.0f, 1.0f, 1.0f, 0.5f);
+
+        Minecraft mc = Minecraft.getMinecraft();
+
+        mc.renderEngine.bindTexture(guiBackground);
+
+        builder.begin(GL11.GL_QUADS, DefaultVertexFormats.POSITION_TEX);
+
+        double min = -.5;
+        double max = .5;
+        renderQuad(builder, min, max, min, max);
+
+        t.draw();
+
+        GlStateManager.disableDepth();
+
+        BlockPos pos = entity.getGuiTile();
+        if (pos != null) {
+            TileEntity te = entity.getEntityWorld().getTileEntity(pos);
+            if (te instanceof IGuiTile) {
+                IGuiTile guiTile = (IGuiTile) te;
+                guiTile.renderGui(entity);
+            }
+        }
+
+        double cursorX = entity.getCursorX();
+        double cursorY = entity.getCursorY();
+        System.out.println("cursor = " + cursorX + "," + cursorY);
+        if (cursorX >= 0 && cursorX <= 30 && cursorY >= 0 && cursorY <= 30) {
+            GlStateManager.disableTexture2D();
+            builder.begin(GL11.GL_QUADS, DefaultVertexFormats.POSITION_COLOR);
+            double offset = .02;
+            renderQuadColor(builder, (cursorX / 10.0) - .4 - offset, (cursorX / 10.0) - .4 + offset,
+                     - ((cursorY / 9.0) -.5 - offset),  - ((cursorY / 9.0) -.5 + offset),
+                    0, 128, 255, 128);
+            t.draw();
+        }
+
+        GlStateManager.popMatrix();
+
+        GlStateManager.enableTexture2D();
+        GlStateManager.enableDepth();
+        GlStateManager.enableLighting();
+    }
+
+    private void renderQuad(BufferBuilder builder, double minX, double maxX, double minY, double maxY) {
+        builder.pos(minX, minY, 0).tex(0, 0).endVertex(); //1
+        builder.pos(maxX, minY, 0).tex(1, 0).endVertex();
+        builder.pos(maxX, maxY, 0).tex(1, 1).endVertex();
+        builder.pos(minX, maxY, 0).tex(0, 1).endVertex();
+        builder.pos(minX, maxY, 0).tex(0, 1).endVertex(); //2
+        builder.pos(maxX, maxY, 0).tex(1, 1).endVertex();
+        builder.pos(maxX, minY, 0).tex(1, 0).endVertex();
+        builder.pos(minX, minY, 0).tex(0, 0).endVertex();
+    }
+
+    private static void renderQuadColor(BufferBuilder builder, double minX, double maxX, double minY, double maxY, int r, int g, int b, int a) {
+        builder.pos(minX, minY, 0).color(r, g, b, a).endVertex(); //1
+        builder.pos(maxX, minY, 0).color(r, g, b, a).endVertex();
+        builder.pos(maxX, maxY, 0).color(r, g, b, a).endVertex();
+        builder.pos(minX, maxY, 0).color(r, g, b, a).endVertex();
+        builder.pos(minX, maxY, 0).color(r, g, b, a).endVertex(); //2
+        builder.pos(maxX, maxY, 0).color(r, g, b, a).endVertex();
+        builder.pos(maxX, minY, 0).color(r, g, b, a).endVertex();
+        builder.pos(minX, minY, 0).color(r, g, b, a).endVertex();
+    }
+
+    private void renderDebugOutline(HoloGuiEntity entity, Tessellator t, BufferBuilder builder) {
         AxisAlignedBB box = entity.getEntityBoundingBox();
         GlStateManager.disableTexture2D();
         GlStateManager.disableLighting();
@@ -61,47 +139,6 @@ public class HoloGuiEntityRender extends Render<HoloGuiEntity> {
         builder.pos(maxX, maxY, maxZ).color(255, 0, 0, 128).endVertex();
         builder.pos(maxX, maxY, minZ).color(255, 0, 0, 128).endVertex();
         t.draw();
-
-
-        GlStateManager.rotate(180.0F - entityYaw, 0.0F, 1.0F, 0.0F);
-        GlStateManager.translate(0, .5, 0);
-
-//        GlStateManager.rotate(-90.0F, 0.0F, 1.0F, 0.0F);
-        GlStateManager.enableTexture2D();
-        GlStateManager.disableLighting();
-        GlStateManager.enableBlend();
-        GlStateManager.color(1.0f, 1.0f, 1.0f, 0.5f);
-
-        Minecraft mc = Minecraft.getMinecraft();
-
-        mc.renderEngine.bindTexture(guiBackground);
-
-        builder.begin(GL11.GL_QUADS, DefaultVertexFormats.POSITION_TEX);
-
-        double min = -.5;
-        double max = .5;
-        builder.pos(min, min, 0).tex(0, 0).endVertex(); //1
-        builder.pos(max, min, 0).tex(1, 0).endVertex();
-        builder.pos(max, max, 0).tex(1, 1).endVertex();
-        builder.pos(min, max, 0).tex(0, 1).endVertex();
-        builder.pos(min, max, 0).tex(0, 1).endVertex(); //2
-        builder.pos(max, max, 0).tex(1, 1).endVertex();
-        builder.pos(max, min, 0).tex(1, 0).endVertex();
-        builder.pos(min, min, 0).tex(0, 0).endVertex();
-
-        t.draw();
-
-        GlStateManager.disableDepth();
-        GlStateManager.scale(0.01, 0.01, 0.01);
-        GlStateManager.rotate(180, 0, 1, 0);
-        GlStateManager.rotate(180, 0, 0, 1);
-        mc.fontRenderer.drawString("Machine Status", -40, -40, 0xaaccff);
-        mc.fontRenderer.drawString("OK", -30, -30, 0xffcccc);
-
-        GlStateManager.popMatrix();
-
-        GlStateManager.enableDepth();
-        GlStateManager.enableLighting();
     }
 
     protected float interpolateRotation(float prevYawOffset, float yawOffset, float partialTicks) {

@@ -66,10 +66,10 @@ public class ModBlocks {
                 .rotationType(BaseBlock.RotationType.HORIZROTATION)
                 .flags(BlockFlags.REDSTONE_CHECK, BlockFlags.RENDER_SOLID, BlockFlags.RENDER_CUTOUT)
                 .property(NegariteGeneratorTile.WORKING)
-                .guiId(GuiProxy.GUI_NEGARITE_GENERATOR)
+                .activateAction((world, pos, player, hand, side, hitX, hitY, hitZ) -> HoloGuiHandler.openHoloGui(world, pos, player))
+//                .guiId(GuiProxy.GUI_NEGARITE_GENERATOR)
                 .info("message.ariente.shiftmessage")
                 .infoExtended("message.ariente.negarite_generator")
-//                .infoExtendedParameter(stack -> Long.toString(CoalGeneratorConfiguration.rfPerTick))
                 .build();
 
         negariteTankBlock = ModBlocks.builderFactory.<NegariteTankTile> builder("negarite_tank")
@@ -79,10 +79,7 @@ public class ModBlocks {
                 .property(NegariteTankTile.LOWER)
                 .property(NegariteTankTile.UPPER)
                 .rotationType(BaseBlock.RotationType.NONE)
-                .activateAction((world, pos, player, hand, side, hitX, hitY, hitZ) -> {
-                    HoloGuiHandler.openHoloGui(world, pos, player);
-                    return true;
-                })
+                .activateAction((world, pos, player, hand, side, hitX, hitY, hitZ) -> HoloGuiHandler.openHoloGui(world, pos, player))
                 .info("message.ariente.shiftmessage")
                 .infoExtended("message.ariente.negarite_tank")
                 .build();
@@ -175,7 +172,7 @@ public class ModBlocks {
     @SideOnly(Side.CLIENT)
     public static void initModels() {
         negariteGeneratorBlock.initModel();
-        negariteGeneratorBlock.setGuiFactory(NegariteGeneratorGui::new);
+//        negariteGeneratorBlock.setGuiFactory(NegariteGeneratorGui::new);
         negariteTankBlock.initModel();
         ClientRegistry.bindTileEntitySpecialRenderer(NegariteTankTile.class, new NegariteTankRenderer());
 

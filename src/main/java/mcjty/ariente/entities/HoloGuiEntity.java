@@ -1,21 +1,51 @@
 package mcjty.ariente.entities;
 
+import com.google.common.base.Optional;
+import com.sun.javafx.geom.Vec2d;
+import mcjty.ariente.Ariente;
+import mcjty.ariente.gui.IGuiTile;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.nbt.NBTTagCompound;
+import net.minecraft.network.datasync.DataParameter;
+import net.minecraft.network.datasync.DataSerializers;
+import net.minecraft.network.datasync.EntityDataManager;
+import net.minecraft.tileentity.TileEntity;
 import net.minecraft.util.EnumHand;
-import net.minecraft.util.math.AxisAlignedBB;
+import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.Vec3d;
 import net.minecraft.world.World;
 
 public class HoloGuiEntity extends Entity {
 
+    private static final DataParameter<Optional<BlockPos>> GUITILE = EntityDataManager.<Optional<BlockPos>>createKey(HoloGuiEntity.class, DataSerializers.OPTIONAL_BLOCK_POS);
+
     private int timeout;
+
+    // Client side only
+    private double cursorX;
+    private double cursorY;
 
     public HoloGuiEntity(World worldIn) {
         super(worldIn);
         timeout = 20*10;
         setSize(1f, 1f);
+    }
+
+    public double getCursorX() {
+        return cursorX;
+    }
+
+    public double getCursorY() {
+        return cursorY;
+    }
+
+    public void setGuiTile(BlockPos guiTile) {
+        this.dataManager.set(GUITILE, Optional.fromNullable(guiTile));
+    }
+
+    public BlockPos getGuiTile() {
+        return (BlockPos) ((Optional) this.dataManager.get(GUITILE)).orNull();
     }
 
     @Override
@@ -24,6 +54,17 @@ public class HoloGuiEntity extends Entity {
         timeout--;
         if (timeout <= 0) {
             this.setDead();
+        } else {
+            if (world.isRemote) {
+                EntityPlayer player = Ariente.proxy.getClientPlayer();
+                Vec2d vec2d = intersect(player);
+                TileEntity te = world.getTileEntity(getGuiTile());
+                if (te instanceof IGuiTile) {
+                    IGuiTile guiTile = (IGuiTile) te;
+                    cursorX = vec2d.x * 8;
+                    cursorY = vec2d.y * 8;
+                }
+            }
         }
     }
 
@@ -42,7 +83,7 @@ public class HoloGuiEntity extends Entity {
     }
 
 
-    private Vec3d intersect(EntityPlayer player) {
+    private Vec2d intersect(EntityPlayer player) {
         // Center point of plane: posX, posY, posZ
         // Perpendicular to the plane: getLookVec()
         Vec3d lookVec = getLookVec();
@@ -56,10 +97,7 @@ public class HoloGuiEntity extends Entity {
         double B = yn;
         double C = zn;
 
-        // Line (from player):
-        //        x = x1 + at
-        //        y = y1 + bt
-        //        z = z1 + ct
+        // Line (from player): (x = x1 + at, y = y1 + bt, z = z1 + ct)
         double x1 = player.posX;
         double y1 = player.posY + player.eyeHeight;
         double z1 = player.posZ;
@@ -82,10 +120,10 @@ public class HoloGuiEntity extends Entity {
         x -= posX;
         y -= posY;
         z -= posZ;
-        double x2d = vx.x * x + vx.y * y + vx.z * z;
-        double y2d = vy.x * x + vy.y * y + vy.z * z;
+        double x2d = vx.x * x + vx.y * y + vx.z * z + .5;
+        double y2d = vy.x * x + vy.y * y + vy.z * z + 1;
 
-        return new Vec3d(x2d, y2d, 0);
+        return new Vec2d(x2d, y2d);
     }
 
     @Override
@@ -93,24 +131,36 @@ public class HoloGuiEntity extends Entity {
         System.out.println("HoloGuiEntity.hitByEntity");
         System.out.println("world.isRemote = " + world.isRemote);
         if (entityIn instanceof EntityPlayer) {
-            Vec3d vec3d = intersect((EntityPlayer) entityIn);
-            System.out.println("pos = " + posX + "," + posY + "," + posZ + ", vec3d = " + vec3d);
+            Vec2d vec2d = intersect((EntityPlayer) entityIn);
+            System.out.println("pos = " + posX + "," + posY + "," + posZ + ", vec2d = " + vec2d);
+            if (!world.isRemote) {
+                TileEntity te = world.getTileEntity(getGuiTile());
+                if (te instanceof IGuiTile) {
+                    IGuiTile guiTile = (IGuiTile) te;
+                    int x = (int) (vec2d.x * 20);
+                    int y = (int) (vec2d.y * 20);
+                    guiTile.clickGui(this, x, y);
+                }
+            }
         }
         return super.hitByEntity(entityIn);
     }
 
     @Override
     protected void entityInit() {
-
+        this.dataManager.register(GUITILE, Optional.absent());
     }
 
     @Override
     protected void readEntityFromNBT(NBTTagCompound compound) {
-        this.timeout = compound.getInteger("Timeout");
+        this.timeout = compound.getInteger("timeout");
+        int x = compound.getInteger("guix");
+        int y = compound.getInteger("guiy");
+        int z = compound.getInteger("guiz");
     }
 
     @Override
     protected void writeEntityToNBT(NBTTagCompound compound) {
-        compound.setInteger("Timeout", this.timeout);
+        compound.setInteger("timeout", this.timeout);
     }
 }

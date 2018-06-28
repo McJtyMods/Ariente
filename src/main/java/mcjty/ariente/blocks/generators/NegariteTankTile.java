@@ -1,6 +1,9 @@
 package mcjty.ariente.blocks.generators;
 
 import mcjty.ariente.blocks.ModBlocks;
+import mcjty.ariente.entities.HoloGuiEntity;
+import mcjty.ariente.gui.HoloGuiRenderTools;
+import mcjty.ariente.gui.IGuiTile;
 import mcjty.lib.tileentity.GenericTileEntity;
 import mcjty.theoneprobe.api.IProbeHitData;
 import mcjty.theoneprobe.api.IProbeInfo;
@@ -21,7 +24,7 @@ import net.minecraftforge.fml.relauncher.SideOnly;
 
 import java.util.List;
 
-public class NegariteTankTile extends GenericTileEntity {
+public class NegariteTankTile extends GenericTileEntity implements IGuiTile {
 
     public static PropertyBool UPPER = PropertyBool.create("upper");
     public static PropertyBool LOWER = PropertyBool.create("lower");
@@ -75,5 +78,15 @@ public class NegariteTankTile extends GenericTileEntity {
 //        if (isWorking()) {
 //            currenttip.add(TextFormatting.GREEN + "Producing " + getRfPerTick() + " RF/t");
 //        }
+    }
+
+    @Override
+    public void renderGui(HoloGuiEntity entity) {
+        HoloGuiRenderTools.renderText(0, 0, "Negarite Tank", 0xaaccff);
+    }
+
+    @Override
+    public void clickGui(HoloGuiEntity entity, int x, int y) {
+
     }
 }

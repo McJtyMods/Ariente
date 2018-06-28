@@ -2,6 +2,9 @@ package mcjty.ariente.blocks.generators;
 
 import mcjty.ariente.Ariente;
 import mcjty.ariente.blocks.ModBlocks;
+import mcjty.ariente.entities.HoloGuiEntity;
+import mcjty.ariente.gui.HoloGuiRenderTools;
+import mcjty.ariente.gui.IGuiTile;
 import mcjty.ariente.items.ModItems;
 import mcjty.lib.container.ContainerFactory;
 import mcjty.lib.container.DefaultSidedInventory;
@@ -19,6 +22,7 @@ import net.minecraft.block.properties.PropertyBool;
 import net.minecraft.block.state.IBlockState;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.entity.player.EntityPlayerMP;
+import net.minecraft.init.Blocks;
 import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.network.NetworkManager;
@@ -34,7 +38,7 @@ import net.minecraftforge.fml.relauncher.SideOnly;
 
 import java.util.List;
 
-public class NegariteGeneratorTile extends GenericTileEntity implements ITickable, DefaultSidedInventory {
+public class NegariteGeneratorTile extends GenericTileEntity implements ITickable, DefaultSidedInventory, IGuiTile {
 
     public static final String CMD_RSMODE = "negarite_gen.setRsMode";
 
@@ -183,5 +187,22 @@ public class NegariteGeneratorTile extends GenericTileEntity implements ITickabl
 //        if (isWorking()) {
 //            currenttip.add(TextFormatting.GREEN + "Producing " + getRfPerTick() + " RF/t");
 //        }
+    }
+
+    @Override
+    public void renderGui(HoloGuiEntity entity) {
+        HoloGuiRenderTools.renderText(0, 0, "Generator", 0xaaccff);
+        HoloGuiRenderTools.renderText(1, 1, "OK", 0xffcccc);
+        ItemStack stack = new ItemStack(ModItems.negariteDust, 10);
+        HoloGuiRenderTools.renderItem(0, 2, stack);
+        HoloGuiRenderTools.renderItem(0, 3, new ItemStack(Blocks.COBBLESTONE));
+        HoloGuiRenderTools.renderItem(1, 3, new ItemStack(Blocks.IRON_BLOCK));
+        HoloGuiRenderTools.renderText(7, 7, "X", 0xff0000);
+
+    }
+
+    @Override
+    public void clickGui(HoloGuiEntity entity, int x, int y) {
+        System.out.println("x,y = " + x + "," + y);
     }
 }
