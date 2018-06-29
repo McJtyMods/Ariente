@@ -4,6 +4,7 @@ import mcjty.ariente.blocks.ModBlocks;
 import mcjty.ariente.entities.HoloGuiEntity;
 import mcjty.ariente.gui.HoloGuiRenderTools;
 import mcjty.ariente.gui.IGuiTile;
+import mcjty.ariente.items.ModItems;
 import mcjty.lib.tileentity.GenericTileEntity;
 import mcjty.theoneprobe.api.IProbeHitData;
 import mcjty.theoneprobe.api.IProbeInfo;
@@ -13,6 +14,7 @@ import mcp.mobius.waila.api.IWailaDataAccessor;
 import net.minecraft.block.properties.PropertyBool;
 import net.minecraft.block.state.IBlockState;
 import net.minecraft.entity.player.EntityPlayer;
+import net.minecraft.init.Blocks;
 import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.tileentity.TileEntity;
@@ -82,11 +84,25 @@ public class NegariteTankTile extends GenericTileEntity implements IGuiTile {
 
     @Override
     public void renderGui(HoloGuiEntity entity) {
-        HoloGuiRenderTools.renderText(0, 0, "Negarite Tank", 0xaaccff);
+        HoloGuiRenderTools.renderText(0, 0, "0", 0xffffff);
+        HoloGuiRenderTools.renderText(1, 0, "1", 0xffffff);
+        HoloGuiRenderTools.renderText(2, 0, "2", 0xffffff);
+        HoloGuiRenderTools.renderText(3, 0, "3", 0xffffff);
+        HoloGuiRenderTools.renderText(4, 0, "4", 0xffffff);
+        HoloGuiRenderTools.renderText(5, 0, "5", 0xffffff);
+        HoloGuiRenderTools.renderText(6, 0, "6", 0xffffff);
+        HoloGuiRenderTools.renderText(7, 0, "7", 0xffffff);
+        HoloGuiRenderTools.renderText(0, 1, "1", 0x00ff00);
+        HoloGuiRenderTools.renderText(0, 2, "2", 0x00ff00);
+        HoloGuiRenderTools.renderText(0, 3, "3", 0x00ff00);
+        HoloGuiRenderTools.renderText(0, 4, "4", 0x00ff00);
+        HoloGuiRenderTools.renderText(0, 5, "5", 0x00ff00);
+        HoloGuiRenderTools.renderText(0, 6, "6", 0x00ff00);
+        HoloGuiRenderTools.renderText(0, 7, "7", 0x00ff00);
+        HoloGuiRenderTools.renderText(7, 7, "X", 0xff0000);
     }
 
     @Override
     public void clickGui(HoloGuiEntity entity, int x, int y) {
-
     }
 }

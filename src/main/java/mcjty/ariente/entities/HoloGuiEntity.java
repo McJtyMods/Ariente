@@ -1,7 +1,6 @@
 package mcjty.ariente.entities;
 
 import com.google.common.base.Optional;
-import com.sun.javafx.geom.Vec2d;
 import mcjty.ariente.Ariente;
 import mcjty.ariente.gui.IGuiTile;
 import net.minecraft.entity.Entity;
@@ -13,6 +12,7 @@ import net.minecraft.network.datasync.EntityDataManager;
 import net.minecraft.tileentity.TileEntity;
 import net.minecraft.util.EnumHand;
 import net.minecraft.util.math.BlockPos;
+import net.minecraft.util.math.Vec2f;
 import net.minecraft.util.math.Vec3d;
 import net.minecraft.world.World;
 
@@ -25,10 +25,11 @@ public class HoloGuiEntity extends Entity {
     // Client side only
     private double cursorX;
     private double cursorY;
+    private Vec3d hit;
 
     public HoloGuiEntity(World worldIn) {
         super(worldIn);
-        timeout = 20*10;
+        timeout = 20*100;
         setSize(1f, 1f);
     }
 
@@ -38,6 +39,10 @@ public class HoloGuiEntity extends Entity {
 
     public double getCursorY() {
         return cursorY;
+    }
+
+    public Vec3d getHit() {
+        return hit;
     }
 
     public void setGuiTile(BlockPos guiTile) {
@@ -56,13 +61,21 @@ public class HoloGuiEntity extends Entity {
             this.setDead();
         } else {
             if (world.isRemote) {
-                EntityPlayer player = Ariente.proxy.getClientPlayer();
-                Vec2d vec2d = intersect(player);
-                TileEntity te = world.getTileEntity(getGuiTile());
-                if (te instanceof IGuiTile) {
-                    IGuiTile guiTile = (IGuiTile) te;
-                    cursorX = vec2d.x * 8;
-                    cursorY = vec2d.y * 8;
+                BlockPos tile = getGuiTile();
+                if (tile != null) {
+                    TileEntity te = world.getTileEntity(tile);
+                    if (te instanceof IGuiTile) {
+                        IGuiTile guiTile = (IGuiTile) te;
+
+                        EntityPlayer player = Ariente.proxy.getClientPlayer();
+                        Vec3d lookVec = getLookVec();
+                        Vec3d v = getIntersect3D(player, lookVec);
+                        Vec2f vec2d = get2DProjection(lookVec, v);
+
+                        cursorX = vec2d.x * 10 -.8;
+                        cursorY = vec2d.y * 10 -.8;
+                        hit = v;
+                    }
                 }
             }
         }
@@ -83,10 +96,34 @@ public class HoloGuiEntity extends Entity {
     }
 
 
-    private Vec2d intersect(EntityPlayer player) {
+    private Vec2f intersect(EntityPlayer player) {
+        Vec3d lookVec = getLookVec();
+        Vec3d v = getIntersect3D(player, lookVec);
+        return get2DProjection(lookVec, v);
+    }
+
+    private Vec2f get2DProjection(Vec3d lookVec, Vec3d v) {
+        double x = v.x;
+        double y = v.y;
+        double z = v.z;
+        // Origin on plane is posX, posY, posZ
+        // Point on plane in 2D x direction: cross( (0,1,0), (xn,yn,zn) )
+        // Point on plane in 2D y direction: posX, posY-1, posZ
+        Vec3d vx = lookVec.crossProduct(new Vec3d(0, 1, 0));    // @todo optimize
+        Vec3d vy = new Vec3d(0, -1, 0);
+//        Vec3d vy = vx.crossProduct(new Vec3d(1, 0, 0));
+        x -= posX;
+        y -= posY;
+        z -= posZ;
+        double x2d = vx.x * x + vx.y * y + vx.z * z + .5;
+        double y2d = vy.x * x + vy.y * y + vy.z * z + 1;
+
+        return new Vec2f((float)x2d, (float)y2d);
+    }
+
+    private Vec3d getIntersect3D(EntityPlayer player, Vec3d lookVec) {
         // Center point of plane: posX, posY, posZ
         // Perpendicular to the plane: getLookVec()
-        Vec3d lookVec = getLookVec();
         double xn = lookVec.x;
         double yn = lookVec.y;
         double zn = lookVec.z;
@@ -111,19 +148,7 @@ public class HoloGuiEntity extends Entity {
         double x = x1 - a * factor;
         double y = y1 - b * factor;
         double z = z1 - c * factor;
-
-        // Origin on plane is posX, posY, posZ
-        // Point on plane in 2D x direction: cross( (0,1,0), (xn,yn,zn) )
-        // Point on plane in 2D y direction: posX, posY-1, posZ
-        Vec3d vx = lookVec.crossProduct(new Vec3d(0, 1, 0));    // @todo optimize
-        Vec3d vy = new Vec3d(0, -1, 0);
-        x -= posX;
-        y -= posY;
-        z -= posZ;
-        double x2d = vx.x * x + vx.y * y + vx.z * z + .5;
-        double y2d = vy.x * x + vy.y * y + vy.z * z + 1;
-
-        return new Vec2d(x2d, y2d);
+        return new Vec3d(x, y, z);
     }
 
     @Override
@@ -131,7 +156,7 @@ public class HoloGuiEntity extends Entity {
         System.out.println("HoloGuiEntity.hitByEntity");
         System.out.println("world.isRemote = " + world.isRemote);
         if (entityIn instanceof EntityPlayer) {
-            Vec2d vec2d = intersect((EntityPlayer) entityIn);
+            Vec2f vec2d = intersect((EntityPlayer) entityIn);
             System.out.println("pos = " + posX + "," + posY + "," + posZ + ", vec2d = " + vec2d);
             if (!world.isRemote) {
                 TileEntity te = world.getTileEntity(getGuiTile());

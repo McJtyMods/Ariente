@@ -28,11 +28,12 @@ public class HoloGuiHandler {
         double y = player.posY+player.eyeHeight - .5;
         double z = player.posZ;
         Vec3d lookVec = player.getLookVec();
+        lookVec = new Vec3d(lookVec.x, 0, lookVec.z).normalize();
         x += lookVec.x;
         y += lookVec.y;
         z += lookVec.z;
         entity.setPosition(x, y, z);
-        entity.setLocationAndAngles(x, y, z, player.rotationYaw, player.rotationPitch);
+        entity.setLocationAndAngles(x, y, z, player.rotationYaw, 0);
         world.spawnEntity(entity);
         return true;
     }

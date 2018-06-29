@@ -13,6 +13,7 @@ import net.minecraft.tileentity.TileEntity;
 import net.minecraft.util.ResourceLocation;
 import net.minecraft.util.math.AxisAlignedBB;
 import net.minecraft.util.math.BlockPos;
+import net.minecraft.util.math.Vec3d;
 import net.minecraftforge.fml.client.registry.IRenderFactory;
 import org.lwjgl.opengl.GL11;
 
@@ -34,7 +35,7 @@ public class HoloGuiEntityRender extends Render<HoloGuiEntity> {
         GlStateManager.pushMatrix();
         GlStateManager.translate(x, y, z);
 
-//        renderDebugOutline(entity, t, builder);
+        renderDebugOutline(entity, t, builder);
 
         GlStateManager.rotate(180.0F - entityYaw, 0.0F, 1.0F, 0.0F);
         GlStateManager.translate(0, .5, 0);
@@ -69,7 +70,7 @@ public class HoloGuiEntityRender extends Render<HoloGuiEntity> {
 
         double cursorX = entity.getCursorX();
         double cursorY = entity.getCursorY();
-        System.out.println("cursor = " + cursorX + "," + cursorY);
+//        System.out.println("cursor = " + cursorX + "," + cursorY);
         if (cursorX >= 0 && cursorX <= 30 && cursorY >= 0 && cursorY <= 30) {
             GlStateManager.disableTexture2D();
             builder.begin(GL11.GL_QUADS, DefaultVertexFormats.POSITION_COLOR);
@@ -79,8 +80,26 @@ public class HoloGuiEntityRender extends Render<HoloGuiEntity> {
                     0, 128, 255, 128);
             t.draw();
         }
-
         GlStateManager.popMatrix();
+
+
+        Vec3d hit = entity.getHit();
+        if (hit != null) {
+            GlStateManager.pushMatrix();
+            GlStateManager.translate(x, y, z);
+            GlStateManager.disableTexture2D();
+            builder.begin(GL11.GL_LINES, DefaultVertexFormats.POSITION_COLOR);
+            double o = .02;
+            double minX = hit.x - entity.posX - o;
+            double minY = hit.y - entity.posY - o;
+            double minZ = hit.z - entity.posZ - o;
+            double maxX = hit.x - entity.posX + o;
+            double maxY = hit.y - entity.posY + o;
+            double maxZ = hit.z - entity.posZ + o;
+            renderDebugOutline(builder, minX, minY, minZ, maxX, maxY, maxZ);
+            t.draw();
+            GlStateManager.popMatrix();
+        }
 
         GlStateManager.enableTexture2D();
         GlStateManager.enableDepth();
@@ -121,6 +140,11 @@ public class HoloGuiEntityRender extends Render<HoloGuiEntity> {
         double maxY = box.maxY - entity.posY;
         double maxZ = box.maxZ - entity.posZ;
 
+        renderDebugOutline(builder, minX, minY, minZ, maxX, maxY, maxZ);
+        t.draw();
+    }
+
+    private void renderDebugOutline(BufferBuilder builder, double minX, double minY, double minZ, double maxX, double maxY, double maxZ) {
         builder.pos(minX, minY, minZ).color(255, 255, 255, 128).endVertex();
         builder.pos(maxX, minY, minZ).color(255, 255, 255, 128).endVertex();
 
@@ -138,7 +162,6 @@ public class HoloGuiEntityRender extends Render<HoloGuiEntity> {
 
         builder.pos(maxX, maxY, maxZ).color(255, 0, 0, 128).endVertex();
         builder.pos(maxX, maxY, minZ).color(255, 0, 0, 128).endVertex();
-        t.draw();
     }
 
     protected float interpolateRotation(float prevYawOffset, float yawOffset, float partialTicks) {
