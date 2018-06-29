@@ -2,6 +2,7 @@ package mcjty.ariente.entities;
 
 import com.google.common.base.Optional;
 import mcjty.ariente.Ariente;
+import mcjty.ariente.gui.IGuiComponent;
 import mcjty.ariente.gui.IGuiTile;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.player.EntityPlayer;
@@ -11,6 +12,7 @@ import net.minecraft.network.datasync.DataSerializers;
 import net.minecraft.network.datasync.EntityDataManager;
 import net.minecraft.tileentity.TileEntity;
 import net.minecraft.util.EnumHand;
+import net.minecraft.util.math.AxisAlignedBB;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.Vec2f;
 import net.minecraft.util.math.Vec3d;
@@ -20,7 +22,10 @@ public class HoloGuiEntity extends Entity {
 
     private static final DataParameter<Optional<BlockPos>> GUITILE = EntityDataManager.<Optional<BlockPos>>createKey(HoloGuiEntity.class, DataSerializers.OPTIONAL_BLOCK_POS);
 
+    private AxisAlignedBB playerDetectionBox = null;
+
     private int timeout;
+    private IGuiComponent panel;
 
     // Client side only
     private double cursorX;
@@ -29,7 +34,7 @@ public class HoloGuiEntity extends Entity {
 
     public HoloGuiEntity(World worldIn) {
         super(worldIn);
-        timeout = 20*100;
+        timeout = 20*4;
         setSize(1f, 1f);
     }
 
@@ -56,29 +61,69 @@ public class HoloGuiEntity extends Entity {
     @Override
     public void onUpdate() {
         super.onUpdate();
+        if (world.isRemote) {
+            onUpdateClient();
+        } else {
+            onUpdateServer();
+        }
+    }
+
+    private void onUpdateServer() {
+        if (playerDetectionBox == null) {
+            playerDetectionBox = new AxisAlignedBB(posX-10, posY-10, posZ-10, posX+10, posY+10, posZ+10);
+        }
         timeout--;
         if (timeout <= 0) {
             this.setDead();
-        } else {
-            if (world.isRemote) {
-                BlockPos tile = getGuiTile();
-                if (tile != null) {
-                    TileEntity te = world.getTileEntity(tile);
-                    if (te instanceof IGuiTile) {
-                        IGuiTile guiTile = (IGuiTile) te;
+        }
+        if (world.getEntitiesWithinAABB(EntityPlayer.class, playerDetectionBox)
+                .stream()
+                .anyMatch(this::playerLooksAtMe)) {
+            timeout = 20*4;
+        }
+    }
 
-                        EntityPlayer player = Ariente.proxy.getClientPlayer();
-                        Vec3d lookVec = getLookVec();
-                        Vec3d v = getIntersect3D(player, lookVec);
-                        Vec2f vec2d = get2DProjection(lookVec, v);
+    private boolean playerLooksAtMe(EntityPlayer player) {
+        Vec3d lookVec = getLookVec();
+        Vec3d v = getIntersect3D(player, lookVec);
+        Vec2f vec2d = get2DProjection(lookVec, v);
 
-                        cursorX = vec2d.x * 10 -.8;
-                        cursorY = vec2d.y * 10 -.8;
-                        hit = v;
-                    }
+        double cx = vec2d.x * 10 -.8;
+        double cy = vec2d.y * 10 -.8;
+        return cx >= 0 && cx <= 10 && cy >= 0 && cy <= 10;
+    }
+
+    private void onUpdateClient() {
+        BlockPos tile = getGuiTile();
+        if (tile != null) {
+            TileEntity te = world.getTileEntity(tile);
+            if (te instanceof IGuiTile) {
+                IGuiTile guiTile = (IGuiTile) te;
+
+                EntityPlayer player = Ariente.proxy.getClientPlayer();
+                Vec3d lookVec = getLookVec();
+                Vec3d v = getIntersect3D(player, lookVec);
+                Vec2f vec2d = get2DProjection(lookVec, v);
+
+                cursorX = vec2d.x * 10 -.8;
+                cursorY = vec2d.y * 10 -.8;
+                hit = v;
+            }
+        }
+    }
+
+    public IGuiComponent getGui() {
+        if (panel == null) {
+            BlockPos tile = getGuiTile();
+            if (tile != null) {
+                TileEntity te = world.getTileEntity(tile);
+                if (te instanceof IGuiTile) {
+                    IGuiTile guiTile = (IGuiTile) te;
+                    panel = guiTile.createGui(this);
                 }
             }
         }
+        return panel;
     }
 
     @Override

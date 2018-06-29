@@ -2,9 +2,10 @@ package mcjty.ariente.blocks.generators;
 
 import mcjty.ariente.blocks.ModBlocks;
 import mcjty.ariente.entities.HoloGuiEntity;
-import mcjty.ariente.gui.HoloGuiRenderTools;
+import mcjty.ariente.gui.IGuiComponent;
 import mcjty.ariente.gui.IGuiTile;
-import mcjty.ariente.items.ModItems;
+import mcjty.ariente.gui.components.HoloPanel;
+import mcjty.ariente.gui.components.HoloText;
 import mcjty.lib.tileentity.GenericTileEntity;
 import mcjty.theoneprobe.api.IProbeHitData;
 import mcjty.theoneprobe.api.IProbeInfo;
@@ -14,7 +15,6 @@ import mcp.mobius.waila.api.IWailaDataAccessor;
 import net.minecraft.block.properties.PropertyBool;
 import net.minecraft.block.state.IBlockState;
 import net.minecraft.entity.player.EntityPlayer;
-import net.minecraft.init.Blocks;
 import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.tileentity.TileEntity;
@@ -83,23 +83,24 @@ public class NegariteTankTile extends GenericTileEntity implements IGuiTile {
     }
 
     @Override
-    public void renderGui(HoloGuiEntity entity) {
-        HoloGuiRenderTools.renderText(0, 0, "0", 0xffffff);
-        HoloGuiRenderTools.renderText(1, 0, "1", 0xffffff);
-        HoloGuiRenderTools.renderText(2, 0, "2", 0xffffff);
-        HoloGuiRenderTools.renderText(3, 0, "3", 0xffffff);
-        HoloGuiRenderTools.renderText(4, 0, "4", 0xffffff);
-        HoloGuiRenderTools.renderText(5, 0, "5", 0xffffff);
-        HoloGuiRenderTools.renderText(6, 0, "6", 0xffffff);
-        HoloGuiRenderTools.renderText(7, 0, "7", 0xffffff);
-        HoloGuiRenderTools.renderText(0, 1, "1", 0x00ff00);
-        HoloGuiRenderTools.renderText(0, 2, "2", 0x00ff00);
-        HoloGuiRenderTools.renderText(0, 3, "3", 0x00ff00);
-        HoloGuiRenderTools.renderText(0, 4, "4", 0x00ff00);
-        HoloGuiRenderTools.renderText(0, 5, "5", 0x00ff00);
-        HoloGuiRenderTools.renderText(0, 6, "6", 0x00ff00);
-        HoloGuiRenderTools.renderText(0, 7, "7", 0x00ff00);
-        HoloGuiRenderTools.renderText(7, 7, "X", 0xff0000);
+    public IGuiComponent createGui(HoloGuiEntity entity) {
+        return new HoloPanel(0, 0, 8, 8)
+            .add(new HoloText(0, 0, 1, 1, "0", 0xffffff))
+            .add(new HoloText(1, 0, 1, 1, "1", 0xffffff))
+            .add(new HoloText(2, 0, 1, 1, "2", 0xffffff))
+            .add(new HoloText(3, 0, 1, 1, "3", 0xffffff))
+            .add(new HoloText(4, 0, 1, 1, "4", 0xffffff))
+            .add(new HoloText(5, 0, 1, 1, "5", 0xffffff))
+            .add(new HoloText(6, 0, 1, 1, "6", 0xffffff))
+            .add(new HoloText(7, 0, 1, 1, "7", 0xffffff))
+            .add(new HoloText(0, 1, 1, 1, "1", 0x00ff00))
+            .add(new HoloText(0, 2, 1, 1, "2", 0x00ff00))
+            .add(new HoloText(0, 3, 1, 1, "3", 0x00ff00))
+            .add(new HoloText(0, 4, 1, 1, "4", 0x00ff00))
+            .add(new HoloText(0, 5, 1, 1, "5", 0x00ff00))
+            .add(new HoloText(0, 6, 1, 1, "6", 0x00ff00))
+            .add(new HoloText(0, 7, 1, 1, "7", 0x00ff00))
+            .add(new HoloText(7, 7, 1, 1, "X", 0xff0000));
     }
 
     @Override

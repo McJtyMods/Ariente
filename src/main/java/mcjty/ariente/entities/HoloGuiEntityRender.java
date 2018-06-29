@@ -1,7 +1,7 @@
 package mcjty.ariente.entities;
 
 import mcjty.ariente.Ariente;
-import mcjty.ariente.gui.IGuiTile;
+import mcjty.ariente.gui.IGuiComponent;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.renderer.BufferBuilder;
 import net.minecraft.client.renderer.GlStateManager;
@@ -9,11 +9,8 @@ import net.minecraft.client.renderer.Tessellator;
 import net.minecraft.client.renderer.entity.Render;
 import net.minecraft.client.renderer.entity.RenderManager;
 import net.minecraft.client.renderer.vertex.DefaultVertexFormats;
-import net.minecraft.tileentity.TileEntity;
 import net.minecraft.util.ResourceLocation;
 import net.minecraft.util.math.AxisAlignedBB;
-import net.minecraft.util.math.BlockPos;
-import net.minecraft.util.math.Vec3d;
 import net.minecraftforge.fml.client.registry.IRenderFactory;
 import org.lwjgl.opengl.GL11;
 
@@ -35,7 +32,7 @@ public class HoloGuiEntityRender extends Render<HoloGuiEntity> {
         GlStateManager.pushMatrix();
         GlStateManager.translate(x, y, z);
 
-        renderDebugOutline(entity, t, builder);
+//        renderDebugOutline(entity, t, builder);
 
         GlStateManager.rotate(180.0F - entityYaw, 0.0F, 1.0F, 0.0F);
         GlStateManager.translate(0, .5, 0);
@@ -59,47 +56,44 @@ public class HoloGuiEntityRender extends Render<HoloGuiEntity> {
 
         GlStateManager.disableDepth();
 
-        BlockPos pos = entity.getGuiTile();
-        if (pos != null) {
-            TileEntity te = entity.getEntityWorld().getTileEntity(pos);
-            if (te instanceof IGuiTile) {
-                IGuiTile guiTile = (IGuiTile) te;
-                guiTile.renderGui(entity);
-            }
-        }
-
         double cursorX = entity.getCursorX();
         double cursorY = entity.getCursorY();
-//        System.out.println("cursor = " + cursorX + "," + cursorY);
-        if (cursorX >= 0 && cursorX <= 30 && cursorY >= 0 && cursorY <= 30) {
+
+        IGuiComponent gui = entity.getGui();
+        if (gui != null) {
+            gui.render(cursorX, cursorY);
+        }
+
+        if (cursorX >= 0 && cursorX <= 10 && cursorY >= 0 && cursorY <= 10) {
             GlStateManager.disableTexture2D();
+            GlStateManager.enableBlend();
             builder.begin(GL11.GL_QUADS, DefaultVertexFormats.POSITION_COLOR);
-            double offset = .02;
-            renderQuadColor(builder, (cursorX / 10.0) - .4 - offset, (cursorX / 10.0) - .4 + offset,
-                     - ((cursorY / 9.0) -.5 - offset),  - ((cursorY / 9.0) -.5 + offset),
-                    0, 128, 255, 128);
+            double offset = .01;
+            renderQuadColor(builder, (cursorX / 10.0) - .42 - offset, (cursorX / 10.0) - .42 + offset,
+                     - ((cursorY / 10) -.42 - offset),  - ((cursorY / 10) -.42 + offset),
+                    60, 255, 128, 100);
             t.draw();
         }
         GlStateManager.popMatrix();
 
 
-        Vec3d hit = entity.getHit();
-        if (hit != null) {
-            GlStateManager.pushMatrix();
-            GlStateManager.translate(x, y, z);
-            GlStateManager.disableTexture2D();
-            builder.begin(GL11.GL_LINES, DefaultVertexFormats.POSITION_COLOR);
-            double o = .02;
-            double minX = hit.x - entity.posX - o;
-            double minY = hit.y - entity.posY - o;
-            double minZ = hit.z - entity.posZ - o;
-            double maxX = hit.x - entity.posX + o;
-            double maxY = hit.y - entity.posY + o;
-            double maxZ = hit.z - entity.posZ + o;
-            renderDebugOutline(builder, minX, minY, minZ, maxX, maxY, maxZ);
-            t.draw();
-            GlStateManager.popMatrix();
-        }
+//        Vec3d hit = entity.getHit();
+//        if (hit != null) {
+//            GlStateManager.pushMatrix();
+//            GlStateManager.translate(x, y, z);
+//            GlStateManager.disableTexture2D();
+//            builder.begin(GL11.GL_LINES, DefaultVertexFormats.POSITION_COLOR);
+//            double o = .02;
+//            double minX = hit.x - entity.posX - o;
+//            double minY = hit.y - entity.posY - o;
+//            double minZ = hit.z - entity.posZ - o;
+//            double maxX = hit.x - entity.posX + o;
+//            double maxY = hit.y - entity.posY + o;
+//            double maxZ = hit.z - entity.posZ + o;
+//            renderDebugOutline(builder, minX, minY, minZ, maxX, maxY, maxZ);
+//            t.draw();
+//            GlStateManager.popMatrix();
+//        }
 
         GlStateManager.enableTexture2D();
         GlStateManager.enableDepth();

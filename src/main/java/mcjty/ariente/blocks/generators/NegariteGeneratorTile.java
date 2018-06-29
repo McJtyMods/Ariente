@@ -3,8 +3,12 @@ package mcjty.ariente.blocks.generators;
 import mcjty.ariente.Ariente;
 import mcjty.ariente.blocks.ModBlocks;
 import mcjty.ariente.entities.HoloGuiEntity;
-import mcjty.ariente.gui.HoloGuiRenderTools;
+import mcjty.ariente.gui.IGuiComponent;
 import mcjty.ariente.gui.IGuiTile;
+import mcjty.ariente.gui.components.HoloButton;
+import mcjty.ariente.gui.components.HoloItemStack;
+import mcjty.ariente.gui.components.HoloPanel;
+import mcjty.ariente.gui.components.HoloText;
 import mcjty.ariente.items.ModItems;
 import mcjty.lib.container.ContainerFactory;
 import mcjty.lib.container.DefaultSidedInventory;
@@ -22,7 +26,6 @@ import net.minecraft.block.properties.PropertyBool;
 import net.minecraft.block.state.IBlockState;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.entity.player.EntityPlayerMP;
-import net.minecraft.init.Blocks;
 import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.network.NetworkManager;
@@ -190,15 +193,12 @@ public class NegariteGeneratorTile extends GenericTileEntity implements ITickabl
     }
 
     @Override
-    public void renderGui(HoloGuiEntity entity) {
-        HoloGuiRenderTools.renderText(0, 0, "Generator", 0xaaccff);
-        HoloGuiRenderTools.renderText(1, 1, "OK", 0xffcccc);
-        ItemStack stack = new ItemStack(ModItems.negariteDust, 10);
-        HoloGuiRenderTools.renderItem(0, 2, stack);
-        HoloGuiRenderTools.renderItem(0, 3, new ItemStack(Blocks.COBBLESTONE));
-        HoloGuiRenderTools.renderItem(1, 3, new ItemStack(Blocks.IRON_BLOCK));
-        HoloGuiRenderTools.renderText(7, 7, "X", 0xff0000);
-
+    public IGuiComponent createGui(HoloGuiEntity entity) {
+        return new HoloPanel(0, 0, 8, 8)
+                .add(new HoloText(0, 0, 8, 1,"Generator", 0xaaccff))
+                .add(new HoloText(1, 1, 1, 1, "OK", 0xffcccc))
+                .add(new HoloButton(3, 3, 1, 1, ">", 0x666666, 0x8888aa))
+                .add(new HoloItemStack(4, 3, 1, 1, new ItemStack(ModItems.negariteDust)));
     }
 
     @Override
