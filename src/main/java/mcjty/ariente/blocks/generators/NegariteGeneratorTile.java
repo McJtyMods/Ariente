@@ -5,10 +5,7 @@ import mcjty.ariente.blocks.ModBlocks;
 import mcjty.ariente.entities.HoloGuiEntity;
 import mcjty.ariente.gui.IGuiComponent;
 import mcjty.ariente.gui.IGuiTile;
-import mcjty.ariente.gui.components.HoloButton;
-import mcjty.ariente.gui.components.HoloItemStack;
-import mcjty.ariente.gui.components.HoloPanel;
-import mcjty.ariente.gui.components.HoloText;
+import mcjty.ariente.gui.components.*;
 import mcjty.ariente.items.ModItems;
 import mcjty.lib.container.ContainerFactory;
 import mcjty.lib.container.DefaultSidedInventory;
@@ -26,6 +23,7 @@ import net.minecraft.block.properties.PropertyBool;
 import net.minecraft.block.state.IBlockState;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.entity.player.EntityPlayerMP;
+import net.minecraft.entity.player.InventoryPlayer;
 import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.network.NetworkManager;
@@ -195,14 +193,45 @@ public class NegariteGeneratorTile extends GenericTileEntity implements ITickabl
     @Override
     public IGuiComponent createGui(HoloGuiEntity entity) {
         return new HoloPanel(0, 0, 8, 8)
-                .add(new HoloText(0, 0, 8, 1,"Generator", 0xaaccff))
-                .add(new HoloText(1, 1, 1, 1, "OK", 0xffcccc))
-                .add(new HoloButton(3, 3, 1, 1, ">", 0x666666, 0x8888aa))
-                .add(new HoloItemStack(4, 3, 1, 1, new ItemStack(ModItems.negariteDust)));
+                .add(new HoloText(0, 0, 8, 1,"Negarite", 0xaaccff))
+                .add(new HoloItemStack(0, 3, 1, 1, new ItemStack(ModItems.negariteDust)))
+
+                .add(new HoloIcon(1, 3, 1, 1).image(128+64, 128))
+                .add(new HoloNumber(2, 3, 1, 1, 0xffffff,
+                        this::countNegarite))
+
+                .add(new HoloButton(2, 4, 1, 1).image(128+32, 128+16).hover(128+32+16, 128+16))
+                .add(new HoloButton(3, 4, 1, 1).image(128+32, 128).hover(128+32+16, 128))
+                .add(new HoloButton(5, 4, 1, 1).image(128, 128).hover(128+16, 128))
+                .add(new HoloButton(6, 4, 1, 1).image(128, 128+16).hover(128+16, 128+16))
+
+                .add(new HoloItemStack(5, 3, 1, 1, new ItemStack(ModBlocks.negariteGeneratorBlock)))
+                .add(new HoloNumber(6, 3, 1, 1,0xffffff, this::countNegariteGenerator))
+                ;
     }
 
-    @Override
-    public void clickGui(HoloGuiEntity entity, int x, int y) {
-        System.out.println("x,y = " + x + "," + y);
+    public Integer countNegarite() {
+        InventoryPlayer inventory = Ariente.proxy.getClientPlayer().inventory;
+        int size = inventory.getSizeInventory();
+        int cnt = 0;
+        for (int i = 0 ; i < size ; i++) {
+            ItemStack stack = inventory.getStackInSlot(i);
+            if (!stack.isEmpty() && stack.getItem() == ModItems.negariteDust) {
+                cnt += stack.stackSize;
+            }
+        }
+        return cnt;
+    }
+
+    public Integer countNegariteGenerator() {
+        int size = inventoryHelper.getCount();
+        int cnt = 0;
+        for (int i = 0 ; i < size ; i++) {
+            ItemStack stack = inventoryHelper.getStackInSlot(i);
+            if (!stack.isEmpty() && stack.getItem() == ModItems.negariteDust) {
+                cnt += stack.stackSize;
+            }
+        }
+        return cnt;
     }
 }

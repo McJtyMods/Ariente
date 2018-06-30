@@ -1,28 +1,53 @@
 package mcjty.ariente.gui.components;
 
+import mcjty.ariente.Ariente;
+import mcjty.ariente.entities.HoloGuiEntity;
 import mcjty.ariente.gui.HoloGuiRenderTools;
+import net.minecraft.entity.Entity;
+import net.minecraft.entity.player.EntityPlayer;
+import net.minecraft.util.ResourceLocation;
 
 public class HoloButton extends AbstractHoloComponent {
 
-    private final String text;
-    private final int color;
-    private final int hoverColor;
+    private static final ResourceLocation image = new ResourceLocation(Ariente.MODID, "textures/gui/guielements.png");
 
-    public HoloButton(double x, double y, double w, double h, String text, int color, int hoverColor) {
+    private int normal_u;
+    private int normal_v;
+    private int hover_u;
+    private int hover_v;
+
+    public HoloButton(double x, double y, double w, double h) {
         super(x, y, w, h);
-        this.text = text;
-        this.color = color;
-        this.hoverColor = hoverColor;
+    }
+
+    public HoloButton image(int u, int v) {
+        this.normal_u = u;
+        this.normal_v = v;
+        return this;
+    }
+
+    public HoloButton hover(int u, int v) {
+        this.hover_u = u;
+        this.hover_v = v;
+        return this;
     }
 
     @Override
     public void render(double cursorX, double cursorY) {
-        int c = color;
+        int u;
+        int v;
         if (isInside(cursorX, cursorY)) {
-            c = hoverColor;
+            u = hover_u;
+            v = hover_v;
+        } else {
+            u = normal_u;
+            v = normal_v;
         }
-        HoloGuiRenderTools.renderBox(x-1, y, w, h, 0xffff0000);
-        HoloGuiRenderTools.renderBox(x, y, w, h, 0xffffffff);
-        HoloGuiRenderTools.renderText(x, y, text, c);
+        HoloGuiRenderTools.renderImage(x, y, u, v, 16, 16, 256, 256, image);
+//        HoloGuiRenderTools.renderText(x, y, "x", 0xffffff);
+    }
+
+    @Override
+    public void hit(EntityPlayer player, HoloGuiEntity entity, double cursorX, double cursorY) {
     }
 }

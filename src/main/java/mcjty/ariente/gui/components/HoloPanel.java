@@ -1,6 +1,8 @@
 package mcjty.ariente.gui.components;
 
+import mcjty.ariente.entities.HoloGuiEntity;
 import mcjty.ariente.gui.IGuiComponent;
+import net.minecraft.entity.player.EntityPlayer;
 
 import java.util.ArrayList;
 import java.util.Collections;
@@ -27,10 +29,10 @@ public class HoloPanel extends AbstractHoloComponent {
     }
 
     @Override
-    public void hit(double cursorX, double cursorY) {
+    public void hit(EntityPlayer player, HoloGuiEntity entity, double cursorX, double cursorY) {
         for (IGuiComponent child : children) {
             if (child.isInside(cursorX, cursorY)) {
-                child.hit(cursorX, cursorY);
+                child.hit(player, entity, cursorX, cursorY);
             }
         }
 

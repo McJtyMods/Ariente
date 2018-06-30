@@ -1,6 +1,9 @@
 package mcjty.ariente.gui.components;
 
+import mcjty.ariente.entities.HoloGuiEntity;
 import mcjty.ariente.gui.IGuiComponent;
+import net.minecraft.entity.Entity;
+import net.minecraft.entity.player.EntityPlayer;
 
 public abstract class AbstractHoloComponent implements IGuiComponent {
 
@@ -42,7 +45,7 @@ public abstract class AbstractHoloComponent implements IGuiComponent {
     }
 
     @Override
-    public void hit(double cursorX, double cursorY) {
+    public void hit(EntityPlayer player, HoloGuiEntity entity, double cursorX, double cursorY) {
 
     }
 }

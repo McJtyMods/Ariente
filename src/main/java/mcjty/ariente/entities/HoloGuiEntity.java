@@ -206,10 +206,12 @@ public class HoloGuiEntity extends Entity {
             if (!world.isRemote) {
                 TileEntity te = world.getTileEntity(getGuiTile());
                 if (te instanceof IGuiTile) {
-                    IGuiTile guiTile = (IGuiTile) te;
-                    int x = (int) (vec2d.x * 20);
-                    int y = (int) (vec2d.y * 20);
-                    guiTile.clickGui(this, x, y);
+                    IGuiComponent gui = getGui();
+                    if (gui != null) {
+                        int x = (int) (vec2d.x * 10 -.8);
+                        int y = (int) (vec2d.y * 10 -.8);
+                        gui.hit((EntityPlayer) entityIn, this, x, y);
+                    }
                 }
             }
         }

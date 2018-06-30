@@ -29,6 +29,8 @@ public class HoloGuiEntityRender extends Render<HoloGuiEntity> {
         Tessellator t = Tessellator.getInstance();
         BufferBuilder builder = t.getBuffer();
 
+        Minecraft.getMinecraft().entityRenderer.disableLightmap();
+
         GlStateManager.pushMatrix();
         GlStateManager.translate(x, y, z);
 
@@ -98,6 +100,7 @@ public class HoloGuiEntityRender extends Render<HoloGuiEntity> {
         GlStateManager.enableTexture2D();
         GlStateManager.enableDepth();
         GlStateManager.enableLighting();
+        Minecraft.getMinecraft().entityRenderer.enableLightmap();
     }
 
     private void renderQuad(BufferBuilder builder, double minX, double maxX, double minY, double maxY) {
