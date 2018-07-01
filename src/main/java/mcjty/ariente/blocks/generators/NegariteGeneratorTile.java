@@ -53,6 +53,11 @@ public class NegariteGeneratorTile extends GenericTileEntity implements ITickabl
     private boolean working = false;
 
     @Override
+    protected boolean needsRedstoneMode() {
+        return true;
+    }
+
+    @Override
     public void update() {
         long time = System.currentTimeMillis();
         if ((time / 2000) %2 == 0) {
@@ -146,6 +151,7 @@ public class NegariteGeneratorTile extends GenericTileEntity implements ITickabl
     public void readRestorableFromNBT(NBTTagCompound tagCompound) {
         super.readRestorableFromNBT(tagCompound);
         working = tagCompound.getBoolean("working");
+
         readBufferFromNBT(tagCompound, inventoryHelper);
     }
 
@@ -212,11 +218,25 @@ public class NegariteGeneratorTile extends GenericTileEntity implements ITickabl
 
                 .add(new HoloItemStack(5, 3, 1, 1, new ItemStack(ModBlocks.negariteGeneratorBlock)))
                 .add(new HoloNumber(6, 3, 1, 1,0xffffff, this::countNegariteGenerator))
+
+                .add(new HoloMode(7, 6, 1, 1, this::getRSModeInt)
+                    .choice(128, 128+32)
+                    .choice(128+16, 128+32)
+                    .choice(128+32, 128+32)
+                    .hitEvent((component, player, entity1, x, y) -> changeMode()))
                 ;
     }
 
+    private void changeMode() {
+        int current = rsMode.ordinal() + 1;
+        if (current >= RedstoneMode.values().length) {
+            current = 0;
+        }
+        setRSMode(RedstoneMode.values()[current]);
+        markDirtyClient();
+    }
+
     private void toPlayer(EntityPlayer player, int amount) {
-        System.out.println("amount = " + amount);
         ItemStack stack = inventoryHelper.decrStackSize(SLOT_NEGARITE_INPUT, amount);
         if ((!stack.isEmpty()) && player.inventory.addItemStackToInventory(stack)) {
             markDirtyClient();
