@@ -102,4 +102,9 @@ public class NegariteTankTile extends GenericTileEntity implements IGuiTile {
             .add(new HoloText(0, 7, 1, 1, "7", 0x00ff00))
             .add(new HoloText(7, 7, 1, 1, "X", 0xff0000));
     }
+
+    @Override
+    public void syncToServer() {
+
+    }
 }

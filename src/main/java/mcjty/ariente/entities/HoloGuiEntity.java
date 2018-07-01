@@ -25,6 +25,7 @@ public class HoloGuiEntity extends Entity {
     private AxisAlignedBB playerDetectionBox = null;
 
     private int timeout;
+    private int ticks;  // For syncing TE to client
     private IGuiComponent panel;
 
     // Client side only
@@ -35,6 +36,7 @@ public class HoloGuiEntity extends Entity {
     public HoloGuiEntity(World worldIn) {
         super(worldIn);
         timeout = 20*4;
+        ticks = 5;
         setSize(1f, 1f);
     }
 
@@ -72,6 +74,19 @@ public class HoloGuiEntity extends Entity {
         if (playerDetectionBox == null) {
             playerDetectionBox = new AxisAlignedBB(posX-10, posY-10, posZ-10, posX+10, posY+10, posZ+10);
         }
+
+        ticks--;
+        if (ticks < 0) {
+            ticks = 5;
+            BlockPos tile = getGuiTile();
+            if (tile != null) {
+                TileEntity te = world.getTileEntity(tile);
+                if (te instanceof IGuiTile) {
+                    ((IGuiTile) te).syncToServer();
+                }
+            }
+        }
+
         timeout--;
         if (timeout <= 0) {
             this.setDead();
@@ -98,8 +113,6 @@ public class HoloGuiEntity extends Entity {
         if (tile != null) {
             TileEntity te = world.getTileEntity(tile);
             if (te instanceof IGuiTile) {
-                IGuiTile guiTile = (IGuiTile) te;
-
                 EntityPlayer player = Ariente.proxy.getClientPlayer();
                 Vec3d lookVec = getLookVec();
                 Vec3d v = getIntersect3D(player, lookVec);
@@ -208,8 +221,8 @@ public class HoloGuiEntity extends Entity {
                 if (te instanceof IGuiTile) {
                     IGuiComponent gui = getGui();
                     if (gui != null) {
-                        int x = (int) (vec2d.x * 10 -.8);
-                        int y = (int) (vec2d.y * 10 -.8);
+                        double x = (vec2d.x * 10 -.8);
+                        double y = (vec2d.y * 10 -.8);
                         gui.hit((EntityPlayer) entityIn, this, x, y);
                     }
                 }

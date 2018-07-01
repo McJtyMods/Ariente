@@ -3,7 +3,6 @@ package mcjty.ariente.gui.components;
 import mcjty.ariente.Ariente;
 import mcjty.ariente.entities.HoloGuiEntity;
 import mcjty.ariente.gui.HoloGuiRenderTools;
-import net.minecraft.entity.Entity;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.util.ResourceLocation;
 
@@ -15,6 +14,7 @@ public class HoloButton extends AbstractHoloComponent {
     private int normal_v;
     private int hover_u;
     private int hover_v;
+    private IEvent hitEvent;
 
     public HoloButton(double x, double y, double w, double h) {
         super(x, y, w, h);
@@ -29,6 +29,11 @@ public class HoloButton extends AbstractHoloComponent {
     public HoloButton hover(int u, int v) {
         this.hover_u = u;
         this.hover_v = v;
+        return this;
+    }
+
+    public HoloButton hitEvent(IEvent event) {
+        this.hitEvent = event;
         return this;
     }
 
@@ -49,5 +54,8 @@ public class HoloButton extends AbstractHoloComponent {
 
     @Override
     public void hit(EntityPlayer player, HoloGuiEntity entity, double cursorX, double cursorY) {
+        if (hitEvent != null) {
+            hitEvent.hit(this, player, entity, cursorX, cursorY);
+        }
     }
 }

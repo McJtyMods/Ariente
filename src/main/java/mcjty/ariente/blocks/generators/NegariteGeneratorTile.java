@@ -24,6 +24,7 @@ import net.minecraft.block.state.IBlockState;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.entity.player.EntityPlayerMP;
 import net.minecraft.entity.player.InventoryPlayer;
+import net.minecraft.init.Items;
 import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.network.NetworkManager;
@@ -200,14 +201,75 @@ public class NegariteGeneratorTile extends GenericTileEntity implements ITickabl
                 .add(new HoloNumber(2, 3, 1, 1, 0xffffff,
                         this::countNegarite))
 
-                .add(new HoloButton(2, 4, 1, 1).image(128+32, 128+16).hover(128+32+16, 128+16))
-                .add(new HoloButton(3, 4, 1, 1).image(128+32, 128).hover(128+32+16, 128))
-                .add(new HoloButton(5, 4, 1, 1).image(128, 128).hover(128+16, 128))
-                .add(new HoloButton(6, 4, 1, 1).image(128, 128+16).hover(128+16, 128+16))
+                .add(new HoloButton(2, 4, 1, 1).image(128+32, 128+16).hover(128+32+16, 128+16)
+                    .hitEvent((component, player, entity1, x, y) -> toPlayer(player, 64)))
+                .add(new HoloButton(3, 4, 1, 1).image(128+32, 128).hover(128+32+16, 128)
+                    .hitEvent((component, player, entity1, x, y) -> toPlayer(player, 1)))
+                .add(new HoloButton(5, 4, 1, 1).image(128, 128).hover(128+16, 128)
+                    .hitEvent((component, player, entity1, x, y) -> toMachine(player, 1)))
+                .add(new HoloButton(6, 4, 1, 1).image(128, 128+16).hover(128+16, 128+16)
+                    .hitEvent((component, player, entity1, x, y) -> toMachine(player, 64)))
 
                 .add(new HoloItemStack(5, 3, 1, 1, new ItemStack(ModBlocks.negariteGeneratorBlock)))
                 .add(new HoloNumber(6, 3, 1, 1,0xffffff, this::countNegariteGenerator))
                 ;
+    }
+
+    private void toPlayer(EntityPlayer player, int amount) {
+        System.out.println("amount = " + amount);
+        ItemStack stack = inventoryHelper.decrStackSize(SLOT_NEGARITE_INPUT, amount);
+        if ((!stack.isEmpty()) && player.inventory.addItemStackToInventory(stack)) {
+            markDirtyClient();
+        } else {
+            ItemStack stillThere = inventoryHelper.getStackInSlot(SLOT_NEGARITE_INPUT);
+            if (stillThere.isEmpty()) {
+                stillThere = stack;
+            } else {
+                stillThere.stackSize += stack.stackSize;
+            }
+            inventoryHelper.setStackInSlot(SLOT_NEGARITE_INPUT, stillThere);
+        }
+    }
+
+    private void toMachine(EntityPlayer player, int amount) {
+        ItemStack toTransfer = ItemStack.EMPTY;
+        ItemStack stackInSlot = inventoryHelper.getStackInSlot(SLOT_NEGARITE_INPUT);
+        if (!stackInSlot.isEmpty()) {
+            amount = Math.min(amount, 64 - stackInSlot.stackSize);    // @todo item specific max stacksize
+        }
+
+        for (int i = 0 ; i < player.inventory.getSizeInventory() ; i++) {
+            ItemStack stack = player.inventory.getStackInSlot(i);
+            if (stack.getItem() == ModItems.negariteDust) {
+                ItemStack splitted = stack.splitStack(amount);
+                if ((!splitted.isEmpty())) {
+                    if (toTransfer.isEmpty()) {
+                        toTransfer = splitted;
+                    } else {
+                        toTransfer.stackSize += amount;
+                    }
+                    amount -= splitted.stackSize;
+                    if (amount <= 0) {
+                        break;
+                    }
+                }
+            }
+        }
+
+        if (!toTransfer.isEmpty()) {
+            if (!stackInSlot.isEmpty()) {
+                toTransfer.stackSize += stackInSlot.stackSize;
+            }
+            inventoryHelper.setStackInSlot(SLOT_NEGARITE_INPUT, toTransfer);
+            markDirtyClient();
+        }
+
+    }
+
+    @Override
+    public void syncToServer() {
+        // @todo more efficient
+        markDirtyClient();
     }
 
     public Integer countNegarite() {
