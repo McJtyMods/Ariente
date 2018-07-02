@@ -7,6 +7,8 @@ import mcjty.ariente.blocks.generators.NegariteGeneratorGui;
 import mcjty.ariente.blocks.generators.NegariteGeneratorTile;
 import mcjty.ariente.blocks.generators.NegariteTankRenderer;
 import mcjty.ariente.blocks.generators.NegariteTankTile;
+import mcjty.ariente.cables.ConnectorBlock;
+import mcjty.ariente.cables.NetCableBlock;
 import mcjty.ariente.gui.GuiProxy;
 import mcjty.ariente.gui.HoloGuiHandler;
 import mcjty.lib.blocks.BaseBlock;
@@ -15,6 +17,7 @@ import mcjty.lib.builder.BaseBlockBuilder;
 import mcjty.lib.builder.BlockFlags;
 import mcjty.lib.builder.GenericBlockBuilderFactory;
 import mcjty.lib.container.GenericContainer;
+import net.minecraft.client.renderer.color.BlockColors;
 import net.minecraftforge.fml.client.registry.ClientRegistry;
 import net.minecraftforge.fml.relauncher.Side;
 import net.minecraftforge.fml.relauncher.SideOnly;
@@ -49,6 +52,9 @@ public class ModBlocks {
 
     public static GenericBlockBuilderFactory builderFactory;
 
+    public static NetCableBlock netCableBlock;
+    public static ConnectorBlock connectorBlock;
+
 
     public static void init() {
         builderFactory = new GenericBlockBuilderFactory(Ariente.instance).creativeTabs(Ariente.creativeTab);
@@ -60,6 +66,9 @@ public class ModBlocks {
     }
 
     private static void initTechnical() {
+        netCableBlock = new NetCableBlock();
+        connectorBlock = new ConnectorBlock();
+
         negariteGeneratorBlock = ModBlocks.builderFactory.<NegariteGeneratorTile> builder("negarite_generator")
                 .tileEntityClass(NegariteGeneratorTile.class)
                 .container(NegariteGeneratorTile.CONTAINER_FACTORY)
@@ -171,6 +180,9 @@ public class ModBlocks {
 
     @SideOnly(Side.CLIENT)
     public static void initModels() {
+        netCableBlock.initModel();
+        connectorBlock.initModel();
+
         negariteGeneratorBlock.initModel();
 //        negariteGeneratorBlock.setGuiFactory(NegariteGeneratorGui::new);
         negariteTankBlock.initModel();
@@ -195,5 +207,16 @@ public class ModBlocks {
         glowleaves.initModel();
         bluelog.initModel();
         blueleaves.initModel();
+    }
+
+    @SideOnly(Side.CLIENT)
+    public static void initItemModels() {
+        netCableBlock.initItemModel();
+        connectorBlock.initItemModel();
+    }
+
+    @SideOnly(Side.CLIENT)
+    public static void initColorHandlers(BlockColors blockColors) {
+        connectorBlock.initColorHandler(blockColors);
     }
 }

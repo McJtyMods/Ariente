@@ -9,10 +9,12 @@ import mcjty.lib.McJtyLibClient;
 import net.minecraft.client.Minecraft;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.world.World;
+import net.minecraftforge.client.event.ColorHandlerEvent;
 import net.minecraftforge.client.event.ModelRegistryEvent;
 import net.minecraftforge.client.model.obj.OBJLoader;
 import net.minecraftforge.common.MinecraftForge;
 import net.minecraftforge.fml.common.event.FMLInitializationEvent;
+import net.minecraftforge.fml.common.event.FMLPostInitializationEvent;
 import net.minecraftforge.fml.common.event.FMLPreInitializationEvent;
 import net.minecraftforge.fml.common.eventhandler.SubscribeEvent;
 
@@ -35,6 +37,18 @@ public class ClientProxy extends CommonProxy {
     public void init(FMLInitializationEvent e) {
         super.init(e);
 //        ModBlocks.initItemModels();
+    }
+
+    @SubscribeEvent
+    public void colorHandlerEventBlock(ColorHandlerEvent.Block event) {
+        ModBlocks.initColorHandlers(event.getBlockColors());
+    }
+
+
+    @Override
+    public void postInit(FMLPostInitializationEvent e) {
+        super.postInit(e);
+        ModBlocks.initItemModels();
     }
 
     @SubscribeEvent
