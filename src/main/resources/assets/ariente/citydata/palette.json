@@ -50,6 +50,10 @@
       {
         "char": "j",
         "block": "ariente:negarite_tank"
+      },
+      {
+        "char": "k",
+        "block": "minecraft:stained_glass_pane@7"
       }
     ]
   }
