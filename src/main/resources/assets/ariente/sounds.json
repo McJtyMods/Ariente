@@ -1,0 +1,4 @@
+{
+    "guiclick" : {"category": "player", "sounds": ["ariente:guiclick"]},
+    "guiopen" : {"category": "player", "sounds": ["ariente:guiopen"]}
+}

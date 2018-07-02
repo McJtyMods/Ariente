@@ -2,6 +2,7 @@ package mcjty.ariente.entities;
 
 import com.google.common.base.Optional;
 import mcjty.ariente.Ariente;
+import mcjty.ariente.ModSounds;
 import mcjty.ariente.gui.IGuiComponent;
 import mcjty.ariente.gui.IGuiTile;
 import net.minecraft.entity.Entity;
@@ -11,7 +12,9 @@ import net.minecraft.network.datasync.DataParameter;
 import net.minecraft.network.datasync.DataSerializers;
 import net.minecraft.network.datasync.EntityDataManager;
 import net.minecraft.tileentity.TileEntity;
+import net.minecraft.util.DamageSource;
 import net.minecraft.util.EnumHand;
+import net.minecraft.util.SoundCategory;
 import net.minecraft.util.math.AxisAlignedBB;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.Vec2f;
@@ -35,7 +38,7 @@ public class HoloGuiEntity extends Entity {
 
     public HoloGuiEntity(World worldIn) {
         super(worldIn);
-        timeout = 20*4;
+        timeout = 20 * 4;
         ticks = 5;
         setSize(1f, 1f);
     }
@@ -70,9 +73,11 @@ public class HoloGuiEntity extends Entity {
         }
     }
 
+
+
     private void onUpdateServer() {
         if (playerDetectionBox == null) {
-            playerDetectionBox = new AxisAlignedBB(posX-10, posY-10, posZ-10, posX+10, posY+10, posZ+10);
+            playerDetectionBox = new AxisAlignedBB(posX - 10, posY - 10, posZ - 10, posX + 10, posY + 10, posZ + 10);
         }
 
         ticks--;
@@ -89,22 +94,24 @@ public class HoloGuiEntity extends Entity {
 
         timeout--;
         if (timeout <= 0) {
+            world.playSound(posX, posY, posZ, ModSounds.guiopen, SoundCategory.PLAYERS, 0.2f, 1.0f, true);
             this.setDead();
         }
         if (world.getEntitiesWithinAABB(EntityPlayer.class, playerDetectionBox)
                 .stream()
                 .anyMatch(this::playerLooksAtMe)) {
-            timeout = 20*4;
+            timeout = 20 * 4;
         }
     }
+
 
     private boolean playerLooksAtMe(EntityPlayer player) {
         Vec3d lookVec = getLookVec();
         Vec3d v = getIntersect3D(player, lookVec);
         Vec2f vec2d = get2DProjection(lookVec, v);
 
-        double cx = vec2d.x * 10 -.8;
-        double cy = vec2d.y * 10 -.8;
+        double cx = vec2d.x * 10 - .8;
+        double cy = vec2d.y * 10 - .8;
         return cx >= 0 && cx <= 10 && cy >= 0 && cy <= 10;
     }
 
@@ -118,8 +125,8 @@ public class HoloGuiEntity extends Entity {
                 Vec3d v = getIntersect3D(player, lookVec);
                 Vec2f vec2d = get2DProjection(lookVec, v);
 
-                cursorX = vec2d.x * 10 -.8;
-                cursorY = vec2d.y * 10 -.8;
+                cursorX = vec2d.x * 10 - .8;
+                cursorY = vec2d.y * 10 - .8;
                 hit = v;
             }
         }
@@ -146,10 +153,9 @@ public class HoloGuiEntity extends Entity {
 
     @Override
     public boolean processInitialInteract(EntityPlayer player, EnumHand hand) {
+        world.playSound(posX, posY, posZ, ModSounds.guiopen, SoundCategory.PLAYERS, 0.2f, 1.0f, true);  // @todo config
         setDead();
-        System.out.println("HoloGuiEntity.processInitialInteract");
         World world = player.getEntityWorld();
-        System.out.println("world.isRemote = " + world.isRemote);
         return false;
     }
 
@@ -176,7 +182,7 @@ public class HoloGuiEntity extends Entity {
         double x2d = vx.x * x + vx.y * y + vx.z * z + .5;
         double y2d = vy.x * x + vy.y * y + vy.z * z + 1;
 
-        return new Vec2f((float)x2d, (float)y2d);
+        return new Vec2f((float) x2d, (float) y2d);
     }
 
     private Vec3d getIntersect3D(EntityPlayer player, Vec3d lookVec) {
@@ -187,7 +193,7 @@ public class HoloGuiEntity extends Entity {
         double zn = lookVec.z;
 
         // Plane: Ax + By + Cz + D = 0
-        double D = - (xn * posX + yn * posY + zn * posZ);
+        double D = -(xn * posX + yn * posY + zn * posZ);
         double A = xn;
         double B = yn;
         double C = zn;
@@ -211,24 +217,24 @@ public class HoloGuiEntity extends Entity {
 
     @Override
     public boolean hitByEntity(Entity entityIn) {
-        System.out.println("HoloGuiEntity.hitByEntity");
-        System.out.println("world.isRemote = " + world.isRemote);
         if (entityIn instanceof EntityPlayer) {
             Vec2f vec2d = intersect((EntityPlayer) entityIn);
-            System.out.println("pos = " + posX + "," + posY + "," + posZ + ", vec2d = " + vec2d);
-            if (!world.isRemote) {
-                TileEntity te = world.getTileEntity(getGuiTile());
-                if (te instanceof IGuiTile) {
-                    IGuiComponent gui = getGui();
-                    if (gui != null) {
-                        double x = (vec2d.x * 10 -.8);
-                        double y = (vec2d.y * 10 -.8);
+            TileEntity te = world.getTileEntity(getGuiTile());
+            if (te instanceof IGuiTile) {
+                IGuiComponent gui = getGui();
+                if (gui != null) {
+                    double x = (vec2d.x * 10 - .8);
+                    double y = (vec2d.y * 10 - .8);
+                    if (!world.isRemote) {
                         gui.hit((EntityPlayer) entityIn, this, x, y);
+                    } else {
+                        gui.hitClient((EntityPlayer) entityIn, this, x, y);
                     }
                 }
             }
         }
-        return super.hitByEntity(entityIn);
+        return true;
+//        return super.hitByEntity(entityIn);
     }
 
     @Override
@@ -239,13 +245,22 @@ public class HoloGuiEntity extends Entity {
     @Override
     protected void readEntityFromNBT(NBTTagCompound compound) {
         this.timeout = compound.getInteger("timeout");
-        int x = compound.getInteger("guix");
-        int y = compound.getInteger("guiy");
-        int z = compound.getInteger("guiz");
+        if (compound.hasKey("guix")) {
+            int x = compound.getInteger("guix");
+            int y = compound.getInteger("guiy");
+            int z = compound.getInteger("guiz");
+            setGuiTile(new BlockPos(x, y, z));
+        }
     }
 
     @Override
     protected void writeEntityToNBT(NBTTagCompound compound) {
         compound.setInteger("timeout", this.timeout);
+        BlockPos tile = getGuiTile();
+        if (tile != null) {
+            compound.setInteger("guix", tile.getX());
+            compound.setInteger("guiy", tile.getY());
+            compound.setInteger("guiz", tile.getZ());
+        }
     }
 }

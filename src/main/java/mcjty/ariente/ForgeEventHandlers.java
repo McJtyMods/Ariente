@@ -6,8 +6,10 @@ import mcjty.ariente.items.ModItems;
 import mcjty.lib.McJtyRegister;
 import net.minecraft.block.Block;
 import net.minecraft.item.Item;
+import net.minecraft.util.SoundEvent;
 import net.minecraft.world.biome.Biome;
 import net.minecraftforge.event.RegistryEvent;
+import net.minecraftforge.event.entity.PlaySoundAtEntityEvent;
 import net.minecraftforge.fml.common.eventhandler.SubscribeEvent;
 import net.minecraftforge.registries.IForgeRegistry;
 
@@ -31,4 +33,12 @@ public class ForgeEventHandlers {
         ModBiomes.registerBiomes(registry);
     }
 
+    @SubscribeEvent
+    public void registerSounds(RegistryEvent.Register<SoundEvent> sounds) {
+        ModSounds.init(sounds.getRegistry());
+    }
+
+    @SubscribeEvent
+    public void onPlaySound(PlaySoundAtEntityEvent event) {
+    }
 }

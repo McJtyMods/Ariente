@@ -9,6 +9,8 @@ public interface IGuiComponent {
 
     void hit(EntityPlayer player, HoloGuiEntity entity, double cursorX, double cursorY);
 
+    void hitClient(EntityPlayer player, HoloGuiEntity entity, double cursorX, double cursorY);
+
     boolean isInside(double x, double y);
 
     double getX();

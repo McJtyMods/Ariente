@@ -48,4 +48,9 @@ public abstract class AbstractHoloComponent implements IGuiComponent {
     public void hit(EntityPlayer player, HoloGuiEntity entity, double cursorX, double cursorY) {
 
     }
+
+    @Override
+    public void hitClient(EntityPlayer player, HoloGuiEntity entity, double cursorX, double cursorY) {
+
+    }
 }

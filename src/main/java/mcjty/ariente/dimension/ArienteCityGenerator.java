@@ -91,10 +91,6 @@ public class ArienteCityGenerator {
         }
     }
 
-    /**
-     * Generate a part. If 'airWaterLevel' is true then 'hard air' blocks are replaced with water below the waterLevel.
-     * Otherwise they are replaced with air.
-     */
     private static int generatePart(ChunkPrimer primer, BuildingPart part,
                              Transform transform,
                              int ox, int oy, int oz) {
@@ -103,8 +99,6 @@ public class ArienteCityGenerator {
         if (localPalette != null) {
             compiledPalette = new CompiledPalette(compiledPalette, localPalette);
         }
-
-        boolean nowater = part.getMetaBoolean("nowater");
 
         for (int x = 0; x < part.getXSize(); x++) {
             for (int z = 0; z < part.getZSize(); z++) {
@@ -134,8 +128,8 @@ public class ArienteCityGenerator {
                             } else if (b == hardAirChar) {
                                 b = airChar;
                             }
-                            primer.data[index] = b;
                         }
+                        primer.data[index] = b;
                         index++;
                     }
                 }

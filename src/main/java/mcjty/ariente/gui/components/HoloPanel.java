@@ -35,6 +35,14 @@ public class HoloPanel extends AbstractHoloComponent {
                 child.hit(player, entity, cursorX, cursorY);
             }
         }
+    }
 
+    @Override
+    public void hitClient(EntityPlayer player, HoloGuiEntity entity, double cursorX, double cursorY) {
+        for (IGuiComponent child : children) {
+            if (child.isInside(cursorX, cursorY)) {
+                child.hitClient(player, entity, cursorX, cursorY);
+            }
+        }
     }
 }

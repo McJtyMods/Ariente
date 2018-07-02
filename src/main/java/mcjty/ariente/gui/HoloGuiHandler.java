@@ -1,8 +1,10 @@
 package mcjty.ariente.gui;
 
+import mcjty.ariente.ModSounds;
 import mcjty.ariente.entities.HoloGuiEntity;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.tileentity.TileEntity;
+import net.minecraft.util.SoundCategory;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.Vec3d;
 import net.minecraft.world.World;
@@ -12,6 +14,7 @@ public class HoloGuiHandler {
 
     public static boolean openHoloGui(World world, BlockPos pos, EntityPlayer player) {
         if (world.isRemote) {
+            world.playSound(pos.getX(), pos.getY(), pos.getZ(), ModSounds.guiopen, SoundCategory.PLAYERS, 1.0f, 1.0f, true);
             return true;
         }
         TileEntity te = world.getTileEntity(pos);

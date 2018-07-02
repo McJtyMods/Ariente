@@ -62,7 +62,7 @@ public class CommandSaveCity implements ICommand {
                 for (int dz = cz - dimZ / 2 - 1 ; dz <= cz + dimZ / 2 + 1 ; dz++) {
                     BuildingPart part = City.getBuildingPart(dx, dz);
                     if (part != null) {
-                        CommandExportPart.exportPart(((EntityPlayer) sender).world, part.getName() + ".json", new BlockPos(cx * 16 + 8, start.getY()-1, cz * 16 + 8));
+                        CommandExportPart.exportPart(((EntityPlayer) sender).world, part.getName() + ".json", new BlockPos(dx * 16 + 8, start.getY()-1, dz * 16 + 8));
                     }
                 }
             }

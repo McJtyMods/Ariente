@@ -1,10 +1,12 @@
 package mcjty.ariente.gui.components;
 
 import mcjty.ariente.Ariente;
+import mcjty.ariente.ModSounds;
 import mcjty.ariente.entities.HoloGuiEntity;
 import mcjty.ariente.gui.HoloGuiRenderTools;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.util.ResourceLocation;
+import net.minecraft.util.SoundCategory;
 import org.apache.commons.lang3.tuple.Pair;
 
 import java.util.ArrayList;
@@ -50,6 +52,11 @@ public class HoloMode extends AbstractHoloComponent {
         if (hitEvent != null) {
             hitEvent.hit(this, player, entity, cursorX, cursorY);
         }
+    }
+
+    @Override
+    public void hitClient(EntityPlayer player, HoloGuiEntity entity, double cursorX, double cursorY) {
+        player.world.playSound(entity.posX, entity.posY, entity.posZ, ModSounds.guiclick, SoundCategory.PLAYERS, 1.0f, 1.0f, true);
     }
 
 }

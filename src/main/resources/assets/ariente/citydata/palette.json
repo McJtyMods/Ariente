@@ -38,6 +38,18 @@
       {
         "char": "f",
         "block": "ariente:blacktech"
+      },
+      {
+        "char": "h",
+        "block": "ariente:blacktech@3"
+      },
+      {
+        "char": "i",
+        "block": "ariente:negarite_generator@2"
+      },
+      {
+        "char": "j",
+        "block": "ariente:negarite_tank"
       }
     ]
   }
