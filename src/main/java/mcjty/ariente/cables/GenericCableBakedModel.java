@@ -81,7 +81,7 @@ public class GenericCableBakedModel implements IBakedModel {
                 tt[i].spriteCrossCable = Minecraft.getMinecraft().getTextureMapBlocks().getAtlasSprite(Ariente.MODID + ":blocks/cables/" + typeName + "/normal_cross_netcable");
             }
 
-            spriteSide = Minecraft.getMinecraft().getTextureMapBlocks().getAtlasSprite(Ariente.MODID + ":blocks/connector_side");
+            spriteSide = Minecraft.getMinecraft().getTextureMapBlocks().getAtlasSprite(Ariente.MODID + ":blocks/cables/connector_side");
             cableTextures = tt;
         }
     }

@@ -1,0 +1,13 @@
+{
+  "forge_marker": 1,
+  "defaults": {
+    "model": "ariente:connector"
+  },
+  "variants": {
+    "color": {
+      "negarite": { "textures": { "txt": "ariente:blocks/cables/negarite/connector" }},
+      "posirite": { "textures": { "txt": "ariente:blocks/cables/negarite/connector" }},
+      "combined": { "textures": { "txt": "ariente:blocks/cables/negarite/connector" }}
+    }
+  }
+}
