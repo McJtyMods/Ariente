@@ -18,6 +18,26 @@
       {
         "char": "w",
         "block": "ariente:marble_smooth@1"
+      },
+      {
+        "char": "a",
+        "block": "ariente:marble@3"
+      },
+      {
+        "char": "c",
+        "block": "ariente:marble_pilar@3"
+      },
+      {
+        "char": "d",
+        "block": "ariente:marble_smooth@3"
+      },
+      {
+        "char": "e",
+        "block": "ariente:blacktech@1"
+      },
+      {
+        "char": "f",
+        "block": "ariente:blacktech"
       }
     ]
   }
