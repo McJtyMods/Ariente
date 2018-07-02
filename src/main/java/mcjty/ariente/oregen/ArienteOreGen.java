@@ -37,12 +37,13 @@ public class ArienteOreGen implements IWorldGenerator {
         }
 
         if (world.provider.getDimension() == 222) { // @todo config
+
             addOreSpawn(ModBlocks.marble, (byte) MarbleColor.BLUE.ordinal(), ModBlocks.marble, world, random, chunkX * 16, chunkZ * 16,
-                    20, 50, 4, 16, 70);
+                    10, 25, 6, 16, 70);
             addOreSpawn(ModBlocks.marble, (byte) MarbleColor.BLACK.ordinal(), ModBlocks.marble, world, random, chunkX * 16, chunkZ * 16,
-                    20, 50, 3, 10, 40);
+                    10, 25, 5, 10, 40);
             addOreSpawn(ModBlocks.marble, (byte) MarbleColor.WHITE.ordinal(), ModBlocks.marble, world, random, chunkX * 16, chunkZ * 16,
-                    20, 50, 4, 16, 70);
+                    10, 25, 6, 16, 70);
             addOreSpawn(ModBlocks.lithiumore, (byte) 0, ModBlocks.marble, world, random, chunkX * 16, chunkZ * 16,
                     2, 3, 2, 8, 20);
             addOreSpawn(ModBlocks.manganeseore, (byte) 0, ModBlocks.marble, world, random, chunkX * 16, chunkZ * 16,

@@ -234,7 +234,6 @@ public class HoloGuiEntity extends Entity {
             }
         }
         return true;
-//        return super.hitByEntity(entityIn);
     }
 
     @Override
