@@ -245,7 +245,7 @@ public class NegariteGeneratorTile extends GenericTileEntity implements ITickabl
             if (stillThere.isEmpty()) {
                 stillThere = stack;
             } else {
-                stillThere.stackSize += stack.stackSize;
+                stillThere.grow(stack.getCount());
             }
             inventoryHelper.setStackInSlot(SLOT_NEGARITE_INPUT, stillThere);
         }
@@ -255,7 +255,7 @@ public class NegariteGeneratorTile extends GenericTileEntity implements ITickabl
         ItemStack toTransfer = ItemStack.EMPTY;
         ItemStack stackInSlot = inventoryHelper.getStackInSlot(SLOT_NEGARITE_INPUT);
         if (!stackInSlot.isEmpty()) {
-            amount = Math.min(amount, 64 - stackInSlot.stackSize);    // @todo item specific max stacksize
+            amount = Math.min(amount, 64 - stackInSlot.getCount());    // @todo item specific max stacksize
         }
 
         for (int i = 0 ; i < player.inventory.getSizeInventory() ; i++) {
@@ -266,9 +266,9 @@ public class NegariteGeneratorTile extends GenericTileEntity implements ITickabl
                     if (toTransfer.isEmpty()) {
                         toTransfer = splitted;
                     } else {
-                        toTransfer.stackSize += amount;
+                        toTransfer.grow(amount);
                     }
-                    amount -= splitted.stackSize;
+                    amount -= splitted.getCount();
                     if (amount <= 0) {
                         break;
                     }
@@ -278,7 +278,7 @@ public class NegariteGeneratorTile extends GenericTileEntity implements ITickabl
 
         if (!toTransfer.isEmpty()) {
             if (!stackInSlot.isEmpty()) {
-                toTransfer.stackSize += stackInSlot.stackSize;
+                toTransfer.grow(stackInSlot.getCount());
             }
             inventoryHelper.setStackInSlot(SLOT_NEGARITE_INPUT, toTransfer);
             markDirtyClient();
@@ -299,7 +299,7 @@ public class NegariteGeneratorTile extends GenericTileEntity implements ITickabl
         for (int i = 0 ; i < size ; i++) {
             ItemStack stack = inventory.getStackInSlot(i);
             if (!stack.isEmpty() && stack.getItem() == ModItems.negariteDust) {
-                cnt += stack.stackSize;
+                cnt += stack.getCount();
             }
         }
         return cnt;
@@ -311,7 +311,7 @@ public class NegariteGeneratorTile extends GenericTileEntity implements ITickabl
         for (int i = 0 ; i < size ; i++) {
             ItemStack stack = inventoryHelper.getStackInSlot(i);
             if (!stack.isEmpty() && stack.getItem() == ModItems.negariteDust) {
-                cnt += stack.stackSize;
+                cnt += stack.getCount();
             }
         }
         return cnt;
