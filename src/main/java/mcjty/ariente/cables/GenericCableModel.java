@@ -29,13 +29,13 @@ public class GenericCableModel implements IModel {
     @Override
     public Collection<ResourceLocation> getTextures() {
         return ImmutableSet.of(
-                new ResourceLocation(Ariente.MODID, "blocks/cables/negarite_cable/connector"),
-                new ResourceLocation(Ariente.MODID, "blocks/cables/negarite_cable/normal_netcable"),
-                new ResourceLocation(Ariente.MODID, "blocks/cables/negarite_cable/normal_corner_netcable"),
-                new ResourceLocation(Ariente.MODID, "blocks/cables/negarite_cable/normal_cross_netcable"),
-                new ResourceLocation(Ariente.MODID, "blocks/cables/negarite_cable/normal_end_netcable"),
-                new ResourceLocation(Ariente.MODID, "blocks/cables/negarite_cable/normal_none_netcable"),
-                new ResourceLocation(Ariente.MODID, "blocks/cables/negarite_cable/normal_three_netcable"),
+                new ResourceLocation(Ariente.MODID, "blocks/cables/negarite/connector"),
+                new ResourceLocation(Ariente.MODID, "blocks/cables/negarite/normal_netcable"),
+                new ResourceLocation(Ariente.MODID, "blocks/cables/negarite/normal_corner_netcable"),
+                new ResourceLocation(Ariente.MODID, "blocks/cables/negarite/normal_cross_netcable"),
+                new ResourceLocation(Ariente.MODID, "blocks/cables/negarite/normal_end_netcable"),
+                new ResourceLocation(Ariente.MODID, "blocks/cables/negarite/normal_none_netcable"),
+                new ResourceLocation(Ariente.MODID, "blocks/cables/negarite/normal_three_netcable"),
 
                 new ResourceLocation(Ariente.MODID, "blocks/cables/connector_side")
                 );
