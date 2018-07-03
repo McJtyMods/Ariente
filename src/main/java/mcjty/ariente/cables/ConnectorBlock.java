@@ -1,7 +1,10 @@
 package mcjty.ariente.cables;
 
 import mcjty.ariente.Ariente;
+import mcjty.ariente.blocks.ModBlocks;
 import mcjty.ariente.blocks.generators.NegariteGeneratorTile;
+import mcjty.ariente.facade.FacadeBlockId;
+import mcjty.ariente.facade.FacadeItemBlock;
 import mcjty.theoneprobe.api.IProbeHitData;
 import mcjty.theoneprobe.api.IProbeInfo;
 import mcjty.theoneprobe.api.ProbeMode;
@@ -83,14 +86,14 @@ public class ConnectorBlock extends GenericCableBlock implements ITileEntityProv
     public void harvestBlock(World worldIn, EntityPlayer player, BlockPos pos, IBlockState state, @Nullable TileEntity te, ItemStack stack) {
         if (te instanceof ConnectorTileEntity) {
             // If we are in mimic mode then the drop will be the facade as the connector will remain there
-//            ConnectorTileEntity connectorTileEntity = (ConnectorTileEntity) te;
-//            if (connectorTileEntity.getMimicBlock() != null) {
-//                ItemStack item = new ItemStack(ModBlocks.facadeBlock);
-//                FacadeItemBlock.setMimicBlock(item, connectorTileEntity.getMimicBlock());
-//                connectorTileEntity.setMimicBlock(null);
-//                spawnAsEntity(worldIn, pos, item);
-//                return;
-//            }
+            ConnectorTileEntity connectorTileEntity = (ConnectorTileEntity) te;
+            if (connectorTileEntity.getMimicBlock() != null) {
+                ItemStack item = new ItemStack(ModBlocks.facadeBlock);
+                FacadeItemBlock.setMimicBlock(item, connectorTileEntity.getMimicBlock());
+                connectorTileEntity.setMimicBlock(null);
+                spawnAsEntity(worldIn, pos, item);
+                return;
+            }
         }
         super.harvestBlock(worldIn, player, pos, state, te, stack);
     }
@@ -101,20 +104,20 @@ public class ConnectorBlock extends GenericCableBlock implements ITileEntityProv
         TileEntity te = world.getTileEntity(pos);
         if (te instanceof ConnectorTileEntity) {
             ConnectorTileEntity connectorTileEntity = (ConnectorTileEntity) te;
-//            if (connectorTileEntity.getMimicBlock() == null) {
+            if (connectorTileEntity.getMimicBlock() == null) {
                 this.onBlockHarvested(world, pos, state, player);
                 return world.setBlockState(pos, Blocks.AIR.getDefaultState(), world.isRemote ? 11 : 3);
-//            } else {
-//                 We are in mimic mode. Don't remove the connector
-//                this.onBlockHarvested(world, pos, state, player);
-//                if(player.capabilities.isCreativeMode) {
-//                    connectorTileEntity.setMimicBlock(null);
-//                }
-//            }
+            } else {
+                // We are in mimic mode. Don't remove the connector
+                this.onBlockHarvested(world, pos, state, player);
+                if(player.capabilities.isCreativeMode) {
+                    connectorTileEntity.setMimicBlock(null);
+                }
+            }
         } else {
             return super.removedByPlayer(state, world, pos, player, willHarvest);
         }
-//        return true;
+        return true;
     }
 
 
@@ -128,12 +131,12 @@ public class ConnectorBlock extends GenericCableBlock implements ITileEntityProv
     @Override
     public IBlockState getExtendedState(IBlockState state, IBlockAccess world, BlockPos pos) {
         IExtendedBlockState extendedBlockState = (IExtendedBlockState) super.getExtendedState(state, world, pos);
-//        IBlockState mimicBlock = getMimicBlock(world, pos);
-//        if (mimicBlock != null) {
-//            return extendedBlockState.withProperty(FACADEID, new FacadeBlockId(mimicBlock));
-//        } else {
+        IBlockState mimicBlock = getMimicBlock(world, pos);
+        if (mimicBlock != null) {
+            return extendedBlockState.withProperty(FACADEID, new FacadeBlockId(mimicBlock));
+        } else {
             return extendedBlockState;
-//        }
+        }
     }
 
 
@@ -150,18 +153,6 @@ public class ConnectorBlock extends GenericCableBlock implements ITileEntityProv
         };
         ModelLoader.setCustomStateMapper(this, ignoreState);
     }
-
-//    @Override
-//    @SideOnly(Side.CLIENT)
-//    public void initItemModel() {
-        // For our item model we want to use a normal json model. This has to be called in
-        // ClientProxy.init (not preInit) so that's why it is a separate method.
-//        Item itemBlock = ForgeRegistries.ITEMS.getValue(getRegistryName());
-//        ModelResourceLocation itemModelResourceLocation = new ModelResourceLocation(getRegistryName(), "inventory");
-//        final int DEFAULT_ITEM_SUBTYPE = 0;
-//        Minecraft.getMinecraft().getRenderItem().getItemModelMesher().register(itemBlock, DEFAULT_ITEM_SUBTYPE, itemModelResourceLocation);
-//    }
-
 
     @Override
     public void neighborChanged(IBlockState state, World world, BlockPos pos, Block blockIn, BlockPos fromPos) {

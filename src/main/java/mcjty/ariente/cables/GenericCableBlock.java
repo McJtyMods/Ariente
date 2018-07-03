@@ -1,6 +1,8 @@
 package mcjty.ariente.cables;
 
 import mcjty.ariente.Ariente;
+import mcjty.ariente.facade.FacadeProperty;
+import mcjty.ariente.facade.IFacadeSupport;
 import mcjty.lib.McJtyRegister;
 import mcjty.lib.blocks.DamageMetadataItemBlock;
 import mcjty.lib.compat.theoneprobe.TOPInfoProvider;
@@ -25,6 +27,7 @@ import net.minecraft.item.Item;
 import net.minecraft.item.ItemBlock;
 import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.NBTTagCompound;
+import net.minecraft.tileentity.TileEntity;
 import net.minecraft.util.EnumFacing;
 import net.minecraft.util.EnumHand;
 import net.minecraft.util.ResourceLocation;
@@ -57,7 +60,7 @@ public abstract class GenericCableBlock extends Block implements WailaInfoProvid
     public static final UnlistedPropertyBlockType UP = new UnlistedPropertyBlockType("up");
     public static final UnlistedPropertyBlockType DOWN = new UnlistedPropertyBlockType("down");
 
-//    public static final FacadeProperty FACADEID = new FacadeProperty("facadeid");
+    public static final FacadeProperty FACADEID = new FacadeProperty("facadeid");
     public static final PropertyEnum<CableColor> COLOR = PropertyEnum.<CableColor>create("color", CableColor.class);
 
 
@@ -147,12 +150,12 @@ public abstract class GenericCableBlock extends Block implements WailaInfoProvid
 
     @Nullable
     protected IBlockState getMimicBlock(IBlockAccess blockAccess, BlockPos pos) {
-//        TileEntity te = blockAccess.getTileEntity(pos);
-//        if (te instanceof IFacadeSupport) {
-//            return ((IFacadeSupport) te).getMimicBlock();
-//        } else {
+        TileEntity te = blockAccess.getTileEntity(pos);
+        if (te instanceof IFacadeSupport) {
+            return ((IFacadeSupport) te).getMimicBlock();
+        } else {
             return null;
-//        }
+        }
     }
 
     @SideOnly(Side.CLIENT)
@@ -284,8 +287,7 @@ public abstract class GenericCableBlock extends Block implements WailaInfoProvid
     @Override
     protected BlockStateContainer createBlockState() {
         IProperty<?>[] listedProperties = new IProperty<?>[] { COLOR };
-        IUnlistedProperty<?>[] unlistedProperties = new IUnlistedProperty<?>[] { NORTH, SOUTH, WEST, EAST, UP, DOWN };
-//            FACADEID};
+        IUnlistedProperty<?>[] unlistedProperties = new IUnlistedProperty<?>[] { NORTH, SOUTH, WEST, EAST, UP, DOWN, FACADEID};
         return new ExtendedBlockState(this, listedProperties, unlistedProperties);
     }
 

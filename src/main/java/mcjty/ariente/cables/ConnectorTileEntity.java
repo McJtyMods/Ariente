@@ -1,19 +1,22 @@
 package mcjty.ariente.cables;
 
+import mcjty.ariente.facade.IFacadeSupport;
+import mcjty.ariente.facade.MimicBlockSupport;
 import mcjty.lib.bindings.DefaultValue;
 import mcjty.lib.bindings.IValue;
 import mcjty.lib.tileentity.GenericTileEntity;
 import mcjty.lib.typed.Key;
 import mcjty.lib.typed.Type;
 import net.minecraft.block.Block;
+import net.minecraft.block.state.IBlockState;
 import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.network.NetworkManager;
 import net.minecraft.network.play.server.SPacketUpdateTileEntity;
 import net.minecraft.util.EnumFacing;
 
-public class ConnectorTileEntity extends GenericTileEntity {
+public class ConnectorTileEntity extends GenericTileEntity implements IFacadeSupport {
 
-//    private MimicBlockSupport mimicBlockSupport = new MimicBlockSupport();
+    private MimicBlockSupport mimicBlockSupport = new MimicBlockSupport();
 
     private int inputFromSide[] = new int[] { 0, 0, 0, 0, 0, 0 };
     private String name = "";
@@ -37,14 +40,14 @@ public class ConnectorTileEntity extends GenericTileEntity {
 
     @Override
     public void onDataPacket(NetworkManager net, SPacketUpdateTileEntity packet) {
-//        IBlockState oldMimicBlock = mimicBlockSupport.getMimicBlock();
+        IBlockState oldMimicBlock = mimicBlockSupport.getMimicBlock();
         byte oldEnabled = enabled;
 
         super.onDataPacket(net, packet);
 
         if (world.isRemote) {
             // If needed send a render update.
-            if (enabled != oldEnabled) { // || mimicBlockSupport.getMimicBlock() != oldMimicBlock) {
+            if (enabled != oldEnabled || mimicBlockSupport.getMimicBlock() != oldMimicBlock) {
                 world.markBlockRangeForRenderUpdate(getPos(), getPos());
             }
         }
@@ -79,15 +82,15 @@ public class ConnectorTileEntity extends GenericTileEntity {
         return (enabled & (1 << direction.ordinal())) != 0;
     }
 
-//    @Override
-//    public IBlockState getMimicBlock() {
-//        return mimicBlockSupport.getMimicBlock();
-//    }
+    @Override
+    public IBlockState getMimicBlock() {
+        return mimicBlockSupport.getMimicBlock();
+    }
 
-//    public void setMimicBlock(IBlockState mimicBlock) {
-//        mimicBlockSupport.setMimicBlock(mimicBlock);
-//        markDirtyClient();
-//    }
+    public void setMimicBlock(IBlockState mimicBlock) {
+        mimicBlockSupport.setMimicBlock(mimicBlock);
+        markDirtyClient();
+    }
 
     @Override
     public void setPowerInput(int powered) {
@@ -104,6 +107,7 @@ public class ConnectorTileEntity extends GenericTileEntity {
         if (inputFromSide.length != 6) {
             inputFromSide = new int[] { 0, 0, 0, 0, 0, 0 };
         }
+        mimicBlockSupport.readFromNBT(tagCompound);
         pulseCounter = tagCompound.getInteger("pulse");
         for (int i = 0 ; i < 6 ; i++) {
             powerOut[i] = tagCompound.getByte("p" + i);
@@ -125,7 +129,7 @@ public class ConnectorTileEntity extends GenericTileEntity {
     public NBTTagCompound writeToNBT(NBTTagCompound tagCompound) {
         super.writeToNBT(tagCompound);
         tagCompound.setIntArray("inputs", inputFromSide);
-//        mimicBlockSupport.writeToNBT(tagCompound);
+        mimicBlockSupport.writeToNBT(tagCompound);
         tagCompound.setInteger("pulse", pulseCounter);
         for (int i = 0 ; i < 6 ; i++) {
             tagCompound.setByte("p" + i, (byte) powerOut[i]);
@@ -149,12 +153,4 @@ public class ConnectorTileEntity extends GenericTileEntity {
     public String getConnectorName() {
         return name;
     }
-
-    public void setEnergyInputFrom(EnumFacing from, int rate) {
-        if (inputFromSide[from.ordinal()] != rate) {
-            inputFromSide[from.ordinal()] = rate;
-            markDirtyQuick();
-        }
-    }
-
 }

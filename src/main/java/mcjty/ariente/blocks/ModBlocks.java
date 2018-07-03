@@ -9,6 +9,7 @@ import mcjty.ariente.blocks.generators.NegariteTankRenderer;
 import mcjty.ariente.blocks.generators.NegariteTankTile;
 import mcjty.ariente.cables.ConnectorBlock;
 import mcjty.ariente.cables.NetCableBlock;
+import mcjty.ariente.facade.FacadeBlock;
 import mcjty.ariente.gui.GuiProxy;
 import mcjty.ariente.gui.HoloGuiHandler;
 import mcjty.lib.blocks.BaseBlock;
@@ -54,7 +55,7 @@ public class ModBlocks {
 
     public static NetCableBlock netCableBlock;
     public static ConnectorBlock connectorBlock;
-
+    public static FacadeBlock facadeBlock;
 
     public static void init() {
         builderFactory = new GenericBlockBuilderFactory(Ariente.instance).creativeTabs(Ariente.creativeTab);
@@ -68,6 +69,7 @@ public class ModBlocks {
     private static void initTechnical() {
         netCableBlock = new NetCableBlock();
         connectorBlock = new ConnectorBlock();
+        facadeBlock = new FacadeBlock();
 
         negariteGeneratorBlock = ModBlocks.builderFactory.<NegariteGeneratorTile> builder("negarite_generator")
                 .tileEntityClass(NegariteGeneratorTile.class)
@@ -182,6 +184,7 @@ public class ModBlocks {
     public static void initModels() {
         netCableBlock.initModel();
         connectorBlock.initModel();
+        facadeBlock.initModel();
 
         negariteGeneratorBlock.initModel();
 //        negariteGeneratorBlock.setGuiFactory(NegariteGeneratorGui::new);
@@ -211,12 +214,14 @@ public class ModBlocks {
 
     @SideOnly(Side.CLIENT)
     public static void initItemModels() {
+        facadeBlock.initItemModel();
         netCableBlock.initItemModel();
         connectorBlock.initItemModel();
     }
 
     @SideOnly(Side.CLIENT)
     public static void initColorHandlers(BlockColors blockColors) {
+        facadeBlock.initColorHandler(blockColors);
         connectorBlock.initColorHandler(blockColors);
     }
 }

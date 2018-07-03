@@ -2,6 +2,7 @@ package mcjty.ariente.cables;
 
 import com.google.common.base.Function;
 import mcjty.ariente.Ariente;
+import mcjty.ariente.facade.FacadeBlockId;
 import net.minecraft.block.state.IBlockState;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.renderer.block.model.*;
@@ -183,20 +184,20 @@ public class GenericCableBakedModel implements IBakedModel {
         }
 
         IExtendedBlockState extendedBlockState = (IExtendedBlockState) state;
-//        FacadeBlockId facadeId = extendedBlockState.getValue(GenericCableBlock.FACADEID);
-//        if (facadeId != null) {
-//            IBlockState facadeState = facadeId.getBlockState();
-//            BlockRenderLayer layer = MinecraftForgeClient.getRenderLayer();
-//            if (layer != null && !facadeState.getBlock().canRenderInLayer(facadeState, layer)) { // always render in the null layer or the block-breaking textures don't show up
-//                return Collections.emptyList();
-//            }
-//            IBakedModel model = Minecraft.getMinecraft().getBlockRendererDispatcher().getBlockModelShapes().getModelForState(facadeState);
-//            try {
-//                return model.getQuads(state, side, rand);
-//            } catch (Exception e) {
-//                return Collections.emptyList();
-//            }
-//        }
+        FacadeBlockId facadeId = extendedBlockState.getValue(GenericCableBlock.FACADEID);
+        if (facadeId != null) {
+            IBlockState facadeState = facadeId.getBlockState();
+            BlockRenderLayer layer = MinecraftForgeClient.getRenderLayer();
+            if (layer != null && !facadeState.getBlock().canRenderInLayer(facadeState, layer)) { // always render in the null layer or the block-breaking textures don't show up
+                return Collections.emptyList();
+            }
+            IBakedModel model = Minecraft.getMinecraft().getBlockRendererDispatcher().getBlockModelShapes().getModelForState(facadeState);
+            try {
+                return model.getQuads(state, side, rand);
+            } catch (Exception e) {
+                return Collections.emptyList();
+            }
+        }
 
         if (side != null || (MinecraftForgeClient.getRenderLayer() != BlockRenderLayer.CUTOUT_MIPPED)) {
             return Collections.emptyList();
