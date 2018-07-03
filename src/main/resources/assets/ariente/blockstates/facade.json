@@ -1,5 +1,6 @@
 {
   "variants": {
-    "normal": { "model": "ariente:facade" }
+    "normal": { "model": "ariente:facade" },
+    "inventory": { "model": "ariente:facade" }
   }
 }

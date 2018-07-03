@@ -1,8 +1,5 @@
 package mcjty.ariente.facade;
 
-import mcjty.ariente.blocks.ModBlocks;
-import mcjty.ariente.cables.ConnectorTileEntity;
-import mcjty.ariente.cables.GenericCableBlock;
 import net.minecraft.block.Block;
 import net.minecraft.block.SoundType;
 import net.minecraft.block.state.IBlockState;
@@ -66,37 +63,18 @@ public class FacadeItemBlock extends ItemBlock {
 
         if (!itemstack.isEmpty()) {
 
-            if (block == ModBlocks.netCableBlock) {
-                int i = this.getMetadata(itemstack.getMetadata());
-                FacadeBlock facadeBlock = (FacadeBlock) this.block;
-                IBlockState placementState = facadeBlock.getPlacementState(world, pos, facing, hitX, hitY, hitZ, i, player).withProperty(GenericCableBlock.COLOR, state.getValue(GenericCableBlock.COLOR));
-
-                if (placeBlockAt(itemstack, player, world, pos, facing, hitX, hitY, hitZ, placementState)) {
+            TileEntity te = world.getTileEntity(pos);
+            if (te instanceof IFacadeSupport) {
+                IFacadeSupport facadeSupport = (IFacadeSupport) te;
+                if (facadeSupport.getMimicBlock() == null) {
+                    facadeSupport.setMimicBlock(getMimicBlock(itemstack));
                     SoundType soundtype = world.getBlockState(pos).getBlock().getSoundType(world.getBlockState(pos), world, pos, player);
                     world.playSound(player, pos, soundtype.getPlaceSound(), SoundCategory.BLOCKS, (soundtype.getVolume() + 1.0F) / 2.0F, soundtype.getPitch() * 0.8F);
-                    TileEntity te = world.getTileEntity(pos);
-                    if (te instanceof FacadeTileEntity) {
-                        ((FacadeTileEntity) te).setMimicBlock(getMimicBlock(itemstack));
-                    }
                     int amount = -1;
                     itemstack.grow(amount);
+                } else {
+                    return EnumActionResult.FAIL;
                 }
-            } else if (block == ModBlocks.connectorBlock) {
-                TileEntity te = world.getTileEntity(pos);
-                if (te instanceof ConnectorTileEntity) {
-                    ConnectorTileEntity connectorTileEntity = (ConnectorTileEntity) te;
-                    if (connectorTileEntity.getMimicBlock() == null) {
-                        connectorTileEntity.setMimicBlock(getMimicBlock(itemstack));
-                        SoundType soundtype = world.getBlockState(pos).getBlock().getSoundType(world.getBlockState(pos), world, pos, player);
-                        world.playSound(player, pos, soundtype.getPlaceSound(), SoundCategory.BLOCKS, (soundtype.getVolume() + 1.0F) / 2.0F, soundtype.getPitch() * 0.8F);
-                        int amount = -1;
-                        itemstack.grow(amount);
-                    } else {
-                        return EnumActionResult.FAIL;
-                    }
-                }
-            } else if (block == ModBlocks.facadeBlock) {
-                return EnumActionResult.FAIL;
             } else {
                 setMimicBlock(itemstack, state);
                 if (world.isRemote) {

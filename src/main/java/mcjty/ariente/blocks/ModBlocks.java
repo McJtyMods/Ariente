@@ -223,5 +223,6 @@ public class ModBlocks {
     public static void initColorHandlers(BlockColors blockColors) {
         facadeBlock.initColorHandler(blockColors);
         connectorBlock.initColorHandler(blockColors);
+        netCableBlock.initColorHandler(blockColors);
     }
 }

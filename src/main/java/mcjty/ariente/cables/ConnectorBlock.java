@@ -25,6 +25,7 @@ import net.minecraft.tileentity.TileEntity;
 import net.minecraft.util.BlockRenderLayer;
 import net.minecraft.util.EnumFacing;
 import net.minecraft.util.NonNullList;
+import net.minecraft.util.ResourceLocation;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.IBlockAccess;
 import net.minecraft.world.World;
@@ -53,7 +54,7 @@ public class ConnectorBlock extends GenericCableBlock implements ITileEntityProv
     }
 
     protected void initTileEntity() {
-        GameRegistry.registerTileEntity(ConnectorTileEntity.class, Ariente.MODID + "_connector");
+        GameRegistry.registerTileEntity(ConnectorTileEntity.class, new ResourceLocation(Ariente.MODID, "connector"));
     }
 
     @Override
@@ -245,11 +246,6 @@ public class ConnectorBlock extends GenericCableBlock implements ITileEntityProv
         if (connectorTE == null) {
             return false;
         }
-
-        if (!connectorTE.isEnabled(facing)) {
-            return false;
-        }
-
 
         TileEntity te = world.getTileEntity(pos);
 

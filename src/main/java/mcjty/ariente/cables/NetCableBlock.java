@@ -1,36 +1,113 @@
 package mcjty.ariente.cables;
 
+import mcjty.ariente.Ariente;
+import mcjty.ariente.blocks.ModBlocks;
+import mcjty.ariente.facade.FacadeBlockId;
+import mcjty.ariente.facade.FacadeItemBlock;
 import net.minecraft.block.Block;
+import net.minecraft.block.ITileEntityProvider;
 import net.minecraft.block.material.Material;
 import net.minecraft.block.state.IBlockState;
 import net.minecraft.client.renderer.block.model.ModelResourceLocation;
 import net.minecraft.client.renderer.block.statemap.StateMapperBase;
 import net.minecraft.creativetab.CreativeTabs;
 import net.minecraft.entity.EntityLivingBase;
+import net.minecraft.entity.player.EntityPlayer;
+import net.minecraft.init.Blocks;
 import net.minecraft.item.ItemStack;
+import net.minecraft.tileentity.TileEntity;
 import net.minecraft.util.BlockRenderLayer;
 import net.minecraft.util.EnumFacing;
 import net.minecraft.util.NonNullList;
+import net.minecraft.util.ResourceLocation;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.IBlockAccess;
 import net.minecraft.world.World;
 import net.minecraftforge.client.model.ModelLoader;
+import net.minecraftforge.common.property.IExtendedBlockState;
+import net.minecraftforge.fml.common.registry.GameRegistry;
 import net.minecraftforge.fml.relauncher.Side;
 import net.minecraftforge.fml.relauncher.SideOnly;
 
 import javax.annotation.Nonnull;
+import javax.annotation.Nullable;
 
-public class NetCableBlock extends GenericCableBlock {
+public class NetCableBlock extends GenericCableBlock implements ITileEntityProvider {
 
     public static final String NETCABLE = "netcable";
 
     public NetCableBlock() {
-        super(Material.CLOTH, NETCABLE);
+        this(Material.CLOTH, NETCABLE);
     }
 
     public NetCableBlock(Material material, String name) {
         super(material, name);
+        initTileEntity();
     }
+
+    protected void initTileEntity() {
+        GameRegistry.registerTileEntity(NetCableTileEntity.class, new ResourceLocation(Ariente.MODID, "netcable"));
+    }
+
+    @Override
+    public TileEntity createNewTileEntity(World world, int i) {
+        return null;
+    }
+
+    @Override
+    public TileEntity createTileEntity(World world, IBlockState metadata) {
+        return new NetCableTileEntity();
+    }
+
+
+    @Override
+    public void harvestBlock(World worldIn, EntityPlayer player, BlockPos pos, IBlockState state, @Nullable TileEntity te, ItemStack stack) {
+        if (te instanceof NetCableTileEntity) {
+            // If we are in mimic mode then the drop will be the facade as the connector will remain there
+            NetCableTileEntity cableTileEntity = (NetCableTileEntity) te;
+            if (cableTileEntity.getMimicBlock() != null) {
+                ItemStack item = new ItemStack(ModBlocks.facadeBlock);
+                FacadeItemBlock.setMimicBlock(item, cableTileEntity.getMimicBlock());
+                cableTileEntity.setMimicBlock(null);
+                spawnAsEntity(worldIn, pos, item);
+                return;
+            }
+        }
+        super.harvestBlock(worldIn, player, pos, state, te, stack);
+    }
+
+    @Override
+    public boolean removedByPlayer(IBlockState state, World world, BlockPos pos, EntityPlayer player, boolean willHarvest) {
+        TileEntity te = world.getTileEntity(pos);
+        if (te instanceof NetCableTileEntity) {
+            NetCableTileEntity cableTileEntity = (NetCableTileEntity) te;
+            if (cableTileEntity.getMimicBlock() == null) {
+                this.onBlockHarvested(world, pos, state, player);
+                return world.setBlockState(pos, Blocks.AIR.getDefaultState(), world.isRemote ? 11 : 3);
+            } else {
+                // We are in mimic mode. Don't remove the connector
+                this.onBlockHarvested(world, pos, state, player);
+                if(player.capabilities.isCreativeMode) {
+                    cableTileEntity.setMimicBlock(null);
+                }
+            }
+        } else {
+            return super.removedByPlayer(state, world, pos, player, willHarvest);
+        }
+        return true;
+    }
+
+    @Override
+    public IBlockState getExtendedState(IBlockState state, IBlockAccess world, BlockPos pos) {
+        IExtendedBlockState extendedBlockState = (IExtendedBlockState) super.getExtendedState(state, world, pos);
+        IBlockState mimicBlock = getMimicBlock(world, pos);
+        if (mimicBlock != null) {
+            return extendedBlockState.withProperty(FACADEID, new FacadeBlockId(mimicBlock));
+        } else {
+            return extendedBlockState;
+        }
+    }
+
 
     @Override
     @SideOnly(Side.CLIENT)
@@ -53,6 +130,18 @@ public class NetCableBlock extends GenericCableBlock {
             items.add(updateColorInStack(new ItemStack(this, 1, value.ordinal()), value));
         }
     }
+
+    @Override
+    @SideOnly(Side.CLIENT)
+    public boolean shouldSideBeRendered(IBlockState blockState, IBlockAccess blockAccess, BlockPos pos, EnumFacing side) {
+        IBlockState mimicBlock = getMimicBlock(blockAccess, pos);
+        if (mimicBlock == null) {
+            return false;
+        } else {
+            return mimicBlock.shouldSideBeRendered(blockAccess, pos, side);
+        }
+    }
+
 
     @Override
     @SideOnly(Side.CLIENT)
