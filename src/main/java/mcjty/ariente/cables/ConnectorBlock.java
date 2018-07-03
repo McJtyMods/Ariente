@@ -31,6 +31,7 @@ import net.minecraft.world.IBlockAccess;
 import net.minecraft.world.World;
 import net.minecraftforge.client.model.ModelLoader;
 import net.minecraftforge.common.property.IExtendedBlockState;
+import net.minecraftforge.fml.client.registry.ClientRegistry;
 import net.minecraftforge.fml.common.Optional;
 import net.minecraftforge.fml.common.registry.GameRegistry;
 import net.minecraftforge.fml.relauncher.Side;
@@ -153,6 +154,7 @@ public class ConnectorBlock extends GenericCableBlock implements ITileEntityProv
             }
         };
         ModelLoader.setCustomStateMapper(this, ignoreState);
+        ClientRegistry.bindTileEntitySpecialRenderer(ConnectorTileEntity.class, new CableRenderer());
     }
 
     @Override

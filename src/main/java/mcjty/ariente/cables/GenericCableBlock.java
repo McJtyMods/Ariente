@@ -296,6 +296,36 @@ public abstract class GenericCableBlock extends Block implements WailaInfoProvid
         return getStateInternal(state, world, pos);
     }
 
+    public int getConnectorMask(IBlockState state, IBlockAccess world, BlockPos pos) {
+        CableColor color = state.getValue(COLOR);
+        int mask = 0;
+        ConnectorType north = getConnectorType(color, world, pos, EnumFacing.NORTH);
+        if (north != ConnectorType.NONE) {
+            mask |= 1 << 5;
+        }
+        ConnectorType south = getConnectorType(color, world, pos, EnumFacing.SOUTH);
+        if (south != ConnectorType.NONE) {
+            mask |= 1 << 4;
+        }
+        ConnectorType west = getConnectorType(color, world, pos, EnumFacing.WEST);
+        if (west != ConnectorType.NONE) {
+            mask |= 1 << 3;
+        }
+        ConnectorType east = getConnectorType(color, world, pos, EnumFacing.EAST);
+        if (east != ConnectorType.NONE) {
+            mask |= 1 << 2;
+        }
+        ConnectorType up = getConnectorType(color, world, pos, EnumFacing.UP);
+        if (up != ConnectorType.NONE) {
+            mask |= 1 << 1;
+        }
+        ConnectorType down = getConnectorType(color, world, pos, EnumFacing.DOWN);
+        if (down != ConnectorType.NONE) {
+            mask |= 1 << 0;
+        }
+        return mask;
+    }
+
     public IBlockState getStateInternal(IBlockState state, IBlockAccess world, BlockPos pos) {
         IExtendedBlockState extendedBlockState = (IExtendedBlockState) state;
         CableColor color = state.getValue(COLOR);
