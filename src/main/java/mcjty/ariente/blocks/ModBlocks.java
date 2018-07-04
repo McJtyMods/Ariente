@@ -3,14 +3,13 @@ package mcjty.ariente.blocks;
 import mcjty.ariente.Ariente;
 import mcjty.ariente.blocks.decorative.BlackTechBlock;
 import mcjty.ariente.blocks.decorative.MarbleBlock;
-import mcjty.ariente.blocks.generators.NegariteGeneratorGui;
 import mcjty.ariente.blocks.generators.NegariteGeneratorTile;
 import mcjty.ariente.blocks.generators.NegariteTankRenderer;
 import mcjty.ariente.blocks.generators.NegariteTankTile;
+import mcjty.ariente.blocks.utility.StorageTile;
 import mcjty.ariente.cables.ConnectorBlock;
 import mcjty.ariente.cables.NetCableBlock;
 import mcjty.ariente.facade.FacadeBlock;
-import mcjty.ariente.gui.GuiProxy;
 import mcjty.ariente.gui.HoloGuiHandler;
 import mcjty.lib.blocks.BaseBlock;
 import mcjty.lib.blocks.GenericBlock;
@@ -50,6 +49,7 @@ public class ModBlocks {
 
     public static GenericBlock<NegariteGeneratorTile, GenericContainer> negariteGeneratorBlock;
     public static GenericBlock<NegariteTankTile, GenericContainer> negariteTankBlock;
+    public static GenericBlock<StorageTile, GenericContainer> storageBlock;
 
     public static GenericBlockBuilderFactory builderFactory;
 
@@ -93,6 +93,16 @@ public class ModBlocks {
                 .activateAction((world, pos, player, hand, side, hitX, hitY, hitZ) -> HoloGuiHandler.openHoloGui(world, pos, player))
                 .info("message.ariente.shiftmessage")
                 .infoExtended("message.ariente.negarite_tank")
+                .build();
+
+        storageBlock = ModBlocks.builderFactory.<StorageTile> builder("storage")
+                .tileEntityClass(StorageTile.class)
+                .emptyContainer()
+                .flags(BlockFlags.RENDER_SOLID, BlockFlags.RENDER_TRANSLUCENT)
+                .rotationType(BaseBlock.RotationType.ROTATION)
+                .activateAction((world, pos, player, hand, side, hitX, hitY, hitZ) -> HoloGuiHandler.openHoloGui(world, pos, player))
+                .info("message.ariente.shiftmessage")
+                .infoExtended("message.ariente.storage")
                 .build();
     }
 
