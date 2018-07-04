@@ -1,12 +1,14 @@
 package mcjty.ariente.network;
 
 import mcjty.ariente.Ariente;
+import mcjty.lib.network.PacketHandler;
 import mcjty.lib.network.PacketSendClientCommand;
 import mcjty.lib.network.PacketSendServerCommand;
 import mcjty.lib.typed.TypedMap;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.entity.player.EntityPlayerMP;
 import net.minecraftforge.fml.common.network.simpleimpl.SimpleNetworkWrapper;
+import net.minecraftforge.fml.relauncher.Side;
 
 import javax.annotation.Nonnull;
 
@@ -18,6 +20,7 @@ public class ArienteMessages {
 
         // Server side
 //        net.registerMessage(PacketGetPlayers.Handler.class, PacketGetPlayers.class, PacketHandler.nextPacketID(), Side.SERVER);
+        net.registerMessage(PacketClickStorage.Handler.class, PacketClickStorage.class, PacketHandler.nextPacketID(), Side.SERVER);
 
         // Client side
 //        net.registerMessage(PacketPlayersReady.Handler.class, PacketPlayersReady.class, PacketHandler.nextPacketID(), Side.CLIENT);

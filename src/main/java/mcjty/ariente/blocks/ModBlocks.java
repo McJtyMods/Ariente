@@ -6,6 +6,7 @@ import mcjty.ariente.blocks.decorative.MarbleBlock;
 import mcjty.ariente.blocks.generators.NegariteGeneratorTile;
 import mcjty.ariente.blocks.generators.NegariteTankRenderer;
 import mcjty.ariente.blocks.generators.NegariteTankTile;
+import mcjty.ariente.blocks.utility.StorageRenderer;
 import mcjty.ariente.blocks.utility.StorageTile;
 import mcjty.ariente.cables.ConnectorBlock;
 import mcjty.ariente.cables.NetCableBlock;
@@ -100,7 +101,8 @@ public class ModBlocks {
                 .emptyContainer()
                 .flags(BlockFlags.RENDER_SOLID, BlockFlags.RENDER_TRANSLUCENT)
                 .rotationType(BaseBlock.RotationType.ROTATION)
-                .activateAction((world, pos, player, hand, side, hitX, hitY, hitZ) -> HoloGuiHandler.openHoloGui(world, pos, player))
+                .clickAction(StorageTile::onClick)
+                .activateAction((world, pos, player, hand, side, hitX, hitY, hitZ) -> StorageTile.onActivate(world, pos, player, side, hitX, hitY, hitZ))
                 .info("message.ariente.shiftmessage")
                 .infoExtended("message.ariente.storage")
                 .build();
@@ -195,6 +197,9 @@ public class ModBlocks {
         netCableBlock.initModel();
         connectorBlock.initModel();
         facadeBlock.initModel();
+
+        storageBlock.initModel();
+        ClientRegistry.bindTileEntitySpecialRenderer(StorageTile.class, new StorageRenderer());
 
         negariteGeneratorBlock.initModel();
 //        negariteGeneratorBlock.setGuiFactory(NegariteGeneratorGui::new);
