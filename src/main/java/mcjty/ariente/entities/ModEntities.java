@@ -9,16 +9,19 @@ public class ModEntities {
 
     public static void init() {
         int id = 1;
-        EntityRegistry.registerModEntity(new ResourceLocation(Ariente.MODID, "hologui"), HoloGuiEntity.class,
-                "hologui", id++, Ariente.instance,64,1,false);
+        EntityRegistry.registerModEntity(new ResourceLocation(Ariente.MODID, "ariente_hologui"), HoloGuiEntity.class,
+                "ariente_hologui", id++, Ariente.instance,64,1,false);
+        EntityRegistry.registerModEntity(new ResourceLocation(Ariente.MODID, "ariente_laser"), LaserEntity.class,
+                "ariente_laser", id++, Ariente.instance,64,1,false);
 
         id = 100;
 
-        EntityRegistry.registerModEntity(new ResourceLocation(Ariente.MODID, "drone"), Drone.class, "drone", id, Ariente.instance, 64, 3, true, 0x222222, 0x555555);
+        EntityRegistry.registerModEntity(new ResourceLocation(Ariente.MODID, "ariente_drone"), DroneEntity.class, "ariente_drone", id, Ariente.instance, 64, 3, true, 0x222222, 0x555555);
     }
 
     public static void initModels() {
         RenderingRegistry.registerEntityRenderingHandler(HoloGuiEntity.class, new HoloGuiEntityRender.Factory());
-        RenderingRegistry.registerEntityRenderingHandler(Drone.class, DroneRender.FACTORY);
+        RenderingRegistry.registerEntityRenderingHandler(LaserEntity.class, new LaserRender.Factory());
+        RenderingRegistry.registerEntityRenderingHandler(DroneEntity.class, DroneRender.FACTORY);
     }
 }

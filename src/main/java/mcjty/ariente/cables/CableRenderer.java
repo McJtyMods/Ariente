@@ -21,8 +21,6 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Random;
 import java.util.function.BiConsumer;
-import java.util.function.BiPredicate;
-import java.util.function.Predicate;
 
 @SideOnly(Side.CLIENT)
 public class CableRenderer extends TileEntitySpecialRenderer<GenericCableTileEntity> {
@@ -72,19 +70,12 @@ public class CableRenderer extends TileEntitySpecialRenderer<GenericCableTileEnt
             GlStateManager.enableBlend();
             GlStateManager.blendFunc(GL11.GL_ONE, GL11.GL_ONE);
 
-//            GlStateManager.pushMatrix();
-//            GlStateManager.translate((float) x + 0.5F, (float) y + 0.85F, (float) z + 0.5F);
-//            this.bindTexture(halo);
-//            RenderHelper.renderBillboardQuadBright(1.0f);
-//            GlStateManager.popMatrix();
-
             Minecraft mc = Minecraft.getMinecraft();
             EntityPlayerSP p = mc.player;
             double doubleX = p.lastTickPosX + (p.posX - p.lastTickPosX) * partialTicks;
             double doubleY = p.lastTickPosY + (p.posY - p.lastTickPosY) * partialTicks;
             double doubleZ = p.lastTickPosZ + (p.posZ - p.lastTickPosZ) * partialTicks;
 
-            RenderHelper.Vector start = new RenderHelper.Vector(te.getPos().getX() + .5f, te.getPos().getY() + .5f + .3f, te.getPos().getZ() + .5f);
             RenderHelper.Vector player = new RenderHelper.Vector((float) doubleX, (float) doubleY + p.getEyeHeight(), (float) doubleZ);
 
             GlStateManager.pushMatrix();
@@ -119,6 +110,7 @@ public class CableRenderer extends TileEntitySpecialRenderer<GenericCableTileEnt
 
             GlStateManager.enableBlend();
             GlStateManager.blendFunc(GL11.GL_SRC_ALPHA, GL11.GL_ONE_MINUS_SRC_ALPHA);
+            GlStateManager.depthMask(true);
         }
     }
 }

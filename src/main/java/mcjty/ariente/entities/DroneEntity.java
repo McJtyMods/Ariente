@@ -10,7 +10,6 @@ import net.minecraft.entity.ai.EntityAIBase;
 import net.minecraft.entity.ai.EntityAIFindEntityNearestPlayer;
 import net.minecraft.entity.ai.EntityMoveHelper;
 import net.minecraft.entity.monster.IMob;
-import net.minecraft.entity.projectile.EntityLargeFireball;
 import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.network.datasync.DataParameter;
 import net.minecraft.network.datasync.DataSerializers;
@@ -30,14 +29,14 @@ import net.minecraftforge.fml.relauncher.SideOnly;
 import javax.annotation.Nullable;
 import java.util.Random;
 
-public class Drone extends EntityFlying implements IMob {
+public class DroneEntity extends EntityFlying implements IMob {
 
-    private static final DataParameter<Boolean> ATTACKING = EntityDataManager.createKey(Drone.class, DataSerializers.BOOLEAN);
+    private static final DataParameter<Boolean> ATTACKING = EntityDataManager.createKey(DroneEntity.class, DataSerializers.BOOLEAN);
     public static final ResourceLocation LOOT = new ResourceLocation(Ariente.MODID, "entities/drone");
 
-    public Drone(World worldIn) {
+    public DroneEntity(World worldIn) {
         super(worldIn);
-        this.setSize(4.0F, 4.0F);
+        this.setSize(1.0F, 1.0F);
         this.isImmuneToFire = false;
         this.experienceValue = 5;
         this.moveHelper = new DroneMoveHelper(this);
@@ -45,9 +44,9 @@ public class Drone extends EntityFlying implements IMob {
 
     @Override
     protected void initEntityAI() {
-        this.tasks.addTask(5, new Drone.AIRandomFly(this));
-        this.tasks.addTask(7, new Drone.AILookAround(this));
-        this.tasks.addTask(7, new Drone.AIFireballAttack(this));
+        this.tasks.addTask(5, new AIRandomFly(this));
+        this.tasks.addTask(7, new AILookAround(this));
+        this.tasks.addTask(7, new AILaserAttack(this));
         this.targetTasks.addTask(1, new EntityAIFindEntityNearestPlayer(this));
     }
 
@@ -129,7 +128,7 @@ public class Drone extends EntityFlying implements IMob {
      */
     @Override
     protected float getSoundVolume() {
-        return 7.0F;
+        return 1.8F;
     }
 
     /**
@@ -151,7 +150,7 @@ public class Drone extends EntityFlying implements IMob {
      */
     @Override
     public int getMaxSpawnedInChunk() {
-        return 3;
+        return 1;
     }
 
     /**
@@ -175,11 +174,11 @@ public class Drone extends EntityFlying implements IMob {
         return 0.8F;
     }
 
-    static class AIFireballAttack extends EntityAIBase {
-        private final Drone parentEntity;
+    static class AILaserAttack extends EntityAIBase {
+        private final DroneEntity parentEntity;
         public int attackTimer;
 
-        public AIFireballAttack(Drone drone) {
+        public AILaserAttack(DroneEntity drone) {
             this.parentEntity = drone;
         }
 
@@ -226,19 +225,27 @@ public class Drone extends EntityFlying implements IMob {
                 if (this.attackTimer == 20) {
                     double d1 = 4.0D;
                     Vec3d vec3d = this.parentEntity.getLook(1.0F);
-                    double d2 = entitylivingbase.posX - (this.parentEntity.posX + vec3d.x * 4.0D);
-                    double d3 = entitylivingbase.getEntityBoundingBox().minY + (entitylivingbase.height / 2.0F) - (0.5D + this.parentEntity.posY + (double) (this.parentEntity.height / 2.0F));
-                    double d4 = entitylivingbase.posZ - (this.parentEntity.posZ + vec3d.z * 4.0D);
+                    double d2 = entitylivingbase.posX - (this.parentEntity.posX + vec3d.x * 2.0D);
+                    double d3 = entitylivingbase.getEntityBoundingBox().minY + (entitylivingbase.height / 2.0F) - (0.5D + this.parentEntity.posY + (this.parentEntity.height / 2.0F));
+                    double d4 = entitylivingbase.posZ - (this.parentEntity.posZ + vec3d.z * 2.0D);
 //                    world.playEvent(null, 1016, new BlockPos(this.parentEntity), 0);
                     for (int i = 0; i < world.playerEntities.size(); ++i) {
                         world.playSound(world.playerEntities.get(i), d2, d3, d4, ModSounds.droneShoot, SoundCategory.HOSTILE, 1.0f, 1.0f);
                     }
-                    EntityLargeFireball entitylargefireball = new EntityLargeFireball(world, this.parentEntity, d2, d3, d4);
-                    entitylargefireball.explosionPower = 3;
-                    entitylargefireball.posX = this.parentEntity.posX + vec3d.x * 4.0D;
-                    entitylargefireball.posY = this.parentEntity.posY + (double) (this.parentEntity.height / 2.0F) + 0.5D;
-                    entitylargefireball.posZ = this.parentEntity.posZ + vec3d.z * 4.0D;
-                    WorldHelper.spawnEntityInWorld(world, entitylargefireball);
+                    LaserEntity laser = new LaserEntity(world, this.parentEntity, d2, d3, d4);
+                    laser.posX = this.parentEntity.posX + vec3d.x * 2.0D;
+                    laser.posY = this.parentEntity.posY + (this.parentEntity.height / 2.0F) + 0.5D;
+                    laser.posZ = this.parentEntity.posZ + vec3d.z * 2.0D;
+
+                    double dx = entitylivingbase.posX - laser.posX;
+                    double dy = entitylivingbase.posY + entitylivingbase.getEyeHeight() - laser.posY;
+                    double dz = entitylivingbase.posZ - laser.posZ;
+                    double dpitch = MathHelper.sqrt(dx * dx + dz * dz);
+//                    float f = (float)(MathHelper.atan2(d2, d0) * (180D / Math.PI)) - 90.0F;
+                    float f1 = (float)(-(MathHelper.atan2(dy, dpitch) * (180D / Math.PI)));
+                    laser.setSpawnYawPitch(laser.getSpawnYaw(), f1);
+
+                    WorldHelper.spawnEntityInWorld(world, laser);
                     this.attackTimer = -40;
                 }
             } else if (this.attackTimer > 0) {
@@ -250,9 +257,9 @@ public class Drone extends EntityFlying implements IMob {
     }
 
     static class AILookAround extends EntityAIBase {
-        private final Drone parentEntity;
+        private final DroneEntity parentEntity;
 
-        public AILookAround(Drone drone) {
+        public AILookAround(DroneEntity drone) {
             this.parentEntity = drone;
             this.setMutexBits(2);
         }
@@ -288,9 +295,9 @@ public class Drone extends EntityFlying implements IMob {
     }
 
     static class AIRandomFly extends EntityAIBase {
-        private final Drone parentEntity;
+        private final DroneEntity parentEntity;
 
-        public AIRandomFly(Drone drone) {
+        public AIRandomFly(DroneEntity drone) {
             this.parentEntity = drone;
             this.setMutexBits(1);
         }
@@ -327,18 +334,18 @@ public class Drone extends EntityFlying implements IMob {
         @Override
         public void startExecuting() {
             Random random = this.parentEntity.getRNG();
-            double d0 = this.parentEntity.posX + (double) ((random.nextFloat() * 2.0F - 1.0F) * 16.0F);
-            double d1 = this.parentEntity.posY + (double) ((random.nextFloat() * 2.0F - 1.0F) * 16.0F);
-            double d2 = this.parentEntity.posZ + (double) ((random.nextFloat() * 2.0F - 1.0F) * 16.0F);
+            double d0 = this.parentEntity.posX + ((random.nextFloat() * 2.0F - 1.0F) * 16.0F);
+            double d1 = this.parentEntity.posY + ((random.nextFloat() * 2.0F - 1.0F) * 16.0F);
+            double d2 = this.parentEntity.posZ + ((random.nextFloat() * 2.0F - 1.0F) * 16.0F);
             this.parentEntity.getMoveHelper().setMoveTo(d0, d1, d2, 1.0D);
         }
     }
 
     static class DroneMoveHelper extends EntityMoveHelper {
-        private final Drone parentEntity;
+        private final DroneEntity parentEntity;
         private int courseChangeCooldown;
 
-        public DroneMoveHelper(Drone drone) {
+        public DroneMoveHelper(DroneEntity drone) {
             super(drone);
             this.parentEntity = drone;
         }
@@ -375,7 +382,7 @@ public class Drone extends EntityFlying implements IMob {
             double d2 = (z - this.parentEntity.posZ) / p_179926_7_;
             AxisAlignedBB axisalignedbb = this.parentEntity.getEntityBoundingBox();
 
-            for (int i = 1; (double) i < p_179926_7_; ++i) {
+            for (int i = 1; i < p_179926_7_; ++i) {
                 axisalignedbb = axisalignedbb.offset(d0, d1, d2);
 
                 if (!this.parentEntity.getEntityWorld().getCollisionBoxes(this.parentEntity, axisalignedbb).isEmpty()) {

@@ -12,7 +12,6 @@ import net.minecraft.network.datasync.DataParameter;
 import net.minecraft.network.datasync.DataSerializers;
 import net.minecraft.network.datasync.EntityDataManager;
 import net.minecraft.tileentity.TileEntity;
-import net.minecraft.util.DamageSource;
 import net.minecraft.util.EnumHand;
 import net.minecraft.util.SoundCategory;
 import net.minecraft.util.math.AxisAlignedBB;
@@ -94,7 +93,7 @@ public class HoloGuiEntity extends Entity {
 
         timeout--;
         if (timeout <= 0) {
-            world.playSound(posX, posY, posZ, ModSounds.guiopen, SoundCategory.PLAYERS, 0.2f, 1.0f, true);
+            world.playSound(null, posX, posY, posZ, ModSounds.guiopen, SoundCategory.PLAYERS, 0.2f, 1.0f);
             this.setDead();
         }
         if (world.getEntitiesWithinAABB(EntityPlayer.class, playerDetectionBox)
