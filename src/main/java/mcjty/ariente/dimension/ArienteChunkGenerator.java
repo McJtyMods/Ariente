@@ -1,7 +1,9 @@
 package mcjty.ariente.dimension;
 
 import com.google.common.collect.ImmutableList;
+import com.google.common.collect.Lists;
 import mcjty.ariente.blocks.ModBlocks;
+import mcjty.ariente.entities.Drone;
 import net.minecraft.entity.EnumCreatureType;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.World;
@@ -27,6 +29,7 @@ public class ArienteChunkGenerator implements IChunkGenerator {
     private Biome[] biomesForGeneration;
 
 //    private List<Biome.SpawnListEntry> mobs = Lists.newArrayList(new Biome.SpawnListEntry(EntityDirtZombie.class, 100, 2, 2));
+private List<Biome.SpawnListEntry> mobs = Lists.newArrayList(new Biome.SpawnListEntry(Drone.class, 50, 1, 1));
 
     private MapGenBase caveGenerator = new MapGenCaves();
 //    private MapGenLowTendrils tendrilGenerator = new MapGenLowTendrils(BlockRegister.hardDirtBlock.getDefaultState());
@@ -97,9 +100,9 @@ public class ArienteChunkGenerator implements IChunkGenerator {
 
     @Override
     public List<Biome.SpawnListEntry> getPossibleCreatures(EnumCreatureType creatureType, BlockPos pos) {
-//        if (creatureType == EnumCreatureType.MONSTER){
-//            return mobs;
-//        }
+        if (creatureType == EnumCreatureType.MONSTER){
+            return mobs;
+        }
         return ImmutableList.of();
 
     }
