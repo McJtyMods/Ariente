@@ -39,51 +39,6 @@ public class AssetRegistries {
         map.get(character).add(partName);
     }
 
-    public static void showStatistics() {
-        Counter<Character> counterLocal = new Counter<>();
-        Counter<Character> counterGlobal = new Counter<>();
-        Map<Character, Set<String>> usersPerCharacter = new HashMap<>();
-
-        for (BuildingPart part : PARTS.getIterable()) {
-            Palette localPalette = part.getLocalPalette();
-            Map<Character, Object> palette = Collections.emptyMap();
-            if (localPalette != null) {
-                palette = localPalette.palette;
-            }
-            for (int x = 0 ; x < part.getXSize() ; x++) {
-                for (int z = 0 ; z < part.getZSize() ; z++) {
-                    char[] slice = part.getVSlice(x, z);
-                    if (slice != null) {
-                        for (char c : slice) {
-                            if (palette.containsKey(c)) {
-                                counterLocal.add(c);
-                            } else {
-                                counterGlobal.add(c);
-                            }
-                            add(usersPerCharacter, c, part.getName());
-                        }
-                    }
-                }
-            }
-        }
-        List<Map.Entry<Character, Integer>> global = new ArrayList<>(counterGlobal.getMap().entrySet());
-        List<Map.Entry<Character, Integer>> local = new ArrayList<>(counterLocal.getMap().entrySet());
-        global.sort((e1, e2) -> e2.getValue().compareTo(e1.getValue()));
-        local.sort((e1, e2) -> e2.getValue().compareTo(e1.getValue()));
-        Ariente.logger.info("############################################################################");
-        Ariente.logger.info("Global palette entries");
-        printMap(usersPerCharacter, global);
-        Ariente.logger.info("----------------------------------------------------------------------------");
-        Ariente.logger.info("Local palette entries");
-        printMap(usersPerCharacter, local);
-        Ariente.logger.info("----------------------------------------------------------------------------");
-
-        printChars("Global: ", counterGlobal);
-        printChars("Local: ", counterLocal);
-
-        Ariente.logger.info("############################################################################");
-    }
-
     private static void printChars(String prefix, Counter<Character> counter) {
         List<Character> chars = new ArrayList<>(counter.getMap().keySet());
         chars.sort((o1, o2) -> o1.compareTo(o2));

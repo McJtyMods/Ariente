@@ -4,7 +4,6 @@ import com.google.gson.JsonArray;
 import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
 import com.google.gson.JsonPrimitive;
-import mcjty.ariente.Ariente;
 import org.apache.commons.lang3.StringUtils;
 
 import java.util.HashMap;
@@ -26,9 +25,6 @@ public class BuildingPart implements IAsset {
 
     // Optimized version of this part which is organized in xSize*ySize vertical strings
     private char[][] vslices = null;
-
-    private Palette localPalette = null;
-    String refPaletteName;
 
 
     private Map<String, Object> metadata = new HashMap<>();
@@ -68,6 +64,9 @@ public class BuildingPart implements IAsset {
         return name;
     }
 
+    public void setName(String name) {
+        this.name = name;
+    }
 
     /**
      * Vertical slices, organized by z*xSize+x
@@ -101,17 +100,6 @@ public class BuildingPart implements IAsset {
         return getVslices()[z*xSize + x];
     }
 
-    public Palette getLocalPalette() {
-        if (localPalette == null && refPaletteName != null) {
-            localPalette = AssetRegistries.PALETTES.get(refPaletteName);
-            if (localPalette == null) {
-                Ariente.logger.error("Could not find palette '" + refPaletteName + "'!");
-                throw new RuntimeException("Could not find palette '" + refPaletteName + "'!");
-            }
-        }
-        return localPalette;
-    }
-
     @Override
     public void readFromJSon(JsonObject object) {
         name = object.get("name").getAsString();
@@ -128,15 +116,7 @@ public class BuildingPart implements IAsset {
             }
             slices[i++] = slice;
         }
-        if (object.has("palette")) {
-            if (object.get("palette").isJsonArray()) {
-                JsonArray palette = object.get("palette").getAsJsonArray();
-                localPalette = new Palette();
-                localPalette.parsePaletteArray(palette);
-            } else {
-                refPaletteName = object.get("palette").getAsString();
-            }
-        }
+
         if (object.has("meta")) {
             JsonArray metaArray = object.get("meta").getAsJsonArray();
             for (JsonElement element : metaArray) {

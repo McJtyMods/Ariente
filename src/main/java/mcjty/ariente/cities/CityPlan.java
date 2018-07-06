@@ -3,6 +3,7 @@ package mcjty.ariente.cities;
 import com.google.gson.JsonArray;
 import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
+import com.google.gson.JsonPrimitive;
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -12,6 +13,7 @@ import java.util.Map;
 public class CityPlan implements IAsset {
 
     private String name;
+    private String palette;
     private Map<Character, List<String>> partPalette = new HashMap<>();
     private List<String> plan = new ArrayList<>();
 
@@ -36,10 +38,15 @@ public class CityPlan implements IAsset {
         return plan;
     }
 
+    public String getPalette() {
+        return palette;
+    }
+
     @Override
     public void readFromJSon(JsonObject object) {
         name = object.get("name").getAsString();
-        JsonArray paletteArray = object.get("palette").getAsJsonArray();
+        palette = object.get("palette").getAsString();
+        JsonArray paletteArray = object.get("partpalette").getAsJsonArray();
         parsePaletteArray(paletteArray);
         JsonArray planArray = object.get("plan").getAsJsonArray();
         for (JsonElement element : planArray) {
@@ -68,4 +75,32 @@ public class CityPlan implements IAsset {
         }
     }
 
+    public JsonObject writeToJSon() {
+        JsonObject object = new JsonObject();
+        object.add("type", new JsonPrimitive("plan"));
+        object.add("name", new JsonPrimitive(name));
+        object.add("palette", new JsonPrimitive(palette));
+
+        JsonArray array = new JsonArray();
+        for (Map.Entry<Character, List<String>> entry : partPalette.entrySet()) {
+            JsonObject o = new JsonObject();
+            o.add("char", new JsonPrimitive(entry.getKey()));
+
+            JsonArray partArray = new JsonArray();
+            for (String part : entry.getValue()) {
+                partArray.add(new JsonPrimitive(part));
+            }
+            o.add("parts", partArray);
+            array.add(o);
+        }
+        object.add("partpalette", array);
+
+        JsonArray planArray = new JsonArray();
+        for (String p : plan) {
+            planArray.add(new JsonPrimitive(p));
+        }
+        object.add("plan", planArray);
+
+        return object;
+    }
 }

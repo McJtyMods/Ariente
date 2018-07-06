@@ -175,11 +175,11 @@ public class DroneEntity extends EntityFlying implements IMob {
     }
 
     static class AILaserAttack extends EntityAIBase {
-        private final DroneEntity parentEntity;
+        private final DroneEntity drone;
         public int attackTimer;
 
         public AILaserAttack(DroneEntity drone) {
-            this.parentEntity = drone;
+            this.drone = drone;
         }
 
         /**
@@ -187,7 +187,7 @@ public class DroneEntity extends EntityFlying implements IMob {
          */
         @Override
         public boolean shouldExecute() {
-            return this.parentEntity.getAttackTarget() != null;
+            return this.drone.getAttackTarget() != null;
         }
 
         /**
@@ -203,7 +203,7 @@ public class DroneEntity extends EntityFlying implements IMob {
          */
         @Override
         public void resetTask() {
-            this.parentEntity.setAttacking(false);
+            this.drone.setAttacking(false);
         }
 
         /**
@@ -211,11 +211,11 @@ public class DroneEntity extends EntityFlying implements IMob {
          */
         @Override
         public void updateTask() {
-            EntityLivingBase entitylivingbase = this.parentEntity.getAttackTarget();
+            EntityLivingBase target = this.drone.getAttackTarget();
             double d0 = 64.0D;
 
-            if (entitylivingbase.getDistanceSq(this.parentEntity) < 4096.0D && this.parentEntity.canEntityBeSeen(entitylivingbase)) {
-                World world = this.parentEntity.getEntityWorld();
+            if (target.getDistanceSq(this.drone) < 4096.0D && this.drone.canEntityBeSeen(target)) {
+                World world = this.drone.getEntityWorld();
                 ++this.attackTimer;
 
                 if (this.attackTimer == 10) {
@@ -224,22 +224,23 @@ public class DroneEntity extends EntityFlying implements IMob {
 
                 if (this.attackTimer == 20) {
                     double d1 = 4.0D;
-                    Vec3d vec3d = this.parentEntity.getLook(1.0F);
-                    double d2 = entitylivingbase.posX - (this.parentEntity.posX + vec3d.x * 2.0D);
-                    double d3 = entitylivingbase.getEntityBoundingBox().minY + (entitylivingbase.height / 2.0F) - (0.5D + this.parentEntity.posY + (this.parentEntity.height / 2.0F));
-                    double d4 = entitylivingbase.posZ - (this.parentEntity.posZ + vec3d.z * 2.0D);
+                    Vec3d vec3d = this.drone.getLook(1.0F);
+                    double d2 = target.posX - (this.drone.posX + vec3d.x * 4.0D);
+                    double d3 = target.getEntityBoundingBox().minY + (target.height / 2.0F) - (0.5D + this.drone.posY + (this.drone.height / 2.0F));
+                    double d4 = target.posZ - (this.drone.posZ + vec3d.z * 4.0D);
 //                    world.playEvent(null, 1016, new BlockPos(this.parentEntity), 0);
-                    for (int i = 0; i < world.playerEntities.size(); ++i) {
-                        world.playSound(world.playerEntities.get(i), d2, d3, d4, ModSounds.droneShoot, SoundCategory.HOSTILE, 1.0f, 1.0f);
-                    }
-                    LaserEntity laser = new LaserEntity(world, this.parentEntity, d2, d3, d4);
-                    laser.posX = this.parentEntity.posX + vec3d.x * 2.0D;
-                    laser.posY = this.parentEntity.posY + (this.parentEntity.height / 2.0F) + 0.5D;
-                    laser.posZ = this.parentEntity.posZ + vec3d.z * 2.0D;
+                    world.playSound(null, d2, d3, d4, ModSounds.droneShoot, SoundCategory.HOSTILE, 1.0f, 1.0f);
+//                    for (int i = 0; i < world.playerEntities.size(); ++i) {
+//                        world.playSound(world.playerEntities.get(i), d2, d3, d4, ModSounds.droneShoot, SoundCategory.HOSTILE, 1.0f, 1.0f);
+//                    }
+                    LaserEntity laser = new LaserEntity(world, this.drone, d2, d3, d4);
+                    laser.posX = this.drone.posX + vec3d.x * 2.0D;
+                    laser.posY = this.drone.posY + (this.drone.height / 2.0F) + 0.5D;
+                    laser.posZ = this.drone.posZ + vec3d.z * 2.0D;
 
-                    double dx = entitylivingbase.posX - laser.posX;
-                    double dy = entitylivingbase.posY + entitylivingbase.getEyeHeight() - laser.posY;
-                    double dz = entitylivingbase.posZ - laser.posZ;
+                    double dx = target.posX - laser.posX;
+                    double dy = target.posY + target.getEyeHeight() - laser.posY;
+                    double dz = target.posZ - laser.posZ;
                     double dpitch = MathHelper.sqrt(dx * dx + dz * dz);
 //                    float f = (float)(MathHelper.atan2(d2, d0) * (180D / Math.PI)) - 90.0F;
                     float f1 = (float)(-(MathHelper.atan2(dy, dpitch) * (180D / Math.PI)));
@@ -252,7 +253,7 @@ public class DroneEntity extends EntityFlying implements IMob {
                 --this.attackTimer;
             }
 
-            this.parentEntity.setAttacking(this.attackTimer > 10);
+            this.drone.setAttacking(this.attackTimer > 10);
         }
     }
 

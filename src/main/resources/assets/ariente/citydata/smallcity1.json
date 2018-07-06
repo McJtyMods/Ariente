@@ -1,5 +1,35 @@
 [
   {
+    "type": "plan",
+    "name": "smallcity1",
+    "palette": "smallcity1",
+    "partpalette": [
+      {
+        "char": "1",
+        "parts": [ "core00" ]
+      },
+      {
+        "char": "2",
+        "parts": [ "core10" ]
+      },
+      {
+        "char": "3",
+        "parts": [ "core01" ]
+      },
+      {
+        "char": "4",
+        "parts": [ "core11" ]
+      }
+    ],
+    "plan": [
+      "     ",
+      " 12  ",
+      " 34  ",
+      "     ",
+      "     "
+    ]
+  },
+  {
     "type": "part",
     "name": "core00",
     "xsize": 16,
@@ -592,5 +622,83 @@
       ]
     ],
     "meta": []
+  },
+  {
+    "type": "palette",
+    "name": "smallcity1",
+    "palette": [
+      {
+        "char": " ",
+        "block": "minecraft:air"
+      },
+      {
+        "char": "g",
+        "block": "ariente:marble_smooth@0"
+      },
+      {
+        "char": "b",
+        "block": "ariente:marble_smooth@2"
+      },
+      {
+        "char": "w",
+        "block": "ariente:marble_smooth@1"
+      },
+      {
+        "char": "a",
+        "block": "ariente:marble@3"
+      },
+      {
+        "char": "c",
+        "block": "ariente:marble_pilar@3"
+      },
+      {
+        "char": "d",
+        "block": "ariente:marble_smooth@3"
+      },
+      {
+        "char": "e",
+        "block": "ariente:blacktech@1"
+      },
+      {
+        "char": "f",
+        "block": "ariente:blacktech"
+      },
+      {
+        "char": "h",
+        "block": "ariente:blacktech@3"
+      },
+      {
+        "char": "i",
+        "block": "ariente:negarite_generator@2"
+      },
+      {
+        "char": "j",
+        "block": "ariente:negarite_tank"
+      },
+      {
+        "char": "k",
+        "block": "minecraft:stained_glass_pane@7"
+      },
+      {
+        "char": "l",
+        "block": "ariente:flatlight@3"
+      },
+      {
+        "char": "n",
+        "block": "ariente:flatlight@5"
+      },
+      {
+        "char": "m",
+        "block": "ariente:flatlight@2"
+      },
+      {
+        "char": "p",
+        "block": "ariente:storage@5"
+      },
+      {
+        "char": "o",
+        "block": "ariente:flatlight@4"
+      }
+    ]
   }
 ]

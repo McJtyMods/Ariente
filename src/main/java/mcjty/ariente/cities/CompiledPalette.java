@@ -19,6 +19,15 @@ public class CompiledPalette {
     private final Map<Character, Character> damagedToBlock = new HashMap<>();
     private final Map<Character, Info> information = new HashMap<>();
 
+    private final static Map<String, CompiledPalette> compiledPaletteMap = new HashMap<>();
+
+    public static CompiledPalette getCompiledPalette(String name) {
+        if (!compiledPaletteMap.containsKey(name)) {
+            compiledPaletteMap.put(name, new CompiledPalette(AssetRegistries.PALETTES.get(name)));
+        }
+        return compiledPaletteMap.get(name);
+    }
+
     public static class Info {
         private final String mobId;
         private final String loot;

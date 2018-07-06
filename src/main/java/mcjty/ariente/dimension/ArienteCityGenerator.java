@@ -1,6 +1,7 @@
 package mcjty.ariente.dimension;
 
 import mcjty.ariente.cities.*;
+import mcjty.ariente.varia.ChunkCoord;
 import net.minecraft.block.Block;
 import net.minecraft.block.state.IBlockState;
 import net.minecraft.init.Blocks;
@@ -26,8 +27,6 @@ public class ArienteCityGenerator {
     private static char grassChar;
     private static char bedrockChar;
 
-    public static CompiledPalette compiledPalette;
-
     public static void initialize() {
         if (!initialized) {
             airChar = (char) Block.BLOCK_STATE_IDS.get(Blocks.AIR.getDefaultState());
@@ -43,8 +42,6 @@ public class ArienteCityGenerator {
             ironbarsChar = (char) Block.BLOCK_STATE_IDS.get(Blocks.IRON_BARS.getDefaultState());
             grassChar = (char) Block.BLOCK_STATE_IDS.get(Blocks.GRASS.getDefaultState());
             bedrockChar = (char) Block.BLOCK_STATE_IDS.get(Blocks.BEDROCK.getDefaultState());
-
-            compiledPalette = new CompiledPalette(AssetRegistries.PALETTES.get("main"));
 
             initialized = true;
         }
@@ -85,20 +82,21 @@ public class ArienteCityGenerator {
     }
 
     public static void generate(World worldIn, int x, int z, ChunkPrimer primer) {
-        BuildingPart part = City.getBuildingPart(x, z);
-        if (part != null) {
-            generatePart(primer, part, Transform.ROTATE_NONE, 0, 80, 0);
+        ChunkCoord cityCenter = City.getNearestCityCenter(x, z);
+        if (cityCenter != null) {
+            BuildingPart part = City.getBuildingPart(x, z);
+            if (part != null) {
+                CityPlan plan = City.getRandomCityPlan(cityCenter);
+                generatePart(primer, plan, part, Transform.ROTATE_NONE, 0, 80, 0);
+            }
         }
     }
 
-    private static int generatePart(ChunkPrimer primer, BuildingPart part,
-                             Transform transform,
-                             int ox, int oy, int oz) {
-        // Cache the combined palette?
-        Palette localPalette = part.getLocalPalette();
-        if (localPalette != null) {
-            compiledPalette = new CompiledPalette(compiledPalette, localPalette);
-        }
+    private static int generatePart(ChunkPrimer primer, CityPlan cityPlan,
+                                    BuildingPart part,
+                                    Transform transform,
+                                    int ox, int oy, int oz) {
+        CompiledPalette compiledPalette = CompiledPalette.getCompiledPalette(cityPlan.getPalette());
 
         for (int x = 0; x < part.getXSize(); x++) {
             for (int z = 0; z < part.getZSize(); z++) {
