@@ -51,12 +51,13 @@ public class ModBlocks {
     public static GenericBlock<NegariteGeneratorTile, GenericContainer> negariteGeneratorBlock;
     public static GenericBlock<NegariteTankTile, GenericContainer> negariteTankBlock;
     public static GenericBlock<StorageTile, GenericContainer> storageBlock;
-
-    public static GenericBlockBuilderFactory builderFactory;
+    public static BaseBlock flatLightBlock;
 
     public static NetCableBlock netCableBlock;
     public static ConnectorBlock connectorBlock;
     public static FacadeBlock facadeBlock;
+
+    public static GenericBlockBuilderFactory builderFactory;
 
     public static void init() {
         builderFactory = new GenericBlockBuilderFactory(Ariente.instance).creativeTabs(Ariente.creativeTab);
@@ -71,6 +72,12 @@ public class ModBlocks {
         netCableBlock = new NetCableBlock();
         connectorBlock = new ConnectorBlock();
         facadeBlock = new FacadeBlock();
+
+        flatLightBlock = new BaseBlockBuilder<>(Ariente.instance, "flatlight")
+                .creativeTabs(Ariente.creativeTab)
+                .lightValue(15)
+                .flags(BlockFlags.NON_OPAQUE)
+                .build();
 
         negariteGeneratorBlock = ModBlocks.builderFactory.<NegariteGeneratorTile> builder("negarite_generator")
                 .tileEntityClass(NegariteGeneratorTile.class)
@@ -201,6 +208,7 @@ public class ModBlocks {
         storageBlock.initModel();
         ClientRegistry.bindTileEntitySpecialRenderer(StorageTile.class, new StorageRenderer());
 
+        flatLightBlock.initModel();
         negariteGeneratorBlock.initModel();
 //        negariteGeneratorBlock.setGuiFactory(NegariteGeneratorGui::new);
         negariteTankBlock.initModel();

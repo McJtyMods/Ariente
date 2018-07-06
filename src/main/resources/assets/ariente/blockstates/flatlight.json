@@ -1,0 +1,24 @@
+{
+  "forge_marker": 1,
+  "defaults": {
+    "custom": { "flip-v": true },
+    "model": "ariente:flatlight.obj",
+    "transform" : {
+      "gui": {
+        "rotation": [{ "x": 10 }, { "y": -45 }, { "z": 170 }]
+      }
+    }
+  },
+  "variants": {
+    "normal": [{}],
+    "inventory": [{}],
+    "facing": {
+      "north": {},
+      "south": {"y": 180},
+      "west": {"y": 270},
+      "east": {"y": 90},
+      "up": {"x": -90},
+      "down": {"x": 90}
+    }
+  }
+}

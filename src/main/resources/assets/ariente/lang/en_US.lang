@@ -22,6 +22,7 @@ tile.ariente.netcable_combined.name=Combined Cable
 tile.ariente.negarite_generator.name=Negarite Flux Generator
 tile.ariente.negarite_tank.name=Negarite Tank
 tile.ariente.storage.name=Storage Cube
+tile.ariente.flatlight.name=Flat Light
 
 tile.ariente.marble.name=Marble
 tile.ariente.marble_smooth.name=Smooth Marble
