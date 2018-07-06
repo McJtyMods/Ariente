@@ -66,6 +66,14 @@
       {
         "char": "m",
         "block": "ariente:flatlight@2"
+      },
+      {
+        "char": "p",
+        "block": "ariente:storage@5"
+      },
+      {
+        "char": "o",
+        "block": "ariente:flatlight@4"
       }
     ]
   }
