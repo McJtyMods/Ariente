@@ -229,10 +229,10 @@ public class DroneEntity extends EntityFlying implements IMob {
                     double d3 = target.getEntityBoundingBox().minY + (target.height / 2.0F) - (0.5D + this.drone.posY + (this.drone.height / 2.0F));
                     double d4 = target.posZ - (this.drone.posZ + vec3d.z * 4.0D);
 //                    world.playEvent(null, 1016, new BlockPos(this.parentEntity), 0);
-                    world.playSound(null, d2, d3, d4, ModSounds.droneShoot, SoundCategory.HOSTILE, 1.0f, 1.0f);
-//                    for (int i = 0; i < world.playerEntities.size(); ++i) {
-//                        world.playSound(world.playerEntities.get(i), d2, d3, d4, ModSounds.droneShoot, SoundCategory.HOSTILE, 1.0f, 1.0f);
-//                    }
+//                    world.playSound(null, d2, d3, d4, ModSounds.droneShoot, SoundCategory.HOSTILE, 1.0f, 1.0f);
+                    for (int i = 0; i < world.playerEntities.size(); ++i) {
+                        world.playSound(world.playerEntities.get(i), d2, d3, d4, ModSounds.droneShoot, SoundCategory.HOSTILE, 1.0f, 1.0f);
+                    }
                     LaserEntity laser = new LaserEntity(world, this.drone, d2, d3, d4);
                     laser.posX = this.drone.posX + vec3d.x * 2.0D;
                     laser.posY = this.drone.posY + (this.drone.height / 2.0F) + 0.5D;

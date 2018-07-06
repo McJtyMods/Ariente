@@ -1,7 +1,6 @@
 package mcjty.ariente.dimension;
 
 import mcjty.ariente.cities.*;
-import mcjty.ariente.varia.ChunkCoord;
 import net.minecraft.block.Block;
 import net.minecraft.block.state.IBlockState;
 import net.minecraft.init.Blocks;
@@ -13,21 +12,23 @@ import java.util.Set;
 
 public class ArienteCityGenerator {
 
-    private static Set<Character> rotatableChars = null;
-    private static boolean initialized = false;
+    private Set<Character> rotatableChars = null;
+    private boolean initialized = false;
+    private ArienteChunkGenerator generator;
 
-    private static char airChar;
-    private static char hardAirChar;
-    private static char glowstoneChar;
-    private static char baseChar;
-    private static char gravelChar;
-    private static char glassChar;
-    private static char liquidChar;
-    private static char ironbarsChar;
-    private static char grassChar;
-    private static char bedrockChar;
+    private char airChar;
+    private char hardAirChar;
+    private char glowstoneChar;
+    private char baseChar;
+    private char gravelChar;
+    private char glassChar;
+    private char liquidChar;
+    private char ironbarsChar;
+    private char grassChar;
+    private char bedrockChar;
 
-    public static void initialize() {
+    public void initialize(ArienteChunkGenerator generator) {
+        this.generator = generator;
         if (!initialized) {
             airChar = (char) Block.BLOCK_STATE_IDS.get(Blocks.AIR.getDefaultState());
             hardAirChar = (char) Block.BLOCK_STATE_IDS.get(Blocks.COMMAND_BLOCK.getDefaultState());
@@ -48,7 +49,7 @@ public class ArienteCityGenerator {
     }
 
 
-    public static Set<Character> getRotatableChars() {
+    public Set<Character> getRotatableChars() {
         if (rotatableChars == null) {
             rotatableChars = new HashSet<>();
             addStates(Blocks.ACACIA_STAIRS, rotatableChars);
@@ -81,18 +82,18 @@ public class ArienteCityGenerator {
         }
     }
 
-    public static void generate(World worldIn, int x, int z, ChunkPrimer primer) {
-        ChunkCoord cityCenter = City.getNearestCityCenter(x, z);
-        if (cityCenter != null) {
-            BuildingPart part = City.getBuildingPart(x, z);
+    public void generate(World worldIn, int x, int z, ChunkPrimer primer) {
+        City city = CityTools.getNearestCity(generator, x, z);
+        if (city != null) {
+            BuildingPart part = CityTools.getBuildingPart(x, z);
             if (part != null) {
-                CityPlan plan = City.getRandomCityPlan(cityCenter);
-                generatePart(primer, plan, part, Transform.ROTATE_NONE, 0, 80, 0);
+                CityPlan plan = city.getPlan();
+                generatePart(primer, plan, part, Transform.ROTATE_NONE, 0, city.getHeight(), 0);
             }
         }
     }
 
-    private static int generatePart(ChunkPrimer primer, CityPlan cityPlan,
+    private int generatePart(ChunkPrimer primer, CityPlan cityPlan,
                                     BuildingPart part,
                                     Transform transform,
                                     int ox, int oy, int oz) {

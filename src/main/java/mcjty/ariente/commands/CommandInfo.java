@@ -1,6 +1,6 @@
 package mcjty.ariente.commands;
 
-import mcjty.ariente.cities.City;
+import mcjty.ariente.cities.CityTools;
 import mcjty.ariente.varia.ChunkCoord;
 import net.minecraft.command.CommandException;
 import net.minecraft.command.ICommand;
@@ -50,23 +50,23 @@ public class CommandInfo implements ICommand {
 
     @Nonnull
     private Optional<ChunkCoord> findNearbyCityCenter(int cx, int cz) {
-        Optional<ChunkCoord> cityCenter = City.getNearestCity(cx, cz);
+        Optional<ChunkCoord> cityCenter = CityTools.getNearestCityCenterO(cx, cz);
         if (cityCenter.isPresent()) {
             return cityCenter;
         }
-        cityCenter = City.getNearestCity(cx - 10, cz);
+        cityCenter = CityTools.getNearestCityCenterO(cx - 10, cz);
         if (cityCenter.isPresent()) {
             return cityCenter;
         }
-        cityCenter = City.getNearestCity(cx + 10, cz);
+        cityCenter = CityTools.getNearestCityCenterO(cx + 10, cz);
         if (cityCenter.isPresent()) {
             return cityCenter;
         }
-        cityCenter = City.getNearestCity(cx, cz - 10);
+        cityCenter = CityTools.getNearestCityCenterO(cx, cz - 10);
         if (cityCenter.isPresent()) {
             return cityCenter;
         }
-        cityCenter = City.getNearestCity(cx, cz + 10);
+        cityCenter = CityTools.getNearestCityCenterO(cx, cz + 10);
         if (cityCenter.isPresent()) {
             return cityCenter;
         }

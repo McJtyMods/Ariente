@@ -4,7 +4,7 @@ import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
 import com.google.gson.JsonArray;
 import mcjty.ariente.cities.*;
-import mcjty.ariente.varia.ChunkCoord;
+import mcjty.ariente.dimension.ArienteChunkGenerator;
 import net.minecraft.block.state.IBlockState;
 import net.minecraft.command.CommandException;
 import net.minecraft.command.ICommand;
@@ -15,6 +15,7 @@ import net.minecraft.server.MinecraftServer;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.text.TextComponentString;
 import net.minecraft.world.World;
+import net.minecraft.world.WorldServer;
 import org.apache.commons.lang3.StringUtils;
 
 import javax.annotation.Nullable;
@@ -49,13 +50,14 @@ public class CommandSaveCity implements ICommand {
             int cx = (start.getX() >> 4);
             int cz = (start.getZ() >> 4);
 
-            ChunkCoord cityCenter = City.getNearestCityCenter(cx, cz);
-            if (cityCenter == null) {
+            ArienteChunkGenerator generator = (ArienteChunkGenerator)(((WorldServer)sender.getEntityWorld()).getChunkProvider().chunkGenerator);
+            City city = CityTools.getNearestCity(generator, cx, cz);
+            if (city == null) {
                 sender.sendMessage(new TextComponentString("No city can be found!"));
                 return;
             }
 
-            CityPlan plan = City.getRandomCityPlan(cityCenter);
+            CityPlan plan = city.getPlan();
             List<String> pattern = plan.getPlan();
             int dimX = pattern.get(0).length();
             int dimZ = pattern.size();
@@ -77,7 +79,7 @@ public class CommandSaveCity implements ICommand {
 
             for (int dx = cx - dimX / 2 - 1 ; dx <= cx + dimX / 2 + 1 ; dx++) {
                 for (int dz = cz - dimZ / 2 - 1 ; dz <= cz + dimZ / 2 + 1 ; dz++) {
-                    BuildingPart part = City.getBuildingPart(dx, dz);
+                    BuildingPart part = CityTools.getBuildingPart(dx, dz);
                     if (part != null) {
                         BuildingPart newpart = exportPart(((EntityPlayer) sender).world, new BlockPos(dx * 16 + 8, start.getY() - 1, dz * 16 + 8),
                                 palette, mapping, idx);
