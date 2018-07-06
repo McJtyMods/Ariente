@@ -54,6 +54,18 @@
       {
         "char": "k",
         "block": "minecraft:stained_glass_pane@7"
+      },
+      {
+        "char": "l",
+        "block": "ariente:flatlight@3"
+      },
+      {
+        "char": "n",
+        "block": "ariente:flatlight@5"
+      },
+      {
+        "char": "m",
+        "block": "ariente:flatlight@2"
       }
     ]
   }

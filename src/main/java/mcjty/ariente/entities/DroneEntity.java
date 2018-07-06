@@ -128,7 +128,7 @@ public class DroneEntity extends EntityFlying implements IMob {
      */
     @Override
     protected float getSoundVolume() {
-        return 1.8F;
+        return 6.0F;
     }
 
     /**
