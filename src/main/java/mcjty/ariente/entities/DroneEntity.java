@@ -136,7 +136,7 @@ public class DroneEntity extends EntityFlying implements IMob {
      */
     @Override
     public boolean getCanSpawnHere() {
-        boolean b = this.rand.nextInt(10) == 0 && super.getCanSpawnHere() && this.getEntityWorld().getDifficulty() != EnumDifficulty.PEACEFUL;
+        boolean b = (this.rand.nextInt(100) == 0) && super.getCanSpawnHere() && this.getEntityWorld().getDifficulty() != EnumDifficulty.PEACEFUL;
         return b;
     }
 
@@ -335,9 +335,9 @@ public class DroneEntity extends EntityFlying implements IMob {
         @Override
         public void startExecuting() {
             Random random = this.parentEntity.getRNG();
-            double d0 = this.parentEntity.posX + ((random.nextFloat() * 2.0F - 1.0F) * 16.0F);
-            double d1 = this.parentEntity.posY + ((random.nextFloat() * 2.0F - 1.0F) * 16.0F);
-            double d2 = this.parentEntity.posZ + ((random.nextFloat() * 2.0F - 1.0F) * 16.0F);
+            double d0 = this.parentEntity.posX + ((random.nextFloat() * 2.0F - 1.0F) * 32.0F);
+            double d1 = this.parentEntity.posY + ((random.nextFloat() * 2.0F - 1.0F) * 32.0F);
+            double d2 = this.parentEntity.posZ + ((random.nextFloat() * 2.0F - 1.0F) * 32.0F);
             this.parentEntity.getMoveHelper().setMoveTo(d0, d1, d2, 1.0D);
         }
     }
