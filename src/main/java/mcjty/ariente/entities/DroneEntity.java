@@ -136,7 +136,7 @@ public class DroneEntity extends EntityFlying implements IMob {
      */
     @Override
     public boolean getCanSpawnHere() {
-        boolean b = /*this.rand.nextInt(5) == 0 && /* super.getCanSpawnHere() && */ this.getEntityWorld().getDifficulty() != EnumDifficulty.PEACEFUL;
+        boolean b = this.rand.nextInt(10) == 0 && super.getCanSpawnHere() && this.getEntityWorld().getDifficulty() != EnumDifficulty.PEACEFUL;
         return b;
     }
 
