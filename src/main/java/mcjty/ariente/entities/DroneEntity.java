@@ -10,6 +10,7 @@ import net.minecraft.entity.ai.EntityAIBase;
 import net.minecraft.entity.ai.EntityAIFindEntityNearestPlayer;
 import net.minecraft.entity.ai.EntityMoveHelper;
 import net.minecraft.entity.monster.IMob;
+import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.network.datasync.DataParameter;
 import net.minecraft.network.datasync.DataSerializers;
@@ -19,6 +20,7 @@ import net.minecraft.util.ResourceLocation;
 import net.minecraft.util.SoundCategory;
 import net.minecraft.util.SoundEvent;
 import net.minecraft.util.math.AxisAlignedBB;
+import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.MathHelper;
 import net.minecraft.util.math.Vec3d;
 import net.minecraft.world.EnumDifficulty;
@@ -128,7 +130,7 @@ public class DroneEntity extends EntityFlying implements IMob {
      */
     @Override
     protected float getSoundVolume() {
-        return 6.0F;
+        return 1.0F;
     }
 
     /**
@@ -225,14 +227,19 @@ public class DroneEntity extends EntityFlying implements IMob {
                 if (this.attackTimer == 20) {
                     double d1 = 4.0D;
                     Vec3d vec3d = this.drone.getLook(1.0F);
+                    world.playSound(null, target.posX - vec3d.x * 8.0d, target.posY - vec3d.y * 8.0d, target.posZ - vec3d.z * 8.0d, ModSounds.droneShoot, SoundCategory.HOSTILE, 5.0f, 1.0f);
+
                     double d2 = target.posX - (this.drone.posX + vec3d.x * 4.0D);
                     double d3 = target.getEntityBoundingBox().minY + (target.height / 2.0F) - (0.5D + this.drone.posY + (this.drone.height / 2.0F));
                     double d4 = target.posZ - (this.drone.posZ + vec3d.z * 4.0D);
 //                    world.playEvent(null, 1016, new BlockPos(this.parentEntity), 0);
-//                    world.playSound(null, d2, d3, d4, ModSounds.droneShoot, SoundCategory.HOSTILE, 1.0f, 1.0f);
-                    for (int i = 0; i < world.playerEntities.size(); ++i) {
-                        world.playSound(world.playerEntities.get(i), d2, d3, d4, ModSounds.droneShoot, SoundCategory.HOSTILE, 1.0f, 1.0f);
-                    }
+//                    for (int i = 0; i < world.playerEntities.size(); ++i) {
+//                        world.playSound(world.playerEntities.get(i), d2, d3, d4, ModSounds.droneShoot, SoundCategory.HOSTILE, 1.0f, 1.0f);
+//                        world.playSound(world.playerEntities.get(i), target.posX, target.posY, target.posZ, ModSounds.droneShoot, SoundCategory.HOSTILE, 1.0f, 1.0f);
+//                    }
+
+//                    world.playEvent((EntityPlayer)null, 1016, new BlockPos(this.drone), 0);
+
                     LaserEntity laser = new LaserEntity(world, this.drone, d2, d3, d4);
                     laser.posX = this.drone.posX + vec3d.x * 2.0D;
                     laser.posY = this.drone.posY + (this.drone.height / 2.0F) + 0.5D;
