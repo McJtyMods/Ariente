@@ -38,7 +38,7 @@ public class DroneEntity extends EntityFlying implements IMob {
 
     public DroneEntity(World worldIn) {
         super(worldIn);
-        this.setSize(1.0F, 1.0F);
+        this.setSize(2.0F, 2.0F);
         this.isImmuneToFire = false;
         this.experienceValue = 5;
         this.moveHelper = new DroneMoveHelper(this);
