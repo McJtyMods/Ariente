@@ -1,5 +1,4 @@
 #PARSE_ESCAPES
-fluid.fresh_water=Fresh Water
 
 item.ariente.ingot_platinum.name=Platinum Ingot
 item.ariente.ingot_lithium.name=Lithium Ingot
@@ -22,6 +21,7 @@ tile.ariente.netcable_combined.name=Combined Cable
 tile.ariente.negarite_generator.name=Negarite Flux Generator
 tile.ariente.negarite_tank.name=Negarite Tank
 tile.ariente.storage.name=Storage Cube
+tile.ariente.elevator.name=Elevator
 tile.ariente.flatlight.name=Flat Light
 
 tile.ariente.marble.name=Marble
@@ -63,3 +63,5 @@ message.ariente.negarite_tank=\
 message.ariente.storage=\
     @fCan store large amounts of 4\n\
     @fdifferent item types
+message.ariente.elevator=\
+    @fMove up and down

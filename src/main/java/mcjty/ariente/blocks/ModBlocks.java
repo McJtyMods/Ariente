@@ -6,6 +6,8 @@ import mcjty.ariente.blocks.decorative.MarbleBlock;
 import mcjty.ariente.blocks.generators.NegariteGeneratorTile;
 import mcjty.ariente.blocks.generators.NegariteTankRenderer;
 import mcjty.ariente.blocks.generators.NegariteTankTile;
+import mcjty.ariente.blocks.utility.ElevatorRenderer;
+import mcjty.ariente.blocks.utility.ElevatorTile;
 import mcjty.ariente.blocks.utility.StorageRenderer;
 import mcjty.ariente.blocks.utility.StorageTile;
 import mcjty.ariente.cables.ConnectorBlock;
@@ -51,6 +53,7 @@ public class ModBlocks {
     public static GenericBlock<NegariteGeneratorTile, GenericContainer> negariteGeneratorBlock;
     public static GenericBlock<NegariteTankTile, GenericContainer> negariteTankBlock;
     public static GenericBlock<StorageTile, GenericContainer> storageBlock;
+    public static GenericBlock<ElevatorTile, GenericContainer> elevatorBlock;
     public static BaseBlock flatLightBlock;
 
     public static NetCableBlock netCableBlock;
@@ -112,6 +115,16 @@ public class ModBlocks {
                 .activateAction((world, pos, player, hand, side, hitX, hitY, hitZ) -> StorageTile.onActivate(world, pos, player, side, hitX, hitY, hitZ))
                 .info("message.ariente.shiftmessage")
                 .infoExtended("message.ariente.storage")
+                .build();
+
+        elevatorBlock = ModBlocks.builderFactory.<ElevatorTile> builder("elevator")
+                .tileEntityClass(ElevatorTile.class)
+                .emptyContainer()
+                .flags(BlockFlags.RENDER_SOLID, BlockFlags.RENDER_TRANSLUCENT)
+                .rotationType(BaseBlock.RotationType.NONE)
+                .activateAction((world, pos, player, hand, side, hitX, hitY, hitZ) -> HoloGuiHandler.openHoloGui(world, pos, player))
+                .info("message.ariente.shiftmessage")
+                .infoExtended("message.ariente.elevator")
                 .build();
     }
 
@@ -208,9 +221,11 @@ public class ModBlocks {
         storageBlock.initModel();
         ClientRegistry.bindTileEntitySpecialRenderer(StorageTile.class, new StorageRenderer());
 
+        elevatorBlock.initModel();
+        ClientRegistry.bindTileEntitySpecialRenderer(ElevatorTile.class, new ElevatorRenderer());
+
         flatLightBlock.initModel();
         negariteGeneratorBlock.initModel();
-//        negariteGeneratorBlock.setGuiFactory(NegariteGeneratorGui::new);
         negariteTankBlock.initModel();
         ClientRegistry.bindTileEntitySpecialRenderer(NegariteTankTile.class, new NegariteTankRenderer());
 
