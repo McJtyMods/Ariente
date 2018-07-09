@@ -3,6 +3,8 @@ package mcjty.ariente.blocks.utility;
 import mcjty.ariente.entities.HoloGuiEntity;
 import mcjty.ariente.gui.IGuiComponent;
 import mcjty.ariente.gui.IGuiTile;
+import mcjty.ariente.gui.components.HoloButton;
+import mcjty.ariente.gui.components.HoloNumber;
 import mcjty.ariente.gui.components.HoloPanel;
 import mcjty.ariente.gui.components.HoloText;
 import mcjty.lib.tileentity.GenericTileEntity;
@@ -15,6 +17,9 @@ import net.minecraft.block.state.IBlockState;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.NBTTagCompound;
+import net.minecraft.network.NetworkManager;
+import net.minecraft.network.play.server.SPacketUpdateTileEntity;
+import net.minecraft.util.ITickable;
 import net.minecraft.util.math.AxisAlignedBB;
 import net.minecraft.world.World;
 import net.minecraftforge.fml.common.Optional;
@@ -23,18 +28,61 @@ import net.minecraftforge.fml.relauncher.SideOnly;
 
 import java.util.List;
 
-public class ElevatorTile extends GenericTileEntity implements IGuiTile {
+public class ElevatorTile extends GenericTileEntity implements IGuiTile, ITickable {
 
     private AxisAlignedBB cachedBox = null;
+
+    private int height = 9;
+
+    @Override
+    public void update() {
+
+    }
+
+    public int getHeight() {
+        return height;
+    }
+
+    public void setHeight(int height) {
+        this.height = height;
+    }
+
+    private void changeHeight(int dy) {
+        height += dy;
+        if (height < 1) {
+            height = 1;
+        } else if (height > 256) {
+            height = 256;
+        }
+        cachedBox = null;
+        markDirtyClient();
+    }
+
+    @Override
+    public void onDataPacket(NetworkManager net, SPacketUpdateTileEntity packet) {
+        int oldheight = height;
+
+        super.onDataPacket(net, packet);
+
+        if (getWorld().isRemote) {
+            // If needed send a render update.
+            if (oldheight != height) {
+                getWorld().markBlockRangeForRenderUpdate(getPos(), getPos());
+                cachedBox = null;
+            }
+        }
+    }
 
     @Override
     public void readRestorableFromNBT(NBTTagCompound tagCompound) {
         super.readRestorableFromNBT(tagCompound);
+        height = tagCompound.getInteger("height");
     }
 
     @Override
     public void writeRestorableToNBT(NBTTagCompound tagCompound) {
         super.writeRestorableToNBT(tagCompound);
+        tagCompound.setInteger("height", height);
     }
 
     @Override
@@ -62,7 +110,7 @@ public class ElevatorTile extends GenericTileEntity implements IGuiTile {
     @Override
     public AxisAlignedBB getRenderBoundingBox() {
         if (cachedBox == null) {
-            cachedBox = new AxisAlignedBB(getPos()).grow(0, 20, 0);
+            cachedBox = new AxisAlignedBB(getPos()).grow(0, height+2, 0);
         }
         return cachedBox;
     }
@@ -71,22 +119,18 @@ public class ElevatorTile extends GenericTileEntity implements IGuiTile {
     @Override
     public IGuiComponent createGui(HoloGuiEntity entity) {
         return new HoloPanel(0, 0, 8, 8)
-                .add(new HoloText(0, 0, 1, 1, "0", 0xffffff))
-                .add(new HoloText(1, 0, 1, 1, "1", 0xffffff))
-                .add(new HoloText(2, 0, 1, 1, "2", 0xffffff))
-                .add(new HoloText(3, 0, 1, 1, "3", 0xffffff))
-                .add(new HoloText(4, 0, 1, 1, "4", 0xffffff))
-                .add(new HoloText(5, 0, 1, 1, "5", 0xffffff))
-                .add(new HoloText(6, 0, 1, 1, "6", 0xffffff))
-                .add(new HoloText(7, 0, 1, 1, "7", 0xffffff))
-                .add(new HoloText(0, 1, 1, 1, "1", 0x00ff00))
-                .add(new HoloText(0, 2, 1, 1, "2", 0x00ff00))
-                .add(new HoloText(0, 3, 1, 1, "3", 0x00ff00))
-                .add(new HoloText(0, 4, 1, 1, "4", 0x00ff00))
-                .add(new HoloText(0, 5, 1, 1, "5", 0x00ff00))
-                .add(new HoloText(0, 6, 1, 1, "6", 0x00ff00))
-                .add(new HoloText(0, 7, 1, 1, "7", 0x00ff00))
-                .add(new HoloText(7, 7, 1, 1, "X", 0xff0000));
+                .add(new HoloText(0, 2, 1, 1, "Height", 0xaaccff))
+                .add(new HoloNumber(3, 4, 1, 1, 0xffffff, this::getHeight))
+
+                .add(new HoloButton(1, 4, 1, 1).image(128+32, 128+16).hover(128+32+16, 128+16)
+                        .hitEvent((component, player, entity1, x, y) -> changeHeight(-8)))
+                .add(new HoloButton(2, 4, 1, 1).image(128+32, 128).hover(128+32+16, 128)
+                        .hitEvent((component, player, entity1, x, y) -> changeHeight(-1)))
+                .add(new HoloButton(5, 4, 1, 1).image(128, 128).hover(128+16, 128)
+                        .hitEvent((component, player, entity1, x, y) -> changeHeight(1)))
+                .add(new HoloButton(6, 4, 1, 1).image(128, 128+16).hover(128+16, 128+16)
+                        .hitEvent((component, player, entity1, x, y) -> changeHeight(8)))
+                ;
     }
 
     @Override

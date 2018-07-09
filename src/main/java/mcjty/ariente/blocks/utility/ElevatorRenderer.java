@@ -25,26 +25,26 @@ public class ElevatorRenderer extends TileEntitySpecialRenderer<ElevatorTile> {
     public ElevatorRenderer() {
     }
 
-    private static float randomX[] = new float[] { .2f, .3f, .2f, .7f, .8f, .5f, .2f, .8f, .4f, .6f };
-    private static float randomZ[] = new float[] { .3f, .2f, .8f, .3f, .7f, .6f, .4f, .5f, .2f, .3f };
-    private static int randomY[] = new int[] { 0, 3, 2, 1, 6, 5, 6, 8, 2, 3 };
+    private static float randomX[] = new float[]{.2f, .3f, .2f, .7f, .8f, .5f, .2f, .8f, .4f, .6f};
+    private static float randomZ[] = new float[]{.3f, .2f, .8f, .3f, .7f, .6f, .4f, .5f, .2f, .3f};
+    private static int randomY[] = new int[]{0, 3, 2, 1, 6, 5, 6, 8, 2, 3};
 
     @Override
     public void render(ElevatorTile te, double x, double y, double z, float time, int breakTime, float alpha) {
 //        if (te.isWorking()) {
-            Tessellator tessellator = Tessellator.getInstance();
-            GlStateManager.pushMatrix();
+        Tessellator tessellator = Tessellator.getInstance();
+        GlStateManager.pushMatrix();
 //            GlStateManager.translate(x, y, z);
 
-            GlStateManager.enableBlend();
-            GlStateManager.depthMask(true);
-            GlStateManager.blendFunc(GL11.GL_SRC_ALPHA, GL11.GL_ONE);
-            GlStateManager.alphaFunc(GL11.GL_GREATER, 0.003921569F);
-            GlStateManager.disableCull();
-            GlStateManager.enableDepth();
+        GlStateManager.enableBlend();
+        GlStateManager.depthMask(true);
+        GlStateManager.blendFunc(GL11.GL_SRC_ALPHA, GL11.GL_ONE);
+        GlStateManager.alphaFunc(GL11.GL_GREATER, 0.003921569F);
+        GlStateManager.disableCull();
+        GlStateManager.enableDepth();
 
-            ResourceLocation beamIcon = halo;
-            bindTexture(beamIcon);
+        ResourceLocation beamIcon = halo;
+        bindTexture(beamIcon);
 
         Minecraft mc = Minecraft.getMinecraft();
         EntityPlayerSP p = mc.player;
@@ -58,36 +58,37 @@ public class ElevatorRenderer extends TileEntitySpecialRenderer<ElevatorTile> {
 
         long tt = System.currentTimeMillis() / 100;
 
-            GlStateManager.color(1, 1, 1, 1);
+        GlStateManager.color(1, 1, 1, 1);
 
-            BufferBuilder renderer = tessellator.getBuffer();
-            renderer.begin(GL11.GL_QUADS, DefaultVertexFormats.POSITION_TEX_LMAP_COLOR);
+        BufferBuilder renderer = tessellator.getBuffer();
+        renderer.begin(GL11.GL_QUADS, DefaultVertexFormats.POSITION_TEX_LMAP_COLOR);
 
-            float height = 5.0f;
+        float height = te.getHeight();
 
-            for (int i = 0 ; i < 10 ; i++) {
-                long ticks = (tt + randomY[i]) % 80;
-                if (ticks > 40) {
-                    ticks = 80-ticks;
-                }
-                float i1 = ticks / 40.0f;
-                float xx = te.getPos().getX() + randomX[i];
-                float zz = te.getPos().getZ() + randomZ[i];
-                float yy = te.getPos().getY() - 1.0f + i1 + randomY[i];
-                RenderHelper.drawBeam(new RenderHelper.Vector(xx, yy, zz), new RenderHelper.Vector(xx, yy + height, zz), player, 0.1f);
+        for (int i = 0; i < 10 + te.getHeight() / 5; i++) {
+            int ii = i % 10;
+            long ticks = (tt + randomY[ii]) % 80;
+            if (ticks > 40) {
+                ticks = 80 - ticks;
             }
+            float i1 = ticks / 40.0f;
+            float xx = te.getPos().getX() + randomX[ii];
+            float zz = te.getPos().getZ() + randomZ[ii];
+            float yy = te.getPos().getY() - 1.0f + i1 + randomY[ii];
+            RenderHelper.drawBeam(new RenderHelper.Vector(xx, yy, zz), new RenderHelper.Vector(xx, yy + height, zz), player, 0.1f);
+        }
 
         net.minecraft.util.math.Vec3d cameraPos = net.minecraft.client.renderer.ActiveRenderInfo.getCameraPosition();
-        tessellator.getBuffer().sortVertexData((float)(player.x+doubleX), (float)(player.y+doubleY), (float)(player.z+doubleZ));
+        tessellator.getBuffer().sortVertexData((float) (player.x + doubleX), (float) (player.y + doubleY), (float) (player.z + doubleZ));
 //        tessellator.getBuffer().sortVertexData((float)(cameraPos.x+doubleX), (float)(cameraPos.y+doubleY), (float)(cameraPos.z+doubleZ));
-            tessellator.draw();
+        tessellator.draw();
 
-            GlStateManager.depthMask(true);
-            GlStateManager.enableLighting();
-            GlStateManager.enableDepth();
-            GlStateManager.alphaFunc(GL11.GL_GREATER, 0.1F);
+        GlStateManager.depthMask(true);
+        GlStateManager.enableLighting();
+        GlStateManager.enableDepth();
+        GlStateManager.alphaFunc(GL11.GL_GREATER, 0.1F);
 
-            GlStateManager.popMatrix();
+        GlStateManager.popMatrix();
 //        }
 
     }

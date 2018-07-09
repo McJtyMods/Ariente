@@ -18,6 +18,6 @@ public class HoloNumber extends AbstractHoloComponent {
     @Override
     public void render(double cursorX, double cursorY) {
         String text = Integer.toString(getter.get());
-        HoloGuiRenderTools.renderText(x, y, text, color);
+        HoloGuiRenderTools.renderText(x, y+.1, text, color);
     }
 }
