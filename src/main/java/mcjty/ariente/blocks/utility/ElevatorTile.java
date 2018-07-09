@@ -15,6 +15,7 @@ import net.minecraft.block.state.IBlockState;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.NBTTagCompound;
+import net.minecraft.util.math.AxisAlignedBB;
 import net.minecraft.world.World;
 import net.minecraftforge.fml.common.Optional;
 import net.minecraftforge.fml.relauncher.Side;
@@ -24,6 +25,7 @@ import java.util.List;
 
 public class ElevatorTile extends GenericTileEntity implements IGuiTile {
 
+    private AxisAlignedBB cachedBox = null;
 
     @Override
     public void readRestorableFromNBT(NBTTagCompound tagCompound) {
@@ -53,6 +55,16 @@ public class ElevatorTile extends GenericTileEntity implements IGuiTile {
 //        if (isWorking()) {
 //            currenttip.add(TextFormatting.GREEN + "Producing " + getRfPerTick() + " RF/t");
 //        }
+    }
+
+
+    @SideOnly(Side.CLIENT)
+    @Override
+    public AxisAlignedBB getRenderBoundingBox() {
+        if (cachedBox == null) {
+            cachedBox = new AxisAlignedBB(getPos()).grow(0, 20, 0);
+        }
+        return cachedBox;
     }
 
 
