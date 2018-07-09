@@ -1,5 +1,6 @@
 package mcjty.ariente.blocks.utility;
 
+import mcjty.ariente.Ariente;
 import mcjty.ariente.entities.HoloGuiEntity;
 import mcjty.ariente.gui.IGuiComponent;
 import mcjty.ariente.gui.IGuiTile;
@@ -36,7 +37,19 @@ public class ElevatorTile extends GenericTileEntity implements IGuiTile, ITickab
 
     @Override
     public void update() {
-
+        if (!world.isRemote) {
+            List<EntityPlayer> players = world.getEntitiesWithinAABB(EntityPlayer.class, getBeamBox());
+            for (EntityPlayer player : players) {
+                player.motionY = 1.5;
+                player.isAirBorne = true;
+            }
+        } else {
+            EntityPlayer clientPlayer = Ariente.proxy.getClientPlayer();
+            if (clientPlayer.getEntityBoundingBox().intersects(getBeamBox())) {
+                clientPlayer.motionY = 1.5;
+                clientPlayer.isAirBorne = true;
+            }
+        }
     }
 
     public int getHeight() {
@@ -109,6 +122,10 @@ public class ElevatorTile extends GenericTileEntity implements IGuiTile, ITickab
     @SideOnly(Side.CLIENT)
     @Override
     public AxisAlignedBB getRenderBoundingBox() {
+        return getBeamBox();
+    }
+
+    private AxisAlignedBB getBeamBox() {
         if (cachedBox == null) {
             cachedBox = new AxisAlignedBB(getPos()).grow(0, height+2, 0);
         }
