@@ -1,6 +1,5 @@
-package mcjty.ariente.blocks.generators;
+package mcjty.ariente.blocks.utility;
 
-import mcjty.ariente.blocks.ModBlocks;
 import mcjty.ariente.entities.HoloGuiEntity;
 import mcjty.ariente.gui.IGuiComponent;
 import mcjty.ariente.gui.IGuiTile;
@@ -12,13 +11,11 @@ import mcjty.theoneprobe.api.IProbeInfo;
 import mcjty.theoneprobe.api.ProbeMode;
 import mcp.mobius.waila.api.IWailaConfigHandler;
 import mcp.mobius.waila.api.IWailaDataAccessor;
-import net.minecraft.block.properties.PropertyBool;
 import net.minecraft.block.state.IBlockState;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.NBTTagCompound;
-import net.minecraft.tileentity.TileEntity;
-import net.minecraft.util.math.BlockPos;
+import net.minecraft.util.math.AxisAlignedBB;
 import net.minecraft.world.World;
 import net.minecraftforge.fml.common.Optional;
 import net.minecraftforge.fml.relauncher.Side;
@@ -26,39 +23,20 @@ import net.minecraftforge.fml.relauncher.SideOnly;
 
 import java.util.List;
 
-public class NegariteTankTile extends GenericTileEntity implements IGuiTile {
+public class LevelMarkerTile extends GenericTileEntity implements IGuiTile {
 
-    public static PropertyBool UPPER = PropertyBool.create("upper");
-    public static PropertyBool LOWER = PropertyBool.create("lower");
-
-    public boolean isWorking() {
-        BlockPos p = pos.down();
-        IBlockState state = world.getBlockState(p);
-        while (state.getBlock() == ModBlocks.negariteTankBlock) {
-            p = p.down();
-            state = world.getBlockState(p);
-        }
-        TileEntity te = world.getTileEntity(p);
-        if (te instanceof NegariteGeneratorTile) {
-            return ((NegariteGeneratorTile)te).isWorking();
-        }
-        return false;
-    }
+    public static final AxisAlignedBB BLOCK_AABB = new AxisAlignedBB(0.0D, 0.0D, 0.0D, 1.0D, 0.1D, 1.0D);
 
     @Override
     public void readRestorableFromNBT(NBTTagCompound tagCompound) {
         super.readRestorableFromNBT(tagCompound);
+//        height = tagCompound.getInteger("height");
     }
 
     @Override
     public void writeRestorableToNBT(NBTTagCompound tagCompound) {
         super.writeRestorableToNBT(tagCompound);
-    }
-
-    @Override
-    public IBlockState getActualState(IBlockState state) {
-        return state.withProperty(UPPER, world.getBlockState(pos.up()).getBlock() == ModBlocks.negariteTankBlock)
-                .withProperty(LOWER, world.getBlockState(pos.down()).getBlock() == ModBlocks.negariteTankBlock);
+//        tagCompound.setInteger("height", height);
     }
 
     @Override
@@ -70,7 +48,6 @@ public class NegariteTankTile extends GenericTileEntity implements IGuiTile {
 //            probeInfo.text(TextFormatting.GREEN + "Producing " + getRfPerTick() + " RF/t");
 //        }
     }
-
 
     @SideOnly(Side.CLIENT)
     @Override
@@ -85,22 +62,7 @@ public class NegariteTankTile extends GenericTileEntity implements IGuiTile {
     @Override
     public IGuiComponent createGui(HoloGuiEntity entity, String tag) {
         return new HoloPanel(0, 0, 8, 8)
-            .add(new HoloText(0, 0, 1, 1, "0", 0xffffff))
-            .add(new HoloText(1, 0, 1, 1, "1", 0xffffff))
-            .add(new HoloText(2, 0, 1, 1, "2", 0xffffff))
-            .add(new HoloText(3, 0, 1, 1, "3", 0xffffff))
-            .add(new HoloText(4, 0, 1, 1, "4", 0xffffff))
-            .add(new HoloText(5, 0, 1, 1, "5", 0xffffff))
-            .add(new HoloText(6, 0, 1, 1, "6", 0xffffff))
-            .add(new HoloText(7, 0, 1, 1, "7", 0xffffff))
-            .add(new HoloText(0, 1, 1, 1, "1", 0x00ff00))
-            .add(new HoloText(0, 2, 1, 1, "2", 0x00ff00))
-            .add(new HoloText(0, 3, 1, 1, "3", 0x00ff00))
-            .add(new HoloText(0, 4, 1, 1, "4", 0x00ff00))
-            .add(new HoloText(0, 5, 1, 1, "5", 0x00ff00))
-            .add(new HoloText(0, 6, 1, 1, "6", 0x00ff00))
-            .add(new HoloText(0, 7, 1, 1, "7", 0x00ff00))
-            .add(new HoloText(7, 7, 1, 1, "X", 0xff0000));
+                .add(new HoloText(0, 2, 1, 1, "Floor name", 0xaaccff));
     }
 
     @Override

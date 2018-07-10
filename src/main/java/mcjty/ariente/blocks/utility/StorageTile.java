@@ -329,7 +329,7 @@ public class StorageTile extends GenericTileEntity implements IGuiTile, IInvento
     }
 
     @Override
-    public IGuiComponent createGui(HoloGuiEntity entity) {
+    public IGuiComponent createGui(HoloGuiEntity entity, String tag) {
         return new HoloPanel(0, 0, 8, 8)
                 .add(new HoloText(0, 0, 1, 1, "0", 0xffffff))
                 .add(new HoloText(1, 0, 1, 1, "1", 0xffffff))

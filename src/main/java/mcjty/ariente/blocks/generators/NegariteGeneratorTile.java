@@ -24,7 +24,6 @@ import net.minecraft.block.state.IBlockState;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.entity.player.EntityPlayerMP;
 import net.minecraft.entity.player.InventoryPlayer;
-import net.minecraft.init.Items;
 import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.network.NetworkManager;
@@ -198,7 +197,7 @@ public class NegariteGeneratorTile extends GenericTileEntity implements ITickabl
     }
 
     @Override
-    public IGuiComponent createGui(HoloGuiEntity entity) {
+    public IGuiComponent createGui(HoloGuiEntity entity, String tag) {
         return new HoloPanel(0, 0, 8, 8)
                 .add(new HoloText(0, 0, 8, 1,"Negarite", 0xaaccff))
                 .add(new HoloItemStack(0, 3, 1, 1, new ItemStack(ModItems.negariteDust)))

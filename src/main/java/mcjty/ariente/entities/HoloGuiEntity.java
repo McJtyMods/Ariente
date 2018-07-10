@@ -23,10 +23,12 @@ import net.minecraft.world.World;
 public class HoloGuiEntity extends Entity {
 
     private static final DataParameter<Optional<BlockPos>> GUITILE = EntityDataManager.<Optional<BlockPos>>createKey(HoloGuiEntity.class, DataSerializers.OPTIONAL_BLOCK_POS);
+    private static final DataParameter<String> TAG = EntityDataManager.<String>createKey(HoloGuiEntity.class, DataSerializers.STRING);
 
     private AxisAlignedBB playerDetectionBox = null;
 
     private int timeout;
+    private int maxTimeout;
     private int ticks;  // For syncing TE to client
     private IGuiComponent panel;
 
@@ -37,7 +39,8 @@ public class HoloGuiEntity extends Entity {
 
     public HoloGuiEntity(World worldIn) {
         super(worldIn);
-        timeout = 20 * 4;
+        maxTimeout = 20 * 4;
+        timeout = maxTimeout;
         ticks = 5;
         setSize(1f, 1f);
     }
@@ -48,6 +51,14 @@ public class HoloGuiEntity extends Entity {
 
     public double getCursorY() {
         return cursorY;
+    }
+
+    public void setMaxTimeout(int maxTimeout) {
+        this.maxTimeout = maxTimeout;
+    }
+
+    public void setTimeout(int timeout) {
+        this.timeout = timeout;
     }
 
     public Vec3d getHit() {
@@ -62,6 +73,14 @@ public class HoloGuiEntity extends Entity {
         return (BlockPos) ((Optional) this.dataManager.get(GUITILE)).orNull();
     }
 
+    public void setTag(String tag) {
+        this.dataManager.set(TAG, tag);
+    }
+
+    public String getTag() {
+        return this.dataManager.get(TAG);
+    }
+
     @Override
     public void onUpdate() {
         super.onUpdate();
@@ -71,7 +90,6 @@ public class HoloGuiEntity extends Entity {
             onUpdateServer();
         }
     }
-
 
 
     private void onUpdateServer() {
@@ -99,7 +117,7 @@ public class HoloGuiEntity extends Entity {
         if (world.getEntitiesWithinAABB(EntityPlayer.class, playerDetectionBox)
                 .stream()
                 .anyMatch(this::playerLooksAtMe)) {
-            timeout = 20 * 4;
+            timeout = maxTimeout;
         }
     }
 
@@ -138,7 +156,7 @@ public class HoloGuiEntity extends Entity {
                 TileEntity te = world.getTileEntity(tile);
                 if (te instanceof IGuiTile) {
                     IGuiTile guiTile = (IGuiTile) te;
-                    panel = guiTile.createGui(this);
+                    panel = guiTile.createGui(this, getTag());
                 }
             }
         }
@@ -238,27 +256,35 @@ public class HoloGuiEntity extends Entity {
     @Override
     protected void entityInit() {
         this.dataManager.register(GUITILE, Optional.absent());
+        this.dataManager.register(TAG, "");
     }
 
     @Override
     protected void readEntityFromNBT(NBTTagCompound compound) {
         this.timeout = compound.getInteger("timeout");
+        this.maxTimeout = compound.getInteger("maxTimeout");
         if (compound.hasKey("guix")) {
             int x = compound.getInteger("guix");
             int y = compound.getInteger("guiy");
             int z = compound.getInteger("guiz");
             setGuiTile(new BlockPos(x, y, z));
         }
+        setTag(compound.getString("tag"));
     }
 
     @Override
     protected void writeEntityToNBT(NBTTagCompound compound) {
-        compound.setInteger("timeout", this.timeout);
+        compound.setInteger("timeout", timeout);
+        compound.setInteger("maxTimeout", maxTimeout);
         BlockPos tile = getGuiTile();
         if (tile != null) {
             compound.setInteger("guix", tile.getX());
             compound.setInteger("guiy", tile.getY());
             compound.setInteger("guiz", tile.getZ());
+        }
+        String tag = getTag();
+        if (tag != null) {
+            compound.setString("tag", tag);
         }
     }
 }

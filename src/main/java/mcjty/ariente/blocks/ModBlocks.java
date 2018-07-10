@@ -6,10 +6,7 @@ import mcjty.ariente.blocks.decorative.MarbleBlock;
 import mcjty.ariente.blocks.generators.NegariteGeneratorTile;
 import mcjty.ariente.blocks.generators.NegariteTankRenderer;
 import mcjty.ariente.blocks.generators.NegariteTankTile;
-import mcjty.ariente.blocks.utility.ElevatorRenderer;
-import mcjty.ariente.blocks.utility.ElevatorTile;
-import mcjty.ariente.blocks.utility.StorageRenderer;
-import mcjty.ariente.blocks.utility.StorageTile;
+import mcjty.ariente.blocks.utility.*;
 import mcjty.ariente.cables.ConnectorBlock;
 import mcjty.ariente.cables.NetCableBlock;
 import mcjty.ariente.facade.FacadeBlock;
@@ -54,6 +51,7 @@ public class ModBlocks {
     public static GenericBlock<NegariteTankTile, GenericContainer> negariteTankBlock;
     public static GenericBlock<StorageTile, GenericContainer> storageBlock;
     public static GenericBlock<ElevatorTile, GenericContainer> elevatorBlock;
+    public static GenericBlock<LevelMarkerTile, GenericContainer> levelMarkerBlock;
     public static BaseBlock flatLightBlock;
 
     public static NetCableBlock netCableBlock;
@@ -125,6 +123,17 @@ public class ModBlocks {
                 .activateAction((world, pos, player, hand, side, hitX, hitY, hitZ) -> HoloGuiHandler.openHoloGui(world, pos, player))
                 .info("message.ariente.shiftmessage")
                 .infoExtended("message.ariente.elevator")
+                .build();
+
+        levelMarkerBlock = ModBlocks.builderFactory.<LevelMarkerTile> builder("level_marker")
+                .tileEntityClass(LevelMarkerTile.class)
+                .emptyContainer()
+                .rotationType(BaseBlock.RotationType.NONE)
+                .flags(BlockFlags.NON_OPAQUE)
+                .activateAction((world, pos, player, hand, side, hitX, hitY, hitZ) -> HoloGuiHandler.openHoloGui(world, pos, player))
+                .boundingBox((state, source, pos) -> LevelMarkerTile.BLOCK_AABB)
+                .info("message.ariente.shiftmessage")
+                .infoExtended("message.ariente.level_marker")
                 .build();
     }
 
@@ -223,6 +232,7 @@ public class ModBlocks {
 
         elevatorBlock.initModel();
         ClientRegistry.bindTileEntitySpecialRenderer(ElevatorTile.class, new ElevatorRenderer());
+        levelMarkerBlock.initModel();
 
         flatLightBlock.initModel();
         negariteGeneratorBlock.initModel();

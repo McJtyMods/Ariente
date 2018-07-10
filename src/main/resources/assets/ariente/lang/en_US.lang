@@ -22,6 +22,7 @@ tile.ariente.negarite_generator.name=Negarite Flux Generator
 tile.ariente.negarite_tank.name=Negarite Tank
 tile.ariente.storage.name=Storage Cube
 tile.ariente.elevator.name=Elevator
+tile.ariente.level_marker.name=Level Marker
 tile.ariente.flatlight.name=Flat Light
 
 tile.ariente.marble.name=Marble
@@ -65,3 +66,5 @@ message.ariente.storage=\
     @fdifferent item types
 message.ariente.elevator=\
     @fMove up and down
+message.ariente.level_marker=\
+    @fMark levels for the elevator

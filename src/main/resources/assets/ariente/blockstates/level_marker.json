@@ -1,0 +1,10 @@
+{
+  "forge_marker": 1,
+  "defaults": {
+    "model": "ariente:level_marker"
+  },
+  "variants": {
+    "normal": [{}],
+    "inventory": [{}]
+  }
+}
