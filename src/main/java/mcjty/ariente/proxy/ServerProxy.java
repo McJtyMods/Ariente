@@ -5,4 +5,8 @@ package mcjty.ariente.proxy;
  */
 public class ServerProxy extends CommonProxy {
 
+    @Override
+    public boolean isJumpKeyDown() {
+        throw new IllegalStateException("Only call this client-side!");
+    }
 }

@@ -40,14 +40,27 @@ public class ElevatorTile extends GenericTileEntity implements IGuiTile, ITickab
         if (!world.isRemote) {
             List<EntityPlayer> players = world.getEntitiesWithinAABB(EntityPlayer.class, getBeamBox());
             for (EntityPlayer player : players) {
-                player.motionY = 1.5;
                 player.isAirBorne = true;
+                player.fallDistance = 0;
+
+//                if (player.isSneaking()) {
+//                    player.motionY = -0.3;
+//                } else if (Keyboard.isKeyDown(Keyboard.KEY_SPACE)) {
+//                    player.motionY = 1.5;
+//                }
             }
         } else {
             EntityPlayer clientPlayer = Ariente.proxy.getClientPlayer();
             if (clientPlayer.getEntityBoundingBox().intersects(getBeamBox())) {
-                clientPlayer.motionY = 1.5;
                 clientPlayer.isAirBorne = true;
+                clientPlayer.fallDistance = 0;
+                if (clientPlayer.isSneaking()) {
+                    clientPlayer.motionY = -0.7;
+                } else if (Ariente.proxy.isJumpKeyDown()) {
+                    clientPlayer.motionY = 0.5;
+                } else {
+                    clientPlayer.motionY = 0.0;
+                }
             }
         }
     }

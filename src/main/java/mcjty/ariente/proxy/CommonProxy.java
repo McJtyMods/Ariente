@@ -31,7 +31,7 @@ import java.io.UncheckedIOException;
 /**
  * Created by jorrit on 16.12.16.
  */
-public class CommonProxy extends AbstractCommonProxy {
+public abstract class CommonProxy extends AbstractCommonProxy {
 
     @Override
     public void preInit(FMLPreInitializationEvent e) {
@@ -87,4 +87,6 @@ public class CommonProxy extends AbstractCommonProxy {
             }
         }
     }
+
+    public abstract boolean isJumpKeyDown();
 }
