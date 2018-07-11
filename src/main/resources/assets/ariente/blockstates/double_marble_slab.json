@@ -1,0 +1,18 @@
+{
+  "forge_marker": 1,
+  "defaults": {
+    "model": "cube_all",
+    "textures": { "all": "ariente:blocks/marble/graymarble" }
+  },
+  "variants": {
+    "normal": [{}],
+    "inventory": [{}],
+    "type": {
+      "gray": { "textures": { "all": "ariente:blocks/marble/graymarble" } },
+      "black": { "textures": { "all": "ariente:blocks/marble/blackmarble" } },
+      "blue": { "textures": { "all": "ariente:blocks/marble/bluemarble" } },
+      "white": { "textures": { "all": "ariente:blocks/marble/whitemarble" } },
+      "lime": { "textures": { "all": "ariente:blocks/marble/limemarble" } }
+    }
+  }
+}

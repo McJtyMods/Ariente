@@ -12,7 +12,7 @@ import net.minecraft.block.state.IBlockState;
 import net.minecraft.client.renderer.block.model.ModelResourceLocation;
 import net.minecraft.creativetab.CreativeTabs;
 import net.minecraft.item.Item;
-import net.minecraft.item.ItemBlock;
+import net.minecraft.item.ItemSlab;
 import net.minecraft.item.ItemStack;
 import net.minecraft.util.NonNullList;
 import net.minecraft.util.math.BlockPos;
@@ -27,23 +27,24 @@ public class MarbleSlabBlock extends BlockSlab {
 
     public static final PropertyEnum<MarbleColor> COLOR = PropertyEnum.create("type", MarbleColor.class);
 
-    public MarbleSlabBlock() {
+    public MarbleSlabBlock(String name) {
         super(Material.ROCK);
         IBlockState iblockstate = this.blockState.getBaseState();
         this.setDefaultState(iblockstate.withProperty(COLOR, MarbleColor.BLACK));
         this.setCreativeTab(Ariente.creativeTab);
-        setUnlocalizedName(Ariente.MODID + ".marble_slab");
-        setRegistryName("marble_slab");
-        McJtyRegister.registerLater(this, Ariente.instance, ItemBlock::new);
+        setUnlocalizedName(Ariente.MODID + "." + name);
+        setRegistryName(name);
+        McJtyRegister.registerLater(this, Ariente.instance, block -> new ItemSlab(block, ModBlocks.marbleSlabBlock, ModBlocks.doubleMarbleSlabBlock));
     }
 
     @SideOnly(Side.CLIENT)
     public void initModel() {
         for (MarbleColor type : MarbleColor.VALUES) {
-            ModelLoader.setCustomModelResourceLocation(Item.getItemFromBlock(this), type.ordinal(), new ModelResourceLocation(getRegistryName(), "type=" + type.getName()));
+            ModelLoader.setCustomModelResourceLocation(Item.getItemFromBlock(this), type.ordinal(), new ModelResourceLocation(getRegistryName(),
+                    "type=" + type.getName() + ",half=bottom"));
         }
 
-        ModelLoader.setCustomModelResourceLocation(Item.getItemFromBlock(this), 0, new ModelResourceLocation(getRegistryName(), "inventory"));
+//        ModelLoader.setCustomModelResourceLocation(Item.getItemFromBlock(this), 0, new ModelResourceLocation(getRegistryName(), "inventory"));
     }
 
     @Override
