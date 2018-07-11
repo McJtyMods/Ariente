@@ -1,17 +1,22 @@
 {
   "forge_marker": 1,
   "defaults": {
-    "model": "cube_all"
+    "model": "half_slab",
+    "textures": { "bottom": "ariente:blocks/marble/graymarble", "top": "ariente:blocks/marble/graymarble", "side": "ariente:blocks/marble/graymarble" }
   },
   "variants": {
     "normal": [{}],
     "inventory": [{}],
     "type": {
-      "gray": { "textures": { "all": "ariente:blocks/marble/graymarble" } },
-      "black": { "textures": { "all": "ariente:blocks/marble/blackmarble" } },
-      "blue": { "textures": { "all": "ariente:blocks/marble/bluemarble" } },
-      "white": { "textures": { "all": "ariente:blocks/marble/whitemarble" } },
-      "lime": { "textures": { "all": "ariente:blocks/marble/limemarble" } }
+      "gray": { "textures": { "bottom": "ariente:blocks/marble/graymarble", "top": "ariente:blocks/marble/graymarble", "side": "ariente:blocks/marble/graymarble" } },
+      "black": { "textures": { "bottom": "ariente:blocks/marble/blackmarble", "top": "ariente:blocks/marble/blackmarble", "side": "ariente:blocks/marble/blackmarble" } },
+      "blue": { "textures": { "bottom": "ariente:blocks/marble/bluemarble", "top": "ariente:blocks/marble/bluemarble", "side": "ariente:blocks/marble/bluemarble" } },
+      "white": { "textures": { "bottom": "ariente:blocks/marble/whitemarble", "top": "ariente:blocks/marble/whitemarble", "side": "ariente:blocks/marble/whitemarble" } },
+      "lime": { "textures": { "bottom": "ariente:blocks/marble/limemarble", "top": "ariente:blocks/marble/limemarble", "side": "ariente:blocks/marble/limemarble" } }
+    },
+    "half": {
+      "bottom": { "model": "half_slab" },
+      "top": { "model": "upper_slab" }
     }
   }
 }

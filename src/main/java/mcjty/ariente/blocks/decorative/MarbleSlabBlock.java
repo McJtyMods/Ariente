@@ -2,7 +2,7 @@ package mcjty.ariente.blocks.decorative;
 
 import mcjty.ariente.Ariente;
 import mcjty.ariente.blocks.ModBlocks;
-import net.minecraft.block.BlockPlanks;
+import mcjty.lib.McJtyRegister;
 import net.minecraft.block.BlockSlab;
 import net.minecraft.block.material.Material;
 import net.minecraft.block.properties.IProperty;
@@ -12,6 +12,7 @@ import net.minecraft.block.state.IBlockState;
 import net.minecraft.client.renderer.block.model.ModelResourceLocation;
 import net.minecraft.creativetab.CreativeTabs;
 import net.minecraft.item.Item;
+import net.minecraft.item.ItemBlock;
 import net.minecraft.item.ItemStack;
 import net.minecraft.util.NonNullList;
 import net.minecraft.util.math.BlockPos;
@@ -33,10 +34,15 @@ public class MarbleSlabBlock extends BlockSlab {
         this.setCreativeTab(Ariente.creativeTab);
         setUnlocalizedName(Ariente.MODID + ".marble_slab");
         setRegistryName("marble_slab");
+        McJtyRegister.registerLater(this, Ariente.instance, ItemBlock::new);
     }
 
     @SideOnly(Side.CLIENT)
     public void initModel() {
+        for (MarbleColor type : MarbleColor.VALUES) {
+            ModelLoader.setCustomModelResourceLocation(Item.getItemFromBlock(this), type.ordinal(), new ModelResourceLocation(getRegistryName(), "type=" + type.getName()));
+        }
+
         ModelLoader.setCustomModelResourceLocation(Item.getItemFromBlock(this), 0, new ModelResourceLocation(getRegistryName(), "inventory"));
     }
 
@@ -73,8 +79,8 @@ public class MarbleSlabBlock extends BlockSlab {
 
     @Override
     public void getSubBlocks(CreativeTabs itemIn, NonNullList<ItemStack> items) {
-        for (BlockPlanks.EnumType blockplanks$enumtype : BlockPlanks.EnumType.values()) {
-            items.add(new ItemStack(this, 1, blockplanks$enumtype.getMetadata()));
+        for (MarbleColor color : MarbleColor.VALUES) {
+            items.add(new ItemStack(this, 1, color.ordinal()));
         }
     }
 
