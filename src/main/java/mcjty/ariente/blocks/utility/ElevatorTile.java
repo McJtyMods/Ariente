@@ -74,9 +74,11 @@ public class ElevatorTile extends GenericTileEntity implements IGuiTile, ITickab
                         if (clientPlayer.isSneaking()) {
                             moveToFloor = findLowerFloor(floors, (int) clientPlayer.posY);
                             System.out.println("DOWN: moveToFloor = " + moveToFloor);
+                            clientPlayer.setPosition(pos.getX() + .5, clientPlayer.posY, pos.getZ() + .5);
                         } else if (Ariente.proxy.isJumpKeyDown()) {
                             moveToFloor = findUpperFloor(floors, (int) clientPlayer.posY);
                             System.out.println("UP: moveToFloor = " + moveToFloor);
+                            clientPlayer.setPosition(pos.getX() + .5, clientPlayer.posY, pos.getZ() + .5);
                         } else {
                             moveToFloor = -1;
                         }
@@ -276,7 +278,10 @@ public class ElevatorTile extends GenericTileEntity implements IGuiTile, ITickab
             for (Integer floor : floors) {
                 int finalIdx = idx;
                 panel.add(new HoloTextButton(x, y, 1, 1, "" + idx)
-                    .hitClientEvent((component, player, entity1, x1, y1) -> moveToFloor = finalIdx -1));
+                    .hitClientEvent((component, player, entity1, x1, y1) -> {
+                        moveToFloor = finalIdx -1;
+                        player.setPosition(pos.getX() + .5, player.posY, pos.getZ() + .5);
+                    }));
                 y++;
                 if (y > 8) {
                     y = 1;
