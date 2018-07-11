@@ -3,6 +3,7 @@ package mcjty.ariente.blocks;
 import mcjty.ariente.Ariente;
 import mcjty.ariente.blocks.decorative.BlackTechBlock;
 import mcjty.ariente.blocks.decorative.MarbleBlock;
+import mcjty.ariente.blocks.decorative.MarbleSlabBlock;
 import mcjty.ariente.blocks.generators.NegariteGeneratorTile;
 import mcjty.ariente.blocks.generators.NegariteTankRenderer;
 import mcjty.ariente.blocks.generators.NegariteTankTile;
@@ -31,6 +32,8 @@ public class ModBlocks {
     public static MarbleBlock marble_smooth;
     public static MarbleBlock marble_pilar;
     public static MarbleBlock marble_bricks;
+
+    public static MarbleSlabBlock marbleSlabBlock;
 
     public static BaseBlock lapisore;
     public static BaseBlock glowstoneore;
@@ -167,6 +170,7 @@ public class ModBlocks {
         marble_smooth = new MarbleBlock("marble_smooth");
         marble_pilar = new MarbleBlock("marble_pilar");
         marble_bricks = new MarbleBlock("marble_bricks");
+        marbleSlabBlock = new MarbleSlabBlock();
     }
 
     private static void initOres() {
@@ -244,6 +248,7 @@ public class ModBlocks {
         marble_smooth.initModel();
         marble_pilar.initModel();
         marble_bricks.initModel();
+        marbleSlabBlock.initModel();
 
         lapisore.initModel();
         glowstoneore.initModel();

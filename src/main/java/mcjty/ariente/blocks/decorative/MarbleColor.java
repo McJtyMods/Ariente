@@ -29,4 +29,9 @@ public enum MarbleColor implements IStringSerializable {
         return name;
     }
 
+    public String getUnlocalizedName()
+    {
+        return name;
+    }
+
 }
