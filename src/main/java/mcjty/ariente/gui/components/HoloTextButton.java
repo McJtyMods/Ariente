@@ -8,56 +8,50 @@ import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.util.ResourceLocation;
 import net.minecraft.util.SoundCategory;
 
-public class HoloButton extends AbstractHoloComponent {
+public class HoloTextButton extends AbstractHoloComponent {
 
-    private static final ResourceLocation image = new ResourceLocation(Ariente.MODID, "textures/gui/guielements.png");
-
-    private int normal_u;
-    private int normal_v;
-    private int hover_u;
-    private int hover_v;
     private IEvent hitEvent;
     private IEvent hitClientEvent;
+    private int color;
+    private int hoverColor;
+    private String text;
 
-    public HoloButton(double x, double y, double w, double h) {
+    public HoloTextButton(double x, double y, double w, double h, String text) {
         super(x, y, w, h);
+        this.text = text;
+        this.color = 0x777777;
+        this.hoverColor = 0xffffff;
     }
 
-    public HoloButton image(int u, int v) {
-        this.normal_u = u;
-        this.normal_v = v;
+    public HoloTextButton color(int color) {
+        this.color = color;
         return this;
     }
 
-    public HoloButton hover(int u, int v) {
-        this.hover_u = u;
-        this.hover_v = v;
+    public HoloTextButton hover(int hoverColor) {
+        this.hoverColor = hoverColor;
         return this;
     }
 
-    public HoloButton hitEvent(IEvent event) {
+    public HoloTextButton hitEvent(IEvent event) {
         this.hitEvent = event;
         return this;
     }
 
-    public HoloButton hitClientEvent(IEvent event) {
+    public HoloTextButton hitClientEvent(IEvent event) {
         this.hitClientEvent = event;
         return this;
     }
 
     @Override
     public void render(double cursorX, double cursorY) {
-        int u;
-        int v;
+        int color;
         if (isInside(cursorX, cursorY)) {
-            u = hover_u;
-            v = hover_v;
+            color = this.hoverColor;
         } else {
-            u = normal_u;
-            v = normal_v;
+            color = this.color;
         }
-        HoloGuiRenderTools.renderImage(x, y, u, v, 16, 16, 256, 256, image);
-//        HoloGuiRenderTools.renderText(x, y, "x", 0xffffff);
+        HoloGuiRenderTools.renderText(x, y, text, color);
     }
 
     @Override

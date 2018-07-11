@@ -5,10 +5,7 @@ import mcjty.ariente.entities.HoloGuiEntity;
 import mcjty.ariente.gui.HoloGuiHandler;
 import mcjty.ariente.gui.IGuiComponent;
 import mcjty.ariente.gui.IGuiTile;
-import mcjty.ariente.gui.components.HoloButton;
-import mcjty.ariente.gui.components.HoloNumber;
-import mcjty.ariente.gui.components.HoloPanel;
-import mcjty.ariente.gui.components.HoloText;
+import mcjty.ariente.gui.components.*;
 import mcjty.lib.tileentity.GenericTileEntity;
 import mcjty.theoneprobe.api.IProbeHitData;
 import mcjty.theoneprobe.api.IProbeInfo;
@@ -143,7 +140,9 @@ public class ElevatorTile extends GenericTileEntity implements IGuiTile, ITickab
             if (entity instanceof HoloGuiEntity) {
                 HoloGuiEntity holoEntity = (HoloGuiEntity) entity;
                 holoEntity.setTimeout(5);
-                double y = player.posY+player.eyeHeight - .5;
+                double oldPosY = holoEntity.posY;
+                double newPosY = player.posY+player.eyeHeight - .5;
+                double y = (newPosY + oldPosY) / 2;
                 holoEntity.setPositionAndUpdate(holoEntity.posX, y, holoEntity.posZ);
             }
             return false;
@@ -252,6 +251,11 @@ public class ElevatorTile extends GenericTileEntity implements IGuiTile, ITickab
         return getBeamBox();
     }
 
+    @Override
+    public boolean shouldRenderInPass(int pass) {
+        return pass == 1;
+    }
+
     private AxisAlignedBB getBeamBox() {
         if (cachedBox == null) {
             cachedBox = new AxisAlignedBB(getPos()).union(new AxisAlignedBB(new BlockPos(pos.getX(), pos.getY() + height + 2, pos.getZ())));
@@ -263,8 +267,25 @@ public class ElevatorTile extends GenericTileEntity implements IGuiTile, ITickab
     @Override
     public IGuiComponent createGui(HoloGuiEntity entity, String tag) {
         if (TAG_ELEVATOR.equals(tag)) {
-            return new HoloPanel(0, 0, 8, 8)
+            HoloPanel panel = new HoloPanel(0, 0, 8, 8)
                     .add(new HoloText(0, 0, 1, 1, "Floor", 0xaaccff));
+            List<Integer> floors = findFloors();
+            int x = 0;
+            int y = 1;
+            int idx = 1;
+            for (Integer floor : floors) {
+                int finalIdx = idx;
+                panel.add(new HoloTextButton(x, y, 1, 1, "" + idx)
+                    .hitClientEvent((component, player, entity1, x1, y1) -> moveToFloor = finalIdx -1));
+                y++;
+                if (y > 8) {
+                    y = 1;
+                    x++;
+                }
+                idx++;
+            }
+
+            return panel;
         } else {
             return new HoloPanel(0, 0, 8, 8)
                     .add(new HoloText(0, 2, 1, 1, "Height", 0xaaccff))

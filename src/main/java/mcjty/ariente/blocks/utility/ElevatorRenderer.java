@@ -37,9 +37,11 @@ public class ElevatorRenderer extends TileEntitySpecialRenderer<ElevatorTile> {
 //            GlStateManager.translate(x, y, z);
 
         GlStateManager.enableBlend();
-        GlStateManager.depthMask(true);
-        GlStateManager.blendFunc(GL11.GL_SRC_ALPHA, GL11.GL_ONE);
-        GlStateManager.alphaFunc(GL11.GL_GREATER, 0.003921569F);
+        GlStateManager.depthMask(false);
+//        GlStateManager.blendFunc(GL11.GL_SRC_ALPHA, GL11.GL_ONE);
+//        GlStateManager.alphaFunc(GL11.GL_GREATER, 0.003921569F);
+        GlStateManager.blendFunc(GL11.GL_ONE, GL11.GL_ONE);
+//        GlStateManager.alphaFunc(GL11.GL_GREATER, 0.003921569F);
         GlStateManager.disableCull();
         GlStateManager.enableDepth();
 
@@ -65,7 +67,7 @@ public class ElevatorRenderer extends TileEntitySpecialRenderer<ElevatorTile> {
 
         float height = te.getHeight();
 
-        for (int i = 0; i < 10 + te.getHeight() / 5; i++) {
+        for (int i = 0; i < 5 + te.getHeight() / 2; i++) {
             int ii = i % 10;
             long ticks = (tt + randomY[ii]) % 80;
             if (ticks > 40) {
@@ -74,12 +76,12 @@ public class ElevatorRenderer extends TileEntitySpecialRenderer<ElevatorTile> {
             float i1 = ticks / 40.0f;
             float xx = te.getPos().getX() + randomX[ii];
             float zz = te.getPos().getZ() + randomZ[ii];
-            float yy = te.getPos().getY() - 1.0f + i1 + randomY[ii];
-            RenderHelper.drawBeam(new RenderHelper.Vector(xx, yy, zz), new RenderHelper.Vector(xx, yy + height, zz), player, 0.1f);
+            float yy = te.getPos().getY() - 1.0f + i1 + (randomY[ii] * height) / 8.0f;
+            RenderHelper.drawBeam(new RenderHelper.Vector(xx, yy, zz), new RenderHelper.Vector(xx, yy + 4, zz), player, 0.2f);
         }
 
-        net.minecraft.util.math.Vec3d cameraPos = net.minecraft.client.renderer.ActiveRenderInfo.getCameraPosition();
-        tessellator.getBuffer().sortVertexData((float) (player.x + doubleX), (float) (player.y + doubleY), (float) (player.z + doubleZ));
+//        net.minecraft.util.math.Vec3d cameraPos = net.minecraft.client.renderer.ActiveRenderInfo.getCameraPosition();
+//        tessellator.getBuffer().sortVertexData((float) (player.x + doubleX), (float) (player.y + doubleY), (float) (player.z + doubleZ));
 //        tessellator.getBuffer().sortVertexData((float)(cameraPos.x+doubleX), (float)(cameraPos.y+doubleY), (float)(cameraPos.z+doubleZ));
         tessellator.draw();
 
