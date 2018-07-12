@@ -7,7 +7,8 @@ public enum MarbleColor implements IStringSerializable {
     WHITE("white"),
     BLUE("blue"),
     BLACK("black"),
-    LIME("lime");
+    LIME("lime"),
+    RED("red");
 
     public static final MarbleColor[] VALUES = new MarbleColor[MarbleColor.values().length];
 

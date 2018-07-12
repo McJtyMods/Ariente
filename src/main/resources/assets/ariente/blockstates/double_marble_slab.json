@@ -12,7 +12,8 @@
       "black": { "textures": { "bottom": "ariente:blocks/marble/blackmarble_smooth", "top": "ariente:blocks/marble/blackmarble_smooth", "side": "ariente:blocks/marble/blackmarble_double_slab" } },
       "blue": { "textures": { "bottom": "ariente:blocks/marble/bluemarble_smooth", "top": "ariente:blocks/marble/bluemarble_smooth", "side": "ariente:blocks/marble/bluemarble_double_slab" } },
       "white": { "textures": { "bottom": "ariente:blocks/marble/whitemarble_smooth", "top": "ariente:blocks/marble/whitemarble_smooth", "side": "ariente:blocks/marble/whitemarble_double_slab" } },
-      "lime": { "textures": { "bottom": "ariente:blocks/marble/limemarble_smooth", "top": "ariente:blocks/marble/limemarble_smooth", "side": "ariente:blocks/marble/limemarble_double_slab" } }
+      "lime": { "textures": { "bottom": "ariente:blocks/marble/limemarble_smooth", "top": "ariente:blocks/marble/limemarble_smooth", "side": "ariente:blocks/marble/limemarble_double_slab" } },
+      "red": { "textures": { "bottom": "ariente:blocks/marble/redmarble_smooth", "top": "ariente:blocks/marble/redmarble_smooth", "side": "ariente:blocks/marble/redmarble_double_slab" } }
     }
   }
 }
