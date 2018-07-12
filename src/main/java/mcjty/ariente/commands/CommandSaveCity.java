@@ -79,12 +79,13 @@ public class CommandSaveCity implements ICommand {
 
             for (int dx = cx - dimX / 2 - 1 ; dx <= cx + dimX / 2 + 1 ; dx++) {
                 for (int dz = cz - dimZ / 2 - 1 ; dz <= cz + dimZ / 2 + 1 ; dz++) {
-                    BuildingPart part = CityTools.getBuildingPart(dx, dz);
-                    if (part != null) {
-                        BuildingPart newpart = exportPart(((EntityPlayer) sender).world, new BlockPos(dx * 16 + 8, start.getY() - 1, dz * 16 + 8),
-                                palette, mapping, idx);
-                        newpart.setName(part.getName());
+                    int y = CityTools.getLowestHeight(city, dx, dz);
+                    List<BuildingPart> parts = CityTools.getBuildingParts(city, dx, dz);
+                    for (BuildingPart part : parts) {
+                        BuildingPart newpart = exportPart(part, ((EntityPlayer) sender).world, new BlockPos(dx * 16 + 8, start.getY() - 1, dz * 16 + 8),
+                                y, palette, mapping, idx);
                         array.add(newpart.writeToJSon());
+                        y += part.getSliceCount();
                     }
                 }
             }
@@ -96,6 +97,7 @@ public class CommandSaveCity implements ICommand {
                 writer.print(gson.toJson(array));
                 writer.flush();
             }
+            sender.sendMessage(new TextComponentString("Save city '" + plan.getName() + "'!"));
 
         } catch (Exception e) {
             e.printStackTrace();
@@ -126,15 +128,13 @@ public class CommandSaveCity implements ICommand {
         String sequence[] = new String[256];
     }
 
-    private static BuildingPart exportPart(World world, BlockPos start, Palette palette,
-                                   Map<IBlockState, Character> mapping, AtomicInteger idx) throws FileNotFoundException {
+    private static BuildingPart exportPart(BuildingPart part, World world, BlockPos start, int y, Palette palette,
+                                           Map<IBlockState, Character> mapping, AtomicInteger idx) throws FileNotFoundException {
         String palettechars = "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789";
         List<Slice> slices = new ArrayList<>();
-        int f = 0;
-        int cntSlices = 0;
-        while (true) {
+        for (int f = 0 ; f < part.getSliceCount() ; f++) {
             int cx = (start.getX() >> 4) * 16;
-            int cy = start.getY() + f;
+            int cy = y + f;
             int cz = (start.getZ() >> 4) * 16;
             if (cy > 255) {
                 break;
@@ -159,23 +159,15 @@ public class CommandSaveCity implements ICommand {
                         mapping.put(state, character);
                     }
                     slice.sequence[z*16+x] = String.valueOf(character);
-                    if (character != ' ') {
-                        allempty = false;
-                    }
                 }
-            }
-            f++;
-            if (!allempty) {
-                cntSlices = f;
             }
         }
 
-        String[] sl = new String[cntSlices];
-        for (int i = 0 ; i < cntSlices ; i++) {
+        String[] sl = new String[part.getSliceCount()];
+        for (int i = 0 ; i < part.getSliceCount() ; i++) {
             sl[i] = StringUtils.join(slices.get(i).sequence);
         }
 
-        return new BuildingPart("part", 16, 16, sl);
+        return new BuildingPart(part.getName(), 16, 16, sl);
     }
-
 }

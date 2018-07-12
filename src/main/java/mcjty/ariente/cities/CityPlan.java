@@ -15,7 +15,9 @@ public class CityPlan implements IAsset {
     private String name;
     private String palette;
     private Map<Character, List<String>> partPalette = new HashMap<>();
+    private List<String> cellar = new ArrayList<>();
     private List<String> plan = new ArrayList<>();
+    private List<String> level2 = new ArrayList<>();
 
     public CityPlan(JsonObject object) {
         readFromJSon(object);
@@ -38,6 +40,14 @@ public class CityPlan implements IAsset {
         return plan;
     }
 
+    public List<String> getCellar() {
+        return cellar;
+    }
+
+    public List<String> getLevel2() {
+        return level2;
+    }
+
     public String getPalette() {
         return palette;
     }
@@ -48,10 +58,20 @@ public class CityPlan implements IAsset {
         palette = object.get("palette").getAsString();
         JsonArray paletteArray = object.get("partpalette").getAsJsonArray();
         parsePaletteArray(paletteArray);
-        JsonArray planArray = object.get("plan").getAsJsonArray();
-        for (JsonElement element : planArray) {
-            String slice = element.getAsString();
-            plan.add(slice);
+
+        parsePlan(object, "plan", plan);
+        parsePlan(object, "cellar", cellar);
+        parsePlan(object, "level2", level2);
+    }
+
+    private void parsePlan(JsonObject object, String name, List<String> plan) {
+        plan.clear();
+        if (object.has(name)) {
+            JsonArray planArray = object.get(name).getAsJsonArray();
+            for (JsonElement element : planArray) {
+                String slice = element.getAsString();
+                plan.add(slice);
+            }
         }
     }
 
@@ -94,13 +114,20 @@ public class CityPlan implements IAsset {
             array.add(o);
         }
         object.add("partpalette", array);
-
-        JsonArray planArray = new JsonArray();
-        for (String p : plan) {
-            planArray.add(new JsonPrimitive(p));
-        }
-        object.add("plan", planArray);
+        writePlan(object, "plan", plan);
+        writePlan(object, "cellar", cellar);
+        writePlan(object, "level2", level2);
 
         return object;
+    }
+
+    private void writePlan(JsonObject object, String name, List<String> plan) {
+        if (!plan.isEmpty()) {
+            JsonArray planArray = new JsonArray();
+            for (String p : plan) {
+                planArray.add(new JsonPrimitive(p));
+            }
+            object.add(name, planArray);
+        }
     }
 }

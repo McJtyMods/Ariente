@@ -1,31 +1,31 @@
 [
   {
     "type": "plan",
-    "name": "smallcity1",
-    "palette": "smallcity1",
+    "name": "city1_1",
+    "palette": "city1_1",
     "partpalette": [
       {
         "char": "1",
         "parts": [
-          "core00"
+          "c1_1_00"
         ]
       },
       {
         "char": "2",
         "parts": [
-          "core10"
+          "c1_1_10"
         ]
       },
       {
         "char": "3",
         "parts": [
-          "core01"
+          "c1_1_01"
         ]
       },
       {
         "char": "4",
         "parts": [
-          "core11"
+          "c1_1_11"
         ]
       }
     ],
@@ -36,7 +36,7 @@
   },
   {
     "type": "part",
-    "name": "core00",
+    "name": "c1_1_00",
     "xsize": 16,
     "zsize": 16,
     "slices": [
@@ -261,7 +261,7 @@
   },
   {
     "type": "part",
-    "name": "core01",
+    "name": "c1_1_01",
     "xsize": 16,
     "zsize": 16,
     "slices": [
@@ -450,7 +450,7 @@
   },
   {
     "type": "part",
-    "name": "core10",
+    "name": "c1_1_10",
     "xsize": 16,
     "zsize": 16,
     "slices": [
@@ -711,7 +711,7 @@
   },
   {
     "type": "part",
-    "name": "core11",
+    "name": "c1_1_11",
     "xsize": 16,
     "zsize": 16,
     "slices": [
@@ -900,7 +900,7 @@
   },
   {
     "type": "palette",
-    "name": "smallcity1",
+    "name": "city1_1",
     "palette": [
       {
         "char": " ",

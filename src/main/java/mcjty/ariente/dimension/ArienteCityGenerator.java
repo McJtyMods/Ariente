@@ -8,6 +8,7 @@ import net.minecraft.world.World;
 import net.minecraft.world.chunk.ChunkPrimer;
 
 import java.util.HashSet;
+import java.util.List;
 import java.util.Set;
 
 public class ArienteCityGenerator {
@@ -85,10 +86,14 @@ public class ArienteCityGenerator {
     public void generate(World worldIn, int x, int z, ChunkPrimer primer) {
         City city = CityTools.getNearestCity(generator, x, z);
         if (city != null) {
-            BuildingPart part = CityTools.getBuildingPart(x, z);
-            if (part != null) {
+            List<BuildingPart> parts = CityTools.getBuildingParts(city, x, z);
+            if (!parts.isEmpty()) {
+                int y = CityTools.getLowestHeight(city, x, z);
                 CityPlan plan = city.getPlan();
-                generatePart(primer, plan, part, Transform.ROTATE_NONE, 0, city.getHeight(), 0);
+                for (BuildingPart part : parts) {
+                    generatePart(primer, plan, part, Transform.ROTATE_NONE, 0, y, 0);
+                    y += part.getSliceCount();
+                }
             }
         }
     }

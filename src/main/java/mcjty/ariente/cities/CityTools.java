@@ -82,28 +82,83 @@ public class CityTools {
         return 70;
     }
 
+    public static int getLowestHeight(City city, int x, int z) {
+        BuildingPart cellar = getCellarBuildingPart(city, x, z);
+        if (cellar != null) {
+            return city.getHeight() - cellar.getSliceCount();
+        } else {
+            return city.getHeight();
+        }
+    }
+
+    public static List<BuildingPart> getBuildingParts(City city, int x, int z) {
+        List<BuildingPart> parts = new ArrayList<>();
+        BuildingPart cellar = getCellarBuildingPart(city, x, z);
+        if (cellar != null) {
+            parts.add(cellar);
+        }
+        BuildingPart part = getBuildingPart(city, x, z);
+        if (part != null) {
+            parts.add(part);
+        }
+        BuildingPart level2 = getLevel2BuildingPart(city, x, z);
+        if (level2 != null) {
+            parts.add(level2);
+        }
+        return parts;
+    }
+
     @Nullable
-    public static BuildingPart getBuildingPart(int x, int z) {
-        ChunkCoord cityCenter = getNearestCityCenter(x, z);
-        if (cityCenter != null) {
-            CityPlan plan = getRandomCityPlan(cityCenter);
-            List<String> pattern = plan.getPlan();
-            int dimX = pattern.get(0).length();
-            int dimZ = pattern.size();
-            int ox = (x + dimX/2) - cityCenter.getChunkX();
-            int oz = (z + dimZ/2) - cityCenter.getChunkZ();
-            if (ox >= 0 && ox < dimX && oz >= 0 && oz < dimZ) {
-                Map<Character, List<String>> partPalette = plan.getPartPalette();
-                char partChar = pattern.get(oz).charAt(ox);
-                if (partChar != ' ') {
-                    List<String> parts = partPalette.get(partChar);
+    public static BuildingPart getLevel2BuildingPart(City city, int x, int z) {
+        CityPlan plan = city.getPlan();
+        ChunkCoord cityCenter = city.getCenter();
+        List<String> pattern = plan.getLevel2();
+        if (pattern.isEmpty()) {
+            return null;
+        }
+        return getCorrectPart(x, z, plan, cityCenter, pattern);
+    }
 
-                    Random random = new Random(x * 23567813L + z * 923568029L);
-                    random.nextFloat();
-                    random.nextFloat();
+    @Nullable
+    public static BuildingPart getCellarBuildingPart(City city, int x, int z) {
+        CityPlan plan = city.getPlan();
+        ChunkCoord cityCenter = city.getCenter();
+        List<String> pattern = plan.getCellar();
+        if (pattern.isEmpty()) {
+            return null;
+        }
 
-                    return AssetRegistries.PARTS.get(parts.get(random.nextInt(parts.size())));
-                }
+        return getCorrectPart(x, z, plan, cityCenter, pattern);
+    }
+
+
+    @Nullable
+    public static BuildingPart getBuildingPart(City city, int x, int z) {
+        CityPlan plan = city.getPlan();
+        ChunkCoord cityCenter = city.getCenter();
+        List<String> pattern = plan.getPlan();
+        if (pattern.isEmpty()) {
+            return null;
+        }
+        return getCorrectPart(x, z, plan, cityCenter, pattern);
+    }
+
+    private static BuildingPart getCorrectPart(int x, int z, CityPlan plan, ChunkCoord cityCenter, List<String> pattern) {
+        int dimX = pattern.get(0).length();
+        int dimZ = pattern.size();
+        int ox = (x + dimX / 2) - cityCenter.getChunkX();
+        int oz = (z + dimZ / 2) - cityCenter.getChunkZ();
+        if (ox >= 0 && ox < dimX && oz >= 0 && oz < dimZ) {
+            Map<Character, List<String>> partPalette = plan.getPartPalette();
+            char partChar = pattern.get(oz).charAt(ox);
+            if (partChar != ' ') {
+                List<String> parts = partPalette.get(partChar);
+
+                Random random = new Random(x * 23567813L + z * 923568029L);
+                random.nextFloat();
+                random.nextFloat();
+
+                return AssetRegistries.PARTS.get(parts.get(random.nextInt(parts.size())));
             }
         }
         return null;
