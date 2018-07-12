@@ -41,10 +41,8 @@ public class MarbleSlabBlock extends BlockSlab {
     public void initModel() {
         for (MarbleColor type : MarbleColor.VALUES) {
             ModelLoader.setCustomModelResourceLocation(Item.getItemFromBlock(this), type.ordinal(), new ModelResourceLocation(getRegistryName(),
-                    "type=" + type.getName() + ",half=bottom"));
+                    "half=bottom,type=" + type.getName()));
         }
-
-//        ModelLoader.setCustomModelResourceLocation(Item.getItemFromBlock(this), 0, new ModelResourceLocation(getRegistryName(), "inventory"));
     }
 
     @Override

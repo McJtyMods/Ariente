@@ -8,11 +8,11 @@
     "normal": [{}],
     "inventory": [{}],
     "type": {
-      "gray": { "textures": { "bottom": "ariente:blocks/marble/graymarble", "top": "ariente:blocks/marble/graymarble", "side": "ariente:blocks/marble/graymarble" } },
-      "black": { "textures": { "bottom": "ariente:blocks/marble/blackmarble", "top": "ariente:blocks/marble/blackmarble", "side": "ariente:blocks/marble/blackmarble" } },
-      "blue": { "textures": { "bottom": "ariente:blocks/marble/bluemarble", "top": "ariente:blocks/marble/bluemarble", "side": "ariente:blocks/marble/bluemarble" } },
-      "white": { "textures": { "bottom": "ariente:blocks/marble/whitemarble", "top": "ariente:blocks/marble/whitemarble", "side": "ariente:blocks/marble/whitemarble" } },
-      "lime": { "textures": { "bottom": "ariente:blocks/marble/limemarble", "top": "ariente:blocks/marble/limemarble", "side": "ariente:blocks/marble/limemarble" } }
+      "gray": { "textures": { "bottom": "ariente:blocks/marble/graymarble_smooth", "top": "ariente:blocks/marble/graymarble_smooth", "side": "ariente:blocks/marble/graymarble_smooth" } },
+      "black": { "textures": { "bottom": "ariente:blocks/marble/blackmarble_smooth", "top": "ariente:blocks/marble/blackmarble_smooth", "side": "ariente:blocks/marble/blackmarble_smooth" } },
+      "blue": { "textures": { "bottom": "ariente:blocks/marble/bluemarble_smooth", "top": "ariente:blocks/marble/bluemarble_smooth", "side": "ariente:blocks/marble/bluemarble_smooth" } },
+      "white": { "textures": { "bottom": "ariente:blocks/marble/whitemarble_smooth", "top": "ariente:blocks/marble/whitemarble_smooth", "side": "ariente:blocks/marble/whitemarble_smooth" } },
+      "lime": { "textures": { "bottom": "ariente:blocks/marble/limemarble_smooth", "top": "ariente:blocks/marble/limemarble_smooth", "side": "ariente:blocks/marble/limemarble_smooth" } }
     },
     "half": {
       "bottom": { "model": "half_slab" },

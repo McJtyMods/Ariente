@@ -5,7 +5,7 @@
     "model": "ariente:flatlight.obj",
     "transform" : {
       "gui": {
-        "rotation": [{ "x": 10 }, { "y": -45 }, { "z": 170 }]
+        "rotation": [{ "x": 115 }, { "y": 45 }]
       }
     }
   },

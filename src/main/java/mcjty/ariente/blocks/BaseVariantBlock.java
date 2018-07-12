@@ -1,6 +1,7 @@
 package mcjty.ariente.blocks;
 
 import mcjty.ariente.Ariente;
+import mcjty.ariente.blocks.decorative.MarbleColor;
 import mcjty.lib.blocks.BaseBlock;
 import mcjty.lib.blocks.DamageMetadataItemBlock;
 import net.minecraft.block.material.Material;
@@ -22,7 +23,7 @@ import net.minecraftforge.fml.relauncher.SideOnly;
 public abstract class BaseVariantBlock<T extends Enum<T> & IStringSerializable> extends BaseBlock {
 
     public BaseVariantBlock(String name) {
-        super(Ariente.instance, Material.ROCK, name, DamageMetadataItemBlock::new);
+        super(Ariente.instance, Material.ROCK, name, BaseVariantItemBlock::new);
         setHardness(2.0f);
         setResistance(4.0f);
         setHarvestLevel("pickaxe", 1);
@@ -43,6 +44,11 @@ public abstract class BaseVariantBlock<T extends Enum<T> & IStringSerializable> 
             ModelLoader.setCustomModelResourceLocation(Item.getItemFromBlock(this), type.ordinal(), new ModelResourceLocation(getRegistryName(), "type=" + type.getName()));
         }
     }
+
+    public String getUnlocalizedName(int meta) {
+        return super.getUnlocalizedName() + "." + getValues()[meta].getName();
+    }
+
 
     @Override
     public void getSubBlocks(CreativeTabs itemIn, NonNullList<ItemStack> tab) {

@@ -7,7 +7,13 @@ item.ariente.ingot_silver.name=Silver Ingot
 item.ariente.dust_negarite.name=Negarite Dust
 item.ariente.dust_posirite.name=Posirite Dust
 
-tile.ariente.blacktech.name=Marble Tech Block
+tile.ariente.blacktech.dots.name=Tech Block Dots
+tile.ariente.blacktech.lines.name=Tech Block Lines
+tile.ariente.blacktech.var1.name=Tech Block Variation 1
+tile.ariente.blacktech.red_var1.name=Tech Block Red Variation 1
+tile.ariente.blacktech.lines_glow.name=Tech Block Glowing Lines
+tile.ariente.blacktech.red_lines_glow.name=Tech Block Red Glowing Lines
+tile.ariente.blacktech.panel.name=Tech Block Panel
 
 tile.ariente.facade.name=Facade
 tile.ariente.connector.name=Connector
@@ -25,10 +31,35 @@ tile.ariente.elevator.name=Elevator
 tile.ariente.level_marker.name=Level Marker
 tile.ariente.flatlight.name=Flat Light
 
-tile.ariente.marble.name=Marble
-tile.ariente.marble_smooth.name=Smooth Marble
-tile.ariente.marble_pilar.name=Marble Pilar
-tile.ariente.marble_bricks.name=Marble Bricks
+tile.ariente.marble.gray.name=Gray Marble
+tile.ariente.marble.white.name=White Marble
+tile.ariente.marble.blue.name=Blue Marble
+tile.ariente.marble.black.name=Black Marble
+tile.ariente.marble.lime.name=Lime Marble
+
+tile.ariente.marble_smooth.gray.name=Gray Smooth Marble
+tile.ariente.marble_smooth.white.name=White Smooth Marble
+tile.ariente.marble_smooth.blue.name=Blue Smooth Marble
+tile.ariente.marble_smooth.black.name=Black Smooth Marble
+tile.ariente.marble_smooth.lime.name=Lime Smooth Marble
+
+tile.ariente.marble_pilar.gray.name=Gray Marble Pilar
+tile.ariente.marble_pilar.white.name=White Marble Pilar
+tile.ariente.marble_pilar.blue.name=Blue Marble Pilar
+tile.ariente.marble_pilar.black.name=Black Marble Pilar
+tile.ariente.marble_pilar.lime.name=Lime Marble Pilar
+
+tile.ariente.marble_bricks.gray.name=Gray Marble Bricks
+tile.ariente.marble_bricks.white.name=White Marble Bricks
+tile.ariente.marble_bricks.blue.name=Blue Marble Bricks
+tile.ariente.marble_bricks.black.name=Black Marble Bricks
+tile.ariente.marble_bricks.lime.name=Lime Marble Bricks
+
+tile.ariente.marble_slab.gray.name=Gray Marble Slab
+tile.ariente.marble_slab.white.name=White Marble Slab
+tile.ariente.marble_slab.blue.name=Blue Marble Slab
+tile.ariente.marble_slab.black.name=Black Marble Slab
+tile.ariente.marble_slab.lime.name=Line Marble Slab
 
 tile.ariente.lapisore.name=Lapis Ore
 tile.ariente.glowstoneore.name=Glowstone Ore

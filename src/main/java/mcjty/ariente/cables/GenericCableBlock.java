@@ -91,7 +91,7 @@ public abstract class GenericCableBlock extends Block implements WailaInfoProvid
         setHardness(1.0f);
         setSoundType(SoundType.METAL);
         setHarvestLevel("pickaxe", 0);
-        setUnlocalizedName(Ariente.creativeTab + "." + name);
+        setUnlocalizedName(Ariente.MODID + "." + name);
         setRegistryName(name);
         McJtyRegister.registerLater(this, Ariente.instance, null);
         McJtyRegister.registerLater(createItemBlock().setRegistryName(name), Ariente.instance);
