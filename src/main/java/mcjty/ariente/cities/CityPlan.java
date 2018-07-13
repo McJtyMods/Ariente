@@ -17,7 +17,9 @@ public class CityPlan implements IAsset {
     private Map<Character, List<String>> partPalette = new HashMap<>();
     private List<String> cellar = new ArrayList<>();
     private List<String> plan = new ArrayList<>();
-    private List<String> level2 = new ArrayList<>();
+    private List<String> layer2 = new ArrayList<>();
+    private int minLayer2 = 1;
+    private int maxLayer2 = 2;
 
     public CityPlan(JsonObject object) {
         readFromJSon(object);
@@ -44,8 +46,16 @@ public class CityPlan implements IAsset {
         return cellar;
     }
 
-    public List<String> getLevel2() {
-        return level2;
+    public List<String> getLayer2() {
+        return layer2;
+    }
+
+    public int getMinLayer2() {
+        return minLayer2;
+    }
+
+    public int getMaxLayer2() {
+        return maxLayer2;
     }
 
     public String getPalette() {
@@ -56,12 +66,18 @@ public class CityPlan implements IAsset {
     public void readFromJSon(JsonObject object) {
         name = object.get("name").getAsString();
         palette = object.get("palette").getAsString();
+        if (object.has("minlayer2")) {
+            minLayer2 = object.get("minlayer2").getAsInt();
+        }
+        if (object.has("maxlayer2")) {
+            maxLayer2 = object.get("maxlayer2").getAsInt();
+        }
         JsonArray paletteArray = object.get("partpalette").getAsJsonArray();
         parsePaletteArray(paletteArray);
 
         parsePlan(object, "plan", plan);
         parsePlan(object, "cellar", cellar);
-        parsePlan(object, "level2", level2);
+        parsePlan(object, "layer2", layer2);
     }
 
     private void parsePlan(JsonObject object, String name, List<String> plan) {
@@ -100,6 +116,8 @@ public class CityPlan implements IAsset {
         object.add("type", new JsonPrimitive("plan"));
         object.add("name", new JsonPrimitive(name));
         object.add("palette", new JsonPrimitive(palette));
+        object.add("minlayer2", new JsonPrimitive(minLayer2));
+        object.add("maxlayer2", new JsonPrimitive(maxLayer2));
 
         JsonArray array = new JsonArray();
         for (Map.Entry<Character, List<String>> entry : partPalette.entrySet()) {
@@ -116,7 +134,7 @@ public class CityPlan implements IAsset {
         object.add("partpalette", array);
         writePlan(object, "plan", plan);
         writePlan(object, "cellar", cellar);
-        writePlan(object, "level2", level2);
+        writePlan(object, "layer2", layer2);
 
         return object;
     }

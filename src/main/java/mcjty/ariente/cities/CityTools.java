@@ -101,22 +101,30 @@ public class CityTools {
         if (part != null) {
             parts.add(part);
         }
-        BuildingPart level2 = getLevel2BuildingPart(city, x, z);
-        if (level2 != null) {
-            parts.add(level2);
+
+        Random random = new Random(x * 6668353L + z * 666672943L);
+        random.nextFloat();
+        random.nextFloat();
+        CityPlan plan = city.getPlan();
+        int levels = plan.getMinLayer2() + random.nextInt(plan.getMaxLayer2() - plan.getMinLayer2() + 1);
+        for (int i = 0 ; i < levels ; i++) {
+            BuildingPart level2 = getLevel2BuildingPart(city, x, z, i);
+            if (level2 != null) {
+                parts.add(level2);
+            }
         }
         return parts;
     }
 
     @Nullable
-    public static BuildingPart getLevel2BuildingPart(City city, int x, int z) {
+    public static BuildingPart getLevel2BuildingPart(City city, int x, int z, int level) {
         CityPlan plan = city.getPlan();
         ChunkCoord cityCenter = city.getCenter();
-        List<String> pattern = plan.getLevel2();
+        List<String> pattern = plan.getLayer2();
         if (pattern.isEmpty()) {
             return null;
         }
-        return getCorrectPart(x, z, plan, cityCenter, pattern);
+        return getCorrectPart(x, z, plan, cityCenter, pattern, 366670937L * (level+1L));
     }
 
     @Nullable
@@ -128,7 +136,7 @@ public class CityTools {
             return null;
         }
 
-        return getCorrectPart(x, z, plan, cityCenter, pattern);
+        return getCorrectPart(x, z, plan, cityCenter, pattern, 13);
     }
 
 
@@ -140,10 +148,11 @@ public class CityTools {
         if (pattern.isEmpty()) {
             return null;
         }
-        return getCorrectPart(x, z, plan, cityCenter, pattern);
+        return getCorrectPart(x, z, plan, cityCenter, pattern, 123);
     }
 
-    private static BuildingPart getCorrectPart(int x, int z, CityPlan plan, ChunkCoord cityCenter, List<String> pattern) {
+    private static BuildingPart getCorrectPart(int x, int z, CityPlan plan, ChunkCoord cityCenter, List<String> pattern,
+                                               long randomSeed) {
         int dimX = pattern.get(0).length();
         int dimZ = pattern.size();
         int ox = (x + dimX / 2) - cityCenter.getChunkX();
@@ -154,7 +163,7 @@ public class CityTools {
             if (partChar != ' ') {
                 List<String> parts = partPalette.get(partChar);
 
-                Random random = new Random(x * 23567813L + z * 923568029L);
+                Random random = new Random(x * 23567813L + z * 923568029L + randomSeed);
                 random.nextFloat();
                 random.nextFloat();
 
