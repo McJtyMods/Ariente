@@ -77,6 +77,9 @@ public class CommandSaveCity implements ICommand {
 
             array.add(plan.writeToJSon());
 
+            cx = city.getCenter().getChunkX();
+            cz = city.getCenter().getChunkZ();
+
             for (int dx = cx - dimX / 2 - 1 ; dx <= cx + dimX / 2 + 1 ; dx++) {
                 for (int dz = cz - dimZ / 2 - 1 ; dz <= cz + dimZ / 2 + 1 ; dz++) {
                     int y = CityTools.getLowestHeight(city, dx, dz);
