@@ -113,6 +113,12 @@ public class CityTools {
                 parts.add(level2);
             }
         }
+
+        part = getTopBuildingPart(city, x, z);
+        if (part != null) {
+            parts.add(part);
+        }
+
         return parts;
     }
 
@@ -139,6 +145,17 @@ public class CityTools {
         return getCorrectPart(x, z, plan, cityCenter, pattern, 13);
     }
 
+    @Nullable
+    public static BuildingPart getTopBuildingPart(City city, int x, int z) {
+        CityPlan plan = city.getPlan();
+        ChunkCoord cityCenter = city.getCenter();
+        List<String> pattern = plan.getTop();
+        if (pattern.isEmpty()) {
+            return null;
+        }
+
+        return getCorrectPart(x, z, plan, cityCenter, pattern, 137777);
+    }
 
     @Nullable
     public static BuildingPart getBuildingPart(City city, int x, int z) {

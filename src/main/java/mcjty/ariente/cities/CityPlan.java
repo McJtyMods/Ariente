@@ -18,6 +18,7 @@ public class CityPlan implements IAsset {
     private List<String> cellar = new ArrayList<>();
     private List<String> plan = new ArrayList<>();
     private List<String> layer2 = new ArrayList<>();
+    private List<String> top = new ArrayList<>();
     private int minLayer2 = 1;
     private int maxLayer2 = 2;
 
@@ -50,6 +51,10 @@ public class CityPlan implements IAsset {
         return layer2;
     }
 
+    public List<String> getTop() {
+        return top;
+    }
+
     public int getMinLayer2() {
         return minLayer2;
     }
@@ -78,6 +83,7 @@ public class CityPlan implements IAsset {
         parsePlan(object, "plan", plan);
         parsePlan(object, "cellar", cellar);
         parsePlan(object, "layer2", layer2);
+        parsePlan(object, "top", top);
     }
 
     private void parsePlan(JsonObject object, String name, List<String> plan) {
@@ -135,6 +141,7 @@ public class CityPlan implements IAsset {
         writePlan(object, "plan", plan);
         writePlan(object, "cellar", cellar);
         writePlan(object, "layer2", layer2);
+        writePlan(object, "top", top);
 
         return object;
     }
