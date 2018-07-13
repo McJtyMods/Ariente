@@ -153,7 +153,8 @@ public class CommandSaveCity implements ICommand {
                     Character character = mapping.get(state);
                     if (character == null) {
                         while (true) {
-                            character = state.getBlock() == Blocks.AIR ? ' ' : palettechars.charAt(idx.getAndIncrement());
+                            character = (state.getBlock() == Blocks.AIR || state.getBlock() == Blocks.WATER || state.getBlock() == Blocks.FLOWING_WATER)
+                                    ? ' ' : palettechars.charAt(idx.getAndIncrement());
                             if (!palette.getPalette().containsKey(character)) {
                                 break;
                             }
