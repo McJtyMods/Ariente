@@ -31,6 +31,8 @@ tile.ariente.elevator.name=Elevator
 tile.ariente.level_marker.name=Level Marker
 tile.ariente.flatlight.name=Flat Light
 
+tile.ariente.ramp.name=Ramp
+
 tile.ariente.marble.gray.name=Gray Marble
 tile.ariente.marble.white.name=White Marble
 tile.ariente.marble.blue.name=Blue Marble

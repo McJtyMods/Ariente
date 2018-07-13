@@ -1,10 +1,7 @@
 package mcjty.ariente.blocks;
 
 import mcjty.ariente.Ariente;
-import mcjty.ariente.blocks.decorative.BlackTechBlock;
-import mcjty.ariente.blocks.decorative.DoubleMarbleSlabBlock;
-import mcjty.ariente.blocks.decorative.MarbleBlock;
-import mcjty.ariente.blocks.decorative.MarbleSlabBlock;
+import mcjty.ariente.blocks.decorative.*;
 import mcjty.ariente.blocks.generators.NegariteGeneratorTile;
 import mcjty.ariente.blocks.generators.NegariteTankRenderer;
 import mcjty.ariente.blocks.generators.NegariteTankTile;
@@ -62,6 +59,8 @@ public class ModBlocks {
     public static NetCableBlock netCableBlock;
     public static ConnectorBlock connectorBlock;
     public static FacadeBlock facadeBlock;
+
+    public static RampBlock rampBlock;
 
     public static GenericBlockBuilderFactory builderFactory;
 
@@ -174,6 +173,7 @@ public class ModBlocks {
         marble_bricks = new MarbleBlock("marble_bricks");
         marbleSlabBlock = new MarbleSlabBlock("marble_slab");
         doubleMarbleSlabBlock = new DoubleMarbleSlabBlock("double_marble_slab");
+        rampBlock = new RampBlock("ramp");
     }
 
     private static void initOres() {
@@ -247,6 +247,7 @@ public class ModBlocks {
         ClientRegistry.bindTileEntitySpecialRenderer(NegariteTankTile.class, new NegariteTankRenderer());
 
         blackmarble_techpat.initModel();
+        rampBlock.initModel();
         marble.initModel();
         marble_smooth.initModel();
         marble_pilar.initModel();

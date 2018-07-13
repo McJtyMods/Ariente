@@ -2,6 +2,7 @@ package mcjty.ariente.proxy;
 
 import com.google.common.util.concurrent.ListenableFuture;
 import mcjty.ariente.Ariente;
+import mcjty.ariente.ClientForgeEventHandlers;
 import mcjty.ariente.blocks.ModBlocks;
 import mcjty.ariente.cables.BakedModelLoader;
 import mcjty.ariente.entities.ModEntities;
@@ -28,6 +29,7 @@ public class ClientProxy extends CommonProxy {
     public void preInit(FMLPreInitializationEvent e) {
         super.preInit(e);
         MinecraftForge.EVENT_BUS.register(this);
+        MinecraftForge.EVENT_BUS.register(new ClientForgeEventHandlers());
         McJtyLibClient.preInit(e);
         OBJLoader.INSTANCE.addDomain(Ariente.MODID);
         ModelLoaderRegistry.registerLoader(new BakedModelLoader());

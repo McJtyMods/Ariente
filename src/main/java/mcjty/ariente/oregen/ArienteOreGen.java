@@ -1,9 +1,8 @@
 package mcjty.ariente.oregen;
 
-import mcjty.ariente.blocks.decorative.MarbleColor;
 import mcjty.ariente.blocks.ModBlocks;
+import mcjty.ariente.blocks.decorative.MarbleColor;
 import net.minecraft.block.Block;
-import net.minecraft.block.state.pattern.BlockMatcher;
 import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.nbt.NBTTagList;
 import net.minecraft.util.math.BlockPos;
@@ -71,7 +70,9 @@ public class ArienteOreGen implements IWorldGenerator {
 
 
     public void addOreSpawn(Block block, byte blockMeta, Block targetBlock, World world, Random random, int blockXPos, int blockZPos, int minVeinSize, int maxVeinSize, int chancesToSpawn, int minY, int maxY) {
-        WorldGenMinable minable = new WorldGenMinable(block.getStateFromMeta(blockMeta), (minVeinSize + random.nextInt(maxVeinSize - minVeinSize + 1)), BlockMatcher.forBlock(targetBlock));
+        WorldGenMinable minable = new WorldGenMinable(block.getStateFromMeta(blockMeta), (minVeinSize + random.nextInt(maxVeinSize - minVeinSize + 1)),
+                input -> input.getBlock() == targetBlock && input.getBlock().getMetaFromState(input) == 0);
+//                BlockMatcher.forBlock(targetBlock));
         for (int i = 0 ; i < chancesToSpawn ; i++) {
             int posX = blockXPos + random.nextInt(16);
             int posY = minY + random.nextInt(maxY - minY);
