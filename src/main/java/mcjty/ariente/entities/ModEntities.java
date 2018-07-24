@@ -1,6 +1,10 @@
 package mcjty.ariente.entities;
 
 import mcjty.ariente.Ariente;
+import mcjty.ariente.blocks.defense.ForceFieldPanelEntity;
+import mcjty.ariente.blocks.defense.ForceFieldPanelEntityRender;
+import mcjty.ariente.gui.HoloGuiEntity;
+import mcjty.ariente.gui.HoloGuiEntityRender;
 import net.minecraft.util.ResourceLocation;
 import net.minecraftforge.fml.client.registry.RenderingRegistry;
 import net.minecraftforge.fml.common.registry.EntityRegistry;
@@ -10,9 +14,11 @@ public class ModEntities {
     public static void init() {
         int id = 1;
         EntityRegistry.registerModEntity(new ResourceLocation(Ariente.MODID, "ariente_hologui"), HoloGuiEntity.class,
-                "ariente_hologui", id++, Ariente.instance,64,1,false);
+                "ariente_hologui", id++, Ariente.instance, 64, 1, false);
         EntityRegistry.registerModEntity(new ResourceLocation(Ariente.MODID, "ariente_laser"), LaserEntity.class,
-                "ariente_laser", id++, Ariente.instance,64,1,false);
+                "ariente_laser", id++, Ariente.instance, 64, 1, false);
+        EntityRegistry.registerModEntity(new ResourceLocation(Ariente.MODID, "ariente_forcefield_panel"), HoloGuiEntity.class,
+                "ariente_forcefield_panel", id++, Ariente.instance, 64, 1, false);
 
         id = 100;
 
@@ -23,5 +29,6 @@ public class ModEntities {
         RenderingRegistry.registerEntityRenderingHandler(HoloGuiEntity.class, new HoloGuiEntityRender.Factory());
         RenderingRegistry.registerEntityRenderingHandler(LaserEntity.class, new LaserRender.Factory());
         RenderingRegistry.registerEntityRenderingHandler(DroneEntity.class, DroneRender.FACTORY);
+        RenderingRegistry.registerEntityRenderingHandler(ForceFieldPanelEntity.class, new ForceFieldPanelEntityRender.Factory());
     }
 }

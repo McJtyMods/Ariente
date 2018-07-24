@@ -1,6 +1,5 @@
 package mcjty.ariente.gui;
 
-import mcjty.ariente.entities.HoloGuiEntity;
 import net.minecraft.entity.player.EntityPlayer;
 
 public interface IGuiComponent {

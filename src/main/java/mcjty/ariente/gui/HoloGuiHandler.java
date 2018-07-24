@@ -1,7 +1,6 @@
 package mcjty.ariente.gui;
 
 import mcjty.ariente.ModSounds;
-import mcjty.ariente.entities.HoloGuiEntity;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.tileentity.TileEntity;
 import net.minecraft.util.SoundCategory;

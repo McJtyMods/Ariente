@@ -2,6 +2,7 @@ package mcjty.ariente.blocks;
 
 import mcjty.ariente.Ariente;
 import mcjty.ariente.blocks.decorative.*;
+import mcjty.ariente.blocks.defense.ForceFieldTile;
 import mcjty.ariente.blocks.generators.NegariteGeneratorTile;
 import mcjty.ariente.blocks.generators.NegariteTankRenderer;
 import mcjty.ariente.blocks.generators.NegariteTankTile;
@@ -54,6 +55,7 @@ public class ModBlocks {
     public static GenericBlock<StorageTile, GenericContainer> storageBlock;
     public static GenericBlock<ElevatorTile, GenericContainer> elevatorBlock;
     public static GenericBlock<LevelMarkerTile, GenericContainer> levelMarkerBlock;
+    public static GenericBlock<ForceFieldTile, GenericContainer> forceFieldBlock;
     public static BaseBlock flatLightBlock;
 
     public static NetCableBlock netCableBlock;
@@ -138,6 +140,14 @@ public class ModBlocks {
                 .boundingBox((state, source, pos) -> LevelMarkerTile.BLOCK_AABB)
                 .info("message.ariente.shiftmessage")
                 .infoExtended("message.ariente.level_marker")
+                .build();
+
+        forceFieldBlock = ModBlocks.builderFactory.<ForceFieldTile> builder("forcefield")
+                .tileEntityClass(ForceFieldTile.class)
+                .emptyContainer()
+                .activateAction((world, pos, player, hand, side, hitX, hitY, hitZ) -> HoloGuiHandler.openHoloGui(world, pos, player))
+                .info("message.ariente.shiftmessage")
+                .infoExtended("message.ariente.forcefield")
                 .build();
     }
 
@@ -240,6 +250,8 @@ public class ModBlocks {
         elevatorBlock.initModel();
         ClientRegistry.bindTileEntitySpecialRenderer(ElevatorTile.class, new ElevatorRenderer());
         levelMarkerBlock.initModel();
+
+        forceFieldBlock.initModel();
 
         flatLightBlock.initModel();
         negariteGeneratorBlock.initModel();

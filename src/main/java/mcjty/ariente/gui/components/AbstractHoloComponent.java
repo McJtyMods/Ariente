@@ -1,8 +1,7 @@
 package mcjty.ariente.gui.components;
 
-import mcjty.ariente.entities.HoloGuiEntity;
+import mcjty.ariente.gui.HoloGuiEntity;
 import mcjty.ariente.gui.IGuiComponent;
-import net.minecraft.entity.Entity;
 import net.minecraft.entity.player.EntityPlayer;
 
 public abstract class AbstractHoloComponent implements IGuiComponent {

@@ -28,6 +28,7 @@ tile.ariente.negarite_generator.name=Negarite Flux Generator
 tile.ariente.negarite_tank.name=Negarite Tank
 tile.ariente.storage.name=Storage Cube
 tile.ariente.elevator.name=Elevator
+tile.ariente.forcefield.name=Forcefield Generator
 tile.ariente.level_marker.name=Level Marker
 tile.ariente.flatlight.name=Flat Light
 
@@ -86,6 +87,7 @@ tile.ariente.blueleaves.name=Blue Leaves
 entity.ariente_drone.name=Drone
 entity.ariente_hologui.name=Holo GUI
 entity.ariente_laser.name=Laser
+entity.ariente_forcefield_panel.name=Forcefield
 
 itemGroup.ariente=Ariente
 
@@ -106,3 +108,5 @@ message.ariente.elevator=\
     @fMove up and down
 message.ariente.level_marker=\
     @fMark levels for the elevator
+message.ariente.forcefield=\
+    @fForcefield generator

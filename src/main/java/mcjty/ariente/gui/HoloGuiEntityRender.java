@@ -1,7 +1,6 @@
-package mcjty.ariente.entities;
+package mcjty.ariente.gui;
 
 import mcjty.ariente.Ariente;
-import mcjty.ariente.gui.IGuiComponent;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.renderer.BufferBuilder;
 import net.minecraft.client.renderer.GlStateManager;

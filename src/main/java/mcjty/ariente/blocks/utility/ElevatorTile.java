@@ -1,7 +1,7 @@
 package mcjty.ariente.blocks.utility;
 
 import mcjty.ariente.Ariente;
-import mcjty.ariente.entities.HoloGuiEntity;
+import mcjty.ariente.gui.HoloGuiEntity;
 import mcjty.ariente.gui.HoloGuiHandler;
 import mcjty.ariente.gui.IGuiComponent;
 import mcjty.ariente.gui.IGuiTile;
@@ -269,25 +269,31 @@ public class ElevatorTile extends GenericTileEntity implements IGuiTile, ITickab
     @Override
     public IGuiComponent createGui(HoloGuiEntity entity, String tag) {
         if (TAG_ELEVATOR.equals(tag)) {
-            HoloPanel panel = new HoloPanel(0, 0, 8, 8)
-                    .add(new HoloText(0, 0, 1, 1, "Floor", 0xaaccff));
+            HoloPanel panel = new HoloPanel(0, 0, 8, 8);
             List<Integer> floors = findFloors();
-            int x = 0;
-            int y = 1;
-            int idx = 1;
-            for (Integer floor : floors) {
-                int finalIdx = idx;
-                panel.add(new HoloTextButton(x, y, 1, 1, "" + idx)
-                    .hitClientEvent((component, player, entity1, x1, y1) -> {
-                        moveToFloor = finalIdx -1;
-                        player.setPosition(pos.getX() + .5, player.posY, pos.getZ() + .5);
-                    }));
-                y++;
-                if (y > 8) {
-                    y = 1;
-                    x++;
+
+            if (!floors.isEmpty()) {
+                panel.add(new HoloText(0, 0, 1, 1, "Floor", 0xaaccff));
+                int x = 0;
+                int y = 1;
+                int idx = 1;
+                for (Integer floor : floors) {
+                    int finalIdx = idx;
+                    panel.add(new HoloTextButton(x, y, 1, 1, "" + idx)
+                            .hitClientEvent((component, player, entity1, x1, y1) -> {
+                                moveToFloor = finalIdx - 1;
+                                player.setPosition(pos.getX() + .5, player.posY, pos.getZ() + .5);
+                            }));
+                    y++;
+                    if (y > 8) {
+                        y = 1;
+                        x++;
+                    }
+                    idx++;
                 }
-                idx++;
+            } else {
+                panel.add(new HoloText(0, 0, 1, 1, "Jump: go up", 0xaaccff))
+                        .add(new HoloText(0, 1, 1, 1, "Crouch: go down", 0xaaccff));
             }
 
             return panel;

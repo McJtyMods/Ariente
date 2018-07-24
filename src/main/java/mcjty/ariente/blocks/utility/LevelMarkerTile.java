@@ -1,6 +1,6 @@
 package mcjty.ariente.blocks.utility;
 
-import mcjty.ariente.entities.HoloGuiEntity;
+import mcjty.ariente.gui.HoloGuiEntity;
 import mcjty.ariente.gui.IGuiComponent;
 import mcjty.ariente.gui.IGuiTile;
 import mcjty.ariente.gui.components.HoloPanel;
