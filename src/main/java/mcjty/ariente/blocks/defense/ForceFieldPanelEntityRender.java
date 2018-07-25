@@ -37,6 +37,7 @@ public class ForceFieldPanelEntityRender extends Render<ForceFieldPanelEntity> {
         GlStateManager.enableTexture2D();
         GlStateManager.disableLighting();
         GlStateManager.enableBlend();
+        GlStateManager.depthMask(false);
         GlStateManager.color(1.0f, 1.0f, 1.0f, 0.2f);
 
         Minecraft mc = Minecraft.getMinecraft();
@@ -69,7 +70,7 @@ public class ForceFieldPanelEntityRender extends Render<ForceFieldPanelEntity> {
 
         GlStateManager.popMatrix();
         GlStateManager.enableTexture2D();
-        GlStateManager.enableDepth();
+        GlStateManager.depthMask(true);
         GlStateManager.enableLighting();
         Minecraft.getMinecraft().entityRenderer.enableLightmap();
     }

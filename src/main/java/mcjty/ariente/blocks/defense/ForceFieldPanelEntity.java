@@ -26,6 +26,8 @@ public class ForceFieldPanelEntity extends Entity {
     private static final DataParameter<Float> DZ = EntityDataManager.<Float>createKey(ForceFieldPanelEntity.class, DataSerializers.FLOAT);
     private static final DataParameter<Float> SCALE = EntityDataManager.<Float>createKey(ForceFieldPanelEntity.class, DataSerializers.FLOAT);
 
+    private AxisAlignedBB aabb = null;
+
     public ForceFieldPanelEntity(World worldIn) {
         super(worldIn);
     }
@@ -37,20 +39,60 @@ public class ForceFieldPanelEntity extends Entity {
         setScale(scale);
 
         // @todo not efficient
-        Triangle triangle = PentakisDodecahedron.getTriangle(getIndex());
-        Vec3d offs = triangle.getMid().scale(scale);
-        Vec3d entityPos = this.getPositionVector();
-        Vec3d a = triangle.getA().scale(scale).subtract(offs).add(entityPos);
-        Vec3d b = triangle.getB().scale(scale).subtract(offs).add(entityPos);
-        Vec3d c = triangle.getC().scale(scale).subtract(offs).add(entityPos);
+//        Triangle triangle = PentakisDodecahedron.getTriangle(getIndex());
+//        Vec3d offs = triangle.getMid().scale(scale);
+//        Vec3d entityPos = this.getPositionVector();
+//        Vec3d a = triangle.getA().scale(scale).subtract(offs).add(entityPos);
+//        Vec3d b = triangle.getB().scale(scale).subtract(offs).add(entityPos);
+//        Vec3d c = triangle.getC().scale(scale).subtract(offs).add(entityPos);
+//
+//        double minx = Intersections.min3(a.x, b.x, c.x);
+//        double miny = Intersections.min3(a.y, b.y, c.y);
+//        double minz = Intersections.min3(a.z, b.z, c.z);
+//        double maxx = Intersections.max3(a.x, b.x, c.x);
+//        double maxy = Intersections.max3(a.y, b.y, c.y);
+//        double maxz = Intersections.max3(a.z, b.z, c.z);
+//        float width = (float) Math.max(maxx - minx, maxz - minz);
+//        float height = (float) (maxy - miny);
+//        setSize(width * 2.0f, height * 2.0f);
+//        setSize(width, height);
+    }
 
-        double minx = Intersections.min3(a.x, b.x, c.x);
-        double miny = Intersections.min3(a.y, b.y, c.y);
-        double minz = Intersections.min3(a.z, b.z, c.z);
-        double maxx = Intersections.max3(a.x, b.x, c.x);
-        double maxy = Intersections.max3(a.y, b.y, c.y);
-        double maxz = Intersections.max3(a.z, b.z, c.z);
-        setSize((float) Math.max(maxx-minx, maxz-minz), (float) (maxy-miny));
+    @Override
+    protected void setSize(float width, float height) {
+        super.setSize(width, height);
+//        System.out.println("width = " + width);
+//        System.out.println("height = " + height);
+//        AxisAlignedBB aabb = getEntityBoundingBox();
+//        System.out.println("aabb = " + aabb);
+    }
+
+    @Override
+    public AxisAlignedBB getEntityBoundingBox() {
+        if (aabb == null) {
+            // @todo don't do this!
+            Triangle triangle = PentakisDodecahedron.getTriangle(getIndex());
+            float scale = getScale();
+            Vec3d offs = triangle.getMid().scale(scale);
+            Vec3d entityPos = this.getPositionVector();
+            Vec3d a = triangle.getA().scale(scale).subtract(offs).add(entityPos);
+            Vec3d b = triangle.getB().scale(scale).subtract(offs).add(entityPos);
+            Vec3d c = triangle.getC().scale(scale).subtract(offs).add(entityPos);
+
+            double minx = Intersections.min3(a.x, b.x, c.x);
+            double miny = Intersections.min3(a.y, b.y, c.y);
+            double minz = Intersections.min3(a.z, b.z, c.z);
+            double maxx = Intersections.max3(a.x, b.x, c.x);
+            double maxy = Intersections.max3(a.y, b.y, c.y);
+            double maxz = Intersections.max3(a.z, b.z, c.z);
+            float width = (float) Math.max(maxx - minx, maxz - minz);
+            float height = (float) (maxy - miny);
+
+            double d0 = (double) width / 2.0D;
+            aabb = new AxisAlignedBB(this.posX - d0, this.posY, this.posZ - d0, this.posX + d0, this.posY + (double) height, this.posZ + d0);
+        }
+        return aabb;
+//        return super.getEntityBoundingBox();
     }
 
     public float getScale() {
