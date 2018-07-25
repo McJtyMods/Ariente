@@ -17,7 +17,7 @@ public class ModEntities {
                 "ariente_hologui", id++, Ariente.instance, 64, 1, false);
         EntityRegistry.registerModEntity(new ResourceLocation(Ariente.MODID, "ariente_laser"), LaserEntity.class,
                 "ariente_laser", id++, Ariente.instance, 64, 1, false);
-        EntityRegistry.registerModEntity(new ResourceLocation(Ariente.MODID, "ariente_forcefield_panel"), HoloGuiEntity.class,
+        EntityRegistry.registerModEntity(new ResourceLocation(Ariente.MODID, "ariente_forcefield_panel"), ForceFieldPanelEntity.class,
                 "ariente_forcefield_panel", id++, Ariente.instance, 64, 1, false);
 
         id = 100;

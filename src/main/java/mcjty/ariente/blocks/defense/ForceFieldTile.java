@@ -5,6 +5,7 @@ import mcjty.ariente.gui.IGuiComponent;
 import mcjty.ariente.gui.IGuiTile;
 import mcjty.ariente.gui.components.HoloPanel;
 import mcjty.ariente.gui.components.HoloText;
+import mcjty.ariente.varia.Triangle;
 import mcjty.lib.tileentity.GenericTileEntity;
 import mcjty.theoneprobe.api.IProbeHitData;
 import mcjty.theoneprobe.api.IProbeInfo;
@@ -17,6 +18,7 @@ import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.util.ITickable;
+import net.minecraft.util.math.Vec3d;
 import net.minecraft.world.World;
 import net.minecraftforge.fml.common.Optional;
 import net.minecraftforge.fml.relauncher.Side;
@@ -25,6 +27,8 @@ import net.minecraftforge.fml.relauncher.SideOnly;
 import java.util.List;
 
 public class ForceFieldTile extends GenericTileEntity implements IGuiTile, ITickable {
+
+    private static final float SCALE = 14.0f;
 
     private int[] entityIds = new int[PentakisDodecahedron.MAX_TRIANGLES];
 
@@ -50,10 +54,13 @@ public class ForceFieldTile extends GenericTileEntity implements IGuiTile, ITick
     private void activateShield() {
         for (int i = 0 ; i < PentakisDodecahedron.MAX_TRIANGLES ; i++) {
             if (entityIds[i] == -1) {
-                ForceFieldPanelEntity entity = new ForceFieldPanelEntity(world, i);
-                double x = pos.getX();
-                double y = pos.getY();
-                double z = pos.getZ();
+                Triangle triangle = PentakisDodecahedron.getTriangle(i);
+                Vec3d offs = triangle.getMid().scale(SCALE);
+                ForceFieldPanelEntity entity = new ForceFieldPanelEntity(world, i, SCALE, offs);
+                double x = pos.getX()+.5 + offs.x;
+                double y = pos.getY()+.5 + offs.y;
+                double z = pos.getZ()+.5 + offs.z;
+                entity.setPosition(x, y, z);
                 entity.setLocationAndAngles(x, y, z, 0, 0);
                 world.spawnEntity(entity);
                 entityIds[i] = entity.getEntityId();

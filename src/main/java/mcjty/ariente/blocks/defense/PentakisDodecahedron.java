@@ -1,5 +1,7 @@
 package mcjty.ariente.blocks.defense;
 
+import mcjty.ariente.varia.Intersections;
+import mcjty.ariente.varia.Triangle;
 import net.minecraft.util.math.Vec3d;
 
 import static java.lang.Math.sqrt;
@@ -26,30 +28,6 @@ public class PentakisDodecahedron {
         }
 
         public int getC() {
-            return c;
-        }
-    }
-
-    public static class Triangle {
-        private final Vec3d a;
-        private final Vec3d b;
-        private final Vec3d c;
-
-        public Triangle(Vec3d a, Vec3d b, Vec3d c) {
-            this.a = a;
-            this.b = b;
-            this.c = c;
-        }
-
-        public Vec3d getA() {
-            return a;
-        }
-
-        public Vec3d getB() {
-            return b;
-        }
-
-        public Vec3d getC() {
             return c;
         }
     }
@@ -164,6 +142,12 @@ public class PentakisDodecahedron {
 
     public static Triangle getTriangle(int index) {
         TriangleIdx tri = TRIANGLES[index];
-        return new Triangle(VERTICES[tri.getA()], VERTICES[tri.getB()], VERTICES[tri.getC()]);
+        Vec3d a = VERTICES[tri.getA()];
+        Vec3d b = VERTICES[tri.getB()];
+        Vec3d c = VERTICES[tri.getC()];
+        // The mid point is horizontally the mid point but vertically the bottom point
+        Vec3d mid = a.add(b).add(c).scale(1.0/3.0);
+        double miny = Intersections.min3(a.y, b.y, c.y);
+        return new Triangle(a, b, c, new Vec3d(mid.x, miny, mid.z));
     }
 }

@@ -1,6 +1,7 @@
 package mcjty.ariente.blocks.defense;
 
 import mcjty.ariente.Ariente;
+import mcjty.ariente.varia.Triangle;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.renderer.BufferBuilder;
 import net.minecraft.client.renderer.GlStateManager;
@@ -17,7 +18,7 @@ import javax.annotation.Nullable;
 
 public class ForceFieldPanelEntityRender extends Render<ForceFieldPanelEntity> {
 
-    private static final ResourceLocation guiBackground = new ResourceLocation(Ariente.MODID, "textures/gui/hologui.png");
+    private static final ResourceLocation guiBackground = new ResourceLocation(Ariente.MODID, "textures/entity/forcefield.png");
 
     public ForceFieldPanelEntityRender(RenderManager renderManager) {
         super(renderManager);
@@ -36,7 +37,7 @@ public class ForceFieldPanelEntityRender extends Render<ForceFieldPanelEntity> {
         GlStateManager.enableTexture2D();
         GlStateManager.disableLighting();
         GlStateManager.enableBlend();
-        GlStateManager.color(1.0f, 1.0f, 1.0f, 0.5f);
+        GlStateManager.color(1.0f, 1.0f, 1.0f, 0.2f);
 
         Minecraft mc = Minecraft.getMinecraft();
 
@@ -45,17 +46,21 @@ public class ForceFieldPanelEntityRender extends Render<ForceFieldPanelEntity> {
         builder.begin(GL11.GL_TRIANGLES, DefaultVertexFormats.POSITION_TEX);
 
         int index = entity.getIndex();
-        PentakisDodecahedron.Triangle triangle = PentakisDodecahedron.getTriangle(index);
+        Triangle triangle = PentakisDodecahedron.getTriangle(index);
 
-        Vec3d a = triangle.getA().scale(10);
-        Vec3d b = triangle.getB().scale(10);
-        Vec3d c = triangle.getC().scale(10);
+        float scale = entity.getScale();
+        Vec3d offs = triangle.getMid().scale(scale);
+//        GlStateManager.translate(offs.x, offs.y, offs.z);
+
+        Vec3d a = triangle.getA().scale(scale).subtract(offs);
+        Vec3d b = triangle.getB().scale(scale).subtract(offs);
+        Vec3d c = triangle.getC().scale(scale).subtract(offs);
 
         builder.pos(a.x, a.y, a.z).tex(0, 0).endVertex();
         builder.pos(b.x, b.y, b.z).tex(1, 0).endVertex();
-        builder.pos(c.x, c.y, c.z).tex(1, 1).endVertex();
+        builder.pos(c.x, c.y, c.z).tex(0, 1).endVertex();
 
-        builder.pos(c.x, c.y, c.z).tex(1, 1).endVertex();
+        builder.pos(c.x, c.y, c.z).tex(0, 1).endVertex();
         builder.pos(b.x, b.y, b.z).tex(1, 0).endVertex();
         builder.pos(a.x, a.y, a.z).tex(0, 0).endVertex();
 
