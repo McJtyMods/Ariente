@@ -14,11 +14,17 @@ import mcp.mobius.waila.api.IWailaConfigHandler;
 import mcp.mobius.waila.api.IWailaDataAccessor;
 import net.minecraft.block.state.IBlockState;
 import net.minecraft.entity.Entity;
+import net.minecraft.entity.EntityLivingBase;
+import net.minecraft.entity.IProjectile;
 import net.minecraft.entity.player.EntityPlayer;
+import net.minecraft.entity.projectile.EntityArrow;
 import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.NBTTagCompound;
+import net.minecraft.util.DamageSource;
 import net.minecraft.util.ITickable;
+import net.minecraft.util.math.AxisAlignedBB;
 import net.minecraft.util.math.Vec3d;
+import net.minecraft.world.Explosion;
 import net.minecraft.world.World;
 import net.minecraftforge.fml.common.Optional;
 import net.minecraftforge.fml.relauncher.Side;
@@ -28,9 +34,10 @@ import java.util.List;
 
 public class ForceFieldTile extends GenericTileEntity implements IGuiTile, ITickable {
 
-    private static final float SCALE = 14.0f;
+    private static final float SCALE = 28.0f;
 
     private int[] entityIds = new int[PentakisDodecahedron.MAX_TRIANGLES];
+    private AxisAlignedBB aabb = null;
 
     public ForceFieldTile() {
         for (int i = 0 ; i < PentakisDodecahedron.MAX_TRIANGLES ; i++) {
@@ -38,20 +45,81 @@ public class ForceFieldTile extends GenericTileEntity implements IGuiTile, ITick
         }
     }
 
+    public int[] getEntityIds() {
+        return entityIds;
+    }
+
     @Override
     public void update() {
         if (!world.isRemote) {
             activateShield();
+            collideWithEntities();
+        } else {
+            ForceFieldRenderer.register(pos);
+        }
+    }
+
+    private AxisAlignedBB getShieldAABB() {
+        if (aabb == null) {
+            double x = pos.getX() + .5;
+            double y = pos.getY() + .5;
+            double z = pos.getZ() + .5;
+            float s = SCALE * 1.03f;
+            aabb = new AxisAlignedBB(x-s, y-s, z-s, x+s, y+s, z+s);
+        }
+        return aabb;
+    }
+
+    private void collideWithEntities() {
+        double x = pos.getX() + .5;
+        double y = pos.getY() + .5;
+        double z = pos.getZ() + .5;
+        Vec3d fieldCenter = new Vec3d(x, y, z);
+        double squaredRadius = SCALE * SCALE;
+
+        List<Entity> entities = world.getEntitiesWithinAABB(Entity.class, getShieldAABB(), entity -> {
+            if (entity instanceof IProjectile || entity instanceof EntityLivingBase) {
+                Vec3d entityCenter = entity.getEntityBoundingBox().getCenter();
+                double squareDist = fieldCenter.squareDistanceTo(entityCenter);
+                if (Math.abs(squareDist - squaredRadius) < 6*6) {
+                    return true;
+                }
+            }
+            return false;
+        });
+
+        for (Entity entity : entities) {
+            for (int id : getEntityIds()) {
+                if (id != -1) {
+                    Entity pan = world.getEntityByID(id);
+                    if (pan instanceof ForceFieldPanelEntity) {
+                        ForceFieldPanelEntity panel = (ForceFieldPanelEntity) pan;
+                        if (panel.testCollision(entity, entity instanceof IProjectile ? 3.0 : 0.0)) {
+                            System.out.println("ForceFieldTile.collideWithEntities: " + entity.getName());
+                            if (entity instanceof IProjectile) {
+                                world.newExplosion(pan, entity.posX, entity.posY, entity.posZ, 2.0f, false, false);
+                                entity.setDead();
+                            } else if (entity instanceof EntityLivingBase) {
+                                entity.attackEntityFrom(DamageSource.GENERIC, 20.0f);
+                            }
+                        }
+                    }
+                }
+            }
         }
     }
 
     @Override
     public void invalidate() {
         disableShield();
+        if (world.isRemote) {
+            ForceFieldRenderer.unregister(pos);
+        }
         super.invalidate();
     }
 
     private void activateShield() {
+        boolean changed = false;
         for (int i = 0 ; i < PentakisDodecahedron.MAX_TRIANGLES ; i++) {
             if (entityIds[i] == -1) {
                 Triangle triangle = PentakisDodecahedron.getTriangle(i);
@@ -64,7 +132,11 @@ public class ForceFieldTile extends GenericTileEntity implements IGuiTile, ITick
                 entity.setLocationAndAngles(x, y, z, 0, 0);
                 world.spawnEntity(entity);
                 entityIds[i] = entity.getEntityId();
+                changed = true;
             }
+        }
+        if (changed) {
+            markDirtyClient();
         }
     }
 
@@ -78,6 +150,7 @@ public class ForceFieldTile extends GenericTileEntity implements IGuiTile, ITick
                 entityIds[i] = -1;
             }
         }
+        markDirtyClient();
     }
 
     @Override
@@ -88,6 +161,22 @@ public class ForceFieldTile extends GenericTileEntity implements IGuiTile, ITick
     @Override
     public void writeRestorableToNBT(NBTTagCompound tagCompound) {
         super.writeRestorableToNBT(tagCompound);
+    }
+
+    @Override
+    public void readFromNBT(NBTTagCompound tagCompound) {
+        super.readFromNBT(tagCompound);
+        int[] entities = tagCompound.getIntArray("entities");
+        if (entities.length == entityIds.length) {
+            System.arraycopy(entities, 0, entityIds, 0, entities.length);
+        }
+    }
+
+    @Override
+    public NBTTagCompound writeToNBT(NBTTagCompound tagCompound) {
+        tagCompound = super.writeToNBT(tagCompound);
+        tagCompound.setIntArray("entities", entityIds);
+        return tagCompound;
     }
 
     @Override

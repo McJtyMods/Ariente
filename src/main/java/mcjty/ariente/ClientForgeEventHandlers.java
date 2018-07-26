@@ -1,6 +1,7 @@
 package mcjty.ariente;
 
 import mcjty.ariente.blocks.ModBlocks;
+import mcjty.ariente.blocks.defense.ForceFieldRenderer;
 import net.minecraft.block.material.Material;
 import net.minecraft.block.state.IBlockState;
 import net.minecraft.client.renderer.GlStateManager;
@@ -10,6 +11,7 @@ import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.RayTraceResult;
 import net.minecraft.world.World;
 import net.minecraftforge.client.event.DrawBlockHighlightEvent;
+import net.minecraftforge.client.event.RenderWorldLastEvent;
 import net.minecraftforge.fml.common.eventhandler.SubscribeEvent;
 
 public class ClientForgeEventHandlers {
@@ -25,6 +27,11 @@ public class ClientForgeEventHandlers {
                 event.setCanceled(true);
             }
         }
+    }
+
+    @SubscribeEvent
+    public void onRenderWorldEvent(RenderWorldLastEvent event) {
+        ForceFieldRenderer.renderForceFields(event.getPartialTicks());
     }
 
     private static void drawSelectionBox(IBlockState state, EntityPlayer player, BlockPos pos, float partialTicks) {

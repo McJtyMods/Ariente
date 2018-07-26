@@ -23,10 +23,6 @@ import javax.annotation.Nullable;
 @SideOnly(Side.CLIENT)
 public class StorageRenderer extends TileEntitySpecialRenderer<StorageTile> {
 
-//    private static final ResourceLocation texture = new ResourceLocation(Ariente.MODID, "textures/blocks/gearSwapperFront.png");
-
-    //    private static int xx[] = new int[] { 9, 40, 9, 40 };
-//    private static int yy[] = new int[] { 7, 7, 36, 36 };
     private static int xx[] = new int[]{11, 36, 11, 36};
     private static int yy[] = new int[]{9, 9, 34, 34};
 

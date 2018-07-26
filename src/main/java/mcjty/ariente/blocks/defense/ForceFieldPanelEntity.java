@@ -26,10 +26,11 @@ public class ForceFieldPanelEntity extends Entity {
     private static final DataParameter<Float> DZ = EntityDataManager.<Float>createKey(ForceFieldPanelEntity.class, DataSerializers.FLOAT);
     private static final DataParameter<Float> SCALE = EntityDataManager.<Float>createKey(ForceFieldPanelEntity.class, DataSerializers.FLOAT);
 
-    private AxisAlignedBB aabb = null;
+//    private AxisAlignedBB aabb = null;
 
     public ForceFieldPanelEntity(World worldIn) {
         super(worldIn);
+        setSize(1.0f, 1.0f);
     }
 
     public ForceFieldPanelEntity(World worldIn, int index, float scale, Vec3d offset) {
@@ -37,63 +38,30 @@ public class ForceFieldPanelEntity extends Entity {
         setIndex(index);
         setOffset(offset);
         setScale(scale);
+    }
 
-        // @todo not efficient
-//        Triangle triangle = PentakisDodecahedron.getTriangle(getIndex());
-//        Vec3d offs = triangle.getMid().scale(scale);
-//        Vec3d entityPos = this.getPositionVector();
-//        Vec3d a = triangle.getA().scale(scale).subtract(offs).add(entityPos);
-//        Vec3d b = triangle.getB().scale(scale).subtract(offs).add(entityPos);
-//        Vec3d c = triangle.getC().scale(scale).subtract(offs).add(entityPos);
+//    @Override
+//    public AxisAlignedBB getEntityBoundingBox() {
+//        if (aabb == null) {
+//            Triangle triangle = PentakisDodecahedron.getTriangle(getIndex());
+//            float scale = getScale();
+//            Vec3d offs = triangle.getMid().scale(scale);
+//            Vec3d entityPos = this.getPositionVector();
+//            Vec3d a = triangle.getA().scale(scale).subtract(offs).add(entityPos);
+//            Vec3d b = triangle.getB().scale(scale).subtract(offs).add(entityPos);
+//            Vec3d c = triangle.getC().scale(scale).subtract(offs).add(entityPos);
 //
-//        double minx = Intersections.min3(a.x, b.x, c.x);
-//        double miny = Intersections.min3(a.y, b.y, c.y);
-//        double minz = Intersections.min3(a.z, b.z, c.z);
-//        double maxx = Intersections.max3(a.x, b.x, c.x);
-//        double maxy = Intersections.max3(a.y, b.y, c.y);
-//        double maxz = Intersections.max3(a.z, b.z, c.z);
-//        float width = (float) Math.max(maxx - minx, maxz - minz);
-//        float height = (float) (maxy - miny);
-//        setSize(width * 2.0f, height * 2.0f);
-//        setSize(width, height);
-    }
-
-    @Override
-    protected void setSize(float width, float height) {
-        super.setSize(width, height);
-//        System.out.println("width = " + width);
-//        System.out.println("height = " + height);
-//        AxisAlignedBB aabb = getEntityBoundingBox();
-//        System.out.println("aabb = " + aabb);
-    }
-
-    @Override
-    public AxisAlignedBB getEntityBoundingBox() {
-        if (aabb == null) {
-            // @todo don't do this!
-            Triangle triangle = PentakisDodecahedron.getTriangle(getIndex());
-            float scale = getScale();
-            Vec3d offs = triangle.getMid().scale(scale);
-            Vec3d entityPos = this.getPositionVector();
-            Vec3d a = triangle.getA().scale(scale).subtract(offs).add(entityPos);
-            Vec3d b = triangle.getB().scale(scale).subtract(offs).add(entityPos);
-            Vec3d c = triangle.getC().scale(scale).subtract(offs).add(entityPos);
-
-            double minx = Intersections.min3(a.x, b.x, c.x);
-            double miny = Intersections.min3(a.y, b.y, c.y);
-            double minz = Intersections.min3(a.z, b.z, c.z);
-            double maxx = Intersections.max3(a.x, b.x, c.x);
-            double maxy = Intersections.max3(a.y, b.y, c.y);
-            double maxz = Intersections.max3(a.z, b.z, c.z);
-            float width = (float) Math.max(maxx - minx, maxz - minz);
-            float height = (float) (maxy - miny);
-
-            double d0 = (double) width / 2.0D;
-            aabb = new AxisAlignedBB(this.posX - d0, this.posY, this.posZ - d0, this.posX + d0, this.posY + (double) height, this.posZ + d0);
-        }
-        return aabb;
-//        return super.getEntityBoundingBox();
-    }
+//            double minx = Intersections.min3(a.x, b.x, c.x);
+//            double miny = Intersections.min3(a.y, b.y, c.y);
+//            double minz = Intersections.min3(a.z, b.z, c.z);
+//            double maxx = Intersections.max3(a.x, b.x, c.x);
+//            double maxy = Intersections.max3(a.y, b.y, c.y);
+//            double maxz = Intersections.max3(a.z, b.z, c.z);
+//
+//            aabb = new AxisAlignedBB(minx, miny, minz, maxx, maxy, maxz);
+//        }
+//        return aabb;
+//    }
 
     public float getScale() {
         return this.dataManager.get(SCALE);
@@ -128,21 +96,6 @@ public class ForceFieldPanelEntity extends Entity {
     }
 
     @Override
-    public void onUpdate() {
-        super.onUpdate();
-    }
-
-    @Override
-    public boolean canBeCollidedWith() {
-        return true;
-    }
-
-    @Override
-    public boolean hitByEntity(Entity entityIn) {
-        return true;
-    }
-
-    @Override
     protected void entityInit() {
         this.dataManager.register(INDEX, 0);
         this.dataManager.register(DX, 0.0f);
@@ -174,7 +127,11 @@ public class ForceFieldPanelEntity extends Entity {
 
     @Override
     public void onCollideWithPlayer(EntityPlayer player) {
-        AxisAlignedBB box = player.getEntityBoundingBox();
+//        testCollision(player);
+    }
+
+    public boolean testCollision(Entity entity, double grow) {
+        AxisAlignedBB box = entity.getEntityBoundingBox().grow(grow);
         Triangle triangle = PentakisDodecahedron.getTriangle(getIndex());
         // @todo not very efficient
         float scale = getScale();
@@ -183,9 +140,7 @@ public class ForceFieldPanelEntity extends Entity {
         Vec3d a = triangle.getA().scale(scale).subtract(offs).add(entityPos);
         Vec3d b = triangle.getB().scale(scale).subtract(offs).add(entityPos);
         Vec3d c = triangle.getC().scale(scale).subtract(offs).add(entityPos);
-        if (Intersections.boxTriangleTest(box, new Triangle(a, b, c))) {
-            System.out.println("ForceFieldPanelEntity.onCollideWithPlayer");
-        }
+        return Intersections.boxTriangleTest(box, new Triangle(a, b, c));
     }
 
     @Override
@@ -203,5 +158,19 @@ public class ForceFieldPanelEntity extends Entity {
     @Override
     public RayTraceResult rayTrace(double blockReachDistance, float partialTicks) {
         return super.rayTrace(blockReachDistance, partialTicks);
+    }
+
+    @SideOnly(Side.CLIENT)
+    @Override
+    public boolean isInRangeToRender3d(double x, double y, double z) {
+        boolean rc = super.isInRangeToRender3d(x, y, z);
+        return rc;
+    }
+
+    @SideOnly(Side.CLIENT)
+    @Override
+    public boolean isInRangeToRenderDist(double distance) {
+        boolean rc = super.isInRangeToRenderDist(distance);
+        return rc;
     }
 }
