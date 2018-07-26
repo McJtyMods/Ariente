@@ -41,22 +41,19 @@ public class ForceFieldRenderer {
             TileEntity te = world.getTileEntity(pos);
             if (te instanceof ForceFieldTile) {
                 ForceFieldTile forcefield = (ForceFieldTile) te;
-                int[] entityIds = forcefield.getEntityIds();
-                for (int id : entityIds) {
-                    if (id != -1) {
-                        Entity entity = world.getEntityByID(id);
-                        if (entity != null) {
-                            // @todo optimize this into a single batch
-                            Entity renderViewEntity = Minecraft.getMinecraft().renderViewEntity;
-                            double d0 = entity.prevPosX + (entity.posX - entity.prevPosX) * partialTicks;
-                            double d1 = entity.prevPosY + (entity.posY - entity.prevPosY) * partialTicks;
-                            double d2 = entity.prevPosZ + (entity.posZ - entity.prevPosZ) * partialTicks;
-                            float f = entity.prevRotationYaw + (entity.rotationYaw - entity.prevRotationYaw) * partialTicks;
-                            double d3 = renderViewEntity.lastTickPosX + (renderViewEntity.posX - renderViewEntity.lastTickPosX) * partialTicks;
-                            double d4 = renderViewEntity.lastTickPosY + (renderViewEntity.posY - renderViewEntity.lastTickPosY) * partialTicks;
-                            double d5 = renderViewEntity.lastTickPosZ + (renderViewEntity.posZ - renderViewEntity.lastTickPosZ) * partialTicks;
-                            doRender((ForceFieldPanelEntity)entity, d0 - d3, d1 - d4, d2 - d5, f, partialTicks);
-                        }
+                PanelInfo[] panelInfo = forcefield.getPanelInfo();
+                for (PanelInfo info : panelInfo) {
+                    if (info != null) {
+                        // @todo optimize this into a single batch
+                        Entity renderViewEntity = Minecraft.getMinecraft().renderViewEntity;
+                        double d0 = info.getX();
+                        double d1 = info.getY();
+                        double d2 = info.getZ();
+                        float f = 0;
+                        double d3 = renderViewEntity.lastTickPosX + (renderViewEntity.posX - renderViewEntity.lastTickPosX) * partialTicks;
+                        double d4 = renderViewEntity.lastTickPosY + (renderViewEntity.posY - renderViewEntity.lastTickPosY) * partialTicks;
+                        double d5 = renderViewEntity.lastTickPosZ + (renderViewEntity.posZ - renderViewEntity.lastTickPosZ) * partialTicks;
+                        doRender(info, d0 - d3, d1 - d4, d2 - d5, f, partialTicks);
                     }
                 }
             } else {
@@ -68,7 +65,7 @@ public class ForceFieldRenderer {
         }
     }
 
-    private static void doRender(ForceFieldPanelEntity entity, double x, double y, double z, float entityYaw, float partialTicks) {
+    private static void doRender(PanelInfo info, double x, double y, double z, float entityYaw, float partialTicks) {
         Tessellator t = Tessellator.getInstance();
         BufferBuilder builder = t.getBuffer();
 
@@ -89,10 +86,10 @@ public class ForceFieldRenderer {
 
         builder.begin(GL11.GL_TRIANGLES, DefaultVertexFormats.POSITION_TEX);
 
-        int index = entity.getIndex();
+        int index = info.getIndex();
         Triangle triangle = PentakisDodecahedron.getTriangle(index);
 
-        float scale = entity.getScale();
+        double scale = info.getScale();
         Vec3d offs = triangle.getMid().scale(scale);
 //        GlStateManager.translate(offs.x, offs.y, offs.z);
 

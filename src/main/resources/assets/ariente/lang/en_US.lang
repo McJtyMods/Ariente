@@ -87,7 +87,6 @@ tile.ariente.blueleaves.name=Blue Leaves
 entity.ariente_drone.name=Drone
 entity.ariente_hologui.name=Holo GUI
 entity.ariente_laser.name=Laser
-entity.ariente_forcefield_panel.name=Forcefield
 
 itemGroup.ariente=Ariente
 

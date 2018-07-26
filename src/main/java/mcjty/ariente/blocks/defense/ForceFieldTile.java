@@ -17,15 +17,15 @@ import net.minecraft.entity.Entity;
 import net.minecraft.entity.EntityLivingBase;
 import net.minecraft.entity.IProjectile;
 import net.minecraft.entity.player.EntityPlayer;
-import net.minecraft.entity.projectile.EntityArrow;
 import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.NBTTagCompound;
+import net.minecraft.nbt.NBTTagList;
 import net.minecraft.util.DamageSource;
 import net.minecraft.util.ITickable;
 import net.minecraft.util.math.AxisAlignedBB;
 import net.minecraft.util.math.Vec3d;
-import net.minecraft.world.Explosion;
 import net.minecraft.world.World;
+import net.minecraftforge.common.util.Constants;
 import net.minecraftforge.fml.common.Optional;
 import net.minecraftforge.fml.relauncher.Side;
 import net.minecraftforge.fml.relauncher.SideOnly;
@@ -36,17 +36,24 @@ public class ForceFieldTile extends GenericTileEntity implements IGuiTile, ITick
 
     private static final float SCALE = 28.0f;
 
-    private int[] entityIds = new int[PentakisDodecahedron.MAX_TRIANGLES];
+    private PanelInfo[] panelInfo = new PanelInfo[PentakisDodecahedron.MAX_TRIANGLES];
+//    private int[] entityIds = new int[PentakisDodecahedron.MAX_TRIANGLES];
     private AxisAlignedBB aabb = null;
 
     public ForceFieldTile() {
         for (int i = 0 ; i < PentakisDodecahedron.MAX_TRIANGLES ; i++) {
-            entityIds[i] = -1;
+//            entityIds[i] = -1;
+            panelInfo[i] = null;
         }
     }
 
-    public int[] getEntityIds() {
-        return entityIds;
+//    public int[] getEntityIds() {
+//        return entityIds;
+//    }
+
+
+    public PanelInfo[] getPanelInfo() {
+        return panelInfo;
     }
 
     @Override
@@ -89,23 +96,40 @@ public class ForceFieldTile extends GenericTileEntity implements IGuiTile, ITick
         });
 
         for (Entity entity : entities) {
-            for (int id : getEntityIds()) {
-                if (id != -1) {
-                    Entity pan = world.getEntityByID(id);
-                    if (pan instanceof ForceFieldPanelEntity) {
-                        ForceFieldPanelEntity panel = (ForceFieldPanelEntity) pan;
-                        if (panel.testCollision(entity, entity instanceof IProjectile ? 3.0 : 0.0)) {
-                            System.out.println("ForceFieldTile.collideWithEntities: " + entity.getName());
-                            if (entity instanceof IProjectile) {
-                                world.newExplosion(pan, entity.posX, entity.posY, entity.posZ, 2.0f, false, false);
-                                entity.setDead();
-                            } else if (entity instanceof EntityLivingBase) {
-                                entity.attackEntityFrom(DamageSource.GENERIC, 20.0f);
-                            }
+            for (PanelInfo info : getPanelInfo()) {
+                if (info != null) {
+                    if (info.testCollision(entity, entity instanceof IProjectile ? 3.0 : 0.0)) {
+                        System.out.println("ForceFieldTile.collideWithEntities: " + entity.getName());
+                        if (entity instanceof IProjectile) {
+                            // Use entity prevPosX to trace the path with the triangle
+                            world.newExplosion(entity, entity.posX, entity.posY, entity.posZ, 2.0f, false, false);
+                            entity.setDead();
+                        } else if (entity instanceof EntityLivingBase) {
+                            entity.attackEntityFrom(DamageSource.GENERIC, 20.0f);
                         }
                     }
                 }
             }
+
+
+//            for (int id : getEntityIds()) {
+//                if (id != -1) {
+//                    Entity pan = world.getEntityByID(id);
+//                    if (pan instanceof ForceFieldPanelEntity) {
+//                        ForceFieldPanelEntity panel = (ForceFieldPanelEntity) pan;
+//                        if (panel.testCollision(entity, entity instanceof IProjectile ? 3.0 : 0.0)) {
+//                            System.out.println("ForceFieldTile.collideWithEntities: " + entity.getName());
+//                            if (entity instanceof IProjectile) {
+//                                // Use entity prevPosX to trace the path with the triangle
+//                                world.newExplosion(pan, entity.posX, entity.posY, entity.posZ, 2.0f, false, false);
+//                                entity.setDead();
+//                            } else if (entity instanceof EntityLivingBase) {
+//                                entity.attackEntityFrom(DamageSource.GENERIC, 20.0f);
+//                            }
+//                        }
+//                    }
+//                }
+//            }
         }
     }
 
@@ -121,19 +145,28 @@ public class ForceFieldTile extends GenericTileEntity implements IGuiTile, ITick
     private void activateShield() {
         boolean changed = false;
         for (int i = 0 ; i < PentakisDodecahedron.MAX_TRIANGLES ; i++) {
-            if (entityIds[i] == -1) {
+            if (panelInfo[i] == null) {
                 Triangle triangle = PentakisDodecahedron.getTriangle(i);
                 Vec3d offs = triangle.getMid().scale(SCALE);
-                ForceFieldPanelEntity entity = new ForceFieldPanelEntity(world, i, SCALE, offs);
                 double x = pos.getX()+.5 + offs.x;
                 double y = pos.getY()+.5 + offs.y;
                 double z = pos.getZ()+.5 + offs.z;
-                entity.setPosition(x, y, z);
-                entity.setLocationAndAngles(x, y, z, 0, 0);
-                world.spawnEntity(entity);
-                entityIds[i] = entity.getEntityId();
+                panelInfo[i] = new PanelInfo(i, x, y, z, SCALE);
                 changed = true;
             }
+//            if (entityIds[i] == -1) {
+//                Triangle triangle = PentakisDodecahedron.getTriangle(i);
+//                Vec3d offs = triangle.getMid().scale(SCALE);
+//                ForceFieldPanelEntity entity = new ForceFieldPanelEntity(world, i, SCALE, offs);
+//                double x = pos.getX()+.5 + offs.x;
+//                double y = pos.getY()+.5 + offs.y;
+//                double z = pos.getZ()+.5 + offs.z;
+//                entity.setPosition(x, y, z);
+//                entity.setLocationAndAngles(x, y, z, 0, 0);
+//                world.spawnEntity(entity);
+//                entityIds[i] = entity.getEntityId();
+//                changed = true;
+//            }
         }
         if (changed) {
             markDirtyClient();
@@ -142,13 +175,16 @@ public class ForceFieldTile extends GenericTileEntity implements IGuiTile, ITick
 
     private void disableShield() {
         for (int i = 0; i < PentakisDodecahedron.MAX_TRIANGLES; i++) {
-            if (entityIds[i] != -1) {
-                Entity entity = world.getEntityByID(entityIds[i]);
-                if (entity != null) {
-                    entity.setDead();
-                }
-                entityIds[i] = -1;
+            if (panelInfo[i] != null) {
+                panelInfo[i] = null;
             }
+//            if (entityIds[i] != -1) {
+//                Entity entity = world.getEntityByID(entityIds[i]);
+//                if (entity != null) {
+//                    entity.setDead();
+//                }
+//                entityIds[i] = -1;
+//            }
         }
         markDirtyClient();
     }
@@ -166,16 +202,44 @@ public class ForceFieldTile extends GenericTileEntity implements IGuiTile, ITick
     @Override
     public void readFromNBT(NBTTagCompound tagCompound) {
         super.readFromNBT(tagCompound);
-        int[] entities = tagCompound.getIntArray("entities");
-        if (entities.length == entityIds.length) {
-            System.arraycopy(entities, 0, entityIds, 0, entities.length);
+//        int[] entities = tagCompound.getIntArray("entities");
+//        if (entities.length == entityIds.length) {
+//            System.arraycopy(entities, 0, entityIds, 0, entities.length);
+//        }
+        for (int i = 0 ; i < panelInfo.length ; i++) {
+            panelInfo[i] = null;
+        }
+        NBTTagList list = tagCompound.getTagList("panels", Constants.NBT.TAG_COMPOUND);
+        for (int i = 0 ; i < list.tagCount() ; i++) {
+            NBTTagCompound compound = list.getCompoundTagAt(i);
+            int index = compound.getInteger("idx");
+            double x = compound.getDouble("x");
+            double y = compound.getDouble("y");
+            double z = compound.getDouble("z");
+            double scale = compound.getDouble("scale");
+            panelInfo[index] = new PanelInfo(index, x, y, z, scale);
         }
     }
 
     @Override
     public NBTTagCompound writeToNBT(NBTTagCompound tagCompound) {
         tagCompound = super.writeToNBT(tagCompound);
-        tagCompound.setIntArray("entities", entityIds);
+        NBTTagList list = new NBTTagList();
+        for (PanelInfo info : panelInfo) {
+            if (info != null) {
+                NBTTagCompound compound = new NBTTagCompound();
+                compound.setInteger("idx", info.getIndex());
+                compound.setDouble("x", info.getX());
+                compound.setDouble("y", info.getY());
+                compound.setDouble("z", info.getZ());
+                compound.setDouble("scale", info.getScale());
+                list.appendTag(compound);
+            }
+        }
+
+        tagCompound.setTag("panels", list);
+//        tagCompound.setIntArray("entities", entityIds);
+        // @todo
         return tagCompound;
     }
 
