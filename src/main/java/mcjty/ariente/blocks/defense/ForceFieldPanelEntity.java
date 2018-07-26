@@ -168,6 +168,11 @@ public class ForceFieldPanelEntity extends Entity {
     }
 
     @Override
+    public void onEntityUpdate() {
+//        super.onEntityUpdate();
+    }
+
+    @Override
     public void onCollideWithPlayer(EntityPlayer player) {
         AxisAlignedBB box = player.getEntityBoundingBox();
         Triangle triangle = PentakisDodecahedron.getTriangle(getIndex());
