@@ -145,6 +145,7 @@ public class ModBlocks {
         forceFieldBlock = ModBlocks.builderFactory.<ForceFieldTile> builder("forcefield")
                 .tileEntityClass(ForceFieldTile.class)
                 .emptyContainer()
+                .rotationType(BaseBlock.RotationType.NONE)
                 .activateAction((world, pos, player, hand, side, hitX, hitY, hitZ) -> HoloGuiHandler.openHoloGui(world, pos, player))
                 .info("message.ariente.shiftmessage")
                 .infoExtended("message.ariente.forcefield")

@@ -37,19 +37,13 @@ public class ForceFieldTile extends GenericTileEntity implements IGuiTile, ITick
     private static final float SCALE = 28.0f;
 
     private PanelInfo[] panelInfo = new PanelInfo[PentakisDodecahedron.MAX_TRIANGLES];
-//    private int[] entityIds = new int[PentakisDodecahedron.MAX_TRIANGLES];
     private AxisAlignedBB aabb = null;
 
     public ForceFieldTile() {
         for (int i = 0 ; i < PentakisDodecahedron.MAX_TRIANGLES ; i++) {
-//            entityIds[i] = -1;
             panelInfo[i] = null;
         }
     }
-
-//    public int[] getEntityIds() {
-//        return entityIds;
-//    }
 
 
     public PanelInfo[] getPanelInfo() {
@@ -110,27 +104,7 @@ public class ForceFieldTile extends GenericTileEntity implements IGuiTile, ITick
                     }
                 }
             }
-
-
-//            for (int id : getEntityIds()) {
-//                if (id != -1) {
-//                    Entity pan = world.getEntityByID(id);
-//                    if (pan instanceof ForceFieldPanelEntity) {
-//                        ForceFieldPanelEntity panel = (ForceFieldPanelEntity) pan;
-//                        if (panel.testCollision(entity, entity instanceof IProjectile ? 3.0 : 0.0)) {
-//                            System.out.println("ForceFieldTile.collideWithEntities: " + entity.getName());
-//                            if (entity instanceof IProjectile) {
-//                                // Use entity prevPosX to trace the path with the triangle
-//                                world.newExplosion(pan, entity.posX, entity.posY, entity.posZ, 2.0f, false, false);
-//                                entity.setDead();
-//                            } else if (entity instanceof EntityLivingBase) {
-//                                entity.attackEntityFrom(DamageSource.GENERIC, 20.0f);
-//                            }
-//                        }
-//                    }
-//                }
-//            }
-        }
+            }
     }
 
     @Override
@@ -154,19 +128,6 @@ public class ForceFieldTile extends GenericTileEntity implements IGuiTile, ITick
                 panelInfo[i] = new PanelInfo(i, x, y, z, SCALE);
                 changed = true;
             }
-//            if (entityIds[i] == -1) {
-//                Triangle triangle = PentakisDodecahedron.getTriangle(i);
-//                Vec3d offs = triangle.getMid().scale(SCALE);
-//                ForceFieldPanelEntity entity = new ForceFieldPanelEntity(world, i, SCALE, offs);
-//                double x = pos.getX()+.5 + offs.x;
-//                double y = pos.getY()+.5 + offs.y;
-//                double z = pos.getZ()+.5 + offs.z;
-//                entity.setPosition(x, y, z);
-//                entity.setLocationAndAngles(x, y, z, 0, 0);
-//                world.spawnEntity(entity);
-//                entityIds[i] = entity.getEntityId();
-//                changed = true;
-//            }
         }
         if (changed) {
             markDirtyClient();
@@ -178,13 +139,6 @@ public class ForceFieldTile extends GenericTileEntity implements IGuiTile, ITick
             if (panelInfo[i] != null) {
                 panelInfo[i] = null;
             }
-//            if (entityIds[i] != -1) {
-//                Entity entity = world.getEntityByID(entityIds[i]);
-//                if (entity != null) {
-//                    entity.setDead();
-//                }
-//                entityIds[i] = -1;
-//            }
         }
         markDirtyClient();
     }
@@ -202,10 +156,6 @@ public class ForceFieldTile extends GenericTileEntity implements IGuiTile, ITick
     @Override
     public void readFromNBT(NBTTagCompound tagCompound) {
         super.readFromNBT(tagCompound);
-//        int[] entities = tagCompound.getIntArray("entities");
-//        if (entities.length == entityIds.length) {
-//            System.arraycopy(entities, 0, entityIds, 0, entities.length);
-//        }
         for (int i = 0 ; i < panelInfo.length ; i++) {
             panelInfo[i] = null;
         }
@@ -238,8 +188,6 @@ public class ForceFieldTile extends GenericTileEntity implements IGuiTile, ITick
         }
 
         tagCompound.setTag("panels", list);
-//        tagCompound.setIntArray("entities", entityIds);
-        // @todo
         return tagCompound;
     }
 

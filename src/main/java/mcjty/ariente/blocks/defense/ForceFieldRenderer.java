@@ -21,7 +21,7 @@ import java.util.Set;
 
 public class ForceFieldRenderer {
 
-    private static final ResourceLocation FORCEFIELD = new ResourceLocation(Ariente.MODID, "textures/entity/forcefield.png");
+    private static final ResourceLocation FORCEFIELD = new ResourceLocation(Ariente.MODID, "textures/effects/forcefield.png");
 
     private static final Set<BlockPos> forceFields = new HashSet<>();    // A set of force fields that are in render range
 
@@ -36,26 +36,51 @@ public class ForceFieldRenderer {
     public static void renderForceFields(float partialTicks) {
         Set<BlockPos> toRemove = new HashSet<>();
         WorldClient world = Minecraft.getMinecraft().world;
-        EntityPlayerSP player = Minecraft.getMinecraft().player;
         for (BlockPos pos : forceFields) {
             TileEntity te = world.getTileEntity(pos);
             if (te instanceof ForceFieldTile) {
+                Minecraft mc = Minecraft.getMinecraft();
+                mc.entityRenderer.disableLightmap();
+                GlStateManager.enableTexture2D();
+                GlStateManager.disableLighting();
+                GlStateManager.enableBlend();
+                GlStateManager.depthMask(false);
+                GlStateManager.color(1.0f, 1.0f, 1.0f, 0.2f);
+                mc.renderEngine.bindTexture(FORCEFIELD);
+
+                Tessellator t = Tessellator.getInstance();
+                BufferBuilder builder = t.getBuffer();
+                builder.begin(GL11.GL_TRIANGLES, DefaultVertexFormats.POSITION_TEX);
+
+                Entity renderViewEntity = Minecraft.getMinecraft().renderViewEntity;
+                double dx = renderViewEntity.lastTickPosX + (renderViewEntity.posX - renderViewEntity.lastTickPosX) * partialTicks;
+                double dy = renderViewEntity.lastTickPosY + (renderViewEntity.posY - renderViewEntity.lastTickPosY) * partialTicks;
+                double dz = renderViewEntity.lastTickPosZ + (renderViewEntity.posZ - renderViewEntity.lastTickPosZ) * partialTicks;
+
                 ForceFieldTile forcefield = (ForceFieldTile) te;
                 PanelInfo[] panelInfo = forcefield.getPanelInfo();
                 for (PanelInfo info : panelInfo) {
                     if (info != null) {
-                        // @todo optimize this into a single batch
-                        Entity renderViewEntity = Minecraft.getMinecraft().renderViewEntity;
-                        double d0 = info.getX();
-                        double d1 = info.getY();
-                        double d2 = info.getZ();
-                        float f = 0;
-                        double d3 = renderViewEntity.lastTickPosX + (renderViewEntity.posX - renderViewEntity.lastTickPosX) * partialTicks;
-                        double d4 = renderViewEntity.lastTickPosY + (renderViewEntity.posY - renderViewEntity.lastTickPosY) * partialTicks;
-                        double d5 = renderViewEntity.lastTickPosZ + (renderViewEntity.posZ - renderViewEntity.lastTickPosZ) * partialTicks;
-                        doRender(info, d0 - d3, d1 - d4, d2 - d5, f, partialTicks);
+                        double scale = info.getScale();
+                        doRender(info, pos.getX() + .5 - dx, pos.getY() + .5 - dy, pos.getZ() + .5 - dz, scale);
                     }
                 }
+
+                t.draw();
+
+                GlStateManager.color(1.0f, 1.0f, 1.0f, 0.6f);
+                builder.begin(GL11.GL_TRIANGLES, DefaultVertexFormats.POSITION_TEX);
+                for (PanelInfo info : panelInfo) {
+                    if (info != null) {
+                        doRender(info, pos.getX() + .5 - dx, pos.getY() + 1.5 - dy, pos.getZ() + .5 - dz, 0.5);
+                    }
+                }
+                t.draw();
+
+                GlStateManager.enableTexture2D();
+                GlStateManager.depthMask(true);
+                GlStateManager.enableLighting();
+                mc.entityRenderer.enableLightmap();
             } else {
                 toRemove.add(pos);
             }
@@ -65,53 +90,28 @@ public class ForceFieldRenderer {
         }
     }
 
-    private static void doRender(PanelInfo info, double x, double y, double z, float entityYaw, float partialTicks) {
+    private static void doRender(PanelInfo info, double x, double y, double z, double scale) {
         Tessellator t = Tessellator.getInstance();
         BufferBuilder builder = t.getBuffer();
-
-        Minecraft.getMinecraft().entityRenderer.disableLightmap();
-
-        GlStateManager.pushMatrix();
-        GlStateManager.translate(x, y, z);
-
-        GlStateManager.enableTexture2D();
-        GlStateManager.disableLighting();
-        GlStateManager.enableBlend();
-        GlStateManager.depthMask(false);
-        GlStateManager.color(1.0f, 1.0f, 1.0f, 0.2f);
-
-        Minecraft mc = Minecraft.getMinecraft();
-
-        mc.renderEngine.bindTexture(FORCEFIELD);
-
-        builder.begin(GL11.GL_TRIANGLES, DefaultVertexFormats.POSITION_TEX);
 
         int index = info.getIndex();
         Triangle triangle = PentakisDodecahedron.getTriangle(index);
 
-        double scale = info.getScale();
         Vec3d offs = triangle.getMid().scale(scale);
-//        GlStateManager.translate(offs.x, offs.y, offs.z);
+        x += offs.x;
+        y += offs.y;
+        z += offs.z;
 
         Vec3d a = triangle.getA().scale(scale).subtract(offs);
         Vec3d b = triangle.getB().scale(scale).subtract(offs);
         Vec3d c = triangle.getC().scale(scale).subtract(offs);
 
-        builder.pos(a.x, a.y, a.z).tex(0, 0).endVertex();
-        builder.pos(b.x, b.y, b.z).tex(1, 0).endVertex();
-        builder.pos(c.x, c.y, c.z).tex(0, 1).endVertex();
+        builder.pos(x + a.x, y + a.y, z + a.z).tex(0, 0).endVertex();
+        builder.pos(x + b.x, y + b.y, z + b.z).tex(1, 0).endVertex();
+        builder.pos(x + c.x, y + c.y, z + c.z).tex(0, 1).endVertex();
 
-        builder.pos(c.x, c.y, c.z).tex(0, 1).endVertex();
-        builder.pos(b.x, b.y, b.z).tex(1, 0).endVertex();
-        builder.pos(a.x, a.y, a.z).tex(0, 0).endVertex();
-
-        t.draw();
-
-
-        GlStateManager.popMatrix();
-        GlStateManager.enableTexture2D();
-        GlStateManager.depthMask(true);
-        GlStateManager.enableLighting();
-        Minecraft.getMinecraft().entityRenderer.enableLightmap();
+        builder.pos(x + c.x, y + c.y, z + c.z).tex(0, 1).endVertex();
+        builder.pos(x + b.x, y + b.y, z + b.z).tex(1, 0).endVertex();
+        builder.pos(x + a.x, y + a.y, z + a.z).tex(0, 0).endVertex();
     }
 }
