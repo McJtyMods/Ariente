@@ -102,19 +102,23 @@ public class ForceFieldTile extends GenericTileEntity implements IGuiTile, ITick
 
         for (Entity entity : entities) {
             if (entity instanceof IProjectile) {
-                // @todo!
+                Vec3d p1 = new Vec3d(entity.prevPosX, entity.prevPosY, entity.prevPosZ);
+                Vec3d p2 = new Vec3d(entity.posX, entity.posY, entity.posZ);
+                for (PanelInfo info : getPanelInfo()) {
+                    if (info != null) {
+                        if (info.testCollisionSegment(p1, p2)) {
+                            System.out.println("ForceFieldTile.collideWithEntities: " + entity.getName());
+                            world.newExplosion(entity, entity.posX, entity.posY, entity.posZ, 2.0f, false, false);
+                            entity.setDead();
+                        }
+                    }
+                }
             } else {
                 for (PanelInfo info : getPanelInfo()) {
                     if (info != null) {
-                        if (info.testCollision(entity, 0.0)) {
+                        if (info.testCollisionEntity(entity)) {
                             System.out.println("ForceFieldTile.collideWithEntities: " + entity.getName());
-                            if (entity instanceof IProjectile) {
-                                // Use entity prevPosX to trace the path with the triangle
-                                world.newExplosion(entity, entity.posX, entity.posY, entity.posZ, 2.0f, false, false);
-                                entity.setDead();
-                            } else if (entity instanceof EntityLivingBase) {
-                                entity.attackEntityFrom(DamageSource.GENERIC, 20.0f);
-                            }
+                            entity.attackEntityFrom(DamageSource.GENERIC, 20.0f);
                         }
                     }
                 }

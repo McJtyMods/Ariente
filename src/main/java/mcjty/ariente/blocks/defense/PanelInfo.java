@@ -41,8 +41,8 @@ public class PanelInfo {
         return scale;
     }
 
-    public boolean testCollision(Entity entity, double grow) {
-        AxisAlignedBB box = entity.getEntityBoundingBox().grow(grow);
+    public boolean testCollisionEntity(Entity entity) {
+        AxisAlignedBB box = entity.getEntityBoundingBox();
         Triangle triangle = PentakisDodecahedron.getTriangle(getIndex());
         // @todo not very efficient
         Vec3d offs = triangle.getMid().scale(scale);
@@ -51,5 +51,16 @@ public class PanelInfo {
         Vec3d b = triangle.getB().scale(scale).subtract(offs).add(entityPos);
         Vec3d c = triangle.getC().scale(scale).subtract(offs).add(entityPos);
         return Intersections.boxTriangleTest(box, new Triangle(a, b, c));
+    }
+
+    public boolean testCollisionSegment(Vec3d p1, Vec3d p2) {
+        Triangle triangle = PentakisDodecahedron.getTriangle(getIndex());
+        // @todo not very efficient
+        Vec3d offs = triangle.getMid().scale(scale);
+        Vec3d entityPos = new Vec3d(x, y, z);
+        Vec3d a = triangle.getA().scale(scale).subtract(offs).add(entityPos);
+        Vec3d b = triangle.getB().scale(scale).subtract(offs).add(entityPos);
+        Vec3d c = triangle.getC().scale(scale).subtract(offs).add(entityPos);
+        return Intersections.segmentTriangleTest(p1, p2, new Triangle(a, b, c));
     }
 }
