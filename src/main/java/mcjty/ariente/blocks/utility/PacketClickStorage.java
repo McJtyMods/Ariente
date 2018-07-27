@@ -1,7 +1,6 @@
-package mcjty.ariente.network;
+package mcjty.ariente.blocks.utility;
 
 import io.netty.buffer.ByteBuf;
-import mcjty.ariente.blocks.utility.StorageTile;
 import net.minecraft.entity.player.EntityPlayerMP;
 import net.minecraft.tileentity.TileEntity;
 import net.minecraft.util.math.BlockPos;

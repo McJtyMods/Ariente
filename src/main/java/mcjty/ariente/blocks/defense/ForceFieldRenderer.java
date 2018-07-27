@@ -2,8 +2,8 @@ package mcjty.ariente.blocks.defense;
 
 import mcjty.ariente.Ariente;
 import mcjty.ariente.varia.Triangle;
+import mcjty.lib.client.RenderHelper;
 import net.minecraft.client.Minecraft;
-import net.minecraft.client.entity.EntityPlayerSP;
 import net.minecraft.client.multiplayer.WorldClient;
 import net.minecraft.client.renderer.BufferBuilder;
 import net.minecraft.client.renderer.GlStateManager;
@@ -14,16 +14,32 @@ import net.minecraft.tileentity.TileEntity;
 import net.minecraft.util.ResourceLocation;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.Vec3d;
+import org.apache.commons.lang3.tuple.Pair;
 import org.lwjgl.opengl.GL11;
 
-import java.util.HashSet;
-import java.util.Set;
+import java.util.*;
 
 public class ForceFieldRenderer {
 
     private static final ResourceLocation FORCEFIELD = new ResourceLocation(Ariente.MODID, "textures/effects/forcefield.png");
-
+    private static final ResourceLocation FORCEFIELD_HIT = new ResourceLocation(Ariente.MODID, "textures/effects/forcefield_hit.png");
+    private static final float FIELD_ALPHA = 0.3f;
     private static final Set<BlockPos> forceFields = new HashSet<>();    // A set of force fields that are in render range
+    private static Random random = new Random();
+
+    private static class DamageInfo {
+        float damage;
+        long prevticks;
+        Vec3d intersection;
+
+        public DamageInfo(float damage, long prevticks, Vec3d intersection) {
+            this.damage = damage;
+            this.prevticks = prevticks;
+            this.intersection = intersection;
+        }
+    }
+
+    private static Map<Pair<BlockPos, Integer>, DamageInfo> damageStats = new HashMap<>();
 
     public static void register(BlockPos pos) {
         forceFields.add(pos);
@@ -31,6 +47,20 @@ public class ForceFieldRenderer {
 
     public static void unregister(BlockPos pos) {
         forceFields.remove(pos);
+        Set<Pair<BlockPos, Integer>> toRemove = new HashSet<>();
+        for (Pair<BlockPos, Integer> pair : damageStats.keySet()) {
+            if (pos.equals(pair.getKey())) {
+                toRemove.add(pair);
+            }
+        }
+        for (Pair<BlockPos, Integer> pair : toRemove) {
+            damageStats.remove(pair);
+        }
+    }
+
+    public static void damageField(BlockPos pos, int index, Vec3d intersection) {
+        Pair<BlockPos, Integer> key = Pair.of(pos, index);
+        damageStats.put(key, new DamageInfo(1.0f, -1, intersection));
     }
 
     public static void renderForceFields(float partialTicks) {
@@ -45,42 +75,47 @@ public class ForceFieldRenderer {
                 GlStateManager.disableLighting();
                 GlStateManager.enableBlend();
                 GlStateManager.depthMask(false);
-                GlStateManager.color(1.0f, 1.0f, 1.0f, 0.2f);
+                GlStateManager.color(1.0f, 1.0f, 1.0f, FIELD_ALPHA);
                 mc.renderEngine.bindTexture(FORCEFIELD);
 
                 Tessellator t = Tessellator.getInstance();
                 BufferBuilder builder = t.getBuffer();
-                builder.begin(GL11.GL_TRIANGLES, DefaultVertexFormats.POSITION_TEX);
+                builder.begin(GL11.GL_TRIANGLES, DefaultVertexFormats.POSITION_TEX_COLOR);
 
                 Entity renderViewEntity = Minecraft.getMinecraft().renderViewEntity;
                 double dx = renderViewEntity.lastTickPosX + (renderViewEntity.posX - renderViewEntity.lastTickPosX) * partialTicks;
                 double dy = renderViewEntity.lastTickPosY + (renderViewEntity.posY - renderViewEntity.lastTickPosY) * partialTicks;
                 double dz = renderViewEntity.lastTickPosZ + (renderViewEntity.posZ - renderViewEntity.lastTickPosZ) * partialTicks;
+                double x = pos.getX() + .5 - dx;
+                double y = pos.getY() + .5 - dy;
+                double z = pos.getZ() + .5 - dz;
 
                 ForceFieldTile forcefield = (ForceFieldTile) te;
+                double scale = forcefield.getScale();
                 PanelInfo[] panelInfo = forcefield.getPanelInfo();
                 for (PanelInfo info : panelInfo) {
                     if (info != null) {
-                        double scale = info.getScale();
-                        doRender(info, pos.getX() + .5 - dx, pos.getY() + .5 - dy, pos.getZ() + .5 - dz, scale);
+                        renderPanel(pos, x, y, z, scale, info);
                     }
                 }
-
                 t.draw();
 
                 GlStateManager.color(1.0f, 1.0f, 1.0f, 0.6f);
-                builder.begin(GL11.GL_TRIANGLES, DefaultVertexFormats.POSITION_TEX);
+                builder.begin(GL11.GL_TRIANGLES, DefaultVertexFormats.POSITION_TEX_COLOR);
                 for (PanelInfo info : panelInfo) {
                     if (info != null) {
-                        doRender(info, pos.getX() + .5 - dx, pos.getY() + 1.5 - dy, pos.getZ() + .5 - dz, 0.5);
+                        renderPanel(pos, x, y+1, z, .5, info);
                     }
                 }
                 t.draw();
+
+                tickDamageEffects(pos, panelInfo, .5 - dx, .5 - dy, .5 - dz);
 
                 GlStateManager.enableTexture2D();
                 GlStateManager.depthMask(true);
                 GlStateManager.enableLighting();
                 mc.entityRenderer.enableLightmap();
+
             } else {
                 toRemove.add(pos);
             }
@@ -90,7 +125,70 @@ public class ForceFieldRenderer {
         }
     }
 
-    private static void doRender(PanelInfo info, double x, double y, double z, double scale) {
+    private static void tickDamageEffects(BlockPos pos, PanelInfo[] panelInfo, double x, double y, double z) {
+        Minecraft.getMinecraft().renderEngine.bindTexture(FORCEFIELD_HIT);
+        for (PanelInfo info : panelInfo) {
+            if (info != null) {
+                Pair<BlockPos, Integer> key = Pair.of(pos, info.getIndex());
+                DamageInfo damage = damageStats.get(key);
+                if (damage != null) {
+
+                    Tessellator t = Tessellator.getInstance();
+                    BufferBuilder builder = t.getBuffer();
+                    builder.begin(GL11.GL_QUADS, DefaultVertexFormats.POSITION_TEX_COLOR);
+
+                    float a = damage.damage;
+                    float scale = 2.0f;
+                    Vec3d v0 = damage.intersection.addVector(-scale, -scale, 0);
+                    Vec3d v1 = damage.intersection.addVector(scale, -scale, 0);
+                    Vec3d v2 = damage.intersection.addVector(scale, scale, 0);
+                    Vec3d v3 = damage.intersection.addVector(-scale, scale, 0);
+                    builder.pos(x + v0.x, y + v0.y, z + v0.z).tex(0, 0).color(1, 1, 1, a).endVertex();
+                    builder.pos(x + v1.x, y + v1.y, z + v1.z).tex(1, 0).color(1, 1, 1, a).endVertex();
+                    builder.pos(x + v2.x, y + v2.y, z + v2.z).tex(1, 1).color(1, 1, 1, a).endVertex();
+                    builder.pos(x + v3.x, y + v3.y, z + v3.z).tex(0, 1).color(1, 1, 1, a).endVertex();
+
+                    builder.pos(x + v3.x, y + v3.y, z + v3.z).tex(0, 0).color(1, 1, 1, a).endVertex();
+                    builder.pos(x + v2.x, y + v2.y, z + v2.z).tex(1, 0).color(1, 1, 1, a).endVertex();
+                    builder.pos(x + v1.x, y + v1.y, z + v1.z).tex(1, 1).color(1, 1, 1, a).endVertex();
+                    builder.pos(x + v0.x, y + v0.y, z + v0.z).tex(0, 1).color(1, 1, 1, a).endVertex();
+                    t.draw();
+
+
+                    long ticks = System.currentTimeMillis();
+                    long prevTicks = damage.prevticks;
+                    if (prevTicks == -1) {
+                        prevTicks = ticks-1;
+                    }
+                    long dt = ticks - prevTicks;
+                    damage.damage -= dt / 100.0f;
+                    if (damage.damage <= 0) {
+                        damageStats.remove(key);
+                    }
+                }
+            }
+        }
+    }
+
+    private static void renderPanel(BlockPos pos, double x, double y, double z, double scale, PanelInfo info) {
+        int life = info.getLife();
+        float l = 1.0f - Math.min(1.0f, - life / 50.0f);
+        if (life >= 0 || random.nextFloat() < (l / 20.0f)) {
+            Pair<BlockPos, Integer> key = Pair.of(pos, info.getIndex());
+            DamageInfo damage = damageStats.get(key);
+            if (damage != null) {
+                float d = damage.damage;
+                doRender(info, x, y, z, scale, 1.0f, 1.0f, 1.0f, FIELD_ALPHA + d * (1.0f - FIELD_ALPHA));
+            } else {
+                doRender(info, x, y, z, scale, 1.0f, 1.0f, 1.0f, FIELD_ALPHA);
+            }
+        } else {
+            doRender(info, x, y, z, scale, 1.0f, l, l, 0.1f + l * 0.1f);
+        }
+    }
+
+    private static void doRender(PanelInfo info, double x, double y, double z, double scale,
+                                 float r, float g, float b, float a) {
         Tessellator t = Tessellator.getInstance();
         BufferBuilder builder = t.getBuffer();
 
@@ -102,16 +200,17 @@ public class ForceFieldRenderer {
         y += offs.y;
         z += offs.z;
 
-        Vec3d a = triangle.getA().scale(scale).subtract(offs);
-        Vec3d b = triangle.getB().scale(scale).subtract(offs);
-        Vec3d c = triangle.getC().scale(scale).subtract(offs);
+        // @todo optimize?
+        Vec3d v0 = triangle.getA().scale(scale).subtract(offs);
+        Vec3d v1 = triangle.getB().scale(scale).subtract(offs);
+        Vec3d v2 = triangle.getC().scale(scale).subtract(offs);
 
-        builder.pos(x + a.x, y + a.y, z + a.z).tex(0, 0).endVertex();
-        builder.pos(x + b.x, y + b.y, z + b.z).tex(1, 0).endVertex();
-        builder.pos(x + c.x, y + c.y, z + c.z).tex(0, 1).endVertex();
+        builder.pos(x + v0.x, y + v0.y, z + v0.z).tex(0, 0).color(r, g, b, a).endVertex();
+        builder.pos(x + v1.x, y + v1.y, z + v1.z).tex(1, 0).color(r, g, b, a).endVertex();
+        builder.pos(x + v2.x, y + v2.y, z + v2.z).tex(0, 1).color(r, g, b, a).endVertex();
 
-        builder.pos(x + c.x, y + c.y, z + c.z).tex(0, 1).endVertex();
-        builder.pos(x + b.x, y + b.y, z + b.z).tex(1, 0).endVertex();
-        builder.pos(x + a.x, y + a.y, z + a.z).tex(0, 0).endVertex();
+        builder.pos(x + v2.x, y + v2.y, z + v2.z).tex(0, 1).color(r, g, b, a).endVertex();
+        builder.pos(x + v1.x, y + v1.y, z + v1.z).tex(1, 0).color(r, g, b, a).endVertex();
+        builder.pos(x + v0.x, y + v0.y, z + v0.z).tex(0, 0).color(r, g, b, a).endVertex();
     }
 }

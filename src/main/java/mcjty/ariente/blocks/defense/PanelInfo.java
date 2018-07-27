@@ -6,19 +6,29 @@ import net.minecraft.entity.Entity;
 import net.minecraft.util.math.AxisAlignedBB;
 import net.minecraft.util.math.Vec3d;
 
+import javax.annotation.Nullable;
+
 public class PanelInfo {
     private final int index;
     private final double x;
     private final double y;
     private final double z;
-    private final double scale;
+    private int life;       // Negative means the panel is still building up
 
-    public PanelInfo(int index, double x, double y, double z, double scale) {
+    public PanelInfo(int index, double x, double y, double z) {
         this.index = index;
         this.x = x;
         this.y = y;
         this.z = z;
-        this.scale = scale;
+        this.life = -100;
+    }
+
+    public int getLife() {
+        return life;
+    }
+
+    public void setLife(int life) {
+        this.life = life;
     }
 
     public int getIndex() {
@@ -37,11 +47,7 @@ public class PanelInfo {
         return z;
     }
 
-    public double getScale() {
-        return scale;
-    }
-
-    public boolean testCollisionEntity(Entity entity) {
+    public boolean testCollisionEntity(Entity entity, double scale) {
         AxisAlignedBB box = entity.getEntityBoundingBox();
         Triangle triangle = PentakisDodecahedron.getTriangle(getIndex());
         // @todo not very efficient
@@ -53,7 +59,8 @@ public class PanelInfo {
         return Intersections.boxTriangleTest(box, new Triangle(a, b, c));
     }
 
-    public boolean testCollisionSegment(Vec3d p1, Vec3d p2) {
+    @Nullable
+    public Vec3d testCollisionSegment(Vec3d p1, Vec3d p2, double scale) {
         Triangle triangle = PentakisDodecahedron.getTriangle(getIndex());
         // @todo not very efficient
         Vec3d offs = triangle.getMid().scale(scale);

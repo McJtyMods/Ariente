@@ -43,7 +43,7 @@ public class Intersections {
         return (min > rad || max < -rad);
     }
 
-    public static boolean segmentTriangleTest(Vec3d p1, Vec3d p2, Triangle tri) {
+    public static Vec3d segmentTriangleTest(Vec3d p1, Vec3d p2, Triangle tri) {
         // Get triangle edge vectors and plane normal
         Vec3d u = tri.b.subtract(tri.a);
         Vec3d v = tri.c.subtract(tri.a);
@@ -55,13 +55,13 @@ public class Intersections {
         double b = n.dotProduct(dir);
 
         if (Math.abs(b) < 0.00000001) {     // ray is  parallel to triangle plane
-            return Math.abs(a) < 0.00000001;                 // ray lies in triangle plane
+            return null;
         }
 
         // get intersect point of ray with triangle plane
         double r = a / b;
         if (r < 0.0) {                    // ray goes away from triangle
-            return false;                   // => no intersect
+            return null;                   // => no intersect
         }
         // for a segment, also test if (r > 1.0) => no intersect
 
@@ -79,14 +79,14 @@ public class Intersections {
         // get and test parametric coords
         double s = (uv * wv - vv * wu) / D;
         if (s < 0.0 || s > 1.0) {         // I is outside T
-            return false;
+            return null;
         }
         double t = (uv * wu - uu * wv) / D;
         if (t < 0.0 || (s + t) > 1.0) {  // I is outside T
-            return false;
+            return null;
         }
 
-        return true;                       // I is in T
+        return intersection;                       // I is in T
     }
 
     public static boolean boxTriangleTest(AxisAlignedBB aabb, Triangle tri) {

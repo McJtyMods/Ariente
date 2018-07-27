@@ -8,7 +8,6 @@ import mcjty.ariente.gui.IGuiTile;
 import mcjty.ariente.gui.components.HoloPanel;
 import mcjty.ariente.gui.components.HoloText;
 import mcjty.ariente.network.ArienteMessages;
-import mcjty.ariente.network.PacketClickStorage;
 import mcjty.lib.tileentity.GenericTileEntity;
 import mcjty.lib.varia.ItemStackList;
 import mcjty.theoneprobe.api.IProbeHitData;

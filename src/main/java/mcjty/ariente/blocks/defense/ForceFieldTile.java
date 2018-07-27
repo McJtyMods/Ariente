@@ -5,6 +5,7 @@ import mcjty.ariente.gui.IGuiComponent;
 import mcjty.ariente.gui.IGuiTile;
 import mcjty.ariente.gui.components.HoloPanel;
 import mcjty.ariente.gui.components.HoloText;
+import mcjty.ariente.network.ArienteMessages;
 import mcjty.ariente.varia.Triangle;
 import mcjty.lib.tileentity.GenericTileEntity;
 import mcjty.theoneprobe.api.IProbeHitData;
@@ -19,13 +20,11 @@ import net.minecraft.entity.IProjectile;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.NBTTagCompound;
-import net.minecraft.nbt.NBTTagList;
 import net.minecraft.util.DamageSource;
 import net.minecraft.util.ITickable;
 import net.minecraft.util.math.AxisAlignedBB;
 import net.minecraft.util.math.Vec3d;
 import net.minecraft.world.World;
-import net.minecraftforge.common.util.Constants;
 import net.minecraftforge.fml.common.Optional;
 import net.minecraftforge.fml.relauncher.Side;
 import net.minecraftforge.fml.relauncher.SideOnly;
@@ -45,6 +44,9 @@ public class ForceFieldTile extends GenericTileEntity implements IGuiTile, ITick
         }
     }
 
+    public double getScale() {
+        return SCALE;
+    }
 
     public PanelInfo[] getPanelInfo() {
         return panelInfo;
@@ -53,7 +55,7 @@ public class ForceFieldTile extends GenericTileEntity implements IGuiTile, ITick
     @Override
     public void update() {
         if (!world.isRemote) {
-            activateShield();
+            updateShield();
             collideWithEntities();
         } else {
             ForceFieldRenderer.register(pos);
@@ -65,7 +67,7 @@ public class ForceFieldTile extends GenericTileEntity implements IGuiTile, ITick
             double x = pos.getX() + .5;
             double y = pos.getY() + .5;
             double z = pos.getZ() + .5;
-            float s = SCALE * 1.03f;
+            double s = getScale() * 1.03;
             aabb = new AxisAlignedBB(x-s, y-s, z-s, x+s, y+s, z+s);
         }
         return aabb;
@@ -76,7 +78,9 @@ public class ForceFieldTile extends GenericTileEntity implements IGuiTile, ITick
         double y = pos.getY() + .5;
         double z = pos.getZ() + .5;
         Vec3d fieldCenter = new Vec3d(x, y, z);
-        double squaredRadius = SCALE * SCALE;
+        double squaredRadius = getScale() * getScale();
+
+        boolean changed = false;
 
         List<Entity> entities = world.getEntitiesWithinAABB(Entity.class, getShieldAABB(), entity -> {
             if (entity instanceof IProjectile) {
@@ -105,24 +109,39 @@ public class ForceFieldTile extends GenericTileEntity implements IGuiTile, ITick
                 Vec3d p1 = new Vec3d(entity.prevPosX, entity.prevPosY, entity.prevPosZ);
                 Vec3d p2 = new Vec3d(entity.posX, entity.posY, entity.posZ);
                 for (PanelInfo info : getPanelInfo()) {
-                    if (info != null) {
-                        if (info.testCollisionSegment(p1, p2)) {
+                    if (info != null && info.getLife() > 0) {
+                        Vec3d intersection = info.testCollisionSegment(p1, p2, getScale());
+                        if (intersection != null) {
                             System.out.println("ForceFieldTile.collideWithEntities: " + entity.getName());
-                            world.newExplosion(entity, entity.posX, entity.posY, entity.posZ, 2.0f, false, false);
+//                            world.newExplosion(entity, entity.posX, entity.posY, entity.posZ, 2.0f, false, false);
                             entity.setDead();
+                            int life = info.getLife();
+                            life -= 10;
+                            if (life <= 0) {
+                                panelInfo[info.getIndex()] = null;
+                            } else {
+                                info.setLife(life);
+                                ArienteMessages.INSTANCE.sendToDimension(
+                                        new PacketDamageForcefield(pos, info.getIndex(), intersection),
+                                        world.provider.getDimension());
+                            }
+                            changed = true;
                         }
                     }
                 }
             } else {
                 for (PanelInfo info : getPanelInfo()) {
-                    if (info != null) {
-                        if (info.testCollisionEntity(entity)) {
+                    if (info != null && info.getLife() > 0) {
+                        if (info.testCollisionEntity(entity, getScale())) {
                             System.out.println("ForceFieldTile.collideWithEntities: " + entity.getName());
                             entity.attackEntityFrom(DamageSource.GENERIC, 20.0f);
                         }
                     }
                 }
             }
+        }
+        if (changed) {
+            markDirtyClient();
         }
     }
 
@@ -135,22 +154,40 @@ public class ForceFieldTile extends GenericTileEntity implements IGuiTile, ITick
         super.invalidate();
     }
 
-    private void activateShield() {
+    private void updateShield() {
         boolean changed = false;
         for (int i = 0 ; i < PentakisDodecahedron.MAX_TRIANGLES ; i++) {
             if (panelInfo[i] == null) {
-                Triangle triangle = PentakisDodecahedron.getTriangle(i);
-                Vec3d offs = triangle.getMid().scale(SCALE);
-                double x = pos.getX()+.5 + offs.x;
-                double y = pos.getY()+.5 + offs.y;
-                double z = pos.getZ()+.5 + offs.z;
-                panelInfo[i] = new PanelInfo(i, x, y, z, SCALE);
+                createPanelInfo(i);
+                // Set a random life
+                panelInfo[i].setLife(-(world.rand.nextInt(50)+50));
                 changed = true;
+            } else {
+                PanelInfo info = this.panelInfo[i];
+                int life = info.getLife();
+                if (life < 0) {
+                    // Building up
+                    life++;
+                    if (life == 0) {
+                        life = 100; // @todo config life
+                    }
+                    info.setLife(life);
+                    changed = true;
+                }
             }
         }
         if (changed) {
             markDirtyClient();
         }
+    }
+
+    private void createPanelInfo(int i) {
+        Triangle triangle = PentakisDodecahedron.getTriangle(i);
+        Vec3d offs = triangle.getMid().scale(getScale());
+        double x = pos.getX()+.5 + offs.x;
+        double y = pos.getY()+.5 + offs.y;
+        double z = pos.getZ()+.5 + offs.z;
+        panelInfo[i] = new PanelInfo(i, x, y, z);
     }
 
     private void disableShield() {
@@ -178,35 +215,31 @@ public class ForceFieldTile extends GenericTileEntity implements IGuiTile, ITick
         for (int i = 0 ; i < panelInfo.length ; i++) {
             panelInfo[i] = null;
         }
-        NBTTagList list = tagCompound.getTagList("panels", Constants.NBT.TAG_COMPOUND);
-        for (int i = 0 ; i < list.tagCount() ; i++) {
-            NBTTagCompound compound = list.getCompoundTagAt(i);
-            int index = compound.getInteger("idx");
-            double x = compound.getDouble("x");
-            double y = compound.getDouble("y");
-            double z = compound.getDouble("z");
-            double scale = compound.getDouble("scale");
-            panelInfo[index] = new PanelInfo(index, x, y, z, scale);
+        int[] lifeIdx = tagCompound.getIntArray("life");
+        for (int i = 0 ; i < lifeIdx.length ; i++) {
+            if (lifeIdx[i] == 0) {
+                panelInfo[i] = null;
+            } else {
+                createPanelInfo(i);
+                panelInfo[i].setLife(lifeIdx[i]);
+            }
         }
     }
 
     @Override
     public NBTTagCompound writeToNBT(NBTTagCompound tagCompound) {
         tagCompound = super.writeToNBT(tagCompound);
-        NBTTagList list = new NBTTagList();
+        int[] lifeIdx = new int[PentakisDodecahedron.MAX_TRIANGLES];
+        int i = 0;
         for (PanelInfo info : panelInfo) {
             if (info != null) {
-                NBTTagCompound compound = new NBTTagCompound();
-                compound.setInteger("idx", info.getIndex());
-                compound.setDouble("x", info.getX());
-                compound.setDouble("y", info.getY());
-                compound.setDouble("z", info.getZ());
-                compound.setDouble("scale", info.getScale());
-                list.appendTag(compound);
+                lifeIdx[i++] = info.getLife();
+            } else {
+                lifeIdx[i++] = 0;
             }
         }
 
-        tagCompound.setTag("panels", list);
+        tagCompound.setIntArray("life", lifeIdx);
         return tagCompound;
     }
 
