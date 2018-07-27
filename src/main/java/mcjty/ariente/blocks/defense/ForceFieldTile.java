@@ -79,7 +79,18 @@ public class ForceFieldTile extends GenericTileEntity implements IGuiTile, ITick
         double squaredRadius = SCALE * SCALE;
 
         List<Entity> entities = world.getEntitiesWithinAABB(Entity.class, getShieldAABB(), entity -> {
-            if (entity instanceof IProjectile || entity instanceof EntityLivingBase) {
+            if (entity instanceof IProjectile) {
+                Vec3d entityPos = new Vec3d(entity.posX, entity.posY, entity.posZ);
+                double squareDist = fieldCenter.squareDistanceTo(entityPos);
+                if (Math.abs(squareDist - squaredRadius) < 6*6) {
+                    return true;
+                }
+                entityPos = new Vec3d((entity.posX + entity.prevPosX) / 2.0, (entity.posY + entity.prevPosY) / 2.0, (entity.posZ + entity.prevPosZ) / 2.0);
+                squareDist = fieldCenter.squareDistanceTo(entityPos);
+                if (Math.abs(squareDist - squaredRadius) < 6*6) {
+                    return true;
+                }
+            } else if (entity instanceof EntityLivingBase) {
                 Vec3d entityCenter = entity.getEntityBoundingBox().getCenter();
                 double squareDist = fieldCenter.squareDistanceTo(entityCenter);
                 if (Math.abs(squareDist - squaredRadius) < 6*6) {
@@ -90,21 +101,25 @@ public class ForceFieldTile extends GenericTileEntity implements IGuiTile, ITick
         });
 
         for (Entity entity : entities) {
-            for (PanelInfo info : getPanelInfo()) {
-                if (info != null) {
-                    if (info.testCollision(entity, entity instanceof IProjectile ? 3.0 : 0.0)) {
-                        System.out.println("ForceFieldTile.collideWithEntities: " + entity.getName());
-                        if (entity instanceof IProjectile) {
-                            // Use entity prevPosX to trace the path with the triangle
-                            world.newExplosion(entity, entity.posX, entity.posY, entity.posZ, 2.0f, false, false);
-                            entity.setDead();
-                        } else if (entity instanceof EntityLivingBase) {
-                            entity.attackEntityFrom(DamageSource.GENERIC, 20.0f);
+            if (entity instanceof IProjectile) {
+                // @todo!
+            } else {
+                for (PanelInfo info : getPanelInfo()) {
+                    if (info != null) {
+                        if (info.testCollision(entity, 0.0)) {
+                            System.out.println("ForceFieldTile.collideWithEntities: " + entity.getName());
+                            if (entity instanceof IProjectile) {
+                                // Use entity prevPosX to trace the path with the triangle
+                                world.newExplosion(entity, entity.posX, entity.posY, entity.posZ, 2.0f, false, false);
+                                entity.setDead();
+                            } else if (entity instanceof EntityLivingBase) {
+                                entity.attackEntityFrom(DamageSource.GENERIC, 20.0f);
+                            }
                         }
                     }
                 }
             }
-            }
+        }
     }
 
     @Override
