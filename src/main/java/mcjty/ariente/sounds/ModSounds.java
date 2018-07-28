@@ -1,5 +1,6 @@
-package mcjty.ariente;
+package mcjty.ariente.sounds;
 
+import mcjty.ariente.Ariente;
 import net.minecraft.util.ResourceLocation;
 import net.minecraft.util.SoundEvent;
 import net.minecraftforge.registries.IForgeRegistry;
@@ -14,6 +15,8 @@ public class ModSounds {
     public static final SoundEvent droneDeath = new SoundEvent(new ResourceLocation(Ariente.MODID, "drone_death")).setRegistryName(new ResourceLocation(Ariente.MODID, "drone_death"));
     public static final SoundEvent droneShoot = new SoundEvent(new ResourceLocation(Ariente.MODID, "drone_shoot")).setRegistryName(new ResourceLocation(Ariente.MODID, "drone_shoot"));
 
+    public static final SoundEvent forcefield = new SoundEvent(new ResourceLocation(Ariente.MODID, "forcefield")).setRegistryName(new ResourceLocation(Ariente.MODID, "forcefield"));
+
     public static void init(IForgeRegistry<SoundEvent> registry) {
         registry.register(guiclick);
         registry.register(guiopen);
@@ -21,6 +24,7 @@ public class ModSounds {
         registry.register(droneHurt);
         registry.register(droneDeath);
         registry.register(droneShoot);
+        registry.register(forcefield);
     }
 
 }

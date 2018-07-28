@@ -2,7 +2,7 @@ package mcjty.ariente.gui;
 
 import com.google.common.base.Optional;
 import mcjty.ariente.Ariente;
-import mcjty.ariente.ModSounds;
+import mcjty.ariente.sounds.ModSounds;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.nbt.NBTTagCompound;

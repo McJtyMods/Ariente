@@ -4,5 +4,5 @@
     "drone_ambient" : {"category": "hostile", "sounds": ["ariente:droneambient"]},
     "drone_hurt" : {"category": "hostile", "sounds": ["ariente:dronehurt"]},
     "drone_death" : {"category": "hostile", "sounds": ["ariente:dronedeath"]},
-    "drone_shoot" : {"category": "hostile", "sounds": ["ariente:laser"]}
+    "forcefield" : {"category": "block", "sounds": ["ariente:forcefield"]}
 }

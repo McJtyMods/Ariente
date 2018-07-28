@@ -6,6 +6,7 @@ import mcjty.ariente.gui.IGuiTile;
 import mcjty.ariente.gui.components.HoloPanel;
 import mcjty.ariente.gui.components.HoloText;
 import mcjty.ariente.network.ArienteMessages;
+import mcjty.ariente.sounds.ISoundProducer;
 import mcjty.ariente.varia.Triangle;
 import mcjty.lib.tileentity.GenericTileEntity;
 import mcjty.theoneprobe.api.IProbeHitData;
@@ -33,7 +34,7 @@ import java.util.List;
 
 import static mcjty.ariente.config.ArienteConfiguration.SHIELD_PANEL_LIFE;
 
-public class ForceFieldTile extends GenericTileEntity implements IGuiTile, ITickable {
+public class ForceFieldTile extends GenericTileEntity implements IGuiTile, ITickable, ISoundProducer {
 
     private static final float SCALE = 28.0f;
 
@@ -61,6 +62,7 @@ public class ForceFieldTile extends GenericTileEntity implements IGuiTile, ITick
             collideWithEntities();
         } else {
             ForceFieldRenderer.register(pos);
+            ForceFieldSounds.doSounds(this);
         }
     }
 
@@ -73,6 +75,18 @@ public class ForceFieldTile extends GenericTileEntity implements IGuiTile, ITick
             aabb = new AxisAlignedBB(x-s, y-s, z-s, x+s, y+s, z+s);
         }
         return aabb;
+    }
+
+    public boolean entityNearField(Entity entity) {
+        double x = pos.getX() + .5;
+        double y = pos.getY() + .5;
+        double z = pos.getZ() + .5;
+        double squaredRadius = getScale() * getScale();
+
+        Vec3d fieldCenter = new Vec3d(x, y, z);
+        Vec3d entityCenter = entity.getEntityBoundingBox().getCenter();
+        double squareDist = fieldCenter.squareDistanceTo(entityCenter);
+        return Math.abs(squareDist - squaredRadius) < 6*6;
     }
 
     private void collideWithEntities() {
@@ -117,7 +131,7 @@ public class ForceFieldTile extends GenericTileEntity implements IGuiTile, ITick
 //                            world.newExplosion(entity, entity.posX, entity.posY, entity.posZ, 2.0f, false, false);
                             entity.setDead();
                             int life = info.getLife();
-                            life -= 10;
+                            life -= 10; // @todo make dependant on arrow
                             if (life <= 0) {
                                 panelInfo[info.getIndex()] = null;
                                 world.newExplosion(entity, entity.posX, entity.posY, entity.posZ, 2.0f, false, false);

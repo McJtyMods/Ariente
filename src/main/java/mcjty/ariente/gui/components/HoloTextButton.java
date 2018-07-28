@@ -1,6 +1,6 @@
 package mcjty.ariente.gui.components;
 
-import mcjty.ariente.ModSounds;
+import mcjty.ariente.sounds.ModSounds;
 import mcjty.ariente.gui.HoloGuiEntity;
 import mcjty.ariente.gui.HoloGuiRenderTools;
 import net.minecraft.entity.player.EntityPlayer;

@@ -65,6 +65,10 @@ public class ForceFieldRenderer {
 
     private static long randomSeedCounter = 0;
 
+    public static Set<BlockPos> getForceFields() {
+        return forceFields;
+    }
+
     public static void renderForceFields(float partialTicks) {
         Set<BlockPos> toRemove = new HashSet<>();
         WorldClient world = Minecraft.getMinecraft().world;
@@ -96,17 +100,11 @@ public class ForceFieldRenderer {
                 PanelInfo[] panelInfo = forcefield.getPanelInfo();
 
                 randomSeedCounter++;
-                random.setSeed(randomSeedCounter);
-                random.nextFloat();
-                random.nextFloat();
                 renderPanels(pos, t, builder, x, y, z, scale, panelInfo);
                 GlStateManager.color(1.0f, 1.0f, 1.0f, 0.6f);
-                random.setSeed(randomSeedCounter);
-                random.nextFloat();
-                random.nextFloat();
                 renderPanels(pos, t, builder, x, y+1, z, .5, panelInfo);
 
-                tickDamageEffects(pos, panelInfo, .5 - dx, .5 - dy, .5 - dz);
+                tickDamageEffects(pos, panelInfo, .5 - dx, .5 - dy, .5 - dz, scale);
 
                 GlStateManager.enableTexture2D();
                 GlStateManager.depthMask(true);
@@ -123,6 +121,10 @@ public class ForceFieldRenderer {
     }
 
     private static void renderPanels(BlockPos pos, Tessellator t, BufferBuilder builder, double x, double y, double z, double scale, PanelInfo[] panelInfo) {
+        random.setSeed(randomSeedCounter);
+        random.nextFloat();
+        random.nextFloat();
+
         builder.begin(GL11.GL_TRIANGLES, DefaultVertexFormats.POSITION_TEX_COLOR);
         for (PanelInfo info : panelInfo) {
             if (info != null) {
@@ -132,24 +134,42 @@ public class ForceFieldRenderer {
         t.draw();
     }
 
-    private static void tickDamageEffects(BlockPos pos, PanelInfo[] panelInfo, double x, double y, double z) {
+    private static void tickDamageEffects(BlockPos pos, PanelInfo[] panelInfo, double x, double y, double z, double scale) {
         Minecraft.getMinecraft().renderEngine.bindTexture(FORCEFIELD_HIT);
         for (PanelInfo info : panelInfo) {
             if (info != null) {
                 Pair<BlockPos, Integer> key = Pair.of(pos, info.getIndex());
                 DamageInfo damage = damageStats.get(key);
                 if (damage != null) {
+                    Triangle triangle = PentakisDodecahedron.getTriangle(info.getIndex());
+
+                    Vec3d offs = triangle.getMid().scale(scale);
+
+                    // @todo optimize/cache?
+                    Vec3d t0 = triangle.getA().scale(scale).subtract(offs);
+                    Vec3d t1 = triangle.getB().scale(scale).subtract(offs);
+                    Vec3d t2 = triangle.getC().scale(scale).subtract(offs);
+                    // Calculate triangle normal
+                    Vec3d e0 = t1.subtract(t0);
+                    Vec3d n = e0.crossProduct(t2.subtract(t0)).normalize();
+                    e0 = e0.normalize();
+                    Vec3d e1 = e0.crossProduct(n).normalize();
 
                     Tessellator t = Tessellator.getInstance();
                     BufferBuilder builder = t.getBuffer();
                     builder.begin(GL11.GL_QUADS, DefaultVertexFormats.POSITION_TEX_COLOR);
 
                     float a = damage.damage;
-                    float scale = 2.0f;
-                    Vec3d v0 = damage.intersection.addVector(-scale, -scale, 0);
-                    Vec3d v1 = damage.intersection.addVector(scale, -scale, 0);
-                    Vec3d v2 = damage.intersection.addVector(scale, scale, 0);
-                    Vec3d v3 = damage.intersection.addVector(-scale, scale, 0);
+                    float sc = 2.0f;
+
+                    e0 = e0.scale(sc);
+                    e1 = e1.scale(sc);
+
+                    Vec3d v0 = damage.intersection.subtract(e0).subtract(e1);
+                    Vec3d v1 = damage.intersection.add(e0).subtract(e1);
+                    Vec3d v2 = damage.intersection.add(e0).add(e1);
+                    Vec3d v3 = damage.intersection.subtract(e0).add(e1);
+
                     builder.pos(x + v0.x, y + v0.y, z + v0.z).tex(0, 0).color(1, 1, 1, a).endVertex();
                     builder.pos(x + v1.x, y + v1.y, z + v1.z).tex(1, 0).color(1, 1, 1, a).endVertex();
                     builder.pos(x + v2.x, y + v2.y, z + v2.z).tex(1, 1).color(1, 1, 1, a).endVertex();

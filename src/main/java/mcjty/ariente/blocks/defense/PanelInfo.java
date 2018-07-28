@@ -68,12 +68,50 @@ public class PanelInfo {
     @Nullable
     public Vec3d testCollisionSegment(Vec3d p1, Vec3d p2, double scale) {
         Triangle triangle = PentakisDodecahedron.getTriangle(getIndex());
-        // @todo not very efficient
+        // @todo not very efficient, cache
         Vec3d offs = triangle.getMid().scale(scale);
         Vec3d entityPos = new Vec3d(x, y, z);
         Vec3d a = triangle.getA().scale(scale).subtract(offs).add(entityPos);
         Vec3d b = triangle.getB().scale(scale).subtract(offs).add(entityPos);
         Vec3d c = triangle.getC().scale(scale).subtract(offs).add(entityPos);
         return Intersections.segmentTriangleTest(p1, p2, new Triangle(a, b, c));
+    }
+
+    public double getSquaredDistance(Vec3d p, double scale) {
+        // @todo optimize/cache?
+        Triangle triangle = PentakisDodecahedron.getTriangle(getIndex());
+        Vec3d offs = triangle.getMid().scale(scale);
+        Vec3d entityPos = new Vec3d(x, y, z);
+        Vec3d a = triangle.getA().scale(scale).subtract(offs).add(entityPos);
+        Vec3d b = triangle.getB().scale(scale).subtract(offs).add(entityPos);
+        Vec3d c = triangle.getC().scale(scale).subtract(offs).add(entityPos);
+
+        // Calculate triangle normal
+        Vec3d e0 = b.subtract(a);
+        Vec3d n = e0.crossProduct(c.subtract(a)).normalize();
+
+        Vec3d v = p.subtract(a);
+        double dot = v.dotProduct(n);
+        Vec3d s = v.subtract(n.scale(dot));
+        return s.x*s.x + s.y*s.y + s.z*s.z;
+    }
+
+    public Vec3d getClosestPoint(Vec3d p, double scale) {
+        // @todo optimize/cache?
+        Triangle triangle = PentakisDodecahedron.getTriangle(getIndex());
+        Vec3d offs = triangle.getMid().scale(scale);
+        Vec3d entityPos = new Vec3d(x, y, z);
+        Vec3d a = triangle.getA().scale(scale).subtract(offs).add(entityPos);
+        Vec3d b = triangle.getB().scale(scale).subtract(offs).add(entityPos);
+        Vec3d c = triangle.getC().scale(scale).subtract(offs).add(entityPos);
+
+        // Calculate triangle normal
+        Vec3d e0 = b.subtract(a);
+        Vec3d n = e0.crossProduct(c.subtract(a)).normalize();
+
+        Vec3d v = p.subtract(a);
+        double dot = v.dotProduct(n);
+        Vec3d s = v.subtract(n.scale(dot));
+        return a.add(s);
     }
 }
