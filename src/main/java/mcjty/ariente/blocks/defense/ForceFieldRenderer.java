@@ -63,6 +63,8 @@ public class ForceFieldRenderer {
         damageStats.put(key, new DamageInfo(1.0f, -1, intersection));
     }
 
+    private static long randomSeedCounter = 0;
+
     public static void renderForceFields(float partialTicks) {
         Set<BlockPos> toRemove = new HashSet<>();
         WorldClient world = Minecraft.getMinecraft().world;
@@ -80,7 +82,6 @@ public class ForceFieldRenderer {
 
                 Tessellator t = Tessellator.getInstance();
                 BufferBuilder builder = t.getBuffer();
-                builder.begin(GL11.GL_TRIANGLES, DefaultVertexFormats.POSITION_TEX_COLOR);
 
                 Entity renderViewEntity = Minecraft.getMinecraft().renderViewEntity;
                 double dx = renderViewEntity.lastTickPosX + (renderViewEntity.posX - renderViewEntity.lastTickPosX) * partialTicks;
@@ -93,21 +94,17 @@ public class ForceFieldRenderer {
                 ForceFieldTile forcefield = (ForceFieldTile) te;
                 double scale = forcefield.getScale();
                 PanelInfo[] panelInfo = forcefield.getPanelInfo();
-                for (PanelInfo info : panelInfo) {
-                    if (info != null) {
-                        renderPanel(pos, x, y, z, scale, info);
-                    }
-                }
-                t.draw();
 
+                randomSeedCounter++;
+                random.setSeed(randomSeedCounter);
+                random.nextFloat();
+                random.nextFloat();
+                renderPanels(pos, t, builder, x, y, z, scale, panelInfo);
                 GlStateManager.color(1.0f, 1.0f, 1.0f, 0.6f);
-                builder.begin(GL11.GL_TRIANGLES, DefaultVertexFormats.POSITION_TEX_COLOR);
-                for (PanelInfo info : panelInfo) {
-                    if (info != null) {
-                        renderPanel(pos, x, y+1, z, .5, info);
-                    }
-                }
-                t.draw();
+                random.setSeed(randomSeedCounter);
+                random.nextFloat();
+                random.nextFloat();
+                renderPanels(pos, t, builder, x, y+1, z, .5, panelInfo);
 
                 tickDamageEffects(pos, panelInfo, .5 - dx, .5 - dy, .5 - dz);
 
@@ -123,6 +120,16 @@ public class ForceFieldRenderer {
         for (BlockPos pos : toRemove) {
             forceFields.add(pos);
         }
+    }
+
+    private static void renderPanels(BlockPos pos, Tessellator t, BufferBuilder builder, double x, double y, double z, double scale, PanelInfo[] panelInfo) {
+        builder.begin(GL11.GL_TRIANGLES, DefaultVertexFormats.POSITION_TEX_COLOR);
+        for (PanelInfo info : panelInfo) {
+            if (info != null) {
+                renderPanel(pos, x, y, z, scale, info);
+            }
+        }
+        t.draw();
     }
 
     private static void tickDamageEffects(BlockPos pos, PanelInfo[] panelInfo, double x, double y, double z) {
@@ -173,16 +180,26 @@ public class ForceFieldRenderer {
     private static void renderPanel(BlockPos pos, double x, double y, double z, double scale, PanelInfo info) {
         int life = info.getLife();
         float l = 1.0f - Math.min(1.0f, - life / 50.0f);
+        if (info.getIndex() == 48) {
+//            System.out.println("ForceFieldRenderer.renderPanel");
+        }
         if (life >= 0 || random.nextFloat() < (l / 20.0f)) {
             Pair<BlockPos, Integer> key = Pair.of(pos, info.getIndex());
             DamageInfo damage = damageStats.get(key);
-            if (damage != null) {
+            float lf = info.getLifePercentage();
+            if (life >= 0 && lf < .5f && random.nextFloat() < .02f + (.5f-lf) / 10.0f) {
+                // Random red flash if life is getting low
+                doRender(info, x, y, z, scale, 1.0f, 0.0f, 0.0f, FIELD_ALPHA);
+            } else if (damage != null) {
+                // Damage animation
                 float d = damage.damage;
                 doRender(info, x, y, z, scale, 1.0f, 1.0f, 1.0f, FIELD_ALPHA + d * (1.0f - FIELD_ALPHA));
             } else {
+                // Normal render
                 doRender(info, x, y, z, scale, 1.0f, 1.0f, 1.0f, FIELD_ALPHA);
             }
         } else {
+            // Building up render
             doRender(info, x, y, z, scale, 1.0f, l, l, 0.1f + l * 0.1f);
         }
     }

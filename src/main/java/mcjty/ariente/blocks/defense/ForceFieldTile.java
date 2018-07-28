@@ -31,6 +31,8 @@ import net.minecraftforge.fml.relauncher.SideOnly;
 
 import java.util.List;
 
+import static mcjty.ariente.config.ArienteConfiguration.SHIELD_PANEL_LIFE;
+
 public class ForceFieldTile extends GenericTileEntity implements IGuiTile, ITickable {
 
     private static final float SCALE = 28.0f;
@@ -112,15 +114,16 @@ public class ForceFieldTile extends GenericTileEntity implements IGuiTile, ITick
                     if (info != null && info.getLife() > 0) {
                         Vec3d intersection = info.testCollisionSegment(p1, p2, getScale());
                         if (intersection != null) {
-                            System.out.println("ForceFieldTile.collideWithEntities: " + entity.getName());
 //                            world.newExplosion(entity, entity.posX, entity.posY, entity.posZ, 2.0f, false, false);
                             entity.setDead();
                             int life = info.getLife();
                             life -= 10;
                             if (life <= 0) {
                                 panelInfo[info.getIndex()] = null;
+                                world.newExplosion(entity, entity.posX, entity.posY, entity.posZ, 2.0f, false, false);
                             } else {
                                 info.setLife(life);
+                                System.out.println("life = " + life + " (index " + info.getIndex() + ")");
                                 ArienteMessages.INSTANCE.sendToDimension(
                                         new PacketDamageForcefield(pos, info.getIndex(), intersection),
                                         world.provider.getDimension());
@@ -133,7 +136,6 @@ public class ForceFieldTile extends GenericTileEntity implements IGuiTile, ITick
                 for (PanelInfo info : getPanelInfo()) {
                     if (info != null && info.getLife() > 0) {
                         if (info.testCollisionEntity(entity, getScale())) {
-                            System.out.println("ForceFieldTile.collideWithEntities: " + entity.getName());
                             entity.attackEntityFrom(DamageSource.GENERIC, 20.0f);
                         }
                     }
@@ -169,7 +171,7 @@ public class ForceFieldTile extends GenericTileEntity implements IGuiTile, ITick
                     // Building up
                     life++;
                     if (life == 0) {
-                        life = 100; // @todo config life
+                        life = SHIELD_PANEL_LIFE;
                     }
                     info.setLife(life);
                     changed = true;

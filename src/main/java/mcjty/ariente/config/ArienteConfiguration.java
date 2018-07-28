@@ -7,4 +7,6 @@ public class ArienteConfiguration {
             "/assets/ariente/citydata/city2_1.json",
             "$ariente/userassets.json"
     };
+
+    public static int SHIELD_PANEL_LIFE = 100;
 }

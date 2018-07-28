@@ -8,6 +8,8 @@ import net.minecraft.util.math.Vec3d;
 
 import javax.annotation.Nullable;
 
+import static mcjty.ariente.config.ArienteConfiguration.SHIELD_PANEL_LIFE;
+
 public class PanelInfo {
     private final int index;
     private final double x;
@@ -29,6 +31,10 @@ public class PanelInfo {
 
     public void setLife(int life) {
         this.life = life;
+    }
+
+    public float getLifePercentage() {
+        return life / (float) SHIELD_PANEL_LIFE;
     }
 
     public int getIndex() {
