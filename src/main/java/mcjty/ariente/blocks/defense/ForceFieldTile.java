@@ -86,7 +86,7 @@ public class ForceFieldTile extends GenericTileEntity implements IGuiTile, ITick
         Vec3d fieldCenter = new Vec3d(x, y, z);
         Vec3d entityCenter = entity.getEntityBoundingBox().getCenter();
         double squareDist = fieldCenter.squareDistanceTo(entityCenter);
-        return Math.abs(squareDist - squaredRadius) < 6*6;
+        return Math.abs(squareDist - squaredRadius) < 10*10;
     }
 
     private void collideWithEntities() {

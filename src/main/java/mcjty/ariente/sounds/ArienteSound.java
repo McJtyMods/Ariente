@@ -1,6 +1,5 @@
 package mcjty.ariente.sounds;
 
-import net.minecraft.block.Block;
 import net.minecraft.client.audio.MovingSound;
 import net.minecraft.tileentity.TileEntity;
 import net.minecraft.util.SoundCategory;
@@ -32,6 +31,10 @@ public class ArienteSound extends MovingSound {
         this.sound = event;
         this.volume = baseVolume;
         ticksRemaining = ticks;
+    }
+
+    public void setVolume(float v) {
+        this.volume = v;
     }
 
     @Override

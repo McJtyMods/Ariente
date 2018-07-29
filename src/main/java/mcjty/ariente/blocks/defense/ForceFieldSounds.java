@@ -32,15 +32,14 @@ public class ForceFieldSounds {
                 }
             }
         }
-        if (minDistance < 30 * 30) {
-            Vec3d closestPoint = minInfo.getClosestPoint(player.getPositionVector(), forcefield.getScale());
-            System.out.println("closestPoint = " + closestPoint);
+        if (minDistance < 10 * 10) {
             ArienteSound soundAt = SoundController.getSoundAt(world, pos);
+            minDistance = Math.sqrt(minDistance);
+            float volume = (float) ((10f - minDistance) * 10.0f / 10.0f);
             if (soundAt != null) {
-//                soundAt.update();
-                // Update volume!
+                soundAt.setVolume(volume);
             } else {
-                SoundController.playSound(world, pos, ModSounds.forcefield, 10.0f, 20);
+                SoundController.playSound(world, pos, ModSounds.forcefield, volume, 20);
             }
         } else {
             SoundController.stopSound(world, pos);
