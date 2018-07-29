@@ -74,7 +74,7 @@ public class ForceFieldTile extends GenericTileEntity implements IGuiTile, ITick
     private void changeScale(int dy) {
         scale += dy;
         if (scale < 3) {
-            scale = 1;
+            scale = 3;
         } else if (scale > 50) {
             scale = 50;
         }
