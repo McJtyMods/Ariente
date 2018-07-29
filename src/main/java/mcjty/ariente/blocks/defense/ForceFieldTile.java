@@ -184,7 +184,7 @@ public class ForceFieldTile extends GenericTileEntity implements IGuiTile, ITick
                 for (PanelInfo info : getPanelInfo()) {
                     if (info != null && info.getLife() > 0) {
                         if (info.testCollisionEntity(entity, getScaleDouble())) {
-                            entity.attackEntityFrom(DamageSource.GENERIC, 20.0f);
+                            entity.attackEntityFrom(DamageSource.GENERIC, 1.0f);
                         }
                     }
                 }
@@ -210,7 +210,7 @@ public class ForceFieldTile extends GenericTileEntity implements IGuiTile, ITick
             if (panelInfo[i] == null) {
                 createPanelInfo(i);
                 // Set a random life
-                panelInfo[i].setLife(-(world.rand.nextInt(50)+50));
+                panelInfo[i].setLife(-(world.rand.nextInt(50)+150));
                 changed = true;
             } else {
                 PanelInfo info = this.panelInfo[i];
