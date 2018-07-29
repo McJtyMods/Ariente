@@ -40,7 +40,7 @@ public class ForceFieldSounds {
 //                soundAt.update();
                 // Update volume!
             } else {
-                SoundController.playSound(world, pos, new BlockPos(closestPoint), ModSounds.forcefield, 1.0f, 20);
+                SoundController.playSound(world, pos, ModSounds.forcefield, 10.0f, 20);
             }
         } else {
             SoundController.stopSound(world, pos);

@@ -2,6 +2,7 @@ package mcjty.ariente.sounds;
 
 import net.minecraft.block.Block;
 import net.minecraft.client.audio.MovingSound;
+import net.minecraft.tileentity.TileEntity;
 import net.minecraft.util.SoundCategory;
 import net.minecraft.util.SoundEvent;
 import net.minecraft.util.math.BlockPos;
@@ -16,13 +17,11 @@ public class ArienteSound extends MovingSound {
     private final BlockPos pos;
     private final SoundEvent sound;
 
-    private BlockPos producerPos;
     private int ticksRemaining;
 
-    public ArienteSound(SoundEvent event, World world, BlockPos producerPos, BlockPos pos, float baseVolume, int ticks) {
+    public ArienteSound(SoundEvent event, World world, BlockPos pos, float baseVolume, int ticks) {
         super(event, SoundCategory.BLOCKS);
         this.world = world;
-        this.producerPos = producerPos;
         this.pos = pos;
         this.xPosF = pos.getX();
         this.yPosF = pos.getY();
@@ -37,17 +36,17 @@ public class ArienteSound extends MovingSound {
 
     @Override
     public void update() {
-        Block block = world.getBlockState(producerPos).getBlock();
-        if (!(block instanceof ISoundProducer)) {
+        TileEntity te = world.getTileEntity(pos);
+        if (!(te instanceof ISoundProducer)) {
             donePlaying = true;
             return;
         }
-        if (ticksRemaining != -1) {
-            ticksRemaining--;
-            if (ticksRemaining <= 0) {
-                donePlaying = true;
-            }
-        }
+//        if (ticksRemaining != -1) {
+//            ticksRemaining--;
+//            if (ticksRemaining <= 0) {
+//                donePlaying = true;
+//            }
+//        }
     }
 
     protected boolean isSoundType(SoundEvent event){

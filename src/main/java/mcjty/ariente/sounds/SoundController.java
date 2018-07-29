@@ -24,12 +24,12 @@ public class SoundController {
         }
     }
 
-    public static void playSound(World worldObj, BlockPos producerPos, BlockPos soundPos, SoundEvent soundType, float baseVolume, int ticks) {
+    public static void playSound(World worldObj, BlockPos pos, SoundEvent soundType, float baseVolume, int ticks) {
         System.out.println("SoundController.playSound");
-        ArienteSound sound = new ArienteSound(soundType, worldObj, producerPos, soundPos, baseVolume, ticks);
-        stopSound(worldObj, producerPos);
+        ArienteSound sound = new ArienteSound(soundType, worldObj, pos, baseVolume, ticks);
+        stopSound(worldObj, pos);
         Minecraft.getMinecraft().getSoundHandler().playSound(sound);
-        Pair<Integer, BlockPos> g = Pair.of(worldObj.provider.getDimension(), producerPos);
+        Pair<Integer, BlockPos> g = Pair.of(worldObj.provider.getDimension(), pos);
         sounds.put(g, sound);
         System.out.println("SoundController.playSound : END");
     }
