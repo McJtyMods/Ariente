@@ -1,8 +1,11 @@
 package mcjty.ariente.blocks.defense;
 
+import mcjty.ariente.config.ArienteConfiguration;
 import mcjty.ariente.gui.HoloGuiEntity;
 import mcjty.ariente.gui.IGuiComponent;
 import mcjty.ariente.gui.IGuiTile;
+import mcjty.ariente.gui.components.HoloButton;
+import mcjty.ariente.gui.components.HoloNumber;
 import mcjty.ariente.gui.components.HoloPanel;
 import mcjty.ariente.gui.components.HoloText;
 import mcjty.ariente.network.ArienteMessages;
@@ -36,10 +39,9 @@ import static mcjty.ariente.config.ArienteConfiguration.SHIELD_PANEL_LIFE;
 
 public class ForceFieldTile extends GenericTileEntity implements IGuiTile, ITickable, ISoundProducer {
 
-    private static final float SCALE = 28.0f;
-
     private PanelInfo[] panelInfo = new PanelInfo[PentakisDodecahedron.MAX_TRIANGLES];
     private AxisAlignedBB aabb = null;
+    private int scale = 10;
 
     public ForceFieldTile() {
         for (int i = 0 ; i < PentakisDodecahedron.MAX_TRIANGLES ; i++) {
@@ -47,9 +49,41 @@ public class ForceFieldTile extends GenericTileEntity implements IGuiTile, ITick
         }
     }
 
-    public double getScale() {
-        return SCALE;
+    public double getScaleDouble() {
+        return (double) scale;
     }
+
+    public int getScale() {
+        return scale;
+    }
+
+    public void setScale(int scale) {
+        this.scale = scale;
+    }
+
+    private int getFieldIntegrity() {
+        float quality = 0;
+        for (int i = 0 ; i < PentakisDodecahedron.MAX_TRIANGLES ; i++) {
+            if (panelInfo[i] != null && panelInfo[i].getLife() > 0) {
+                quality += panelInfo[i].getLife() / (float) ArienteConfiguration.SHIELD_PANEL_LIFE;
+            }
+        }
+        return (int) (quality * 100 / PentakisDodecahedron.MAX_TRIANGLES);
+    }
+
+    private void changeScale(int dy) {
+        scale += dy;
+        if (scale < 3) {
+            scale = 1;
+        } else if (scale > 50) {
+            scale = 50;
+        }
+        aabb = null;
+        disableShield();
+        markDirtyClient();
+    }
+
+
 
     public PanelInfo[] getPanelInfo() {
         return panelInfo;
@@ -71,7 +105,7 @@ public class ForceFieldTile extends GenericTileEntity implements IGuiTile, ITick
             double x = pos.getX() + .5;
             double y = pos.getY() + .5;
             double z = pos.getZ() + .5;
-            double s = getScale() * 1.03;
+            double s = getScaleDouble() * 1.03;
             aabb = new AxisAlignedBB(x-s, y-s, z-s, x+s, y+s, z+s);
         }
         return aabb;
@@ -81,7 +115,7 @@ public class ForceFieldTile extends GenericTileEntity implements IGuiTile, ITick
         double x = pos.getX() + .5;
         double y = pos.getY() + .5;
         double z = pos.getZ() + .5;
-        double squaredRadius = getScale() * getScale();
+        double squaredRadius = getScaleDouble() * getScaleDouble();
 
         Vec3d fieldCenter = new Vec3d(x, y, z);
         Vec3d entityCenter = entity.getEntityBoundingBox().getCenter();
@@ -94,7 +128,7 @@ public class ForceFieldTile extends GenericTileEntity implements IGuiTile, ITick
         double y = pos.getY() + .5;
         double z = pos.getZ() + .5;
         Vec3d fieldCenter = new Vec3d(x, y, z);
-        double squaredRadius = getScale() * getScale();
+        double squaredRadius = getScaleDouble() * getScaleDouble();
 
         boolean changed = false;
 
@@ -126,7 +160,7 @@ public class ForceFieldTile extends GenericTileEntity implements IGuiTile, ITick
                 Vec3d p2 = new Vec3d(entity.posX, entity.posY, entity.posZ);
                 for (PanelInfo info : getPanelInfo()) {
                     if (info != null && info.getLife() > 0) {
-                        Vec3d intersection = info.testCollisionSegment(p1, p2, getScale());
+                        Vec3d intersection = info.testCollisionSegment(p1, p2, getScaleDouble());
                         if (intersection != null) {
 //                            world.newExplosion(entity, entity.posX, entity.posY, entity.posZ, 2.0f, false, false);
                             entity.setDead();
@@ -149,7 +183,7 @@ public class ForceFieldTile extends GenericTileEntity implements IGuiTile, ITick
             } else {
                 for (PanelInfo info : getPanelInfo()) {
                     if (info != null && info.getLife() > 0) {
-                        if (info.testCollisionEntity(entity, getScale())) {
+                        if (info.testCollisionEntity(entity, getScaleDouble())) {
                             entity.attackEntityFrom(DamageSource.GENERIC, 20.0f);
                         }
                     }
@@ -199,7 +233,7 @@ public class ForceFieldTile extends GenericTileEntity implements IGuiTile, ITick
 
     private void createPanelInfo(int i) {
         Triangle triangle = PentakisDodecahedron.getTriangle(i);
-        Vec3d offs = triangle.getMid().scale(getScale());
+        Vec3d offs = triangle.getMid().scale(getScaleDouble());
         double x = pos.getX()+.5 + offs.x;
         double y = pos.getY()+.5 + offs.y;
         double z = pos.getZ()+.5 + offs.z;
@@ -218,11 +252,13 @@ public class ForceFieldTile extends GenericTileEntity implements IGuiTile, ITick
     @Override
     public void readRestorableFromNBT(NBTTagCompound tagCompound) {
         super.readRestorableFromNBT(tagCompound);
+        scale = tagCompound.getInteger("scale");
     }
 
     @Override
     public void writeRestorableToNBT(NBTTagCompound tagCompound) {
         super.writeRestorableToNBT(tagCompound);
+        tagCompound.setInteger("scale", scale);
     }
 
     @Override
@@ -282,26 +318,25 @@ public class ForceFieldTile extends GenericTileEntity implements IGuiTile, ITick
     @Override
     public IGuiComponent createGui(HoloGuiEntity entity, String tag) {
         return new HoloPanel(0, 0, 8, 8)
-                .add(new HoloText(0, 0, 1, 1, "0", 0xffffff))
-                .add(new HoloText(1, 0, 1, 1, "1", 0xffffff))
-                .add(new HoloText(2, 0, 1, 1, "2", 0xffffff))
-                .add(new HoloText(3, 0, 1, 1, "3", 0xffffff))
-                .add(new HoloText(4, 0, 1, 1, "4", 0xffffff))
-                .add(new HoloText(5, 0, 1, 1, "5", 0xffffff))
-                .add(new HoloText(6, 0, 1, 1, "6", 0xffffff))
-                .add(new HoloText(7, 0, 1, 1, "7", 0xffffff))
-                .add(new HoloText(0, 1, 1, 1, "1", 0x00ff00))
-                .add(new HoloText(0, 2, 1, 1, "2", 0x00ff00))
-                .add(new HoloText(0, 3, 1, 1, "3", 0x00ff00))
-                .add(new HoloText(0, 4, 1, 1, "4", 0x00ff00))
-                .add(new HoloText(0, 5, 1, 1, "5", 0x00ff00))
-                .add(new HoloText(0, 6, 1, 1, "6", 0x00ff00))
-                .add(new HoloText(0, 7, 1, 1, "7", 0x00ff00))
-                .add(new HoloText(7, 7, 1, 1, "X", 0xff0000));
+                .add(new HoloText(0, 1, 1, 1, "Radius", 0xaaccff))
+                .add(new HoloNumber(3, 2, 1, 1, 0xffffff, this::getScale))
+
+                .add(new HoloButton(1, 2, 1, 1).image(128 + 32, 128 + 16).hover(128 + 32 + 16, 128 + 16)
+                        .hitEvent((component, player, entity1, x, y) -> changeScale(-8)))
+                .add(new HoloButton(2, 2, 1, 1).image(128 + 32, 128).hover(128 + 32 + 16, 128)
+                        .hitEvent((component, player, entity1, x, y) -> changeScale(-1)))
+                .add(new HoloButton(5, 2, 1, 1).image(128, 128).hover(128 + 16, 128)
+                        .hitEvent((component, player, entity1, x, y) -> changeScale(1)))
+                .add(new HoloButton(6, 2, 1, 1).image(128, 128 + 16).hover(128 + 16, 128 + 16)
+                        .hitEvent((component, player, entity1, x, y) -> changeScale(8)))
+
+                .add(new HoloText(0, 4, 1, 1, "Field Integrity", 0xaaccff))
+                .add(new HoloText(1, 5, 1, 1, () -> getFieldIntegrity() + "%", 0xffffff))
+
+                ;
     }
 
     @Override
-    public void syncToServer() {
-
+    public void syncToClient() {
     }
 }

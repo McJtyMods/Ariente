@@ -4,5 +4,5 @@ public interface IGuiTile {
 
     IGuiComponent createGui(HoloGuiEntity entity, String tag);
 
-    void syncToServer();
+    void syncToClient();
 }

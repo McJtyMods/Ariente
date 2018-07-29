@@ -66,7 +66,7 @@ public class LevelMarkerTile extends GenericTileEntity implements IGuiTile {
     }
 
     @Override
-    public void syncToServer() {
+    public void syncToClient() {
 
     }
 }

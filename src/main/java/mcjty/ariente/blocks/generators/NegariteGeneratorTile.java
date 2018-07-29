@@ -286,7 +286,7 @@ public class NegariteGeneratorTile extends GenericTileEntity implements ITickabl
     }
 
     @Override
-    public void syncToServer() {
+    public void syncToClient() {
         // @todo more efficient
         markDirtyClient();
     }

@@ -104,7 +104,7 @@ public class NegariteTankTile extends GenericTileEntity implements IGuiTile {
     }
 
     @Override
-    public void syncToServer() {
+    public void syncToClient() {
 
     }
 }

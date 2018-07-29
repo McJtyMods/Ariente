@@ -315,7 +315,7 @@ public class ElevatorTile extends GenericTileEntity implements IGuiTile, ITickab
     }
 
     @Override
-    public void syncToServer() {
+    public void syncToClient() {
 
     }
 }

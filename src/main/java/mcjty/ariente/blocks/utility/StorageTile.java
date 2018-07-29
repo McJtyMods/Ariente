@@ -349,7 +349,7 @@ public class StorageTile extends GenericTileEntity implements IGuiTile, IInvento
     }
 
     @Override
-    public void syncToServer() {
+    public void syncToClient() {
 
     }
 

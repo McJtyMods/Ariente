@@ -102,7 +102,7 @@ public class HoloGuiEntity extends Entity {
             if (tile != null) {
                 TileEntity te = world.getTileEntity(tile);
                 if (te instanceof IGuiTile) {
-                    ((IGuiTile) te).syncToServer();
+                    ((IGuiTile) te).syncToClient();
                 }
             }
         }

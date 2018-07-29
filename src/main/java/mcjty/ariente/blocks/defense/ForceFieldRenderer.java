@@ -2,7 +2,6 @@ package mcjty.ariente.blocks.defense;
 
 import mcjty.ariente.Ariente;
 import mcjty.ariente.varia.Triangle;
-import mcjty.lib.client.RenderHelper;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.multiplayer.WorldClient;
 import net.minecraft.client.renderer.BufferBuilder;
@@ -96,7 +95,7 @@ public class ForceFieldRenderer {
                 double z = pos.getZ() + .5 - dz;
 
                 ForceFieldTile forcefield = (ForceFieldTile) te;
-                double scale = forcefield.getScale();
+                double scale = forcefield.getScaleDouble();
                 PanelInfo[] panelInfo = forcefield.getPanelInfo();
 
                 randomSeedCounter++;
@@ -200,14 +199,13 @@ public class ForceFieldRenderer {
     private static void renderPanel(BlockPos pos, double x, double y, double z, double scale, PanelInfo info) {
         int life = info.getLife();
         float l = 1.0f - Math.min(1.0f, - life / 50.0f);
-        if (info.getIndex() == 48) {
-//            System.out.println("ForceFieldRenderer.renderPanel");
-        }
         if (life >= 0 || random.nextFloat() < (l / 20.0f)) {
             Pair<BlockPos, Integer> key = Pair.of(pos, info.getIndex());
             DamageInfo damage = damageStats.get(key);
             float lf = info.getLifePercentage();
-            if (life >= 0 && lf < .5f && random.nextFloat() < .02f + (.5f-lf) / 10.0f) {
+            // Damage indicator flickers more on the preview
+            float damageIndicatorScale = scale < .6 ? 1.0f : 10.0f;
+            if (life >= 0 && lf < .5f && random.nextFloat() < .02f + (.5f-lf) / damageIndicatorScale) {
                 // Random red flash if life is getting low
                 doRender(info, x, y, z, scale, 1.0f, 0.0f, 0.0f, FIELD_ALPHA);
             } else if (damage != null) {

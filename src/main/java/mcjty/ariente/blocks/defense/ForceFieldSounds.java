@@ -7,7 +7,6 @@ import net.minecraft.client.Minecraft;
 import net.minecraft.client.multiplayer.WorldClient;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.util.math.BlockPos;
-import net.minecraft.util.math.Vec3d;
 
 public class ForceFieldSounds {
 
@@ -21,7 +20,7 @@ public class ForceFieldSounds {
             for (PanelInfo info : forcefield.getPanelInfo()) {
                 if (info != null) {
                     if (info.getLife() > 0) {
-                        double sqdist = info.getSquaredDistance(player.getPositionVector(), forcefield.getScale());
+                        double sqdist = info.getSquaredDistance(player.getPositionVector(), forcefield.getScaleDouble());
                         if (sqdist < minDistance) {
                             minDistance = sqdist;
                             minInfo = info;
