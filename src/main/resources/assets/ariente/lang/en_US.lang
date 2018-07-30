@@ -17,6 +17,7 @@ tile.ariente.blacktech.panel.name=Tech Block Panel
 
 tile.ariente.facade.name=Facade
 tile.ariente.connector.name=Connector
+tile.ariente.connector_posirite.name=Posirite Connector
 tile.ariente.connector_negarite.name=Negarite Connector
 tile.ariente.connector_posirite.name=Posirite Connector
 tile.ariente.connector_combined.name=Combined Connector
@@ -97,6 +98,9 @@ message.ariente.negarite_generator=\
     @fflux when fed with negarite dust.\n\
     @fThis block needs negarite infusion\n\
     @ftubes above it to work
+message.ariente.posirite_generator=\
+    @fThis machine produces posirite\n\
+    @fflux when fed with posirite dust
 message.ariente.negarite_tank=\
     @fPlace one or more tanks on top\n\
     @fof a Negarite Flux Generator

@@ -1,6 +1,6 @@
 container {
     slot('specificitem') {
-        items('ariente:dust_negarite')
+        items('ariente:dust_posirite')
         pos(82,24)
     }
     playerslots(10,70)
