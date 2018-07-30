@@ -10,6 +10,7 @@ import mcjty.lib.compat.waila.WailaInfoProvider;
 import mcjty.theoneprobe.api.IProbeHitData;
 import mcjty.theoneprobe.api.IProbeInfo;
 import mcjty.theoneprobe.api.ProbeMode;
+import mcjty.theoneprobe.api.TextStyleClass;
 import mcp.mobius.waila.api.IWailaConfigHandler;
 import mcp.mobius.waila.api.IWailaDataAccessor;
 import net.minecraft.block.Block;
@@ -224,28 +225,41 @@ public abstract class GenericCableBlock extends Block implements WailaInfoProvid
     @Override
     @Optional.Method(modid = "theoneprobe")
     public void addProbeInfo(ProbeMode mode, IProbeInfo probeInfo, EntityPlayer player, World world, IBlockState blockState, IProbeHitData data) {
+        TileEntity te = world.getTileEntity(data.getPos());
+        if (te instanceof GenericCableTileEntity) {
+            probeInfo.text(TextStyleClass.LABEL + "Network: " + TextStyleClass.INFO + ((GenericCableTileEntity) te).getCableId());
+        }
     }
 
     @Override
     public void onBlockPlacedBy(World world, BlockPos pos, IBlockState state, EntityLivingBase placer, ItemStack stack) {
         originalOnBlockPlacedBy(world, pos, state, placer, stack);
-//        if (!world.isRemote) {
-//            createCableSegment(world, pos, stack);
-//        }
+        if (!world.isRemote) {
+            createCableSegment(world, pos, stack);
+        }
     }
 
     protected void originalOnBlockPlacedBy(World world, BlockPos pos, IBlockState state, EntityLivingBase placer, ItemStack stack) {
         super.onBlockPlacedBy(world, pos, state, placer, stack);
     }
 
+
+
+
+    public void createCableSegment(World world, BlockPos pos, ItemStack stack) {
+        GenericCableTileEntity.fixNetworks(world, pos);
+    }
+
+
     @Override
     public void breakBlock(World world, BlockPos pos, IBlockState state) {
-        unlinkBlock(world, pos);
         originalBreakBlock(world, pos, state);
+        unlinkBlock(world, pos);
     }
 
     public void unlinkBlock(World world, BlockPos pos) {
         if (!world.isRemote) {
+            GenericCableTileEntity.fixNetworks(world, pos);
         }
     }
 
