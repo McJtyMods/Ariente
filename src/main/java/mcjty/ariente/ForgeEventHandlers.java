@@ -8,6 +8,7 @@ import mcjty.ariente.cities.CityPlan;
 import mcjty.ariente.cities.CityTools;
 import mcjty.ariente.dimension.ArienteChunkGenerator;
 import mcjty.ariente.items.ModItems;
+import mcjty.ariente.power.PowerSystem;
 import mcjty.ariente.sounds.ModSounds;
 import mcjty.lib.McJtyRegister;
 import net.minecraft.block.Block;
@@ -21,6 +22,7 @@ import net.minecraft.world.biome.Biome;
 import net.minecraftforge.event.RegistryEvent;
 import net.minecraftforge.event.world.BlockEvent;
 import net.minecraftforge.fml.common.eventhandler.SubscribeEvent;
+import net.minecraftforge.fml.common.gameevent.TickEvent;
 import net.minecraftforge.registries.IForgeRegistry;
 
 import java.util.List;
@@ -48,6 +50,13 @@ public class ForgeEventHandlers {
     @SubscribeEvent
     public void registerSounds(RegistryEvent.Register<SoundEvent> sounds) {
         ModSounds.init(sounds.getRegistry());
+    }
+
+    @SubscribeEvent
+    public void onWorldTick(TickEvent.WorldTickEvent event) {
+        if (!event.world.isRemote && event.world.provider.getDimension() == 0) {
+            PowerSystem.getPowerSystem(event.world).tick();
+        }
     }
 
     @SubscribeEvent

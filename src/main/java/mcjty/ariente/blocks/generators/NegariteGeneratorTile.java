@@ -2,11 +2,13 @@ package mcjty.ariente.blocks.generators;
 
 import mcjty.ariente.Ariente;
 import mcjty.ariente.blocks.ModBlocks;
+import mcjty.ariente.cables.CableColor;
 import mcjty.ariente.gui.HoloGuiEntity;
 import mcjty.ariente.gui.IGuiComponent;
 import mcjty.ariente.gui.IGuiTile;
 import mcjty.ariente.gui.components.*;
 import mcjty.ariente.items.ModItems;
+import mcjty.ariente.power.*;
 import mcjty.lib.container.ContainerFactory;
 import mcjty.lib.container.DefaultSidedInventory;
 import mcjty.lib.container.InventoryHelper;
@@ -17,6 +19,7 @@ import mcjty.lib.varia.RedstoneMode;
 import mcjty.theoneprobe.api.IProbeHitData;
 import mcjty.theoneprobe.api.IProbeInfo;
 import mcjty.theoneprobe.api.ProbeMode;
+import mcjty.theoneprobe.api.TextStyleClass;
 import mcp.mobius.waila.api.IWailaConfigHandler;
 import mcp.mobius.waila.api.IWailaDataAccessor;
 import net.minecraft.block.properties.PropertyBool;
@@ -28,6 +31,7 @@ import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.network.NetworkManager;
 import net.minecraft.network.play.server.SPacketUpdateTileEntity;
+import net.minecraft.tileentity.TileEntity;
 import net.minecraft.util.EnumFacing;
 import net.minecraft.util.ITickable;
 import net.minecraft.util.ResourceLocation;
@@ -39,7 +43,7 @@ import net.minecraftforge.fml.relauncher.SideOnly;
 
 import java.util.List;
 
-public class NegariteGeneratorTile extends GenericTileEntity implements ITickable, DefaultSidedInventory, IGuiTile {
+public class NegariteGeneratorTile extends GenericTileEntity implements ITickable, DefaultSidedInventory, IGuiTile, IPowerBlob {
 
     public static final String CMD_RSMODE = "negarite_gen.setRsMode";
 
@@ -49,7 +53,10 @@ public class NegariteGeneratorTile extends GenericTileEntity implements ITickabl
     public static final int SLOT_NEGARITE_INPUT = 0;
     private InventoryHelper inventoryHelper = new InventoryHelper(this, CONTAINER_FACTORY, 1);
 
-    private boolean working = false;
+    private PowerBlobSupport powerBlobSupport = new PowerBlobSupport();
+
+    // @todo, temporary: base on tanks later!
+    private int dustCounter;        // Number of ticks before the current dust depletes
 
     @Override
     protected boolean needsRedstoneMode() {
@@ -58,11 +65,52 @@ public class NegariteGeneratorTile extends GenericTileEntity implements ITickabl
 
     @Override
     public void update() {
-        long time = System.currentTimeMillis();
-        if ((time / 2000) %2 == 0) {
-            setWorking(true);
-        } else {
-            setWorking(false);
+        if (!world.isRemote) {
+            if (dustCounter > 0) {
+                dustCounter--;
+                markDirtyQuick();
+//                sendPower();
+            } else {
+                ItemStack stack = inventoryHelper.getStackInSlot(SLOT_NEGARITE_INPUT);
+                if (!stack.isEmpty() && stack.getItem() == ModItems.negariteDust) {
+                    inventoryHelper.decrStackSize(SLOT_NEGARITE_INPUT, 1);
+                    dustCounter = 200;
+                    markDirtyQuick();
+//                    sendPower();
+                }
+            }
+        }
+    }
+
+    private void sendPower() {
+        int cnt = 0;
+        for (EnumFacing facing : EnumFacing.VALUES) {
+            BlockPos p = pos.offset(facing);
+            TileEntity te = world.getTileEntity(p);
+            if (te instanceof IPowerReceiver) {
+                IPowerReceiver receiver = (IPowerReceiver) te;
+                if (receiver.accepts(PowerType.NEGARITE)) {
+                    cnt++;
+                }
+            }
+        }
+        if (cnt > 0) {
+            PowerSystem powerSystem = PowerSystem.getPowerSystem(world);
+            // Divide power over multiple receivers
+            int toReceive = 1000 / cnt;     // @todo configure (based on tanks?)
+            int remainder = 1000 % cnt;
+            for (EnumFacing facing : EnumFacing.VALUES) {
+                BlockPos p = pos.offset(facing);
+                TileEntity te = world.getTileEntity(p);
+                if (te instanceof IPowerReceiver) {
+                    IPowerReceiver receiver = (IPowerReceiver) te;
+                    if (receiver.accepts(PowerType.NEGARITE)) {
+                        receiver.send(PowerType.NEGARITE, toReceive + remainder);
+                        remainder = 0;
+                    }
+                }
+            }
+
         }
     }
 
@@ -96,16 +144,8 @@ public class NegariteGeneratorTile extends GenericTileEntity implements ITickabl
         return state.withProperty(WORKING, isWorking());
     }
 
-    private void setWorking(boolean working) {
-        if (this.working == working) {
-            return;
-        }
-        this.working = working;
-        markDirtyClient();
-    }
-
     public boolean isWorking() {
-        return working;
+        return dustCounter > 0;
     }
 
     @Override
@@ -147,18 +187,30 @@ public class NegariteGeneratorTile extends GenericTileEntity implements ITickabl
     }
 
     @Override
+    public void readFromNBT(NBTTagCompound tagCompound) {
+        super.readFromNBT(tagCompound);
+        powerBlobSupport.setCableId(tagCompound.getInteger("cableId"));
+    }
+
+    @Override
+    public NBTTagCompound writeToNBT(NBTTagCompound tagCompound) {
+        tagCompound.setInteger("cableId", powerBlobSupport.getCableId());
+        return super.writeToNBT(tagCompound);
+    }
+
+    @Override
     public void readRestorableFromNBT(NBTTagCompound tagCompound) {
         super.readRestorableFromNBT(tagCompound);
-        working = tagCompound.getBoolean("working");
 
         readBufferFromNBT(tagCompound, inventoryHelper);
+        dustCounter = tagCompound.getInteger("dust");
     }
 
     @Override
     public void writeRestorableToNBT(NBTTagCompound tagCompound) {
         super.writeRestorableToNBT(tagCompound);
-        tagCompound.setBoolean("working", working);
         writeBufferToNBT(tagCompound, inventoryHelper);
+        tagCompound.setInteger("dust", dustCounter);
     }
 
     @Override
@@ -179,10 +231,7 @@ public class NegariteGeneratorTile extends GenericTileEntity implements ITickabl
     @Optional.Method(modid = "theoneprobe")
     public void addProbeInfo(ProbeMode mode, IProbeInfo probeInfo, EntityPlayer player, World world, IBlockState blockState, IProbeHitData data) {
         super.addProbeInfo(mode, probeInfo, player, world, blockState, data);
-//        Boolean working = isWorking();
-//        if (working) {
-//            probeInfo.text(TextFormatting.GREEN + "Producing " + getRfPerTick() + " RF/t");
-//        }
+        probeInfo.text(TextStyleClass.LABEL + "Network: " + TextStyleClass.INFO + powerBlobSupport.getCableId());
     }
 
 
@@ -194,6 +243,21 @@ public class NegariteGeneratorTile extends GenericTileEntity implements ITickabl
 //        if (isWorking()) {
 //            currenttip.add(TextFormatting.GREEN + "Producing " + getRfPerTick() + " RF/t");
 //        }
+    }
+
+    @Override
+    public int getCableId() {
+        return powerBlobSupport.getCableId();
+    }
+
+    @Override
+    public void fillCableId(int id) {
+        powerBlobSupport.fillCableId(world, pos, id, getCableColor());
+    }
+
+    @Override
+    public CableColor getCableColor() {
+        return CableColor.NEGARITE;
     }
 
     @Override
