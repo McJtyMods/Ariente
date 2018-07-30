@@ -3,7 +3,7 @@ package mcjty.ariente.cables;
 import mcjty.ariente.facade.IFacadeSupport;
 import mcjty.ariente.facade.MimicBlockSupport;
 import mcjty.ariente.power.IPowerBlob;
-import mcjty.ariente.power.PowerBlobSupport;
+import mcjty.ariente.power.PowerSenderSupport;
 import mcjty.lib.tileentity.GenericTileEntity;
 import net.minecraft.block.state.IBlockState;
 import net.minecraft.nbt.NBTTagCompound;
@@ -15,7 +15,7 @@ import net.minecraft.world.World;
 public class GenericCableTileEntity extends GenericTileEntity implements IFacadeSupport, IPowerBlob {
 
     private MimicBlockSupport mimicBlockSupport = new MimicBlockSupport();
-    private PowerBlobSupport powerBlobSupport = new PowerBlobSupport();
+    private PowerSenderSupport powerBlobSupport = new PowerSenderSupport();
 
     @Override
     public void onDataPacket(NetworkManager net, SPacketUpdateTileEntity packet) {
@@ -69,7 +69,7 @@ public class GenericCableTileEntity extends GenericTileEntity implements IFacade
     }
 
     public static void fixNetworks(World world, BlockPos pos) {
-        PowerBlobSupport.fixNetworks(world, pos);
+        PowerSenderSupport.fixNetworks(world, pos);
     }
 
     @Override

@@ -3,6 +3,8 @@ package mcjty.ariente.cables;
 import mcjty.ariente.Ariente;
 import mcjty.ariente.facade.FacadeProperty;
 import mcjty.ariente.facade.IFacadeSupport;
+import mcjty.ariente.power.PowerBlob;
+import mcjty.ariente.power.PowerSystem;
 import mcjty.lib.McJtyRegister;
 import mcjty.lib.blocks.DamageMetadataItemBlock;
 import mcjty.lib.compat.theoneprobe.TOPInfoProvider;
@@ -227,7 +229,16 @@ public abstract class GenericCableBlock extends Block implements WailaInfoProvid
     public void addProbeInfo(ProbeMode mode, IProbeInfo probeInfo, EntityPlayer player, World world, IBlockState blockState, IProbeHitData data) {
         TileEntity te = world.getTileEntity(data.getPos());
         if (te instanceof GenericCableTileEntity) {
-            probeInfo.text(TextStyleClass.LABEL + "Network: " + TextStyleClass.INFO + ((GenericCableTileEntity) te).getCableId());
+            GenericCableTileEntity cableTileEntity = (GenericCableTileEntity) te;
+            int cableId = cableTileEntity.getCableId();
+            probeInfo.text(TextStyleClass.LABEL + "Network: " + TextStyleClass.INFO + cableId);
+            PowerSystem powerSystem = PowerSystem.getPowerSystem(world);
+            int tickCounter = powerSystem.getTickCounter();
+            PowerBlob blob = powerSystem.getPowerBlob(cableId);
+            if (blob.getLastUsedTick() >= tickCounter-1) {
+                probeInfo.text(TextStyleClass.LABEL + "Generated: " + TextStyleClass.INFO + blob.getPrevTotalAdded());
+                probeInfo.text(TextStyleClass.LABEL + "Consumed: " + TextStyleClass.INFO + blob.getPrevTotalConsumed());
+            }
         }
     }
 

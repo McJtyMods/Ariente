@@ -6,6 +6,8 @@ import mcjty.ariente.gui.HoloGuiHandler;
 import mcjty.ariente.gui.IGuiComponent;
 import mcjty.ariente.gui.IGuiTile;
 import mcjty.ariente.gui.components.*;
+import mcjty.ariente.power.PowerReceiverSupport;
+import mcjty.ariente.power.PowerSystem;
 import mcjty.lib.tileentity.GenericTileEntity;
 import mcjty.theoneprobe.api.IProbeHitData;
 import mcjty.theoneprobe.api.IProbeInfo;
@@ -34,6 +36,8 @@ public class ElevatorTile extends GenericTileEntity implements IGuiTile, ITickab
 
     public static final String TAG_ELEVATOR = "elevator";
 
+    public static final int POWER_USAGE = 10;
+
     private AxisAlignedBB cachedBox = null;
 
     private int height = 9;
@@ -46,6 +50,8 @@ public class ElevatorTile extends GenericTileEntity implements IGuiTile, ITickab
     @Override
     public void update() {
         if (!world.isRemote) {
+            PowerReceiverSupport.consumePower(world, pos, POWER_USAGE);
+
             List<EntityPlayer> players = world.getEntitiesWithinAABB(EntityPlayer.class, getBeamBox());
             for (EntityPlayer player : players) {
                 if (openOrMoveHoloGui(player)) {

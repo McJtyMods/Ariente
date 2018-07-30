@@ -24,6 +24,10 @@ public class PowerSystem extends AbstractWorldData<PowerSystem> {
         tickCounter++;
     }
 
+    public int getTickCounter() {
+        return tickCounter;
+    }
+
     @Override
     public void clear() {
         powerBlobs.clear();
@@ -39,7 +43,7 @@ public class PowerSystem extends AbstractWorldData<PowerSystem> {
         return lastId;
     }
 
-    private PowerBlob getPowerBlob(int id) {
+    public PowerBlob getPowerBlob(int id) {
         if (!powerBlobs.containsKey(id)) {
             powerBlobs.put(id, new PowerBlob());
         }
@@ -75,24 +79,33 @@ public class PowerSystem extends AbstractWorldData<PowerSystem> {
         }
     }
 
-    public boolean consumePower(int id, long amount) {
+    // Return the amount of power that could not be consumed
+    public long consumePower(int id, long amount) {
+        if (amount == 0) {
+            return 0;
+        }
         PowerBlob blob = getPowerBlob(id);
         long total = getTotalPower(id);
+        long diff;
         if (amount > total) {
-            return false;
+            diff = amount - total;
+            amount = total;
+        } else {
+            diff = 0;
         }
+
         if (blob.getLastUsedTick() == tickCounter) {
             if (amount <= blob.getLastAmount()) {
                 blob.addLastAmount(-amount);
             } else {
                 amount -= blob.getLastAmount();
                 blob.setLastAmount(0);
-                blob.addAmount(-amount);
+                blob.removeAmount(amount);
             }
         } else if (blob.getLastUsedTick() == tickCounter-1) {
-            blob.addAmount(-amount);
+            blob.removeAmount(amount);
         }
-        return true;
+        return diff;
     }
 
     @Nonnull

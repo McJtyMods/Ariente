@@ -9,7 +9,7 @@ import net.minecraft.world.World;
 import java.util.HashSet;
 import java.util.Set;
 
-public class PowerBlobSupport {
+public class PowerSenderSupport {
 
     private int cableId = -1;
 

@@ -8,7 +8,9 @@ import mcjty.ariente.gui.IGuiComponent;
 import mcjty.ariente.gui.IGuiTile;
 import mcjty.ariente.gui.components.*;
 import mcjty.ariente.items.ModItems;
-import mcjty.ariente.power.*;
+import mcjty.ariente.power.IPowerBlob;
+import mcjty.ariente.power.PowerSenderSupport;
+import mcjty.ariente.power.PowerSystem;
 import mcjty.lib.container.ContainerFactory;
 import mcjty.lib.container.DefaultSidedInventory;
 import mcjty.lib.container.InventoryHelper;
@@ -31,7 +33,6 @@ import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.network.NetworkManager;
 import net.minecraft.network.play.server.SPacketUpdateTileEntity;
-import net.minecraft.tileentity.TileEntity;
 import net.minecraft.util.EnumFacing;
 import net.minecraft.util.ITickable;
 import net.minecraft.util.ResourceLocation;
@@ -46,14 +47,15 @@ import java.util.List;
 public class NegariteGeneratorTile extends GenericTileEntity implements ITickable, DefaultSidedInventory, IGuiTile, IPowerBlob {
 
     public static final String CMD_RSMODE = "negarite_gen.setRsMode";
-
     public static final PropertyBool WORKING = PropertyBool.create("working");
+
+    public static final int POWERGEN = 1000;        // @todo configurable and based on tanks!
 
     public static final ContainerFactory CONTAINER_FACTORY = new ContainerFactory(new ResourceLocation(Ariente.MODID, "gui/negarite_generator.gui"));
     public static final int SLOT_NEGARITE_INPUT = 0;
     private InventoryHelper inventoryHelper = new InventoryHelper(this, CONTAINER_FACTORY, 1);
 
-    private PowerBlobSupport powerBlobSupport = new PowerBlobSupport();
+    private PowerSenderSupport powerBlobSupport = new PowerSenderSupport();
 
     // @todo, temporary: base on tanks later!
     private int dustCounter;        // Number of ticks before the current dust depletes
@@ -68,50 +70,31 @@ public class NegariteGeneratorTile extends GenericTileEntity implements ITickabl
         if (!world.isRemote) {
             if (dustCounter > 0) {
                 dustCounter--;
-                markDirtyQuick();
-//                sendPower();
-            } else {
-                ItemStack stack = inventoryHelper.getStackInSlot(SLOT_NEGARITE_INPUT);
-                if (!stack.isEmpty() && stack.getItem() == ModItems.negariteDust) {
-                    inventoryHelper.decrStackSize(SLOT_NEGARITE_INPUT, 1);
-                    dustCounter = 200;
+                if (dustCounter == 0 && !canProceed()) {
+                    markDirtyClient();
+                } else {
                     markDirtyQuick();
-//                    sendPower();
+                }
+                sendPower();
+            } else {
+                if (canProceed()) {
+                    inventoryHelper.decrStackSize(SLOT_NEGARITE_INPUT, 1);
+                    dustCounter = 600;
+                    markDirtyQuick();
+                    sendPower();
                 }
             }
         }
     }
 
-    private void sendPower() {
-        int cnt = 0;
-        for (EnumFacing facing : EnumFacing.VALUES) {
-            BlockPos p = pos.offset(facing);
-            TileEntity te = world.getTileEntity(p);
-            if (te instanceof IPowerReceiver) {
-                IPowerReceiver receiver = (IPowerReceiver) te;
-                if (receiver.accepts(PowerType.NEGARITE)) {
-                    cnt++;
-                }
-            }
-        }
-        if (cnt > 0) {
-            PowerSystem powerSystem = PowerSystem.getPowerSystem(world);
-            // Divide power over multiple receivers
-            int toReceive = 1000 / cnt;     // @todo configure (based on tanks?)
-            int remainder = 1000 % cnt;
-            for (EnumFacing facing : EnumFacing.VALUES) {
-                BlockPos p = pos.offset(facing);
-                TileEntity te = world.getTileEntity(p);
-                if (te instanceof IPowerReceiver) {
-                    IPowerReceiver receiver = (IPowerReceiver) te;
-                    if (receiver.accepts(PowerType.NEGARITE)) {
-                        receiver.send(PowerType.NEGARITE, toReceive + remainder);
-                        remainder = 0;
-                    }
-                }
-            }
+    private boolean canProceed() {
+        ItemStack stack = inventoryHelper.getStackInSlot(SLOT_NEGARITE_INPUT);
+        return !stack.isEmpty() && stack.getItem() == ModItems.negariteDust;
+    }
 
-        }
+    private void sendPower() {
+        PowerSystem powerSystem = PowerSystem.getPowerSystem(world);
+        powerSystem.addPower(powerBlobSupport.getCableId(), POWERGEN);
     }
 
     @Override
@@ -232,6 +215,9 @@ public class NegariteGeneratorTile extends GenericTileEntity implements ITickabl
     public void addProbeInfo(ProbeMode mode, IProbeInfo probeInfo, EntityPlayer player, World world, IBlockState blockState, IProbeHitData data) {
         super.addProbeInfo(mode, probeInfo, player, world, blockState, data);
         probeInfo.text(TextStyleClass.LABEL + "Network: " + TextStyleClass.INFO + powerBlobSupport.getCableId());
+        if (isWorking()) {
+            probeInfo.text(TextStyleClass.LABEL + "Generating: " + TextStyleClass.INFO + POWERGEN + " flux");
+        }
     }
 
 

@@ -3,14 +3,14 @@ package mcjty.ariente.blocks.generators;
 import mcjty.ariente.Ariente;
 import mcjty.ariente.blocks.ModBlocks;
 import mcjty.ariente.cables.CableColor;
-import mcjty.ariente.cables.GenericCableTileEntity;
 import mcjty.ariente.gui.HoloGuiEntity;
 import mcjty.ariente.gui.IGuiComponent;
 import mcjty.ariente.gui.IGuiTile;
 import mcjty.ariente.gui.components.*;
 import mcjty.ariente.items.ModItems;
 import mcjty.ariente.power.IPowerBlob;
-import mcjty.ariente.power.PowerBlobSupport;
+import mcjty.ariente.power.PowerSenderSupport;
+import mcjty.ariente.power.PowerSystem;
 import mcjty.lib.container.ContainerFactory;
 import mcjty.lib.container.DefaultSidedInventory;
 import mcjty.lib.container.InventoryHelper;
@@ -49,10 +49,12 @@ public class PosiriteGeneratorTile extends GenericTileEntity implements ITickabl
 
     public static final PropertyBool WORKING = PropertyBool.create("working");
 
+    public static final int POWERGEN = 1000;        // @todo configurable and based on tanks!
+
     public static final int SLOT_POSIRITE_INPUT = 0;
     public static final ContainerFactory CONTAINER_FACTORY = new ContainerFactory(new ResourceLocation(Ariente.MODID, "gui/posirite_generator.gui"));
     private InventoryHelper inventoryHelper = new InventoryHelper(this, CONTAINER_FACTORY, 1);
-    private PowerBlobSupport powerBlobSupport = new PowerBlobSupport();
+    private PowerSenderSupport powerBlobSupport = new PowerSenderSupport();
 
     // @todo, temporary: base on tanks later!
     private int dustCounter;        // Number of ticks before the current dust depletes
@@ -67,19 +69,33 @@ public class PosiriteGeneratorTile extends GenericTileEntity implements ITickabl
         if (!world.isRemote) {
             if (dustCounter > 0) {
                 dustCounter--;
-                markDirtyQuick();
-//                sendPower();
-            } else {
-                ItemStack stack = inventoryHelper.getStackInSlot(SLOT_POSIRITE_INPUT);
-                if (!stack.isEmpty() && stack.getItem() == ModItems.posiriteDust) {
-                    inventoryHelper.decrStackSize(SLOT_POSIRITE_INPUT, 1);
-                    dustCounter = 200;
+                if (dustCounter == 0 && !canProceed()) {
+                    markDirtyClient();
+                } else {
                     markDirtyQuick();
-//                    sendPower();
+                }
+                sendPower();
+            } else {
+                if (canProceed()) {
+                    inventoryHelper.decrStackSize(SLOT_POSIRITE_INPUT, 1);
+                    dustCounter = 600;
+                    markDirtyQuick();
+                    sendPower();
                 }
             }
         }
     }
+
+    private boolean canProceed() {
+        ItemStack stack = inventoryHelper.getStackInSlot(SLOT_POSIRITE_INPUT);
+        return !stack.isEmpty() && stack.getItem() == ModItems.posiriteDust;
+    }
+
+    private void sendPower() {
+        PowerSystem powerSystem = PowerSystem.getPowerSystem(world);
+        powerSystem.addPower(powerBlobSupport.getCableId(), POWERGEN);
+    }
+
 
     @Override
     public void onDataPacket(NetworkManager net, SPacketUpdateTileEntity packet) {
@@ -189,6 +205,9 @@ public class PosiriteGeneratorTile extends GenericTileEntity implements ITickabl
     public void addProbeInfo(ProbeMode mode, IProbeInfo probeInfo, EntityPlayer player, World world, IBlockState blockState, IProbeHitData data) {
         super.addProbeInfo(mode, probeInfo, player, world, blockState, data);
         probeInfo.text(TextStyleClass.LABEL + "Network: " + TextStyleClass.INFO + powerBlobSupport.getCableId());
+        if (isWorking()) {
+            probeInfo.text(TextStyleClass.LABEL + "Generating: " + TextStyleClass.INFO + POWERGEN + " flux");
+        }
     }
 
 
