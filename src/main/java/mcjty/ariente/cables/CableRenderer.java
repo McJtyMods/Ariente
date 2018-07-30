@@ -26,12 +26,17 @@ import java.util.function.BiConsumer;
 public class CableRenderer extends TileEntitySpecialRenderer<GenericCableTileEntity> {
 
     private Random random = new Random();
-    private static ResourceLocation laserbeams[] = new ResourceLocation[4];
+    private static ResourceLocation negarite_laserbeams[] = new ResourceLocation[4];
+    private static ResourceLocation posirite_laserbeams[] = new ResourceLocation[4];
     static {
-        laserbeams[0] = new ResourceLocation(Ariente.MODID, "textures/effects/laserbeam1.png");
-        laserbeams[1] = new ResourceLocation(Ariente.MODID, "textures/effects/laserbeam2.png");
-        laserbeams[2] = new ResourceLocation(Ariente.MODID, "textures/effects/laserbeam3.png");
-        laserbeams[3] = new ResourceLocation(Ariente.MODID, "textures/effects/laserbeam4.png");
+        negarite_laserbeams[0] = new ResourceLocation(Ariente.MODID, "textures/effects/negarite_laserbeam1.png");
+        negarite_laserbeams[1] = new ResourceLocation(Ariente.MODID, "textures/effects/negarite_laserbeam2.png");
+        negarite_laserbeams[2] = new ResourceLocation(Ariente.MODID, "textures/effects/negarite_laserbeam3.png");
+        negarite_laserbeams[3] = new ResourceLocation(Ariente.MODID, "textures/effects/negarite_laserbeam4.png");
+        posirite_laserbeams[0] = new ResourceLocation(Ariente.MODID, "textures/effects/posirite_laserbeam1.png");
+        posirite_laserbeams[1] = new ResourceLocation(Ariente.MODID, "textures/effects/posirite_laserbeam2.png");
+        posirite_laserbeams[2] = new ResourceLocation(Ariente.MODID, "textures/effects/posirite_laserbeam3.png");
+        posirite_laserbeams[3] = new ResourceLocation(Ariente.MODID, "textures/effects/posirite_laserbeam4.png");
     }
 
     public static final List<BiConsumer<RenderHelper.Vector, BlockPos>> BEAM_RENDERERS_UP_DOWN = new ArrayList<>(4);
@@ -65,7 +70,18 @@ public class CableRenderer extends TileEntitySpecialRenderer<GenericCableTileEnt
 
     @Override
     public void render(GenericCableTileEntity te, double x, double y, double z, float partialTicks, int destroyStage, float alpha) {
-        if (true) {
+        if (true) { // @todo only when it has power
+            switch (te.getCableColor()) {
+                case NEGARITE:
+                    this.bindTexture(negarite_laserbeams[random.nextInt(4)]);
+                    break;
+                case POSIRITE:
+                    this.bindTexture(posirite_laserbeams[random.nextInt(4)]);
+                    break;
+                case COMBINED:
+                    return;
+            }
+
             GlStateManager.depthMask(false);
             GlStateManager.enableBlend();
             GlStateManager.blendFunc(GL11.GL_ONE, GL11.GL_ONE);
@@ -85,9 +101,6 @@ public class CableRenderer extends TileEntitySpecialRenderer<GenericCableTileEnt
             BufferBuilder buffer = tessellator.getBuffer();
 
             // ----------------------------------------
-
-            this.bindTexture(laserbeams[random.nextInt(4)]);
-
 
             IBlockState state = te.getWorld().getBlockState(te.getPos());
             Block block = state.getBlock();

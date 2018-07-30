@@ -71,7 +71,7 @@ public class GenericCableBakedModel implements IBakedModel {
             CableTextures[] tt = new CableTextures[CableColor.VALUES.length];
             for (CableColor color : CableColor.VALUES) {
                 int i = color.ordinal();
-                String typeName = "negarite";
+                String typeName = color.getName();
                 tt[i] = new CableTextures();
                 tt[i].spriteConnector = Minecraft.getMinecraft().getTextureMapBlocks().getAtlasSprite(Ariente.MODID + ":blocks/cables/" + typeName + "/connector");
                 tt[i].spriteNormalCable = Minecraft.getMinecraft().getTextureMapBlocks().getAtlasSprite(Ariente.MODID + ":blocks/cables/" + typeName + "/normal_netcable");

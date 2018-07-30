@@ -12,8 +12,8 @@
   "variants": {
     "color": {
       "negarite": { "textures": { "txt": "ariente:blocks/cables/negarite/normal_none_netcable" }},
-      "posirite": { "textures": { "txt": "ariente:blocks/cables/negarite/normal_none_netcable" }},
-      "combined": { "textures": { "txt": "ariente:blocks/cables/negarite/normal_none_netcable" }}
+      "posirite": { "textures": { "txt": "ariente:blocks/cables/posirite/normal_none_netcable" }},
+      "combined": { "textures": { "txt": "ariente:blocks/cables/combined/normal_none_netcable" }}
     }
   }
 }

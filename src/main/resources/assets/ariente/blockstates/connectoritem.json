@@ -6,8 +6,8 @@
   "variants": {
     "color": {
       "negarite": { "textures": { "txt": "ariente:blocks/cables/negarite/connector" }},
-      "posirite": { "textures": { "txt": "ariente:blocks/cables/negarite/connector" }},
-      "combined": { "textures": { "txt": "ariente:blocks/cables/negarite/connector" }}
+      "posirite": { "textures": { "txt": "ariente:blocks/cables/posirite/connector" }},
+      "combined": { "textures": { "txt": "ariente:blocks/cables/combined/connector" }}
     }
   }
 }

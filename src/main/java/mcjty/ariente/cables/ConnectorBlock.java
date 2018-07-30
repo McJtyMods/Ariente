@@ -3,6 +3,8 @@ package mcjty.ariente.cables;
 import mcjty.ariente.Ariente;
 import mcjty.ariente.blocks.ModBlocks;
 import mcjty.ariente.blocks.generators.NegariteGeneratorTile;
+import mcjty.ariente.blocks.generators.PosiriteGeneratorTile;
+import mcjty.ariente.blocks.utility.ElevatorTile;
 import mcjty.ariente.facade.FacadeBlockId;
 import mcjty.ariente.facade.FacadeItemBlock;
 import mcjty.theoneprobe.api.IProbeHitData;
@@ -258,6 +260,12 @@ public class ConnectorBlock extends GenericCableBlock implements ITileEntityProv
             return false;
         }
         if (te instanceof NegariteGeneratorTile) {
+            return true;
+        }
+        if (te instanceof PosiriteGeneratorTile) {
+            return true;
+        }
+        if (te instanceof ElevatorTile) {   // Ad-hoc!
             return true;
         }
         return false;

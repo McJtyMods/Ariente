@@ -36,6 +36,20 @@ public class GenericCableModel implements IModel {
                 new ResourceLocation(Ariente.MODID, "blocks/cables/negarite/normal_end_netcable"),
                 new ResourceLocation(Ariente.MODID, "blocks/cables/negarite/normal_none_netcable"),
                 new ResourceLocation(Ariente.MODID, "blocks/cables/negarite/normal_three_netcable"),
+                new ResourceLocation(Ariente.MODID, "blocks/cables/posirite/connector"),
+                new ResourceLocation(Ariente.MODID, "blocks/cables/posirite/normal_netcable"),
+                new ResourceLocation(Ariente.MODID, "blocks/cables/posirite/normal_corner_netcable"),
+                new ResourceLocation(Ariente.MODID, "blocks/cables/posirite/normal_cross_netcable"),
+                new ResourceLocation(Ariente.MODID, "blocks/cables/posirite/normal_end_netcable"),
+                new ResourceLocation(Ariente.MODID, "blocks/cables/posirite/normal_none_netcable"),
+                new ResourceLocation(Ariente.MODID, "blocks/cables/posirite/normal_three_netcable"),
+                new ResourceLocation(Ariente.MODID, "blocks/cables/combined/connector"),
+                new ResourceLocation(Ariente.MODID, "blocks/cables/combined/normal_netcable"),
+                new ResourceLocation(Ariente.MODID, "blocks/cables/combined/normal_corner_netcable"),
+                new ResourceLocation(Ariente.MODID, "blocks/cables/combined/normal_cross_netcable"),
+                new ResourceLocation(Ariente.MODID, "blocks/cables/combined/normal_end_netcable"),
+                new ResourceLocation(Ariente.MODID, "blocks/cables/combined/normal_none_netcable"),
+                new ResourceLocation(Ariente.MODID, "blocks/cables/combined/normal_three_netcable"),
 
                 new ResourceLocation(Ariente.MODID, "blocks/cables/connector_side")
                 );

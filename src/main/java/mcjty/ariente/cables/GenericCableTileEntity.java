@@ -1,5 +1,6 @@
 package mcjty.ariente.cables;
 
+import mcjty.ariente.blocks.ModBlocks;
 import mcjty.ariente.facade.IFacadeSupport;
 import mcjty.ariente.facade.MimicBlockSupport;
 import mcjty.lib.tileentity.GenericTileEntity;
@@ -24,6 +25,14 @@ public class GenericCableTileEntity extends GenericTileEntity implements IFacade
                 world.markBlockRangeForRenderUpdate(getPos(), getPos());
             }
         }
+    }
+
+    public CableColor getCableColor() {
+        IBlockState state = world.getBlockState(pos);
+        if (state.getBlock() instanceof GenericCableBlock) {
+            return state.getValue(GenericCableBlock.COLOR);
+        }
+        return CableColor.COMBINED;
     }
 
     @Override
