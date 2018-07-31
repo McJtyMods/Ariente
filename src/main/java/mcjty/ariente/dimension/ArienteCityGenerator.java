@@ -84,6 +84,9 @@ public class ArienteCityGenerator {
     }
 
     public void generate(World worldIn, int x, int z, ChunkPrimer primer) {
+        if (x == 1928/16 && z == 2440/16) {
+            System.out.println("ArienteCityGenerator.generate");
+        }
         City city = CityTools.getNearestCity(generator, x, z);
         if (city != null) {
             List<BuildingPart> parts = CityTools.getBuildingParts(city, x, z);
@@ -127,12 +130,12 @@ public class ArienteCityGenerator {
                             }
                         }
                         // We don't replace the world where the part is empty (air)
-                        if (b != airChar) {
-                            if (b == liquidChar) {
-                            } else if (b == hardAirChar) {
-                                b = airChar;
-                            }
-                        }
+//                        if (b != airChar) {
+//                            if (b == liquidChar) {
+//                            } else if (b == hardAirChar) {
+//                                b = airChar;
+//                            }
+//                        }
                         primer.data[index] = b;
                         index++;
                     }

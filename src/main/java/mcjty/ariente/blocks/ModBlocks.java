@@ -1,6 +1,7 @@
 package mcjty.ariente.blocks;
 
 import mcjty.ariente.Ariente;
+import mcjty.ariente.blocks.aicore.AICoreTile;
 import mcjty.ariente.blocks.decorative.*;
 import mcjty.ariente.blocks.defense.ForceFieldTile;
 import mcjty.ariente.blocks.generators.NegariteGeneratorTile;
@@ -59,6 +60,8 @@ public class ModBlocks {
     public static GenericBlock<ElevatorTile, GenericContainer> elevatorBlock;
     public static GenericBlock<LevelMarkerTile, GenericContainer> levelMarkerBlock;
     public static GenericBlock<ForceFieldTile, GenericContainer> forceFieldBlock;
+    public static GenericBlock<AICoreTile, GenericContainer> aiCoreBlock;
+    
     public static BaseBlock flatLightBlock;
 
     public static NetCableBlock netCableBlock;
@@ -89,7 +92,7 @@ public class ModBlocks {
                 .flags(BlockFlags.NON_OPAQUE)
                 .build();
 
-        negariteGeneratorBlock = ModBlocks.builderFactory.<NegariteGeneratorTile> builder("negarite_generator")
+        negariteGeneratorBlock = builderFactory.<NegariteGeneratorTile> builder("negarite_generator")
                 .tileEntityClass(NegariteGeneratorTile.class)
                 .container(NegariteGeneratorTile.CONTAINER_FACTORY)
                 .rotationType(BaseBlock.RotationType.HORIZROTATION)
@@ -100,7 +103,7 @@ public class ModBlocks {
                 .infoExtended("message.ariente.negarite_generator")
                 .build();
 
-        posiriteGeneratorBlock = ModBlocks.builderFactory.<PosiriteGeneratorTile> builder("posirite_generator")
+        posiriteGeneratorBlock = builderFactory.<PosiriteGeneratorTile> builder("posirite_generator")
                 .tileEntityClass(PosiriteGeneratorTile.class)
                 .container(PosiriteGeneratorTile.CONTAINER_FACTORY)
                 .rotationType(BaseBlock.RotationType.HORIZROTATION)
@@ -111,7 +114,7 @@ public class ModBlocks {
                 .infoExtended("message.ariente.posirite_generator")
                 .build();
 
-        negariteTankBlock = ModBlocks.builderFactory.<NegariteTankTile> builder("negarite_tank")
+        negariteTankBlock = builderFactory.<NegariteTankTile> builder("negarite_tank")
                 .tileEntityClass(NegariteTankTile.class)
                 .emptyContainer()
                 .flags(BlockFlags.NON_OPAQUE, BlockFlags.RENDER_SOLID, BlockFlags.RENDER_TRANSLUCENT)
@@ -123,7 +126,7 @@ public class ModBlocks {
                 .infoExtended("message.ariente.negarite_tank")
                 .build();
 
-        storageBlock = ModBlocks.builderFactory.<StorageTile> builder("storage")
+        storageBlock = builderFactory.<StorageTile> builder("storage")
                 .tileEntityClass(StorageTile.class)
                 .emptyContainer()
                 .flags(BlockFlags.RENDER_SOLID, BlockFlags.RENDER_TRANSLUCENT)
@@ -134,7 +137,7 @@ public class ModBlocks {
                 .infoExtended("message.ariente.storage")
                 .build();
 
-        elevatorBlock = ModBlocks.builderFactory.<ElevatorTile> builder("elevator")
+        elevatorBlock = builderFactory.<ElevatorTile> builder("elevator")
                 .tileEntityClass(ElevatorTile.class)
                 .emptyContainer()
                 .flags(BlockFlags.RENDER_SOLID, BlockFlags.RENDER_TRANSLUCENT)
@@ -144,7 +147,7 @@ public class ModBlocks {
                 .infoExtended("message.ariente.elevator")
                 .build();
 
-        levelMarkerBlock = ModBlocks.builderFactory.<LevelMarkerTile> builder("level_marker")
+        levelMarkerBlock = builderFactory.<LevelMarkerTile> builder("level_marker")
                 .tileEntityClass(LevelMarkerTile.class)
                 .emptyContainer()
                 .rotationType(BaseBlock.RotationType.NONE)
@@ -155,7 +158,7 @@ public class ModBlocks {
                 .infoExtended("message.ariente.level_marker")
                 .build();
 
-        forceFieldBlock = ModBlocks.builderFactory.<ForceFieldTile> builder("forcefield")
+        forceFieldBlock = builderFactory.<ForceFieldTile> builder("forcefield")
                 .tileEntityClass(ForceFieldTile.class)
                 .emptyContainer()
                 .flags(BlockFlags.REDSTONE_CHECK)
@@ -164,6 +167,14 @@ public class ModBlocks {
                 .info("message.ariente.shiftmessage")
                 .infoExtended("message.ariente.forcefield")
                 .build();
+        
+        aiCoreBlock = builderFactory.<AICoreTile> builder("aicore")
+                .tileEntityClass(AICoreTile.class)
+                .emptyContainer()
+                .rotationType(BaseBlock.RotationType.NONE)
+                .build();
+        aiCoreBlock.setHardness(10.0f);
+        aiCoreBlock.setHarvestLevel("pickaxe", 2);
     }
 
     private static void initPlants() {
@@ -274,6 +285,8 @@ public class ModBlocks {
         negariteGeneratorBlock.initModel();
         negariteTankBlock.initModel();
         ClientRegistry.bindTileEntitySpecialRenderer(NegariteTankTile.class, new NegariteTankRenderer());
+
+        aiCoreBlock.initModel();
 
         blackmarble_techpat.initModel();
         patternBlock.initModel();
