@@ -6,12 +6,14 @@ import mcjty.ariente.gui.HoloGuiHandler;
 import mcjty.ariente.gui.IGuiComponent;
 import mcjty.ariente.gui.IGuiTile;
 import mcjty.ariente.gui.components.*;
+import mcjty.ariente.power.IPowerReceiver;
 import mcjty.ariente.power.PowerReceiverSupport;
 import mcjty.ariente.power.PowerSystem;
 import mcjty.lib.tileentity.GenericTileEntity;
 import mcjty.theoneprobe.api.IProbeHitData;
 import mcjty.theoneprobe.api.IProbeInfo;
 import mcjty.theoneprobe.api.ProbeMode;
+import mcjty.theoneprobe.api.TextStyleClass;
 import mcp.mobius.waila.api.IWailaConfigHandler;
 import mcp.mobius.waila.api.IWailaDataAccessor;
 import net.minecraft.block.state.IBlockState;
@@ -32,7 +34,7 @@ import net.minecraftforge.fml.relauncher.SideOnly;
 
 import java.util.*;
 
-public class ElevatorTile extends GenericTileEntity implements IGuiTile, ITickable {
+public class ElevatorTile extends GenericTileEntity implements IGuiTile, ITickable, IPowerReceiver {
 
     public static final String TAG_ELEVATOR = "elevator";
 
@@ -236,6 +238,8 @@ public class ElevatorTile extends GenericTileEntity implements IGuiTile, ITickab
     @Optional.Method(modid = "theoneprobe")
     public void addProbeInfo(ProbeMode mode, IProbeInfo probeInfo, EntityPlayer player, World world, IBlockState blockState, IProbeHitData data) {
         super.addProbeInfo(mode, probeInfo, player, world, blockState, data);
+        probeInfo.text(TextStyleClass.LABEL + "Using: " + TextStyleClass.INFO + POWER_USAGE + " flux");
+
 //        Boolean working = isWorking();
 //        if (working) {
 //            probeInfo.text(TextFormatting.GREEN + "Producing " + getRfPerTick() + " RF/t");

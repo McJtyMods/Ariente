@@ -54,7 +54,7 @@ public class ForgeEventHandlers {
 
     @SubscribeEvent
     public void onWorldTick(TickEvent.WorldTickEvent event) {
-        if (!event.world.isRemote && event.world.provider.getDimension() == 0) {
+        if (event.phase == TickEvent.Phase.START && !event.world.isRemote && event.world.provider.getDimension() == 0) {
             PowerSystem.getPowerSystem(event.world).tick();
         }
     }

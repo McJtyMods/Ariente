@@ -17,7 +17,7 @@ public class PowerBlob {
 
     public void setAmount(long amount) {
         this.amount = amount;
-        totalAdded = amount;
+        totalAdded += amount;
     }
 
     public void addAmount(long da) {

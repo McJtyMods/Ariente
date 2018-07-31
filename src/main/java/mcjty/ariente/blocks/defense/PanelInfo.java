@@ -41,18 +41,6 @@ public class PanelInfo {
         return index;
     }
 
-    public double getX() {
-        return x;
-    }
-
-    public double getY() {
-        return y;
-    }
-
-    public double getZ() {
-        return z;
-    }
-
     public boolean testCollisionEntity(Entity entity, double scale) {
         AxisAlignedBB box = entity.getEntityBoundingBox();
         Triangle triangle = PentakisDodecahedron.getTriangle(getIndex());

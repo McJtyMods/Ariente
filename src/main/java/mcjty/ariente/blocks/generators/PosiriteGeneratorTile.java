@@ -26,6 +26,7 @@ import mcp.mobius.waila.api.IWailaConfigHandler;
 import mcp.mobius.waila.api.IWailaDataAccessor;
 import net.minecraft.block.properties.PropertyBool;
 import net.minecraft.block.state.IBlockState;
+import net.minecraft.entity.EntityLivingBase;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.entity.player.EntityPlayerMP;
 import net.minecraft.entity.player.InventoryPlayer;
@@ -36,6 +37,7 @@ import net.minecraft.network.play.server.SPacketUpdateTileEntity;
 import net.minecraft.util.EnumFacing;
 import net.minecraft.util.ITickable;
 import net.minecraft.util.ResourceLocation;
+import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.World;
 import net.minecraftforge.fml.common.Optional;
 import net.minecraftforge.fml.relauncher.Side;
@@ -355,5 +357,22 @@ public class PosiriteGeneratorTile extends GenericTileEntity implements ITickabl
             }
         }
         return cnt;
+    }
+
+
+    @Override
+    public void onBlockPlacedBy(World world, BlockPos pos, IBlockState state, EntityLivingBase placer, ItemStack stack) {
+        super.onBlockPlacedBy(world, pos, state, placer, stack);
+        if (!world.isRemote) {
+            PowerSenderSupport.fixNetworks(world, pos);
+        }
+    }
+
+    @Override
+    public void onBlockBreak(World workd, BlockPos pos, IBlockState state) {
+        super.onBlockBreak(workd, pos, state);
+        if (!world.isRemote) {
+            PowerSenderSupport.fixNetworks(world, pos);
+        }
     }
 }

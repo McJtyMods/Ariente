@@ -26,6 +26,7 @@ import mcp.mobius.waila.api.IWailaConfigHandler;
 import mcp.mobius.waila.api.IWailaDataAccessor;
 import net.minecraft.block.properties.PropertyBool;
 import net.minecraft.block.state.IBlockState;
+import net.minecraft.entity.EntityLivingBase;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.entity.player.EntityPlayerMP;
 import net.minecraft.entity.player.InventoryPlayer;
@@ -364,5 +365,21 @@ public class NegariteGeneratorTile extends GenericTileEntity implements ITickabl
             }
         }
         return cnt;
+    }
+
+    @Override
+    public void onBlockPlacedBy(World world, BlockPos pos, IBlockState state, EntityLivingBase placer, ItemStack stack) {
+        super.onBlockPlacedBy(world, pos, state, placer, stack);
+        if (!world.isRemote) {
+            PowerSenderSupport.fixNetworks(world, pos);
+        }
+    }
+
+    @Override
+    public void onBlockBreak(World workd, BlockPos pos, IBlockState state) {
+        super.onBlockBreak(workd, pos, state);
+        if (!world.isRemote) {
+            PowerSenderSupport.fixNetworks(world, pos);
+        }
     }
 }

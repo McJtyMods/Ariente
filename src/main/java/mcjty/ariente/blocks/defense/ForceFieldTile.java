@@ -9,12 +9,15 @@ import mcjty.ariente.gui.components.HoloNumber;
 import mcjty.ariente.gui.components.HoloPanel;
 import mcjty.ariente.gui.components.HoloText;
 import mcjty.ariente.network.ArienteMessages;
+import mcjty.ariente.power.IPowerReceiver;
+import mcjty.ariente.power.PowerReceiverSupport;
 import mcjty.ariente.sounds.ISoundProducer;
 import mcjty.ariente.varia.Triangle;
 import mcjty.lib.tileentity.GenericTileEntity;
 import mcjty.theoneprobe.api.IProbeHitData;
 import mcjty.theoneprobe.api.IProbeInfo;
 import mcjty.theoneprobe.api.ProbeMode;
+import mcjty.theoneprobe.api.TextStyleClass;
 import mcp.mobius.waila.api.IWailaConfigHandler;
 import mcp.mobius.waila.api.IWailaDataAccessor;
 import net.minecraft.block.state.IBlockState;
@@ -33,20 +36,29 @@ import net.minecraftforge.fml.common.Optional;
 import net.minecraftforge.fml.relauncher.Side;
 import net.minecraftforge.fml.relauncher.SideOnly;
 
+import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 
 import static mcjty.ariente.config.ArienteConfiguration.SHIELD_PANEL_LIFE;
 
-public class ForceFieldTile extends GenericTileEntity implements IGuiTile, ITickable, ISoundProducer {
+public class ForceFieldTile extends GenericTileEntity implements IGuiTile, ITickable, ISoundProducer, IPowerReceiver {
 
     private PanelInfo[] panelInfo = new PanelInfo[PentakisDodecahedron.MAX_TRIANGLES];
     private AxisAlignedBB aabb = null;
     private int scale = 10;
 
+    private static int[] shuffledIndices = null;
+
     public ForceFieldTile() {
         for (int i = 0 ; i < PentakisDodecahedron.MAX_TRIANGLES ; i++) {
             panelInfo[i] = null;
         }
+    }
+
+    @Override
+    protected boolean needsRedstoneMode() {
+        return true;
     }
 
     public double getScaleDouble() {
@@ -92,12 +104,20 @@ public class ForceFieldTile extends GenericTileEntity implements IGuiTile, ITick
     @Override
     public void update() {
         if (!world.isRemote) {
-            updateShield();
+            if (!PowerReceiverSupport.consumePower(world, pos, calculateIdleUsage())) {
+                disableShield();
+            } else {
+                updateShield();
+            }
             collideWithEntities();
         } else {
             ForceFieldRenderer.register(pos);
             ForceFieldSounds.doSounds(this);
         }
+    }
+
+    private long calculateIdleUsage() {
+        return scale * 30;
     }
 
     private AxisAlignedBB getShieldAABB() {
@@ -204,25 +224,43 @@ public class ForceFieldTile extends GenericTileEntity implements IGuiTile, ITick
         super.invalidate();
     }
 
+    private static int[] getShuffledIndices() {
+        if (shuffledIndices == null) {
+            shuffledIndices = new int[PentakisDodecahedron.MAX_TRIANGLES];
+            List<Integer> idx = new ArrayList<>();
+            for (int i = 0 ; i < PentakisDodecahedron.MAX_TRIANGLES ; i++) {
+                idx.add(i);
+            }
+            Collections.shuffle(idx);
+            for (int i = 0 ; i < PentakisDodecahedron.MAX_TRIANGLES ; i++) {
+                shuffledIndices[i] = idx.get(i);
+            }
+        }
+        return shuffledIndices;
+    }
+
     private void updateShield() {
         boolean changed = false;
         for (int i = 0 ; i < PentakisDodecahedron.MAX_TRIANGLES ; i++) {
-            if (panelInfo[i] == null) {
-                createPanelInfo(i);
+            int randomI = getShuffledIndices()[i];
+            if (panelInfo[randomI] == null) {
+                createPanelInfo(randomI);
                 // Set a random life
-                panelInfo[i].setLife(-(world.rand.nextInt(50)+150));
+                panelInfo[randomI].setLife(-100);      // @todo configurable
                 changed = true;
             } else {
-                PanelInfo info = this.panelInfo[i];
+                PanelInfo info = this.panelInfo[randomI];
                 int life = info.getLife();
                 if (life < 0) {
-                    // Building up
-                    life++;
-                    if (life == 0) {
-                        life = SHIELD_PANEL_LIFE;
+                    // Building up!
+                    if (PowerReceiverSupport.consumePower(world, pos, 500)) {   // @todo configurable
+                        life++;
+                        if (life == 0) {
+                            life = SHIELD_PANEL_LIFE;
+                        }
+                        info.setLife(life);
+                        changed = true;
                     }
-                    info.setLife(life);
-                    changed = true;
                 }
             }
         }
@@ -299,6 +337,7 @@ public class ForceFieldTile extends GenericTileEntity implements IGuiTile, ITick
     @Optional.Method(modid = "theoneprobe")
     public void addProbeInfo(ProbeMode mode, IProbeInfo probeInfo, EntityPlayer player, World world, IBlockState blockState, IProbeHitData data) {
         super.addProbeInfo(mode, probeInfo, player, world, blockState, data);
+        probeInfo.text(TextStyleClass.LABEL + "Using: " + TextStyleClass.INFO + 11111 + " flux");
 //        Boolean working = isWorking();
 //        if (working) {
 //            probeInfo.text(TextFormatting.GREEN + "Producing " + getRfPerTick() + " RF/t");

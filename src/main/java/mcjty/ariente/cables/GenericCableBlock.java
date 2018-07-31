@@ -4,6 +4,7 @@ import mcjty.ariente.Ariente;
 import mcjty.ariente.facade.FacadeProperty;
 import mcjty.ariente.facade.IFacadeSupport;
 import mcjty.ariente.power.PowerBlob;
+import mcjty.ariente.power.PowerSenderSupport;
 import mcjty.ariente.power.PowerSystem;
 import mcjty.lib.McJtyRegister;
 import mcjty.lib.blocks.DamageMetadataItemBlock;
@@ -244,38 +245,18 @@ public abstract class GenericCableBlock extends Block implements WailaInfoProvid
 
     @Override
     public void onBlockPlacedBy(World world, BlockPos pos, IBlockState state, EntityLivingBase placer, ItemStack stack) {
-        originalOnBlockPlacedBy(world, pos, state, placer, stack);
+        super.onBlockPlacedBy(world, pos, state, placer, stack);
         if (!world.isRemote) {
-            createCableSegment(world, pos, stack);
+            PowerSenderSupport.fixNetworks(world, pos);
         }
     }
-
-    protected void originalOnBlockPlacedBy(World world, BlockPos pos, IBlockState state, EntityLivingBase placer, ItemStack stack) {
-        super.onBlockPlacedBy(world, pos, state, placer, stack);
-    }
-
-
-
-
-    public void createCableSegment(World world, BlockPos pos, ItemStack stack) {
-        GenericCableTileEntity.fixNetworks(world, pos);
-    }
-
 
     @Override
     public void breakBlock(World world, BlockPos pos, IBlockState state) {
-        originalBreakBlock(world, pos, state);
-        unlinkBlock(world, pos);
-    }
-
-    public void unlinkBlock(World world, BlockPos pos) {
-        if (!world.isRemote) {
-            GenericCableTileEntity.fixNetworks(world, pos);
-        }
-    }
-
-    protected void originalBreakBlock(World world, BlockPos pos, IBlockState state) {
         super.breakBlock(world, pos, state);
+        if (!world.isRemote) {
+            PowerSenderSupport.fixNetworks(world, pos);
+        }
     }
 
     @Override

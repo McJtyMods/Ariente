@@ -4,9 +4,9 @@ import mcjty.ariente.Ariente;
 import mcjty.ariente.blocks.ModBlocks;
 import mcjty.ariente.blocks.generators.NegariteGeneratorTile;
 import mcjty.ariente.blocks.generators.PosiriteGeneratorTile;
-import mcjty.ariente.blocks.utility.ElevatorTile;
 import mcjty.ariente.facade.FacadeBlockId;
 import mcjty.ariente.facade.FacadeItemBlock;
+import mcjty.ariente.power.IPowerReceiver;
 import mcjty.theoneprobe.api.IProbeHitData;
 import mcjty.theoneprobe.api.IProbeInfo;
 import mcjty.theoneprobe.api.ProbeMode;
@@ -265,7 +265,7 @@ public class ConnectorBlock extends GenericCableBlock implements ITileEntityProv
         if (te instanceof PosiriteGeneratorTile) {
             return true;
         }
-        if (te instanceof ElevatorTile) {   // Ad-hoc!
+        if (te instanceof IPowerReceiver) {
             return true;
         }
         return false;

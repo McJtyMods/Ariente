@@ -68,10 +68,6 @@ public class GenericCableTileEntity extends GenericTileEntity implements IFacade
         powerBlobSupport.fillCableId(world, pos, id, getCableColor());
     }
 
-    public static void fixNetworks(World world, BlockPos pos) {
-        PowerSenderSupport.fixNetworks(world, pos);
-    }
-
     @Override
     public void readFromNBT(NBTTagCompound tagCompound) {
         super.readFromNBT(tagCompound);
