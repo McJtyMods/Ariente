@@ -48,6 +48,9 @@ public class ForceFieldTile extends GenericTileEntity implements IGuiTile, ITick
     private AxisAlignedBB aabb = null;
     private int scale = 10;
 
+    private long usingPower = 0;
+    private int breakDownSkip = 5;  // After the world is just loaded we skip a few low-power ticks to be sure the powergenerators can start up
+
     private static int[] shuffledIndices = null;
 
     public ForceFieldTile() {
@@ -104,9 +107,17 @@ public class ForceFieldTile extends GenericTileEntity implements IGuiTile, ITick
     @Override
     public void update() {
         if (!world.isRemote) {
-            if (!PowerReceiverSupport.consumePower(world, pos, calculateIdleUsage())) {
-                disableShield();
+            usingPower = 0;
+            long desiredPower = calculateIdleUsage();
+            if (!PowerReceiverSupport.consumePower(world, pos, desiredPower)) {
+                if (breakDownSkip > 0) {
+                    breakDownSkip--;
+                } else {
+                    breakDownShield();
+                }
             } else {
+                breakDownSkip = 5;
+                usingPower += desiredPower;
                 updateShield();
             }
             collideWithEntities();
@@ -239,6 +250,32 @@ public class ForceFieldTile extends GenericTileEntity implements IGuiTile, ITick
         return shuffledIndices;
     }
 
+    private void breakDownShield() {
+        boolean changed = false;
+        for (int i = 0; i < PentakisDodecahedron.MAX_TRIANGLES; i++) {
+            int randomI = getShuffledIndices()[i];
+            if (panelInfo[randomI] != null) {
+                PanelInfo info = this.panelInfo[randomI];
+                int life = info.getLife();
+                if (life > 0) {
+                    if (life > 10) {
+                        life /= 2;
+                    } else {
+                        life--;
+                    }
+                    info.setLife(life);
+                    changed = true;
+                    if (life == 0) {
+                        panelInfo[randomI] = null;
+                    }
+                }
+            }
+        }
+        if (changed) {
+            markDirtyClient();
+        }
+    }
+
     private void updateShield() {
         boolean changed = false;
         for (int i = 0 ; i < PentakisDodecahedron.MAX_TRIANGLES ; i++) {
@@ -254,6 +291,7 @@ public class ForceFieldTile extends GenericTileEntity implements IGuiTile, ITick
                 if (life < 0) {
                     // Building up!
                     if (PowerReceiverSupport.consumePower(world, pos, 500)) {   // @todo configurable
+                        usingPower += 500;
                         life++;
                         if (life == 0) {
                             life = SHIELD_PANEL_LIFE;
@@ -337,7 +375,7 @@ public class ForceFieldTile extends GenericTileEntity implements IGuiTile, ITick
     @Optional.Method(modid = "theoneprobe")
     public void addProbeInfo(ProbeMode mode, IProbeInfo probeInfo, EntityPlayer player, World world, IBlockState blockState, IProbeHitData data) {
         super.addProbeInfo(mode, probeInfo, player, world, blockState, data);
-        probeInfo.text(TextStyleClass.LABEL + "Using: " + TextStyleClass.INFO + 11111 + " flux");
+        probeInfo.text(TextStyleClass.LABEL + "Using: " + TextStyleClass.INFO + usingPower + " flux");
 //        Boolean working = isWorking();
 //        if (working) {
 //            probeInfo.text(TextFormatting.GREEN + "Producing " + getRfPerTick() + " RF/t");
