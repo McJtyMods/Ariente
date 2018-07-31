@@ -7,6 +7,9 @@ item.ariente.ingot_silver.name=Silver Ingot
 item.ariente.dust_negarite.name=Negarite Dust
 item.ariente.dust_posirite.name=Posirite Dust
 
+tile.ariente.pattern.dots.name=Dots Pattern
+tile.ariente.pattern.lines.name=Lines Pattern
+
 tile.ariente.blacktech.dots.name=Tech Block Dots
 tile.ariente.blacktech.lines.name=Tech Block Lines
 tile.ariente.blacktech.var1.name=Tech Block Variation 1
@@ -25,6 +28,7 @@ tile.ariente.netcable.name=Cable
 tile.ariente.netcable_negarite.name=Negarite Cable
 tile.ariente.netcable_posirite.name=Posirite Cable
 tile.ariente.netcable_combined.name=Combined Cable
+tile.ariente.posirite_generator.name=Posirite Flux Generator
 tile.ariente.negarite_generator.name=Negarite Flux Generator
 tile.ariente.negarite_tank.name=Negarite Tank
 tile.ariente.storage.name=Storage Cube

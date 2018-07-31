@@ -27,6 +27,7 @@ import net.minecraftforge.oredict.OreDictionary;
 public class ModBlocks {
 
     public static BlackTechBlock blackmarble_techpat;
+    public static PatternBlock patternBlock;
 
     public static MarbleBlock marble;
     public static MarbleBlock marble_smooth;
@@ -191,6 +192,7 @@ public class ModBlocks {
 
     private static void initDecorative() {
         blackmarble_techpat = new BlackTechBlock("blacktech");
+        patternBlock = new PatternBlock("pattern");
         marble = new MarbleBlock("marble");
         marble_smooth = new MarbleBlock("marble_smooth");
         marble_pilar = new MarbleBlock("marble_pilar");
@@ -274,6 +276,7 @@ public class ModBlocks {
         ClientRegistry.bindTileEntitySpecialRenderer(NegariteTankTile.class, new NegariteTankRenderer());
 
         blackmarble_techpat.initModel();
+        patternBlock.initModel();
         rampBlock.initModel();
         marble.initModel();
         marble_smooth.initModel();
