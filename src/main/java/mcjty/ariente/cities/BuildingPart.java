@@ -85,11 +85,12 @@ public class BuildingPart implements IAsset {
                             empty = false;
                         }
                     }
-                    if (empty) {
-                        vslices[z*xSize+x] = null;
-                    } else {
+                    // @todo: allow empty slices for other types of parts?
+//                    if (empty) {
+//                        vslices[z*xSize+x] = null;
+//                    } else {
                         vslices[z*xSize+x] = vs.toCharArray();
-                    }
+//                    }
                 }
             }
         }

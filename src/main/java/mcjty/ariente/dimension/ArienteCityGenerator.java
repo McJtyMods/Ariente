@@ -84,9 +84,6 @@ public class ArienteCityGenerator {
     }
 
     public void generate(World worldIn, int x, int z, ChunkPrimer primer) {
-        if (x == 1928/16 && z == 2440/16) {
-            System.out.println("ArienteCityGenerator.generate");
-        }
         City city = CityTools.getNearestCity(generator, x, z);
         if (city != null) {
             List<BuildingPart> parts = CityTools.getBuildingParts(city, x, z);
