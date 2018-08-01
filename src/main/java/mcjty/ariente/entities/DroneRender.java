@@ -15,7 +15,7 @@ public class DroneRender extends RenderLiving<DroneEntity> {
     private ResourceLocation mobShootingTexture = new ResourceLocation("ariente:textures/entity/drone_shooting.png");
 
     public DroneRender(RenderManager renderManagerIn) {
-        super(renderManagerIn, new DroneModel(), 0.5F);
+        super(renderManagerIn, new DroneModel(), 0.8F);
     }
 
     /**

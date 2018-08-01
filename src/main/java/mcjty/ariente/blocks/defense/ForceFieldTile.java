@@ -1,6 +1,8 @@
 package mcjty.ariente.blocks.defense;
 
 import mcjty.ariente.config.ArienteConfiguration;
+import mcjty.ariente.entities.DroneEntity;
+import mcjty.ariente.entities.SentinelDroneEntity;
 import mcjty.ariente.gui.HoloGuiEntity;
 import mcjty.ariente.gui.IGuiComponent;
 import mcjty.ariente.gui.IGuiTile;
@@ -212,7 +214,10 @@ public class ForceFieldTile extends GenericTileEntity implements IGuiTile, ITick
             } else {
                 for (PanelInfo info : getPanelInfo()) {
                     if (info != null && info.getLife() > 0) {
-                        if (info.testCollisionEntity(entity, getScaleDouble())) {
+                        // @todo general immunity system
+                        if (entity instanceof DroneEntity || entity instanceof SentinelDroneEntity) {
+                            // Do nothing: immune
+                        } else if (info.testCollisionEntity(entity, getScaleDouble())) {
                             entity.attackEntityFrom(DamageSource.GENERIC, 1.0f);
                         }
                     }

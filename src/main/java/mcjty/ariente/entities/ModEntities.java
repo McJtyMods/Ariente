@@ -18,12 +18,14 @@ public class ModEntities {
 
         id = 100;
 
-        EntityRegistry.registerModEntity(new ResourceLocation(Ariente.MODID, "ariente_drone"), DroneEntity.class, "ariente_drone", id, Ariente.instance, 64, 3, true, 0x222222, 0x555555);
+        EntityRegistry.registerModEntity(new ResourceLocation(Ariente.MODID, "ariente_drone"), DroneEntity.class, "ariente_drone", id++, Ariente.instance, 64, 3, true, 0x222222, 0x555555);
+        EntityRegistry.registerModEntity(new ResourceLocation(Ariente.MODID, "ariente_sentinel_drone"), SentinelDroneEntity.class, "ariente_sentinel_drone", id++, Ariente.instance, 64, 3, true, 0x555555, 0x999999);
     }
 
     public static void initModels() {
         RenderingRegistry.registerEntityRenderingHandler(HoloGuiEntity.class, new HoloGuiEntityRender.Factory());
         RenderingRegistry.registerEntityRenderingHandler(LaserEntity.class, new LaserRender.Factory());
         RenderingRegistry.registerEntityRenderingHandler(DroneEntity.class, DroneRender.FACTORY);
+        RenderingRegistry.registerEntityRenderingHandler(SentinelDroneEntity.class, SentinelDroneRender.FACTORY);
     }
 }

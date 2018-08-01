@@ -36,6 +36,7 @@ tile.ariente.elevator.name=Elevator
 tile.ariente.forcefield.name=Forcefield Generator
 tile.ariente.level_marker.name=Level Marker
 tile.ariente.flatlight.name=Flat Light
+tile.ariente.aicore.name=AI Core
 
 tile.ariente.ramp.name=Ramp
 
@@ -90,6 +91,7 @@ tile.ariente.bluelog.name=Blue Log
 tile.ariente.blueleaves.name=Blue Leaves
 
 entity.ariente_drone.name=Drone
+entity.ariente_sentinel_drone.name=Sentinel Drone
 entity.ariente_hologui.name=Holo GUI
 entity.ariente_laser.name=Laser
 

@@ -7,6 +7,7 @@ import mcjty.ariente.blocks.generators.PosiriteGeneratorTile;
 import mcjty.ariente.cities.City;
 import mcjty.ariente.cities.CityPlan;
 import mcjty.ariente.cities.CityTools;
+import mcjty.ariente.entities.SentinelDroneEntity;
 import mcjty.ariente.items.ModItems;
 import mcjty.ariente.power.PowerSenderSupport;
 import mcjty.ariente.varia.ChunkCoord;
@@ -30,6 +31,10 @@ public class CityAI {
     private Set<BlockPos> forceFields = new HashSet<>();
     private Set<BlockPos> negariteGenerators = new HashSet<>();
     private Set<BlockPos> posiriteGenerators = new HashSet<>();
+
+    private int[] sentinels = null;
+    private int sentinelMovementTicks = 6;
+    private int sentinelAngleOffset = 0;
 
     public CityAI(ChunkCoord center) {
         this.center = center;
@@ -76,9 +81,39 @@ public class CityAI {
                 generator.markDirtyClient();
             }
         }
+
+        // Sentinel movement
+        sentinelMovementTicks--;
+        if (sentinelMovementTicks <= 0) {
+            sentinelMovementTicks = 6;
+            sentinelAngleOffset++;
+            if (sentinelAngleOffset >= 12) {
+                sentinelAngleOffset = 0;
+            }
+        }
     }
 
+    public BlockPos requestNewSentinelPosition(int sentinelId) {
+        int angleI = (sentinelAngleOffset + sentinelId * 12 / sentinels.length) % 12;
+        int cx = center.getChunkX() * 16 + 8;
+        int cy = CityTools.getCity(center).getHeight() + 30;
+        int cz = center.getChunkZ() * 16 + 8;
+
+        float angle = angleI * 360.0f / 12;
+        // @todo sentinel radius depends on city size
+        float distance = 40;
+        cx = (int) (cx + Math.cos(angle) * distance);
+        cz = (int) (cz + Math.sin(angle) * distance);
+        return new BlockPos(cx, cy, cz);
+    }
+
+
     private void initialize(World world) {
+        initCityEquipment(world);
+        initSentinels(world);
+    }
+
+    private void initCityEquipment(World world) {
         City city = CityTools.getCity(center);
         assert city != null;
         CityPlan plan = city.getPlan();
@@ -121,12 +156,38 @@ public class CityAI {
         }
     }
 
+    private void initSentinels(World world) {
+        int numSentinels = 3;
+        sentinels = new int[numSentinels];
+        for (int i = 0 ; i < numSentinels ; i++) {
+            SentinelDroneEntity entity = new SentinelDroneEntity(world, i, center);
+            int cx = center.getChunkX() * 16 + 8;
+            int cy = CityTools.getCity(center).getHeight() + 60;
+            int cz = center.getChunkZ() * 16 + 8;
+            entity.setPosition(cx, cy, cz);
+            world.spawnEntity(entity);
+            sentinels[i] = entity.getEntityId();
+        }
+    }
+
     public void readFromNBT(NBTTagCompound nbt) {
         initialized = nbt.getBoolean("initialized");
+        if (nbt.hasKey("sentinels")) {
+            sentinels = nbt.getIntArray("sentinels");
+        } else {
+            sentinels = null;
+        }
+        sentinelMovementTicks = nbt.getInteger("sentinelMovementTicks");
+        sentinelAngleOffset = nbt.getInteger("sentinelAngleOffset");
     }
 
     public void writeToNBT(NBTTagCompound compound) {
         compound.setBoolean("initialized", initialized);
+        if (sentinels != null) {
+            compound.setIntArray("sentinels", sentinels);
+        }
+        compound.setInteger("sentinelMovementTicks", sentinelMovementTicks);
+        compound.setInteger("sentinelAngleOffset", sentinelAngleOffset);
     }
 
 }
