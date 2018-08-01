@@ -12,6 +12,7 @@ import net.minecraft.entity.ai.EntityAIBase;
 import net.minecraft.entity.ai.EntityAIFindEntityNearestPlayer;
 import net.minecraft.entity.ai.EntityMoveHelper;
 import net.minecraft.entity.monster.IMob;
+import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.util.DamageSource;
 import net.minecraft.util.ResourceLocation;
@@ -45,6 +46,18 @@ public class SentinelDroneEntity extends EntityFlying implements IMob {
         this(world);
         this.sentinalId = sentinalId;
         this.cityCenter = cityCenter;
+    }
+
+    @Override
+    public void setAttackTarget(@Nullable EntityLivingBase entitylivingbaseIn) {
+//        super.setAttackTarget(entitylivingbaseIn);
+        // This is called by EntityAIFindEntityNearestPlayer when it spots a player.
+        // In this case we don't attack but notify the city AI
+        if (entitylivingbaseIn instanceof EntityPlayer) {
+            CityAISystem aiSystem = CityAISystem.getCityAISystem(world);
+            CityAI cityAI = aiSystem.getCityAI(cityCenter);
+            cityAI.playerSpotted((EntityPlayer) entitylivingbaseIn);
+        };
     }
 
     @Override
@@ -243,7 +256,9 @@ public class SentinelDroneEntity extends EntityFlying implements IMob {
             CityAISystem aiSystem = CityAISystem.getCityAISystem(parentEntity.world);
             CityAI cityAI = aiSystem.getCityAI(parentEntity.cityCenter);
             BlockPos pos = cityAI.requestNewSentinelPosition(parentEntity.sentinalId);
-            this.parentEntity.getMoveHelper().setMoveTo(pos.getX(), pos.getY(), pos.getZ(), 2.0D);
+            if (pos != null) {
+                this.parentEntity.getMoveHelper().setMoveTo(pos.getX(), pos.getY(), pos.getZ(), 2.0D);
+            }
         }
     }
 

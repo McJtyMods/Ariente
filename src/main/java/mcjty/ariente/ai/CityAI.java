@@ -12,6 +12,7 @@ import mcjty.ariente.items.ModItems;
 import mcjty.ariente.power.PowerSenderSupport;
 import mcjty.ariente.varia.ChunkCoord;
 import mcjty.lib.varia.RedstoneMode;
+import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.tileentity.TileEntity;
@@ -20,6 +21,7 @@ import net.minecraft.world.World;
 
 import java.util.HashSet;
 import java.util.List;
+import java.util.Random;
 import java.util.Set;
 
 public class CityAI {
@@ -35,6 +37,10 @@ public class CityAI {
     private int[] sentinels = null;
     private int sentinelMovementTicks = 6;
     private int sentinelAngleOffset = 0;
+
+    private int onAlert = 0;
+
+    private static Random random = new Random();
 
     public CityAI(ChunkCoord center) {
         this.center = center;
@@ -69,16 +75,20 @@ public class CityAI {
             TileEntity te = world.getTileEntity(pos);
             if (te instanceof NegariteGeneratorTile) {
                 NegariteGeneratorTile generator = (NegariteGeneratorTile) te;
-                generator.setInventorySlotContents(NegariteGeneratorTile.SLOT_NEGARITE_INPUT, new ItemStack(ModItems.negariteDust, 1));
-                generator.markDirtyClient();
+                if (generator.getStackInSlot(NegariteGeneratorTile.SLOT_NEGARITE_INPUT).isEmpty()) {
+                    generator.setInventorySlotContents(NegariteGeneratorTile.SLOT_NEGARITE_INPUT, new ItemStack(ModItems.negariteDust, 1));
+                    generator.markDirtyClient();
+                }
             }
         }
         for (BlockPos pos : posiriteGenerators) {
             TileEntity te = world.getTileEntity(pos);
             if (te instanceof PosiriteGeneratorTile) {
                 PosiriteGeneratorTile generator = (PosiriteGeneratorTile) te;
-                generator.setInventorySlotContents(PosiriteGeneratorTile.SLOT_POSIRITE_INPUT, new ItemStack(ModItems.posiriteDust, 1));
-                generator.markDirtyClient();
+                if (generator.getStackInSlot(PosiriteGeneratorTile.SLOT_POSIRITE_INPUT).isEmpty()) {
+                    generator.setInventorySlotContents(PosiriteGeneratorTile.SLOT_POSIRITE_INPUT, new ItemStack(ModItems.posiriteDust, 1));
+                    generator.markDirtyClient();
+                }
             }
         }
 
@@ -91,9 +101,52 @@ public class CityAI {
                 sentinelAngleOffset = 0;
             }
         }
+
+        // Small chance to revive sentinels if they are missing
+        if (random.nextFloat() < .1f) {
+            System.out.println("REVIVE EVENT");
+            for (int i = 0 ; i < sentinels.length ; i++) {
+                if (sentinels[i] == 0 || world.getEntityByID(sentinels[i]) == null) {
+                    System.out.println("    revive " + i);
+                    createSentinel(world, i);
+                }
+            }
+        }
+
+        // Handle alert mode
+        if (onAlert > 0) {
+            onAlert--;
+        }
+
+        if (onAlert > 0) {
+            // Turn on forcefields if present
+            for (BlockPos pos : forceFields) {
+                TileEntity te = world.getTileEntity(pos);
+                if (te instanceof ForceFieldTile) {
+                    ForceFieldTile forcefield = (ForceFieldTile) te;
+                    if (forcefield.getRSMode() != RedstoneMode.REDSTONE_IGNORED) {
+                        forcefield.setRSMode(RedstoneMode.REDSTONE_IGNORED);
+                    }
+                }
+            }
+        } else {
+            // Turn off forcefields if present
+            for (BlockPos pos : forceFields) {
+                TileEntity te = world.getTileEntity(pos);
+                if (te instanceof ForceFieldTile) {
+                    ForceFieldTile forcefield = (ForceFieldTile) te;
+                    if (forcefield.getRSMode() != RedstoneMode.REDSTONE_ONREQUIRED) {
+                        forcefield.setRSMode(RedstoneMode.REDSTONE_ONREQUIRED);
+                    }
+                }
+            }
+        }
     }
 
     public BlockPos requestNewSentinelPosition(int sentinelId) {
+        if (sentinels == null) {
+            return null;
+        }
         int angleI = (sentinelAngleOffset + sentinelId * 12 / sentinels.length) % 12;
         int cx = center.getChunkX() * 16 + 8;
         int cy = CityTools.getCity(center).getHeight() + 30;
@@ -107,6 +160,10 @@ public class CityAI {
         return new BlockPos(cx, cy, cz);
     }
 
+    public void playerSpotted(EntityPlayer player) {
+        onAlert = 100; //600;      // 5 minutes alert
+        System.out.println("CityAI.playerSpotted");
+    }
 
     private void initialize(World world) {
         initCityEquipment(world);
@@ -160,14 +217,18 @@ public class CityAI {
         int numSentinels = 3;
         sentinels = new int[numSentinels];
         for (int i = 0 ; i < numSentinels ; i++) {
-            SentinelDroneEntity entity = new SentinelDroneEntity(world, i, center);
-            int cx = center.getChunkX() * 16 + 8;
-            int cy = CityTools.getCity(center).getHeight() + 60;
-            int cz = center.getChunkZ() * 16 + 8;
-            entity.setPosition(cx, cy, cz);
-            world.spawnEntity(entity);
-            sentinels[i] = entity.getEntityId();
+            createSentinel(world, i);
         }
+    }
+
+    private void createSentinel(World world, int i) {
+        SentinelDroneEntity entity = new SentinelDroneEntity(world, i, center);
+        int cx = center.getChunkX() * 16 + 8;
+        int cy = CityTools.getCity(center).getHeight() + 60;
+        int cz = center.getChunkZ() * 16 + 8;
+        entity.setPosition(cx, cy, cz);
+        world.spawnEntity(entity);
+        sentinels[i] = entity.getEntityId();
     }
 
     public void readFromNBT(NBTTagCompound nbt) {
@@ -179,6 +240,7 @@ public class CityAI {
         }
         sentinelMovementTicks = nbt.getInteger("sentinelMovementTicks");
         sentinelAngleOffset = nbt.getInteger("sentinelAngleOffset");
+        onAlert = nbt.getInteger("onAlert");
     }
 
     public void writeToNBT(NBTTagCompound compound) {
@@ -188,6 +250,7 @@ public class CityAI {
         }
         compound.setInteger("sentinelMovementTicks", sentinelMovementTicks);
         compound.setInteger("sentinelAngleOffset", sentinelAngleOffset);
+        compound.setInteger("onAlert", onAlert);
     }
 
 }
