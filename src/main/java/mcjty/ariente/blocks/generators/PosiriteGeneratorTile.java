@@ -51,7 +51,7 @@ public class PosiriteGeneratorTile extends GenericTileEntity implements ITickabl
 
     public static final PropertyBool WORKING = PropertyBool.create("working");
 
-    public static final int POWERGEN = 1000;        // @todo configurable and based on tanks!
+    public static final int POWERGEN = 2000;        // @todo configurable and based on tanks!
 
     public static final int SLOT_POSIRITE_INPUT = 0;
     public static final ContainerFactory CONTAINER_FACTORY = new ContainerFactory(new ResourceLocation(Ariente.MODID, "gui/posirite_generator.gui"));

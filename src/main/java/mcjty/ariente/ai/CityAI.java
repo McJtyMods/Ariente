@@ -102,7 +102,7 @@ public class CityAI {
                                 forceFields.add(p);
                                 ForceFieldTile forcefield = (ForceFieldTile) te;
                                 forcefield.setRSMode(RedstoneMode.REDSTONE_IGNORED);
-                                forcefield.setScale(31);    // @todo, base on city size
+                                forcefield.setScale(38);    // @todo, base on city size
                             } else if (te instanceof NegariteGeneratorTile) {
                                 negariteGenerators.add(p);
                                 NegariteGeneratorTile generator = (NegariteGeneratorTile) te;

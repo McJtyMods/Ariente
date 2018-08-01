@@ -50,7 +50,7 @@ public class NegariteGeneratorTile extends GenericTileEntity implements ITickabl
     public static final String CMD_RSMODE = "negarite_gen.setRsMode";
     public static final PropertyBool WORKING = PropertyBool.create("working");
 
-    public static final int POWERGEN = 1000;        // @todo configurable and based on tanks!
+    public static final int POWERGEN = 2000;        // @todo configurable and based on tanks!
 
     public static final ContainerFactory CONTAINER_FACTORY = new ContainerFactory(new ResourceLocation(Ariente.MODID, "gui/negarite_generator.gui"));
     public static final int SLOT_NEGARITE_INPUT = 0;
