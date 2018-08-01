@@ -1,5 +1,7 @@
 package mcjty.ariente.varia;
 
+import net.minecraft.util.math.BlockPos;
+
 import java.util.Objects;
 
 public class ChunkCoord {
@@ -9,6 +11,10 @@ public class ChunkCoord {
     public ChunkCoord(int chunkX, int chunkZ) {
         this.chunkX = chunkX;
         this.chunkZ = chunkZ;
+    }
+
+    public static ChunkCoord getChunkCoordFromPos(BlockPos pos) {
+        return new ChunkCoord(pos.getX() >> 4, pos.getZ() >> 4);
     }
 
     public int getChunkX() {

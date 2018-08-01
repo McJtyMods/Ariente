@@ -12,7 +12,7 @@ public class CityTools {
 
     private static final Map<ChunkCoord, City> cities = new HashMap<>();
 
-    private static City getCity(ChunkCoord center) {
+    public static City getCity(ChunkCoord center) {
         return cities.get(center);
     }
 
@@ -62,7 +62,7 @@ public class CityTools {
     }
 
     @Nullable
-    private static ChunkCoord getNearestCityCenter(int chunkX, int chunkZ) {
+    public static ChunkCoord getNearestCityCenter(int chunkX, int chunkZ) {
         int cx = (chunkX & ~0xf) + 8;
         int cz = (chunkZ & ~0xf) + 8;
         ChunkCoord cc = new ChunkCoord(cx, cz);
