@@ -4,16 +4,14 @@ import mcjty.ariente.config.ArienteConfiguration;
 import mcjty.ariente.gui.HoloGuiEntity;
 import mcjty.ariente.gui.IGuiComponent;
 import mcjty.ariente.gui.IGuiTile;
-import mcjty.ariente.gui.components.HoloButton;
-import mcjty.ariente.gui.components.HoloNumber;
-import mcjty.ariente.gui.components.HoloPanel;
-import mcjty.ariente.gui.components.HoloText;
+import mcjty.ariente.gui.components.*;
 import mcjty.ariente.network.ArienteMessages;
 import mcjty.ariente.power.IPowerReceiver;
 import mcjty.ariente.power.PowerReceiverSupport;
 import mcjty.ariente.sounds.ISoundProducer;
 import mcjty.ariente.varia.Triangle;
 import mcjty.lib.tileentity.GenericTileEntity;
+import mcjty.lib.varia.RedstoneMode;
 import mcjty.theoneprobe.api.IProbeHitData;
 import mcjty.theoneprobe.api.IProbeInfo;
 import mcjty.theoneprobe.api.ProbeMode;
@@ -109,7 +107,7 @@ public class ForceFieldTile extends GenericTileEntity implements IGuiTile, ITick
         if (!world.isRemote) {
             usingPower = 0;
             long desiredPower = calculateIdleUsage();
-            if (!PowerReceiverSupport.consumePower(world, pos, desiredPower)) {
+            if ((!isMachineEnabled()) || !PowerReceiverSupport.consumePower(world, pos, desiredPower)) {
                 if (breakDownSkip > 0) {
                     breakDownSkip--;
                 } else {
@@ -410,8 +408,24 @@ public class ForceFieldTile extends GenericTileEntity implements IGuiTile, ITick
                 .add(new HoloText(0, 4, 1, 1, "Field Integrity", 0xaaccff))
                 .add(new HoloText(1, 5, 1, 1, () -> getFieldIntegrity() + "%", 0xffffff))
 
+
+                .add(new HoloMode(7, 6, 1, 1, this::getRSModeInt)
+                        .choice(128, 128+32)
+                        .choice(128+16, 128+32)
+                        .choice(128+32, 128+32)
+                        .hitEvent((component, player, entity1, x, y) -> changeMode()))
                 ;
     }
+
+    private void changeMode() {
+        int current = rsMode.ordinal() + 1;
+        if (current >= RedstoneMode.values().length) {
+            current = 0;
+        }
+        setRSMode(RedstoneMode.values()[current]);
+        markDirtyClient();
+    }
+
 
     @Override
     public void syncToClient() {

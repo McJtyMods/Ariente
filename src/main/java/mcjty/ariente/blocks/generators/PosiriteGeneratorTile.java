@@ -69,6 +69,9 @@ public class PosiriteGeneratorTile extends GenericTileEntity implements ITickabl
     @Override
     public void update() {
         if (!world.isRemote) {
+            if (!isMachineEnabled()) {
+                return;
+            }
             if (dustCounter > 0) {
                 dustCounter--;
                 if (dustCounter == 0 && !canProceed()) {
@@ -121,7 +124,7 @@ public class PosiriteGeneratorTile extends GenericTileEntity implements ITickabl
     }
 
     public boolean isWorking() {
-        return dustCounter > 0;
+        return dustCounter > 0 && isMachineEnabled();
     }
 
     @Override
