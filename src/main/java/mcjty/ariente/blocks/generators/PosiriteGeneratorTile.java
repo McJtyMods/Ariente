@@ -101,6 +101,15 @@ public class PosiriteGeneratorTile extends GenericTileEntity implements ITickabl
         powerSystem.addPower(powerBlobSupport.getCableId(), POWERGEN);
     }
 
+    @Override
+    public void setPowerInput(int powered) {
+        boolean changed = powerLevel != powered;
+        super.setPowerInput(powered);
+        if (changed) {
+            markDirtyClient();
+        }
+    }
+
 
     @Override
     public void onDataPacket(NetworkManager net, SPacketUpdateTileEntity packet) {

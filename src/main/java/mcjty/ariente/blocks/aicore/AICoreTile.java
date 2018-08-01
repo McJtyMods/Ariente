@@ -27,8 +27,11 @@ public class AICoreTile extends GenericTileEntity implements ITickable {
             }
 
             if (cityCenter != null) {
-                CityAI cityAI = CityAISystem.getCityAISystem(world).getCityAI(cityCenter);
-                cityAI.tick(this);
+                CityAISystem cityAISystem = CityAISystem.getCityAISystem(world);
+                CityAI cityAI = cityAISystem.getCityAI(cityCenter);
+                if (cityAI.tick(this)) {
+                    cityAISystem.save();
+                }
             }
         }
     }

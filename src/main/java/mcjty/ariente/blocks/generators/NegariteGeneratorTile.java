@@ -125,6 +125,15 @@ public class NegariteGeneratorTile extends GenericTileEntity implements ITickabl
         }
     }
 
+    @Override
+    public void setPowerInput(int powered) {
+        boolean changed = powerLevel != powered;
+        super.setPowerInput(powered);
+        if (changed) {
+            markDirtyClient();
+        }
+    }
+
 
     @Override
     public IBlockState getActualState(IBlockState state) {

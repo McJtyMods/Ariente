@@ -37,6 +37,22 @@ public class CityTools {
         return false;
     }
 
+    public static boolean isCityChunk(int chunkX, int chunkZ) {
+        ChunkCoord center = getNearestCityCenter(chunkX, chunkZ);
+        if (center == null) {
+            return false;
+        }
+        City city = getCity(center);
+        CityPlan plan = city.getPlan();
+        List<String> pattern = plan.getPlan();
+        int dimX = pattern.get(0).length();
+        int dimZ = pattern.size();
+
+        int ox = (chunkX + dimX / 2) - center.getChunkX();
+        int oz = (chunkZ + dimZ / 2) - center.getChunkZ();
+        return ox >= 0 && ox < dimX && oz >= 0 && oz < dimZ;
+    }
+
     // Return a random city plan. Use a valid city center as chunk coordinate parameter
     private static CityPlan getRandomCityPlan(ChunkCoord c) {
         int chunkX = c.getChunkX();

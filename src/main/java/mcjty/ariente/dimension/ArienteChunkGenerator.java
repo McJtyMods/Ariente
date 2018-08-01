@@ -1,11 +1,13 @@
 package mcjty.ariente.dimension;
 
 import com.google.common.collect.ImmutableList;
-import com.google.common.collect.Lists;
 import mcjty.ariente.blocks.ModBlocks;
-import mcjty.ariente.entities.DroneEntity;
+import mcjty.ariente.cities.CityTools;
 import mcjty.ariente.varia.ChunkCoord;
+import mcjty.lib.tileentity.GenericTileEntity;
+import net.minecraft.block.state.IBlockState;
 import net.minecraft.entity.EnumCreatureType;
+import net.minecraft.tileentity.TileEntity;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.World;
 import net.minecraft.world.WorldEntitySpawner;
@@ -141,6 +143,27 @@ public class ArienteChunkGenerator implements IChunkGenerator {
         Biome biome = this.worldObj.getBiome(blockpos.add(16, 0, 16));
         biome.decorate(this.worldObj, this.random, new BlockPos(i, 0, j));
         WorldEntitySpawner.performWorldGenSpawning(this.worldObj, biome, i + 8, j + 8, 16, 16, this.random);
+
+        if (CityTools.isCityChunk(x, z)) {
+            System.out.println("Fixing tile entities in chunk " + x + "," + z);
+            fixTileEntities(x, z);
+        }
+    }
+
+    private void fixTileEntities(int x, int z) {
+        for (int dx = 0 ; dx < 16 ; dx++) {
+            for (int dy = 0 ; dy < 256 ; dy++) {
+                for (int dz = 0 ; dz < 16 ; dz++) {
+                    BlockPos p = new BlockPos(x*16 + dx, dy, z*16 + dz);
+                    TileEntity te = worldObj.getTileEntity(p);
+                    if (te instanceof GenericTileEntity) {
+                        IBlockState state = worldObj.getBlockState(p);
+                        worldObj.setBlockState(p, state, 3);
+                        ((GenericTileEntity) te).markDirtyClient();
+                    }
+                }
+            }
+        }
     }
 
     @Override

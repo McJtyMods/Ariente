@@ -2,10 +2,16 @@ package mcjty.ariente.ai;
 
 import mcjty.ariente.blocks.aicore.AICoreTile;
 import mcjty.ariente.blocks.defense.ForceFieldTile;
+import mcjty.ariente.blocks.generators.NegariteGeneratorTile;
+import mcjty.ariente.blocks.generators.PosiriteGeneratorTile;
 import mcjty.ariente.cities.City;
 import mcjty.ariente.cities.CityPlan;
 import mcjty.ariente.cities.CityTools;
+import mcjty.ariente.items.ModItems;
+import mcjty.ariente.power.PowerSenderSupport;
 import mcjty.ariente.varia.ChunkCoord;
+import mcjty.lib.varia.RedstoneMode;
+import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.tileentity.TileEntity;
 import net.minecraft.util.math.BlockPos;
@@ -22,33 +28,54 @@ public class CityAI {
 
     private Set<BlockPos> aiCores = new HashSet<>();
     private Set<BlockPos> forceFields = new HashSet<>();
+    private Set<BlockPos> negariteGenerators = new HashSet<>();
+    private Set<BlockPos> posiriteGenerators = new HashSet<>();
 
     public CityAI(ChunkCoord center) {
         this.center = center;
     }
 
-    public void tick(AICoreTile tile) {
+    // Return true if we potentially have to save the city system state
+    public boolean tick(AICoreTile tile) {
         // We use the given AICoreTile parameter to make sure only one tick per city happens
         if (!initialized) {
             initialized = true;
             initialize(tile.getWorld());
+            return true;
         } else {
             // If there are no more ai cores the city AI is dead
             if (aiCores.isEmpty()) {
-                return;
+                return false;
             }
 
             // Only tick for the first aicore
             if (!tile.getPos().equals(aiCores.iterator().next())) {
-                return;
+                return false;
             }
 
-            handleAI();
+            handleAI(tile.getWorld());
+            return true;
         }
     }
 
-    private void handleAI() {
-
+    private void handleAI(World world) {
+        // Handle power
+        for (BlockPos pos : negariteGenerators) {
+            TileEntity te = world.getTileEntity(pos);
+            if (te instanceof NegariteGeneratorTile) {
+                NegariteGeneratorTile generator = (NegariteGeneratorTile) te;
+                generator.setInventorySlotContents(NegariteGeneratorTile.SLOT_NEGARITE_INPUT, new ItemStack(ModItems.negariteDust, 1));
+                generator.markDirtyClient();
+            }
+        }
+        for (BlockPos pos : posiriteGenerators) {
+            TileEntity te = world.getTileEntity(pos);
+            if (te instanceof PosiriteGeneratorTile) {
+                PosiriteGeneratorTile generator = (PosiriteGeneratorTile) te;
+                generator.setInventorySlotContents(PosiriteGeneratorTile.SLOT_POSIRITE_INPUT, new ItemStack(ModItems.posiriteDust, 1));
+                generator.markDirtyClient();
+            }
+        }
     }
 
     private void initialize(World world) {
@@ -73,6 +100,19 @@ public class CityAI {
                                 aiCores.add(p);
                             } else if (te instanceof ForceFieldTile) {
                                 forceFields.add(p);
+                                ForceFieldTile forcefield = (ForceFieldTile) te;
+                                forcefield.setRSMode(RedstoneMode.REDSTONE_IGNORED);
+                                forcefield.setScale(31);    // @todo, base on city size
+                            } else if (te instanceof NegariteGeneratorTile) {
+                                negariteGenerators.add(p);
+                                NegariteGeneratorTile generator = (NegariteGeneratorTile) te;
+                                PowerSenderSupport.fixNetworks(world, p);
+                                generator.setRSMode(RedstoneMode.REDSTONE_IGNORED);
+                            } else if (te instanceof PosiriteGeneratorTile) {
+                                posiriteGenerators.add(p);
+                                PosiriteGeneratorTile generator = (PosiriteGeneratorTile) te;
+                                PowerSenderSupport.fixNetworks(world, p);
+                                generator.setRSMode(RedstoneMode.REDSTONE_IGNORED);
                             }
                         }
                     }
