@@ -133,7 +133,7 @@ public class CommandSaveCity implements ICommand {
 
     private static BuildingPart exportPart(BuildingPart part, World world, BlockPos start, int y, Palette palette,
                                            Map<IBlockState, Character> mapping, AtomicInteger idx) throws FileNotFoundException {
-        String palettechars = "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789";
+        String palettechars = "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789+-+=*^%$#@";
         List<Slice> slices = new ArrayList<>();
         for (int f = 0 ; f < part.getSliceCount() ; f++) {
             int cx = (start.getX() >> 4) * 16;

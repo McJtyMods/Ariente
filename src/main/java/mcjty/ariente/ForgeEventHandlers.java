@@ -13,6 +13,7 @@ import mcjty.ariente.sounds.ModSounds;
 import mcjty.lib.McJtyRegister;
 import net.minecraft.block.Block;
 import net.minecraft.block.state.IBlockState;
+import net.minecraft.entity.passive.IAnimals;
 import net.minecraft.item.Item;
 import net.minecraft.util.SoundEvent;
 import net.minecraft.util.math.BlockPos;
@@ -20,7 +21,10 @@ import net.minecraft.world.World;
 import net.minecraft.world.WorldServer;
 import net.minecraft.world.biome.Biome;
 import net.minecraftforge.event.RegistryEvent;
+import net.minecraftforge.event.entity.EntityJoinWorldEvent;
+import net.minecraftforge.event.entity.living.LivingSpawnEvent;
 import net.minecraftforge.event.world.BlockEvent;
+import net.minecraftforge.fml.common.eventhandler.Event;
 import net.minecraftforge.fml.common.eventhandler.SubscribeEvent;
 import net.minecraftforge.fml.common.gameevent.TickEvent;
 import net.minecraftforge.registries.IForgeRegistry;
@@ -56,6 +60,23 @@ public class ForgeEventHandlers {
     public void onWorldTick(TickEvent.WorldTickEvent event) {
         if (event.phase == TickEvent.Phase.START && !event.world.isRemote && event.world.provider.getDimension() == 0) {
             PowerSystem.getPowerSystem(event.world).tick();
+        }
+    }
+
+    @SubscribeEvent
+    public void onEntityJoinWorld(EntityJoinWorldEvent event) {
+
+    }
+
+    @SubscribeEvent
+    public void onCheckSpawn(LivingSpawnEvent.CheckSpawn event) {
+        if (event.isSpawner()) {
+            return;
+        }
+        if (event.getWorld().provider.getDimension() == 222) {
+            if (event.getEntity() instanceof IAnimals) {
+                event.setResult(Event.Result.DENY);
+            }
         }
     }
 

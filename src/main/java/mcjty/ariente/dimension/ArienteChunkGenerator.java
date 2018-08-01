@@ -18,10 +18,7 @@ import net.minecraft.world.gen.MapGenCaves;
 import net.minecraftforge.event.terraingen.TerrainGen;
 
 import javax.annotation.Nullable;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-import java.util.Random;
+import java.util.*;
 
 import static net.minecraftforge.event.terraingen.InitMapGenEvent.EventType.CAVE;
 
@@ -31,8 +28,8 @@ public class ArienteChunkGenerator implements IChunkGenerator {
     private Random random;
     private Biome[] biomesForGeneration;
 
-    //    private List<Biome.SpawnListEntry> mobs = Lists.newArrayList(new Biome.SpawnListEntry(EntityDirtZombie.class, 100, 2, 2));
-    private List<Biome.SpawnListEntry> mobs = Lists.newArrayList(new Biome.SpawnListEntry(DroneEntity.class, 20, 1, 1));
+//    private List<Biome.SpawnListEntry> mobs = Lists.newArrayList(new Biome.SpawnListEntry(DroneEntity.class, 20, 1, 1));
+    private List<Biome.SpawnListEntry> mobs = Collections.emptyList();
 
     private MapGenBase caveGenerator = new MapGenCaves();
 //    private MapGenLowTendrils tendrilGenerator = new MapGenLowTendrils(BlockRegister.hardDirtBlock.getDefaultState());
@@ -157,7 +154,6 @@ public class ArienteChunkGenerator implements IChunkGenerator {
             return mobs;
         }
         return ImmutableList.of();
-
     }
 
     @Nullable
