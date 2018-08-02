@@ -45,6 +45,7 @@ import static mcjty.ariente.config.ArienteConfiguration.SHIELD_PANEL_LIFE;
 public class ForceFieldTile extends GenericTileEntity implements IGuiTile, ITickable, ISoundProducer, IPowerReceiver {
 
     private PanelInfo[] panelInfo = new PanelInfo[PentakisDodecahedron.MAX_TRIANGLES];
+    private int[] panelDestroyTimeout = new int[PentakisDodecahedron.MAX_TRIANGLES];    // @todo persist to NBT?
     private AxisAlignedBB aabb = null;
     private int scale = 10;
 
@@ -56,6 +57,7 @@ public class ForceFieldTile extends GenericTileEntity implements IGuiTile, ITick
     public ForceFieldTile() {
         for (int i = 0 ; i < PentakisDodecahedron.MAX_TRIANGLES ; i++) {
             panelInfo[i] = null;
+            panelDestroyTimeout[i] = 0;
         }
     }
 
@@ -201,6 +203,7 @@ public class ForceFieldTile extends GenericTileEntity implements IGuiTile, ITick
                             int life = info.getLife();
                             life -= 10; // @todo make dependant on arrow
                             if (life <= 0) {
+                                panelDestroyTimeout[info.getIndex()] = 100;
                                 panelInfo[info.getIndex()] = null;
                                 world.newExplosion(entity, entity.posX, entity.posY, entity.posZ, 2.0f, false, false);
                             } else {
@@ -285,10 +288,14 @@ public class ForceFieldTile extends GenericTileEntity implements IGuiTile, ITick
         for (int i = 0 ; i < PentakisDodecahedron.MAX_TRIANGLES ; i++) {
             int randomI = getShuffledIndices()[i];
             if (panelInfo[randomI] == null) {
-                createPanelInfo(randomI);
-                // Set a random life
-                panelInfo[randomI].setLife(-100);      // @todo configurable
-                changed = true;
+                if (panelDestroyTimeout[randomI] > 0) {
+                    panelDestroyTimeout[randomI]--;
+                } else {
+                    createPanelInfo(randomI);
+                    // Set a random life
+                    panelInfo[randomI].setLife(-100);      // @todo configurable
+                    changed = true;
+                }
             } else {
                 PanelInfo info = this.panelInfo[randomI];
                 int life = info.getLife();
@@ -318,6 +325,7 @@ public class ForceFieldTile extends GenericTileEntity implements IGuiTile, ITick
         double y = pos.getY()+.5 + offs.y;
         double z = pos.getZ()+.5 + offs.z;
         panelInfo[i] = new PanelInfo(i, x, y, z);
+        panelDestroyTimeout[i] = 0;
     }
 
     private void disableShield() {
