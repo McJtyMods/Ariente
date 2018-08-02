@@ -150,6 +150,9 @@ public class CityAI {
         if (sentinels == null) {
             return null;
         }
+        if (aiCores.isEmpty()) {
+            return null;
+        }
         int angleI = (sentinelAngleOffset + sentinelId * 12 / sentinels.length) % 12;
         int cx = center.getChunkX() * 16 + 8;
         int cy = aiCores.iterator().next().getY() + 20;     // Use the height of one of the ai cores as a base
