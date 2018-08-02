@@ -74,6 +74,7 @@ public class ForceFieldTile extends GenericTileEntity implements IGuiTile, ITick
 
     public void setScale(int scale) {
         this.scale = scale;
+        aabb = null;
     }
 
     private int getFieldIntegrity() {
@@ -136,7 +137,7 @@ public class ForceFieldTile extends GenericTileEntity implements IGuiTile, ITick
             double x = pos.getX() + .5;
             double y = pos.getY() + .5;
             double z = pos.getZ() + .5;
-            double s = getScaleDouble() * 1.03;
+            double s = getScaleDouble() * 1.05;
             aabb = new AxisAlignedBB(x-s, y-s, z-s, x+s, y+s, z+s);
         }
         return aabb;
@@ -167,18 +168,20 @@ public class ForceFieldTile extends GenericTileEntity implements IGuiTile, ITick
             if (entity instanceof IProjectile) {
                 Vec3d entityPos = new Vec3d(entity.posX, entity.posY, entity.posZ);
                 double squareDist = fieldCenter.squareDistanceTo(entityPos);
-                if (Math.abs(squareDist - squaredRadius) < 6*6) {
+                if (Math.abs(squareDist - squaredRadius) < 10 * 10) {
                     return true;
                 }
                 entityPos = new Vec3d((entity.posX + entity.prevPosX) / 2.0, (entity.posY + entity.prevPosY) / 2.0, (entity.posZ + entity.prevPosZ) / 2.0);
                 squareDist = fieldCenter.squareDistanceTo(entityPos);
-                if (Math.abs(squareDist - squaredRadius) < 6*6) {
+                if (Math.abs(squareDist - squaredRadius) < 10 * 10) {
                     return true;
                 }
+            } else if (entity instanceof DroneEntity || entity instanceof SentinelDroneEntity) {
+                return false;
             } else if (entity instanceof EntityLivingBase) {
                 Vec3d entityCenter = entity.getEntityBoundingBox().getCenter();
                 double squareDist = fieldCenter.squareDistanceTo(entityCenter);
-                if (Math.abs(squareDist - squaredRadius) < 6*6) {
+                if (Math.abs(squareDist - squaredRadius) < 10*10) {
                     return true;
                 }
             }
@@ -214,10 +217,7 @@ public class ForceFieldTile extends GenericTileEntity implements IGuiTile, ITick
             } else {
                 for (PanelInfo info : getPanelInfo()) {
                     if (info != null && info.getLife() > 0) {
-                        // @todo general immunity system
-                        if (entity instanceof DroneEntity || entity instanceof SentinelDroneEntity) {
-                            // Do nothing: immune
-                        } else if (info.testCollisionEntity(entity, getScaleDouble())) {
+                        if (info.testCollisionEntity(entity, getScaleDouble())) {
                             entity.attackEntityFrom(DamageSource.GENERIC, 1.0f);
                         }
                     }

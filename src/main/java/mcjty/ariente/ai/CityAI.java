@@ -149,7 +149,7 @@ public class CityAI {
         }
         int angleI = (sentinelAngleOffset + sentinelId * 12 / sentinels.length) % 12;
         int cx = center.getChunkX() * 16 + 8;
-        int cy = CityTools.getCity(center).getHeight() + 30;
+        int cy = CityTools.getCity(center).getHeight() + 20;
         int cz = center.getChunkZ() * 16 + 8;
 
         float angle = angleI * 360.0f / 12;
@@ -224,7 +224,7 @@ public class CityAI {
     private void createSentinel(World world, int i) {
         SentinelDroneEntity entity = new SentinelDroneEntity(world, i, center);
         int cx = center.getChunkX() * 16 + 8;
-        int cy = CityTools.getCity(center).getHeight() + 60;
+        int cy = CityTools.getCity(center).getHeight() + 50;
         int cz = center.getChunkZ() * 16 + 8;
         entity.setPosition(cx, cy, cz);
         world.spawnEntity(entity);
