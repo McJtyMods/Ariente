@@ -95,7 +95,7 @@ public class ForgeEventHandlers {
                     if (!parts.isEmpty()) {
                         BuildingPart found = null;
                         int partY = -1;
-                        int lowesty = CityTools.getLowestHeight(city, cx, cz);
+                        int lowesty = CityTools.getLowestHeight(city, generator, cx, cz);
                         for (int i = 0 ; i < parts.size() ; i++) {
                             int count = parts.get(i).getSliceCount();
                             if (pos.getY() >= lowesty && pos.getY() < lowesty + count) {
@@ -130,7 +130,7 @@ public class ForgeEventHandlers {
                     if (!parts.isEmpty()) {
                         BuildingPart found = null;
                         int partY = -1;
-                        int lowesty = CityTools.getLowestHeight(city, cx, cz);
+                        int lowesty = CityTools.getLowestHeight(city, generator, cx, cz);
                         for (int i = 0 ; i < parts.size() ; i++) {
                             int count = parts.get(i).getSliceCount();
                             if (pos.getY() >= lowesty && pos.getY() < lowesty + count) {
@@ -160,9 +160,11 @@ public class ForgeEventHandlers {
         cx = city.getCenter().getChunkX();
         cz = city.getCenter().getChunkZ();
 
+        ArienteChunkGenerator generator = (ArienteChunkGenerator)(((WorldServer) world).getChunkProvider().chunkGenerator);
+
         for (int dx = cx - dimX / 2 - 1 ; dx <= cx + dimX / 2 + 1 ; dx++) {
             for (int dz = cz - dimZ / 2 - 1 ; dz <= cz + dimZ / 2 + 1 ; dz++) {
-                int y = CityTools.getLowestHeight(city, dx, dz);
+                int y = CityTools.getLowestHeight(city, generator, dx, dz);
                 List<BuildingPart> parts = CityTools.getBuildingParts(city, dx, dz);
                 for (BuildingPart part : parts) {
                     if (part == found) {
@@ -184,9 +186,11 @@ public class ForgeEventHandlers {
         cx = city.getCenter().getChunkX();
         cz = city.getCenter().getChunkZ();
 
+        ArienteChunkGenerator generator = (ArienteChunkGenerator)(((WorldServer) world).getChunkProvider().chunkGenerator);
+
         for (int dx = cx - dimX / 2 - 1 ; dx <= cx + dimX / 2 + 1 ; dx++) {
             for (int dz = cz - dimZ / 2 - 1 ; dz <= cz + dimZ / 2 + 1 ; dz++) {
-                int y = CityTools.getLowestHeight(city, dx, dz);
+                int y = CityTools.getLowestHeight(city, generator, dx, dz);
                 List<BuildingPart> parts = CityTools.getBuildingParts(city, dx, dz);
                 for (BuildingPart part : parts) {
                     if (part == found) {

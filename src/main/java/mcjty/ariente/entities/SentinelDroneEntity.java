@@ -9,11 +9,11 @@ import net.minecraft.entity.EntityFlying;
 import net.minecraft.entity.EntityLivingBase;
 import net.minecraft.entity.SharedMonsterAttributes;
 import net.minecraft.entity.ai.EntityAIBase;
-import net.minecraft.entity.ai.EntityAIFindEntityNearestPlayer;
 import net.minecraft.entity.ai.EntityMoveHelper;
 import net.minecraft.entity.monster.IMob;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.nbt.NBTTagCompound;
+import net.minecraft.nbt.NBTUtil;
 import net.minecraft.util.DamageSource;
 import net.minecraft.util.ResourceLocation;
 import net.minecraft.util.SoundCategory;
@@ -25,7 +25,6 @@ import net.minecraft.world.EnumDifficulty;
 import net.minecraft.world.World;
 
 import javax.annotation.Nullable;
-import java.util.Random;
 
 public class SentinelDroneEntity extends EntityFlying implements IMob {
 
@@ -53,7 +52,7 @@ public class SentinelDroneEntity extends EntityFlying implements IMob {
 //        super.setAttackTarget(entitylivingbaseIn);
         // This is called by EntityAIFindEntityNearestPlayer when it spots a player.
         // In this case we don't attack but notify the city AI
-        if (entitylivingbaseIn instanceof EntityPlayer) {
+        if (entitylivingbaseIn instanceof EntityPlayer && cityCenter != null) {
             CityAISystem aiSystem = CityAISystem.getCityAISystem(world);
             CityAI cityAI = aiSystem.getCityAI(cityCenter);
             cityAI.playerSpotted((EntityPlayer) entitylivingbaseIn);
@@ -64,7 +63,7 @@ public class SentinelDroneEntity extends EntityFlying implements IMob {
     protected void initEntityAI() {
         this.tasks.addTask(5, new AICircleCity(this));
         this.tasks.addTask(7, new AILookAround(this));
-        this.targetTasks.addTask(1, new EntityAIFindEntityNearestPlayer(this));
+        this.targetTasks.addTask(1, new EntityAIScanForPlayer(this));
     }
 
     /**
@@ -95,7 +94,7 @@ public class SentinelDroneEntity extends EntityFlying implements IMob {
     protected void applyEntityAttributes() {
         super.applyEntityAttributes();
         this.getEntityAttribute(SharedMonsterAttributes.MAX_HEALTH).setBaseValue(10.0D);
-        this.getEntityAttribute(SharedMonsterAttributes.FOLLOW_RANGE).setBaseValue(100.0D);
+        this.getEntityAttribute(SharedMonsterAttributes.FOLLOW_RANGE).setBaseValue(50); // Configurable
     }
 
     @Override
@@ -161,6 +160,10 @@ public class SentinelDroneEntity extends EntityFlying implements IMob {
     @Override
     public void writeEntityToNBT(NBTTagCompound compound) {
         super.writeEntityToNBT(compound);
+        if (cityCenter != null) {
+            compound.setInteger("cityX", cityCenter.getChunkX());
+            compound.setInteger("cityZ", cityCenter.getChunkZ());
+        }
     }
 
     /**
@@ -169,6 +172,9 @@ public class SentinelDroneEntity extends EntityFlying implements IMob {
     @Override
     public void readEntityFromNBT(NBTTagCompound compound) {
         super.readEntityFromNBT(compound);
+        if (compound.hasKey("cityX")) {
+            cityCenter = new ChunkCoord(compound.getInteger("cityX"), compound.getInteger("cityZ"));
+        }
     }
 
     @Override
@@ -253,6 +259,9 @@ public class SentinelDroneEntity extends EntityFlying implements IMob {
          */
         @Override
         public void startExecuting() {
+            if (parentEntity.cityCenter == null) {
+                return;
+            }
             CityAISystem aiSystem = CityAISystem.getCityAISystem(parentEntity.world);
             CityAI cityAI = aiSystem.getCityAI(parentEntity.cityCenter);
             BlockPos pos = cityAI.requestNewSentinelPosition(parentEntity.sentinalId);

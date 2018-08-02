@@ -29,6 +29,7 @@ public class CityAI {
     private final ChunkCoord center;
     private boolean initialized = false;
 
+    private boolean foundEquipment = false;
     private Set<BlockPos> aiCores = new HashSet<>();
     private Set<BlockPos> forceFields = new HashSet<>();
     private Set<BlockPos> negariteGenerators = new HashSet<>();
@@ -54,6 +55,8 @@ public class CityAI {
             initialize(tile.getWorld());
             return true;
         } else {
+            findEquipment(tile.getWorld());
+
             // If there are no more ai cores the city AI is dead
             if (aiCores.isEmpty()) {
                 return false;
@@ -105,7 +108,7 @@ public class CityAI {
         // Small chance to revive sentinels if they are missing
         if (random.nextFloat() < .1f) {
             System.out.println("REVIVE EVENT");
-            for (int i = 0 ; i < sentinels.length ; i++) {
+            for (int i = 0; i < sentinels.length; i++) {
                 if (sentinels[i] == 0 || world.getEntityByID(sentinels[i]) == null) {
                     System.out.println("    revive " + i);
                     createSentinel(world, i);
@@ -149,7 +152,7 @@ public class CityAI {
         }
         int angleI = (sentinelAngleOffset + sentinelId * 12 / sentinels.length) % 12;
         int cx = center.getChunkX() * 16 + 8;
-        int cy = CityTools.getCity(center).getHeight() + 20;
+        int cy = aiCores.iterator().next().getY() + 20;     // Use the height of one of the ai cores as a base
         int cz = center.getChunkZ() * 16 + 8;
 
         float angle = angleI * 360.0f / 12;
@@ -161,16 +164,14 @@ public class CityAI {
     }
 
     public void playerSpotted(EntityPlayer player) {
-        onAlert = 100; //600;      // 5 minutes alert
+        onAlert = 100; //600;      // 5 minutes alert @todo configurable
         System.out.println("CityAI.playerSpotted");
     }
 
-    private void initialize(World world) {
-        initCityEquipment(world);
-        initSentinels(world);
-    }
-
-    private void initCityEquipment(World world) {
+    private void findEquipment(World world) {
+        if (foundEquipment) {
+            return;
+        }
         City city = CityTools.getCity(center);
         assert city != null;
         CityPlan plan = city.getPlan();
@@ -180,35 +181,61 @@ public class CityAI {
         int cx = center.getChunkX();
         int cz = center.getChunkZ();
 
-        for (int dx = cx - dimX / 2 - 1 ; dx <= cx + dimX / 2 + 1 ; dx++) {
+        for (int dx = cx - dimX / 2 - 1; dx <= cx + dimX / 2 + 1; dx++) {
             for (int dz = cz - dimZ / 2 - 1; dz <= cz + dimZ / 2 + 1; dz++) {
-                int starty = CityTools.getLowestHeight(city, dx, dz);
-                for (int x = dx * 16 ; x < dx * 16 + 16 ; x++) {
-                    for (int z = dz * 16 ; z < dz * 16 + 16 ; z++) {
-                        for (int y = starty ; y < starty + 100 ; y++) {
+                int starty = 30;    // @todo is this a safe minimum height to assume?
+                for (int x = dx * 16; x < dx * 16 + 16; x++) {
+                    for (int z = dz * 16; z < dz * 16 + 16; z++) {
+                        for (int y = starty; y < starty + 100; y++) {
                             BlockPos p = new BlockPos(x, y, z);
                             TileEntity te = world.getTileEntity(p);
                             if (te instanceof AICoreTile) {
                                 aiCores.add(p);
                             } else if (te instanceof ForceFieldTile) {
                                 forceFields.add(p);
-                                ForceFieldTile forcefield = (ForceFieldTile) te;
-                                forcefield.setRSMode(RedstoneMode.REDSTONE_IGNORED);
-                                forcefield.setScale(38);    // @todo, base on city size
                             } else if (te instanceof NegariteGeneratorTile) {
                                 negariteGenerators.add(p);
-                                NegariteGeneratorTile generator = (NegariteGeneratorTile) te;
-                                PowerSenderSupport.fixNetworks(world, p);
-                                generator.setRSMode(RedstoneMode.REDSTONE_IGNORED);
                             } else if (te instanceof PosiriteGeneratorTile) {
                                 posiriteGenerators.add(p);
-                                PosiriteGeneratorTile generator = (PosiriteGeneratorTile) te;
-                                PowerSenderSupport.fixNetworks(world, p);
-                                generator.setRSMode(RedstoneMode.REDSTONE_IGNORED);
                             }
                         }
                     }
                 }
+            }
+        }
+        foundEquipment = true;
+    }
+
+    private void initialize(World world) {
+        findEquipment(world);
+        initCityEquipment(world);
+        initSentinels(world);
+    }
+
+    private void initCityEquipment(World world) {
+        for (BlockPos p : forceFields) {
+            TileEntity te = world.getTileEntity(p);
+            if (te instanceof ForceFieldTile) {
+                ForceFieldTile forcefield = (ForceFieldTile) te;
+                forcefield.setRSMode(RedstoneMode.REDSTONE_IGNORED);
+                forcefield.setScale(38);    // @todo, base on city size
+            }
+        }
+        for (BlockPos p : negariteGenerators) {
+            TileEntity te = world.getTileEntity(p);
+            if (te instanceof NegariteGeneratorTile) {
+                NegariteGeneratorTile generator = (NegariteGeneratorTile) te;
+                PowerSenderSupport.fixNetworks(world, p);
+                generator.setRSMode(RedstoneMode.REDSTONE_IGNORED);
+            }
+        }
+        for (BlockPos p : posiriteGenerators) {
+            TileEntity te = world.getTileEntity(p);
+            if (te instanceof PosiriteGeneratorTile) {
+                posiriteGenerators.add(p);
+                PosiriteGeneratorTile generator = (PosiriteGeneratorTile) te;
+                PowerSenderSupport.fixNetworks(world, p);
+                generator.setRSMode(RedstoneMode.REDSTONE_IGNORED);
             }
         }
     }
@@ -224,7 +251,7 @@ public class CityAI {
     private void createSentinel(World world, int i) {
         SentinelDroneEntity entity = new SentinelDroneEntity(world, i, center);
         int cx = center.getChunkX() * 16 + 8;
-        int cy = CityTools.getCity(center).getHeight() + 50;
+        int cy = aiCores.iterator().next().getY() + 50; // @todo make more consistent?
         int cz = center.getChunkZ() * 16 + 8;
         entity.setPosition(cx, cy, cz);
         world.spawnEntity(entity);

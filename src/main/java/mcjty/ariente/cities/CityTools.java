@@ -13,6 +13,10 @@ public class CityTools {
     private static final Map<ChunkCoord, City> cities = new HashMap<>();
 
     public static City getCity(ChunkCoord center) {
+        if (!cities.containsKey(center)) {
+            City city = new City(center, getRandomCityPlan(center), -1);
+            cacheCity(center, city);
+        }
         return cities.get(center);
     }
 
@@ -68,7 +72,7 @@ public class CityTools {
         if (center == null) {
             return null;
         }
-        City city = getCity(center);
+        City city = cities.get(center);
         if (city == null) {
             ChunkHeightmap heightmap = generator.getHeightmap(center.getChunkX(), center.getChunkZ());
             city = new City(center, getRandomCityPlan(center), heightmap.getAverageHeight());
@@ -94,16 +98,12 @@ public class CityTools {
         return Optional.ofNullable(getNearestCityCenter(chunkX, chunkZ));
     }
 
-    private static int getCityHeight(int x, int z) {
-        return 70;
-    }
-
-    public static int getLowestHeight(City city, int x, int z) {
+    public static int getLowestHeight(City city, ArienteChunkGenerator generator, int x, int z) {
         BuildingPart cellar = getCellarBuildingPart(city, x, z);
         if (cellar != null) {
-            return city.getHeight() - cellar.getSliceCount();
+            return city.getHeight(generator) - cellar.getSliceCount();
         } else {
-            return city.getHeight();
+            return city.getHeight(generator);
         }
     }
 

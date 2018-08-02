@@ -88,7 +88,7 @@ public class ArienteCityGenerator {
         if (city != null) {
             List<BuildingPart> parts = CityTools.getBuildingParts(city, x, z);
             if (!parts.isEmpty()) {
-                int y = CityTools.getLowestHeight(city, x, z);
+                int y = CityTools.getLowestHeight(city, generator, x, z);
                 CityPlan plan = city.getPlan();
                 for (BuildingPart part : parts) {
                     generatePart(primer, plan, part, Transform.ROTATE_NONE, 0, y, 0);

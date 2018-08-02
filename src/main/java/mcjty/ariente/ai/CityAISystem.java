@@ -28,6 +28,9 @@ public class CityAISystem extends AbstractWorldData<CityAISystem> {
     }
 
     public CityAI getCityAI(ChunkCoord coord) {
+        if (coord == null) {
+            System.out.println("CityAISystem.getCityAI");
+        }
         if (!cityAIMap.containsKey(coord)) {
             CityAI cityAI = new CityAI(coord);
             cityAIMap.put(coord, cityAI);

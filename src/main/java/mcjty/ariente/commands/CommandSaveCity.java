@@ -82,7 +82,7 @@ public class CommandSaveCity implements ICommand {
 
             for (int dx = cx - dimX / 2 - 1 ; dx <= cx + dimX / 2 + 1 ; dx++) {
                 for (int dz = cz - dimZ / 2 - 1 ; dz <= cz + dimZ / 2 + 1 ; dz++) {
-                    int y = CityTools.getLowestHeight(city, dx, dz);
+                    int y = CityTools.getLowestHeight(city, generator, dx, dz);
                     List<BuildingPart> parts = CityTools.getBuildingParts(city, dx, dz);
                     for (BuildingPart part : parts) {
                         BuildingPart newpart = exportPart(part, ((EntityPlayer) sender).world, new BlockPos(dx * 16 + 8, start.getY() - 1, dz * 16 + 8),

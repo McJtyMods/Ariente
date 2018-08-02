@@ -1,13 +1,14 @@
 package mcjty.ariente.cities;
 
 import mcjty.ariente.dimension.ArienteChunkGenerator;
+import mcjty.ariente.dimension.ChunkHeightmap;
 import mcjty.ariente.varia.ChunkCoord;
 
 public class City {
 
     private final ChunkCoord center;
     private final CityPlan plan;
-    private final int height;
+    private int height;
 
     public City(ChunkCoord center, CityPlan plan, int height) {
         this.center = center;
@@ -25,6 +26,14 @@ public class City {
     }
 
     public int getHeight() {
+        return height;
+    }
+
+    public int getHeight(ArienteChunkGenerator generator) {
+        if (height == -1) {
+            ChunkHeightmap heightmap = generator.getHeightmap(center.getChunkX(), center.getChunkZ());
+            height = heightmap.getAverageHeight();
+        }
         return height;
     }
 }
