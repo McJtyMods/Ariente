@@ -73,49 +73,13 @@ public class CityAI {
     }
 
     private void handleAI(World world) {
-        // Handle power
-        for (BlockPos pos : negariteGenerators) {
-            TileEntity te = world.getTileEntity(pos);
-            if (te instanceof NegariteGeneratorTile) {
-                NegariteGeneratorTile generator = (NegariteGeneratorTile) te;
-                if (generator.getStackInSlot(NegariteGeneratorTile.SLOT_NEGARITE_INPUT).isEmpty()) {
-                    generator.setInventorySlotContents(NegariteGeneratorTile.SLOT_NEGARITE_INPUT, new ItemStack(ModItems.negariteDust, 1));
-                    generator.markDirtyClient();
-                }
-            }
-        }
-        for (BlockPos pos : posiriteGenerators) {
-            TileEntity te = world.getTileEntity(pos);
-            if (te instanceof PosiriteGeneratorTile) {
-                PosiriteGeneratorTile generator = (PosiriteGeneratorTile) te;
-                if (generator.getStackInSlot(PosiriteGeneratorTile.SLOT_POSIRITE_INPUT).isEmpty()) {
-                    generator.setInventorySlotContents(PosiriteGeneratorTile.SLOT_POSIRITE_INPUT, new ItemStack(ModItems.posiriteDust, 1));
-                    generator.markDirtyClient();
-                }
-            }
-        }
+        handlePower(world);
+        handleSentinels(world);
+        handleAlert(world);
 
-        // Sentinel movement
-        sentinelMovementTicks--;
-        if (sentinelMovementTicks <= 0) {
-            sentinelMovementTicks = 6;
-            sentinelAngleOffset++;
-            if (sentinelAngleOffset >= 12) {
-                sentinelAngleOffset = 0;
-            }
-        }
+    }
 
-        // Small chance to revive sentinels if they are missing
-        if (random.nextFloat() < .1f) {
-            System.out.println("REVIVE EVENT");
-            for (int i = 0; i < sentinels.length; i++) {
-                if (sentinels[i] == 0 || world.getEntityByID(sentinels[i]) == null) {
-                    System.out.println("    revive " + i);
-                    createSentinel(world, i);
-                }
-            }
-        }
-
+    private void handleAlert(World world) {
         // Handle alert mode
         if (onAlert > 0) {
             onAlert--;
@@ -144,6 +108,57 @@ public class CityAI {
                 }
             }
         }
+    }
+
+    private void handleSentinels(World world) {
+        // Sentinel movement
+        sentinelMovementTicks--;
+        if (sentinelMovementTicks <= 0) {
+            sentinelMovementTicks = 6;
+            sentinelAngleOffset++;
+            if (sentinelAngleOffset >= 12) {
+                sentinelAngleOffset = 0;
+            }
+        }
+
+        // Small chance to revive sentinels if they are missing
+        if (random.nextFloat() < .1f) {
+            System.out.println("REVIVE EVENT");
+            for (int i = 0; i < sentinels.length; i++) {
+                if (sentinels[i] == 0 || world.getEntityByID(sentinels[i]) == null) {
+                    System.out.println("    revive " + i);
+                    createSentinel(world, i);
+                }
+            }
+        }
+    }
+
+    private void handlePower(World world) {
+        // Handle power
+        for (BlockPos pos : negariteGenerators) {
+            TileEntity te = world.getTileEntity(pos);
+            if (te instanceof NegariteGeneratorTile) {
+                NegariteGeneratorTile generator = (NegariteGeneratorTile) te;
+                if (generator.getStackInSlot(NegariteGeneratorTile.SLOT_NEGARITE_INPUT).isEmpty()) {
+                    generator.setInventorySlotContents(NegariteGeneratorTile.SLOT_NEGARITE_INPUT, new ItemStack(ModItems.negariteDust, 1));
+                    generator.markDirtyClient();
+                }
+            }
+        }
+        for (BlockPos pos : posiriteGenerators) {
+            TileEntity te = world.getTileEntity(pos);
+            if (te instanceof PosiriteGeneratorTile) {
+                PosiriteGeneratorTile generator = (PosiriteGeneratorTile) te;
+                if (generator.getStackInSlot(PosiriteGeneratorTile.SLOT_POSIRITE_INPUT).isEmpty()) {
+                    generator.setInventorySlotContents(PosiriteGeneratorTile.SLOT_POSIRITE_INPUT, new ItemStack(ModItems.posiriteDust, 1));
+                    generator.markDirtyClient();
+                }
+            }
+        }
+    }
+
+    public BlockPos requestNewDronePosition() {
+        return null;
     }
 
     public BlockPos requestNewSentinelPosition(int sentinelId) {

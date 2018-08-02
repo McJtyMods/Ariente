@@ -1,7 +1,10 @@
 package mcjty.ariente.entities;
 
 import mcjty.ariente.Ariente;
+import mcjty.ariente.ai.CityAI;
+import mcjty.ariente.ai.CityAISystem;
 import mcjty.ariente.sounds.ModSounds;
+import mcjty.ariente.varia.ChunkCoord;
 import net.minecraft.entity.EntityFlying;
 import net.minecraft.entity.EntityLivingBase;
 import net.minecraft.entity.SharedMonsterAttributes;
@@ -18,6 +21,7 @@ import net.minecraft.util.ResourceLocation;
 import net.minecraft.util.SoundCategory;
 import net.minecraft.util.SoundEvent;
 import net.minecraft.util.math.AxisAlignedBB;
+import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.MathHelper;
 import net.minecraft.util.math.Vec3d;
 import net.minecraft.world.EnumDifficulty;
@@ -33,6 +37,9 @@ public class DroneEntity extends EntityFlying implements IMob {
     private static final DataParameter<Boolean> ATTACKING = EntityDataManager.createKey(DroneEntity.class, DataSerializers.BOOLEAN);
     public static final ResourceLocation LOOT = new ResourceLocation(Ariente.MODID, "entities/drone");
 
+    // If this drone is controlled by a city then this will be set
+    private ChunkCoord cityCenter;
+
     public DroneEntity(World worldIn) {
         super(worldIn);
         this.setSize(2.0F, 2.0F);
@@ -41,9 +48,14 @@ public class DroneEntity extends EntityFlying implements IMob {
         this.moveHelper = new DroneMoveHelper(this);
     }
 
+    public DroneEntity(World world, ChunkCoord cityCenter) {
+        this(world);
+        this.cityCenter = cityCenter;
+    }
+
     @Override
     protected void initEntityAI() {
-        this.tasks.addTask(5, new AIRandomFly(this));
+        this.tasks.addTask(5, new AIDroneFly(this));
         this.tasks.addTask(7, new AILookAround(this));
         this.tasks.addTask(7, new AILaserAttack(this));
         this.targetTasks.addTask(1, new EntityAIFindEntityNearestPlayer(this));
@@ -158,6 +170,10 @@ public class DroneEntity extends EntityFlying implements IMob {
     @Override
     public void writeEntityToNBT(NBTTagCompound compound) {
         super.writeEntityToNBT(compound);
+        if (cityCenter != null) {
+            compound.setInteger("cityX", cityCenter.getChunkX());
+            compound.setInteger("cityZ", cityCenter.getChunkZ());
+        }
     }
 
     /**
@@ -166,6 +182,9 @@ public class DroneEntity extends EntityFlying implements IMob {
     @Override
     public void readEntityFromNBT(NBTTagCompound compound) {
         super.readEntityFromNBT(compound);
+        if (compound.hasKey("cityX")) {
+            cityCenter = new ChunkCoord(compound.getInteger("cityX"), compound.getInteger("cityZ"));
+        }
     }
 
     @Override
@@ -299,10 +318,10 @@ public class DroneEntity extends EntityFlying implements IMob {
         }
     }
 
-    static class AIRandomFly extends EntityAIBase {
+    static class AIDroneFly extends EntityAIBase {
         private final DroneEntity parentEntity;
 
-        public AIRandomFly(DroneEntity drone) {
+        public AIDroneFly(DroneEntity drone) {
             this.parentEntity = drone;
             this.setMutexBits(1);
         }
@@ -338,11 +357,21 @@ public class DroneEntity extends EntityFlying implements IMob {
          */
         @Override
         public void startExecuting() {
-            Random random = this.parentEntity.getRNG();
-            double d0 = this.parentEntity.posX + ((random.nextFloat() * 2.0F - 1.0F) * 32.0F);
-            double d1 = this.parentEntity.posY + ((random.nextFloat() * 2.0F - 1.0F) * 32.0F);
-            double d2 = this.parentEntity.posZ + ((random.nextFloat() * 2.0F - 1.0F) * 32.0F);
-            this.parentEntity.getMoveHelper().setMoveTo(d0, d1, d2, 1.0D);
+            if (parentEntity.cityCenter == null) {
+                Random random = this.parentEntity.getRNG();
+                double d0 = this.parentEntity.posX + ((random.nextFloat() * 2.0F - 1.0F) * 32.0F);
+                double d1 = this.parentEntity.posY + ((random.nextFloat() * 2.0F - 1.0F) * 32.0F);
+                double d2 = this.parentEntity.posZ + ((random.nextFloat() * 2.0F - 1.0F) * 32.0F);
+                this.parentEntity.getMoveHelper().setMoveTo(d0, d1, d2, 1.0D);
+            } else {
+                // City controls movement
+                CityAISystem aiSystem = CityAISystem.getCityAISystem(parentEntity.world);
+                CityAI cityAI = aiSystem.getCityAI(parentEntity.cityCenter);
+                BlockPos pos = cityAI.requestNewDronePosition();
+                if (pos != null) {
+                    this.parentEntity.getMoveHelper().setMoveTo(pos.getX(), pos.getY(), pos.getZ(), 2.0D);
+                }
+            }
         }
     }
 
