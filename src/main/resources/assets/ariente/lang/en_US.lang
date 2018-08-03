@@ -31,6 +31,7 @@ tile.ariente.netcable_combined.name=Combined Cable
 tile.ariente.posirite_generator.name=Posirite Flux Generator
 tile.ariente.negarite_generator.name=Negarite Flux Generator
 tile.ariente.negarite_tank.name=Negarite Tank
+tile.ariente.posirite_tank.name=Posirite Tank
 tile.ariente.storage.name=Storage Cube
 tile.ariente.elevator.name=Elevator
 tile.ariente.forcefield.name=Forcefield Generator
@@ -110,6 +111,9 @@ message.ariente.posirite_generator=\
 message.ariente.negarite_tank=\
     @fPlace one or more tanks on top\n\
     @fof a Negarite Flux Generator
+message.ariente.posirite_tank=\
+    @fPlace one or more tanks on top\n\
+    @fof a Posirite Flux Generator
 message.ariente.storage=\
     @fCan store large amounts of 4\n\
     @fdifferent item types

@@ -26,7 +26,7 @@ import net.minecraftforge.fml.relauncher.SideOnly;
 
 import java.util.List;
 
-public class NegariteTankTile extends GenericTileEntity implements IGuiTile {
+public class PosiriteTankTile extends GenericTileEntity implements IGuiTile {
 
     public static final PropertyBool UPPER = PropertyBool.create("upper");
     public static final PropertyBool LOWER = PropertyBool.create("lower");
@@ -34,13 +34,13 @@ public class NegariteTankTile extends GenericTileEntity implements IGuiTile {
     public boolean isWorking() {
         BlockPos p = pos.down();
         IBlockState state = world.getBlockState(p);
-        while (state.getBlock() == ModBlocks.negariteTankBlock) {
+        while (state.getBlock() == ModBlocks.posiriteTankBlock) {
             p = p.down();
             state = world.getBlockState(p);
         }
         TileEntity te = world.getTileEntity(p);
-        if (te instanceof NegariteGeneratorTile) {
-            return ((NegariteGeneratorTile)te).isWorking();
+        if (te instanceof PosiriteGeneratorTile) {
+            return ((PosiriteGeneratorTile)te).isWorking();
         }
         return false;
     }
@@ -57,8 +57,8 @@ public class NegariteTankTile extends GenericTileEntity implements IGuiTile {
 
     @Override
     public IBlockState getActualState(IBlockState state) {
-        return state.withProperty(UPPER, world.getBlockState(pos.up()).getBlock() == ModBlocks.negariteTankBlock)
-                .withProperty(LOWER, world.getBlockState(pos.down()).getBlock() == ModBlocks.negariteTankBlock);
+        return state.withProperty(UPPER, world.getBlockState(pos.up()).getBlock() == ModBlocks.posiriteTankBlock)
+                .withProperty(LOWER, world.getBlockState(pos.down()).getBlock() == ModBlocks.posiriteTankBlock);
     }
 
     @Override

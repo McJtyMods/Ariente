@@ -26,10 +26,10 @@ public class LaserRender extends Render<LaserEntity> {
     private Random random = new Random();
     private static ResourceLocation laserbeams[] = new ResourceLocation[4];
     static {
-        laserbeams[0] = new ResourceLocation(Ariente.MODID, "textures/effects/laserbeam1.png");
-        laserbeams[1] = new ResourceLocation(Ariente.MODID, "textures/effects/laserbeam2.png");
-        laserbeams[2] = new ResourceLocation(Ariente.MODID, "textures/effects/laserbeam3.png");
-        laserbeams[3] = new ResourceLocation(Ariente.MODID, "textures/effects/laserbeam4.png");
+        laserbeams[0] = new ResourceLocation(Ariente.MODID, "textures/effects/negarite_laserbeam1.png");
+        laserbeams[1] = new ResourceLocation(Ariente.MODID, "textures/effects/negarite_laserbeam2.png");
+        laserbeams[2] = new ResourceLocation(Ariente.MODID, "textures/effects/negarite_laserbeam3.png");
+        laserbeams[3] = new ResourceLocation(Ariente.MODID, "textures/effects/negarite_laserbeam4.png");
     }
 
     public LaserRender(RenderManager renderManager) {

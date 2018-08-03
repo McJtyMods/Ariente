@@ -3,6 +3,8 @@
     "type": "plan",
     "name": "city1_1",
     "palette": "city1_1",
+    "minlayer2": 1,
+    "maxlayer2": 2,
     "partpalette": [
       {
         "char": "1",
@@ -56,7 +58,7 @@
         "aaaaaagggggggggg",
         "aaaaaagggggggggg",
         "aaaaaagggggggggg",
-        "aaaaaagggggggggg"
+        "gggggggggggggggg"
       ],
       [
         "                ",
@@ -74,7 +76,7 @@
         "      c         ",
         "      c         ",
         "      c       ha",
-        "              i "
+        "              it"
       ],
       [
         "                ",
@@ -92,7 +94,7 @@
         "      d         ",
         "      e         ",
         "      d       ha",
-        "              j "
+        "              ja"
       ],
       [
         "                ",
@@ -110,7 +112,7 @@
         "      d         ",
         "      e         ",
         "      d       ha",
-        "              j "
+        "              r "
       ],
       [
         "                ",
@@ -156,15 +158,15 @@
         "   d     d      ",
         "   d     d      ",
         "   d     ggggggg",
-        "   d     ggggggg",
-        "   d     ggggggg",
-        "   dddgggggggggg",
-        "      gggggggggg",
-        "      gggggggggg",
-        "      gggggggggg",
-        "      gggggggggg",
-        "      gggggggggg",
-        "      gggggggggg"
+        "   d     uuuuuuu",
+        "   d     uuuuuuu",
+        "   dddguuuuuuuuu",
+        "      guuuuuuuuu",
+        "      guuuuuuuuu",
+        "      guuuuuuuuu",
+        "      guuuuuuuuu",
+        "      guuuuuuuuu",
+        "      guuuuuuuuu"
       ],
       [
         "                ",
@@ -207,11 +209,11 @@
         "                ",
         "                ",
         "   ggggggg      ",
-        "   ggggggg      ",
-        "   ggggggg      ",
-        "   ggggggg      ",
-        "   ggggggg      ",
-        "   ggggggg      ",
+        "   guuuuug      ",
+        "   guuuuug      ",
+        "   guuuuug      ",
+        "   guuuuug      ",
+        "   guuuuug      ",
         "   ggggggg      ",
         "                ",
         "                ",
@@ -266,7 +268,7 @@
     "zsize": 16,
     "slices": [
       [
-        "aaaaaagggggggggg",
+        "gggggggggggggggg",
         "aaaaaagggggggggg",
         "aaaaaagggggggggg",
         "aaaaaagggggggggg",
@@ -353,7 +355,7 @@
         "                ",
         "  q             ",
         "                ",
-        "                "
+        "vv              "
       ],
       [
         "      d         ",
@@ -371,18 +373,18 @@
         "                ",
         "  q             ",
         "                ",
-        "                "
+        "vv              "
       ],
       [
-        "      gggggggggg",
-        "      gggggggggg",
-        "      gggggggggg",
-        "      gggggggggg",
-        "      gggggggggg",
-        "      gggggggggg",
-        "      gggggggggg",
-        "      gggggggggg",
-        "      gggggggggg",
+        "      guuuuuuuuu",
+        "      guuuuuuuuu",
+        "      guuuuuuuuu",
+        "      guuuuuuuuu",
+        "      guuuuuuuuu",
+        "      guuuuuuuuu",
+        "      guuuuuuuuu",
+        "      guuuuuuuuu",
+        "      guuuuuuuuu",
         "      gggggggggg",
         "                ",
         "                ",
@@ -488,7 +490,7 @@
         "         c      ",
         "         c      ",
         "h        c      ",
-        "a        c      "
+        "x        c      "
       ],
       [
         "                ",
@@ -506,7 +508,7 @@
         "         d      ",
         "         d      ",
         "h        d      ",
-        "a        d      "
+        "y        d      "
       ],
       [
         "                ",
@@ -524,7 +526,7 @@
         "         d      ",
         "         d      ",
         "h        d      ",
-        "a        d      "
+        "r        d      "
       ],
       [
         "                ",
@@ -570,15 +572,15 @@
         "                ",
         "                ",
         "gggggggggg      ",
-        "gggggggggg      ",
-        "gggggggggg      ",
-        "gggggggggg      ",
-        "gggggggggg      ",
-        "gggg ggggg      ",
-        "gggggggggg      ",
-        "gggggggggg      ",
-        "gggggggggg      ",
-        "gggggggggg      "
+        "uuuuuuuuug      ",
+        "uuuuuuuuug      ",
+        "uuuuuuuuug      ",
+        "uuuuuuuuug      ",
+        "uuuu uuuug      ",
+        "uuuuuuuuug      ",
+        "uuuuuuuuug      ",
+        "uuuuuuuuug      ",
+        "uuuuuuuuug      "
       ],
       [
         "                ",
@@ -662,11 +664,11 @@
         "                ",
         "                ",
         " ggggggg        ",
-        " ggggggg        ",
-        " ggggggg        ",
-        " ggggggg        ",
-        " ggggggg        ",
-        " ggggggg        ",
+        " guuuuug        ",
+        " guuuuug        ",
+        " guuuuug        ",
+        " guuuuug        ",
+        " guuuuug        ",
         " ggggggg        ",
         "                "
       ],
@@ -824,15 +826,15 @@
         "                "
       ],
       [
-        "gggggggggg      ",
-        "gggggggggg      ",
-        "gggggggggg      ",
-        "gggggggggg      ",
-        "gggggggggg      ",
-        "gggggggggg      ",
-        "gggggggggg      ",
-        "gggggggggg      ",
-        "gggggggggg      ",
+        "uuuuuuuuug      ",
+        "uuuuuuuuug      ",
+        "uuuuuuuuug      ",
+        "uuuuuuuuug      ",
+        "uuuuuuuuug      ",
+        "uuuuuuuuug      ",
+        "uuuuuuuuug      ",
+        "uuuuuuuuug      ",
+        "uuuuuuuuug      ",
         "gggggggggg      ",
         "                ",
         "                ",
@@ -983,8 +985,28 @@
         "block": "ariente:elevator"
       },
       {
+        "char": "t",
+        "block": "ariente:aicore"
+      },
+      {
+        "char": "u",
+        "block": "ariente:pattern"
+      },
+      {
+        "char": "v",
+        "block": "ariente:glowleaves"
+      },
+      {
         "char": "w",
         "block": "ariente:marble_smooth@1"
+      },
+      {
+        "char": "x",
+        "block": "ariente:posirite_generator@3"
+      },
+      {
+        "char": "y",
+        "block": "ariente:posirite_tank"
       }
     ]
   }

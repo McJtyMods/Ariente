@@ -41,6 +41,11 @@ public class GenericCableTileEntity extends GenericTileEntity implements IFacade
     }
 
     @Override
+    public boolean shouldRenderInPass(int pass) {
+        return pass == 1;
+    }
+
+    @Override
     public IBlockState getMimicBlock() {
         return mimicBlockSupport.getMimicBlock();
     }

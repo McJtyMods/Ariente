@@ -14,12 +14,12 @@ import org.lwjgl.opengl.GL11;
 import java.util.Random;
 
 @SideOnly(Side.CLIENT)
-public class NegariteTankRenderer extends TileEntitySpecialRenderer<NegariteTankTile> {
+public class PosiriteTankRenderer extends TileEntitySpecialRenderer<PosiriteTankTile> {
 
-    private ResourceLocation halo = new ResourceLocation(Ariente.MODID, "textures/blocks/machines/negarite_beam.png");
+    private ResourceLocation halo = new ResourceLocation(Ariente.MODID, "textures/blocks/machines/posirite_beam.png");
     private Random random = new Random();
 
-    public NegariteTankRenderer() {
+    public PosiriteTankRenderer() {
     }
 
     private static void p(BufferBuilder renderer, double x, double y, double z, double u, double v) {
@@ -28,7 +28,7 @@ public class NegariteTankRenderer extends TileEntitySpecialRenderer<NegariteTank
 
 
     @Override
-    public void render(NegariteTankTile te, double x, double y, double z, float time, int breakTime, float alpha) {
+    public void render(PosiriteTankTile te, double x, double y, double z, float time, int breakTime, float alpha) {
         if (te.isWorking()) {
             Tessellator tessellator = Tessellator.getInstance();
 //            GlStateManager.pushAttrib();

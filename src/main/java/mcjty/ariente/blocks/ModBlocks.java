@@ -4,10 +4,7 @@ import mcjty.ariente.Ariente;
 import mcjty.ariente.blocks.aicore.AICoreTile;
 import mcjty.ariente.blocks.decorative.*;
 import mcjty.ariente.blocks.defense.ForceFieldTile;
-import mcjty.ariente.blocks.generators.NegariteGeneratorTile;
-import mcjty.ariente.blocks.generators.NegariteTankRenderer;
-import mcjty.ariente.blocks.generators.NegariteTankTile;
-import mcjty.ariente.blocks.generators.PosiriteGeneratorTile;
+import mcjty.ariente.blocks.generators.*;
 import mcjty.ariente.blocks.utility.*;
 import mcjty.ariente.cables.ConnectorBlock;
 import mcjty.ariente.cables.NetCableBlock;
@@ -55,6 +52,7 @@ public class ModBlocks {
 
     public static GenericBlock<NegariteGeneratorTile, GenericContainer> negariteGeneratorBlock;
     public static GenericBlock<NegariteTankTile, GenericContainer> negariteTankBlock;
+    public static GenericBlock<PosiriteTankTile, GenericContainer> posiriteTankBlock;
     public static GenericBlock<PosiriteGeneratorTile, GenericContainer> posiriteGeneratorBlock;
     public static GenericBlock<StorageTile, GenericContainer> storageBlock;
     public static GenericBlock<ElevatorTile, GenericContainer> elevatorBlock;
@@ -124,6 +122,18 @@ public class ModBlocks {
                 .activateAction((world, pos, player, hand, side, hitX, hitY, hitZ) -> HoloGuiHandler.openHoloGui(world, pos, player))
                 .info("message.ariente.shiftmessage")
                 .infoExtended("message.ariente.negarite_tank")
+                .build();
+
+        posiriteTankBlock = builderFactory.<PosiriteTankTile> builder("posirite_tank")
+                .tileEntityClass(PosiriteTankTile.class)
+                .emptyContainer()
+                .flags(BlockFlags.NON_OPAQUE, BlockFlags.RENDER_SOLID, BlockFlags.RENDER_TRANSLUCENT)
+                .property(PosiriteTankTile.LOWER)
+                .property(PosiriteTankTile.UPPER)
+                .rotationType(BaseBlock.RotationType.NONE)
+                .activateAction((world, pos, player, hand, side, hitX, hitY, hitZ) -> HoloGuiHandler.openHoloGui(world, pos, player))
+                .info("message.ariente.shiftmessage")
+                .infoExtended("message.ariente.posirite_tank")
                 .build();
 
         storageBlock = builderFactory.<StorageTile> builder("storage")
@@ -285,6 +295,8 @@ public class ModBlocks {
         negariteGeneratorBlock.initModel();
         negariteTankBlock.initModel();
         ClientRegistry.bindTileEntitySpecialRenderer(NegariteTankTile.class, new NegariteTankRenderer());
+        posiriteTankBlock.initModel();
+        ClientRegistry.bindTileEntitySpecialRenderer(PosiriteTankTile.class, new PosiriteTankRenderer());
 
         aiCoreBlock.initModel();
 
