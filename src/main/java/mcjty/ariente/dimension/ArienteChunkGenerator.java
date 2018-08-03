@@ -2,11 +2,14 @@ package mcjty.ariente.dimension;
 
 import com.google.common.collect.ImmutableList;
 import mcjty.ariente.blocks.ModBlocks;
+import mcjty.ariente.cities.City;
 import mcjty.ariente.cities.CityTools;
 import mcjty.ariente.varia.ChunkCoord;
 import mcjty.lib.tileentity.GenericTileEntity;
+import net.minecraft.block.Block;
 import net.minecraft.block.state.IBlockState;
 import net.minecraft.entity.EnumCreatureType;
+import net.minecraft.init.Blocks;
 import net.minecraft.tileentity.TileEntity;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.World;
@@ -17,6 +20,7 @@ import net.minecraft.world.chunk.ChunkPrimer;
 import net.minecraft.world.gen.IChunkGenerator;
 import net.minecraft.world.gen.MapGenBase;
 import net.minecraft.world.gen.MapGenCaves;
+import net.minecraft.world.gen.NoiseGeneratorPerlin;
 import net.minecraftforge.event.terraingen.TerrainGen;
 
 import javax.annotation.Nullable;
@@ -103,16 +107,126 @@ public class ArienteChunkGenerator implements IChunkGenerator {
         return chunkprimer;
     }
 
+    private NoiseGeneratorPerlin varianceNoise;
+    private double[] varianceBuffer = new double[256];
+
+    private void fixForNearbyCity(ChunkPrimer primer, int x, int z) {
+        if (varianceNoise == null) {
+            this.varianceNoise = new NoiseGeneratorPerlin(random, 4);
+        }
+        this.varianceBuffer = this.varianceNoise.getRegion(this.varianceBuffer, (x * 16), (z * 16), 16, 16, 1.0 / 16.0, 1.0 / 16.0, 1.0D);
+        char air = (char) Block.BLOCK_STATE_IDS.get(Blocks.AIR.getDefaultState());
+
+        if (CityTools.isCityChunk(x, z)) {
+            ChunkCoord center = CityTools.getNearestCityCenter(x, z);
+            City city = CityTools.getCity(center);
+            int height = city.getHeight(this);
+            for (int dx = 0; dx < 16; dx++) {
+                for (int dz = 0; dz < 16; dz++) {
+                    int index = (dx << 12) | (dz << 8) + height;
+                    PrimerTools.setBlockStateRange(primer, index, index + 128 - height, air);
+                }
+            }
+        } else {
+            int[][] cityHeights = new int[3][3];
+            boolean hasCity = false;
+            int height = 0;
+            for (int cx = -1 ; cx <= 1 ; cx++) {
+                for (int cz = -1 ; cz <= 1 ; cz++) {
+                    if (CityTools.isCityChunk(x+cx, z+cz)) {
+                        ChunkCoord center = CityTools.getNearestCityCenter(x+cx, z+cz);
+                        City city = CityTools.getCity(center);
+                        height = city.getHeight(this)+2;
+                        cityHeights[cx+1][cz+1] = height;
+                        hasCity = true;
+                    } else {
+                        cityHeights[cx+1][cz+1] = -1;
+                    }
+                }
+            }
+            if (!hasCity) {
+                return;
+            }
+            for (int dx = 0; dx < 16; dx++) {
+                for (int dz = 0; dz < 16; dz++) {
+                    double vr = varianceBuffer[dx + dz * 16];
+                    System.out.println("vr = " + vr);
+                    int mindist = getMinDist(cityHeights, dx, dz);
+                    int dh = mindist * 2 + height + (int) vr;
+                    int index = (dx << 12) | (dz << 8) + dh;
+                    PrimerTools.setBlockStateRangeSafe(primer, index, index + 128 - dh, air);
+                }
+            }
+        }
+    }
+
+    private int getMinDist(int[][] cityHeights, int dx, int dz) {
+        int mindist = 1000;
+        if (cityHeights[0][1] != -1) {
+            mindist = dx;
+        }
+        if (cityHeights[0][0] != -1) {
+            int dist = Math.max(dx, dz);
+            if (dist < mindist) {
+                mindist = dist;
+            }
+        }
+        if (cityHeights[0][2] != -1) {
+            int dist = Math.max(dx, 15-dz);
+            if (dist < mindist) {
+                mindist = dist;
+            }
+        }
+        if (cityHeights[2][1] != -1) {
+            int dist = 15-dx;
+            if (dist < mindist) {
+                mindist = dist;
+            }
+        }
+        if (cityHeights[2][0] != -1) {
+            int dist = Math.max(15-dx, dz);
+            if (dist < mindist) {
+                mindist = dist;
+            }
+        }
+        if (cityHeights[2][2] != -1) {
+            int dist = Math.max(15-dx, 15-dz);
+            if (dist < mindist) {
+                mindist = dist;
+            }
+        }
+        if (cityHeights[1][0] != -1) {
+            int dist = dz;
+            if (dist < mindist) {
+                mindist = dist;
+            }
+        }
+        if (cityHeights[1][2] != -1) {
+            int dist = 15-dz;
+            if (dist < mindist) {
+                mindist = dist;
+            }
+        }
+        return mindist;
+    }
+
+    private static int bipolate(float h00, float h10, float h01, float h11, int dx, int dz) {
+        float factor = (15.0f - dx) / 15.0f;
+        float h0 = h00 + (h10 - h00) * factor;
+        float h1 = h01 + (h11 - h01) * factor;
+        float h = h0 + (h1 - h0) * (15.0f - dz) / 15.0f;
+        return (int) h;
+    }
+
+
     @Override
     public Chunk generateChunk(int x, int z) {
         ChunkPrimer chunkprimer = getChunkPrimer(x, z);
 
-//        this.biomesForGeneration = worldObj.getBiomeProvider().getBiomesForGeneration(this.biomesForGeneration, x * 4 - 2, z * 4 - 2, 10, 10);
-//        terraingen.generate(x, z, chunkprimer, this.biomesForGeneration);
-//        islandsGen.setBlocksInChunk(x, z, chunkprimer);
-
         this.biomesForGeneration = worldObj.getBiomeProvider().getBiomes(this.biomesForGeneration, x * 16, z * 16, 16, 16);
         terraingen.replaceBiomeBlocks(x, z, chunkprimer, biomesForGeneration);
+
+        fixForNearbyCity(chunkprimer, x, z);
 
         this.caveGenerator.generate(this.worldObj, x, z, chunkprimer);
 
