@@ -7,22 +7,25 @@ import mcjty.ariente.blocks.generators.PosiriteGeneratorTile;
 import mcjty.ariente.cities.City;
 import mcjty.ariente.cities.CityPlan;
 import mcjty.ariente.cities.CityTools;
+import mcjty.ariente.entities.DroneEntity;
 import mcjty.ariente.entities.SentinelDroneEntity;
 import mcjty.ariente.items.ModItems;
 import mcjty.ariente.power.PowerSenderSupport;
 import mcjty.ariente.varia.ChunkCoord;
 import mcjty.lib.varia.RedstoneMode;
+import net.minecraft.entity.EntityLivingBase;
 import net.minecraft.entity.player.EntityPlayer;
+import net.minecraft.entity.player.EntityPlayerMP;
 import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.NBTTagCompound;
+import net.minecraft.nbt.NBTTagList;
 import net.minecraft.tileentity.TileEntity;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.World;
+import net.minecraftforge.common.util.Constants;
 
-import java.util.HashSet;
-import java.util.List;
-import java.util.Random;
-import java.util.Set;
+import javax.annotation.Nullable;
+import java.util.*;
 
 public class CityAI {
 
@@ -39,7 +42,11 @@ public class CityAI {
     private int sentinelMovementTicks = 6;
     private int sentinelAngleOffset = 0;
 
+    private int[] drones = new int[30];
+    private int droneTicker = 0;
+
     private int onAlert = 0;
+    private Set<UUID> watchingPlayers = new HashSet<>();
 
     private static Random random = new Random();
 
@@ -76,6 +83,7 @@ public class CityAI {
         handlePower(world);
         handleSentinels(world);
         handleAlert(world);
+        handleDrones(world);
 
     }
 
@@ -97,6 +105,7 @@ public class CityAI {
                 }
             }
         } else {
+            watchingPlayers.clear();
             // Turn off forcefields if present
             for (BlockPos pos : forceFields) {
                 TileEntity te = world.getTileEntity(pos);
@@ -107,6 +116,94 @@ public class CityAI {
                     }
                 }
             }
+        }
+    }
+
+    private int countEntities(World world, int[] entityIds) {
+        int cnt = 0;
+        for (int id : entityIds) {
+            if (id != 0 && world.getEntityByID(id) != null) {
+                cnt++;
+            }
+        }
+
+        return cnt;
+    }
+
+    @Nullable
+    private EntityPlayer findRandomPlayer(World world) {
+        List<EntityPlayer> players = new ArrayList<>();
+        for (UUID uuid : watchingPlayers) {
+            EntityPlayerMP player = world.getMinecraftServer().getPlayerList().getPlayerByUUID(uuid);
+            if (player != null && player.getEntityWorld().provider.getDimension() == world.provider.getDimension()) {
+                BlockPos pos = player.getPosition();
+                double sq = pos.distanceSq(new BlockPos(center.getChunkX() * 16 + 8, 50, center.getChunkZ() * 16 + 8));
+                if (sq < 80 * 80) {
+                    players.add(player);
+                }
+            }
+        }
+        if (players.isEmpty()) {
+            return null;
+        }
+        return players.get(random.nextInt(players.size()));
+    }
+
+    private void handleDrones(World world) {
+        if (onAlert > 0) {
+            droneTicker--;
+            if (droneTicker > 0) {
+                return;
+            }
+            droneTicker = 10;
+
+            int desiredMinimumCount = 0;
+            int newWaveMaximum = 0;
+            if (watchingPlayers.size() > 2) {
+                desiredMinimumCount = 6;
+                newWaveMaximum = 12;
+            } else if (watchingPlayers.size() > 1) {
+                desiredMinimumCount = 3;
+                newWaveMaximum = 6;
+            } else {
+                desiredMinimumCount = 1;
+                newWaveMaximum = 3;
+            }
+
+            int cnt = countEntities(world, drones);
+            while (cnt < desiredMinimumCount) {
+                spawnDrone(world);
+                cnt++;
+            }
+
+            if (cnt < newWaveMaximum && random.nextFloat() < 0.1f) {
+                // Randomly spawn a new wave of drones
+                System.out.println("WAVE");
+                while (cnt < newWaveMaximum) {
+                    spawnDrone(world);
+                    cnt++;
+                }
+            }
+        }
+    }
+
+    private void spawnDrone(World world) {
+        // Too few drones. Spawn a new one
+        int foundId = -1;
+        for (int i = 0 ; i < drones.length ; i++) {
+            if (drones[i] == 0 || world.getEntityByID(drones[i]) == null) {
+                foundId = i;
+                break;
+            }
+        }
+        if (foundId != -1) {
+            DroneEntity entity = new DroneEntity(world, center);
+            int cx = center.getChunkX() * 16 + 8;
+            int cy = aiCores.iterator().next().getY() + 50; // @todo make more consistent?
+            int cz = center.getChunkZ() * 16 + 8;
+            entity.setPosition(cx, cy, cz);
+            world.spawnEntity(entity);
+            drones[foundId] = entity.getEntityId();
         }
     }
 
@@ -121,11 +218,11 @@ public class CityAI {
             }
         }
 
-        // Small chance to revive sentinels if they are missing
+        // Small chance to revive sentinels if they are missing. Only revive if all are missing
         if (random.nextFloat() < .1f) {
             System.out.println("REVIVE EVENT");
-            for (int i = 0; i < sentinels.length; i++) {
-                if (sentinels[i] == 0 || world.getEntityByID(sentinels[i]) == null) {
+            if (countEntities(world, sentinels) == 0) {
+                for (int i = 0; i < sentinels.length; i++) {
                     System.out.println("    revive " + i);
                     createSentinel(world, i);
                 }
@@ -157,7 +254,17 @@ public class CityAI {
         }
     }
 
-    public BlockPos requestNewDronePosition() {
+    public BlockPos requestNewDronePosition(World world, EntityLivingBase currentTarget) {
+        if (currentTarget == null) {
+            currentTarget = findRandomPlayer(world);
+        }
+        if (currentTarget != null) {
+            float angle = random.nextFloat() * 360.0f;
+            float distance = 9;
+            int cx = (int) (currentTarget.posX + Math.cos(angle) * distance);
+            int cz = (int) (currentTarget.posZ + Math.sin(angle) * distance);
+            return new BlockPos(cx, currentTarget.posY+3, cz);
+        }
         return null;
     }
 
@@ -183,7 +290,8 @@ public class CityAI {
 
     public void playerSpotted(EntityPlayer player) {
         onAlert = 100; //600;      // 5 minutes alert @todo configurable
-        System.out.println("CityAI.playerSpotted");
+        System.out.println("CityAI.playerSpotted: " + player.getName());
+        watchingPlayers.add(player.getUniqueID());
     }
 
     private void findEquipment(World world) {
@@ -228,6 +336,7 @@ public class CityAI {
         findEquipment(world);
         initCityEquipment(world);
         initSentinels(world);
+        initDrones(world);
     }
 
     private void initCityEquipment(World world) {
@@ -258,6 +367,9 @@ public class CityAI {
         }
     }
 
+    private void initDrones(World world) {
+    }
+
     private void initSentinels(World world) {
         int numSentinels = 3;
         sentinels = new int[numSentinels];
@@ -283,9 +395,23 @@ public class CityAI {
         } else {
             sentinels = null;
         }
+        if (nbt.hasKey("drones")) {
+            drones = nbt.getIntArray("drones");
+        }
+        watchingPlayers.clear();
+        if (nbt.hasKey("players")) {
+            NBTTagList list = nbt.getTagList("players", Constants.NBT.TAG_COMPOUND);
+            for (int i = 0 ; i < list.tagCount() ; i++) {
+                NBTTagCompound tc = list.getCompoundTagAt(i);
+                UUID uuid = tc.getUniqueId("id");
+                watchingPlayers.add(uuid);
+            }
+
+        }
         sentinelMovementTicks = nbt.getInteger("sentinelMovementTicks");
         sentinelAngleOffset = nbt.getInteger("sentinelAngleOffset");
         onAlert = nbt.getInteger("onAlert");
+        droneTicker = nbt.getInteger("droneTicker");
     }
 
     public void writeToNBT(NBTTagCompound compound) {
@@ -293,9 +419,20 @@ public class CityAI {
         if (sentinels != null) {
             compound.setIntArray("sentinels", sentinels);
         }
+        compound.setIntArray("drones", drones);
+        if (!watchingPlayers.isEmpty()) {
+            NBTTagList list = new NBTTagList();
+            for (UUID player : watchingPlayers) {
+                NBTTagCompound tc = new NBTTagCompound();
+                tc.setUniqueId("id", player);
+                list.appendTag(tc);
+            }
+            compound.setTag("players", list);
+        }
         compound.setInteger("sentinelMovementTicks", sentinelMovementTicks);
         compound.setInteger("sentinelAngleOffset", sentinelAngleOffset);
         compound.setInteger("onAlert", onAlert);
+        compound.setInteger("droneTicker", droneTicker);
     }
 
 }

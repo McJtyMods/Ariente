@@ -12,6 +12,7 @@ import net.minecraft.entity.ai.EntityAIBase;
 import net.minecraft.entity.ai.EntityAIFindEntityNearestPlayer;
 import net.minecraft.entity.ai.EntityMoveHelper;
 import net.minecraft.entity.monster.IMob;
+import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.network.datasync.DataParameter;
 import net.minecraft.network.datasync.DataSerializers;
@@ -162,6 +163,16 @@ public class DroneEntity extends EntityFlying implements IMob {
     @Override
     public int getMaxSpawnedInChunk() {
         return 1;
+    }
+
+    @Override
+    public void setAttackTarget(@Nullable EntityLivingBase entitylivingbaseIn) {
+        super.setAttackTarget(entitylivingbaseIn);
+        if (entitylivingbaseIn instanceof EntityPlayer && cityCenter != null) {
+            CityAISystem aiSystem = CityAISystem.getCityAISystem(world);
+            CityAI cityAI = aiSystem.getCityAI(cityCenter);
+            cityAI.playerSpotted((EntityPlayer) entitylivingbaseIn);
+        }
     }
 
     /**
@@ -367,7 +378,7 @@ public class DroneEntity extends EntityFlying implements IMob {
                 // City controls movement
                 CityAISystem aiSystem = CityAISystem.getCityAISystem(parentEntity.world);
                 CityAI cityAI = aiSystem.getCityAI(parentEntity.cityCenter);
-                BlockPos pos = cityAI.requestNewDronePosition();
+                BlockPos pos = cityAI.requestNewDronePosition(parentEntity.world, parentEntity.getAttackTarget());
                 if (pos != null) {
                     this.parentEntity.getMoveHelper().setMoveTo(pos.getX(), pos.getY(), pos.getZ(), 2.0D);
                 }
