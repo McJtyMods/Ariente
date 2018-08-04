@@ -1,5 +1,8 @@
 package mcjty.ariente.dimension;
 
+import mcjty.ariente.blocks.ModBlocks;
+import mcjty.ariente.blocks.decorative.MarbleBlock;
+import mcjty.ariente.blocks.decorative.MarbleColor;
 import mcjty.ariente.cities.*;
 import net.minecraft.block.Block;
 import net.minecraft.block.state.IBlockState;
@@ -27,6 +30,7 @@ public class ArienteCityGenerator {
     private char ironbarsChar;
     private char grassChar;
     private char bedrockChar;
+    private char fillerChar;
 
     public void initialize(ArienteChunkGenerator generator) {
         this.generator = generator;
@@ -44,6 +48,7 @@ public class ArienteCityGenerator {
             ironbarsChar = (char) Block.BLOCK_STATE_IDS.get(Blocks.IRON_BARS.getDefaultState());
             grassChar = (char) Block.BLOCK_STATE_IDS.get(Blocks.GRASS.getDefaultState());
             bedrockChar = (char) Block.BLOCK_STATE_IDS.get(Blocks.BEDROCK.getDefaultState());
+            fillerChar = (char) Block.BLOCK_STATE_IDS.get(ModBlocks.marble_bricks.getDefaultState().withProperty(MarbleBlock.COLOR, MarbleColor.BLACK));
 
             initialized = true;
         }
@@ -88,13 +93,43 @@ public class ArienteCityGenerator {
         if (city != null) {
             List<BuildingPart> parts = CityTools.getBuildingParts(city, x, z);
             if (!parts.isEmpty()) {
-                int y = CityTools.getLowestHeight(city, generator, x, z);
+                int lowestY = CityTools.getLowestHeight(city, generator, x, z);
+                int y = lowestY;
                 CityPlan plan = city.getPlan();
                 for (BuildingPart part : parts) {
                     generatePart(primer, plan, part, Transform.ROTATE_NONE, 0, y, 0);
                     y += part.getSliceCount();
                 }
+
+                // Make pilars down if needed
+                CityIndex cityIndex = CityTools.getCityIndex(x, z);
+                assert cityIndex != null;
+                if (cityIndex.isTopLeft()) {
+                    fillDown(primer, lowestY, 2, 2);
+                }
+                if (cityIndex.isTopRight()) {
+                    fillDown(primer, lowestY, 13, 2);
+                }
+                if (cityIndex.isBottomLeft()) {
+                    fillDown(primer, lowestY, 2, 13);
+                }
+                if (cityIndex.isBottomRight()) {
+                    fillDown(primer, lowestY, 13, 13);
+                }
             }
+        }
+    }
+
+    private void fillDown(ChunkPrimer primer, int lowestY, int dx, int dz) {
+        int y = lowestY-1;
+        int index = (dx << 12) | (dz << 8);
+        while (y > 1) {
+            if (primer.data[index+y] == airChar) {
+                primer.data[index+y] = fillerChar;
+            } else {
+                break;
+            }
+            y--;
         }
     }
 

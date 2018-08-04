@@ -42,19 +42,28 @@ public class CityTools {
     }
 
     public static boolean isCityChunk(int chunkX, int chunkZ) {
+        return getCityIndex(chunkX, chunkZ) != null;
+    }
+
+    @Nullable
+    public static CityIndex getCityIndex(int chunkX, int chunkZ) {
         ChunkCoord center = getNearestCityCenter(chunkX, chunkZ);
         if (center == null) {
-            return false;
+            return null;
         }
         City city = getCity(center);
         CityPlan plan = city.getPlan();
         List<String> pattern = plan.getPlan();
         int dimX = pattern.get(0).length();
         int dimZ = pattern.size();
-
         int ox = (chunkX + dimX / 2) - center.getChunkX();
         int oz = (chunkZ + dimZ / 2) - center.getChunkZ();
-        return ox >= 0 && ox < dimX && oz >= 0 && oz < dimZ;
+
+        if (ox >= 0 && ox < dimX && oz >= 0 && oz < dimZ) {
+            return new CityIndex(dimX, dimZ, ox, oz);
+        } else {
+            return null;
+        }
     }
 
     // Return a random city plan. Use a valid city center as chunk coordinate parameter
@@ -186,13 +195,10 @@ public class CityTools {
 
     private static BuildingPart getCorrectPart(int x, int z, CityPlan plan, ChunkCoord cityCenter, List<String> pattern,
                                                long randomSeed) {
-        int dimX = pattern.get(0).length();
-        int dimZ = pattern.size();
-        int ox = (x + dimX / 2) - cityCenter.getChunkX();
-        int oz = (z + dimZ / 2) - cityCenter.getChunkZ();
-        if (ox >= 0 && ox < dimX && oz >= 0 && oz < dimZ) {
+        CityIndex index = getCityIndex(x, z);
+        if (index != null) {
             Map<Character, List<String>> partPalette = plan.getPartPalette();
-            char partChar = pattern.get(oz).charAt(ox);
+            char partChar = pattern.get(index.getZOffset()).charAt(index.getXOffset());
             if (partChar != ' ') {
                 List<String> parts = partPalette.get(partChar);
 

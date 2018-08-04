@@ -264,7 +264,10 @@ public class ForceFieldTile extends GenericTileEntity implements IGuiTile, ITick
             if (panelInfo[randomI] != null) {
                 PanelInfo info = this.panelInfo[randomI];
                 int life = info.getLife();
-                if (life > 0) {
+                if (life <= 0) {
+                    changed = true;
+                    panelInfo[randomI] = null;
+                } else {
                     if (life > 10) {
                         life /= 2;
                     } else {

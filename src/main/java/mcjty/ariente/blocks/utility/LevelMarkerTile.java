@@ -25,7 +25,8 @@ import java.util.List;
 
 public class LevelMarkerTile extends GenericTileEntity implements IGuiTile {
 
-    public static final AxisAlignedBB BLOCK_AABB = new AxisAlignedBB(0.0D, 0.0D, 0.0D, 1.0D, 0.1D, 1.0D);
+    public static final AxisAlignedBB BLOCK_AABB = new AxisAlignedBB(0.0D, 0.0D, 0.0D, 0.0D, 0.0D, 0.0D);
+//    public static final AxisAlignedBB BLOCK_AABB = new AxisAlignedBB(0.0D, 0.0D, 0.0D, 1.0D, 0.1D, 1.0D);
 
     @Override
     public void readRestorableFromNBT(NBTTagCompound tagCompound) {

@@ -2,6 +2,8 @@ package mcjty.ariente;
 
 import mcjty.ariente.blocks.ModBlocks;
 import mcjty.ariente.blocks.defense.ForceFieldRenderer;
+import mcjty.ariente.dimension.EditMode;
+import mcjty.ariente.dimension.EditModeClient;
 import net.minecraft.block.state.IBlockState;
 import net.minecraft.client.renderer.GlStateManager;
 import net.minecraft.client.renderer.RenderGlobal;
@@ -47,5 +49,8 @@ public class ClientForgeEventHandlers {
     @SubscribeEvent
     public void onRenderWorldEvent(RenderWorldLastEvent event) {
         ForceFieldRenderer.renderForceFields(event.getPartialTicks());
+        if (EditMode.editMode) {
+            EditModeClient.renderPart(event.getPartialTicks());
+        }
     }
 }
