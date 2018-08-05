@@ -57,6 +57,7 @@ public class ModBlocks {
     public static GenericBlock<StorageTile, GenericContainer> storageBlock;
     public static GenericBlock<ElevatorTile, GenericContainer> elevatorBlock;
     public static GenericBlock<LevelMarkerTile, GenericContainer> levelMarkerBlock;
+    public static GenericBlock<DoorMarkerTile, GenericContainer> doorMarkerBlock;
     public static GenericBlock<ForceFieldTile, GenericContainer> forceFieldBlock;
     public static GenericBlock<AICoreTile, GenericContainer> aiCoreBlock;
     
@@ -166,6 +167,16 @@ public class ModBlocks {
                 .boundingBox((state, source, pos) -> LevelMarkerTile.BLOCK_AABB)
                 .info("message.ariente.shiftmessage")
                 .infoExtended("message.ariente.level_marker")
+                .build();
+
+        doorMarkerBlock = builderFactory.<DoorMarkerTile> builder("door_marker")
+                .tileEntityClass(DoorMarkerTile.class)
+                .emptyContainer()
+                .rotationType(BaseBlock.RotationType.HORIZROTATION)
+                .flags(BlockFlags.NON_OPAQUE, BlockFlags.NON_FULLCUBE, BlockFlags.NO_COLLISION)
+                .boundingBox((state, source, pos) -> DoorMarkerTile.BLOCK_AABB)
+                .info("message.ariente.shiftmessage")
+                .infoExtended("message.ariente.door_marker")
                 .build();
 
         forceFieldBlock = builderFactory.<ForceFieldTile> builder("forcefield")
@@ -287,6 +298,9 @@ public class ModBlocks {
         elevatorBlock.initModel();
         ClientRegistry.bindTileEntitySpecialRenderer(ElevatorTile.class, new ElevatorRenderer());
         levelMarkerBlock.initModel();
+
+        doorMarkerBlock.initModel();
+        ClientRegistry.bindTileEntitySpecialRenderer(DoorMarkerTile.class, new DoorMarkerRenderer());
 
         forceFieldBlock.initModel();
 

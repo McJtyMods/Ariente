@@ -1,7 +1,7 @@
 {
   "parent": "ariente:block/thinblock",
   "textures": {
-    "up": "ariente:blocks/machines/level_marker",
+    "up": "ariente:blocks/machines/door_marker",
     "side": "ariente:blocks/marble/blackmarble",
     "bottom": "ariente:blocks/marble/blackmarble"
   }
