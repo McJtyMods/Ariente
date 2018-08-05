@@ -2114,10 +2114,10 @@
         "     dd       Jd",
         "     dd     I Jd",
         "     dd        d",
-        "dd  ddd        d",
+        "ddhhddd        d",
         "      d        d",
-        "               d",
-        "               d",
+        "      L        d",
+        "      L        d",
         "      d        d",
         "dddddddddddddddd",
         "       t       d",
@@ -2146,7 +2146,7 @@
       ],
       [
         "eeeeeeeeeeeeeeee",
-        "  k  ee     J  e",
+        " k   ee     J  e",
         "     ee        e",
         "     ee       Je",
         "     ee        e",
@@ -2494,8 +2494,8 @@
         "      d         ",
         "      d         ",
         "      d         ",
-        "                ",
-        "                ",
+        "      L         ",
+        "      L         ",
         "      d         ",
         "      d         ",
         "      d         ",
@@ -3024,6 +3024,10 @@
         "block": "ariente:storage@4"
       },
       {
+        "char": "L",
+        "block": "ariente:door_marker@2"
+      },
+      {
         "char": " ",
         "block": "minecraft:air"
       },
@@ -3054,6 +3058,10 @@
       {
         "char": "g",
         "block": "ariente:blacktech"
+      },
+      {
+        "char": "h",
+        "block": "ariente:door_marker@1"
       },
       {
         "char": "i",
