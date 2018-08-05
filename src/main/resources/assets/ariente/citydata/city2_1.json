@@ -2120,11 +2120,11 @@
         "      L        d",
         "      d        d",
         "dddddddddddddddd",
-        "       t       d",
-        "       t       d",
-        "               d",
-        "               d",
-        "               d"
+        "       t    d  d",
+        "       t    d  d",
+        "      ddddddd  d",
+        "      L        d",
+        "      L   ee   d"
       ],
       [
         "eeeeeeeeeeeeeeee",
@@ -2138,11 +2138,11 @@
         "               e",
         "      e        e",
         "eeeeeeeeeeeeeeee",
-        "        t      e",
-        "        t      e",
+        "        t   e  e",
+        "        t   e  e",
+        "      eeeeeee  e",
         "               e",
-        "               e",
-        "               e"
+        "          MN   e"
       ],
       [
         "eeeeeeeeeeeeeeee",
@@ -2156,11 +2156,11 @@
         "               e",
         "      e    l   e",
         "eeeeeeeeeeeeeeee",
-        "         t     e",
-        "         t     e",
+        "  k      t  e  e",
+        "         t  e  e",
+        "      eeeeeee  e",
         "               e",
-        "               e",
-        "               e"
+        "          OO   e"
       ],
       [
         "eeeeeeeeeeeeeeee",
@@ -2174,11 +2174,11 @@
         "      e        e",
         "      e        e",
         "eeeeeeeeeeeeeeee",
-        "          t    e",
-        "          t    e",
-        "               e",
-        "               e",
-        "               e"
+        "          t e  e",
+        "          t e  e",
+        "      eeeeeee  e",
+        "      e        e",
+        "      e        e"
       ],
       [
         "eeeeeeeeeeeeeeee",
@@ -2192,11 +2192,11 @@
         "      e        e",
         "      e        e",
         "eeeeeeeeeeeeeeee",
-        "           t   e",
-        "           t   e",
-        "               e",
-        "               e",
-        "               e"
+        "           te  e",
+        "           te  e",
+        "      eeeeeee  e",
+        "      e        e",
+        "      e        e"
       ]
     ],
     "meta": []
@@ -2487,16 +2487,16 @@
         "uuuuuuuuuuuuuuuc"
       ],
       [
-        "               d",
-        "               d",
-        "               d",
+        "      d   ee   d",
+        "      d        d",
+        "      d        d",
         "      dddddddddd",
         "      d         ",
         "      d         ",
-        "      d         ",
         "      L         ",
         "      L         ",
-        "      d         ",
+        "      L         ",
+        "      L         ",
         "      d         ",
         "      d         ",
         "      dddddddddd",
@@ -2505,15 +2505,51 @@
         "               d"
       ],
       [
+        "      e   NM   e",
+        "      e        e",
+        "      e        e",
+        "      eeeeeeeeee",
+        "      e         ",
+        "      e         ",
+        "                ",
+        "                ",
+        "                ",
+        "                ",
+        "      e         ",
+        "      e         ",
+        "      eeeeeeeeee",
         "               e",
         "               e",
+        "               e"
+      ],
+      [
+        "      e   OO   e",
+        "      e        e",
+        "      e   l    e",
+        "      eeeeeeeeee",
+        "      e         ",
+        "      e         ",
+        "                ",
+        "                ",
+        "                ",
+        "                ",
+        "      e         ",
+        "      e         ",
+        "      eeeeeeeeee",
         "               e",
+        "               e",
+        "               e"
+      ],
+      [
+        "      e        e",
+        "      e        e",
+        "      e        e",
         "      eeeeeeeeee",
         "      e         ",
         "      e         ",
         "      e         ",
-        "                ",
-        "                ",
+        "      e         ",
+        "      e         ",
         "      e         ",
         "      e         ",
         "      e         ",
@@ -2523,45 +2559,9 @@
         "               e"
       ],
       [
-        "               e",
-        "               e",
-        "          l    e",
-        "      eeeeeeeeee",
-        "      e         ",
-        "      e         ",
-        "      e         ",
-        "                ",
-        "                ",
-        "      e         ",
-        "      e         ",
-        "      e         ",
-        "      eeeeeeeeee",
-        "               e",
-        "               e",
-        "               e"
-      ],
-      [
-        "               e",
-        "               e",
-        "               e",
-        "      eeeeeeeeee",
-        "      e         ",
-        "      e         ",
-        "      e         ",
-        "      e         ",
-        "      e         ",
-        "      e         ",
-        "      e         ",
-        "      e         ",
-        "      eeeeeeeeee",
-        "               e",
-        "               e",
-        "               e"
-      ],
-      [
-        "               e",
-        "               e",
-        "               e",
+        "      e        e",
+        "      e        e",
+        "      e        e",
         "      eeeeeeeeee",
         "      e         ",
         "      e         ",
@@ -3026,6 +3026,18 @@
       {
         "char": "L",
         "block": "ariente:door_marker@2"
+      },
+      {
+        "char": "M",
+        "block": "ariente:blacktech@6"
+      },
+      {
+        "char": "N",
+        "block": "ariente:blacktech@4"
+      },
+      {
+        "char": "O",
+        "block": "ariente:marble_slab@3"
       },
       {
         "char": " ",
