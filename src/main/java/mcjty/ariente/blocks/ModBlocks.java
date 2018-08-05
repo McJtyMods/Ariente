@@ -161,7 +161,7 @@ public class ModBlocks {
                 .tileEntityClass(LevelMarkerTile.class)
                 .emptyContainer()
                 .rotationType(BaseBlock.RotationType.NONE)
-                .flags(BlockFlags.NON_OPAQUE, BlockFlags.NON_FULLCUBE)
+                .flags(BlockFlags.NON_OPAQUE, BlockFlags.NON_FULLCUBE, BlockFlags.NO_COLLISION)
                 .activateAction((world, pos, player, hand, side, hitX, hitY, hitZ) -> HoloGuiHandler.openHoloGui(world, pos, player))
                 .boundingBox((state, source, pos) -> LevelMarkerTile.BLOCK_AABB)
                 .info("message.ariente.shiftmessage")
