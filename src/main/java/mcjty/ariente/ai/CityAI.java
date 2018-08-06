@@ -19,6 +19,7 @@ import net.minecraft.entity.player.EntityPlayerMP;
 import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.nbt.NBTTagList;
+import net.minecraft.nbt.NBTUtil;
 import net.minecraft.tileentity.TileEntity;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.World;
@@ -46,7 +47,7 @@ public class CityAI {
     private int droneTicker = 0;
 
     private int onAlert = 0;
-    private Set<UUID> watchingPlayers = new HashSet<>();
+    private Map<UUID, BlockPos> watchingPlayers = new HashMap<>();  // Players we are watching as well as their last known position
 
     private static Random random = new Random();
 
@@ -147,15 +148,16 @@ public class CityAI {
     }
 
     @Nullable
-    private EntityPlayer findRandomPlayer(World world) {
-        List<EntityPlayer> players = new ArrayList<>();
-        for (UUID uuid : watchingPlayers) {
+    private BlockPos findRandomPlayer(World world) {
+        List<BlockPos> players = new ArrayList<>();
+        for (Map.Entry<UUID, BlockPos> entry : watchingPlayers.entrySet()) {
+            UUID uuid = entry.getKey();
             EntityPlayerMP player = world.getMinecraftServer().getPlayerList().getPlayerByUUID(uuid);
             if (player != null && player.getEntityWorld().provider.getDimension() == world.provider.getDimension()) {
-                BlockPos pos = player.getPosition();
+                BlockPos pos = entry.getValue();    // Use the last known position
                 double sq = pos.distanceSq(new BlockPos(center.getChunkX() * 16 + 8, 50, center.getChunkZ() * 16 + 8));
                 if (sq < 80 * 80) {
-                    players.add(player);
+                    players.add(pos);
                 }
             }
         }
@@ -271,15 +273,18 @@ public class CityAI {
     }
 
     public BlockPos requestNewDronePosition(World world, EntityLivingBase currentTarget) {
-        if (currentTarget == null) {
-            currentTarget = findRandomPlayer(world);
-        }
+        BlockPos target;
         if (currentTarget != null) {
+            target = currentTarget.getPosition();
+        } else {
+            target = findRandomPlayer(world);
+        }
+        if (target != null) {
             float angle = random.nextFloat() * 360.0f;
             float distance = 9;
-            int cx = (int) (currentTarget.posX + Math.cos(angle) * distance);
-            int cz = (int) (currentTarget.posZ + Math.sin(angle) * distance);
-            return new BlockPos(cx, currentTarget.posY+3, cz);
+            int cx = (int) (target.getX()+.5 + Math.cos(angle) * distance);
+            int cz = (int) (target.getZ()+.5 + Math.sin(angle) * distance);
+            return new BlockPos(cx, target.getY()+3, cz);
         }
         return null;
     }
@@ -307,7 +312,7 @@ public class CityAI {
     public void playerSpotted(EntityPlayer player) {
         onAlert = 100; //600;      // 5 minutes alert @todo configurable
         System.out.println("CityAI.playerSpotted: " + player.getName());
-        watchingPlayers.add(player.getUniqueID());
+        watchingPlayers.put(player.getUniqueID(), player.getPosition());    // Register the last known position
     }
 
     private void findEquipment(World world) {
@@ -420,7 +425,8 @@ public class CityAI {
             for (int i = 0 ; i < list.tagCount() ; i++) {
                 NBTTagCompound tc = list.getCompoundTagAt(i);
                 UUID uuid = tc.getUniqueId("id");
-                watchingPlayers.add(uuid);
+                BlockPos pos = NBTUtil.getPosFromTag(tc);
+                watchingPlayers.put(uuid, pos);
             }
 
         }
@@ -438,9 +444,9 @@ public class CityAI {
         compound.setIntArray("drones", drones);
         if (!watchingPlayers.isEmpty()) {
             NBTTagList list = new NBTTagList();
-            for (UUID player : watchingPlayers) {
-                NBTTagCompound tc = new NBTTagCompound();
-                tc.setUniqueId("id", player);
+            for (Map.Entry<UUID, BlockPos> entry : watchingPlayers.entrySet()) {
+                NBTTagCompound tc = NBTUtil.createPosTag(entry.getValue());
+                tc.setUniqueId("id", entry.getKey());
                 list.appendTag(tc);
             }
             compound.setTag("players", list);
