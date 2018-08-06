@@ -94,4 +94,9 @@ public class ElevatorRenderer extends TileEntitySpecialRenderer<ElevatorTile> {
 //        }
 
     }
+
+    @Override
+    public boolean isGlobalRenderer(ElevatorTile te) {
+        return true;
+    }
 }

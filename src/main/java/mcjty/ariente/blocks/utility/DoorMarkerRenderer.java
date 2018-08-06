@@ -37,7 +37,6 @@ public class DoorMarkerRenderer extends TileEntitySpecialRenderer<DoorMarkerTile
 
         GlStateManager.disableBlend();
         GlStateManager.enableDepth();
-        GlStateManager.depthMask(true);
 
         ResourceLocation beamIcon = halo;
         bindTexture(beamIcon);
@@ -120,5 +119,10 @@ public class DoorMarkerRenderer extends TileEntitySpecialRenderer<DoorMarkerTile
         }
         te.setLastTime(t);
         return openphase;
+    }
+
+    @Override
+    public boolean isGlobalRenderer(DoorMarkerTile te) {
+        return true;
     }
 }

@@ -163,7 +163,7 @@ public class DoorMarkerTile extends GenericTileEntity implements ITickable, IGui
 
     @Override
     public boolean shouldRenderInPass(int pass) {
-        return pass == 1;
+        return pass == 0;
     }
 
     @Override
