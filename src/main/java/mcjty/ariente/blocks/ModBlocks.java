@@ -174,6 +174,7 @@ public class ModBlocks {
                 .emptyContainer()
                 .rotationType(BaseBlock.RotationType.HORIZROTATION)
                 .flags(BlockFlags.NON_OPAQUE, BlockFlags.NON_FULLCUBE)
+                .activateAction((world, pos, player, hand, side, hitX, hitY, hitZ) -> HoloGuiHandler.openHoloGui(world, pos, player))
                 .addCollisionBoxToList(DoorMarkerTile::addCollisionBoxToList)
                 .boundingBox((state, source, pos) -> DoorMarkerTile.BLOCK_AABB)
                 .info("message.ariente.shiftmessage")

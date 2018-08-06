@@ -1,5 +1,12 @@
 package mcjty.ariente.blocks.utility;
 
+import mcjty.ariente.gui.HoloGuiEntity;
+import mcjty.ariente.gui.IGuiComponent;
+import mcjty.ariente.gui.IGuiTile;
+import mcjty.ariente.gui.components.HoloIcon;
+import mcjty.ariente.gui.components.HoloPanel;
+import mcjty.ariente.gui.components.HoloText;
+import mcjty.ariente.gui.components.HoloToggleIcon;
 import mcjty.lib.tileentity.GenericTileEntity;
 import mcjty.theoneprobe.api.IProbeHitData;
 import mcjty.theoneprobe.api.IProbeInfo;
@@ -24,7 +31,7 @@ import net.minecraftforge.fml.relauncher.SideOnly;
 import javax.annotation.Nullable;
 import java.util.List;
 
-public class DoorMarkerTile extends GenericTileEntity implements ITickable {
+public class DoorMarkerTile extends GenericTileEntity implements ITickable, IGuiTile {
 
     public static final AxisAlignedBB BLOCK_AABB = new AxisAlignedBB(0.0D, 0.0D, 0.0D, 1.0D, 0.1D, 1.0D);
 
@@ -32,6 +39,7 @@ public class DoorMarkerTile extends GenericTileEntity implements ITickable {
     private AxisAlignedBB detectionBox = null;
 
     private boolean open = false;
+    private int iconIndex = 0;
 
     // Client side only
     private int opening;  // 0 is closed, 1000 is open
@@ -65,6 +73,10 @@ public class DoorMarkerTile extends GenericTileEntity implements ITickable {
 
     public boolean isOpen() {
         return open;
+    }
+
+    public int getIconIndex() {
+        return iconIndex;
     }
 
     // Client side only
@@ -113,13 +125,13 @@ public class DoorMarkerTile extends GenericTileEntity implements ITickable {
     @Override
     public void readRestorableFromNBT(NBTTagCompound tagCompound) {
         super.readRestorableFromNBT(tagCompound);
-//        height = tagCompound.getInteger("height");
+        iconIndex = tagCompound.getInteger("icon");
     }
 
     @Override
     public void writeRestorableToNBT(NBTTagCompound tagCompound) {
         super.writeRestorableToNBT(tagCompound);
-//        tagCompound.setInteger("height", height);
+        tagCompound.setInteger("icon", iconIndex);
     }
 
     @Override
@@ -154,4 +166,42 @@ public class DoorMarkerTile extends GenericTileEntity implements ITickable {
         return pass == 1;
     }
 
+    @Override
+    public IGuiComponent createGui(HoloGuiEntity entity, String tag) {
+        return new HoloPanel(0, 0, 8, 8)
+                .add(new HoloToggleIcon(1, 1, 1, 1, () -> isIconSelected(0)).image(4*16, 12*16).selected(64+4*16, 12*16).hitEvent((component, player, entity1, x, y) -> setIconIndex(0)))
+                .add(new HoloToggleIcon(3, 1, 1, 1, () -> isIconSelected(1)).image(5*16, 12*16).selected(64+5*16, 12*16).hitEvent((component, player, entity1, x, y) -> setIconIndex(1)))
+                .add(new HoloToggleIcon(5, 1, 1, 1, () -> isIconSelected(2)).image(6*16, 12*16).selected(64+6*16, 12*16).hitEvent((component, player, entity1, x, y) -> setIconIndex(2)))
+                .add(new HoloToggleIcon(7, 1, 1, 1, () -> isIconSelected(3)).image(7*16, 12*16).selected(64+7*16, 12*16).hitEvent((component, player, entity1, x, y) -> setIconIndex(3)))
+
+                .add(new HoloToggleIcon(1, 3, 1, 1, () -> isIconSelected(4)).image(4*16, 13*16).selected(64+4*16, 13*16).hitEvent((component, player, entity1, x, y) -> setIconIndex(4)))
+                .add(new HoloToggleIcon(3, 3, 1, 1, () -> isIconSelected(5)).image(5*16, 13*16).selected(64+5*16, 13*16).hitEvent((component, player, entity1, x, y) -> setIconIndex(5)))
+                .add(new HoloToggleIcon(5, 3, 1, 1, () -> isIconSelected(6)).image(6*16, 13*16).selected(64+6*16, 13*16).hitEvent((component, player, entity1, x, y) -> setIconIndex(6)))
+                .add(new HoloToggleIcon(7, 3, 1, 1, () -> isIconSelected(7)).image(7*16, 13*16).selected(64+7*16, 13*16).hitEvent((component, player, entity1, x, y) -> setIconIndex(7)))
+
+                .add(new HoloToggleIcon(1, 5, 1, 1, () -> isIconSelected(8)).image(4*16, 14*16).selected(64+4*16, 14*16).hitEvent((component, player, entity1, x, y) -> setIconIndex(8)))
+                .add(new HoloToggleIcon(3, 5, 1, 1, () -> isIconSelected(9)).image(5*16, 14*16).selected(64+5*16, 14*16).hitEvent((component, player, entity1, x, y) -> setIconIndex(9)))
+                .add(new HoloToggleIcon(5, 5, 1, 1, () -> isIconSelected(10)).image(6*16, 14*16).selected(64+6*16, 14*16).hitEvent((component, player, entity1, x, y) -> setIconIndex(10)))
+                .add(new HoloToggleIcon(7, 5, 1, 1, () -> isIconSelected(11)).image(7*16, 14*16).selected(64+7*16, 14*16).hitEvent((component, player, entity1, x, y) -> setIconIndex(11)))
+
+                .add(new HoloToggleIcon(1, 7, 1, 1, () -> isIconSelected(12)).image(4*16, 15*16).selected(64+4*16, 15*16).hitEvent((component, player, entity1, x, y) -> setIconIndex(12)))
+                .add(new HoloToggleIcon(3, 7, 1, 1, () -> isIconSelected(13)).image(5*16, 15*16).selected(64+5*16, 15*16).hitEvent((component, player, entity1, x, y) -> setIconIndex(13)))
+                .add(new HoloToggleIcon(5, 7, 1, 1, () -> isIconSelected(14)).image(6*16, 15*16).selected(64+6*16, 15*16).hitEvent((component, player, entity1, x, y) -> setIconIndex(14)))
+                .add(new HoloToggleIcon(7, 7, 1, 1, () -> isIconSelected(15)).image(7*16, 15*16).selected(64+7*16, 15*16).hitEvent((component, player, entity1, x, y) -> setIconIndex(15)))
+                ;
+    }
+
+    private void setIconIndex(int idx) {
+        this.iconIndex = idx;
+        markDirtyClient();
+    }
+
+    private boolean isIconSelected(int idx) {
+        return iconIndex == idx;
+    }
+
+    @Override
+    public void syncToClient() {
+
+    }
 }

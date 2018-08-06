@@ -2,7 +2,6 @@ package mcjty.ariente.blocks.utility;
 
 import mcjty.ariente.Ariente;
 import mcjty.ariente.blocks.ModBlocks;
-import net.minecraft.client.Minecraft;
 import net.minecraft.client.renderer.BufferBuilder;
 import net.minecraft.client.renderer.GlStateManager;
 import net.minecraft.client.renderer.Tessellator;
@@ -17,14 +16,13 @@ import org.lwjgl.opengl.GL11;
 @SideOnly(Side.CLIENT)
 public class DoorMarkerRenderer extends TileEntitySpecialRenderer<DoorMarkerTile> {
 
-    private ResourceLocation halo = new ResourceLocation(Ariente.MODID, "textures/blocks/machines/door_panel.png");
+    private ResourceLocation halo = new ResourceLocation(Ariente.MODID, "textures/gui/guielements.png");
 
     public DoorMarkerRenderer() {
     }
 
     @Override
     public void render(DoorMarkerTile te, double x, double y, double z, float time, int breakTime, float alpha) {
-//        if (te.isWorking()) {
         Tessellator tessellator = Tessellator.getInstance();
         GlStateManager.pushMatrix();
 
@@ -38,13 +36,70 @@ public class DoorMarkerRenderer extends TileEntitySpecialRenderer<DoorMarkerTile
 
 
         GlStateManager.disableBlend();
+        GlStateManager.enableDepth();
+        GlStateManager.depthMask(true);
 
         ResourceLocation beamIcon = halo;
         bindTexture(beamIcon);
 
-        Minecraft mc = Minecraft.getMinecraft();
-        boolean opening = te.isOpen();
+        int openphase = getOpenphase(te);
 
+        int iconIndex = te.getIconIndex();
+        float u = (float) (4 + (iconIndex % 4));
+        float v = (float) (12 + (iconIndex / 4));
+
+        u = (u*16) / 256.0f;
+        v = (v*16) / 256.0f;
+        float duv = 16.0f / 256.0f;
+
+        if (openphase < 1000) {
+
+            GlStateManager.color(1, 1, 1, 1);
+
+            BufferBuilder renderer = tessellator.getBuffer();
+            renderer.begin(GL11.GL_QUADS, DefaultVertexFormats.POSITION_TEX);
+
+            BufferBuilder buffer = tessellator.getBuffer();
+
+            float o = openphase / 2000.0f;
+            float p = 1 - o;
+
+            buffer.pos(-0.1, o, o).tex(u, v).endVertex();
+            buffer.pos(-0.1, o, p).tex(u+duv, v).endVertex();
+            buffer.pos(-0.1, p, p).tex(u+duv, v+duv).endVertex();
+            buffer.pos(-0.1, p, o).tex(u, v+duv).endVertex();
+
+            buffer.pos(.1, p, o).tex(u, v).endVertex();
+            buffer.pos(.1, p, p).tex(u+duv, v).endVertex();
+            buffer.pos(.1, o, p).tex(u+duv, v+duv).endVertex();
+            buffer.pos(.1, o, o).tex(u, v+duv).endVertex();
+
+            for (int yy = 1; yy < 10; yy++) {
+                if (getWorld().isAirBlock(te.getPos().up(yy))) {
+                    buffer.pos(-.1, yy + o, o).tex(u, v).endVertex();
+                    buffer.pos(-.1, yy + o, p).tex(u+duv, v).endVertex();
+                    buffer.pos(-.1, yy + p, p).tex(u+duv, v+duv).endVertex();
+                    buffer.pos(-.1, yy + p, o).tex(u, v+duv).endVertex();
+
+                    buffer.pos(.1, yy + p, o).tex(u, v).endVertex();
+                    buffer.pos(.1, yy + p, p).tex(u+duv, v).endVertex();
+                    buffer.pos(.1, yy + o, p).tex(u+duv, v+duv).endVertex();
+                    buffer.pos(.1, yy + o, o).tex(u, v+duv).endVertex();
+                } else {
+                    break;
+                }
+            }
+
+
+            tessellator.draw();
+
+        }
+
+        GlStateManager.popMatrix();
+    }
+
+    private int getOpenphase(DoorMarkerTile te) {
+        boolean opening = te.isOpen();
         int openphase = te.getOpening();
         long t = System.currentTimeMillis();
         long last = te.getLastTime();
@@ -64,49 +119,6 @@ public class DoorMarkerRenderer extends TileEntitySpecialRenderer<DoorMarkerTile
             te.setOpening(openphase);
         }
         te.setLastTime(t);
-
-        if (openphase < 1000) {
-
-            GlStateManager.color(1, 1, 1, 1);
-
-            BufferBuilder renderer = tessellator.getBuffer();
-            renderer.begin(GL11.GL_QUADS, DefaultVertexFormats.POSITION_TEX);
-
-            BufferBuilder buffer = tessellator.getBuffer();
-
-            float o = openphase / 2000.0f;
-
-            buffer.pos(0, o, o).tex(0.0D, 0.0D).endVertex();
-            buffer.pos(0, o, 1 - o).tex(1.0D, 0.0D).endVertex();
-            buffer.pos(0, 1 - o, 1 - o).tex(1.0D, 1.0D).endVertex();
-            buffer.pos(0, 1 - o, o).tex(0.0D, 1.0D).endVertex();
-
-            buffer.pos(0, 1 - o, o).tex(0.0D, 0.0D).endVertex();
-            buffer.pos(0, 1 - o, 1 - o).tex(1.0D, 0.0D).endVertex();
-            buffer.pos(0, o, 1 - o).tex(1.0D, 1.0D).endVertex();
-            buffer.pos(0, o, o).tex(0.0D, 1.0D).endVertex();
-
-            for (int yy = 1; yy < 10; yy++) {
-                if (getWorld().isAirBlock(te.getPos().up(yy))) {
-                    buffer.pos(0, yy + o, o).tex(0.0D, 0.0D).endVertex();
-                    buffer.pos(0, yy + o, 1 - o).tex(1.0D, 0.0D).endVertex();
-                    buffer.pos(0, yy + 1 - o, 1 - o).tex(1.0D, 1.0D).endVertex();
-                    buffer.pos(0, yy + 1 - o, o).tex(0.0D, 1.0D).endVertex();
-
-                    buffer.pos(0, yy + 1 - o, o).tex(0.0D, 0.0D).endVertex();
-                    buffer.pos(0, yy + 1 - o, 1 - o).tex(1.0D, 0.0D).endVertex();
-                    buffer.pos(0, yy + o, 1 - o).tex(1.0D, 1.0D).endVertex();
-                    buffer.pos(0, yy + o, o).tex(0.0D, 1.0D).endVertex();
-                } else {
-                    break;
-                }
-            }
-
-
-            tessellator.draw();
-
-        }
-
-        GlStateManager.popMatrix();
+        return openphase;
     }
 }
