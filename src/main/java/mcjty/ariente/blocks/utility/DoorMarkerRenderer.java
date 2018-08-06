@@ -43,11 +43,7 @@ public class DoorMarkerRenderer extends TileEntitySpecialRenderer<DoorMarkerTile
         bindTexture(beamIcon);
 
         Minecraft mc = Minecraft.getMinecraft();
-        boolean opening = false;
-        double sqdist = mc.player.getPositionVector().squareDistanceTo(te.getPos().getX() + .5, te.getPos().getY() + 1, te.getPos().getZ() + .5);
-        if (sqdist < 4*4) {
-            opening = true;
-        }
+        boolean opening = te.isOpen();
 
         int openphase = te.getOpening();
         long t = System.currentTimeMillis();
