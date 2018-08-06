@@ -5,6 +5,7 @@ import mcjty.ariente.ai.CityAI;
 import mcjty.ariente.ai.CityAISystem;
 import mcjty.ariente.sounds.ModSounds;
 import mcjty.ariente.varia.ChunkCoord;
+import net.minecraft.entity.Entity;
 import net.minecraft.entity.EntityFlying;
 import net.minecraft.entity.EntityLivingBase;
 import net.minecraft.entity.SharedMonsterAttributes;
@@ -46,6 +47,30 @@ public class SentinelDroneEntity extends EntityFlying implements IMob {
         this.sentinalId = sentinalId;
         this.cityCenter = cityCenter;
     }
+
+    // Override this to make it less likely to despawn
+    @Override
+    protected void despawnEntity() {
+        Entity entity = this.world.getClosestPlayerToEntity(this, -1.0D);
+
+        if (entity != null) {
+            double d0 = entity.posX - this.posX;
+            double d1 = entity.posY - this.posY;
+            double d2 = entity.posZ - this.posZ;
+            double d3 = d0 * d0 + d1 * d1 + d2 * d2;
+
+            if (this.canDespawn() && d3 > 16384.0D) {
+                this.setDead();
+            }
+
+            if (this.idleTime > 900 && this.rand.nextInt(800) == 0 && d3 > 2048.0D && this.canDespawn()) {
+                this.setDead();
+            } else if (d3 < 2048.0D) {
+                this.idleTime = 0;
+            }
+        }
+    }
+
 
     @Override
     public void setAttackTarget(@Nullable EntityLivingBase entitylivingbaseIn) {

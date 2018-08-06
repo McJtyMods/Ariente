@@ -28,6 +28,10 @@ import net.minecraftforge.common.util.Constants;
 import javax.annotation.Nullable;
 import java.util.*;
 
+
+// @todo
+// world.getClosestPlayerToEntity
+
 public class CityAI {
 
     private final ChunkCoord center;
