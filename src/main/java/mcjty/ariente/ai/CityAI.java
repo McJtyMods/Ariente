@@ -69,14 +69,30 @@ public class CityAI {
                 return false;
             }
 
-            // Only tick for the first aicore
-            if (!tile.getPos().equals(aiCores.iterator().next())) {
+            AICoreTile core = findFirstValidAICore(tile.getWorld());
+            if (core == null) {
+                // All cores are no longer valid and have been removed
+                return false;
+            }
+            // Only tick for the first valid aicore
+            if (!tile.getPos().equals(core.getPos())) {
                 return false;
             }
 
             handleAI(tile.getWorld());
             return true;
         }
+    }
+
+    @Nullable
+    private AICoreTile findFirstValidAICore(World world) {
+        for (BlockPos pos : aiCores) {
+            TileEntity te = world.getTileEntity(pos);
+            if (te instanceof AICoreTile) {
+                return (AICoreTile) te;
+            }
+        }
+        return null;
     }
 
     private void handleAI(World world) {
