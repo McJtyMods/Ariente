@@ -1,6 +1,8 @@
 package mcjty.ariente.entities;
 
 import mcjty.ariente.Ariente;
+import mcjty.ariente.ai.CityAI;
+import mcjty.ariente.ai.CityAISystem;
 import mcjty.ariente.varia.ChunkCoord;
 import net.minecraft.block.Block;
 import net.minecraft.entity.Entity;
@@ -48,6 +50,11 @@ public class EntitySoldier extends EntityMob implements IArmRaisable {
     }
 
     @Override
+    protected boolean canDespawn() {
+        return false;
+    }
+
+    @Override
     protected void entityInit() {
         super.entityInit();
         this.getDataManager().register(ARMS_RAISED, Boolean.valueOf(false));
@@ -55,6 +62,7 @@ public class EntitySoldier extends EntityMob implements IArmRaisable {
 //        System.out.println("lootTableFromLocation = " + lootTableFromLocation);
     }
 
+    @Override
     protected void applyEntityAttributes() {
         super.applyEntityAttributes();
         this.getEntityAttribute(SharedMonsterAttributes.FOLLOW_RANGE).setBaseValue(35.0D);
@@ -89,7 +97,6 @@ public class EntitySoldier extends EntityMob implements IArmRaisable {
     }
 
     private void applyEntityAI() {
-        this.tasks.addTask(6, new EntityAIMoveThroughVillage(this, 1.0D, false));
         this.targetTasks.addTask(1, new EntityAIHurtByTarget(this, true, new Class[]{EntityPigZombie.class}));
         this.targetTasks.addTask(2, new EntityAINearestAttackableTarget(this, EntityPlayer.class, true));
     }
@@ -110,6 +117,16 @@ public class EntitySoldier extends EntityMob implements IArmRaisable {
     @Override
     public int getMaxSpawnedInChunk() {
         return 3;
+    }
+
+    @Override
+    public void setAttackTarget(@Nullable EntityLivingBase entitylivingbaseIn) {
+        super.setAttackTarget(entitylivingbaseIn);
+        if (entitylivingbaseIn instanceof EntityPlayer && cityCenter != null) {
+            CityAISystem aiSystem = CityAISystem.getCityAISystem(world);
+            CityAI cityAI = aiSystem.getCityAI(cityCenter);
+            cityAI.playerSpotted((EntityPlayer) entitylivingbaseIn);
+        }
     }
 
     @Override

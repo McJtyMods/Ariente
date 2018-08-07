@@ -1,9 +1,7 @@
 package mcjty.ariente;
 
 
-import mcjty.ariente.commands.CommandEditMode;
-import mcjty.ariente.commands.CommandInfo;
-import mcjty.ariente.commands.CommandSaveCity;
+import mcjty.ariente.commands.*;
 import mcjty.ariente.proxy.CommonProxy;
 import mcjty.lib.base.ModBase;
 import mcjty.lib.compat.MainCompatHandler;
@@ -78,7 +76,9 @@ public class Ariente implements ModBase {
     public void serverLoad(FMLServerStartingEvent event) {
         event.registerServerCommand(new CommandSaveCity());
         event.registerServerCommand(new CommandEditMode());
+        event.registerServerCommand(new CommandFindCity());
         event.registerServerCommand(new CommandInfo());
+        event.registerServerCommand(new CommandSwitchPart());
     }
 
 

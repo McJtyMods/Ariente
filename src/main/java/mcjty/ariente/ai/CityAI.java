@@ -49,7 +49,7 @@ public class CityAI {
     private Set<BlockPos> forceFields = new HashSet<>();
     private Set<BlockPos> negariteGenerators = new HashSet<>();
     private Set<BlockPos> posiriteGenerators = new HashSet<>();
-    private Set<BlockPos> guards = new HashSet<>();
+    private Map<BlockPos, EnumFacing> guards = new HashMap<>();
 
     private int[] sentinels = null;
     private int sentinelMovementTicks = 6;
@@ -250,10 +250,8 @@ public class CityAI {
 
         // Small chance to revive sentinels if they are missing. Only revive if all are missing
         if (random.nextFloat() < .1f) {
-            System.out.println("REVIVE EVENT");
             if (countEntities(world, sentinels) == 0) {
                 for (int i = 0; i < sentinels.length; i++) {
-                    System.out.println("    revive " + i);
                     createSentinel(world, i);
                 }
             }
@@ -347,9 +345,11 @@ public class CityAI {
                     for (int z = dz * 16; z < dz * 16 + 16; z++) {
                         for (int y = starty; y < starty + 100; y++) {
                             BlockPos p = new BlockPos(x, y, z);
-                            Block block = world.getBlockState(p).getBlock();
+                            IBlockState state = world.getBlockState(p);
+                            Block block = state.getBlock();
                             if (block == ModBlocks.guardDummy) {
-                                guards.add(p);
+                                guards.put(p, state.getValue(BaseBlock.FACING_HORIZ));
+                                world.setBlockToAir(p);
                             } else {
                                 TileEntity te = world.getTileEntity(p);
                                 if (te instanceof AICoreTile) {
@@ -403,14 +403,10 @@ public class CityAI {
     }
 
     private void initGuards(World world) {
-        for (BlockPos pos : guards) {
-            IBlockState state = world.getBlockState(pos);
-            Block block = state.getBlock();
-            if (block == ModBlocks.guardDummy) {
-                EnumFacing facing = state.getValue(BaseBlock.FACING_HORIZ);
-                world.setBlockToAir(pos);
-                createSoldier(world, pos, facing, SoldierBehaviourType.SOLDIER_GUARD);
-            }
+        for (Map.Entry<BlockPos, EnumFacing> entry : guards.entrySet()) {
+            BlockPos pos = entry.getKey();
+            EnumFacing facing = entry.getValue();
+            createSoldier(world, pos, facing, SoldierBehaviourType.SOLDIER_GUARD);
         }
     }
 
@@ -463,6 +459,12 @@ public class CityAI {
         sentinels[i] = entity.getEntityId();
     }
 
+    public void enableEditMode(World world) {
+        for (Map.Entry<BlockPos, EnumFacing> entry : guards.entrySet()) {
+            world.setBlockState(entry.getKey(), ModBlocks.guardDummy.getDefaultState().withProperty(BaseBlock.FACING_HORIZ, entry.getValue()));
+        }
+    }
+
     public void readFromNBT(NBTTagCompound nbt) {
         initialized = nbt.getBoolean("initialized");
         if (nbt.hasKey("sentinels")) {
@@ -488,6 +490,7 @@ public class CityAI {
         sentinelAngleOffset = nbt.getInteger("sentinelAngleOffset");
         onAlert = nbt.getInteger("onAlert");
         droneTicker = nbt.getInteger("droneTicker");
+        readMapFromNBT(nbt.getTagList("guards", Constants.NBT.TAG_COMPOUND), guards);
     }
 
     public void writeToNBT(NBTTagCompound compound) {
@@ -509,6 +512,42 @@ public class CityAI {
         compound.setInteger("sentinelAngleOffset", sentinelAngleOffset);
         compound.setInteger("onAlert", onAlert);
         compound.setInteger("droneTicker", droneTicker);
+        compound.setTag("guards", writeMapToNBT(guards));
     }
 
+    private NBTTagList writeSetToNBT(Set<BlockPos> set) {
+        NBTTagList list = new NBTTagList();
+        for (BlockPos pos : set) {
+            list.appendTag(NBTUtil.createPosTag(pos));
+        }
+        return list;
+    }
+
+    private void readSetFromNBT(NBTTagList list, Set<BlockPos> set) {
+        set.clear();
+        for (int i = 0 ; i < list.tagCount() ; i++) {
+            BlockPos pos = NBTUtil.getPosFromTag(list.getCompoundTagAt(i));
+            set.add(pos);
+        }
+    }
+
+    private NBTTagList writeMapToNBT(Map<BlockPos, EnumFacing> map) {
+        NBTTagList list = new NBTTagList();
+        for (Map.Entry<BlockPos, EnumFacing> entry : map.entrySet()) {
+            NBTTagCompound tc = NBTUtil.createPosTag(entry.getKey());
+            tc.setInteger("facing", entry.getValue().ordinal());
+            list.appendTag(tc);
+        }
+        return list;
+    }
+
+    private void readMapFromNBT(NBTTagList list, Map<BlockPos, EnumFacing> map) {
+        map.clear();
+        for (int i = 0 ; i < list.tagCount() ; i++) {
+            NBTTagCompound tc = list.getCompoundTagAt(i);
+            BlockPos pos = NBTUtil.getPosFromTag(tc);
+            EnumFacing facing = EnumFacing.VALUES[tc.getInteger("facing")];
+            map.put(pos, facing);
+        }
+    }
 }

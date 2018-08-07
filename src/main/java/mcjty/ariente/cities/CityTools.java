@@ -116,6 +116,7 @@ public class CityTools {
         }
     }
 
+    @Nonnull
     public static List<BuildingPart> getBuildingParts(City city, int x, int z) {
         List<BuildingPart> parts = new ArrayList<>();
         BuildingPart cellar = getCellarBuildingPart(city, x, z);

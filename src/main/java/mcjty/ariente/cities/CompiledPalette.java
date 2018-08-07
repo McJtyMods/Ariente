@@ -16,10 +16,8 @@ import java.util.Set;
 public class CompiledPalette {
 
     private final Map<Character, Object> palette = new HashMap<>();
-    private final Map<Character, Character> damagedToBlock = new HashMap<>();
-    private final Map<Character, Info> information = new HashMap<>();
 
-    private final static Map<String, CompiledPalette> compiledPaletteMap = new HashMap<>();
+    private static final Map<String, CompiledPalette> compiledPaletteMap = new HashMap<>();
 
     public static CompiledPalette getCompiledPalette(String name) {
         if (!compiledPaletteMap.containsKey(name)) {
@@ -55,8 +53,6 @@ public class CompiledPalette {
 
     public CompiledPalette(CompiledPalette other, Palette... palettes) {
         this.palette.putAll(other.palette);
-        this.damagedToBlock.putAll(other.damagedToBlock);
-        this.information.putAll(other.information);
         addPalettes(palettes);
     }
 
@@ -121,25 +117,6 @@ public class CompiledPalette {
                         }
                     }
                 }
-            }
-        }
-
-        for (Palette p : palettes) {
-            for (Map.Entry<IBlockState, IBlockState> entry : p.getDamaged().entrySet()) {
-                IBlockState c = entry.getKey();
-                damagedToBlock.put((char) Block.BLOCK_STATE_IDS.get(c), (char) Block.BLOCK_STATE_IDS.get(entry.getValue()));
-            }
-            for (Map.Entry<Character, String> entry : p.getMobIds().entrySet()) {
-                Character c = entry.getKey();
-                information.put(c, new Info(entry.getValue(), null, null));
-            }
-            for (Map.Entry<Character, String> entry : p.getLootTables().entrySet()) {
-                Character c = entry.getKey();
-                information.put(c, new Info(null, entry.getValue(), null));
-            }
-            for (Map.Entry<Character, Map<String, Integer>> entry : p.getTorchOrientations().entrySet()) {
-                Character c = entry.getKey();
-                information.put(c, new Info(null, null, entry.getValue()));
             }
         }
     }
@@ -208,10 +185,4 @@ public class CompiledPalette {
             return null;
         }
     }
-
-    public Character canBeDamagedToIronBars(Character b) {
-        return damagedToBlock.get(b);
-    }
-
-    public Info getInfo(Character c) { return information.get(c); }
 }
