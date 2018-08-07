@@ -19,12 +19,9 @@ import org.apache.commons.lang3.StringUtils;
 import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.PrintWriter;
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 import java.util.concurrent.atomic.AtomicInteger;
-import java.util.stream.Stream;
+import java.util.stream.Collectors;
 
 public class EditMode {
 
@@ -46,7 +43,7 @@ public class EditMode {
         int cx = (start.getX() >> 4);
         int cz = (start.getZ() >> 4);
 
-        ArienteChunkGenerator generator = (ArienteChunkGenerator)(((WorldServer)player.getEntityWorld()).getChunkProvider().chunkGenerator);
+        ArienteChunkGenerator generator = (ArienteChunkGenerator) (((WorldServer) player.getEntityWorld()).getChunkProvider().chunkGenerator);
         City city = CityTools.getNearestCity(generator, cx, cz);
         if (city == null) {
             player.sendMessage(new TextComponentString("No city can be found!"));
@@ -70,7 +67,7 @@ public class EditMode {
         BlockPos pos = player.getPosition();
         ChunkCoord coord = ChunkCoord.getChunkCoordFromPos(pos);
         World world = player.getEntityWorld();
-        ArienteChunkGenerator generator = (ArienteChunkGenerator)(((WorldServer) world).getChunkProvider().chunkGenerator);
+        ArienteChunkGenerator generator = (ArienteChunkGenerator) (((WorldServer) world).getChunkProvider().chunkGenerator);
         int cx = coord.getChunkX();
         int cz = coord.getChunkZ();
         int lowesty = CityTools.getLowestHeight(city, generator, cx, cz);
@@ -78,7 +75,7 @@ public class EditMode {
 
         BuildingPart found = null;
         int partY = -1;
-        for (int i = 0 ; i < parts.size() ; i++) {
+        for (int i = 0; i < parts.size(); i++) {
             int count = parts.get(i).getSliceCount();
             if (pos.getY() >= lowesty && pos.getY() < lowesty + count) {
                 found = parts.get(i);
@@ -89,22 +86,22 @@ public class EditMode {
         }
 
         if (found != null) {
-            for (int dy = 0 ; dy < found.getSliceCount() ; dy++) {
-                for (int dx = 0 ; dx < 16 ; dx++) {
-                    for (int dz = 0 ; dz < 16 ; dz++) {
-                        world.setBlockToAir(new BlockPos(cx*16+dx, partY+dy, cz*16+dz));
+            for (int dy = 0; dy < found.getSliceCount(); dy++) {
+                for (int dx = 0; dx < 16; dx++) {
+                    for (int dz = 0; dz < 16; dz++) {
+                        world.setBlockToAir(new BlockPos(cx * 16 + dx, partY + dy, cz * 16 + dz));
                     }
                 }
             }
             String paletteName = city.getPlan().getPalette();
             Palette palette = AssetRegistries.PALETTES.get(paletteName);
             CompiledPalette compiledPalette = new CompiledPalette(palette);
-            for (int dy = 0 ; dy < newPart.getSliceCount() ; dy++) {
-                for (int dx = 0 ; dx < 16 ; dx++) {
-                    for (int dz = 0 ; dz < 16 ; dz++) {
+            for (int dy = 0; dy < newPart.getSliceCount(); dy++) {
+                for (int dx = 0; dx < 16; dx++) {
+                    for (int dz = 0; dz < 16; dz++) {
                         Character c = newPart.getPaletteChar(dx, dy, dz);
                         IBlockState state = compiledPalette.getStraight(c);
-                        world.setBlockState(new BlockPos(cx*16+dx, partY+dy, cz*16+dz), state, 3);
+                        world.setBlockState(new BlockPos(cx * 16 + dx, partY + dy, cz * 16 + dz), state, 3);
                     }
                 }
             }
@@ -121,13 +118,13 @@ public class EditMode {
 
         BlockPos pos = player.getPosition();
         ChunkCoord coord = ChunkCoord.getChunkCoordFromPos(pos);
-        ArienteChunkGenerator generator = (ArienteChunkGenerator)(((WorldServer)player.getEntityWorld()).getChunkProvider().chunkGenerator);
+        ArienteChunkGenerator generator = (ArienteChunkGenerator) (((WorldServer) player.getEntityWorld()).getChunkProvider().chunkGenerator);
         int lowesty = CityTools.getLowestHeight(city, generator, coord.getChunkX(), coord.getChunkZ());
         List<BuildingPart> parts = CityTools.getBuildingParts(city, coord.getChunkX(), coord.getChunkZ());
 
         BuildingPart found = null;
         int partY = -1;
-        for (int i = 0 ; i < parts.size() ; i++) {
+        for (int i = 0; i < parts.size(); i++) {
             int count = parts.get(i).getSliceCount();
             if (pos.getY() >= lowesty && pos.getY() < lowesty + count) {
                 found = parts.get(i);
@@ -153,10 +150,10 @@ public class EditMode {
         cx = city.getCenter().getChunkX();
         cz = city.getCenter().getChunkZ();
 
-        ArienteChunkGenerator generator = (ArienteChunkGenerator)(((WorldServer) world).getChunkProvider().chunkGenerator);
+        ArienteChunkGenerator generator = (ArienteChunkGenerator) (((WorldServer) world).getChunkProvider().chunkGenerator);
 
-        for (int dx = cx - dimX / 2 - 1 ; dx <= cx + dimX / 2 + 1 ; dx++) {
-            for (int dz = cz - dimZ / 2 - 1 ; dz <= cz + dimZ / 2 + 1 ; dz++) {
+        for (int dx = cx - dimX / 2 - 1; dx <= cx + dimX / 2 + 1; dx++) {
+            for (int dz = cz - dimZ / 2 - 1; dz <= cz + dimZ / 2 + 1; dz++) {
                 int y = CityTools.getLowestHeight(city, generator, dx, dz);
                 List<BuildingPart> parts = CityTools.getBuildingParts(city, dx, dz);
                 for (BuildingPart part : parts) {
@@ -171,7 +168,8 @@ public class EditMode {
 
     public static void breakBlock(City city, World world, BuildingPart found, int relX, int relY, int relZ) {
         int cx;
-        int cz;CityPlan plan = city.getPlan();
+        int cz;
+        CityPlan plan = city.getPlan();
         List<String> pattern = plan.getPlan();
         int dimX = pattern.get(0).length();
         int dimZ = pattern.size();
@@ -179,10 +177,10 @@ public class EditMode {
         cx = city.getCenter().getChunkX();
         cz = city.getCenter().getChunkZ();
 
-        ArienteChunkGenerator generator = (ArienteChunkGenerator)(((WorldServer) world).getChunkProvider().chunkGenerator);
+        ArienteChunkGenerator generator = (ArienteChunkGenerator) (((WorldServer) world).getChunkProvider().chunkGenerator);
 
-        for (int dx = cx - dimX / 2 - 1 ; dx <= cx + dimX / 2 + 1 ; dx++) {
-            for (int dz = cz - dimZ / 2 - 1 ; dz <= cz + dimZ / 2 + 1 ; dz++) {
+        for (int dx = cx - dimX / 2 - 1; dx <= cx + dimX / 2 + 1; dx++) {
+            for (int dz = cz - dimZ / 2 - 1; dz <= cz + dimZ / 2 + 1; dz++) {
                 int y = CityTools.getLowestHeight(city, generator, dx, dz);
                 List<BuildingPart> parts = CityTools.getBuildingParts(city, dx, dz);
                 for (BuildingPart part : parts) {
@@ -200,7 +198,7 @@ public class EditMode {
         int cx = (start.getX() >> 4);
         int cz = (start.getZ() >> 4);
 
-        ArienteChunkGenerator generator = (ArienteChunkGenerator)(((WorldServer)player.getEntityWorld()).getChunkProvider().chunkGenerator);
+        ArienteChunkGenerator generator = (ArienteChunkGenerator) (((WorldServer) player.getEntityWorld()).getChunkProvider().chunkGenerator);
         City city = CityTools.getNearestCity(generator, cx, cz);
         if (city == null) {
             player.sendMessage(new TextComponentString("No city can be found!"));
@@ -231,8 +229,8 @@ public class EditMode {
         cz = city.getCenter().getChunkZ();
 
         Map<String, BuildingPart> editedParts = new HashMap<>();
-        for (int dx = cx - dimX / 2 - 1 ; dx <= cx + dimX / 2 + 1 ; dx++) {
-            for (int dz = cz - dimZ / 2 - 1 ; dz <= cz + dimZ / 2 + 1 ; dz++) {
+        for (int dx = cx - dimX / 2 - 1; dx <= cx + dimX / 2 + 1; dx++) {
+            for (int dz = cz - dimZ / 2 - 1; dz <= cz + dimZ / 2 + 1; dz++) {
                 int y = CityTools.getLowestHeight(city, generator, dx, dz);
                 List<BuildingPart> parts = CityTools.getBuildingParts(city, dx, dz);
                 for (BuildingPart part : parts) {
@@ -244,26 +242,28 @@ public class EditMode {
             }
         }
 
-        List<String> partNames = new ArrayList<>();
-        AssetRegistries.PARTS.getIterable().forEach(part -> partNames.add(part.getName()));
-        partNames.sort(String::compareTo);
-
         StringBuilder affectedParts = new StringBuilder();
-        for (String name : partNames) {
-            if (editedParts.containsKey(name)) {
-                affectedParts.append(name);
-                affectedParts.append(' ');
-                array.add(editedParts.get(name).writeToJSon());
-            } else {
-                array.add(AssetRegistries.PARTS.get(name).writeToJSon());
-            }
-        }
-        array.add(palette.writeToJSon());
+        city.getPlan().getPartPalette().values()
+                .stream()
+                .flatMap(Collection::stream)
+                .collect(Collectors.toSet())
+                .stream()
+                .sorted(String::compareTo)
+                .map(name -> {
+                    if (editedParts.containsKey(name)) {
+                        affectedParts.append(name);
+                        affectedParts.append(' ');
+                        return editedParts.get(name).writeToJSon();
+                    } else {
+                        return AssetRegistries.PARTS.get(name).writeToJSon();
+                    }
+                })
+                .forEach(array::add);
 
         player.sendMessage(new TextComponentString("Affected parts " + affectedParts));
 
         Gson gson = new GsonBuilder().setPrettyPrinting().create();
-        try(PrintWriter writer = new PrintWriter(new File(plan.getName() + ".json"))) {
+        try (PrintWriter writer = new PrintWriter(new File(plan.getName() + ".json"))) {
             writer.print(gson.toJson(array));
             writer.flush();
         }
@@ -274,7 +274,7 @@ public class EditMode {
                                            Map<IBlockState, Character> mapping, AtomicInteger idx) throws FileNotFoundException {
         String palettechars = "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789+-+=*^%$#@";
         List<Slice> slices = new ArrayList<>();
-        for (int f = 0 ; f < part.getSliceCount() ; f++) {
+        for (int f = 0; f < part.getSliceCount(); f++) {
             int cx = (start.getX() >> 4) * 16;
             int cy = y + f;
             int cz = (start.getZ() >> 4) * 16;
@@ -285,8 +285,8 @@ public class EditMode {
             slices.add(slice);
             BlockPos.MutableBlockPos pos = new BlockPos.MutableBlockPos(cx, cy, cz);
             boolean allempty = true;
-            for (int x = 0 ; x < 16 ; x++) {
-                for (int z = 0 ; z < 16 ; z++) {
+            for (int x = 0; x < 16; x++) {
+                for (int z = 0; z < 16; z++) {
                     pos.setPos(cx + x, cy, cz + z);
                     IBlockState state = world.getBlockState(pos);
                     Character character = mapping.get(state);
@@ -301,13 +301,13 @@ public class EditMode {
                         palette.addMapping(character, state);
                         mapping.put(state, character);
                     }
-                    slice.sequence[z*16+x] = String.valueOf(character);
+                    slice.sequence[z * 16 + x] = String.valueOf(character);
                 }
             }
         }
 
         String[] sl = new String[part.getSliceCount()];
-        for (int i = 0 ; i < part.getSliceCount() ; i++) {
+        for (int i = 0; i < part.getSliceCount(); i++) {
             sl[i] = StringUtils.join(slices.get(i).sequence);
         }
 

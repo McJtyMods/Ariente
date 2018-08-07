@@ -73,10 +73,10 @@
         "   cccc         ",
         "      c         ",
         "      c         ",
-        "      c         ",
+        "      c       A ",
         "      c         ",
         "      c       ha",
-        "              it"
+        "      z       it"
       ],
       [
         "                ",
@@ -286,9 +286,9 @@
         "aaaaaaaaaaaaaaaa"
       ],
       [
-        "              ha",
+        "      z       ha",
         "      c         ",
-        "      c         ",
+        "    A c         ",
         "      c         ",
         "      c         ",
         "      c         ",
@@ -905,6 +905,10 @@
     "name": "city1_1",
     "palette": [
       {
+        "char": "A",
+        "block": "ariente:guard_dummy@2"
+      },
+      {
         "char": " ",
         "block": "minecraft:air"
       },
@@ -1007,6 +1011,10 @@
       {
         "char": "y",
         "block": "ariente:posirite_tank"
+      },
+      {
+        "char": "z",
+        "block": "ariente:door_marker@2"
       }
     ]
   }

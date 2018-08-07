@@ -2,6 +2,7 @@ package mcjty.ariente.blocks.utility;
 
 import mcjty.ariente.Ariente;
 import mcjty.ariente.blocks.ModBlocks;
+import net.minecraft.client.Minecraft;
 import net.minecraft.client.renderer.BufferBuilder;
 import net.minecraft.client.renderer.GlStateManager;
 import net.minecraft.client.renderer.RenderHelper;
@@ -39,16 +40,26 @@ public class DoorMarkerRenderer extends TileEntitySpecialRenderer<DoorMarkerTile
 //        RenderHelper.enableStandardItemLighting();
         GlStateManager.disableBlend();
         GlStateManager.enableDepth();
-        // @todo figure out why entities cause this to flicker
+        GlStateManager.enableTexture2D();
 
-        ResourceLocation beamIcon = halo;
-        bindTexture(beamIcon);
+//        GlStateManager.disableLighting();
+//        Minecraft.getMinecraft().entityRenderer.disableLightmap();
+        GlStateManager.enableLighting();
+//        GlStateManager.enableRescaleNormal();
+        Minecraft.getMinecraft().entityRenderer.enableLightmap();
+//        int light = Minecraft.getMinecraft().world.getCombinedLight(new BlockPos(MathHelper.floor(te.getPos().getX()), MathHelper.floor(te.getPos().getY()), MathHelper.floor(te.getPos().getZ())), 0);
+//        OpenGlHelper.setLightmapTextureCoords(OpenGlHelper.lightmapTexUnit, (float)(light & 0xFFFF), (float)((light >> 16) & 0xFFFF));
+
+//        GlStateManager.enableLighting();
+        // @todo figure out why entities cause this to flicker if the TE is rendered in pass 0 instead of pass 1
+
+        bindTexture(halo);
 
         int openphase = getOpenphase(te);
 
         int iconIndex = te.getIconIndex();
-        float u = (float) (4 + (iconIndex % 4));
-        float v = (float) (12 + (iconIndex / 4));
+        float u = (4 + (iconIndex % 4));
+        float v = (12 + (iconIndex / 4));
 
         u = (u*16) / 256.0f;
         v = (v*16) / 256.0f;
@@ -92,9 +103,7 @@ public class DoorMarkerRenderer extends TileEntitySpecialRenderer<DoorMarkerTile
                 }
             }
 
-
             tessellator.draw();
-
         }
 
         GlStateManager.popMatrix();
