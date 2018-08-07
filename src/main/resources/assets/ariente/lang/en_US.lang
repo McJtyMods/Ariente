@@ -10,6 +10,8 @@ item.ariente.dust_posirite.name=Posirite Dust
 tile.ariente.pattern.dots.name=Dots Pattern
 tile.ariente.pattern.lines.name=Lines Pattern
 
+tile.ariente.guard_dummy.name=Guard Dummy
+
 tile.ariente.blacktech.dots.name=Tech Block Dots
 tile.ariente.blacktech.lines.name=Tech Block Lines
 tile.ariente.blacktech.var1.name=Tech Block Variation 1
@@ -94,6 +96,7 @@ tile.ariente.blueleaves.name=Blue Leaves
 
 entity.ariente_drone.name=Drone
 entity.ariente_sentinel_drone.name=Sentinel Drone
+entity.ariente_soldier.name=Soldier
 entity.ariente_hologui.name=Holo GUI
 entity.ariente_laser.name=Laser
 

@@ -35,6 +35,8 @@ public class ModBlocks {
     public static MarbleSlabBlock marbleSlabBlock;
     public static DoubleMarbleSlabBlock doubleMarbleSlabBlock;
 
+    public static BaseBlock guardDummy;
+
     public static BaseBlock lapisore;
     public static BaseBlock glowstoneore;
     public static BaseBlock lithiumore;
@@ -89,6 +91,10 @@ public class ModBlocks {
                 .creativeTabs(Ariente.creativeTab)
                 .lightValue(15)
                 .flags(BlockFlags.NON_OPAQUE)
+                .build();
+
+        guardDummy = new BaseBlockBuilder<>(Ariente.instance, "guard_dummy")
+                .rotationType(BaseBlock.RotationType.HORIZROTATION)
                 .build();
 
         negariteGeneratorBlock = builderFactory.<NegariteGeneratorTile> builder("negarite_generator")
@@ -315,6 +321,7 @@ public class ModBlocks {
         ClientRegistry.bindTileEntitySpecialRenderer(PosiriteTankTile.class, new PosiriteTankRenderer());
 
         aiCoreBlock.initModel();
+        guardDummy.initModel();
 
         blackmarble_techpat.initModel();
         patternBlock.initModel();

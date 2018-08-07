@@ -562,7 +562,7 @@
         "d          Q   e",
         "d          Q   e",
         "d          e   e",
-        "d          e   e",
+        "d        F e   e",
         "d          e   e",
         "d          e   e",
         "d          e   e",
@@ -1195,7 +1195,7 @@
         "eeeeeeeeeeeeeeee",
         "                ",
         "                ",
-        "                ",
+        "     S    S     ",
         "eeeeeee  eeeeeee",
         "eeeeeeeRReeeeeee"
       ],
@@ -1742,7 +1742,7 @@
       [
         "eeeeeeeRReeeeeee",
         "eeeeeee  eeeeeee",
-        "                ",
+        "     T    T     ",
         "                ",
         "                ",
         "eeeeeeeeeeeeeeee",
@@ -2381,7 +2381,7 @@
         "e   L          d",
         "e   e          d",
         "e   e          d",
-        "e   e          d",
+        "e   e U        d",
         "e   e          d",
         "e   e          d",
         "e   e          d",
@@ -2492,12 +2492,12 @@
         "      d        d",
         "      dddddddddd",
         "      d         ",
-        "      d         ",
+        "      d    U    ",
         "      L         ",
         "      L         ",
         "      L         ",
         "      L         ",
-        "      d         ",
+        "      d    U    ",
         "      d         ",
         "      dddddddddd",
         "               d",
@@ -3000,6 +3000,10 @@
         "block": "ariente:bluelog"
       },
       {
+        "char": "F",
+        "block": "ariente:guard_dummy@2"
+      },
+      {
         "char": "G",
         "block": "ariente:elevator"
       },
@@ -3046,6 +3050,18 @@
       {
         "char": "R",
         "block": "ariente:door_marker"
+      },
+      {
+        "char": "S",
+        "block": "ariente:guard_dummy"
+      },
+      {
+        "char": "T",
+        "block": "ariente:guard_dummy@1"
+      },
+      {
+        "char": "U",
+        "block": "ariente:guard_dummy@3"
       },
       {
         "char": " ",

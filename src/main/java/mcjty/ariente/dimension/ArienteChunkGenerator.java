@@ -150,7 +150,6 @@ public class ArienteChunkGenerator implements IChunkGenerator {
             for (int dx = 0; dx < 16; dx++) {
                 for (int dz = 0; dz < 16; dz++) {
                     double vr = varianceBuffer[dx + dz * 16];
-                    System.out.println("vr = " + vr);
                     int mindist = getMinDist(cityHeights, dx, dz);
                     int dh = mindist * 2 + height + (int) vr;
                     int index = (dx << 12) | (dz << 8) + dh;

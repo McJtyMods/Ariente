@@ -1,5 +1,6 @@
 package mcjty.ariente.ai;
 
+import mcjty.ariente.blocks.ModBlocks;
 import mcjty.ariente.blocks.aicore.AICoreTile;
 import mcjty.ariente.blocks.defense.ForceFieldTile;
 import mcjty.ariente.blocks.generators.NegariteGeneratorTile;
@@ -8,11 +9,16 @@ import mcjty.ariente.cities.City;
 import mcjty.ariente.cities.CityPlan;
 import mcjty.ariente.cities.CityTools;
 import mcjty.ariente.entities.DroneEntity;
+import mcjty.ariente.entities.EntitySoldier;
 import mcjty.ariente.entities.SentinelDroneEntity;
+import mcjty.ariente.entities.SoldierBehaviourType;
 import mcjty.ariente.items.ModItems;
 import mcjty.ariente.power.PowerSenderSupport;
 import mcjty.ariente.varia.ChunkCoord;
+import mcjty.lib.blocks.BaseBlock;
 import mcjty.lib.varia.RedstoneMode;
+import net.minecraft.block.Block;
+import net.minecraft.block.state.IBlockState;
 import net.minecraft.entity.EntityLivingBase;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.entity.player.EntityPlayerMP;
@@ -21,6 +27,7 @@ import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.nbt.NBTTagList;
 import net.minecraft.nbt.NBTUtil;
 import net.minecraft.tileentity.TileEntity;
+import net.minecraft.util.EnumFacing;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.World;
 import net.minecraftforge.common.util.Constants;
@@ -42,6 +49,7 @@ public class CityAI {
     private Set<BlockPos> forceFields = new HashSet<>();
     private Set<BlockPos> negariteGenerators = new HashSet<>();
     private Set<BlockPos> posiriteGenerators = new HashSet<>();
+    private Set<BlockPos> guards = new HashSet<>();
 
     private int[] sentinels = null;
     private int sentinelMovementTicks = 6;
@@ -339,15 +347,20 @@ public class CityAI {
                     for (int z = dz * 16; z < dz * 16 + 16; z++) {
                         for (int y = starty; y < starty + 100; y++) {
                             BlockPos p = new BlockPos(x, y, z);
-                            TileEntity te = world.getTileEntity(p);
-                            if (te instanceof AICoreTile) {
-                                aiCores.add(p);
-                            } else if (te instanceof ForceFieldTile) {
-                                forceFields.add(p);
-                            } else if (te instanceof NegariteGeneratorTile) {
-                                negariteGenerators.add(p);
-                            } else if (te instanceof PosiriteGeneratorTile) {
-                                posiriteGenerators.add(p);
+                            Block block = world.getBlockState(p).getBlock();
+                            if (block == ModBlocks.guardDummy) {
+                                guards.add(p);
+                            } else {
+                                TileEntity te = world.getTileEntity(p);
+                                if (te instanceof AICoreTile) {
+                                    aiCores.add(p);
+                                } else if (te instanceof ForceFieldTile) {
+                                    forceFields.add(p);
+                                } else if (te instanceof NegariteGeneratorTile) {
+                                    negariteGenerators.add(p);
+                                } else if (te instanceof PosiriteGeneratorTile) {
+                                    posiriteGenerators.add(p);
+                                }
                             }
                         }
                     }
@@ -362,6 +375,43 @@ public class CityAI {
         initCityEquipment(world);
         initSentinels(world);
         initDrones(world);
+        initGuards(world);
+    }
+
+    private void createSoldier(World world, BlockPos p, EnumFacing facing, SoldierBehaviourType behaviourType) {
+        EntitySoldier entity = new EntitySoldier(world, center, behaviourType);
+        entity.setPosition(p.getX()+.5, p.getY(), p.getZ()+.5);
+        float yaw = 0;
+        switch (facing) {
+            case NORTH:
+                yaw = 0;
+                break;
+            case SOUTH:
+                yaw = 90;
+                break;
+            case WEST:
+                yaw = 180;
+                break;
+            case EAST:
+                yaw = 270;
+                break;
+            default:
+                break;
+        }
+        entity.setLocationAndAngles(entity.posX, entity.posY, entity.posZ, yaw, 0);
+        world.spawnEntity(entity);
+    }
+
+    private void initGuards(World world) {
+        for (BlockPos pos : guards) {
+            IBlockState state = world.getBlockState(pos);
+            Block block = state.getBlock();
+            if (block == ModBlocks.guardDummy) {
+                EnumFacing facing = state.getValue(BaseBlock.FACING_HORIZ);
+                world.setBlockToAir(pos);
+                createSoldier(world, pos, facing, SoldierBehaviourType.SOLDIER_GUARD);
+            }
+        }
     }
 
     private void initCityEquipment(World world) {

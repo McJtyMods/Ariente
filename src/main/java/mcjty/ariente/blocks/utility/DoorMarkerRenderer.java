@@ -4,6 +4,7 @@ import mcjty.ariente.Ariente;
 import mcjty.ariente.blocks.ModBlocks;
 import net.minecraft.client.renderer.BufferBuilder;
 import net.minecraft.client.renderer.GlStateManager;
+import net.minecraft.client.renderer.RenderHelper;
 import net.minecraft.client.renderer.Tessellator;
 import net.minecraft.client.renderer.tileentity.TileEntitySpecialRenderer;
 import net.minecraft.client.renderer.vertex.DefaultVertexFormats;
@@ -35,8 +36,10 @@ public class DoorMarkerRenderer extends TileEntitySpecialRenderer<DoorMarkerTile
         }
 
 
+        RenderHelper.enableStandardItemLighting();
         GlStateManager.disableBlend();
         GlStateManager.enableDepth();
+        // @todo figure out why entities cause this to flicker
 
         ResourceLocation beamIcon = halo;
         bindTexture(beamIcon);
