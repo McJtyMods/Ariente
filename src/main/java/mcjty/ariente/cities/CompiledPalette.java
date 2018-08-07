@@ -26,31 +26,6 @@ public class CompiledPalette {
         return compiledPaletteMap.get(name);
     }
 
-    public static class Info {
-        private final String mobId;
-        private final String loot;
-        private final Map<String, Integer> torchOrientations;
-
-        public Info(String mobId, String loot, Map<String, Integer> torchOrientations) {
-            this.mobId = mobId;
-            this.loot = loot;
-            this.torchOrientations = torchOrientations;
-        }
-
-        public String getMobId() {
-            return mobId;
-        }
-
-        public String getLoot() {
-            return loot;
-        }
-
-        public Map<String, Integer> getTorchOrientations() {
-            return torchOrientations;
-        }
-    }
-
-
     public CompiledPalette(CompiledPalette other, Palette... palettes) {
         this.palette.putAll(other.palette);
         addPalettes(palettes);
