@@ -16,7 +16,7 @@ public class CommandSwitchPart implements ICommand {
 
     @Override
     public String getName() {
-        return "ar_info";
+        return "ar_switchpart";
     }
 
     @Override
@@ -31,7 +31,7 @@ public class CommandSwitchPart implements ICommand {
 
     @Override
     public void execute(MinecraftServer server, ICommandSender sender, String[] args) throws CommandException {
-        EditMode.switchPart((EntityPlayer) sender, args[1]);
+        EditMode.switchPart((EntityPlayer) sender, args[0]);
     }
 
     @Override

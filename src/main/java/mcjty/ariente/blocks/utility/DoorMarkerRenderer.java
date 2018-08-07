@@ -36,7 +36,7 @@ public class DoorMarkerRenderer extends TileEntitySpecialRenderer<DoorMarkerTile
         }
 
 
-        RenderHelper.enableStandardItemLighting();
+//        RenderHelper.enableStandardItemLighting();
         GlStateManager.disableBlend();
         GlStateManager.enableDepth();
         // @todo figure out why entities cause this to flicker

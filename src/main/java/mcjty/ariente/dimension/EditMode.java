@@ -24,6 +24,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.concurrent.atomic.AtomicInteger;
+import java.util.stream.Stream;
 
 public class EditMode {
 
@@ -229,6 +230,7 @@ public class EditMode {
         cx = city.getCenter().getChunkX();
         cz = city.getCenter().getChunkZ();
 
+        Map<String, BuildingPart> editedParts = new HashMap<>();
         for (int dx = cx - dimX / 2 - 1 ; dx <= cx + dimX / 2 + 1 ; dx++) {
             for (int dz = cz - dimZ / 2 - 1 ; dz <= cz + dimZ / 2 + 1 ; dz++) {
                 int y = CityTools.getLowestHeight(city, generator, dx, dz);
@@ -236,13 +238,29 @@ public class EditMode {
                 for (BuildingPart part : parts) {
                     BuildingPart newpart = exportPart(part, player.world, new BlockPos(dx * 16 + 8, start.getY() - 1, dz * 16 + 8),
                             y, palette, mapping, idx);
-                    array.add(newpart.writeToJSon());
+                    editedParts.put(newpart.getName(), newpart);
                     y += part.getSliceCount();
                 }
             }
         }
 
+        List<String> partNames = new ArrayList<>();
+        AssetRegistries.PARTS.getIterable().forEach(part -> partNames.add(part.getName()));
+        partNames.sort(String::compareTo);
+
+        StringBuilder affectedParts = new StringBuilder();
+        for (String name : partNames) {
+            if (editedParts.containsKey(name)) {
+                affectedParts.append(name);
+                affectedParts.append(' ');
+                array.add(editedParts.get(name).writeToJSon());
+            } else {
+                array.add(AssetRegistries.PARTS.get(name).writeToJSon());
+            }
+        }
         array.add(palette.writeToJSon());
+
+        player.sendMessage(new TextComponentString("Affected parts " + affectedParts));
 
         Gson gson = new GsonBuilder().setPrettyPrinting().create();
         try(PrintWriter writer = new PrintWriter(new File(plan.getName() + ".json"))) {
