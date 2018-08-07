@@ -22,12 +22,14 @@ import net.minecraft.block.state.IBlockState;
 import net.minecraft.entity.EntityLivingBase;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.entity.player.EntityPlayerMP;
+import net.minecraft.init.Items;
 import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.nbt.NBTTagList;
 import net.minecraft.nbt.NBTUtil;
 import net.minecraft.tileentity.TileEntity;
 import net.minecraft.util.EnumFacing;
+import net.minecraft.util.EnumHand;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.World;
 import net.minecraftforge.common.util.Constants;
@@ -378,7 +380,7 @@ public class CityAI {
         initGuards(world);
     }
 
-    private void createSoldier(World world, BlockPos p, EnumFacing facing, SoldierBehaviourType behaviourType) {
+    private EntitySoldier createSoldier(World world, BlockPos p, EnumFacing facing, SoldierBehaviourType behaviourType) {
         EntitySoldier entity = new EntitySoldier(world, center, behaviourType);
         entity.setPosition(p.getX()+.5, p.getY(), p.getZ()+.5);
         float yaw = 0;
@@ -400,13 +402,15 @@ public class CityAI {
         }
         entity.setLocationAndAngles(entity.posX, entity.posY, entity.posZ, yaw, 0);
         world.spawnEntity(entity);
+        return entity;
     }
 
     private void initGuards(World world) {
         for (Map.Entry<BlockPos, EnumFacing> entry : guards.entrySet()) {
             BlockPos pos = entry.getKey();
             EnumFacing facing = entry.getValue();
-            createSoldier(world, pos, facing, SoldierBehaviourType.SOLDIER_GUARD);
+            EntitySoldier soldier = createSoldier(world, pos, facing, SoldierBehaviourType.SOLDIER_GUARD);
+            soldier.setHeldItem(EnumHand.MAIN_HAND, new ItemStack(Items.DIAMOND_SWORD));
         }
     }
 
