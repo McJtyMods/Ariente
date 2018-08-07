@@ -7,6 +7,8 @@ item.ariente.ingot_silver.name=Silver Ingot
 item.ariente.dust_negarite.name=Negarite Dust
 item.ariente.dust_posirite.name=Posirite Dust
 
+item.ariente.energy_sabre.name=Energy Sabre
+
 tile.ariente.pattern.dots.name=Dots Pattern
 tile.ariente.pattern.lines.name=Lines Pattern
 

@@ -14,6 +14,9 @@ public class ModItems {
     public static GenericItem negariteDust;
     public static GenericItem posiriteDust;
 
+    public static EnergySabreItem energySabre;
+
+
     public static void init() {
         platinumIngot = new GenericItem("ingot_platinum");
         lithiumIngot = new GenericItem("ingot_lithium");
@@ -22,6 +25,8 @@ public class ModItems {
 
         negariteDust = new GenericItem("dust_negarite");
         posiriteDust = new GenericItem("dust_posirite");
+
+        energySabre = new EnergySabreItem();
     }
 
     public static void initOreDict() {
@@ -39,6 +44,8 @@ public class ModItems {
         silverIngot.initModel();
         negariteDust.initModel();
         posiriteDust.initModel();
+
+        energySabre.initModel();
     }
 
 }

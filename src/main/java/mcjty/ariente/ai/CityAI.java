@@ -22,7 +22,6 @@ import net.minecraft.block.state.IBlockState;
 import net.minecraft.entity.EntityLivingBase;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.entity.player.EntityPlayerMP;
-import net.minecraft.init.Items;
 import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.nbt.NBTTagList;
@@ -410,7 +409,7 @@ public class CityAI {
             BlockPos pos = entry.getKey();
             EnumFacing facing = entry.getValue();
             EntitySoldier soldier = createSoldier(world, pos, facing, SoldierBehaviourType.SOLDIER_GUARD);
-            soldier.setHeldItem(EnumHand.MAIN_HAND, new ItemStack(Items.DIAMOND_SWORD));
+            soldier.setHeldItem(EnumHand.MAIN_HAND, new ItemStack(ModItems.energySabre));
         }
     }
 
