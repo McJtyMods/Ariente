@@ -1,6 +1,5 @@
 package mcjty.ariente.entities;
 
-import com.google.common.base.Optional;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.EntityLivingBase;
 import net.minecraft.entity.projectile.ProjectileHelper;
@@ -148,7 +147,13 @@ public class LaserEntity extends Entity {
     }
 
     protected void onImpact(RayTraceResult result) {
-
+        if (!this.world.isRemote) {
+            if (result.entityHit != null) {
+                result.entityHit.attackEntityFrom(DamageSource.causeIndirectMagicDamage(this, this.shootingEntity), 10.0F);
+                this.applyEnchantments(this.shootingEntity, result.entityHit);
+            }
+            this.setDead();
+        }
     }
 
     public static void registerFixesFireball(DataFixer fixer, String name) {

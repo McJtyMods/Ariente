@@ -287,11 +287,22 @@ public class CityAI {
             CityPlan plan = city.getPlan();
             List<String> pattern = plan.getPlan();
 
-            BlockPos pos = new ArrayList<>(soldierPositions.keySet()).get(random.nextInt(soldierPositions.size()));
-            EnumFacing facing = soldierPositions.get(pos);
+            BlockPos pos;
+            // Avoid too close to player if possible
+            int avoidNearby = 3;
+            do {
+                pos = new ArrayList<>(soldierPositions.keySet()).get(random.nextInt(soldierPositions.size()));
+                EntityPlayer closestPlayer = world.getClosestPlayer(pos.getX(), pos.getY(), pos.getZ(), 10, false);
+                if (closestPlayer == null) {
+                    avoidNearby = 0;
+                } else {
+                    avoidNearby--;
+                }
+            } while (avoidNearby > 0);
 
             System.out.println("CityAI.spawnSoldier at " + pos);
 
+            EnumFacing facing = soldierPositions.get(pos);
             SoldierEntity entity = createSoldier(world, pos, facing, SoldierBehaviourType.SOLDIER_FIGHTER);
             entity.setHeldItem(EnumHand.MAIN_HAND, new ItemStack(ModItems.energySabre));    // @todo need a lasergun
             soldiers[foundId] = entity.getEntityId();

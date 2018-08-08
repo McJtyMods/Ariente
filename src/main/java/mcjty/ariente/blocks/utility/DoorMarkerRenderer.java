@@ -45,6 +45,7 @@ public class DoorMarkerRenderer extends TileEntitySpecialRenderer<DoorMarkerTile
 //        RenderHelper.enableStandardItemLighting();
         GlStateManager.disableBlend();
         GlStateManager.enableDepth();
+        GlStateManager.depthMask(true);
         GlStateManager.enableTexture2D();
 
 //        GlStateManager.disableLighting();
