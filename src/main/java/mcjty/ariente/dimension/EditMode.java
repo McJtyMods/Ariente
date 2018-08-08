@@ -260,6 +260,8 @@ public class EditMode {
                 })
                 .forEach(array::add);
 
+        array.add(palette.writeToJSon());
+
         player.sendMessage(new TextComponentString("Affected parts " + affectedParts));
 
         Gson gson = new GsonBuilder().setPrettyPrinting().create();
