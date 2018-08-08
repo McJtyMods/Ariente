@@ -3,8 +3,15 @@
     "type": "plan",
     "name": "city1_1",
     "palette": "city1_1",
-    "minlayer2": 1,
-    "maxlayer2": 2,
+    "layers": "1-2",
+    "sentinels": "1-2",
+    "dronesMinimum1": 1,
+    "dronesMinimum2": 1,
+    "dronesMinimumN": 2,
+    "dronesWaveMax1": 2,
+    "dronesWaveMax2": 3,
+    "dronesWaveMaxN": 5,
+    "forcefieldScale": 10,
     "partpalette": [
       {
         "char": "1",

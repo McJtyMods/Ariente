@@ -4,6 +4,7 @@ import com.google.gson.JsonArray;
 import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
 import com.google.gson.JsonPrimitive;
+import org.apache.commons.lang3.StringUtils;
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -21,6 +22,18 @@ public class CityPlan implements IAsset {
     private List<String> top = new ArrayList<>();
     private int minLayer2 = 1;
     private int maxLayer2 = 2;
+
+    private int minSentinels = 0;
+    private int maxSentinels = 0;
+
+    private int dronesMinimum1 = 1;
+    private int dronesMinimum2 = 1;
+    private int dronesMinimumN = 2;
+    private int dronesWaveMax1 = 2;
+    private int dronesWaveMax2 = 3;
+    private int dronesWaveMaxN = 5;
+
+    private int forcefieldScale = 10;
 
     public CityPlan(JsonObject object) {
         readFromJSon(object);
@@ -67,16 +80,58 @@ public class CityPlan implements IAsset {
         return palette;
     }
 
+    public int getForcefieldScale() {
+        return forcefieldScale;
+    }
+
+    public int getMinSentinels() {
+        return minSentinels;
+    }
+
+    public int getMaxSentinels() {
+        return maxSentinels;
+    }
+
+    public int getDronesMinimum1() {
+        return dronesMinimum1;
+    }
+
+    public int getDronesMinimum2() {
+        return dronesMinimum2;
+    }
+
+    public int getDronesMinimumN() {
+        return dronesMinimumN;
+    }
+
+    public int getDronesWaveMax1() {
+        return dronesWaveMax1;
+    }
+
+    public int getDronesWaveMax2() {
+        return dronesWaveMax2;
+    }
+
+    public int getDronesWaveMaxN() {
+        return dronesWaveMaxN;
+    }
+
     @Override
     public void readFromJSon(JsonObject object) {
         name = object.get("name").getAsString();
         palette = object.get("palette").getAsString();
-        if (object.has("minlayer2")) {
-            minLayer2 = object.get("minlayer2").getAsInt();
-        }
-        if (object.has("maxlayer2")) {
-            maxLayer2 = object.get("maxlayer2").getAsInt();
-        }
+        minLayer2 = getMin(object, "layers", 1);
+        maxLayer2 = getMax(object, "layers", 1);
+        minSentinels = getMin(object, "sentinels", 0);
+        maxSentinels = getMax(object, "sentinels", 0);
+        dronesMinimum1 = object.get("dronesMinimum1").getAsInt();
+        dronesMinimum2 = object.get("dronesMinimum2").getAsInt();
+        dronesMinimumN = object.get("dronesMinimumN").getAsInt();
+        dronesWaveMax1 = object.get("dronesWaveMax1").getAsInt();
+        dronesWaveMax2 = object.get("dronesWaveMax2").getAsInt();
+        dronesWaveMaxN = object.get("dronesWaveMaxN").getAsInt();
+        forcefieldScale = object.get("forcefieldScale").getAsInt();
+
         JsonArray paletteArray = object.get("partpalette").getAsJsonArray();
         parsePaletteArray(paletteArray);
 
@@ -84,6 +139,28 @@ public class CityPlan implements IAsset {
         parsePlan(object, "cellar", cellar);
         parsePlan(object, "layer2", layer2);
         parsePlan(object, "top", top);
+    }
+
+    private int getMin(JsonObject object, String tag, int def) {
+        if (object.has(tag)) {
+            String value = object.get(tag).getAsString();
+            String[] split = StringUtils.split(value, '-');
+            return Integer.parseInt(split[0]);
+        }
+        return def;
+    }
+
+    private int getMax(JsonObject object, String tag, int def) {
+        if (object.has(tag)) {
+            String value = object.get(tag).getAsString();
+            String[] split = StringUtils.split(value, '-');
+            if (split.length > 1) {
+                return Integer.parseInt(split[1]);
+            } else {
+                return Integer.parseInt(split[0]);
+            }
+        }
+        return def;
     }
 
     private void parsePlan(JsonObject object, String name, List<String> plan) {
@@ -122,8 +199,15 @@ public class CityPlan implements IAsset {
         object.add("type", new JsonPrimitive("plan"));
         object.add("name", new JsonPrimitive(name));
         object.add("palette", new JsonPrimitive(palette));
-        object.add("minlayer2", new JsonPrimitive(minLayer2));
-        object.add("maxlayer2", new JsonPrimitive(maxLayer2));
+        object.add("layers", new JsonPrimitive(minLayer2 + "-" + maxLayer2));
+        object.add("sentinels", new JsonPrimitive(minSentinels + "-" + maxSentinels));
+        object.add("dronesMinimum1", new JsonPrimitive(dronesMinimum1));
+        object.add("dronesMinimum2", new JsonPrimitive(dronesMinimum2));
+        object.add("dronesMinimumN", new JsonPrimitive(dronesMinimumN));
+        object.add("dronesWaveMax1", new JsonPrimitive(dronesWaveMax1));
+        object.add("dronesWaveMax2", new JsonPrimitive(dronesWaveMax2));
+        object.add("dronesWaveMaxN", new JsonPrimitive(dronesWaveMaxN));
+        object.add("forcefieldScale", new JsonPrimitive(forcefieldScale));
 
         JsonArray array = new JsonArray();
         for (Map.Entry<Character, List<String>> entry : partPalette.entrySet()) {

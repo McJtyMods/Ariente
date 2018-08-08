@@ -3,6 +3,7 @@ package mcjty.ariente.cities;
 import mcjty.ariente.dimension.ArienteChunkGenerator;
 import mcjty.ariente.dimension.ChunkHeightmap;
 import mcjty.ariente.varia.ChunkCoord;
+import net.minecraftforge.common.DimensionManager;
 
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
@@ -33,7 +34,8 @@ public class CityTools {
 
         boolean candidate = ((chunkX & 0xf) == 8) && ((chunkZ & 0xf) == 8);
         if (candidate) {
-            Random random = new Random(chunkX * 776531419L + chunkZ * 198491317L);
+            long seed = DimensionManager.getWorld(0).getSeed();
+            Random random = new Random(seed + chunkX * 776531419L + chunkZ * 198491317L);
             random.nextFloat();
             random.nextFloat();
             return random.nextFloat() < .5f;
@@ -70,7 +72,8 @@ public class CityTools {
     private static CityPlan getRandomCityPlan(ChunkCoord c) {
         int chunkX = c.getChunkX();
         int chunkZ = c.getChunkZ();
-        Random random = new Random(chunkX * 198491317L + chunkZ * 776531419L);
+        long seed = DimensionManager.getWorld(0).getSeed();
+        Random random = new Random(seed + chunkX * 198491317L + chunkZ * 776531419L);
         random.nextFloat();
         random.nextFloat();
         return AssetRegistries.CITYPLANS.get(random.nextInt(AssetRegistries.CITYPLANS.getCount()));
@@ -128,7 +131,8 @@ public class CityTools {
             parts.add(part);
         }
 
-        Random random = new Random(x * 6668353L + z * 666672943L);
+        long seed = DimensionManager.getWorld(0).getSeed();
+        Random random = new Random(seed + x * 6668353L + z * 666672943L);
         random.nextFloat();
         random.nextFloat();
         CityPlan plan = city.getPlan();
@@ -203,7 +207,8 @@ public class CityTools {
             if (partChar != ' ') {
                 List<String> parts = partPalette.get(partChar);
 
-                Random random = new Random(x * 23567813L + z * 923568029L + randomSeed);
+                long seed = DimensionManager.getWorld(0).getSeed();
+                Random random = new Random(x * 23567813L + z * 923568029L + randomSeed + seed);
                 random.nextFloat();
                 random.nextFloat();
 

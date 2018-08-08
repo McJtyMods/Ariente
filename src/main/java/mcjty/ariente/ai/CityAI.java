@@ -31,6 +31,7 @@ import net.minecraft.util.EnumFacing;
 import net.minecraft.util.EnumHand;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.World;
+import net.minecraftforge.common.DimensionManager;
 import net.minecraftforge.common.util.Constants;
 
 import javax.annotation.Nullable;
@@ -45,6 +46,8 @@ public class CityAI {
     private final ChunkCoord center;
     private boolean initialized = false;
 
+    private CityAISettings settings = null;
+
     private boolean foundEquipment = false;
     private Set<BlockPos> aiCores = new HashSet<>();
     private Set<BlockPos> forceFields = new HashSet<>();
@@ -56,7 +59,7 @@ public class CityAI {
     private int sentinelMovementTicks = 6;
     private int sentinelAngleOffset = 0;
 
-    private int[] drones = new int[30];
+    private int[] drones = new int[40];
     private int droneTicker = 0;
 
     private int onAlert = 0;
@@ -188,17 +191,20 @@ public class CityAI {
             }
             droneTicker = 10;
 
+            City city = CityTools.getCity(center);
+            CityPlan plan = city.getPlan();
+
             int desiredMinimumCount = 0;
             int newWaveMaximum = 0;
             if (watchingPlayers.size() > 2) {
-                desiredMinimumCount = 6;
-                newWaveMaximum = 12;
+                desiredMinimumCount = plan.getDronesMinimumN();
+                newWaveMaximum = plan.getDronesWaveMaxN();
             } else if (watchingPlayers.size() > 1) {
-                desiredMinimumCount = 3;
-                newWaveMaximum = 6;
+                desiredMinimumCount = plan.getDronesMinimum2();
+                newWaveMaximum = plan.getDronesWaveMax2();
             } else {
-                desiredMinimumCount = 1;
-                newWaveMaximum = 3;
+                desiredMinimumCount = plan.getDronesMinimum1();
+                newWaveMaximum = plan.getDronesWaveMax1();
             }
 
             int cnt = countEntities(world, drones);
@@ -321,7 +327,7 @@ public class CityAI {
     }
 
     public void playerSpotted(EntityPlayer player) {
-        onAlert = 100; //600;      // 5 minutes alert @todo configurable
+        onAlert = 600; // 5 minutes alert @todo configurable
         System.out.println("CityAI.playerSpotted: " + player.getName());
         watchingPlayers.put(player.getUniqueID(), player.getPosition());    // Register the last known position
     }
@@ -371,7 +377,26 @@ public class CityAI {
         foundEquipment = true;
     }
 
+    private static int getMinMax(Random rnd, int min, int max) {
+        if (min >= max) {
+            return min;
+        }
+        return min + rnd.nextInt(max-min);
+    }
+
+    private void createSettings(World world) {
+        long seed = DimensionManager.getWorld(0).getSeed();
+        Random rnd = new Random(seed + center.getChunkX() * 567000003533L + center.getChunkZ() * 234516783139L);
+        rnd.nextFloat();
+        rnd.nextFloat();
+        City city = CityTools.getCity(center);
+        CityPlan plan = city.getPlan();
+        settings = new CityAISettings();
+        settings.setNumSentinels(getMinMax(rnd, plan.getMinSentinels(), plan.getMaxSentinels()));
+    }
+
     private void initialize(World world) {
+        createSettings(world);
         findEquipment(world);
         initCityEquipment(world);
         initSentinels(world);
@@ -414,12 +439,15 @@ public class CityAI {
     }
 
     private void initCityEquipment(World world) {
+        City city = CityTools.getCity(center);
+        CityPlan plan = city.getPlan();
+
         for (BlockPos p : forceFields) {
             TileEntity te = world.getTileEntity(p);
             if (te instanceof ForceFieldTile) {
                 ForceFieldTile forcefield = (ForceFieldTile) te;
                 forcefield.setRSMode(RedstoneMode.REDSTONE_IGNORED);
-                forcefield.setScale(38);    // @todo, base on city size
+                forcefield.setScale(plan.getForcefieldScale());
             }
         }
         for (BlockPos p : negariteGenerators) {
@@ -445,7 +473,7 @@ public class CityAI {
     }
 
     private void initSentinels(World world) {
-        int numSentinels = 3;
+        int numSentinels = settings.getNumSentinels();
         sentinels = new int[numSentinels];
         for (int i = 0 ; i < numSentinels ; i++) {
             createSentinel(world, i);
@@ -470,6 +498,11 @@ public class CityAI {
 
     public void readFromNBT(NBTTagCompound nbt) {
         initialized = nbt.getBoolean("initialized");
+        settings = null;
+        if (nbt.hasKey("settings")) {
+            settings = new CityAISettings();
+            settings.readFromNBT(nbt.getCompoundTag("settings"));
+        }
         if (nbt.hasKey("sentinels")) {
             sentinels = nbt.getIntArray("sentinels");
         } else {
@@ -498,6 +531,12 @@ public class CityAI {
 
     public void writeToNBT(NBTTagCompound compound) {
         compound.setBoolean("initialized", initialized);
+        if (settings != null) {
+            NBTTagCompound tc = new NBTTagCompound();
+            settings.writeToNBT(tc);
+            compound.setTag("settings", tc);
+        }
+
         if (sentinels != null) {
             compound.setIntArray("sentinels", sentinels);
         }
