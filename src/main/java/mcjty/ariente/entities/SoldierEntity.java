@@ -24,9 +24,9 @@ import net.minecraftforge.fml.relauncher.SideOnly;
 
 import javax.annotation.Nullable;
 
-public class EntitySoldier extends EntityMob implements IArmRaisable {
+public class SoldierEntity extends EntityMob implements IArmRaisable {
 
-    private static final DataParameter<Boolean> ARMS_RAISED = EntityDataManager.createKey(EntitySoldier.class, DataSerializers.BOOLEAN);
+    private static final DataParameter<Boolean> ARMS_RAISED = EntityDataManager.createKey(SoldierEntity.class, DataSerializers.BOOLEAN);
     public static final ResourceLocation LOOT = new ResourceLocation(Ariente.MODID, "entities/soldier");
 
     // If this entity is controlled by a city then this will be set
@@ -34,15 +34,19 @@ public class EntitySoldier extends EntityMob implements IArmRaisable {
     private SoldierBehaviourType behaviourType = SoldierBehaviourType.SOLDIER_FIGHTER;
 
 
-    public EntitySoldier(World worldIn) {
+    public SoldierEntity(World worldIn) {
         super(worldIn);
         setSize(0.6F, 1.95F);
     }
 
-    public EntitySoldier(World world, ChunkCoord cityCenter, SoldierBehaviourType behaviourType) {
+    public SoldierEntity(World world, ChunkCoord cityCenter, SoldierBehaviourType behaviourType) {
         this(world);
         this.cityCenter = cityCenter;
         this.behaviourType = behaviourType;
+    }
+
+    public ChunkCoord getCityCenter() {
+        return cityCenter;
     }
 
     @Override
@@ -62,7 +66,7 @@ public class EntitySoldier extends EntityMob implements IArmRaisable {
     protected void applyEntityAttributes() {
         super.applyEntityAttributes();
         this.getEntityAttribute(SharedMonsterAttributes.FOLLOW_RANGE).setBaseValue(35.0D);
-        this.getEntityAttribute(SharedMonsterAttributes.MOVEMENT_SPEED).setBaseValue(0.5D);
+        this.getEntityAttribute(SharedMonsterAttributes.MOVEMENT_SPEED).setBaseValue(0.32D);
         this.getEntityAttribute(SharedMonsterAttributes.ATTACK_DAMAGE).setBaseValue(4.0D);
         this.getEntityAttribute(SharedMonsterAttributes.ARMOR).setBaseValue(4.0D);
     }

@@ -1,14 +1,16 @@
 package mcjty.ariente.entities;
 
-import net.minecraft.entity.EntityCreature;
+import mcjty.ariente.ai.CityAI;
+import mcjty.ariente.ai.CityAISystem;
 import net.minecraft.entity.ai.EntityAIBase;
 import net.minecraft.entity.ai.RandomPositionGenerator;
+import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.Vec3d;
 
 import javax.annotation.Nullable;
 
 public class EntityAISoldierWander extends EntityAIBase {
-    protected final EntitySoldier entity;
+    protected final SoldierEntity entity;
     protected double x;
     protected double y;
     protected double z;
@@ -16,17 +18,18 @@ public class EntityAISoldierWander extends EntityAIBase {
     protected int executionChance;
     protected boolean mustUpdate;
 
-    public EntityAISoldierWander(EntitySoldier creatureIn, double speedIn) {
+    public EntityAISoldierWander(SoldierEntity creatureIn, double speedIn) {
         this(creatureIn, speedIn, 120);
     }
 
-    public EntityAISoldierWander(EntitySoldier creatureIn, double speedIn, int chance) {
+    public EntityAISoldierWander(SoldierEntity creatureIn, double speedIn, int chance) {
         this.entity = creatureIn;
         this.speed = speedIn;
         this.executionChance = chance;
         this.setMutexBits(1);
     }
 
+    @Override
     public boolean shouldExecute() {
         if (!this.mustUpdate) {
             if (this.entity.getIdleTime() >= 100) {
@@ -55,14 +58,26 @@ public class EntityAISoldierWander extends EntityAIBase {
     protected Vec3d getPosition() {
         if (entity.getBehaviourType() == SoldierBehaviourType.SOLDIER_GUARD) {
             return null;
+        } else if (entity.getCityCenter() == null) {
+            return RandomPositionGenerator.findRandomTarget(this.entity, 10, 7);
+        } else {
+            CityAISystem aiSystem = CityAISystem.getCityAISystem(entity.world);
+            CityAI cityAI = aiSystem.getCityAI(entity.getCityCenter());
+            BlockPos pos = cityAI.requestNewSoldierPosition(entity.world, entity.getAttackTarget());
+            if (pos != null) {
+                return new Vec3d(pos);
+            } else {
+                return RandomPositionGenerator.findRandomTarget(this.entity, 10, 7);
+            }
         }
-        return RandomPositionGenerator.findRandomTarget(this.entity, 10, 7);
     }
 
+    @Override
     public boolean shouldContinueExecuting() {
         return !this.entity.getNavigator().noPath();
     }
 
+    @Override
     public void startExecuting() {
         this.entity.getNavigator().tryMoveToXYZ(this.x, this.y, this.z, this.speed);
     }

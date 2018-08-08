@@ -13,6 +13,7 @@ tile.ariente.pattern.dots.name=Dots Pattern
 tile.ariente.pattern.lines.name=Lines Pattern
 
 tile.ariente.guard_dummy.name=Guard Dummy
+tile.ariente.soldier_dummy.name=Soldier Dummy
 
 tile.ariente.blacktech.dots.name=Tech Block Dots
 tile.ariente.blacktech.lines.name=Tech Block Lines

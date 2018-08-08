@@ -33,6 +33,13 @@ public class CityPlan implements IAsset {
     private int dronesWaveMax2 = 3;
     private int dronesWaveMaxN = 5;
 
+    private int soldiersMinimum1 = 1;
+    private int soldiersMinimum2 = 1;
+    private int soldiersMinimumN = 2;
+    private int soldiersWaveMax1 = 2;
+    private int soldiersWaveMax2 = 3;
+    private int soldiersWaveMaxN = 5;
+
     private int forcefieldScale = 10;
 
     public CityPlan(JsonObject object) {
@@ -116,6 +123,30 @@ public class CityPlan implements IAsset {
         return dronesWaveMaxN;
     }
 
+    public int getSoldiersMinimum1() {
+        return soldiersMinimum1;
+    }
+
+    public int getSoldiersMinimum2() {
+        return soldiersMinimum2;
+    }
+
+    public int getSoldiersMinimumN() {
+        return soldiersMinimumN;
+    }
+
+    public int getSoldiersWaveMax1() {
+        return soldiersWaveMax1;
+    }
+
+    public int getSoldiersWaveMax2() {
+        return soldiersWaveMax2;
+    }
+
+    public int getSoldiersWaveMaxN() {
+        return soldiersWaveMaxN;
+    }
+
     @Override
     public void readFromJSon(JsonObject object) {
         name = object.get("name").getAsString();
@@ -130,6 +161,12 @@ public class CityPlan implements IAsset {
         dronesWaveMax1 = object.get("dronesWaveMax1").getAsInt();
         dronesWaveMax2 = object.get("dronesWaveMax2").getAsInt();
         dronesWaveMaxN = object.get("dronesWaveMaxN").getAsInt();
+        soldiersMinimum1 = object.get("soldiersMinimum1").getAsInt();
+        soldiersMinimum2 = object.get("soldiersMinimum2").getAsInt();
+        soldiersMinimumN = object.get("soldiersMinimumN").getAsInt();
+        soldiersWaveMax1 = object.get("soldiersWaveMax1").getAsInt();
+        soldiersWaveMax2 = object.get("soldiersWaveMax2").getAsInt();
+        soldiersWaveMaxN = object.get("soldiersWaveMaxN").getAsInt();
         forcefieldScale = object.get("forcefieldScale").getAsInt();
 
         JsonArray paletteArray = object.get("partpalette").getAsJsonArray();
@@ -207,6 +244,12 @@ public class CityPlan implements IAsset {
         object.add("dronesWaveMax1", new JsonPrimitive(dronesWaveMax1));
         object.add("dronesWaveMax2", new JsonPrimitive(dronesWaveMax2));
         object.add("dronesWaveMaxN", new JsonPrimitive(dronesWaveMaxN));
+        object.add("soldiersMinimum1", new JsonPrimitive(soldiersMinimum1));
+        object.add("soldiersMinimum2", new JsonPrimitive(soldiersMinimum2));
+        object.add("soldiersMinimumN", new JsonPrimitive(soldiersMinimumN));
+        object.add("soldiersWaveMax1", new JsonPrimitive(soldiersWaveMax1));
+        object.add("soldiersWaveMax2", new JsonPrimitive(soldiersWaveMax2));
+        object.add("soldiersWaveMaxN", new JsonPrimitive(soldiersWaveMaxN));
         object.add("forcefieldScale", new JsonPrimitive(forcefieldScale));
 
         JsonArray array = new JsonArray();

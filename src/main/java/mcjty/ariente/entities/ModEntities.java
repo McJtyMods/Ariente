@@ -20,7 +20,7 @@ public class ModEntities {
 
         EntityRegistry.registerModEntity(new ResourceLocation(Ariente.MODID, "ariente_drone"), DroneEntity.class, "ariente_drone", id++, Ariente.instance, 64, 3, true, 0x222222, 0x555555);
         EntityRegistry.registerModEntity(new ResourceLocation(Ariente.MODID, "ariente_sentinel_drone"), SentinelDroneEntity.class, "ariente_sentinel_drone", id++, Ariente.instance, 64, 3, true, 0x555555, 0x999999);
-        EntityRegistry.registerModEntity(new ResourceLocation(Ariente.MODID, "soldier"), EntitySoldier.class, "ariente_soldier", id++, Ariente.instance, 64, 3, true, 0x996600, 0x00ff00);
+        EntityRegistry.registerModEntity(new ResourceLocation(Ariente.MODID, "soldier"), SoldierEntity.class, "ariente_soldier", id++, Ariente.instance, 64, 3, true, 0x996600, 0x00ff00);
     }
 
     public static void initModels() {
@@ -28,6 +28,6 @@ public class ModEntities {
         RenderingRegistry.registerEntityRenderingHandler(LaserEntity.class, new LaserRender.Factory());
         RenderingRegistry.registerEntityRenderingHandler(DroneEntity.class, DroneRender.FACTORY);
         RenderingRegistry.registerEntityRenderingHandler(SentinelDroneEntity.class, SentinelDroneRender.FACTORY);
-        RenderingRegistry.registerEntityRenderingHandler(EntitySoldier.class, RenderSoldier.FACTORY);
+        RenderingRegistry.registerEntityRenderingHandler(SoldierEntity.class, SoldierRender.FACTORY);
     }
 }

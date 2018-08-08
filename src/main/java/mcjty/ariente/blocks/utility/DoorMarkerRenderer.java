@@ -2,10 +2,10 @@ package mcjty.ariente.blocks.utility;
 
 import mcjty.ariente.Ariente;
 import mcjty.ariente.blocks.ModBlocks;
+import net.minecraft.block.state.IBlockState;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.renderer.BufferBuilder;
 import net.minecraft.client.renderer.GlStateManager;
-import net.minecraft.client.renderer.RenderHelper;
 import net.minecraft.client.renderer.Tessellator;
 import net.minecraft.client.renderer.tileentity.TileEntitySpecialRenderer;
 import net.minecraft.client.renderer.vertex.DefaultVertexFormats;
@@ -25,10 +25,15 @@ public class DoorMarkerRenderer extends TileEntitySpecialRenderer<DoorMarkerTile
 
     @Override
     public void render(DoorMarkerTile te, double x, double y, double z, float time, int breakTime, float alpha) {
+        IBlockState state = getWorld().getBlockState(te.getPos());
+        if (state.getBlock() != ModBlocks.doorMarkerBlock) {
+            return;
+        }
+
         Tessellator tessellator = Tessellator.getInstance();
         GlStateManager.pushMatrix();
 
-        EnumFacing frontDirection = ModBlocks.doorMarkerBlock.getFrontDirection(getWorld().getBlockState(te.getPos()));
+        EnumFacing frontDirection = ModBlocks.doorMarkerBlock.getFrontDirection(state);
         if (EnumFacing.NORTH.equals(frontDirection) || EnumFacing.SOUTH.equals(frontDirection)) {
             GlStateManager.translate(x, y, z+.5);
             GlStateManager.rotate(90, 0, 1, 0);

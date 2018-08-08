@@ -9,9 +9,9 @@ import mcjty.ariente.cities.City;
 import mcjty.ariente.cities.CityPlan;
 import mcjty.ariente.cities.CityTools;
 import mcjty.ariente.entities.DroneEntity;
-import mcjty.ariente.entities.EntitySoldier;
 import mcjty.ariente.entities.SentinelDroneEntity;
 import mcjty.ariente.entities.SoldierBehaviourType;
+import mcjty.ariente.entities.SoldierEntity;
 import mcjty.ariente.items.ModItems;
 import mcjty.ariente.power.PowerSenderSupport;
 import mcjty.ariente.varia.ChunkCoord;
@@ -53,7 +53,8 @@ public class CityAI {
     private Set<BlockPos> forceFields = new HashSet<>();
     private Set<BlockPos> negariteGenerators = new HashSet<>();
     private Set<BlockPos> posiriteGenerators = new HashSet<>();
-    private Map<BlockPos, EnumFacing> guards = new HashMap<>();
+    private Map<BlockPos, EnumFacing> guardPositions = new HashMap<>();
+    private Map<BlockPos, EnumFacing> soldierPositions = new HashMap<>();
 
     private int[] sentinels = null;
     private int sentinelMovementTicks = 6;
@@ -61,6 +62,9 @@ public class CityAI {
 
     private int[] drones = new int[40];
     private int droneTicker = 0;
+
+    private int[] soldiers = new int[60];
+    private int soldierTicker = 0;
 
     private int onAlert = 0;
     private Map<UUID, BlockPos> watchingPlayers = new HashMap<>();  // Players we are watching as well as their last known position
@@ -117,7 +121,7 @@ public class CityAI {
         handleSentinels(world);
         handleAlert(world);
         handleDrones(world);
-
+        handleSoldiers(world);
     }
 
     private void handleAlert(World world) {
@@ -224,6 +228,76 @@ public class CityAI {
         }
     }
 
+    private void handleSoldiers(World world) {
+        if (onAlert > 0) {
+            soldierTicker--;
+            if (soldierTicker > 0) {
+                return;
+            }
+            soldierTicker = 10;
+
+            City city = CityTools.getCity(center);
+            CityPlan plan = city.getPlan();
+
+            int desiredMinimumCount = 0;
+            int newWaveMaximum = 0;
+            if (watchingPlayers.size() > 2) {
+                desiredMinimumCount = plan.getSoldiersMinimumN();
+                newWaveMaximum = plan.getSoldiersWaveMaxN();
+            } else if (watchingPlayers.size() > 1) {
+                desiredMinimumCount = plan.getSoldiersMinimum2();
+                newWaveMaximum = plan.getSoldiersWaveMax2();
+            } else {
+                desiredMinimumCount = plan.getSoldiersMinimum1();
+                newWaveMaximum = plan.getSoldiersWaveMax1();
+            }
+
+            int cnt = countEntities(world, soldiers);
+            while (cnt < desiredMinimumCount) {
+                spawnSoldier(world);
+                cnt++;
+            }
+
+            if (cnt < newWaveMaximum && random.nextFloat() < 0.1f) {
+                // Randomly spawn a new wave of drones
+                System.out.println("SOLDIER WAVE");
+                while (cnt < newWaveMaximum) {
+                    spawnSoldier(world);
+                    cnt++;
+                }
+            }
+        }
+    }
+
+    private void spawnSoldier(World world) {
+        if (soldierPositions.isEmpty()) {
+            return;
+        }
+
+        // Too few soldiers. Spawn a new one
+        int foundId = -1;
+        for (int i = 0 ; i < soldiers.length ; i++) {
+            if (soldiers[i] == 0 || world.getEntityByID(soldiers[i]) == null) {
+                foundId = i;
+                break;
+            }
+        }
+        if (foundId != -1) {
+            City city = CityTools.getCity(center);
+            CityPlan plan = city.getPlan();
+            List<String> pattern = plan.getPlan();
+
+            BlockPos pos = new ArrayList<>(soldierPositions.keySet()).get(random.nextInt(soldierPositions.size()));
+            EnumFacing facing = soldierPositions.get(pos);
+
+            System.out.println("CityAI.spawnSoldier at " + pos);
+
+            SoldierEntity entity = createSoldier(world, pos, facing, SoldierBehaviourType.SOLDIER_FIGHTER);
+            entity.setHeldItem(EnumHand.MAIN_HAND, new ItemStack(ModItems.energySabre));    // @todo need a lasergun
+            soldiers[foundId] = entity.getEntityId();
+        }
+    }
+
     private void spawnDrone(World world) {
         // Too few drones. Spawn a new one
         int foundId = -1;
@@ -289,6 +363,28 @@ public class CityAI {
         }
     }
 
+    public BlockPos requestNewSoldierPosition(World world, EntityLivingBase currentTarget) {
+        // Sometimes we let a solider pick a different location independent of target
+        if (random.nextFloat() > .6) {
+            return null;
+        }
+
+        BlockPos target;
+        if (currentTarget != null) {
+            target = currentTarget.getPosition();
+        } else {
+            target = findRandomPlayer(world);
+        }
+        if (target != null) {
+            float angle = random.nextFloat() * 360.0f;
+            float distance = 4;
+            int cx = (int) (target.getX()+.5 + Math.cos(angle) * distance);
+            int cz = (int) (target.getZ()+.5 + Math.sin(angle) * distance);
+            return new BlockPos(cx, target.getY(), cz);
+        }
+        return null;
+    }
+
     public BlockPos requestNewDronePosition(World world, EntityLivingBase currentTarget) {
         BlockPos target;
         if (currentTarget != null) {
@@ -328,7 +424,6 @@ public class CityAI {
 
     public void playerSpotted(EntityPlayer player) {
         onAlert = 600; // 5 minutes alert @todo configurable
-        System.out.println("CityAI.playerSpotted: " + player.getName());
         watchingPlayers.put(player.getUniqueID(), player.getPosition());    // Register the last known position
     }
 
@@ -355,7 +450,10 @@ public class CityAI {
                             IBlockState state = world.getBlockState(p);
                             Block block = state.getBlock();
                             if (block == ModBlocks.guardDummy) {
-                                guards.put(p, state.getValue(BaseBlock.FACING_HORIZ));
+                                guardPositions.put(p, state.getValue(BaseBlock.FACING_HORIZ));
+                                world.setBlockToAir(p);
+                            } else if (block == ModBlocks.soldierDummy) {
+                                soldierPositions.put(p, state.getValue(BaseBlock.FACING_HORIZ));
                                 world.setBlockToAir(p);
                             } else {
                                 TileEntity te = world.getTileEntity(p);
@@ -400,12 +498,11 @@ public class CityAI {
         findEquipment(world);
         initCityEquipment(world);
         initSentinels(world);
-        initDrones(world);
         initGuards(world);
     }
 
-    private EntitySoldier createSoldier(World world, BlockPos p, EnumFacing facing, SoldierBehaviourType behaviourType) {
-        EntitySoldier entity = new EntitySoldier(world, center, behaviourType);
+    private SoldierEntity createSoldier(World world, BlockPos p, EnumFacing facing, SoldierBehaviourType behaviourType) {
+        SoldierEntity entity = new SoldierEntity(world, center, behaviourType);
         entity.setPosition(p.getX()+.5, p.getY(), p.getZ()+.5);
         float yaw = 0;
         switch (facing) {
@@ -430,10 +527,10 @@ public class CityAI {
     }
 
     private void initGuards(World world) {
-        for (Map.Entry<BlockPos, EnumFacing> entry : guards.entrySet()) {
+        for (Map.Entry<BlockPos, EnumFacing> entry : guardPositions.entrySet()) {
             BlockPos pos = entry.getKey();
             EnumFacing facing = entry.getValue();
-            EntitySoldier soldier = createSoldier(world, pos, facing, SoldierBehaviourType.SOLDIER_GUARD);
+            SoldierEntity soldier = createSoldier(world, pos, facing, SoldierBehaviourType.SOLDIER_GUARD);
             soldier.setHeldItem(EnumHand.MAIN_HAND, new ItemStack(ModItems.energySabre));
         }
     }
@@ -469,9 +566,6 @@ public class CityAI {
         }
     }
 
-    private void initDrones(World world) {
-    }
-
     private void initSentinels(World world) {
         int numSentinels = settings.getNumSentinels();
         sentinels = new int[numSentinels];
@@ -491,8 +585,11 @@ public class CityAI {
     }
 
     public void enableEditMode(World world) {
-        for (Map.Entry<BlockPos, EnumFacing> entry : guards.entrySet()) {
+        for (Map.Entry<BlockPos, EnumFacing> entry : guardPositions.entrySet()) {
             world.setBlockState(entry.getKey(), ModBlocks.guardDummy.getDefaultState().withProperty(BaseBlock.FACING_HORIZ, entry.getValue()));
+        }
+        for (Map.Entry<BlockPos, EnumFacing> entry : soldierPositions.entrySet()) {
+            world.setBlockState(entry.getKey(), ModBlocks.soldierDummy.getDefaultState().withProperty(BaseBlock.FACING_HORIZ, entry.getValue()));
         }
     }
 
@@ -511,6 +608,9 @@ public class CityAI {
         if (nbt.hasKey("drones")) {
             drones = nbt.getIntArray("drones");
         }
+        if (nbt.hasKey("soldiers")) {
+            soldiers = nbt.getIntArray("soldiers");
+        }
         watchingPlayers.clear();
         if (nbt.hasKey("players")) {
             NBTTagList list = nbt.getTagList("players", Constants.NBT.TAG_COMPOUND);
@@ -526,7 +626,7 @@ public class CityAI {
         sentinelAngleOffset = nbt.getInteger("sentinelAngleOffset");
         onAlert = nbt.getInteger("onAlert");
         droneTicker = nbt.getInteger("droneTicker");
-        readMapFromNBT(nbt.getTagList("guards", Constants.NBT.TAG_COMPOUND), guards);
+        readMapFromNBT(nbt.getTagList("guards", Constants.NBT.TAG_COMPOUND), guardPositions);
     }
 
     public void writeToNBT(NBTTagCompound compound) {
@@ -541,6 +641,7 @@ public class CityAI {
             compound.setIntArray("sentinels", sentinels);
         }
         compound.setIntArray("drones", drones);
+        compound.setIntArray("soldiers", soldiers);
         if (!watchingPlayers.isEmpty()) {
             NBTTagList list = new NBTTagList();
             for (Map.Entry<UUID, BlockPos> entry : watchingPlayers.entrySet()) {
@@ -554,7 +655,7 @@ public class CityAI {
         compound.setInteger("sentinelAngleOffset", sentinelAngleOffset);
         compound.setInteger("onAlert", onAlert);
         compound.setInteger("droneTicker", droneTicker);
-        compound.setTag("guards", writeMapToNBT(guards));
+        compound.setTag("guards", writeMapToNBT(guardPositions));
     }
 
     private NBTTagList writeSetToNBT(Set<BlockPos> set) {
