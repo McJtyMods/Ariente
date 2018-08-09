@@ -194,6 +194,7 @@ public class ElevatorTile extends GenericTileEntity implements IGuiTile, ITickab
 
     public void setHeight(int height) {
         this.height = height;
+        markDirtyClient();
     }
 
     private void changeHeight(int dy) {

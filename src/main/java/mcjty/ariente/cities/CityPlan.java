@@ -25,6 +25,10 @@ public class CityPlan implements IAsset {
 
     private int minSentinels = 0;
     private int maxSentinels = 0;
+    private int sentinelDistance = 20;
+    private int sentinelRelHeight = 14;
+
+    private int elevatorHeight = 9;
 
     private int dronesMinimum1 = 1;
     private int dronesMinimum2 = 1;
@@ -99,6 +103,18 @@ public class CityPlan implements IAsset {
         return maxSentinels;
     }
 
+    public int getSentinelDistance() {
+        return sentinelDistance;
+    }
+
+    public int getSentinelRelHeight() {
+        return sentinelRelHeight;
+    }
+
+    public int getElevatorHeight() {
+        return elevatorHeight;
+    }
+
     public int getDronesMinimum1() {
         return dronesMinimum1;
     }
@@ -155,6 +171,9 @@ public class CityPlan implements IAsset {
         maxLayer2 = getMax(object, "layers", 1);
         minSentinels = getMin(object, "sentinels", 0);
         maxSentinels = getMax(object, "sentinels", 0);
+        sentinelDistance = object.get("sentinelDistance").getAsInt();
+        sentinelRelHeight = object.get("sentinelRelHeight").getAsInt();
+        elevatorHeight = object.get("elevatorHeight").getAsInt();
         dronesMinimum1 = object.get("dronesMinimum1").getAsInt();
         dronesMinimum2 = object.get("dronesMinimum2").getAsInt();
         dronesMinimumN = object.get("dronesMinimumN").getAsInt();
@@ -238,6 +257,9 @@ public class CityPlan implements IAsset {
         object.add("palette", new JsonPrimitive(palette));
         object.add("layers", new JsonPrimitive(minLayer2 + "-" + maxLayer2));
         object.add("sentinels", new JsonPrimitive(minSentinels + "-" + maxSentinels));
+        object.add("sentinelDistance", new JsonPrimitive(sentinelDistance));
+        object.add("sentinelRelHeight", new JsonPrimitive(sentinelRelHeight));
+        object.add("elevatorHeight", new JsonPrimitive(elevatorHeight));
         object.add("dronesMinimum1", new JsonPrimitive(dronesMinimum1));
         object.add("dronesMinimum2", new JsonPrimitive(dronesMinimum2));
         object.add("dronesMinimumN", new JsonPrimitive(dronesMinimumN));

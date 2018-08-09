@@ -5,6 +5,9 @@
     "palette": "city2_1",
     "layers": "1-2",
     "sentinels": "3-5",
+    "sentinelDistance": 40,
+    "sentinelRelHeight": 20,
+    "elevatorHeight": 9,
     "dronesMinimum1": 1,
     "dronesMinimum2": 3,
     "dronesMinimumN": 6,
@@ -5706,10 +5709,6 @@
         "block": "ariente:double_marble_slab@3"
       },
       {
-        "char": "2",
-        "block": "ariente:ramp@3"
-      },
-      {
         "char": "3",
         "block": "ariente:soldier_dummy@3"
       },
@@ -5738,14 +5737,6 @@
         "block": "ariente:posirite_tank"
       },
       {
-        "char": "D",
-        "block": "ariente:blueleaves"
-      },
-      {
-        "char": "E",
-        "block": "ariente:bluelog"
-      },
-      {
         "char": "F",
         "block": "ariente:guard_dummy@2"
       },
@@ -5754,20 +5745,12 @@
         "block": "ariente:elevator"
       },
       {
-        "char": "H",
-        "block": "ariente:marble_slab@2"
-      },
-      {
         "char": "I",
         "block": "ariente:level_marker"
       },
       {
         "char": "J",
         "block": "ariente:marble_slab@1"
-      },
-      {
-        "char": "K",
-        "block": "ariente:storage@4"
       },
       {
         "char": "L",
@@ -5810,20 +5793,12 @@
         "block": "ariente:guard_dummy@3"
       },
       {
-        "char": "V",
-        "block": "ariente:storage@5"
-      },
-      {
         "char": "W",
         "block": "ariente:marble_slab@5"
       },
       {
         "char": "X",
         "block": "ariente:storage@2"
-      },
-      {
-        "char": "Y",
-        "block": "minecraft:stained_glass_pane@15"
       },
       {
         "char": "Z",
@@ -5892,10 +5867,6 @@
       {
         "char": "p",
         "block": "ariente:blacktech@2"
-      },
-      {
-        "char": "q",
-        "block": "ariente:negarite_generator@2"
       },
       {
         "char": "r",

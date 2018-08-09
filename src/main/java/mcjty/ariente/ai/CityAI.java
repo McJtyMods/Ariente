@@ -5,6 +5,7 @@ import mcjty.ariente.blocks.aicore.AICoreTile;
 import mcjty.ariente.blocks.defense.ForceFieldTile;
 import mcjty.ariente.blocks.generators.NegariteGeneratorTile;
 import mcjty.ariente.blocks.generators.PosiriteGeneratorTile;
+import mcjty.ariente.blocks.utility.ElevatorTile;
 import mcjty.ariente.cities.City;
 import mcjty.ariente.cities.CityPlan;
 import mcjty.ariente.cities.CityTools;
@@ -37,9 +38,6 @@ import net.minecraftforge.common.util.Constants;
 import javax.annotation.Nullable;
 import java.util.*;
 
-
-// @todo
-// world.getClosestPlayerToEntity
 
 public class CityAI {
 
@@ -420,14 +418,17 @@ public class CityAI {
         if (aiCores.isEmpty()) {
             return null;
         }
+
+        City city = CityTools.getCity(center);
+        CityPlan plan = city.getPlan();
+
         int angleI = (sentinelAngleOffset + sentinelId * 12 / sentinels.length) % 12;
         int cx = center.getChunkX() * 16 + 8;
-        int cy = aiCores.iterator().next().getY() + 20;     // Use the height of one of the ai cores as a base
+        int cy = aiCores.iterator().next().getY() + plan.getSentinelRelHeight();     // Use the height of one of the ai cores as a base
         int cz = center.getChunkZ() * 16 + 8;
 
         float angle = angleI * 360.0f / 12;
-        // @todo sentinel radius depends on city size
-        float distance = 40;
+        float distance = plan.getSentinelDistance();
         cx = (int) (cx + Math.cos(angle) * distance);
         cz = (int) (cz + Math.sin(angle) * distance);
         return new BlockPos(cx, cy, cz);
@@ -476,6 +477,8 @@ public class CityAI {
                                     negariteGenerators.add(p);
                                 } else if (te instanceof PosiriteGeneratorTile) {
                                     posiriteGenerators.add(p);
+                                } else if (te instanceof ElevatorTile) {
+                                    ((ElevatorTile) te).setHeight(plan.getElevatorHeight());
                                 }
                             }
                         }
