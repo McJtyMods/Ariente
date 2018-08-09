@@ -4,6 +4,9 @@ import com.google.gson.JsonArray;
 import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
 import com.google.gson.JsonPrimitive;
+import net.minecraft.item.Item;
+import net.minecraft.util.ResourceLocation;
+import net.minecraftforge.fml.common.registry.ForgeRegistries;
 import org.apache.commons.lang3.StringUtils;
 
 import java.util.ArrayList;
@@ -22,6 +25,8 @@ public class CityPlan implements IAsset {
     private List<String> top = new ArrayList<>();
     private int minLayer2 = 1;
     private int maxLayer2 = 2;
+
+    private List<Loot> loot = new ArrayList<>();
 
     private int minSentinels = 0;
     private int maxSentinels = 0;
@@ -163,6 +168,10 @@ public class CityPlan implements IAsset {
         return soldiersWaveMaxN;
     }
 
+    public List<Loot> getLoot() {
+        return loot;
+    }
+
     @Override
     public void readFromJSon(JsonObject object) {
         name = object.get("name").getAsString();
@@ -187,6 +196,9 @@ public class CityPlan implements IAsset {
         soldiersWaveMax2 = object.get("soldiersWaveMax2").getAsInt();
         soldiersWaveMaxN = object.get("soldiersWaveMaxN").getAsInt();
         forcefieldScale = object.get("forcefieldScale").getAsInt();
+
+        JsonArray lootArray = object.get("loot").getAsJsonArray();
+        parseLoot(lootArray);
 
         JsonArray paletteArray = object.get("partpalette").getAsJsonArray();
         parsePaletteArray(paletteArray);
@@ -226,6 +238,24 @@ public class CityPlan implements IAsset {
             for (JsonElement element : planArray) {
                 String slice = element.getAsString();
                 plan.add(slice);
+            }
+        }
+    }
+
+    public void parseLoot(JsonArray lootArray) {
+        loot.clear();
+        for (JsonElement element : lootArray) {
+            JsonObject o = element.getAsJsonObject();
+            String id = o.get("id").getAsString();
+            int meta = 0;
+            if (o.has("meta")) {
+                meta = o.get("meta").getAsInt();
+            }
+            float chance = o.get("chance").getAsFloat();
+            int maxAmount = o.get("max").getAsInt();
+            Item item = ForgeRegistries.ITEMS.getValue(new ResourceLocation(id));
+            if (item != null) {
+                loot.add(new Loot(new ResourceLocation(id), meta, maxAmount, chance));
             }
         }
     }
@@ -273,6 +303,17 @@ public class CityPlan implements IAsset {
         object.add("soldiersWaveMax2", new JsonPrimitive(soldiersWaveMax2));
         object.add("soldiersWaveMaxN", new JsonPrimitive(soldiersWaveMaxN));
         object.add("forcefieldScale", new JsonPrimitive(forcefieldScale));
+
+        JsonArray lootArray = new JsonArray();
+        for (Loot l : loot) {
+            JsonObject o = new JsonObject();
+            o.add("id", new JsonPrimitive(l.getId().toString()));
+            o.add("meta", new JsonPrimitive(l.getMeta()));
+            o.add("max", new JsonPrimitive(l.getMaxAmount()));
+            o.add("chance", new JsonPrimitive(l.getChance()));
+            lootArray.add(o);
+        }
+        object.add("loot", lootArray);
 
         JsonArray array = new JsonArray();
         for (Map.Entry<Character, List<String>> entry : partPalette.entrySet()) {

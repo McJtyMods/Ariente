@@ -6,9 +6,11 @@ import mcjty.ariente.blocks.defense.ForceFieldTile;
 import mcjty.ariente.blocks.generators.NegariteGeneratorTile;
 import mcjty.ariente.blocks.generators.PosiriteGeneratorTile;
 import mcjty.ariente.blocks.utility.ElevatorTile;
+import mcjty.ariente.blocks.utility.StorageTile;
 import mcjty.ariente.cities.City;
 import mcjty.ariente.cities.CityPlan;
 import mcjty.ariente.cities.CityTools;
+import mcjty.ariente.cities.Loot;
 import mcjty.ariente.entities.DroneEntity;
 import mcjty.ariente.entities.SentinelDroneEntity;
 import mcjty.ariente.entities.SoldierBehaviourType;
@@ -23,6 +25,7 @@ import net.minecraft.block.state.IBlockState;
 import net.minecraft.entity.EntityLivingBase;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.entity.player.EntityPlayerMP;
+import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.nbt.NBTTagList;
@@ -34,6 +37,7 @@ import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.World;
 import net.minecraftforge.common.DimensionManager;
 import net.minecraftforge.common.util.Constants;
+import net.minecraftforge.fml.common.registry.ForgeRegistries;
 
 import javax.annotation.Nullable;
 import java.util.*;
@@ -479,6 +483,8 @@ public class CityAI {
                                     posiriteGenerators.add(p);
                                 } else if (te instanceof ElevatorTile) {
                                     ((ElevatorTile) te).setHeight(plan.getElevatorHeight());
+                                } else if (te instanceof StorageTile) {
+                                    fillLoot(plan, (StorageTile) te);
                                 }
                             }
                         }
@@ -487,6 +493,28 @@ public class CityAI {
             }
         }
         foundEquipment = true;
+    }
+
+    private void fillLoot(CityPlan plan, StorageTile te) {
+        List<Loot> loot = plan.getLoot();
+        for (int i = 0 ; i < 4 ; i++) {
+            for (Loot l : loot) {
+                if (random.nextFloat() < l.getChance()) {
+                    int amount;
+                    if (l.getMaxAmount() <= 1) {
+                        amount = 1;
+                    } else {
+                        amount = 1 + random.nextInt(l.getMaxAmount() - 1);
+                    }
+                    Item item = ForgeRegistries.ITEMS.getValue(l.getId());
+                    if (item != null) {
+                        te.initTotalStack(i, new ItemStack(item, amount, l.getMeta()));
+                        break;
+                    }
+                }
+            }
+        }
+        te.markDirtyClient();
     }
 
     private static int getMinMax(Random rnd, int min, int max) {

@@ -21,6 +21,33 @@
     "soldiersWaveMax2": 6,
     "soldiersWaveMaxN": 10,
     "forcefieldScale": 13,
+    "loot": [
+      {
+        "id": "ariente:ingot_silver",
+        "chance": 0.1,
+        "max": 3
+      },
+      {
+        "id": "ariente:ingot_manganese",
+        "chance": 0.1,
+        "max": 2
+      },
+      {
+        "id": "ariente:dust_negarite",
+        "chance": 0.1,
+        "max": 4
+      },
+      {
+        "id": "ariente:dust_posirite",
+        "chance": 0.1,
+        "max": 4
+      },
+      {
+        "id": "ariente:energy_sabre",
+        "chance": 0.1,
+        "max": 1
+      }
+    ],
     "partpalette": [
       {
         "char": "1",
