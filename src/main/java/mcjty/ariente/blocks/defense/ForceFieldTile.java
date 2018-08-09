@@ -178,7 +178,7 @@ public class ForceFieldTile extends GenericTileEntity implements IGuiTile, ITick
                 if (Math.abs(squareDist - squaredRadius) < 10 * 10) {
                     return true;
                 }
-            } else if (entity instanceof DroneEntity || entity instanceof SentinelDroneEntity) {
+            } else if (entity instanceof IForcefieldImmunity && ((IForcefieldImmunity) entity).isImmuneToForcefield()) {
                 return false;
             } else if (entity instanceof EntityLivingBase) {
                 Vec3d entityCenter = entity.getEntityBoundingBox().getCenter();

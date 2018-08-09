@@ -3,6 +3,7 @@ package mcjty.ariente.entities;
 import mcjty.ariente.Ariente;
 import mcjty.ariente.ai.CityAI;
 import mcjty.ariente.ai.CityAISystem;
+import mcjty.ariente.blocks.defense.IForcefieldImmunity;
 import mcjty.ariente.varia.ChunkCoord;
 import net.minecraft.block.Block;
 import net.minecraft.entity.EntityLivingBase;
@@ -24,7 +25,7 @@ import net.minecraftforge.fml.relauncher.SideOnly;
 
 import javax.annotation.Nullable;
 
-public class SoldierEntity extends EntityMob implements IArmRaisable {
+public class SoldierEntity extends EntityMob implements IArmRaisable, IForcefieldImmunity {
 
     private static final DataParameter<Boolean> ARMS_RAISED = EntityDataManager.createKey(SoldierEntity.class, DataSerializers.BOOLEAN);
     public static final ResourceLocation LOOT = new ResourceLocation(Ariente.MODID, "entities/soldier");
@@ -43,6 +44,12 @@ public class SoldierEntity extends EntityMob implements IArmRaisable {
         this(world);
         this.cityCenter = cityCenter;
         this.behaviourType = behaviourType;
+    }
+
+    @Override
+    public boolean isImmuneToForcefield() {
+        // Need to implement forcefield immunity cards
+        return true;
     }
 
     public ChunkCoord getCityCenter() {

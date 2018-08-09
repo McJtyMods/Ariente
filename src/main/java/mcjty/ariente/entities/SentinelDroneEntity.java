@@ -3,6 +3,7 @@ package mcjty.ariente.entities;
 import mcjty.ariente.Ariente;
 import mcjty.ariente.ai.CityAI;
 import mcjty.ariente.ai.CityAISystem;
+import mcjty.ariente.blocks.defense.IForcefieldImmunity;
 import mcjty.ariente.sounds.ModSounds;
 import mcjty.ariente.varia.ChunkCoord;
 import net.minecraft.entity.Entity;
@@ -14,7 +15,6 @@ import net.minecraft.entity.ai.EntityMoveHelper;
 import net.minecraft.entity.monster.IMob;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.nbt.NBTTagCompound;
-import net.minecraft.nbt.NBTUtil;
 import net.minecraft.util.DamageSource;
 import net.minecraft.util.ResourceLocation;
 import net.minecraft.util.SoundCategory;
@@ -27,7 +27,7 @@ import net.minecraft.world.World;
 
 import javax.annotation.Nullable;
 
-public class SentinelDroneEntity extends EntityFlying implements IMob {
+public class SentinelDroneEntity extends EntityFlying implements IMob, IForcefieldImmunity {
 
     public static final ResourceLocation LOOT = new ResourceLocation(Ariente.MODID, "entities/sentinel_drone");
 
@@ -46,6 +46,11 @@ public class SentinelDroneEntity extends EntityFlying implements IMob {
         this(world);
         this.sentinalId = sentinalId;
         this.cityCenter = cityCenter;
+    }
+
+    @Override
+    public boolean isImmuneToForcefield() {
+        return true;
     }
 
     // Override this to make it less likely to despawn

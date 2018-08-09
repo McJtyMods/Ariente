@@ -3,6 +3,7 @@ package mcjty.ariente.entities;
 import mcjty.ariente.Ariente;
 import mcjty.ariente.ai.CityAI;
 import mcjty.ariente.ai.CityAISystem;
+import mcjty.ariente.blocks.defense.IForcefieldImmunity;
 import mcjty.ariente.sounds.ModSounds;
 import mcjty.ariente.varia.ChunkCoord;
 import net.minecraft.entity.EntityFlying;
@@ -33,7 +34,7 @@ import net.minecraftforge.fml.relauncher.SideOnly;
 import javax.annotation.Nullable;
 import java.util.Random;
 
-public class DroneEntity extends EntityFlying implements IMob {
+public class DroneEntity extends EntityFlying implements IMob, IForcefieldImmunity {
 
     private static final DataParameter<Boolean> ATTACKING = EntityDataManager.createKey(DroneEntity.class, DataSerializers.BOOLEAN);
     public static final ResourceLocation LOOT = new ResourceLocation(Ariente.MODID, "entities/drone");
@@ -69,6 +70,11 @@ public class DroneEntity extends EntityFlying implements IMob {
 
     public void setAttacking(boolean attacking) {
         this.dataManager.set(ATTACKING, Boolean.valueOf(attacking));
+    }
+
+    @Override
+    public boolean isImmuneToForcefield() {
+        return true;
     }
 
     /**

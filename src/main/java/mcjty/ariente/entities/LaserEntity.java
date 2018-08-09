@@ -1,5 +1,6 @@
 package mcjty.ariente.entities;
 
+import mcjty.ariente.blocks.defense.IForcefieldImmunity;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.EntityLivingBase;
 import net.minecraft.entity.projectile.ProjectileHelper;
@@ -19,7 +20,7 @@ import net.minecraft.world.World;
 import net.minecraftforge.fml.relauncher.Side;
 import net.minecraftforge.fml.relauncher.SideOnly;
 
-public class LaserEntity extends Entity {
+public class LaserEntity extends Entity implements IForcefieldImmunity {
 
     private static final DataParameter<Float> SPAWN_YAW = EntityDataManager.<Float>createKey(LaserEntity.class, DataSerializers.FLOAT);
     private static final DataParameter<Float> SPAWN_PITCH = EntityDataManager.<Float>createKey(LaserEntity.class, DataSerializers.FLOAT);
@@ -40,6 +41,12 @@ public class LaserEntity extends Entity {
     protected void entityInit() {
         this.dataManager.register(SPAWN_YAW, 0.0f);
         this.dataManager.register(SPAWN_PITCH, 0.0f);
+    }
+
+    @Override
+    public boolean isImmuneToForcefield() {
+        // @todo only make immune if this laser belongs to the controller of the forcefield
+        return true;
     }
 
     @Override
