@@ -48,7 +48,7 @@ public class SoldierEntity extends EntityMob implements IArmRaisable, IForcefiel
 
     @Override
     public boolean isImmuneToForcefield() {
-        // Need to implement forcefield immunity cards
+        // @todo Need to implement forcefield immunity cards
         return true;
     }
 
