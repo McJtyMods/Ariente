@@ -4,14 +4,12 @@ import com.google.gson.JsonArray;
 import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
 import com.google.gson.JsonPrimitive;
+import mcjty.ariente.varia.Counter;
 import mcjty.ariente.varia.Tools;
 import net.minecraft.block.state.IBlockState;
 import org.apache.commons.lang3.tuple.Pair;
 
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 
 /**
  * A palette of materials as used by building parts
@@ -34,6 +32,15 @@ public class Palette implements IAsset {
 
     public void merge(Palette other) {
         palette.putAll(other.palette);
+    }
+
+    public void optimize(Counter<Character> paletteUsage) {
+        Set<Character> characters = new HashSet<>(palette.keySet());
+        for (Character character : characters) {
+            if (paletteUsage.get(character) == 0) {
+                palette.remove(character);
+            }
+        }
     }
 
     @Override

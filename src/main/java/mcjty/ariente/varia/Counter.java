@@ -18,11 +18,7 @@ public class Counter<T> {
     }
 
     public int get(T key) {
-        if (internalMap.containsKey(key)) {
-            return internalMap.get(key);
-        } else {
-            return 0;
-        }
+        return internalMap.getOrDefault(key, 0);
     }
 
     public T getMostOccuring() {

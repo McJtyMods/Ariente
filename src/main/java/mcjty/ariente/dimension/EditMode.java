@@ -7,6 +7,7 @@ import mcjty.ariente.ai.CityAI;
 import mcjty.ariente.ai.CityAISystem;
 import mcjty.ariente.cities.*;
 import mcjty.ariente.varia.ChunkCoord;
+import mcjty.ariente.varia.Counter;
 import net.minecraft.block.state.IBlockState;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.init.Blocks;
@@ -228,6 +229,7 @@ public class EditMode {
         cx = city.getCenter().getChunkX();
         cz = city.getCenter().getChunkZ();
 
+        Counter<Character> paletteUsage = new Counter<>();
         Map<String, BuildingPart> editedParts = new HashMap<>();
         for (int dx = cx - dimX / 2 - 1; dx <= cx + dimX / 2 + 1; dx++) {
             for (int dz = cz - dimZ / 2 - 1; dz <= cz + dimZ / 2 + 1; dz++) {
@@ -235,7 +237,7 @@ public class EditMode {
                 List<BuildingPart> parts = CityTools.getBuildingParts(city, dx, dz);
                 for (BuildingPart part : parts) {
                     BuildingPart newpart = exportPart(part, player.world, new BlockPos(dx * 16 + 8, start.getY() - 1, dz * 16 + 8),
-                            y, palette, mapping, idx);
+                            y, palette, paletteUsage, mapping, idx);
                     editedParts.put(newpart.getName(), newpart);
                     y += part.getSliceCount();
                 }
@@ -260,6 +262,7 @@ public class EditMode {
                 })
                 .forEach(array::add);
 
+        palette.optimize(paletteUsage);
         array.add(palette.writeToJSon());
 
         player.sendMessage(new TextComponentString("Affected parts " + affectedParts));
@@ -273,8 +276,9 @@ public class EditMode {
     }
 
     private static BuildingPart exportPart(BuildingPart part, World world, BlockPos start, int y, Palette palette,
+                                           Counter<Character> paletteUsage,
                                            Map<IBlockState, Character> mapping, AtomicInteger idx) throws FileNotFoundException {
-        String palettechars = "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789+-+=*^%$#@";
+        String palettechars = "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789-+=*^%$#@_";
         List<Slice> slices = new ArrayList<>();
         for (int f = 0; f < part.getSliceCount(); f++) {
             int cx = (start.getX() >> 4) * 16;
@@ -303,6 +307,7 @@ public class EditMode {
                         palette.addMapping(character, state);
                         mapping.put(state, character);
                     }
+                    paletteUsage.add(character);
                     slice.sequence[z * 16 + x] = String.valueOf(character);
                 }
             }
