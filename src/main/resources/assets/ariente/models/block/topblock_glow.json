@@ -1,0 +1,19 @@
+{
+  "parent": "ariente:block/util_cube_glow_2",
+  "ambientocclusion": false,
+  "textures": {
+    "particle": "#top",
+    "down": "#down",
+    "up": "#top",
+    "north": "#side",
+    "east": "#side",
+    "south": "#side",
+    "west": "#side",
+    "glow_down": "#downglow",
+    "glow_up": "#topglow",
+    "glow_north": "#sideglow",
+    "glow_east": "#sideglow",
+    "glow_south": "#sideglow",
+    "glow_west": "#sideglow"
+  }
+}

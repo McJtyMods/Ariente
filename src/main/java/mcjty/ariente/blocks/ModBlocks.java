@@ -63,7 +63,8 @@ public class ModBlocks {
     public static GenericBlock<DoorMarkerTile, GenericContainer> doorMarkerBlock;
     public static GenericBlock<ForceFieldTile, GenericContainer> forceFieldBlock;
     public static GenericBlock<AICoreTile, GenericContainer> aiCoreBlock;
-    
+    public static GenericBlock<WarperTile, GenericContainer> warperBlock;
+
     public static BaseBlock flatLightBlock;
 
     public static NetCableBlock netCableBlock;
@@ -200,7 +201,15 @@ public class ModBlocks {
                 .info("message.ariente.shiftmessage")
                 .infoExtended("message.ariente.forcefield")
                 .build();
-        
+
+        warperBlock = builderFactory.<WarperTile> builder("warper")
+                .tileEntityClass(WarperTile.class)
+                .emptyContainer()
+                .rotationType(BaseBlock.RotationType.NONE)
+                .info("message.ariente.shiftmessage")
+                .infoExtended("message.ariente.warper")
+                .build();
+
         aiCoreBlock = builderFactory.<AICoreTile> builder("aicore")
                 .tileEntityClass(AICoreTile.class)
                 .emptyContainer()
@@ -323,6 +332,8 @@ public class ModBlocks {
         ClientRegistry.bindTileEntitySpecialRenderer(NegariteTankTile.class, new NegariteTankRenderer());
         posiriteTankBlock.initModel();
         ClientRegistry.bindTileEntitySpecialRenderer(PosiriteTankTile.class, new PosiriteTankRenderer());
+
+        warperBlock.initModel();
 
         aiCoreBlock.initModel();
         guardDummy.initModel();

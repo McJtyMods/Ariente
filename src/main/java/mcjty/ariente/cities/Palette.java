@@ -4,7 +4,6 @@ import com.google.gson.JsonArray;
 import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
 import com.google.gson.JsonPrimitive;
-import mcjty.ariente.varia.Counter;
 import mcjty.ariente.varia.Tools;
 import net.minecraft.block.state.IBlockState;
 import org.apache.commons.lang3.tuple.Pair;
@@ -34,11 +33,12 @@ public class Palette implements IAsset {
         palette.putAll(other.palette);
     }
 
-    public void optimize(Counter<Character> paletteUsage) {
+    public void optimize(Set<Character> paletteUsage) {
         Set<Character> characters = new HashSet<>(palette.keySet());
         for (Character character : characters) {
-            if (paletteUsage.get(character) == 0) {
-                palette.remove(character);
+            if (!paletteUsage.contains(character)) {
+                System.out.println("Possibly remove character = " + character);
+//                palette.remove(character);
             }
         }
     }

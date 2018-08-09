@@ -7,7 +7,7 @@
     "sentinels": "2-3",
     "sentinelDistance": 30,
     "sentinelRelHeight": 20,
-    "elevatorHeight": 13,
+    "elevatorHeight": 15,
     "dronesMinimum1": 1,
     "dronesMinimum2": 2,
     "dronesMinimumN": 3,
@@ -88,8 +88,8 @@
     "slices": [
       [
         "aaaaaaaaaaaaaaaa",
-        "a aaaaaaaaaaaaaa",
-        "aaxxxxxxxxxxxxxx",
+        "aaaaaaaaaaaaaaaa",
+        "aa xxxxxxxxxxxxx",
         "aaxhhhhhhhhhhhhh",
         "aaxhxxxxxxxxxxxx",
         "aaxhxaaaaaaaaaaa",
@@ -106,8 +106,8 @@
       ],
       [
         "aayaFayaFayaa   ",
-        "a               ",
-        "y z             ",
+        "az              ",
+        "y               ",
         "a               ",
         "F   H           ",
         "a           aaya",
@@ -988,8 +988,8 @@
     "slices": [
       [
         "aaaaaaaaaaaaaaaa",
-        "awaaaaaaaaaaaaaa",
-        "aaxxxxxxxxxxxxxx",
+        "aaaaaaaaaaaaaaaa",
+        "aawxxxxxxxxxxxxx",
         "aaxxxxxxxxxxxxxx",
         "aaxxxxxxxxxxxxxx",
         "aaxxxaaaaaaaaaaa",
@@ -1006,8 +1006,8 @@
       ],
       [
         "bbybbbybbbybbbyb",
-        "b               ",
-        "y z             ",
+        "bz              ",
+        "y               ",
         "b               ",
         "b               ",
         "b    A          ",

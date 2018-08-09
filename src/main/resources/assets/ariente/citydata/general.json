@@ -2,40 +2,79 @@
   {
     "type": "part",
     "name": "portal",
-    "xsize": 16,
-    "zsize": 16,
+    "xsize": 7,
+    "zsize": 7,
     "slices": [
       [
-        "                ",
-        "                ",
-        "                ",
-        "                ",
-        "                ",
-        "                ",
-        "                ",
-        "                ",
-        "                ",
-        "                ",
-        "                ",
-        "                ",
-        "                ",
-        "                ",
-        "                ",
-        "                "
+        "abbbbba",
+        "bbbbbbb",
+        "bbbbbbb",
+        "bbbdbbb",
+        "bbbbbbb",
+        "bbbbbbb",
+        "abbbbba"
+      ],
+      [
+        "ac   ca",
+        "c     c",
+        "       ",
+        "       ",
+        "       ",
+        "c     c",
+        "ac   ca"
+      ],
+      [
+        "ac   ca",
+        "c     c",
+        "       ",
+        "       ",
+        "       ",
+        "c     c",
+        "ac   ca"
+      ],
+      [
+        "ac   ca",
+        "c     c",
+        "       ",
+        "       ",
+        "       ",
+        "c     c",
+        "ac   ca"
+      ],
+      [
+        "abbbbba",
+        "bbbbbbb",
+        "bbbbbbb",
+        "bbbbbbb",
+        "bbbbbbb",
+        "bbbbbbb",
+        "abbbbba"
       ]
     ]
   },
   {
     "type": "palette",
-    "name": "city2_1",
+    "name": "portal",
     "palette": [
       {
         "char": " ",
         "block": "minecraft:air"
       },
       {
-        "char": "0",
-        "block": "ariente:marble_slab@11"
+        "char": "a",
+        "block": "ariente:marble_pilar@3"
+      },
+      {
+        "char": "b",
+        "block": "ariente:marble_smooth@3"
+      },
+      {
+        "char": "c",
+        "block": "minecraft:stained_glass@7"
+      },
+      {
+        "char": "d",
+        "block": "ariente:warper"
       }
     ]
   }

@@ -21,33 +21,14 @@ public class ArienteCityGenerator {
     private ArienteChunkGenerator generator;
 
     private char airChar;
-    private char hardAirChar;
-    private char glowstoneChar;
     private char baseChar;
-    private char gravelChar;
-    private char glassChar;
-    private char liquidChar;
-    private char ironbarsChar;
-    private char grassChar;
-    private char bedrockChar;
     private char fillerChar;
 
     public void initialize(ArienteChunkGenerator generator) {
         this.generator = generator;
         if (!initialized) {
             airChar = (char) Block.BLOCK_STATE_IDS.get(Blocks.AIR.getDefaultState());
-            hardAirChar = (char) Block.BLOCK_STATE_IDS.get(Blocks.COMMAND_BLOCK.getDefaultState());
-            glowstoneChar = (char) Block.BLOCK_STATE_IDS.get(Blocks.GLOWSTONE.getDefaultState());
-            baseChar = (char) Block.BLOCK_STATE_IDS.get(Blocks.STONE.getDefaultState());
-            gravelChar = (char) Block.BLOCK_STATE_IDS.get(Blocks.GRAVEL.getDefaultState());
-            liquidChar = (char) Block.BLOCK_STATE_IDS.get(Blocks.WATER.getDefaultState());
-
-            // @todo
-            glassChar = (char) Block.BLOCK_STATE_IDS.get(Blocks.GLASS.getDefaultState());
-
-            ironbarsChar = (char) Block.BLOCK_STATE_IDS.get(Blocks.IRON_BARS.getDefaultState());
-            grassChar = (char) Block.BLOCK_STATE_IDS.get(Blocks.GRASS.getDefaultState());
-            bedrockChar = (char) Block.BLOCK_STATE_IDS.get(Blocks.BEDROCK.getDefaultState());
+            baseChar = (char) Block.BLOCK_STATE_IDS.get(ModBlocks.marble.getDefaultState());
             fillerChar = (char) Block.BLOCK_STATE_IDS.get(ModBlocks.marble_bricks.getDefaultState().withProperty(MarbleBlock.COLOR, MarbleColor.BLACK));
 
             initialized = true;
@@ -89,6 +70,23 @@ public class ArienteCityGenerator {
     }
 
     public void generate(World worldIn, int x, int z, ChunkPrimer primer) {
+        if (CityTools.isPortalChunk(x, z)) {
+            ChunkHeightmap heightmap = generator.getHeightmap(x, z);
+            int minHeight = 160;
+            for (int dx = 4 ; dx <= 10 ; dx++) {
+                for (int dz = 4 ; dz <= 10 ; dz++) {
+                    int h = heightmap.getHeight(dx, dz);
+                    if (h < minHeight) {
+                        minHeight = h;
+                    }
+                }
+            }
+
+            generatePart(primer, "portal", AssetRegistries.PARTS.get("portal"), Transform.ROTATE_NONE, 4, minHeight, 4);
+
+            return;
+        }
+
         City city = CityTools.getNearestCity(generator, x, z);
         if (city != null) {
             List<BuildingPart> parts = CityTools.getBuildingParts(city, x, z);
@@ -97,7 +95,7 @@ public class ArienteCityGenerator {
                 int y = lowestY;
                 CityPlan plan = city.getPlan();
                 for (BuildingPart part : parts) {
-                    generatePart(primer, plan, part, Transform.ROTATE_NONE, 0, y, 0);
+                    generatePart(primer, plan.getPalette(), part, Transform.ROTATE_NONE, 0, y, 0);
                     y += part.getSliceCount();
                 }
 
@@ -133,11 +131,11 @@ public class ArienteCityGenerator {
         }
     }
 
-    private int generatePart(ChunkPrimer primer, CityPlan cityPlan,
+    private int generatePart(ChunkPrimer primer, String palette,
                                     BuildingPart part,
                                     Transform transform,
                                     int ox, int oy, int oz) {
-        CompiledPalette compiledPalette = CompiledPalette.getCompiledPalette(cityPlan.getPalette());
+        CompiledPalette compiledPalette = CompiledPalette.getCompiledPalette(palette);
 
         for (int x = 0; x < part.getXSize(); x++) {
             for (int z = 0; z < part.getZSize(); z++) {
@@ -161,13 +159,6 @@ public class ArienteCityGenerator {
                                 b = (char) Block.BLOCK_STATE_IDS.get(bs);
                             }
                         }
-                        // We don't replace the world where the part is empty (air)
-//                        if (b != airChar) {
-//                            if (b == liquidChar) {
-//                            } else if (b == hardAirChar) {
-//                                b = airChar;
-//                            }
-//                        }
                         primer.data[index] = b;
                         index++;
                     }

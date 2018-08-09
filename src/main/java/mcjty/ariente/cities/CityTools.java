@@ -25,12 +25,10 @@ public class CityTools {
         cities.put(center, city);
     }
 
-    private static boolean isPortalChunk(ChunkCoord c) {
-        int chunkX = c.getChunkX();
-        int chunkZ = c.getChunkZ();
-        if (Math.abs(chunkX) < 32 && Math.abs(chunkZ) < 32) {
-            return false;
-        }
+    public static boolean isPortalChunk(int chunkX, int chunkZ) {
+//        if (Math.abs(chunkX) < 32 && Math.abs(chunkZ) < 32) {
+//            return false;
+//        }
 
         return ((chunkX & 0xf) == 0) && ((chunkZ & 0xf) == 0);
     }
@@ -38,9 +36,9 @@ public class CityTools {
     private static boolean isCityCenter(ChunkCoord c) {
         int chunkX = c.getChunkX();
         int chunkZ = c.getChunkZ();
-        if (Math.abs(chunkX) < 32 && Math.abs(chunkZ) < 32) {
-            return false;
-        }
+//        if (Math.abs(chunkX) < 32 && Math.abs(chunkZ) < 32) {
+//            return false;
+//        }
 
         boolean candidate = ((chunkX & 0xf) == 8) && ((chunkZ & 0xf) == 8);
         if (candidate) {

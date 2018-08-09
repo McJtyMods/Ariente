@@ -37,6 +37,7 @@ tile.ariente.posirite_generator.name=Posirite Flux Generator
 tile.ariente.negarite_generator.name=Negarite Flux Generator
 tile.ariente.negarite_tank.name=Negarite Tank
 tile.ariente.posirite_tank.name=Posirite Tank
+tile.ariente.warper.name=Warper
 tile.ariente.storage.name=Storage Cube
 tile.ariente.elevator.name=Elevator
 tile.ariente.forcefield.name=Forcefield Generator
@@ -124,6 +125,8 @@ message.ariente.posirite_tank=\
 message.ariente.storage=\
     @fCan store large amounts of 4\n\
     @fdifferent item types
+message.ariente.warper=\
+    @fWarp to nearby warpers
 message.ariente.elevator=\
     @fMove up and down
 message.ariente.level_marker=\

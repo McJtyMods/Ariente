@@ -7,7 +7,6 @@ import mcjty.ariente.ai.CityAI;
 import mcjty.ariente.ai.CityAISystem;
 import mcjty.ariente.cities.*;
 import mcjty.ariente.varia.ChunkCoord;
-import mcjty.ariente.varia.Counter;
 import net.minecraft.block.state.IBlockState;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.init.Blocks;
@@ -229,7 +228,7 @@ public class EditMode {
         cx = city.getCenter().getChunkX();
         cz = city.getCenter().getChunkZ();
 
-        Counter<Character> paletteUsage = new Counter<>();
+        Set<Character> paletteUsage = new HashSet<>();
         Map<String, BuildingPart> editedParts = new HashMap<>();
         for (int dx = cx - dimX / 2 - 1; dx <= cx + dimX / 2 + 1; dx++) {
             for (int dz = cz - dimZ / 2 - 1; dz <= cz + dimZ / 2 + 1; dz++) {
@@ -276,7 +275,7 @@ public class EditMode {
     }
 
     private static BuildingPart exportPart(BuildingPart part, World world, BlockPos start, int y, Palette palette,
-                                           Counter<Character> paletteUsage,
+                                           Set<Character> paletteUsage,
                                            Map<IBlockState, Character> mapping, AtomicInteger idx) throws FileNotFoundException {
         String palettechars = "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789-+=*^%$#@_";
         List<Slice> slices = new ArrayList<>();
