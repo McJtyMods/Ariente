@@ -17,7 +17,6 @@ public class CityAISystem extends AbstractWorldData<CityAISystem> {
 
     // Indexed by city center
     private Map<ChunkCoord, CityAI> cityAIMap = new HashMap<>();
-    private int lastCityID = 1;
 
     public CityAISystem(String name) {
         super(name);
@@ -29,12 +28,8 @@ public class CityAISystem extends AbstractWorldData<CityAISystem> {
     }
 
     public CityAI getCityAI(ChunkCoord coord) {
-        if (coord == null) {
-            System.out.println("CityAISystem.getCityAI");
-        }
         if (!cityAIMap.containsKey(coord)) {
-            CityAI cityAI = new CityAI(coord, lastCityID);
-            lastCityID++;
+            CityAI cityAI = new CityAI(coord);
             cityAIMap.put(coord, cityAI);
             save();
         }
@@ -48,16 +43,14 @@ public class CityAISystem extends AbstractWorldData<CityAISystem> {
 
     @Override
     public void readFromNBT(NBTTagCompound compound) {
-        lastCityID = compound.getInteger("lastCityId");
         NBTTagList cityList = compound.getTagList("cities", Constants.NBT.TAG_COMPOUND);
         cityAIMap.clear();
         for (int i = 0 ; i < cityList.tagCount() ; i++) {
             NBTTagCompound nbt = cityList.getCompoundTagAt(i);
             int chunkX = nbt.getInteger("chunkx");
             int chunkZ = nbt.getInteger("chunkz");
-            int cityId = nbt.getInteger("cityId");
             ChunkCoord coord = new ChunkCoord(chunkX, chunkZ);
-            CityAI ai = new CityAI(coord, cityId);
+            CityAI ai = new CityAI(coord);
             ai.readFromNBT(nbt);
             cityAIMap.put(coord, ai);
         }
@@ -65,7 +58,6 @@ public class CityAISystem extends AbstractWorldData<CityAISystem> {
 
     @Override
     public NBTTagCompound writeToNBT(NBTTagCompound compound) {
-        compound.setInteger("lastCityId", lastCityID);
         NBTTagList cityList = new NBTTagList();
         for (Map.Entry<ChunkCoord, CityAI> entry : cityAIMap.entrySet()) {
             NBTTagCompound nbt = new NBTTagCompound();

@@ -18,6 +18,7 @@ import mcjty.ariente.entities.SoldierBehaviourType;
 import mcjty.ariente.entities.SoldierEntity;
 import mcjty.ariente.items.ModItems;
 import mcjty.ariente.power.PowerSenderSupport;
+import mcjty.ariente.security.SecuritySystem;
 import mcjty.ariente.varia.ChunkCoord;
 import mcjty.lib.blocks.BaseBlock;
 import mcjty.lib.varia.RedstoneMode;
@@ -66,7 +67,6 @@ public class CityAI {
     private int[] drones = new int[40];
     private int droneTicker = 0;
 
-    private int cityId;
     private String keyId;
 
     private int[] soldiers = new int[60];
@@ -77,9 +77,8 @@ public class CityAI {
 
     private static Random random = new Random();
 
-    public CityAI(ChunkCoord center, int cityId) {
+    public CityAI(ChunkCoord center) {
         this.center = center;
-        this.cityId = cityId;
     }
 
     // Return true if we potentially have to save the city system state
@@ -453,7 +452,7 @@ public class CityAI {
             return;
         }
 
-        generateKeyId();
+        keyId = SecuritySystem.getSecuritySystem(world).generateKeyId();
 
         City city = CityTools.getCity(center);
         assert city != null;
@@ -508,34 +507,6 @@ public class CityAI {
 
     public String getKeyId() {
         return keyId;
-    }
-
-    private void generateKeyId() {
-        World world = DimensionManager.getWorld(0);
-        Random rnd = new Random(world.getSeed() + 234516783139L);       // A fixed seed for this work
-        rnd.nextFloat();
-        rnd.nextFloat();
-        String keyChars = "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789";
-        List<Character> keys = new ArrayList<>();
-        for (int i = 0 ; i < keyChars.length() ; i++) {
-            keys.add(keyChars.charAt(i));
-        }
-
-        // The shuffles will always be the same way for this world. The code we get from it depends
-        // on the number of this city
-        int id = cityId;
-        StringBuilder builder = new StringBuilder();
-        Collections.shuffle(keys, rnd);
-        builder.append(keys.get(id % keyChars.length())); id /= keyChars.length();
-        Collections.shuffle(keys, rnd);
-        builder.append(keys.get(id % keyChars.length())); id /= keyChars.length();
-        Collections.shuffle(keys, rnd);
-        builder.append(keys.get(id % keyChars.length())); id /= keyChars.length();
-        Collections.shuffle(keys, rnd);
-        builder.append(keys.get(id % keyChars.length())); id /= keyChars.length();
-        Collections.shuffle(keys, rnd);
-        builder.append(keys.get(id % keyChars.length())); id /= keyChars.length();
-        keyId = builder.toString();
     }
 
     private void fillLoot(CityPlan plan, StorageTile te) {
@@ -690,7 +661,6 @@ public class CityAI {
         } else {
             sentinels = null;
         }
-        cityId = nbt.getInteger("cityId");
         keyId = nbt.getString("keyId");
         if (nbt.hasKey("drones")) {
             drones = nbt.getIntArray("drones");
@@ -727,7 +697,6 @@ public class CityAI {
         if (sentinels != null) {
             compound.setIntArray("sentinels", sentinels);
         }
-        compound.setInteger("cityId", cityId);
         compound.setString("keyId", keyId);
         compound.setIntArray("drones", drones);
         compound.setIntArray("soldiers", soldiers);
