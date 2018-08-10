@@ -3,9 +3,7 @@ package mcjty.ariente.blocks.utility;
 import mcjty.ariente.gui.HoloGuiEntity;
 import mcjty.ariente.gui.IGuiComponent;
 import mcjty.ariente.gui.IGuiTile;
-import mcjty.ariente.gui.components.HoloIcon;
 import mcjty.ariente.gui.components.HoloPanel;
-import mcjty.ariente.gui.components.HoloText;
 import mcjty.ariente.gui.components.HoloToggleIcon;
 import mcjty.lib.tileentity.GenericTileEntity;
 import mcjty.theoneprobe.api.IProbeHitData;
@@ -40,6 +38,7 @@ public class DoorMarkerTile extends GenericTileEntity implements ITickable, IGui
 
     private boolean open = false;
     private int iconIndex = 0;
+    private boolean locked = false;
 
     // Client side only
     private int opening;  // 0 is closed, 1000 is open
@@ -47,7 +46,7 @@ public class DoorMarkerTile extends GenericTileEntity implements ITickable, IGui
 
     @Override
     public void update() {
-        if (!world.isRemote) {
+        if (!world.isRemote && !locked) {
             List<Entity> entities = world.getEntitiesWithinAABB(EntityPlayer.class, getDetectionBox());
             boolean o = !entities.isEmpty();
             if (o != open) {
@@ -73,6 +72,18 @@ public class DoorMarkerTile extends GenericTileEntity implements ITickable, IGui
 
     public boolean isOpen() {
         return open;
+    }
+
+    public boolean isLocked() {
+        return locked;
+    }
+
+    public void setLocked(boolean locked) {
+        this.locked = locked;
+        if (locked) {
+            open = false;
+        }
+        markDirtyClient();
     }
 
     public int getIconIndex() {
@@ -126,12 +137,14 @@ public class DoorMarkerTile extends GenericTileEntity implements ITickable, IGui
     public void readRestorableFromNBT(NBTTagCompound tagCompound) {
         super.readRestorableFromNBT(tagCompound);
         iconIndex = tagCompound.getInteger("icon");
+        locked = tagCompound.getBoolean("locked");
     }
 
     @Override
     public void writeRestorableToNBT(NBTTagCompound tagCompound) {
         super.writeRestorableToNBT(tagCompound);
         tagCompound.setInteger("icon", iconIndex);
+        tagCompound.setBoolean("locked", locked);
     }
 
     @Override

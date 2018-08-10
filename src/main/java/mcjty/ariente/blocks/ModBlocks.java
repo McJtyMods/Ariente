@@ -16,7 +16,12 @@ import mcjty.lib.builder.BaseBlockBuilder;
 import mcjty.lib.builder.BlockFlags;
 import mcjty.lib.builder.GenericBlockBuilderFactory;
 import mcjty.lib.container.GenericContainer;
+import net.minecraft.block.Block;
+import net.minecraft.block.state.IBlockState;
 import net.minecraft.client.renderer.color.BlockColors;
+import net.minecraft.tileentity.TileEntity;
+import net.minecraft.util.EnumFacing;
+import net.minecraft.util.math.AxisAlignedBB;
 import net.minecraftforge.fml.client.registry.ClientRegistry;
 import net.minecraftforge.fml.relauncher.Side;
 import net.minecraftforge.fml.relauncher.SideOnly;
@@ -64,6 +69,7 @@ public class ModBlocks {
     public static GenericBlock<ForceFieldTile, GenericContainer> forceFieldBlock;
     public static GenericBlock<AICoreTile, GenericContainer> aiCoreBlock;
     public static GenericBlock<WarperTile, GenericContainer> warperBlock;
+    public static GenericBlock<LockTile, GenericContainer> lockBlock;
 
     public static BaseBlock flatLightBlock;
 
@@ -74,6 +80,14 @@ public class ModBlocks {
     public static RampBlock rampBlock;
 
     public static GenericBlockBuilderFactory builderFactory;
+
+    public static final AxisAlignedBB LIGHT_BLOCK_DOWN = new AxisAlignedBB(0.0F, 0.0F, 0.0F, 1.0F, 0.2F, 1.0F);
+    public static final AxisAlignedBB LIGHT_BLOCK_UP = new AxisAlignedBB(0.0F, 0.8F, 0.0F, 1.0F, 1.0F, 1.0F);
+    public static final AxisAlignedBB LIGHT_BLOCK_NORTH = new AxisAlignedBB(0.0F, 0.0F, 0.0F, 1.0F, 1.0F, 0.2F);
+    public static final AxisAlignedBB LIGHT_BLOCK_SOUTH = new AxisAlignedBB(0.0F, 0.0F, 0.8F, 1.0F, 1.0F, 1.0F);
+    public static final AxisAlignedBB LIGHT_BLOCK_WEST = new AxisAlignedBB(0.0F, 0.0F, 0.0F, 0.2F, 1.0F, 1.0F);
+    public static final AxisAlignedBB LIGHT_BLOCK_EAST = new AxisAlignedBB(0.8F, 0.0F, 0.0F, 1.0F, 1.0F, 1.0F);
+
 
     public static void init() {
         builderFactory = new GenericBlockBuilderFactory(Ariente.instance).creativeTabs(Ariente.creativeTab);
@@ -93,6 +107,7 @@ public class ModBlocks {
                 .creativeTabs(Ariente.creativeTab)
                 .lightValue(15)
                 .flags(BlockFlags.NON_OPAQUE)
+                .boundingBox((state, source, pos) -> getFlatBox(state))
                 .build();
 
         guardDummy = new BaseBlockBuilder<>(Ariente.instance, "guard_dummy")
@@ -101,6 +116,25 @@ public class ModBlocks {
         soldierDummy = new BaseBlockBuilder<>(Ariente.instance, "soldier_dummy")
                 .rotationType(BaseBlock.RotationType.HORIZROTATION)
                 .build();
+
+        lockBlock = builderFactory.<LockTile> builder("lock")
+                .tileEntityClass(LockTile.class)
+                .property(LockTile.LOCKED)
+                .flags(BlockFlags.NON_OPAQUE)
+                .property(LockTile.LOCKED)
+                .boundingBox((state, source, pos) -> getFlatBox(state))
+                .activateAction((world, pos, player, hand, side, hitX, hitY, hitZ) -> {
+                    TileEntity te = world.getTileEntity(pos);
+                    if (te instanceof LockTile) {
+                        ((LockTile) te).toggleLock();
+                    }
+                    return true;
+                })
+//                .activateAction((world, pos, player, hand, side, hitX, hitY, hitZ) -> HoloGuiHandler.openHoloGui(world, pos, player))
+                .info("message.ariente.shiftmessage")
+                .infoExtended("message.ariente.lock")
+                .build();
+
 
         negariteGeneratorBlock = builderFactory.<NegariteGeneratorTile> builder("negarite_generator")
                 .tileEntityClass(NegariteGeneratorTile.class)
@@ -219,6 +253,25 @@ public class ModBlocks {
         aiCoreBlock.setHarvestLevel("pickaxe", 2);
     }
 
+    private static AxisAlignedBB getFlatBox(IBlockState state) {
+        EnumFacing facing = state.getValue(BaseBlock.FACING);
+        switch (facing) {
+            case UP:
+                return LIGHT_BLOCK_DOWN;
+            case DOWN:
+                return LIGHT_BLOCK_UP;
+            case SOUTH:
+                return LIGHT_BLOCK_NORTH;
+            case NORTH:
+                return LIGHT_BLOCK_SOUTH;
+            case EAST:
+                return LIGHT_BLOCK_WEST;
+            case WEST:
+                return LIGHT_BLOCK_EAST;
+        }
+        return Block.FULL_BLOCK_AABB;
+    }
+
     private static void initPlants() {
         glowlog = new BaseBlockBuilder<>(Ariente.instance, "glowlog")
                 .rotationType(BaseBlock.RotationType.NONE)
@@ -334,6 +387,7 @@ public class ModBlocks {
         ClientRegistry.bindTileEntitySpecialRenderer(PosiriteTankTile.class, new PosiriteTankRenderer());
 
         warperBlock.initModel();
+        lockBlock.initModel();
 
         aiCoreBlock.initModel();
         guardDummy.initModel();

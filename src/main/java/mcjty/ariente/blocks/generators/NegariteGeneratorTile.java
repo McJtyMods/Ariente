@@ -127,8 +127,6 @@ public class NegariteGeneratorTile extends GenericTileEntity implements ITickabl
                     p = p.up();
                     state = world.getBlockState(p);
                 }
-
-
             }
         }
     }
