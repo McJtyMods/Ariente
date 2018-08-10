@@ -11,7 +11,6 @@ import mcjty.theoneprobe.api.IProbeInfo;
 import mcjty.theoneprobe.api.ProbeMode;
 import mcp.mobius.waila.api.IWailaConfigHandler;
 import mcp.mobius.waila.api.IWailaDataAccessor;
-import net.minecraft.block.Block;
 import net.minecraft.block.state.IBlockState;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.player.EntityPlayer;
@@ -115,7 +114,18 @@ public class DoorMarkerTile extends GenericTileEntity implements ITickable, IGui
         if (te instanceof DoorMarkerTile) {
             DoorMarkerTile door = (DoorMarkerTile) te;
             if (!door.isOpen()) {
-                collidingBoxes.add(Block.FULL_BLOCK_AABB);
+                BlockPos p = pos.up();
+                for (int yy = 1; yy < 10; yy++) {
+                    if (!world.isAirBlock(p)) {
+                        break;
+                    }
+                    p = p.up();
+                }
+                AxisAlignedBB box = new AxisAlignedBB(pos.getX(), pos.getY(), pos.getZ(), p.getX()+1, p.getY()+1, p.getZ()+1);
+                // @todo doesn't seem to work entirely
+                if (entityBox.intersects(box)) {
+                    collidingBoxes.add(box);
+                }
             }
         }
         return true;
