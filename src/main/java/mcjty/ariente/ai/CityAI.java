@@ -511,7 +511,8 @@ public class CityAI {
     }
 
     private void generateKeyId() {
-        Random rnd = new Random(cityId + center.getChunkX() * 567000003533L + center.getChunkZ() * 234516783139L);
+        World world = DimensionManager.getWorld(0);
+        Random rnd = new Random(world.getSeed() + 234516783139L);       // A fixed seed for this work
         rnd.nextFloat();
         rnd.nextFloat();
         String keyChars = "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789";
@@ -520,17 +521,20 @@ public class CityAI {
             keys.add(keyChars.charAt(i));
         }
 
+        // The shuffles will always be the same way for this world. The code we get from it depends
+        // on the number of this city
+        int id = cityId;
         StringBuilder builder = new StringBuilder();
         Collections.shuffle(keys, rnd);
-        builder.append(keys.get(0));
+        builder.append(keys.get(id % keyChars.length())); id /= keyChars.length();
         Collections.shuffle(keys, rnd);
-        builder.append(keys.get(0));
+        builder.append(keys.get(id % keyChars.length())); id /= keyChars.length();
         Collections.shuffle(keys, rnd);
-        builder.append(keys.get(0));
+        builder.append(keys.get(id % keyChars.length())); id /= keyChars.length();
         Collections.shuffle(keys, rnd);
-        builder.append(keys.get(0));
+        builder.append(keys.get(id % keyChars.length())); id /= keyChars.length();
         Collections.shuffle(keys, rnd);
-        builder.append(keys.get(0));
+        builder.append(keys.get(id % keyChars.length())); id /= keyChars.length();
         keyId = builder.toString();
     }
 

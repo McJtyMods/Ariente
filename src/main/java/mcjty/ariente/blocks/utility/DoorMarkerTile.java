@@ -122,7 +122,7 @@ public class DoorMarkerTile extends GenericTileEntity implements ITickable, IGui
                     p = p.up();
                 }
                 AxisAlignedBB box = new AxisAlignedBB(pos.getX(), pos.getY(), pos.getZ(), p.getX()+1, p.getY()+1, p.getZ()+1);
-                // @todo doesn't seem to work entirely
+                // @todo doesn't seem to work entirely. We need to work with dummy boxes (also fixes rendering?, need to exclude from asset system)
                 if (entityBox.intersects(box)) {
                     collidingBoxes.add(box);
                 }
