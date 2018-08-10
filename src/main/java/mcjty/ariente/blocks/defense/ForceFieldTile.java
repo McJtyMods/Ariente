@@ -1,8 +1,6 @@
 package mcjty.ariente.blocks.defense;
 
 import mcjty.ariente.config.ArienteConfiguration;
-import mcjty.ariente.entities.DroneEntity;
-import mcjty.ariente.entities.SentinelDroneEntity;
 import mcjty.ariente.gui.HoloGuiEntity;
 import mcjty.ariente.gui.IGuiComponent;
 import mcjty.ariente.gui.IGuiTile;
@@ -149,12 +147,12 @@ public class ForceFieldTile extends GenericTileEntity implements IGuiTile, ITick
         double x = pos.getX() + .5;
         double y = pos.getY() + .5;
         double z = pos.getZ() + .5;
-        double squaredRadius = getScaleDouble() * getScaleDouble();
+        double radius = getScaleDouble();
 
         Vec3d fieldCenter = new Vec3d(x, y, z);
         Vec3d entityCenter = entity.getEntityBoundingBox().getCenter();
         double squareDist = fieldCenter.squareDistanceTo(entityCenter);
-        return Math.abs(squareDist - squaredRadius) < 10*10;
+        return Math.abs(Math.sqrt(squareDist) - radius) < 10;
     }
 
     private void collideWithEntities() {
@@ -221,7 +219,7 @@ public class ForceFieldTile extends GenericTileEntity implements IGuiTile, ITick
                 for (PanelInfo info : getPanelInfo()) {
                     if (info != null && info.getLife() > 0) {
                         if (info.testCollisionEntity(entity, getScaleDouble())) {
-                            entity.attackEntityFrom(DamageSource.GENERIC, 1.0f);    // @todo damage configurable
+                            entity.attackEntityFrom(DamageSource.GENERIC, 19.0f);    // @todo damage configurable
                             ((EntityLivingBase)entity).knockBack(entity, 1.0f, pos.getX() - entity.posX, pos.getZ() - entity.posZ);
                         }
                     }

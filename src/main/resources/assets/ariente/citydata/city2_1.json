@@ -24,28 +24,33 @@
     "loot": [
       {
         "id": "ariente:ingot_silver",
-        "chance": 0.1,
-        "max": 3
+        "meta": 0,
+        "max": 3,
+        "chance": 0.1
       },
       {
         "id": "ariente:ingot_manganese",
-        "chance": 0.1,
-        "max": 2
+        "meta": 0,
+        "max": 2,
+        "chance": 0.1
       },
       {
         "id": "ariente:dust_negarite",
-        "chance": 0.1,
-        "max": 8
+        "meta": 0,
+        "max": 8,
+        "chance": 0.1
       },
       {
         "id": "ariente:dust_posirite",
-        "chance": 0.1,
-        "max": 8
+        "meta": 0,
+        "max": 8,
+        "chance": 0.1
       },
       {
         "id": "ariente:energy_sabre",
-        "chance": 0.1,
-        "max": 1
+        "meta": 0,
+        "max": 1,
+        "chance": 0.1
       }
     ],
     "partpalette": [
@@ -476,7 +481,7 @@
         "d               ",
         "d               ",
         "d               ",
-        "d               ",
+        "d  3            ",
         "d               ",
         "d               ",
         "d               ",
@@ -516,7 +521,7 @@
         "e               ",
         "e               ",
         "e               ",
-        "e               ",
+        "ej              ",
         "e               ",
         "e               ",
         "e               ",
@@ -977,7 +982,7 @@
         "d               ",
         "d               ",
         "d      t        ",
-        "d      t        ",
+        "d 6    t        ",
         "d               ",
         "d               ",
         "dddddddddddddddd"
@@ -1129,9 +1134,9 @@
         "e               ",
         "e               ",
         "eeeee  eeYeYeYee",
+        "  k             ",
         "                ",
         "                ",
-        "j               ",
         "                ",
         "                "
       ],
@@ -4586,7 +4591,7 @@
         "               d",
         "eeeee          d",
         "    e          d",
-        "    e          d",
+        "    e      5   d",
         "    e          d",
         "e   e          d",
         "e   e          d"
@@ -4937,10 +4942,10 @@
         "e   e          d",
         "e   e          d",
         "e   e U        d",
+        "e 3 e          d",
         "e   e          d",
         "e   e          d",
-        "e   e          d",
-        "e   e          d"
+        "e   e      6   d"
       ],
       [
         "P   P          e",

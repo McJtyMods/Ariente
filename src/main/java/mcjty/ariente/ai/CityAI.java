@@ -407,7 +407,7 @@ public class CityAI {
         }
         if (target != null) {
             float angle = random.nextFloat() * 360.0f;
-            float distance = 9;
+            float distance = 15;
             int cx = (int) (target.getX()+.5 + Math.cos(angle) * distance);
             int cz = (int) (target.getZ()+.5 + Math.sin(angle) * distance);
             return new BlockPos(cx, target.getY()+3, cz);

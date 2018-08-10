@@ -73,7 +73,7 @@ public class LaserRender extends Render<LaserEntity> {
         buffer.begin(GL11.GL_QUADS, DefaultVertexFormats.POSITION_TEX_LMAP_COLOR);
 
         float size = .05f;
-        int length = 4;
+        int length = 2;
         drawQuad(tessellator,
                 new RenderHelper.Vector(-size, -size, 0),
                 new RenderHelper.Vector(-size, -size, length),

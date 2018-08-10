@@ -617,7 +617,7 @@
         "                ",
         "  q             ",
         "                ",
-        "vv              "
+        "                "
       ],
       [
         "      d         ",
@@ -635,7 +635,7 @@
         "                ",
         "  q             ",
         "                ",
-        "vv              "
+        "                "
       ],
       [
         "      guuuuuuuuu",
@@ -806,7 +806,7 @@
         "                ",
         "  q             ",
         "                ",
-        "vv              "
+        "                "
       ],
       [
         "      d         ",
@@ -824,7 +824,7 @@
         "                ",
         "  q             ",
         "                ",
-        "vv              "
+        "                "
       ],
       [
         "      guuuuuuuuu",
@@ -1928,10 +1928,6 @@
       {
         "char": "u",
         "block": "ariente:pattern"
-      },
-      {
-        "char": "v",
-        "block": "ariente:glowleaves"
       },
       {
         "char": "w",

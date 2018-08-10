@@ -99,9 +99,9 @@ public class LaserEntity extends Entity implements IForcefieldImmunity {
         accelY = accelY + this.rand.nextGaussian() * 0.4D;
         accelZ = accelZ + this.rand.nextGaussian() * 0.4D;
         double d0 = MathHelper.sqrt(accelX * accelX + accelY * accelY + accelZ * accelZ);
-        this.accelerationX = accelX / d0 * 0.1D;
-        this.accelerationY = accelY / d0 * 0.1D;
-        this.accelerationZ = accelZ / d0 * 0.1D;
+        this.accelerationX = accelX / d0 * 0.01D;
+        this.accelerationY = accelY / d0 * 0.01D;
+        this.accelerationZ = accelZ / d0 * 0.01D;
         setSpawnYawPitch(shooter.rotationYaw, shooter.rotationPitch);
     }
 
@@ -156,8 +156,9 @@ public class LaserEntity extends Entity implements IForcefieldImmunity {
     protected void onImpact(RayTraceResult result) {
         if (!this.world.isRemote) {
             if (result.entityHit != null) {
+//                System.out.println("LaserEntity.onImpact");
                 result.entityHit.attackEntityFrom(DamageSource.causeIndirectMagicDamage(this, this.shootingEntity), 10.0F);
-                this.applyEnchantments(this.shootingEntity, result.entityHit);
+//                this.awwpplyEnchantments(this.shootingEntity, result.entityHit);
             }
             this.setDead();
         }

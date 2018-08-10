@@ -263,7 +263,7 @@ public class DroneEntity extends EntityFlying implements IMob, IForcefieldImmuni
                     world.playSound(null, target.posX - vec3d.x * 8.0d, target.posY - vec3d.y * 8.0d, target.posZ - vec3d.z * 8.0d, ModSounds.droneShoot, SoundCategory.HOSTILE, 5.0f, 1.0f);
 
                     double d2 = target.posX - (this.drone.posX + vec3d.x * 4.0D);
-                    double d3 = target.getEntityBoundingBox().minY + (target.height / 2.0F) - (0.5D + this.drone.posY + (this.drone.height / 2.0F));
+                    double d3 = target.getEntityBoundingBox().minY + ((target.height+2) / 2.0F) - (0.5D + this.drone.posY + (this.drone.height / 2.0F));
                     double d4 = target.posZ - (this.drone.posZ + vec3d.z * 4.0D);
 //                    world.playEvent(null, 1016, new BlockPos(this.parentEntity), 0);
 //                    for (int i = 0; i < world.playerEntities.size(); ++i) {
@@ -279,7 +279,7 @@ public class DroneEntity extends EntityFlying implements IMob, IForcefieldImmuni
                     laser.posZ = this.drone.posZ + vec3d.z * 2.0D;
 
                     double dx = target.posX - laser.posX;
-                    double dy = target.posY + target.getEyeHeight() - laser.posY;
+                    double dy = target.posY + target.getEyeHeight() - laser.posY + 0;
                     double dz = target.posZ - laser.posZ;
                     double dpitch = MathHelper.sqrt(dx * dx + dz * dz);
 //                    float f = (float)(MathHelper.atan2(d2, d0) * (180D / Math.PI)) - 90.0F;

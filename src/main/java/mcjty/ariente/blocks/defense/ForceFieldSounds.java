@@ -31,10 +31,11 @@ public class ForceFieldSounds {
                 }
             }
         }
-        if (minDistance < 10 * 10) {
+        if (minDistance < 5 * 5) {
             ArienteSound soundAt = SoundController.getSoundAt(world, pos);
             minDistance = Math.sqrt(minDistance);
-            float volume = (float) ((10f - minDistance) * 2.0f / 10.0f);
+
+            float volume = (float) ((5f - minDistance) * 2.0f / 5.0f);
             if (soundAt != null) {
                 soundAt.setVolume(volume);
             } else {

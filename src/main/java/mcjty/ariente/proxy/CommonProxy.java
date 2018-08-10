@@ -2,6 +2,7 @@ package mcjty.ariente.proxy;
 
 import mcjty.ariente.Ariente;
 import mcjty.ariente.ForgeEventHandlers;
+import mcjty.ariente.TerrainEventHandlers;
 import mcjty.ariente.TerrainGenEventHandlers;
 import mcjty.ariente.blocks.ModBlocks;
 import mcjty.ariente.cities.AssetRegistries;
@@ -61,6 +62,7 @@ public abstract class CommonProxy extends AbstractCommonProxy {
 
 //        EntityRegistry.registerModEntity(new ResourceLocation(AquaMunda.MODID, "fresh_water_falling"), EntityFallingFreshWaterBlock.class, "fresh_water_falling", 1, AquaMunda.instance, 250, 5, true);
         MinecraftForge.EVENT_BUS.register(WorldTickHandler.instance);
+        MinecraftForge.TERRAIN_GEN_BUS.register(new TerrainEventHandlers());
         NetworkRegistry.INSTANCE.registerGuiHandler(Ariente.instance, new GuiProxy());
 
 //        ConfigSetup.readRecipesConfig();
