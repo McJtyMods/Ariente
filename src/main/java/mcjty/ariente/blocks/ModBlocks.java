@@ -19,7 +19,6 @@ import mcjty.lib.container.GenericContainer;
 import net.minecraft.block.Block;
 import net.minecraft.block.state.IBlockState;
 import net.minecraft.client.renderer.color.BlockColors;
-import net.minecraft.tileentity.TileEntity;
 import net.minecraft.util.EnumFacing;
 import net.minecraft.util.math.AxisAlignedBB;
 import net.minecraftforge.fml.client.registry.ClientRegistry;
@@ -123,13 +122,6 @@ public class ModBlocks {
                 .flags(BlockFlags.NON_OPAQUE)
                 .property(LockTile.LOCKED)
                 .boundingBox((state, source, pos) -> getFlatBox(state))
-                .activateAction((world, pos, player, hand, side, hitX, hitY, hitZ) -> {
-                    TileEntity te = world.getTileEntity(pos);
-                    if (te instanceof LockTile) {
-                        ((LockTile) te).toggleLock();
-                    }
-                    return true;
-                })
 //                .activateAction((world, pos, player, hand, side, hitX, hitY, hitZ) -> HoloGuiHandler.openHoloGui(world, pos, player))
                 .info("message.ariente.shiftmessage")
                 .infoExtended("message.ariente.lock")

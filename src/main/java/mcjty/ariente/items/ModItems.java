@@ -15,6 +15,7 @@ public class ModItems {
     public static GenericItem posiriteDust;
 
     public static EnergySabreItem energySabre;
+    public static KeyCardItem keyCardItem;
 
 
     public static void init() {
@@ -27,6 +28,7 @@ public class ModItems {
         posiriteDust = new GenericItem("dust_posirite");
 
         energySabre = new EnergySabreItem();
+        keyCardItem = new KeyCardItem();
     }
 
     public static void initOreDict() {
@@ -46,6 +48,7 @@ public class ModItems {
         posiriteDust.initModel();
 
         energySabre.initModel();
+        keyCardItem.initModel();
     }
 
 }

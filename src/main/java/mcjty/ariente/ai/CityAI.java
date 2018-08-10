@@ -6,6 +6,7 @@ import mcjty.ariente.blocks.defense.ForceFieldTile;
 import mcjty.ariente.blocks.generators.NegariteGeneratorTile;
 import mcjty.ariente.blocks.generators.PosiriteGeneratorTile;
 import mcjty.ariente.blocks.utility.ElevatorTile;
+import mcjty.ariente.blocks.utility.LockTile;
 import mcjty.ariente.blocks.utility.StorageTile;
 import mcjty.ariente.cities.City;
 import mcjty.ariente.cities.CityPlan;
@@ -65,6 +66,9 @@ public class CityAI {
     private int[] drones = new int[40];
     private int droneTicker = 0;
 
+    private int cityId;
+    private String keyId;
+
     private int[] soldiers = new int[60];
     private int soldierTicker = 0;
 
@@ -73,8 +77,9 @@ public class CityAI {
 
     private static Random random = new Random();
 
-    public CityAI(ChunkCoord center) {
+    public CityAI(ChunkCoord center, int cityId) {
         this.center = center;
+        this.cityId = cityId;
     }
 
     // Return true if we potentially have to save the city system state
@@ -447,6 +452,9 @@ public class CityAI {
         if (foundEquipment) {
             return;
         }
+
+        generateKeyId();
+
         City city = CityTools.getCity(center);
         assert city != null;
         CityPlan plan = city.getPlan();
@@ -485,6 +493,9 @@ public class CityAI {
                                     ((ElevatorTile) te).setHeight(plan.getElevatorHeight());
                                 } else if (te instanceof StorageTile) {
                                     fillLoot(plan, (StorageTile) te);
+                                } else if (te instanceof LockTile) {
+                                    ((LockTile) te).setKeyId(keyId);
+                                    ((LockTile) te).setLocked(true);
                                 }
                             }
                         }
@@ -493,6 +504,34 @@ public class CityAI {
             }
         }
         foundEquipment = true;
+    }
+
+    public String getKeyId() {
+        return keyId;
+    }
+
+    private void generateKeyId() {
+        Random rnd = new Random(cityId + center.getChunkX() * 567000003533L + center.getChunkZ() * 234516783139L);
+        rnd.nextFloat();
+        rnd.nextFloat();
+        String keyChars = "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789";
+        List<Character> keys = new ArrayList<>();
+        for (int i = 0 ; i < keyChars.length() ; i++) {
+            keys.add(keyChars.charAt(i));
+        }
+
+        StringBuilder builder = new StringBuilder();
+        Collections.shuffle(keys, rnd);
+        builder.append(keys.get(0));
+        Collections.shuffle(keys, rnd);
+        builder.append(keys.get(0));
+        Collections.shuffle(keys, rnd);
+        builder.append(keys.get(0));
+        Collections.shuffle(keys, rnd);
+        builder.append(keys.get(0));
+        Collections.shuffle(keys, rnd);
+        builder.append(keys.get(0));
+        keyId = builder.toString();
     }
 
     private void fillLoot(CityPlan plan, StorageTile te) {
@@ -647,6 +686,8 @@ public class CityAI {
         } else {
             sentinels = null;
         }
+        cityId = nbt.getInteger("cityId");
+        keyId = nbt.getString("keyId");
         if (nbt.hasKey("drones")) {
             drones = nbt.getIntArray("drones");
         }
@@ -682,6 +723,8 @@ public class CityAI {
         if (sentinels != null) {
             compound.setIntArray("sentinels", sentinels);
         }
+        compound.setInteger("cityId", cityId);
+        compound.setString("keyId", keyId);
         compound.setIntArray("drones", drones);
         compound.setIntArray("soldiers", soldiers);
         if (!watchingPlayers.isEmpty()) {

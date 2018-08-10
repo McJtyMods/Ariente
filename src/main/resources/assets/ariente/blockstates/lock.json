@@ -1,7 +1,6 @@
 {
   "forge_marker": 1,
   "defaults": {
-    "custom": { "flip-v": true },
     "model": "ariente:flatblock_glow",
     "transform": "forge:default-block"
   },

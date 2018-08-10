@@ -5,5 +5,7 @@
     "drone_hurt" : {"category": "hostile", "sounds": ["ariente:dronehurt"]},
     "drone_death" : {"category": "hostile", "sounds": ["ariente:dronedeath"]},
     "laser" : {"category": "hostile", "sounds": ["ariente:laser"]},
-    "forcefield" : {"category": "block", "sounds": ["ariente:forcefield"]}
+    "forcefield" : {"category": "block", "sounds": ["ariente:forcefield"]},
+    "buzz_error" : {"category": "block", "sounds": ["ariente:buzz_error"]},
+    "buzz_ok" : {"category": "block", "sounds": ["ariente:buzz_ok"]}
 }

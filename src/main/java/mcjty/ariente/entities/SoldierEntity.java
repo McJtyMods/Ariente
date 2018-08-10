@@ -4,6 +4,8 @@ import mcjty.ariente.Ariente;
 import mcjty.ariente.ai.CityAI;
 import mcjty.ariente.ai.CityAISystem;
 import mcjty.ariente.blocks.defense.IForcefieldImmunity;
+import mcjty.ariente.items.KeyCardItem;
+import mcjty.ariente.items.ModItems;
 import mcjty.ariente.varia.ChunkCoord;
 import net.minecraft.block.Block;
 import net.minecraft.entity.EntityLivingBase;
@@ -12,10 +14,12 @@ import net.minecraft.entity.ai.*;
 import net.minecraft.entity.monster.EntityMob;
 import net.minecraft.entity.monster.EntityPigZombie;
 import net.minecraft.entity.player.EntityPlayer;
+import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.network.datasync.DataParameter;
 import net.minecraft.network.datasync.DataSerializers;
 import net.minecraft.network.datasync.EntityDataManager;
+import net.minecraft.util.DamageSource;
 import net.minecraft.util.ResourceLocation;
 import net.minecraft.util.SoundEvent;
 import net.minecraft.util.math.BlockPos;
@@ -85,6 +89,22 @@ public class SoldierEntity extends EntityMob implements IArmRaisable, IForcefiel
     @Override
     public void setArmsRaised(boolean armsRaised) {
         this.getDataManager().set(ARMS_RAISED, Boolean.valueOf(armsRaised));
+    }
+
+    @Override
+    protected void dropLoot(boolean wasRecentlyHit, int lootingModifier, DamageSource source) {
+        super.dropLoot(wasRecentlyHit, lootingModifier, source);
+        if (attackingPlayer != null) {
+            if (cityCenter != null && rand.nextFloat() < .2f) {
+                CityAISystem aiSystem = CityAISystem.getCityAISystem(world);
+                CityAI cityAI = aiSystem.getCityAI(cityCenter);
+                if (cityAI != null) {
+                    ItemStack stack = new ItemStack(ModItems.keyCardItem);
+                    KeyCardItem.addSecurityTag(stack, cityAI.getKeyId());
+                    entityDropItem(stack, 0.0f);
+                }
+            }
+        }
     }
 
     @SideOnly(Side.CLIENT)
