@@ -13,7 +13,7 @@ public class ModSounds {
     public static final SoundEvent droneAmbient = new SoundEvent(new ResourceLocation(Ariente.MODID, "drone_ambient")).setRegistryName(new ResourceLocation(Ariente.MODID, "drone_ambient"));
     public static final SoundEvent droneHurt = new SoundEvent(new ResourceLocation(Ariente.MODID, "drone_hurt")).setRegistryName(new ResourceLocation(Ariente.MODID, "drone_hurt"));
     public static final SoundEvent droneDeath = new SoundEvent(new ResourceLocation(Ariente.MODID, "drone_death")).setRegistryName(new ResourceLocation(Ariente.MODID, "drone_death"));
-    public static final SoundEvent droneShoot = new SoundEvent(new ResourceLocation(Ariente.MODID, "drone_shoot")).setRegistryName(new ResourceLocation(Ariente.MODID, "drone_shoot"));
+    public static final SoundEvent laser = new SoundEvent(new ResourceLocation(Ariente.MODID, "laser")).setRegistryName(new ResourceLocation(Ariente.MODID, "laser"));
 
     public static final SoundEvent forcefield = new SoundEvent(new ResourceLocation(Ariente.MODID, "forcefield")).setRegistryName(new ResourceLocation(Ariente.MODID, "forcefield"));
 
@@ -23,7 +23,7 @@ public class ModSounds {
         registry.register(droneAmbient);
         registry.register(droneHurt);
         registry.register(droneDeath);
-        registry.register(droneShoot);
+        registry.register(laser);
         registry.register(forcefield);
     }
 

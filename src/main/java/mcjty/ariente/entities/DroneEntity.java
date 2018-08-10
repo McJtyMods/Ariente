@@ -260,7 +260,8 @@ public class DroneEntity extends EntityFlying implements IMob, IForcefieldImmuni
                 if (this.attackTimer == 20) {
                     double d1 = 4.0D;
                     Vec3d vec3d = this.drone.getLook(1.0F);
-                    world.playSound(null, target.posX - vec3d.x * 8.0d, target.posY - vec3d.y * 8.0d, target.posZ - vec3d.z * 8.0d, ModSounds.droneShoot, SoundCategory.HOSTILE, 5.0f, 1.0f);
+
+//                    world.playSound(null, target.posX - vec3d.x * 8.0d, target.posY - vec3d.y * 8.0d, target.posZ - vec3d.z * 8.0d, ModSounds.droneShoot, SoundCategory.HOSTILE, 5.0f, 1.0f);
 
                     double d2 = target.posX - (this.drone.posX + vec3d.x * 4.0D);
                     double d3 = target.getEntityBoundingBox().minY + ((target.height+2) / 2.0F) - (0.5D + this.drone.posY + (this.drone.height / 2.0F));

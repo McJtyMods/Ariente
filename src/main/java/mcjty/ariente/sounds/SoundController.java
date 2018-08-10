@@ -12,32 +12,32 @@ import java.util.Map;
 
 public class SoundController {
 
-    private static final Map<Pair<Integer, BlockPos>, ArienteSound> sounds = Maps.newHashMap();
+    private static final Map<Pair<Integer, BlockPos>, ForcefieldSound> forcefieldSounds = Maps.newHashMap();
 
-    public static void stopSound(World worldObj, BlockPos pos) {
+    public static void stopForcefieldSounds(World worldObj, BlockPos pos) {
         Pair<Integer, BlockPos> g = fromPosition(worldObj, pos);
-        if (sounds.containsKey(g)) {
-            MovingSound movingSound = sounds.get(g);
+        if (forcefieldSounds.containsKey(g)) {
+            MovingSound movingSound = forcefieldSounds.get(g);
             Minecraft.getMinecraft().getSoundHandler().stopSound(movingSound);
-            sounds.remove(g);
+            forcefieldSounds.remove(g);
         }
     }
 
-    public static void playSound(World worldObj, BlockPos pos, SoundEvent soundType, float baseVolume, int ticks) {
-        ArienteSound sound = new ArienteSound(soundType, worldObj, pos, baseVolume, ticks);
-        stopSound(worldObj, pos);
+    public static void playForcefieldSound(World worldObj, BlockPos pos, SoundEvent soundType, float baseVolume, int ticks) {
+        ForcefieldSound sound = new ForcefieldSound(soundType, worldObj, pos, baseVolume, ticks);
+        stopForcefieldSounds(worldObj, pos);
         Minecraft.getMinecraft().getSoundHandler().playSound(sound);
         Pair<Integer, BlockPos> g = Pair.of(worldObj.provider.getDimension(), pos);
-        sounds.put(g, sound);
+        forcefieldSounds.put(g, sound);
     }
 
-    public static boolean isSoundTypePlayingAt(SoundEvent event, World world, BlockPos pos){
-        ArienteSound s = getSoundAt(world, pos);
+    public static boolean isForcefieldSoundPlayingAt(SoundEvent event, World world, BlockPos pos){
+        ForcefieldSound s = getForcefieldSoundAt(world, pos);
         return s != null && s.isSoundType(event);
     }
 
-    public static ArienteSound getSoundAt(World world, BlockPos pos){
-        return sounds.get(fromPosition(world, pos));
+    public static ForcefieldSound getForcefieldSoundAt(World world, BlockPos pos){
+        return forcefieldSounds.get(fromPosition(world, pos));
     }
 
 

@@ -10,7 +10,7 @@ import net.minecraftforge.fml.relauncher.Side;
 import net.minecraftforge.fml.relauncher.SideOnly;
 
 @SideOnly(Side.CLIENT)
-public class ArienteSound extends MovingSound {
+public class ForcefieldSound extends MovingSound {
 
     private final World world;
     private final BlockPos pos;
@@ -18,7 +18,7 @@ public class ArienteSound extends MovingSound {
 
     private int ticksRemaining;
 
-    public ArienteSound(SoundEvent event, World world, BlockPos pos, float baseVolume, int ticks) {
+    public ForcefieldSound(SoundEvent event, World world, BlockPos pos, float baseVolume, int ticks) {
         super(event, SoundCategory.BLOCKS);
         this.world = world;
         this.pos = pos;

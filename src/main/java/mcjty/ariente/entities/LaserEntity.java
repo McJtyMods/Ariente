@@ -1,6 +1,7 @@
 package mcjty.ariente.entities;
 
 import mcjty.ariente.blocks.defense.IForcefieldImmunity;
+import mcjty.ariente.sounds.ModSounds;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.EntityLivingBase;
 import net.minecraft.entity.projectile.ProjectileHelper;
@@ -11,6 +12,7 @@ import net.minecraft.network.datasync.DataSerializers;
 import net.minecraft.network.datasync.EntityDataManager;
 import net.minecraft.util.DamageSource;
 import net.minecraft.util.EnumParticleTypes;
+import net.minecraft.util.SoundCategory;
 import net.minecraft.util.datafix.DataFixer;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.MathHelper;
@@ -31,6 +33,8 @@ public class LaserEntity extends Entity implements IForcefieldImmunity {
     private double accelerationX;
     private double accelerationY;
     private double accelerationZ;
+
+    private int soundTicker = 0;
 
     public LaserEntity(World worldIn) {
         super(worldIn);
@@ -99,16 +103,28 @@ public class LaserEntity extends Entity implements IForcefieldImmunity {
         accelY = accelY + this.rand.nextGaussian() * 0.4D;
         accelZ = accelZ + this.rand.nextGaussian() * 0.4D;
         double d0 = MathHelper.sqrt(accelX * accelX + accelY * accelY + accelZ * accelZ);
-        this.accelerationX = accelX / d0 * 0.01D;
-        this.accelerationY = accelY / d0 * 0.01D;
-        this.accelerationZ = accelZ / d0 * 0.01D;
+        this.accelerationX = accelX / d0 * 0.1D;
+        this.accelerationY = accelY / d0 * 0.1D;
+        this.accelerationZ = accelZ / d0 * 0.1D;
         setSpawnYawPitch(shooter.rotationYaw, shooter.rotationPitch);
+    }
+
+    @Override
+    public void onEntityUpdate() {
+        super.onEntityUpdate();
+
+        soundTicker--;
+        if (soundTicker <= 0) {
+            world.playSound(null, posX, posY, posZ, ModSounds.laser, SoundCategory.HOSTILE, 5.0f, 1.0f);
+            soundTicker = 40;
+        }
     }
 
     @Override
     public void onUpdate() {
         if (this.world.isRemote || (this.shootingEntity == null || !this.shootingEntity.isDead) && this.world.isBlockLoaded(new BlockPos(this))) {
             super.onUpdate();
+
 
             ++this.ticksInAir;
             RayTraceResult raytraceresult = ProjectileHelper.forwardsRaycast(this, true, this.ticksInAir >= 25, this.shootingEntity);
@@ -156,9 +172,10 @@ public class LaserEntity extends Entity implements IForcefieldImmunity {
     protected void onImpact(RayTraceResult result) {
         if (!this.world.isRemote) {
             if (result.entityHit != null) {
-//                System.out.println("LaserEntity.onImpact");
-                result.entityHit.attackEntityFrom(DamageSource.causeIndirectMagicDamage(this, this.shootingEntity), 10.0F);
-//                this.awwpplyEnchantments(this.shootingEntity, result.entityHit);
+                System.out.println("LaserEntity.onImpact");
+//                result.entityHit.attackEntityFrom(DamageSource.causeIndirectMagicDamage(this, this.shootingEntity), 10.0F);
+
+//                this.applyEnchantments(this.shootingEntity, result.entityHit);
             }
             this.setDead();
         }

@@ -1,6 +1,6 @@
 package mcjty.ariente.blocks.defense;
 
-import mcjty.ariente.sounds.ArienteSound;
+import mcjty.ariente.sounds.ForcefieldSound;
 import mcjty.ariente.sounds.ModSounds;
 import mcjty.ariente.sounds.SoundController;
 import net.minecraft.client.Minecraft;
@@ -32,17 +32,17 @@ public class ForceFieldSounds {
             }
         }
         if (minDistance < 5 * 5) {
-            ArienteSound soundAt = SoundController.getSoundAt(world, pos);
+            ForcefieldSound soundAt = SoundController.getForcefieldSoundAt(world, pos);
             minDistance = Math.sqrt(minDistance);
 
             float volume = (float) ((5f - minDistance) * 2.0f / 5.0f);
             if (soundAt != null) {
                 soundAt.setVolume(volume);
             } else {
-                SoundController.playSound(world, pos, ModSounds.forcefield, volume, 20);
+                SoundController.playForcefieldSound(world, pos, ModSounds.forcefield, volume, 20);
             }
         } else {
-            SoundController.stopSound(world, pos);
+            SoundController.stopForcefieldSounds(world, pos);
         }
     }
 }
