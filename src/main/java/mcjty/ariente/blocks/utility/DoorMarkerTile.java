@@ -1,22 +1,26 @@
 package mcjty.ariente.blocks.utility;
 
+import mcjty.ariente.blocks.ModBlocks;
 import mcjty.ariente.gui.HoloGuiEntity;
 import mcjty.ariente.gui.IGuiComponent;
 import mcjty.ariente.gui.IGuiTile;
 import mcjty.ariente.gui.components.HoloPanel;
 import mcjty.ariente.gui.components.HoloToggleIcon;
+import mcjty.lib.blocks.BaseBlock;
 import mcjty.lib.tileentity.GenericTileEntity;
 import mcjty.theoneprobe.api.IProbeHitData;
 import mcjty.theoneprobe.api.IProbeInfo;
 import mcjty.theoneprobe.api.ProbeMode;
 import mcp.mobius.waila.api.IWailaConfigHandler;
 import mcp.mobius.waila.api.IWailaDataAccessor;
+import net.minecraft.block.Block;
 import net.minecraft.block.state.IBlockState;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.tileentity.TileEntity;
+import net.minecraft.util.EnumFacing;
 import net.minecraft.util.ITickable;
 import net.minecraft.util.math.AxisAlignedBB;
 import net.minecraft.util.math.BlockPos;
@@ -32,7 +36,8 @@ public class DoorMarkerTile extends GenericTileEntity implements ITickable, IGui
 
     public static final AxisAlignedBB BLOCK_AABB = new AxisAlignedBB(0.0D, 0.0D, 0.0D, 1.0D, 0.1D, 1.0D);
 
-    private AxisAlignedBB renderBox = null;
+    public static final int MAX_DOOR_HEIGHT = 6;        // @todo configurable
+
     private AxisAlignedBB detectionBox = null;
 
     private boolean open = false;
@@ -45,21 +50,14 @@ public class DoorMarkerTile extends GenericTileEntity implements ITickable, IGui
 
     @Override
     public void update() {
-        if (!world.isRemote && !locked) {
-            List<Entity> entities = world.getEntitiesWithinAABB(EntityPlayer.class, getDetectionBox());
-            boolean o = !entities.isEmpty();
-            if (o != open) {
-                open = o;
-                markDirtyClient();
+        if (!world.isRemote) {
+            setInvisibleBlocks();
+            if (!locked) {
+                List<Entity> entities = world.getEntitiesWithinAABB(EntityPlayer.class, getDetectionBox());
+                boolean o = !entities.isEmpty();
+                setOpen(o);
             }
         }
-    }
-
-    private AxisAlignedBB getBeamBox() {
-        if (renderBox == null) {
-            renderBox = new AxisAlignedBB(getPos()).union(new AxisAlignedBB(new BlockPos(pos.getX(), pos.getY() + 10, pos.getZ())));
-        }
-        return renderBox;
     }
 
     private AxisAlignedBB getDetectionBox() {
@@ -77,10 +75,54 @@ public class DoorMarkerTile extends GenericTileEntity implements ITickable, IGui
         return locked;
     }
 
+    private void setInvisibleBlocks() {
+        BlockPos p = pos.up();
+        for (int i = 0 ; i < MAX_DOOR_HEIGHT ; i++) {
+            if (world.isAirBlock(p)) {
+                EnumFacing facing = getFacing();
+                if (facing == null) {
+                    return;
+                }
+                world.setBlockState(p, ModBlocks.invisibleDoorBlock.getDefaultState().withProperty(BaseBlock.FACING_HORIZ, facing), 3);
+            } else {
+                return;
+            }
+            p = p.up();
+        }
+    }
+
+    private void clearInvisibleBlocks() {
+        BlockPos p = pos.up();
+        for (int i = 0 ; i < MAX_DOOR_HEIGHT ; i++) {
+            if (world.getBlockState(p).getBlock() == ModBlocks.invisibleDoorBlock) {
+                world.setBlockToAir(p);
+            } else {
+                return;
+            }
+            p = p.up();
+        }
+    }
+
+    private EnumFacing getFacing() {
+        IBlockState state = world.getBlockState(pos);
+        if (state.getBlock() != ModBlocks.doorMarkerBlock) {
+            return null;
+        }
+        return state.getValue(BaseBlock.FACING_HORIZ);
+    }
+
+    private void setOpen(boolean o) {
+        if (open == o) {
+            return;
+        }
+        open = o;
+        markDirtyClient();
+    }
+
     public void setLocked(boolean locked) {
         this.locked = locked;
         if (locked) {
-            open = false;
+            setOpen(false);
         }
         markDirtyClient();
     }
@@ -114,15 +156,7 @@ public class DoorMarkerTile extends GenericTileEntity implements ITickable, IGui
         if (te instanceof DoorMarkerTile) {
             DoorMarkerTile door = (DoorMarkerTile) te;
             if (!door.isOpen()) {
-                BlockPos p = pos.up();
-                for (int yy = 1; yy < 10; yy++) {
-                    if (!world.isAirBlock(p)) {
-                        break;
-                    }
-                    p = p.up();
-                }
-                AxisAlignedBB box = new AxisAlignedBB(pos.getX(), pos.getY(), pos.getZ(), p.getX()+1, p.getY()+1, p.getZ()+1);
-                // @todo doesn't seem to work entirely. We need to work with dummy boxes (also fixes rendering?, need to exclude from asset system)
+                AxisAlignedBB box = Block.FULL_BLOCK_AABB.offset(pos);
                 if (entityBox.intersects(box)) {
                     collidingBoxes.add(box);
                 }
@@ -177,17 +211,15 @@ public class DoorMarkerTile extends GenericTileEntity implements ITickable, IGui
 //        }
     }
 
-    @SideOnly(Side.CLIENT)
-    @Override
-    public AxisAlignedBB getRenderBoundingBox() {
-        return getBeamBox();
-    }
-
-
     @Override
     public boolean shouldRenderInPass(int pass) {
-        // @todo Should be pass 0 but it flickers then if an entity comes into view
-        return pass == 1;
+        return pass == 0;
+    }
+
+    @Override
+    public void onBlockBreak(World workd, BlockPos pos, IBlockState state) {
+        super.onBlockBreak(workd, pos, state);
+        clearInvisibleBlocks();
     }
 
     @Override

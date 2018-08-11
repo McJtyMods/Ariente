@@ -45,6 +45,7 @@ tile.ariente.elevator.name=Elevator
 tile.ariente.forcefield.name=Forcefield Generator
 tile.ariente.level_marker.name=Level Marker
 tile.ariente.door_marker.name=Door Marker
+tile.ariente.invisible_door.name=Door
 tile.ariente.flatlight.name=Flat Light
 tile.ariente.aicore.name=AI Core
 

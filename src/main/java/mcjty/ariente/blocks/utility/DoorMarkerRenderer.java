@@ -18,7 +18,7 @@ import org.lwjgl.opengl.GL11;
 @SideOnly(Side.CLIENT)
 public class DoorMarkerRenderer extends TileEntitySpecialRenderer<DoorMarkerTile> {
 
-    private ResourceLocation halo = new ResourceLocation(Ariente.MODID, "textures/gui/guielements.png");
+    public static ResourceLocation halo = new ResourceLocation(Ariente.MODID, "textures/gui/guielements.png");
 
     public DoorMarkerRenderer() {
     }
@@ -30,7 +30,6 @@ public class DoorMarkerRenderer extends TileEntitySpecialRenderer<DoorMarkerTile
             return;
         }
 
-        Tessellator tessellator = Tessellator.getInstance();
         GlStateManager.pushMatrix();
 
         EnumFacing frontDirection = ModBlocks.doorMarkerBlock.getFrontDirection(state);
@@ -41,8 +40,18 @@ public class DoorMarkerRenderer extends TileEntitySpecialRenderer<DoorMarkerTile
             GlStateManager.translate(x + .5, y, z);
         }
 
+        bindTexture(halo);
 
-//        RenderHelper.enableStandardItemLighting();
+        int openphase = getOpenphase(te);
+        int iconIndex = te.getIconIndex();
+        renderDoorSegment(openphase, iconIndex);
+
+        GlStateManager.popMatrix();
+    }
+
+    public static void renderDoorSegment(int openphase, int iconIndex) {
+        Tessellator tessellator = Tessellator.getInstance();
+        //        RenderHelper.enableStandardItemLighting();
         GlStateManager.disableBlend();
         GlStateManager.enableDepth();
         GlStateManager.depthMask(true);
@@ -59,11 +68,7 @@ public class DoorMarkerRenderer extends TileEntitySpecialRenderer<DoorMarkerTile
 //        GlStateManager.enableLighting();
         // @todo figure out why entities cause this to flicker if the TE is rendered in pass 0 instead of pass 1
 
-        bindTexture(halo);
 
-        int openphase = getOpenphase(te);
-
-        int iconIndex = te.getIconIndex();
         float u = (4 + (iconIndex % 4));
         float v = (12 + (iconIndex / 4));
 
@@ -93,29 +98,27 @@ public class DoorMarkerRenderer extends TileEntitySpecialRenderer<DoorMarkerTile
             buffer.pos(.1, o, p).tex(u+duv, v+duv).endVertex();
             buffer.pos(.1, o, o).tex(u, v+duv).endVertex();
 
-            for (int yy = 1; yy < 10; yy++) {
-                if (getWorld().isAirBlock(te.getPos().up(yy))) {
-                    buffer.pos(-.1, yy + o, o).tex(u, v).endVertex();
-                    buffer.pos(-.1, yy + o, p).tex(u+duv, v).endVertex();
-                    buffer.pos(-.1, yy + p, p).tex(u+duv, v+duv).endVertex();
-                    buffer.pos(-.1, yy + p, o).tex(u, v+duv).endVertex();
-
-                    buffer.pos(.1, yy + p, o).tex(u, v).endVertex();
-                    buffer.pos(.1, yy + p, p).tex(u+duv, v).endVertex();
-                    buffer.pos(.1, yy + o, p).tex(u+duv, v+duv).endVertex();
-                    buffer.pos(.1, yy + o, o).tex(u, v+duv).endVertex();
-                } else {
-                    break;
-                }
-            }
+//            for (int yy = 1; yy < 10; yy++) {
+//                if (getWorld().isAirBlock(te.getPos().up(yy))) {
+//                    buffer.pos(-.1, yy + o, o).tex(u, v).endVertex();
+//                    buffer.pos(-.1, yy + o, p).tex(u+duv, v).endVertex();
+//                    buffer.pos(-.1, yy + p, p).tex(u+duv, v+duv).endVertex();
+//                    buffer.pos(-.1, yy + p, o).tex(u, v+duv).endVertex();
+//
+//                    buffer.pos(.1, yy + p, o).tex(u, v).endVertex();
+//                    buffer.pos(.1, yy + p, p).tex(u+duv, v).endVertex();
+//                    buffer.pos(.1, yy + o, p).tex(u+duv, v+duv).endVertex();
+//                    buffer.pos(.1, yy + o, o).tex(u, v+duv).endVertex();
+//                } else {
+//                    break;
+//                }
+//            }
 
             tessellator.draw();
         }
-
-        GlStateManager.popMatrix();
     }
 
-    private int getOpenphase(DoorMarkerTile te) {
+    public static int getOpenphase(DoorMarkerTile te) {
         boolean opening = te.isOpen();
         int openphase = te.getOpening();
         long t = System.currentTimeMillis();
@@ -137,10 +140,5 @@ public class DoorMarkerRenderer extends TileEntitySpecialRenderer<DoorMarkerTile
         }
         te.setLastTime(t);
         return openphase;
-    }
-
-    @Override
-    public boolean isGlobalRenderer(DoorMarkerTile te) {
-        return true;
     }
 }

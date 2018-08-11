@@ -65,6 +65,7 @@ public class ModBlocks {
     public static GenericBlock<ElevatorTile, GenericContainer> elevatorBlock;
     public static GenericBlock<LevelMarkerTile, GenericContainer> levelMarkerBlock;
     public static GenericBlock<DoorMarkerTile, GenericContainer> doorMarkerBlock;
+    public static GenericBlock<InvisibleDoorTile, GenericContainer> invisibleDoorBlock;
     public static GenericBlock<ForceFieldTile, GenericContainer> forceFieldBlock;
     public static GenericBlock<AICoreTile, GenericContainer> aiCoreBlock;
     public static GenericBlock<WarperTile, GenericContainer> warperBlock;
@@ -218,6 +219,14 @@ public class ModBlocks {
                 .infoExtended("message.ariente.door_marker")
                 .build();
 
+        invisibleDoorBlock = builderFactory.<InvisibleDoorTile> builder("invisible_door")
+                .tileEntityClass(InvisibleDoorTile.class)
+                .emptyContainer()
+                .rotationType(BaseBlock.RotationType.HORIZROTATION)
+                .flags(BlockFlags.NON_OPAQUE, BlockFlags.NON_FULLCUBE)
+                .addCollisionBoxToList(InvisibleDoorTile::addCollisionBoxToList)
+                .build();
+
         forceFieldBlock = builderFactory.<ForceFieldTile> builder("forcefield")
                 .tileEntityClass(ForceFieldTile.class)
                 .emptyContainer()
@@ -367,6 +376,8 @@ public class ModBlocks {
 
         doorMarkerBlock.initModel();
         ClientRegistry.bindTileEntitySpecialRenderer(DoorMarkerTile.class, new DoorMarkerRenderer());
+        invisibleDoorBlock.initModel();
+        ClientRegistry.bindTileEntitySpecialRenderer(InvisibleDoorTile.class, new InvisibleDoorRenderer());
 
         forceFieldBlock.initModel();
 
