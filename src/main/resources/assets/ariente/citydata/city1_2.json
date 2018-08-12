@@ -341,7 +341,8 @@
         "aaaaaaaaaaaaaaaa"
       ]
     ],
-    "meta": []
+    "meta": [],
+    "tedata": []
   },
   {
     "type": "part",
@@ -566,7 +567,8 @@
         "aaaaFaaaaaaaaaaa"
       ]
     ],
-    "meta": []
+    "meta": [],
+    "tedata": []
   },
   {
     "type": "part",
@@ -791,7 +793,8 @@
         "aaaaaaaaaaaaaaaa"
       ]
     ],
-    "meta": []
+    "meta": [],
+    "tedata": []
   },
   {
     "type": "part",
@@ -1016,7 +1019,8 @@
         "aaaaaaaaaaaaaaaa"
       ]
     ],
-    "meta": []
+    "meta": [],
+    "tedata": []
   },
   {
     "type": "part",
@@ -1241,7 +1245,20 @@
         "a               "
       ]
     ],
-    "meta": []
+    "meta": [],
+    "tedata": [
+      {
+        "x": 2,
+        "y": 0,
+        "z": 2,
+        "values": [
+          {
+            "key": "height",
+            "integer": 15
+          }
+        ]
+      }
+    ]
   },
   {
     "type": "part",
@@ -1466,7 +1483,8 @@
         "aayaaayaaayaaaya"
       ]
     ],
-    "meta": []
+    "meta": [],
+    "tedata": []
   },
   {
     "type": "part",
@@ -1691,7 +1709,8 @@
         "               a"
       ]
     ],
-    "meta": []
+    "meta": [],
+    "tedata": []
   },
   {
     "type": "part",
@@ -1916,7 +1935,20 @@
         "ayaaayaaayaaayaa"
       ]
     ],
-    "meta": []
+    "meta": [],
+    "tedata": [
+      {
+        "x": 0,
+        "y": 5,
+        "z": 0,
+        "values": [
+          {
+            "key": "scale",
+            "integer": 13
+          }
+        ]
+      }
+    ]
   },
   {
     "type": "palette",

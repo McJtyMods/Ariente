@@ -4,7 +4,9 @@ import com.google.gson.JsonArray;
 import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
 import com.google.gson.JsonPrimitive;
+import net.minecraft.util.math.BlockPos;
 import org.apache.commons.lang3.StringUtils;
+import org.apache.commons.lang3.tuple.Pair;
 
 import java.util.HashMap;
 import java.util.Map;
@@ -26,18 +28,21 @@ public class BuildingPart implements IAsset {
     // Optimized version of this part which is organized in xSize*ySize vertical strings
     private char[][] vslices = null;
 
-
+    private Map<BlockPos, Map<String, Object>> teInfo = new HashMap<>();
     private Map<String, Object> metadata = new HashMap<>();
 
     public BuildingPart(JsonObject object) {
         readFromJSon(object);
     }
 
-    public BuildingPart(String name, int xSize, int zSize, String[] slices) {
+    public BuildingPart(String name, int xSize, int zSize, String[] slices, Map<BlockPos, Map<String, Object>> teData) {
         this.name = name;
         this.slices = slices;
         this.xSize = xSize;
         this.zSize = zSize;
+        for (Map.Entry<BlockPos, Map<String, Object>> entry : teData.entrySet()) {
+            teInfo.put(entry.getKey(), entry.getValue());
+        }
     }
 
     public Character getMetaChar(String key) {
@@ -66,6 +71,10 @@ public class BuildingPart implements IAsset {
 
     public void setName(String name) {
         this.name = name;
+    }
+
+    public Map<BlockPos, Map<String, Object>> getTeInfo() {
+        return teInfo;
     }
 
     /**
@@ -138,6 +147,36 @@ public class BuildingPart implements IAsset {
                 }
             }
         }
+        if (object.has("tedata")) {
+            JsonArray dataArray = object.get("tedata").getAsJsonArray();
+            for (JsonElement element : dataArray) {
+                JsonObject o = element.getAsJsonObject();
+                Integer x = o.get("x").getAsInt();
+                Integer y = o.get("y").getAsInt();
+                Integer z = o.get("z").getAsInt();
+                BlockPos key = new BlockPos(x, y, z);
+                Map<String, Object> valueMap = new HashMap<>();
+                JsonArray values = o.get("values").getAsJsonArray();
+                for (JsonElement el : values) {
+                    JsonObject value = el.getAsJsonObject();
+                    String k = value.get("key").getAsString();
+                    if (value.has("integer")) {
+                        valueMap.put(k, value.get("integer").getAsInt());
+                    } else if (value.has("float")) {
+                        valueMap.put(k, value.get("float").getAsFloat());
+                    } else if (value.has("boolean")) {
+                        valueMap.put(k, value.get("boolean").getAsBoolean());
+                    } else if (value.has("char")) {
+                        valueMap.put(k, value.get("char").getAsCharacter());
+                    } else if (value.has("character")) {
+                        valueMap.put(k, value.get("character").getAsCharacter());
+                    } else if (value.has("string")) {
+                        valueMap.put(k, value.get("string").getAsString());
+                    }
+                }
+                teInfo.put(key, valueMap);
+            }
+        }
     }
 
     public JsonObject writeToJSon() {
@@ -175,6 +214,33 @@ public class BuildingPart implements IAsset {
             metaArray.add(o);
         }
         object.add("meta", metaArray);
+
+        JsonArray dataArray = new JsonArray();
+        for (Map.Entry<BlockPos, Map<String, Object>> entry : teInfo.entrySet()) {
+            JsonObject o = new JsonObject();
+            o.add("x", new JsonPrimitive(entry.getKey().getX()));
+            o.add("y", new JsonPrimitive(entry.getKey().getY()));
+            o.add("z", new JsonPrimitive(entry.getKey().getZ()));
+            JsonArray values = new JsonArray();
+            for (Map.Entry<String, Object> objectEntry : entry.getValue().entrySet()) {
+                JsonObject value = new JsonObject();
+                value.add("key", new JsonPrimitive(objectEntry.getKey()));
+                Object v = objectEntry.getValue();
+                if (v instanceof Integer) {
+                    value.add("integer", new JsonPrimitive((Integer) v));
+                } else if (v instanceof Float) {
+                    value.add("float", new JsonPrimitive((Float) v));
+                } else if (v instanceof Boolean) {
+                    value.add("boolean", new JsonPrimitive((Boolean) v));
+                } else if (v instanceof String) {
+                    value.add("string", new JsonPrimitive((String) v));
+                }
+                values.add(value);
+            }
+            o.add("values", values);
+            dataArray.add(o);
+        }
+        object.add("tedata", dataArray);
 
         return object;
     }

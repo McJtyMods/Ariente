@@ -1,6 +1,11 @@
 package mcjty.ariente.blocks.utility;
 
+import mcjty.ariente.ai.CityAI;
 import mcjty.ariente.blocks.ModBlocks;
+import mcjty.ariente.cities.City;
+import mcjty.ariente.cities.CityPlan;
+import mcjty.ariente.cities.CityTools;
+import mcjty.ariente.cities.ICityEquipment;
 import mcjty.ariente.gui.HoloGuiEntity;
 import mcjty.ariente.gui.HoloGuiHandler;
 import mcjty.ariente.gui.IGuiComponent;
@@ -40,9 +45,11 @@ import net.minecraftforge.items.ItemHandlerHelper;
 import net.minecraftforge.items.wrapper.InvWrapper;
 
 import javax.annotation.Nonnull;
+import javax.annotation.Nullable;
 import java.util.List;
+import java.util.Map;
 
-public class StorageTile extends GenericTileEntity implements IGuiTile, IInventory {
+public class StorageTile extends GenericTileEntity implements IGuiTile, IInventory, ICityEquipment {
 
     public static final int STACKS_PER_TYPE = 64;
     public static final int STACKS = 4;
@@ -50,6 +57,29 @@ public class StorageTile extends GenericTileEntity implements IGuiTile, IInvento
     private ItemStackList stacks = ItemStackList.create(4);
     private int[] counts = new int[STACKS * STACKS_PER_TYPE];
     private int[] totals = new int[STACKS];
+
+    @Nullable
+    @Override
+    public Map<String, Object> save() {
+        return null;
+    }
+
+    @Override
+    public void load(Map<String, Object> data) {
+
+    }
+
+    @Override
+    public void initialize(CityAI cityAI, World world) {
+        City city = CityTools.getCity(cityAI.getCenter());
+        CityPlan plan = city.getPlan();
+        cityAI.fillLoot(plan, this);
+    }
+
+    @Override
+    public void setup(CityAI cityAI, World world) {
+
+    }
 
     @Override
     public void readRestorableFromNBT(NBTTagCompound tagCompound) {

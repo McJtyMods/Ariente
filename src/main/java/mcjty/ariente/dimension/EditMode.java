@@ -5,11 +5,14 @@ import com.google.gson.GsonBuilder;
 import com.google.gson.JsonArray;
 import mcjty.ariente.ai.CityAI;
 import mcjty.ariente.ai.CityAISystem;
+import mcjty.ariente.blocks.ModBlocks;
 import mcjty.ariente.cities.*;
 import mcjty.ariente.varia.ChunkCoord;
+import net.minecraft.block.Block;
 import net.minecraft.block.state.IBlockState;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.init.Blocks;
+import net.minecraft.tileentity.TileEntity;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.text.TextComponentString;
 import net.minecraft.world.World;
@@ -277,7 +280,8 @@ public class EditMode {
     private static BuildingPart exportPart(BuildingPart part, World world, BlockPos start, int y, Palette palette,
                                            Set<Character> paletteUsage,
                                            Map<IBlockState, Character> mapping, AtomicInteger idx) throws FileNotFoundException {
-        String palettechars = "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789-+=*^%$#@_";
+        String palettechars = "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789-+=*^%$#@_()[]{}:;,.?!";
+        Map<BlockPos, Map<String, Object>> teData = new HashMap<>();
         List<Slice> slices = new ArrayList<>();
         for (int f = 0; f < part.getSliceCount(); f++) {
             int cx = (start.getX() >> 4) * 16;
@@ -289,16 +293,26 @@ public class EditMode {
             Slice slice = new Slice();
             slices.add(slice);
             BlockPos.MutableBlockPos pos = new BlockPos.MutableBlockPos(cx, cy, cz);
-            boolean allempty = true;
             for (int x = 0; x < 16; x++) {
                 for (int z = 0; z < 16; z++) {
                     pos.setPos(cx + x, cy, cz + z);
                     IBlockState state = world.getBlockState(pos);
-                    Character character = mapping.get(state);
+                    Character character;
+
+                    if (state.getBlock() == ModBlocks.invisibleDoorBlock) {
+                        character = ' ';
+                    } else {
+                        character = mapping.get(state);
+                    }
                     if (character == null) {
                         while (true) {
-                            character = (state.getBlock() == Blocks.AIR || state.getBlock() == Blocks.WATER || state.getBlock() == Blocks.FLOWING_WATER)
-                                    ? ' ' : palettechars.charAt(idx.getAndIncrement());
+                            try {
+                                character = (state.getBlock() == Blocks.AIR || state.getBlock() == Blocks.WATER || state.getBlock() == Blocks.FLOWING_WATER)
+                                        ? ' ' : palettechars.charAt(idx.getAndIncrement());
+                            } catch (Exception e) {
+                                character = ' ';
+                                System.out.println("PALETTE OVERFLOW SAVING PART " + part.getName() + "!");
+                            }
                             if (!palette.getPalette().containsKey(character)) {
                                 break;
                             }
@@ -308,6 +322,13 @@ public class EditMode {
                     }
                     paletteUsage.add(character);
                     slice.sequence[z * 16 + x] = String.valueOf(character);
+                    TileEntity te = world.getTileEntity(pos);
+                    if (te instanceof ICityEquipment) {
+                        Map<String, Object> saved = ((ICityEquipment) te).save();
+                        if (saved != null) {
+                            teData.put(new BlockPos(x, f, z), saved);
+                        }
+                    }
                 }
             }
         }
@@ -317,7 +338,7 @@ public class EditMode {
             sl[i] = StringUtils.join(slices.get(i).sequence);
         }
 
-        return new BuildingPart(part.getName(), 16, 16, sl);
+        return new BuildingPart(part.getName(), 16, 16, sl, teData);
     }
 
     public static class Slice {

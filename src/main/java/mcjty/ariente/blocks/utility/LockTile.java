@@ -1,5 +1,8 @@
 package mcjty.ariente.blocks.utility;
 
+import com.google.gson.JsonObject;
+import mcjty.ariente.ai.CityAI;
+import mcjty.ariente.cities.ICityEquipment;
 import mcjty.ariente.items.KeyCardItem;
 import mcjty.ariente.security.IKeyCardSlot;
 import mcjty.ariente.sounds.ModSounds;
@@ -26,9 +29,10 @@ import net.minecraftforge.fml.relauncher.Side;
 import net.minecraftforge.fml.relauncher.SideOnly;
 
 import java.util.List;
+import java.util.Map;
 import java.util.Set;
 
-public class LockTile extends GenericTileEntity implements IKeyCardSlot {
+public class LockTile extends GenericTileEntity implements IKeyCardSlot, ICityEquipment {
 
     public static final PropertyBool LOCKED = PropertyBool.create("locked");
 
@@ -111,13 +115,24 @@ public class LockTile extends GenericTileEntity implements IKeyCardSlot {
     }
 
     @Override
-    public void readFromNBT(NBTTagCompound tagCompound) {
-        super.readFromNBT(tagCompound);
+    public Map<String, Object> save() {
+        return null;
     }
 
     @Override
-    public NBTTagCompound writeToNBT(NBTTagCompound tagCompound) {
-        return super.writeToNBT(tagCompound);
+    public void load(Map<String, Object> data) {
+
+    }
+
+    @Override
+    public void initialize(CityAI cityAI, World world) {
+        setKeyId(cityAI.getKeyId());
+        setLocked(true);
+    }
+
+    @Override
+    public void setup(CityAI cityAI, World world) {
+
     }
 
     @Override

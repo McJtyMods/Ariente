@@ -1,6 +1,8 @@
 package mcjty.ariente.blocks.utility;
 
 import mcjty.ariente.Ariente;
+import mcjty.ariente.ai.CityAI;
+import mcjty.ariente.cities.ICityEquipment;
 import mcjty.ariente.gui.HoloGuiEntity;
 import mcjty.ariente.gui.HoloGuiHandler;
 import mcjty.ariente.gui.IGuiComponent;
@@ -32,9 +34,10 @@ import net.minecraftforge.fml.common.Optional;
 import net.minecraftforge.fml.relauncher.Side;
 import net.minecraftforge.fml.relauncher.SideOnly;
 
+import javax.annotation.Nullable;
 import java.util.*;
 
-public class ElevatorTile extends GenericTileEntity implements IGuiTile, ITickable, IPowerReceiver {
+public class ElevatorTile extends GenericTileEntity implements IGuiTile, ITickable, IPowerReceiver, ICityEquipment {
 
     public static final String TAG_ELEVATOR = "elevator";
 
@@ -221,6 +224,31 @@ public class ElevatorTile extends GenericTileEntity implements IGuiTile, ITickab
                 cachedBox = null;
             }
         }
+    }
+
+    @Nullable
+    @Override
+    public Map<String, Object> save() {
+        Map<String, Object> data = new HashMap<>();
+        data.put("height", getHeight());
+        return data;
+    }
+
+    @Override
+    public void load(Map<String, Object> data) {
+        if (data.get("height") instanceof Integer) {
+            setHeight((Integer) data.get("height"));
+        }
+    }
+
+    @Override
+    public void initialize(CityAI cityAI, World world) {
+
+    }
+
+    @Override
+    public void setup(CityAI cityAI, World world) {
+
     }
 
     @Override

@@ -5,13 +5,8 @@ import mcjty.ariente.blocks.aicore.AICoreTile;
 import mcjty.ariente.blocks.defense.ForceFieldTile;
 import mcjty.ariente.blocks.generators.NegariteGeneratorTile;
 import mcjty.ariente.blocks.generators.PosiriteGeneratorTile;
-import mcjty.ariente.blocks.utility.ElevatorTile;
-import mcjty.ariente.blocks.utility.LockTile;
 import mcjty.ariente.blocks.utility.StorageTile;
-import mcjty.ariente.cities.City;
-import mcjty.ariente.cities.CityPlan;
-import mcjty.ariente.cities.CityTools;
-import mcjty.ariente.cities.Loot;
+import mcjty.ariente.cities.*;
 import mcjty.ariente.entities.DroneEntity;
 import mcjty.ariente.entities.SentinelDroneEntity;
 import mcjty.ariente.entities.SoldierBehaviourType;
@@ -55,6 +50,7 @@ public class CityAI {
     private boolean foundEquipment = false;
     private Set<BlockPos> aiCores = new HashSet<>();
     private Set<BlockPos> forceFields = new HashSet<>();
+    private Set<BlockPos> equipment = new HashSet<>();
     private Set<BlockPos> negariteGenerators = new HashSet<>();
     private Set<BlockPos> posiriteGenerators = new HashSet<>();
     private Map<BlockPos, EnumFacing> guardPositions = new HashMap<>();
@@ -79,6 +75,10 @@ public class CityAI {
 
     public CityAI(ChunkCoord center) {
         this.center = center;
+    }
+
+    public ChunkCoord getCenter() {
+        return center;
     }
 
     // Return true if we potentially have to save the city system state
@@ -480,21 +480,20 @@ public class CityAI {
                                 world.setBlockToAir(p);
                             } else {
                                 TileEntity te = world.getTileEntity(p);
+                                if (te instanceof ICityEquipment) {
+                                    ((ICityEquipment) te).setup(this, world);
+                                    equipment.add(p);
+                                }
+
                                 if (te instanceof AICoreTile) {
                                     aiCores.add(p);
                                 } else if (te instanceof ForceFieldTile) {
+                                    // We already have this as equipment but we need it separate
                                     forceFields.add(p);
                                 } else if (te instanceof NegariteGeneratorTile) {
                                     negariteGenerators.add(p);
                                 } else if (te instanceof PosiriteGeneratorTile) {
                                     posiriteGenerators.add(p);
-                                } else if (te instanceof ElevatorTile) {
-                                    ((ElevatorTile) te).setHeight(plan.getElevatorHeight());
-                                } else if (te instanceof StorageTile) {
-                                    fillLoot(plan, (StorageTile) te);
-                                } else if (te instanceof LockTile) {
-                                    ((LockTile) te).setKeyId(keyId);
-                                    ((LockTile) te).setLocked(true);
                                 }
                             }
                         }
@@ -509,7 +508,7 @@ public class CityAI {
         return keyId;
     }
 
-    private void fillLoot(CityPlan plan, StorageTile te) {
+    public void fillLoot(CityPlan plan, StorageTile te) {
         List<Loot> loot = plan.getLoot();
         for (int i = 0 ; i < 4 ; i++) {
             for (Loot l : loot) {
@@ -595,14 +594,13 @@ public class CityAI {
         City city = CityTools.getCity(center);
         CityPlan plan = city.getPlan();
 
-        for (BlockPos p : forceFields) {
+        for (BlockPos p : equipment) {
             TileEntity te = world.getTileEntity(p);
-            if (te instanceof ForceFieldTile) {
-                ForceFieldTile forcefield = (ForceFieldTile) te;
-                forcefield.setRSMode(RedstoneMode.REDSTONE_IGNORED);
-                forcefield.setScale(plan.getForcefieldScale());
+            if (te instanceof ICityEquipment) {
+                ((ICityEquipment) te).initialize(this, world);
             }
         }
+
         for (BlockPos p : negariteGenerators) {
             TileEntity te = world.getTileEntity(p);
             if (te instanceof NegariteGeneratorTile) {

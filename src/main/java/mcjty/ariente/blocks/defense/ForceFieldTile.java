@@ -1,5 +1,7 @@
 package mcjty.ariente.blocks.defense;
 
+import mcjty.ariente.ai.CityAI;
+import mcjty.ariente.cities.ICityEquipment;
 import mcjty.ariente.config.ArienteConfiguration;
 import mcjty.ariente.gui.HoloGuiEntity;
 import mcjty.ariente.gui.IGuiComponent;
@@ -34,13 +36,11 @@ import net.minecraftforge.fml.common.Optional;
 import net.minecraftforge.fml.relauncher.Side;
 import net.minecraftforge.fml.relauncher.SideOnly;
 
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.List;
+import java.util.*;
 
 import static mcjty.ariente.config.ArienteConfiguration.SHIELD_PANEL_LIFE;
 
-public class ForceFieldTile extends GenericTileEntity implements IGuiTile, ITickable, ISoundProducer, IPowerReceiver {
+public class ForceFieldTile extends GenericTileEntity implements IGuiTile, ITickable, ISoundProducer, IPowerReceiver, ICityEquipment {
 
     private PanelInfo[] panelInfo = new PanelInfo[PentakisDodecahedron.MAX_TRIANGLES];
     private int[] panelDestroyTimeout = new int[PentakisDodecahedron.MAX_TRIANGLES];    // @todo persist to NBT?
@@ -336,6 +336,30 @@ public class ForceFieldTile extends GenericTileEntity implements IGuiTile, ITick
             }
         }
         markDirtyClient();
+    }
+
+    @Override
+    public Map<String, Object> save() {
+        Map<String, Object> data = new HashMap<>();
+        data.put("scale", getScale());
+        return data;
+    }
+
+    @Override
+    public void load(Map<String, Object> data) {
+        if (data.get("scale") instanceof Integer) {
+            setScale((Integer) data.get("scale"));
+        }
+    }
+
+    @Override
+    public void initialize(CityAI cityAI, World world) {
+        setRSMode(RedstoneMode.REDSTONE_IGNORED);
+    }
+
+    @Override
+    public void setup(CityAI cityAI, World world) {
+
     }
 
     @Override

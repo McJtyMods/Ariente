@@ -2,8 +2,10 @@ package mcjty.ariente.dimension;
 
 import com.google.common.collect.ImmutableList;
 import mcjty.ariente.blocks.ModBlocks;
+import mcjty.ariente.cities.BuildingPart;
 import mcjty.ariente.cities.City;
 import mcjty.ariente.cities.CityTools;
+import mcjty.ariente.cities.ICityEquipment;
 import mcjty.ariente.varia.ChunkCoord;
 import mcjty.lib.tileentity.GenericTileEntity;
 import net.minecraft.block.Block;
@@ -264,6 +266,19 @@ public class ArienteChunkGenerator implements IChunkGenerator {
     }
 
     private void fixTileEntities(int x, int z) {
+        City city = CityTools.getNearestCity(this, x, z);
+        List<BuildingPart> parts = CityTools.getBuildingParts(city, x, z);
+        int lowestY = CityTools.getLowestHeight(city, this, x, z);
+        int y = lowestY;
+        // We need the parts again to load the equipment data
+        Map<BlockPos, Map<String, Object>> equipment = new HashMap<>();
+        for (BuildingPart part : parts) {
+            for (Map.Entry<BlockPos, Map<String, Object>> entry : part.getTeInfo().entrySet()) {
+                equipment.put(new BlockPos(x*16, y, z*16).add(entry.getKey()), entry.getValue());
+            }
+            y += part.getSliceCount();
+        }
+
         for (int dx = 0 ; dx < 16 ; dx++) {
             for (int dy = 0 ; dy < 256 ; dy++) {
                 for (int dz = 0 ; dz < 16 ; dz++) {
@@ -273,6 +288,9 @@ public class ArienteChunkGenerator implements IChunkGenerator {
                         IBlockState state = worldObj.getBlockState(p);
                         worldObj.setBlockState(p, state, 3);
                         ((GenericTileEntity) te).markDirtyClient();
+                    }
+                    if (te instanceof ICityEquipment && equipment.containsKey(p)) {
+                        ((ICityEquipment)te).load(equipment.get(p));
                     }
                 }
             }
