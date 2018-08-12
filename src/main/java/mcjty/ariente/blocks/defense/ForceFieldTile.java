@@ -353,13 +353,10 @@ public class ForceFieldTile extends GenericTileEntity implements IGuiTile, ITick
     }
 
     @Override
-    public void initialize(CityAI cityAI, World world) {
-        setRSMode(RedstoneMode.REDSTONE_IGNORED);
-    }
-
-    @Override
-    public boolean setup(CityAI cityAI, World world) {
-        return true;
+    public void setup(CityAI cityAI, World world, boolean firstTime) {
+        if (firstTime) {
+            setRSMode(RedstoneMode.REDSTONE_IGNORED);
+        }
     }
 
     @Override

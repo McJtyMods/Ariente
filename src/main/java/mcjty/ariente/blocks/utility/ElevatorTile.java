@@ -10,7 +10,6 @@ import mcjty.ariente.gui.IGuiTile;
 import mcjty.ariente.gui.components.*;
 import mcjty.ariente.power.IPowerReceiver;
 import mcjty.ariente.power.PowerReceiverSupport;
-import mcjty.ariente.power.PowerSystem;
 import mcjty.lib.tileentity.GenericTileEntity;
 import mcjty.theoneprobe.api.IProbeHitData;
 import mcjty.theoneprobe.api.IProbeInfo;
@@ -242,13 +241,7 @@ public class ElevatorTile extends GenericTileEntity implements IGuiTile, ITickab
     }
 
     @Override
-    public void initialize(CityAI cityAI, World world) {
-
-    }
-
-    @Override
-    public boolean setup(CityAI cityAI, World world) {
-        return false;
+    public void setup(CityAI cityAI, World world, boolean firstTime) {
     }
 
     @Override

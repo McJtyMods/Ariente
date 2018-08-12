@@ -1,6 +1,5 @@
 package mcjty.ariente.blocks.utility;
 
-import com.google.gson.JsonObject;
 import mcjty.ariente.ai.CityAI;
 import mcjty.ariente.cities.ICityEquipment;
 import mcjty.ariente.items.KeyCardItem;
@@ -125,14 +124,11 @@ public class LockTile extends GenericTileEntity implements IKeyCardSlot, ICityEq
     }
 
     @Override
-    public void initialize(CityAI cityAI, World world) {
-        setKeyId(cityAI.getKeyId());
-        setLocked(true);
-    }
-
-    @Override
-    public boolean setup(CityAI cityAI, World world) {
-        return true;
+    public void setup(CityAI cityAI, World world, boolean firstTime) {
+        if (firstTime) {
+            setKeyId(cityAI.getKeyId());
+            setLocked(true);
+        }
     }
 
     @Override

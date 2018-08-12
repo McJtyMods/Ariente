@@ -18,20 +18,12 @@ public interface ICityEquipment {
     void load(Map<String, Object> data);
 
     /**
-     * Initialize this equipment for the given city AI. This
-     * occurs only once when the city AI is first created
-     */
-    void initialize(CityAI cityAI, World world);
-
-    /**
      * Setup this equipment immediatelly after finding it
      * whenever a city is created. This happens every time
-     * a city AI is created (in contrast with initialize
-     * that only happens the first time)
-     * Setup should return true if the equipment should be
-     * remembered for later. If this returns false
-     * then note that 'initialize' cannot be called on this
-     * as this is called later
+     * a city AI is created.
+     *
+     * If 'firstTime' is true then this should also do
+     * initialization that is only relevant the first time
      */
-    boolean setup(CityAI cityAI, World world);
+    void setup(CityAI cityAI, World world, boolean firstTime);
 }

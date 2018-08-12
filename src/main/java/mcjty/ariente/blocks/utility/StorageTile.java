@@ -70,15 +70,12 @@ public class StorageTile extends GenericTileEntity implements IGuiTile, IInvento
     }
 
     @Override
-    public void initialize(CityAI cityAI, World world) {
-        City city = CityTools.getCity(cityAI.getCenter());
-        CityPlan plan = city.getPlan();
-        cityAI.fillLoot(plan, this);
-    }
-
-    @Override
-    public boolean setup(CityAI cityAI, World world) {
-        return true;
+    public void setup(CityAI cityAI, World world, boolean firstTime) {
+        if (firstTime) {
+            City city = CityTools.getCity(cityAI.getCenter());
+            CityPlan plan = city.getPlan();
+            cityAI.fillLoot(plan, this);
+        }
     }
 
     @Override

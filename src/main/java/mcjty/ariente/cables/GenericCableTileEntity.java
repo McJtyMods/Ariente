@@ -10,11 +10,9 @@ import mcjty.lib.tileentity.GenericTileEntity;
 import net.minecraft.block.Block;
 import net.minecraft.block.state.IBlockState;
 import net.minecraft.nbt.NBTTagCompound;
-import net.minecraft.nbt.NBTUtil;
 import net.minecraft.network.NetworkManager;
 import net.minecraft.network.play.server.SPacketUpdateTileEntity;
 import net.minecraft.util.ResourceLocation;
-import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.World;
 import net.minecraftforge.fml.common.registry.ForgeRegistries;
 
@@ -54,13 +52,7 @@ public class GenericCableTileEntity extends GenericTileEntity implements IFacade
     }
 
     @Override
-    public void initialize(CityAI cityAI, World world) {
-
-    }
-
-    @Override
-    public boolean setup(CityAI cityAI, World world) {
-        return false;
+    public void setup(CityAI cityAI, World world, boolean firstTime) {
     }
 
     @Override

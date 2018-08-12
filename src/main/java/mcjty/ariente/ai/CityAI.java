@@ -50,7 +50,6 @@ public class CityAI {
     private boolean foundEquipment = false;
     private Set<BlockPos> aiCores = new HashSet<>();
     private Set<BlockPos> forceFields = new HashSet<>();
-    private Set<BlockPos> equipment = new HashSet<>();
     private Set<BlockPos> negariteGenerators = new HashSet<>();
     private Set<BlockPos> posiriteGenerators = new HashSet<>();
     private Map<BlockPos, EnumFacing> guardPositions = new HashMap<>();
@@ -89,7 +88,7 @@ public class CityAI {
             initialize(tile.getWorld());
             return true;
         } else {
-            findEquipment(tile.getWorld());
+            findEquipment(tile.getWorld(), false);
 
             // If there are no more ai cores the city AI is dead
             if (aiCores.isEmpty()) {
@@ -447,7 +446,7 @@ public class CityAI {
         watchingPlayers.put(player.getUniqueID(), player.getPosition());    // Register the last known position
     }
 
-    private void findEquipment(World world) {
+    private void findEquipment(World world, boolean firstTime) {
         if (foundEquipment) {
             return;
         }
@@ -481,9 +480,7 @@ public class CityAI {
                             } else {
                                 TileEntity te = world.getTileEntity(p);
                                 if (te instanceof ICityEquipment) {
-                                    if (((ICityEquipment) te).setup(this, world)) {
-                                        equipment.add(p);
-                                    }
+                                    ((ICityEquipment) te).setup(this, world, firstTime);
                                 }
 
                                 if (te instanceof AICoreTile) {
@@ -551,7 +548,7 @@ public class CityAI {
 
     private void initialize(World world) {
         createSettings(world);
-        findEquipment(world);
+        findEquipment(world, true);
         initCityEquipment(world);
         initSentinels(world);
         initGuards(world);
@@ -592,12 +589,6 @@ public class CityAI {
     }
 
     private void initCityEquipment(World world) {
-        for (BlockPos p : equipment) {
-            TileEntity te = world.getTileEntity(p);
-            if (te instanceof ICityEquipment) {
-                ((ICityEquipment) te).initialize(this, world);
-            }
-        }
 
         for (BlockPos p : negariteGenerators) {
             TileEntity te = world.getTileEntity(p);
