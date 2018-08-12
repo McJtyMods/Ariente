@@ -7,7 +7,6 @@
     "sentinels": "3-5",
     "sentinelDistance": 40,
     "sentinelRelHeight": 20,
-    "elevatorHeight": 9,
     "dronesMinimum1": 1,
     "dronesMinimum2": 3,
     "dronesMinimumN": 6,
@@ -20,7 +19,6 @@
     "soldiersWaveMax1": 10,
     "soldiersWaveMax2": 15,
     "soldiersWaveMaxN": 30,
-    "forcefieldScale": 38,
     "loot": [
       {
         "id": "ariente:ingot_silver",

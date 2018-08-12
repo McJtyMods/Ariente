@@ -33,8 +33,6 @@ public class CityPlan implements IAsset {
     private int sentinelDistance = 20;
     private int sentinelRelHeight = 14;
 
-    private int elevatorHeight = 9;
-
     private int dronesMinimum1 = 1;
     private int dronesMinimum2 = 1;
     private int dronesMinimumN = 2;
@@ -48,8 +46,6 @@ public class CityPlan implements IAsset {
     private int soldiersWaveMax1 = 2;
     private int soldiersWaveMax2 = 3;
     private int soldiersWaveMaxN = 5;
-
-    private int forcefieldScale = 10;
 
     public CityPlan(JsonObject object) {
         readFromJSon(object);
@@ -96,10 +92,6 @@ public class CityPlan implements IAsset {
         return palette;
     }
 
-    public int getForcefieldScale() {
-        return forcefieldScale;
-    }
-
     public int getMinSentinels() {
         return minSentinels;
     }
@@ -114,10 +106,6 @@ public class CityPlan implements IAsset {
 
     public int getSentinelRelHeight() {
         return sentinelRelHeight;
-    }
-
-    public int getElevatorHeight() {
-        return elevatorHeight;
     }
 
     public int getDronesMinimum1() {
@@ -182,7 +170,6 @@ public class CityPlan implements IAsset {
         maxSentinels = getMax(object, "sentinels", 0);
         sentinelDistance = object.get("sentinelDistance").getAsInt();
         sentinelRelHeight = object.get("sentinelRelHeight").getAsInt();
-        elevatorHeight = object.get("elevatorHeight").getAsInt();
         dronesMinimum1 = object.get("dronesMinimum1").getAsInt();
         dronesMinimum2 = object.get("dronesMinimum2").getAsInt();
         dronesMinimumN = object.get("dronesMinimumN").getAsInt();
@@ -195,7 +182,6 @@ public class CityPlan implements IAsset {
         soldiersWaveMax1 = object.get("soldiersWaveMax1").getAsInt();
         soldiersWaveMax2 = object.get("soldiersWaveMax2").getAsInt();
         soldiersWaveMaxN = object.get("soldiersWaveMaxN").getAsInt();
-        forcefieldScale = object.get("forcefieldScale").getAsInt();
 
         JsonArray lootArray = object.get("loot").getAsJsonArray();
         parseLoot(lootArray);
@@ -289,7 +275,6 @@ public class CityPlan implements IAsset {
         object.add("sentinels", new JsonPrimitive(minSentinels + "-" + maxSentinels));
         object.add("sentinelDistance", new JsonPrimitive(sentinelDistance));
         object.add("sentinelRelHeight", new JsonPrimitive(sentinelRelHeight));
-        object.add("elevatorHeight", new JsonPrimitive(elevatorHeight));
         object.add("dronesMinimum1", new JsonPrimitive(dronesMinimum1));
         object.add("dronesMinimum2", new JsonPrimitive(dronesMinimum2));
         object.add("dronesMinimumN", new JsonPrimitive(dronesMinimumN));
@@ -302,7 +287,6 @@ public class CityPlan implements IAsset {
         object.add("soldiersWaveMax1", new JsonPrimitive(soldiersWaveMax1));
         object.add("soldiersWaveMax2", new JsonPrimitive(soldiersWaveMax2));
         object.add("soldiersWaveMaxN", new JsonPrimitive(soldiersWaveMaxN));
-        object.add("forcefieldScale", new JsonPrimitive(forcefieldScale));
 
         JsonArray lootArray = new JsonArray();
         for (Loot l : loot) {
