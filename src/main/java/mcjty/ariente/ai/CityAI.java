@@ -481,8 +481,9 @@ public class CityAI {
                             } else {
                                 TileEntity te = world.getTileEntity(p);
                                 if (te instanceof ICityEquipment) {
-                                    ((ICityEquipment) te).setup(this, world);
-                                    equipment.add(p);
+                                    if (((ICityEquipment) te).setup(this, world)) {
+                                        equipment.add(p);
+                                    }
                                 }
 
                                 if (te instanceof AICoreTile) {
@@ -591,9 +592,6 @@ public class CityAI {
     }
 
     private void initCityEquipment(World world) {
-        City city = CityTools.getCity(center);
-        CityPlan plan = city.getPlan();
-
         for (BlockPos p : equipment) {
             TileEntity te = world.getTileEntity(p);
             if (te instanceof ICityEquipment) {

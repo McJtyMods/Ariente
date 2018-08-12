@@ -358,8 +358,8 @@ public class ForceFieldTile extends GenericTileEntity implements IGuiTile, ITick
     }
 
     @Override
-    public void setup(CityAI cityAI, World world) {
-
+    public boolean setup(CityAI cityAI, World world) {
+        return true;
     }
 
     @Override

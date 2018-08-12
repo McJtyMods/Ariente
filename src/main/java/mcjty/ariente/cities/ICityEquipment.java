@@ -28,6 +28,10 @@ public interface ICityEquipment {
      * whenever a city is created. This happens every time
      * a city AI is created (in contrast with initialize
      * that only happens the first time)
+     * Setup should return true if the equipment should be
+     * remembered for later. If this returns false
+     * then note that 'initialize' cannot be called on this
+     * as this is called later
      */
-    void setup(CityAI cityAI, World world);
+    boolean setup(CityAI cityAI, World world);
 }

@@ -131,8 +131,8 @@ public class LockTile extends GenericTileEntity implements IKeyCardSlot, ICityEq
     }
 
     @Override
-    public void setup(CityAI cityAI, World world) {
-
+    public boolean setup(CityAI cityAI, World world) {
+        return true;
     }
 
     @Override

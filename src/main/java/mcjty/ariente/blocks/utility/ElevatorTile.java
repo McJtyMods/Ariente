@@ -247,8 +247,8 @@ public class ElevatorTile extends GenericTileEntity implements IGuiTile, ITickab
     }
 
     @Override
-    public void setup(CityAI cityAI, World world) {
-
+    public boolean setup(CityAI cityAI, World world) {
+        return false;
     }
 
     @Override

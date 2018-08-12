@@ -77,8 +77,8 @@ public class StorageTile extends GenericTileEntity implements IGuiTile, IInvento
     }
 
     @Override
-    public void setup(CityAI cityAI, World world) {
-
+    public boolean setup(CityAI cityAI, World world) {
+        return true;
     }
 
     @Override

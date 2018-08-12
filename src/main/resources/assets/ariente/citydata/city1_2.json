@@ -1708,7 +1708,83 @@
       ]
     ],
     "meta": [],
-    "tedata": []
+    "tedata": [
+      {
+        "x": 0,
+        "y": 5,
+        "z": 15,
+        "values": [
+          {
+            "key": "meta",
+            "integer": 3
+          },
+          {
+            "key": "mimic",
+            "string": "ariente:marble_pilar"
+          }
+        ]
+      },
+      {
+        "x": 0,
+        "y": 4,
+        "z": 15,
+        "values": [
+          {
+            "key": "meta",
+            "integer": 3
+          },
+          {
+            "key": "mimic",
+            "string": "ariente:marble_pilar"
+          }
+        ]
+      },
+      {
+        "x": 0,
+        "y": 3,
+        "z": 15,
+        "values": [
+          {
+            "key": "meta",
+            "integer": 3
+          },
+          {
+            "key": "mimic",
+            "string": "ariente:marble_pilar"
+          }
+        ]
+      },
+      {
+        "x": 0,
+        "y": 2,
+        "z": 15,
+        "values": [
+          {
+            "key": "meta",
+            "integer": 3
+          },
+          {
+            "key": "mimic",
+            "string": "ariente:marble_pilar"
+          }
+        ]
+      },
+      {
+        "x": 0,
+        "y": 1,
+        "z": 15,
+        "values": [
+          {
+            "key": "meta",
+            "integer": 3
+          },
+          {
+            "key": "mimic",
+            "string": "ariente:marble_pilar"
+          }
+        ]
+      }
+    ]
   },
   {
     "type": "part",
@@ -1937,12 +2013,117 @@
     "tedata": [
       {
         "x": 0,
+        "y": 1,
+        "z": 1,
+        "values": [
+          {
+            "key": "meta",
+            "integer": 3
+          },
+          {
+            "key": "mimic",
+            "string": "ariente:marble_pilar"
+          }
+        ]
+      },
+      {
+        "x": 7,
+        "y": 4,
+        "z": 6,
+        "values": [
+          {
+            "key": "meta",
+            "integer": 1
+          },
+          {
+            "key": "mimic",
+            "string": "ariente:double_marble_slab"
+          }
+        ]
+      },
+      {
+        "x": 7,
+        "y": 4,
+        "z": 8,
+        "values": [
+          {
+            "key": "meta",
+            "integer": 1
+          },
+          {
+            "key": "mimic",
+            "string": "ariente:double_marble_slab"
+          }
+        ]
+      },
+      {
+        "x": 0,
         "y": 5,
         "z": 0,
         "values": [
           {
             "key": "scale",
             "integer": 13
+          }
+        ]
+      },
+      {
+        "x": 0,
+        "y": 5,
+        "z": 1,
+        "values": [
+          {
+            "key": "meta",
+            "integer": 3
+          },
+          {
+            "key": "mimic",
+            "string": "ariente:marble_pilar"
+          }
+        ]
+      },
+      {
+        "x": 0,
+        "y": 4,
+        "z": 1,
+        "values": [
+          {
+            "key": "meta",
+            "integer": 3
+          },
+          {
+            "key": "mimic",
+            "string": "ariente:marble_pilar"
+          }
+        ]
+      },
+      {
+        "x": 0,
+        "y": 3,
+        "z": 1,
+        "values": [
+          {
+            "key": "meta",
+            "integer": 3
+          },
+          {
+            "key": "mimic",
+            "string": "ariente:marble_pilar"
+          }
+        ]
+      },
+      {
+        "x": 0,
+        "y": 2,
+        "z": 1,
+        "values": [
+          {
+            "key": "meta",
+            "integer": 3
+          },
+          {
+            "key": "mimic",
+            "string": "ariente:marble_pilar"
           }
         ]
       }

@@ -1,21 +1,67 @@
 package mcjty.ariente.cables;
 
+import mcjty.ariente.ai.CityAI;
+import mcjty.ariente.cities.ICityEquipment;
 import mcjty.ariente.facade.IFacadeSupport;
 import mcjty.ariente.facade.MimicBlockSupport;
 import mcjty.ariente.power.IPowerBlob;
 import mcjty.ariente.power.PowerSenderSupport;
 import mcjty.lib.tileentity.GenericTileEntity;
+import net.minecraft.block.Block;
 import net.minecraft.block.state.IBlockState;
 import net.minecraft.nbt.NBTTagCompound;
+import net.minecraft.nbt.NBTUtil;
 import net.minecraft.network.NetworkManager;
 import net.minecraft.network.play.server.SPacketUpdateTileEntity;
+import net.minecraft.util.ResourceLocation;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.World;
+import net.minecraftforge.fml.common.registry.ForgeRegistries;
 
-public class GenericCableTileEntity extends GenericTileEntity implements IFacadeSupport, IPowerBlob {
+import javax.annotation.Nullable;
+import java.util.HashMap;
+import java.util.Map;
+
+public class GenericCableTileEntity extends GenericTileEntity implements IFacadeSupport, IPowerBlob, ICityEquipment {
 
     private MimicBlockSupport mimicBlockSupport = new MimicBlockSupport();
     private PowerSenderSupport powerBlobSupport = new PowerSenderSupport();
+
+    @Nullable
+    @Override
+    public Map<String, Object> save() {
+        if (mimicBlockSupport.getMimicBlock() == null) {
+            return null;
+        }
+        Map<String, Object> data = new HashMap<>();
+        Block mimic = mimicBlockSupport.getMimicBlock().getBlock();
+        data.put("mimic", mimic.getRegistryName().toString());
+        data.put("meta", mimic.getMetaFromState(mimicBlockSupport.getMimicBlock()));
+        return data;
+    }
+
+    @Override
+    public void load(Map<String, Object> data) {
+        if (data.get("mimic") instanceof String) {
+            Block mimic = ForgeRegistries.BLOCKS.getValue(new ResourceLocation((String) data.get("mimic")));
+            if (mimic == null) {
+                System.out.println("Something went wrnog loading mimic state for: '" + data.get("mimic") + "'!");
+            } else {
+                int meta = (Integer) data.get("meta");
+                mimicBlockSupport.setMimicBlock(mimic.getStateFromMeta(meta));
+            }
+        }
+    }
+
+    @Override
+    public void initialize(CityAI cityAI, World world) {
+
+    }
+
+    @Override
+    public boolean setup(CityAI cityAI, World world) {
+        return false;
+    }
 
     @Override
     public void onDataPacket(NetworkManager net, SPacketUpdateTileEntity packet) {
