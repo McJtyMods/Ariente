@@ -51,6 +51,7 @@ public class ModBlocks {
     public static BaseBlock platinumore;
     public static BaseBlock posirite;
     public static BaseBlock negarite;
+    public static BaseBlock reinforcedMarble;
 
     public static BaseBlock glowlog;
     public static BaseBlock glowleaves;
@@ -116,6 +117,14 @@ public class ModBlocks {
         soldierDummy = new BaseBlockBuilder<>(Ariente.instance, "soldier_dummy")
                 .rotationType(BaseBlock.RotationType.HORIZROTATION)
                 .build();
+
+        reinforcedMarble = new BaseBlockBuilder<>(Ariente.instance, "reinforced_marble")
+                .creativeTabs(Ariente.creativeTab)
+                .rotationType(BaseBlock.RotationType.NONE)
+                .info("message.ariente.shiftmessage")
+                .infoExtended("message.ariente.lock")
+                .build();
+        reinforcedMarble.setHardness(80.0F).setResistance(3000.0F);
 
         lockBlock = builderFactory.<LockTile> builder("lock")
                 .tileEntityClass(LockTile.class)
@@ -250,7 +259,7 @@ public class ModBlocks {
                 .emptyContainer()
                 .rotationType(BaseBlock.RotationType.NONE)
                 .build();
-        aiCoreBlock.setHardness(10.0f);
+        aiCoreBlock.setHardness(20.0f).setResistance(800);
         aiCoreBlock.setHarvestLevel("pickaxe", 2);
     }
 
@@ -392,6 +401,7 @@ public class ModBlocks {
         warperBlock.initModel();
         lockBlock.initModel();
 
+        reinforcedMarble.initModel();
         aiCoreBlock.initModel();
         guardDummy.initModel();
         soldierDummy.initModel();

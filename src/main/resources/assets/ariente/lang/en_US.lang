@@ -16,6 +16,8 @@ tile.ariente.pattern.lines.name=Lines Pattern
 tile.ariente.guard_dummy.name=Guard Dummy
 tile.ariente.soldier_dummy.name=Soldier Dummy
 
+tile.ariente.reinforced_marble.name=Reinforced Marble
+
 tile.ariente.blacktech.dots.name=Tech Block Dots
 tile.ariente.blacktech.lines.name=Tech Block Lines
 tile.ariente.blacktech.var1.name=Tech Block Variation 1
@@ -134,6 +136,8 @@ message.ariente.lock=\
     @fLock
 message.ariente.elevator=\
     @fMove up and down
+message.ariente.reinforced_marble=\
+    @fA very strong kind of marble
 message.ariente.level_marker=\
     @fMark levels for the elevator
 message.ariente.door_marker=\
