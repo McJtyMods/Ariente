@@ -41,6 +41,7 @@ public class ModBlocks {
 
     public static BaseBlock guardDummy;
     public static BaseBlock soldierDummy;
+    public static BaseBlock masterSoldierDummy;
 
     public static BaseBlock lapisore;
     public static BaseBlock glowstoneore;
@@ -115,6 +116,9 @@ public class ModBlocks {
                 .rotationType(BaseBlock.RotationType.HORIZROTATION)
                 .build();
         soldierDummy = new BaseBlockBuilder<>(Ariente.instance, "soldier_dummy")
+                .rotationType(BaseBlock.RotationType.HORIZROTATION)
+                .build();
+        masterSoldierDummy = new BaseBlockBuilder<>(Ariente.instance, "master_soldier_dummy")
                 .rotationType(BaseBlock.RotationType.HORIZROTATION)
                 .build();
 
@@ -405,6 +409,7 @@ public class ModBlocks {
         aiCoreBlock.initModel();
         guardDummy.initModel();
         soldierDummy.initModel();
+        masterSoldierDummy.initModel();
 
         blackmarble_techpat.initModel();
         patternBlock.initModel();
