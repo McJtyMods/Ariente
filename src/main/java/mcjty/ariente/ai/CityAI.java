@@ -51,6 +51,7 @@ public class CityAI {
     private Set<BlockPos> posiriteGenerators = new HashSet<>();
     private Map<BlockPos, EnumFacing> guardPositions = new HashMap<>();
     private Map<BlockPos, EnumFacing> soldierPositions = new HashMap<>();
+    private Map<BlockPos, EnumFacing> masterSoldierPositions = new HashMap<>();
 
     private int[] sentinels = null;
     private int sentinelMovementTicks = 6;
@@ -474,6 +475,9 @@ public class CityAI {
                             } else if (block == ModBlocks.soldierDummy) {
                                 soldierPositions.put(p, state.getValue(BaseBlock.FACING_HORIZ));
                                 world.setBlockToAir(p);
+                            } else if (block == ModBlocks.masterSoldierDummy) {
+                                masterSoldierPositions.put(p, state.getValue(BaseBlock.FACING_HORIZ));
+                                world.setBlockToAir(p);
                             } else {
                                 TileEntity te = world.getTileEntity(p);
                                 if (te instanceof ICityEquipment) {
@@ -549,6 +553,7 @@ public class CityAI {
         initCityEquipment(world);
         initSentinels(world);
         initGuards(world);
+        initMasterSoldiers(world);
     }
 
     private SoldierEntity createSoldier(World world, BlockPos p, EnumFacing facing, SoldierBehaviourType behaviourType,
@@ -587,6 +592,15 @@ public class CityAI {
             BlockPos pos = entry.getKey();
             EnumFacing facing = entry.getValue();
             SoldierEntity soldier = createSoldier(world, pos, facing, SoldierBehaviourType.SOLDIER_GUARD, false);
+            soldier.setHeldItem(EnumHand.MAIN_HAND, new ItemStack(ModItems.energySabre));
+        }
+    }
+
+    private void initMasterSoldiers(World world) {
+        for (Map.Entry<BlockPos, EnumFacing> entry : masterSoldierPositions.entrySet()) {
+            BlockPos pos = entry.getKey();
+            EnumFacing facing = entry.getValue();
+            SoldierEntity soldier = createSoldier(world, pos, facing, SoldierBehaviourType.SOLDIER_FIGHTER, true);
             soldier.setHeldItem(EnumHand.MAIN_HAND, new ItemStack(ModItems.energySabre));
         }
     }
@@ -637,6 +651,9 @@ public class CityAI {
         for (Map.Entry<BlockPos, EnumFacing> entry : soldierPositions.entrySet()) {
             world.setBlockState(entry.getKey(), ModBlocks.soldierDummy.getDefaultState().withProperty(BaseBlock.FACING_HORIZ, entry.getValue()));
         }
+        for (Map.Entry<BlockPos, EnumFacing> entry : masterSoldierPositions.entrySet()) {
+            world.setBlockState(entry.getKey(), ModBlocks.masterSoldierDummy.getDefaultState().withProperty(BaseBlock.FACING_HORIZ, entry.getValue()));
+        }
     }
 
     public void readFromNBT(NBTTagCompound nbt) {
@@ -674,6 +691,8 @@ public class CityAI {
         onAlert = nbt.getInteger("onAlert");
         droneTicker = nbt.getInteger("droneTicker");
         readMapFromNBT(nbt.getTagList("guards", Constants.NBT.TAG_COMPOUND), guardPositions);
+        readMapFromNBT(nbt.getTagList("soldierPositions", Constants.NBT.TAG_COMPOUND), soldierPositions);
+        readMapFromNBT(nbt.getTagList("masterSoldierPositions", Constants.NBT.TAG_COMPOUND), masterSoldierPositions);
     }
 
     public void writeToNBT(NBTTagCompound compound) {
@@ -704,6 +723,8 @@ public class CityAI {
         compound.setInteger("onAlert", onAlert);
         compound.setInteger("droneTicker", droneTicker);
         compound.setTag("guards", writeMapToNBT(guardPositions));
+        compound.setTag("soldierPositions", writeMapToNBT(soldierPositions));
+        compound.setTag("masterSoldierPositions", writeMapToNBT(masterSoldierPositions));
     }
 
     private NBTTagList writeSetToNBT(Set<BlockPos> set) {
