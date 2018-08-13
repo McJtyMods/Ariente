@@ -1,0 +1,19 @@
+{
+  "result": {
+    "item": "ariente:enhanced_energy_sabre"
+  },
+  "pattern": [
+    "xxx",
+    "xMx",
+    "xxx"
+  ],
+  "type": "minecraft:crafting_shaped",
+  "key": {
+    "M": {
+      "item": "ariente:energy_sabre"
+    },
+    "x": {
+      "item": "ariente:ingot_lithium"
+    }
+  }
+}

@@ -15,6 +15,7 @@ public class ModItems {
     public static GenericItem posiriteDust;
 
     public static EnergySabreItem energySabre;
+    public static EnhancedEnergySabreItem enhancedEnergySabreItem;
     public static KeyCardItem keyCardItem;
 
 
@@ -27,7 +28,8 @@ public class ModItems {
         negariteDust = new GenericItem("dust_negarite");
         posiriteDust = new GenericItem("dust_posirite");
 
-        energySabre = new EnergySabreItem();
+        energySabre = new EnergySabreItem("energy_sabre");
+        enhancedEnergySabreItem = new EnhancedEnergySabreItem("enhanced_energy_sabre");
         keyCardItem = new KeyCardItem();
     }
 
@@ -48,6 +50,7 @@ public class ModItems {
         posiriteDust.initModel();
 
         energySabre.initModel();
+        enhancedEnergySabreItem.initModel();
         keyCardItem.initModel();
     }
 

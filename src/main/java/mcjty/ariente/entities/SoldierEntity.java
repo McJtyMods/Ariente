@@ -68,6 +68,7 @@ public class SoldierEntity extends EntityMob implements IArmRaisable, IForcefiel
         return cityCenter;
     }
 
+    // Soldiers don't despawn. Spawning and despawning is managed by the cities
     @Override
     protected boolean canDespawn() {
         return false;

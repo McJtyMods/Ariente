@@ -42,6 +42,7 @@ public class ForgeEventHandlers {
         McJtyRegister.registerItems(Ariente.instance, event.getRegistry());
         ModBlocks.initOreDict();
         ModItems.initOreDict();
+        ModCrafting.init();
     }
 
     @SubscribeEvent
