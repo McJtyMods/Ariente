@@ -136,7 +136,7 @@ public class ModBlocks {
                 .flags(BlockFlags.NON_OPAQUE)
                 .property(LockTile.LOCKED)
                 .boundingBox((state, source, pos) -> getFlatBox(state))
-//                .activateAction((world, pos, player, hand, side, hitX, hitY, hitZ) -> HoloGuiHandler.openHoloGui(world, pos, player))
+                .activateAction((world, pos, player, hand, side, hitX, hitY, hitZ) -> HoloGuiHandler.openHoloGui(world, pos, player))
                 .info("message.ariente.shiftmessage")
                 .infoExtended("message.ariente.lock")
                 .build();

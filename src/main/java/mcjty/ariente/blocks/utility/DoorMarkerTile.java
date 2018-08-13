@@ -2,6 +2,7 @@ package mcjty.ariente.blocks.utility;
 
 import mcjty.ariente.blocks.ModBlocks;
 import mcjty.ariente.gui.HoloGuiEntity;
+import mcjty.ariente.gui.HoloGuiHandler;
 import mcjty.ariente.gui.IGuiComponent;
 import mcjty.ariente.gui.IGuiTile;
 import mcjty.ariente.gui.components.HoloPanel;
@@ -225,6 +226,9 @@ public class DoorMarkerTile extends GenericTileEntity implements ITickable, IGui
 
     @Override
     public IGuiComponent createGui(HoloGuiEntity entity, String tag) {
+        if (isLocked()) {
+            return HoloGuiHandler.createNoAccessPanel();
+        }
         return new HoloPanel(0, 0, 8, 8)
                 .add(new HoloToggleIcon(1, 1, 1, 1, () -> isIconSelected(0)).image(4*16, 12*16).selected(64+4*16, 12*16).hitEvent((component, player, entity1, x, y) -> setIconIndex(0)))
                 .add(new HoloToggleIcon(3, 1, 1, 1, () -> isIconSelected(1)).image(5*16, 12*16).selected(64+5*16, 12*16).hitEvent((component, player, entity1, x, y) -> setIconIndex(1)))

@@ -2,6 +2,14 @@ package mcjty.ariente.blocks.utility;
 
 import mcjty.ariente.ai.CityAI;
 import mcjty.ariente.cities.ICityEquipment;
+import mcjty.ariente.gui.HoloGuiEntity;
+import mcjty.ariente.gui.HoloGuiHandler;
+import mcjty.ariente.gui.IGuiComponent;
+import mcjty.ariente.gui.IGuiTile;
+import mcjty.ariente.gui.components.HoloButton;
+import mcjty.ariente.gui.components.HoloNumber;
+import mcjty.ariente.gui.components.HoloPanel;
+import mcjty.ariente.gui.components.HoloText;
 import mcjty.ariente.items.KeyCardItem;
 import mcjty.ariente.security.IKeyCardSlot;
 import mcjty.ariente.sounds.ModSounds;
@@ -27,16 +35,20 @@ import net.minecraftforge.fml.common.Optional;
 import net.minecraftforge.fml.relauncher.Side;
 import net.minecraftforge.fml.relauncher.SideOnly;
 
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
-public class LockTile extends GenericTileEntity implements IKeyCardSlot, ICityEquipment, ILockable {
+public class LockTile extends GenericTileEntity implements IGuiTile, IKeyCardSlot, ICityEquipment, ILockable {
 
     public static final PropertyBool LOCKED = PropertyBool.create("locked");
 
     private boolean locked = false;
     private String keyId;
+
+    private int horizontalRange = 5;
+    private int verticalRange = 3;
 
     @Override
     public void onDataPacket(NetworkManager net, SPacketUpdateTileEntity packet) {
@@ -53,15 +65,43 @@ public class LockTile extends GenericTileEntity implements IKeyCardSlot, ICityEq
         }
     }
 
-    public void doLock() {
+    public int getHorizontalRange() {
+        return horizontalRange;
+    }
+
+    public void setHorizontalRange(int horizontalRange) {
+        doLock(false);
+        this.horizontalRange = horizontalRange;
+        markDirtyQuick();
+        doLock(true);
+    }
+
+    public int getVerticalRange() {
+        return verticalRange;
+    }
+
+    public void setVerticalRange(int verticalRange) {
+        doLock(false);
+        this.verticalRange = verticalRange;
+        markDirtyQuick();
+        doLock(true);
+    }
+
+    @Override
+    public void onBlockBreak(World workd, BlockPos pos, IBlockState state) {
+        doLock(false);
+        super.onBlockBreak(workd, pos, state);
+    }
+
+    private void doLock(boolean l) {
         if (!world.isRemote) {
-            for (int dx = -5 ; dx <= 5 ; dx++) {
-                for (int dy = -3 ; dy <= 2 ; dy++) {
-                    for (int dz = -5 ; dz <= 5 ; dz++) {
+            for (int dx = -horizontalRange ; dx <= horizontalRange ; dx++) {
+                for (int dy = -verticalRange ; dy <= verticalRange ; dy++) {
+                    for (int dz = -horizontalRange ; dz <= horizontalRange ; dz++) {
                         BlockPos p = pos.add(dx, dy, dz);
                         TileEntity te = world.getTileEntity(p);
-                        if (te instanceof DoorMarkerTile) {
-                            ((DoorMarkerTile) te).setLocked(locked);
+                        if (te instanceof DoorMarkerTile) { // @todo generalize!
+                            ((DoorMarkerTile) te).setLocked(l);
                         }
                     }
                 }
@@ -79,7 +119,7 @@ public class LockTile extends GenericTileEntity implements IKeyCardSlot, ICityEq
             return;
         }
         this.locked = locked;
-        doLock();
+        doLock(locked);
         markDirtyClient();
     }
 
@@ -116,12 +156,20 @@ public class LockTile extends GenericTileEntity implements IKeyCardSlot, ICityEq
 
     @Override
     public Map<String, Object> save() {
-        return null;
+        Map<String, Object> data = new HashMap<>();
+        data.put("vertical", verticalRange);
+        data.put("horizontal", horizontalRange);
+        return data;
     }
 
     @Override
     public void load(Map<String, Object> data) {
-
+        if (data.get("horizontal") instanceof Integer) {
+            setHorizontalRange((Integer) data.get("horizontal"));
+        }
+        if (data.get("vertical") instanceof Integer) {
+            setVerticalRange((Integer) data.get("vertical"));
+        }
     }
 
     @Override
@@ -137,6 +185,12 @@ public class LockTile extends GenericTileEntity implements IKeyCardSlot, ICityEq
         super.readRestorableFromNBT(tagCompound);
         locked = tagCompound.getBoolean("locked");
         keyId = tagCompound.getString("keyId");
+        if (tagCompound.hasKey("vertical")) {
+            verticalRange = tagCompound.getInteger("vertical");
+        }
+        if (tagCompound.hasKey("horizontal")) {
+            horizontalRange = tagCompound.getInteger("horizontal");
+        }
     }
 
     @Override
@@ -146,6 +200,8 @@ public class LockTile extends GenericTileEntity implements IKeyCardSlot, ICityEq
         if (keyId != null) {
             tagCompound.setString("keyId", keyId);
         }
+        tagCompound.setInteger("vertical", verticalRange);
+        tagCompound.setInteger("horizontal", horizontalRange);
     }
 
     @Override
@@ -153,6 +209,9 @@ public class LockTile extends GenericTileEntity implements IKeyCardSlot, ICityEq
     public void addProbeInfo(ProbeMode mode, IProbeInfo probeInfo, EntityPlayer player, World world, IBlockState blockState, IProbeHitData data) {
         super.addProbeInfo(mode, probeInfo, player, world, blockState, data);
         probeInfo.text(TextStyleClass.LABEL + "Key " + TextStyleClass.INFO + keyId);
+        if (isLocked()) {
+            probeInfo.text(TextStyleClass.WARNING + "Locked!");
+        }
     }
 
     @SideOnly(Side.CLIENT)
@@ -163,5 +222,65 @@ public class LockTile extends GenericTileEntity implements IKeyCardSlot, ICityEq
 //        if (isWorking()) {
 //            currenttip.add(TextFormatting.GREEN + "Producing " + getRfPerTick() + " RF/t");
 //        }
+    }
+
+    private void changeHorizontalRange(int dy) {
+        int h = horizontalRange + dy;
+        if (h < 1) {
+            h = 1;
+        } else if (h > 20) {
+            h = 20;
+        }
+        setHorizontalRange(h);
+    }
+
+
+    private void changeVerticalRange(int dy) {
+        int h = verticalRange + dy;
+        if (h < 1) {
+            h = 1;
+        } else if (h > 10) {
+            h = 10;
+        }
+        setVerticalRange(h);
+    }
+
+
+    @Override
+    public IGuiComponent createGui(HoloGuiEntity entity, String tag) {
+        if (isLocked()) {
+            return HoloGuiHandler.createNoAccessPanel();
+        }
+        return new HoloPanel(0, 0, 8, 8)
+                .add(new HoloText(0, 1, 1, 1, "Horizontal", 0xaaccff))
+                .add(new HoloNumber(3, 3, 1, 1, 0xffffff, this::getHorizontalRange))
+
+                .add(new HoloButton(1, 3, 1, 1).image(128 + 32, 128 + 16).hover(128 + 32 + 16, 128 + 16)
+                        .hitEvent((component, player, entity1, x, y) -> changeHorizontalRange(-8)))
+                .add(new HoloButton(2, 3, 1, 1).image(128 + 32, 128).hover(128 + 32 + 16, 128)
+                        .hitEvent((component, player, entity1, x, y) -> changeHorizontalRange(-1)))
+                .add(new HoloButton(5, 3, 1, 1).image(128, 128).hover(128 + 16, 128)
+                        .hitEvent((component, player, entity1, x, y) -> changeHorizontalRange(1)))
+                .add(new HoloButton(6, 3, 1, 1).image(128, 128 + 16).hover(128 + 16, 128 + 16)
+                        .hitEvent((component, player, entity1, x, y) -> changeHorizontalRange(8)))
+
+
+                .add(new HoloText(0, 5, 1, 1, "Vertical", 0xaaccff))
+                .add(new HoloNumber(3, 7, 1, 1, 0xffffff, this::getVerticalRange))
+
+                .add(new HoloButton(1, 7, 1, 1).image(128 + 32, 128 + 16).hover(128 + 32 + 16, 128 + 16)
+                        .hitEvent((component, player, entity1, x, y) -> changeVerticalRange(-8)))
+                .add(new HoloButton(2, 7, 1, 1).image(128 + 32, 128).hover(128 + 32 + 16, 128)
+                        .hitEvent((component, player, entity1, x, y) -> changeVerticalRange(-1)))
+                .add(new HoloButton(5, 7, 1, 1).image(128, 128).hover(128 + 16, 128)
+                        .hitEvent((component, player, entity1, x, y) -> changeVerticalRange(1)))
+                .add(new HoloButton(6, 7, 1, 1).image(128, 128 + 16).hover(128 + 16, 128 + 16)
+                        .hitEvent((component, player, entity1, x, y) -> changeVerticalRange(8)))
+                ;
+    }
+
+    @Override
+    public void syncToClient() {
+
     }
 }

@@ -1,5 +1,7 @@
 package mcjty.ariente.gui;
 
+import mcjty.ariente.gui.components.HoloPanel;
+import mcjty.ariente.gui.components.HoloText;
 import mcjty.ariente.sounds.ModSounds;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.tileentity.TileEntity;
@@ -15,6 +17,13 @@ public class HoloGuiHandler {
     public static boolean openHoloGui(World world, BlockPos pos, EntityPlayer player) {
         openHoloGuiEntity(world, pos, player, TAG_DEFAULT, 1.0);
         return true;
+    }
+
+    public static IGuiComponent createNoAccessPanel() {
+        return new HoloPanel(0, 0, 8, 8)
+                .add(new HoloText(2, 3, 1, 1, "Access", 0xff0000))
+                .add(new HoloText(2, 4, 1, 1, "Denied!", 0xff0000))
+            ;
     }
 
     public static HoloGuiEntity openHoloGuiEntity(World world, BlockPos pos, EntityPlayer player, String tag, double distance) {

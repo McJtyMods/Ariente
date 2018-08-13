@@ -19,7 +19,7 @@ public class SoldierRender extends RenderBiped<SoldierEntity> {
     public static final MasterFactory MASTER_FACTORY = new MasterFactory();
 
     public SoldierRender(RenderManager rendermanagerIn, float scale) {
-        super(rendermanagerIn, new ModelZombie(), 0.5F * scale);
+        super(rendermanagerIn, new ModelZombie(scale-1.0f, false), 0.5F * scale);
         LayerBipedArmor layerbipedarmor = new LayerBipedArmor(this) {
             @Override
             protected void initArmor() {
