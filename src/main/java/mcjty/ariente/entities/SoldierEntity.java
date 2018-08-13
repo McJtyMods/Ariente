@@ -41,13 +41,21 @@ public class SoldierEntity extends EntityMob implements IArmRaisable, IForcefiel
 
     public SoldierEntity(World worldIn) {
         super(worldIn);
-        setSize(0.6F, 1.95F);
+        if (isMaster()) {
+            setSize(0.7F, 2.6F);
+        } else {
+            setSize(0.6F, 1.95F);
+        }
     }
 
     public SoldierEntity(World world, ChunkCoord cityCenter, SoldierBehaviourType behaviourType) {
         this(world);
         this.cityCenter = cityCenter;
         this.behaviourType = behaviourType;
+    }
+
+    protected boolean isMaster() {
+        return false;
     }
 
     @Override
@@ -78,8 +86,14 @@ public class SoldierEntity extends EntityMob implements IArmRaisable, IForcefiel
         super.applyEntityAttributes();
         this.getEntityAttribute(SharedMonsterAttributes.FOLLOW_RANGE).setBaseValue(35.0D);
         this.getEntityAttribute(SharedMonsterAttributes.MOVEMENT_SPEED).setBaseValue(0.32D);
-        this.getEntityAttribute(SharedMonsterAttributes.ATTACK_DAMAGE).setBaseValue(4.0D);
-        this.getEntityAttribute(SharedMonsterAttributes.ARMOR).setBaseValue(4.0D);
+        if (isMaster()) {
+            this.getEntityAttribute(SharedMonsterAttributes.MAX_HEALTH).setBaseValue(150.0D);
+            this.getEntityAttribute(SharedMonsterAttributes.ATTACK_DAMAGE).setBaseValue(8.0D);
+            this.getEntityAttribute(SharedMonsterAttributes.ARMOR).setBaseValue(6.0D);
+        } else {
+            this.getEntityAttribute(SharedMonsterAttributes.ATTACK_DAMAGE).setBaseValue(4.0D);
+            this.getEntityAttribute(SharedMonsterAttributes.ARMOR).setBaseValue(4.0D);
+        }
     }
 
     public SoldierBehaviourType getBehaviourType() {
@@ -91,11 +105,16 @@ public class SoldierEntity extends EntityMob implements IArmRaisable, IForcefiel
         this.getDataManager().set(ARMS_RAISED, Boolean.valueOf(armsRaised));
     }
 
+    @SideOnly(Side.CLIENT)
+    public boolean isArmsRaised() {
+        return this.getDataManager().get(ARMS_RAISED).booleanValue();
+    }
+
     @Override
     protected void dropLoot(boolean wasRecentlyHit, int lootingModifier, DamageSource source) {
         super.dropLoot(wasRecentlyHit, lootingModifier, source);
         if (attackingPlayer != null) {
-            if (cityCenter != null && rand.nextFloat() < .2f) {
+            if (cityCenter != null && rand.nextFloat() < .1f) {
                 CityAISystem aiSystem = CityAISystem.getCityAISystem(world);
                 CityAI cityAI = aiSystem.getCityAI(cityCenter);
                 if (cityAI != null) {
@@ -105,11 +124,6 @@ public class SoldierEntity extends EntityMob implements IArmRaisable, IForcefiel
                 }
             }
         }
-    }
-
-    @SideOnly(Side.CLIENT)
-    public boolean isArmsRaised() {
-        return this.getDataManager().get(ARMS_RAISED).booleanValue();
     }
 
     @Override

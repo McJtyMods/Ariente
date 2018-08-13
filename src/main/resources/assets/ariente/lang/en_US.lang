@@ -106,6 +106,7 @@ tile.ariente.blueleaves.name=Blue Leaves
 entity.ariente_drone.name=Drone
 entity.ariente_sentinel_drone.name=Sentinel Drone
 entity.ariente_soldier.name=Soldier
+entity.ariente_master_soldier.name=Master Soldier
 entity.ariente_hologui.name=Holo GUI
 entity.ariente_laser.name=Laser
 

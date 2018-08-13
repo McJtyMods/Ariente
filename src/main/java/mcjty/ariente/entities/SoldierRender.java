@@ -16,14 +16,15 @@ public class SoldierRender extends RenderBiped<SoldierEntity> {
     private ResourceLocation mobTexture = new ResourceLocation(Ariente.MODID, "textures/entity/soldier.png");
 
     public static final Factory FACTORY = new Factory();
+    public static final MasterFactory MASTER_FACTORY = new MasterFactory();
 
-    public SoldierRender(RenderManager rendermanagerIn) {
-        super(rendermanagerIn, new ModelZombie(), 0.5F);
+    public SoldierRender(RenderManager rendermanagerIn, float scale) {
+        super(rendermanagerIn, new ModelZombie(), 0.5F * scale);
         LayerBipedArmor layerbipedarmor = new LayerBipedArmor(this) {
             @Override
             protected void initArmor() {
-                this.modelLeggings = new ModelZombie(0.5F, true);
-                this.modelArmor = new ModelZombie(1.0F, true);
+                this.modelLeggings = new ModelZombie(0.5F * scale, true);
+                this.modelArmor = new ModelZombie(1.0F * scale, true);
             }
         };
         this.addLayer(layerbipedarmor);
@@ -39,7 +40,16 @@ public class SoldierRender extends RenderBiped<SoldierEntity> {
 
         @Override
         public Render<? super SoldierEntity> createRenderFor(RenderManager manager) {
-            return new SoldierRender(manager);
+            return new SoldierRender(manager, 1.0f);
+        }
+
+    }
+
+    public static class MasterFactory implements IRenderFactory<MasterSoldierEntity> {
+
+        @Override
+        public Render<? super MasterSoldierEntity> createRenderFor(RenderManager manager) {
+            return new SoldierRender(manager, 1.5f);
         }
 
     }

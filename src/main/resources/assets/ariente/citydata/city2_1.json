@@ -19,6 +19,7 @@
     "soldiersWaveMax1": 10,
     "soldiersWaveMax2": 15,
     "soldiersWaveMaxN": 30,
+    "masterChance": 0.05,
     "loot": [
       {
         "id": "ariente:ingot_silver",

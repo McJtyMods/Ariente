@@ -7,10 +7,7 @@ import mcjty.ariente.blocks.generators.NegariteGeneratorTile;
 import mcjty.ariente.blocks.generators.PosiriteGeneratorTile;
 import mcjty.ariente.blocks.utility.StorageTile;
 import mcjty.ariente.cities.*;
-import mcjty.ariente.entities.DroneEntity;
-import mcjty.ariente.entities.SentinelDroneEntity;
-import mcjty.ariente.entities.SoldierBehaviourType;
-import mcjty.ariente.entities.SoldierEntity;
+import mcjty.ariente.entities.*;
 import mcjty.ariente.items.ModItems;
 import mcjty.ariente.power.PowerSenderSupport;
 import mcjty.ariente.security.SecuritySystem;
@@ -290,7 +287,6 @@ public class CityAI {
         if (foundId != -1) {
             City city = CityTools.getCity(center);
             CityPlan plan = city.getPlan();
-            List<String> pattern = plan.getPlan();
 
             BlockPos pos;
             // Avoid too close to player if possible
@@ -308,7 +304,8 @@ public class CityAI {
             System.out.println("CityAI.spawnSoldier at " + pos);
 
             EnumFacing facing = soldierPositions.get(pos);
-            SoldierEntity entity = createSoldier(world, pos, facing, SoldierBehaviourType.SOLDIER_FIGHTER);
+            SoldierEntity entity = createSoldier(world, pos, facing, SoldierBehaviourType.SOLDIER_FIGHTER,
+                    random.nextDouble() < plan.getMasterChance());
             entity.setHeldItem(EnumHand.MAIN_HAND, new ItemStack(ModItems.energySabre));    // @todo need a lasergun
             soldiers[foundId] = entity.getEntityId();
         }
@@ -554,8 +551,14 @@ public class CityAI {
         initGuards(world);
     }
 
-    private SoldierEntity createSoldier(World world, BlockPos p, EnumFacing facing, SoldierBehaviourType behaviourType) {
-        SoldierEntity entity = new SoldierEntity(world, center, behaviourType);
+    private SoldierEntity createSoldier(World world, BlockPos p, EnumFacing facing, SoldierBehaviourType behaviourType,
+                                        boolean master) {
+        SoldierEntity entity;
+        if (master) {
+            entity = new MasterSoldierEntity(world, center, behaviourType);
+        } else {
+            entity = new SoldierEntity(world, center, behaviourType);
+        }
         entity.setPosition(p.getX()+.5, p.getY(), p.getZ()+.5);
         float yaw = 0;
         switch (facing) {
@@ -583,7 +586,7 @@ public class CityAI {
         for (Map.Entry<BlockPos, EnumFacing> entry : guardPositions.entrySet()) {
             BlockPos pos = entry.getKey();
             EnumFacing facing = entry.getValue();
-            SoldierEntity soldier = createSoldier(world, pos, facing, SoldierBehaviourType.SOLDIER_GUARD);
+            SoldierEntity soldier = createSoldier(world, pos, facing, SoldierBehaviourType.SOLDIER_GUARD, false);
             soldier.setHeldItem(EnumHand.MAIN_HAND, new ItemStack(ModItems.energySabre));
         }
     }

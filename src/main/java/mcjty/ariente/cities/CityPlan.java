@@ -40,6 +40,7 @@ public class CityPlan implements IAsset {
     private int dronesWaveMax2 = 3;
     private int dronesWaveMaxN = 5;
 
+    private double masterChance = 0.0;
     private int soldiersMinimum1 = 1;
     private int soldiersMinimum2 = 1;
     private int soldiersMinimumN = 2;
@@ -156,6 +157,10 @@ public class CityPlan implements IAsset {
         return soldiersWaveMaxN;
     }
 
+    public double getMasterChance() {
+        return masterChance;
+    }
+
     public List<Loot> getLoot() {
         return loot;
     }
@@ -182,6 +187,7 @@ public class CityPlan implements IAsset {
         soldiersWaveMax1 = object.get("soldiersWaveMax1").getAsInt();
         soldiersWaveMax2 = object.get("soldiersWaveMax2").getAsInt();
         soldiersWaveMaxN = object.get("soldiersWaveMaxN").getAsInt();
+        masterChance = object.get("masterChance").getAsDouble();
 
         JsonArray lootArray = object.get("loot").getAsJsonArray();
         parseLoot(lootArray);
@@ -287,6 +293,7 @@ public class CityPlan implements IAsset {
         object.add("soldiersWaveMax1", new JsonPrimitive(soldiersWaveMax1));
         object.add("soldiersWaveMax2", new JsonPrimitive(soldiersWaveMax2));
         object.add("soldiersWaveMaxN", new JsonPrimitive(soldiersWaveMaxN));
+        object.add("masterChance", new JsonPrimitive(masterChance));
 
         JsonArray lootArray = new JsonArray();
         for (Loot l : loot) {
