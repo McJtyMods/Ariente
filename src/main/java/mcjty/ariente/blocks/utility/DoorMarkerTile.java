@@ -32,7 +32,7 @@ import net.minecraftforge.fml.relauncher.SideOnly;
 import javax.annotation.Nullable;
 import java.util.List;
 
-public class DoorMarkerTile extends GenericTileEntity implements ITickable, IGuiTile {
+public class DoorMarkerTile extends GenericTileEntity implements ITickable, IGuiTile, ILockable {
 
     public static final AxisAlignedBB BLOCK_AABB = new AxisAlignedBB(0.0D, 0.0D, 0.0D, 1.0D, 0.1D, 1.0D);
 
@@ -71,6 +71,7 @@ public class DoorMarkerTile extends GenericTileEntity implements ITickable, IGui
         return open;
     }
 
+    @Override
     public boolean isLocked() {
         return locked;
     }

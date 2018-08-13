@@ -2,6 +2,8 @@ package mcjty.ariente;
 
 import mcjty.ariente.biomes.ModBiomes;
 import mcjty.ariente.blocks.ModBlocks;
+import mcjty.ariente.blocks.utility.ILockable;
+import mcjty.ariente.blocks.utility.LockTile;
 import mcjty.ariente.cities.BuildingPart;
 import mcjty.ariente.cities.City;
 import mcjty.ariente.cities.CityTools;
@@ -14,6 +16,7 @@ import mcjty.lib.McJtyRegister;
 import net.minecraft.block.Block;
 import net.minecraft.entity.passive.IAnimals;
 import net.minecraft.item.Item;
+import net.minecraft.tileentity.TileEntity;
 import net.minecraft.util.SoundEvent;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.World;
@@ -80,9 +83,20 @@ public class ForgeEventHandlers {
         }
     }
 
+    private void onBlockBreakNormal(BlockEvent.BreakEvent event) {
+        World world = event.getWorld();
+        TileEntity te = world.getTileEntity(event.getPos());
+        if (te instanceof ILockable) {
+            if (((ILockable) te).isLocked()) {
+                event.setCanceled(true);
+            }
+        }
+    }
+
     @SubscribeEvent
     public void onBlockBreak(BlockEvent.BreakEvent event) {
         if (!EditMode.editMode) {
+            onBlockBreakNormal(event);
             return;
         }
         World world = event.getWorld();

@@ -31,7 +31,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
-public class LockTile extends GenericTileEntity implements IKeyCardSlot, ICityEquipment {
+public class LockTile extends GenericTileEntity implements IKeyCardSlot, ICityEquipment, ILockable {
 
     public static final PropertyBool LOCKED = PropertyBool.create("locked");
 
@@ -69,6 +69,7 @@ public class LockTile extends GenericTileEntity implements IKeyCardSlot, ICityEq
         }
     }
 
+    @Override
     public boolean isLocked() {
         return locked;
     }

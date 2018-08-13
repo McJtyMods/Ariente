@@ -12,7 +12,7 @@ import net.minecraft.world.World;
 import javax.annotation.Nullable;
 import java.util.List;
 
-public class InvisibleDoorTile extends GenericTileEntity {
+public class InvisibleDoorTile extends GenericTileEntity implements ILockable {
 
     public static boolean addCollisionBoxToList(IBlockState state, World world, BlockPos pos, AxisAlignedBB entityBox, List<AxisAlignedBB> collidingBoxes, @Nullable Entity entityIn, boolean isActualState) {
         TileEntity te = world.getTileEntity(pos);
@@ -26,6 +26,17 @@ public class InvisibleDoorTile extends GenericTileEntity {
             }
         }
         return true;
+    }
+
+    @Override
+    public boolean isLocked() {
+        // An invisible door block can never be broken
+        return true;
+//        DoorMarkerTile tile = findDoorMarker();
+//        if (tile.isLocked()) {
+//            return true;
+//        }
+//        return false;
     }
 
     public DoorMarkerTile findDoorMarker() {
