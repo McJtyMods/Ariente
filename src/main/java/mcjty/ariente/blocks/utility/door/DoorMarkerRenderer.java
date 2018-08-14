@@ -1,4 +1,4 @@
-package mcjty.ariente.blocks.utility;
+package mcjty.ariente.blocks.utility.door;
 
 import mcjty.ariente.Ariente;
 import mcjty.ariente.blocks.ModBlocks;

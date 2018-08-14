@@ -1,6 +1,7 @@
 package mcjty.ariente.blocks.utility;
 
 import mcjty.ariente.ai.CityAI;
+import mcjty.ariente.blocks.utility.door.DoorMarkerTile;
 import mcjty.ariente.cities.ICityEquipment;
 import mcjty.ariente.gui.HoloGuiEntity;
 import mcjty.ariente.gui.HoloGuiHandler;

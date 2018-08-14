@@ -1,5 +1,6 @@
-package mcjty.ariente.blocks.utility;
+package mcjty.ariente.blocks.utility.door;
 
+import mcjty.ariente.blocks.utility.ILockable;
 import mcjty.lib.tileentity.GenericTileEntity;
 import net.minecraft.block.Block;
 import net.minecraft.block.state.IBlockState;

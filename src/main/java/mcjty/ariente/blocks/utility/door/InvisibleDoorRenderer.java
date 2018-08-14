@@ -1,14 +1,12 @@
-package mcjty.ariente.blocks.utility;
+package mcjty.ariente.blocks.utility.door;
 
 import mcjty.ariente.Ariente;
 import mcjty.ariente.blocks.ModBlocks;
 import net.minecraft.block.state.IBlockState;
 import net.minecraft.client.renderer.GlStateManager;
 import net.minecraft.client.renderer.tileentity.TileEntitySpecialRenderer;
-import net.minecraft.tileentity.TileEntity;
 import net.minecraft.util.EnumFacing;
 import net.minecraft.util.ResourceLocation;
-import net.minecraft.util.math.BlockPos;
 import net.minecraftforge.fml.relauncher.Side;
 import net.minecraftforge.fml.relauncher.SideOnly;
 

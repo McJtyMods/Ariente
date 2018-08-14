@@ -1,6 +1,7 @@
-package mcjty.ariente.blocks.utility;
+package mcjty.ariente.blocks.utility.door;
 
 import mcjty.ariente.blocks.ModBlocks;
+import mcjty.ariente.blocks.utility.ILockable;
 import mcjty.ariente.gui.HoloGuiEntity;
 import mcjty.ariente.gui.HoloGuiHandler;
 import mcjty.ariente.gui.IGuiComponent;

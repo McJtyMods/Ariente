@@ -6,6 +6,13 @@ import mcjty.ariente.blocks.decorative.*;
 import mcjty.ariente.blocks.defense.ForceFieldTile;
 import mcjty.ariente.blocks.generators.*;
 import mcjty.ariente.blocks.utility.*;
+import mcjty.ariente.blocks.utility.door.DoorMarkerRenderer;
+import mcjty.ariente.blocks.utility.door.DoorMarkerTile;
+import mcjty.ariente.blocks.utility.door.InvisibleDoorRenderer;
+import mcjty.ariente.blocks.utility.door.InvisibleDoorTile;
+import mcjty.ariente.blocks.utility.wireless.SignalChannelTileEntity;
+import mcjty.ariente.blocks.utility.wireless.SignalReceiverTile;
+import mcjty.ariente.blocks.utility.wireless.SignalTransmitterTile;
 import mcjty.ariente.cables.ConnectorBlock;
 import mcjty.ariente.cables.NetCableBlock;
 import mcjty.ariente.facade.FacadeBlock;
@@ -16,6 +23,7 @@ import mcjty.lib.builder.BaseBlockBuilder;
 import mcjty.lib.builder.BlockFlags;
 import mcjty.lib.builder.GenericBlockBuilderFactory;
 import mcjty.lib.container.GenericContainer;
+import mcjty.lib.varia.ItemStackTools;
 import net.minecraft.block.Block;
 import net.minecraft.block.state.IBlockState;
 import net.minecraft.client.renderer.color.BlockColors;
@@ -72,6 +80,8 @@ public class ModBlocks {
     public static GenericBlock<AICoreTile, GenericContainer> aiCoreBlock;
     public static GenericBlock<WarperTile, GenericContainer> warperBlock;
     public static GenericBlock<LockTile, GenericContainer> lockBlock;
+    public static GenericBlock<SignalReceiverTile, GenericContainer> signalReceiverBlock;
+    public static GenericBlock<SignalTransmitterTile, GenericContainer> signalTransmitterBlock;
 
     public static BaseBlock flatLightBlock;
 
@@ -108,7 +118,7 @@ public class ModBlocks {
         flatLightBlock = new BaseBlockBuilder<>(Ariente.instance, "flatlight")
                 .creativeTabs(Ariente.creativeTab)
                 .lightValue(15)
-                .flags(BlockFlags.NON_OPAQUE)
+                .flags(BlockFlags.NON_OPAQUE, BlockFlags.NON_FULLCUBE)
                 .boundingBox((state, source, pos) -> getFlatBox(state))
                 .build();
 
@@ -133,14 +143,34 @@ public class ModBlocks {
         lockBlock = builderFactory.<LockTile> builder("lock")
                 .tileEntityClass(LockTile.class)
                 .property(LockTile.LOCKED)
-                .flags(BlockFlags.NON_OPAQUE)
-                .property(LockTile.LOCKED)
+                .flags(BlockFlags.NON_OPAQUE, BlockFlags.NON_FULLCUBE)
                 .boundingBox((state, source, pos) -> getFlatBox(state))
                 .activateAction((world, pos, player, hand, side, hitX, hitY, hitZ) -> HoloGuiHandler.openHoloGui(world, pos, player))
                 .info("message.ariente.shiftmessage")
                 .infoExtended("message.ariente.lock")
                 .build();
 
+        signalReceiverBlock = builderFactory.<SignalReceiverTile> builder("signal_receiver")
+                .tileEntityClass(SignalReceiverTile.class)
+                .property(SignalChannelTileEntity.POWER)
+                .flags(BlockFlags.NON_OPAQUE, BlockFlags.NON_FULLCUBE, BlockFlags.REDSTONE_OUTPUT)
+                .boundingBox((state, source, pos) -> getFlatBox(state))
+                .activateAction(SignalChannelTileEntity::onBlockActivated)
+                .info("message.ariente.shiftmessage")
+                .infoExtended("message.ariente.signal_receiver")
+                .infoExtendedParameter(ItemStackTools.intGetter("channel", -1))
+                .build();
+
+        signalTransmitterBlock = builderFactory.<SignalTransmitterTile> builder("signal_transmitter")
+                .tileEntityClass(SignalTransmitterTile.class)
+                .property(SignalChannelTileEntity.POWER)
+                .flags(BlockFlags.NON_OPAQUE, BlockFlags.NON_FULLCUBE, BlockFlags.REDSTONE_CHECK)
+                .boundingBox((state, source, pos) -> getFlatBox(state))
+                .activateAction(SignalChannelTileEntity::onBlockActivated)
+                .info("message.ariente.shiftmessage")
+                .infoExtended("message.ariente.signal_transmitter")
+                .infoExtendedParameter(ItemStackTools.intGetter("channel", -1))
+                .build();
 
         negariteGeneratorBlock = builderFactory.<NegariteGeneratorTile> builder("negarite_generator")
                 .tileEntityClass(NegariteGeneratorTile.class)
@@ -404,6 +434,8 @@ public class ModBlocks {
 
         warperBlock.initModel();
         lockBlock.initModel();
+        signalReceiverBlock.initModel();
+        signalTransmitterBlock.initModel();
 
         reinforcedMarble.initModel();
         aiCoreBlock.initModel();

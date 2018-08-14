@@ -43,6 +43,8 @@ tile.ariente.negarite_tank.name=Negarite Tank
 tile.ariente.posirite_tank.name=Posirite Tank
 tile.ariente.warper.name=Warper
 tile.ariente.lock.name=Lock
+tile.ariente.signal_receiver.name=Signal Receiver
+tile.ariente.signal_transmitter.name=Signal Transmitter
 tile.ariente.storage.name=Storage Cube
 tile.ariente.elevator.name=Elevator
 tile.ariente.forcefield.name=Forcefield Generator
@@ -136,6 +138,17 @@ message.ariente.warper=\
     @fWarp to nearby warpers
 message.ariente.lock=\
     @fLock
+message.ariente.signal_receiver=\
+    @aChannel: %s\n\
+    @fThis logic block sends redstone signals from\n\
+    @fa linked transmitter. Right click on a transmitter\n\
+    @f(or other receiver) to link
+message.ariente.signal_transmitter=\
+    @aChannel: %s\n\
+    @fThis logic block accepts redstone signals and\n\
+    @fsends them out wirelessly to linked receivers\n\
+    @fPlace down to create a channel or else right\n\
+    @fclick on receiver/transmitter to use that channel
 message.ariente.elevator=\
     @fMove up and down
 message.ariente.reinforced_marble=\
