@@ -44,12 +44,18 @@ public class KeyCardItem extends GenericItem {
         }
     }
 
+
     @Override
-    public EnumActionResult onItemUse(EntityPlayer player, World worldIn, BlockPos pos, EnumHand hand, EnumFacing facing, float hitX, float hitY, float hitZ) {
-        TileEntity te = worldIn.getTileEntity(pos);
+    public EnumActionResult onItemUseFirst(EntityPlayer player, World world, BlockPos pos, EnumFacing side, float hitX, float hitY, float hitZ, EnumHand hand) {
+        TileEntity te = world.getTileEntity(pos);
         if (te instanceof IKeyCardSlot) {
             ((IKeyCardSlot) te).acceptKeyCard(player.getHeldItem(hand));
         }
+        return EnumActionResult.SUCCESS;
+    }
+
+    @Override
+    public EnumActionResult onItemUse(EntityPlayer player, World worldIn, BlockPos pos, EnumHand hand, EnumFacing facing, float hitX, float hitY, float hitZ) {
         return EnumActionResult.SUCCESS;
     }
 

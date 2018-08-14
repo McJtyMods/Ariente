@@ -42,7 +42,7 @@ public class SoldierEntity extends EntityMob implements IArmRaisable, IForcefiel
     public SoldierEntity(World worldIn) {
         super(worldIn);
         if (isMaster()) {
-            setSize(0.7F, 2.6F);
+            setSize(0.7F, 2.7F);
         } else {
             setSize(0.6F, 1.95F);
         }

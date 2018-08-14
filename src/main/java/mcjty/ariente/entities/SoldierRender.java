@@ -2,6 +2,7 @@ package mcjty.ariente.entities;
 
 import mcjty.ariente.Ariente;
 import net.minecraft.client.model.ModelZombie;
+import net.minecraft.client.renderer.GlStateManager;
 import net.minecraft.client.renderer.entity.Render;
 import net.minecraft.client.renderer.entity.RenderBiped;
 import net.minecraft.client.renderer.entity.RenderManager;
@@ -28,6 +29,13 @@ public class SoldierRender extends RenderBiped<SoldierEntity> {
             }
         };
         this.addLayer(layerbipedarmor);
+    }
+
+    @Override
+    protected void preRenderCallback(SoldierEntity entitylivingbaseIn, float partialTickTime) {
+        if (entitylivingbaseIn instanceof MasterSoldierEntity) {
+            GlStateManager.scale(1.4, 1.4, 1.4);
+        }
     }
 
     @Override

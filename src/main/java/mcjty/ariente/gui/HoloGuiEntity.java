@@ -252,6 +252,11 @@ public class HoloGuiEntity extends Entity {
     }
 
     @Override
+    public boolean shouldRenderInPass(int pass) {
+        return pass == 1;
+    }
+
+    @Override
     protected void entityInit() {
         this.dataManager.register(GUITILE, Optional.absent());
         this.dataManager.register(TAG, "");

@@ -253,28 +253,28 @@ public class LockTile extends GenericTileEntity implements IGuiTile, IKeyCardSlo
         }
         return new HoloPanel(0, 0, 8, 8)
                 .add(new HoloText(0, 1, 1, 1, "Horizontal", 0xaaccff))
-                .add(new HoloNumber(3, 3, 1, 1, 0xffffff, this::getHorizontalRange))
+                .add(new HoloNumber(3, 2, 1, 1, 0xffffff, this::getHorizontalRange))
 
-                .add(new HoloButton(1, 3, 1, 1).image(128 + 32, 128 + 16).hover(128 + 32 + 16, 128 + 16)
+                .add(new HoloButton(1, 2, 1, 1).image(128 + 32, 128 + 16).hover(128 + 32 + 16, 128 + 16)
                         .hitEvent((component, player, entity1, x, y) -> changeHorizontalRange(-8)))
-                .add(new HoloButton(2, 3, 1, 1).image(128 + 32, 128).hover(128 + 32 + 16, 128)
+                .add(new HoloButton(2, 2, 1, 1).image(128 + 32, 128).hover(128 + 32 + 16, 128)
                         .hitEvent((component, player, entity1, x, y) -> changeHorizontalRange(-1)))
-                .add(new HoloButton(5, 3, 1, 1).image(128, 128).hover(128 + 16, 128)
+                .add(new HoloButton(5, 2, 1, 1).image(128, 128).hover(128 + 16, 128)
                         .hitEvent((component, player, entity1, x, y) -> changeHorizontalRange(1)))
-                .add(new HoloButton(6, 3, 1, 1).image(128, 128 + 16).hover(128 + 16, 128 + 16)
+                .add(new HoloButton(6, 2, 1, 1).image(128, 128 + 16).hover(128 + 16, 128 + 16)
                         .hitEvent((component, player, entity1, x, y) -> changeHorizontalRange(8)))
 
 
-                .add(new HoloText(0, 5, 1, 1, "Vertical", 0xaaccff))
-                .add(new HoloNumber(3, 7, 1, 1, 0xffffff, this::getVerticalRange))
+                .add(new HoloText(0, 4, 1, 1, "Vertical", 0xaaccff))
+                .add(new HoloNumber(3, 5, 1, 1, 0xffffff, this::getVerticalRange))
 
-                .add(new HoloButton(1, 7, 1, 1).image(128 + 32, 128 + 16).hover(128 + 32 + 16, 128 + 16)
+                .add(new HoloButton(1, 5, 1, 1).image(128 + 32, 128 + 16).hover(128 + 32 + 16, 128 + 16)
                         .hitEvent((component, player, entity1, x, y) -> changeVerticalRange(-8)))
-                .add(new HoloButton(2, 7, 1, 1).image(128 + 32, 128).hover(128 + 32 + 16, 128)
+                .add(new HoloButton(2, 5, 1, 1).image(128 + 32, 128).hover(128 + 32 + 16, 128)
                         .hitEvent((component, player, entity1, x, y) -> changeVerticalRange(-1)))
-                .add(new HoloButton(5, 7, 1, 1).image(128, 128).hover(128 + 16, 128)
+                .add(new HoloButton(5, 5, 1, 1).image(128, 128).hover(128 + 16, 128)
                         .hitEvent((component, player, entity1, x, y) -> changeVerticalRange(1)))
-                .add(new HoloButton(6, 7, 1, 1).image(128, 128 + 16).hover(128 + 16, 128 + 16)
+                .add(new HoloButton(6, 5, 1, 1).image(128, 128 + 16).hover(128 + 16, 128 + 16)
                         .hitEvent((component, player, entity1, x, y) -> changeVerticalRange(8)))
                 ;
     }
