@@ -31,12 +31,17 @@ public class SignalTransmitterTile extends SignalChannelTileEntity {
 
         if (powerLevel != prevIn) {
             prevIn = powerLevel;
-            markDirty();
+            markDirtyClient();
             RedstoneChannels channels = RedstoneChannels.getChannels(getWorld());
             RedstoneChannels.RedstoneChannel ch = channels.getOrCreateChannel(channel);
             ch.setValue(powerLevel);
             channels.save();
         }
+    }
+
+    @Override
+    public IBlockState getActualState(IBlockState state) {
+        return state.withProperty(POWER, powerLevel > 0);
     }
 
     @Override

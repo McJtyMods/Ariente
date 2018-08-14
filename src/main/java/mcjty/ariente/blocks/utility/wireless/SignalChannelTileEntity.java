@@ -70,9 +70,9 @@ public abstract class SignalChannelTileEntity extends GenericTileEntity {
         powerOutput = newout;
         markDirty();
         IBlockState state = world.getBlockState(pos);
-        EnumFacing outputSide = getFacing(state);
+        EnumFacing outputSide = getFacing(state).getOpposite();
         getWorld().neighborChanged(this.pos.offset(outputSide), this.getBlockType(), this.pos);
-        //        getWorld().notifyNeighborsOfStateChange(this.pos, this.getBlockType());
+        markDirtyClient();
     }
 
     private EnumFacing getFacing(IBlockState state) {
@@ -193,7 +193,7 @@ public abstract class SignalChannelTileEntity extends GenericTileEntity {
 
     @Override
     public void checkRedstone(World world, BlockPos pos) {
-        EnumFacing inputSide = getFacing(world.getBlockState(pos));
+        EnumFacing inputSide = getFacing(world.getBlockState(pos)).getOpposite();
         int power = getInputStrength(world, pos, inputSide);
         setPowerInput(power);
     }
