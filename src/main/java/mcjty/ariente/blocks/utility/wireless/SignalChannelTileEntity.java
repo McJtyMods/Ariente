@@ -40,7 +40,10 @@ public abstract class SignalChannelTileEntity extends GenericTileEntity {
     protected int powerOutput = 0;
 
     static boolean isRedstoneChannelItem(Item item) {
-        return (item instanceof ItemBlock && (((ItemBlock)item).getBlock() == ModBlocks.signalTransmitterBlock || ((ItemBlock)item).getBlock() == ModBlocks.signalReceiverBlock));
+        return (item instanceof ItemBlock &&
+                (((ItemBlock)item).getBlock() == ModBlocks.signalTransmitterBlock
+                        || ((ItemBlock)item).getBlock() == ModBlocks.signalReceiverBlock
+                        || ((ItemBlock)item).getBlock() == ModBlocks.wirelessLockBlock));
     }
 
 //    @Override
@@ -137,39 +140,42 @@ public abstract class SignalChannelTileEntity extends GenericTileEntity {
     public static boolean onBlockActivated(World world, BlockPos pos, EntityPlayer player, EnumHand hand, EnumFacing side, float hitX, float hitY, float hitZ) {
         ItemStack stack = player.getHeldItem(hand);
         if(SignalChannelTileEntity.isRedstoneChannelItem(stack.getItem())) {
-            TileEntity te = world.getTileEntity(pos);
-            if (te instanceof SignalChannelTileEntity) {
-                if(!world.isRemote) {
-                    SignalChannelTileEntity rcte = (SignalChannelTileEntity)te;
-                    NBTTagCompound tagCompound = stack.getTagCompound();
-                    if (tagCompound == null) {
-                        tagCompound = new NBTTagCompound();
-                        stack.setTagCompound(tagCompound);
-                    }
-                    int channel;
-                    if(!player.isSneaking()) {
-                        channel = rcte.getChannel(true);
-                        tagCompound.setInteger("channel", channel);
-                    } else {
-                        if (tagCompound.hasKey("channel")) {
-                            channel = tagCompound.getInteger("channel");
-                        } else {
-                            channel = -1;
-                        }
-                        if(channel == -1) {
-                            RedstoneChannels redstoneChannels = RedstoneChannels.getChannels(world);
-                            channel = redstoneChannels.newChannel();
-                            redstoneChannels.save();
-                            tagCompound.setInteger("channel", channel);
-                        }
-                        rcte.setChannel(channel);
-                    }
-                    Logging.message(player, TextFormatting.YELLOW + "Channel set to " + channel + "!");
-                }
-                return true;
-            }
+            setChannel(world, pos, player, stack);
         }
         return true;
+    }
+
+    public static void setChannel(World world, BlockPos pos, EntityPlayer player, ItemStack stack) {
+        TileEntity te = world.getTileEntity(pos);
+        if (te instanceof SignalChannelTileEntity) {
+            if(!world.isRemote) {
+                SignalChannelTileEntity rcte = (SignalChannelTileEntity)te;
+                NBTTagCompound tagCompound = stack.getTagCompound();
+                if (tagCompound == null) {
+                    tagCompound = new NBTTagCompound();
+                    stack.setTagCompound(tagCompound);
+                }
+                int channel;
+                if(!player.isSneaking()) {
+                    channel = rcte.getChannel(true);
+                    tagCompound.setInteger("channel", channel);
+                } else {
+                    if (tagCompound.hasKey("channel")) {
+                        channel = tagCompound.getInteger("channel");
+                    } else {
+                        channel = -1;
+                    }
+                    if(channel == -1) {
+                        RedstoneChannels redstoneChannels = RedstoneChannels.getChannels(world);
+                        channel = redstoneChannels.newChannel();
+                        redstoneChannels.save();
+                        tagCompound.setInteger("channel", channel);
+                    }
+                    rcte.setChannel(channel);
+                }
+                Logging.message(player, TextFormatting.YELLOW + "Channel set to " + channel + "!");
+            }
+        }
     }
 
     /**

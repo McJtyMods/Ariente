@@ -13,6 +13,7 @@ import mcjty.ariente.blocks.utility.door.InvisibleDoorTile;
 import mcjty.ariente.blocks.utility.wireless.SignalChannelTileEntity;
 import mcjty.ariente.blocks.utility.wireless.SignalReceiverTile;
 import mcjty.ariente.blocks.utility.wireless.SignalTransmitterTile;
+import mcjty.ariente.blocks.utility.wireless.WirelessLockTile;
 import mcjty.ariente.cables.ConnectorBlock;
 import mcjty.ariente.cables.NetCableBlock;
 import mcjty.ariente.facade.FacadeBlock;
@@ -82,6 +83,7 @@ public class ModBlocks {
     public static GenericBlock<LockTile, GenericContainer> lockBlock;
     public static GenericBlock<SignalReceiverTile, GenericContainer> signalReceiverBlock;
     public static GenericBlock<SignalTransmitterTile, GenericContainer> signalTransmitterBlock;
+    public static GenericBlock<WirelessLockTile, GenericContainer> wirelessLockBlock;
 
     public static BaseBlock flatLightBlock;
 
@@ -148,6 +150,16 @@ public class ModBlocks {
                 .activateAction((world, pos, player, hand, side, hitX, hitY, hitZ) -> HoloGuiHandler.openHoloGui(world, pos, player))
                 .info("message.ariente.shiftmessage")
                 .infoExtended("message.ariente.lock")
+                .build();
+
+        wirelessLockBlock = builderFactory.<WirelessLockTile> builder("wireless_lock")
+                .tileEntityClass(WirelessLockTile.class)
+                .property(WirelessLockTile.POWER)
+                .flags(BlockFlags.NON_OPAQUE, BlockFlags.NON_FULLCUBE)
+                .boundingBox((state, source, pos) -> getFlatBox(state))
+                .activateAction(WirelessLockTile::onBlockActivatedWithToggle)
+                .info("message.ariente.shiftmessage")
+                .infoExtended("message.ariente.wireless_lock")
                 .build();
 
         signalReceiverBlock = builderFactory.<SignalReceiverTile> builder("signal_receiver")
@@ -434,6 +446,7 @@ public class ModBlocks {
 
         warperBlock.initModel();
         lockBlock.initModel();
+        wirelessLockBlock.initModel();
         signalReceiverBlock.initModel();
         signalTransmitterBlock.initModel();
 
