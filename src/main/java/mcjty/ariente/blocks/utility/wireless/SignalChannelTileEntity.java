@@ -1,6 +1,8 @@
 package mcjty.ariente.blocks.utility.wireless;
 
+import mcjty.ariente.ai.CityAI;
 import mcjty.ariente.blocks.ModBlocks;
+import mcjty.ariente.cities.ICityEquipment;
 import mcjty.lib.blocks.BaseBlock;
 import mcjty.lib.tileentity.GenericTileEntity;
 import mcjty.lib.varia.Logging;
@@ -30,20 +32,26 @@ import net.minecraftforge.fml.common.Optional;
 import net.minecraftforge.fml.relauncher.Side;
 import net.minecraftforge.fml.relauncher.SideOnly;
 
+import javax.annotation.Nullable;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
-public abstract class SignalChannelTileEntity extends GenericTileEntity {
+public abstract class SignalChannelTileEntity extends GenericTileEntity implements ICityEquipment {
 
     public static final PropertyBool POWER = PropertyBool.create("power");
 
     protected int channel = -1;
     protected int powerOutput = 0;
 
+    private int desiredChannel; // Only used for city AI
+
     static boolean isRedstoneChannelItem(Item item) {
         return (item instanceof ItemBlock &&
                 (((ItemBlock)item).getBlock() == ModBlocks.signalTransmitterBlock
                         || ((ItemBlock)item).getBlock() == ModBlocks.signalReceiverBlock
-                        || ((ItemBlock)item).getBlock() == ModBlocks.wirelessLockBlock));
+                        || ((ItemBlock)item).getBlock() == ModBlocks.wirelessLockBlock
+                        || ((ItemBlock)item).getBlock() == ModBlocks.wirelessButtonBlock));
     }
 
 //    @Override
@@ -114,12 +122,14 @@ public abstract class SignalChannelTileEntity extends GenericTileEntity {
     public void readRestorableFromNBT(NBTTagCompound tagCompound) {
         super.readRestorableFromNBT(tagCompound);
         channel = tagCompound.getInteger("channel");
+        desiredChannel = tagCompound.getInteger("desired");
     }
 
     @Override
     public void writeRestorableToNBT(NBTTagCompound tagCompound) {
         super.writeRestorableToNBT(tagCompound);
         tagCompound.setInteger("channel", channel);
+        tagCompound.setInteger("desired", desiredChannel);
     }
 
     @Override
@@ -202,5 +212,34 @@ public abstract class SignalChannelTileEntity extends GenericTileEntity {
         EnumFacing inputSide = getFacing(world.getBlockState(pos)).getOpposite();
         int power = getInputStrength(world, pos, inputSide);
         setPowerInput(power);
+    }
+
+    public int getDesiredChannel() {
+        return desiredChannel;
+    }
+
+    public void setDesiredChannel(int desiredChannel) {
+        this.desiredChannel = desiredChannel;
+        markDirtyQuick();
+    }
+
+    @Nullable
+    @Override
+    public Map<String, Object> save() {
+        Map<String, Object> data = new HashMap<>();
+        data.put("channel", channel);
+        return data;
+    }
+
+    @Override
+    public void load(Map<String, Object> data) {
+        if (data.get("channel") instanceof Integer) {
+            desiredChannel = (Integer) data.get("channel");
+        }
+    }
+
+    @Override
+    public void setup(CityAI cityAI, World world, boolean firstTime) {
+
     }
 }

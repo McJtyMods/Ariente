@@ -23,7 +23,7 @@
       "up": {"x": -90},
       "down": {"x": 90}
     },
-    "locked": {
+    "power": {
       "false": {
         "textures": {
           "bottom": "ariente:blocks/base/machinebottom",

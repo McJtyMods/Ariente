@@ -6,6 +6,8 @@ import mcjty.ariente.blocks.defense.ForceFieldTile;
 import mcjty.ariente.blocks.generators.NegariteGeneratorTile;
 import mcjty.ariente.blocks.generators.PosiriteGeneratorTile;
 import mcjty.ariente.blocks.utility.StorageTile;
+import mcjty.ariente.blocks.utility.wireless.RedstoneChannels;
+import mcjty.ariente.blocks.utility.wireless.SignalChannelTileEntity;
 import mcjty.ariente.cities.*;
 import mcjty.ariente.entities.*;
 import mcjty.ariente.items.ModItems;
@@ -460,6 +462,8 @@ public class CityAI {
         int cx = center.getChunkX();
         int cz = center.getChunkZ();
 
+        Map<Integer, Integer> desiredToReal = new HashMap<>();
+
         for (int dx = cx - dimX / 2 - 1; dx <= cx + dimX / 2 + 1; dx++) {
             for (int dz = cz - dimZ / 2 - 1; dz <= cz + dimZ / 2 + 1; dz++) {
                 int starty = 30;    // @todo is this a safe minimum height to assume?
@@ -482,6 +486,20 @@ public class CityAI {
                                 TileEntity te = world.getTileEntity(p);
                                 if (te instanceof ICityEquipment) {
                                     ((ICityEquipment) te).setup(this, world, firstTime);
+                                }
+
+                                if (firstTime && te instanceof SignalChannelTileEntity) {
+                                    int desired = ((SignalChannelTileEntity) te).getDesiredChannel();
+                                    if (!desiredToReal.containsKey(desired)) {
+                                        // New channel is needed
+                                        RedstoneChannels redstoneChannels = RedstoneChannels.getChannels(world);
+                                        int newChannel = redstoneChannels.newChannel();
+                                        redstoneChannels.save();
+                                        desiredToReal.put(desired, newChannel);
+                                        System.out.println("Mapping channel " + desired + " to " + newChannel);
+                                    }
+                                    desired = desiredToReal.get(desired);
+                                    ((SignalChannelTileEntity) te).setChannel(desired);
                                 }
 
                                 if (te instanceof AICoreTile) {

@@ -48,11 +48,7 @@ public class SignalReceiverTile extends SignalChannelTileEntity implements ITick
     @Override
     public void readFromNBT(NBTTagCompound tagCompound) {
         super.readFromNBT(tagCompound);
-        if(tagCompound.hasKey("rs", 3 /* int */)) {
-            powerOutput = tagCompound.getInteger("rs");
-        } else {
-            powerOutput = tagCompound.getBoolean("rs") ? 15 : 0; // backwards compatibility
-        }
+        powerOutput = tagCompound.getInteger("rs");
     }
 
     @Override

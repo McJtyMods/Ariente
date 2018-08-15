@@ -44,6 +44,7 @@ tile.ariente.posirite_tank.name=Posirite Tank
 tile.ariente.warper.name=Warper
 tile.ariente.lock.name=Lock
 tile.ariente.wireless_lock.name=Wireless Lock
+tile.ariente.wireless_button.name=Wireless Button
 tile.ariente.signal_receiver.name=Signal Receiver
 tile.ariente.signal_transmitter.name=Signal Transmitter
 tile.ariente.storage.name=Storage Cube
@@ -141,7 +142,10 @@ message.ariente.lock=\
     @fLock
 message.ariente.wireless_lock=\
     @aChannel: %s\n\
-    @fWireless Lock. Right click on a transmitter\n\
+    @fWireless Lock
+message.ariente.wireless_button=\
+    @aChannel: %s\n\
+    @fWireless Button. Right click on a transmitter\n\
     @for receiver to link
 message.ariente.signal_receiver=\
     @aChannel: %s\n\
