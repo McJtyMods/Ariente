@@ -135,7 +135,7 @@ public class ArienteChunkGenerator implements IChunkGenerator {
                     if (CityTools.isCityChunk(x+cx, z+cz)) {
                         ChunkCoord center = CityTools.getNearestCityCenter(x+cx, z+cz);
                         City city = CityTools.getCity(center);
-                        height = city.getHeight(this)+2;
+                        height = city.getHeight(this);
                         cityHeights[cx+1][cz+1] = height;
                         hasCity = true;
                     } else {

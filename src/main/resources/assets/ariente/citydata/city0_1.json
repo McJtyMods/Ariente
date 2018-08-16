@@ -19,17 +19,19 @@
     "soldiersWaveMax1": 2,
     "soldiersWaveMax2": 3,
     "soldiersWaveMaxN": 5,
-    "masterChance": 0,
+    "masterChance": 0.0,
     "loot": [
       {
         "id": "ariente:ingot_silver",
-        "chance": 0.1,
-        "max": 3
+        "meta": 0,
+        "max": 3,
+        "chance": 0.1
       },
       {
         "id": "ariente:ingot_manganese",
-        "chance": 0.1,
-        "max": 1
+        "meta": 0,
+        "max": 1,
+        "chance": 0.1
       }
     ],
     "partpalette": [
@@ -51,255 +53,256 @@
     "zsize": 16,
     "slices": [
       [
-        "dddddddddddddddd",
-        "dddddddddddddddd",
-        "ddeeeeeeeeeeeedd",
-        "ddeddddddddddedd",
-        "ddeddddddddddedd",
-        "ddeddddddddddedd",
-        "ddeddddddddddedd",
-        "ddeddddddddddedd",
-        "ddeddddddddddedd",
-        "ddeddddddddddedd",
-        "ddeddddddddddedd",
-        "ddeddddddddddedd",
-        "ddeddddddddddedd",
-        "ddeeeeeeeeeeeedd",
-        "dddddddddddddddd",
-        "dddddddddddddddd"
+        "d d d d d d d d d d d d d d d d ",
+        "d d d d d d d d d d d d d d d d ",
+        "d d e e e e e e e e e e e e d d ",
+        "d d e d d d d d d d d d d e d d ",
+        "d d e d d d d d d d d d d e d d ",
+        "d d e d d d d d d d d d d e d d ",
+        "d d e d d d d d d d d d d e d d ",
+        "d d e d d d d d d d d d d e d d ",
+        "d d e d d d d d d d d d d e d d ",
+        "d d e d d d d d d d d d d e d d ",
+        "d d e d d d d d d d d d d e d d ",
+        "d d e d d d d d d d d d d e d d ",
+        "d d e d d d d d d d d d d e d d ",
+        "d d e e e e e e e e e e e e d d ",
+        "d d d d d d d d d d d d d d d d ",
+        "d d d d d d d d d d d d d d d d "
       ],
       [
-        "bbbbbbbjjbbbbbbb",
-        "b     b        b",
-        "b g   b        b",
-        "b     b   l    b",
-        "b    bb     m  b",
-        "b    bb        b",
-        "b    bbbbkkbbbbb",
-        "f     b    i   n",
-        "f   i b        n",
-        "b     f  bb    b",
-        "b     f  bb    b",
-        "b     b        b",
-        "b h   b        b",
-        "b     b     l  b",
-        "b     b        b",
-        "bbbbbbbkkbbbbbbb"
+        "b b b b b b b j j b b b b b b b ",
+        "b           b                 b ",
+        "b   g       b                 b ",
+        "b           b       l         b ",
+        "b         b b           m     b ",
+        "b         b b                 b ",
+        "b         b b b b k k b b b b b ",
+        "f           b         i       n ",
+        "f       i   b                 n ",
+        "b           f     b b         b ",
+        "b           f     b b         b ",
+        "b           b                 b ",
+        "b   h       b                 b ",
+        "b           b           l     b ",
+        "b           b                 b ",
+        "b b b b b b b k k b b b b b b b "
       ],
       [
-        "boooooo  oooooob",
-        "o     o        o",
-        "o     o        o",
-        "o     o        o",
-        "o    po        o",
-        "o    qo        o",
-        "o    rooo  ooooo",
-        "      o         ",
-        "      o         ",
-        "o        sr    o",
-        "o        rs    o",
-        "o     o        o",
-        "o     o        o",
-        "o     o        o",
-        "o     o        o",
-        "boooooo  oooooob"
+        "b o o o o o o     o o o o o o b ",
+        "o           o                 o ",
+        "o           o                 o ",
+        "o           o                 o ",
+        "o         p o                 o ",
+        "o         q o                 o ",
+        "o         r o o o     o o o o o ",
+        "            o                   ",
+        "            o                   ",
+        "o                 s r         o ",
+        "o                 r s         o ",
+        "o           o                 o ",
+        "o           o                 o ",
+        "o           o                 o ",
+        "o           o                 o ",
+        "b o o o o o o     o o o o o o b "
       ],
       [
-        "booooto  otoooob",
-        "o     o        o",
-        "o     o        o",
-        "o     o        o",
-        "o    uo        o",
-        "t    uo        t",
-        "o    uooo  ooooo",
-        "      o         ",
-        "      o         ",
-        "o        uv    o",
-        "t        vu    t",
-        "o     o        o",
-        "o     o        o",
-        "o     o        o",
-        "o     o        o",
-        "booooto  otoooob"
+        "b o o o o t o     o t o o o o b ",
+        "o           o                 o ",
+        "o           o                 o ",
+        "o           o                 o ",
+        "o         u o                 o ",
+        "t         u o                 t ",
+        "o         u o o o     o o o o o ",
+        "            o                   ",
+        "            o                   ",
+        "o                 u v         o ",
+        "t                 v u         t ",
+        "o           o                 o ",
+        "o           o                 o ",
+        "o           o                 o ",
+        "o           o                 o ",
+        "b o o o o t o     o t o o o o b "
       ],
       [
-        "boooooooooooooob",
-        "o     o        o",
-        "o     o        o",
-        "o     o        o",
-        "o    wo        o",
-        "o    wo        o",
-        "o    woooooooooo",
-        "o     o        o",
-        "o     o        o",
-        "o     o  uv    o",
-        "o     o  vu    o",
-        "o     o        o",
-        "o     o        o",
-        "o     o        o",
-        "o     o        o",
-        "boooooooooooooob"
+        "b o o o o o o o o o o o o o o b ",
+        "o           o                 o ",
+        "o           o                 o ",
+        "o           o                 o ",
+        "o         w o                 o ",
+        "o         w o                 o ",
+        "o         w o o o o o o o o o o ",
+        "o           o                 o ",
+        "o           o                 o ",
+        "o           o     u v         o ",
+        "o           o     v u         o ",
+        "o           o                 o ",
+        "o           o                 o ",
+        "o           o                 o ",
+        "o           o                 o ",
+        "b o o o o o o o o o o o o o o b "
       ],
       [
-        "boooooooooooooob",
-        "o     o        o",
-        "o     o        o",
-        "o     o        o",
-        "o     o        o",
-        "o     o        o",
-        "o     oooooooooo",
-        "o     o        o",
-        "o     o        o",
-        "o     o  uv    o",
-        "o     o  vu    o",
-        "o     o        o",
-        "o     o        o",
-        "o     o        o",
-        "o     o        o",
-        "boooooooooooooob"
+        "b o o o o o o o o o o o o o o b ",
+        "o           o                 o ",
+        "o           o                 o ",
+        "o           o                 o ",
+        "o           o                 o ",
+        "o           o                 o ",
+        "o           o o o o o o o o o o ",
+        "o           o                 o ",
+        "o           o                 o ",
+        "o           o     u v         o ",
+        "o           o     v u         o ",
+        "o           o                 o ",
+        "o           o                 o ",
+        "o           o                 o ",
+        "o           o                 o ",
+        "b o o o o o o o o o o o o o o b "
       ],
       [
-        "boooooooooooooob",
-        "o     o        o",
-        "o     o        o",
-        "o     o        o",
-        "o     o        o",
-        "o     o        o",
-        "o     oooooooooo",
-        "o     o        o",
-        "o     o        o",
-        "o     o  xx    o",
-        "o     o  xx    o",
-        "o     o        o",
-        "o     o        o",
-        "o     o        o",
-        "o     o        o",
-        "boooooooooooooob"
+        "b o o o o o o o o o o o o o o b ",
+        "o           o                 o ",
+        "o           o                 o ",
+        "o           o                 o ",
+        "o           o                 o ",
+        "o           o                 o ",
+        "o           o o o o o o o o o o ",
+        "o           o                 o ",
+        "o           o                 o ",
+        "o           o     x x         o ",
+        "o           o     x x         o ",
+        "o           o                 o ",
+        "o           o                 o ",
+        "o           o                 o ",
+        "o           o                 o ",
+        "b o o o o o o o o o o o o o o b "
       ],
       [
-        "bbbbbbbbbbbbbbbb",
-        "bccccccccccccccb",
-        "bccccccccccccccb",
-        "bccccccccccccccb",
-        "bccccccccccccccb",
-        "bccccccccccccccb",
-        "bccccccccccccccb",
-        "bccccccccccccccb",
-        "bccccccccccccccb",
-        "bccccccccccccccb",
-        "bccccccccccccccb",
-        "bccccccccccccccb",
-        "bccccccccccccccb",
-        "bccccccccccccccb",
-        "bccccccccccccccb",
-        "bbbbbbbbbbbbbbbb"
+        "b b b b b b b b b b b b b b b b ",
+        "b c c c c c c c c c c c c c c b ",
+        "b c c c c c c c c c c c c c c b ",
+        "b c c c c c c c c c c c c c c b ",
+        "b c c c c c c c c c c c c c c b ",
+        "b c c c c c c c c c c c c c c b ",
+        "b c c c c c c c c c c c c c c b ",
+        "b c c c c c c c c c c c c c c b ",
+        "b c c c c c c c c c c c c c c b ",
+        "b c c c c c c c c c c c c c c b ",
+        "b c c c c c c c c c c c c c c b ",
+        "b c c c c c c c c c c c c c c b ",
+        "b c c c c c c c c c c c c c c b ",
+        "b c c c c c c c c c c c c c c b ",
+        "b c c c c c c c c c c c c c c b ",
+        "b b b b b b b b b b b b b b b b "
       ]
     ],
-    "meta": []
+    "meta": [],
+    "tedata": []
   },
   {
     "type": "palette",
     "name": "city0_1",
     "palette": [
       {
-        "char": " ",
+        "char": "  ",
         "block": "minecraft:air"
       },
       {
-        "char": "a",
-        "block": "ariente:marble_pilar@3"
-      },
-      {
-        "char": "b",
-        "block": "ariente:marble_smooth@3"
-      },
-      {
-        "char": "c",
-        "block": "minecraft:stained_glass@7"
-      },
-      {
-        "char": "d",
-        "block": "ariente:pattern"
-      },
-      {
-        "char": "e",
-        "block": "ariente:blacktech@5"
-      },
-      {
-        "char": "f",
-        "block": "ariente:door_marker@3"
-      },
-      {
-        "char": "g",
-        "block": "ariente:soldier_dummy@1"
-      },
-      {
-        "char": "h",
-        "block": "ariente:soldier_dummy"
-      },
-      {
-        "char": "i",
-        "block": "ariente:guard_dummy@1"
-      },
-      {
-        "char": "j",
-        "block": "ariente:door_marker@1"
-      },
-      {
-        "char": "k",
-        "block": "ariente:door_marker"
-      },
-      {
-        "char": "l",
-        "block": "ariente:soldier_dummy@2"
-      },
-      {
-        "char": "m",
-        "block": "ariente:guard_dummy@2"
-      },
-      {
-        "char": "n",
-        "block": "ariente:door_marker@2"
-      },
-      {
-        "char": "o",
-        "block": "ariente:marble@3"
-      },
-      {
-        "char": "p",
-        "block": "ariente:storage@4"
-      },
-      {
-        "char": "q",
-        "block": "ariente:aicore"
-      },
-      {
-        "char": "r",
-        "block": "ariente:blacktech@6"
-      },
-      {
-        "char": "s",
-        "block": "ariente:blacktech"
-      },
-      {
-        "char": "t",
-        "block": "ariente:blacktech@4"
-      },
-      {
-        "char": "u",
-        "block": "ariente:blacktech@3"
-      },
-      {
-        "char": "v",
-        "block": "ariente:blacktech@2"
-      },
-      {
-        "char": "w",
+        "char": "w ",
         "block": "ariente:marble_slab@3"
       },
       {
-        "char": "x",
+        "char": "u ",
+        "block": "ariente:blacktech@3"
+      },
+      {
+        "char": "s ",
+        "block": "ariente:blacktech"
+      },
+      {
+        "char": "q ",
+        "block": "ariente:aicore"
+      },
+      {
+        "char": "o ",
+        "block": "ariente:marble@3"
+      },
+      {
+        "char": "m ",
+        "block": "ariente:guard_dummy@2"
+      },
+      {
+        "char": "k ",
+        "block": "ariente:door_marker"
+      },
+      {
+        "char": "i ",
+        "block": "ariente:guard_dummy@1"
+      },
+      {
+        "char": "g ",
+        "block": "ariente:soldier_dummy@1"
+      },
+      {
+        "char": "e ",
+        "block": "ariente:blacktech@5"
+      },
+      {
+        "char": "c ",
+        "block": "minecraft:stained_glass@7"
+      },
+      {
+        "char": "a ",
+        "block": "ariente:marble_pilar@3"
+      },
+      {
+        "char": "x ",
         "block": "ariente:double_marble_slab@3"
+      },
+      {
+        "char": "v ",
+        "block": "ariente:blacktech@2"
+      },
+      {
+        "char": "t ",
+        "block": "ariente:blacktech@4"
+      },
+      {
+        "char": "r ",
+        "block": "ariente:blacktech@6"
+      },
+      {
+        "char": "p ",
+        "block": "ariente:storage@4"
+      },
+      {
+        "char": "n ",
+        "block": "ariente:door_marker@2"
+      },
+      {
+        "char": "l ",
+        "block": "ariente:soldier_dummy@2"
+      },
+      {
+        "char": "j ",
+        "block": "ariente:door_marker@1"
+      },
+      {
+        "char": "h ",
+        "block": "ariente:soldier_dummy"
+      },
+      {
+        "char": "f ",
+        "block": "ariente:door_marker@3"
+      },
+      {
+        "char": "d ",
+        "block": "ariente:pattern"
+      },
+      {
+        "char": "b ",
+        "block": "ariente:marble_smooth@3"
       }
     ]
   }
