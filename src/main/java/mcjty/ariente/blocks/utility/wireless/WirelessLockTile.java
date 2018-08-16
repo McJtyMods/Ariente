@@ -18,10 +18,11 @@ import net.minecraft.block.properties.PropertyBool;
 import net.minecraft.block.state.IBlockState;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.nbt.NBTTagCompound;
+import net.minecraft.network.NetworkManager;
+import net.minecraft.network.play.server.SPacketUpdateTileEntity;
 import net.minecraft.tileentity.TileEntity;
 import net.minecraft.util.ITickable;
 import net.minecraft.util.math.BlockPos;
-import net.minecraft.util.text.TextFormatting;
 import net.minecraft.world.World;
 import net.minecraftforge.fml.common.Optional;
 
@@ -46,10 +47,28 @@ public class WirelessLockTile extends SignalChannelTileEntity implements ILockab
                 RedstoneChannels.RedstoneChannel ch = channels.getChannel(channel);
                 if (ch != null) {
                     setLocked(ch.getValue() <= 0);
+                } else {
+                    setLocked(true);
                 }
             }
         }
     }
+
+    @Override
+    public void onDataPacket(NetworkManager net, SPacketUpdateTileEntity packet) {
+        boolean locked = isLocked();
+
+        super.onDataPacket(net, packet);
+
+        if (world.isRemote) {
+            // If needed send a render update.
+            boolean newLocked = isLocked();
+            if (newLocked != locked) {
+                world.markBlockRangeForRenderUpdate(pos, pos);
+            }
+        }
+    }
+
 
     @Override
     public boolean isLocked() {
@@ -106,7 +125,7 @@ public class WirelessLockTile extends SignalChannelTileEntity implements ILockab
 
     @Override
     public IBlockState getActualState(IBlockState state) {
-        return state.withProperty(LOCKED, !locked);
+        return state.withProperty(LOCKED, locked);
     }
 
     @Override
