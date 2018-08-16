@@ -8,7 +8,6 @@ import mcjty.ariente.ai.CityAISystem;
 import mcjty.ariente.blocks.ModBlocks;
 import mcjty.ariente.cities.*;
 import mcjty.ariente.varia.ChunkCoord;
-import net.minecraft.block.Block;
 import net.minecraft.block.state.IBlockState;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.init.Blocks;
@@ -17,7 +16,6 @@ import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.text.TextComponentString;
 import net.minecraft.world.World;
 import net.minecraft.world.WorldServer;
-import org.apache.commons.lang3.StringUtils;
 
 import java.io.File;
 import java.io.FileNotFoundException;
@@ -28,6 +26,7 @@ import java.util.stream.Collectors;
 
 public class EditMode {
 
+    public static final PaletteIndex PALETTE_AIR = new PaletteIndex(' ', ' ');
     public static boolean editMode = false;
 
     public static void enableEditMode(EntityPlayer player) {
@@ -102,7 +101,7 @@ public class EditMode {
             for (int dy = 0; dy < newPart.getSliceCount(); dy++) {
                 for (int dx = 0; dx < 16; dx++) {
                     for (int dz = 0; dz < 16; dz++) {
-                        Character c = newPart.getPaletteChar(dx, dy, dz);
+                        PaletteIndex c = newPart.getPaletteChar(dx, dy, dz);
                         IBlockState state = compiledPalette.getStraight(c);
                         world.setBlockState(new BlockPos(cx * 16 + dx, partY + dy, cz * 16 + dz), state, 3);
                     }
@@ -214,11 +213,11 @@ public class EditMode {
         int dimZ = pattern.size();
 
         JsonArray array = new JsonArray();
-        AtomicInteger idx = new AtomicInteger();
-        Map<IBlockState, Character> mapping = new HashMap<>();
+        AtomicInteger idx = new AtomicInteger(1);
+        Map<IBlockState, PaletteIndex> mapping = new HashMap<>();
         Palette palette = new Palette(plan.getPalette());
         CompiledPalette compiledPalette = CompiledPalette.getCompiledPalette(plan.getPalette());
-        for (Character character : compiledPalette.getCharacters()) {
+        for (PaletteIndex character : compiledPalette.getCharacters()) {
             IBlockState state = compiledPalette.getStraight(character);
             if (state != null) {
                 palette.addMapping(character, state);
@@ -231,7 +230,7 @@ public class EditMode {
         cx = city.getCenter().getChunkX();
         cz = city.getCenter().getChunkZ();
 
-        Set<Character> paletteUsage = new HashSet<>();
+        Set<PaletteIndex> paletteUsage = new HashSet<>();
         Map<String, BuildingPart> editedParts = new HashMap<>();
         for (int dx = cx - dimX / 2 - 1; dx <= cx + dimX / 2 + 1; dx++) {
             for (int dz = cz - dimZ / 2 - 1; dz <= cz + dimZ / 2 + 1; dz++) {
@@ -277,10 +276,15 @@ public class EditMode {
         player.sendMessage(new TextComponentString("Save city '" + plan.getName() + "'!"));
     }
 
+    private static PaletteIndex createNewIndex(int i) {
+        String palettechars = " abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789";
+        return new PaletteIndex(palettechars.charAt(i % palettechars.length()),
+                palettechars.charAt(i / palettechars.length()));
+    }
+
     private static BuildingPart exportPart(BuildingPart part, World world, BlockPos start, int y, Palette palette,
-                                           Set<Character> paletteUsage,
-                                           Map<IBlockState, Character> mapping, AtomicInteger idx) throws FileNotFoundException {
-        String palettechars = "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789-+=*^%$#@_()[]{}:;,.?!";
+                                           Set<PaletteIndex> paletteUsage,
+                                           Map<IBlockState, PaletteIndex> mapping, AtomicInteger idx) throws FileNotFoundException {
         Map<BlockPos, Map<String, Object>> teData = new HashMap<>();
         List<Slice> slices = new ArrayList<>();
         for (int f = 0; f < part.getSliceCount(); f++) {
@@ -297,22 +301,17 @@ public class EditMode {
                 for (int z = 0; z < 16; z++) {
                     pos.setPos(cx + x, cy, cz + z);
                     IBlockState state = world.getBlockState(pos);
-                    Character character;
+                    PaletteIndex character;
 
                     if (state.getBlock() == ModBlocks.invisibleDoorBlock) {
-                        character = ' ';
+                        character = PALETTE_AIR;
                     } else {
                         character = mapping.get(state);
                     }
                     if (character == null) {
                         while (true) {
-                            try {
-                                character = (state.getBlock() == Blocks.AIR || state.getBlock() == Blocks.WATER || state.getBlock() == Blocks.FLOWING_WATER)
-                                        ? ' ' : palettechars.charAt(idx.getAndIncrement());
-                            } catch (Exception e) {
-                                character = ' ';
-                                System.out.println("PALETTE OVERFLOW SAVING PART " + part.getName() + "!");
-                            }
+                            character = (state.getBlock() == Blocks.AIR || state.getBlock() == Blocks.WATER || state.getBlock() == Blocks.FLOWING_WATER)
+                                    ? PALETTE_AIR : createNewIndex(idx.getAndIncrement());
                             if (!palette.getPalette().containsKey(character)) {
                                 break;
                             }
@@ -321,7 +320,7 @@ public class EditMode {
                         mapping.put(state, character);
                     }
                     paletteUsage.add(character);
-                    slice.sequence[z * 16 + x] = String.valueOf(character);
+                    slice.sequence[z * 16 + x] = character;
                     TileEntity te = world.getTileEntity(pos);
                     if (te instanceof ICityEquipment) {
                         Map<String, Object> saved = ((ICityEquipment) te).save();
@@ -333,15 +332,15 @@ public class EditMode {
             }
         }
 
-        String[] sl = new String[part.getSliceCount()];
+        BuildingPart.PalettedSlice[] sl = new BuildingPart.PalettedSlice[part.getSliceCount()];
         for (int i = 0; i < part.getSliceCount(); i++) {
-            sl[i] = StringUtils.join(slices.get(i).sequence);
+            sl[i] = new BuildingPart.PalettedSlice(slices.get(i).sequence);
         }
 
         return new BuildingPart(part.getName(), 16, 16, sl, teData);
     }
 
     public static class Slice {
-        String sequence[] = new String[256];
+        PaletteIndex sequence[] = new PaletteIndex[256];
     }
 }

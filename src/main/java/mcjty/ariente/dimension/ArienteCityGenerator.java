@@ -139,14 +139,14 @@ public class ArienteCityGenerator {
 
         for (int x = 0; x < part.getXSize(); x++) {
             for (int z = 0; z < part.getZSize(); z++) {
-                char[] vs = part.getVSlice(x, z);
+                BuildingPart.PalettedSlice vs = part.getVSlice(x, z);
                 if (vs != null) {
                     int rx = ox + transform.rotateX(x, z);
                     int rz = oz + transform.rotateZ(x, z);
                     int index = (rx << 12) | (rz << 8) + oy;
-                    int len = vs.length;
+                    int len = vs.getSlice().size();
                     for (int y = 0; y < len; y++) {
-                        char c = vs[y];
+                        PaletteIndex c = vs.getSlice().get(y);
                         Character b = compiledPalette.get(c);
                         if (b == null) {
                             throw new RuntimeException("Could not find entry '" + c + "' in the palette for part '" + part.getName() + "'!");

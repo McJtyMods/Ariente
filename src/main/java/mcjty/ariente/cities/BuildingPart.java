@@ -5,11 +5,8 @@ import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
 import com.google.gson.JsonPrimitive;
 import net.minecraft.util.math.BlockPos;
-import org.apache.commons.lang3.StringUtils;
-import org.apache.commons.lang3.tuple.Pair;
 
-import java.util.HashMap;
-import java.util.Map;
+import java.util.*;
 
 /**
  * A structure part
@@ -19,14 +16,14 @@ public class BuildingPart implements IAsset {
     private String name;
 
     // Data per height level
-    private String[] slices;
+    private PalettedSlice[] slices;
 
     // Dimension (should be less then 16x16)
     private int xSize;
     private int zSize;
 
     // Optimized version of this part which is organized in xSize*ySize vertical strings
-    private char[][] vslices = null;
+    private PalettedSlice[] vslices = null;
 
     private Map<BlockPos, Map<String, Object>> teInfo = new HashMap<>();
     private Map<String, Object> metadata = new HashMap<>();
@@ -35,7 +32,7 @@ public class BuildingPart implements IAsset {
         readFromJSon(object);
     }
 
-    public BuildingPart(String name, int xSize, int zSize, String[] slices, Map<BlockPos, Map<String, Object>> teData) {
+    public BuildingPart(String name, int xSize, int zSize, PalettedSlice[] slices, Map<BlockPos, Map<String, Object>> teData) {
         this.name = name;
         this.slices = slices;
         this.xSize = xSize;
@@ -80,25 +77,22 @@ public class BuildingPart implements IAsset {
     /**
      * Vertical slices, organized by z*xSize+x
      */
-    public char[][] getVslices() {
+    public PalettedSlice[] getVslices() {
         if (vslices == null) {
-            vslices = new char[xSize * zSize][];
+            vslices = new PalettedSlice[xSize * zSize];
             for (int x = 0 ; x < xSize ; x++) {
                 for (int z = 0 ; z < zSize ; z++) {
-                    String vs = "";
+                    PalettedSlice vs = new PalettedSlice();
                     boolean empty = true;
                     for (int y = 0; y < slices.length; y++) {
-                        Character c = getC(x, y, z);
-                        vs += c;
-                        if (c != ' ') {
-                            empty = false;
-                        }
+                        PaletteIndex c = getC(x, y, z);
+                        vs.getSlice().add(c);
                     }
                     // @todo: allow empty slices for other types of parts?
 //                    if (empty) {
 //                        vslices[z*xSize+x] = null;
 //                    } else {
-                        vslices[z*xSize+x] = vs.toCharArray();
+                        vslices[z*xSize+x] = vs;
 //                    }
                 }
             }
@@ -106,7 +100,7 @@ public class BuildingPart implements IAsset {
         return vslices;
     }
 
-    public char[] getVSlice(int x, int z) {
+    public PalettedSlice getVSlice(int x, int z) {
         return getVslices()[z*xSize + x];
     }
 
@@ -116,13 +110,23 @@ public class BuildingPart implements IAsset {
         xSize = object.get("xsize").getAsInt();
         zSize = object.get("zsize").getAsInt();
         JsonArray sliceArray = object.get("slices").getAsJsonArray();
-        slices = new String[sliceArray.size()];
+        slices = new PalettedSlice[sliceArray.size()];
         int i = 0;
         for (JsonElement element : sliceArray) {
             JsonArray a = element.getAsJsonArray();
-            String slice = "";
+            PalettedSlice slice = new PalettedSlice();
             for (JsonElement el : a) {
-                slice += el.getAsString();
+                String line = el.getAsString();
+                if (line.length() < xSize * 2) {
+                    // Old format
+                    for (int j = 0 ; j < xSize ; j++) {
+                        slice.getSlice().add(new PaletteIndex(line.charAt(j), ' '));
+                    }
+                } else {
+                    for (int j = 0 ; j < xSize ; j++) {
+                        slice.getSlice().add(new PaletteIndex(line.charAt(j * 2), line.charAt(j * 2 + 1)));
+                    }
+                }
             }
             slices[i++] = slice;
         }
@@ -186,15 +190,29 @@ public class BuildingPart implements IAsset {
         object.add("xsize", new JsonPrimitive(xSize));
         object.add("zsize", new JsonPrimitive(zSize));
         JsonArray sliceArray = new JsonArray();
-        for (String slice : slices) {
+        for (PalettedSlice slice : slices) {
+            List<PaletteIndex> list = slice.getSlice();
             JsonArray a = new JsonArray();
-            while (!slice.isEmpty()) {
-                String left = StringUtils.left(slice, xSize);
-                a.add(new JsonPrimitive(left));
-                slice = slice.substring(left.length());
+            while (!list.isEmpty()) {
+                StringBuilder l = new StringBuilder();
+                List<PaletteIndex> sub = list.subList(0, xSize);
+                for (PaletteIndex idx : sub) {
+                    l.append(idx.getI1());
+                    l.append(idx.getI2());
+                }
+                a.add(new JsonPrimitive(l.toString()));
+
+                list = list.subList(xSize, list.size());
             }
             sliceArray.add(a);
         }
+        /*
+                    while (!slice.isEmpty()) {
+                String left = StringUtils.left(slice, xSize);
+                a.add(new JsonPrimitive(left));
+                slice = slice.substring(left.length());
+
+         */
         object.add("slices", sliceArray);
 
         JsonArray metaArray = new JsonArray();
@@ -249,11 +267,11 @@ public class BuildingPart implements IAsset {
         return slices.length;
     }
 
-    public String getSlice(int i) {
+    public PalettedSlice getSlice(int i) {
         return slices[i];
     }
 
-    public String[] getSlices() {
+    public PalettedSlice[] getSlices() {
         return slices;
     }
 
@@ -265,15 +283,30 @@ public class BuildingPart implements IAsset {
         return zSize;
     }
 
-    public Character getPaletteChar(int x, int y, int z) {
-        return slices[y].charAt(z * xSize + x);
+    public PaletteIndex getPaletteChar(int x, int y, int z) {
+        return slices[y].getSlice().get(z * xSize + x);
     }
 
     public Character get(CompiledPalette palette, int x, int y, int z) {
-        return palette.get(slices[y].charAt(z * xSize + x));
+        return palette.get(slices[y].getSlice().get(z * xSize + x));
     }
 
-    public Character getC(int x, int y, int z) {
-        return slices[y].charAt(z * xSize + x);
+    public PaletteIndex getC(int x, int y, int z) {
+        return slices[y].getSlice().get(z * xSize + x);
+    }
+
+    public static class PalettedSlice {
+        private final List<PaletteIndex> slice = new ArrayList<>();
+
+        public PalettedSlice() {
+        }
+
+        public PalettedSlice(PaletteIndex[] slice) {
+            Collections.addAll(this.slice, slice);
+        }
+
+        public List<PaletteIndex> getSlice() {
+            return slice;
+        }
     }
 }

@@ -15,7 +15,7 @@ import java.util.Set;
  */
 public class CompiledPalette {
 
-    private final Map<Character, Object> palette = new HashMap<>();
+    private final Map<PaletteIndex, Object> palette = new HashMap<>();
 
     private static final Map<String, CompiledPalette> compiledPaletteMap = new HashMap<>();
 
@@ -48,7 +48,7 @@ public class CompiledPalette {
     public void addPalettes(Palette[] palettes) {
         // First add the straight palette entries
         for (Palette p : palettes) {
-            for (Map.Entry<Character, Object> entry : p.palette.entrySet()) {
+            for (Map.Entry<PaletteIndex, Object> entry : p.getPalette().entrySet()) {
                 Object value = entry.getValue();
                 if (value instanceof IBlockState) {
                     palette.put(entry.getKey(), (char) Block.BLOCK_STATE_IDS.get((IBlockState) value));
@@ -71,36 +71,13 @@ public class CompiledPalette {
                 }
             }
         }
-
-        boolean dirty = true;
-        while (dirty) {
-            dirty = false;
-
-            // Now add the palette entries that refer to other palette entries
-            for (Palette p : palettes) {
-                for (Map.Entry<Character, Object> entry : p.palette.entrySet()) {
-                    Object value = entry.getValue();
-                    if (value instanceof String) {
-                        char c = ((String) value).charAt(0);
-                        if (palette.containsKey(c) && !palette.containsKey(entry.getKey())) {
-                            Object s = palette.get(c);
-                            if (s instanceof IBlockState) {
-                                s = (char) Block.BLOCK_STATE_IDS.get((IBlockState) value);
-                            }
-                            palette.put(entry.getKey(), s);
-                            dirty = true;
-                        }
-                    }
-                }
-            }
-        }
     }
 
-    public Set<Character> getCharacters() {
+    public Set<PaletteIndex> getCharacters() {
         return palette.keySet();
     }
 
-    public IBlockState getStraight(char c) {
+    public IBlockState getStraight(PaletteIndex c) {
         try {
             Object o = palette.get(c);
             if (o instanceof IBlockState) {
@@ -144,7 +121,7 @@ public class CompiledPalette {
 
     }
 
-    public Character get(char c) {
+    public Character get(PaletteIndex c) {
         try {
             Object o = palette.get(c);
             if (o instanceof Character) {
