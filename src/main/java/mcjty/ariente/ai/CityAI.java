@@ -63,6 +63,7 @@ public class CityAI {
     private int droneTicker = 0;
 
     private String keyId;
+    private String storageKeyId;
 
     private int[] soldiers = new int[60];
     private int soldierTicker = 0;
@@ -108,6 +109,19 @@ public class CityAI {
             handleAI(tile.getWorld());
             return true;
         }
+    }
+
+    // Check if there is still a valid AI core except for the input parameter
+    public boolean hasValidCoreExcept(World world, @Nullable BlockPos exclude) {
+        for (BlockPos pos : aiCores) {
+            if (!pos.equals(exclude)) {
+                TileEntity te = world.getTileEntity(pos);
+                if (te instanceof AICoreTile) {
+                    return true;
+                }
+            }
+        }
+        return false;
     }
 
     @Nullable
@@ -452,6 +466,7 @@ public class CityAI {
         }
 
         keyId = SecuritySystem.getSecuritySystem(world).generateKeyId();
+        storageKeyId = SecuritySystem.getSecuritySystem(world).generateKeyId();
 
         City city = CityTools.getCity(center);
         assert city != null;
@@ -523,6 +538,10 @@ public class CityAI {
 
     public String getKeyId() {
         return keyId;
+    }
+
+    public String getStorageKeyId() {
+        return storageKeyId;
     }
 
     public void fillLoot(CityPlan plan, StorageTile te) {
@@ -687,6 +706,7 @@ public class CityAI {
             sentinels = null;
         }
         keyId = nbt.getString("keyId");
+        storageKeyId = nbt.getString("storageKeyId");
         if (nbt.hasKey("drones")) {
             drones = nbt.getIntArray("drones");
         }
@@ -725,6 +745,7 @@ public class CityAI {
             compound.setIntArray("sentinels", sentinels);
         }
         compound.setString("keyId", keyId);
+        compound.setString("storageKeyId", storageKeyId);
         compound.setIntArray("drones", drones);
         compound.setIntArray("soldiers", soldiers);
         if (!watchingPlayers.isEmpty()) {

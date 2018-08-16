@@ -243,6 +243,7 @@ public class ModBlocks {
         storageBlock = builderFactory.<StorageTile> builder("storage")
                 .tileEntityClass(StorageTile.class)
                 .emptyContainer()
+//                .property(StorageTile.LOCKED)
                 .flags(BlockFlags.RENDER_SOLID, BlockFlags.RENDER_TRANSLUCENT)
                 .rotationType(BaseBlock.RotationType.ROTATION)
                 .clickAction(StorageTile::onClick)

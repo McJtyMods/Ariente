@@ -124,6 +124,12 @@ public class LockTile extends GenericTileEntity implements IGuiTile, IKeyCardSlo
         markDirtyClient();
     }
 
+    public void toggleLock() {
+        if (!world.isRemote) {
+            setLocked(!locked);
+        }
+    }
+
     @Override
     public void acceptKeyCard(ItemStack stack) {
         Set<String> tags = KeyCardItem.getSecurityTags(stack);
@@ -142,12 +148,6 @@ public class LockTile extends GenericTileEntity implements IGuiTile, IKeyCardSlo
     public void setKeyId(String keyId) {
         this.keyId = keyId;
         markDirty();
-    }
-
-    public void toggleLock() {
-        if (!world.isRemote) {
-            setLocked(!locked);
-        }
     }
 
     @Override

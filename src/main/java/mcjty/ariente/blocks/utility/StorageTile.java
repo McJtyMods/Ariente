@@ -12,14 +12,19 @@ import mcjty.ariente.gui.IGuiComponent;
 import mcjty.ariente.gui.IGuiTile;
 import mcjty.ariente.gui.components.HoloPanel;
 import mcjty.ariente.gui.components.HoloText;
+import mcjty.ariente.items.KeyCardItem;
 import mcjty.ariente.network.ArienteMessages;
+import mcjty.ariente.security.IKeyCardSlot;
+import mcjty.ariente.sounds.ModSounds;
 import mcjty.lib.tileentity.GenericTileEntity;
 import mcjty.lib.varia.ItemStackList;
 import mcjty.theoneprobe.api.IProbeHitData;
 import mcjty.theoneprobe.api.IProbeInfo;
 import mcjty.theoneprobe.api.ProbeMode;
+import mcjty.theoneprobe.api.TextStyleClass;
 import mcp.mobius.waila.api.IWailaConfigHandler;
 import mcp.mobius.waila.api.IWailaDataAccessor;
+import net.minecraft.block.properties.PropertyBool;
 import net.minecraft.block.state.IBlockState;
 import net.minecraft.client.Minecraft;
 import net.minecraft.entity.player.EntityPlayer;
@@ -27,9 +32,12 @@ import net.minecraft.inventory.IInventory;
 import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.nbt.NBTTagList;
+import net.minecraft.network.NetworkManager;
+import net.minecraft.network.play.server.SPacketUpdateTileEntity;
 import net.minecraft.tileentity.TileEntity;
 import net.minecraft.util.EnumFacing;
 import net.minecraft.util.EnumHand;
+import net.minecraft.util.SoundCategory;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.RayTraceResult;
 import net.minecraft.util.math.Vec3d;
@@ -37,6 +45,7 @@ import net.minecraft.world.World;
 import net.minecraftforge.common.capabilities.Capability;
 import net.minecraftforge.common.util.Constants;
 import net.minecraftforge.fml.common.Optional;
+import net.minecraftforge.fml.common.network.internal.OpenGuiHandler;
 import net.minecraftforge.fml.relauncher.Side;
 import net.minecraftforge.fml.relauncher.SideOnly;
 import net.minecraftforge.items.CapabilityItemHandler;
@@ -48,8 +57,14 @@ import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 
-public class StorageTile extends GenericTileEntity implements IGuiTile, IInventory, ICityEquipment {
+public class StorageTile extends GenericTileEntity implements IGuiTile, IInventory, ICityEquipment, IKeyCardSlot, ILockable {
+
+//    public static final PropertyBool LOCKED = PropertyBool.create("locked");
+
+    private boolean locked = false;
+    private String keyId;
 
     public static final int STACKS_PER_TYPE = 64;
     public static final int STACKS = 4;
@@ -57,6 +72,22 @@ public class StorageTile extends GenericTileEntity implements IGuiTile, IInvento
     private ItemStackList stacks = ItemStackList.create(4);
     private int[] counts = new int[STACKS * STACKS_PER_TYPE];
     private int[] totals = new int[STACKS];
+
+    @Override
+    public void onDataPacket(NetworkManager net, SPacketUpdateTileEntity packet) {
+        boolean locked = isLocked();
+
+        super.onDataPacket(net, packet);
+
+        if (world.isRemote) {
+            // If needed send a render update.
+            boolean newLocked = isLocked();
+            if (newLocked != locked) {
+                world.markBlockRangeForRenderUpdate(pos, pos);
+            }
+        }
+    }
+
 
     @Nullable
     @Override
@@ -75,12 +106,19 @@ public class StorageTile extends GenericTileEntity implements IGuiTile, IInvento
             City city = CityTools.getCity(cityAI.getCenter());
             CityPlan plan = city.getPlan();
             cityAI.fillLoot(plan, this);
+            setLocked(true);
+            setKeyId(cityAI.getStorageKeyId());
         }
     }
 
     @Override
     public void readRestorableFromNBT(NBTTagCompound tagCompound) {
         super.readRestorableFromNBT(tagCompound);
+        locked = tagCompound.getBoolean("locked");
+        if (tagCompound.hasKey("keyId")) {
+            keyId = tagCompound.getString("keyId");
+        }
+
         NBTTagList bufferTagList = tagCompound.getTagList("Items", Constants.NBT.TAG_COMPOUND);
         for (int i = 0; i < STACKS; i++) {
             NBTTagCompound nbtTagCompound = bufferTagList.getCompoundTagAt(i);
@@ -95,6 +133,10 @@ public class StorageTile extends GenericTileEntity implements IGuiTile, IInvento
     @Override
     public void writeRestorableToNBT(NBTTagCompound tagCompound) {
         super.writeRestorableToNBT(tagCompound);
+        tagCompound.setBoolean("locked", locked);
+        if (keyId != null) {
+            tagCompound.setString("keyId", keyId);
+        }
         NBTTagList bufferTagList = new NBTTagList();
         for (int i = 0; i < STACKS; i++) {
             ItemStack stack = stacks.get(i);
@@ -110,13 +152,63 @@ public class StorageTile extends GenericTileEntity implements IGuiTile, IInvento
     }
 
     @Override
+    public boolean isLocked() {
+        return locked;
+    }
+
+    public void setLocked(boolean locked) {
+        if (locked == this.locked) {
+            return;
+        }
+        this.locked = locked;
+        markDirtyClient();
+    }
+
+    public void toggleLock() {
+        if (!world.isRemote) {
+            setLocked(!locked);
+        }
+    }
+
+    public String getKeyId() {
+        return keyId;
+    }
+
+    public void setKeyId(String keyId) {
+        this.keyId = keyId;
+        markDirty();
+    }
+
+//    @Override
+//    public IBlockState getActualState(IBlockState state) {
+//        return state.withProperty(LOCKED, isLocked());
+//    }
+//
+
+    @Override
+    public void acceptKeyCard(ItemStack stack) {
+        Set<String> tags = KeyCardItem.getSecurityTags(stack);
+        if (tags.contains(keyId)) {
+            world.playSound(null, pos, ModSounds.buzzOk, SoundCategory.BLOCKS, 1.0f, 1.0f);
+            toggleLock();
+        } else {
+            world.playSound(null, pos, ModSounds.buzzError, SoundCategory.BLOCKS, 1.0f, 1.0f);
+        }
+    }
+
+    @Override
     @Optional.Method(modid = "theoneprobe")
     public void addProbeInfo(ProbeMode mode, IProbeInfo probeInfo, EntityPlayer player, World world, IBlockState blockState, IProbeHitData data) {
         super.addProbeInfo(mode, probeInfo, player, world, blockState, data);
-//        Boolean working = isWorking();
-//        if (working) {
-//            probeInfo.text(TextFormatting.GREEN + "Producing " + getRfPerTick() + " RF/t");
-//        }
+        if (locked) {
+            if (keyId != null && !keyId.isEmpty()) {
+                probeInfo.text(TextStyleClass.LABEL + "Key " + TextStyleClass.INFO + keyId);
+            }
+            if (isLocked()) {
+                probeInfo.text(TextStyleClass.WARNING + "Locked!");
+            }
+
+        }
     }
 
     public ItemStack getTotalStack(int type) {
@@ -166,6 +258,10 @@ public class StorageTile extends GenericTileEntity implements IGuiTile, IInvento
     }
 
     public void giveToPlayer(int type, EntityPlayer player) {
+        if (locked) {
+            HoloGuiHandler.openHoloGui(world, pos, player);
+            return;
+        }
         if (totals[type] == 0) {
             return;
         }
@@ -256,6 +352,11 @@ public class StorageTile extends GenericTileEntity implements IGuiTile, IInvento
             if (!world.isRemote) {
                 if (tileEntity instanceof StorageTile) {
                     StorageTile te = (StorageTile) tileEntity;
+                    if (te.isLocked()) {
+                        HoloGuiHandler.openHoloGui(world, pos, player);
+                        return true;
+                    }
+
                     int type = calculateHitIndex(sx, sy, sz, k);
 
                     if (type == -1) {
@@ -363,23 +464,7 @@ public class StorageTile extends GenericTileEntity implements IGuiTile, IInvento
 
     @Override
     public IGuiComponent createGui(HoloGuiEntity entity, String tag) {
-        return new HoloPanel(0, 0, 8, 8)
-                .add(new HoloText(0, 0, 1, 1, "0", 0xffffff))
-                .add(new HoloText(1, 0, 1, 1, "1", 0xffffff))
-                .add(new HoloText(2, 0, 1, 1, "2", 0xffffff))
-                .add(new HoloText(3, 0, 1, 1, "3", 0xffffff))
-                .add(new HoloText(4, 0, 1, 1, "4", 0xffffff))
-                .add(new HoloText(5, 0, 1, 1, "5", 0xffffff))
-                .add(new HoloText(6, 0, 1, 1, "6", 0xffffff))
-                .add(new HoloText(7, 0, 1, 1, "7", 0xffffff))
-                .add(new HoloText(0, 1, 1, 1, "1", 0x00ff00))
-                .add(new HoloText(0, 2, 1, 1, "2", 0x00ff00))
-                .add(new HoloText(0, 3, 1, 1, "3", 0x00ff00))
-                .add(new HoloText(0, 4, 1, 1, "4", 0x00ff00))
-                .add(new HoloText(0, 5, 1, 1, "5", 0x00ff00))
-                .add(new HoloText(0, 6, 1, 1, "6", 0x00ff00))
-                .add(new HoloText(0, 7, 1, 1, "7", 0x00ff00))
-                .add(new HoloText(7, 7, 1, 1, "X", 0xff0000));
+        return HoloGuiHandler.createNoAccessPanel();
     }
 
     @Override

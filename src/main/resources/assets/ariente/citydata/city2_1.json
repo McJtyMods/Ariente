@@ -1298,8 +1298,8 @@
       [
         "eeiiieeeeeeiiiee",
         "     ee     J  e",
-        "     Ke        i",
-        "     Ke       Ji",
+        "     ee        i",
+        "     ee       Ji",
         "     ee        i",
         "ee  eee        e",
         "      e        e",
@@ -1731,10 +1731,10 @@
         "e9        9g    ",
         "e9        9e    ",
         "e9        9g    ",
-        "e9      @ 9e    ",
+        "e9        9e    ",
         "e999    999PPPPP",
         "ePPP    PPP     ",
-        "e         P     ",
+        "e       ( P     ",
         "e         P     ",
         "e         P   PP",
         "e         P   Pe"
@@ -1799,7 +1799,7 @@
       {
         "x": 8,
         "y": 2,
-        "z": 9,
+        "z": 12,
         "values": [
           {
             "key": "horizontal",
@@ -1807,7 +1807,7 @@
           },
           {
             "key": "channel",
-            "integer": 3
+            "integer": 1
           },
           {
             "key": "vertical",
@@ -2311,7 +2311,7 @@
         "values": [
           {
             "key": "channel",
-            "integer": 3
+            "integer": 1
           }
         ]
       },
@@ -2761,12 +2761,12 @@
         "PPPPP9999999999e",
         "   e9         9e",
         "   e9         9e",
-        "   e9_        9e",
+        "   e9         9e",
         "              9e",
         "              9e",
         "           p  9e",
         "              9e",
-        "   e9         9e",
+        "  )e9         9e",
         "   e99999999999e",
         "eeeeeeeeeeeeeeee"
       ],
@@ -2828,9 +2828,9 @@
     "meta": [],
     "tedata": [
       {
-        "x": 5,
+        "x": 2,
         "y": 2,
-        "z": 8,
+        "z": 13,
         "values": [
           {
             "key": "horizontal",
@@ -2838,7 +2838,7 @@
           },
           {
             "key": "channel",
-            "integer": 3
+            "integer": 1
           },
           {
             "key": "vertical",
@@ -3341,6 +3341,14 @@
         "block": "ariente:wireless_button@4"
       },
       {
+        "char": "(",
+        "block": "ariente:wireless_lock@3"
+      },
+      {
+        "char": ")",
+        "block": "ariente:wireless_lock@4"
+      },
+      {
         "char": "*",
         "block": "ariente:marble_slab@9"
       },
@@ -3391,14 +3399,6 @@
       {
         "char": "9",
         "block": "ariente:reinforced_marble"
-      },
-      {
-        "char": "\u003d",
-        "block": "ariente:signal_receiver@2"
-      },
-      {
-        "char": "@",
-        "block": "ariente:wireless_lock@2"
       },
       {
         "char": "A",
