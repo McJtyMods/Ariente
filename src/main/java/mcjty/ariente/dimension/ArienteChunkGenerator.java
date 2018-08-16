@@ -40,11 +40,8 @@ public class ArienteChunkGenerator implements IChunkGenerator {
     private List<Biome.SpawnListEntry> mobs = Collections.emptyList();
 
     private MapGenBase caveGenerator = new MapGenCaves();
-//    private MapGenLowTendrils tendrilGenerator = new MapGenLowTendrils(BlockRegister.hardDirtBlock.getDefaultState());
     private ArienteTerrainGenerator terraingen = new ArienteTerrainGenerator();
-//    private IslandTerrainGenerator islandgen = new IslandTerrainGenerator(IslandTerrainGenerator.ISLANDS);
     private IslandsTerrainGenerator islandsGen = new IslandsTerrainGenerator();
-//    private IslandTerrainGenerator island2gen = new IslandTerrainGenerator(IslandTerrainGenerator.PLATEAUS);
     private ArienteCityGenerator cityGenerator = new ArienteCityGenerator();
 
     private Map<ChunkCoord, ChunkPrimer> cachedPrimers = new HashMap<>();
@@ -153,6 +150,13 @@ public class ArienteChunkGenerator implements IChunkGenerator {
                 for (int dz = 0; dz < 16; dz++) {
                     double vr = varianceBuffer[dx + dz * 16];
                     int mindist = getMinDist(cityHeights, dx, dz);
+                    if (mindist <= 1) {
+                        vr /= 3.0f;
+                    } else if (mindist <= 2) {
+                        vr /= 2.0f;
+                    } else if (mindist <= 3) {
+                        vr /= 1.5f;
+                    }
                     int dh = mindist * 2 + height + (int) vr;
                     int index = (dx << 12) | (dz << 8) + dh;
                     PrimerTools.setBlockStateRangeSafe(primer, index, index + 128 - dh, air);

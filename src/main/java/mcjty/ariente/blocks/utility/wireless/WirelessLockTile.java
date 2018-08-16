@@ -10,13 +10,20 @@ import mcjty.ariente.gui.components.HoloButton;
 import mcjty.ariente.gui.components.HoloNumber;
 import mcjty.ariente.gui.components.HoloPanel;
 import mcjty.ariente.gui.components.HoloText;
+import mcjty.theoneprobe.api.IProbeHitData;
+import mcjty.theoneprobe.api.IProbeInfo;
+import mcjty.theoneprobe.api.ProbeMode;
+import mcjty.theoneprobe.api.TextStyleClass;
 import net.minecraft.block.properties.PropertyBool;
 import net.minecraft.block.state.IBlockState;
+import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.tileentity.TileEntity;
 import net.minecraft.util.ITickable;
 import net.minecraft.util.math.BlockPos;
+import net.minecraft.util.text.TextFormatting;
 import net.minecraft.world.World;
+import net.minecraftforge.fml.common.Optional;
 
 import java.util.Map;
 
@@ -178,6 +185,14 @@ public class WirelessLockTile extends SignalChannelTileEntity implements ILockab
         setVerticalRange(h);
     }
 
+    @Override
+    @Optional.Method(modid = "theoneprobe")
+    public void addProbeInfo(ProbeMode mode, IProbeInfo probeInfo, EntityPlayer player, World world, IBlockState blockState, IProbeHitData data) {
+        super.addProbeInfo(mode, probeInfo, player, world, blockState, data);
+        if (isLocked()) {
+            probeInfo.text(TextStyleClass.WARNING + "Locked!");
+        }
+    }
 
     @Override
     public IGuiComponent createGui(HoloGuiEntity entity, String tag) {
