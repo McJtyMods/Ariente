@@ -71,17 +71,7 @@ public class ArienteCityGenerator {
 
     public void generate(World worldIn, int x, int z, ChunkPrimer primer) {
         if (CityTools.isPortalChunk(x, z)) {
-            ChunkHeightmap heightmap = generator.getHeightmap(x, z);
-            int minHeight = 160;
-            for (int dx = 4 ; dx <= 10 ; dx++) {
-                for (int dz = 4 ; dz <= 10 ; dz++) {
-                    int h = heightmap.getHeight(dx, dz);
-                    if (h < minHeight) {
-                        minHeight = h;
-                    }
-                }
-            }
-
+            int minHeight = getPortalHeight(generator, x, z);
             generatePart(primer, "portal", AssetRegistries.PARTS.get("portal"), Transform.ROTATE_NONE, 4, minHeight, 4);
 
             return;
@@ -116,6 +106,20 @@ public class ArienteCityGenerator {
                 }
             }
         }
+    }
+
+    public static int getPortalHeight(ArienteChunkGenerator generator, int x, int z) {
+        ChunkHeightmap heightmap = generator.getHeightmap(x, z);
+        int minHeight = 160;
+        for (int dx = 4 ; dx <= 10 ; dx++) {
+            for (int dz = 4 ; dz <= 10 ; dz++) {
+                int h = heightmap.getHeight(dx, dz);
+                if (h < minHeight) {
+                    minHeight = h;
+                }
+            }
+        }
+        return minHeight;
     }
 
     private void fillDown(ChunkPrimer primer, int lowestY, int dx, int dz) {

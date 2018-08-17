@@ -17,7 +17,7 @@ public class ModItems {
     public static EnergySabreItem energySabre;
     public static EnhancedEnergySabreItem enhancedEnergySabreItem;
     public static KeyCardItem keyCardItem;
-
+    public static DirtyDiamondItem dirtyDiamondItem;
 
     public static void init() {
         platinumIngot = new GenericItem("ingot_platinum");
@@ -31,6 +31,8 @@ public class ModItems {
         energySabre = new EnergySabreItem("energy_sabre");
         enhancedEnergySabreItem = new EnhancedEnergySabreItem("enhanced_energy_sabre");
         keyCardItem = new KeyCardItem();
+
+        dirtyDiamondItem = new DirtyDiamondItem();
     }
 
     public static void initOreDict() {
@@ -52,6 +54,8 @@ public class ModItems {
         energySabre.initModel();
         enhancedEnergySabreItem.initModel();
         keyCardItem.initModel();
+
+        dirtyDiamondItem.initModel();
     }
 
 }

@@ -120,7 +120,7 @@
         "t                 v u         t ",
         "o           o                 o ",
         "o           o                 o ",
-        "o           o                 o ",
+        "o           o               y o ",
         "o           o                 o ",
         "b o o o o t o     o t o o o o b "
       ],
@@ -207,6 +207,10 @@
       {
         "char": "  ",
         "block": "minecraft:air"
+      },
+      {
+        "char": "y ",
+        "block": "ariente:alarm@4"
       },
       {
         "char": "w ",

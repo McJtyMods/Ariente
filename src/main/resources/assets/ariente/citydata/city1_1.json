@@ -606,7 +606,7 @@
         "                                "
       ],
       [
-        "            d               c c ",
+        "            d J             c c ",
         "            d                   ",
         "            e                   ",
         "            d                   ",
@@ -1001,7 +1001,7 @@
         "                  d             ",
         "                  d             ",
         "c                 d             ",
-        "c                 d             "
+        "c J               d             "
       ],
       [
         "                                ",
@@ -1866,6 +1866,10 @@
       {
         "char": "k ",
         "block": "minecraft:stained_glass_pane@7"
+      },
+      {
+        "char": "J ",
+        "block": "ariente:alarm@5"
       },
       {
         "char": "i ",

@@ -1,0 +1,19 @@
+{
+  "result": {
+    "item": "ariente:dirty_diamond"
+  },
+  "pattern": [
+    "xxx",
+    "xMx",
+    "xxx"
+  ],
+  "type": "minecraft:crafting_shaped",
+  "key": {
+    "M": {
+      "item": "minecraft:diamond"
+    },
+    "x": {
+      "item": "minecraft:clay_ball"
+    }
+  }
+}
