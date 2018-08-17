@@ -636,7 +636,7 @@
         "                              a ",
         "                              F ",
         "a y a a                       a ",
-        "                              y ",
+        "Q                             y ",
         "                              a ",
         "                            f F ",
         "                              a ",
@@ -1882,7 +1882,7 @@
         "a y a a a y a a a y a a a y a a "
       ],
       [
-        "y                             a ",
+        "y R                           a ",
         "i                             y ",
         "y                             a ",
         "                              a ",
@@ -2175,6 +2175,10 @@
         "block": "ariente:posirite_tank"
       },
       {
+        "char": "R ",
+        "block": "ariente:alarm@5"
+      },
+      {
         "char": "q ",
         "block": "ariente:negarite_generator@3"
       },
@@ -2261,6 +2265,10 @@
       {
         "char": "r ",
         "block": "ariente:negarite_tank"
+      },
+      {
+        "char": "Q ",
+        "block": "ariente:alarm@3"
       },
       {
         "char": "p ",

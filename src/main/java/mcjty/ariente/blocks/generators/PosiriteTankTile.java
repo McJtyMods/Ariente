@@ -1,5 +1,6 @@
 package mcjty.ariente.blocks.generators;
 
+import mcjty.ariente.ai.IAlarmMode;
 import mcjty.ariente.blocks.ModBlocks;
 import mcjty.ariente.gui.HoloGuiEntity;
 import mcjty.ariente.gui.IGuiComponent;
@@ -26,7 +27,7 @@ import net.minecraftforge.fml.relauncher.SideOnly;
 
 import java.util.List;
 
-public class PosiriteTankTile extends GenericTileEntity implements IGuiTile {
+public class PosiriteTankTile extends GenericTileEntity implements IGuiTile, IAlarmMode {
 
     public static final PropertyBool UPPER = PropertyBool.create("upper");
     public static final PropertyBool LOWER = PropertyBool.create("lower");
@@ -42,6 +43,11 @@ public class PosiriteTankTile extends GenericTileEntity implements IGuiTile {
         if (te instanceof PosiriteGeneratorTile) {
             return ((PosiriteGeneratorTile)te).isWorking();
         }
+        return false;
+    }
+
+    @Override
+    public boolean isHighAlert() {
         return false;
     }
 

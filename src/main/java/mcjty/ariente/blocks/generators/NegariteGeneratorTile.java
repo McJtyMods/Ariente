@@ -1,6 +1,7 @@
 package mcjty.ariente.blocks.generators;
 
 import mcjty.ariente.Ariente;
+import mcjty.ariente.ai.IAlarmMode;
 import mcjty.ariente.blocks.ModBlocks;
 import mcjty.ariente.cables.CableColor;
 import mcjty.ariente.gui.HoloGuiEntity;
@@ -45,7 +46,7 @@ import net.minecraftforge.fml.relauncher.SideOnly;
 
 import java.util.List;
 
-public class NegariteGeneratorTile extends GenericTileEntity implements ITickable, DefaultSidedInventory, IGuiTile, IPowerBlob {
+public class NegariteGeneratorTile extends GenericTileEntity implements ITickable, DefaultSidedInventory, IGuiTile, IPowerBlob, IAlarmMode {
 
     public static final String CMD_RSMODE = "negarite_gen.setRsMode";
     public static final PropertyBool WORKING = PropertyBool.create("working");
@@ -60,6 +61,11 @@ public class NegariteGeneratorTile extends GenericTileEntity implements ITickabl
 
     // @todo, temporary: base on tanks later!
     private int dustCounter;        // Number of ticks before the current dust depletes
+
+    @Override
+    public boolean isHighAlert() {
+        return false;
+    }
 
     @Override
     protected boolean needsRedstoneMode() {

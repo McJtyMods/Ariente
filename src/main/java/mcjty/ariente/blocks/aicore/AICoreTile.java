@@ -2,6 +2,7 @@ package mcjty.ariente.blocks.aicore;
 
 import mcjty.ariente.ai.CityAI;
 import mcjty.ariente.ai.CityAISystem;
+import mcjty.ariente.ai.IAlarmMode;
 import mcjty.ariente.blocks.utility.AlarmType;
 import mcjty.ariente.cities.CityTools;
 import mcjty.ariente.items.KeyCardItem;
@@ -15,7 +16,7 @@ import net.minecraft.util.ITickable;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.World;
 
-public class AICoreTile extends GenericTileEntity implements ITickable {
+public class AICoreTile extends GenericTileEntity implements ITickable, IAlarmMode {
 
     private ChunkCoord cityCenter;
     private int tickCounter = 10;
@@ -37,6 +38,11 @@ public class AICoreTile extends GenericTileEntity implements ITickable {
                 }
             }
         }
+    }
+
+    @Override
+    public boolean isHighAlert() {
+        return true;
     }
 
     private ChunkCoord getCityCenter() {

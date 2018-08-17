@@ -1,6 +1,7 @@
 package mcjty.ariente.blocks.defense;
 
 import mcjty.ariente.ai.CityAI;
+import mcjty.ariente.ai.IAlarmMode;
 import mcjty.ariente.cities.ICityEquipment;
 import mcjty.ariente.config.ArienteConfiguration;
 import mcjty.ariente.gui.HoloGuiEntity;
@@ -40,7 +41,7 @@ import java.util.*;
 
 import static mcjty.ariente.config.ArienteConfiguration.SHIELD_PANEL_LIFE;
 
-public class ForceFieldTile extends GenericTileEntity implements IGuiTile, ITickable, ISoundProducer, IPowerReceiver, ICityEquipment {
+public class ForceFieldTile extends GenericTileEntity implements IGuiTile, ITickable, ISoundProducer, IPowerReceiver, ICityEquipment, IAlarmMode {
 
     private PanelInfo[] panelInfo = new PanelInfo[PentakisDodecahedron.MAX_TRIANGLES];
     private int[] panelDestroyTimeout = new int[PentakisDodecahedron.MAX_TRIANGLES];    // @todo persist to NBT?
@@ -62,6 +63,11 @@ public class ForceFieldTile extends GenericTileEntity implements IGuiTile, ITick
     @Override
     protected boolean needsRedstoneMode() {
         return true;
+    }
+
+    @Override
+    public boolean isHighAlert() {
+        return false;
     }
 
     public double getScaleDouble() {

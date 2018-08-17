@@ -2,6 +2,7 @@ package mcjty.ariente;
 
 import mcjty.ariente.ai.CityAI;
 import mcjty.ariente.ai.CityAISystem;
+import mcjty.ariente.ai.IAlarmMode;
 import mcjty.ariente.biomes.ModBiomes;
 import mcjty.ariente.blocks.ModBlocks;
 import mcjty.ariente.blocks.utility.ILockable;
@@ -16,6 +17,7 @@ import mcjty.ariente.sounds.ModSounds;
 import mcjty.lib.McJtyRegister;
 import net.minecraft.block.Block;
 import net.minecraft.entity.passive.IAnimals;
+import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.item.Item;
 import net.minecraft.tileentity.TileEntity;
 import net.minecraft.util.SoundEvent;
@@ -88,19 +90,31 @@ public class ForgeEventHandlers {
             }
         }
         if (world.provider.getDimension() == 222) { // @todo config
-            if (world.getBlockState(pos).getBlock() == ModBlocks.reinforcedMarble) {
-                int cx = pos.getX() >> 4;
-                int cz = pos.getZ() >> 4;
-                ArienteChunkGenerator generator = (ArienteChunkGenerator) (((WorldServer) world).getChunkProvider().chunkGenerator);
-                if (CityTools.isCityChunk(cx, cz)) {
-                    City city = CityTools.getNearestCity(generator, cx, cz);
-                    CityAISystem cityAISystem = CityAISystem.getCityAISystem(world);
-                    CityAI cityAI = cityAISystem.getCityAI(city.getCenter());
-                    if (cityAI != null) {
-                        cityAI.highAlertMode(event.getPlayer());
-                        cityAISystem.save();
-                    }
+            EntityPlayer player = event.getPlayer();
+            if (te instanceof IAlarmMode) {
+                boolean highAlert = ((IAlarmMode) te).isHighAlert();
+                alertCity(world, pos, player, highAlert);
+            } else if (world.getBlockState(pos).getBlock() == ModBlocks.reinforcedMarble) {
+                alertCity(world, pos, player, true);
+            }
+        }
+    }
+
+    private void alertCity(World world, BlockPos pos, EntityPlayer player, boolean highAlert) {
+        int cx = pos.getX() >> 4;
+        int cz = pos.getZ() >> 4;
+        ArienteChunkGenerator generator = (ArienteChunkGenerator) (((WorldServer) world).getChunkProvider().chunkGenerator);
+        if (CityTools.isCityChunk(cx, cz)) {
+            City city = CityTools.getNearestCity(generator, cx, cz);
+            CityAISystem cityAISystem = CityAISystem.getCityAISystem(world);
+            CityAI cityAI = cityAISystem.getCityAI(city.getCenter());
+            if (cityAI != null) {
+                if (highAlert) {
+                    cityAI.highAlertMode(player);
+                } else {
+                    cityAI.playerSpotted(player);
                 }
+                cityAISystem.save();
             }
         }
     }
