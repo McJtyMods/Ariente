@@ -1,5 +1,7 @@
 package mcjty.ariente;
 
+import mcjty.ariente.ai.CityAI;
+import mcjty.ariente.ai.CityAISystem;
 import mcjty.ariente.biomes.ModBiomes;
 import mcjty.ariente.blocks.ModBlocks;
 import mcjty.ariente.blocks.utility.ILockable;
@@ -78,10 +80,27 @@ public class ForgeEventHandlers {
 
     private void onBlockBreakNormal(BlockEvent.BreakEvent event) {
         World world = event.getWorld();
-        TileEntity te = world.getTileEntity(event.getPos());
+        BlockPos pos = event.getPos();
+        TileEntity te = world.getTileEntity(pos);
         if (te instanceof ILockable) {
             if (((ILockable) te).isLocked()) {
                 event.setCanceled(true);
+            }
+        }
+        if (world.provider.getDimension() == 222) { // @todo config
+            if (world.getBlockState(pos).getBlock() == ModBlocks.reinforcedMarble) {
+                int cx = pos.getX() >> 4;
+                int cz = pos.getZ() >> 4;
+                ArienteChunkGenerator generator = (ArienteChunkGenerator) (((WorldServer) world).getChunkProvider().chunkGenerator);
+                if (CityTools.isCityChunk(cx, cz)) {
+                    City city = CityTools.getNearestCity(generator, cx, cz);
+                    CityAISystem cityAISystem = CityAISystem.getCityAISystem(world);
+                    CityAI cityAI = cityAISystem.getCityAI(city.getCenter());
+                    if (cityAI != null) {
+                        cityAI.highAlertMode(event.getPlayer());
+                        cityAISystem.save();
+                    }
+                }
             }
         }
     }

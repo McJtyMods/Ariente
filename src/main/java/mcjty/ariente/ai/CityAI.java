@@ -72,6 +72,7 @@ public class CityAI {
     private int soldierTicker = 0;
 
     private int onAlert = 0;
+    private boolean highAlert = false;
     private Map<UUID, BlockPos> watchingPlayers = new HashMap<>();  // Players we are watching as well as their last known position
 
     private static Random random = new Random();
@@ -165,6 +166,7 @@ public class CityAI {
             }
         } else {
             setAlarmType(world, AlarmType.SAFE);
+            highAlert = false;
             watchingPlayers.clear();
             // Turn off forcefields if present
             for (BlockPos pos : forceFields) {
@@ -273,6 +275,16 @@ public class CityAI {
             } else {
                 desiredMinimumCount = plan.getSoldiersMinimum1();
                 newWaveMaximum = plan.getSoldiersWaveMax1();
+            }
+            if (highAlert) {
+                desiredMinimumCount *= 2;
+                if (desiredMinimumCount > soldiers.length) {
+                    desiredMinimumCount = soldiers.length;
+                }
+                newWaveMaximum *= 2;
+                if (newWaveMaximum > soldiers.length) {
+                    newWaveMaximum = soldiers.length;
+                }
             }
 
             int cnt = countEntities(world, soldiers);
@@ -459,10 +471,24 @@ public class CityAI {
         return new BlockPos(cx, cy, cz);
     }
 
+    public void pacify(World world) {
+        setAlarmType(world, AlarmType.SAFE);
+        onAlert = 0;
+        highAlert = false;
+    }
+
     public void playerSpotted(EntityPlayer player) {
+        if (onAlert <= 0) {
+            // Set alarm type in case it is not already set
+            setAlarmType(player.world, AlarmType.ALERT);
+        }
         onAlert = 400; // alert @todo configurable
-        setAlarmType(player.world, AlarmType.ALERT);
         watchingPlayers.put(player.getUniqueID(), player.getPosition());    // Register the last known position
+    }
+
+    public void highAlertMode(EntityPlayer player) {
+        playerSpotted(player);
+        highAlert = true;
     }
 
     private void findEquipment(World world, boolean firstTime) {
@@ -745,6 +771,7 @@ public class CityAI {
         sentinelMovementTicks = nbt.getInteger("sentinelMovementTicks");
         sentinelAngleOffset = nbt.getInteger("sentinelAngleOffset");
         onAlert = nbt.getInteger("onAlert");
+        highAlert = nbt.getBoolean("highAlert");
         droneTicker = nbt.getInteger("droneTicker");
         readMapFromNBT(nbt.getTagList("guards", Constants.NBT.TAG_COMPOUND), guardPositions);
         readMapFromNBT(nbt.getTagList("soldierPositions", Constants.NBT.TAG_COMPOUND), soldierPositions);
@@ -778,6 +805,7 @@ public class CityAI {
         compound.setInteger("sentinelMovementTicks", sentinelMovementTicks);
         compound.setInteger("sentinelAngleOffset", sentinelAngleOffset);
         compound.setInteger("onAlert", onAlert);
+        compound.setBoolean("highAlert", highAlert);
         compound.setInteger("droneTicker", droneTicker);
         compound.setTag("guards", writeMapToNBT(guardPositions));
         compound.setTag("soldierPositions", writeMapToNBT(soldierPositions));
