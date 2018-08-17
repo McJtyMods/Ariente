@@ -2,6 +2,7 @@ package mcjty.ariente.blocks.aicore;
 
 import mcjty.ariente.ai.CityAI;
 import mcjty.ariente.ai.CityAISystem;
+import mcjty.ariente.blocks.utility.AlarmType;
 import mcjty.ariente.cities.CityTools;
 import mcjty.ariente.items.KeyCardItem;
 import mcjty.ariente.items.ModItems;
@@ -61,6 +62,7 @@ public class AICoreTile extends GenericTileEntity implements ITickable {
                     EntityItem entityitem = new EntityItem(this.world, pos.getX()+.5, pos.getY()+.5, pos.getZ()+.5, stack);
                     entityitem.setDefaultPickupDelay();
                     world.spawnEntity(entityitem);
+                    cityAI.setAlarmType(world, AlarmType.DEAD);
                 }
             }
         }

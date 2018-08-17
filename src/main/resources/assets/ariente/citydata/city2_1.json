@@ -577,7 +577,7 @@
         "i                             e ",
         "i                             e ",
         "i                             e ",
-        "e                             e ",
+        "e                           aae ",
         "e                             e ",
         "e                               ",
         "e                               ",
@@ -719,7 +719,7 @@
         "e                               ",
         "e                               ",
         "e e e e e e e e e Y e Y e Y e e ",
-        "                                ",
+        "           a                    ",
         "                                ",
         "                                ",
         "                                ",
@@ -1346,7 +1346,7 @@
         "                    t   e e e i ",
         "                    t   e     i ",
         "            e e e e e e e     i ",
-        "            e                 e ",
+        "          aae                 e ",
         "            e                 e "
       ],
       [
@@ -1636,7 +1636,7 @@
         "                  t           i ",
         "                  t           i ",
         "                              i ",
-        "                    l         e ",
+        "            ba      l         e ",
         "e e i i i e e e e e e i i i e e "
       ],
       [
@@ -1752,7 +1752,7 @@
         "e 9                 9 e         ",
         "e 9 9 9         9 9 9 e e e e e ",
         "e e e e         e e e           ",
-        "e                   e           ",
+        "e                a  e           ",
         "e                   e           ",
         "e                   e       e e ",
         "e                   e       e e "
@@ -1807,7 +1807,7 @@
           },
           {
             "key": "channel",
-            "integer": 1
+            "integer": 3
           },
           {
             "key": "vertical",
@@ -1903,7 +1903,7 @@
         "e                   e       e 9 ",
         "e                   e       e 9 ",
         "e                   e       e 9 ",
-        "e                   e       e 9 ",
+        "e                 aae       e 9 ",
         "e                   e       e 9 ",
         "e                   e       e 9 ",
         "e                   e       e 9 ",
@@ -2109,7 +2109,7 @@
         "P P P P P P P P P P P P P P P P ",
         "                                ",
         "                                ",
-        "            7                   ",
+        "            7     ba            ",
         "P P P P P P P     P P P P P P P ",
         "e e e 9 9 9 9     9 9 9 9 e e e "
       ],
@@ -2311,7 +2311,7 @@
         "values": [
           {
             "key": "channel",
-            "integer": 1
+            "integer": 3
           }
         ]
       },
@@ -2373,7 +2373,7 @@
       [
         "e e e 9 9 9 9     9 9 9 9 e e e ",
         "P P P P P P P     P P P P P P P ",
-        "                  8             ",
+        "             a    8             ",
         "                                ",
         "                                ",
         "P P P P P P P P P P P P P P P P ",
@@ -2679,7 +2679,7 @@
         "9 e       e                 ^ e ",
         "9 e       e                 o e ",
         "9 e       e                 ^ e ",
-        "9 e       e                   e ",
+        "9 e       e ca                e ",
         "9 e       e                 ^ e ",
         "9 e       e                 o e ",
         "9 e       e                 ^ e ",
@@ -2784,7 +2784,7 @@
         "                            9 e ",
         "                      w     9 e ",
         "                            9 e ",
-        "      e 9                   9 e ",
+        "    aae 9                   9 e ",
         "l     e 9 9 9 9 9 9 9 9 9 9 9 e ",
         "e e e e e e e e e e e e e e e e "
       ],
@@ -2838,7 +2838,7 @@
           },
           {
             "key": "channel",
-            "integer": 2
+            "integer": 4
           },
           {
             "key": "vertical",
@@ -3325,6 +3325,14 @@
     "name": "city2_1",
     "palette": [
       {
+        "char": "ba",
+        "block": "ariente:alarm@2"
+      },
+      {
+        "char": " a",
+        "block": "ariente:alarm@3"
+      },
+      {
         "char": "y ",
         "block": "ariente:connector"
       },
@@ -3387,6 +3395,10 @@
       {
         "char": "# ",
         "block": "ariente:ramp"
+      },
+      {
+        "char": "ca",
+        "block": "ariente:alarm@5"
       },
       {
         "char": "a ",
@@ -3551,6 +3563,10 @@
       {
         "char": "B ",
         "block": "ariente:forcefield"
+      },
+      {
+        "char": "aa",
+        "block": "ariente:alarm@4"
       },
       {
         "char": "_ ",

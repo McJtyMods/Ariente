@@ -5,6 +5,8 @@ import mcjty.ariente.blocks.aicore.AICoreTile;
 import mcjty.ariente.blocks.defense.ForceFieldTile;
 import mcjty.ariente.blocks.generators.NegariteGeneratorTile;
 import mcjty.ariente.blocks.generators.PosiriteGeneratorTile;
+import mcjty.ariente.blocks.utility.AlarmTile;
+import mcjty.ariente.blocks.utility.AlarmType;
 import mcjty.ariente.blocks.utility.StorageTile;
 import mcjty.ariente.blocks.utility.wireless.RedstoneChannels;
 import mcjty.ariente.blocks.utility.wireless.SignalChannelTileEntity;
@@ -49,6 +51,7 @@ public class CityAI {
     private boolean foundEquipment = false;
     private Set<BlockPos> aiCores = new HashSet<>();
     private Set<BlockPos> forceFields = new HashSet<>();
+    private Set<BlockPos> alarms = new HashSet<>();
     private Set<BlockPos> negariteGenerators = new HashSet<>();
     private Set<BlockPos> posiriteGenerators = new HashSet<>();
     private Map<BlockPos, EnumFacing> guardPositions = new HashMap<>();
@@ -161,6 +164,7 @@ public class CityAI {
                 }
             }
         } else {
+            setAlarmType(world, AlarmType.SAFE);
             watchingPlayers.clear();
             // Turn off forcefields if present
             for (BlockPos pos : forceFields) {
@@ -457,6 +461,7 @@ public class CityAI {
 
     public void playerSpotted(EntityPlayer player) {
         onAlert = 600; // 5 minutes alert @todo configurable
+        setAlarmType(player.world, AlarmType.ALERT);
         watchingPlayers.put(player.getUniqueID(), player.getPosition());    // Register the last known position
     }
 
@@ -522,6 +527,8 @@ public class CityAI {
                                 } else if (te instanceof ForceFieldTile) {
                                     // We already have this as equipment but we need it separate
                                     forceFields.add(p);
+                                } else if (te instanceof AlarmTile) {
+                                    alarms.add(p);
                                 } else if (te instanceof NegariteGeneratorTile) {
                                     negariteGenerators.add(p);
                                 } else if (te instanceof PosiriteGeneratorTile) {
@@ -644,6 +651,8 @@ public class CityAI {
 
     private void initCityEquipment(World world) {
 
+        setAlarmType(world, AlarmType.SAFE);
+
         for (BlockPos p : negariteGenerators) {
             TileEntity te = world.getTileEntity(p);
             if (te instanceof NegariteGeneratorTile) {
@@ -659,6 +668,15 @@ public class CityAI {
                 PosiriteGeneratorTile generator = (PosiriteGeneratorTile) te;
                 PowerSenderSupport.fixNetworks(world, p);
                 generator.setRSMode(RedstoneMode.REDSTONE_IGNORED);
+            }
+        }
+    }
+
+    public void setAlarmType(World world, AlarmType type) {
+        for (BlockPos p : alarms) {
+            TileEntity te = world.getTileEntity(p);
+            if (te instanceof AlarmTile) {
+                ((AlarmTile) te).setAlarmType(type);
             }
         }
     }

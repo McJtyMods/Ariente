@@ -18,6 +18,7 @@ public class ModSounds {
     public static final SoundEvent forcefield = new SoundEvent(new ResourceLocation(Ariente.MODID, "forcefield")).setRegistryName(new ResourceLocation(Ariente.MODID, "forcefield"));
     public static final SoundEvent buzzError = new SoundEvent(new ResourceLocation(Ariente.MODID, "buzz_error")).setRegistryName(new ResourceLocation(Ariente.MODID, "buzz_error"));
     public static final SoundEvent buzzOk = new SoundEvent(new ResourceLocation(Ariente.MODID, "buzz_ok")).setRegistryName(new ResourceLocation(Ariente.MODID, "buzz_ok"));
+    public static final SoundEvent alarm = new SoundEvent(new ResourceLocation(Ariente.MODID, "alarm")).setRegistryName(new ResourceLocation(Ariente.MODID, "alarm"));
 
     public static void init(IForgeRegistry<SoundEvent> registry) {
         registry.register(guiclick);
@@ -29,6 +30,7 @@ public class ModSounds {
         registry.register(forcefield);
         registry.register(buzzError);
         registry.register(buzzOk);
+        registry.register(alarm);
     }
 
 }

@@ -42,6 +42,7 @@ tile.ariente.negarite_generator.name=Negarite Flux Generator
 tile.ariente.negarite_tank.name=Negarite Tank
 tile.ariente.posirite_tank.name=Posirite Tank
 tile.ariente.warper.name=Warper
+tile.ariente.alarm.name=Alarm
 tile.ariente.lock.name=Lock
 tile.ariente.wireless_lock.name=Wireless Lock
 tile.ariente.wireless_button.name=Wireless Button
@@ -138,6 +139,8 @@ message.ariente.storage=\
     @fdifferent item types
 message.ariente.warper=\
     @fWarp to nearby warpers
+message.ariente.alarm=\
+    @fCity status
 message.ariente.lock=\
     @fLock
 message.ariente.wireless_lock=\

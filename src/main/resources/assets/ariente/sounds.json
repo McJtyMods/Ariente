@@ -7,5 +7,6 @@
     "laser" : {"category": "hostile", "sounds": ["ariente:laser"]},
     "forcefield" : {"category": "block", "sounds": ["ariente:forcefield"]},
     "buzz_error" : {"category": "block", "sounds": ["ariente:buzz_error"]},
-    "buzz_ok" : {"category": "block", "sounds": ["ariente:buzz_ok"]}
+    "buzz_ok" : {"category": "block", "sounds": ["ariente:buzz_ok"]},
+    "alarm" : {"category": "block", "sounds": ["ariente:alarm"]}
 }

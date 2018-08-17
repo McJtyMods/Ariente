@@ -82,6 +82,7 @@ public class ModBlocks {
     public static GenericBlock<SignalTransmitterTile, GenericContainer> signalTransmitterBlock;
     public static GenericBlock<WirelessButtonTile, GenericContainer> wirelessButtonBlock;
     public static GenericBlock<WirelessLockTile, GenericContainer> wirelessLockBlock;
+    public static GenericBlock<AlarmTile, GenericContainer> alarmBlock;
 
     public static BaseBlock flatLightBlock;
 
@@ -140,10 +141,19 @@ public class ModBlocks {
                 .build();
         reinforcedMarble.setHardness(80.0F).setResistance(3000.0F);
 
+        alarmBlock = builderFactory.<AlarmTile> builder("alarm")
+                .tileEntityClass(AlarmTile.class)
+                .property(AlarmTile.ALARM)
+                .flags(BlockFlags.NON_OPAQUE, BlockFlags.NON_FULLCUBE, BlockFlags.RENDER_SOLID, BlockFlags.RENDER_CUTOUT)
+                .boundingBox((state, source, pos) -> getFlatBox(state))
+                .info("message.ariente.shiftmessage")
+                .infoExtended("message.ariente.alarm")
+                .build();
+
         lockBlock = builderFactory.<LockTile> builder("lock")
                 .tileEntityClass(LockTile.class)
                 .property(LockTile.LOCKED)
-                .flags(BlockFlags.NON_OPAQUE, BlockFlags.NON_FULLCUBE)
+                .flags(BlockFlags.NON_OPAQUE, BlockFlags.NON_FULLCUBE, BlockFlags.RENDER_SOLID, BlockFlags.RENDER_CUTOUT)
                 .boundingBox((state, source, pos) -> getFlatBox(state))
                 .activateAction((world, pos, player, hand, side, hitX, hitY, hitZ) -> HoloGuiHandler.openHoloGui(world, pos, player))
                 .info("message.ariente.shiftmessage")
@@ -153,7 +163,7 @@ public class ModBlocks {
         wirelessLockBlock = builderFactory.<WirelessLockTile> builder("wireless_lock")
                 .tileEntityClass(WirelessLockTile.class)
                 .property(WirelessLockTile.LOCKED)
-                .flags(BlockFlags.NON_OPAQUE, BlockFlags.NON_FULLCUBE)
+                .flags(BlockFlags.NON_OPAQUE, BlockFlags.NON_FULLCUBE, BlockFlags.RENDER_SOLID, BlockFlags.RENDER_CUTOUT)
                 .boundingBox((state, source, pos) -> getFlatBox(state))
                 .activateAction((world, pos, player, hand, side, hitX, hitY, hitZ) -> HoloGuiHandler.openHoloGui(world, pos, player))
                 .info("message.ariente.shiftmessage")
@@ -164,7 +174,7 @@ public class ModBlocks {
         wirelessButtonBlock = builderFactory.<WirelessButtonTile> builder("wireless_button")
                 .tileEntityClass(WirelessButtonTile.class)
                 .property(WirelessButtonTile.POWER)
-                .flags(BlockFlags.NON_OPAQUE, BlockFlags.NON_FULLCUBE)
+                .flags(BlockFlags.NON_OPAQUE, BlockFlags.NON_FULLCUBE, BlockFlags.RENDER_SOLID, BlockFlags.RENDER_CUTOUT)
                 .boundingBox((state, source, pos) -> getFlatBox(state))
                 .activateAction(WirelessButtonTile::onBlockActivatedWithToggle)
                 .info("message.ariente.shiftmessage")
@@ -175,7 +185,7 @@ public class ModBlocks {
         signalReceiverBlock = builderFactory.<SignalReceiverTile> builder("signal_receiver")
                 .tileEntityClass(SignalReceiverTile.class)
                 .property(SignalChannelTileEntity.POWER)
-                .flags(BlockFlags.NON_OPAQUE, BlockFlags.NON_FULLCUBE, BlockFlags.REDSTONE_OUTPUT)
+                .flags(BlockFlags.NON_OPAQUE, BlockFlags.NON_FULLCUBE, BlockFlags.REDSTONE_OUTPUT, BlockFlags.RENDER_SOLID, BlockFlags.RENDER_CUTOUT)
                 .boundingBox((state, source, pos) -> getFlatBox(state))
                 .activateAction(SignalChannelTileEntity::onBlockActivated)
                 .info("message.ariente.shiftmessage")
@@ -186,7 +196,7 @@ public class ModBlocks {
         signalTransmitterBlock = builderFactory.<SignalTransmitterTile> builder("signal_transmitter")
                 .tileEntityClass(SignalTransmitterTile.class)
                 .property(SignalChannelTileEntity.POWER)
-                .flags(BlockFlags.NON_OPAQUE, BlockFlags.NON_FULLCUBE, BlockFlags.REDSTONE_CHECK)
+                .flags(BlockFlags.NON_OPAQUE, BlockFlags.NON_FULLCUBE, BlockFlags.REDSTONE_CHECK, BlockFlags.RENDER_SOLID, BlockFlags.RENDER_CUTOUT)
                 .boundingBox((state, source, pos) -> getFlatBox(state))
                 .activateAction(SignalChannelTileEntity::onBlockActivated)
                 .info("message.ariente.shiftmessage")
@@ -320,7 +330,7 @@ public class ModBlocks {
         aiCoreBlock.setHarvestLevel("pickaxe", 2);
     }
 
-    private static AxisAlignedBB getFlatBox(IBlockState state) {
+    public static AxisAlignedBB getFlatBox(IBlockState state) {
         EnumFacing facing = state.getValue(BaseBlock.FACING);
         switch (facing) {
             case UP:
@@ -455,6 +465,7 @@ public class ModBlocks {
         posiriteTankBlock.initModel();
         ClientRegistry.bindTileEntitySpecialRenderer(PosiriteTankTile.class, new PosiriteTankRenderer());
 
+        alarmBlock.initModel();
         warperBlock.initModel();
         lockBlock.initModel();
         wirelessButtonBlock.initModel();
