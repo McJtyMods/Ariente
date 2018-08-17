@@ -110,6 +110,12 @@ public class PosiriteGeneratorTile extends GenericTileEntity implements ITickabl
     }
 
     @Override
+    public boolean canSendPower() {
+        return true;
+    }
+
+
+    @Override
     public void setPowerInput(int powered) {
         boolean changed = powerLevel != powered;
         super.setPowerInput(powered);

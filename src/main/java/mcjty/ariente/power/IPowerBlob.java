@@ -13,4 +13,6 @@ public interface IPowerBlob {
     void fillCableId(int id);
 
     CableColor getCableColor();
+
+    boolean canSendPower();
 }

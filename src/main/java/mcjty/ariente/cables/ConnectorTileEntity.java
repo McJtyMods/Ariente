@@ -27,6 +27,11 @@ public class ConnectorTileEntity extends GenericCableTileEntity {
     }
 
     @Override
+    public boolean canSendPower() {
+        return true;
+    }
+
+    @Override
     public void readFromNBT(NBTTagCompound tagCompound) {
         super.readFromNBT(tagCompound);
         inputFromSide = tagCompound.getIntArray("inputs");

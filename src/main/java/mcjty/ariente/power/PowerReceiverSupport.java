@@ -22,20 +22,22 @@ public class PowerReceiverSupport {
             TileEntity te = world.getTileEntity(p);
             if (te instanceof IPowerBlob) {
                 IPowerBlob blob = (IPowerBlob) te;
-                int id = blob.getCableId();
-                if (!handled.contains(id)) {
-                    handled.add(id);
-                    switch (blob.getCableColor()) {
-                        case NEGARITE:
-                            totalNegarite += powerSystem.getTotalPower(id);
-                            break;
-                        case POSIRITE:
-                            totalPosirite += powerSystem.getTotalPower(id);
-                            break;
-                        case COMBINED:
-                            totalPosirite += powerSystem.getTotalPower(id);
-                            totalNegarite += powerSystem.getTotalPower(id);
-                            break;
+                if (blob.canSendPower()) {
+                    int id = blob.getCableId();
+                    if (!handled.contains(id)) {
+                        handled.add(id);
+                        switch (blob.getCableColor()) {
+                            case NEGARITE:
+                                totalNegarite += powerSystem.getTotalPower(id);
+                                break;
+                            case POSIRITE:
+                                totalPosirite += powerSystem.getTotalPower(id);
+                                break;
+                            case COMBINED:
+                                totalPosirite += powerSystem.getTotalPower(id);
+                                totalNegarite += powerSystem.getTotalPower(id);
+                                break;
+                        }
                     }
                 }
             }

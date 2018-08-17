@@ -20,7 +20,7 @@ import javax.annotation.Nullable;
 import java.util.HashMap;
 import java.util.Map;
 
-public class GenericCableTileEntity extends GenericTileEntity implements IFacadeSupport, IPowerBlob, ICityEquipment {
+public abstract class GenericCableTileEntity extends GenericTileEntity implements IFacadeSupport, IPowerBlob, ICityEquipment {
 
     private MimicBlockSupport mimicBlockSupport = new MimicBlockSupport();
     private PowerSenderSupport powerBlobSupport = new PowerSenderSupport();

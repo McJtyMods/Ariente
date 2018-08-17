@@ -110,6 +110,11 @@ public class NegariteGeneratorTile extends GenericTileEntity implements ITickabl
     }
 
     @Override
+    public boolean canSendPower() {
+        return true;
+    }
+
+    @Override
     public void onDataPacket(NetworkManager net, SPacketUpdateTileEntity packet) {
         boolean working = isWorking();
 
