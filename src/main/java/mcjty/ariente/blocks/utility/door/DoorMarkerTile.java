@@ -41,6 +41,7 @@ public class DoorMarkerTile extends GenericTileEntity implements ITickable, IGui
     public static final int MAX_DOOR_HEIGHT = 6;        // @todo configurable
 
     private AxisAlignedBB detectionBox = null;
+    private AxisAlignedBB renderBox = null;
 
     private boolean open = false;
     private int iconIndex = 0;
@@ -223,6 +224,14 @@ public class DoorMarkerTile extends GenericTileEntity implements ITickable, IGui
     public void onBlockBreak(World workd, BlockPos pos, IBlockState state) {
         super.onBlockBreak(workd, pos, state);
         clearInvisibleBlocks();
+    }
+
+    @Override
+    public AxisAlignedBB getRenderBoundingBox() {
+        if (renderBox == null) {
+            renderBox = new AxisAlignedBB(getPos()).grow(.3);
+        }
+        return renderBox;
     }
 
     @Override

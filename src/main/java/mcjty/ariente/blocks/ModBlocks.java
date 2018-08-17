@@ -94,12 +94,12 @@ public class ModBlocks {
 
     public static GenericBlockBuilderFactory builderFactory;
 
-    public static final AxisAlignedBB LIGHT_BLOCK_DOWN = new AxisAlignedBB(0.0F, 0.0F, 0.0F, 1.0F, 0.2F, 1.0F);
-    public static final AxisAlignedBB LIGHT_BLOCK_UP = new AxisAlignedBB(0.0F, 0.8F, 0.0F, 1.0F, 1.0F, 1.0F);
-    public static final AxisAlignedBB LIGHT_BLOCK_NORTH = new AxisAlignedBB(0.0F, 0.0F, 0.0F, 1.0F, 1.0F, 0.2F);
-    public static final AxisAlignedBB LIGHT_BLOCK_SOUTH = new AxisAlignedBB(0.0F, 0.0F, 0.8F, 1.0F, 1.0F, 1.0F);
-    public static final AxisAlignedBB LIGHT_BLOCK_WEST = new AxisAlignedBB(0.0F, 0.0F, 0.0F, 0.2F, 1.0F, 1.0F);
-    public static final AxisAlignedBB LIGHT_BLOCK_EAST = new AxisAlignedBB(0.8F, 0.0F, 0.0F, 1.0F, 1.0F, 1.0F);
+    public static final AxisAlignedBB LIGHT_BLOCK_DOWN  = new AxisAlignedBB(0.125F, 0.0F, 0.125F, 0.875F, 0.125F, 0.875F);
+    public static final AxisAlignedBB LIGHT_BLOCK_UP    = new AxisAlignedBB(0.125F, 0.875F, 0.125F, 0.875F, 1.0F, 0.875F);
+    public static final AxisAlignedBB LIGHT_BLOCK_NORTH = new AxisAlignedBB(0.125F, 0.125F, 0.0F, 0.875F, 0.875F, 0.125F);
+    public static final AxisAlignedBB LIGHT_BLOCK_SOUTH = new AxisAlignedBB(0.125F, 0.125F, 0.875F, 0.875F, 0.8750F, 1.0F);
+    public static final AxisAlignedBB LIGHT_BLOCK_WEST  = new AxisAlignedBB(0.0F, 0.125F, 0.125F, 0.125F, 0.875F, 0.8750F);
+    public static final AxisAlignedBB LIGHT_BLOCK_EAST  = new AxisAlignedBB(0.875F, 0.125F, 0.125F, 1.0F, 0.875F, 0.8750F);
 
 
     public static void init() {
