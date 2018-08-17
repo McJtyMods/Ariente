@@ -50,7 +50,7 @@ public class CityTools {
             Random random = new Random(seed + chunkX * 776531419L + chunkZ * 198491317L);
             random.nextFloat();
             random.nextFloat();
-            return random.nextFloat() < .6f;        // @todo configurable
+            return random.nextFloat() < .7f;        // @todo configurable
         }
         return false;
     }

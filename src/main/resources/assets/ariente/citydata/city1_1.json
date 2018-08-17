@@ -25,13 +25,13 @@
         "id": "ariente:ingot_silver",
         "meta": 0,
         "max": 3,
-        "chance": 0.1
+        "chance": 0.2
       },
       {
         "id": "ariente:ingot_manganese",
         "meta": 0,
         "max": 1,
-        "chance": 0.1
+        "chance": 0.2
       },
       {
         "id": "ariente:energy_sabre",
