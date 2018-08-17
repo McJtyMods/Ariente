@@ -9,6 +9,7 @@ import mcjty.ariente.gui.IGuiComponent;
 import mcjty.ariente.gui.IGuiTile;
 import mcjty.ariente.gui.components.HoloPanel;
 import mcjty.ariente.gui.components.HoloToggleIcon;
+import mcjty.ariente.sounds.ModSounds;
 import mcjty.lib.blocks.BaseBlock;
 import mcjty.lib.tileentity.GenericTileEntity;
 import mcjty.theoneprobe.api.IProbeHitData;
@@ -27,6 +28,7 @@ import net.minecraft.pathfinding.PathNodeType;
 import net.minecraft.tileentity.TileEntity;
 import net.minecraft.util.EnumFacing;
 import net.minecraft.util.ITickable;
+import net.minecraft.util.SoundCategory;
 import net.minecraft.util.math.AxisAlignedBB;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.IBlockAccess;
@@ -126,6 +128,7 @@ public class DoorMarkerTile extends GenericTileEntity implements ITickable, IGui
             return;
         }
         open = o;
+        world.playSound(null, getPos().getX(), getPos().getY(), getPos().getZ(), ModSounds.door, SoundCategory.BLOCKS, 0.6f, 1.0f);
         markDirtyClient();
     }
 

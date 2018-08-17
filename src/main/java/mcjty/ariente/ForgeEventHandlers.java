@@ -3,7 +3,6 @@ package mcjty.ariente;
 import mcjty.ariente.biomes.ModBiomes;
 import mcjty.ariente.blocks.ModBlocks;
 import mcjty.ariente.blocks.utility.ILockable;
-import mcjty.ariente.blocks.utility.LockTile;
 import mcjty.ariente.cities.BuildingPart;
 import mcjty.ariente.cities.City;
 import mcjty.ariente.cities.CityTools;
@@ -23,7 +22,6 @@ import net.minecraft.world.World;
 import net.minecraft.world.WorldServer;
 import net.minecraft.world.biome.Biome;
 import net.minecraftforge.event.RegistryEvent;
-import net.minecraftforge.event.entity.EntityJoinWorldEvent;
 import net.minecraftforge.event.entity.living.LivingSpawnEvent;
 import net.minecraftforge.event.world.BlockEvent;
 import net.minecraftforge.fml.common.eventhandler.Event;
@@ -64,11 +62,6 @@ public class ForgeEventHandlers {
         if (event.phase == TickEvent.Phase.START && !event.world.isRemote && event.world.provider.getDimension() == 0) {
             PowerSystem.getPowerSystem(event.world).tick();
         }
-    }
-
-    @SubscribeEvent
-    public void onEntityJoinWorld(EntityJoinWorldEvent event) {
-
     }
 
     @SubscribeEvent

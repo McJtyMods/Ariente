@@ -31,7 +31,7 @@
           "up": "ariente:blocks/machines/alarm_dead",
           "glow_bottom": "ariente:blocks/base/empty_glow",
           "glow_side": "ariente:blocks/base/empty_glow",
-          "glow_up": "ariente:blocks/machines/empty_glow"
+          "glow_up": "ariente:blocks/base/empty_glow"
         }
       },
       "safe": {

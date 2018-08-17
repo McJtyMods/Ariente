@@ -22,6 +22,7 @@ public class ArienteMessages {
 
         // Server side
         net.registerMessage(PacketClickStorage.Handler.class, PacketClickStorage.class, PacketHandler.nextPacketID(), Side.SERVER);
+        net.registerMessage(PacketHitForcefield.Handler.class, PacketHitForcefield.class, PacketHandler.nextPacketID(), Side.SERVER);
 
         // Client side
         net.registerMessage(PacketDamageForcefield.Handler.class, PacketDamageForcefield.class, PacketHandler.nextPacketID(), Side.CLIENT);

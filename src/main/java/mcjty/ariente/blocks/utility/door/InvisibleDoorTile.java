@@ -37,7 +37,7 @@ public class InvisibleDoorTile extends GenericTileEntity implements ILockable {
                 return DoorMarkerTile.OPEN_BLOCK_AABB;
             }
         }
-        return DoorMarkerTile.BLOCK_AABB;
+        return Block.FULL_BLOCK_AABB;
     }
 
     public static boolean addCollisionBoxToList(IBlockState state, World world, BlockPos pos, AxisAlignedBB entityBox, List<AxisAlignedBB> collidingBoxes, @Nullable Entity entityIn, boolean isActualState) {
