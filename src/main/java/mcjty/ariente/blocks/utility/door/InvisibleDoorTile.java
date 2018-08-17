@@ -5,15 +5,40 @@ import mcjty.lib.tileentity.GenericTileEntity;
 import net.minecraft.block.Block;
 import net.minecraft.block.state.IBlockState;
 import net.minecraft.entity.Entity;
+import net.minecraft.pathfinding.PathNodeType;
 import net.minecraft.tileentity.TileEntity;
 import net.minecraft.util.math.AxisAlignedBB;
 import net.minecraft.util.math.BlockPos;
+import net.minecraft.world.IBlockAccess;
 import net.minecraft.world.World;
 
 import javax.annotation.Nullable;
 import java.util.List;
 
 public class InvisibleDoorTile extends GenericTileEntity implements ILockable {
+
+    @Nullable
+    public static PathNodeType getAiPathNodeType(IBlockState state, IBlockAccess world, BlockPos pos) {
+        TileEntity te = world.getTileEntity(pos);
+        if (te instanceof InvisibleDoorTile) {
+            DoorMarkerTile door = ((InvisibleDoorTile) te).findDoorMarker();
+            if (door.isOpen()) {
+                return PathNodeType.OPEN;
+            }
+        }
+        return PathNodeType.BLOCKED;
+    }
+
+    public static AxisAlignedBB getCollisionBoundingBox(IBlockState blockState, IBlockAccess world, BlockPos pos) {
+        TileEntity te = world.getTileEntity(pos);
+        if (te instanceof InvisibleDoorTile) {
+            DoorMarkerTile door = ((InvisibleDoorTile) te).findDoorMarker();
+            if (door.isOpen()) {
+                return DoorMarkerTile.OPEN_BLOCK_AABB;
+            }
+        }
+        return DoorMarkerTile.BLOCK_AABB;
+    }
 
     public static boolean addCollisionBoxToList(IBlockState state, World world, BlockPos pos, AxisAlignedBB entityBox, List<AxisAlignedBB> collidingBoxes, @Nullable Entity entityIn, boolean isActualState) {
         TileEntity te = world.getTileEntity(pos);

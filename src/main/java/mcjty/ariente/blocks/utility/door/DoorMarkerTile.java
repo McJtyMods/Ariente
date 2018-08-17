@@ -2,6 +2,7 @@ package mcjty.ariente.blocks.utility.door;
 
 import mcjty.ariente.blocks.ModBlocks;
 import mcjty.ariente.blocks.utility.ILockable;
+import mcjty.ariente.entities.SoldierEntity;
 import mcjty.ariente.gui.HoloGuiEntity;
 import mcjty.ariente.gui.HoloGuiHandler;
 import mcjty.ariente.gui.IGuiComponent;
@@ -18,14 +19,17 @@ import mcp.mobius.waila.api.IWailaDataAccessor;
 import net.minecraft.block.Block;
 import net.minecraft.block.state.IBlockState;
 import net.minecraft.entity.Entity;
+import net.minecraft.entity.EntityLivingBase;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.NBTTagCompound;
+import net.minecraft.pathfinding.PathNodeType;
 import net.minecraft.tileentity.TileEntity;
 import net.minecraft.util.EnumFacing;
 import net.minecraft.util.ITickable;
 import net.minecraft.util.math.AxisAlignedBB;
 import net.minecraft.util.math.BlockPos;
+import net.minecraft.world.IBlockAccess;
 import net.minecraft.world.World;
 import net.minecraftforge.fml.common.Optional;
 import net.minecraftforge.fml.relauncher.Side;
@@ -37,6 +41,7 @@ import java.util.List;
 public class DoorMarkerTile extends GenericTileEntity implements ITickable, IGuiTile, ILockable {
 
     public static final AxisAlignedBB BLOCK_AABB = new AxisAlignedBB(0.0D, 0.0D, 0.0D, 1.0D, 0.1D, 1.0D);
+    public static final AxisAlignedBB OPEN_BLOCK_AABB = new AxisAlignedBB(0.0D, 0.0D, 0.0D, 0.0D, 0.0D, 0.0D);
 
     public static final int MAX_DOOR_HEIGHT = 6;        // @todo configurable
 
@@ -56,7 +61,8 @@ public class DoorMarkerTile extends GenericTileEntity implements ITickable, IGui
         if (!world.isRemote) {
             setInvisibleBlocks();
             if (!locked) {
-                List<Entity> entities = world.getEntitiesWithinAABB(EntityPlayer.class, getDetectionBox());
+                List<Entity> entities = world.getEntitiesWithinAABB(EntityLivingBase.class, getDetectionBox(),
+                        entity -> entity instanceof EntityPlayer || entity instanceof SoldierEntity);
                 boolean o = !entities.isEmpty();
                 setOpen(o);
             }
@@ -153,6 +159,29 @@ public class DoorMarkerTile extends GenericTileEntity implements ITickable, IGui
     // Client side only
     public void setLastTime(long lastTime) {
         this.lastTime = lastTime;
+    }
+
+    @Nullable
+    public static PathNodeType getAiPathNodeType(IBlockState state, IBlockAccess world, BlockPos pos) {
+        TileEntity te = world.getTileEntity(pos);
+        if (te instanceof DoorMarkerTile) {
+            DoorMarkerTile door = (DoorMarkerTile) te;
+            if (door.isOpen()) {
+                return PathNodeType.OPEN;
+            }
+        }
+        return PathNodeType.BLOCKED;
+    }
+
+    public static AxisAlignedBB getCollisionBoundingBox(IBlockState blockState, IBlockAccess world, BlockPos pos) {
+        TileEntity te = world.getTileEntity(pos);
+        if (te instanceof DoorMarkerTile) {
+            DoorMarkerTile door = (DoorMarkerTile) te;
+            if (door.isOpen()) {
+                return OPEN_BLOCK_AABB;
+            }
+        }
+        return BLOCK_AABB;
     }
 
     public static boolean addCollisionBoxToList(IBlockState state, World world, BlockPos pos, AxisAlignedBB entityBox, List<AxisAlignedBB> collidingBoxes, @Nullable Entity entityIn, boolean isActualState) {

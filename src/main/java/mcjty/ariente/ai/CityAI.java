@@ -460,7 +460,7 @@ public class CityAI {
     }
 
     public void playerSpotted(EntityPlayer player) {
-        onAlert = 600; // 5 minutes alert @todo configurable
+        onAlert = 400; // alert @todo configurable
         setAlarmType(player.world, AlarmType.ALERT);
         watchingPlayers.put(player.getUniqueID(), player.getPosition());    // Register the last known position
     }

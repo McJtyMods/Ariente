@@ -290,7 +290,8 @@ public class ModBlocks {
                 .flags(BlockFlags.NON_OPAQUE, BlockFlags.NON_FULLCUBE)
                 .activateAction((world, pos, player, hand, side, hitX, hitY, hitZ) -> HoloGuiHandler.openHoloGui(world, pos, player))
                 .addCollisionBoxToList(DoorMarkerTile::addCollisionBoxToList)
-                .boundingBox((state, source, pos) -> DoorMarkerTile.BLOCK_AABB)
+                .boundingBox(DoorMarkerTile::getCollisionBoundingBox)
+                .getAIPathNodeType(DoorMarkerTile::getAiPathNodeType)
                 .info("message.ariente.shiftmessage")
                 .infoExtended("message.ariente.door_marker")
                 .build();
@@ -301,6 +302,8 @@ public class ModBlocks {
                 .rotationType(BaseBlock.RotationType.HORIZROTATION)
                 .flags(BlockFlags.NON_OPAQUE, BlockFlags.NON_FULLCUBE)
                 .addCollisionBoxToList(InvisibleDoorTile::addCollisionBoxToList)
+                .boundingBox(InvisibleDoorTile::getCollisionBoundingBox)
+                .getAIPathNodeType(InvisibleDoorTile::getAiPathNodeType)
                 .build();
 
         forceFieldBlock = builderFactory.<ForceFieldTile> builder("forcefield")

@@ -39,8 +39,8 @@ public class AlarmTile extends GenericTileEntity implements ITickable {
                 if (soundTicker >= 0) {
                     return;
                 }
-                soundTicker = 50;
-                world.playSound(null, getPos().getX(), getPos().getY(), getPos().getZ(), ModSounds.alarm, SoundCategory.BLOCKS, 1.0f, 1.0f);
+                soundTicker = 60;
+                world.playSound(null, getPos().getX(), getPos().getY(), getPos().getZ(), ModSounds.alarm, SoundCategory.BLOCKS, 0.6f, 1.0f);
             }
         }
     }
