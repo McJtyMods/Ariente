@@ -496,8 +496,10 @@ public class CityAI {
             return;
         }
 
-        keyId = SecuritySystem.getSecuritySystem(world).generateKeyId();
-        storageKeyId = SecuritySystem.getSecuritySystem(world).generateKeyId();
+        if (firstTime) {
+            keyId = SecuritySystem.getSecuritySystem(world).generateKeyId();
+            storageKeyId = SecuritySystem.getSecuritySystem(world).generateKeyId();
+        }
 
         City city = CityTools.getCity(center);
         assert city != null;
