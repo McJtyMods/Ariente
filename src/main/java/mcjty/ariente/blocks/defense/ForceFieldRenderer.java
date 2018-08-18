@@ -86,7 +86,7 @@ public class ForceFieldRenderer {
                 Tessellator t = Tessellator.getInstance();
                 BufferBuilder builder = t.getBuffer();
 
-                Entity renderViewEntity = Minecraft.getMinecraft().renderViewEntity;
+                Entity renderViewEntity = Minecraft.getMinecraft().getRenderViewEntity();
                 double dx = renderViewEntity.lastTickPosX + (renderViewEntity.posX - renderViewEntity.lastTickPosX) * partialTicks;
                 double dy = renderViewEntity.lastTickPosY + (renderViewEntity.posY - renderViewEntity.lastTickPosY) * partialTicks;
                 double dz = renderViewEntity.lastTickPosZ + (renderViewEntity.posZ - renderViewEntity.lastTickPosZ) * partialTicks;
