@@ -30,7 +30,7 @@ public class Ariente implements ModBase {
     public static final String MODNAME = "Ariente";
     public static final String VERSION = "0.0.1-alpha";
     public static final String MIN_FORGE11_VER = "13.19.0.2176";
-    public static final String MIN_MCJTYLIB_VER = "3.0.1";
+    public static final String MIN_MCJTYLIB_VER = "3.0.4";
 
     @SidedProxy(clientSide = "mcjty.ariente.proxy.ClientProxy", serverSide = "mcjty.ariente.proxy.ServerProxy")
     public static CommonProxy proxy;
