@@ -1,2 +1,2 @@
-# AquaMunda
-Aqua Munda is a mod about water and purification
+# Ariente
+Ariente is a mod about technology and exploration
