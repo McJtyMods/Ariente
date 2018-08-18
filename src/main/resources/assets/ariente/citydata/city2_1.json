@@ -16,9 +16,9 @@
     "soldiersMinimum1": 4,
     "soldiersMinimum2": 6,
     "soldiersMinimumN": 10,
-    "soldiersWaveMax1": 10,
-    "soldiersWaveMax2": 15,
-    "soldiersWaveMaxN": 30,
+    "soldiersWaveMax1": 7,
+    "soldiersWaveMax2": 12,
+    "soldiersWaveMaxN": 25,
     "masterChance": 0.05,
     "loot": [
       {
@@ -2838,7 +2838,7 @@
           },
           {
             "key": "channel",
-            "integer": 4
+            "integer": 3
           },
           {
             "key": "vertical",

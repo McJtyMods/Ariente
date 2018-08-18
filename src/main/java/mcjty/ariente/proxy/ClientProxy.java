@@ -43,6 +43,8 @@ public class ClientProxy extends CommonProxy {
     public void init(FMLInitializationEvent e) {
         super.init(e);
 //        ModBlocks.initItemModels();
+//        MinecraftForge.EVENT_BUS.register(new KeyInputHandler());
+//        KeyBindings.init();
     }
 
     @SubscribeEvent

@@ -108,7 +108,7 @@ public class ForceFieldRenderer {
                 GlStateManager.enableTexture2D();
                 GlStateManager.depthMask(true);
                 GlStateManager.enableLighting();
-                mc.entityRenderer.enableLightmap();
+//                mc.entityRenderer.enableLightmap();
 
             } else {
                 toRemove.add(pos);

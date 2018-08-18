@@ -16,9 +16,9 @@
     "soldiersMinimum1": 2,
     "soldiersMinimum2": 3,
     "soldiersMinimumN": 5,
-    "soldiersWaveMax1": 4,
-    "soldiersWaveMax2": 6,
-    "soldiersWaveMaxN": 10,
+    "soldiersWaveMax1": 3,
+    "soldiersWaveMax2": 5,
+    "soldiersWaveMaxN": 8,
     "masterChance": 0.01,
     "loot": [
       {
