@@ -478,6 +478,10 @@ public class CityAI {
     }
 
     public void playerSpotted(EntityPlayer player) {
+        if (findFirstValidAICore(player.getEntityWorld()) == null) {
+            // City is dead
+            return;
+        }
         if (onAlert <= 0) {
             // Set alarm type in case it is not already set
             setAlarmType(player.world, AlarmType.ALERT);
