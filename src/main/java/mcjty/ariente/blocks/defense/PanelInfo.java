@@ -42,7 +42,7 @@ public class PanelInfo {
     }
 
     public boolean testCollisionEntity(Entity entity, double scale) {
-        AxisAlignedBB box = entity.getEntityBoundingBox();
+        AxisAlignedBB box = entity.getEntityBoundingBox().grow(0, -.4, 0);
         Triangle triangle = PentakisDodecahedron.getTriangle(getIndex());
         // @todo not very efficient
         Vec3d offs = triangle.getMid().scale(scale);
