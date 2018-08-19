@@ -2,6 +2,7 @@
 - The collision test with the forcefield is slightly more relaxed so that it is easier to go through
 - Damaging a forcefield will notify the city AI that the player is there
 - If the city is dead it will no longer try to set alarms in some cases
+- Only guards and master soldiers will alert the city now. The normal soldiers no longer do that
 
 0.0.1-alpha:
 - Alpha release

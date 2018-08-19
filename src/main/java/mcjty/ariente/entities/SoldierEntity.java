@@ -27,6 +27,7 @@ import net.minecraft.world.World;
 import net.minecraftforge.fml.relauncher.Side;
 import net.minecraftforge.fml.relauncher.SideOnly;
 
+import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 
 public class SoldierEntity extends EntityMob implements IArmRaisable, IForcefieldImmunity {
@@ -187,11 +188,19 @@ public class SoldierEntity extends EntityMob implements IArmRaisable, IForcefiel
     public void setAttackTarget(@Nullable EntityLivingBase entitylivingbaseIn) {
         super.setAttackTarget(entitylivingbaseIn);
         if (entitylivingbaseIn instanceof EntityPlayer && cityCenter != null) {
-            CityAISystem aiSystem = CityAISystem.getCityAISystem(world);
-            CityAI cityAI = aiSystem.getCityAI(cityCenter);
-            cityAI.playerSpotted((EntityPlayer) entitylivingbaseIn);
-            aiSystem.save();
+            if (behaviourType == SoldierBehaviourType.SOLDIER_GUARD) {
+                alertCity((EntityPlayer) entitylivingbaseIn);
+            } else if (this instanceof MasterSoldierEntity) {
+                alertCity((EntityPlayer) entitylivingbaseIn);
+            }
         }
+    }
+
+    private void alertCity(@Nonnull EntityPlayer player) {
+        CityAISystem aiSystem = CityAISystem.getCityAISystem(world);
+        CityAI cityAI = aiSystem.getCityAI(cityCenter);
+        cityAI.playerSpotted(player);
+        aiSystem.save();
     }
 
     @Override
