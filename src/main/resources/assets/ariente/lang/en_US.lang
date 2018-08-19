@@ -12,6 +12,11 @@ item.ariente.enhanced_energy_sabre.name=Enhanced Energy Sabre
 item.ariente.key_card.name=Key Card
 item.ariente.dirty_diamond.name=Dirty Diamond
 
+item.ariente.powersuit_head.name=Power Helmet
+item.ariente.powersuit_chest.name=Power Chestplate
+item.ariente.powersuit_legs.name=Power Leggings
+item.ariente.powersuit_feet.name=Power Boots
+
 tile.ariente.pattern.dots.name=Dots Pattern
 tile.ariente.pattern.lines.name=Lines Pattern
 

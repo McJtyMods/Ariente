@@ -6,6 +6,7 @@
 - If a soldier is killed there is now also a chance it will drop an empty key card
 - If a soldier is killed there is now also a chance it will drop a key card giving protection against the city forcefield
 - If the player holds a key card tagged with the city forcefield ID he will no longer get damage
+- Added first version of the power armor
 
 0.0.1-alpha:
 - Alpha release

@@ -1,5 +1,8 @@
 package mcjty.ariente.items;
 
+import net.minecraft.client.renderer.block.model.ModelResourceLocation;
+import net.minecraft.inventory.EntityEquipmentSlot;
+import net.minecraftforge.client.model.ModelLoader;
 import net.minecraftforge.fml.relauncher.Side;
 import net.minecraftforge.fml.relauncher.SideOnly;
 import net.minecraftforge.oredict.OreDictionary;
@@ -19,6 +22,11 @@ public class ModItems {
     public static KeyCardItem keyCardItem;
     public static DirtyDiamondItem dirtyDiamondItem;
 
+    public static PowerSuit powerSuitHelmet;
+    public static PowerSuit powerSuitChest;
+    public static PowerSuit powerSuitLegs;
+    public static PowerSuit powerSuitBoots;
+
     public static void init() {
         platinumIngot = new GenericItem("ingot_platinum");
         lithiumIngot = new GenericItem("ingot_lithium");
@@ -33,6 +41,11 @@ public class ModItems {
         keyCardItem = new KeyCardItem();
 
         dirtyDiamondItem = new DirtyDiamondItem();
+
+        powerSuitBoots = new PowerSuit(EntityEquipmentSlot.FEET);
+        powerSuitChest = new PowerSuit(EntityEquipmentSlot.CHEST);
+        powerSuitHelmet = new PowerSuit(EntityEquipmentSlot.HEAD);
+        powerSuitLegs = new PowerSuit(EntityEquipmentSlot.LEGS);
     }
 
     public static void initOreDict() {
@@ -56,6 +69,11 @@ public class ModItems {
         keyCardItem.initModel();
 
         dirtyDiamondItem.initModel();
+
+        ModelLoader.setCustomModelResourceLocation(powerSuitBoots, 0, new ModelResourceLocation(powerSuitBoots.getRegistryName(), "inventory"));
+        ModelLoader.setCustomModelResourceLocation(powerSuitChest, 0, new ModelResourceLocation(powerSuitChest.getRegistryName(), "inventory"));
+        ModelLoader.setCustomModelResourceLocation(powerSuitHelmet, 0, new ModelResourceLocation(powerSuitHelmet.getRegistryName(), "inventory"));
+        ModelLoader.setCustomModelResourceLocation(powerSuitLegs, 0, new ModelResourceLocation(powerSuitLegs.getRegistryName(), "inventory"));
     }
 
 }
