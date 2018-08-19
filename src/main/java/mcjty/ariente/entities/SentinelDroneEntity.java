@@ -86,6 +86,7 @@ public class SentinelDroneEntity extends EntityFlying implements IMob, IForcefie
             CityAISystem aiSystem = CityAISystem.getCityAISystem(world);
             CityAI cityAI = aiSystem.getCityAI(cityCenter);
             cityAI.playerSpotted((EntityPlayer) entitylivingbaseIn);
+            aiSystem.save();
         }
     }
 

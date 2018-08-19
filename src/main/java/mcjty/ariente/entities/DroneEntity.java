@@ -178,6 +178,7 @@ public class DroneEntity extends EntityFlying implements IMob, IForcefieldImmuni
             CityAISystem aiSystem = CityAISystem.getCityAISystem(world);
             CityAI cityAI = aiSystem.getCityAI(cityCenter);
             cityAI.playerSpotted((EntityPlayer) entitylivingbaseIn);
+            aiSystem.save();
         }
     }
 

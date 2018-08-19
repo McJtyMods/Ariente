@@ -554,6 +554,7 @@ public class CityAI {
                                     aiCores.add(p);
                                 } else if (te instanceof ForceFieldTile) {
                                     // We already have this as equipment but we need it separate
+                                    ((ForceFieldTile)te).setCityCenter(center);
                                     forceFields.add(p);
                                 } else if (te instanceof AlarmTile) {
                                     alarms.add(p);

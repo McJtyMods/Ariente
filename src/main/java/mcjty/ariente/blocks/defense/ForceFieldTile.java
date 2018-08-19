@@ -1,7 +1,9 @@
 package mcjty.ariente.blocks.defense;
 
 import mcjty.ariente.ai.CityAI;
+import mcjty.ariente.ai.CityAISystem;
 import mcjty.ariente.ai.IAlarmMode;
+import mcjty.ariente.cities.CityTools;
 import mcjty.ariente.cities.ICityEquipment;
 import mcjty.ariente.config.ArienteConfiguration;
 import mcjty.ariente.gui.HoloGuiEntity;
@@ -12,6 +14,7 @@ import mcjty.ariente.network.ArienteMessages;
 import mcjty.ariente.power.IPowerReceiver;
 import mcjty.ariente.power.PowerReceiverSupport;
 import mcjty.ariente.sounds.ISoundProducer;
+import mcjty.ariente.varia.ChunkCoord;
 import mcjty.ariente.varia.Triangle;
 import mcjty.lib.tileentity.GenericTileEntity;
 import mcjty.lib.varia.RedstoneMode;
@@ -26,6 +29,8 @@ import net.minecraft.entity.Entity;
 import net.minecraft.entity.EntityLivingBase;
 import net.minecraft.entity.IProjectile;
 import net.minecraft.entity.player.EntityPlayer;
+import net.minecraft.entity.projectile.EntityArrow;
+import net.minecraft.entity.projectile.EntityThrowable;
 import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.util.DamageSource;
@@ -37,6 +42,7 @@ import net.minecraftforge.fml.common.Optional;
 import net.minecraftforge.fml.relauncher.Side;
 import net.minecraftforge.fml.relauncher.SideOnly;
 
+import javax.annotation.Nullable;
 import java.util.*;
 
 import static mcjty.ariente.config.ArienteConfiguration.SHIELD_PANEL_LIFE;
@@ -47,6 +53,7 @@ public class ForceFieldTile extends GenericTileEntity implements IGuiTile, ITick
     private int[] panelDestroyTimeout = new int[PentakisDodecahedron.MAX_TRIANGLES];    // @todo persist to NBT?
     private AxisAlignedBB aabb = null;
     private int scale = 10;
+    private ChunkCoord cityCenter;
 
     private long usingPower = 0;
     private int breakDownSkip = 5;  // After the world is just loaded we skip a few low-power ticks to be sure the powergenerators can start up
@@ -68,6 +75,10 @@ public class ForceFieldTile extends GenericTileEntity implements IGuiTile, ITick
     @Override
     public boolean isHighAlert() {
         return false;
+    }
+
+    public void setCityCenter(ChunkCoord cityCenter) {
+        this.cityCenter = cityCenter;
     }
 
     public double getScaleDouble() {
@@ -213,6 +224,18 @@ public class ForceFieldTile extends GenericTileEntity implements IGuiTile, ITick
                             } else {
                                 info.setLife(life);
                                 System.out.println("life = " + life + " (index " + info.getIndex() + ")");
+                                if (cityCenter != null) {
+                                    EntityPlayer player = determineAttacker(entity);
+                                    if (player != null) {
+                                        CityAISystem system = CityAISystem.getCityAISystem(world);
+                                        CityAI cityAI = system.getCityAI(cityCenter);
+                                        if (cityAI != null) {
+                                            cityAI.playerSpotted(player);
+                                            system.save();
+                                        }
+                                    }
+                                }
+
                                 ArienteMessages.INSTANCE.sendToDimension(
                                         new PacketDamageForcefield(pos, info.getIndex(), intersection),
                                         world.provider.getDimension());
@@ -235,6 +258,24 @@ public class ForceFieldTile extends GenericTileEntity implements IGuiTile, ITick
         if (changed) {
             markDirtyClient();
         }
+    }
+
+    @Nullable
+    private EntityPlayer determineAttacker(Entity entity) {
+        if (entity instanceof EntityArrow) {
+            Entity shootingEntity = ((EntityArrow) entity).shootingEntity;
+            if (shootingEntity instanceof EntityPlayer) {
+                return (EntityPlayer) shootingEntity;
+            }
+        } else if (entity instanceof EntityThrowable) {
+            EntityLivingBase thrower = ((EntityThrowable) entity).getThrower();
+            if (thrower instanceof EntityPlayer) {
+                return (EntityPlayer) thrower;
+            }
+        } else if (entity instanceof EntityPlayer) {
+            return (EntityPlayer) entity;
+        }
+        return null;
     }
 
     @Override

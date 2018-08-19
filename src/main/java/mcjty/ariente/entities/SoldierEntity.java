@@ -190,6 +190,7 @@ public class SoldierEntity extends EntityMob implements IArmRaisable, IForcefiel
             CityAISystem aiSystem = CityAISystem.getCityAISystem(world);
             CityAI cityAI = aiSystem.getCityAI(cityCenter);
             cityAI.playerSpotted((EntityPlayer) entitylivingbaseIn);
+            aiSystem.save();
         }
     }
 
