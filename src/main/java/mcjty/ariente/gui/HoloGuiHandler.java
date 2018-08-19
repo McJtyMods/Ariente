@@ -36,12 +36,9 @@ public class HoloGuiHandler {
             return null;
         }
 
-        IGuiTile guiTile = (IGuiTile) te;
-
         HoloGuiEntity entity = new HoloGuiEntity(world);
         entity.setGuiTile(pos);
         entity.setTag(tag);
-//        entity.setPosition(pos.getX()+1, pos.getY()+1, pos.getZ()+1);
         double x = player.posX;
         double y = player.posY+player.eyeHeight - .5;
         double z = player.posZ;

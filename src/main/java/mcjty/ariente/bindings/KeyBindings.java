@@ -11,9 +11,12 @@ import org.lwjgl.input.Keyboard;
 public class KeyBindings {
 
     public static KeyBinding fullHealth;
+    public static KeyBinding configureArmor;
 
     public static void init() {
-        fullHealth = new KeyBinding("key.fullhealth", KeyConflictContext.IN_GAME, Keyboard.KEY_O, "key.categories.ariente");
-        ClientRegistry.registerKeyBinding(fullHealth);
+//        fullHealth = new KeyBinding("key.fullhealth", KeyConflictContext.IN_GAME, Keyboard.KEY_O, "key.categories.ariente");
+//        ClientRegistry.registerKeyBinding(fullHealth);
+        configureArmor = new KeyBinding("key.configurearmor", KeyConflictContext.IN_GAME, Keyboard.KEY_C, "key.categories.ariente");
+        ClientRegistry.registerKeyBinding(configureArmor);
     }
 }

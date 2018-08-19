@@ -1,5 +1,6 @@
 package mcjty.ariente.items;
 
+import mcjty.ariente.items.armor.PowerSuit;
 import net.minecraft.client.renderer.block.model.ModelResourceLocation;
 import net.minecraft.inventory.EntityEquipmentSlot;
 import net.minecraftforge.client.model.ModelLoader;

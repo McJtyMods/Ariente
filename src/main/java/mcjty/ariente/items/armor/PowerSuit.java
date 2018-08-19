@@ -1,4 +1,4 @@
-package mcjty.ariente.items;
+package mcjty.ariente.items.armor;
 
 import mcjty.ariente.Ariente;
 import net.minecraft.client.model.ModelBiped;

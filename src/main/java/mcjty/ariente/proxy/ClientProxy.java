@@ -3,6 +3,8 @@ package mcjty.ariente.proxy;
 import com.google.common.util.concurrent.ListenableFuture;
 import mcjty.ariente.Ariente;
 import mcjty.ariente.ClientForgeEventHandlers;
+import mcjty.ariente.bindings.KeyBindings;
+import mcjty.ariente.bindings.KeyInputHandler;
 import mcjty.ariente.blocks.ModBlocks;
 import mcjty.ariente.cables.BakedModelLoader;
 import mcjty.ariente.entities.ModEntities;
@@ -43,8 +45,8 @@ public class ClientProxy extends CommonProxy {
     public void init(FMLInitializationEvent e) {
         super.init(e);
 //        ModBlocks.initItemModels();
-//        MinecraftForge.EVENT_BUS.register(new KeyInputHandler());
-//        KeyBindings.init();
+        MinecraftForge.EVENT_BUS.register(new KeyInputHandler());
+        KeyBindings.init();
     }
 
     @SubscribeEvent

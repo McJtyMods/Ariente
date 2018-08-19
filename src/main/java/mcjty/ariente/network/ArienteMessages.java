@@ -1,6 +1,7 @@
 package mcjty.ariente.network;
 
 import mcjty.ariente.Ariente;
+import mcjty.ariente.items.armor.PacketConfigureArmor;
 import mcjty.ariente.bindings.PacketFullHealth;
 import mcjty.ariente.blocks.defense.PacketDamageForcefield;
 import mcjty.ariente.blocks.utility.PacketClickStorage;
@@ -25,6 +26,7 @@ public class ArienteMessages {
         net.registerMessage(PacketClickStorage.Handler.class, PacketClickStorage.class, PacketHandler.nextPacketID(), Side.SERVER);
         net.registerMessage(PacketHitForcefield.Handler.class, PacketHitForcefield.class, PacketHandler.nextPacketID(), Side.SERVER);
         net.registerMessage(PacketFullHealth.Handler.class, PacketFullHealth.class, PacketHandler.nextPacketID(), Side.SERVER);
+        net.registerMessage(PacketConfigureArmor.Handler.class, PacketConfigureArmor.class, PacketHandler.nextPacketID(), Side.SERVER);
 
         // Client side
         net.registerMessage(PacketDamageForcefield.Handler.class, PacketDamageForcefield.class, PacketHandler.nextPacketID(), Side.CLIENT);
