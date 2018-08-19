@@ -67,6 +67,7 @@ public class CityAI {
 
     private String keyId;
     private String storageKeyId;
+    private String forcefieldId;
 
     private int[] soldiers = new int[60];
     private int soldierTicker = 0;
@@ -293,7 +294,7 @@ public class CityAI {
                 cnt++;
             }
 
-            if (cnt < newWaveMaximum && random.nextFloat() < 0.1f) {
+            if (cnt < newWaveMaximum && random.nextFloat() < 0.2f) {
                 // Randomly spawn a new wave of drones
                 System.out.println("SOLDIER WAVE");
                 while (cnt < newWaveMaximum) {
@@ -503,6 +504,7 @@ public class CityAI {
         if (firstTime) {
             keyId = SecuritySystem.getSecuritySystem(world).generateKeyId();
             storageKeyId = SecuritySystem.getSecuritySystem(world).generateKeyId();
+            forcefieldId = SecuritySystem.getSecuritySystem(world).generateKeyId();
         }
 
         City city = CityTools.getCity(center);
@@ -582,6 +584,10 @@ public class CityAI {
 
     public String getStorageKeyId() {
         return storageKeyId;
+    }
+
+    public String getForcefieldId() {
+        return forcefieldId;
     }
 
     public void fillLoot(CityPlan plan, StorageTile te) {
@@ -758,6 +764,7 @@ public class CityAI {
         }
         keyId = nbt.getString("keyId");
         storageKeyId = nbt.getString("storageKeyId");
+        forcefieldId = nbt.getString("forcefieldId");
         if (nbt.hasKey("drones")) {
             drones = nbt.getIntArray("drones");
         }
@@ -798,6 +805,7 @@ public class CityAI {
         }
         compound.setString("keyId", keyId);
         compound.setString("storageKeyId", storageKeyId);
+        compound.setString("forcefieldId", forcefieldId);
         compound.setIntArray("drones", drones);
         compound.setIntArray("soldiers", soldiers);
         if (!watchingPlayers.isEmpty()) {

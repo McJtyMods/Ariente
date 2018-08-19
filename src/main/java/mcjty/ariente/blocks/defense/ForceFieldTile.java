@@ -10,6 +10,7 @@ import mcjty.ariente.gui.HoloGuiEntity;
 import mcjty.ariente.gui.IGuiComponent;
 import mcjty.ariente.gui.IGuiTile;
 import mcjty.ariente.gui.components.*;
+import mcjty.ariente.items.KeyCardItem;
 import mcjty.ariente.network.ArienteMessages;
 import mcjty.ariente.power.IPowerReceiver;
 import mcjty.ariente.power.PowerReceiverSupport;
@@ -193,13 +194,27 @@ public class ForceFieldTile extends GenericTileEntity implements IGuiTile, ITick
                 if (Math.abs(squareDist - squaredRadius) < 10 * 10) {
                     return true;
                 }
-            } else if (entity instanceof IForcefieldImmunity && ((IForcefieldImmunity) entity).isImmuneToForcefield()) {
-                return false;
-            } else if (entity instanceof EntityLivingBase) {
-                Vec3d entityCenter = entity.getEntityBoundingBox().getCenter();
-                double squareDist = fieldCenter.squareDistanceTo(entityCenter);
-                if (Math.abs(squareDist - squaredRadius) < 10*10) {
-                    return true;
+            } else {
+                if (entity instanceof IForcefieldImmunity && ((IForcefieldImmunity) entity).isImmuneToForcefield(this)) {
+                    return false;
+                }
+                if (entity instanceof EntityLivingBase) {
+                    if (entity instanceof EntityPlayer && cityCenter != null) {
+                        CityAISystem system = CityAISystem.getCityAISystem(world);
+                        CityAI cityAI = system.getCityAI(cityCenter);
+                        if (cityAI != null) {
+                            EntityPlayer player = (EntityPlayer) entity;
+                            String forcefieldId = cityAI.getForcefieldId();
+                            if (KeyCardItem.hasPlayerKeycard(player, forcefieldId)) {
+                                return false;   // No damage, player is protected
+                            }
+                        }
+                    }
+                    Vec3d entityCenter = entity.getEntityBoundingBox().getCenter();
+                    double squareDist = fieldCenter.squareDistanceTo(entityCenter);
+                    if (Math.abs(squareDist - squaredRadius) < 10*10) {
+                        return true;
+                    }
                 }
             }
             return false;

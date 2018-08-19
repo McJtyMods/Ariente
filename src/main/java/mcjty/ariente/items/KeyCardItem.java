@@ -29,6 +29,18 @@ public class KeyCardItem extends GenericItem {
         this.maxStackSize = 1;
     }
 
+    public static boolean hasPlayerKeycard(EntityPlayer player, String tag) {
+        for (int i = 0 ; i < player.inventory.getSizeInventory() ; i++) {
+            ItemStack stack = player.inventory.getStackInSlot(i);
+            if (!stack.isEmpty() && stack.getItem() == ModItems.keyCardItem) {
+                if (hasSecurityTag(stack, tag)) {
+                    return true;
+                }
+            }
+        }
+        return false;
+    }
+
     @Override
     public void addInformation(ItemStack stack, @Nullable World worldIn, List<String> tooltip, ITooltipFlag flagIn) {
         super.addInformation(stack, worldIn, tooltip, flagIn);
@@ -71,6 +83,22 @@ public class KeyCardItem extends GenericItem {
             tags.add(tag);
         }
         return tags;
+    }
+
+    public static boolean hasSecurityTag(ItemStack stack, String tag) {
+        if (!stack.hasTagCompound()) {
+            return false;
+        }
+        Set<String> tags = new HashSet<>();
+        NBTTagCompound compound = stack.getTagCompound();
+        NBTTagList tagList = compound.getTagList("tags", Constants.NBT.TAG_STRING);
+        for (int i = 0; i < tagList.tagCount(); i++) {
+            String t = tagList.getStringTagAt(i);
+            if (tag.equals(t)) {
+                return true;
+            }
+        }
+        return false;
     }
 
     public static void addSecurityTag(ItemStack stack, String tag) {

@@ -3,6 +3,7 @@ package mcjty.ariente.entities;
 import mcjty.ariente.Ariente;
 import mcjty.ariente.ai.CityAI;
 import mcjty.ariente.ai.CityAISystem;
+import mcjty.ariente.blocks.defense.ForceFieldTile;
 import mcjty.ariente.blocks.defense.IForcefieldImmunity;
 import mcjty.ariente.sounds.ModSounds;
 import mcjty.ariente.varia.ChunkCoord;
@@ -73,7 +74,7 @@ public class DroneEntity extends EntityFlying implements IMob, IForcefieldImmuni
     }
 
     @Override
-    public boolean isImmuneToForcefield() {
+    public boolean isImmuneToForcefield(ForceFieldTile tile) {
         return true;
     }
 

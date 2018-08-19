@@ -3,6 +3,7 @@ package mcjty.ariente.entities;
 import mcjty.ariente.Ariente;
 import mcjty.ariente.ai.CityAI;
 import mcjty.ariente.ai.CityAISystem;
+import mcjty.ariente.blocks.defense.ForceFieldTile;
 import mcjty.ariente.blocks.defense.IForcefieldImmunity;
 import mcjty.ariente.items.KeyCardItem;
 import mcjty.ariente.items.ModItems;
@@ -60,7 +61,7 @@ public class SoldierEntity extends EntityMob implements IArmRaisable, IForcefiel
     }
 
     @Override
-    public boolean isImmuneToForcefield() {
+    public boolean isImmuneToForcefield(ForceFieldTile tile) {
         // @todo Need to implement forcefield immunity cards
         return true;
     }
@@ -116,12 +117,17 @@ public class SoldierEntity extends EntityMob implements IArmRaisable, IForcefiel
     protected void dropLoot(boolean wasRecentlyHit, int lootingModifier, DamageSource source) {
         super.dropLoot(wasRecentlyHit, lootingModifier, source);
         if (attackingPlayer != null) {
-            if (cityCenter != null && rand.nextFloat() < .1f) {
+            if (cityCenter != null && rand.nextFloat() < .2f) { // @todo configurable
                 CityAISystem aiSystem = CityAISystem.getCityAISystem(world);
                 CityAI cityAI = aiSystem.getCityAI(cityCenter);
                 if (cityAI != null) {
                     ItemStack stack = new ItemStack(ModItems.keyCardItem);
-                    KeyCardItem.addSecurityTag(stack, cityAI.getKeyId());
+                    float r = rand.nextFloat();
+                    if (r < .4f) {
+                        KeyCardItem.addSecurityTag(stack, cityAI.getKeyId());
+                    } else if (r < .8f) {
+                        KeyCardItem.addSecurityTag(stack, cityAI.getForcefieldId());
+                    }
                     entityDropItem(stack, 0.0f);
                 }
             }
