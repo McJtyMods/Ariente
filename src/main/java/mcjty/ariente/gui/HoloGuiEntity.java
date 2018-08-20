@@ -20,8 +20,8 @@ import net.minecraft.world.World;
 
 public class HoloGuiEntity extends Entity {
 
-    private static final DataParameter<Optional<BlockPos>> GUITILE = EntityDataManager.<Optional<BlockPos>>createKey(HoloGuiEntity.class, DataSerializers.OPTIONAL_BLOCK_POS);
-    private static final DataParameter<String> TAG = EntityDataManager.<String>createKey(HoloGuiEntity.class, DataSerializers.STRING);
+    private static final DataParameter<Optional<BlockPos>> GUITILE = EntityDataManager.createKey(HoloGuiEntity.class, DataSerializers.OPTIONAL_BLOCK_POS);
+    private static final DataParameter<String> TAG = EntityDataManager.createKey(HoloGuiEntity.class, DataSerializers.STRING);
 
     private AxisAlignedBB playerDetectionBox = null;
 
@@ -131,20 +131,14 @@ public class HoloGuiEntity extends Entity {
     }
 
     private void onUpdateClient() {
-        BlockPos tile = getGuiTile();
-        if (tile != null) {
-            TileEntity te = world.getTileEntity(tile);
-            if (te instanceof IGuiTile) {
-                EntityPlayer player = Ariente.proxy.getClientPlayer();
-                Vec3d lookVec = getLookVec();
-                Vec3d v = getIntersect3D(player, lookVec);
-                Vec2f vec2d = get2DProjection(lookVec, v);
+        EntityPlayer player = Ariente.proxy.getClientPlayer();
+        Vec3d lookVec = getLookVec();
+        Vec3d v = getIntersect3D(player, lookVec);
+        Vec2f vec2d = get2DProjection(lookVec, v);
 
-                cursorX = vec2d.x * 10 - .8;
-                cursorY = vec2d.y * 10 - .8;
-                hit = v;
-            }
-        }
+        cursorX = vec2d.x * 10 - .8;
+        cursorY = vec2d.y * 10 - .8;
+        hit = v;
     }
 
     public IGuiComponent getGui() {
@@ -170,7 +164,6 @@ public class HoloGuiEntity extends Entity {
     public boolean processInitialInteract(EntityPlayer player, EnumHand hand) {
         world.playSound(posX, posY, posZ, ModSounds.guiopen, SoundCategory.PLAYERS, 0.2f, 1.0f, true);  // @todo config
         setDead();
-        World world = player.getEntityWorld();
         return false;
     }
 
@@ -234,17 +227,14 @@ public class HoloGuiEntity extends Entity {
     public boolean hitByEntity(Entity entityIn) {
         if (entityIn instanceof EntityPlayer) {
             Vec2f vec2d = intersect((EntityPlayer) entityIn);
-            TileEntity te = world.getTileEntity(getGuiTile());
-            if (te instanceof IGuiTile) {
-                IGuiComponent gui = getGui();
-                if (gui != null) {
-                    double x = (vec2d.x * 10 - .8);
-                    double y = (vec2d.y * 10 - .8);
-                    if (!world.isRemote) {
-                        gui.hit((EntityPlayer) entityIn, this, x, y);
-                    } else {
-                        gui.hitClient((EntityPlayer) entityIn, this, x, y);
-                    }
+            IGuiComponent gui = getGui();
+            if (gui != null) {
+                double x = (vec2d.x * 10 - .8);
+                double y = (vec2d.y * 10 - .8);
+                if (!world.isRemote) {
+                    gui.hit((EntityPlayer) entityIn, this, x, y);
+                } else {
+                    gui.hitClient((EntityPlayer) entityIn, this, x, y);
                 }
             }
         }
