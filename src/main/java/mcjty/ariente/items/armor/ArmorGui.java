@@ -1,5 +1,6 @@
 package mcjty.ariente.items.armor;
 
+import mcjty.ariente.gui.HoloGuiEntity;
 import mcjty.ariente.gui.IGuiComponent;
 import mcjty.ariente.gui.components.HoloItemStack;
 import mcjty.ariente.gui.components.HoloPanel;
@@ -15,36 +16,12 @@ public class ArmorGui {
     public static IGuiComponent create(EntityPlayer player) {
         HoloPanel panel = new HoloPanel(0, 0, 8, 8)
                 .add(new HoloText(0, 1, 1, 1, "Configure armor", 0xaaccff));
-        ItemStack helmet = player.getItemStackFromSlot(EntityEquipmentSlot.HEAD);
         double x = 0.5;
         double y = 2.5;
-        if (!helmet.isEmpty() && helmet.getItem() == ModItems.powerSuitHelmet) {
-            panel
-                    .add(new HoloItemStack(x, y, 1, 1, new ItemStack(ModItems.powerSuitHelmet)))
-                    .add(new HoloTextButton(2, y, 5, 1, "Configure"));
-            y++;
-        }
-        ItemStack chest = player.getItemStackFromSlot(EntityEquipmentSlot.CHEST);
-        if (!chest.isEmpty() && chest.getItem() == ModItems.powerSuitChest) {
-            panel
-                    .add(new HoloItemStack(x, y, 1, 1, new ItemStack(ModItems.powerSuitChest)))
-                    .add(new HoloTextButton(2, y, 5, 1, "Configure"));
-            y++;
-        }
-        ItemStack legs = player.getItemStackFromSlot(EntityEquipmentSlot.LEGS);
-        if (!legs.isEmpty() && legs.getItem() == ModItems.powerSuitLegs) {
-            panel
-                    .add(new HoloItemStack(x, y, 1, 1, new ItemStack(ModItems.powerSuitLegs)))
-                    .add(new HoloTextButton(2, y, 5, 1, "Configure"));
-            y++;
-        }
-        ItemStack boots = player.getItemStackFromSlot(EntityEquipmentSlot.FEET);
-        if (!boots.isEmpty() && boots.getItem() == ModItems.powerSuitBoots) {
-            panel
-                    .add(new HoloItemStack(x, y, 1, 1, new ItemStack(ModItems.powerSuitBoots)))
-                    .add(new HoloTextButton(2, y, 5, 1, "Configure"));
-            y++;
-        }
+        y = createMenuEntry(player, panel, x, y, EntityEquipmentSlot.HEAD, ModItems.powerSuitHelmet);
+        y = createMenuEntry(player, panel, x, y, EntityEquipmentSlot.CHEST, ModItems.powerSuitChest);
+        y = createMenuEntry(player, panel, x, y, EntityEquipmentSlot.LEGS, ModItems.powerSuitLegs);
+        y = createMenuEntry(player, panel, x, y, EntityEquipmentSlot.FEET, ModItems.powerSuitBoots);
 
         if (y <= 2.6) {
             // No armor
@@ -52,6 +29,59 @@ public class ArmorGui {
         }
 
         return panel;
+    }
+
+    public static IGuiComponent createHelmetGui(EntityPlayer player) {
+        // Modules:
+        //   - Energy Optimizer
+        //   - Increase Armor
+        //   - Night vision
+        //   - Invisibility
+        return null;
+    }
+
+    public static IGuiComponent createChestGui(EntityPlayer player) {
+        // Modules:
+        //   - Energy Optimizer
+        //   - Increase Armor
+        //   - Forcefield (requires full suit)
+        //   - Regeneration
+        //   - Flight
+        return null;
+    }
+
+    public static IGuiComponent createLegsGui(EntityPlayer player) {
+        // Modules:
+        //   - Energy Optimizer
+        //   - Increase Armor
+        //   - Speed
+        //   - Higher jump
+        return null;
+    }
+
+    public static IGuiComponent createBootsGui(EntityPlayer player) {
+        // Modules:
+        //   - Energy Optimizer
+        //   - Increase Armor
+        //   - Feather falling
+        return null;
+    }
+
+
+    private static double createMenuEntry(EntityPlayer player, HoloPanel panel, double x, double y, EntityEquipmentSlot slot, PowerSuit armorItem) {
+        ItemStack armorStack = player.getItemStackFromSlot(slot);
+        if (!armorStack.isEmpty() && armorStack.getItem() == armorItem) {
+            panel
+                    .add(new HoloItemStack(x, y, 1, 1, new ItemStack(armorItem)))
+                    .add(new HoloTextButton(2, y, 5, 1, "Configure")
+                        .hitEvent((component, player1, entity, x1, y1) -> hitArmorConfigureButton(slot, component, player1, entity)));
+            y++;
+        }
+        return y;
+    }
+
+    private static void hitArmorConfigureButton(EntityEquipmentSlot slot, IGuiComponent component, EntityPlayer player, HoloGuiEntity entity) {
+
     }
 
 }
