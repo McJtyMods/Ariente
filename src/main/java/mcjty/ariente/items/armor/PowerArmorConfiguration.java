@@ -1,6 +1,7 @@
 package mcjty.ariente.items.armor;
 
 import mcjty.ariente.gui.HoloGuiHandler;
+import mcjty.ariente.gui.ModGuis;
 import mcjty.ariente.sounds.ModSounds;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.util.SoundCategory;
@@ -14,6 +15,6 @@ public class PowerArmorConfiguration {
         BlockPos pos = player.getPosition();
         world.playSound(player, pos, ModSounds.guiopen, SoundCategory.PLAYERS, 1.0f, 1.0f);
 
-        HoloGuiHandler.openHoloGuiEntity(world, pos, player, "config", 2.0f);
+        HoloGuiHandler.openHoloGui(world, pos, player, ModGuis.GUI_ARMOR, 2.0f);
     }
 }

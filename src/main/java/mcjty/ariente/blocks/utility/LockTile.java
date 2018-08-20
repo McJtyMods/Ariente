@@ -3,7 +3,6 @@ package mcjty.ariente.blocks.utility;
 import mcjty.ariente.ai.CityAI;
 import mcjty.ariente.blocks.utility.door.DoorMarkerTile;
 import mcjty.ariente.cities.ICityEquipment;
-import mcjty.ariente.gui.HoloGuiEntity;
 import mcjty.ariente.gui.HoloGuiHandler;
 import mcjty.ariente.gui.IGuiComponent;
 import mcjty.ariente.gui.IGuiTile;
@@ -248,7 +247,7 @@ public class LockTile extends GenericTileEntity implements IGuiTile, IKeyCardSlo
 
 
     @Override
-    public IGuiComponent createGui(HoloGuiEntity entity, String tag) {
+    public IGuiComponent createGui(String tag) {
         if (isLocked()) {
             return HoloGuiHandler.createNoAccessPanel();
         }

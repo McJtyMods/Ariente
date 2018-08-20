@@ -2,7 +2,6 @@ package mcjty.ariente.blocks.generators;
 
 import mcjty.ariente.ai.IAlarmMode;
 import mcjty.ariente.blocks.ModBlocks;
-import mcjty.ariente.gui.HoloGuiEntity;
 import mcjty.ariente.gui.IGuiComponent;
 import mcjty.ariente.gui.IGuiTile;
 import mcjty.ariente.gui.components.HoloPanel;
@@ -94,7 +93,7 @@ public class PosiriteTankTile extends GenericTileEntity implements IGuiTile, IAl
     }
 
     @Override
-    public IGuiComponent createGui(HoloGuiEntity entity, String tag) {
+    public IGuiComponent createGui(String tag) {
         return new HoloPanel(0, 0, 8, 8)
             .add(new HoloText(0, 0, 1, 1, "0", 0xffffff))
             .add(new HoloText(1, 0, 1, 1, "1", 0xffffff))

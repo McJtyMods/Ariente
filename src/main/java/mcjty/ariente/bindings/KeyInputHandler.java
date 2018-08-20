@@ -9,9 +9,9 @@ public class KeyInputHandler {
 
     @SubscribeEvent
     public void onKeyInput(InputEvent.KeyInputEvent event) {
-        if (KeyBindings.fullHealth.isPressed()) {
-            ArienteMessages.INSTANCE.sendToServer(new PacketFullHealth());
-        } else if (KeyBindings.configureArmor.isPressed()) {
+//        if (KeyBindings.fullHealth.isPressed()) {
+//            ArienteMessages.INSTANCE.sendToServer(new PacketFullHealth());
+        if (KeyBindings.configureArmor.isPressed()) {
             ArienteMessages.INSTANCE.sendToServer(new PacketConfigureArmor());
         }
     }

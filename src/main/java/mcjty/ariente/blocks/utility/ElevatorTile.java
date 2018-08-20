@@ -299,7 +299,7 @@ public class ElevatorTile extends GenericTileEntity implements IGuiTile, ITickab
 
 
     @Override
-    public IGuiComponent createGui(HoloGuiEntity entity, String tag) {
+    public IGuiComponent createGui(String tag) {
         if (TAG_ELEVATOR.equals(tag)) {
             HoloPanel panel = new HoloPanel(0, 0, 8, 8);
             List<Integer> floors = findFloors();

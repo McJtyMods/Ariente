@@ -1,6 +1,7 @@
 package mcjty.ariente.items.armor;
 
 import mcjty.ariente.Ariente;
+import mcjty.lib.McJtyRegister;
 import net.minecraft.client.model.ModelBiped;
 import net.minecraft.client.util.ITooltipFlag;
 import net.minecraft.entity.Entity;
@@ -21,6 +22,7 @@ public class PowerSuit extends ItemArmor {
         setRegistryName("powersuit_" + slot.getName());
         setUnlocalizedName(Ariente.MODID + ".powersuit_" + slot.getName());
         setCreativeTab(Ariente.creativeTab);
+        McJtyRegister.registerLater(this, Ariente.instance);
     }
 
     @Nullable

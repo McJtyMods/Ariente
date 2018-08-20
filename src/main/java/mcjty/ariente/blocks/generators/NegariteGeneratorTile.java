@@ -4,7 +4,6 @@ import mcjty.ariente.Ariente;
 import mcjty.ariente.ai.IAlarmMode;
 import mcjty.ariente.blocks.ModBlocks;
 import mcjty.ariente.cables.CableColor;
-import mcjty.ariente.gui.HoloGuiEntity;
 import mcjty.ariente.gui.IGuiComponent;
 import mcjty.ariente.gui.IGuiTile;
 import mcjty.ariente.gui.components.*;
@@ -277,7 +276,7 @@ public class NegariteGeneratorTile extends GenericTileEntity implements ITickabl
     }
 
     @Override
-    public IGuiComponent createGui(HoloGuiEntity entity, String tag) {
+    public IGuiComponent createGui(String tag) {
         return new HoloPanel(0, 0, 8, 8)
                 .add(new HoloText(0, 0, 8, 1,"Negarite", 0xaaccff))
                 .add(new HoloItemStack(0, 3, 1, 1, new ItemStack(ModItems.negariteDust)))

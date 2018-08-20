@@ -2,7 +2,7 @@ package mcjty.ariente.gui;
 
 public interface IGuiTile {
 
-    IGuiComponent createGui(HoloGuiEntity entity, String tag);
+    IGuiComponent createGui(String tag);
 
     void syncToClient();
 }

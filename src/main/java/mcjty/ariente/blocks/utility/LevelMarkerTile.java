@@ -1,6 +1,5 @@
 package mcjty.ariente.blocks.utility;
 
-import mcjty.ariente.gui.HoloGuiEntity;
 import mcjty.ariente.gui.IGuiComponent;
 import mcjty.ariente.gui.IGuiTile;
 import mcjty.ariente.gui.components.HoloPanel;
@@ -60,7 +59,7 @@ public class LevelMarkerTile extends GenericTileEntity implements IGuiTile {
     }
 
     @Override
-    public IGuiComponent createGui(HoloGuiEntity entity, String tag) {
+    public IGuiComponent createGui(String tag) {
         return new HoloPanel(0, 0, 8, 8)
                 .add(new HoloText(0, 2, 1, 1, "Floor name", 0xaaccff));
     }

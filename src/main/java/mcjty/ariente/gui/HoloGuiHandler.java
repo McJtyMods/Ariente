@@ -26,6 +26,16 @@ public class HoloGuiHandler {
             ;
     }
 
+    public static HoloGuiEntity openHoloGui(World world, BlockPos pos, EntityPlayer player, String guiId, double distance) {
+        if (world.isRemote) {
+            world.playSound(pos.getX(), pos.getY(), pos.getZ(), ModSounds.guiopen, SoundCategory.PLAYERS, 1.0f, 1.0f, true);
+            return null;
+        }
+        HoloGuiEntity entity = createHoloGui(world, pos, player, "", distance);
+        entity.setGuiId(guiId);
+        return entity;
+    }
+
     public static HoloGuiEntity openHoloGuiEntity(World world, BlockPos pos, EntityPlayer player, String tag, double distance) {
         if (world.isRemote) {
             world.playSound(pos.getX(), pos.getY(), pos.getZ(), ModSounds.guiopen, SoundCategory.PLAYERS, 1.0f, 1.0f, true);
@@ -36,8 +46,13 @@ public class HoloGuiHandler {
             return null;
         }
 
-        HoloGuiEntity entity = new HoloGuiEntity(world);
+        HoloGuiEntity entity = createHoloGui(world, pos, player, tag, distance);
         entity.setGuiTile(pos);
+        return entity;
+    }
+
+    private static HoloGuiEntity createHoloGui(World world, BlockPos pos, EntityPlayer player, String tag, double distance) {
+        HoloGuiEntity entity = new HoloGuiEntity(world);
         entity.setTag(tag);
         double x = player.posX;
         double y = player.posY+player.eyeHeight - .5;

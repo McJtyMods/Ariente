@@ -3,7 +3,6 @@ package mcjty.ariente.blocks.utility.door;
 import mcjty.ariente.blocks.ModBlocks;
 import mcjty.ariente.blocks.utility.ILockable;
 import mcjty.ariente.entities.SoldierEntity;
-import mcjty.ariente.gui.HoloGuiEntity;
 import mcjty.ariente.gui.HoloGuiHandler;
 import mcjty.ariente.gui.IGuiComponent;
 import mcjty.ariente.gui.IGuiTile;
@@ -267,7 +266,7 @@ public class DoorMarkerTile extends GenericTileEntity implements ITickable, IGui
     }
 
     @Override
-    public IGuiComponent createGui(HoloGuiEntity entity, String tag) {
+    public IGuiComponent createGui(String tag) {
         if (isLocked()) {
             return HoloGuiHandler.createNoAccessPanel();
         }

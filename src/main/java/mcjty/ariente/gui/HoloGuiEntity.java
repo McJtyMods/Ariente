@@ -22,6 +22,7 @@ public class HoloGuiEntity extends Entity {
 
     private static final DataParameter<Optional<BlockPos>> GUITILE = EntityDataManager.createKey(HoloGuiEntity.class, DataSerializers.OPTIONAL_BLOCK_POS);
     private static final DataParameter<String> TAG = EntityDataManager.createKey(HoloGuiEntity.class, DataSerializers.STRING);
+    private static final DataParameter<String> GUIID = EntityDataManager.createKey(HoloGuiEntity.class, DataSerializers.STRING);
 
     private AxisAlignedBB playerDetectionBox = null;
 
@@ -67,8 +68,17 @@ public class HoloGuiEntity extends Entity {
         this.dataManager.set(GUITILE, Optional.fromNullable(guiTile));
     }
 
+
     public BlockPos getGuiTile() {
         return (BlockPos) ((Optional) this.dataManager.get(GUITILE)).orNull();
+    }
+
+    public String getGuiId() {
+        return this.dataManager.get(GUIID);
+    }
+
+    public void setGuiId(String guiId) {
+        this.dataManager.set(GUIID, guiId);
     }
 
     public void setTag(String tag) {
@@ -98,11 +108,16 @@ public class HoloGuiEntity extends Entity {
         ticks--;
         if (ticks < 0) {
             ticks = 5;
-            BlockPos tile = getGuiTile();
-            if (tile != null) {
-                TileEntity te = world.getTileEntity(tile);
-                if (te instanceof IGuiTile) {
-                    ((IGuiTile) te).syncToClient();
+            String id = getGuiId();
+            if (id != null && !id.isEmpty()) {
+                // @todo do we have to do anything here?
+            } else {
+                BlockPos tile = getGuiTile();
+                if (tile != null) {
+                    TileEntity te = world.getTileEntity(tile);
+                    if (te instanceof IGuiTile) {
+                        ((IGuiTile) te).syncToClient();
+                    }
                 }
             }
         }
@@ -141,14 +156,19 @@ public class HoloGuiEntity extends Entity {
         hit = v;
     }
 
-    public IGuiComponent getGui() {
+    public IGuiComponent getGui(EntityPlayer player) {
         if (panel == null) {
-            BlockPos tile = getGuiTile();
-            if (tile != null) {
-                TileEntity te = world.getTileEntity(tile);
-                if (te instanceof IGuiTile) {
-                    IGuiTile guiTile = (IGuiTile) te;
-                    panel = guiTile.createGui(this, getTag());
+            String id = getGuiId();
+            if (id != null && !id.isEmpty()) {
+                panel = Ariente.instance.guiRegistry.createGui(id, player);
+            } else {
+                BlockPos tile = getGuiTile();
+                if (tile != null) {
+                    TileEntity te = world.getTileEntity(tile);
+                    if (te instanceof IGuiTile) {
+                        IGuiTile guiTile = (IGuiTile) te;
+                        panel = guiTile.createGui(getTag());
+                    }
                 }
             }
         }
@@ -226,15 +246,16 @@ public class HoloGuiEntity extends Entity {
     @Override
     public boolean hitByEntity(Entity entityIn) {
         if (entityIn instanceof EntityPlayer) {
-            Vec2f vec2d = intersect((EntityPlayer) entityIn);
-            IGuiComponent gui = getGui();
+            EntityPlayer player = (EntityPlayer) entityIn;
+            Vec2f vec2d = intersect(player);
+            IGuiComponent gui = getGui(player);
             if (gui != null) {
                 double x = (vec2d.x * 10 - .8);
                 double y = (vec2d.y * 10 - .8);
                 if (!world.isRemote) {
-                    gui.hit((EntityPlayer) entityIn, this, x, y);
+                    gui.hit(player, this, x, y);
                 } else {
-                    gui.hitClient((EntityPlayer) entityIn, this, x, y);
+                    gui.hitClient(player, this, x, y);
                 }
             }
         }
@@ -250,6 +271,7 @@ public class HoloGuiEntity extends Entity {
     protected void entityInit() {
         this.dataManager.register(GUITILE, Optional.absent());
         this.dataManager.register(TAG, "");
+        this.dataManager.register(GUIID, "");
     }
 
     @Override
@@ -263,6 +285,7 @@ public class HoloGuiEntity extends Entity {
             setGuiTile(new BlockPos(x, y, z));
         }
         setTag(compound.getString("tag"));
+        setGuiId(compound.getString("guiId"));
     }
 
     @Override
@@ -278,6 +301,10 @@ public class HoloGuiEntity extends Entity {
         String tag = getTag();
         if (tag != null) {
             compound.setString("tag", tag);
+        }
+        String guiid = getGuiId();
+        if (guiid != null) {
+            compound.setString("guiId", guiid);
         }
     }
 }

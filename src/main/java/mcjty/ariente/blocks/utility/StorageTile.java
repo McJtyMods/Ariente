@@ -6,12 +6,9 @@ import mcjty.ariente.cities.City;
 import mcjty.ariente.cities.CityPlan;
 import mcjty.ariente.cities.CityTools;
 import mcjty.ariente.cities.ICityEquipment;
-import mcjty.ariente.gui.HoloGuiEntity;
 import mcjty.ariente.gui.HoloGuiHandler;
 import mcjty.ariente.gui.IGuiComponent;
 import mcjty.ariente.gui.IGuiTile;
-import mcjty.ariente.gui.components.HoloPanel;
-import mcjty.ariente.gui.components.HoloText;
 import mcjty.ariente.items.KeyCardItem;
 import mcjty.ariente.network.ArienteMessages;
 import mcjty.ariente.security.IKeyCardSlot;
@@ -24,7 +21,6 @@ import mcjty.theoneprobe.api.ProbeMode;
 import mcjty.theoneprobe.api.TextStyleClass;
 import mcp.mobius.waila.api.IWailaConfigHandler;
 import mcp.mobius.waila.api.IWailaDataAccessor;
-import net.minecraft.block.properties.PropertyBool;
 import net.minecraft.block.state.IBlockState;
 import net.minecraft.client.Minecraft;
 import net.minecraft.entity.player.EntityPlayer;
@@ -45,7 +41,6 @@ import net.minecraft.world.World;
 import net.minecraftforge.common.capabilities.Capability;
 import net.minecraftforge.common.util.Constants;
 import net.minecraftforge.fml.common.Optional;
-import net.minecraftforge.fml.common.network.internal.OpenGuiHandler;
 import net.minecraftforge.fml.relauncher.Side;
 import net.minecraftforge.fml.relauncher.SideOnly;
 import net.minecraftforge.items.CapabilityItemHandler;
@@ -463,7 +458,7 @@ public class StorageTile extends GenericTileEntity implements IGuiTile, IInvento
     }
 
     @Override
-    public IGuiComponent createGui(HoloGuiEntity entity, String tag) {
+    public IGuiComponent createGui(String tag) {
         return HoloGuiHandler.createNoAccessPanel();
     }
 

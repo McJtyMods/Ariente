@@ -3,10 +3,8 @@ package mcjty.ariente.blocks.defense;
 import mcjty.ariente.ai.CityAI;
 import mcjty.ariente.ai.CityAISystem;
 import mcjty.ariente.ai.IAlarmMode;
-import mcjty.ariente.cities.CityTools;
 import mcjty.ariente.cities.ICityEquipment;
 import mcjty.ariente.config.ArienteConfiguration;
-import mcjty.ariente.gui.HoloGuiEntity;
 import mcjty.ariente.gui.IGuiComponent;
 import mcjty.ariente.gui.IGuiTile;
 import mcjty.ariente.gui.components.*;
@@ -489,7 +487,7 @@ public class ForceFieldTile extends GenericTileEntity implements IGuiTile, ITick
     }
 
     @Override
-    public IGuiComponent createGui(HoloGuiEntity entity, String tag) {
+    public IGuiComponent createGui(String tag) {
         return new HoloPanel(0, 0, 8, 8)
                 .add(new HoloText(0, 1, 1, 1, "Radius", 0xaaccff))
                 .add(new HoloNumber(3, 2, 1, 1, 0xffffff, this::getScale))

@@ -2,6 +2,7 @@ package mcjty.ariente;
 
 
 import mcjty.ariente.commands.*;
+import mcjty.ariente.gui.GuiRegistry;
 import mcjty.ariente.proxy.CommonProxy;
 import mcjty.lib.base.ModBase;
 import mcjty.lib.compat.MainCompatHandler;
@@ -41,6 +42,8 @@ public class Ariente implements ModBase {
     public static CreativeTabs creativeTab;
 
     public static Logger logger;
+
+    public GuiRegistry guiRegistry = new GuiRegistry();
 
     public Ariente() {
         // This has to be done VERY early

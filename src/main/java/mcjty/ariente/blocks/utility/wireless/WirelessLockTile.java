@@ -2,7 +2,6 @@ package mcjty.ariente.blocks.utility.wireless;
 
 import mcjty.ariente.blocks.utility.ILockable;
 import mcjty.ariente.blocks.utility.door.DoorMarkerTile;
-import mcjty.ariente.gui.HoloGuiEntity;
 import mcjty.ariente.gui.HoloGuiHandler;
 import mcjty.ariente.gui.IGuiComponent;
 import mcjty.ariente.gui.IGuiTile;
@@ -214,7 +213,7 @@ public class WirelessLockTile extends SignalChannelTileEntity implements ILockab
     }
 
     @Override
-    public IGuiComponent createGui(HoloGuiEntity entity, String tag) {
+    public IGuiComponent createGui(String tag) {
         if (isLocked()) {
             return HoloGuiHandler.createNoAccessPanel();
         }
