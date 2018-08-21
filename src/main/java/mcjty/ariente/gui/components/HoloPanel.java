@@ -22,9 +22,9 @@ public class HoloPanel extends AbstractHoloComponent {
     }
 
     @Override
-    public void render(double cursorX, double cursorY) {
+    public void render(EntityPlayer player, double cursorX, double cursorY) {
         for (IGuiComponent child : children) {
-            child.render(cursorX, cursorY);
+            child.render(player, cursorX, cursorY);
         }
     }
 

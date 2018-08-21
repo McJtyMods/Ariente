@@ -15,6 +15,6 @@ public class PowerArmorConfiguration {
         BlockPos pos = player.getPosition();
         world.playSound(player, pos, ModSounds.guiopen, SoundCategory.PLAYERS, 1.0f, 1.0f);
 
-        HoloGuiHandler.openHoloGui(world, pos, player, ModGuis.GUI_ARMOR, 2.0f);
+        HoloGuiHandler.openHoloGui(world, pos, player, ModGuis.GUI_ARMOR, 1f);
     }
 }

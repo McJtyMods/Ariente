@@ -4,7 +4,7 @@ import net.minecraft.entity.player.EntityPlayer;
 
 public interface IGuiComponent {
 
-    void render(double cursorX, double cursorY);
+    void render(EntityPlayer player, double cursorX, double cursorY);
 
     void hit(EntityPlayer player, HoloGuiEntity entity, double cursorX, double cursorY);
 

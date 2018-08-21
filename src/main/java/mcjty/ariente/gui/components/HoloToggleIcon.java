@@ -9,7 +9,7 @@ import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.util.ResourceLocation;
 import net.minecraft.util.SoundCategory;
 
-import java.util.function.Supplier;
+import java.util.function.Function;
 
 public class HoloToggleIcon extends AbstractHoloComponent {
 
@@ -19,10 +19,10 @@ public class HoloToggleIcon extends AbstractHoloComponent {
     private int normal_v;
     private int selected_u;
     private int selected_v;
-    private Supplier<Boolean> currentValue;
+    private Function<EntityPlayer, Boolean> currentValue;
     private IEvent hitEvent;
 
-    public HoloToggleIcon(double x, double y, double w, double h, Supplier<Boolean> getter) {
+    public HoloToggleIcon(double x, double y, double w, double h, Function<EntityPlayer, Boolean> getter) {
         super(x, y, w, h);
         this.currentValue = getter;
     }
@@ -46,10 +46,10 @@ public class HoloToggleIcon extends AbstractHoloComponent {
 
 
     @Override
-    public void render(double cursorX, double cursorY) {
+    public void render(EntityPlayer player, double cursorX, double cursorY) {
         int u = normal_u;
         int v = normal_v;
-        if (currentValue.get()) {
+        if (currentValue.apply(player)) {
             u = selected_u;
             v = selected_v;
         }

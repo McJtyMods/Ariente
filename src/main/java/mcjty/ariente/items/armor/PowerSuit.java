@@ -1,6 +1,7 @@
 package mcjty.ariente.items.armor;
 
 import mcjty.ariente.Ariente;
+import mcjty.ariente.items.modules.ArmorUpgradeType;
 import mcjty.lib.McJtyRegister;
 import net.minecraft.client.model.ModelBiped;
 import net.minecraft.client.util.ITooltipFlag;
@@ -10,6 +11,8 @@ import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.inventory.EntityEquipmentSlot;
 import net.minecraft.item.ItemArmor;
 import net.minecraft.item.ItemStack;
+import net.minecraft.nbt.NBTTagCompound;
+import net.minecraft.util.text.TextFormatting;
 import net.minecraft.world.World;
 
 import javax.annotation.Nullable;
@@ -60,6 +63,20 @@ public class PowerSuit extends ItemArmor {
     public void addInformation(ItemStack stack, World world, List<String> list, ITooltipFlag b) {
         super.addInformation(stack, world, list, b);
         list.add("Power suit part");
+        if (stack.hasTagCompound()) {
+            NBTTagCompound compound = stack.getTagCompound();
+            for (ArmorUpgradeType type : ArmorUpgradeType.values()) {
+                String key = "module_" + type.getName();
+                if (compound.hasKey(key)) {
+                    boolean activated = compound.getBoolean(key);
+                    if (activated) {
+                        list.add("    " + TextFormatting.GREEN + type.getDescription() + " (on)");
+                    } else {
+                        list.add("    " + TextFormatting.GRAY + type.getDescription() + " (off)");
+                    }
+                }
+            }
+        }
     }
 
 }

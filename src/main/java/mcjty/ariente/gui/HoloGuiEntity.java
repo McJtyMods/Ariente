@@ -35,6 +35,7 @@ public class HoloGuiEntity extends Entity {
     private double cursorX;
     private double cursorY;
     private Vec3d hit;
+    private String lastGuiId = null;   // Last guiId that was rendered on the client. If it changes then we have to redo the gui
 
     public HoloGuiEntity(World worldIn) {
         super(worldIn);
@@ -93,12 +94,18 @@ public class HoloGuiEntity extends Entity {
     public void onUpdate() {
         super.onUpdate();
         if (world.isRemote) {
+            String id = getGuiId();
+            if (id != null && !id.isEmpty()) {
+                if (!id.equals(lastGuiId)) {
+                    panel = null;
+                    lastGuiId = id;
+                }
+            }
             onUpdateClient();
         } else {
             onUpdateServer();
         }
     }
-
 
     private void onUpdateServer() {
         if (playerDetectionBox == null) {
@@ -154,6 +161,11 @@ public class HoloGuiEntity extends Entity {
         cursorX = vec2d.x * 10 - .8;
         cursorY = vec2d.y * 10 - .8;
         hit = v;
+    }
+
+    public void switchGui(String guiId) {
+        setGuiId(guiId);
+        panel = null;
     }
 
     public IGuiComponent getGui(EntityPlayer player) {

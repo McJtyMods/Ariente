@@ -25,6 +25,7 @@ item.ariente.module_forcefield.name=Forcefield Upgrade Module
 item.ariente.module_invisibility.name=Invisiblity Upgrade Module
 item.ariente.module_regeneration.name=Regeneration Upgrade Module
 item.ariente.module_speed.name=Speed Upgrade Module
+item.ariente.module_scramble.name=Scramble Upgrade Module
 
 tile.ariente.pattern.dots.name=Dots Pattern
 tile.ariente.pattern.lines.name=Lines Pattern

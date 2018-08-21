@@ -62,7 +62,7 @@ public class HoloGuiEntityRender extends Render<HoloGuiEntity> {
 
         IGuiComponent gui = entity.getGui(Minecraft.getMinecraft().player);
         if (gui != null) {
-            gui.render(cursorX, cursorY);
+            gui.render(Minecraft.getMinecraft().player, cursorX, cursorY);
         }
 
         if (cursorX >= 0 && cursorX <= 10 && cursorY >= 0 && cursorY <= 10) {

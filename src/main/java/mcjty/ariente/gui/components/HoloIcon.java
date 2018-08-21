@@ -2,6 +2,7 @@ package mcjty.ariente.gui.components;
 
 import mcjty.ariente.Ariente;
 import mcjty.ariente.gui.HoloGuiRenderTools;
+import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.util.ResourceLocation;
 
 public class HoloIcon extends AbstractHoloComponent {
@@ -22,7 +23,7 @@ public class HoloIcon extends AbstractHoloComponent {
     }
 
     @Override
-    public void render(double cursorX, double cursorY) {
+    public void render(EntityPlayer player, double cursorX, double cursorY) {
         HoloGuiRenderTools.renderImage(x, y, normal_u, normal_v, 16, 16, 256, 256, image);
 //        HoloGuiRenderTools.renderText(x, y, "x", 0xffffff);
     }

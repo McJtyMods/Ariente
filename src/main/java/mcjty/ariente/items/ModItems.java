@@ -2,6 +2,7 @@ package mcjty.ariente.items;
 
 import mcjty.ariente.items.armor.PowerSuit;
 import mcjty.ariente.items.modules.ArmorModuleItem;
+import mcjty.ariente.items.modules.ArmorUpgradeType;
 import net.minecraft.client.renderer.block.model.ModelResourceLocation;
 import net.minecraft.inventory.EntityEquipmentSlot;
 import net.minecraftforge.client.model.ModelLoader;
@@ -37,6 +38,7 @@ public class ModItems {
     public static ArmorModuleItem moduleInvisibility;
     public static ArmorModuleItem moduleNightvision;
     public static ArmorModuleItem moduleRegeneration;
+    public static ArmorModuleItem moduleScramble;
 
     public static void init() {
         platinumIngot = new GenericItem("ingot_platinum");
@@ -58,14 +60,15 @@ public class ModItems {
         powerSuitHelmet = new PowerSuit(EntityEquipmentSlot.HEAD);
         powerSuitLegs = new PowerSuit(EntityEquipmentSlot.LEGS);
 
-        moduleArmor = new ArmorModuleItem("module_armor");
-        moduleEnergy = new ArmorModuleItem("module_energy");
-        moduleFeatherFalling = new ArmorModuleItem("module_featherfalling");
-        moduleFlight = new ArmorModuleItem("module_flight");
-        moduleForcefield = new ArmorModuleItem("module_forcefield");
-        moduleInvisibility = new ArmorModuleItem("module_invisibility");
-        moduleNightvision = new ArmorModuleItem("module_nightvision");
-        moduleRegeneration = new ArmorModuleItem("module_regeneration");
+        moduleArmor = new ArmorModuleItem("module_armor", ArmorUpgradeType.ARMOR);
+        moduleEnergy = new ArmorModuleItem("module_energy", ArmorUpgradeType.ENERGY);
+        moduleFeatherFalling = new ArmorModuleItem("module_featherfalling", ArmorUpgradeType.FEATHERFALLING);
+        moduleFlight = new ArmorModuleItem("module_flight", ArmorUpgradeType.FLIGHT);
+        moduleForcefield = new ArmorModuleItem("module_forcefield", ArmorUpgradeType.FORCEFIELD);
+        moduleInvisibility = new ArmorModuleItem("module_invisibility", ArmorUpgradeType.INVISIBILITY);
+        moduleNightvision = new ArmorModuleItem("module_nightvision", ArmorUpgradeType.NIGHTVISION);
+        moduleRegeneration = new ArmorModuleItem("module_regeneration", ArmorUpgradeType.REGENERATION);
+        moduleScramble = new ArmorModuleItem("module_scramble", ArmorUpgradeType.SCRAMBLE);
     }
 
     public static void initOreDict() {
@@ -98,6 +101,7 @@ public class ModItems {
         moduleInvisibility.initModel();
         moduleNightvision.initModel();
         moduleRegeneration.initModel();
+        moduleScramble.initModel();
 
         ModelLoader.setCustomModelResourceLocation(powerSuitBoots, 0, new ModelResourceLocation(powerSuitBoots.getRegistryName(), "inventory"));
         ModelLoader.setCustomModelResourceLocation(powerSuitChest, 0, new ModelResourceLocation(powerSuitChest.getRegistryName(), "inventory"));

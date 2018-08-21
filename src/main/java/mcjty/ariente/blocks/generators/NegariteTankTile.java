@@ -4,6 +4,8 @@ import mcjty.ariente.ai.IAlarmMode;
 import mcjty.ariente.blocks.ModBlocks;
 import mcjty.ariente.gui.IGuiComponent;
 import mcjty.ariente.gui.IGuiTile;
+import mcjty.ariente.gui.components.HoloIcon;
+import mcjty.ariente.gui.components.HoloItemStack;
 import mcjty.ariente.gui.components.HoloPanel;
 import mcjty.ariente.gui.components.HoloText;
 import mcjty.lib.tileentity.GenericTileEntity;
@@ -94,23 +96,21 @@ public class NegariteTankTile extends GenericTileEntity implements IGuiTile, IAl
 
     @Override
     public IGuiComponent createGui(String tag) {
-        return new HoloPanel(0, 0, 8, 8)
-            .add(new HoloText(0, 0, 1, 1, "0", 0xffffff))
-            .add(new HoloText(1, 0, 1, 1, "1", 0xffffff))
-            .add(new HoloText(2, 0, 1, 1, "2", 0xffffff))
-            .add(new HoloText(3, 0, 1, 1, "3", 0xffffff))
-            .add(new HoloText(4, 0, 1, 1, "4", 0xffffff))
-            .add(new HoloText(5, 0, 1, 1, "5", 0xffffff))
-            .add(new HoloText(6, 0, 1, 1, "6", 0xffffff))
-            .add(new HoloText(7, 0, 1, 1, "7", 0xffffff))
-            .add(new HoloText(0, 1, 1, 1, "1", 0x00ff00))
-            .add(new HoloText(0, 2, 1, 1, "2", 0x00ff00))
-            .add(new HoloText(0, 3, 1, 1, "3", 0x00ff00))
-            .add(new HoloText(0, 4, 1, 1, "4", 0x00ff00))
-            .add(new HoloText(0, 5, 1, 1, "5", 0x00ff00))
-            .add(new HoloText(0, 6, 1, 1, "6", 0x00ff00))
-            .add(new HoloText(0, 7, 1, 1, "7", 0x00ff00))
-            .add(new HoloText(7, 7, 1, 1, "X", 0xff0000));
+        HoloPanel panel = new HoloPanel(0, 0, 8, 8);
+        for (int i = 0 ; i < 64 ; i++) {
+            switch (i % 3) {
+                case 0:
+                    panel.add(new HoloText(i % 8, i / 8, 1, 1, "W", 0xffffff));
+                    break;
+                case 1:
+                    panel.add(new HoloIcon(i % 8, i / 8, 1, 1).image(128+64, 128));
+                    break;
+                case 2:
+                    panel.add(new HoloItemStack(i % 8, i / 8, 1, 1, new ItemStack(ModBlocks.negariteGeneratorBlock)));
+                    break;
+            }
+        }
+        return panel;
     }
 
     @Override
