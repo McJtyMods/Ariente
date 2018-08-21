@@ -55,7 +55,6 @@ public class ArmorGui {
         //   - Energy Optimizer
         //   - Increase Armor
         //   - Speed
-        //   - Higher jump
         return null;
     }
 

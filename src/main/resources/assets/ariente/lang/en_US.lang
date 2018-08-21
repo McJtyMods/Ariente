@@ -17,6 +17,15 @@ item.ariente.powersuit_chest.name=Power Chestplate
 item.ariente.powersuit_legs.name=Power Leggings
 item.ariente.powersuit_feet.name=Power Boots
 
+item.ariente.module_armor.name=Armor Upgrade Module
+item.ariente.module_energy.name=Energy Upgrade Module
+item.ariente.module_featherfalling.name=Featherfalling Upgrade Module
+item.ariente.module_flight.name=Flight Upgrade Module
+item.ariente.module_forcefield.name=Forcefield Upgrade Module
+item.ariente.module_invisibility.name=Invisiblity Upgrade Module
+item.ariente.module_regeneration.name=Regeneration Upgrade Module
+item.ariente.module_speed.name=Speed Upgrade Module
+
 tile.ariente.pattern.dots.name=Dots Pattern
 tile.ariente.pattern.lines.name=Lines Pattern
 
