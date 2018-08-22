@@ -490,7 +490,7 @@ public class ForceFieldTile extends GenericTileEntity implements IGuiTile, ITick
     public IGuiComponent createGui(String tag) {
         return new HoloPanel(0, 0, 8, 8)
                 .add(new HoloText(0, 1, 1, 1, "Radius", 0xaaccff))
-                .add(new HoloNumber(3, 2, 1, 1, 0xffffff, this::getScale))
+                .add(new HoloNumber(3, 2, 1, 1, 0xffffff, p -> getScale()))
 
                 .add(new HoloButton(1, 2, 1, 1).image(128 + 32, 128 + 16).hover(128 + 32 + 16, 128 + 16)
                         .hitEvent((component, player, entity1, x, y) -> changeScale(-8)))

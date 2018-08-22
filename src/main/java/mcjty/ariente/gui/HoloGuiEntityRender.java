@@ -17,7 +17,14 @@ import javax.annotation.Nullable;
 
 public class HoloGuiEntityRender extends Render<HoloGuiEntity> {
 
-    private static final ResourceLocation guiBackground = new ResourceLocation(Ariente.MODID, "textures/gui/hologui.png");
+    private static final ResourceLocation guiBackground1 = new ResourceLocation(Ariente.MODID, "textures/gui/hologui.png");
+    private static final ResourceLocation guiBackground2 = new ResourceLocation(Ariente.MODID, "textures/gui/hologui1.png");
+    private static final ResourceLocation guiBackground3 = new ResourceLocation(Ariente.MODID, "textures/gui/hologui2.png");
+    private static final ResourceLocation guiBackground4 = new ResourceLocation(Ariente.MODID, "textures/gui/hologui3.png");
+    private static final ResourceLocation guiBackground5 = new ResourceLocation(Ariente.MODID, "textures/gui/hologui4.png");
+    private static final ResourceLocation guiBackground6 = new ResourceLocation(Ariente.MODID, "textures/gui/hologui5.png");
+    private static final ResourceLocation guiBackground7 = new ResourceLocation(Ariente.MODID, "textures/gui/hologui6.png");
+    private static final ResourceLocation guiBackground8 = new ResourceLocation(Ariente.MODID, "textures/gui/hologui7.png");
 
     public HoloGuiEntityRender(RenderManager renderManager) {
         super(renderManager);
@@ -41,11 +48,12 @@ public class HoloGuiEntityRender extends Render<HoloGuiEntity> {
         GlStateManager.enableTexture2D();
         GlStateManager.disableLighting();
         GlStateManager.enableBlend();
+//        GlStateManager.disableBlend();
         GlStateManager.color(1.0f, 1.0f, 1.0f, 0.5f);
 
         Minecraft mc = Minecraft.getMinecraft();
 
-        mc.renderEngine.bindTexture(guiBackground);
+        mc.renderEngine.bindTexture(guiBackground8);
 
         builder.begin(GL11.GL_QUADS, DefaultVertexFormats.POSITION_TEX);
 

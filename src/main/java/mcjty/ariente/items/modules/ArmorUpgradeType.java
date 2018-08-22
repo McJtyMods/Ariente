@@ -5,19 +5,21 @@ import java.util.HashMap;
 import java.util.Map;
 
 public enum ArmorUpgradeType {
-    ENERGY("energy", "Energy Efficiency Upgrade"),
-    ARMOR("armor", "Armor Improvement Upgrade"),
-    FEATHERFALLING("featherfalling", "Feather Falling Upgrade"),
-    FLIGHT("flight", "Flight upgrade"),
-    FORCEFIELD("forcefield", "Forcefield upgrade"),
-    INVISIBILITY("invisibility", "Invisibility upgrade"),
-    NIGHTVISION("nightvision", "Nightvision upgrade"),
-    REGENERATION("regeneration", "Regeneration upgrade"),
-    SPEED("speed", "Speed upgrade"),
-    SCRAMBLE("scramble", "Scramble upgrade");
+    ENERGY("energy", "Energy Efficiency Upgrade", -1),
+    ARMOR("armor", "Armor Improvement Upgrade", 20),
+    FEATHERFALLING("featherfalling", "Feather Falling Upgrade", 20),
+    FLIGHT("flight", "Flight upgrade", 40),
+    FORCEFIELD("forcefield", "Forcefield upgrade", 80),
+    INVISIBILITY("invisibility", "Invisibility upgrade", 20),
+    NIGHTVISION("nightvision", "Nightvision upgrade", 20),
+    REGENERATION("regeneration", "Regeneration upgrade", 40),
+    SPEED("speed", "Speed upgrade", 20),
+    SCRAMBLE("scramble", "Scramble upgrade", 50),
+    AUTOFEED("autofeed", "Autofeed power upgrade", 5);
 
     private final String name;
     private final String description;
+    private final int powerUsage;
 
     private static Map<String, ArmorUpgradeType> MAP = new HashMap<>();
 
@@ -27,9 +29,14 @@ public enum ArmorUpgradeType {
         }
     }
 
-    ArmorUpgradeType(String name, String description) {
+    ArmorUpgradeType(String name, String description, int powerUsage) {
         this.name = name;
         this.description = description;
+        this.powerUsage = powerUsage;
+    }
+
+    public String getModuleKey() {
+        return "module_" + getName();
     }
 
     public String getName() {
@@ -38,6 +45,10 @@ public enum ArmorUpgradeType {
 
     public String getDescription() {
         return description;
+    }
+
+    public int getPowerUsage() {
+        return powerUsage;
     }
 
     @Nullable

@@ -4,6 +4,7 @@ import mcjty.ariente.Ariente;
 import mcjty.ariente.ai.IAlarmMode;
 import mcjty.ariente.blocks.ModBlocks;
 import mcjty.ariente.cables.CableColor;
+import mcjty.ariente.gui.HoloGuiTools;
 import mcjty.ariente.gui.IGuiComponent;
 import mcjty.ariente.gui.IGuiTile;
 import mcjty.ariente.gui.components.*;
@@ -29,7 +30,6 @@ import net.minecraft.block.state.IBlockState;
 import net.minecraft.entity.EntityLivingBase;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.entity.player.EntityPlayerMP;
-import net.minecraft.entity.player.InventoryPlayer;
 import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.network.NetworkManager;
@@ -282,8 +282,7 @@ public class NegariteGeneratorTile extends GenericTileEntity implements ITickabl
                 .add(new HoloItemStack(0, 3, 1, 1, new ItemStack(ModItems.negariteDust)))
 
                 .add(new HoloIcon(1, 3, 1, 1).image(128+64, 128))
-                .add(new HoloNumber(2, 3, 1, 1, 0xffffff,
-                        this::countNegarite))
+                .add(new HoloNumber(2, 3, 1, 1, 0xffffff, p -> HoloGuiTools.countItem(p, ModItems.negariteDust)))
 
                 .add(new HoloButton(2, 4, 1, 1).image(128+32, 128+16).hover(128+32+16, 128+16)
                     .hitEvent((component, player, entity1, x, y) -> toPlayer(player, 64)))
@@ -370,20 +369,7 @@ public class NegariteGeneratorTile extends GenericTileEntity implements ITickabl
         markDirtyClient();
     }
 
-    public Integer countNegarite() {
-        InventoryPlayer inventory = Ariente.proxy.getClientPlayer().inventory;
-        int size = inventory.getSizeInventory();
-        int cnt = 0;
-        for (int i = 0 ; i < size ; i++) {
-            ItemStack stack = inventory.getStackInSlot(i);
-            if (!stack.isEmpty() && stack.getItem() == ModItems.negariteDust) {
-                cnt += stack.getCount();
-            }
-        }
-        return cnt;
-    }
-
-    public Integer countNegariteGenerator() {
+    public Integer countNegariteGenerator(EntityPlayer player) {
         int size = inventoryHelper.getCount();
         int cnt = 0;
         for (int i = 0 ; i < size ; i++) {

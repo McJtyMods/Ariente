@@ -219,7 +219,7 @@ public class WirelessLockTile extends SignalChannelTileEntity implements ILockab
         }
         return new HoloPanel(0, 0, 8, 8)
                 .add(new HoloText(0, 1, 1, 1, "Horizontal", 0xaaccff))
-                .add(new HoloNumber(3, 2, 1, 1, 0xffffff, this::getHorizontalRange))
+                .add(new HoloNumber(3, 2, 1, 1, 0xffffff, o -> getHorizontalRange()))
 
                 .add(new HoloButton(1, 2, 1, 1).image(128 + 32, 128 + 16).hover(128 + 32 + 16, 128 + 16)
                         .hitEvent((component, player, entity1, x, y) -> changeHorizontalRange(-8)))
@@ -232,7 +232,7 @@ public class WirelessLockTile extends SignalChannelTileEntity implements ILockab
 
 
                 .add(new HoloText(0, 4, 1, 1, "Vertical", 0xaaccff))
-                .add(new HoloNumber(3, 5, 1, 1, 0xffffff, this::getVerticalRange))
+                .add(new HoloNumber(3, 5, 1, 1, 0xffffff, p -> getVerticalRange()))
 
                 .add(new HoloButton(1, 5, 1, 1).image(128 + 32, 128 + 16).hover(128 + 32 + 16, 128 + 16)
                         .hitEvent((component, player, entity1, x, y) -> changeVerticalRange(-8)))

@@ -65,7 +65,7 @@ public class LockTile extends GenericTileEntity implements IGuiTile, IKeyCardSlo
         }
     }
 
-    public int getHorizontalRange() {
+    public int getHorizontalRange(EntityPlayer player) {
         return horizontalRange;
     }
 
@@ -76,7 +76,7 @@ public class LockTile extends GenericTileEntity implements IGuiTile, IKeyCardSlo
         doLock(true);
     }
 
-    public int getVerticalRange() {
+    public int getVerticalRange(EntityPlayer player) {
         return verticalRange;
     }
 

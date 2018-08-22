@@ -1,6 +1,7 @@
 package mcjty.ariente.items.armor;
 
 import mcjty.ariente.gui.HoloGuiEntity;
+import mcjty.ariente.gui.HoloGuiTools;
 import mcjty.ariente.gui.IGuiComponent;
 import mcjty.ariente.gui.ModGuis;
 import mcjty.ariente.gui.components.*;
@@ -8,9 +9,9 @@ import mcjty.ariente.items.ModItems;
 import mcjty.ariente.items.modules.ArmorModuleItem;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.inventory.EntityEquipmentSlot;
+import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.NBTTagCompound;
-import net.minecraft.nbt.NBTTagIntArray;
 
 public class ArmorGui {
 
@@ -33,56 +34,151 @@ public class ArmorGui {
     }
 
     public static IGuiComponent createHelmetGui(EntityPlayer player) {
-        // Modules:
-        //   - Energy Optimizer
-        //   - Increase Armor
-        //   - Night vision
-        //   - Invisibility
-        HoloPanel panel = new HoloPanel(0, 0, 8, 8);
-        panel.add(new HoloText(0, 0, 1, 1, "Pwr", 0xaaccff));
-        panel.add(new HoloNumber(3, 0, 1, 1, 0xffffff, () -> 30));
-        panel.add(new HoloText(5, 0, 1, 1, "/", 0xaaccff));
-        panel.add(new HoloNumber(6, 0, 1, 1, 0xffffff, () -> 200));
-
         EntityEquipmentSlot slot = EntityEquipmentSlot.HEAD;
+
+        HoloPanel panel = createPieceGui(slot);
+
         createModuleEntry(panel, slot, 1, 2, ModItems.moduleEnergy);
         createModuleEntry(panel, slot, 4, 2, ModItems.moduleArmor);
-        createModuleEntry(panel, slot, 1, 3, ModItems.moduleNightvision);
-        createModuleEntry(panel, slot, 4, 3, ModItems.moduleInvisibility);
-        createModuleEntry(panel, slot, 1, 4, ModItems.moduleScramble);
+        createModuleEntry(panel, slot, 1, 3, ModItems.moduleAutofeed);
+        createModuleEntry(panel, slot, 4, 3, ModItems.moduleNightvision);
+        createModuleEntry(panel, slot, 1, 4, ModItems.moduleInvisibility);
+        createModuleEntry(panel, slot, 4, 4, ModItems.moduleScramble);
 
-        panel
-                .add(new HoloItemStack(0, 6, 1, 1, new ItemStack(ModItems.negariteDust)))
-                .add(new HoloNumber(1, 6, 1, 1, 0xffffff, ArmorGui::countNegarite))
-                .add(new HoloButton(3, 6, 1, 1).image(128, 128).hover(128+16, 128)
-                        .hitEvent((component, player1, entity1, x, y) -> toMachine(player1, 1)))
-                .add(new HoloButton(4, 6, 1, 1).image(128, 128+16).hover(128+16, 128+16)
-                        .hitEvent((component, player1, entity1, x, y) -> toMachine(player1, 64)))
-                .add(new HoloNumber(5, 6, 1, 1,0xffffff, ArmorGui::countNegariteGenerator))
-
-
-                .add(new HoloItemStack(0, 7, 1, 1, new ItemStack(ModItems.posiriteDust)))
-                .add(new HoloNumber(1, 7, 1, 1, 0xffffff, ArmorGui::countNegarite))
-                .add(new HoloButton(3, 7, 1, 1).image(128, 128).hover(128+16, 128)
-                        .hitEvent((component, player1, entity1, x, y) -> toMachine(player1, 1)))
-                .add(new HoloButton(4, 7, 1, 1).image(128, 128+16).hover(128+16, 128+16)
-                        .hitEvent((component, player1, entity1, x, y) -> toMachine(player1, 64)))
-                .add(new HoloNumber(5, 7, 1, 1,0xffffff, ArmorGui::countNegariteGenerator))
-        ;
+        addPowerGui(slot, panel);
 
         return panel;
     }
 
-    private static int countNegarite() {
-        return 0;
+    public static IGuiComponent createChestGui(EntityPlayer player) {
+        EntityEquipmentSlot slot = EntityEquipmentSlot.CHEST;
+
+        HoloPanel panel = createPieceGui(slot);
+
+        createModuleEntry(panel, slot, 1, 2, ModItems.moduleEnergy);
+        createModuleEntry(panel, slot, 4, 2, ModItems.moduleArmor);
+        createModuleEntry(panel, slot, 1, 3, ModItems.moduleAutofeed);
+        createModuleEntry(panel, slot, 4, 3, ModItems.moduleForcefield);
+        createModuleEntry(panel, slot, 1, 4, ModItems.moduleRegeneration);
+        createModuleEntry(panel, slot, 4, 4, ModItems.moduleFlight);
+
+        addPowerGui(slot, panel);
+
+        return panel;
     }
 
-    private static int countNegariteGenerator() {
-        return 20;
+    public static IGuiComponent createLegsGui(EntityPlayer player) {
+        EntityEquipmentSlot slot = EntityEquipmentSlot.LEGS;
+
+        HoloPanel panel = createPieceGui(slot);
+
+        createModuleEntry(panel, slot, 1, 2, ModItems.moduleEnergy);
+        createModuleEntry(panel, slot, 4, 2, ModItems.moduleArmor);
+        createModuleEntry(panel, slot, 1, 3, ModItems.moduleAutofeed);
+//        createModuleEntry(panel, slot, 4, 3, ModItems.moduleSpeed);
+
+        addPowerGui(slot, panel);
+
+        return panel;
     }
 
-    private static void toMachine(EntityPlayer player, int amount) {
+    public static IGuiComponent createBootsGui(EntityPlayer player) {
+        EntityEquipmentSlot slot = EntityEquipmentSlot.LEGS;
 
+        HoloPanel panel = createPieceGui(slot);
+
+        createModuleEntry(panel, slot, 1, 2, ModItems.moduleEnergy);
+        createModuleEntry(panel, slot, 4, 2, ModItems.moduleArmor);
+        createModuleEntry(panel, slot, 1, 3, ModItems.moduleAutofeed);
+        createModuleEntry(panel, slot, 4, 3, ModItems.moduleFeatherFalling);
+
+        addPowerGui(slot, panel);
+
+        return panel;
+    }
+
+
+    private static HoloPanel createPieceGui(EntityEquipmentSlot slot) {
+        HoloPanel panel = new HoloPanel(0, 0, 8, 8);
+        panel.add(new HoloText(0, 0, 1, 1, "Pwr", 0xaaccff));
+        panel.add(new HoloNumber(3, 0, 1, 1, 0xffffff, player1 -> calculatePowerUsage(player1, slot)));
+        panel.add(new HoloText(5, 0, 1, 1, "/", 0xaaccff));
+        panel.add(new HoloNumber(6, 0, 1, 1, 0xffffff, player1 -> calculateMaxPowerUsage(player1, slot)));
+        return panel;
+    }
+
+    private static void addPowerGui(EntityEquipmentSlot slot, HoloPanel panel) {
+        panel
+                .add(new HoloItemStack(0, 6, 1, 1, new ItemStack(ModItems.negariteDust)))
+                .add(new HoloNumber(1, 6, 1, 1, 0xffffff, p -> HoloGuiTools.countItem(p, ModItems.negariteDust)))
+                .add(new HoloButton(3, 6, 1, 1).image(128, 128).hover(128+16, 128)
+                        .hitEvent((component, p, entity1, x, y) -> toArmor(p, slot, "negarite", ModItems.negariteDust, 1)))
+                .add(new HoloButton(4, 6, 1, 1).image(128, 128+16).hover(128+16, 128+16)
+                        .hitEvent((component, p, entity1, x, y) -> toArmor(p, slot, "negarite", ModItems.negariteDust, 64)))
+                .add(new HoloNumber(5, 6, 1, 1,0xffffff, p -> countArmor(p, slot, "negarite")))
+
+                .add(new HoloItemStack(0, 7, 1, 1, new ItemStack(ModItems.posiriteDust)))
+                .add(new HoloNumber(1, 7, 1, 1, 0xffffff, p -> HoloGuiTools.countItem(p, ModItems.posiriteDust)))
+                .add(new HoloButton(3, 7, 1, 1).image(128, 128).hover(128+16, 128)
+                        .hitEvent((component, p, entity1, x, y) -> toArmor(p, slot, "posirite", ModItems.posiriteDust, 1)))
+                .add(new HoloButton(4, 7, 1, 1).image(128, 128+16).hover(128+16, 128+16)
+                        .hitEvent((component, p, entity1, x, y) -> toArmor(p, slot, "posirite", ModItems.posiriteDust, 64)))
+                .add(new HoloNumber(5, 7, 1, 1,0xffffff, p -> countArmor(p, slot, "posirite")))
+        ;
+    }
+
+    private static int calculatePowerUsage(EntityPlayer player, EntityEquipmentSlot slot) {
+        ItemStack stack = player.getItemStackFromSlot(slot);
+        if (stack.isEmpty() || !(stack.getItem() instanceof PowerSuit)) {
+            return 0;
+        }
+        return PowerSuit.getPowerUsage(stack).getLeft();
+    }
+
+    private static int calculateMaxPowerUsage(EntityPlayer player, EntityEquipmentSlot slot) {
+        ItemStack stack = player.getItemStackFromSlot(slot);
+        if (stack.isEmpty() || !(stack.getItem() instanceof PowerSuit)) {
+            return 0;
+        }
+        return PowerSuit.getPowerUsage(stack).getRight();
+    }
+
+    private static int countArmor(EntityPlayer player, EntityEquipmentSlot slot, String itemTag) {
+        ItemStack stack = player.getItemStackFromSlot(slot);
+        if (stack.isEmpty() || !(stack.getItem() instanceof PowerSuit)) {
+            return 0;
+        }
+        NBTTagCompound compound = stack.getTagCompound();
+        if (compound == null) {
+            return 0;
+        }
+        return compound.getInteger(itemTag);
+    }
+
+    private static void toArmor(EntityPlayer player, EntityEquipmentSlot slot, String itemTag, Item item, int amount) {
+        ItemStack stack = player.getItemStackFromSlot(slot);
+        if (stack.isEmpty() || !(stack.getItem() instanceof PowerSuit)) {
+            return;
+        }
+        NBTTagCompound compound = stack.getTagCompound();
+        if (compound == null) {
+            compound = new NBTTagCompound();
+            stack.setTagCompound(compound);
+        }
+        int number = compound.getInteger(itemTag);
+        for (int i = 0; i < player.inventory.getSizeInventory(); i++) {
+            ItemStack itemStack = player.inventory.getStackInSlot(i);
+            if (itemStack.getItem() == item) {
+                int n = Math.min(amount, itemStack.getCount());
+                itemStack.shrink(n);
+                number += n;
+                amount -= n;
+                if (amount <= 0) {
+                    break;
+                }
+            }
+        }
+        compound.setInteger(itemTag, number);
     }
 
     private static void createModuleEntry(HoloPanel panel, EntityEquipmentSlot slot, int xx, int yy, ArmorModuleItem module) {
@@ -99,7 +195,7 @@ public class ArmorGui {
         }
         ItemStack stack = player.getItemStackFromSlot(slot);
         NBTTagCompound compound = stack.getTagCompound();
-        return compound.getBoolean(getModuleKey(moduleItem));
+        return compound.getBoolean(moduleItem.getType().getModuleKey());
     }
 
     private static Boolean hasModuleAndCheckPlayerToo(EntityPlayer player, EntityEquipmentSlot slot, ArmorModuleItem moduleItem) {
@@ -122,7 +218,7 @@ public class ArmorGui {
             return false;
         }
         NBTTagCompound compound = stack.getTagCompound();
-        return compound.hasKey(getModuleKey(moduleItem));
+        return compound.hasKey(moduleItem.getType().getModuleKey());
     }
 
     private static void toggleActivation(EntityPlayer player, EntityEquipmentSlot slot, ArmorModuleItem moduleItem) {
@@ -131,7 +227,7 @@ public class ArmorGui {
         }
         ItemStack stack = player.getItemStackFromSlot(slot);
         NBTTagCompound compound = stack.getTagCompound();
-        String key = getModuleKey(moduleItem);
+        String key = moduleItem.getType().getModuleKey();
         compound.setBoolean(key, !compound.getBoolean(key));
     }
 
@@ -163,7 +259,7 @@ public class ArmorGui {
                 stack.setTagCompound(new NBTTagCompound());
             }
             NBTTagCompound compound = stack.getTagCompound();
-            compound.setBoolean(getModuleKey(moduleItem), false);
+            compound.setBoolean(moduleItem.getType().getModuleKey(), false);
             return;
         } else {
             // Remove installed module
@@ -173,41 +269,10 @@ public class ArmorGui {
             }
             ItemStack stack = player.getItemStackFromSlot(slot);
             NBTTagCompound compound = stack.getTagCompound();
-            String key = getModuleKey(moduleItem);
+            String key = moduleItem.getType().getModuleKey();
             compound.removeTag(key);
         }
     }
-
-    private static String getModuleKey(ArmorModuleItem moduleItem) {
-        return "module_" + moduleItem.getType().getName();
-    }
-
-    public static IGuiComponent createChestGui(EntityPlayer player) {
-        // Modules:
-        //   - Energy Optimizer
-        //   - Increase Armor
-        //   - Forcefield (requires full suit)
-        //   - Regeneration
-        //   - Flight
-        return null;
-    }
-
-    public static IGuiComponent createLegsGui(EntityPlayer player) {
-        // Modules:
-        //   - Energy Optimizer
-        //   - Increase Armor
-        //   - Speed
-        return null;
-    }
-
-    public static IGuiComponent createBootsGui(EntityPlayer player) {
-        // Modules:
-        //   - Energy Optimizer
-        //   - Increase Armor
-        //   - Feather falling
-        return null;
-    }
-
 
     private static double createMenuEntry(EntityPlayer player, HoloPanel panel, double x, double y, EntityEquipmentSlot slot, PowerSuit armorItem) {
         ItemStack armorStack = player.getItemStackFromSlot(slot);
@@ -224,10 +289,13 @@ public class ArmorGui {
     private static void hitArmorConfigureButton(EntityEquipmentSlot slot, IGuiComponent component, EntityPlayer player, HoloGuiEntity entity) {
         switch (slot) {
             case FEET:
+                entity.switchGui(ModGuis.GUI_ARMOR_BOOTS);
                 break;
             case LEGS:
+                entity.switchGui(ModGuis.GUI_ARMOR_LEGS);
                 break;
             case CHEST:
+                entity.switchGui(ModGuis.GUI_ARMOR_CHEST);
                 break;
             case HEAD:
                 entity.switchGui(ModGuis.GUI_ARMOR_HELMET);
