@@ -11,7 +11,7 @@ import net.minecraft.util.SoundCategory;
 
 import java.util.function.Function;
 
-public class HoloItemStackButton extends AbstractHoloComponent {
+public class HoloItemStackToggle extends AbstractHoloComponent {
 
     private final ItemStack stack;
     private Function<EntityPlayer, Boolean> currentValue;
@@ -20,7 +20,7 @@ public class HoloItemStackButton extends AbstractHoloComponent {
     private static final ResourceLocation DARKEN = new ResourceLocation(Ariente.MODID, "textures/gui/darken.png");
     private static final ResourceLocation INVALID = new ResourceLocation(Ariente.MODID, "textures/gui/darken_red.png");
 
-    public HoloItemStackButton(double x, double y, double w, double h, ItemStack stack, Function<EntityPlayer, Boolean> getter) {
+    public HoloItemStackToggle(double x, double y, double w, double h, ItemStack stack, Function<EntityPlayer, Boolean> getter) {
         super(x, y, w, h);
         this.stack = stack;
         this.currentValue = getter;
@@ -30,15 +30,17 @@ public class HoloItemStackButton extends AbstractHoloComponent {
     public void render(EntityPlayer player, double cursorX, double cursorY) {
         Boolean state = currentValue.apply(player);
         ResourceLocation lightmap = null;
+        boolean border = false;
         if (state == null) {
-            lightmap = INVALID;
-        } else if (!state) {
             lightmap = DARKEN;
+        } else if (!state) {
+        } else {
+            border = true;
         }
-        HoloGuiRenderTools.renderItem(x * 1.05, y * 0.85 + .45, stack, lightmap);
+        HoloGuiRenderTools.renderItem(x * 1.05, y * 0.85 + .45, stack, lightmap, border);
     }
 
-    public HoloItemStackButton hitEvent(IEvent event) {
+    public HoloItemStackToggle hitEvent(IEvent event) {
         this.hitEvent = event;
         return this;
     }

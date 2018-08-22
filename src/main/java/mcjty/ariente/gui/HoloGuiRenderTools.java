@@ -2,14 +2,14 @@ package mcjty.ariente.gui;
 
 import mcjty.lib.client.RenderHelper;
 import net.minecraft.client.Minecraft;
-import net.minecraft.client.renderer.GlStateManager;
-import net.minecraft.client.renderer.OpenGlHelper;
-import net.minecraft.client.renderer.RenderItem;
+import net.minecraft.client.renderer.*;
 import net.minecraft.client.renderer.block.model.IBakedModel;
 import net.minecraft.client.renderer.block.model.ItemCameraTransforms;
 import net.minecraft.client.renderer.texture.TextureMap;
+import net.minecraft.client.renderer.vertex.DefaultVertexFormats;
 import net.minecraft.item.ItemStack;
 import net.minecraft.util.ResourceLocation;
+import org.lwjgl.opengl.GL11;
 
 import javax.annotation.Nullable;
 
@@ -29,7 +29,7 @@ public class HoloGuiRenderTools {
         GlStateManager.scale(0.01, 0.01, 0.01);
         GlStateManager.rotate(180, 0, 1, 0);
         GlStateManager.rotate(180, 0, 0, 1);
-        GlStateManager.scale(1, 1, 0.05);
+        GlStateManager.scale(1, 1, 0.01);
         Minecraft.getMinecraft().getTextureManager().bindTexture(image);
         RenderHelper.drawTexturedModalRect((int) (x * 10 - 46), (int) (y * 10 - 44), u, v, w, h, txtw, txth);
         GlStateManager.popMatrix();
@@ -50,7 +50,7 @@ public class HoloGuiRenderTools {
         GlStateManager.popMatrix();
     }
 
-    public static void renderItem(double x, double y, ItemStack stack, @Nullable ResourceLocation lightmap) {
+    public static void renderItem(double x, double y, ItemStack stack, @Nullable ResourceLocation lightmap, boolean border) {
         GlStateManager.pushMatrix();
         GlStateManager.scale(0.1, 0.1, 0.1);
         GlStateManager.translate(x * 0.95 - 3.7, 4.2 - y * 1.2, 0);
@@ -59,6 +59,30 @@ public class HoloGuiRenderTools {
             RenderItem renderItem = Minecraft.getMinecraft().getRenderItem();
             IBakedModel ibakedmodel = renderItem.getItemModelWithOverrides(stack, null, null);
             renderItemModel(stack, ibakedmodel, ItemCameraTransforms.TransformType.GUI, lightmap);
+            if (border) {
+                Tessellator tessellator = Tessellator.getInstance();
+                BufferBuilder builder = tessellator.getBuffer();
+                builder.begin(GL11.GL_LINE_STRIP, DefaultVertexFormats.POSITION_COLOR);
+                x /= 200; x -= 0.47;
+                y /= 100; y -= 0.5;
+
+                GlStateManager.enableBlend();
+                GlStateManager.tryBlendFuncSeparate(GlStateManager.SourceFactor.SRC_ALPHA, GlStateManager.DestFactor.ONE_MINUS_SRC_ALPHA, GlStateManager.SourceFactor.ONE, GlStateManager.DestFactor.ZERO);
+                GlStateManager.glLineWidth(2.0F);
+                GlStateManager.disableTexture2D();
+
+                double z = 0.3;
+                double w = 0.9;
+                builder.pos(x, y, z).color(1.0f, 1.0f, 1.0f, 1.0f).endVertex();
+                builder.pos(x+w, y, z).color(1.0f, 1.0f, 1.0f, 1.0f).endVertex();
+                builder.pos(x+w, y+w, z).color(1.0f, 1.0f, 1.0f, 1.0f).endVertex();
+                builder.pos(x, y+w, z).color(1.0f, 1.0f, 1.0f, 1.0f).endVertex();
+                builder.pos(x, y, z).color(1.0f, 1.0f, 1.0f, 1.0f).endVertex();
+                tessellator.draw();
+
+                GlStateManager.disableBlend();
+                GlStateManager.enableTexture2D();
+            }
         }
         GlStateManager.popMatrix();
     }

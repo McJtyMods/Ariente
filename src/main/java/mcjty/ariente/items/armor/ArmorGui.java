@@ -10,6 +10,7 @@ import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.inventory.EntityEquipmentSlot;
 import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.NBTTagCompound;
+import net.minecraft.nbt.NBTTagIntArray;
 
 public class ArmorGui {
 
@@ -49,11 +50,43 @@ public class ArmorGui {
         createModuleEntry(panel, slot, 1, 3, ModItems.moduleNightvision);
         createModuleEntry(panel, slot, 4, 3, ModItems.moduleInvisibility);
         createModuleEntry(panel, slot, 1, 4, ModItems.moduleScramble);
+
+        panel
+                .add(new HoloItemStack(0, 6, 1, 1, new ItemStack(ModItems.negariteDust)))
+                .add(new HoloNumber(1, 6, 1, 1, 0xffffff, ArmorGui::countNegarite))
+                .add(new HoloButton(3, 6, 1, 1).image(128, 128).hover(128+16, 128)
+                        .hitEvent((component, player1, entity1, x, y) -> toMachine(player1, 1)))
+                .add(new HoloButton(4, 6, 1, 1).image(128, 128+16).hover(128+16, 128+16)
+                        .hitEvent((component, player1, entity1, x, y) -> toMachine(player1, 64)))
+                .add(new HoloNumber(5, 6, 1, 1,0xffffff, ArmorGui::countNegariteGenerator))
+
+
+                .add(new HoloItemStack(0, 7, 1, 1, new ItemStack(ModItems.posiriteDust)))
+                .add(new HoloNumber(1, 7, 1, 1, 0xffffff, ArmorGui::countNegarite))
+                .add(new HoloButton(3, 7, 1, 1).image(128, 128).hover(128+16, 128)
+                        .hitEvent((component, player1, entity1, x, y) -> toMachine(player1, 1)))
+                .add(new HoloButton(4, 7, 1, 1).image(128, 128+16).hover(128+16, 128+16)
+                        .hitEvent((component, player1, entity1, x, y) -> toMachine(player1, 64)))
+                .add(new HoloNumber(5, 7, 1, 1,0xffffff, ArmorGui::countNegariteGenerator))
+        ;
+
         return panel;
     }
 
+    private static int countNegarite() {
+        return 0;
+    }
+
+    private static int countNegariteGenerator() {
+        return 20;
+    }
+
+    private static void toMachine(EntityPlayer player, int amount) {
+
+    }
+
     private static void createModuleEntry(HoloPanel panel, EntityEquipmentSlot slot, int xx, int yy, ArmorModuleItem module) {
-        panel.add(new HoloItemStackButton(xx, yy, 1, 1, new ItemStack(module), player -> hasModuleAndCheckPlayerToo(player, slot, module))
+        panel.add(new HoloItemStackToggle(xx, yy, 1, 1, new ItemStack(module), player -> hasModuleAndCheckPlayerToo(player, slot, module))
                 .hitEvent((component, player, entity, x, y) -> toggleModuleInstall(player, slot, module)));
         panel.add(new HoloToggleIcon(xx + 1, yy, 1, 1, player -> isModuleActivated(player, slot, module))
                 .image(128 + 64 + 16, 128 + 16).selected(128 + 64, 128 + 16)

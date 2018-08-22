@@ -15,6 +15,6 @@ public class HoloItemStack extends AbstractHoloComponent {
 
     @Override
     public void render(EntityPlayer player, double cursorX, double cursorY) {
-        HoloGuiRenderTools.renderItem(x * 1.05, y * 0.85 + .45, stack, null);
+        HoloGuiRenderTools.renderItem(x * 1.05, y * 0.85 + .45, stack, null, false);
     }
 }
