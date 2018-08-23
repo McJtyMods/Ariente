@@ -11,6 +11,7 @@ import net.minecraft.entity.EntityLivingBase;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.init.MobEffects;
 import net.minecraft.inventory.EntityEquipmentSlot;
+import net.minecraft.item.Item;
 import net.minecraft.item.ItemArmor;
 import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.NBTTagCompound;
@@ -45,13 +46,35 @@ public class PowerSuit extends ItemArmor {
         return PowerSuitModel.getModel(entityLiving, itemStack);
     }
 
+    public static void receivedHotkey(EntityPlayer player, int index) {
+        handleHotkey(player, index, EntityEquipmentSlot.HEAD, ModItems.powerSuitHelmet);
+        handleHotkey(player, index, EntityEquipmentSlot.LEGS, ModItems.powerSuitLegs);
+        handleHotkey(player, index, EntityEquipmentSlot.FEET, ModItems.powerSuitBoots);
+        handleHotkey(player, index, EntityEquipmentSlot.CHEST, ModItems.powerSuitChest);
+    }
+
+    private static void handleHotkey(EntityPlayer player, int index, EntityEquipmentSlot slot, Item armorItem) {
+        ItemStack armorStack = player.getItemStackFromSlot(slot);
+        if (!armorStack.isEmpty() && armorStack.getItem() == armorItem && armorStack.hasTagCompound()) {
+            NBTTagCompound compound = armorStack.getTagCompound();
+            for (ArmorUpgradeType type : ArmorUpgradeType.VALUES) {
+                int idx = compound.getInteger(type.getHotkeyKey());
+                if (idx == index) {
+                    boolean on = compound.getBoolean(type.getModuleKey());
+                    on = !on;
+                    compound.setBoolean(type.getModuleKey(), on);
+                }
+            }
+        }
+    }
+
     @Override
     public void onUpdate(ItemStack stack, World world, Entity entity, int itemSlot, boolean isSelected) {
         if (entity instanceof EntityLivingBase && !world.isRemote) {
-            if (itemSlot != getEquipmentSlot().getIndex()) {
+            if (itemSlot != armorType.getIndex()) {
                 return;
             }
-            switch (getEquipmentSlot()) {
+            switch (armorType) {
                 case FEET:
                     onUpdateFeet(stack, world, (EntityLivingBase) entity);
                     break;
@@ -73,9 +96,34 @@ public class PowerSuit extends ItemArmor {
     }
 
     private void onUpdateFeet(ItemStack stack, World world, EntityLivingBase entity) {
-    }
+        if (stack.isEmpty() || stack.getItem() != ModItems.powerSuitBoots || !stack.hasTagCompound()) {
+            return;
+        }
+
+        if (!managePower(stack)) {
+            return;
+        }
+
+        NBTTagCompound compound = stack.getTagCompound();
+        }
 
     private void onUpdateLegs(ItemStack stack, World world, EntityLivingBase entity) {
+        if (stack.isEmpty() || stack.getItem() != ModItems.powerSuitLegs || !stack.hasTagCompound()) {
+            return;
+        }
+
+        if (!managePower(stack)) {
+            return;
+        }
+
+        NBTTagCompound compound = stack.getTagCompound();
+
+        if (compound.getBoolean(ArmorUpgradeType.SPEED.getModuleKey())) {
+            PotionEffect effect = entity.getActivePotionEffect(MobEffects.SPEED);
+            if (effect == null || effect.getDuration() <= 100) {
+                entity.addPotionEffect(new PotionEffect(MobEffects.SPEED, 200, 1, false, false));
+            }
+        }
     }
 
     private void onUpdateChest(ItemStack stack, World world, EntityLivingBase entity) {
@@ -183,7 +231,7 @@ public class PowerSuit extends ItemArmor {
         if (compound == null) {
             return Pair.of(0, 0);
         }
-        for (ArmorUpgradeType type : ArmorUpgradeType.values()) {
+        for (ArmorUpgradeType type : ArmorUpgradeType.VALUES) {
             String key = "module_" + type.getName();
             if (compound.hasKey(key)) {
                 boolean activated = compound.getBoolean(key);
@@ -205,7 +253,7 @@ public class PowerSuit extends ItemArmor {
         list.add("Power suit part");
         if (stack.hasTagCompound()) {
             NBTTagCompound compound = stack.getTagCompound();
-            for (ArmorUpgradeType type : ArmorUpgradeType.values()) {
+            for (ArmorUpgradeType type : ArmorUpgradeType.VALUES) {
                 String key = "module_" + type.getName();
                 if (compound.hasKey(key)) {
                     boolean activated = compound.getBoolean(key);

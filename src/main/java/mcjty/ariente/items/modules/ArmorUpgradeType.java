@@ -23,6 +23,16 @@ public enum ArmorUpgradeType {
 
     private static Map<String, ArmorUpgradeType> MAP = new HashMap<>();
 
+    public static final ArmorUpgradeType[] VALUES = new ArmorUpgradeType[ArmorUpgradeType.values().length];
+
+    static {
+        int i = 0;
+        for (ArmorUpgradeType type : ArmorUpgradeType.values()) {
+            VALUES[i++] = type;
+        }
+    }
+
+
     static {
         for (ArmorUpgradeType type : ArmorUpgradeType.values()) {
             MAP.put(type.getName(), type);
@@ -37,6 +47,10 @@ public enum ArmorUpgradeType {
 
     public String getModuleKey() {
         return "module_" + getName();
+    }
+
+    public String getHotkeyKey() {
+        return "key_" + getName();
     }
 
     public String getName() {

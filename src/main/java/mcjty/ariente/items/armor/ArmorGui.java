@@ -39,11 +39,11 @@ public class ArmorGui {
         HoloPanel panel = createPieceGui(slot);
 
         createModuleEntry(panel, slot, 1, 2, ModItems.moduleEnergy);
-        createModuleEntry(panel, slot, 4, 2, ModItems.moduleArmor);
+        createModuleEntry(panel, slot, 5, 2, ModItems.moduleArmor);
         createModuleEntry(panel, slot, 1, 3, ModItems.moduleAutofeed);
-        createModuleEntry(panel, slot, 4, 3, ModItems.moduleNightvision);
+        createModuleEntry(panel, slot, 5, 3, ModItems.moduleNightvision);
         createModuleEntry(panel, slot, 1, 4, ModItems.moduleInvisibility);
-        createModuleEntry(panel, slot, 4, 4, ModItems.moduleScramble);
+        createModuleEntry(panel, slot, 5, 4, ModItems.moduleScramble);
 
         addPowerGui(slot, panel);
 
@@ -56,11 +56,11 @@ public class ArmorGui {
         HoloPanel panel = createPieceGui(slot);
 
         createModuleEntry(panel, slot, 1, 2, ModItems.moduleEnergy);
-        createModuleEntry(panel, slot, 4, 2, ModItems.moduleArmor);
+        createModuleEntry(panel, slot, 5, 2, ModItems.moduleArmor);
         createModuleEntry(panel, slot, 1, 3, ModItems.moduleAutofeed);
-        createModuleEntry(panel, slot, 4, 3, ModItems.moduleForcefield);
+        createModuleEntry(panel, slot, 5, 3, ModItems.moduleForcefield);
         createModuleEntry(panel, slot, 1, 4, ModItems.moduleRegeneration);
-        createModuleEntry(panel, slot, 4, 4, ModItems.moduleFlight);
+        createModuleEntry(panel, slot, 5, 4, ModItems.moduleFlight);
 
         addPowerGui(slot, panel);
 
@@ -73,9 +73,9 @@ public class ArmorGui {
         HoloPanel panel = createPieceGui(slot);
 
         createModuleEntry(panel, slot, 1, 2, ModItems.moduleEnergy);
-        createModuleEntry(panel, slot, 4, 2, ModItems.moduleArmor);
+        createModuleEntry(panel, slot, 5, 2, ModItems.moduleArmor);
         createModuleEntry(panel, slot, 1, 3, ModItems.moduleAutofeed);
-//        createModuleEntry(panel, slot, 4, 3, ModItems.moduleSpeed);
+        createModuleEntry(panel, slot, 5, 3, ModItems.moduleSpeed);
 
         addPowerGui(slot, panel);
 
@@ -88,9 +88,9 @@ public class ArmorGui {
         HoloPanel panel = createPieceGui(slot);
 
         createModuleEntry(panel, slot, 1, 2, ModItems.moduleEnergy);
-        createModuleEntry(panel, slot, 4, 2, ModItems.moduleArmor);
+        createModuleEntry(panel, slot, 5, 2, ModItems.moduleArmor);
         createModuleEntry(panel, slot, 1, 3, ModItems.moduleAutofeed);
-        createModuleEntry(panel, slot, 4, 3, ModItems.moduleFeatherFalling);
+        createModuleEntry(panel, slot, 5, 3, ModItems.moduleFeatherFalling);
 
         addPowerGui(slot, panel);
 
@@ -187,6 +187,37 @@ public class ArmorGui {
         panel.add(new HoloToggleIcon(xx + 1, yy, 1, 1, player -> isModuleActivated(player, slot, module))
                 .image(128 + 64 + 16, 128 + 16).selected(128 + 64, 128 + 16)
                 .hitEvent((component, player, entity, x, y) -> toggleActivation(player, slot, module)));
+        panel.add(new HoloIcons(xx + 2, yy, 1, 1, player -> getHotkey(player, slot, module))
+                .icon(128 + 64 - 16, 128 + 32)
+                .icon(128 + 64, 128 + 32)
+                .icon(128 + 64 + 16, 128 + 32)
+                .icon(128 + 64 + 32, 128 + 32)
+                .icon(128 + 64 + 48, 128 + 32)
+                .hitEvent((component, player, entity, x, y) -> switchHotkey(player, slot, module))
+        );
+    }
+
+    private static void switchHotkey(EntityPlayer player, EntityEquipmentSlot slot, ArmorModuleItem moduleItem) {
+        if (!hasModule(player, slot, moduleItem)) {
+            return;
+        }
+        ItemStack stack = player.getItemStackFromSlot(slot);
+        NBTTagCompound compound = stack.getTagCompound();
+        int index = compound.getInteger(moduleItem.getType().getHotkeyKey());
+        index++;
+        if (index >= 4) {
+            index = 0;
+        }
+        compound.setInteger(moduleItem.getType().getHotkeyKey(), index);
+    }
+
+    private static Integer getHotkey(EntityPlayer player, EntityEquipmentSlot slot, ArmorModuleItem moduleItem) {
+        if (!hasModule(player, slot, moduleItem)) {
+            return 0;
+        }
+        ItemStack stack = player.getItemStackFromSlot(slot);
+        NBTTagCompound compound = stack.getTagCompound();
+        return compound.getInteger(moduleItem.getType().getHotkeyKey());
     }
 
     private static Boolean isModuleActivated(EntityPlayer player, EntityEquipmentSlot slot, ArmorModuleItem moduleItem) {

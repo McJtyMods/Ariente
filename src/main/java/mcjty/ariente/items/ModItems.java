@@ -40,6 +40,7 @@ public class ModItems {
     public static ArmorModuleItem moduleRegeneration;
     public static ArmorModuleItem moduleScramble;
     public static ArmorModuleItem moduleAutofeed;
+    public static ArmorModuleItem moduleSpeed;
 
     public static void init() {
         platinumIngot = new GenericItem("ingot_platinum");
@@ -71,6 +72,7 @@ public class ModItems {
         moduleRegeneration = new ArmorModuleItem("module_regeneration", ArmorUpgradeType.REGENERATION);
         moduleScramble = new ArmorModuleItem("module_scramble", ArmorUpgradeType.SCRAMBLE);
         moduleAutofeed = new ArmorModuleItem("module_autofeed", ArmorUpgradeType.AUTOFEED);
+        moduleSpeed = new ArmorModuleItem("module_speed", ArmorUpgradeType.SPEED);
     }
 
     public static void initOreDict() {
@@ -105,6 +107,7 @@ public class ModItems {
         moduleRegeneration.initModel();
         moduleScramble.initModel();
         moduleAutofeed.initModel();
+        moduleSpeed.initModel();
 
         ModelLoader.setCustomModelResourceLocation(powerSuitBoots, 0, new ModelResourceLocation(powerSuitBoots.getRegistryName(), "inventory"));
         ModelLoader.setCustomModelResourceLocation(powerSuitChest, 0, new ModelResourceLocation(powerSuitChest.getRegistryName(), "inventory"));

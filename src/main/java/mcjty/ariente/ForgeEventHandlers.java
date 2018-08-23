@@ -12,7 +12,6 @@ import mcjty.ariente.cities.CityTools;
 import mcjty.ariente.dimension.ArienteChunkGenerator;
 import mcjty.ariente.dimension.EditMode;
 import mcjty.ariente.items.ModItems;
-import mcjty.ariente.items.armor.PowerSuitFeatureCache;
 import mcjty.ariente.power.PowerSystem;
 import mcjty.ariente.sounds.ModSounds;
 import mcjty.lib.McJtyRegister;
@@ -27,7 +26,6 @@ import net.minecraft.world.World;
 import net.minecraft.world.WorldServer;
 import net.minecraft.world.biome.Biome;
 import net.minecraftforge.event.RegistryEvent;
-import net.minecraftforge.event.entity.living.LivingEquipmentChangeEvent;
 import net.minecraftforge.event.entity.living.LivingSpawnEvent;
 import net.minecraftforge.event.world.BlockEvent;
 import net.minecraftforge.fml.common.eventhandler.Event;
@@ -82,10 +80,10 @@ public class ForgeEventHandlers {
         }
     }
 
-    @SubscribeEvent
-    public void onLivingEquipmentChange(LivingEquipmentChangeEvent event) {
-        PowerSuitFeatureCache.checkCacheClean(event.getEntity().getEntityId(), event.getSlot(), event.getFrom(), event.getTo());
-    }
+//    @SubscribeEvent
+//    public void onLivingEquipmentChange(LivingEquipmentChangeEvent event) {
+//        PowerSuitFeatureCache.checkCacheClean(event.getEntity().getEntityId(), event.getSlot(), event.getFrom(), event.getTo());
+//    }
 
     private void onBlockBreakNormal(BlockEvent.BreakEvent event) {
         World world = event.getWorld();
