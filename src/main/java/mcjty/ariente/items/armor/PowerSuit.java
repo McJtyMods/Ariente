@@ -100,7 +100,7 @@ public class PowerSuit extends ItemArmor {
             return;
         }
 
-        if (!managePower(stack)) {
+        if (!managePower(stack, entity)) {
             return;
         }
 
@@ -112,7 +112,7 @@ public class PowerSuit extends ItemArmor {
             return;
         }
 
-        if (!managePower(stack)) {
+        if (!managePower(stack, entity)) {
             return;
         }
 
@@ -120,8 +120,8 @@ public class PowerSuit extends ItemArmor {
 
         if (compound.getBoolean(ArmorUpgradeType.SPEED.getModuleKey())) {
             PotionEffect effect = entity.getActivePotionEffect(MobEffects.SPEED);
-            if (effect == null || effect.getDuration() <= 100) {
-                entity.addPotionEffect(new PotionEffect(MobEffects.SPEED, 200, 1, false, false));
+            if (effect == null || effect.getDuration() <= 50) {
+                entity.addPotionEffect(new PotionEffect(MobEffects.SPEED, 100, 1, false, false));
             }
         }
     }
@@ -131,7 +131,7 @@ public class PowerSuit extends ItemArmor {
             return;
         }
 
-        if (!managePower(stack)) {
+        if (!managePower(stack, entity)) {
             return;
         }
 
@@ -139,8 +139,8 @@ public class PowerSuit extends ItemArmor {
 
         if (compound.getBoolean(ArmorUpgradeType.REGENERATION.getModuleKey())) {
             PotionEffect effect = entity.getActivePotionEffect(MobEffects.REGENERATION);
-            if (effect == null || effect.getDuration() <= 100) {
-                entity.addPotionEffect(new PotionEffect(MobEffects.REGENERATION, 200, 1, false, false));
+            if (effect == null || effect.getDuration() <= 50) {
+                entity.addPotionEffect(new PotionEffect(MobEffects.REGENERATION, 100, 1, false, false));
             }
         }
     }
@@ -150,7 +150,7 @@ public class PowerSuit extends ItemArmor {
             return;
         }
 
-        if (!managePower(stack)) {
+        if (!managePower(stack, entity)) {
             return;
         }
 
@@ -170,7 +170,7 @@ public class PowerSuit extends ItemArmor {
         }
     }
 
-    private boolean managePower(ItemStack stack) {
+    private boolean managePower(ItemStack stack, EntityLivingBase entity) {
         Pair<Integer, Integer> powerUsage = getPowerUsage(stack);
         if (powerUsage.getLeft() > powerUsage.getRight()) {
             // Can't work
@@ -191,17 +191,62 @@ public class PowerSuit extends ItemArmor {
             negarite--;
             posirite--;
             if (negarite < 0 || posirite < 0) {
-                // Not enough power possible
-                return false;
+                // Not enough power possible. Check if we can autofeed
+                if (!checkAutofeed(entity, compound)) {
+                    return false;
+                } else {
+                    // We autofed and immediatelly consumed it so set values to 0
+                    posirite = 0;
+                    negarite = 0;
+                }
             }
             compound.setInteger("negarite", negarite);
             compound.setInteger("posirite", posirite);
-            compound.setInteger("power", 5000 / powerUsage.getLeft());    // @todo configurable
+            int max = 30000;
+            if (powerUsage.getRight() > 100) {  // If > 100 we have an energy optimizer
+                max = 40000;
+            }
+            compound.setInteger("power", max / powerUsage.getLeft());    // @todo configurable
         } else {
             power--;
             compound.setInteger("power", power);
         }
         return true;
+    }
+
+    private boolean checkAutofeed(EntityLivingBase entity, NBTTagCompound compound) {
+        if (compound.getBoolean(ArmorUpgradeType.AUTOFEED.getModuleKey())) {
+            if (entity instanceof EntityPlayer) {
+                // Only auto-feed with player
+                int negariteIndex = -1;
+                int posiriteIndex = -1;
+                EntityPlayer player = (EntityPlayer) entity;
+                for (int i = 0; i < player.inventory.getSizeInventory(); i++) {
+                    ItemStack itemStack = player.inventory.getStackInSlot(i);
+                    if (itemStack.getItem() == ModItems.negariteDust) {
+                        if (!itemStack.isEmpty()) {
+                            negariteIndex = i;
+                            if (posiriteIndex != -1) {
+                                break;
+                            }
+                        }
+                    } else if (itemStack.getItem() == ModItems.posiriteDust) {
+                        if (!itemStack.isEmpty()) {
+                            posiriteIndex = i;
+                            if (negariteIndex != -1) {
+                                break;
+                            }
+                        }
+                    }
+                }
+                if (negariteIndex != -1 && posiriteIndex != -1) {
+                    player.inventory.getStackInSlot(negariteIndex).shrink(1);
+                    player.inventory.getStackInSlot(posiriteIndex).shrink(1);
+                    return true;
+                }
+            }
+        }
+        return false;
     }
 
     public static boolean hasFullArmor(EntityPlayer player) {
@@ -226,7 +271,7 @@ public class PowerSuit extends ItemArmor {
     @Nonnull
     public static Pair<Integer, Integer> getPowerUsage(ItemStack stack) {
         int power = 0;
-        int maxPower = 100;
+        int maxPower = 100; // @todo configurable
         NBTTagCompound compound = stack.getTagCompound();
         if (compound == null) {
             return Pair.of(0, 0);
@@ -239,7 +284,7 @@ public class PowerSuit extends ItemArmor {
                     if (type.getPowerUsage() > 0) {
                         power += type.getPowerUsage();
                     } else if (type.getPowerUsage() == -1) {
-                        maxPower = 130;
+                        maxPower = 130; // @todo configurable
                     }
                 }
             }
