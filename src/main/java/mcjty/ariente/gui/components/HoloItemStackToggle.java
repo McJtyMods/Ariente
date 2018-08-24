@@ -4,6 +4,7 @@ import mcjty.ariente.Ariente;
 import mcjty.ariente.gui.HoloGuiEntity;
 import mcjty.ariente.gui.HoloGuiRenderTools;
 import mcjty.ariente.sounds.ModSounds;
+import net.minecraft.client.renderer.GlStateManager;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.item.ItemStack;
 import net.minecraft.util.ResourceLocation;
@@ -38,7 +39,18 @@ public class HoloItemStackToggle extends AbstractHoloComponent {
             border = true;
         }
         HoloGuiRenderTools.renderItem(x * 1.05, y * 0.85 + .45, stack, lightmap, border);
-//        HoloGuiRenderTools.renderToolTip(stack, (int) (x * 10), (int) (y * 8));
+    }
+
+    @Override
+    public void renderTooltip(EntityPlayer player, double cursorX, double cursorY) {
+        GlStateManager.pushMatrix();
+        GlStateManager.scale(0.01, 0.01, 0.01);
+        GlStateManager.rotate(180, 0, 1, 0);
+        GlStateManager.rotate(180, 0, 0, 1);
+        GlStateManager.translate(0, 0, -10);
+        GlStateManager.scale(0.4, 0.4, 0.0);
+        HoloGuiRenderTools.renderToolTip(stack, (int) (x * 30 - 120), (int) (y * 30 - 120));
+        GlStateManager.popMatrix();
     }
 
     public HoloItemStackToggle hitEvent(IEvent event) {

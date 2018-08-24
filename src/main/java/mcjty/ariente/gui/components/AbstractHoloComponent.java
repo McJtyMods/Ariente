@@ -24,6 +24,16 @@ public abstract class AbstractHoloComponent implements IGuiComponent {
     }
 
     @Override
+    public void renderTooltip(EntityPlayer player, double cursorX, double cursorY) {
+
+    }
+
+    @Override
+    public IGuiComponent findHoveringWidget(double cursorX, double cursorY) {
+        return this;
+    }
+
+    @Override
     public double getX() {
         return x;
     }

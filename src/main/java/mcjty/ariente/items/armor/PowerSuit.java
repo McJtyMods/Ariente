@@ -1,6 +1,7 @@
 package mcjty.ariente.items.armor;
 
 import mcjty.ariente.Ariente;
+import mcjty.ariente.bindings.KeyBindings;
 import mcjty.ariente.items.ModItems;
 import mcjty.ariente.items.modules.ArmorUpgradeType;
 import mcjty.lib.McJtyRegister;
@@ -296,6 +297,9 @@ public class PowerSuit extends ItemArmor {
     public void addInformation(ItemStack stack, World world, List<String> list, ITooltipFlag b) {
         super.addInformation(stack, world, list, b);
         list.add("Power suit part");
+        if (KeyBindings.configureArmor != null) {
+            list.add(TextFormatting.GRAY + "Configure with: " + TextFormatting.WHITE + "key " + KeyBindings.configureArmor.getDisplayName());
+        }
         if (stack.hasTagCompound()) {
             NBTTagCompound compound = stack.getTagCompound();
             for (ArmorUpgradeType type : ArmorUpgradeType.VALUES) {

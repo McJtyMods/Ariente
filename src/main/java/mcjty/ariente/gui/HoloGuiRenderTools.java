@@ -129,6 +129,8 @@ public class HoloGuiRenderTools {
 
 
     public static void renderToolTip(ItemStack stack, int x, int y) {
+        GuiUtils.preItemToolTip(stack);
+
         net.minecraft.client.renderer.RenderHelper.enableGUIStandardItemLighting();
 
         Minecraft mc = Minecraft.getMinecraft();
@@ -144,12 +146,12 @@ public class HoloGuiRenderTools {
         }
 
         FontRenderer font = stack.getItem().getFontRenderer(stack);
-        GuiUtils.preItemToolTip(stack);
         FontRenderer font1 = (font == null ? mc.fontRenderer : font);
         GuiUtils.drawHoveringText(list, x, y, 600, 500, -1, font1);
-        GuiUtils.postItemToolTip();
 
         net.minecraft.client.renderer.RenderHelper.disableStandardItemLighting();
+
+        GuiUtils.postItemToolTip();
     }
 
 }

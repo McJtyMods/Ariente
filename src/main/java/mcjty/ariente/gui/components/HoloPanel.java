@@ -29,6 +29,16 @@ public class HoloPanel extends AbstractHoloComponent {
     }
 
     @Override
+    public IGuiComponent findHoveringWidget(double cursorX, double cursorY) {
+        for (IGuiComponent child : children) {
+            if (child.isInside(cursorX, cursorY)) {
+                return child.findHoveringWidget(cursorX, cursorY);
+            }
+        }
+        return null;
+    }
+
+    @Override
     public void hit(EntityPlayer player, HoloGuiEntity entity, double cursorX, double cursorY) {
         for (IGuiComponent child : children) {
             if (child.isInside(cursorX, cursorY)) {

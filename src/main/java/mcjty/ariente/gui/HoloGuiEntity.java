@@ -36,6 +36,8 @@ public class HoloGuiEntity extends Entity {
     private double cursorY;
     private Vec3d hit;
     private String lastGuiId = null;   // Last guiId that was rendered on the client. If it changes then we have to redo the gui
+    public int tooltipTimeout = 10;
+    public IGuiComponent tooltipComponent = null;
 
     public HoloGuiEntity(World worldIn) {
         super(worldIn);

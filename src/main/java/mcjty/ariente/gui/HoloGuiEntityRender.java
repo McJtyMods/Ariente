@@ -71,6 +71,19 @@ public class HoloGuiEntityRender extends Render<HoloGuiEntity> {
         IGuiComponent gui = entity.getGui(Minecraft.getMinecraft().player);
         if (gui != null) {
             gui.render(Minecraft.getMinecraft().player, cursorX, cursorY);
+            IGuiComponent hovering = gui.findHoveringWidget(cursorX, cursorY);
+            if (hovering != entity.tooltipComponent) {
+                entity.tooltipComponent = hovering;
+                entity.tooltipTimeout = 10;
+            } else {
+                if (entity.tooltipTimeout > 0) {
+                    entity.tooltipTimeout--;
+                } else {
+                    if (hovering != null) {
+                        hovering.renderTooltip(Minecraft.getMinecraft().player, cursorX, cursorY);
+                    }
+                }
+            }
         }
 
         if (cursorX >= 0 && cursorX <= 10 && cursorY >= 0 && cursorY <= 10) {

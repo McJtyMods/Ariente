@@ -1,6 +1,5 @@
 package mcjty.ariente.items.modules;
 
-import mcjty.ariente.bindings.KeyBindings;
 import mcjty.ariente.items.GenericItem;
 import net.minecraft.client.util.ITooltipFlag;
 import net.minecraft.item.ItemStack;
@@ -22,12 +21,6 @@ public class ArmorModuleItem extends GenericItem {
     @Override
     public void addInformation(ItemStack stack, @Nullable World worldIn, List<String> tooltip, ITooltipFlag flagIn) {
         super.addInformation(stack, worldIn, tooltip, flagIn);
-        tooltip.add("Upgrade module for");
-        tooltip.add("the power armor");
-        if (KeyBindings.configureArmor != null) {
-            tooltip.add(TextFormatting.GRAY + "Configure: " + TextFormatting.WHITE + "key " + KeyBindings.configureArmor.getDisplayName());
-        }
-        tooltip.add(TextFormatting.BLUE + type.getDescription());
         if (type.getPowerUsage() > 0) {
             tooltip.add(TextFormatting.GRAY + "Power usage: " + TextFormatting.YELLOW + type.getPowerUsage());
         } else if (type.getPowerUsage() == -1) {
