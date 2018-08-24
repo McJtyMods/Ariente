@@ -2,16 +2,21 @@ package mcjty.ariente.gui;
 
 import mcjty.lib.client.RenderHelper;
 import net.minecraft.client.Minecraft;
+import net.minecraft.client.gui.FontRenderer;
 import net.minecraft.client.renderer.*;
 import net.minecraft.client.renderer.block.model.IBakedModel;
 import net.minecraft.client.renderer.block.model.ItemCameraTransforms;
 import net.minecraft.client.renderer.texture.TextureMap;
 import net.minecraft.client.renderer.vertex.DefaultVertexFormats;
+import net.minecraft.client.util.ITooltipFlag;
 import net.minecraft.item.ItemStack;
 import net.minecraft.util.ResourceLocation;
+import net.minecraft.util.text.TextFormatting;
+import net.minecraftforge.fml.client.config.GuiUtils;
 import org.lwjgl.opengl.GL11;
 
 import javax.annotation.Nullable;
+import java.util.List;
 
 public class HoloGuiRenderTools {
 
@@ -120,6 +125,31 @@ public class HoloGuiRenderTools {
         if (lightmap != null) {
             Minecraft.getMinecraft().entityRenderer.disableLightmap();
         }
+    }
+
+
+    public static void renderToolTip(ItemStack stack, int x, int y) {
+        net.minecraft.client.renderer.RenderHelper.enableGUIStandardItemLighting();
+
+        Minecraft mc = Minecraft.getMinecraft();
+        ITooltipFlag flag = mc.gameSettings.advancedItemTooltips ? ITooltipFlag.TooltipFlags.ADVANCED : ITooltipFlag.TooltipFlags.NORMAL;
+        List<String> list = stack.getTooltip(mc.player, flag);
+
+        for (int i = 0; i < list.size(); ++i) {
+            if (i == 0) {
+                list.set(i, stack.getRarity().rarityColor + list.get(i));
+            } else {
+                list.set(i, TextFormatting.GRAY + list.get(i));
+            }
+        }
+
+        FontRenderer font = stack.getItem().getFontRenderer(stack);
+        GuiUtils.preItemToolTip(stack);
+        FontRenderer font1 = (font == null ? mc.fontRenderer : font);
+        GuiUtils.drawHoveringText(list, x, y, 600, 500, -1, font1);
+        GuiUtils.postItemToolTip();
+
+        net.minecraft.client.renderer.RenderHelper.disableStandardItemLighting();
     }
 
 }

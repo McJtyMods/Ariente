@@ -38,6 +38,7 @@ public class HoloItemStackToggle extends AbstractHoloComponent {
             border = true;
         }
         HoloGuiRenderTools.renderItem(x * 1.05, y * 0.85 + .45, stack, lightmap, border);
+//        HoloGuiRenderTools.renderToolTip(stack, (int) (x * 10), (int) (y * 8));
     }
 
     public HoloItemStackToggle hitEvent(IEvent event) {
