@@ -7,9 +7,12 @@ import mcjty.ariente.items.modules.ArmorUpgradeType;
 import mcjty.lib.McJtyRegister;
 import net.minecraft.client.model.ModelBiped;
 import net.minecraft.client.util.ITooltipFlag;
+import net.minecraft.enchantment.Enchantment;
+import net.minecraft.enchantment.EnchantmentHelper;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.EntityLivingBase;
 import net.minecraft.entity.player.EntityPlayer;
+import net.minecraft.init.Enchantments;
 import net.minecraft.init.MobEffects;
 import net.minecraft.inventory.EntityEquipmentSlot;
 import net.minecraft.item.Item;
@@ -23,7 +26,10 @@ import org.apache.commons.lang3.tuple.Pair;
 
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
+import java.util.Collections;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 public class PowerSuit extends ItemArmor {
 
@@ -101,12 +107,29 @@ public class PowerSuit extends ItemArmor {
             return;
         }
 
+        int level = EnchantmentHelper.getEnchantmentLevel(Enchantments.FEATHER_FALLING, stack);
+
         if (!managePower(stack, entity)) {
+            if (level > 0) {
+                EnchantmentHelper.setEnchantments(Collections.emptyMap(), stack);
+            }
             return;
         }
 
         NBTTagCompound compound = stack.getTagCompound();
+
+        if (compound.getBoolean(ArmorUpgradeType.FEATHERFALLING.getModuleKey())) {
+            if (level <= 0) {
+                Map<Enchantment, Integer> ench = new HashMap<>();
+                ench.put(Enchantments.FEATHER_FALLING, 10);
+                EnchantmentHelper.setEnchantments(ench, stack);
+            }
+        } else {
+            if (level > 0) {
+                EnchantmentHelper.setEnchantments(Collections.emptyMap(), stack);
+            }
         }
+    }
 
     private void onUpdateLegs(ItemStack stack, World world, EntityLivingBase entity) {
         if (stack.isEmpty() || stack.getItem() != ModItems.powerSuitLegs || !stack.hasTagCompound()) {
@@ -122,7 +145,7 @@ public class PowerSuit extends ItemArmor {
         if (compound.getBoolean(ArmorUpgradeType.SPEED.getModuleKey())) {
             PotionEffect effect = entity.getActivePotionEffect(MobEffects.SPEED);
             if (effect == null || effect.getDuration() <= 50) {
-                entity.addPotionEffect(new PotionEffect(MobEffects.SPEED, 100, 1, false, false));
+                entity.addPotionEffect(new PotionEffect(MobEffects.SPEED, 100, 2, false, false));
             }
         }
     }
@@ -141,7 +164,7 @@ public class PowerSuit extends ItemArmor {
         if (compound.getBoolean(ArmorUpgradeType.REGENERATION.getModuleKey())) {
             PotionEffect effect = entity.getActivePotionEffect(MobEffects.REGENERATION);
             if (effect == null || effect.getDuration() <= 50) {
-                entity.addPotionEffect(new PotionEffect(MobEffects.REGENERATION, 100, 1, false, false));
+                entity.addPotionEffect(new PotionEffect(MobEffects.REGENERATION, 100, 2, false, false));
             }
         }
     }
@@ -291,6 +314,11 @@ public class PowerSuit extends ItemArmor {
             }
         }
         return Pair.of(power, maxPower);
+    }
+
+    @Override
+    public boolean hasEffect(ItemStack stack) {
+        return false;
     }
 
     @Override

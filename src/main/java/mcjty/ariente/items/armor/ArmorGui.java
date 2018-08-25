@@ -83,7 +83,7 @@ public class ArmorGui {
     }
 
     public static IGuiComponent createBootsGui(EntityPlayer player) {
-        EntityEquipmentSlot slot = EntityEquipmentSlot.LEGS;
+        EntityEquipmentSlot slot = EntityEquipmentSlot.FEET;
 
         HoloPanel panel = createPieceGui(slot);
 
