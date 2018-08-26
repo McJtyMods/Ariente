@@ -6,17 +6,16 @@ import mcjty.ariente.dimension.EditMode;
 import mcjty.ariente.dimension.EditModeClient;
 import mcjty.ariente.items.ModItems;
 import mcjty.ariente.items.armor.PowerSuit;
-import mcjty.ariente.items.modules.ArmorModuleItem;
 import mcjty.ariente.items.modules.ArmorUpgradeType;
 import mcjty.ariente.network.ArienteMessages;
 import mcjty.ariente.network.PacketHitForcefield;
 import net.minecraft.block.state.IBlockState;
+import net.minecraft.client.entity.EntityPlayerSP;
 import net.minecraft.client.renderer.GlStateManager;
 import net.minecraft.client.renderer.RenderGlobal;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.inventory.EntityEquipmentSlot;
 import net.minecraft.item.ItemStack;
-import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.RayTraceResult;
 import net.minecraftforge.client.event.DrawBlockHighlightEvent;
@@ -76,7 +75,7 @@ public class ClientForgeEventHandlers {
     public void onClientTick(TickEvent.ClientTickEvent event) {
         EventPriority phase = event.getPhase();
         if (phase == EventPriority.NORMAL) {
-            EntityPlayer player = Ariente.proxy.getClientPlayer();
+            EntityPlayerSP player = (EntityPlayerSP) Ariente.proxy.getClientPlayer();
             if (player != null) {
                 ItemStack chestStack = player.getItemStackFromSlot(EntityEquipmentSlot.CHEST);
                 if (!chestStack.isEmpty() && chestStack.getItem() == ModItems.powerSuitChest && chestStack.hasTagCompound()) {
@@ -85,6 +84,14 @@ public class ClientForgeEventHandlers {
                             player.isAirBorne = true;
                             player.motionY = 0.4;
                         }
+                    }
+                }
+
+                ItemStack feetStack = player.getItemStackFromSlot(EntityEquipmentSlot.FEET);
+                player.stepHeight = 0.6f;
+                if (!feetStack.isEmpty() && feetStack.getItem() == ModItems.powerSuitBoots && feetStack.hasTagCompound()) {
+                    if (PowerSuit.hasWorkingUpgrade(feetStack, ArmorUpgradeType.STEPASSIST)) {
+                        player.stepHeight = 1.9f;
                     }
                 }
             }

@@ -91,6 +91,7 @@ public class ArmorGui {
         createModuleEntry(panel, slot, 5, 2, ModItems.moduleArmor);
         createModuleEntry(panel, slot, 1, 3, ModItems.moduleAutofeed);
         createModuleEntry(panel, slot, 5, 3, ModItems.moduleFeatherFalling);
+        createModuleEntry(panel, slot, 1, 4, ModItems.moduleStepassist);
 
         addPowerGui(slot, panel);
 

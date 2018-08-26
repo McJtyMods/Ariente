@@ -28,6 +28,7 @@ item.ariente.module_speed.name=Speed Upgrade Module
 item.ariente.module_scramble.name=Scramble Upgrade Module
 item.ariente.module_autofeed.name=Autofeed Power Upgrade Module
 item.ariente.module_nightvision.name=Nightvision Upgrade Module
+item.ariente.module_stepassist.name=Step Assist Upgrade Module
 
 tile.ariente.pattern.dots.name=Dots Pattern
 tile.ariente.pattern.lines.name=Lines Pattern

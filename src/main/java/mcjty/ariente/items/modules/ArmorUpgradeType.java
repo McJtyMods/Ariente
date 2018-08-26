@@ -15,7 +15,8 @@ public enum ArmorUpgradeType {
     REGENERATION("regeneration", "Regeneration upgrade", 40),
     SPEED("speed", "Speed upgrade", 20),
     SCRAMBLE("scramble", "Scramble upgrade", 50),
-    AUTOFEED("autofeed", "Autofeed power upgrade", 5);
+    AUTOFEED("autofeed", "Autofeed power upgrade", 5),
+    STEPASSIST("stepassist", "Step Assist power upgrade", 10);
 
     private final String name;
     private final String description;

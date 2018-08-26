@@ -132,11 +132,13 @@ public class PowerSuit extends ItemArmor {
         if (!managePower(stack, entity)) {
             compound.setBoolean(ArmorUpgradeType.ARMOR.getWorkingKey(), false);
             compound.setBoolean(ArmorUpgradeType.FEATHERFALLING.getWorkingKey(), false);
+            compound.setBoolean(ArmorUpgradeType.STEPASSIST.getWorkingKey(), false);
             return;
         }
 
         compound.setBoolean(ArmorUpgradeType.ARMOR.getWorkingKey(), compound.getBoolean(ArmorUpgradeType.ARMOR.getModuleKey()));
         compound.setBoolean(ArmorUpgradeType.FEATHERFALLING.getWorkingKey(), compound.getBoolean(ArmorUpgradeType.FEATHERFALLING.getModuleKey()));
+        compound.setBoolean(ArmorUpgradeType.STEPASSIST.getWorkingKey(), compound.getBoolean(ArmorUpgradeType.STEPASSIST.getModuleKey()));
     }
 
     private void onUpdateLegs(ItemStack stack, World world, EntityLivingBase entity) {
