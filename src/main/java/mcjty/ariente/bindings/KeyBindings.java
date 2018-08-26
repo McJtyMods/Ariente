@@ -22,9 +22,9 @@ public class KeyBindings {
 //        ClientRegistry.registerKeyBinding(fullHealth);
         configureArmor = new KeyBinding("key.configurearmor", KeyConflictContext.IN_GAME, Keyboard.KEY_0, "key.categories.ariente");
         ClientRegistry.registerKeyBinding(configureArmor);
-        armorHotkey1 = new KeyBinding("key.hotkey1", KeyConflictContext.IN_GAME, Keyboard.KEY_NONE, "key.categories.ariente");
+        armorHotkey1 = new KeyBinding("key.hotkey1", KeyConflictContext.IN_GAME, Keyboard.KEY_NUMPAD7, "key.categories.ariente");
         ClientRegistry.registerKeyBinding(armorHotkey1);
-        armorHotkey2 = new KeyBinding("key.hotkey2", KeyConflictContext.IN_GAME, Keyboard.KEY_NONE, "key.categories.ariente");
+        armorHotkey2 = new KeyBinding("key.hotkey2", KeyConflictContext.IN_GAME, Keyboard.KEY_NUMPAD8, "key.categories.ariente");
         ClientRegistry.registerKeyBinding(armorHotkey2);
         armorHotkey3 = new KeyBinding("key.hotkey3", KeyConflictContext.IN_GAME, Keyboard.KEY_NONE, "key.categories.ariente");
         ClientRegistry.registerKeyBinding(armorHotkey3);

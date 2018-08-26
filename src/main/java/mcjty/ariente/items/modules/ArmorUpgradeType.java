@@ -49,6 +49,10 @@ public enum ArmorUpgradeType {
         return "module_" + getName();
     }
 
+    public String getWorkingKey() {
+        return "working_" + getName();
+    }
+
     public String getHotkeyKey() {
         return "key_" + getName();
     }

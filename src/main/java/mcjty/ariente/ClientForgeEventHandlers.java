@@ -4,18 +4,27 @@ import mcjty.ariente.blocks.ModBlocks;
 import mcjty.ariente.blocks.defense.ForceFieldRenderer;
 import mcjty.ariente.dimension.EditMode;
 import mcjty.ariente.dimension.EditModeClient;
+import mcjty.ariente.items.ModItems;
+import mcjty.ariente.items.armor.PowerSuit;
+import mcjty.ariente.items.modules.ArmorModuleItem;
+import mcjty.ariente.items.modules.ArmorUpgradeType;
 import mcjty.ariente.network.ArienteMessages;
 import mcjty.ariente.network.PacketHitForcefield;
 import net.minecraft.block.state.IBlockState;
 import net.minecraft.client.renderer.GlStateManager;
 import net.minecraft.client.renderer.RenderGlobal;
 import net.minecraft.entity.player.EntityPlayer;
+import net.minecraft.inventory.EntityEquipmentSlot;
+import net.minecraft.item.ItemStack;
+import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.RayTraceResult;
 import net.minecraftforge.client.event.DrawBlockHighlightEvent;
 import net.minecraftforge.client.event.RenderWorldLastEvent;
 import net.minecraftforge.event.entity.player.PlayerInteractEvent;
+import net.minecraftforge.fml.common.eventhandler.EventPriority;
 import net.minecraftforge.fml.common.eventhandler.SubscribeEvent;
+import net.minecraftforge.fml.common.gameevent.TickEvent;
 
 public class ClientForgeEventHandlers {
 
@@ -62,4 +71,24 @@ public class ClientForgeEventHandlers {
         // This event is only called clientside. Tell the server
         ArienteMessages.INSTANCE.sendToServer(new PacketHitForcefield());
     }
+
+    @SubscribeEvent
+    public void onClientTick(TickEvent.ClientTickEvent event) {
+        EventPriority phase = event.getPhase();
+        if (phase == EventPriority.NORMAL) {
+            EntityPlayer player = Ariente.proxy.getClientPlayer();
+            if (player != null) {
+                ItemStack chestStack = player.getItemStackFromSlot(EntityEquipmentSlot.CHEST);
+                if (!chestStack.isEmpty() && chestStack.getItem() == ModItems.powerSuitChest && chestStack.hasTagCompound()) {
+                    if (PowerSuit.hasWorkingUpgrade(chestStack, ArmorUpgradeType.FLIGHT)) {
+                        if (Ariente.proxy.isJumpKeyDown()) {
+                            player.isAirBorne = true;
+                            player.motionY = 0.4;
+                        }
+                    }
+                }
+            }
+        }
+    }
+
 }

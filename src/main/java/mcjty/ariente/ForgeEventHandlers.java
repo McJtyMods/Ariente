@@ -12,13 +12,17 @@ import mcjty.ariente.cities.CityTools;
 import mcjty.ariente.dimension.ArienteChunkGenerator;
 import mcjty.ariente.dimension.EditMode;
 import mcjty.ariente.items.ModItems;
+import mcjty.ariente.items.armor.PowerSuit;
+import mcjty.ariente.items.modules.ArmorUpgradeType;
 import mcjty.ariente.power.PowerSystem;
 import mcjty.ariente.sounds.ModSounds;
 import mcjty.lib.McJtyRegister;
 import net.minecraft.block.Block;
 import net.minecraft.entity.passive.IAnimals;
 import net.minecraft.entity.player.EntityPlayer;
+import net.minecraft.inventory.EntityEquipmentSlot;
 import net.minecraft.item.Item;
+import net.minecraft.item.ItemStack;
 import net.minecraft.tileentity.TileEntity;
 import net.minecraft.util.SoundEvent;
 import net.minecraft.util.math.BlockPos;
@@ -26,6 +30,7 @@ import net.minecraft.world.World;
 import net.minecraft.world.WorldServer;
 import net.minecraft.world.biome.Biome;
 import net.minecraftforge.event.RegistryEvent;
+import net.minecraftforge.event.entity.living.LivingFallEvent;
 import net.minecraftforge.event.entity.living.LivingSpawnEvent;
 import net.minecraftforge.event.world.BlockEvent;
 import net.minecraftforge.fml.common.eventhandler.Event;
@@ -76,6 +81,16 @@ public class ForgeEventHandlers {
         if (event.getWorld().provider.getDimension() == 222) {
             if (event.getEntity() instanceof IAnimals) {
                 event.setResult(Event.Result.DENY);
+            }
+        }
+    }
+
+    @SubscribeEvent
+    public void onLivingFall(LivingFallEvent event) {
+        ItemStack feetStack = event.getEntityLiving().getItemStackFromSlot(EntityEquipmentSlot.FEET);
+        if (feetStack.getItem() == ModItems.powerSuitBoots) {
+            if (PowerSuit.hasWorkingUpgrade(feetStack, ArmorUpgradeType.FEATHERFALLING)) {
+                event.setCanceled(true);
             }
         }
     }

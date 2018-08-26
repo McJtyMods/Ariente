@@ -1,5 +1,6 @@
 package mcjty.ariente.items.armor;
 
+import com.google.common.collect.Multimap;
 import mcjty.ariente.Ariente;
 import mcjty.ariente.bindings.KeyBindings;
 import mcjty.ariente.items.ModItems;
@@ -7,12 +8,11 @@ import mcjty.ariente.items.modules.ArmorUpgradeType;
 import mcjty.lib.McJtyRegister;
 import net.minecraft.client.model.ModelBiped;
 import net.minecraft.client.util.ITooltipFlag;
-import net.minecraft.enchantment.Enchantment;
-import net.minecraft.enchantment.EnchantmentHelper;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.EntityLivingBase;
+import net.minecraft.entity.SharedMonsterAttributes;
+import net.minecraft.entity.ai.attributes.AttributeModifier;
 import net.minecraft.entity.player.EntityPlayer;
-import net.minecraft.init.Enchantments;
 import net.minecraft.init.MobEffects;
 import net.minecraft.inventory.EntityEquipmentSlot;
 import net.minecraft.item.Item;
@@ -26,12 +26,12 @@ import org.apache.commons.lang3.tuple.Pair;
 
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
-import java.util.Collections;
-import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
+import java.util.UUID;
 
 public class PowerSuit extends ItemArmor {
+
+    private static final UUID[] ARMOR_EXT_MODIFIERS = new UUID[] {UUID.randomUUID(), UUID.randomUUID(), UUID.randomUUID(), UUID.randomUUID()};
 
     public PowerSuit(EntityEquipmentSlot slot) {
         super(ArmorMaterial.LEATHER, 0, slot);
@@ -45,6 +45,19 @@ public class PowerSuit extends ItemArmor {
     @Override
     public String getArmorTexture(ItemStack stack, Entity entity, EntityEquipmentSlot slot, String type) {
         return Ariente.MODID + ":textures/armor/suit.png";
+    }
+
+    @Override
+    public Multimap<String, AttributeModifier> getAttributeModifiers(EntityEquipmentSlot slot, ItemStack stack) {
+        Multimap<String, AttributeModifier> multimap = super.getAttributeModifiers(slot, stack);
+
+        if (slot == this.armorType) {
+            double extra = hasWorkingUpgrade(stack, ArmorUpgradeType.ARMOR) ? 4 : 0;
+            multimap.put(SharedMonsterAttributes.ARMOR.getName(), new AttributeModifier(ARMOR_EXT_MODIFIERS[armorType.getIndex()],
+                    "Armor extra modifier", extra, 0));
+        }
+
+        return multimap;
     }
 
     @Nullable
@@ -102,33 +115,28 @@ public class PowerSuit extends ItemArmor {
         }
     }
 
+    public static boolean hasWorkingUpgrade(ItemStack stack, ArmorUpgradeType type) {
+        if (stack.isEmpty() || !stack.hasTagCompound()) {
+            return false;
+        }
+        return stack.getTagCompound().getBoolean(type.getWorkingKey());
+    }
+
     private void onUpdateFeet(ItemStack stack, World world, EntityLivingBase entity) {
         if (stack.isEmpty() || stack.getItem() != ModItems.powerSuitBoots || !stack.hasTagCompound()) {
             return;
         }
 
-        int level = EnchantmentHelper.getEnchantmentLevel(Enchantments.FEATHER_FALLING, stack);
+        NBTTagCompound compound = stack.getTagCompound();
 
         if (!managePower(stack, entity)) {
-            if (level > 0) {
-                EnchantmentHelper.setEnchantments(Collections.emptyMap(), stack);
-            }
+            compound.setBoolean(ArmorUpgradeType.ARMOR.getWorkingKey(), false);
+            compound.setBoolean(ArmorUpgradeType.FEATHERFALLING.getWorkingKey(), false);
             return;
         }
 
-        NBTTagCompound compound = stack.getTagCompound();
-
-        if (compound.getBoolean(ArmorUpgradeType.FEATHERFALLING.getModuleKey())) {
-            if (level <= 0) {
-                Map<Enchantment, Integer> ench = new HashMap<>();
-                ench.put(Enchantments.FEATHER_FALLING, 10);
-                EnchantmentHelper.setEnchantments(ench, stack);
-            }
-        } else {
-            if (level > 0) {
-                EnchantmentHelper.setEnchantments(Collections.emptyMap(), stack);
-            }
-        }
+        compound.setBoolean(ArmorUpgradeType.ARMOR.getWorkingKey(), compound.getBoolean(ArmorUpgradeType.ARMOR.getModuleKey()));
+        compound.setBoolean(ArmorUpgradeType.FEATHERFALLING.getWorkingKey(), compound.getBoolean(ArmorUpgradeType.FEATHERFALLING.getModuleKey()));
     }
 
     private void onUpdateLegs(ItemStack stack, World world, EntityLivingBase entity) {
@@ -136,11 +144,14 @@ public class PowerSuit extends ItemArmor {
             return;
         }
 
+        NBTTagCompound compound = stack.getTagCompound();
+
         if (!managePower(stack, entity)) {
+            compound.setBoolean(ArmorUpgradeType.ARMOR.getWorkingKey(), false);
             return;
         }
 
-        NBTTagCompound compound = stack.getTagCompound();
+        compound.setBoolean(ArmorUpgradeType.ARMOR.getWorkingKey(), compound.getBoolean(ArmorUpgradeType.ARMOR.getModuleKey()));
 
         if (compound.getBoolean(ArmorUpgradeType.SPEED.getModuleKey())) {
             PotionEffect effect = entity.getActivePotionEffect(MobEffects.SPEED);
@@ -155,11 +166,16 @@ public class PowerSuit extends ItemArmor {
             return;
         }
 
+        NBTTagCompound compound = stack.getTagCompound();
+
         if (!managePower(stack, entity)) {
+            compound.setBoolean(ArmorUpgradeType.ARMOR.getWorkingKey(), false);
+            compound.setBoolean(ArmorUpgradeType.FLIGHT.getWorkingKey(), false);
             return;
         }
 
-        NBTTagCompound compound = stack.getTagCompound();
+        compound.setBoolean(ArmorUpgradeType.ARMOR.getWorkingKey(), compound.getBoolean(ArmorUpgradeType.ARMOR.getModuleKey()));
+        compound.setBoolean(ArmorUpgradeType.FLIGHT.getWorkingKey(), compound.getBoolean(ArmorUpgradeType.FLIGHT.getModuleKey()));
 
         if (compound.getBoolean(ArmorUpgradeType.REGENERATION.getModuleKey())) {
             PotionEffect effect = entity.getActivePotionEffect(MobEffects.REGENERATION);
@@ -174,15 +190,18 @@ public class PowerSuit extends ItemArmor {
             return;
         }
 
+        NBTTagCompound compound = stack.getTagCompound();
+
         if (!managePower(stack, entity)) {
+            compound.setBoolean(ArmorUpgradeType.ARMOR.getWorkingKey(), false);
             return;
         }
 
-        NBTTagCompound compound = stack.getTagCompound();
+        compound.setBoolean(ArmorUpgradeType.ARMOR.getWorkingKey(), compound.getBoolean(ArmorUpgradeType.ARMOR.getModuleKey()));
 
         if (compound.getBoolean(ArmorUpgradeType.NIGHTVISION.getModuleKey())) {
             PotionEffect effect = entity.getActivePotionEffect(MobEffects.NIGHT_VISION);
-            if (effect == null || effect.getDuration() <= 200) {
+            if (effect == null || effect.getDuration() <= 300) {
                 entity.addPotionEffect(new PotionEffect(MobEffects.NIGHT_VISION, 400, 1, false, false));
             }
         }
