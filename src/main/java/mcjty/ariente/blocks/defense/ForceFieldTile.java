@@ -5,6 +5,8 @@ import mcjty.ariente.ai.CityAISystem;
 import mcjty.ariente.ai.IAlarmMode;
 import mcjty.ariente.cities.ICityEquipment;
 import mcjty.ariente.config.ArienteConfiguration;
+import mcjty.ariente.config.DamageConfiguration;
+import mcjty.ariente.config.PowerConfiguration;
 import mcjty.ariente.gui.IGuiComponent;
 import mcjty.ariente.gui.IGuiTile;
 import mcjty.ariente.gui.components.*;
@@ -261,7 +263,7 @@ public class ForceFieldTile extends GenericTileEntity implements IGuiTile, ITick
                 for (PanelInfo info : getPanelInfo()) {
                     if (info != null && info.getLife() > 0) {
                         if (info.testCollisionEntity(entity, getScaleDouble())) {
-                            entity.attackEntityFrom(DamageSource.GENERIC, 19.0f);    // @todo damage configurable
+                            entity.attackEntityFrom(DamageSource.GENERIC, DamageConfiguration.FORCEFIELD_DAMAGE);
                             ((EntityLivingBase)entity).knockBack(entity, 1.0f, pos.getX() - entity.posX, pos.getZ() - entity.posZ);
                         }
                     }
@@ -362,8 +364,8 @@ public class ForceFieldTile extends GenericTileEntity implements IGuiTile, ITick
                 int life = info.getLife();
                 if (life < 0) {
                     // Building up!
-                    if (PowerReceiverSupport.consumePower(world, pos, 500)) {   // @todo configurable
-                        usingPower += 500;
+                    if (PowerReceiverSupport.consumePower(world, pos, PowerConfiguration.FORCEFIELD_BUILDUP_POWER)) {
+                        usingPower += PowerConfiguration.FORCEFIELD_BUILDUP_POWER;
                         life++;
                         if (life == 0) {
                             life = SHIELD_PANEL_LIFE;

@@ -1,6 +1,7 @@
 package mcjty.ariente.blocks.utility.door;
 
 import mcjty.ariente.blocks.utility.ILockable;
+import mcjty.ariente.config.UtilityConfiguration;
 import mcjty.lib.tileentity.GenericTileEntity;
 import net.minecraft.block.Block;
 import net.minecraft.block.state.IBlockState;
@@ -69,7 +70,7 @@ public class InvisibleDoorTile extends GenericTileEntity implements ILockable {
         DoorMarkerTile doorMarkerTile = null;
         // Find the parent door marker
         BlockPos p = pos.down();
-        for (int i = 0 ; i < DoorMarkerTile.MAX_DOOR_HEIGHT ; i++) {
+        for (int i = 0; i < UtilityConfiguration.MAX_DOOR_HEIGHT ; i++) {
             TileEntity marker = getWorld().getTileEntity(p);
             if (marker instanceof DoorMarkerTile) {
                 doorMarkerTile = (DoorMarkerTile) marker;

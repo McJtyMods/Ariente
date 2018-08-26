@@ -10,7 +10,7 @@ public class TerrainGenEventHandlers {
     public void onInitBiomeGens(WorldTypeEvent.InitBiomeGens event) {
 //        System.out.println("event.getWorldType().getName() = " + event.getWorldType().getName());
 //        System.out.println("event.getWorldType().getId() = " + event.getWorldType().getId());
-//        if (event.getWorldType().getId() == 222 /*@todo config*/) {
+//        if (event.getWorldType().getId() == WorldgenConfiguration.DIMENSION_ID) {
 //            event.setNewBiomeGens(ArienteBiomeProvider.makeLayers());
 //        }
     }

@@ -1,6 +1,7 @@
 package mcjty.ariente.dimension;
 
 import mcjty.ariente.Ariente;
+import mcjty.ariente.config.WorldgenConfiguration;
 import net.minecraft.world.DimensionType;
 import net.minecraftforge.common.DimensionManager;
 
@@ -14,11 +15,11 @@ public class DimensionRegister {
     }
 
     private static void registerDimensionTypes() {
-        dimensionType = DimensionType.register(Ariente.MODID, "_earth", 222/* @todo config*/, ArienteWorldProvider.class, false);
+        dimensionType = DimensionType.register(Ariente.MODID, "_earth", WorldgenConfiguration.DIMENSION_ID, ArienteWorldProvider.class, false);
     }
 
     private static void registerDimensions() {
-        DimensionManager.registerDimension(222, dimensionType);
+        DimensionManager.registerDimension(WorldgenConfiguration.DIMENSION_ID, dimensionType);
     }
 
 }

@@ -11,6 +11,7 @@ import mcjty.ariente.blocks.utility.StorageTile;
 import mcjty.ariente.blocks.utility.wireless.RedstoneChannels;
 import mcjty.ariente.blocks.utility.wireless.SignalChannelTileEntity;
 import mcjty.ariente.cities.*;
+import mcjty.ariente.config.AIConfiguration;
 import mcjty.ariente.entities.*;
 import mcjty.ariente.items.ModItems;
 import mcjty.ariente.power.PowerSenderSupport;
@@ -487,7 +488,7 @@ public class CityAI {
             // Set alarm type in case it is not already set
             setAlarmType(player.world, AlarmType.ALERT);
         }
-        onAlert = 400; // alert @todo configurable
+        onAlert = AIConfiguration.ALERT_TIME;
         watchingPlayers.put(player.getUniqueID(), player.getPosition());    // Register the last known position
     }
 

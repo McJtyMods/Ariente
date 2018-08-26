@@ -1,5 +1,6 @@
 package mcjty.ariente.cities;
 
+import mcjty.ariente.config.WorldgenConfiguration;
 import mcjty.ariente.dimension.ArienteChunkGenerator;
 import mcjty.ariente.dimension.ArienteCityGenerator;
 import mcjty.ariente.dimension.ChunkHeightmap;
@@ -50,7 +51,7 @@ public class CityTools {
             Random random = new Random(seed + chunkX * 776531419L + chunkZ * 198491317L);
             random.nextFloat();
             random.nextFloat();
-            return random.nextFloat() < .7f;        // @todo configurable
+            return random.nextFloat() < WorldgenConfiguration.CITY_DUNGEON_CHANCE;
         }
         return false;
     }
@@ -124,7 +125,7 @@ public class CityTools {
         int cx = (chunkX & ~0xf);
         int cz = (chunkZ & ~0xf);
         MinecraftServer server = DimensionManager.getWorld(0).getMinecraftServer();
-        WorldServer world = server.getWorld(222); // @todo config
+        WorldServer world = server.getWorld(WorldgenConfiguration.DIMENSION_ID);
         ArienteChunkGenerator generator = (ArienteChunkGenerator) (world.getChunkProvider().chunkGenerator);
         int minHeight = ArienteCityGenerator.getPortalHeight(generator, cx, cz);
         return new BlockPos(cx * 16 + 8, minHeight+2, cz * 16 + 8);

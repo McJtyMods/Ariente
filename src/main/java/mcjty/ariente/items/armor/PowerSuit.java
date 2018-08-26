@@ -3,6 +3,7 @@ package mcjty.ariente.items.armor;
 import com.google.common.collect.Multimap;
 import mcjty.ariente.Ariente;
 import mcjty.ariente.bindings.KeyBindings;
+import mcjty.ariente.config.UtilityConfiguration;
 import mcjty.ariente.items.ModItems;
 import mcjty.ariente.items.modules.ArmorUpgradeType;
 import mcjty.lib.McJtyRegister;
@@ -247,11 +248,11 @@ public class PowerSuit extends ItemArmor {
             }
             compound.setInteger("negarite", negarite);
             compound.setInteger("posirite", posirite);
-            int max = 30000;
-            if (powerUsage.getRight() > 100) {  // If > 100 we have an energy optimizer
-                max = 40000;
+            int max = UtilityConfiguration.POWERSUIT_TICKS;
+            if (powerUsage.getRight() > UtilityConfiguration.POWERSUIT_MAXPOWER) {  // If > we have an energy optimizer
+                max = UtilityConfiguration.POWERSUIT_TICKS_OPTIMIZED;
             }
-            compound.setInteger("power", max / powerUsage.getLeft());    // @todo configurable
+            compound.setInteger("power", max / powerUsage.getLeft());
         } else {
             power--;
             compound.setInteger("power", power);
@@ -316,7 +317,7 @@ public class PowerSuit extends ItemArmor {
     @Nonnull
     public static Pair<Integer, Integer> getPowerUsage(ItemStack stack) {
         int power = 0;
-        int maxPower = 100; // @todo configurable
+        int maxPower = UtilityConfiguration.POWERSUIT_MAXPOWER;
         NBTTagCompound compound = stack.getTagCompound();
         if (compound == null) {
             return Pair.of(0, 0);
@@ -329,7 +330,7 @@ public class PowerSuit extends ItemArmor {
                     if (type.getPowerUsage() > 0) {
                         power += type.getPowerUsage();
                     } else if (type.getPowerUsage() == -1) {
-                        maxPower = 130; // @todo configurable
+                        maxPower = UtilityConfiguration.POWERSUIT_MAXPOWER_OPTIMIZED;
                     }
                 }
             }

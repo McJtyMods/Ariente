@@ -2,6 +2,7 @@ package mcjty.ariente.oregen;
 
 import mcjty.ariente.blocks.ModBlocks;
 import mcjty.ariente.blocks.decorative.MarbleColor;
+import mcjty.ariente.config.WorldgenConfiguration;
 import net.minecraft.block.Block;
 import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.nbt.NBTTagList;
@@ -35,7 +36,7 @@ public class ArienteOreGen implements IWorldGenerator {
             return;
         }
 
-        if (world.provider.getDimension() == 222) { // @todo config
+        if (world.provider.getDimension() == WorldgenConfiguration.DIMENSION_ID) {
 
             addOreSpawn(ModBlocks.marble, (byte) MarbleColor.BLUE.ordinal(), ModBlocks.marble, world, random, chunkX * 16, chunkZ * 16,
                     10, 25, 6, 16, 70);

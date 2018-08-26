@@ -1,6 +1,7 @@
 package mcjty.ariente.items;
 
 import mcjty.ariente.cities.CityTools;
+import mcjty.ariente.config.WorldgenConfiguration;
 import mcjty.lib.varia.TeleportationTools;
 import net.minecraft.client.util.ITooltipFlag;
 import net.minecraft.entity.player.EntityPlayer;
@@ -38,7 +39,7 @@ public class DirtyDiamondItem extends GenericItem {
     public ActionResult<ItemStack> onItemRightClick(World worldIn, EntityPlayer player, EnumHand handIn) {
         if (!worldIn.isRemote) {
             BlockPos nearest = CityTools.getNearestTeleportationSpot(player.getPosition());
-            TeleportationTools.teleportToDimension(player, 222, nearest.getX(), nearest.getY(), nearest.getZ());
+            TeleportationTools.teleportToDimension(player, WorldgenConfiguration.DIMENSION_ID, nearest.getX(), nearest.getY(), nearest.getZ());
         }
         return super.onItemRightClick(worldIn, player, handIn);
     }

@@ -2,6 +2,7 @@ package mcjty.ariente.blocks.utility.door;
 
 import mcjty.ariente.blocks.ModBlocks;
 import mcjty.ariente.blocks.utility.ILockable;
+import mcjty.ariente.config.UtilityConfiguration;
 import mcjty.ariente.entities.SoldierEntity;
 import mcjty.ariente.gui.HoloGuiHandler;
 import mcjty.ariente.gui.IGuiComponent;
@@ -43,8 +44,6 @@ public class DoorMarkerTile extends GenericTileEntity implements ITickable, IGui
 
     public static final AxisAlignedBB BLOCK_AABB = new AxisAlignedBB(0.0D, 0.0D, 0.0D, 1.0D, 0.1D, 1.0D);
     public static final AxisAlignedBB OPEN_BLOCK_AABB = new AxisAlignedBB(0.0D, 0.0D, 0.0D, 0.0D, 0.0D, 0.0D);
-
-    public static final int MAX_DOOR_HEIGHT = 6;        // @todo configurable
 
     private AxisAlignedBB detectionBox = null;
     private AxisAlignedBB renderBox = null;
@@ -88,7 +87,7 @@ public class DoorMarkerTile extends GenericTileEntity implements ITickable, IGui
 
     private void setInvisibleBlocks() {
         BlockPos p = pos.up();
-        for (int i = 0 ; i < MAX_DOOR_HEIGHT ; i++) {
+        for (int i = 0 ; i < UtilityConfiguration.MAX_DOOR_HEIGHT ; i++) {
             if (world.isAirBlock(p)) {
                 EnumFacing facing = getFacing();
                 if (facing == null) {
@@ -104,7 +103,7 @@ public class DoorMarkerTile extends GenericTileEntity implements ITickable, IGui
 
     private void clearInvisibleBlocks() {
         BlockPos p = pos.up();
-        for (int i = 0 ; i < MAX_DOOR_HEIGHT ; i++) {
+        for (int i = 0 ; i < UtilityConfiguration.MAX_DOOR_HEIGHT ; i++) {
             if (world.getBlockState(p).getBlock() == ModBlocks.invisibleDoorBlock) {
                 world.setBlockToAir(p);
             } else {

@@ -19,6 +19,7 @@ import mcjty.lib.base.GeneralConfig;
 import mcjty.lib.network.PacketHandler;
 import mcjty.lib.proxy.AbstractCommonProxy;
 import net.minecraftforge.common.MinecraftForge;
+import net.minecraftforge.common.config.Configuration;
 import net.minecraftforge.fml.common.event.FMLInitializationEvent;
 import net.minecraftforge.fml.common.event.FMLPostInitializationEvent;
 import net.minecraftforge.fml.common.event.FMLPreInitializationEvent;
@@ -48,7 +49,8 @@ public abstract class CommonProxy extends AbstractCommonProxy {
 
         DimensionRegister.init();
 
-//        ConfigSetup.preInit(e);
+        mainConfig = new Configuration(new File(modConfigDir.getPath(), "ariente.cfg"));
+        ArienteConfiguration.init(mainConfig);
 
 //        FluidSetup.preInitFluids();
         ModBlocks.init();
@@ -74,6 +76,10 @@ public abstract class CommonProxy extends AbstractCommonProxy {
     public void postInit(FMLPostInitializationEvent e) {
 //        ConfigSetup.postInit();
 //        ModBlocks.postInit();
+        if (mainConfig.hasChanged()) {
+            mainConfig.save();
+        }
+        mainConfig = null;
 
         AssetRegistries.reset();
         for (String path : ArienteConfiguration.ASSETS) {

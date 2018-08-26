@@ -1,5 +1,6 @@
 package mcjty.ariente;
 
+import mcjty.ariente.config.WorldgenConfiguration;
 import net.minecraft.world.World;
 import net.minecraftforge.event.terraingen.DecorateBiomeEvent;
 import net.minecraftforge.fml.common.eventhandler.Event;
@@ -10,7 +11,7 @@ public class TerrainEventHandlers {
     @SubscribeEvent
     public void onCreateDecorate(DecorateBiomeEvent.Decorate event) {
         World world = event.getWorld();
-        if (!world.isRemote && world.provider.getDimension() == 222) {  // @todo config
+        if (!world.isRemote && world.provider.getDimension() == WorldgenConfiguration.DIMENSION_ID) {
             switch (event.getType()) {
                 case CLAY:
                 case DEAD_BUSH:
