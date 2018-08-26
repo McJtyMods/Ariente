@@ -1,14 +1,26 @@
 package mcjty.ariente.items.armor;
 
+import mcjty.ariente.blocks.defense.ForceFieldRenderer;
+import mcjty.ariente.blocks.defense.PanelInfo;
+import mcjty.ariente.blocks.defense.PentakisDodecahedron;
+import mcjty.ariente.varia.Triangle;
+import net.minecraft.client.Minecraft;
 import net.minecraft.client.model.ModelBiped;
 import net.minecraft.client.model.ModelRenderer;
+import net.minecraft.client.renderer.BufferBuilder;
 import net.minecraft.client.renderer.GlStateManager;
+import net.minecraft.client.renderer.Tessellator;
+import net.minecraft.client.renderer.vertex.DefaultVertexFormats;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.EntityLivingBase;
 import net.minecraft.inventory.EntityEquipmentSlot;
 import net.minecraft.item.ItemArmor;
 import net.minecraft.item.ItemStack;
+import net.minecraft.util.math.BlockPos;
+import net.minecraft.util.math.Vec3d;
 import org.lwjgl.opengl.GL11;
+
+import static mcjty.ariente.blocks.defense.ForceFieldRenderer.FORCEFIELD;
 
 public class PowerSuitModel extends ModelBiped {
 
@@ -16,6 +28,8 @@ public class PowerSuitModel extends ModelBiped {
     public static PowerSuitModel modelChest;
     public static PowerSuitModel modelLegs;
     public static PowerSuitModel modelBoots;
+
+    private static PanelInfo[] panelInfo = null;
 
     // Hazmat Suit
 
@@ -259,6 +273,79 @@ public class PowerSuitModel extends ModelBiped {
             this.bipedRightLeg.render(scale);
             this.bipedLeftLeg.render(scale);
         }
+
+        if (this == modelChest) {   // @todo Proper test
+            renderForcefield(entity.posX, entity.posY, entity.posZ, 0);
+        }
+
     }
+
+
+    private static void renderForcefield(double posX, double posY, double posZ, float partialTicks) {
+        GlStateManager.pushMatrix();
+//        GlStateManager.translate(-.75, 0, -.5);
+        Minecraft mc = Minecraft.getMinecraft();
+        mc.entityRenderer.disableLightmap();
+        GlStateManager.enableTexture2D();
+        GlStateManager.disableLighting();
+        GlStateManager.enableBlend();
+        GlStateManager.depthMask(false);
+        GlStateManager.enableDepth();
+        GlStateManager.color(1.0f, 1.0f, 1.0f, 0.1f);
+        mc.renderEngine.bindTexture(FORCEFIELD);
+
+        Tessellator t = Tessellator.getInstance();
+        BufferBuilder builder = t.getBuffer();
+
+        Entity renderViewEntity = Minecraft.getMinecraft().getRenderViewEntity();
+        double dx = renderViewEntity.lastTickPosX + (renderViewEntity.posX - renderViewEntity.lastTickPosX) * partialTicks;
+        double dy = renderViewEntity.lastTickPosY + (renderViewEntity.posY - renderViewEntity.lastTickPosY) * partialTicks;
+        double dz = renderViewEntity.lastTickPosZ + (renderViewEntity.posZ - renderViewEntity.lastTickPosZ) * partialTicks;
+        double x = posX + 0 - dx;
+        double y = posY + .4 - dy;
+        double z = posZ + 0 - dz;
+
+        double scale = 1.2;
+
+        GlStateManager.color(1.0f, 1.0f, 1.0f, 0.2f);
+        renderPanels(t, builder, x, y, z, scale, getPanelInfo(posX, posY, posZ, scale));
+
+        GlStateManager.enableTexture2D();
+        GlStateManager.depthMask(true);
+        GlStateManager.enableLighting();
+        GlStateManager.popMatrix();
+    }
+
+    private static PanelInfo[] getPanelInfo(double posX, double posY, double posZ, double scale) {
+        if (panelInfo == null) {
+            panelInfo = new PanelInfo[PentakisDodecahedron.MAX_TRIANGLES];
+        }
+        for (int i = 0 ; i < PentakisDodecahedron.MAX_TRIANGLES ; i++) {
+            Triangle triangle = PentakisDodecahedron.getTriangle(i);
+            Vec3d offs = triangle.getMid().scale(scale);
+            double x = posX+.5 + offs.x;
+            double y = posY+.5 + offs.y;
+            double z = posZ+.5 + offs.z;
+            panelInfo[i] = new PanelInfo(i, x, y, z);
+        }
+        return panelInfo;
+    }
+
+
+    private static void renderPanels(Tessellator t, BufferBuilder builder, double x, double y, double z, double scale, PanelInfo[] panelInfo) {
+        builder.begin(GL11.GL_TRIANGLES, DefaultVertexFormats.POSITION_TEX_COLOR);
+
+        for (PanelInfo info : panelInfo) {
+            if (info != null) {
+                renderPanel(x, y, z, scale, info);
+            }
+        }
+        t.draw();
+    }
+
+    private static void renderPanel(double x, double y, double z, double scale, PanelInfo info) {
+        ForceFieldRenderer.doRender(info, x, y, z, scale, 1.0f, 1.0f, 1.0f, 0.2f);
+    }
+
 
 }

@@ -20,7 +20,7 @@ import java.util.*;
 
 public class ForceFieldRenderer {
 
-    private static final ResourceLocation FORCEFIELD = new ResourceLocation(Ariente.MODID, "textures/effects/forcefield.png");
+    public static final ResourceLocation FORCEFIELD = new ResourceLocation(Ariente.MODID, "textures/effects/forcefield.png");
     private static final ResourceLocation FORCEFIELD_HIT = new ResourceLocation(Ariente.MODID, "textures/effects/forcefield_hit.png");
     private static final float FIELD_ALPHA = 0.3f;
     private static final Set<BlockPos> forceFields = new HashSet<>();    // A set of force fields that are in render range
@@ -222,7 +222,7 @@ public class ForceFieldRenderer {
         }
     }
 
-    private static void doRender(PanelInfo info, double x, double y, double z, double scale,
+    public static void doRender(PanelInfo info, double x, double y, double z, double scale,
                                  float r, float g, float b, float a) {
         Tessellator t = Tessellator.getInstance();
         BufferBuilder builder = t.getBuffer();
