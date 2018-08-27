@@ -3,6 +3,8 @@ package mcjty.ariente.items.armor;
 import mcjty.ariente.blocks.defense.ForceFieldRenderer;
 import mcjty.ariente.blocks.defense.PanelInfo;
 import mcjty.ariente.blocks.defense.PentakisDodecahedron;
+import mcjty.ariente.items.ModItems;
+import mcjty.ariente.items.modules.ArmorUpgradeType;
 import mcjty.ariente.varia.Triangle;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.model.ModelBiped;
@@ -275,14 +277,21 @@ public class PowerSuitModel extends ModelBiped {
         }
 
         if (this == modelChest) {   // @todo Proper test
-            renderForcefield(entity.posX, entity.posY, entity.posZ, 0);
+            if (entity instanceof EntityLivingBase) {
+                ItemStack chestStack = ((EntityLivingBase) entity).getItemStackFromSlot(EntityEquipmentSlot.CHEST);
+                if (chestStack.getItem() == ModItems.powerSuitChest) {
+                    if (PowerSuit.hasWorkingUpgrade(chestStack, ArmorUpgradeType.FORCEFIELD)) {
+                        ForceFieldRenderer.personalForcefields.add(new Vec3d(entity.posX, entity.posY, entity.posZ));
+                    }
+                }
+            }
         }
 
     }
 
 
-    private static void renderForcefield(double posX, double posY, double posZ, float partialTicks) {
-        GlStateManager.pushMatrix();
+    public static void renderForcefield(double posX, double posY, double posZ, float partialTicks) {
+//        GlStateManager.pushMatrix();
 //        GlStateManager.translate(-.75, 0, -.5);
         Minecraft mc = Minecraft.getMinecraft();
         mc.entityRenderer.disableLightmap();
@@ -313,7 +322,7 @@ public class PowerSuitModel extends ModelBiped {
         GlStateManager.enableTexture2D();
         GlStateManager.depthMask(true);
         GlStateManager.enableLighting();
-        GlStateManager.popMatrix();
+//        GlStateManager.popMatrix();
     }
 
     private static PanelInfo[] getPanelInfo(double posX, double posY, double posZ, double scale) {

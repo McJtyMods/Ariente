@@ -1,6 +1,7 @@
 package mcjty.ariente.blocks.defense;
 
 import mcjty.ariente.Ariente;
+import mcjty.ariente.items.armor.PowerSuitModel;
 import mcjty.ariente.varia.Triangle;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.multiplayer.WorldClient;
@@ -25,6 +26,8 @@ public class ForceFieldRenderer {
     private static final float FIELD_ALPHA = 0.3f;
     private static final Set<BlockPos> forceFields = new HashSet<>();    // A set of force fields that are in render range
     private static Random random = new Random();
+
+    public static Set<Vec3d> personalForcefields = new HashSet<>();
 
     private static class DamageInfo {
         float damage;
@@ -64,11 +67,13 @@ public class ForceFieldRenderer {
 
     private static long randomSeedCounter = 0;
 
-    public static Set<BlockPos> getForceFields() {
-        return forceFields;
-    }
-
     public static void renderForceFields(float partialTicks) {
+        for (Vec3d vec3d : personalForcefields) {
+            PowerSuitModel.renderForcefield(vec3d.x, vec3d.y+.6, vec3d.z, 1);
+        }
+        personalForcefields.clear();
+
+
         Set<BlockPos> toRemove = new HashSet<>();
         WorldClient world = Minecraft.getMinecraft().world;
         for (BlockPos pos : forceFields) {
@@ -248,4 +253,7 @@ public class ForceFieldRenderer {
         builder.pos(x + v1.x, y + v1.y, z + v1.z).tex(1, 0).color(r, g, b, a).endVertex();
         builder.pos(x + v0.x, y + v0.y, z + v0.z).tex(0, 0).color(r, g, b, a).endVertex();
     }
+
+
+
 }

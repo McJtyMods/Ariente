@@ -174,11 +174,13 @@ public class PowerSuit extends ItemArmor {
         if (!managePower(stack, entity)) {
             compound.setBoolean(ArmorUpgradeType.ARMOR.getWorkingKey(), false);
             compound.setBoolean(ArmorUpgradeType.FLIGHT.getWorkingKey(), false);
+            compound.setBoolean(ArmorUpgradeType.FORCEFIELD.getWorkingKey(), false);
             return;
         }
 
         compound.setBoolean(ArmorUpgradeType.ARMOR.getWorkingKey(), compound.getBoolean(ArmorUpgradeType.ARMOR.getModuleKey()));
         compound.setBoolean(ArmorUpgradeType.FLIGHT.getWorkingKey(), compound.getBoolean(ArmorUpgradeType.FLIGHT.getModuleKey()));
+        compound.setBoolean(ArmorUpgradeType.FORCEFIELD.getWorkingKey(), compound.getBoolean(ArmorUpgradeType.FORCEFIELD.getModuleKey()));
 
         if (compound.getBoolean(ArmorUpgradeType.REGENERATION.getModuleKey())) {
             PotionEffect effect = entity.getActivePotionEffect(MobEffects.REGENERATION);
