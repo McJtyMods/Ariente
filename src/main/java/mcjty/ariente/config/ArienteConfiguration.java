@@ -24,6 +24,7 @@ public class ArienteConfiguration {
         WorldgenConfiguration.init(cfg);
         LootConfiguration.init(cfg);
         SoundConfiguration.init(cfg);
+        GuiConfiguration.init(cfg);
     }
 
 }

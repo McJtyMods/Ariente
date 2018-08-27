@@ -25,6 +25,7 @@
         - Armor: improve armor value of armor (default is like leather)
 - Power armor can be configured with (by default) the 0 key. Four hotkeys are provided to enable/disable various modules
 - Ariente now has a configuration file. Not much is in it yet. This will grow
+- Some configuration options (mostly for GUI) are now configurable in-game in the standard mod config
 - Holo GUI now shows tooltips for items
 - Different styles for the holo GUI
 - The damage for the drone laser was accidentally disabled

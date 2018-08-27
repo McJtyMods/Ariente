@@ -30,6 +30,15 @@ public class HoloGuiEntityRender extends Render<HoloGuiEntity> {
         super(renderManager);
     }
 
+    // Option 1: blue with sharp white: hologui2
+    // Option 2: just blue: hologui1
+    // Option 3: blue with soft dark border: hologui4
+    // Option 4: gray with soft dark: hologui7
+    // Option 5: gray with sharp white: hologui6
+    // Option 6: blue with sharp dark border: hologui3
+    // Option 7: gray with sharp dark border: hologui5
+    // Option 8: current: hologui
+
     @Override
     public void doRender(HoloGuiEntity entity, double x, double y, double z, float entityYaw, float partialTicks) {
         Tessellator t = Tessellator.getInstance();

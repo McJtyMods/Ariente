@@ -60,6 +60,10 @@ public abstract class CommonProxy extends AbstractCommonProxy {
         ModGuis.init();
     }
 
+    public Configuration getConfig() {
+        return mainConfig;
+    }
+
     @Override
     public void init(FMLInitializationEvent e) {
         super.init(e);

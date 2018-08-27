@@ -25,7 +25,8 @@ import org.apache.logging.log4j.Logger;
                 "required-after:mcjtylib_ng@[" + Ariente.MIN_MCJTYLIB_VER + ",);" +
                 "after:forge@[" + Ariente.MIN_FORGE11_VER + ",)",
         acceptedMinecraftVersions = "[1.12,1.13)",
-        version = Ariente.VERSION)
+        version = Ariente.VERSION,
+        guiFactory = "mcjty.ariente.config.ArienteModGuiFactory")
 public class Ariente implements ModBase {
     public static final String MODID = "ariente";
     public static final String MODNAME = "Ariente";
