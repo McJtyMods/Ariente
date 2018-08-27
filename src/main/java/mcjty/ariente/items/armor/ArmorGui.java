@@ -12,6 +12,7 @@ import net.minecraft.inventory.EntityEquipmentSlot;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.NBTTagCompound;
+import org.apache.commons.lang3.tuple.Pair;
 
 public class ArmorGui {
 
@@ -102,9 +103,10 @@ public class ArmorGui {
     private static HoloPanel createPieceGui(EntityEquipmentSlot slot) {
         HoloPanel panel = new HoloPanel(0, 0, 8, 8);
         panel.add(new HoloText(0, 0, 1, 1, "Pwr", 0xaaccff));
-        panel.add(new HoloNumber(3, 0, 1, 1, 0xffffff, player1 -> calculatePowerUsage(player1, slot)));
+        panel.add(new HoloNumber(3, 0, 1, 1, 0xffffff, p -> calculatePowerUsage(p, slot))
+            .colorGetter(p -> calculatePowerColor(p, slot)));
         panel.add(new HoloText(5, 0, 1, 1, "/", 0xaaccff));
-        panel.add(new HoloNumber(6, 0, 1, 1, 0xffffff, player1 -> calculateMaxPowerUsage(player1, slot)));
+        panel.add(new HoloNumber(6, 0, 1, 1, 0xffffff, p -> calculateMaxPowerUsage(p, slot)));
         return panel;
     }
 
@@ -134,6 +136,15 @@ public class ArmorGui {
             return 0;
         }
         return PowerSuit.getPowerUsage(stack).getLeft();
+    }
+
+    private static int calculatePowerColor(EntityPlayer player, EntityEquipmentSlot slot) {
+        ItemStack stack = player.getItemStackFromSlot(slot);
+        if (stack.isEmpty() || !(stack.getItem() instanceof PowerSuit)) {
+            return 0;
+        }
+        Pair<Integer, Integer> usage = PowerSuit.getPowerUsage(stack);
+        return usage.getLeft() <= usage.getRight() ? 0xffffff : 0xff0000;
     }
 
     private static int calculateMaxPowerUsage(EntityPlayer player, EntityEquipmentSlot slot) {

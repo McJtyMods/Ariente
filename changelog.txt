@@ -6,7 +6,24 @@
 - If a soldier is killed there is now also a chance it will drop an empty key card
 - If a soldier is killed there is now also a chance it will drop a key card giving protection against the city forcefield
 - If the player holds a key card tagged with the city forcefield ID he will no longer get damage
-- New power armor. This is a modular armor system that uses Ariente power. Various modules are implemented (like regeneration, armor, invisibility, speed, flight, step assist, ...)
+- New power armor. This is a modular armor system that uses Ariente power. Various modules are implemented:
+    - Helmet upgrades:
+        - Invisibility
+        - Nightvision
+        - Scramble: disrupt communication of soldiers and drones so they don't alert each other
+    - Chestplate upgrades:
+        - Flight: press space to go up (hover is not yet implemented)
+        - Regeneration
+        - Forcefield: negate projectile damage, explostion damage to 20%, other damage is halved
+    - Legs upgrades:
+        - Speed upgrade
+    - Boots upgrades:
+        - Step assist
+        - Feather falling
+    - Global upgrades:
+        - Energy: improve energy consumption and max energy usage
+        - Autofeed: automatically get negarite/posirite from inventory
+        - Armor: improve armor value of armor (default is like leather)
 - Power armor can be configured with (by default) the 0 key. Four hotkeys are provided to enable/disable various modules
 - Ariente now has a configuration file. Not much is in it yet. This will grow
 - Holo GUI now shows tooltips for items
