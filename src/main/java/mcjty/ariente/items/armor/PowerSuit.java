@@ -38,6 +38,7 @@ public class PowerSuit extends ItemArmor {
         super(ArmorMaterial.LEATHER, 0, slot);
         setRegistryName("powersuit_" + slot.getName());
         setUnlocalizedName(Ariente.MODID + ".powersuit_" + slot.getName());
+        setMaxDamage(0);
         setCreativeTab(Ariente.creativeTab);
         McJtyRegister.registerLater(this, Ariente.instance);
     }

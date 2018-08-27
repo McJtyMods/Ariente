@@ -173,8 +173,7 @@ public class LaserEntity extends Entity implements IForcefieldImmunity {
     protected void onImpact(RayTraceResult result) {
         if (!this.world.isRemote) {
             if (result.entityHit != null) {
-                System.out.println("LaserEntity.onImpact");
-//                result.entityHit.attackEntityFrom(DamageSource.causeIndirectMagicDamage(this, this.shootingEntity), 10.0F);
+                result.entityHit.attackEntityFrom(DamageSource.causeIndirectMagicDamage(this, this.shootingEntity), 10.0F);
 
 //                this.applyEnchantments(this.shootingEntity, result.entityHit);
             }

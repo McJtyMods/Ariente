@@ -19,18 +19,22 @@ import mcjty.ariente.power.PowerSystem;
 import mcjty.ariente.sounds.ModSounds;
 import mcjty.lib.McJtyRegister;
 import net.minecraft.block.Block;
+import net.minecraft.entity.Entity;
+import net.minecraft.entity.EntityLivingBase;
 import net.minecraft.entity.passive.IAnimals;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.inventory.EntityEquipmentSlot;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
 import net.minecraft.tileentity.TileEntity;
+import net.minecraft.util.DamageSource;
 import net.minecraft.util.SoundEvent;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.World;
 import net.minecraft.world.WorldServer;
 import net.minecraft.world.biome.Biome;
 import net.minecraftforge.event.RegistryEvent;
+import net.minecraftforge.event.entity.living.LivingDamageEvent;
 import net.minecraftforge.event.entity.living.LivingFallEvent;
 import net.minecraftforge.event.entity.living.LivingSpawnEvent;
 import net.minecraftforge.event.world.BlockEvent;
@@ -92,6 +96,28 @@ public class ForgeEventHandlers {
         if (feetStack.getItem() == ModItems.powerSuitBoots) {
             if (PowerSuit.hasWorkingUpgrade(feetStack, ArmorUpgradeType.FEATHERFALLING)) {
                 event.setCanceled(true);
+            }
+        }
+    }
+
+    @SubscribeEvent
+    public void onDamage(LivingDamageEvent event) {
+        Entity entity = event.getEntity();
+        World world = entity.getEntityWorld();
+        if (!world.isRemote && entity instanceof EntityLivingBase) {
+            ItemStack chestStack = ((EntityLivingBase) entity).getItemStackFromSlot(EntityEquipmentSlot.CHEST);
+            if (chestStack.getItem() == ModItems.powerSuitChest) {
+                if (PowerSuit.hasWorkingUpgrade(chestStack, ArmorUpgradeType.FORCEFIELD)) {
+                    float damage = event.getAmount();
+                    DamageSource source = event.getSource();
+                    if (source.isExplosion()) {
+                        event.setAmount(damage / 5);
+                    } else if (source.isProjectile()) {
+                        event.setCanceled(true);
+                    } else if (!source.isUnblockable()) {
+                        event.setAmount(damage / 2);
+                    }
+                }
             }
         }
     }

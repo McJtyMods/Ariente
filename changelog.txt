@@ -11,6 +11,8 @@
 - Ariente now has a configuration file. Not much is in it yet. This will grow
 - Holo GUI now shows tooltips for items
 - Different styles for the holo GUI
+- The damage for the drone laser was accidentally disabled
+- Fixed a bug in loot generation
 
 0.0.1-alpha:
 - Alpha release

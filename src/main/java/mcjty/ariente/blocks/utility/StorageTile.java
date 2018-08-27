@@ -219,7 +219,7 @@ public class StorageTile extends GenericTileEntity implements IGuiTile, IInvento
     // Only use this for initial loot placement
     public void initTotalStack(int type, ItemStack stack) {
         stacks.set(type, stack);
-        counts[type] = stack.getCount();
+        counts[type * STACKS_PER_TYPE] = stack.getCount();
         totals[type] = stack.getCount();
     }
 
