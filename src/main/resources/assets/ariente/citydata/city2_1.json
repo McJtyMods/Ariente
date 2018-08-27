@@ -58,6 +58,48 @@
         "meta": 0,
         "max": 1,
         "chance": 0.1
+      },
+      {
+        "id": "ariente:module_armor",
+        "meta": 0,
+        "max": 1,
+        "chance": 0.1
+      },
+      {
+        "id": "ariente:module_energy",
+        "meta": 0,
+        "max": 1,
+        "chance": 0.1
+      },
+      {
+        "id": "ariente:module_forcefield",
+        "meta": 0,
+        "max": 1,
+        "chance": 0.1
+      },
+      {
+        "id": "ariente:powersuit_legs",
+        "meta": 0,
+        "max": 1,
+        "chance": 0.1
+      },
+      {
+        "id": "ariente:powersuit_chest",
+        "meta": 0,
+        "max": 1,
+        "chance": 0.1
+      },
+      {
+        "id": "ariente:powersuit_head",
+        "meta": 0,
+        "max": 1,
+        "chance": 0.1
+      },
+      {
+        "id": "ariente:powersuit_feet",
+        "meta": 0,
+        "max": 1,
+        "chance": 0.1
       }
     ],
     "partpalette": [
