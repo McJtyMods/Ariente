@@ -8,7 +8,6 @@
 - If the player holds a key card tagged with the city forcefield ID he will no longer get damage
 - New power armor. This is a modular armor system that uses Ariente power. Various modules are implemented:
     - Helmet upgrades:
-        - Invisibility
         - Nightvision
         - Scramble: disrupt communication of soldiers and drones so they don't alert each other
     - Chestplate upgrades:

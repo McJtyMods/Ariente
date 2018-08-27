@@ -15,6 +15,7 @@ import net.minecraft.client.renderer.Tessellator;
 import net.minecraft.client.renderer.vertex.DefaultVertexFormats;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.EntityLivingBase;
+import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.inventory.EntityEquipmentSlot;
 import net.minecraft.item.ItemArmor;
 import net.minecraft.item.ItemStack;
@@ -281,7 +282,7 @@ public class PowerSuitModel extends ModelBiped {
                 ItemStack chestStack = ((EntityLivingBase) entity).getItemStackFromSlot(EntityEquipmentSlot.CHEST);
                 if (chestStack.getItem() == ModItems.powerSuitChest) {
                     if (PowerSuit.hasWorkingUpgrade(chestStack, ArmorUpgradeType.FORCEFIELD)) {
-                        ForceFieldRenderer.personalForcefields.add(new Vec3d(entity.posX, entity.posY, entity.posZ));
+                        ForceFieldRenderer.personalForcefields.put(new Vec3d(entity.prevPosX, entity.prevPosY, entity.prevPosZ), entity instanceof EntityPlayer);
                     }
                 }
             }

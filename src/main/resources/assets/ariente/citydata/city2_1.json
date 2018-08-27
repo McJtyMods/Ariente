@@ -19,6 +19,8 @@
     "soldiersWaveMax1": 7,
     "soldiersWaveMax2": 12,
     "soldiersWaveMaxN": 25,
+    "powerArmorChance": 0.2,
+    "forcefieldChance": 0.1,
     "masterChance": 0.05,
     "loot": [
       {

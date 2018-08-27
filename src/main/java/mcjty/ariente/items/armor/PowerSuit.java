@@ -298,7 +298,7 @@ public class PowerSuit extends ItemArmor {
         return false;
     }
 
-    public static boolean hasFullArmor(EntityPlayer player) {
+    public static boolean hasFullArmor(EntityLivingBase player) {
         if (player == null) {
             return false;
         }

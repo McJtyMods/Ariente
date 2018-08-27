@@ -10,7 +10,7 @@ public enum ArmorUpgradeType {
     FEATHERFALLING("featherfalling", "Feather Falling Upgrade", 20),
     FLIGHT("flight", "Flight upgrade", 40),
     FORCEFIELD("forcefield", "Forcefield upgrade", 80),
-    INVISIBILITY("invisibility", "Invisibility upgrade", 20),
+    INVISIBILITY("invisibility", "Invisibility upgrade (Not Implemented Yet)", 20),
     NIGHTVISION("nightvision", "Nightvision upgrade", 20),
     REGENERATION("regeneration", "Regeneration upgrade", 40),
     SPEED("speed", "Speed upgrade", 20),

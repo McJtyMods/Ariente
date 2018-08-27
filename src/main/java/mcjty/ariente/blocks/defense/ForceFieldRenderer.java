@@ -27,7 +27,7 @@ public class ForceFieldRenderer {
     private static final Set<BlockPos> forceFields = new HashSet<>();    // A set of force fields that are in render range
     private static Random random = new Random();
 
-    public static Set<Vec3d> personalForcefields = new HashSet<>();
+    public static Map<Vec3d, Boolean> personalForcefields = new HashMap<>();
 
     private static class DamageInfo {
         float damage;
@@ -68,8 +68,8 @@ public class ForceFieldRenderer {
     private static long randomSeedCounter = 0;
 
     public static void renderForceFields(float partialTicks) {
-        for (Vec3d vec3d : personalForcefields) {
-            PowerSuitModel.renderForcefield(vec3d.x, vec3d.y+.6, vec3d.z, 1);
+        for (Vec3d vec3d : personalForcefields.keySet()) {
+            PowerSuitModel.renderForcefield(vec3d.x, vec3d.y+.6, vec3d.z, personalForcefields.get(vec3d) ? 1 : partialTicks);
         }
         personalForcefields.clear();
 

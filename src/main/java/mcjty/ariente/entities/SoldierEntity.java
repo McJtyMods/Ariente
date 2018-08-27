@@ -8,6 +8,7 @@ import mcjty.ariente.blocks.defense.IForcefieldImmunity;
 import mcjty.ariente.config.LootConfiguration;
 import mcjty.ariente.items.KeyCardItem;
 import mcjty.ariente.items.ModItems;
+import mcjty.ariente.items.armor.PowerSuit;
 import mcjty.ariente.varia.ChunkCoord;
 import net.minecraft.block.Block;
 import net.minecraft.entity.EntityLivingBase;
@@ -16,6 +17,7 @@ import net.minecraft.entity.ai.*;
 import net.minecraft.entity.monster.EntityMob;
 import net.minecraft.entity.monster.EntityPigZombie;
 import net.minecraft.entity.player.EntityPlayer;
+import net.minecraft.inventory.EntityEquipmentSlot;
 import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.network.datasync.DataParameter;
@@ -55,6 +57,45 @@ public class SoldierEntity extends EntityMob implements IArmRaisable, IForcefiel
         this(world);
         this.cityCenter = cityCenter;
         this.behaviourType = behaviourType;
+    }
+
+    @Override
+    public void onUpdate() {
+        super.onUpdate();
+        if (!world.isRemote && !isDead && cityCenter != null) {
+            CityAISystem aiSystem = CityAISystem.getCityAISystem(world);
+            CityAI cityAI = aiSystem.getCityAI(cityCenter);
+            if (cityAI != null && !cityAI.isDead(world)) {
+                feedPowerIfNeeded(EntityEquipmentSlot.HEAD);
+                feedPowerIfNeeded(EntityEquipmentSlot.FEET);
+                feedPowerIfNeeded(EntityEquipmentSlot.CHEST);
+                feedPowerIfNeeded(EntityEquipmentSlot.LEGS);
+            } else {
+                cityCenter = null;
+            }
+        }
+    }
+
+    private void feedPowerIfNeeded(EntityEquipmentSlot slot) {
+        ItemStack stack = getItemStackFromSlot(slot);
+        if (stack.isEmpty()) {
+            return;
+        }
+        if (!(stack.getItem() instanceof PowerSuit)) {
+            return;
+        }
+        NBTTagCompound compound = stack.getTagCompound();
+        if (compound == null) {
+            return;
+        }
+        int negarite = compound.getInteger("negarite");
+        if (negarite < 2) {
+            compound.setInteger("negarite", 2);
+        }
+        int posirite = compound.getInteger("posirite");
+        if (posirite < 2) {
+            compound.setInteger("posirite", 2);
+        }
     }
 
     protected boolean isMaster() {

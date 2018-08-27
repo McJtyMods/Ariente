@@ -43,8 +43,8 @@ public class ArmorGui {
         createModuleEntry(panel, slot, 5, 2, ModItems.moduleArmor);
         createModuleEntry(panel, slot, 1, 3, ModItems.moduleAutofeed);
         createModuleEntry(panel, slot, 5, 3, ModItems.moduleNightvision);
-        createModuleEntry(panel, slot, 1, 4, ModItems.moduleInvisibility);
-        createModuleEntry(panel, slot, 5, 4, ModItems.moduleScramble);
+        createModuleEntry(panel, slot, 1, 4, ModItems.moduleScramble);
+//        createModuleEntry(panel, slot, 5, 4, ModItems.moduleInvisibility);
 
         addPowerGui(slot, panel);
 

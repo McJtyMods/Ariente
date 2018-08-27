@@ -14,6 +14,7 @@ import mcjty.ariente.cities.*;
 import mcjty.ariente.config.AIConfiguration;
 import mcjty.ariente.entities.*;
 import mcjty.ariente.items.ModItems;
+import mcjty.ariente.items.modules.ArmorUpgradeType;
 import mcjty.ariente.power.PowerSenderSupport;
 import mcjty.ariente.security.SecuritySystem;
 import mcjty.ariente.varia.ChunkCoord;
@@ -24,6 +25,7 @@ import net.minecraft.block.state.IBlockState;
 import net.minecraft.entity.EntityLivingBase;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.entity.player.EntityPlayerMP;
+import net.minecraft.inventory.EntityEquipmentSlot;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.NBTTagCompound;
@@ -115,6 +117,10 @@ public class CityAI {
             handleAI(tile.getWorld());
             return true;
         }
+    }
+
+    public boolean isDead(World world) {
+        return !hasValidCoreExcept(world, null);
     }
 
     // Check if there is still a valid AI core except for the input parameter
@@ -342,9 +348,61 @@ public class CityAI {
             SoldierEntity entity = createSoldier(world, pos, facing, SoldierBehaviourType.SOLDIER_FIGHTER,
                     random.nextDouble() < plan.getMasterChance());
             entity.setHeldItem(EnumHand.MAIN_HAND, new ItemStack(ModItems.energySabre));    // @todo need a lasergun
+
+            if (random.nextFloat() < plan.getPowerArmorChance()) {
+                entity.setItemStackToSlot(EntityEquipmentSlot.HEAD, createNiceHelmet());
+                entity.setItemStackToSlot(EntityEquipmentSlot.FEET, createNiceBoots());
+                entity.setItemStackToSlot(EntityEquipmentSlot.CHEST, createNiceChestplate(plan));
+                entity.setItemStackToSlot(EntityEquipmentSlot.LEGS, createNiceLegs());
+            }
             soldiers[foundId] = entity.getEntityId();
         }
     }
+
+    private ItemStack createNiceHelmet() {
+        ItemStack helmet = new ItemStack(ModItems.powerSuitHelmet);
+        NBTTagCompound compound = new NBTTagCompound();
+        compound.setBoolean(ArmorUpgradeType.ARMOR.getModuleKey(), true);
+        compound.setBoolean(ArmorUpgradeType.ARMOR.getWorkingKey(), compound.getBoolean(ArmorUpgradeType.ARMOR.getModuleKey()));
+        helmet.setTagCompound(compound);
+        return helmet;
+    }
+
+
+    private ItemStack createNiceBoots() {
+        ItemStack helmet = new ItemStack(ModItems.powerSuitBoots);
+        NBTTagCompound compound = new NBTTagCompound();
+        compound.setBoolean(ArmorUpgradeType.ARMOR.getModuleKey(), true);
+        compound.setBoolean(ArmorUpgradeType.ARMOR.getWorkingKey(), compound.getBoolean(ArmorUpgradeType.ARMOR.getModuleKey()));
+        helmet.setTagCompound(compound);
+        return helmet;
+    }
+
+
+    private ItemStack createNiceChestplate(CityPlan plan) {
+        ItemStack helmet = new ItemStack(ModItems.powerSuitChest);
+        NBTTagCompound compound = new NBTTagCompound();
+        compound.setBoolean(ArmorUpgradeType.ARMOR.getModuleKey(), true);
+        compound.setBoolean(ArmorUpgradeType.ARMOR.getWorkingKey(), compound.getBoolean(ArmorUpgradeType.ARMOR.getModuleKey()));
+        if (random.nextFloat() < plan.getForcefieldChance()) {
+            compound.setBoolean(ArmorUpgradeType.ENERGY.getModuleKey(), true);
+            compound.setBoolean(ArmorUpgradeType.FORCEFIELD.getModuleKey(), true);
+            compound.setBoolean(ArmorUpgradeType.FORCEFIELD.getWorkingKey(), compound.getBoolean(ArmorUpgradeType.FORCEFIELD.getModuleKey()));
+        }
+        helmet.setTagCompound(compound);
+        return helmet;
+    }
+
+
+    private ItemStack createNiceLegs() {
+        ItemStack helmet = new ItemStack(ModItems.powerSuitLegs);
+        NBTTagCompound compound = new NBTTagCompound();
+        compound.setBoolean(ArmorUpgradeType.ARMOR.getModuleKey(), true);
+        compound.setBoolean(ArmorUpgradeType.ARMOR.getWorkingKey(), compound.getBoolean(ArmorUpgradeType.ARMOR.getModuleKey()));
+        helmet.setTagCompound(compound);
+        return helmet;
+    }
+
 
     private void spawnDrone(World world) {
         // Too few drones. Spawn a new one
