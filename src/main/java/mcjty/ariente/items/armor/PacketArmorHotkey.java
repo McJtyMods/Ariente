@@ -1,6 +1,7 @@
 package mcjty.ariente.items.armor;
 
 import io.netty.buffer.ByteBuf;
+import mcjty.ariente.items.modules.ModuleSupport;
 import net.minecraft.entity.player.EntityPlayerMP;
 import net.minecraftforge.fml.common.FMLCommonHandler;
 import net.minecraftforge.fml.common.network.simpleimpl.IMessage;
@@ -37,7 +38,7 @@ public class PacketArmorHotkey implements IMessage {
 
         private void handle(PacketArmorHotkey message, MessageContext ctx) {
             EntityPlayerMP playerEntity = ctx.getServerHandler().player;
-            PowerSuit.receivedHotkey(playerEntity, message.index);
+            ModuleSupport.receivedHotkey(playerEntity, message.index);
         }
     }
 }

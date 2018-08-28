@@ -7,6 +7,7 @@ import mcjty.ariente.gui.ModGuis;
 import mcjty.ariente.gui.components.*;
 import mcjty.ariente.items.ModItems;
 import mcjty.ariente.items.modules.ArmorModuleItem;
+import mcjty.ariente.items.modules.ModuleSupport;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.inventory.EntityEquipmentSlot;
 import net.minecraft.item.Item;
@@ -25,6 +26,7 @@ public class ArmorGui {
         y = createMenuEntry(player, panel, x, y, EntityEquipmentSlot.CHEST, ModItems.powerSuitChest);
         y = createMenuEntry(player, panel, x, y, EntityEquipmentSlot.LEGS, ModItems.powerSuitLegs);
         y = createMenuEntry(player, panel, x, y, EntityEquipmentSlot.FEET, ModItems.powerSuitBoots);
+        y = createMenuEntry(player, panel, x, y, EntityEquipmentSlot.MAINHAND, ModItems.enhancedEnergySabreItem);
 
         if (y <= 2.6) {
             // No armor
@@ -40,8 +42,8 @@ public class ArmorGui {
         HoloPanel panel = createPieceGui(slot);
 
         createModuleEntry(panel, slot, 1, 2, ModItems.moduleEnergy);
-        createModuleEntry(panel, slot, 5, 2, ModItems.moduleArmor);
-        createModuleEntry(panel, slot, 1, 3, ModItems.moduleAutofeed);
+        createModuleEntry(panel, slot, 5, 2, ModItems.moduleAutofeed);
+        createModuleEntry(panel, slot, 1, 3, ModItems.moduleArmor);
         createModuleEntry(panel, slot, 5, 3, ModItems.moduleNightvision);
         createModuleEntry(panel, slot, 1, 4, ModItems.moduleScramble);
 //        createModuleEntry(panel, slot, 5, 4, ModItems.moduleInvisibility);
@@ -57,8 +59,8 @@ public class ArmorGui {
         HoloPanel panel = createPieceGui(slot);
 
         createModuleEntry(panel, slot, 1, 2, ModItems.moduleEnergy);
-        createModuleEntry(panel, slot, 5, 2, ModItems.moduleArmor);
-        createModuleEntry(panel, slot, 1, 3, ModItems.moduleAutofeed);
+        createModuleEntry(panel, slot, 5, 2, ModItems.moduleAutofeed);
+        createModuleEntry(panel, slot, 1, 3, ModItems.moduleArmor);
         createModuleEntry(panel, slot, 5, 3, ModItems.moduleForcefield);
         createModuleEntry(panel, slot, 1, 4, ModItems.moduleRegeneration);
         createModuleEntry(panel, slot, 5, 4, ModItems.moduleFlight);
@@ -74,8 +76,8 @@ public class ArmorGui {
         HoloPanel panel = createPieceGui(slot);
 
         createModuleEntry(panel, slot, 1, 2, ModItems.moduleEnergy);
-        createModuleEntry(panel, slot, 5, 2, ModItems.moduleArmor);
-        createModuleEntry(panel, slot, 1, 3, ModItems.moduleAutofeed);
+        createModuleEntry(panel, slot, 5, 2, ModItems.moduleAutofeed);
+        createModuleEntry(panel, slot, 1, 3, ModItems.moduleArmor);
         createModuleEntry(panel, slot, 5, 3, ModItems.moduleSpeed);
 
         addPowerGui(slot, panel);
@@ -83,14 +85,15 @@ public class ArmorGui {
         return panel;
     }
 
+
     public static IGuiComponent createBootsGui(EntityPlayer player) {
         EntityEquipmentSlot slot = EntityEquipmentSlot.FEET;
 
         HoloPanel panel = createPieceGui(slot);
 
         createModuleEntry(panel, slot, 1, 2, ModItems.moduleEnergy);
-        createModuleEntry(panel, slot, 5, 2, ModItems.moduleArmor);
-        createModuleEntry(panel, slot, 1, 3, ModItems.moduleAutofeed);
+        createModuleEntry(panel, slot, 5, 2, ModItems.moduleAutofeed);
+        createModuleEntry(panel, slot, 1, 3, ModItems.moduleArmor);
         createModuleEntry(panel, slot, 5, 3, ModItems.moduleFeatherFalling);
         createModuleEntry(panel, slot, 1, 4, ModItems.moduleStepassist);
 
@@ -98,6 +101,24 @@ public class ArmorGui {
 
         return panel;
     }
+
+    public static IGuiComponent createSabreGui(EntityPlayer player) {
+        EntityEquipmentSlot slot = EntityEquipmentSlot.MAINHAND;
+
+        HoloPanel panel = createPieceGui(slot);
+
+        createModuleEntry(panel, slot, 1, 2, ModItems.moduleEnergy);
+        createModuleEntry(panel, slot, 5, 2, ModItems.moduleAutofeed);
+        createModuleEntry(panel, slot, 1, 3, ModItems.modulePower);
+        createModuleEntry(panel, slot, 5, 3, ModItems.moduleInhibit);
+        createModuleEntry(panel, slot, 1, 4, ModItems.moduleLooting);
+        createModuleEntry(panel, slot, 5, 4, ModItems.moduleFire);
+
+        addPowerGui(slot, panel);
+
+        return panel;
+    }
+
 
 
     private static HoloPanel createPieceGui(EntityEquipmentSlot slot) {
@@ -132,32 +153,36 @@ public class ArmorGui {
 
     private static int calculatePowerUsage(EntityPlayer player, EntityEquipmentSlot slot) {
         ItemStack stack = player.getItemStackFromSlot(slot);
-        if (stack.isEmpty() || !(stack.getItem() instanceof PowerSuit)) {
+        if (isValidPowerArmorPiece(stack)) {
             return 0;
         }
-        return PowerSuit.getPowerUsage(stack).getLeft();
+        return ModuleSupport.getPowerUsage(stack).getLeft();
+    }
+
+    private static boolean isValidPowerArmorPiece(ItemStack stack) {
+        return stack.isEmpty() || (!(stack.getItem() instanceof PowerSuit) && stack.getItem() != ModItems.enhancedEnergySabreItem);
     }
 
     private static int calculatePowerColor(EntityPlayer player, EntityEquipmentSlot slot) {
         ItemStack stack = player.getItemStackFromSlot(slot);
-        if (stack.isEmpty() || !(stack.getItem() instanceof PowerSuit)) {
+        if (isValidPowerArmorPiece(stack)) {
             return 0;
         }
-        Pair<Integer, Integer> usage = PowerSuit.getPowerUsage(stack);
+        Pair<Integer, Integer> usage = ModuleSupport.getPowerUsage(stack);
         return usage.getLeft() <= usage.getRight() ? 0xffffff : 0xff0000;
     }
 
     private static int calculateMaxPowerUsage(EntityPlayer player, EntityEquipmentSlot slot) {
         ItemStack stack = player.getItemStackFromSlot(slot);
-        if (stack.isEmpty() || !(stack.getItem() instanceof PowerSuit)) {
+        if (isValidPowerArmorPiece(stack)) {
             return 0;
         }
-        return PowerSuit.getPowerUsage(stack).getRight();
+        return ModuleSupport.getPowerUsage(stack).getRight();
     }
 
     private static int countArmor(EntityPlayer player, EntityEquipmentSlot slot, String itemTag) {
         ItemStack stack = player.getItemStackFromSlot(slot);
-        if (stack.isEmpty() || !(stack.getItem() instanceof PowerSuit)) {
+        if (isValidPowerArmorPiece(stack)) {
             return 0;
         }
         NBTTagCompound compound = stack.getTagCompound();
@@ -169,7 +194,7 @@ public class ArmorGui {
 
     private static void toArmor(EntityPlayer player, EntityEquipmentSlot slot, String itemTag, Item item, int amount) {
         ItemStack stack = player.getItemStackFromSlot(slot);
-        if (stack.isEmpty() || !(stack.getItem() instanceof PowerSuit)) {
+        if (isValidPowerArmorPiece(stack)) {
             return;
         }
         NBTTagCompound compound = stack.getTagCompound();
@@ -317,7 +342,7 @@ public class ArmorGui {
         }
     }
 
-    private static double createMenuEntry(EntityPlayer player, HoloPanel panel, double x, double y, EntityEquipmentSlot slot, PowerSuit armorItem) {
+    private static double createMenuEntry(EntityPlayer player, HoloPanel panel, double x, double y, EntityEquipmentSlot slot, Item armorItem) {
         ItemStack armorStack = player.getItemStackFromSlot(slot);
         if (!armorStack.isEmpty() && armorStack.getItem() == armorItem) {
             panel
@@ -342,6 +367,9 @@ public class ArmorGui {
                 break;
             case HEAD:
                 entity.switchGui(ModGuis.GUI_ARMOR_HELMET);
+                break;
+            case MAINHAND:
+                entity.switchGui(ModGuis.GUI_ARMOR_SABRE);
                 break;
             default:
                 break;

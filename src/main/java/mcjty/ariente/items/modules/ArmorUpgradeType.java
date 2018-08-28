@@ -16,7 +16,12 @@ public enum ArmorUpgradeType {
     SPEED("speed", "Speed upgrade", 20),
     SCRAMBLE("scramble", "Scramble upgrade", 50),
     AUTOFEED("autofeed", "Autofeed power upgrade", 5),
-    STEPASSIST("stepassist", "Step Assist power upgrade", 10);
+    STEPASSIST("stepassist", "Step Assist power upgrade", 10),
+    INHIBIT("inhibit", "Inhibit sabre upgrade", 30),
+    POWER("power", "Power sabre upgrade", 30),
+    LOOTING("looting", "Looting sabre upgrade", 20),
+    FIRE("fire", "Fire damage sabre upgrade", 30),
+    ;
 
     private final String name;
     private final String description;

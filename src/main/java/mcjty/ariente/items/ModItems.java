@@ -42,6 +42,10 @@ public class ModItems {
     public static ArmorModuleItem moduleAutofeed;
     public static ArmorModuleItem moduleSpeed;
     public static ArmorModuleItem moduleStepassist;
+    public static ArmorModuleItem moduleInhibit;
+    public static ArmorModuleItem modulePower;
+    public static ArmorModuleItem moduleLooting;
+    public static ArmorModuleItem moduleFire;
 
     public static void init() {
         platinumIngot = new GenericItem("ingot_platinum");
@@ -75,6 +79,11 @@ public class ModItems {
         moduleAutofeed = new ArmorModuleItem("module_autofeed", ArmorUpgradeType.AUTOFEED);
         moduleSpeed = new ArmorModuleItem("module_speed", ArmorUpgradeType.SPEED);
         moduleStepassist = new ArmorModuleItem("module_stepassist", ArmorUpgradeType.STEPASSIST);
+
+        moduleInhibit = new ArmorModuleItem("module_inhibit", ArmorUpgradeType.INHIBIT);
+        modulePower = new ArmorModuleItem("module_power", ArmorUpgradeType.POWER);
+        moduleLooting = new ArmorModuleItem("module_looting", ArmorUpgradeType.LOOTING);
+        moduleFire = new ArmorModuleItem("module_fire", ArmorUpgradeType.FIRE);
     }
 
     public static void initOreDict() {
@@ -111,6 +120,11 @@ public class ModItems {
         moduleAutofeed.initModel();
         moduleSpeed.initModel();
         moduleStepassist.initModel();
+
+        moduleInhibit.initModel();
+        modulePower.initModel();
+        moduleLooting.initModel();
+        moduleFire.initModel();
 
         ModelLoader.setCustomModelResourceLocation(powerSuitBoots, 0, new ModelResourceLocation(powerSuitBoots.getRegistryName(), "inventory"));
         ModelLoader.setCustomModelResourceLocation(powerSuitChest, 0, new ModelResourceLocation(powerSuitChest.getRegistryName(), "inventory"));

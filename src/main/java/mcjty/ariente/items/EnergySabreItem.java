@@ -16,7 +16,7 @@ import net.minecraftforge.fml.relauncher.SideOnly;
 
 public class EnergySabreItem extends GenericItem {
 
-    private final float attackDamage;
+    protected final float attackDamage;
     private final ToolMaterial material;
 
     public EnergySabreItem(String name) {

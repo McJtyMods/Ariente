@@ -5,8 +5,8 @@ import mcjty.ariente.blocks.defense.ForceFieldRenderer;
 import mcjty.ariente.dimension.EditMode;
 import mcjty.ariente.dimension.EditModeClient;
 import mcjty.ariente.items.ModItems;
-import mcjty.ariente.items.armor.PowerSuit;
 import mcjty.ariente.items.modules.ArmorUpgradeType;
+import mcjty.ariente.items.modules.ModuleSupport;
 import mcjty.ariente.network.ArienteMessages;
 import mcjty.ariente.network.PacketHitForcefield;
 import net.minecraft.block.state.IBlockState;
@@ -79,7 +79,7 @@ public class ClientForgeEventHandlers {
             if (player != null) {
                 ItemStack chestStack = player.getItemStackFromSlot(EntityEquipmentSlot.CHEST);
                 if (!chestStack.isEmpty() && chestStack.getItem() == ModItems.powerSuitChest && chestStack.hasTagCompound()) {
-                    if (PowerSuit.hasWorkingUpgrade(chestStack, ArmorUpgradeType.FLIGHT)) {
+                    if (ModuleSupport.hasWorkingUpgrade(chestStack, ArmorUpgradeType.FLIGHT)) {
                         if (Ariente.proxy.isJumpKeyDown()) {
                             player.isAirBorne = true;
                             player.motionY = 0.4;
@@ -90,7 +90,7 @@ public class ClientForgeEventHandlers {
                 ItemStack feetStack = player.getItemStackFromSlot(EntityEquipmentSlot.FEET);
                 player.stepHeight = 0.6f;
                 if (!feetStack.isEmpty() && feetStack.getItem() == ModItems.powerSuitBoots && feetStack.hasTagCompound()) {
-                    if (PowerSuit.hasWorkingUpgrade(feetStack, ArmorUpgradeType.STEPASSIST)) {
+                    if (ModuleSupport.hasWorkingUpgrade(feetStack, ArmorUpgradeType.STEPASSIST)) {
                         player.stepHeight = 1.9f;
                     }
                 }

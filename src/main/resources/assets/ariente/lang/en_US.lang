@@ -29,6 +29,10 @@ item.ariente.module_scramble.name=Scramble Upgrade Module
 item.ariente.module_autofeed.name=Autofeed Power Upgrade Module
 item.ariente.module_nightvision.name=Nightvision Upgrade Module
 item.ariente.module_stepassist.name=Step Assist Upgrade Module
+item.ariente.module_inhibit.name=Inhibit Sabre Module
+item.ariente.module_power.name=Power Sabre Module
+item.ariente.module_looting.name=Looting Sabre Module
+item.ariente.module_fire.name=Fire Sabre Module
 
 tile.ariente.pattern.dots.name=Dots Pattern
 tile.ariente.pattern.lines.name=Lines Pattern

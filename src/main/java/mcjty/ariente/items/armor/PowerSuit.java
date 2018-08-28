@@ -3,9 +3,9 @@ package mcjty.ariente.items.armor;
 import com.google.common.collect.Multimap;
 import mcjty.ariente.Ariente;
 import mcjty.ariente.bindings.KeyBindings;
-import mcjty.ariente.config.UtilityConfiguration;
 import mcjty.ariente.items.ModItems;
 import mcjty.ariente.items.modules.ArmorUpgradeType;
+import mcjty.ariente.items.modules.ModuleSupport;
 import mcjty.lib.McJtyRegister;
 import net.minecraft.client.model.ModelBiped;
 import net.minecraft.client.util.ITooltipFlag;
@@ -13,10 +13,8 @@ import net.minecraft.entity.Entity;
 import net.minecraft.entity.EntityLivingBase;
 import net.minecraft.entity.SharedMonsterAttributes;
 import net.minecraft.entity.ai.attributes.AttributeModifier;
-import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.init.MobEffects;
 import net.minecraft.inventory.EntityEquipmentSlot;
-import net.minecraft.item.Item;
 import net.minecraft.item.ItemArmor;
 import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.NBTTagCompound;
@@ -25,7 +23,6 @@ import net.minecraft.util.text.TextFormatting;
 import net.minecraft.world.World;
 import org.apache.commons.lang3.tuple.Pair;
 
-import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 import java.util.List;
 import java.util.UUID;
@@ -54,7 +51,7 @@ public class PowerSuit extends ItemArmor {
         Multimap<String, AttributeModifier> multimap = super.getAttributeModifiers(slot, stack);
 
         if (slot == this.armorType) {
-            double extra = hasWorkingUpgrade(stack, ArmorUpgradeType.ARMOR) ? 4 : 0;
+            double extra = ModuleSupport.hasWorkingUpgrade(stack, ArmorUpgradeType.ARMOR) ? 4 : 0;
             multimap.put(SharedMonsterAttributes.ARMOR.getName(), new AttributeModifier(ARMOR_EXT_MODIFIERS[armorType.getIndex()],
                     "Armor extra modifier", extra, 0));
         }
@@ -66,28 +63,6 @@ public class PowerSuit extends ItemArmor {
     @Override
     public ModelBiped getArmorModel(EntityLivingBase entityLiving, ItemStack itemStack, EntityEquipmentSlot armorSlot, ModelBiped _default) {
         return PowerSuitModel.getModel(entityLiving, itemStack);
-    }
-
-    public static void receivedHotkey(EntityPlayer player, int index) {
-        handleHotkey(player, index, EntityEquipmentSlot.HEAD, ModItems.powerSuitHelmet);
-        handleHotkey(player, index, EntityEquipmentSlot.LEGS, ModItems.powerSuitLegs);
-        handleHotkey(player, index, EntityEquipmentSlot.FEET, ModItems.powerSuitBoots);
-        handleHotkey(player, index, EntityEquipmentSlot.CHEST, ModItems.powerSuitChest);
-    }
-
-    private static void handleHotkey(EntityPlayer player, int index, EntityEquipmentSlot slot, Item armorItem) {
-        ItemStack armorStack = player.getItemStackFromSlot(slot);
-        if (!armorStack.isEmpty() && armorStack.getItem() == armorItem && armorStack.hasTagCompound()) {
-            NBTTagCompound compound = armorStack.getTagCompound();
-            for (ArmorUpgradeType type : ArmorUpgradeType.VALUES) {
-                int idx = compound.getInteger(type.getHotkeyKey());
-                if (idx == index) {
-                    boolean on = compound.getBoolean(type.getModuleKey());
-                    on = !on;
-                    compound.setBoolean(type.getModuleKey(), on);
-                }
-            }
-        }
     }
 
     @Override
@@ -117,13 +92,6 @@ public class PowerSuit extends ItemArmor {
         }
     }
 
-    public static boolean hasWorkingUpgrade(ItemStack stack, ArmorUpgradeType type) {
-        if (stack.isEmpty() || !stack.hasTagCompound()) {
-            return false;
-        }
-        return stack.getTagCompound().getBoolean(type.getWorkingKey());
-    }
-
     private void onUpdateFeet(ItemStack stack, World world, EntityLivingBase entity) {
         if (stack.isEmpty() || stack.getItem() != ModItems.powerSuitBoots || !stack.hasTagCompound()) {
             return;
@@ -131,7 +99,7 @@ public class PowerSuit extends ItemArmor {
 
         NBTTagCompound compound = stack.getTagCompound();
 
-        if (!managePower(stack, entity)) {
+        if (!ModuleSupport.managePower(stack, entity)) {
             compound.setBoolean(ArmorUpgradeType.ARMOR.getWorkingKey(), false);
             compound.setBoolean(ArmorUpgradeType.FEATHERFALLING.getWorkingKey(), false);
             compound.setBoolean(ArmorUpgradeType.STEPASSIST.getWorkingKey(), false);
@@ -150,7 +118,7 @@ public class PowerSuit extends ItemArmor {
 
         NBTTagCompound compound = stack.getTagCompound();
 
-        if (!managePower(stack, entity)) {
+        if (!ModuleSupport.managePower(stack, entity)) {
             compound.setBoolean(ArmorUpgradeType.ARMOR.getWorkingKey(), false);
             return;
         }
@@ -172,7 +140,7 @@ public class PowerSuit extends ItemArmor {
 
         NBTTagCompound compound = stack.getTagCompound();
 
-        if (!managePower(stack, entity)) {
+        if (!ModuleSupport.managePower(stack, entity)) {
             compound.setBoolean(ArmorUpgradeType.ARMOR.getWorkingKey(), false);
             compound.setBoolean(ArmorUpgradeType.FLIGHT.getWorkingKey(), false);
             compound.setBoolean(ArmorUpgradeType.FORCEFIELD.getWorkingKey(), false);
@@ -198,7 +166,7 @@ public class PowerSuit extends ItemArmor {
 
         NBTTagCompound compound = stack.getTagCompound();
 
-        if (!managePower(stack, entity)) {
+        if (!ModuleSupport.managePower(stack, entity)) {
             compound.setBoolean(ArmorUpgradeType.ARMOR.getWorkingKey(), false);
             return;
         }
@@ -219,85 +187,6 @@ public class PowerSuit extends ItemArmor {
         }
     }
 
-    private boolean managePower(ItemStack stack, EntityLivingBase entity) {
-        Pair<Integer, Integer> powerUsage = getPowerUsage(stack);
-        if (powerUsage.getLeft() > powerUsage.getRight()) {
-            // Can't work
-            return false;
-        }
-        if (powerUsage.getLeft() <= 0) {
-            // No power consumption
-            return true;
-        }
-
-        NBTTagCompound compound = stack.getTagCompound();
-
-        int power = compound.getInteger("power");
-        if (power <= 0) {
-            // We need a new negarite/posirite injection
-            int negarite = compound.getInteger("negarite");
-            int posirite = compound.getInteger("posirite");
-            negarite--;
-            posirite--;
-            if (negarite < 0 || posirite < 0) {
-                // Not enough power possible. Check if we can autofeed
-                if (!checkAutofeed(entity, compound)) {
-                    return false;
-                } else {
-                    // We autofed and immediatelly consumed it so set values to 0
-                    posirite = 0;
-                    negarite = 0;
-                }
-            }
-            compound.setInteger("negarite", negarite);
-            compound.setInteger("posirite", posirite);
-            int max = UtilityConfiguration.POWERSUIT_TICKS;
-            if (powerUsage.getRight() > UtilityConfiguration.POWERSUIT_MAXPOWER) {  // If > we have an energy optimizer
-                max = UtilityConfiguration.POWERSUIT_TICKS_OPTIMIZED;
-            }
-            compound.setInteger("power", max / powerUsage.getLeft());
-        } else {
-            power--;
-            compound.setInteger("power", power);
-        }
-        return true;
-    }
-
-    private boolean checkAutofeed(EntityLivingBase entity, NBTTagCompound compound) {
-        if (compound.getBoolean(ArmorUpgradeType.AUTOFEED.getModuleKey())) {
-            if (entity instanceof EntityPlayer) {
-                // Only auto-feed with player
-                int negariteIndex = -1;
-                int posiriteIndex = -1;
-                EntityPlayer player = (EntityPlayer) entity;
-                for (int i = 0; i < player.inventory.getSizeInventory(); i++) {
-                    ItemStack itemStack = player.inventory.getStackInSlot(i);
-                    if (itemStack.getItem() == ModItems.negariteDust) {
-                        if (!itemStack.isEmpty()) {
-                            negariteIndex = i;
-                            if (posiriteIndex != -1) {
-                                break;
-                            }
-                        }
-                    } else if (itemStack.getItem() == ModItems.posiriteDust) {
-                        if (!itemStack.isEmpty()) {
-                            posiriteIndex = i;
-                            if (negariteIndex != -1) {
-                                break;
-                            }
-                        }
-                    }
-                }
-                if (negariteIndex != -1 && posiriteIndex != -1) {
-                    player.inventory.getStackInSlot(negariteIndex).shrink(1);
-                    player.inventory.getStackInSlot(posiriteIndex).shrink(1);
-                    return true;
-                }
-            }
-        }
-        return false;
-    }
-
     public static boolean hasFullArmor(EntityLivingBase player) {
         if (player == null) {
             return false;
@@ -315,30 +204,6 @@ public class PowerSuit extends ItemArmor {
             return false;
         }
         return true;
-    }
-
-    @Nonnull
-    public static Pair<Integer, Integer> getPowerUsage(ItemStack stack) {
-        int power = 0;
-        int maxPower = UtilityConfiguration.POWERSUIT_MAXPOWER;
-        NBTTagCompound compound = stack.getTagCompound();
-        if (compound == null) {
-            return Pair.of(0, 0);
-        }
-        for (ArmorUpgradeType type : ArmorUpgradeType.VALUES) {
-            String key = "module_" + type.getName();
-            if (compound.hasKey(key)) {
-                boolean activated = compound.getBoolean(key);
-                if (activated) {
-                    if (type.getPowerUsage() > 0) {
-                        power += type.getPowerUsage();
-                    } else if (type.getPowerUsage() == -1) {
-                        maxPower = UtilityConfiguration.POWERSUIT_MAXPOWER_OPTIMIZED;
-                    }
-                }
-            }
-        }
-        return Pair.of(power, maxPower);
     }
 
     @Override
@@ -366,7 +231,7 @@ public class PowerSuit extends ItemArmor {
                     }
                 }
             }
-            Pair<Integer, Integer> usage = getPowerUsage(stack);
+            Pair<Integer, Integer> usage = ModuleSupport.getPowerUsage(stack);
             list.add(TextFormatting.WHITE + "Power: " + TextFormatting.YELLOW + usage.getLeft() + " / " + usage.getRight());
 
             int negarite = compound.getInteger("negarite");
