@@ -54,6 +54,12 @@
         "chance": 0.1
       },
       {
+        "id": "ariente:module_inhibit",
+        "meta": 0,
+        "max": 1,
+        "chance": 0.1
+      },
+      {
         "id": "ariente:key_card",
         "meta": 0,
         "max": 1,
