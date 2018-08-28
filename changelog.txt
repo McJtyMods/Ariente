@@ -19,6 +19,11 @@
     - Boots upgrades:
         - Step assist
         - Feather falling
+    - Sabre upgrades:
+        - Fire aspect
+        - Looting
+        - Inhibit (removes regeneration ability of master soldiers)
+        - Power (extra damage)
     - Global upgrades:
         - Energy: improve energy consumption and max energy usage
         - Autofeed: automatically get negarite/posirite from inventory

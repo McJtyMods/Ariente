@@ -34,6 +34,8 @@ import net.minecraftforge.oredict.OreDictionary;
 
 public class ModBlocks {
 
+    public static final AxisAlignedBB FLAT_BLOCK_AABB = new AxisAlignedBB(0.0D, 0.0D, 0.0D, 1.0D, 0.1D, 1.0D);
+
     public static BlackTechBlock blackmarble_techpat;
     public static PatternBlock patternBlock;
 
@@ -48,6 +50,8 @@ public class ModBlocks {
     public static BaseBlock guardDummy;
     public static BaseBlock soldierDummy;
     public static BaseBlock masterSoldierDummy;
+
+    public static BaseBlock fluxBeamBlock;
 
     public static BaseBlock lapisore;
     public static BaseBlock glowstoneore;
@@ -131,6 +135,12 @@ public class ModBlocks {
                 .build();
         masterSoldierDummy = new BaseBlockBuilder<>(Ariente.instance, "master_soldier_dummy")
                 .rotationType(BaseBlock.RotationType.HORIZROTATION)
+                .build();
+
+        fluxBeamBlock = new BaseBlockBuilder<>(Ariente.instance, "flux_beam")
+                .rotationType(BaseBlock.RotationType.HORIZROTATION)
+                .flags(BlockFlags.NON_OPAQUE, BlockFlags.NON_FULLCUBE, BlockFlags.NO_COLLISION)
+                .boundingBox((state, source, pos) -> FLAT_BLOCK_AABB)
                 .build();
 
         reinforcedMarble = new BaseBlockBuilder<>(Ariente.instance, "reinforced_marble")
@@ -278,7 +288,7 @@ public class ModBlocks {
                 .rotationType(BaseBlock.RotationType.NONE)
                 .flags(BlockFlags.NON_OPAQUE, BlockFlags.NON_FULLCUBE, BlockFlags.NO_COLLISION)
                 .activateAction((world, pos, player, hand, side, hitX, hitY, hitZ) -> HoloGuiHandler.openHoloGui(world, pos, player))
-                .boundingBox((state, source, pos) -> LevelMarkerTile.BLOCK_AABB)
+                .boundingBox((state, source, pos) -> FLAT_BLOCK_AABB)
                 .info("message.ariente.shiftmessage")
                 .infoExtended("message.ariente.level_marker")
                 .build();
@@ -445,6 +455,8 @@ public class ModBlocks {
         netCableBlock.initModel();
         connectorBlock.initModel();
         facadeBlock.initModel();
+
+        fluxBeamBlock.initModel();
 
         storageBlock.initModel();
         ClientRegistry.bindTileEntitySpecialRenderer(StorageTile.class, new StorageRenderer());

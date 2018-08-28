@@ -10,6 +10,7 @@ item.ariente.dust_posirite.name=Posirite Dust
 item.ariente.energy_sabre.name=Energy Sabre
 item.ariente.enhanced_energy_sabre.name=Enhanced Energy Sabre
 item.ariente.key_card.name=Key Card
+item.ariente.flux_levitator.name=Flux Levitator
 item.ariente.dirty_diamond.name=Dirty Diamond
 
 item.ariente.powersuit_head.name=Power Helmet
@@ -41,6 +42,7 @@ tile.ariente.guard_dummy.name=Guard Dummy
 tile.ariente.soldier_dummy.name=Soldier Dummy
 
 tile.ariente.reinforced_marble.name=Reinforced Marble
+tile.ariente.flux_beam.name=Flux Beam
 
 tile.ariente.blacktech.dots.name=Tech Block Dots
 tile.ariente.blacktech.lines.name=Tech Block Lines
@@ -138,6 +140,7 @@ entity.ariente_soldier.name=Soldier
 entity.ariente_master_soldier.name=Master Soldier
 entity.ariente_hologui.name=Holo GUI
 entity.ariente_laser.name=Laser
+entity.ariente_flux_levitator.name=Flux Levitator
 
 itemGroup.ariente=Ariente
 

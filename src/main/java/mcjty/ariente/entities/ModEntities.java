@@ -15,6 +15,8 @@ public class ModEntities {
                 "ariente_hologui", id++, Ariente.instance, 64, 1, false);
         EntityRegistry.registerModEntity(new ResourceLocation(Ariente.MODID, "ariente_laser"), LaserEntity.class,
                 "ariente_laser", id++, Ariente.instance, 64, 1, false);
+        EntityRegistry.registerModEntity(new ResourceLocation(Ariente.MODID, "ariente_flux_levitator"), FluxLevitatorEntity.class,
+                "ariente_flux_levitator", id++, Ariente.instance, 64, 1, false);
 
         id = 100;
 
@@ -31,5 +33,6 @@ public class ModEntities {
         RenderingRegistry.registerEntityRenderingHandler(SentinelDroneEntity.class, SentinelDroneRender.FACTORY);
         RenderingRegistry.registerEntityRenderingHandler(SoldierEntity.class, SoldierRender.FACTORY);
         RenderingRegistry.registerEntityRenderingHandler(MasterSoldierEntity.class, SoldierRender.MASTER_FACTORY);
+        RenderingRegistry.registerEntityRenderingHandler(FluxLevitatorEntity.class, new FluxLevitatorRender.Factory());
     }
 }
