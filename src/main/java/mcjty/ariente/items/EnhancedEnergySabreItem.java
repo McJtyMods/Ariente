@@ -6,10 +6,13 @@ import mcjty.ariente.entities.MasterSoldierEntity;
 import mcjty.ariente.items.modules.ArmorUpgradeType;
 import mcjty.ariente.items.modules.ModuleSupport;
 import net.minecraft.client.util.ITooltipFlag;
+import net.minecraft.enchantment.Enchantment;
+import net.minecraft.enchantment.EnchantmentHelper;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.EntityLivingBase;
 import net.minecraft.entity.SharedMonsterAttributes;
 import net.minecraft.entity.ai.attributes.AttributeModifier;
+import net.minecraft.init.Enchantments;
 import net.minecraft.inventory.EntityEquipmentSlot;
 import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.NBTTagCompound;
@@ -18,7 +21,10 @@ import net.minecraft.world.World;
 import org.apache.commons.lang3.tuple.Pair;
 
 import javax.annotation.Nullable;
+import java.util.Collections;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 public class EnhancedEnergySabreItem extends EnergySabreItem {
 
@@ -38,11 +44,12 @@ public class EnhancedEnergySabreItem extends EnergySabreItem {
 
     @Override
     public Multimap<String, AttributeModifier> getAttributeModifiers(EntityEquipmentSlot slot, ItemStack stack) {
-        Multimap<String, AttributeModifier> multimap = super.getAttributeModifiers(slot, stack);
+        Multimap<String, AttributeModifier> multimap = super.getOriginalAttributeModifiers(slot, stack);
 
         if (slot == EntityEquipmentSlot.MAINHAND) {
             float factor = ModuleSupport.hasWorkingUpgrade(stack, ArmorUpgradeType.POWER) ? 2 : 1;
             multimap.put(SharedMonsterAttributes.ATTACK_DAMAGE.getName(), new AttributeModifier(ATTACK_DAMAGE_MODIFIER, "Weapon modifier", this.attackDamage * factor, 0));
+            multimap.put(SharedMonsterAttributes.ATTACK_SPEED.getName(), new AttributeModifier(ATTACK_SPEED_MODIFIER, "Weapon modifier", -2.4000000953674316D, 0));
         }
 
         return multimap;
@@ -99,15 +106,25 @@ public class EnhancedEnergySabreItem extends EnergySabreItem {
         if (!ModuleSupport.managePower(stack, entity)) {
             compound.setBoolean(ArmorUpgradeType.INHIBIT.getWorkingKey(), false);
             compound.setBoolean(ArmorUpgradeType.POWER.getWorkingKey(), false);
-            compound.setBoolean(ArmorUpgradeType.FIRE.getWorkingKey(), false);
-            compound.setBoolean(ArmorUpgradeType.LOOTING.getWorkingKey(), false);
+            int lootingLevel = EnchantmentHelper.getEnchantmentLevel(Enchantments.LOOTING, stack);
+            int fireLevel = EnchantmentHelper.getEnchantmentLevel(Enchantments.FIRE_ASPECT, stack);
+            if (lootingLevel > 0 || fireLevel > 0) {
+                EnchantmentHelper.setEnchantments(Collections.emptyMap(), stack);
+            }
             return;
         }
 
         compound.setBoolean(ArmorUpgradeType.INHIBIT.getWorkingKey(), compound.getBoolean(ArmorUpgradeType.INHIBIT.getModuleKey()));
         compound.setBoolean(ArmorUpgradeType.POWER.getWorkingKey(), compound.getBoolean(ArmorUpgradeType.POWER.getModuleKey()));
-        compound.setBoolean(ArmorUpgradeType.FIRE.getWorkingKey(), compound.getBoolean(ArmorUpgradeType.FIRE.getModuleKey()));
-        compound.setBoolean(ArmorUpgradeType.LOOTING.getWorkingKey(), compound.getBoolean(ArmorUpgradeType.LOOTING.getModuleKey()));
+
+        Map<Enchantment, Integer> ench = new HashMap<>();
+        if (compound.getBoolean(ArmorUpgradeType.LOOTING.getModuleKey())) {
+            ench.put(Enchantments.LOOTING, 3);
+        }
+        if (compound.getBoolean(ArmorUpgradeType.FIRE.getModuleKey())) {
+            ench.put(Enchantments.FIRE_ASPECT, 3);
+        }
+        EnchantmentHelper.setEnchantments(ench, stack);
     }
 
 
