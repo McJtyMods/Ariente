@@ -31,8 +31,12 @@ public class City {
 
     public int getHeight(ArienteChunkGenerator generator) {
         if (height == -1) {
-            ChunkHeightmap heightmap = generator.getHeightmap(center.getChunkX(), center.getChunkZ());
-            height = heightmap.getAverageHeight();
+            if (plan.isUnderground()) {
+                height = 50;
+            } else {
+                ChunkHeightmap heightmap = generator.getHeightmap(center.getChunkX(), center.getChunkZ());
+                height = heightmap.getAverageHeight();
+            }
         }
         return height;
     }

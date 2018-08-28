@@ -25,6 +25,7 @@ public class CityPlan implements IAsset {
     private List<String> top = new ArrayList<>();
     private int minLayer2 = 1;
     private int maxLayer2 = 2;
+    private boolean underground = false;
 
     private List<Loot> loot = new ArrayList<>();
 
@@ -65,6 +66,10 @@ public class CityPlan implements IAsset {
 
     public Map<Character, List<String>> getPartPalette() {
         return partPalette;
+    }
+
+    public boolean isUnderground() {
+        return underground;
     }
 
     public List<String> getPlan() {
@@ -200,6 +205,11 @@ public class CityPlan implements IAsset {
         masterChance = object.get("masterChance").getAsDouble();
         powerArmorChance = object.get("powerArmorChance").getAsDouble();
         forcefieldChance = object.get("forcefieldChance").getAsDouble();
+        if (object.has("underground")) {
+            underground = object.get("underground").getAsBoolean();
+        } else {
+            underground = false;
+        }
 
         JsonArray lootArray = object.get("loot").getAsJsonArray();
         parseLoot(lootArray);
@@ -308,6 +318,7 @@ public class CityPlan implements IAsset {
         object.add("masterChance", new JsonPrimitive(masterChance));
         object.add("powerArmorChance", new JsonPrimitive(powerArmorChance));
         object.add("forcefieldChance", new JsonPrimitive(forcefieldChance));
+        object.add("underground", new JsonPrimitive(underground));
 
         JsonArray lootArray = new JsonArray();
         for (Loot l : loot) {
