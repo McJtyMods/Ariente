@@ -83,7 +83,7 @@ public abstract class CommonProxy extends AbstractCommonProxy {
         if (mainConfig.hasChanged()) {
             mainConfig.save();
         }
-        mainConfig = null;
+//        mainConfig = null;
 
         AssetRegistries.reset();
         for (String path : ArienteConfiguration.ASSETS) {

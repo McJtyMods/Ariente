@@ -6,7 +6,7 @@ public class GuiConfiguration {
 
     public static final String CATEGORY_GUI = "gui";
 
-    public static int GUI_STYLE = 1;
+    public static int GUI_STYLE = 3;
 
     public static void init(Configuration cfg) {
         cfg.addCustomCategoryComment(CATEGORY_GUI, "GUI settings");

@@ -1,6 +1,7 @@
 package mcjty.ariente.gui;
 
 import mcjty.ariente.Ariente;
+import mcjty.ariente.config.GuiConfiguration;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.renderer.BufferBuilder;
 import net.minecraft.client.renderer.GlStateManager;
@@ -17,14 +18,14 @@ import javax.annotation.Nullable;
 
 public class HoloGuiEntityRender extends Render<HoloGuiEntity> {
 
-    private static final ResourceLocation guiBackground1 = new ResourceLocation(Ariente.MODID, "textures/gui/hologui.png");
-    private static final ResourceLocation guiBackground2 = new ResourceLocation(Ariente.MODID, "textures/gui/hologui1.png");
-    private static final ResourceLocation guiBackground3 = new ResourceLocation(Ariente.MODID, "textures/gui/hologui2.png");
-    private static final ResourceLocation guiBackground4 = new ResourceLocation(Ariente.MODID, "textures/gui/hologui3.png");
-    private static final ResourceLocation guiBackground5 = new ResourceLocation(Ariente.MODID, "textures/gui/hologui4.png");
-    private static final ResourceLocation guiBackground6 = new ResourceLocation(Ariente.MODID, "textures/gui/hologui5.png");
-    private static final ResourceLocation guiBackground7 = new ResourceLocation(Ariente.MODID, "textures/gui/hologui6.png");
-    private static final ResourceLocation guiBackground8 = new ResourceLocation(Ariente.MODID, "textures/gui/hologui7.png");
+    private static final ResourceLocation guiBackground1 = new ResourceLocation(Ariente.MODID, "textures/gui/hologui_blue_softwhite.png");
+    private static final ResourceLocation guiBackground2 = new ResourceLocation(Ariente.MODID, "textures/gui/hologui_blue.png");
+    private static final ResourceLocation guiBackground3 = new ResourceLocation(Ariente.MODID, "textures/gui/hologui_blue_sharpwhite.png");
+    private static final ResourceLocation guiBackground4 = new ResourceLocation(Ariente.MODID, "textures/gui/hologui_blue_sharpblack.png");
+    private static final ResourceLocation guiBackground5 = new ResourceLocation(Ariente.MODID, "textures/gui/hologui_blue_softblack.png");
+    private static final ResourceLocation guiBackground6 = new ResourceLocation(Ariente.MODID, "textures/gui/hologui_gray_sharpblack.png");
+    private static final ResourceLocation guiBackground7 = new ResourceLocation(Ariente.MODID, "textures/gui/hologui_gray_sharpwhite.png");
+    private static final ResourceLocation guiBackground8 = new ResourceLocation(Ariente.MODID, "textures/gui/hologui_gray_softblack.png");
 
     public HoloGuiEntityRender(RenderManager renderManager) {
         super(renderManager);
@@ -56,13 +57,30 @@ public class HoloGuiEntityRender extends Render<HoloGuiEntity> {
 
         GlStateManager.enableTexture2D();
         GlStateManager.disableLighting();
-        GlStateManager.enableBlend();
-//        GlStateManager.disableBlend();
+
+        int style = GuiConfiguration.GUI_STYLE;
+
+        if (style <= 8) {
+            GlStateManager.enableBlend();
+        } else {
+            GlStateManager.disableBlend();
+            style -= 8;
+        }
+
         GlStateManager.color(1.0f, 1.0f, 1.0f, 0.5f);
 
         Minecraft mc = Minecraft.getMinecraft();
 
-        mc.renderEngine.bindTexture(guiBackground8);
+        switch (style) {
+            case 1: mc.renderEngine.bindTexture(guiBackground1); break;
+            case 2: mc.renderEngine.bindTexture(guiBackground2); break;
+            case 3: mc.renderEngine.bindTexture(guiBackground3); break;
+            case 4: mc.renderEngine.bindTexture(guiBackground4); break;
+            case 5: mc.renderEngine.bindTexture(guiBackground5); break;
+            case 6: mc.renderEngine.bindTexture(guiBackground6); break;
+            case 7: mc.renderEngine.bindTexture(guiBackground7); break;
+            case 8: mc.renderEngine.bindTexture(guiBackground8); break;
+        }
 
         builder.begin(GL11.GL_QUADS, DefaultVertexFormats.POSITION_TEX);
 
@@ -107,24 +125,6 @@ public class HoloGuiEntityRender extends Render<HoloGuiEntity> {
         }
         GlStateManager.popMatrix();
 
-
-//        Vec3d hit = entity.getHit();
-//        if (hit != null) {
-//            GlStateManager.pushMatrix();
-//            GlStateManager.translate(x, y, z);
-//            GlStateManager.disableTexture2D();
-//            builder.begin(GL11.GL_LINES, DefaultVertexFormats.POSITION_COLOR);
-//            double o = .02;
-//            double minX = hit.x - entity.posX - o;
-//            double minY = hit.y - entity.posY - o;
-//            double minZ = hit.z - entity.posZ - o;
-//            double maxX = hit.x - entity.posX + o;
-//            double maxY = hit.y - entity.posY + o;
-//            double maxZ = hit.z - entity.posZ + o;
-//            renderDebugOutline(builder, minX, minY, minZ, maxX, maxY, maxZ);
-//            t.draw();
-//            GlStateManager.popMatrix();
-//        }
 
         GlStateManager.enableTexture2D();
         GlStateManager.enableDepth();
