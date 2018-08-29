@@ -1,8 +1,8 @@
 {
-  "parent": "ariente:block/thinblock",
+  "parent": "ariente:block/longblock",
   "textures": {
     "up": "ariente:blocks/machines/flux_beam",
-    "side": "ariente:blocks/marble/blackmarble",
-    "bottom": "ariente:blocks/marble/blackmarble"
+    "side": "ariente:blocks/machines/flux_beam",
+    "bottom": "ariente:blocks/machines/flux_beam"
   }
 }

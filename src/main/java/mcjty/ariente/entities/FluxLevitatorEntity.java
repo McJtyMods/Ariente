@@ -324,7 +324,7 @@ public class FluxLevitatorEntity extends Entity {
     }
 
     protected double getMaximumSpeed() {
-        return 0.4D;
+        return 0.8D;
     }
 
     protected void moveDerailedLevitator() {
@@ -360,7 +360,7 @@ public class FluxLevitatorEntity extends Entity {
         this.fallDistance = 0.0F;
         Vec3d vec3d = this.getPos(this.posX, this.posY, this.posZ);
         this.posY = pos.getY();
-        boolean flag = false;
+        boolean flag = true;    // Like powered
         boolean flag1 = false;
 
 //        BlockRailBase blockrailbase = (BlockRailBase) state.getBlock();

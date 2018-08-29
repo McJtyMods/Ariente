@@ -3,7 +3,6 @@ package mcjty.ariente.cities;
 import mcjty.ariente.config.WorldgenConfiguration;
 import mcjty.ariente.dimension.ArienteChunkGenerator;
 import mcjty.ariente.dimension.ArienteCityGenerator;
-import mcjty.ariente.dimension.ChunkHeightmap;
 import mcjty.ariente.varia.ChunkCoord;
 import net.minecraft.server.MinecraftServer;
 import net.minecraft.util.math.BlockPos;
@@ -99,8 +98,8 @@ public class CityTools {
         }
         City city = cities.get(center);
         if (city == null) {
-            ChunkHeightmap heightmap = generator.getHeightmap(center.getChunkX(), center.getChunkZ());
-            city = new City(center, getRandomCityPlan(center), heightmap.getAverageHeight());
+//            ChunkHeightmap heightmap = generator.getHeightmap(center.getChunkX(), center.getChunkZ());
+            city = new City(center, getRandomCityPlan(center), -1);
             cacheCity(center, city);
         }
         return city;

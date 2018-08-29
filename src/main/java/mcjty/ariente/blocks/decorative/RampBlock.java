@@ -41,7 +41,6 @@ public class RampBlock extends BaseBlock {
     public static final AxisAlignedBB AABB_EAST4 = new AxisAlignedBB(0.2D, 0.6D, 0.0D, 0.4D, 0.8D, 1.0D);
     public static final AxisAlignedBB AABB_EAST5 = new AxisAlignedBB(0.0D, 0.8D, 0.0D, 0.2D, 1.0D, 1.0D);
 
-
     public RampBlock(String name) {
         super(Ariente.instance, Material.ROCK, name, ItemBlock::new);
         setHardness(2.0f);

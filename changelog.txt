@@ -35,6 +35,9 @@
 - Different styles for the holo GUI
 - The damage for the drone laser was accidentally disabled
 - Fixed a bug in loot generation
+- New large (and hard) underground city
+- New monorail like system (called flux levitators)
+- A new slope decorative block
 
 0.0.1-alpha:
 - Alpha release

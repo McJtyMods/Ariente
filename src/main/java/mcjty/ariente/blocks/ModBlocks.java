@@ -35,6 +35,7 @@ import net.minecraftforge.oredict.OreDictionary;
 public class ModBlocks {
 
     public static final AxisAlignedBB FLAT_BLOCK_AABB = new AxisAlignedBB(0.0D, 0.0D, 0.0D, 1.0D, 0.1D, 1.0D);
+    public static final AxisAlignedBB BEAM_BLOCK_AABB = new AxisAlignedBB(0.0D, 0.0D, 0.3D, 1.0D, 0.3D, 0.7D);
 
     public static BlackTechBlock blackmarble_techpat;
     public static PatternBlock patternBlock;
@@ -95,6 +96,7 @@ public class ModBlocks {
     public static FacadeBlock facadeBlock;
 
     public static RampBlock rampBlock;
+    public static SlopeBlock slopeBlock;
 
     public static GenericBlockBuilderFactory builderFactory;
 
@@ -140,7 +142,7 @@ public class ModBlocks {
         fluxBeamBlock = new BaseBlockBuilder<>(Ariente.instance, "flux_beam")
                 .rotationType(BaseBlock.RotationType.HORIZROTATION)
                 .flags(BlockFlags.NON_OPAQUE, BlockFlags.NON_FULLCUBE, BlockFlags.NO_COLLISION)
-                .boundingBox((state, source, pos) -> FLAT_BLOCK_AABB)
+                .boundingBox((state, source, pos) -> BEAM_BLOCK_AABB)
                 .build();
 
         reinforcedMarble = new BaseBlockBuilder<>(Ariente.instance, "reinforced_marble")
@@ -396,6 +398,7 @@ public class ModBlocks {
         marbleSlabBlock = new MarbleSlabBlock("marble_slab");
         doubleMarbleSlabBlock = new DoubleMarbleSlabBlock("double_marble_slab");
         rampBlock = new RampBlock("ramp");
+        slopeBlock = new SlopeBlock("slope");
     }
 
     private static void initOres() {
@@ -497,6 +500,7 @@ public class ModBlocks {
         blackmarble_techpat.initModel();
         patternBlock.initModel();
         rampBlock.initModel();
+        slopeBlock.initModel();
         marble.initModel();
         marble_smooth.initModel();
         marble_pilar.initModel();

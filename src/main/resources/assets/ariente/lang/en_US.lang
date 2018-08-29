@@ -83,6 +83,7 @@ tile.ariente.flatlight.name=Flat Light
 tile.ariente.aicore.name=AI Core
 
 tile.ariente.ramp.name=Ramp
+tile.ariente.slope.name=Slope
 
 tile.ariente.marble.gray.name=Gray Marble
 tile.ariente.marble.white.name=White Marble

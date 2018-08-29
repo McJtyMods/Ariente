@@ -119,11 +119,13 @@ public class ArienteChunkGenerator implements IChunkGenerator {
         if (CityTools.isCityChunk(x, z)) {
             ChunkCoord center = CityTools.getNearestCityCenter(x, z);
             City city = CityTools.getCity(center);
-            int height = city.getHeight(this);
-            for (int dx = 0; dx < 16; dx++) {
-                for (int dz = 0; dz < 16; dz++) {
-                    int index = (dx << 12) | (dz << 8) + height;
-                    PrimerTools.setBlockStateRange(primer, index, index + 128 - height, air);
+            if (!city.getPlan().isUnderground()) {
+                int height = city.getHeight(this);
+                for (int dx = 0; dx < 16; dx++) {
+                    for (int dz = 0; dz < 16; dz++) {
+                        int index = (dx << 12) | (dz << 8) + height;
+                        PrimerTools.setBlockStateRange(primer, index, index + 128 - height, air);
+                    }
                 }
             }
         } else {
@@ -135,9 +137,13 @@ public class ArienteChunkGenerator implements IChunkGenerator {
                     if (CityTools.isCityChunk(x+cx, z+cz)) {
                         ChunkCoord center = CityTools.getNearestCityCenter(x+cx, z+cz);
                         City city = CityTools.getCity(center);
-                        height = city.getHeight(this);
-                        cityHeights[cx+1][cz+1] = height;
-                        hasCity = true;
+                        if (!city.getPlan().isUnderground()) {
+                            height = city.getHeight(this);
+                            cityHeights[cx + 1][cz + 1] = height;
+                            hasCity = true;
+                        } else {
+                            cityHeights[cx+1][cz+1] = -1;
+                        }
                     } else {
                         cityHeights[cx+1][cz+1] = -1;
                     }
@@ -234,8 +240,8 @@ public class ArienteChunkGenerator implements IChunkGenerator {
         fixForNearbyCity(chunkprimer, x, z);
 
         this.caveGenerator.generate(this.worldObj, x, z, chunkprimer);
-
         cityGenerator.generate(this.worldObj, x, z, chunkprimer);
+        LevitatorNetworkGenerator.generate(this.worldObj, x, z, chunkprimer, this);
 
         Chunk chunk = new Chunk(this.worldObj, chunkprimer, x, z);
 
