@@ -32,7 +32,7 @@ public class City {
     public int getHeight(ArienteChunkGenerator generator) {
         if (height == -1) {
             if (plan.isUnderground()) {
-                height = 50;
+                height = 40;
             } else {
                 ChunkHeightmap heightmap = generator.getHeightmap(center.getChunkX(), center.getChunkZ());
                 height = heightmap.getAverageHeight();

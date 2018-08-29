@@ -523,9 +523,9 @@ public class FluxLevitatorEntity extends Entity {
     public static BlockRailBase.EnumRailDirection getBeamDirection(IBlockState state) {
         EnumFacing facing = state.getValue(BaseBlock.FACING_HORIZ);
         if (facing == EnumFacing.NORTH || facing == EnumFacing.SOUTH) {
-            return BlockRailBase.EnumRailDirection.NORTH_SOUTH;
-        } else {
             return BlockRailBase.EnumRailDirection.EAST_WEST;
+        } else {
+            return BlockRailBase.EnumRailDirection.NORTH_SOUTH;
         }
     }
 

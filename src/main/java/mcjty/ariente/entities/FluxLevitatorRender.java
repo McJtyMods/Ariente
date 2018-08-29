@@ -16,7 +16,7 @@ import net.minecraftforge.fml.relauncher.SideOnly;
 @SideOnly(Side.CLIENT)
 public class FluxLevitatorRender<T extends FluxLevitatorEntity> extends Render<T> {
 
-    private static final ResourceLocation TEXTURES = new ResourceLocation("textures/entity/minecart.png");
+    private static final ResourceLocation TEXTURES = new ResourceLocation("ariente:textures/entity/flux_levitator.png");
     protected ModelBase model = new FluxLevitatorModel();
 
     public FluxLevitatorRender(RenderManager renderManagerIn) {

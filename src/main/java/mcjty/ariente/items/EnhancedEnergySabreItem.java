@@ -87,6 +87,11 @@ public class EnhancedEnergySabreItem extends EnergySabreItem {
     }
 
     @Override
+    public boolean shouldCauseReequipAnimation(ItemStack oldStack, ItemStack newStack, boolean slotChanged) {
+        return false;
+    }
+
+    @Override
     public void onUpdate(ItemStack stack, World world, Entity entity, int itemSlot, boolean isSelected) {
         if (entity instanceof EntityLivingBase && !world.isRemote) {
             if (itemSlot != EntityEquipmentSlot.MAINHAND.getIndex()) {
