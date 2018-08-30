@@ -6880,7 +6880,7 @@
         "    b                       b   ",
         "    b                       b   ",
         "    b                       b   ",
-        "    p                       p   ",
+        "    p       v         v     p   ",
         "    b p b b b b     b b b p b   ",
         "                            b   "
       ],
@@ -6960,17 +6960,17 @@
         "                                ",
         "                                ",
         "    b p b b b b b b b b b p b   ",
-        "    p                       p   ",
+        "    p       x       x       p   ",
+        "    b                       b   ",
+        "    b                       b   ",
+        "    b w                   y b   ",
         "    b                       b   ",
         "    b                       b   ",
         "    b                       b   ",
+        "    b w                   y b   ",
         "    b                       b   ",
         "    b                       b   ",
-        "    b                       b   ",
-        "    b                       b   ",
-        "    b                       b   ",
-        "    b                       b   ",
-        "    p                       p   ",
+        "    p       v       v       p   ",
         "    b p b b b b b b b b b p b   ",
         "                                "
       ],
@@ -10799,88 +10799,104 @@
     "name": "city3_1",
     "palette": [
       {
-        "char": "a ",
-        "block": "ariente:marble_smooth@1"
-      },
-      {
         "char": "  ",
         "block": "minecraft:air"
+      },
+      {
+        "char": "y ",
+        "block": "ariente:flatlight@4"
+      },
+      {
+        "char": "w ",
+        "block": "ariente:flatlight@5"
       },
       {
         "char": "u ",
         "block": "ariente:blacktech@2"
       },
       {
-        "char": "t ",
-        "block": "ariente:pattern@1"
-      },
-      {
         "char": "s ",
         "block": "ariente:level_marker"
-      },
-      {
-        "char": "r ",
-        "block": "ariente:elevator"
       },
       {
         "char": "q ",
         "block": "ariente:pattern"
       },
       {
-        "char": "p ",
-        "block": "ariente:marble@3"
-      },
-      {
         "char": "o ",
         "block": "ariente:ramp@3"
-      },
-      {
-        "char": "n ",
-        "block": "ariente:door_marker@1"
       },
       {
         "char": "m ",
         "block": "ariente:flatlight"
       },
       {
-        "char": "l ",
-        "block": "ariente:slope@6"
-      },
-      {
         "char": "k ",
         "block": "ariente:slope@7"
-      },
-      {
-        "char": "j ",
-        "block": "ariente:flux_beam@2"
       },
       {
         "char": "i ",
         "block": "ariente:slope@2"
       },
       {
-        "char": "h ",
-        "block": "ariente:slope@3"
-      },
-      {
         "char": "g ",
         "block": "ariente:slope@4"
-      },
-      {
-        "char": "f ",
-        "block": "ariente:slope@5"
       },
       {
         "char": "e ",
         "block": "ariente:flux_beam"
       },
       {
-        "char": "d ",
-        "block": "ariente:slope"
-      },
-      {
         "char": "c ",
         "block": "ariente:slope@1"
+      },
+      {
+        "char": "a ",
+        "block": "ariente:marble_smooth@1"
+      },
+      {
+        "char": "x ",
+        "block": "ariente:flatlight@3"
+      },
+      {
+        "char": "v ",
+        "block": "ariente:flatlight@2"
+      },
+      {
+        "char": "t ",
+        "block": "ariente:pattern@1"
+      },
+      {
+        "char": "r ",
+        "block": "ariente:elevator"
+      },
+      {
+        "char": "p ",
+        "block": "ariente:marble@3"
+      },
+      {
+        "char": "n ",
+        "block": "ariente:door_marker@1"
+      },
+      {
+        "char": "l ",
+        "block": "ariente:slope@6"
+      },
+      {
+        "char": "j ",
+        "block": "ariente:flux_beam@2"
+      },
+      {
+        "char": "h ",
+        "block": "ariente:slope@3"
+      },
+      {
+        "char": "f ",
+        "block": "ariente:slope@5"
+      },
+      {
+        "char": "d ",
+        "block": "ariente:slope"
       },
       {
         "char": "b ",

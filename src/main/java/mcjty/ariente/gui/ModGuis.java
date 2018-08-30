@@ -1,6 +1,7 @@
 package mcjty.ariente.gui;
 
 import mcjty.ariente.Ariente;
+import mcjty.ariente.entities.FluxLevitatorGui;
 import mcjty.ariente.items.armor.ArmorGui;
 
 public class ModGuis {
@@ -11,6 +12,7 @@ public class ModGuis {
     public static final String GUI_ARMOR_LEGS = "armor_legs";
     public static final String GUI_ARMOR_BOOTS = "armor_boots";
     public static final String GUI_ARMOR_SABRE = "armor_sabre";
+    public static final String GUI_LEVITATOR = "levitator";
 
     public static void init() {
         Ariente.instance.guiRegistry.registerGui(GUI_ARMOR, ArmorGui::create);
@@ -19,6 +21,7 @@ public class ModGuis {
         Ariente.instance.guiRegistry.registerGui(GUI_ARMOR_LEGS, ArmorGui::createLegsGui);
         Ariente.instance.guiRegistry.registerGui(GUI_ARMOR_BOOTS, ArmorGui::createBootsGui);
         Ariente.instance.guiRegistry.registerGui(GUI_ARMOR_SABRE, ArmorGui::createSabreGui);
+        Ariente.instance.guiRegistry.registerGui(GUI_LEVITATOR, FluxLevitatorGui::createGui);
     }
 
 }

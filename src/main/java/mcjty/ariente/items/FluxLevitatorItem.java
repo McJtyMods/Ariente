@@ -2,6 +2,9 @@ package mcjty.ariente.items;
 
 import mcjty.ariente.blocks.ModBlocks;
 import mcjty.ariente.entities.FluxLevitatorEntity;
+import mcjty.ariente.gui.HoloGuiEntity;
+import mcjty.ariente.gui.HoloGuiHandler;
+import mcjty.ariente.gui.ModGuis;
 import net.minecraft.block.BlockRailBase;
 import net.minecraft.block.state.IBlockState;
 import net.minecraft.client.util.ITooltipFlag;
@@ -53,6 +56,9 @@ public class FluxLevitatorItem extends GenericItem {
                 }
 
                 world.spawnEntity(entity);
+
+                HoloGuiEntity holoGui = HoloGuiHandler.openHoloGui(world, pos, player, ModGuis.GUI_LEVITATOR, 2.0f);
+                holoGui.startRiding(entity, true);
             }
 
             itemstack.shrink(1);

@@ -399,23 +399,23 @@ public class FluxLevitatorEntity extends Entity {
         double slopeAdjustment = getSlopeAdjustment();
         BlockRailBase.EnumRailDirection dir = getBeamDirection(state);
 
-//        switch (dir) {
-//            case ASCENDING_EAST:
-//                this.motionX -= slopeAdjustment;
-//                ++this.posY;
-//                break;
-//            case ASCENDING_WEST:
-//                this.motionX += slopeAdjustment;
-//                ++this.posY;
-//                break;
-//            case ASCENDING_NORTH:
-//                this.motionZ += slopeAdjustment;
-//                ++this.posY;
-//                break;
-//            case ASCENDING_SOUTH:
-//                this.motionZ -= slopeAdjustment;
-//                ++this.posY;
-//        }
+        switch (dir) {
+            case ASCENDING_EAST:
+                this.motionX -= slopeAdjustment;
+                ++this.posY;
+                break;
+            case ASCENDING_WEST:
+                this.motionX += slopeAdjustment;
+                ++this.posY;
+                break;
+            case ASCENDING_NORTH:
+                this.motionZ += slopeAdjustment;
+                ++this.posY;
+                break;
+            case ASCENDING_SOUTH:
+                this.motionZ -= slopeAdjustment;
+                ++this.posY;
+        }
 
         int[][] aint = MATRIX[dir.getMetadata()];
         double d1 = (aint[1][0] - aint[0][0]);
