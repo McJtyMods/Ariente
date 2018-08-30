@@ -242,7 +242,7 @@ public class ArmorGui {
         NBTTagCompound compound = stack.getTagCompound();
         int index = compound.getInteger(moduleItem.getType().getHotkeyKey());
         index++;
-        if (index >= 4) {
+        if (index >= 5) {
             index = 0;
         }
         compound.setInteger(moduleItem.getType().getHotkeyKey(), index);

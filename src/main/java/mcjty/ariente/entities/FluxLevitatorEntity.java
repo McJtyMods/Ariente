@@ -64,11 +64,38 @@ public class FluxLevitatorEntity extends Entity {
     protected float maxSpeedAirVertical = defaultMaxSpeedAirVertical;
     protected double dragAir = defaultDragAir;
 
+    private float length;
+
     public FluxLevitatorEntity(World worldIn) {
         super(worldIn);
         this.preventEntitySpawning = true;
-        this.setSize(0.98F, 0.7F);
+        length = 2.5f;
+        this.setSize(1.30F, 0.9F);
     }
+
+    @Override
+    protected void setSize(float width, float height) {
+        if (width != this.width || height != this.height) {
+            float f = this.width;
+            this.width = width;
+            this.height = height;
+
+            if (this.width < f) {
+                double dx = (double) length / 2.0D;
+                double d0 = (double) width / 2.0D;
+                this.setEntityBoundingBox(new AxisAlignedBB(this.posX - dx, this.posY, this.posZ - d0, this.posX + dx, this.posY + (double) this.height, this.posZ + d0));
+                return;
+            }
+
+            AxisAlignedBB axisalignedbb = this.getEntityBoundingBox();
+            this.setEntityBoundingBox(new AxisAlignedBB(axisalignedbb.minX, axisalignedbb.minY, axisalignedbb.minZ, axisalignedbb.minX + (double) this.length, axisalignedbb.minY + (double) this.height, axisalignedbb.minZ + (double) this.width));
+
+            if (this.width > f && !this.firstUpdate && !this.world.isRemote) {
+                this.move(MoverType.SELF, (double) (f - this.length), 0.0D, (double) (f - this.width));
+            }
+        }
+    }
+
 
     public FluxLevitatorEntity(World worldIn, double x, double y, double z) {
         this(worldIn);
