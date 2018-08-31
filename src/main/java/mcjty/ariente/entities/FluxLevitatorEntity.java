@@ -1,6 +1,7 @@
 package mcjty.ariente.entities;
 
 import mcjty.ariente.blocks.ModBlocks;
+import mcjty.ariente.gui.HoloGuiEntity;
 import mcjty.ariente.items.ModItems;
 import mcjty.lib.blocks.BaseBlock;
 import net.minecraft.block.BlockRailBase;
@@ -64,6 +65,8 @@ public class FluxLevitatorEntity extends Entity {
     protected float maxSpeedAirVertical = defaultMaxSpeedAirVertical;
     protected double dragAir = defaultDragAir;
 
+    private HoloGuiEntity holoGui;
+
     private float length;
 
     public FluxLevitatorEntity(World worldIn) {
@@ -97,6 +100,14 @@ public class FluxLevitatorEntity extends Entity {
     }
 
 
+    public HoloGuiEntity getHoloGui() {
+        return holoGui;
+    }
+
+    public void setHoloGui(HoloGuiEntity holoGui) {
+        this.holoGui = holoGui;
+    }
+
     public FluxLevitatorEntity(World worldIn, double x, double y, double z) {
         this(worldIn);
         this.setPosition(x, y, z);
@@ -106,6 +117,27 @@ public class FluxLevitatorEntity extends Entity {
         this.prevPosX = x;
         this.prevPosY = y;
         this.prevPosZ = z;
+    }
+
+    @Override
+    public void move(MoverType type, double x, double y, double z) {
+        super.move(type, x, y, z);
+        if (holoGui != null) {
+            holoGui.move(type, x, y, z);
+            holoGui.setPosition(this.posX, this.posY + .5, this.posZ);
+            holoGui.setLocationAndAngles(this.posX, this.posY + .5, this.posZ+1, this.rotationYaw+90, this.rotationPitch);
+            holoGui.move(type, 0, 0, 0);
+//            holoGui.move(type, x, y, z);
+        }
+    }
+
+    @Override
+    public void setLocationAndAngles(double x, double y, double z, float yaw, float pitch) {
+        super.setLocationAndAngles(x, y, z, yaw, pitch);
+        if (holoGui != null) {
+//            holoGui.setLocationAndAngles(x, y + .5, z, yaw, pitch);
+//            holoGui.move(type, x, y, z);
+        }
     }
 
     @Override
@@ -174,6 +206,14 @@ public class FluxLevitatorEntity extends Entity {
             }
         } else {
             return true;
+        }
+    }
+
+    @Override
+    public void setDead() {
+        super.setDead();
+        if (holoGui != null) {
+            holoGui.setDead();
         }
     }
 
@@ -347,6 +387,12 @@ public class FluxLevitatorEntity extends Entity {
             }
 
             this.handleWaterMovement();
+        }
+
+        if (holoGui != null) {
+            holoGui.setLocationAndAngles(this.posX, this.posY + .5, this.posZ+1, this.rotationYaw+90, this.rotationPitch);
+            holoGui.setPositionAndUpdate(this.posX, this.posY + .5, this.posZ+1);
+            holoGui.move(MoverType.SELF, 0, 0, 0);
         }
     }
 
@@ -576,6 +622,10 @@ public class FluxLevitatorEntity extends Entity {
         float f = this.width / 2.0F;
         float f1 = this.height;
         this.setEntityBoundingBox(new AxisAlignedBB(x - f, y, z - f, x + f, y + f1, z + f));
+        if (holoGui != null) {
+//            holoGui.setLocationAndAngles(x, y + .5, z, this.rotationYaw, this.rotationPitch);
+//            holoGui.setPosition(x, y+.5, z);
+        }
     }
 
     @Nullable
@@ -682,10 +732,19 @@ public class FluxLevitatorEntity extends Entity {
 
     @Override
     protected void readEntityFromNBT(NBTTagCompound compound) {
+//        if (compound.hasKey("holoGui")) {
+//
+//        }
     }
 
     @Override
     protected void writeEntityToNBT(NBTTagCompound compound) {
+        if (holoGui != null) {
+            NBTTagCompound nbttagcompound = new NBTTagCompound();
+            if (holoGui.writeToNBTAtomically(nbttagcompound)) {
+                compound.setTag("holoGui", nbttagcompound);
+            }
+        }
     }
 
     @Override

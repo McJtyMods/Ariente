@@ -14,6 +14,7 @@ import net.minecraft.util.EnumActionResult;
 import net.minecraft.util.EnumFacing;
 import net.minecraft.util.EnumHand;
 import net.minecraft.util.math.BlockPos;
+import net.minecraft.util.math.Vec3d;
 import net.minecraft.world.World;
 
 import javax.annotation.Nullable;
@@ -57,8 +58,10 @@ public class FluxLevitatorItem extends GenericItem {
 
                 world.spawnEntity(entity);
 
-                HoloGuiEntity holoGui = HoloGuiHandler.openHoloGui(world, pos, player, ModGuis.GUI_LEVITATOR, 2.0f);
-                holoGui.startRiding(entity, true);
+                HoloGuiEntity holoGui = HoloGuiHandler.openHoloGuiRelative(world, pos, player, entity, new Vec3d(0, .5, 1), ModGuis.GUI_LEVITATOR);
+                holoGui.setTimeout(2000000000); // Never timeout
+                holoGui.setSmall(true);
+                entity.setHoloGui(holoGui);
             }
 
             itemstack.shrink(1);

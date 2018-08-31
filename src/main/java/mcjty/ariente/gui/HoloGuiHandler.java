@@ -3,6 +3,7 @@ package mcjty.ariente.gui;
 import mcjty.ariente.gui.components.HoloPanel;
 import mcjty.ariente.gui.components.HoloText;
 import mcjty.ariente.sounds.ModSounds;
+import net.minecraft.entity.Entity;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.tileentity.TileEntity;
 import net.minecraft.util.SoundCategory;
@@ -36,6 +37,16 @@ public class HoloGuiHandler {
         return entity;
     }
 
+    public static HoloGuiEntity openHoloGuiRelative(World world, BlockPos pos, EntityPlayer player, Entity parent, Vec3d offset, String guiId) {
+        if (world.isRemote) {
+            world.playSound(pos.getX(), pos.getY(), pos.getZ(), ModSounds.guiopen, SoundCategory.PLAYERS, 1.0f, 1.0f, true);
+            return null;
+        }
+        HoloGuiEntity entity = createHoloGuiRelative(world, parent, offset, "");
+        entity.setGuiId(guiId);
+        return entity;
+    }
+
     public static HoloGuiEntity openHoloGuiEntity(World world, BlockPos pos, EntityPlayer player, String tag, double distance) {
         if (world.isRemote) {
             world.playSound(pos.getX(), pos.getY(), pos.getZ(), ModSounds.guiopen, SoundCategory.PLAYERS, 1.0f, 1.0f, true);
@@ -64,6 +75,18 @@ public class HoloGuiHandler {
         z += lookVec.z * distance;
         entity.setPosition(x, y, z);
         entity.setLocationAndAngles(x, y, z, player.rotationYaw, 0);
+        world.spawnEntity(entity);
+        return entity;
+    }
+
+    private static HoloGuiEntity createHoloGuiRelative(World world, Entity parent, Vec3d offset, String tag) {
+        HoloGuiEntity entity = new HoloGuiEntity(world);
+        entity.setTag(tag);
+        double x = parent.posX + offset.x;
+        double y = parent.posY + offset.y;
+        double z = parent.posZ + offset.z;
+        entity.setPosition(x, y, z);
+        entity.setLocationAndAngles(x, y, z, parent.rotationYaw, parent.rotationPitch);
         world.spawnEntity(entity);
         return entity;
     }

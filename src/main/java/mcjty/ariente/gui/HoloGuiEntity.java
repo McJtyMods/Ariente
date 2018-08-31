@@ -23,6 +23,7 @@ public class HoloGuiEntity extends Entity {
     private static final DataParameter<Optional<BlockPos>> GUITILE = EntityDataManager.createKey(HoloGuiEntity.class, DataSerializers.OPTIONAL_BLOCK_POS);
     private static final DataParameter<String> TAG = EntityDataManager.createKey(HoloGuiEntity.class, DataSerializers.STRING);
     private static final DataParameter<String> GUIID = EntityDataManager.createKey(HoloGuiEntity.class, DataSerializers.STRING);
+    private static final DataParameter<Boolean> SMALL = EntityDataManager.createKey(HoloGuiEntity.class, DataSerializers.BOOLEAN);
 
     private AxisAlignedBB playerDetectionBox = null;
 
@@ -92,6 +93,14 @@ public class HoloGuiEntity extends Entity {
         return this.dataManager.get(TAG);
     }
 
+    public void setSmall(boolean b) {
+        this.dataManager.set(SMALL, b);
+    }
+
+    public boolean isSmall() {
+        return this.dataManager.get(SMALL);
+    }
+
     @Override
     public void onUpdate() {
         super.onUpdate();
@@ -131,15 +140,17 @@ public class HoloGuiEntity extends Entity {
             }
         }
 
-        timeout--;
-        if (timeout <= 0) {
-            world.playSound(null, posX, posY, posZ, ModSounds.guiopen, SoundCategory.PLAYERS, 0.2f, 1.0f);
-            this.setDead();
-        }
-        if (world.getEntitiesWithinAABB(EntityPlayer.class, playerDetectionBox)
-                .stream()
-                .anyMatch(this::playerLooksAtMe)) {
-            timeout = maxTimeout;
+        if (timeout < 2000000000) {
+            timeout--;
+            if (timeout <= 0) {
+                world.playSound(null, posX, posY, posZ, ModSounds.guiopen, SoundCategory.PLAYERS, 0.2f, 1.0f);
+                this.setDead();
+            }
+            if (world.getEntitiesWithinAABB(EntityPlayer.class, playerDetectionBox)
+                    .stream()
+                    .anyMatch(this::playerLooksAtMe)) {
+                timeout = maxTimeout;
+            }
         }
     }
 
@@ -149,8 +160,15 @@ public class HoloGuiEntity extends Entity {
         Vec3d v = getIntersect3D(player, lookVec);
         Vec2f vec2d = get2DProjection(lookVec, v);
 
-        double cx = vec2d.x * 10 - .8;
-        double cy = vec2d.y * 10 - .8;
+        double cx;
+        double cy;
+        if (isSmall()) {
+            cx = vec2d.x * 10 / .6 - 4.1;
+            cy = vec2d.y * 10 / .6 - 4.1;
+        } else {
+            cx = vec2d.x * 10 - .8;
+            cy = vec2d.y * 10 - .8;
+        }
         return cx >= 0 && cx <= 10 && cy >= 0 && cy <= 10;
     }
 
@@ -160,8 +178,14 @@ public class HoloGuiEntity extends Entity {
         Vec3d v = getIntersect3D(player, lookVec);
         Vec2f vec2d = get2DProjection(lookVec, v);
 
-        cursorX = vec2d.x * 10 - .8;
-        cursorY = vec2d.y * 10 - .8;
+        if (isSmall()) {
+            cursorX = vec2d.x * 10 / .6 - 4.1;
+            cursorY = vec2d.y * 10 / .6 - 4.1;
+        } else {
+            cursorX = vec2d.x * 10 - .8;
+            cursorY = vec2d.y * 10 - .8;
+        }
+
         hit = v;
     }
 
@@ -286,6 +310,7 @@ public class HoloGuiEntity extends Entity {
         this.dataManager.register(GUITILE, Optional.absent());
         this.dataManager.register(TAG, "");
         this.dataManager.register(GUIID, "");
+        this.dataManager.register(SMALL, false);
     }
 
     @Override
@@ -300,6 +325,7 @@ public class HoloGuiEntity extends Entity {
         }
         setTag(compound.getString("tag"));
         setGuiId(compound.getString("guiId"));
+        setSmall(compound.getBoolean("small"));
     }
 
     @Override
@@ -319,6 +345,9 @@ public class HoloGuiEntity extends Entity {
         String guiid = getGuiId();
         if (guiid != null) {
             compound.setString("guiId", guiid);
+        }
+        if (isSmall()) {
+            compound.setBoolean("small", true);
         }
     }
 }
