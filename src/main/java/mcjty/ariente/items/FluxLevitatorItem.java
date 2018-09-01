@@ -50,18 +50,19 @@ public class FluxLevitatorItem extends GenericItem {
                     d0 = 0.5D;
                 }
 
-                FluxLevitatorEntity entity = new FluxLevitatorEntity(world, pos.getX() + 0.5D, pos.getY() + 0.0625D + d0, pos.getZ() + 0.5D);
+                FluxLevitatorEntity levitator = new FluxLevitatorEntity(world, pos.getX() + 0.5D, pos.getY() + 0.0625D + d0, pos.getZ() + 0.5D);
 
                 if (itemstack.hasDisplayName()) {
-                    entity.setCustomNameTag(itemstack.getDisplayName());
+                    levitator.setCustomNameTag(itemstack.getDisplayName());
                 }
 
-                world.spawnEntity(entity);
+                world.spawnEntity(levitator);
 
-                HoloGuiEntity holoGui = HoloGuiHandler.openHoloGuiRelative(world, pos, player, entity, new Vec3d(0, .5, 1), ModGuis.GUI_LEVITATOR);
+                HoloGuiEntity holoGui = HoloGuiHandler.openHoloGuiRelative(world, pos, player, levitator, new Vec3d(0, .5, 1), ModGuis.GUI_LEVITATOR);
                 holoGui.setTimeout(2000000000); // Never timeout
                 holoGui.setSmall(true);
-                entity.setHoloGui(holoGui);
+
+                levitator.setHoloGui(holoGui);
             }
 
             itemstack.shrink(1);

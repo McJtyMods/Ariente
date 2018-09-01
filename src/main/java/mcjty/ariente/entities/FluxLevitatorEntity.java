@@ -1,5 +1,6 @@
 package mcjty.ariente.entities;
 
+import com.google.common.base.Optional;
 import mcjty.ariente.blocks.ModBlocks;
 import mcjty.ariente.gui.HoloGuiEntity;
 import mcjty.ariente.items.ModItems;
@@ -32,12 +33,15 @@ import net.minecraftforge.fml.relauncher.SideOnly;
 
 import javax.annotation.Nullable;
 import java.util.List;
+import java.util.UUID;
 
 public class FluxLevitatorEntity extends Entity {
 
-    private static final DataParameter<Integer> ROLLING_AMPLITUDE = EntityDataManager.<Integer>createKey(FluxLevitatorEntity.class, DataSerializers.VARINT);
-    private static final DataParameter<Integer> ROLLING_DIRECTION = EntityDataManager.<Integer>createKey(FluxLevitatorEntity.class, DataSerializers.VARINT);
-    private static final DataParameter<Float> DAMAGE = EntityDataManager.<Float>createKey(FluxLevitatorEntity.class, DataSerializers.FLOAT);
+    private static final DataParameter<Integer> ROLLING_AMPLITUDE = EntityDataManager.createKey(FluxLevitatorEntity.class, DataSerializers.VARINT);
+    private static final DataParameter<Integer> ROLLING_DIRECTION = EntityDataManager.createKey(FluxLevitatorEntity.class, DataSerializers.VARINT);
+    private static final DataParameter<Float> DAMAGE = EntityDataManager.createKey(FluxLevitatorEntity.class, DataSerializers.FLOAT);
+    private static final DataParameter<Optional<UUID>> HOLO_FRONT = EntityDataManager.createKey(FluxLevitatorEntity.class, DataSerializers.OPTIONAL_UNIQUE_ID);
+
     private boolean isInReverse;
     private static final int[][][] MATRIX = new int[][][]{{{0, 0, -1}, {0, 0, 1}}, {{-1, 0, 0}, {1, 0, 0}}, {{-1, -1, 0}, {1, 0, 0}}, {{-1, 0, 0}, {1, -1, 0}}, {{0, 0, -1}, {0, -1, 1}}, {{0, -1, -1}, {0, 0, 1}}, {{0, 0, 1}, {1, 0, 0}}, {{0, 0, 1}, {-1, 0, 0}}, {{0, 0, -1}, {-1, 0, 0}}, {{0, 0, -1}, {1, 0, 0}}};
     private int turnProgress;
@@ -101,11 +105,20 @@ public class FluxLevitatorEntity extends Entity {
 
 
     public HoloGuiEntity getHoloGui() {
+        if (holoGui == null && getHoloFront() != null) {
+            for (HoloGuiEntity entity : world.getEntitiesWithinAABB(HoloGuiEntity.class, getEntityBoundingBox().grow(10))) {
+                if (getHoloFront().equals(entity.getUniqueID())) {
+                    holoGui = entity;
+                    break;
+                }
+            }
+        }
         return holoGui;
     }
 
     public void setHoloGui(HoloGuiEntity holoGui) {
         this.holoGui = holoGui;
+        setHoloFront(holoGui.getUniqueID());
     }
 
     public FluxLevitatorEntity(World worldIn, double x, double y, double z) {
@@ -122,7 +135,7 @@ public class FluxLevitatorEntity extends Entity {
     @Override
     public void move(MoverType type, double x, double y, double z) {
         super.move(type, x, y, z);
-        if (holoGui != null) {
+        if (getHoloGui() != null) {
             holoGui.move(type, x, y, z);
             holoGui.setPosition(this.posX, this.posY + .5, this.posZ);
             holoGui.setLocationAndAngles(this.posX, this.posY + .5, this.posZ+1, this.rotationYaw+90, this.rotationPitch);
@@ -134,11 +147,21 @@ public class FluxLevitatorEntity extends Entity {
     @Override
     public void setLocationAndAngles(double x, double y, double z, float yaw, float pitch) {
         super.setLocationAndAngles(x, y, z, yaw, pitch);
-        if (holoGui != null) {
+        if (getHoloGui() != null) {
 //            holoGui.setLocationAndAngles(x, y + .5, z, yaw, pitch);
 //            holoGui.move(type, x, y, z);
         }
     }
+
+    public void setHoloFront(UUID holoFront) {
+        this.dataManager.set(HOLO_FRONT, Optional.fromNullable(holoFront));
+    }
+
+
+    public UUID getHoloFront() {
+        return (UUID) ((com.google.common.base.Optional) this.dataManager.get(HOLO_FRONT)).orNull();
+    }
+
 
     @Override
     protected boolean canTriggerWalking() {
@@ -155,6 +178,7 @@ public class FluxLevitatorEntity extends Entity {
         this.dataManager.register(ROLLING_AMPLITUDE, Integer.valueOf(0));
         this.dataManager.register(ROLLING_DIRECTION, Integer.valueOf(1));
         this.dataManager.register(DAMAGE, Float.valueOf(0.0F));
+        this.dataManager.register(HOLO_FRONT, Optional.absent());
     }
 
     @Override
@@ -212,7 +236,7 @@ public class FluxLevitatorEntity extends Entity {
     @Override
     public void setDead() {
         super.setDead();
-        if (holoGui != null) {
+        if (getHoloGui() != null) {
             holoGui.setDead();
         }
     }
@@ -389,7 +413,7 @@ public class FluxLevitatorEntity extends Entity {
             this.handleWaterMovement();
         }
 
-        if (holoGui != null) {
+        if (getHoloGui() != null) {
             holoGui.setLocationAndAngles(this.posX, this.posY + .5, this.posZ+1, this.rotationYaw+90, this.rotationPitch);
             holoGui.setPositionAndUpdate(this.posX, this.posY + .5, this.posZ+1);
             holoGui.move(MoverType.SELF, 0, 0, 0);
@@ -622,10 +646,6 @@ public class FluxLevitatorEntity extends Entity {
         float f = this.width / 2.0F;
         float f1 = this.height;
         this.setEntityBoundingBox(new AxisAlignedBB(x - f, y, z - f, x + f, y + f1, z + f));
-        if (holoGui != null) {
-//            holoGui.setLocationAndAngles(x, y + .5, z, this.rotationYaw, this.rotationPitch);
-//            holoGui.setPosition(x, y+.5, z);
-        }
     }
 
     @Nullable
@@ -732,18 +752,15 @@ public class FluxLevitatorEntity extends Entity {
 
     @Override
     protected void readEntityFromNBT(NBTTagCompound compound) {
-//        if (compound.hasKey("holoGui")) {
-//
-//        }
+        if (compound.hasKey("holoFront")) {
+            setHoloFront(compound.getUniqueId("holoFront"));
+        }
     }
 
     @Override
     protected void writeEntityToNBT(NBTTagCompound compound) {
-        if (holoGui != null) {
-            NBTTagCompound nbttagcompound = new NBTTagCompound();
-            if (holoGui.writeToNBTAtomically(nbttagcompound)) {
-                compound.setTag("holoGui", nbttagcompound);
-            }
+        if (getHoloFront() != null) {
+            compound.setUniqueId("holoFront", getHoloFront());
         }
     }
 

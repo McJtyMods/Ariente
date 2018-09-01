@@ -86,7 +86,7 @@ public class HoloGuiHandler {
         double y = parent.posY + offset.y;
         double z = parent.posZ + offset.z;
         entity.setPosition(x, y, z);
-        entity.setLocationAndAngles(x, y, z, parent.rotationYaw, parent.rotationPitch);
+        entity.setLocationAndAngles(x, y, z, parent.rotationYaw+90, parent.rotationPitch);
         world.spawnEntity(entity);
         return entity;
     }
