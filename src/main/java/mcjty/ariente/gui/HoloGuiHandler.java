@@ -37,11 +37,11 @@ public class HoloGuiHandler {
         return entity;
     }
 
-    public static HoloGuiEntity openHoloGuiRelative(World world, BlockPos pos, EntityPlayer player, Entity parent, Vec3d offset, String guiId) {
-        if (world.isRemote) {
-            world.playSound(pos.getX(), pos.getY(), pos.getZ(), ModSounds.guiopen, SoundCategory.PLAYERS, 1.0f, 1.0f, true);
-            return null;
-        }
+    public static HoloGuiEntity openHoloGuiRelative(World world, Entity parent, Vec3d offset, String guiId) {
+//        if (world.isRemote) {
+//            world.playSound(pos.getX(), pos.getY(), pos.getZ(), ModSounds.guiopen, SoundCategory.PLAYERS, 1.0f, 1.0f, true);
+//            return null;
+//        }
         HoloGuiEntity entity = createHoloGuiRelative(world, parent, offset, "");
         entity.setGuiId(guiId);
         return entity;

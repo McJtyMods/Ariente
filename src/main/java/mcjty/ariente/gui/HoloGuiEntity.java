@@ -2,6 +2,7 @@ package mcjty.ariente.gui;
 
 import com.google.common.base.Optional;
 import mcjty.ariente.Ariente;
+import mcjty.ariente.entities.FluxLevitatorEntity;
 import mcjty.ariente.sounds.ModSounds;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.player.EntityPlayer;
@@ -31,6 +32,8 @@ public class HoloGuiEntity extends Entity {
     private int maxTimeout;
     private int ticks;  // For syncing TE to client
     private IGuiComponent panel;
+
+    private Entity parent;      // For example, a flux levitator
 
     // Client side only
     private double cursorX;
@@ -73,6 +76,14 @@ public class HoloGuiEntity extends Entity {
     }
 
 
+    public Entity getParent() {
+        return parent;
+    }
+
+    public void setParent(Entity parent) {
+        this.parent = parent;
+    }
+
     public BlockPos getGuiTile() {
         return (BlockPos) ((Optional) this.dataManager.get(GUITILE)).orNull();
     }
@@ -104,6 +115,28 @@ public class HoloGuiEntity extends Entity {
     @Override
     public void onUpdate() {
         super.onUpdate();
+
+//        if (parent != null) {
+//            Vec3d offset = new Vec3d(0, .5, 1);
+//            double x = parent.posX + offset.x;
+//            double y = parent.posY + offset.y;
+//            double z = parent.posZ + offset.z;
+//            setPosition(x, y, z);
+//            if (parent instanceof FluxLevitatorEntity) {
+//                System.out.println("parent.rotationYaw = " + ((FluxLevitatorEntity) parent).getLevitatorYaw() + " remote: " + world.isRemote);
+//                setLocationAndAngles(x, y, z, (float) ((FluxLevitatorEntity) parent).getLevitatorYaw(), (float) ((FluxLevitatorEntity) parent).getLevitatorPitch());
+//            } else {
+//                System.out.println("parent.rotationYaw = " + parent.rotationYaw + " remote: " + world.isRemote);
+//                setLocationAndAngles(x, y, z, parent.rotationYaw, parent.rotationPitch);
+//            }
+//            if (world.isRemote) {
+//                parent.applyOrientationToEntity(this);
+//            }
+//            motionX = 0;
+//            motionY = 0;
+//            motionZ = 0;
+//        }
+
         if (world.isRemote) {
             String id = getGuiId();
             if (id != null && !id.isEmpty()) {

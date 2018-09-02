@@ -2,9 +2,6 @@ package mcjty.ariente.items;
 
 import mcjty.ariente.blocks.ModBlocks;
 import mcjty.ariente.entities.FluxLevitatorEntity;
-import mcjty.ariente.gui.HoloGuiEntity;
-import mcjty.ariente.gui.HoloGuiHandler;
-import mcjty.ariente.gui.ModGuis;
 import net.minecraft.block.BlockRailBase;
 import net.minecraft.block.state.IBlockState;
 import net.minecraft.client.util.ITooltipFlag;
@@ -14,7 +11,6 @@ import net.minecraft.util.EnumActionResult;
 import net.minecraft.util.EnumFacing;
 import net.minecraft.util.EnumHand;
 import net.minecraft.util.math.BlockPos;
-import net.minecraft.util.math.Vec3d;
 import net.minecraft.world.World;
 
 import javax.annotation.Nullable;
@@ -57,12 +53,6 @@ public class FluxLevitatorItem extends GenericItem {
                 }
 
                 world.spawnEntity(levitator);
-
-                HoloGuiEntity holoGui = HoloGuiHandler.openHoloGuiRelative(world, pos, player, levitator, new Vec3d(0, .5, 1), ModGuis.GUI_LEVITATOR);
-                holoGui.setTimeout(2000000000); // Never timeout
-                holoGui.setSmall(true);
-
-                levitator.setHoloGui(holoGui);
             }
 
             itemstack.shrink(1);
