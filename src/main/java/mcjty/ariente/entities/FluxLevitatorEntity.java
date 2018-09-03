@@ -13,7 +13,6 @@ import net.minecraft.entity.Entity;
 import net.minecraft.entity.EntityLivingBase;
 import net.minecraft.entity.MoverType;
 import net.minecraft.entity.monster.EntityIronGolem;
-import net.minecraft.entity.passive.EntityAnimal;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.NBTTagCompound;
@@ -33,6 +32,7 @@ import net.minecraft.world.World;
 import net.minecraft.world.WorldServer;
 import net.minecraftforge.fml.relauncher.Side;
 import net.minecraftforge.fml.relauncher.SideOnly;
+import org.apache.commons.lang3.tuple.Pair;
 
 import javax.annotation.Nullable;
 import java.util.List;
@@ -147,9 +147,9 @@ public class FluxLevitatorEntity extends Entity {
 //            }
 
                 if (passenger instanceof HoloGuiEntity) {
-                    Vec3d vec3d = (new Vec3d(1.1, 0.0D, 0.0D)).rotateYaw(-this.rotationYaw * 0.017453292F - ((float) Math.PI / 2F));
-                    passenger.setPosition(this.posX + vec3d.x, this.posY + (double) f1, this.posZ + vec3d.z);
-                    passenger.setRotationYawHead(passenger.getRotationYawHead());
+//                    Vec3d vec3d = (new Vec3d(1.1, 0.0D, 0.0D)).rotateYaw(-this.rotationYaw * 0.017453292F - ((float) Math.PI / 2F));
+//                    passenger.setPosition(this.posX + vec3d.x, this.posY + (double) f1, this.posZ + vec3d.z);
+//                    passenger.setRotationYawHead(passenger.getRotationYawHead());
 //                passenger.setPositionAndRotation(this.posX + vec3d.x, this.posY + (double) f1, this.posZ + vec3d.z, this.rotationYaw, this.rotationPitch);
 
                 } else {
@@ -160,7 +160,7 @@ public class FluxLevitatorEntity extends Entity {
                     passenger.setRotationYawHead(passenger.getRotationYawHead());
                 }
 
-                this.applyYawToEntity(passenger);
+//                this.applyYawToEntity(passenger);
 
 //            if (passenger instanceof EntityAnimal && this.getPassengers().size() > 1) {
 //                int j = passenger.getEntityId() % 2 == 0 ? 90 : 270;
@@ -226,22 +226,22 @@ public class FluxLevitatorEntity extends Entity {
     @Override
     public void move(MoverType type, double x, double y, double z) {
         super.move(type, x, y, z);
-        if (getHoloGui() != null) {
-//            holoGui.move(type, x, y, z);
-//            holoGui.setPosition(this.posX, this.posY + .5, this.posZ);
-//            holoGui.setLocationAndAngles(this.posX, this.posY + .5, this.posZ+1, this.rotationYaw+90, this.rotationPitch);
-//            holoGui.move(type, 0, 0, 0);
-        }
+        updateHoloGui();
     }
 
     @Override
     public void setLocationAndAngles(double x, double y, double z, float yaw, float pitch) {
         super.setLocationAndAngles(x, y, z, yaw, pitch);
-        if (getHoloGui() != null) {
-//            holoGui.setLocationAndAngles(x, y + .5, z, yaw, pitch);
-//            holoGui.move(type, x, y, z);
-        }
+        updateHoloGui();
     }
+
+    @Override
+    public void setPositionAndRotation(double x, double y, double z, float yaw, float pitch) {
+        super.setPositionAndRotation(x, y, z, yaw, pitch);
+        updateHoloGui();
+    }
+
+
 
     public void setHoloFront(UUID holoFront) {
         this.dataManager.set(HOLO_FRONT, Optional.fromNullable(holoFront));
@@ -503,9 +503,24 @@ public class FluxLevitatorEntity extends Entity {
             this.handleWaterMovement();
         }
 
+        updateHoloGui();
+    }
+
+    private void updateHoloGui() {
         if (getHoloGui() != null) {
-//            holoGui.setLocationAndAngles(this.posX, this.posY + .5, this.posZ+1, this.rotationYaw+90, this.rotationPitch);
+            Pair<Float, Float> pair = calculateYawPitch();
+            Vec3d vec3d = getPosOffset(posX, posY, posZ, 1);
+            if (vec3d != null) {
+                double x = vec3d.x;
+                double y = vec3d.y;
+                double z = vec3d.z;
+
+                holoGui.setLocationAndAngles(x, y, z, pair.getLeft() + 90, pair.getRight());
+                holoGui.setPositionAndUpdate(x, y, z);
+            }
+            //            holoGui.setLocationAndAngles(this.posX, this.posY + .5, this.posZ+1, this.rotationYaw+90, this.rotationPitch);
 //            holoGui.setPositionAndUpdate(this.posX, this.posY + .5, this.posZ+1);
+
 //            holoGui.move(MoverType.SELF, 0, 0, 0);
         }
     }
@@ -738,8 +753,36 @@ public class FluxLevitatorEntity extends Entity {
         this.setEntityBoundingBox(new AxisAlignedBB(x - f, y, z - f, x + f, y + f1, z + f));
     }
 
+    // Calculate yaw and pitch based on block below the levitator
+    private Pair<Float, Float> calculateYawPitch() {
+        Vec3d vec3d = getPos(posX, posY, posZ);
+        float yaw = rotationYaw;
+        float pitch = rotationPitch;
+
+        if (vec3d != null) {
+            Vec3d vec3d1 = getPosOffset(posX, posY, posZ, 0.3D);
+            Vec3d vec3d2 = getPosOffset(posX, posY, posZ, -0.3D);
+
+            if (vec3d1 == null) {
+                vec3d1 = vec3d;
+            }
+
+            if (vec3d2 == null) {
+                vec3d2 = vec3d;
+            }
+
+            Vec3d vec3d3 = vec3d2.addVector(-vec3d1.x, -vec3d1.y, -vec3d1.z);
+
+            if (vec3d3.lengthVector() != 0.0D) {
+                vec3d3 = vec3d3.normalize();
+                yaw = (float) (Math.atan2(vec3d3.z, vec3d3.x) * 180.0D / Math.PI);
+                pitch = (float) (Math.atan(vec3d3.y) * 73.0D);
+            }
+        }
+        return Pair.of(yaw, pitch);
+    }
+
     @Nullable
-    @SideOnly(Side.CLIENT)
     public Vec3d getPosOffset(double x, double y, double z, double offset) {
         int i = MathHelper.floor(x);
         int j = MathHelper.floor(y);
@@ -926,6 +969,8 @@ public class FluxLevitatorEntity extends Entity {
         this.motionX = this.velocityX;
         this.motionY = this.velocityY;
         this.motionZ = this.velocityZ;
+
+        updateHoloGui();
     }
 
     public void setDamage(float damage) {

@@ -5,6 +5,7 @@ import mcjty.ariente.Ariente;
 import mcjty.ariente.entities.FluxLevitatorEntity;
 import mcjty.ariente.sounds.ModSounds;
 import net.minecraft.entity.Entity;
+import net.minecraft.entity.MoverType;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.network.datasync.DataParameter;
@@ -110,6 +111,37 @@ public class HoloGuiEntity extends Entity {
 
     public boolean isSmall() {
         return this.dataManager.get(SMALL);
+    }
+
+    @Override
+    public void setPositionAndRotationDirect(double x, double y, double z, float yaw, float pitch, int posRotationIncrements, boolean teleport) {
+        System.out.println("setPositionAndRotationDirect: yaw = " + yaw);
+        super.setPositionAndRotationDirect(x, y, z, yaw, pitch, posRotationIncrements, teleport);
+    }
+
+    @Override
+    protected void setRotation(float yaw, float pitch) {
+        System.out.println("setRotation: yaw = " + yaw);
+        super.setRotation(yaw, pitch);
+    }
+
+    @Override
+    public void setPosition(double x, double y, double z) {
+        super.setPosition(x, y, z);
+    }
+
+    @Override
+    public void setLocationAndAngles(double x, double y, double z, float yaw, float pitch) {
+        super.setLocationAndAngles(x, y, z, yaw, pitch);
+        System.out.println("yaw = " + yaw);
+    }
+
+
+
+    @Override
+    public void move(MoverType type, double x, double y, double z) {
+    // @todo remove
+        super.move(type, x, y, z);
     }
 
     @Override

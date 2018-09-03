@@ -37,9 +37,8 @@ public class FluxLevitatorRender<T extends FluxLevitatorEntity> extends Render<T
         double d0 = entity.lastTickPosX + (entity.posX - entity.lastTickPosX) * partialTicks;
         double d1 = entity.lastTickPosY + (entity.posY - entity.lastTickPosY) * partialTicks;
         double d2 = entity.lastTickPosZ + (entity.posZ - entity.lastTickPosZ) * partialTicks;
-        double d3 = 0.3D;
         Vec3d vec3d = entity.getPos(d0, d1, d2);
-        float f3 = entity.prevRotationPitch + (entity.rotationPitch - entity.prevRotationPitch) * partialTicks;
+        float pitch = entity.prevRotationPitch + (entity.rotationPitch - entity.prevRotationPitch) * partialTicks;
 
         if (vec3d != null) {
             Vec3d vec3d1 = entity.getPosOffset(d0, d1, d2, 0.3D);
@@ -61,13 +60,13 @@ public class FluxLevitatorRender<T extends FluxLevitatorEntity> extends Render<T
             if (vec3d3.lengthVector() != 0.0D) {
                 vec3d3 = vec3d3.normalize();
                 entityYaw = (float) (Math.atan2(vec3d3.z, vec3d3.x) * 180.0D / Math.PI);
-                f3 = (float) (Math.atan(vec3d3.y) * 73.0D);
+                pitch = (float) (Math.atan(vec3d3.y) * 73.0D);
             }
         }
 
         GlStateManager.translate((float) x, (float) y + 0.375F, (float) z);
         GlStateManager.rotate(180.0F - entityYaw, 0.0F, 1.0F, 0.0F);
-        GlStateManager.rotate(-f3, 0.0F, 0.0F, 1.0F);
+        GlStateManager.rotate(-pitch, 0.0F, 0.0F, 1.0F);
         float f5 = entity.getRollingAmplitude() - partialTicks;
         float f6 = entity.getDamage() - partialTicks;
 
