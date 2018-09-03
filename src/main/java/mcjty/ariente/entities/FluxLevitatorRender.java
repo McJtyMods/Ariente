@@ -30,19 +30,19 @@ public class FluxLevitatorRender<T extends FluxLevitatorEntity> extends Render<T
         this.bindEntityTexture(entity);
         long i = entity.getEntityId() * 493286711L;
         i = i * i * 4392167121L + i * 98761L;
-        float f = (((i >> 16 & 7L) + 0.5F) / 8.0F - 0.5F) * 0.004F;
-        float f1 = (((i >> 20 & 7L) + 0.5F) / 8.0F - 0.5F) * 0.004F;
-        float f2 = (((i >> 24 & 7L) + 0.5F) / 8.0F - 0.5F) * 0.004F;
-        GlStateManager.translate(f, f1, f2);
-        double d0 = entity.lastTickPosX + (entity.posX - entity.lastTickPosX) * partialTicks;
-        double d1 = entity.lastTickPosY + (entity.posY - entity.lastTickPosY) * partialTicks;
-        double d2 = entity.lastTickPosZ + (entity.posZ - entity.lastTickPosZ) * partialTicks;
-        Vec3d vec3d = entity.getPos(d0, d1, d2);
+        float fx = (((i >> 16 & 7L) + 0.5F) / 8.0F - 0.5F) * 0.004F;
+        float fy = (((i >> 20 & 7L) + 0.5F) / 8.0F - 0.5F) * 0.004F;
+        float fz = (((i >> 24 & 7L) + 0.5F) / 8.0F - 0.5F) * 0.004F;
+        GlStateManager.translate(fx, fy, fz);
+        double interX = entity.lastTickPosX + (entity.posX - entity.lastTickPosX) * partialTicks;
+        double interY = entity.lastTickPosY + (entity.posY - entity.lastTickPosY) * partialTicks;
+        double interZ = entity.lastTickPosZ + (entity.posZ - entity.lastTickPosZ) * partialTicks;
+        Vec3d vec3d = entity.getPos(interX, interY, interZ);
         float pitch = entity.prevRotationPitch + (entity.rotationPitch - entity.prevRotationPitch) * partialTicks;
 
         if (vec3d != null) {
-            Vec3d vec3d1 = entity.getPosOffset(d0, d1, d2, 0.3D);
-            Vec3d vec3d2 = entity.getPosOffset(d0, d1, d2, -0.3D);
+            Vec3d vec3d1 = entity.getPosOffset(interX, interY, interZ, 0.3D);
+            Vec3d vec3d2 = entity.getPosOffset(interX, interY, interZ, -0.3D);
 
             if (vec3d1 == null) {
                 vec3d1 = vec3d;
@@ -52,9 +52,9 @@ public class FluxLevitatorRender<T extends FluxLevitatorEntity> extends Render<T
                 vec3d2 = vec3d;
             }
 
-            x += vec3d.x - d0;
-            y += (vec3d1.y + vec3d2.y) / 2.0D - d1;
-            z += vec3d.z - d2;
+            x += vec3d.x - interX;
+            y += (vec3d1.y + vec3d2.y) / 2.0D - interY;
+            z += vec3d.z - interZ;
             Vec3d vec3d3 = vec3d2.addVector(-vec3d1.x, -vec3d1.y, -vec3d1.z);
 
             if (vec3d3.lengthVector() != 0.0D) {
