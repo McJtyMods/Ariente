@@ -2,7 +2,6 @@ package mcjty.ariente.gui;
 
 import mcjty.ariente.Ariente;
 import mcjty.ariente.config.GuiConfiguration;
-import mcjty.ariente.entities.FluxLevitatorEntity;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.renderer.BufferBuilder;
 import net.minecraft.client.renderer.GlStateManager;
@@ -43,6 +42,14 @@ public class HoloGuiEntityRender extends Render<HoloGuiEntity> {
 
     @Override
     public void doRender(HoloGuiEntity entity, double x, double y, double z, float entityYaw, float partialTicks) {
+        if (entity.isRiding()) {
+            return;
+        }
+
+        doActualRender(entity, x, y, z, entityYaw);
+    }
+
+    public static void doActualRender(HoloGuiEntity entity, double x, double y, double z, float entityYaw) {
         Tessellator t = Tessellator.getInstance();
         BufferBuilder builder = t.getBuffer();
 
@@ -52,11 +59,6 @@ public class HoloGuiEntityRender extends Render<HoloGuiEntity> {
         GlStateManager.translate(x, y, z);
 
 //        renderDebugOutline(entity, t, builder);
-
-//        if (entity.isRiding()) {
-//            ((FluxLevitatorEntity)entity.getRidingEntity()).updateHoloGui();
-//        }
-
 
         GlStateManager.rotate(180.0F - entityYaw, 0.0F, 1.0F, 0.0F);
         GlStateManager.translate(0, .5, 0);
@@ -140,7 +142,7 @@ public class HoloGuiEntityRender extends Render<HoloGuiEntity> {
         Minecraft.getMinecraft().entityRenderer.enableLightmap();
     }
 
-    private void renderQuad(BufferBuilder builder, double minX, double maxX, double minY, double maxY) {
+    private static void renderQuad(BufferBuilder builder, double minX, double maxX, double minY, double maxY) {
         builder.pos(minX, minY, 0).tex(0, 0).endVertex(); //1
         builder.pos(maxX, minY, 0).tex(1, 0).endVertex();
         builder.pos(maxX, maxY, 0).tex(1, 1).endVertex();

@@ -471,23 +471,23 @@ public class FluxLevitatorEntity extends Entity {
             float yaw = pair.getLeft() + 90;
             float pitch = pair.getRight();
 
-            // @todo optimize
-            Vec3d offset = new Vec3d(0, 1, 0).rotateYaw(yaw).rotatePitch(pitch);
-            double x = posX + offset.x;
-            double y = posY + offset.y;
-            double z = posZ + offset.z;
-
-            holoGui.setLocationAndAngles(x, y, z, yaw, pitch);
-            holoGui.setPositionAndUpdate(x, y, z);
-//            Vec3d vec3d = getPosOffset(posX, posY, posZ, 1);
-//            if (vec3d != null) {
-//                double x = vec3d.x;
-//                double y = vec3d.y;
-//                double z = vec3d.z;
+//            // @todo optimize
+//            Vec3d offset = new Vec3d(0, 1, 0).rotateYaw(yaw).rotatePitch(pitch);
+//            double x = posX + offset.x;
+//            double y = posY + offset.y;
+//            double z = posZ + offset.z;
 //
-//                holoGui.setLocationAndAngles(x, y, z, yaw, pitch);
-//                holoGui.setPositionAndUpdate(x, y, z);
-//            }
+//            holoGui.setLocationAndAngles(x, y, z, yaw, pitch);
+//            holoGui.setPositionAndUpdate(x, y, z);
+            Vec3d vec3d = getPosOffset(posX, posY, posZ, 1);
+            if (vec3d != null) {
+                double x = vec3d.x;
+                double y = vec3d.y;
+                double z = vec3d.z;
+
+                holoGui.setLocationAndAngles(x, y, z, yaw, pitch);
+                holoGui.setPositionAndUpdate(x, y, z);
+            }
         }
     }
 

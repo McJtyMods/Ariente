@@ -1,5 +1,7 @@
 package mcjty.ariente.entities;
 
+import mcjty.ariente.gui.HoloGuiEntity;
+import mcjty.ariente.gui.HoloGuiEntityRender;
 import net.minecraft.block.state.IBlockState;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.model.ModelBase;
@@ -27,7 +29,6 @@ public class FluxLevitatorRender extends Render<FluxLevitatorEntity> {
     @Override
     public void doRender(FluxLevitatorEntity entity, double x, double y, double z, float entityYaw, float partialTicks) {
         GlStateManager.pushMatrix();
-        this.bindEntityTexture(entity);
 //        long i = entity.getEntityId() * 493286711L;
 //        i = i * i * 4392167121L + i * 98761L;
 //        float fx = (((i >> 16 & 7L) + 0.5F) / 8.0F - 0.5F) * 0.004F;
@@ -79,6 +80,13 @@ public class FluxLevitatorRender extends Render<FluxLevitatorEntity> {
         if (f5 > 0.0F) {
             GlStateManager.rotate(MathHelper.sin(f5) * f5 * f6 / 10.0F * entity.getRollingDirection(), 1.0F, 0.0F, 0.0F);
         }
+
+        HoloGuiEntity holoGui = entity.getHoloGui();
+        if (holoGui != null) {
+            HoloGuiEntityRender.doActualRender(holoGui, -1, 0, 0, 90);
+        }
+
+        this.bindEntityTexture(entity);
 
         if (this.renderOutlines) {
             GlStateManager.enableColorMaterial();
