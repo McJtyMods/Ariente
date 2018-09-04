@@ -2,6 +2,7 @@ package mcjty.ariente.gui;
 
 import mcjty.ariente.Ariente;
 import mcjty.ariente.config.GuiConfiguration;
+import mcjty.ariente.entities.FluxLevitatorEntity;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.renderer.BufferBuilder;
 import net.minecraft.client.renderer.GlStateManager;
@@ -51,6 +52,11 @@ public class HoloGuiEntityRender extends Render<HoloGuiEntity> {
         GlStateManager.translate(x, y, z);
 
 //        renderDebugOutline(entity, t, builder);
+
+//        if (entity.isRiding()) {
+//            ((FluxLevitatorEntity)entity.getRidingEntity()).updateHoloGui();
+//        }
+
 
         GlStateManager.rotate(180.0F - entityYaw, 0.0F, 1.0F, 0.0F);
         GlStateManager.translate(0, .5, 0);

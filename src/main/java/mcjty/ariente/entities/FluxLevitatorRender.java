@@ -14,7 +14,7 @@ import net.minecraftforge.fml.relauncher.Side;
 import net.minecraftforge.fml.relauncher.SideOnly;
 
 @SideOnly(Side.CLIENT)
-public class FluxLevitatorRender<T extends FluxLevitatorEntity> extends Render<T> {
+public class FluxLevitatorRender extends Render<FluxLevitatorEntity> {
 
     private static final ResourceLocation TEXTURES = new ResourceLocation("ariente:textures/entity/flux_levitator.png");
     protected ModelBase model = new FluxLevitatorModel();
@@ -25,20 +25,22 @@ public class FluxLevitatorRender<T extends FluxLevitatorEntity> extends Render<T
     }
 
     @Override
-    public void doRender(T entity, double x, double y, double z, float entityYaw, float partialTicks) {
+    public void doRender(FluxLevitatorEntity entity, double x, double y, double z, float entityYaw, float partialTicks) {
         GlStateManager.pushMatrix();
         this.bindEntityTexture(entity);
-        long i = entity.getEntityId() * 493286711L;
-        i = i * i * 4392167121L + i * 98761L;
-        float fx = (((i >> 16 & 7L) + 0.5F) / 8.0F - 0.5F) * 0.004F;
-        float fy = (((i >> 20 & 7L) + 0.5F) / 8.0F - 0.5F) * 0.004F;
-        float fz = (((i >> 24 & 7L) + 0.5F) / 8.0F - 0.5F) * 0.004F;
-        GlStateManager.translate(fx, fy, fz);
+//        long i = entity.getEntityId() * 493286711L;
+//        i = i * i * 4392167121L + i * 98761L;
+//        float fx = (((i >> 16 & 7L) + 0.5F) / 8.0F - 0.5F) * 0.004F;
+//        float fy = (((i >> 20 & 7L) + 0.5F) / 8.0F - 0.5F) * 0.004F;
+//        float fz = (((i >> 24 & 7L) + 0.5F) / 8.0F - 0.5F) * 0.004F;
+//        GlStateManager.translate(fx, fy, fz);
+
         double interX = entity.lastTickPosX + (entity.posX - entity.lastTickPosX) * partialTicks;
         double interY = entity.lastTickPosY + (entity.posY - entity.lastTickPosY) * partialTicks;
         double interZ = entity.lastTickPosZ + (entity.posZ - entity.lastTickPosZ) * partialTicks;
         Vec3d vec3d = entity.getPos(interX, interY, interZ);
         float pitch = entity.prevRotationPitch + (entity.rotationPitch - entity.prevRotationPitch) * partialTicks;
+
 
         if (vec3d != null) {
             Vec3d vec3d1 = entity.getPosOffset(interX, interY, interZ, 0.3D);
@@ -96,11 +98,11 @@ public class FluxLevitatorRender<T extends FluxLevitatorEntity> extends Render<T
     }
 
     @Override
-    protected ResourceLocation getEntityTexture(T entity) {
+    protected ResourceLocation getEntityTexture(FluxLevitatorEntity entity) {
         return TEXTURES;
     }
 
-    protected void renderCartContents(T p_188319_1_, float partialTicks, IBlockState p_188319_3_) {
+    protected void renderCartContents(FluxLevitatorEntity p_188319_1_, float partialTicks, IBlockState p_188319_3_) {
         GlStateManager.pushMatrix();
         Minecraft.getMinecraft().getBlockRendererDispatcher().renderBlockBrightness(p_188319_3_, p_188319_1_.getBrightness());
         GlStateManager.popMatrix();
@@ -111,7 +113,7 @@ public class FluxLevitatorRender<T extends FluxLevitatorEntity> extends Render<T
 
         @Override
         public Render<? super FluxLevitatorEntity> createRenderFor(RenderManager manager) {
-            return new FluxLevitatorRender<>(manager);
+            return new FluxLevitatorRender(manager);
         }
 
     }
