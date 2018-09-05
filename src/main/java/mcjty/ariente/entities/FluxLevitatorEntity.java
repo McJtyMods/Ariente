@@ -10,7 +10,6 @@ import mcjty.lib.blocks.BaseBlock;
 import net.minecraft.block.BlockRailBase;
 import net.minecraft.block.state.IBlockState;
 import net.minecraft.entity.Entity;
-import net.minecraft.entity.EntityLivingBase;
 import net.minecraft.entity.MoverType;
 import net.minecraft.entity.monster.EntityIronGolem;
 import net.minecraft.entity.player.EntityPlayer;
@@ -42,6 +41,7 @@ public class FluxLevitatorEntity extends Entity {
 
     private static final DataParameter<Integer> ROLLING_AMPLITUDE = EntityDataManager.createKey(FluxLevitatorEntity.class, DataSerializers.VARINT);
     private static final DataParameter<Integer> ROLLING_DIRECTION = EntityDataManager.createKey(FluxLevitatorEntity.class, DataSerializers.VARINT);
+    private static final DataParameter<Integer> SPEED = EntityDataManager.createKey(FluxLevitatorEntity.class, DataSerializers.VARINT);
     private static final DataParameter<Float> DAMAGE = EntityDataManager.createKey(FluxLevitatorEntity.class, DataSerializers.FLOAT);
     private static final DataParameter<Optional<UUID>> HOLO_FRONT = EntityDataManager.createKey(FluxLevitatorEntity.class, DataSerializers.OPTIONAL_UNIQUE_ID);
 
@@ -81,6 +81,19 @@ public class FluxLevitatorEntity extends Entity {
         this.preventEntitySpawning = true;
         length = 2.5f;
         this.setSize(1.30F, 0.9F);
+    }
+
+    public int getSpeed() {
+        return dataManager.get(SPEED);
+    }
+
+    public void changeSpeed(int speed) {
+        if (speed < -50) {
+            speed = -50;
+        } else if (speed > 50) {
+            speed = 50;
+        }
+        this.dataManager.set(SPEED, speed);
     }
 
     @Override
@@ -208,7 +221,8 @@ public class FluxLevitatorEntity extends Entity {
     @Override
     protected void entityInit() {
         this.dataManager.register(ROLLING_AMPLITUDE, Integer.valueOf(0));
-        this.dataManager.register(ROLLING_DIRECTION, Integer.valueOf(1));
+        this.dataManager.register(ROLLING_DIRECTION, Integer.valueOf(0));
+        this.dataManager.register(SPEED, Integer.valueOf(0));
         this.dataManager.register(DAMAGE, Float.valueOf(0.0F));
         this.dataManager.register(HOLO_FRONT, Optional.absent());
     }
@@ -468,7 +482,7 @@ public class FluxLevitatorEntity extends Entity {
     public void updateHoloGui() {
         if (getHoloGui() != null) {
             Pair<Float, Float> pair = calculateYawPitch();
-            float yaw = pair.getLeft() + 90;
+            float yaw = pair.getLeft() - 90;
             float pitch = pair.getRight();
 
 //            // @todo optimize
@@ -482,7 +496,7 @@ public class FluxLevitatorEntity extends Entity {
             Vec3d vec3d = getPosOffset(posX, posY, posZ, 1);
             if (vec3d != null) {
                 double x = vec3d.x;
-                double y = vec3d.y;
+                double y = vec3d.y+.5;
                 double z = vec3d.z;
 
                 holoGui.setLocationAndAngles(x, y, z, yaw, pitch);
@@ -492,7 +506,7 @@ public class FluxLevitatorEntity extends Entity {
     }
 
     protected double getMaximumSpeed() {
-        return 0.8D;
+        return Math.abs(getSpeed()) / 50.0;
     }
 
     protected void moveDerailedLevitator() {
@@ -528,8 +542,9 @@ public class FluxLevitatorEntity extends Entity {
         this.fallDistance = 0.0F;
         Vec3d vec3d = this.getPos(this.posX, this.posY, this.posZ);
         this.posY = pos.getY();
-        boolean powered = true;    // Like powered
-        boolean unpowered = false;
+        int speed = getSpeed();
+        boolean powered = speed != 0;    // Like powered
+        boolean unpowered = speed == 0;
 
 //        BlockRailBase blockrailbase = (BlockRailBase) state.getBlock();
 //        if (blockrailbase == Blocks.GOLDEN_RAIL) {
@@ -559,10 +574,15 @@ public class FluxLevitatorEntity extends Entity {
 
         this.motionX = motionLength * ddx / ddist;
         this.motionZ = motionLength * ddz / ddist;
-        Entity entity = this.getPassengers().isEmpty() ? null : this.getPassengers().get(0);
 
-        if (entity instanceof EntityLivingBase) {
-            unpowered = handleLivingMotion(unpowered, entity);
+//        Entity entity = this.getPassengers().isEmpty() ? null : this.getPassengers().get(0);
+//
+//        if (entity instanceof EntityLivingBase) {
+//            double forward = ((EntityLivingBase) entity).moveForward;
+//            unpowered = handleLivingMotion(unpowered, forward, entity.rotationYaw);
+//        }
+        if (speed != 0) {
+            handleLivingMotion(unpowered, getMaximumSpeed(), rotationYaw);
         }
 
         if (unpowered) {
@@ -651,12 +671,11 @@ public class FluxLevitatorEntity extends Entity {
         }
     }
 
-    private boolean handleLivingMotion(boolean unpowered, Entity entity) {
-        double forward = ((EntityLivingBase) entity).moveForward;
+    private boolean handleLivingMotion(boolean unpowered, double forward, float rotationYaw) {
 
         if (forward > 0.0D) {
-            double dx = -Math.sin((entity.rotationYaw * 0.017453292F));
-            double dz = Math.cos((entity.rotationYaw * 0.017453292F));
+            double dx = -Math.sin((rotationYaw * 0.017453292F));
+            double dz = Math.cos((rotationYaw * 0.017453292F));
             double dist = this.motionX * this.motionX + this.motionZ * this.motionZ;
 
             if (dist < 0.01D) {
@@ -869,6 +888,7 @@ public class FluxLevitatorEntity extends Entity {
         if (compound.hasKey("holoFront")) {
             setHoloFront(compound.getUniqueId("holoFront"));
         }
+        changeSpeed(compound.getInteger("speed"));
     }
 
     @Override
@@ -876,6 +896,7 @@ public class FluxLevitatorEntity extends Entity {
         if (getHoloFront() != null) {
             compound.setUniqueId("holoFront", getHoloFront());
         }
+        compound.setInteger("speed", getSpeed());
     }
 
     @Override

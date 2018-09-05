@@ -124,30 +124,30 @@ public class ArmorGui {
     private static HoloPanel createPieceGui(EntityEquipmentSlot slot) {
         HoloPanel panel = new HoloPanel(0, 0, 8, 8);
         panel.add(new HoloText(0, 0, 1, 1, "Pwr", 0xaaccff));
-        panel.add(new HoloNumber(3, 0, 1, 1, 0xffffff, p -> calculatePowerUsage(p, slot))
+        panel.add(new HoloNumber(3, 0, 1, 1, 0xffffff, (p,h) -> calculatePowerUsage(p, slot))
             .colorGetter(p -> calculatePowerColor(p, slot)));
         panel.add(new HoloText(5, 0, 1, 1, "/", 0xaaccff));
-        panel.add(new HoloNumber(6, 0, 1, 1, 0xffffff, p -> calculateMaxPowerUsage(p, slot)));
+        panel.add(new HoloNumber(6, 0, 1, 1, 0xffffff, (p,h) -> calculateMaxPowerUsage(p, slot)));
         return panel;
     }
 
     private static void addPowerGui(EntityEquipmentSlot slot, HoloPanel panel) {
         panel
                 .add(new HoloItemStack(0, 6, 1, 1, new ItemStack(ModItems.negariteDust)))
-                .add(new HoloNumber(1, 6, 1, 1, 0xffffff, p -> HoloGuiTools.countItem(p, ModItems.negariteDust)))
+                .add(new HoloNumber(1, 6, 1, 1, 0xffffff, (p,h) -> HoloGuiTools.countItem(p, ModItems.negariteDust)))
                 .add(new HoloButton(3, 6, 1, 1).image(128, 128).hover(128+16, 128)
                         .hitEvent((component, p, entity1, x, y) -> toArmor(p, slot, "negarite", ModItems.negariteDust, 1)))
                 .add(new HoloButton(4, 6, 1, 1).image(128, 128+16).hover(128+16, 128+16)
                         .hitEvent((component, p, entity1, x, y) -> toArmor(p, slot, "negarite", ModItems.negariteDust, 64)))
-                .add(new HoloNumber(5, 6, 1, 1,0xffffff, p -> countArmor(p, slot, "negarite")))
+                .add(new HoloNumber(5, 6, 1, 1,0xffffff, (p,h) -> countArmor(p, slot, "negarite")))
 
                 .add(new HoloItemStack(0, 7, 1, 1, new ItemStack(ModItems.posiriteDust)))
-                .add(new HoloNumber(1, 7, 1, 1, 0xffffff, p -> HoloGuiTools.countItem(p, ModItems.posiriteDust)))
+                .add(new HoloNumber(1, 7, 1, 1, 0xffffff, (p,h) -> HoloGuiTools.countItem(p, ModItems.posiriteDust)))
                 .add(new HoloButton(3, 7, 1, 1).image(128, 128).hover(128+16, 128)
                         .hitEvent((component, p, entity1, x, y) -> toArmor(p, slot, "posirite", ModItems.posiriteDust, 1)))
                 .add(new HoloButton(4, 7, 1, 1).image(128, 128+16).hover(128+16, 128+16)
                         .hitEvent((component, p, entity1, x, y) -> toArmor(p, slot, "posirite", ModItems.posiriteDust, 64)))
-                .add(new HoloNumber(5, 7, 1, 1,0xffffff, p -> countArmor(p, slot, "posirite")))
+                .add(new HoloNumber(5, 7, 1, 1,0xffffff, (p,h) -> countArmor(p, slot, "posirite")))
         ;
     }
 

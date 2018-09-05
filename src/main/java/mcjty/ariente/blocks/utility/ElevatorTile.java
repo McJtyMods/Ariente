@@ -332,7 +332,7 @@ public class ElevatorTile extends GenericTileEntity implements IGuiTile, ITickab
         } else {
             return new HoloPanel(0, 0, 8, 8)
                     .add(new HoloText(0, 2, 1, 1, "Height", 0xaaccff))
-                    .add(new HoloNumber(3, 4, 1, 1, 0xffffff, p -> getHeight()))
+                    .add(new HoloNumber(3, 4, 1, 1, 0xffffff, (p,h) -> getHeight()))
 
                     .add(new HoloButton(1, 4, 1, 1).image(128 + 32, 128 + 16).hover(128 + 32 + 16, 128 + 16)
                             .hitEvent((component, player, entity1, x, y) -> changeHeight(-8)))

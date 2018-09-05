@@ -83,7 +83,7 @@ public class FluxLevitatorRender extends Render<FluxLevitatorEntity> {
 
         HoloGuiEntity holoGui = entity.getHoloGui();
         if (holoGui != null) {
-            HoloGuiEntityRender.doActualRender(holoGui, -1, 0, 0, 90);
+            HoloGuiEntityRender.doActualRender(holoGui, 1, 0, 0, -90);
         }
 
         this.bindEntityTexture(entity);

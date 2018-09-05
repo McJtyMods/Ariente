@@ -38,7 +38,7 @@ public class HoloIcons extends AbstractHoloComponent {
     }
 
     @Override
-    public void render(EntityPlayer player, double cursorX, double cursorY) {
+    public void render(EntityPlayer player, HoloGuiEntity holo, double cursorX, double cursorY) {
         Integer value = currentValue.apply(player);
         if (value < 0 || value >= icons.size()) {
             return;

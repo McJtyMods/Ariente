@@ -24,7 +24,7 @@ public abstract class AbstractHoloComponent implements IGuiComponent {
     }
 
     @Override
-    public void renderTooltip(EntityPlayer player, double cursorX, double cursorY) {
+    public void renderTooltip(EntityPlayer player, HoloGuiEntity holo, double cursorX, double cursorY) {
 
     }
 

@@ -4,6 +4,7 @@ import mcjty.ariente.Ariente;
 import mcjty.ariente.ai.IAlarmMode;
 import mcjty.ariente.blocks.ModBlocks;
 import mcjty.ariente.cables.CableColor;
+import mcjty.ariente.gui.HoloGuiEntity;
 import mcjty.ariente.gui.HoloGuiTools;
 import mcjty.ariente.gui.IGuiComponent;
 import mcjty.ariente.gui.IGuiTile;
@@ -278,7 +279,7 @@ public class PosiriteGeneratorTile extends GenericTileEntity implements ITickabl
                 .add(new HoloItemStack(0, 3, 1, 1, new ItemStack(ModItems.posiriteDust)))
 
                 .add(new HoloIcon(1, 3, 1, 1).image(128+64, 128))
-                .add(new HoloNumber(2, 3, 1, 1, 0xffffff, p -> HoloGuiTools.countItem(p, ModItems.posiriteDust)))
+                .add(new HoloNumber(2, 3, 1, 1, 0xffffff, (p,h) -> HoloGuiTools.countItem(p, ModItems.posiriteDust)))
 
                 .add(new HoloButton(2, 4, 1, 1).image(128+32, 128+16).hover(128+32+16, 128+16)
                     .hitEvent((component, player, entity1, x, y) -> toPlayer(player, 64)))
@@ -365,7 +366,7 @@ public class PosiriteGeneratorTile extends GenericTileEntity implements ITickabl
         markDirtyClient();
     }
 
-    public Integer countPosiriteGenerator(EntityPlayer player) {
+    public Integer countPosiriteGenerator(EntityPlayer player, HoloGuiEntity holo) {
         int size = inventoryHelper.getCount();
         int cnt = 0;
         for (int i = 0 ; i < size ; i++) {

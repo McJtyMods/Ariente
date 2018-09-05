@@ -3,6 +3,7 @@ package mcjty.ariente.blocks.utility;
 import mcjty.ariente.ai.CityAI;
 import mcjty.ariente.blocks.utility.door.DoorMarkerTile;
 import mcjty.ariente.cities.ICityEquipment;
+import mcjty.ariente.gui.HoloGuiEntity;
 import mcjty.ariente.gui.HoloGuiHandler;
 import mcjty.ariente.gui.IGuiComponent;
 import mcjty.ariente.gui.IGuiTile;
@@ -65,7 +66,7 @@ public class LockTile extends GenericTileEntity implements IGuiTile, IKeyCardSlo
         }
     }
 
-    public int getHorizontalRange(EntityPlayer player) {
+    public int getHorizontalRange(EntityPlayer player, HoloGuiEntity holo) {
         return horizontalRange;
     }
 
@@ -76,7 +77,7 @@ public class LockTile extends GenericTileEntity implements IGuiTile, IKeyCardSlo
         doLock(true);
     }
 
-    public int getVerticalRange(EntityPlayer player) {
+    public int getVerticalRange(EntityPlayer player, HoloGuiEntity holo) {
         return verticalRange;
     }
 

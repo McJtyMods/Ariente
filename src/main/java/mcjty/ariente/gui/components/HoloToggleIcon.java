@@ -46,7 +46,7 @@ public class HoloToggleIcon extends AbstractHoloComponent {
 
 
     @Override
-    public void render(EntityPlayer player, double cursorX, double cursorY) {
+    public void render(EntityPlayer player, HoloGuiEntity holo, double cursorX, double cursorY) {
         int u = normal_u;
         int v = normal_v;
         if (currentValue.apply(player)) {

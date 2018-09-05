@@ -4,9 +4,9 @@ import net.minecraft.entity.player.EntityPlayer;
 
 public interface IGuiComponent {
 
-    void render(EntityPlayer player, double cursorX, double cursorY);
+    void render(EntityPlayer player, HoloGuiEntity holo, double cursorX, double cursorY);
 
-    void renderTooltip(EntityPlayer player, double cursorX, double cursorY);
+    void renderTooltip(EntityPlayer player, HoloGuiEntity holo, double cursorX, double cursorY);
 
     IGuiComponent findHoveringWidget(double cursorX, double cursorY);
 

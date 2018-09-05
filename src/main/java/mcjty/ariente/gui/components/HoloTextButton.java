@@ -42,7 +42,7 @@ public class HoloTextButton extends AbstractHoloComponent {
     }
 
     @Override
-    public void render(EntityPlayer player, double cursorX, double cursorY) {
+    public void render(EntityPlayer player, HoloGuiEntity holo, double cursorX, double cursorY) {
         int color;
         if (isInside(cursorX, cursorY)) {
             color = this.hoverColor;

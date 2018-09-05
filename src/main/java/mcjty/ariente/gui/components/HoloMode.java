@@ -39,7 +39,7 @@ public class HoloMode extends AbstractHoloComponent {
     }
 
     @Override
-    public void render(EntityPlayer player, double cursorX, double cursorY) {
+    public void render(EntityPlayer player, HoloGuiEntity holo, double cursorX, double cursorY) {
         currentChoice = currentValue.get();
         int u = choices.get(currentChoice).getLeft();
         int v = choices.get(currentChoice).getRight();

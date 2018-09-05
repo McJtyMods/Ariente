@@ -1,5 +1,6 @@
 package mcjty.ariente.gui.components;
 
+import mcjty.ariente.gui.HoloGuiEntity;
 import mcjty.ariente.gui.HoloGuiRenderTools;
 import net.minecraft.entity.player.EntityPlayer;
 
@@ -23,7 +24,7 @@ public class HoloText extends AbstractHoloComponent {
     }
 
     @Override
-    public void render(EntityPlayer player, double cursorX, double cursorY) {
+    public void render(EntityPlayer player, HoloGuiEntity holo, double cursorX, double cursorY) {
         HoloGuiRenderTools.renderText(x, y, text.get(), color);
     }
 }

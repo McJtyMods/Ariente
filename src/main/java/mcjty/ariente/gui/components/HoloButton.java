@@ -46,7 +46,7 @@ public class HoloButton extends AbstractHoloComponent {
     }
 
     @Override
-    public void render(EntityPlayer player, double cursorX, double cursorY) {
+    public void render(EntityPlayer player, HoloGuiEntity holo, double cursorX, double cursorY) {
         int u;
         int v;
         if (isInside(cursorX, cursorY)) {

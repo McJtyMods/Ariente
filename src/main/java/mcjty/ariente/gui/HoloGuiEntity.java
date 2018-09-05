@@ -110,7 +110,6 @@ public class HoloGuiEntity extends Entity {
 
     @Override
     protected void setRotation(float yaw, float pitch) {
-        System.out.println("setRotation: yaw = " + yaw);
         super.setRotation(yaw, pitch);
     }
 

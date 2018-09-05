@@ -1,5 +1,6 @@
 package mcjty.ariente.gui.components;
 
+import mcjty.ariente.gui.HoloGuiEntity;
 import mcjty.ariente.gui.HoloGuiRenderTools;
 import net.minecraft.client.renderer.GlStateManager;
 import net.minecraft.entity.player.EntityPlayer;
@@ -15,12 +16,12 @@ public class HoloItemStack extends AbstractHoloComponent {
     }
 
     @Override
-    public void render(EntityPlayer player, double cursorX, double cursorY) {
+    public void render(EntityPlayer player, HoloGuiEntity holo, double cursorX, double cursorY) {
         HoloGuiRenderTools.renderItem(x * 1.05, y * 0.85 + .45, stack, null, false);
     }
 
     @Override
-    public void renderTooltip(EntityPlayer player, double cursorX, double cursorY) {
+    public void renderTooltip(EntityPlayer player, HoloGuiEntity holo, double cursorX, double cursorY) {
         GlStateManager.pushMatrix();
         GlStateManager.scale(0.01, 0.01, 0.01);
         GlStateManager.rotate(180, 0, 1, 0);

@@ -28,7 +28,7 @@ public class HoloItemStackToggle extends AbstractHoloComponent {
     }
 
     @Override
-    public void render(EntityPlayer player, double cursorX, double cursorY) {
+    public void render(EntityPlayer player, HoloGuiEntity holo, double cursorX, double cursorY) {
         Boolean state = currentValue.apply(player);
         ResourceLocation lightmap = null;
         boolean border = false;
@@ -42,7 +42,7 @@ public class HoloItemStackToggle extends AbstractHoloComponent {
     }
 
     @Override
-    public void renderTooltip(EntityPlayer player, double cursorX, double cursorY) {
+    public void renderTooltip(EntityPlayer player, HoloGuiEntity holo, double cursorX, double cursorY) {
         GlStateManager.pushMatrix();
         GlStateManager.scale(0.01, 0.01, 0.01);
         GlStateManager.rotate(180, 0, 1, 0);
