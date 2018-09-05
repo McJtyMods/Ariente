@@ -104,7 +104,7 @@ public class HoloGuiEntity extends Entity {
 
     @Override
     public void setPositionAndRotationDirect(double x, double y, double z, float yaw, float pitch, int posRotationIncrements, boolean teleport) {
-        System.out.println("setPositionAndRotationDirect: yaw = " + yaw);
+//        System.out.println("setPositionAndRotationDirect: yaw = " + yaw);
         super.setPositionAndRotationDirect(x, y, z, yaw, pitch, posRotationIncrements, teleport);
     }
 
@@ -121,7 +121,7 @@ public class HoloGuiEntity extends Entity {
     @Override
     public void setLocationAndAngles(double x, double y, double z, float yaw, float pitch) {
         super.setLocationAndAngles(x, y, z, yaw, pitch);
-        System.out.println("yaw = " + yaw);
+//        System.out.println("yaw = " + yaw);
     }
 
 
@@ -262,6 +262,11 @@ public class HoloGuiEntity extends Entity {
         Vec3d lookVec = getLookVec();
         Vec3d v = getIntersect3D(player, lookVec);
         return get2DProjection(lookVec, v);
+    }
+
+    @Override
+    public boolean canRiderInteract() {
+        return true;
     }
 
     private Vec2f get2DProjection(Vec3d lookVec, Vec3d v) {

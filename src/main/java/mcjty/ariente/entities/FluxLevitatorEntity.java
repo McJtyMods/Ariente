@@ -482,7 +482,7 @@ public class FluxLevitatorEntity extends Entity {
     public void updateHoloGui() {
         if (getHoloGui() != null) {
             Pair<Float, Float> pair = calculateYawPitch();
-            float yaw = pair.getLeft() - 90;
+            float yaw = pair.getLeft() + 90;
             float pitch = pair.getRight();
 
 //            // @todo optimize
@@ -496,13 +496,18 @@ public class FluxLevitatorEntity extends Entity {
             Vec3d vec3d = getPosOffset(posX, posY, posZ, 1);
             if (vec3d != null) {
                 double x = vec3d.x;
-                double y = vec3d.y+.5;
+                double y = vec3d.y+.38;
                 double z = vec3d.z;
 
                 holoGui.setLocationAndAngles(x, y, z, yaw, pitch);
                 holoGui.setPositionAndUpdate(x, y, z);
             }
         }
+    }
+
+    @Override
+    public boolean canRiderInteract() {
+        return super.canRiderInteract();
     }
 
     protected double getMaximumSpeed() {
@@ -582,7 +587,7 @@ public class FluxLevitatorEntity extends Entity {
 //            unpowered = handleLivingMotion(unpowered, forward, entity.rotationYaw);
 //        }
         if (speed != 0) {
-            handleLivingMotion(unpowered, getMaximumSpeed(), rotationYaw);
+            handleLivingMotion(unpowered, getMaximumSpeed() / 10.0, rotationYaw);
         }
 
         if (unpowered) {
