@@ -320,9 +320,6 @@ public class HoloGuiEntity extends Entity {
 
     @Override
     public boolean hitByEntity(Entity entityIn) {
-        if (!world.isRemote) {
-            System.out.println("HoloGuiEntity.hitByEntity");
-        }
         if (entityIn instanceof EntityPlayer) {
             EntityPlayer player = (EntityPlayer) entityIn;
             Vec2f vec2d = intersect(player);

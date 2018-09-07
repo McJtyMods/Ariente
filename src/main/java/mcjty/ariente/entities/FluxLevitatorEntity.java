@@ -44,6 +44,7 @@ public class FluxLevitatorEntity extends Entity {
     private static final DataParameter<Integer> SPEED = EntityDataManager.createKey(FluxLevitatorEntity.class, DataSerializers.VARINT);
     private static final DataParameter<Float> DAMAGE = EntityDataManager.createKey(FluxLevitatorEntity.class, DataSerializers.FLOAT);
     private static final DataParameter<Optional<UUID>> HOLO_FRONT = EntityDataManager.createKey(FluxLevitatorEntity.class, DataSerializers.OPTIONAL_UNIQUE_ID);
+    private static final DataParameter<Optional<UUID>> HOLO_BACK = EntityDataManager.createKey(FluxLevitatorEntity.class, DataSerializers.OPTIONAL_UNIQUE_ID);
 
     private boolean isInReverse;
     private static final int[][][] MATRIX = new int[][][]{{{0, 0, -1}, {0, 0, 1}}, {{-1, 0, 0}, {1, 0, 0}}, {{-1, -1, 0}, {1, 0, 0}}, {{-1, 0, 0}, {1, -1, 0}}, {{0, 0, -1}, {0, -1, 1}}, {{0, -1, -1}, {0, 0, 1}}, {{0, 0, 1}, {1, 0, 0}}, {{0, 0, 1}, {-1, 0, 0}}, {{0, 0, -1}, {-1, 0, 0}}, {{0, 0, -1}, {1, 0, 0}}};
@@ -72,7 +73,8 @@ public class FluxLevitatorEntity extends Entity {
     protected float maxSpeedAirVertical = defaultMaxSpeedAirVertical;
     protected double dragAir = defaultDragAir;
 
-    private HoloGuiEntity holoGui;
+    private HoloGuiEntity holoGuiFront;
+    private HoloGuiEntity holoGuiBack;
 
     private float length;
 
@@ -147,27 +149,50 @@ public class FluxLevitatorEntity extends Entity {
         }
     }
 
-    public HoloGuiEntity getHoloGui() {
-        if (holoGui == null) {
+    public HoloGuiEntity getHoloGuiFront() {
+        if (holoGuiFront == null) {
             if (getHoloFront() != null) {
                 for (HoloGuiEntity entity : world.getEntitiesWithinAABB(HoloGuiEntity.class, getEntityBoundingBox().grow(10))) {
                     if (getHoloFront().equals(entity.getUniqueID())) {
-                        holoGui = entity;
-                        holoGui.startRiding(this);
+                        holoGuiFront = entity;
+                        holoGuiFront.startRiding(this);
                         break;
                     }
                 }
             }
-            if (holoGui == null && !world.isRemote ) {
+            if (holoGuiFront == null && !world.isRemote ) {
                 HoloGuiEntity holoGui = HoloGuiHandler.openHoloGuiRelative(world, this, new Vec3d(0, .5, 1), ModGuis.GUI_LEVITATOR);
                 holoGui.setTimeout(2000000000); // Never timeout
                 holoGui.setSmall(true);
                 holoGui.startRiding(this);
-                this.holoGui = holoGui;
+                this.holoGuiFront = holoGui;
                 setHoloFront(holoGui.getUniqueID());
             }
         }
-        return holoGui;
+        return holoGuiFront;
+    }
+
+    public HoloGuiEntity getHoloGuiBack() {
+        if (holoGuiBack == null) {
+            if (getHoloBack() != null) {
+                for (HoloGuiEntity entity : world.getEntitiesWithinAABB(HoloGuiEntity.class, getEntityBoundingBox().grow(10))) {
+                    if (getHoloBack().equals(entity.getUniqueID())) {
+                        holoGuiBack = entity;
+                        holoGuiBack.startRiding(this);
+                        break;
+                    }
+                }
+            }
+            if (holoGuiBack == null && !world.isRemote ) {
+                HoloGuiEntity holoGui = HoloGuiHandler.openHoloGuiRelative(world, this, new Vec3d(0, .5, 1), ModGuis.GUI_LEVITATOR);
+                holoGui.setTimeout(2000000000); // Never timeout
+                holoGui.setSmall(true);
+                holoGui.startRiding(this);
+                this.holoGuiBack = holoGui;
+                setHoloBack(holoGui.getUniqueID());
+            }
+        }
+        return holoGuiBack;
     }
 
     public FluxLevitatorEntity(World worldIn, double x, double y, double z) {
@@ -208,6 +233,15 @@ public class FluxLevitatorEntity extends Entity {
     }
 
 
+    public void setHoloBack(UUID holoBack) {
+        this.dataManager.set(HOLO_BACK, Optional.fromNullable(holoBack));
+    }
+
+    public UUID getHoloBack() {
+        return (UUID) ((com.google.common.base.Optional) this.dataManager.get(HOLO_BACK)).orNull();
+    }
+
+
     @Override
     protected boolean canTriggerWalking() {
         return false;
@@ -225,6 +259,7 @@ public class FluxLevitatorEntity extends Entity {
         this.dataManager.register(SPEED, Integer.valueOf(0));
         this.dataManager.register(DAMAGE, Float.valueOf(0.0F));
         this.dataManager.register(HOLO_FRONT, Optional.absent());
+        this.dataManager.register(HOLO_BACK, Optional.absent());
     }
 
     @Override
@@ -281,10 +316,15 @@ public class FluxLevitatorEntity extends Entity {
 
     @Override
     public void setDead() {
-        if (getHoloGui() != null) {
-            holoGui.dismountRidingEntity();
-            holoGui.setDead();
-            holoGui = null;
+        if (getHoloGuiFront() != null) {
+            holoGuiFront.dismountRidingEntity();
+            holoGuiFront.setDead();
+            holoGuiFront = null;
+        }
+        if (getHoloGuiBack() != null) {
+            holoGuiBack.dismountRidingEntity();
+            holoGuiBack.setDead();
+            holoGuiBack = null;
         }
         super.setDead();
     }
@@ -480,33 +520,40 @@ public class FluxLevitatorEntity extends Entity {
     }
 
     public void updateHoloGui() {
-        if (getHoloGui() != null) {
+        if (getHoloGuiFront() != null) {
             Pair<Float, Float> pair = calculateYawPitch();
             float yaw = pair.getLeft() + 90;
             float pitch = pair.getRight();
 
-//            // @todo optimize
-//            Vec3d offset = new Vec3d(0, 1, 0).rotateYaw(yaw).rotatePitch(pitch);
-//            double x = posX + offset.x;
-//            double y = posY + offset.y;
-//            double z = posZ + offset.z;
-//
-//            holoGui.setLocationAndAngles(x, y, z, yaw, pitch);
-//            holoGui.setPositionAndUpdate(x, y, z);
             Vec3d vec3d = getPosOffset(posX, posY, posZ, 1);
             if (vec3d != null) {
                 double x = vec3d.x;
                 double y = vec3d.y+.38;
                 double z = vec3d.z;
 
-                holoGui.setLocationAndAngles(x, y, z, yaw, pitch);
-                holoGui.setPositionAndUpdate(x, y, z);
+                holoGuiFront.setLocationAndAngles(x, y, z, yaw, pitch);
+                holoGuiFront.setPositionAndUpdate(x, y, z);
+            }
+        }
+        if (getHoloGuiBack() != null) {
+            Pair<Float, Float> pair = calculateYawPitch();
+            float yaw = pair.getLeft() - 90;
+            float pitch = pair.getRight();
+
+            Vec3d vec3d = getPosOffset(posX, posY, posZ, -1);
+            if (vec3d != null) {
+                double x = vec3d.x;
+                double y = vec3d.y+.38;
+                double z = vec3d.z;
+
+                holoGuiBack.setLocationAndAngles(x, y, z, yaw, pitch);
+                holoGuiBack.setPositionAndUpdate(x, y, z);
             }
         }
     }
 
     protected double getMaximumSpeed() {
-        return Math.abs(getSpeed()) / 50.0;
+        return Math.abs(getSpeed()) / 25.0;
     }
 
     protected void moveDerailedLevitator() {
@@ -582,7 +629,7 @@ public class FluxLevitatorEntity extends Entity {
 //            unpowered = handleLivingMotion(unpowered, forward, entity.rotationYaw);
 //        }
         if (speed != 0) {
-            handleLivingMotion(unpowered, getMaximumSpeed() / 10.0, rotationYaw);
+            handleLivingMotion(unpowered, speed, rotationYaw);
         }
 
         if (unpowered) {
@@ -671,17 +718,33 @@ public class FluxLevitatorEntity extends Entity {
         }
     }
 
-    private boolean handleLivingMotion(boolean unpowered, double forward, float rotationYaw) {
+    private boolean handleLivingMotion(boolean unpowered, int speed, float rotationYaw) {
 
-        if (forward > 0.0D) {
-            double dx = -Math.sin((rotationYaw * 0.017453292F));
-            double dz = Math.cos((rotationYaw * 0.017453292F));
-            double dist = this.motionX * this.motionX + this.motionZ * this.motionZ;
+        double dx = -Math.sin((rotationYaw * 0.017453292F));
+        double dz = Math.cos((rotationYaw * 0.017453292F));
+        double dist = this.motionX * this.motionX + this.motionZ * this.motionZ;
 
-            if (dist < 0.01D) {
-                this.motionX += dx * 0.1D;
-                this.motionZ += dz * 0.1D;
-                unpowered = false;
+        if (dist < 0.01D) {
+            this.motionX += dx * 0.1D;
+            this.motionZ += dz * 0.1D;
+            unpowered = false;
+        }
+
+        double maxMotion = Math.abs(speed / 25.0f);
+        if (Math.abs(motionX) > maxMotion) {
+            motionZ /= Math.abs(motionX) / maxMotion;
+            if (motionX < 0) {
+                motionX = -maxMotion;
+            } else {
+                motionX = maxMotion;
+            }
+        }
+        if (Math.abs(motionZ) > maxMotion) {
+            motionX /= Math.abs(motionZ) / maxMotion;
+            if (motionZ < 0) {
+                motionZ = -maxMotion;
+            } else {
+                motionZ = maxMotion;
             }
         }
         return unpowered;
@@ -888,6 +951,9 @@ public class FluxLevitatorEntity extends Entity {
         if (compound.hasKey("holoFront")) {
             setHoloFront(compound.getUniqueId("holoFront"));
         }
+        if (compound.hasKey("holoBack")) {
+            setHoloBack(compound.getUniqueId("holoBack"));
+        }
         changeSpeed(compound.getInteger("speed"));
     }
 
@@ -895,6 +961,9 @@ public class FluxLevitatorEntity extends Entity {
     protected void writeEntityToNBT(NBTTagCompound compound) {
         if (getHoloFront() != null) {
             compound.setUniqueId("holoFront", getHoloFront());
+        }
+        if (getHoloBack() != null) {
+            compound.setUniqueId("holoBack", getHoloBack());
         }
         compound.setInteger("speed", getSpeed());
     }
