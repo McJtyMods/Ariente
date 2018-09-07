@@ -505,11 +505,6 @@ public class FluxLevitatorEntity extends Entity {
         }
     }
 
-    @Override
-    public boolean canRiderInteract() {
-        return super.canRiderInteract();
-    }
-
     protected double getMaximumSpeed() {
         return Math.abs(getSpeed()) / 50.0;
     }

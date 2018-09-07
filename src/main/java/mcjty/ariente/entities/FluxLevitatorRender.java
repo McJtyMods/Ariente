@@ -81,11 +81,6 @@ public class FluxLevitatorRender extends Render<FluxLevitatorEntity> {
             GlStateManager.rotate(MathHelper.sin(f5) * f5 * f6 / 10.0F * entity.getRollingDirection(), 1.0F, 0.0F, 0.0F);
         }
 
-        HoloGuiEntity holoGui = entity.getHoloGui();
-        if (holoGui != null) {
-            HoloGuiEntityRender.doActualRender(holoGui, 1, 0, 0, -90);
-        }
-
         this.bindEntityTexture(entity);
 
         if (this.renderOutlines) {
@@ -95,6 +90,14 @@ public class FluxLevitatorRender extends Render<FluxLevitatorEntity> {
 
         GlStateManager.scale(-1.0F, -1.0F, 1.0F);
         this.model.render(entity, 0.0F, 0.0F, -0.1F, 0.0F, 0.0F, 0.0625F);
+
+        HoloGuiEntity holoGui = entity.getHoloGui();
+        if (holoGui != null) {
+            GlStateManager.scale(-1.0F, -1.0F, 1.0F);
+            HoloGuiEntityRender.doActualRender(holoGui, 1, 0, 0, -90);
+        }
+
+
         GlStateManager.popMatrix();
 
         if (this.renderOutlines) {

@@ -320,13 +320,24 @@ public class HoloGuiEntity extends Entity {
 
     @Override
     public boolean hitByEntity(Entity entityIn) {
+        if (!world.isRemote) {
+            System.out.println("HoloGuiEntity.hitByEntity");
+        }
         if (entityIn instanceof EntityPlayer) {
             EntityPlayer player = (EntityPlayer) entityIn;
             Vec2f vec2d = intersect(player);
             IGuiComponent gui = getGui(player);
             if (gui != null) {
-                double x = (vec2d.x * 10 - .8);
-                double y = (vec2d.y * 10 - .8);
+                double x;
+                double y;
+                if (isSmall()) {
+                    x = vec2d.x * 10 / .6 - 4.1;
+                    y = vec2d.y * 10 / .6 - 4.1;
+                } else {
+                    x = vec2d.x * 10 - .8;
+                    y = vec2d.y * 10 - .8;
+                }
+
                 if (!world.isRemote) {
                     gui.hit(player, this, x, y);
                 } else {
