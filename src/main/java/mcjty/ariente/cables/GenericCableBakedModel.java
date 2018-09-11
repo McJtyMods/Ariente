@@ -397,7 +397,7 @@ public class GenericCableBakedModel implements IBakedModel {
 
     @Override
     public TextureAtlasSprite getParticleTexture() {
-        return spriteCable;
+        return spriteCable == null ? Minecraft.getMinecraft().getTextureMapBlocks().getMissingSprite() : spriteCable;
     }
 
     @Override
