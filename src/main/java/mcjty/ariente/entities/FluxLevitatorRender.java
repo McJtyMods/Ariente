@@ -99,7 +99,8 @@ public class FluxLevitatorRender extends Render<FluxLevitatorEntity> {
         holoGui = entity.getHoloGuiBack();
         if (holoGui != null) {
             GlStateManager.scale(-1.0F, -1.0F, 1.0F);
-            HoloGuiEntityRender.doActualRender(holoGui, -1, 0, 0, 90);
+            GlStateManager.rotate(180, 1, 0, 0);
+            HoloGuiEntityRender.doActualRender(holoGui, 1, 0, 0, -90);
         }
 
 
