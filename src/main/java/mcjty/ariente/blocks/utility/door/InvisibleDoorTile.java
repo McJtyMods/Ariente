@@ -34,7 +34,7 @@ public class InvisibleDoorTile extends GenericTileEntity implements ILockable {
         TileEntity te = world.getTileEntity(pos);
         if (te instanceof InvisibleDoorTile) {
             DoorMarkerTile door = ((InvisibleDoorTile) te).findDoorMarker();
-            if (door.isOpen()) {
+            if (door != null && door.isOpen()) {
                 return DoorMarkerTile.OPEN_BLOCK_AABB;
             }
         }

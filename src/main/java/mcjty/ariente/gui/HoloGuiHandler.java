@@ -80,7 +80,7 @@ public class HoloGuiHandler {
     }
 
     private static HoloGuiEntity createHoloGuiRelative(World world, Entity parent, Vec3d offset, String tag) {
-        HoloGuiEntity entity = new HoloGuiEntity(world);
+        HoloGuiEntity entity = new HoloGuiEntity(world, true);
         entity.setTag(tag);
         double x = parent.posX + offset.x;
         double y = parent.posY + offset.y;

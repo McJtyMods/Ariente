@@ -163,7 +163,6 @@ public class FluxLevitatorEntity extends Entity {
             if (holoGuiFront == null && !world.isRemote ) {
                 HoloGuiEntity holoGui = HoloGuiHandler.openHoloGuiRelative(world, this, new Vec3d(0, .5, 1), ModGuis.GUI_LEVITATOR);
                 holoGui.setTimeout(2000000000); // Never timeout
-                holoGui.setSmall(true);
                 holoGui.startRiding(this);
                 this.holoGuiFront = holoGui;
                 setHoloFront(holoGui.getUniqueID());
@@ -186,7 +185,6 @@ public class FluxLevitatorEntity extends Entity {
             if (holoGuiBack == null && !world.isRemote ) {
                 HoloGuiEntity holoGui = HoloGuiHandler.openHoloGuiRelative(world, this, new Vec3d(0, .5, 1), ModGuis.GUI_LEVITATOR);
                 holoGui.setTimeout(2000000000); // Never timeout
-                holoGui.setSmall(true);
                 holoGui.startRiding(this);
                 this.holoGuiBack = holoGui;
                 setHoloBack(holoGui.getUniqueID());

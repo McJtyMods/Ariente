@@ -579,7 +579,7 @@ public class CityAI {
 
         for (int dx = cx - dimX / 2 - 1; dx <= cx + dimX / 2 + 1; dx++) {
             for (int dz = cz - dimZ / 2 - 1; dz <= cz + dimZ / 2 + 1; dz++) {
-                int starty = 30;    // @todo is this a safe minimum height to assume?
+                int starty = plan.isUnderground() ? 1 : 30;    // @todo is this a safe minimum height to assume?
                 for (int x = dx * 16; x < dx * 16 + 16; x++) {
                     for (int z = dz * 16; z < dz * 16 + 16; z++) {
                         for (int y = starty; y < starty + 100; y++) {

@@ -50,6 +50,19 @@ public class HoloGuiEntity extends Entity {
         setSize(1f, 1f);
     }
 
+    public HoloGuiEntity(World worldIn, boolean small) {
+        super(worldIn);
+        maxTimeout = 20 * 4;
+        timeout = maxTimeout;
+        ticks = 5;
+        setSmall(small);
+        if (small) {
+            setSize(.6f, .6f);
+        } else {
+            setSize(1f, 1f);
+        }
+    }
+
     public double getCursorX() {
         return cursorX;
     }
