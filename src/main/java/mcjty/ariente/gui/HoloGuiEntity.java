@@ -2,7 +2,6 @@ package mcjty.ariente.gui;
 
 import com.google.common.base.Optional;
 import mcjty.ariente.Ariente;
-import mcjty.ariente.entities.FluxLevitatorEntity;
 import mcjty.ariente.sounds.ModSounds;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.MoverType;
@@ -25,7 +24,6 @@ public class HoloGuiEntity extends Entity {
     private static final DataParameter<Optional<BlockPos>> GUITILE = EntityDataManager.createKey(HoloGuiEntity.class, DataSerializers.OPTIONAL_BLOCK_POS);
     private static final DataParameter<String> TAG = EntityDataManager.createKey(HoloGuiEntity.class, DataSerializers.STRING);
     private static final DataParameter<String> GUIID = EntityDataManager.createKey(HoloGuiEntity.class, DataSerializers.STRING);
-    private static final DataParameter<Boolean> SMALL = EntityDataManager.createKey(HoloGuiEntity.class, DataSerializers.BOOLEAN);
 
     private AxisAlignedBB playerDetectionBox = null;
 
@@ -48,19 +46,6 @@ public class HoloGuiEntity extends Entity {
         timeout = maxTimeout;
         ticks = 5;
         setSize(1f, 1f);
-    }
-
-    public HoloGuiEntity(World worldIn, boolean small) {
-        super(worldIn);
-        maxTimeout = 20 * 4;
-        timeout = maxTimeout;
-        ticks = 5;
-        setSmall(small);
-        if (small) {
-            setSize(.6f, .6f);
-        } else {
-            setSize(1f, 1f);
-        }
     }
 
     public double getCursorX() {
@@ -107,12 +92,8 @@ public class HoloGuiEntity extends Entity {
         return this.dataManager.get(TAG);
     }
 
-    public void setSmall(boolean b) {
-        this.dataManager.set(SMALL, b);
-    }
-
     public boolean isSmall() {
-        return this.dataManager.get(SMALL);
+        return false;
     }
 
     @Override
@@ -368,7 +349,6 @@ public class HoloGuiEntity extends Entity {
         this.dataManager.register(GUITILE, Optional.absent());
         this.dataManager.register(TAG, "");
         this.dataManager.register(GUIID, "");
-        this.dataManager.register(SMALL, false);
     }
 
     @Override
@@ -383,7 +363,6 @@ public class HoloGuiEntity extends Entity {
         }
         setTag(compound.getString("tag"));
         setGuiId(compound.getString("guiId"));
-        setSmall(compound.getBoolean("small"));
     }
 
     @Override
@@ -403,9 +382,6 @@ public class HoloGuiEntity extends Entity {
         String guiid = getGuiId();
         if (guiid != null) {
             compound.setString("guiId", guiid);
-        }
-        if (isSmall()) {
-            compound.setBoolean("small", true);
         }
     }
 }

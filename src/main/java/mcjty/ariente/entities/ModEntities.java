@@ -3,6 +3,7 @@ package mcjty.ariente.entities;
 import mcjty.ariente.Ariente;
 import mcjty.ariente.gui.HoloGuiEntity;
 import mcjty.ariente.gui.HoloGuiEntityRender;
+import mcjty.ariente.gui.HoloGuiEntitySmall;
 import net.minecraft.util.ResourceLocation;
 import net.minecraftforge.fml.client.registry.RenderingRegistry;
 import net.minecraftforge.fml.common.registry.EntityRegistry;
@@ -13,6 +14,8 @@ public class ModEntities {
         int id = 1;
         EntityRegistry.registerModEntity(new ResourceLocation(Ariente.MODID, "ariente_hologui"), HoloGuiEntity.class,
                 "ariente_hologui", id++, Ariente.instance, 64, 1, false);
+        EntityRegistry.registerModEntity(new ResourceLocation(Ariente.MODID, "ariente_hologui_small"), HoloGuiEntitySmall.class,
+                "ariente_hologui_small", id++, Ariente.instance, 64, 1, false);
         EntityRegistry.registerModEntity(new ResourceLocation(Ariente.MODID, "ariente_laser"), LaserEntity.class,
                 "ariente_laser", id++, Ariente.instance, 64, 1, false);
         EntityRegistry.registerModEntity(new ResourceLocation(Ariente.MODID, "ariente_flux_levitator"), FluxLevitatorEntity.class,
@@ -28,6 +31,7 @@ public class ModEntities {
 
     public static void initModels() {
         RenderingRegistry.registerEntityRenderingHandler(HoloGuiEntity.class, new HoloGuiEntityRender.Factory());
+        RenderingRegistry.registerEntityRenderingHandler(HoloGuiEntitySmall.class, new HoloGuiEntityRender.Factory());
         RenderingRegistry.registerEntityRenderingHandler(LaserEntity.class, new LaserRender.Factory());
         RenderingRegistry.registerEntityRenderingHandler(DroneEntity.class, DroneRender.FACTORY);
         RenderingRegistry.registerEntityRenderingHandler(SentinelDroneEntity.class, SentinelDroneRender.FACTORY);

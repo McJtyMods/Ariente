@@ -140,6 +140,7 @@ entity.ariente_sentinel_drone.name=Sentinel Drone
 entity.ariente_soldier.name=Soldier
 entity.ariente_master_soldier.name=Master Soldier
 entity.ariente_hologui.name=Holo GUI
+entity.ariente_hologui_small.name=Holo GUI
 entity.ariente_laser.name=Laser
 entity.ariente_flux_levitator.name=Flux Levitator
 
