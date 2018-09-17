@@ -16,7 +16,7 @@ import java.util.Set;
 
 public class ArienteCityGenerator {
 
-    private Set<Character> rotatableChars = null;
+    private static Set<Character> rotatableChars = null;
     private boolean initialized = false;
     private ArienteChunkGenerator generator;
 
@@ -36,7 +36,7 @@ public class ArienteCityGenerator {
     }
 
 
-    public Set<Character> getRotatableChars() {
+    public static Set<Character> getRotatableChars() {
         if (rotatableChars == null) {
             rotatableChars = new HashSet<>();
             addStates(Blocks.ACACIA_STAIRS, rotatableChars);
@@ -135,7 +135,7 @@ public class ArienteCityGenerator {
         }
     }
 
-    private int generatePart(ChunkPrimer primer, String palette,
+    public static int generatePart(ChunkPrimer primer, String palette,
                                     BuildingPart part,
                                     Transform transform,
                                     int ox, int oy, int oz) {

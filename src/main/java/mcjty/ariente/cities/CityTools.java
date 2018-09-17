@@ -67,6 +67,10 @@ public class CityTools {
         }
         City city = getCity(center);
         CityPlan plan = city.getPlan();
+        return getCityIndex(chunkX, chunkZ, center, plan);
+    }
+
+    public static CityIndex getCityIndex(int chunkX, int chunkZ, ChunkCoord center, CityPlan plan) {
         List<String> pattern = plan.getPlan();
         int dimX = pattern.get(0).length();
         int dimZ = pattern.size();
@@ -115,6 +119,14 @@ public class CityTools {
         } else {
             return null;
         }
+    }
+
+    @Nullable
+    public static ChunkCoord getNearestStationCenter(int chunkX, int chunkZ) {
+        int cx = (chunkX & ~0xf) + 8;
+        int cz = (chunkZ & ~0xf) + 8;
+        ChunkCoord cc = new ChunkCoord(cx, cz);
+        return cc;
     }
 
     public static BlockPos getNearestTeleportationSpot(BlockPos overworldPos) {
@@ -180,65 +192,65 @@ public class CityTools {
     @Nullable
     public static BuildingPart getLevel2BuildingPart(City city, int x, int z, int level) {
         CityPlan plan = city.getPlan();
-        ChunkCoord cityCenter = city.getCenter();
         List<String> pattern = plan.getLayer2();
         if (pattern.isEmpty()) {
             return null;
         }
-        return getCorrectPart(x, z, plan, cityCenter, pattern, 366670937L * (level+1L));
+        return getCorrectPart(x, z, plan, pattern, 366670937L * (level+1L));
     }
 
     @Nullable
     public static BuildingPart getCellarBuildingPart(City city, int x, int z) {
         CityPlan plan = city.getPlan();
-        ChunkCoord cityCenter = city.getCenter();
         List<String> pattern = plan.getCellar();
         if (pattern.isEmpty()) {
             return null;
         }
 
-        return getCorrectPart(x, z, plan, cityCenter, pattern, 13);
+        return getCorrectPart(x, z, plan, pattern, 13);
     }
 
     @Nullable
     public static BuildingPart getTopBuildingPart(City city, int x, int z) {
         CityPlan plan = city.getPlan();
-        ChunkCoord cityCenter = city.getCenter();
         List<String> pattern = plan.getTop();
         if (pattern.isEmpty()) {
             return null;
         }
 
-        return getCorrectPart(x, z, plan, cityCenter, pattern, 137777);
+        return getCorrectPart(x, z, plan, pattern, 137777);
     }
 
     @Nullable
     public static BuildingPart getBuildingPart(City city, int x, int z) {
         CityPlan plan = city.getPlan();
-        ChunkCoord cityCenter = city.getCenter();
         List<String> pattern = plan.getPlan();
         if (pattern.isEmpty()) {
             return null;
         }
-        return getCorrectPart(x, z, plan, cityCenter, pattern, 123);
+        return getCorrectPart(x, z, plan, pattern, 123);
     }
 
-    private static BuildingPart getCorrectPart(int x, int z, CityPlan plan, ChunkCoord cityCenter, List<String> pattern,
-                                               long randomSeed) {
+    private static BuildingPart getCorrectPart(int x, int z, CityPlan plan, List<String> pattern, long randomSeed) {
         CityIndex index = getCityIndex(x, z);
         if (index != null) {
-            Map<Character, List<String>> partPalette = plan.getPartPalette();
-            char partChar = pattern.get(index.getZOffset()).charAt(index.getXOffset());
-            if (partChar != ' ') {
-                List<String> parts = partPalette.get(partChar);
+            return getPart(x, z, index, plan, pattern, randomSeed);
+        }
+        return null;
+    }
 
-                long seed = DimensionManager.getWorld(0).getSeed();
-                Random random = new Random(x * 23567813L + z * 923568029L + randomSeed + seed);
-                random.nextFloat();
-                random.nextFloat();
+    public static BuildingPart getPart(int x, int z, CityIndex index, CityPlan plan, List<String> pattern, long randomSeed) {
+        Map<Character, List<String>> partPalette = plan.getPartPalette();
+        char partChar = pattern.get(index.getZOffset()).charAt(index.getXOffset());
+        if (partChar != ' ') {
+            List<String> parts = partPalette.get(partChar);
 
-                return AssetRegistries.PARTS.get(parts.get(random.nextInt(parts.size())));
-            }
+            long seed = DimensionManager.getWorld(0).getSeed();
+            Random random = new Random(x * 23567813L + z * 923568029L + randomSeed + seed);
+            random.nextFloat();
+            random.nextFloat();
+
+            return AssetRegistries.PARTS.get(parts.get(random.nextInt(parts.size())));
         }
         return null;
     }

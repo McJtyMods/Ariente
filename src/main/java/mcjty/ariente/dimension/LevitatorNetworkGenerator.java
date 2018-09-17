@@ -2,8 +2,7 @@ package mcjty.ariente.dimension;
 
 import mcjty.ariente.blocks.ModBlocks;
 import mcjty.ariente.blocks.decorative.*;
-import mcjty.ariente.cities.City;
-import mcjty.ariente.cities.CityTools;
+import mcjty.ariente.cities.*;
 import mcjty.lib.blocks.BaseBlock;
 import net.minecraft.block.Block;
 import net.minecraft.init.Blocks;
@@ -62,26 +61,38 @@ public class LevitatorNetworkGenerator {
 
         initialize();
 
-        boolean candidateX = (chunkX & 0xf) == 8;
-        boolean candidateZ = (chunkZ & 0xf) == 8;
+        int cx = chunkX & 0xf;
+        int cz = chunkZ & 0xf;
 
-        if (candidateX && candidateZ) {
-            // Crossing
-            for (int dx = 0 ; dx <= 15 ; dx++) {
-                fillSide(primer, dx, 4);
-                fillSide(primer, dx, 12);
+        boolean candidateX = cx == 8;
+        boolean candidateZ = cz == 8;
+
+        boolean inStation = cx >= 7 && cx <= 9 && cz >= 7 && cz <= 9;
+
+        if (inStation) {
+            CityPlan station = AssetRegistries.CITYPLANS.get("station");
+            CityIndex index = CityTools.getCityIndex(chunkX, chunkZ, CityTools.getNearestStationCenter(chunkX, chunkZ), station);
+            BuildingPart part = CityTools.getPart(chunkX, chunkZ, index, station, station.getPlan(), 3939321);
+            if (part != null) {
+                ArienteCityGenerator.generatePart(primer, station.getPalette(), part, Transform.ROTATE_NONE, 0, 30, 0);
             }
-            for (int dz = 0 ; dz <= 15 ; dz++) {
-                fillSide(primer, 4, dz);
-                fillSide(primer, 12, dz);
-            }
-            for (int dx = 0 ; dx <= 15 ; dx++) {
-                for (int dz = 0 ; dz <= 15 ; dz++) {
-                    if ((dx >= 5 && dx <= 11) || (dz >= 5 && dz <= 11)) {
-                        fillInner(primer, dx, dz);
-                    }
-                }
-            }
+//
+//            // Crossing
+//            for (int dx = 0 ; dx <= 15 ; dx++) {
+//                fillSide(primer, dx, 4);
+//                fillSide(primer, dx, 12);
+//            }
+//            for (int dz = 0 ; dz <= 15 ; dz++) {
+//                fillSide(primer, 4, dz);
+//                fillSide(primer, 12, dz);
+//            }
+//            for (int dx = 0 ; dx <= 15 ; dx++) {
+//                for (int dz = 0 ; dz <= 15 ; dz++) {
+//                    if ((dx >= 5 && dx <= 11) || (dz >= 5 && dz <= 11)) {
+//                        fillInner(primer, dx, dz);
+//                    }
+//                }
+//            }
         } else if (candidateX) {
             for (int dx = 5 ; dx <= 11 ; dx++) {
                 for (int dz = 0 ; dz <= 15 ; dz++) {
@@ -105,6 +116,7 @@ public class LevitatorNetworkGenerator {
                     fillSide(primer, 12, dz);
                 }
             }
+            primer.data[(8 << 12) | (8 << 8) + 36] = lampTop;
         } else if (candidateZ) {
             for (int dx = 0 ; dx <= 15 ; dx++) {
                 for (int dz = 5 ; dz <= 11 ; dz++) {
@@ -128,8 +140,8 @@ public class LevitatorNetworkGenerator {
                     fillSide(primer, dx, 12);
                 }
             }
+            primer.data[(8 << 12) | (8 << 8) + 36] = lampTop;
         }
-        primer.data[(8 << 12) | (8 << 8) + 36] = lampTop;
     }
 
     private static void fillInner(ChunkPrimer primer, int dx, int dz) {
