@@ -273,12 +273,24 @@ public class ArienteChunkGenerator implements IChunkGenerator {
             System.out.println("Fixing tile entities in chunk " + x + "," + z);
             fixTileEntities(x, z);
         }
+
+        if (CityTools.isStationChunk(x, z)) {
+            System.out.println("Fixing tile entities in station " + x + "," + z);
+            BuildingPart part = CityTools.getStationPart(x, z);
+            if (part != null) {
+                fixTileEntities(x, z, Collections.singletonList(part), CityTools.getStationHeight());
+            }
+        }
     }
 
     private void fixTileEntities(int x, int z) {
         City city = CityTools.getNearestCity(this, x, z);
         List<BuildingPart> parts = CityTools.getBuildingParts(city, x, z);
         int lowestY = CityTools.getLowestHeight(city, this, x, z);
+        fixTileEntities(x, z, parts, lowestY);
+    }
+
+    private void fixTileEntities(int x, int z, List<BuildingPart> parts, int lowestY) {
         int y = lowestY;
         // We need the parts again to load the equipment data
         Map<BlockPos, Map<String, Object>> equipment = new HashMap<>();

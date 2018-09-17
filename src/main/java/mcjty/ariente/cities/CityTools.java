@@ -59,6 +59,12 @@ public class CityTools {
         return getCityIndex(chunkX, chunkZ) != null;
     }
 
+    public static boolean isStationChunk(int chunkX, int chunkZ) {
+        int cx = chunkX & 0xf;
+        int cz = chunkZ & 0xf;
+        return cx >= 7 && cx <= 9 && cz >= 7 && cz <= 9;
+    }
+
     @Nullable
     public static CityIndex getCityIndex(int chunkX, int chunkZ) {
         ChunkCoord center = getNearestCityCenter(chunkX, chunkZ);
@@ -121,12 +127,11 @@ public class CityTools {
         }
     }
 
-    @Nullable
+    @Nonnull
     public static ChunkCoord getNearestStationCenter(int chunkX, int chunkZ) {
         int cx = (chunkX & ~0xf) + 8;
         int cz = (chunkZ & ~0xf) + 8;
-        ChunkCoord cc = new ChunkCoord(cx, cz);
-        return cc;
+        return new ChunkCoord(cx, cz);
     }
 
     public static BlockPos getNearestTeleportationSpot(BlockPos overworldPos) {
@@ -154,6 +159,17 @@ public class CityTools {
         } else {
             return city.getHeight(generator);
         }
+    }
+
+    @Nullable
+    public static BuildingPart getStationPart(int chunkX, int chunkZ) {
+        CityPlan station = AssetRegistries.CITYPLANS.get("station");
+        CityIndex index = CityTools.getCityIndex(chunkX, chunkZ, CityTools.getNearestStationCenter(chunkX, chunkZ), station);
+        return CityTools.getPart(chunkX, chunkZ, index, station, station.getPlan(), 3939321);
+    }
+
+    public static int getStationHeight() {
+        return 30;
     }
 
     @Nonnull

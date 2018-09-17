@@ -67,32 +67,12 @@ public class LevitatorNetworkGenerator {
         boolean candidateX = cx == 8;
         boolean candidateZ = cz == 8;
 
-        boolean inStation = cx >= 7 && cx <= 9 && cz >= 7 && cz <= 9;
-
-        if (inStation) {
-            CityPlan station = AssetRegistries.CITYPLANS.get("station");
-            CityIndex index = CityTools.getCityIndex(chunkX, chunkZ, CityTools.getNearestStationCenter(chunkX, chunkZ), station);
-            BuildingPart part = CityTools.getPart(chunkX, chunkZ, index, station, station.getPlan(), 3939321);
+        if (CityTools.isStationChunk(chunkX, chunkZ)) {
+            BuildingPart part = CityTools.getStationPart(chunkX, chunkZ);
             if (part != null) {
-                ArienteCityGenerator.generatePart(primer, station.getPalette(), part, Transform.ROTATE_NONE, 0, 30, 0);
+                CityPlan station = AssetRegistries.CITYPLANS.get("station");
+                ArienteCityGenerator.generatePart(primer, station.getPalette(), part, Transform.ROTATE_NONE, 0, CityTools.getStationHeight(), 0);
             }
-//
-//            // Crossing
-//            for (int dx = 0 ; dx <= 15 ; dx++) {
-//                fillSide(primer, dx, 4);
-//                fillSide(primer, dx, 12);
-//            }
-//            for (int dz = 0 ; dz <= 15 ; dz++) {
-//                fillSide(primer, 4, dz);
-//                fillSide(primer, 12, dz);
-//            }
-//            for (int dx = 0 ; dx <= 15 ; dx++) {
-//                for (int dz = 0 ; dz <= 15 ; dz++) {
-//                    if ((dx >= 5 && dx <= 11) || (dz >= 5 && dz <= 11)) {
-//                        fillInner(primer, dx, dz);
-//                    }
-//                }
-//            }
         } else if (candidateX) {
             for (int dx = 5 ; dx <= 11 ; dx++) {
                 for (int dz = 0 ; dz <= 15 ; dz++) {
