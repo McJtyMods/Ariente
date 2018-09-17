@@ -22,6 +22,7 @@ import java.io.FileNotFoundException;
 import java.io.PrintWriter;
 import java.util.*;
 import java.util.concurrent.atomic.AtomicInteger;
+import java.util.function.BiFunction;
 import java.util.stream.Collectors;
 
 public class EditMode {
@@ -195,19 +196,45 @@ public class EditMode {
         }
     }
 
+    public static void saveStation(EntityPlayer player) throws FileNotFoundException {
+        BlockPos start = player.getPosition();
+        int cx = (start.getX() >> 4);
+        int cz = (start.getZ() >> 4);
+        CityPlan plan = AssetRegistries.CITYPLANS.get("station");
+        saveCityOrStation(player, CityTools.getNearestStationCenter(cx, cz), plan,
+                (x, z) -> CityTools.getStationHeight(),
+                (x, z) -> Collections.singletonList(CityTools.getStationPart(x, z)));
+    }
+
     public static void saveCity(EntityPlayer player) throws FileNotFoundException {
         BlockPos start = player.getPosition();
         int cx = (start.getX() >> 4);
         int cz = (start.getZ() >> 4);
 
+        if (CityTools.isStationChunk(cx, cz) && start.getY() >= CityTools.getStationHeight() && start.getY() <= CityTools.getStationHeight() + 10 /* @todo */) {
+            saveStation(player);
+            return;
+        }
+
         ArienteChunkGenerator generator = (ArienteChunkGenerator) (((WorldServer) player.getEntityWorld()).getChunkProvider().chunkGenerator);
         City city = CityTools.getNearestCity(generator, cx, cz);
         if (city == null) {
-            player.sendMessage(new TextComponentString("No city can be found!"));
+            player.sendMessage(new TextComponentString("No city or station can be found!"));
             return;
         }
 
         CityPlan plan = city.getPlan();
+
+        saveCityOrStation(player, city.getCenter(), plan,
+                (x, z) -> CityTools.getLowestHeight(city, generator, x, z),
+                (x, z) -> CityTools.getBuildingParts(city, x, z));
+    }
+
+    private static void saveCityOrStation(EntityPlayer player,
+                                          ChunkCoord center, CityPlan plan,
+                                          BiFunction<Integer, Integer, Integer> heightGetter,
+                                          BiFunction<Integer, Integer, List<BuildingPart>> partsGetter)
+            throws FileNotFoundException {
         List<String> pattern = plan.getPlan();
         int dimX = pattern.get(0).length();
         int dimZ = pattern.size();
@@ -227,17 +254,17 @@ public class EditMode {
 
         array.add(plan.writeToJSon());
 
-        cx = city.getCenter().getChunkX();
-        cz = city.getCenter().getChunkZ();
+        int cx = center.getChunkX();
+        int cz = center.getChunkZ();
 
         Set<PaletteIndex> paletteUsage = new HashSet<>();
         Map<String, BuildingPart> editedParts = new HashMap<>();
         for (int dx = cx - dimX / 2 - 1; dx <= cx + dimX / 2 + 1; dx++) {
             for (int dz = cz - dimZ / 2 - 1; dz <= cz + dimZ / 2 + 1; dz++) {
-                int y = CityTools.getLowestHeight(city, generator, dx, dz);
-                List<BuildingPart> parts = CityTools.getBuildingParts(city, dx, dz);
+                int y = heightGetter.apply(dx, dz);
+                List<BuildingPart> parts = partsGetter.apply(dx, dz);
                 for (BuildingPart part : parts) {
-                    BuildingPart newpart = exportPart(part, player.world, new BlockPos(dx * 16 + 8, start.getY() - 1, dz * 16 + 8),
+                    BuildingPart newpart = exportPart(part, player.world, new BlockPos(dx * 16 + 8, y /*unused*/, dz * 16 + 8),
                             y, palette, paletteUsage, mapping, idx);
                     editedParts.put(newpart.getName(), newpart);
                     y += part.getSliceCount();
@@ -246,7 +273,7 @@ public class EditMode {
         }
 
         StringBuilder affectedParts = new StringBuilder();
-        city.getPlan().getPartPalette().values()
+        plan.getPartPalette().values()
                 .stream()
                 .flatMap(Collection::stream)
                 .collect(Collectors.toSet())
@@ -273,7 +300,7 @@ public class EditMode {
             writer.print(gson.toJson(array));
             writer.flush();
         }
-        player.sendMessage(new TextComponentString("Save city '" + plan.getName() + "'!"));
+        player.sendMessage(new TextComponentString("Save city/station '" + plan.getName() + "'!"));
     }
 
     private static PaletteIndex createNewIndex(int i) {
