@@ -161,10 +161,23 @@ public class CityTools {
         }
     }
 
+    @Nonnull
+    public static List<BuildingPart> getStationParts(int chunkX, int chunkZ) {
+        BuildingPart part = getStationPart(chunkX, chunkZ);
+        if (part != null) {
+            return Collections.singletonList(part);
+        } else {
+            return Collections.emptyList();
+        }
+    }
+
     @Nullable
     public static BuildingPart getStationPart(int chunkX, int chunkZ) {
         CityPlan station = AssetRegistries.CITYPLANS.get("station");
         CityIndex index = CityTools.getCityIndex(chunkX, chunkZ, CityTools.getNearestStationCenter(chunkX, chunkZ), station);
+        if (index == null) {
+            return null;
+        }
         return CityTools.getPart(chunkX, chunkZ, index, station, station.getPlan(), 3939321);
     }
 

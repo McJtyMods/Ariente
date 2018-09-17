@@ -201,9 +201,9 @@ public class EditMode {
         int cx = (start.getX() >> 4);
         int cz = (start.getZ() >> 4);
         CityPlan plan = AssetRegistries.CITYPLANS.get("station");
-        saveCityOrStation(player, CityTools.getNearestStationCenter(cx, cz), plan,
+        saveCityOrStation(player, CityTools.getNearestStationCenter(cx, cz), plan, 0,
                 (x, z) -> CityTools.getStationHeight(),
-                (x, z) -> Collections.singletonList(CityTools.getStationPart(x, z)));
+                CityTools::getStationParts);
     }
 
     public static void saveCity(EntityPlayer player) throws FileNotFoundException {
@@ -225,13 +225,13 @@ public class EditMode {
 
         CityPlan plan = city.getPlan();
 
-        saveCityOrStation(player, city.getCenter(), plan,
+        saveCityOrStation(player, city.getCenter(), plan, 0,
                 (x, z) -> CityTools.getLowestHeight(city, generator, x, z),
                 (x, z) -> CityTools.getBuildingParts(city, x, z));
     }
 
     private static void saveCityOrStation(EntityPlayer player,
-                                          ChunkCoord center, CityPlan plan,
+                                          ChunkCoord center, CityPlan plan, int offset,
                                           BiFunction<Integer, Integer, Integer> heightGetter,
                                           BiFunction<Integer, Integer, List<BuildingPart>> partsGetter)
             throws FileNotFoundException {
@@ -259,8 +259,8 @@ public class EditMode {
 
         Set<PaletteIndex> paletteUsage = new HashSet<>();
         Map<String, BuildingPart> editedParts = new HashMap<>();
-        for (int dx = cx - dimX / 2 - 1; dx <= cx + dimX / 2 + 1; dx++) {
-            for (int dz = cz - dimZ / 2 - 1; dz <= cz + dimZ / 2 + 1; dz++) {
+        for (int dx = cx - dimX / 2 - 1 - offset; dx <= cx + dimX / 2 + 1 - offset; dx++) {
+            for (int dz = cz - dimZ / 2 - 1 - offset; dz <= cz + dimZ / 2 + 1 - offset; dz++) {
                 int y = heightGetter.apply(dx, dz);
                 List<BuildingPart> parts = partsGetter.apply(dx, dz);
                 for (BuildingPart part : parts) {

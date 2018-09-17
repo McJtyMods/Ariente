@@ -3,6 +3,7 @@ package mcjty.ariente.dimension;
 import mcjty.ariente.blocks.ModBlocks;
 import mcjty.ariente.blocks.decorative.*;
 import mcjty.ariente.cities.*;
+import mcjty.ariente.varia.ChunkCoord;
 import mcjty.lib.blocks.BaseBlock;
 import net.minecraft.block.Block;
 import net.minecraft.init.Blocks;
@@ -28,6 +29,8 @@ public class LevitatorNetworkGenerator {
     private static char slopeWestUp;
     private static char glowLines;
     private static char lampTop;
+    private static char elevator;
+    private static char levelMarker;
 
     private static void initialize() {
         if (!initialized) {
@@ -46,6 +49,8 @@ public class LevitatorNetworkGenerator {
             slopeEastUp = (char) Block.BLOCK_STATE_IDS.get(ModBlocks.slopeBlock.getDefaultState().withProperty(SlopeBlock.FACING, EnumFacingUpDown.EAST_UP));
             glowLines = (char) Block.BLOCK_STATE_IDS.get(ModBlocks.blackmarble_techpat.getDefaultState().withProperty(BlackTechBlock.TYPE, TechType.LINES_GLOW));
             lampTop = (char) Block.BLOCK_STATE_IDS.get(ModBlocks.flatLightBlock.getDefaultState().withProperty(BaseBlock.FACING, EnumFacing.DOWN));
+            elevator = (char) Block.BLOCK_STATE_IDS.get(ModBlocks.elevatorBlock.getDefaultState());
+            levelMarker = (char) Block.BLOCK_STATE_IDS.get(ModBlocks.levelMarkerBlock.getDefaultState());
             initialized = true;
         }
     }
@@ -67,11 +72,47 @@ public class LevitatorNetworkGenerator {
         boolean candidateX = cx == 8;
         boolean candidateZ = cz == 8;
 
+        // At -X,+Z we have an elevator
+
         if (CityTools.isStationChunk(chunkX, chunkZ)) {
             BuildingPart part = CityTools.getStationPart(chunkX, chunkZ);
             if (part != null) {
                 CityPlan station = AssetRegistries.CITYPLANS.get("station");
-                ArienteCityGenerator.generatePart(primer, station.getPalette(), part, Transform.ROTATE_NONE, 0, CityTools.getStationHeight(), 0);
+                int lowest = ArienteCityGenerator.generatePart(primer, station.getPalette(), part, Transform.ROTATE_NONE, 0, CityTools.getStationHeight(), 0);
+
+                if (cx == 7 && cz == 9 && CityTools.isCityChunk(chunkX, chunkZ)) {
+                    // @todo, not all cities need (or support) a connection to the station
+                    ChunkCoord center = CityTools.getNearestCityCenter(chunkX, chunkZ);
+                    City city = CityTools.getCity(center);
+                    CityPlan plan = city.getPlan();
+                    int cityBottom = CityTools.getLowestHeight(city, generator, chunkX, chunkZ);
+
+                    for (int sx = 3 ; sx >= 1 ; sx--) {
+                        for (int sz = 12 ; sz <= 14 ; sz++) {
+                            int y = lowest-1;
+                            int index = (sx << 12) | (sz << 8) + y;
+                            char f = blackMarble;
+                            if (sx == 2 && sz == 13) {
+                                f = airChar;
+                            } else if (sx == 2 || sz == 13) {
+                                f = glowLines;
+                            }
+                            while (y <= cityBottom) {
+                                primer.data[index] = f;
+                                index++;
+                                y++;
+                            }
+
+                        }
+                    }
+
+                    int index = (2 << 12) | (13 << 8) + CityTools.getStationHeight();
+                    primer.data[index] = elevator;
+                    index = (1 << 12) | (14 << 8) + CityTools.getStationHeight()+1;
+                    primer.data[index] = levelMarker;
+                    index = (1 << 12) | (14 << 8) + cityBottom+1;
+                    primer.data[index] = levelMarker;
+                }
             }
         } else if (candidateX) {
             for (int dx = 5 ; dx <= 11 ; dx++) {
