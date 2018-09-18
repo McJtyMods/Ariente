@@ -18,6 +18,7 @@ public class CityPlan implements IAsset {
 
     private String name;
     private String palette;
+    private boolean isCity = true;
     private Map<Character, List<String>> partPalette = new HashMap<>();
     private List<String> cellar = new ArrayList<>();
     private List<String> plan = new ArrayList<>();
@@ -70,6 +71,10 @@ public class CityPlan implements IAsset {
 
     public boolean isUnderground() {
         return underground;
+    }
+
+    public boolean isCity() {
+        return isCity;
     }
 
     public List<String> getPlan() {
@@ -183,6 +188,7 @@ public class CityPlan implements IAsset {
     @Override
     public void readFromJSon(JsonObject object) {
         name = object.get("name").getAsString();
+        isCity = object.has("city") ? object.get("city").getAsBoolean() : true;
         palette = object.get("palette").getAsString();
         minLayer2 = getMin(object, "layers", 1);
         maxLayer2 = getMax(object, "layers", 1);
@@ -298,6 +304,7 @@ public class CityPlan implements IAsset {
         JsonObject object = new JsonObject();
         object.add("type", new JsonPrimitive("plan"));
         object.add("name", new JsonPrimitive(name));
+        object.add("city", new JsonPrimitive(isCity));
         object.add("palette", new JsonPrimitive(palette));
         object.add("layers", new JsonPrimitive(minLayer2 + "-" + maxLayer2));
         object.add("sentinels", new JsonPrimitive(minSentinels + "-" + maxSentinels));

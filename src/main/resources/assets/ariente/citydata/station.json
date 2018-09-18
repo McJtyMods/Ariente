@@ -2,6 +2,7 @@
   {
     "type": "plan",
     "name": "station",
+    "city": false,
     "palette": "station",
     "layers": "1-2",
     "sentinels": "1-1",

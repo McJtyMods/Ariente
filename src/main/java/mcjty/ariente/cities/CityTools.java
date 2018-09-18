@@ -98,7 +98,11 @@ public class CityTools {
         Random random = new Random(seed + chunkX * 198491317L + chunkZ * 776531419L);
         random.nextFloat();
         random.nextFloat();
-        return AssetRegistries.CITYPLANS.get(random.nextInt(AssetRegistries.CITYPLANS.getCount()));
+        CityPlan plan = AssetRegistries.CITYPLANS.get(random.nextInt(AssetRegistries.CITYPLANS.getCount()));
+        while (!plan.isCity()) {
+            plan = AssetRegistries.CITYPLANS.get(random.nextInt(AssetRegistries.CITYPLANS.getCount()));
+        }
+        return plan;
     }
 
     public static City getNearestCity(ArienteChunkGenerator generator, int chunkX, int chunkZ) {

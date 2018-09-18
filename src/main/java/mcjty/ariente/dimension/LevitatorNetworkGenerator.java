@@ -72,7 +72,8 @@ public class LevitatorNetworkGenerator {
         boolean candidateX = cx == 8;
         boolean candidateZ = cz == 8;
 
-        // At -X,+Z we have an elevator
+        // At -X,+Z we have a possible elevator
+        // At -X,-Z we have a possible elevator
 
         if (CityTools.isStationChunk(chunkX, chunkZ)) {
             BuildingPart part = CityTools.getStationPart(chunkX, chunkZ);
@@ -80,38 +81,13 @@ public class LevitatorNetworkGenerator {
                 CityPlan station = AssetRegistries.CITYPLANS.get("station");
                 int lowest = ArienteCityGenerator.generatePart(primer, station.getPalette(), part, Transform.ROTATE_NONE, 0, CityTools.getStationHeight(), 0);
 
+                // @todo, not all cities need (or support) a connection to the station
                 if (cx == 7 && cz == 9 && CityTools.isCityChunk(chunkX, chunkZ)) {
-                    // @todo, not all cities need (or support) a connection to the station
-                    ChunkCoord center = CityTools.getNearestCityCenter(chunkX, chunkZ);
-                    City city = CityTools.getCity(center);
-                    CityPlan plan = city.getPlan();
-                    int cityBottom = CityTools.getLowestHeight(city, generator, chunkX, chunkZ);
-
-                    for (int sx = 3 ; sx >= 1 ; sx--) {
-                        for (int sz = 12 ; sz <= 14 ; sz++) {
-                            int y = lowest-1;
-                            int index = (sx << 12) | (sz << 8) + y;
-                            char f = blackMarble;
-                            if (sx == 2 && sz == 13) {
-                                f = airChar;
-                            } else if (sx == 2 || sz == 13) {
-                                f = glowLines;
-                            }
-                            while (y <= cityBottom) {
-                                primer.data[index] = f;
-                                index++;
-                                y++;
-                            }
-
-                        }
-                    }
-
-                    int index = (2 << 12) | (13 << 8) + CityTools.getStationHeight();
-                    primer.data[index] = elevator;
-                    index = (1 << 12) | (14 << 8) + CityTools.getStationHeight()+1;
-                    primer.data[index] = levelMarker;
-                    index = (1 << 12) | (14 << 8) + cityBottom+1;
-                    primer.data[index] = levelMarker;
+                    int startz = 12;
+                    createElevatorShaft(chunkX, chunkZ, primer, generator, lowest, startz);
+                } else if (cx == 7 && cz == 7 && CityTools.isCityChunk(chunkX, chunkZ)) {
+                    int startz = 3;
+                    createElevatorShaft(chunkX, chunkZ, primer, generator, lowest, startz);
                 }
             }
         } else if (candidateX) {
@@ -163,6 +139,38 @@ public class LevitatorNetworkGenerator {
             }
             primer.data[(8 << 12) | (8 << 8) + 36] = lampTop;
         }
+    }
+
+    private static void createElevatorShaft(int chunkX, int chunkZ, ChunkPrimer primer, ArienteChunkGenerator generator, int lowest, int startz) {
+        ChunkCoord center = CityTools.getNearestCityCenter(chunkX, chunkZ);
+        City city = CityTools.getCity(center);
+        int cityBottom = CityTools.getLowestHeight(city, generator, chunkX, chunkZ);
+
+        for (int sx = 3 ; sx >= 1 ; sx--) {
+            for (int sz = startz ; sz <= startz+2 ; sz++) {
+                int y = lowest-1;
+                int index = (sx << 12) | (sz << 8) + y;
+                char f = blackMarble;
+                if (sx == 2 && sz == startz+1) {
+                    f = airChar;
+                } else if (sx == 2 || sz == startz+1) {
+                    f = glowLines;
+                }
+                while (y <= cityBottom) {
+                    primer.data[index] = f;
+                    index++;
+                    y++;
+                }
+
+            }
+        }
+
+        int index = (2 << 12) | ((startz+1) << 8) + CityTools.getStationHeight();
+        primer.data[index] = elevator;
+        index = (1 << 12) | ((startz+2) << 8) + CityTools.getStationHeight()+1;
+        primer.data[index] = levelMarker;
+        index = (1 << 12) | ((startz+2) << 8) + cityBottom+1;
+        primer.data[index] = levelMarker;
     }
 
     private static void fillInner(ChunkPrimer primer, int dx, int dz) {

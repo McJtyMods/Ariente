@@ -19,9 +19,10 @@
     "soldiersWaveMax1": 3,
     "soldiersWaveMax2": 5,
     "soldiersWaveMaxN": 8,
-    "powerArmorChance": 0.1,
-    "forcefieldChance": 0,
     "masterChance": 0.01,
+    "powerArmorChance": 0.1,
+    "forcefieldChance": 0.0,
+    "underground": false,
     "loot": [
       {
         "id": "ariente:ingot_silver",
@@ -176,7 +177,7 @@
       [
         "a a a a a a a a a a a a a a a a ",
         "a a a a a a a a a a a a a a a a ",
-        "a a   x x x x x x x x x x x x x ",
+        "a a x x x x x x x x x x x x x x ",
         "a a x h h h h h h h h h h h h h ",
         "a a x h x x x x x x x x x x x x ",
         "a a x h x a a a a a a a a a a a ",
@@ -193,7 +194,7 @@
       ],
       [
         "a a y a F a y a F a y a a       ",
-        "a z                             ",
+        "a                               ",
         "y                               ",
         "a                               ",
         "F       H                       ",
@@ -413,7 +414,7 @@
         "a a x h x a a a a a a a a a a a ",
         "a a x h x x x x x x x x x x x x ",
         "a a x h h h h h h h h h h h h h ",
-        "a a x x x x x x x x x x x x x x ",
+        "a a   x x x x x x x x x x x x x ",
         "a a a a a a a a a a a a a a a a ",
         "a a a a a a a a a a a a a a a a "
       ],
@@ -432,7 +433,7 @@
         "F                               ",
         "a                               ",
         "y                             L ",
-        "a                               ",
+        "a z                             ",
         "a a y a F a y a F a y a a       "
       ],
       [
@@ -1080,7 +1081,7 @@
       [
         "a a a a a a a a a a a a a a a a ",
         "a a a a a a a a a a a a a a a a ",
-        "a a w x x x x x x x x x x x x x ",
+        "a a x x x x x x x x x x x x x x ",
         "a a x x x x x x x x x x x x x x ",
         "a a x x x x x x x x x x x x x x ",
         "a a x x x a a a a a a a a a a a ",
@@ -1097,7 +1098,7 @@
       ],
       [
         "b b y b b b y b b b y b b b y b ",
-        "b z                             ",
+        "b                               ",
         "y                               ",
         "b                               ",
         "b                               ",
@@ -1295,19 +1296,7 @@
       ]
     ],
     "meta": [],
-    "tedata": [
-      {
-        "x": 2,
-        "y": 0,
-        "z": 2,
-        "values": [
-          {
-            "key": "height",
-            "integer": 15
-          }
-        ]
-      }
-    ]
+    "tedata": []
   },
   {
     "type": "part",
@@ -1329,7 +1318,7 @@
         "a a x x x a a a a a a a a a a a ",
         "a a x x x x x x x x x x x x x x ",
         "a a x x x x x x x x x x x x x x ",
-        "a a x x x x x x x x x x x x x x ",
+        "a a w x x x x x x x x x x x x x ",
         "a a a a a a a a a a a a a a a a ",
         "a a a a a a a a a a a a a a a a "
       ],
@@ -1348,7 +1337,7 @@
         "b       I                       ",
         "b                               ",
         "y                               ",
-        "b                               ",
+        "b z                             ",
         "b b y b b b y b b b y b b b y b "
       ],
       [
@@ -1546,6 +1535,17 @@
           {
             "key": "vertical",
             "integer": 3
+          }
+        ]
+      },
+      {
+        "x": 2,
+        "y": 0,
+        "z": 13,
+        "values": [
+          {
+            "key": "height",
+            "integer": 15
           }
         ]
       }
