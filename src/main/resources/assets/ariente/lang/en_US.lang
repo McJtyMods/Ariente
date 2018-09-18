@@ -80,6 +80,7 @@ tile.ariente.level_marker.name=Level Marker
 tile.ariente.door_marker.name=Door Marker
 tile.ariente.invisible_door.name=Door
 tile.ariente.flatlight.name=Flat Light
+tile.ariente.fluxglow.name=Flux Glow
 tile.ariente.aicore.name=AI Core
 
 tile.ariente.ramp.name=Ramp

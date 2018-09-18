@@ -35,7 +35,8 @@ import net.minecraftforge.oredict.OreDictionary;
 public class ModBlocks {
 
     public static final AxisAlignedBB FLAT_BLOCK_AABB = new AxisAlignedBB(0.0D, 0.0D, 0.0D, 1.0D, 0.1D, 1.0D);
-    public static final AxisAlignedBB BEAM_BLOCK_AABB = new AxisAlignedBB(0.0D, 0.0D, 0.3D, 1.0D, 0.3D, 0.7D);
+    public static final AxisAlignedBB BEAM_BLOCK_NS_AABB = new AxisAlignedBB(0.0D, 0.0D, 0.3D, 1.0D, 0.3D, 0.7D);
+    public static final AxisAlignedBB BEAM_BLOCK_EW_AABB = new AxisAlignedBB(0.3D, 0.0D, 0.0D, 0.7D, 0.3D, 1.0D);
 
     public static BlackTechBlock blackmarble_techpat;
     public static PatternBlock patternBlock;
@@ -64,6 +65,7 @@ public class ModBlocks {
     public static BaseBlock posirite;
     public static BaseBlock negarite;
     public static BaseBlock reinforcedMarble;
+    public static BaseBlock fluxGlow;
 
     public static BaseBlock glowlog;
     public static BaseBlock glowleaves;
@@ -129,6 +131,12 @@ public class ModBlocks {
                 .boundingBox((state, source, pos) -> getFlatBox(state))
                 .build();
 
+        fluxGlow = new BaseBlockBuilder<>(Ariente.instance, "fluxglow")
+                .creativeTabs(Ariente.creativeTab)
+                .rotationType(BaseBlock.RotationType.NONE)
+                .lightValue(15)
+                .build();
+
         guardDummy = new BaseBlockBuilder<>(Ariente.instance, "guard_dummy")
                 .rotationType(BaseBlock.RotationType.HORIZROTATION)
                 .build();
@@ -142,7 +150,7 @@ public class ModBlocks {
         fluxBeamBlock = new BaseBlockBuilder<>(Ariente.instance, "flux_beam")
                 .rotationType(BaseBlock.RotationType.HORIZROTATION)
                 .flags(BlockFlags.NON_OPAQUE, BlockFlags.NON_FULLCUBE, BlockFlags.NO_COLLISION)
-                .boundingBox((state, source, pos) -> BEAM_BLOCK_AABB)
+                .boundingBox((state, source, pos) -> getBeamBox(state))
                 .build();
 
         reinforcedMarble = new BaseBlockBuilder<>(Ariente.instance, "reinforced_marble")
@@ -364,6 +372,21 @@ public class ModBlocks {
         return Block.FULL_BLOCK_AABB;
     }
 
+    public static AxisAlignedBB getBeamBox(IBlockState state) {
+        EnumFacing facing = state.getValue(BaseBlock.FACING_HORIZ);
+        switch (facing) {
+            case SOUTH:
+                return BEAM_BLOCK_NS_AABB;
+            case NORTH:
+                return BEAM_BLOCK_NS_AABB;
+            case EAST:
+                return BEAM_BLOCK_EW_AABB;
+            case WEST:
+                return BEAM_BLOCK_EW_AABB;
+        }
+        return Block.FULL_BLOCK_AABB;
+    }
+
     private static void initPlants() {
         glowlog = new BaseBlockBuilder<>(Ariente.instance, "glowlog")
                 .rotationType(BaseBlock.RotationType.NONE)
@@ -476,6 +499,7 @@ public class ModBlocks {
         forceFieldBlock.initModel();
 
         flatLightBlock.initModel();
+        fluxGlow.initModel();
         posiriteGeneratorBlock.initModel();
         negariteGeneratorBlock.initModel();
         negariteTankBlock.initModel();

@@ -36,8 +36,9 @@
 - The damage for the drone laser was accidentally disabled
 - Fixed a bug in loot generation
 - New large (and hard) underground city
-- New monorail like system (called flux levitators)
+- New monorail like system (called flux levitators) including an underground network connected with stations under each city
 - A new slope decorative block
+- A new blue light glowing block
 
 0.0.1-alpha:
 - Alpha release
