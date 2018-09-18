@@ -39,6 +39,7 @@
 - New monorail like system (called flux levitators) including an underground network connected with stations under each city
 - A new slope decorative block
 - A new blue light glowing block
+- Implemented the scramble module which prevents inter-mob communication so they don't get alerted anymore when they see you. This does not prevent alert mode for breaking reinforced obsidian or being touched by the forcefield
 
 0.0.1-alpha:
 - Alpha release
