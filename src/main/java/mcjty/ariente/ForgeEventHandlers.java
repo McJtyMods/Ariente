@@ -170,7 +170,7 @@ public class ForgeEventHandlers {
                 if (highAlert) {
                     cityAI.highAlertMode(player);
                 } else {
-                    cityAI.playerSpotted(player);
+                    cityAI.alertCity(player);
                 }
                 cityAISystem.save();
             }

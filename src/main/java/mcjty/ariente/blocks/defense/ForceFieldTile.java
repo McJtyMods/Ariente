@@ -245,7 +245,7 @@ public class ForceFieldTile extends GenericTileEntity implements IGuiTile, ITick
                                         CityAISystem system = CityAISystem.getCityAISystem(world);
                                         CityAI cityAI = system.getCityAI(cityCenter);
                                         if (cityAI != null) {
-                                            cityAI.playerSpotted(player);
+                                            cityAI.alertCity(player);
                                             system.save();
                                         }
                                     }

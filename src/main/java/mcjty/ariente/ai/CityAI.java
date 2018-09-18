@@ -15,6 +15,7 @@ import mcjty.ariente.config.AIConfiguration;
 import mcjty.ariente.entities.*;
 import mcjty.ariente.items.ModItems;
 import mcjty.ariente.items.modules.ArmorUpgradeType;
+import mcjty.ariente.items.modules.ModuleSupport;
 import mcjty.ariente.power.PowerSenderSupport;
 import mcjty.ariente.security.SecuritySystem;
 import mcjty.ariente.varia.ChunkCoord;
@@ -538,10 +539,23 @@ public class CityAI {
     }
 
     public void playerSpotted(EntityPlayer player) {
+        // The scramble module helps protect against player allertness
+        ItemStack helmet = player.getItemStackFromSlot(EntityEquipmentSlot.HEAD);
+        if (helmet.getItem() == ModItems.powerSuitHelmet) {
+            if (ModuleSupport.hasWorkingUpgrade(helmet, ArmorUpgradeType.SCRAMBLE)) {
+                return;
+            }
+        }
+
+        alertCity(player);
+    }
+
+    public void alertCity(EntityPlayer player) {
         if (findFirstValidAICore(player.getEntityWorld()) == null) {
             // City is dead
             return;
         }
+
         if (onAlert <= 0) {
             // Set alarm type in case it is not already set
             setAlarmType(player.world, AlarmType.ALERT);
@@ -551,7 +565,7 @@ public class CityAI {
     }
 
     public void highAlertMode(EntityPlayer player) {
-        playerSpotted(player);
+        alertCity(player);
         highAlert = true;
     }
 

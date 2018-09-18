@@ -172,6 +172,7 @@ public class PowerSuit extends ItemArmor {
         }
 
         compound.setBoolean(ArmorUpgradeType.ARMOR.getWorkingKey(), compound.getBoolean(ArmorUpgradeType.ARMOR.getModuleKey()));
+        compound.setBoolean(ArmorUpgradeType.SCRAMBLE.getWorkingKey(), compound.getBoolean(ArmorUpgradeType.SCRAMBLE.getModuleKey()));
 
         if (compound.getBoolean(ArmorUpgradeType.NIGHTVISION.getModuleKey())) {
             PotionEffect effect = entity.getActivePotionEffect(MobEffects.NIGHT_VISION);
