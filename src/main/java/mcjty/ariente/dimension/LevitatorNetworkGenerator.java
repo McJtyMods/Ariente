@@ -82,10 +82,12 @@ public class LevitatorNetworkGenerator {
                 int lowest = ArienteCityGenerator.generatePart(primer, station.getPalette(), part, Transform.ROTATE_NONE, 0, CityTools.getStationHeight(), 0);
 
                 // @todo, not all cities need (or support) a connection to the station
+                // @todo, elevator height!
                 if (cx == 7 && cz == 9 && CityTools.isCityChunk(chunkX, chunkZ)) {
                     int startz = 12;
                     createElevatorShaft(chunkX, chunkZ, primer, generator, lowest, startz);
                 } else if (cx == 7 && cz == 7 && CityTools.isCityChunk(chunkX, chunkZ)) {
+                    // @todo bug! There are too many shafts for the 3x3 city!
                     int startz = 3;
                     createElevatorShaft(chunkX, chunkZ, primer, generator, lowest, startz);
                 }
