@@ -246,8 +246,11 @@ public class HoloGuiEntity extends Entity {
 
     @Override
     public boolean processInitialInteract(EntityPlayer player, EnumHand hand) {
-        world.playSound(posX, posY, posZ, ModSounds.guiopen, SoundCategory.PLAYERS, 0.2f, 1.0f, true);  // @todo config
-        setDead();
+        // The small holo is used as a child on the flux levitator. It doesn't close like this
+        if (!isSmall()) {
+            world.playSound(posX, posY, posZ, ModSounds.guiopen, SoundCategory.PLAYERS, 0.2f, 1.0f, true);  // @todo config
+            setDead();
+        }
         return false;
     }
 
