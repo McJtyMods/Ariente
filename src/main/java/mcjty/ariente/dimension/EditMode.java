@@ -31,6 +31,9 @@ public class EditMode {
     public static boolean editMode = false;
 
     public static void enableEditMode(EntityPlayer player) {
+        // Restore city from parts
+        loadCity(player);
+
         editMode = true;
         City city = getCurrentCity(player);
         if (city == null) {
@@ -196,15 +199,103 @@ public class EditMode {
         }
     }
 
-    public static void saveStation(EntityPlayer player) throws FileNotFoundException {
+    public static void loadCity(EntityPlayer player) {
+        BlockPos start = player.getPosition();
+        int cx = (start.getX() >> 4);
+        int cz = (start.getZ() >> 4);
+
+        if (CityTools.isStationChunk(cx, cz) && start.getY() >= CityTools.getStationHeight() && start.getY() <= CityTools.getStationHeight() + 10 /* @todo */) {
+            loadStation(player);
+            return;
+        }
+
+        ArienteChunkGenerator generator = (ArienteChunkGenerator) (((WorldServer) player.getEntityWorld()).getChunkProvider().chunkGenerator);
+        City city = CityTools.getNearestCity(generator, cx, cz);
+        if (city == null) {
+            player.sendMessage(new TextComponentString("No city or station can be found!"));
+            return;
+        }
+
+        CityPlan plan = city.getPlan();
+
+        loadCityOrStation(player, city.getCenter(), plan, 0,
+                (x, z) -> CityTools.getLowestHeight(city, generator, x, z),
+                (x, z) -> CityTools.getBuildingParts(city, x, z));
+    }
+
+    public static void loadStation(EntityPlayer player) {
         BlockPos start = player.getPosition();
         int cx = (start.getX() >> 4);
         int cz = (start.getZ() >> 4);
         CityPlan plan = AssetRegistries.CITYPLANS.get("station");
-        saveCityOrStation(player, CityTools.getNearestStationCenter(cx, cz), plan, 0,
+        loadCityOrStation(player, CityTools.getNearestStationCenter(cx, cz), plan, 0,
                 (x, z) -> CityTools.getStationHeight(),
                 CityTools::getStationParts);
     }
+
+    private static void loadCityOrStation(EntityPlayer player,
+                                          ChunkCoord center, CityPlan plan, int offset,
+                                          BiFunction<Integer, Integer, Integer> heightGetter,
+                                          BiFunction<Integer, Integer, List<BuildingPart>> partsGetter) {
+        List<String> pattern = plan.getPlan();
+        int dimX = pattern.get(0).length();
+        int dimZ = pattern.size();
+
+        Palette palette = new Palette(plan.getPalette());
+        CompiledPalette compiledPalette = CompiledPalette.getCompiledPalette(plan.getPalette());
+        for (PaletteIndex character : compiledPalette.getCharacters()) {
+            IBlockState state = compiledPalette.getStraight(character);
+            if (state != null) {
+                palette.addMapping(character, state);
+            }
+        }
+
+        int cx = center.getChunkX();
+        int cz = center.getChunkZ();
+
+        for (int dx = cx - dimX / 2 - 1 - offset; dx <= cx + dimX / 2 + 1 - offset; dx++) {
+            for (int dz = cz - dimZ / 2 - 1 - offset; dz <= cz + dimZ / 2 + 1 - offset; dz++) {
+                int y = heightGetter.apply(dx, dz);
+                List<BuildingPart> parts = partsGetter.apply(dx, dz);
+                for (BuildingPart part : parts) {
+                    restorePart(part, player.world, new BlockPos(dx * 16 + 8, y /*unused*/, dz * 16 + 8),
+                            y, palette);
+                    y += part.getSliceCount();
+                }
+            }
+        }
+    }
+
+    private static void restorePart(BuildingPart part, World world, BlockPos start, int y, Palette palette) {
+        BlockPos.MutableBlockPos pos = new BlockPos.MutableBlockPos(0, 0, 0);
+        for (int x = 0; x < 16; x++) {
+            int cx = (start.getX() >> 4) * 16;
+
+            for (int z = 0; z < 16; z++) {
+                int cz = (start.getZ() >> 4) * 16;
+
+                BuildingPart.PalettedSlice vs = part.getVSlice(x, z);
+                if (vs != null) {
+
+                    for (int f = 0; f < part.getSliceCount(); f++) {
+                        int cy = y + f;
+                        if (cy > 255) {
+                            break;
+                        }
+                        pos.setPos(cx + x, cy, cz + z);
+                        PaletteIndex c = vs.getSlice().get(f);
+                        IBlockState original = palette.getPalette().get(c);
+                        IBlockState current = world.getBlockState(pos);
+
+                        if (!current.equals(original) && original != null) {
+                            world.setBlockState(pos, original, 3);
+                        }
+                    }
+                }
+            }
+        }
+    }
+
 
     public static void saveCity(EntityPlayer player) throws FileNotFoundException {
         BlockPos start = player.getPosition();
@@ -228,6 +319,16 @@ public class EditMode {
         saveCityOrStation(player, city.getCenter(), plan, 0,
                 (x, z) -> CityTools.getLowestHeight(city, generator, x, z),
                 (x, z) -> CityTools.getBuildingParts(city, x, z));
+    }
+
+    public static void saveStation(EntityPlayer player) throws FileNotFoundException {
+        BlockPos start = player.getPosition();
+        int cx = (start.getX() >> 4);
+        int cz = (start.getZ() >> 4);
+        CityPlan plan = AssetRegistries.CITYPLANS.get("station");
+        saveCityOrStation(player, CityTools.getNearestStationCenter(cx, cz), plan, 0,
+                (x, z) -> CityTools.getStationHeight(),
+                CityTools::getStationParts);
     }
 
     private static void saveCityOrStation(EntityPlayer player,

@@ -6,9 +6,11 @@ import com.google.gson.JsonObject;
 import com.google.gson.JsonPrimitive;
 import mcjty.ariente.varia.Tools;
 import net.minecraft.block.state.IBlockState;
-import org.apache.commons.lang3.tuple.Pair;
 
-import java.util.*;
+import java.util.HashMap;
+import java.util.HashSet;
+import java.util.Map;
+import java.util.Set;
 
 /**
  * A palette of materials as used by building parts
@@ -16,7 +18,7 @@ import java.util.*;
 public class Palette implements IAsset {
 
     private String name;
-    private final Map<PaletteIndex, Object> palette = new HashMap<>();
+    private final Map<PaletteIndex, IBlockState> palette = new HashMap<>();
 
     public Palette() {
     }
@@ -48,7 +50,7 @@ public class Palette implements IAsset {
         return name;
     }
 
-    public Map<PaletteIndex, Object> getPalette() {
+    public Map<PaletteIndex, IBlockState> getPalette() {
         return palette;
     }
 
@@ -62,7 +64,6 @@ public class Palette implements IAsset {
     public void parsePaletteArray(JsonArray paletteArray) {
         for (JsonElement element : paletteArray) {
             JsonObject o = element.getAsJsonObject();
-            Object value = null;
             String cidx = o.get("char").getAsString();
             PaletteIndex c = cidx.length() > 1 ? new PaletteIndex(cidx.charAt(0), cidx.charAt(1)) :
                     new PaletteIndex(cidx.charAt(0), ' ');
@@ -70,17 +71,6 @@ public class Palette implements IAsset {
                 String block = o.get("block").getAsString();
                 IBlockState state = Tools.stringToState(block);
                 palette.put(c, state);
-            } else if (o.has("blocks")) {
-                JsonArray array = o.get("blocks").getAsJsonArray();
-                List<Pair<Integer, IBlockState>> blocks = new ArrayList<>();
-                for (JsonElement el : array) {
-                    JsonObject ob = el.getAsJsonObject();
-                    Integer f = ob.get("random").getAsInt();
-                    String block = ob.get("block").getAsString();
-                    IBlockState state = Tools.stringToState(block);
-                    blocks.add(Pair.of(f, state));
-                }
-                addMappingViaState(c, blocks.toArray(new Pair[blocks.size()]));
             } else {
                 throw new RuntimeException("Illegal palette!");
             }
@@ -100,7 +90,7 @@ public class Palette implements IAsset {
         object.add("type", new JsonPrimitive("palette"));
         object.add("name", new JsonPrimitive(name));
         JsonArray array = new JsonArray();
-        for (Map.Entry<PaletteIndex, Object> entry : palette.entrySet()) {
+        for (Map.Entry<PaletteIndex, IBlockState> entry : palette.entrySet()) {
             JsonObject o = new JsonObject();
             PaletteIndex idx = entry.getKey();
             o.add("char", new JsonPrimitive(String.valueOf(idx.getI1()) + idx.getI2()));
@@ -116,12 +106,6 @@ public class Palette implements IAsset {
 
     public Palette addMapping(PaletteIndex c, IBlockState state) {
         palette.put(c, state);
-        return this;
-    }
-
-    @SafeVarargs
-    private final Palette addMappingViaState(PaletteIndex c, Pair<Integer, IBlockState>... randomBlocks) {
-        palette.put(c, randomBlocks);
         return this;
     }
 }
