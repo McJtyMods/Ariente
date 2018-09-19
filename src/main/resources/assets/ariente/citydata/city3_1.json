@@ -2,6 +2,7 @@
   {
     "type": "plan",
     "name": "city3_1",
+    "city": true,
     "palette": "city3_1",
     "layers": "1-1",
     "sentinels": "5-8",
@@ -454,26 +455,8 @@
         "a                             b ",
         "a                             b ",
         "a                             b ",
-        "a                             b ",
-        "a                             b ",
-        "a                             b ",
-        "a                             b ",
-        "a                             b ",
-        "a                             b ",
-        "a                             b ",
-        "a                             b ",
-        "a                             b ",
-        "a                             b ",
-        "a                             b "
-      ],
-      [
-        "a a a a a a a a a a a a a a a a ",
-        "a                             b ",
-        "a                             b ",
-        "a                             b ",
-        "a                             b ",
-        "a                             b ",
-        "a                             b ",
+        "a                             T ",
+        "a                             T ",
         "a                             b ",
         "a                             b ",
         "a                             b ",
@@ -490,8 +473,26 @@
         "a                             b ",
         "a                             b ",
         "a                             b ",
+        "a                               ",
+        "a                               ",
         "a                             b ",
         "a                             b ",
+        "a                             b ",
+        "a                             b ",
+        "a                             b ",
+        "a                             b ",
+        "a                             b ",
+        "a                             b ",
+        "a                             b "
+      ],
+      [
+        "a a a a a a a a a a a a a a a a ",
+        "a                             b ",
+        "a                             b ",
+        "a                             b ",
+        "a                             b ",
+        "a                               ",
+        "a                               ",
         "a                             b ",
         "a                             b ",
         "a                             b ",
@@ -959,7 +960,7 @@
         "                                ",
         "                                ",
         "                                ",
-        "                                ",
+        "                              v ",
         "b b b b b b b b b b b b b b b b "
       ],
       [
@@ -979,6 +980,24 @@
         "                                ",
         "                                ",
         "b b b b b b b b b b b b b b b b "
+      ],
+      [
+        "a a a a a a a a a a a a a a a a ",
+        "b b b b b b b b b b b b b b b b ",
+        "b q q q q q q q q q q q q q q q ",
+        "b q q q q q q q q q q q q q q q ",
+        "b q q q q q q q q q q q q q q q ",
+        "b q q q q q q q q q q q q q q q ",
+        "b q q q q q q q q q q q q q q q ",
+        "b q q q q q q q q q q q q q q q ",
+        "b q q q q q q q q q q q q q q q ",
+        "b q q q q q q q q q q q q q q q ",
+        "b q q q q q q q q q q q q q q q ",
+        "b q q q q q q q q q q q q q q q ",
+        "b q q q q q q q q q q q q q q q ",
+        "b q q q q q q q q q q q q q q q ",
+        "b q q q q q q q q q q q q q q q ",
+        "b q q q q q q q q q q q q q q q "
       ],
       [
         "a a a a a a a a a a a a a a a a ",
@@ -993,28 +1012,10 @@
         "b q q q q q b b b b b b b b b b ",
         "b q q q q q b b b b b b b b b b ",
         "b q q q q q b b b b R R R R R R ",
-        "b q q q q q b b b b R S S S S S ",
-        "b q q q q q b b b b R S S S S S ",
-        "b q q q q q b b b b R S S S S S ",
-        "b q q q q q b b b b R S S S S S "
-      ],
-      [
-        "a a a a a a a a a a a a a a a a ",
-        "                                ",
-        "                                ",
-        "                                ",
-        "                                ",
-        "                                ",
-        "                                ",
-        "                                ",
-        "                                ",
-        "                                ",
-        "                                ",
-        "                                ",
-        "                        I       ",
-        "                                ",
-        "                                ",
-        "                                "
+        "b q q q q q b b b b R U U U U U ",
+        "b q q q q q b b b b R U U U U U ",
+        "b q q q q q b b b b R U U U U U ",
+        "b q q q q q b b b b R U U U U U "
       ],
       [
         "a a a a a a a a a a a a a a a a ",
@@ -1030,7 +1031,7 @@
         "                                ",
         "                                ",
         "                                ",
-        "                                ",
+        "                      I         ",
         "                                ",
         "                                "
       ],
@@ -1090,42 +1091,43 @@
       ],
       [
         "a a a a a a a a a a a a a a a a ",
-        "                                ",
-        "                                ",
-        "                                ",
-        "                                ",
-        "                                ",
-        "                                ",
-        "                                ",
-        "                                ",
-        "                                ",
-        "                                ",
-        "                                ",
-        "                                ",
-        "                                ",
-        "                                ",
-        "                                "
+        "b b b b b b b b b b b b b b b b ",
+        "b b b b b b b b b b b b b b b b ",
+        "b b b b b b b b b b b b b b b b ",
+        "b b b b b b b b b b b b b b b b ",
+        "b b b b b b b b b b b b b b b b ",
+        "b b b b b b b b b b b b b b b b ",
+        "b b b b b b b b b b b b b b b b ",
+        "b b b b b b b b b b b b b b b b ",
+        "b b b b b b b b b b b b b b b b ",
+        "b b b b b b b b b b b b b b b b ",
+        "b b b b b b b b b b b b b b b b ",
+        "b b b b b b b b b b b b b b b b ",
+        "b b b b b b b b b b b b b b b b ",
+        "b b b b b b b b b b b b b b b b ",
+        "b b b b b b b b b b b b b b b b "
       ],
       [
         "a a a a a a a a a a a a a a a a ",
+        "b b b b b b b b b b b b b b b b ",
+        "                                ",
+        "                                ",
+        "                                ",
+        "                                ",
+        "                          O     ",
+        "                                ",
+        "                                ",
+        "    E                           ",
         "                                ",
         "                                ",
         "                                ",
         "                                ",
         "                                ",
-        "                                ",
-        "                                ",
-        "                                ",
-        "                                ",
-        "                                ",
-        "                                ",
-        "                                ",
-        "                                ",
-        "                                ",
-        "                                "
+        "V b V b V b V b V b V b V b V b "
       ],
       [
         "a a a a a a a a a a a a a a a a ",
+        "b b b b b b b b b b b b b b b b ",
         "                                ",
         "                                ",
         "                                ",
@@ -1139,29 +1141,29 @@
         "                                ",
         "                                ",
         "                                ",
-        "                                ",
-        "                                "
+        "V b V b V b V b V b V b V b V b "
       ],
       [
         "a a a a a a a a a a a a a a a a ",
+        "b b b b b b b b b b b b b b b b ",
         "                                ",
         "                                ",
         "                                ",
         "                                ",
         "                                ",
         "                                ",
+        "w                               ",
         "                                ",
         "                                ",
         "                                ",
         "                                ",
         "                                ",
         "                                ",
-        "                                ",
-        "                                ",
-        "                                "
+        "V b V b V b V b V b V b V b V b "
       ],
       [
         "a a a a a a a a a a a a a a a a ",
+        "b b b b b b b b b b b b b b b b ",
         "                                ",
         "                                ",
         "                                ",
@@ -1175,26 +1177,25 @@
         "                                ",
         "                                ",
         "                                ",
-        "                                ",
-        "                                "
+        "V b V b V b V b V b V b V b V b "
       ],
       [
         "a a a a a a a a a a a a a a a a ",
-        "                                ",
-        "                                ",
-        "                                ",
-        "                                ",
-        "                                ",
-        "                                ",
-        "                                ",
-        "                                ",
-        "                                ",
-        "                                ",
-        "                                ",
-        "                                ",
-        "                                ",
-        "                                ",
-        "                                "
+        "b b b b b b b b b b b b b b b b ",
+        "b b b b b b b b b b b b b b b b ",
+        "b b b b b b b b b b b b b b b b ",
+        "b b b b b b b b b b b b b b b b ",
+        "b b b b b b b b b b b b b b b b ",
+        "b b b b b b b b b b b b b b b b ",
+        "b b b b b b b b b b b b b b b b ",
+        "b b b b b b b b b b b b b b b b ",
+        "b b b b b b b b b b b b b b b b ",
+        "b b b b b b b b b b b b b b b b ",
+        "b b b b b b b b b b b b b b b b ",
+        "b b b b b b b b b b b b b b b b ",
+        "b b b b b b b b b b b b b b b b ",
+        "b b b b b b b b b b b b b b b b ",
+        "b b b b b b b b b b b b b b b b "
       ],
       [
         "a a a a a a a a a a a a a a a a ",
@@ -1568,15 +1569,15 @@
       ],
       [
         "b b b b b b b b b b b b b b b b ",
-        "                                ",
-        "                                ",
-        "                                ",
-        "                                ",
-        "                                ",
-        "                                ",
-        "                                ",
-        "                                ",
-        "                                ",
+        "                              b ",
+        "                              b ",
+        "              D               b ",
+        "                              b ",
+        "                              b ",
+        "                              b ",
+        "                              b ",
+        "                              b ",
+        "                              b ",
         "                                ",
         "                                ",
         "                                ",
@@ -1586,33 +1587,15 @@
       ],
       [
         "b b b b b b b b b b b b b b b b ",
-        "                                ",
-        "                                ",
-        "                                ",
-        "                                ",
-        "                                ",
-        "                                ",
-        "                                ",
-        "                                ",
-        "                                ",
-        "                                ",
-        "                                ",
-        "                                ",
-        "                                ",
-        "                                ",
-        "b     b b b b b b b b b b b b b "
-      ],
-      [
-        "b b b b b b b b b b b b b b b b ",
-        "                                ",
-        "                                ",
-        "                                ",
-        "                                ",
-        "                                ",
-        "                                ",
-        "                                ",
-        "                                ",
-        "                                ",
+        "                              b ",
+        "                              R ",
+        "                              R ",
+        "                            W q ",
+        "                              X ",
+        "                              Y ",
+        "                              Z ",
+        "                              Z ",
+        "                              b ",
         "                                ",
         "                                ",
         "                                ",
@@ -1622,21 +1605,57 @@
       ],
       [
         "b b b b b b b b b b b b b b b b ",
+        "                              b ",
+        "                              R ",
+        "                              R ",
+        "                              u ",
+        "                              u ",
+        "                              u ",
+        "                              Z ",
+        "                              Z ",
+        "                              b ",
         "                                ",
         "                                ",
         "                                ",
         "                                ",
-        "                                ",
-        "                                ",
-        "                                ",
-        "                                ",
-        "                                ",
+        "        v                       ",
+        "b     b b b b b b b b b b b b b "
+      ],
+      [
+        "b b b b b b b b b b b b b b b b ",
+        "                              b ",
+        "                              b ",
+        "                              b ",
+        "                              b ",
+        "                              b ",
+        "                              b ",
+        "                              b ",
+        "                              b ",
+        "                              b ",
         "                                ",
         "                                ",
         "                                ",
         "                                ",
         "                                ",
         "b b b b b b b b b b b b b b b b "
+      ],
+      [
+        "a a a a a a a a a a a a a a a a ",
+        "b b b b b b b b b b b b b b b b ",
+        "q q q q q q q q q q q q q q q b ",
+        "q q q q q q q q q q q q q q q b ",
+        "q q q q q q q q q q q q q q q b ",
+        "q q q q q q q q q q q q q q q b ",
+        "q q q q q q q q q q q q q q q b ",
+        "q q q q q q q q q q q q q q q b ",
+        "q q q q q q q q q q q q q q q b ",
+        "q q q q q q q q q q q q q q q b ",
+        "q q q q q q q q q q q q q q q b ",
+        "q q q q q q q q q q q q q q q b ",
+        "q q q q q q q q q q q q q q q b ",
+        "q q q q q q q q q q q q q q q b ",
+        "q q q q q q q q q q q q q q q b ",
+        "q q q q q q q q q q q q q b b b "
       ],
       [
         "a a a a a a a a a a a a a a a a ",
@@ -1651,10 +1670,10 @@
         "b b b b b b b b q q q q q b b b ",
         "b b b b b b b b q q q q q b b b ",
         "R R R R b b b b q q q q q b b b ",
-        "S S S R b b b b q q q q q b b b ",
-        "S S S R b b b b q q q q q b b b ",
-        "S S S R b b b b q q q q q b b b ",
-        "S S S R b b b b q q q q q b b b "
+        "U U U R b b b b q q q q q b b b ",
+        "U U U R b b b b q q q q q b b b ",
+        "U U U R b b b b q q q q q b b b ",
+        "U U U R b b b b q q q q q b b b "
       ],
       [
         "a a a a a a a a a a a a a a a a ",
@@ -1678,7 +1697,7 @@
         "a a a a a a a a a a a a a a a a ",
         "                                ",
         "                                ",
-        "                              M ",
+        "                              0 ",
         "                                ",
         "                                ",
         "                              N ",
@@ -1712,21 +1731,21 @@
       ],
       [
         "a a a a a a a a a a a a a a a a ",
-        "                                ",
-        "                                ",
-        "                                ",
-        "                                ",
-        "                                ",
-        "                                ",
-        "                                ",
-        "                                ",
-        "                                ",
-        "                                ",
-        "                                ",
-        "                                ",
-        "                                ",
-        "                                ",
-        "                                "
+        "b b b b b b b b b b b b b b b b ",
+        "b b b b b b b b b b b b b b b b ",
+        "b b b b b b b b b b b b b b b b ",
+        "b b b b b b b b b b b b b b b b ",
+        "b b b b b b b b b b b b b b b b ",
+        "b b b b b b b b b b b b b b b b ",
+        "b b b b b b b b b b b b b b b b ",
+        "b b b b b b b b b b b b b b b b ",
+        "b b b b b b b b b b b b b b b b ",
+        "b b b b b b b b b b b b b b b b ",
+        "b b b b b b b b b b b b b b b b ",
+        "b b b b b b b b b b b b b b b b ",
+        "b b b b b b b b b b b b b b b b ",
+        "b b b b b b b b b b b b b b b b ",
+        "b b b b b b b b b b b b b b b b "
       ],
       [
         "a a a a a a a a a a a a a a a a ",
@@ -1748,6 +1767,7 @@
       ],
       [
         "a a a a a a a a a a a a a a a a ",
+        "b b b b b b b b b b b b b b b b ",
         "                                ",
         "                                ",
         "                                ",
@@ -1756,16 +1776,16 @@
         "                                ",
         "                                ",
         "                                ",
+        "                    O           ",
         "                                ",
         "                                ",
         "                                ",
         "                                ",
-        "                                ",
-        "                                ",
-        "                                "
+        "V b V b V b V b V b V b V b V b "
       ],
       [
         "a a a a a a a a a a a a a a a a ",
+        "b b b b b b b b b b b b b b b b ",
         "                                ",
         "                                ",
         "                                ",
@@ -1779,11 +1799,17 @@
         "                                ",
         "                                ",
         "                                ",
-        "                                ",
-        "                                "
+        "V b V b V b V b V b V b V b V b "
       ],
       [
         "a a a a a a a a a a a a a a a a ",
+        "b b b b b b b b b b b b b b b b ",
+        "                                ",
+        "                                ",
+        "                                ",
+        "                                ",
+        "                                ",
+        "                              y ",
         "                                ",
         "                                ",
         "                                ",
@@ -1791,17 +1817,11 @@
         "                                ",
         "                                ",
         "                                ",
-        "                                ",
-        "                                ",
-        "                                ",
-        "                                ",
-        "                                ",
-        "                                ",
-        "                                ",
-        "                                "
+        "V b V b V b V b V b V b V b V b "
       ],
       [
         "a a a a a a a a a a a a a a a a ",
+        "b b b b b b b b b b b b b b b b ",
         "                                ",
         "                                ",
         "                                ",
@@ -1815,44 +1835,25 @@
         "                                ",
         "                                ",
         "                                ",
-        "                                ",
-        "                                "
+        "V b V b V b V b V b V b V b V b "
       ],
       [
         "a a a a a a a a a a a a a a a a ",
-        "                                ",
-        "                                ",
-        "                                ",
-        "                                ",
-        "                                ",
-        "                                ",
-        "                                ",
-        "                                ",
-        "                                ",
-        "                                ",
-        "                                ",
-        "                                ",
-        "                                ",
-        "                                ",
-        "                                "
-      ],
-      [
-        "a a a a a a a a a a a a a a a a ",
-        "                                ",
-        "                                ",
-        "                                ",
-        "                                ",
-        "                                ",
-        "                                ",
-        "                                ",
-        "                                ",
-        "                                ",
-        "                                ",
-        "                                ",
-        "                                ",
-        "                                ",
-        "                                ",
-        "                                "
+        "b b b b b b b b b b b b b b b b ",
+        "b b b b b b b b b b b b b b b b ",
+        "b b b b b b b b b b b b b b b b ",
+        "b b b b b b b b b b b b b b b b ",
+        "b b b b b b b b b b b b b b b b ",
+        "b b b b b b b b b b b b b b b b ",
+        "b b b b b b b b b b b b b b b b ",
+        "b b b b b b b b b b b b b b b b ",
+        "b b b b b b b b b b b b b b b b ",
+        "b b b b b b b b b b b b b b b b ",
+        "b b b b b b b b b b b b b b b b ",
+        "b b b b b b b b b b b b b b b b ",
+        "b b b b b b b b b b b b b b b b ",
+        "b b b b b b b b b b b b b b b b ",
+        "b b b b b b b b b b b b b b b b "
       ],
       [
         "a a a a a a a a a a a a a a a a ",
@@ -2200,13 +2201,28 @@
     "meta": [],
     "tedata": [
       {
+        "x": 14,
+        "y": 2,
+        "z": 4,
+        "values": [
+          {
+            "key": "channel",
+            "integer": 6
+          }
+        ]
+      },
+      {
         "x": 15,
-        "y": 7,
+        "y": 8,
         "z": 3,
         "values": [
           {
             "key": "horizontal",
             "integer": 5
+          },
+          {
+            "key": "channel",
+            "integer": 6
           },
           {
             "key": "vertical",
@@ -2284,7 +2300,7 @@
         "b A                           A ",
         "b A                           A ",
         "b A                           A ",
-        "b A                           A ",
+        "b A w                         A ",
         "b A                           A ",
         "b A                           A ",
         "b A                           A ",
@@ -2335,8 +2351,8 @@
         "b A                           A ",
         "b A                   s       A ",
         "b A                           A ",
-        "C                             A ",
-        "C                             A ",
+        "b o                           A ",
+        "b o                           A ",
         "b A                           A ",
         "b A                           A ",
         "b A                           A ",
@@ -2353,8 +2369,8 @@
         "b A                           A ",
         "b A                           A ",
         "b A                           A ",
-        "                              A ",
-        "                              A ",
+        "C                             A ",
+        "C                             A ",
         "b A                           A ",
         "b A                           A ",
         "b A                           A ",
@@ -2374,7 +2390,7 @@
         "                              A ",
         "                              A ",
         "b A                           A ",
-        "b A                           A ",
+        "b A w                         A ",
         "b A                           A ",
         "b A                           A ",
         "b A                           A ",
@@ -2389,8 +2405,8 @@
         "b A                           A ",
         "b A                           A ",
         "b A                           A ",
-        "b A                           A ",
-        "b A                           A ",
+        "                              A ",
+        "                              A ",
         "b A                           A ",
         "b A                           A ",
         "b A                           A ",
@@ -2425,8 +2441,8 @@
         "b A                           A ",
         "b A     P             s       A ",
         "b A                           A ",
-        "b A                           A ",
-        "b A                           A ",
+        "b o                           A ",
+        "b o                           A ",
         "b A                           A ",
         "b A                           A ",
         "b A                           A ",
@@ -2443,26 +2459,8 @@
         "b A                           A ",
         "b A                           A ",
         "b A                           A ",
-        "b A                           A ",
-        "b A                           A ",
-        "b A                           A ",
-        "b A                           A ",
-        "b A                           A ",
-        "b A                           A ",
-        "b A                           A ",
-        "b A                           A ",
-        "b A                           A ",
-        "b A                           A ",
-        "b A A A A A A A A A A A A A A A ",
-        "b b b b b b b b b b b b b b b A "
-      ],
-      [
-        "A A A A A A A A A A A A A A A A ",
-        "b A                           A ",
-        "b A                           A ",
-        "b A                           A ",
-        "b A                           A ",
-        "b A                           A ",
+        "T                             A ",
+        "T                             A ",
         "b A                           A ",
         "b A                           A ",
         "b A                           A ",
@@ -2479,8 +2477,26 @@
         "b A                           A ",
         "b A                           A ",
         "b A                           A ",
+        "                              A ",
+        "                              A ",
         "b A                           A ",
         "b A                           A ",
+        "b A                           A ",
+        "b A                           A ",
+        "b A                           A ",
+        "b A                           A ",
+        "b A                           A ",
+        "b A                           A ",
+        "b A A A A A A A A A A A A A A A ",
+        "b b b b b b b b b b b b b b b A "
+      ],
+      [
+        "A A A A A A A A A A A A A A A A ",
+        "b A                           A ",
+        "b A                           A ",
+        "b A                           A ",
+        "                              A ",
+        "                              A ",
         "b A                           A ",
         "b A                           A ",
         "b A                           A ",
@@ -2512,14 +2528,14 @@
       ],
       [
         "A A A A A A A A A A A A A A A A ",
-        "b A                           A ",
-        "b A     P             s       A ",
-        "b A                           A ",
-        "b A                           A ",
-        "b A                           A ",
-        "b A                           A ",
-        "b A                           A ",
-        "b A                           A ",
+        "b A b                         A ",
+        "b A b   P             s       A ",
+        "b A b                         A ",
+        "b A b                         A ",
+        "b A b                         A ",
+        "b A b                         A ",
+        "b A b                         A ",
+        "b A b                         A ",
         "b A                           A ",
         "b A                           A ",
         "b A                       Q   A ",
@@ -2915,11 +2931,11 @@
         "a a a a a a a a a a a a a a a q ",
         "a a a a a a a a a a a a a a a q ",
         "a a a a a a a a a a a a a a a q ",
-        "a a a a a a a a a a a a a a q q ",
-        "a a a a a a a a a a a a a a q q ",
-        "a a a a a a a a a a a a a a q q ",
-        "a a a a a a a a a a a a a a q q ",
-        "a a a a a a a a a a a a a a q q "
+        "a a a a a a a a a a a a a a a q ",
+        "a a a a a a a a a a a a a a a q ",
+        "a a a a a a a a a a a a a a a q ",
+        "a a a a a a a a a a a a a a a q ",
+        "a a a a a a a a a a a a a a a q "
       ],
       [
         "a                             b ",
@@ -3581,7 +3597,7 @@
       ],
       [
         "                                ",
-        "                              J ",
+        "                            J   ",
         "                                ",
         "                                ",
         "                                ",
@@ -3616,6 +3632,24 @@
         "                                "
       ],
       [
+        "                              x ",
+        "                                ",
+        "                                ",
+        "                                ",
+        "                                ",
+        "                                ",
+        "                                ",
+        "                                ",
+        "                                ",
+        "                                ",
+        "                                ",
+        "                                ",
+        "                                ",
+        "                                ",
+        "                                ",
+        "                                "
+      ],
+      [
         "                                ",
         "                                ",
         "                                ",
@@ -3634,31 +3668,31 @@
         "                                "
       ],
       [
-        "                                ",
-        "                                ",
-        "                                ",
-        "                                ",
-        "                                ",
-        "                                ",
-        "                                ",
-        "                                ",
-        "                                ",
-        "                                ",
-        "                                ",
-        "                                ",
-        "                                ",
-        "                                ",
-        "                                ",
-        "                                "
+        "b q q q q q q q q q q q q q q q ",
+        "b q q q q q q q q q q q q q q q ",
+        "b q q q q q q q q q q q q q q q ",
+        "b q q q q q q q q q q q q q q q ",
+        "b q q q q q q q q q q q q q q q ",
+        "b q q q q q q q q q q q q q q q ",
+        "b q q q q q q q q q q q q q q q ",
+        "b q q q q q q q q q q q q q q q ",
+        "b q q q q q q q q q q q q q q q ",
+        "b q q q q q q q q q q q q q q q ",
+        "b q q q q q q q q q q q q q q q ",
+        "b q q q q q q q q q q q q q q q ",
+        "b q q q q q q q q q q q q q q q ",
+        "b q q q q q q q q q q q q q q q ",
+        "b q q q q q q q q q q q q q q q ",
+        "b q q q q q q q q q q q q q q q "
       ],
       [
-        "b q q q q q b b b b R S S S S S ",
-        "b q q q q q b b b b R S S S S S ",
-        "b q q q q q b b b b R S S S S S ",
-        "b q q q q q b b b b R S S S S S ",
-        "b q q q q q b b b b R S S S S S ",
-        "b q q q q q b b b b R S S S S S ",
-        "b q q q q q b b b b R S S S S S ",
+        "b q q q q q b b b b R U U U U U ",
+        "b q q q q q b b b b R U U U U U ",
+        "b q q q q q b b b b R U U U U U ",
+        "b q q q q q b b b b R U U U U U ",
+        "b q q q q q b b b b R U U U U U ",
+        "b q q q q q b b b b R U U U U U ",
+        "b q q q q q b b b b R U U U U U ",
         "b q q q q q b b b b R R R R R R ",
         "b q q q q q b b b b b b b b b b ",
         "b q q q q q b b b b b b b b b b ",
@@ -3683,27 +3717,9 @@
         "                                ",
         "                                ",
         "                                ",
-        "                    I           ",
-        "                                ",
-        "                                "
-      ],
-      [
         "                                ",
         "                                ",
-        "                                ",
-        "                                ",
-        "                                ",
-        "                                ",
-        "                                ",
-        "                                ",
-        "                                ",
-        "                                ",
-        "                                ",
-        "                                ",
-        "                                ",
-        "                                ",
-        "                                ",
-        "                                "
+        "                  I             "
       ],
       [
         "                                ",
@@ -4239,7 +4255,7 @@
       ],
       [
         "                            b   ",
-        "        J                   b   ",
+        "          J                 b   ",
         "                            b   ",
         "                            b   ",
         "                            b   ",
@@ -4252,7 +4268,7 @@
         "                            b   ",
         "                            b   ",
         "                            b   ",
-        "                            b   ",
+        "              O             b   ",
         "                            b   "
       ],
       [
@@ -4274,25 +4290,7 @@
         "                            b h "
       ],
       [
-        "                            b   ",
-        "                            b   ",
-        "                            b   ",
-        "                            b   ",
-        "                            b   ",
-        "                            b   ",
-        "                            b   ",
-        "                            b   ",
-        "                            b   ",
-        "                            b   ",
-        "                            b   ",
-        "                            b   ",
-        "                            b   ",
-        "                            b   ",
-        "                            b   ",
-        "                            b   "
-      ],
-      [
-        "                            b   ",
+        "        x                   b   ",
         "                            b   ",
         "                            b   ",
         "                            b   ",
@@ -4310,13 +4308,49 @@
         "                            b   "
       ],
       [
-        "S S S R b b b b q q q q q b b   ",
-        "S S S R b b b b q q q q q b b   ",
-        "S S S R b b b b q q q q q b b   ",
-        "S S S R b b b b q q q q q b b   ",
-        "S S S R b b b b q q q q q b b   ",
-        "S S S R b b b b q q q q q b b   ",
-        "S S S R b b b b q q q q q b b   ",
+        "  1                         b   ",
+        "                            b   ",
+        "                            b   ",
+        "                            b   ",
+        "                            b   ",
+        "                            b   ",
+        "                            b   ",
+        "                            b   ",
+        "                            b   ",
+        "                            b   ",
+        "                            b   ",
+        "                            b   ",
+        "                            b   ",
+        "                            b   ",
+        "                            b   ",
+        "                            b   "
+      ],
+      [
+        "q q q q q q q q q q q q q b b   ",
+        "q q q q q q q q q q q q q b b   ",
+        "q q q q q q q q q q q q q b b   ",
+        "q q q q q q q q q q q q q b b   ",
+        "q q q q q q q q q q q q q b b   ",
+        "q q q q q q q q q q q q q b b   ",
+        "q q q q q q q q q q q q q b b   ",
+        "q q q q q q q q q q q q q b b   ",
+        "q q q q q q q q q q q q q b b   ",
+        "q q q q q q q q q q q q q b b   ",
+        "q q q q q q q q q q q q q b b   ",
+        "q q q q q q q q q q q q q b b   ",
+        "q q q q q q q q q q q q q b b   ",
+        "q q q q q q q q q q q q q b b   ",
+        "q q q q q q q q q q q q q b b   ",
+        "q q q q q q q q q q q q q b b   "
+      ],
+      [
+        "U U U R b b b b q q q q q b b   ",
+        "U U U R b b b b q q q q q b b   ",
+        "U U U R b b b b q q q q q b b   ",
+        "U U U R b b b b q q q q q b b   ",
+        "U U U R b b b b q q q q q b b   ",
+        "U U U R b b b b q q q q q b b   ",
+        "U U U R b b b b q q q q q b b   ",
         "R R R R b b b b q q q q q b b   ",
         "b b b b b b b b q q q q q b b   ",
         "b b b b b b b b q q q q q b b   ",
@@ -4339,29 +4373,11 @@
         "                            z   ",
         "                            z   ",
         "                            z   ",
+        "                            z   ",
         "      O                     z   ",
         "                            z   ",
         "                            z   ",
-        "                            z   ",
         "                            z   "
-      ],
-      [
-        "                                ",
-        "                                ",
-        "                                ",
-        "                                ",
-        "                                ",
-        "                                ",
-        "                                ",
-        "                                ",
-        "                                ",
-        "                                ",
-        "                                ",
-        "                                ",
-        "                                ",
-        "                                ",
-        "                                ",
-        "                                "
       ],
       [
         "                                ",
@@ -4878,40 +4894,40 @@
     "zsize": 16,
     "slices": [
       [
+        "a t t t t t 2 2 t t t t t a a a ",
+        "a t t t t t 2 2 t t t t t a a a ",
+        "a t t t t t 2 2 t t t t t a a a ",
+        "a t t t t t 2 2 t t t t t a a a ",
+        "a t t t t t 2 2 t t t t t a a a ",
         "a t t t t t t t t t t t t a a a ",
         "a t t t t t t t t t t t t a a a ",
         "a t t t t t t t t t t t t a a a ",
         "a t t t t t t t t t t t t a a a ",
         "a t t t t t t t t t t t t a a a ",
         "a t t t t t t t t t t t t a a a ",
-        "a t t t t t t t t t t t t a a a ",
-        "a t t t t t t t t t t t t a a a ",
-        "a t t t t t t t t t t t t a a a ",
-        "a t t t t t t t t t t t t a a a ",
-        "a t t t t t t t t t t t t a a a ",
-        "a t t t t t t t t t t t t a a a ",
-        "a t t t t t t t t t t t t a a a ",
-        "a t t t t t t t t t t t t a a a ",
-        "a t t t t t t t t t t t t a a a ",
-        "a t t t t t t t t t t t t a a a "
+        "a t t t t t 2 2 t t t t t a a a ",
+        "a t t t t t 2 2 t t t t t a a a ",
+        "a t t t t t 2 2 t t t t t a a a ",
+        "a t t t t t 2 2 t t t t t a a a ",
+        "a t t t t t 2 2 t t t t t a a a "
       ],
       [
-        "h                         i   a ",
-        "h                         i   a ",
-        "h                         i   a ",
-        "h                         i   a ",
-        "h                         i   a ",
-        "h         d d d d         i   a ",
+        "h         3     3         i   a ",
+        "h         3     3         i   a ",
+        "h         3     3         i   a ",
+        "h         3     3         i   a ",
+        "h         3     3         i   a ",
+        "h         b d d b         i   a ",
         "h       i u p p u h       i   a ",
         "h       i p     p h       i   a ",
         "h       i p     p h       i   a ",
         "h       i u p p u h       i   a ",
-        "h         c c c c         i   a ",
-        "h                         i   a ",
-        "h                         i   a ",
-        "h                         i   a ",
-        "h                         i   a ",
-        "h                         i   a "
+        "h         b c c b         i   a ",
+        "h         3     3         i   a ",
+        "h         3     3         i   a ",
+        "h         3     3         i   a ",
+        "h         3     3         i   a ",
+        "h         3     3         i   a "
       ],
       [
         "                            i a ",
@@ -5536,13 +5552,13 @@
     "zsize": 16,
     "slices": [
       [
-        "a a a a a a a a a a a a a a q q ",
-        "a a a a a a a a a a a a a a q q ",
-        "a a a a a a a a a a a a a a q q ",
-        "a a a a a a a a a a a a a a q q ",
-        "a a a a a a a a a a a a a a q q ",
-        "a a a a a a a a a a a a a a q q ",
-        "a a a a a a a a a a a a a a q q ",
+        "a a a a a a a a a a a a a a a q ",
+        "a a a a a a a a a a a a a a a q ",
+        "a a a a a a a a a a a a a a a q ",
+        "a a a a a a a a a a a a a a a q ",
+        "a a a a a a a a a a a a a a a q ",
+        "a a a a a a a a a a a a a a a q ",
+        "a a a a a a a a a a a a a a a q ",
         "a a a a a a a a a a a a a a a q ",
         "a a a a a a a a a a a a a a a q ",
         "a a a a a a a a a a a a a a a q ",
@@ -6222,11 +6238,11 @@
         "                                ",
         "                                ",
         "                                ",
+        "                        I       ",
         "                                ",
         "                                ",
         "                                ",
-        "                                ",
-        "                                ",
+        "              I                 ",
         "                                "
       ],
       [
@@ -6282,6 +6298,24 @@
         "                                ",
         "                                ",
         "                                "
+      ],
+      [
+        "b q q q q q q q q q q q q q q q ",
+        "b q q q q q q q q q q q q q q q ",
+        "b q q q q q q q q q q q q q q q ",
+        "b q q q q q q q q q q q q q q q ",
+        "b q q q q q q q q q q q q q q q ",
+        "b q q q q q q q q q q q q q q q ",
+        "b q q q q q q q q q q q q q q q ",
+        "b q q q q q q q q q q q q q q q ",
+        "b q q q q q q q q q q q q q q q ",
+        "b q q q q q q q q q q q q q q q ",
+        "b q q q q q q q q q q q q q q q ",
+        "b q q q q q q q q q q q q q q q ",
+        "b q q q q q q q q q q q q q q q ",
+        "b q q q q q q q q q q q q q q q ",
+        "b q q q q q q q q q q q q q q q ",
+        "b q q q q q q q q q q q q q q q "
       ],
       [
         "b q q q q q b b b b b b q q q q ",
@@ -6307,19 +6341,7 @@
         "                                ",
         "                                ",
         "                                ",
-        "                              L ",
-        "                                ",
-        "                                ",
-        "                                ",
-        "                      I         ",
-        "                                ",
-        "                                ",
-        "                                ",
-        "                                ",
-        "                                ",
-        "                                "
-      ],
-      [
+        "                            L   ",
         "                                ",
         "                                ",
         "                                ",
@@ -6327,13 +6349,7 @@
         "                                ",
         "                                ",
         "                                ",
-        "                                ",
-        "                                ",
-        "                                ",
-        "                                ",
-        "                                ",
-        "                                ",
-        "                                ",
+        "                              O ",
         "                                ",
         "                                "
       ],
@@ -6939,7 +6955,7 @@
         "    b                       b   ",
         "    p                       p   ",
         "    b p b b b b b b b b b p b   ",
-        "                            b   "
+        "                1           b   "
       ],
       [
         "q q q q q q q q q q q q q b b   ",
@@ -6960,40 +6976,40 @@
         "q b b b b b b b b b b b b b b   "
       ],
       [
-        "                            z   ",
-        "                            z   ",
-        "    b p b b b b b b b b b p b   ",
-        "    p                       p   ",
-        "    b                       b   ",
-        "    b                       b   ",
-        "    b                       b   ",
-        "    C                       b   ",
-        "    C                       b   ",
-        "    b           s           b   ",
-        "    b                       b   ",
-        "    b     F                 b   ",
-        "    b                       b   ",
-        "O   p                       p   ",
-        "    b p b b b b b b b b b p b   ",
-        "                                "
+        "q q q q q q q q q q q q q b b   ",
+        "q b b b b b b b b b b b b b b   ",
+        "q b b p b b b b b b b b b p b   ",
+        "q b p                       p   ",
+        "q b b                       b   ",
+        "q b b                       b   ",
+        "q b b                       b   ",
+        "q b b o                     b   ",
+        "q b b o                     b   ",
+        "q b b           s           b   ",
+        "q b b                       b   ",
+        "q b b     F                 b   ",
+        "q b b                       b   ",
+        "q b p                       p   ",
+        "q b b p b b b b b b b b b p b   ",
+        "q b b b b b b b b b b b b b b   "
       ],
       [
-        "                                ",
-        "                                ",
+        "                            z   ",
+        "                            z   ",
         "    b p b b b b b b b b b p b   ",
         "    p                       p   ",
         "    b                       b   ",
         "    b                       b   ",
         "    b                       b   ",
-        "                            b   ",
-        "                            b   ",
+        "    T                       b   ",
+        "    T                       b   ",
         "    b                       b   ",
         "    b                       b   ",
         "    b                       b   ",
         "    b                       b   ",
         "    p                       p   ",
         "    b p b b b b b b b b b p b   ",
-        "                                "
+        "                            z   "
       ],
       [
         "                                ",
@@ -7021,8 +7037,8 @@
         "    b                       b   ",
         "    b                       b   ",
         "    b                       b   ",
-        "    b                       b   ",
-        "    b                       b   ",
+        "                            b   ",
+        "                            b   ",
         "    b                       b   ",
         "    b                       b   ",
         "    b                       b   ",
@@ -7522,40 +7538,40 @@
     "zsize": 16,
     "slices": [
       [
+        "a t t t t t 2 2 t t t t t a a a ",
+        "a t t t t t 2 2 t t t t t a a a ",
+        "a t t t t t 2 2 t t t t t a a a ",
+        "a t t t t t 2 2 t t t t t a a a ",
+        "a t t t t t 2 2 t t t t t a a a ",
         "a t t t t t t t t t t t t a a a ",
         "a t t t t t t t t t t t t a a a ",
         "a t t t t t t t t t t t t a a a ",
         "a t t t t t t t t t t t t a a a ",
         "a t t t t t t t t t t t t a a a ",
         "a t t t t t t t t t t t t a a a ",
-        "a t t t t t t t t t t t t a a a ",
-        "a t t t t t t t t t t t t a a a ",
-        "a t t t t t t t t t t t t a a a ",
-        "a t t t t t t t t t t t t a a a ",
-        "a t t t t t t t t t t t t a a a ",
-        "a t t t t t t t t t t t t a a a ",
-        "a t t t t t t t t t t t t a a a ",
-        "a t t t t t t t t t t t t a a a ",
-        "a t t t t t t t t t t t t a a a ",
-        "a t t t t t t t t t t t t a a a "
+        "a t t t t t 2 2 t t t t t a a a ",
+        "a t t t t t 2 2 t t t t t a a a ",
+        "a t t t t t 2 2 t t t t t a a a ",
+        "a t t t t t 2 2 t t t t t a a a ",
+        "a t t t t t 2 2 t t t t t a a a "
       ],
       [
-        "h                         i   a ",
-        "h                         i   a ",
-        "h                         i   a ",
-        "h                         i   a ",
-        "h                         i   a ",
-        "h         d d d d         i   a ",
+        "h         3     3         i   a ",
+        "h         3     3         i   a ",
+        "h         3     3         i   a ",
+        "h         3     3         i   a ",
+        "h         3     3         i   a ",
+        "h         b d d b         i   a ",
         "h       i u p p u h       i   a ",
         "h       i p     p h       i   a ",
         "h       i p     p h       i   a ",
         "h       i u p p u h       i   a ",
-        "h         c c c c         i   a ",
-        "h                         i   a ",
-        "h                         i   a ",
-        "h                         i   a ",
-        "h                         i   a ",
-        "h                         i   a "
+        "h         b c c b         i   a ",
+        "h         3     3         i   a ",
+        "h         3     3         i   a ",
+        "h         3     3         i   a ",
+        "h         3     3         i   a ",
+        "h         3     3         i   a "
       ],
       [
         "                            i a ",
@@ -8865,25 +8881,7 @@
         "                                ",
         "                                ",
         "                                ",
-        "                                ",
-        "                                ",
-        "                                ",
-        "                                ",
-        "                                ",
-        "                                ",
-        "b b b b b b b b b b b b b b b b "
-      ],
-      [
-        "                                ",
-        "                                ",
-        "                                ",
-        "                                ",
-        "                                ",
-        "                                ",
-        "                                ",
-        "                                ",
-        "                                ",
-        "                                ",
+        "              P               F ",
         "                                ",
         "                                ",
         "                                ",
@@ -8928,15 +8926,51 @@
         "b b b b b b b b b b b b b b b b "
       ],
       [
+        "                                ",
+        "                                ",
+        "                                ",
+        "                                ",
+        "                                ",
+        "                                ",
+        "                                ",
+        "                                ",
+        "                                ",
+        "                                ",
+        "                                ",
+        "                                ",
+        "                                ",
+        "                                ",
+        "                                ",
+        "b b b b b b b b b b b b b b b b "
+      ],
+      [
+        "b q q q q q q q q q q q q q q q ",
+        "b q q q q q q q q q q q q q q q ",
+        "b q q q q q q q q q q q q q q q ",
+        "b q q q q q q q q q q q q q q q ",
+        "b q q q q q q q q q q q q q q q ",
+        "b q q q q q q q q q q q q q q q ",
+        "b q q q q q q q q q q q q q q q ",
+        "b q q q q q q q q q q q q q q q ",
+        "b q q q q q q q q q q q q q q q ",
+        "b q q q q q q q q q q q q q q q ",
+        "b q q q q q q q q q q q q q q q ",
+        "b q q q q q q q q q q q q q q q ",
+        "b q q q q q q q q q q q q q q q ",
+        "b q q q q q q q q q q q q q q q ",
+        "b b b b b b b b b b b b b b b b ",
+        "a a a a a a a a a a a a a a a a "
+      ],
+      [
         "b q q q q q b b b b b b q q q q ",
         "b q q q q q b b b b b b q q q q ",
         "b q q q q q b b b b b b q q q q ",
         "b q q q q q b b b b b b q q q q ",
         "b q q q q q b b b b b b q q q q ",
-        "b q q q q q b b b b b b b b b b ",
-        "b q q q q q b b b b b b b b b b ",
-        "b q q q q q b b b b b b b b b b ",
-        "b q q q q q b b b b b b b b b b ",
+        "b q q q q q q b b b b b b b b b ",
+        "b q q q q q q b b b b b b b b b ",
+        "b q q q q q q b b b b b b b b b ",
+        "b q q q q q q b b b b b b b b b ",
         "b q q q q q q q q q q q q q q q ",
         "b q q q q q q q q q q q q q q q ",
         "b q q q q q q q q q q q q q q q ",
@@ -8952,25 +8986,7 @@
         "                                ",
         "                                ",
         "                                ",
-        "                                ",
-        "                                ",
-        "                                ",
-        "                                ",
-        "                                ",
-        "                                ",
-        "                                ",
-        "                                ",
-        "                                ",
-        "a a a a a a a a a a a a a a a a "
-      ],
-      [
-        "                                ",
-        "                                ",
-        "                                ",
-        "                                ",
-        "                                ",
-        "                                ",
-        "                                ",
+        "          F                     ",
         "                                ",
         "                                ",
         "                                ",
@@ -9591,6 +9607,24 @@
         "q q q q q q q q q q q q q q b   ",
         "q q q q q q q q q q q q q q b   ",
         "q q q q q q q q q q q q q q b   ",
+        "q q q q q q q q q q q q q q b   ",
+        "q q q q q q q q q q q q q q b   ",
+        "q q q q q q q q q q q q q q b   ",
+        "q q q q q q q q q q q q q q b   ",
+        "q q q q q q q q q q q q q q b   ",
+        "q q q q q q q q q q q q q q b   ",
+        "q q q q q q q q q q q q q q b   ",
+        "q q q q q q q q q q q q q q b   ",
+        "q q q q q q q q q q q q q q b   ",
+        "b b b b b b b b b b b b b b b   ",
+        "a a a a a a a a a a a a a a a a "
+      ],
+      [
+        "q q q q q q q q q q q q q q b   ",
+        "q q q q q q q q q q q q q q b   ",
+        "q q q q q q q q q q q q q q b   ",
+        "q q q q q q q q q q q q q q b   ",
+        "q q q q q q q q q q q q q q b   ",
         "b b b b b b b b b q q q q q b   ",
         "b b b b b b b b b q q q q q b   ",
         "b b b b b b b b b q q q q q b   ",
@@ -9604,39 +9638,21 @@
         "a a a a a a a a a a a a a a a a "
       ],
       [
-        "                                ",
-        "        O                       ",
-        "                                ",
-        "                                ",
-        "                                ",
-        "                                ",
-        "                                ",
-        "                                ",
-        "                                ",
-        "                                ",
-        "                                ",
-        "                                ",
-        "                                ",
-        "                                ",
-        "                                ",
-        "a a a a a a a a a a a a a a a a "
-      ],
-      [
-        "                                ",
-        "                                ",
-        "                                ",
-        "                                ",
-        "                                ",
-        "                                ",
-        "                                ",
-        "                                ",
-        "                                ",
-        "                                ",
-        "                                ",
-        "                                ",
-        "                                ",
-        "                                ",
-        "                                ",
+        "                            z   ",
+        "                            z   ",
+        "        I                   z   ",
+        "                            z   ",
+        "                            z   ",
+        "                            z   ",
+        "                            z   ",
+        "                            z   ",
+        "                            z   ",
+        "                            z   ",
+        "                            z   ",
+        "                            z   ",
+        "                            z   ",
+        "                            z   ",
+        "                            z   ",
         "a a a a a a a a a a a a a a a a "
       ],
       [
@@ -10154,39 +10170,39 @@
     "zsize": 16,
     "slices": [
       [
+        "a t t t t t 2 2 t t t t t a a a ",
+        "a t t t t t 2 2 t t t t t a a a ",
+        "a t t t t t 2 2 t t t t t a a a ",
         "a t t t t t t t t t t t t a a a ",
         "a t t t t t t t t t t t t a a a ",
         "a t t t t t t t t t t t t a a a ",
         "a t t t t t t t t t t t t a a a ",
         "a t t t t t t t t t t t t a a a ",
         "a t t t t t t t t t t t t a a a ",
-        "a t t t t t t t t t t t t a a a ",
-        "a t t t t t t t t t t t t a a a ",
-        "a t t t t t t t t t t t t a a a ",
-        "a t t t t t t t t t t t t a a a ",
-        "a t t t t t t t t t t t t a a a ",
-        "a t t t t t t t t t t t t a a a ",
-        "a t t t t t t t t t t t t a a a ",
-        "a t t t t t t t t t t t t a a a ",
-        "a t t t t t t t t t t t t a a a ",
+        "a t t t t t 2 2 t t t t t a a a ",
+        "a t t t t t 2 2 t t t t t a a a ",
+        "a t t t t t 2 2 t t t t t a a a ",
+        "a t t t t t 2 2 t t t t t a a a ",
+        "a t t t t t 2 2 t t t t t a a a ",
+        "a t t t t t 2 2 t t t t t a a a ",
         "a a a a a a a a a a a a a a a a "
       ],
       [
-        "h                         i   a ",
-        "h                         i   a ",
-        "h                         i   a ",
-        "h         d d d d         i   a ",
+        "h         3     3         i   a ",
+        "h         3     3         i   a ",
+        "h         3     3         i   a ",
+        "h         b d d b         i   a ",
         "h       i u p p u h       i   a ",
         "h       i p     p h       i   a ",
         "h       i p     p h       i   a ",
         "h       i u p p u h       i   a ",
-        "h         c c c c         i   a ",
-        "h                         i   a ",
-        "h                         i   a ",
-        "h                         i   a ",
-        "h                         i   a ",
-        "h                         i   a ",
-        "h                         i   a ",
+        "h         b c c b         i   a ",
+        "h         3     3         i   a ",
+        "h         3     3         i   a ",
+        "h         3     3         i   a ",
+        "h         3     3         i   a ",
+        "h         3     3         i   a ",
+        "h         3     3         i   a ",
         "a a a a a a a a a a a a a a a a "
       ],
       [
@@ -10838,32 +10854,24 @@
     "name": "city3_1",
     "palette": [
       {
-        "char": "A ",
-        "block": "ariente:reinforced_marble"
-      },
-      {
-        "char": "  ",
-        "block": "minecraft:air"
-      },
-      {
         "char": "y ",
         "block": "ariente:flatlight@4"
       },
       {
-        "char": "w ",
-        "block": "ariente:flatlight@5"
+        "char": "X ",
+        "block": "ariente:blacktech"
       },
       {
         "char": "u ",
         "block": "ariente:blacktech@2"
       },
       {
-        "char": "s ",
-        "block": "ariente:level_marker"
+        "char": "T ",
+        "block": "ariente:door_marker@3"
       },
       {
-        "char": "R ",
-        "block": "ariente:blacktech@1"
+        "char": "3 ",
+        "block": "ariente:marble_slab@3"
       },
       {
         "char": "q ",
@@ -10874,28 +10882,12 @@
         "block": "ariente:soldier_dummy@3"
       },
       {
-        "char": "o ",
-        "block": "ariente:ramp@3"
-      },
-      {
-        "char": "N ",
-        "block": "ariente:alarm@4"
-      },
-      {
         "char": "m ",
         "block": "ariente:flatlight"
       },
       {
         "char": "L ",
         "block": "ariente:guard_dummy@2"
-      },
-      {
-        "char": "k ",
-        "block": "ariente:slope@7"
-      },
-      {
-        "char": "J ",
-        "block": "ariente:guard_dummy@1"
       },
       {
         "char": "i ",
@@ -10906,28 +10898,12 @@
         "block": "ariente:aicore"
       },
       {
-        "char": "g ",
-        "block": "ariente:slope@4"
-      },
-      {
-        "char": "F ",
-        "block": "ariente:soldier_dummy"
-      },
-      {
         "char": "e ",
         "block": "ariente:flux_beam"
       },
       {
         "char": "D ",
         "block": "ariente:master_soldier_dummy@1"
-      },
-      {
-        "char": "c ",
-        "block": "ariente:slope@1"
-      },
-      {
-        "char": "B ",
-        "block": "minecraft:stained_glass@15"
       },
       {
         "char": "a ",
@@ -10938,20 +10914,16 @@
         "block": "minecraft:iron_bars"
       },
       {
-        "char": "x ",
-        "block": "ariente:flatlight@3"
+        "char": "Y ",
+        "block": "ariente:blacktech@6"
       },
       {
         "char": "v ",
         "block": "ariente:flatlight@2"
       },
       {
-        "char": "t ",
-        "block": "ariente:pattern@1"
-      },
-      {
-        "char": "S ",
-        "block": "ariente:marble"
+        "char": "U ",
+        "block": "ariente:marble@1"
       },
       {
         "char": "r ",
@@ -10962,12 +10934,8 @@
         "block": "ariente:guard_dummy"
       },
       {
-        "char": "p ",
-        "block": "ariente:marble@3"
-      },
-      {
-        "char": "O ",
-        "block": "ariente:soldier_dummy@2"
+        "char": "0 ",
+        "block": "ariente:wireless_lock@4"
       },
       {
         "char": "n ",
@@ -10978,28 +10946,12 @@
         "block": "ariente:lock@4"
       },
       {
-        "char": "l ",
-        "block": "ariente:slope@6"
-      },
-      {
-        "char": "K ",
-        "block": "ariente:door_marker"
-      },
-      {
         "char": "j ",
         "block": "ariente:flux_beam@2"
       },
       {
         "char": "I ",
         "block": "ariente:soldier_dummy@1"
-      },
-      {
-        "char": "h ",
-        "block": "ariente:slope@3"
-      },
-      {
-        "char": "G ",
-        "block": "ariente:blacktech@3"
       },
       {
         "char": "f ",
@@ -11010,16 +10962,124 @@
         "block": "ariente:guard_dummy@3"
       },
       {
+        "char": "b ",
+        "block": "ariente:marble_smooth@3"
+      },
+      {
+        "char": "A ",
+        "block": "ariente:reinforced_marble"
+      },
+      {
+        "char": "  ",
+        "block": "minecraft:air"
+      },
+      {
+        "char": "Z ",
+        "block": "ariente:blacktech@5"
+      },
+      {
+        "char": "w ",
+        "block": "ariente:flatlight@5"
+      },
+      {
+        "char": "V ",
+        "block": "minecraft:stained_glass_pane@7"
+      },
+      {
+        "char": "s ",
+        "block": "ariente:level_marker"
+      },
+      {
+        "char": "R ",
+        "block": "ariente:blacktech@1"
+      },
+      {
+        "char": "1 ",
+        "block": "ariente:alarm@3"
+      },
+      {
+        "char": "o ",
+        "block": "ariente:ramp@3"
+      },
+      {
+        "char": "N ",
+        "block": "ariente:alarm@4"
+      },
+      {
+        "char": "k ",
+        "block": "ariente:slope@7"
+      },
+      {
+        "char": "J ",
+        "block": "ariente:guard_dummy@1"
+      },
+      {
+        "char": "g ",
+        "block": "ariente:slope@4"
+      },
+      {
+        "char": "F ",
+        "block": "ariente:soldier_dummy"
+      },
+      {
+        "char": "c ",
+        "block": "ariente:slope@1"
+      },
+      {
+        "char": "B ",
+        "block": "minecraft:stained_glass@15"
+      },
+      {
+        "char": "x ",
+        "block": "ariente:flatlight@3"
+      },
+      {
+        "char": "W ",
+        "block": "ariente:wireless_button@4"
+      },
+      {
+        "char": "t ",
+        "block": "ariente:pattern@1"
+      },
+      {
+        "char": "S ",
+        "block": "ariente:marble"
+      },
+      {
+        "char": "2 ",
+        "block": "ariente:fluxglow"
+      },
+      {
+        "char": "p ",
+        "block": "ariente:marble@3"
+      },
+      {
+        "char": "O ",
+        "block": "ariente:soldier_dummy@2"
+      },
+      {
+        "char": "l ",
+        "block": "ariente:slope@6"
+      },
+      {
+        "char": "K ",
+        "block": "ariente:door_marker"
+      },
+      {
+        "char": "h ",
+        "block": "ariente:slope@3"
+      },
+      {
+        "char": "G ",
+        "block": "ariente:blacktech@3"
+      },
+      {
         "char": "d ",
         "block": "ariente:slope"
       },
       {
         "char": "C ",
         "block": "ariente:door_marker@2"
-      },
-      {
-        "char": "b ",
-        "block": "ariente:marble_smooth@3"
       }
     ]
   }

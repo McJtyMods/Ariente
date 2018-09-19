@@ -86,8 +86,7 @@ public class LevitatorNetworkGenerator {
                 if (cx == 7 && cz == 9 && CityTools.isCityChunk(chunkX, chunkZ)) {
                     int startz = 12;
                     createElevatorShaft(chunkX, chunkZ, primer, generator, lowest, startz);
-                } else if (cx == 7 && cz == 7 && CityTools.isCityChunk(chunkX, chunkZ)) {
-                    // @todo bug! There are too many shafts for the 3x3 city!
+                } else if (cx == 7 && cz == 7 && CityTools.isCityChunk(chunkX, chunkZ) && !CityTools.isCityChunk(chunkX, chunkZ+2)) {
                     int startz = 3;
                     createElevatorShaft(chunkX, chunkZ, primer, generator, lowest, startz);
                 }
