@@ -51,7 +51,6 @@ public class FluxLevitatorItem extends GenericItem {
                 if (itemstack.hasDisplayName()) {
                     levitator.setCustomNameTag(itemstack.getDisplayName());
                 }
-
                 world.spawnEntity(levitator);
             }
 

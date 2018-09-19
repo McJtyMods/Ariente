@@ -21,6 +21,8 @@ public class ModSounds {
     public static final SoundEvent alarm = new SoundEvent(new ResourceLocation(Ariente.MODID, "alarm")).setRegistryName(new ResourceLocation(Ariente.MODID, "alarm"));
     public static final SoundEvent door = new SoundEvent(new ResourceLocation(Ariente.MODID, "door")).setRegistryName(new ResourceLocation(Ariente.MODID, "door"));
 
+    public static final SoundEvent levitator = new SoundEvent(new ResourceLocation(Ariente.MODID, "levitator")).setRegistryName(new ResourceLocation(Ariente.MODID, "levitator"));
+
     public static void init(IForgeRegistry<SoundEvent> registry) {
         registry.register(guiclick);
         registry.register(guiopen);
@@ -33,6 +35,7 @@ public class ModSounds {
         registry.register(buzzOk);
         registry.register(alarm);
         registry.register(door);
+        registry.register(levitator);
     }
 
 }

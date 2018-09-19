@@ -9,5 +9,6 @@
     "buzz_error" : {"category": "block", "sounds": ["ariente:buzz_error"]},
     "buzz_ok" : {"category": "block", "sounds": ["ariente:buzz_ok"]},
     "alarm" : {"category": "block", "sounds": ["ariente:alarm"]},
-    "door" : {"category": "block", "sounds": ["ariente:door"]}
+    "door" : {"category": "block", "sounds": ["ariente:door"]},
+    "levitator" : {"category": "neutral", "sounds": ["ariente:levitator"]}
 }

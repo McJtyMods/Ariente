@@ -4,11 +4,13 @@ import mcjty.ariente.blocks.ModBlocks;
 import mcjty.ariente.blocks.defense.ForceFieldRenderer;
 import mcjty.ariente.dimension.EditMode;
 import mcjty.ariente.dimension.EditModeClient;
+import mcjty.ariente.entities.FluxLevitatorEntity;
 import mcjty.ariente.items.ModItems;
 import mcjty.ariente.items.modules.ArmorUpgradeType;
 import mcjty.ariente.items.modules.ModuleSupport;
 import mcjty.ariente.network.ArienteMessages;
 import mcjty.ariente.network.PacketHitForcefield;
+import mcjty.ariente.sounds.FluxLevitatorSounds;
 import net.minecraft.block.state.IBlockState;
 import net.minecraft.client.entity.EntityPlayerSP;
 import net.minecraft.client.renderer.GlStateManager;
@@ -20,6 +22,7 @@ import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.RayTraceResult;
 import net.minecraftforge.client.event.DrawBlockHighlightEvent;
 import net.minecraftforge.client.event.RenderWorldLastEvent;
+import net.minecraftforge.event.entity.EntityMountEvent;
 import net.minecraftforge.event.entity.player.PlayerInteractEvent;
 import net.minecraftforge.fml.common.eventhandler.EventPriority;
 import net.minecraftforge.fml.common.eventhandler.SubscribeEvent;
@@ -62,6 +65,16 @@ public class ClientForgeEventHandlers {
         ForceFieldRenderer.renderForceFields(event.getPartialTicks());
         if (EditMode.editMode) {
             EditModeClient.renderPart(event.getPartialTicks());
+        }
+    }
+
+    @SubscribeEvent
+    public void onEntityMount(EntityMountEvent event) {
+        if (event.isMounting() && event.getWorldObj().isRemote && event.getEntityBeingMounted() instanceof FluxLevitatorEntity) {
+            FluxLevitatorEntity levitator = (FluxLevitatorEntity) event.getEntityBeingMounted();
+            if (event.getEntityMounting() instanceof EntityPlayer) {
+                FluxLevitatorSounds.playMovingSoundClientInside((EntityPlayer) event.getEntityMounting(), levitator);
+            }
         }
     }
 

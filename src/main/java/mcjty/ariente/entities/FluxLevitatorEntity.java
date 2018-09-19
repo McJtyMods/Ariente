@@ -6,6 +6,7 @@ import mcjty.ariente.gui.HoloGuiEntity;
 import mcjty.ariente.gui.HoloGuiHandler;
 import mcjty.ariente.gui.ModGuis;
 import mcjty.ariente.items.ModItems;
+import mcjty.ariente.sounds.FluxLevitatorSounds;
 import mcjty.lib.blocks.BaseBlock;
 import net.minecraft.block.BlockRailBase;
 import net.minecraft.block.state.IBlockState;
@@ -84,6 +85,7 @@ public class FluxLevitatorEntity extends Entity {
         length = 2.5f;
         this.setSize(1.30F, 0.9F);
     }
+
 
     public int getSpeed() {
         return dataManager.get(SPEED);
@@ -258,6 +260,10 @@ public class FluxLevitatorEntity extends Entity {
         this.dataManager.register(DAMAGE, Float.valueOf(0.0F));
         this.dataManager.register(HOLO_FRONT, Optional.absent());
         this.dataManager.register(HOLO_BACK, Optional.absent());
+
+        if (world.isRemote) {
+            FluxLevitatorSounds.playMovingSoundClient(this);
+        }
     }
 
     @Override
