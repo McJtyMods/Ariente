@@ -153,9 +153,9 @@ public class FluxLevitatorEntity extends Entity {
 
     public HoloGuiEntity getHoloGuiFront() {
         if (holoGuiFront == null) {
-            if (getHoloFront() != null) {
+            if (getHoloFrontUUID() != null) {
                 for (HoloGuiEntity entity : world.getEntitiesWithinAABB(HoloGuiEntity.class, getEntityBoundingBox().grow(10))) {
-                    if (getHoloFront().equals(entity.getUniqueID())) {
+                    if (getHoloFrontUUID().equals(entity.getUniqueID())) {
                         holoGuiFront = entity;
                         holoGuiFront.startRiding(this);
                         break;
@@ -167,7 +167,7 @@ public class FluxLevitatorEntity extends Entity {
                 holoGui.setTimeout(2000000000); // Never timeout
                 holoGui.startRiding(this);
                 this.holoGuiFront = holoGui;
-                setHoloFront(holoGui.getUniqueID());
+                setHoloFrontUUID(holoGui.getUniqueID());
             }
         }
         return holoGuiFront;
@@ -175,9 +175,9 @@ public class FluxLevitatorEntity extends Entity {
 
     public HoloGuiEntity getHoloGuiBack() {
         if (holoGuiBack == null) {
-            if (getHoloBack() != null) {
+            if (getHoloBackUUID() != null) {
                 for (HoloGuiEntity entity : world.getEntitiesWithinAABB(HoloGuiEntity.class, getEntityBoundingBox().grow(10))) {
-                    if (getHoloBack().equals(entity.getUniqueID())) {
+                    if (getHoloBackUUID().equals(entity.getUniqueID())) {
                         holoGuiBack = entity;
                         holoGuiBack.startRiding(this);
                         break;
@@ -189,7 +189,7 @@ public class FluxLevitatorEntity extends Entity {
                 holoGui.setTimeout(2000000000); // Never timeout
                 holoGui.startRiding(this);
                 this.holoGuiBack = holoGui;
-                setHoloBack(holoGui.getUniqueID());
+                setHoloBackUUID(holoGui.getUniqueID());
             }
         }
         return holoGuiBack;
@@ -224,21 +224,21 @@ public class FluxLevitatorEntity extends Entity {
         updateHoloGui();        // @todo check if needed
     }
 
-    public void setHoloFront(UUID holoFront) {
+    public void setHoloFrontUUID(UUID holoFront) {
         this.dataManager.set(HOLO_FRONT, Optional.fromNullable(holoFront));
     }
 
-    public UUID getHoloFront() {
-        return (UUID) ((com.google.common.base.Optional) this.dataManager.get(HOLO_FRONT)).orNull();
+    public UUID getHoloFrontUUID() {
+        return (UUID) ((Optional) this.dataManager.get(HOLO_FRONT)).orNull();
     }
 
 
-    public void setHoloBack(UUID holoBack) {
+    public void setHoloBackUUID(UUID holoBack) {
         this.dataManager.set(HOLO_BACK, Optional.fromNullable(holoBack));
     }
 
-    public UUID getHoloBack() {
-        return (UUID) ((com.google.common.base.Optional) this.dataManager.get(HOLO_BACK)).orNull();
+    public UUID getHoloBackUUID() {
+        return (UUID) ((Optional) this.dataManager.get(HOLO_BACK)).orNull();
     }
 
 
@@ -952,22 +952,22 @@ public class FluxLevitatorEntity extends Entity {
 
     @Override
     protected void readEntityFromNBT(NBTTagCompound compound) {
-        if (compound.hasKey("holoFront")) {
-            setHoloFront(compound.getUniqueId("holoFront"));
+        if (compound.hasUniqueId("holoFront")) {
+            setHoloFrontUUID(compound.getUniqueId("holoFront"));
         }
-        if (compound.hasKey("holoBack")) {
-            setHoloBack(compound.getUniqueId("holoBack"));
+        if (compound.hasUniqueId("holoBack")) {
+            setHoloBackUUID(compound.getUniqueId("holoBack"));
         }
         changeSpeed(compound.getInteger("speed"));
     }
 
     @Override
     protected void writeEntityToNBT(NBTTagCompound compound) {
-        if (getHoloFront() != null) {
-            compound.setUniqueId("holoFront", getHoloFront());
+        if (getHoloFrontUUID() != null) {
+            compound.setUniqueId("holoFront", getHoloFrontUUID());
         }
-        if (getHoloBack() != null) {
-            compound.setUniqueId("holoBack", getHoloBack());
+        if (getHoloBackUUID() != null) {
+            compound.setUniqueId("holoBack", getHoloBackUUID());
         }
         compound.setInteger("speed", getSpeed());
     }
