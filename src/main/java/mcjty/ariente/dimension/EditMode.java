@@ -257,10 +257,25 @@ public class EditMode {
             for (int dz = cz - dimZ / 2 - 1 - offset; dz <= cz + dimZ / 2 + 1 - offset; dz++) {
                 int y = heightGetter.apply(dx, dz);
                 List<BuildingPart> parts = partsGetter.apply(dx, dz);
-                for (BuildingPart part : parts) {
-                    restorePart(part, player.world, new BlockPos(dx * 16 + 8, y /*unused*/, dz * 16 + 8),
-                            y, palette);
-                    y += part.getSliceCount();
+                if (parts.isEmpty()) {
+                    // Void this chunk
+                    voidChunk(player.world, dx, dz);
+                } else {
+                    for (BuildingPart part : parts) {
+                        restorePart(part, player.world, new BlockPos(dx * 16 + 8, y /*unused*/, dz * 16 + 8),
+                                y, palette);
+                        y += part.getSliceCount();
+                    }
+                }
+            }
+        }
+    }
+
+    private static void voidChunk(World world, int chunkX, int chunkZ) {
+        for (int y = 1 ; y < 100 ; y++) {
+            for (int x = 0 ; x < 16 ; x++) {
+                for (int z = 0 ; z < 16 ; z++) {
+                    world.setBlockToAir(new BlockPos(chunkX * 16 + x, y, chunkZ * 16 + z));
                 }
             }
         }
