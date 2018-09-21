@@ -13,6 +13,7 @@ import mcjty.ariente.blocks.utility.wireless.SignalChannelTileEntity;
 import mcjty.ariente.cities.*;
 import mcjty.ariente.config.AIConfiguration;
 import mcjty.ariente.entities.*;
+import mcjty.ariente.gui.HoloGuiEntity;
 import mcjty.ariente.items.ModItems;
 import mcjty.ariente.items.modules.ArmorUpgradeType;
 import mcjty.ariente.items.modules.ModuleSupport;
@@ -22,7 +23,9 @@ import mcjty.ariente.varia.ChunkCoord;
 import mcjty.lib.blocks.BaseBlock;
 import mcjty.lib.varia.RedstoneMode;
 import net.minecraft.block.Block;
+import net.minecraft.block.BlockRailBase;
 import net.minecraft.block.state.IBlockState;
+import net.minecraft.entity.Entity;
 import net.minecraft.entity.EntityLivingBase;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.entity.player.EntityPlayerMP;
@@ -68,6 +71,9 @@ public class CityAI {
 
     private int[] drones = new int[40];
     private int droneTicker = 0;
+
+    private int levitator = -1;
+    private int levitatorTicker = 20;
 
     private String keyId;
     private String storageKeyId;
@@ -154,6 +160,77 @@ public class CityAI {
         handleAlert(world);
         handleDrones(world);
         handleSoldiers(world);
+        handleFluxLevitators(world);
+    }
+
+    private void handleFluxLevitators(World world) {
+        // First check if there is a levitator and if it is near its destination
+
+//@todc
+
+        levitatorTicker--;
+        if (levitatorTicker <= 0) {
+            levitatorTicker = 20;
+            if (levitator != -1) {
+                Entity entity = world.getEntityByID(levitator);
+                if (entity != null) {
+                    for (Entity passenger : entity.getPassengers()) {
+                        if (!(passenger instanceof HoloGuiEntity) && !(passenger instanceof EntityPlayer)) {
+                            passenger.setDead();
+                        }
+                    }
+
+                    entity.setDead();
+                }
+                levitator = -1;
+            } else {
+                BlockPos pos = findValidBeam(world);
+                if (pos != null) {
+                    System.out.println("CityAI.handleFluxLevitators");
+                    IBlockState state = world.getBlockState(pos);
+                    BlockRailBase.EnumRailDirection dir = FluxLevitatorEntity.getBeamDirection(state);
+                    double d0 = 0.0D;
+
+                    if (dir.isAscending()) {
+                        d0 = 0.5D;
+                    }
+
+                    FluxLevitatorEntity entity = new FluxLevitatorEntity(world, pos.getX() + 0.5D, pos.getY() + 0.0625D + d0, pos.getZ() + 0.5D);
+                    entity.changeSpeed(1);
+                    world.spawnEntity(entity);
+                    levitator = entity.getEntityId();
+
+                    SoldierEntity soldier = createSoldier(world, pos, EnumFacing.SOUTH, SoldierBehaviourType.SOLDIER_FIGHTER, false);
+                    world.spawnEntity(soldier);
+                    soldier.startRiding(entity);
+                }
+            }
+        }
+    }
+
+    @Nullable
+    private BlockPos findValidBeam(World world) {
+        BlockPos pos = new BlockPos((center.getChunkX() + 2) * 16 + 8, 32, (center.getChunkZ() * 16) + 8);
+        IBlockState state = world.getBlockState(pos);
+        if (state.getBlock() == ModBlocks.fluxBeamBlock) {
+            return pos;
+        }
+        pos = new BlockPos((center.getChunkX() - 2) * 16 + 8, 32, (center.getChunkZ() * 16) + 8);
+        state = world.getBlockState(pos);
+        if (state.getBlock() == ModBlocks.fluxBeamBlock) {
+            return pos;
+        }
+        pos = new BlockPos((center.getChunkX()) * 16 + 8, 32, ((center.getChunkZ() + 2) * 16) + 8);
+        state = world.getBlockState(pos);
+        if (state.getBlock() == ModBlocks.fluxBeamBlock) {
+            return pos;
+        }
+        pos = new BlockPos((center.getChunkX()) * 16 + 8, 32, ((center.getChunkZ() - 2) * 16) + 8);
+        state = world.getBlockState(pos);
+        if (state.getBlock() == ModBlocks.fluxBeamBlock) {
+            return pos;
+        }
+        return null;
     }
 
     private void handleAlert(World world) {
@@ -863,6 +940,8 @@ public class CityAI {
         readMapFromNBT(nbt.getTagList("guards", Constants.NBT.TAG_COMPOUND), guardPositions);
         readMapFromNBT(nbt.getTagList("soldierPositions", Constants.NBT.TAG_COMPOUND), soldierPositions);
         readMapFromNBT(nbt.getTagList("masterSoldierPositions", Constants.NBT.TAG_COMPOUND), masterSoldierPositions);
+        levitator = nbt.getInteger("levitator");
+        levitatorTicker = nbt.getInteger("levitatorTicker");
     }
 
     public void writeToNBT(NBTTagCompound compound) {
@@ -898,6 +977,8 @@ public class CityAI {
         compound.setTag("guards", writeMapToNBT(guardPositions));
         compound.setTag("soldierPositions", writeMapToNBT(soldierPositions));
         compound.setTag("masterSoldierPositions", writeMapToNBT(masterSoldierPositions));
+        compound.setInteger("levitator", levitator);
+        compound.setInteger("levitatorTicker", levitatorTicker);
     }
 
     private NBTTagList writeSetToNBT(Set<BlockPos> set) {

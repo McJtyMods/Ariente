@@ -423,10 +423,17 @@ public class FluxLevitatorEntity extends Entity {
 
         if (dx * dx + dz * dz > 0.001D) {
             this.rotationYaw = (float) (MathHelper.atan2(dz, dx) * 180.0D / Math.PI);
+//            System.out.println("1: rotationYaw = " + rotationYaw + ", isInReverse = " + isInReverse);
 
             if (this.isInReverse) {
                 this.rotationYaw += 180.0F;
             }
+
+//            if (getSpeed() > 0) {
+//                rotationYaw = 90;
+//            } else {
+//                rotationYaw = -90;
+//            }
         }
 
         double yaw = MathHelper.wrapDegrees(this.rotationYaw - this.prevRotationYaw);
@@ -434,6 +441,7 @@ public class FluxLevitatorEntity extends Entity {
         if (yaw < -170.0D || yaw >= 170.0D) {
             this.rotationYaw += 180.0F;
             this.isInReverse = !this.isInReverse;
+//            System.out.println("2: rotationYaw = " + rotationYaw + ", isInReverse = " + isInReverse + ", yaw = " + yaw);
         }
 
         this.setRotation(this.rotationYaw, this.rotationPitch);
