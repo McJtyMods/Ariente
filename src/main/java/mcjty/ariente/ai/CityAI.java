@@ -74,6 +74,7 @@ public class CityAI {
 
     private int levitator = -1;
     private int levitatorTicker = 20;
+    private BlockPos levitatorPrevPos = null;
 
     private String keyId;
     private String storageKeyId;
@@ -176,14 +177,19 @@ public class CityAI {
                     double distanceSq = levitatorEntity.getPosition().distanceSq(desiredDestination);
                     if (distanceSq < 5*5) {
                         // Arrived
-                        for (Entity passenger : levitatorEntity.getPassengers()) {
-                            if (!(passenger instanceof HoloGuiEntity) && !(passenger instanceof EntityPlayer)) {
-                                passenger.dismountRidingEntity();
+                        dismountAndKill(levitatorEntity);
+                    } else {
+                        // Check if we actually moved since last time. If not we let the soldier get out and remove the flux levitator
+                        if (levitatorPrevPos != null) {
+                            distanceSq = levitatorEntity.getPosition().distanceSq(levitatorPrevPos);
+                            if (distanceSq <= 0.1) {
+                                dismountAndKill(levitatorEntity);
                             }
                         }
-                        levitatorEntity.setDead();
-                        levitator = -1;
                     }
+                    levitatorPrevPos = levitatorEntity.getPosition();
+                } else {
+                    dismountAndKill(levitatorEntity);
                 }
             }
             return;
@@ -224,11 +230,22 @@ public class CityAI {
                     levitator = entity.getEntityId();
 
                     SoldierEntity soldier = createSoldier(world, pos, path.direction, SoldierBehaviourType.SOLDIER_FIGHTER, false);
+                    soldier.setHeldItem(EnumHand.MAIN_HAND, new ItemStack(ModItems.energySabre));
                     world.spawnEntity(soldier);
                     soldier.startRiding(entity);
                 }
             }
         }
+    }
+
+    private void dismountAndKill(FluxLevitatorEntity levitatorEntity) {
+        for (Entity passenger : levitatorEntity.getPassengers()) {
+            if (!(passenger instanceof HoloGuiEntity) && !(passenger instanceof EntityPlayer)) {
+                passenger.dismountRidingEntity();
+            }
+        }
+        levitatorEntity.setDead();
+        levitator = -1;
     }
 
     private BlockPos isValidBeam(World world, ChunkCoord c, EnumFacing direction) {
@@ -261,12 +278,13 @@ public class CityAI {
     private LevitatorPath findValidBeam(World world) {
         List<LevitatorPath> positions = new ArrayList<>();
         for (EnumFacing facing : EnumFacing.HORIZONTALS) {
-            BlockPos pos = isValidBeam(world, center, facing);
-            if (pos != null) {
-                BlockPos end = isValidBeam(world, new ChunkCoord(center.getChunkX() + facing.getDirectionVec().getX() * 16,
-                        center.getChunkZ() + facing.getDirectionVec().getZ() * 16), facing.getOpposite());
-                if (end != null) {
-                    positions.add(new LevitatorPath(facing, pos, end));
+            BlockPos end = isValidBeam(world, center, facing);
+            if (end != null) {
+                // @todo Check if the city in that direction is actually still alive
+                BlockPos start = isValidBeam(world, new ChunkCoord(center.getChunkX() + facing.getDirectionVec().getX() * 5,
+                        center.getChunkZ() + facing.getDirectionVec().getZ() * 5), facing.getOpposite());
+                if (start != null) {
+                    positions.add(new LevitatorPath(facing, start, end));
                 }
             }
         }
