@@ -165,8 +165,29 @@ public class CityAI {
 
     private void handleFluxLevitators(World world) {
         // First check if there is a levitator and if it is near its destination
-
-//@todc
+        if (levitator != -1) {
+            Entity entity = world.getEntityByID(levitator);
+            if (!(entity instanceof FluxLevitatorEntity)) {
+                levitator = -1;
+            } else {
+                FluxLevitatorEntity levitatorEntity = (FluxLevitatorEntity) entity;
+                BlockPos desiredDestination = levitatorEntity.getDesiredDestination();
+                if (desiredDestination != null) {
+                    double distanceSq = levitatorEntity.getPosition().distanceSq(desiredDestination);
+                    if (distanceSq < 5*5) {
+                        // Arrived
+                        for (Entity passenger : levitatorEntity.getPassengers()) {
+                            if (!(passenger instanceof HoloGuiEntity) && !(passenger instanceof EntityPlayer)) {
+                                passenger.dismountRidingEntity();
+                            }
+                        }
+                        levitatorEntity.setDead();
+                        levitator = -1;
+                    }
+                }
+            }
+            return;
+        }
 
         levitatorTicker--;
         if (levitatorTicker <= 0) {
@@ -184,9 +205,10 @@ public class CityAI {
                 }
                 levitator = -1;
             } else {
-                BlockPos pos = findValidBeam(world);
-                if (pos != null) {
+                LevitatorPath path = findValidBeam(world);
+                if (path != null) {
                     System.out.println("CityAI.handleFluxLevitators");
+                    BlockPos pos = path.start;
                     IBlockState state = world.getBlockState(pos);
                     BlockRailBase.EnumRailDirection dir = FluxLevitatorEntity.getBeamDirection(state);
                     double d0 = 0.0D;
@@ -196,11 +218,12 @@ public class CityAI {
                     }
 
                     FluxLevitatorEntity entity = new FluxLevitatorEntity(world, pos.getX() + 0.5D, pos.getY() + 0.0625D + d0, pos.getZ() + 0.5D);
-                    entity.changeSpeed(1);
+                    entity.changeSpeed(50);
+                    entity.setDesiredDestination(path.end);
                     world.spawnEntity(entity);
                     levitator = entity.getEntityId();
 
-                    SoldierEntity soldier = createSoldier(world, pos, EnumFacing.SOUTH, SoldierBehaviourType.SOLDIER_FIGHTER, false);
+                    SoldierEntity soldier = createSoldier(world, pos, path.direction, SoldierBehaviourType.SOLDIER_FIGHTER, false);
                     world.spawnEntity(soldier);
                     soldier.startRiding(entity);
                 }
@@ -208,29 +231,52 @@ public class CityAI {
         }
     }
 
-    @Nullable
-    private BlockPos findValidBeam(World world) {
-        BlockPos pos = new BlockPos((center.getChunkX() + 2) * 16 + 8, 32, (center.getChunkZ() * 16) + 8);
+    private BlockPos isValidBeam(World world, ChunkCoord c, EnumFacing direction) {
+        BlockPos pos = new BlockPos((c.getChunkX() + direction.getDirectionVec().getX()) * 16 + 8, 32, ((c.getChunkZ() + direction.getDirectionVec().getZ()) * 16) + 8);
         IBlockState state = world.getBlockState(pos);
         if (state.getBlock() == ModBlocks.fluxBeamBlock) {
             return pos;
         }
-        pos = new BlockPos((center.getChunkX() - 2) * 16 + 8, 32, (center.getChunkZ() * 16) + 8);
-        state = world.getBlockState(pos);
-        if (state.getBlock() == ModBlocks.fluxBeamBlock) {
-            return pos;
-        }
-        pos = new BlockPos((center.getChunkX()) * 16 + 8, 32, ((center.getChunkZ() + 2) * 16) + 8);
-        state = world.getBlockState(pos);
-        if (state.getBlock() == ModBlocks.fluxBeamBlock) {
-            return pos;
-        }
-        pos = new BlockPos((center.getChunkX()) * 16 + 8, 32, ((center.getChunkZ() - 2) * 16) + 8);
+        pos = new BlockPos((c.getChunkX() + direction.getDirectionVec().getX() * 2) * 16 + 8, 32, ((c.getChunkZ() + direction.getDirectionVec().getZ() * 2) * 16) + 8);
         state = world.getBlockState(pos);
         if (state.getBlock() == ModBlocks.fluxBeamBlock) {
             return pos;
         }
         return null;
+    }
+
+    private static class LevitatorPath {
+        private final EnumFacing direction;
+        private final BlockPos start;
+        private final BlockPos end;
+
+        public LevitatorPath(EnumFacing direction, BlockPos start, BlockPos end) {
+            this.direction = direction;
+            this.start = start;
+            this.end = end;
+        }
+    }
+
+    @Nullable
+    private LevitatorPath findValidBeam(World world) {
+        List<LevitatorPath> positions = new ArrayList<>();
+        for (EnumFacing facing : EnumFacing.HORIZONTALS) {
+            BlockPos pos = isValidBeam(world, center, facing);
+            if (pos != null) {
+                BlockPos end = isValidBeam(world, new ChunkCoord(center.getChunkX() + facing.getDirectionVec().getX() * 16,
+                        center.getChunkZ() + facing.getDirectionVec().getZ() * 16), facing.getOpposite());
+                if (end != null) {
+                    positions.add(new LevitatorPath(facing, pos, end));
+                }
+            }
+        }
+        if (positions.isEmpty()) {
+            return null;
+        }
+        if (positions.size() == 1) {
+            return positions.get(0);
+        }
+        return positions.get(random.nextInt(positions.size()));
     }
 
     private void handleAlert(World world) {

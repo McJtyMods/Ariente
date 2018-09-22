@@ -77,6 +77,8 @@ public class FluxLevitatorEntity extends Entity {
     private HoloGuiEntity holoGuiFront;
     private HoloGuiEntity holoGuiBack;
 
+    private BlockPos desiredDestination = null;
+
     private float length;
 
     public FluxLevitatorEntity(World worldIn) {
@@ -952,6 +954,14 @@ public class FluxLevitatorEntity extends Entity {
         }
     }
 
+    public BlockPos getDesiredDestination() {
+        return desiredDestination;
+    }
+
+    public void setDesiredDestination(BlockPos desiredDestination) {
+        this.desiredDestination = desiredDestination;
+    }
+
     @Override
     @SideOnly(Side.CLIENT)
     public AxisAlignedBB getRenderBoundingBox() {
@@ -967,6 +977,11 @@ public class FluxLevitatorEntity extends Entity {
             setHoloBackUUID(compound.getUniqueId("holoBack"));
         }
         changeSpeed(compound.getInteger("speed"));
+        if (compound.hasKey("desiredDestX")) {
+            desiredDestination = new BlockPos(compound.getInteger("desiredDestX"),
+                    compound.getInteger("desiredDestY"),
+                    compound.getInteger("desiredDestZ"));
+        }
     }
 
     @Override
@@ -978,6 +993,11 @@ public class FluxLevitatorEntity extends Entity {
             compound.setUniqueId("holoBack", getHoloBackUUID());
         }
         compound.setInteger("speed", getSpeed());
+        if (desiredDestination != null) {
+            compound.setInteger("desiredDestX", desiredDestination.getX());
+            compound.setInteger("desiredDestY", desiredDestination.getY());
+            compound.setInteger("desiredDestZ", desiredDestination.getZ());
+        }
     }
 
     @Override
