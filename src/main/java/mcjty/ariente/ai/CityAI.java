@@ -211,29 +211,29 @@ public class CityAI {
                 }
                 levitator = -1;
             } else {
-                LevitatorPath path = findValidBeam(world);
-                if (path != null) {
-                    System.out.println("CityAI.handleFluxLevitators");
-                    BlockPos pos = path.start;
-                    IBlockState state = world.getBlockState(pos);
-                    BlockRailBase.EnumRailDirection dir = FluxLevitatorEntity.getBeamDirection(state);
-                    double d0 = 0.0D;
-
-                    if (dir.isAscending()) {
-                        d0 = 0.5D;
-                    }
-
-                    FluxLevitatorEntity entity = new FluxLevitatorEntity(world, pos.getX() + 0.5D, pos.getY() + 0.0625D + d0, pos.getZ() + 0.5D);
-                    entity.changeSpeed(50);
-                    entity.setDesiredDestination(path.end);
-                    world.spawnEntity(entity);
-                    levitator = entity.getEntityId();
-
-                    SoldierEntity soldier = createSoldier(world, pos, path.direction, SoldierBehaviourType.SOLDIER_FIGHTER, false);
-                    soldier.setHeldItem(EnumHand.MAIN_HAND, new ItemStack(ModItems.energySabre));
-                    world.spawnEntity(soldier);
-                    soldier.startRiding(entity);
-                }
+//                LevitatorPath path = findValidBeam(world);
+//                if (path != null) {
+//                    System.out.println("CityAI.handleFluxLevitators");
+//                    BlockPos pos = path.start;
+//                    IBlockState state = world.getBlockState(pos);
+//                    BlockRailBase.EnumRailDirection dir = FluxLevitatorEntity.getBeamDirection(state);
+//                    double d0 = 0.0D;
+//
+//                    if (dir.isAscending()) {
+//                        d0 = 0.5D;
+//                    }
+//
+//                    FluxLevitatorEntity entity = new FluxLevitatorEntity(world, pos.getX() + 0.5D, pos.getY() + 0.0625D + d0, pos.getZ() + 0.5D);
+//                    entity.changeSpeed(50);
+//                    entity.setDesiredDestination(path.end);
+//                    world.spawnEntity(entity);
+//                    levitator = entity.getEntityId();
+//
+//                    SoldierEntity soldier = createSoldier(world, pos, path.direction, SoldierBehaviourType.SOLDIER_FIGHTER, false);
+//                    soldier.setHeldItem(EnumHand.MAIN_HAND, new ItemStack(ModItems.energySabre));
+//                    world.spawnEntity(soldier);
+//                    soldier.startRiding(entity);
+//                }
             }
         }
     }
@@ -248,16 +248,13 @@ public class CityAI {
         levitator = -1;
     }
 
-    private BlockPos isValidBeam(World world, ChunkCoord c, EnumFacing direction) {
-        BlockPos pos = new BlockPos((c.getChunkX() + direction.getDirectionVec().getX()) * 16 + 8, 32, ((c.getChunkZ() + direction.getDirectionVec().getZ()) * 16) + 8);
-        IBlockState state = world.getBlockState(pos);
-        if (state.getBlock() == ModBlocks.fluxBeamBlock) {
-            return pos;
-        }
-        pos = new BlockPos((c.getChunkX() + direction.getDirectionVec().getX() * 2) * 16 + 8, 32, ((c.getChunkZ() + direction.getDirectionVec().getZ() * 2) * 16) + 8);
-        state = world.getBlockState(pos);
-        if (state.getBlock() == ModBlocks.fluxBeamBlock) {
-            return pos;
+    private BlockPos isValidBeam(World world, ChunkCoord c, EnumFacing direction, int minOffset, int maxOffset) {
+        for (int i = minOffset ; i <= maxOffset ; i++) {
+            BlockPos pos = new BlockPos(c.getChunkX() * 16 + 8 + direction.getDirectionVec().getX() * i, 32, (c.getChunkZ() * 16) + 8 + direction.getDirectionVec().getZ() * i);
+            IBlockState state = world.getBlockState(pos);
+            if (state.getBlock() == ModBlocks.fluxBeamBlock) {
+                return pos;
+            }
         }
         return null;
     }
@@ -276,15 +273,19 @@ public class CityAI {
 
     @Nullable
     private LevitatorPath findValidBeam(World world) {
+        CityAISystem system = CityAISystem.getCityAISystem(world);
         List<LevitatorPath> positions = new ArrayList<>();
         for (EnumFacing facing : EnumFacing.HORIZONTALS) {
-            BlockPos end = isValidBeam(world, center, facing);
-            if (end != null) {
-                // @todo Check if the city in that direction is actually still alive
-                BlockPos start = isValidBeam(world, new ChunkCoord(center.getChunkX() + facing.getDirectionVec().getX() * 5,
-                        center.getChunkZ() + facing.getDirectionVec().getZ() * 5), facing.getOpposite());
-                if (start != null) {
-                    positions.add(new LevitatorPath(facing, start, end));
+            ChunkCoord otherCoord = new ChunkCoord(center.getChunkX() + facing.getDirectionVec().getX() * 16,
+                    center.getChunkZ() + facing.getDirectionVec().getZ() * 16);
+            CityAI otherCity = system.getCityAI(otherCoord);
+            if (otherCity != null && !otherCity.isDead(world)) {
+                BlockPos end = isValidBeam(world, center, facing, 1, 40);
+                if (end != null) {
+                    BlockPos start = isValidBeam(world, center, facing, 100, 120);
+                    if (start != null) {
+                        positions.add(new LevitatorPath(facing, start, end));
+                    }
                 }
             }
         }

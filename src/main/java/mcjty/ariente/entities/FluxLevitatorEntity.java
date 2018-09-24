@@ -367,8 +367,36 @@ public class FluxLevitatorEntity extends Entity {
         return this.isInReverse ? this.getHorizontalFacing().getOpposite().rotateY() : this.getHorizontalFacing().rotateY();
     }
 
+    private String previousOutputClient = "";
+    private String previousOutputServer = "";
+
+    private void dumpInfo(String id) {
+        StringBuilder builder = new StringBuilder();
+        builder.append("getRollingAmplitude() = " + this.getRollingAmplitude()).append("\n");
+        builder.append("motionX = " + motionX + ", motionZ = " + motionZ).append("\n");
+        builder.append("getSpeed() = " + getSpeed() + ", isInReverse = " + isInReverse).append("\n");
+        builder.append("rotationYaw = " + rotationYaw + ", rotationPitch = " + rotationPitch).append("\n");
+        builder.append("levitatorYaw = " + levitatorPitch + ", rotationPitch = " + levitatorPitch).append("\n");
+        String output = builder.toString();
+
+        if (world.isRemote) {
+            if (!output.equals(previousOutputClient)) {
+                previousOutputClient = output;
+                System.out.println("############# " + (world.isRemote ? "CLIENT " : "SERVER ") + id + " ##############");
+                System.out.print(output);
+            }
+        } else {
+            if (!output.equals(previousOutputServer)) {
+                previousOutputServer = output;
+                System.out.println("############# " + (world.isRemote ? "CLIENT " : "SERVER ") + id + " ##############");
+                System.out.print(output);
+            }
+        }
+    }
+
     @Override
     public void onUpdate() {
+        dumpInfo("Before");
         if (this.getRollingAmplitude() > 0) {
             this.setRollingAmplitude(this.getRollingAmplitude() - 1);
         }
@@ -390,6 +418,8 @@ public class FluxLevitatorEntity extends Entity {
         }
 
         updateHoloGui();
+
+        dumpInfo("After");
     }
 
     private void onUpdateServer() {
