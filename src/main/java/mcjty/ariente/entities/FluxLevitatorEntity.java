@@ -368,7 +368,9 @@ public class FluxLevitatorEntity extends Entity {
     }
 
     private String previousOutputClient = "";
+    private int countClient = -1;
     private String previousOutputServer = "";
+    private int countServer = -1;
 
     private void dumpInfo(String id) {
         StringBuilder builder = new StringBuilder();
@@ -381,21 +383,68 @@ public class FluxLevitatorEntity extends Entity {
 
         if (world.isRemote) {
             if (!output.equals(previousOutputClient)) {
+                if (countClient != -1) {
+                    System.out.println("countClient = " + countClient);
+                }
                 previousOutputClient = output;
                 System.out.println("############# " + (world.isRemote ? "CLIENT " : "SERVER ") + id + " ##############");
                 System.out.print(output);
+                countClient = 1;
+            } else {
+                countClient++;
             }
         } else {
             if (!output.equals(previousOutputServer)) {
+                if (countServer != -1) {
+                    System.out.println("countServer = " + countServer);
+                }
                 previousOutputServer = output;
                 System.out.println("############# " + (world.isRemote ? "CLIENT " : "SERVER ") + id + " ##############");
                 System.out.print(output);
+                countServer = 1;
+            } else {
+                countServer++;
             }
         }
     }
 
     @Override
     public void onUpdate() {
+        if (this.posY < -64.0D) {
+            this.outOfWorld();
+        }
+
+        if (this.world.isRemote) {
+            this.setPosition(this.posX, this.posY, this.posZ);
+            this.setRotation(this.rotationYaw, this.rotationPitch);
+        } else {
+            if (!this.hasNoGravity()) {
+                this.motionY -= 0.04D;
+            }
+
+            int floorX = MathHelper.floor(this.posX);
+            int floorY = MathHelper.floor(this.posY);
+            int floorZ = MathHelper.floor(this.posZ);
+
+            if (world.getBlockState(new BlockPos(floorX, floorY - 1, floorZ)).getBlock() == ModBlocks.fluxBeamBlock) {
+                --floorY;
+            }
+
+            BlockPos blockpos = new BlockPos(floorX, floorY, floorZ);
+            IBlockState state = this.world.getBlockState(blockpos);
+
+            if (canUseRail() && state.getBlock() == ModBlocks.fluxBeamBlock) {
+
+
+            } else {
+//                this.moveDerailedLevitator();
+            }
+        }
+
+        updateHoloGui();
+    }
+
+    private void onUpdateOld() {
         dumpInfo("Before");
         if (this.getRollingAmplitude() > 0) {
             this.setRollingAmplitude(this.getRollingAmplitude() - 1);
