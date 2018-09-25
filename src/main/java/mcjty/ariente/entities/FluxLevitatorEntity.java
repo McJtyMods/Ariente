@@ -408,8 +408,7 @@ public class FluxLevitatorEntity extends Entity {
         }
     }
 
-    @Override
-    public void onUpdate() {
+    public void onUpdateTry() {
         if (this.posY < -64.0D) {
             this.outOfWorld();
         }
@@ -444,8 +443,9 @@ public class FluxLevitatorEntity extends Entity {
         updateHoloGui();
     }
 
-    private void onUpdateOld() {
-        dumpInfo("Before");
+    @Override
+    public void onUpdate() {
+//        dumpInfo("Before");
         if (this.getRollingAmplitude() > 0) {
             this.setRollingAmplitude(this.getRollingAmplitude() - 1);
         }
@@ -468,7 +468,7 @@ public class FluxLevitatorEntity extends Entity {
 
         updateHoloGui();
 
-        dumpInfo("After");
+//        dumpInfo("After");
     }
 
     private void onUpdateServer() {
@@ -722,7 +722,7 @@ public class FluxLevitatorEntity extends Entity {
 //            unpowered = handleLivingMotion(unpowered, forward, entity.rotationYaw);
 //        }
         if (speed != 0) {
-            handleLivingMotion(unpowered, speed, rotationYaw);
+            handleLivingMotion(speed);
         }
 
         if (unpowered) {
@@ -811,16 +811,22 @@ public class FluxLevitatorEntity extends Entity {
         }
     }
 
-    private boolean handleLivingMotion(boolean unpowered, int speed, float rotationYaw) {
+    private void handleLivingMotion(int speed) {
 
-        double dx = -Math.sin((rotationYaw * 0.017453292F));
-        double dz = Math.cos((rotationYaw * 0.017453292F));
+        float yaw;
+        if (speed > 0) {
+            yaw = -358;
+        } else {
+            yaw = -178;
+        }
+
+        double dx = -Math.sin((yaw * 0.017453292F));
+        double dz = Math.cos((yaw * 0.017453292F));
         double dist = this.motionX * this.motionX + this.motionZ * this.motionZ;
 
         if (dist < 0.01D) {
             this.motionX += dx * 0.1D;
             this.motionZ += dz * 0.1D;
-            unpowered = false;
         }
 
         double maxMotion = Math.abs(speed / 25.0f);
@@ -840,7 +846,6 @@ public class FluxLevitatorEntity extends Entity {
                 motionZ = maxMotion;
             }
         }
-        return unpowered;
     }
 
     private void handlePoweredMotion(BlockPos pos, BlockRailBase.EnumRailDirection dir) {
