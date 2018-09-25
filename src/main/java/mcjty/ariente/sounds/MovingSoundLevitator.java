@@ -12,9 +12,9 @@ public class MovingSoundLevitator extends MovingSound {
     private final FluxLevitatorEntity levitator;
     private float distance = 0.0F;
 
-    public MovingSoundLevitator(FluxLevitatorEntity minecartIn) {
+    public MovingSoundLevitator(FluxLevitatorEntity levitatorIn) {
         super(ModSounds.levitator, SoundCategory.NEUTRAL);
-        this.levitator = minecartIn;
+        this.levitator = levitatorIn;
         this.repeat = true;
         this.repeatDelay = 0;
     }
@@ -27,7 +27,8 @@ public class MovingSoundLevitator extends MovingSound {
             this.xPosF = (float) this.levitator.posX;
             this.yPosF = (float) this.levitator.posY;
             this.zPosF = (float) this.levitator.posZ;
-            float f = Math.abs(this.levitator.getSpeed()) / 50.0f;
+//            float f = Math.abs(this.levitator.getSpeed()) / 50.0f;
+            float f = MathHelper.sqrt(this.levitator.motionX * this.levitator.motionX + this.levitator.motionZ * this.levitator.motionZ);
 
             if (f >= 0.01D) {
                 this.distance = MathHelper.clamp(this.distance + 0.0025F, 0.0F, 1.0F);

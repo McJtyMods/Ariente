@@ -106,6 +106,12 @@
         "meta": 0,
         "max": 1,
         "chance": 0.1
+      },
+      {
+        "id": "ariente:flux_levitator",
+        "meta": 0,
+        "max": 1,
+        "chance": 0.1
       }
     ],
     "partpalette": [

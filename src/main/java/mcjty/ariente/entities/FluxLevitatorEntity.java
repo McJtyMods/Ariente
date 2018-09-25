@@ -47,7 +47,6 @@ public class FluxLevitatorEntity extends Entity {
     private static final DataParameter<Optional<UUID>> HOLO_FRONT = EntityDataManager.createKey(FluxLevitatorEntity.class, DataSerializers.OPTIONAL_UNIQUE_ID);
     private static final DataParameter<Optional<UUID>> HOLO_BACK = EntityDataManager.createKey(FluxLevitatorEntity.class, DataSerializers.OPTIONAL_UNIQUE_ID);
 
-    private boolean isInReverse;
     private static final int[][][] MATRIX = new int[][][]{{{0, 0, -1}, {0, 0, 1}}, {{-1, 0, 0}, {1, 0, 0}}, {{-1, -1, 0}, {1, 0, 0}}, {{-1, 0, 0}, {1, -1, 0}}, {{0, 0, -1}, {0, -1, 1}}, {{0, -1, -1}, {0, 0, 1}}, {{0, 0, 1}, {1, 0, 0}}, {{0, 0, 1}, {-1, 0, 0}}, {{0, 0, -1}, {-1, 0, 0}}, {{0, 0, -1}, {1, 0, 0}}};
     private int turnProgress;
     private double levitatorX;
@@ -94,10 +93,10 @@ public class FluxLevitatorEntity extends Entity {
     }
 
     public void changeSpeed(int speed) {
-        if (speed < -50) {
-            speed = -50;
-        } else if (speed > 50) {
-            speed = 50;
+        if (speed < -80) {
+            speed = -80;
+        } else if (speed > 80) {
+            speed = 80;
         }
         this.dataManager.set(SPEED, speed);
     }
@@ -364,88 +363,11 @@ public class FluxLevitatorEntity extends Entity {
 
     @Override
     public EnumFacing getAdjustedHorizontalFacing() {
-        return this.isInReverse ? this.getHorizontalFacing().getOpposite().rotateY() : this.getHorizontalFacing().rotateY();
-    }
-
-    private String previousOutputClient = "";
-    private int countClient = -1;
-    private String previousOutputServer = "";
-    private int countServer = -1;
-
-    private void dumpInfo(String id) {
-        StringBuilder builder = new StringBuilder();
-        builder.append("getRollingAmplitude() = " + this.getRollingAmplitude()).append("\n");
-        builder.append("motionX = " + motionX + ", motionZ = " + motionZ).append("\n");
-        builder.append("getSpeed() = " + getSpeed() + ", isInReverse = " + isInReverse).append("\n");
-        builder.append("rotationYaw = " + rotationYaw + ", rotationPitch = " + rotationPitch).append("\n");
-        builder.append("levitatorYaw = " + levitatorPitch + ", rotationPitch = " + levitatorPitch).append("\n");
-        String output = builder.toString();
-
-        if (world.isRemote) {
-            if (!output.equals(previousOutputClient)) {
-                if (countClient != -1) {
-                    System.out.println("countClient = " + countClient);
-                }
-                previousOutputClient = output;
-                System.out.println("############# " + (world.isRemote ? "CLIENT " : "SERVER ") + id + " ##############");
-                System.out.print(output);
-                countClient = 1;
-            } else {
-                countClient++;
-            }
-        } else {
-            if (!output.equals(previousOutputServer)) {
-                if (countServer != -1) {
-                    System.out.println("countServer = " + countServer);
-                }
-                previousOutputServer = output;
-                System.out.println("############# " + (world.isRemote ? "CLIENT " : "SERVER ") + id + " ##############");
-                System.out.print(output);
-                countServer = 1;
-            } else {
-                countServer++;
-            }
-        }
-    }
-
-    public void onUpdateTry() {
-        if (this.posY < -64.0D) {
-            this.outOfWorld();
-        }
-
-        if (this.world.isRemote) {
-            this.setPosition(this.posX, this.posY, this.posZ);
-            this.setRotation(this.rotationYaw, this.rotationPitch);
-        } else {
-            if (!this.hasNoGravity()) {
-                this.motionY -= 0.04D;
-            }
-
-            int floorX = MathHelper.floor(this.posX);
-            int floorY = MathHelper.floor(this.posY);
-            int floorZ = MathHelper.floor(this.posZ);
-
-            if (world.getBlockState(new BlockPos(floorX, floorY - 1, floorZ)).getBlock() == ModBlocks.fluxBeamBlock) {
-                --floorY;
-            }
-
-            BlockPos blockpos = new BlockPos(floorX, floorY, floorZ);
-            IBlockState state = this.world.getBlockState(blockpos);
-
-            if (canUseRail() && state.getBlock() == ModBlocks.fluxBeamBlock) {
-
-
-            } else {
-//                this.moveDerailedLevitator();
-            }
-        }
-
-        updateHoloGui();
+        return this.getHorizontalFacing().rotateY();
     }
 
     @Override
     public void onUpdate() {
-//        dumpInfo("Before");
         if (this.getRollingAmplitude() > 0) {
             this.setRollingAmplitude(this.getRollingAmplitude() - 1);
         }
@@ -467,8 +389,6 @@ public class FluxLevitatorEntity extends Entity {
         }
 
         updateHoloGui();
-
-//        dumpInfo("After");
     }
 
     private void onUpdateServer() {
@@ -504,25 +424,6 @@ public class FluxLevitatorEntity extends Entity {
 
         if (dx * dx + dz * dz > 0.001D) {
             this.rotationYaw = (float) (MathHelper.atan2(dz, dx) * 180.0D / Math.PI);
-//            System.out.println("1: rotationYaw = " + rotationYaw + ", isInReverse = " + isInReverse);
-
-            if (this.isInReverse) {
-                this.rotationYaw += 180.0F;
-            }
-
-//            if (getSpeed() > 0) {
-//                rotationYaw = 90;
-//            } else {
-//                rotationYaw = -90;
-//            }
-        }
-
-        double yaw = MathHelper.wrapDegrees(this.rotationYaw - this.prevRotationYaw);
-
-        if (yaw < -170.0D || yaw >= 170.0D) {
-            this.rotationYaw += 180.0F;
-            this.isInReverse = !this.isInReverse;
-//            System.out.println("2: rotationYaw = " + rotationYaw + ", isInReverse = " + isInReverse + ", yaw = " + yaw);
         }
 
         this.setRotation(this.rotationYaw, this.rotationPitch);
