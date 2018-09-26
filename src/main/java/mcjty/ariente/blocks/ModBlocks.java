@@ -23,6 +23,8 @@ import mcjty.lib.builder.GenericBlockBuilderFactory;
 import mcjty.lib.container.GenericContainer;
 import mcjty.lib.varia.ItemStackTools;
 import net.minecraft.block.Block;
+import net.minecraft.block.SoundType;
+import net.minecraft.block.material.Material;
 import net.minecraft.block.state.IBlockState;
 import net.minecraft.client.renderer.color.BlockColors;
 import net.minecraft.util.EnumFacing;
@@ -99,6 +101,8 @@ public class ModBlocks {
 
     public static RampBlock rampBlock;
     public static SlopeBlock slopeBlock;
+    public static PaneBlock glassFence;
+    public static PaneBlock marbleFence;
 
     public static GenericBlockBuilderFactory builderFactory;
 
@@ -422,6 +426,10 @@ public class ModBlocks {
         doubleMarbleSlabBlock = new DoubleMarbleSlabBlock("double_marble_slab");
         rampBlock = new RampBlock("ramp");
         slopeBlock = new SlopeBlock("slope");
+        glassFence = (PaneBlock) new PaneBlock("glass_fence", Material.GLASS, SoundType.GLASS, true)
+                .setHardness(0.3F);
+        marbleFence = (PaneBlock) new PaneBlock("marble_fence", Material.ROCK, SoundType.STONE, true)
+                .setHardness(3.0F).setResistance(8.0F);
     }
 
     private static void initOres() {
@@ -531,6 +539,8 @@ public class ModBlocks {
         marble_bricks.initModel();
         marbleSlabBlock.initModel();
         doubleMarbleSlabBlock.initModel();
+        glassFence.initModel();
+        marbleFence.initModel();
 
         lapisore.initModel();
         glowstoneore.initModel();

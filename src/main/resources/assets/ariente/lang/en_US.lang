@@ -85,6 +85,8 @@ tile.ariente.aicore.name=AI Core
 
 tile.ariente.ramp.name=Ramp
 tile.ariente.slope.name=Slope
+tile.ariente.glass_fence.name=Glass Fence
+tile.ariente.marble_fence.name=Marble Fence
 
 tile.ariente.marble.gray.name=Gray Marble
 tile.ariente.marble.white.name=White Marble
