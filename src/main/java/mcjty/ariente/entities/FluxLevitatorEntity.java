@@ -726,8 +726,29 @@ public class FluxLevitatorEntity extends Entity {
         double dist = this.motionX * this.motionX + this.motionZ * this.motionZ;
 
         if (dist < 0.01D) {
-            this.motionX += dx * 0.1D;
-            this.motionZ += dz * 0.1D;
+//            this.motionX += dx * 0.1D;
+//            this.motionZ += dz * 0.1D;
+            if (dx > 0) {
+                this.motionX = Math.abs(motionX) + dx * 0.1D;
+            } else {
+                this.motionX = -Math.abs(motionX) + dx * 0.1D;
+            }
+            if (dz > 0) {
+                this.motionZ = Math.abs(motionZ) + dz * 0.1D;
+            } else {
+                this.motionZ = -Math.abs(motionZ) + dz * 0.1D;
+            }
+        } else {
+            if (dx > 0) {
+                this.motionX = Math.abs(motionX);
+            } else {
+                this.motionX = -Math.abs(motionX);
+            }
+            if (dz > 0) {
+                this.motionZ = Math.abs(motionZ);
+            } else {
+                this.motionZ = -Math.abs(motionZ);
+            }
         }
 
         double maxMotion = Math.abs(speed / 25.0f);
