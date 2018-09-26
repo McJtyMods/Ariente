@@ -102,7 +102,9 @@ public class ModBlocks {
     public static RampBlock rampBlock;
     public static SlopeBlock slopeBlock;
     public static PaneBlock glassFence;
+    public static PaneBlock blueGlassFence;
     public static PaneBlock marbleFence;
+    public static PaneBlock techFence;
 
     public static GenericBlockBuilderFactory builderFactory;
 
@@ -427,8 +429,14 @@ public class ModBlocks {
         rampBlock = new RampBlock("ramp");
         slopeBlock = new SlopeBlock("slope");
         glassFence = (PaneBlock) new PaneBlock("glass_fence", Material.GLASS, SoundType.GLASS, true)
+                .setTransluscent(true)
+                .setHardness(0.3F);
+        blueGlassFence = (PaneBlock) new PaneBlock("blue_glass_fence", Material.GLASS, SoundType.GLASS, true)
+                .setTransluscent(true)
                 .setHardness(0.3F);
         marbleFence = (PaneBlock) new PaneBlock("marble_fence", Material.ROCK, SoundType.STONE, true)
+                .setHardness(3.0F).setResistance(8.0F);
+        techFence = (PaneBlock) new PaneBlock("tech_fence", Material.ROCK, SoundType.STONE, true)
                 .setHardness(3.0F).setResistance(8.0F);
     }
 
@@ -539,8 +547,10 @@ public class ModBlocks {
         marble_bricks.initModel();
         marbleSlabBlock.initModel();
         doubleMarbleSlabBlock.initModel();
+        blueGlassFence.initModel();
         glassFence.initModel();
         marbleFence.initModel();
+        techFence.initModel();
 
         lapisore.initModel();
         glowstoneore.initModel();
