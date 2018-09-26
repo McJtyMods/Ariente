@@ -24,13 +24,21 @@
     "masterChance": 0.0,
     "loot": [
     ],
+    "partpalette": [
+      {
+        "char": "1",
+        "parts": [
+          "c0_0_00"
+        ]
+      }
+    ],
     "plan": [
       "1"
     ]
   },
   {
     "type": "part",
-    "name": "c1_0_00",
+    "name": "c0_0_00",
     "xsize": 16,
     "zsize": 16,
     "slices": [
