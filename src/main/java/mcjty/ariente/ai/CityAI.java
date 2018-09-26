@@ -670,11 +670,11 @@ public class CityAI {
         City city = CityTools.getCity(center);
         CityPlan plan = city.getPlan();
         ArienteChunkGenerator generator = (ArienteChunkGenerator)(((WorldServer) world).getChunkProvider().chunkGenerator);
-        int droneHeight = plan.getDroneHeightOffset() + CityTools.getLowestHeight(city, generator, center.getChunkX(), center.getChunkZ());
+        int droneHeight = plan.getSentinelRelHeight() + CityTools.getLowestHeight(city, generator, center.getChunkX(), center.getChunkZ());
 
         int angleI = (sentinelAngleOffset + sentinelId * 12 / sentinels.length) % 12;
         int cx = center.getChunkX() * 16 + 8;
-        int cy = droneHeight + plan.getSentinelRelHeight();
+        int cy = droneHeight;
         int cz = center.getChunkZ() * 16 + 8;
 
         float angle = angleI * 360.0f / 12;
