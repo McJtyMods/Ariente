@@ -623,7 +623,7 @@ public class FluxLevitatorEntity extends Entity {
 //            unpowered = handleLivingMotion(unpowered, forward, entity.rotationYaw);
 //        }
         if (speed != 0) {
-            handleLivingMotion(speed);
+            handleLivingMotion(speed, dir);
         }
 
         if (unpowered) {
@@ -712,13 +712,21 @@ public class FluxLevitatorEntity extends Entity {
         }
     }
 
-    private void handleLivingMotion(int speed) {
+    private void handleLivingMotion(int speed, BlockRailBase.EnumRailDirection dir) {
 
         float yaw;
-        if (speed > 0) {
-            yaw = -358;
+        if (dir == BlockRailBase.EnumRailDirection.NORTH_SOUTH) {
+            if (speed > 0) {
+                yaw = -358;
+            } else {
+                yaw = -178;
+            }
         } else {
-            yaw = -178;
+            if (speed > 0) {
+                yaw = -88;
+            } else {
+                yaw = -278;
+            }
         }
 
         double dx = -Math.sin((yaw * 0.017453292F));
