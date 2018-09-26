@@ -45,14 +45,16 @@ public class CityTools {
 //        }
 
         boolean candidate = ((chunkX & 0xf) == 8) && ((chunkZ & 0xf) == 8);
-        if (candidate) {
-            long seed = DimensionManager.getWorld(0).getSeed();
-            Random random = new Random(seed + chunkX * 776531419L + chunkZ * 198491317L);
-            random.nextFloat();
-            random.nextFloat();
-            return random.nextFloat() < WorldgenConfiguration.CITY_DUNGEON_CHANCE;
-        }
-        return false;
+//        if (candidate) {
+//            long seed = DimensionManager.getWorld(0).getSeed();
+//            Random random = new Random(seed + chunkX * 776531419L + chunkZ * 198491317L);
+//            random.nextFloat();
+//            random.nextFloat();
+//            return random.nextFloat() < WorldgenConfiguration.CITY_DUNGEON_CHANCE;
+//        }
+//        return false;
+        // @todo always return a city. But it can be the 0_0 city which is basically empty and takes care of the station below it
+        return true;
     }
 
     public static boolean isCityChunk(int chunkX, int chunkZ) {

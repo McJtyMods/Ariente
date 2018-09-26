@@ -1,0 +1,73 @@
+[
+  {
+    "type": "plan",
+    "name": "city0_0",
+    "palette": "city0_0",
+    "layers": "1-2",
+    "sentinels": "0-0",
+    "sentinelDistance": 15,
+    "sentinelRelHeight": 14,
+    "dronesMinimum1": 0,
+    "dronesMinimum2": 0,
+    "dronesMinimumN": 0,
+    "dronesWaveMax1": 0,
+    "dronesWaveMax2": 0,
+    "dronesWaveMaxN": 0,
+    "soldiersMinimum1": 1,
+    "soldiersMinimum2": 1,
+    "soldiersMinimumN": 2,
+    "soldiersWaveMax1": 2,
+    "soldiersWaveMax2": 3,
+    "soldiersWaveMaxN": 5,
+    "powerArmorChance": 0,
+    "forcefieldChance": 0,
+    "masterChance": 0.0,
+    "loot": [
+    ],
+    "plan": [
+      "1"
+    ]
+  },
+  {
+    "type": "part",
+    "name": "c1_0_00",
+    "xsize": 16,
+    "zsize": 16,
+    "slices": [
+      [
+        "                                ",
+        "                                ",
+        "                                ",
+        "                                ",
+        "                                ",
+        "                                ",
+        "                                ",
+        "                                ",
+        "                q               ",
+        "                                ",
+        "                                ",
+        "                                ",
+        "                                ",
+        "                                ",
+        "                                ",
+        "                                "
+      ]
+    ],
+    "meta": [],
+    "tedata": []
+  },
+  {
+    "type": "palette",
+    "name": "city0_0",
+    "palette": [
+      {
+        "char": "  ",
+        "block": "minecraft:air"
+      },
+      {
+        "char": "q ",
+        "block": "ariente:aicore"
+      }
+    ]
+  }
+]

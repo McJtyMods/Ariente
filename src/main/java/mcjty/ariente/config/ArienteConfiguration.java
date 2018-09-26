@@ -5,6 +5,7 @@ import net.minecraftforge.common.config.Configuration;
 public class ArienteConfiguration {
 
     public static String[] ASSETS = new String[] {
+            "/assets/ariente/citydata/city0_0.json",
             "/assets/ariente/citydata/city0_1.json",
             "/assets/ariente/citydata/city1_1.json",
             "/assets/ariente/citydata/city1_2.json",
