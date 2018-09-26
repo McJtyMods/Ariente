@@ -32,7 +32,7 @@ public class SentinelDroneEntity extends EntityFlying implements IMob, IForcefie
 
     public static final ResourceLocation LOOT = new ResourceLocation(Ariente.MODID, "entities/sentinel_drone");
 
-    private int sentinalId;
+    private int sentinelId;
     private ChunkCoord cityCenter;
 
     public SentinelDroneEntity(World worldIn) {
@@ -43,9 +43,9 @@ public class SentinelDroneEntity extends EntityFlying implements IMob, IForcefie
         this.moveHelper = new SentinelDroneMoveHelper(this);
     }
 
-    public SentinelDroneEntity(World world, int sentinalId, ChunkCoord cityCenter) {
+    public SentinelDroneEntity(World world, int sentinelId, ChunkCoord cityCenter) {
         this(world);
-        this.sentinalId = sentinalId;
+        this.sentinelId = sentinelId;
         this.cityCenter = cityCenter;
     }
 
@@ -296,7 +296,7 @@ public class SentinelDroneEntity extends EntityFlying implements IMob, IForcefie
             }
             CityAISystem aiSystem = CityAISystem.getCityAISystem(parentEntity.world);
             CityAI cityAI = aiSystem.getCityAI(parentEntity.cityCenter);
-            BlockPos pos = cityAI.requestNewSentinelPosition(parentEntity.sentinalId);
+            BlockPos pos = cityAI.requestNewSentinelPosition(parentEntity.world, parentEntity.sentinelId);
             if (pos != null) {
                 this.parentEntity.getMoveHelper().setMoveTo(pos.getX(), pos.getY(), pos.getZ(), 2.0D);
             }

@@ -12,6 +12,7 @@ import mcjty.ariente.blocks.utility.wireless.RedstoneChannels;
 import mcjty.ariente.blocks.utility.wireless.SignalChannelTileEntity;
 import mcjty.ariente.cities.*;
 import mcjty.ariente.config.AIConfiguration;
+import mcjty.ariente.dimension.ArienteChunkGenerator;
 import mcjty.ariente.entities.*;
 import mcjty.ariente.gui.HoloGuiEntity;
 import mcjty.ariente.items.ModItems;
@@ -40,6 +41,7 @@ import net.minecraft.util.EnumFacing;
 import net.minecraft.util.EnumHand;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.World;
+import net.minecraft.world.WorldServer;
 import net.minecraftforge.common.DimensionManager;
 import net.minecraftforge.common.util.Constants;
 import net.minecraftforge.fml.common.registry.ForgeRegistries;
@@ -373,6 +375,8 @@ public class CityAI {
 
             City city = CityTools.getCity(center);
             CityPlan plan = city.getPlan();
+            ArienteChunkGenerator generator = (ArienteChunkGenerator)(((WorldServer) world).getChunkProvider().chunkGenerator);
+            int droneHeight = plan.getDroneHeightOffset() + CityTools.getLowestHeight(city, generator, center.getChunkX(), center.getChunkZ());
 
             int desiredMinimumCount = 0;
             int newWaveMaximum = 0;
@@ -389,7 +393,7 @@ public class CityAI {
 
             int cnt = countEntities(world, drones);
             while (cnt < desiredMinimumCount) {
-                spawnDrone(world);
+                spawnDrone(world, droneHeight);
                 cnt++;
             }
 
@@ -397,7 +401,7 @@ public class CityAI {
                 // Randomly spawn a new wave of drones
                 System.out.println("WAVE");
                 while (cnt < newWaveMaximum) {
-                    spawnDrone(world);
+                    spawnDrone(world, droneHeight);
                     cnt++;
                 }
             }
@@ -547,7 +551,7 @@ public class CityAI {
     }
 
 
-    private void spawnDrone(World world) {
+    private void spawnDrone(World world, int height) {
         // Too few drones. Spawn a new one
         int foundId = -1;
         for (int i = 0 ; i < drones.length ; i++) {
@@ -559,7 +563,7 @@ public class CityAI {
         if (foundId != -1) {
             DroneEntity entity = new DroneEntity(world, center);
             int cx = center.getChunkX() * 16 + 8;
-            int cy = aiCores.iterator().next().getY() + 50; // @todo make more consistent?
+            int cy = height;
             int cz = center.getChunkZ() * 16 + 8;
             entity.setPosition(cx, cy, cz);
             world.spawnEntity(entity);
@@ -581,8 +585,12 @@ public class CityAI {
         // Small chance to revive sentinels if they are missing. Only revive if all are missing
         if (random.nextFloat() < .1f) {
             if (countEntities(world, sentinels) == 0) {
+                City city = CityTools.getCity(center);
+                CityPlan plan = city.getPlan();
+                ArienteChunkGenerator generator = (ArienteChunkGenerator)(((WorldServer) world).getChunkProvider().chunkGenerator);
+                int droneHeight = plan.getDroneHeightOffset() + CityTools.getLowestHeight(city, generator, center.getChunkX(), center.getChunkZ());
                 for (int i = 0; i < sentinels.length; i++) {
-                    createSentinel(world, i);
+                    createSentinel(world, i, droneHeight);
                 }
             }
         }
@@ -651,7 +659,7 @@ public class CityAI {
         return null;
     }
 
-    public BlockPos requestNewSentinelPosition(int sentinelId) {
+    public BlockPos requestNewSentinelPosition(World world, int sentinelId) {
         if (sentinels == null) {
             return null;
         }
@@ -661,10 +669,12 @@ public class CityAI {
 
         City city = CityTools.getCity(center);
         CityPlan plan = city.getPlan();
+        ArienteChunkGenerator generator = (ArienteChunkGenerator)(((WorldServer) world).getChunkProvider().chunkGenerator);
+        int droneHeight = plan.getDroneHeightOffset() + CityTools.getLowestHeight(city, generator, center.getChunkX(), center.getChunkZ());
 
         int angleI = (sentinelAngleOffset + sentinelId * 12 / sentinels.length) % 12;
         int cx = center.getChunkX() * 16 + 8;
-        int cy = aiCores.iterator().next().getY() + plan.getSentinelRelHeight();     // Use the height of one of the ai cores as a base
+        int cy = droneHeight + plan.getSentinelRelHeight();
         int cz = center.getChunkZ() * 16 + 8;
 
         float angle = angleI * 360.0f / 12;
@@ -936,17 +946,22 @@ public class CityAI {
     }
 
     private void initSentinels(World world) {
+        City city = CityTools.getCity(center);
+        CityPlan plan = city.getPlan();
+        ArienteChunkGenerator generator = (ArienteChunkGenerator)(((WorldServer) world).getChunkProvider().chunkGenerator);
+        int droneHeight = plan.getDroneHeightOffset() + CityTools.getLowestHeight(city, generator, center.getChunkX(), center.getChunkZ());
+
         int numSentinels = settings.getNumSentinels();
         sentinels = new int[numSentinels];
         for (int i = 0 ; i < numSentinels ; i++) {
-            createSentinel(world, i);
+            createSentinel(world, i, droneHeight);
         }
     }
 
-    private void createSentinel(World world, int i) {
+    private void createSentinel(World world, int i, int height) {
         SentinelDroneEntity entity = new SentinelDroneEntity(world, i, center);
         int cx = center.getChunkX() * 16 + 8;
-        int cy = aiCores.iterator().next().getY() + 50; // @todo make more consistent?
+        int cy = height;
         int cz = center.getChunkZ() * 16 + 8;
         entity.setPosition(cx, cy, cz);
         world.spawnEntity(entity);

@@ -41,6 +41,7 @@ public class CityPlan implements IAsset {
     private int dronesWaveMax1 = 2;
     private int dronesWaveMax2 = 3;
     private int dronesWaveMaxN = 5;
+    private int droneHeightOffset = 50;
 
     private double masterChance = 0.0;
     private double powerArmorChance = 0.0;
@@ -145,6 +146,10 @@ public class CityPlan implements IAsset {
         return dronesWaveMaxN;
     }
 
+    public int getDroneHeightOffset() {
+        return droneHeightOffset;
+    }
+
     public int getSoldiersMinimum1() {
         return soldiersMinimum1;
     }
@@ -202,6 +207,11 @@ public class CityPlan implements IAsset {
         dronesWaveMax1 = object.get("dronesWaveMax1").getAsInt();
         dronesWaveMax2 = object.get("dronesWaveMax2").getAsInt();
         dronesWaveMaxN = object.get("dronesWaveMaxN").getAsInt();
+        if (object.has("droneHeightOffset")) {
+            droneHeightOffset = object.get("droneHeightOffset").getAsInt();
+        } else {
+            droneHeightOffset = 50;
+        }
         soldiersMinimum1 = object.get("soldiersMinimum1").getAsInt();
         soldiersMinimum2 = object.get("soldiersMinimum2").getAsInt();
         soldiersMinimumN = object.get("soldiersMinimumN").getAsInt();
@@ -316,6 +326,7 @@ public class CityPlan implements IAsset {
         object.add("dronesWaveMax1", new JsonPrimitive(dronesWaveMax1));
         object.add("dronesWaveMax2", new JsonPrimitive(dronesWaveMax2));
         object.add("dronesWaveMaxN", new JsonPrimitive(dronesWaveMaxN));
+        object.add("droneHeightOffset", new JsonPrimitive(droneHeightOffset));
         object.add("soldiersMinimum1", new JsonPrimitive(soldiersMinimum1));
         object.add("soldiersMinimum2", new JsonPrimitive(soldiersMinimum2));
         object.add("soldiersMinimumN", new JsonPrimitive(soldiersMinimumN));
