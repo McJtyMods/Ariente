@@ -209,7 +209,7 @@ public class CityAI {
 
         levitatorTicker--;
         if (levitatorTicker <= 0) {
-            levitatorTicker = 40;
+            levitatorTicker = 80;
             if (levitator != -1) {
                 Entity entity = world.getEntityByID(levitator);
                 if (entity != null) {
@@ -225,8 +225,8 @@ public class CityAI {
             } else {
                 LevitatorPath path = findValidBeam(world);
                 if (path != null) {
-                    List<SoldierEntity> entities = world.getEntitiesWithinAABB(SoldierEntity.class, new AxisAlignedBB(path.end).grow(10));
-                    if (entities.size() > 5) {
+                    List<SoldierEntity> entities = world.getEntitiesWithinAABB(SoldierEntity.class, new AxisAlignedBB(path.end).grow(20));
+                    if (entities.size() > 2) {
                         // Too many already
                         return;
                     }
