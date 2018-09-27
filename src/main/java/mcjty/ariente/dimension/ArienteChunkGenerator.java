@@ -2,6 +2,7 @@ package mcjty.ariente.dimension;
 
 import com.google.common.collect.ImmutableList;
 import mcjty.ariente.blocks.ModBlocks;
+import mcjty.ariente.blocks.utility.ElevatorTile;
 import mcjty.ariente.cities.BuildingPart;
 import mcjty.ariente.cities.City;
 import mcjty.ariente.cities.CityTools;
@@ -43,6 +44,8 @@ public class ArienteChunkGenerator implements IChunkGenerator {
     private ArienteTerrainGenerator terraingen = new ArienteTerrainGenerator();
     private IslandsTerrainGenerator islandsGen = new IslandsTerrainGenerator();
     private ArienteCityGenerator cityGenerator = new ArienteCityGenerator();
+
+    private static Map<ChunkCoord, BlockPos> stationLevitatorTodo = new HashMap<>();
 
     private Map<ChunkCoord, ChunkPrimer> cachedPrimers = new HashMap<>();
     private Map<ChunkCoord, ChunkHeightmap> cachedHeightmaps = new HashMap<>();
@@ -283,6 +286,10 @@ public class ArienteChunkGenerator implements IChunkGenerator {
         }
     }
 
+    public static void registerStationLevitatorTodo(ChunkCoord chunkCoord, BlockPos pos) {
+        stationLevitatorTodo.put(chunkCoord, pos);
+    }
+
     private void fixTileEntities(int x, int z) {
         City city = CityTools.getNearestCity(this, x, z);
         List<BuildingPart> parts = CityTools.getBuildingParts(city, x, z);
@@ -316,6 +323,18 @@ public class ArienteChunkGenerator implements IChunkGenerator {
                     }
                 }
             }
+        }
+
+        ChunkCoord coord = new ChunkCoord(x, z);
+        if (stationLevitatorTodo.containsKey(coord)) {
+            BlockPos levitatorPos = stationLevitatorTodo.get(coord);
+            TileEntity te = worldObj.getTileEntity(levitatorPos);
+            if (te instanceof ElevatorTile) {
+                ElevatorTile elevatorTile = (ElevatorTile) te;
+                ChunkCoord center = CityTools.getNearestCityCenter(x, z);
+                elevatorTile.setHeight(CityTools.getLowestHeight(CityTools.getCity(center), this, x, z) - 30 + 5);
+            }
+            stationLevitatorTodo.remove(coord);
         }
     }
 

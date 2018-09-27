@@ -8,6 +8,7 @@ import mcjty.lib.blocks.BaseBlock;
 import net.minecraft.block.Block;
 import net.minecraft.init.Blocks;
 import net.minecraft.util.EnumFacing;
+import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.World;
 import net.minecraft.world.chunk.ChunkPrimer;
 
@@ -81,14 +82,16 @@ public class LevitatorNetworkGenerator {
                 CityPlan station = AssetRegistries.CITYPLANS.get("station");
                 int lowest = ArienteCityGenerator.generatePart(primer, station.getPalette(), part, Transform.ROTATE_NONE, 0, CityTools.getStationHeight(), 0);
 
-                // @todo, not all cities need (or support) a connection to the station
-                // @todo, elevator height!
+                BlockPos elevatorPos = null;
                 if (cx == 7 && cz == 9 && CityTools.isCityChunk(chunkX, chunkZ)) {
                     int startz = 12;
-                    createElevatorShaft(chunkX, chunkZ, primer, generator, lowest, startz);
+                    elevatorPos = createElevatorShaft(chunkX, chunkZ, primer, generator, lowest, startz);
                 } else if (cx == 7 && cz == 7 && CityTools.isCityChunk(chunkX, chunkZ) && !CityTools.isCityChunk(chunkX, chunkZ+2)) {
                     int startz = 3;
-                    createElevatorShaft(chunkX, chunkZ, primer, generator, lowest, startz);
+                    elevatorPos = createElevatorShaft(chunkX, chunkZ, primer, generator, lowest, startz);
+                }
+                if (elevatorPos != null) {
+                    ArienteChunkGenerator.registerStationLevitatorTodo(new ChunkCoord(chunkX, chunkZ), elevatorPos);
                 }
             }
         } else if (candidateX) {
@@ -142,7 +145,7 @@ public class LevitatorNetworkGenerator {
         }
     }
 
-    private static void createElevatorShaft(int chunkX, int chunkZ, ChunkPrimer primer, ArienteChunkGenerator generator, int lowest, int startz) {
+    private static BlockPos createElevatorShaft(int chunkX, int chunkZ, ChunkPrimer primer, ArienteChunkGenerator generator, int lowest, int startz) {
         ChunkCoord center = CityTools.getNearestCityCenter(chunkX, chunkZ);
         City city = CityTools.getCity(center);
         int cityBottom = CityTools.getLowestHeight(city, generator, chunkX, chunkZ);
@@ -172,6 +175,7 @@ public class LevitatorNetworkGenerator {
         primer.data[index] = levelMarker;
         index = (1 << 12) | ((startz+2) << 8) + cityBottom+1;
         primer.data[index] = levelMarker;
+        return new BlockPos(chunkX * 16 + 2, CityTools.getStationHeight(), chunkZ * 16 + startz+1);
     }
 
     private static void fillInner(ChunkPrimer primer, int dx, int dz) {
