@@ -13,10 +13,12 @@ import mcjty.ariente.config.GuiConfiguration;
 import mcjty.ariente.config.WorldgenConfiguration;
 import mcjty.ariente.dimension.ArienteChunkGenerator;
 import mcjty.ariente.dimension.EditMode;
+import mcjty.ariente.entities.FluxLevitatorEntity;
 import mcjty.ariente.items.ModItems;
 import mcjty.ariente.items.modules.ArmorUpgradeType;
 import mcjty.ariente.items.modules.ModuleSupport;
 import mcjty.ariente.power.PowerSystem;
+import mcjty.ariente.sounds.FluxLevitatorSounds;
 import mcjty.ariente.sounds.ModSounds;
 import mcjty.lib.McJtyRegister;
 import net.minecraft.block.Block;
@@ -35,6 +37,7 @@ import net.minecraft.world.World;
 import net.minecraft.world.WorldServer;
 import net.minecraft.world.biome.Biome;
 import net.minecraftforge.event.RegistryEvent;
+import net.minecraftforge.event.entity.EntityJoinWorldEvent;
 import net.minecraftforge.event.entity.living.LivingDamageEvent;
 import net.minecraftforge.event.entity.living.LivingFallEvent;
 import net.minecraftforge.event.entity.living.LivingSpawnEvent;
@@ -173,6 +176,17 @@ public class ForgeEventHandlers {
                     cityAI.alertCity(player);
                 }
                 cityAISystem.save();
+            }
+        }
+    }
+
+    @SubscribeEvent
+    public void onEntityJoin(EntityJoinWorldEvent event) {
+        World world = event.getWorld();
+        if (world.isRemote) {
+            Entity entity = event.getEntity();
+            if (entity instanceof FluxLevitatorEntity) {
+                FluxLevitatorSounds.playMovingSoundClient((FluxLevitatorEntity) entity);
             }
         }
     }
