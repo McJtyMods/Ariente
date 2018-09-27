@@ -419,6 +419,12 @@ public class FluxLevitatorEntity extends Entity {
 
         if (dx * dx + dz * dz > 0.001D) {
             this.rotationYaw = (float) (MathHelper.atan2(dz, dx) * 180.0D / Math.PI);
+        } else {
+            if (getSpeed() > 0) {
+                changeSpeed(getSpeed() - 1);
+            } else if (getSpeed() < 0) {
+                changeSpeed(getSpeed() + 1);
+            }
         }
 
         this.setRotation(this.rotationYaw, this.rotationPitch);

@@ -225,7 +225,7 @@ public class CityAI {
             } else {
                 LevitatorPath path = findValidBeam(world);
                 if (path != null) {
-                    List<SoldierEntity> entities = world.getEntitiesWithinAABB(SoldierEntity.class, new AxisAlignedBB(path.end).grow(20));
+                    List<SoldierEntity> entities = world.getEntitiesWithinAABB(SoldierEntity.class, new AxisAlignedBB(path.end).grow(15));
                     if (entities.size() > 2) {
                         // Too many already
                         return;
@@ -293,6 +293,19 @@ public class CityAI {
         }
     }
 
+    private boolean isValidPath(World world, BlockPos start, BlockPos end, EnumFacing facing) {
+        BlockPos p = start;
+        while (!end.equals(p)) {
+            IBlockState state = world.getBlockState(p);
+            if (state.getBlock() != ModBlocks.fluxBeamBlock) {
+                return false;
+            }
+            p = p.offset(facing.getOpposite());
+        }
+        List<FluxLevitatorEntity> entities = world.getEntitiesWithinAABB(FluxLevitatorEntity.class, new AxisAlignedBB(start).union(new AxisAlignedBB(end)));
+        return entities.isEmpty();
+    }
+
     @Nullable
     private LevitatorPath findValidBeam(World world) {
         CityAISystem system = CityAISystem.getCityAISystem(world);
@@ -306,7 +319,9 @@ public class CityAI {
                 if (end != null) {
                     BlockPos start = isValidBeam(world, center, facing, 100, 120);
                     if (start != null) {
-                        positions.add(new LevitatorPath(facing, start, end));
+                        if (isValidPath(world, start, end, facing)) {
+                            positions.add(new LevitatorPath(facing, start, end));
+                        }
                     }
                 }
             }
