@@ -39,6 +39,7 @@ import net.minecraft.nbt.NBTUtil;
 import net.minecraft.tileentity.TileEntity;
 import net.minecraft.util.EnumFacing;
 import net.minecraft.util.EnumHand;
+import net.minecraft.util.math.AxisAlignedBB;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.World;
 import net.minecraft.world.WorldServer;
@@ -99,16 +100,21 @@ public class CityAI {
         return center;
     }
 
+    private boolean setup(World world) {
+        if (!initialized) {
+            initialized = true;
+            initialize(world);
+            return false;
+        } else {
+            findEquipment(world, false);
+            return true;
+        }
+    }
+
     // Return true if we potentially have to save the city system state
     public boolean tick(AICoreTile tile) {
         // We use the given AICoreTile parameter to make sure only one tick per city happens
-        if (!initialized) {
-            initialized = true;
-            initialize(tile.getWorld());
-            return true;
-        } else {
-            findEquipment(tile.getWorld(), false);
-
+        if (setup(tile.getWorld())) {
             // If there are no more ai cores the city AI is dead
             if (aiCores.isEmpty()) {
                 return false;
@@ -127,6 +133,7 @@ public class CityAI {
             handleAI(tile.getWorld());
             return true;
         }
+        return true;
     }
 
     public boolean isDead(World world) {
@@ -135,6 +142,9 @@ public class CityAI {
 
     // Check if there is still a valid AI core except for the input parameter
     public boolean hasValidCoreExcept(World world, @Nullable BlockPos exclude) {
+        if (!initialized) {
+            return true;        // If not initialized we assume this city is alive
+        }
         for (BlockPos pos : aiCores) {
             if (!pos.equals(exclude)) {
                 TileEntity te = world.getTileEntity(pos);
@@ -199,7 +209,7 @@ public class CityAI {
 
         levitatorTicker--;
         if (levitatorTicker <= 0) {
-            levitatorTicker = 20;
+            levitatorTicker = 40;
             if (levitator != -1) {
                 Entity entity = world.getEntityByID(levitator);
                 if (entity != null) {
@@ -213,29 +223,39 @@ public class CityAI {
                 }
                 levitator = -1;
             } else {
-//                LevitatorPath path = findValidBeam(world);
-//                if (path != null) {
-//                    System.out.println("CityAI.handleFluxLevitators");
-//                    BlockPos pos = path.start;
-//                    IBlockState state = world.getBlockState(pos);
-//                    BlockRailBase.EnumRailDirection dir = FluxLevitatorEntity.getBeamDirection(state);
-//                    double d0 = 0.0D;
-//
-//                    if (dir.isAscending()) {
-//                        d0 = 0.5D;
-//                    }
-//
-//                    FluxLevitatorEntity entity = new FluxLevitatorEntity(world, pos.getX() + 0.5D, pos.getY() + 0.0625D + d0, pos.getZ() + 0.5D);
-//                    entity.changeSpeed(50);
-//                    entity.setDesiredDestination(path.end);
-//                    world.spawnEntity(entity);
-//                    levitator = entity.getEntityId();
-//
-//                    SoldierEntity soldier = createSoldier(world, pos, path.direction, SoldierBehaviourType.SOLDIER_FIGHTER, false);
-//                    soldier.setHeldItem(EnumHand.MAIN_HAND, new ItemStack(ModItems.energySabre));
-//                    world.spawnEntity(soldier);
-//                    soldier.startRiding(entity);
-//                }
+                LevitatorPath path = findValidBeam(world);
+                if (path != null) {
+                    List<SoldierEntity> entities = world.getEntitiesWithinAABB(SoldierEntity.class, new AxisAlignedBB(path.end).grow(10));
+                    if (entities.size() > 5) {
+                        // Too many already
+                        return;
+                    }
+
+
+                    BlockPos pos = path.start;
+                    IBlockState state = world.getBlockState(pos);
+                    BlockRailBase.EnumRailDirection dir = FluxLevitatorEntity.getBeamDirection(state);
+                    double d0 = 0.0D;
+
+                    if (dir.isAscending()) {
+                        d0 = 0.5D;
+                    }
+
+                    FluxLevitatorEntity entity = new FluxLevitatorEntity(world, pos.getX() + 0.5D, pos.getY() + 0.0625D + d0, pos.getZ() + 0.5D);
+                    if (path.direction == EnumFacing.SOUTH || path.direction == EnumFacing.EAST) {
+                        entity.changeSpeed(-50);
+                    } else {
+                        entity.changeSpeed(50);
+                    }
+                    entity.setDesiredDestination(path.end);
+                    world.spawnEntity(entity);
+                    levitator = entity.getEntityId();
+
+                    SoldierEntity soldier = createSoldier(world, pos, path.direction, SoldierBehaviourType.SOLDIER_FIGHTER, false);
+                    soldier.setHeldItem(EnumHand.MAIN_HAND, new ItemStack(ModItems.energySabre));
+                    world.spawnEntity(soldier);
+                    soldier.startRiding(entity);
+                }
             }
         }
     }
@@ -983,82 +1003,86 @@ public class CityAI {
     public void readFromNBT(NBTTagCompound nbt) {
         initialized = nbt.getBoolean("initialized");
         settings = null;
-        if (nbt.hasKey("settings")) {
-            settings = new CityAISettings();
-            settings.readFromNBT(nbt.getCompoundTag("settings"));
-        }
-        if (nbt.hasKey("sentinels")) {
-            sentinels = nbt.getIntArray("sentinels");
-        } else {
-            sentinels = null;
-        }
-        keyId = nbt.getString("keyId");
-        storageKeyId = nbt.getString("storageKeyId");
-        forcefieldId = nbt.getString("forcefieldId");
-        if (nbt.hasKey("drones")) {
-            drones = nbt.getIntArray("drones");
-        }
-        if (nbt.hasKey("soldiers")) {
-            soldiers = nbt.getIntArray("soldiers");
-        }
-        watchingPlayers.clear();
-        if (nbt.hasKey("players")) {
-            NBTTagList list = nbt.getTagList("players", Constants.NBT.TAG_COMPOUND);
-            for (int i = 0 ; i < list.tagCount() ; i++) {
-                NBTTagCompound tc = list.getCompoundTagAt(i);
-                UUID uuid = tc.getUniqueId("id");
-                BlockPos pos = NBTUtil.getPosFromTag(tc);
-                watchingPlayers.put(uuid, pos);
+        if (initialized) {
+            if (nbt.hasKey("settings")) {
+                settings = new CityAISettings();
+                settings.readFromNBT(nbt.getCompoundTag("settings"));
             }
+            if (nbt.hasKey("sentinels")) {
+                sentinels = nbt.getIntArray("sentinels");
+            } else {
+                sentinels = null;
+            }
+            keyId = nbt.getString("keyId");
+            storageKeyId = nbt.getString("storageKeyId");
+            forcefieldId = nbt.getString("forcefieldId");
+            if (nbt.hasKey("drones")) {
+                drones = nbt.getIntArray("drones");
+            }
+            if (nbt.hasKey("soldiers")) {
+                soldiers = nbt.getIntArray("soldiers");
+            }
+            watchingPlayers.clear();
+            if (nbt.hasKey("players")) {
+                NBTTagList list = nbt.getTagList("players", Constants.NBT.TAG_COMPOUND);
+                for (int i = 0; i < list.tagCount(); i++) {
+                    NBTTagCompound tc = list.getCompoundTagAt(i);
+                    UUID uuid = tc.getUniqueId("id");
+                    BlockPos pos = NBTUtil.getPosFromTag(tc);
+                    watchingPlayers.put(uuid, pos);
+                }
 
+            }
+            sentinelMovementTicks = nbt.getInteger("sentinelMovementTicks");
+            sentinelAngleOffset = nbt.getInteger("sentinelAngleOffset");
+            onAlert = nbt.getInteger("onAlert");
+            highAlert = nbt.getBoolean("highAlert");
+            droneTicker = nbt.getInteger("droneTicker");
+            readMapFromNBT(nbt.getTagList("guards", Constants.NBT.TAG_COMPOUND), guardPositions);
+            readMapFromNBT(nbt.getTagList("soldierPositions", Constants.NBT.TAG_COMPOUND), soldierPositions);
+            readMapFromNBT(nbt.getTagList("masterSoldierPositions", Constants.NBT.TAG_COMPOUND), masterSoldierPositions);
+            levitator = nbt.getInteger("levitator");
+            levitatorTicker = nbt.getInteger("levitatorTicker");
         }
-        sentinelMovementTicks = nbt.getInteger("sentinelMovementTicks");
-        sentinelAngleOffset = nbt.getInteger("sentinelAngleOffset");
-        onAlert = nbt.getInteger("onAlert");
-        highAlert = nbt.getBoolean("highAlert");
-        droneTicker = nbt.getInteger("droneTicker");
-        readMapFromNBT(nbt.getTagList("guards", Constants.NBT.TAG_COMPOUND), guardPositions);
-        readMapFromNBT(nbt.getTagList("soldierPositions", Constants.NBT.TAG_COMPOUND), soldierPositions);
-        readMapFromNBT(nbt.getTagList("masterSoldierPositions", Constants.NBT.TAG_COMPOUND), masterSoldierPositions);
-        levitator = nbt.getInteger("levitator");
-        levitatorTicker = nbt.getInteger("levitatorTicker");
     }
 
     public void writeToNBT(NBTTagCompound compound) {
         compound.setBoolean("initialized", initialized);
-        if (settings != null) {
-            NBTTagCompound tc = new NBTTagCompound();
-            settings.writeToNBT(tc);
-            compound.setTag("settings", tc);
-        }
-
-        if (sentinels != null) {
-            compound.setIntArray("sentinels", sentinels);
-        }
-        compound.setString("keyId", keyId);
-        compound.setString("storageKeyId", storageKeyId);
-        compound.setString("forcefieldId", forcefieldId);
-        compound.setIntArray("drones", drones);
-        compound.setIntArray("soldiers", soldiers);
-        if (!watchingPlayers.isEmpty()) {
-            NBTTagList list = new NBTTagList();
-            for (Map.Entry<UUID, BlockPos> entry : watchingPlayers.entrySet()) {
-                NBTTagCompound tc = NBTUtil.createPosTag(entry.getValue());
-                tc.setUniqueId("id", entry.getKey());
-                list.appendTag(tc);
+        if (initialized) {
+            if (settings != null) {
+                NBTTagCompound tc = new NBTTagCompound();
+                settings.writeToNBT(tc);
+                compound.setTag("settings", tc);
             }
-            compound.setTag("players", list);
+
+            if (sentinels != null) {
+                compound.setIntArray("sentinels", sentinels);
+            }
+            compound.setString("keyId", keyId);
+            compound.setString("storageKeyId", storageKeyId);
+            compound.setString("forcefieldId", forcefieldId);
+            compound.setIntArray("drones", drones);
+            compound.setIntArray("soldiers", soldiers);
+            if (!watchingPlayers.isEmpty()) {
+                NBTTagList list = new NBTTagList();
+                for (Map.Entry<UUID, BlockPos> entry : watchingPlayers.entrySet()) {
+                    NBTTagCompound tc = NBTUtil.createPosTag(entry.getValue());
+                    tc.setUniqueId("id", entry.getKey());
+                    list.appendTag(tc);
+                }
+                compound.setTag("players", list);
+            }
+            compound.setInteger("sentinelMovementTicks", sentinelMovementTicks);
+            compound.setInteger("sentinelAngleOffset", sentinelAngleOffset);
+            compound.setInteger("onAlert", onAlert);
+            compound.setBoolean("highAlert", highAlert);
+            compound.setInteger("droneTicker", droneTicker);
+            compound.setTag("guards", writeMapToNBT(guardPositions));
+            compound.setTag("soldierPositions", writeMapToNBT(soldierPositions));
+            compound.setTag("masterSoldierPositions", writeMapToNBT(masterSoldierPositions));
+            compound.setInteger("levitator", levitator);
+            compound.setInteger("levitatorTicker", levitatorTicker);
         }
-        compound.setInteger("sentinelMovementTicks", sentinelMovementTicks);
-        compound.setInteger("sentinelAngleOffset", sentinelAngleOffset);
-        compound.setInteger("onAlert", onAlert);
-        compound.setBoolean("highAlert", highAlert);
-        compound.setInteger("droneTicker", droneTicker);
-        compound.setTag("guards", writeMapToNBT(guardPositions));
-        compound.setTag("soldierPositions", writeMapToNBT(soldierPositions));
-        compound.setTag("masterSoldierPositions", writeMapToNBT(masterSoldierPositions));
-        compound.setInteger("levitator", levitator);
-        compound.setInteger("levitatorTicker", levitatorTicker);
     }
 
     private NBTTagList writeSetToNBT(Set<BlockPos> set) {

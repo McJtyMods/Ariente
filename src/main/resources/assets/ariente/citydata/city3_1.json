@@ -5,7 +5,7 @@
     "city": true,
     "palette": "city3_1",
     "layers": "1-1",
-    "sentinels": "5-8",
+    "sentinels": "4-6",
     "sentinelDistance": 20,
     "sentinelRelHeight": 32,
     "dronesMinimum1": 2,
