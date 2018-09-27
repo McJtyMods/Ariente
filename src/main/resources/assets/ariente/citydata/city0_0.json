@@ -2,6 +2,7 @@
   {
     "type": "plan",
     "name": "city0_0",
+    "city": true,
     "palette": "city0_0",
     "layers": "1-2",
     "sentinels": "0-0",
@@ -13,17 +14,18 @@
     "dronesWaveMax1": 0,
     "dronesWaveMax2": 0,
     "dronesWaveMaxN": 0,
+    "droneHeightOffset": 50,
     "soldiersMinimum1": 1,
     "soldiersMinimum2": 1,
     "soldiersMinimumN": 2,
     "soldiersWaveMax1": 2,
     "soldiersWaveMax2": 3,
     "soldiersWaveMaxN": 5,
-    "powerArmorChance": 0,
-    "forcefieldChance": 0,
     "masterChance": 0.0,
-    "loot": [
-    ],
+    "powerArmorChance": 0.0,
+    "forcefieldChance": 0.0,
+    "underground": false,
+    "loot": [],
     "partpalette": [
       {
         "char": "1",
@@ -43,15 +45,123 @@
     "zsize": 16,
     "slices": [
       [
+        "a a a a a a a a a a a a a a a a ",
+        "a a a a a a a a a a a a a a a a ",
+        "a a a a a a a a a a a a a a a a ",
+        "a a a a a a a a a a a a a a a a ",
+        "a a a a a a a a a a a a a a a a ",
+        "a a a a a a a a a a a a a a a a ",
+        "a a a a a a a a a a a a a a a a ",
+        "a a a a a a a a a a a a a a a a ",
+        "a a a a a a a a a a a a a a a a ",
+        "a a a a a a a a a a a a a a a a ",
+        "a a a a a a a a a a a a a a a a ",
+        "a a a a a a a a a a a a a a a a ",
+        "a a a a a a a a a a a a a a a a ",
+        "a a a a a a a a a a a a a a a a ",
+        "a a a a a a a a a a a a a a a a ",
+        "a a a a a a a a a a a a a a a a "
+      ],
+      [
         "                                ",
         "                                ",
         "                                ",
         "                                ",
-        "                                ",
-        "                                ",
-        "                                ",
+        "            c                   ",
+        "                      d         ",
         "                                ",
         "                q               ",
+        "                                ",
+        "                                ",
+        "          b         c           ",
+        "                                ",
+        "                                ",
+        "                                ",
+        "                                ",
+        "                                "
+      ],
+      [
+        "                                ",
+        "                                ",
+        "                                ",
+        "                                ",
+        "                                ",
+        "                                ",
+        "                                ",
+        "                                ",
+        "                                ",
+        "                                ",
+        "                                ",
+        "                                ",
+        "                                ",
+        "                                ",
+        "                                ",
+        "                                "
+      ],
+      [
+        "                                ",
+        "                                ",
+        "                                ",
+        "                                ",
+        "                                ",
+        "                                ",
+        "                                ",
+        "                                ",
+        "                                ",
+        "                                ",
+        "                                ",
+        "                                ",
+        "                                ",
+        "                                ",
+        "                                ",
+        "                                "
+      ],
+      [
+        "                                ",
+        "                                ",
+        "                                ",
+        "                                ",
+        "                                ",
+        "                                ",
+        "                                ",
+        "                                ",
+        "                                ",
+        "                                ",
+        "                                ",
+        "                                ",
+        "                                ",
+        "                                ",
+        "                                ",
+        "                                "
+      ],
+      [
+        "                                ",
+        "                                ",
+        "                                ",
+        "                                ",
+        "                                ",
+        "                                ",
+        "                                ",
+        "                                ",
+        "                                ",
+        "                                ",
+        "                                ",
+        "                                ",
+        "                                ",
+        "                                ",
+        "                                ",
+        "                                "
+      ],
+      [
+        "                                ",
+        "                                ",
+        "                                ",
+        "                                ",
+        "                                ",
+        "                                ",
+        "                                ",
+        "                                ",
+        "                                ",
         "                                ",
         "                                ",
         "                                ",
@@ -69,12 +179,28 @@
     "name": "city0_0",
     "palette": [
       {
+        "char": "q ",
+        "block": "ariente:aicore"
+      },
+      {
+        "char": "a ",
+        "block": "ariente:pattern"
+      },
+      {
         "char": "  ",
         "block": "minecraft:air"
       },
       {
-        "char": "q ",
-        "block": "ariente:aicore"
+        "char": "d ",
+        "block": "ariente:guard_dummy@1"
+      },
+      {
+        "char": "c ",
+        "block": "ariente:soldier_dummy@3"
+      },
+      {
+        "char": "b ",
+        "block": "ariente:guard_dummy@3"
       }
     ]
   }
