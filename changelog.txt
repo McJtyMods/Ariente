@@ -1,8 +1,7 @@
-
 0.0.2-alpha:
 - The collision test with the forcefield is slightly more relaxed so that it is easier to go through
 - Damaging a forcefield will notify the city AI that the player is there
-- If the city is dead it will no longer try to set alarms in some cases
+- If the city is dead it will no longer try to set alarms
 - Only guards and master soldiers will alert the city now. The normal soldiers no longer do that
 - If a soldier is killed there is now also a chance it will drop an empty key card
 - If a soldier is killed there is now also a chance it will drop a key card giving protection against the city forcefield
@@ -10,7 +9,7 @@
 - New power armor. This is a modular armor system that uses Ariente power. Various modules are implemented:
     - Helmet upgrades:
         - Nightvision
-        - Scramble: disrupt communication of soldiers and drones so they don't alert each other
+        - Scramble: prevents inter-mob communication so they don't get alerted anymore when they see you. This does not prevent alert mode for breaking reinforced obsidian or being touched by the forcefield
     - Chestplate upgrades:
         - Flight: press space to go up (hover is not yet implemented)
         - Regeneration
@@ -30,17 +29,18 @@
         - Autofeed: automatically get negarite/posirite from inventory
         - Armor: improve armor value of armor (default is like leather)
 - Power armor can be configured with (by default) the 0 key. Four hotkeys are provided to enable/disable various modules
-- Ariente now has a configuration file. Not much is in it yet. This will grow
+- Ariente now has a configuration file with some various things in it
 - Some configuration options (mostly for GUI) are now configurable in-game in the standard mod config
-- Holo GUI now shows tooltips for items
+- Holo GUI now shows tooltips for items. This is currently using the default vanilla style. In the future this will likely change to using a more holo style
 - Different styles for the holo GUI
 - The damage for the drone laser was accidentally disabled
 - Fixed a bug in loot generation
-- New large (and hard) underground city
-- New monorail like system (called flux levitators) including an underground network connected with stations under each city
-- A new slope decorative block
+- New large (and hard) underground city. This city is not finished yet and it is only reachable using the new flux levitator network
+- New monorail like system (called flux levitators) including an underground network connected with stations under each city. This system is not ready yet. There are only straight tracks for example
+- The flux levitator network is also used to send reinforcements to a city
+- Several new decorative blocks like a slope and various fences
 - A new blue light glowing block
-- Implemented the scramble module which prevents inter-mob communication so they don't get alerted anymore when they see you. This does not prevent alert mode for breaking reinforced obsidian or being touched by the forcefield
+- For mod dev only: much improved city editor system
 
 0.0.1-alpha:
 - Alpha release
