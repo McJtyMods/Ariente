@@ -2,10 +2,10 @@ package mcjty.ariente.blocks.utility;
 
 import mcjty.ariente.Ariente;
 import mcjty.ariente.ai.CityAI;
-import mcjty.ariente.api.hologui.IGuiComponent;
-import mcjty.ariente.api.hologui.IGuiComponentRegistry;
-import mcjty.ariente.api.hologui.IGuiTile;
-import mcjty.ariente.api.hologui.IHoloGuiEntity;
+import mcjty.hologui.api.IGuiComponent;
+import mcjty.hologui.api.IGuiComponentRegistry;
+import mcjty.hologui.api.IGuiTile;
+import mcjty.hologui.api.IHoloGuiEntity;
 import mcjty.ariente.blocks.utility.door.DoorMarkerTile;
 import mcjty.ariente.cities.ICityEquipment;
 import mcjty.ariente.items.KeyCardItem;

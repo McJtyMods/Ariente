@@ -3,14 +3,12 @@ package mcjty.ariente;
 import mcjty.ariente.ai.CityAI;
 import mcjty.ariente.ai.CityAISystem;
 import mcjty.ariente.ai.IAlarmMode;
-import mcjty.ariente.apiimp.hologui.HoloGuiSounds;
 import mcjty.ariente.biomes.ModBiomes;
 import mcjty.ariente.blocks.ModBlocks;
 import mcjty.ariente.blocks.utility.ILockable;
 import mcjty.ariente.cities.BuildingPart;
 import mcjty.ariente.cities.City;
 import mcjty.ariente.cities.CityTools;
-import mcjty.ariente.config.GuiConfiguration;
 import mcjty.ariente.config.WorldgenConfiguration;
 import mcjty.ariente.dimension.ArienteChunkGenerator;
 import mcjty.ariente.dimension.EditMode;
@@ -75,13 +73,10 @@ public class ForgeEventHandlers {
     @SubscribeEvent
     public void registerSounds(RegistryEvent.Register<SoundEvent> sounds) {
         ModSounds.init(sounds.getRegistry());
-        HoloGuiSounds.init(sounds.getRegistry());
     }
 
     @SubscribeEvent
     public void onConfigChanged(ConfigChangedEvent.OnConfigChangedEvent event) {
-        GuiConfiguration.init(Ariente.proxy.getConfig());
-
         if (Ariente.proxy.getConfig().hasChanged()) {
             Ariente.proxy.getConfig().save();
         }

@@ -1,10 +1,10 @@
 package mcjty.ariente.items.armor;
 
 import mcjty.ariente.Ariente;
-import mcjty.ariente.api.hologui.IGuiComponent;
-import mcjty.ariente.api.hologui.IGuiComponentRegistry;
-import mcjty.ariente.api.hologui.IHoloGuiEntity;
-import mcjty.ariente.api.hologui.components.IPanel;
+import mcjty.hologui.api.IGuiComponent;
+import mcjty.hologui.api.IGuiComponentRegistry;
+import mcjty.hologui.api.IHoloGuiEntity;
+import mcjty.hologui.api.components.IPanel;
 import mcjty.ariente.gui.HoloGuiTools;
 import mcjty.ariente.gui.ModGuis;
 import mcjty.ariente.items.ModItems;

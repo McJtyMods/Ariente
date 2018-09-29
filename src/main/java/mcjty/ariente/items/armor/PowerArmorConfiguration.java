@@ -1,7 +1,7 @@
 package mcjty.ariente.items.armor;
 
 import mcjty.ariente.Ariente;
-import mcjty.ariente.apiimp.hologui.HoloGuiSounds;
+import mcjty.hologui.gui.HoloGuiSounds;
 import mcjty.ariente.gui.ModGuis;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.util.SoundCategory;

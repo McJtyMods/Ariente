@@ -2,9 +2,9 @@ package mcjty.ariente.blocks.utility;
 
 import mcjty.ariente.Ariente;
 import mcjty.ariente.ai.CityAI;
-import mcjty.ariente.api.hologui.IGuiComponent;
-import mcjty.ariente.api.hologui.IGuiComponentRegistry;
-import mcjty.ariente.api.hologui.IGuiTile;
+import mcjty.hologui.api.IGuiComponent;
+import mcjty.hologui.api.IGuiComponentRegistry;
+import mcjty.hologui.api.IGuiTile;
 import mcjty.ariente.blocks.ModBlocks;
 import mcjty.ariente.cities.City;
 import mcjty.ariente.cities.CityPlan;

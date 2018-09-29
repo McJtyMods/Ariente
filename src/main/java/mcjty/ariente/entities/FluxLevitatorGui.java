@@ -1,9 +1,9 @@
 package mcjty.ariente.entities;
 
 import mcjty.ariente.Ariente;
-import mcjty.ariente.api.hologui.IGuiComponent;
-import mcjty.ariente.api.hologui.IGuiComponentRegistry;
-import mcjty.ariente.api.hologui.IHoloGuiEntity;
+import mcjty.hologui.api.IGuiComponent;
+import mcjty.hologui.api.IGuiComponentRegistry;
+import mcjty.hologui.api.IHoloGuiEntity;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.player.EntityPlayer;
 

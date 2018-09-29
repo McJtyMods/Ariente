@@ -1,8 +1,9 @@
 package mcjty.ariente;
 
 
-import mcjty.ariente.api.hologui.IHoloGuiHandler;
-import mcjty.ariente.apiimp.hologui.HoloGuiHandler;
+import mcjty.hologui.HoloGui;
+import mcjty.hologui.api.IHoloGuiHandler;
+import mcjty.hologui.gui.HoloGuiHandler;
 import mcjty.ariente.commands.*;
 import mcjty.ariente.proxy.CommonProxy;
 import mcjty.lib.base.ModBase;
@@ -24,6 +25,7 @@ import org.apache.logging.log4j.Logger;
 @Mod(modid = Ariente.MODID, name = Ariente.MODNAME,
         dependencies =
                 "required-after:mcjtylib_ng@[" + Ariente.MIN_MCJTYLIB_VER + ",);" +
+                "required-after:hologui@[" + Ariente.MIN_HOLOGUI_VER + ",);" +
                 "after:forge@[" + Ariente.MIN_FORGE11_VER + ",)",
         acceptedMinecraftVersions = "[1.12,1.13)",
         version = Ariente.VERSION,
@@ -34,6 +36,7 @@ public class Ariente implements ModBase {
     public static final String VERSION = "0.0.2-alpha";
     public static final String MIN_FORGE11_VER = "14.23.3.2694";
     public static final String MIN_MCJTYLIB_VER = "3.0.4";
+    public static final String MIN_HOLOGUI_VER = "0.0.2-alpha";
 
     @SidedProxy(clientSide = "mcjty.ariente.proxy.ClientProxy", serverSide = "mcjty.ariente.proxy.ServerProxy")
     public static CommonProxy proxy;
@@ -41,7 +44,8 @@ public class Ariente implements ModBase {
     @Mod.Instance
     public static Ariente instance;
 
-    public static IHoloGuiHandler guiHandler = new HoloGuiHandler();
+    // @todo Use IMC
+    public static IHoloGuiHandler guiHandler = HoloGui.guiHandler;
 
     public static CreativeTabs creativeTab;
 

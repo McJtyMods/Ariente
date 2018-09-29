@@ -1,6 +1,6 @@
 package mcjty.ariente.entities;
 
-import mcjty.ariente.api.hologui.IHoloGuiEntity;
+import mcjty.hologui.api.IHoloGuiEntity;
 import mcjty.ariente.proxy.ClientProxy;
 import net.minecraft.block.state.IBlockState;
 import net.minecraft.client.Minecraft;

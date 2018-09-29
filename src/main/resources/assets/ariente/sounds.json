@@ -1,6 +1,4 @@
 {
-    "guiclick" : {"category": "player", "sounds": ["ariente:guiclick"]},
-    "guiopen" : {"category": "player", "sounds": ["ariente:guiopen"]},
     "drone_ambient" : {"category": "hostile", "sounds": ["ariente:droneambient"]},
     "drone_hurt" : {"category": "hostile", "sounds": ["ariente:dronehurt"]},
     "drone_death" : {"category": "hostile", "sounds": ["ariente:dronedeath"]},

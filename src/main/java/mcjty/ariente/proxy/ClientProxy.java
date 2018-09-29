@@ -3,8 +3,8 @@ package mcjty.ariente.proxy;
 import com.google.common.util.concurrent.ListenableFuture;
 import mcjty.ariente.Ariente;
 import mcjty.ariente.ClientForgeEventHandlers;
-import mcjty.ariente.api.hologui.IHoloGuiRenderer;
-import mcjty.ariente.apiimp.hologui.HoloGuiRenderer;
+import mcjty.hologui.api.IHoloGuiRenderer;
+import mcjty.hologui.gui.HoloGuiRenderer;
 import mcjty.ariente.bindings.KeyBindings;
 import mcjty.ariente.bindings.KeyInputHandler;
 import mcjty.ariente.blocks.ModBlocks;
@@ -30,6 +30,7 @@ import java.util.concurrent.Callable;
 
 public class ClientProxy extends CommonProxy {
 
+    // @todo bad!
     public static IHoloGuiRenderer holoGuiRenderer = new HoloGuiRenderer();
 
     @Override

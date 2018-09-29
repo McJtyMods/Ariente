@@ -1,9 +1,9 @@
 package mcjty.ariente.blocks.generators;
 
 import mcjty.ariente.ai.IAlarmMode;
-import mcjty.ariente.api.hologui.IGuiComponent;
-import mcjty.ariente.api.hologui.IGuiComponentRegistry;
-import mcjty.ariente.api.hologui.IGuiTile;
+import mcjty.hologui.api.IGuiComponent;
+import mcjty.hologui.api.IGuiComponentRegistry;
+import mcjty.hologui.api.IGuiTile;
 import mcjty.ariente.blocks.ModBlocks;
 import mcjty.lib.tileentity.GenericTileEntity;
 import mcjty.theoneprobe.api.IProbeHitData;

@@ -1,6 +1,6 @@
 package mcjty.ariente.ai;
 
-import mcjty.ariente.api.hologui.IHoloGuiEntity;
+import mcjty.hologui.api.IHoloGuiEntity;
 import mcjty.ariente.blocks.ModBlocks;
 import mcjty.ariente.blocks.aicore.AICoreTile;
 import mcjty.ariente.blocks.defense.ForceFieldTile;

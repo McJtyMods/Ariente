@@ -2,7 +2,7 @@ package mcjty.ariente.entities;
 
 import com.google.common.base.Optional;
 import mcjty.ariente.Ariente;
-import mcjty.ariente.api.hologui.IHoloGuiEntity;
+import mcjty.hologui.api.IHoloGuiEntity;
 import mcjty.ariente.blocks.ModBlocks;
 import mcjty.ariente.gui.ModGuis;
 import mcjty.ariente.items.ModItems;
