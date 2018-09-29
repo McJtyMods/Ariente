@@ -2,13 +2,13 @@ package mcjty.ariente.blocks.generators;
 
 import mcjty.ariente.Ariente;
 import mcjty.ariente.ai.IAlarmMode;
+import mcjty.ariente.api.hologui.IGuiComponent;
+import mcjty.ariente.api.hologui.IGuiComponentRegistry;
+import mcjty.ariente.api.hologui.IGuiTile;
+import mcjty.ariente.api.hologui.IHoloGuiEntity;
 import mcjty.ariente.blocks.ModBlocks;
 import mcjty.ariente.cables.CableColor;
-import mcjty.ariente.gui.HoloGuiEntity;
 import mcjty.ariente.gui.HoloGuiTools;
-import mcjty.ariente.gui.IGuiComponent;
-import mcjty.ariente.gui.IGuiTile;
-import mcjty.ariente.gui.components.*;
 import mcjty.ariente.items.ModItems;
 import mcjty.ariente.power.IPowerBlob;
 import mcjty.ariente.power.PowerSenderSupport;
@@ -277,27 +277,28 @@ public class NegariteGeneratorTile extends GenericTileEntity implements ITickabl
     }
 
     @Override
-    public IGuiComponent createGui(String tag) {
-        return new HoloPanel(0, 0, 8, 8)
-                .add(new HoloText(0, 0, 8, 1,"Negarite", 0xaaccff))
-                .add(new HoloItemStack(0, 3, 1, 1, new ItemStack(ModItems.negariteDust)))
+    public IGuiComponent createGui(String tag, IGuiComponentRegistry registry) {
+        return registry.panel(0, 0, 8, 8)
+                .add(registry.text(0, 0, 8, 1).text("Negarite").color(0xaaccff))
+                .add(registry.stackIcon(0, 3, 1, 1).itemStack(new ItemStack(ModItems.negariteDust)))
 
-                .add(new HoloIcon(1, 3, 1, 1).image(128+64, 128))
-                .add(new HoloNumber(2, 3, 1, 1, 0xffffff, (p,h) -> HoloGuiTools.countItem(p, ModItems.negariteDust)))
+                .add(registry.icon(1, 3, 1, 1).image(128+64, 128))
+                .add(registry.number(2, 3, 1, 1).color(0xffffff).getter((p,h) -> HoloGuiTools.countItem(p, ModItems.negariteDust)))
 
-                .add(new HoloButton(2, 4, 1, 1).image(128+32, 128+16).hover(128+32+16, 128+16)
+                .add(registry.iconButton(2, 4, 1, 1).image(128+32, 128+16).hover(128+32+16, 128+16)
                     .hitEvent((component, player, entity1, x, y) -> toPlayer(player, 64)))
-                .add(new HoloButton(3, 4, 1, 1).image(128+32, 128).hover(128+32+16, 128)
+                .add(registry.iconButton(3, 4, 1, 1).image(128+32, 128).hover(128+32+16, 128)
                     .hitEvent((component, player, entity1, x, y) -> toPlayer(player, 1)))
-                .add(new HoloButton(5, 4, 1, 1).image(128, 128).hover(128+16, 128)
+                .add(registry.iconButton(5, 4, 1, 1).image(128, 128).hover(128+16, 128)
                     .hitEvent((component, player, entity1, x, y) -> toMachine(player, 1)))
-                .add(new HoloButton(6, 4, 1, 1).image(128, 128+16).hover(128+16, 128+16)
+                .add(registry.iconButton(6, 4, 1, 1).image(128, 128+16).hover(128+16, 128+16)
                     .hitEvent((component, player, entity1, x, y) -> toMachine(player, 64)))
 
-                .add(new HoloItemStack(5, 3, 1, 1, new ItemStack(ModBlocks.negariteGeneratorBlock)))
-                .add(new HoloNumber(6, 3, 1, 1,0xffffff, this::countNegariteGenerator))
+                .add(registry.stackIcon(5, 3, 1, 1).itemStack(new ItemStack(ModBlocks.negariteGeneratorBlock)))
+                .add(registry.number(6, 3, 1, 1).color(0xffffff).getter(this::countNegariteGenerator))
 
-                .add(new HoloMode(7, 6, 1, 1, this::getRSModeInt)
+                .add(registry.modeToggle(7, 6, 1, 1)
+                        .getter(this::getRSModeInt)
                     .choice(128, 128+32)
                     .choice(128+16, 128+32)
                     .choice(128+32, 128+32)
@@ -370,7 +371,7 @@ public class NegariteGeneratorTile extends GenericTileEntity implements ITickabl
         markDirtyClient();
     }
 
-    public Integer countNegariteGenerator(EntityPlayer player, HoloGuiEntity holo) {
+    public Integer countNegariteGenerator(EntityPlayer player, IHoloGuiEntity holo) {
         int size = inventoryHelper.getCount();
         int cnt = 0;
         for (int i = 0 ; i < size ; i++) {

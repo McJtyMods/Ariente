@@ -1,11 +1,10 @@
 package mcjty.ariente.blocks.generators;
 
 import mcjty.ariente.ai.IAlarmMode;
+import mcjty.ariente.api.hologui.IGuiComponent;
+import mcjty.ariente.api.hologui.IGuiComponentRegistry;
+import mcjty.ariente.api.hologui.IGuiTile;
 import mcjty.ariente.blocks.ModBlocks;
-import mcjty.ariente.gui.IGuiComponent;
-import mcjty.ariente.gui.IGuiTile;
-import mcjty.ariente.gui.components.HoloPanel;
-import mcjty.ariente.gui.components.HoloText;
 import mcjty.lib.tileentity.GenericTileEntity;
 import mcjty.theoneprobe.api.IProbeHitData;
 import mcjty.theoneprobe.api.IProbeInfo;
@@ -93,24 +92,24 @@ public class PosiriteTankTile extends GenericTileEntity implements IGuiTile, IAl
     }
 
     @Override
-    public IGuiComponent createGui(String tag) {
-        return new HoloPanel(0, 0, 8, 8)
-            .add(new HoloText(0, 0, 1, 1, "0", 0xffffff))
-            .add(new HoloText(1, 0, 1, 1, "1", 0xffffff))
-            .add(new HoloText(2, 0, 1, 1, "2", 0xffffff))
-            .add(new HoloText(3, 0, 1, 1, "3", 0xffffff))
-            .add(new HoloText(4, 0, 1, 1, "4", 0xffffff))
-            .add(new HoloText(5, 0, 1, 1, "5", 0xffffff))
-            .add(new HoloText(6, 0, 1, 1, "6", 0xffffff))
-            .add(new HoloText(7, 0, 1, 1, "7", 0xffffff))
-            .add(new HoloText(0, 1, 1, 1, "1", 0x00ff00))
-            .add(new HoloText(0, 2, 1, 1, "2", 0x00ff00))
-            .add(new HoloText(0, 3, 1, 1, "3", 0x00ff00))
-            .add(new HoloText(0, 4, 1, 1, "4", 0x00ff00))
-            .add(new HoloText(0, 5, 1, 1, "5", 0x00ff00))
-            .add(new HoloText(0, 6, 1, 1, "6", 0x00ff00))
-            .add(new HoloText(0, 7, 1, 1, "7", 0x00ff00))
-            .add(new HoloText(7, 7, 1, 1, "X", 0xff0000));
+    public IGuiComponent createGui(String tag, IGuiComponentRegistry registry) {
+        return registry.panel(0, 0, 8, 8)
+            .add(registry.text(0, 0, 1, 1).text("0").color(0xffffff))
+            .add(registry.text(1, 0, 1, 1).text("1").color(0xffffff))
+            .add(registry.text(2, 0, 1, 1).text("2").color(0xffffff))
+            .add(registry.text(3, 0, 1, 1).text("3").color(0xffffff))
+            .add(registry.text(4, 0, 1, 1).text("4").color(0xffffff))
+            .add(registry.text(5, 0, 1, 1).text("5").color(0xffffff))
+            .add(registry.text(6, 0, 1, 1).text("6").color(0xffffff))
+            .add(registry.text(7, 0, 1, 1).text("7").color(0xffffff))
+            .add(registry.text(0, 1, 1, 1).text("1").color(0x00ff00))
+            .add(registry.text(0, 2, 1, 1).text("2").color(0x00ff00))
+            .add(registry.text(0, 3, 1, 1).text("3").color(0x00ff00))
+            .add(registry.text(0, 4, 1, 1).text("4").color(0x00ff00))
+            .add(registry.text(0, 5, 1, 1).text("5").color(0x00ff00))
+            .add(registry.text(0, 6, 1, 1).text("6").color(0x00ff00))
+            .add(registry.text(0, 7, 1, 1).text("7").color(0x00ff00))
+            .add(registry.text(7, 7, 1, 1).text("X").color(0xff0000));
     }
 
     @Override

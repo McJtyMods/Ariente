@@ -1,7 +1,7 @@
 package mcjty.ariente.entities;
 
-import mcjty.ariente.gui.HoloGuiEntity;
-import mcjty.ariente.gui.HoloGuiEntityRender;
+import mcjty.ariente.api.hologui.IHoloGuiEntity;
+import mcjty.ariente.proxy.ClientProxy;
 import net.minecraft.block.state.IBlockState;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.model.ModelBase;
@@ -91,16 +91,16 @@ public class FluxLevitatorRender extends Render<FluxLevitatorEntity> {
         GlStateManager.scale(-1.0F, -1.0F, 1.0F);
         this.model.render(entity, 0.0F, 0.0F, -0.1F, 0.0F, 0.0F, 0.0625F);
 
-        HoloGuiEntity holoGui = entity.getHoloGuiFront();
+        IHoloGuiEntity holoGui = entity.getHoloGuiFront();
         if (holoGui != null) {
             GlStateManager.scale(-1.0F, -1.0F, 1.0F);
-            HoloGuiEntityRender.doActualRender(holoGui, 1, 0, 0, -90);
+            ClientProxy.holoGuiRenderer.render(holoGui, 1, 0, 0, -90);
         }
         holoGui = entity.getHoloGuiBack();
         if (holoGui != null) {
             GlStateManager.scale(-1.0F, -1.0F, 1.0F);
             GlStateManager.rotate(180, 1, 0, 0);
-            HoloGuiEntityRender.doActualRender(holoGui, 1, 0, 0, -90);
+            ClientProxy.holoGuiRenderer.render(holoGui, 1, 0, 0, -90);
         }
 
 

@@ -15,13 +15,13 @@ public class ModGuis {
     public static final String GUI_LEVITATOR = "levitator";
 
     public static void init() {
-        Ariente.instance.guiRegistry.registerGui(GUI_ARMOR, ArmorGui::create);
-        Ariente.instance.guiRegistry.registerGui(GUI_ARMOR_HELMET, ArmorGui::createHelmetGui);
-        Ariente.instance.guiRegistry.registerGui(GUI_ARMOR_CHEST, ArmorGui::createChestGui);
-        Ariente.instance.guiRegistry.registerGui(GUI_ARMOR_LEGS, ArmorGui::createLegsGui);
-        Ariente.instance.guiRegistry.registerGui(GUI_ARMOR_BOOTS, ArmorGui::createBootsGui);
-        Ariente.instance.guiRegistry.registerGui(GUI_ARMOR_SABRE, ArmorGui::createSabreGui);
-        Ariente.instance.guiRegistry.registerGui(GUI_LEVITATOR, FluxLevitatorGui::createGui);
+        Ariente.guiHandler.getGuiRegistry().registerGui(GUI_ARMOR, ArmorGui::create);
+        Ariente.guiHandler.getGuiRegistry().registerGui(GUI_ARMOR_HELMET, ArmorGui::createHelmetGui);
+        Ariente.guiHandler.getGuiRegistry().registerGui(GUI_ARMOR_CHEST, ArmorGui::createChestGui);
+        Ariente.guiHandler.getGuiRegistry().registerGui(GUI_ARMOR_LEGS, ArmorGui::createLegsGui);
+        Ariente.guiHandler.getGuiRegistry().registerGui(GUI_ARMOR_BOOTS, ArmorGui::createBootsGui);
+        Ariente.guiHandler.getGuiRegistry().registerGui(GUI_ARMOR_SABRE, ArmorGui::createSabreGui);
+        Ariente.guiHandler.getGuiRegistry().registerGui(GUI_LEVITATOR, FluxLevitatorGui::createGui);
     }
 
 }

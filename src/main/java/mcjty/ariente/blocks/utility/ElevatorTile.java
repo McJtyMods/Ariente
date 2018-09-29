@@ -2,12 +2,12 @@ package mcjty.ariente.blocks.utility;
 
 import mcjty.ariente.Ariente;
 import mcjty.ariente.ai.CityAI;
+import mcjty.ariente.api.hologui.IGuiComponent;
+import mcjty.ariente.api.hologui.IGuiComponentRegistry;
+import mcjty.ariente.api.hologui.IGuiTile;
+import mcjty.ariente.api.hologui.IHoloGuiEntity;
+import mcjty.ariente.api.hologui.components.IPanel;
 import mcjty.ariente.cities.ICityEquipment;
-import mcjty.ariente.gui.HoloGuiEntity;
-import mcjty.ariente.gui.HoloGuiHandler;
-import mcjty.ariente.gui.IGuiComponent;
-import mcjty.ariente.gui.IGuiTile;
-import mcjty.ariente.gui.components.*;
 import mcjty.ariente.power.IPowerReceiver;
 import mcjty.ariente.power.PowerReceiverSupport;
 import mcjty.lib.tileentity.GenericTileEntity;
@@ -139,9 +139,9 @@ public class ElevatorTile extends GenericTileEntity implements IGuiTile, ITickab
         if (holoID == null) {
 //            List<Integer> floors = findFloors();
 //            if (!floors.isEmpty()) {
-                HoloGuiEntity holoEntity = HoloGuiHandler.openHoloGuiEntity(world, pos, player, TAG_ELEVATOR, 2.0);
+                IHoloGuiEntity holoEntity = Ariente.guiHandler.openHoloGuiEntity(world, pos, player, TAG_ELEVATOR, 2.0);
                 if (holoEntity != null) {
-                    playerToHoloGui.put(player.getUniqueID(), holoEntity.getEntityId());
+                    playerToHoloGui.put(player.getUniqueID(), holoEntity.getEntity().getEntityId());
                     holoEntity.setTimeout(5);
                     holoEntity.setMaxTimeout(5);
                 }
@@ -149,13 +149,14 @@ public class ElevatorTile extends GenericTileEntity implements IGuiTile, ITickab
             return true;
         } else {
             Entity entity = world.getEntityByID(holoID);
-            if (entity instanceof HoloGuiEntity) {
-                HoloGuiEntity holoEntity = (HoloGuiEntity) entity;
+            if (entity instanceof IHoloGuiEntity) {
+                IHoloGuiEntity holoEntity = (IHoloGuiEntity) entity;
                 holoEntity.setTimeout(5);
-                double oldPosY = holoEntity.posY;
+                Entity h = holoEntity.getEntity();
+                double oldPosY = h.posY;
                 double newPosY = player.posY+player.eyeHeight - .5;
                 double y = (newPosY + oldPosY) / 2;
-                holoEntity.setPositionAndUpdate(holoEntity.posX, y, holoEntity.posZ);
+                h.setPositionAndUpdate(h.posX, y, h.posZ);
             }
             return false;
         }
@@ -165,7 +166,7 @@ public class ElevatorTile extends GenericTileEntity implements IGuiTile, ITickab
         Set<UUID> toRemove = new HashSet<>();
         for (Map.Entry<UUID, Integer> entry : playerToHoloGui.entrySet()) {
             Entity entity = world.getEntityByID(entry.getValue());
-            if (!(entity instanceof HoloGuiEntity)) {
+            if (!(entity instanceof IHoloGuiEntity)) {
                 toRemove.add(entry.getKey());
             }
         }
@@ -299,19 +300,20 @@ public class ElevatorTile extends GenericTileEntity implements IGuiTile, ITickab
 
 
     @Override
-    public IGuiComponent createGui(String tag) {
+    public IGuiComponent createGui(String tag, IGuiComponentRegistry registry) {
         if (TAG_ELEVATOR.equals(tag)) {
-            HoloPanel panel = new HoloPanel(0, 0, 8, 8);
+            IPanel panel = registry.panel(0, 0, 8, 8);
             List<Integer> floors = findFloors();
 
             if (!floors.isEmpty()) {
-                panel.add(new HoloText(0, 0, 1, 1, "Floor", 0xaaccff));
+                panel.add(registry.text(0, 0, 1, 1).text("Floor").color(0xaaccff));
                 int x = 0;
                 int y = 1;
                 int idx = 1;
                 for (Integer floor : floors) {
                     int finalIdx = idx;
-                    panel.add(new HoloTextButton(x, y, 1, 1, "" + idx)
+                    panel.add(registry.button(x, y, 1, 1)
+                            .text("" + idx)
                             .hitClientEvent((component, player, entity1, x1, y1) -> {
                                 moveToFloor = finalIdx - 1;
                                 player.setPosition(pos.getX() + .5, player.posY, pos.getZ() + .5);
@@ -324,23 +326,23 @@ public class ElevatorTile extends GenericTileEntity implements IGuiTile, ITickab
                     idx++;
                 }
             } else {
-                panel.add(new HoloText(0, 0, 1, 1, "Jump: go up", 0xaaccff))
-                        .add(new HoloText(0, 1, 1, 1, "Crouch: go down", 0xaaccff));
+                panel.add(registry.text(0, 0, 1, 1).text("Jump: go up").color(0xaaccff))
+                        .add(registry.text(0, 1, 1, 1).text("Crouch: go down").color(0xaaccff));
             }
 
             return panel;
         } else {
-            return new HoloPanel(0, 0, 8, 8)
-                    .add(new HoloText(0, 2, 1, 1, "Height", 0xaaccff))
-                    .add(new HoloNumber(3, 4, 1, 1, 0xffffff, (p,h) -> getHeight()))
+            return registry.panel(0, 0, 8, 8)
+                    .add(registry.text(0, 2, 1, 1).text("Height").color(0xaaccff))
+                    .add(registry.number(3, 4, 1, 1).color(0xffffff).getter((p,h) -> getHeight()))
 
-                    .add(new HoloButton(1, 4, 1, 1).image(128 + 32, 128 + 16).hover(128 + 32 + 16, 128 + 16)
+                    .add(registry.iconButton(1, 4, 1, 1).image(128 + 32, 128 + 16).hover(128 + 32 + 16, 128 + 16)
                             .hitEvent((component, player, entity1, x, y) -> changeHeight(-8)))
-                    .add(new HoloButton(2, 4, 1, 1).image(128 + 32, 128).hover(128 + 32 + 16, 128)
+                    .add(registry.iconButton(2, 4, 1, 1).image(128 + 32, 128).hover(128 + 32 + 16, 128)
                             .hitEvent((component, player, entity1, x, y) -> changeHeight(-1)))
-                    .add(new HoloButton(5, 4, 1, 1).image(128, 128).hover(128 + 16, 128)
+                    .add(registry.iconButton(5, 4, 1, 1).image(128, 128).hover(128 + 16, 128)
                             .hitEvent((component, player, entity1, x, y) -> changeHeight(1)))
-                    .add(new HoloButton(6, 4, 1, 1).image(128, 128 + 16).hover(128 + 16, 128 + 16)
+                    .add(registry.iconButton(6, 4, 1, 1).image(128, 128 + 16).hover(128 + 16, 128 + 16)
                             .hitEvent((component, player, entity1, x, y) -> changeHeight(8)))
                     ;
         }

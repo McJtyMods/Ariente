@@ -14,7 +14,6 @@ import mcjty.ariente.blocks.utility.wireless.*;
 import mcjty.ariente.cables.ConnectorBlock;
 import mcjty.ariente.cables.NetCableBlock;
 import mcjty.ariente.facade.FacadeBlock;
-import mcjty.ariente.gui.HoloGuiHandler;
 import mcjty.lib.blocks.BaseBlock;
 import mcjty.lib.blocks.GenericBlock;
 import mcjty.lib.builder.BaseBlockBuilder;
@@ -181,7 +180,7 @@ public class ModBlocks {
                 .property(LockTile.LOCKED)
                 .flags(BlockFlags.NON_OPAQUE, BlockFlags.NON_FULLCUBE, BlockFlags.RENDER_SOLID, BlockFlags.RENDER_CUTOUT)
                 .boundingBox((state, source, pos) -> getFlatBox(state))
-                .activateAction((world, pos, player, hand, side, hitX, hitY, hitZ) -> HoloGuiHandler.openHoloGui(world, pos, player))
+                .activateAction((world, pos, player, hand, side, hitX, hitY, hitZ) -> Ariente.guiHandler.openHoloGui(world, pos, player))
                 .info("message.ariente.shiftmessage")
                 .infoExtended("message.ariente.lock")
                 .build();
@@ -191,7 +190,7 @@ public class ModBlocks {
                 .property(WirelessLockTile.LOCKED)
                 .flags(BlockFlags.NON_OPAQUE, BlockFlags.NON_FULLCUBE, BlockFlags.RENDER_SOLID, BlockFlags.RENDER_CUTOUT)
                 .boundingBox((state, source, pos) -> getFlatBox(state))
-                .activateAction((world, pos, player, hand, side, hitX, hitY, hitZ) -> HoloGuiHandler.openHoloGui(world, pos, player))
+                .activateAction((world, pos, player, hand, side, hitX, hitY, hitZ) -> Ariente.guiHandler.openHoloGui(world, pos, player))
                 .info("message.ariente.shiftmessage")
                 .infoExtended("message.ariente.wireless_lock")
                 .infoExtendedParameter(ItemStackTools.intGetter("channel", -1))
@@ -236,7 +235,7 @@ public class ModBlocks {
                 .rotationType(BaseBlock.RotationType.HORIZROTATION)
                 .flags(BlockFlags.REDSTONE_CHECK, BlockFlags.RENDER_SOLID, BlockFlags.RENDER_CUTOUT)
                 .property(NegariteGeneratorTile.WORKING)
-                .activateAction((world, pos, player, hand, side, hitX, hitY, hitZ) -> HoloGuiHandler.openHoloGui(world, pos, player))
+                .activateAction((world, pos, player, hand, side, hitX, hitY, hitZ) -> Ariente.guiHandler.openHoloGui(world, pos, player))
                 .info("message.ariente.shiftmessage")
                 .infoExtended("message.ariente.negarite_generator")
                 .build();
@@ -247,7 +246,7 @@ public class ModBlocks {
                 .rotationType(BaseBlock.RotationType.HORIZROTATION)
                 .flags(BlockFlags.REDSTONE_CHECK, BlockFlags.RENDER_SOLID, BlockFlags.RENDER_CUTOUT)
                 .property(PosiriteGeneratorTile.WORKING)
-                .activateAction((world, pos, player, hand, side, hitX, hitY, hitZ) -> HoloGuiHandler.openHoloGui(world, pos, player))
+                .activateAction((world, pos, player, hand, side, hitX, hitY, hitZ) -> Ariente.guiHandler.openHoloGui(world, pos, player))
                 .info("message.ariente.shiftmessage")
                 .infoExtended("message.ariente.posirite_generator")
                 .build();
@@ -259,7 +258,7 @@ public class ModBlocks {
                 .property(NegariteTankTile.LOWER)
                 .property(NegariteTankTile.UPPER)
                 .rotationType(BaseBlock.RotationType.NONE)
-                .activateAction((world, pos, player, hand, side, hitX, hitY, hitZ) -> HoloGuiHandler.openHoloGui(world, pos, player))
+                .activateAction((world, pos, player, hand, side, hitX, hitY, hitZ) -> Ariente.guiHandler.openHoloGui(world, pos, player))
                 .info("message.ariente.shiftmessage")
                 .infoExtended("message.ariente.negarite_tank")
                 .build();
@@ -271,7 +270,7 @@ public class ModBlocks {
                 .property(PosiriteTankTile.LOWER)
                 .property(PosiriteTankTile.UPPER)
                 .rotationType(BaseBlock.RotationType.NONE)
-                .activateAction((world, pos, player, hand, side, hitX, hitY, hitZ) -> HoloGuiHandler.openHoloGui(world, pos, player))
+                .activateAction((world, pos, player, hand, side, hitX, hitY, hitZ) -> Ariente.guiHandler.openHoloGui(world, pos, player))
                 .info("message.ariente.shiftmessage")
                 .infoExtended("message.ariente.posirite_tank")
                 .build();
@@ -293,7 +292,7 @@ public class ModBlocks {
                 .emptyContainer()
                 .flags(BlockFlags.RENDER_SOLID, BlockFlags.RENDER_TRANSLUCENT)
                 .rotationType(BaseBlock.RotationType.NONE)
-                .activateAction((world, pos, player, hand, side, hitX, hitY, hitZ) -> HoloGuiHandler.openHoloGui(world, pos, player))
+                .activateAction((world, pos, player, hand, side, hitX, hitY, hitZ) -> Ariente.guiHandler.openHoloGui(world, pos, player))
                 .info("message.ariente.shiftmessage")
                 .infoExtended("message.ariente.elevator")
                 .build();
@@ -303,7 +302,7 @@ public class ModBlocks {
                 .emptyContainer()
                 .rotationType(BaseBlock.RotationType.NONE)
                 .flags(BlockFlags.NON_OPAQUE, BlockFlags.NON_FULLCUBE, BlockFlags.NO_COLLISION)
-                .activateAction((world, pos, player, hand, side, hitX, hitY, hitZ) -> HoloGuiHandler.openHoloGui(world, pos, player))
+                .activateAction((world, pos, player, hand, side, hitX, hitY, hitZ) -> Ariente.guiHandler.openHoloGui(world, pos, player))
                 .boundingBox((state, source, pos) -> FLAT_BLOCK_AABB)
                 .info("message.ariente.shiftmessage")
                 .infoExtended("message.ariente.level_marker")
@@ -314,7 +313,7 @@ public class ModBlocks {
                 .emptyContainer()
                 .rotationType(BaseBlock.RotationType.HORIZROTATION)
                 .flags(BlockFlags.NON_OPAQUE, BlockFlags.NON_FULLCUBE)
-                .activateAction((world, pos, player, hand, side, hitX, hitY, hitZ) -> HoloGuiHandler.openHoloGui(world, pos, player))
+                .activateAction((world, pos, player, hand, side, hitX, hitY, hitZ) -> Ariente.guiHandler.openHoloGui(world, pos, player))
                 .addCollisionBoxToList(DoorMarkerTile::addCollisionBoxToList)
                 .boundingBox(DoorMarkerTile::getCollisionBoundingBox)
                 .getAIPathNodeType(DoorMarkerTile::getAiPathNodeType)
@@ -337,7 +336,7 @@ public class ModBlocks {
                 .emptyContainer()
                 .flags(BlockFlags.REDSTONE_CHECK)
                 .rotationType(BaseBlock.RotationType.NONE)
-                .activateAction((world, pos, player, hand, side, hitX, hitY, hitZ) -> HoloGuiHandler.openHoloGui(world, pos, player))
+                .activateAction((world, pos, player, hand, side, hitX, hitY, hitZ) -> Ariente.guiHandler.openHoloGui(world, pos, player))
                 .info("message.ariente.shiftmessage")
                 .infoExtended("message.ariente.forcefield")
                 .build();

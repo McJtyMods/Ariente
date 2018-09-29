@@ -3,13 +3,13 @@ package mcjty.ariente.blocks.defense;
 import mcjty.ariente.ai.CityAI;
 import mcjty.ariente.ai.CityAISystem;
 import mcjty.ariente.ai.IAlarmMode;
+import mcjty.ariente.api.hologui.IGuiComponent;
+import mcjty.ariente.api.hologui.IGuiComponentRegistry;
+import mcjty.ariente.api.hologui.IGuiTile;
 import mcjty.ariente.cities.ICityEquipment;
 import mcjty.ariente.config.ArienteConfiguration;
 import mcjty.ariente.config.DamageConfiguration;
 import mcjty.ariente.config.PowerConfiguration;
-import mcjty.ariente.gui.IGuiComponent;
-import mcjty.ariente.gui.IGuiTile;
-import mcjty.ariente.gui.components.*;
 import mcjty.ariente.items.KeyCardItem;
 import mcjty.ariente.network.ArienteMessages;
 import mcjty.ariente.power.IPowerReceiver;
@@ -489,25 +489,26 @@ public class ForceFieldTile extends GenericTileEntity implements IGuiTile, ITick
     }
 
     @Override
-    public IGuiComponent createGui(String tag) {
-        return new HoloPanel(0, 0, 8, 8)
-                .add(new HoloText(0, 1, 1, 1, "Radius", 0xaaccff))
-                .add(new HoloNumber(3, 2, 1, 1, 0xffffff, (p,h) -> getScale()))
+    public IGuiComponent createGui(String tag, IGuiComponentRegistry registry) {
+        return registry.panel(0, 0, 8, 8)
+                .add(registry.text(0, 1, 1, 1).text("Radius").color(0xaaccff))
+                .add(registry.number(3, 2, 1, 1).color(0xffffff).getter((p,h) -> getScale()))
 
-                .add(new HoloButton(1, 2, 1, 1).image(128 + 32, 128 + 16).hover(128 + 32 + 16, 128 + 16)
+                .add(registry.iconButton(1, 2, 1, 1).image(128 + 32, 128 + 16).hover(128 + 32 + 16, 128 + 16)
                         .hitEvent((component, player, entity1, x, y) -> changeScale(-8)))
-                .add(new HoloButton(2, 2, 1, 1).image(128 + 32, 128).hover(128 + 32 + 16, 128)
+                .add(registry.iconButton(2, 2, 1, 1).image(128 + 32, 128).hover(128 + 32 + 16, 128)
                         .hitEvent((component, player, entity1, x, y) -> changeScale(-1)))
-                .add(new HoloButton(5, 2, 1, 1).image(128, 128).hover(128 + 16, 128)
+                .add(registry.iconButton(5, 2, 1, 1).image(128, 128).hover(128 + 16, 128)
                         .hitEvent((component, player, entity1, x, y) -> changeScale(1)))
-                .add(new HoloButton(6, 2, 1, 1).image(128, 128 + 16).hover(128 + 16, 128 + 16)
+                .add(registry.iconButton(6, 2, 1, 1).image(128, 128 + 16).hover(128 + 16, 128 + 16)
                         .hitEvent((component, player, entity1, x, y) -> changeScale(8)))
 
-                .add(new HoloText(0, 4, 1, 1, "Field Integrity", 0xaaccff))
-                .add(new HoloText(1, 5, 1, 1, () -> getFieldIntegrity() + "%", 0xffffff))
+                .add(registry.text(0, 4, 1, 1).text("Field Integrity").color(0xaaccff))
+                .add(registry.text(1, 5, 1, 1).text(() -> getFieldIntegrity() + "%").color(0xffffff))
 
 
-                .add(new HoloMode(7, 6, 1, 1, this::getRSModeInt)
+                .add(registry.modeToggle(7, 6, 1, 1)
+                        .getter(this::getRSModeInt)
                         .choice(128, 128+32)
                         .choice(128+16, 128+32)
                         .choice(128+32, 128+32)

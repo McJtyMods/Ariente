@@ -1,14 +1,11 @@
 package mcjty.ariente.blocks.utility.wireless;
 
+import mcjty.ariente.Ariente;
+import mcjty.ariente.api.hologui.IGuiComponent;
+import mcjty.ariente.api.hologui.IGuiComponentRegistry;
+import mcjty.ariente.api.hologui.IGuiTile;
 import mcjty.ariente.blocks.utility.ILockable;
 import mcjty.ariente.blocks.utility.door.DoorMarkerTile;
-import mcjty.ariente.gui.HoloGuiHandler;
-import mcjty.ariente.gui.IGuiComponent;
-import mcjty.ariente.gui.IGuiTile;
-import mcjty.ariente.gui.components.HoloButton;
-import mcjty.ariente.gui.components.HoloNumber;
-import mcjty.ariente.gui.components.HoloPanel;
-import mcjty.ariente.gui.components.HoloText;
 import mcjty.theoneprobe.api.IProbeHitData;
 import mcjty.theoneprobe.api.IProbeInfo;
 import mcjty.theoneprobe.api.ProbeMode;
@@ -213,34 +210,34 @@ public class WirelessLockTile extends SignalChannelTileEntity implements ILockab
     }
 
     @Override
-    public IGuiComponent createGui(String tag) {
+    public IGuiComponent createGui(String tag, IGuiComponentRegistry registry) {
         if (isLocked()) {
-            return HoloGuiHandler.createNoAccessPanel();
+            return Ariente.guiHandler.createNoAccessPanel();
         }
-        return new HoloPanel(0, 0, 8, 8)
-                .add(new HoloText(0, 1, 1, 1, "Horizontal", 0xaaccff))
-                .add(new HoloNumber(3, 2, 1, 1, 0xffffff, (p,h) -> getHorizontalRange()))
+        return registry.panel(0, 0, 8, 8)
+                .add(registry.text(0, 1, 1, 1).text("Horizontal").color(0xaaccff))
+                .add(registry.number(3, 2, 1, 1).color(0xffffff).getter((p,h) -> getHorizontalRange()))
 
-                .add(new HoloButton(1, 2, 1, 1).image(128 + 32, 128 + 16).hover(128 + 32 + 16, 128 + 16)
+                .add(registry.iconButton(1, 2, 1, 1).image(128 + 32, 128 + 16).hover(128 + 32 + 16, 128 + 16)
                         .hitEvent((component, player, entity1, x, y) -> changeHorizontalRange(-8)))
-                .add(new HoloButton(2, 2, 1, 1).image(128 + 32, 128).hover(128 + 32 + 16, 128)
+                .add(registry.iconButton(2, 2, 1, 1).image(128 + 32, 128).hover(128 + 32 + 16, 128)
                         .hitEvent((component, player, entity1, x, y) -> changeHorizontalRange(-1)))
-                .add(new HoloButton(5, 2, 1, 1).image(128, 128).hover(128 + 16, 128)
+                .add(registry.iconButton(5, 2, 1, 1).image(128, 128).hover(128 + 16, 128)
                         .hitEvent((component, player, entity1, x, y) -> changeHorizontalRange(1)))
-                .add(new HoloButton(6, 2, 1, 1).image(128, 128 + 16).hover(128 + 16, 128 + 16)
+                .add(registry.iconButton(6, 2, 1, 1).image(128, 128 + 16).hover(128 + 16, 128 + 16)
                         .hitEvent((component, player, entity1, x, y) -> changeHorizontalRange(8)))
 
 
-                .add(new HoloText(0, 4, 1, 1, "Vertical", 0xaaccff))
-                .add(new HoloNumber(3, 5, 1, 1, 0xffffff, (p,h) -> getVerticalRange()))
+                .add(registry.text(0, 4, 1, 1).text("Vertical").color(0xaaccff))
+                .add(registry.number(3, 5, 1, 1).color(0xffffff).getter((p,h) -> getVerticalRange()))
 
-                .add(new HoloButton(1, 5, 1, 1).image(128 + 32, 128 + 16).hover(128 + 32 + 16, 128 + 16)
+                .add(registry.iconButton(1, 5, 1, 1).image(128 + 32, 128 + 16).hover(128 + 32 + 16, 128 + 16)
                         .hitEvent((component, player, entity1, x, y) -> changeVerticalRange(-8)))
-                .add(new HoloButton(2, 5, 1, 1).image(128 + 32, 128).hover(128 + 32 + 16, 128)
+                .add(registry.iconButton(2, 5, 1, 1).image(128 + 32, 128).hover(128 + 32 + 16, 128)
                         .hitEvent((component, player, entity1, x, y) -> changeVerticalRange(-1)))
-                .add(new HoloButton(5, 5, 1, 1).image(128, 128).hover(128 + 16, 128)
+                .add(registry.iconButton(5, 5, 1, 1).image(128, 128).hover(128 + 16, 128)
                         .hitEvent((component, player, entity1, x, y) -> changeVerticalRange(1)))
-                .add(new HoloButton(6, 5, 1, 1).image(128, 128 + 16).hover(128 + 16, 128 + 16)
+                .add(registry.iconButton(6, 5, 1, 1).image(128, 128 + 16).hover(128 + 16, 128 + 16)
                         .hitEvent((component, player, entity1, x, y) -> changeVerticalRange(8)))
                 ;
     }

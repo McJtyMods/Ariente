@@ -1,14 +1,15 @@
 package mcjty.ariente.blocks.utility;
 
+import mcjty.ariente.Ariente;
 import mcjty.ariente.ai.CityAI;
+import mcjty.ariente.api.hologui.IGuiComponent;
+import mcjty.ariente.api.hologui.IGuiComponentRegistry;
+import mcjty.ariente.api.hologui.IGuiTile;
 import mcjty.ariente.blocks.ModBlocks;
 import mcjty.ariente.cities.City;
 import mcjty.ariente.cities.CityPlan;
 import mcjty.ariente.cities.CityTools;
 import mcjty.ariente.cities.ICityEquipment;
-import mcjty.ariente.gui.HoloGuiHandler;
-import mcjty.ariente.gui.IGuiComponent;
-import mcjty.ariente.gui.IGuiTile;
 import mcjty.ariente.items.KeyCardItem;
 import mcjty.ariente.network.ArienteMessages;
 import mcjty.ariente.security.IKeyCardSlot;
@@ -254,7 +255,7 @@ public class StorageTile extends GenericTileEntity implements IGuiTile, IInvento
 
     public void giveToPlayer(int type, EntityPlayer player) {
         if (locked) {
-            HoloGuiHandler.openHoloGui(world, pos, player);
+            Ariente.guiHandler.openHoloGui(world, pos, player);
             return;
         }
         if (totals[type] == 0) {
@@ -348,14 +349,14 @@ public class StorageTile extends GenericTileEntity implements IGuiTile, IInvento
                 if (tileEntity instanceof StorageTile) {
                     StorageTile te = (StorageTile) tileEntity;
                     if (te.isLocked()) {
-                        HoloGuiHandler.openHoloGui(world, pos, player);
+                        Ariente.guiHandler.openHoloGui(world, pos, player);
                         return true;
                     }
 
                     int type = calculateHitIndex(sx, sy, sz, k);
 
                     if (type == -1) {
-                        HoloGuiHandler.openHoloGui(world, pos, player);
+                        Ariente.guiHandler.openHoloGui(world, pos, player);
                         return true;
                     }
 
@@ -458,8 +459,8 @@ public class StorageTile extends GenericTileEntity implements IGuiTile, IInvento
     }
 
     @Override
-    public IGuiComponent createGui(String tag) {
-        return HoloGuiHandler.createNoAccessPanel();
+    public IGuiComponent createGui(String tag, IGuiComponentRegistry registry) {
+        return Ariente.guiHandler.createNoAccessPanel();
     }
 
     @Override

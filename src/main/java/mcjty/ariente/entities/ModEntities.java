@@ -1,9 +1,9 @@
 package mcjty.ariente.entities;
 
 import mcjty.ariente.Ariente;
-import mcjty.ariente.gui.HoloGuiEntity;
-import mcjty.ariente.gui.HoloGuiEntityRender;
-import mcjty.ariente.gui.HoloGuiEntitySmall;
+import mcjty.ariente.apiimp.hologui.HoloGuiEntity;
+import mcjty.ariente.apiimp.hologui.HoloGuiEntityRender;
+import mcjty.ariente.apiimp.hologui.HoloGuiEntitySmall;
 import net.minecraft.util.ResourceLocation;
 import net.minecraftforge.fml.client.registry.RenderingRegistry;
 import net.minecraftforge.fml.common.registry.EntityRegistry;

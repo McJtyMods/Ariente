@@ -1,5 +1,6 @@
 package mcjty.ariente.ai;
 
+import mcjty.ariente.api.hologui.IHoloGuiEntity;
 import mcjty.ariente.blocks.ModBlocks;
 import mcjty.ariente.blocks.aicore.AICoreTile;
 import mcjty.ariente.blocks.defense.ForceFieldTile;
@@ -14,7 +15,6 @@ import mcjty.ariente.cities.*;
 import mcjty.ariente.config.AIConfiguration;
 import mcjty.ariente.dimension.ArienteChunkGenerator;
 import mcjty.ariente.entities.*;
-import mcjty.ariente.gui.HoloGuiEntity;
 import mcjty.ariente.items.ModItems;
 import mcjty.ariente.items.modules.ArmorUpgradeType;
 import mcjty.ariente.items.modules.ModuleSupport;
@@ -214,7 +214,7 @@ public class CityAI {
                 Entity entity = world.getEntityByID(levitator);
                 if (entity != null) {
                     for (Entity passenger : entity.getPassengers()) {
-                        if (!(passenger instanceof HoloGuiEntity) && !(passenger instanceof EntityPlayer)) {
+                        if (!(passenger instanceof IHoloGuiEntity) && !(passenger instanceof EntityPlayer)) {
                             passenger.setDead();
                         }
                     }
@@ -262,7 +262,7 @@ public class CityAI {
 
     private void dismountAndKill(FluxLevitatorEntity levitatorEntity) {
         for (Entity passenger : levitatorEntity.getPassengers()) {
-            if (!(passenger instanceof HoloGuiEntity) && !(passenger instanceof EntityPlayer)) {
+            if (!(passenger instanceof IHoloGuiEntity) && !(passenger instanceof EntityPlayer)) {
                 passenger.dismountRidingEntity();
             }
         }

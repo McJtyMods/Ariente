@@ -1,9 +1,9 @@
 package mcjty.ariente.entities;
 
 import com.google.common.base.Optional;
+import mcjty.ariente.Ariente;
+import mcjty.ariente.api.hologui.IHoloGuiEntity;
 import mcjty.ariente.blocks.ModBlocks;
-import mcjty.ariente.gui.HoloGuiEntity;
-import mcjty.ariente.gui.HoloGuiHandler;
 import mcjty.ariente.gui.ModGuis;
 import mcjty.ariente.items.ModItems;
 import mcjty.lib.blocks.BaseBlock;
@@ -72,8 +72,8 @@ public class FluxLevitatorEntity extends Entity {
     protected float maxSpeedAirVertical = defaultMaxSpeedAirVertical;
     protected double dragAir = defaultDragAir;
 
-    private HoloGuiEntity holoGuiFront;
-    private HoloGuiEntity holoGuiBack;
+    private IHoloGuiEntity holoGuiFront;
+    private IHoloGuiEntity holoGuiBack;
 
     private BlockPos desiredDestination = null;
 
@@ -145,51 +145,51 @@ public class FluxLevitatorEntity extends Entity {
     @Override
     public void updatePassenger(Entity passenger) {
         if (this.isPassenger(passenger)) {
-            if (!(passenger instanceof HoloGuiEntity)) {
+            if (!(passenger instanceof IHoloGuiEntity)) {
                 super.updatePassenger(passenger);
             }
         }
     }
 
-    public HoloGuiEntity getHoloGuiFront() {
+    public IHoloGuiEntity getHoloGuiFront() {
         if (holoGuiFront == null) {
             if (getHoloFrontUUID() != null) {
-                for (HoloGuiEntity entity : world.getEntitiesWithinAABB(HoloGuiEntity.class, getEntityBoundingBox().grow(10))) {
-                    if (getHoloFrontUUID().equals(entity.getUniqueID())) {
-                        holoGuiFront = entity;
-                        holoGuiFront.startRiding(this);
+                for (Entity entity : world.getEntitiesWithinAABB(Ariente.guiHandler.getHoloEntityClass(), getEntityBoundingBox().grow(10))) {
+                    if (entity instanceof IHoloGuiEntity && getHoloFrontUUID().equals(entity.getUniqueID())) {
+                        holoGuiFront = (IHoloGuiEntity) entity;
+                        entity.startRiding(this);
                         break;
                     }
                 }
             }
             if (holoGuiFront == null && !world.isRemote ) {
-                HoloGuiEntity holoGui = HoloGuiHandler.openHoloGuiRelative(world, this, new Vec3d(0, .5, 1), ModGuis.GUI_LEVITATOR);
+                IHoloGuiEntity holoGui = Ariente.guiHandler.openHoloGuiRelative(world, this, new Vec3d(0, .5, 1), ModGuis.GUI_LEVITATOR);
                 holoGui.setTimeout(2000000000); // Never timeout
-                holoGui.startRiding(this);
+                holoGui.getEntity().startRiding(this);
                 this.holoGuiFront = holoGui;
-                setHoloFrontUUID(holoGui.getUniqueID());
+                setHoloFrontUUID(holoGui.getEntity().getUniqueID());
             }
         }
         return holoGuiFront;
     }
 
-    public HoloGuiEntity getHoloGuiBack() {
+    public IHoloGuiEntity getHoloGuiBack() {
         if (holoGuiBack == null) {
             if (getHoloBackUUID() != null) {
-                for (HoloGuiEntity entity : world.getEntitiesWithinAABB(HoloGuiEntity.class, getEntityBoundingBox().grow(10))) {
+                for (Entity entity : world.getEntitiesWithinAABB(Ariente.guiHandler.getHoloEntityClass(), getEntityBoundingBox().grow(10))) {
                     if (getHoloBackUUID().equals(entity.getUniqueID())) {
-                        holoGuiBack = entity;
-                        holoGuiBack.startRiding(this);
+                        holoGuiBack = (IHoloGuiEntity) entity;
+                        entity.startRiding(this);
                         break;
                     }
                 }
             }
             if (holoGuiBack == null && !world.isRemote ) {
-                HoloGuiEntity holoGui = HoloGuiHandler.openHoloGuiRelative(world, this, new Vec3d(0, .5, 1), ModGuis.GUI_LEVITATOR);
+                IHoloGuiEntity holoGui = Ariente.guiHandler.openHoloGuiRelative(world, this, new Vec3d(0, .5, 1), ModGuis.GUI_LEVITATOR);
                 holoGui.setTimeout(2000000000); // Never timeout
-                holoGui.startRiding(this);
+                holoGui.getEntity().startRiding(this);
                 this.holoGuiBack = holoGui;
-                setHoloBackUUID(holoGui.getUniqueID());
+                setHoloBackUUID(holoGui.getEntity().getUniqueID());
             }
         }
         return holoGuiBack;
@@ -317,13 +317,13 @@ public class FluxLevitatorEntity extends Entity {
     @Override
     public void setDead() {
         if (getHoloGuiFront() != null) {
-            holoGuiFront.dismountRidingEntity();
-            holoGuiFront.setDead();
+            holoGuiFront.getEntity().dismountRidingEntity();
+            holoGuiFront.getEntity().setDead();
             holoGuiFront = null;
         }
         if (getHoloGuiBack() != null) {
-            holoGuiBack.dismountRidingEntity();
-            holoGuiBack.setDead();
+            holoGuiBack.getEntity().dismountRidingEntity();
+            holoGuiBack.getEntity().setDead();
             holoGuiBack = null;
         }
         super.setDead();
@@ -526,8 +526,8 @@ public class FluxLevitatorEntity extends Entity {
                 double y = vec3d.y+.38;
                 double z = vec3d.z;
 
-                holoGuiFront.setLocationAndAngles(x, y, z, yaw, pitch);
-                holoGuiFront.setPositionAndUpdate(x, y, z);
+                holoGuiFront.getEntity().setLocationAndAngles(x, y, z, yaw, pitch);
+                holoGuiFront.getEntity().setPositionAndUpdate(x, y, z);
             }
         }
         if (getHoloGuiBack() != null) {
@@ -541,8 +541,8 @@ public class FluxLevitatorEntity extends Entity {
                 double y = vec3d.y+.38;
                 double z = vec3d.z;
 
-                holoGuiBack.setLocationAndAngles(x, y, z, yaw, pitch);
-                holoGuiBack.setPositionAndUpdate(x, y, z);
+                holoGuiBack.getEntity().setLocationAndAngles(x, y, z, yaw, pitch);
+                holoGuiBack.getEntity().setPositionAndUpdate(x, y, z);
             }
         }
     }

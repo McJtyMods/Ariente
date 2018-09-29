@@ -1,14 +1,13 @@
 package mcjty.ariente.blocks.utility.door;
 
+import mcjty.ariente.Ariente;
+import mcjty.ariente.api.hologui.IGuiComponent;
+import mcjty.ariente.api.hologui.IGuiComponentRegistry;
+import mcjty.ariente.api.hologui.IGuiTile;
 import mcjty.ariente.blocks.ModBlocks;
 import mcjty.ariente.blocks.utility.ILockable;
 import mcjty.ariente.config.UtilityConfiguration;
 import mcjty.ariente.entities.SoldierEntity;
-import mcjty.ariente.gui.HoloGuiHandler;
-import mcjty.ariente.gui.IGuiComponent;
-import mcjty.ariente.gui.IGuiTile;
-import mcjty.ariente.gui.components.HoloPanel;
-import mcjty.ariente.gui.components.HoloToggleIcon;
 import mcjty.ariente.sounds.ModSounds;
 import mcjty.lib.blocks.BaseBlock;
 import mcjty.lib.tileentity.GenericTileEntity;
@@ -265,30 +264,30 @@ public class DoorMarkerTile extends GenericTileEntity implements ITickable, IGui
     }
 
     @Override
-    public IGuiComponent createGui(String tag) {
+    public IGuiComponent createGui(String tag, IGuiComponentRegistry registry) {
         if (isLocked()) {
-            return HoloGuiHandler.createNoAccessPanel();
+            return Ariente.guiHandler.createNoAccessPanel();
         }
-        return new HoloPanel(0, 0, 8, 8)
-                .add(new HoloToggleIcon(1, 1, 1, 1, (player) -> isIconSelected(0)).image(4*16, 12*16).selected(64+4*16, 12*16).hitEvent((component, player, entity1, x, y) -> setIconIndex(0)))
-                .add(new HoloToggleIcon(3, 1, 1, 1, (player) -> isIconSelected(1)).image(5*16, 12*16).selected(64+5*16, 12*16).hitEvent((component, player, entity1, x, y) -> setIconIndex(1)))
-                .add(new HoloToggleIcon(5, 1, 1, 1, (player) -> isIconSelected(2)).image(6*16, 12*16).selected(64+6*16, 12*16).hitEvent((component, player, entity1, x, y) -> setIconIndex(2)))
-                .add(new HoloToggleIcon(7, 1, 1, 1, (player) -> isIconSelected(3)).image(7*16, 12*16).selected(64+7*16, 12*16).hitEvent((component, player, entity1, x, y) -> setIconIndex(3)))
+        return registry.panel(0, 0, 8, 8)
+                .add(registry.iconToggle(1, 1, 1, 1).getter((player) -> isIconSelected(0)).image(4*16, 12*16).selected(64+4*16, 12*16).hitEvent((component, player, entity1, x, y) -> setIconIndex(0)))
+                .add(registry.iconToggle(3, 1, 1, 1).getter((player) -> isIconSelected(1)).image(5*16, 12*16).selected(64+5*16, 12*16).hitEvent((component, player, entity1, x, y) -> setIconIndex(1)))
+                .add(registry.iconToggle(5, 1, 1, 1).getter((player) -> isIconSelected(2)).image(6*16, 12*16).selected(64+6*16, 12*16).hitEvent((component, player, entity1, x, y) -> setIconIndex(2)))
+                .add(registry.iconToggle(7, 1, 1, 1).getter((player) -> isIconSelected(3)).image(7*16, 12*16).selected(64+7*16, 12*16).hitEvent((component, player, entity1, x, y) -> setIconIndex(3)))
 
-                .add(new HoloToggleIcon(1, 3, 1, 1, (player) -> isIconSelected(4)).image(4*16, 13*16).selected(64+4*16, 13*16).hitEvent((component, player, entity1, x, y) -> setIconIndex(4)))
-                .add(new HoloToggleIcon(3, 3, 1, 1, (player) -> isIconSelected(5)).image(5*16, 13*16).selected(64+5*16, 13*16).hitEvent((component, player, entity1, x, y) -> setIconIndex(5)))
-                .add(new HoloToggleIcon(5, 3, 1, 1, (player) -> isIconSelected(6)).image(6*16, 13*16).selected(64+6*16, 13*16).hitEvent((component, player, entity1, x, y) -> setIconIndex(6)))
-                .add(new HoloToggleIcon(7, 3, 1, 1, (player) -> isIconSelected(7)).image(7*16, 13*16).selected(64+7*16, 13*16).hitEvent((component, player, entity1, x, y) -> setIconIndex(7)))
+                .add(registry.iconToggle(1, 3, 1, 1).getter((player) -> isIconSelected(4)).image(4*16, 13*16).selected(64+4*16, 13*16).hitEvent((component, player, entity1, x, y) -> setIconIndex(4)))
+                .add(registry.iconToggle(3, 3, 1, 1).getter((player) -> isIconSelected(5)).image(5*16, 13*16).selected(64+5*16, 13*16).hitEvent((component, player, entity1, x, y) -> setIconIndex(5)))
+                .add(registry.iconToggle(5, 3, 1, 1).getter((player) -> isIconSelected(6)).image(6*16, 13*16).selected(64+6*16, 13*16).hitEvent((component, player, entity1, x, y) -> setIconIndex(6)))
+                .add(registry.iconToggle(7, 3, 1, 1).getter((player) -> isIconSelected(7)).image(7*16, 13*16).selected(64+7*16, 13*16).hitEvent((component, player, entity1, x, y) -> setIconIndex(7)))
 
-                .add(new HoloToggleIcon(1, 5, 1, 1, (player) -> isIconSelected(8)).image(4*16, 14*16).selected(64+4*16, 14*16).hitEvent((component, player, entity1, x, y) -> setIconIndex(8)))
-                .add(new HoloToggleIcon(3, 5, 1, 1, (player) -> isIconSelected(9)).image(5*16, 14*16).selected(64+5*16, 14*16).hitEvent((component, player, entity1, x, y) -> setIconIndex(9)))
-                .add(new HoloToggleIcon(5, 5, 1, 1, (player) -> isIconSelected(10)).image(6*16, 14*16).selected(64+6*16, 14*16).hitEvent((component, player, entity1, x, y) -> setIconIndex(10)))
-                .add(new HoloToggleIcon(7, 5, 1, 1, (player) -> isIconSelected(11)).image(7*16, 14*16).selected(64+7*16, 14*16).hitEvent((component, player, entity1, x, y) -> setIconIndex(11)))
+                .add(registry.iconToggle(1, 5, 1, 1).getter((player) -> isIconSelected(8)).image(4*16, 14*16).selected(64+4*16, 14*16).hitEvent((component, player, entity1, x, y) -> setIconIndex(8)))
+                .add(registry.iconToggle(3, 5, 1, 1).getter((player) -> isIconSelected(9)).image(5*16, 14*16).selected(64+5*16, 14*16).hitEvent((component, player, entity1, x, y) -> setIconIndex(9)))
+                .add(registry.iconToggle(5, 5, 1, 1).getter((player) -> isIconSelected(10)).image(6*16, 14*16).selected(64+6*16, 14*16).hitEvent((component, player, entity1, x, y) -> setIconIndex(10)))
+                .add(registry.iconToggle(7, 5, 1, 1).getter((player) -> isIconSelected(11)).image(7*16, 14*16).selected(64+7*16, 14*16).hitEvent((component, player, entity1, x, y) -> setIconIndex(11)))
 
-                .add(new HoloToggleIcon(1, 7, 1, 1, (player) -> isIconSelected(12)).image(4*16, 15*16).selected(64+4*16, 15*16).hitEvent((component, player, entity1, x, y) -> setIconIndex(12)))
-                .add(new HoloToggleIcon(3, 7, 1, 1, (player) -> isIconSelected(13)).image(5*16, 15*16).selected(64+5*16, 15*16).hitEvent((component, player, entity1, x, y) -> setIconIndex(13)))
-                .add(new HoloToggleIcon(5, 7, 1, 1, (player) -> isIconSelected(14)).image(6*16, 15*16).selected(64+6*16, 15*16).hitEvent((component, player, entity1, x, y) -> setIconIndex(14)))
-                .add(new HoloToggleIcon(7, 7, 1, 1, (player) -> isIconSelected(15)).image(7*16, 15*16).selected(64+7*16, 15*16).hitEvent((component, player, entity1, x, y) -> setIconIndex(15)))
+                .add(registry.iconToggle(1, 7, 1, 1).getter((player) -> isIconSelected(12)).image(4*16, 15*16).selected(64+4*16, 15*16).hitEvent((component, player, entity1, x, y) -> setIconIndex(12)))
+                .add(registry.iconToggle(3, 7, 1, 1).getter((player) -> isIconSelected(13)).image(5*16, 15*16).selected(64+5*16, 15*16).hitEvent((component, player, entity1, x, y) -> setIconIndex(13)))
+                .add(registry.iconToggle(5, 7, 1, 1).getter((player) -> isIconSelected(14)).image(6*16, 15*16).selected(64+6*16, 15*16).hitEvent((component, player, entity1, x, y) -> setIconIndex(14)))
+                .add(registry.iconToggle(7, 7, 1, 1).getter((player) -> isIconSelected(15)).image(7*16, 15*16).selected(64+7*16, 15*16).hitEvent((component, player, entity1, x, y) -> setIconIndex(15)))
                 ;
     }
 

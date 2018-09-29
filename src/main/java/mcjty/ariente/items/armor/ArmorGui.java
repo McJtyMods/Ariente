@@ -1,10 +1,12 @@
 package mcjty.ariente.items.armor;
 
-import mcjty.ariente.gui.HoloGuiEntity;
+import mcjty.ariente.Ariente;
+import mcjty.ariente.api.hologui.IGuiComponent;
+import mcjty.ariente.api.hologui.IGuiComponentRegistry;
+import mcjty.ariente.api.hologui.IHoloGuiEntity;
+import mcjty.ariente.api.hologui.components.IPanel;
 import mcjty.ariente.gui.HoloGuiTools;
-import mcjty.ariente.gui.IGuiComponent;
 import mcjty.ariente.gui.ModGuis;
-import mcjty.ariente.gui.components.*;
 import mcjty.ariente.items.ModItems;
 import mcjty.ariente.items.modules.ArmorModuleItem;
 import mcjty.ariente.items.modules.ModuleSupport;
@@ -18,136 +20,145 @@ import org.apache.commons.lang3.tuple.Pair;
 public class ArmorGui {
 
     public static IGuiComponent create(EntityPlayer player) {
-        HoloPanel panel = new HoloPanel(0, 0, 8, 8)
-                .add(new HoloText(0, 1, 1, 1, "Configure armor", 0xaaccff));
+        IGuiComponentRegistry registry = Ariente.guiHandler.getComponentRegistry();
+        IPanel panel = registry.panel(0, 0, 8, 8)
+                .add(registry.text(0, 1, 1, 1).text("Configure armor").color(0xaaccff));
         double x = 0.5;
         double y = 2.5;
-        y = createMenuEntry(player, panel, x, y, EntityEquipmentSlot.HEAD, ModItems.powerSuitHelmet);
-        y = createMenuEntry(player, panel, x, y, EntityEquipmentSlot.CHEST, ModItems.powerSuitChest);
-        y = createMenuEntry(player, panel, x, y, EntityEquipmentSlot.LEGS, ModItems.powerSuitLegs);
-        y = createMenuEntry(player, panel, x, y, EntityEquipmentSlot.FEET, ModItems.powerSuitBoots);
-        y = createMenuEntry(player, panel, x, y, EntityEquipmentSlot.MAINHAND, ModItems.enhancedEnergySabreItem);
+        y = createMenuEntry(registry, player, panel, x, y, EntityEquipmentSlot.HEAD, ModItems.powerSuitHelmet);
+        y = createMenuEntry(registry, player, panel, x, y, EntityEquipmentSlot.CHEST, ModItems.powerSuitChest);
+        y = createMenuEntry(registry, player, panel, x, y, EntityEquipmentSlot.LEGS, ModItems.powerSuitLegs);
+        y = createMenuEntry(registry, player, panel, x, y, EntityEquipmentSlot.FEET, ModItems.powerSuitBoots);
+        y = createMenuEntry(registry, player, panel, x, y, EntityEquipmentSlot.MAINHAND, ModItems.enhancedEnergySabreItem);
 
         if (y <= 2.6) {
             // No armor
-            panel.add(new HoloText(0, 3, 1, 1, "No power armor!", 0xff0000));
+            panel.add(registry.text(0, 3, 1, 1).text("No power armor!").color(0xff0000));
         }
 
         return panel;
     }
 
     public static IGuiComponent createHelmetGui(EntityPlayer player) {
+        IGuiComponentRegistry registry = Ariente.guiHandler.getComponentRegistry();
         EntityEquipmentSlot slot = EntityEquipmentSlot.HEAD;
 
-        HoloPanel panel = createPieceGui(slot);
+        IPanel panel = createPieceGui(registry, slot);
 
-        createModuleEntry(panel, slot, 1, 2, ModItems.moduleEnergy);
-        createModuleEntry(panel, slot, 5, 2, ModItems.moduleAutofeed);
-        createModuleEntry(panel, slot, 1, 3, ModItems.moduleArmor);
-        createModuleEntry(panel, slot, 5, 3, ModItems.moduleNightvision);
-        createModuleEntry(panel, slot, 1, 4, ModItems.moduleScramble);
+        createModuleEntry(registry, panel, slot, 1, 2, ModItems.moduleEnergy);
+        createModuleEntry(registry, panel, slot, 5, 2, ModItems.moduleAutofeed);
+        createModuleEntry(registry, panel, slot, 1, 3, ModItems.moduleArmor);
+        createModuleEntry(registry, panel, slot, 5, 3, ModItems.moduleNightvision);
+        createModuleEntry(registry, panel, slot, 1, 4, ModItems.moduleScramble);
 //        createModuleEntry(panel, slot, 5, 4, ModItems.moduleInvisibility);
 
-        addPowerGui(slot, panel);
+        addPowerGui(registry, slot, panel);
 
         return panel;
     }
 
     public static IGuiComponent createChestGui(EntityPlayer player) {
+        IGuiComponentRegistry registry = Ariente.guiHandler.getComponentRegistry();
         EntityEquipmentSlot slot = EntityEquipmentSlot.CHEST;
 
-        HoloPanel panel = createPieceGui(slot);
+        IPanel panel = createPieceGui(registry, slot);
 
-        createModuleEntry(panel, slot, 1, 2, ModItems.moduleEnergy);
-        createModuleEntry(panel, slot, 5, 2, ModItems.moduleAutofeed);
-        createModuleEntry(panel, slot, 1, 3, ModItems.moduleArmor);
-        createModuleEntry(panel, slot, 5, 3, ModItems.moduleForcefield);
-        createModuleEntry(panel, slot, 1, 4, ModItems.moduleRegeneration);
-        createModuleEntry(panel, slot, 5, 4, ModItems.moduleFlight);
+        createModuleEntry(registry, panel, slot, 1, 2, ModItems.moduleEnergy);
+        createModuleEntry(registry, panel, slot, 5, 2, ModItems.moduleAutofeed);
+        createModuleEntry(registry, panel, slot, 1, 3, ModItems.moduleArmor);
+        createModuleEntry(registry, panel, slot, 5, 3, ModItems.moduleForcefield);
+        createModuleEntry(registry, panel, slot, 1, 4, ModItems.moduleRegeneration);
+        createModuleEntry(registry, panel, slot, 5, 4, ModItems.moduleFlight);
 
-        addPowerGui(slot, panel);
+        addPowerGui(registry, slot, panel);
 
         return panel;
     }
 
     public static IGuiComponent createLegsGui(EntityPlayer player) {
+        IGuiComponentRegistry registry = Ariente.guiHandler.getComponentRegistry();
         EntityEquipmentSlot slot = EntityEquipmentSlot.LEGS;
 
-        HoloPanel panel = createPieceGui(slot);
+        IPanel panel = createPieceGui(registry, slot);
 
-        createModuleEntry(panel, slot, 1, 2, ModItems.moduleEnergy);
-        createModuleEntry(panel, slot, 5, 2, ModItems.moduleAutofeed);
-        createModuleEntry(panel, slot, 1, 3, ModItems.moduleArmor);
-        createModuleEntry(panel, slot, 5, 3, ModItems.moduleSpeed);
+        createModuleEntry(registry, panel, slot, 1, 2, ModItems.moduleEnergy);
+        createModuleEntry(registry, panel, slot, 5, 2, ModItems.moduleAutofeed);
+        createModuleEntry(registry, panel, slot, 1, 3, ModItems.moduleArmor);
+        createModuleEntry(registry, panel, slot, 5, 3, ModItems.moduleSpeed);
 
-        addPowerGui(slot, panel);
+        addPowerGui(registry, slot, panel);
 
         return panel;
     }
 
 
     public static IGuiComponent createBootsGui(EntityPlayer player) {
+        IGuiComponentRegistry registry = Ariente.guiHandler.getComponentRegistry();
         EntityEquipmentSlot slot = EntityEquipmentSlot.FEET;
 
-        HoloPanel panel = createPieceGui(slot);
+        IPanel panel = createPieceGui(registry, slot);
 
-        createModuleEntry(panel, slot, 1, 2, ModItems.moduleEnergy);
-        createModuleEntry(panel, slot, 5, 2, ModItems.moduleAutofeed);
-        createModuleEntry(panel, slot, 1, 3, ModItems.moduleArmor);
-        createModuleEntry(panel, slot, 5, 3, ModItems.moduleFeatherFalling);
-        createModuleEntry(panel, slot, 1, 4, ModItems.moduleStepassist);
+        createModuleEntry(registry, panel, slot, 1, 2, ModItems.moduleEnergy);
+        createModuleEntry(registry, panel, slot, 5, 2, ModItems.moduleAutofeed);
+        createModuleEntry(registry, panel, slot, 1, 3, ModItems.moduleArmor);
+        createModuleEntry(registry, panel, slot, 5, 3, ModItems.moduleFeatherFalling);
+        createModuleEntry(registry, panel, slot, 1, 4, ModItems.moduleStepassist);
 
-        addPowerGui(slot, panel);
+        addPowerGui(registry, slot, panel);
 
         return panel;
     }
 
     public static IGuiComponent createSabreGui(EntityPlayer player) {
+        IGuiComponentRegistry registry = Ariente.guiHandler.getComponentRegistry();
         EntityEquipmentSlot slot = EntityEquipmentSlot.MAINHAND;
 
-        HoloPanel panel = createPieceGui(slot);
+        IPanel panel = createPieceGui(registry, slot);
 
-        createModuleEntry(panel, slot, 1, 2, ModItems.moduleEnergy);
-        createModuleEntry(panel, slot, 5, 2, ModItems.moduleAutofeed);
-        createModuleEntry(panel, slot, 1, 3, ModItems.modulePower);
-        createModuleEntry(panel, slot, 5, 3, ModItems.moduleInhibit);
-        createModuleEntry(panel, slot, 1, 4, ModItems.moduleLooting);
-        createModuleEntry(panel, slot, 5, 4, ModItems.moduleFire);
+        createModuleEntry(registry, panel, slot, 1, 2, ModItems.moduleEnergy);
+        createModuleEntry(registry, panel, slot, 5, 2, ModItems.moduleAutofeed);
+        createModuleEntry(registry, panel, slot, 1, 3, ModItems.modulePower);
+        createModuleEntry(registry, panel, slot, 5, 3, ModItems.moduleInhibit);
+        createModuleEntry(registry, panel, slot, 1, 4, ModItems.moduleLooting);
+        createModuleEntry(registry, panel, slot, 5, 4, ModItems.moduleFire);
 
-        addPowerGui(slot, panel);
+        addPowerGui(registry, slot, panel);
 
         return panel;
     }
 
 
-
-    private static HoloPanel createPieceGui(EntityEquipmentSlot slot) {
-        HoloPanel panel = new HoloPanel(0, 0, 8, 8);
-        panel.add(new HoloText(0, 0, 1, 1, "Pwr", 0xaaccff));
-        panel.add(new HoloNumber(3, 0, 1, 1, 0xffffff, (p,h) -> calculatePowerUsage(p, slot))
-            .colorGetter(p -> calculatePowerColor(p, slot)));
-        panel.add(new HoloText(5, 0, 1, 1, "/", 0xaaccff));
-        panel.add(new HoloNumber(6, 0, 1, 1, 0xffffff, (p,h) -> calculateMaxPowerUsage(p, slot)));
+    private static IPanel createPieceGui(IGuiComponentRegistry registry, EntityEquipmentSlot slot) {
+        IPanel panel = registry.panel(0, 0, 8, 8);
+        panel.add(registry.text(0, 0, 1, 1).text("Pwr").color(0xaaccff));
+        panel.add(registry.number(3, 0, 1, 1)
+                .color(0xffffff)
+                .getter((p, h) -> calculatePowerUsage(p, slot))
+                .colorGetter(p -> calculatePowerColor(p, slot)));
+        panel.add(registry.text(5, 0, 1, 1).text("/").color(0xaaccff));
+        panel.add(registry.number(6, 0, 1, 1)
+                .color(0xffffff)
+                .getter((p, h) -> calculateMaxPowerUsage(p, slot)));
         return panel;
     }
 
-    private static void addPowerGui(EntityEquipmentSlot slot, HoloPanel panel) {
+    private static void addPowerGui(IGuiComponentRegistry registry, EntityEquipmentSlot slot, IPanel panel) {
         panel
-                .add(new HoloItemStack(0, 6, 1, 1, new ItemStack(ModItems.negariteDust)))
-                .add(new HoloNumber(1, 6, 1, 1, 0xffffff, (p,h) -> HoloGuiTools.countItem(p, ModItems.negariteDust)))
-                .add(new HoloButton(3, 6, 1, 1).image(128, 128).hover(128+16, 128)
+                .add(registry.stackIcon(0, 6, 1, 1).itemStack(new ItemStack(ModItems.negariteDust)))
+                .add(registry.number(1, 6, 1, 1).color(0xffffff).getter((p, h) -> HoloGuiTools.countItem(p, ModItems.negariteDust)))
+                .add(registry.iconButton(3, 6, 1, 1).image(128, 128).hover(128 + 16, 128)
                         .hitEvent((component, p, entity1, x, y) -> toArmor(p, slot, "negarite", ModItems.negariteDust, 1)))
-                .add(new HoloButton(4, 6, 1, 1).image(128, 128+16).hover(128+16, 128+16)
+                .add(registry.iconButton(4, 6, 1, 1).image(128, 128 + 16).hover(128 + 16, 128 + 16)
                         .hitEvent((component, p, entity1, x, y) -> toArmor(p, slot, "negarite", ModItems.negariteDust, 64)))
-                .add(new HoloNumber(5, 6, 1, 1,0xffffff, (p,h) -> countArmor(p, slot, "negarite")))
+                .add(registry.number(5, 6, 1, 1).color(0xffffff).getter((p, h) -> countArmor(p, slot, "negarite")))
 
-                .add(new HoloItemStack(0, 7, 1, 1, new ItemStack(ModItems.posiriteDust)))
-                .add(new HoloNumber(1, 7, 1, 1, 0xffffff, (p,h) -> HoloGuiTools.countItem(p, ModItems.posiriteDust)))
-                .add(new HoloButton(3, 7, 1, 1).image(128, 128).hover(128+16, 128)
+                .add(registry.stackIcon(0, 7, 1, 1).itemStack(new ItemStack(ModItems.posiriteDust)))
+                .add(registry.number(1, 7, 1, 1).color(0xffffff).getter((p, h) -> HoloGuiTools.countItem(p, ModItems.posiriteDust)))
+                .add(registry.iconButton(3, 7, 1, 1).image(128, 128).hover(128 + 16, 128)
                         .hitEvent((component, p, entity1, x, y) -> toArmor(p, slot, "posirite", ModItems.posiriteDust, 1)))
-                .add(new HoloButton(4, 7, 1, 1).image(128, 128+16).hover(128+16, 128+16)
+                .add(registry.iconButton(4, 7, 1, 1).image(128, 128 + 16).hover(128 + 16, 128 + 16)
                         .hitEvent((component, p, entity1, x, y) -> toArmor(p, slot, "posirite", ModItems.posiriteDust, 64)))
-                .add(new HoloNumber(5, 7, 1, 1,0xffffff, (p,h) -> countArmor(p, slot, "posirite")))
+                .add(registry.number(5, 7, 1, 1).color(0xffffff).getter((p, h) -> countArmor(p, slot, "posirite")))
         ;
     }
 
@@ -218,13 +229,17 @@ public class ArmorGui {
         compound.setInteger(itemTag, number);
     }
 
-    private static void createModuleEntry(HoloPanel panel, EntityEquipmentSlot slot, int xx, int yy, ArmorModuleItem module) {
-        panel.add(new HoloItemStackToggle(xx, yy, 1, 1, new ItemStack(module), player -> hasModuleAndCheckPlayerToo(player, slot, module))
+    private static void createModuleEntry(IGuiComponentRegistry registry, IPanel panel, EntityEquipmentSlot slot, int xx, int yy, ArmorModuleItem module) {
+        panel.add(registry.stackToggle(xx, yy, 1, 1)
+                .itemStack(new ItemStack(module))
+                .getter(player -> hasModuleAndCheckPlayerToo(player, slot, module))
                 .hitEvent((component, player, entity, x, y) -> toggleModuleInstall(player, slot, module)));
-        panel.add(new HoloToggleIcon(xx + 1, yy, 1, 1, player -> isModuleActivated(player, slot, module))
+        panel.add(registry.iconToggle(xx + 1, yy, 1, 1)
+                .getter(player -> isModuleActivated(player, slot, module))
                 .image(128 + 64 + 16, 128 + 16).selected(128 + 64, 128 + 16)
                 .hitEvent((component, player, entity, x, y) -> toggleActivation(player, slot, module)));
-        panel.add(new HoloIcons(xx + 2, yy, 1, 1, player -> getHotkey(player, slot, module))
+        panel.add(registry.iconChoice(xx + 2, yy, 1, 1)
+                .getter(player -> getHotkey(player, slot, module))
                 .icon(128 + 64 - 16, 128 + 32)
                 .icon(128 + 64, 128 + 32)
                 .icon(128 + 64 + 16, 128 + 32)
@@ -342,19 +357,20 @@ public class ArmorGui {
         }
     }
 
-    private static double createMenuEntry(EntityPlayer player, HoloPanel panel, double x, double y, EntityEquipmentSlot slot, Item armorItem) {
+    private static double createMenuEntry(IGuiComponentRegistry registry, EntityPlayer player, IPanel panel, double x, double y, EntityEquipmentSlot slot, Item armorItem) {
         ItemStack armorStack = player.getItemStackFromSlot(slot);
         if (!armorStack.isEmpty() && armorStack.getItem() == armorItem) {
             panel
-                    .add(new HoloItemStack(x, y, 1, 1, new ItemStack(armorItem)))
-                    .add(new HoloTextButton(2, y, 5, 1, "Configure")
+                    .add(registry.stackIcon(x, y, 1, 1).itemStack(new ItemStack(armorItem)))
+                    .add(registry.button(2, y, 5, 1)
+                            .text("Configure")
                             .hitEvent((component, player1, entity, x1, y1) -> hitArmorConfigureButton(slot, component, player1, entity)));
             y++;
         }
         return y;
     }
 
-    private static void hitArmorConfigureButton(EntityEquipmentSlot slot, IGuiComponent component, EntityPlayer player, HoloGuiEntity entity) {
+    private static void hitArmorConfigureButton(EntityEquipmentSlot slot, IGuiComponent component, EntityPlayer player, IHoloGuiEntity entity) {
         switch (slot) {
             case FEET:
                 entity.switchGui(ModGuis.GUI_ARMOR_BOOTS);

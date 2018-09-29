@@ -1,13 +1,11 @@
 package mcjty.ariente.blocks.generators;
 
 import mcjty.ariente.ai.IAlarmMode;
+import mcjty.ariente.api.hologui.IGuiComponent;
+import mcjty.ariente.api.hologui.IGuiComponentRegistry;
+import mcjty.ariente.api.hologui.IGuiTile;
+import mcjty.ariente.api.hologui.components.IPanel;
 import mcjty.ariente.blocks.ModBlocks;
-import mcjty.ariente.gui.IGuiComponent;
-import mcjty.ariente.gui.IGuiTile;
-import mcjty.ariente.gui.components.HoloIcon;
-import mcjty.ariente.gui.components.HoloItemStack;
-import mcjty.ariente.gui.components.HoloPanel;
-import mcjty.ariente.gui.components.HoloText;
 import mcjty.lib.tileentity.GenericTileEntity;
 import mcjty.theoneprobe.api.IProbeHitData;
 import mcjty.theoneprobe.api.IProbeInfo;
@@ -95,18 +93,18 @@ public class NegariteTankTile extends GenericTileEntity implements IGuiTile, IAl
     }
 
     @Override
-    public IGuiComponent createGui(String tag) {
-        HoloPanel panel = new HoloPanel(0, 0, 8, 8);
+    public IGuiComponent createGui(String tag, IGuiComponentRegistry registry) {
+        IPanel panel = registry.panel(0, 0, 8, 8);
         for (int i = 0 ; i < 64 ; i++) {
             switch (i % 3) {
                 case 0:
-                    panel.add(new HoloText(i % 8, i / 8, 1, 1, "W", 0xffffff));
+                    panel.add(registry.text(i % 8, i / 8, 1, 1).text("W").color(0xffffff));
                     break;
                 case 1:
-                    panel.add(new HoloIcon(i % 8, i / 8, 1, 1).image(128+64, 128));
+                    panel.add(registry.icon(i % 8, i / 8, 1, 1).image(128+64, 128));
                     break;
                 case 2:
-                    panel.add(new HoloItemStack(i % 8, i / 8, 1, 1, new ItemStack(ModBlocks.negariteGeneratorBlock)));
+                    panel.add(registry.stackIcon(i % 8, i / 8, 1, 1).itemStack(new ItemStack(ModBlocks.negariteGeneratorBlock)));
                     break;
             }
         }

@@ -3,6 +3,7 @@ package mcjty.ariente;
 import mcjty.ariente.ai.CityAI;
 import mcjty.ariente.ai.CityAISystem;
 import mcjty.ariente.ai.IAlarmMode;
+import mcjty.ariente.apiimp.hologui.HoloGuiSounds;
 import mcjty.ariente.biomes.ModBiomes;
 import mcjty.ariente.blocks.ModBlocks;
 import mcjty.ariente.blocks.utility.ILockable;
@@ -74,6 +75,7 @@ public class ForgeEventHandlers {
     @SubscribeEvent
     public void registerSounds(RegistryEvent.Register<SoundEvent> sounds) {
         ModSounds.init(sounds.getRegistry());
+        HoloGuiSounds.init(sounds.getRegistry());
     }
 
     @SubscribeEvent
