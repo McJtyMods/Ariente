@@ -151,7 +151,7 @@ curseforge {
         }
         relations {
             requiredLibrary 'mcjtylib'
-            requiredLibrary 'hologui'
+//            requiredLibrary 'hologui'
             optionalLibrary 'the-one-probe'
         }
     }
