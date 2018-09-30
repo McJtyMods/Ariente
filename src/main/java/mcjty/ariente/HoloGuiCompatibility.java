@@ -1,8 +1,10 @@
 package mcjty.ariente;
 
 import mcjty.ariente.gui.ModGuis;
+import mcjty.hologui.api.IGuiTile;
 import mcjty.hologui.api.IHoloGuiHandler;
 import mcjty.lib.varia.Logging;
+import net.minecraft.tileentity.TileEntity;
 import net.minecraftforge.fml.common.event.FMLInterModComms;
 
 import javax.annotation.Nullable;
@@ -28,6 +30,13 @@ public class HoloGuiCompatibility {
             Ariente.guiHandler = holoHandler;
             Logging.log("Enabled support for Holo Gui");
             ModGuis.init();
+            Ariente.guiHandler.registerProvider((world, pos) -> {
+                TileEntity tileEntity = world.getTileEntity(pos);
+                if (tileEntity instanceof IGuiTile) {
+                    return (IGuiTile) tileEntity;
+                }
+                return null;
+            });
             return null;
         }
     }

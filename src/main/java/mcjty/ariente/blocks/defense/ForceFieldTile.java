@@ -3,9 +3,6 @@ package mcjty.ariente.blocks.defense;
 import mcjty.ariente.ai.CityAI;
 import mcjty.ariente.ai.CityAISystem;
 import mcjty.ariente.ai.IAlarmMode;
-import mcjty.hologui.api.IGuiComponent;
-import mcjty.hologui.api.IGuiComponentRegistry;
-import mcjty.hologui.api.IGuiTile;
 import mcjty.ariente.cities.ICityEquipment;
 import mcjty.ariente.config.ArienteConfiguration;
 import mcjty.ariente.config.DamageConfiguration;
@@ -17,6 +14,9 @@ import mcjty.ariente.power.PowerReceiverSupport;
 import mcjty.ariente.sounds.ISoundProducer;
 import mcjty.ariente.varia.ChunkCoord;
 import mcjty.ariente.varia.Triangle;
+import mcjty.hologui.api.IGuiComponent;
+import mcjty.hologui.api.IGuiComponentRegistry;
+import mcjty.hologui.api.IGuiTile;
 import mcjty.lib.tileentity.GenericTileEntity;
 import mcjty.lib.varia.RedstoneMode;
 import mcjty.theoneprobe.api.IProbeHitData;
@@ -507,11 +507,11 @@ public class ForceFieldTile extends GenericTileEntity implements IGuiTile, ITick
                 .add(registry.text(1, 5, 1, 1).text(() -> getFieldIntegrity() + "%").color(0xffffff))
 
 
-                .add(registry.modeToggle(7, 6, 1, 1)
-                        .getter(this::getRSModeInt)
-                        .choice(128, 128+32)
-                        .choice(128+16, 128+32)
-                        .choice(128+32, 128+32)
+                .add(registry.iconChoice(7, 6, 1, 1)
+                        .getter((player) -> getRSModeInt())
+                        .icon(128, 128+32)
+                        .icon(128+16, 128+32)
+                        .icon(128+32, 128+32)
                         .hitEvent((component, player, entity1, x, y) -> changeMode()))
                 ;
     }

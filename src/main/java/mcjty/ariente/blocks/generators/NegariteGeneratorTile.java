@@ -2,10 +2,6 @@ package mcjty.ariente.blocks.generators;
 
 import mcjty.ariente.Ariente;
 import mcjty.ariente.ai.IAlarmMode;
-import mcjty.hologui.api.IGuiComponent;
-import mcjty.hologui.api.IGuiComponentRegistry;
-import mcjty.hologui.api.IGuiTile;
-import mcjty.hologui.api.IHoloGuiEntity;
 import mcjty.ariente.blocks.ModBlocks;
 import mcjty.ariente.cables.CableColor;
 import mcjty.ariente.gui.HoloGuiTools;
@@ -13,6 +9,10 @@ import mcjty.ariente.items.ModItems;
 import mcjty.ariente.power.IPowerBlob;
 import mcjty.ariente.power.PowerSenderSupport;
 import mcjty.ariente.power.PowerSystem;
+import mcjty.hologui.api.IGuiComponent;
+import mcjty.hologui.api.IGuiComponentRegistry;
+import mcjty.hologui.api.IGuiTile;
+import mcjty.hologui.api.IHoloGuiEntity;
 import mcjty.lib.container.ContainerFactory;
 import mcjty.lib.container.DefaultSidedInventory;
 import mcjty.lib.container.InventoryHelper;
@@ -297,12 +297,12 @@ public class NegariteGeneratorTile extends GenericTileEntity implements ITickabl
                 .add(registry.stackIcon(5, 3, 1, 1).itemStack(new ItemStack(ModBlocks.negariteGeneratorBlock)))
                 .add(registry.number(6, 3, 1, 1).color(0xffffff).getter(this::countNegariteGenerator))
 
-                .add(registry.modeToggle(7, 6, 1, 1)
-                        .getter(this::getRSModeInt)
-                    .choice(128, 128+32)
-                    .choice(128+16, 128+32)
-                    .choice(128+32, 128+32)
-                    .hitEvent((component, player, entity1, x, y) -> changeMode()))
+                .add(registry.iconChoice(7, 6, 1, 1)
+                        .getter((player) -> getRSModeInt())
+                        .icon(128, 128+32)
+                        .icon(128+16, 128+32)
+                        .icon(128+32, 128+32)
+                        .hitEvent((component, player, entity1, x, y) -> changeMode()))
                 ;
     }
 

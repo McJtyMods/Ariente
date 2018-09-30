@@ -163,7 +163,7 @@ public class FluxLevitatorEntity extends Entity {
                 }
             }
             if (holoGuiFront == null && !world.isRemote ) {
-                IHoloGuiEntity holoGui = Ariente.guiHandler.openHoloGuiRelative(world, this, new Vec3d(0, .5, 1), ModGuis.GUI_LEVITATOR);
+                IHoloGuiEntity holoGui = Ariente.guiHandler.openHoloGuiRelative(this, new Vec3d(0, .5, 1), ModGuis.GUI_LEVITATOR);
                 holoGui.setTimeout(2000000000); // Never timeout
                 holoGui.getEntity().startRiding(this);
                 this.holoGuiFront = holoGui;
@@ -185,7 +185,7 @@ public class FluxLevitatorEntity extends Entity {
                 }
             }
             if (holoGuiBack == null && !world.isRemote ) {
-                IHoloGuiEntity holoGui = Ariente.guiHandler.openHoloGuiRelative(world, this, new Vec3d(0, .5, 1), ModGuis.GUI_LEVITATOR);
+                IHoloGuiEntity holoGui = Ariente.guiHandler.openHoloGuiRelative(this, new Vec3d(0, .5, 1), ModGuis.GUI_LEVITATOR);
                 holoGui.setTimeout(2000000000); // Never timeout
                 holoGui.getEntity().startRiding(this);
                 this.holoGuiBack = holoGui;
