@@ -67,8 +67,10 @@ dependencies {
     deobfCompile "com.github.mcjty:intwheel:${intwheel_version}"
     if (!project.hasProperty("singleproject")) {
         deobfCompile "com.github.mcjty:mcjtylib:${mcjtylib_version}"
+        deobfCompile "com.github.mcjty:hologui:${hologui_version}"
     } else {
-	compile project(':McJtyLib')
+        compile project(':McJtyLib')
+        compile project(':HoloGui')
     }
     compile "li.cil.oc:OpenComputers:${oc_version}"
     compile "team.chisel.ctm:CTM:MC1.12-0.2.3.12"
