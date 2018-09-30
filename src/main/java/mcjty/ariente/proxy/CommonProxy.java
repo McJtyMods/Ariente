@@ -10,7 +10,6 @@ import mcjty.ariente.config.ArienteConfiguration;
 import mcjty.ariente.dimension.DimensionRegister;
 import mcjty.ariente.entities.ModEntities;
 import mcjty.ariente.gui.GuiProxy;
-import mcjty.ariente.gui.ModGuis;
 import mcjty.ariente.items.ModItems;
 import mcjty.ariente.network.ArienteMessages;
 import mcjty.ariente.oregen.WorldGen;
@@ -57,7 +56,6 @@ public abstract class CommonProxy extends AbstractCommonProxy {
         ModItems.init();
         WorldGen.init();
         ModEntities.init();
-        ModGuis.init();
     }
 
     public Configuration getConfig() {

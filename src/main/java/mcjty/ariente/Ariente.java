@@ -1,11 +1,9 @@
 package mcjty.ariente;
 
 
-import mcjty.hologui.HoloGui;
-import mcjty.hologui.api.IHoloGuiHandler;
-import mcjty.hologui.gui.HoloGuiHandler;
 import mcjty.ariente.commands.*;
 import mcjty.ariente.proxy.CommonProxy;
+import mcjty.hologui.api.IHoloGuiHandler;
 import mcjty.lib.base.ModBase;
 import mcjty.lib.compat.MainCompatHandler;
 import net.minecraft.creativetab.CreativeTabs;
@@ -44,8 +42,7 @@ public class Ariente implements ModBase {
     @Mod.Instance
     public static Ariente instance;
 
-    // @todo Use IMC
-    public static IHoloGuiHandler guiHandler = HoloGui.guiHandler;
+    public static IHoloGuiHandler guiHandler;
 
     public static CreativeTabs creativeTab;
 
@@ -69,6 +66,7 @@ public class Ariente implements ModBase {
         proxy.preInit(event);
         MainCompatHandler.registerWaila();
         MainCompatHandler.registerTOP();
+        HoloGuiCompatibility.register();
     }
 
     @Mod.EventHandler
