@@ -1,3 +1,6 @@
+0.0.3-alpha:
+- Use the new HoloGui mod
+
 0.0.2-alpha:
 - The collision test with the forcefield is slightly more relaxed so that it is easier to go through
 - Damaging a forcefield will notify the city AI that the player is there
