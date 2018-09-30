@@ -34,7 +34,7 @@ public class Ariente implements ModBase {
     public static final String VERSION = "0.0.2-alpha";
     public static final String MIN_FORGE11_VER = "14.23.3.2694";
     public static final String MIN_MCJTYLIB_VER = "3.0.4";
-    public static final String MIN_HOLOGUI_VER = "0.0.2-alpha";
+    public static final String MIN_HOLOGUI_VER = "0.0.1-beta";
 
     @SidedProxy(clientSide = "mcjty.ariente.proxy.ClientProxy", serverSide = "mcjty.ariente.proxy.ServerProxy")
     public static CommonProxy proxy;
