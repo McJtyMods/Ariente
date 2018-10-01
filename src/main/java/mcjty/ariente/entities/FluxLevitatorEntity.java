@@ -2,10 +2,11 @@ package mcjty.ariente.entities;
 
 import com.google.common.base.Optional;
 import mcjty.ariente.Ariente;
-import mcjty.hologui.api.IHoloGuiEntity;
 import mcjty.ariente.blocks.ModBlocks;
 import mcjty.ariente.gui.ModGuis;
 import mcjty.ariente.items.ModItems;
+import mcjty.hologui.api.CloseStrategy;
+import mcjty.hologui.api.IHoloGuiEntity;
 import mcjty.lib.blocks.BaseBlock;
 import net.minecraft.block.BlockRailBase;
 import net.minecraft.block.state.IBlockState;
@@ -164,7 +165,8 @@ public class FluxLevitatorEntity extends Entity {
             }
             if (holoGuiFront == null && !world.isRemote ) {
                 IHoloGuiEntity holoGui = Ariente.guiHandler.openHoloGuiRelative(this, new Vec3d(0, .5, 1), ModGuis.GUI_LEVITATOR);
-                holoGui.setTimeout(2000000000); // Never timeout
+                holoGui.setScale(0.75f);
+                holoGui.setCloseStrategy(CloseStrategy.NEVER);
                 holoGui.getEntity().startRiding(this);
                 this.holoGuiFront = holoGui;
                 setHoloFrontUUID(holoGui.getEntity().getUniqueID());
@@ -186,7 +188,8 @@ public class FluxLevitatorEntity extends Entity {
             }
             if (holoGuiBack == null && !world.isRemote ) {
                 IHoloGuiEntity holoGui = Ariente.guiHandler.openHoloGuiRelative(this, new Vec3d(0, .5, 1), ModGuis.GUI_LEVITATOR);
-                holoGui.setTimeout(2000000000); // Never timeout
+                holoGui.setScale(0.75f);
+                holoGui.setCloseStrategy(CloseStrategy.NEVER);
                 holoGui.getEntity().startRiding(this);
                 this.holoGuiBack = holoGui;
                 setHoloBackUUID(holoGui.getEntity().getUniqueID());
