@@ -336,13 +336,13 @@ public class ElevatorTile extends GenericTileEntity implements IGuiTile, ITickab
                     .add(registry.text(0, 2, 1, 1).text("Height").color(0xaaccff))
                     .add(registry.number(3, 4, 1, 1).color(0xffffff).getter((p,h) -> getHeight()))
 
-                    .add(registry.iconButton(1, 4, 1, 1).image(128 + 32, 128 + 16).hover(128 + 32 + 16, 128 + 16)
+                    .add(registry.iconButton(1, 4, 1, 1).icon(128 + 32, 128 + 16).hover(128 + 32 + 16, 128 + 16)
                             .hitEvent((component, player, entity1, x, y) -> changeHeight(-8)))
-                    .add(registry.iconButton(2, 4, 1, 1).image(128 + 32, 128).hover(128 + 32 + 16, 128)
+                    .add(registry.iconButton(2, 4, 1, 1).icon(128 + 32, 128).hover(128 + 32 + 16, 128)
                             .hitEvent((component, player, entity1, x, y) -> changeHeight(-1)))
-                    .add(registry.iconButton(5, 4, 1, 1).image(128, 128).hover(128 + 16, 128)
+                    .add(registry.iconButton(5, 4, 1, 1).icon(128, 128).hover(128 + 16, 128)
                             .hitEvent((component, player, entity1, x, y) -> changeHeight(1)))
-                    .add(registry.iconButton(6, 4, 1, 1).image(128, 128 + 16).hover(128 + 16, 128 + 16)
+                    .add(registry.iconButton(6, 4, 1, 1).icon(128, 128 + 16).hover(128 + 16, 128 + 16)
                             .hitEvent((component, player, entity1, x, y) -> changeHeight(8)))
                     ;
         }

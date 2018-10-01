@@ -13,15 +13,15 @@ public class FluxLevitatorGui {
         IGuiComponentRegistry registry = Ariente.guiHandler.getComponentRegistry();
         return registry.panel(0, 0, 8, 8)
 
-                .add(registry.iconButton(2, 2, 1, 1).image(128+32, 128+16).hover(128+32+16, 128+16)
+                .add(registry.iconButton(2, 2, 1, 1).icon(128+32, 128+16).hover(128+32+16, 128+16)
                         .hitEvent((component, p, holo, x, y) -> changeSpeed(holo, -10)))
-                .add(registry.iconButton(3, 2, 1, 1).image(128+32, 128).hover(128+32+16, 128)
+                .add(registry.iconButton(3, 2, 1, 1).icon(128+32, 128).hover(128+32+16, 128)
                         .hitEvent((component, p, holo, x, y) -> changeSpeed(holo, -5)))
-                .add(registry.iconButton(4, 2, 1, 1).image(128+80, 128).hover(128+80+16, 128)
+                .add(registry.iconButton(4, 2, 1, 1).icon(128+80, 128).hover(128+80+16, 128)
                         .hitEvent((component, p, holo, x, y) -> changeSpeed(holo, 0)))
-                .add(registry.iconButton(5, 2, 1, 1).image(128, 128).hover(128+16, 128)
+                .add(registry.iconButton(5, 2, 1, 1).icon(128, 128).hover(128+16, 128)
                         .hitEvent((component, p, holo, x, y) -> changeSpeed(holo, 5)))
-                .add(registry.iconButton(6, 2, 1, 1).image(128, 128+16).hover(128+16, 128+16)
+                .add(registry.iconButton(6, 2, 1, 1).icon(128, 128+16).hover(128+16, 128+16)
                         .hitEvent((component, p, holo, x, y) -> changeSpeed(holo, 10)))
 
                 .add(registry.text(1, 4, 4, 1).text("Speed:").color(0xffffff))

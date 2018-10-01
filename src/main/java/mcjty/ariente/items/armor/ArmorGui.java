@@ -146,17 +146,17 @@ public class ArmorGui {
         panel
                 .add(registry.stackIcon(0, 6, 1, 1).itemStack(new ItemStack(ModItems.negariteDust)))
                 .add(registry.number(1, 6, 1, 1).color(0xffffff).getter((p, h) -> HoloGuiTools.countItem(p, ModItems.negariteDust)))
-                .add(registry.iconButton(3, 6, 1, 1).image(128, 128).hover(128 + 16, 128)
+                .add(registry.iconButton(3, 6, 1, 1).icon(128, 128).hover(128 + 16, 128)
                         .hitEvent((component, p, entity1, x, y) -> toArmor(p, slot, "negarite", ModItems.negariteDust, 1)))
-                .add(registry.iconButton(4, 6, 1, 1).image(128, 128 + 16).hover(128 + 16, 128 + 16)
+                .add(registry.iconButton(4, 6, 1, 1).icon(128, 128 + 16).hover(128 + 16, 128 + 16)
                         .hitEvent((component, p, entity1, x, y) -> toArmor(p, slot, "negarite", ModItems.negariteDust, 64)))
                 .add(registry.number(5, 6, 1, 1).color(0xffffff).getter((p, h) -> countArmor(p, slot, "negarite")))
 
                 .add(registry.stackIcon(0, 7, 1, 1).itemStack(new ItemStack(ModItems.posiriteDust)))
                 .add(registry.number(1, 7, 1, 1).color(0xffffff).getter((p, h) -> HoloGuiTools.countItem(p, ModItems.posiriteDust)))
-                .add(registry.iconButton(3, 7, 1, 1).image(128, 128).hover(128 + 16, 128)
+                .add(registry.iconButton(3, 7, 1, 1).icon(128, 128).hover(128 + 16, 128)
                         .hitEvent((component, p, entity1, x, y) -> toArmor(p, slot, "posirite", ModItems.posiriteDust, 1)))
-                .add(registry.iconButton(4, 7, 1, 1).image(128, 128 + 16).hover(128 + 16, 128 + 16)
+                .add(registry.iconButton(4, 7, 1, 1).icon(128, 128 + 16).hover(128 + 16, 128 + 16)
                         .hitEvent((component, p, entity1, x, y) -> toArmor(p, slot, "posirite", ModItems.posiriteDust, 64)))
                 .add(registry.number(5, 7, 1, 1).color(0xffffff).getter((p, h) -> countArmor(p, slot, "posirite")))
         ;
@@ -236,7 +236,7 @@ public class ArmorGui {
                 .hitEvent((component, player, entity, x, y) -> toggleModuleInstall(player, slot, module)));
         panel.add(registry.iconToggle(xx + 1, yy, 1, 1)
                 .getter(player -> isModuleActivated(player, slot, module))
-                .image(128 + 64 + 16, 128 + 16).selected(128 + 64, 128 + 16)
+                .icon(128 + 64 + 16, 128 + 16).selected(128 + 64, 128 + 16)
                 .hitEvent((component, player, entity, x, y) -> toggleActivation(player, slot, module)));
         panel.add(registry.iconChoice(xx + 2, yy, 1, 1)
                 .getter(player -> getHotkey(player, slot, module))

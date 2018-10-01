@@ -253,26 +253,26 @@ public class LockTile extends GenericTileEntity implements IGuiTile, IKeyCardSlo
                 .add(registry.text(0, 1, 1, 1).text("Horizontal").color(0xaaccff))
                 .add(registry.number(3, 2, 1, 1).color(0xffffff).getter(this::getHorizontalRange))
 
-                .add(registry.iconButton(1, 2, 1, 1).image(128 + 32, 128 + 16).hover(128 + 32 + 16, 128 + 16)
+                .add(registry.iconButton(1, 2, 1, 1).icon(128 + 32, 128 + 16).hover(128 + 32 + 16, 128 + 16)
                         .hitEvent((component, player, entity1, x, y) -> changeHorizontalRange(-8)))
-                .add(registry.iconButton(2, 2, 1, 1).image(128 + 32, 128).hover(128 + 32 + 16, 128)
+                .add(registry.iconButton(2, 2, 1, 1).icon(128 + 32, 128).hover(128 + 32 + 16, 128)
                         .hitEvent((component, player, entity1, x, y) -> changeHorizontalRange(-1)))
-                .add(registry.iconButton(5, 2, 1, 1).image(128, 128).hover(128 + 16, 128)
+                .add(registry.iconButton(5, 2, 1, 1).icon(128, 128).hover(128 + 16, 128)
                         .hitEvent((component, player, entity1, x, y) -> changeHorizontalRange(1)))
-                .add(registry.iconButton(6, 2, 1, 1).image(128, 128 + 16).hover(128 + 16, 128 + 16)
+                .add(registry.iconButton(6, 2, 1, 1).icon(128, 128 + 16).hover(128 + 16, 128 + 16)
                         .hitEvent((component, player, entity1, x, y) -> changeHorizontalRange(8)))
 
 
                 .add(registry.text(0, 4, 1, 1).text("Vertical").color(0xaaccff))
                 .add(registry.number(3, 5, 1, 1).color(0xffffff).getter(this::getVerticalRange))
 
-                .add(registry.iconButton(1, 5, 1, 1).image(128 + 32, 128 + 16).hover(128 + 32 + 16, 128 + 16)
+                .add(registry.iconButton(1, 5, 1, 1).icon(128 + 32, 128 + 16).hover(128 + 32 + 16, 128 + 16)
                         .hitEvent((component, player, entity1, x, y) -> changeVerticalRange(-8)))
-                .add(registry.iconButton(2, 5, 1, 1).image(128 + 32, 128).hover(128 + 32 + 16, 128)
+                .add(registry.iconButton(2, 5, 1, 1).icon(128 + 32, 128).hover(128 + 32 + 16, 128)
                         .hitEvent((component, player, entity1, x, y) -> changeVerticalRange(-1)))
-                .add(registry.iconButton(5, 5, 1, 1).image(128, 128).hover(128 + 16, 128)
+                .add(registry.iconButton(5, 5, 1, 1).icon(128, 128).hover(128 + 16, 128)
                         .hitEvent((component, player, entity1, x, y) -> changeVerticalRange(1)))
-                .add(registry.iconButton(6, 5, 1, 1).image(128, 128 + 16).hover(128 + 16, 128 + 16)
+                .add(registry.iconButton(6, 5, 1, 1).icon(128, 128 + 16).hover(128 + 16, 128 + 16)
                         .hitEvent((component, player, entity1, x, y) -> changeVerticalRange(8)))
                 ;
     }

@@ -282,16 +282,16 @@ public class NegariteGeneratorTile extends GenericTileEntity implements ITickabl
                 .add(registry.text(0, 0, 8, 1).text("Negarite").color(0xaaccff))
                 .add(registry.stackIcon(0, 3, 1, 1).itemStack(new ItemStack(ModItems.negariteDust)))
 
-                .add(registry.icon(1, 3, 1, 1).image(128+64, 128))
+                .add(registry.icon(1, 3, 1, 1).icon(128+64, 128))
                 .add(registry.number(2, 3, 1, 1).color(0xffffff).getter((p,h) -> HoloGuiTools.countItem(p, ModItems.negariteDust)))
 
-                .add(registry.iconButton(2, 4, 1, 1).image(128+32, 128+16).hover(128+32+16, 128+16)
+                .add(registry.iconButton(2, 4, 1, 1).icon(128+32, 128+16).hover(128+32+16, 128+16)
                     .hitEvent((component, player, entity1, x, y) -> toPlayer(player, 64)))
-                .add(registry.iconButton(3, 4, 1, 1).image(128+32, 128).hover(128+32+16, 128)
+                .add(registry.iconButton(3, 4, 1, 1).icon(128+32, 128).hover(128+32+16, 128)
                     .hitEvent((component, player, entity1, x, y) -> toPlayer(player, 1)))
-                .add(registry.iconButton(5, 4, 1, 1).image(128, 128).hover(128+16, 128)
+                .add(registry.iconButton(5, 4, 1, 1).icon(128, 128).hover(128+16, 128)
                     .hitEvent((component, player, entity1, x, y) -> toMachine(player, 1)))
-                .add(registry.iconButton(6, 4, 1, 1).image(128, 128+16).hover(128+16, 128+16)
+                .add(registry.iconButton(6, 4, 1, 1).icon(128, 128+16).hover(128+16, 128+16)
                     .hitEvent((component, player, entity1, x, y) -> toMachine(player, 64)))
 
                 .add(registry.stackIcon(5, 3, 1, 1).itemStack(new ItemStack(ModBlocks.negariteGeneratorBlock)))

@@ -269,25 +269,25 @@ public class DoorMarkerTile extends GenericTileEntity implements ITickable, IGui
             return Ariente.guiHandler.createNoAccessPanel();
         }
         return registry.panel(0, 0, 8, 8)
-                .add(registry.iconToggle(1, 1, 1, 1).getter((player) -> isIconSelected(0)).image(4*16, 12*16).selected(64+4*16, 12*16).hitEvent((component, player, entity1, x, y) -> setIconIndex(0)))
-                .add(registry.iconToggle(3, 1, 1, 1).getter((player) -> isIconSelected(1)).image(5*16, 12*16).selected(64+5*16, 12*16).hitEvent((component, player, entity1, x, y) -> setIconIndex(1)))
-                .add(registry.iconToggle(5, 1, 1, 1).getter((player) -> isIconSelected(2)).image(6*16, 12*16).selected(64+6*16, 12*16).hitEvent((component, player, entity1, x, y) -> setIconIndex(2)))
-                .add(registry.iconToggle(7, 1, 1, 1).getter((player) -> isIconSelected(3)).image(7*16, 12*16).selected(64+7*16, 12*16).hitEvent((component, player, entity1, x, y) -> setIconIndex(3)))
+                .add(registry.iconToggle(1, 1, 1, 1).getter((player) -> isIconSelected(0)).icon(4*16, 12*16).selected(64+4*16, 12*16).hitEvent((component, player, entity1, x, y) -> setIconIndex(0)))
+                .add(registry.iconToggle(3, 1, 1, 1).getter((player) -> isIconSelected(1)).icon(5*16, 12*16).selected(64+5*16, 12*16).hitEvent((component, player, entity1, x, y) -> setIconIndex(1)))
+                .add(registry.iconToggle(5, 1, 1, 1).getter((player) -> isIconSelected(2)).icon(6*16, 12*16).selected(64+6*16, 12*16).hitEvent((component, player, entity1, x, y) -> setIconIndex(2)))
+                .add(registry.iconToggle(7, 1, 1, 1).getter((player) -> isIconSelected(3)).icon(7*16, 12*16).selected(64+7*16, 12*16).hitEvent((component, player, entity1, x, y) -> setIconIndex(3)))
 
-                .add(registry.iconToggle(1, 3, 1, 1).getter((player) -> isIconSelected(4)).image(4*16, 13*16).selected(64+4*16, 13*16).hitEvent((component, player, entity1, x, y) -> setIconIndex(4)))
-                .add(registry.iconToggle(3, 3, 1, 1).getter((player) -> isIconSelected(5)).image(5*16, 13*16).selected(64+5*16, 13*16).hitEvent((component, player, entity1, x, y) -> setIconIndex(5)))
-                .add(registry.iconToggle(5, 3, 1, 1).getter((player) -> isIconSelected(6)).image(6*16, 13*16).selected(64+6*16, 13*16).hitEvent((component, player, entity1, x, y) -> setIconIndex(6)))
-                .add(registry.iconToggle(7, 3, 1, 1).getter((player) -> isIconSelected(7)).image(7*16, 13*16).selected(64+7*16, 13*16).hitEvent((component, player, entity1, x, y) -> setIconIndex(7)))
+                .add(registry.iconToggle(1, 3, 1, 1).getter((player) -> isIconSelected(4)).icon(4*16, 13*16).selected(64+4*16, 13*16).hitEvent((component, player, entity1, x, y) -> setIconIndex(4)))
+                .add(registry.iconToggle(3, 3, 1, 1).getter((player) -> isIconSelected(5)).icon(5*16, 13*16).selected(64+5*16, 13*16).hitEvent((component, player, entity1, x, y) -> setIconIndex(5)))
+                .add(registry.iconToggle(5, 3, 1, 1).getter((player) -> isIconSelected(6)).icon(6*16, 13*16).selected(64+6*16, 13*16).hitEvent((component, player, entity1, x, y) -> setIconIndex(6)))
+                .add(registry.iconToggle(7, 3, 1, 1).getter((player) -> isIconSelected(7)).icon(7*16, 13*16).selected(64+7*16, 13*16).hitEvent((component, player, entity1, x, y) -> setIconIndex(7)))
 
-                .add(registry.iconToggle(1, 5, 1, 1).getter((player) -> isIconSelected(8)).image(4*16, 14*16).selected(64+4*16, 14*16).hitEvent((component, player, entity1, x, y) -> setIconIndex(8)))
-                .add(registry.iconToggle(3, 5, 1, 1).getter((player) -> isIconSelected(9)).image(5*16, 14*16).selected(64+5*16, 14*16).hitEvent((component, player, entity1, x, y) -> setIconIndex(9)))
-                .add(registry.iconToggle(5, 5, 1, 1).getter((player) -> isIconSelected(10)).image(6*16, 14*16).selected(64+6*16, 14*16).hitEvent((component, player, entity1, x, y) -> setIconIndex(10)))
-                .add(registry.iconToggle(7, 5, 1, 1).getter((player) -> isIconSelected(11)).image(7*16, 14*16).selected(64+7*16, 14*16).hitEvent((component, player, entity1, x, y) -> setIconIndex(11)))
+                .add(registry.iconToggle(1, 5, 1, 1).getter((player) -> isIconSelected(8)).icon(4*16, 14*16).selected(64+4*16, 14*16).hitEvent((component, player, entity1, x, y) -> setIconIndex(8)))
+                .add(registry.iconToggle(3, 5, 1, 1).getter((player) -> isIconSelected(9)).icon(5*16, 14*16).selected(64+5*16, 14*16).hitEvent((component, player, entity1, x, y) -> setIconIndex(9)))
+                .add(registry.iconToggle(5, 5, 1, 1).getter((player) -> isIconSelected(10)).icon(6*16, 14*16).selected(64+6*16, 14*16).hitEvent((component, player, entity1, x, y) -> setIconIndex(10)))
+                .add(registry.iconToggle(7, 5, 1, 1).getter((player) -> isIconSelected(11)).icon(7*16, 14*16).selected(64+7*16, 14*16).hitEvent((component, player, entity1, x, y) -> setIconIndex(11)))
 
-                .add(registry.iconToggle(1, 7, 1, 1).getter((player) -> isIconSelected(12)).image(4*16, 15*16).selected(64+4*16, 15*16).hitEvent((component, player, entity1, x, y) -> setIconIndex(12)))
-                .add(registry.iconToggle(3, 7, 1, 1).getter((player) -> isIconSelected(13)).image(5*16, 15*16).selected(64+5*16, 15*16).hitEvent((component, player, entity1, x, y) -> setIconIndex(13)))
-                .add(registry.iconToggle(5, 7, 1, 1).getter((player) -> isIconSelected(14)).image(6*16, 15*16).selected(64+6*16, 15*16).hitEvent((component, player, entity1, x, y) -> setIconIndex(14)))
-                .add(registry.iconToggle(7, 7, 1, 1).getter((player) -> isIconSelected(15)).image(7*16, 15*16).selected(64+7*16, 15*16).hitEvent((component, player, entity1, x, y) -> setIconIndex(15)))
+                .add(registry.iconToggle(1, 7, 1, 1).getter((player) -> isIconSelected(12)).icon(4*16, 15*16).selected(64+4*16, 15*16).hitEvent((component, player, entity1, x, y) -> setIconIndex(12)))
+                .add(registry.iconToggle(3, 7, 1, 1).getter((player) -> isIconSelected(13)).icon(5*16, 15*16).selected(64+5*16, 15*16).hitEvent((component, player, entity1, x, y) -> setIconIndex(13)))
+                .add(registry.iconToggle(5, 7, 1, 1).getter((player) -> isIconSelected(14)).icon(6*16, 15*16).selected(64+6*16, 15*16).hitEvent((component, player, entity1, x, y) -> setIconIndex(14)))
+                .add(registry.iconToggle(7, 7, 1, 1).getter((player) -> isIconSelected(15)).icon(7*16, 15*16).selected(64+7*16, 15*16).hitEvent((component, player, entity1, x, y) -> setIconIndex(15)))
                 ;
     }
 

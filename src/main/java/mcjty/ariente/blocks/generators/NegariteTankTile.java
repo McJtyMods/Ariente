@@ -101,7 +101,7 @@ public class NegariteTankTile extends GenericTileEntity implements IGuiTile, IAl
                     panel.add(registry.text(i % 8, i / 8, 1, 1).text("W").color(0xffffff));
                     break;
                 case 1:
-                    panel.add(registry.icon(i % 8, i / 8, 1, 1).image(128+64, 128));
+                    panel.add(registry.icon(i % 8, i / 8, 1, 1).icon(128+64, 128));
                     break;
                 case 2:
                     panel.add(registry.stackIcon(i % 8, i / 8, 1, 1).itemStack(new ItemStack(ModBlocks.negariteGeneratorBlock)));
