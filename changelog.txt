@@ -1,3 +1,6 @@
+0.0.4-alpha:
+- Update to 0.0.3-beta of HoloGui
+
 0.0.3-alpha:
 - Use the new HoloGui mod
 
