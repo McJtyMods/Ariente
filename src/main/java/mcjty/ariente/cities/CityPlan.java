@@ -9,17 +9,14 @@ import net.minecraft.util.ResourceLocation;
 import net.minecraftforge.fml.common.registry.ForgeRegistries;
 import org.apache.commons.lang3.StringUtils;
 
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 
 public class CityPlan implements IAsset {
 
     private String name;
     private String palette;
     private boolean isCity = true;
-    private Map<Character, List<String>> partPalette = new HashMap<>();
+    private Map<Character, PartPalette> partPalette = new HashMap<>();
     private List<String> cellar = new ArrayList<>();
     private List<String> plan = new ArrayList<>();
     private List<String> layer2 = new ArrayList<>();
@@ -27,6 +24,8 @@ public class CityPlan implements IAsset {
     private int minLayer2 = 1;
     private int maxLayer2 = 2;
     private boolean underground = false;
+
+    private final Set<String> variants = new HashSet<>();
 
     private List<Loot> loot = new ArrayList<>();
 
@@ -66,7 +65,7 @@ public class CityPlan implements IAsset {
         return name;
     }
 
-    public Map<Character, List<String>> getPartPalette() {
+    public Map<Character, PartPalette> getPartPalette() {
         return partPalette;
     }
 
@@ -186,6 +185,10 @@ public class CityPlan implements IAsset {
         return forcefieldChance;
     }
 
+    public Set<String> getVariants() {
+        return variants;
+    }
+
     public List<Loot> getLoot() {
         return loot;
     }
@@ -229,6 +232,14 @@ public class CityPlan implements IAsset {
 
         JsonArray lootArray = object.get("loot").getAsJsonArray();
         parseLoot(lootArray);
+
+        variants.clear();
+        if (object.has("variants")) {
+            JsonArray array = object.get("variants").getAsJsonArray();
+            for (JsonElement element : array) {
+                variants.add(element.getAsString());
+            }
+        }
 
         JsonArray paletteArray = object.get("partpalette").getAsJsonArray();
         parsePaletteArray(paletteArray);
@@ -298,11 +309,16 @@ public class CityPlan implements IAsset {
             if (o.has("parts")) {
                 JsonArray array = o.get("parts").getAsJsonArray();
 
-                List<String> parts = new ArrayList<>();
+                PartPalette parts = new PartPalette();
                 for (JsonElement el : array) {
                     String part = el.getAsString();
-                    parts.add(part);
+                    parts.getPalette().add(part);
                 }
+
+                if (o.has("variant")) {
+                    parts.setVariant(o.get("variant").getAsString());
+                }
+
                 partPalette.put(c, parts);
             } else {
                 throw new RuntimeException("Illegal palette!");
@@ -338,6 +354,27 @@ public class CityPlan implements IAsset {
         object.add("forcefieldChance", new JsonPrimitive(forcefieldChance));
         object.add("underground", new JsonPrimitive(underground));
 
+        writeLootArray(object);
+        writeVariants(object);
+        writePartPalette(object);
+
+        writePlan(object, "plan", plan);
+        writePlan(object, "cellar", cellar);
+        writePlan(object, "layer2", layer2);
+        writePlan(object, "top", top);
+
+        return object;
+    }
+
+    private void writeVariants(JsonObject object) {
+        JsonArray lootArray = new JsonArray();
+        for (String s : variants) {
+            lootArray.add(new JsonPrimitive(s));
+        }
+        object.add("variants", lootArray);
+    }
+
+    private void writeLootArray(JsonObject object) {
         JsonArray lootArray = new JsonArray();
         for (Loot l : loot) {
             JsonObject o = new JsonObject();
@@ -348,26 +385,26 @@ public class CityPlan implements IAsset {
             lootArray.add(o);
         }
         object.add("loot", lootArray);
+    }
 
+    private void writePartPalette(JsonObject object) {
         JsonArray array = new JsonArray();
-        for (Map.Entry<Character, List<String>> entry : partPalette.entrySet()) {
+        for (Map.Entry<Character, PartPalette> entry : partPalette.entrySet()) {
             JsonObject o = new JsonObject();
             o.add("char", new JsonPrimitive(entry.getKey()));
 
             JsonArray partArray = new JsonArray();
-            for (String part : entry.getValue()) {
+            for (String part : entry.getValue().getPalette()) {
                 partArray.add(new JsonPrimitive(part));
             }
             o.add("parts", partArray);
+            String variant = entry.getValue().getVariant();
+            if (variant != null && !variant.isEmpty()) {
+                o.add("variant", new JsonPrimitive(variant));
+            }
             array.add(o);
         }
         object.add("partpalette", array);
-        writePlan(object, "plan", plan);
-        writePlan(object, "cellar", cellar);
-        writePlan(object, "layer2", layer2);
-        writePlan(object, "top", top);
-
-        return object;
     }
 
     private void writePlan(JsonObject object, String name, List<String> plan) {

@@ -15,6 +15,10 @@ public class AbstractAssetRegistry<T extends IAsset> {
         assetNames.add(building.getName());
     }
 
+    public void replace(String name, T newversion) {
+        assets.put(name, newversion);
+    }
+
     public T get(String name) {
         if (name == null) {
             return null;

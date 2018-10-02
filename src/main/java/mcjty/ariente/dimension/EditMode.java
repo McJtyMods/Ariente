@@ -30,6 +30,25 @@ public class EditMode {
     public static final PaletteIndex PALETTE_AIR = new PaletteIndex(' ', ' ');
     public static boolean editMode = false;
 
+    public static void setVariant(EntityPlayer player, String variant) {
+        City city = getCurrentCity(player);
+        if (city == null) {
+            return;
+        }
+        BlockPos start = player.getPosition();
+        int cx = (start.getX() >> 4);
+        int cz = (start.getZ() >> 4);
+        CityIndex index = CityTools.getCityIndex(cx, cz);
+        if (index == null) {
+            return;
+        }
+
+        CityPlan plan = city.getPlan();
+        Map<Character, PartPalette> partPalette = plan.getPartPalette();
+//        char partChar = pattern.get(index.getZOffset()).charAt(index.getXOffset());
+
+    }
+
     public static void enableEditMode(EntityPlayer player) {
         // Restore city from parts
         loadCity(player);
@@ -383,6 +402,7 @@ public class EditMode {
                     BuildingPart newpart = exportPart(part, player.world, new BlockPos(dx * 16 + 8, y /*unused*/, dz * 16 + 8),
                             y, palette, paletteUsage, mapping, idx);
                     editedParts.put(newpart.getName(), newpart);
+                    AssetRegistries.PARTS.replace(newpart.getName(), newpart);
                     y += part.getSliceCount();
                 }
             }
@@ -391,7 +411,7 @@ public class EditMode {
         StringBuilder affectedParts = new StringBuilder();
         plan.getPartPalette().values()
                 .stream()
-                .flatMap(Collection::stream)
+                .flatMap(partPalette -> partPalette.getPalette().stream())
                 .collect(Collectors.toSet())
                 .stream()
                 .sorted(String::compareTo)
@@ -399,10 +419,9 @@ public class EditMode {
                     if (editedParts.containsKey(name)) {
                         affectedParts.append(name);
                         affectedParts.append(' ');
-                        return editedParts.get(name).writeToJSon();
-                    } else {
-                        return AssetRegistries.PARTS.get(name).writeToJSon();
+//                        return editedParts.get(name).writeToJSon();
                     }
+                    return AssetRegistries.PARTS.get(name).writeToJSon();
                 })
                 .forEach(array::add);
 

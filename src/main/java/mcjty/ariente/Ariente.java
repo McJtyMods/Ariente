@@ -81,6 +81,7 @@ public class Ariente implements ModBase {
     @Mod.EventHandler
     public void serverLoad(FMLServerStartingEvent event) {
         event.registerServerCommand(new CommandSaveCity());
+        event.registerServerCommand(new CommandSetVariant());
         event.registerServerCommand(new CommandEditMode());
         event.registerServerCommand(new CommandFindCity());
         event.registerServerCommand(new CommandInfo());

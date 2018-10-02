@@ -25,6 +25,7 @@
     "powerArmorChance": 0.3,
     "forcefieldChance": 0.2,
     "underground": true,
+    "variants": [ "energy_pylons" ],
     "loot": [
       {
         "id": "ariente:ingot_silver",

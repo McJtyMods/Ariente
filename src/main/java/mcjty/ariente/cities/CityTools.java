@@ -159,7 +159,7 @@ public class CityTools {
     }
 
     public static int getLowestHeight(City city, ArienteChunkGenerator generator, int x, int z) {
-        BuildingPart cellar = getCellarBuildingPart(city, x, z);
+        BuildingPart cellar = getPart(x, z, getCityIndex(x, z), city.getPlan(), city.getPlan().getCellar(), 13);
         if (cellar != null) {
             return city.getHeight(generator) - cellar.getSliceCount();
         } else {
@@ -192,13 +192,16 @@ public class CityTools {
     }
 
     @Nonnull
-    public static List<BuildingPart> getBuildingParts(City city, int x, int z) {
-        List<BuildingPart> parts = new ArrayList<>();
-        BuildingPart cellar = getCellarBuildingPart(city, x, z);
+    public static List<PartPalette> getPartPalettes(City city, int x, int z) {
+        List<PartPalette> parts = new ArrayList<>();
+        CityIndex cityIndex = getCityIndex(x, z);
+        CityPlan plan = city.getPlan();
+
+        PartPalette cellar = getPartPalette(x, z, cityIndex, plan, plan.getCellar(), 13);
         if (cellar != null) {
             parts.add(cellar);
         }
-        BuildingPart part = getBuildingPart(city, x, z);
+        PartPalette part = getPartPalette(x, z, cityIndex, plan, plan.getPlan(), 123);
         if (part != null) {
             parts.add(part);
         }
@@ -207,16 +210,15 @@ public class CityTools {
         Random random = new Random(seed + x * 6668353L + z * 666672943L);
         random.nextFloat();
         random.nextFloat();
-        CityPlan plan = city.getPlan();
         int levels = plan.getMinLayer2() + random.nextInt(plan.getMaxLayer2() - plan.getMinLayer2() + 1);
         for (int i = 0 ; i < levels ; i++) {
-            BuildingPart level2 = getLevel2BuildingPart(city, x, z, i);
+            PartPalette level2 = getPartPalette(x, z, cityIndex, plan, plan.getLayer2(), 366670937L * (i + 1L));
             if (level2 != null) {
                 parts.add(level2);
             }
         }
 
-        part = getTopBuildingPart(city, x, z);
+        part = getPartPalette(x, z, cityIndex, plan, plan.getTop(), 137777);
         if (part != null) {
             parts.add(part);
         }
@@ -224,61 +226,34 @@ public class CityTools {
         return parts;
     }
 
-    @Nullable
-    public static BuildingPart getLevel2BuildingPart(City city, int x, int z, int level) {
-        CityPlan plan = city.getPlan();
-        List<String> pattern = plan.getLayer2();
-        if (pattern.isEmpty()) {
-            return null;
+    @Nonnull
+    public static List<BuildingPart> getBuildingParts(City city, int x, int z) {
+        List<PartPalette> partPalettes = getPartPalettes(city, x, z);
+        long randomSeed = 7;
+        List<BuildingPart> parts = new ArrayList<>();
+        long seed = DimensionManager.getWorld(0).getSeed();
+        for (PartPalette palette : partPalettes) {
+            Random random = new Random(x * 23567813L + z * 923568029L + randomSeed + seed);
+            random.nextFloat();
+            random.nextFloat();
+            randomSeed = randomSeed * 27 + 13;
+            List<String> p = palette.getPalette();
+            parts.add(AssetRegistries.PARTS.get(p.get(random.nextInt(p.size()))));
         }
-        return getCorrectPart(x, z, plan, pattern, 366670937L * (level+1L));
-    }
-
-    @Nullable
-    public static BuildingPart getCellarBuildingPart(City city, int x, int z) {
-        CityPlan plan = city.getPlan();
-        List<String> pattern = plan.getCellar();
-        if (pattern.isEmpty()) {
-            return null;
-        }
-
-        return getCorrectPart(x, z, plan, pattern, 13);
-    }
-
-    @Nullable
-    public static BuildingPart getTopBuildingPart(City city, int x, int z) {
-        CityPlan plan = city.getPlan();
-        List<String> pattern = plan.getTop();
-        if (pattern.isEmpty()) {
-            return null;
-        }
-
-        return getCorrectPart(x, z, plan, pattern, 137777);
-    }
-
-    @Nullable
-    public static BuildingPart getBuildingPart(City city, int x, int z) {
-        CityPlan plan = city.getPlan();
-        List<String> pattern = plan.getPlan();
-        if (pattern.isEmpty()) {
-            return null;
-        }
-        return getCorrectPart(x, z, plan, pattern, 123);
-    }
-
-    private static BuildingPart getCorrectPart(int x, int z, CityPlan plan, List<String> pattern, long randomSeed) {
-        CityIndex index = getCityIndex(x, z);
-        if (index != null) {
-            return getPart(x, z, index, plan, pattern, randomSeed);
-        }
-        return null;
+        return parts;
     }
 
     public static BuildingPart getPart(int x, int z, CityIndex index, CityPlan plan, List<String> pattern, long randomSeed) {
-        Map<Character, List<String>> partPalette = plan.getPartPalette();
+        if (pattern.isEmpty()) {
+            return null;
+        }
+        if (index == null) {
+            return null;
+        }
+        Map<Character, PartPalette> partPalette = plan.getPartPalette();
         char partChar = pattern.get(index.getZOffset()).charAt(index.getXOffset());
         if (partChar != ' ') {
-            List<String> parts = partPalette.get(partChar);
+            List<String> parts = partPalette.get(partChar).getPalette();
 
             long seed = DimensionManager.getWorld(0).getSeed();
             Random random = new Random(x * 23567813L + z * 923568029L + randomSeed + seed);
@@ -289,4 +264,20 @@ public class CityTools {
         }
         return null;
     }
+
+    public static PartPalette getPartPalette(int x, int z, CityIndex index, CityPlan plan, List<String> pattern, long randomSeed) {
+        if (pattern.isEmpty()) {
+            return null;
+        }
+        if (index == null) {
+            return null;
+        }
+        Map<Character, PartPalette> partPalette = plan.getPartPalette();
+        char partChar = pattern.get(index.getZOffset()).charAt(index.getXOffset());
+        if (partChar != ' ') {
+            return partPalette.get(partChar);
+        }
+        return null;
+    }
+
 }
