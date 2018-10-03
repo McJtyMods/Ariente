@@ -74,6 +74,12 @@ public class BuildingPart implements IAsset {
         return teInfo;
     }
 
+    public BuildingPart createCopy(String newName) {
+        PalettedSlice[] copySlices = new PalettedSlice[slices.length];
+        System.arraycopy(slices, 0, copySlices, 0, slices.length);
+        return new BuildingPart(newName, xSize, zSize, copySlices, teInfo);
+    }
+
     /**
      * Vertical slices, organized by z*xSize+x
      */

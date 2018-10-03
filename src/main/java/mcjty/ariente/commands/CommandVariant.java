@@ -7,6 +7,8 @@ import net.minecraft.command.ICommandSender;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.server.MinecraftServer;
 import net.minecraft.util.math.BlockPos;
+import net.minecraft.util.text.TextComponentString;
+import net.minecraft.util.text.TextFormatting;
 
 import javax.annotation.Nullable;
 import java.util.Collections;
@@ -33,17 +35,20 @@ public class CommandVariant implements ICommand {
     public void execute(MinecraftServer server, ICommandSender sender, String[] args) throws CommandException {
         EntityPlayer player = (EntityPlayer) sender;
         try {
-            String c = args[1].toLowerCase();
+            String c = args[0].toLowerCase();
             if ("set".equals(c) || "s".equals(c)) {
-                EditMode.setVariant(player, args[2]);
+                EditMode.setVariant(player, args[1]);
             } else if ("get".equals(c) || "g".equals(c)) {
                 EditMode.getVariant(player);
             } else if ("list".equals(c)) {
                 EditMode.listVariants(player);
             } else if ("switch".equals(c)) {
-                EditMode.switchVariant(player, args[2], args[3]);
+                EditMode.switchVariant(player, args[1], args[2]);
             }
+        } catch (IndexOutOfBoundsException E) {
+            ((EntityPlayer) sender).sendStatusMessage(new TextComponentString(TextFormatting.RED + "Too few arguments!"), false);
         } catch (Exception e) {
+            ((EntityPlayer) sender).sendStatusMessage(new TextComponentString(TextFormatting.RED + "Something went wrong with command!"), false);
             e.printStackTrace();
         }
     }

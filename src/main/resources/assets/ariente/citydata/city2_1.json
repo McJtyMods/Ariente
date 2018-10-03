@@ -22,6 +22,24 @@
     "powerArmorChance": 0.2,
     "forcefieldChance": 0.1,
     "masterChance": 0.05,
+    "variants": [
+      {
+        "name": "tower1",
+        "count": 2
+      },
+      {
+        "name": "tower2",
+        "count": 2
+      },
+      {
+        "name": "tower3",
+        "count": 2
+      },
+      {
+        "name": "tower4",
+        "count": 2
+      }
+    ],
     "loot": [
       {
         "id": "ariente:ingot_silver",
@@ -171,6 +189,31 @@
       },
       {
         "char": "L",
+        "variant": "tower1",
+        "parts": [
+          "tow2_1_A",
+          "tow2_1_B"
+        ]
+      },
+      {
+        "char": "M",
+        "variant": "tower2",
+        "parts": [
+          "tow2_1_A",
+          "tow2_1_B"
+        ]
+      },
+      {
+        "char": "N",
+        "variant": "tower3",
+        "parts": [
+          "tow2_1_A",
+          "tow2_1_B"
+        ]
+      },
+      {
+        "char": "O",
+        "variant": "tower4",
         "parts": [
           "tow2_1_A",
           "tow2_1_B"
@@ -249,9 +292,9 @@
       "ghi"
     ],
     "layer2": [
-      "L L",
+      "L M",
       "   ",
-      "L L"
+      "N O"
     ],
     "top": [
       "T T",

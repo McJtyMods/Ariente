@@ -15,7 +15,7 @@ public class AbstractAssetRegistry<T extends IAsset> {
         assetNames.add(building.getName());
     }
 
-    public void replace(String name, T newversion) {
+    public void put(String name, T newversion) {
         assets.put(name, newversion);
     }
 

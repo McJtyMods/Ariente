@@ -246,17 +246,25 @@ public class CityTools {
 
     @Nonnull
     public static List<BuildingPart> getBuildingParts(City city, int x, int z) {
+        Map<String, Integer> variantSelections = getVariantSelections(city.getCenter());
+
         List<PartPalette> partPalettes = getPartPalettes(city, x, z);
         long randomSeed = 7;
         List<BuildingPart> parts = new ArrayList<>();
         long seed = DimensionManager.getWorld(0).getSeed();
         for (PartPalette palette : partPalettes) {
-            Random random = new Random(x * 23567813L + z * 923568029L + randomSeed + seed);
-            random.nextFloat();
-            random.nextFloat();
-            randomSeed = randomSeed * 27 + 13;
+            String variantName = palette.getVariant();
+            int variant = (variantName == null || variantName.isEmpty()) ? 0 : variantSelections.getOrDefault(variantName, 0);
+
+//            Random random = new Random(x * 23567813L + z * 923568029L + randomSeed + seed);
+//            random.nextFloat();
+//            random.nextFloat();
+//            randomSeed = randomSeed * 27 + 13;
             List<String> p = palette.getPalette();
-            parts.add(AssetRegistries.PARTS.get(p.get(random.nextInt(p.size()))));
+            if (variant >= p.size()) {
+                variant = 0;
+            }
+            parts.add(AssetRegistries.PARTS.get(p.get(variant)));
         }
         return parts;
     }
