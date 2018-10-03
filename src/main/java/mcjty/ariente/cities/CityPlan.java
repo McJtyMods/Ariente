@@ -24,8 +24,6 @@ public class CityPlan implements IAsset {
     private List<String> plan = new ArrayList<>();
     private List<String> layer2 = new ArrayList<>();
     private List<String> top = new ArrayList<>();
-    private int minLayer2 = 1;
-    private int maxLayer2 = 2;
     private boolean underground = false;
 
     private final Map<String, Integer> variants = new HashMap<>();
@@ -94,14 +92,6 @@ public class CityPlan implements IAsset {
 
     public List<String> getTop() {
         return top;
-    }
-
-    public int getMinLayer2() {
-        return minLayer2;
-    }
-
-    public int getMaxLayer2() {
-        return maxLayer2;
     }
 
     public String getPalette() {
@@ -201,8 +191,6 @@ public class CityPlan implements IAsset {
         name = object.get("name").getAsString();
         isCity = object.has("city") ? object.get("city").getAsBoolean() : true;
         palette = object.get("palette").getAsString();
-        minLayer2 = getMin(object, "layers", 1);
-        maxLayer2 = getMax(object, "layers", 1);
         minSentinels = getMin(object, "sentinels", 0);
         maxSentinels = getMax(object, "sentinels", 0);
         sentinelDistance = object.get("sentinelDistance").getAsInt();
@@ -338,7 +326,6 @@ public class CityPlan implements IAsset {
         object.add("name", new JsonPrimitive(name));
         object.add("city", new JsonPrimitive(isCity));
         object.add("palette", new JsonPrimitive(palette));
-        object.add("layers", new JsonPrimitive(minLayer2 + "-" + maxLayer2));
         object.add("sentinels", new JsonPrimitive(minSentinels + "-" + maxSentinels));
         object.add("sentinelDistance", new JsonPrimitive(sentinelDistance));
         object.add("sentinelRelHeight", new JsonPrimitive(sentinelRelHeight));

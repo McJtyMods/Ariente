@@ -4,7 +4,6 @@
     "name": "city0_0",
     "city": true,
     "palette": "city0_0",
-    "layers": "1-2",
     "sentinels": "0-0",
     "sentinelDistance": 15,
     "sentinelRelHeight": 14,

@@ -4,7 +4,6 @@
     "name": "station",
     "city": false,
     "palette": "station",
-    "layers": "1-2",
     "sentinels": "1-1",
     "sentinelDistance": 15,
     "sentinelRelHeight": 14,

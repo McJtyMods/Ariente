@@ -12,6 +12,7 @@ import net.minecraftforge.common.DimensionManager;
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 import java.util.*;
+import java.util.stream.Stream;
 
 public class CityTools {
 
@@ -168,7 +169,7 @@ public class CityTools {
         WorldServer world = server.getWorld(WorldgenConfiguration.DIMENSION_ID);
         ArienteChunkGenerator generator = (ArienteChunkGenerator) (world.getChunkProvider().chunkGenerator);
         int minHeight = ArienteCityGenerator.getPortalHeight(generator, cx, cz);
-        return new BlockPos(cx * 16 + 8, minHeight+2, cz * 16 + 8);
+        return new BlockPos(cx * 16 + 8, minHeight + 2, cz * 16 + 8);
     }
 
     @Nonnull
@@ -215,32 +216,13 @@ public class CityTools {
         CityIndex cityIndex = getCityIndex(x, z);
         CityPlan plan = city.getPlan();
 
-        PartPalette cellar = getPartPalette(x, z, cityIndex, plan, plan.getCellar(), 13);
-        if (cellar != null) {
-            parts.add(cellar);
-        }
-        PartPalette part = getPartPalette(x, z, cityIndex, plan, plan.getPlan(), 123);
-        if (part != null) {
-            parts.add(part);
-        }
-
-        long seed = DimensionManager.getWorld(0).getSeed();
-        Random random = new Random(seed + x * 6668353L + z * 666672943L);
-        random.nextFloat();
-        random.nextFloat();
-        int levels = plan.getMinLayer2() + random.nextInt(plan.getMaxLayer2() - plan.getMinLayer2() + 1);
-        for (int i = 0 ; i < levels ; i++) {
-            PartPalette level2 = getPartPalette(x, z, cityIndex, plan, plan.getLayer2(), 366670937L * (i + 1L));
-            if (level2 != null) {
-                parts.add(level2);
-            }
-        }
-
-        part = getPartPalette(x, z, cityIndex, plan, plan.getTop(), 137777);
-        if (part != null) {
-            parts.add(part);
-        }
-
+        Stream.of(getPartPalette(x, z, cityIndex, plan, plan.getCellar(), 13),
+                getPartPalette(x, z, cityIndex, plan, plan.getPlan(), 123),
+                getPartPalette(x, z, cityIndex, plan, plan.getLayer2(), 366670937L * 57),
+                getPartPalette(x, z, cityIndex, plan, plan.getTop(), 137777))
+                .filter(Optional::isPresent)
+                .map(Optional::get)
+                .forEach(parts::add);
         return parts;
     }
 
@@ -255,11 +237,6 @@ public class CityTools {
         for (PartPalette palette : partPalettes) {
             String variantName = palette.getVariant();
             int variant = (variantName == null || variantName.isEmpty()) ? 0 : variantSelections.getOrDefault(variantName, 0);
-
-//            Random random = new Random(x * 23567813L + z * 923568029L + randomSeed + seed);
-//            random.nextFloat();
-//            random.nextFloat();
-//            randomSeed = randomSeed * 27 + 13;
             List<String> p = palette.getPalette();
             if (variant >= p.size()) {
                 variant = 0;
@@ -291,19 +268,19 @@ public class CityTools {
         return null;
     }
 
-    public static PartPalette getPartPalette(int x, int z, CityIndex index, CityPlan plan, List<String> pattern, long randomSeed) {
+    public static Optional<PartPalette> getPartPalette(int x, int z, CityIndex index, CityPlan plan, List<String> pattern, long randomSeed) {
         if (pattern.isEmpty()) {
-            return null;
+            return Optional.empty();
         }
         if (index == null) {
-            return null;
+            return Optional.empty();
         }
         Map<Character, PartPalette> partPalette = plan.getPartPalette();
         char partChar = pattern.get(index.getZOffset()).charAt(index.getXOffset());
         if (partChar != ' ') {
-            return partPalette.get(partChar);
+            return Optional.ofNullable(partPalette.get(partChar));
         }
-        return null;
+        return Optional.empty();
     }
 
 }

@@ -3,7 +3,6 @@
     "type": "plan",
     "name": "city2_1",
     "palette": "city2_1",
-    "layers": "1-2",
     "sentinels": "3-5",
     "sentinelDistance": 40,
     "sentinelRelHeight": 20,
