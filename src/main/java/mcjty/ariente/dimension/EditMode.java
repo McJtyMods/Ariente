@@ -60,6 +60,7 @@ public class EditMode {
             BuildingPart copy = firstPart.createCopy(newpartname);
             AssetRegistries.PARTS.put(newpartname, copy);
             player.sendStatusMessage(new TextComponentString("Created part: " + newpartname), false);
+            palette.add(newpartname);
         }
 
         player.sendStatusMessage(new TextComponentString("Variant set to: " + variant), false);
@@ -68,12 +69,12 @@ public class EditMode {
 
     private static String findValidNewPartNameBasedOnOther(String oldname, int number) {
         if (oldname.contains("@")) {
-            oldname = oldname.substring(0, oldname.indexOf("@")+1);
+            oldname = oldname.substring(0, oldname.indexOf("@"));
         }
-        String newpartName = oldname + number;
+        String newpartName = oldname + "@" + number;
         while (AssetRegistries.PARTS.get(newpartName) != null) {
             number++;
-            newpartName = oldname + number;
+            newpartName = oldname + "@" + number;
         }
         return newpartName;
     }
