@@ -17,6 +17,9 @@ public class CityTools {
 
     private static final Map<ChunkCoord, City> cities = new HashMap<>();
 
+    // Mostly for editmode purposes
+    private static final Map<ChunkCoord, Map<String, Integer>> cachedVariantSelections = new HashMap<>();
+
     public static City getCity(ChunkCoord center) {
         if (!cities.containsKey(center)) {
             City city = new City(center, getRandomCityPlan(center), -1);
@@ -27,6 +30,21 @@ public class CityTools {
 
     private static void cacheCity(ChunkCoord center, City city) {
         cities.put(center, city);
+    }
+
+    public static Map<String, Integer> getVariantSelections(ChunkCoord center) {
+        if (!cachedVariantSelections.containsKey(center)) {
+            long seed = DimensionManager.getWorld(0).getSeed();
+            Random random = new Random(seed + center.getChunkZ() * 198491317L + center.getChunkX() * 776531419L);
+            random.nextFloat();
+            City city = getCity(center);
+            Map<String, Integer> variants = new HashMap<>();
+            for (Map.Entry<String, Integer> entry : city.getPlan().getVariants().entrySet()) {
+                variants.put(entry.getKey(), random.nextInt(entry.getValue()));
+            }
+            cachedVariantSelections.put(center, variants);
+        }
+        return cachedVariantSelections.get(center);
     }
 
     public static boolean isPortalChunk(int chunkX, int chunkZ) {

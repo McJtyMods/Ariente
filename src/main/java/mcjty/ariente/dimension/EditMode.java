@@ -35,18 +35,78 @@ public class EditMode {
         if (city == null) {
             return;
         }
-        BlockPos start = player.getPosition();
-        int cx = (start.getX() >> 4);
-        int cz = (start.getZ() >> 4);
-        CityIndex index = CityTools.getCityIndex(cx, cz);
-        if (index == null) {
+        BlockPos pos = player.getPosition();
+        int cx = (pos.getX() >> 4);
+        int cz = (pos.getZ() >> 4);
+
+        PartPalette found = getCurrentPartPalette(player, city, pos, cx, cz);
+
+        if (found == null) {
             return;
         }
 
-        CityPlan plan = city.getPlan();
-        Map<Character, PartPalette> partPalette = plan.getPartPalette();
-//        char partChar = pattern.get(index.getZOffset()).charAt(index.getXOffset());
+        found.setVariant(variant);
+        player.sendStatusMessage(new TextComponentString("Variant set to: " + variant), false);
 
+    }
+
+    public static void getVariant(EntityPlayer player) {
+        City city = getCurrentCity(player);
+        if (city == null) {
+            return;
+        }
+        BlockPos pos = player.getPosition();
+        int cx = (pos.getX() >> 4);
+        int cz = (pos.getZ() >> 4);
+
+        PartPalette found = getCurrentPartPalette(player, city, pos, cx, cz);
+
+        if (found == null) {
+            return;
+        }
+
+        player.sendStatusMessage(new TextComponentString("Variant is: " + found.getVariant()), false);
+
+    }
+
+    public static void listVariants(EntityPlayer player) {
+        City city = getCurrentCity(player);
+        if (city == null) {
+            return;
+        }
+
+        for (Map.Entry<String, Integer> entry : city.getPlan().getVariants().entrySet()) {
+            player.sendStatusMessage(new TextComponentString("Variant: " + entry.getKey() + " (count " + entry.getValue() + ")"), false);
+        }
+    }
+
+    public static void switchVariant(EntityPlayer player, String variant, String countS) {
+        Integer count = Integer.parseInt(countS);
+
+        City city = getCurrentCity(player);
+        if (city == null) {
+            return;
+        }
+
+    }
+
+    private static PartPalette getCurrentPartPalette(EntityPlayer player, City city, BlockPos pos, int cx, int cz) {
+        ArienteChunkGenerator generator = (ArienteChunkGenerator) (((WorldServer) player.getEntityWorld()).getChunkProvider().chunkGenerator);
+        int lowesty = CityTools.getLowestHeight(city, generator, cx, cz);
+        List<PartPalette> partPalettes = CityTools.getPartPalettes(city, cx, cz);
+        PartPalette found = null;
+        int partY = -1;
+        for (int i = 0; i < partPalettes.size(); i++) {
+            List<String> palette = partPalettes.get(i).getPalette();
+            int count = palette.isEmpty() ? 0 : AssetRegistries.PARTS.get(palette.get(0)).getSliceCount();
+            if (pos.getY() >= lowesty && pos.getY() < lowesty + count) {
+                found = partPalettes.get(i);
+                partY = lowesty;
+                break;
+            }
+            lowesty += count;
+        }
+        return found;
     }
 
     public static void enableEditMode(EntityPlayer player) {

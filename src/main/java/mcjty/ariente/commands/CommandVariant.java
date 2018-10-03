@@ -12,16 +12,16 @@ import javax.annotation.Nullable;
 import java.util.Collections;
 import java.util.List;
 
-public class CommandSetVariant implements ICommand {
+public class CommandVariant implements ICommand {
 
     @Override
     public String getName() {
-        return "ar_setvariant";
+        return "ar_variant";
     }
 
     @Override
     public String getUsage(ICommandSender sender) {
-        return getName() + " <variantname>";
+        return getName() + " [set|get|list|switch] [<variantname> [<number>]]";
     }
 
     @Override
@@ -33,7 +33,16 @@ public class CommandSetVariant implements ICommand {
     public void execute(MinecraftServer server, ICommandSender sender, String[] args) throws CommandException {
         EntityPlayer player = (EntityPlayer) sender;
         try {
-            EditMode.setVariant(player, args[1]);
+            String c = args[1].toLowerCase();
+            if ("set".equals(c) || "s".equals(c)) {
+                EditMode.setVariant(player, args[2]);
+            } else if ("get".equals(c) || "g".equals(c)) {
+                EditMode.getVariant(player);
+            } else if ("list".equals(c)) {
+                EditMode.listVariants(player);
+            } else if ("switch".equals(c)) {
+                EditMode.switchVariant(player, args[2], args[3]);
+            }
         } catch (Exception e) {
             e.printStackTrace();
         }

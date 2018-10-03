@@ -9,7 +9,10 @@ import net.minecraft.util.ResourceLocation;
 import net.minecraftforge.fml.common.registry.ForgeRegistries;
 import org.apache.commons.lang3.StringUtils;
 
-import java.util.*;
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
 
 public class CityPlan implements IAsset {
 
@@ -25,7 +28,7 @@ public class CityPlan implements IAsset {
     private int maxLayer2 = 2;
     private boolean underground = false;
 
-    private final Set<String> variants = new HashSet<>();
+    private final Map<String, Integer> variants = new HashMap<>();
 
     private List<Loot> loot = new ArrayList<>();
 
@@ -185,7 +188,7 @@ public class CityPlan implements IAsset {
         return forcefieldChance;
     }
 
-    public Set<String> getVariants() {
+    public Map<String, Integer> getVariants() {
         return variants;
     }
 
@@ -230,24 +233,27 @@ public class CityPlan implements IAsset {
             underground = false;
         }
 
-        JsonArray lootArray = object.get("loot").getAsJsonArray();
-        parseLoot(lootArray);
-
-        variants.clear();
-        if (object.has("variants")) {
-            JsonArray array = object.get("variants").getAsJsonArray();
-            for (JsonElement element : array) {
-                variants.add(element.getAsString());
-            }
-        }
-
-        JsonArray paletteArray = object.get("partpalette").getAsJsonArray();
-        parsePaletteArray(paletteArray);
+        parseLoot(object.get("loot").getAsJsonArray());
+        parseVariants(object);
+        parsePaletteArray(object.get("partpalette").getAsJsonArray());
 
         parsePlan(object, "plan", plan);
         parsePlan(object, "cellar", cellar);
         parsePlan(object, "layer2", layer2);
         parsePlan(object, "top", top);
+    }
+
+    private void parseVariants(JsonObject object) {
+        variants.clear();
+        if (object.has("variants")) {
+            JsonArray array = object.get("variants").getAsJsonArray();
+            for (JsonElement element : array) {
+                JsonObject o = element.getAsJsonObject();
+                String name = o.get("name").getAsString();
+                Integer count = o.get("count").getAsInt();
+                variants.put(name, count);
+            }
+        }
     }
 
     private int getMin(JsonObject object, String tag, int def) {
@@ -367,11 +373,14 @@ public class CityPlan implements IAsset {
     }
 
     private void writeVariants(JsonObject object) {
-        JsonArray lootArray = new JsonArray();
-        for (String s : variants) {
-            lootArray.add(new JsonPrimitive(s));
+        JsonArray array = new JsonArray();
+        for (Map.Entry<String, Integer> entry : variants.entrySet()) {
+            JsonObject o = new JsonObject();
+            o.add("name", new JsonPrimitive(entry.getKey()));
+            o.add("count", new JsonPrimitive(entry.getValue()));
+            array.add(o);
         }
-        object.add("variants", lootArray);
+        object.add("variants", array);
     }
 
     private void writeLootArray(JsonObject object) {
