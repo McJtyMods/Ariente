@@ -2,9 +2,7 @@ package mcjty.ariente.blocks.utility;
 
 import mcjty.ariente.Ariente;
 import mcjty.ariente.ai.CityAI;
-import mcjty.ariente.blocks.ModBlocks;
 import mcjty.ariente.cities.ICityEquipment;
-import mcjty.ariente.gui.HoloGuiTools;
 import mcjty.ariente.items.ModItems;
 import mcjty.ariente.power.IPowerReceiver;
 import mcjty.hologui.api.IGuiComponent;
@@ -18,7 +16,6 @@ import mcjty.lib.varia.RedstoneMode;
 import mcjty.theoneprobe.api.IProbeHitData;
 import mcjty.theoneprobe.api.IProbeInfo;
 import mcjty.theoneprobe.api.ProbeMode;
-import mcjty.theoneprobe.api.TextStyleClass;
 import mcp.mobius.waila.api.IWailaConfigHandler;
 import mcp.mobius.waila.api.IWailaDataAccessor;
 import net.minecraft.block.properties.PropertyBool;
@@ -31,7 +28,6 @@ import net.minecraft.network.play.server.SPacketUpdateTileEntity;
 import net.minecraft.util.EnumFacing;
 import net.minecraft.util.ITickable;
 import net.minecraft.util.ResourceLocation;
-import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.World;
 import net.minecraftforge.fml.common.Optional;
 import net.minecraftforge.fml.relauncher.Side;
@@ -78,13 +74,6 @@ public class ConstructorTile extends GenericTileEntity implements DefaultSidedIn
             boolean newWorking = isWorking();
             if (newWorking != working) {
                 world.markBlockRangeForRenderUpdate(getPos(), getPos());
-                BlockPos p = pos.up();
-                IBlockState state = world.getBlockState(p);
-                while (state.getBlock() == ModBlocks.negariteTankBlock) {
-                    world.markBlockRangeForRenderUpdate(p, p);
-                    p = p.up();
-                    state = world.getBlockState(p);
-                }
             }
         }
     }
@@ -107,7 +96,7 @@ public class ConstructorTile extends GenericTileEntity implements DefaultSidedIn
     @Override
     public boolean isItemValidForSlot(int index, ItemStack stack) {
         if (index == SLOT_BLUEPRINT) {
-            return stack.getItem() == ModItems.negariteDust;    // @todo blueprint
+            return stack.getItem() == ModItems.blueprintItem;    // @todo blueprint
         }
         return true;
     }
@@ -176,10 +165,16 @@ public class ConstructorTile extends GenericTileEntity implements DefaultSidedIn
     public IGuiComponent createGui(String tag, IGuiComponentRegistry registry) {
         return registry.panel(0, 0, 8, 8)
                 .add(registry.text(0, 0, 8, 1).text("Constructor").color(0xaaccff))
+                .add(registry.stackIcon(1, 2, 1, 1).itemStack(new ItemStack(ModItems.blueprintItem)))
+                .add(registry.stackIcon(2, 2, 1, 1).itemStack(new ItemStack(ModItems.blueprintItem)))
+                .add(registry.stackIcon(3, 2, 1, 1).itemStack(new ItemStack(ModItems.blueprintItem)))
+                .add(registry.stackIcon(1, 3, 1, 1).itemStack(new ItemStack(ModItems.blueprintItem)))
+                .add(registry.stackIcon(2, 3, 1, 1).itemStack(new ItemStack(ModItems.blueprintItem)))
+                .add(registry.stackIcon(3, 3, 1, 1).itemStack(new ItemStack(ModItems.blueprintItem)))
+                .add(registry.stackIcon(1, 4, 1, 1).itemStack(new ItemStack(ModItems.blueprintItem)))
+                .add(registry.stackIcon(2, 4, 1, 1).itemStack(new ItemStack(ModItems.blueprintItem)))
+                .add(registry.stackIcon(3, 4, 1, 1).itemStack(new ItemStack(ModItems.blueprintItem)))
 //                .add(registry.stackIcon(0, 3, 1, 1).itemStack(new ItemStack(ModItems.negariteDust)))
-
-                .add(registry.icon(1, 3, 1, 1).icon(128+64, 128))
-                .add(registry.number(2, 3, 1, 1).color(0xffffff).getter((p,h) -> HoloGuiTools.countItem(p, ModItems.negariteDust)))
 
 //                .add(registry.iconButton(2, 4, 1, 1).icon(128+32, 128+16).hover(128+32+16, 128+16)
 //                        .hitEvent((component, player, entity1, x, y) -> toPlayer(player, 64)))
@@ -193,7 +188,7 @@ public class ConstructorTile extends GenericTileEntity implements DefaultSidedIn
 //                .add(registry.stackIcon(5, 3, 1, 1).itemStack(new ItemStack(ModBlocks.negariteGeneratorBlock)))
 //                .add(registry.number(6, 3, 1, 1).color(0xffffff).getter(this::countNegariteGenerator))
 
-                .add(registry.iconChoice(7, 6, 1, 1)
+                .add(registry.iconChoice(7, 7, 1, 1)
                         .getter((player) -> getRSModeInt())
                         .icon(128, 128+32)
                         .icon(128+16, 128+32)
