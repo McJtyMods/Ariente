@@ -1,0 +1,31 @@
+{
+  "forge_marker": 1,
+  "defaults": {
+    "model": "ariente:frontblock_glow",
+    "textures": {
+      "front": "ariente:blocks/machines/constructor_off",
+      "frontglow": "ariente:blocks/base/empty_glow"
+    }
+  },
+  "variants": {
+    "normal": [{}],
+    "inventory": [{}],
+    "facing": {
+      "north": {},
+      "south": {"y": 180},
+      "west": {"y": 270},
+      "east": {"y": 90}
+    },
+    "working": {
+      "false": {
+      },
+      "true": {
+        "model": "ariente:frontblock_glow",
+        "textures": {
+          "front": "ariente:blocks/machines/constructor",
+          "frontglow": "ariente:blocks/machines/constructor_glow"
+        }
+      }
+    }
+  }
+}

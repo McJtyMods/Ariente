@@ -1,0 +1,7 @@
+container {
+    slot('specificitem') {
+        items('ariente:blueprint')
+        pos(82,24)
+    }
+    playerslots(10,70)
+}

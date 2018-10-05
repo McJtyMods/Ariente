@@ -91,6 +91,7 @@ public class ModBlocks {
     public static GenericBlock<WirelessButtonTile, GenericContainer> wirelessButtonBlock;
     public static GenericBlock<WirelessLockTile, GenericContainer> wirelessLockBlock;
     public static GenericBlock<AlarmTile, GenericContainer> alarmBlock;
+    public static GenericBlock<ConstructorTile, GenericContainer> constructorBlock;
 
     public static BaseBlock flatLightBlock;
 
@@ -165,6 +166,17 @@ public class ModBlocks {
                 .infoExtended("message.ariente.lock")
                 .build();
         reinforcedMarble.setHardness(80.0F).setResistance(3000.0F);
+
+        constructorBlock = builderFactory.<ConstructorTile> builder("constructor")
+                .tileEntityClass(ConstructorTile.class)
+                .container(ConstructorTile.CONTAINER_FACTORY)
+                .rotationType(BaseBlock.RotationType.HORIZROTATION)
+                .flags(BlockFlags.REDSTONE_CHECK)
+                .property(ConstructorTile.WORKING)
+                .activateAction((world, pos, player, hand, side, hitX, hitY, hitZ) -> Ariente.guiHandler.openHoloGui(world, pos, player))
+                .info("message.ariente.shiftmessage")
+                .infoExtended("message.ariente.constructor")
+                .build();
 
         alarmBlock = builderFactory.<AlarmTile> builder("alarm")
                 .tileEntityClass(AlarmTile.class)
@@ -513,6 +525,7 @@ public class ModBlocks {
 
         forceFieldBlock.initModel();
 
+        constructorBlock.initModel();
         flatLightBlock.initModel();
         fluxGlow.initModel();
         posiriteGeneratorBlock.initModel();

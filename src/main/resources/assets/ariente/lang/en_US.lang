@@ -52,6 +52,7 @@ tile.ariente.blacktech.lines_glow.name=Tech Block Glowing Lines
 tile.ariente.blacktech.red_lines_glow.name=Tech Block Red Glowing Lines
 tile.ariente.blacktech.panel.name=Tech Block Panel
 
+tile.ariente.constructor.name=Constructor
 tile.ariente.facade.name=Facade
 tile.ariente.connector.name=Connector
 tile.ariente.connector_posirite.name=Posirite Connector
