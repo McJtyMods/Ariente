@@ -1,4 +1,7 @@
 {
+    "animation": {
+      "frametime": 3
+    },
     "ctm":{
         "ctm_version": 1,
         "layer":"CUTOUT",
