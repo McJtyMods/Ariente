@@ -231,9 +231,7 @@ public class CityTools {
         Map<String, Integer> variantSelections = getVariantSelections(city.getCenter());
 
         List<PartPalette> partPalettes = getPartPalettes(city, x, z);
-        long randomSeed = 7;
         List<BuildingPart> parts = new ArrayList<>();
-        long seed = DimensionManager.getWorld(0).getSeed();
         for (PartPalette palette : partPalettes) {
             String variantName = palette.getVariant();
             int variant = (variantName == null || variantName.isEmpty()) ? 0 : variantSelections.getOrDefault(variantName, 0);

@@ -23,19 +23,11 @@ public class AbstractAssetRegistry<T extends IAsset> {
         if (name == null) {
             return null;
         }
-        T t = assets.get(name);
-        if (t != null) {
-            t.init();
-        }
-        return t;
+        return assets.get(name);
     }
 
     public T get(int i) {
-        T t = assets.get(assetNames.get(i));
-        if (t != null) {
-            t.init();
-        }
-        return t;
+        return assets.get(assetNames.get(i));
     }
 
     public Iterable<T> getIterable() {

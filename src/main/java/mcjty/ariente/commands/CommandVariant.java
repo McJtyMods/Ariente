@@ -23,7 +23,7 @@ public class CommandVariant implements ICommand {
 
     @Override
     public String getUsage(ICommandSender sender) {
-        return getName() + " [set|get|list|switch] [<variantname> [<number>]]";
+        return getName() + " [set <name> | get | list | switch <name> <number> | create <name> <count>]";
     }
 
     @Override
@@ -44,6 +44,8 @@ public class CommandVariant implements ICommand {
                 EditMode.listVariants(player);
             } else if ("switch".equals(c)) {
                 EditMode.switchVariant(player, args[1], args[2]);
+            } else if ("create".equals(c)) {
+                EditMode.createVariant(player, args[1], args[2]);
             }
         } catch (IndexOutOfBoundsException E) {
             ((EntityPlayer) sender).sendStatusMessage(new TextComponentString(TextFormatting.RED + "Too few arguments!"), false);

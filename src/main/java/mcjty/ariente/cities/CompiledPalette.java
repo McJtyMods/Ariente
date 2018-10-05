@@ -23,6 +23,11 @@ public class CompiledPalette {
         return compiledPaletteMap.get(name);
     }
 
+    public static CompiledPalette getNewCompiledPalette(String name) {
+        compiledPaletteMap.remove(name);
+        return getCompiledPalette(name);
+    }
+
     public CompiledPalette(CompiledPalette other, Palette... palettes) {
         this.palette.putAll(other.palette);
         addPalettes(palettes);

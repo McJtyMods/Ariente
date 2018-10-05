@@ -76,7 +76,9 @@ public class BuildingPart implements IAsset {
 
     public BuildingPart createCopy(String newName) {
         PalettedSlice[] copySlices = new PalettedSlice[slices.length];
-        System.arraycopy(slices, 0, copySlices, 0, slices.length);
+        for (int i = 0 ; i < slices.length ; i++) {
+            copySlices[i] = slices[i].copy();
+        }
         return new BuildingPart(newName, xSize, zSize, copySlices, teInfo);
     }
 
@@ -108,6 +110,10 @@ public class BuildingPart implements IAsset {
 
     public PalettedSlice getVSlice(int x, int z) {
         return getVslices()[z*xSize + x];
+    }
+
+    public void clearVSlices() {
+        vslices = null;
     }
 
     @Override
@@ -313,6 +319,13 @@ public class BuildingPart implements IAsset {
 
         public List<PaletteIndex> getSlice() {
             return slice;
+        }
+
+        public PalettedSlice copy() {
+            PalettedSlice copySlice = new PalettedSlice();
+            copySlice.slice.clear();
+            copySlice.slice.addAll(slice);
+            return copySlice;
         }
     }
 }

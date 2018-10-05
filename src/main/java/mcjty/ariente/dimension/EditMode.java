@@ -115,6 +115,21 @@ public class EditMode {
         }
     }
 
+    public static void createVariant(EntityPlayer player, String variant, String maxS) {
+        Integer max = Integer.parseInt(maxS);
+
+        City city = getCurrentCity(player);
+        if (city == null) {
+            player.sendStatusMessage(new TextComponentString(TextFormatting.RED + "No city!"), false);
+            return;
+        }
+
+        Map<String, Integer> variants = city.getPlan().getVariants();
+        Map<String, Integer> variantSelections = CityTools.getVariantSelections(city.getCenter());
+        variants.put(variant, max);
+        variantSelections.put(variant, 0);
+    }
+
     public static void switchVariant(EntityPlayer player, String variant, String indexS) {
         Integer index = Integer.parseInt(indexS);
 
@@ -130,7 +145,11 @@ public class EditMode {
             player.sendStatusMessage(new TextComponentString(TextFormatting.RED + "Variant not found!"), false);
             return;
         }
+
+        saveCity(player);
+
         variantSelections.put(variant, Math.min(index, variants.get(variant)-1));
+        player.sendStatusMessage(new TextComponentString("Variant " + variant + " set to " + index), false);
 
         updateCity(player, city);
     }
@@ -362,6 +381,7 @@ public class EditMode {
     }
 
     private static void restorePart(BuildingPart part, World world, BlockPos start, int y, Palette palette) {
+        part.clearVSlices();
         BlockPos.MutableBlockPos pos = new BlockPos.MutableBlockPos(0, 0, 0);
         for (int x = 0; x < 16; x++) {
             int cx = (start.getX() >> 4) * 16;
@@ -392,13 +412,18 @@ public class EditMode {
     }
 
 
-    public static void saveCity(EntityPlayer player) throws FileNotFoundException {
+    public static void saveCity(EntityPlayer player) {
         BlockPos start = player.getPosition();
         int cx = (start.getX() >> 4);
         int cz = (start.getZ() >> 4);
 
         if (CityTools.isStationChunk(cx, cz) && start.getY() >= CityTools.getStationHeight() && start.getY() <= CityTools.getStationHeight() + 10 /* @todo */) {
-            saveStation(player);
+            try {
+                saveStation(player);
+            } catch (FileNotFoundException e) {
+                player.sendMessage(new TextComponentString(TextFormatting.RED + "Error saving station!"));
+                e.printStackTrace();
+            }
             return;
         }
 
@@ -411,9 +436,14 @@ public class EditMode {
 
         CityPlan plan = city.getPlan();
 
-        saveCityOrStation(player, city.getCenter(), plan, 0,
-                (x, z) -> CityTools.getLowestHeight(city, generator, x, z),
-                (x, z) -> CityTools.getBuildingParts(city, x, z));
+        try {
+            saveCityOrStation(player, city.getCenter(), plan, 0,
+                    (x, z) -> CityTools.getLowestHeight(city, generator, x, z),
+                    (x, z) -> CityTools.getBuildingParts(city, x, z));
+        } catch (FileNotFoundException e) {
+            player.sendMessage(new TextComponentString(TextFormatting.RED + "Error saving city!"));
+            e.printStackTrace();
+        }
     }
 
     public static void saveStation(EntityPlayer player) throws FileNotFoundException {
@@ -439,7 +469,7 @@ public class EditMode {
         AtomicInteger idx = new AtomicInteger(1);
         Map<IBlockState, PaletteIndex> mapping = new HashMap<>();
         Palette palette = new Palette(plan.getPalette());
-        CompiledPalette compiledPalette = CompiledPalette.getCompiledPalette(plan.getPalette());
+        CompiledPalette compiledPalette = CompiledPalette.getNewCompiledPalette(plan.getPalette());
         for (PaletteIndex character : compiledPalette.getCharacters()) {
             IBlockState state = compiledPalette.getStraight(character);
             if (state != null) {
@@ -488,8 +518,8 @@ public class EditMode {
 
         palette.optimize(paletteUsage);
         array.add(palette.writeToJSon());
-
-        player.sendMessage(new TextComponentString("Affected parts " + affectedParts));
+        AssetRegistries.PALETTES.register(palette);
+        System.out.println("Affected parts " + affectedParts);
 
         Gson gson = new GsonBuilder().setPrettyPrinting().create();
         try (PrintWriter writer = new PrintWriter(new File(plan.getName() + ".json"))) {
@@ -507,7 +537,7 @@ public class EditMode {
 
     private static BuildingPart exportPart(BuildingPart part, World world, BlockPos start, int y, Palette palette,
                                            Set<PaletteIndex> paletteUsage,
-                                           Map<IBlockState, PaletteIndex> mapping, AtomicInteger idx) throws FileNotFoundException {
+                                           Map<IBlockState, PaletteIndex> mapping, AtomicInteger idx) {
         Map<BlockPos, Map<String, Object>> teData = new HashMap<>();
         List<Slice> slices = new ArrayList<>();
         for (int f = 0; f < part.getSliceCount(); f++) {
