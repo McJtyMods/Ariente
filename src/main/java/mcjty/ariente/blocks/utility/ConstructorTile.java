@@ -3,6 +3,7 @@ package mcjty.ariente.blocks.utility;
 import mcjty.ariente.Ariente;
 import mcjty.ariente.ai.CityAI;
 import mcjty.ariente.cities.ICityEquipment;
+import mcjty.ariente.items.BlueprintItem;
 import mcjty.ariente.items.ModItems;
 import mcjty.ariente.power.IPowerReceiver;
 import mcjty.hologui.api.IGuiComponent;
@@ -165,15 +166,15 @@ public class ConstructorTile extends GenericTileEntity implements DefaultSidedIn
     public IGuiComponent createGui(String tag, IGuiComponentRegistry registry) {
         return registry.panel(0, 0, 8, 8)
                 .add(registry.text(0, 0, 8, 1).text("Constructor").color(0xaaccff))
-                .add(registry.stackIcon(1, 2, 1, 1).itemStack(new ItemStack(ModItems.blueprintItem)))
-                .add(registry.stackIcon(2, 2, 1, 1).itemStack(new ItemStack(ModItems.blueprintItem)))
-                .add(registry.stackIcon(3, 2, 1, 1).itemStack(new ItemStack(ModItems.blueprintItem)))
-                .add(registry.stackIcon(1, 3, 1, 1).itemStack(new ItemStack(ModItems.blueprintItem)))
-                .add(registry.stackIcon(2, 3, 1, 1).itemStack(new ItemStack(ModItems.blueprintItem)))
-                .add(registry.stackIcon(3, 3, 1, 1).itemStack(new ItemStack(ModItems.blueprintItem)))
-                .add(registry.stackIcon(1, 4, 1, 1).itemStack(new ItemStack(ModItems.blueprintItem)))
-                .add(registry.stackIcon(2, 4, 1, 1).itemStack(new ItemStack(ModItems.blueprintItem)))
-                .add(registry.stackIcon(3, 4, 1, 1).itemStack(new ItemStack(ModItems.blueprintItem)))
+                .add(registry.stackIcon(1, 2, 1, 1).itemStack(new ItemStack(ModItems.platinumIngot)))
+                .add(registry.stackIcon(2, 2, 1, 1).itemStack(new ItemStack(ModItems.silverIngot)))
+                .add(registry.stackIcon(3, 2, 1, 1).itemStack(new ItemStack(ModItems.platinumIngot)))
+                .add(registry.stackIcon(1, 3, 1, 1).itemStack(new ItemStack(ModItems.silverIngot)))
+                .add(registry.stackIcon(2, 3, 1, 1).itemStack(new ItemStack(ModItems.negariteDust)))
+                .add(registry.stackIcon(3, 3, 1, 1).itemStack(new ItemStack(ModItems.silverIngot)))
+                .add(registry.stackIcon(1, 4, 1, 1).itemStack(new ItemStack(ModItems.platinumIngot)))
+                .add(registry.stackIcon(2, 4, 1, 1).itemStack(new ItemStack(ModItems.silverIngot)))
+                .add(registry.stackIcon(3, 4, 1, 1).itemStack(new ItemStack(ModItems.platinumIngot)))
 //                .add(registry.stackIcon(0, 3, 1, 1).itemStack(new ItemStack(ModItems.negariteDust)))
 
 //                .add(registry.iconButton(2, 4, 1, 1).icon(128+32, 128+16).hover(128+32+16, 128+16)
@@ -188,7 +189,10 @@ public class ConstructorTile extends GenericTileEntity implements DefaultSidedIn
 //                .add(registry.stackIcon(5, 3, 1, 1).itemStack(new ItemStack(ModBlocks.negariteGeneratorBlock)))
 //                .add(registry.number(6, 3, 1, 1).color(0xffffff).getter(this::countNegariteGenerator))
 
-                .add(registry.iconChoice(7, 7, 1, 1)
+                .add(registry.playerSlots(0, 6, 7, 2)
+                        .filter(stack -> stack.getItem() instanceof BlueprintItem))
+
+                .add(registry.iconChoice(7.5, 7, 1, 1)
                         .getter((player) -> getRSModeInt())
                         .icon(128, 128+32)
                         .icon(128+16, 128+32)
