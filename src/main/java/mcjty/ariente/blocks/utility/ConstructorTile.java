@@ -33,6 +33,9 @@ import net.minecraft.world.World;
 import net.minecraftforge.fml.common.Optional;
 import net.minecraftforge.fml.relauncher.Side;
 import net.minecraftforge.fml.relauncher.SideOnly;
+import net.minecraftforge.items.CapabilityItemHandler;
+import net.minecraftforge.items.IItemHandler;
+import net.minecraftforge.items.ItemHandlerHelper;
 
 import javax.annotation.Nullable;
 import java.util.List;
@@ -43,13 +46,19 @@ public class ConstructorTile extends GenericTileEntity implements DefaultSidedIn
     public static final PropertyBool WORKING = PropertyBool.create("working");
     public static final ContainerFactory CONTAINER_FACTORY = new ContainerFactory(new ResourceLocation(Ariente.MODID, "gui/constructor.gui"));
     public static final int SLOT_BLUEPRINT = 0;
-    private InventoryHelper inventoryHelper = new InventoryHelper(this, CONTAINER_FACTORY, 1);
+    public static final int BLUEPRINTS = 6;
+    public static final int[] SLOTS = {SLOT_BLUEPRINT, SLOT_BLUEPRINT + 1, SLOT_BLUEPRINT + 2, SLOT_BLUEPRINT + 3, SLOT_BLUEPRINT + 4, SLOT_BLUEPRINT + 5};
+    private InventoryHelper inventoryHelper = new InventoryHelper(this, CONTAINER_FACTORY, BLUEPRINTS);
 
     @Override
     protected boolean needsRedstoneMode() {
         return true;
     }
 
+    @Override
+    protected boolean needsCustomInvWrapper() {
+        return true;
+    }
 
     @Override
     public void update() {
@@ -86,7 +95,7 @@ public class ConstructorTile extends GenericTileEntity implements DefaultSidedIn
 
     @Override
     public int[] getSlotsForFace(EnumFacing side) {
-        return new int[] { SLOT_BLUEPRINT };
+        return SLOTS;
     }
 
     @Override
@@ -96,8 +105,8 @@ public class ConstructorTile extends GenericTileEntity implements DefaultSidedIn
 
     @Override
     public boolean isItemValidForSlot(int index, ItemStack stack) {
-        if (index == SLOT_BLUEPRINT) {
-            return stack.getItem() == ModItems.blueprintItem;    // @todo blueprint
+        if (index >= SLOT_BLUEPRINT && index < SLOT_BLUEPRINT + BLUEPRINTS) {
+            return stack.getItem() == ModItems.blueprintItem;
         }
         return true;
     }
@@ -166,15 +175,15 @@ public class ConstructorTile extends GenericTileEntity implements DefaultSidedIn
     public IGuiComponent createGui(String tag, IGuiComponentRegistry registry) {
         return registry.panel(0, 0, 8, 8)
                 .add(registry.text(0, 0, 8, 1).text("Constructor").color(0xaaccff))
-                .add(registry.stackIcon(1, 2, 1, 1).itemStack(new ItemStack(ModItems.platinumIngot)))
-                .add(registry.stackIcon(2, 2, 1, 1).itemStack(new ItemStack(ModItems.silverIngot)))
-                .add(registry.stackIcon(3, 2, 1, 1).itemStack(new ItemStack(ModItems.platinumIngot)))
-                .add(registry.stackIcon(1, 3, 1, 1).itemStack(new ItemStack(ModItems.silverIngot)))
-                .add(registry.stackIcon(2, 3, 1, 1).itemStack(new ItemStack(ModItems.negariteDust)))
-                .add(registry.stackIcon(3, 3, 1, 1).itemStack(new ItemStack(ModItems.silverIngot)))
-                .add(registry.stackIcon(1, 4, 1, 1).itemStack(new ItemStack(ModItems.platinumIngot)))
-                .add(registry.stackIcon(2, 4, 1, 1).itemStack(new ItemStack(ModItems.silverIngot)))
-                .add(registry.stackIcon(3, 4, 1, 1).itemStack(new ItemStack(ModItems.platinumIngot)))
+                .add(registry.stackIcon(1, 1, 1, 1).itemStack(new ItemStack(ModItems.platinumIngot)))
+                .add(registry.stackIcon(2, 1, 1, 1).itemStack(new ItemStack(ModItems.silverIngot)))
+                .add(registry.stackIcon(3, 1, 1, 1).itemStack(new ItemStack(ModItems.platinumIngot)))
+                .add(registry.stackIcon(1, 2, 1, 1).itemStack(new ItemStack(ModItems.silverIngot)))
+                .add(registry.stackIcon(2, 2, 1, 1).itemStack(new ItemStack(ModItems.negariteDust)))
+                .add(registry.stackIcon(3, 2, 1, 1).itemStack(new ItemStack(ModItems.silverIngot)))
+                .add(registry.stackIcon(1, 3, 1, 1).itemStack(new ItemStack(ModItems.platinumIngot)))
+                .add(registry.stackIcon(2, 3, 1, 1).itemStack(new ItemStack(ModItems.silverIngot)))
+                .add(registry.stackIcon(3, 3, 1, 1).itemStack(new ItemStack(ModItems.platinumIngot)))
 //                .add(registry.stackIcon(0, 3, 1, 1).itemStack(new ItemStack(ModItems.negariteDust)))
 
 //                .add(registry.iconButton(2, 4, 1, 1).icon(128+32, 128+16).hover(128+32+16, 128+16)
@@ -189,7 +198,13 @@ public class ConstructorTile extends GenericTileEntity implements DefaultSidedIn
 //                .add(registry.stackIcon(5, 3, 1, 1).itemStack(new ItemStack(ModBlocks.negariteGeneratorBlock)))
 //                .add(registry.number(6, 3, 1, 1).color(0xffffff).getter(this::countNegariteGenerator))
 
+                .add(registry.slots(0, 4, 7, 2)
+                        .filter(stack -> stack.getItem() instanceof BlueprintItem)
+                        .hitEvent((component, player, entity, x, y, stack, i) -> transferToPlayer(player, stack, i))
+                        .itemHandler(getItemHandler())
+                )
                 .add(registry.playerSlots(0, 6, 7, 2)
+                        .hitEvent((component, player, entity, x, y, stack, i) -> transferToMachine(player, stack, i))
                         .filter(stack -> stack.getItem() instanceof BlueprintItem))
 
                 .add(registry.iconChoice(7.5, 7, 1, 1)
@@ -199,6 +214,26 @@ public class ConstructorTile extends GenericTileEntity implements DefaultSidedIn
                         .icon(128+32, 128+32)
                         .hitEvent((component, player, entity1, x, y) -> changeMode()))
                 ;
+    }
+
+    private IItemHandler getItemHandler() {
+        return getCapability(CapabilityItemHandler.ITEM_HANDLER_CAPABILITY, null);
+    }
+
+    private void transferToPlayer(EntityPlayer player, ItemStack stack, int index) {
+        if (!stack.isEmpty()) {
+            IItemHandler handler = getItemHandler();
+            ItemStack extracted = handler.extractItem(index, stack.getCount(), false);
+            player.inventory.addItemStackToInventory(extracted);
+        }
+    }
+
+    private void transferToMachine(EntityPlayer player, ItemStack stack, int index) {
+        if (!stack.isEmpty()) {
+            IItemHandler handler = getItemHandler();
+            ItemStack notInserted = ItemHandlerHelper.insertItem(handler, stack, false);
+            player.inventory.setInventorySlotContents(index, notInserted);
+        }
     }
 
     private void changeMode() {
