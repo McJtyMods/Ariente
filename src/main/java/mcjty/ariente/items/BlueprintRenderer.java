@@ -36,7 +36,7 @@ public class BlueprintRenderer extends TileEntityItemStackRenderer {
             GlStateManager.enableLighting();
             // Translate to the center of the block and .9 points higher
             GlStateManager.translate(0, 0, .5);
-            GlStateManager.scale(.4f, .4f, .4f);
+            GlStateManager.scale(.5f, .5f, .5f);
             GlStateManager.rotate(30, 1, 0, 0);
             long angle = (System.currentTimeMillis() / 50) % 360;
             GlStateManager.rotate(angle, 0, 1, 0);

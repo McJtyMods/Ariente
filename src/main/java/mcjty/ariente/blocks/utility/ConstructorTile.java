@@ -247,7 +247,7 @@ public class ConstructorTile extends GenericTileEntity implements DefaultSidedIn
                         .filter(stack -> stack.getItem() instanceof BlueprintItem)
                         .hitEvent((component, player, entity, x, y, stack, i) -> transferToPlayer(player, stack, i))
                         .itemHandler(getItemHandler()))
-                .add(registry.icon(0, 5, 1, 1).icon(128+64, 128))
+                .add(registry.icon(0, 5.5, 1, 1).icon(128+64, 128))
                 .add(registry.playerSlots(1.5, 5, 6, 2)
                         .hitEvent((component, player, entity, x, y, stack, i) -> transferToMachine(player, stack, i))
                         .filter(stack -> stack.getItem() instanceof BlueprintItem))
