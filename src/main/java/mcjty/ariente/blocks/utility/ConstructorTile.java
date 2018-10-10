@@ -11,6 +11,8 @@ import mcjty.hologui.api.IGuiComponent;
 import mcjty.hologui.api.IGuiComponentRegistry;
 import mcjty.hologui.api.IGuiTile;
 import mcjty.hologui.api.IHoloGuiEntity;
+import mcjty.hologui.api.components.IPlayerSlots;
+import mcjty.hologui.api.components.ISlots;
 import mcjty.lib.container.ContainerFactory;
 import mcjty.lib.container.DefaultSidedInventory;
 import mcjty.lib.container.InventoryHelper;
@@ -230,8 +232,10 @@ public class ConstructorTile extends GenericTileEntity implements DefaultSidedIn
                 .add(registry.text(0, 0, 8, 1).text("Blueprints").color(0xaaccff))
 //                .add(registry.stackIcon(0, 3, 1, 1).itemStack(new ItemStack(ModItems.negariteDust)))
 
-//                .add(registry.iconButton(2, 4, 1, 1).icon(128+32, 128+16).hover(128+32+16, 128+16)
-//                        .hitEvent((component, player, entity1, x, y) -> toPlayer(player, 64)))
+                .add(registry.iconButton(2, 3.5, 1, 1).icon(128, 128-16).hover(128+16, 128-16)
+                        .hitEvent((component, player, entity, x, y) -> transferToPlayer(player, entity)))
+                .add(registry.iconButton(3, 3.5, 1, 1).icon(128+32, 128-16).hover(128+32+16, 128-16)
+                        .hitEvent((component, player, entity, x, y) -> transferToMachine(player, entity)))
 //                .add(registry.iconButton(3, 4, 1, 1).icon(128+32, 128).hover(128+32+16, 128)
 //                        .hitEvent((component, player, entity1, x, y) -> toPlayer(player, 1)))
 //                .add(registry.iconButton(5, 4, 1, 1).icon(128, 128).hover(128+16, 128)
@@ -244,12 +248,14 @@ public class ConstructorTile extends GenericTileEntity implements DefaultSidedIn
 
                 .add(registry.stackIcon(0, 2, 1, 1).itemStack(new ItemStack(ModBlocks.constructorBlock)))
                 .add(registry.slots(1.5, 2, 6, 1)
+                        .name("slots")
                         .filter(stack -> stack.getItem() instanceof BlueprintItem)
-                        .hitEvent((component, player, entity, x, y, stack, i) -> transferToPlayer(player, stack, i))
+//                        .hitEvent((component, player, entity, x, y, stack, i) -> transferToPlayer(player, stack, i))
                         .itemHandler(getItemHandler()))
                 .add(registry.icon(0, 5.5, 1, 1).icon(128+64, 128))
                 .add(registry.playerSlots(1.5, 5, 6, 2)
-                        .hitEvent((component, player, entity, x, y, stack, i) -> transferToMachine(player, stack, i))
+                        .name("playerslots")
+//                        .hitEvent((component, player, entity, x, y, stack, i) -> transferToMachine(player, stack, i))
                         .filter(stack -> stack.getItem() instanceof BlueprintItem))
 
                 .add(registry.iconChoice(7.5, 7.5, 1, 1)
@@ -263,6 +269,44 @@ public class ConstructorTile extends GenericTileEntity implements DefaultSidedIn
 
     private IItemHandler getItemHandler() {
         return getCapability(CapabilityItemHandler.ITEM_HANDLER_CAPABILITY, null);
+    }
+
+    private void transferToPlayer(EntityPlayer player, IHoloGuiEntity entity) {
+        entity.findComponent("slots").ifPresent(component -> {
+            if (component instanceof ISlots) {
+                int selected = ((ISlots) component).getSelected();
+                if (selected != -1) {
+                    ItemStack extracted = getItemHandler().extractItem(selected, 64, false);
+                    if (!extracted.isEmpty()) {
+                        if (!player.inventory.addItemStackToInventory(extracted)) {
+                            getItemHandler().insertItem(selected, extracted, false);
+                        } else {
+                            ((ISlots) component).setSelection(-1);
+                        }
+                        markDirtyClient();
+                    }
+                }
+            }
+        });
+    }
+
+    private void transferToMachine(EntityPlayer player, IHoloGuiEntity entity) {
+        entity.findComponent("playerslots").ifPresent(component -> {
+            if (component instanceof IPlayerSlots) {
+                int selected = ((IPlayerSlots) component).getSelected();
+                if (selected != -1) {
+                    ItemStack extracted = player.inventory.getStackInSlot(selected);
+                    if (!extracted.isEmpty()) {
+                        ItemStack notInserted = ItemHandlerHelper.insertItem(getItemHandler(), extracted, false);
+                        player.inventory.setInventorySlotContents(selected, notInserted);
+                        if (notInserted.isEmpty()) {
+                            ((IPlayerSlots) component).setSelection(-1);
+                        }
+                        markDirtyClient();
+                    }
+                }
+            }
+        });
     }
 
     private void transferToPlayer(EntityPlayer player, ItemStack stack, int index) {
