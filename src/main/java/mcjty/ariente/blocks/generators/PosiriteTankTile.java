@@ -92,7 +92,7 @@ public class PosiriteTankTile extends GenericTileEntity implements IGuiTile, IAl
     }
 
     @Override
-    public IGuiComponent createGui(String tag, IGuiComponentRegistry registry) {
+    public IGuiComponent<?> createGui(String tag, IGuiComponentRegistry registry) {
         return registry.panel(0, 0, 8, 8)
             .add(registry.text(0, 0, 1, 1).text("0").color(0xffffff))
             .add(registry.text(1, 0, 1, 1).text("1").color(0xffffff))

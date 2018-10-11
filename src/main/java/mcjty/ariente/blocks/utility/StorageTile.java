@@ -459,7 +459,7 @@ public class StorageTile extends GenericTileEntity implements IGuiTile, IInvento
     }
 
     @Override
-    public IGuiComponent createGui(String tag, IGuiComponentRegistry registry) {
+    public IGuiComponent<?> createGui(String tag, IGuiComponentRegistry registry) {
         return Ariente.guiHandler.createNoAccessPanel();
     }
 

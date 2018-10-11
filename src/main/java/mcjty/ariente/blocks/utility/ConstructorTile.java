@@ -17,8 +17,6 @@ import mcjty.lib.container.ContainerFactory;
 import mcjty.lib.container.DefaultSidedInventory;
 import mcjty.lib.container.InventoryHelper;
 import mcjty.lib.tileentity.GenericTileEntity;
-import mcjty.lib.varia.ItemStackTools;
-import mcjty.lib.varia.NBTTools;
 import mcjty.lib.varia.RedstoneMode;
 import mcjty.theoneprobe.api.IProbeHitData;
 import mcjty.theoneprobe.api.IProbeInfo;
@@ -29,6 +27,7 @@ import net.minecraft.block.properties.PropertyBool;
 import net.minecraft.block.state.IBlockState;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.init.Blocks;
+import net.minecraft.init.Items;
 import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.network.NetworkManager;
@@ -58,6 +57,7 @@ public class ConstructorTile extends GenericTileEntity implements DefaultSidedIn
     private InventoryHelper inventoryHelper = new InventoryHelper(this, CONTAINER_FACTORY, BLUEPRINTS);
 
     public static String TAG_BLUEPRINTS = "blueprints";
+    public static String TAG_INGREDIENTS = "ingredients";
     public static String TAG_CRAFTING = "crafting";
 
     private ItemStack focus = ItemStack.EMPTY;
@@ -201,51 +201,65 @@ public class ConstructorTile extends GenericTileEntity implements DefaultSidedIn
     }
 
     @Override
-    public IGuiComponent createGui(String tag, IGuiComponentRegistry registry) {
+    public IGuiComponent<?> createGui(String tag, IGuiComponentRegistry registry) {
         if (TAG_BLUEPRINTS.equals(tag)) {
             return createBlueprintGui(registry);
+        } else if (TAG_INGREDIENTS.equals(tag)) {
+            return createIngredientsGui(registry);
         } else if (TAG_CRAFTING.equals(tag)) {
-            return createCrartingGui(registry);
+            return createCraftingGui(registry);
         } else {
             return createMainMenuGui(registry);
         }
     }
 
-    private IGuiComponent createMainMenuGui(IGuiComponentRegistry registry) {
+    private IGuiComponent<?> createMainMenuGui(IGuiComponentRegistry registry) {
         return registry.panel(0, 0, 8, 8)
                 .add(registry.text(0, 1, 1, 1).text("Main menu").color(0xaaccff))
                 .add(registry.stackIcon(0.5, 2.5, 1, 1).itemStack(new ItemStack(ModItems.blueprintItem)))
                 .add(registry.button(2, 2.5, 5, 1)
                         .text("Blueprints")
-                        .hitEvent((component, p, entity, x1, y1) -> switchBlueprintGui(p, entity)))
-                .add(registry.stackIcon(0.5, 3.5, 1, 1).itemStack(new ItemStack(Blocks.CRAFTING_TABLE)))
+                        .hitEvent((component, p, entity, x1, y1) -> entity.switchTag(TAG_BLUEPRINTS)))
+                .add(registry.stackIcon(0.5, 3.5, 1, 1).itemStack(new ItemStack(Items.IRON_INGOT)))
                 .add(registry.button(2, 3.5, 5, 1)
+                        .text("Ingredients")
+                        .hitEvent((component, p, entity, x1, y1) -> entity.switchTag(TAG_INGREDIENTS)))
+                .add(registry.stackIcon(0.5, 4.5, 1, 1).itemStack(new ItemStack(Blocks.CRAFTING_TABLE)))
+                .add(registry.button(2, 4.5, 5, 1)
                         .text("Crafting")
-                        .hitEvent((component, p, entity, x1, y1) -> switchCraftingGui(p, entity)))
+                        .hitEvent((component, p, entity, x1, y1) -> entity.switchTag(TAG_CRAFTING)))
                 ;
     }
 
-    private void switchBlueprintGui(EntityPlayer player, IHoloGuiEntity entity) {
-        entity.switchTag(TAG_BLUEPRINTS);
-    }
-
-    private void switchCraftingGui(EntityPlayer player, IHoloGuiEntity entity) {
-        entity.switchTag(TAG_CRAFTING);
-    }
-
-    private IGuiComponent createCrartingGui(IGuiComponentRegistry registry) {
+    private IGuiComponent<?> createIngredientsGui(IGuiComponentRegistry registry) {
         return registry.panel(0, 0, 8, 8)
-                .add(registry.stackIcon(1, 1, 1, 1).itemStack(new ItemStack(ModItems.platinumIngot)))
-                .add(registry.stackIcon(2, 1, 1, 1).itemStack(new ItemStack(ModItems.silverIngot)))
-                .add(registry.stackIcon(3, 1, 1, 1).itemStack(new ItemStack(ModItems.platinumIngot)))
-                .add(registry.stackIcon(1, 2, 1, 1).itemStack(new ItemStack(ModItems.silverIngot)))
-                .add(registry.stackIcon(2, 2, 1, 1).itemStack(new ItemStack(ModItems.negariteDust)))
-                .add(registry.stackIcon(3, 2, 1, 1).itemStack(new ItemStack(ModItems.silverIngot)))
-                .add(registry.stackIcon(1, 3, 1, 1).itemStack(new ItemStack(ModItems.platinumIngot)))
-                .add(registry.stackIcon(2, 3, 1, 1).itemStack(new ItemStack(ModItems.silverIngot)))
-                .add(registry.stackIcon(3, 3, 1, 1).itemStack(new ItemStack(ModItems.platinumIngot)))
 
-                .add(registry.iconChoice(7.5, 7.5, 1, 1)
+                .add(registry.text(0, 0, 8, 1).text("Ingredients").color(0xaaccff))
+
+                .add(registry.icon(0, 2, 1, 1).icon(128+64, 128))
+                .add(registry.playerSlots(1.5, 1.5, 6, 2)
+                        .name("playerslots")
+                        .filter(this::isIngredient))
+
+                .add(registry.iconButton(2, 3.5, 1, 1).icon(128, 128-16).hover(128+16, 128-16)
+                        .hitEvent((component, player, entity, x, y) -> transferToMachine(player, entity)))
+                .add(registry.iconButton(3, 3.5, 1, 1).icon(128+32, 128-16).hover(128+32+16, 128-16)
+                        .hitEvent((component, player, entity, x, y) -> transferToPlayer(player, entity)))
+
+                .add(registry.stackIcon(0, 4.5, 1, 1).itemStack(new ItemStack(ModBlocks.constructorBlock)))
+                .add(registry.slots(1.5, 4.5, 6, 1)
+                        .name("slots")
+                        .filter(stack -> !(stack.getItem() instanceof BlueprintItem))
+                        .itemHandler(getItemHandler()))
+                ;
+    }
+
+    private IGuiComponent<?> createCraftingGui(IGuiComponentRegistry registry) {
+        return registry.panel(0, 0, 8, 8)
+
+                .add(registry.text(0, 0, 8, 1).text("Crafting").color(0xaaccff))
+
+                .add(registry.iconChoice(7, 7, 1, 1)
                         .getter((player) -> getRSModeInt())
                         .icon(128, 128+32)
                         .icon(128+16, 128+32)
@@ -254,8 +268,11 @@ public class ConstructorTile extends GenericTileEntity implements DefaultSidedIn
                 ;
     }
 
+    private boolean isIngredient(ItemStack stack) {
+        return true;
+    }
 
-    private IGuiComponent createBlueprintGui(IGuiComponentRegistry registry) {
+    private IGuiComponent<?> createBlueprintGui(IGuiComponentRegistry registry) {
         return registry.panel(0, 0, 8, 8)
                 .add(registry.text(0, 0, 8, 1).text("Blueprints").color(0xaaccff))
 

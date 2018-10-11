@@ -264,7 +264,7 @@ public class DoorMarkerTile extends GenericTileEntity implements ITickable, IGui
     }
 
     @Override
-    public IGuiComponent createGui(String tag, IGuiComponentRegistry registry) {
+    public IGuiComponent<?> createGui(String tag, IGuiComponentRegistry registry) {
         if (isLocked()) {
             return Ariente.guiHandler.createNoAccessPanel();
         }

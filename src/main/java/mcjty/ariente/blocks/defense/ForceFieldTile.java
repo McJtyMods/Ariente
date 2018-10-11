@@ -489,7 +489,7 @@ public class ForceFieldTile extends GenericTileEntity implements IGuiTile, ITick
     }
 
     @Override
-    public IGuiComponent createGui(String tag, IGuiComponentRegistry registry) {
+    public IGuiComponent<?> createGui(String tag, IGuiComponentRegistry registry) {
         return registry.panel(0, 0, 8, 8)
                 .add(registry.text(0, 1, 1, 1).text("Radius").color(0xaaccff))
                 .add(registry.number(3, 2, 1, 1).color(0xffffff).getter((p,h) -> getScale()))

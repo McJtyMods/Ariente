@@ -300,7 +300,7 @@ public class ElevatorTile extends GenericTileEntity implements IGuiTile, ITickab
 
 
     @Override
-    public IGuiComponent createGui(String tag, IGuiComponentRegistry registry) {
+    public IGuiComponent<?> createGui(String tag, IGuiComponentRegistry registry) {
         if (TAG_ELEVATOR.equals(tag)) {
             IPanel panel = registry.panel(0, 0, 8, 8);
             List<Integer> floors = findFloors();

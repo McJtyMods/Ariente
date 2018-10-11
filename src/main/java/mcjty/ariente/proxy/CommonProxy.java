@@ -14,6 +14,7 @@ import mcjty.ariente.items.ModItems;
 import mcjty.ariente.network.ArienteMessages;
 import mcjty.ariente.oregen.WorldGen;
 import mcjty.ariente.oregen.WorldTickHandler;
+import mcjty.ariente.recipes.RecipeRegistry;
 import mcjty.lib.base.GeneralConfig;
 import mcjty.lib.network.PacketHandler;
 import mcjty.lib.proxy.AbstractCommonProxy;
@@ -71,6 +72,7 @@ public abstract class CommonProxy extends AbstractCommonProxy {
         MinecraftForge.TERRAIN_GEN_BUS.register(new TerrainEventHandlers());
         NetworkRegistry.INSTANCE.registerGuiHandler(Ariente.instance, new GuiProxy());
 
+        RecipeRegistry.init();
 //        ConfigSetup.readRecipesConfig();
     }
 

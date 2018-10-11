@@ -93,7 +93,7 @@ public class NegariteTankTile extends GenericTileEntity implements IGuiTile, IAl
     }
 
     @Override
-    public IGuiComponent createGui(String tag, IGuiComponentRegistry registry) {
+    public IGuiComponent<?> createGui(String tag, IGuiComponentRegistry registry) {
         IPanel panel = registry.panel(0, 0, 8, 8);
         for (int i = 0 ; i < 64 ; i++) {
             switch (i % 3) {

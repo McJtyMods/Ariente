@@ -272,7 +272,7 @@ public class PosiriteGeneratorTile extends GenericTileEntity implements ITickabl
 
 
     @Override
-    public IGuiComponent createGui(String tag, IGuiComponentRegistry registry) {
+    public IGuiComponent<?> createGui(String tag, IGuiComponentRegistry registry) {
         return registry.panel(0, 0, 8, 8)
                 .add(registry.text(0, 0, 8, 1).text("Posirite").color(0xaaccff))
                 .add(registry.stackIcon(0, 3, 1, 1).itemStack(new ItemStack(ModItems.posiriteDust)))

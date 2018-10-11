@@ -210,7 +210,7 @@ public class WirelessLockTile extends SignalChannelTileEntity implements ILockab
     }
 
     @Override
-    public IGuiComponent createGui(String tag, IGuiComponentRegistry registry) {
+    public IGuiComponent<?> createGui(String tag, IGuiComponentRegistry registry) {
         if (isLocked()) {
             return Ariente.guiHandler.createNoAccessPanel();
         }

@@ -19,7 +19,7 @@ import org.apache.commons.lang3.tuple.Pair;
 
 public class ArmorGui {
 
-    public static IGuiComponent create(EntityPlayer player) {
+    public static IGuiComponent<?> create(EntityPlayer player) {
         IGuiComponentRegistry registry = Ariente.guiHandler.getComponentRegistry();
         IPanel panel = registry.panel(0, 0, 8, 8)
                 .add(registry.text(0, 1, 1, 1).text("Configure armor").color(0xaaccff));
@@ -39,7 +39,7 @@ public class ArmorGui {
         return panel;
     }
 
-    public static IGuiComponent createHelmetGui(EntityPlayer player) {
+    public static IGuiComponent<?> createHelmetGui(EntityPlayer player) {
         IGuiComponentRegistry registry = Ariente.guiHandler.getComponentRegistry();
         EntityEquipmentSlot slot = EntityEquipmentSlot.HEAD;
 
@@ -57,7 +57,7 @@ public class ArmorGui {
         return panel;
     }
 
-    public static IGuiComponent createChestGui(EntityPlayer player) {
+    public static IGuiComponent<?> createChestGui(EntityPlayer player) {
         IGuiComponentRegistry registry = Ariente.guiHandler.getComponentRegistry();
         EntityEquipmentSlot slot = EntityEquipmentSlot.CHEST;
 
@@ -75,7 +75,7 @@ public class ArmorGui {
         return panel;
     }
 
-    public static IGuiComponent createLegsGui(EntityPlayer player) {
+    public static IGuiComponent<?> createLegsGui(EntityPlayer player) {
         IGuiComponentRegistry registry = Ariente.guiHandler.getComponentRegistry();
         EntityEquipmentSlot slot = EntityEquipmentSlot.LEGS;
 
@@ -92,7 +92,7 @@ public class ArmorGui {
     }
 
 
-    public static IGuiComponent createBootsGui(EntityPlayer player) {
+    public static IGuiComponent<?> createBootsGui(EntityPlayer player) {
         IGuiComponentRegistry registry = Ariente.guiHandler.getComponentRegistry();
         EntityEquipmentSlot slot = EntityEquipmentSlot.FEET;
 
@@ -109,7 +109,7 @@ public class ArmorGui {
         return panel;
     }
 
-    public static IGuiComponent createSabreGui(EntityPlayer player) {
+    public static IGuiComponent<?> createSabreGui(EntityPlayer player) {
         IGuiComponentRegistry registry = Ariente.guiHandler.getComponentRegistry();
         EntityEquipmentSlot slot = EntityEquipmentSlot.MAINHAND;
 

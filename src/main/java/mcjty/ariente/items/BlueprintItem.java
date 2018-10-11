@@ -5,25 +5,29 @@ import com.google.gson.JsonObject;
 import com.google.gson.JsonParser;
 import mcjty.ariente.Ariente;
 import mcjty.ariente.blocks.ModBlocks;
+import mcjty.ariente.recipes.ConstructorRecipe;
+import mcjty.ariente.recipes.RecipeRegistry;
+import mcjty.lib.tooltips.ITooltipExtras;
 import mcjty.lib.varia.ItemStackTools;
-import mcjty.lib.varia.JSonTools;
-import mcjty.lib.varia.NBTTools;
 import net.minecraft.client.renderer.ItemMeshDefinition;
 import net.minecraft.client.renderer.block.model.ModelResourceLocation;
 import net.minecraft.client.util.ITooltipFlag;
 import net.minecraft.creativetab.CreativeTabs;
-import net.minecraft.init.Blocks;
 import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.util.NonNullList;
 import net.minecraft.util.ResourceLocation;
+import net.minecraft.util.text.TextFormatting;
 import net.minecraft.world.World;
 import net.minecraftforge.client.model.ModelLoader;
+import org.apache.commons.lang3.tuple.Pair;
 
 import javax.annotation.Nullable;
+import java.util.Collections;
 import java.util.List;
+import java.util.stream.Collectors;
 
-public class BlueprintItem extends GenericItem {
+public class BlueprintItem extends GenericItem implements ITooltipExtras {
 
     public BlueprintItem() {
         super("blueprint");
@@ -32,9 +36,21 @@ public class BlueprintItem extends GenericItem {
     }
 
     @Override
+    public List<Pair<ItemStack, Integer>> getItems(ItemStack stack) {
+        ItemStack destination = getDestination(stack);
+        ConstructorRecipe recipe = RecipeRegistry.findRecipe(destination);
+        if (recipe == null) {
+            return Collections.emptyList();
+        } else {
+            return recipe.getIngredients().stream().map(s -> Pair.of(s, -1)).collect(Collectors.toList());
+        }
+    }
+
+    @Override
     public void addInformation(ItemStack stack, @Nullable World worldIn, List<String> tooltip, ITooltipFlag flagIn) {
         super.addInformation(stack, worldIn, tooltip, flagIn);
-//        tooltip.add("Security card");
+        ItemStack destination = getDestination(stack);
+        tooltip.add(TextFormatting.GRAY + "Result: " + TextFormatting.GREEN + destination.getDisplayName());
 //        Set<String> tags = getSecurityTags(stack);
 //        if (tags.isEmpty()) {
 //            tooltip.add(TextFormatting.YELLOW + "Security card is empty!");
@@ -64,6 +80,9 @@ public class BlueprintItem extends GenericItem {
             items.add(makeBluePrint(new ItemStack(ModItems.moduleAutofeed)));
             items.add(makeBluePrint(new ItemStack(ModItems.moduleEnergy)));
             items.add(makeBluePrint(new ItemStack(ModItems.moduleArmor)));
+            items.add(makeBluePrint(new ItemStack(ModItems.moduleFlight)));
+            items.add(makeBluePrint(new ItemStack(ModItems.moduleFire)));
+            items.add(makeBluePrint(new ItemStack(ModItems.moduleNightvision)));
             items.add(makeBluePrint(new ItemStack(ModItems.moduleFeatherFalling)));
         }
     }

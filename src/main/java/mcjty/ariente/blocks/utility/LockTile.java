@@ -245,7 +245,7 @@ public class LockTile extends GenericTileEntity implements IGuiTile, IKeyCardSlo
 
 
     @Override
-    public IGuiComponent createGui(String tag, IGuiComponentRegistry registry) {
+    public IGuiComponent<?> createGui(String tag, IGuiComponentRegistry registry) {
         if (isLocked()) {
             return Ariente.guiHandler.createNoAccessPanel();
         }
