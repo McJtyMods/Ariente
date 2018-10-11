@@ -17,6 +17,8 @@ import mcjty.lib.container.ContainerFactory;
 import mcjty.lib.container.DefaultSidedInventory;
 import mcjty.lib.container.InventoryHelper;
 import mcjty.lib.tileentity.GenericTileEntity;
+import mcjty.lib.varia.ItemStackTools;
+import mcjty.lib.varia.NBTTools;
 import mcjty.lib.varia.RedstoneMode;
 import mcjty.theoneprobe.api.IProbeHitData;
 import mcjty.theoneprobe.api.IProbeInfo;
@@ -58,6 +60,8 @@ public class ConstructorTile extends GenericTileEntity implements DefaultSidedIn
     public static String TAG_BLUEPRINTS = "blueprints";
     public static String TAG_CRAFTING = "crafting";
 
+    private ItemStack focus = ItemStack.EMPTY;
+
     @Override
     protected boolean needsRedstoneMode() {
         return true;
@@ -70,6 +74,15 @@ public class ConstructorTile extends GenericTileEntity implements DefaultSidedIn
 
     @Override
     public void update() {
+    }
+
+    public ItemStack getFocus() {
+        return focus;
+    }
+
+    public void setFocus(ItemStack focus) {
+        this.focus = focus;
+        markDirtyClient();
     }
 
     @Override
@@ -140,12 +153,20 @@ public class ConstructorTile extends GenericTileEntity implements DefaultSidedIn
     public void readRestorableFromNBT(NBTTagCompound tagCompound) {
         super.readRestorableFromNBT(tagCompound);
         readBufferFromNBT(tagCompound, inventoryHelper);
+        if (tagCompound.hasKey("focus")) {
+            focus = new ItemStack(tagCompound.getCompoundTag("focus"));
+        } else {
+            focus = ItemStack.EMPTY;
+        }
     }
 
     @Override
     public void writeRestorableToNBT(NBTTagCompound tagCompound) {
         super.writeRestorableToNBT(tagCompound);
         writeBufferToNBT(tagCompound, inventoryHelper);
+        NBTTagCompound focusNBT = new NBTTagCompound();
+        focus.writeToNBT(focusNBT);
+        tagCompound.setTag("focus", focusNBT);
     }
 
     @Override
@@ -223,40 +244,6 @@ public class ConstructorTile extends GenericTileEntity implements DefaultSidedIn
                 .add(registry.stackIcon(1, 3, 1, 1).itemStack(new ItemStack(ModItems.platinumIngot)))
                 .add(registry.stackIcon(2, 3, 1, 1).itemStack(new ItemStack(ModItems.silverIngot)))
                 .add(registry.stackIcon(3, 3, 1, 1).itemStack(new ItemStack(ModItems.platinumIngot)))
-                ;
-    }
-
-
-    private IGuiComponent createBlueprintGui(IGuiComponentRegistry registry) {
-        return registry.panel(0, 0, 8, 8)
-                .add(registry.text(0, 0, 8, 1).text("Blueprints").color(0xaaccff))
-//                .add(registry.stackIcon(0, 3, 1, 1).itemStack(new ItemStack(ModItems.negariteDust)))
-
-                .add(registry.iconButton(2, 3.5, 1, 1).icon(128, 128-16).hover(128+16, 128-16)
-                        .hitEvent((component, player, entity, x, y) -> transferToPlayer(player, entity)))
-                .add(registry.iconButton(3, 3.5, 1, 1).icon(128+32, 128-16).hover(128+32+16, 128-16)
-                        .hitEvent((component, player, entity, x, y) -> transferToMachine(player, entity)))
-//                .add(registry.iconButton(3, 4, 1, 1).icon(128+32, 128).hover(128+32+16, 128)
-//                        .hitEvent((component, player, entity1, x, y) -> toPlayer(player, 1)))
-//                .add(registry.iconButton(5, 4, 1, 1).icon(128, 128).hover(128+16, 128)
-//                        .hitEvent((component, player, entity1, x, y) -> toMachine(player, 1)))
-//                .add(registry.iconButton(6, 4, 1, 1).icon(128, 128+16).hover(128+16, 128+16)
-//                        .hitEvent((component, player, entity1, x, y) -> toMachine(player, 64)))
-
-//                .add(registry.stackIcon(5, 3, 1, 1).itemStack(new ItemStack(ModBlocks.negariteGeneratorBlock)))
-//                .add(registry.number(6, 3, 1, 1).color(0xffffff).getter(this::countNegariteGenerator))
-
-                .add(registry.stackIcon(0, 2, 1, 1).itemStack(new ItemStack(ModBlocks.constructorBlock)))
-                .add(registry.slots(1.5, 2, 6, 1)
-                        .name("slots")
-                        .filter(stack -> stack.getItem() instanceof BlueprintItem)
-//                        .hitEvent((component, player, entity, x, y, stack, i) -> transferToPlayer(player, stack, i))
-                        .itemHandler(getItemHandler()))
-                .add(registry.icon(0, 5.5, 1, 1).icon(128+64, 128))
-                .add(registry.playerSlots(1.5, 5, 6, 2)
-                        .name("playerslots")
-//                        .hitEvent((component, player, entity, x, y, stack, i) -> transferToMachine(player, stack, i))
-                        .filter(stack -> stack.getItem() instanceof BlueprintItem))
 
                 .add(registry.iconChoice(7.5, 7.5, 1, 1)
                         .getter((player) -> getRSModeInt())
@@ -267,8 +254,54 @@ public class ConstructorTile extends GenericTileEntity implements DefaultSidedIn
                 ;
     }
 
+
+    private IGuiComponent createBlueprintGui(IGuiComponentRegistry registry) {
+        return registry.panel(0, 0, 8, 8)
+                .add(registry.text(0, 0, 8, 1).text("Blueprints").color(0xaaccff))
+
+                .add(registry.icon(0, 2, 1, 1).icon(128+64, 128))
+                .add(registry.playerSlots(1.5, 1.5, 6, 2)
+                        .name("playerslots")
+                        .filter(stack -> stack.getItem() instanceof BlueprintItem))
+
+                .add(registry.iconButton(2, 3.5, 1, 1).icon(128, 128-16).hover(128+16, 128-16)
+                        .hitEvent((component, player, entity, x, y) -> transferToMachine(player, entity)))
+                .add(registry.iconButton(3, 3.5, 1, 1).icon(128+32, 128-16).hover(128+32+16, 128-16)
+                        .hitEvent((component, player, entity, x, y) -> transferToPlayer(player, entity)))
+
+                .add(registry.stackIcon(0, 4.5, 1, 1).itemStack(new ItemStack(ModBlocks.constructorBlock)))
+                .add(registry.slots(1.5, 4.5, 6, 1)
+                        .name("slots")
+                        .filter(stack -> stack.getItem() instanceof BlueprintItem)
+                        .itemHandler(getItemHandler()))
+                .add(registry.button(7.8, 4.5, 1, 1)
+                        .hitEvent((component, player, entity, x, y) -> setFocus(entity))
+                        .text("F"))
+
+                .add(registry.text(0, 6.5, 2, 1)
+                        .text("Focus")
+                        .color(0xaaccff))
+                .add(registry.stackIcon(4, 6.5, 1.5, 1.5)
+                        .scale(1.5)
+                        .itemStack(this::getFocus))
+                ;
+    }
+
     private IItemHandler getItemHandler() {
         return getCapability(CapabilityItemHandler.ITEM_HANDLER_CAPABILITY, null);
+    }
+
+    private void setFocus(IHoloGuiEntity entity) {
+        entity.findComponent("slots").ifPresent(component -> {
+            if (component instanceof ISlots) {
+                int selected = ((ISlots) component).getSelected();
+                ItemStack stack = ItemStack.EMPTY;
+                if (selected != -1) {
+                    stack = getItemHandler().getStackInSlot(selected);
+                }
+                setFocus(stack);
+            }
+        });
     }
 
     private void transferToPlayer(EntityPlayer player, IHoloGuiEntity entity) {
@@ -307,24 +340,6 @@ public class ConstructorTile extends GenericTileEntity implements DefaultSidedIn
                 }
             }
         });
-    }
-
-    private void transferToPlayer(EntityPlayer player, ItemStack stack, int index) {
-        if (!stack.isEmpty()) {
-            IItemHandler handler = getItemHandler();
-            ItemStack extracted = handler.extractItem(index, stack.getCount(), false);
-            player.inventory.addItemStackToInventory(extracted);
-            markDirtyClient();
-        }
-    }
-
-    private void transferToMachine(EntityPlayer player, ItemStack stack, int index) {
-        if (!stack.isEmpty()) {
-            IItemHandler handler = getItemHandler();
-            ItemStack notInserted = ItemHandlerHelper.insertItem(handler, stack, false);
-            player.inventory.setInventorySlotContents(index, notInserted);
-            markDirtyClient();
-        }
     }
 
     private void changeMode() {
