@@ -7,6 +7,9 @@ import mcjty.ariente.cities.ICityEquipment;
 import mcjty.ariente.items.BlueprintItem;
 import mcjty.ariente.items.ModItems;
 import mcjty.ariente.power.IPowerReceiver;
+import mcjty.ariente.power.PowerReceiverSupport;
+import mcjty.ariente.recipes.ConstructorRecipe;
+import mcjty.ariente.recipes.RecipeRegistry;
 import mcjty.hologui.api.IGuiComponent;
 import mcjty.hologui.api.IGuiComponentRegistry;
 import mcjty.hologui.api.IGuiTile;
@@ -21,6 +24,7 @@ import mcjty.lib.varia.RedstoneMode;
 import mcjty.theoneprobe.api.IProbeHitData;
 import mcjty.theoneprobe.api.IProbeInfo;
 import mcjty.theoneprobe.api.ProbeMode;
+import mcjty.theoneprobe.api.TextStyleClass;
 import mcp.mobius.waila.api.IWailaConfigHandler;
 import mcp.mobius.waila.api.IWailaDataAccessor;
 import net.minecraft.block.properties.PropertyBool;
@@ -51,16 +55,22 @@ public class ConstructorTile extends GenericTileEntity implements DefaultSidedIn
 
     public static final PropertyBool WORKING = PropertyBool.create("working");
     public static final ContainerFactory CONTAINER_FACTORY = new ContainerFactory(new ResourceLocation(Ariente.MODID, "gui/constructor.gui"));
-    public static final int SLOT_BLUEPRINT = 0;
     public static final int BLUEPRINTS = 6;
-    public static final int[] SLOTS = {SLOT_BLUEPRINT, SLOT_BLUEPRINT + 1, SLOT_BLUEPRINT + 2, SLOT_BLUEPRINT + 3, SLOT_BLUEPRINT + 4, SLOT_BLUEPRINT + 5};
-    private InventoryHelper inventoryHelper = new InventoryHelper(this, CONTAINER_FACTORY, BLUEPRINTS);
+    public static final int INGREDIENTS = 6*2;
+    public static final int OUTPUT = 6;
+    public static final int SLOT_BLUEPRINT = 0;
+    public static final int SLOT_INGREDIENTS = SLOT_BLUEPRINT + BLUEPRINTS;
+    public static final int SLOT_OUTPUT = SLOT_INGREDIENTS + INGREDIENTS;
+    public static int[] slots = null;
+    private InventoryHelper inventoryHelper = new InventoryHelper(this, CONTAINER_FACTORY, BLUEPRINTS + INGREDIENTS + OUTPUT);
 
     public static String TAG_BLUEPRINTS = "blueprints";
     public static String TAG_INGREDIENTS = "ingredients";
     public static String TAG_CRAFTING = "crafting";
 
     private ItemStack focus = ItemStack.EMPTY;
+    private long usingPower = 0;
+    private int craftIndex = 0;
 
     @Override
     protected boolean needsRedstoneMode() {
@@ -72,8 +82,46 @@ public class ConstructorTile extends GenericTileEntity implements DefaultSidedIn
         return true;
     }
 
+    private void attemptCraft(ItemStack blueprintStack) {
+        if (PowerReceiverSupport.consumePower(world, pos, 100)) {
+            boolean wasUsing = usingPower > 0;
+            usingPower = 100;
+            boolean isUsing = usingPower > 0;
+            if (isUsing != wasUsing) {
+                markDirtyClient();
+            }
+        }
+    }
+
     @Override
     public void update() {
+        if (!world.isRemote) {
+            usingPower = 0;
+            if (isMachineEnabled()) {
+                for (int i = 0; i < BLUEPRINTS; i++) {
+                    int index = SLOT_BLUEPRINT + ((i + craftIndex) % BLUEPRINTS);
+                    ItemStack blueprintStack = inventoryHelper.getStackInSlot(index);
+                    if (!blueprintStack.isEmpty()) {
+                        if (!focus.isEmpty()) {
+                            if (ItemHandlerHelper.canItemStacksStack(blueprintStack, focus)) {
+                                attemptCraft(blueprintStack);
+                                break;
+                            }
+                        } else {
+                            attemptCraft(blueprintStack);
+                            break;
+                        }
+                    }
+                }
+
+                craftIndex++;
+                if (craftIndex >= BLUEPRINTS) {
+                    craftIndex = 0;
+                }
+                markDirtyQuick();
+
+            }
+        }
     }
 
     public ItemStack getFocus() {
@@ -91,7 +139,7 @@ public class ConstructorTile extends GenericTileEntity implements DefaultSidedIn
     }
 
     public boolean isWorking() {
-        return isMachineEnabled();
+        return usingPower > 0 && isMachineEnabled();
     }
 
     @Override
@@ -116,20 +164,35 @@ public class ConstructorTile extends GenericTileEntity implements DefaultSidedIn
 
     @Override
     public int[] getSlotsForFace(EnumFacing side) {
-        return SLOTS;
+        if (slots == null) {
+            slots = new int[inventoryHelper.getCount()];
+            for (int i = 0 ; i < inventoryHelper.getCount() ; i++) {
+                slots[i] = i;
+            }
+        }
+        return slots;
     }
 
     @Override
     public boolean canInsertItem(int index, ItemStack stack, EnumFacing direction) {
+        if (isOutputSlot(index)) {
+            return false;
+        }
         return isItemValidForSlot(index, stack);
     }
 
     @Override
     public boolean isItemValidForSlot(int index, ItemStack stack) {
-        if (index >= SLOT_BLUEPRINT && index < SLOT_BLUEPRINT + BLUEPRINTS) {
+        if (isBlueprintSlot(index)) {
             return stack.getItem() == ModItems.blueprintItem;
+        } else if (isIngredientSlot(index)) {
+            return stack.getItem() != ModItems.blueprintItem;
         }
         return true;
+    }
+
+    private boolean isBlueprintSlot(int index) {
+        return index >= SLOT_BLUEPRINT && index < SLOT_BLUEPRINT + BLUEPRINTS;
     }
 
     @Override
@@ -147,7 +210,17 @@ public class ConstructorTile extends GenericTileEntity implements DefaultSidedIn
         return canPlayerAccess(player);
     }
 
+    @Override
+    public void readFromNBT(NBTTagCompound tagCompound) {
+        super.readFromNBT(tagCompound);
+        craftIndex = tagCompound.getInteger("craftIndex");
+    }
 
+    @Override
+    public NBTTagCompound writeToNBT(NBTTagCompound tagCompound) {
+        tagCompound.setInteger("craftIndex", craftIndex);
+        return super.writeToNBT(tagCompound);
+    }
 
     @Override
     public void readRestorableFromNBT(NBTTagCompound tagCompound) {
@@ -173,7 +246,7 @@ public class ConstructorTile extends GenericTileEntity implements DefaultSidedIn
     @Optional.Method(modid = "theoneprobe")
     public void addProbeInfo(ProbeMode mode, IProbeInfo probeInfo, EntityPlayer player, World world, IBlockState blockState, IProbeHitData data) {
         super.addProbeInfo(mode, probeInfo, player, world, blockState, data);
-//        probeInfo.text(TextStyleClass.LABEL + "Using: " + TextStyleClass.INFO + POWER_USAGE + " flux");
+        probeInfo.text(TextStyleClass.LABEL + "Using: " + TextStyleClass.INFO + usingPower + " flux");
     }
 
     @SideOnly(Side.CLIENT)
@@ -239,7 +312,7 @@ public class ConstructorTile extends GenericTileEntity implements DefaultSidedIn
                 .add(registry.icon(0, 2, 1, 1).icon(128+64, 128))
                 .add(registry.playerSlots(1.5, 1.5, 6, 2)
                         .name("playerslots")
-                        .filter(this::isIngredient))
+                        .filter((stack, index) -> isIngredient(stack)))
 
                 .add(registry.iconButton(2, 3.5, 1, 1).icon(128, 128-16).hover(128+16, 128-16)
                         .hitEvent((component, player, entity, x, y) -> transferToMachine(player, entity)))
@@ -247,11 +320,21 @@ public class ConstructorTile extends GenericTileEntity implements DefaultSidedIn
                         .hitEvent((component, player, entity, x, y) -> transferToPlayer(player, entity)))
 
                 .add(registry.stackIcon(0, 4.5, 1, 1).itemStack(new ItemStack(ModBlocks.constructorBlock)))
-                .add(registry.slots(1.5, 4.5, 6, 1)
+                .add(registry.slots(1.5, 4.5, 6, 2)
                         .name("slots")
-                        .filter(stack -> !(stack.getItem() instanceof BlueprintItem))
+                        .filter((stack, index) -> isIngredientSlot(index))
+                        .itemHandler(getItemHandler()))
+
+                .add(registry.stackIcon(0, 6.5, 1, 1).itemStack(new ItemStack(ModBlocks.constructorBlock)))
+                .add(registry.slots(1.5, 6.5, 6, 1)
+                        .name("outputslots")
+                        .filter((stack, index) -> isOutputSlot(index))
                         .itemHandler(getItemHandler()))
                 ;
+    }
+
+    private boolean isIngredientSlot(Integer index) {
+        return index >= SLOT_INGREDIENTS && index < SLOT_INGREDIENTS + INGREDIENTS;
     }
 
     private IGuiComponent<?> createCraftingGui(IGuiComponentRegistry registry) {
@@ -269,7 +352,22 @@ public class ConstructorTile extends GenericTileEntity implements DefaultSidedIn
     }
 
     private boolean isIngredient(ItemStack stack) {
-        return true;
+        // @todo optimize!
+        for (int i = SLOT_BLUEPRINT ; i < SLOT_BLUEPRINT + BLUEPRINTS ; i++) {
+            ItemStack blueprintStack = inventoryHelper.getStackInSlot(i);
+            if (!blueprintStack.isEmpty()) {
+                ItemStack destination = BlueprintItem.getDestination(blueprintStack);
+                ConstructorRecipe recipe = RecipeRegistry.findRecipe(destination);
+                if (recipe != null) {
+                    for (ItemStack ingredient : recipe.getIngredients()) {
+                        if (ItemStack.areItemsEqual(ingredient, stack)) {
+                            return true;
+                        }
+                    }
+                }
+            }
+        }
+        return false;
     }
 
     private IGuiComponent<?> createBlueprintGui(IGuiComponentRegistry registry) {
@@ -279,7 +377,7 @@ public class ConstructorTile extends GenericTileEntity implements DefaultSidedIn
                 .add(registry.icon(0, 2, 1, 1).icon(128+64, 128))
                 .add(registry.playerSlots(1.5, 1.5, 6, 2)
                         .name("playerslots")
-                        .filter(stack -> stack.getItem() instanceof BlueprintItem))
+                        .filter((stack, index) -> stack.getItem() instanceof BlueprintItem))
 
                 .add(registry.iconButton(2, 3.5, 1, 1).icon(128, 128-16).hover(128+16, 128-16)
                         .hitEvent((component, player, entity, x, y) -> transferToMachine(player, entity)))
@@ -289,7 +387,7 @@ public class ConstructorTile extends GenericTileEntity implements DefaultSidedIn
                 .add(registry.stackIcon(0, 4.5, 1, 1).itemStack(new ItemStack(ModBlocks.constructorBlock)))
                 .add(registry.slots(1.5, 4.5, 6, 1)
                         .name("slots")
-                        .filter(stack -> stack.getItem() instanceof BlueprintItem)
+                        .filter((stack, index) -> isBlueprintSlot(index))
                         .itemHandler(getItemHandler()))
                 .add(registry.button(7.8, 4.5, 1, 1)
                         .hitEvent((component, player, entity, x, y) -> setFocus(entity))

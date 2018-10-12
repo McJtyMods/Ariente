@@ -16,6 +16,7 @@ public class ModItems {
     public static GenericItem lithiumIngot;
     public static GenericItem manganeseIngot;
     public static GenericItem silverIngot;
+    public static GenericItem silicon;
 
     public static GenericItem negariteDust;
     public static GenericItem posiriteDust;
@@ -54,6 +55,7 @@ public class ModItems {
         lithiumIngot = new GenericItem("ingot_lithium");
         manganeseIngot = new GenericItem("ingot_manganese");
         silverIngot = new GenericItem("ingot_silver");
+        silicon = new GenericItem("silicon");
 
         negariteDust = new GenericItem("dust_negarite");
         posiriteDust = new GenericItem("dust_posirite");
@@ -95,6 +97,7 @@ public class ModItems {
         OreDictionary.registerOre("ingotPlatinum", platinumIngot);
         OreDictionary.registerOre("ingotManganese", manganeseIngot);
         OreDictionary.registerOre("ingotLithium", lithiumIngot);
+        OreDictionary.registerOre("silicon", silicon);
     }
 
     @SideOnly(Side.CLIENT)
@@ -105,6 +108,7 @@ public class ModItems {
         silverIngot.initModel();
         negariteDust.initModel();
         posiriteDust.initModel();
+        silicon.initModel();
 
         energySabre.initModel();
         enhancedEnergySabreItem.initModel();

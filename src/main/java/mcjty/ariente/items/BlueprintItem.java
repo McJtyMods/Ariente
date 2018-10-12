@@ -4,7 +4,6 @@ import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
 import com.google.gson.JsonParser;
 import mcjty.ariente.Ariente;
-import mcjty.ariente.blocks.ModBlocks;
 import mcjty.ariente.recipes.ConstructorRecipe;
 import mcjty.ariente.recipes.RecipeRegistry;
 import mcjty.lib.tooltips.ITooltipExtras;
@@ -67,23 +66,9 @@ public class BlueprintItem extends GenericItem implements ITooltipExtras {
     @Override
     public void getSubItems(CreativeTabs tab, NonNullList<ItemStack> items) {
         if (isInCreativeTab(tab)) {
-            items.add(makeBluePrint(new ItemStack(ModBlocks.negariteGeneratorBlock)));
-            items.add(makeBluePrint(new ItemStack(ModBlocks.posiriteGeneratorBlock)));
-            items.add(makeBluePrint(new ItemStack(ModBlocks.forceFieldBlock)));
-            items.add(makeBluePrint(new ItemStack(ModBlocks.levelMarkerBlock)));
-            items.add(makeBluePrint(new ItemStack(ModBlocks.alarmBlock)));
-            items.add(makeBluePrint(new ItemStack(ModBlocks.signalReceiverBlock)));
-            items.add(makeBluePrint(new ItemStack(ModItems.powerSuitChest)));
-            items.add(makeBluePrint(new ItemStack(ModItems.powerSuitBoots)));
-            items.add(makeBluePrint(new ItemStack(ModItems.powerSuitHelmet)));
-            items.add(makeBluePrint(new ItemStack(ModItems.powerSuitLegs)));
-            items.add(makeBluePrint(new ItemStack(ModItems.moduleAutofeed)));
-            items.add(makeBluePrint(new ItemStack(ModItems.moduleEnergy)));
-            items.add(makeBluePrint(new ItemStack(ModItems.moduleArmor)));
-            items.add(makeBluePrint(new ItemStack(ModItems.moduleFlight)));
-            items.add(makeBluePrint(new ItemStack(ModItems.moduleFire)));
-            items.add(makeBluePrint(new ItemStack(ModItems.moduleNightvision)));
-            items.add(makeBluePrint(new ItemStack(ModItems.moduleFeatherFalling)));
+            for (ConstructorRecipe recipe : RecipeRegistry.getRecipes()) {
+                items.add(makeBluePrint(recipe.getDestination()));
+            }
         }
     }
 
