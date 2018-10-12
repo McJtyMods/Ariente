@@ -196,6 +196,10 @@ public class ConstructorTile extends GenericTileEntity implements DefaultSidedIn
         return index >= SLOT_BLUEPRINT && index < SLOT_BLUEPRINT + BLUEPRINTS;
     }
 
+    private boolean isOutputSlot(int index) {
+        return index >= SLOT_OUTPUT;
+    }
+
     @Override
     public boolean canExtractItem(int index, ItemStack stack, EnumFacing direction) {
         return false;
