@@ -202,7 +202,7 @@ public class ConstructorTile extends GenericTileEntity implements DefaultSidedIn
 
     @Override
     public boolean canExtractItem(int index, ItemStack stack, EnumFacing direction) {
-        return false;
+        return isOutputSlot(index);
     }
 
     @Override
