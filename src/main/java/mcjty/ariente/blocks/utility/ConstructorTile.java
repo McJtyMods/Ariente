@@ -142,6 +142,7 @@ public class ConstructorTile extends GenericTileEntity implements DefaultSidedIn
         return usingPower > 0 && isMachineEnabled();
     }
 
+
     @Override
     public void onDataPacket(NetworkManager net, SPacketUpdateTileEntity packet) {
         boolean working = isWorking();
