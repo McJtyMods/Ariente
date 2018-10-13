@@ -47,6 +47,7 @@ import javax.annotation.Nullable;
 import java.util.*;
 
 import static mcjty.ariente.config.ArienteConfiguration.SHIELD_PANEL_LIFE;
+import static mcjty.hologui.api.Icons.*;
 
 public class ForceFieldTile extends GenericTileEntity implements IGuiTile, ITickable, ISoundProducer, IPowerReceiver, ICityEquipment, IAlarmMode {
 
@@ -494,13 +495,13 @@ public class ForceFieldTile extends GenericTileEntity implements IGuiTile, ITick
                 .add(registry.text(0, 1, 1, 1).text("Radius").color(0xaaccff))
                 .add(registry.number(3, 2, 1, 1).color(0xffffff).getter((p,h) -> getScale()))
 
-                .add(registry.iconButton(1, 2, 1, 1).icon(128 + 32, 128 + 16).hover(128 + 32 + 16, 128 + 16)
+                .add(registry.iconButton(1, 2, 1, 1).icon(GRAY_DOUBLE_ARROW_LEFT).hover(WHITE_DOUBLE_ARROW_LEFT)
                         .hitEvent((component, player, entity1, x, y) -> changeScale(-8)))
-                .add(registry.iconButton(2, 2, 1, 1).icon(128 + 32, 128).hover(128 + 32 + 16, 128)
+                .add(registry.iconButton(2, 2, 1, 1).icon(GRAY_ARROW_LEFT).hover(WHITE_ARROW_LEFT)
                         .hitEvent((component, player, entity1, x, y) -> changeScale(-1)))
-                .add(registry.iconButton(5, 2, 1, 1).icon(128, 128).hover(128 + 16, 128)
+                .add(registry.iconButton(5, 2, 1, 1).icon(GRAY_ARROW_RIGHT).hover(WHITE_ARROW_RIGHT)
                         .hitEvent((component, player, entity1, x, y) -> changeScale(1)))
-                .add(registry.iconButton(6, 2, 1, 1).icon(128, 128 + 16).hover(128 + 16, 128 + 16)
+                .add(registry.iconButton(6, 2, 1, 1).icon(GRAY_DOUBLE_ARROW_RIGHT).hover(WHITE_DOUBLE_ARROW_RIGHT)
                         .hitEvent((component, player, entity1, x, y) -> changeScale(8)))
 
                 .add(registry.text(0, 4, 1, 1).text("Field Integrity").color(0xaaccff))
@@ -509,9 +510,9 @@ public class ForceFieldTile extends GenericTileEntity implements IGuiTile, ITick
 
                 .add(registry.iconChoice(7, 6, 1, 1)
                         .getter((player) -> getRSModeInt())
-                        .icon(128, 128+32)
-                        .icon(128+16, 128+32)
-                        .icon(128+32, 128+32)
+                        .icon(REDSTONE_DUST)
+                        .icon(REDSTONE_OFF)
+                        .icon(REDSTONE_ON)
                         .hitEvent((component, player, entity1, x, y) -> changeMode()))
                 ;
     }

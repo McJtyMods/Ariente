@@ -51,6 +51,8 @@ import javax.annotation.Nullable;
 import java.util.List;
 import java.util.Map;
 
+import static mcjty.hologui.api.Icons.*;
+
 public class ConstructorTile extends GenericTileEntity implements DefaultSidedInventory, IGuiTile, ITickable, IPowerReceiver, ICityEquipment {
 
     public static final PropertyBool WORKING = PropertyBool.create("working");
@@ -314,14 +316,14 @@ public class ConstructorTile extends GenericTileEntity implements DefaultSidedIn
 
                 .add(registry.text(0, 0, 8, 1).text("Ingredients").color(0xaaccff))
 
-                .add(registry.icon(0, 2, 1, 1).icon(128+64, 128))
+                .add(registry.icon(0, 2, 1, 1).icon(WHITE_PLAYER))
                 .add(registry.playerSlots(1.5, 1.5, 6, 2)
                         .name("playerslots")
                         .filter((stack, index) -> isIngredient(stack)))
 
-                .add(registry.iconButton(2, 3.5, 1, 1).icon(128, 128-16).hover(128+16, 128-16)
+                .add(registry.iconButton(2, 3.5, 1, 1).icon(GRAY_ARROW_DOWN).hover(WHITE_ARROW_DOWN)
                         .hitEvent((component, player, entity, x, y) -> transferToMachine(player, entity)))
-                .add(registry.iconButton(3, 3.5, 1, 1).icon(128+32, 128-16).hover(128+32+16, 128-16)
+                .add(registry.iconButton(3, 3.5, 1, 1).icon(GRAY_ARROW_UP).hover(WHITE_ARROW_UP)
                         .hitEvent((component, player, entity, x, y) -> transferToPlayer(player, entity)))
 
                 .add(registry.stackIcon(0, 4.5, 1, 1).itemStack(new ItemStack(ModBlocks.constructorBlock)))
@@ -349,9 +351,9 @@ public class ConstructorTile extends GenericTileEntity implements DefaultSidedIn
 
                 .add(registry.iconChoice(7, 7, 1, 1)
                         .getter((player) -> getRSModeInt())
-                        .icon(128, 128+32)
-                        .icon(128+16, 128+32)
-                        .icon(128+32, 128+32)
+                        .icon(REDSTONE_DUST)
+                        .icon(REDSTONE_OFF)
+                        .icon(REDSTONE_ON)
                         .hitEvent((component, player, entity1, x, y) -> changeMode()))
                 ;
     }
@@ -379,14 +381,14 @@ public class ConstructorTile extends GenericTileEntity implements DefaultSidedIn
         return registry.panel(0, 0, 8, 8)
                 .add(registry.text(0, 0, 8, 1).text("Blueprints").color(0xaaccff))
 
-                .add(registry.icon(0, 2, 1, 1).icon(128+64, 128))
+                .add(registry.icon(0, 2, 1, 1).icon(WHITE_PLAYER))
                 .add(registry.playerSlots(1.5, 1.5, 6, 2)
                         .name("playerslots")
                         .filter((stack, index) -> stack.getItem() instanceof BlueprintItem))
 
-                .add(registry.iconButton(2, 3.5, 1, 1).icon(128, 128-16).hover(128+16, 128-16)
+                .add(registry.iconButton(2, 3.5, 1, 1).icon(GRAY_ARROW_DOWN).hover(WHITE_ARROW_DOWN)
                         .hitEvent((component, player, entity, x, y) -> transferToMachine(player, entity)))
-                .add(registry.iconButton(3, 3.5, 1, 1).icon(128+32, 128-16).hover(128+32+16, 128-16)
+                .add(registry.iconButton(3, 3.5, 1, 1).icon(GRAY_ARROW_UP).hover(WHITE_ARROW_UP)
                         .hitEvent((component, player, entity, x, y) -> transferToPlayer(player, entity)))
 
                 .add(registry.stackIcon(0, 4.5, 1, 1).itemStack(new ItemStack(ModBlocks.constructorBlock)))

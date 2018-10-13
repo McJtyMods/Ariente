@@ -46,6 +46,8 @@ import net.minecraftforge.fml.relauncher.SideOnly;
 
 import java.util.List;
 
+import static mcjty.hologui.api.Icons.*;
+
 public class PosiriteGeneratorTile extends GenericTileEntity implements ITickable, DefaultSidedInventory, IGuiTile, IPowerBlob, IAlarmMode {
 
     public static final String CMD_RSMODE = "posirite_gen.setRsMode";
@@ -277,26 +279,26 @@ public class PosiriteGeneratorTile extends GenericTileEntity implements ITickabl
                 .add(registry.text(0, 0, 8, 1).text("Posirite").color(0xaaccff))
                 .add(registry.stackIcon(0, 3, 1, 1).itemStack(new ItemStack(ModItems.posiriteDust)))
 
-                .add(registry.icon(1, 3, 1, 1).icon(128+64, 128))
+                .add(registry.icon(1, 3, 1, 1).icon(WHITE_PLAYER))
                 .add(registry.number(2, 3, 1, 1).color(0xffffff).getter((p,h) -> HoloGuiTools.countItem(p, ModItems.posiriteDust)))
 
-                .add(registry.iconButton(2, 4, 1, 1).icon(128+32, 128+16).hover(128+32+16, 128+16)
-                    .hitEvent((component, player, entity1, x, y) -> toPlayer(player, 64)))
-                .add(registry.iconButton(3, 4, 1, 1).icon(128+32, 128).hover(128+32+16, 128)
-                    .hitEvent((component, player, entity1, x, y) -> toPlayer(player, 1)))
-                .add(registry.iconButton(5, 4, 1, 1).icon(128, 128).hover(128+16, 128)
-                    .hitEvent((component, player, entity1, x, y) -> toMachine(player, 1)))
-                .add(registry.iconButton(6, 4, 1, 1).icon(128, 128+16).hover(128+16, 128+16)
-                    .hitEvent((component, player, entity1, x, y) -> toMachine(player, 64)))
+                .add(registry.iconButton(2, 4, 1, 1).icon(GRAY_DOUBLE_ARROW_LEFT).hover(WHITE_DOUBLE_ARROW_LEFT)
+                        .hitEvent((component, player, e, x, y) -> toPlayer(player, 64)))
+                .add(registry.iconButton(3, 4, 1, 1).icon(GRAY_ARROW_LEFT).hover(WHITE_ARROW_LEFT)
+                        .hitEvent((component, player, e, x, y) -> toPlayer(player, 1)))
+                .add(registry.iconButton(5, 4, 1, 1).icon(GRAY_ARROW_RIGHT).hover(WHITE_ARROW_RIGHT)
+                        .hitEvent((component, player, e, x, y) -> toMachine(player, 1)))
+                .add(registry.iconButton(6, 4, 1, 1).icon(GRAY_DOUBLE_ARROW_RIGHT).hover(WHITE_DOUBLE_ARROW_RIGHT)
+                        .hitEvent((component, player, e, x, y) -> toMachine(player, 64)))
 
                 .add(registry.stackIcon(5, 3, 1, 1).itemStack(new ItemStack(ModBlocks.posiriteGeneratorBlock)))
                 .add(registry.number(6, 3, 1, 1).color(0xffffff).getter(this::countPosiriteGenerator))
 
                 .add(registry.iconChoice(7, 6, 1, 1)
                         .getter((player) -> getRSModeInt())
-                        .icon(128, 128+32)
-                        .icon(128+16, 128+32)
-                        .icon(128+32, 128+32)
+                        .icon(REDSTONE_DUST)
+                        .icon(REDSTONE_OFF)
+                        .icon(REDSTONE_ON)
                         .hitEvent((component, player, entity1, x, y) -> changeMode()))
                 ;
     }

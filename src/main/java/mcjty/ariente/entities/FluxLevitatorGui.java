@@ -7,21 +7,23 @@ import mcjty.hologui.api.IHoloGuiEntity;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.player.EntityPlayer;
 
+import static mcjty.hologui.api.Icons.*;
+
 public class FluxLevitatorGui {
 
-    public static IGuiComponent createGui(EntityPlayer player) {
+    public static IGuiComponent<?> createGui(EntityPlayer player) {
         IGuiComponentRegistry registry = Ariente.guiHandler.getComponentRegistry();
         return registry.panel(0, 0, 8, 8)
 
-                .add(registry.iconButton(2, 2, 1, 1).icon(128+32, 128+16).hover(128+32+16, 128+16)
+                .add(registry.iconButton(2, 2, 1, 1).icon(GRAY_DOUBLE_ARROW_LEFT).hover(WHITE_DOUBLE_ARROW_LEFT)
                         .hitEvent((component, p, holo, x, y) -> changeSpeed(holo, -10)))
-                .add(registry.iconButton(3, 2, 1, 1).icon(128+32, 128).hover(128+32+16, 128)
+                .add(registry.iconButton(3, 2, 1, 1).icon(GRAY_ARROW_LEFT).hover(WHITE_ARROW_LEFT)
                         .hitEvent((component, p, holo, x, y) -> changeSpeed(holo, -5)))
-                .add(registry.iconButton(4, 2, 1, 1).icon(128+80, 128).hover(128+80+16, 128)
+                .add(registry.iconButton(4, 2, 1, 1).icon(FADED_RED_BALL).hover(RED_BALL)
                         .hitEvent((component, p, holo, x, y) -> changeSpeed(holo, 0)))
-                .add(registry.iconButton(5, 2, 1, 1).icon(128, 128).hover(128+16, 128)
+                .add(registry.iconButton(5, 2, 1, 1).icon(GRAY_ARROW_RIGHT).hover(WHITE_ARROW_RIGHT)
                         .hitEvent((component, p, holo, x, y) -> changeSpeed(holo, 5)))
-                .add(registry.iconButton(6, 2, 1, 1).icon(128, 128+16).hover(128+16, 128+16)
+                .add(registry.iconButton(6, 2, 1, 1).icon(GRAY_DOUBLE_ARROW_RIGHT).hover(WHITE_DOUBLE_ARROW_RIGHT)
                         .hitEvent((component, p, holo, x, y) -> changeSpeed(holo, 10)))
 
                 .add(registry.text(1, 4, 4, 1).text("Speed:").color(0xffffff))

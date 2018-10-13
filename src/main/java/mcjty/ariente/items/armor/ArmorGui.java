@@ -4,6 +4,7 @@ import mcjty.ariente.Ariente;
 import mcjty.hologui.api.IGuiComponent;
 import mcjty.hologui.api.IGuiComponentRegistry;
 import mcjty.hologui.api.IHoloGuiEntity;
+import mcjty.hologui.api.Icons;
 import mcjty.hologui.api.components.IPanel;
 import mcjty.ariente.gui.HoloGuiTools;
 import mcjty.ariente.gui.ModGuis;
@@ -16,6 +17,8 @@ import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.NBTTagCompound;
 import org.apache.commons.lang3.tuple.Pair;
+
+import static mcjty.hologui.api.Icons.*;
 
 public class ArmorGui {
 
@@ -146,17 +149,17 @@ public class ArmorGui {
         panel
                 .add(registry.stackIcon(0, 6, 1, 1).itemStack(new ItemStack(ModItems.negariteDust)))
                 .add(registry.number(1, 6, 1, 1).color(0xffffff).getter((p, h) -> HoloGuiTools.countItem(p, ModItems.negariteDust)))
-                .add(registry.iconButton(3, 6, 1, 1).icon(128, 128).hover(128 + 16, 128)
+                .add(registry.iconButton(3, 6, 1, 1).icon(GRAY_ARROW_RIGHT).hover(WHITE_ARROW_RIGHT)
                         .hitEvent((component, p, entity1, x, y) -> toArmor(p, slot, "negarite", ModItems.negariteDust, 1)))
-                .add(registry.iconButton(4, 6, 1, 1).icon(128, 128 + 16).hover(128 + 16, 128 + 16)
+                .add(registry.iconButton(4, 6, 1, 1).icon(GRAY_DOUBLE_ARROW_RIGHT).hover(WHITE_DOUBLE_ARROW_RIGHT)
                         .hitEvent((component, p, entity1, x, y) -> toArmor(p, slot, "negarite", ModItems.negariteDust, 64)))
                 .add(registry.number(5, 6, 1, 1).color(0xffffff).getter((p, h) -> countArmor(p, slot, "negarite")))
 
                 .add(registry.stackIcon(0, 7, 1, 1).itemStack(new ItemStack(ModItems.posiriteDust)))
                 .add(registry.number(1, 7, 1, 1).color(0xffffff).getter((p, h) -> HoloGuiTools.countItem(p, ModItems.posiriteDust)))
-                .add(registry.iconButton(3, 7, 1, 1).icon(128, 128).hover(128 + 16, 128)
+                .add(registry.iconButton(3, 7, 1, 1).icon(GRAY_ARROW_RIGHT).hover(WHITE_ARROW_RIGHT)
                         .hitEvent((component, p, entity1, x, y) -> toArmor(p, slot, "posirite", ModItems.posiriteDust, 1)))
-                .add(registry.iconButton(4, 7, 1, 1).icon(128, 128 + 16).hover(128 + 16, 128 + 16)
+                .add(registry.iconButton(4, 7, 1, 1).icon(GRAY_DOUBLE_ARROW_RIGHT).hover(WHITE_DOUBLE_ARROW_RIGHT)
                         .hitEvent((component, p, entity1, x, y) -> toArmor(p, slot, "posirite", ModItems.posiriteDust, 64)))
                 .add(registry.number(5, 7, 1, 1).color(0xffffff).getter((p, h) -> countArmor(p, slot, "posirite")))
         ;
@@ -240,11 +243,11 @@ public class ArmorGui {
                 .hitEvent((component, player, entity, x, y) -> toggleActivation(player, slot, module)));
         panel.add(registry.iconChoice(xx + 2, yy, 1, 1)
                 .getter(player -> getHotkey(player, slot, module))
-                .icon(128 + 64 - 16, 128 + 32)
-                .icon(128 + 64, 128 + 32)
-                .icon(128 + 64 + 16, 128 + 32)
-                .icon(128 + 64 + 32, 128 + 32)
-                .icon(128 + 64 + 48, 128 + 32)
+                .icon(BLUE_EMPTY_BUTTON)
+                .icon(BLUE_1_BUTTON)
+                .icon(BLUE_2_BUTTON)
+                .icon(BLUE_3_BUTTON)
+                .icon(BLUE_4_BUTTON)
                 .hitEvent((component, player, entity, x, y) -> switchHotkey(player, slot, module))
         );
     }
