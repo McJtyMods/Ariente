@@ -1,6 +1,5 @@
 package mcjty.ariente.ai;
 
-import mcjty.hologui.api.IHoloGuiEntity;
 import mcjty.ariente.blocks.ModBlocks;
 import mcjty.ariente.blocks.aicore.AICoreTile;
 import mcjty.ariente.blocks.defense.ForceFieldTile;
@@ -15,12 +14,14 @@ import mcjty.ariente.cities.*;
 import mcjty.ariente.config.AIConfiguration;
 import mcjty.ariente.dimension.ArienteChunkGenerator;
 import mcjty.ariente.entities.*;
+import mcjty.ariente.items.BlueprintItem;
 import mcjty.ariente.items.ModItems;
 import mcjty.ariente.items.modules.ArmorUpgradeType;
 import mcjty.ariente.items.modules.ModuleSupport;
 import mcjty.ariente.power.PowerSenderSupport;
 import mcjty.ariente.security.SecuritySystem;
 import mcjty.ariente.varia.ChunkCoord;
+import mcjty.hologui.api.IHoloGuiEntity;
 import mcjty.lib.blocks.BaseBlock;
 import mcjty.lib.varia.RedstoneMode;
 import net.minecraft.block.Block;
@@ -863,7 +864,12 @@ public class CityAI {
                     }
                     Item item = ForgeRegistries.ITEMS.getValue(l.getId());
                     if (item != null) {
-                        te.initTotalStack(i, new ItemStack(item, amount, l.getMeta()));
+                        if (l.isBlueprint()) {
+                            ItemStack blueprint = BlueprintItem.makeBluePrint(new ItemStack(item, 1, l.getMeta()));
+                            te.initTotalStack(i, blueprint);
+                        } else {
+                            te.initTotalStack(i, new ItemStack(item, amount, l.getMeta()));
+                        }
                         break;
                     }
                 }

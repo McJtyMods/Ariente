@@ -72,7 +72,7 @@ public class BlueprintItem extends GenericItem implements ITooltipExtras {
         }
     }
 
-    private static ItemStack makeBluePrint(ItemStack destination) {
+    public static ItemStack makeBluePrint(ItemStack destination) {
         ItemStack dest = new ItemStack(ModItems.blueprintItem);
         NBTTagCompound nbt = new NBTTagCompound();
         JsonObject json = ItemStackTools.itemStackToJson(destination);

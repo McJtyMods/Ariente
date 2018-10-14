@@ -66,12 +66,14 @@
       },
       {
         "id": "ariente:energy_sabre",
+        "blueprint": true,
         "meta": 0,
         "max": 1,
         "chance": 0.1
       },
       {
         "id": "ariente:module_inhibit",
+        "blueprint": true,
         "meta": 0,
         "max": 1,
         "chance": 0.1
@@ -84,48 +86,56 @@
       },
       {
         "id": "ariente:module_armor",
+        "blueprint": true,
         "meta": 0,
         "max": 1,
         "chance": 0.1
       },
       {
         "id": "ariente:module_energy",
+        "blueprint": true,
         "meta": 0,
         "max": 1,
         "chance": 0.1
       },
       {
         "id": "ariente:module_forcefield",
+        "blueprint": true,
         "meta": 0,
         "max": 1,
         "chance": 0.1
       },
       {
         "id": "ariente:powersuit_legs",
+        "blueprint": true,
         "meta": 0,
         "max": 1,
         "chance": 0.1
       },
       {
         "id": "ariente:powersuit_chest",
+        "blueprint": true,
         "meta": 0,
         "max": 1,
         "chance": 0.1
       },
       {
         "id": "ariente:powersuit_head",
+        "blueprint": true,
         "meta": 0,
         "max": 1,
         "chance": 0.1
       },
       {
         "id": "ariente:powersuit_feet",
+        "blueprint": true,
         "meta": 0,
         "max": 1,
         "chance": 0.1
       },
       {
         "id": "ariente:flux_levitator",
+        "blueprint": true,
         "meta": 0,
         "max": 1,
         "chance": 0.1

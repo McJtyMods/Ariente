@@ -286,11 +286,15 @@ public class CityPlan implements IAsset {
             if (o.has("meta")) {
                 meta = o.get("meta").getAsInt();
             }
+            boolean blueprint = false;
+            if (o.has("blueprint")) {
+                blueprint = o.get("blueprint").getAsBoolean();
+            }
             float chance = o.get("chance").getAsFloat();
             int maxAmount = o.get("max").getAsInt();
             Item item = ForgeRegistries.ITEMS.getValue(new ResourceLocation(id));
             if (item != null) {
-                loot.add(new Loot(new ResourceLocation(id), meta, maxAmount, chance));
+                loot.add(new Loot(new ResourceLocation(id), meta, blueprint, maxAmount, chance));
             }
         }
     }
@@ -378,6 +382,7 @@ public class CityPlan implements IAsset {
             o.add("meta", new JsonPrimitive(l.getMeta()));
             o.add("max", new JsonPrimitive(l.getMaxAmount()));
             o.add("chance", new JsonPrimitive(l.getChance()));
+            o.add("blueprint", new JsonPrimitive(l.isBlueprint()));
             lootArray.add(o);
         }
         object.add("loot", lootArray);
