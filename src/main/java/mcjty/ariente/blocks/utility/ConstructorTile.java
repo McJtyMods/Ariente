@@ -4,12 +4,9 @@ import mcjty.ariente.Ariente;
 import mcjty.ariente.ai.CityAI;
 import mcjty.ariente.blocks.ModBlocks;
 import mcjty.ariente.cities.ICityEquipment;
-import mcjty.ariente.items.BlueprintItem;
 import mcjty.ariente.items.ModItems;
 import mcjty.ariente.power.IPowerReceiver;
 import mcjty.ariente.power.PowerReceiverSupport;
-import mcjty.ariente.recipes.ConstructorRecipe;
-import mcjty.ariente.recipes.RecipeRegistry;
 import mcjty.hologui.api.IGuiComponent;
 import mcjty.hologui.api.IGuiComponentRegistry;
 import mcjty.hologui.api.IGuiTile;
@@ -57,16 +54,13 @@ public class ConstructorTile extends GenericTileEntity implements DefaultSidedIn
 
     public static final PropertyBool WORKING = PropertyBool.create("working");
     public static final ContainerFactory CONTAINER_FACTORY = new ContainerFactory(new ResourceLocation(Ariente.MODID, "gui/constructor.gui"));
-    public static final int BLUEPRINTS = 6;
     public static final int INGREDIENTS = 6*2;
     public static final int OUTPUT = 6;
-    public static final int SLOT_BLUEPRINT = 0;
-    public static final int SLOT_INGREDIENTS = SLOT_BLUEPRINT + BLUEPRINTS;
+    public static final int SLOT_INGREDIENTS = 0;
     public static final int SLOT_OUTPUT = SLOT_INGREDIENTS + INGREDIENTS;
     public static int[] slots = null;
-    private InventoryHelper inventoryHelper = new InventoryHelper(this, CONTAINER_FACTORY, BLUEPRINTS + INGREDIENTS + OUTPUT);
+    private InventoryHelper inventoryHelper = new InventoryHelper(this, CONTAINER_FACTORY, INGREDIENTS + OUTPUT);
 
-    public static String TAG_BLUEPRINTS = "blueprints";
     public static String TAG_INGREDIENTS = "ingredients";
     public static String TAG_CRAFTING = "crafting";
 
@@ -100,27 +94,27 @@ public class ConstructorTile extends GenericTileEntity implements DefaultSidedIn
         if (!world.isRemote) {
             usingPower = 0;
             if (isMachineEnabled()) {
-                for (int i = 0; i < BLUEPRINTS; i++) {
-                    int index = SLOT_BLUEPRINT + ((i + craftIndex) % BLUEPRINTS);
-                    ItemStack blueprintStack = inventoryHelper.getStackInSlot(index);
-                    if (!blueprintStack.isEmpty()) {
-                        if (!focus.isEmpty()) {
-                            if (ItemHandlerHelper.canItemStacksStack(blueprintStack, focus)) {
-                                attemptCraft(blueprintStack);
-                                break;
-                            }
-                        } else {
-                            attemptCraft(blueprintStack);
-                            break;
-                        }
-                    }
-                }
-
-                craftIndex++;
-                if (craftIndex >= BLUEPRINTS) {
-                    craftIndex = 0;
-                }
-                markDirtyQuick();
+//                for (int i = 0; i < BLUEPRINTS; i++) {
+//                    int index = SLOT_BLUEPRINT + ((i + craftIndex) % BLUEPRINTS);
+//                    ItemStack blueprintStack = inventoryHelper.getStackInSlot(index);
+//                    if (!blueprintStack.isEmpty()) {
+//                        if (!focus.isEmpty()) {
+//                            if (ItemHandlerHelper.canItemStacksStack(blueprintStack, focus)) {
+//                                attemptCraft(blueprintStack);
+//                                break;
+//                            }
+//                        } else {
+//                            attemptCraft(blueprintStack);
+//                            break;
+//                        }
+//                    }
+//                }
+//
+//                craftIndex++;
+//                if (craftIndex >= BLUEPRINTS) {
+//                    craftIndex = 0;
+//                }
+//                markDirtyQuick();
 
             }
         }
@@ -186,16 +180,10 @@ public class ConstructorTile extends GenericTileEntity implements DefaultSidedIn
 
     @Override
     public boolean isItemValidForSlot(int index, ItemStack stack) {
-        if (isBlueprintSlot(index)) {
-            return stack.getItem() == ModItems.blueprintItem;
-        } else if (isIngredientSlot(index)) {
+        if (isIngredientSlot(index)) {
             return stack.getItem() != ModItems.blueprintItem;
         }
         return true;
-    }
-
-    private boolean isBlueprintSlot(int index) {
-        return index >= SLOT_BLUEPRINT && index < SLOT_BLUEPRINT + BLUEPRINTS;
     }
 
     private boolean isOutputSlot(int index) {
@@ -282,9 +270,7 @@ public class ConstructorTile extends GenericTileEntity implements DefaultSidedIn
 
     @Override
     public IGuiComponent<?> createGui(String tag, IGuiComponentRegistry registry) {
-        if (TAG_BLUEPRINTS.equals(tag)) {
-            return createBlueprintGui(registry);
-        } else if (TAG_INGREDIENTS.equals(tag)) {
+        if (TAG_INGREDIENTS.equals(tag)) {
             return createIngredientsGui(registry);
         } else if (TAG_CRAFTING.equals(tag)) {
             return createCraftingGui(registry);
@@ -296,16 +282,12 @@ public class ConstructorTile extends GenericTileEntity implements DefaultSidedIn
     private IGuiComponent<?> createMainMenuGui(IGuiComponentRegistry registry) {
         return registry.panel(0, 0, 8, 8)
                 .add(registry.text(0, 1, 1, 1).text("Main menu").color(0xaaccff))
-                .add(registry.stackIcon(0.5, 2.5, 1, 1).itemStack(new ItemStack(ModItems.blueprintItem)))
+                .add(registry.stackIcon(0.5, 2.5, 1, 1).itemStack(new ItemStack(Items.IRON_INGOT)))
                 .add(registry.button(2, 2.5, 5, 1)
-                        .text("Blueprints")
-                        .hitEvent((component, p, entity, x1, y1) -> entity.switchTag(TAG_BLUEPRINTS)))
-                .add(registry.stackIcon(0.5, 3.5, 1, 1).itemStack(new ItemStack(Items.IRON_INGOT)))
-                .add(registry.button(2, 3.5, 5, 1)
                         .text("Ingredients")
                         .hitEvent((component, p, entity, x1, y1) -> entity.switchTag(TAG_INGREDIENTS)))
-                .add(registry.stackIcon(0.5, 4.5, 1, 1).itemStack(new ItemStack(Blocks.CRAFTING_TABLE)))
-                .add(registry.button(2, 4.5, 5, 1)
+                .add(registry.stackIcon(0.5, 3.5, 1, 1).itemStack(new ItemStack(Blocks.CRAFTING_TABLE)))
+                .add(registry.button(2, 3.5, 5, 1)
                         .text("Crafting")
                         .hitEvent((component, p, entity, x1, y1) -> entity.switchTag(TAG_CRAFTING)))
                 ;
@@ -360,54 +342,30 @@ public class ConstructorTile extends GenericTileEntity implements DefaultSidedIn
 
     private boolean isIngredient(ItemStack stack) {
         // @todo optimize!
-        for (int i = SLOT_BLUEPRINT ; i < SLOT_BLUEPRINT + BLUEPRINTS ; i++) {
-            ItemStack blueprintStack = inventoryHelper.getStackInSlot(i);
-            if (!blueprintStack.isEmpty()) {
-                ItemStack destination = BlueprintItem.getDestination(blueprintStack);
-                ConstructorRecipe recipe = RecipeRegistry.findRecipe(destination);
-                if (recipe != null) {
-                    for (ItemStack ingredient : recipe.getIngredients()) {
-                        if (ItemStack.areItemsEqual(ingredient, stack)) {
-                            return true;
-                        }
-                    }
-                }
-            }
-        }
+//        for (int i = SLOT_BLUEPRINT ; i < SLOT_BLUEPRINT + BLUEPRINTS ; i++) {
+//            ItemStack blueprintStack = inventoryHelper.getStackInSlot(i);
+//            if (!blueprintStack.isEmpty()) {
+//                ItemStack destination = BlueprintItem.getDestination(blueprintStack);
+//                ConstructorRecipe recipe = RecipeRegistry.findRecipe(destination);
+//                if (recipe != null) {
+//                    for (ItemStack ingredient : recipe.getIngredients()) {
+//                        if (ItemStack.areItemsEqual(ingredient, stack)) {
+//                            return true;
+//                        }
+//                    }
+//                }
+//            }
+//        }
         return false;
     }
 
-    private IGuiComponent<?> createBlueprintGui(IGuiComponentRegistry registry) {
-        return registry.panel(0, 0, 8, 8)
-                .add(registry.text(0, 0, 8, 1).text("Blueprints").color(0xaaccff))
-
-                .add(registry.icon(0, 2, 1, 1).icon(WHITE_PLAYER))
-                .add(registry.playerSlots(1.5, 1.5, 6, 2)
-                        .name("playerslots")
-                        .filter((stack, index) -> stack.getItem() instanceof BlueprintItem))
-
-                .add(registry.iconButton(2, 3.5, 1, 1).icon(GRAY_ARROW_DOWN).hover(WHITE_ARROW_DOWN)
-                        .hitEvent((component, player, entity, x, y) -> transferToMachine(player, entity)))
-                .add(registry.iconButton(3, 3.5, 1, 1).icon(GRAY_ARROW_UP).hover(WHITE_ARROW_UP)
-                        .hitEvent((component, player, entity, x, y) -> transferToPlayer(player, entity)))
-
-                .add(registry.stackIcon(0, 4.5, 1, 1).itemStack(new ItemStack(ModBlocks.constructorBlock)))
-                .add(registry.slots(1.5, 4.5, 6, 1)
-                        .name("slots")
-                        .filter((stack, index) -> isBlueprintSlot(index))
-                        .itemHandler(getItemHandler()))
-                .add(registry.button(7.8, 4.5, 1, 1)
-                        .hitEvent((component, player, entity, x, y) -> setFocus(entity))
-                        .text("F"))
-
-                .add(registry.text(0, 6.5, 2, 1)
-                        .text("Focus")
-                        .color(0xaaccff))
-                .add(registry.stackIcon(4, 6.5, 1.5, 1.5)
-                        .scale(1.5)
-                        .itemStack(this::getFocus))
-                ;
-    }
+//                .add(registry.text(0, 6.5, 2, 1)
+//                        .text("Focus")
+//                        .color(0xaaccff))
+//                .add(registry.stackIcon(4, 6.5, 1.5, 1.5)
+//                        .scale(1.5)
+//                        .itemStack(this::getFocus))
+//                ;
 
     private IItemHandler getItemHandler() {
         return getCapability(CapabilityItemHandler.ITEM_HANDLER_CAPABILITY, null);

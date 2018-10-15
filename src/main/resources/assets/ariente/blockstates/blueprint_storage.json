@@ -1,0 +1,20 @@
+{
+  "forge_marker": 1,
+  "defaults": {
+    "model": "ariente:frontblock",
+    "textures": {
+      "front": "ariente:blocks/machines/blueprint_storage",
+      "side": "ariente:blocks/base/machineside",
+    }
+  },
+  "variants": {
+    "normal": [{}],
+    "inventory": [{}],
+    "facing": {
+      "north": {},
+      "south": {"y": 180},
+      "west": {"y": 270},
+      "east": {"y": 90}
+    }
+  }
+}
