@@ -3,10 +3,7 @@ package mcjty.ariente.cables;
 import mcjty.ariente.Ariente;
 import mcjty.ariente.facade.FacadeProperty;
 import mcjty.ariente.facade.IFacadeSupport;
-import mcjty.ariente.power.PowerAmount;
-import mcjty.ariente.power.PowerBlob;
-import mcjty.ariente.power.PowerSenderSupport;
-import mcjty.ariente.power.PowerSystem;
+import mcjty.ariente.power.*;
 import mcjty.lib.McJtyRegister;
 import mcjty.lib.blocks.DamageMetadataItemBlock;
 import mcjty.lib.compat.theoneprobe.TOPInfoProvider;
@@ -239,7 +236,7 @@ public abstract class GenericCableBlock extends Block implements WailaInfoProvid
             PowerBlob blob = powerSystem.getPowerBlob(cableId);
             CableColor cableColor = cableTileEntity.getCableColor();
             if (cableColor.equals(CableColor.NEGARITE) || cableColor.equals(CableColor.COMBINED)) {
-                PowerAmount negariteAmount = blob.getPowerAmount(CableColor.NEGARITE);
+                PowerAmount negariteAmount = blob.getPowerAmount(PowerType.NEGARITE);
                 if (negariteAmount.getLastUsedTick() >= tickCounter - 1) {
                     probeInfo.text(TextStyleClass.LABEL + "Negarite:");
                     probeInfo.text(TextStyleClass.LABEL + "    Generated: " + TextStyleClass.INFO + negariteAmount.getPrevTotalAdded());
@@ -247,7 +244,7 @@ public abstract class GenericCableBlock extends Block implements WailaInfoProvid
                 }
             }
             if (cableColor.equals(CableColor.POSIRITE) || cableColor.equals(CableColor.COMBINED)) {
-                PowerAmount posiriteAmount = blob.getPowerAmount(CableColor.POSIRITE);
+                PowerAmount posiriteAmount = blob.getPowerAmount(PowerType.POSIRITE);
                 if (posiriteAmount.getLastUsedTick() >= tickCounter - 1) {
                     probeInfo.text(TextStyleClass.LABEL + "Posirite:");
                     probeInfo.text(TextStyleClass.LABEL + "    Generated: " + TextStyleClass.INFO + posiriteAmount.getPrevTotalAdded());

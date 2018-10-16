@@ -1,6 +1,5 @@
 package mcjty.ariente.power;
 
-import mcjty.ariente.cables.CableColor;
 import mcjty.lib.worlddata.AbstractWorldData;
 import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.world.World;
@@ -51,9 +50,9 @@ public class PowerSystem extends AbstractWorldData<PowerSystem> {
         return powerBlobs.get(id);
     }
 
-    public void addPower(int id, long power, CableColor color) {
+    public void addPower(int id, long power, PowerType type) {
         PowerBlob blob = getPowerBlob(id);
-        PowerAmount powerAmount = blob.getPowerAmount(color);
+        PowerAmount powerAmount = blob.getPowerAmount(type);
         if (powerAmount.getLastUsedTick() == tickCounter) {
             // Update current power
             powerAmount.addAmount(power);
@@ -70,9 +69,9 @@ public class PowerSystem extends AbstractWorldData<PowerSystem> {
         }
     }
 
-    public long getTotalPower(int id, CableColor color) {
+    public long getTotalPower(int id, PowerType type) {
         PowerBlob blob = getPowerBlob(id);
-        PowerAmount powerAmount = blob.getPowerAmount(color);
+        PowerAmount powerAmount = blob.getPowerAmount(type);
         if (powerAmount.getLastUsedTick() == tickCounter) {
             return powerAmount.getLastAmount() + powerAmount.getAmount();
         } else if (powerAmount.getLastUsedTick() == tickCounter-1) {
@@ -83,13 +82,13 @@ public class PowerSystem extends AbstractWorldData<PowerSystem> {
     }
 
     // Return the amount of power that could not be consumed
-    public long consumePower(int id, long amount, CableColor color) {
+    public long consumePower(int id, long amount, PowerType type) {
         if (amount == 0) {
             return 0;
         }
         PowerBlob blob = getPowerBlob(id);
-        PowerAmount powerAmount = blob.getPowerAmount(color);
-        long total = getTotalPower(id, color);
+        PowerAmount powerAmount = blob.getPowerAmount(type);
+        long total = getTotalPower(id, type);
         long diff;
         if (amount > total) {
             diff = amount - total;

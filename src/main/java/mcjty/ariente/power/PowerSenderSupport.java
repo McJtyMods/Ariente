@@ -30,8 +30,12 @@ public class PowerSenderSupport {
         for (EnumFacing facing : EnumFacing.VALUES) {
             BlockPos p = pos.offset(facing);
             TileEntity te = world.getTileEntity(p);
-            if (te instanceof IPowerBlob && ((IPowerBlob) te).getCableColor() == color && ((IPowerBlob) te).getCableId() == toReplace) {
-                ((IPowerBlob) te).fillCableId(id);
+            if (te instanceof IPowerBlob) {
+                IPowerBlob blob = (IPowerBlob) te;
+                CableColor cableColor = blob.getCableColor();
+                if ((cableColor == color || cableColor.equals(CableColor.COMBINED)) && blob.getCableId() == toReplace) {
+                    blob.fillCableId(id);
+                }
             }
         }
     }

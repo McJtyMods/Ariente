@@ -5,7 +5,8 @@ import net.minecraft.util.IStringSerializable;
 public enum CableColor implements IStringSerializable {
     NEGARITE("negarite", "dyeBlue"),
     POSIRITE("posirite", "dyeRed"),
-    COMBINED("combined", "dyeYellow");
+    COMBINED("combined", "dyeYellow"),
+    DATA("data", "dyeGreen");
 
     public static final CableColor[] VALUES = CableColor.values();
 
@@ -13,7 +14,8 @@ public enum CableColor implements IStringSerializable {
     private final String dye;
 
     CableColor(String name, String dye) {
-        this.name = name; this.dye = dye;
+        this.name = name;
+        this.dye = dye;
     }
 
     @Override

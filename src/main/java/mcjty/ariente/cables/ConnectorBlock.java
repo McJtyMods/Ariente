@@ -2,11 +2,10 @@ package mcjty.ariente.cables;
 
 import mcjty.ariente.Ariente;
 import mcjty.ariente.blocks.ModBlocks;
-import mcjty.ariente.blocks.generators.NegariteGeneratorTile;
-import mcjty.ariente.blocks.generators.PosiriteGeneratorTile;
 import mcjty.ariente.facade.FacadeBlockId;
 import mcjty.ariente.facade.FacadeItemBlock;
 import mcjty.ariente.power.IPowerReceiver;
+import mcjty.ariente.power.IPowerSender;
 import mcjty.theoneprobe.api.IProbeHitData;
 import mcjty.theoneprobe.api.IProbeInfo;
 import mcjty.theoneprobe.api.ProbeMode;
@@ -259,11 +258,8 @@ public class ConnectorBlock extends GenericCableBlock implements ITileEntityProv
         if (te == null) {
             return false;
         }
-        if (te instanceof NegariteGeneratorTile) {
-            return connectorTE.supportsCableColor(CableColor.NEGARITE);
-        }
-        if (te instanceof PosiriteGeneratorTile) {
-            return connectorTE.supportsCableColor(CableColor.POSIRITE);
+        if (te instanceof IPowerSender) {
+            return connectorTE.supportsCableColor(((IPowerSender) te).getSupportedColor());
         }
         if (te instanceof IPowerReceiver) {
             return true;

@@ -1,6 +1,5 @@
 package mcjty.ariente.power;
 
-import mcjty.ariente.cables.CableColor;
 import net.minecraft.tileentity.TileEntity;
 import net.minecraft.util.EnumFacing;
 import net.minecraft.util.math.BlockPos;
@@ -29,14 +28,14 @@ public class PowerReceiverSupport {
                         handled.add(id);
                         switch (blob.getCableColor()) {
                             case NEGARITE:
-                                totalNegarite += powerSystem.getTotalPower(id, CableColor.NEGARITE);
+                                totalNegarite += powerSystem.getTotalPower(id, PowerType.NEGARITE);
                                 break;
                             case POSIRITE:
-                                totalPosirite += powerSystem.getTotalPower(id, CableColor.POSIRITE);
+                                totalPosirite += powerSystem.getTotalPower(id, PowerType.POSIRITE);
                                 break;
                             case COMBINED:
-                                totalPosirite += powerSystem.getTotalPower(id, CableColor.POSIRITE);
-                                totalNegarite += powerSystem.getTotalPower(id, CableColor.NEGARITE);
+                                totalPosirite += powerSystem.getTotalPower(id, PowerType.POSIRITE);
+                                totalNegarite += powerSystem.getTotalPower(id, PowerType.NEGARITE);
                                 break;
                         }
                     }
@@ -60,14 +59,14 @@ public class PowerReceiverSupport {
                     handled.add(id);
                     switch (blob.getCableColor()) {
                         case NEGARITE:
-                            amountNegarite = powerSystem.consumePower(id, amountNegarite, CableColor.NEGARITE);
+                            amountNegarite = powerSystem.consumePower(id, amountNegarite, PowerType.NEGARITE);
                             break;
                         case POSIRITE:
-                            amountPosirite = powerSystem.consumePower(id, amountPosirite, CableColor.POSIRITE);
+                            amountPosirite = powerSystem.consumePower(id, amountPosirite, PowerType.POSIRITE);
                             break;
                         case COMBINED:
-                            amountPosirite = powerSystem.consumePower(id, amountPosirite, CableColor.POSIRITE);
-                            amountNegarite = powerSystem.consumePower(id, amountNegarite, CableColor.NEGARITE);
+                            amountPosirite = powerSystem.consumePower(id, amountPosirite, PowerType.POSIRITE);
+                            amountNegarite = powerSystem.consumePower(id, amountNegarite, PowerType.NEGARITE);
                             break;
                     }
                     if (amountNegarite <= 0 && amountPosirite <= 0) {

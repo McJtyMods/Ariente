@@ -6,9 +6,7 @@ import mcjty.ariente.blocks.ModBlocks;
 import mcjty.ariente.cables.CableColor;
 import mcjty.ariente.gui.HoloGuiTools;
 import mcjty.ariente.items.ModItems;
-import mcjty.ariente.power.IPowerBlob;
-import mcjty.ariente.power.PowerSenderSupport;
-import mcjty.ariente.power.PowerSystem;
+import mcjty.ariente.power.*;
 import mcjty.hologui.api.IGuiComponent;
 import mcjty.hologui.api.IGuiComponentRegistry;
 import mcjty.hologui.api.IGuiTile;
@@ -48,7 +46,7 @@ import java.util.List;
 
 import static mcjty.hologui.api.Icons.*;
 
-public class PosiriteGeneratorTile extends GenericTileEntity implements ITickable, DefaultSidedInventory, IGuiTile, IPowerBlob, IAlarmMode {
+public class PosiriteGeneratorTile extends GenericTileEntity implements ITickable, DefaultSidedInventory, IGuiTile, IPowerBlob, IAlarmMode, IPowerSender {
 
     public static final String CMD_RSMODE = "posirite_gen.setRsMode";
 
@@ -113,7 +111,7 @@ public class PosiriteGeneratorTile extends GenericTileEntity implements ITickabl
         }
         if (cnt > 0) {
             PowerSystem powerSystem = PowerSystem.getPowerSystem(world);
-            powerSystem.addPower(powerBlobSupport.getCableId(), POWERGEN * cnt, CableColor.POSIRITE);
+            powerSystem.addPower(powerBlobSupport.getCableId(), POWERGEN * cnt, PowerType.POSIRITE);
         }
     }
 
@@ -122,6 +120,10 @@ public class PosiriteGeneratorTile extends GenericTileEntity implements ITickabl
         return true;
     }
 
+    @Override
+    public CableColor getSupportedColor() {
+        return CableColor.POSIRITE;
+    }
 
     @Override
     public void setPowerInput(int powered) {

@@ -50,6 +50,13 @@ public class GenericCableModel implements IModel {
                 new ResourceLocation(Ariente.MODID, "blocks/cables/combined/normal_end_netcable"),
                 new ResourceLocation(Ariente.MODID, "blocks/cables/combined/normal_none_netcable"),
                 new ResourceLocation(Ariente.MODID, "blocks/cables/combined/normal_three_netcable"),
+                new ResourceLocation(Ariente.MODID, "blocks/cables/data/connector"),
+                new ResourceLocation(Ariente.MODID, "blocks/cables/data/normal_netcable"),
+                new ResourceLocation(Ariente.MODID, "blocks/cables/data/normal_corner_netcable"),
+                new ResourceLocation(Ariente.MODID, "blocks/cables/data/normal_cross_netcable"),
+                new ResourceLocation(Ariente.MODID, "blocks/cables/data/normal_end_netcable"),
+                new ResourceLocation(Ariente.MODID, "blocks/cables/data/normal_none_netcable"),
+                new ResourceLocation(Ariente.MODID, "blocks/cables/data/normal_three_netcable"),
 
                 new ResourceLocation(Ariente.MODID, "blocks/cables/connector_side")
                 );

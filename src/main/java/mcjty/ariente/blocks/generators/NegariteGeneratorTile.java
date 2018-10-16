@@ -6,10 +6,11 @@ import mcjty.ariente.blocks.ModBlocks;
 import mcjty.ariente.cables.CableColor;
 import mcjty.ariente.gui.HoloGuiTools;
 import mcjty.ariente.items.ModItems;
-import mcjty.ariente.power.IPowerBlob;
-import mcjty.ariente.power.PowerSenderSupport;
-import mcjty.ariente.power.PowerSystem;
-import mcjty.hologui.api.*;
+import mcjty.ariente.power.*;
+import mcjty.hologui.api.IGuiComponent;
+import mcjty.hologui.api.IGuiComponentRegistry;
+import mcjty.hologui.api.IGuiTile;
+import mcjty.hologui.api.IHoloGuiEntity;
 import mcjty.lib.container.ContainerFactory;
 import mcjty.lib.container.DefaultSidedInventory;
 import mcjty.lib.container.InventoryHelper;
@@ -45,7 +46,7 @@ import java.util.List;
 
 import static mcjty.hologui.api.Icons.*;
 
-public class NegariteGeneratorTile extends GenericTileEntity implements ITickable, DefaultSidedInventory, IGuiTile, IPowerBlob, IAlarmMode {
+public class NegariteGeneratorTile extends GenericTileEntity implements ITickable, DefaultSidedInventory, IGuiTile, IPowerBlob, IAlarmMode, IPowerSender {
 
     public static final String CMD_RSMODE = "negarite_gen.setRsMode";
     public static final PropertyBool WORKING = PropertyBool.create("working");
@@ -110,13 +111,18 @@ public class NegariteGeneratorTile extends GenericTileEntity implements ITickabl
         }
         if (cnt > 0) {
             PowerSystem powerSystem = PowerSystem.getPowerSystem(world);
-            powerSystem.addPower(powerBlobSupport.getCableId(), POWERGEN * cnt, CableColor.NEGARITE);
+            powerSystem.addPower(powerBlobSupport.getCableId(), POWERGEN * cnt, PowerType.NEGARITE);
         }
     }
 
     @Override
     public boolean canSendPower() {
         return true;
+    }
+
+    @Override
+    public CableColor getSupportedColor() {
+        return CableColor.NEGARITE;
     }
 
     @Override

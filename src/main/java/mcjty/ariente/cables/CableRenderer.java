@@ -28,6 +28,7 @@ public class CableRenderer extends TileEntitySpecialRenderer<GenericCableTileEnt
     private Random random = new Random();
     private static ResourceLocation negarite_laserbeams[] = new ResourceLocation[4];
     private static ResourceLocation posirite_laserbeams[] = new ResourceLocation[4];
+    private static ResourceLocation data_laserbeams[] = new ResourceLocation[4];
     static {
         negarite_laserbeams[0] = new ResourceLocation(Ariente.MODID, "textures/effects/negarite_laserbeam1.png");
         negarite_laserbeams[1] = new ResourceLocation(Ariente.MODID, "textures/effects/negarite_laserbeam2.png");
@@ -37,6 +38,10 @@ public class CableRenderer extends TileEntitySpecialRenderer<GenericCableTileEnt
         posirite_laserbeams[1] = new ResourceLocation(Ariente.MODID, "textures/effects/posirite_laserbeam2.png");
         posirite_laserbeams[2] = new ResourceLocation(Ariente.MODID, "textures/effects/posirite_laserbeam3.png");
         posirite_laserbeams[3] = new ResourceLocation(Ariente.MODID, "textures/effects/posirite_laserbeam4.png");
+        data_laserbeams[0] = new ResourceLocation(Ariente.MODID, "textures/effects/data_laserbeam1.png");
+        data_laserbeams[1] = new ResourceLocation(Ariente.MODID, "textures/effects/data_laserbeam2.png");
+        data_laserbeams[2] = new ResourceLocation(Ariente.MODID, "textures/effects/data_laserbeam3.png");
+        data_laserbeams[3] = new ResourceLocation(Ariente.MODID, "textures/effects/data_laserbeam4.png");
     }
 
     public static final List<BiConsumer<RenderHelper.Vector, BlockPos>> BEAM_RENDERERS_UP_DOWN = new ArrayList<>(4);
@@ -80,6 +85,9 @@ public class CableRenderer extends TileEntitySpecialRenderer<GenericCableTileEnt
                     break;
                 case COMBINED:
                     return;
+                case DATA:
+                    this.bindTexture(data_laserbeams[random.nextInt(4)]);
+                    break;
             }
 
             GlStateManager.depthMask(false);
