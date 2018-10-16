@@ -110,7 +110,7 @@ public class NegariteGeneratorTile extends GenericTileEntity implements ITickabl
         }
         if (cnt > 0) {
             PowerSystem powerSystem = PowerSystem.getPowerSystem(world);
-            powerSystem.addPower(powerBlobSupport.getCableId(), POWERGEN * cnt);
+            powerSystem.addPower(powerBlobSupport.getCableId(), POWERGEN * cnt, CableColor.NEGARITE);
         }
     }
 

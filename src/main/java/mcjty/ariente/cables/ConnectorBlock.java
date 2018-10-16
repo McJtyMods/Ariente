@@ -260,10 +260,10 @@ public class ConnectorBlock extends GenericCableBlock implements ITileEntityProv
             return false;
         }
         if (te instanceof NegariteGeneratorTile) {
-            return true;
+            return connectorTE.supportsCableColor(CableColor.NEGARITE);
         }
         if (te instanceof PosiriteGeneratorTile) {
-            return true;
+            return connectorTE.supportsCableColor(CableColor.POSIRITE);
         }
         if (te instanceof IPowerReceiver) {
             return true;

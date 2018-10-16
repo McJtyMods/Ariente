@@ -1,5 +1,6 @@
 package mcjty.ariente.power;
 
+import mcjty.ariente.cables.CableColor;
 import mcjty.lib.worlddata.AbstractWorldData;
 import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.world.World;
@@ -50,42 +51,45 @@ public class PowerSystem extends AbstractWorldData<PowerSystem> {
         return powerBlobs.get(id);
     }
 
-    public void addPower(int id, long power) {
+    public void addPower(int id, long power, CableColor color) {
         PowerBlob blob = getPowerBlob(id);
-        if (blob.getLastUsedTick() == tickCounter) {
+        PowerAmount powerAmount = blob.getPowerAmount(color);
+        if (powerAmount.getLastUsedTick() == tickCounter) {
             // Update current power
-            blob.addAmount(power);
-        } else if (blob.getLastUsedTick() == tickCounter-1) {
+            powerAmount.addAmount(power);
+        } else if (powerAmount.getLastUsedTick() == tickCounter-1) {
             // We added power the previous tick
-            blob.setLastAmount(blob.getAmount());
-            blob.setAmount(power);
-            blob.setLastUsedTick(tickCounter);
+            powerAmount.setLastAmount(powerAmount.getAmount());
+            powerAmount.setAmount(power);
+            powerAmount.setLastUsedTick(tickCounter);
         } else {
             // The previous power is lost
-            blob.setLastAmount(0);
-            blob.setAmount(power);
-            blob.setLastUsedTick(tickCounter);
+            powerAmount.setLastAmount(0);
+            powerAmount.setAmount(power);
+            powerAmount.setLastUsedTick(tickCounter);
         }
     }
 
-    public long getTotalPower(int id) {
+    public long getTotalPower(int id, CableColor color) {
         PowerBlob blob = getPowerBlob(id);
-        if (blob.getLastUsedTick() == tickCounter) {
-            return blob.getLastAmount() + blob.getAmount();
-        } else if (blob.getLastUsedTick() == tickCounter-1) {
-            return blob.getAmount();
+        PowerAmount powerAmount = blob.getPowerAmount(color);
+        if (powerAmount.getLastUsedTick() == tickCounter) {
+            return powerAmount.getLastAmount() + powerAmount.getAmount();
+        } else if (powerAmount.getLastUsedTick() == tickCounter-1) {
+            return powerAmount.getAmount();
         } else {
             return 0;
         }
     }
 
     // Return the amount of power that could not be consumed
-    public long consumePower(int id, long amount) {
+    public long consumePower(int id, long amount, CableColor color) {
         if (amount == 0) {
             return 0;
         }
         PowerBlob blob = getPowerBlob(id);
-        long total = getTotalPower(id);
+        PowerAmount powerAmount = blob.getPowerAmount(color);
+        long total = getTotalPower(id, color);
         long diff;
         if (amount > total) {
             diff = amount - total;
@@ -94,16 +98,16 @@ public class PowerSystem extends AbstractWorldData<PowerSystem> {
             diff = 0;
         }
 
-        if (blob.getLastUsedTick() == tickCounter) {
-            if (amount <= blob.getLastAmount()) {
-                blob.addLastAmount(-amount);
+        if (powerAmount.getLastUsedTick() == tickCounter) {
+            if (amount <= powerAmount.getLastAmount()) {
+                powerAmount.addLastAmount(-amount);
             } else {
-                amount -= blob.getLastAmount();
-                blob.setLastAmount(0);
-                blob.removeAmount(amount);
+                amount -= powerAmount.getLastAmount();
+                powerAmount.setLastAmount(0);
+                powerAmount.removeAmount(amount);
             }
-        } else if (blob.getLastUsedTick() == tickCounter-1) {
-            blob.removeAmount(amount);
+        } else if (powerAmount.getLastUsedTick() == tickCounter-1) {
+            powerAmount.removeAmount(amount);
         }
         return diff;
     }

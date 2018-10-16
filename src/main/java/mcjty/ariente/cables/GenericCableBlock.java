@@ -3,6 +3,7 @@ package mcjty.ariente.cables;
 import mcjty.ariente.Ariente;
 import mcjty.ariente.facade.FacadeProperty;
 import mcjty.ariente.facade.IFacadeSupport;
+import mcjty.ariente.power.PowerAmount;
 import mcjty.ariente.power.PowerBlob;
 import mcjty.ariente.power.PowerSenderSupport;
 import mcjty.ariente.power.PowerSystem;
@@ -236,9 +237,22 @@ public abstract class GenericCableBlock extends Block implements WailaInfoProvid
             PowerSystem powerSystem = PowerSystem.getPowerSystem(world);
             int tickCounter = powerSystem.getTickCounter();
             PowerBlob blob = powerSystem.getPowerBlob(cableId);
-            if (blob.getLastUsedTick() >= tickCounter-1) {
-                probeInfo.text(TextStyleClass.LABEL + "Generated: " + TextStyleClass.INFO + blob.getPrevTotalAdded());
-                probeInfo.text(TextStyleClass.LABEL + "Consumed: " + TextStyleClass.INFO + blob.getPrevTotalConsumed());
+            CableColor cableColor = cableTileEntity.getCableColor();
+            if (cableColor.equals(CableColor.NEGARITE) || cableColor.equals(CableColor.COMBINED)) {
+                PowerAmount negariteAmount = blob.getPowerAmount(CableColor.NEGARITE);
+                if (negariteAmount.getLastUsedTick() >= tickCounter - 1) {
+                    probeInfo.text(TextStyleClass.LABEL + "Negarite:");
+                    probeInfo.text(TextStyleClass.LABEL + "    Generated: " + TextStyleClass.INFO + negariteAmount.getPrevTotalAdded());
+                    probeInfo.text(TextStyleClass.LABEL + "    Consumed: " + TextStyleClass.INFO + negariteAmount.getPrevTotalConsumed());
+                }
+            }
+            if (cableColor.equals(CableColor.POSIRITE) || cableColor.equals(CableColor.COMBINED)) {
+                PowerAmount posiriteAmount = blob.getPowerAmount(CableColor.POSIRITE);
+                if (posiriteAmount.getLastUsedTick() >= tickCounter - 1) {
+                    probeInfo.text(TextStyleClass.LABEL + "Posirite:");
+                    probeInfo.text(TextStyleClass.LABEL + "    Generated: " + TextStyleClass.INFO + posiriteAmount.getPrevTotalAdded());
+                    probeInfo.text(TextStyleClass.LABEL + "    Consumed: " + TextStyleClass.INFO + posiriteAmount.getPrevTotalConsumed());
+                }
             }
         }
     }

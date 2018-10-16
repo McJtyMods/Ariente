@@ -31,6 +31,17 @@ public class ConnectorTileEntity extends GenericCableTileEntity {
         return true;
     }
 
+    public boolean supportsCableColor(CableColor color) {
+        CableColor thisColor = getCableColor();
+        if (thisColor.equals(color)) {
+            return true;
+        }
+        if (thisColor.equals(CableColor.COMBINED)) {
+            return true;
+        }
+        return false;
+    }
+
     @Override
     public void readFromNBT(NBTTagCompound tagCompound) {
         super.readFromNBT(tagCompound);
