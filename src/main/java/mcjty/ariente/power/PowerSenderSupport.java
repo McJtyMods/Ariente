@@ -21,6 +21,16 @@ public class PowerSenderSupport {
         this.cableId = cableId;
     }
 
+    private boolean matchingColor(CableColor c1, CableColor c2) {
+        if (c1 == c2) {
+            return true;
+        }
+        if (c1 == CableColor.COMBINED || c2 == CableColor.COMBINED) {
+            return true;
+        }
+        return false;
+    }
+
     public void fillCableId(World world, BlockPos pos, int id, CableColor color) {
         if (cableId == id) {
             return; // Already ok
@@ -33,7 +43,7 @@ public class PowerSenderSupport {
             if (te instanceof IPowerBlob) {
                 IPowerBlob blob = (IPowerBlob) te;
                 CableColor cableColor = blob.getCableColor();
-                if ((cableColor == color || cableColor.equals(CableColor.COMBINED)) && blob.getCableId() == toReplace) {
+                if (matchingColor(color, cableColor) && blob.getCableId() == toReplace) {
                     blob.fillCableId(id);
                 }
             }
