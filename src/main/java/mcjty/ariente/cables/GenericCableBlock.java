@@ -37,6 +37,7 @@ import net.minecraft.util.math.AxisAlignedBB;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.RayTraceResult;
 import net.minecraft.util.math.Vec3d;
+import net.minecraft.util.text.TextFormatting;
 import net.minecraft.world.IBlockAccess;
 import net.minecraft.world.World;
 import net.minecraftforge.client.model.ModelLoader;
@@ -238,17 +239,15 @@ public abstract class GenericCableBlock extends Block implements WailaInfoProvid
             if (cableColor.equals(CableColor.NEGARITE) || cableColor.equals(CableColor.COMBINED)) {
                 PowerAmount negariteAmount = blob.getPowerAmount(PowerType.NEGARITE);
                 if (negariteAmount.getLastUsedTick() >= tickCounter - 1) {
-                    probeInfo.text(TextStyleClass.LABEL + "Negarite:");
-                    probeInfo.text(TextStyleClass.LABEL + "    Generated: " + TextStyleClass.INFO + negariteAmount.getPrevTotalAdded());
-                    probeInfo.text(TextStyleClass.LABEL + "    Consumed: " + TextStyleClass.INFO + negariteAmount.getPrevTotalConsumed());
+                    probeInfo.text(TextStyleClass.LABEL + "Negarite:" + TextFormatting.GREEN + " +" + negariteAmount.getPrevTotalAdded()
+                        + TextFormatting.RED + " -" + negariteAmount.getPrevTotalConsumed());
                 }
             }
             if (cableColor.equals(CableColor.POSIRITE) || cableColor.equals(CableColor.COMBINED)) {
                 PowerAmount posiriteAmount = blob.getPowerAmount(PowerType.POSIRITE);
                 if (posiriteAmount.getLastUsedTick() >= tickCounter - 1) {
-                    probeInfo.text(TextStyleClass.LABEL + "Posirite:");
-                    probeInfo.text(TextStyleClass.LABEL + "    Generated: " + TextStyleClass.INFO + posiriteAmount.getPrevTotalAdded());
-                    probeInfo.text(TextStyleClass.LABEL + "    Consumed: " + TextStyleClass.INFO + posiriteAmount.getPrevTotalConsumed());
+                    probeInfo.text(TextStyleClass.LABEL + "Posirite:" + TextFormatting.GREEN + " +" + posiriteAmount.getPrevTotalAdded()
+                            + TextFormatting.RED + " -" + posiriteAmount.getPrevTotalConsumed());
                 }
             }
         }
