@@ -73,6 +73,7 @@ public class ModBlocks {
     public static BaseBlock bluelog;
     public static BaseBlock blueleaves;
 
+    public static GenericBlock<PowerCombinerTile, GenericContainer> powerCombinerBlock;
     public static GenericBlock<NegariteGeneratorTile, GenericContainer> negariteGeneratorBlock;
     public static GenericBlock<NegariteTankTile, GenericContainer> negariteTankBlock;
     public static GenericBlock<PosiriteTankTile, GenericContainer> posiriteTankBlock;
@@ -249,6 +250,14 @@ public class ModBlocks {
                 .info("message.ariente.shiftmessage")
                 .infoExtended("message.ariente.signal_transmitter")
                 .infoExtendedParameter(ItemStackTools.intGetter("channel", -1))
+                .build();
+
+        powerCombinerBlock = builderFactory.<PowerCombinerTile> builder("power_combiner")
+                .tileEntityClass(PowerCombinerTile.class)
+                .rotationType(BaseBlock.RotationType.ROTATION)
+                .flags(BlockFlags.RENDER_SOLID, BlockFlags.RENDER_CUTOUT)
+                .info("message.ariente.shiftmessage")
+                .infoExtended("message.ariente.power_combiner")
                 .build();
 
         negariteGeneratorBlock = builderFactory.<NegariteGeneratorTile> builder("negarite_generator")
@@ -539,6 +548,7 @@ public class ModBlocks {
         blueprintStorageBlock.initModel();
         flatLightBlock.initModel();
         fluxGlow.initModel();
+        powerCombinerBlock.initModel();
         posiriteGeneratorBlock.initModel();
         negariteGeneratorBlock.initModel();
         negariteTankBlock.initModel();

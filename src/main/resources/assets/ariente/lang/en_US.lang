@@ -68,6 +68,7 @@ tile.ariente.netcable_posirite.name=Posirite Cable
 tile.ariente.netcable_combined.name=Combined Cable
 tile.ariente.posirite_generator.name=Posirite Flux Generator
 tile.ariente.negarite_generator.name=Negarite Flux Generator
+tile.ariente.power_combiner.name=Power Combiner
 tile.ariente.negarite_tank.name=Negarite Tank
 tile.ariente.posirite_tank.name=Posirite Tank
 tile.ariente.warper.name=Warper
@@ -155,14 +156,20 @@ itemGroup.ariente=Ariente
 
 # Messages
 message.ariente.shiftmessage=<Press Shift>
+message.ariente.power_combiner=\
+    @fThis machine combines negarite\n\
+    @fand posirite flux and feeds it\n\
+    @finto a combined cable
 message.ariente.negarite_generator=\
     @fThis machine produces negarite\n\
     @fflux when fed with negarite dust.\n\
-    @fThis block needs negarite infusion\n\
-    @ftubes above it to work
+    @fThis block needs negarite tanks\n\
+    @fabove it to work
 message.ariente.posirite_generator=\
     @fThis machine produces posirite\n\
-    @fflux when fed with posirite dust
+    @fflux when fed with posirite dust.\n\
+    @fThis block needs posirite tanks\n\
+    @fabove it to work
 message.ariente.negarite_tank=\
     @fPlace one or more tanks on top\n\
     @fof a Negarite Flux Generator
