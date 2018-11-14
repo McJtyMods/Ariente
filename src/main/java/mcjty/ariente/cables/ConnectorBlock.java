@@ -2,6 +2,7 @@ package mcjty.ariente.cables;
 
 import mcjty.ariente.Ariente;
 import mcjty.ariente.blocks.ModBlocks;
+import mcjty.ariente.blocks.generators.PowerCombinerTile;
 import mcjty.ariente.facade.FacadeBlockId;
 import mcjty.ariente.facade.FacadeItemBlock;
 import mcjty.ariente.power.IPowerReceiver;
@@ -260,6 +261,9 @@ public class ConnectorBlock extends GenericCableBlock implements ITileEntityProv
         }
         if (te instanceof IPowerSender) {
             return connectorTE.supportsCableColor(((IPowerSender) te).getSupportedColor());
+        }
+        if (te instanceof PowerCombinerTile) {
+            return true;        // All connectors connect to the power combiner
         }
         if (te instanceof IPowerReceiver) {
             return true;

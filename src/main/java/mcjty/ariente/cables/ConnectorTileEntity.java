@@ -36,9 +36,6 @@ public class ConnectorTileEntity extends GenericCableTileEntity {
         if (thisColor.equals(color)) {
             return true;
         }
-        if (thisColor.equals(CableColor.COMBINED)) {
-            return true;
-        }
         return false;
     }
 
