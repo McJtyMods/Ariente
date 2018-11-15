@@ -1,8 +1,8 @@
 package mcjty.ariente.blocks.generators;
 
-import mcjty.ariente.power.IPowerReceiver;
-import mcjty.ariente.power.PowerReceiverSupport;
-import mcjty.ariente.power.PowerSystem;
+import mcjty.ariente.cables.CableColor;
+import mcjty.ariente.cables.ConnectorTileEntity;
+import mcjty.ariente.power.*;
 import mcjty.hologui.api.IGuiComponent;
 import mcjty.hologui.api.IGuiComponentRegistry;
 import mcjty.hologui.api.IGuiTile;
@@ -17,8 +17,10 @@ import net.minecraft.block.state.IBlockState;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.NBTTagCompound;
+import net.minecraft.tileentity.TileEntity;
 import net.minecraft.util.EnumFacing;
 import net.minecraft.util.ITickable;
+import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.World;
 import net.minecraftforge.fml.common.Optional;
 import net.minecraftforge.fml.relauncher.Side;
@@ -38,20 +40,48 @@ public class PowerCombinerTile extends GenericTileEntity implements ITickable, I
     public void update() {
         if (!world.isRemote) {
             usingPower = 0;
-            long desiredPower = powerTransfer;
-            if (!PowerReceiverSupport.consumePower(world, pos, desiredPower)) {
-            } else {
-                usingPower += desiredPower;
-                sendPower(desiredPower);
+            if (PowerReceiverSupport.consumePower(world, pos, powerTransfer)) {
+                usingPower += powerTransfer;
+                sendPower();
             }
         }
     }
 
-    private void sendPower(long power) {
-        PowerSystem powerSystem = PowerSystem.getPowerSystem(world);
-        for (EnumFacing value : EnumFacing.VALUES) {
-//            powerSystem.addPower(powerBlobSupport.getCableId(), POWERGEN * cnt, PowerType.NEGARITE);
+    private int getPowerToTransfer() {
+        return (int) (powerTransfer * .99); // @todo configurable cost
+    }
 
+    private void sendPower() {
+
+        int power = getPowerTransfer();
+
+        PowerSystem powerSystem = PowerSystem.getPowerSystem(world);
+        int cnt = 0;
+        for (EnumFacing facing : EnumFacing.VALUES) {
+            BlockPos p = pos.offset(facing);
+            TileEntity te = world.getTileEntity(p);
+            if (te instanceof ConnectorTileEntity) {
+                ConnectorTileEntity connector = (ConnectorTileEntity) te;
+                if (connector.getCableColor() == CableColor.COMBINED) {
+                    cnt++;
+                }
+            }
+        }
+
+        if (cnt > 0) {
+            long pPerConnector = power / cnt;
+            long p = pPerConnector + power % cnt;
+            for (EnumFacing facing : EnumFacing.VALUES) {
+                TileEntity te = world.getTileEntity(pos.offset(facing));
+                if (te instanceof ConnectorTileEntity) {
+                    ConnectorTileEntity connector = (ConnectorTileEntity) te;
+                    if (connector.getCableColor() == CableColor.COMBINED) {
+                        powerSystem.addPower(connector.getCableId(), p, PowerType.NEGARITE);
+                        powerSystem.addPower(connector.getCableId(), p, PowerType.POSIRITE);
+                        p = pPerConnector;
+                    }
+                }
+            }
         }
     }
 
@@ -123,16 +153,18 @@ public class PowerCombinerTile extends GenericTileEntity implements ITickable, I
     @Override
     public IGuiComponent<?> createGui(String tag, IGuiComponentRegistry registry) {
         return registry.panel(0, 0, 8, 8)
-                .add(registry.text(0, 2, 1, 1).text("Transfer max").color(0xaaccff))
-                .add(registry.number(3, 4, 1, 1).color(0xffffff).getter((p,h) -> getPowerTransfer()))
+                .add(registry.text(0, 1, 1, 1).text("Transfer max").color(0xaaccff))
+                .add(registry.number(3, 3, 1, 1).color(0xffffff).getter((p,h) -> getPowerTransfer()))
+                .add(registry.text(0, 4, 1, 1).text("Output").color(0xaaccff))
+                .add(registry.number(3, 5, 1, 1).color(0xffffff).getter((p,h) -> getPowerToTransfer()))
 
-                .add(registry.iconButton(1, 4, 1, 1).icon(GRAY_DOUBLE_ARROW_LEFT).hover(WHITE_DOUBLE_ARROW_LEFT)
+                .add(registry.iconButton(1, 6, 1, 1).icon(GRAY_DOUBLE_ARROW_LEFT).hover(WHITE_DOUBLE_ARROW_LEFT)
                         .hitEvent((component, player, entity1, x, y) -> changeTransfer(-50)))
-                .add(registry.iconButton(2, 4, 1, 1).icon(GRAY_ARROW_LEFT).hover(WHITE_ARROW_LEFT)
+                .add(registry.iconButton(2, 6, 1, 1).icon(GRAY_ARROW_LEFT).hover(WHITE_ARROW_LEFT)
                         .hitEvent((component, player, entity1, x, y) -> changeTransfer(-1)))
-                .add(registry.iconButton(5, 4, 1, 1).icon(GRAY_ARROW_RIGHT).hover(WHITE_ARROW_RIGHT)
+                .add(registry.iconButton(5, 6, 1, 1).icon(GRAY_ARROW_RIGHT).hover(WHITE_ARROW_RIGHT)
                         .hitEvent((component, player, entity1, x, y) -> changeTransfer(1)))
-                .add(registry.iconButton(6, 4, 1, 1).icon(GRAY_DOUBLE_ARROW_RIGHT).hover(WHITE_DOUBLE_ARROW_RIGHT)
+                .add(registry.iconButton(6, 6, 1, 1).icon(GRAY_DOUBLE_ARROW_RIGHT).hover(WHITE_DOUBLE_ARROW_RIGHT)
                         .hitEvent((component, player, entity1, x, y) -> changeTransfer(50)))
                 ;
     }
