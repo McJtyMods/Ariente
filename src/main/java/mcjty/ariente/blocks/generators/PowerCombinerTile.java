@@ -40,7 +40,7 @@ public class PowerCombinerTile extends GenericTileEntity implements ITickable, I
     public void update() {
         if (!world.isRemote) {
             usingPower = 0;
-            if (PowerReceiverSupport.consumePower(world, pos, powerTransfer)) {
+            if (PowerReceiverSupport.consumePower(world, pos, powerTransfer, false)) {
                 usingPower += powerTransfer;
                 sendPower();
             }

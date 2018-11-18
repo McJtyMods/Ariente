@@ -129,7 +129,7 @@ public class ForceFieldTile extends GenericTileEntity implements IGuiTile, ITick
         if (!world.isRemote) {
             usingPower = 0;
             long desiredPower = calculateIdleUsage();
-            if ((!isMachineEnabled()) || !PowerReceiverSupport.consumePower(world, pos, desiredPower)) {
+            if ((!isMachineEnabled()) || !PowerReceiverSupport.consumePower(world, pos, desiredPower, true)) {
                 if (breakDownSkip > 0) {
                     breakDownSkip--;
                 } else {
@@ -365,7 +365,7 @@ public class ForceFieldTile extends GenericTileEntity implements IGuiTile, ITick
                 int life = info.getLife();
                 if (life < 0) {
                     // Building up!
-                    if (PowerReceiverSupport.consumePower(world, pos, PowerConfiguration.FORCEFIELD_BUILDUP_POWER)) {
+                    if (PowerReceiverSupport.consumePower(world, pos, PowerConfiguration.FORCEFIELD_BUILDUP_POWER, true)) {
                         usingPower += PowerConfiguration.FORCEFIELD_BUILDUP_POWER;
                         life++;
                         if (life == 0) {

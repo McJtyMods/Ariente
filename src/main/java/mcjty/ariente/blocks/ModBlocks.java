@@ -256,6 +256,7 @@ public class ModBlocks {
                 .tileEntityClass(PowerCombinerTile.class)
                 .rotationType(BaseBlock.RotationType.ROTATION)
                 .flags(BlockFlags.RENDER_SOLID, BlockFlags.RENDER_CUTOUT)
+                .activateAction((world, pos, player, hand, side, hitX, hitY, hitZ) -> Ariente.guiHandler.openHoloGui(world, pos, player))
                 .info("message.ariente.shiftmessage")
                 .infoExtended("message.ariente.power_combiner")
                 .build();

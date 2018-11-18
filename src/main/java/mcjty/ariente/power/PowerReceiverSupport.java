@@ -11,7 +11,7 @@ import java.util.Set;
 public class PowerReceiverSupport {
 
     // @todo can this be done more optimal?
-    public static boolean consumePower(World world, BlockPos pos, long amount) {
+    public static boolean consumePower(World world, BlockPos pos, long amount, boolean doCombined) {
         PowerSystem powerSystem = PowerSystem.getPowerSystem(world);
 
         long totalNegarite = 0;
@@ -34,8 +34,10 @@ public class PowerReceiverSupport {
                                 totalPosirite += powerSystem.getTotalPower(id, PowerType.POSIRITE);
                                 break;
                             case COMBINED:
-                                totalPosirite += powerSystem.getTotalPower(id, PowerType.POSIRITE);
-                                totalNegarite += powerSystem.getTotalPower(id, PowerType.NEGARITE);
+                                if (doCombined) {
+                                    totalPosirite += powerSystem.getTotalPower(id, PowerType.POSIRITE);
+                                    totalNegarite += powerSystem.getTotalPower(id, PowerType.NEGARITE);
+                                }
                                 break;
                         }
                     }
@@ -65,8 +67,10 @@ public class PowerReceiverSupport {
                             amountPosirite = powerSystem.consumePower(id, amountPosirite, PowerType.POSIRITE);
                             break;
                         case COMBINED:
-                            amountPosirite = powerSystem.consumePower(id, amountPosirite, PowerType.POSIRITE);
-                            amountNegarite = powerSystem.consumePower(id, amountNegarite, PowerType.NEGARITE);
+                            if (doCombined) {
+                                amountPosirite = powerSystem.consumePower(id, amountPosirite, PowerType.POSIRITE);
+                                amountNegarite = powerSystem.consumePower(id, amountNegarite, PowerType.NEGARITE);
+                            }
                             break;
                     }
                     if (amountNegarite <= 0 && amountPosirite <= 0) {

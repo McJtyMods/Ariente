@@ -79,7 +79,7 @@ public class ConstructorTile extends GenericTileEntity implements DefaultSidedIn
     }
 
     private void attemptCraft(ItemStack blueprintStack) {
-        if (PowerReceiverSupport.consumePower(world, pos, 100)) {
+        if (PowerReceiverSupport.consumePower(world, pos, 100, true)) {
             boolean wasUsing = usingPower > 0;
             usingPower = 100;
             boolean isUsing = usingPower > 0;

@@ -56,7 +56,7 @@ public class ElevatorTile extends GenericTileEntity implements IGuiTile, ITickab
     @Override
     public void update() {
         if (!world.isRemote) {
-            PowerReceiverSupport.consumePower(world, pos, POWER_USAGE);
+            PowerReceiverSupport.consumePower(world, pos, POWER_USAGE, true);
 
             List<EntityPlayer> players = world.getEntitiesWithinAABB(EntityPlayer.class, getBeamBox());
             for (EntityPlayer player : players) {
