@@ -25,6 +25,7 @@ public class CityPlan implements IAsset {
     private List<String> layer2 = new ArrayList<>();
     private List<String> top = new ArrayList<>();
     private boolean underground = false;
+    private boolean floating = false;
 
     private final Map<String, Integer> variants = new HashMap<>();
 
@@ -72,6 +73,10 @@ public class CityPlan implements IAsset {
 
     public boolean isUnderground() {
         return underground;
+    }
+
+    public boolean isFloating() {
+        return floating;
     }
 
     public boolean isCity() {
@@ -220,6 +225,11 @@ public class CityPlan implements IAsset {
         } else {
             underground = false;
         }
+        if (object.has("floating")) {
+            floating = object.get("floating").getAsBoolean();
+        } else {
+            floating = false;
+        }
 
         parseLoot(object.get("loot").getAsJsonArray());
         parseVariants(object);
@@ -350,6 +360,7 @@ public class CityPlan implements IAsset {
         object.add("powerArmorChance", new JsonPrimitive(powerArmorChance));
         object.add("forcefieldChance", new JsonPrimitive(forcefieldChance));
         object.add("underground", new JsonPrimitive(underground));
+        object.add("floating", new JsonPrimitive(floating));
 
         writeLootArray(object);
         writeVariants(object);

@@ -33,6 +33,8 @@ public class City {
         if (height == -1) {
             if (plan.isUnderground()) {
                 height = 40;
+            } else if (plan.isFloating()) {
+                height = 100;
             } else {
                 ChunkHeightmap heightmap = generator.getHeightmap(center.getChunkX(), center.getChunkZ());
                 height = heightmap.getAverageHeight();

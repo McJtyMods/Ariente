@@ -11,6 +11,7 @@ public class ArienteConfiguration {
             "/assets/ariente/citydata/city1_2.json",
             "/assets/ariente/citydata/city2_1.json",
             "/assets/ariente/citydata/city3_1.json",
+            "/assets/ariente/citydata/city4_1.json",
             "/assets/ariente/citydata/general.json",
             "/assets/ariente/citydata/station.json",
             "$ariente/userassets.json"

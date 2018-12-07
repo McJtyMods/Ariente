@@ -60,7 +60,7 @@ public class LevitatorNetworkGenerator {
     public static void generate(World world, int chunkX, int chunkZ, ChunkPrimer primer, ArienteChunkGenerator generator) {
         if (CityTools.isCityChunk(chunkX, chunkZ)) {
             City city = CityTools.getNearestCity(generator, chunkX, chunkZ);
-            if (city != null && city.getPlan().isUnderground()) {
+            if (city != null && (city.getPlan().isUnderground() || city.getPlan().isFloating())) {
                 return;
             }
         }

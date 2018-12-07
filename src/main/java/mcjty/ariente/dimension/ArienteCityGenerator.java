@@ -90,19 +90,21 @@ public class ArienteCityGenerator {
                 }
 
                 // Make pilars down if needed
-                CityIndex cityIndex = CityTools.getCityIndex(x, z);
-                assert cityIndex != null;
-                if (cityIndex.isTopLeft()) {
-                    fillDown(primer, lowestY, 2, 2);
-                }
-                if (cityIndex.isTopRight()) {
-                    fillDown(primer, lowestY, 13, 2);
-                }
-                if (cityIndex.isBottomLeft()) {
-                    fillDown(primer, lowestY, 2, 13);
-                }
-                if (cityIndex.isBottomRight()) {
-                    fillDown(primer, lowestY, 13, 13);
+                if (!city.getPlan().isFloating()) {
+                    CityIndex cityIndex = CityTools.getCityIndex(x, z);
+                    assert cityIndex != null;
+                    if (cityIndex.isTopLeft()) {
+                        fillDown(primer, lowestY, 2, 2);
+                    }
+                    if (cityIndex.isTopRight()) {
+                        fillDown(primer, lowestY, 13, 2);
+                    }
+                    if (cityIndex.isBottomLeft()) {
+                        fillDown(primer, lowestY, 2, 13);
+                    }
+                    if (cityIndex.isBottomRight()) {
+                        fillDown(primer, lowestY, 13, 13);
+                    }
                 }
             }
         }
