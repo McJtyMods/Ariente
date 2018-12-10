@@ -1,4 +1,4 @@
-package mcjty.ariente.entities;
+package mcjty.ariente.entities.drone;
 
 import com.google.common.base.Predicate;
 import net.minecraft.entity.Entity;
@@ -13,7 +13,6 @@ import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.entity.player.EntityPlayerMP;
 import net.minecraft.scoreboard.Team;
 
-import javax.annotation.Nullable;
 import java.util.Collections;
 import java.util.List;
 

@@ -1,21 +1,25 @@
-package mcjty.ariente.entities;
+package mcjty.ariente.entities.drone;
 
 import mcjty.ariente.Ariente;
 import mcjty.ariente.ai.CityAI;
 import mcjty.ariente.ai.CityAISystem;
 import mcjty.ariente.blocks.defense.ForceFieldTile;
 import mcjty.ariente.blocks.defense.IForcefieldImmunity;
+import mcjty.ariente.entities.LaserEntity;
 import mcjty.ariente.sounds.ModSounds;
 import mcjty.ariente.varia.ChunkCoord;
-import net.minecraft.entity.Entity;
 import net.minecraft.entity.EntityFlying;
 import net.minecraft.entity.EntityLivingBase;
 import net.minecraft.entity.SharedMonsterAttributes;
 import net.minecraft.entity.ai.EntityAIBase;
+import net.minecraft.entity.ai.EntityAIFindEntityNearestPlayer;
 import net.minecraft.entity.ai.EntityMoveHelper;
 import net.minecraft.entity.monster.IMob;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.nbt.NBTTagCompound;
+import net.minecraft.network.datasync.DataParameter;
+import net.minecraft.network.datasync.DataSerializers;
+import net.minecraft.network.datasync.EntityDataManager;
 import net.minecraft.util.DamageSource;
 import net.minecraft.util.ResourceLocation;
 import net.minecraft.util.SoundCategory;
@@ -23,79 +27,56 @@ import net.minecraft.util.SoundEvent;
 import net.minecraft.util.math.AxisAlignedBB;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.MathHelper;
+import net.minecraft.util.math.Vec3d;
 import net.minecraft.world.EnumDifficulty;
 import net.minecraft.world.World;
+import net.minecraftforge.fml.relauncher.Side;
+import net.minecraftforge.fml.relauncher.SideOnly;
 
 import javax.annotation.Nullable;
+import java.util.Random;
 
-public class SentinelDroneEntity extends EntityFlying implements IMob, IForcefieldImmunity {
+public class DroneEntity extends EntityFlying implements IMob, IForcefieldImmunity {
 
-    public static final ResourceLocation LOOT = new ResourceLocation(Ariente.MODID, "entities/sentinel_drone");
+    private static final DataParameter<Boolean> ATTACKING = EntityDataManager.createKey(DroneEntity.class, DataSerializers.BOOLEAN);
+    public static final ResourceLocation LOOT = new ResourceLocation(Ariente.MODID, "entities/drone");
 
-    private int sentinelId;
+    // If this drone is controlled by a city then this will be set
     private ChunkCoord cityCenter;
 
-    public SentinelDroneEntity(World worldIn) {
+    public DroneEntity(World worldIn) {
         super(worldIn);
-        this.setSize(1.3F, 1.3F);
+        this.setSize(2.0F, 2.0F);
         this.isImmuneToFire = false;
         this.experienceValue = 5;
-        this.moveHelper = new SentinelDroneMoveHelper(this);
+        this.moveHelper = new DroneMoveHelper(this);
     }
 
-    public SentinelDroneEntity(World world, int sentinelId, ChunkCoord cityCenter) {
+    public DroneEntity(World world, ChunkCoord cityCenter) {
         this(world);
-        this.sentinelId = sentinelId;
         this.cityCenter = cityCenter;
+    }
+
+    @Override
+    protected void initEntityAI() {
+        this.tasks.addTask(5, new AIDroneFly(this));
+        this.tasks.addTask(7, new AILookAround(this));
+        this.tasks.addTask(7, new AILaserAttack(this));
+        this.targetTasks.addTask(1, new EntityAIFindEntityNearestPlayer(this));
+    }
+
+    @SideOnly(Side.CLIENT)
+    public boolean isAttacking() {
+        return this.dataManager.get(ATTACKING).booleanValue();
+    }
+
+    public void setAttacking(boolean attacking) {
+        this.dataManager.set(ATTACKING, Boolean.valueOf(attacking));
     }
 
     @Override
     public boolean isImmuneToForcefield(ForceFieldTile tile) {
         return true;
-    }
-
-    // Override this to make it less likely to despawn
-    @Override
-    protected void despawnEntity() {
-        Entity entity = this.world.getClosestPlayerToEntity(this, -1.0D);
-
-        if (entity != null) {
-            double d0 = entity.posX - this.posX;
-            double d1 = entity.posY - this.posY;
-            double d2 = entity.posZ - this.posZ;
-            double d3 = d0 * d0 + d1 * d1 + d2 * d2;
-
-            if (this.canDespawn() && d3 > 16384.0D) {
-                this.setDead();
-            }
-
-            if (this.idleTime > 900 && this.rand.nextInt(800) == 0 && d3 > 2048.0D && this.canDespawn()) {
-                this.setDead();
-            } else if (d3 < 2048.0D) {
-                this.idleTime = 0;
-            }
-        }
-    }
-
-
-    @Override
-    public void setAttackTarget(@Nullable EntityLivingBase entitylivingbaseIn) {
-//        super.setAttackTarget(entitylivingbaseIn);
-        // This is called by EntityAIFindEntityNearestPlayer when it spots a player.
-        // In this case we don't attack but notify the city AI
-        if (entitylivingbaseIn instanceof EntityPlayer && cityCenter != null) {
-            CityAISystem aiSystem = CityAISystem.getCityAISystem(world);
-            CityAI cityAI = aiSystem.getCityAI(cityCenter);
-            cityAI.playerSpotted((EntityPlayer) entitylivingbaseIn);
-            aiSystem.save();
-        }
-    }
-
-    @Override
-    protected void initEntityAI() {
-        this.tasks.addTask(5, new AICircleCity(this));
-        this.tasks.addTask(7, new AILookAround(this));
-        this.targetTasks.addTask(1, new EntityAIScanForPlayer(this));
     }
 
     /**
@@ -123,10 +104,16 @@ public class SentinelDroneEntity extends EntityFlying implements IMob, IForcefie
     }
 
     @Override
+    protected void entityInit() {
+        super.entityInit();
+        this.dataManager.register(ATTACKING, Boolean.valueOf(false));
+    }
+
+    @Override
     protected void applyEntityAttributes() {
         super.applyEntityAttributes();
-        this.getEntityAttribute(SharedMonsterAttributes.MAX_HEALTH).setBaseValue(10.0D);
-        this.getEntityAttribute(SharedMonsterAttributes.FOLLOW_RANGE).setBaseValue(50); // Configurable
+        this.getEntityAttribute(SharedMonsterAttributes.MAX_HEALTH).setBaseValue(30.0D);
+        this.getEntityAttribute(SharedMonsterAttributes.FOLLOW_RANGE).setBaseValue(50.0D);  // Configurable
     }
 
     @Override
@@ -186,6 +173,17 @@ public class SentinelDroneEntity extends EntityFlying implements IMob, IForcefie
         return 1;
     }
 
+    @Override
+    public void setAttackTarget(@Nullable EntityLivingBase entitylivingbaseIn) {
+        super.setAttackTarget(entitylivingbaseIn);
+        if (entitylivingbaseIn instanceof EntityPlayer && cityCenter != null) {
+            CityAISystem aiSystem = CityAISystem.getCityAISystem(world);
+            CityAI cityAI = aiSystem.getCityAI(cityCenter);
+            cityAI.playerSpotted((EntityPlayer) entitylivingbaseIn);
+            aiSystem.save();
+        }
+    }
+
     /**
      * (abstract) Protected helper method to write subclass entity data to NBT.
      */
@@ -214,10 +212,99 @@ public class SentinelDroneEntity extends EntityFlying implements IMob, IForcefie
         return 0.8F;
     }
 
-    static class AILookAround extends EntityAIBase {
-        private final SentinelDroneEntity parentEntity;
+    static class AILaserAttack extends EntityAIBase {
+        private final DroneEntity drone;
+        public int attackTimer;
 
-        public AILookAround(SentinelDroneEntity drone) {
+        public AILaserAttack(DroneEntity drone) {
+            this.drone = drone;
+        }
+
+        /**
+         * Returns whether the EntityAIBase should begin execution.
+         */
+        @Override
+        public boolean shouldExecute() {
+            return this.drone.getAttackTarget() != null;
+        }
+
+        /**
+         * Execute a one shot task or start executing a continuous task
+         */
+        @Override
+        public void startExecuting() {
+            this.attackTimer = 0;
+        }
+
+        /**
+         * Resets the task
+         */
+        @Override
+        public void resetTask() {
+            this.drone.setAttacking(false);
+        }
+
+        /**
+         * Updates the task
+         */
+        @Override
+        public void updateTask() {
+            EntityLivingBase target = this.drone.getAttackTarget();
+            double d0 = 64.0D;
+
+            if (target.getDistanceSq(this.drone) < 4096.0D && this.drone.canEntityBeSeen(target)) {
+                World world = this.drone.getEntityWorld();
+                ++this.attackTimer;
+
+                if (this.attackTimer == 10) {
+//                    world.playEvent(null, 1015, new BlockPos(this.parentEntity), 0);
+                }
+
+                if (this.attackTimer == 20) {
+                    double d1 = 4.0D;
+                    Vec3d vec3d = this.drone.getLook(1.0F);
+
+//                    world.playSound(null, target.posX - vec3d.x * 8.0d, target.posY - vec3d.y * 8.0d, target.posZ - vec3d.z * 8.0d, ModSounds.droneShoot, SoundCategory.HOSTILE, 5.0f, 1.0f);
+
+                    double d2 = target.posX - (this.drone.posX + vec3d.x * 4.0D);
+                    double d3 = target.getEntityBoundingBox().minY + ((target.height+2) / 2.0F) - (0.5D + this.drone.posY + (this.drone.height / 2.0F));
+                    double d4 = target.posZ - (this.drone.posZ + vec3d.z * 4.0D);
+//                    world.playEvent(null, 1016, new BlockPos(this.parentEntity), 0);
+//                    for (int i = 0; i < world.playerEntities.size(); ++i) {
+//                        world.playSound(world.playerEntities.get(i), d2, d3, d4, ModSounds.droneShoot, SoundCategory.HOSTILE, 1.0f, 1.0f);
+//                        world.playSound(world.playerEntities.get(i), target.posX, target.posY, target.posZ, ModSounds.droneShoot, SoundCategory.HOSTILE, 1.0f, 1.0f);
+//                    }
+
+//                    world.playEvent((EntityPlayer)null, 1016, new BlockPos(this.drone), 0);
+
+                    LaserEntity laser = new LaserEntity(world, this.drone, d2, d3, d4);
+                    laser.posX = this.drone.posX + vec3d.x * 2.0D;
+                    laser.posY = this.drone.posY + (this.drone.height / 2.0F) + 0.5D;
+                    laser.posZ = this.drone.posZ + vec3d.z * 2.0D;
+
+                    double dx = target.posX - laser.posX;
+                    double dy = target.posY + target.getEyeHeight() - laser.posY + 0;
+                    double dz = target.posZ - laser.posZ;
+                    double dpitch = MathHelper.sqrt(dx * dx + dz * dz);
+//                    float f = (float)(MathHelper.atan2(d2, d0) * (180D / Math.PI)) - 90.0F;
+                    float f1 = (float)(-(MathHelper.atan2(dy, dpitch) * (180D / Math.PI)));
+                    laser.setSpawnYawPitch(laser.getSpawnYaw(), f1);
+
+                    world.spawnEntity(laser);
+                    this.attackTimer = -40;
+                }
+            } else if (this.attackTimer > 0) {
+                --this.attackTimer;
+            }
+
+            this.drone.setAttacking(this.attackTimer > 10);
+        }
+    }
+
+    static class AILookAround extends EntityAIBase {
+        private final DroneEntity parentEntity;
+
+        public AILookAround(DroneEntity drone) {
             this.parentEntity = drone;
             this.setMutexBits(2);
         }
@@ -252,10 +339,10 @@ public class SentinelDroneEntity extends EntityFlying implements IMob, IForcefie
         }
     }
 
-    static class AICircleCity extends EntityAIBase {
-        private final SentinelDroneEntity parentEntity;
+    static class AIDroneFly extends EntityAIBase {
+        private final DroneEntity parentEntity;
 
-        public AICircleCity(SentinelDroneEntity drone) {
+        public AIDroneFly(DroneEntity drone) {
             this.parentEntity = drone;
             this.setMutexBits(1);
         }
@@ -292,22 +379,28 @@ public class SentinelDroneEntity extends EntityFlying implements IMob, IForcefie
         @Override
         public void startExecuting() {
             if (parentEntity.cityCenter == null) {
-                return;
-            }
-            CityAISystem aiSystem = CityAISystem.getCityAISystem(parentEntity.world);
-            CityAI cityAI = aiSystem.getCityAI(parentEntity.cityCenter);
-            BlockPos pos = cityAI.requestNewSentinelPosition(parentEntity.world, parentEntity.sentinelId);
-            if (pos != null) {
-                this.parentEntity.getMoveHelper().setMoveTo(pos.getX(), pos.getY(), pos.getZ(), 2.0D);
+                Random random = this.parentEntity.getRNG();
+                double d0 = this.parentEntity.posX + ((random.nextFloat() * 2.0F - 1.0F) * 32.0F);
+                double d1 = this.parentEntity.posY + ((random.nextFloat() * 2.0F - 1.0F) * 32.0F);
+                double d2 = this.parentEntity.posZ + ((random.nextFloat() * 2.0F - 1.0F) * 32.0F);
+                this.parentEntity.getMoveHelper().setMoveTo(d0, d1, d2, 1.0D);
+            } else {
+                // City controls movement
+                CityAISystem aiSystem = CityAISystem.getCityAISystem(parentEntity.world);
+                CityAI cityAI = aiSystem.getCityAI(parentEntity.cityCenter);
+                BlockPos pos = cityAI.requestNewDronePosition(parentEntity.world, parentEntity.getAttackTarget());
+                if (pos != null) {
+                    this.parentEntity.getMoveHelper().setMoveTo(pos.getX(), pos.getY(), pos.getZ(), 2.0D);
+                }
             }
         }
     }
 
-    static class SentinelDroneMoveHelper extends EntityMoveHelper {
-        private final SentinelDroneEntity parentEntity;
+    static class DroneMoveHelper extends EntityMoveHelper {
+        private final DroneEntity parentEntity;
         private int courseChangeCooldown;
 
-        public SentinelDroneMoveHelper(SentinelDroneEntity drone) {
+        public DroneMoveHelper(DroneEntity drone) {
             super(drone);
             this.parentEntity = drone;
         }

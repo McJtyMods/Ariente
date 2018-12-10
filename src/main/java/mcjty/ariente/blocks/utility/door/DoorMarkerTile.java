@@ -7,7 +7,7 @@ import mcjty.hologui.api.IGuiTile;
 import mcjty.ariente.blocks.ModBlocks;
 import mcjty.ariente.blocks.utility.ILockable;
 import mcjty.ariente.config.UtilityConfiguration;
-import mcjty.ariente.entities.SoldierEntity;
+import mcjty.ariente.entities.soldier.SoldierEntity;
 import mcjty.ariente.sounds.ModSounds;
 import mcjty.lib.blocks.BaseBlock;
 import mcjty.lib.tileentity.GenericTileEntity;

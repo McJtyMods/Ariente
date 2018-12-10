@@ -1,4 +1,4 @@
-package mcjty.ariente.entities;
+package mcjty.ariente.entities.soldier;
 
 import mcjty.ariente.varia.ChunkCoord;
 import net.minecraft.init.MobEffects;

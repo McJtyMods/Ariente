@@ -1,4 +1,4 @@
-package mcjty.ariente.entities;
+package mcjty.ariente.entities.drone;
 
 import net.minecraft.client.model.ModelBase;
 import net.minecraft.client.model.ModelRenderer;

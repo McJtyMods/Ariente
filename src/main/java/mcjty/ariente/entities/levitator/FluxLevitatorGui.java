@@ -1,4 +1,4 @@
-package mcjty.ariente.entities;
+package mcjty.ariente.entities.levitator;
 
 import mcjty.ariente.Ariente;
 import mcjty.hologui.api.IGuiComponent;

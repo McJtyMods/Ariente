@@ -4,7 +4,7 @@ import mcjty.ariente.blocks.ModBlocks;
 import mcjty.ariente.blocks.defense.ForceFieldRenderer;
 import mcjty.ariente.dimension.EditMode;
 import mcjty.ariente.dimension.EditModeClient;
-import mcjty.ariente.entities.FluxLevitatorEntity;
+import mcjty.ariente.entities.levitator.FluxLevitatorEntity;
 import mcjty.ariente.items.ModItems;
 import mcjty.ariente.items.modules.ArmorUpgradeType;
 import mcjty.ariente.items.modules.ModuleSupport;

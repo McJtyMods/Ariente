@@ -1,6 +1,6 @@
 package mcjty.ariente.sounds;
 
-import mcjty.ariente.entities.FluxLevitatorEntity;
+import mcjty.ariente.entities.levitator.FluxLevitatorEntity;
 import net.minecraft.client.Minecraft;
 import net.minecraft.entity.player.EntityPlayer;
 

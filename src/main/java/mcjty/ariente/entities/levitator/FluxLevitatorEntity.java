@@ -1,4 +1,4 @@
-package mcjty.ariente.entities;
+package mcjty.ariente.entities.levitator;
 
 import com.google.common.base.Optional;
 import mcjty.ariente.Ariente;

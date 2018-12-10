@@ -1,4 +1,4 @@
-package mcjty.ariente.entities;
+package mcjty.ariente.entities.soldier;
 
 import mcjty.ariente.Ariente;
 import mcjty.ariente.ai.CityAI;

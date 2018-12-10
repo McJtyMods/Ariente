@@ -1,6 +1,15 @@
 package mcjty.ariente.entities;
 
 import mcjty.ariente.Ariente;
+import mcjty.ariente.entities.drone.DroneEntity;
+import mcjty.ariente.entities.drone.DroneRender;
+import mcjty.ariente.entities.drone.SentinelDroneEntity;
+import mcjty.ariente.entities.drone.SentinelDroneRender;
+import mcjty.ariente.entities.levitator.FluxLevitatorEntity;
+import mcjty.ariente.entities.levitator.FluxLevitatorRender;
+import mcjty.ariente.entities.soldier.MasterSoldierEntity;
+import mcjty.ariente.entities.soldier.SoldierEntity;
+import mcjty.ariente.entities.soldier.SoldierRender;
 import net.minecraft.util.ResourceLocation;
 import net.minecraftforge.fml.client.registry.RenderingRegistry;
 import net.minecraftforge.fml.common.registry.EntityRegistry;

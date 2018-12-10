@@ -1,7 +1,7 @@
 package mcjty.ariente.items;
 
 import mcjty.ariente.blocks.ModBlocks;
-import mcjty.ariente.entities.FluxLevitatorEntity;
+import mcjty.ariente.entities.levitator.FluxLevitatorEntity;
 import net.minecraft.block.BlockRailBase;
 import net.minecraft.block.state.IBlockState;
 import net.minecraft.client.util.ITooltipFlag;

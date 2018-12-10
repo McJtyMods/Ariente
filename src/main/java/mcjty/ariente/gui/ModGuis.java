@@ -1,7 +1,7 @@
 package mcjty.ariente.gui;
 
 import mcjty.ariente.Ariente;
-import mcjty.ariente.entities.FluxLevitatorGui;
+import mcjty.ariente.entities.levitator.FluxLevitatorGui;
 import mcjty.ariente.items.armor.ArmorGui;
 
 public class ModGuis {
