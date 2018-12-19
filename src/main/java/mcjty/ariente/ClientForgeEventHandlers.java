@@ -4,6 +4,7 @@ import mcjty.ariente.blocks.ModBlocks;
 import mcjty.ariente.blocks.defense.ForceFieldRenderer;
 import mcjty.ariente.dimension.EditMode;
 import mcjty.ariente.dimension.EditModeClient;
+import mcjty.ariente.entities.fluxship.FluxShipRender;
 import mcjty.ariente.entities.levitator.FluxLevitatorEntity;
 import mcjty.ariente.items.ModItems;
 import mcjty.ariente.items.modules.ArmorUpgradeType;
@@ -26,6 +27,7 @@ import net.minecraft.util.math.RayTraceResult;
 import net.minecraftforge.client.event.DrawBlockHighlightEvent;
 import net.minecraftforge.client.event.ModelBakeEvent;
 import net.minecraftforge.client.event.RenderWorldLastEvent;
+import net.minecraftforge.client.event.TextureStitchEvent;
 import net.minecraftforge.event.entity.EntityMountEvent;
 import net.minecraftforge.event.entity.player.PlayerInteractEvent;
 import net.minecraftforge.fml.common.eventhandler.EventPriority;
@@ -39,7 +41,11 @@ public class ClientForgeEventHandlers {
     @SubscribeEvent
     public void onModelBake(ModelBakeEvent event) {
         event.getModelRegistry().putObject(EMPTY_BLUEPRINT_MODEL, new BuiltInModel(ItemCameraTransforms.DEFAULT, ItemOverrideList.NONE));
+    }
 
+    @SubscribeEvent
+    public void onTextureStitchEvent(TextureStitchEvent.Pre event) {
+        event.getMap().registerSprite(FluxShipRender.TEXTURE);
     }
 
     @SubscribeEvent

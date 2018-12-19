@@ -2,8 +2,6 @@ package mcjty.ariente.entities.levitator;
 
 import mcjty.ariente.Ariente;
 import mcjty.hologui.api.IHoloGuiEntity;
-import net.minecraft.block.state.IBlockState;
-import net.minecraft.client.Minecraft;
 import net.minecraft.client.model.ModelBase;
 import net.minecraft.client.renderer.GlStateManager;
 import net.minecraft.client.renderer.entity.Render;
@@ -18,8 +16,8 @@ import net.minecraftforge.fml.relauncher.SideOnly;
 @SideOnly(Side.CLIENT)
 public class FluxLevitatorRender extends Render<FluxLevitatorEntity> {
 
-    private static final ResourceLocation TEXTURES = new ResourceLocation("ariente:textures/entity/flux_levitator.png");
-    protected ModelBase model = new FluxLevitatorModel();
+    private static final ResourceLocation TEXTURE = new ResourceLocation("ariente:textures/entity/flux_levitator.png");
+    private ModelBase model = new FluxLevitatorModel();
 
     public FluxLevitatorRender(RenderManager renderManagerIn) {
         super(renderManagerIn);
@@ -116,15 +114,8 @@ public class FluxLevitatorRender extends Render<FluxLevitatorEntity> {
 
     @Override
     protected ResourceLocation getEntityTexture(FluxLevitatorEntity entity) {
-        return TEXTURES;
+        return TEXTURE;
     }
-
-    protected void renderCartContents(FluxLevitatorEntity p_188319_1_, float partialTicks, IBlockState p_188319_3_) {
-        GlStateManager.pushMatrix();
-        Minecraft.getMinecraft().getBlockRendererDispatcher().renderBlockBrightness(p_188319_3_, p_188319_1_.getBrightness());
-        GlStateManager.popMatrix();
-    }
-
 
     public static class Factory implements IRenderFactory<FluxLevitatorEntity> {
 

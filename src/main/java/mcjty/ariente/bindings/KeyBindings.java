@@ -1,8 +1,13 @@
 package mcjty.ariente.bindings;
 
-import net.minecraft.client.settings.KeyBinding;
-import net.minecraftforge.client.settings.KeyConflictContext;
-import net.minecraftforge.fml.client.registry.ClientRegistry;
+import mcjty.ariente.entities.fluxship.FluxShipEntity;
+import mcjty.ariente.entities.fluxship.FlyAction;
+import mcjty.ariente.entities.fluxship.PacketShipAction;
+import mcjty.ariente.items.armor.PacketArmorHotkey;
+import mcjty.ariente.items.armor.PacketConfigureArmor;
+import mcjty.ariente.network.ArienteMessages;
+import net.minecraft.client.Minecraft;
+import net.minecraftforge.fml.common.network.simpleimpl.IMessage;
 import net.minecraftforge.fml.relauncher.Side;
 import net.minecraftforge.fml.relauncher.SideOnly;
 import org.lwjgl.input.Keyboard;
@@ -10,25 +15,46 @@ import org.lwjgl.input.Keyboard;
 @SideOnly(Side.CLIENT)
 public class KeyBindings {
 
-    public static KeyBinding fullHealth;
-    public static KeyBinding configureArmor;
-    public static KeyBinding armorHotkey1;
-    public static KeyBinding armorHotkey2;
-    public static KeyBinding armorHotkey3;
-    public static KeyBinding armorHotkey4;
+    public static Binding fullHealth;
+    public static Binding configureArmor;
+    public static Binding armorHotkey1;
+    public static Binding armorHotkey2;
+    public static Binding armorHotkey3;
+    public static Binding armorHotkey4;
+    public static Binding flyForward;
+    public static Binding flyBackwards;
+    public static Binding turnLeft;
+    public static Binding turnRight;
+    public static Binding flyUp;
+    public static Binding flyDown;
+    public static Binding startFlying;
+    public static Binding startLanding;
 
     public static void init() {
-//        fullHealth = new KeyBinding("key.fullhealth", KeyConflictContext.IN_GAME, Keyboard.KEY_O, "key.categories.ariente");
-//        ClientRegistry.registerKeyBinding(fullHealth);
-        configureArmor = new KeyBinding("key.configurearmor", KeyConflictContext.IN_GAME, Keyboard.KEY_0, "key.categories.ariente");
-        ClientRegistry.registerKeyBinding(configureArmor);
-        armorHotkey1 = new KeyBinding("key.hotkey1", KeyConflictContext.IN_GAME, Keyboard.KEY_NUMPAD7, "key.categories.ariente");
-        ClientRegistry.registerKeyBinding(armorHotkey1);
-        armorHotkey2 = new KeyBinding("key.hotkey2", KeyConflictContext.IN_GAME, Keyboard.KEY_NUMPAD8, "key.categories.ariente");
-        ClientRegistry.registerKeyBinding(armorHotkey2);
-        armorHotkey3 = new KeyBinding("key.hotkey3", KeyConflictContext.IN_GAME, Keyboard.KEY_NONE, "key.categories.ariente");
-        ClientRegistry.registerKeyBinding(armorHotkey3);
-        armorHotkey4 = new KeyBinding("key.hotkey4", KeyConflictContext.IN_GAME, Keyboard.KEY_NONE, "key.categories.ariente");
-        ClientRegistry.registerKeyBinding(armorHotkey4);
+//        fullHealth = Binding.create("key.fullhealth", Keyboard.KEY_O);
+        configureArmor = Binding.create("key.configurearmor", Keyboard.KEY_0, () -> toServer(new PacketConfigureArmor()));
+        armorHotkey1 = Binding.create("key.hotkey1", Keyboard.KEY_NUMPAD7, () -> toServer(new PacketArmorHotkey(1)));
+        armorHotkey2 = Binding.create("key.hotkey2", Keyboard.KEY_NUMPAD8, () -> toServer(new PacketArmorHotkey(2)));
+        armorHotkey3 = Binding.create("key.hotkey3", Keyboard.KEY_NONE, () -> toServer(new PacketArmorHotkey(3)));
+        armorHotkey4 = Binding.create("key.hotkey4", Keyboard.KEY_NONE, () -> toServer(new PacketArmorHotkey(4)));
+        flyForward = Binding.create("key.flyforward", Keyboard.KEY_W, () -> performFlyAction(FlyAction.FORWARD));
+        flyBackwards = Binding.create("key.flybackwards", Keyboard.KEY_S, () -> performFlyAction(FlyAction.BACKWARD));
+        turnLeft = Binding.create("key.turnleft", Keyboard.KEY_A, () -> performFlyAction(FlyAction.TURNLEFT));
+        turnRight = Binding.create("key.turnright", Keyboard.KEY_D, () -> performFlyAction(FlyAction.TURNRIGHT));
+        flyUp = Binding.create("key.flyup", Keyboard.KEY_UP, () -> performFlyAction(FlyAction.UP));
+        flyDown = Binding.create("key.flydown", Keyboard.KEY_DOWN, () -> performFlyAction(FlyAction.DOWN));
+        startFlying = Binding.create("key.startflying", Keyboard.KEY_SPACE, () -> performFlyAction(FlyAction.START));
+        startLanding = Binding.create("key.startlanding", Keyboard.KEY_BACK, () -> performFlyAction(FlyAction.LAND));
+    }
+
+    private static void performFlyAction(FlyAction forward) {
+        // First check if we're actually on a ship
+        if (Minecraft.getMinecraft().player.getRidingEntity() instanceof FluxShipEntity) {
+            toServer(new PacketShipAction(forward));
+        }
+    }
+
+    private static void toServer(IMessage packet) {
+        ArienteMessages.INSTANCE.sendToServer(packet);
     }
 }

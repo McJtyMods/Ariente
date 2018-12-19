@@ -5,6 +5,8 @@ import mcjty.ariente.entities.drone.DroneEntity;
 import mcjty.ariente.entities.drone.DroneRender;
 import mcjty.ariente.entities.drone.SentinelDroneEntity;
 import mcjty.ariente.entities.drone.SentinelDroneRender;
+import mcjty.ariente.entities.fluxship.FluxShipEntity;
+import mcjty.ariente.entities.fluxship.FluxShipRender;
 import mcjty.ariente.entities.levitator.FluxLevitatorEntity;
 import mcjty.ariente.entities.levitator.FluxLevitatorRender;
 import mcjty.ariente.entities.soldier.MasterSoldierEntity;
@@ -22,6 +24,8 @@ public class ModEntities {
                 "ariente_laser", id++, Ariente.instance, 64, 1, false);
         EntityRegistry.registerModEntity(new ResourceLocation(Ariente.MODID, "ariente_flux_levitator"), FluxLevitatorEntity.class,
                 "ariente_flux_levitator", id++, Ariente.instance, 64, 1, false);
+        EntityRegistry.registerModEntity(new ResourceLocation(Ariente.MODID, "ariente_flux_ship"), FluxShipEntity.class,
+                "ariente_flux_ship", id++, Ariente.instance, 64, 1, false);
 
         id = 100;
 
@@ -38,5 +42,6 @@ public class ModEntities {
         RenderingRegistry.registerEntityRenderingHandler(SoldierEntity.class, SoldierRender.FACTORY);
         RenderingRegistry.registerEntityRenderingHandler(MasterSoldierEntity.class, SoldierRender.MASTER_FACTORY);
         RenderingRegistry.registerEntityRenderingHandler(FluxLevitatorEntity.class, new FluxLevitatorRender.Factory());
+        RenderingRegistry.registerEntityRenderingHandler(FluxShipEntity.class, new FluxShipRender.Factory());
     }
 }

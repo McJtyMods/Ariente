@@ -26,6 +26,7 @@ import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 import java.util.Map;
 
+// Kindly 'stolen' from gigaherz! Thanks!
 public class ModelHandle {
     static Map<String, IBakedModel> loadedModels = Maps.newHashMap();
 

@@ -1,6 +1,7 @@
 package mcjty.ariente.network;
 
 import mcjty.ariente.Ariente;
+import mcjty.ariente.entities.fluxship.PacketShipAction;
 import mcjty.ariente.items.armor.PacketArmorHotkey;
 import mcjty.ariente.items.armor.PacketConfigureArmor;
 import mcjty.ariente.bindings.PacketFullHealth;
@@ -29,6 +30,7 @@ public class ArienteMessages {
         net.registerMessage(PacketFullHealth.Handler.class, PacketFullHealth.class, PacketHandler.nextPacketID(), Side.SERVER);
         net.registerMessage(PacketConfigureArmor.Handler.class, PacketConfigureArmor.class, PacketHandler.nextPacketID(), Side.SERVER);
         net.registerMessage(PacketArmorHotkey.Handler.class, PacketArmorHotkey.class, PacketHandler.nextPacketID(), Side.SERVER);
+        net.registerMessage(PacketShipAction.Handler.class, PacketShipAction.class, PacketHandler.nextPacketID(), Side.SERVER);
 
         // Client side
         net.registerMessage(PacketDamageForcefield.Handler.class, PacketDamageForcefield.class, PacketHandler.nextPacketID(), Side.CLIENT);

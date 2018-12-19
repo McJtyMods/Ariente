@@ -27,6 +27,7 @@ public class ModItems {
     public static BlueprintItem blueprintItem;
     public static DirtyDiamondItem dirtyDiamondItem;
     public static FluxLevitatorItem fluxLevitatorItem;
+    public static FluxShipItem fluxShipItem;
 
     public static PowerSuit powerSuitHelmet;
     public static PowerSuit powerSuitChest;
@@ -65,6 +66,7 @@ public class ModItems {
         keyCardItem = new KeyCardItem();
         blueprintItem = new BlueprintItem();
         fluxLevitatorItem = new FluxLevitatorItem();
+        fluxShipItem = new FluxShipItem();
 
         dirtyDiamondItem = new DirtyDiamondItem();
 
@@ -114,6 +116,7 @@ public class ModItems {
         enhancedEnergySabreItem.initModel();
         keyCardItem.initModel();
         fluxLevitatorItem.initModel();
+        fluxShipItem.initModel();
         blueprintItem.initModel();
 
         dirtyDiamondItem.initModel();
