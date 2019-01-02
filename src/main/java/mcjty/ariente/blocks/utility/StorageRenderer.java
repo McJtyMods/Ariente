@@ -14,6 +14,7 @@ import net.minecraft.item.ItemStack;
 import net.minecraft.util.EnumFacing;
 import net.minecraft.util.math.MathHelper;
 import net.minecraft.util.math.RayTraceResult;
+import net.minecraftforge.fml.client.registry.ClientRegistry;
 import net.minecraftforge.fml.relauncher.Side;
 import net.minecraftforge.fml.relauncher.SideOnly;
 import org.lwjgl.opengl.GL11;
@@ -158,7 +159,7 @@ public class StorageRenderer extends TileEntitySpecialRenderer<StorageTile> {
                 GlStateManager.enableDepth();
 //                GlStateManager.disableDepth();
                 GlStateManager.disableBlend();
-                fr.drawString(s, (float) (xPosition + 19 - 2 - fr.getStringWidth(s)), (float) (yPosition + 6 + 3), 16777215, false);
+                fr.drawString(s, (xPosition + 19 - 2 - fr.getStringWidth(s)), (yPosition + 6 + 3), 16777215, false);
 //                fr.drawStringWithShadow(s, (float) (xPosition + 19 - 2 - fr.getStringWidth(s)), (float) (yPosition + 6 + 3), 16777215);
                 GlStateManager.enableLighting();
                 GlStateManager.enableDepth();
@@ -209,12 +210,14 @@ public class StorageRenderer extends TileEntitySpecialRenderer<StorageTile> {
 
     private static void draw(BufferBuilder renderer, int x, int y, int width, int height, int red, int green, int blue, int alpha) {
         renderer.begin(7, DefaultVertexFormats.POSITION_COLOR);
-        renderer.pos((double) (x + 0), (double) (y + 0), 0.0D).color(red, green, blue, alpha).endVertex();
-        renderer.pos((double) (x + 0), (double) (y + height), 0.0D).color(red, green, blue, alpha).endVertex();
-        renderer.pos((double) (x + width), (double) (y + height), 0.0D).color(red, green, blue, alpha).endVertex();
-        renderer.pos((double) (x + width), (double) (y + 0), 0.0D).color(red, green, blue, alpha).endVertex();
+        renderer.pos((x + 0), (y + 0), 0.0D).color(red, green, blue, alpha).endVertex();
+        renderer.pos((x + 0), (y + height), 0.0D).color(red, green, blue, alpha).endVertex();
+        renderer.pos((x + width), (y + height), 0.0D).color(red, green, blue, alpha).endVertex();
+        renderer.pos((x + width), (y + 0), 0.0D).color(red, green, blue, alpha).endVertex();
         Tessellator.getInstance().draw();
     }
 
-
+    public static void register() {
+        ClientRegistry.bindTileEntitySpecialRenderer(StorageTile.class, new StorageRenderer());
+    }
 }

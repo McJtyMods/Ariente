@@ -28,7 +28,6 @@ import net.minecraft.block.state.IBlockState;
 import net.minecraft.client.renderer.color.BlockColors;
 import net.minecraft.util.EnumFacing;
 import net.minecraft.util.math.AxisAlignedBB;
-import net.minecraftforge.fml.client.registry.ClientRegistry;
 import net.minecraftforge.fml.relauncher.Side;
 import net.minecraftforge.fml.relauncher.SideOnly;
 import net.minecraftforge.oredict.OreDictionary;
@@ -535,7 +534,6 @@ public class ModBlocks {
         OreDictionary.registerOre("logWood", bluelog);
     }
 
-    @SideOnly(Side.CLIENT)
     public static void initModels() {
         netCableBlock.initModel();
         connectorBlock.initModel();
@@ -544,16 +542,16 @@ public class ModBlocks {
         fluxBeamBlock.initModel();
 
         storageBlock.initModel();
-        ClientRegistry.bindTileEntitySpecialRenderer(StorageTile.class, new StorageRenderer());
+        StorageRenderer.register();
 
         elevatorBlock.initModel();
-        ClientRegistry.bindTileEntitySpecialRenderer(ElevatorTile.class, new ElevatorRenderer());
+        ElevatorRenderer.register();
         levelMarkerBlock.initModel();
 
         doorMarkerBlock.initModel();
-        ClientRegistry.bindTileEntitySpecialRenderer(DoorMarkerTile.class, new DoorMarkerRenderer());
+        DoorMarkerRenderer.register();
         invisibleDoorBlock.initModel();
-        ClientRegistry.bindTileEntitySpecialRenderer(InvisibleDoorTile.class, new InvisibleDoorRenderer());
+        InvisibleDoorRenderer.register();
 
         forceFieldBlock.initModel();
 
@@ -566,9 +564,9 @@ public class ModBlocks {
         posiriteGeneratorBlock.initModel();
         negariteGeneratorBlock.initModel();
         negariteTankBlock.initModel();
-        ClientRegistry.bindTileEntitySpecialRenderer(NegariteTankTile.class, new NegariteTankRenderer());
+        NegariteTankRenderer.register();
         posiriteTankBlock.initModel();
-        ClientRegistry.bindTileEntitySpecialRenderer(PosiriteTankTile.class, new PosiriteTankRenderer());
+        PosiriteTankRenderer.register();
 
         alarmBlock.initModel();
         warperBlock.initModel();

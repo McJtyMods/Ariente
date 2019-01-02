@@ -139,7 +139,6 @@ public abstract class GenericCableBlock extends Block implements WailaInfoProvid
         return state.getValue(COLOR).ordinal();
     }
 
-    @SideOnly(Side.CLIENT)
     public void initModel() {
         ResourceLocation name = getRegistryName();
         for (CableColor color : CableColor.VALUES) {
@@ -147,7 +146,6 @@ public abstract class GenericCableBlock extends Block implements WailaInfoProvid
         }
     }
 
-    @SideOnly(Side.CLIENT)
     public void initItemModel() {
     }
 

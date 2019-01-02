@@ -7,6 +7,7 @@ import net.minecraft.client.renderer.GlStateManager;
 import net.minecraft.client.renderer.tileentity.TileEntitySpecialRenderer;
 import net.minecraft.util.EnumFacing;
 import net.minecraft.util.ResourceLocation;
+import net.minecraftforge.fml.client.registry.ClientRegistry;
 import net.minecraftforge.fml.relauncher.Side;
 import net.minecraftforge.fml.relauncher.SideOnly;
 
@@ -47,5 +48,9 @@ public class InvisibleDoorRenderer extends TileEntitySpecialRenderer<InvisibleDo
         DoorMarkerRenderer.renderDoorSegment(openphase, iconIndex);
 
         GlStateManager.popMatrix();
+    }
+
+    public static void register() {
+        ClientRegistry.bindTileEntitySpecialRenderer(InvisibleDoorTile.class, new InvisibleDoorRenderer());
     }
 }

@@ -4,12 +4,11 @@ import mcjty.ariente.Ariente;
 import mcjty.ariente.blocks.ModBlocks;
 import mcjty.ariente.facade.FacadeBlockId;
 import mcjty.ariente.facade.FacadeItemBlock;
+import mcjty.lib.McJtyLib;
 import net.minecraft.block.Block;
 import net.minecraft.block.ITileEntityProvider;
 import net.minecraft.block.material.Material;
 import net.minecraft.block.state.IBlockState;
-import net.minecraft.client.renderer.block.model.ModelResourceLocation;
-import net.minecraft.client.renderer.block.statemap.StateMapperBase;
 import net.minecraft.creativetab.CreativeTabs;
 import net.minecraft.entity.EntityLivingBase;
 import net.minecraft.entity.player.EntityPlayer;
@@ -23,9 +22,7 @@ import net.minecraft.util.ResourceLocation;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.IBlockAccess;
 import net.minecraft.world.World;
-import net.minecraftforge.client.model.ModelLoader;
 import net.minecraftforge.common.property.IExtendedBlockState;
-import net.minecraftforge.fml.client.registry.ClientRegistry;
 import net.minecraftforge.fml.common.registry.GameRegistry;
 import net.minecraftforge.fml.relauncher.Side;
 import net.minecraftforge.fml.relauncher.SideOnly;
@@ -111,19 +108,11 @@ public class NetCableBlock extends GenericCableBlock implements ITileEntityProvi
 
 
     @Override
-    @SideOnly(Side.CLIENT)
     public void initModel() {
         super.initModel();
-
         // To make sure that our ISBM model is chosen for all states we use this custom state mapper:
-        StateMapperBase ignoreState = new StateMapperBase() {
-            @Override
-            protected ModelResourceLocation getModelResourceLocation(IBlockState iBlockState) {
-                return GenericCableBakedModel.modelCable;
-            }
-        };
-        ModelLoader.setCustomStateMapper(this, ignoreState);
-        ClientRegistry.bindTileEntitySpecialRenderer(NetCableTileEntity.class, new CableRenderer());
+        McJtyLib.proxy.initStateMapper(this, GenericCableBakedModel.modelCable);
+        CableRenderer.register(NetCableTileEntity.class);
     }
 
     @Override

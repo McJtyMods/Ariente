@@ -38,7 +38,6 @@ public abstract class BaseVariantBlock<T extends Enum<T> & IStringSerializable> 
         return RotationType.NONE;
     }
 
-    @SideOnly(Side.CLIENT)
     public void initModel() {
         for (T type : getValues()) {
             ModelLoader.setCustomModelResourceLocation(Item.getItemFromBlock(this), type.ordinal(), new ModelResourceLocation(getRegistryName(), "type=" + type.getName()));

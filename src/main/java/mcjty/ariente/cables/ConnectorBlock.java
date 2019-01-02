@@ -7,6 +7,7 @@ import mcjty.ariente.facade.FacadeBlockId;
 import mcjty.ariente.facade.FacadeItemBlock;
 import mcjty.ariente.power.IPowerReceiver;
 import mcjty.ariente.power.IPowerSender;
+import mcjty.lib.McJtyLib;
 import mcjty.theoneprobe.api.IProbeHitData;
 import mcjty.theoneprobe.api.IProbeInfo;
 import mcjty.theoneprobe.api.ProbeMode;
@@ -14,8 +15,6 @@ import net.minecraft.block.Block;
 import net.minecraft.block.ITileEntityProvider;
 import net.minecraft.block.material.Material;
 import net.minecraft.block.state.IBlockState;
-import net.minecraft.client.renderer.block.model.ModelResourceLocation;
-import net.minecraft.client.renderer.block.statemap.StateMapperBase;
 import net.minecraft.client.util.ITooltipFlag;
 import net.minecraft.creativetab.CreativeTabs;
 import net.minecraft.entity.EntityLivingBase;
@@ -31,9 +30,7 @@ import net.minecraft.util.ResourceLocation;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.IBlockAccess;
 import net.minecraft.world.World;
-import net.minecraftforge.client.model.ModelLoader;
 import net.minecraftforge.common.property.IExtendedBlockState;
-import net.minecraftforge.fml.client.registry.ClientRegistry;
 import net.minecraftforge.fml.common.Optional;
 import net.minecraftforge.fml.common.registry.GameRegistry;
 import net.minecraftforge.fml.relauncher.Side;
@@ -145,18 +142,11 @@ public class ConnectorBlock extends GenericCableBlock implements ITileEntityProv
 
 
     @Override
-    @SideOnly(Side.CLIENT)
     public void initModel() {
         super.initModel();
         // To make sure that our ISBM model is chosen for all states we use this custom state mapper:
-        StateMapperBase ignoreState = new StateMapperBase() {
-            @Override
-            protected ModelResourceLocation getModelResourceLocation(IBlockState iBlockState) {
-                return GenericCableBakedModel.modelConnector;
-            }
-        };
-        ModelLoader.setCustomStateMapper(this, ignoreState);
-        ClientRegistry.bindTileEntitySpecialRenderer(ConnectorTileEntity.class, new CableRenderer());
+        McJtyLib.proxy.initStateMapper(this, GenericCableBakedModel.modelConnector);
+        CableRenderer.register(ConnectorTileEntity.class);
     }
 
     @Override
