@@ -56,6 +56,7 @@ tile.ariente.blacktech.red_lines_glow.name=Tech Block Red Glowing Lines
 tile.ariente.blacktech.panel.name=Tech Block Panel
 
 tile.ariente.constructor.name=Constructor
+tile.ariente.auto_constructor.name=Auto Constructor
 tile.ariente.blueprint_storage.name=Blueprint Storage
 tile.ariente.facade.name=Facade
 tile.ariente.connector.name=Connector
@@ -217,5 +218,7 @@ message.ariente.forcefield=\
     @fForcefield generator
 message.ariente.constructor=\
     @fConstructor
+message.ariente.auto_constructor=\
+    @fAuto Constructor
 message.ariente.blueprint_storage=\
     @fBlueprint Storage

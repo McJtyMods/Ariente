@@ -93,6 +93,7 @@ public class ModBlocks {
     public static GenericBlock<WirelessLockTile, GenericContainer> wirelessLockBlock;
     public static GenericBlock<AlarmTile, GenericContainer> alarmBlock;
     public static GenericBlock<ConstructorTile, GenericContainer> constructorBlock;
+    public static GenericBlock<AutoConstructorTile, GenericContainer> autoConstructorBlock;
     public static GenericBlock<BlueprintStorageTile, GenericContainer> blueprintStorageBlock;
 
     public static BaseBlock flatLightBlock;
@@ -178,6 +179,17 @@ public class ModBlocks {
                 .activateAction((world, pos, player, hand, side, hitX, hitY, hitZ) -> Ariente.guiHandler.openHoloGui(world, pos, player))
                 .info("message.ariente.shiftmessage")
                 .infoExtended("message.ariente.constructor")
+                .build();
+
+        autoConstructorBlock = builderFactory.<AutoConstructorTile> builder("auto_constructor")
+                .tileEntityClass(AutoConstructorTile.class)
+                .container(AutoConstructorTile.CONTAINER_FACTORY)
+                .rotationType(BaseBlock.RotationType.HORIZROTATION)
+                .flags(BlockFlags.REDSTONE_CHECK)
+                .property(AutoConstructorTile.WORKING)
+                .activateAction((world, pos, player, hand, side, hitX, hitY, hitZ) -> Ariente.guiHandler.openHoloGui(world, pos, player))
+                .info("message.ariente.shiftmessage")
+                .infoExtended("message.ariente.auto_constructor")
                 .build();
 
         blueprintStorageBlock = builderFactory.<BlueprintStorageTile> builder("blueprint_storage")
@@ -546,6 +558,7 @@ public class ModBlocks {
         forceFieldBlock.initModel();
 
         constructorBlock.initModel();
+        autoConstructorBlock.initModel();
         blueprintStorageBlock.initModel();
         flatLightBlock.initModel();
         fluxGlow.initModel();

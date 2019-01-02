@@ -4,7 +4,7 @@
     "model": "ariente:frontblock",
     "textures": {
       "front": "ariente:blocks/machines/blueprint_storage",
-      "side": "ariente:blocks/base/machineside",
+      "side": "ariente:blocks/base/machineside"
     }
   },
   "variants": {

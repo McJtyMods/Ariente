@@ -56,7 +56,7 @@ import static mcjty.ariente.blocks.utility.BlueprintStorageTile.BLUEPRINTS;
 import static mcjty.ariente.blocks.utility.BlueprintStorageTile.SLOT_BLUEPRINT;
 import static mcjty.hologui.api.Icons.*;
 
-public class ConstructorTile extends GenericTileEntity implements DefaultSidedInventory, IGuiTile, ITickable, IPowerReceiver, ICityEquipment {
+public class AutoConstructorTile extends GenericTileEntity implements DefaultSidedInventory, IGuiTile, ITickable, IPowerReceiver, ICityEquipment {
 
     public static final PropertyBool WORKING = PropertyBool.create("working");
     public static final ContainerFactory CONTAINER_FACTORY = new ContainerFactory(new ResourceLocation(Ariente.MODID, "gui/constructor.gui"));
