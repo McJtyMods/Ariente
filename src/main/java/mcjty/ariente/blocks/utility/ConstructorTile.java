@@ -92,6 +92,9 @@ public class ConstructorTile extends GenericTileEntity implements IGuiTile, ICit
                 }
                 needed -= stack.getCount();
                 stack.shrink(stack.getCount());
+                if (needed <= 0) {
+                    return;
+                }
             }
         }
     }
@@ -111,6 +114,10 @@ public class ConstructorTile extends GenericTileEntity implements IGuiTile, ICit
                 // We have enough. Consume and craft
                 for (ItemStack ingredient : recipe.getIngredients()) {
                     consumeIngredient(player, ingredient);
+                }
+
+                if (!player.inventory.addItemStackToInventory(destination)) {
+                    player.entityDropItem(destination, 1.05f);
                 }
 
                 markDirtyClient();
