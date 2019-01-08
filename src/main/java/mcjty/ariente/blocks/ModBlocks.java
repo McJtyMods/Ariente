@@ -171,10 +171,7 @@ public class ModBlocks {
 
         constructorBlock = builderFactory.<ConstructorTile> builder("constructor")
                 .tileEntityClass(ConstructorTile.class)
-                .container(ConstructorTile.CONTAINER_FACTORY)
                 .rotationType(BaseBlock.RotationType.HORIZROTATION)
-                .flags(BlockFlags.REDSTONE_CHECK)
-                .property(ConstructorTile.WORKING)
                 .activateAction((world, pos, player, hand, side, hitX, hitY, hitZ) -> Ariente.guiHandler.openHoloGui(world, pos, player))
                 .info("message.ariente.shiftmessage")
                 .infoExtended("message.ariente.constructor")

@@ -308,6 +308,7 @@ public class AutoConstructorTile extends GenericTileEntity implements DefaultSid
                 .add(registry.playerSlots(1.5, 1.5, 6, 2)
                         .name("playerslots")
                         .withAmount()
+                        .doubleClickEvent((component, player, entity, x, y, stack, index) -> transferToMachine(player, entity))
                         .filter((stack, index) -> isIngredient(stack)))
 
                 .add(registry.iconButton(2, 3.5, 1, 1).icon(GRAY_ARROW_DOWN).hover(WHITE_ARROW_DOWN)
@@ -319,6 +320,7 @@ public class AutoConstructorTile extends GenericTileEntity implements DefaultSid
                 .add(registry.slots(1.5, 4.5, 6, 2)
                         .name("slots")
                         .withAmount()
+                        .doubleClickEvent((component, player, entity, x, y, stack, index) -> transferToPlayer(player, entity))
                         .filter((stack, index) -> isIngredientSlot(index))
                         .itemHandler(getItemHandler()))
 

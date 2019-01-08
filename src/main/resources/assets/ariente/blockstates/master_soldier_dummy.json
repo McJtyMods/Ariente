@@ -1,10 +1,9 @@
 {
   "forge_marker": 1,
   "defaults": {
-    "model": "ariente:frontblock",
+    "model": "cube_all",
     "textures": {
-      "front": "ariente:blocks/dummy/master_soldier_dummy",
-      "side": "ariente:blocks/dummy/dummy"
+      "all": "ariente:blocks/dummy/master_soldier_dummy"
     }
   },
   "variants": {

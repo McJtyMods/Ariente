@@ -149,6 +149,7 @@ public class BlueprintStorageTile extends GenericTileEntity implements DefaultSi
                 .add(registry.icon(0, 2, 1, 1).icon(WHITE_PLAYER))
                 .add(registry.playerSlots(1.5, 1.5, 6, 2)
                         .name("playerslots")
+                        .doubleClickEvent((component, player, entity, x, y, stack, index) -> transferToMachine(player, entity))
                         .filter((stack, index) -> stack.getItem() instanceof BlueprintItem))
 
                 .add(registry.iconButton(2, 3.5, 1, 1).icon(GRAY_ARROW_DOWN).hover(WHITE_ARROW_DOWN)
@@ -159,11 +160,12 @@ public class BlueprintStorageTile extends GenericTileEntity implements DefaultSi
                 .add(registry.stackIcon(0, 4.5, 1, 1).itemStack(new ItemStack(ModBlocks.constructorBlock)))
                 .add(registry.slots(1.5, 4.5, 6, 1)
                         .name("slots")
+                        .doubleClickEvent((component, player, entity, x, y, stack, index) -> transferToPlayer(player, entity))
                         .itemHandler(getItemHandler()))
                 ;
     }
 
-    private IItemHandler getItemHandler() {
+    public IItemHandler getItemHandler() {
         return getCapability(CapabilityItemHandler.ITEM_HANDLER_CAPABILITY, null);
     }
 

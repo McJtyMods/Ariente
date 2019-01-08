@@ -2,11 +2,11 @@
   "parent": "block/cube",
   "textures": {
     "particle": "#front",
-    "down": "#side",
-    "up": "#side",
+    "down": "ariente:blocks/base/machinebottom",
+    "up": "ariente:blocks/base/machinetop",
     "north": "#front",
-    "east": "#side",
-    "south": "#side",
-    "west": "#side"
+    "east": "ariente:blocks/base/machineside",
+    "south": "ariente:blocks/base/machineside",
+    "west": "ariente:blocks/base/machineside"
   }
 }
