@@ -15,15 +15,15 @@ public class FluxLevitatorGui {
         IGuiComponentRegistry registry = Ariente.guiHandler.getComponentRegistry();
         return registry.panel(0, 0, 8, 8)
 
-                .add(registry.iconButton(2, 2, 1, 1).icon(GRAY_DOUBLE_ARROW_LEFT).hover(WHITE_DOUBLE_ARROW_LEFT)
+                .add(registry.iconButton(2, 2, 1, 1).icon(registry.image(GRAY_DOUBLE_ARROW_LEFT)).hover(registry.image(WHITE_DOUBLE_ARROW_LEFT))
                         .hitEvent((component, p, holo, x, y) -> changeSpeed(holo, -10)))
-                .add(registry.iconButton(3, 2, 1, 1).icon(GRAY_ARROW_LEFT).hover(WHITE_ARROW_LEFT)
+                .add(registry.iconButton(3, 2, 1, 1).icon(registry.image(GRAY_ARROW_LEFT)).hover(registry.image(WHITE_ARROW_LEFT))
                         .hitEvent((component, p, holo, x, y) -> changeSpeed(holo, -5)))
-                .add(registry.iconButton(4, 2, 1, 1).icon(FADED_RED_BALL).hover(RED_BALL)
+                .add(registry.iconButton(4, 2, 1, 1).icon(registry.image(FADED_RED_BALL)).hover(registry.image(RED_BALL))
                         .hitEvent((component, p, holo, x, y) -> changeSpeed(holo, 0)))
-                .add(registry.iconButton(5, 2, 1, 1).icon(GRAY_ARROW_RIGHT).hover(WHITE_ARROW_RIGHT)
+                .add(registry.iconButton(5, 2, 1, 1).icon(registry.image(GRAY_ARROW_RIGHT)).hover(registry.image(WHITE_ARROW_RIGHT))
                         .hitEvent((component, p, holo, x, y) -> changeSpeed(holo, 5)))
-                .add(registry.iconButton(6, 2, 1, 1).icon(GRAY_DOUBLE_ARROW_RIGHT).hover(WHITE_DOUBLE_ARROW_RIGHT)
+                .add(registry.iconButton(6, 2, 1, 1).icon(registry.image(GRAY_DOUBLE_ARROW_RIGHT)).hover(registry.image(WHITE_DOUBLE_ARROW_RIGHT))
                         .hitEvent((component, p, holo, x, y) -> changeSpeed(holo, 10)))
 
                 .add(registry.text(1, 4, 4, 1).text("Speed:").color(0xffffff))

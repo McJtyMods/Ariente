@@ -281,16 +281,16 @@ public class PosiriteGeneratorTile extends GenericTileEntity implements ITickabl
                 .add(registry.text(0, 0, 8, 1).text("Posirite").color(0xaaccff))
                 .add(registry.stackIcon(0, 3, 1, 1).itemStack(new ItemStack(ModItems.posiriteDust)))
 
-                .add(registry.icon(1, 3, 1, 1).icon(WHITE_PLAYER))
+                .add(registry.icon(1, 3, 1, 1).icon(registry.image(WHITE_PLAYER)))
                 .add(registry.number(2, 3, 1, 1).color(0xffffff).getter((p,h) -> HoloGuiTools.countItem(p, ModItems.posiriteDust)))
 
-                .add(registry.iconButton(2, 4, 1, 1).icon(GRAY_DOUBLE_ARROW_LEFT).hover(WHITE_DOUBLE_ARROW_LEFT)
+                .add(registry.iconButton(2, 4, 1, 1).icon(registry.image(GRAY_DOUBLE_ARROW_LEFT)).hover(registry.image(WHITE_DOUBLE_ARROW_LEFT))
                         .hitEvent((component, player, e, x, y) -> toPlayer(player, 64)))
-                .add(registry.iconButton(3, 4, 1, 1).icon(GRAY_ARROW_LEFT).hover(WHITE_ARROW_LEFT)
+                .add(registry.iconButton(3, 4, 1, 1).icon(registry.image(GRAY_ARROW_LEFT)).hover(registry.image(WHITE_ARROW_LEFT))
                         .hitEvent((component, player, e, x, y) -> toPlayer(player, 1)))
-                .add(registry.iconButton(5, 4, 1, 1).icon(GRAY_ARROW_RIGHT).hover(WHITE_ARROW_RIGHT)
+                .add(registry.iconButton(5, 4, 1, 1).icon(registry.image(GRAY_ARROW_RIGHT)).hover(registry.image(WHITE_ARROW_RIGHT))
                         .hitEvent((component, player, e, x, y) -> toMachine(player, 1)))
-                .add(registry.iconButton(6, 4, 1, 1).icon(GRAY_DOUBLE_ARROW_RIGHT).hover(WHITE_DOUBLE_ARROW_RIGHT)
+                .add(registry.iconButton(6, 4, 1, 1).icon(registry.image(GRAY_DOUBLE_ARROW_RIGHT)).hover(registry.image(WHITE_DOUBLE_ARROW_RIGHT))
                         .hitEvent((component, player, e, x, y) -> toMachine(player, 64)))
 
                 .add(registry.stackIcon(5, 3, 1, 1).itemStack(new ItemStack(ModBlocks.posiriteGeneratorBlock)))

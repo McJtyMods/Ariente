@@ -15,6 +15,7 @@ import mcjty.hologui.api.components.ISlots;
 import mcjty.lib.tileentity.GenericTileEntity;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.item.ItemStack;
+import net.minecraft.util.ResourceLocation;
 import net.minecraft.world.World;
 import net.minecraftforge.items.IItemHandler;
 import net.minecraftforge.items.ItemHandlerHelper;
@@ -27,6 +28,8 @@ import static mcjty.hologui.api.Icons.WHITE_PLAYER;
 public class ConstructorTile extends GenericTileEntity implements IGuiTile, ICityEquipment {
 
     private BlueprintItemHandler blueprintItemHandler = null;
+
+    public static final ResourceLocation CROSS = new ResourceLocation("hologui", "textures/gui/cross.png");
 
     @Override
     protected boolean needsRedstoneMode() {
@@ -136,7 +139,7 @@ public class ConstructorTile extends GenericTileEntity implements IGuiTile, ICit
 
                 .add(registry.text(0, 0, 8, 1).text("Ingredients").color(0xaaccff))
 
-                .add(registry.icon(0, 1.7, 1, 1).icon(WHITE_PLAYER))
+                .add(registry.icon(0, 1.7, 1, 1).icon(registry.image(WHITE_PLAYER)))
                 .add(registry.playerSlots(1.5, 1.2, 6, 3)
                         .name("playerslots")
                         .withAmount()
@@ -149,6 +152,7 @@ public class ConstructorTile extends GenericTileEntity implements IGuiTile, ICit
                         .name("outputslots")
                         .doubleClickEvent((component, player, entity, x, y, stack, index) -> attemptCraft(player, stack))
                         .filter((stack, index) -> isOutputSlot(index))
+//                        .overlay()
                         .itemHandler(getItemHandler()))
                 ;
     }

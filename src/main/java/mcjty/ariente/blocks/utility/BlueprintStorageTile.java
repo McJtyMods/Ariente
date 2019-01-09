@@ -146,15 +146,15 @@ public class BlueprintStorageTile extends GenericTileEntity implements DefaultSi
         return registry.panel(0, 0, 8, 8)
                 .add(registry.text(0, 0, 8, 1).text("Blueprints").color(0xaaccff))
 
-                .add(registry.icon(0, 2, 1, 1).icon(WHITE_PLAYER))
+                .add(registry.icon(0, 2, 1, 1).icon(registry.image(WHITE_PLAYER)))
                 .add(registry.playerSlots(1.5, 1.5, 6, 2)
                         .name("playerslots")
                         .doubleClickEvent((component, player, entity, x, y, stack, index) -> transferToMachine(player, entity))
                         .filter((stack, index) -> stack.getItem() instanceof BlueprintItem))
 
-                .add(registry.iconButton(2, 3.5, 1, 1).icon(GRAY_ARROW_DOWN).hover(WHITE_ARROW_DOWN)
+                .add(registry.iconButton(2, 3.5, 1, 1).icon(registry.image(GRAY_ARROW_DOWN)).hover(registry.image(WHITE_ARROW_DOWN))
                         .hitEvent((component, player, entity, x, y) -> transferToMachine(player, entity)))
-                .add(registry.iconButton(3, 3.5, 1, 1).icon(GRAY_ARROW_UP).hover(WHITE_ARROW_UP)
+                .add(registry.iconButton(3, 3.5, 1, 1).icon(registry.image(GRAY_ARROW_UP)).hover(registry.image(WHITE_ARROW_UP))
                         .hitEvent((component, player, entity, x, y) -> transferToPlayer(player, entity)))
 
                 .add(registry.stackIcon(0, 4.5, 1, 1).itemStack(new ItemStack(ModBlocks.constructorBlock)))
