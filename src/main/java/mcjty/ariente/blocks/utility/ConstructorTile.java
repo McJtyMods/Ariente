@@ -1,15 +1,13 @@
 package mcjty.ariente.blocks.utility;
 
+import mcjty.ariente.Ariente;
 import mcjty.ariente.ai.CityAI;
 import mcjty.ariente.blocks.ModBlocks;
 import mcjty.ariente.cities.ICityEquipment;
 import mcjty.ariente.items.BlueprintItem;
 import mcjty.ariente.recipes.ConstructorRecipe;
 import mcjty.ariente.recipes.RecipeRegistry;
-import mcjty.hologui.api.IGuiComponent;
-import mcjty.hologui.api.IGuiComponentRegistry;
-import mcjty.hologui.api.IGuiTile;
-import mcjty.hologui.api.IHoloGuiEntity;
+import mcjty.hologui.api.*;
 import mcjty.hologui.api.components.IPlayerSlots;
 import mcjty.hologui.api.components.ISlots;
 import mcjty.lib.tileentity.GenericTileEntity;
@@ -102,31 +100,45 @@ public class ConstructorTile extends GenericTileEntity implements IGuiTile, ICit
         }
     }
 
-    private void attemptCraft(EntityPlayer player, ItemStack blueprintStack) {
+    private boolean canCraft(EntityPlayer player, ItemStack blueprintStack) {
         if (!blueprintStack.isEmpty()) {
-            ItemStack destination = BlueprintItem.getDestination(blueprintStack);
-            ConstructorRecipe recipe = RecipeRegistry.findRecipe(destination);
-            if (recipe != null) {
-                // Check if we have enough
-                for (ItemStack ingredient : recipe.getIngredients()) {
-                    if (!hasIngredient(player, ingredient)) {
-                        return; // Can't craft
+            if (!blueprintStack.isEmpty()) {
+                ItemStack destination = BlueprintItem.getDestination(blueprintStack);
+                ConstructorRecipe recipe = RecipeRegistry.findRecipe(destination);
+                if (recipe != null) {
+                    // Check if we have enough
+                    for (ItemStack ingredient : recipe.getIngredients()) {
+                        if (!hasIngredient(player, ingredient)) {
+                            return false; // Can't craft
+                        }
                     }
                 }
+            }
+            return true;
+        }
+        return false;
+    }
 
-                // We have enough. Consume and craft
-                for (ItemStack ingredient : recipe.getIngredients()) {
-                    consumeIngredient(player, ingredient);
-                }
+    private void attemptCraft(EntityPlayer player, ItemStack blueprintStack) {
+        if (!blueprintStack.isEmpty()) {
+            if (canCraft(player, blueprintStack)) {
+                ItemStack destination = BlueprintItem.getDestination(blueprintStack);
+                ConstructorRecipe recipe = RecipeRegistry.findRecipe(destination);
+                if (recipe != null) {
+                    // We have enough. Consume and craft
+                    for (ItemStack ingredient : recipe.getIngredients()) {
+                        consumeIngredient(player, ingredient);
+                    }
 
-                if (!player.inventory.addItemStackToInventory(destination)) {
-                    player.entityDropItem(destination, 1.05f);
-                }
+                    if (!player.inventory.addItemStackToInventory(destination)) {
+                        player.entityDropItem(destination, 1.05f);
+                    }
 
-                markDirtyClient();
+                    markDirtyClient();
 
-                if (player.openContainer != null) {
-                    player.openContainer.detectAndSendChanges();
+                    if (player.openContainer != null) {
+                        player.openContainer.detectAndSendChanges();
+                    }
                 }
             }
         }
@@ -152,9 +164,17 @@ public class ConstructorTile extends GenericTileEntity implements IGuiTile, ICit
                         .name("outputslots")
                         .doubleClickEvent((component, player, entity, x, y, stack, index) -> attemptCraft(player, stack))
                         .filter((stack, index) -> isOutputSlot(index))
-//                        .overlay()
+                        .overlay((stack, integer) -> getCraftableOverlay(registry, stack))
                         .itemHandler(getItemHandler()))
                 ;
+    }
+
+    private IImage getCraftableOverlay(IGuiComponentRegistry registry, ItemStack stack) {
+        if (canCraft(Ariente.proxy.getClientPlayer(), stack)) {
+            return null;
+        } else {
+            return registry.image(Icons.RED_CROSS);
+        }
     }
 
     private boolean isOutputSlot(int index) {
