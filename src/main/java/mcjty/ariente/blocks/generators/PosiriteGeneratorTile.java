@@ -298,9 +298,9 @@ public class PosiriteGeneratorTile extends GenericTileEntity implements ITickabl
 
                 .add(registry.iconChoice(7, 6, 1, 1)
                         .getter((player) -> getRSModeInt())
-                        .icon(REDSTONE_DUST)
-                        .icon(REDSTONE_OFF)
-                        .icon(REDSTONE_ON)
+                        .addImage(registry.image(REDSTONE_DUST))
+                        .addImage(registry.image(REDSTONE_OFF))
+                        .addImage(registry.image(REDSTONE_ON))
                         .hitEvent((component, player, entity1, x, y) -> changeMode()))
                 ;
     }

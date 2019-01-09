@@ -1,16 +1,15 @@
 package mcjty.ariente.items.armor;
 
 import mcjty.ariente.Ariente;
-import mcjty.hologui.api.IGuiComponent;
-import mcjty.hologui.api.IGuiComponentRegistry;
-import mcjty.hologui.api.IHoloGuiEntity;
-import mcjty.hologui.api.Icons;
-import mcjty.hologui.api.components.IPanel;
 import mcjty.ariente.gui.HoloGuiTools;
 import mcjty.ariente.gui.ModGuis;
 import mcjty.ariente.items.ModItems;
 import mcjty.ariente.items.modules.ArmorModuleItem;
 import mcjty.ariente.items.modules.ModuleSupport;
+import mcjty.hologui.api.IGuiComponent;
+import mcjty.hologui.api.IGuiComponentRegistry;
+import mcjty.hologui.api.IHoloGuiEntity;
+import mcjty.hologui.api.components.IPanel;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.inventory.EntityEquipmentSlot;
 import net.minecraft.item.Item;
@@ -239,15 +238,15 @@ public class ArmorGui {
                 .hitEvent((component, player, entity, x, y) -> toggleModuleInstall(player, slot, module)));
         panel.add(registry.iconToggle(xx + 1, yy, 1, 1)
                 .getter(player -> isModuleActivated(player, slot, module))
-                .icon(128 + 64 + 16, 128 + 16).selected(128 + 64, 128 + 16)
+                .icon(registry.image(128 + 64 + 16, 128 + 16)).selected(registry.image(128 + 64, 128 + 16))
                 .hitEvent((component, player, entity, x, y) -> toggleActivation(player, slot, module)));
         panel.add(registry.iconChoice(xx + 2, yy, 1, 1)
                 .getter(player -> getHotkey(player, slot, module))
-                .icon(BLUE_EMPTY_BUTTON)
-                .icon(BLUE_1_BUTTON)
-                .icon(BLUE_2_BUTTON)
-                .icon(BLUE_3_BUTTON)
-                .icon(BLUE_4_BUTTON)
+                .addImage(registry.image(BLUE_EMPTY_BUTTON))
+                .addImage(registry.image(BLUE_1_BUTTON))
+                .addImage(registry.image(BLUE_2_BUTTON))
+                .addImage(registry.image(BLUE_3_BUTTON))
+                .addImage(registry.image(BLUE_4_BUTTON))
                 .hitEvent((component, player, entity, x, y) -> switchHotkey(player, slot, module))
         );
     }
