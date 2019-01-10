@@ -149,12 +149,37 @@ public class ConstructorTile extends GenericTileEntity implements IGuiTile, ICit
 
     @Override
     public IGuiComponent<?> createGui(String tag, IGuiComponentRegistry registry) {
+        if (TAG_HELP.equals(tag)) {
+            return createHelpGui(registry);
+        } else {
+            return createMainGui(registry);
+        }
+    }
+
+    private IGuiComponent<?> createHelpGui(IGuiComponentRegistry registry) {
         return registry.panel(0, 0, 8, 8)
+                .add(registry.text(0, -.2, 8, 1).text("Help").color(0xaaccff))
+                .add(registry.text(0, 1, 8, 1).text("With this block you").scale(.5f))
+                .add(registry.text(0, 2, 8, 1).text("can craft items from").scale(.5f))
+                .add(registry.text(0, 3, 8, 1).text("blueprints that are in").scale(.5f))
+                .add(registry.text(0, 4, 8, 1).text("adjacent blueprint").scale(.5f))
+                .add(registry.text(0, 5, 8, 1).text("storages.").scale(.5f))
+                .add(registry.text(0, 6, 8, 1).text("Top grid: ingredients").scale(.5f))
+                .add(registry.text(0, 7, 8, 1).text("Bottom grid: available blueprints").scale(.5f))
 
-                .add(registry.text(0, 0, 8, 1).text("Ingredients").color(0xaaccff))
+                .add(registry.iconButton(8.1, 7.8, 1, 1)
+                        .icon(registry.image(Icons.FADED_NAVIGATE_BACK))
+                        .hover(registry.image(Icons.NAVIGATE_BACK))
+                        .hitEvent((component, p, entity, x1, y1) -> entity.switchTag(TAG_MAIN)))
+                ;
+    }
 
-                .add(registry.icon(0, 1.7, 1, 1).icon(registry.image(WHITE_PLAYER)))
-                .add(registry.playerSlots(1.5, 1.2, 6, 3)
+    private IGuiComponent<?> createMainGui(IGuiComponentRegistry registry) {
+        return registry.panel(0, 0, 8, 8)
+                .add(registry.text(0, -.2, 8, 1).text("Ingredients").color(0xaaccff))
+
+                .add(registry.icon(0, 1.5, 1, 1).icon(registry.image(WHITE_PLAYER)))
+                .add(registry.playerSlots(1.5, 1.0, 6, 3)
                         .name("playerslots")
                         .withAmount()
                         .fullBright()
@@ -170,6 +195,11 @@ public class ConstructorTile extends GenericTileEntity implements IGuiTile, ICit
                         .overlay((stack, integer) -> getCraftableOverlay(registry, stack))
                         .tooltipHandler(this::tooltipHandler)
                         .itemHandler(getItemHandler()))
+
+                .add(registry.iconButton(8.1, 7.8, 1, 1)
+                        .icon(registry.image(Icons.FADED_QUESTION_MARK))
+                        .hover(registry.image(Icons.QUESTION_MARK))
+                        .hitEvent((component, p, entity, x1, y1) -> entity.switchTag(TAG_HELP)))
                 ;
     }
 
