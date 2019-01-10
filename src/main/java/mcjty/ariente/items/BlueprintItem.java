@@ -50,15 +50,6 @@ public class BlueprintItem extends GenericItem implements ITooltipExtras {
         super.addInformation(stack, worldIn, tooltip, flagIn);
         ItemStack destination = getDestination(stack);
         tooltip.add(TextFormatting.GRAY + "Result: " + TextFormatting.GREEN + destination.getDisplayName());
-//        Set<String> tags = getSecurityTags(stack);
-//        if (tags.isEmpty()) {
-//            tooltip.add(TextFormatting.YELLOW + "Security card is empty!");
-//        } else {
-//            tooltip.add(TextFormatting.YELLOW + "Tags:");
-//            for (String tag : tags) {
-//                tooltip.add("   " + TextFormatting.GREEN + tag);
-//            }
-//        }
     }
 
     public static ModelResourceLocation EMPTY_BLUEPRINT_MODEL = new ModelResourceLocation(new ResourceLocation(Ariente.MODID, "empty_blueprint"), "inventory");

@@ -14,11 +14,13 @@ import mcjty.lib.tileentity.GenericTileEntity;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.item.ItemStack;
 import net.minecraft.util.ResourceLocation;
+import net.minecraft.util.text.TextFormatting;
 import net.minecraft.world.World;
 import net.minecraftforge.items.IItemHandler;
 import net.minecraftforge.items.ItemHandlerHelper;
 
 import javax.annotation.Nullable;
+import java.util.List;
 import java.util.Map;
 
 import static mcjty.hologui.api.Icons.WHITE_PLAYER;
@@ -155,6 +157,7 @@ public class ConstructorTile extends GenericTileEntity implements IGuiTile, ICit
                 .add(registry.playerSlots(1.5, 1.2, 6, 3)
                         .name("playerslots")
                         .withAmount()
+                        .fullBright()
                         .filter((stack, index) -> isIngredient(stack)))
 
                 .add(registry.text(0, 4.5, 8, 1).text("Craft").color(0xaaccff))
@@ -165,8 +168,31 @@ public class ConstructorTile extends GenericTileEntity implements IGuiTile, ICit
                         .doubleClickEvent((component, player, entity, x, y, stack, index) -> attemptCraft(player, stack))
                         .filter((stack, index) -> isOutputSlot(index))
                         .overlay((stack, integer) -> getCraftableOverlay(registry, stack))
+                        .tooltipHandler(this::tooltipHandler)
                         .itemHandler(getItemHandler()))
                 ;
+    }
+
+    private void tooltipHandler(ItemStack blueprintStack, List<String> tooltip) {
+        if (!blueprintStack.isEmpty()) {
+            if (!blueprintStack.isEmpty()) {
+                ItemStack destination = BlueprintItem.getDestination(blueprintStack);
+                ConstructorRecipe recipe = RecipeRegistry.findRecipe(destination);
+                if (recipe != null) {
+                    boolean ok = true;
+                    // Check if we have enough
+                    for (ItemStack ingredient : recipe.getIngredients()) {
+                        if (!hasIngredient(Ariente.proxy.getClientPlayer(), ingredient)) {
+                            tooltip.add(TextFormatting.RED + "Missing: " + TextFormatting.WHITE + ingredient.getDisplayName());
+                            ok = false;
+                        }
+                    }
+                    if (ok) {
+                        tooltip.add(0, TextFormatting.GOLD + "Doubleclick to craft!");
+                    }
+                }
+            }
+        }
     }
 
     private IImage getCraftableOverlay(IGuiComponentRegistry registry, ItemStack stack) {
