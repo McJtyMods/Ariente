@@ -4,6 +4,8 @@ import mcjty.ariente.Ariente;
 import mcjty.ariente.ai.CityAI;
 import mcjty.ariente.blocks.ModBlocks;
 import mcjty.ariente.cities.ICityEquipment;
+import mcjty.ariente.gui.HelpBuilder;
+import mcjty.ariente.gui.HoloGuiTools;
 import mcjty.ariente.items.BlueprintItem;
 import mcjty.ariente.recipes.ConstructorRecipe;
 import mcjty.ariente.recipes.RecipeRegistry;
@@ -68,7 +70,7 @@ public class ConstructorTile extends GenericTileEntity implements IGuiTile, ICit
             return true;
         }
         int needed = ingredient.getCount();
-        for (int i = 0 ; i < player.inventory.getSizeInventory() ; i++) {
+        for (int i = 0; i < player.inventory.getSizeInventory(); i++) {
             ItemStack stack = player.inventory.getStackInSlot(i);
             if (ItemStack.areItemsEqual(ingredient, stack)) {
                 needed -= stack.getCount();
@@ -86,7 +88,7 @@ public class ConstructorTile extends GenericTileEntity implements IGuiTile, ICit
         }
 
         int needed = ingredient.getCount();
-        for (int i = 0 ; i < player.inventory.getSizeInventory() ; i++) {
+        for (int i = 0; i < player.inventory.getSizeInventory(); i++) {
             ItemStack stack = player.inventory.getStackInSlot(i);
             if (ItemStack.areItemsEqual(ingredient, stack)) {
                 if (needed <= stack.getCount()) {
@@ -150,32 +152,23 @@ public class ConstructorTile extends GenericTileEntity implements IGuiTile, ICit
     @Override
     public IGuiComponent<?> createGui(String tag, IGuiComponentRegistry registry) {
         if (TAG_HELP.equals(tag)) {
-            return createHelpGui(registry);
+            return HoloGuiTools.createHelpGui(registry,
+                    HelpBuilder.create()
+                            .line("With this block you can craft")
+                            .line("items from blueprints that are in")
+                            .line("adjacent blueprint storages")
+                            .nl()
+                            .line("Top grid: player inventory")
+                            .line("Bottom grid: available blueprints")
+                            .line("Double click on blueprint to craft)", 0xffffff00)
+            );
         } else {
             return createMainGui(registry);
         }
     }
 
-    private IGuiComponent<?> createHelpGui(IGuiComponentRegistry registry) {
-        return registry.panel(0, 0, 8, 8)
-                .add(registry.text(0, -.2, 8, 1).text("Help").color(0xaaccff))
-                .add(registry.text(0, 1, 8, 1).text("With this block you can craft").scale(.5f))
-                .add(registry.text(0, 1.5, 8, 1).text("items from blueprints that are in").scale(.5f))
-                .add(registry.text(0, 2, 8, 1).text("adjacent blueprint storages").scale(.5f))
-
-                .add(registry.text(0, 3, 8, 1).text("Top grid: player inventory").scale(.5f))
-                .add(registry.text(0, 3.5, 8, 1).text("Bottom grid: available blueprints").scale(.5f))
-                .add(registry.text(0, 4.5, 8, 1).text("Double click on blueprint to craft").scale(.5f).color(0xffffff00))
-
-                .add(registry.iconButton(8.1, 7.8, 1, 1)
-                        .icon(registry.image(Icons.FADED_NAVIGATE_BACK))
-                        .hover(registry.image(Icons.NAVIGATE_BACK))
-                        .hitEvent((component, p, entity, x1, y1) -> entity.switchTag(TAG_MAIN)))
-                ;
-    }
-
     private IGuiComponent<?> createMainGui(IGuiComponentRegistry registry) {
-        return registry.panel(0, 0, 8, 8)
+        return HoloGuiTools.createPanelWithHelp(registry)
                 .add(registry.text(0, -.2, 8, 1).text("Ingredients").color(0xaaccff))
 
                 .add(registry.icon(0, 1.5, 1, 1).icon(registry.image(WHITE_PLAYER)))
@@ -195,11 +188,6 @@ public class ConstructorTile extends GenericTileEntity implements IGuiTile, ICit
                         .overlay((stack, integer) -> getCraftableOverlay(registry, stack))
                         .tooltipHandler(this::tooltipHandler)
                         .itemHandler(getItemHandler()))
-
-                .add(registry.iconButton(8.1, 7.8, 1, 1)
-                        .icon(registry.image(Icons.FADED_QUESTION_MARK))
-                        .hover(registry.image(Icons.QUESTION_MARK))
-                        .hitEvent((component, p, entity, x1, y1) -> entity.switchTag(TAG_HELP)))
                 ;
     }
 
@@ -240,7 +228,7 @@ public class ConstructorTile extends GenericTileEntity implements IGuiTile, ICit
     private boolean isIngredient(ItemStack stack) {
         // @todo optimize!
         IItemHandler handler = getItemHandler();
-        for (int i = 0 ; i < handler.getSlots() ; i++) {
+        for (int i = 0; i < handler.getSlots(); i++) {
             ItemStack blueprintStack = handler.getStackInSlot(i);
             if (!blueprintStack.isEmpty()) {
                 ItemStack destination = BlueprintItem.getDestination(blueprintStack);
