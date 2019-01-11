@@ -159,13 +159,13 @@ public class ConstructorTile extends GenericTileEntity implements IGuiTile, ICit
     private IGuiComponent<?> createHelpGui(IGuiComponentRegistry registry) {
         return registry.panel(0, 0, 8, 8)
                 .add(registry.text(0, -.2, 8, 1).text("Help").color(0xaaccff))
-                .add(registry.text(0, 1, 8, 1).text("With this block you").scale(.5f))
-                .add(registry.text(0, 2, 8, 1).text("can craft items from").scale(.5f))
-                .add(registry.text(0, 3, 8, 1).text("blueprints that are in").scale(.5f))
-                .add(registry.text(0, 4, 8, 1).text("adjacent blueprint").scale(.5f))
-                .add(registry.text(0, 5, 8, 1).text("storages.").scale(.5f))
-                .add(registry.text(0, 6, 8, 1).text("Top grid: ingredients").scale(.5f))
-                .add(registry.text(0, 7, 8, 1).text("Bottom grid: available blueprints").scale(.5f))
+                .add(registry.text(0, 1, 8, 1).text("With this block you can craft").scale(.5f))
+                .add(registry.text(0, 1.5, 8, 1).text("items from blueprints that are in").scale(.5f))
+                .add(registry.text(0, 2, 8, 1).text("adjacent blueprint storages").scale(.5f))
+
+                .add(registry.text(0, 3, 8, 1).text("Top grid: player inventory").scale(.5f))
+                .add(registry.text(0, 3.5, 8, 1).text("Bottom grid: available blueprints").scale(.5f))
+                .add(registry.text(0, 4.5, 8, 1).text("Double click on blueprint to craft").scale(.5f).color(0xffffff00))
 
                 .add(registry.iconButton(8.1, 7.8, 1, 1)
                         .icon(registry.image(Icons.FADED_NAVIGATE_BACK))
