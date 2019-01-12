@@ -10,8 +10,6 @@ import mcjty.ariente.items.BlueprintItem;
 import mcjty.ariente.recipes.ConstructorRecipe;
 import mcjty.ariente.recipes.RecipeRegistry;
 import mcjty.hologui.api.*;
-import mcjty.hologui.api.components.IPlayerSlots;
-import mcjty.hologui.api.components.ISlots;
 import mcjty.lib.tileentity.GenericTileEntity;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.item.ItemStack;
@@ -19,7 +17,6 @@ import net.minecraft.util.ResourceLocation;
 import net.minecraft.util.text.TextFormatting;
 import net.minecraft.world.World;
 import net.minecraftforge.items.IItemHandler;
-import net.minecraftforge.items.ItemHandlerHelper;
 
 import javax.annotation.Nullable;
 import java.util.List;
@@ -106,15 +103,13 @@ public class ConstructorTile extends GenericTileEntity implements IGuiTile, ICit
 
     private boolean canCraft(EntityPlayer player, ItemStack blueprintStack) {
         if (!blueprintStack.isEmpty()) {
-            if (!blueprintStack.isEmpty()) {
-                ItemStack destination = BlueprintItem.getDestination(blueprintStack);
-                ConstructorRecipe recipe = RecipeRegistry.findRecipe(destination);
-                if (recipe != null) {
-                    // Check if we have enough
-                    for (ItemStack ingredient : recipe.getIngredients()) {
-                        if (!hasIngredient(player, ingredient)) {
-                            return false; // Can't craft
-                        }
+            ItemStack destination = BlueprintItem.getDestination(blueprintStack);
+            ConstructorRecipe recipe = RecipeRegistry.findRecipe(destination);
+            if (recipe != null) {
+                // Check if we have enough
+                for (ItemStack ingredient : recipe.getIngredients()) {
+                    if (!hasIngredient(player, ingredient)) {
+                        return false; // Can't craft
                     }
                 }
             }
@@ -134,11 +129,11 @@ public class ConstructorTile extends GenericTileEntity implements IGuiTile, ICit
                         consumeIngredient(player, ingredient);
                     }
 
+                    markDirtyClient();
+
                     if (!player.inventory.addItemStackToInventory(destination)) {
                         player.entityDropItem(destination, 1.05f);
                     }
-
-                    markDirtyClient();
 
                     if (player.openContainer != null) {
                         player.openContainer.detectAndSendChanges();
@@ -160,6 +155,7 @@ public class ConstructorTile extends GenericTileEntity implements IGuiTile, ICit
                             .nl()
                             .line("Top grid: player inventory")
                             .line("Bottom grid: available blueprints")
+                            .nl()
                             .line("Double click on blueprint to craft)", 0xffffff00)
             );
         } else {
@@ -184,7 +180,6 @@ public class ConstructorTile extends GenericTileEntity implements IGuiTile, ICit
                 .add(registry.slots(1.5, 5.5, 6, 3)
                         .name("outputslots")
                         .doubleClickEvent((component, player, entity, x, y, stack, index) -> attemptCraft(player, stack))
-                        .filter((stack, index) -> isOutputSlot(index))
                         .overlay((stack, integer) -> getCraftableOverlay(registry, stack))
                         .tooltipHandler(this::tooltipHandler)
                         .itemHandler(getItemHandler()))
@@ -221,10 +216,6 @@ public class ConstructorTile extends GenericTileEntity implements IGuiTile, ICit
         }
     }
 
-    private boolean isOutputSlot(int index) {
-        return true;
-    }
-
     private boolean isIngredient(ItemStack stack) {
         // @todo optimize!
         IItemHandler handler = getItemHandler();
@@ -253,44 +244,6 @@ public class ConstructorTile extends GenericTileEntity implements IGuiTile, ICit
         return blueprintItemHandler;
     }
 
-
-    private void transferToPlayer(EntityPlayer player, IHoloGuiEntity entity) {
-        entity.findComponent("slots").ifPresent(component -> {
-            if (component instanceof ISlots) {
-                int selected = ((ISlots) component).getSelected();
-                if (selected != -1) {
-                    ItemStack extracted = getItemHandler().extractItem(selected, 64, false);
-                    if (!extracted.isEmpty()) {
-                        if (!player.inventory.addItemStackToInventory(extracted)) {
-                            getItemHandler().insertItem(selected, extracted, false);
-                        } else {
-                            ((ISlots) component).setSelection(-1);
-                        }
-                        markDirtyClient();
-                    }
-                }
-            }
-        });
-    }
-
-    private void transferToMachine(EntityPlayer player, IHoloGuiEntity entity) {
-        entity.findComponent("playerslots").ifPresent(component -> {
-            if (component instanceof IPlayerSlots) {
-                int selected = ((IPlayerSlots) component).getSelected();
-                if (selected != -1) {
-                    ItemStack extracted = player.inventory.getStackInSlot(selected);
-                    if (!extracted.isEmpty()) {
-                        ItemStack notInserted = ItemHandlerHelper.insertItem(getItemHandler(), extracted, false);
-                        player.inventory.setInventorySlotContents(selected, notInserted);
-                        if (notInserted.isEmpty()) {
-                            ((IPlayerSlots) component).setSelection(-1);
-                        }
-                        markDirtyClient();
-                    }
-                }
-            }
-        });
-    }
 
     @Override
     public void syncToClient() {

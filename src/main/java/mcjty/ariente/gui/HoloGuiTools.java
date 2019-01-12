@@ -9,8 +9,6 @@ import net.minecraft.entity.player.InventoryPlayer;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
 
-import java.util.List;
-
 import static mcjty.hologui.api.IGuiTile.TAG_HELP;
 import static mcjty.hologui.api.IGuiTile.TAG_MAIN;
 
@@ -47,15 +45,6 @@ public class HoloGuiTools {
             help.add(registry.text(0, y, 8, 1).text(line.getText()).color(line.getColor()).scale(.5f));
             y += .5;
         }
-
-        help
-                .add(registry.text(0, 1, 8, 1).text("With this block you can craft").scale(.5f))
-                .add(registry.text(0, 1.5, 8, 1).text("items from blueprints that are in").scale(.5f))
-                .add(registry.text(0, 2, 8, 1).text("adjacent blueprint storages").scale(.5f))
-
-                .add(registry.text(0, 3, 8, 1).text("Top grid: player inventory").scale(.5f))
-                .add(registry.text(0, 3.5, 8, 1).text("Bottom grid: available blueprints").scale(.5f))
-                .add(registry.text(0, 4.5, 8, 1).text("Double click on blueprint to craft").scale(.5f).color(0xffffff00));
 
         return help
                 .add(registry.iconButton(8.1, 7.8, 1, 1)

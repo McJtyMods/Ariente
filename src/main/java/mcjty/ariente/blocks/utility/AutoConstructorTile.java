@@ -49,6 +49,7 @@ import net.minecraftforge.items.IItemHandler;
 import net.minecraftforge.items.ItemHandlerHelper;
 
 import javax.annotation.Nullable;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 
@@ -60,7 +61,7 @@ public class AutoConstructorTile extends GenericTileEntity implements DefaultSid
 
     public static final PropertyBool WORKING = PropertyBool.create("working");
     public static final ContainerFactory CONTAINER_FACTORY = new ContainerFactory(new ResourceLocation(Ariente.MODID, "gui/constructor.gui"));
-    public static final int INGREDIENTS = 6*2;
+    public static final int INGREDIENTS = 6*3;
     public static final int OUTPUT = 6;
     public static final int SLOT_INGREDIENTS = 0;
     public static final int SLOT_OUTPUT = SLOT_INGREDIENTS + INGREDIENTS;
@@ -70,7 +71,6 @@ public class AutoConstructorTile extends GenericTileEntity implements DefaultSid
     public static String TAG_INGREDIENTS = "ingredients";
     public static String TAG_CRAFTING = "crafting";
 
-    private ItemStack focus = ItemStack.EMPTY;
     private long usingPower = 0;
     private int craftIndex = 0;
 
@@ -84,6 +84,65 @@ public class AutoConstructorTile extends GenericTileEntity implements DefaultSid
         return true;
     }
 
+    private boolean hasIngredient(ItemStack ingredient) {
+        if (ingredient.isEmpty()) {
+            return true;
+        }
+        int needed = ingredient.getCount();
+        for (int i = SLOT_INGREDIENTS; i < SLOT_INGREDIENTS + INGREDIENTS; i++) {
+            ItemStack stack = getStackInSlot(i);
+            if (ItemStack.areItemsEqual(ingredient, stack)) {
+                needed -= stack.getCount();
+                if (needed <= 0) {
+                    return true;
+                }
+            }
+        }
+        return false;
+    }
+
+
+    private boolean canCraft(ItemStack blueprintStack) {
+        if (!blueprintStack.isEmpty()) {
+            ItemStack destination = BlueprintItem.getDestination(blueprintStack);
+            ConstructorRecipe recipe = RecipeRegistry.findRecipe(destination);
+            if (recipe != null) {
+                // Check if we have enough
+                for (ItemStack ingredient : recipe.getIngredients()) {
+                    if (!hasIngredient(ingredient)) {
+                        return false; // Can't craft
+                    }
+                }
+            }
+            return true;
+        }
+        return false;
+    }
+
+    private void consumeIngredient(ItemStack ingredient) {
+        if (ingredient.isEmpty()) {
+            return;
+        }
+
+        int needed = ingredient.getCount();
+        for (int i = SLOT_INGREDIENTS; i < SLOT_INGREDIENTS + INGREDIENTS; i++) {
+            ItemStack stack = getStackInSlot(i);
+            if (ItemStack.areItemsEqual(ingredient, stack)) {
+                markDirtyQuick();
+                if (needed <= stack.getCount()) {
+                    stack.shrink(needed);
+                    return;
+                }
+                needed -= stack.getCount();
+                stack.shrink(stack.getCount());
+                if (needed <= 0) {
+                    return;
+                }
+            }
+        }
+    }
+
+
     private void attemptCraft(ItemStack blueprintStack) {
         if (PowerReceiverSupport.consumePower(world, pos, 100, true)) {
             boolean wasUsing = usingPower > 0;
@@ -92,6 +151,40 @@ public class AutoConstructorTile extends GenericTileEntity implements DefaultSid
             if (isUsing != wasUsing) {
                 markDirtyClient();
             }
+
+            if (canCraft(blueprintStack)) {
+                ItemStack destination = BlueprintItem.getDestination(blueprintStack);
+                ConstructorRecipe recipe = RecipeRegistry.findRecipe(destination);
+                if (recipe != null) {
+                    // Check if we have room for the destination
+                    boolean ok = false;
+                    for (int i = SLOT_OUTPUT ; i < SLOT_OUTPUT + OUTPUT ; i++) {
+                        ItemStack outputSlot = getStackInSlot(i);
+                        if (outputSlot.isEmpty()) {
+                            setInventorySlotContents(i, recipe.getDestination().copy());
+                            ok = true;
+                            break;
+                        } else {
+                            if (ItemHandlerHelper.canItemStacksStack(recipe.getDestination(), outputSlot)) {
+                                if (outputSlot.getCount() < outputSlot.getMaxStackSize()) {
+                                    outputSlot.grow(1);
+                                    markDirtyQuick();
+                                    ok = true;
+                                    break;
+                                }
+                            }
+                        }
+                    }
+
+                    if (ok) {
+                        // We have enough. Consume and craft
+                        for (ItemStack ingredient : recipe.getIngredients()) {
+                            consumeIngredient(ingredient);
+                        }
+                    }
+                }
+            }
+
         }
     }
 
@@ -100,39 +193,40 @@ public class AutoConstructorTile extends GenericTileEntity implements DefaultSid
         if (!world.isRemote) {
             usingPower = 0;
             if (isMachineEnabled()) {
-//                for (int i = 0; i < BLUEPRINTS; i++) {
-//                    int index = SLOT_BLUEPRINT + ((i + craftIndex) % BLUEPRINTS);
-//                    ItemStack blueprintStack = inventoryHelper.getStackInSlot(index);
-//                    if (!blueprintStack.isEmpty()) {
-//                        if (!focus.isEmpty()) {
-//                            if (ItemHandlerHelper.canItemStacksStack(blueprintStack, focus)) {
-//                                attemptCraft(blueprintStack);
-//                                break;
-//                            }
-//                        } else {
-//                            attemptCraft(blueprintStack);
-//                            break;
-//                        }
-//                    }
-//                }
-//
-//                craftIndex++;
-//                if (craftIndex >= BLUEPRINTS) {
-//                    craftIndex = 0;
-//                }
-//                markDirtyQuick();
+                craftIndex++;
+                markDirtyQuick();
 
+                if (craftIndex % 10 != 0) {
+                    // Only craft every 10 ticks
+                    return;
+                }
+
+                int ci = craftIndex / 10;
+                // @todo optimize
+                List<BlueprintStorageTile> storageTiles = new ArrayList<>();
+                for (EnumFacing value : EnumFacing.VALUES) {
+                    TileEntity te = world.getTileEntity(pos.offset(value));
+                    if (te instanceof BlueprintStorageTile) {
+                        BlueprintStorageTile blueprints = (BlueprintStorageTile) te;
+                        storageTiles.add(blueprints);
+                    }
+                }
+                if (storageTiles.isEmpty()) {
+                    // Nothing to do
+                    return;
+                }
+                BlueprintStorageTile blueprints = storageTiles.get((ci / BLUEPRINTS) % storageTiles.size());
+                int index = ci % BLUEPRINTS;
+                InventoryHelper helper = blueprints.getInventoryHelper();
+                ItemStack blueprintStack = helper.getStackInSlot(SLOT_BLUEPRINT + index);
+                if (blueprintStack.isEmpty()) {
+                    // Nothing to do
+                    return;
+                }
+
+                attemptCraft(blueprintStack);
             }
         }
-    }
-
-    public ItemStack getFocus() {
-        return focus;
-    }
-
-    public void setFocus(ItemStack focus) {
-        this.focus = focus;
-        markDirtyClient();
     }
 
     @Override
@@ -227,20 +321,12 @@ public class AutoConstructorTile extends GenericTileEntity implements DefaultSid
     public void readRestorableFromNBT(NBTTagCompound tagCompound) {
         super.readRestorableFromNBT(tagCompound);
         readBufferFromNBT(tagCompound, inventoryHelper);
-        if (tagCompound.hasKey("focus")) {
-            focus = new ItemStack(tagCompound.getCompoundTag("focus"));
-        } else {
-            focus = ItemStack.EMPTY;
-        }
     }
 
     @Override
     public void writeRestorableToNBT(NBTTagCompound tagCompound) {
         super.writeRestorableToNBT(tagCompound);
         writeBufferToNBT(tagCompound, inventoryHelper);
-        NBTTagCompound focusNBT = new NBTTagCompound();
-        focus.writeToNBT(focusNBT);
-        tagCompound.setTag("focus", focusNBT);
     }
 
     @Override
@@ -314,20 +400,22 @@ public class AutoConstructorTile extends GenericTileEntity implements DefaultSid
                 .add(registry.iconButton(2, 3.5, 1, 1).icon(registry.image(GRAY_ARROW_DOWN)).hover(registry.image(WHITE_ARROW_DOWN))
                         .hitEvent((component, player, entity, x, y) -> transferToMachine(player, entity)))
                 .add(registry.iconButton(3, 3.5, 1, 1).icon(registry.image(GRAY_ARROW_UP)).hover(registry.image(WHITE_ARROW_UP))
-                        .hitEvent((component, player, entity, x, y) -> transferToPlayer(player, entity)))
+                        .hitEvent((component, player, entity, x, y) -> transferToPlayer(player, entity, "slots")))
 
                 .add(registry.stackIcon(0, 4.5, 1, 1).itemStack(new ItemStack(ModBlocks.constructorBlock)))
-                .add(registry.slots(1.5, 4.5, 6, 2)
+                .add(registry.slots(1.5, 4.5, 6, 3)
                         .name("slots")
                         .withAmount()
-                        .doubleClickEvent((component, player, entity, x, y, stack, index) -> transferToPlayer(player, entity))
+                        .doubleClickEvent((component, player, entity, x, y, stack, index) -> transferToPlayer(player, entity, "slots"))
                         .filter((stack, index) -> isIngredientSlot(index))
                         .itemHandler(getItemHandler()))
 
-                .add(registry.stackIcon(0, 6.5, 1, 1).itemStack(new ItemStack(ModBlocks.constructorBlock)))
-                .add(registry.slots(1.5, 6.5, 6, 1)
+                .add(registry.stackIcon(0, 7.5, 1, 1).itemStack(new ItemStack(ModBlocks.constructorBlock)))
+                .add(registry.slots(1.5, 7.5, 6, 1)
                         .name("outputslots")
+                        .withAmount()
                         .filter((stack, index) -> isOutputSlot(index))
+                        .doubleClickEvent((component, player, entity, x, y, stack, index) -> transferToPlayer(player, entity, "outputslots"))
                         .itemHandler(getItemHandler()))
                 ;
     }
@@ -376,33 +464,14 @@ public class AutoConstructorTile extends GenericTileEntity implements DefaultSid
         return false;
     }
 
-//                .add(registry.text(0, 6.5, 2, 1)
-//                        .text("Focus")
-//                        .color(0xaaccff))
-//                .add(registry.stackIcon(4, 6.5, 1.5, 1.5)
-//                        .scale(1.5)
-//                        .itemStack(this::getFocus))
-//                ;
 
     private IItemHandler getItemHandler() {
         return getCapability(CapabilityItemHandler.ITEM_HANDLER_CAPABILITY, null);
     }
 
-    private void setFocus(IHoloGuiEntity entity) {
-        entity.findComponent("slots").ifPresent(component -> {
-            if (component instanceof ISlots) {
-                int selected = ((ISlots) component).getSelected();
-                ItemStack stack = ItemStack.EMPTY;
-                if (selected != -1) {
-                    stack = getItemHandler().getStackInSlot(selected);
-                }
-                setFocus(stack);
-            }
-        });
-    }
 
-    private void transferToPlayer(EntityPlayer player, IHoloGuiEntity entity) {
-        entity.findComponent("slots").ifPresent(component -> {
+    private void transferToPlayer(EntityPlayer player, IHoloGuiEntity entity, String compName) {
+        entity.findComponent(compName).ifPresent(component -> {
             if (component instanceof ISlots) {
                 int selected = ((ISlots) component).getSelected();
                 if (selected != -1) {
@@ -421,6 +490,7 @@ public class AutoConstructorTile extends GenericTileEntity implements DefaultSid
     }
 
     private void transferToMachine(EntityPlayer player, IHoloGuiEntity entity) {
+        // @todo don't put in output slots!
         entity.findComponent("playerslots").ifPresent(component -> {
             if (component instanceof IPlayerSlots) {
                 int selected = ((IPlayerSlots) component).getSelected();
