@@ -4,6 +4,8 @@ import mcjty.ariente.Ariente;
 import mcjty.ariente.ai.CityAI;
 import mcjty.ariente.blocks.ModBlocks;
 import mcjty.ariente.cities.ICityEquipment;
+import mcjty.ariente.gui.HelpBuilder;
+import mcjty.ariente.gui.HoloGuiTools;
 import mcjty.ariente.items.BlueprintItem;
 import mcjty.ariente.items.ModItems;
 import mcjty.ariente.power.IPowerReceiver;
@@ -69,10 +71,10 @@ public class AutoConstructorTile extends GenericTileEntity implements DefaultSid
     private InventoryHelper inventoryHelper = new InventoryHelper(this, CONTAINER_FACTORY, INGREDIENTS + OUTPUT);
 
     public static String TAG_INGREDIENTS = "ingredients";
-    public static String TAG_CRAFTING = "crafting";
 
     private long usingPower = 0;
     private int craftIndex = 0;
+    private int busyCounter = 0;
 
     @Override
     protected boolean needsRedstoneMode() {
@@ -144,88 +146,102 @@ public class AutoConstructorTile extends GenericTileEntity implements DefaultSid
 
 
     private void attemptCraft(ItemStack blueprintStack) {
-        if (PowerReceiverSupport.consumePower(world, pos, 100, true)) {
-            boolean wasUsing = usingPower > 0;
-            usingPower = 100;
-            boolean isUsing = usingPower > 0;
-            if (isUsing != wasUsing) {
-                markDirtyClient();
-            }
-
-            if (canCraft(blueprintStack)) {
-                ItemStack destination = BlueprintItem.getDestination(blueprintStack);
-                ConstructorRecipe recipe = RecipeRegistry.findRecipe(destination);
-                if (recipe != null) {
-                    // Check if we have room for the destination
-                    boolean ok = false;
-                    for (int i = SLOT_OUTPUT ; i < SLOT_OUTPUT + OUTPUT ; i++) {
-                        ItemStack outputSlot = getStackInSlot(i);
-                        if (outputSlot.isEmpty()) {
+        if (canCraft(blueprintStack)) {
+            ItemStack destination = BlueprintItem.getDestination(blueprintStack);
+            ConstructorRecipe recipe = RecipeRegistry.findRecipe(destination);
+            if (recipe != null) {
+                // Check if we have room for the destination
+                boolean ok = false;
+                for (int i = SLOT_OUTPUT; i < SLOT_OUTPUT + OUTPUT; i++) {
+                    ItemStack outputSlot = getStackInSlot(i);
+                    if (outputSlot.isEmpty()) {
+                        if (PowerReceiverSupport.consumePower(world, pos, 100, true)) {
+                            usingPower += 100;
                             setInventorySlotContents(i, recipe.getDestination().copy());
                             ok = true;
-                            break;
                         } else {
-                            if (ItemHandlerHelper.canItemStacksStack(recipe.getDestination(), outputSlot)) {
-                                if (outputSlot.getCount() < outputSlot.getMaxStackSize()) {
+                            return; // Do nothing. Not enough power
+                        }
+                        break;
+                    } else {
+                        if (ItemHandlerHelper.canItemStacksStack(recipe.getDestination(), outputSlot)) {
+                            if (outputSlot.getCount() < outputSlot.getMaxStackSize()) {
+                                if (PowerReceiverSupport.consumePower(world, pos, 100, true)) {
+                                    usingPower += 100;
                                     outputSlot.grow(1);
                                     markDirtyQuick();
                                     ok = true;
-                                    break;
+                                } else {
+                                    return; // Do nothing. Not enough power
                                 }
+                                break;
                             }
                         }
                     }
+                }
 
-                    if (ok) {
-                        // We have enough. Consume and craft
-                        for (ItemStack ingredient : recipe.getIngredients()) {
-                            consumeIngredient(ingredient);
-                        }
+                if (ok) {
+                    // We have enough. Consume and craft
+                    for (ItemStack ingredient : recipe.getIngredients()) {
+                        consumeIngredient(ingredient);
                     }
                 }
             }
-
         }
     }
 
     @Override
     public void update() {
         if (!world.isRemote) {
+
+            boolean wasUsing = usingPower > 0;
             usingPower = 0;
             if (isMachineEnabled()) {
-                craftIndex++;
-                markDirtyQuick();
+                if (PowerReceiverSupport.consumePower(world, pos, 10, true)) {
+                    usingPower = 10;
+                    markDirtyQuick();
 
-                if (craftIndex % 10 != 0) {
-                    // Only craft every 10 ticks
-                    return;
-                }
-
-                int ci = craftIndex / 10;
-                // @todo optimize
-                List<BlueprintStorageTile> storageTiles = new ArrayList<>();
-                for (EnumFacing value : EnumFacing.VALUES) {
-                    TileEntity te = world.getTileEntity(pos.offset(value));
-                    if (te instanceof BlueprintStorageTile) {
-                        BlueprintStorageTile blueprints = (BlueprintStorageTile) te;
-                        storageTiles.add(blueprints);
+                    busyCounter--;
+                    if (busyCounter > 0) {
+                        return;
                     }
-                }
-                if (storageTiles.isEmpty()) {
-                    // Nothing to do
-                    return;
-                }
-                BlueprintStorageTile blueprints = storageTiles.get((ci / BLUEPRINTS) % storageTiles.size());
-                int index = ci % BLUEPRINTS;
-                InventoryHelper helper = blueprints.getInventoryHelper();
-                ItemStack blueprintStack = helper.getStackInSlot(SLOT_BLUEPRINT + index);
-                if (blueprintStack.isEmpty()) {
-                    // Nothing to do
-                    return;
-                }
+                    busyCounter = 10;
 
-                attemptCraft(blueprintStack);
+                    craftIndex++;
+
+                    int ci = craftIndex;
+                    // @todo optimize
+                    List<BlueprintStorageTile> storageTiles = new ArrayList<>();
+                    for (EnumFacing value : EnumFacing.VALUES) {
+                        TileEntity te = world.getTileEntity(pos.offset(value));
+                        if (te instanceof BlueprintStorageTile) {
+                            BlueprintStorageTile blueprints = (BlueprintStorageTile) te;
+                            storageTiles.add(blueprints);
+                        }
+                    }
+                    if (storageTiles.isEmpty()) {
+                        // Nothing to do
+                        return;
+                    }
+                    BlueprintStorageTile blueprints = storageTiles.get((ci / BLUEPRINTS) % storageTiles.size());
+                    int index = ci % BLUEPRINTS;
+                    InventoryHelper helper = blueprints.getInventoryHelper();
+                    ItemStack blueprintStack = helper.getStackInSlot(SLOT_BLUEPRINT + index);
+                    if (blueprintStack.isEmpty()) {
+                        // Nothing to do. Decrease busyCounter so we skip to the next blueprint faster
+                        busyCounter = 3;
+                        return;
+                    }
+
+                    attemptCraft(blueprintStack);
+                }
             }
+
+            boolean isUsing = usingPower > 0;
+            if (isUsing != wasUsing) {
+                markDirtyClient();
+            }
+
         }
     }
 
@@ -309,11 +325,13 @@ public class AutoConstructorTile extends GenericTileEntity implements DefaultSid
     public void readFromNBT(NBTTagCompound tagCompound) {
         super.readFromNBT(tagCompound);
         craftIndex = tagCompound.getInteger("craftIndex");
+        busyCounter = tagCompound.getInteger("busy");
     }
 
     @Override
     public NBTTagCompound writeToNBT(NBTTagCompound tagCompound) {
         tagCompound.setInteger("craftIndex", craftIndex);
+        tagCompound.setInteger("busy", busyCounter);
         return super.writeToNBT(tagCompound);
     }
 
@@ -364,54 +382,46 @@ public class AutoConstructorTile extends GenericTileEntity implements DefaultSid
     public IGuiComponent<?> createGui(String tag, IGuiComponentRegistry registry) {
         if (TAG_INGREDIENTS.equals(tag)) {
             return createIngredientsGui(registry);
-        } else if (TAG_CRAFTING.equals(tag)) {
-            return createCraftingGui(registry);
+        } else if (TAG_HELP.equals(tag)) {
+            return HoloGuiTools.createHelpGui(registry,
+                    HelpBuilder.create()
+                            .line("The auto constructor can be")
+                            .line("used to automatically craft items")
+                            .line("with blueprints from adjacent")
+                            .line("blueprint storages.")
+                            .nl()
+                            .line("Use the 'ingredients' page to")
+                            .line("transfer ingredients between the")
+                            .line("player and this machine.")
+                            .line("Automation is also possible")
+                            .nl()
+                            .line("Output appears in the slots below")
+                            .line("the main page"));
         } else {
             return createMainMenuGui(registry);
         }
     }
 
     private IGuiComponent<?> createMainMenuGui(IGuiComponentRegistry registry) {
-        return registry.panel(0, 0, 8, 8)
-                .add(registry.text(0, 1, 1, 1).text("Main menu").color(0xaaccff))
+        return HoloGuiTools.createPanelWithHelp(registry)
+                .add(registry.text(0, 0.5, 1, 1).text("Main menu").color(0xaaccff))
                 .add(registry.stackIcon(0.5, 2.5, 1, 1).itemStack(new ItemStack(Items.IRON_INGOT)))
-                .add(registry.button(2, 2.5, 5, 1)
+                .add(registry.button(2, 2, 5, 1)
                         .text("Ingredients")
                         .hitEvent((component, p, entity, x1, y1) -> entity.switchTag(TAG_INGREDIENTS)))
-                .add(registry.stackIcon(0.5, 3.5, 1, 1).itemStack(new ItemStack(Blocks.CRAFTING_TABLE)))
-                .add(registry.button(2, 3.5, 5, 1)
-                        .text("Crafting")
-                        .hitEvent((component, p, entity, x1, y1) -> entity.switchTag(TAG_CRAFTING)))
-                ;
-    }
 
-    private IGuiComponent<?> createIngredientsGui(IGuiComponentRegistry registry) {
-        return registry.panel(0, 0, 8, 8)
 
-                .add(registry.text(0, 0, 8, 1).text("Ingredients").color(0xaaccff))
+                .add(registry.iconChoice(7, 0, 1, 1)
+                        .getter((player) -> getRSModeInt())
+                        .addImage(registry.image(REDSTONE_DUST))
+                        .addImage(registry.image(REDSTONE_OFF))
+                        .addImage(registry.image(REDSTONE_ON))
+                        .hitEvent((component, player, entity1, x, y) -> changeMode()))
 
-                .add(registry.icon(0, 2, 1, 1).icon(registry.image(WHITE_PLAYER)))
-                .add(registry.playerSlots(1.5, 1.5, 6, 2)
-                        .name("playerslots")
-                        .withAmount()
-                        .doubleClickEvent((component, player, entity, x, y, stack, index) -> transferToMachine(player, entity))
-                        .filter((stack, index) -> isIngredient(stack)))
+                .add(registry.text(0, 5, 1, 1).text("Output").color(0xaaccff))
 
-                .add(registry.iconButton(2, 3.5, 1, 1).icon(registry.image(GRAY_ARROW_DOWN)).hover(registry.image(WHITE_ARROW_DOWN))
-                        .hitEvent((component, player, entity, x, y) -> transferToMachine(player, entity)))
-                .add(registry.iconButton(3, 3.5, 1, 1).icon(registry.image(GRAY_ARROW_UP)).hover(registry.image(WHITE_ARROW_UP))
-                        .hitEvent((component, player, entity, x, y) -> transferToPlayer(player, entity, "slots")))
-
-                .add(registry.stackIcon(0, 4.5, 1, 1).itemStack(new ItemStack(ModBlocks.constructorBlock)))
-                .add(registry.slots(1.5, 4.5, 6, 3)
-                        .name("slots")
-                        .withAmount()
-                        .doubleClickEvent((component, player, entity, x, y, stack, index) -> transferToPlayer(player, entity, "slots"))
-                        .filter((stack, index) -> isIngredientSlot(index))
-                        .itemHandler(getItemHandler()))
-
-                .add(registry.stackIcon(0, 7.5, 1, 1).itemStack(new ItemStack(ModBlocks.constructorBlock)))
-                .add(registry.slots(1.5, 7.5, 6, 1)
+                .add(registry.stackIcon(0, 6.5, 1, 1).itemStack(new ItemStack(ModBlocks.constructorBlock)))
+                .add(registry.slots(1.5, 6.5, 6, 1)
                         .name("outputslots")
                         .withAmount()
                         .filter((stack, index) -> isOutputSlot(index))
@@ -420,22 +430,35 @@ public class AutoConstructorTile extends GenericTileEntity implements DefaultSid
                 ;
     }
 
-    private boolean isIngredientSlot(Integer index) {
-        return index >= SLOT_INGREDIENTS && index < SLOT_INGREDIENTS + INGREDIENTS;
-    }
-
-    private IGuiComponent<?> createCraftingGui(IGuiComponentRegistry registry) {
+    private IGuiComponent<?> createIngredientsGui(IGuiComponentRegistry registry) {
         return registry.panel(0, 0, 8, 8)
 
-                .add(registry.text(0, 0, 8, 1).text("Crafting").color(0xaaccff))
+                .add(registry.text(0, 0, 8, 1).text("Ingredients").color(0xaaccff))
 
-                .add(registry.iconChoice(7, 7, 1, 1)
-                        .getter((player) -> getRSModeInt())
-                        .addImage(registry.image(REDSTONE_DUST))
-                        .addImage(registry.image(REDSTONE_OFF))
-                        .addImage(registry.image(REDSTONE_ON))
-                        .hitEvent((component, player, entity1, x, y) -> changeMode()))
+                .add(registry.icon(0, 1.5, 1, 1).icon(registry.image(WHITE_PLAYER)))
+                .add(registry.playerSlots(1.5, 1, 6, 3)
+                        .name("playerslots")
+                        .withAmount()
+                        .doubleClickEvent((component, player, entity, x, y, stack, index) -> transferToMachine(player, entity))
+                        .filter((stack, index) -> isIngredient(stack)))
+
+                .add(registry.iconButton(2, 4.2, 1, 1).icon(registry.image(GRAY_ARROW_DOWN)).hover(registry.image(WHITE_ARROW_DOWN))
+                        .hitEvent((component, player, entity, x, y) -> transferToMachine(player, entity)))
+                .add(registry.iconButton(3, 4.2, 1, 1).icon(registry.image(GRAY_ARROW_UP)).hover(registry.image(WHITE_ARROW_UP))
+                        .hitEvent((component, player, entity, x, y) -> transferToPlayer(player, entity, "slots")))
+
+                .add(registry.stackIcon(0, 5.5, 1, 1).itemStack(new ItemStack(ModBlocks.constructorBlock)))
+                .add(registry.slots(1.5, 5.5, 6, 3)
+                        .name("slots")
+                        .withAmount()
+                        .doubleClickEvent((component, player, entity, x, y, stack, index) -> transferToPlayer(player, entity, "slots"))
+                        .filter((stack, index) -> isIngredientSlot(index))
+                        .itemHandler(getItemHandler()))
                 ;
+    }
+
+    private boolean isIngredientSlot(Integer index) {
+        return index >= SLOT_INGREDIENTS && index < SLOT_INGREDIENTS + INGREDIENTS;
     }
 
     private boolean isIngredient(ItemStack stack) {
