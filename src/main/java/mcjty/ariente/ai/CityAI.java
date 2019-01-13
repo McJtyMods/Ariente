@@ -74,6 +74,7 @@ public class CityAI {
     private Map<BlockPos, EnumFacing> soldierPositions = new HashMap<>();
     private Map<BlockPos, EnumFacing> masterSoldierPositions = new HashMap<>();
 
+    private boolean foundArmy = false;
     private int[] sentinels = null;
     private int sentinelMovementTicks = 6;
     private int sentinelAngleOffset = 0;
@@ -110,9 +111,11 @@ public class CityAI {
         if (!initialized) {
             initialized = true;
             initialize(world);
+            findArmy(world);
             return false;
         } else {
             findEquipment(world, false);
+            findArmy(world);
             return true;
         }
     }
@@ -631,6 +634,7 @@ public class CityAI {
                 ArienteChunkGenerator generator = (ArienteChunkGenerator)(((WorldServer) world).getChunkProvider().chunkGenerator);
                 int droneHeight = plan.getDroneHeightOffset() + CityTools.getLowestHeight(city, generator, center.getChunkX(), center.getChunkZ());
                 for (int i = 0; i < sentinels.length; i++) {
+                    System.out.println("revive: i = " + i);
                     createSentinel(world, i, droneHeight);
                 }
             }
@@ -760,6 +764,52 @@ public class CityAI {
     public void highAlertMode(EntityPlayer player) {
         alertCity(player);
         highAlert = true;
+    }
+
+    private void findArmy(World world) {
+        if (foundArmy) {
+            return;
+        }
+
+        City city = CityTools.getCity(center);
+        assert city != null;
+        CityPlan plan = city.getPlan();
+        List<String> pattern = plan.getPlan();
+        int dimX = pattern.get(0).length() * 16 * 2;
+        int dimZ = pattern.size() * 16 * 2;
+
+        BlockPos ctr = new BlockPos(this.center.getChunkX() * 16 + 8, 50, this.center.getChunkZ() * 16 + 8);
+        List<EntityLivingBase> entities = world.getEntitiesWithinAABB(EntityLivingBase.class, new AxisAlignedBB(ctr).grow(dimX, 200, dimZ));
+
+        if (sentinels == null) {
+            sentinels = new int[settings.getNumSentinels()];
+        }
+        int cntSentinel = 0;
+        int cntDrone = 0;
+        int cntSoldier = 0;
+
+        for (EntityLivingBase entity : entities) {
+            if (entity instanceof SentinelDroneEntity) {
+                if (cntSentinel < sentinels.length) {
+                    sentinels[cntSentinel++] = entity.getEntityId();
+                }
+            } else if (entity instanceof SoldierEntity) {
+                if (cntSoldier < soldiers.length) {
+                    soldiers[cntSoldier++] = entity.getEntityId();
+                }
+            } else if (entity instanceof DroneEntity) {
+                if (cntDrone < drones.length) {
+                    drones[cntDrone++] = entity.getEntityId();
+                }
+            }
+        }
+
+        // @todo remove later
+        System.out.println("cntSoldier = " + cntSoldier);
+        System.out.println("cntSentinel = " + cntSentinel);
+        System.out.println("cntDrone = " + cntDrone);
+
+        foundArmy = true;
     }
 
     private void findEquipment(World world, boolean firstTime) {
@@ -1006,6 +1056,7 @@ public class CityAI {
         int numSentinels = settings.getNumSentinels();
         sentinels = new int[numSentinels];
         for (int i = 0 ; i < numSentinels ; i++) {
+            System.out.println("initSentinels: i = " + i);
             createSentinel(world, i, droneHeight);
         }
     }
@@ -1040,20 +1091,9 @@ public class CityAI {
                 settings = new CityAISettings();
                 settings.readFromNBT(nbt.getCompoundTag("settings"));
             }
-            if (nbt.hasKey("sentinels")) {
-                sentinels = nbt.getIntArray("sentinels");
-            } else {
-                sentinels = null;
-            }
             keyId = nbt.getString("keyId");
             storageKeyId = nbt.getString("storageKeyId");
             forcefieldId = nbt.getString("forcefieldId");
-            if (nbt.hasKey("drones")) {
-                drones = nbt.getIntArray("drones");
-            }
-            if (nbt.hasKey("soldiers")) {
-                soldiers = nbt.getIntArray("soldiers");
-            }
             watchingPlayers.clear();
             if (nbt.hasKey("players")) {
                 NBTTagList list = nbt.getTagList("players", Constants.NBT.TAG_COMPOUND);
@@ -1087,14 +1127,9 @@ public class CityAI {
                 compound.setTag("settings", tc);
             }
 
-            if (sentinels != null) {
-                compound.setIntArray("sentinels", sentinels);
-            }
             compound.setString("keyId", keyId);
             compound.setString("storageKeyId", storageKeyId);
             compound.setString("forcefieldId", forcefieldId);
-            compound.setIntArray("drones", drones);
-            compound.setIntArray("soldiers", soldiers);
             if (!watchingPlayers.isEmpty()) {
                 NBTTagList list = new NBTTagList();
                 for (Map.Entry<UUID, BlockPos> entry : watchingPlayers.entrySet()) {
