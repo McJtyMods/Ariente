@@ -3313,12 +3313,12 @@
         "                    i           ",
         "                  i             ",
         "                i               ",
-        "              i                 ",
+        "              i             u   ",
         "            i                   ",
         "          i                     ",
         "        i                       ",
         "      i                         ",
-        "    i                           "
+        "    i             u             "
       ],
       [
         "                              b ",
@@ -3644,15 +3644,15 @@
         "                                ",
         "                                ",
         "                                ",
+        "      z                         ",
         "                                ",
         "                                ",
+        "                  z             ",
         "                                ",
         "                                ",
+        "              P                 ",
         "                                ",
-        "                                ",
-        "                                ",
-        "                                ",
-        "                                "
+        "                    v           "
       ],
       [
         "b b b b b b b b b b b b b b b b ",
@@ -3688,7 +3688,7 @@
         "                                ",
         "                                ",
         "                                ",
-        "                                "
+        "              A                 "
       ],
       [
         "                                ",
@@ -4310,13 +4310,13 @@
         "  i                             ",
         "  i                             ",
         "  i                             ",
+        "  i           v                 ",
+        "  i                             ",
+        "  i                         w   ",
         "  i                             ",
         "  i                             ",
         "  i                             ",
-        "  i                             ",
-        "  i                             ",
-        "  i                             ",
-        "  i                             ",
+        "  i             v               ",
         "  i                             ",
         "  i                             ",
         "  i                             ",
@@ -4348,7 +4348,7 @@
         "k                               ",
         "k                               ",
         "k                               ",
-        "p                               ",
+        "p                             x ",
         "k                               ",
         "k                               ",
         "k                               ",
@@ -4622,110 +4622,110 @@
       ],
       [
         "b b b b b b b b b b b b b b b b ",
-        "b b b b b b b b b b b b b b b b ",
-        "b b b b b b b b b b b b b b b b ",
-        "b b b b b b b b b b b b b b b b ",
-        "b b b b b b b b b b b b b b b b ",
-        "b b b b b b b b b b b b b b b b ",
-        "b b b b b b b b b b b b b b b b ",
-        "b b b b b b b b b b b b b b b b ",
-        "b b b b b b b b b b b b b b b b ",
-        "b b b b b b b b b b b b b b b b ",
-        "b b b b b b b b b b b b b b b b ",
-        "b b b b b b b b b b b b b b b b ",
-        "b b b b b b b b b b b b b b b b ",
-        "b b b b b b b b b b b b b b b b ",
+        "b B B B B B B B B B B B B B b b ",
+        "b B b b b b b b b b b b b B b b ",
+        "b B b b b b b b b b b b b B b b ",
+        "b B b b b b b b b b b b b B b b ",
+        "b B b b b b b b b b b b b B b b ",
+        "b B b b b b b b b b b b b B b b ",
+        "b B b b b b b b b b b b b B b b ",
+        "b B b b b b b b b b b b b B b b ",
+        "b B b b b b b b b b b b b B b b ",
+        "b B b b b b b b b b b b b B b b ",
+        "b B b b b b b b b b b b b B b b ",
+        "b B b b b b b b b b b b b B b b ",
+        "b B B B B B B B B B B B B B b b ",
         "b b b b b b b b b b b b b b b b ",
         "b b b b b b b b b b b b b b b b "
       ],
       [
-        "                                ",
-        "                                ",
-        "                                ",
-        "                                ",
-        "                                ",
-        "                                ",
-        "                                ",
-        "              e                 ",
-        "                                ",
-        "                                ",
-        "                                ",
-        "                                ",
-        "                                ",
-        "                                ",
-        "                                ",
+        "i i i i i i i R i i i i i i i   ",
+        "i                           i   ",
+        "i                           i   ",
+        "i                 v         i   ",
+        "i                           i   ",
+        "i                           i   ",
+        "i         C E E             i   ",
+        "Q             G       H     S   ",
+        "i         D F F             i   ",
+        "i                           i   ",
+        "i                           i   ",
+        "i                           i   ",
+        "i                           i   ",
+        "i                           i   ",
+        "i i i i i i i R i i i i i i i   ",
         "                                "
       ],
       [
-        "                                ",
-        "                                ",
-        "                                ",
-        "                                ",
-        "                                ",
-        "                                ",
-        "                                ",
+        "b b b b b O b   b O b b b b b   ",
+        "b                           b   ",
+        "b                           b   ",
+        "b                           b   ",
+        "b                           b   ",
+        "O                           O   ",
+        "b         I                 b   ",
         "              t                 ",
-        "                                ",
-        "                                ",
-        "                                ",
-        "                                ",
-        "                                ",
-        "                                ",
-        "                                ",
+        "b         J                 b   ",
+        "O                           O   ",
+        "b                           b   ",
+        "b                           b   ",
+        "b                           b   ",
+        "b                           b   ",
+        "b b b b b O b   b O b b b b b   ",
         "                                "
       ],
       [
-        "                                ",
-        "                                ",
-        "                                ",
-        "                                ",
-        "                                ",
-        "                                ",
-        "                                ",
-        "              e                 ",
-        "                                ",
-        "                                ",
-        "                                ",
-        "                                ",
-        "                                ",
-        "                                ",
-        "                                ",
+        "b b b b b O b b b O b b b b b   ",
+        "b                           b   ",
+        "b                           b   ",
+        "b                           b   ",
+        "b                           b   ",
+        "O                           O   ",
+        "b         I   A             b   ",
+        "b           x e L           b L ",
+        "b         J   K             b   ",
+        "O                           O   ",
+        "b                           b   ",
+        "b                           b   ",
+        "b                           b   ",
+        "b                           b   ",
+        "b b b b b O b b b O b b b b b   ",
+        "              K                 "
+      ],
+      [
+        "b b b b b O b b b O b b b b b   ",
+        "b                           b   ",
+        "b                           b   ",
+        "b                           b   ",
+        "b                           b   ",
+        "O                           O   ",
+        "b         I                 b   ",
+        "b             e M           b   ",
+        "b         J                 b   ",
+        "O                           O   ",
+        "b                           b   ",
+        "b                           b   ",
+        "b                           b   ",
+        "b                           b   ",
+        "b b b b b O b b b O b b b b b   ",
         "                                "
       ],
       [
-        "                                ",
-        "                                ",
-        "                                ",
-        "                                ",
-        "                                ",
-        "                                ",
-        "                                ",
-        "              e                 ",
-        "                                ",
-        "                                ",
-        "                                ",
-        "                                ",
-        "                                ",
-        "                                ",
-        "                                ",
-        "                                "
-      ],
-      [
-        "                                ",
-        "                                ",
-        "                                ",
-        "                                ",
-        "                                ",
-        "                                ",
-        "                                ",
-        "              e                 ",
-        "                                ",
-        "                                ",
-        "                                ",
-        "                                ",
-        "                                ",
-        "                                ",
-        "                                ",
+        "b b b b b b b b b b b b b b b   ",
+        "b                           b   ",
+        "b                           b   ",
+        "b                           b   ",
+        "b                           b   ",
+        "b                           b   ",
+        "b         e                 b   ",
+        "b             e             b   ",
+        "b         e                 b   ",
+        "b                           b   ",
+        "b                           b   ",
+        "b                           b   ",
+        "b                           b   ",
+        "b                           b   ",
+        "b b b b b b b b b b b b b b b   ",
         "                                "
       ],
       [
@@ -4928,7 +4928,19 @@
       ]
     ],
     "meta": [],
-    "tedata": []
+    "tedata": [
+      {
+        "x": 7,
+        "y": 2,
+        "z": 7,
+        "values": [
+          {
+            "key": "scale",
+            "integer": 26
+          }
+        ]
+      }
+    ]
   },
   {
     "type": "part",
@@ -4978,17 +4990,17 @@
         "                          i     ",
         "                          i     ",
         "                          i     ",
+        "  H                       i     ",
+        "                          i     ",
+        "              z           i     ",
         "                          i     ",
         "                          i     ",
+        "              e O e       i     ",
+        "              N c O       i     ",
+        "              N c O       i     ",
+        "              e O e       i     ",
         "                          i     ",
-        "                          i     ",
-        "                          i     ",
-        "                          i     ",
-        "                          i     ",
-        "                          i     ",
-        "                          i     ",
-        "                          i     ",
-        "                        i       "
+        "  z                     i       "
       ],
       [
         "                          b b   ",
@@ -5001,10 +5013,10 @@
         "                          b b   ",
         "                          b b   ",
         "                          b b   ",
-        "                          b b   ",
-        "                          b b   ",
-        "                          b b   ",
-        "                          b b   ",
+        "              e O e       b b   ",
+        "              N c O       b b   ",
+        "              N c O       b b   ",
+        "              e O e       b b   ",
         "                          b b   ",
         "                        b b b   "
       ],
@@ -5019,10 +5031,10 @@
         "                            s   ",
         "                            n   ",
         "                            n   ",
-        "                            n   ",
-        "                            n   ",
-        "                            n   ",
-        "                            n   ",
+        "              e e e         n   ",
+        "              e O e         n   ",
+        "              e O e         n   ",
+        "              e e e         n   ",
         "                            n   ",
         "                          b     "
       ],
@@ -5307,7 +5319,7 @@
         "                                "
       ],
       [
-        "      i                         ",
+        "      i                   y     ",
         "        i                       ",
         "          i                     ",
         "            i                   ",
@@ -5641,13 +5653,13 @@
         "                                "
       ],
       [
+        "            w                   ",
         "                                ",
         "                                ",
+        "                z               ",
         "                                ",
         "                                ",
-        "                                ",
-        "                                ",
-        "                                ",
+        "  y                             ",
         "                                ",
         "                                ",
         "                                ",
@@ -6271,84 +6283,184 @@
     "name": "city4_1",
     "palette": [
       {
-        "char": "a ",
-        "block": "ariente:marble_smooth@1"
+        "char": "A ",
+        "block": "ariente:flatlight@2"
       },
       {
         "char": "  ",
         "block": "minecraft:air"
       },
       {
-        "char": "t ",
-        "block": "ariente:aicore"
+        "char": "y ",
+        "block": "ariente:soldier_dummy@2"
+      },
+      {
+        "char": "w ",
+        "block": "ariente:guard_dummy@2"
+      },
+      {
+        "char": "u ",
+        "block": "ariente:soldier_dummy@3"
       },
       {
         "char": "s ",
         "block": "ariente:ramp@3"
       },
       {
-        "char": "r ",
-        "block": "ariente:ramp@1"
+        "char": "R ",
+        "block": "ariente:door_marker@1"
       },
       {
         "char": "q ",
         "block": "ariente:ramp"
       },
       {
-        "char": "p ",
-        "block": "ariente:ramp@2"
+        "char": "P ",
+        "block": "ariente:guard_dummy@3"
       },
       {
         "char": "o ",
         "block": "minecraft:stained_glass@9"
       },
       {
-        "char": "n ",
-        "block": "ariente:slope@3"
+        "char": "N ",
+        "block": "ariente:storage@4"
       },
       {
         "char": "m ",
         "block": "ariente:slope@1"
       },
       {
-        "char": "l ",
-        "block": "ariente:slope"
+        "char": "L ",
+        "block": "ariente:flatlight@5"
       },
       {
         "char": "k ",
         "block": "ariente:slope@2"
       },
       {
-        "char": "j ",
-        "block": "ariente:blacktech@1"
+        "char": "J ",
+        "block": "ariente:posirite_tank"
       },
       {
         "char": "i ",
         "block": "ariente:marble_pilar"
       },
       {
-        "char": "h ",
-        "block": "ariente:blacktech"
+        "char": "H ",
+        "block": "ariente:guard_dummy@1"
       },
       {
         "char": "g ",
         "block": "ariente:blacktech@5"
       },
       {
-        "char": "f ",
-        "block": "ariente:blacktech@3"
+        "char": "F ",
+        "block": "ariente:connector@1"
       },
       {
         "char": "e ",
         "block": "ariente:marble_pilar@3"
       },
       {
-        "char": "d ",
-        "block": "minecraft:iron_bars"
+        "char": "D ",
+        "block": "ariente:posirite_generator@2"
       },
       {
         "char": "c ",
         "block": "ariente:fluxglow"
+      },
+      {
+        "char": "B ",
+        "block": "ariente:blacktech@4"
+      },
+      {
+        "char": "a ",
+        "block": "ariente:marble_smooth@1"
+      },
+      {
+        "char": "z ",
+        "block": "ariente:soldier_dummy@1"
+      },
+      {
+        "char": "x ",
+        "block": "ariente:flatlight@4"
+      },
+      {
+        "char": "v ",
+        "block": "ariente:soldier_dummy"
+      },
+      {
+        "char": "t ",
+        "block": "ariente:aicore"
+      },
+      {
+        "char": "S ",
+        "block": "ariente:door_marker@3"
+      },
+      {
+        "char": "r ",
+        "block": "ariente:ramp@1"
+      },
+      {
+        "char": "Q ",
+        "block": "ariente:door_marker@2"
+      },
+      {
+        "char": "p ",
+        "block": "ariente:ramp@2"
+      },
+      {
+        "char": "O ",
+        "block": "ariente:blue_glass_fence"
+      },
+      {
+        "char": "n ",
+        "block": "ariente:slope@3"
+      },
+      {
+        "char": "M ",
+        "block": "ariente:alarm@5"
+      },
+      {
+        "char": "l ",
+        "block": "ariente:slope"
+      },
+      {
+        "char": "K ",
+        "block": "ariente:flatlight@3"
+      },
+      {
+        "char": "j ",
+        "block": "ariente:blacktech@1"
+      },
+      {
+        "char": "I ",
+        "block": "ariente:negarite_tank"
+      },
+      {
+        "char": "h ",
+        "block": "ariente:blacktech"
+      },
+      {
+        "char": "G ",
+        "block": "ariente:forcefield"
+      },
+      {
+        "char": "f ",
+        "block": "ariente:blacktech@3"
+      },
+      {
+        "char": "E ",
+        "block": "ariente:connector"
+      },
+      {
+        "char": "d ",
+        "block": "minecraft:iron_bars"
+      },
+      {
+        "char": "C ",
+        "block": "ariente:negarite_generator@2"
       },
       {
         "char": "b ",
