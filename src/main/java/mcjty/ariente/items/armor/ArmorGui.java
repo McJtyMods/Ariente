@@ -1,6 +1,7 @@
 package mcjty.ariente.items.armor;
 
 import mcjty.ariente.Ariente;
+import mcjty.ariente.gui.HelpBuilder;
 import mcjty.ariente.gui.HoloGuiTools;
 import mcjty.ariente.gui.ModGuis;
 import mcjty.ariente.items.ModItems;
@@ -9,6 +10,7 @@ import mcjty.ariente.items.modules.ModuleSupport;
 import mcjty.hologui.api.IGuiComponent;
 import mcjty.hologui.api.IGuiComponentRegistry;
 import mcjty.hologui.api.IHoloGuiEntity;
+import mcjty.hologui.api.Icons;
 import mcjty.hologui.api.components.IPanel;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.inventory.EntityEquipmentSlot;
@@ -24,7 +26,13 @@ public class ArmorGui {
     public static IGuiComponent<?> create(EntityPlayer player) {
         IGuiComponentRegistry registry = Ariente.guiHandler.getComponentRegistry();
         IPanel panel = registry.panel(0, 0, 8, 8)
-                .add(registry.text(0, 1, 1, 1).text("Configure armor").color(0xaaccff));
+                .add(registry.text(0, 1, 1, 1).text("Configure armor").color(0xaaccff))
+                .add(registry.iconButton(8.1, 7.8, 1, 1)
+                        .icon(registry.image(Icons.FADED_QUESTION_MARK))
+                        .hover(registry.image(Icons.QUESTION_MARK))
+                        .hitEvent((component, p, entity, x1, y1) -> entity.switchGui(ModGuis.GUI_ARMOR_HELP)
+        ));
+
         double x = 0.5;
         double y = 2.5;
         y = createMenuEntry(registry, player, panel, x, y, EntityEquipmentSlot.HEAD, ModItems.powerSuitHelmet);
@@ -39,6 +47,23 @@ public class ArmorGui {
         }
 
         return panel;
+    }
+
+    public static IGuiComponent<?> createHelpGui(EntityPlayer player) {
+        IGuiComponentRegistry registry = Ariente.guiHandler.getComponentRegistry();
+        return HoloGuiTools.createHelpGui(registry, HelpBuilder.create()
+                .line("With this GUI you can configure")
+                .line("your armor and sabre modules")
+                .line("For every module you can toggle")
+                .line("the module itself to install or")
+                .line("deinstall it.")
+                .nl()
+                .line("Then you can hit the checkbox to")
+                .line("actually enable the module")
+                .nl()
+                .line("Using the last button you can set")
+                .line("a hotkey (1 to 4 defined hotkeys)")
+        );
     }
 
     public static IGuiComponent<?> createHelmetGui(EntityPlayer player) {

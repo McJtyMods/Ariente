@@ -6,7 +6,7 @@
 - New flux ship (work in progress!)
 - New levitating city
 - Fixed a bug where cities kept on spawning new sentinels everytime the world was reloaded
-- New power combiner which is used to combine power for the combined power cables (TODO TODO TODO FIX GUI!)
+- New power combiner which is used to combine power for the combined power cables
 - New online help in many gui's (TODO TODO TODO EXTEND)
 - TODO TODO TODO Better placement logic for flat light and similar flat blocks
 - New command option for ar_findcity to locate a city of a given type

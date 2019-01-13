@@ -2,7 +2,12 @@ package mcjty.ariente.blocks.generators;
 
 import mcjty.ariente.cables.CableColor;
 import mcjty.ariente.cables.ConnectorTileEntity;
-import mcjty.ariente.power.*;
+import mcjty.ariente.gui.HelpBuilder;
+import mcjty.ariente.gui.HoloGuiTools;
+import mcjty.ariente.power.IPowerReceiver;
+import mcjty.ariente.power.PowerReceiverSupport;
+import mcjty.ariente.power.PowerSystem;
+import mcjty.ariente.power.PowerType;
 import mcjty.hologui.api.IGuiComponent;
 import mcjty.hologui.api.IGuiComponentRegistry;
 import mcjty.hologui.api.IGuiTile;
@@ -48,7 +53,7 @@ public class PowerCombinerTile extends GenericTileEntity implements ITickable, I
     }
 
     private int getPowerToTransfer() {
-        return (int) (powerTransfer * .99); // @todo configurable cost
+        return (int) (powerTransfer * .98); // @todo configurable cost
     }
 
     private void sendPower() {
@@ -152,11 +157,30 @@ public class PowerCombinerTile extends GenericTileEntity implements ITickable, I
 
     @Override
     public IGuiComponent<?> createGui(String tag, IGuiComponentRegistry registry) {
-        return registry.panel(0, 0, 8, 8)
-                .add(registry.text(0, 1, 1, 1).text("Transfer max").color(0xaaccff))
-                .add(registry.number(3, 3, 1, 1).color(0xffffff).getter((p,h) -> getPowerTransfer()))
-                .add(registry.text(0, 4, 1, 1).text("Output").color(0xaaccff))
-                .add(registry.number(3, 5, 1, 1).color(0xffffff).getter((p,h) -> getPowerToTransfer()))
+        if (TAG_HELP.equals(tag)) {
+            return HoloGuiTools.createHelpGui(registry,
+                    HelpBuilder.create()
+                            .line("This block can combine negarite")
+                            .line("and posirite power and send it")
+                            .line("out through a combined cable")
+                            .line("Note that there is a small loss")
+                            .line("associated with this operation")
+                            .nl()
+                            .line("Use the controls to change the")
+                            .line("maximum transfer rate")
+            );
+        } else {
+            return createMainGui(registry);
+        }
+    }
+
+    private IGuiComponent<?> createMainGui(IGuiComponentRegistry registry) {
+        return HoloGuiTools.createPanelWithHelp(registry)
+                .add(registry.text(0, 1, 1, 1).text("Transfer").color(0xaaccff))
+                .add(registry.text(0, 2.7, 1, 1).text("In").color(0xaaccff).scale(.7f))
+                .add(registry.number(2, 2.5, 1, 1).color(0xffffff).getter((p,h) -> getPowerTransfer()))
+                .add(registry.text(0, 3.7, 1, 1).text("Out").color(0xaaccff).scale(.7f))
+                .add(registry.number(2, 3.5, 1, 1).color(0xffffff).getter((p,h) -> getPowerToTransfer()))
 
                 .add(registry.iconButton(1, 6, 1, 1).icon(registry.image(GRAY_DOUBLE_ARROW_LEFT)).hover(registry.image(WHITE_DOUBLE_ARROW_LEFT))
                         .hitEvent((component, player, entity1, x, y) -> changeTransfer(-50)))

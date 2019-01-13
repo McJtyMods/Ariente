@@ -12,6 +12,7 @@ public class ModGuis {
     public static final String GUI_ARMOR_LEGS = "armor_legs";
     public static final String GUI_ARMOR_BOOTS = "armor_boots";
     public static final String GUI_ARMOR_SABRE = "armor_sabre";
+    public static final String GUI_ARMOR_HELP = "armor_help";
     public static final String GUI_LEVITATOR = "levitator";
 
     public static void init() {
@@ -21,6 +22,7 @@ public class ModGuis {
         Ariente.guiHandler.getGuiRegistry().registerGui(GUI_ARMOR_LEGS, ArmorGui::createLegsGui);
         Ariente.guiHandler.getGuiRegistry().registerGui(GUI_ARMOR_BOOTS, ArmorGui::createBootsGui);
         Ariente.guiHandler.getGuiRegistry().registerGui(GUI_ARMOR_SABRE, ArmorGui::createSabreGui);
+        Ariente.guiHandler.getGuiRegistry().registerGui(GUI_ARMOR_HELP, ArmorGui::createHelpGui);
         Ariente.guiHandler.getGuiRegistry().registerGui(GUI_LEVITATOR, FluxLevitatorGui::createGui);
     }
 
