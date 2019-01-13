@@ -1,11 +1,16 @@
 0.0.5-alpha:
-- New blueprint system
+- New blueprint system. These blueprints are going to be used as the gating component for progression through this mod
 - Loot in cities has been mostly replaced with blueprints
-- New constructor and auto constructor
-- New blueprint storage
+- New constructor and auto constructor for crafting objects from blueprints
+- New blueprint storage which has to be set adjacent to the constructor and auto constructor so that they can craft
 - New flux ship (work in progress!)
 - New levitating city
-- Power combiner now works properly
+- Fixed a bug where cities kept on spawning new sentinels everytime the world was reloaded
+- New power combiner which is used to combine power for the combined power cables (TODO TODO TODO FIX GUI!)
+- New online help in many gui's (TODO TODO TODO EXTEND)
+- New command option for ar_findcity to locate a city of a given type
+- More powerful city editing mode (mostly for internal usage)
+- Needs McJtyLib 3.1.0 and HoloGui 0.0.4-beta
 
 0.0.4-alpha:
 - Update to 0.0.3-beta of HoloGui
