@@ -1,8 +1,11 @@
 0.0.5-alpha:
 - New blueprint system
 - Loot in cities has been mostly replaced with blueprints
-- New constructor
+- New constructor and auto constructor
 - New blueprint storage
+- New flux ship (work in progress!)
+- New levitating city
+- Power combiner now works properly
 
 0.0.4-alpha:
 - Update to 0.0.3-beta of HoloGui
