@@ -3298,7 +3298,7 @@
         "          b b b b b b b b b b b ",
         "        b b b b b b b b b b b b ",
         "      b b b b b b b b b b b b b ",
-        "    b b b b b b b b b b b b b b ",
+        "    b b b b b b b b b b b T b b ",
         "  b b b b b b b b b b b b b b b ",
         "b b b b b b b b b b b b b b b b "
       ],
@@ -3313,9 +3313,9 @@
         "                    i           ",
         "                  i             ",
         "                i               ",
-        "              i             u   ",
+        "              i                 ",
         "            i                   ",
-        "          i                     ",
+        "          i             U       ",
         "        i                       ",
         "      i                         ",
         "    i             u             "
@@ -3402,13 +3402,13 @@
         "                    b b b b b b ",
         "                  b b b b b b b ",
         "                b b b b b b b b ",
-        "              b b b b b b b b b ",
-        "            b b b b b b b b b b ",
-        "          b b b b b b b b b b b ",
-        "        b b b b b b b b b b b b ",
-        "      b b b b b b b b b b b b b ",
-        "    b b b b b b b b b b b b b b ",
-        "  k b b b b b b b b b b b b b b "
+        "              b b b b b b g b b ",
+        "            b b b b b b b g b b ",
+        "          b b b b b b b b g b b ",
+        "        b b b b b b b b j g j b ",
+        "      b b b b b b g g g g   g g ",
+        "    b b b b b b b b b b j g j b ",
+        "  k b b b b b b b b b b b g b b "
       ],
       [
         "                                ",
@@ -3423,7 +3423,7 @@
         "                                ",
         "                                ",
         "                                ",
-        "                                ",
+        "                        U       ",
         "                                ",
         "                                ",
         "                                "
@@ -3592,7 +3592,19 @@
       ]
     ],
     "meta": [],
-    "tedata": []
+    "tedata": [
+      {
+        "x": 13,
+        "y": 1,
+        "z": 13,
+        "values": [
+          {
+            "key": "height",
+            "integer": 9
+          }
+        ]
+      }
+    ]
   },
   {
     "type": "part",
@@ -3642,9 +3654,9 @@
         "                              i ",
         "                                ",
         "                                ",
-        "                                ",
-        "                                ",
-        "      z                         ",
+        "              W h W             ",
+        "              h   h             ",
+        "      z       W h W             ",
         "                                ",
         "                                ",
         "                  z             ",
@@ -3660,9 +3672,9 @@
         "                              b ",
         "                                ",
         "                                ",
-        "                                ",
-        "                                ",
-        "                                ",
+        "                l               ",
+        "              k X n             ",
+        "                m               ",
         "                                ",
         "                                ",
         "                                ",
@@ -3679,7 +3691,7 @@
         "                                ",
         "                                ",
         "                                ",
-        "                                ",
+        "                X               ",
         "                                ",
         "                                ",
         "                                ",
@@ -3740,7 +3752,7 @@
         "b b b b b b b b b b b b b b b b ",
         "b b b b b b b b b b b b b b b b ",
         "b b b b b b b b b b b b b b b b ",
-        "b b b b b b b b b b b b b b b b ",
+        "g g b b b b b b b b b b b g g g ",
         "b b b b b b b b b b b b b b b b ",
         "b b b b b b b b b b b b b b b b "
       ],
@@ -3966,7 +3978,7 @@
         "b b b b b b b b b b             ",
         "b b b b b b b b b b b           ",
         "b b b b b b b b b b b b         ",
-        "b b b b b b b b b b b b b       ",
+        "b T b b b b b b b b b b b       ",
         "b b b b b b b b b b b b b b     ",
         "b b b b b b b b b b b b b b b   "
       ],
@@ -3983,7 +3995,7 @@
         "            i                   ",
         "              i                 ",
         "                i               ",
-        "                  i             ",
+        "    U             i             ",
         "                    i           ",
         "                      i         ",
         "                        i       "
@@ -4070,13 +4082,13 @@
         "b b b b b                       ",
         "b b b b b b                     ",
         "b b b b b b b                   ",
-        "b b b b b b b b                 ",
-        "b b b b b b b b b               ",
-        "b b b b b b b b b b             ",
-        "b b b b b b b b b b b           ",
-        "b b b b b b b b b b b b         ",
-        "b b b b b b b b b b b b b       ",
-        "b b b b b b b b b b b b b n     "
+        "b g b b b b b b                 ",
+        "b g b b b b b b b               ",
+        "b g b b b b b b b b             ",
+        "j g j b b b b b b b b           ",
+        "g   g g g g b b b b b b         ",
+        "j g j b b b b b b b b b b       ",
+        "b g b b b b b b b b b b b n     "
       ],
       [
         "                                ",
@@ -4091,7 +4103,7 @@
         "                                ",
         "                                ",
         "                                ",
-        "                                ",
+        "    U                           ",
         "                                ",
         "                                ",
         "                                "
@@ -4260,7 +4272,19 @@
       ]
     ],
     "meta": [],
-    "tedata": []
+    "tedata": [
+      {
+        "x": 1,
+        "y": 1,
+        "z": 13,
+        "values": [
+          {
+            "key": "height",
+            "integer": 9
+          }
+        ]
+      }
+    ]
   },
   {
     "type": "part",
@@ -4310,9 +4334,9 @@
         "  i                             ",
         "  i                             ",
         "  i                             ",
-        "  i           v                 ",
-        "  i                             ",
-        "  i                         w   ",
+        "  i         V f V               ",
+        "  i         f   f               ",
+        "  i         V f V           w   ",
         "  i                             ",
         "  i                             ",
         "  i                             ",
@@ -4328,9 +4352,9 @@
         "b b                             ",
         "b b                             ",
         "b b                             ",
-        "b b                             ",
-        "b b                             ",
-        "b b                             ",
+        "b b         V V V               ",
+        "b b         V   V               ",
+        "b b         V V V               ",
         "b b                             ",
         "b b                             ",
         "b b                             ",
@@ -4346,9 +4370,9 @@
         "k                               ",
         "k                               ",
         "k                               ",
-        "k                               ",
-        "k                               ",
-        "p                             x ",
+        "k             l                 ",
+        "k           k f n               ",
+        "p             m               x ",
         "k                               ",
         "k                               ",
         "k                               ",
@@ -4395,6 +4419,8 @@
         "  o                             "
       ],
       [
+        "  k b b b b b b b b b b b g b b ",
+        "  k b b b b b b b b b b b g b b ",
         "  k b b b b b b b b b b b b b b ",
         "  k b b b b b b b b b b b b b b ",
         "  k b b b b b b b b b b b b b b ",
@@ -4406,11 +4432,9 @@
         "  k b b b b b b b b b b b b b b ",
         "  k b b b b b b b b b b b b b b ",
         "  k b b b b b b b b b b b b b b ",
-        "  k b b b b b b b b b b b b b b ",
-        "  k b b b b b b b b b b b b b b ",
-        "  k b b b b b b b b b b b b b b ",
-        "  k b b b b b b b b b b b b b b ",
-        "  k b b b b b b b b b b b b b b "
+        "  k b b b b b b b b b b b g b b ",
+        "  k b b b b b b b b b b b g b b ",
+        "  k b b b b b b b b b b b g b b "
       ],
       [
         "                                ",
@@ -5075,8 +5099,8 @@
         "                          o     "
       ],
       [
-        "b b b b b b b b b b b b b n     ",
-        "b b b b b b b b b b b b b n     ",
+        "b g b b b b b b b b b b b n     ",
+        "b g b b b b b b b b b b b n     ",
         "b b b b b b b b b b b b b n     ",
         "b b b b b b b b b b b b b n     ",
         "b b b b b b b b b b b b b n     ",
@@ -5088,9 +5112,9 @@
         "b b b b b b b b b b b b b n     ",
         "b b b b b b b b b b b b b n     ",
         "b b b b b b b b b b b b b n     ",
-        "b b b b b b b b b b b b b n     ",
-        "b b b b b b b b b b b b b n     ",
-        "b b b b b b b b b b b b b n     "
+        "b g b b b b b b b b b b b n     ",
+        "b g b b b b b b b b b b b n     ",
+        "b g b b b b b b b b b b b n     "
       ],
       [
         "                                ",
@@ -5302,7 +5326,7 @@
       ],
       [
         "  b b b b b b b b b b b b b b b ",
-        "    b b b b b b b b b b b b b b ",
+        "    b b b b b b b b b b b T b b ",
         "      b b b b b b b b b b b b b ",
         "        b b b b b b b b b b b b ",
         "          b b b b b b b b b b b ",
@@ -5321,7 +5345,7 @@
       [
         "      i                   y     ",
         "        i                       ",
-        "          i                     ",
+        "          i             U       ",
         "            i                   ",
         "              i                 ",
         "                i               ",
@@ -5409,12 +5433,12 @@
         "                                "
       ],
       [
-        "    b b b b b b b b b b b b b b ",
-        "      b b b b b b b b b b b b b ",
-        "        b b b b b b b b b b b b ",
-        "          b b b b b b b b b b b ",
-        "            b b b b b b b b b b ",
-        "              b b b b b b b b b ",
+        "    b b b b b b b b b b j g j b ",
+        "      b b b b b b g g g g   g g ",
+        "        b b b b b b b b j g j b ",
+        "          b b b b b b b b g b b ",
+        "            b b b b b b b g b b ",
+        "              b b b b b b g b b ",
         "                b b b b b b b b ",
         "                  b b b b b b b ",
         "                    b b b b b b ",
@@ -5429,7 +5453,7 @@
       [
         "                                ",
         "                                ",
-        "                                ",
+        "                        U       ",
         "                                ",
         "                                ",
         "                                ",
@@ -5608,7 +5632,19 @@
       ]
     ],
     "meta": [],
-    "tedata": []
+    "tedata": [
+      {
+        "x": 13,
+        "y": 1,
+        "z": 1,
+        "values": [
+          {
+            "key": "height",
+            "integer": 9
+          }
+        ]
+      }
+    ]
   },
   {
     "type": "part",
@@ -5744,7 +5780,7 @@
       ],
       [
         "b b b b b b b b b b b b b b b b ",
-        "b b b b b b b b b b b b b b b b ",
+        "g g b b b b b b b b b b b g g g ",
         "b b b b b b b b b b b b b b b b ",
         "b b b b b b b b b b b b b b b b ",
         "b b b b b b b b b b b b b b b b ",
@@ -5970,7 +6006,7 @@
       ],
       [
         "b b b b b b b b b b b b b b     ",
-        "b b b b b b b b b b b b b       ",
+        "b T b b b b b b b b b b b       ",
         "b b b b b b b b b b b b         ",
         "b b b b b b b b b b b           ",
         "b b b b b b b b b b             ",
@@ -5989,7 +6025,7 @@
       [
         "                      i         ",
         "                    i           ",
-        "                  i             ",
+        "    U             i             ",
         "                i               ",
         "              i                 ",
         "            i                   ",
@@ -6077,12 +6113,12 @@
         "                                "
       ],
       [
-        "b b b b b b b b b b b b b       ",
-        "b b b b b b b b b b b b         ",
-        "b b b b b b b b b b b           ",
-        "b b b b b b b b b b             ",
-        "b b b b b b b b b               ",
-        "b b b b b b b b                 ",
+        "j g j b b b b b b b b b b       ",
+        "g   g g g g b b b b b b         ",
+        "j g j b b b b b b b b           ",
+        "b g b b b b b b b b             ",
+        "b g b b b b b b b               ",
+        "b g b b b b b b                 ",
         "b b b b b b b                   ",
         "b b b b b b                     ",
         "b b b b b                       ",
@@ -6097,7 +6133,7 @@
       [
         "                                ",
         "                                ",
-        "                                ",
+        "    U                           ",
         "                                ",
         "                                ",
         "                                ",
@@ -6276,39 +6312,39 @@
       ]
     ],
     "meta": [],
-    "tedata": []
+    "tedata": [
+      {
+        "x": 1,
+        "y": 1,
+        "z": 1,
+        "values": [
+          {
+            "key": "height",
+            "integer": 9
+          }
+        ]
+      }
+    ]
   },
   {
     "type": "palette",
     "name": "city4_1",
     "palette": [
       {
-        "char": "A ",
-        "block": "ariente:flatlight@2"
-      },
-      {
-        "char": "  ",
-        "block": "minecraft:air"
-      },
-      {
         "char": "y ",
         "block": "ariente:soldier_dummy@2"
       },
       {
-        "char": "w ",
-        "block": "ariente:guard_dummy@2"
+        "char": "X ",
+        "block": "ariente:blacktech@2"
       },
       {
         "char": "u ",
         "block": "ariente:soldier_dummy@3"
       },
       {
-        "char": "s ",
-        "block": "ariente:ramp@3"
-      },
-      {
-        "char": "R ",
-        "block": "ariente:door_marker@1"
+        "char": "T ",
+        "block": "ariente:elevator"
       },
       {
         "char": "q ",
@@ -6319,28 +6355,12 @@
         "block": "ariente:guard_dummy@3"
       },
       {
-        "char": "o ",
-        "block": "minecraft:stained_glass@9"
-      },
-      {
-        "char": "N ",
-        "block": "ariente:storage@4"
-      },
-      {
         "char": "m ",
         "block": "ariente:slope@1"
       },
       {
         "char": "L ",
         "block": "ariente:flatlight@5"
-      },
-      {
-        "char": "k ",
-        "block": "ariente:slope@2"
-      },
-      {
-        "char": "J ",
-        "block": "ariente:posirite_tank"
       },
       {
         "char": "i ",
@@ -6351,28 +6371,12 @@
         "block": "ariente:guard_dummy@1"
       },
       {
-        "char": "g ",
-        "block": "ariente:blacktech@5"
-      },
-      {
-        "char": "F ",
-        "block": "ariente:connector@1"
-      },
-      {
         "char": "e ",
         "block": "ariente:marble_pilar@3"
       },
       {
         "char": "D ",
         "block": "ariente:posirite_generator@2"
-      },
-      {
-        "char": "c ",
-        "block": "ariente:fluxglow"
-      },
-      {
-        "char": "B ",
-        "block": "ariente:blacktech@4"
       },
       {
         "char": "a ",
@@ -6383,20 +6387,12 @@
         "block": "ariente:soldier_dummy@1"
       },
       {
-        "char": "x ",
-        "block": "ariente:flatlight@4"
-      },
-      {
         "char": "v ",
         "block": "ariente:soldier_dummy"
       },
       {
-        "char": "t ",
-        "block": "ariente:aicore"
-      },
-      {
-        "char": "S ",
-        "block": "ariente:door_marker@3"
+        "char": "U ",
+        "block": "ariente:level_marker"
       },
       {
         "char": "r ",
@@ -6407,28 +6403,12 @@
         "block": "ariente:door_marker@2"
       },
       {
-        "char": "p ",
-        "block": "ariente:ramp@2"
-      },
-      {
-        "char": "O ",
-        "block": "ariente:blue_glass_fence"
-      },
-      {
         "char": "n ",
         "block": "ariente:slope@3"
       },
       {
         "char": "M ",
         "block": "ariente:alarm@5"
-      },
-      {
-        "char": "l ",
-        "block": "ariente:slope"
-      },
-      {
-        "char": "K ",
-        "block": "ariente:flatlight@3"
       },
       {
         "char": "j ",
@@ -6439,14 +6419,6 @@
         "block": "ariente:negarite_tank"
       },
       {
-        "char": "h ",
-        "block": "ariente:blacktech"
-      },
-      {
-        "char": "G ",
-        "block": "ariente:forcefield"
-      },
-      {
         "char": "f ",
         "block": "ariente:blacktech@3"
       },
@@ -6455,16 +6427,112 @@
         "block": "ariente:connector"
       },
       {
+        "char": "b ",
+        "block": "ariente:marble_smooth@3"
+      },
+      {
+        "char": "A ",
+        "block": "ariente:flatlight@2"
+      },
+      {
+        "char": "  ",
+        "block": "minecraft:air"
+      },
+      {
+        "char": "w ",
+        "block": "ariente:guard_dummy@2"
+      },
+      {
+        "char": "V ",
+        "block": "ariente:tech_fence"
+      },
+      {
+        "char": "s ",
+        "block": "ariente:ramp@3"
+      },
+      {
+        "char": "R ",
+        "block": "ariente:door_marker@1"
+      },
+      {
+        "char": "o ",
+        "block": "minecraft:stained_glass@9"
+      },
+      {
+        "char": "N ",
+        "block": "ariente:storage@4"
+      },
+      {
+        "char": "k ",
+        "block": "ariente:slope@2"
+      },
+      {
+        "char": "J ",
+        "block": "ariente:posirite_tank"
+      },
+      {
+        "char": "g ",
+        "block": "ariente:blacktech@5"
+      },
+      {
+        "char": "F ",
+        "block": "ariente:connector@1"
+      },
+      {
+        "char": "c ",
+        "block": "ariente:fluxglow"
+      },
+      {
+        "char": "B ",
+        "block": "ariente:blacktech@4"
+      },
+      {
+        "char": "x ",
+        "block": "ariente:flatlight@4"
+      },
+      {
+        "char": "W ",
+        "block": "ariente:marble_fence"
+      },
+      {
+        "char": "t ",
+        "block": "ariente:aicore"
+      },
+      {
+        "char": "S ",
+        "block": "ariente:door_marker@3"
+      },
+      {
+        "char": "p ",
+        "block": "ariente:ramp@2"
+      },
+      {
+        "char": "O ",
+        "block": "ariente:blue_glass_fence"
+      },
+      {
+        "char": "l ",
+        "block": "ariente:slope"
+      },
+      {
+        "char": "K ",
+        "block": "ariente:flatlight@3"
+      },
+      {
+        "char": "h ",
+        "block": "ariente:blacktech"
+      },
+      {
+        "char": "G ",
+        "block": "ariente:forcefield"
+      },
+      {
         "char": "d ",
         "block": "minecraft:iron_bars"
       },
       {
         "char": "C ",
         "block": "ariente:negarite_generator@2"
-      },
-      {
-        "char": "b ",
-        "block": "ariente:marble_smooth@3"
       }
     ]
   }
