@@ -12,6 +12,9 @@
 - New command option for ar_findcity to locate a city of a given type
 - More powerful city editing mode (mostly for internal usage)
 - Needs McJtyLib 3.1.0 and HoloGui 0.0.4-beta
+- Bug: AUTO CONSTRUCTOR gui not correct?
+- Bug: can't go back from help in armor gui
+- Bug: flying city worldgen clears weird area below
 
 0.0.4-alpha:
 - Update to 0.0.3-beta of HoloGui
