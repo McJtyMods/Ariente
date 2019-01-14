@@ -8,13 +8,13 @@
 - The jump key (usually space) to start flying with the power armor fired even if a console or gui was open
 - Fixed a bug where cities kept on spawning new sentinels everytime the world was reloaded
 - New power combiner which is used to combine power for the combined power cables
-- New online help in many gui's (TODO TODO TODO EXTEND)
+- New online help in many gui's
 - New command option for ar_findcity to locate a city of a given type
 - More powerful city editing mode (mostly for internal usage)
 - Needs McJtyLib 3.1.0 and HoloGui 0.0.4-beta
 - Better loot generation as well as the possibility to have random blueprints
 - Some attempt at proper loot balancing has been done
-- Bug: AUTO CONSTRUCTOR gui not correct?
+- Added ar_citycard command to spawn in the keycard that can be used to unlock the loot storages
 
 0.0.4-alpha:
 - Update to 0.0.3-beta of HoloGui

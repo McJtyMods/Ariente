@@ -942,7 +942,6 @@ public class CityAI {
                         } else {
                             te.initTotalStack(i, new ItemStack(item, amount, l.getMeta()));
                         }
-                        break;
                     }
                 }
             }

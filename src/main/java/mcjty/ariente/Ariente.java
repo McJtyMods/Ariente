@@ -86,6 +86,7 @@ public class Ariente implements ModBase {
         event.registerServerCommand(new CommandFindCity());
         event.registerServerCommand(new CommandInfo());
         event.registerServerCommand(new CommandPacify());
+        event.registerServerCommand(new CommandCityCard());
     }
 
 

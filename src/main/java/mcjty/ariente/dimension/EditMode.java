@@ -198,7 +198,7 @@ public class EditMode {
         cityAI.enableEditMode(player.getEntityWorld());
     }
 
-    private static City getCurrentCity(EntityPlayer player) {
+    public static City getCurrentCity(EntityPlayer player) {
         BlockPos start = player.getPosition();
         int cx = (start.getX() >> 4);
         int cz = (start.getZ() >> 4);
