@@ -81,7 +81,7 @@ public class ModItems {
         moduleFlight = new ArmorModuleItem("module_flight", ArmorUpgradeType.FLIGHT);
         moduleForcefield = new ArmorModuleItem("module_forcefield", ArmorUpgradeType.FORCEFIELD);
         moduleInvisibility = new ArmorModuleItem("module_invisibility", ArmorUpgradeType.INVISIBILITY);
-        moduleNightvision = new ArmorModuleItem("c", ArmorUpgradeType.NIGHTVISION);
+        moduleNightvision = new ArmorModuleItem("module_nightvision", ArmorUpgradeType.NIGHTVISION);
         moduleRegeneration = new ArmorModuleItem("module_regeneration", ArmorUpgradeType.REGENERATION);
         moduleScramble = new ArmorModuleItem("module_scramble", ArmorUpgradeType.SCRAMBLE);
         moduleAutofeed = new ArmorModuleItem("module_autofeed", ArmorUpgradeType.AUTOFEED);
