@@ -137,7 +137,7 @@ public class ArienteCityGenerator {
         }
     }
 
-    public static int generatePart(ChunkPrimer primer, String palette,
+    public int generatePart(ChunkPrimer primer, String palette,
                                     BuildingPart part,
                                     Transform transform,
                                     int ox, int oy, int oz) {
@@ -151,6 +151,7 @@ public class ArienteCityGenerator {
                     int rz = oz + transform.rotateZ(x, z);
                     int index = (rx << 12) | (rz << 8) + oy;
                     int len = vs.getSlice().size();
+                    boolean allSpaces = true;
                     for (int y = 0; y < len; y++) {
                         PaletteIndex c = vs.getSlice().get(y);
                         Character b = compiledPalette.get(c);
@@ -165,7 +166,15 @@ public class ArienteCityGenerator {
                                 b = (char) Block.BLOCK_STATE_IDS.get(bs);
                             }
                         }
-                        primer.data[index] = b;
+                        if (allSpaces) {
+                            // Skip all initial spaces. This is to avoid ugly generation issues with floating cities
+                            if (b != airChar) {
+                                primer.data[index] = b;
+                                allSpaces = false;
+                            }
+                        } else {
+                            primer.data[index] = b;
+                        }
                         index++;
                     }
                 }
