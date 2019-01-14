@@ -13,6 +13,7 @@ import mcjty.ariente.network.ArienteMessages;
 import mcjty.ariente.network.PacketHitForcefield;
 import mcjty.ariente.sounds.FluxLevitatorSounds;
 import net.minecraft.block.state.IBlockState;
+import net.minecraft.client.Minecraft;
 import net.minecraft.client.entity.EntityPlayerSP;
 import net.minecraft.client.renderer.GlStateManager;
 import net.minecraft.client.renderer.RenderGlobal;
@@ -110,7 +111,7 @@ public class ClientForgeEventHandlers {
             if (player != null) {
                 ItemStack chestStack = player.getItemStackFromSlot(EntityEquipmentSlot.CHEST);
                 if (!chestStack.isEmpty() && chestStack.getItem() == ModItems.powerSuitChest && chestStack.hasTagCompound()) {
-                    if (ModuleSupport.hasWorkingUpgrade(chestStack, ArmorUpgradeType.FLIGHT)) {
+                    if (Minecraft.getMinecraft().currentScreen == null && ModuleSupport.hasWorkingUpgrade(chestStack, ArmorUpgradeType.FLIGHT)) {
                         if (Ariente.proxy.isJumpKeyDown()) {
                             player.isAirBorne = true;
                             player.motionY = 0.4;
