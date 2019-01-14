@@ -232,6 +232,9 @@ public class ArienteChunkGenerator implements IChunkGenerator {
         return (int) h;
     }
 
+    public ArienteCityGenerator getCityGenerator() {
+        return cityGenerator;
+    }
 
     @Override
     public Chunk generateChunk(int x, int z) {

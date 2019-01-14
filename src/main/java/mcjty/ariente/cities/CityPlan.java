@@ -4,6 +4,7 @@ import com.google.gson.JsonArray;
 import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
 import com.google.gson.JsonPrimitive;
+import mcjty.ariente.varia.WeightedRandom;
 import net.minecraft.item.Item;
 import net.minecraft.util.ResourceLocation;
 import net.minecraftforge.fml.common.registry.ForgeRegistries;
@@ -30,6 +31,7 @@ public class CityPlan implements IAsset {
     private final Map<String, Integer> variants = new HashMap<>();
 
     private List<Loot> loot = new ArrayList<>();
+    private WeightedRandom<Loot> randomLoot = null;
 
     private int minSentinels = 0;
     private int maxSentinels = 0;
@@ -191,6 +193,16 @@ public class CityPlan implements IAsset {
         return loot;
     }
 
+    public WeightedRandom<Loot> getRandomLoot() {
+        if (randomLoot == null) {
+            randomLoot = new WeightedRandom<>();
+            for (Loot l : loot) {
+                randomLoot.add(l, l.getChance());
+            }
+        }
+        return randomLoot;
+    }
+
     @Override
     public void readFromJSon(JsonObject object) {
         name = object.get("name").getAsString();
@@ -291,7 +303,12 @@ public class CityPlan implements IAsset {
         loot.clear();
         for (JsonElement element : lootArray) {
             JsonObject o = element.getAsJsonObject();
-            String id = o.get("id").getAsString();
+            String id;
+            if (o.has("id")) {
+                id = o.get("id").getAsString();
+            } else {
+                id = null;  // Random blueprint
+            }
             int meta = 0;
             if (o.has("meta")) {
                 meta = o.get("meta").getAsInt();
@@ -302,9 +319,13 @@ public class CityPlan implements IAsset {
             }
             float chance = o.get("chance").getAsFloat();
             int maxAmount = o.get("max").getAsInt();
-            Item item = ForgeRegistries.ITEMS.getValue(new ResourceLocation(id));
-            if (item != null) {
-                loot.add(new Loot(new ResourceLocation(id), meta, blueprint, maxAmount, chance));
+            if (id == null) {
+                loot.add(new Loot(null, meta, blueprint, maxAmount, chance));
+            } else {
+                Item item = ForgeRegistries.ITEMS.getValue(new ResourceLocation(id));
+                if (item != null) {
+                    loot.add(new Loot(new ResourceLocation(id), meta, blueprint, maxAmount, chance));
+                }
             }
         }
     }
@@ -389,7 +410,9 @@ public class CityPlan implements IAsset {
         JsonArray lootArray = new JsonArray();
         for (Loot l : loot) {
             JsonObject o = new JsonObject();
-            o.add("id", new JsonPrimitive(l.getId().toString()));
+            if (l.getId() != null) {
+                o.add("id", new JsonPrimitive(l.getId().toString()));
+            }
             o.add("meta", new JsonPrimitive(l.getMeta()));
             o.add("max", new JsonPrimitive(l.getMaxAmount()));
             o.add("chance", new JsonPrimitive(l.getChance()));

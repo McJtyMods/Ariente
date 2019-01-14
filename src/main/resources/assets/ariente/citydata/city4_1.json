@@ -27,6 +27,12 @@
     "floating": true,
     "loot": [
       {
+        "meta": 0,
+        "blueprint": true,
+        "max": 3,
+        "chance": 0.4
+      },
+      {
         "id": "ariente:ingot_silver",
         "meta": 0,
         "max": 3,

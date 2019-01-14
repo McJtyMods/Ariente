@@ -26,6 +26,12 @@
     "underground": true,
     "loot": [
       {
+        "meta": 0,
+        "blueprint": true,
+        "max": 3,
+        "chance": 0.3
+      },
+      {
         "id": "ariente:ingot_silver",
         "meta": 0,
         "max": 3,

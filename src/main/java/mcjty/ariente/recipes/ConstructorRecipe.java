@@ -10,11 +10,17 @@ public class ConstructorRecipe {
 
     private final ItemStack destination;
     private final List<ItemStack> ingredients;
+    private final float chance;
 
-    public ConstructorRecipe(ItemStack destination, ItemStack... ingredients) {
+    public ConstructorRecipe(ItemStack destination, float chance, ItemStack... ingredients) {
         this.destination = destination;
         this.ingredients = new ArrayList<>(ingredients.length);
+        this.chance = chance;
         Collections.addAll(this.ingredients, ingredients);
+    }
+
+    public float getChance() {
+        return chance;
     }
 
     public ItemStack getDestination() {

@@ -80,7 +80,7 @@ public class LevitatorNetworkGenerator {
             BuildingPart part = CityTools.getStationPart(chunkX, chunkZ);
             if (part != null) {
                 CityPlan station = AssetRegistries.CITYPLANS.get("station");
-                int lowest = ArienteCityGenerator.generatePart(primer, station.getPalette(), part, Transform.ROTATE_NONE, 0, CityTools.getStationHeight(), 0);
+                int lowest = generator.getCityGenerator().generatePart(primer, station.getPalette(), part, Transform.ROTATE_NONE, 0, CityTools.getStationHeight(), 0);
 
                 BlockPos elevatorPos = null;
                 if (cx == 7 && cz == 9 && CityTools.isCityChunk(chunkX, chunkZ)) {

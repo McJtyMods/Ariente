@@ -15,6 +15,7 @@ import mcjty.ariente.config.AIConfiguration;
 import mcjty.ariente.dimension.ArienteChunkGenerator;
 import mcjty.ariente.entities.drone.DroneEntity;
 import mcjty.ariente.entities.drone.SentinelDroneEntity;
+import mcjty.ariente.entities.levitator.FluxLevitatorEntity;
 import mcjty.ariente.entities.soldier.MasterSoldierEntity;
 import mcjty.ariente.entities.soldier.SoldierBehaviourType;
 import mcjty.ariente.entities.soldier.SoldierEntity;
@@ -22,10 +23,12 @@ import mcjty.ariente.items.BlueprintItem;
 import mcjty.ariente.items.ModItems;
 import mcjty.ariente.items.modules.ArmorUpgradeType;
 import mcjty.ariente.items.modules.ModuleSupport;
-import mcjty.ariente.entities.levitator.FluxLevitatorEntity;
 import mcjty.ariente.power.PowerSenderSupport;
+import mcjty.ariente.recipes.ConstructorRecipe;
+import mcjty.ariente.recipes.RecipeRegistry;
 import mcjty.ariente.security.SecuritySystem;
 import mcjty.ariente.varia.ChunkCoord;
+import mcjty.ariente.varia.WeightedRandom;
 import mcjty.hologui.api.IHoloGuiEntity;
 import mcjty.lib.blocks.BaseBlock;
 import mcjty.lib.varia.RedstoneMode;
@@ -45,6 +48,7 @@ import net.minecraft.nbt.NBTUtil;
 import net.minecraft.tileentity.TileEntity;
 import net.minecraft.util.EnumFacing;
 import net.minecraft.util.EnumHand;
+import net.minecraft.util.ResourceLocation;
 import net.minecraft.util.math.AxisAlignedBB;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.World;
@@ -913,17 +917,24 @@ public class CityAI {
     }
 
     public void fillLoot(CityPlan plan, StorageTile te) {
-        List<Loot> loot = plan.getLoot();
+        WeightedRandom<Loot> randomLoot = plan.getRandomLoot();
         for (int i = 0 ; i < 4 ; i++) {
-            for (Loot l : loot) {
-                if (random.nextFloat() < l.getChance()) {
-                    int amount;
-                    if (l.getMaxAmount() <= 1) {
-                        amount = 1;
-                    } else {
-                        amount = 1 + random.nextInt(l.getMaxAmount() - 1);
-                    }
-                    Item item = ForgeRegistries.ITEMS.getValue(l.getId());
+            if (random.nextFloat() > .3f) {
+                Loot l = randomLoot.getRandom();
+                int amount;
+                if (l.getMaxAmount() <= 1) {
+                    amount = 1;
+                } else {
+                    amount = 1 + random.nextInt(l.getMaxAmount() - 1);
+                }
+                ResourceLocation id = l.getId();
+                if (id == null) {
+                    // Random blueprint
+                    ConstructorRecipe recipe = RecipeRegistry.getRandomRecipes().getRandom();
+                    ItemStack blueprint = BlueprintItem.makeBluePrint(recipe.getDestination());
+                    te.initTotalStack(i, blueprint);
+                } else {
+                    Item item = ForgeRegistries.ITEMS.getValue(id);
                     if (item != null) {
                         if (l.isBlueprint()) {
                             ItemStack blueprint = BlueprintItem.makeBluePrint(new ItemStack(item, 1, l.getMeta()));
