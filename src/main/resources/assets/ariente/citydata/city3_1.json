@@ -56,6 +56,55 @@
         "chance": 0.1
       },
       {
+        "id": "ariente:module_speed",
+        "blueprint": true,
+        "meta": 0,
+        "max": 1,
+        "chance": 0.1
+      },
+      {
+        "id": "ariente:module_loot",
+        "blueprint": true,
+        "meta": 0,
+        "max": 1,
+        "chance": 0.01
+      },
+      {
+        "id": "ariente:module_fire",
+        "blueprint": true,
+        "meta": 0,
+        "max": 1,
+        "chance": 0.01
+      },
+      {
+        "id": "ariente:module_power",
+        "blueprint": true,
+        "meta": 0,
+        "max": 1,
+        "chance": 0.1
+      },
+      {
+        "id": "ariente:module_regeneration",
+        "blueprint": true,
+        "meta": 0,
+        "max": 1,
+        "chance": 0.1
+      },
+      {
+        "id": "ariente:module_featherfalling",
+        "blueprint": true,
+        "meta": 0,
+        "max": 1,
+        "chance": 0.1
+      },
+      {
+        "id": "ariente:enhanced_energy_sabre",
+        "blueprint": true,
+        "meta": 0,
+        "max": 1,
+        "chance": 0.05
+      },
+      {
         "id": "ariente:module_inhibit",
         "blueprint": true,
         "meta": 0,
@@ -80,10 +129,24 @@
         "blueprint": true,
         "meta": 0,
         "max": 1,
-        "chance": 0.1
+        "chance": 0.01
       },
       {
         "id": "ariente:module_forcefield",
+        "blueprint": true,
+        "meta": 0,
+        "max": 1,
+        "chance": 0.1
+      },
+      {
+        "id": "ariente:module_flight",
+        "blueprint": true,
+        "meta": 0,
+        "max": 1,
+        "chance": 0.1
+      },
+      {
+        "id": "ariente:module_scramble",
         "blueprint": true,
         "meta": 0,
         "max": 1,

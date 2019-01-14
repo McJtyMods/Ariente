@@ -76,11 +76,53 @@
         "blueprint": false
       },
       {
+        "id": "ariente:enhanced_energy_sabre",
+        "blueprint": true,
+        "meta": 0,
+        "max": 1,
+        "chance": 0.1
+      },
+      {
         "id": "ariente:module_armor",
         "meta": 0,
         "max": 1,
         "chance": 0.1,
         "blueprint": true
+      },
+      {
+        "id": "ariente:module_energy",
+        "blueprint": true,
+        "meta": 0,
+        "max": 1,
+        "chance": 0.1
+      },
+      {
+        "id": "ariente:module_regeneration",
+        "blueprint": true,
+        "meta": 0,
+        "max": 1,
+        "chance": 0.1
+      },
+      {
+        "id": "ariente:module_speed",
+        "blueprint": true,
+        "meta": 0,
+        "max": 1,
+        "chance": 0.1
+      },
+      {
+        "id": "ariente:module_loot",
+        "blueprint": true,
+        "meta": 0,
+        "max": 1,
+        "chance": 0.1
+      },
+      {
+        "id": "ariente:module_fire",
+        "blueprint": true,
+        "meta": 0,
+        "max": 1,
+        "chance": 0.1
       },
       {
         "id": "ariente:module_energy",

@@ -38,6 +38,12 @@
         "chance": 0.2
       },
       {
+        "id": "ariente:constructor",
+        "meta": 0,
+        "max": 1,
+        "chance": 0.1
+      },
+      {
         "id": "ariente:energy_sabre",
         "blueprint": true,
         "meta": 0,
