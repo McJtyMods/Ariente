@@ -1,3 +1,6 @@
+0.0.6-alpha:
+- Forgot to commit a few things
+
 0.0.5-alpha:
 - New blueprint system. These blueprints are going to be used as the gating component for progression through this mod
 - Loot in cities has been mostly replaced with blueprints

@@ -30,7 +30,7 @@ import org.apache.logging.log4j.Logger;
 public class Ariente implements ModBase {
     public static final String MODID = "ariente";
     public static final String MODNAME = "Ariente";
-    public static final String VERSION = "0.0.5-alpha";
+    public static final String VERSION = "0.0.6-alpha";
     public static final String MIN_FORGE11_VER = "14.23.3.2694";
     public static final String MIN_MCJTYLIB_VER = "3.1.0";
     public static final String MIN_HOLOGUI_VER = "0.0.4-beta";
