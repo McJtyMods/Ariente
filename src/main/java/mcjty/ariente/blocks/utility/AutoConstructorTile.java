@@ -543,5 +543,6 @@ public class AutoConstructorTile extends GenericTileEntity implements DefaultSid
 
     @Override
     public void syncToClient() {
+        markDirtyClient();
     }
 }

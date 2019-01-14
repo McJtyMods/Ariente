@@ -5,16 +5,14 @@
 - New blueprint storage which has to be set adjacent to the constructor and auto constructor so that they can craft
 - New flux ship (work in progress!)
 - New levitating city
+- The jump key (usually space) to start flying with the power armor fired even if a console or gui was open
 - Fixed a bug where cities kept on spawning new sentinels everytime the world was reloaded
 - New power combiner which is used to combine power for the combined power cables
 - New online help in many gui's (TODO TODO TODO EXTEND)
-- TODO TODO TODO Better placement logic for flat light and similar flat blocks
 - New command option for ar_findcity to locate a city of a given type
 - More powerful city editing mode (mostly for internal usage)
 - Needs McJtyLib 3.1.0 and HoloGui 0.0.4-beta
 - Bug: AUTO CONSTRUCTOR gui not correct?
-- Bug: can't go back from help in armor gui
-- Bug: flying city worldgen clears weird area below
 
 0.0.4-alpha:
 - Update to 0.0.3-beta of HoloGui
