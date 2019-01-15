@@ -1,3 +1,6 @@
+Upcoming:
+- Added back SideOnly(Side.CLIENT) to some spots to avoid crashes on server
+
 0.0.6-alpha:
 - Forgot to commit a few things
 
