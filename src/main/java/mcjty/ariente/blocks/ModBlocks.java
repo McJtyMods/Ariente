@@ -5,7 +5,7 @@ import mcjty.ariente.blocks.aicore.AICoreTile;
 import mcjty.ariente.blocks.decorative.*;
 import mcjty.ariente.blocks.defense.ForceFieldTile;
 import mcjty.ariente.blocks.generators.*;
-import mcjty.ariente.blocks.plants.BlockBlackBush;
+import mcjty.ariente.blocks.plants.BlockArientePlant;
 import mcjty.ariente.blocks.utility.*;
 import mcjty.ariente.blocks.utility.door.DoorMarkerRenderer;
 import mcjty.ariente.blocks.utility.door.DoorMarkerTile;
@@ -72,7 +72,8 @@ public class ModBlocks {
     public static BaseBlock glowleaves;
     public static BaseBlock bluelog;
     public static BaseBlock blueleaves;
-    public static BlockBlackBush blackBush;
+    public static BlockArientePlant blackBush;
+    public static BlockArientePlant darkGrass;
 
     public static GenericBlock<PowerCombinerTile, GenericContainer> powerCombinerBlock;
     public static GenericBlock<NegariteGeneratorTile, GenericContainer> negariteGeneratorBlock;
@@ -456,7 +457,8 @@ public class ModBlocks {
                 .creativeTabs(Ariente.creativeTab)
                 .flags(BlockFlags.NON_OPAQUE, BlockFlags.RENDER_CUTOUT)
                 .build();
-        blackBush = new BlockBlackBush();
+        blackBush = new BlockArientePlant("black_bush");
+        darkGrass = new BlockArientePlant("dark_grass");
     }
 
     private static void initDecorative() {
@@ -611,6 +613,7 @@ public class ModBlocks {
         bluelog.initModel();
         blueleaves.initModel();
         blackBush.initModel();
+        darkGrass.initModel();
     }
 
     @SideOnly(Side.CLIENT)

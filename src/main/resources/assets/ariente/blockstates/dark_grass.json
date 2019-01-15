@@ -3,7 +3,7 @@
     "defaults": {
         "model": "cross",
         "textures": {
-            "cross": "ariente:blocks/plants/blackbush"
+            "cross": "ariente:blocks/plants/darkgrass"
         }
     },
     "variants": {

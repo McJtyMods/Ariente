@@ -11,10 +11,11 @@ import net.minecraft.world.gen.feature.WorldGenerator;
 import java.util.Random;
 
 public class WorldGenArienteFlowers extends WorldGenerator {
-    private IBlockState state;
+    private IBlockState[] states = new IBlockState[2];
 
     public WorldGenArienteFlowers() {
-        state = ModBlocks.blackBush.getDefaultState();
+        states[0] = ModBlocks.blackBush.getDefaultState();
+        states[1] = ModBlocks.darkGrass.getDefaultState();
     }
 
 
@@ -24,7 +25,7 @@ public class WorldGenArienteFlowers extends WorldGenerator {
 
             Block block = world.getBlockState(blockpos.down()).getBlock();
             if (world.isAirBlock(blockpos) && (blockpos.getY() < 255) && (block == Blocks.DIRT || block == Blocks.GRASS)) {
-                world.setBlockState(blockpos, this.state, 2);
+                world.setBlockState(blockpos, this.states[rand.nextInt(2)], 2);
             }
         }
 

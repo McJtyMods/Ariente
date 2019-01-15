@@ -1,7 +1,6 @@
 package mcjty.ariente.blocks.plants;
 
 import mcjty.ariente.Ariente;
-import mcjty.ariente.blocks.ModBlocks;
 import mcjty.lib.McJtyLib;
 import mcjty.lib.McJtyRegister;
 import net.minecraft.block.BlockBush;
@@ -26,18 +25,18 @@ import java.util.Arrays;
 import java.util.List;
 import java.util.Random;
 
-public class BlockBlackBush extends BlockBush implements net.minecraftforge.common.IShearable {
+public class BlockArientePlant extends BlockBush implements net.minecraftforge.common.IShearable {
 
     protected static final AxisAlignedBB BLACK_BUSH_AABB = new AxisAlignedBB(0.1, 0.0D, 0.1, 0.9, 0.8, 0.9);
 
-    public BlockBlackBush() {
+    public BlockArientePlant(String name) {
         super(Material.VINE);
         setHardness(0.0F);
         setSoundType(SoundType.PLANT);
         setCreativeTab(Ariente.creativeTab);
 
-        setUnlocalizedName(Ariente.MODID + "." + "black_bush");
-        setRegistryName("black_bush");
+        setUnlocalizedName(Ariente.MODID + "." + name);
+        setRegistryName(name);
         McJtyRegister.registerLater(this, Ariente.instance, ItemBlock::new);
     }
 
@@ -79,7 +78,7 @@ public class BlockBlackBush extends BlockBush implements net.minecraftforge.comm
     @Override
     public void harvestBlock(World worldIn, EntityPlayer player, BlockPos pos, IBlockState state, @Nullable TileEntity te, ItemStack stack) {
         if (!worldIn.isRemote && stack.getItem() == Items.SHEARS) {
-            spawnAsEntity(worldIn, pos, new ItemStack(ModBlocks.blackBush, 1, 0));
+            spawnAsEntity(worldIn, pos, new ItemStack(this, 1, 0));
         } else {
             super.harvestBlock(worldIn, player, pos, state, te, stack);
         }
@@ -92,6 +91,6 @@ public class BlockBlackBush extends BlockBush implements net.minecraftforge.comm
 
     @Override
     public List<ItemStack> onSheared(ItemStack item, IBlockAccess world, BlockPos pos, int fortune) {
-        return Arrays.asList(new ItemStack(Blocks.DEADBUSH));
+        return Arrays.asList(new ItemStack(this));
     }
 }
