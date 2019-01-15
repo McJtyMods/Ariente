@@ -1,3 +1,6 @@
+upcoming:
+- Started working on more biome decorations: flowers.
+
 0.0.7-alpha:
 - Added back SideOnly(Side.CLIENT) to some spots to avoid crashes on server
 

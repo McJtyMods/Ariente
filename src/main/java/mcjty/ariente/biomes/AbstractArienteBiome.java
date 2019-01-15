@@ -3,6 +3,7 @@ package mcjty.ariente.biomes;
 import mcjty.ariente.biomes.features.WorldGenBlueTree;
 import mcjty.ariente.biomes.features.WorldGenGlassTree;
 import mcjty.ariente.blocks.ModBlocks;
+import net.minecraft.block.BlockFlower;
 import net.minecraft.block.BlockSand;
 import net.minecraft.block.material.Material;
 import net.minecraft.block.state.IBlockState;
@@ -31,6 +32,11 @@ public abstract class AbstractArienteBiome extends Biome {
     @Override
     public void genTerrainBlocks(World worldIn, Random rand, ChunkPrimer chunkPrimerIn, int x, int z, double noiseVal) {
         generateBlocks(worldIn, rand, chunkPrimerIn, x, z, noiseVal);
+    }
+
+    @Override
+    public BlockFlower.EnumFlowerType pickRandomFlower(Random rand, BlockPos pos) {
+        return super.pickRandomFlower(rand, pos);
     }
 
     @Override

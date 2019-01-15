@@ -146,6 +146,7 @@ tile.ariente.glowlog.name=Glowing Log
 tile.ariente.glowleaves.name=Glowing Leaves
 tile.ariente.bluelog.name=Blue Log
 tile.ariente.blueleaves.name=Blue Leaves
+tile.ariente.black_bush.name=Black Bush
 
 entity.ariente_drone.name=Drone
 entity.ariente_sentinel_drone.name=Sentinel Drone
