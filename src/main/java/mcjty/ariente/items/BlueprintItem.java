@@ -19,6 +19,8 @@ import net.minecraft.util.ResourceLocation;
 import net.minecraft.util.text.TextFormatting;
 import net.minecraft.world.World;
 import net.minecraftforge.client.model.ModelLoader;
+import net.minecraftforge.fml.relauncher.Side;
+import net.minecraftforge.fml.relauncher.SideOnly;
 import org.apache.commons.lang3.tuple.Pair;
 
 import javax.annotation.Nullable;
@@ -86,6 +88,7 @@ public class BlueprintItem extends GenericItem implements ITooltipExtras {
         return ItemStackTools.jsonToItemStack(json.getAsJsonObject());
     }
 
+    @SideOnly(Side.CLIENT)
     @Override
     public void initModel() {
         ModelLoader.setCustomMeshDefinition(this, new ItemMeshDefinition() {
