@@ -13,8 +13,8 @@ import java.util.Random;
 
 public class WorldGenBlueTree extends WorldGenHugeTrees {
 
-    public WorldGenBlueTree(boolean notify, int baseHeightIn, int extraRandomHeightIn, IBlockState woodMetadataIn, IBlockState leavesMetadataIn) {
-        super(notify, baseHeightIn, extraRandomHeightIn, woodMetadataIn, leavesMetadataIn);
+    public WorldGenBlueTree(int baseHeightIn, int extraRandomHeightIn, IBlockState woodMetadataIn, IBlockState leavesMetadataIn) {
+        super(false, baseHeightIn, extraRandomHeightIn, woodMetadataIn, leavesMetadataIn);
     }
 
     @Override

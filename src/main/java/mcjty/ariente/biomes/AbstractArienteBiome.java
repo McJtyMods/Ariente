@@ -1,7 +1,9 @@
 package mcjty.ariente.biomes;
 
+import mcjty.ariente.biomes.features.WorldGenArianteVariantTree;
+import mcjty.ariente.biomes.features.WorldGenArienteFlowers;
+import mcjty.ariente.biomes.features.WorldGenArienteSmallTree;
 import mcjty.ariente.biomes.features.WorldGenBlueTree;
-import mcjty.ariente.biomes.features.WorldGenGlassTree;
 import mcjty.ariente.blocks.ModBlocks;
 import net.minecraft.block.BlockFlower;
 import net.minecraft.block.BlockSand;
@@ -19,9 +21,21 @@ import java.util.Random;
 
 public abstract class AbstractArienteBiome extends Biome {
 
-    protected static final WorldGenGlassTree GLASS_TREE = new WorldGenGlassTree(false);
-    protected static final WorldGenHugeTrees HUGE_TREE = new WorldGenBlueTree(false,
-            10, 20, ModBlocks.bluelog.getDefaultState(), ModBlocks.blueleaves.getDefaultState());
+    private static final IBlockState GLOW_TRUNK = ModBlocks.glowlog.getDefaultState();
+    private static final IBlockState GLOW_LEAVES = ModBlocks.glowleaves.getDefaultState();
+    private static final IBlockState BLUE_TRUNK = ModBlocks.bluelog.getDefaultState();
+    private static final IBlockState DARK_LEAVES = ModBlocks.darkleaves.getDefaultState();
+    private static final IBlockState BLUE_LEAVES = ModBlocks.blueleaves.getDefaultState();
+
+    private static final WorldGenArienteSmallTree GLASS_TREE = new WorldGenArienteSmallTree(GLOW_TRUNK, GLOW_LEAVES);
+    private static final WorldGenArienteSmallTree DARK_TREE = new WorldGenArienteSmallTree(BLUE_TRUNK, DARK_LEAVES);
+    private static final WorldGenArienteSmallTree SMALL_TREE = new WorldGenArienteSmallTree(BLUE_TRUNK, BLUE_LEAVES);
+    private static final WorldGenArienteSmallTree DARK_TREE_V2 = new WorldGenArienteSmallTree(6, BLUE_TRUNK, DARK_LEAVES, false);
+    private static final WorldGenArienteSmallTree SMALL_TREE_V2 = new WorldGenArienteSmallTree(6, BLUE_TRUNK, BLUE_LEAVES, false);
+    private static final WorldGenHugeTrees HUGE_TREE = new WorldGenBlueTree(10, 20, BLUE_TRUNK, BLUE_LEAVES);
+    private static final WorldGenArianteVariantTree VARIANT_TREE = new WorldGenArianteVariantTree();
+
+    private WorldGenArienteFlowers flowers = new WorldGenArienteFlowers();
 
     public AbstractArienteBiome(BiomeProperties properties) {
         super(properties);
@@ -35,13 +49,25 @@ public abstract class AbstractArienteBiome extends Biome {
     }
 
     @Override
-    public BlockFlower.EnumFlowerType pickRandomFlower(Random rand, BlockPos pos) {
-        return super.pickRandomFlower(rand, pos);
-    }
-
-    @Override
     public WorldGenAbstractTree getRandomTreeFeature(Random rand) {
-        return rand.nextInt(10) == 0 ? HUGE_TREE : GLASS_TREE;
+        switch (rand.nextInt(10)) {
+            case 0:
+                return HUGE_TREE;
+            case 1:
+            case 2:
+                return GLASS_TREE;
+            case 3:
+            case 4:
+                return SMALL_TREE;
+            case 5:
+                return SMALL_TREE_V2;
+            case 6:
+                return DARK_TREE_V2;
+            case 7:
+                return VARIANT_TREE;
+            default:
+                return DARK_TREE;
+        }
     }
 
     @Override
@@ -66,15 +92,15 @@ public abstract class AbstractArienteBiome extends Biome {
         IBlockState iblockstate1 = this.fillerBlock;
         int j = -1;
         int k = (int) (noiseVal / 3.0D + 3.0D + rand.nextDouble() * 0.25D);
-        int l = x & 15;
-        int i1 = z & 15;
+        int dz = x & 15;    // swapped?
+        int dx = z & 15;
         BlockPos.MutableBlockPos blockpos$mutableblockpos = new BlockPos.MutableBlockPos();
 
-        for (int j1 = 255; j1 >= 0; --j1) {
-            if (j1 <= rand.nextInt(5)) {
-                chunkPrimerIn.setBlockState(i1, j1, l, BEDROCK);
+        for (int y = 255; y >= 0; --y) {
+            if (y <= rand.nextInt(5)) {
+                chunkPrimerIn.setBlockState(dx, y, dz, BEDROCK);
             } else {
-                IBlockState iblockstate2 = chunkPrimerIn.getBlockState(i1, j1, l);
+                IBlockState iblockstate2 = chunkPrimerIn.getBlockState(dx, y, dz);
 
                 if (iblockstate2.getMaterial() == Material.AIR) {
                     j = -1;
@@ -83,13 +109,13 @@ public abstract class AbstractArienteBiome extends Biome {
                         if (k <= 0) {
                             iblockstate = AIR;
                             iblockstate1 = ModBlocks.marble.getDefaultState();
-                        } else if (j1 >= i - 4 && j1 <= i + 1) {
+                        } else if (y >= i - 4 && y <= i + 1) {
                             iblockstate = this.topBlock;
                             iblockstate1 = this.fillerBlock;
                         }
 
-                        if (j1 < i && (iblockstate == null || iblockstate.getMaterial() == Material.AIR)) {
-                            if (this.getTemperature(blockpos$mutableblockpos.setPos(x, j1, z)) < 0.15F) {
+                        if (y < i && (iblockstate == null || iblockstate.getMaterial() == Material.AIR)) {
+                            if (this.getTemperature(blockpos$mutableblockpos.setPos(x, y, z)) < 0.15F) {
                                 iblockstate = ICE;
                             } else {
                                 iblockstate = WATER;
@@ -98,25 +124,39 @@ public abstract class AbstractArienteBiome extends Biome {
 
                         j = k;
 
-                        if (j1 >= i - 1) {
-                            chunkPrimerIn.setBlockState(i1, j1, l, iblockstate);
-                        } else if (j1 < i - 7 - k) {
+                        if (y >= i - 1) {
+                            chunkPrimerIn.setBlockState(dx, y, dz, iblockstate);
+                        } else if (y < i - 7 - k) {
                             iblockstate = AIR;
                             iblockstate1 = ModBlocks.marble.getDefaultState();
-                            chunkPrimerIn.setBlockState(i1, j1, l, GRAVEL);
+                            chunkPrimerIn.setBlockState(dx, y, dz, GRAVEL);
                         } else {
-                            chunkPrimerIn.setBlockState(i1, j1, l, iblockstate1);
+                            chunkPrimerIn.setBlockState(dx, y, dz, iblockstate1);
                         }
                     } else if (j > 0) {
                         --j;
-                        chunkPrimerIn.setBlockState(i1, j1, l, iblockstate1);
+                        chunkPrimerIn.setBlockState(dx, y, dz, iblockstate1);
 
                         if (j == 0 && iblockstate1.getBlock() == Blocks.SAND && k > 1) {
-                            j = rand.nextInt(4) + Math.max(0, j1 - 63);
+                            j = rand.nextInt(4) + Math.max(0, y - 63);
                             iblockstate1 = iblockstate1.getValue(BlockSand.VARIANT) == BlockSand.EnumType.RED_SAND ? RED_SANDSTONE : SANDSTONE;
                         }
                     }
                 }
+            }
+        }
+    }
+
+    protected void generateFlowers(World worldIn, Random random, int cnt) {
+        for (int i = 0; i < cnt; ++i) {
+            int x = random.nextInt(16) + 8;
+            int z = random.nextInt(16) + 8;
+            int y = worldIn.getHeight(decorator.chunkPos.add(x, 0, z)).getY() + 32;
+
+            if (y > 0) {
+                int y2 = random.nextInt(y);
+                BlockPos blockpos1 = decorator.chunkPos.add(x, y2, z);
+                flowers.generate(worldIn, random, blockpos1);
             }
         }
     }

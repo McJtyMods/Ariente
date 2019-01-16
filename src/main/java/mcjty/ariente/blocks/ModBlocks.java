@@ -72,8 +72,10 @@ public class ModBlocks {
     public static BaseBlock glowleaves;
     public static BaseBlock bluelog;
     public static BaseBlock blueleaves;
+    public static BaseBlock darkleaves;
     public static BlockArientePlant blackBush;
     public static BlockArientePlant darkGrass;
+    public static BlockArientePlant smallFlower;
 
     public static GenericBlock<PowerCombinerTile, GenericContainer> powerCombinerBlock;
     public static GenericBlock<NegariteGeneratorTile, GenericContainer> negariteGeneratorBlock;
@@ -457,8 +459,14 @@ public class ModBlocks {
                 .creativeTabs(Ariente.creativeTab)
                 .flags(BlockFlags.NON_OPAQUE, BlockFlags.RENDER_CUTOUT)
                 .build();
+        darkleaves = new BaseBlockBuilder<>(Ariente.instance, "darkleaves")
+                .rotationType(BaseBlock.RotationType.NONE)
+                .creativeTabs(Ariente.creativeTab)
+                .flags(BlockFlags.NON_OPAQUE, BlockFlags.RENDER_CUTOUT)
+                .build();
         blackBush = new BlockArientePlant("black_bush");
         darkGrass = new BlockArientePlant("dark_grass");
+        smallFlower = new BlockArientePlant("small_flower");
     }
 
     private static void initDecorative() {
@@ -608,12 +616,15 @@ public class ModBlocks {
         platinumore.initModel();
         posirite.initModel();
         negarite.initModel();
+
         glowlog.initModel();
         glowleaves.initModel();
         bluelog.initModel();
         blueleaves.initModel();
+        darkleaves.initModel();
         blackBush.initModel();
         darkGrass.initModel();
+        smallFlower.initModel();
     }
 
     @SideOnly(Side.CLIENT)

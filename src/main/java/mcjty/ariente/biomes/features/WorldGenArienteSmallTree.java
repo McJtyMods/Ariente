@@ -1,6 +1,5 @@
 package mcjty.ariente.biomes.features;
 
-import mcjty.ariente.blocks.ModBlocks;
 import net.minecraft.block.BlockCocoa;
 import net.minecraft.block.BlockVine;
 import net.minecraft.block.material.Material;
@@ -14,24 +13,22 @@ import net.minecraft.world.gen.feature.WorldGenAbstractTree;
 
 import java.util.Random;
 
-public class WorldGenGlassTree extends WorldGenAbstractTree {
+public class WorldGenArienteSmallTree extends WorldGenAbstractTree {
 
-    private static final IBlockState DEFAULT_TRUNK = ModBlocks.glowlog.getDefaultState();
-    private static final IBlockState DEFAULT_LEAF = ModBlocks.glowleaves.getDefaultState();
     private final int minTreeHeight;
     private final boolean vinesGrow;
     private final IBlockState metaWood;
     private final IBlockState metaLeaves;
 
-    public WorldGenGlassTree(boolean p_i2027_1_) {
-        this(p_i2027_1_, 4, DEFAULT_TRUNK, DEFAULT_LEAF, false);
+    public WorldGenArienteSmallTree(IBlockState woodMeta, IBlockState leaves) {
+        this(4, woodMeta, leaves, false);
     }
 
-    public WorldGenGlassTree(boolean notify, int minTreeHeightIn, IBlockState woodMeta, IBlockState p_i46446_4_, boolean growVines) {
-        super(notify);
+    public WorldGenArienteSmallTree(int minTreeHeightIn, IBlockState woodMeta, IBlockState leaves, boolean growVines) {
+        super(false);
         this.minTreeHeight = minTreeHeightIn;
         this.metaWood = woodMeta;
-        this.metaLeaves = p_i46446_4_;
+        this.metaLeaves = leaves;
         this.vinesGrow = growVines;
     }
 
