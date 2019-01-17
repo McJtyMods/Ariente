@@ -1,5 +1,6 @@
 upcoming:
-- Started working on more biome decorations: flowers.
+- Started working on more biome decorations: flowers
+- Fixed a problem on servers with the forcefield
 
 0.0.7-alpha:
 - Added back SideOnly(Side.CLIENT) to some spots to avoid crashes on server

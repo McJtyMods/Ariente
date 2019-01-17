@@ -169,7 +169,8 @@ public class ForceFieldTile extends GenericTileEntity implements IGuiTile, ITick
         double radius = getScaleDouble();
 
         Vec3d fieldCenter = new Vec3d(x, y, z);
-        Vec3d entityCenter = entity.getEntityBoundingBox().getCenter();
+        AxisAlignedBB box = entity.getEntityBoundingBox();
+        Vec3d entityCenter = new Vec3d(box.minX + (box.maxX - box.minX) * 0.5D, box.minY + (box.maxY - box.minY) * 0.5D, box.minZ + (box.maxZ - box.minZ) * 0.5D);
         double squareDist = fieldCenter.squareDistanceTo(entityCenter);
         return Math.abs(Math.sqrt(squareDist) - radius) < 10;
     }
@@ -211,7 +212,9 @@ public class ForceFieldTile extends GenericTileEntity implements IGuiTile, ITick
                             }
                         }
                     }
-                    Vec3d entityCenter = entity.getEntityBoundingBox().getCenter();
+                    AxisAlignedBB box = entity.getEntityBoundingBox();
+                    Vec3d entityCenter = new Vec3d(box.minX + (box.maxX - box.minX) * 0.5D, box.minY + (box.maxY - box.minY) * 0.5D, box.minZ + (box.maxZ - box.minZ) * 0.5D);
+
                     double squareDist = fieldCenter.squareDistanceTo(entityCenter);
                     if (Math.abs(squareDist - squaredRadius) < 10*10) {
                         return true;
