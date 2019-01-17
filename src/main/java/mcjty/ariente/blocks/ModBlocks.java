@@ -21,17 +21,23 @@ import mcjty.lib.builder.BaseBlockBuilder;
 import mcjty.lib.builder.BlockFlags;
 import mcjty.lib.builder.GenericBlockBuilderFactory;
 import mcjty.lib.container.GenericContainer;
+import mcjty.lib.multipart.MultipartItemBlock;
 import mcjty.lib.varia.ItemStackTools;
 import net.minecraft.block.Block;
 import net.minecraft.block.SoundType;
 import net.minecraft.block.material.Material;
 import net.minecraft.block.state.IBlockState;
 import net.minecraft.client.renderer.color.BlockColors;
+import net.minecraft.item.ItemBlock;
 import net.minecraft.util.EnumFacing;
 import net.minecraft.util.math.AxisAlignedBB;
 import net.minecraftforge.fml.relauncher.Side;
 import net.minecraftforge.fml.relauncher.SideOnly;
 import net.minecraftforge.oredict.OreDictionary;
+
+import static mcjty.lib.blocks.BaseBlock.RotationType.HORIZROTATION;
+import static mcjty.lib.blocks.BaseBlock.RotationType.NONE;
+import static mcjty.lib.builder.BlockFlags.*;
 
 public class ModBlocks {
 
@@ -55,6 +61,9 @@ public class ModBlocks {
     public static BaseBlock masterSoldierDummy;
 
     public static BaseBlock fluxBeamBlock;
+
+    public static BaseBlock partTest1;
+    public static BaseBlock partTest2;
 
     public static BaseBlock lapisore;
     public static BaseBlock glowstoneore;
@@ -140,35 +149,42 @@ public class ModBlocks {
         flatLightBlock = new BaseBlockBuilder<>(Ariente.instance, "flatlight")
                 .creativeTabs(Ariente.creativeTab)
                 .lightValue(15)
-                .flags(BlockFlags.NON_OPAQUE, BlockFlags.NON_FULLCUBE)
+                .flags(NON_OPAQUE, NON_FULLCUBE)
                 .boundingBox((state, source, pos) -> getFlatBox(state))
                 .build();
 
         fluxGlow = new BaseBlockBuilder<>(Ariente.instance, "fluxglow")
                 .creativeTabs(Ariente.creativeTab)
-                .rotationType(BaseBlock.RotationType.NONE)
+                .rotationType(NONE)
                 .lightValue(15)
                 .build();
 
         guardDummy = new BaseBlockBuilder<>(Ariente.instance, "guard_dummy")
-                .rotationType(BaseBlock.RotationType.HORIZROTATION)
+                .rotationType(HORIZROTATION)
                 .build();
         soldierDummy = new BaseBlockBuilder<>(Ariente.instance, "soldier_dummy")
-                .rotationType(BaseBlock.RotationType.HORIZROTATION)
+                .rotationType(HORIZROTATION)
                 .build();
         masterSoldierDummy = new BaseBlockBuilder<>(Ariente.instance, "master_soldier_dummy")
-                .rotationType(BaseBlock.RotationType.HORIZROTATION)
+                .rotationType(HORIZROTATION)
+                .build();
+
+        partTest1 = new BaseBlockBuilder<>(Ariente.instance, "part_test1")
+                .itemBlockFactory(MultipartItemBlock::new)
+                .build();
+        partTest2 = new BaseBlockBuilder<>(Ariente.instance, "part_test2")
+                .itemBlockFactory(MultipartItemBlock::new)
                 .build();
 
         fluxBeamBlock = new BaseBlockBuilder<>(Ariente.instance, "flux_beam")
-                .rotationType(BaseBlock.RotationType.HORIZROTATION)
-                .flags(BlockFlags.NON_OPAQUE, BlockFlags.NON_FULLCUBE, BlockFlags.NO_COLLISION)
+                .rotationType(HORIZROTATION)
+                .flags(NON_OPAQUE, NON_FULLCUBE, NO_COLLISION)
                 .boundingBox((state, source, pos) -> getBeamBox(state))
                 .build();
 
         reinforcedMarble = new BaseBlockBuilder<>(Ariente.instance, "reinforced_marble")
                 .creativeTabs(Ariente.creativeTab)
-                .rotationType(BaseBlock.RotationType.NONE)
+                .rotationType(NONE)
                 .info("message.ariente.shiftmessage")
                 .infoExtended("message.ariente.lock")
                 .build();
@@ -176,7 +192,7 @@ public class ModBlocks {
 
         constructorBlock = builderFactory.<ConstructorTile> builder("constructor")
                 .tileEntityClass(ConstructorTile.class)
-                .rotationType(BaseBlock.RotationType.HORIZROTATION)
+                .rotationType(HORIZROTATION)
                 .activateAction((world, pos, player, hand, side, hitX, hitY, hitZ) -> Ariente.guiHandler.openHoloGui(world, pos, player))
                 .info("message.ariente.shiftmessage")
                 .infoExtended("message.ariente.constructor")
@@ -185,8 +201,8 @@ public class ModBlocks {
         autoConstructorBlock = builderFactory.<AutoConstructorTile> builder("auto_constructor")
                 .tileEntityClass(AutoConstructorTile.class)
                 .container(AutoConstructorTile.CONTAINER_FACTORY)
-                .rotationType(BaseBlock.RotationType.HORIZROTATION)
-                .flags(BlockFlags.REDSTONE_CHECK)
+                .rotationType(HORIZROTATION)
+                .flags(REDSTONE_CHECK)
                 .property(AutoConstructorTile.WORKING)
                 .activateAction((world, pos, player, hand, side, hitX, hitY, hitZ) -> Ariente.guiHandler.openHoloGui(world, pos, player))
                 .info("message.ariente.shiftmessage")
@@ -196,7 +212,7 @@ public class ModBlocks {
         blueprintStorageBlock = builderFactory.<BlueprintStorageTile> builder("blueprint_storage")
                 .tileEntityClass(BlueprintStorageTile.class)
                 .container(BlueprintStorageTile.CONTAINER_FACTORY)
-                .rotationType(BaseBlock.RotationType.HORIZROTATION)
+                .rotationType(HORIZROTATION)
                 .activateAction((world, pos, player, hand, side, hitX, hitY, hitZ) -> Ariente.guiHandler.openHoloGui(world, pos, player))
                 .info("message.ariente.shiftmessage")
                 .infoExtended("message.ariente.blueprint_storage")
@@ -205,7 +221,7 @@ public class ModBlocks {
         alarmBlock = builderFactory.<AlarmTile> builder("alarm")
                 .tileEntityClass(AlarmTile.class)
                 .property(AlarmTile.ALARM)
-                .flags(BlockFlags.NON_OPAQUE, BlockFlags.NON_FULLCUBE, BlockFlags.RENDER_SOLID, BlockFlags.RENDER_CUTOUT)
+                .flags(NON_OPAQUE, NON_FULLCUBE, RENDER_SOLID, RENDER_CUTOUT)
                 .boundingBox((state, source, pos) -> getFlatBox(state))
                 .info("message.ariente.shiftmessage")
                 .infoExtended("message.ariente.alarm")
@@ -214,7 +230,7 @@ public class ModBlocks {
         lockBlock = builderFactory.<LockTile> builder("lock")
                 .tileEntityClass(LockTile.class)
                 .property(LockTile.LOCKED)
-                .flags(BlockFlags.NON_OPAQUE, BlockFlags.NON_FULLCUBE, BlockFlags.RENDER_SOLID, BlockFlags.RENDER_CUTOUT)
+                .flags(NON_OPAQUE, NON_FULLCUBE, RENDER_SOLID, RENDER_CUTOUT)
                 .boundingBox((state, source, pos) -> getFlatBox(state))
                 .activateAction((world, pos, player, hand, side, hitX, hitY, hitZ) -> Ariente.guiHandler.openHoloGui(world, pos, player))
                 .info("message.ariente.shiftmessage")
@@ -224,7 +240,7 @@ public class ModBlocks {
         wirelessLockBlock = builderFactory.<WirelessLockTile> builder("wireless_lock")
                 .tileEntityClass(WirelessLockTile.class)
                 .property(WirelessLockTile.LOCKED)
-                .flags(BlockFlags.NON_OPAQUE, BlockFlags.NON_FULLCUBE, BlockFlags.RENDER_SOLID, BlockFlags.RENDER_CUTOUT)
+                .flags(NON_OPAQUE, NON_FULLCUBE, RENDER_SOLID, RENDER_CUTOUT)
                 .boundingBox((state, source, pos) -> getFlatBox(state))
                 .activateAction((world, pos, player, hand, side, hitX, hitY, hitZ) -> Ariente.guiHandler.openHoloGui(world, pos, player))
                 .info("message.ariente.shiftmessage")
@@ -235,7 +251,7 @@ public class ModBlocks {
         wirelessButtonBlock = builderFactory.<WirelessButtonTile> builder("wireless_button")
                 .tileEntityClass(WirelessButtonTile.class)
                 .property(WirelessButtonTile.POWER)
-                .flags(BlockFlags.NON_OPAQUE, BlockFlags.NON_FULLCUBE, BlockFlags.RENDER_SOLID, BlockFlags.RENDER_CUTOUT)
+                .flags(NON_OPAQUE, NON_FULLCUBE, RENDER_SOLID, RENDER_CUTOUT)
                 .boundingBox((state, source, pos) -> getFlatBox(state))
                 .activateAction(WirelessButtonTile::onBlockActivatedWithToggle)
                 .info("message.ariente.shiftmessage")
@@ -246,7 +262,7 @@ public class ModBlocks {
         signalReceiverBlock = builderFactory.<SignalReceiverTile> builder("signal_receiver")
                 .tileEntityClass(SignalReceiverTile.class)
                 .property(SignalChannelTileEntity.POWER)
-                .flags(BlockFlags.NON_OPAQUE, BlockFlags.NON_FULLCUBE, BlockFlags.REDSTONE_OUTPUT, BlockFlags.RENDER_SOLID, BlockFlags.RENDER_CUTOUT)
+                .flags(NON_OPAQUE, NON_FULLCUBE, REDSTONE_OUTPUT, RENDER_SOLID, RENDER_CUTOUT)
                 .boundingBox((state, source, pos) -> getFlatBox(state))
                 .activateAction(SignalChannelTileEntity::onBlockActivated)
                 .info("message.ariente.shiftmessage")
@@ -257,7 +273,7 @@ public class ModBlocks {
         signalTransmitterBlock = builderFactory.<SignalTransmitterTile> builder("signal_transmitter")
                 .tileEntityClass(SignalTransmitterTile.class)
                 .property(SignalChannelTileEntity.POWER)
-                .flags(BlockFlags.NON_OPAQUE, BlockFlags.NON_FULLCUBE, BlockFlags.REDSTONE_CHECK, BlockFlags.RENDER_SOLID, BlockFlags.RENDER_CUTOUT)
+                .flags(NON_OPAQUE, NON_FULLCUBE, REDSTONE_CHECK, RENDER_SOLID, RENDER_CUTOUT)
                 .boundingBox((state, source, pos) -> getFlatBox(state))
                 .activateAction(SignalChannelTileEntity::onBlockActivated)
                 .info("message.ariente.shiftmessage")
@@ -268,7 +284,7 @@ public class ModBlocks {
         powerCombinerBlock = builderFactory.<PowerCombinerTile> builder("power_combiner")
                 .tileEntityClass(PowerCombinerTile.class)
                 .rotationType(BaseBlock.RotationType.ROTATION)
-                .flags(BlockFlags.RENDER_SOLID, BlockFlags.RENDER_CUTOUT)
+                .flags(RENDER_SOLID, RENDER_CUTOUT)
                 .activateAction((world, pos, player, hand, side, hitX, hitY, hitZ) -> Ariente.guiHandler.openHoloGui(world, pos, player))
                 .info("message.ariente.shiftmessage")
                 .infoExtended("message.ariente.power_combiner")
@@ -277,8 +293,8 @@ public class ModBlocks {
         negariteGeneratorBlock = builderFactory.<NegariteGeneratorTile> builder("negarite_generator")
                 .tileEntityClass(NegariteGeneratorTile.class)
                 .container(NegariteGeneratorTile.CONTAINER_FACTORY)
-                .rotationType(BaseBlock.RotationType.HORIZROTATION)
-                .flags(BlockFlags.REDSTONE_CHECK, BlockFlags.RENDER_SOLID, BlockFlags.RENDER_CUTOUT)
+                .rotationType(HORIZROTATION)
+                .flags(REDSTONE_CHECK, RENDER_SOLID, RENDER_CUTOUT)
                 .property(NegariteGeneratorTile.WORKING)
                 .activateAction((world, pos, player, hand, side, hitX, hitY, hitZ) -> Ariente.guiHandler.openHoloGui(world, pos, player))
                 .info("message.ariente.shiftmessage")
@@ -288,8 +304,8 @@ public class ModBlocks {
         posiriteGeneratorBlock = builderFactory.<PosiriteGeneratorTile> builder("posirite_generator")
                 .tileEntityClass(PosiriteGeneratorTile.class)
                 .container(PosiriteGeneratorTile.CONTAINER_FACTORY)
-                .rotationType(BaseBlock.RotationType.HORIZROTATION)
-                .flags(BlockFlags.REDSTONE_CHECK, BlockFlags.RENDER_SOLID, BlockFlags.RENDER_CUTOUT)
+                .rotationType(HORIZROTATION)
+                .flags(REDSTONE_CHECK, RENDER_SOLID, RENDER_CUTOUT)
                 .property(PosiriteGeneratorTile.WORKING)
                 .activateAction((world, pos, player, hand, side, hitX, hitY, hitZ) -> Ariente.guiHandler.openHoloGui(world, pos, player))
                 .info("message.ariente.shiftmessage")
@@ -299,10 +315,10 @@ public class ModBlocks {
         negariteTankBlock = builderFactory.<NegariteTankTile> builder("negarite_tank")
                 .tileEntityClass(NegariteTankTile.class)
                 .emptyContainer()
-                .flags(BlockFlags.NON_OPAQUE, BlockFlags.RENDER_SOLID, BlockFlags.RENDER_TRANSLUCENT)
+                .flags(NON_OPAQUE, RENDER_SOLID, BlockFlags.RENDER_TRANSLUCENT)
                 .property(NegariteTankTile.LOWER)
                 .property(NegariteTankTile.UPPER)
-                .rotationType(BaseBlock.RotationType.NONE)
+                .rotationType(NONE)
                 .activateAction((world, pos, player, hand, side, hitX, hitY, hitZ) -> Ariente.guiHandler.openHoloGui(world, pos, player))
                 .info("message.ariente.shiftmessage")
                 .infoExtended("message.ariente.negarite_tank")
@@ -311,10 +327,10 @@ public class ModBlocks {
         posiriteTankBlock = builderFactory.<PosiriteTankTile> builder("posirite_tank")
                 .tileEntityClass(PosiriteTankTile.class)
                 .emptyContainer()
-                .flags(BlockFlags.NON_OPAQUE, BlockFlags.RENDER_SOLID, BlockFlags.RENDER_TRANSLUCENT)
+                .flags(NON_OPAQUE, RENDER_SOLID, BlockFlags.RENDER_TRANSLUCENT)
                 .property(PosiriteTankTile.LOWER)
                 .property(PosiriteTankTile.UPPER)
-                .rotationType(BaseBlock.RotationType.NONE)
+                .rotationType(NONE)
                 .activateAction((world, pos, player, hand, side, hitX, hitY, hitZ) -> Ariente.guiHandler.openHoloGui(world, pos, player))
                 .info("message.ariente.shiftmessage")
                 .infoExtended("message.ariente.posirite_tank")
@@ -324,7 +340,7 @@ public class ModBlocks {
                 .tileEntityClass(StorageTile.class)
                 .emptyContainer()
 //                .property(StorageTile.LOCKED)
-                .flags(BlockFlags.RENDER_SOLID, BlockFlags.RENDER_TRANSLUCENT)
+                .flags(RENDER_SOLID, BlockFlags.RENDER_TRANSLUCENT)
                 .rotationType(BaseBlock.RotationType.ROTATION)
                 .clickAction(StorageTile::onClick)
                 .activateAction((world, pos, player, hand, side, hitX, hitY, hitZ) -> StorageTile.onActivate(world, pos, player, side, hitX, hitY, hitZ))
@@ -335,8 +351,8 @@ public class ModBlocks {
         elevatorBlock = builderFactory.<ElevatorTile> builder("elevator")
                 .tileEntityClass(ElevatorTile.class)
                 .emptyContainer()
-                .flags(BlockFlags.RENDER_SOLID, BlockFlags.RENDER_TRANSLUCENT)
-                .rotationType(BaseBlock.RotationType.NONE)
+                .flags(RENDER_SOLID, BlockFlags.RENDER_TRANSLUCENT)
+                .rotationType(NONE)
                 .activateAction((world, pos, player, hand, side, hitX, hitY, hitZ) -> Ariente.guiHandler.openHoloGui(world, pos, player))
                 .info("message.ariente.shiftmessage")
                 .infoExtended("message.ariente.elevator")
@@ -345,8 +361,8 @@ public class ModBlocks {
         levelMarkerBlock = builderFactory.<LevelMarkerTile> builder("level_marker")
                 .tileEntityClass(LevelMarkerTile.class)
                 .emptyContainer()
-                .rotationType(BaseBlock.RotationType.NONE)
-                .flags(BlockFlags.NON_OPAQUE, BlockFlags.NON_FULLCUBE, BlockFlags.NO_COLLISION)
+                .rotationType(NONE)
+                .flags(NON_OPAQUE, NON_FULLCUBE, NO_COLLISION)
                 .activateAction((world, pos, player, hand, side, hitX, hitY, hitZ) -> Ariente.guiHandler.openHoloGui(world, pos, player))
                 .boundingBox((state, source, pos) -> FLAT_BLOCK_AABB)
                 .info("message.ariente.shiftmessage")
@@ -356,8 +372,8 @@ public class ModBlocks {
         doorMarkerBlock = builderFactory.<DoorMarkerTile> builder("door_marker")
                 .tileEntityClass(DoorMarkerTile.class)
                 .emptyContainer()
-                .rotationType(BaseBlock.RotationType.HORIZROTATION)
-                .flags(BlockFlags.NON_OPAQUE, BlockFlags.NON_FULLCUBE)
+                .rotationType(HORIZROTATION)
+                .flags(NON_OPAQUE, NON_FULLCUBE)
                 .activateAction((world, pos, player, hand, side, hitX, hitY, hitZ) -> Ariente.guiHandler.openHoloGui(world, pos, player))
                 .addCollisionBoxToList(DoorMarkerTile::addCollisionBoxToList)
                 .boundingBox(DoorMarkerTile::getCollisionBoundingBox)
@@ -369,8 +385,8 @@ public class ModBlocks {
         invisibleDoorBlock = builderFactory.<InvisibleDoorTile> builder("invisible_door")
                 .tileEntityClass(InvisibleDoorTile.class)
                 .emptyContainer()
-                .rotationType(BaseBlock.RotationType.HORIZROTATION)
-                .flags(BlockFlags.NON_OPAQUE, BlockFlags.NON_FULLCUBE)
+                .rotationType(HORIZROTATION)
+                .flags(NON_OPAQUE, NON_FULLCUBE)
                 .addCollisionBoxToList(InvisibleDoorTile::addCollisionBoxToList)
                 .boundingBox(InvisibleDoorTile::getCollisionBoundingBox)
                 .getAIPathNodeType(InvisibleDoorTile::getAiPathNodeType)
@@ -379,8 +395,8 @@ public class ModBlocks {
         forceFieldBlock = builderFactory.<ForceFieldTile> builder("forcefield")
                 .tileEntityClass(ForceFieldTile.class)
                 .emptyContainer()
-                .flags(BlockFlags.REDSTONE_CHECK)
-                .rotationType(BaseBlock.RotationType.NONE)
+                .flags(REDSTONE_CHECK)
+                .rotationType(NONE)
                 .activateAction((world, pos, player, hand, side, hitX, hitY, hitZ) -> Ariente.guiHandler.openHoloGui(world, pos, player))
                 .info("message.ariente.shiftmessage")
                 .infoExtended("message.ariente.forcefield")
@@ -389,7 +405,7 @@ public class ModBlocks {
         warperBlock = builderFactory.<WarperTile> builder("warper")
                 .tileEntityClass(WarperTile.class)
                 .emptyContainer()
-                .rotationType(BaseBlock.RotationType.NONE)
+                .rotationType(NONE)
                 .info("message.ariente.shiftmessage")
                 .infoExtended("message.ariente.warper")
                 .build();
@@ -397,7 +413,7 @@ public class ModBlocks {
         aiCoreBlock = builderFactory.<AICoreTile> builder("aicore")
                 .tileEntityClass(AICoreTile.class)
                 .emptyContainer()
-                .rotationType(BaseBlock.RotationType.NONE)
+                .rotationType(NONE)
                 .build();
         aiCoreBlock.setHardness(20.0f).setResistance(800);
         aiCoreBlock.setHarvestLevel("pickaxe", 2);
@@ -439,30 +455,30 @@ public class ModBlocks {
 
     private static void initPlants() {
         glowlog = new BaseBlockBuilder<>(Ariente.instance, "glowlog")
-                .rotationType(BaseBlock.RotationType.NONE)
+                .rotationType(NONE)
                 .creativeTabs(Ariente.creativeTab)
                 .lightValue(10)
-                .flags(BlockFlags.NON_OPAQUE, BlockFlags.RENDER_TRANSLUCENT, BlockFlags.RENDER_NOSIDES)
+                .flags(NON_OPAQUE, BlockFlags.RENDER_TRANSLUCENT, BlockFlags.RENDER_NOSIDES)
                 .build();
         glowleaves = new BaseBlockBuilder<>(Ariente.instance, "glowleaves")
-                .rotationType(BaseBlock.RotationType.NONE)
+                .rotationType(NONE)
                 .creativeTabs(Ariente.creativeTab)
                 .lightValue(10)
-                .flags(BlockFlags.NON_OPAQUE, BlockFlags.RENDER_TRANSLUCENT)
+                .flags(NON_OPAQUE, BlockFlags.RENDER_TRANSLUCENT)
                 .build();
         bluelog = new BaseBlockBuilder<>(Ariente.instance, "bluelog")
-                .rotationType(BaseBlock.RotationType.NONE)
+                .rotationType(NONE)
                 .creativeTabs(Ariente.creativeTab)
                 .build();
         blueleaves = new BaseBlockBuilder<>(Ariente.instance, "blueleaves")
-                .rotationType(BaseBlock.RotationType.NONE)
+                .rotationType(NONE)
                 .creativeTabs(Ariente.creativeTab)
-                .flags(BlockFlags.NON_OPAQUE, BlockFlags.RENDER_CUTOUT)
+                .flags(NON_OPAQUE, RENDER_CUTOUT)
                 .build();
         darkleaves = new BaseBlockBuilder<>(Ariente.instance, "darkleaves")
-                .rotationType(BaseBlock.RotationType.NONE)
+                .rotationType(NONE)
                 .creativeTabs(Ariente.creativeTab)
-                .flags(BlockFlags.NON_OPAQUE, BlockFlags.RENDER_CUTOUT)
+                .flags(NON_OPAQUE, RENDER_CUTOUT)
                 .build();
         blackBush = new BlockArientePlant("black_bush");
         darkGrass = new BlockArientePlant("dark_grass");
@@ -494,40 +510,40 @@ public class ModBlocks {
 
     private static void initOres() {
         lapisore = new BaseBlockBuilder<>(Ariente.instance, "lapisore")
-                .rotationType(BaseBlock.RotationType.NONE)
+                .rotationType(NONE)
                 .creativeTabs(Ariente.creativeTab)
                 .build();
         glowstoneore = new BaseBlockBuilder<>(Ariente.instance, "glowstoneore")
-                .rotationType(BaseBlock.RotationType.NONE)
+                .rotationType(NONE)
                 .creativeTabs(Ariente.creativeTab)
                 .lightValue(13)
                 .build();
         lithiumore = new BaseBlockBuilder<>(Ariente.instance, "lithiumore")
-                .rotationType(BaseBlock.RotationType.NONE)
+                .rotationType(NONE)
                 .creativeTabs(Ariente.creativeTab)
                 .build();
         manganeseore = new BaseBlockBuilder<>(Ariente.instance, "manganeseore")
-                .rotationType(BaseBlock.RotationType.NONE)
+                .rotationType(NONE)
                 .creativeTabs(Ariente.creativeTab)
                 .build();
         siliconore = new BaseBlockBuilder<>(Ariente.instance, "siliconore")
-                .rotationType(BaseBlock.RotationType.NONE)
+                .rotationType(NONE)
                 .creativeTabs(Ariente.creativeTab)
                 .build();
         silverore = new BaseBlockBuilder<>(Ariente.instance, "silverore")
-                .rotationType(BaseBlock.RotationType.NONE)
+                .rotationType(NONE)
                 .creativeTabs(Ariente.creativeTab)
                 .build();
         platinumore = new BaseBlockBuilder<>(Ariente.instance, "platinumore")
-                .rotationType(BaseBlock.RotationType.NONE)
+                .rotationType(NONE)
                 .creativeTabs(Ariente.creativeTab)
                 .build();
         posirite = new BaseBlockBuilder<>(Ariente.instance, "posirite")
-                .rotationType(BaseBlock.RotationType.NONE)
+                .rotationType(NONE)
                 .creativeTabs(Ariente.creativeTab)
                 .build();
         negarite = new BaseBlockBuilder<>(Ariente.instance, "negarite")
-                .rotationType(BaseBlock.RotationType.NONE)
+                .rotationType(NONE)
                 .creativeTabs(Ariente.creativeTab)
                 .build();
     }
@@ -564,6 +580,9 @@ public class ModBlocks {
         InvisibleDoorRenderer.register();
 
         forceFieldBlock.initModel();
+
+        partTest1.initModel();
+        partTest2.initModel();
 
         constructorBlock.initModel();
         autoConstructorBlock.initModel();

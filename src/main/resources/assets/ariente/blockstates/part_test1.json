@@ -1,0 +1,49 @@
+{
+  "forge_marker": 1,
+  "defaults": {
+    "model": "ariente:flatblock_glow",
+    "textures": {
+      "bottom": "ariente:blocks/base/machinebottom",
+      "side": "ariente:blocks/base/machinebottom",
+      "up": "ariente:blocks/machines/lock",
+      "glow_bottom": "ariente:blocks/base/empty_glow",
+      "glow_side": "ariente:blocks/base/empty_glow",
+      "glow_up": "ariente:blocks/machines/lock_glow"
+    },
+    "transform": "forge:default-block"
+  },
+  "variants": {
+    "normal": [{}],
+    "inventory": [{}],
+    "facing": {
+      "north": {},
+      "south": {"y": 180},
+      "west": {"y": 270},
+      "east": {"y": 90},
+      "up": {"x": -90},
+      "down": {"x": 90}
+    },
+    "locked": {
+      "false": {
+        "textures": {
+          "bottom": "ariente:blocks/base/machinebottom",
+          "side": "ariente:blocks/base/machinebottom",
+          "up": "ariente:blocks/machines/lock",
+          "glow_bottom": "ariente:blocks/base/empty_glow",
+          "glow_side": "ariente:blocks/base/empty_glow",
+          "glow_up": "ariente:blocks/machines/lock_glow"
+        }
+      },
+      "true": {
+        "textures": {
+          "bottom": "ariente:blocks/base/machinebottom",
+          "side": "ariente:blocks/base/machinebottom",
+          "up": "ariente:blocks/machines/lock_locked",
+          "glow_bottom": "ariente:blocks/base/empty_glow",
+          "glow_side": "ariente:blocks/base/empty_glow",
+          "glow_up": "ariente:blocks/machines/lock_locked_glow"
+        }
+      }
+    }
+  }
+}
