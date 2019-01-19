@@ -1,4 +1,4 @@
-upcoming:
+0.0.8-alpha:
 - Started working on more biome decorations: flowers
 - Fixed a problem on servers with the forcefield
 
