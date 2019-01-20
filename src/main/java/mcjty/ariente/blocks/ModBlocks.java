@@ -21,12 +21,14 @@ import mcjty.lib.builder.BaseBlockBuilder;
 import mcjty.lib.builder.BlockFlags;
 import mcjty.lib.builder.GenericBlockBuilderFactory;
 import mcjty.lib.container.GenericContainer;
+import mcjty.lib.multipart.MultipartItemBlock;
 import mcjty.lib.varia.ItemStackTools;
 import net.minecraft.block.Block;
 import net.minecraft.block.SoundType;
 import net.minecraft.block.material.Material;
 import net.minecraft.block.state.IBlockState;
 import net.minecraft.client.renderer.color.BlockColors;
+import net.minecraft.item.ItemBlock;
 import net.minecraft.util.EnumFacing;
 import net.minecraft.util.math.AxisAlignedBB;
 import net.minecraftforge.fml.relauncher.Side;
@@ -36,8 +38,6 @@ import net.minecraftforge.oredict.OreDictionary;
 import static mcjty.lib.blocks.BaseBlock.RotationType.HORIZROTATION;
 import static mcjty.lib.blocks.BaseBlock.RotationType.NONE;
 import static mcjty.lib.builder.BlockFlags.*;
-
-//import mcjty.lib.multipart.MultipartItemBlock;
 
 public class ModBlocks {
 
@@ -62,8 +62,8 @@ public class ModBlocks {
 
     public static BaseBlock fluxBeamBlock;
 
-//    public static BaseBlock partTest1;
-//    public static BaseBlock partTest2;
+    public static BaseBlock partTest1;
+    public static BaseBlock partTest2;
 
     public static BaseBlock lapisore;
     public static BaseBlock glowstoneore;
@@ -169,12 +169,16 @@ public class ModBlocks {
                 .rotationType(HORIZROTATION)
                 .build();
 
-//        partTest1 = new BaseBlockBuilder<>(Ariente.instance, "part_test1")
-//                .itemBlockFactory(MultipartItemBlock::new)
-//                .build();
-//        partTest2 = new BaseBlockBuilder<>(Ariente.instance, "part_test2")
-//                .itemBlockFactory(MultipartItemBlock::new)
-//                .build();
+        partTest1 = new BaseBlockBuilder<>(Ariente.instance, "part_test1")
+                .itemBlockFactory(MultipartItemBlock::new)
+                .flags(NON_OPAQUE, NON_FULLCUBE)
+                .boundingBox((state, source, pos) -> getFlatBox(state))
+                .build();
+        partTest2 = new BaseBlockBuilder<>(Ariente.instance, "part_test2")
+                .itemBlockFactory(MultipartItemBlock::new)
+                .flags(NON_OPAQUE, NON_FULLCUBE)
+                .boundingBox((state, source, pos) -> getFlatBox(state))
+                .build();
 
         fluxBeamBlock = new BaseBlockBuilder<>(Ariente.instance, "flux_beam")
                 .rotationType(HORIZROTATION)
@@ -581,8 +585,8 @@ public class ModBlocks {
 
         forceFieldBlock.initModel();
 
-//        partTest1.initModel();
-//        partTest2.initModel();
+        partTest1.initModel();
+        partTest2.initModel();
 
         constructorBlock.initModel();
         autoConstructorBlock.initModel();
