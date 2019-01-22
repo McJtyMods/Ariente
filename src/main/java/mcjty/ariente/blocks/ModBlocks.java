@@ -28,7 +28,6 @@ import net.minecraft.block.SoundType;
 import net.minecraft.block.material.Material;
 import net.minecraft.block.state.IBlockState;
 import net.minecraft.client.renderer.color.BlockColors;
-import net.minecraft.item.ItemBlock;
 import net.minecraft.util.EnumFacing;
 import net.minecraft.util.math.AxisAlignedBB;
 import net.minecraftforge.fml.relauncher.Side;
@@ -63,7 +62,7 @@ public class ModBlocks {
     public static BaseBlock fluxBeamBlock;
 
     public static BaseBlock partTest1;
-    public static BaseBlock partTest2;
+    public static BaseBlock fieldMarker;
 
     public static BaseBlock lapisore;
     public static BaseBlock glowstoneore;
@@ -174,10 +173,11 @@ public class ModBlocks {
                 .flags(NON_OPAQUE, NON_FULLCUBE)
                 .boundingBox((state, source, pos) -> getFlatBox(state))
                 .build();
-        partTest2 = new BaseBlockBuilder<>(Ariente.instance, "part_test2")
+        fieldMarker = new BaseBlockBuilder<>(Ariente.instance, "field_marker")
+                .rotationType(NONE)
                 .itemBlockFactory(MultipartItemBlock::new)
                 .flags(NON_OPAQUE, NON_FULLCUBE)
-                .boundingBox((state, source, pos) -> getFlatBox(state))
+                .boundingBox((state, source, pos) -> FLAT_BLOCK_AABB)
                 .build();
 
         fluxBeamBlock = new BaseBlockBuilder<>(Ariente.instance, "flux_beam")
@@ -586,7 +586,7 @@ public class ModBlocks {
         forceFieldBlock.initModel();
 
         partTest1.initModel();
-        partTest2.initModel();
+        fieldMarker.initModel();
 
         constructorBlock.initModel();
         autoConstructorBlock.initModel();
