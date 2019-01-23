@@ -1,11 +1,11 @@
 {
   "forge_marker": 1,
   "defaults": {
-    "model": "ariente:flatblock",
+    "model": "ariente:nodeblock",
     "textures": {
       "bottom": "ariente:blocks/base/machinebottom",
       "side": "ariente:blocks/base/machinebottom",
-      "up": "ariente:blocks/machines/flux_beam"
+      "up": "ariente:blocks/machines/item_node"
     },
     "transform": "forge:default-block"
   },

@@ -61,7 +61,7 @@ public class ModBlocks {
 
     public static BaseBlock fluxBeamBlock;
 
-    public static BaseBlock partTest1;
+    public static BaseBlock itemNode;
     public static BaseBlock fieldMarker;
 
     public static BaseBlock lapisore;
@@ -168,7 +168,7 @@ public class ModBlocks {
                 .rotationType(HORIZROTATION)
                 .build();
 
-        partTest1 = new BaseBlockBuilder<>(Ariente.instance, "part_test1")
+        itemNode = new BaseBlockBuilder<>(Ariente.instance, "item_node")
                 .itemBlockFactory(MultipartItemBlock::new)
                 .flags(NON_OPAQUE, NON_FULLCUBE)
                 .boundingBox((state, source, pos) -> getFlatBox(state))
@@ -585,7 +585,7 @@ public class ModBlocks {
 
         forceFieldBlock.initModel();
 
-        partTest1.initModel();
+        itemNode.initModel();
         fieldMarker.initModel();
 
         constructorBlock.initModel();
