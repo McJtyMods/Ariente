@@ -7,6 +7,7 @@ import mcjty.ariente.blocks.defense.ForceFieldTile;
 import mcjty.ariente.blocks.generators.*;
 import mcjty.ariente.blocks.plants.BlockArientePlant;
 import mcjty.ariente.blocks.utility.*;
+import mcjty.ariente.blocks.utility.autofield.ItemNodeTile;
 import mcjty.ariente.blocks.utility.door.DoorMarkerRenderer;
 import mcjty.ariente.blocks.utility.door.DoorMarkerTile;
 import mcjty.ariente.blocks.utility.door.InvisibleDoorRenderer;
@@ -61,7 +62,7 @@ public class ModBlocks {
 
     public static BaseBlock fluxBeamBlock;
 
-    public static BaseBlock itemNode;
+    public static GenericBlock<ItemNodeTile, GenericContainer> itemNode;
     public static BaseBlock fieldMarker;
 
     public static BaseBlock lapisore;
@@ -168,10 +169,14 @@ public class ModBlocks {
                 .rotationType(HORIZROTATION)
                 .build();
 
-        itemNode = new BaseBlockBuilder<>(Ariente.instance, "item_node")
+        itemNode = builderFactory.<ItemNodeTile> builder("item_node")
+                .tileEntityClass(ItemNodeTile.class)
+                .emptyContainer()
+                .rotationType(NONE)
                 .itemBlockFactory(MultipartItemBlock::new)
+                .property(ItemNodeTile.ORIENTATION)
                 .flags(NON_OPAQUE, NON_FULLCUBE)
-                .boundingBox((state, source, pos) -> getFlatBox(state))
+                .boundingBox((state, source, pos) -> ItemNodeTile.getBoundingBox(source, pos))
                 .build();
         fieldMarker = new BaseBlockBuilder<>(Ariente.instance, "field_marker")
                 .rotationType(NONE)
