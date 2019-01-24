@@ -23,6 +23,7 @@ import mcjty.lib.builder.BlockFlags;
 import mcjty.lib.builder.GenericBlockBuilderFactory;
 import mcjty.lib.container.GenericContainer;
 import mcjty.lib.multipart.MultipartItemBlock;
+import mcjty.lib.multipart.PartSlot;
 import mcjty.lib.varia.ItemStackTools;
 import net.minecraft.block.Block;
 import net.minecraft.block.SoundType;
@@ -175,13 +176,15 @@ public class ModBlocks {
                 .rotationType(NONE)
                 .itemBlockFactory(MultipartItemBlock::new)
                 .property(ItemNodeTile.ORIENTATION)
+                .slotGetter((world, pos, newState) -> newState.getValue(ItemNodeTile.ORIENTATION).getSlot())
                 .flags(NON_OPAQUE, NON_FULLCUBE)
-                .boundingBox((state, source, pos) -> ItemNodeTile.getBoundingBox(source, pos))
+                .boundingBox((state, source, pos) -> ItemNodeTile.getBoundingBox(state, source, pos))
                 .build();
         fieldMarker = new BaseBlockBuilder<>(Ariente.instance, "field_marker")
                 .rotationType(NONE)
                 .itemBlockFactory(MultipartItemBlock::new)
                 .flags(NON_OPAQUE, NON_FULLCUBE)
+                .slotGetter((world, pos, newState) -> PartSlot.DOWN)
                 .boundingBox((state, source, pos) -> FLAT_BLOCK_AABB)
                 .build();
 

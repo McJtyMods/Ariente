@@ -1,7 +1,6 @@
 package mcjty.ariente.blocks.utility.autofield;
 
 import mcjty.ariente.blocks.ModBlocks;
-import mcjty.lib.blocks.BaseBlock;
 import mcjty.lib.tileentity.GenericTileEntity;
 import mcjty.theoneprobe.api.IProbeHitData;
 import mcjty.theoneprobe.api.IProbeInfo;
@@ -15,7 +14,6 @@ import net.minecraft.entity.EntityLivingBase;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.NBTTagCompound;
-import net.minecraft.tileentity.TileEntity;
 import net.minecraft.util.EnumFacing;
 import net.minecraft.util.math.AxisAlignedBB;
 import net.minecraft.util.math.BlockPos;
@@ -45,26 +43,23 @@ public class ItemNodeTile extends GenericTileEntity {
         return ModBlocks.itemNode.getDefaultState().withProperty(ORIENTATION, orientation);
     }
 
-    public static AxisAlignedBB getBoundingBox(IBlockAccess world, BlockPos pos) {
-        TileEntity te = world.getTileEntity(pos);
-        if (te instanceof ItemNodeTile) {
-            NodeOrientation orientation = ((ItemNodeTile) te).getOrientation();
-            // @todo bounding box should differ based on which part we are
-            EnumFacing facing = orientation.getMainDirection();
-            switch (facing) {
-                case UP:
-                    return LIGHT_BLOCK_DOWN;
-                case DOWN:
-                    return LIGHT_BLOCK_UP;
-                case SOUTH:
-                    return LIGHT_BLOCK_NORTH;
-                case NORTH:
-                    return LIGHT_BLOCK_SOUTH;
-                case EAST:
-                    return LIGHT_BLOCK_WEST;
-                case WEST:
-                    return LIGHT_BLOCK_EAST;
-            }
+    public static AxisAlignedBB getBoundingBox(IBlockState state, IBlockAccess world, BlockPos pos) {
+        NodeOrientation orientation  = state.getValue(ORIENTATION);
+        // @todo bounding box should differ based on which part we are
+        EnumFacing facing = orientation.getMainDirection();
+        switch (facing) {
+            case UP:
+                return LIGHT_BLOCK_DOWN;
+            case DOWN:
+                return LIGHT_BLOCK_UP;
+            case SOUTH:
+                return LIGHT_BLOCK_NORTH;
+            case NORTH:
+                return LIGHT_BLOCK_SOUTH;
+            case EAST:
+                return LIGHT_BLOCK_WEST;
+            case WEST:
+                return LIGHT_BLOCK_EAST;
         }
         return Block.NULL_AABB;
     }
@@ -82,48 +77,48 @@ public class ItemNodeTile extends GenericTileEntity {
         switch (side) {
             case DOWN:
                 if (dx < dz) {
-                    facing = hitZ < 0.5 ? DOWN_00 : DOWN_01;
+                    facing = hitZ < 0.5 ? DOWN_NW : DOWN_SW;
                 } else {
-                    facing = hitX < 0.5 ? DOWN_10 : DOWN_11;
+                    facing = hitX < 0.5 ? DOWN_NE : DOWN_SE;
                 }
                 break;
             case UP:
                 if (dx < dz) {
-                    facing = hitZ < 0.5 ? UP_00 : UP_01;
+                    facing = hitZ < 0.5 ? UP_NW : UP_SW;
                 } else {
-                    facing = hitX < 0.5 ? UP_10 : UP_11;
+                    facing = hitX < 0.5 ? UP_NE : UP_SE;
                 }
                 break;
             case NORTH:
                 if (dx < dy) {
-                    facing = hitY < 0.5 ? NORTH_00 : NORTH_01;
+                    facing = hitY < 0.5 ? NORTH_DW : NORTH_DE;
                 } else {
-                    facing = hitX < 0.5 ? NORTH_10 : NORTH_11;
+                    facing = hitX < 0.5 ? NORTH_UW : NORTH_UE;
                 }
                 break;
             case SOUTH:
                 if (dx < dy) {
-                    facing = hitY < 0.5 ? SOUTH_00 : SOUTH_01;
+                    facing = hitY < 0.5 ? SOUTH_DW : SOUTH_DE;
                 } else {
-                    facing = hitX < 0.5 ? SOUTH_10 : SOUTH_11;
+                    facing = hitX < 0.5 ? SOUTH_UW : SOUTH_UE;
                 }
                 break;
             case WEST:
                 if (dy < dz) {
-                    facing = hitZ < 0.5 ? WEST_00 : WEST_01;
+                    facing = hitZ < 0.5 ? WEST_DN : WEST_DS;
                 } else {
-                    facing = hitY < 0.5 ? WEST_10 : WEST_11;
+                    facing = hitY < 0.5 ? WEST_UN : WEST_US;
                 }
                 break;
             case EAST:
                 if (dy < dz) {
-                    facing = hitZ < 0.5 ? EAST_00 : EAST_01;
+                    facing = hitZ < 0.5 ? EAST_DN : EAST_DS;
                 } else {
-                    facing = hitY < 0.5 ? EAST_10 : EAST_11;
+                    facing = hitY < 0.5 ? EAST_UN : EAST_US;
                 }
                 break;
             default:
-                facing = DOWN_00;
+                facing = DOWN_NW;
                 break;
         }
         return facing;

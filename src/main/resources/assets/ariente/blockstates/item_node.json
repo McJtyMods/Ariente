@@ -14,35 +14,30 @@
     "inventory": [{}],
 
     "orientation": {
-      "down_00": {},
-      "down_01": {"y": 180},
-      "down_10": {"y": 90},
-      "down_11": {"y": 270},
-
-      "up_00": { "transform": { "rotation": [ { "z" : 180 } ] } },
-      "up_01": { "transform": { "rotation": [ { "z" : 180 }, { "y": 180 } ] } },
-      "up_10": { "transform": { "rotation": [ { "z" : 180 }, { "y": 90 } ] } },
-      "up_11": { "transform": { "rotation": [ { "z" : 180 }, { "y": 270 } ] } },
-
-      "north_00": { "transform": { "rotation": [ { "x" : 90 }, { "y": 270 } ] } },
-      "north_01": { "transform": { "rotation": [ { "x" : 90 }, { "y": 90 } ] } },
-      "north_10": { "transform": { "rotation": [ { "x" : 90 } ] } },
-      "north_11": { "transform": { "rotation": [ { "x" : 90 }, { "y": 180 } ] } },
-
-      "south_00": { "transform": { "rotation": [ { "x" : 270 }, { "y": 270 } ] } },
-      "south_01": { "transform": { "rotation": [ { "x" : 270 }, { "y": 90 } ] } },
-      "south_10": { "transform": { "rotation": [ { "x" : 270 }, { "y": 180 } ] } },
-      "south_11": { "transform": { "rotation": [ { "x" : 270 } ] } },
-
-      "west_00": { "transform": { "rotation": [ { "z" : 270 } ] } },
-      "west_01": { "transform": { "rotation": [ { "z" : 270 }, { "y": 180 }  ] } },
-      "west_10": { "transform": { "rotation": [ { "z" : 270 }, { "y": 90 }  ] } },
-      "west_11": { "transform": { "rotation": [ { "z" : 270 }, { "y": 270 }  ] } },
-
-      "east_00": { "transform": { "rotation": [ { "z" : 90 } ] } },
-      "east_01": { "transform": { "rotation": [ { "z" : 90 }, { "y": 180 }  ] } },
-      "east_10": { "transform": { "rotation": [ { "z" : 90 }, { "y": 270 }  ] } },
-      "east_11": { "transform": { "rotation": [ { "z" : 90 }, { "y": 90 }  ] } }
+      "down_ne": {},
+      "down_nw": {"y": 180},
+      "down_se": {"y": 90},
+      "down_sw": {"y": 270},
+      "up_ne": { "transform": { "rotation": [ { "z" : 180 } ] } },
+      "up_nw": { "transform": { "rotation": [ { "z" : 180 }, { "y": 180 } ] } },
+      "up_se": { "transform": { "rotation": [ { "z" : 180 }, { "y": 90 } ] } },
+      "up_sw": { "transform": { "rotation": [ { "z" : 180 }, { "y": 270 } ] } },
+      "north_de": { "transform": { "rotation": [ { "x" : 90 }, { "y": 270 } ] } },
+      "north_dw": { "transform": { "rotation": [ { "x" : 90 }, { "y": 90 } ] } },
+      "north_ue": { "transform": { "rotation": [ { "x" : 90 } ] } },
+      "north_uw": { "transform": { "rotation": [ { "x" : 90 }, { "y": 180 } ] } },
+      "south_de": { "transform": { "rotation": [ { "x" : 270 }, { "y": 270 } ] } },
+      "south_dw": { "transform": { "rotation": [ { "x" : 270 }, { "y": 90 } ] } },
+      "south_ue": { "transform": { "rotation": [ { "x" : 270 }, { "y": 180 } ] } },
+      "south_uw": { "transform": { "rotation": [ { "x" : 270 } ] } },
+      "west_dn": { "transform": { "rotation": [ { "z" : 270 } ] } },
+      "west_ds": { "transform": { "rotation": [ { "z" : 270 }, { "y": 180 }  ] } },
+      "west_un": { "transform": { "rotation": [ { "z" : 270 }, { "y": 90 }  ] } },
+      "west_us": { "transform": { "rotation": [ { "z" : 270 }, { "y": 270 }  ] } },
+      "east_dn": { "transform": { "rotation": [ { "z" : 90 } ] } },
+      "east_ds": { "transform": { "rotation": [ { "z" : 90 }, { "y": 180 }  ] } },
+      "east_un": { "transform": { "rotation": [ { "z" : 90 }, { "y": 270 }  ] } },
+      "east_us": { "transform": { "rotation": [ { "z" : 90 }, { "y": 90 }  ] } }
     }
   }
 }
