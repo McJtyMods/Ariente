@@ -176,9 +176,10 @@ public class ModBlocks {
                 .rotationType(NONE)
                 .itemBlockFactory(MultipartItemBlock::new)
                 .property(ItemNodeTile.ORIENTATION)
+                .placementGetter(ItemNodeTile::getStateForPlacement)
                 .slotGetter((world, pos, newState) -> newState.getValue(ItemNodeTile.ORIENTATION).getSlot())
                 .flags(NON_OPAQUE, NON_FULLCUBE)
-                .boundingBox((state, source, pos) -> ItemNodeTile.getBoundingBox(state, source, pos))
+                .boundingBox(ItemNodeTile::getBoundingBox)
                 .build();
         fieldMarker = new BaseBlockBuilder<>(Ariente.instance, "field_marker")
                 .rotationType(NONE)

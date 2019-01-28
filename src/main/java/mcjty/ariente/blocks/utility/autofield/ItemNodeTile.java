@@ -23,7 +23,6 @@ import net.minecraftforge.fml.common.Optional;
 import net.minecraftforge.fml.relauncher.Side;
 import net.minecraftforge.fml.relauncher.SideOnly;
 
-import javax.annotation.Nullable;
 import java.util.List;
 
 import static mcjty.ariente.blocks.ModBlocks.*;
@@ -35,9 +34,7 @@ public class ItemNodeTile extends GenericTileEntity {
 
     private NodeOrientation orientation;
 
-    @Nullable
-    @Override
-    public IBlockState getStateForPlacement(World world, BlockPos pos, EnumFacing facing, float hitX, float hitY, float hitZ, int meta, EntityLivingBase placer) {
+    public static IBlockState getStateForPlacement(World world, BlockPos pos, EnumFacing facing, float hitX, float hitY, float hitZ, int meta, EntityLivingBase placer) {
         NodeOrientation orientation = getOrientationFromPlacement(world, pos, facing, hitX, hitY, hitZ, meta, placer);
         // orientation doesn't get saved to metadata, but it doesn't need to. It only needs to be available until onLoad() runs.
         return ModBlocks.itemNode.getDefaultState().withProperty(ORIENTATION, orientation);
@@ -65,7 +62,10 @@ public class ItemNodeTile extends GenericTileEntity {
     }
 
 
-    public NodeOrientation getOrientationFromPlacement(World world, BlockPos pos, EnumFacing side, float hitX, float hitY, float hitZ, int meta, EntityLivingBase placer) {
+    public static NodeOrientation getOrientationFromPlacement(World world, BlockPos pos, EnumFacing side, float hitX, float hitY, float hitZ, int meta, EntityLivingBase placer) {
+
+        // @todo remove these!
+
         float dx = Math.abs(0.5f - hitX);
         float dy = Math.abs(0.5f - hitY);
         float dz = Math.abs(0.5f - hitZ);
