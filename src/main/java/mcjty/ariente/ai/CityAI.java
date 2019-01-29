@@ -638,7 +638,7 @@ public class CityAI {
                 ArienteChunkGenerator generator = (ArienteChunkGenerator)(((WorldServer) world).getChunkProvider().chunkGenerator);
                 int droneHeight = plan.getDroneHeightOffset() + CityTools.getLowestHeight(city, generator, center.getChunkX(), center.getChunkZ());
                 for (int i = 0; i < sentinels.length; i++) {
-                    System.out.println("revive: i = " + i);
+//                    System.out.println("revive: i = " + i);
                     createSentinel(world, i, droneHeight);
                 }
             }
