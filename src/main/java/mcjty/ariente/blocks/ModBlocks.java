@@ -7,6 +7,8 @@ import mcjty.ariente.blocks.defense.ForceFieldTile;
 import mcjty.ariente.blocks.generators.*;
 import mcjty.ariente.blocks.plants.BlockArientePlant;
 import mcjty.ariente.blocks.utility.*;
+import mcjty.ariente.blocks.utility.autofield.AutoFieldRenderer;
+import mcjty.ariente.blocks.utility.autofield.AutoFieldTile;
 import mcjty.ariente.blocks.utility.autofield.ItemNodeTile;
 import mcjty.ariente.blocks.utility.door.DoorMarkerRenderer;
 import mcjty.ariente.blocks.utility.door.DoorMarkerTile;
@@ -109,6 +111,7 @@ public class ModBlocks {
     public static GenericBlock<ConstructorTile, GenericContainer> constructorBlock;
     public static GenericBlock<AutoConstructorTile, GenericContainer> autoConstructorBlock;
     public static GenericBlock<BlueprintStorageTile, GenericContainer> blueprintStorageBlock;
+    public static GenericBlock<AutoFieldTile, GenericContainer> autoFieldBlock;
 
     public static BaseBlock flatLightBlock;
 
@@ -222,6 +225,16 @@ public class ModBlocks {
                 .infoExtended("message.ariente.auto_constructor")
                 .build();
 
+        autoFieldBlock = builderFactory.<AutoFieldTile> builder("automation_field")
+                .tileEntityClass(AutoFieldTile.class)
+                .emptyContainer()
+                .rotationType(HORIZROTATION)
+                .flags(RENDER_SOLID, RENDER_TRANSLUCENT, REDSTONE_CHECK)
+                .activateAction((world, pos, player, hand, side, hitX, hitY, hitZ) -> Ariente.guiHandler.openHoloGui(world, pos, player))
+                .info("message.ariente.shiftmessage")
+                .infoExtended("message.ariente.automation_field")
+                .build();
+
         blueprintStorageBlock = builderFactory.<BlueprintStorageTile> builder("blueprint_storage")
                 .tileEntityClass(BlueprintStorageTile.class)
                 .container(BlueprintStorageTile.CONTAINER_FACTORY)
@@ -328,7 +341,7 @@ public class ModBlocks {
         negariteTankBlock = builderFactory.<NegariteTankTile> builder("negarite_tank")
                 .tileEntityClass(NegariteTankTile.class)
                 .emptyContainer()
-                .flags(NON_OPAQUE, RENDER_SOLID, BlockFlags.RENDER_TRANSLUCENT)
+                .flags(NON_OPAQUE, RENDER_SOLID, RENDER_TRANSLUCENT)
                 .property(NegariteTankTile.LOWER)
                 .property(NegariteTankTile.UPPER)
                 .rotationType(NONE)
@@ -340,7 +353,7 @@ public class ModBlocks {
         posiriteTankBlock = builderFactory.<PosiriteTankTile> builder("posirite_tank")
                 .tileEntityClass(PosiriteTankTile.class)
                 .emptyContainer()
-                .flags(NON_OPAQUE, RENDER_SOLID, BlockFlags.RENDER_TRANSLUCENT)
+                .flags(NON_OPAQUE, RENDER_SOLID, RENDER_TRANSLUCENT)
                 .property(PosiriteTankTile.LOWER)
                 .property(PosiriteTankTile.UPPER)
                 .rotationType(NONE)
@@ -353,7 +366,7 @@ public class ModBlocks {
                 .tileEntityClass(StorageTile.class)
                 .emptyContainer()
 //                .property(StorageTile.LOCKED)
-                .flags(RENDER_SOLID, BlockFlags.RENDER_TRANSLUCENT)
+                .flags(RENDER_SOLID, RENDER_TRANSLUCENT)
                 .rotationType(BaseBlock.RotationType.ROTATION)
                 .clickAction(StorageTile::onClick)
                 .activateAction((world, pos, player, hand, side, hitX, hitY, hitZ) -> StorageTile.onActivate(world, pos, player, side, hitX, hitY, hitZ))
@@ -364,7 +377,7 @@ public class ModBlocks {
         elevatorBlock = builderFactory.<ElevatorTile> builder("elevator")
                 .tileEntityClass(ElevatorTile.class)
                 .emptyContainer()
-                .flags(RENDER_SOLID, BlockFlags.RENDER_TRANSLUCENT)
+                .flags(RENDER_SOLID, RENDER_TRANSLUCENT)
                 .rotationType(NONE)
                 .activateAction((world, pos, player, hand, side, hitX, hitY, hitZ) -> Ariente.guiHandler.openHoloGui(world, pos, player))
                 .info("message.ariente.shiftmessage")
@@ -471,13 +484,13 @@ public class ModBlocks {
                 .rotationType(NONE)
                 .creativeTabs(Ariente.creativeTab)
                 .lightValue(10)
-                .flags(NON_OPAQUE, BlockFlags.RENDER_TRANSLUCENT, BlockFlags.RENDER_NOSIDES)
+                .flags(NON_OPAQUE, RENDER_TRANSLUCENT, BlockFlags.RENDER_NOSIDES)
                 .build();
         glowleaves = new BaseBlockBuilder<>(Ariente.instance, "glowleaves")
                 .rotationType(NONE)
                 .creativeTabs(Ariente.creativeTab)
                 .lightValue(10)
-                .flags(NON_OPAQUE, BlockFlags.RENDER_TRANSLUCENT)
+                .flags(NON_OPAQUE, RENDER_TRANSLUCENT)
                 .build();
         bluelog = new BaseBlockBuilder<>(Ariente.instance, "bluelog")
                 .rotationType(NONE)
@@ -596,6 +609,8 @@ public class ModBlocks {
 
         itemNode.initModel();
         fieldMarker.initModel();
+        autoFieldBlock.initModel();
+        AutoFieldRenderer.register();
 
         constructorBlock.initModel();
         autoConstructorBlock.initModel();
