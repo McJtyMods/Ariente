@@ -21,7 +21,13 @@ import java.util.Random;
 @SideOnly(Side.CLIENT)
 public class AutoFieldRenderer extends TileEntitySpecialRenderer<AutoFieldTile> {
 
-    private ResourceLocation halo = new ResourceLocation(Ariente.MODID, "textures/effects/data_laserbeam1.png");
+    private static ResourceLocation beams[] = new ResourceLocation[3];
+    static {
+        beams[0] = new ResourceLocation(Ariente.MODID, "textures/effects/autobeam1.png");
+        beams[1] = new ResourceLocation(Ariente.MODID, "textures/effects/autobeam2.png");
+        beams[2] = new ResourceLocation(Ariente.MODID, "textures/effects/autobeam3.png");
+    }
+
     private Random random = new Random();
 
     public AutoFieldRenderer() {
@@ -48,7 +54,7 @@ public class AutoFieldRenderer extends TileEntitySpecialRenderer<AutoFieldTile> 
         GlStateManager.disableCull();
         GlStateManager.enableDepth();
 
-        ResourceLocation beamIcon = halo;
+        ResourceLocation beamIcon = beams[random.nextInt(3)];
         bindTexture(beamIcon);
 
         Minecraft mc = Minecraft.getMinecraft();
