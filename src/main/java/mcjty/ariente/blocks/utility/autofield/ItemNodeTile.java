@@ -1,7 +1,10 @@
 package mcjty.ariente.blocks.utility.autofield;
 
+import mcjty.ariente.Ariente;
 import mcjty.ariente.blocks.ModBlocks;
-import mcjty.lib.multipart.MultipartHelper;
+import mcjty.hologui.api.IGuiComponent;
+import mcjty.hologui.api.IGuiComponentRegistry;
+import mcjty.hologui.api.IGuiTile;
 import mcjty.lib.multipart.PartSlot;
 import mcjty.lib.tileentity.GenericTileEntity;
 import mcjty.theoneprobe.api.IProbeHitData;
@@ -18,6 +21,7 @@ import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.tileentity.TileEntity;
 import net.minecraft.util.EnumFacing;
+import net.minecraft.util.EnumHand;
 import net.minecraft.util.math.AxisAlignedBB;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.IBlockAccess;
@@ -30,15 +34,13 @@ import java.util.List;
 
 import static mcjty.ariente.blocks.utility.autofield.NodeOrientation.*;
 
-public class ItemNodeTile extends GenericTileEntity {
+public class ItemNodeTile extends GenericTileEntity implements IGuiTile {
 
     public static final PropertyEnum<NodeOrientation> ORIENTATION = PropertyEnum.create("orientation", NodeOrientation.class, NodeOrientation.values());
 
-    private NodeOrientation orientation = NodeOrientation.DOWN_NW;
-
     public static IBlockState getStateForPlacement(World world, BlockPos pos, EnumFacing facing, float hitX, float hitY, float hitZ, int meta, EntityLivingBase placer) {
         NodeOrientation orientation = getOrientationFromPlacement(facing, hitX, hitY, hitZ);
-        // orientation doesn't get saved to metadata, but it doesn't need to. We give this state directly to getSlotFromState
+        // Since this is a multipart we can use state that isn't convertable to metadata
         return ModBlocks.itemNode.getDefaultState().withProperty(ORIENTATION, orientation);
     }
 
@@ -103,9 +105,18 @@ public class ItemNodeTile extends GenericTileEntity {
     }
 
     @Override
-    public void onPartAdded(PartSlot slot, IBlockState state) {
-        orientation = state.getValue(ORIENTATION);
-        markDirtyQuick();
+    public boolean onBlockActivated(IBlockState state, EntityPlayer player, EnumHand hand, EnumFacing side, float hitX, float hitY, float hitZ) {
+        Ariente.guiHandler.openHoloGuiEntity(world, pos, player, state.getValue(ORIENTATION).getSlot().name(), 1.0);
+        return true;
+    }
+
+    @Override
+    public void onPartAdded(PartSlot slot, IBlockState state, TileEntity multipartTile) {
+        this.world = multipartTile.getWorld();
+        this.pos = multipartTile.getPos();
+
+//        orientation = state.getValue(ORIENTATION);
+//        markDirtyQuick();
     }
 
     public static NodeOrientation getOrientationFromPlacement(EnumFacing side, float hitX, float hitY, float hitZ) {
@@ -164,30 +175,12 @@ public class ItemNodeTile extends GenericTileEntity {
 
 
     @Override
-    public IBlockState getActualState(IBlockState state) {
-        return super.getActualState(state).withProperty(ORIENTATION, orientation);
-    }
-
-    public void setOrientation(NodeOrientation orientation) {
-        if(orientation != this.orientation) {
-            this.orientation = orientation;
-            markDirtyClient();
-        }
-    }
-
-    public NodeOrientation getOrientation() {
-        return orientation;
-    }
-
-    @Override
     public void readFromNBT(NBTTagCompound tagCompound) {
         super.readFromNBT(tagCompound);
-        orientation = NodeOrientation.VALUES[tagCompound.getInteger("orientation")];
     }
 
     @Override
     public NBTTagCompound writeToNBT(NBTTagCompound tagCompound) {
-        tagCompound.setInteger("orientation", orientation.ordinal());
         return super.writeToNBT(tagCompound);
     }
 
@@ -195,6 +188,7 @@ public class ItemNodeTile extends GenericTileEntity {
     @Optional.Method(modid = "theoneprobe")
     public void addProbeInfo(ProbeMode mode, IProbeInfo probeInfo, EntityPlayer player, World world, IBlockState blockState, IProbeHitData data) {
         super.addProbeInfo(mode, probeInfo, player, world, blockState, data);
+        probeInfo.text("Item Node");
     }
 
     @SideOnly(Side.CLIENT)
@@ -202,5 +196,16 @@ public class ItemNodeTile extends GenericTileEntity {
     @Optional.Method(modid = "waila")
     public void addWailaBody(ItemStack itemStack, List<String> currenttip, IWailaDataAccessor accessor, IWailaConfigHandler config) {
         super.addWailaBody(itemStack, currenttip, accessor, config);
+    }
+
+    @Override
+    public IGuiComponent<?> createGui(String tag, IGuiComponentRegistry registry) {
+        return registry.panel(0, 0, 8, 8)
+                ;
+    }
+
+    @Override
+    public void syncToClient() {
+
     }
 }

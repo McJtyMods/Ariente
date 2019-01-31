@@ -3,6 +3,7 @@ package mcjty.ariente;
 import mcjty.ariente.gui.ModGuis;
 import mcjty.hologui.api.IGuiTile;
 import mcjty.hologui.api.IHoloGuiHandler;
+import mcjty.lib.multipart.MultipartTE;
 import mcjty.lib.varia.Logging;
 import net.minecraft.tileentity.TileEntity;
 import net.minecraftforge.fml.common.event.FMLInterModComms;
@@ -34,6 +35,8 @@ public class HoloGuiCompatibility {
                 TileEntity tileEntity = world.getTileEntity(pos);
                 if (tileEntity instanceof IGuiTile) {
                     return (IGuiTile) tileEntity;
+                } else if (tileEntity instanceof MultipartTE) {
+                    return new MultipartGuiTile(world, pos);
                 }
                 return null;
             });
