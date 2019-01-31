@@ -1,6 +1,8 @@
 package mcjty.ariente.blocks.utility.autofield;
 
 import mcjty.ariente.blocks.ModBlocks;
+import mcjty.lib.multipart.MultipartHelper;
+import mcjty.lib.multipart.PartSlot;
 import mcjty.lib.tileentity.GenericTileEntity;
 import mcjty.theoneprobe.api.IProbeHitData;
 import mcjty.theoneprobe.api.IProbeInfo;
@@ -14,6 +16,7 @@ import net.minecraft.entity.EntityLivingBase;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.NBTTagCompound;
+import net.minecraft.tileentity.TileEntity;
 import net.minecraft.util.EnumFacing;
 import net.minecraft.util.math.AxisAlignedBB;
 import net.minecraft.util.math.BlockPos;
@@ -25,8 +28,6 @@ import net.minecraftforge.fml.relauncher.SideOnly;
 
 import java.util.List;
 
-import static mcjty.ariente.blocks.ModBlocks.LIGHT_BLOCK_DOWN;
-import static mcjty.ariente.blocks.ModBlocks.LIGHT_BLOCK_UP;
 import static mcjty.ariente.blocks.utility.autofield.NodeOrientation.*;
 
 public class ItemNodeTile extends GenericTileEntity {
@@ -37,7 +38,7 @@ public class ItemNodeTile extends GenericTileEntity {
 
     public static IBlockState getStateForPlacement(World world, BlockPos pos, EnumFacing facing, float hitX, float hitY, float hitZ, int meta, EntityLivingBase placer) {
         NodeOrientation orientation = getOrientationFromPlacement(facing, hitX, hitY, hitZ);
-        // orientation doesn't get saved to metadata, but it doesn't need to. It only needs to be available until onLoad() runs.
+        // orientation doesn't get saved to metadata, but it doesn't need to. We give this state directly to getSlotFromState
         return ModBlocks.itemNode.getDefaultState().withProperty(ORIENTATION, orientation);
     }
 
@@ -101,6 +102,11 @@ public class ItemNodeTile extends GenericTileEntity {
         return Block.NULL_AABB;
     }
 
+    @Override
+    public void onPartAdded(PartSlot slot, IBlockState state) {
+        orientation = state.getValue(ORIENTATION);
+        markDirtyQuick();
+    }
 
     public static NodeOrientation getOrientationFromPlacement(EnumFacing side, float hitX, float hitY, float hitZ) {
         side = side.getOpposite();
@@ -157,6 +163,11 @@ public class ItemNodeTile extends GenericTileEntity {
     }
 
 
+    @Override
+    public IBlockState getActualState(IBlockState state) {
+        return super.getActualState(state).withProperty(ORIENTATION, orientation);
+    }
+
     public void setOrientation(NodeOrientation orientation) {
         if(orientation != this.orientation) {
             this.orientation = orientation;
@@ -166,17 +177,6 @@ public class ItemNodeTile extends GenericTileEntity {
 
     public NodeOrientation getOrientation() {
         return orientation;
-    }
-
-    @Override
-    public void onLoad() {
-        if(orientation == null) {
-            IBlockState state = getWorld().getBlockState(getPos());
-            if(state.getBlock() == ModBlocks.itemNode) {
-                setOrientation(state.getValue(ORIENTATION));
-            }
-        }
-        super.onLoad();
     }
 
     @Override
