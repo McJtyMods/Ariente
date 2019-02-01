@@ -5,8 +5,10 @@ import mcjty.ariente.blocks.ModBlocks;
 import mcjty.hologui.api.IGuiComponent;
 import mcjty.hologui.api.IGuiComponentRegistry;
 import mcjty.hologui.api.IGuiTile;
+import mcjty.lib.container.InventoryHelper;
 import mcjty.lib.multipart.PartSlot;
 import mcjty.lib.tileentity.GenericTileEntity;
+import mcjty.lib.varia.ItemStackList;
 import mcjty.theoneprobe.api.IProbeHitData;
 import mcjty.theoneprobe.api.IProbeInfo;
 import mcjty.theoneprobe.api.ProbeMode;
@@ -33,11 +35,13 @@ import net.minecraftforge.fml.relauncher.SideOnly;
 import java.util.List;
 
 import static mcjty.ariente.blocks.utility.autofield.NodeOrientation.*;
-import static mcjty.theoneprobe.api.TextStyleClass.MODNAME;
 
 public class ItemNodeTile extends GenericTileEntity implements IGuiTile {
 
     public static final PropertyEnum<NodeOrientation> ORIENTATION = PropertyEnum.create("orientation", NodeOrientation.class, NodeOrientation.values());
+
+    private ItemStackList inputFilter = ItemStackList.create(16);
+    private ItemStackList outputFilter = ItemStackList.create(16);
 
     public static IBlockState getStateForPlacement(World world, BlockPos pos, EnumFacing facing, float hitX, float hitY, float hitZ, int meta, EntityLivingBase placer) {
         NodeOrientation orientation = getOrientationFromPlacement(facing, hitX, hitY, hitZ);
@@ -45,37 +49,37 @@ public class ItemNodeTile extends GenericTileEntity implements IGuiTile {
         return ModBlocks.itemNode.getDefaultState().withProperty(ORIENTATION, orientation);
     }
 
-    public static final float T = 0.2f;
-    public static final float A = 0.1F;
+    private static final float T = 0.2f;
+    private static final float A = 0.1F;
 
-    public static final AxisAlignedBB AABB_DOWN_NW  = new AxisAlignedBB(0.0+A, 0, 0.0+A,      0.5-A, T, 0.5-A);
-    public static final AxisAlignedBB AABB_DOWN_NE  = new AxisAlignedBB(0.5+A, 0, 0.0+A,      1.0-A, T, 0.5-A);
-    public static final AxisAlignedBB AABB_DOWN_SW  = new AxisAlignedBB(0.0+A, 0, 0.5+A,      0.5-A, T, 1.0-A);
-    public static final AxisAlignedBB AABB_DOWN_SE  = new AxisAlignedBB(0.5+A, 0, 0.5+A,      1.0-A, T, 1.0-A);
-    public static final AxisAlignedBB AABB_UP_NW  = new AxisAlignedBB(0.0+A, 1-T, 0.0+A,      0.5-A, 1, 0.5-A);
-    public static final AxisAlignedBB AABB_UP_NE  = new AxisAlignedBB(0.5+A, 1-T, 0.0+A,      1.0-A, 1, 0.5-A);
-    public static final AxisAlignedBB AABB_UP_SW  = new AxisAlignedBB(0.0+A, 1-T, 0.5+A,      0.5-A, 1, 1.0-A);
-    public static final AxisAlignedBB AABB_UP_SE  = new AxisAlignedBB(0.5+A, 1-T, 0.5+A,      1.0-A, 1, 1.0-A);
-    public static final AxisAlignedBB AABB_NORTH_DE  = new AxisAlignedBB(0.5+A, 0.0+A, 0,     1.0-A, 0.5-A, T);
-    public static final AxisAlignedBB AABB_NORTH_DW  = new AxisAlignedBB(0.0+A, 0.0+A, 0,     0.5-A, 0.5-A, T);
-    public static final AxisAlignedBB AABB_NORTH_UE  = new AxisAlignedBB(0.5+A, 0.5+A, 0,     1.0-A, 1.0-A, T);
-    public static final AxisAlignedBB AABB_NORTH_UW  = new AxisAlignedBB(0.0+A, 0.5+A, 0,     0.5-A, 1.0-A, T);
-    public static final AxisAlignedBB AABB_SOUTH_DE  = new AxisAlignedBB(0.5+A, 0.0+A, 1-T,   1.0-A, 0.5-A, 1);
-    public static final AxisAlignedBB AABB_SOUTH_DW  = new AxisAlignedBB(0.0+A, 0.0+A, 1-T,   0.5-A, 0.5-A, 1);
-    public static final AxisAlignedBB AABB_SOUTH_UE  = new AxisAlignedBB(0.5+A, 0.5+A, 1-T,   1.0-A, 1.0-A, 1);
-    public static final AxisAlignedBB AABB_SOUTH_UW  = new AxisAlignedBB(0.0+A, 0.5+A, 1-T,   0.5-A, 1.0-A, 1);
-    public static final AxisAlignedBB AABB_WEST_DN  = new AxisAlignedBB(0, 0.0+A, 0.0+A,      T, 0.5-A, 0.5-A);
-    public static final AxisAlignedBB AABB_WEST_DS  = new AxisAlignedBB(0, 0.0+A, 0.5+A,      T, 0.5-A, 1.0-A);
-    public static final AxisAlignedBB AABB_WEST_UN  = new AxisAlignedBB(0, 0.5+A, 0.0+A,      T, 1.0-A, 0.5-A);
-    public static final AxisAlignedBB AABB_WEST_US  = new AxisAlignedBB(0, 0.5+A, 0.5+A,      T, 1.0-A, 1.0-A);
-    public static final AxisAlignedBB AABB_EAST_DN  = new AxisAlignedBB(1-T, 0.0+A, 0.0+A,    1, 0.5-A, 0.5-A);
-    public static final AxisAlignedBB AABB_EAST_DS  = new AxisAlignedBB(1-T, 0.0+A, 0.5+A,    1, 0.5-A, 1.0-A);
-    public static final AxisAlignedBB AABB_EAST_UN  = new AxisAlignedBB(1-T, 0.5+A, 0.0+A,    1, 1.0-A, 0.5-A);
-    public static final AxisAlignedBB AABB_EAST_US  = new AxisAlignedBB(1-T, 0.5+A, 0.5+A,    1, 1.0-A, 1.0-A);
+    private static final AxisAlignedBB AABB_DOWN_NW = new AxisAlignedBB(0.0+A, 0, 0.0+A,      0.5-A, T, 0.5-A);
+    private static final AxisAlignedBB AABB_DOWN_NE = new AxisAlignedBB(0.5+A, 0, 0.0+A,      1.0-A, T, 0.5-A);
+    private static final AxisAlignedBB AABB_DOWN_SW = new AxisAlignedBB(0.0+A, 0, 0.5+A,      0.5-A, T, 1.0-A);
+    private static final AxisAlignedBB AABB_DOWN_SE = new AxisAlignedBB(0.5+A, 0, 0.5+A,      1.0-A, T, 1.0-A);
+    private static final AxisAlignedBB AABB_UP_NW = new AxisAlignedBB(0.0+A, 1-T, 0.0+A,      0.5-A, 1, 0.5-A);
+    private static final AxisAlignedBB AABB_UP_NE = new AxisAlignedBB(0.5+A, 1-T, 0.0+A,      1.0-A, 1, 0.5-A);
+    private static final AxisAlignedBB AABB_UP_SW = new AxisAlignedBB(0.0+A, 1-T, 0.5+A,      0.5-A, 1, 1.0-A);
+    private static final AxisAlignedBB AABB_UP_SE = new AxisAlignedBB(0.5+A, 1-T, 0.5+A,      1.0-A, 1, 1.0-A);
+    private static final AxisAlignedBB AABB_NORTH_DE = new AxisAlignedBB(0.5+A, 0.0+A, 0,     1.0-A, 0.5-A, T);
+    private static final AxisAlignedBB AABB_NORTH_DW = new AxisAlignedBB(0.0+A, 0.0+A, 0,     0.5-A, 0.5-A, T);
+    private static final AxisAlignedBB AABB_NORTH_UE = new AxisAlignedBB(0.5+A, 0.5+A, 0,     1.0-A, 1.0-A, T);
+    private static final AxisAlignedBB AABB_NORTH_UW = new AxisAlignedBB(0.0+A, 0.5+A, 0,     0.5-A, 1.0-A, T);
+    private static final AxisAlignedBB AABB_SOUTH_DE = new AxisAlignedBB(0.5+A, 0.0+A, 1-T,   1.0-A, 0.5-A, 1);
+    private static final AxisAlignedBB AABB_SOUTH_DW = new AxisAlignedBB(0.0+A, 0.0+A, 1-T,   0.5-A, 0.5-A, 1);
+    private static final AxisAlignedBB AABB_SOUTH_UE = new AxisAlignedBB(0.5+A, 0.5+A, 1-T,   1.0-A, 1.0-A, 1);
+    private static final AxisAlignedBB AABB_SOUTH_UW = new AxisAlignedBB(0.0+A, 0.5+A, 1-T,   0.5-A, 1.0-A, 1);
+    private static final AxisAlignedBB AABB_WEST_DN = new AxisAlignedBB(0, 0.0+A, 0.0+A,      T, 0.5-A, 0.5-A);
+    private static final AxisAlignedBB AABB_WEST_DS = new AxisAlignedBB(0, 0.0+A, 0.5+A,      T, 0.5-A, 1.0-A);
+    private static final AxisAlignedBB AABB_WEST_UN = new AxisAlignedBB(0, 0.5+A, 0.0+A,      T, 1.0-A, 0.5-A);
+    private static final AxisAlignedBB AABB_WEST_US = new AxisAlignedBB(0, 0.5+A, 0.5+A,      T, 1.0-A, 1.0-A);
+    private static final AxisAlignedBB AABB_EAST_DN = new AxisAlignedBB(1-T, 0.0+A, 0.0+A,    1, 0.5-A, 0.5-A);
+    private static final AxisAlignedBB AABB_EAST_DS = new AxisAlignedBB(1-T, 0.0+A, 0.5+A,    1, 0.5-A, 1.0-A);
+    private static final AxisAlignedBB AABB_EAST_UN = new AxisAlignedBB(1-T, 0.5+A, 0.0+A,    1, 1.0-A, 0.5-A);
+    private static final AxisAlignedBB AABB_EAST_US = new AxisAlignedBB(1-T, 0.5+A, 0.5+A,    1, 1.0-A, 1.0-A);
 
 
     public static AxisAlignedBB getBoundingBox(IBlockState state, IBlockAccess world, BlockPos pos) {
-        NodeOrientation orientation  = state.getValue(ORIENTATION);
+        NodeOrientation orientation = state.getValue(ORIENTATION);
         switch (orientation) {
             case DOWN_NE: return AABB_DOWN_NE;
             case DOWN_NW: return AABB_DOWN_NW;
@@ -115,9 +119,6 @@ public class ItemNodeTile extends GenericTileEntity implements IGuiTile {
     public void onPartAdded(PartSlot slot, IBlockState state, TileEntity multipartTile) {
         this.world = multipartTile.getWorld();
         this.pos = multipartTile.getPos();
-
-//        orientation = state.getValue(ORIENTATION);
-//        markDirtyQuick();
     }
 
     public static NodeOrientation getOrientationFromPlacement(EnumFacing side, float hitX, float hitY, float hitZ) {
@@ -174,15 +175,18 @@ public class ItemNodeTile extends GenericTileEntity implements IGuiTile {
         return facing;
     }
 
-
     @Override
-    public void readFromNBT(NBTTagCompound tagCompound) {
-        super.readFromNBT(tagCompound);
+    public void readRestorableFromNBT(NBTTagCompound tagCompound) {
+        super.readRestorableFromNBT(tagCompound);
+        writeBufferToNBT(tagCompound, "input", inputFilter);
+        writeBufferToNBT(tagCompound, "output", outputFilter);
     }
 
     @Override
-    public NBTTagCompound writeToNBT(NBTTagCompound tagCompound) {
-        return super.writeToNBT(tagCompound);
+    public void writeRestorableToNBT(NBTTagCompound tagCompound) {
+        super.writeRestorableToNBT(tagCompound);
+        readBufferFromNBT(tagCompound, "input", inputFilter);
+        readBufferFromNBT(tagCompound, "output", outputFilter);
     }
 
     @Override
