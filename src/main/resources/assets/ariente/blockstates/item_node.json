@@ -11,7 +11,8 @@
   },
   "variants": {
     "normal": [{}],
-    "inventory": [{}],
+    "inventory": [{
+    }],
 
     "orientation": {
       "south_dw": {},

@@ -33,6 +33,7 @@ import net.minecraftforge.fml.relauncher.SideOnly;
 import java.util.List;
 
 import static mcjty.ariente.blocks.utility.autofield.NodeOrientation.*;
+import static mcjty.theoneprobe.api.TextStyleClass.MODNAME;
 
 public class ItemNodeTile extends GenericTileEntity implements IGuiTile {
 
@@ -188,7 +189,6 @@ public class ItemNodeTile extends GenericTileEntity implements IGuiTile {
     @Optional.Method(modid = "theoneprobe")
     public void addProbeInfo(ProbeMode mode, IProbeInfo probeInfo, EntityPlayer player, World world, IBlockState blockState, IProbeHitData data) {
         super.addProbeInfo(mode, probeInfo, player, world, blockState, data);
-        probeInfo.text("Item Node");
     }
 
     @SideOnly(Side.CLIENT)

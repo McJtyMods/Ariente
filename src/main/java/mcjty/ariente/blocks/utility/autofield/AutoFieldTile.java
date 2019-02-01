@@ -169,10 +169,11 @@ public class AutoFieldTile extends GenericTileEntity implements IGuiTile, ITicka
             return HoloGuiTools.createHelpGui(registry,
                     HelpBuilder.create()
                             .line("This block sets up an automation")
-                            .line("field. Setup adjacent field markers")
-                            .line("in a rectangle to mark where the field")
-                            .line("is active. Use nodes in the field to")
-                            .line("transfer items, energy, ...")
+                            .line("field. Setup adjacent field")
+                            .line("markers in a rectangle to mark where")
+                            .line("the field is active. Use nodes in")
+                            .line("the field to transfer items,")
+                            .line("energy, ...")
             );
         } else {
             return createMainGui(registry);
