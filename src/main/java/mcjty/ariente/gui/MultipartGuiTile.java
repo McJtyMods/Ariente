@@ -1,4 +1,4 @@
-package mcjty.ariente;
+package mcjty.ariente.gui;
 
 import mcjty.hologui.api.IGuiComponent;
 import mcjty.hologui.api.IGuiComponentRegistry;

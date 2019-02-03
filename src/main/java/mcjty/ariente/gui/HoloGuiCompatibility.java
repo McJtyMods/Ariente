@@ -1,6 +1,6 @@
-package mcjty.ariente;
+package mcjty.ariente.gui;
 
-import mcjty.ariente.gui.ModGuis;
+import mcjty.ariente.Ariente;
 import mcjty.hologui.api.IGuiTile;
 import mcjty.hologui.api.IHoloGuiHandler;
 import mcjty.lib.multipart.MultipartTE;

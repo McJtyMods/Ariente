@@ -2,6 +2,7 @@ package mcjty.ariente;
 
 
 import mcjty.ariente.commands.*;
+import mcjty.ariente.gui.HoloGuiCompatibility;
 import mcjty.ariente.proxy.CommonProxy;
 import mcjty.hologui.api.IHoloGuiHandler;
 import mcjty.lib.base.ModBase;
