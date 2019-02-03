@@ -44,7 +44,11 @@ public class HoloGuiTools {
     }
 
     public static IGuiComponent<?> createHelpGui(IGuiComponentRegistry registry, HelpBuilder helpBuilder) {
-        return createHelpGui(registry, helpBuilder, iHoloGuiEntity -> iHoloGuiEntity.switchTag(TAG_MAIN));
+        return createHelpGui(registry, helpBuilder, TAG_MAIN);
+    }
+
+    public static IGuiComponent<?> createHelpGui(IGuiComponentRegistry registry, HelpBuilder helpBuilder, String tagBack) {
+        return createHelpGui(registry, helpBuilder, iHoloGuiEntity -> iHoloGuiEntity.switchTag(tagBack));
     }
 
     public static IGuiComponent<?> createHelpGui(IGuiComponentRegistry registry, HelpBuilder helpBuilder, Consumer<IHoloGuiEntity> switchBack) {

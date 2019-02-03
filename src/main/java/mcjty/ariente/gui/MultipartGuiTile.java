@@ -8,6 +8,7 @@ import mcjty.lib.multipart.PartSlot;
 import net.minecraft.tileentity.TileEntity;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.World;
+import org.apache.commons.lang3.StringUtils;
 
 public class MultipartGuiTile implements IGuiTile {
 
@@ -23,7 +24,8 @@ public class MultipartGuiTile implements IGuiTile {
     public IGuiComponent<?> createGui(String tag, IGuiComponentRegistry registry) {
         TileEntity tileEntity = world.getTileEntity(pos);
         if (tileEntity instanceof MultipartTE) {
-            PartSlot slot = PartSlot.byName(tag);
+            String[] split = StringUtils.split(tag, "_");
+            PartSlot slot = PartSlot.byName(split[0]);
             MultipartTE.Part part = ((MultipartTE) tileEntity).getParts().get(slot);
             if (part.getTileEntity() instanceof IGuiTile) {
                 return ((IGuiTile) part.getTileEntity()).createGui(tag, registry);

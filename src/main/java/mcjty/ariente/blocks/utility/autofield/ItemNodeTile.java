@@ -2,10 +2,11 @@ package mcjty.ariente.blocks.utility.autofield;
 
 import mcjty.ariente.Ariente;
 import mcjty.ariente.blocks.ModBlocks;
+import mcjty.ariente.gui.HelpBuilder;
+import mcjty.ariente.gui.HoloGuiTools;
 import mcjty.hologui.api.IGuiComponent;
 import mcjty.hologui.api.IGuiComponentRegistry;
 import mcjty.hologui.api.IGuiTile;
-import mcjty.lib.container.InventoryHelper;
 import mcjty.lib.multipart.PartSlot;
 import mcjty.lib.tileentity.GenericTileEntity;
 import mcjty.lib.varia.ItemStackList;
@@ -31,6 +32,8 @@ import net.minecraft.world.World;
 import net.minecraftforge.fml.common.Optional;
 import net.minecraftforge.fml.relauncher.Side;
 import net.minecraftforge.fml.relauncher.SideOnly;
+import org.apache.commons.lang3.StringUtils;
+import org.apache.commons.lang3.tuple.Pair;
 
 import java.util.List;
 
@@ -204,8 +207,31 @@ public class ItemNodeTile extends GenericTileEntity implements IGuiTile {
 
     @Override
     public IGuiComponent<?> createGui(String tag, IGuiComponentRegistry registry) {
-        return registry.panel(0, 0, 8, 8)
+        final Pair<String, String> pair = getSlotTag(tag);
+
+        if (TAG_HELP.equals(pair.getRight())) {
+            return HoloGuiTools.createHelpGui(registry,
+                    HelpBuilder.create()
+                            .line("This node can be used in")
+                            .line("an automation field to transfer")
+                            .line("items"),
+                    pair.getLeft() + "_" + TAG_MAIN
+            );
+        } else {
+            return createMainGui(pair, registry);
+        }
+    }
+
+    private IGuiComponent<?> createMainGui(final Pair<String, String> pair, IGuiComponentRegistry registry) {
+        return HoloGuiTools.createPanelWithHelp(registry, entity -> entity.switchTag(pair.getLeft() + "_" + TAG_HELP))
                 ;
+    }
+
+    private Pair<String, String> getSlotTag(String tag) {
+        String[] split = StringUtils.split(tag, "_");
+        final String slot = split[0];
+        final String t = split.length > 1 ? split[1] : TAG_MAIN;
+        return Pair.of(slot, t);
     }
 
     @Override
