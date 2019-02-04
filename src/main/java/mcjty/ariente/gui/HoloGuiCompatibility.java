@@ -1,5 +1,6 @@
 package mcjty.ariente.gui;
 
+import com.google.common.base.Function;
 import mcjty.ariente.Ariente;
 import mcjty.hologui.api.IGuiTile;
 import mcjty.hologui.api.IHoloGuiHandler;
@@ -12,18 +13,18 @@ import javax.annotation.Nullable;
 
 public class HoloGuiCompatibility {
 
-    private static boolean registered;
+    private static boolean registered = false;
 
     public static void register() {
         if (registered) {
             return;
         }
         registered = true;
-        FMLInterModComms.sendFunctionMessage("hologui", "getHoloHandler", "mcjty.ariente.HoloGuiCompatibility$GetHoloHandler");
+        FMLInterModComms.sendFunctionMessage("hologui", "getHoloHandler", "mcjty.ariente.gui.HoloGuiCompatibility$GetHoloHandler");
     }
 
 
-    public static class GetHoloHandler implements com.google.common.base.Function<IHoloGuiHandler, Void> {
+    public static class GetHoloHandler implements Function<IHoloGuiHandler, Void> {
 
         @Nullable
         @Override
