@@ -24,10 +24,10 @@ public class MultipartGuiTile implements IGuiTile {
     public IGuiComponent<?> createGui(String tag, IGuiComponentRegistry registry) {
         TileEntity tileEntity = world.getTileEntity(pos);
         if (tileEntity instanceof MultipartTE) {
-            String[] split = StringUtils.split(tag, "_");
+            String[] split = StringUtils.split(tag, ":");
             PartSlot slot = PartSlot.byName(split[0]);
             MultipartTE.Part part = ((MultipartTE) tileEntity).getParts().get(slot);
-            if (part.getTileEntity() instanceof IGuiTile) {
+            if (part != null && part.getTileEntity() instanceof IGuiTile) {
                 return ((IGuiTile) part.getTileEntity()).createGui(tag, registry);
             }
         }

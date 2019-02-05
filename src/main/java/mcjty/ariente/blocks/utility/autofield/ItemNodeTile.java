@@ -7,9 +7,13 @@ import mcjty.ariente.gui.HoloGuiTools;
 import mcjty.hologui.api.IGuiComponent;
 import mcjty.hologui.api.IGuiComponentRegistry;
 import mcjty.hologui.api.IGuiTile;
+import mcjty.hologui.api.IHoloGuiEntity;
+import mcjty.hologui.api.components.IPlayerSlots;
+import mcjty.hologui.api.components.ISlots;
 import mcjty.lib.multipart.PartSlot;
 import mcjty.lib.tileentity.GenericTileEntity;
 import mcjty.lib.varia.ItemStackList;
+import mcjty.lib.varia.RedstoneMode;
 import mcjty.theoneprobe.api.IProbeHitData;
 import mcjty.theoneprobe.api.IProbeInfo;
 import mcjty.theoneprobe.api.ProbeMode;
@@ -32,19 +36,25 @@ import net.minecraft.world.World;
 import net.minecraftforge.fml.common.Optional;
 import net.minecraftforge.fml.relauncher.Side;
 import net.minecraftforge.fml.relauncher.SideOnly;
+import net.minecraftforge.items.ItemHandlerHelper;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.lang3.tuple.Pair;
 
 import java.util.List;
 
 import static mcjty.ariente.blocks.utility.autofield.NodeOrientation.*;
+import static mcjty.hologui.api.Icons.*;
 
 public class ItemNodeTile extends GenericTileEntity implements IGuiTile {
 
     public static final PropertyEnum<NodeOrientation> ORIENTATION = PropertyEnum.create("orientation", NodeOrientation.class, NodeOrientation.values());
+    public static final int FILTER_AMOUNT = 16;
 
-    private ItemStackList inputFilter = ItemStackList.create(16);
-    private ItemStackList outputFilter = ItemStackList.create(16);
+    public static String TAG_INPUT = "input";
+    public static String TAG_OUTPUT = "output";
+
+    private ItemStackList inputFilter = ItemStackList.create(FILTER_AMOUNT);
+    private ItemStackList outputFilter = ItemStackList.create(FILTER_AMOUNT);
 
     public static IBlockState getStateForPlacement(World world, BlockPos pos, EnumFacing facing, float hitX, float hitY, float hitZ, int meta, EntityLivingBase placer) {
         NodeOrientation orientation = getOrientationFromPlacement(facing, hitX, hitY, hitZ);
@@ -174,7 +184,6 @@ public class ItemNodeTile extends GenericTileEntity implements IGuiTile {
                 facing = DOWN_NW;
                 break;
         }
-        System.out.println("facing.name() = " + facing.name());
         return facing;
     }
 
@@ -190,6 +199,23 @@ public class ItemNodeTile extends GenericTileEntity implements IGuiTile {
         super.writeRestorableToNBT(tagCompound);
         readBufferFromNBT(tagCompound, "input", inputFilter);
         readBufferFromNBT(tagCompound, "output", outputFilter);
+    }
+
+    private void changeMode() {
+        int current = rsMode.ordinal() + 1;
+        if (current >= RedstoneMode.values().length) {
+            current = 0;
+        }
+        setRSMode(RedstoneMode.values()[current]);
+        markDirtyClient();
+    }
+
+    private SimpleItemHandler getInputHandler() {
+        return new SimpleItemHandler(inputFilter);
+    }
+
+    private SimpleItemHandler getOutputHandler() {
+        return new SimpleItemHandler(outputFilter);
     }
 
     @Override
@@ -215,20 +241,101 @@ public class ItemNodeTile extends GenericTileEntity implements IGuiTile {
                             .line("This node can be used in")
                             .line("an automation field to transfer")
                             .line("items"),
-                    pair.getLeft() + "_" + TAG_MAIN
+                    pair.getLeft() + ":" + TAG_MAIN
             );
+        } else if (TAG_INPUT.equals(pair.getRight())) {
+            return createInputGui(pair, registry);
+        } else if (TAG_OUTPUT.equals(pair.getRight())) {
+            return createOutputGui(pair, registry);
         } else {
             return createMainGui(pair, registry);
         }
     }
 
     private IGuiComponent<?> createMainGui(final Pair<String, String> pair, IGuiComponentRegistry registry) {
-        return HoloGuiTools.createPanelWithHelp(registry, entity -> entity.switchTag(pair.getLeft() + "_" + TAG_HELP))
+        return HoloGuiTools.createPanelWithHelp(registry, entity -> entity.switchTag(pair.getLeft() + ":" + TAG_HELP))
+                .add(registry.text(0, 0.5, 1, 1).text("Main menu").color(0xaaccff))
+                .add(registry.button(2, 2, 5, 1)
+                        .text("Input")
+                        .hitEvent((component, p, entity, x1, y1) -> entity.switchTag(pair.getLeft() + ":" + TAG_INPUT)))
+                .add(registry.button(2, 4, 5, 1)
+                        .text("Output")
+                        .hitEvent((component, p, entity, x1, y1) -> entity.switchTag(pair.getLeft() + ":" + TAG_OUTPUT)))
+
+                .add(registry.iconChoice(7, 0, 1, 1)
+                        .getter((player) -> getRSModeInt())
+                        .addImage(registry.image(REDSTONE_DUST))
+                        .addImage(registry.image(REDSTONE_OFF))
+                        .addImage(registry.image(REDSTONE_ON))
+                        .hitEvent((component, player, entity1, x, y) -> changeMode()))
                 ;
     }
 
+    private IGuiComponent<?> createInputGui(final Pair<String, String> pair, IGuiComponentRegistry registry) {
+        return HoloGuiTools.createPanelWithHelp(registry, entity -> entity.switchTag(pair.getLeft() + ":" + TAG_HELP))
+                .add(registry.text(0, 0.5, 1, 1).text("Input Config").color(0xaaccff))
+
+                .add(registry.icon(0, 1.5, 1, 1).icon(registry.image(WHITE_PLAYER)))
+                .add(registry.playerSlots(1.5, 1, 6, 3)
+                        .name("playerslots")
+                        .doubleClickEvent((component, player, entity, x, y, stack, index) -> addToFilter(player, entity, getInputHandler())))
+
+                .add(registry.stackIcon(0, 5.5, 1, 1).itemStack(new ItemStack(ModBlocks.itemNode)))
+                .add(registry.slots(1.5, 5.5, 6, 3)
+                        .name("slots")
+                        .withAmount()
+                        .doubleClickEvent((component, player, entity, x, y, stack, index) -> removeFromFilter(player, entity, getInputHandler()))
+                        .itemHandler(getInputHandler()))
+                ;
+    }
+
+    private IGuiComponent<?> createOutputGui(final Pair<String, String> pair, IGuiComponentRegistry registry) {
+        return HoloGuiTools.createPanelWithHelp(registry, entity -> entity.switchTag(pair.getLeft() + ":" + TAG_HELP))
+                .add(registry.text(0, 0.5, 1, 1).text("Output Config").color(0xaaccff))
+
+                .add(registry.icon(0, 1.5, 1, 1).icon(registry.image(WHITE_PLAYER)))
+                .add(registry.playerSlots(1.5, 1, 6, 3)
+                        .name("playerslots")
+                        .doubleClickEvent((component, player, entity, x, y, stack, index) -> addToFilter(player, entity, getOutputHandler())))
+
+                .add(registry.stackIcon(0, 5.5, 1, 1).itemStack(new ItemStack(ModBlocks.itemNode)))
+                .add(registry.slots(1.5, 5.5, 6, 3)
+                        .name("slots")
+                        .withAmount()
+                        .doubleClickEvent((component, player, entity, x, y, stack, index) -> removeFromFilter(player, entity, getOutputHandler()))
+                        .itemHandler(getOutputHandler()))
+                ;
+    }
+
+    private void addToFilter(EntityPlayer player, IHoloGuiEntity entity, SimpleItemHandler filter) {
+        entity.findComponent("playerslots").ifPresent(component -> {
+            if (component instanceof IPlayerSlots) {
+                int selected = ((IPlayerSlots) component).getSelected();
+                if (selected != -1) {
+                    ItemStack extracted = player.inventory.getStackInSlot(selected);
+                    if (!extracted.isEmpty()) {
+                        ItemHandlerHelper.insertItem(filter, extracted, false);
+                        markDirtyClient();
+                    }
+                }
+            }
+        });
+    }
+
+    private void removeFromFilter(EntityPlayer player, IHoloGuiEntity entity, SimpleItemHandler filter) {
+        entity.findComponent("slots").ifPresent(component -> {
+            if (component instanceof ISlots) {
+                int selected = ((ISlots) component).getSelected();
+                if (selected != -1) {
+                    filter.setItemStack(selected, ItemStack.EMPTY);
+                    markDirtyClient();
+                }
+            }
+        });
+    }
+
     private Pair<String, String> getSlotTag(String tag) {
-        String[] split = StringUtils.split(tag, "_");
+        String[] split = StringUtils.split(tag, ":");
         final String slot = split[0];
         final String t = split.length > 1 ? split[1] : TAG_MAIN;
         return Pair.of(slot, t);
