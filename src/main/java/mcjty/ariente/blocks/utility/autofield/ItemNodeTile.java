@@ -48,7 +48,7 @@ import static mcjty.hologui.api.Icons.*;
 public class ItemNodeTile extends GenericTileEntity implements IGuiTile {
 
     public static final PropertyEnum<NodeOrientation> ORIENTATION = PropertyEnum.create("orientation", NodeOrientation.class, NodeOrientation.values());
-    public static final int FILTER_AMOUNT = 16;
+    public static final int FILTER_AMOUNT = 14;
 
     public static String TAG_INPUT = "input";
     public static String TAG_OUTPUT = "output";
@@ -190,15 +190,15 @@ public class ItemNodeTile extends GenericTileEntity implements IGuiTile {
     @Override
     public void readRestorableFromNBT(NBTTagCompound tagCompound) {
         super.readRestorableFromNBT(tagCompound);
-        writeBufferToNBT(tagCompound, "input", inputFilter);
-        writeBufferToNBT(tagCompound, "output", outputFilter);
+        readBufferFromNBT(tagCompound, "input", inputFilter);
+        readBufferFromNBT(tagCompound, "output", outputFilter);
     }
 
     @Override
     public void writeRestorableToNBT(NBTTagCompound tagCompound) {
         super.writeRestorableToNBT(tagCompound);
-        readBufferFromNBT(tagCompound, "input", inputFilter);
-        readBufferFromNBT(tagCompound, "output", outputFilter);
+        writeBufferToNBT(tagCompound, "input", inputFilter);
+        writeBufferToNBT(tagCompound, "output", outputFilter);
     }
 
     private void changeMode() {
@@ -273,17 +273,16 @@ public class ItemNodeTile extends GenericTileEntity implements IGuiTile {
 
     private IGuiComponent<?> createInputGui(final Pair<String, String> pair, IGuiComponentRegistry registry) {
         return HoloGuiTools.createPanelWithHelp(registry, entity -> entity.switchTag(pair.getLeft() + ":" + TAG_HELP))
-                .add(registry.text(0, 0.5, 1, 1).text("Input Config").color(0xaaccff))
+                .add(registry.text(0, -.2, 1, 1).text("Input Config").color(0xaaccff))
 
                 .add(registry.icon(0, 1.5, 1, 1).icon(registry.image(WHITE_PLAYER)))
-                .add(registry.playerSlots(1.5, 1, 6, 3)
+                .add(registry.playerSlots(1.5, 1, 7, 3)
                         .name("playerslots")
                         .doubleClickEvent((component, player, entity, x, y, stack, index) -> addToFilter(player, entity, getInputHandler())))
 
                 .add(registry.stackIcon(0, 5.5, 1, 1).itemStack(new ItemStack(ModBlocks.itemNode)))
-                .add(registry.slots(1.5, 5.5, 6, 3)
+                .add(registry.slots(1.5, 5.5, 7, 2)
                         .name("slots")
-                        .withAmount()
                         .doubleClickEvent((component, player, entity, x, y, stack, index) -> removeFromFilter(player, entity, getInputHandler()))
                         .itemHandler(getInputHandler()))
                 ;
@@ -291,17 +290,16 @@ public class ItemNodeTile extends GenericTileEntity implements IGuiTile {
 
     private IGuiComponent<?> createOutputGui(final Pair<String, String> pair, IGuiComponentRegistry registry) {
         return HoloGuiTools.createPanelWithHelp(registry, entity -> entity.switchTag(pair.getLeft() + ":" + TAG_HELP))
-                .add(registry.text(0, 0.5, 1, 1).text("Output Config").color(0xaaccff))
+                .add(registry.text(0, -.2, 1, 1).text("Output Config").color(0xaaccff))
 
                 .add(registry.icon(0, 1.5, 1, 1).icon(registry.image(WHITE_PLAYER)))
-                .add(registry.playerSlots(1.5, 1, 6, 3)
+                .add(registry.playerSlots(1.5, 1, 7, 3)
                         .name("playerslots")
                         .doubleClickEvent((component, player, entity, x, y, stack, index) -> addToFilter(player, entity, getOutputHandler())))
 
                 .add(registry.stackIcon(0, 5.5, 1, 1).itemStack(new ItemStack(ModBlocks.itemNode)))
-                .add(registry.slots(1.5, 5.5, 6, 3)
+                .add(registry.slots(1.5, 5.5, 7, 2)
                         .name("slots")
-                        .withAmount()
                         .doubleClickEvent((component, player, entity, x, y, stack, index) -> removeFromFilter(player, entity, getOutputHandler()))
                         .itemHandler(getOutputHandler()))
                 ;
@@ -343,6 +341,6 @@ public class ItemNodeTile extends GenericTileEntity implements IGuiTile {
 
     @Override
     public void syncToClient() {
-
+        markDirtyClient();
     }
 }
