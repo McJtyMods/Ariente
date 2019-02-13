@@ -210,12 +210,21 @@ public class ItemNodeTile extends GenericTileEntity implements IGuiTile {
         markDirtyClient();
     }
 
+    private SimpleItemHandler inputHandler = null;
+    private SimpleItemHandler outputHandler = null;
+
     private SimpleItemHandler getInputHandler() {
-        return new SimpleItemHandler(inputFilter);
+        if (inputHandler == null) {
+            inputHandler = new SimpleItemHandler(inputFilter);
+        }
+        return inputHandler;
     }
 
     private SimpleItemHandler getOutputHandler() {
-        return new SimpleItemHandler(outputFilter);
+        if (outputHandler == null) {
+            outputHandler = new SimpleItemHandler(outputFilter);
+        }
+        return outputHandler;
     }
 
     @Override
