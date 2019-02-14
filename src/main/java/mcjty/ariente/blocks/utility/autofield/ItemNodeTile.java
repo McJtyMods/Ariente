@@ -90,6 +90,11 @@ public class ItemNodeTile extends GenericTileEntity implements IGuiTile {
     private static final AxisAlignedBB AABB_EAST_UN = new AxisAlignedBB(1-T, 0.5+A, 0.0+A,    1, 1.0-A, 0.5-A);
     private static final AxisAlignedBB AABB_EAST_US = new AxisAlignedBB(1-T, 0.5+A, 0.5+A,    1, 1.0-A, 1.0-A);
 
+    @Override
+    public void markDirty() {
+        // Make sure to mark the MultipartTE as dirty
+        world.getTileEntity(pos).markDirty();
+    }
 
     public static AxisAlignedBB getBoundingBox(IBlockState state, IBlockAccess world, BlockPos pos) {
         NodeOrientation orientation = state.getValue(ORIENTATION);
@@ -350,6 +355,6 @@ public class ItemNodeTile extends GenericTileEntity implements IGuiTile {
 
     @Override
     public void syncToClient() {
-        markDirtyClient();
+//        markDirtyClient();
     }
 }
