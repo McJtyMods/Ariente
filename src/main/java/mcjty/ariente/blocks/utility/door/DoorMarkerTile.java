@@ -250,8 +250,8 @@ public class DoorMarkerTile extends GenericTileEntity implements ITickable, IGui
     }
 
     @Override
-    public void onBlockBreak(World workd, BlockPos pos, IBlockState state) {
-        super.onBlockBreak(workd, pos, state);
+    public void onBlockBreak(World world, BlockPos pos, IBlockState state) {
+        super.onBlockBreak(world, pos, state);
         clearInvisibleBlocks();
     }
 

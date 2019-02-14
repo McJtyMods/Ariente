@@ -20,6 +20,7 @@ import net.minecraft.util.EnumFacing;
 import net.minecraft.util.ITickable;
 import net.minecraft.util.math.AxisAlignedBB;
 import net.minecraft.util.math.BlockPos;
+import net.minecraft.world.World;
 import net.minecraftforge.fml.relauncher.Side;
 import net.minecraftforge.fml.relauncher.SideOnly;
 
@@ -40,6 +41,54 @@ public class AutoFieldTile extends GenericTileEntity implements IGuiTile, ITicka
     @Override
     public void update() {
 
+    }
+
+    @Override
+    public void invalidate() {
+        super.invalidate();
+        for (BlockPos marker : markers) {
+            TileEntity tileEntity = world.getTileEntity(marker);
+            if (tileEntity instanceof FieldMarkerTile) {
+                ((FieldMarkerTile) tileEntity).setAutoFieldTile(null);
+            }
+        }
+    }
+
+    // Call this if a node in the field is updated/changed/added/removed
+    public void notifyNode(BlockPos originalPos) {
+
+    }
+
+    // Call this to check if there is a field marker below us and if that
+    // field marker is connected to an auto field tile that tile will be notified
+    public static void notifyField(World world, BlockPos pos) {
+        BlockPos originalPos = pos;
+        while (pos.getY() > 0) {
+            TileEntity te = MultipartHelper.getTileEntity(world, pos, PartSlot.DOWN);
+            if (te instanceof FieldMarkerTile) {
+                BlockPos fieldPos = ((FieldMarkerTile) te).getAutoFieldTile();
+                if (fieldPos != null) {
+                    TileEntity tileEntity = world.getTileEntity(fieldPos);
+                    if (tileEntity instanceof AutoFieldTile) {
+                        ((AutoFieldTile) tileEntity).notifyNode(originalPos);
+                    }
+                }
+                return;
+            }
+            pos = pos.down();
+        }
+    }
+
+    public void addFieldMarker(BlockPos pos) {
+        markers.add(pos);
+        invalidateBox();
+        markDirtyClient();
+    }
+
+    public void removeFieldMarker(BlockPos pos) {
+        markers.remove(pos);
+        invalidateBox();
+        markDirtyClient();
     }
 
     public int getHeight() {
@@ -110,6 +159,10 @@ public class AutoFieldTile extends GenericTileEntity implements IGuiTile, ITicka
                                 fieldBox = fieldBox.union(new AxisAlignedBB(p));
                             }
                             markers.add(p);
+                            TileEntity markerTE = MultipartHelper.getTileEntity(world, p, PartSlot.DOWN);
+                            if (markerTE instanceof FieldMarkerTile) {
+                                ((FieldMarkerTile) markerTE).setAutoFieldTile(pos);
+                            }
                             todo.add(p);
                         }
                     }

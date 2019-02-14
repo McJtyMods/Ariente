@@ -2,6 +2,8 @@ package mcjty.ariente.blocks.utility.autofield;
 
 import mcjty.ariente.Ariente;
 import mcjty.lib.client.RenderHelper;
+import mcjty.lib.client.RenderHelper.Vector;
+import mcjty.lib.client.RenderSettings;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.entity.EntityPlayerSP;
 import net.minecraft.client.renderer.BufferBuilder;
@@ -17,6 +19,8 @@ import net.minecraftforge.fml.relauncher.SideOnly;
 import org.lwjgl.opengl.GL11;
 
 import java.util.Random;
+
+import static mcjty.lib.client.RenderHelper.Vector.Vector;
 
 @SideOnly(Side.CLIENT)
 public class AutoFieldRenderer extends TileEntitySpecialRenderer<AutoFieldTile> {
@@ -65,7 +69,7 @@ public class AutoFieldRenderer extends TileEntitySpecialRenderer<AutoFieldTile> 
 
         GlStateManager.translate(-doubleX, -doubleY, -doubleZ);
 
-        RenderHelper.Vector player = new RenderHelper.Vector((float) doubleX, (float) doubleY + p.getEyeHeight(), (float) doubleZ);
+        Vector player = new Vector((float) doubleX, (float) doubleY + p.getEyeHeight(), (float) doubleZ);
 
         long tt = System.currentTimeMillis() / 100;
 
@@ -80,20 +84,29 @@ public class AutoFieldRenderer extends TileEntitySpecialRenderer<AutoFieldTile> 
         float px = (float) (box.maxX + 0.0f);
         float py = (float) (box.maxY + 0.0f);
         float pz = (float) (box.maxZ + 0.0f);
-        RenderHelper.drawBeam(new RenderHelper.Vector(mx, my, mz), new RenderHelper.Vector(px, my, mz), player, 0.1f);
-        RenderHelper.drawBeam(new RenderHelper.Vector(mx, my, mz), new RenderHelper.Vector(mx, py, mz), player, 0.1f);
-        RenderHelper.drawBeam(new RenderHelper.Vector(mx, my, mz), new RenderHelper.Vector(mx, my, pz), player, 0.1f);
 
-        RenderHelper.drawBeam(new RenderHelper.Vector(px, py, pz), new RenderHelper.Vector(mx, py, pz), player, 0.1f);
-        RenderHelper.drawBeam(new RenderHelper.Vector(px, py, pz), new RenderHelper.Vector(px, my, pz), player, 0.1f);
-        RenderHelper.drawBeam(new RenderHelper.Vector(px, py, pz), new RenderHelper.Vector(px, py, mz), player, 0.1f);
+        // @todo move to a static final once experimentation is done
+        RenderSettings settings = RenderSettings.builder()
+                .width(0.1f)
+                .color(255, 255, 255)
+                .alpha(128)
+                .brightness(100)
+                .build();
 
-        RenderHelper.drawBeam(new RenderHelper.Vector(px, my, mz), new RenderHelper.Vector(px, py, mz), player, 0.1f);
-        RenderHelper.drawBeam(new RenderHelper.Vector(px, my, mz), new RenderHelper.Vector(px, my, pz), player, 0.1f);
-        RenderHelper.drawBeam(new RenderHelper.Vector(mx, py, mz), new RenderHelper.Vector(px, py, mz), player, 0.1f);
-        RenderHelper.drawBeam(new RenderHelper.Vector(mx, py, mz), new RenderHelper.Vector(mx, py, pz), player, 0.1f);
-        RenderHelper.drawBeam(new RenderHelper.Vector(mx, my, pz), new RenderHelper.Vector(px, my, pz), player, 0.1f);
-        RenderHelper.drawBeam(new RenderHelper.Vector(mx, my, pz), new RenderHelper.Vector(mx, py, pz), player, 0.1f);
+        RenderHelper.drawBeam(Vector(mx, my, mz), Vector(px, my, mz), player, settings);
+        RenderHelper.drawBeam(Vector(mx, my, mz), Vector(mx, py, mz), player, settings);
+        RenderHelper.drawBeam(Vector(mx, my, mz), Vector(mx, my, pz), player, settings);
+
+        RenderHelper.drawBeam(Vector(px, py, pz), Vector(mx, py, pz), player, settings);
+        RenderHelper.drawBeam(Vector(px, py, pz), Vector(px, my, pz), player, settings);
+        RenderHelper.drawBeam(Vector(px, py, pz), Vector(px, py, mz), player, settings);
+
+        RenderHelper.drawBeam(Vector(px, my, mz), Vector(px, py, mz), player, settings);
+        RenderHelper.drawBeam(Vector(px, my, mz), Vector(px, my, pz), player, settings);
+        RenderHelper.drawBeam(Vector(mx, py, mz), Vector(px, py, mz), player, settings);
+        RenderHelper.drawBeam(Vector(mx, py, mz), Vector(mx, py, pz), player, settings);
+        RenderHelper.drawBeam(Vector(mx, my, pz), Vector(px, my, pz), player, settings);
+        RenderHelper.drawBeam(Vector(mx, my, pz), Vector(mx, py, pz), player, settings);
 
 //        net.minecraft.util.math.Vec3d cameraPos = net.minecraft.client.renderer.ActiveRenderInfo.getCameraPosition();
 //        tessellator.getBuffer().sortVertexData((float) (player.x + doubleX), (float) (player.y + doubleY), (float) (player.z + doubleZ));

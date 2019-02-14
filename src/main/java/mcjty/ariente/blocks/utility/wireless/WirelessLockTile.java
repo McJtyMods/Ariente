@@ -127,9 +127,9 @@ public class WirelessLockTile extends SignalChannelTileEntity implements ILockab
     }
 
     @Override
-    public void onBlockBreak(World workd, BlockPos pos, IBlockState state) {
+    public void onBlockBreak(World world, BlockPos pos, IBlockState state) {
         doLock(false);
-        super.onBlockBreak(workd, pos, state);
+        super.onBlockBreak(world, pos, state);
     }
 
     @Override

@@ -54,21 +54,21 @@ public class AICoreTile extends GenericTileEntity implements ITickable, IAlarmMo
     }
 
     @Override
-    public void onBlockBreak(World workd, BlockPos pos, IBlockState state) {
-        super.onBlockBreak(workd, pos, state);
-        if (!world.isRemote) {
+    public void onBlockBreak(World world, BlockPos pos, IBlockState state) {
+        super.onBlockBreak(world, pos, state);
+        if (!this.world.isRemote) {
             if (getCityCenter() != null) {
-                CityAISystem cityAISystem = CityAISystem.getCityAISystem(world);
+                CityAISystem cityAISystem = CityAISystem.getCityAISystem(this.world);
                 CityAI cityAI = cityAISystem.getCityAI(cityCenter);
-                if (!cityAI.hasValidCoreExcept(world, pos)) {
+                if (!cityAI.hasValidCoreExcept(this.world, pos)) {
                     // There are no other valid AI cores. Spawn an item for the player
                     // with the right security key
                     ItemStack stack = new ItemStack(ModItems.keyCardItem);
                     KeyCardItem.addSecurityTag(stack, cityAI.getStorageKeyId());
                     EntityItem entityitem = new EntityItem(this.world, pos.getX()+.5, pos.getY()+.5, pos.getZ()+.5, stack);
                     entityitem.setDefaultPickupDelay();
-                    world.spawnEntity(entityitem);
-                    cityAI.setAlarmType(world, AlarmType.DEAD);
+                    this.world.spawnEntity(entityitem);
+                    cityAI.setAlarmType(this.world, AlarmType.DEAD);
                 }
             }
         }

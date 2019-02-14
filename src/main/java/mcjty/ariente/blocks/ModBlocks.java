@@ -9,6 +9,7 @@ import mcjty.ariente.blocks.plants.BlockArientePlant;
 import mcjty.ariente.blocks.utility.*;
 import mcjty.ariente.blocks.utility.autofield.AutoFieldRenderer;
 import mcjty.ariente.blocks.utility.autofield.AutoFieldTile;
+import mcjty.ariente.blocks.utility.autofield.FieldMarkerTile;
 import mcjty.ariente.blocks.utility.autofield.ItemNodeTile;
 import mcjty.ariente.blocks.utility.door.DoorMarkerRenderer;
 import mcjty.ariente.blocks.utility.door.DoorMarkerTile;
@@ -66,7 +67,7 @@ public class ModBlocks {
     public static BaseBlock fluxBeamBlock;
 
     public static GenericBlock<ItemNodeTile, GenericContainer> itemNode;
-    public static BaseBlock fieldMarker;
+    public static GenericBlock<FieldMarkerTile, GenericContainer> fieldMarker;
 
     public static BaseBlock lapisore;
     public static BaseBlock glowstoneore;
@@ -184,11 +185,13 @@ public class ModBlocks {
                 .flags(NON_OPAQUE, NON_FULLCUBE)
                 .boundingBox(ItemNodeTile::getBoundingBox)
                 .build();
-        fieldMarker = new BaseBlockBuilder<>(Ariente.instance, "field_marker")
+        fieldMarker = builderFactory.<FieldMarkerTile> builder("field_marker")
+                .tileEntityClass(FieldMarkerTile.class)
+                .emptyContainer()
                 .rotationType(NONE)
                 .itemBlockFactory(MultipartItemBlock::new)
-                .flags(NON_OPAQUE, NON_FULLCUBE)
                 .slotGetter((world, pos, newState) -> PartSlot.DOWN)
+                .flags(NON_OPAQUE, NON_FULLCUBE)
                 .boundingBox((state, source, pos) -> FLAT_BLOCK_AABB)
                 .build();
 

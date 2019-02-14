@@ -96,6 +96,22 @@ public class ItemNodeTile extends GenericTileEntity implements IGuiTile {
         world.getTileEntity(pos).markDirty();
     }
 
+    @Override
+    public void markDirtyQuick() {
+        // Make sure to mark the MultipartTE as dirty
+        ((GenericTileEntity)world.getTileEntity(pos)).markDirtyQuick();
+    }
+
+    @Override
+    public void onBlockPlacedBy(World world, BlockPos pos, IBlockState state, EntityLivingBase placer, ItemStack stack) {
+        AutoFieldTile.notifyField(world, pos);
+    }
+
+    @Override
+    public void onBlockBreak(World world, BlockPos pos, IBlockState state) {
+        AutoFieldTile.notifyField(world, pos);
+    }
+
     public static AxisAlignedBB getBoundingBox(IBlockState state, IBlockAccess world, BlockPos pos) {
         NodeOrientation orientation = state.getValue(ORIENTATION);
         switch (orientation) {
