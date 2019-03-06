@@ -10,14 +10,18 @@ import mcjty.ariente.config.ArienteConfiguration;
 import mcjty.ariente.dimension.DimensionRegister;
 import mcjty.ariente.entities.ModEntities;
 import mcjty.ariente.gui.GuiProxy;
+import mcjty.ariente.gui.HoloGuiCompatibility;
 import mcjty.ariente.items.ModItems;
 import mcjty.ariente.network.ArienteMessages;
 import mcjty.ariente.oregen.WorldGen;
 import mcjty.ariente.oregen.WorldTickHandler;
 import mcjty.ariente.recipes.RecipeRegistry;
 import mcjty.lib.base.GeneralConfig;
+import mcjty.lib.compat.MainCompatHandler;
 import mcjty.lib.network.PacketHandler;
-import mcjty.lib.proxy.AbstractCommonProxy;
+import mcjty.lib.setup.DefaultCommonSetup;
+import net.minecraft.init.Items;
+import net.minecraft.item.ItemStack;
 import net.minecraftforge.common.MinecraftForge;
 import net.minecraftforge.common.config.Configuration;
 import net.minecraftforge.fml.common.event.FMLInitializationEvent;
@@ -34,7 +38,7 @@ import java.io.UncheckedIOException;
 /**
  * Created by jorrit on 16.12.16.
  */
-public abstract class CommonProxy extends AbstractCommonProxy {
+public class CommonSetup extends DefaultCommonSetup {
 
     @Override
     public void preInit(FMLPreInitializationEvent e) {
@@ -57,10 +61,15 @@ public abstract class CommonProxy extends AbstractCommonProxy {
         ModItems.init();
         WorldGen.init();
         ModEntities.init();
+
+        MainCompatHandler.registerWaila();
+        MainCompatHandler.registerTOP();
+        HoloGuiCompatibility.register();
     }
 
-    public Configuration getConfig() {
-        return mainConfig;
+    @Override
+    public void createTabs() {
+        createTab("ariente", new ItemStack(Items.WATER_BUCKET));
     }
 
     @Override
@@ -101,6 +110,4 @@ public abstract class CommonProxy extends AbstractCommonProxy {
             }
         }
     }
-
-    public abstract boolean isJumpKeyDown();
 }

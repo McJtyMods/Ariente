@@ -16,7 +16,7 @@ public class PaneBlock extends BlockPane {
     public PaneBlock(String name, Material materialIn, SoundType soundType, boolean canDrop) {
         super(materialIn, canDrop);
         setSoundType(soundType);
-        setCreativeTab(Ariente.creativeTab);
+        setCreativeTab(Ariente.setup.getTab());
         setUnlocalizedName(Ariente.MODID + "." + name);
         setRegistryName(name);
         McJtyRegister.registerLater(this, Ariente.instance, ItemBlock::new);

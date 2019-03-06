@@ -41,12 +41,12 @@ public class AssetRegistries {
 
     private static void printChars(String prefix, Counter<Character> counter) {
         List<Character> chars = new ArrayList<>(counter.getMap().keySet());
-        chars.sort((o1, o2) -> o1.compareTo(o2));
+        chars.sort(Character::compareTo);
         String s = "";
         for (Character character : chars) {
             s += character;
         }
-        Ariente.logger.info(prefix + s);
+        Ariente.setup.getLogger().info(prefix + s);
     }
 
     private static void printMap(Map<Character, Set<String>> usersPerCharacter, List<Map.Entry<Character, Integer>> map) {
@@ -61,7 +61,7 @@ public class AssetRegistries {
             } else {
                 s += ", Used " + users.size() + " times";
             }
-            Ariente.logger.info(s);
+            Ariente.setup.getLogger().info(s);
         }
     }
 

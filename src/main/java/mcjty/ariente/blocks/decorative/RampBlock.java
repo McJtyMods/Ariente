@@ -46,7 +46,7 @@ public class RampBlock extends BaseBlock {
         setHardness(2.0f);
         setResistance(4.0f);
         setHarvestLevel("pickaxe", 1);
-        setCreativeTab(Ariente.creativeTab);
+        setCreativeTab(Ariente.setup.getTab());
     }
 
     @Override

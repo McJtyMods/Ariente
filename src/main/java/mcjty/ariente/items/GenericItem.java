@@ -13,7 +13,7 @@ public class GenericItem extends Item {
     public GenericItem(String name) {
         setUnlocalizedName(Ariente.MODID + "." + name);
         setRegistryName(name);
-        setCreativeTab(Ariente.creativeTab);
+        setCreativeTab(Ariente.setup.getTab());
         McJtyRegister.registerLater(this, Ariente.instance);
     }
 

@@ -2,15 +2,11 @@ package mcjty.ariente;
 
 
 import mcjty.ariente.commands.*;
-import mcjty.ariente.gui.HoloGuiCompatibility;
-import mcjty.ariente.proxy.CommonProxy;
+import mcjty.ariente.proxy.CommonSetup;
 import mcjty.hologui.api.IHoloGuiHandler;
 import mcjty.lib.base.ModBase;
-import mcjty.lib.compat.MainCompatHandler;
-import net.minecraft.creativetab.CreativeTabs;
+import mcjty.lib.proxy.IProxy;
 import net.minecraft.entity.player.EntityPlayer;
-import net.minecraft.init.Items;
-import net.minecraft.item.ItemStack;
 import net.minecraftforge.fluids.FluidRegistry;
 import net.minecraftforge.fml.common.Mod;
 import net.minecraftforge.fml.common.SidedProxy;
@@ -18,7 +14,6 @@ import net.minecraftforge.fml.common.event.FMLInitializationEvent;
 import net.minecraftforge.fml.common.event.FMLPostInitializationEvent;
 import net.minecraftforge.fml.common.event.FMLPreInitializationEvent;
 import net.minecraftforge.fml.common.event.FMLServerStartingEvent;
-import org.apache.logging.log4j.Logger;
 
 
 @Mod(modid = Ariente.MODID, name = Ariente.MODNAME,
@@ -37,16 +32,13 @@ public class Ariente implements ModBase {
     public static final String MIN_HOLOGUI_VER = "0.0.4-beta";
 
     @SidedProxy(clientSide = "mcjty.ariente.proxy.ClientProxy", serverSide = "mcjty.ariente.proxy.ServerProxy")
-    public static CommonProxy proxy;
+    public static IProxy proxy;
+    public static CommonSetup setup = new CommonSetup();
 
     @Mod.Instance
     public static Ariente instance;
 
     public static IHoloGuiHandler guiHandler;
-
-    public static CreativeTabs creativeTab;
-
-    public static Logger logger;
 
     public Ariente() {
         // This has to be done VERY early
@@ -56,26 +48,19 @@ public class Ariente implements ModBase {
 
     @Mod.EventHandler
     public void preInit(FMLPreInitializationEvent event){
-        logger = event.getModLog();
-        creativeTab = new CreativeTabs("ariente") {
-            @Override
-            public ItemStack getTabIconItem() {
-                return new ItemStack(Items.WATER_BUCKET);   // @todo
-            }
-        };
+        setup.preInit(event);
         proxy.preInit(event);
-        MainCompatHandler.registerWaila();
-        MainCompatHandler.registerTOP();
-        HoloGuiCompatibility.register();
     }
 
     @Mod.EventHandler
     public void init(FMLInitializationEvent e) {
+        setup.init(e);
         proxy.init(e);
     }
 
     @Mod.EventHandler
     public void postInit(FMLPostInitializationEvent e) {
+        setup.postInit(e);
         proxy.postInit(e);
     }
 

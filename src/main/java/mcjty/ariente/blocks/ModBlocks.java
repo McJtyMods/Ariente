@@ -138,7 +138,7 @@ public class ModBlocks {
 
 
     public static void init() {
-        builderFactory = new GenericBlockBuilderFactory(Ariente.instance).creativeTabs(Ariente.creativeTab);
+        builderFactory = new GenericBlockBuilderFactory(Ariente.instance).creativeTabs(Ariente.setup.getTab());
 
         initDecorative();
         initOres();
@@ -152,14 +152,14 @@ public class ModBlocks {
         facadeBlock = new FacadeBlock();
 
         flatLightBlock = new BaseBlockBuilder<>(Ariente.instance, "flatlight")
-                .creativeTabs(Ariente.creativeTab)
+                .creativeTabs(Ariente.setup.getTab())
                 .lightValue(15)
                 .flags(NON_OPAQUE, NON_FULLCUBE)
                 .boundingBox((state, source, pos) -> getFlatBox(state))
                 .build();
 
         fluxGlow = new BaseBlockBuilder<>(Ariente.instance, "fluxglow")
-                .creativeTabs(Ariente.creativeTab)
+                .creativeTabs(Ariente.setup.getTab())
                 .rotationType(NONE)
                 .lightValue(15)
                 .build();
@@ -202,7 +202,7 @@ public class ModBlocks {
                 .build();
 
         reinforcedMarble = new BaseBlockBuilder<>(Ariente.instance, "reinforced_marble")
-                .creativeTabs(Ariente.creativeTab)
+                .creativeTabs(Ariente.setup.getTab())
                 .rotationType(NONE)
                 .info("message.ariente.shiftmessage")
                 .infoExtended("message.ariente.lock")
@@ -485,28 +485,28 @@ public class ModBlocks {
     private static void initPlants() {
         glowlog = new BaseBlockBuilder<>(Ariente.instance, "glowlog")
                 .rotationType(NONE)
-                .creativeTabs(Ariente.creativeTab)
+                .creativeTabs(Ariente.setup.getTab())
                 .lightValue(10)
                 .flags(NON_OPAQUE, RENDER_TRANSLUCENT, BlockFlags.RENDER_NOSIDES)
                 .build();
         glowleaves = new BaseBlockBuilder<>(Ariente.instance, "glowleaves")
                 .rotationType(NONE)
-                .creativeTabs(Ariente.creativeTab)
+                .creativeTabs(Ariente.setup.getTab())
                 .lightValue(10)
                 .flags(NON_OPAQUE, RENDER_TRANSLUCENT)
                 .build();
         bluelog = new BaseBlockBuilder<>(Ariente.instance, "bluelog")
                 .rotationType(NONE)
-                .creativeTabs(Ariente.creativeTab)
+                .creativeTabs(Ariente.setup.getTab())
                 .build();
         blueleaves = new BaseBlockBuilder<>(Ariente.instance, "blueleaves")
                 .rotationType(NONE)
-                .creativeTabs(Ariente.creativeTab)
+                .creativeTabs(Ariente.setup.getTab())
                 .flags(NON_OPAQUE, RENDER_CUTOUT)
                 .build();
         darkleaves = new BaseBlockBuilder<>(Ariente.instance, "darkleaves")
                 .rotationType(NONE)
-                .creativeTabs(Ariente.creativeTab)
+                .creativeTabs(Ariente.setup.getTab())
                 .flags(NON_OPAQUE, RENDER_CUTOUT)
                 .build();
         blackBush = new BlockArientePlant("black_bush");
@@ -540,40 +540,40 @@ public class ModBlocks {
     private static void initOres() {
         lapisore = new BaseBlockBuilder<>(Ariente.instance, "lapisore")
                 .rotationType(NONE)
-                .creativeTabs(Ariente.creativeTab)
+                .creativeTabs(Ariente.setup.getTab())
                 .build();
         glowstoneore = new BaseBlockBuilder<>(Ariente.instance, "glowstoneore")
                 .rotationType(NONE)
-                .creativeTabs(Ariente.creativeTab)
+                .creativeTabs(Ariente.setup.getTab())
                 .lightValue(13)
                 .build();
         lithiumore = new BaseBlockBuilder<>(Ariente.instance, "lithiumore")
                 .rotationType(NONE)
-                .creativeTabs(Ariente.creativeTab)
+                .creativeTabs(Ariente.setup.getTab())
                 .build();
         manganeseore = new BaseBlockBuilder<>(Ariente.instance, "manganeseore")
                 .rotationType(NONE)
-                .creativeTabs(Ariente.creativeTab)
+                .creativeTabs(Ariente.setup.getTab())
                 .build();
         siliconore = new BaseBlockBuilder<>(Ariente.instance, "siliconore")
                 .rotationType(NONE)
-                .creativeTabs(Ariente.creativeTab)
+                .creativeTabs(Ariente.setup.getTab())
                 .build();
         silverore = new BaseBlockBuilder<>(Ariente.instance, "silverore")
                 .rotationType(NONE)
-                .creativeTabs(Ariente.creativeTab)
+                .creativeTabs(Ariente.setup.getTab())
                 .build();
         platinumore = new BaseBlockBuilder<>(Ariente.instance, "platinumore")
                 .rotationType(NONE)
-                .creativeTabs(Ariente.creativeTab)
+                .creativeTabs(Ariente.setup.getTab())
                 .build();
         posirite = new BaseBlockBuilder<>(Ariente.instance, "posirite")
                 .rotationType(NONE)
-                .creativeTabs(Ariente.creativeTab)
+                .creativeTabs(Ariente.setup.getTab())
                 .build();
         negarite = new BaseBlockBuilder<>(Ariente.instance, "negarite")
                 .rotationType(NONE)
-                .creativeTabs(Ariente.creativeTab)
+                .creativeTabs(Ariente.setup.getTab())
                 .build();
     }
 

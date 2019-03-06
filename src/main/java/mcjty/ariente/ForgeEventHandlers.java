@@ -77,8 +77,8 @@ public class ForgeEventHandlers {
 
     @SubscribeEvent
     public void onConfigChanged(ConfigChangedEvent.OnConfigChangedEvent event) {
-        if (Ariente.proxy.getConfig().hasChanged()) {
-            Ariente.proxy.getConfig().save();
+        if (Ariente.setup.getConfig().hasChanged()) {
+            Ariente.setup.getConfig().save();
         }
     }
 

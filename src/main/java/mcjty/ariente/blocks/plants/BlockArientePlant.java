@@ -33,7 +33,7 @@ public class BlockArientePlant extends BlockBush implements net.minecraftforge.c
         super(Material.VINE);
         setHardness(0.0F);
         setSoundType(SoundType.PLANT);
-        setCreativeTab(Ariente.creativeTab);
+        setCreativeTab(Ariente.setup.getTab());
 
         setUnlocalizedName(Ariente.MODID + "." + name);
         setRegistryName(name);

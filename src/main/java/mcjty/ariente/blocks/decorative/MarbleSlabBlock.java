@@ -31,7 +31,7 @@ public class MarbleSlabBlock extends BlockSlab {
         super(Material.ROCK);
         IBlockState iblockstate = this.blockState.getBaseState();
         this.setDefaultState(iblockstate.withProperty(COLOR, MarbleColor.BLACK));
-        this.setCreativeTab(Ariente.creativeTab);
+        this.setCreativeTab(Ariente.setup.getTab());
         setUnlocalizedName(Ariente.MODID + "." + name);
         setRegistryName(name);
         McJtyRegister.registerLater(this, Ariente.instance, block -> new ItemSlab(block, ModBlocks.marbleSlabBlock, ModBlocks.doubleMarbleSlabBlock));
