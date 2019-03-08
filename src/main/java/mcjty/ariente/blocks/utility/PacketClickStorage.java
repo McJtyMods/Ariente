@@ -1,13 +1,13 @@
 package mcjty.ariente.blocks.utility;
 
 import io.netty.buffer.ByteBuf;
+import mcjty.lib.thirteen.Context;
 import net.minecraft.entity.player.EntityPlayerMP;
 import net.minecraft.tileentity.TileEntity;
 import net.minecraft.util.math.BlockPos;
-import net.minecraftforge.fml.common.FMLCommonHandler;
 import net.minecraftforge.fml.common.network.simpleimpl.IMessage;
-import net.minecraftforge.fml.common.network.simpleimpl.IMessageHandler;
-import net.minecraftforge.fml.common.network.simpleimpl.MessageContext;
+
+import java.util.function.Supplier;
 
 public class PacketClickStorage implements IMessage {
     private BlockPos pos;
@@ -31,25 +31,25 @@ public class PacketClickStorage implements IMessage {
     public PacketClickStorage() {
     }
 
+    public PacketClickStorage(ByteBuf buf) {
+        fromBytes(buf);
+    }
+
     public PacketClickStorage(BlockPos pos, int index) {
         this.pos = pos;
         this.index = index;
     }
 
-    public static class Handler implements IMessageHandler<PacketClickStorage, IMessage> {
-        @Override
-        public IMessage onMessage(PacketClickStorage message, MessageContext ctx) {
-            FMLCommonHandler.instance().getWorldThread(ctx.netHandler).addScheduledTask(() -> handle(message, ctx));
-            return null;
-        }
-
-        private void handle(PacketClickStorage message, MessageContext ctx) {
-            EntityPlayerMP playerEntity = ctx.getServerHandler().player;
-            TileEntity te = playerEntity.getEntityWorld().getTileEntity(message.pos);
+    public void handle(Supplier<Context> supplier) {
+        Context ctx = supplier.get();
+        ctx.enqueueWork(() -> {
+            EntityPlayerMP playerEntity = ctx.getSender();
+            TileEntity te = playerEntity.getEntityWorld().getTileEntity(pos);
             if (te instanceof StorageTile) {
                 StorageTile storageTile = (StorageTile) te;
-                storageTile.giveToPlayer(message.index, playerEntity);
+                storageTile.giveToPlayer(index, playerEntity);
             }
-        }
+        });
+        ctx.setPacketHandled(true);
     }
 }

@@ -1,11 +1,11 @@
 package mcjty.ariente.network;
 
 import io.netty.buffer.ByteBuf;
+import mcjty.lib.thirteen.Context;
 import net.minecraft.entity.player.EntityPlayerMP;
-import net.minecraftforge.fml.common.FMLCommonHandler;
 import net.minecraftforge.fml.common.network.simpleimpl.IMessage;
-import net.minecraftforge.fml.common.network.simpleimpl.IMessageHandler;
-import net.minecraftforge.fml.common.network.simpleimpl.MessageContext;
+
+import java.util.function.Supplier;
 
 public class PacketHitForcefield implements IMessage {
 
@@ -20,16 +20,17 @@ public class PacketHitForcefield implements IMessage {
     public PacketHitForcefield() {
     }
 
-    public static class Handler implements IMessageHandler<PacketHitForcefield, IMessage> {
-        @Override
-        public IMessage onMessage(PacketHitForcefield message, MessageContext ctx) {
-            FMLCommonHandler.instance().getWorldThread(ctx.netHandler).addScheduledTask(() -> handle(message, ctx));
-            return null;
-        }
+    public PacketHitForcefield(ByteBuf buf) {
+        fromBytes(buf);
+    }
 
-        private void handle(PacketHitForcefield message, MessageContext ctx) {
-            EntityPlayerMP playerEntity = ctx.getServerHandler().player;
+    public void handle(Supplier<Context> supplier) {
+        Context ctx = supplier.get();
+        ctx.enqueueWork(() -> {
+            EntityPlayerMP playerEntity = ctx.getSender();
             // @todo
-        }
+
+        });
+        ctx.setPacketHandled(true);
     }
 }

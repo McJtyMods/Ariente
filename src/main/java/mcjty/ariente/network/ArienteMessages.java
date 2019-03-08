@@ -1,39 +1,54 @@
 package mcjty.ariente.network;
 
 import mcjty.ariente.Ariente;
-import mcjty.ariente.entities.fluxship.PacketShipAction;
-import mcjty.ariente.items.armor.PacketArmorHotkey;
-import mcjty.ariente.items.armor.PacketConfigureArmor;
 import mcjty.ariente.bindings.PacketFullHealth;
 import mcjty.ariente.blocks.defense.PacketDamageForcefield;
 import mcjty.ariente.blocks.utility.PacketClickStorage;
+import mcjty.ariente.entities.fluxship.PacketShipAction;
+import mcjty.ariente.items.armor.PacketArmorHotkey;
+import mcjty.ariente.items.armor.PacketConfigureArmor;
 import mcjty.lib.network.PacketHandler;
 import mcjty.lib.network.PacketSendClientCommand;
 import mcjty.lib.network.PacketSendServerCommand;
+import mcjty.lib.thirteen.ChannelBuilder;
+import mcjty.lib.thirteen.SimpleChannel;
 import mcjty.lib.typed.TypedMap;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.entity.player.EntityPlayerMP;
+import net.minecraft.util.ResourceLocation;
 import net.minecraftforge.fml.common.network.simpleimpl.SimpleNetworkWrapper;
-import net.minecraftforge.fml.relauncher.Side;
 
 import javax.annotation.Nonnull;
 
 public class ArienteMessages {
+
     public static SimpleNetworkWrapper INSTANCE;
 
-    public static void registerNetworkMessages(SimpleNetworkWrapper net) {
-        INSTANCE = net;
+    public static void registerMessages(String name) {
+        SimpleChannel net = ChannelBuilder
+                .named(new ResourceLocation(Ariente.MODID, name))
+                .networkProtocolVersion(() -> "1.0")
+                .clientAcceptedVersions(s -> true)
+                .serverAcceptedVersions(s -> true)
+                .simpleChannel();
+
+
+        INSTANCE = net.getNetwork();
 
         // Server side
-        net.registerMessage(PacketClickStorage.Handler.class, PacketClickStorage.class, PacketHandler.nextPacketID(), Side.SERVER);
-        net.registerMessage(PacketHitForcefield.Handler.class, PacketHitForcefield.class, PacketHandler.nextPacketID(), Side.SERVER);
-        net.registerMessage(PacketFullHealth.Handler.class, PacketFullHealth.class, PacketHandler.nextPacketID(), Side.SERVER);
-        net.registerMessage(PacketConfigureArmor.Handler.class, PacketConfigureArmor.class, PacketHandler.nextPacketID(), Side.SERVER);
-        net.registerMessage(PacketArmorHotkey.Handler.class, PacketArmorHotkey.class, PacketHandler.nextPacketID(), Side.SERVER);
-        net.registerMessage(PacketShipAction.Handler.class, PacketShipAction.class, PacketHandler.nextPacketID(), Side.SERVER);
+        net.registerMessageServer(id(), PacketClickStorage.class, PacketClickStorage::toBytes, PacketClickStorage::new, PacketClickStorage::handle);
+        net.registerMessageServer(id(), PacketHitForcefield.class, PacketHitForcefield::toBytes, PacketHitForcefield::new, PacketHitForcefield::handle);
+        net.registerMessageServer(id(), PacketFullHealth.class, PacketFullHealth::toBytes, PacketFullHealth::new, PacketFullHealth::handle);
+        net.registerMessageServer(id(), PacketConfigureArmor.class, PacketConfigureArmor::toBytes, PacketConfigureArmor::new, PacketConfigureArmor::handle);
+        net.registerMessageServer(id(), PacketArmorHotkey.class, PacketArmorHotkey::toBytes, PacketArmorHotkey::new, PacketArmorHotkey::handle);
+        net.registerMessageServer(id(), PacketShipAction.class, PacketShipAction::toBytes, PacketShipAction::new, PacketShipAction::handle);
 
         // Client side
-        net.registerMessage(PacketDamageForcefield.Handler.class, PacketDamageForcefield.class, PacketHandler.nextPacketID(), Side.CLIENT);
+        net.registerMessageClient(id(), PacketDamageForcefield.class, PacketDamageForcefield::toBytes, PacketDamageForcefield::new, PacketDamageForcefield::handle);
+    }
+
+    private static int id() {
+        return PacketHandler.nextPacketID();
     }
 
     public static void sendToServer(String command, @Nonnull TypedMap.Builder argumentBuilder) {

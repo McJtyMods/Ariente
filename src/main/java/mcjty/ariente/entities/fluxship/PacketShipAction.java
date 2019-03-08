@@ -1,12 +1,12 @@
 package mcjty.ariente.entities.fluxship;
 
 import io.netty.buffer.ByteBuf;
+import mcjty.lib.thirteen.Context;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.player.EntityPlayerMP;
-import net.minecraftforge.fml.common.FMLCommonHandler;
 import net.minecraftforge.fml.common.network.simpleimpl.IMessage;
-import net.minecraftforge.fml.common.network.simpleimpl.IMessageHandler;
-import net.minecraftforge.fml.common.network.simpleimpl.MessageContext;
+
+import java.util.function.Supplier;
 
 public class PacketShipAction implements IMessage {
 
@@ -25,23 +25,23 @@ public class PacketShipAction implements IMessage {
     public PacketShipAction() {
     }
 
+    public PacketShipAction(ByteBuf buf) {
+        fromBytes(buf);
+    }
+
     public PacketShipAction(FlyAction action) {
         this.action = action;
     }
 
-    public static class Handler implements IMessageHandler<PacketShipAction, IMessage> {
-        @Override
-        public IMessage onMessage(PacketShipAction message, MessageContext ctx) {
-            FMLCommonHandler.instance().getWorldThread(ctx.netHandler).addScheduledTask(() -> handle(message, ctx));
-            return null;
-        }
-
-        private void handle(PacketShipAction message, MessageContext ctx) {
-            EntityPlayerMP player = ctx.getServerHandler().player;
+    public void handle(Supplier<Context> supplier) {
+        Context ctx = supplier.get();
+        ctx.enqueueWork(() -> {
+            EntityPlayerMP player = ctx.getSender();
             Entity ridingEntity = player.getRidingEntity();
             if (ridingEntity instanceof FluxShipEntity) {
-                ((FluxShipEntity) ridingEntity).handleAction(message.action);
+                ((FluxShipEntity) ridingEntity).handleAction(action);
             }
-        }
+        });
+        ctx.setPacketHandled(true);
     }
 }

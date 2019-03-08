@@ -1,11 +1,11 @@
 package mcjty.ariente.bindings;
 
 import io.netty.buffer.ByteBuf;
+import mcjty.lib.thirteen.Context;
 import net.minecraft.entity.player.EntityPlayerMP;
-import net.minecraftforge.fml.common.FMLCommonHandler;
 import net.minecraftforge.fml.common.network.simpleimpl.IMessage;
-import net.minecraftforge.fml.common.network.simpleimpl.IMessageHandler;
-import net.minecraftforge.fml.common.network.simpleimpl.MessageContext;
+
+import java.util.function.Supplier;
 
 public class PacketFullHealth implements IMessage {
 
@@ -20,16 +20,16 @@ public class PacketFullHealth implements IMessage {
     public PacketFullHealth() {
     }
 
-    public static class Handler implements IMessageHandler<PacketFullHealth, IMessage> {
-        @Override
-        public IMessage onMessage(PacketFullHealth message, MessageContext ctx) {
-            FMLCommonHandler.instance().getWorldThread(ctx.netHandler).addScheduledTask(() -> handle(message, ctx));
-            return null;
-        }
+    public PacketFullHealth(ByteBuf buf) {
+        fromBytes(buf);
+    }
 
-        private void handle(PacketFullHealth message, MessageContext ctx) {
-            EntityPlayerMP playerEntity = ctx.getServerHandler().player;
+    public void handle(Supplier<Context> supplier) {
+        Context ctx = supplier.get();
+        ctx.enqueueWork(() -> {
+            EntityPlayerMP playerEntity = ctx.getSender();
             playerEntity.heal(100);
-        }
+        });
+        ctx.setPacketHandled(true);
     }
 }

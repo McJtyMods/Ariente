@@ -1,12 +1,12 @@
 package mcjty.ariente.blocks.defense;
 
 import io.netty.buffer.ByteBuf;
-import mcjty.ariente.Ariente;
+import mcjty.lib.thirteen.Context;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.Vec3d;
 import net.minecraftforge.fml.common.network.simpleimpl.IMessage;
-import net.minecraftforge.fml.common.network.simpleimpl.IMessageHandler;
-import net.minecraftforge.fml.common.network.simpleimpl.MessageContext;
+
+import java.util.function.Supplier;
 
 public class PacketDamageForcefield implements IMessage {
     private BlockPos pos;
@@ -34,21 +34,21 @@ public class PacketDamageForcefield implements IMessage {
     public PacketDamageForcefield() {
     }
 
+    public PacketDamageForcefield(ByteBuf buf) {
+        fromBytes(buf);
+    }
+
     public PacketDamageForcefield(BlockPos pos, int index, Vec3d intersection) {
         this.pos = pos;
         this.index = index;
         this.intersection = intersection;
     }
 
-    public static class Handler implements IMessageHandler<PacketDamageForcefield, IMessage> {
-        @Override
-        public IMessage onMessage(PacketDamageForcefield message, MessageContext ctx) {
-            Ariente.proxy.addScheduledTaskClient(() -> handle(message, ctx));
-            return null;
-        }
-
-        private void handle(PacketDamageForcefield message, MessageContext ctx) {
-            ForceFieldRenderer.damageField(message.pos, message.index, message.intersection);
-        }
+    public void handle(Supplier<Context> supplier) {
+        Context ctx = supplier.get();
+        ctx.enqueueWork(() -> {
+            ForceFieldRenderer.damageField(pos, index, intersection);
+        });
+        ctx.setPacketHandled(true);
     }
 }

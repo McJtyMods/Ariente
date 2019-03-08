@@ -47,9 +47,8 @@ public class CommonSetup extends DefaultCommonSetup {
         MinecraftForge.EVENT_BUS.register(new ForgeEventHandlers());
         MinecraftForge.TERRAIN_GEN_BUS.register(new TerrainGenEventHandlers());
 
-        SimpleNetworkWrapper network = PacketHandler.registerMessages(Ariente.MODID, "ariente");
         GeneralConfig.preInit(e);
-        ArienteMessages.registerNetworkMessages(network);
+        ArienteMessages.registerMessages("ariente");
 
         DimensionRegister.init();
 
