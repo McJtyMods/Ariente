@@ -15,11 +15,11 @@ public class DimensionRegister {
     }
 
     private static void registerDimensionTypes() {
-        dimensionType = DimensionType.register(Ariente.MODID, "_earth", WorldgenConfiguration.DIMENSION_ID, ArienteWorldProvider.class, false);
+        dimensionType = DimensionType.register(Ariente.MODID, "_earth", WorldgenConfiguration.DIMENSION_ID.get(), ArienteWorldProvider.class, false);
     }
 
     private static void registerDimensions() {
-        DimensionManager.registerDimension(WorldgenConfiguration.DIMENSION_ID, dimensionType);
+        DimensionManager.registerDimension(WorldgenConfiguration.DIMENSION_ID.get(), dimensionType);
     }
 
 }

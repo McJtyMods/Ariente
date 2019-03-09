@@ -267,7 +267,7 @@ public class ForceFieldTile extends GenericTileEntity implements IGuiTile, ITick
                 for (PanelInfo info : getPanelInfo()) {
                     if (info != null && info.getLife() > 0) {
                         if (info.testCollisionEntity(entity, getScaleDouble())) {
-                            entity.attackEntityFrom(DamageSource.GENERIC, DamageConfiguration.FORCEFIELD_DAMAGE);
+                            entity.attackEntityFrom(DamageSource.GENERIC, (float) DamageConfiguration.FORCEFIELD_DAMAGE.get());
                             ((EntityLivingBase)entity).knockBack(entity, 1.0f, pos.getX() - entity.posX, pos.getZ() - entity.posZ);
                         }
                     }
@@ -368,8 +368,8 @@ public class ForceFieldTile extends GenericTileEntity implements IGuiTile, ITick
                 int life = info.getLife();
                 if (life < 0) {
                     // Building up!
-                    if (PowerReceiverSupport.consumePower(world, pos, PowerConfiguration.FORCEFIELD_BUILDUP_POWER, true)) {
-                        usingPower += PowerConfiguration.FORCEFIELD_BUILDUP_POWER;
+                    if (PowerReceiverSupport.consumePower(world, pos, PowerConfiguration.FORCEFIELD_BUILDUP_POWER.get(), true)) {
+                        usingPower += PowerConfiguration.FORCEFIELD_BUILDUP_POWER.get();
                         life++;
                         if (life == 0) {
                             life = SHIELD_PANEL_LIFE;

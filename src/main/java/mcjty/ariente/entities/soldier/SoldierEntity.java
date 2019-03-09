@@ -159,7 +159,7 @@ public class SoldierEntity extends EntityMob implements IArmRaisable, IForcefiel
     protected void dropLoot(boolean wasRecentlyHit, int lootingModifier, DamageSource source) {
         super.dropLoot(wasRecentlyHit, lootingModifier, source);
         if (attackingPlayer != null) {
-            if (cityCenter != null && rand.nextFloat() < LootConfiguration.SOLDIER_CITYKEY_CHANCE) {
+            if (cityCenter != null && rand.nextFloat() < LootConfiguration.SOLDIER_CITYKEY_CHANCE.get()) {
                 CityAISystem aiSystem = CityAISystem.getCityAISystem(world);
                 CityAI cityAI = aiSystem.getCityAI(cityCenter);
                 if (cityAI != null) {

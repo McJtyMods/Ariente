@@ -1,24 +1,36 @@
 package mcjty.ariente.config;
 
-import net.minecraftforge.common.config.Configuration;
+import mcjty.lib.thirteen.ConfigSpec;
 
 public class UtilityConfiguration {
 
     private static final String CATEGORY_UTILITY = "utility";
 
-    public static int MAX_DOOR_HEIGHT = 6;
-    public static int POWERSUIT_MAXPOWER = 100;
-    public static int POWERSUIT_MAXPOWER_OPTIMIZED = 130;
-    public static int POWERSUIT_TICKS = 30000;
-    public static int POWERSUIT_TICKS_OPTIMIZED = 40000;
+    public static ConfigSpec.IntValue MAX_DOOR_HEIGHT;
+    public static ConfigSpec.IntValue POWERSUIT_MAXPOWER;
+    public static ConfigSpec.IntValue POWERSUIT_MAXPOWER_OPTIMIZED;
+    public static ConfigSpec.IntValue POWERSUIT_TICKS;
+    public static ConfigSpec.IntValue POWERSUIT_TICKS_OPTIMIZED;
 
-    public static void init(Configuration cfg) {
-        cfg.addCustomCategoryComment(CATEGORY_UTILITY, "Utility settings");
+    public static void init(ConfigSpec.Builder SERVER_BUILDER, ConfigSpec.Builder CLIENT_BUILDER) {
+        SERVER_BUILDER.comment("Utility settings").push(CATEGORY_UTILITY);
 
-        MAX_DOOR_HEIGHT = cfg.getInt("maxDoorHeight", CATEGORY_UTILITY, MAX_DOOR_HEIGHT, 1, 50, "The maximum height of a door");
-        POWERSUIT_MAXPOWER = cfg.getInt("powersuitMaxPower", CATEGORY_UTILITY, POWERSUIT_MAXPOWER, 1, 100000, "The maximum supported power of a power armor suit piece");
-        POWERSUIT_MAXPOWER_OPTIMIZED = cfg.getInt("powersuitMaxPowerOptimized", CATEGORY_UTILITY, POWERSUIT_MAXPOWER_OPTIMIZED, 1, 100000, "The maximum supported power of a power armor suit piece with the energy module installed");
-        POWERSUIT_TICKS = cfg.getInt("powersuitTicks", CATEGORY_UTILITY, POWERSUIT_TICKS, 1, 10000000, "Given a power consumption of 1, this represents the amount of ticks a single negarite/posirite item will last for a powersuit armor piece");
-        POWERSUIT_TICKS_OPTIMIZED = cfg.getInt("powersuitTicksOptimized", CATEGORY_UTILITY, POWERSUIT_TICKS_OPTIMIZED, 1, 10000000, "Given a power consumption of 1, this represents the amount of ticks a single negarite/posirite item will last for a powersuit armor piece (with energy module installed)");
+        MAX_DOOR_HEIGHT = SERVER_BUILDER
+                .comment("The maximum height of a door")
+                .defineInRange("maxDoorHeight", 6, 1, 50);
+        POWERSUIT_MAXPOWER = SERVER_BUILDER
+                .comment("The maximum supported power of a power armor suit piece")
+                .defineInRange("powersuitMaxPower", 100, 1, 100000);
+        POWERSUIT_MAXPOWER_OPTIMIZED = SERVER_BUILDER
+                .comment("The maximum supported power of a power armor suit piece with the energy module installed")
+                .defineInRange("powersuitMaxPowerOptimized", 130, 1, 100000);
+        POWERSUIT_TICKS = SERVER_BUILDER
+                .comment("Given a power consumption of 1, this represents the amount of ticks a single negarite/posirite item will last for a powersuit armor piece")
+                .defineInRange("powersuitTicks", 30000, 1, 10000000);
+        POWERSUIT_TICKS_OPTIMIZED = SERVER_BUILDER
+                .comment("Given a power consumption of 1, this represents the amount of ticks a single negarite/posirite item will last for a powersuit armor piece (with energy module installed)")
+                .defineInRange("powersuitTicksOptimized", 40000, 1, 10000000);
+
+        SERVER_BUILDER.pop();
     }
 }

@@ -1,16 +1,20 @@
 package mcjty.ariente.config;
 
-import net.minecraftforge.common.config.Configuration;
+import mcjty.lib.thirteen.ConfigSpec;
 
 public class DamageConfiguration {
 
     private static final String CATEGORY_DAMAGE = "damage";
 
-    public static float FORCEFIELD_DAMAGE = 19.0f;
+    public static ConfigSpec.DoubleValue FORCEFIELD_DAMAGE;
 
-    public static void init(Configuration cfg) {
-        cfg.addCustomCategoryComment(CATEGORY_DAMAGE, "Damage settings");
+    public static void init(ConfigSpec.Builder SERVER_BUILDER, ConfigSpec.Builder CLIENT_BUILDER) {
+        SERVER_BUILDER.comment("Damage settings").push(CATEGORY_DAMAGE);
 
-        FORCEFIELD_DAMAGE = cfg.getFloat("forcefieldDamage", CATEGORY_DAMAGE, FORCEFIELD_DAMAGE, 0.0f, 1000.0f, "Amount of damage the forcefield does when an entity touches it");
+        FORCEFIELD_DAMAGE = SERVER_BUILDER
+                .comment("Amount of damage the forcefield does when an entity touches it")
+                .defineInRange("forcefieldDamage", 19.0, 0.0, 1000.0);
+
+        SERVER_BUILDER.pop();
     }
 }

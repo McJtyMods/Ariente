@@ -86,7 +86,7 @@ public class DoorMarkerTile extends GenericTileEntity implements ITickable, IGui
 
     private void setInvisibleBlocks() {
         BlockPos p = pos.up();
-        for (int i = 0 ; i < UtilityConfiguration.MAX_DOOR_HEIGHT ; i++) {
+        for (int i = 0 ; i < UtilityConfiguration.MAX_DOOR_HEIGHT.get() ; i++) {
             if (world.isAirBlock(p)) {
                 EnumFacing facing = getFacing();
                 if (facing == null) {
@@ -102,7 +102,7 @@ public class DoorMarkerTile extends GenericTileEntity implements ITickable, IGui
 
     private void clearInvisibleBlocks() {
         BlockPos p = pos.up();
-        for (int i = 0 ; i < UtilityConfiguration.MAX_DOOR_HEIGHT ; i++) {
+        for (int i = 0 ; i < UtilityConfiguration.MAX_DOOR_HEIGHT.get() ; i++) {
             if (world.getBlockState(p).getBlock() == ModBlocks.invisibleDoorBlock) {
                 world.setBlockToAir(p);
             } else {

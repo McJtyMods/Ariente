@@ -46,7 +46,7 @@ public class ModuleSupport {
     @Nonnull
     public static Pair<Integer, Integer> getPowerUsage(ItemStack stack) {
         int power = 0;
-        int maxPower = UtilityConfiguration.POWERSUIT_MAXPOWER;
+        int maxPower = UtilityConfiguration.POWERSUIT_MAXPOWER.get();
         NBTTagCompound compound = stack.getTagCompound();
         if (compound == null) {
             return Pair.of(power, maxPower);
@@ -59,7 +59,7 @@ public class ModuleSupport {
                     if (type.getPowerUsage() > 0) {
                         power += type.getPowerUsage();
                     } else if (type.getPowerUsage() == -1) {
-                        maxPower = UtilityConfiguration.POWERSUIT_MAXPOWER_OPTIMIZED;
+                        maxPower = UtilityConfiguration.POWERSUIT_MAXPOWER_OPTIMIZED.get();
                     }
                 }
             }
@@ -99,9 +99,9 @@ public class ModuleSupport {
             }
             compound.setInteger("negarite", negarite);
             compound.setInteger("posirite", posirite);
-            int max = UtilityConfiguration.POWERSUIT_TICKS;
-            if (powerUsage.getRight() > UtilityConfiguration.POWERSUIT_MAXPOWER) {  // If > we have an energy optimizer
-                max = UtilityConfiguration.POWERSUIT_TICKS_OPTIMIZED;
+            int max = UtilityConfiguration.POWERSUIT_TICKS.get();
+            if (powerUsage.getRight() > UtilityConfiguration.POWERSUIT_MAXPOWER.get()) {  // If > we have an energy optimizer
+                max = UtilityConfiguration.POWERSUIT_TICKS_OPTIMIZED.get();
             }
             compound.setInteger("power", max / powerUsage.getLeft());
         } else {

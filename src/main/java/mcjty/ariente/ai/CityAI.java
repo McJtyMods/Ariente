@@ -761,7 +761,7 @@ public class CityAI {
             // Set alarm type in case it is not already set
             setAlarmType(player.world, AlarmType.ALERT);
         }
-        onAlert = AIConfiguration.ALERT_TIME;
+        onAlert = AIConfiguration.ALERT_TIME.get();
         watchingPlayers.put(player.getUniqueID(), player.getPosition());    // Register the last known position
     }
 

@@ -94,7 +94,7 @@ public class ForgeEventHandlers {
         if (event.isSpawner()) {
             return;
         }
-        if (event.getWorld().provider.getDimension() == WorldgenConfiguration.DIMENSION_ID) {
+        if (event.getWorld().provider.getDimension() == WorldgenConfiguration.DIMENSION_ID.get()) {
             if (event.getEntity() instanceof IAnimals) {
                 event.setResult(Event.Result.DENY);
             }
@@ -147,7 +147,7 @@ public class ForgeEventHandlers {
                 event.setCanceled(true);
             }
         }
-        if (world.provider.getDimension() == WorldgenConfiguration.DIMENSION_ID) {
+        if (world.provider.getDimension() == WorldgenConfiguration.DIMENSION_ID.get()) {
             EntityPlayer player = event.getPlayer();
             if (te instanceof IAlarmMode) {
                 boolean highAlert = ((IAlarmMode) te).isHighAlert();
@@ -196,7 +196,7 @@ public class ForgeEventHandlers {
         }
         World world = event.getWorld();
         if (!world.isRemote) {
-            if (world.provider.getDimension() == WorldgenConfiguration.DIMENSION_ID) {
+            if (world.provider.getDimension() == WorldgenConfiguration.DIMENSION_ID.get()) {
                 ArienteChunkGenerator generator = (ArienteChunkGenerator)(((WorldServer) world).getChunkProvider().chunkGenerator);
                 BlockPos pos = event.getPos();
                 int cx = pos.getX() >> 4;
@@ -234,7 +234,7 @@ public class ForgeEventHandlers {
         }
         World world = event.getWorld();
         if (!world.isRemote) {
-            if (world.provider.getDimension() == WorldgenConfiguration.DIMENSION_ID) {
+            if (world.provider.getDimension() == WorldgenConfiguration.DIMENSION_ID.get()) {
                 ArienteChunkGenerator generator = (ArienteChunkGenerator)(((WorldServer) world).getChunkProvider().chunkGenerator);
                 BlockPos pos = event.getPos();
                 int cx = pos.getX() >> 4;

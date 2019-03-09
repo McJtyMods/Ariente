@@ -50,10 +50,10 @@ public class CommonSetup extends DefaultCommonSetup {
         GeneralConfig.preInit(e);
         ArienteMessages.registerMessages("ariente");
 
-        DimensionRegister.init();
-
         mainConfig = new Configuration(new File(modConfigDir.getPath(), "ariente.cfg"));
         ArienteConfiguration.init(mainConfig);
+
+        DimensionRegister.init();
 
 //        FluidSetup.preInitFluids();
         ModBlocks.init();

@@ -1,18 +1,24 @@
 package mcjty.ariente.config;
 
-import net.minecraftforge.common.config.Configuration;
+import mcjty.lib.thirteen.ConfigSpec;
 
 public class WorldgenConfiguration {
 
     private static final String CATEGORY_WORLDGEN = "worldgen";
 
-    public static int DIMENSION_ID = 222;
-    public static float CITY_DUNGEON_CHANCE = .7f;
+    public static ConfigSpec.IntValue DIMENSION_ID;
+    public static ConfigSpec.DoubleValue CITY_DUNGEON_CHANCE;
 
-    public static void init(Configuration cfg) {
-        cfg.addCustomCategoryComment(CATEGORY_WORLDGEN, "World generation settings");
+    public static void init(ConfigSpec.Builder SERVER_BUILDER, ConfigSpec.Builder CLIENT_BUILDER) {
+        SERVER_BUILDER.comment("World generation settings").push(CATEGORY_WORLDGEN);
 
-        DIMENSION_ID = cfg.getInt("dimensionId", CATEGORY_WORLDGEN, DIMENSION_ID, -100000, 100000, "The id of the Ariente dimension");
-        CITY_DUNGEON_CHANCE = cfg.getFloat("cityDungeonChance", CATEGORY_WORLDGEN, CITY_DUNGEON_CHANCE, 0, 1, "The chance that a city dungeon spot will actually have a city dungeon");
+        DIMENSION_ID = SERVER_BUILDER
+                .comment("The id of the Ariente dimension")
+                .defineInRange("dimensionId", 222, -100000, 100000);
+        CITY_DUNGEON_CHANCE = SERVER_BUILDER
+                .comment("The chance that a city dungeon spot will actually have a city dungeon")
+                .defineInRange("cityDungeonChance", .7, 0, 1);
+
+        SERVER_BUILDER.pop();
     }
 }

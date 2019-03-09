@@ -39,7 +39,7 @@ public class DirtyDiamondItem extends GenericItem {
     public ActionResult<ItemStack> onItemRightClick(World worldIn, EntityPlayer player, EnumHand handIn) {
         if (!worldIn.isRemote) {
             BlockPos nearest = CityTools.getNearestTeleportationSpot(player.getPosition());
-            TeleportationTools.teleportToDimension(player, WorldgenConfiguration.DIMENSION_ID, nearest.getX(), nearest.getY(), nearest.getZ());
+            TeleportationTools.teleportToDimension(player, WorldgenConfiguration.DIMENSION_ID.get(), nearest.getX(), nearest.getY(), nearest.getZ());
         }
         return super.onItemRightClick(worldIn, player, handIn);
     }

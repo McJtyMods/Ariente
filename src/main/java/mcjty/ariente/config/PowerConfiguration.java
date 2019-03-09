@@ -1,16 +1,20 @@
 package mcjty.ariente.config;
 
-import net.minecraftforge.common.config.Configuration;
+import mcjty.lib.thirteen.ConfigSpec;
 
 public class PowerConfiguration {
 
     private static final String CATEGORY_POWER = "power";
 
-    public static int FORCEFIELD_BUILDUP_POWER = 500;
+    public static ConfigSpec.IntValue FORCEFIELD_BUILDUP_POWER;
 
-    public static void init(Configuration cfg) {
-        cfg.addCustomCategoryComment(CATEGORY_POWER, "Power settings");
+    public static void init(ConfigSpec.Builder SERVER_BUILDER, ConfigSpec.Builder CLIENT_BUILDER) {
+        SERVER_BUILDER.comment("Power settings").push(CATEGORY_POWER);
 
-        FORCEFIELD_BUILDUP_POWER = cfg.getInt("forcefieldBuildupPower", CATEGORY_POWER, FORCEFIELD_BUILDUP_POWER, 0, 1000000000, "The amount of power to consume per forcefield panel while it is building up");
+        FORCEFIELD_BUILDUP_POWER = SERVER_BUILDER
+                .comment("The amount of power to consume per forcefield panel while it is building up")
+                .defineInRange("forcefieldBuildupPower", 500, 0, 1000000000);
+
+        SERVER_BUILDER.pop();
     }
 }

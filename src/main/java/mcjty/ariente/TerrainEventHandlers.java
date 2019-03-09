@@ -11,7 +11,7 @@ public class TerrainEventHandlers {
     @SubscribeEvent
     public void onCreateDecorate(DecorateBiomeEvent.Decorate event) {
         World world = event.getWorld();
-        if (!world.isRemote && world.provider.getDimension() == WorldgenConfiguration.DIMENSION_ID) {
+        if (!world.isRemote && world.provider.getDimension() == WorldgenConfiguration.DIMENSION_ID.get()) {
             switch (event.getType()) {
                 case CLAY:
                 case DEAD_BUSH:

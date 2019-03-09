@@ -70,7 +70,7 @@ public class InvisibleDoorTile extends GenericTileEntity implements ILockable {
         DoorMarkerTile doorMarkerTile = null;
         // Find the parent door marker
         BlockPos p = pos.down();
-        for (int i = 0; i < UtilityConfiguration.MAX_DOOR_HEIGHT ; i++) {
+        for (int i = 0; i < UtilityConfiguration.MAX_DOOR_HEIGHT.get() ; i++) {
             TileEntity marker = getWorld().getTileEntity(p);
             if (marker instanceof DoorMarkerTile) {
                 doorMarkerTile = (DoorMarkerTile) marker;
