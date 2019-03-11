@@ -25,10 +25,7 @@ import net.minecraft.inventory.EntityEquipmentSlot;
 import net.minecraft.item.ItemStack;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.RayTraceResult;
-import net.minecraftforge.client.event.DrawBlockHighlightEvent;
-import net.minecraftforge.client.event.ModelBakeEvent;
-import net.minecraftforge.client.event.RenderWorldLastEvent;
-import net.minecraftforge.client.event.TextureStitchEvent;
+import net.minecraftforge.client.event.*;
 import net.minecraftforge.event.entity.EntityMountEvent;
 import net.minecraftforge.event.entity.player.PlayerInteractEvent;
 import net.minecraftforge.fml.common.eventhandler.EventPriority;
@@ -38,6 +35,11 @@ import net.minecraftforge.fml.common.gameevent.TickEvent;
 import static mcjty.ariente.items.BlueprintItem.EMPTY_BLUEPRINT_MODEL;
 
 public class ClientForgeEventHandlers {
+
+    @SubscribeEvent
+    public void colorHandlerEventBlock(ColorHandlerEvent.Block event) {
+        ModBlocks.initColorHandlers(event.getBlockColors());
+    }
 
     @SubscribeEvent
     public void onModelBake(ModelBakeEvent event) {
