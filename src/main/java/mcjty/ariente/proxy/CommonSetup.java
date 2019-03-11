@@ -20,7 +20,6 @@ import mcjty.lib.setup.DefaultCommonSetup;
 import net.minecraft.init.Items;
 import net.minecraft.item.ItemStack;
 import net.minecraftforge.common.MinecraftForge;
-import net.minecraftforge.fml.common.event.FMLInitializationEvent;
 import net.minecraftforge.fml.common.event.FMLPostInitializationEvent;
 import net.minecraftforge.fml.common.event.FMLPreInitializationEvent;
 import net.minecraftforge.fml.common.network.NetworkRegistry;
@@ -44,8 +43,6 @@ public class CommonSetup extends DefaultCommonSetup {
         MinecraftForge.TERRAIN_GEN_BUS.register(new TerrainEventHandlers());
         NetworkRegistry.INSTANCE.registerGuiHandler(Ariente.instance, new GuiProxy());
 
-        setupModCompat();
-
         ArienteMessages.registerMessages("ariente");
 
         ConfigSetup.init();
@@ -54,9 +51,12 @@ public class CommonSetup extends DefaultCommonSetup {
         ModItems.init();
         WorldGen.init();
         ModEntities.init();
+
+        RecipeRegistry.init();
     }
 
-    private void setupModCompat() {
+    @Override
+    protected void setupModCompat() {
         MainCompatHandler.registerWaila();
         MainCompatHandler.registerTOP();
         HoloGuiCompatibility.register();
@@ -65,13 +65,6 @@ public class CommonSetup extends DefaultCommonSetup {
     @Override
     public void createTabs() {
         createTab("ariente", new ItemStack(Items.WATER_BUCKET));
-    }
-
-    @Override
-    public void init(FMLInitializationEvent e) {
-        super.init(e);
-
-        RecipeRegistry.init();
     }
 
     @Override
@@ -87,7 +80,7 @@ public class CommonSetup extends DefaultCommonSetup {
                     throw new UncheckedIOException(ex);
                 }
             } else if (path.startsWith("$")) {
-                File file = new File(modConfigDir.getPath() + File.separator + path.substring(1));
+                File file = new File(getModConfigDir().getPath() + File.separator + path.substring(1));
                 AssetRegistries.load(file);
             } else {
                 throw new RuntimeException("Invalid path for ariente resource in 'assets' config!");
