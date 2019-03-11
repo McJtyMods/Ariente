@@ -1,4 +1,4 @@
-package mcjty.ariente.proxy;
+package mcjty.ariente.setup;
 
 import mcjty.lib.setup.DefaultServerProxy;
 

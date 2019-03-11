@@ -1,4 +1,4 @@
-package mcjty.ariente.proxy;
+package mcjty.ariente.setup;
 
 import mcjty.ariente.Ariente;
 import mcjty.ariente.ClientForgeEventHandlers;

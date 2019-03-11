@@ -2,7 +2,7 @@ package mcjty.ariente;
 
 
 import mcjty.ariente.commands.*;
-import mcjty.ariente.proxy.CommonSetup;
+import mcjty.ariente.setup.CommonSetup;
 import mcjty.hologui.api.IHoloGuiHandler;
 import mcjty.lib.base.ModBase;
 import mcjty.lib.proxy.IProxy;
