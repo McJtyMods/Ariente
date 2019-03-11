@@ -3,7 +3,6 @@ package mcjty.ariente;
 import mcjty.ariente.ai.CityAI;
 import mcjty.ariente.ai.CityAISystem;
 import mcjty.ariente.ai.IAlarmMode;
-import mcjty.ariente.biomes.ModBiomes;
 import mcjty.ariente.blocks.ModBlocks;
 import mcjty.ariente.blocks.utility.ILockable;
 import mcjty.ariente.cities.BuildingPart;
@@ -19,24 +18,17 @@ import mcjty.ariente.items.modules.ArmorUpgradeType;
 import mcjty.ariente.items.modules.ModuleSupport;
 import mcjty.ariente.power.PowerSystem;
 import mcjty.ariente.sounds.FluxLevitatorSounds;
-import mcjty.ariente.sounds.ModSounds;
-import mcjty.lib.McJtyRegister;
-import net.minecraft.block.Block;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.EntityLivingBase;
 import net.minecraft.entity.passive.IAnimals;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.inventory.EntityEquipmentSlot;
-import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
 import net.minecraft.tileentity.TileEntity;
 import net.minecraft.util.DamageSource;
-import net.minecraft.util.SoundEvent;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.World;
 import net.minecraft.world.WorldServer;
-import net.minecraft.world.biome.Biome;
-import net.minecraftforge.event.RegistryEvent;
 import net.minecraftforge.event.entity.EntityJoinWorldEvent;
 import net.minecraftforge.event.entity.living.LivingDamageEvent;
 import net.minecraftforge.event.entity.living.LivingFallEvent;
@@ -46,35 +38,10 @@ import net.minecraftforge.fml.client.event.ConfigChangedEvent;
 import net.minecraftforge.fml.common.eventhandler.Event;
 import net.minecraftforge.fml.common.eventhandler.SubscribeEvent;
 import net.minecraftforge.fml.common.gameevent.TickEvent;
-import net.minecraftforge.registries.IForgeRegistry;
 
 import java.util.List;
 
 public class ForgeEventHandlers {
-
-    @SubscribeEvent
-    public void registerBlocks(RegistryEvent.Register<Block> event) {
-        McJtyRegister.registerBlocks(Ariente.instance, event.getRegistry());
-    }
-
-    @SubscribeEvent
-    public void registerItems(RegistryEvent.Register<Item> event) {
-        McJtyRegister.registerItems(Ariente.instance, event.getRegistry());
-        ModBlocks.initOreDict();
-        ModItems.initOreDict();
-        ModCrafting.init();
-    }
-
-    @SubscribeEvent
-    public void registerBiomes(RegistryEvent.Register<Biome> event) {
-        IForgeRegistry<Biome> registry = event.getRegistry();
-        ModBiomes.registerBiomes(registry);
-    }
-
-    @SubscribeEvent
-    public void registerSounds(RegistryEvent.Register<SoundEvent> sounds) {
-        ModSounds.init(sounds.getRegistry());
-    }
 
     @SubscribeEvent
     public void onConfigChanged(ConfigChangedEvent.OnConfigChangedEvent event) {

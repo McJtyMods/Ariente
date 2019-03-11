@@ -28,9 +28,6 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.io.UncheckedIOException;
 
-/**
- * Created by jorrit on 16.12.16.
- */
 public class CommonSetup extends DefaultCommonSetup {
 
     @Override
