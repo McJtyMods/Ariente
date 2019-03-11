@@ -15,7 +15,7 @@ import mcjty.ariente.oregen.WorldGen;
 import mcjty.ariente.oregen.WorldTickHandler;
 import mcjty.ariente.recipes.RecipeRegistry;
 import mcjty.lib.compat.MainCompatHandler;
-import mcjty.lib.setup.DefaultCommonSetup;
+import mcjty.lib.setup.DefaultModSetup;
 import net.minecraft.init.Items;
 import net.minecraft.item.ItemStack;
 import net.minecraftforge.common.MinecraftForge;
@@ -28,7 +28,7 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.io.UncheckedIOException;
 
-public class CommonSetup extends DefaultCommonSetup {
+public class ModSetup extends DefaultModSetup {
 
     @Override
     public void preInit(FMLPreInitializationEvent e) {

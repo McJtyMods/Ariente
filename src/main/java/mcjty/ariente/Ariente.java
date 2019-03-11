@@ -2,7 +2,7 @@ package mcjty.ariente;
 
 
 import mcjty.ariente.commands.*;
-import mcjty.ariente.setup.CommonSetup;
+import mcjty.ariente.setup.ModSetup;
 import mcjty.hologui.api.IHoloGuiHandler;
 import mcjty.lib.base.ModBase;
 import mcjty.lib.proxy.IProxy;
@@ -33,7 +33,7 @@ public class Ariente implements ModBase {
 
     @SidedProxy(clientSide = "mcjty.ariente.setup.ClientProxy", serverSide = "mcjty.ariente.setup.ServerProxy")
     public static IProxy proxy;
-    public static CommonSetup setup = new CommonSetup();
+    public static ModSetup setup = new ModSetup();
 
     @Mod.Instance
     public static Ariente instance;
