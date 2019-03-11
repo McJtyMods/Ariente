@@ -4,7 +4,7 @@ import mcjty.ariente.ai.CityAI;
 import mcjty.ariente.ai.CityAISystem;
 import mcjty.ariente.ai.IAlarmMode;
 import mcjty.ariente.cities.ICityEquipment;
-import mcjty.ariente.config.ArienteConfiguration;
+import mcjty.ariente.config.ConfigSetup;
 import mcjty.ariente.config.DamageConfiguration;
 import mcjty.ariente.config.PowerConfiguration;
 import mcjty.ariente.items.KeyCardItem;
@@ -46,7 +46,7 @@ import net.minecraftforge.fml.relauncher.SideOnly;
 import javax.annotation.Nullable;
 import java.util.*;
 
-import static mcjty.ariente.config.ArienteConfiguration.SHIELD_PANEL_LIFE;
+import static mcjty.ariente.config.ConfigSetup.SHIELD_PANEL_LIFE;
 import static mcjty.hologui.api.Icons.*;
 
 public class ForceFieldTile extends GenericTileEntity implements IGuiTile, ITickable, ISoundProducer, IPowerReceiver, ICityEquipment, IAlarmMode {
@@ -100,7 +100,7 @@ public class ForceFieldTile extends GenericTileEntity implements IGuiTile, ITick
         float quality = 0;
         for (int i = 0 ; i < PentakisDodecahedron.MAX_TRIANGLES ; i++) {
             if (panelInfo[i] != null && panelInfo[i].getLife() > 0) {
-                quality += panelInfo[i].getLife() / (float) ArienteConfiguration.SHIELD_PANEL_LIFE;
+                quality += panelInfo[i].getLife() / (float) ConfigSetup.SHIELD_PANEL_LIFE;
             }
         }
         return (int) (quality * 100 / PentakisDodecahedron.MAX_TRIANGLES);

@@ -1,9 +1,12 @@
 package mcjty.ariente.config;
 
+import mcjty.ariente.Ariente;
 import mcjty.lib.thirteen.ConfigSpec;
 import net.minecraftforge.common.config.Configuration;
 
-public class ArienteConfiguration {
+import java.io.File;
+
+public class ConfigSetup {
 
     private static final ConfigSpec.Builder SERVER_BUILDER = new ConfigSpec.Builder();
     private static final ConfigSpec.Builder CLIENT_BUILDER = new ConfigSpec.Builder();
@@ -38,9 +41,18 @@ public class ArienteConfiguration {
 
     public static int SHIELD_PANEL_LIFE = 100;
 
-    public static void init(Configuration cfg) {
-        SERVER_CONFIG = SERVER_BUILDER.build(cfg);
-        CLIENT_CONFIG = CLIENT_BUILDER.build(cfg);
+    public static Configuration mainConfig;
+
+    public static void init() {
+        mainConfig = new Configuration(new File(Ariente.setup.getModConfigDir().getPath(), "ariente.cfg"));
+        SERVER_CONFIG = SERVER_BUILDER.build(mainConfig);
+        CLIENT_CONFIG = CLIENT_BUILDER.build(mainConfig);
     }
 
+    public static void postInit() {
+        if (mainConfig.hasChanged()) {
+            mainConfig.save();
+        }
+        mainConfig = null;
+    }
 }

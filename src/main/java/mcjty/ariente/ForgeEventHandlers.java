@@ -9,6 +9,7 @@ import mcjty.ariente.blocks.utility.ILockable;
 import mcjty.ariente.cities.BuildingPart;
 import mcjty.ariente.cities.City;
 import mcjty.ariente.cities.CityTools;
+import mcjty.ariente.config.ConfigSetup;
 import mcjty.ariente.config.WorldgenConfiguration;
 import mcjty.ariente.dimension.ArienteChunkGenerator;
 import mcjty.ariente.dimension.EditMode;
@@ -77,8 +78,8 @@ public class ForgeEventHandlers {
 
     @SubscribeEvent
     public void onConfigChanged(ConfigChangedEvent.OnConfigChangedEvent event) {
-        if (Ariente.setup.getConfig().hasChanged()) {
-            Ariente.setup.getConfig().save();
+        if (ConfigSetup.mainConfig.hasChanged()) {
+            ConfigSetup.mainConfig.save();
         }
     }
 

@@ -8,7 +8,7 @@ import net.minecraft.util.math.Vec3d;
 
 import javax.annotation.Nullable;
 
-import static mcjty.ariente.config.ArienteConfiguration.SHIELD_PANEL_LIFE;
+import static mcjty.ariente.config.ConfigSetup.SHIELD_PANEL_LIFE;
 
 public class PanelInfo {
     private final int index;
