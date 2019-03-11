@@ -6,12 +6,9 @@ import mcjty.ariente.bindings.KeyBindings;
 import mcjty.ariente.bindings.KeyInputHandler;
 import mcjty.ariente.blocks.ModBlocks;
 import mcjty.ariente.cables.BakedModelLoader;
-import mcjty.ariente.entities.ModEntities;
-import mcjty.ariente.items.ModItems;
 import mcjty.lib.McJtyLibClient;
 import mcjty.lib.setup.DefaultClientProxy;
 import net.minecraftforge.client.event.ColorHandlerEvent;
-import net.minecraftforge.client.event.ModelRegistryEvent;
 import net.minecraftforge.client.model.ModelLoaderRegistry;
 import net.minecraftforge.client.model.obj.OBJLoader;
 import net.minecraftforge.common.MinecraftForge;
@@ -30,16 +27,11 @@ public class ClientProxy extends DefaultClientProxy {
         McJtyLibClient.preInit(e);
         OBJLoader.INSTANCE.addDomain(Ariente.MODID);
         ModelLoaderRegistry.registerLoader(new BakedModelLoader());
-
-//        MinecraftForge.EVENT_BUS.register(new ClientForgeEventHandlers());
-//        ModelLoaderRegistry.registerLoader(new TankModelLoader());
-//        FluidSetup.initRenderer();
     }
 
     @Override
     public void init(FMLInitializationEvent e) {
         super.init(e);
-//        ModBlocks.initItemModels();
         MinecraftForge.EVENT_BUS.register(new KeyInputHandler());
         KeyBindings.init();
     }
@@ -54,12 +46,5 @@ public class ClientProxy extends DefaultClientProxy {
     public void postInit(FMLPostInitializationEvent e) {
         super.postInit(e);
         ModBlocks.initItemModels();
-    }
-
-    @SubscribeEvent
-    public void registerModels(ModelRegistryEvent event) {
-        ModBlocks.initModels();
-        ModItems.initModels();
-        ModEntities.initModels();
     }
 }
