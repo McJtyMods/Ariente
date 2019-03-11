@@ -8,7 +8,6 @@ import mcjty.ariente.cities.AssetRegistries;
 import mcjty.ariente.config.ConfigSetup;
 import mcjty.ariente.dimension.DimensionRegister;
 import mcjty.ariente.entities.ModEntities;
-import mcjty.ariente.gui.GuiProxy;
 import mcjty.ariente.gui.HoloGuiCompatibility;
 import mcjty.ariente.items.ModItems;
 import mcjty.ariente.network.ArienteMessages;

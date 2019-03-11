@@ -1,4 +1,4 @@
-package mcjty.ariente.gui;
+package mcjty.ariente.proxy;
 
 import mcjty.lib.blocks.GenericBlock;
 import net.minecraft.block.Block;
