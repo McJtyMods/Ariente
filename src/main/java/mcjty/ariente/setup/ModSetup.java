@@ -39,8 +39,6 @@ public class ModSetup extends DefaultModSetup {
         MinecraftForge.TERRAIN_GEN_BUS.register(new TerrainEventHandlers());
         NetworkRegistry.INSTANCE.registerGuiHandler(Ariente.instance, new GuiProxy());
 
-        ConfigSetup.init();
-
         ArienteMessages.registerMessages("ariente");
 
         DimensionRegister.init();
@@ -57,6 +55,11 @@ public class ModSetup extends DefaultModSetup {
         MainCompatHandler.registerWaila();
         MainCompatHandler.registerTOP();
         HoloGuiCompatibility.register();
+    }
+
+    @Override
+    protected void setupConfig() {
+        ConfigSetup.init();
     }
 
     @Override
