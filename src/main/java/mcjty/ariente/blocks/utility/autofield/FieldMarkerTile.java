@@ -1,6 +1,7 @@
 package mcjty.ariente.blocks.utility.autofield;
 
 import mcjty.lib.multipart.MultipartHelper;
+import mcjty.lib.multipart.MultipartTE;
 import mcjty.lib.multipart.PartSlot;
 import mcjty.lib.tileentity.GenericTileEntity;
 import mcjty.lib.varia.BlockPosTools;
@@ -26,7 +27,10 @@ public class FieldMarkerTile extends GenericTileEntity {
     @Override
     public void markDirtyQuick() {
         // Make sure to mark the MultipartTE as dirty
-        ((GenericTileEntity)world.getTileEntity(pos)).markDirtyQuick();
+        TileEntity te = world.getTileEntity(pos);
+        if (te instanceof MultipartTE) {
+            ((MultipartTE) te).markDirtyQuick();
+        }
     }
 
     public void setAutoFieldTile(BlockPos autoFieldTile) {
