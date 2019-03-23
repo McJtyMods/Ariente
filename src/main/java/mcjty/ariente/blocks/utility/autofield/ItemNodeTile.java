@@ -8,7 +8,7 @@ import mcjty.hologui.api.IGuiComponent;
 import mcjty.hologui.api.IGuiComponentRegistry;
 import mcjty.hologui.api.IGuiTile;
 import mcjty.hologui.api.IHoloGuiEntity;
-import mcjty.hologui.api.components.IPlayerSlots;
+import mcjty.hologui.api.components.IPlayerInventory;
 import mcjty.hologui.api.components.ISlots;
 import mcjty.lib.multipart.PartSlot;
 import mcjty.lib.tileentity.GenericTileEntity;
@@ -305,16 +305,15 @@ public class ItemNodeTile extends GenericTileEntity implements IGuiTile {
         return HoloGuiTools.createPanelWithHelp(registry, entity -> entity.switchTag(pair.getLeft() + ":" + TAG_HELP))
                 .add(registry.text(0, -.2, 1, 1).text("Input Config").color(0xaaccff))
 
-                .add(registry.icon(0, 1.5, 1, 1).icon(registry.image(WHITE_PLAYER)))
-                .add(registry.playerSlots(1.5, 1, 7, 3)
-                        .name("playerslots")
-                        .doubleClickEvent((component, player, entity, x, y, stack, index) -> addToFilter(player, entity, getInputHandler())))
-
-                .add(registry.stackIcon(0, 5.5, 1, 1).itemStack(new ItemStack(ModBlocks.itemNode)))
-                .add(registry.slots(1.5, 5.5, 7, 2)
+                .add(registry.stackIcon(0, 1.5, 1, 1).itemStack(new ItemStack(ModBlocks.itemNode)))
+                .add(registry.slots(1.5, 1.5, 7, 2)
                         .name("slots")
                         .doubleClickEvent((component, player, entity, x, y, stack, index) -> removeFromFilter(player, entity, getInputHandler()))
                         .itemHandler(getInputHandler()))
+
+                .add(registry.playerInventory(4)
+                        .name("playerSlots")
+                        .doubleClickEvent((component, player, entity, x, y, stack, index) -> addToFilter(player, entity, getInputHandler())))
                 ;
     }
 
@@ -337,8 +336,8 @@ public class ItemNodeTile extends GenericTileEntity implements IGuiTile {
 
     private void addToFilter(EntityPlayer player, IHoloGuiEntity entity, SimpleItemHandler filter) {
         entity.findComponent("playerslots").ifPresent(component -> {
-            if (component instanceof IPlayerSlots) {
-                int selected = ((IPlayerSlots) component).getSelected();
+            if (component instanceof IPlayerInventory) {
+                int selected = ((IPlayerInventory) component).getSelected();
                 if (selected != -1) {
                     ItemStack extracted = player.inventory.getStackInSlot(selected);
                     if (!extracted.isEmpty()) {
