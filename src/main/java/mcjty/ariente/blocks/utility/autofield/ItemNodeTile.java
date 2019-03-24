@@ -4,10 +4,7 @@ import mcjty.ariente.Ariente;
 import mcjty.ariente.blocks.ModBlocks;
 import mcjty.ariente.gui.HelpBuilder;
 import mcjty.ariente.gui.HoloGuiTools;
-import mcjty.hologui.api.IGuiComponent;
-import mcjty.hologui.api.IGuiComponentRegistry;
-import mcjty.hologui.api.IGuiTile;
-import mcjty.hologui.api.IHoloGuiEntity;
+import mcjty.hologui.api.*;
 import mcjty.hologui.api.components.IPlayerInventory;
 import mcjty.hologui.api.components.ISlots;
 import mcjty.lib.multipart.PartSlot;
@@ -48,7 +45,7 @@ import static mcjty.hologui.api.Icons.*;
 public class ItemNodeTile extends GenericTileEntity implements IGuiTile {
 
     public static final PropertyEnum<NodeOrientation> ORIENTATION = PropertyEnum.create("orientation", NodeOrientation.class, NodeOrientation.values());
-    public static final int FILTER_AMOUNT = 14;
+    public static final int FILTER_AMOUNT = 12;
 
     public static String TAG_INPUT = "input";
     public static String TAG_OUTPUT = "output";
@@ -303,11 +300,24 @@ public class ItemNodeTile extends GenericTileEntity implements IGuiTile {
 
     private IGuiComponent<?> createInputGui(final Pair<String, String> pair, IGuiComponentRegistry registry) {
         return HoloGuiTools.createPanelWithHelp(registry, entity -> entity.switchTag(pair.getLeft() + ":" + TAG_HELP))
-                .add(registry.text(0, -.2, 1, 1).text("Input Config").color(0xaaccff))
+                .add(registry.text(2, -.2, 1, 1).text("Input Config").color(0xaaccff))
 
-                .add(registry.stackIcon(0, 1.5, 1, 1).itemStack(new ItemStack(ModBlocks.itemNode)))
-                .add(registry.slots(1.5, 1.5, 7, 2)
+//                .add(registry.stackIcon(0, 1.5, 1, 1).itemStack(new ItemStack(ModBlocks.itemNode)))
+                .add(registry.iconToggle(0, 1.1, 1, 1)
+                        .getter(player -> true)
+                        .icon(registry.image(Icons.NBT_OFF))
+                        .selected(registry.image(Icons.NBT_ON)))
+                .add(registry.iconToggle(0, 2.1, 1, 1)
+                        .getter(player -> false)
+                        .icon(registry.image(Icons.DAM_OFF))
+                        .selected(registry.image(Icons.DAM_ON)))
+                .add(registry.iconToggle(0, 3.1, 1, 1)
+                        .getter(player -> true)
+                        .icon(registry.image(Icons.ORE_OFF))
+                        .selected(registry.image(Icons.ORE_ON)))
+                .add(registry.slots(2.5, 1.5, 6, 2)
                         .name("slots")
+                        .fullBright()
                         .doubleClickEvent((component, player, entity, x, y, stack, index) -> removeFromFilter(player, entity, getInputHandler()))
                         .itemHandler(getInputHandler()))
 
@@ -321,21 +331,21 @@ public class ItemNodeTile extends GenericTileEntity implements IGuiTile {
         return HoloGuiTools.createPanelWithHelp(registry, entity -> entity.switchTag(pair.getLeft() + ":" + TAG_HELP))
                 .add(registry.text(0, -.2, 1, 1).text("Output Config").color(0xaaccff))
 
-                .add(registry.icon(0, 1.5, 1, 1).icon(registry.image(WHITE_PLAYER)))
-                .add(registry.playerSlots(1.5, 1, 7, 3)
-                        .name("playerslots")
-                        .doubleClickEvent((component, player, entity, x, y, stack, index) -> addToFilter(player, entity, getOutputHandler())))
-
-                .add(registry.stackIcon(0, 5.5, 1, 1).itemStack(new ItemStack(ModBlocks.itemNode)))
-                .add(registry.slots(1.5, 5.5, 7, 2)
+                .add(registry.stackIcon(0, 1.5, 1, 1).itemStack(new ItemStack(ModBlocks.itemNode)))
+                .add(registry.slots(2.5, 1.5, 6, 2)
                         .name("slots")
+                        .fullBright()
                         .doubleClickEvent((component, player, entity, x, y, stack, index) -> removeFromFilter(player, entity, getOutputHandler()))
                         .itemHandler(getOutputHandler()))
+
+                .add(registry.playerInventory(4)
+                        .name("playerSlots")
+                        .doubleClickEvent((component, player, entity, x, y, stack, index) -> addToFilter(player, entity, getOutputHandler())))
                 ;
     }
 
     private void addToFilter(EntityPlayer player, IHoloGuiEntity entity, SimpleItemHandler filter) {
-        entity.findComponent("playerslots").ifPresent(component -> {
+        entity.findComponent("playerSlots").ifPresent(component -> {
             if (component instanceof IPlayerInventory) {
                 int selected = ((IPlayerInventory) component).getSelected();
                 if (selected != -1) {
