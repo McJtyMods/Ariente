@@ -300,18 +300,18 @@ public class ItemNodeTile extends GenericTileEntity implements IGuiTile {
 
     private IGuiComponent<?> createInputGui(final Pair<String, String> pair, IGuiComponentRegistry registry) {
         return HoloGuiTools.createPanelWithHelp(registry, entity -> entity.switchTag(pair.getLeft() + ":" + TAG_HELP))
-                .add(registry.text(2, -.2, 1, 1).text("Input Config").color(0xaaccff))
+                .add(registry.text(2.3, -.2, 1, 1).text("Input Config").color(0xaaccff))
 
 //                .add(registry.stackIcon(0, 1.5, 1, 1).itemStack(new ItemStack(ModBlocks.itemNode)))
-                .add(registry.iconToggle(0, 1.1, 1, 1)
+                .add(registry.iconToggle(0.5, 0.5, 1, 1)
                         .getter(player -> true)
                         .icon(registry.image(Icons.NBT_OFF))
                         .selected(registry.image(Icons.NBT_ON)))
-                .add(registry.iconToggle(0, 2.1, 1, 1)
+                .add(registry.iconToggle(0.5, 1.5, 1, 1)
                         .getter(player -> false)
                         .icon(registry.image(Icons.DAM_OFF))
                         .selected(registry.image(Icons.DAM_ON)))
-                .add(registry.iconToggle(0, 3.1, 1, 1)
+                .add(registry.iconToggle(0.5, 2.5, 1, 1)
                         .getter(player -> true)
                         .icon(registry.image(Icons.ORE_OFF))
                         .selected(registry.image(Icons.ORE_ON)))
