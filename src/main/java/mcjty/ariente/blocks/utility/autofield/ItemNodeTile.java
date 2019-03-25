@@ -53,6 +53,13 @@ public class ItemNodeTile extends GenericTileEntity implements IGuiTile {
     private ItemStackList inputFilter = ItemStackList.create(FILTER_AMOUNT);
     private ItemStackList outputFilter = ItemStackList.create(FILTER_AMOUNT);
 
+    private boolean inputOredict = false;
+    private boolean inputDamage = false;
+    private boolean inputNbt = false;
+    private boolean outputOredict = false;
+    private boolean outputDamage = false;
+    private boolean outputNbt = false;
+
     public static IBlockState getStateForPlacement(World world, BlockPos pos, EnumFacing facing, float hitX, float hitY, float hitZ, int meta, EntityLivingBase placer) {
         NodeOrientation orientation = getOrientationFromPlacement(facing, hitX, hitY, hitZ);
         // Since this is a multipart we can use state that isn't convertable to metadata
@@ -302,19 +309,22 @@ public class ItemNodeTile extends GenericTileEntity implements IGuiTile {
         return HoloGuiTools.createPanelWithHelp(registry, entity -> entity.switchTag(pair.getLeft() + ":" + TAG_HELP))
                 .add(registry.text(2.3, -.2, 1, 1).text("Input Config").color(0xaaccff))
 
-//                .add(registry.stackIcon(0, 1.5, 1, 1).itemStack(new ItemStack(ModBlocks.itemNode)))
                 .add(registry.iconToggle(0.5, 0.5, 1, 1)
-                        .getter(player -> true)
+                        .getter(player -> inputNbt)
                         .icon(registry.image(Icons.NBT_OFF))
-                        .selected(registry.image(Icons.NBT_ON)))
+                        .selected(registry.image(Icons.NBT_ON))
+                        .hitEvent((component, player, entity, x, y) -> toggleInputNBT()))
                 .add(registry.iconToggle(0.5, 1.5, 1, 1)
-                        .getter(player -> false)
+                        .getter(player -> inputDamage)
                         .icon(registry.image(Icons.DAM_OFF))
-                        .selected(registry.image(Icons.DAM_ON)))
+                        .selected(registry.image(Icons.DAM_ON))
+                        .hitEvent((component, player, entity, x, y) -> toggleInputDamage()))
                 .add(registry.iconToggle(0.5, 2.5, 1, 1)
-                        .getter(player -> true)
+                        .getter(player -> inputOredict)
                         .icon(registry.image(Icons.ORE_OFF))
-                        .selected(registry.image(Icons.ORE_ON)))
+                        .selected(registry.image(Icons.ORE_ON))
+                        .hitEvent((component, player, entity, x, y) -> toggleInputOre()))
+
                 .add(registry.slots(2.5, 1.5, 6, 2)
                         .name("slots")
                         .fullBright()
@@ -329,9 +339,21 @@ public class ItemNodeTile extends GenericTileEntity implements IGuiTile {
 
     private IGuiComponent<?> createOutputGui(final Pair<String, String> pair, IGuiComponentRegistry registry) {
         return HoloGuiTools.createPanelWithHelp(registry, entity -> entity.switchTag(pair.getLeft() + ":" + TAG_HELP))
-                .add(registry.text(0, -.2, 1, 1).text("Output Config").color(0xaaccff))
+                .add(registry.text(2.3, -.2, 1, 1).text("Output Config").color(0xaaccff))
 
-                .add(registry.stackIcon(0, 1.5, 1, 1).itemStack(new ItemStack(ModBlocks.itemNode)))
+                .add(registry.iconToggle(0.5, 0.5, 1, 1)
+                        .getter(player -> outputNbt)
+                        .icon(registry.image(Icons.NBT_OFF))
+                        .selected(registry.image(Icons.NBT_ON)))
+                .add(registry.iconToggle(0.5, 1.5, 1, 1)
+                        .getter(player -> outputDamage)
+                        .icon(registry.image(Icons.DAM_OFF))
+                        .selected(registry.image(Icons.DAM_ON)))
+                .add(registry.iconToggle(0.5, 2.5, 1, 1)
+                        .getter(player -> outputOredict)
+                        .icon(registry.image(Icons.ORE_OFF))
+                        .selected(registry.image(Icons.ORE_ON)))
+
                 .add(registry.slots(2.5, 1.5, 6, 2)
                         .name("slots")
                         .fullBright()
@@ -342,6 +364,18 @@ public class ItemNodeTile extends GenericTileEntity implements IGuiTile {
                         .name("playerSlots")
                         .doubleClickEvent((component, player, entity, x, y, stack, index) -> addToFilter(player, entity, getOutputHandler())))
                 ;
+    }
+
+    private void toggleInputNBT() {
+        inputNbt = !inputNbt;
+    }
+
+    private void toggleInputDamage() {
+        inputDamage = !inputDamage;
+    }
+
+    private void toggleInputOre() {
+        inputOredict = !inputOredict;
     }
 
     private void addToFilter(EntityPlayer player, IHoloGuiEntity entity, SimpleItemHandler filter) {
