@@ -23,6 +23,7 @@ import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.World;
 import net.minecraftforge.fml.relauncher.Side;
 import net.minecraftforge.fml.relauncher.SideOnly;
+import org.apache.commons.lang3.tuple.Pair;
 
 import java.util.ArrayDeque;
 import java.util.HashSet;
@@ -37,10 +38,37 @@ public class AutoFieldTile extends GenericTileEntity implements IGuiTile, ITicka
     private AxisAlignedBB fieldBox = null;
     private AxisAlignedBB renderBox = null;
     private Set<BlockPos> markers = null;
+    private Set<Pair<BlockPos, PartSlot>> itemNodes = null;
+
+    private ConsumerInfo consumerInfo = null;
+    private ProducerInfo producerInfo = null;
 
     @Override
     public void update() {
+        findConsumers();
+        findProducers();
+    }
 
+    private void findConsumers() {
+        if (consumerInfo == null) {
+            consumerInfo = new ConsumerInfo(getItemNodes());
+        }
+    }
+
+    private void findProducers() {
+        if (producerInfo == null) {
+            producerInfo = new ProducerInfo(getItemNodes());
+        }
+    }
+
+    private Set<Pair<BlockPos, PartSlot>> getItemNodes() {
+        if (itemNodes == null) {
+            itemNodes = new HashSet<>();
+            for (BlockPos blockPos : getMarkers()) {
+                // @todo
+            }
+        }
+        return itemNodes;
     }
 
     @Override
@@ -56,7 +84,9 @@ public class AutoFieldTile extends GenericTileEntity implements IGuiTile, ITicka
 
     // Call this if a node in the field is updated/changed/added/removed
     public void notifyNode(BlockPos originalPos) {
-
+        consumerInfo = null;
+        producerInfo = null;
+        itemNodes = null;
     }
 
     // Call this to check if there is a field marker below us and if that
@@ -105,6 +135,9 @@ public class AutoFieldTile extends GenericTileEntity implements IGuiTile, ITicka
         fieldBox = null;
         renderBox = null;
         markers = null;
+        consumerInfo = null;
+        producerInfo = null;
+        itemNodes = null;
     }
 
     private void changeHeight(int dy) {
