@@ -51,21 +51,29 @@ public class AutoFieldTile extends GenericTileEntity implements IGuiTile, ITicka
 
     private void findConsumers() {
         if (consumerInfo == null) {
-            consumerInfo = new ConsumerInfo(getItemNodes());
+            consumerInfo = new ConsumerInfo(world, getItemNodes());
         }
     }
 
     private void findProducers() {
         if (producerInfo == null) {
-            producerInfo = new ProducerInfo(getItemNodes());
+            producerInfo = new ProducerInfo(world, getItemNodes());
         }
     }
 
     private Set<Pair<BlockPos, PartSlot>> getItemNodes() {
         if (itemNodes == null) {
             itemNodes = new HashSet<>();
-            for (BlockPos blockPos : getMarkers()) {
-                // @todo
+            for (BlockPos mpos : getMarkers()) {
+                for (int y = 0 ; y <= height ; y++) {
+                    BlockPos p = mpos.up(y);
+                    for (PartSlot slot : PartSlot.VALUES) {
+                        TileEntity te = MultipartHelper.getTileEntity(world, p, slot);
+                        if (te instanceof ItemNodeTile) {
+                            itemNodes.add(Pair.of(p, slot));
+                        }
+                    }
+                }
             }
         }
         return itemNodes;

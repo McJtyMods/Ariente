@@ -235,6 +235,14 @@ public class ItemNodeTile extends GenericTileEntity implements IGuiTile {
         markDirtyClient();
     }
 
+    public ItemStackList getInputFilter() {
+        return inputFilter;
+    }
+
+    public ItemStackList getOutputFilter() {
+        return outputFilter;
+    }
+
     private SimpleItemHandler inputHandler = null;
     private SimpleItemHandler outputHandler = null;
 
