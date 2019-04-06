@@ -1,5 +1,6 @@
 package mcjty.ariente.blocks.utility.autofield;
 
+import elec332.core.client.model.loading.handler.ItemModelHandler;
 import mcjty.ariente.Ariente;
 import mcjty.ariente.blocks.ModBlocks;
 import mcjty.ariente.gui.HelpBuilder;
@@ -33,10 +34,13 @@ import net.minecraft.world.World;
 import net.minecraftforge.fml.common.Optional;
 import net.minecraftforge.fml.relauncher.Side;
 import net.minecraftforge.fml.relauncher.SideOnly;
+import net.minecraftforge.items.CapabilityItemHandler;
+import net.minecraftforge.items.IItemHandler;
 import net.minecraftforge.items.ItemHandlerHelper;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.lang3.tuple.Pair;
 
+import javax.annotation.Nullable;
 import java.util.List;
 
 import static mcjty.ariente.blocks.utility.autofield.NodeOrientation.*;
@@ -243,6 +247,30 @@ public class ItemNodeTile extends GenericTileEntity implements IGuiTile {
         return outputFilter;
     }
 
+    public boolean isInputOredict() {
+        return inputOredict;
+    }
+
+    public boolean isInputDamage() {
+        return inputDamage;
+    }
+
+    public boolean isInputNbt() {
+        return inputNbt;
+    }
+
+    public boolean isOutputOredict() {
+        return outputOredict;
+    }
+
+    public boolean isOutputDamage() {
+        return outputDamage;
+    }
+
+    public boolean isOutputNbt() {
+        return outputNbt;
+    }
+
     private SimpleItemHandler inputHandler = null;
     private SimpleItemHandler outputHandler = null;
 
@@ -258,6 +286,20 @@ public class ItemNodeTile extends GenericTileEntity implements IGuiTile {
             outputHandler = new SimpleItemHandler(outputFilter);
         }
         return outputHandler;
+    }
+
+    @Nullable
+    public IItemHandler getConnectedItemHandler() {
+        IBlockState state = world.getBlockState(pos);
+        if (state.getBlock() == ModBlocks.itemNode) {
+            NodeOrientation orientation = state.getValue(ORIENTATION);
+            EnumFacing mainDirection = orientation.getMainDirection();
+            TileEntity otherTe = world.getTileEntity(pos.offset(mainDirection));
+            if (otherTe != null && otherTe.hasCapability(CapabilityItemHandler.ITEM_HANDLER_CAPABILITY, mainDirection.getOpposite())) {
+                return otherTe.getCapability(CapabilityItemHandler.ITEM_HANDLER_CAPABILITY, mainDirection.getOpposite());
+            }
+        }
+        return null;
     }
 
     @Override

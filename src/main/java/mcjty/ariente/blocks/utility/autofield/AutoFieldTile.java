@@ -4,6 +4,7 @@ import mcjty.ariente.blocks.ModBlocks;
 import mcjty.ariente.gui.HelpBuilder;
 import mcjty.ariente.gui.HoloGuiTools;
 import mcjty.ariente.power.IPowerReceiver;
+import mcjty.lib.multipart.PartPos;
 import mcjty.hologui.api.IGuiComponent;
 import mcjty.hologui.api.IGuiComponentRegistry;
 import mcjty.hologui.api.IGuiTile;
@@ -12,6 +13,7 @@ import mcjty.lib.multipart.MultipartTE;
 import mcjty.lib.multipart.PartSlot;
 import mcjty.lib.tileentity.GenericTileEntity;
 import net.minecraft.block.state.IBlockState;
+import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.network.NetworkManager;
 import net.minecraft.network.play.server.SPacketUpdateTileEntity;
@@ -23,12 +25,9 @@ import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.World;
 import net.minecraftforge.fml.relauncher.Side;
 import net.minecraftforge.fml.relauncher.SideOnly;
-import org.apache.commons.lang3.tuple.Pair;
+import net.minecraftforge.items.IItemHandler;
 
-import java.util.ArrayDeque;
-import java.util.HashSet;
-import java.util.Queue;
-import java.util.Set;
+import java.util.*;
 
 import static mcjty.hologui.api.Icons.*;
 
@@ -38,7 +37,7 @@ public class AutoFieldTile extends GenericTileEntity implements IGuiTile, ITicka
     private AxisAlignedBB fieldBox = null;
     private AxisAlignedBB renderBox = null;
     private Set<BlockPos> markers = null;
-    private Set<Pair<BlockPos, PartSlot>> itemNodes = null;
+    private Set<PartPos> itemNodes = null;
 
     private ConsumerInfo consumerInfo = null;
     private ProducerInfo producerInfo = null;
@@ -47,6 +46,27 @@ public class AutoFieldTile extends GenericTileEntity implements IGuiTile, ITicka
     public void update() {
         findConsumers();
         findProducers();
+
+        for (Map.Entry<PartPos, ProducerInfo.Producer> entry : producerInfo.getProducers().entrySet()) {
+            TileEntity te = MultipartHelper.getTileEntity(world, entry.getKey());
+            if (te instanceof ItemNodeTile) {
+                ItemNodeTile itemNode = (ItemNodeTile) te;
+                IItemHandler connectedItemHandler = itemNode.getConnectedItemHandler();
+                if (connectedItemHandler != null) {
+                    ProducerInfo.Producer producer = entry.getValue();
+                    for (int i = 0 ; i < connectedItemHandler.getSlots() ; i++) {
+                        ItemStack stack = connectedItemHandler.getStackInSlot(i);
+                        if (!stack.isEmpty()) {
+                            ProducerInfo.ProvidedItem providedItem = producer.getProvidedItem(stack);
+                            if (providedItem != null) {
+                                consumerInfo.getWantedStream(stack);
+                                // @todo
+                            }
+                        }
+                    }
+                }
+            }
+        }
     }
 
     private void findConsumers() {
@@ -61,7 +81,7 @@ public class AutoFieldTile extends GenericTileEntity implements IGuiTile, ITicka
         }
     }
 
-    private Set<Pair<BlockPos, PartSlot>> getItemNodes() {
+    private Set<PartPos> getItemNodes() {
         if (itemNodes == null) {
             itemNodes = new HashSet<>();
             for (BlockPos mpos : getMarkers()) {
@@ -70,7 +90,7 @@ public class AutoFieldTile extends GenericTileEntity implements IGuiTile, ITicka
                     for (PartSlot slot : PartSlot.VALUES) {
                         TileEntity te = MultipartHelper.getTileEntity(world, p, slot);
                         if (te instanceof ItemNodeTile) {
-                            itemNodes.add(Pair.of(p, slot));
+                            itemNodes.add(PartPos.create(p, slot));
                         }
                     }
                 }
