@@ -8,6 +8,8 @@ import mcjty.ariente.gui.HoloGuiTools;
 import mcjty.hologui.api.*;
 import mcjty.hologui.api.components.IPlayerInventory;
 import mcjty.hologui.api.components.ISlots;
+import mcjty.lib.multipart.MultipartHelper;
+import mcjty.lib.multipart.PartPos;
 import mcjty.lib.multipart.PartSlot;
 import mcjty.lib.tileentity.GenericTileEntity;
 import mcjty.lib.varia.ItemStackList;
@@ -289,9 +291,9 @@ public class ItemNodeTile extends GenericTileEntity implements IGuiTile {
     }
 
     @Nullable
-    public IItemHandler getConnectedItemHandler() {
-        IBlockState state = world.getBlockState(pos);
-        if (state.getBlock() == ModBlocks.itemNode) {
+    public IItemHandler getConnectedItemHandler(PartPos partPos) {
+        IBlockState state = MultipartHelper.getBlockState(world, pos, partPos.getSlot());
+        if (state != null && state.getBlock() == ModBlocks.itemNode) {
             NodeOrientation orientation = state.getValue(ORIENTATION);
             EnumFacing mainDirection = orientation.getMainDirection();
             TileEntity otherTe = world.getTileEntity(pos.offset(mainDirection));

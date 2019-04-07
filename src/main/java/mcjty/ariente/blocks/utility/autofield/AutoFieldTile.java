@@ -26,6 +26,7 @@ import net.minecraft.world.World;
 import net.minecraftforge.fml.relauncher.Side;
 import net.minecraftforge.fml.relauncher.SideOnly;
 import net.minecraftforge.items.IItemHandler;
+import net.minecraftforge.items.ItemHandlerHelper;
 
 import java.util.*;
 
@@ -42,30 +43,70 @@ public class AutoFieldTile extends GenericTileEntity implements IGuiTile, ITicka
     private ConsumerInfo consumerInfo = null;
     private ProducerInfo producerInfo = null;
 
+    private final AutoFieldRenderInfo renderInfo = new AutoFieldRenderInfo();
+
     @Override
     public void update() {
         findConsumers();
         findProducers();
 
         for (Map.Entry<PartPos, ProducerInfo.Producer> entry : producerInfo.getProducers().entrySet()) {
-            TileEntity te = MultipartHelper.getTileEntity(world, entry.getKey());
-            if (te instanceof ItemNodeTile) {
-                ItemNodeTile itemNode = (ItemNodeTile) te;
-                IItemHandler connectedItemHandler = itemNode.getConnectedItemHandler();
-                if (connectedItemHandler != null) {
+            PartPos sourcePos = entry.getKey();
+            ItemNodeTile producingItemNode = getItemNodeAt(sourcePos);
+            if (producingItemNode != null) {
+                IItemHandler producingItemHandler = producingItemNode.getConnectedItemHandler(sourcePos);
+                if (producingItemHandler != null) {
                     ProducerInfo.Producer producer = entry.getValue();
-                    for (int i = 0 ; i < connectedItemHandler.getSlots() ; i++) {
-                        ItemStack stack = connectedItemHandler.getStackInSlot(i);
+                    for (int i = 0 ; i < producingItemHandler.getSlots() ; i++) {
+                        ItemStack stack = producingItemHandler.extractItem(i, 1, true);
                         if (!stack.isEmpty()) {
                             ProducerInfo.ProvidedItem providedItem = producer.getProvidedItem(stack);
                             if (providedItem != null) {
-                                consumerInfo.getWantedStream(stack);
-                                // @todo
+                                int finalI = i;
+                                consumerInfo.getWantedStream(stack)
+                                        .filter(destPos -> canInsert(destPos, stack))
+                                        .findFirst()
+                                        .ifPresent(destPos -> {
+                                            ItemStack extracted = producingItemHandler.extractItem(finalI, 1, false);
+                                            doInsert(sourcePos, destPos, extracted);
+                                        });
                             }
                         }
                     }
                 }
             }
+        }
+    }
+
+    private boolean canInsert(PartPos partPos, ItemStack stack) {
+        ItemNodeTile itemNode = getItemNodeAt(partPos);
+        if (itemNode != null) {
+            IItemHandler connectedItemHandler = itemNode.getConnectedItemHandler(partPos);
+            if (connectedItemHandler != null) {
+                ItemStack remainer = ItemHandlerHelper.insertItem(connectedItemHandler, stack, true);
+                return remainer.isEmpty();
+            }
+        }
+        return false;
+    }
+
+    private void doInsert(PartPos sourcePos, PartPos destPos, ItemStack stack) {
+        ItemNodeTile itemNode = getItemNodeAt(destPos);
+        if (itemNode != null) {
+            IItemHandler connectedItemHandler = itemNode.getConnectedItemHandler(destPos);
+            if (connectedItemHandler != null) {
+                ItemHandlerHelper.insertItem(connectedItemHandler, stack, false);
+                renderInfo.registerTransfer(sourcePos, destPos, stack);
+            }
+        }
+    }
+
+    private ItemNodeTile getItemNodeAt(PartPos partPos) {
+        TileEntity te = MultipartHelper.getTileEntity(world, partPos);
+        if (te instanceof ItemNodeTile) {
+            return (ItemNodeTile) te;
+        } else {
+            return null;
         }
     }
 

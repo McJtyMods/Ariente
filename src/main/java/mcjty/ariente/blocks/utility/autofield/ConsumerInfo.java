@@ -48,7 +48,7 @@ public class ConsumerInfo {
         int[] oreIDs = OreDictionary.getOreIDs(stack);
         Stream<PartPos> oreDictStream = Arrays.stream(oreIDs)
                 .boxed()
-                .flatMap(oreID -> wantedOredictItems.get(oreID)
+                .flatMap(oreID -> wantedOredictItems.getOrDefault(oreID, Collections.emptyList())
                         .stream()
                         .map(WantedItem::getPos));
         Stream<PartPos> itemStream = wantedItems.get(stack.getItem())
