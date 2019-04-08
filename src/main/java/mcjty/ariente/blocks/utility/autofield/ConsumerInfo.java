@@ -51,10 +51,15 @@ public class ConsumerInfo {
                 .flatMap(oreID -> wantedOredictItems.getOrDefault(oreID, Collections.emptyList())
                         .stream()
                         .map(WantedItem::getPos));
-        Stream<PartPos> itemStream = wantedItems.get(stack.getItem())
-                .stream()
-                .map(WantedItem::getPos);
-        return Stream.concat(oreDictStream, itemStream);
+        List<WantedItem> wantedItems = this.wantedItems.get(stack.getItem());
+        if (wantedItems == null || wantedItems.isEmpty()) {
+            return oreDictStream;
+        } else {
+            Stream<PartPos> itemStream = wantedItems
+                    .stream()
+                    .map(WantedItem::getPos);
+            return Stream.concat(oreDictStream, itemStream);
+        }
     }
 
 

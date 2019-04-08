@@ -4,6 +4,8 @@ import mcjty.ariente.Ariente;
 import mcjty.ariente.bindings.PacketFullHealth;
 import mcjty.ariente.blocks.defense.PacketDamageForcefield;
 import mcjty.ariente.blocks.utility.PacketClickStorage;
+import mcjty.ariente.blocks.utility.autofield.PacketAutoFieldRequestRenderInfo;
+import mcjty.ariente.blocks.utility.autofield.PacketAutoFieldReturnRenderInfo;
 import mcjty.ariente.entities.fluxship.PacketShipAction;
 import mcjty.ariente.items.armor.PacketArmorHotkey;
 import mcjty.ariente.items.armor.PacketConfigureArmor;
@@ -42,9 +44,11 @@ public class ArienteMessages {
         net.registerMessageServer(id(), PacketConfigureArmor.class, PacketConfigureArmor::toBytes, PacketConfigureArmor::new, PacketConfigureArmor::handle);
         net.registerMessageServer(id(), PacketArmorHotkey.class, PacketArmorHotkey::toBytes, PacketArmorHotkey::new, PacketArmorHotkey::handle);
         net.registerMessageServer(id(), PacketShipAction.class, PacketShipAction::toBytes, PacketShipAction::new, PacketShipAction::handle);
+        net.registerMessageServer(id(), PacketAutoFieldRequestRenderInfo.class, PacketAutoFieldRequestRenderInfo::toBytes, PacketAutoFieldRequestRenderInfo::new, PacketAutoFieldRequestRenderInfo::handle);
 
         // Client side
         net.registerMessageClient(id(), PacketDamageForcefield.class, PacketDamageForcefield::toBytes, PacketDamageForcefield::new, PacketDamageForcefield::handle);
+        net.registerMessageClient(id(), PacketAutoFieldReturnRenderInfo.class, PacketAutoFieldReturnRenderInfo::toBytes, PacketAutoFieldReturnRenderInfo::new, PacketAutoFieldReturnRenderInfo::handle);
     }
 
     private static int id() {

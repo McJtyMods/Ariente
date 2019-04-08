@@ -119,6 +119,38 @@ public class AutoFieldRenderer extends TileEntitySpecialRenderer<AutoFieldTile> 
         GlStateManager.alphaFunc(GL11.GL_GREATER, 0.1F);
 
         GlStateManager.popMatrix();
+
+
+
+        te.clientRequestRenderInfo();
+
+        GlStateManager.pushMatrix();
+        GlStateManager.translate(x, y, z);
+        net.minecraft.client.renderer.RenderHelper.enableStandardItemLighting();
+        Minecraft.getMinecraft().entityRenderer.disableLightmap();
+
+        TransferRender[] transferRenders = te.getTransferRenders();
+        for (int i = 0 ; i < transferRenders.length ; i++) {
+            TransferRender render = transferRenders[i];
+            if (render == null) {
+                if (random.nextInt(50) == 1) {
+                    AutoFieldRenderInfo renderInfo = te.getClientRenderInfo();
+                    if (renderInfo != null) {
+                        AutoFieldRenderInfo.Transfer transfer = renderInfo.getRandomTransfer();
+                        if (transfer != null) {
+                            transferRenders[i] = new TransferRender(transfer, te.getPos());
+                        }
+                    }
+                }
+            } else {
+                if (!render.render()) {
+                    transferRenders[i] = null;
+                }
+            }
+        }
+        Minecraft.getMinecraft().entityRenderer.enableLightmap();
+
+        GlStateManager.popMatrix();
 //        }
 
     }

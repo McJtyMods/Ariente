@@ -1,6 +1,7 @@
 package mcjty.ariente.blocks.defense;
 
 import io.netty.buffer.ByteBuf;
+import mcjty.lib.network.NetworkTools;
 import mcjty.lib.thirteen.Context;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.Vec3d;
@@ -15,16 +16,14 @@ public class PacketDamageForcefield implements IMessage {
 
     @Override
     public void fromBytes(ByteBuf buf) {
-        pos = new BlockPos(buf.readInt(), buf.readInt(), buf.readInt());
+        pos = NetworkTools.readPos(buf);
         index = buf.readInt();
         intersection = new Vec3d(buf.readDouble(), buf.readDouble(), buf.readDouble());
     }
 
     @Override
     public void toBytes(ByteBuf buf) {
-        buf.writeInt(pos.getX());
-        buf.writeInt(pos.getY());
-        buf.writeInt(pos.getZ());
+        NetworkTools.writePos(buf, pos);
         buf.writeInt(index);
         buf.writeDouble(intersection.x);
         buf.writeDouble(intersection.y);

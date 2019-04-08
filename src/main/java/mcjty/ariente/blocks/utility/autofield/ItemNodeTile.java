@@ -438,6 +438,7 @@ public class ItemNodeTile extends GenericTileEntity implements IGuiTile {
                     ItemStack extracted = player.inventory.getStackInSlot(selected);
                     if (!extracted.isEmpty()) {
                         ItemHandlerHelper.insertItem(filter, extracted, false);
+                        AutoFieldTile.notifyField(world, pos);
                         markDirtyClient();
                     }
                 }
@@ -451,6 +452,7 @@ public class ItemNodeTile extends GenericTileEntity implements IGuiTile {
                 int selected = ((ISlots) component).getSelected();
                 if (selected != -1) {
                     filter.setItemStack(selected, ItemStack.EMPTY);
+                    AutoFieldTile.notifyField(world, pos);
                     markDirtyClient();
                 }
             }

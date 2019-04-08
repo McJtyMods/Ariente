@@ -3,16 +3,18 @@ package mcjty.ariente.blocks.utility.autofield;
 import mcjty.ariente.blocks.ModBlocks;
 import mcjty.ariente.gui.HelpBuilder;
 import mcjty.ariente.gui.HoloGuiTools;
+import mcjty.ariente.network.ArienteMessages;
 import mcjty.ariente.power.IPowerReceiver;
-import mcjty.lib.multipart.PartPos;
 import mcjty.hologui.api.IGuiComponent;
 import mcjty.hologui.api.IGuiComponentRegistry;
 import mcjty.hologui.api.IGuiTile;
 import mcjty.lib.multipart.MultipartHelper;
 import mcjty.lib.multipart.MultipartTE;
+import mcjty.lib.multipart.PartPos;
 import mcjty.lib.multipart.PartSlot;
 import mcjty.lib.tileentity.GenericTileEntity;
 import net.minecraft.block.state.IBlockState;
+import net.minecraft.entity.player.EntityPlayerMP;
 import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.network.NetworkManager;
@@ -43,7 +45,13 @@ public class AutoFieldTile extends GenericTileEntity implements IGuiTile, ITicka
     private ConsumerInfo consumerInfo = null;
     private ProducerInfo producerInfo = null;
 
+    // Server side renderInfo
     private final AutoFieldRenderInfo renderInfo = new AutoFieldRenderInfo();
+
+    // Client side renderInfo
+    private AutoFieldRenderInfo clientRenderInfo = null;
+    private long clientRenderInfoAge = -1;
+    private TransferRender[] transferRenders = new TransferRender[] { null, null };
 
     @Override
     public void update() {
@@ -76,6 +84,46 @@ public class AutoFieldTile extends GenericTileEntity implements IGuiTile, ITicka
                 }
             }
         }
+    }
+
+    // Call client side to request render info
+    public void clientRequestRenderInfo() {
+        long time = System.currentTimeMillis();
+        if (clientRenderInfo == null || time > clientRenderInfoAge + 1000) {
+            ArienteMessages.INSTANCE.sendToServer(new PacketAutoFieldRequestRenderInfo(pos));
+        }
+    }
+
+    // Called server side when a client has requested render info
+    public void renderInfoRequested() {
+        double x = pos.getX();
+        double y = pos.getY();
+        double z = pos.getZ();
+        double radius = 50;
+        PacketAutoFieldReturnRenderInfo info = new PacketAutoFieldReturnRenderInfo(pos, renderInfo);
+        for (EntityPlayerMP player : world.getMinecraftServer().getPlayerList().getPlayers()) {
+            double dx = x - player.posX;
+            double dy = y - player.posY;
+            double dz = z - player.posZ;
+
+            if (dx * dx + dy * dy + dz * dz < radius * radius) {
+                ArienteMessages.INSTANCE.sendTo(info, player);
+            }
+        }
+    }
+
+    // Called client side when a client has received render info
+    public void clientRenderInfoReceived(AutoFieldRenderInfo info) {
+        clientRenderInfo = info;
+        clientRenderInfoAge = System.currentTimeMillis();
+    }
+
+    public AutoFieldRenderInfo getClientRenderInfo() {
+        return clientRenderInfo;
+    }
+
+    public TransferRender[] getTransferRenders() {
+        return transferRenders;
     }
 
     private boolean canInsert(PartPos partPos, ItemStack stack) {
