@@ -51,7 +51,7 @@ public class AutoFieldTile extends GenericTileEntity implements IGuiTile, ITicka
     // Client side renderInfo
     private AutoFieldRenderInfo clientRenderInfo = null;
     private long clientRenderInfoAge = -1;
-    private TransferRender[] transferRenders = new TransferRender[] { null, null };
+    private TransferRender[] transferRenders = new TransferRender[] { null, null, null };
 
     @Override
     public void update() {

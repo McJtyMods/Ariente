@@ -121,13 +121,19 @@ public class AutoFieldRenderer extends TileEntitySpecialRenderer<AutoFieldTile> 
         GlStateManager.popMatrix();
 
 
+        renderItemTransfers(te, x, y, z);
+//        }
 
+    }
+
+    private void renderItemTransfers(AutoFieldTile te, double x, double y, double z) {
         te.clientRequestRenderInfo();
 
         GlStateManager.pushMatrix();
         GlStateManager.translate(x, y, z);
         net.minecraft.client.renderer.RenderHelper.enableStandardItemLighting();
         Minecraft.getMinecraft().entityRenderer.disableLightmap();
+        GlStateManager.enableAlpha();
 
         TransferRender[] transferRenders = te.getTransferRenders();
         for (int i = 0 ; i < transferRenders.length ; i++) {
@@ -149,10 +155,9 @@ public class AutoFieldRenderer extends TileEntitySpecialRenderer<AutoFieldTile> 
             }
         }
         Minecraft.getMinecraft().entityRenderer.enableLightmap();
+        GlStateManager.disableAlpha();
 
         GlStateManager.popMatrix();
-//        }
-
     }
 
     @Override
