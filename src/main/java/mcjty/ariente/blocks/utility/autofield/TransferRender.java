@@ -15,60 +15,80 @@ public class TransferRender {
     private final long startTime;
     private final long endTime;
     private final ItemStack stack;
-    private final CatmullRomSpline<Vec3dAlpha> spline;
+    private final CatmullRomSpline<AnimatedPoint> spline;
 
     private final Random random = new Random();
 
-    private static class Vec3dAlpha {
+    private static class AnimatedPoint {
         private final double x;
         private final double y;
         private final double z;
-        private final double alpha;
+        private final double rotation;
+        private final double size;
 
-        public Vec3dAlpha() {
+        public AnimatedPoint() {
             this.x = 0;
             this.y = 0;
             this.z = 0;
-            this.alpha = 0;
+            this.rotation = 0;
+            this.size = 0;
         }
 
-        public Vec3dAlpha(double x, double y, double z, double alpha) {
+        public AnimatedPoint(double x, double y, double z, double rotation, double size) {
             this.x = x;
             this.y = y;
             this.z = z;
-            this.alpha = alpha;
+            this.rotation = rotation;
+            this.size = size;
         }
 
-        public Vec3dAlpha subtract(Vec3dAlpha other) {
-            return new Vec3dAlpha(x - other.x, y - other.y, z - other.z, alpha - other.alpha);
+        public AnimatedPoint withSize(double s) {
+            return new AnimatedPoint(x, y, z, rotation, s);
         }
 
-        public Vec3dAlpha add(Vec3dAlpha other) {
-            return new Vec3dAlpha(x + other.x, y + other.y, z + other.z, alpha + other.alpha);
+        public AnimatedPoint subtract(AnimatedPoint other) {
+            return new AnimatedPoint(x - other.x, y - other.y, z - other.z, rotation - other.rotation, size - other.size);
         }
 
-        public Vec3dAlpha scale(double scale) {
-            return new Vec3dAlpha(x * scale, y * scale, z * scale, alpha * scale);
+        public AnimatedPoint add(AnimatedPoint other) {
+            return new AnimatedPoint(x + other.x, y + other.y, z + other.z, rotation + other.rotation, size + other.size);
+        }
+
+        public AnimatedPoint scale(double scale) {
+            return new AnimatedPoint(x * scale, y * scale, z * scale, rotation * scale, this.size * scale);
         }
     }
 
-    public TransferRender(AutoFieldRenderInfo.Transfer transfer, BlockPos relative) {
+    public TransferRender(AutoFieldRenderInfo.TransferPath path, AutoFieldRenderInfo.Transfer transfer, BlockPos relative) {
         startTime = System.currentTimeMillis();
         endTime = startTime + 2000;
         stack = new ItemStack(transfer.getItem(), 1, transfer.getMeta());
 
-        Vec3d start = new Vec3d(transfer.getSourcePos().getPos().subtract(relative)).add(getPos(transfer.getSourcePos().getSlot()));
-        Vec3d end = new Vec3d(transfer.getDestPos().getPos().subtract(relative)).add(getPos(transfer.getDestPos().getSlot()));
-        Vec3d mid = start.add(end).scale(0.5).addVector(random.nextFloat() * .6 - .3, random.nextFloat() * .6 - .3, random.nextFloat() * .6 - .3);
+        Vec3d sta = new Vec3d(path.getSourcePos().getPos().subtract(relative)).add(getPos(path.getSourcePos().getSlot()));
+        Vec3d end = new Vec3d(path.getDestPos().getPos().subtract(relative)).add(getPos(path.getDestPos().getSlot()));
+        double jitter = Math.sqrt(sta.squareDistanceTo(end)) / 5.0;
+        Vec3d mid = sta.add(end).scale(0.5).addVector(
+                random.nextFloat() * jitter - (jitter/2.0),
+                random.nextFloat() * jitter - (jitter/2.0),
+                random.nextFloat() * jitter - (jitter/2.0));
 
         spline = new CatmullRomSpline<>(
-                Vec3dAlpha::new,
-                Vec3dAlpha::subtract,
-                Vec3dAlpha::add,
-                Vec3dAlpha::scale);
-        spline.addPoint(new Vec3dAlpha(start.x, start.y, start.z, 0.0), 0.0f);
-        spline.addPoint(new Vec3dAlpha(mid.x, mid.y, mid.z, 0.5), 0.5f);
-        spline.addPoint(new Vec3dAlpha(end.x, end.y, end.z, 0.0), 1.0f);
+                AnimatedPoint::new,
+                AnimatedPoint::subtract,
+                AnimatedPoint::add,
+                AnimatedPoint::scale);
+        spline.addPoint(new AnimatedPoint(sta.x, sta.y, sta.z, 0.0, 0.0), 0.0f);
+        spline.addPoint(new AnimatedPoint(mid.x, mid.y, mid.z, 150.0, 0.4), 0.5f);
+        spline.addPoint(new AnimatedPoint(end.x, end.y, end.z, 0.0, 0.0), 1.0f);
+
+        spline.calculate(0.1f);
+        AnimatedPoint point10 = spline.getInterpolated();
+
+        spline.calculate(0.9f);
+        AnimatedPoint point90 = spline.getInterpolated();
+
+        spline.insertPoint(point10.withSize(0.4), 0.1f, 1);
+        spline.insertPoint(point90.withSize(0.4), 0.9f, 3);
     }
 
     public boolean render() {
@@ -78,20 +98,19 @@ public class TransferRender {
         }
         double factor = (time - startTime) / 2000.0;
         spline.calculate((float) factor);
-        Vec3dAlpha pos = spline.getInterpolated();
-        renderStack(stack, new Vec3d(pos.x, pos.y, pos.z), pos.alpha);
+        AnimatedPoint pos = spline.getInterpolated();
+        renderStack(stack, new Vec3d(pos.x, pos.y, pos.z), pos.rotation, pos.size);
 
         return true;
     }
 
-    private void renderStack(ItemStack stack, Vec3d pos, double alpha) {
+    private void renderStack(ItemStack stack, Vec3d pos, double alpha, double size) {
         GlStateManager.pushMatrix();
         GlStateManager.translate(pos.x, pos.y, pos.z);
-        GlStateManager.scale(.4f, .4f, .4f);
-        GlStateManager.rotate((float) alpha * 300, 0, 1, 0);
+        GlStateManager.scale(size, size, size);
+        GlStateManager.rotate((float) alpha, 0, 1, 0);
         RenderHelper.renderStackOnGround(stack, alpha);
 
-//        Minecraft.getMinecraft().getRenderItem().renderItem(stack, ItemCameraTransforms.TransformType.GROUND);
         GlStateManager.popMatrix();
     }
 

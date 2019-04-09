@@ -51,7 +51,7 @@ public class AutoFieldTile extends GenericTileEntity implements IGuiTile, ITicka
     // Client side renderInfo
     private AutoFieldRenderInfo clientRenderInfo = null;
     private long clientRenderInfoAge = -1;
-    private TransferRender[] transferRenders = new TransferRender[] { null, null, null };
+    private TransferRender[] transferRenders = null;
 
     @Override
     public void update() {
@@ -123,6 +123,20 @@ public class AutoFieldTile extends GenericTileEntity implements IGuiTile, ITicka
     }
 
     public TransferRender[] getTransferRenders() {
+        if (transferRenders == null) {
+            int size = getItemNodes().size();
+            if (size <= 2) {
+                transferRenders = new TransferRender[1];
+            } else if (size <= 4) {
+                transferRenders = new TransferRender[2];
+            } else if (size <= 8) {
+                transferRenders = new TransferRender[3];
+            } else if (size <= 12) {
+                transferRenders = new TransferRender[4];
+            } else {
+                transferRenders = new TransferRender[5];
+            }
+        }
         return transferRenders;
     }
 
@@ -204,6 +218,7 @@ public class AutoFieldTile extends GenericTileEntity implements IGuiTile, ITicka
         consumerInfo = null;
         producerInfo = null;
         itemNodes = null;
+        transferRenders = null;
     }
 
     // Call this to check if there is a field marker below us and if that

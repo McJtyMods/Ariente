@@ -11,11 +11,10 @@ import net.minecraft.util.math.BlockPos;
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 import java.util.*;
-import java.util.stream.Collectors;
 
 public class AutoFieldRenderInfo {
 
-    private final Map<Transfer, Long> transfers = new HashMap<>();
+    private final Map<TransferPath, List<Transfer>> transfers = new HashMap<>();
 
     private final Random random = new Random();
 
@@ -24,50 +23,68 @@ public class AutoFieldRenderInfo {
         if (random.nextInt(10) != 1) {
             return;
         }
-        Transfer transfer = new Transfer(sourcePos, destPos, stack.getItem(), stack.getMetadata());
         long time = System.currentTimeMillis();
-        transfers.put(transfer, time);
-        if (transfers.size() > 100) {
-            cleanupTransfers(time);
-        }
+        Transfer transfer = new Transfer(stack.getItem(), stack.getMetadata(), time);
+        TransferPath path = new TransferPath(sourcePos, destPos);
+        transfers.computeIfAbsent(path, p -> new ArrayList<>());
+        transfers.get(path).add(transfer);
+        // @todo
+//        if (transfers.size() > 100) {
+//            cleanupTransfers(time);
+//        }
     }
 
     @Nullable
-    public Transfer getRandomTransfer() {
+    public TransferPath getRandomPath() {
         if (this.transfers.isEmpty()) {
             return null;
         }
-        if (this.transfers.size() == 1) {
-            return this.transfers.entrySet().iterator().next().getKey();
+        if (transfers.size() == 1) {
+            return transfers.keySet().iterator().next();
         }
-        List<Transfer> transfers = new ArrayList<>(this.transfers.keySet());
-        return transfers.get(random.nextInt(transfers.size()));
+        List<TransferPath> paths = new ArrayList<>(this.transfers.keySet());
+        return paths.get(random.nextInt(paths.size()));
     }
 
-    private void cleanupTransfers(long time) {
-        List<Transfer> toRemove = transfers.entrySet().stream()
-                .sorted(Comparator.comparingLong(Map.Entry::getValue))
-                .filter(e -> e.getValue() < time - 5000)
-                .map(Map.Entry::getKey)
-                .collect(Collectors.toList());
-        for (Transfer transfer : toRemove) {
-            transfers.remove(transfer);
+    @Nullable
+    public Transfer getRandomTransfer(TransferPath path) {
+        List<Transfer> values = this.transfers.get(path);
+        if (values.isEmpty()) {
+            return null;
         }
-        System.out.println("transfers.size() = " + transfers.size());
+        if (values.size() == 1) {
+            return values.get(0);
+        }
+        return values.get(random.nextInt(values.size()));
     }
+
+//    private void cleanupTransfers(long time) {
+//        List<Transfer> toRemove = transfers.entrySet().stream()
+//                .sorted(Comparator.comparingLong(Map.Entry::getValue))
+//                .filter(e -> e.getValue() < time - 5000)
+//                .map(Map.Entry::getKey)
+//                .collect(Collectors.toList());
+//        for (Transfer transfer : toRemove) {
+//            transfers.remove(transfer);
+//        }
+//        System.out.println("transfers.size() = " + transfers.size());
+//    }
 
     public void toBytes(ByteBuf buf) {
         buf.writeInt(transfers.size());
-        for (Map.Entry<Transfer, Long> entry : transfers.entrySet()) {
-            Transfer transfer = entry.getKey();
-            NetworkTools.writePos(buf, transfer.sourcePos.getPos());
-            buf.writeByte(transfer.sourcePos.getSlot().ordinal());
-            NetworkTools.writePos(buf, transfer.destPos.getPos());
-            buf.writeByte(transfer.destPos.getSlot().ordinal());
-            int id = Item.getIdFromItem(transfer.item);
-//            System.out.println("to: id = " + id);
-            buf.writeInt(id);
-            buf.writeInt(transfer.meta);
+        for (Map.Entry<TransferPath, List<Transfer>> entry : transfers.entrySet()) {
+            TransferPath path = entry.getKey();
+            NetworkTools.writePos(buf, path.sourcePos.getPos());
+            buf.writeByte(path.sourcePos.getSlot().ordinal());
+            NetworkTools.writePos(buf, path.destPos.getPos());
+            buf.writeByte(path.destPos.getSlot().ordinal());
+            List<Transfer> values = entry.getValue();
+            buf.writeInt(values.size());
+            for (Transfer transfer : entry.getValue()) {
+                int id = Item.getIdFromItem(transfer.item);
+                buf.writeInt(id);
+                buf.writeInt(transfer.meta);
+            }
         }
     }
 
@@ -79,26 +96,27 @@ public class AutoFieldRenderInfo {
             PartSlot sourceSlot = PartSlot.VALUES[buf.readByte()];
             BlockPos destPos = NetworkTools.readPos(buf);
             PartSlot destSlot = PartSlot.VALUES[buf.readByte()];
-            int id = buf.readInt();
-//            System.out.println("from: id = " + id);
-            Item item = Item.getItemById(id);
-            int meta = buf.readInt();
-            // On the client the time doesn't matter so we put long there
-            transfers.put(new Transfer(PartPos.create(sourcePos, sourceSlot), PartPos.create(destPos, destSlot), item, meta), 0L);
+            TransferPath path = new TransferPath(PartPos.create(sourcePos, sourceSlot), PartPos.create(destPos, destSlot));
+            List<Transfer> values = new ArrayList<>();
+            int s = buf.readInt();
+            for (int j = 0 ; j < s ; j++) {
+                int id = buf.readInt();
+                Item item = Item.getItemById(id);
+                int meta = buf.readInt();
+                // On the client the time doesn't matter so we put 0 there
+                values.add(new Transfer(item, meta, 0));
+            }
+            transfers.put(path, values);
         }
     }
 
-    public static class Transfer {
+    public static class TransferPath {
         @Nonnull private final PartPos sourcePos;
         @Nonnull private final PartPos destPos;
-        @Nonnull private final Item item;
-        private final int meta;
 
-        public Transfer(@Nonnull PartPos sourcePos, @Nonnull PartPos destPos, @Nonnull Item item, int meta) {
+        public TransferPath(@Nonnull PartPos sourcePos, @Nonnull PartPos destPos) {
             this.sourcePos = sourcePos;
             this.destPos = destPos;
-            this.item = item;
-            this.meta = meta;
         }
 
         @Nonnull
@@ -111,6 +129,32 @@ public class AutoFieldRenderInfo {
             return destPos;
         }
 
+        @Override
+        public boolean equals(Object o) {
+            if (this == o) return true;
+            if (o == null || getClass() != o.getClass()) return false;
+            TransferPath that = (TransferPath) o;
+            return Objects.equals(sourcePos, that.sourcePos) &&
+                    Objects.equals(destPos, that.destPos);
+        }
+
+        @Override
+        public int hashCode() {
+            return Objects.hash(sourcePos, destPos);
+        }
+    }
+
+    public static class Transfer {
+        @Nonnull private final Item item;
+        private final int meta;
+        private final long time;
+
+        public Transfer(@Nonnull Item item, int meta, long time) {
+            this.item = item;
+            this.meta = meta;
+            this.time = time;
+        }
+
         @Nonnull
         public Item getItem() {
             return item;
@@ -120,20 +164,23 @@ public class AutoFieldRenderInfo {
             return meta;
         }
 
+        public long getTime() {
+            return time;
+        }
+
         @Override
         public boolean equals(Object o) {
             if (this == o) return true;
             if (o == null || getClass() != o.getClass()) return false;
             Transfer transfer = (Transfer) o;
             return meta == transfer.meta &&
-                    Objects.equals(sourcePos, transfer.sourcePos) &&
-                    Objects.equals(destPos, transfer.destPos) &&
+                    time == transfer.time &&
                     Objects.equals(item, transfer.item);
         }
 
         @Override
         public int hashCode() {
-            return Objects.hash(sourcePos, destPos, item, meta);
+            return Objects.hash(item, meta, time);
         }
     }
 

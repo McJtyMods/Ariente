@@ -43,11 +43,13 @@ public class AutoFieldRenderer extends TileEntitySpecialRenderer<AutoFieldTile> 
         if (box == null) {
             return;
         }
+        renderBeamBox(time, box);
+        renderItemTransfers(te, x, y, z);
+    }
 
-//        if (te.isWorking()) {
+    private void renderBeamBox(float time, AxisAlignedBB box) {
         Tessellator tessellator = Tessellator.getInstance();
         GlStateManager.pushMatrix();
-//            GlStateManager.translate(x, y, z);
 
         GlStateManager.enableBlend();
         GlStateManager.depthMask(false);
@@ -119,11 +121,6 @@ public class AutoFieldRenderer extends TileEntitySpecialRenderer<AutoFieldTile> 
         GlStateManager.alphaFunc(GL11.GL_GREATER, 0.1F);
 
         GlStateManager.popMatrix();
-
-
-        renderItemTransfers(te, x, y, z);
-//        }
-
     }
 
     private void renderItemTransfers(AutoFieldTile te, double x, double y, double z) {
@@ -142,9 +139,12 @@ public class AutoFieldRenderer extends TileEntitySpecialRenderer<AutoFieldTile> 
                 if (random.nextInt(50) == 1) {
                     AutoFieldRenderInfo renderInfo = te.getClientRenderInfo();
                     if (renderInfo != null) {
-                        AutoFieldRenderInfo.Transfer transfer = renderInfo.getRandomTransfer();
-                        if (transfer != null) {
-                            transferRenders[i] = new TransferRender(transfer, te.getPos());
+                        AutoFieldRenderInfo.TransferPath path = renderInfo.getRandomPath();
+                        if (path != null) {
+                            AutoFieldRenderInfo.Transfer transfer = renderInfo.getRandomTransfer(path);
+                            if (transfer != null) {
+                                transferRenders[i] = new TransferRender(path, transfer, te.getPos());
+                            }
                         }
                     }
                 }
