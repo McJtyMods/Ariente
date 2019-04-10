@@ -223,6 +223,12 @@ public class ItemNodeTile extends GenericTileEntity implements IGuiTile {
         super.readRestorableFromNBT(tagCompound);
         readBufferFromNBT(tagCompound, "input", inputFilter);
         readBufferFromNBT(tagCompound, "output", outputFilter);
+        inputDamage = tagCompound.getBoolean("inDamage");
+        inputNbt = tagCompound.getBoolean("inNBT");
+        inputOredict = tagCompound.getBoolean("inOre");
+        outputDamage = tagCompound.getBoolean("outDamage");
+        outputNbt = tagCompound.getBoolean("outNBT");
+        outputOredict = tagCompound.getBoolean("outOre");
     }
 
     @Override
@@ -230,6 +236,12 @@ public class ItemNodeTile extends GenericTileEntity implements IGuiTile {
         super.writeRestorableToNBT(tagCompound);
         writeBufferToNBT(tagCompound, "input", inputFilter);
         writeBufferToNBT(tagCompound, "output", outputFilter);
+        tagCompound.setBoolean("inDamage", inputDamage);
+        tagCompound.setBoolean("inNBT", inputNbt);
+        tagCompound.setBoolean("inOre", inputOredict);
+        tagCompound.setBoolean("outDamage", outputDamage);
+        tagCompound.setBoolean("outNBT", outputNbt);
+        tagCompound.setBoolean("outOre", outputOredict);
     }
 
     private void changeMode() {
@@ -395,14 +407,17 @@ public class ItemNodeTile extends GenericTileEntity implements IGuiTile {
 
                 .add(registry.iconToggle(0.5, 0.5, 1, 1)
                         .getter(player -> outputNbt)
+                        .hitEvent((component, player, entity, x, y) -> toggleOutputNBT())
                         .icon(registry.image(Icons.NBT_OFF))
                         .selected(registry.image(Icons.NBT_ON)))
                 .add(registry.iconToggle(0.5, 1.5, 1, 1)
                         .getter(player -> outputDamage)
+                        .hitEvent((component, player, entity, x, y) -> toggleOutputDamage())
                         .icon(registry.image(Icons.DAM_OFF))
                         .selected(registry.image(Icons.DAM_ON)))
                 .add(registry.iconToggle(0.5, 2.5, 1, 1)
                         .getter(player -> outputOredict)
+                        .hitEvent((component, player, entity, x, y) -> toggleOutputOre())
                         .icon(registry.image(Icons.ORE_OFF))
                         .selected(registry.image(Icons.ORE_ON)))
 
@@ -420,14 +435,32 @@ public class ItemNodeTile extends GenericTileEntity implements IGuiTile {
 
     private void toggleInputNBT() {
         inputNbt = !inputNbt;
+        markDirtyClient();
     }
 
     private void toggleInputDamage() {
         inputDamage = !inputDamage;
+        markDirtyClient();
     }
 
     private void toggleInputOre() {
         inputOredict = !inputOredict;
+        markDirtyClient();
+    }
+
+    private void toggleOutputNBT() {
+        outputNbt = !outputNbt;
+        markDirtyClient();
+    }
+
+    private void toggleOutputDamage() {
+        outputDamage = !outputDamage;
+        markDirtyClient();
+    }
+
+    private void toggleOutputOre() {
+        outputOredict = !outputOredict;
+        markDirtyClient();
     }
 
     private void addToFilter(EntityPlayer player, IHoloGuiEntity entity, SimpleItemHandler filter) {
