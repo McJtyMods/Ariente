@@ -1,10 +1,12 @@
 package mcjty.ariente.blocks.utility.autofield;
 
 import mcjty.ariente.blocks.ModBlocks;
+import mcjty.ariente.config.UtilityConfiguration;
 import mcjty.ariente.gui.HelpBuilder;
 import mcjty.ariente.gui.HoloGuiTools;
 import mcjty.ariente.network.ArienteMessages;
 import mcjty.ariente.power.IPowerReceiver;
+import mcjty.ariente.power.PowerReceiverSupport;
 import mcjty.hologui.api.IGuiComponent;
 import mcjty.hologui.api.IGuiComponentRegistry;
 import mcjty.hologui.api.IGuiTile;
@@ -31,6 +33,7 @@ import net.minecraftforge.items.IItemHandler;
 import net.minecraftforge.items.ItemHandlerHelper;
 
 import java.util.*;
+import java.util.concurrent.atomic.AtomicBoolean;
 
 import static mcjty.hologui.api.Icons.*;
 
@@ -44,6 +47,7 @@ public class AutoFieldTile extends GenericTileEntity implements IGuiTile, ITicka
 
     private ConsumerInfo consumerInfo = null;
     private ProducerInfo producerInfo = null;
+    private long accumulatedPower = 0;
 
     // Server side renderInfo
     private final AutoFieldRenderInfo renderInfo = new AutoFieldRenderInfo();
@@ -53,10 +57,15 @@ public class AutoFieldTile extends GenericTileEntity implements IGuiTile, ITicka
     private long clientRenderInfoAge = -1;
     private TransferRender[] transferRenders = null;
 
+    // Transient
     private int ticker = 20;
 
     @Override
     public void update() {
+        if (world.isRemote) {
+            return;
+        }
+
         findConsumers();
         findProducers();
 
@@ -66,16 +75,43 @@ public class AutoFieldTile extends GenericTileEntity implements IGuiTile, ITicka
             renderInfo.cleanOldTransfers();
         }
 
-        for (Map.Entry<PartPos, ProducerInfo.Producer> entry : producerInfo.getProducers().entrySet()) {
-            PartPos sourcePos = entry.getKey();
-            ItemNodeTile producingItemNode = getItemNodeAt(sourcePos);
-            if (producingItemNode != null) {
-                IItemHandler producingItemHandler = producingItemNode.getConnectedItemHandler(sourcePos);
-                if (producingItemHandler != null) {
+        markDirtyQuick();
+
+        if (!handleAccumulatedPower()) {
+            return;
+        }
+
+        boolean hasWorkToDo = true;
+        // As long as we have work to do and we have at least enough power to transfer a single item we
+        // continue looping
+        while (hasWorkToDo && accumulatedPower >= UtilityConfiguration.AUTOFIELD_POWER_PER_OPERATION.get()) {
+            hasWorkToDo = false;
+            for (Map.Entry<PartPos, ProducerInfo.Producer> entry : producerInfo.getProducers().entrySet()) {
+                PartPos sourcePos = entry.getKey();
+                ItemNodeTile producingItemNode = getItemNodeAt(sourcePos);
+                if (producingItemNode != null) {
                     ProducerInfo.Producer producer = entry.getValue();
-                    for (int i = 0 ; i < producingItemHandler.getSlots() ; i++) {
-                        ItemStack stack = producingItemHandler.extractItem(i, 1, true);
-                        if (!stack.isEmpty()) {
+                    boolean didSomeWork = tryProducer(sourcePos, producingItemNode, producer);
+                    if (didSomeWork) {
+                        // As long as we managed to process an item we try again as we may have some accumulated power left
+                        hasWorkToDo = true;
+                    }
+                }
+            }
+        }
+    }
+
+    private boolean tryProducer(PartPos sourcePos, ItemNodeTile producingItemNode, ProducerInfo.Producer producer) {
+        AtomicBoolean didSomeWork = new AtomicBoolean(false);
+        IItemHandler producingItemHandler = producingItemNode.getConnectedItemHandler(sourcePos);
+        if (producingItemHandler != null) {
+            int minStackSize = producer.getMinStackSize();
+            for (int i = 0 ; i < producingItemHandler.getSlots() ; i++) {
+                ItemStack stack = producingItemHandler.extractItem(i, minStackSize, true);
+                if (!stack.isEmpty()) {
+                    if (stack.getCount() >= minStackSize) {
+                        long neededPower = computeNeededPower(stack);
+                        if (neededPower <= accumulatedPower) {
                             ProducerInfo.ProvidedItem providedItem = producer.getProvidedItem(stack);
                             if (providedItem != null) {
                                 int finalI = i;
@@ -83,8 +119,10 @@ public class AutoFieldTile extends GenericTileEntity implements IGuiTile, ITicka
                                         .filter(destPos -> canInsert(destPos, stack))
                                         .findFirst()
                                         .ifPresent(destPos -> {
-                                            ItemStack extracted = producingItemHandler.extractItem(finalI, 1, false);
+                                            accumulatedPower -= neededPower;
+                                            ItemStack extracted = producingItemHandler.extractItem(finalI, minStackSize, false);
                                             doInsert(sourcePos, destPos, extracted);
+                                            didSomeWork.set(true);
                                         });
                             }
                         }
@@ -92,6 +130,32 @@ public class AutoFieldTile extends GenericTileEntity implements IGuiTile, ITicka
                 }
             }
         }
+        return didSomeWork.get();
+    }
+
+    private boolean handleAccumulatedPower() {
+        long availablePower = PowerReceiverSupport.getPowerAvailable(world, pos, true);
+        if (availablePower == 0) {
+            // If there is no power available all accumulated power is lost and nothing can happen
+            accumulatedPower = 0;
+            return false;
+        }
+        long toAccumulate = Math.min(availablePower, UtilityConfiguration.AUTOFIELD_ACCUMULATE_PER_TICK.get());
+        long maxAccumulatedPower = UtilityConfiguration.AUTOFIELD_MAX_ACCUMULATED_POWER.get();
+
+        if (accumulatedPower + toAccumulate > maxAccumulatedPower) {
+            toAccumulate = maxAccumulatedPower - accumulatedPower;
+        }
+
+        if (toAccumulate > 0) {
+            PowerReceiverSupport.consumerPowerNoCheck(world, pos, toAccumulate, true);
+            accumulatedPower += toAccumulate;
+        }
+        return true;
+    }
+
+    private long computeNeededPower(ItemStack stack) {
+        return (long) (UtilityConfiguration.AUTOFIELD_POWER_PER_OPERATION.get() + (stack.getCount()-1) * UtilityConfiguration.AUTOFIELD_FACTOR_PER_COMBINED_STACK.get());
     }
 
     // Call client side to request render info
@@ -350,6 +414,18 @@ public class AutoFieldTile extends GenericTileEntity implements IGuiTile, ITicka
     }
 
     @Override
+    public void readFromNBT(NBTTagCompound tagCompound) {
+        super.readFromNBT(tagCompound);
+        accumulatedPower = tagCompound.getLong("accPower");
+    }
+
+    @Override
+    public NBTTagCompound writeToNBT(NBTTagCompound tagCompound) {
+        tagCompound.setLong("accPower", accumulatedPower);
+        return super.writeToNBT(tagCompound);
+    }
+
+    @Override
     public void readRestorableFromNBT(NBTTagCompound tagCompound) {
         super.readRestorableFromNBT(tagCompound);
         height = tagCompound.getInteger("height");
@@ -379,10 +455,10 @@ public class AutoFieldTile extends GenericTileEntity implements IGuiTile, ITicka
 
         super.onDataPacket(net, packet);
 
-        if (getWorld().isRemote) {
+        if (world.isRemote) {
             // If needed send a render update.
             if (oldheight != height) {
-                getWorld().markBlockRangeForRenderUpdate(getPos(), getPos());
+                world.markBlockRangeForRenderUpdate(pos, pos);
                 invalidateBox();
             }
         }

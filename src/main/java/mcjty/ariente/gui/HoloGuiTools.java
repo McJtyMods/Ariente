@@ -36,7 +36,7 @@ public class HoloGuiTools {
 
     public static IPanel createPanelWithHelp(IGuiComponentRegistry registry, Consumer<IHoloGuiEntity> switchHelp) {
         return registry.panel(0, 0, 8, 8)
-                .add(registry.iconButton(8.1, 7.8, 1, 1)
+                .add(registry.iconButton(8.2, -0.8, 1, 1)
                         .icon(registry.image(Icons.FADED_QUESTION_MARK))
                         .hover(registry.image(Icons.QUESTION_MARK))
                         .hitEvent((component, p, entity, x1, y1) -> switchHelp.accept(entity)))

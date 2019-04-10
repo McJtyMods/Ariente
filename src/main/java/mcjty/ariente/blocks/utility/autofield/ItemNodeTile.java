@@ -65,6 +65,7 @@ public class ItemNodeTile extends GenericTileEntity implements IGuiTile {
     private boolean outputOredict = false;
     private boolean outputDamage = false;
     private boolean outputNbt = false;
+    private int outputStackSize = 1;
 
     public static IBlockState getStateForPlacement(World world, BlockPos pos, EnumFacing facing, float hitX, float hitY, float hitZ, int meta, EntityLivingBase placer) {
         NodeOrientation orientation = getOrientationFromPlacement(facing, hitX, hitY, hitZ);
@@ -229,6 +230,7 @@ public class ItemNodeTile extends GenericTileEntity implements IGuiTile {
         outputDamage = tagCompound.getBoolean("outDamage");
         outputNbt = tagCompound.getBoolean("outNBT");
         outputOredict = tagCompound.getBoolean("outOre");
+        outputStackSize = tagCompound.getInteger("outSS");
     }
 
     @Override
@@ -242,6 +244,7 @@ public class ItemNodeTile extends GenericTileEntity implements IGuiTile {
         tagCompound.setBoolean("outDamage", outputDamage);
         tagCompound.setBoolean("outNBT", outputNbt);
         tagCompound.setBoolean("outOre", outputOredict);
+        tagCompound.setInteger("outSS", outputStackSize);
     }
 
     private void changeMode() {
@@ -283,6 +286,24 @@ public class ItemNodeTile extends GenericTileEntity implements IGuiTile {
 
     public boolean isOutputNbt() {
         return outputNbt;
+    }
+
+    public int getOutputStackSize() {
+        return outputStackSize;
+    }
+
+    public void setOutputStackSize(int outputStackSize) {
+        this.outputStackSize = outputStackSize;
+    }
+
+    private void changeOutputStackSize(int d) {
+        outputStackSize += d;
+        if (outputStackSize < 1) {
+            outputStackSize = 1;
+        } else if (outputStackSize > 64) {
+            outputStackSize = 64;
+        }
+        markDirtyClient();
     }
 
     private SimpleItemHandler inputHandler = null;
@@ -371,31 +392,31 @@ public class ItemNodeTile extends GenericTileEntity implements IGuiTile {
 
     private IGuiComponent<?> createInputGui(final Pair<String, String> pair, IGuiComponentRegistry registry) {
         return HoloGuiTools.createPanelWithHelp(registry, entity -> entity.switchTag(pair.getLeft() + ":" + TAG_HELP))
-                .add(registry.text(2.3, -.2, 1, 1).text("Input Config").color(0xaaccff))
+                .add(registry.text(2.3, -.2, 1, 1).text("Input").color(0xaaccff))
 
-                .add(registry.iconToggle(0.5, 0.5, 1, 1)
+                .add(registry.iconToggle(0.5, 0.2, 1, 1)
                         .getter(player -> inputNbt)
                         .icon(registry.image(Icons.NBT_OFF))
                         .selected(registry.image(Icons.NBT_ON))
                         .hitEvent((component, player, entity, x, y) -> toggleInputNBT()))
-                .add(registry.iconToggle(0.5, 1.5, 1, 1)
+                .add(registry.iconToggle(0.5, 1.2, 1, 1)
                         .getter(player -> inputDamage)
                         .icon(registry.image(Icons.DAM_OFF))
                         .selected(registry.image(Icons.DAM_ON))
                         .hitEvent((component, player, entity, x, y) -> toggleInputDamage()))
-                .add(registry.iconToggle(0.5, 2.5, 1, 1)
+                .add(registry.iconToggle(0.5, 2.2, 1, 1)
                         .getter(player -> inputOredict)
                         .icon(registry.image(Icons.ORE_OFF))
                         .selected(registry.image(Icons.ORE_ON))
                         .hitEvent((component, player, entity, x, y) -> toggleInputOre()))
 
-                .add(registry.slots(2.5, 1.5, 6, 2)
+                .add(registry.slots(2.5, 1.2, 6, 2)
                         .name("slots")
                         .fullBright()
                         .doubleClickEvent((component, player, entity, x, y, stack, index) -> removeFromFilter(player, entity, getInputHandler()))
                         .itemHandler(getInputHandler()))
 
-                .add(registry.playerInventory(4)
+                .add(registry.playerInventory(4.7)
                         .name("playerSlots")
                         .doubleClickEvent((component, player, entity, x, y, stack, index) -> addToFilter(player, entity, getInputHandler())))
                 ;
@@ -403,31 +424,43 @@ public class ItemNodeTile extends GenericTileEntity implements IGuiTile {
 
     private IGuiComponent<?> createOutputGui(final Pair<String, String> pair, IGuiComponentRegistry registry) {
         return HoloGuiTools.createPanelWithHelp(registry, entity -> entity.switchTag(pair.getLeft() + ":" + TAG_HELP))
-                .add(registry.text(2.3, -.2, 1, 1).text("Output Config").color(0xaaccff))
+                .add(registry.text(2.3, -.2, 1, 1).text("Output").color(0xaaccff))
 
-                .add(registry.iconToggle(0.5, 0.5, 1, 1)
+                .add(registry.iconToggle(0.5, 0.2, 1, 1)
                         .getter(player -> outputNbt)
                         .hitEvent((component, player, entity, x, y) -> toggleOutputNBT())
                         .icon(registry.image(Icons.NBT_OFF))
                         .selected(registry.image(Icons.NBT_ON)))
-                .add(registry.iconToggle(0.5, 1.5, 1, 1)
+                .add(registry.iconToggle(0.5, 1.2, 1, 1)
                         .getter(player -> outputDamage)
                         .hitEvent((component, player, entity, x, y) -> toggleOutputDamage())
                         .icon(registry.image(Icons.DAM_OFF))
                         .selected(registry.image(Icons.DAM_ON)))
-                .add(registry.iconToggle(0.5, 2.5, 1, 1)
+                .add(registry.iconToggle(0.5, 2.2, 1, 1)
                         .getter(player -> outputOredict)
                         .hitEvent((component, player, entity, x, y) -> toggleOutputOre())
                         .icon(registry.image(Icons.ORE_OFF))
                         .selected(registry.image(Icons.ORE_ON)))
 
-                .add(registry.slots(2.5, 1.5, 6, 2)
+                .add(registry.text(0, 3.4, 1, 1).text("SS").color(0xaaccff))
+                .add(registry.number(4, 3.4, 1, 1).color(0xffffff).getter((p,h) -> getOutputStackSize()))
+
+                .add(registry.iconButton(2, 3.3, 1, 1).icon(registry.image(GRAY_DOUBLE_ARROW_LEFT)).hover(registry.image(WHITE_DOUBLE_ARROW_LEFT))
+                        .hitEvent((component, player, entity1, x, y) -> changeOutputStackSize(-8)))
+                .add(registry.iconButton(3, 3.3, 1, 1).icon(registry.image(GRAY_ARROW_LEFT)).hover(registry.image(WHITE_ARROW_LEFT))
+                        .hitEvent((component, player, entity1, x, y) -> changeOutputStackSize(-1)))
+                .add(registry.iconButton(5.6, 3.3, 1, 1).icon(registry.image(GRAY_ARROW_RIGHT)).hover(registry.image(WHITE_ARROW_RIGHT))
+                        .hitEvent((component, player, entity1, x, y) -> changeOutputStackSize(1)))
+                .add(registry.iconButton(6.6, 3.3, 1, 1).icon(registry.image(GRAY_DOUBLE_ARROW_RIGHT)).hover(registry.image(WHITE_DOUBLE_ARROW_RIGHT))
+                        .hitEvent((component, player, entity1, x, y) -> changeOutputStackSize(8)))
+
+                .add(registry.slots(2.5, 1.2, 6, 2)
                         .name("slots")
                         .fullBright()
                         .doubleClickEvent((component, player, entity, x, y, stack, index) -> removeFromFilter(player, entity, getOutputHandler()))
                         .itemHandler(getOutputHandler()))
 
-                .add(registry.playerInventory(4)
+                .add(registry.playerInventory(4.7)
                         .name("playerSlots")
                         .doubleClickEvent((component, player, entity, x, y, stack, index) -> addToFilter(player, entity, getOutputHandler())))
                 ;

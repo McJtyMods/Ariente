@@ -27,7 +27,7 @@ public class ProducerInfo {
                 boolean outputOredict = itemNode.isOutputOredict();
                 for (ItemStack stack : itemNode.getOutputFilter()) {
                     if (!stack.isEmpty()) {
-                        producers.putIfAbsent(pair, new Producer(outputOredict, outputDamage, outputNbt));
+                        producers.putIfAbsent(pair, new Producer(outputOredict, outputDamage, outputNbt, itemNode.getOutputStackSize()));
                         int[] oreIDs;
                         if (outputOredict) {
                             oreIDs = OreDictionary.getOreIDs(stack);
@@ -49,14 +49,16 @@ public class ProducerInfo {
         private final boolean matchOredict;
         private final boolean matchDamage;
         private final boolean matchNbt;
+        private final int minStackSize;
         private final List<ProvidedItem> providedItems = new ArrayList<>();
         private final Set<Item> isProvidedItem = new HashSet<>();
         private final Set<Integer> isProvidedOre = new HashSet<>();
 
-        public Producer(boolean matchOredict, boolean matchDamage, boolean matchNbt) {
+        public Producer(boolean matchOredict, boolean matchDamage, boolean matchNbt, int minStackSize) {
             this.matchOredict = matchOredict;
             this.matchDamage = matchDamage;
             this.matchNbt = matchNbt;
+            this.minStackSize = minStackSize;
         }
 
         public void addItem(ProvidedItem item) {
@@ -79,6 +81,10 @@ public class ProducerInfo {
 
         public boolean isMatchNbt() {
             return matchNbt;
+        }
+
+        public int getMinStackSize() {
+            return minStackSize;
         }
 
         public List<ProvidedItem> getProvidedItems() {
