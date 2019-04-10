@@ -14,7 +14,7 @@ import java.util.*;
 
 public class AutoFieldRenderInfo {
 
-    private final Map<TransferPath, List<Transfer>> transfers = new HashMap<>();
+    private final Map<TransferPath, TreeSet<Transfer>> transfers = new HashMap<>();
 
     private final Random random = new Random();
 
@@ -26,12 +26,9 @@ public class AutoFieldRenderInfo {
         long time = System.currentTimeMillis();
         Transfer transfer = new Transfer(stack.getItem(), stack.getMetadata(), time);
         TransferPath path = new TransferPath(sourcePos, destPos);
-        transfers.computeIfAbsent(path, p -> new ArrayList<>());
-        transfers.get(path).add(transfer);
-        // @todo
-//        if (transfers.size() > 100) {
-//            cleanupTransfers(time);
-//        }
+        transfers.computeIfAbsent(path, p -> new TreeSet<>());
+        TreeSet<Transfer> treeSet = this.transfers.get(path);
+        treeSet.add(transfer);
     }
 
     @Nullable
@@ -48,14 +45,40 @@ public class AutoFieldRenderInfo {
 
     @Nullable
     public Transfer getRandomTransfer(TransferPath path) {
-        List<Transfer> values = this.transfers.get(path);
+        TreeSet<Transfer> values = this.transfers.get(path);
         if (values.isEmpty()) {
             return null;
         }
         if (values.size() == 1) {
-            return values.get(0);
+            return values.first();
         }
-        return values.get(random.nextInt(values.size()));
+        // We iterate over the values and with a 50% chance return every one. That means
+        // the first one will have most chance to be returned
+        while (true) {
+            for (Transfer value : values) {
+                if (random.nextFloat() < .5) {
+                    return value;
+                }
+            }
+        }
+    }
+
+    public void cleanOldTransfers() {
+        long time = System.currentTimeMillis();
+        for (TransferPath path : transfers.keySet()) {
+            TreeSet<Transfer> treeSet = this.transfers.get(path);
+
+            TreeSet<Transfer> newTreeSet = new TreeSet<>();
+            for (Transfer tr : treeSet) {
+                if (tr.time < time-3000) {
+                    // All movements after this one will be too old
+                    break;
+                }
+                newTreeSet.add(tr);
+            }
+
+            this.transfers.put(path, newTreeSet);
+        }
     }
 
 //    private void cleanupTransfers(long time) {
@@ -72,13 +95,13 @@ public class AutoFieldRenderInfo {
 
     public void toBytes(ByteBuf buf) {
         buf.writeInt(transfers.size());
-        for (Map.Entry<TransferPath, List<Transfer>> entry : transfers.entrySet()) {
+        for (Map.Entry<TransferPath, TreeSet<Transfer>> entry : transfers.entrySet()) {
             TransferPath path = entry.getKey();
             NetworkTools.writePos(buf, path.sourcePos.getPos());
             buf.writeByte(path.sourcePos.getSlot().ordinal());
             NetworkTools.writePos(buf, path.destPos.getPos());
             buf.writeByte(path.destPos.getSlot().ordinal());
-            List<Transfer> values = entry.getValue();
+            TreeSet<Transfer> values = entry.getValue();
             buf.writeInt(values.size());
             for (Transfer transfer : entry.getValue()) {
                 int id = Item.getIdFromItem(transfer.item);
@@ -97,7 +120,7 @@ public class AutoFieldRenderInfo {
             BlockPos destPos = NetworkTools.readPos(buf);
             PartSlot destSlot = PartSlot.VALUES[buf.readByte()];
             TransferPath path = new TransferPath(PartPos.create(sourcePos, sourceSlot), PartPos.create(destPos, destSlot));
-            List<Transfer> values = new ArrayList<>();
+            TreeSet<Transfer> values = new TreeSet<>();
             int s = buf.readInt();
             for (int j = 0 ; j < s ; j++) {
                 int id = buf.readInt();
@@ -144,7 +167,7 @@ public class AutoFieldRenderInfo {
         }
     }
 
-    public static class Transfer {
+    public static class Transfer implements Comparable<Transfer> {
         @Nonnull private final Item item;
         private final int meta;
         private final long time;
@@ -153,6 +176,11 @@ public class AutoFieldRenderInfo {
             this.item = item;
             this.meta = meta;
             this.time = time;
+        }
+
+        @Override
+        public int compareTo(Transfer transfer) {
+            return Long.compare(time, transfer.time);
         }
 
         @Nonnull

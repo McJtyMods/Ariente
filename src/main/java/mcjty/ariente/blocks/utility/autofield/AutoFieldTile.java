@@ -53,10 +53,18 @@ public class AutoFieldTile extends GenericTileEntity implements IGuiTile, ITicka
     private long clientRenderInfoAge = -1;
     private TransferRender[] transferRenders = null;
 
+    private int ticker = 20;
+
     @Override
     public void update() {
         findConsumers();
         findProducers();
+
+        ticker--;
+        if (ticker < 0) {
+            ticker = 20;
+            renderInfo.cleanOldTransfers();
+        }
 
         for (Map.Entry<PartPos, ProducerInfo.Producer> entry : producerInfo.getProducers().entrySet()) {
             PartPos sourcePos = entry.getKey();
@@ -128,13 +136,13 @@ public class AutoFieldTile extends GenericTileEntity implements IGuiTile, ITicka
             if (size <= 2) {
                 transferRenders = new TransferRender[1];
             } else if (size <= 4) {
-                transferRenders = new TransferRender[2];
-            } else if (size <= 8) {
                 transferRenders = new TransferRender[3];
-            } else if (size <= 12) {
+            } else if (size <= 8) {
                 transferRenders = new TransferRender[4];
-            } else {
+            } else if (size <= 12) {
                 transferRenders = new TransferRender[5];
+            } else {
+                transferRenders = new TransferRender[6];
             }
         }
         return transferRenders;

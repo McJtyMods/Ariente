@@ -13,7 +13,7 @@ import java.util.Random;
 // A single item transfer render in progress
 public class TransferRender {
     private final long startTime;
-    private final long endTime;
+    private final long duration;
     private final ItemStack stack;
     private final CatmullRomSpline<AnimatedPoint> spline;
 
@@ -61,12 +61,14 @@ public class TransferRender {
 
     public TransferRender(AutoFieldRenderInfo.TransferPath path, AutoFieldRenderInfo.Transfer transfer, BlockPos relative) {
         startTime = System.currentTimeMillis();
-        endTime = startTime + 2000;
         stack = new ItemStack(transfer.getItem(), 1, transfer.getMeta());
 
         Vec3d sta = new Vec3d(path.getSourcePos().getPos().subtract(relative)).add(getPos(path.getSourcePos().getSlot()));
         Vec3d end = new Vec3d(path.getDestPos().getPos().subtract(relative)).add(getPos(path.getDestPos().getSlot()));
-        double jitter = Math.sqrt(sta.squareDistanceTo(end)) / 5.0;
+        double distance = Math.sqrt(sta.squareDistanceTo(end));
+        duration = (long) (distance * 600) + 100;
+
+        double jitter = distance / 5.0;
         Vec3d mid = sta.add(end).scale(0.5).addVector(
                 random.nextFloat() * jitter - (jitter/2.0),
                 random.nextFloat() * jitter - (jitter/2.0),
@@ -81,22 +83,22 @@ public class TransferRender {
         spline.addPoint(new AnimatedPoint(mid.x, mid.y, mid.z, 150.0, 0.4), 0.5f);
         spline.addPoint(new AnimatedPoint(end.x, end.y, end.z, 0.0, 0.0), 1.0f);
 
-        spline.calculate(0.1f);
+        spline.calculate(0.2f);
         AnimatedPoint point10 = spline.getInterpolated();
 
-        spline.calculate(0.9f);
+        spline.calculate(0.8f);
         AnimatedPoint point90 = spline.getInterpolated();
 
-        spline.insertPoint(point10.withSize(0.4), 0.1f, 1);
-        spline.insertPoint(point90.withSize(0.4), 0.9f, 3);
+        spline.insertPoint(point10.withSize(0.4), 0.2f, 1);
+        spline.insertPoint(point90.withSize(0.4), 0.8f, 3);
     }
 
     public boolean render() {
         long time = System.currentTimeMillis();
-        if (time > endTime) {
+        if (time > startTime+duration) {
             return false;
         }
-        double factor = (time - startTime) / 2000.0;
+        double factor = (time - startTime) / (double) duration;
         spline.calculate((float) factor);
         AnimatedPoint pos = spline.getInterpolated();
         renderStack(stack, new Vec3d(pos.x, pos.y, pos.z), pos.rotation, pos.size);
@@ -104,12 +106,12 @@ public class TransferRender {
         return true;
     }
 
-    private void renderStack(ItemStack stack, Vec3d pos, double alpha, double size) {
+    private void renderStack(ItemStack stack, Vec3d pos, double rotation, double size) {
         GlStateManager.pushMatrix();
         GlStateManager.translate(pos.x, pos.y, pos.z);
+        GlStateManager.rotate((float) rotation, 0, 1, 0);
         GlStateManager.scale(size, size, size);
-        GlStateManager.rotate((float) alpha, 0, 1, 0);
-        RenderHelper.renderStackOnGround(stack, alpha);
+        RenderHelper.renderStackOnGround(stack, 1.0f);
 
         GlStateManager.popMatrix();
     }
