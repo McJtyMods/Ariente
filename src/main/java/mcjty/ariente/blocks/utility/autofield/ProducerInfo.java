@@ -19,8 +19,8 @@ public class ProducerInfo {
     public ProducerInfo(World world, Set<PartPos> itemNodes) {
         for (PartPos pair : itemNodes) {
             TileEntity te = MultipartHelper.getTileEntity(world, pair.getPos(), pair.getSlot());
-            if (te instanceof ItemNodeTile) {
-                ItemNodeTile itemNode = (ItemNodeTile) te;
+            if (te instanceof OutputItemNodeTile) {
+                OutputItemNodeTile itemNode = (OutputItemNodeTile) te;
 
                 boolean outputDamage = itemNode.isOutputDamage();
                 boolean outputNbt = itemNode.isOutputNbt();

@@ -57,6 +57,7 @@ public class ForceFieldTile extends GenericTileEntity implements IGuiTile, ITick
     private int scale = 10;
     private ChunkCoord cityCenter;
 
+    // Transient
     private long usingPower = 0;
     private int breakDownSkip = 5;  // After the world is just loaded we skip a few low-power ticks to be sure the powergenerators can start up
 

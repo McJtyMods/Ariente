@@ -43,8 +43,12 @@ public class AutoFieldRenderer extends TileEntitySpecialRenderer<AutoFieldTile> 
         if (box == null) {
             return;
         }
-        renderBeamBox(time, box);
-        renderItemTransfers(te, x, y, z);
+        if (te.isRenderOutline()) {
+            renderBeamBox(time, box);
+        }
+        if (te.isRenderItems()) {
+            renderItemTransfers(te, x, y, z);
+        }
     }
 
     private void renderBeamBox(float time, AxisAlignedBB box) {

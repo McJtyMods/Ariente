@@ -20,8 +20,8 @@ public class ConsumerInfo {
     public ConsumerInfo(World world, Set<PartPos> itemNodes) {
         for (PartPos pair : itemNodes) {
             TileEntity te = MultipartHelper.getTileEntity(world, pair.getPos(), pair.getSlot());
-            if (te instanceof ItemNodeTile) {
-                ItemNodeTile itemNode = (ItemNodeTile) te;
+            if (te instanceof InputItemNodeTile) {
+                InputItemNodeTile itemNode = (InputItemNodeTile) te;
 
                 boolean inputDamage = itemNode.isInputDamage();
                 boolean inputNbt = itemNode.isInputNbt();

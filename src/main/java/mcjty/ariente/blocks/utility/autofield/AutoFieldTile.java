@@ -15,7 +15,14 @@ import mcjty.lib.multipart.MultipartTE;
 import mcjty.lib.multipart.PartPos;
 import mcjty.lib.multipart.PartSlot;
 import mcjty.lib.tileentity.GenericTileEntity;
+import mcjty.theoneprobe.api.IProbeHitData;
+import mcjty.theoneprobe.api.IProbeInfo;
+import mcjty.theoneprobe.api.ProbeMode;
+import mcjty.theoneprobe.api.TextStyleClass;
+import mcp.mobius.waila.api.IWailaConfigHandler;
+import mcp.mobius.waila.api.IWailaDataAccessor;
 import net.minecraft.block.state.IBlockState;
+import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.entity.player.EntityPlayerMP;
 import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.NBTTagCompound;
@@ -27,6 +34,7 @@ import net.minecraft.util.ITickable;
 import net.minecraft.util.math.AxisAlignedBB;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.World;
+import net.minecraftforge.fml.common.Optional;
 import net.minecraftforge.fml.relauncher.Side;
 import net.minecraftforge.fml.relauncher.SideOnly;
 import net.minecraftforge.items.IItemHandler;
@@ -43,11 +51,15 @@ public class AutoFieldTile extends GenericTileEntity implements IGuiTile, ITicka
     private AxisAlignedBB fieldBox = null;
     private AxisAlignedBB renderBox = null;
     private Set<BlockPos> markers = null;
-    private Set<PartPos> itemNodes = null;
+    private Set<PartPos> inputItemNodes = null;
+    private Set<PartPos> outputItemNodes = null;
 
     private ConsumerInfo consumerInfo = null;
     private ProducerInfo producerInfo = null;
     private long accumulatedPower = 0;
+
+    private boolean renderOutline = true;
+    private boolean renderItems = true;
 
     // Server side renderInfo
     private final AutoFieldRenderInfo renderInfo = new AutoFieldRenderInfo();
@@ -59,6 +71,7 @@ public class AutoFieldTile extends GenericTileEntity implements IGuiTile, ITicka
 
     // Transient
     private int ticker = 20;
+    private long usingPower = 0;
 
     @Override
     public void update() {
@@ -69,14 +82,17 @@ public class AutoFieldTile extends GenericTileEntity implements IGuiTile, ITicka
         findConsumers();
         findProducers();
 
-        ticker--;
-        if (ticker < 0) {
-            ticker = 20;
-            renderInfo.cleanOldTransfers();
+        if (renderItems) {
+            ticker--;
+            if (ticker < 0) {
+                ticker = 20;
+                renderInfo.cleanOldTransfers();
+            }
         }
 
         markDirtyQuick();
 
+        usingPower = 0;
         if (!handleAccumulatedPower()) {
             return;
         }
@@ -88,7 +104,7 @@ public class AutoFieldTile extends GenericTileEntity implements IGuiTile, ITicka
             hasWorkToDo = false;
             for (Map.Entry<PartPos, ProducerInfo.Producer> entry : producerInfo.getProducers().entrySet()) {
                 PartPos sourcePos = entry.getKey();
-                ItemNodeTile producingItemNode = getItemNodeAt(sourcePos);
+                OutputItemNodeTile producingItemNode = getOutputItemNodeAt(sourcePos);
                 if (producingItemNode != null) {
                     ProducerInfo.Producer producer = entry.getValue();
                     boolean didSomeWork = tryProducer(sourcePos, producingItemNode, producer);
@@ -101,7 +117,7 @@ public class AutoFieldTile extends GenericTileEntity implements IGuiTile, ITicka
         }
     }
 
-    private boolean tryProducer(PartPos sourcePos, ItemNodeTile producingItemNode, ProducerInfo.Producer producer) {
+    private boolean tryProducer(PartPos sourcePos, OutputItemNodeTile producingItemNode, ProducerInfo.Producer producer) {
         AtomicBoolean didSomeWork = new AtomicBoolean(false);
         IItemHandler producingItemHandler = producingItemNode.getConnectedItemHandler(sourcePos);
         if (producingItemHandler != null) {
@@ -149,6 +165,7 @@ public class AutoFieldTile extends GenericTileEntity implements IGuiTile, ITicka
 
         if (toAccumulate > 0) {
             PowerReceiverSupport.consumerPowerNoCheck(world, pos, toAccumulate, true);
+            usingPower = toAccumulate;
             accumulatedPower += toAccumulate;
         }
         return true;
@@ -196,24 +213,33 @@ public class AutoFieldTile extends GenericTileEntity implements IGuiTile, ITicka
 
     public TransferRender[] getTransferRenders() {
         if (transferRenders == null) {
-            int size = getItemNodes().size();
+            int size = getInputItemNodes().size();
             if (size <= 2) {
-                transferRenders = new TransferRender[1];
+                transferRenders = new TransferRender[2];
             } else if (size <= 4) {
-                transferRenders = new TransferRender[3];
-            } else if (size <= 8) {
                 transferRenders = new TransferRender[4];
-            } else if (size <= 12) {
-                transferRenders = new TransferRender[5];
-            } else {
+            } else if (size <= 8) {
                 transferRenders = new TransferRender[6];
+            } else if (size <= 12) {
+                transferRenders = new TransferRender[8];
+            } else {
+                transferRenders = new TransferRender[12];
             }
         }
         return transferRenders;
     }
 
+
+    public boolean isRenderOutline() {
+        return renderOutline;
+    }
+
+    public boolean isRenderItems() {
+        return renderItems;
+    }
+
     private boolean canInsert(PartPos partPos, ItemStack stack) {
-        ItemNodeTile itemNode = getItemNodeAt(partPos);
+        InputItemNodeTile itemNode = getInputItemNodeAt(partPos);
         if (itemNode != null) {
             IItemHandler connectedItemHandler = itemNode.getConnectedItemHandler(partPos);
             if (connectedItemHandler != null) {
@@ -225,20 +251,31 @@ public class AutoFieldTile extends GenericTileEntity implements IGuiTile, ITicka
     }
 
     private void doInsert(PartPos sourcePos, PartPos destPos, ItemStack stack) {
-        ItemNodeTile itemNode = getItemNodeAt(destPos);
+        InputItemNodeTile itemNode = getInputItemNodeAt(destPos);
         if (itemNode != null) {
             IItemHandler connectedItemHandler = itemNode.getConnectedItemHandler(destPos);
             if (connectedItemHandler != null) {
                 ItemHandlerHelper.insertItem(connectedItemHandler, stack, false);
-                renderInfo.registerTransfer(sourcePos, destPos, stack);
+                if (renderItems) {
+                    renderInfo.registerTransfer(sourcePos, destPos, stack);
+                }
             }
         }
     }
 
-    private ItemNodeTile getItemNodeAt(PartPos partPos) {
+    private InputItemNodeTile getInputItemNodeAt(PartPos partPos) {
         TileEntity te = MultipartHelper.getTileEntity(world, partPos);
-        if (te instanceof ItemNodeTile) {
-            return (ItemNodeTile) te;
+        if (te instanceof InputItemNodeTile) {
+            return (InputItemNodeTile) te;
+        } else {
+            return null;
+        }
+    }
+
+    private OutputItemNodeTile getOutputItemNodeAt(PartPos partPos) {
+        TileEntity te = MultipartHelper.getTileEntity(world, partPos);
+        if (te instanceof OutputItemNodeTile) {
+            return (OutputItemNodeTile) te;
         } else {
             return null;
         }
@@ -246,32 +283,50 @@ public class AutoFieldTile extends GenericTileEntity implements IGuiTile, ITicka
 
     private void findConsumers() {
         if (consumerInfo == null) {
-            consumerInfo = new ConsumerInfo(world, getItemNodes());
+            consumerInfo = new ConsumerInfo(world, getInputItemNodes());
         }
     }
 
     private void findProducers() {
         if (producerInfo == null) {
-            producerInfo = new ProducerInfo(world, getItemNodes());
+            producerInfo = new ProducerInfo(world, getOutputItemNodes());
         }
     }
 
-    private Set<PartPos> getItemNodes() {
-        if (itemNodes == null) {
-            itemNodes = new HashSet<>();
+    private Set<PartPos> getInputItemNodes() {
+        if (inputItemNodes == null) {
+            inputItemNodes = new HashSet<>();
             for (BlockPos mpos : getMarkers()) {
                 for (int y = 0 ; y <= height ; y++) {
                     BlockPos p = mpos.up(y);
                     for (PartSlot slot : PartSlot.VALUES) {
                         TileEntity te = MultipartHelper.getTileEntity(world, p, slot);
-                        if (te instanceof ItemNodeTile) {
-                            itemNodes.add(PartPos.create(p, slot));
+                        if (te instanceof InputItemNodeTile) {
+                            inputItemNodes.add(PartPos.create(p, slot));
                         }
                     }
                 }
             }
         }
-        return itemNodes;
+        return inputItemNodes;
+    }
+
+    private Set<PartPos> getOutputItemNodes() {
+        if (outputItemNodes == null) {
+            outputItemNodes = new HashSet<>();
+            for (BlockPos mpos : getMarkers()) {
+                for (int y = 0 ; y <= height ; y++) {
+                    BlockPos p = mpos.up(y);
+                    for (PartSlot slot : PartSlot.VALUES) {
+                        TileEntity te = MultipartHelper.getTileEntity(world, p, slot);
+                        if (te instanceof OutputItemNodeTile) {
+                            outputItemNodes.add(PartPos.create(p, slot));
+                        }
+                    }
+                }
+            }
+        }
+        return outputItemNodes;
     }
 
     @Override
@@ -289,7 +344,8 @@ public class AutoFieldTile extends GenericTileEntity implements IGuiTile, ITicka
     public void notifyNode(BlockPos originalPos) {
         consumerInfo = null;
         producerInfo = null;
-        itemNodes = null;
+        inputItemNodes = null;
+        outputItemNodes = null;
         transferRenders = null;
     }
 
@@ -341,7 +397,8 @@ public class AutoFieldTile extends GenericTileEntity implements IGuiTile, ITicka
         markers = null;
         consumerInfo = null;
         producerInfo = null;
-        itemNodes = null;
+        inputItemNodes = null;
+        outputItemNodes = null;
     }
 
     private void changeHeight(int dy) {
@@ -429,13 +486,40 @@ public class AutoFieldTile extends GenericTileEntity implements IGuiTile, ITicka
     public void readRestorableFromNBT(NBTTagCompound tagCompound) {
         super.readRestorableFromNBT(tagCompound);
         height = tagCompound.getInteger("height");
+        renderItems = tagCompound.getBoolean("renderItems");
+        renderOutline = tagCompound.getBoolean("renderOutline");
     }
 
     @Override
     public void writeRestorableToNBT(NBTTagCompound tagCompound) {
         super.writeRestorableToNBT(tagCompound);
         tagCompound.setInteger("height", height);
+        tagCompound.setBoolean("renderItems", renderItems);
+        tagCompound.setBoolean("renderOutline", renderOutline);
     }
+
+
+    @Override
+    @net.minecraftforge.fml.common.Optional.Method(modid = "theoneprobe")
+    public void addProbeInfo(ProbeMode mode, IProbeInfo probeInfo, EntityPlayer player, World world, IBlockState blockState, IProbeHitData data) {
+        super.addProbeInfo(mode, probeInfo, player, world, blockState, data);
+        probeInfo.text(TextStyleClass.LABEL + "Using: " + TextStyleClass.INFO + usingPower + " flux");
+//        Boolean working = isWorking();
+//        if (working) {
+//            probeInfo.text(TextFormatting.GREEN + "Producing " + getRfPerTick() + " RF/t");
+//        }
+    }
+
+    @SideOnly(Side.CLIENT)
+    @Override
+    @Optional.Method(modid = "waila")
+    public void addWailaBody(ItemStack itemStack, List<String> currenttip, IWailaDataAccessor accessor, IWailaConfigHandler config) {
+        super.addWailaBody(itemStack, currenttip, accessor, config);
+//        if (isWorking()) {
+//            currenttip.add(TextFormatting.GREEN + "Producing " + getRfPerTick() + " RF/t");
+//        }
+    }
+
 
     @SideOnly(Side.CLIENT)
     @Override
@@ -495,7 +579,29 @@ public class AutoFieldTile extends GenericTileEntity implements IGuiTile, ITicka
                         .hitEvent((component, player, entity1, x, y) -> changeHeight(1)))
                 .add(registry.iconButton(6, 4, 1, 1).icon(registry.image(GRAY_DOUBLE_ARROW_RIGHT)).hover(registry.image(WHITE_DOUBLE_ARROW_RIGHT))
                         .hitEvent((component, player, entity1, x, y) -> changeHeight(8)))
+
+                .add(registry.iconToggle(1, 6, 1, 1)
+                        .icon(registry.image(ITEMFLOW_OFF))
+                        .selected(registry.image(ITEMFLOW_ON))
+                        .getter(player -> isRenderItems())
+                        .hitEvent((component, player, entity, x, y) -> toggleRenderItems()))
+
+                .add(registry.iconToggle(3, 6, 1, 1)
+                        .icon(registry.image(BOX_OFF))
+                        .selected(registry.image(BOX_ON))
+                        .getter(player -> isRenderOutline())
+                        .hitEvent((component, player, entity, x, y) -> toggleRenderOutline()))
                 ;
+    }
+
+    private void toggleRenderItems() {
+        renderItems = !renderItems;
+        markDirtyClient();
+    }
+
+    private void toggleRenderOutline() {
+        renderOutline = !renderOutline;
+        markDirtyClient();
     }
 
     @Override

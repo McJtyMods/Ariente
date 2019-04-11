@@ -7,10 +7,7 @@ import mcjty.ariente.blocks.defense.ForceFieldTile;
 import mcjty.ariente.blocks.generators.*;
 import mcjty.ariente.blocks.plants.BlockArientePlant;
 import mcjty.ariente.blocks.utility.*;
-import mcjty.ariente.blocks.utility.autofield.AutoFieldRenderer;
-import mcjty.ariente.blocks.utility.autofield.AutoFieldTile;
-import mcjty.ariente.blocks.utility.autofield.FieldMarkerTile;
-import mcjty.ariente.blocks.utility.autofield.ItemNodeTile;
+import mcjty.ariente.blocks.utility.autofield.*;
 import mcjty.ariente.blocks.utility.door.DoorMarkerRenderer;
 import mcjty.ariente.blocks.utility.door.DoorMarkerTile;
 import mcjty.ariente.blocks.utility.door.InvisibleDoorRenderer;
@@ -66,7 +63,8 @@ public class ModBlocks {
 
     public static BaseBlock fluxBeamBlock;
 
-    public static GenericBlock<ItemNodeTile, GenericContainer> itemNode;
+    public static GenericBlock<InputItemNodeTile, GenericContainer> inputItemNode;
+    public static GenericBlock<OutputItemNodeTile, GenericContainer> outputItemNode;
     public static GenericBlock<FieldMarkerTile, GenericContainer> fieldMarker;
 
     public static BaseBlock lapisore;
@@ -174,16 +172,27 @@ public class ModBlocks {
                 .rotationType(HORIZROTATION)
                 .build();
 
-        itemNode = builderFactory.<ItemNodeTile> builder("item_node")
-                .tileEntityClass(ItemNodeTile.class)
+        inputItemNode = builderFactory.<InputItemNodeTile> builder("input_item_node")
+                .tileEntityClass(InputItemNodeTile.class)
                 .emptyContainer()
                 .rotationType(NONE)
                 .itemBlockFactory(MultipartItemBlock::new)
-                .property(ItemNodeTile.ORIENTATION)
-                .placementGetter(ItemNodeTile::getStateForPlacement)
-                .slotGetter((world, pos, newState) -> newState.getValue(ItemNodeTile.ORIENTATION).getSlot())
+                .property(InputItemNodeTile.ORIENTATION)
+                .placementGetter(InputItemNodeTile::getStateForPlacement)
+                .slotGetter((world, pos, newState) -> newState.getValue(InputItemNodeTile.ORIENTATION).getSlot())
                 .flags(NON_OPAQUE, NON_FULLCUBE)
-                .boundingBox(ItemNodeTile::getBoundingBox)
+                .boundingBox(InputItemNodeTile::getBoundingBox)
+                .build();
+        outputItemNode = builderFactory.<OutputItemNodeTile> builder("output_item_node")
+                .tileEntityClass(OutputItemNodeTile.class)
+                .emptyContainer()
+                .rotationType(NONE)
+                .itemBlockFactory(MultipartItemBlock::new)
+                .property(OutputItemNodeTile.ORIENTATION)
+                .placementGetter(OutputItemNodeTile::getStateForPlacement)
+                .slotGetter((world, pos, newState) -> newState.getValue(OutputItemNodeTile.ORIENTATION).getSlot())
+                .flags(NON_OPAQUE, NON_FULLCUBE)
+                .boundingBox(OutputItemNodeTile::getBoundingBox)
                 .build();
         fieldMarker = builderFactory.<FieldMarkerTile> builder("field_marker")
                 .tileEntityClass(FieldMarkerTile.class)
@@ -610,7 +619,8 @@ public class ModBlocks {
 
         forceFieldBlock.initModel();
 
-        itemNode.initModel();
+        inputItemNode.initModel();
+        outputItemNode.initModel();
         fieldMarker.initModel();
         autoFieldBlock.initModel();
         AutoFieldRenderer.register();

@@ -1,6 +1,5 @@
 package mcjty.ariente.blocks.utility.autofield;
 
-import elec332.core.client.model.loading.handler.ItemModelHandler;
 import mcjty.ariente.Ariente;
 import mcjty.ariente.blocks.ModBlocks;
 import mcjty.ariente.gui.HelpBuilder;
@@ -46,31 +45,22 @@ import javax.annotation.Nullable;
 import java.util.List;
 
 import static mcjty.ariente.blocks.utility.autofield.NodeOrientation.*;
-import static mcjty.hologui.api.Icons.*;
 
-public class ItemNodeTile extends GenericTileEntity implements IGuiTile {
+public class InputItemNodeTile extends GenericTileEntity implements IGuiTile {
 
     public static final PropertyEnum<NodeOrientation> ORIENTATION = PropertyEnum.create("orientation", NodeOrientation.class, NodeOrientation.values());
     public static final int FILTER_AMOUNT = 12;
 
-    public static String TAG_INPUT = "input";
-    public static String TAG_OUTPUT = "output";
-
     private ItemStackList inputFilter = ItemStackList.create(FILTER_AMOUNT);
-    private ItemStackList outputFilter = ItemStackList.create(FILTER_AMOUNT);
 
     private boolean inputOredict = false;
     private boolean inputDamage = false;
     private boolean inputNbt = false;
-    private boolean outputOredict = false;
-    private boolean outputDamage = false;
-    private boolean outputNbt = false;
-    private int outputStackSize = 1;
 
     public static IBlockState getStateForPlacement(World world, BlockPos pos, EnumFacing facing, float hitX, float hitY, float hitZ, int meta, EntityLivingBase placer) {
         NodeOrientation orientation = getOrientationFromPlacement(facing, hitX, hitY, hitZ);
         // Since this is a multipart we can use state that isn't convertable to metadata
-        return ModBlocks.itemNode.getDefaultState().withProperty(ORIENTATION, orientation);
+        return ModBlocks.inputItemNode.getDefaultState().withProperty(ORIENTATION, orientation);
     }
 
     private static final float T = 0.2f;
@@ -164,6 +154,7 @@ public class ItemNodeTile extends GenericTileEntity implements IGuiTile {
     public void onPartAdded(PartSlot slot, IBlockState state, TileEntity multipartTile) {
         this.world = multipartTile.getWorld();
         this.pos = multipartTile.getPos();
+        AutoFieldTile.notifyField(world, pos);
     }
 
     public static NodeOrientation getOrientationFromPlacement(EnumFacing side, float hitX, float hitY, float hitZ) {
@@ -223,28 +214,18 @@ public class ItemNodeTile extends GenericTileEntity implements IGuiTile {
     public void readRestorableFromNBT(NBTTagCompound tagCompound) {
         super.readRestorableFromNBT(tagCompound);
         readBufferFromNBT(tagCompound, "input", inputFilter);
-        readBufferFromNBT(tagCompound, "output", outputFilter);
         inputDamage = tagCompound.getBoolean("inDamage");
         inputNbt = tagCompound.getBoolean("inNBT");
         inputOredict = tagCompound.getBoolean("inOre");
-        outputDamage = tagCompound.getBoolean("outDamage");
-        outputNbt = tagCompound.getBoolean("outNBT");
-        outputOredict = tagCompound.getBoolean("outOre");
-        outputStackSize = tagCompound.getInteger("outSS");
     }
 
     @Override
     public void writeRestorableToNBT(NBTTagCompound tagCompound) {
         super.writeRestorableToNBT(tagCompound);
         writeBufferToNBT(tagCompound, "input", inputFilter);
-        writeBufferToNBT(tagCompound, "output", outputFilter);
         tagCompound.setBoolean("inDamage", inputDamage);
         tagCompound.setBoolean("inNBT", inputNbt);
         tagCompound.setBoolean("inOre", inputOredict);
-        tagCompound.setBoolean("outDamage", outputDamage);
-        tagCompound.setBoolean("outNBT", outputNbt);
-        tagCompound.setBoolean("outOre", outputOredict);
-        tagCompound.setInteger("outSS", outputStackSize);
     }
 
     private void changeMode() {
@@ -260,10 +241,6 @@ public class ItemNodeTile extends GenericTileEntity implements IGuiTile {
         return inputFilter;
     }
 
-    public ItemStackList getOutputFilter() {
-        return outputFilter;
-    }
-
     public boolean isInputOredict() {
         return inputOredict;
     }
@@ -276,38 +253,7 @@ public class ItemNodeTile extends GenericTileEntity implements IGuiTile {
         return inputNbt;
     }
 
-    public boolean isOutputOredict() {
-        return outputOredict;
-    }
-
-    public boolean isOutputDamage() {
-        return outputDamage;
-    }
-
-    public boolean isOutputNbt() {
-        return outputNbt;
-    }
-
-    public int getOutputStackSize() {
-        return outputStackSize;
-    }
-
-    public void setOutputStackSize(int outputStackSize) {
-        this.outputStackSize = outputStackSize;
-    }
-
-    private void changeOutputStackSize(int d) {
-        outputStackSize += d;
-        if (outputStackSize < 1) {
-            outputStackSize = 1;
-        } else if (outputStackSize > 64) {
-            outputStackSize = 64;
-        }
-        markDirtyClient();
-    }
-
     private SimpleItemHandler inputHandler = null;
-    private SimpleItemHandler outputHandler = null;
 
     private SimpleItemHandler getInputHandler() {
         if (inputHandler == null) {
@@ -316,17 +262,10 @@ public class ItemNodeTile extends GenericTileEntity implements IGuiTile {
         return inputHandler;
     }
 
-    private SimpleItemHandler getOutputHandler() {
-        if (outputHandler == null) {
-            outputHandler = new SimpleItemHandler(outputFilter);
-        }
-        return outputHandler;
-    }
-
     @Nullable
     public IItemHandler getConnectedItemHandler(PartPos partPos) {
         IBlockState state = MultipartHelper.getBlockState(world, pos, partPos.getSlot());
-        if (state != null && state.getBlock() == ModBlocks.itemNode) {
+        if (state != null && state.getBlock() == ModBlocks.inputItemNode) {
             NodeOrientation orientation = state.getValue(ORIENTATION);
             EnumFacing mainDirection = orientation.getMainDirection();
             TileEntity otherTe = world.getTileEntity(pos.offset(mainDirection));
@@ -358,36 +297,13 @@ public class ItemNodeTile extends GenericTileEntity implements IGuiTile {
             return HoloGuiTools.createHelpGui(registry,
                     HelpBuilder.create()
                             .line("This node can be used in")
-                            .line("an automation field to transfer")
+                            .line("an automation field to input")
                             .line("items"),
                     pair.getLeft() + ":" + TAG_MAIN
             );
-        } else if (TAG_INPUT.equals(pair.getRight())) {
-            return createInputGui(pair, registry);
-        } else if (TAG_OUTPUT.equals(pair.getRight())) {
-            return createOutputGui(pair, registry);
         } else {
-            return createMainGui(pair, registry);
+            return createInputGui(pair, registry);
         }
-    }
-
-    private IGuiComponent<?> createMainGui(final Pair<String, String> pair, IGuiComponentRegistry registry) {
-        return HoloGuiTools.createPanelWithHelp(registry, entity -> entity.switchTag(pair.getLeft() + ":" + TAG_HELP))
-                .add(registry.text(0, 0.5, 1, 1).text("Main menu").color(0xaaccff))
-                .add(registry.button(2, 2, 5, 1)
-                        .text("Input")
-                        .hitEvent((component, p, entity, x1, y1) -> entity.switchTag(pair.getLeft() + ":" + TAG_INPUT)))
-                .add(registry.button(2, 4, 5, 1)
-                        .text("Output")
-                        .hitEvent((component, p, entity, x1, y1) -> entity.switchTag(pair.getLeft() + ":" + TAG_OUTPUT)))
-
-                .add(registry.iconChoice(7, 0, 1, 1)
-                        .getter((player) -> getRSModeInt())
-                        .addImage(registry.image(REDSTONE_DUST))
-                        .addImage(registry.image(REDSTONE_OFF))
-                        .addImage(registry.image(REDSTONE_ON))
-                        .hitEvent((component, player, entity1, x, y) -> changeMode()))
-                ;
     }
 
     private IGuiComponent<?> createInputGui(final Pair<String, String> pair, IGuiComponentRegistry registry) {
@@ -422,50 +338,6 @@ public class ItemNodeTile extends GenericTileEntity implements IGuiTile {
                 ;
     }
 
-    private IGuiComponent<?> createOutputGui(final Pair<String, String> pair, IGuiComponentRegistry registry) {
-        return HoloGuiTools.createPanelWithHelp(registry, entity -> entity.switchTag(pair.getLeft() + ":" + TAG_HELP))
-                .add(registry.text(2.3, -.2, 1, 1).text("Output").color(0xaaccff))
-
-                .add(registry.iconToggle(0.5, 0.2, 1, 1)
-                        .getter(player -> outputNbt)
-                        .hitEvent((component, player, entity, x, y) -> toggleOutputNBT())
-                        .icon(registry.image(Icons.NBT_OFF))
-                        .selected(registry.image(Icons.NBT_ON)))
-                .add(registry.iconToggle(0.5, 1.2, 1, 1)
-                        .getter(player -> outputDamage)
-                        .hitEvent((component, player, entity, x, y) -> toggleOutputDamage())
-                        .icon(registry.image(Icons.DAM_OFF))
-                        .selected(registry.image(Icons.DAM_ON)))
-                .add(registry.iconToggle(0.5, 2.2, 1, 1)
-                        .getter(player -> outputOredict)
-                        .hitEvent((component, player, entity, x, y) -> toggleOutputOre())
-                        .icon(registry.image(Icons.ORE_OFF))
-                        .selected(registry.image(Icons.ORE_ON)))
-
-                .add(registry.text(0, 3.4, 1, 1).text("SS").color(0xaaccff))
-                .add(registry.number(4, 3.4, 1, 1).color(0xffffff).getter((p,h) -> getOutputStackSize()))
-
-                .add(registry.iconButton(2, 3.3, 1, 1).icon(registry.image(GRAY_DOUBLE_ARROW_LEFT)).hover(registry.image(WHITE_DOUBLE_ARROW_LEFT))
-                        .hitEvent((component, player, entity1, x, y) -> changeOutputStackSize(-8)))
-                .add(registry.iconButton(3, 3.3, 1, 1).icon(registry.image(GRAY_ARROW_LEFT)).hover(registry.image(WHITE_ARROW_LEFT))
-                        .hitEvent((component, player, entity1, x, y) -> changeOutputStackSize(-1)))
-                .add(registry.iconButton(5.6, 3.3, 1, 1).icon(registry.image(GRAY_ARROW_RIGHT)).hover(registry.image(WHITE_ARROW_RIGHT))
-                        .hitEvent((component, player, entity1, x, y) -> changeOutputStackSize(1)))
-                .add(registry.iconButton(6.6, 3.3, 1, 1).icon(registry.image(GRAY_DOUBLE_ARROW_RIGHT)).hover(registry.image(WHITE_DOUBLE_ARROW_RIGHT))
-                        .hitEvent((component, player, entity1, x, y) -> changeOutputStackSize(8)))
-
-                .add(registry.slots(2.5, 1.2, 6, 2)
-                        .name("slots")
-                        .fullBright()
-                        .doubleClickEvent((component, player, entity, x, y, stack, index) -> removeFromFilter(player, entity, getOutputHandler()))
-                        .itemHandler(getOutputHandler()))
-
-                .add(registry.playerInventory(4.7)
-                        .name("playerSlots")
-                        .doubleClickEvent((component, player, entity, x, y, stack, index) -> addToFilter(player, entity, getOutputHandler())))
-                ;
-    }
-
     private void toggleInputNBT() {
         inputNbt = !inputNbt;
         markDirtyClient();
@@ -478,21 +350,6 @@ public class ItemNodeTile extends GenericTileEntity implements IGuiTile {
 
     private void toggleInputOre() {
         inputOredict = !inputOredict;
-        markDirtyClient();
-    }
-
-    private void toggleOutputNBT() {
-        outputNbt = !outputNbt;
-        markDirtyClient();
-    }
-
-    private void toggleOutputDamage() {
-        outputDamage = !outputDamage;
-        markDirtyClient();
-    }
-
-    private void toggleOutputOre() {
-        outputOredict = !outputOredict;
         markDirtyClient();
     }
 
