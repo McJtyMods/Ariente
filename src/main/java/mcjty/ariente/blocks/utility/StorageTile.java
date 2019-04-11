@@ -510,7 +510,7 @@ public class StorageTile extends GenericTileEntity implements IGuiTile, IInvento
                     counts[index] = 0;
                 }
                 updateTotals(type);
-                markDirtyQuick();
+                markDirtyClient();
             }
             return stack;
         }
@@ -528,7 +528,7 @@ public class StorageTile extends GenericTileEntity implements IGuiTile, IInvento
                 stack.setCount(counts[index]);
                 counts[index] = 0;
                 updateTotals(type);
-                markDirtyQuick();
+                markDirtyClient();
             }
             return stack;
         }
@@ -548,7 +548,7 @@ public class StorageTile extends GenericTileEntity implements IGuiTile, IInvento
             stacks.set(type, stack);
         }
         updateTotals(type);
-        markDirtyQuick();
+        markDirtyClient();
     }
 
     @Override
