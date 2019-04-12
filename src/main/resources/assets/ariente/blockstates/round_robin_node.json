@@ -1,11 +1,11 @@
 {
   "forge_marker": 1,
   "defaults": {
-    "model": "ariente:nodeblock",
+    "model": "ariente:flatnodeblock",
     "textures": {
       "bottom": "ariente:blocks/base/machinebottom",
       "side": "ariente:blocks/base/machinebottom",
-      "up": "ariente:blocks/machines/output_item_node"
+      "up": "ariente:blocks/machines/round_robin_node"
     },
     "transform": "forge:default-block"
   },
@@ -22,7 +22,6 @@
         }
       }
     ],
-
     "orientation": {
       "south_dw": {},
       "north_de": {"y": 180},
