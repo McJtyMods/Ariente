@@ -27,7 +27,7 @@ public class ProducerInfo {
                 boolean outputOredict = itemNode.isOutputOredict();
                 for (ItemStack stack : itemNode.getOutputFilter()) {
                     if (!stack.isEmpty()) {
-                        producers.putIfAbsent(pair, new Producer(outputOredict, outputDamage, outputNbt, itemNode.getOutputStackSize()));
+                        producers.putIfAbsent(pair, new Producer(outputOredict, outputDamage, outputNbt, itemNode.getOutputStackSize(), itemNode.hasRoundRobin()));
                         int[] oreIDs;
                         if (outputOredict) {
                             oreIDs = OreDictionary.getOreIDs(stack);
@@ -49,16 +49,18 @@ public class ProducerInfo {
         private final boolean matchOredict;
         private final boolean matchDamage;
         private final boolean matchNbt;
+        private final boolean roundRobin;
         private final int minStackSize;
         private final List<ProvidedItem> providedItems = new ArrayList<>();
         private final Set<Item> isProvidedItem = new HashSet<>();
         private final Set<Integer> isProvidedOre = new HashSet<>();
 
-        public Producer(boolean matchOredict, boolean matchDamage, boolean matchNbt, int minStackSize) {
+        public Producer(boolean matchOredict, boolean matchDamage, boolean matchNbt, int minStackSize, boolean roundRobin) {
             this.matchOredict = matchOredict;
             this.matchDamage = matchDamage;
             this.matchNbt = matchNbt;
             this.minStackSize = minStackSize;
+            this.roundRobin = roundRobin;
         }
 
         public void addItem(ProvidedItem item) {
@@ -85,6 +87,10 @@ public class ProducerInfo {
 
         public int getMinStackSize() {
             return minStackSize;
+        }
+
+        public boolean isRoundRobin() {
+            return roundRobin;
         }
 
         public List<ProvidedItem> getProvidedItems() {
