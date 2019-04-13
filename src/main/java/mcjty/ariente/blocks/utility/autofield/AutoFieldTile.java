@@ -490,7 +490,7 @@ public class AutoFieldTile extends GenericTileEntity implements IGuiTile, ITicka
                             markers.add(p);
                             TileEntity markerTE = MultipartHelper.getTileEntity(world, p, PartSlot.DOWN);
                             if (markerTE instanceof FieldMarkerTile) {
-                                ((FieldMarkerTile) markerTE).setAutoFieldTile(pos);
+                                ((FieldMarkerTile) markerTE).setAutoFieldTile(this.pos);
                             }
                             todo.add(p);
                         }
