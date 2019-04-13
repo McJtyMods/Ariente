@@ -2,8 +2,6 @@ package mcjty.ariente.blocks.utility.autofield;
 
 import mcjty.ariente.Ariente;
 import mcjty.ariente.blocks.ModBlocks;
-import mcjty.lib.multipart.MultipartHelper;
-import mcjty.lib.multipart.PartPos;
 import mcjty.lib.multipart.PartSlot;
 import mcjty.lib.tileentity.GenericTileEntity;
 import mcjty.theoneprobe.api.IProbeHitData;
@@ -17,6 +15,7 @@ import net.minecraft.block.state.IBlockState;
 import net.minecraft.entity.EntityLivingBase;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.item.ItemStack;
+import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.tileentity.TileEntity;
 import net.minecraft.util.EnumFacing;
 import net.minecraft.util.EnumHand;
@@ -27,10 +26,7 @@ import net.minecraft.world.World;
 import net.minecraftforge.fml.common.Optional;
 import net.minecraftforge.fml.relauncher.Side;
 import net.minecraftforge.fml.relauncher.SideOnly;
-import net.minecraftforge.items.CapabilityItemHandler;
-import net.minecraftforge.items.IItemHandler;
 
-import javax.annotation.Nullable;
 import java.util.List;
 
 import static mcjty.ariente.blocks.utility.autofield.NodeOrientation.*;
@@ -44,6 +40,8 @@ public class RoundRobinNodeTile extends GenericTileEntity {
         // Since this is a multipart we can use state that isn't convertable to metadata
         return ModBlocks.roundRobinNode.getDefaultState().withProperty(ORIENTATION, orientation);
     }
+
+    private int index = 0;
 
     private static final float T = 0.1f;
     private static final float A = 0.05F;
@@ -197,18 +195,21 @@ public class RoundRobinNodeTile extends GenericTileEntity {
         return facing;
     }
 
-    @Nullable
-    public IItemHandler getConnectedItemHandler(PartPos partPos) {
-        IBlockState state = MultipartHelper.getBlockState(world, pos, partPos.getSlot());
-        if (state != null && state.getBlock() == ModBlocks.inputItemNode) {
-            NodeOrientation orientation = state.getValue(ORIENTATION);
-            EnumFacing mainDirection = orientation.getMainDirection();
-            TileEntity otherTe = world.getTileEntity(pos.offset(mainDirection));
-            if (otherTe != null && otherTe.hasCapability(CapabilityItemHandler.ITEM_HANDLER_CAPABILITY, mainDirection.getOpposite())) {
-                return otherTe.getCapability(CapabilityItemHandler.ITEM_HANDLER_CAPABILITY, mainDirection.getOpposite());
-            }
-        }
-        return null;
+    @Override
+    public void readFromNBT(NBTTagCompound tagCompound) {
+        super.readFromNBT(tagCompound);
+        index = tagCompound.getInteger("index");
+    }
+
+    @Override
+    public NBTTagCompound writeToNBT(NBTTagCompound tagCompound) {
+        tagCompound.setInteger("index", index);
+        return super.writeToNBT(tagCompound);
+    }
+
+    public int fetchIndex() {
+        markDirty();
+        return index++;
     }
 
     @Override
@@ -223,5 +224,4 @@ public class RoundRobinNodeTile extends GenericTileEntity {
     public void addWailaBody(ItemStack itemStack, List<String> currenttip, IWailaDataAccessor accessor, IWailaConfigHandler config) {
         super.addWailaBody(itemStack, currenttip, accessor, config);
     }
-
 }

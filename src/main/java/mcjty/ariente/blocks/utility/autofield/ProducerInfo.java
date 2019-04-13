@@ -2,6 +2,7 @@ package mcjty.ariente.blocks.utility.autofield;
 
 import mcjty.lib.multipart.MultipartHelper;
 import mcjty.lib.multipart.PartPos;
+import mcjty.lib.multipart.PartSlot;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
 import net.minecraft.tileentity.TileEntity;
@@ -16,18 +17,21 @@ public class ProducerInfo {
     private Map<PartPos, Producer> producers = new HashMap<>();
     public static final int[] EMPTY_OREIDS = new int[0];
 
-    public ProducerInfo(World world, Set<PartPos> itemNodes) {
+    public ProducerInfo(World world, Set<PartPos> itemNodes, Set<PartPos> modifierNodes) {
         for (PartPos pair : itemNodes) {
             TileEntity te = MultipartHelper.getTileEntity(world, pair.getPos(), pair.getSlot());
             if (te instanceof OutputItemNodeTile) {
-                OutputItemNodeTile itemNode = (OutputItemNodeTile) te;
+                OutputItemNodeTile outputNode = (OutputItemNodeTile) te;
 
-                boolean outputDamage = itemNode.isOutputDamage();
-                boolean outputNbt = itemNode.isOutputNbt();
-                boolean outputOredict = itemNode.isOutputOredict();
-                for (ItemStack stack : itemNode.getOutputFilter()) {
+                boolean outputDamage = outputNode.isOutputDamage();
+                boolean outputNbt = outputNode.isOutputNbt();
+                boolean outputOredict = outputNode.isOutputOredict();
+                for (ItemStack stack : outputNode.getOutputFilter()) {
                     if (!stack.isEmpty()) {
-                        producers.putIfAbsent(pair, new Producer(outputOredict, outputDamage, outputNbt, itemNode.getOutputStackSize(), itemNode.hasRoundRobin()));
+                        // @todo hardcoded round robin modifier
+                        boolean roundRobin = modifierNodes.contains(pair);
+                        producers.putIfAbsent(pair, new Producer(outputOredict, outputDamage, outputNbt,
+                                outputNode.getOutputStackSize(), roundRobin ? pair.getSlot().getBackSlot() : null));
                         int[] oreIDs;
                         if (outputOredict) {
                             oreIDs = OreDictionary.getOreIDs(stack);
@@ -49,18 +53,18 @@ public class ProducerInfo {
         private final boolean matchOredict;
         private final boolean matchDamage;
         private final boolean matchNbt;
-        private final boolean roundRobin;
+        private final PartSlot roundRobinSlot;
         private final int minStackSize;
         private final List<ProvidedItem> providedItems = new ArrayList<>();
         private final Set<Item> isProvidedItem = new HashSet<>();
         private final Set<Integer> isProvidedOre = new HashSet<>();
 
-        public Producer(boolean matchOredict, boolean matchDamage, boolean matchNbt, int minStackSize, boolean roundRobin) {
+        public Producer(boolean matchOredict, boolean matchDamage, boolean matchNbt, int minStackSize, @Nullable PartSlot roundRobinSlot) {
             this.matchOredict = matchOredict;
             this.matchDamage = matchDamage;
             this.matchNbt = matchNbt;
             this.minStackSize = minStackSize;
-            this.roundRobin = roundRobin;
+            this.roundRobinSlot = roundRobinSlot;
         }
 
         public void addItem(ProvidedItem item) {
@@ -89,8 +93,9 @@ public class ProducerInfo {
             return minStackSize;
         }
 
-        public boolean isRoundRobin() {
-            return roundRobin;
+        @Nullable
+        public PartSlot getRoundRobinSlot() {
+            return roundRobinSlot;
         }
 
         public List<ProvidedItem> getProvidedItems() {

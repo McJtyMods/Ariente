@@ -93,11 +93,6 @@ public class OutputItemNodeTile extends AbstractItemNodeTile {
         notifyField();
     }
 
-    public boolean hasRoundRobin() {
-        // @todo
-        return false;
-    }
-
     private SimpleItemHandler outputHandler = null;
 
     private SimpleItemHandler getOutputHandler() {

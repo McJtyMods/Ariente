@@ -42,6 +42,7 @@ import net.minecraftforge.items.ItemHandlerHelper;
 
 import java.util.*;
 import java.util.concurrent.atomic.AtomicBoolean;
+import java.util.stream.Collectors;
 
 import static mcjty.hologui.api.Icons.*;
 
@@ -53,6 +54,7 @@ public class AutoFieldTile extends GenericTileEntity implements IGuiTile, ITicka
     private Set<BlockPos> markers = null;
     private Set<PartPos> inputItemNodes = null;
     private Set<PartPos> outputItemNodes = null;
+    private Set<PartPos> outputmodifierNodes = null;
 
     private ConsumerInfo consumerInfo = null;
     private ProducerInfo producerInfo = null;
@@ -131,15 +133,28 @@ public class AutoFieldTile extends GenericTileEntity implements IGuiTile, ITicka
                             ProducerInfo.ProvidedItem providedItem = producer.getProvidedItem(stack);
                             if (providedItem != null) {
                                 int finalI = i;
-                                consumerInfo.getWantedStream(stack)
-                                        .filter(destPos -> canInsert(destPos, stack))
-                                        .findFirst()
-                                        .ifPresent(destPos -> {
-                                            accumulatedPower -= neededPower;
-                                            ItemStack extracted = producingItemHandler.extractItem(finalI, minStackSize, false);
-                                            doInsert(sourcePos, destPos, extracted);
-                                            didSomeWork.set(true);
-                                        });
+                                List<PartPos> destinations = consumerInfo.getWantedStream(stack)
+                                        .filter(destPos -> canInsert(destPos, stack)).collect(Collectors.toList());
+                                if (!destinations.isEmpty()) {
+                                    int index = 0;
+                                    if (destinations.size() > 1) {
+                                        // We need to round robin
+                                        PartSlot roundRobinSlot = producer.getRoundRobinSlot();
+                                        if (roundRobinSlot != null) {
+                                            // @todo more efficient way to get to the round robin index?
+                                            TileEntity roundRobinModifier = MultipartHelper.getTileEntity(world, sourcePos.getPos(), roundRobinSlot);
+                                            if (roundRobinModifier instanceof RoundRobinNodeTile) {
+                                                index = ((RoundRobinNodeTile) roundRobinModifier).fetchIndex();
+                                                index = index % destinations.size();
+                                            }
+                                        }
+                                    }
+                                    PartPos destPos = destinations.get(index);
+                                    accumulatedPower -= neededPower;
+                                    ItemStack extracted = producingItemHandler.extractItem(finalI, minStackSize, false);
+                                    doInsert(sourcePos, destPos, extracted);
+                                    didSomeWork.set(true);
+                                }
                             }
                         }
                     }
@@ -289,7 +304,7 @@ public class AutoFieldTile extends GenericTileEntity implements IGuiTile, ITicka
 
     private void findProducers() {
         if (producerInfo == null) {
-            producerInfo = new ProducerInfo(world, getOutputItemNodes());
+            producerInfo = new ProducerInfo(world, getOutputItemNodes(), getOutputModifierNodes());
         }
     }
 
@@ -313,20 +328,38 @@ public class AutoFieldTile extends GenericTileEntity implements IGuiTile, ITicka
 
     private Set<PartPos> getOutputItemNodes() {
         if (outputItemNodes == null) {
-            outputItemNodes = new HashSet<>();
-            for (BlockPos mpos : getMarkers()) {
-                for (int y = 0 ; y <= height ; y++) {
-                    BlockPos p = mpos.up(y);
-                    for (PartSlot slot : PartSlot.VALUES) {
-                        TileEntity te = MultipartHelper.getTileEntity(world, p, slot);
-                        if (te instanceof OutputItemNodeTile) {
-                            outputItemNodes.add(PartPos.create(p, slot));
-                        }
+            findOutputNodes();
+        }
+        return outputItemNodes;
+    }
+
+    private Set<PartPos> getOutputModifierNodes() {
+        if (outputmodifierNodes == null) {
+            findOutputNodes();
+        }
+        return outputmodifierNodes;
+    }
+
+    private void findOutputNodes() {
+        outputItemNodes = new HashSet<>();
+        outputmodifierNodes = new HashSet<>();
+        for (BlockPos mpos : getMarkers()) {
+            for (int y = 0 ; y <= height ; y++) {
+                BlockPos p = mpos.up(y);
+                for (NodeOrientation orientation : NodeOrientation.VALUES) {
+                    PartSlot slot = orientation.getSlot();
+                    TileEntity te = MultipartHelper.getTileEntity(world, p, slot);
+                    if (te instanceof OutputItemNodeTile) {
+                        outputItemNodes.add(PartPos.create(p, slot));
+                    }
+                    PartSlot backSlot = orientation.getBackSlot();
+                    te = MultipartHelper.getTileEntity(world, p, backSlot);
+                    if (te instanceof RoundRobinNodeTile) {
+                        outputmodifierNodes.add(PartPos.create(p, slot));  // Use 'slot' even if the round robin modifier is at backSlot
                     }
                 }
             }
         }
-        return outputItemNodes;
     }
 
     @Override
@@ -347,6 +380,7 @@ public class AutoFieldTile extends GenericTileEntity implements IGuiTile, ITicka
         inputItemNodes = null;
         outputItemNodes = null;
         transferRenders = null;
+        outputmodifierNodes = null;
     }
 
     // Call this to check if there is a field marker below us and if that
@@ -399,6 +433,7 @@ public class AutoFieldTile extends GenericTileEntity implements IGuiTile, ITicka
         producerInfo = null;
         inputItemNodes = null;
         outputItemNodes = null;
+        outputmodifierNodes = null;
     }
 
     private void changeHeight(int dy) {
