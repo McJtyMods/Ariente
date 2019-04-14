@@ -85,6 +85,7 @@ tile.ariente.elevator.name=Elevator
 tile.ariente.forcefield.name=Forcefield Generator
 tile.ariente.level_marker.name=Level Marker
 tile.ariente.field_marker.name=Field Marker
+tile.ariente.sensor_item_node.name=Sensor Item Node
 tile.ariente.input_item_node.name=Input Item Node
 tile.ariente.output_item_node.name=Output Item Node
 tile.ariente.round_robin_node.name=Round Robin Node

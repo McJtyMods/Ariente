@@ -63,6 +63,7 @@ public class ModBlocks {
 
     public static BaseBlock fluxBeamBlock;
 
+    public static GenericBlock<SensorItemNodeTile, GenericContainer> sensorItemNode;
     public static GenericBlock<InputItemNodeTile, GenericContainer> inputItemNode;
     public static GenericBlock<OutputItemNodeTile, GenericContainer> outputItemNode;
     public static GenericBlock<RoundRobinNodeTile, GenericContainer> roundRobinNode;
@@ -173,27 +174,38 @@ public class ModBlocks {
                 .rotationType(HORIZROTATION)
                 .build();
 
+        sensorItemNode = builderFactory.<SensorItemNodeTile> builder("sensor_item_node")
+                .tileEntityClass(SensorItemNodeTile.class)
+                .emptyContainer()
+                .rotationType(NONE)
+                .itemBlockFactory(MultipartItemBlock::new)
+                .property(AbstractNodeTile.ORIENTATION)
+                .placementGetter(SensorItemNodeTile::getStateForPlacement)
+                .slotGetter((world, pos, newState) -> newState.getValue(AbstractNodeTile.ORIENTATION).getSlot())
+                .flags(NON_OPAQUE, NON_FULLCUBE)
+                .boundingBox(AbstractNodeTile::getBoundingBox)
+                .build();
         inputItemNode = builderFactory.<InputItemNodeTile> builder("input_item_node")
                 .tileEntityClass(InputItemNodeTile.class)
                 .emptyContainer()
                 .rotationType(NONE)
                 .itemBlockFactory(MultipartItemBlock::new)
-                .property(AbstractItemNodeTile.ORIENTATION)
+                .property(AbstractNodeTile.ORIENTATION)
                 .placementGetter(InputItemNodeTile::getStateForPlacement)
-                .slotGetter((world, pos, newState) -> newState.getValue(AbstractItemNodeTile.ORIENTATION).getSlot())
+                .slotGetter((world, pos, newState) -> newState.getValue(AbstractNodeTile.ORIENTATION).getSlot())
                 .flags(NON_OPAQUE, NON_FULLCUBE)
-                .boundingBox(AbstractItemNodeTile::getBoundingBox)
+                .boundingBox(AbstractNodeTile::getBoundingBox)
                 .build();
         outputItemNode = builderFactory.<OutputItemNodeTile> builder("output_item_node")
                 .tileEntityClass(OutputItemNodeTile.class)
                 .emptyContainer()
                 .rotationType(NONE)
                 .itemBlockFactory(MultipartItemBlock::new)
-                .property(AbstractItemNodeTile.ORIENTATION)
+                .property(AbstractNodeTile.ORIENTATION)
                 .placementGetter(OutputItemNodeTile::getStateForPlacement)
-                .slotGetter((world, pos, newState) -> newState.getValue(AbstractItemNodeTile.ORIENTATION).getSlot())
+                .slotGetter((world, pos, newState) -> newState.getValue(AbstractNodeTile.ORIENTATION).getSlot())
                 .flags(NON_OPAQUE, NON_FULLCUBE)
-                .boundingBox(AbstractItemNodeTile::getBoundingBox)
+                .boundingBox(AbstractNodeTile::getBoundingBox)
                 .build();
         roundRobinNode = builderFactory.<RoundRobinNodeTile> builder("round_robin_node")
                 .tileEntityClass(RoundRobinNodeTile.class)
@@ -633,6 +645,7 @@ public class ModBlocks {
 
         roundRobinNode.initModel();
         inputItemNode.initModel();
+        sensorItemNode.initModel();
         outputItemNode.initModel();
         fieldMarker.initModel();
         autoFieldBlock.initModel();
