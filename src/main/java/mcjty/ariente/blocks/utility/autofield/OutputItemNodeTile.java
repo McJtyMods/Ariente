@@ -6,6 +6,7 @@ import mcjty.ariente.gui.HoloGuiTools;
 import mcjty.hologui.api.IGuiComponent;
 import mcjty.hologui.api.IGuiComponentRegistry;
 import mcjty.hologui.api.Icons;
+import mcjty.hologui.api.components.IPanel;
 import mcjty.lib.varia.ItemStackList;
 import net.minecraft.block.Block;
 import net.minecraft.block.state.IBlockState;
@@ -120,35 +121,34 @@ public class OutputItemNodeTile extends AbstractItemNodeTile {
     }
 
     private IGuiComponent<?> createOutputGui(final Pair<String, String> pair, IGuiComponentRegistry registry) {
-        return HoloGuiTools.createPanelWithHelp(registry, entity -> entity.switchTag(pair.getLeft() + ":" + TAG_HELP))
-                .add(registry.text(2.3, -.2, 1, 1).text("Output").color(0xaaccff))
+        IPanel panel = HoloGuiTools.createPanelWithHelp(registry, entity -> entity.switchTag(pair.getLeft() + ":" + TAG_HELP))
+                .add(registry.text(3.3, -.6, 1, 1).text("Output").color(0xaaccff))
 
-                .add(registry.iconToggle(0.5, 0.2, 1, 1)
+                .add(registry.iconToggle(0.5, 0.4, 1, 1)
                         .getter(player -> outputNbt)
                         .hitEvent((component, player, entity, x, y) -> toggleOutputNBT())
                         .icon(registry.image(Icons.NBT_OFF))
                         .selected(registry.image(Icons.NBT_ON)))
-                .add(registry.iconToggle(0.5, 1.2, 1, 1)
+                .add(registry.iconToggle(0.5, 1.4, 1, 1)
                         .getter(player -> outputDamage)
                         .hitEvent((component, player, entity, x, y) -> toggleOutputDamage())
                         .icon(registry.image(Icons.DAM_OFF))
                         .selected(registry.image(Icons.DAM_ON)))
-                .add(registry.iconToggle(0.5, 2.2, 1, 1)
+                .add(registry.iconToggle(0.5, 2.4, 1, 1)
                         .getter(player -> outputOredict)
                         .hitEvent((component, player, entity, x, y) -> toggleOutputOre())
                         .icon(registry.image(Icons.ORE_OFF))
                         .selected(registry.image(Icons.ORE_ON)))
 
-                .add(registry.text(0, 3.4, 1, 1).text("SS").color(0xaaccff))
-                .add(registry.number(4, 3.4, 1, 1).color(0xffffff).getter((p,h) -> getOutputStackSize()))
+                .add(registry.number(5, 3.4, 1, 1).color(0xffffff).getter((p, h) -> getOutputStackSize()))
 
-                .add(registry.iconButton(2, 3.3, 1, 1).icon(registry.image(GRAY_DOUBLE_ARROW_LEFT)).hover(registry.image(WHITE_DOUBLE_ARROW_LEFT))
+                .add(registry.iconButton(3, 3.3, 1, 1).icon(registry.image(GRAY_DOUBLE_ARROW_LEFT)).hover(registry.image(WHITE_DOUBLE_ARROW_LEFT))
                         .hitEvent((component, player, entity1, x, y) -> changeOutputStackSize(-8)))
-                .add(registry.iconButton(3, 3.3, 1, 1).icon(registry.image(GRAY_ARROW_LEFT)).hover(registry.image(WHITE_ARROW_LEFT))
+                .add(registry.iconButton(4, 3.3, 1, 1).icon(registry.image(GRAY_ARROW_LEFT)).hover(registry.image(WHITE_ARROW_LEFT))
                         .hitEvent((component, player, entity1, x, y) -> changeOutputStackSize(-1)))
-                .add(registry.iconButton(5.6, 3.3, 1, 1).icon(registry.image(GRAY_ARROW_RIGHT)).hover(registry.image(WHITE_ARROW_RIGHT))
+                .add(registry.iconButton(6.6, 3.3, 1, 1).icon(registry.image(GRAY_ARROW_RIGHT)).hover(registry.image(WHITE_ARROW_RIGHT))
                         .hitEvent((component, player, entity1, x, y) -> changeOutputStackSize(1)))
-                .add(registry.iconButton(6.6, 3.3, 1, 1).icon(registry.image(GRAY_DOUBLE_ARROW_RIGHT)).hover(registry.image(WHITE_DOUBLE_ARROW_RIGHT))
+                .add(registry.iconButton(7.6, 3.3, 1, 1).icon(registry.image(GRAY_DOUBLE_ARROW_RIGHT)).hover(registry.image(WHITE_DOUBLE_ARROW_RIGHT))
                         .hitEvent((component, player, entity1, x, y) -> changeOutputStackSize(8)))
 
                 .add(registry.slots(2.5, 1.2, 6, 2)
@@ -159,8 +159,13 @@ public class OutputItemNodeTile extends AbstractItemNodeTile {
 
                 .add(registry.playerInventory(4.7)
                         .name("playerSlots")
-                        .doubleClickEvent((component, player, entity, x, y, stack, index) -> addToFilter(player, entity, getOutputHandler())))
-                ;
+                        .doubleClickEvent((component, player, entity, x, y, stack, index) -> addToFilter(player, entity, getOutputHandler())));
+
+        addFilterChoice(registry, panel, 0);
+        addFilterChoice(registry, panel, 1);
+        addFilterChoice(registry, panel, 2);
+        addFilterChoice(registry, panel, 3);
+        return panel;
     }
 
     private void toggleOutputNBT() {

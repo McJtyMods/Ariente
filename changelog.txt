@@ -1,3 +1,7 @@
+Upcoming:
+- New automation field system
+- Fix a server-side crash with the forcefield
+
 0.0.8-alpha:
 - Started working on more biome decorations: flowers
 - Fixed a problem on servers with the forcefield

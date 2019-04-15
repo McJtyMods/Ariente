@@ -1,7 +1,11 @@
 package mcjty.ariente.blocks.utility.autofield;
 
 import mcjty.ariente.Ariente;
+import mcjty.hologui.api.IEvent;
+import mcjty.hologui.api.IGuiComponentRegistry;
 import mcjty.hologui.api.IGuiTile;
+import mcjty.hologui.api.components.IIconChoice;
+import mcjty.hologui.api.components.IPanel;
 import mcjty.lib.multipart.PartSlot;
 import mcjty.lib.tileentity.GenericTileEntity;
 import mcjty.theoneprobe.api.IProbeHitData;
@@ -14,7 +18,9 @@ import net.minecraft.block.properties.PropertyEnum;
 import net.minecraft.block.state.IBlockState;
 import net.minecraft.entity.EntityLivingBase;
 import net.minecraft.entity.player.EntityPlayer;
+import net.minecraft.item.EnumDyeColor;
 import net.minecraft.item.ItemStack;
+import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.tileentity.TileEntity;
 import net.minecraft.util.EnumFacing;
 import net.minecraft.util.EnumHand;
@@ -31,10 +37,13 @@ import org.apache.commons.lang3.tuple.Pair;
 import java.util.List;
 
 import static mcjty.ariente.blocks.utility.autofield.NodeOrientation.*;
+import static mcjty.hologui.api.Icons.*;
 
 public abstract class AbstractNodeTile extends GenericTileEntity implements IGuiTile {
 
     public static final PropertyEnum<NodeOrientation> ORIENTATION = PropertyEnum.create("orientation", NodeOrientation.class, NodeOrientation.values());
+
+    protected EnumDyeColor[] filters = new EnumDyeColor[] { null, null, null, null };
 
     private static final float T = 0.2f;
     private static final float A = 0.14F;
@@ -189,6 +198,28 @@ public abstract class AbstractNodeTile extends GenericTileEntity implements IGui
     }
 
     @Override
+    public void readRestorableFromNBT(NBTTagCompound tagCompound) {
+        super.readRestorableFromNBT(tagCompound);
+        for (int i = 0 ; i < filters.length ; i++) {
+            if (tagCompound.hasKey("f" + i)) {
+                filters[i] = EnumDyeColor.values()[tagCompound.getInteger("f" + i)];
+            } else {
+                filters[i] = null;
+            }
+        }
+    }
+
+    @Override
+    public void writeRestorableToNBT(NBTTagCompound tagCompound) {
+        for (int i = 0 ; i < filters.length ; i++) {
+            if (filters[i] != null) {
+                tagCompound.setInteger("f" + i, filters[i].ordinal());
+            }
+        }
+        super.writeRestorableToNBT(tagCompound);
+    }
+
+    @Override
     @Optional.Method(modid = "theoneprobe")
     public void addProbeInfo(ProbeMode mode, IProbeInfo probeInfo, EntityPlayer player, World world, IBlockState blockState, IProbeHitData data) {
         super.addProbeInfo(mode, probeInfo, player, world, blockState, data);
@@ -211,5 +242,47 @@ public abstract class AbstractNodeTile extends GenericTileEntity implements IGui
     @Override
     public void syncToClient() {
 //        markDirtyClient();
+    }
+
+    protected IIconChoice addColors(IGuiComponentRegistry registry, IIconChoice iconChoice) {
+        return iconChoice
+                .addImage(registry.image(GRAY_CROSS))
+                .addImage(registry.image(COLOR_WHITE))
+                .addImage(registry.image(COLOR_ORANGE))
+                .addImage(registry.image(COLOR_MAGENTA))
+                .addImage(registry.image(COLOR_LIGHT_BLUE))
+                .addImage(registry.image(COLOR_YELLOW))
+                .addImage(registry.image(COLOR_LIME))
+                .addImage(registry.image(COLOR_PINK))
+                .addImage(registry.image(COLOR_GRAY))
+                .addImage(registry.image(COLOR_SILVER))
+                .addImage(registry.image(COLOR_CYAN))
+                .addImage(registry.image(COLOR_PURPLE))
+                .addImage(registry.image(COLOR_BLUE))
+                .addImage(registry.image(COLOR_BROWN))
+                .addImage(registry.image(COLOR_GREEN))
+                .addImage(registry.image(COLOR_RED))
+                .addImage(registry.image(COLOR_BLACK));
+    }
+
+    protected void addFilterChoice(IGuiComponentRegistry registry, IPanel panel, int i) {
+        IIconChoice iconChoice = registry.iconChoice(i * 0.9 - .5, -.7, 1, 1);
+        panel.add(addColors(registry, iconChoice)
+                .getter(player -> filters[i] == null ? 0 : filters[i].ordinal() + 1)
+                .hitEvent(changeColor(filters, i))
+        );
+    }
+
+    protected IEvent changeColor(EnumDyeColor[] filters, int i) {
+        return (component, player, entity, x, y) -> {
+            if (filters[i] == null) {
+                filters[i] = EnumDyeColor.WHITE;
+            } else if (filters[i] == EnumDyeColor.BLACK) {
+                filters[i] = null;
+            } else {
+                filters[i] = EnumDyeColor.values()[filters[i].ordinal() + 1];
+            }
+            markDirtyClient();
+        };
     }
 }

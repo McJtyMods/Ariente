@@ -6,6 +6,7 @@ import mcjty.ariente.gui.HoloGuiTools;
 import mcjty.hologui.api.IGuiComponent;
 import mcjty.hologui.api.IGuiComponentRegistry;
 import mcjty.hologui.api.Icons;
+import mcjty.hologui.api.components.IPanel;
 import mcjty.lib.varia.ItemStackList;
 import net.minecraft.block.Block;
 import net.minecraft.block.state.IBlockState;
@@ -97,20 +98,20 @@ public class InputItemNodeTile extends AbstractItemNodeTile {
     }
 
     private IGuiComponent<?> createInputGui(final Pair<String, String> pair, IGuiComponentRegistry registry) {
-        return HoloGuiTools.createPanelWithHelp(registry, entity -> entity.switchTag(pair.getLeft() + ":" + TAG_HELP))
-                .add(registry.text(2.3, -.2, 1, 1).text("Input").color(0xaaccff))
+        IPanel panel = HoloGuiTools.createPanelWithHelp(registry, entity -> entity.switchTag(pair.getLeft() + ":" + TAG_HELP))
+                .add(registry.text(3.3, -.6, 1, 1).text("Input").color(0xaaccff))
 
-                .add(registry.iconToggle(0.5, 0.2, 1, 1)
+                .add(registry.iconToggle(0.5, 0.4, 1, 1)
                         .getter(player -> inputNbt)
                         .icon(registry.image(Icons.NBT_OFF))
                         .selected(registry.image(Icons.NBT_ON))
                         .hitEvent((component, player, entity, x, y) -> toggleInputNBT()))
-                .add(registry.iconToggle(0.5, 1.2, 1, 1)
+                .add(registry.iconToggle(0.5, 1.4, 1, 1)
                         .getter(player -> inputDamage)
                         .icon(registry.image(Icons.DAM_OFF))
                         .selected(registry.image(Icons.DAM_ON))
                         .hitEvent((component, player, entity, x, y) -> toggleInputDamage()))
-                .add(registry.iconToggle(0.5, 2.2, 1, 1)
+                .add(registry.iconToggle(0.5, 2.4, 1, 1)
                         .getter(player -> inputOredict)
                         .icon(registry.image(Icons.ORE_OFF))
                         .selected(registry.image(Icons.ORE_ON))
@@ -124,8 +125,12 @@ public class InputItemNodeTile extends AbstractItemNodeTile {
 
                 .add(registry.playerInventory(4.7)
                         .name("playerSlots")
-                        .doubleClickEvent((component, player, entity, x, y, stack, index) -> addToFilter(player, entity, getInputHandler())))
-                ;
+                        .doubleClickEvent((component, player, entity, x, y, stack, index) -> addToFilter(player, entity, getInputHandler())));
+        addFilterChoice(registry, panel, 0);
+        addFilterChoice(registry, panel, 1);
+        addFilterChoice(registry, panel, 2);
+        addFilterChoice(registry, panel, 3);
+        return panel;
     }
 
     private void toggleInputNBT() {
