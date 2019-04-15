@@ -161,10 +161,10 @@ public class OutputItemNodeTile extends AbstractItemNodeTile {
                         .name("playerSlots")
                         .doubleClickEvent((component, player, entity, x, y, stack, index) -> addToFilter(player, entity, getOutputHandler())));
 
-        addFilterChoice(registry, panel, 0);
-        addFilterChoice(registry, panel, 1);
-        addFilterChoice(registry, panel, 2);
-        addFilterChoice(registry, panel, 3);
+        addFilterChoice(registry, panel, 0, false);
+        addFilterChoice(registry, panel, 1, false);
+        addFilterChoice(registry, panel, 2, true);
+        addFilterChoice(registry, panel, 3, true);
         return panel;
     }
 

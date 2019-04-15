@@ -142,7 +142,7 @@ public class SensorItemNodeTile extends AbstractNodeTile {
         IIconChoice outColor = registry.iconChoice(4, 7, 1, 1)
                 .getter(player -> outputColor[0].ordinal()+1)
                 .hitEvent(changeColor(outputColor, 0));
-        addColors(registry, outColor);
+        addColors(registry, outColor, false);
 
         ITextChoice operatorChoice = registry.textChoice(0, 3.5, 1.3, 1)
                 .getter(player -> operator)
@@ -169,10 +169,10 @@ public class SensorItemNodeTile extends AbstractNodeTile {
                         .hitEvent((component, player, entity1, x, y) -> changeAmount(8)))
                 ;
 
-        addFilterChoice(registry, panel, 0);
-        addFilterChoice(registry, panel, 1);
-        addFilterChoice(registry, panel, 2);
-        addFilterChoice(registry, panel, 3);
+        addFilterChoice(registry, panel, 0, false);
+        addFilterChoice(registry, panel, 1, false);
+        addFilterChoice(registry, panel, 2, true);
+        addFilterChoice(registry, panel, 3, true);
 
         return panel;
     }

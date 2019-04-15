@@ -124,9 +124,11 @@ public class AutoFieldTile extends GenericTileEntity implements IGuiTile, ITicka
     }
 
     private boolean canNodeWork(AbstractNodeTile tile) {
-        for (EnumDyeColor filter : tile.getFilters()) {
+        for (int i = 0 ; i < tile.getFilters().length ; i++) {
+            EnumDyeColor filter = tile.getFilters()[i];
             if (filter != null) {
-                if (!getSensorOutput(filter)) {
+                boolean result = getSensorOutput(filter);
+                if (result == i >= 2) {      // i < 2 are the positive filters
                     return false;
                 }
             }
@@ -348,7 +350,9 @@ public class AutoFieldTile extends GenericTileEntity implements IGuiTile, ITicka
                 TileEntity te = MultipartHelper.getTileEntity(world, sensorPos);
                 if (te instanceof SensorItemNodeTile) {
                     SensorItemNodeTile sensor = (SensorItemNodeTile) te;
-                    if (sensor.sense(sensorPos)) {
+                    // This recursion will work even if we need the same color because
+                    // this routine pre-inits the sensor color with false
+                    if (canNodeWork(sensor) && sensor.sense(sensorPos)) {
                         sensorMeasurements.put(color, true);
                         break;
                     }

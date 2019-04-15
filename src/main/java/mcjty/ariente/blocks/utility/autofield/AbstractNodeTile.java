@@ -253,30 +253,30 @@ public abstract class AbstractNodeTile extends GenericTileEntity implements IGui
 //        markDirtyClient();
     }
 
-    protected IIconChoice addColors(IGuiComponentRegistry registry, IIconChoice iconChoice) {
+    protected IIconChoice addColors(IGuiComponentRegistry registry, IIconChoice iconChoice, boolean negative) {
         return iconChoice
                 .addImage(registry.image(GRAY_CROSS))
-                .addImage(registry.image(COLOR_WHITE))
-                .addImage(registry.image(COLOR_ORANGE))
-                .addImage(registry.image(COLOR_MAGENTA))
-                .addImage(registry.image(COLOR_LIGHT_BLUE))
-                .addImage(registry.image(COLOR_YELLOW))
-                .addImage(registry.image(COLOR_LIME))
-                .addImage(registry.image(COLOR_PINK))
-                .addImage(registry.image(COLOR_GRAY))
-                .addImage(registry.image(COLOR_SILVER))
-                .addImage(registry.image(COLOR_CYAN))
-                .addImage(registry.image(COLOR_PURPLE))
-                .addImage(registry.image(COLOR_BLUE))
-                .addImage(registry.image(COLOR_BROWN))
-                .addImage(registry.image(COLOR_GREEN))
-                .addImage(registry.image(COLOR_RED))
-                .addImage(registry.image(COLOR_BLACK));
+                .addImage(registry.image(negative ? NOT_COLOR_WHITE : COLOR_WHITE))
+                .addImage(registry.image(negative ? NOT_COLOR_ORANGE : COLOR_ORANGE))
+                .addImage(registry.image(negative ? NOT_COLOR_MAGENTA : COLOR_MAGENTA))
+                .addImage(registry.image(negative ? NOT_COLOR_LIGHT_BLUE : COLOR_LIGHT_BLUE))
+                .addImage(registry.image(negative ? NOT_COLOR_YELLOW : COLOR_YELLOW))
+                .addImage(registry.image(negative ? NOT_COLOR_LIME : COLOR_LIME))
+                .addImage(registry.image(negative ? NOT_COLOR_PINK : COLOR_PINK))
+                .addImage(registry.image(negative ? NOT_COLOR_GRAY : COLOR_GRAY))
+                .addImage(registry.image(negative ? NOT_COLOR_SILVER : COLOR_SILVER))
+                .addImage(registry.image(negative ? NOT_COLOR_CYAN : COLOR_CYAN))
+                .addImage(registry.image(negative ? NOT_COLOR_PURPLE : COLOR_PURPLE))
+                .addImage(registry.image(negative ? NOT_COLOR_BLUE : COLOR_BLUE))
+                .addImage(registry.image(negative ? NOT_COLOR_BROWN : COLOR_BROWN))
+                .addImage(registry.image(negative ? NOT_COLOR_GREEN : COLOR_GREEN))
+                .addImage(registry.image(negative ? NOT_COLOR_RED : COLOR_RED))
+                .addImage(registry.image(negative ? NOT_COLOR_BLACK : COLOR_BLACK));
     }
 
-    protected void addFilterChoice(IGuiComponentRegistry registry, IPanel panel, int i) {
+    protected void addFilterChoice(IGuiComponentRegistry registry, IPanel panel, int i, boolean negative) {
         IIconChoice iconChoice = registry.iconChoice(i * 0.9 - .5, -.7, 1, 1);
-        panel.add(addColors(registry, iconChoice)
+        panel.add(addColors(registry, iconChoice, negative)
                 .getter(player -> filters[i] == null ? 0 : filters[i].ordinal() + 1)
                 .hitEvent(changeColor(filters, i))
         );
