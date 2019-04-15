@@ -86,7 +86,6 @@ public class AutoFieldTile extends GenericTileEntity implements IGuiTile, ITicka
 
         findConsumers();
         findProducers();
-        sensorMeasurements.clear();
 
         if (renderItems) {
             ticker--;
@@ -107,6 +106,7 @@ public class AutoFieldTile extends GenericTileEntity implements IGuiTile, ITicka
         // As long as we have work to do and we have at least enough power to transfer a single item we
         // continue looping
         while (hasWorkToDo && accumulatedPower >= UtilityConfiguration.AUTOFIELD_POWER_PER_OPERATION.get()) {
+            sensorMeasurements.clear();
             hasWorkToDo = false;
             for (Map.Entry<PartPos, ProducerInfo.Producer> entry : producerInfo.getProducers().entrySet()) {
                 PartPos sourcePos = entry.getKey();
