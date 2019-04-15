@@ -8,6 +8,7 @@ import mcjty.hologui.api.IGuiComponentRegistry;
 import mcjty.hologui.api.components.IIconChoice;
 import mcjty.hologui.api.components.IPanel;
 import mcjty.hologui.api.components.ITextChoice;
+import mcjty.lib.multipart.PartPos;
 import net.minecraft.block.Block;
 import net.minecraft.block.state.IBlockState;
 import net.minecraft.entity.EntityLivingBase;
@@ -16,10 +17,10 @@ import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.util.EnumFacing;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.World;
+import net.minecraftforge.items.IItemHandler;
 import org.apache.commons.lang3.tuple.Pair;
 
 import static mcjty.hologui.api.Icons.*;
-import static mcjty.hologui.api.Icons.WHITE_DOUBLE_ARROW_RIGHT;
 
 public class SensorItemNodeTile extends AbstractNodeTile {
 
@@ -35,6 +36,47 @@ public class SensorItemNodeTile extends AbstractNodeTile {
         return ModBlocks.sensorItemNode.getDefaultState().withProperty(ORIENTATION, orientation);
     }
 
+    // Return true if we already know the operator is succesful. Check false if we already know the operator can never succeed.
+    // Return null otherwise
+    private Boolean checkOperatorEarly(int cnt) {
+        switch (operator) {
+            case 0: if (cnt >= amount) { return false; } else { return null; }
+            case 1: if (cnt > amount) { return false; } else { return null; }
+            case 2: if (cnt <= amount) { return null; } else { return true; }
+            case 3: if (cnt < amount) { return null; } else { return true; }
+            case 4: if (cnt > amount) { return false; } else { return null; }
+            case 5: if (cnt > amount) { return true; } else { return null; }
+            default: return null;
+        }
+    }
+
+    private boolean checkOperator(int cnt) {
+        switch (operator) {
+            case 0: return cnt < amount;
+            case 1: return cnt <= amount;
+            case 2: return cnt > amount;
+            case 3: return cnt >= amount;
+            case 4: return cnt == amount;
+            case 5: return cnt != amount;
+            default: return false;
+        }
+    }
+
+    public boolean sense(PartPos sensorPos) {
+        IItemHandler itemHandler = getConnectedItemHandler(sensorPos);
+        if (itemHandler != null) {
+            int cnt = 0;
+            for (int i = 0 ; i < itemHandler.getSlots() ; i++) {
+                cnt += itemHandler.getStackInSlot(i).getCount();
+                Boolean earlyCheck = checkOperatorEarly(cnt);
+                if (earlyCheck != null) {
+                    return earlyCheck;
+                }
+            }
+            return checkOperator(cnt);
+        }
+        return false;
+    }
 
     @Override
     public Block getBlockType() {
@@ -92,7 +134,9 @@ public class SensorItemNodeTile extends AbstractNodeTile {
         notifyField();
     }
 
-
+    public EnumDyeColor getOutputColor() {
+        return outputColor[0];
+    }
 
     private IGuiComponent<?> createSensorGui(final Pair<String, String> pair, IGuiComponentRegistry registry) {
         IIconChoice outColor = registry.iconChoice(4, 7, 1, 1)
@@ -130,16 +174,6 @@ public class SensorItemNodeTile extends AbstractNodeTile {
         addFilterChoice(registry, panel, 2);
         addFilterChoice(registry, panel, 3);
 
-
-//                .add(registry.slots(2.5, 1.2, 6, 2)
-//                        .name("slots")
-//                        .fullBright()
-//                        .doubleClickEvent((component, player, entity, x, y, stack, index) -> removeFromFilter(player, entity, getInputHandler()))
-//                        .itemHandler(getInputHandler()))
-//
-//                .add(registry.playerInventory(4.7)
-//                        .name("playerSlots")
-//                        .doubleClickEvent((component, player, entity, x, y, stack, index) -> addToFilter(player, entity, getInputHandler())))
         return panel;
     }
 }

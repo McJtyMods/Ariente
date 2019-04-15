@@ -24,6 +24,7 @@ import mcp.mobius.waila.api.IWailaDataAccessor;
 import net.minecraft.block.state.IBlockState;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.entity.player.EntityPlayerMP;
+import net.minecraft.item.EnumDyeColor;
 import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.network.NetworkManager;
@@ -55,6 +56,8 @@ public class AutoFieldTile extends GenericTileEntity implements IGuiTile, ITicka
     private Set<PartPos> inputItemNodes = null;
     private Set<PartPos> outputItemNodes = null;
     private Set<PartPos> outputmodifierNodes = null;
+    private Map<EnumDyeColor, List<PartPos>> sensorNodes = null;
+    private final Map<EnumDyeColor, Boolean> sensorMeasurements = new HashMap<>();
 
     private ConsumerInfo consumerInfo = null;
     private ProducerInfo producerInfo = null;
@@ -83,6 +86,7 @@ public class AutoFieldTile extends GenericTileEntity implements IGuiTile, ITicka
 
         findConsumers();
         findProducers();
+        sensorMeasurements.clear();
 
         if (renderItems) {
             ticker--;
@@ -107,7 +111,7 @@ public class AutoFieldTile extends GenericTileEntity implements IGuiTile, ITicka
             for (Map.Entry<PartPos, ProducerInfo.Producer> entry : producerInfo.getProducers().entrySet()) {
                 PartPos sourcePos = entry.getKey();
                 OutputItemNodeTile producingItemNode = getOutputItemNodeAt(sourcePos);
-                if (producingItemNode != null) {
+                if (producingItemNode != null && canNodeWork(producingItemNode)) {
                     ProducerInfo.Producer producer = entry.getValue();
                     boolean didSomeWork = tryProducer(sourcePos, producingItemNode, producer);
                     if (didSomeWork) {
@@ -117,6 +121,17 @@ public class AutoFieldTile extends GenericTileEntity implements IGuiTile, ITicka
                 }
             }
         }
+    }
+
+    private boolean canNodeWork(AbstractNodeTile tile) {
+        for (EnumDyeColor filter : tile.getFilters()) {
+            if (filter != null) {
+                if (!getSensorOutput(filter)) {
+                    return false;
+                }
+            }
+        }
+        return true;
     }
 
     private boolean tryProducer(PartPos sourcePos, OutputItemNodeTile producingItemNode, ProducerInfo.Producer producer) {
@@ -255,7 +270,7 @@ public class AutoFieldTile extends GenericTileEntity implements IGuiTile, ITicka
 
     private boolean canInsert(PartPos partPos, ItemStack stack) {
         InputItemNodeTile itemNode = getInputItemNodeAt(partPos);
-        if (itemNode != null) {
+        if (itemNode != null && canNodeWork(itemNode)) {
             IItemHandler connectedItemHandler = itemNode.getConnectedItemHandler(partPos);
             if (connectedItemHandler != null) {
                 ItemStack remainer = ItemHandlerHelper.insertItem(connectedItemHandler, stack, true);
@@ -326,6 +341,30 @@ public class AutoFieldTile extends GenericTileEntity implements IGuiTile, ITicka
         return inputItemNodes;
     }
 
+    private boolean getSensorOutput(EnumDyeColor color) {
+        if (!sensorMeasurements.containsKey(color)) {
+            sensorMeasurements.put(color, false);
+            for (PartPos sensorPos : getSensorNodes().getOrDefault(color, Collections.emptyList())) {
+                TileEntity te = MultipartHelper.getTileEntity(world, sensorPos);
+                if (te instanceof SensorItemNodeTile) {
+                    SensorItemNodeTile sensor = (SensorItemNodeTile) te;
+                    if (sensor.sense(sensorPos)) {
+                        sensorMeasurements.put(color, true);
+                        break;
+                    }
+                }
+            }
+        }
+        return sensorMeasurements.get(color);
+    }
+
+    private Map<EnumDyeColor, List<PartPos>> getSensorNodes() {
+        if (sensorNodes == null) {
+            findSensorNodes();
+        }
+        return sensorNodes;
+    }
+
     private Set<PartPos> getOutputItemNodes() {
         if (outputItemNodes == null) {
             findOutputNodes();
@@ -362,6 +401,24 @@ public class AutoFieldTile extends GenericTileEntity implements IGuiTile, ITicka
         }
     }
 
+    private void findSensorNodes() {
+        sensorNodes = new HashMap<>();
+        for (BlockPos mpos : getMarkers()) {
+            for (int y = 0 ; y <= height ; y++) {
+                BlockPos p = mpos.up(y);
+                for (NodeOrientation orientation : NodeOrientation.VALUES) {
+                    PartSlot slot = orientation.getSlot();
+                    TileEntity te = MultipartHelper.getTileEntity(world, p, slot);
+                    if (te instanceof SensorItemNodeTile) {
+                        EnumDyeColor outputColor = ((SensorItemNodeTile) te).getOutputColor();
+                        sensorNodes.computeIfAbsent(outputColor, color -> new ArrayList<>());
+                        sensorNodes.get(outputColor).add(PartPos.create(p, slot));
+                    }
+                }
+            }
+        }
+    }
+
     @Override
     public void invalidate() {
         super.invalidate();
@@ -381,6 +438,7 @@ public class AutoFieldTile extends GenericTileEntity implements IGuiTile, ITicka
         outputItemNodes = null;
         transferRenders = null;
         outputmodifierNodes = null;
+        sensorNodes = null;
     }
 
     // Call this to check if there is a field marker below us and if that
@@ -434,6 +492,7 @@ public class AutoFieldTile extends GenericTileEntity implements IGuiTile, ITicka
         inputItemNodes = null;
         outputItemNodes = null;
         outputmodifierNodes = null;
+        sensorNodes = null;
     }
 
     private void changeHeight(int dy) {

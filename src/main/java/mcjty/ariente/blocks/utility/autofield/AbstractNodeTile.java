@@ -6,6 +6,8 @@ import mcjty.hologui.api.IGuiComponentRegistry;
 import mcjty.hologui.api.IGuiTile;
 import mcjty.hologui.api.components.IIconChoice;
 import mcjty.hologui.api.components.IPanel;
+import mcjty.lib.multipart.MultipartHelper;
+import mcjty.lib.multipart.PartPos;
 import mcjty.lib.multipart.PartSlot;
 import mcjty.lib.tileentity.GenericTileEntity;
 import mcjty.theoneprobe.api.IProbeHitData;
@@ -31,9 +33,12 @@ import net.minecraft.world.World;
 import net.minecraftforge.fml.common.Optional;
 import net.minecraftforge.fml.relauncher.Side;
 import net.minecraftforge.fml.relauncher.SideOnly;
+import net.minecraftforge.items.CapabilityItemHandler;
+import net.minecraftforge.items.IItemHandler;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.lang3.tuple.Pair;
 
+import javax.annotation.Nullable;
 import java.util.List;
 
 import static mcjty.ariente.blocks.utility.autofield.NodeOrientation.*;
@@ -83,6 +88,10 @@ public abstract class AbstractNodeTile extends GenericTileEntity implements IGui
     public void markDirtyQuick() {
         // Make sure to mark the MultipartTE as dirty
         ((GenericTileEntity)world.getTileEntity(pos)).markDirtyQuick();
+    }
+
+    public EnumDyeColor[] getFilters() {
+        return filters;
     }
 
     @Override
@@ -284,5 +293,19 @@ public abstract class AbstractNodeTile extends GenericTileEntity implements IGui
             }
             markDirtyClient();
         };
+    }
+
+    @Nullable
+    public IItemHandler getConnectedItemHandler(PartPos partPos) {
+        IBlockState state = MultipartHelper.getBlockState(world, pos, partPos.getSlot());
+        if (state != null && state.getBlock() == getBlockType()) {
+            NodeOrientation orientation = state.getValue(ORIENTATION);
+            EnumFacing mainDirection = orientation.getMainDirection();
+            TileEntity otherTe = world.getTileEntity(pos.offset(mainDirection));
+            if (otherTe != null && otherTe.hasCapability(CapabilityItemHandler.ITEM_HANDLER_CAPABILITY, mainDirection.getOpposite())) {
+                return otherTe.getCapability(CapabilityItemHandler.ITEM_HANDLER_CAPABILITY, mainDirection.getOpposite());
+            }
+        }
+        return null;
     }
 }
