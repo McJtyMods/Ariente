@@ -102,7 +102,7 @@ public class Intersections {
         Vec3d normal;
 
         // Move to center of box
-        Vec3d center = aabb.getCenter();
+        Vec3d center = new Vec3d(aabb.minX + (aabb.maxX - aabb.minX) * 0.5D, aabb.minY + (aabb.maxY - aabb.minY) * 0.5D, aabb.minZ + (aabb.maxZ - aabb.minZ) * 0.5D);
         Vec3d v0 = tri.a.subtract(center);
         Vec3d v1 = tri.b.subtract(center);
         Vec3d v2 = tri.c.subtract(center);
