@@ -122,7 +122,7 @@ public class ProducerInfo {
             if (isProvidedItem.contains(stack.getItem()) || Arrays.stream(oreIDs).anyMatch(isProvidedOre::contains)) {
                 for (ProvidedItem item : providedItems) {
                     if (matchOredict) {
-                        if (!OreDictionary.itemMatches(stack, item.getStack(), true)) {
+                        if (!OreDictionary.itemMatches(stack, item.getStack(), false)) {
                             continue;
                         }
                     } else {
