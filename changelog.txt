@@ -1,4 +1,5 @@
-Upcoming:
+0.0.9-alpha:
+- Depends on McJtyLib 3.5.0!
 - New automation field system
 - Fix a server-side crash with the forcefield
 
