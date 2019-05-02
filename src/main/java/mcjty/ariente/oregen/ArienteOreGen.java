@@ -21,7 +21,7 @@ import java.util.Random;
 
 public class ArienteOreGen implements IWorldGenerator {
 
-    public static final String RETRO_NAME = "DeepResGen";
+    public static final String RETRO_NAME = "ArienteGen";
     public static ArienteOreGen instance = new ArienteOreGen();
 
     private static boolean retrogen = false;    // @todo config

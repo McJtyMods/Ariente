@@ -6,7 +6,6 @@ import mcjty.lib.McJtyRegister;
 import net.minecraft.block.BlockSlab;
 import net.minecraft.block.material.Material;
 import net.minecraft.block.properties.IProperty;
-import net.minecraft.block.properties.PropertyEnum;
 import net.minecraft.block.state.BlockStateContainer;
 import net.minecraft.block.state.IBlockState;
 import net.minecraft.client.renderer.block.model.ModelResourceLocation;
@@ -23,9 +22,9 @@ import net.minecraftforge.fml.relauncher.SideOnly;
 
 import java.util.Random;
 
-public class MarbleSlabBlock extends BlockSlab {
+import static mcjty.ariente.blocks.decorative.MarbleBlock.COLOR;
 
-    public static final PropertyEnum<MarbleColor> COLOR = PropertyEnum.create("type", MarbleColor.class);
+public class MarbleSlabBlock extends BlockSlab {
 
     public MarbleSlabBlock(String name) {
         super(Material.ROCK);

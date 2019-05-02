@@ -12,6 +12,8 @@ public class UtilityConfiguration {
     public static ConfigSpec.IntValue POWERSUIT_TICKS;
     public static ConfigSpec.IntValue POWERSUIT_TICKS_OPTIMIZED;
 
+    public static ConfigSpec.IntValue WARPER_MAX_CHARGES;
+
     public static ConfigSpec.IntValue AUTOFIELD_POWER_PER_OPERATION;
     public static ConfigSpec.DoubleValue AUTOFIELD_FACTOR_PER_COMBINED_STACK;
     public static ConfigSpec.IntValue AUTOFIELD_ACCUMULATE_PER_TICK;
@@ -47,6 +49,10 @@ public class UtilityConfiguration {
         AUTOFIELD_MAX_ACCUMULATED_POWER = SERVER_BUILDER
                 .comment("This is the maximum amount of power the automation field can accumulate")
                 .defineInRange("autoFieldMaxAccumulatedPower", 3200, 1, Integer.MAX_VALUE);
+
+        WARPER_MAX_CHARGES = SERVER_BUILDER
+                .comment("Amount of charges needed before the warper can work (from overworld to Ariente)")
+                .defineInRange("maxWarperCharges", 10, 0, Integer.MAX_VALUE);
 
         SERVER_BUILDER.pop();
     }

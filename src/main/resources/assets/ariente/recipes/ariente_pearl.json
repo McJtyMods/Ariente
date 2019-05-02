@@ -1,6 +1,6 @@
 {
   "result": {
-    "item": "ariente:dirty_diamond"
+    "item": "ariente:ariente_pearl"
   },
   "pattern": [
     "xxx",
@@ -10,10 +10,10 @@
   "type": "minecraft:crafting_shaped",
   "key": {
     "M": {
-      "item": "minecraft:diamond"
+      "item": "minecraft:ender_pearl"
     },
     "x": {
-      "item": "minecraft:clay_ball"
+      "item": "minecraft:quartz"
     }
   }
 }

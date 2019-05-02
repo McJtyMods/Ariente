@@ -1,3 +1,10 @@
+Upcoming:
+- New dungeons in the overworld that will be used to teleport to the Ariente dimension
+- New 'ariente pearl' item that works like an ender eye and can be used to locate such dungeons
+- Removed the 'dirty diamond' as that was a cheaty item that is no longer needed
+- The warper has to be charged using 'ariente pearls' before it can be used. This is not the case for warpers in the Ariente dimension
+- The warper now has a teleport gui
+
 0.0.9-alpha:
 - Depends on McJtyLib 3.5.0!
 - New automation field system

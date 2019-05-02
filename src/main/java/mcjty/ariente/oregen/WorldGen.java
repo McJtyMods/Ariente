@@ -6,9 +6,11 @@ import net.minecraftforge.fml.common.registry.GameRegistry;
 public class WorldGen {
 
     public static void init() {
-        ArienteOreGen generator = ArienteOreGen.instance;
-        GameRegistry.registerWorldGenerator(generator, 5);
-        MinecraftForge.EVENT_BUS.register(generator);
+        GameRegistry.registerWorldGenerator(ArienteOreGen.instance, 5);
+        MinecraftForge.EVENT_BUS.register(ArienteOreGen.instance);
+
+        GameRegistry.registerWorldGenerator(OverworldDungeonGen.instance, 5);
+        MinecraftForge.EVENT_BUS.register(OverworldDungeonGen.instance);
     }
 
 }

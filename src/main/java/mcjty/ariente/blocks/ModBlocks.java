@@ -468,6 +468,8 @@ public class ModBlocks {
                 .tileEntityClass(WarperTile.class)
                 .emptyContainer()
                 .rotationType(NONE)
+                .activateAction((world, pos, player, hand, side, hitX, hitY, hitZ) -> Ariente.guiHandler.openHoloGui(world, pos, player))
+                .lightValue(8)
                 .info("message.ariente.shiftmessage")
                 .infoExtended("message.ariente.warper")
                 .build();
@@ -666,6 +668,7 @@ public class ModBlocks {
 
         alarmBlock.initModel();
         warperBlock.initModel();
+        WarperRenderer.register();
         lockBlock.initModel();
         wirelessButtonBlock.initModel();
         wirelessLockBlock.initModel();

@@ -25,7 +25,7 @@ public class ModItems {
     public static EnhancedEnergySabreItem enhancedEnergySabreItem;
     public static KeyCardItem keyCardItem;
     public static BlueprintItem blueprintItem;
-    public static DirtyDiamondItem dirtyDiamondItem;
+    public static ArientePearlItem arientePearlItem;
     public static FluxLevitatorItem fluxLevitatorItem;
     public static FluxShipItem fluxShipItem;
 
@@ -68,7 +68,7 @@ public class ModItems {
         fluxLevitatorItem = new FluxLevitatorItem();
         fluxShipItem = new FluxShipItem();
 
-        dirtyDiamondItem = new DirtyDiamondItem();
+        arientePearlItem = new ArientePearlItem();
 
         powerSuitBoots = new PowerSuit(EntityEquipmentSlot.FEET);
         powerSuitChest = new PowerSuit(EntityEquipmentSlot.CHEST);
@@ -119,7 +119,7 @@ public class ModItems {
         fluxShipItem.initModel();
         blueprintItem.initModel();
 
-        dirtyDiamondItem.initModel();
+        arientePearlItem.initModel();
 
         moduleArmor.initModel();
         moduleEnergy.initModel();

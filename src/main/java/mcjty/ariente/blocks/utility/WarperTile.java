@@ -1,16 +1,23 @@
 package mcjty.ariente.blocks.utility;
 
+import mcjty.ariente.cities.CityTools;
+import mcjty.ariente.config.UtilityConfiguration;
+import mcjty.ariente.config.WorldgenConfiguration;
+import mcjty.hologui.api.IGuiComponent;
+import mcjty.hologui.api.IGuiComponentRegistry;
+import mcjty.hologui.api.IGuiTile;
 import mcjty.lib.tileentity.GenericTileEntity;
+import mcjty.lib.varia.TeleportationTools;
 import mcjty.theoneprobe.api.IProbeHitData;
 import mcjty.theoneprobe.api.IProbeInfo;
 import mcjty.theoneprobe.api.ProbeMode;
+import mcjty.theoneprobe.api.TextStyleClass;
 import mcp.mobius.waila.api.IWailaConfigHandler;
 import mcp.mobius.waila.api.IWailaDataAccessor;
 import net.minecraft.block.state.IBlockState;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.NBTTagCompound;
-import net.minecraft.util.ITickable;
 import net.minecraft.util.math.AxisAlignedBB;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.World;
@@ -20,15 +27,18 @@ import net.minecraftforge.fml.relauncher.SideOnly;
 
 import java.util.List;
 
-public class WarperTile extends GenericTileEntity implements ITickable {
+public class WarperTile extends GenericTileEntity implements IGuiTile {
 
     private AxisAlignedBB renderBox = null;
     private AxisAlignedBB detectionBox = null;
 
+    private int charges = 0;
+
     @Override
-    public void update() {
-        if (!world.isRemote) {
-//            List<Entity> entities = world.getEntitiesWithinAABB(EntityPlayer.class, getDetectionBox());
+    public void setWorld(World worldIn) {
+        super.setWorld(worldIn);
+        if (worldIn != null && worldIn.provider.getDimension() == WorldgenConfiguration.DIMENSION_ID.get()) {
+            charges = UtilityConfiguration.WARPER_MAX_CHARGES.get();
         }
     }
 
@@ -46,6 +56,15 @@ public class WarperTile extends GenericTileEntity implements ITickable {
         return detectionBox;
     }
 
+    public int getCharges() {
+        return charges;
+    }
+
+    public void setCharges(int charges) {
+        this.charges = charges;
+        markDirtyClient();
+    }
+
     @Override
     public void readFromNBT(NBTTagCompound tagCompound) {
         super.readFromNBT(tagCompound);
@@ -59,21 +78,31 @@ public class WarperTile extends GenericTileEntity implements ITickable {
     @Override
     public void readRestorableFromNBT(NBTTagCompound tagCompound) {
         super.readRestorableFromNBT(tagCompound);
+        charges = tagCompound.getInteger("charges");
     }
 
     @Override
     public void writeRestorableToNBT(NBTTagCompound tagCompound) {
         super.writeRestorableToNBT(tagCompound);
+        tagCompound.setInteger("charges", charges);
     }
 
     @Override
     @Optional.Method(modid = "theoneprobe")
     public void addProbeInfo(ProbeMode mode, IProbeInfo probeInfo, EntityPlayer player, World world, IBlockState blockState, IProbeHitData data) {
         super.addProbeInfo(mode, probeInfo, player, world, blockState, data);
-//        Boolean working = isWorking();
-//        if (working) {
-//            probeInfo.text(TextFormatting.GREEN + "Producing " + getRfPerTick() + " RF/t");
-//        }
+        int pct = getChargePercentage();
+        probeInfo.text(TextStyleClass.LABEL + "Charged: " + TextStyleClass.INFO + pct + "%");
+    }
+
+    public int getChargePercentage() {
+        int pct;
+        if (UtilityConfiguration.WARPER_MAX_CHARGES.get() <= 0) {
+            pct = 100;
+        } else {
+            pct = charges * 100 / UtilityConfiguration.WARPER_MAX_CHARGES.get();
+        }
+        return pct;
     }
 
     @SideOnly(Side.CLIENT)
@@ -96,5 +125,46 @@ public class WarperTile extends GenericTileEntity implements ITickable {
     @Override
     public boolean shouldRenderInPass(int pass) {
         return pass == 1;
+    }
+
+    private void warp(EntityPlayer player) {
+        if (world.provider.getDimension() == 0) {
+            if (!world.isRemote) {
+                BlockPos nearest = CityTools.getNearestTeleportationSpot(player.getPosition());
+                TeleportationTools.teleportToDimension(player, WorldgenConfiguration.DIMENSION_ID.get(), nearest.getX(), nearest.getY(), nearest.getZ());
+            }
+        } else {
+            if (!world.isRemote) {
+                BlockPos bedLocation = player.getBedLocation(0);
+                if (bedLocation == null) {
+                    bedLocation = world.getSpawnPoint();
+                }
+                while (!world.isAirBlock(bedLocation) && !world.isAirBlock(bedLocation.up()) && bedLocation.getY() < world.getHeight()-2) {
+                    bedLocation = bedLocation.up();
+                }
+                TeleportationTools.teleportToDimension(player, 0, bedLocation.getX(), bedLocation.getY(), bedLocation.getZ());
+            }
+        }
+    }
+
+    @Override
+    public IGuiComponent<?> createGui(String tag, IGuiComponentRegistry registry) {
+        if (getChargePercentage() < 100) {
+            return registry.panel(0, 0, 8, 8)
+                    .add(registry.text(0, 2, 1, 1).text("Teleportation").color(0xaaccff))
+                    .add(registry.text(0, 4, 1, 1).text("Charged to " + getChargePercentage() + "%"))
+                    .add(registry.text(0, 5, 1, 1).text("Insufficient!").color(0xff0000));
+        } else {
+            return registry.panel(0, 0, 8, 8)
+                    .add(registry.text(0, 2, 1, 1).text("Teleportation").color(0xaaccff))
+                    .add(registry.button(0, 4, 2, 1).text("Warp").hitEvent((component, player, entity, x, y) -> {
+                        warp(player);
+                    }));
+        }
+    }
+
+    @Override
+    public void syncToClient() {
+
     }
 }
