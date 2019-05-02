@@ -6,5 +6,5 @@ import net.minecraft.client.renderer.entity.RenderSnowball;
 import net.minecraftforge.fml.client.registry.IRenderFactory;
 
 public class RenderArientePearl {
-    static IRenderFactory<EntityArientePearl> FACTORY = manager -> new RenderSnowball(manager, ModItems.arientePearlItem, Minecraft.getMinecraft().renderItem);
+    static IRenderFactory<EntityArientePearl> FACTORY = manager -> new RenderSnowball(manager, ModItems.arientePearlItem, Minecraft.getMinecraft().getRenderItem());
 }
