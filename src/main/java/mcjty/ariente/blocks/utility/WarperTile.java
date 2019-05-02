@@ -157,7 +157,7 @@ public class WarperTile extends GenericTileEntity implements IGuiTile {
         } else {
             return registry.panel(0, 0, 8, 8)
                     .add(registry.text(0, 2, 1, 1).text("Teleportation").color(0xaaccff))
-                    .add(registry.button(0, 4, 2, 1).text("Warp").hitEvent((component, player, entity, x, y) -> {
+                    .add(registry.button(0, 4, 3, 1).text("Warp").hitEvent((component, player, entity, x, y) -> {
                         warp(player);
                     }));
         }
