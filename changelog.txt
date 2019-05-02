@@ -1,4 +1,4 @@
-Upcoming:
+0.0.10-alpha:
 - New dungeons in the overworld that will be used to teleport to the Ariente dimension
 - New 'ariente pearl' item that works like an ender eye and can be used to locate such dungeons
 - Removed the 'dirty diamond' as that was a cheaty item that is no longer needed
