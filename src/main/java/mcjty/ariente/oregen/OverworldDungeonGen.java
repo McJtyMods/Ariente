@@ -3,9 +3,11 @@ package mcjty.ariente.oregen;
 import mcjty.ariente.blocks.ModBlocks;
 import mcjty.ariente.blocks.decorative.MarbleColor;
 import mcjty.ariente.blocks.decorative.TechType;
+import mcjty.ariente.blocks.utility.WarperTile;
 import mcjty.ariente.config.WorldgenConfiguration;
 import net.minecraft.block.BlockSlab;
 import net.minecraft.block.state.IBlockState;
+import net.minecraft.tileentity.TileEntity;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.ChunkPos;
 import net.minecraft.world.World;
@@ -103,29 +105,29 @@ public class OverworldDungeonGen implements IWorldGenerator {
 
     public static BlockPos getNearestDungeon(World world, BlockPos pos) {
         ChunkPos cp = new ChunkPos(pos);
-        if (isDungeonChunk(world, cp.x, cp.z)) {
+        if (isValidDungeonChunk(world, cp.x, cp.z)) {
             return getDungeonPos(world, cp.x, cp.z);
         }
         for (int d = 1 ; d < 20 ; d++) {
             for (int m = 0 ; m < d ; m++) {
                 int cx = cp.x - d + m;
                 int cz = cp.z - d;
-                if (isDungeonChunk(world, cx, cz)) {
+                if (isValidDungeonChunk(world, cx, cz)) {
                     return getDungeonPos(world, cx, cz);
                 }
                 cx = cp.x + d;
                 cz = cp.z - d + m;
-                if (isDungeonChunk(world, cx, cz)) {
+                if (isValidDungeonChunk(world, cx, cz)) {
                     return getDungeonPos(world, cx, cz);
                 }
                 cx = cp.x + d - m;
                 cz = cp.z + d;
-                if (isDungeonChunk(world, cx, cz)) {
+                if (isValidDungeonChunk(world, cx, cz)) {
                     return getDungeonPos(world, cx, cz);
                 }
                 cx = cp.x - d;
                 cz = cp.z + d - m;
-                if (isDungeonChunk(world, cx, cz)) {
+                if (isValidDungeonChunk(world, cx, cz)) {
                     return getDungeonPos(world, cx, cz);
                 }
             }
@@ -137,6 +139,30 @@ public class OverworldDungeonGen implements IWorldGenerator {
         return new BlockPos(cx * 16 + 8, getDungeonHeight(world, cx, cz), cz * 16 + 8);
     }
 
+
+    /**
+     * Return true if this chunk can contain a dungeon and the warper is still present
+     */
+    private static boolean isValidDungeonChunk(World world, int chunkX, int chunkZ) {
+        if (isDungeonChunk(world, chunkX, chunkZ)) {
+            BlockPos pos = getDungeonPos(world, chunkX, chunkZ);
+            for (int dx = -2 ; dx <= 2 ; dx++) {
+                for (int dy = -2 ; dy <= 2 ; dy++) {
+                    for (int dz = -2 ; dz <= 2 ; dz++) {
+                        TileEntity te = world.getTileEntity(pos.add(dx, dy, dz));
+                        if (te instanceof WarperTile) {
+                            return true;
+                        }
+                    }
+                }
+            }
+        }
+        return false;
+    }
+
+    /**
+     * Return true if this chunk can contain a dungeon
+     */
     private static boolean isDungeonChunk(World world, int chunkX, int chunkZ) {
         Random rnd = new Random(world.getSeed() + chunkX * 198491317L + chunkZ * 776531419L);
         rnd.nextFloat();
@@ -152,9 +178,10 @@ public class OverworldDungeonGen implements IWorldGenerator {
     @Override
     public void generate(Random random, int chunkX, int chunkZ, World world, IChunkGenerator chunkGenerator, IChunkProvider chunkProvider) {
         if (isDungeonChunk(world, chunkX, chunkZ)) {
-            int midx = chunkX * 16 + 8;
-            int midz = chunkZ * 16 + 8;
-            int midy = getDungeonHeight(world, chunkX, chunkZ);
+            BlockPos dungeonPos = getDungeonPos(world, chunkX, chunkZ);
+            int midx = dungeonPos.getX();
+            int midy = dungeonPos.getY();
+            int midz = dungeonPos.getZ();
             for (int dy = 0; dy < dungeon.length; dy++) {
                 String[] level = dungeon[dy];
                 for (int dx = 0; dx < level.length; dx++) {

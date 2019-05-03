@@ -114,6 +114,8 @@ public class ArientePearlItem extends GenericItem {
                     }
 
                     return new ActionResult<ItemStack>(EnumActionResult.SUCCESS, itemstack);
+                } else {
+                    player.sendStatusMessage(new TextComponentString("Can't find any nearby Ariente dungeon!"), false);
                 }
             }
 
