@@ -1,5 +1,6 @@
 Upcoming:
 - Added flux capacitor intermediate ingredient and added it to a few recipes
+- Added JEI integration for the constructor and auto constructor
 
 0.0.10-alpha:
 - New dungeons in the overworld that will be used to teleport to the Ariente dimension

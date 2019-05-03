@@ -46,8 +46,6 @@ public class ModSetup extends DefaultModSetup {
         ModItems.init();
         WorldGen.init();
         ModEntities.init();
-
-        RecipeRegistry.init();
     }
 
     @Override

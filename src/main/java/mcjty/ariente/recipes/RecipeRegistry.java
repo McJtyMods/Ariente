@@ -35,8 +35,14 @@ public class RecipeRegistry {
     public static final float UNCOMMON = 0.1f;
     public static final float COMMON = 1.0f;
 
+    private static boolean initialized = false;
 
-    public static void init() {
+
+    private static void init() {
+        if (initialized) {
+            return;
+        }
+        initialized = true;
         recipes.add(new ConstructorRecipe(new ItemStack(ModItems.fluxCapacitorItem), RARE,
                 new ItemStack(ModItems.lithiumIngot, 2),
                 new ItemStack(ModItems.manganeseIngot, 1),
@@ -237,12 +243,13 @@ public class RecipeRegistry {
     }
 
     public static List<ConstructorRecipe> getRecipes() {
+        init();
         return recipes;
     }
 
     public static ConstructorRecipe findRecipe(ItemStack destination) {
         // @todo optimize
-        for (ConstructorRecipe recipe : recipes) {
+        for (ConstructorRecipe recipe : getRecipes()) {
             if (ItemHandlerHelper.canItemStacksStack(recipe.getDestination(), destination)) {
                 return recipe;
             }
@@ -253,7 +260,7 @@ public class RecipeRegistry {
     public static WeightedRandom<ConstructorRecipe> getRandomRecipes() {
         if (randomRecipes == null) {
             randomRecipes = new WeightedRandom<>();
-            for (ConstructorRecipe recipe : recipes) {
+            for (ConstructorRecipe recipe : getRecipes()) {
                 randomRecipes.add(recipe, recipe.getChance());
             }
         }
