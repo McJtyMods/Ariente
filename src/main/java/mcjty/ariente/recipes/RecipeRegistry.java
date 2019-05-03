@@ -37,6 +37,12 @@ public class RecipeRegistry {
 
 
     public static void init() {
+        recipes.add(new ConstructorRecipe(new ItemStack(ModItems.fluxCapacitorItem), RARE,
+                new ItemStack(ModItems.lithiumIngot, 2),
+                new ItemStack(ModItems.manganeseIngot, 1),
+                new ItemStack(ModItems.negariteDust, 6),
+                new ItemStack(ModItems.posiriteDust, 6)
+        ));
         recipes.add(new ConstructorRecipe(new ItemStack(ModItems.moduleAutofeed), COMMON,
                 new ItemStack(Items.PAPER),
                 new ItemStack(ModItems.silverIngot, 1),
@@ -152,6 +158,7 @@ public class RecipeRegistry {
                 new ItemStack(ModItems.platinumIngot, 1)
         ));
         recipes.add(new ConstructorRecipe(new ItemStack(ModBlocks.forceFieldBlock), RARE,
+                new ItemStack(ModItems.fluxCapacitorItem, 1),
                 new ItemStack(ModItems.silverIngot, 5),
                 new ItemStack(ModItems.silicon, 5),
                 new ItemStack(ModItems.platinumIngot, 3),
@@ -220,6 +227,12 @@ public class RecipeRegistry {
         recipes.add(new ConstructorRecipe(new ItemStack(ModBlocks.reinforcedMarble, 1), UNCOMMON,
                 new ItemStack(ModBlocks.marble, 4),
                 new ItemStack(Blocks.OBSIDIAN, 4)
+        ));
+        recipes.add(new ConstructorRecipe(new ItemStack(ModBlocks.autoFieldBlock), UNCOMMON,
+                new ItemStack(ModItems.fluxCapacitorItem, 1),
+                new ItemStack(ModItems.silicon, 3),
+                new ItemStack(Items.ENDER_PEARL, 1),
+                new ItemStack(ModItems.silverIngot, 2)
         ));
     }
 

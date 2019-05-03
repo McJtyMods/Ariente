@@ -28,6 +28,7 @@ public class ModItems {
     public static ArientePearlItem arientePearlItem;
     public static FluxLevitatorItem fluxLevitatorItem;
     public static FluxShipItem fluxShipItem;
+    public static FluxCapacitorItem fluxCapacitorItem;
 
     public static PowerSuit powerSuitHelmet;
     public static PowerSuit powerSuitChest;
@@ -67,6 +68,7 @@ public class ModItems {
         blueprintItem = new BlueprintItem();
         fluxLevitatorItem = new FluxLevitatorItem();
         fluxShipItem = new FluxShipItem();
+        fluxCapacitorItem = new FluxCapacitorItem();
 
         arientePearlItem = new ArientePearlItem();
 
@@ -118,6 +120,7 @@ public class ModItems {
         fluxLevitatorItem.initModel();
         fluxShipItem.initModel();
         blueprintItem.initModel();
+        fluxCapacitorItem.initModel();
 
         arientePearlItem.initModel();
 

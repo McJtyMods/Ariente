@@ -1,3 +1,6 @@
+Upcoming:
+- Added flux capacitor intermediate ingredient and added it to a few recipes
+
 0.0.10-alpha:
 - New dungeons in the overworld that will be used to teleport to the Ariente dimension
 - New 'ariente pearl' item that works like an ender eye and can be used to locate such dungeons
