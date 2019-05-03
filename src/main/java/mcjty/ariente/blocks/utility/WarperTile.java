@@ -1,8 +1,8 @@
 package mcjty.ariente.blocks.utility;
 
-import mcjty.ariente.cities.CityTools;
+import mcjty.ariente.Ariente;
+import mcjty.ariente.compat.arienteworld.ArienteWorldCompat;
 import mcjty.ariente.config.UtilityConfiguration;
-import mcjty.ariente.config.WorldgenConfiguration;
 import mcjty.hologui.api.IGuiComponent;
 import mcjty.hologui.api.IGuiComponentRegistry;
 import mcjty.hologui.api.IGuiTile;
@@ -37,8 +37,11 @@ public class WarperTile extends GenericTileEntity implements IGuiTile {
     @Override
     public void setWorld(World worldIn) {
         super.setWorld(worldIn);
-        if (worldIn != null && worldIn.provider.getDimension() == WorldgenConfiguration.DIMENSION_ID.get()) {
-            charges = UtilityConfiguration.WARPER_MAX_CHARGES.get();
+        if (Ariente.setup.arienteWorld) {
+            int dim = ArienteWorldCompat.getArienteWorld().getDimension();
+            if (worldIn != null && worldIn.provider.getDimension() == dim) {
+                charges = UtilityConfiguration.WARPER_MAX_CHARGES.get();
+            }
         }
     }
 
@@ -130,8 +133,11 @@ public class WarperTile extends GenericTileEntity implements IGuiTile {
     private void warp(EntityPlayer player) {
         if (world.provider.getDimension() == 0) {
             if (!world.isRemote) {
-                BlockPos nearest = CityTools.getNearestTeleportationSpot(player.getPosition());
-                TeleportationTools.teleportToDimension(player, WorldgenConfiguration.DIMENSION_ID.get(), nearest.getX(), nearest.getY(), nearest.getZ());
+                if (Ariente.setup.arienteWorld) {
+                    // @todo for future usage
+                    BlockPos nearest = ArienteWorldCompat.getArienteWorld().getNearestTeleportationSpot(player.getPosition());
+                    TeleportationTools.teleportToDimension(player, ArienteWorldCompat.getArienteWorld().getDimension(), nearest.getX(), nearest.getY(), nearest.getZ());
+                }
             }
         } else {
             if (!world.isRemote) {

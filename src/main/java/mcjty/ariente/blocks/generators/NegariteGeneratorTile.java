@@ -1,7 +1,7 @@
 package mcjty.ariente.blocks.generators;
 
 import mcjty.ariente.Ariente;
-import mcjty.ariente.ai.IAlarmMode;
+import mcjty.ariente.api.IAlarmMode;
 import mcjty.ariente.blocks.ModBlocks;
 import mcjty.ariente.cables.CableColor;
 import mcjty.ariente.gui.HoloGuiTools;

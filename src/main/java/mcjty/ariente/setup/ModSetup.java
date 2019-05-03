@@ -2,54 +2,48 @@ package mcjty.ariente.setup;
 
 import mcjty.ariente.Ariente;
 import mcjty.ariente.ForgeEventHandlers;
-import mcjty.ariente.TerrainEventHandlers;
 import mcjty.ariente.blocks.ModBlocks;
-import mcjty.ariente.cities.AssetRegistries;
+import mcjty.ariente.compat.arienteworld.ArienteWorldCompat;
 import mcjty.ariente.config.ConfigSetup;
-import mcjty.ariente.dimension.DimensionRegister;
 import mcjty.ariente.entities.ModEntities;
 import mcjty.ariente.gui.HoloGuiCompatibility;
 import mcjty.ariente.items.ModItems;
 import mcjty.ariente.network.ArienteMessages;
-import mcjty.ariente.oregen.WorldGen;
-import mcjty.ariente.oregen.WorldTickHandler;
-import mcjty.ariente.recipes.RecipeRegistry;
 import mcjty.lib.compat.MainCompatHandler;
 import mcjty.lib.setup.DefaultModSetup;
 import net.minecraft.init.Items;
 import net.minecraft.item.ItemStack;
 import net.minecraftforge.common.MinecraftForge;
+import net.minecraftforge.fml.common.Loader;
 import net.minecraftforge.fml.common.event.FMLPostInitializationEvent;
 import net.minecraftforge.fml.common.event.FMLPreInitializationEvent;
 import net.minecraftforge.fml.common.network.NetworkRegistry;
 
-import java.io.File;
-import java.io.IOException;
-import java.io.InputStream;
-import java.io.UncheckedIOException;
-
 public class ModSetup extends DefaultModSetup {
+
+    public boolean arienteWorld = false;
 
     @Override
     public void preInit(FMLPreInitializationEvent e) {
         super.preInit(e);
 
         MinecraftForge.EVENT_BUS.register(new ForgeEventHandlers());
-        MinecraftForge.EVENT_BUS.register(WorldTickHandler.instance);
-        MinecraftForge.TERRAIN_GEN_BUS.register(new TerrainEventHandlers());
         NetworkRegistry.INSTANCE.registerGuiHandler(Ariente.instance, new GuiProxy());
 
         ArienteMessages.registerMessages("ariente");
 
-        DimensionRegister.init();
         ModBlocks.init();
         ModItems.init();
-        WorldGen.init();
         ModEntities.init();
     }
 
     @Override
     protected void setupModCompat() {
+        arienteWorld = Loader.isModLoaded("arienteworld");
+        if (arienteWorld) {
+            ArienteWorldCompat.register();
+        }
+
         MainCompatHandler.registerWaila();
         MainCompatHandler.registerTOP();
         HoloGuiCompatibility.register();
@@ -69,20 +63,5 @@ public class ModSetup extends DefaultModSetup {
     public void postInit(FMLPostInitializationEvent e) {
         ConfigSetup.postInit();
 
-        AssetRegistries.reset();
-        for (String path : ConfigSetup.ASSETS) {
-            if (path.startsWith("/")) {
-                try(InputStream inputstream = Ariente.class.getResourceAsStream(path)) {
-                    AssetRegistries.load(inputstream, path);
-                } catch (IOException ex) {
-                    throw new UncheckedIOException(ex);
-                }
-            } else if (path.startsWith("$")) {
-                File file = new File(getModConfigDir().getPath() + File.separator + path.substring(1));
-                AssetRegistries.load(file);
-            } else {
-                throw new RuntimeException("Invalid path for ariente resource in 'assets' config!");
-            }
-        }
     }
 }

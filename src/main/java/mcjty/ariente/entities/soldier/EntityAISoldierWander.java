@@ -1,7 +1,8 @@
 package mcjty.ariente.entities.soldier;
 
-import mcjty.ariente.ai.CityAI;
-import mcjty.ariente.ai.CityAISystem;
+import mcjty.ariente.api.ICityAI;
+import mcjty.ariente.api.ICityAISystem;
+import mcjty.ariente.compat.arienteworld.ArienteWorldCompat;
 import net.minecraft.entity.ai.EntityAIBase;
 import net.minecraft.entity.ai.RandomPositionGenerator;
 import net.minecraft.util.math.BlockPos;
@@ -61,8 +62,8 @@ public class EntityAISoldierWander extends EntityAIBase {
         } else if (entity.getCityCenter() == null) {
             return RandomPositionGenerator.findRandomTarget(this.entity, 10, 7);
         } else {
-            CityAISystem aiSystem = CityAISystem.getCityAISystem(entity.world);
-            CityAI cityAI = aiSystem.getCityAI(entity.getCityCenter());
+            ICityAISystem aiSystem = ArienteWorldCompat.getCityAISystem(entity.world);
+            ICityAI cityAI = aiSystem.getCityAI(entity.getCityCenter());
             BlockPos pos = cityAI.requestNewSoldierPosition(entity.world, entity.getAttackTarget());
             if (pos != null) {
                 return new Vec3d(pos);

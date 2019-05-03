@@ -1,9 +1,9 @@
 package mcjty.ariente.blocks.utility;
 
 import mcjty.ariente.Ariente;
-import mcjty.ariente.ai.CityAI;
+import mcjty.ariente.api.ICityAI;
+import mcjty.ariente.api.ICityEquipment;
 import mcjty.ariente.blocks.ModBlocks;
-import mcjty.ariente.cities.ICityEquipment;
 import mcjty.ariente.items.BlueprintItem;
 import mcjty.ariente.items.ModItems;
 import mcjty.hologui.api.IGuiComponent;
@@ -133,7 +133,7 @@ public class BlueprintStorageTile extends GenericTileEntity implements DefaultSi
     }
 
     @Override
-    public void setup(CityAI cityAI, World world, boolean firstTime) {
+    public void setup(ICityAI cityAI, World world, boolean firstTime) {
 
     }
 

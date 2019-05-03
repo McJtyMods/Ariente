@@ -1,6 +1,6 @@
 package mcjty.ariente.blocks.generators;
 
-import mcjty.ariente.ai.IAlarmMode;
+import mcjty.ariente.api.IAlarmMode;
 import mcjty.hologui.api.IGuiComponent;
 import mcjty.hologui.api.IGuiComponentRegistry;
 import mcjty.hologui.api.IGuiTile;

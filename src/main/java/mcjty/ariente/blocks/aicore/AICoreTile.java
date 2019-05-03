@@ -1,17 +1,12 @@
 package mcjty.ariente.blocks.aicore;
 
-import mcjty.ariente.ai.CityAI;
-import mcjty.ariente.ai.CityAISystem;
-import mcjty.ariente.ai.IAlarmMode;
-import mcjty.ariente.blocks.utility.AlarmType;
-import mcjty.ariente.cities.CityTools;
-import mcjty.ariente.items.KeyCardItem;
-import mcjty.ariente.items.ModItems;
+import mcjty.ariente.api.IAlarmMode;
+import mcjty.ariente.api.ICityAI;
+import mcjty.ariente.api.ICityAISystem;
+import mcjty.ariente.compat.arienteworld.ArienteWorldCompat;
 import mcjty.ariente.varia.ChunkCoord;
 import mcjty.lib.tileentity.GenericTileEntity;
 import net.minecraft.block.state.IBlockState;
-import net.minecraft.entity.item.EntityItem;
-import net.minecraft.item.ItemStack;
 import net.minecraft.util.ITickable;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.World;
@@ -30,11 +25,12 @@ public class AICoreTile extends GenericTileEntity implements ITickable, IAlarmMo
             }
             tickCounter = 10;
 
+            // @todo check if Ariente World is there!
             if (getCityCenter() != null) {
-                CityAISystem cityAISystem = CityAISystem.getCityAISystem(world);
-                CityAI cityAI = cityAISystem.getCityAI(cityCenter);
+                ICityAISystem cityAISystem = ArienteWorldCompat.getCityAISystem(world);
+                ICityAI cityAI = cityAISystem.getCityAI(cityCenter);
                 if (cityAI.tick(this)) {
-                    cityAISystem.save();
+                    cityAISystem.saveSystem();
                 }
             }
         }
@@ -48,7 +44,8 @@ public class AICoreTile extends GenericTileEntity implements ITickable, IAlarmMo
     private ChunkCoord getCityCenter() {
         if (cityCenter == null) {
             cityCenter = ChunkCoord.getChunkCoordFromPos(pos);
-            cityCenter = CityTools.getNearestCityCenter(cityCenter.getChunkX(), cityCenter.getChunkZ());
+            // @todo check if Ariente World is there!
+            cityCenter = ArienteWorldCompat.getArienteWorld().getNearestCityCenter(cityCenter);
         }
         return cityCenter;
     }
@@ -58,18 +55,9 @@ public class AICoreTile extends GenericTileEntity implements ITickable, IAlarmMo
         super.onBlockBreak(world, pos, state);
         if (!this.world.isRemote) {
             if (getCityCenter() != null) {
-                CityAISystem cityAISystem = CityAISystem.getCityAISystem(this.world);
-                CityAI cityAI = cityAISystem.getCityAI(cityCenter);
-                if (!cityAI.hasValidCoreExcept(this.world, pos)) {
-                    // There are no other valid AI cores. Spawn an item for the player
-                    // with the right security key
-                    ItemStack stack = new ItemStack(ModItems.keyCardItem);
-                    KeyCardItem.addSecurityTag(stack, cityAI.getStorageKeyId());
-                    EntityItem entityitem = new EntityItem(this.world, pos.getX()+.5, pos.getY()+.5, pos.getZ()+.5, stack);
-                    entityitem.setDefaultPickupDelay();
-                    this.world.spawnEntity(entityitem);
-                    cityAI.setAlarmType(this.world, AlarmType.DEAD);
-                }
+                ICityAISystem cityAISystem = ArienteWorldCompat.getCityAISystem(world);
+                ICityAI cityAI = cityAISystem.getCityAI(cityCenter);
+                cityAI.breakAICore(world, pos);
             }
         }
     }

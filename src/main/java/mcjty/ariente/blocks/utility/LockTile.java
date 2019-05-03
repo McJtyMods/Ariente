@@ -1,13 +1,13 @@
 package mcjty.ariente.blocks.utility;
 
 import mcjty.ariente.Ariente;
-import mcjty.ariente.ai.CityAI;
+import mcjty.ariente.api.ICityAI;
+import mcjty.ariente.api.ICityEquipment;
 import mcjty.hologui.api.IGuiComponent;
 import mcjty.hologui.api.IGuiComponentRegistry;
 import mcjty.hologui.api.IGuiTile;
 import mcjty.hologui.api.IHoloGuiEntity;
 import mcjty.ariente.blocks.utility.door.DoorMarkerTile;
-import mcjty.ariente.cities.ICityEquipment;
 import mcjty.ariente.items.KeyCardItem;
 import mcjty.ariente.security.IKeyCardSlot;
 import mcjty.ariente.sounds.ModSounds;
@@ -173,7 +173,7 @@ public class LockTile extends GenericTileEntity implements IGuiTile, IKeyCardSlo
     }
 
     @Override
-    public void setup(CityAI cityAI, World world, boolean firstTime) {
+    public void setup(ICityAI cityAI, World world, boolean firstTime) {
         if (firstTime) {
             setKeyId(cityAI.getKeyId());
             setLocked(true);

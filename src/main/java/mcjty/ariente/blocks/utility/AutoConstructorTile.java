@@ -1,9 +1,9 @@
 package mcjty.ariente.blocks.utility;
 
 import mcjty.ariente.Ariente;
-import mcjty.ariente.ai.CityAI;
+import mcjty.ariente.api.ICityAI;
+import mcjty.ariente.api.ICityEquipment;
 import mcjty.ariente.blocks.ModBlocks;
-import mcjty.ariente.cities.ICityEquipment;
 import mcjty.ariente.gui.HelpBuilder;
 import mcjty.ariente.gui.HoloGuiTools;
 import mcjty.ariente.items.BlueprintItem;
@@ -32,7 +32,6 @@ import mcp.mobius.waila.api.IWailaDataAccessor;
 import net.minecraft.block.properties.PropertyBool;
 import net.minecraft.block.state.IBlockState;
 import net.minecraft.entity.player.EntityPlayer;
-import net.minecraft.init.Blocks;
 import net.minecraft.init.Items;
 import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.NBTTagCompound;
@@ -374,7 +373,7 @@ public class AutoConstructorTile extends GenericTileEntity implements DefaultSid
     }
 
     @Override
-    public void setup(CityAI cityAI, World world, boolean firstTime) {
+    public void setup(ICityAI cityAI, World world, boolean firstTime) {
 
     }
 

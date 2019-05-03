@@ -1,9 +1,10 @@
 package mcjty.ariente.blocks.defense;
 
-import mcjty.ariente.ai.CityAI;
-import mcjty.ariente.ai.CityAISystem;
-import mcjty.ariente.ai.IAlarmMode;
-import mcjty.ariente.cities.ICityEquipment;
+import mcjty.ariente.api.IAlarmMode;
+import mcjty.ariente.api.ICityAI;
+import mcjty.ariente.api.ICityAISystem;
+import mcjty.ariente.api.ICityEquipment;
+import mcjty.ariente.compat.arienteworld.ArienteWorldCompat;
 import mcjty.ariente.config.ConfigSetup;
 import mcjty.ariente.config.DamageConfiguration;
 import mcjty.ariente.config.PowerConfiguration;
@@ -203,8 +204,8 @@ public class ForceFieldTile extends GenericTileEntity implements IGuiTile, ITick
                 }
                 if (entity instanceof EntityLivingBase) {
                     if (entity instanceof EntityPlayer && cityCenter != null) {
-                        CityAISystem system = CityAISystem.getCityAISystem(world);
-                        CityAI cityAI = system.getCityAI(cityCenter);
+                        ICityAISystem system = ArienteWorldCompat.getCityAISystem(world);
+                        ICityAI cityAI = system.getCityAI(cityCenter);
                         if (cityAI != null) {
                             EntityPlayer player = (EntityPlayer) entity;
                             String forcefieldId = cityAI.getForcefieldId();
@@ -247,11 +248,11 @@ public class ForceFieldTile extends GenericTileEntity implements IGuiTile, ITick
                                 if (cityCenter != null) {
                                     EntityPlayer player = determineAttacker(entity);
                                     if (player != null) {
-                                        CityAISystem system = CityAISystem.getCityAISystem(world);
-                                        CityAI cityAI = system.getCityAI(cityCenter);
+                                        ICityAISystem system = ArienteWorldCompat.getCityAISystem(world);
+                                        ICityAI cityAI = system.getCityAI(cityCenter);
                                         if (cityAI != null) {
                                             cityAI.alertCity(player);
-                                            system.save();
+                                            system.saveSystem();
                                         }
                                     }
                                 }
@@ -420,7 +421,7 @@ public class ForceFieldTile extends GenericTileEntity implements IGuiTile, ITick
     }
 
     @Override
-    public void setup(CityAI cityAI, World world, boolean firstTime) {
+    public void setup(ICityAI cityAI, World world, boolean firstTime) {
         if (firstTime) {
             setRSMode(RedstoneMode.REDSTONE_IGNORED);
         }

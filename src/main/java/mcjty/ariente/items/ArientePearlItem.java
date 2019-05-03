@@ -2,9 +2,9 @@ package mcjty.ariente.items;
 
 import mcjty.ariente.blocks.ModBlocks;
 import mcjty.ariente.blocks.utility.WarperTile;
+import mcjty.ariente.compat.arienteworld.ArienteWorldCompat;
 import mcjty.ariente.config.UtilityConfiguration;
 import mcjty.ariente.entities.EntityArientePearl;
-import mcjty.ariente.oregen.OverworldDungeonGen;
 import net.minecraft.block.state.IBlockState;
 import net.minecraft.client.util.ITooltipFlag;
 import net.minecraft.entity.player.EntityPlayer;
@@ -99,7 +99,7 @@ public class ArientePearlItem extends GenericItem {
             player.setActiveHand(hand);
 
             if (!world.isRemote) {
-                BlockPos blockpos = OverworldDungeonGen.getNearestDungeon(world, new BlockPos(player));
+                BlockPos blockpos = ArienteWorldCompat.getArienteWorld().getNearestDungeon(world, new BlockPos(player));
 
                 if (blockpos != null) {
                     EntityArientePearl entityendereye = new EntityArientePearl(world, player.posX, player.posY + (player.height / 2.0F), player.posZ);

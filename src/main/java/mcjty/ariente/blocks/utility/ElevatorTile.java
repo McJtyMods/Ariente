@@ -1,13 +1,13 @@
 package mcjty.ariente.blocks.utility;
 
 import mcjty.ariente.Ariente;
-import mcjty.ariente.ai.CityAI;
+import mcjty.ariente.api.ICityAI;
+import mcjty.ariente.api.ICityEquipment;
 import mcjty.hologui.api.IGuiComponent;
 import mcjty.hologui.api.IGuiComponentRegistry;
 import mcjty.hologui.api.IGuiTile;
 import mcjty.hologui.api.IHoloGuiEntity;
 import mcjty.hologui.api.components.IPanel;
-import mcjty.ariente.cities.ICityEquipment;
 import mcjty.ariente.power.IPowerReceiver;
 import mcjty.ariente.power.PowerReceiverSupport;
 import mcjty.lib.tileentity.GenericTileEntity;
@@ -245,7 +245,7 @@ public class ElevatorTile extends GenericTileEntity implements IGuiTile, ITickab
     }
 
     @Override
-    public void setup(CityAI cityAI, World world, boolean firstTime) {
+    public void setup(ICityAI cityAI, World world, boolean firstTime) {
     }
 
     @Override

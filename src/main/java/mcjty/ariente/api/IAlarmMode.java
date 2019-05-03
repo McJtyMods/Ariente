@@ -1,4 +1,4 @@
-package mcjty.ariente.ai;
+package mcjty.ariente.api;
 
 // Tile entities implementing this interface can cause alarms to go off for the city
 public interface IAlarmMode {

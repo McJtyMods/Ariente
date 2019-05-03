@@ -1,19 +1,16 @@
 package mcjty.ariente.blocks.utility;
 
 import mcjty.ariente.Ariente;
-import mcjty.ariente.ai.CityAI;
-import mcjty.hologui.api.IGuiComponent;
-import mcjty.hologui.api.IGuiComponentRegistry;
-import mcjty.hologui.api.IGuiTile;
+import mcjty.ariente.api.ICityAI;
+import mcjty.ariente.api.ICityEquipment;
 import mcjty.ariente.blocks.ModBlocks;
-import mcjty.ariente.cities.City;
-import mcjty.ariente.cities.CityPlan;
-import mcjty.ariente.cities.CityTools;
-import mcjty.ariente.cities.ICityEquipment;
 import mcjty.ariente.items.KeyCardItem;
 import mcjty.ariente.network.ArienteMessages;
 import mcjty.ariente.security.IKeyCardSlot;
 import mcjty.ariente.sounds.ModSounds;
+import mcjty.hologui.api.IGuiComponent;
+import mcjty.hologui.api.IGuiComponentRegistry;
+import mcjty.hologui.api.IGuiTile;
 import mcjty.lib.tileentity.GenericTileEntity;
 import mcjty.lib.varia.ItemStackList;
 import mcjty.theoneprobe.api.IProbeHitData;
@@ -97,11 +94,9 @@ public class StorageTile extends GenericTileEntity implements IGuiTile, IInvento
     }
 
     @Override
-    public void setup(CityAI cityAI, World world, boolean firstTime) {
+    public void setup(ICityAI cityAI, World world, boolean firstTime) {
         if (firstTime) {
-            City city = CityTools.getCity(cityAI.getCenter());
-            CityPlan plan = city.getPlan();
-            cityAI.fillLoot(plan, this);
+            cityAI.fillLoot(this);
             setLocked(true);
             setKeyId(cityAI.getStorageKeyId());
         }

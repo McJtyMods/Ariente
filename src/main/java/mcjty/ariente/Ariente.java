@@ -1,7 +1,6 @@
 package mcjty.ariente;
 
 
-import mcjty.ariente.commands.*;
 import mcjty.ariente.setup.ModSetup;
 import mcjty.hologui.api.IHoloGuiHandler;
 import mcjty.lib.base.ModBase;
@@ -66,13 +65,6 @@ public class Ariente implements ModBase {
 
     @Mod.EventHandler
     public void serverLoad(FMLServerStartingEvent event) {
-        event.registerServerCommand(new CommandSaveCity());
-        event.registerServerCommand(new CommandVariant());
-        event.registerServerCommand(new CommandEditMode());
-        event.registerServerCommand(new CommandFindCity());
-        event.registerServerCommand(new CommandInfo());
-        event.registerServerCommand(new CommandPacify());
-        event.registerServerCommand(new CommandCityCard());
     }
 
 

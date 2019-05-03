@@ -1,7 +1,7 @@
 package mcjty.ariente.cables;
 
-import mcjty.ariente.ai.CityAI;
-import mcjty.ariente.cities.ICityEquipment;
+import mcjty.ariente.api.ICityAI;
+import mcjty.ariente.api.ICityEquipment;
 import mcjty.ariente.facade.IFacadeSupport;
 import mcjty.ariente.facade.MimicBlockSupport;
 import mcjty.ariente.power.IPowerBlob;
@@ -52,7 +52,7 @@ public abstract class GenericCableTileEntity extends GenericTileEntity implement
     }
 
     @Override
-    public void setup(CityAI cityAI, World world, boolean firstTime) {
+    public void setup(ICityAI cityAI, World world, boolean firstTime) {
     }
 
     @Override

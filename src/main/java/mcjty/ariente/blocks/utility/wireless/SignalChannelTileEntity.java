@@ -1,8 +1,8 @@
 package mcjty.ariente.blocks.utility.wireless;
 
-import mcjty.ariente.ai.CityAI;
+import mcjty.ariente.api.ICityAI;
+import mcjty.ariente.api.ICityEquipment;
 import mcjty.ariente.blocks.ModBlocks;
-import mcjty.ariente.cities.ICityEquipment;
 import mcjty.lib.blocks.BaseBlock;
 import mcjty.lib.tileentity.GenericTileEntity;
 import mcjty.lib.varia.Logging;
@@ -239,7 +239,7 @@ public abstract class SignalChannelTileEntity extends GenericTileEntity implemen
     }
 
     @Override
-    public void setup(CityAI cityAI, World world, boolean firstTime) {
+    public void setup(ICityAI cityAI, World world, boolean firstTime) {
 
     }
 }

@@ -1,11 +1,11 @@
 package mcjty.ariente.entities.soldier;
 
 import mcjty.ariente.Ariente;
-import mcjty.ariente.ai.CityAI;
-import mcjty.ariente.ai.CityAISystem;
+import mcjty.ariente.api.ICityAI;
+import mcjty.ariente.api.ICityAISystem;
 import mcjty.ariente.blocks.defense.ForceFieldTile;
 import mcjty.ariente.blocks.defense.IForcefieldImmunity;
-import mcjty.ariente.config.LootConfiguration;
+import mcjty.ariente.compat.arienteworld.ArienteWorldCompat;
 import mcjty.ariente.items.KeyCardItem;
 import mcjty.ariente.items.ModItems;
 import mcjty.ariente.items.armor.PowerSuit;
@@ -63,8 +63,8 @@ public class SoldierEntity extends EntityMob implements IArmRaisable, IForcefiel
     public void onUpdate() {
         super.onUpdate();
         if (!world.isRemote && !isDead && cityCenter != null) {
-            CityAISystem aiSystem = CityAISystem.getCityAISystem(world);
-            CityAI cityAI = aiSystem.getCityAI(cityCenter);
+            ICityAISystem aiSystem = ArienteWorldCompat.getCityAISystem(world);
+            ICityAI cityAI = aiSystem.getCityAI(cityCenter);
             if (cityAI != null && !cityAI.isDead(world)) {
                 feedPowerIfNeeded(EntityEquipmentSlot.HEAD);
                 feedPowerIfNeeded(EntityEquipmentSlot.FEET);
@@ -159,18 +159,21 @@ public class SoldierEntity extends EntityMob implements IArmRaisable, IForcefiel
     protected void dropLoot(boolean wasRecentlyHit, int lootingModifier, DamageSource source) {
         super.dropLoot(wasRecentlyHit, lootingModifier, source);
         if (attackingPlayer != null) {
-            if (cityCenter != null && rand.nextFloat() < LootConfiguration.SOLDIER_CITYKEY_CHANCE.get()) {
-                CityAISystem aiSystem = CityAISystem.getCityAISystem(world);
-                CityAI cityAI = aiSystem.getCityAI(cityCenter);
-                if (cityAI != null) {
-                    ItemStack stack = new ItemStack(ModItems.keyCardItem);
-                    float r = rand.nextFloat();
-                    if (r < .4f) {
-                        KeyCardItem.addSecurityTag(stack, cityAI.getKeyId());
-                    } else if (r < .8f) {
-                        KeyCardItem.addSecurityTag(stack, cityAI.getForcefieldId());
+            if (Ariente.setup.arienteWorld) {
+                double chance = ArienteWorldCompat.getArienteWorld().getSoldierCityKeyChance();
+                if (cityCenter != null && rand.nextFloat() < chance) {
+                    ICityAISystem aiSystem = ArienteWorldCompat.getCityAISystem(world);
+                    ICityAI cityAI = aiSystem.getCityAI(cityCenter);
+                    if (cityAI != null) {
+                        ItemStack stack = new ItemStack(ModItems.keyCardItem);
+                        float r = rand.nextFloat();
+                        if (r < .4f) {
+                            KeyCardItem.addSecurityTag(stack, cityAI.getKeyId());
+                        } else if (r < .8f) {
+                            KeyCardItem.addSecurityTag(stack, cityAI.getForcefieldId());
+                        }
+                        entityDropItem(stack, 0.0f);
                     }
-                    entityDropItem(stack, 0.0f);
                 }
             }
         }
@@ -245,10 +248,10 @@ public class SoldierEntity extends EntityMob implements IArmRaisable, IForcefiel
     }
 
     private void alertCity(@Nonnull EntityPlayer player) {
-        CityAISystem aiSystem = CityAISystem.getCityAISystem(world);
-        CityAI cityAI = aiSystem.getCityAI(cityCenter);
+        ICityAISystem aiSystem = ArienteWorldCompat.getCityAISystem(world);
+        ICityAI cityAI = aiSystem.getCityAI(cityCenter);
         cityAI.playerSpotted(player);
-        aiSystem.save();
+        aiSystem.saveSystem();
     }
 
     @Override

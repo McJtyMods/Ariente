@@ -2,8 +2,6 @@ package mcjty.ariente;
 
 import mcjty.ariente.blocks.ModBlocks;
 import mcjty.ariente.blocks.defense.ForceFieldRenderer;
-import mcjty.ariente.dimension.EditMode;
-import mcjty.ariente.dimension.EditModeClient;
 import mcjty.ariente.entities.fluxship.FluxShipRender;
 import mcjty.ariente.entities.levitator.FluxLevitatorEntity;
 import mcjty.ariente.items.ModItems;
@@ -84,9 +82,6 @@ public class ClientForgeEventHandlers {
     @SubscribeEvent
     public void onRenderWorldEvent(RenderWorldLastEvent event) {
         ForceFieldRenderer.renderForceFields(event.getPartialTicks());
-        if (EditMode.editMode) {
-            EditModeClient.renderPart(event.getPartialTicks());
-        }
     }
 
     @SubscribeEvent

@@ -1,10 +1,11 @@
 package mcjty.ariente.entities.drone;
 
 import mcjty.ariente.Ariente;
-import mcjty.ariente.ai.CityAI;
-import mcjty.ariente.ai.CityAISystem;
+import mcjty.ariente.api.ICityAI;
+import mcjty.ariente.api.ICityAISystem;
 import mcjty.ariente.blocks.defense.ForceFieldTile;
 import mcjty.ariente.blocks.defense.IForcefieldImmunity;
+import mcjty.ariente.compat.arienteworld.ArienteWorldCompat;
 import mcjty.ariente.sounds.ModSounds;
 import mcjty.ariente.varia.ChunkCoord;
 import net.minecraft.entity.Entity;
@@ -84,10 +85,10 @@ public class SentinelDroneEntity extends EntityFlying implements IMob, IForcefie
         // This is called by EntityAIFindEntityNearestPlayer when it spots a player.
         // In this case we don't attack but notify the city AI
         if (entitylivingbaseIn instanceof EntityPlayer && cityCenter != null) {
-            CityAISystem aiSystem = CityAISystem.getCityAISystem(world);
-            CityAI cityAI = aiSystem.getCityAI(cityCenter);
+            ICityAISystem aiSystem = ArienteWorldCompat.getCityAISystem(world);
+            ICityAI cityAI = aiSystem.getCityAI(cityCenter);
             cityAI.playerSpotted((EntityPlayer) entitylivingbaseIn);
-            aiSystem.save();
+            aiSystem.saveSystem();
         }
     }
 
@@ -294,8 +295,8 @@ public class SentinelDroneEntity extends EntityFlying implements IMob, IForcefie
             if (parentEntity.cityCenter == null) {
                 return;
             }
-            CityAISystem aiSystem = CityAISystem.getCityAISystem(parentEntity.world);
-            CityAI cityAI = aiSystem.getCityAI(parentEntity.cityCenter);
+            ICityAISystem aiSystem = ArienteWorldCompat.getCityAISystem(parentEntity.world);
+            ICityAI cityAI = aiSystem.getCityAI(parentEntity.cityCenter);
             BlockPos pos = cityAI.requestNewSentinelPosition(parentEntity.world, parentEntity.sentinelId);
             if (pos != null) {
                 this.parentEntity.getMoveHelper().setMoveTo(pos.getX(), pos.getY(), pos.getZ(), 2.0D);
