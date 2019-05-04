@@ -7,7 +7,7 @@ import mcjty.ariente.blocks.defense.ForceFieldTile;
 import mcjty.ariente.blocks.defense.IForcefieldImmunity;
 import mcjty.ariente.compat.arienteworld.ArienteWorldCompat;
 import mcjty.ariente.sounds.ModSounds;
-import mcjty.ariente.varia.ChunkCoord;
+import mcjty.lib.varia.ChunkCoord;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.EntityFlying;
 import net.minecraft.entity.EntityLivingBase;

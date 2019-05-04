@@ -3,9 +3,13 @@ package mcjty.ariente.blocks.utility;
 import mcjty.ariente.Ariente;
 import mcjty.ariente.api.ICityAI;
 import mcjty.ariente.api.ICityEquipment;
+import mcjty.ariente.api.IStorageTile;
 import mcjty.ariente.blocks.ModBlocks;
+import mcjty.ariente.items.BlueprintItem;
 import mcjty.ariente.items.KeyCardItem;
 import mcjty.ariente.network.ArienteMessages;
+import mcjty.ariente.recipes.ConstructorRecipe;
+import mcjty.ariente.recipes.RecipeRegistry;
 import mcjty.ariente.security.IKeyCardSlot;
 import mcjty.ariente.sounds.ModSounds;
 import mcjty.hologui.api.IGuiComponent;
@@ -23,6 +27,7 @@ import net.minecraft.block.state.IBlockState;
 import net.minecraft.client.Minecraft;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.inventory.IInventory;
+import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.nbt.NBTTagList;
@@ -31,6 +36,7 @@ import net.minecraft.network.play.server.SPacketUpdateTileEntity;
 import net.minecraft.tileentity.TileEntity;
 import net.minecraft.util.EnumFacing;
 import net.minecraft.util.EnumHand;
+import net.minecraft.util.ResourceLocation;
 import net.minecraft.util.SoundCategory;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.RayTraceResult;
@@ -39,6 +45,7 @@ import net.minecraft.world.World;
 import net.minecraftforge.common.capabilities.Capability;
 import net.minecraftforge.common.util.Constants;
 import net.minecraftforge.fml.common.Optional;
+import net.minecraftforge.fml.common.registry.ForgeRegistries;
 import net.minecraftforge.fml.relauncher.Side;
 import net.minecraftforge.fml.relauncher.SideOnly;
 import net.minecraftforge.items.CapabilityItemHandler;
@@ -52,7 +59,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
-public class StorageTile extends GenericTileEntity implements IGuiTile, IInventory, ICityEquipment, IKeyCardSlot, ILockable {
+public class StorageTile extends GenericTileEntity implements IGuiTile, IInventory, ICityEquipment, IKeyCardSlot, ILockable, IStorageTile {
 
 //    public static final PropertyBool LOCKED = PropertyBool.create("locked");
 
@@ -461,6 +468,26 @@ public class StorageTile extends GenericTileEntity implements IGuiTile, IInvento
     @Override
     public void syncToClient() {
 
+    }
+
+    @Override
+    public void setLoot(ResourceLocation id, int i, boolean doBlueprint, int amount, int meta) {
+        if (id == null) {
+            // Random blueprint
+            ConstructorRecipe recipe = RecipeRegistry.getRandomRecipes().getRandom();
+            ItemStack blueprint = BlueprintItem.makeBluePrint(recipe.getDestination());
+            initTotalStack(i, blueprint);
+        } else {
+            Item item = ForgeRegistries.ITEMS.getValue(id);
+            if (item != null) {
+                if (doBlueprint) {
+                    ItemStack blueprint = BlueprintItem.makeBluePrint(new ItemStack(item, 1, meta));
+                    initTotalStack(i, blueprint);
+                } else {
+                    initTotalStack(i, new ItemStack(item, amount, meta));
+                }
+            }
+        }
     }
 
     @Override

@@ -1,5 +1,6 @@
 package mcjty.ariente.blocks.utility;
 
+import mcjty.ariente.api.AlarmType;
 import mcjty.ariente.sounds.ModSounds;
 import mcjty.lib.tileentity.GenericTileEntity;
 import mcjty.theoneprobe.api.IProbeHitData;

@@ -1,9 +1,8 @@
 package mcjty.ariente.api;
 
-import mcjty.ariente.blocks.aicore.AICoreTile;
-import mcjty.ariente.blocks.utility.StorageTile;
 import net.minecraft.entity.EntityLivingBase;
 import net.minecraft.entity.player.EntityPlayer;
+import net.minecraft.tileentity.TileEntity;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.World;
 
@@ -11,8 +10,11 @@ public interface ICityAI {
 
     void breakAICore(World world, BlockPos pos);
 
-    // Return true if we potentially have to save the city system state
-    boolean tick(AICoreTile tile);
+    /**
+     * Return true if we potentially have to save the city system state.
+     * Parameter should be an AICoreTile
+     */
+    boolean tick(TileEntity tile);
 
     boolean isDead(World world);
 
@@ -32,5 +34,5 @@ public interface ICityAI {
 
     String getForcefieldId();
 
-    void fillLoot(StorageTile te);
+    void fillLoot(IStorageTile te);
 }

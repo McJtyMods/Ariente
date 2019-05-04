@@ -2,6 +2,7 @@ package mcjty.ariente.entities.soldier;
 
 import mcjty.ariente.api.ICityAI;
 import mcjty.ariente.api.ICityAISystem;
+import mcjty.ariente.api.SoldierBehaviourType;
 import mcjty.ariente.compat.arienteworld.ArienteWorldCompat;
 import net.minecraft.entity.ai.EntityAIBase;
 import net.minecraft.entity.ai.RandomPositionGenerator;

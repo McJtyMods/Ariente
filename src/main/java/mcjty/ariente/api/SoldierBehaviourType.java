@@ -1,4 +1,4 @@
-package mcjty.ariente.entities.soldier;
+package mcjty.ariente.api;
 
 public enum SoldierBehaviourType {
     SOLDIER_GUARD,

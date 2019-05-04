@@ -11,7 +11,6 @@ import mcjty.ariente.items.ModItems;
 import mcjty.ariente.network.ArienteMessages;
 import mcjty.lib.compat.MainCompatHandler;
 import mcjty.lib.setup.DefaultModSetup;
-import net.minecraft.init.Items;
 import net.minecraft.item.ItemStack;
 import net.minecraftforge.common.MinecraftForge;
 import net.minecraftforge.fml.common.Loader;
@@ -56,7 +55,7 @@ public class ModSetup extends DefaultModSetup {
 
     @Override
     public void createTabs() {
-        createTab("ariente", () -> new ItemStack(Items.WATER_BUCKET));
+        createTab("ariente", () -> new ItemStack(ModBlocks.posiriteGeneratorBlock));
     }
 
     @Override

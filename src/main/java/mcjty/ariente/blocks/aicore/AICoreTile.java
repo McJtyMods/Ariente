@@ -1,17 +1,18 @@
 package mcjty.ariente.blocks.aicore;
 
+import mcjty.ariente.api.IAICoreTile;
 import mcjty.ariente.api.IAlarmMode;
 import mcjty.ariente.api.ICityAI;
 import mcjty.ariente.api.ICityAISystem;
 import mcjty.ariente.compat.arienteworld.ArienteWorldCompat;
-import mcjty.ariente.varia.ChunkCoord;
+import mcjty.lib.varia.ChunkCoord;
 import mcjty.lib.tileentity.GenericTileEntity;
 import net.minecraft.block.state.IBlockState;
 import net.minecraft.util.ITickable;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.World;
 
-public class AICoreTile extends GenericTileEntity implements ITickable, IAlarmMode {
+public class AICoreTile extends GenericTileEntity implements ITickable, IAlarmMode, IAICoreTile {
 
     private ChunkCoord cityCenter;
     private int tickCounter = 10;

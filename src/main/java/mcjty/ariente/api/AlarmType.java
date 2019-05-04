@@ -1,4 +1,4 @@
-package mcjty.ariente.blocks.utility;
+package mcjty.ariente.api;
 
 import net.minecraft.util.IStringSerializable;
 

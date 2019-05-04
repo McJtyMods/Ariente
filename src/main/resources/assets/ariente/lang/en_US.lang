@@ -42,9 +42,6 @@ item.ariente.module_fire.name=Fire Sabre Module
 tile.ariente.pattern.dots.name=Dots Pattern
 tile.ariente.pattern.lines.name=Lines Pattern
 
-tile.ariente.guard_dummy.name=Guard Dummy
-tile.ariente.soldier_dummy.name=Soldier Dummy
-
 tile.ariente.reinforced_marble.name=Reinforced Marble
 tile.ariente.flux_beam.name=Flux Beam
 
@@ -148,15 +145,6 @@ tile.ariente.silverore.name=Silver Ore
 tile.ariente.platinumore.name=Platinum Ore
 tile.ariente.posirite.name=Posirite Ore
 tile.ariente.negarite.name=Negarite Ore
-
-tile.ariente.glowlog.name=Glowing Log
-tile.ariente.glowleaves.name=Glowing Leaves
-tile.ariente.bluelog.name=Blue Log
-tile.ariente.blueleaves.name=Blue Leaves
-tile.ariente.darkleaves.name=Dark Leaves
-tile.ariente.black_bush.name=Black Bush
-tile.ariente.dark_grass.name=Dark Grass
-tile.ariente.small_flower.name=Small Flower
 
 entity.ariente_drone.name=Drone
 entity.ariente_sentinel_drone.name=Sentinel Drone

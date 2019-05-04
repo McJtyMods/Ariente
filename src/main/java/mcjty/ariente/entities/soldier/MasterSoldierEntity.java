@@ -1,6 +1,7 @@
 package mcjty.ariente.entities.soldier;
 
-import mcjty.ariente.varia.ChunkCoord;
+import mcjty.ariente.api.SoldierBehaviourType;
+import mcjty.lib.varia.ChunkCoord;
 import net.minecraft.init.MobEffects;
 import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.potion.PotionEffect;

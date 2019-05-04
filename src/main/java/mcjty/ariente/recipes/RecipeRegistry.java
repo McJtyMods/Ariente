@@ -3,7 +3,7 @@ package mcjty.ariente.recipes;
 import mcjty.ariente.blocks.ModBlocks;
 import mcjty.ariente.blocks.decorative.MarbleColor;
 import mcjty.ariente.items.ModItems;
-import mcjty.ariente.varia.WeightedRandom;
+import mcjty.lib.varia.WeightedRandom;
 import net.minecraft.init.Blocks;
 import net.minecraft.init.Items;
 import net.minecraft.item.EnumDyeColor;

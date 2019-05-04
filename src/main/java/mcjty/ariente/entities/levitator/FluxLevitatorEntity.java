@@ -2,6 +2,7 @@ package mcjty.ariente.entities.levitator;
 
 import com.google.common.base.Optional;
 import mcjty.ariente.Ariente;
+import mcjty.ariente.api.IFluxLevitatorEntity;
 import mcjty.ariente.blocks.ModBlocks;
 import mcjty.ariente.gui.ModGuis;
 import mcjty.ariente.items.ModItems;
@@ -38,7 +39,7 @@ import javax.annotation.Nullable;
 import java.util.List;
 import java.util.UUID;
 
-public class FluxLevitatorEntity extends Entity {
+public class FluxLevitatorEntity extends Entity implements IFluxLevitatorEntity {
 
     private static final DataParameter<Integer> ROLLING_AMPLITUDE = EntityDataManager.createKey(FluxLevitatorEntity.class, DataSerializers.VARINT);
     private static final DataParameter<Integer> ROLLING_DIRECTION = EntityDataManager.createKey(FluxLevitatorEntity.class, DataSerializers.VARINT);
@@ -972,10 +973,12 @@ public class FluxLevitatorEntity extends Entity {
         }
     }
 
+    @Override
     public BlockPos getDesiredDestination() {
         return desiredDestination;
     }
 
+    @Override
     public void setDesiredDestination(BlockPos desiredDestination) {
         this.desiredDestination = desiredDestination;
     }

@@ -1,9 +1,6 @@
 package mcjty.ariente.blocks.defense;
 
-import mcjty.ariente.api.IAlarmMode;
-import mcjty.ariente.api.ICityAI;
-import mcjty.ariente.api.ICityAISystem;
-import mcjty.ariente.api.ICityEquipment;
+import mcjty.ariente.api.*;
 import mcjty.ariente.compat.arienteworld.ArienteWorldCompat;
 import mcjty.ariente.config.ConfigSetup;
 import mcjty.ariente.config.DamageConfiguration;
@@ -13,7 +10,7 @@ import mcjty.ariente.network.ArienteMessages;
 import mcjty.ariente.power.IPowerReceiver;
 import mcjty.ariente.power.PowerReceiverSupport;
 import mcjty.ariente.sounds.ISoundProducer;
-import mcjty.ariente.varia.ChunkCoord;
+import mcjty.lib.varia.ChunkCoord;
 import mcjty.ariente.varia.Triangle;
 import mcjty.hologui.api.IGuiComponent;
 import mcjty.hologui.api.IGuiComponentRegistry;
@@ -50,7 +47,7 @@ import java.util.*;
 import static mcjty.ariente.config.ConfigSetup.SHIELD_PANEL_LIFE;
 import static mcjty.hologui.api.Icons.*;
 
-public class ForceFieldTile extends GenericTileEntity implements IGuiTile, ITickable, ISoundProducer, IPowerReceiver, ICityEquipment, IAlarmMode {
+public class ForceFieldTile extends GenericTileEntity implements IGuiTile, ITickable, ISoundProducer, IPowerReceiver, ICityEquipment, IAlarmMode, IForceFieldTile {
 
     private PanelInfo[] panelInfo = new PanelInfo[PentakisDodecahedron.MAX_TRIANGLES];
     private int[] panelDestroyTimeout = new int[PentakisDodecahedron.MAX_TRIANGLES];    // @todo persist to NBT?

@@ -3,13 +3,15 @@ package mcjty.ariente.entities.soldier;
 import mcjty.ariente.Ariente;
 import mcjty.ariente.api.ICityAI;
 import mcjty.ariente.api.ICityAISystem;
+import mcjty.ariente.api.ISoldier;
+import mcjty.ariente.api.SoldierBehaviourType;
 import mcjty.ariente.blocks.defense.ForceFieldTile;
 import mcjty.ariente.blocks.defense.IForcefieldImmunity;
 import mcjty.ariente.compat.arienteworld.ArienteWorldCompat;
 import mcjty.ariente.items.KeyCardItem;
 import mcjty.ariente.items.ModItems;
 import mcjty.ariente.items.armor.PowerSuit;
-import mcjty.ariente.varia.ChunkCoord;
+import mcjty.lib.varia.ChunkCoord;
 import net.minecraft.block.Block;
 import net.minecraft.entity.EntityLivingBase;
 import net.minecraft.entity.SharedMonsterAttributes;
@@ -34,7 +36,7 @@ import net.minecraftforge.fml.relauncher.SideOnly;
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 
-public class SoldierEntity extends EntityMob implements IArmRaisable, IForcefieldImmunity {
+public class SoldierEntity extends EntityMob implements IArmRaisable, IForcefieldImmunity, ISoldier {
 
     private static final DataParameter<Boolean> ARMS_RAISED = EntityDataManager.createKey(SoldierEntity.class, DataSerializers.BOOLEAN);
     public static final ResourceLocation LOOT = new ResourceLocation(Ariente.MODID, "entities/soldier");

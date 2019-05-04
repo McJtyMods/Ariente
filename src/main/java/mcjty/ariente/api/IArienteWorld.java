@@ -1,6 +1,6 @@
 package mcjty.ariente.api;
 
-import mcjty.ariente.varia.ChunkCoord;
+import mcjty.lib.varia.ChunkCoord;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.World;
 

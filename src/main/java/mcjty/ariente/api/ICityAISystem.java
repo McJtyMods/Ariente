@@ -1,6 +1,6 @@
 package mcjty.ariente.api;
 
-import mcjty.ariente.varia.ChunkCoord;
+import mcjty.lib.varia.ChunkCoord;
 
 public interface ICityAISystem {
     ICityAI getCityAI(ChunkCoord cityCenter);

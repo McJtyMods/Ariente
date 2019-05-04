@@ -1,6 +1,9 @@
 package mcjty.ariente;
 
 
+import mcjty.ariente.api.IArienteMod;
+import mcjty.ariente.api.IArienteSystem;
+import mcjty.ariente.apiimpl.ArienteSystem;
 import mcjty.ariente.setup.ModSetup;
 import mcjty.hologui.api.IHoloGuiHandler;
 import mcjty.lib.base.ModBase;
@@ -22,7 +25,7 @@ import net.minecraftforge.fml.common.event.FMLServerStartingEvent;
                 "after:forge@[" + Ariente.MIN_FORGE11_VER + ",)",
         acceptedMinecraftVersions = "[1.12,1.13)",
         version = Ariente.VERSION)
-public class Ariente implements ModBase {
+public class Ariente implements ModBase, IArienteMod {
     public static final String MODID = "ariente";
     public static final String MODNAME = "Ariente";
     public static final String VERSION = "0.0.11-alpha";
@@ -38,6 +41,7 @@ public class Ariente implements ModBase {
     public static Ariente instance;
 
     public static IHoloGuiHandler guiHandler;
+    public static IArienteSystem arienteSystem = new ArienteSystem();
 
     public Ariente() {
         // This has to be done VERY early
@@ -67,6 +71,10 @@ public class Ariente implements ModBase {
     public void serverLoad(FMLServerStartingEvent event) {
     }
 
+    @Override
+    public IArienteSystem getSystem() {
+        return arienteSystem;
+    }
 
     @Override
     public String getModId() {
