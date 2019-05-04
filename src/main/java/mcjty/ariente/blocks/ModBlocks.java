@@ -5,7 +5,6 @@ import mcjty.ariente.blocks.aicore.AICoreTile;
 import mcjty.ariente.blocks.decorative.*;
 import mcjty.ariente.blocks.defense.ForceFieldTile;
 import mcjty.ariente.blocks.generators.*;
-import mcjty.ariente.blocks.plants.BlockArientePlant;
 import mcjty.ariente.blocks.utility.*;
 import mcjty.ariente.blocks.utility.autofield.*;
 import mcjty.ariente.blocks.utility.door.DoorMarkerRenderer;
@@ -19,7 +18,6 @@ import mcjty.ariente.facade.FacadeBlock;
 import mcjty.lib.blocks.BaseBlock;
 import mcjty.lib.blocks.GenericBlock;
 import mcjty.lib.builder.BaseBlockBuilder;
-import mcjty.lib.builder.BlockFlags;
 import mcjty.lib.builder.GenericBlockBuilderFactory;
 import mcjty.lib.container.GenericContainer;
 import mcjty.lib.multipart.MultipartItemBlock;
@@ -57,10 +55,6 @@ public class ModBlocks {
     public static MarbleSlabBlock marbleSlabBlock;
     public static DoubleMarbleSlabBlock doubleMarbleSlabBlock;
 
-    public static BaseBlock guardDummy;
-    public static BaseBlock soldierDummy;
-    public static BaseBlock masterSoldierDummy;
-
     public static BaseBlock fluxBeamBlock;
 
     public static GenericBlock<SensorItemNodeTile, GenericContainer> sensorItemNode;
@@ -80,15 +74,6 @@ public class ModBlocks {
     public static BaseBlock negarite;
     public static BaseBlock reinforcedMarble;
     public static BaseBlock fluxGlow;
-
-    public static BaseBlock glowlog;
-    public static BaseBlock glowleaves;
-    public static BaseBlock bluelog;
-    public static BaseBlock blueleaves;
-    public static BaseBlock darkleaves;
-    public static BlockArientePlant blackBush;
-    public static BlockArientePlant darkGrass;
-    public static BlockArientePlant smallFlower;
 
     public static GenericBlock<PowerCombinerTile, GenericContainer> powerCombinerBlock;
     public static GenericBlock<NegariteGeneratorTile, GenericContainer> negariteGeneratorBlock;
@@ -142,7 +127,6 @@ public class ModBlocks {
 
         initDecorative();
         initOres();
-        initPlants();
         initTechnical();
     }
 
@@ -162,16 +146,6 @@ public class ModBlocks {
                 .creativeTabs(Ariente.setup.getTab())
                 .rotationType(NONE)
                 .lightValue(15)
-                .build();
-
-        guardDummy = new BaseBlockBuilder<>(Ariente.instance, "guard_dummy")
-                .rotationType(HORIZROTATION)
-                .build();
-        soldierDummy = new BaseBlockBuilder<>(Ariente.instance, "soldier_dummy")
-                .rotationType(HORIZROTATION)
-                .build();
-        masterSoldierDummy = new BaseBlockBuilder<>(Ariente.instance, "master_soldier_dummy")
-                .rotationType(HORIZROTATION)
                 .build();
 
         sensorItemNode = builderFactory.<SensorItemNodeTile> builder("sensor_item_node")
@@ -517,37 +491,6 @@ public class ModBlocks {
         return Block.FULL_BLOCK_AABB;
     }
 
-    private static void initPlants() {
-        glowlog = new BaseBlockBuilder<>(Ariente.instance, "glowlog")
-                .rotationType(NONE)
-                .creativeTabs(Ariente.setup.getTab())
-                .lightValue(10)
-                .flags(NON_OPAQUE, RENDER_TRANSLUCENT, BlockFlags.RENDER_NOSIDES)
-                .build();
-        glowleaves = new BaseBlockBuilder<>(Ariente.instance, "glowleaves")
-                .rotationType(NONE)
-                .creativeTabs(Ariente.setup.getTab())
-                .lightValue(10)
-                .flags(NON_OPAQUE, RENDER_TRANSLUCENT)
-                .build();
-        bluelog = new BaseBlockBuilder<>(Ariente.instance, "bluelog")
-                .rotationType(NONE)
-                .creativeTabs(Ariente.setup.getTab())
-                .build();
-        blueleaves = new BaseBlockBuilder<>(Ariente.instance, "blueleaves")
-                .rotationType(NONE)
-                .creativeTabs(Ariente.setup.getTab())
-                .flags(NON_OPAQUE, RENDER_CUTOUT)
-                .build();
-        darkleaves = new BaseBlockBuilder<>(Ariente.instance, "darkleaves")
-                .rotationType(NONE)
-                .creativeTabs(Ariente.setup.getTab())
-                .flags(NON_OPAQUE, RENDER_CUTOUT)
-                .build();
-        blackBush = new BlockArientePlant("black_bush");
-        darkGrass = new BlockArientePlant("dark_grass");
-        smallFlower = new BlockArientePlant("small_flower");
-    }
 
     private static void initDecorative() {
         blackmarble_techpat = new BlackTechBlock("blacktech");
@@ -620,8 +563,6 @@ public class ModBlocks {
         OreDictionary.registerOre("oreManganese", manganeseore);
         OreDictionary.registerOre("oreLithium", lithiumore);
         OreDictionary.registerOre("blockMarble", marble);
-        OreDictionary.registerOre("logWood", glowlog);
-        OreDictionary.registerOre("logWood", bluelog);
     }
 
     public static void initModels() {
@@ -677,9 +618,6 @@ public class ModBlocks {
 
         reinforcedMarble.initModel();
         aiCoreBlock.initModel();
-        guardDummy.initModel();
-        soldierDummy.initModel();
-        masterSoldierDummy.initModel();
 
         blackmarble_techpat.initModel();
         patternBlock.initModel();
@@ -705,15 +643,6 @@ public class ModBlocks {
         platinumore.initModel();
         posirite.initModel();
         negarite.initModel();
-
-        glowlog.initModel();
-        glowleaves.initModel();
-        bluelog.initModel();
-        blueleaves.initModel();
-        darkleaves.initModel();
-        blackBush.initModel();
-        darkGrass.initModel();
-        smallFlower.initModel();
     }
 
     @SideOnly(Side.CLIENT)
