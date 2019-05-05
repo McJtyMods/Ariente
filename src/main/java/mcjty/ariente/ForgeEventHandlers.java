@@ -4,7 +4,7 @@ import mcjty.ariente.blocks.utility.ILockable;
 import mcjty.ariente.config.ConfigSetup;
 import mcjty.ariente.entities.levitator.FluxLevitatorEntity;
 import mcjty.ariente.items.ModItems;
-import mcjty.ariente.items.modules.ArmorUpgradeType;
+import mcjty.ariente.api.ArmorUpgradeType;
 import mcjty.ariente.items.modules.ModuleSupport;
 import mcjty.ariente.power.PowerSystem;
 import mcjty.ariente.sounds.FluxLevitatorSounds;

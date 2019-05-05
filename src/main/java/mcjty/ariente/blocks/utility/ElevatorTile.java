@@ -3,6 +3,7 @@ package mcjty.ariente.blocks.utility;
 import mcjty.ariente.Ariente;
 import mcjty.ariente.api.ICityAI;
 import mcjty.ariente.api.ICityEquipment;
+import mcjty.ariente.api.IElevator;
 import mcjty.hologui.api.IGuiComponent;
 import mcjty.hologui.api.IGuiComponentRegistry;
 import mcjty.hologui.api.IGuiTile;
@@ -38,7 +39,7 @@ import java.util.*;
 
 import static mcjty.hologui.api.Icons.*;
 
-public class ElevatorTile extends GenericTileEntity implements IGuiTile, ITickable, IPowerReceiver, ICityEquipment {
+public class ElevatorTile extends GenericTileEntity implements IGuiTile, ITickable, IPowerReceiver, ICityEquipment, IElevator {
 
     public static final String TAG_ELEVATOR = "elevator";
 
@@ -197,6 +198,7 @@ public class ElevatorTile extends GenericTileEntity implements IGuiTile, ITickab
         return height;
     }
 
+    @Override
     public void setHeight(int height) {
         this.height = height;
         cachedBox = null;

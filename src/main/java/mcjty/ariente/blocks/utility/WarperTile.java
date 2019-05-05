@@ -1,6 +1,7 @@
 package mcjty.ariente.blocks.utility;
 
 import mcjty.ariente.Ariente;
+import mcjty.ariente.api.IWarper;
 import mcjty.ariente.compat.arienteworld.ArienteWorldCompat;
 import mcjty.ariente.config.UtilityConfiguration;
 import mcjty.hologui.api.IGuiComponent;
@@ -27,7 +28,7 @@ import net.minecraftforge.fml.relauncher.SideOnly;
 
 import java.util.List;
 
-public class WarperTile extends GenericTileEntity implements IGuiTile {
+public class WarperTile extends GenericTileEntity implements IGuiTile, IWarper {
 
     private AxisAlignedBB renderBox = null;
     private AxisAlignedBB detectionBox = null;

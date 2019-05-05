@@ -1,5 +1,6 @@
 package mcjty.ariente.blocks.utility.wireless;
 
+import mcjty.ariente.api.IRedstoneChannels;
 import mcjty.lib.worlddata.AbstractWorldData;
 import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.nbt.NBTTagList;
@@ -9,7 +10,7 @@ import net.minecraftforge.common.util.Constants;
 import java.util.HashMap;
 import java.util.Map;
 
-public class RedstoneChannels extends AbstractWorldData<RedstoneChannels> {
+public class RedstoneChannels extends AbstractWorldData<RedstoneChannels> implements IRedstoneChannels {
 
     private static final String REDSTONE_CHANNELS_NAME = "ArienteRedstoneChannels";
 
@@ -48,8 +49,10 @@ public class RedstoneChannels extends AbstractWorldData<RedstoneChannels> {
         channels.remove(id);
     }
 
+    @Override
     public int newChannel() {
         lastId++;
+        save();
         return lastId;
     }
 

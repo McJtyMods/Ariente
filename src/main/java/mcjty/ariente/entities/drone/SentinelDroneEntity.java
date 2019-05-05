@@ -1,10 +1,7 @@
 package mcjty.ariente.entities.drone;
 
 import mcjty.ariente.Ariente;
-import mcjty.ariente.api.ICityAI;
-import mcjty.ariente.api.ICityAISystem;
-import mcjty.ariente.blocks.defense.ForceFieldTile;
-import mcjty.ariente.blocks.defense.IForcefieldImmunity;
+import mcjty.ariente.api.*;
 import mcjty.ariente.compat.arienteworld.ArienteWorldCompat;
 import mcjty.ariente.sounds.ModSounds;
 import mcjty.lib.varia.ChunkCoord;
@@ -29,7 +26,7 @@ import net.minecraft.world.World;
 
 import javax.annotation.Nullable;
 
-public class SentinelDroneEntity extends EntityFlying implements IMob, IForcefieldImmunity {
+public class SentinelDroneEntity extends EntityFlying implements IMob, IForcefieldImmunity, ISentinel {
 
     public static final ResourceLocation LOOT = new ResourceLocation(Ariente.MODID, "entities/sentinel_drone");
 
@@ -51,7 +48,7 @@ public class SentinelDroneEntity extends EntityFlying implements IMob, IForcefie
     }
 
     @Override
-    public boolean isImmuneToForcefield(ForceFieldTile tile) {
+    public boolean isImmuneToForcefield(IForceFieldTile tile) {
         return true;
     }
 

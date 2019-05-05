@@ -1,11 +1,10 @@
 package mcjty.ariente.blocks.decorative;
 
+import mcjty.ariente.api.TechType;
 import mcjty.ariente.blocks.BaseVariantBlock;
 import net.minecraft.block.properties.PropertyEnum;
 
 public class BlackTechBlock extends BaseVariantBlock<TechType> {
-
-    public static final PropertyEnum<TechType> TYPE = PropertyEnum.create("type", TechType.class);
 
     public BlackTechBlock(String name) {
         super(name);
@@ -13,7 +12,7 @@ public class BlackTechBlock extends BaseVariantBlock<TechType> {
 
     @Override
     public PropertyEnum<TechType> getProperty() {
-        return TYPE;
+        return TechType.TYPE;
     }
 
     @Override

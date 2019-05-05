@@ -5,7 +5,7 @@ import mcjty.ariente.blocks.defense.ForceFieldRenderer;
 import mcjty.ariente.entities.fluxship.FluxShipRender;
 import mcjty.ariente.entities.levitator.FluxLevitatorEntity;
 import mcjty.ariente.items.ModItems;
-import mcjty.ariente.items.modules.ArmorUpgradeType;
+import mcjty.ariente.api.ArmorUpgradeType;
 import mcjty.ariente.items.modules.ModuleSupport;
 import mcjty.ariente.network.ArienteMessages;
 import mcjty.ariente.network.PacketHitForcefield;

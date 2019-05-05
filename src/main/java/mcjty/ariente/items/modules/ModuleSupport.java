@@ -1,5 +1,6 @@
 package mcjty.ariente.items.modules;
 
+import mcjty.ariente.api.ArmorUpgradeType;
 import mcjty.ariente.config.UtilityConfiguration;
 import mcjty.ariente.items.ModItems;
 import net.minecraft.entity.EntityLivingBase;

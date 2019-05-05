@@ -1,6 +1,7 @@
 package mcjty.ariente.blocks.decorative;
 
 import mcjty.ariente.Ariente;
+import mcjty.ariente.api.MarbleColor;
 import mcjty.ariente.blocks.ModBlocks;
 import mcjty.lib.McJtyRegister;
 import net.minecraft.block.BlockSlab;
@@ -22,7 +23,7 @@ import net.minecraftforge.fml.relauncher.SideOnly;
 
 import java.util.Random;
 
-import static mcjty.ariente.blocks.decorative.MarbleBlock.COLOR;
+import static mcjty.ariente.api.MarbleColor.COLOR;
 
 public class MarbleSlabBlock extends BlockSlab {
 

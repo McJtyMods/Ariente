@@ -2,6 +2,7 @@ package mcjty.ariente.blocks.generators;
 
 import mcjty.ariente.Ariente;
 import mcjty.ariente.api.IAlarmMode;
+import mcjty.ariente.api.IGenerator;
 import mcjty.ariente.blocks.ModBlocks;
 import mcjty.ariente.cables.CableColor;
 import mcjty.ariente.gui.HoloGuiTools;
@@ -46,7 +47,7 @@ import java.util.List;
 
 import static mcjty.hologui.api.Icons.*;
 
-public class NegariteGeneratorTile extends GenericTileEntity implements ITickable, DefaultSidedInventory, IGuiTile, IPowerBlob, IAlarmMode, IPowerSender {
+public class NegariteGeneratorTile extends GenericTileEntity implements ITickable, DefaultSidedInventory, IGuiTile, IPowerBlob, IAlarmMode, IPowerSender, IGenerator {
 
     public static final String CMD_RSMODE = "negarite_gen.setRsMode";
     public static final PropertyBool WORKING = PropertyBool.create("working");
@@ -70,6 +71,24 @@ public class NegariteGeneratorTile extends GenericTileEntity implements ITickabl
     @Override
     protected boolean needsRedstoneMode() {
         return true;
+    }
+
+    @Override
+    public void feedDust(int amount) {
+        if (getStackInSlot(NegariteGeneratorTile.SLOT_NEGARITE_INPUT).isEmpty()) {
+            setInventorySlotContents(NegariteGeneratorTile.SLOT_NEGARITE_INPUT, new ItemStack(ModItems.negariteDust, amount));
+            markDirtyClient();
+        }
+    }
+
+    @Override
+    public boolean supportsNegarite() {
+        return true;
+    }
+
+    @Override
+    public boolean supportsPosirite() {
+        return false;
     }
 
     @Override

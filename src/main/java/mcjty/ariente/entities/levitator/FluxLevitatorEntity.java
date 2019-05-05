@@ -93,6 +93,7 @@ public class FluxLevitatorEntity extends Entity implements IFluxLevitatorEntity 
         return dataManager.get(SPEED);
     }
 
+    @Override
     public void changeSpeed(int speed) {
         if (speed < -80) {
             speed = -80;

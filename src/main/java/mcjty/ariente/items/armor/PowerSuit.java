@@ -4,7 +4,7 @@ import com.google.common.collect.Multimap;
 import mcjty.ariente.Ariente;
 import mcjty.ariente.bindings.KeyBindings;
 import mcjty.ariente.items.ModItems;
-import mcjty.ariente.items.modules.ArmorUpgradeType;
+import mcjty.ariente.api.ArmorUpgradeType;
 import mcjty.ariente.items.modules.ModuleSupport;
 import mcjty.lib.McJtyRegister;
 import net.minecraft.client.model.ModelBiped;

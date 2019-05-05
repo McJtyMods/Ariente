@@ -2,6 +2,7 @@ package mcjty.ariente.blocks.utility.wireless;
 
 import mcjty.ariente.api.ICityAI;
 import mcjty.ariente.api.ICityEquipment;
+import mcjty.ariente.api.ISignalChannel;
 import mcjty.ariente.blocks.ModBlocks;
 import mcjty.lib.blocks.BaseBlock;
 import mcjty.lib.tileentity.GenericTileEntity;
@@ -37,7 +38,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-public abstract class SignalChannelTileEntity extends GenericTileEntity implements ICityEquipment {
+public abstract class SignalChannelTileEntity extends GenericTileEntity implements ICityEquipment, ISignalChannel {
 
     public static final PropertyBool POWER = PropertyBool.create("power");
 
@@ -104,15 +105,16 @@ public abstract class SignalChannelTileEntity extends GenericTileEntity implemen
         }
     }
 
+    @Override
     public int getChannel(boolean initialize) {
         if(initialize && channel == -1) {
             RedstoneChannels redstoneChannels = RedstoneChannels.getChannels(world);
             setChannel(redstoneChannels.newChannel());
-            redstoneChannels.save();
         }
         return channel;
     }
 
+    @Override
     public void setChannel(int channel) {
         this.channel = channel;
         markDirtyClient();
@@ -178,7 +180,6 @@ public abstract class SignalChannelTileEntity extends GenericTileEntity implemen
                     if(channel == -1) {
                         RedstoneChannels redstoneChannels = RedstoneChannels.getChannels(world);
                         channel = redstoneChannels.newChannel();
-                        redstoneChannels.save();
                         tagCompound.setInteger("channel", channel);
                     }
                     rcte.setChannel(channel);
@@ -214,10 +215,12 @@ public abstract class SignalChannelTileEntity extends GenericTileEntity implemen
         setPowerInput(power);
     }
 
+    @Override
     public int getDesiredChannel() {
         return desiredChannel;
     }
 
+    @Override
     public void setDesiredChannel(int desiredChannel) {
         this.desiredChannel = desiredChannel;
         markDirtyQuick();

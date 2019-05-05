@@ -1,12 +1,7 @@
 package mcjty.ariente.entities.soldier;
 
 import mcjty.ariente.Ariente;
-import mcjty.ariente.api.ICityAI;
-import mcjty.ariente.api.ICityAISystem;
-import mcjty.ariente.api.ISoldier;
-import mcjty.ariente.api.SoldierBehaviourType;
-import mcjty.ariente.blocks.defense.ForceFieldTile;
-import mcjty.ariente.blocks.defense.IForcefieldImmunity;
+import mcjty.ariente.api.*;
 import mcjty.ariente.compat.arienteworld.ArienteWorldCompat;
 import mcjty.ariente.items.KeyCardItem;
 import mcjty.ariente.items.ModItems;
@@ -105,7 +100,7 @@ public class SoldierEntity extends EntityMob implements IArmRaisable, IForcefiel
     }
 
     @Override
-    public boolean isImmuneToForcefield(ForceFieldTile tile) {
+    public boolean isImmuneToForcefield(IForceFieldTile tile) {
         // @todo Need to implement forcefield immunity cards
         return true;
     }

@@ -1,5 +1,6 @@
 package mcjty.ariente.security;
 
+import mcjty.ariente.api.ISecuritySystem;
 import mcjty.lib.worlddata.AbstractWorldData;
 import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.world.World;
@@ -11,7 +12,7 @@ import java.util.Collections;
 import java.util.List;
 import java.util.Random;
 
-public class SecuritySystem extends AbstractWorldData<SecuritySystem> {
+public class SecuritySystem extends AbstractWorldData<SecuritySystem> implements ISecuritySystem {
 
     private static final String NAME = "ArienteSecurity";
 
@@ -33,6 +34,7 @@ public class SecuritySystem extends AbstractWorldData<SecuritySystem> {
         return id;
     }
 
+    @Override
     public String generateKeyId() {
         long id = newSecurityID();
         World world = DimensionManager.getWorld(0);

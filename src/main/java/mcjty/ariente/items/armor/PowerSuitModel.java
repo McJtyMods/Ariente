@@ -4,7 +4,7 @@ import mcjty.ariente.blocks.defense.ForceFieldRenderer;
 import mcjty.ariente.blocks.defense.PanelInfo;
 import mcjty.ariente.blocks.defense.PentakisDodecahedron;
 import mcjty.ariente.items.ModItems;
-import mcjty.ariente.items.modules.ArmorUpgradeType;
+import mcjty.ariente.api.ArmorUpgradeType;
 import mcjty.ariente.items.modules.ModuleSupport;
 import mcjty.ariente.varia.Triangle;
 import net.minecraft.client.Minecraft;

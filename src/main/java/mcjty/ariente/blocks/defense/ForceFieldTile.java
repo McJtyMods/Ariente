@@ -78,6 +78,7 @@ public class ForceFieldTile extends GenericTileEntity implements IGuiTile, ITick
         return false;
     }
 
+    @Override
     public void setCityCenter(ChunkCoord cityCenter) {
         this.cityCenter = cityCenter;
     }

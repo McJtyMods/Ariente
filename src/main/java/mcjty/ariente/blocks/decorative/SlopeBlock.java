@@ -1,10 +1,10 @@
 package mcjty.ariente.blocks.decorative;
 
 import mcjty.ariente.Ariente;
+import mcjty.ariente.api.EnumFacingUpDown;
 import mcjty.lib.blocks.BaseBlock;
 import net.minecraft.block.material.Material;
 import net.minecraft.block.properties.IProperty;
-import net.minecraft.block.properties.PropertyEnum;
 import net.minecraft.block.state.IBlockState;
 import net.minecraft.entity.EntityLivingBase;
 import net.minecraft.item.ItemBlock;
@@ -14,8 +14,7 @@ import net.minecraft.world.World;
 
 public class SlopeBlock extends BaseBlock {
 
-    public static final PropertyEnum<EnumFacingUpDown> FACING = PropertyEnum.create("facing", EnumFacingUpDown.class);
-    private static final IProperty[] PROPERTIES = {FACING};
+    private static final IProperty[] PROPERTIES = {EnumFacingUpDown.FACING};
 
     public SlopeBlock(String name) {
         super(Ariente.instance, Material.ROCK, name, ItemBlock::new);
@@ -50,17 +49,17 @@ public class SlopeBlock extends BaseBlock {
         IBlockState state = super.getStateForPlacement(worldIn, pos, facing, hitX, hitY, hitZ, meta, placer);
         EnumFacing dir = placer.getHorizontalFacing().getOpposite();
         EnumFacingUpDown updown = EnumFacingUpDown.VALUES[dir.ordinal()-2 + (facing == EnumFacing.DOWN ? 4 : 0)];
-        return state.withProperty(FACING, updown);
+        return state.withProperty(EnumFacingUpDown.FACING, updown);
     }
 
     @Override
     public IBlockState getStateFromMeta(int meta) {
-        return getDefaultState().withProperty(FACING, EnumFacingUpDown.VALUES[meta]);
+        return getDefaultState().withProperty(EnumFacingUpDown.FACING, EnumFacingUpDown.VALUES[meta]);
     }
 
     @Override
     public int getMetaFromState(IBlockState state) {
-        return state.getValue(FACING).ordinal();
+        return state.getValue(EnumFacingUpDown.FACING).ordinal();
     }
 
     @Override

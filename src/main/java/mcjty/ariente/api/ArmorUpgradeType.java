@@ -1,4 +1,4 @@
-package mcjty.ariente.items.modules;
+package mcjty.ariente.api;
 
 import javax.annotation.Nullable;
 import java.util.HashMap;

@@ -1,14 +1,22 @@
 package mcjty.ariente.apiimpl;
 
-import mcjty.ariente.api.IArienteSystem;
-import mcjty.ariente.api.IFluxLevitatorEntity;
-import mcjty.ariente.api.ISoldier;
-import mcjty.ariente.api.SoldierBehaviourType;
+import mcjty.ariente.api.*;
+import mcjty.ariente.blocks.utility.wireless.RedstoneChannels;
+import mcjty.ariente.entities.drone.DroneEntity;
+import mcjty.ariente.entities.drone.SentinelDroneEntity;
 import mcjty.ariente.entities.levitator.FluxLevitatorEntity;
 import mcjty.ariente.entities.soldier.MasterSoldierEntity;
 import mcjty.ariente.entities.soldier.SoldierEntity;
+import mcjty.ariente.items.KeyCardItem;
+import mcjty.ariente.items.modules.ModuleSupport;
+import mcjty.ariente.power.PowerSenderSupport;
+import mcjty.ariente.security.SecuritySystem;
 import mcjty.lib.varia.ChunkCoord;
+import net.minecraft.block.BlockRailBase;
+import net.minecraft.block.state.IBlockState;
+import net.minecraft.entity.Entity;
 import net.minecraft.entity.EntityLivingBase;
+import net.minecraft.item.ItemStack;
 import net.minecraft.util.EnumFacing;
 import net.minecraft.util.math.AxisAlignedBB;
 import net.minecraft.util.math.BlockPos;
@@ -35,6 +43,51 @@ public class ArienteSystem implements IArienteSystem {
     @Override
     public EntityLivingBase createSoldier(World world, BlockPos pos, EnumFacing facing, @Nullable ChunkCoord cityCenter, SoldierBehaviourType type, boolean master) {
         return createSoldierInt(world, pos, facing, cityCenter, type, master);
+    }
+
+    @Override
+    public EntityLivingBase createSentinel(World world, int index, @Nullable ChunkCoord cityCenter) {
+        return new SentinelDroneEntity(world, index, cityCenter);
+    }
+
+    @Override
+    public EntityLivingBase createDrone(World world, @Nullable ChunkCoord cityCenter) {
+        return new DroneEntity(world, cityCenter);
+    }
+
+    @Override
+    public void addSecurity(ItemStack keyCard, String tag) {
+        KeyCardItem.addSecurityTag(keyCard, tag);
+    }
+
+    @Override
+    public void fixNetworks(World world, BlockPos pos) {
+        PowerSenderSupport.fixNetworks(world, pos);
+    }
+
+    @Override
+    public BlockRailBase.EnumRailDirection getBeamDirection(IBlockState state) {
+        return FluxLevitatorEntity.getBeamDirection(state);
+    }
+
+    @Override
+    public boolean hasWorkingUpgrade(ItemStack armor, ArmorUpgradeType type) {
+        return ModuleSupport.hasWorkingUpgrade(armor, type);
+    }
+
+    @Override
+    public ISecuritySystem getSecuritySystem(World world) {
+        return SecuritySystem.getSecuritySystem(world);
+    }
+
+    @Override
+    public IRedstoneChannels getRedstoneChannels(World world) {
+        return RedstoneChannels.getChannels(world);
+    }
+
+    @Override
+    public Entity createFluxLevitatorEntity(World world, double x, double y, double z) {
+        return new FluxLevitatorEntity(world, x, y, z);
     }
 
     private SoldierEntity createSoldierInt(World world, BlockPos p, EnumFacing facing, @Nullable ChunkCoord center, SoldierBehaviourType behaviourType,

@@ -1,5 +1,6 @@
-package mcjty.ariente.blocks.decorative;
+package mcjty.ariente.api;
 
+import net.minecraft.block.properties.PropertyEnum;
 import net.minecraft.util.IStringSerializable;
 
 public enum TechType implements IStringSerializable {
@@ -13,6 +14,8 @@ public enum TechType implements IStringSerializable {
     ;
 
     public static final TechType[] VALUES = new TechType[TechType.values().length];
+
+    public static final PropertyEnum<TechType> TYPE = PropertyEnum.create("type", TechType.class);
 
     static {
         int i = 0;

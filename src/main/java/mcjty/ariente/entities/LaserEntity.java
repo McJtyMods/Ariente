@@ -1,7 +1,7 @@
 package mcjty.ariente.entities;
 
-import mcjty.ariente.blocks.defense.ForceFieldTile;
-import mcjty.ariente.blocks.defense.IForcefieldImmunity;
+import mcjty.ariente.api.IForceFieldTile;
+import mcjty.ariente.api.IForcefieldImmunity;
 import mcjty.ariente.sounds.ModSounds;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.EntityLivingBase;
@@ -49,7 +49,7 @@ public class LaserEntity extends Entity implements IForcefieldImmunity {
     }
 
     @Override
-    public boolean isImmuneToForcefield(ForceFieldTile tile) {
+    public boolean isImmuneToForcefield(IForceFieldTile tile) {
         // @todo only make immune if this laser belongs to the controller of the forcefield
         return true;
     }

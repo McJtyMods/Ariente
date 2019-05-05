@@ -1,9 +1,7 @@
 package mcjty.ariente.blocks;
 
 import mcjty.ariente.Ariente;
-import mcjty.ariente.blocks.decorative.MarbleColor;
 import mcjty.lib.blocks.BaseBlock;
-import mcjty.lib.blocks.DamageMetadataItemBlock;
 import net.minecraft.block.material.Material;
 import net.minecraft.block.properties.PropertyEnum;
 import net.minecraft.block.state.BlockStateContainer;
@@ -17,8 +15,6 @@ import net.minecraft.util.NonNullList;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.World;
 import net.minecraftforge.client.model.ModelLoader;
-import net.minecraftforge.fml.relauncher.Side;
-import net.minecraftforge.fml.relauncher.SideOnly;
 
 public abstract class BaseVariantBlock<T extends Enum<T> & IStringSerializable> extends BaseBlock {
 

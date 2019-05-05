@@ -3,7 +3,7 @@ package mcjty.ariente.items;
 import com.google.common.collect.Multimap;
 import mcjty.ariente.bindings.KeyBindings;
 import mcjty.ariente.entities.soldier.MasterSoldierEntity;
-import mcjty.ariente.items.modules.ArmorUpgradeType;
+import mcjty.ariente.api.ArmorUpgradeType;
 import mcjty.ariente.items.modules.ModuleSupport;
 import net.minecraft.client.util.ITooltipFlag;
 import net.minecraft.enchantment.Enchantment;

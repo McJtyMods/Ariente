@@ -1,11 +1,10 @@
 package mcjty.ariente.blocks.decorative;
 
+import mcjty.ariente.api.MarbleColor;
 import mcjty.ariente.blocks.BaseVariantBlock;
 import net.minecraft.block.properties.PropertyEnum;
 
 public class MarbleBlock extends BaseVariantBlock<MarbleColor> {
-
-    public static final PropertyEnum<MarbleColor> COLOR = PropertyEnum.create("type", MarbleColor.class);
 
     public MarbleBlock(String name) {
         super(name);
@@ -13,7 +12,7 @@ public class MarbleBlock extends BaseVariantBlock<MarbleColor> {
 
     @Override
     public PropertyEnum<MarbleColor> getProperty() {
-        return COLOR;
+        return MarbleColor.COLOR;
     }
 
     @Override

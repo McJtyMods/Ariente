@@ -1,5 +1,6 @@
 package mcjty.ariente.items.modules;
 
+import mcjty.ariente.api.ArmorUpgradeType;
 import mcjty.ariente.items.GenericItem;
 import net.minecraft.client.util.ITooltipFlag;
 import net.minecraft.item.ItemStack;

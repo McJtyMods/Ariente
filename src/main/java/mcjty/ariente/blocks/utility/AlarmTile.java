@@ -1,6 +1,7 @@
 package mcjty.ariente.blocks.utility;
 
 import mcjty.ariente.api.AlarmType;
+import mcjty.ariente.api.IAlarmTile;
 import mcjty.ariente.sounds.ModSounds;
 import mcjty.lib.tileentity.GenericTileEntity;
 import mcjty.theoneprobe.api.IProbeHitData;
@@ -25,7 +26,7 @@ import net.minecraftforge.fml.relauncher.SideOnly;
 
 import java.util.List;
 
-public class AlarmTile extends GenericTileEntity implements ITickable {
+public class AlarmTile extends GenericTileEntity implements ITickable, IAlarmTile {
 
     public static final PropertyEnum<AlarmType> ALARM = PropertyEnum.create("alarm", AlarmType.class, AlarmType.values());
 
@@ -46,10 +47,12 @@ public class AlarmTile extends GenericTileEntity implements ITickable {
         }
     }
 
+    @Override
     public AlarmType getAlarmType() {
         return alarmType;
     }
 
+    @Override
     public void setAlarmType(AlarmType alarmType) {
         this.alarmType = alarmType;
         markDirtyClient();
