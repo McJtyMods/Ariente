@@ -11,7 +11,6 @@ import mcjty.ariente.items.KeyCardItem;
 import mcjty.ariente.items.modules.ModuleSupport;
 import mcjty.ariente.power.PowerSenderSupport;
 import mcjty.ariente.security.SecuritySystem;
-import mcjty.lib.varia.ChunkCoord;
 import net.minecraft.block.BlockRailBase;
 import net.minecraft.block.state.IBlockState;
 import net.minecraft.entity.Entity;
@@ -20,6 +19,7 @@ import net.minecraft.item.ItemStack;
 import net.minecraft.util.EnumFacing;
 import net.minecraft.util.math.AxisAlignedBB;
 import net.minecraft.util.math.BlockPos;
+import net.minecraft.util.math.ChunkPos;
 import net.minecraft.world.World;
 
 import javax.annotation.Nonnull;
@@ -41,17 +41,17 @@ public class ArienteSystem implements IArienteSystem {
     }
 
     @Override
-    public EntityLivingBase createSoldier(World world, BlockPos pos, EnumFacing facing, @Nullable ChunkCoord cityCenter, SoldierBehaviourType type, boolean master) {
+    public EntityLivingBase createSoldier(World world, BlockPos pos, EnumFacing facing, @Nullable ChunkPos cityCenter, SoldierBehaviourType type, boolean master) {
         return createSoldierInt(world, pos, facing, cityCenter, type, master);
     }
 
     @Override
-    public EntityLivingBase createSentinel(World world, int index, @Nullable ChunkCoord cityCenter) {
+    public EntityLivingBase createSentinel(World world, int index, @Nullable ChunkPos cityCenter) {
         return new SentinelDroneEntity(world, index, cityCenter);
     }
 
     @Override
-    public EntityLivingBase createDrone(World world, @Nullable ChunkCoord cityCenter) {
+    public EntityLivingBase createDrone(World world, @Nullable ChunkPos cityCenter) {
         return new DroneEntity(world, cityCenter);
     }
 
@@ -90,7 +90,7 @@ public class ArienteSystem implements IArienteSystem {
         return new FluxLevitatorEntity(world, x, y, z);
     }
 
-    private SoldierEntity createSoldierInt(World world, BlockPos p, EnumFacing facing, @Nullable ChunkCoord center, SoldierBehaviourType behaviourType,
+    private SoldierEntity createSoldierInt(World world, BlockPos p, EnumFacing facing, @Nullable ChunkPos center, SoldierBehaviourType behaviourType,
                                            boolean master) {
         SoldierEntity entity;
         if (master) {

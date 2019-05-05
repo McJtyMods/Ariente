@@ -1,7 +1,7 @@
 package mcjty.ariente.api;
 
-import mcjty.lib.varia.ChunkCoord;
 import net.minecraft.util.math.BlockPos;
+import net.minecraft.util.math.ChunkPos;
 import net.minecraft.world.World;
 
 public interface IArienteWorld {
@@ -10,7 +10,7 @@ public interface IArienteWorld {
 
     BlockPos getNearestTeleportationSpot(BlockPos pos);
 
-    ChunkCoord getNearestCityCenter(ChunkCoord cityCenter);
+    ChunkPos getNearestCityCenter(ChunkPos cityCenter);
 
     BlockPos getNearestDungeon(World world, BlockPos pos);
 

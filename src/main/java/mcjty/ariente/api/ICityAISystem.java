@@ -1,9 +1,9 @@
 package mcjty.ariente.api;
 
-import mcjty.lib.varia.ChunkCoord;
+import net.minecraft.util.math.ChunkPos;
 
 public interface ICityAISystem {
-    ICityAI getCityAI(ChunkCoord cityCenter);
+    ICityAI getCityAI(ChunkPos cityCenter);
 
     void saveSystem();
 }

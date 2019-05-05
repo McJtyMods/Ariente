@@ -1,6 +1,5 @@
 package mcjty.ariente.api;
 
-import mcjty.lib.varia.ChunkCoord;
 import net.minecraft.block.BlockRailBase;
 import net.minecraft.block.state.IBlockState;
 import net.minecraft.entity.Entity;
@@ -9,6 +8,7 @@ import net.minecraft.item.ItemStack;
 import net.minecraft.util.EnumFacing;
 import net.minecraft.util.math.AxisAlignedBB;
 import net.minecraft.util.math.BlockPos;
+import net.minecraft.util.math.ChunkPos;
 import net.minecraft.world.World;
 
 import javax.annotation.Nonnull;
@@ -23,13 +23,13 @@ public interface IArienteSystem {
     @Nonnull
     List<? extends IFluxLevitatorEntity> getLevitatorsWithinAABB(World world, AxisAlignedBB aabb);
 
-    EntityLivingBase createSoldier(World world, BlockPos pos, EnumFacing facing, @Nullable ChunkCoord cityCenter, SoldierBehaviourType type, boolean master);
+    EntityLivingBase createSoldier(World world, BlockPos pos, EnumFacing facing, @Nullable ChunkPos cityCenter, SoldierBehaviourType type, boolean master);
 
-    EntityLivingBase createSentinel(World world, int index, @Nullable ChunkCoord cityCenter);
+    EntityLivingBase createSentinel(World world, int index, @Nullable ChunkPos cityCenter);
 
     Entity createFluxLevitatorEntity(World world, double x, double y, double z);
 
-    EntityLivingBase createDrone(World world, @Nullable ChunkCoord cityCenter);
+    EntityLivingBase createDrone(World world, @Nullable ChunkPos cityCenter);
 
     void addSecurity(ItemStack keyCard, String tag);
 

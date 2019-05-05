@@ -1,7 +1,7 @@
 package mcjty.ariente.api;
 
-import mcjty.lib.varia.ChunkCoord;
+import net.minecraft.util.math.ChunkPos;
 
 public interface IForceFieldTile {
-    void setCityCenter(ChunkCoord cityCenter);
+    void setCityCenter(ChunkPos cityCenter);
 }

@@ -5,7 +5,6 @@ import mcjty.ariente.api.*;
 import mcjty.ariente.compat.arienteworld.ArienteWorldCompat;
 import mcjty.ariente.entities.LaserEntity;
 import mcjty.ariente.sounds.ModSounds;
-import mcjty.lib.varia.ChunkCoord;
 import net.minecraft.entity.EntityFlying;
 import net.minecraft.entity.EntityLivingBase;
 import net.minecraft.entity.SharedMonsterAttributes;
@@ -22,10 +21,7 @@ import net.minecraft.util.DamageSource;
 import net.minecraft.util.ResourceLocation;
 import net.minecraft.util.SoundCategory;
 import net.minecraft.util.SoundEvent;
-import net.minecraft.util.math.AxisAlignedBB;
-import net.minecraft.util.math.BlockPos;
-import net.minecraft.util.math.MathHelper;
-import net.minecraft.util.math.Vec3d;
+import net.minecraft.util.math.*;
 import net.minecraft.world.EnumDifficulty;
 import net.minecraft.world.World;
 import net.minecraftforge.fml.relauncher.Side;
@@ -40,7 +36,7 @@ public class DroneEntity extends EntityFlying implements IMob, IForcefieldImmuni
     public static final ResourceLocation LOOT = new ResourceLocation(Ariente.MODID, "entities/drone");
 
     // If this drone is controlled by a city then this will be set
-    private ChunkCoord cityCenter;
+    private ChunkPos cityCenter;
 
     public DroneEntity(World worldIn) {
         super(worldIn);
@@ -50,7 +46,7 @@ public class DroneEntity extends EntityFlying implements IMob, IForcefieldImmuni
         this.moveHelper = new DroneMoveHelper(this);
     }
 
-    public DroneEntity(World world, ChunkCoord cityCenter) {
+    public DroneEntity(World world, ChunkPos cityCenter) {
         this(world);
         this.cityCenter = cityCenter;
     }
@@ -189,8 +185,8 @@ public class DroneEntity extends EntityFlying implements IMob, IForcefieldImmuni
     public void writeEntityToNBT(NBTTagCompound compound) {
         super.writeEntityToNBT(compound);
         if (cityCenter != null) {
-            compound.setInteger("cityX", cityCenter.getChunkX());
-            compound.setInteger("cityZ", cityCenter.getChunkZ());
+            compound.setInteger("cityX", cityCenter.x);
+            compound.setInteger("cityZ", cityCenter.z);
         }
     }
 
@@ -201,7 +197,7 @@ public class DroneEntity extends EntityFlying implements IMob, IForcefieldImmuni
     public void readEntityFromNBT(NBTTagCompound compound) {
         super.readEntityFromNBT(compound);
         if (compound.hasKey("cityX")) {
-            cityCenter = new ChunkCoord(compound.getInteger("cityX"), compound.getInteger("cityZ"));
+            cityCenter = new ChunkPos(compound.getInteger("cityX"), compound.getInteger("cityZ"));
         }
     }
 

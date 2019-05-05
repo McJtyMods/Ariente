@@ -6,7 +6,6 @@ import mcjty.ariente.compat.arienteworld.ArienteWorldCompat;
 import mcjty.ariente.items.KeyCardItem;
 import mcjty.ariente.items.ModItems;
 import mcjty.ariente.items.armor.PowerSuit;
-import mcjty.lib.varia.ChunkCoord;
 import net.minecraft.block.Block;
 import net.minecraft.entity.EntityLivingBase;
 import net.minecraft.entity.SharedMonsterAttributes;
@@ -24,6 +23,7 @@ import net.minecraft.util.DamageSource;
 import net.minecraft.util.ResourceLocation;
 import net.minecraft.util.SoundEvent;
 import net.minecraft.util.math.BlockPos;
+import net.minecraft.util.math.ChunkPos;
 import net.minecraft.world.World;
 import net.minecraftforge.fml.relauncher.Side;
 import net.minecraftforge.fml.relauncher.SideOnly;
@@ -37,7 +37,7 @@ public class SoldierEntity extends EntityMob implements IArmRaisable, IForcefiel
     public static final ResourceLocation LOOT = new ResourceLocation(Ariente.MODID, "entities/soldier");
 
     // If this entity is controlled by a city then this will be set
-    private ChunkCoord cityCenter;
+    private ChunkPos cityCenter;
     private SoldierBehaviourType behaviourType = SoldierBehaviourType.SOLDIER_FIGHTER;
 
 
@@ -50,7 +50,7 @@ public class SoldierEntity extends EntityMob implements IArmRaisable, IForcefiel
         }
     }
 
-    public SoldierEntity(World world, ChunkCoord cityCenter, SoldierBehaviourType behaviourType) {
+    public SoldierEntity(World world, ChunkPos cityCenter, SoldierBehaviourType behaviourType) {
         this(world);
         this.cityCenter = cityCenter;
         this.behaviourType = behaviourType;
@@ -105,7 +105,7 @@ public class SoldierEntity extends EntityMob implements IArmRaisable, IForcefiel
         return true;
     }
 
-    public ChunkCoord getCityCenter() {
+    public ChunkPos getCityCenter() {
         return cityCenter;
     }
 
@@ -196,8 +196,8 @@ public class SoldierEntity extends EntityMob implements IArmRaisable, IForcefiel
     public void writeEntityToNBT(NBTTagCompound compound) {
         super.writeEntityToNBT(compound);
         if (cityCenter != null) {
-            compound.setInteger("cityX", cityCenter.getChunkX());
-            compound.setInteger("cityZ", cityCenter.getChunkZ());
+            compound.setInteger("cityX", cityCenter.x);
+            compound.setInteger("cityZ", cityCenter.z);
         }
         compound.setInteger("behaviour", behaviourType.ordinal());
     }
@@ -209,7 +209,7 @@ public class SoldierEntity extends EntityMob implements IArmRaisable, IForcefiel
     public void readEntityFromNBT(NBTTagCompound compound) {
         super.readEntityFromNBT(compound);
         if (compound.hasKey("cityX")) {
-            cityCenter = new ChunkCoord(compound.getInteger("cityX"), compound.getInteger("cityZ"));
+            cityCenter = new ChunkPos(compound.getInteger("cityX"), compound.getInteger("cityZ"));
         }
         behaviourType = SoldierBehaviourType.values()[compound.getInteger("behaviour")];
     }

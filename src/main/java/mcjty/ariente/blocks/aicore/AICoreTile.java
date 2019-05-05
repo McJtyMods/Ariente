@@ -5,16 +5,17 @@ import mcjty.ariente.api.IAlarmMode;
 import mcjty.ariente.api.ICityAI;
 import mcjty.ariente.api.ICityAISystem;
 import mcjty.ariente.compat.arienteworld.ArienteWorldCompat;
-import mcjty.lib.varia.ChunkCoord;
 import mcjty.lib.tileentity.GenericTileEntity;
+import mcjty.lib.varia.BlockPosTools;
 import net.minecraft.block.state.IBlockState;
 import net.minecraft.util.ITickable;
 import net.minecraft.util.math.BlockPos;
+import net.minecraft.util.math.ChunkPos;
 import net.minecraft.world.World;
 
 public class AICoreTile extends GenericTileEntity implements ITickable, IAlarmMode, IAICoreTile {
 
-    private ChunkCoord cityCenter;
+    private ChunkPos cityCenter;
     private int tickCounter = 10;
 
     @Override
@@ -42,9 +43,9 @@ public class AICoreTile extends GenericTileEntity implements ITickable, IAlarmMo
         return true;
     }
 
-    private ChunkCoord getCityCenter() {
+    private ChunkPos getCityCenter() {
         if (cityCenter == null) {
-            cityCenter = ChunkCoord.getChunkCoordFromPos(pos);
+            cityCenter = BlockPosTools.getChunkCoordFromPos(pos);
             // @todo check if Ariente World is there!
             cityCenter = ArienteWorldCompat.getArienteWorld().getNearestCityCenter(cityCenter);
         }

@@ -10,7 +10,6 @@ import mcjty.ariente.network.ArienteMessages;
 import mcjty.ariente.power.IPowerReceiver;
 import mcjty.ariente.power.PowerReceiverSupport;
 import mcjty.ariente.sounds.ISoundProducer;
-import mcjty.lib.varia.ChunkCoord;
 import mcjty.ariente.varia.Triangle;
 import mcjty.hologui.api.IGuiComponent;
 import mcjty.hologui.api.IGuiComponentRegistry;
@@ -35,6 +34,7 @@ import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.util.DamageSource;
 import net.minecraft.util.ITickable;
 import net.minecraft.util.math.AxisAlignedBB;
+import net.minecraft.util.math.ChunkPos;
 import net.minecraft.util.math.Vec3d;
 import net.minecraft.world.World;
 import net.minecraftforge.fml.common.Optional;
@@ -53,7 +53,7 @@ public class ForceFieldTile extends GenericTileEntity implements IGuiTile, ITick
     private int[] panelDestroyTimeout = new int[PentakisDodecahedron.MAX_TRIANGLES];    // @todo persist to NBT?
     private AxisAlignedBB aabb = null;
     private int scale = 10;
-    private ChunkCoord cityCenter;
+    private ChunkPos cityCenter;
 
     // Transient
     private long usingPower = 0;
@@ -79,7 +79,7 @@ public class ForceFieldTile extends GenericTileEntity implements IGuiTile, ITick
     }
 
     @Override
-    public void setCityCenter(ChunkCoord cityCenter) {
+    public void setCityCenter(ChunkPos cityCenter) {
         this.cityCenter = cityCenter;
     }
 

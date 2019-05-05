@@ -1,11 +1,11 @@
 package mcjty.ariente.entities.soldier;
 
 import mcjty.ariente.api.SoldierBehaviourType;
-import mcjty.lib.varia.ChunkCoord;
 import net.minecraft.init.MobEffects;
 import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.potion.PotionEffect;
 import net.minecraft.util.DamageSource;
+import net.minecraft.util.math.ChunkPos;
 import net.minecraft.world.World;
 
 public class MasterSoldierEntity extends SoldierEntity {
@@ -17,7 +17,7 @@ public class MasterSoldierEntity extends SoldierEntity {
         isImmuneToFire = true;
     }
 
-    public MasterSoldierEntity(World world, ChunkCoord cityCenter, SoldierBehaviourType behaviourType) {
+    public MasterSoldierEntity(World world, ChunkPos cityCenter, SoldierBehaviourType behaviourType) {
         super(world, cityCenter, behaviourType);
         isImmuneToFire = true;
     }

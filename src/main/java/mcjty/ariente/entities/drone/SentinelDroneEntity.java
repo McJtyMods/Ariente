@@ -4,7 +4,6 @@ import mcjty.ariente.Ariente;
 import mcjty.ariente.api.*;
 import mcjty.ariente.compat.arienteworld.ArienteWorldCompat;
 import mcjty.ariente.sounds.ModSounds;
-import mcjty.lib.varia.ChunkCoord;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.EntityFlying;
 import net.minecraft.entity.EntityLivingBase;
@@ -20,6 +19,7 @@ import net.minecraft.util.SoundCategory;
 import net.minecraft.util.SoundEvent;
 import net.minecraft.util.math.AxisAlignedBB;
 import net.minecraft.util.math.BlockPos;
+import net.minecraft.util.math.ChunkPos;
 import net.minecraft.util.math.MathHelper;
 import net.minecraft.world.EnumDifficulty;
 import net.minecraft.world.World;
@@ -31,7 +31,7 @@ public class SentinelDroneEntity extends EntityFlying implements IMob, IForcefie
     public static final ResourceLocation LOOT = new ResourceLocation(Ariente.MODID, "entities/sentinel_drone");
 
     private int sentinelId;
-    private ChunkCoord cityCenter;
+    private ChunkPos cityCenter;
 
     public SentinelDroneEntity(World worldIn) {
         super(worldIn);
@@ -41,7 +41,7 @@ public class SentinelDroneEntity extends EntityFlying implements IMob, IForcefie
         this.moveHelper = new SentinelDroneMoveHelper(this);
     }
 
-    public SentinelDroneEntity(World world, int sentinelId, ChunkCoord cityCenter) {
+    public SentinelDroneEntity(World world, int sentinelId, ChunkPos cityCenter) {
         this(world);
         this.sentinelId = sentinelId;
         this.cityCenter = cityCenter;
@@ -191,8 +191,8 @@ public class SentinelDroneEntity extends EntityFlying implements IMob, IForcefie
     public void writeEntityToNBT(NBTTagCompound compound) {
         super.writeEntityToNBT(compound);
         if (cityCenter != null) {
-            compound.setInteger("cityX", cityCenter.getChunkX());
-            compound.setInteger("cityZ", cityCenter.getChunkZ());
+            compound.setInteger("cityX", cityCenter.x);
+            compound.setInteger("cityZ", cityCenter.z);
         }
     }
 
@@ -203,7 +203,7 @@ public class SentinelDroneEntity extends EntityFlying implements IMob, IForcefie
     public void readEntityFromNBT(NBTTagCompound compound) {
         super.readEntityFromNBT(compound);
         if (compound.hasKey("cityX")) {
-            cityCenter = new ChunkCoord(compound.getInteger("cityX"), compound.getInteger("cityZ"));
+            cityCenter = new ChunkPos(compound.getInteger("cityX"), compound.getInteger("cityZ"));
         }
     }
 
