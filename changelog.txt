@@ -1,4 +1,5 @@
-Upcoming:
+upcoming:
+- Huge change: Ariente is now only the tech mod. The dimension and progression has moved to Ariente World
 - Make sure the Ariente Pearl only leads the player towards dungeons that still have a warper in them
 
 0.0.11-alpha:
