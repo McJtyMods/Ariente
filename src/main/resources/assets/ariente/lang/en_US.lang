@@ -136,16 +136,6 @@ tile.ariente.marble_slab.black.name=Black Marble Slab
 tile.ariente.marble_slab.lime.name=Lime Marble Slab
 tile.ariente.marble_slab.red.name=Red Marble Slab
 
-tile.ariente.lapisore.name=Lapis Ore
-tile.ariente.glowstoneore.name=Glowstone Ore
-tile.ariente.lithiumore.name=Lithium Ore
-tile.ariente.manganeseore.name=Manganese Ore
-tile.ariente.siliconore.name=Silicon Ore
-tile.ariente.silverore.name=Silver Ore
-tile.ariente.platinumore.name=Platinum Ore
-tile.ariente.posirite.name=Posirite Ore
-tile.ariente.negarite.name=Negarite Ore
-
 entity.ariente_drone.name=Drone
 entity.ariente_sentinel_drone.name=Sentinel Drone
 entity.ariente_soldier.name=Soldier
