@@ -52,6 +52,15 @@ public class ModBlocks {
     public static MarbleBlock marble_pilar;
     public static MarbleBlock marble_bricks;
 
+    public static BaseBlock lithiumore;
+    public static BaseBlock manganeseore;
+    public static BaseBlock siliconore;
+    public static BaseBlock silverore;
+    public static BaseBlock platinumore;
+    public static BaseBlock posirite;
+    public static BaseBlock negarite;
+
+
     public static MarbleSlabBlock marbleSlabBlock;
     public static DoubleMarbleSlabBlock doubleMarbleSlabBlock;
 
@@ -117,6 +126,7 @@ public class ModBlocks {
         builderFactory = new GenericBlockBuilderFactory(Ariente.instance).creativeTabs(Ariente.setup.getTab());
 
         initDecorative();
+        initOres();
         initTechnical();
     }
 
@@ -505,8 +515,47 @@ public class ModBlocks {
                 .setHardness(3.0F).setResistance(8.0F);
     }
 
+    private static void initOres() {
+        lithiumore = new BaseBlockBuilder<>(Ariente.instance, "lithiumore")
+                .rotationType(NONE)
+                .creativeTabs(Ariente.setup.getTab())
+                .build();
+        manganeseore = new BaseBlockBuilder<>(Ariente.instance, "manganeseore")
+                .rotationType(NONE)
+                .creativeTabs(Ariente.setup.getTab())
+                .build();
+        siliconore = new BaseBlockBuilder<>(Ariente.instance, "siliconore")
+                .rotationType(NONE)
+                .creativeTabs(Ariente.setup.getTab())
+                .build();
+        silverore = new BaseBlockBuilder<>(Ariente.instance, "silverore")
+                .rotationType(NONE)
+                .creativeTabs(Ariente.setup.getTab())
+                .build();
+        platinumore = new BaseBlockBuilder<>(Ariente.instance, "platinumore")
+                .rotationType(NONE)
+                .creativeTabs(Ariente.setup.getTab())
+                .build();
+        posirite = new BaseBlockBuilder<>(Ariente.instance, "posirite")
+                .rotationType(NONE)
+                .creativeTabs(Ariente.setup.getTab())
+                .build();
+        negarite = new BaseBlockBuilder<>(Ariente.instance, "negarite")
+                .rotationType(NONE)
+                .creativeTabs(Ariente.setup.getTab())
+                .build();
+    }
+
+
     public static void initOreDict() {
         OreDictionary.registerOre("blockMarble", marble);
+        OreDictionary.registerOre("oreSilver", silverore);
+        OreDictionary.registerOre("orePlatinum", platinumore);
+        OreDictionary.registerOre("oreSilicon", siliconore);
+        OreDictionary.registerOre("oreManganese", manganeseore);
+        OreDictionary.registerOre("oreLithium", lithiumore);
+        OreDictionary.registerOre("oreNegarite", negarite);
+        OreDictionary.registerOre("orePosirite", posirite);
     }
 
     public static void initModels() {
@@ -577,6 +626,14 @@ public class ModBlocks {
         glassFence.initModel();
         marbleFence.initModel();
         techFence.initModel();
+
+        lithiumore.initModel();
+        manganeseore.initModel();
+        siliconore.initModel();
+        silverore.initModel();
+        platinumore.initModel();
+        posirite.initModel();
+        negarite.initModel();
     }
 
     @SideOnly(Side.CLIENT)

@@ -17,6 +17,14 @@ item.ariente.flux_ship.name=Flux Ship
 item.ariente.flux_capacitor.name=Flux Capacitor
 item.ariente.ariente_pearl.name=Ariente Pearl
 
+tile.ariente.lithiumore.name=Lithium Ore
+tile.ariente.manganeseore.name=Manganese Ore
+tile.ariente.siliconore.name=Silicon Ore
+tile.ariente.silverore.name=Silver Ore
+tile.ariente.platinumore.name=Platinum Ore
+tile.ariente.posirite.name=Posirite Ore
+tile.ariente.negarite.name=Negarite Ore
+
 item.ariente.powersuit_head.name=Power Helmet
 item.ariente.powersuit_chest.name=Power Chestplate
 item.ariente.powersuit_legs.name=Power Leggings
