@@ -7,6 +7,7 @@ import mcjty.ariente.config.UtilityConfiguration;
 import mcjty.hologui.api.IGuiComponent;
 import mcjty.hologui.api.IGuiComponentRegistry;
 import mcjty.hologui.api.IGuiTile;
+import mcjty.hologui.api.StyledColor;
 import mcjty.lib.tileentity.GenericTileEntity;
 import mcjty.lib.varia.TeleportationTools;
 import mcjty.theoneprobe.api.IProbeHitData;
@@ -158,12 +159,12 @@ public class WarperTile extends GenericTileEntity implements IGuiTile, IWarper {
     public IGuiComponent<?> createGui(String tag, IGuiComponentRegistry registry) {
         if (getChargePercentage() < 100) {
             return registry.panel(0, 0, 8, 8)
-                    .add(registry.text(0, 2, 1, 1).text("Teleportation").color(0xaaccff))
+                    .add(registry.text(0, 2, 1, 1).text("Teleportation").color(registry.color(StyledColor.LABEL)))
                     .add(registry.text(0, 4, 1, 1).text("Charged to " + getChargePercentage() + "%"))
-                    .add(registry.text(0, 5, 1, 1).text("Insufficient!").color(0xff0000));
+                    .add(registry.text(0, 5, 1, 1).text("Insufficient!").color(registry.color(StyledColor.ERROR)));
         } else {
             return registry.panel(0, 0, 8, 8)
-                    .add(registry.text(0, 2, 1, 1).text("Teleportation").color(0xaaccff))
+                    .add(registry.text(0, 2, 1, 1).text("Teleportation").color(registry.color(StyledColor.LABEL)))
                     .add(registry.button(0, 4, 3, 1).text("Warp").hitEvent((component, player, entity, x, y) -> {
                         warp(player);
                     }));

@@ -6,6 +6,7 @@ import mcjty.hologui.api.IGuiComponentRegistry;
 import mcjty.hologui.api.IGuiTile;
 import mcjty.ariente.blocks.utility.ILockable;
 import mcjty.ariente.blocks.utility.door.DoorMarkerTile;
+import mcjty.hologui.api.StyledColor;
 import mcjty.theoneprobe.api.IProbeHitData;
 import mcjty.theoneprobe.api.IProbeInfo;
 import mcjty.theoneprobe.api.ProbeMode;
@@ -217,8 +218,8 @@ public class WirelessLockTile extends SignalChannelTileEntity implements ILockab
             return Ariente.guiHandler.createNoAccessPanel();
         }
         return registry.panel(0, 0, 8, 8)
-                .add(registry.text(0, 1, 1, 1).text("Horizontal").color(0xaaccff))
-                .add(registry.number(3, 2, 1, 1).color(0xffffff).getter((p,h) -> getHorizontalRange()))
+                .add(registry.text(0, 1, 1, 1).text("Horizontal").color(registry.color(StyledColor.LABEL)))
+                .add(registry.number(3, 2, 1, 1).color(registry.color(StyledColor.INFORMATION)).getter((p,h) -> getHorizontalRange()))
 
                 .add(registry.iconButton(1, 2, 1, 1).icon(registry.image(GRAY_DOUBLE_ARROW_LEFT)).hover(registry.image(WHITE_DOUBLE_ARROW_LEFT))
                         .hitEvent((component, player, e, x, y) -> changeHorizontalRange(-8)))
@@ -230,8 +231,8 @@ public class WirelessLockTile extends SignalChannelTileEntity implements ILockab
                         .hitEvent((component, player, e, x, y) -> changeHorizontalRange(8)))
 
 
-                .add(registry.text(0, 4, 1, 1).text("Vertical").color(0xaaccff))
-                .add(registry.number(3, 5, 1, 1).color(0xffffff).getter((p,h) -> getVerticalRange()))
+                .add(registry.text(0, 4, 1, 1).text("Vertical").color(registry.color(StyledColor.LABEL)))
+                .add(registry.number(3, 5, 1, 1).color(registry.color(StyledColor.INFORMATION)).getter((p,h) -> getVerticalRange()))
 
                 .add(registry.iconButton(1, 5, 1, 1).icon(registry.image(GRAY_DOUBLE_ARROW_LEFT)).hover(registry.image(WHITE_DOUBLE_ARROW_LEFT))
                         .hitEvent((component, player, e, x, y) -> changeVerticalRange(-8)))

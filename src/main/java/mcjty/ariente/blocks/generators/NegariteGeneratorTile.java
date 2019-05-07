@@ -8,10 +8,7 @@ import mcjty.ariente.cables.CableColor;
 import mcjty.ariente.gui.HoloGuiTools;
 import mcjty.ariente.items.ModItems;
 import mcjty.ariente.power.*;
-import mcjty.hologui.api.IGuiComponent;
-import mcjty.hologui.api.IGuiComponentRegistry;
-import mcjty.hologui.api.IGuiTile;
-import mcjty.hologui.api.IHoloGuiEntity;
+import mcjty.hologui.api.*;
 import mcjty.lib.container.ContainerFactory;
 import mcjty.lib.container.DefaultSidedInventory;
 import mcjty.lib.container.InventoryHelper;
@@ -303,11 +300,11 @@ public class NegariteGeneratorTile extends GenericTileEntity implements ITickabl
     @Override
     public IGuiComponent<?> createGui(String tag, IGuiComponentRegistry registry) {
         return registry.panel(0, 0, 8, 8)
-                .add(registry.text(0, 0, 8, 1).text("Negarite").color(0xaaccff))
+                .add(registry.text(0, 0, 8, 1).text("Negarite").color(registry.color(StyledColor.LABEL)))
                 .add(registry.stackIcon(0, 3, 1, 1).itemStack(new ItemStack(ModItems.negariteDust)))
 
                 .add(registry.icon(1, 3, 1, 1).icon(registry.image(WHITE_PLAYER)))
-                .add(registry.number(2, 3, 1, 1).color(0xffffff).getter((p,h) -> HoloGuiTools.countItem(p, ModItems.negariteDust)))
+                .add(registry.number(2, 3, 1, 1).color(registry.color(StyledColor.INFORMATION)).getter((p,h) -> HoloGuiTools.countItem(p, ModItems.negariteDust)))
 
                 .add(registry.iconButton(2, 4, 1, 1).icon(registry.image(GRAY_DOUBLE_ARROW_LEFT)).hover(registry.image(WHITE_DOUBLE_ARROW_LEFT))
                     .hitEvent((component, player, e, x, y) -> toPlayer(player, 64)))
@@ -319,7 +316,7 @@ public class NegariteGeneratorTile extends GenericTileEntity implements ITickabl
                     .hitEvent((component, player, e, x, y) -> toMachine(player, 64)))
 
                 .add(registry.stackIcon(5, 3, 1, 1).itemStack(new ItemStack(ModBlocks.negariteGeneratorBlock)))
-                .add(registry.number(6, 3, 1, 1).color(0xffffff).getter(this::countNegariteGenerator))
+                .add(registry.number(6, 3, 1, 1).color(registry.color(StyledColor.INFORMATION)).getter(this::countNegariteGenerator))
 
                 .add(registry.iconChoice(7, 6, 1, 1)
                         .getter((player) -> getRSModeInt())

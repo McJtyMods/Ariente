@@ -165,7 +165,7 @@ public class ConstructorTile extends GenericTileEntity implements IGuiTile, ICit
 
     private IGuiComponent<?> createMainGui(IGuiComponentRegistry registry) {
         return HoloGuiTools.createPanelWithHelp(registry)
-                .add(registry.text(0, -.2, 8, 1).text("Ingredients").color(0xaaccff))
+                .add(registry.text(0, -.2, 8, 1).text("Ingredients").color(registry.color(StyledColor.LABEL)))
 
                 .add(registry.icon(0, 1.5, 1, 1).icon(registry.image(WHITE_PLAYER)))
                 .add(registry.playerSlots(1.5, 1.0, 6, 3)
@@ -174,7 +174,7 @@ public class ConstructorTile extends GenericTileEntity implements IGuiTile, ICit
                         .fullBright()
                         .filter((stack, index) -> isIngredient(stack)))
 
-                .add(registry.text(0, 4.5, 8, 1).text("Craft").color(0xaaccff))
+                .add(registry.text(0, 4.5, 8, 1).text("Craft").color(registry.color(StyledColor.LABEL)))
 
                 .add(registry.stackIcon(0, 5.5, 1, 1).itemStack(new ItemStack(ModBlocks.constructorBlock)))
                 .add(registry.slots(1.5, 5.5, 6, 3)

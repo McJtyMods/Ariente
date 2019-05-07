@@ -14,6 +14,7 @@ import mcjty.ariente.varia.Triangle;
 import mcjty.hologui.api.IGuiComponent;
 import mcjty.hologui.api.IGuiComponentRegistry;
 import mcjty.hologui.api.IGuiTile;
+import mcjty.hologui.api.StyledColor;
 import mcjty.lib.tileentity.GenericTileEntity;
 import mcjty.lib.varia.RedstoneMode;
 import mcjty.theoneprobe.api.IProbeHitData;
@@ -495,8 +496,8 @@ public class ForceFieldTile extends GenericTileEntity implements IGuiTile, ITick
     @Override
     public IGuiComponent<?> createGui(String tag, IGuiComponentRegistry registry) {
         return registry.panel(0, 0, 8, 8)
-                .add(registry.text(0, 1, 1, 1).text("Radius").color(0xaaccff))
-                .add(registry.number(3, 2, 1, 1).color(0xffffff).getter((p,h) -> getScale()))
+                .add(registry.text(0, 1, 1, 1).text("Radius").color(registry.color(StyledColor.LABEL)))
+                .add(registry.number(3, 2, 1, 1).color(registry.color(StyledColor.INFORMATION)).getter((p, h) -> getScale()))
 
                 .add(registry.iconButton(1, 2, 1, 1).icon(registry.image(GRAY_DOUBLE_ARROW_LEFT)).hover(registry.image(WHITE_DOUBLE_ARROW_LEFT))
                         .hitEvent((component, player, entity1, x, y) -> changeScale(-8)))
@@ -507,8 +508,8 @@ public class ForceFieldTile extends GenericTileEntity implements IGuiTile, ITick
                 .add(registry.iconButton(6, 2, 1, 1).icon(registry.image(GRAY_DOUBLE_ARROW_RIGHT)).hover(registry.image(WHITE_DOUBLE_ARROW_RIGHT))
                         .hitEvent((component, player, entity1, x, y) -> changeScale(8)))
 
-                .add(registry.text(0, 4, 1, 1).text("Field Integrity").color(0xaaccff))
-                .add(registry.text(1, 5, 1, 1).text(() -> getFieldIntegrity() + "%").color(0xffffff))
+                .add(registry.text(0, 4, 1, 1).text("Field Integrity").color(registry.color(StyledColor.LABEL)))
+                .add(registry.text(1, 5, 1, 1).text(() -> getFieldIntegrity() + "%").color(registry.color(StyledColor.INFORMATION)))
 
 
                 .add(registry.iconChoice(7, 6, 1, 1)

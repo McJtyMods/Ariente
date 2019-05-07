@@ -4,6 +4,7 @@ import mcjty.ariente.Ariente;
 import mcjty.hologui.api.IGuiComponent;
 import mcjty.hologui.api.IGuiComponentRegistry;
 import mcjty.hologui.api.IHoloGuiEntity;
+import mcjty.hologui.api.StyledColor;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.player.EntityPlayer;
 
@@ -26,8 +27,8 @@ public class FluxLevitatorGui {
                 .add(registry.iconButton(6, 2, 1, 1).icon(registry.image(GRAY_DOUBLE_ARROW_RIGHT)).hover(registry.image(WHITE_DOUBLE_ARROW_RIGHT))
                         .hitEvent((component, p, holo, x, y) -> changeSpeed(holo, 10)))
 
-                .add(registry.text(1, 4, 4, 1).text("Speed:").color(0xffffff))
-                .add(registry.number(5, 4, 1, 1).color(0x00ff00).getter((p,holo) -> getSpeed(holo)))
+                .add(registry.text(1, 4, 4, 1).text("Speed:").color(registry.color(StyledColor.LABEL)))
+                .add(registry.number(5, 4, 1, 1).color(registry.color(StyledColor.INFORMATION)).getter((p,holo) -> getSpeed(holo)))
                 ;
     }
 

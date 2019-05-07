@@ -4,10 +4,7 @@ import mcjty.ariente.Ariente;
 import mcjty.ariente.api.ICityAI;
 import mcjty.ariente.api.ICityEquipment;
 import mcjty.ariente.api.IElevator;
-import mcjty.hologui.api.IGuiComponent;
-import mcjty.hologui.api.IGuiComponentRegistry;
-import mcjty.hologui.api.IGuiTile;
-import mcjty.hologui.api.IHoloGuiEntity;
+import mcjty.hologui.api.*;
 import mcjty.hologui.api.components.IPanel;
 import mcjty.ariente.power.IPowerReceiver;
 import mcjty.ariente.power.PowerReceiverSupport;
@@ -311,7 +308,7 @@ public class ElevatorTile extends GenericTileEntity implements IGuiTile, ITickab
             List<Integer> floors = findFloors();
 
             if (!floors.isEmpty()) {
-                panel.add(registry.text(0, 0, 1, 1).text("Floor").color(0xaaccff));
+                panel.add(registry.text(0, 0, 1, 1).text("Floor").color(registry.color(StyledColor.LABEL)));
                 int x = 0;
                 int y = 1;
                 int idx = 1;
@@ -331,15 +328,15 @@ public class ElevatorTile extends GenericTileEntity implements IGuiTile, ITickab
                     idx++;
                 }
             } else {
-                panel.add(registry.text(0, 0, 1, 1).text("Jump: go up").color(0xaaccff))
-                        .add(registry.text(0, 1, 1, 1).text("Crouch: go down").color(0xaaccff));
+                panel.add(registry.text(0, 0, 1, 1).text("Jump: go up").color(registry.color(StyledColor.LABEL)))
+                        .add(registry.text(0, 1, 1, 1).text("Crouch: go down").color(registry.color(StyledColor.LABEL)));
             }
 
             return panel;
         } else {
             return registry.panel(0, 0, 8, 8)
-                    .add(registry.text(0, 2, 1, 1).text("Height").color(0xaaccff))
-                    .add(registry.number(3, 4, 1, 1).color(0xffffff).getter((p,h) -> getHeight()))
+                    .add(registry.text(0, 2, 1, 1).text("Height").color(registry.color(StyledColor.LABEL)))
+                    .add(registry.number(3, 4, 1, 1).color(registry.color(StyledColor.INFORMATION)).getter((p,h) -> getHeight()))
 
                     .add(registry.iconButton(1, 4, 1, 1).icon(registry.image(GRAY_DOUBLE_ARROW_LEFT)).hover(registry.image(WHITE_DOUBLE_ARROW_LEFT))
                             .hitEvent((component, player, entity1, x, y) -> changeHeight(-8)))

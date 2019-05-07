@@ -6,10 +6,7 @@ import mcjty.ariente.api.ICityEquipment;
 import mcjty.ariente.blocks.ModBlocks;
 import mcjty.ariente.items.BlueprintItem;
 import mcjty.ariente.items.ModItems;
-import mcjty.hologui.api.IGuiComponent;
-import mcjty.hologui.api.IGuiComponentRegistry;
-import mcjty.hologui.api.IGuiTile;
-import mcjty.hologui.api.IHoloGuiEntity;
+import mcjty.hologui.api.*;
 import mcjty.hologui.api.components.IPlayerSlots;
 import mcjty.hologui.api.components.ISlots;
 import mcjty.lib.container.ContainerFactory;
@@ -144,7 +141,7 @@ public class BlueprintStorageTile extends GenericTileEntity implements DefaultSi
 
     private IGuiComponent<?> createBlueprintGui(IGuiComponentRegistry registry) {
         return registry.panel(0, 0, 8, 8)
-                .add(registry.text(0, 0, 8, 1).text("Blueprints").color(0xaaccff))
+                .add(registry.text(0, 0, 8, 1).text("Blueprints").color(registry.color(StyledColor.LABEL)))
 
                 .add(registry.icon(0, 2, 1, 1).icon(registry.image(WHITE_PLAYER)))
                 .add(registry.playerSlots(1.5, 1.5, 6, 2)

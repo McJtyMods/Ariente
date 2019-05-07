@@ -3,10 +3,7 @@ package mcjty.ariente.blocks.utility;
 import mcjty.ariente.Ariente;
 import mcjty.ariente.api.ICityAI;
 import mcjty.ariente.api.ICityEquipment;
-import mcjty.hologui.api.IGuiComponent;
-import mcjty.hologui.api.IGuiComponentRegistry;
-import mcjty.hologui.api.IGuiTile;
-import mcjty.hologui.api.IHoloGuiEntity;
+import mcjty.hologui.api.*;
 import mcjty.ariente.blocks.utility.door.DoorMarkerTile;
 import mcjty.ariente.items.KeyCardItem;
 import mcjty.ariente.security.IKeyCardSlot;
@@ -252,8 +249,8 @@ public class LockTile extends GenericTileEntity implements IGuiTile, IKeyCardSlo
             return Ariente.guiHandler.createNoAccessPanel();
         }
         return registry.panel(0, 0, 8, 8)
-                .add(registry.text(0, 1, 1, 1).text("Horizontal").color(0xaaccff))
-                .add(registry.number(3, 2, 1, 1).color(0xffffff).getter(this::getHorizontalRange))
+                .add(registry.text(0, 1, 1, 1).text("Horizontal").color(registry.color(StyledColor.LABEL)))
+                .add(registry.number(3, 2, 1, 1).color(registry.color(StyledColor.INFORMATION)).getter(this::getHorizontalRange))
 
                 .add(registry.iconButton(1, 2, 1, 1).icon(registry.image(GRAY_DOUBLE_ARROW_LEFT)).hover(registry.image(WHITE_DOUBLE_ARROW_LEFT))
                         .hitEvent((component, player, entity1, x, y) -> changeHorizontalRange(-8)))
@@ -265,8 +262,8 @@ public class LockTile extends GenericTileEntity implements IGuiTile, IKeyCardSlo
                         .hitEvent((component, player, entity1, x, y) -> changeHorizontalRange(8)))
 
 
-                .add(registry.text(0, 4, 1, 1).text("Vertical").color(0xaaccff))
-                .add(registry.number(3, 5, 1, 1).color(0xffffff).getter(this::getVerticalRange))
+                .add(registry.text(0, 4, 1, 1).text("Vertical").color(registry.color(StyledColor.LABEL)))
+                .add(registry.number(3, 5, 1, 1).color(registry.color(StyledColor.INFORMATION)).getter(this::getVerticalRange))
 
                 .add(registry.iconButton(1, 5, 1, 1).icon(registry.image(GRAY_DOUBLE_ARROW_LEFT)).hover(registry.image(WHITE_DOUBLE_ARROW_LEFT))
                         .hitEvent((component, player, entity1, x, y) -> changeVerticalRange(-8)))

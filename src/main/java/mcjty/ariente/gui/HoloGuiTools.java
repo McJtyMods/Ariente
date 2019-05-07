@@ -1,9 +1,6 @@
 package mcjty.ariente.gui;
 
-import mcjty.hologui.api.IGuiComponent;
-import mcjty.hologui.api.IGuiComponentRegistry;
-import mcjty.hologui.api.IHoloGuiEntity;
-import mcjty.hologui.api.Icons;
+import mcjty.hologui.api.*;
 import mcjty.hologui.api.components.IPanel;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.entity.player.InventoryPlayer;
@@ -53,7 +50,7 @@ public class HoloGuiTools {
 
     public static IGuiComponent<?> createHelpGui(IGuiComponentRegistry registry, HelpBuilder helpBuilder, Consumer<IHoloGuiEntity> switchBack) {
         IPanel help = registry.panel(0, 0, 8, 8)
-                .add(registry.text(0, -.2, 8, 1).text("Help").color(0xaaccff));
+                .add(registry.text(0, -.2, 8, 1).text("Help").color(registry.color(StyledColor.LABEL)));
 
         double y = 1;
         for (HelpBuilder.HelpLine line : helpBuilder.getLines()) {

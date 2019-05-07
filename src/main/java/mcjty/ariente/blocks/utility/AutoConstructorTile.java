@@ -12,10 +12,7 @@ import mcjty.ariente.power.IPowerReceiver;
 import mcjty.ariente.power.PowerReceiverSupport;
 import mcjty.ariente.recipes.ConstructorRecipe;
 import mcjty.ariente.recipes.RecipeRegistry;
-import mcjty.hologui.api.IGuiComponent;
-import mcjty.hologui.api.IGuiComponentRegistry;
-import mcjty.hologui.api.IGuiTile;
-import mcjty.hologui.api.IHoloGuiEntity;
+import mcjty.hologui.api.*;
 import mcjty.hologui.api.components.IPlayerSlots;
 import mcjty.hologui.api.components.ISlots;
 import mcjty.lib.container.ContainerFactory;
@@ -403,7 +400,7 @@ public class AutoConstructorTile extends GenericTileEntity implements DefaultSid
 
     private IGuiComponent<?> createMainMenuGui(IGuiComponentRegistry registry) {
         return HoloGuiTools.createPanelWithHelp(registry)
-                .add(registry.text(0, 0.5, 1, 1).text("Main menu").color(0xaaccff))
+                .add(registry.text(0, 0.5, 1, 1).text("Main menu").color(registry.color(StyledColor.LABEL)))
                 .add(registry.stackIcon(0.5, 2.5, 1, 1).itemStack(new ItemStack(Items.IRON_INGOT)))
                 .add(registry.button(2, 2, 5, 1)
                         .text("Ingredients")
@@ -417,7 +414,7 @@ public class AutoConstructorTile extends GenericTileEntity implements DefaultSid
                         .addImage(registry.image(REDSTONE_ON))
                         .hitEvent((component, player, entity1, x, y) -> changeMode()))
 
-                .add(registry.text(0, 5, 1, 1).text("Output").color(0xaaccff))
+                .add(registry.text(0, 5, 1, 1).text("Output").color(registry.color(StyledColor.LABEL)))
 
                 .add(registry.stackIcon(0, 6.5, 1, 1).itemStack(new ItemStack(ModBlocks.constructorBlock)))
                 .add(registry.slots(1.5, 6.5, 6, 1)
@@ -432,7 +429,7 @@ public class AutoConstructorTile extends GenericTileEntity implements DefaultSid
     private IGuiComponent<?> createIngredientsGui(IGuiComponentRegistry registry) {
         return registry.panel(0, 0, 8, 8)
 
-                .add(registry.text(0, 0, 8, 1).text("Ingredients").color(0xaaccff))
+                .add(registry.text(0, 0, 8, 1).text("Ingredients").color(registry.color(StyledColor.LABEL)))
 
                 .add(registry.icon(0, 1.5, 1, 1).icon(registry.image(WHITE_PLAYER)))
                 .add(registry.playerSlots(1.5, 1, 6, 3)

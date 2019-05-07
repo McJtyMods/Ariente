@@ -10,6 +10,7 @@ import mcjty.ariente.items.modules.ModuleSupport;
 import mcjty.hologui.api.IGuiComponent;
 import mcjty.hologui.api.IGuiComponentRegistry;
 import mcjty.hologui.api.IHoloGuiEntity;
+import mcjty.hologui.api.StyledColor;
 import mcjty.hologui.api.components.IPanel;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.inventory.EntityEquipmentSlot;
@@ -25,7 +26,7 @@ public class ArmorGui {
     public static IGuiComponent<?> create(EntityPlayer player) {
         IGuiComponentRegistry registry = Ariente.guiHandler.getComponentRegistry();
         IPanel panel = HoloGuiTools.createPanelWithHelp(registry, entity -> entity.switchGui(ModGuis.GUI_ARMOR_HELP))
-                .add(registry.text(0, 1, 1, 1).text("Configure armor").color(0xaaccff));
+                .add(registry.text(0, 1, 1, 1).text("Configure armor").color(registry.color(StyledColor.LABEL)));
 
         double x = 0.5;
         double y = 2.5;
@@ -37,7 +38,7 @@ public class ArmorGui {
 
         if (y <= 2.6) {
             // No armor
-            panel.add(registry.text(0, 3, 1, 1).text("No power armor!").color(0xff0000));
+            panel.add(registry.text(0, 3, 1, 1).text("No power armor!").color(registry.color(StyledColor.ERROR)));
         }
 
         return panel;
@@ -152,14 +153,14 @@ public class ArmorGui {
 
     private static IPanel createPieceGui(IGuiComponentRegistry registry, EntityEquipmentSlot slot) {
         IPanel panel = registry.panel(0, 0, 8, 8);
-        panel.add(registry.text(0, 0, 1, 1).text("Pwr").color(0xaaccff));
+        panel.add(registry.text(0, 0, 1, 1).text("Pwr").color(registry.color(StyledColor.LABEL)));
         panel.add(registry.number(3, 0, 1, 1)
-                .color(0xffffff)
+                .color(registry.color(StyledColor.INFORMATION))
                 .getter((p, h) -> calculatePowerUsage(p, slot))
                 .colorGetter(p -> calculatePowerColor(p, slot)));
-        panel.add(registry.text(5, 0, 1, 1).text("/").color(0xaaccff));
+        panel.add(registry.text(5, 0, 1, 1).text("/").color(registry.color(StyledColor.LABEL)));
         panel.add(registry.number(6, 0, 1, 1)
-                .color(0xffffff)
+                .color(registry.color(StyledColor.INFORMATION))
                 .getter((p, h) -> calculateMaxPowerUsage(p, slot)));
         return panel;
     }
@@ -167,20 +168,20 @@ public class ArmorGui {
     private static void addPowerGui(IGuiComponentRegistry registry, EntityEquipmentSlot slot, IPanel panel) {
         panel
                 .add(registry.stackIcon(0, 6, 1, 1).itemStack(new ItemStack(ModItems.negariteDust)))
-                .add(registry.number(1, 6, 1, 1).color(0xffffff).getter((p, h) -> HoloGuiTools.countItem(p, ModItems.negariteDust)))
+                .add(registry.number(1, 6, 1, 1).color(registry.color(StyledColor.INFORMATION)).getter((p, h) -> HoloGuiTools.countItem(p, ModItems.negariteDust)))
                 .add(registry.iconButton(3, 6, 1, 1).icon(registry.image(GRAY_ARROW_RIGHT)).hover(registry.image(WHITE_ARROW_RIGHT))
                         .hitEvent((component, p, entity1, x, y) -> toArmor(p, slot, "negarite", ModItems.negariteDust, 1)))
                 .add(registry.iconButton(4, 6, 1, 1).icon(registry.image(GRAY_DOUBLE_ARROW_RIGHT)).hover(registry.image(WHITE_DOUBLE_ARROW_RIGHT))
                         .hitEvent((component, p, entity1, x, y) -> toArmor(p, slot, "negarite", ModItems.negariteDust, 64)))
-                .add(registry.number(5, 6, 1, 1).color(0xffffff).getter((p, h) -> countArmor(p, slot, "negarite")))
+                .add(registry.number(5, 6, 1, 1).color(registry.color(StyledColor.INFORMATION)).getter((p, h) -> countArmor(p, slot, "negarite")))
 
                 .add(registry.stackIcon(0, 7, 1, 1).itemStack(new ItemStack(ModItems.posiriteDust)))
-                .add(registry.number(1, 7, 1, 1).color(0xffffff).getter((p, h) -> HoloGuiTools.countItem(p, ModItems.posiriteDust)))
+                .add(registry.number(1, 7, 1, 1).color(registry.color(StyledColor.INFORMATION)).getter((p, h) -> HoloGuiTools.countItem(p, ModItems.posiriteDust)))
                 .add(registry.iconButton(3, 7, 1, 1).icon(registry.image(GRAY_ARROW_RIGHT)).hover(registry.image(WHITE_ARROW_RIGHT))
                         .hitEvent((component, p, entity1, x, y) -> toArmor(p, slot, "posirite", ModItems.posiriteDust, 1)))
                 .add(registry.iconButton(4, 7, 1, 1).icon(registry.image(GRAY_DOUBLE_ARROW_RIGHT)).hover(registry.image(WHITE_DOUBLE_ARROW_RIGHT))
                         .hitEvent((component, p, entity1, x, y) -> toArmor(p, slot, "posirite", ModItems.posiriteDust, 64)))
-                .add(registry.number(5, 7, 1, 1).color(0xffffff).getter((p, h) -> countArmor(p, slot, "posirite")))
+                .add(registry.number(5, 7, 1, 1).color(registry.color(StyledColor.INFORMATION)).getter((p, h) -> countArmor(p, slot, "posirite")))
         ;
     }
 

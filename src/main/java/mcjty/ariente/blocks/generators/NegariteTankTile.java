@@ -4,6 +4,7 @@ import mcjty.ariente.api.IAlarmMode;
 import mcjty.hologui.api.IGuiComponent;
 import mcjty.hologui.api.IGuiComponentRegistry;
 import mcjty.hologui.api.IGuiTile;
+import mcjty.hologui.api.StyledColor;
 import mcjty.hologui.api.components.IPanel;
 import mcjty.ariente.blocks.ModBlocks;
 import mcjty.lib.tileentity.GenericTileEntity;
@@ -98,7 +99,7 @@ public class NegariteTankTile extends GenericTileEntity implements IGuiTile, IAl
         for (int i = 0 ; i < 64 ; i++) {
             switch (i % 3) {
                 case 0:
-                    panel.add(registry.text(i % 8, i / 8, 1, 1).text("W").color(0xffffff));
+                    panel.add(registry.text(i % 8, i / 8, 1, 1).text("W").color(registry.color(StyledColor.INFORMATION)));
                     break;
                 case 1:
                     panel.add(registry.icon(i % 8, i / 8, 1, 1).icon(registry.image(128+64, 128)));

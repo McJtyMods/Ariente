@@ -5,6 +5,7 @@ import mcjty.ariente.gui.HelpBuilder;
 import mcjty.ariente.gui.HoloGuiTools;
 import mcjty.hologui.api.IGuiComponent;
 import mcjty.hologui.api.IGuiComponentRegistry;
+import mcjty.hologui.api.StyledColor;
 import mcjty.hologui.api.components.IIconChoice;
 import mcjty.hologui.api.components.IPanel;
 import mcjty.hologui.api.components.ITextChoice;
@@ -152,12 +153,12 @@ public class SensorItemNodeTile extends AbstractNodeTile {
         }
 
         IPanel panel = HoloGuiTools.createPanelWithHelp(registry, entity -> entity.switchTag(pair.getLeft() + ":" + TAG_HELP))
-                .add(registry.text(3.3, -.6, 1, 1).text("Sensor").color(0xaaccff))
-                .add(registry.text(0, 7, 1, 1).text("Output").color(0xaaccff))
+                .add(registry.text(3.3, -.6, 1, 1).text("Sensor").color(registry.color(StyledColor.LABEL)))
+                .add(registry.text(0, 7, 1, 1).text("Output").color(registry.color(StyledColor.LABEL)))
                 .add(outColor)
                 .add(operatorChoice)
 
-                .add(registry.number(4, 3.4, 1, 1).color(0xffffff).getter((p, h) -> amount))
+                .add(registry.number(4, 3.4, 1, 1).color(registry.color(StyledColor.INFORMATION)).getter((p, h) -> amount))
 
                 .add(registry.iconButton(2, 3.3, 1, 1).icon(registry.image(GRAY_DOUBLE_ARROW_LEFT)).hover(registry.image(WHITE_DOUBLE_ARROW_LEFT))
                         .hitEvent((component, player, entity1, x, y) -> changeAmount(-8)))

@@ -6,6 +6,7 @@ import mcjty.ariente.gui.HoloGuiTools;
 import mcjty.hologui.api.IGuiComponent;
 import mcjty.hologui.api.IGuiComponentRegistry;
 import mcjty.hologui.api.Icons;
+import mcjty.hologui.api.StyledColor;
 import mcjty.hologui.api.components.IPanel;
 import mcjty.lib.varia.ItemStackList;
 import net.minecraft.block.Block;
@@ -99,7 +100,7 @@ public class InputItemNodeTile extends AbstractItemNodeTile {
 
     private IGuiComponent<?> createInputGui(final Pair<String, String> pair, IGuiComponentRegistry registry) {
         IPanel panel = HoloGuiTools.createPanelWithHelp(registry, entity -> entity.switchTag(pair.getLeft() + ":" + TAG_HELP))
-                .add(registry.text(3.3, -.6, 1, 1).text("Input").color(0xaaccff))
+                .add(registry.text(3.3, -.6, 1, 1).text("Input").color(registry.color(StyledColor.LABEL)))
 
                 .add(registry.iconToggle(0.5, 0.4, 1, 1)
                         .getter(player -> inputNbt)

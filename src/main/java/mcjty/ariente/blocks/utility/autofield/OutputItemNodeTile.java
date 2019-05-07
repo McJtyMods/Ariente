@@ -6,6 +6,7 @@ import mcjty.ariente.gui.HoloGuiTools;
 import mcjty.hologui.api.IGuiComponent;
 import mcjty.hologui.api.IGuiComponentRegistry;
 import mcjty.hologui.api.Icons;
+import mcjty.hologui.api.StyledColor;
 import mcjty.hologui.api.components.IPanel;
 import mcjty.lib.varia.ItemStackList;
 import net.minecraft.block.Block;
@@ -122,7 +123,7 @@ public class OutputItemNodeTile extends AbstractItemNodeTile {
 
     private IGuiComponent<?> createOutputGui(final Pair<String, String> pair, IGuiComponentRegistry registry) {
         IPanel panel = HoloGuiTools.createPanelWithHelp(registry, entity -> entity.switchTag(pair.getLeft() + ":" + TAG_HELP))
-                .add(registry.text(3.3, -.6, 1, 1).text("Output").color(0xaaccff))
+                .add(registry.text(3.3, -.6, 1, 1).text("Output").color(registry.color(StyledColor.LABEL)))
 
                 .add(registry.iconToggle(0.5, 0.4, 1, 1)
                         .getter(player -> outputNbt)
@@ -140,7 +141,7 @@ public class OutputItemNodeTile extends AbstractItemNodeTile {
                         .icon(registry.image(Icons.ORE_OFF))
                         .selected(registry.image(Icons.ORE_ON)))
 
-                .add(registry.number(5, 3.4, 1, 1).color(0xffffff).getter((p, h) -> getOutputStackSize()))
+                .add(registry.number(5, 3.4, 1, 1).color(registry.color(StyledColor.INFORMATION)).getter((p, h) -> getOutputStackSize()))
 
                 .add(registry.iconButton(3, 3.3, 1, 1).icon(registry.image(GRAY_DOUBLE_ARROW_LEFT)).hover(registry.image(WHITE_DOUBLE_ARROW_LEFT))
                         .hitEvent((component, player, entity1, x, y) -> changeOutputStackSize(-8)))

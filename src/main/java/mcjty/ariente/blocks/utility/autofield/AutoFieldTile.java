@@ -10,6 +10,7 @@ import mcjty.ariente.power.PowerReceiverSupport;
 import mcjty.hologui.api.IGuiComponent;
 import mcjty.hologui.api.IGuiComponentRegistry;
 import mcjty.hologui.api.IGuiTile;
+import mcjty.hologui.api.StyledColor;
 import mcjty.lib.multipart.MultipartHelper;
 import mcjty.lib.multipart.MultipartTE;
 import mcjty.lib.multipart.PartPos;
@@ -666,8 +667,8 @@ public class AutoFieldTile extends GenericTileEntity implements IGuiTile, ITicka
 
     private IGuiComponent<?> createMainGui(IGuiComponentRegistry registry) {
         return HoloGuiTools.createPanelWithHelp(registry)
-                .add(registry.text(0, 2, 1, 1).text("Height").color(0xaaccff))
-                .add(registry.number(3, 4, 1, 1).color(0xffffff).getter((p,h) -> getHeight()))
+                .add(registry.text(0, 2, 1, 1).text("Height").color(registry.color(StyledColor.LABEL)))
+                .add(registry.number(3, 4, 1, 1).color(registry.color(StyledColor.INFORMATION)).getter((p,h) -> getHeight()))
 
                 .add(registry.iconButton(1, 4, 1, 1).icon(registry.image(GRAY_DOUBLE_ARROW_LEFT)).hover(registry.image(WHITE_DOUBLE_ARROW_LEFT))
                         .hitEvent((component, player, entity1, x, y) -> changeHeight(-8)))

@@ -11,6 +11,7 @@ import mcjty.ariente.power.PowerType;
 import mcjty.hologui.api.IGuiComponent;
 import mcjty.hologui.api.IGuiComponentRegistry;
 import mcjty.hologui.api.IGuiTile;
+import mcjty.hologui.api.StyledColor;
 import mcjty.lib.tileentity.GenericTileEntity;
 import mcjty.theoneprobe.api.IProbeHitData;
 import mcjty.theoneprobe.api.IProbeInfo;
@@ -176,11 +177,11 @@ public class PowerCombinerTile extends GenericTileEntity implements ITickable, I
 
     private IGuiComponent<?> createMainGui(IGuiComponentRegistry registry) {
         return HoloGuiTools.createPanelWithHelp(registry)
-                .add(registry.text(0, 1, 1, 1).text("Transfer").color(0xaaccff))
-                .add(registry.text(0, 2.7, 1, 1).text("In").color(0xaaccff).scale(.7f))
-                .add(registry.number(2, 2.5, 1, 1).color(0xffffff).getter((p,h) -> getPowerTransfer()))
-                .add(registry.text(0, 3.7, 1, 1).text("Out").color(0xaaccff).scale(.7f))
-                .add(registry.number(2, 3.5, 1, 1).color(0xffffff).getter((p,h) -> getPowerToTransfer()))
+                .add(registry.text(0, 1, 1, 1).text("Transfer").color(registry.color(StyledColor.LABEL)))
+                .add(registry.text(0, 2.7, 1, 1).text("In").color(registry.color(StyledColor.LABEL)).scale(.7f))
+                .add(registry.number(2, 2.5, 1, 1).color(registry.color(StyledColor.INFORMATION)).getter((p,h) -> getPowerTransfer()))
+                .add(registry.text(0, 3.7, 1, 1).text("Out").color(registry.color(StyledColor.LABEL)).scale(.7f))
+                .add(registry.number(2, 3.5, 1, 1).color(registry.color(StyledColor.INFORMATION)).getter((p,h) -> getPowerToTransfer()))
 
                 .add(registry.iconButton(1, 6, 1, 1).icon(registry.image(GRAY_DOUBLE_ARROW_LEFT)).hover(registry.image(WHITE_DOUBLE_ARROW_LEFT))
                         .hitEvent((component, player, entity1, x, y) -> changeTransfer(-50)))
