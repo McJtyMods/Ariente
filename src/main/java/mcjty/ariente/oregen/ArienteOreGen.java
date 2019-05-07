@@ -2,6 +2,7 @@ package mcjty.ariente.oregen;
 
 import mcjty.ariente.api.MarbleColor;
 import mcjty.ariente.blocks.ModBlocks;
+import mcjty.ariente.config.WorldgenConfiguration;
 import net.minecraft.block.Block;
 import net.minecraft.init.Blocks;
 import net.minecraft.nbt.NBTTagCompound;
@@ -32,6 +33,10 @@ public class ArienteOreGen implements IWorldGenerator {
     }
 
     public void generateWorld(Random random, int chunkX, int chunkZ, World world, boolean newGen) {
+        if (!WorldgenConfiguration.doWorldGen()) {
+            return;
+        }
+
         if (!newGen && !retrogen) {
             return;
         }

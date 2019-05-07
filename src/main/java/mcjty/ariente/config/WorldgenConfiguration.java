@@ -1,5 +1,6 @@
 package mcjty.ariente.config;
 
+import mcjty.ariente.Ariente;
 import mcjty.lib.thirteen.ConfigSpec;
 
 public class WorldgenConfiguration {
@@ -16,5 +17,18 @@ public class WorldgenConfiguration {
                 .defineEnum("overworldOregen", OverworldOregen.DEFAULT, OverworldOregen.DEFAULT, OverworldOregen.YES, OverworldOregen.NO);
 
         SERVER_BUILDER.pop();
+    }
+
+    public static boolean doWorldGen() {
+        OverworldOregen oregen = OVERWORLD_OREGEN.get();
+        switch (oregen) {
+            case DEFAULT:
+                return !Ariente.setup.arienteWorld;
+            case YES:
+                return true;
+            case NO:
+            default:
+                return false;
+        }
     }
 }
