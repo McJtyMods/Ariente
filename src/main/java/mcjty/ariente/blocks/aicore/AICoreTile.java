@@ -63,4 +63,9 @@ public class AICoreTile extends GenericTileEntity implements ITickable, IAlarmMo
             }
         }
     }
+
+    @Override
+    public BlockPos getCorePos() {
+        return getPos();
+    }
 }

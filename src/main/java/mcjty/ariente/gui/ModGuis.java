@@ -6,14 +6,14 @@ import mcjty.ariente.items.armor.ArmorGui;
 
 public class ModGuis {
 
-    public static final String GUI_ARMOR = "armor";
-    public static final String GUI_ARMOR_HELMET = "armor_helmet";
-    public static final String GUI_ARMOR_CHEST = "armor_chest";
-    public static final String GUI_ARMOR_LEGS = "armor_legs";
-    public static final String GUI_ARMOR_BOOTS = "armor_boots";
-    public static final String GUI_ARMOR_SABRE = "armor_sabre";
-    public static final String GUI_ARMOR_HELP = "armor_help";
-    public static final String GUI_LEVITATOR = "levitator";
+    public static final String GUI_ARMOR = "ariente.armor";
+    public static final String GUI_ARMOR_HELMET = "ariente.armor_helmet";
+    public static final String GUI_ARMOR_CHEST = "ariente.armor_chest";
+    public static final String GUI_ARMOR_LEGS = "ariente.armor_legs";
+    public static final String GUI_ARMOR_BOOTS = "ariente.armor_boots";
+    public static final String GUI_ARMOR_SABRE = "ariente.armor_sabre";
+    public static final String GUI_ARMOR_HELP = "ariente.armor_help";
+    public static final String GUI_LEVITATOR = "ariente.levitator";
 
     public static void init() {
         Ariente.guiHandler.getGuiRegistry().registerGui(GUI_ARMOR, ArmorGui::create);

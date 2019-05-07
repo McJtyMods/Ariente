@@ -2,6 +2,7 @@ Upcoming:
 - Added overworld variants of some of the Ariente ores (like negarite, posirite, silver, ...)
 - Added new 'overworldOregen' config with three possible values: 'default', 'yes', or 'no'. With 'default' Ariente will generate ores in the overworld if Ariente World is NOT present
 - Oregen supports retrogen
+- Fixed a problem with the city ai crashing
 
 0.0.20-alpha:
 - Huge change: Ariente is now only the tech mod. The dimension and progression has moved to Ariente World. This means that you will have to delete the Ariente dimension and let it recreate. Otherwise things might not work as expected

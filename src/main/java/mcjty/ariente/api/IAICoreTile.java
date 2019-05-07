@@ -4,5 +4,5 @@ import net.minecraft.util.math.BlockPos;
 
 public interface IAICoreTile {
 
-    BlockPos getPos();
+    BlockPos getCorePos();
 }
