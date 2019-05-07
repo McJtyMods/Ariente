@@ -17,6 +17,7 @@ public class ConfigSetup {
         PowerConfiguration.init(SERVER_BUILDER, CLIENT_BUILDER);
         UtilityConfiguration.init(SERVER_BUILDER, CLIENT_BUILDER);
         SoundConfiguration.init(SERVER_BUILDER, CLIENT_BUILDER);
+        WorldgenConfiguration.init(SERVER_BUILDER, CLIENT_BUILDER);
     }
 
     public static ConfigSpec SERVER_CONFIG;
