@@ -1,3 +1,6 @@
+0.0.22-alpha:
+- Fixed another problem with generated flux levitators crashing
+
 0.0.21-alpha:
 - Added overworld variants of some of the Ariente ores (like negarite, posirite, silver, ...)
 - Added new 'overworldOregen' config with three possible values: 'default', 'yes', or 'no'. With 'default' Ariente will generate ores in the overworld if Ariente World is NOT present
