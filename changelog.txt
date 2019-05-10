@@ -1,3 +1,6 @@
+Upcoming:
+- Fixed a placement problem with the double slab block
+
 0.0.22-alpha:
 - Fixed another problem with generated flux levitators crashing
 
