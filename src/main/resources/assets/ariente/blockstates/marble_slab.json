@@ -13,7 +13,8 @@
       "blue": { "textures": { "bottom": "ariente:blocks/marble/bluemarble_smooth", "top": "ariente:blocks/marble/bluemarble_smooth", "side": "ariente:blocks/marble/bluemarble_smooth" } },
       "white": { "textures": { "bottom": "ariente:blocks/marble/whitemarble_smooth", "top": "ariente:blocks/marble/whitemarble_smooth", "side": "ariente:blocks/marble/whitemarble_smooth" } },
       "lime": { "textures": { "bottom": "ariente:blocks/marble/limemarble_smooth", "top": "ariente:blocks/marble/limemarble_smooth", "side": "ariente:blocks/marble/limemarble_smooth" } },
-      "red": { "textures": { "bottom": "ariente:blocks/marble/redmarble_smooth", "top": "ariente:blocks/marble/redmarble_smooth", "side": "ariente:blocks/marble/redmarble_smooth" } }
+      "red": { "textures": { "bottom": "ariente:blocks/marble/redmarble_smooth", "top": "ariente:blocks/marble/redmarble_smooth", "side": "ariente:blocks/marble/redmarble_smooth" } },
+      "darkblue": { "textures": { "bottom": "ariente:blocks/marble/darkbluemarble_smooth", "top": "ariente:blocks/marble/darkbluemarble_smooth", "side": "ariente:blocks/marble/darkbluemarble_smooth" } }
     },
     "half": {
       "bottom": { "model": "half_slab" },

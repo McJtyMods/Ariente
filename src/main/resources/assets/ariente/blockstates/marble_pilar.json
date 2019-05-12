@@ -12,7 +12,8 @@
       "blue": { "textures": { "all": "ariente:blocks/marble/bluemarble_pilar" } },
       "white": { "textures": { "all": "ariente:blocks/marble/whitemarble_pilar" } },
       "lime": { "textures": { "all": "ariente:blocks/marble/limemarble_pilar" } },
-      "red": { "textures": { "all": "ariente:blocks/marble/redmarble_pilar" } }
+      "red": { "textures": { "all": "ariente:blocks/marble/redmarble_pilar" } },
+      "darkblue": { "textures": { "all": "ariente:blocks/marble/darkbluemarble_pilar" } }
     }
   }
 }

@@ -12,7 +12,8 @@
       "blue": { "textures": { "all": "ariente:blocks/marble/bluemarble_bricks" } },
       "white": { "textures": { "all": "ariente:blocks/marble/whitemarble_bricks" } },
       "lime": { "textures": { "all": "ariente:blocks/marble/limemarble_bricks" } },
-      "red": { "textures": { "all": "ariente:blocks/marble/redmarble_bricks" } }
+      "red": { "textures": { "all": "ariente:blocks/marble/redmarble_bricks" } },
+      "darkblue": { "textures": { "all": "ariente:blocks/marble/darkbluemarble_bricks" } }
     }
   }
 }

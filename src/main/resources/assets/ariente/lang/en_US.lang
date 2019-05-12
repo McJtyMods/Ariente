@@ -115,6 +115,7 @@ tile.ariente.marble.blue.name=Blue Marble
 tile.ariente.marble.black.name=Black Marble
 tile.ariente.marble.lime.name=Lime Marble
 tile.ariente.marble.red.name=Red Marble
+tile.ariente.marble.darkblue.name=Dark Blue Marble
 
 tile.ariente.marble_smooth.gray.name=Gray Smooth Marble
 tile.ariente.marble_smooth.white.name=White Smooth Marble
@@ -122,6 +123,7 @@ tile.ariente.marble_smooth.blue.name=Blue Smooth Marble
 tile.ariente.marble_smooth.black.name=Black Smooth Marble
 tile.ariente.marble_smooth.lime.name=Lime Smooth Marble
 tile.ariente.marble_smooth.red.name=Red Smooth Marble
+tile.ariente.marble_smooth.darkblue.name=Dark Blue Smooth Marble
 
 tile.ariente.marble_pilar.gray.name=Gray Marble Pilar
 tile.ariente.marble_pilar.white.name=White Marble Pilar
@@ -129,6 +131,7 @@ tile.ariente.marble_pilar.blue.name=Blue Marble Pilar
 tile.ariente.marble_pilar.black.name=Black Marble Pilar
 tile.ariente.marble_pilar.lime.name=Lime Marble Pilar
 tile.ariente.marble_pilar.red.name=Red Marble Pilar
+tile.ariente.marble_pilar.darkblue.name=Dark Blue Marble Pilar
 
 tile.ariente.marble_bricks.gray.name=Gray Marble Bricks
 tile.ariente.marble_bricks.white.name=White Marble Bricks
@@ -136,6 +139,7 @@ tile.ariente.marble_bricks.blue.name=Blue Marble Bricks
 tile.ariente.marble_bricks.black.name=Black Marble Bricks
 tile.ariente.marble_bricks.lime.name=Lime Marble Bricks
 tile.ariente.marble_bricks.red.name=Red Marble Bricks
+tile.ariente.marble_bricks.darkblue.name=Dark Blue Marble Bricks
 
 tile.ariente.marble_slab.gray.name=Gray Marble Slab
 tile.ariente.marble_slab.white.name=White Marble Slab
@@ -143,6 +147,7 @@ tile.ariente.marble_slab.blue.name=Blue Marble Slab
 tile.ariente.marble_slab.black.name=Black Marble Slab
 tile.ariente.marble_slab.lime.name=Lime Marble Slab
 tile.ariente.marble_slab.red.name=Red Marble Slab
+tile.ariente.marble_slab.darkblue.name=Dark Blue Marble Slab
 
 entity.ariente_drone.name=Drone
 entity.ariente_sentinel_drone.name=Sentinel Drone
