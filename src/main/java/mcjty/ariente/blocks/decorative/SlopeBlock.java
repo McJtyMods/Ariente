@@ -9,6 +9,7 @@ import net.minecraft.block.state.IBlockState;
 import net.minecraft.entity.EntityLivingBase;
 import net.minecraft.item.ItemBlock;
 import net.minecraft.util.EnumFacing;
+import net.minecraft.util.Rotation;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.World;
 
@@ -42,6 +43,22 @@ public class SlopeBlock extends BaseBlock {
     @Override
     public boolean isFullCube(IBlockState state) {
         return false;
+    }
+
+    @Override
+    public IBlockState withRotation(IBlockState state, Rotation rot) {
+        EnumFacingUpDown facing = state.getValue(EnumFacingUpDown.FACING);
+        switch (rot) {
+            case NONE:
+                return state;
+            case CLOCKWISE_90:
+                return state.withProperty(EnumFacingUpDown.FACING, facing.rotateY());
+            case CLOCKWISE_180:
+                return state.withProperty(EnumFacingUpDown.FACING, facing.rotateY().rotateY());
+            case COUNTERCLOCKWISE_90:
+                return state.withProperty(EnumFacingUpDown.FACING, facing.rotateY().rotateY().rotateY());
+        }
+        return state;
     }
 
     @Override

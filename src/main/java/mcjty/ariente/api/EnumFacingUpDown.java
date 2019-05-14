@@ -38,6 +38,14 @@ public enum EnumFacingUpDown implements IStringSerializable {
                 return WEST;
             case WEST:
                 return NORTH;
+            case NORTH_UP:
+                return EAST_UP;
+            case EAST_UP:
+                return SOUTH_UP;
+            case SOUTH_UP:
+                return WEST_UP;
+            case WEST_UP:
+                return NORTH_UP;
             default:
                 throw new IllegalStateException("Unable to get Y-rotated facing of " + this);
         }
