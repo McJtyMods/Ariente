@@ -3,6 +3,7 @@ package mcjty.ariente.api;
 import net.minecraft.block.BlockRailBase;
 import net.minecraft.block.state.IBlockState;
 import net.minecraft.entity.Entity;
+import net.minecraft.entity.EntityLiving;
 import net.minecraft.entity.EntityLivingBase;
 import net.minecraft.item.ItemStack;
 import net.minecraft.util.EnumFacing;
@@ -24,6 +25,9 @@ public interface IArienteSystem {
     List<? extends IFluxLevitatorEntity> getLevitatorsWithinAABB(World world, AxisAlignedBB aabb);
 
     EntityLivingBase createSoldier(World world, BlockPos pos, EnumFacing facing, @Nullable ChunkPos cityCenter, SoldierBehaviourType type, boolean master);
+
+    Class<? extends EntityLiving> getSoldierClass();
+    Class<? extends EntityLiving> getMasterSoldierClass();
 
     EntityLivingBase createSentinel(World world, int index, @Nullable ChunkPos cityCenter);
 

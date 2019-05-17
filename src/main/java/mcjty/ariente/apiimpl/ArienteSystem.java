@@ -14,6 +14,7 @@ import mcjty.ariente.security.SecuritySystem;
 import net.minecraft.block.BlockRailBase;
 import net.minecraft.block.state.IBlockState;
 import net.minecraft.entity.Entity;
+import net.minecraft.entity.EntityLiving;
 import net.minecraft.entity.EntityLivingBase;
 import net.minecraft.item.ItemStack;
 import net.minecraft.util.EnumFacing;
@@ -27,6 +28,16 @@ import javax.annotation.Nullable;
 import java.util.List;
 
 public class ArienteSystem implements IArienteSystem {
+
+    @Override
+    public Class<? extends EntityLiving> getSoldierClass() {
+        return SoldierEntity.class;
+    }
+
+    @Override
+    public Class<? extends EntityLiving> getMasterSoldierClass() {
+        return MasterSoldierEntity.class;
+    }
 
     @Nonnull
     @Override
