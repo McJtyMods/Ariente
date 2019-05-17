@@ -176,7 +176,7 @@ public class ElevatorTile extends GenericTileEntity implements IGuiTile, ITickab
     }
 
     private List<Integer> findFloors() {
-        List<Integer> result = new ArrayList<>();
+        Set<Integer> result = new HashSet<>();
         for (int y = pos.getY() ; y < pos.getY() + height ; y++) {
             for (int dx = -2 ; dx <= 2 ; dx++) {
                 for (int dz = -2 ; dz <= 2 ; dz++) {
@@ -184,11 +184,17 @@ public class ElevatorTile extends GenericTileEntity implements IGuiTile, ITickab
                     TileEntity te = world.getTileEntity(p);
                     if (te instanceof LevelMarkerTile) {
                         result.add(y);
+                        break;
                     }
                 }
             }
         }
-        return result;
+        if (result.isEmpty()) {
+            return Collections.emptyList();
+        }
+        List<Integer> floors = new ArrayList<>(result);
+        floors.sort(Comparator.naturalOrder());
+        return floors;
     }
 
     public int getHeight() {
