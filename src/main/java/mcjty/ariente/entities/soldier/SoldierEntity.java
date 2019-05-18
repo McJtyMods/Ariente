@@ -109,10 +109,10 @@ public class SoldierEntity extends EntityMob implements IArmRaisable, IForcefiel
         return cityCenter;
     }
 
-    // Soldiers don't despawn. Spawning and despawning is managed by the cities
+    // Guards don't despawn. Spawning and despawning is managed by the cities
     @Override
     protected boolean canDespawn() {
-        return false;
+        return behaviourType != SoldierBehaviourType.SOLDIER_GUARD;
     }
 
     @Override
@@ -223,8 +223,7 @@ public class SoldierEntity extends EntityMob implements IArmRaisable, IForcefiel
 
     @Override
     protected boolean isValidLightLevel() {
-//        return super.isValidLightLevel();
-        return true;
+        return super.isValidLightLevel();
     }
 
     @Override
