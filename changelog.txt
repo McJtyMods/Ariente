@@ -1,6 +1,7 @@
 Upcoming:
 - Fixed a placement problem with the double slab block
 - Fixed a bug in the elevator. It was showing too many floors in some cases
+- There was no way to make negarite and posirite dust from the ores. Oops!
 
 0.0.22-alpha:
 - Fixed another problem with generated flux levitators crashing
