@@ -1,4 +1,4 @@
 package mcjty.ariente.api;
 
-public interface ISoldier {
+public interface ISoldier extends IArienteMob {
 }

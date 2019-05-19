@@ -1,4 +1,4 @@
 package mcjty.ariente.api;
 
-public interface IDrone {
+public interface IDrone extends IArienteMob {
 }

@@ -1,4 +1,4 @@
 package mcjty.ariente.api;
 
-public interface ISentinel {
+public interface ISentinel extends IArienteMob {
 }
