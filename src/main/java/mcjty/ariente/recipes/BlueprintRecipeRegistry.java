@@ -2,6 +2,8 @@ package mcjty.ariente.recipes;
 
 import mcjty.ariente.api.MarbleColor;
 import mcjty.ariente.blocks.ModBlocks;
+import mcjty.ariente.cables.CableColor;
+import mcjty.ariente.cables.NetCableBlock;
 import mcjty.ariente.items.ModItems;
 import mcjty.lib.varia.WeightedRandom;
 import net.minecraft.init.Blocks;
@@ -212,10 +214,36 @@ public class BlueprintRecipeRegistry {
                 new ItemStack(ModItems.negariteDust, 20),
                 new ItemStack(ModItems.posiriteDust, 20)
         ));
+        recipes.add(new ConstructorRecipe(new ItemStack(ModBlocks.constructorBlock), COMMON,
+                new ItemStack(ModItems.circuitItem, 1),
+                new ItemStack(ModItems.silverIngot, 2),
+                new ItemStack(ModItems.platinumIngot, 1),
+                new ItemStack(ModItems.silicon, 4)
+        ));
+        recipes.add(new ConstructorRecipe(new ItemStack(ModBlocks.autoConstructorBlock), COMMON,
+                new ItemStack(ModBlocks.constructorBlock, 1),
+                new ItemStack(ModItems.circuitItem, 2),
+                new ItemStack(ModItems.silverIngot, 1),
+                new ItemStack(ModItems.platinumIngot, 2),
+                new ItemStack(ModItems.silicon, 2)
+        ));
         recipes.add(new ConstructorRecipe(new ItemStack(ModBlocks.storageBlock), COMMON,
                 new ItemStack(ModBlocks.marble, 1),
                 new ItemStack(ModItems.silverIngot, 3),
+                new ItemStack(Blocks.CHEST, 1),
                 new ItemStack(Blocks.GLASS_PANE, 4)
+        ));
+        recipes.add(new ConstructorRecipe(new ItemStack(ModBlocks.blueprintStorageBlock), COMMON,
+                new ItemStack(ModBlocks.marble, 1),
+                new ItemStack(ModItems.silverIngot, 3),
+                new ItemStack(ModItems.silicon, 2),
+                new ItemStack(Blocks.CHEST, 1),
+                new ItemStack(Blocks.GLASS_PANE, 4)
+        ));
+        recipes.add(new ConstructorRecipe(new ItemStack(ModBlocks.elevatorBlock), COMMON,
+                new ItemStack(ModItems.circuitItem, 1),
+                new ItemStack(ModBlocks.marbleSlabBlock, 1),
+                new ItemStack(ModItems.silverIngot, 3)
         ));
         recipes.add(new ConstructorRecipe(new ItemStack(ModBlocks.negariteTankBlock), COMMON,
                 new ItemStack(ModItems.silverIngot, 4),
@@ -236,7 +264,12 @@ public class BlueprintRecipeRegistry {
                 new ItemStack(ModItems.posiriteDust, 1)
         ));
         recipes.add(new ConstructorRecipe(new ItemStack(ModBlocks.levelMarkerBlock), COMMON,
-                new ItemStack(ModBlocks.marble, 1),
+                new ItemStack(ModBlocks.marbleSlabBlock, 1),
+                new ItemStack(ModItems.silverIngot, 1)
+        ));
+        recipes.add(new ConstructorRecipe(new ItemStack(ModBlocks.doorMarkerBlock), COMMON,
+                new ItemStack(ModBlocks.marbleSlabBlock, 1),
+                new ItemStack(ModItems.silicon, 3),
                 new ItemStack(ModItems.silverIngot, 1)
         ));
         recipes.add(new ConstructorRecipe(new ItemStack(ModBlocks.alarmBlock), UNCOMMON,
@@ -248,13 +281,41 @@ public class BlueprintRecipeRegistry {
                 new ItemStack(Items.ENDER_PEARL, 1),
                 new ItemStack(ModItems.silverIngot, 1)
         ));
+        recipes.add(new ConstructorRecipe(new ItemStack(ModBlocks.lockBlock), UNCOMMON,
+                new ItemStack(ModItems.circuitItem, 1),
+                new ItemStack(ModItems.silicon, 2),
+                new ItemStack(ModItems.lithiumIngot, 1),
+                new ItemStack(ModItems.silverIngot, 1)
+        ));
         recipes.add(new ConstructorRecipe(new ItemStack(ModBlocks.signalReceiverBlock), UNCOMMON,
                 new ItemStack(ModItems.circuitItem, 1),
-                new ItemStack(ModBlocks.marble, 1),
+                new ItemStack(ModBlocks.marbleSlabBlock, 1),
                 new ItemStack(ModItems.silicon, 1),
                 new ItemStack(ModItems.lithiumIngot, 1),
                 new ItemStack(Items.ENDER_PEARL, 1),
                 new ItemStack(ModItems.silverIngot, 1)
+        ));
+        recipes.add(new ConstructorRecipe(new ItemStack(ModBlocks.signalTransmitterBlock), UNCOMMON,
+                new ItemStack(ModItems.circuitItem, 1),
+                new ItemStack(ModBlocks.marbleSlabBlock, 1),
+                new ItemStack(ModItems.silicon, 2),
+                new ItemStack(ModItems.lithiumIngot, 1),
+                new ItemStack(Items.ENDER_PEARL, 1)
+        ));
+        recipes.add(new ConstructorRecipe(new ItemStack(ModBlocks.wirelessButtonBlock), UNCOMMON,
+                new ItemStack(ModItems.circuitItem, 1),
+                new ItemStack(ModBlocks.marbleSlabBlock, 1),
+                new ItemStack(ModItems.silicon, 2),
+                new ItemStack(ModItems.lithiumIngot, 1),
+                new ItemStack(Items.ENDER_PEARL, 1)
+        ));
+        recipes.add(new ConstructorRecipe(new ItemStack(ModBlocks.wirelessLockBlock), UNCOMMON,
+                new ItemStack(ModItems.circuitItem, 1),
+                new ItemStack(ModBlocks.marbleSlabBlock, 1),
+                new ItemStack(ModItems.silicon, 4),
+                new ItemStack(ModItems.silverIngot, 2),
+                new ItemStack(ModItems.lithiumIngot, 1),
+                new ItemStack(Items.ENDER_PEARL, 1)
         ));
         recipes.add(new ConstructorRecipe(new ItemStack(ModBlocks.slopeBlock), COMMON,
                 new ItemStack(ModBlocks.marble, 1, MarbleColor.BLACK.ordinal())
@@ -302,6 +363,45 @@ public class BlueprintRecipeRegistry {
                 new ItemStack(ModBlocks.marble, 1),
                 new ItemStack(Items.GLOWSTONE_DUST, 8)
         ));
+        recipes.add(new ConstructorRecipe(new ItemStack(ModBlocks.flatLightBlock), COMMON,
+                new ItemStack(ModBlocks.marbleSlabBlock, 1),
+                new ItemStack(Items.GLOWSTONE_DUST, 8)
+        ));
+        recipes.add(new ConstructorRecipe(new ItemStack(ModBlocks.netCableBlock, 8, CableColor.NEGARITE.ordinal()), COMMON,
+                new ItemStack(ModItems.silicon, 1),
+                new ItemStack(ModItems.silverIngot, 1),
+                new ItemStack(Blocks.GLASS_PANE, 3),
+                new ItemStack(ModItems.negariteDust, 2)
+        ));
+        recipes.add(new ConstructorRecipe(new ItemStack(ModBlocks.netCableBlock, 8, CableColor.POSIRITE.ordinal()), COMMON,
+                new ItemStack(ModItems.silicon, 1),
+                new ItemStack(ModItems.silverIngot, 1),
+                new ItemStack(Blocks.GLASS_PANE, 3),
+                new ItemStack(ModItems.posiriteDust, 2)
+        ));
+        recipes.add(new ConstructorRecipe(new ItemStack(ModBlocks.netCableBlock, 8, CableColor.COMBINED.ordinal()), COMMON,
+                new ItemStack(ModItems.silicon, 1),
+                new ItemStack(ModItems.silverIngot, 1),
+                new ItemStack(Blocks.GLASS_PANE, 3),
+                new ItemStack(ModItems.negariteDust, 2),
+                new ItemStack(ModItems.posiriteDust, 2)
+        ));
+        recipes.add(new ConstructorRecipe(new ItemStack(ModBlocks.connectorBlock, 1, CableColor.NEGARITE.ordinal()), COMMON,
+                new ItemStack(ModBlocks.netCableBlock, 1, CableColor.NEGARITE.ordinal()),
+                new ItemStack(ModItems.silverIngot, 1),
+                new ItemStack(ModItems.silicon, 1)
+        ));
+        recipes.add(new ConstructorRecipe(new ItemStack(ModBlocks.connectorBlock, 1, CableColor.POSIRITE.ordinal()), COMMON,
+                new ItemStack(ModBlocks.netCableBlock, 1, CableColor.POSIRITE.ordinal()),
+                new ItemStack(ModItems.silverIngot, 1),
+                new ItemStack(ModItems.silicon, 1)
+        ));
+        recipes.add(new ConstructorRecipe(new ItemStack(ModBlocks.connectorBlock, 1, CableColor.COMBINED.ordinal()), COMMON,
+                new ItemStack(ModBlocks.netCableBlock, 1, CableColor.COMBINED.ordinal()),
+                new ItemStack(ModItems.silverIngot, 1),
+                new ItemStack(ModItems.silicon, 1)
+        ));
+
     }
 
     public static List<ConstructorRecipe> getRecipes() {
