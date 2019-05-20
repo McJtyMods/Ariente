@@ -11,7 +11,7 @@ import mcjty.ariente.items.ModItems;
 import mcjty.ariente.power.IPowerReceiver;
 import mcjty.ariente.power.PowerReceiverSupport;
 import mcjty.ariente.recipes.ConstructorRecipe;
-import mcjty.ariente.recipes.RecipeRegistry;
+import mcjty.ariente.recipes.BlueprintRecipeRegistry;
 import mcjty.hologui.api.*;
 import mcjty.hologui.api.components.IPlayerSlots;
 import mcjty.hologui.api.components.ISlots;
@@ -103,7 +103,7 @@ public class AutoConstructorTile extends GenericTileEntity implements DefaultSid
     private boolean canCraft(ItemStack blueprintStack) {
         if (!blueprintStack.isEmpty()) {
             ItemStack destination = BlueprintItem.getDestination(blueprintStack);
-            ConstructorRecipe recipe = RecipeRegistry.findRecipe(destination);
+            ConstructorRecipe recipe = BlueprintRecipeRegistry.findRecipe(destination);
             if (recipe != null) {
                 // Check if we have enough
                 for (ItemStack ingredient : recipe.getIngredients()) {
@@ -144,7 +144,7 @@ public class AutoConstructorTile extends GenericTileEntity implements DefaultSid
     private void attemptCraft(ItemStack blueprintStack) {
         if (canCraft(blueprintStack)) {
             ItemStack destination = BlueprintItem.getDestination(blueprintStack);
-            ConstructorRecipe recipe = RecipeRegistry.findRecipe(destination);
+            ConstructorRecipe recipe = BlueprintRecipeRegistry.findRecipe(destination);
             if (recipe != null) {
                 // Check if we have room for the destination
                 boolean ok = false;
@@ -468,7 +468,7 @@ public class AutoConstructorTile extends GenericTileEntity implements DefaultSid
                     ItemStack blueprintStack = helper.getStackInSlot(i);
                     if (!blueprintStack.isEmpty()) {
                         ItemStack destination = BlueprintItem.getDestination(blueprintStack);
-                        ConstructorRecipe recipe = RecipeRegistry.findRecipe(destination);
+                        ConstructorRecipe recipe = BlueprintRecipeRegistry.findRecipe(destination);
                         if (recipe != null) {
                             for (ItemStack ingredient : recipe.getIngredients()) {
                                 if (ItemStack.areItemsEqual(ingredient, stack)) {

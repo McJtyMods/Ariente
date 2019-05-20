@@ -8,7 +8,7 @@ import mcjty.ariente.gui.HelpBuilder;
 import mcjty.ariente.gui.HoloGuiTools;
 import mcjty.ariente.items.BlueprintItem;
 import mcjty.ariente.recipes.ConstructorRecipe;
-import mcjty.ariente.recipes.RecipeRegistry;
+import mcjty.ariente.recipes.BlueprintRecipeRegistry;
 import mcjty.hologui.api.*;
 import mcjty.lib.tileentity.GenericTileEntity;
 import net.minecraft.entity.player.EntityPlayer;
@@ -104,7 +104,7 @@ public class ConstructorTile extends GenericTileEntity implements IGuiTile, ICit
     private boolean canCraft(EntityPlayer player, ItemStack blueprintStack) {
         if (!blueprintStack.isEmpty()) {
             ItemStack destination = BlueprintItem.getDestination(blueprintStack);
-            ConstructorRecipe recipe = RecipeRegistry.findRecipe(destination);
+            ConstructorRecipe recipe = BlueprintRecipeRegistry.findRecipe(destination);
             if (recipe != null) {
                 // Check if we have enough
                 for (ItemStack ingredient : recipe.getIngredients()) {
@@ -122,7 +122,7 @@ public class ConstructorTile extends GenericTileEntity implements IGuiTile, ICit
         if (!blueprintStack.isEmpty()) {
             if (canCraft(player, blueprintStack)) {
                 ItemStack destination = BlueprintItem.getDestination(blueprintStack);
-                ConstructorRecipe recipe = RecipeRegistry.findRecipe(destination);
+                ConstructorRecipe recipe = BlueprintRecipeRegistry.findRecipe(destination);
                 if (recipe != null) {
                     // We have enough. Consume and craft
                     for (ItemStack ingredient : recipe.getIngredients()) {
@@ -190,7 +190,7 @@ public class ConstructorTile extends GenericTileEntity implements IGuiTile, ICit
         if (!blueprintStack.isEmpty()) {
             if (!blueprintStack.isEmpty()) {
                 ItemStack destination = BlueprintItem.getDestination(blueprintStack);
-                ConstructorRecipe recipe = RecipeRegistry.findRecipe(destination);
+                ConstructorRecipe recipe = BlueprintRecipeRegistry.findRecipe(destination);
                 if (recipe != null) {
                     boolean ok = true;
                     // Check if we have enough
@@ -223,7 +223,7 @@ public class ConstructorTile extends GenericTileEntity implements IGuiTile, ICit
             ItemStack blueprintStack = handler.getStackInSlot(i);
             if (!blueprintStack.isEmpty()) {
                 ItemStack destination = BlueprintItem.getDestination(blueprintStack);
-                ConstructorRecipe recipe = RecipeRegistry.findRecipe(destination);
+                ConstructorRecipe recipe = BlueprintRecipeRegistry.findRecipe(destination);
                 if (recipe != null) {
                     for (ItemStack ingredient : recipe.getIngredients()) {
                         if (ItemStack.areItemsEqual(ingredient, stack)) {

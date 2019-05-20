@@ -9,7 +9,7 @@ import mcjty.ariente.items.BlueprintItem;
 import mcjty.ariente.items.KeyCardItem;
 import mcjty.ariente.network.ArienteMessages;
 import mcjty.ariente.recipes.ConstructorRecipe;
-import mcjty.ariente.recipes.RecipeRegistry;
+import mcjty.ariente.recipes.BlueprintRecipeRegistry;
 import mcjty.ariente.security.IKeyCardSlot;
 import mcjty.ariente.sounds.ModSounds;
 import mcjty.hologui.api.IGuiComponent;
@@ -474,7 +474,7 @@ public class StorageTile extends GenericTileEntity implements IGuiTile, IInvento
     public void setLoot(ResourceLocation id, int i, boolean doBlueprint, int amount, int meta) {
         if (id == null) {
             // Random blueprint
-            ConstructorRecipe recipe = RecipeRegistry.getRandomRecipes().getRandom();
+            ConstructorRecipe recipe = BlueprintRecipeRegistry.getRandomRecipes().getRandom();
             ItemStack blueprint = BlueprintItem.makeBluePrint(recipe.getDestination());
             initTotalStack(i, blueprint);
         } else {

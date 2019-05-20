@@ -15,6 +15,8 @@ item.ariente.blueprint.name=Blueprint
 item.ariente.flux_levitator.name=Flux Levitator
 item.ariente.flux_ship.name=Flux Ship
 item.ariente.flux_capacitor.name=Flux Capacitor
+item.ariente.circuit.name=Circuit
+item.ariente.advanced_circuit.name=Advanced Circuit
 item.ariente.ariente_pearl.name=Ariente Pearl
 
 tile.ariente.lithiumore.name=Lithium Ore

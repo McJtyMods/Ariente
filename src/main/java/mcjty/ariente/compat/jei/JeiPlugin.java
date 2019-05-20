@@ -2,7 +2,7 @@ package mcjty.ariente.compat.jei;
 
 import mcjty.ariente.blocks.ModBlocks;
 import mcjty.ariente.recipes.ConstructorRecipe;
-import mcjty.ariente.recipes.RecipeRegistry;
+import mcjty.ariente.recipes.BlueprintRecipeRegistry;
 import mezz.jei.api.*;
 import mezz.jei.api.recipe.IRecipeCategoryRegistration;
 import net.minecraft.item.ItemStack;
@@ -26,7 +26,7 @@ public class JeiPlugin implements IModPlugin {
         registry.addRecipeCatalyst(new ItemStack(ModBlocks.autoConstructorBlock), ARIENTE_CRAFTING_ID);
 
         List<JeiConstructorRecipe> recipes = new ArrayList<>();
-        for (ConstructorRecipe recipe : RecipeRegistry.getRecipes()) {
+        for (ConstructorRecipe recipe : BlueprintRecipeRegistry.getRecipes()) {
             recipes.add(new JeiConstructorRecipe(recipe));
         }
         registry.addRecipes(recipes, ARIENTE_CRAFTING_ID);

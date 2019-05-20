@@ -5,7 +5,7 @@ import com.google.gson.JsonObject;
 import com.google.gson.JsonParser;
 import mcjty.ariente.Ariente;
 import mcjty.ariente.recipes.ConstructorRecipe;
-import mcjty.ariente.recipes.RecipeRegistry;
+import mcjty.ariente.recipes.BlueprintRecipeRegistry;
 import mcjty.lib.tooltips.ITooltipExtras;
 import mcjty.lib.varia.ItemStackTools;
 import net.minecraft.client.renderer.ItemMeshDefinition;
@@ -39,7 +39,7 @@ public class BlueprintItem extends GenericItem implements ITooltipExtras {
     @Override
     public List<Pair<ItemStack, Integer>> getItems(ItemStack stack) {
         ItemStack destination = getDestination(stack);
-        ConstructorRecipe recipe = RecipeRegistry.findRecipe(destination);
+        ConstructorRecipe recipe = BlueprintRecipeRegistry.findRecipe(destination);
         if (recipe == null) {
             return Collections.emptyList();
         } else {
@@ -59,7 +59,7 @@ public class BlueprintItem extends GenericItem implements ITooltipExtras {
     @Override
     public void getSubItems(CreativeTabs tab, NonNullList<ItemStack> items) {
         if (isInCreativeTab(tab)) {
-            for (ConstructorRecipe recipe : RecipeRegistry.getRecipes()) {
+            for (ConstructorRecipe recipe : BlueprintRecipeRegistry.getRecipes()) {
                 items.add(makeBluePrint(recipe.getDestination()));
             }
         }

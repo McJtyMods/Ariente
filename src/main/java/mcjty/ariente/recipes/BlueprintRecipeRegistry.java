@@ -13,7 +13,7 @@ import net.minecraftforge.items.ItemHandlerHelper;
 import java.util.ArrayList;
 import java.util.List;
 
-public class RecipeRegistry {
+public class BlueprintRecipeRegistry {
 
     private static List<ConstructorRecipe> recipes = new ArrayList<>();
     private static WeightedRandom<ConstructorRecipe> randomRecipes = null;
