@@ -1,7 +1,7 @@
 package mcjty.ariente.recipes;
 
-import mcjty.ariente.blocks.ModBlocks;
 import mcjty.ariente.api.MarbleColor;
+import mcjty.ariente.blocks.ModBlocks;
 import mcjty.ariente.items.ModItems;
 import mcjty.lib.varia.WeightedRandom;
 import net.minecraft.init.Blocks;
@@ -49,28 +49,41 @@ public class BlueprintRecipeRegistry {
                 new ItemStack(ModItems.negariteDust, 6),
                 new ItemStack(ModItems.posiriteDust, 6)
         ));
+        recipes.add(new ConstructorRecipe(new ItemStack(ModItems.circuitItem), COMMON,
+                new ItemStack(ModItems.silicon, 1),
+                new ItemStack(ModItems.manganeseIngot, 1),
+                new ItemStack(ModItems.negariteDust, 3),
+                new ItemStack(ModItems.posiriteDust, 3)
+        ));
+        recipes.add(new ConstructorRecipe(new ItemStack(ModItems.advancedCircuitItem), RARE,
+                new ItemStack(ModItems.circuitItem, 1),
+                new ItemStack(ModItems.lithiumIngot, 2),
+                new ItemStack(ModItems.manganeseIngot, 1),
+                new ItemStack(ModItems.negariteDust, 6),
+                new ItemStack(ModItems.posiriteDust, 6)
+        ));
         recipes.add(new ConstructorRecipe(new ItemStack(ModItems.moduleAutofeed), COMMON,
-                new ItemStack(Items.PAPER),
+                new ItemStack(ModItems.circuitItem, 1),
                 new ItemStack(ModItems.silverIngot, 1),
                 new ItemStack(ModItems.silicon, 1),
                 new ItemStack(ModItems.negariteDust, 3),
                 new ItemStack(ModItems.posiriteDust, 3)
         ));
         recipes.add(new ConstructorRecipe(new ItemStack(ModItems.moduleNightvision), UNCOMMON,
-                new ItemStack(Items.PAPER),
+                new ItemStack(ModItems.circuitItem, 1),
                 new ItemStack(ModItems.silverIngot, 1),
                 new ItemStack(ModItems.silicon, 1),
                 new ItemStack(Items.GLOWSTONE_DUST, 10)
                 ));
         recipes.add(new ConstructorRecipe(new ItemStack(ModItems.moduleArmor), RARE,
-                new ItemStack(Items.PAPER),
+                new ItemStack(ModItems.circuitItem, 1),
                 new ItemStack(ModItems.silverIngot, 1),
                 new ItemStack(ModItems.silicon, 1),
                 new ItemStack(ModItems.platinumIngot, 1),
                 new ItemStack(Items.DIAMOND, 2)
         ));
         recipes.add(new ConstructorRecipe(new ItemStack(ModItems.moduleEnergy), RARE,
-                new ItemStack(Items.PAPER),
+                new ItemStack(ModItems.circuitItem, 1),
                 new ItemStack(ModItems.silverIngot, 1),
                 new ItemStack(ModItems.silicon, 1),
                 new ItemStack(ModItems.platinumIngot, 1),
@@ -79,21 +92,21 @@ public class BlueprintRecipeRegistry {
                 new ItemStack(ModItems.posiriteDust, 3)
         ));
         recipes.add(new ConstructorRecipe(new ItemStack(ModItems.moduleFeatherFalling), RARE,
-                new ItemStack(Items.PAPER),
+                new ItemStack(ModItems.circuitItem, 1),
                 new ItemStack(ModItems.silverIngot, 1),
                 new ItemStack(ModItems.silicon, 1),
                 new ItemStack(ModItems.lithiumIngot, 1),
                 new ItemStack(Items.FEATHER, 5)
         ));
         recipes.add(new ConstructorRecipe(new ItemStack(ModItems.moduleFire), UNCOMMON,
-                new ItemStack(Items.PAPER),
+                new ItemStack(ModItems.circuitItem, 1),
                 new ItemStack(ModItems.silverIngot, 1),
                 new ItemStack(ModItems.silicon, 1),
                 new ItemStack(Blocks.MAGMA, 1),
                 new ItemStack(Items.FLINT_AND_STEEL, 5)
         ));
         recipes.add(new ConstructorRecipe(new ItemStack(ModItems.moduleFlight), EXTREME,
-                new ItemStack(Items.PAPER),
+                new ItemStack(ModItems.advancedCircuitItem, 1),
                 new ItemStack(ModItems.silverIngot, 1),
                 new ItemStack(ModItems.silicon, 1),
                 new ItemStack(ModItems.platinumIngot, 1),
@@ -102,7 +115,7 @@ public class BlueprintRecipeRegistry {
                 new ItemStack(Items.NETHER_STAR, 1)
         ));
         recipes.add(new ConstructorRecipe(new ItemStack(ModItems.moduleForcefield), EXTREME,
-                new ItemStack(Items.PAPER),
+                new ItemStack(ModItems.advancedCircuitItem, 1),
                 new ItemStack(ModItems.silverIngot, 1),
                 new ItemStack(ModItems.silicon, 1),
                 new ItemStack(ModItems.lithiumIngot, 1),
@@ -112,18 +125,19 @@ public class BlueprintRecipeRegistry {
                 new ItemStack(Items.NETHER_STAR, 1)
         ));
         recipes.add(new ConstructorRecipe(new ItemStack(ModItems.moduleInhibit), RARE,
-                new ItemStack(Items.PAPER),
+                new ItemStack(ModItems.advancedCircuitItem, 1),
                 new ItemStack(ModItems.silverIngot, 1),
                 new ItemStack(ModItems.silicon, 1),
                 new ItemStack(Items.STRING, 4)
         ));
         recipes.add(new ConstructorRecipe(new ItemStack(ModItems.moduleLooting), RARE,
-                new ItemStack(Items.PAPER),
+                new ItemStack(ModItems.circuitItem, 1),
                 new ItemStack(ModItems.silverIngot, 1),
                 new ItemStack(ModItems.silicon, 1),
                 new ItemStack(Items.DYE, 10, EnumDyeColor.BLUE.getMetadata())
         ));
         recipes.add(new ConstructorRecipe(new ItemStack(ModItems.fluxLevitatorItem), UNCOMMON,
+                new ItemStack(ModItems.circuitItem, 1),
                 new ItemStack(ModItems.silverIngot, 10),
                 new ItemStack(ModItems.manganeseIngot, 2),
                 new ItemStack(ModItems.lithiumIngot, 1)
@@ -137,7 +151,8 @@ public class BlueprintRecipeRegistry {
         ));
         recipes.add(new ConstructorRecipe(new ItemStack(ModItems.enhancedEnergySabreItem), RARE,
                 new ItemStack(ModItems.energySabre, 1),
-                new ItemStack(ModItems.silicon, 10),
+                new ItemStack(ModItems.circuitItem, 1),
+                new ItemStack(ModItems.silicon, 3),
                 new ItemStack(ModItems.negariteDust, 5),
                 new ItemStack(ModItems.posiriteDust, 5),
                 new ItemStack(ModItems.platinumIngot, 3),
@@ -164,6 +179,7 @@ public class BlueprintRecipeRegistry {
                 new ItemStack(ModItems.platinumIngot, 1)
         ));
         recipes.add(new ConstructorRecipe(new ItemStack(ModBlocks.forceFieldBlock), RARE,
+                new ItemStack(ModItems.advancedCircuitItem, 1),
                 new ItemStack(ModItems.fluxCapacitorItem, 1),
                 new ItemStack(ModItems.silverIngot, 5),
                 new ItemStack(ModItems.silicon, 5),
@@ -174,6 +190,7 @@ public class BlueprintRecipeRegistry {
                 new ItemStack(Items.NETHER_STAR, 1)
         ));
         recipes.add(new ConstructorRecipe(new ItemStack(ModBlocks.negariteGeneratorBlock), COMMON,
+                new ItemStack(ModItems.circuitItem, 1),
                 new ItemStack(ModItems.silverIngot, 5),
                 new ItemStack(ModItems.silicon, 5),
                 new ItemStack(ModItems.manganeseIngot, 2),
@@ -181,11 +198,24 @@ public class BlueprintRecipeRegistry {
                 new ItemStack(ModItems.negariteDust, 40)
         ));
         recipes.add(new ConstructorRecipe(new ItemStack(ModBlocks.posiriteGeneratorBlock), COMMON,
+                new ItemStack(ModItems.circuitItem, 1),
                 new ItemStack(ModItems.silverIngot, 5),
                 new ItemStack(ModItems.silicon, 5),
                 new ItemStack(ModItems.manganeseIngot, 2),
                 new ItemStack(ModItems.lithiumIngot, 2),
                 new ItemStack(ModItems.posiriteDust, 40)
+        ));
+        recipes.add(new ConstructorRecipe(new ItemStack(ModBlocks.powerCombinerBlock), COMMON,
+                new ItemStack(ModItems.circuitItem, 1),
+                new ItemStack(ModItems.silverIngot, 3),
+                new ItemStack(ModItems.silicon, 2),
+                new ItemStack(ModItems.negariteDust, 20),
+                new ItemStack(ModItems.posiriteDust, 20)
+        ));
+        recipes.add(new ConstructorRecipe(new ItemStack(ModBlocks.storageBlock), COMMON,
+                new ItemStack(ModBlocks.marble, 1),
+                new ItemStack(ModItems.silverIngot, 3),
+                new ItemStack(Blocks.GLASS_PANE, 4)
         ));
         recipes.add(new ConstructorRecipe(new ItemStack(ModBlocks.negariteTankBlock), COMMON,
                 new ItemStack(ModItems.silverIngot, 4),
@@ -210,6 +240,7 @@ public class BlueprintRecipeRegistry {
                 new ItemStack(ModItems.silverIngot, 1)
         ));
         recipes.add(new ConstructorRecipe(new ItemStack(ModBlocks.alarmBlock), UNCOMMON,
+                new ItemStack(ModItems.circuitItem, 1),
                 new ItemStack(ModBlocks.marble, 1),
                 new ItemStack(ModItems.silicon, 1),
                 new ItemStack(ModItems.lithiumIngot, 1),
@@ -218,6 +249,7 @@ public class BlueprintRecipeRegistry {
                 new ItemStack(ModItems.silverIngot, 1)
         ));
         recipes.add(new ConstructorRecipe(new ItemStack(ModBlocks.signalReceiverBlock), UNCOMMON,
+                new ItemStack(ModItems.circuitItem, 1),
                 new ItemStack(ModBlocks.marble, 1),
                 new ItemStack(ModItems.silicon, 1),
                 new ItemStack(ModItems.lithiumIngot, 1),
@@ -235,10 +267,40 @@ public class BlueprintRecipeRegistry {
                 new ItemStack(Blocks.OBSIDIAN, 4)
         ));
         recipes.add(new ConstructorRecipe(new ItemStack(ModBlocks.autoFieldBlock), UNCOMMON,
+                new ItemStack(ModItems.circuitItem, 1),
                 new ItemStack(ModItems.fluxCapacitorItem, 1),
                 new ItemStack(ModItems.silicon, 3),
                 new ItemStack(Items.ENDER_PEARL, 1),
                 new ItemStack(ModItems.silverIngot, 2)
+        ));
+        recipes.add(new ConstructorRecipe(new ItemStack(ModBlocks.sensorItemNode), UNCOMMON,
+                new ItemStack(ModItems.circuitItem, 1),
+                new ItemStack(ModItems.silicon, 2),
+                new ItemStack(ModItems.silverIngot, 2)
+        ));
+        recipes.add(new ConstructorRecipe(new ItemStack(ModBlocks.inputItemNode), COMMON,
+                new ItemStack(ModItems.circuitItem, 1),
+                new ItemStack(ModItems.silicon, 2),
+                new ItemStack(ModItems.silverIngot, 2)
+        ));
+        recipes.add(new ConstructorRecipe(new ItemStack(ModBlocks.outputItemNode), COMMON,
+                new ItemStack(ModItems.circuitItem, 1),
+                new ItemStack(ModItems.silicon, 2),
+                new ItemStack(ModItems.silverIngot, 2)
+        ));
+        recipes.add(new ConstructorRecipe(new ItemStack(ModBlocks.roundRobinNode), UNCOMMON,
+                new ItemStack(ModItems.circuitItem, 1),
+                new ItemStack(ModItems.silicon, 1),
+                new ItemStack(ModItems.silverIngot, 2)
+        ));
+        recipes.add(new ConstructorRecipe(new ItemStack(ModBlocks.fieldMarker), COMMON,
+                new ItemStack(ModBlocks.marbleSlabBlock, 1),
+                new ItemStack(ModItems.silicon, 1),
+                new ItemStack(ModItems.silverIngot, 2)
+        ));
+        recipes.add(new ConstructorRecipe(new ItemStack(ModBlocks.fluxGlow), COMMON,
+                new ItemStack(ModBlocks.marble, 1),
+                new ItemStack(Items.GLOWSTONE_DUST, 8)
         ));
     }
 
