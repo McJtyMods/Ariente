@@ -1,12 +1,102 @@
 {
-    "drone_ambient" : {"category": "hostile", "sounds": ["ariente:droneambient"]},
-    "drone_hurt" : {"category": "hostile", "sounds": ["ariente:dronehurt"]},
-    "drone_death" : {"category": "hostile", "sounds": ["ariente:dronedeath"]},
-    "laser" : {"category": "hostile", "sounds": ["ariente:laser"]},
-    "forcefield" : {"category": "block", "sounds": ["ariente:forcefield"]},
-    "buzz_error" : {"category": "block", "sounds": ["ariente:buzz_error"]},
-    "buzz_ok" : {"category": "block", "sounds": ["ariente:buzz_ok"]},
-    "alarm" : {"category": "block", "sounds": ["ariente:alarm"]},
-    "door" : {"category": "block", "sounds": ["ariente:door"]},
-    "levitator" : {"category": "neutral", "sounds": ["ariente:levitator"]}
+  "step": {
+    "category": "hostile",
+    "sounds": [
+      "ariente:monster/step"
+    ]
+  },
+  "soldier_hurt": {
+    "category": "hostile",
+    "sounds": [
+      "ariente:monster/mobhit"
+    ]
+  },
+  "soldier_death": {
+    "category": "hostile",
+    "sounds": [
+      "ariente:monster/soldierdeath"
+    ]
+  },
+  "boss_soldier_hurt": {
+    "category": "hostile",
+    "sounds": [
+      "ariente:monster/bosshit"
+    ]
+  },
+  "boss_soldier_death": {
+    "category": "hostile",
+    "sounds": [
+      "ariente:monster/bossdeath"
+    ]
+  },
+  "drone_ambient": {
+    "category": "hostile",
+    "sounds": [
+      "ariente:monster/droneidle1",
+      "ariente:monster/droneidle2",
+      "ariente:monster/droneidle3",
+      "ariente:monster/droneidle4",
+      "ariente:monster/droneidle5"
+    ]
+  },
+  "drone_hurt": {
+    "category": "hostile",
+    "sounds": [
+      "ariente:monster/dronehit"
+    ]
+  },
+  "drone_death": {
+    "category": "hostile",
+    "sounds": [
+      "ariente:monster/dronedeathfighter"
+    ]
+  },
+  "sentinel_death": {
+    "category": "hostile",
+    "sounds": [
+      "ariente:monster/dronedeath"
+    ]
+  },
+  "laser": {
+    "category": "hostile",
+    "sounds": [
+      "ariente:laser"
+    ]
+  },
+  "forcefield": {
+    "category": "block",
+    "sounds": [
+      "ariente:forcefield"
+    ]
+  },
+  "buzz_error": {
+    "category": "block",
+    "sounds": [
+      "ariente:buzz_error"
+    ]
+  },
+  "buzz_ok": {
+    "category": "block",
+    "sounds": [
+      "ariente:buzz_ok"
+    ]
+  },
+  "alarm": {
+    "category": "block",
+    "sounds": [
+      "ariente:alarm"
+    ]
+  },
+  "door": {
+    "category": "block",
+    "sounds": [
+      "ariente:door"
+    ]
+  },
+  "levitator": {
+    "category": "neutral",
+    "sounds": [
+      "ariente:levitator"
+    ]
+  }
 }

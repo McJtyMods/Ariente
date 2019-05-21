@@ -145,7 +145,7 @@ public class SentinelDroneEntity extends EntityFlying implements IMob, IForcefie
 
     @Override
     protected SoundEvent getDeathSound() {
-        return ModSounds.droneDeath;
+        return ModSounds.sentinelDeath;
     }
 
     @Override

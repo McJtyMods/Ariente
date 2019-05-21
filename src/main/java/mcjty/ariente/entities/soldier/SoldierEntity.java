@@ -6,13 +6,16 @@ import mcjty.ariente.compat.arienteworld.ArienteWorldCompat;
 import mcjty.ariente.items.KeyCardItem;
 import mcjty.ariente.items.ModItems;
 import mcjty.ariente.items.armor.PowerSuit;
+import mcjty.ariente.sounds.ModSounds;
 import net.minecraft.block.Block;
+import net.minecraft.block.SoundType;
 import net.minecraft.entity.EntityLivingBase;
 import net.minecraft.entity.SharedMonsterAttributes;
 import net.minecraft.entity.ai.*;
 import net.minecraft.entity.monster.EntityMob;
 import net.minecraft.entity.monster.EntityPigZombie;
 import net.minecraft.entity.player.EntityPlayer;
+import net.minecraft.init.Blocks;
 import net.minecraft.inventory.EntityEquipmentSlot;
 import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.NBTTagCompound;
@@ -253,7 +256,26 @@ public class SoldierEntity extends EntityMob implements IArmRaisable, IForcefiel
 
     @Override
     protected void playStepSound(BlockPos pos, Block blockIn) {
-        super.playStepSound(pos, blockIn);
+        SoundType soundtype = blockIn.getSoundType(world.getBlockState(pos), world, pos, this);
+
+        if (this.world.getBlockState(pos.up()).getBlock() == Blocks.SNOW_LAYER) {
+            soundtype = Blocks.SNOW_LAYER.getSoundType();
+            this.playSound(soundtype.getStepSound(), soundtype.getVolume() * 0.15F, soundtype.getPitch());
+        } else if (!blockIn.getDefaultState().getMaterial().isLiquid()) {
+            this.playSound(soundtype.getStepSound(), soundtype.getVolume() * 0.15F, soundtype.getPitch());
+        } else {
+            this.playSound(ModSounds.step, 0.15f, isMaster() ? 0.5f : 1.0f);
+        }
+    }
+
+    @Override
+    protected SoundEvent getHurtSound(DamageSource damageSourceIn) {
+        return isMaster() ? ModSounds.bossSoldierHurt : ModSounds.soldierHurt;
+    }
+
+    @Override
+    protected SoundEvent getDeathSound() {
+        return isMaster() ? ModSounds.bossSoldierDeath : ModSounds.soldierDeath;
     }
 
     @Nullable
