@@ -37,6 +37,8 @@ public interface IArienteSystem {
 
     void addSecurity(ItemStack keyCard, String tag);
 
+    void setDescription(ItemStack keyCard, String description);
+
     void fixNetworks(World world, BlockPos pos);
 
     BlockRailBase.EnumRailDirection getBeamDirection(IBlockState state);

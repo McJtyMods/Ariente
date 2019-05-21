@@ -34,5 +34,7 @@ public interface ICityAI {
 
     String getForcefieldId();
 
+    String getCityName();
+
     void fillLoot(IStorageTile te);
 }

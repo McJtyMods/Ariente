@@ -72,6 +72,11 @@ public class ArienteSystem implements IArienteSystem {
     }
 
     @Override
+    public void setDescription(ItemStack keyCard, String description) {
+        KeyCardItem.setDescription(keyCard, description);
+    }
+
+    @Override
     public void fixNetworks(World world, BlockPos pos) {
         PowerSenderSupport.fixNetworks(world, pos);
     }

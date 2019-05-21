@@ -59,7 +59,7 @@ public class PowerCombinerTile extends GenericTileEntity implements ITickable, I
 
     private void sendPower() {
 
-        int power = getPowerTransfer();
+        int power = getPowerToTransfer();
 
         PowerSystem powerSystem = PowerSystem.getPowerSystem(world);
         int cnt = 0;

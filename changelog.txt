@@ -3,6 +3,8 @@ Upcoming:
 - Fixed a bug in the elevator. It was showing too many floors in some cases
 - There was no way to make negarite and posirite dust from the ores. Oops!
 - Added circuit and advanced circuit items to be used as crafting ingredients
+- Fixed power combiner to not be lossy as it should be
+- Dungeon cities now have names and these names are also used on the keycards that belong to those cities. That makes it easier to identify what keycards are important for a given city
 
 0.0.22-alpha:
 - Fixed another problem with generated flux levitators crashing

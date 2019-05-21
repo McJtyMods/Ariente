@@ -54,6 +54,10 @@ public class KeyCardItem extends GenericItem {
                 tooltip.add("   " + TextFormatting.GREEN + tag);
             }
         }
+        String description = getDescription(stack);
+        if (description != null) {
+            tooltip.add(TextFormatting.BLUE + description);
+        }
     }
 
 
@@ -112,5 +116,23 @@ public class KeyCardItem extends GenericItem {
             tagList.appendTag(new NBTTagString(t));
         }
         stack.getTagCompound().setTag("tags", tagList);
+    }
+
+    @Nullable
+    public static String getDescription(ItemStack stack) {
+        if (!stack.hasTagCompound()) {
+            return null;
+        }
+        if (stack.getTagCompound().hasKey("description")) {
+            return stack.getTagCompound().getString("description");
+        }
+        return null;
+    }
+
+    public static void setDescription(ItemStack stack, String description) {
+        if (!stack.hasTagCompound()) {
+            stack.setTagCompound(new NBTTagCompound());
+        }
+        stack.getTagCompound().setString("description", description);
     }
 }

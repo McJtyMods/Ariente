@@ -169,6 +169,7 @@ public class SoldierEntity extends EntityMob implements IArmRaisable, IForcefiel
                         } else if (r < .8f) {
                             KeyCardItem.addSecurityTag(stack, cityAI.getForcefieldId());
                         }
+                        KeyCardItem.setDescription(stack, "City: " + cityAI.getCityName());
                         entityDropItem(stack, 0.0f);
                     }
                 }
