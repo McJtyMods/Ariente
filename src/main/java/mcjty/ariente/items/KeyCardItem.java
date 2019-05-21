@@ -93,7 +93,6 @@ public class KeyCardItem extends GenericItem {
         if (!stack.hasTagCompound()) {
             return false;
         }
-        Set<String> tags = new HashSet<>();
         NBTTagCompound compound = stack.getTagCompound();
         NBTTagList tagList = compound.getTagList("tags", Constants.NBT.TAG_STRING);
         for (int i = 0; i < tagList.tagCount(); i++) {
