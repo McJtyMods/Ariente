@@ -88,13 +88,13 @@ public class ArientePearlItem extends GenericItem {
             if (world.isRemote) {
                 player.sendStatusMessage(new TextComponentString(TextFormatting.RED + "Doesn't work in this dimension!"), false);
             }
-            return new ActionResult<ItemStack>(EnumActionResult.FAIL, itemstack);
+            return new ActionResult<>(EnumActionResult.FAIL, itemstack);
         }
 
         RayTraceResult raytraceresult = this.rayTrace(world, player, false);
 
         if (raytraceresult != null && raytraceresult.typeOfHit == RayTraceResult.Type.BLOCK && world.getBlockState(raytraceresult.getBlockPos()).getBlock() == ModBlocks.warperBlock) {
-            return new ActionResult<ItemStack>(EnumActionResult.PASS, itemstack);
+            return new ActionResult<>(EnumActionResult.PASS, itemstack);
         } else {
             player.setActiveHand(hand);
 
@@ -113,13 +113,13 @@ public class ArientePearlItem extends GenericItem {
                         itemstack.shrink(1);
                     }
 
-                    return new ActionResult<ItemStack>(EnumActionResult.SUCCESS, itemstack);
+                    return new ActionResult<>(EnumActionResult.SUCCESS, itemstack);
                 } else {
                     player.sendStatusMessage(new TextComponentString("Can't find any nearby Ariente dungeon!"), false);
                 }
             }
 
-            return new ActionResult<ItemStack>(EnumActionResult.SUCCESS, itemstack);
+            return new ActionResult<>(EnumActionResult.SUCCESS, itemstack);
         }
     }
 
