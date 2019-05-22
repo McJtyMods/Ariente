@@ -28,10 +28,10 @@ import net.minecraftforge.fml.common.event.FMLServerStartingEvent;
 public class Ariente implements ModBase, IArienteMod {
     public static final String MODID = "ariente";
     public static final String MODNAME = "Ariente";
-    public static final String VERSION = "0.0.22-alpha";
+    public static final String VERSION = "0.0.30-alpha";
     public static final String MIN_FORGE11_VER = "14.23.3.2694";
-    public static final String MIN_MCJTYLIB_VER = "3.5.2";
-    public static final String MIN_HOLOGUI_VER = "0.0.8-beta";
+    public static final String MIN_MCJTYLIB_VER = "3.5.3";
+    public static final String MIN_HOLOGUI_VER = "0.0.9-beta";
 
     @SidedProxy(clientSide = "mcjty.ariente.setup.ClientProxy", serverSide = "mcjty.ariente.setup.ServerProxy")
     public static IProxy proxy;
