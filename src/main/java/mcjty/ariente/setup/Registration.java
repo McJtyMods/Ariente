@@ -5,10 +5,13 @@ import mcjty.ariente.Ariente;
 import mcjty.ariente.ModCrafting;
 import mcjty.ariente.blocks.ModBlocks;
 import mcjty.ariente.items.ModItems;
+import mcjty.ariente.potions.ArienteSpeedPotion;
+import mcjty.ariente.potions.ModPotions;
 import mcjty.ariente.sounds.ModSounds;
 import mcjty.lib.McJtyRegister;
 import net.minecraft.block.Block;
 import net.minecraft.item.Item;
+import net.minecraft.potion.Potion;
 import net.minecraft.util.SoundEvent;
 import net.minecraft.world.biome.Biome;
 import net.minecraftforge.event.RegistryEvent;
@@ -32,13 +35,13 @@ public class Registration {
     }
 
     @SubscribeEvent
-    public static void registerBiomes(RegistryEvent.Register<Biome> event) {
-    }
-
-    @SubscribeEvent
     public static void registerSounds(RegistryEvent.Register<SoundEvent> sounds) {
         ModSounds.init(sounds.getRegistry());
     }
 
+    @SubscribeEvent
+    public static void registerPotions(RegistryEvent.Register<Potion> potions) {
+        potions.getRegistry().register(ModPotions.arienteSpeedPotion);
+    }
 
 }

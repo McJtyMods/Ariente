@@ -2,10 +2,11 @@ package mcjty.ariente.items.armor;
 
 import com.google.common.collect.Multimap;
 import mcjty.ariente.Ariente;
+import mcjty.ariente.api.ArmorUpgradeType;
 import mcjty.ariente.bindings.KeyBindings;
 import mcjty.ariente.items.ModItems;
-import mcjty.ariente.api.ArmorUpgradeType;
 import mcjty.ariente.items.modules.ModuleSupport;
+import mcjty.ariente.potions.ModPotions;
 import mcjty.lib.McJtyRegister;
 import net.minecraft.client.model.ModelBiped;
 import net.minecraft.client.util.ITooltipFlag;
@@ -126,9 +127,9 @@ public class PowerSuit extends ItemArmor {
         compound.setBoolean(ArmorUpgradeType.ARMOR.getWorkingKey(), compound.getBoolean(ArmorUpgradeType.ARMOR.getModuleKey()));
 
         if (compound.getBoolean(ArmorUpgradeType.SPEED.getModuleKey())) {
-            PotionEffect effect = entity.getActivePotionEffect(MobEffects.SPEED);
+            PotionEffect effect = entity.getActivePotionEffect(ModPotions.arienteSpeedPotion);
             if (effect == null || effect.getDuration() <= 50) {
-                entity.addPotionEffect(new PotionEffect(MobEffects.SPEED, 100, 2, false, false));
+                entity.addPotionEffect(new PotionEffect(ModPotions.arienteSpeedPotion, 100, 2, false, false));
             }
         }
     }

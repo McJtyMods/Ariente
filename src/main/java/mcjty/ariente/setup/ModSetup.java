@@ -11,6 +11,7 @@ import mcjty.ariente.items.ModItems;
 import mcjty.ariente.network.ArienteMessages;
 import mcjty.ariente.oregen.WorldGen;
 import mcjty.ariente.oregen.WorldTickHandler;
+import mcjty.ariente.potions.ModPotions;
 import mcjty.lib.compat.MainCompatHandler;
 import mcjty.lib.setup.DefaultModSetup;
 import net.minecraft.item.ItemStack;
@@ -38,6 +39,7 @@ public class ModSetup extends DefaultModSetup {
         ModItems.init();
         ModEntities.init();
         WorldGen.init();
+        ModPotions.init();
     }
 
     @Override
