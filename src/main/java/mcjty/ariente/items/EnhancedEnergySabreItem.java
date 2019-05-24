@@ -1,9 +1,9 @@
 package mcjty.ariente.items;
 
 import com.google.common.collect.Multimap;
+import mcjty.ariente.api.ArmorUpgradeType;
 import mcjty.ariente.bindings.KeyBindings;
 import mcjty.ariente.entities.soldier.MasterSoldierEntity;
-import mcjty.ariente.api.ArmorUpgradeType;
 import mcjty.ariente.items.modules.ModuleSupport;
 import net.minecraft.client.util.ITooltipFlag;
 import net.minecraft.enchantment.Enchantment;
@@ -16,15 +16,14 @@ import net.minecraft.init.Enchantments;
 import net.minecraft.inventory.EntityEquipmentSlot;
 import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.NBTTagCompound;
+import net.minecraft.potion.Potion;
+import net.minecraft.potion.PotionEffect;
 import net.minecraft.util.text.TextFormatting;
 import net.minecraft.world.World;
 import org.apache.commons.lang3.tuple.Pair;
 
 import javax.annotation.Nullable;
-import java.util.Collections;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 
 public class EnhancedEnergySabreItem extends EnergySabreItem {
 
@@ -36,11 +35,33 @@ public class EnhancedEnergySabreItem extends EnergySabreItem {
     @Override
     public boolean hitEntity(ItemStack stack, EntityLivingBase target, EntityLivingBase attacker) {
         super.hitEntity(stack, target, attacker);
-        if (ModuleSupport.hasWorkingUpgrade(stack, ArmorUpgradeType.INHIBIT) && target instanceof MasterSoldierEntity) {
-            ((MasterSoldierEntity) target).setNoregenCounter(200);
+        if (ModuleSupport.hasWorkingUpgrade(stack, ArmorUpgradeType.INHIBIT)) {
+            if (target instanceof MasterSoldierEntity) {
+                ((MasterSoldierEntity) target).setNoregenCounter(200);
+            }
+            removeGoodEffects(target);
         }
         return true;
     }
+
+    private void removeGoodEffects(EntityLivingBase target) {
+        if (target.getEntityWorld().isRemote) {
+            return;
+        }
+        Iterator<PotionEffect> iterator = target.getActivePotionMap().values().iterator();
+
+        Set<Potion> potionsToRemove = new HashSet<>();
+        while (iterator.hasNext()) {
+            PotionEffect effect = iterator.next();
+            if (effect.getPotion().isBeneficial()) {
+                potionsToRemove.add(effect.getPotion());
+            }
+        }
+        for (Potion potion : potionsToRemove) {
+            target.removePotionEffect(potion);
+        }
+    }
+
 
     @Override
     public Multimap<String, AttributeModifier> getAttributeModifiers(EntityEquipmentSlot slot, ItemStack stack) {

@@ -1,6 +1,7 @@
 Upcoming:
 - Speed module no longer changes FOV and also works in flight mode
 - New hover module to hover while flying
+- The inhibit module on the energy sabre will now also remove all beneficial potion effects from the target (in addition to only removing regeneration from the master soldier)
 
 0.0.30-alpha:
 - Fixed a placement problem with the double slab block
