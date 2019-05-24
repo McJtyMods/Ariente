@@ -1,11 +1,12 @@
 package mcjty.ariente;
 
+import mcjty.ariente.api.ArmorUpgradeType;
 import mcjty.ariente.blocks.ModBlocks;
 import mcjty.ariente.blocks.defense.ForceFieldRenderer;
+import mcjty.ariente.config.UtilityConfiguration;
 import mcjty.ariente.entities.fluxship.FluxShipRender;
 import mcjty.ariente.entities.levitator.FluxLevitatorEntity;
 import mcjty.ariente.items.ModItems;
-import mcjty.ariente.api.ArmorUpgradeType;
 import mcjty.ariente.items.modules.ModuleSupport;
 import mcjty.ariente.network.ArienteMessages;
 import mcjty.ariente.network.PacketHitForcefield;
@@ -20,9 +21,9 @@ import net.minecraft.client.renderer.block.model.ItemCameraTransforms;
 import net.minecraft.client.renderer.block.model.ItemOverrideList;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.inventory.EntityEquipmentSlot;
+import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
 import net.minecraft.util.math.BlockPos;
-import net.minecraft.util.math.MathHelper;
 import net.minecraft.util.math.RayTraceResult;
 import net.minecraft.util.math.Vec3d;
 import net.minecraftforge.client.event.*;
@@ -109,70 +110,68 @@ public class ClientForgeEventHandlers {
         EventPriority phase = event.getPhase();
         if (phase == EventPriority.NORMAL) {
             EntityPlayerSP player = (EntityPlayerSP) Ariente.proxy.getClientPlayer();
-            if (player != null) {
+            if (player != null && Minecraft.getMinecraft().currentScreen == null) {
                 ItemStack chestStack = player.getItemStackFromSlot(EntityEquipmentSlot.CHEST);
                 boolean hovering = false;
-                if (!chestStack.isEmpty() && chestStack.getItem() == ModItems.powerSuitChest && chestStack.hasTagCompound()) {
-                    if (Minecraft.getMinecraft().currentScreen == null && ModuleSupport.hasWorkingUpgrade(chestStack, ArmorUpgradeType.HOVER)) {
-                        player.isAirBorne = true;
-                        player.motionY = 0;
-                        hovering = true;
-                    }
-                    if (Minecraft.getMinecraft().currentScreen == null && ModuleSupport.hasWorkingUpgrade(chestStack, ArmorUpgradeType.FLIGHT)) {
+                if (isValidArmorPiece(chestStack, ModItems.powerSuitChest)) {
+                    boolean hasFlight = ModuleSupport.hasWorkingUpgrade(chestStack, ArmorUpgradeType.FLIGHT);
+                    if (hasFlight) {
+                        boolean hasHover = ModuleSupport.hasWorkingUpgrade(chestStack, ArmorUpgradeType.HOVER);
+                        if (hasHover) {
+                            player.isAirBorne = true;
+                            player.motionY = 0;
+                            hovering = true;
+                        }
+
                         if (Ariente.proxy.isJumpKeyDown()) {
                             player.isAirBorne = true;
-                            player.motionY = 0.4;
+                            player.motionY = UtilityConfiguration.POWERSUIT_FLYVERTICAL_FACTOR.get();
                         } else if (hovering && Ariente.proxy.isSneakKeyDown()) {
                             player.isAirBorne = true;
-                            player.motionY = -0.4;
+                            player.motionY = -UtilityConfiguration.POWERSUIT_FLYVERTICAL_FACTOR.get();
                         }
                     }
                 }
 
-
                 ItemStack feetStack = player.getItemStackFromSlot(EntityEquipmentSlot.FEET);
                 player.stepHeight = 0.6f;
-                if (!feetStack.isEmpty() && feetStack.getItem() == ModItems.powerSuitBoots && feetStack.hasTagCompound()) {
+                if (isValidArmorPiece(feetStack, ModItems.powerSuitBoots)) {
                     if (ModuleSupport.hasWorkingUpgrade(feetStack, ArmorUpgradeType.STEPASSIST)) {
                         player.stepHeight = STEP_HEIGHT;
                     }
                 }
 
                 ItemStack legsStack = player.getItemStackFromSlot(EntityEquipmentSlot.LEGS);
-                if (!legsStack.isEmpty() && legsStack.getItem() == ModItems.powerSuitLegs && legsStack.hasTagCompound()) {
-                    if (Minecraft.getMinecraft().currentScreen == null && ModuleSupport.hasWorkingUpgrade(legsStack, ArmorUpgradeType.SPEED)) {
+                if (isValidArmorPiece(legsStack, ModItems.powerSuitLegs)) {
+                    if (ModuleSupport.hasWorkingUpgrade(legsStack, ArmorUpgradeType.SPEED)) {
                         if (Ariente.proxy.isForwardKeyDown()) {
-                            Vec3d vec3d = player.getLookVec().normalize().scale(0.5);
-                            player.motionX += vec3d.x;
-//                            player.motionY += vec3d.y;
-                            player.motionZ += vec3d.z;
-                            // @todo make configurable
-                            Vec3d v = new Vec3d(player.motionX, player.motionY, player.motionZ);
-                            double max = player.onGround ? 0.5 : 1.6;
-                            if (v.lengthSquared() > max*max) {
-                                v = v.normalize().scale(max);
-                                player.motionX = v.x;
-                                player.motionY = v.y;
-                                player.motionZ = v.z;
-                            }
+                            handleSpeed(player, 0.5, UtilityConfiguration.POWERSUIT_MAX_FORWARD_GROUND_SPEED.get(), UtilityConfiguration.POWERSUIT_MAX_FORWARD_FLY_SPEED.get());
                         } else if (Ariente.proxy.isBackKeyDown()) {
-                            Vec3d vec3d = player.getLookVec().normalize().scale(-0.5);
-                            player.motionX += vec3d.x;
-//                            player.motionY += vec3d.y;
-                            player.motionZ += vec3d.z;
-                            // @todo make configurable
-                            Vec3d v = new Vec3d(player.motionX, player.motionY, player.motionZ);
-                            double max = player.onGround ? 0.3 : 1.4;
-                            if (v.lengthSquared() > max*max) {
-                                v = v.normalize().scale(max);
-                                player.motionX = v.x;
-                                player.motionY = v.y;
-                                player.motionZ = v.z;
-                            }
+                            handleSpeed(player, -0.5, UtilityConfiguration.POWERSUIT_MAX_BACK_GROUND_SPEED.get(), UtilityConfiguration.POWERSUIT_MAX_BACK_FLY_SPEED.get());
                         }
                     }
                 }
             }
+        }
+    }
+
+    private boolean isValidArmorPiece(ItemStack chestStack, Item powerSuitChest) {
+        return !chestStack.isEmpty() && chestStack.getItem() == powerSuitChest && chestStack.hasTagCompound();
+    }
+
+    private void handleSpeed(EntityPlayerSP player, double v2, double powersuitMaxForwardGroundSpeed, double powersuitMaxForwardFlySpeed) {
+        Vec3d vec3d = player.getLookVec().normalize().scale(v2);
+        player.motionX += vec3d.x;
+        player.motionZ += vec3d.z;
+        Vec3d v = new Vec3d(player.motionX, player.motionY, player.motionZ);
+        double max = player.onGround ?
+                powersuitMaxForwardGroundSpeed :
+                powersuitMaxForwardFlySpeed;
+        if (v.lengthSquared() > max * max) {
+            v = v.normalize().scale(max);
+            player.motionX = v.x;
+            player.motionY = v.y;
+            player.motionZ = v.z;
         }
     }
 
