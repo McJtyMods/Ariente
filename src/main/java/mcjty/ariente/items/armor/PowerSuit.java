@@ -121,16 +121,18 @@ public class PowerSuit extends ItemArmor {
 
         if (!ModuleSupport.managePower(stack, entity)) {
             compound.setBoolean(ArmorUpgradeType.ARMOR.getWorkingKey(), false);
+            compound.setBoolean(ArmorUpgradeType.SPEED.getWorkingKey(), false);
             return;
         }
 
         compound.setBoolean(ArmorUpgradeType.ARMOR.getWorkingKey(), compound.getBoolean(ArmorUpgradeType.ARMOR.getModuleKey()));
+        compound.setBoolean(ArmorUpgradeType.SPEED.getWorkingKey(), compound.getBoolean(ArmorUpgradeType.SPEED.getModuleKey()));
 
         if (compound.getBoolean(ArmorUpgradeType.SPEED.getModuleKey())) {
-            PotionEffect effect = entity.getActivePotionEffect(ModPotions.arienteSpeedPotion);
-            if (effect == null || effect.getDuration() <= 50) {
-                entity.addPotionEffect(new PotionEffect(ModPotions.arienteSpeedPotion, 100, 2, false, false));
-            }
+//            PotionEffect effect = entity.getActivePotionEffect(ModPotions.arienteSpeedPotion);
+//            if (effect == null || effect.getDuration() <= 50) {
+//                entity.addPotionEffect(new PotionEffect(ModPotions.arienteSpeedPotion, 100, 2, false, false));
+//            }
         }
     }
 

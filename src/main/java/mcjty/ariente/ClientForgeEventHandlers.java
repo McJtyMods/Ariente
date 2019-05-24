@@ -22,7 +22,9 @@ import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.inventory.EntityEquipmentSlot;
 import net.minecraft.item.ItemStack;
 import net.minecraft.util.math.BlockPos;
+import net.minecraft.util.math.MathHelper;
 import net.minecraft.util.math.RayTraceResult;
+import net.minecraft.util.math.Vec3d;
 import net.minecraftforge.client.event.*;
 import net.minecraftforge.event.entity.EntityMountEvent;
 import net.minecraftforge.event.entity.player.PlayerInteractEvent;
@@ -33,6 +35,8 @@ import net.minecraftforge.fml.common.gameevent.TickEvent;
 import static mcjty.ariente.items.BlueprintItem.EMPTY_BLUEPRINT_MODEL;
 
 public class ClientForgeEventHandlers {
+
+    public static final float STEP_HEIGHT = 1.902f;
 
     @SubscribeEvent
     public void colorHandlerEventBlock(ColorHandlerEvent.Block event) {
@@ -116,11 +120,32 @@ public class ClientForgeEventHandlers {
                     }
                 }
 
+
                 ItemStack feetStack = player.getItemStackFromSlot(EntityEquipmentSlot.FEET);
                 player.stepHeight = 0.6f;
                 if (!feetStack.isEmpty() && feetStack.getItem() == ModItems.powerSuitBoots && feetStack.hasTagCompound()) {
                     if (ModuleSupport.hasWorkingUpgrade(feetStack, ArmorUpgradeType.STEPASSIST)) {
-                        player.stepHeight = 1.9f;
+                        player.stepHeight = STEP_HEIGHT;
+                    }
+                }
+
+                ItemStack legsStack = player.getItemStackFromSlot(EntityEquipmentSlot.LEGS);
+                if (!legsStack.isEmpty() && legsStack.getItem() == ModItems.powerSuitLegs && legsStack.hasTagCompound()) {
+                    if (Minecraft.getMinecraft().currentScreen == null && ModuleSupport.hasWorkingUpgrade(legsStack, ArmorUpgradeType.SPEED)) {
+                        if (Ariente.proxy.isForwardKeyDown()) {
+                            Vec3d vec3d = player.getLookVec().normalize().scale(0.5);
+                            player.motionX += vec3d.x;
+                            player.motionY += vec3d.y;
+                            player.motionZ += vec3d.z;
+                            Vec3d v = new Vec3d(player.motionX, player.motionY, player.motionZ);
+                            double max = 1.9;
+                            if (v.lengthSquared() > max*max) {
+                                v = v.normalize().scale(max);
+                                player.motionX = v.x;
+                                player.motionY = v.y;
+                                player.motionZ = v.z;
+                            }
+                        }
                     }
                 }
             }
