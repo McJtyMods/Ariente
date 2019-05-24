@@ -113,8 +113,9 @@ public class ClientForgeEventHandlers {
             if (player != null && Minecraft.getMinecraft().currentScreen == null) {
                 ItemStack chestStack = player.getItemStackFromSlot(EntityEquipmentSlot.CHEST);
                 boolean hovering = false;
+                boolean hasFlight = false;
                 if (isValidArmorPiece(chestStack, ModItems.powerSuitChest)) {
-                    boolean hasFlight = ModuleSupport.hasWorkingUpgrade(chestStack, ArmorUpgradeType.FLIGHT);
+                    hasFlight = ModuleSupport.hasWorkingUpgrade(chestStack, ArmorUpgradeType.FLIGHT);
                     if (hasFlight) {
                         boolean hasHover = ModuleSupport.hasWorkingUpgrade(chestStack, ArmorUpgradeType.HOVER);
                         if (hasHover) {
@@ -145,9 +146,9 @@ public class ClientForgeEventHandlers {
                 if (isValidArmorPiece(legsStack, ModItems.powerSuitLegs)) {
                     if (ModuleSupport.hasWorkingUpgrade(legsStack, ArmorUpgradeType.SPEED)) {
                         if (Ariente.proxy.isForwardKeyDown()) {
-                            handleSpeed(player, 0.5, UtilityConfiguration.POWERSUIT_MAX_FORWARD_GROUND_SPEED.get(), UtilityConfiguration.POWERSUIT_MAX_FORWARD_FLY_SPEED.get());
+                            handleSpeed(player, 0.5, UtilityConfiguration.POWERSUIT_MAX_FORWARD_GROUND_SPEED.get(), UtilityConfiguration.POWERSUIT_MAX_FORWARD_FLY_SPEED.get(), hasFlight);
                         } else if (Ariente.proxy.isBackKeyDown()) {
-                            handleSpeed(player, -0.5, UtilityConfiguration.POWERSUIT_MAX_BACK_GROUND_SPEED.get(), UtilityConfiguration.POWERSUIT_MAX_BACK_FLY_SPEED.get());
+                            handleSpeed(player, -0.5, UtilityConfiguration.POWERSUIT_MAX_BACK_GROUND_SPEED.get(), UtilityConfiguration.POWERSUIT_MAX_BACK_FLY_SPEED.get(), hasFlight);
                         }
                     }
                 }
@@ -159,12 +160,12 @@ public class ClientForgeEventHandlers {
         return !chestStack.isEmpty() && chestStack.getItem() == powerSuitChest && chestStack.hasTagCompound();
     }
 
-    private void handleSpeed(EntityPlayerSP player, double v2, double powersuitMaxForwardGroundSpeed, double powersuitMaxForwardFlySpeed) {
+    private void handleSpeed(EntityPlayerSP player, double v2, double powersuitMaxForwardGroundSpeed, double powersuitMaxForwardFlySpeed, boolean hasFlight) {
         Vec3d vec3d = player.getLookVec().normalize().scale(v2);
         player.motionX += vec3d.x;
         player.motionZ += vec3d.z;
         Vec3d v = new Vec3d(player.motionX, player.motionY, player.motionZ);
-        double max = player.onGround ?
+        double max = (player.onGround || !hasFlight) ?
                 powersuitMaxForwardGroundSpeed :
                 powersuitMaxForwardFlySpeed;
         if (v.lengthSquared() > max * max) {
