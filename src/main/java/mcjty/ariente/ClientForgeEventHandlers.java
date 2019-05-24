@@ -171,7 +171,7 @@ public class ClientForgeEventHandlers {
         if (v.lengthSquared() > max * max) {
             v = v.normalize().scale(max);
             player.motionX = v.x;
-            player.motionY = v.y;
+//            player.motionY = v.y;
             player.motionZ = v.z;
         }
     }

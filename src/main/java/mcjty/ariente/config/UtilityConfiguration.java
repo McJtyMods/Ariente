@@ -25,6 +25,7 @@ public class UtilityConfiguration {
     public static ConfigSpec.IntValue AUTOFIELD_MAX_ACCUMULATED_POWER;
 
     public static void init(ConfigSpec.Builder SERVER_BUILDER, ConfigSpec.Builder CLIENT_BUILDER) {
+        CLIENT_BUILDER.comment("Utility settings").push(CATEGORY_UTILITY);
         SERVER_BUILDER.comment("Utility settings").push(CATEGORY_UTILITY);
 
         POWERSUIT_FLYVERTICAL_FACTOR = CLIENT_BUILDER
@@ -32,16 +33,16 @@ public class UtilityConfiguration {
                 .defineInRange("flyVerticalFactor", 0.4, 0, 100);
         POWERSUIT_MAX_FORWARD_GROUND_SPEED = CLIENT_BUILDER
                 .comment("Maximum acceleration for movement forward on ground")
-                .defineInRange("flyVerticalFactor", 0.5, 0, 5);
+                .defineInRange("maxForwardGroundSpeed", 0.5, 0, 5);
         POWERSUIT_MAX_FORWARD_FLY_SPEED = CLIENT_BUILDER
                 .comment("Maximum acceleration for movement forward while flying")
-                .defineInRange("flyVerticalFactor", 1.6, 0, 5);
+                .defineInRange("maxForwardFlySpeed", 1.6, 0, 5);
         POWERSUIT_MAX_BACK_GROUND_SPEED = CLIENT_BUILDER
                 .comment("Maximum acceleration for movement back on ground")
-                .defineInRange("flyVerticalFactor", 0.3, 0, 5);
+                .defineInRange("maxBackGroundSpeed", 0.3, 0, 5);
         POWERSUIT_MAX_BACK_FLY_SPEED = CLIENT_BUILDER
                 .comment("Maximum acceleration for movement back while flying")
-                .defineInRange("flyVerticalFactor", 1.4, 0, 5);
+                .defineInRange("maxBackFlySpeed", 1.4, 0, 5);
 
         MAX_DOOR_HEIGHT = SERVER_BUILDER
                 .comment("The maximum height of a door")
@@ -76,5 +77,6 @@ public class UtilityConfiguration {
                 .defineInRange("maxWarperCharges", 10, 0, Integer.MAX_VALUE);
 
         SERVER_BUILDER.pop();
+        CLIENT_BUILDER.pop();
     }
 }
