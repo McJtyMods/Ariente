@@ -92,6 +92,7 @@ public class ArmorGui {
         createModuleEntry(registry, panel, slot, 5, 3, ModItems.moduleForcefield);
         createModuleEntry(registry, panel, slot, 1, 4, ModItems.moduleRegeneration);
         createModuleEntry(registry, panel, slot, 5, 4, ModItems.moduleFlight);
+        createModuleEntry(registry, panel, slot, 1, 5, ModItems.moduleHover);
 
         addPowerGui(registry, slot, panel);
 
@@ -253,15 +254,15 @@ public class ArmorGui {
     }
 
     private static void createModuleEntry(IGuiComponentRegistry registry, IPanel panel, EntityEquipmentSlot slot, int xx, int yy, ArmorModuleItem module) {
-        panel.add(registry.stackToggle(xx, yy, 1, 1)
+        panel.add(registry.stackToggle(xx, yy-.2, 1, 1)
                 .itemStack(new ItemStack(module))
                 .getter(player -> hasModuleAndCheckPlayerToo(player, slot, module))
                 .hitEvent((component, player, entity, x, y) -> toggleModuleInstall(player, slot, module)));
-        panel.add(registry.iconToggle(xx + 1, yy, 1, 1)
+        panel.add(registry.iconToggle(xx + 1, yy-.2, 1, 1)
                 .getter(player -> isModuleActivated(player, slot, module))
                 .icon(registry.image(128 + 64 + 16, 128 + 16)).selected(registry.image(128 + 64, 128 + 16))
                 .hitEvent((component, player, entity, x, y) -> toggleActivation(player, slot, module)));
-        panel.add(registry.iconChoice(xx + 2, yy, 1, 1)
+        panel.add(registry.iconChoice(xx + 2, yy-.2, 1, 1)
                 .getter(player -> getHotkey(player, slot, module))
                 .addImage(registry.image(BLUE_EMPTY_BUTTON))
                 .addImage(registry.image(BLUE_1_BUTTON))

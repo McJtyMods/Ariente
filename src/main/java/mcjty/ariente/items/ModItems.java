@@ -41,6 +41,7 @@ public class ModItems {
     public static ArmorModuleItem moduleEnergy;
     public static ArmorModuleItem moduleFeatherFalling;
     public static ArmorModuleItem moduleFlight;
+    public static ArmorModuleItem moduleHover;
     public static ArmorModuleItem moduleForcefield;
     public static ArmorModuleItem moduleInvisibility;
     public static ArmorModuleItem moduleNightvision;
@@ -85,6 +86,7 @@ public class ModItems {
         moduleEnergy = new ArmorModuleItem("module_energy", ArmorUpgradeType.ENERGY);
         moduleFeatherFalling = new ArmorModuleItem("module_featherfalling", ArmorUpgradeType.FEATHERFALLING);
         moduleFlight = new ArmorModuleItem("module_flight", ArmorUpgradeType.FLIGHT);
+        moduleHover = new ArmorModuleItem("module_hover", ArmorUpgradeType.HOVER);
         moduleForcefield = new ArmorModuleItem("module_forcefield", ArmorUpgradeType.FORCEFIELD);
         moduleInvisibility = new ArmorModuleItem("module_invisibility", ArmorUpgradeType.INVISIBILITY);
         moduleNightvision = new ArmorModuleItem("module_nightvision", ArmorUpgradeType.NIGHTVISION);
@@ -134,6 +136,7 @@ public class ModItems {
         moduleEnergy.initModel();
         moduleFeatherFalling.initModel();
         moduleFlight.initModel();
+        moduleHover.initModel();
         moduleForcefield.initModel();
         moduleInvisibility.initModel();
         moduleNightvision.initModel();

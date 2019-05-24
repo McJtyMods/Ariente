@@ -6,7 +6,6 @@ import mcjty.ariente.api.ArmorUpgradeType;
 import mcjty.ariente.bindings.KeyBindings;
 import mcjty.ariente.items.ModItems;
 import mcjty.ariente.items.modules.ModuleSupport;
-import mcjty.ariente.potions.ModPotions;
 import mcjty.lib.McJtyRegister;
 import net.minecraft.client.model.ModelBiped;
 import net.minecraft.client.util.ITooltipFlag;
@@ -127,13 +126,6 @@ public class PowerSuit extends ItemArmor {
 
         compound.setBoolean(ArmorUpgradeType.ARMOR.getWorkingKey(), compound.getBoolean(ArmorUpgradeType.ARMOR.getModuleKey()));
         compound.setBoolean(ArmorUpgradeType.SPEED.getWorkingKey(), compound.getBoolean(ArmorUpgradeType.SPEED.getModuleKey()));
-
-        if (compound.getBoolean(ArmorUpgradeType.SPEED.getModuleKey())) {
-//            PotionEffect effect = entity.getActivePotionEffect(ModPotions.arienteSpeedPotion);
-//            if (effect == null || effect.getDuration() <= 50) {
-//                entity.addPotionEffect(new PotionEffect(ModPotions.arienteSpeedPotion, 100, 2, false, false));
-//            }
-        }
     }
 
     private void onUpdateChest(ItemStack stack, World world, EntityLivingBase entity) {
@@ -146,12 +138,14 @@ public class PowerSuit extends ItemArmor {
         if (!ModuleSupport.managePower(stack, entity)) {
             compound.setBoolean(ArmorUpgradeType.ARMOR.getWorkingKey(), false);
             compound.setBoolean(ArmorUpgradeType.FLIGHT.getWorkingKey(), false);
+            compound.setBoolean(ArmorUpgradeType.HOVER.getWorkingKey(), false);
             compound.setBoolean(ArmorUpgradeType.FORCEFIELD.getWorkingKey(), false);
             return;
         }
 
         compound.setBoolean(ArmorUpgradeType.ARMOR.getWorkingKey(), compound.getBoolean(ArmorUpgradeType.ARMOR.getModuleKey()));
         compound.setBoolean(ArmorUpgradeType.FLIGHT.getWorkingKey(), compound.getBoolean(ArmorUpgradeType.FLIGHT.getModuleKey()));
+        compound.setBoolean(ArmorUpgradeType.HOVER.getWorkingKey(), compound.getBoolean(ArmorUpgradeType.HOVER.getModuleKey()));
         compound.setBoolean(ArmorUpgradeType.FORCEFIELD.getWorkingKey(), compound.getBoolean(ArmorUpgradeType.FORCEFIELD.getModuleKey()));
 
         if (compound.getBoolean(ArmorUpgradeType.REGENERATION.getModuleKey())) {

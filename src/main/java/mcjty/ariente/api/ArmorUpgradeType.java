@@ -8,7 +8,7 @@ public enum ArmorUpgradeType {
     ENERGY("energy", "Energy Efficiency Upgrade", -1),
     ARMOR("armor", "Armor Improvement Upgrade", 20),
     FEATHERFALLING("featherfalling", "Feather Falling Upgrade", 20),
-    FLIGHT("flight", "Flight upgrade", 40),
+    FLIGHT("flight", "Flight upgrade", 30),
     FORCEFIELD("forcefield", "Forcefield upgrade", 80),
     INVISIBILITY("invisibility", "Invisibility upgrade (Not Implemented Yet)", 20),
     NIGHTVISION("nightvision", "Nightvision upgrade", 20),
@@ -21,6 +21,7 @@ public enum ArmorUpgradeType {
     POWER("power", "Power sabre upgrade", 30),
     LOOTING("looting", "Looting sabre upgrade", 20),
     FIRE("fire", "Fire damage sabre upgrade", 30),
+    HOVER("hover", "Hover upgrade", 10),
     ;
 
     private final String name;

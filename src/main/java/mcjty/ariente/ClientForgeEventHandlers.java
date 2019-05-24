@@ -111,11 +111,20 @@ public class ClientForgeEventHandlers {
             EntityPlayerSP player = (EntityPlayerSP) Ariente.proxy.getClientPlayer();
             if (player != null) {
                 ItemStack chestStack = player.getItemStackFromSlot(EntityEquipmentSlot.CHEST);
+                boolean hovering = false;
                 if (!chestStack.isEmpty() && chestStack.getItem() == ModItems.powerSuitChest && chestStack.hasTagCompound()) {
+                    if (Minecraft.getMinecraft().currentScreen == null && ModuleSupport.hasWorkingUpgrade(chestStack, ArmorUpgradeType.HOVER)) {
+                        player.isAirBorne = true;
+                        player.motionY = 0;
+                        hovering = true;
+                    }
                     if (Minecraft.getMinecraft().currentScreen == null && ModuleSupport.hasWorkingUpgrade(chestStack, ArmorUpgradeType.FLIGHT)) {
                         if (Ariente.proxy.isJumpKeyDown()) {
                             player.isAirBorne = true;
                             player.motionY = 0.4;
+                        } else if (hovering && Ariente.proxy.isSneakKeyDown()) {
+                            player.isAirBorne = true;
+                            player.motionY = -0.4;
                         }
                     }
                 }
@@ -135,10 +144,25 @@ public class ClientForgeEventHandlers {
                         if (Ariente.proxy.isForwardKeyDown()) {
                             Vec3d vec3d = player.getLookVec().normalize().scale(0.5);
                             player.motionX += vec3d.x;
-                            player.motionY += vec3d.y;
+//                            player.motionY += vec3d.y;
                             player.motionZ += vec3d.z;
+                            // @todo make configurable
                             Vec3d v = new Vec3d(player.motionX, player.motionY, player.motionZ);
-                            double max = 1.9;
+                            double max = player.onGround ? 0.5 : 1.6;
+                            if (v.lengthSquared() > max*max) {
+                                v = v.normalize().scale(max);
+                                player.motionX = v.x;
+                                player.motionY = v.y;
+                                player.motionZ = v.z;
+                            }
+                        } else if (Ariente.proxy.isBackKeyDown()) {
+                            Vec3d vec3d = player.getLookVec().normalize().scale(-0.5);
+                            player.motionX += vec3d.x;
+//                            player.motionY += vec3d.y;
+                            player.motionZ += vec3d.z;
+                            // @todo make configurable
+                            Vec3d v = new Vec3d(player.motionX, player.motionY, player.motionZ);
+                            double max = player.onGround ? 0.3 : 1.4;
                             if (v.lengthSquared() > max*max) {
                                 v = v.normalize().scale(max);
                                 player.motionX = v.x;
