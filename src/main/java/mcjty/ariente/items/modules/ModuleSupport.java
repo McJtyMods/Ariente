@@ -2,6 +2,7 @@ package mcjty.ariente.items.modules;
 
 import mcjty.ariente.api.ArmorUpgradeType;
 import mcjty.ariente.config.UtilityConfiguration;
+import mcjty.ariente.items.EnergyHolderItem;
 import mcjty.ariente.items.ModItems;
 import net.minecraft.entity.EntityLivingBase;
 import net.minecraft.entity.player.EntityPlayer;
@@ -121,7 +122,19 @@ public class ModuleSupport {
                 EntityPlayer player = (EntityPlayer) entity;
                 for (int i = 0; i < player.inventory.getSizeInventory(); i++) {
                     ItemStack itemStack = player.inventory.getStackInSlot(i);
-                    if (itemStack.getItem() == ModItems.negariteDust) {
+                    if (itemStack.getItem() == ModItems.energyHolderItem) {
+                        int negarite = EnergyHolderItem.count(itemStack, "negarite");
+                        if (negarite > 0) {
+                            negariteIndex = i;
+                        }
+                        int posirite = EnergyHolderItem.count(itemStack, "posirite");
+                        if (posirite > 0) {
+                            posiriteIndex = i;
+                        }
+                        if (negariteIndex != -1 && posiriteIndex != -1) {
+                            break;
+                        }
+                    } else if (itemStack.getItem() == ModItems.negariteDust) {
                         if (!itemStack.isEmpty()) {
                             negariteIndex = i;
                             if (posiriteIndex != -1) {
@@ -138,8 +151,19 @@ public class ModuleSupport {
                     }
                 }
                 if (negariteIndex != -1 && posiriteIndex != -1) {
-                    player.inventory.getStackInSlot(negariteIndex).shrink(1);
-                    player.inventory.getStackInSlot(posiriteIndex).shrink(1);
+                    ItemStack negariteStack = player.inventory.getStackInSlot(negariteIndex);
+                    if (negariteStack.getItem() == ModItems.energyHolderItem) {
+                        EnergyHolderItem.extractIfPossible(negariteStack, "negarite", 1);
+                    } else {
+                        negariteStack.shrink(1);
+                    }
+
+                    ItemStack posiriteStack = player.inventory.getStackInSlot(posiriteIndex);
+                    if (posiriteStack.getItem() == ModItems.energyHolderItem) {
+                        EnergyHolderItem.extractIfPossible(negariteStack, "posirite", 1);
+                    } else {
+                        posiriteStack.shrink(1);
+                    }
                     return true;
                 }
             }

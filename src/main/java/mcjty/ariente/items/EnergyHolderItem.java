@@ -9,6 +9,7 @@ import mcjty.hologui.api.IGuiComponentRegistry;
 import mcjty.hologui.api.StyledColor;
 import mcjty.hologui.api.components.IPanel;
 import net.minecraft.client.util.ITooltipFlag;
+import net.minecraft.entity.Entity;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
@@ -16,14 +17,19 @@ import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.util.ActionResult;
 import net.minecraft.util.EnumActionResult;
 import net.minecraft.util.EnumHand;
+import net.minecraft.util.text.TextFormatting;
 import net.minecraft.world.World;
 
 import javax.annotation.Nullable;
 import java.util.List;
+import java.util.Random;
 
 import static mcjty.hologui.api.Icons.*;
 
 public class EnergyHolderItem extends GenericItem {
+
+    public static final int MODE_MANUAL = 0;
+    public static final int MODE_AUTOMATIC = 1;
 
     public EnergyHolderItem() {
         super("energy_holder");
@@ -31,11 +37,52 @@ public class EnergyHolderItem extends GenericItem {
     }
 
     @Override
+    public boolean shouldCauseReequipAnimation(ItemStack oldStack, ItemStack newStack, boolean slotChanged) {
+        if (oldStack.isEmpty() != newStack.isEmpty()) {
+            return true;
+        }
+        return oldStack.getItem() != newStack.getItem();
+    }
+
+
+    @Override
     public void addInformation(ItemStack stack, @Nullable World worldIn, List<String> tooltip, ITooltipFlag flagIn) {
         super.addInformation(stack, worldIn, tooltip, flagIn);
-        tooltip.add("The Energy Holder can");
-        tooltip.add("store negarite and posirite");
-        tooltip.add("dust");
+        tooltip.add("The Energy Holder can store");
+        tooltip.add("negarite and posirite dust");
+        tooltip.add(TextFormatting.YELLOW + "Negarite: " + TextFormatting.GRAY + count(stack, "negarite"));
+        tooltip.add(TextFormatting.BLUE + "Posirite: " + TextFormatting.GRAY + count(stack, "posirite"));
+        tooltip.add(TextFormatting.GOLD + "Mode: " + TextFormatting.GRAY + (getAutomatic(stack) == MODE_MANUAL ? "Manual" : "Automatic"));
+    }
+
+    @Override
+    public void onUpdate(ItemStack stack, World world, Entity entity, int itemSlot, boolean isSelected) {
+        if (!(entity instanceof EntityPlayer)) {
+            return;
+        }
+        NBTTagCompound tag = stack.getTagCompound();
+        if (tag == null) {
+            tag = new NBTTagCompound();
+            stack.setTagCompound(tag);
+        }
+        if (getAutomatic(stack) == MODE_MANUAL) {
+            return;
+        }
+
+        int index = tag.getInteger("index");
+        EntityPlayer player = (EntityPlayer) entity;
+        if (index >= player.inventory.getSizeInventory()) {
+            index = 0;
+        }
+        tag.setInteger("index", index+1);
+        ItemStack playerStack = player.inventory.getStackInSlot(index);
+        if (playerStack.getItem() == ModItems.negariteDust) {
+            tag.setInteger("negarite", tag.getInteger("negarite") + playerStack.getCount());
+            player.inventory.setInventorySlotContents(index, ItemStack.EMPTY);
+        } else if (playerStack.getItem() == ModItems.posiriteDust) {
+            tag.setInteger("posirite", tag.getInteger("posirite") + playerStack.getCount());
+            player.inventory.setInventorySlotContents(index, ItemStack.EMPTY);
+        }
     }
 
     @Override
@@ -54,7 +101,9 @@ public class EnergyHolderItem extends GenericItem {
         addDustControl(registry, panel, 2.3, ModItems.negariteDust, "negarite");
         addDustControl(registry, panel, 4.7, ModItems.posiriteDust, "posirite");
 
-        panel.add(registry.textChoice(0, 7, 2, 1).addText("Manual").addText("Automatic").getter(player -> 0));
+        panel.add(registry.textChoice(0, 7, 2, 1).addText("Manual").addText("Automatic")
+                .getter(EnergyHolderItem::getAutomatic)
+                .hitEvent((component, player, entity, x, y) -> changeAutomatic(player)));
 
         return panel;
     }
@@ -76,15 +125,37 @@ public class EnergyHolderItem extends GenericItem {
                         .hitEvent((component, player, e, x, y) -> toItem(player, 64, negarite, negariteDust)))
 
                 .add(registry.stackIcon(5, yy, 1, 1).itemStack(new ItemStack(ModItems.energyHolderItem)))
-                .add(registry.number(6, yy, 1, 1).color(registry.color(StyledColor.INFORMATION)).getter((player, holo) -> countNegarite(player, negarite)));
+                .add(registry.number(6, yy, 1, 1).color(registry.color(StyledColor.INFORMATION)).getter((player, holo) -> count(player, negarite)));
+    }
+
+    private static int getAutomatic(EntityPlayer player) {
+        NBTTagCompound tag = getCompound(player);
+        if (tag == null) {
+            return MODE_MANUAL;
+        }
+        return tag.getInteger("mode");
+    }
+
+    private static int getAutomatic(ItemStack stack) {
+        NBTTagCompound tag = stack.getTagCompound();
+        if (tag == null) {
+            return MODE_MANUAL;
+        }
+        return tag.getInteger("mode");
+    }
+
+    private static void changeAutomatic(EntityPlayer player) {
+        NBTTagCompound tag = getCompound(player);
+        if (tag == null) {
+            return;
+        }
+        int mode = tag.getInteger("mode");
+        mode = mode == 0 ? 1 : 0;
+        tag.setInteger("mode", mode);
     }
 
     private static void toPlayer(EntityPlayer player, int amount, String tagname, Item item) {
-        ItemStack heldItem = player.getHeldItem(EnumHand.MAIN_HAND);
-        if (heldItem.getItem() != ModItems.energyHolderItem) {
-            return;
-        }
-        NBTTagCompound tag = heldItem.getTagCompound();
+        NBTTagCompound tag = getCompound(player);
         if (tag == null) {
             return;
         }
@@ -101,14 +172,9 @@ public class EnergyHolderItem extends GenericItem {
     }
 
     private static void toItem(EntityPlayer player, int amount, String tagname, Item item) {
-        ItemStack heldItem = player.getHeldItem(EnumHand.MAIN_HAND);
-        if (heldItem.getItem() != ModItems.energyHolderItem) {
-            return;
-        }
-        NBTTagCompound tag = heldItem.getTagCompound();
+        NBTTagCompound tag = getCompound(player);
         if (tag == null) {
-            tag = new NBTTagCompound();
-            heldItem.setTagCompound(tag);
+            return;
         }
         int total = tag.getInteger(tagname);
         ItemStack toTransfer = ItemStack.EMPTY;
@@ -139,18 +205,49 @@ public class EnergyHolderItem extends GenericItem {
         }
     }
 
-    private static int countNegarite(EntityPlayer player, String tagname) {
+    private static NBTTagCompound getCompound(EntityPlayer player) {
         ItemStack heldItem = player.getHeldItem(EnumHand.MAIN_HAND);
         if (heldItem.getItem() != ModItems.energyHolderItem) {
-            return 0;
+            return null;
         }
         NBTTagCompound tag = heldItem.getTagCompound();
+        if (tag == null) {
+            tag = new NBTTagCompound();
+            heldItem.setTagCompound(tag);
+        }
+        return tag;
+    }
+
+    private static int count(EntityPlayer player, String tagname) {
+        NBTTagCompound tag = getCompound(player);
         if (tag == null) {
             return 0;
         }
         return tag.getInteger(tagname);
     }
 
+    public static int count(ItemStack stack, String tagname) {
+        NBTTagCompound tag = stack.getTagCompound();
+        if (tag == null) {
+            return 0;
+        }
+        return tag.getInteger(tagname);
+    }
+
+    public static int extractIfPossible(ItemStack stack, String tagname, int amount) {
+        NBTTagCompound tag = stack.getTagCompound();
+        if (tag == null) {
+            return 0;
+        }
+        int count = tag.getInteger(tagname);
+        if (count <= 0) {
+            return 0;
+        }
+        int amountToExtract = Math.min(amount, count);
+        count -= amountToExtract;
+        tag.setInteger(tagname, count);
+        return amountToExtract;
+    }
 
     public static IGuiComponent<?> createHelpGui(EntityPlayer player) {
         IGuiComponentRegistry registry = Ariente.guiHandler.getComponentRegistry();
