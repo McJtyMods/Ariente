@@ -51,6 +51,11 @@ public class BlueprintRecipeRegistry {
                 new ItemStack(ModItems.negariteDust, 6),
                 new ItemStack(ModItems.posiriteDust, 6)
         ));
+        recipes.add(new ConstructorRecipe(new ItemStack(ModItems.energyHolderItem), COMMON,
+                new ItemStack(ModItems.silicon, 1),
+                new ItemStack(ModItems.negariteDust, 5),
+                new ItemStack(ModItems.posiriteDust, 5)
+        ));
         recipes.add(new ConstructorRecipe(new ItemStack(ModItems.circuitItem), COMMON,
                 new ItemStack(ModItems.silicon, 1),
                 new ItemStack(ModItems.manganeseIngot, 1),

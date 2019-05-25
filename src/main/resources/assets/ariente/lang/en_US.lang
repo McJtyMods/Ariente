@@ -18,6 +18,7 @@ item.ariente.flux_capacitor.name=Flux Capacitor
 item.ariente.circuit.name=Circuit
 item.ariente.advanced_circuit.name=Advanced Circuit
 item.ariente.ariente_pearl.name=Ariente Pearl
+item.ariente.energy_holder.name=Energy Holder
 
 tile.ariente.lithiumore.name=Lithium Ore
 tile.ariente.manganeseore.name=Manganese Ore

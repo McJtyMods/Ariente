@@ -2,6 +2,7 @@ package mcjty.ariente.gui;
 
 import mcjty.ariente.Ariente;
 import mcjty.ariente.entities.levitator.FluxLevitatorGui;
+import mcjty.ariente.items.EnergyHolderItem;
 import mcjty.ariente.items.armor.ArmorGui;
 
 public class ModGuis {
@@ -14,6 +15,8 @@ public class ModGuis {
     public static final String GUI_ARMOR_SABRE = "ariente.armor_sabre";
     public static final String GUI_ARMOR_HELP = "ariente.armor_help";
     public static final String GUI_LEVITATOR = "ariente.levitator";
+    public static final String GUI_ENERGY_HOLDER = "ariente.energy_holder";
+    public static final String GUI_ENERGY_HOLDER_HOLD = "ariente.energy_holder_help";
 
     public static void init() {
         Ariente.guiHandler.getGuiRegistry().registerGui(GUI_ARMOR, ArmorGui::create);
@@ -24,6 +27,8 @@ public class ModGuis {
         Ariente.guiHandler.getGuiRegistry().registerGui(GUI_ARMOR_SABRE, ArmorGui::createSabreGui);
         Ariente.guiHandler.getGuiRegistry().registerGui(GUI_ARMOR_HELP, ArmorGui::createHelpGui);
         Ariente.guiHandler.getGuiRegistry().registerGui(GUI_LEVITATOR, FluxLevitatorGui::createGui);
+        Ariente.guiHandler.getGuiRegistry().registerGui(GUI_ENERGY_HOLDER, EnergyHolderItem::createGui);
+        Ariente.guiHandler.getGuiRegistry().registerGui(GUI_ENERGY_HOLDER_HOLD, EnergyHolderItem::createHelpGui);
     }
 
 }
