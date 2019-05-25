@@ -168,6 +168,11 @@ public class ClientForgeEventHandlers {
         double max = (player.onGround || !hasFlight) ?
                 powersuitMaxForwardGroundSpeed :
                 powersuitMaxForwardFlySpeed;
+
+        if (player.onGround && !player.isSprinting()) {
+            max /= 2;
+        }
+
         if (v.lengthSquared() > max * max) {
             v = v.normalize().scale(max);
             player.motionX = v.x;
