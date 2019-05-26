@@ -10,7 +10,13 @@ public enum TechType implements IStringSerializable {
     RED_VAR1("red_var1"),
     LINES_GLOW("lines_glow"),
     RED_LINES_GLOW("red_lines_glow"),
-    PANEL("panel")
+    PANEL("panel"),
+    RED_LINES("red_lines"),
+    DARKBLUE_BLUE("darkblue_blue"),
+    DARKBLUE_RED("darkblue_red"),
+    DOTS2("dots2"),
+    VAR1_ANIM("var1_anim"),
+    RED_VAR1_ANIM("red_var1_anim"),
     ;
 
     public static final TechType[] VALUES = new TechType[TechType.values().length];

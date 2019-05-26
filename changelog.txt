@@ -3,6 +3,7 @@ Upcoming:
 - New hover module to hover while flying
 - The inhibit module on the energy sabre will now also remove all beneficial potion effects from the target (in addition to only removing regeneration from the master soldier)
 - New 'Energy Holder' item that can store negarite and posirite
+- Added a few new variants of the decorative tech blocks
 
 0.0.30-alpha:
 - Fixed a placement problem with the double slab block

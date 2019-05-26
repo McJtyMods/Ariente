@@ -1,0 +1,15 @@
+{
+    "animation": {
+      "frametime": 5
+    },
+    "ctm":{
+        "ctm_version": 1,
+        "type": "ctm",
+        "extra": {
+            "connect_inside": true
+        },
+        "textures": [
+            "ariente:blocks/blacktech/blacktech_red_var1_anim-ctm"
+        ]
+    }
+}
