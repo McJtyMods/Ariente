@@ -64,6 +64,17 @@ tile.ariente.blacktech.red_var1.name=Tech Block Red Variation 1
 tile.ariente.blacktech.lines_glow.name=Tech Block Glowing Lines
 tile.ariente.blacktech.red_lines_glow.name=Tech Block Red Glowing Lines
 tile.ariente.blacktech.panel.name=Tech Block Panel
+tile.ariente.blacktech.red_lines.name=Tech Block Red Lines
+tile.ariente.blacktech.darkblue_blue.name=Tech Block Blue in Blue
+tile.ariente.blacktech.darkblue_red.name=Tech Block Red in Blue
+tile.ariente.blacktech.dots2.name=Tech Block Dots Variation
+tile.ariente.blacktech.var1_anim.name=Tech Block Variation 2
+tile.ariente.blacktech.red_var1_anim.name=Tech Block Variation 3
+
+tile.ariente.marbletech.variation1.name=Marble Pattern 1
+tile.ariente.marbletech.variation2.name=Marble Pattern 2
+tile.ariente.marbletech.variation3.name=Marble Pattern 3
+
 
 tile.ariente.constructor.name=Constructor
 tile.ariente.auto_constructor.name=Auto Constructor

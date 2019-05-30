@@ -1,0 +1,15 @@
+{
+  "forge_marker": 1,
+  "defaults": {
+    "model": "cube_all"
+  },
+  "variants": {
+    "normal": [{}],
+    "inventory": [{}],
+    "type": {
+      "variation1": { "textures": { "all": "ariente:blocks/marbletech/marbletech1" } },
+      "variation2": { "textures": { "all": "ariente:blocks/marbletech/marbletech2" } },
+      "variation3": { "textures": { "all": "ariente:blocks/marbletech/marbletech3" } }
+    }
+  }
+}

@@ -44,7 +44,8 @@ public class ModBlocks {
     public static final AxisAlignedBB BEAM_BLOCK_NS_AABB = new AxisAlignedBB(0.0D, 0.0D, 0.3D, 1.0D, 0.3D, 0.7D);
     public static final AxisAlignedBB BEAM_BLOCK_EW_AABB = new AxisAlignedBB(0.3D, 0.0D, 0.0D, 0.7D, 0.3D, 1.0D);
 
-    public static BlackTechBlock blackmarble_techpat;
+    public static BlackTechBlock blackTechBlock;
+    public static MarbleTechBlock marbleTechBlock;
     public static PatternBlock patternBlock;
 
     public static MarbleBlock marble;
@@ -493,7 +494,8 @@ public class ModBlocks {
 
 
     private static void initDecorative() {
-        blackmarble_techpat = new BlackTechBlock("blacktech");
+        blackTechBlock = new BlackTechBlock("blacktech");
+        marbleTechBlock = new MarbleTechBlock("marbletech");
         patternBlock = new PatternBlock("pattern");
         marble = new MarbleBlock("marble");
         marble_smooth = new MarbleBlock("marble_smooth");
@@ -612,7 +614,8 @@ public class ModBlocks {
         reinforcedMarble.initModel();
         aiCoreBlock.initModel();
 
-        blackmarble_techpat.initModel();
+        blackTechBlock.initModel();
+        marbleTechBlock.initModel();
         patternBlock.initModel();
         rampBlock.initModel();
         slopeBlock.initModel();
