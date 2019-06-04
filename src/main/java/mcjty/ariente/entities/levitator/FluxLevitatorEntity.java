@@ -72,7 +72,6 @@ public class FluxLevitatorEntity extends Entity implements IFluxLevitatorEntity 
     private double velocityZ;
 
     public static final float DEFAULT_MAX_SPEED_AIR_LATERAL = 0.4f;
-    public static final float DEFAULT_MAX_SPEED_AIR_VERTICAL = -1f;
     public static final double DEFAULT_DRAG_AIR = 0.95D;
     public static final double SLOPE_ADJUSTMENT = 0.0078125D;
 
@@ -529,54 +528,39 @@ public class FluxLevitatorEntity extends Entity implements IFluxLevitatorEntity 
 
     public void updateHoloGui() {
         if (getHoloGuiFront() != null) {
-            Pair<Float, Float> pair = calculateYawPitch();
-            float yaw = pair.getLeft() + 90;
-            float pitch = pair.getRight();
-
-            Vec3d vec3d = getPosOffset(posX, posY, posZ, 1);
-            if (vec3d != null) {
-                double x = vec3d.x;
-                double y = vec3d.y+.38;
-                double z = vec3d.z;
-
-                holoGuiFront.getEntity().setLocationAndAngles(x, y, z, yaw, pitch);
-                holoGuiFront.getEntity().setPositionAndUpdate(x, y, z);
-            }
+            updateHoloGui(this.holoGuiFront, 1);
         }
         if (getHoloGuiBack() != null) {
-            Pair<Float, Float> pair = calculateYawPitch();
-            float yaw = pair.getLeft() - 90;
-            float pitch = pair.getRight();
-
-            Vec3d vec3d = getPosOffset(posX, posY, posZ, -1);
-            if (vec3d != null) {
-                double x = vec3d.x;
-                double y = vec3d.y+.38;
-                double z = vec3d.z;
-
-                holoGuiBack.getEntity().setLocationAndAngles(x, y, z, yaw, pitch);
-                holoGuiBack.getEntity().setPositionAndUpdate(x, y, z);
-            }
+            updateHoloGui(this.holoGuiBack, -1);
         }
     }
 
-    protected double getMaximumSpeed() {
+    private void updateHoloGui(IHoloGuiEntity holo, int offset) {
+        Pair<Float, Float> pair = calculateYawPitch();
+        float yaw = pair.getLeft() + offset * 90;
+        float pitch = pair.getRight();
+
+        Vec3d vec3d = getPosOffset(posX, posY, posZ, offset);
+        if (vec3d != null) {
+            double x = vec3d.x;
+            double y = vec3d.y + .38;
+            double z = vec3d.z;
+
+            holo.getEntity().setLocationAndAngles(x, y, z, yaw, pitch);
+            holo.getEntity().setPositionAndUpdate(x, y, z);
+        }
+    }
+
+    private double getMaximumSpeed() {
         return Math.abs(getSpeed()) / 25.0;
     }
 
-    protected void moveDerailedLevitator() {
+    private void moveDerailedLevitator() {
         double speed = onGround ? this.getMaximumSpeed() : DEFAULT_MAX_SPEED_AIR_LATERAL;
         this.motionX = MathHelper.clamp(this.motionX, -speed, speed);
         this.motionZ = MathHelper.clamp(this.motionZ, -speed, speed);
 
         double moveY = motionY;
-        if (DEFAULT_MAX_SPEED_AIR_VERTICAL > 0 && motionY > DEFAULT_MAX_SPEED_AIR_VERTICAL) {
-            moveY = DEFAULT_MAX_SPEED_AIR_VERTICAL;
-            if (Math.abs(motionX) < 0.3f && Math.abs(motionZ) < 0.3f) {
-                moveY = 0.15f;
-                motionY = moveY;
-            }
-        }
 
         if (this.onGround) {
             this.motionX *= 0.5D;
@@ -595,28 +579,21 @@ public class FluxLevitatorEntity extends Entity implements IFluxLevitatorEntity 
 
     protected void moveAlongTrack(BlockPos pos, IBlockState state) {
         this.fallDistance = 0.0F;
-        Vec3d vec3d = this.getPos(this.posX, this.posY, this.posZ);
+        Vec3d oldPos = this.getPos(this.posX, this.posY, this.posZ);
         this.posY = pos.getY();
         int speed = getSpeed();
         boolean powered = speed != 0;    // Like powered
         boolean unpowered = speed == 0;
 
-//        BlockRailBase blockrailbase = (BlockRailBase) state.getBlock();
-//        if (blockrailbase == Blocks.GOLDEN_RAIL) {
-//            flag = state.getValue(BlockRailPowered.POWERED).booleanValue();
-//            flag1 = !flag;
-//        }
-
         EnumRailDirection dir = getBeamDirection(state);
-        handleBeamAscend(dir);
+//        handleBeamAscend(dir);        // Ascend not supported
 
         int[][] aint = MATRIX[dir.getMetadata()];
         double ddx = (aint[1][0] - aint[0][0]);
         double ddz = (aint[1][2] - aint[0][2]);
         double ddist = Math.sqrt(ddx * ddx + ddz * ddz);
-        double d4 = this.motionX * ddx + this.motionZ * ddz;
-
-        if (d4 < 0.0D) {
+        double direction = this.motionX * ddx + this.motionZ * ddz;
+        if (direction < 0.0D) {
             ddx = -ddx;
             ddz = -ddz;
         }
@@ -630,12 +607,6 @@ public class FluxLevitatorEntity extends Entity implements IFluxLevitatorEntity 
         this.motionX = motionLength * ddx / ddist;
         this.motionZ = motionLength * ddz / ddist;
 
-//        Entity entity = this.getPassengers().isEmpty() ? null : this.getPassengers().get(0);
-//
-//        if (entity instanceof EntityLivingBase) {
-//            double forward = ((EntityLivingBase) entity).moveForward;
-//            unpowered = handleLivingMotion(unpowered, forward, entity.rotationYaw);
-//        }
         if (speed != 0) {
             handleLivingMotion(speed, dir);
         }
@@ -644,12 +615,12 @@ public class FluxLevitatorEntity extends Entity implements IFluxLevitatorEntity 
             restrictMotionUnpowered();
         }
 
-        double d18 = pos.getX() + 0.5D + aint[0][0] * 0.5D;
-        double d19 = pos.getZ() + 0.5D + aint[0][2] * 0.5D;
-        double d20 = pos.getX() + 0.5D + aint[1][0] * 0.5D;
-        double d21 = pos.getZ() + 0.5D + aint[1][2] * 0.5D;
-        ddx = d20 - d18;
-        ddz = d21 - d19;
+        double dx1 = pos.getX() + 0.5D + aint[0][0] * 0.5D;
+        double dx2 = pos.getX() + 0.5D + aint[1][0] * 0.5D;
+        double dz1 = pos.getZ() + 0.5D + aint[0][2] * 0.5D;
+        double dz2 = pos.getZ() + 0.5D + aint[1][2] * 0.5D;
+        ddx = dx2 - dx1;
+        ddz = dz2 - dz1;
         double d10;
 
         if (ddx == 0.0D) {
@@ -659,13 +630,13 @@ public class FluxLevitatorEntity extends Entity implements IFluxLevitatorEntity 
             this.posZ = pos.getZ() + 0.5D;
             d10 = this.posX - pos.getX();
         } else {
-            double d11 = this.posX - d18;
-            double d12 = this.posZ - d19;
+            double d11 = this.posX - dx1;
+            double d12 = this.posZ - dz1;
             d10 = (d11 * ddx + d12 * ddz) * 2.0D;
         }
 
-        this.posX = d18 + ddx * d10;
-        this.posZ = d19 + ddz * d10;
+        this.posX = dx1 + ddx * d10;
+        this.posZ = dz1 + ddz * d10;
         this.setPosition(this.posX, this.posY, this.posZ);
         this.moveLevitatorOnBeam(pos);
 
@@ -676,10 +647,10 @@ public class FluxLevitatorEntity extends Entity implements IFluxLevitatorEntity 
         }
 
         this.applyDrag();
-        Vec3d vec3d1 = this.getPos(this.posX, this.posY, this.posZ);
+        Vec3d newPos = this.getPos(this.posX, this.posY, this.posZ);
 
-        if (vec3d1 != null && vec3d != null) {
-            double d14 = (vec3d.y - vec3d1.y) * 0.05D;
+        if (newPos != null && oldPos != null) {
+            double d14 = (oldPos.y - newPos.y) * 0.05D;
             motionLength = Math.sqrt(this.motionX * this.motionX + this.motionZ * this.motionZ);
 
             if (motionLength > 0.0D) {
@@ -687,7 +658,7 @@ public class FluxLevitatorEntity extends Entity implements IFluxLevitatorEntity 
                 this.motionZ = this.motionZ / motionLength * (motionLength + d14);
             }
 
-            this.setPosition(this.posX, vec3d1.y, this.posZ);
+            this.setPosition(this.posX, newPos.y, this.posZ);
         }
 
         int floorX = MathHelper.floor(this.posX);
@@ -705,26 +676,26 @@ public class FluxLevitatorEntity extends Entity implements IFluxLevitatorEntity 
         }
     }
 
-    private void handleBeamAscend(EnumRailDirection dir) {
-        double slopeAdjustment = SLOPE_ADJUSTMENT;
-        switch (dir) {
-            case ASCENDING_EAST:
-                this.motionX -= slopeAdjustment;
-                ++this.posY;
-                break;
-            case ASCENDING_WEST:
-                this.motionX += slopeAdjustment;
-                ++this.posY;
-                break;
-            case ASCENDING_NORTH:
-                this.motionZ += slopeAdjustment;
-                ++this.posY;
-                break;
-            case ASCENDING_SOUTH:
-                this.motionZ -= slopeAdjustment;
-                ++this.posY;
-        }
-    }
+//    private void handleBeamAscend(EnumRailDirection dir) {
+//        double slopeAdjustment = SLOPE_ADJUSTMENT;
+//        switch (dir) {
+//            case ASCENDING_EAST:
+//                this.motionX -= slopeAdjustment;
+//                ++this.posY;
+//                break;
+//            case ASCENDING_WEST:
+//                this.motionX += slopeAdjustment;
+//                ++this.posY;
+//                break;
+//            case ASCENDING_NORTH:
+//                this.motionZ += slopeAdjustment;
+//                ++this.posY;
+//                break;
+//            case ASCENDING_SOUTH:
+//                this.motionZ -= slopeAdjustment;
+//                ++this.posY;
+//        }
+//    }
 
     private void handleLivingMotion(int speed, EnumRailDirection dir) {
 
@@ -793,11 +764,11 @@ public class FluxLevitatorEntity extends Entity implements IFluxLevitatorEntity 
     }
 
     private void handlePoweredMotion(BlockPos pos, EnumRailDirection dir) {
-        double d15 = Math.sqrt(this.motionX * this.motionX + this.motionZ * this.motionZ);
+        double length = Math.sqrt(this.motionX * this.motionX + this.motionZ * this.motionZ);
 
-        if (d15 > 0.01D) {
-            this.motionX += this.motionX / d15 * 0.06D;
-            this.motionZ += this.motionZ / d15 * 0.06D;
+        if (length > 0.01D) {
+            this.motionX += this.motionX / length * 0.06D;
+            this.motionZ += this.motionZ / length * 0.06D;
         } else if (dir == EnumRailDirection.EAST_WEST) {
             if (this.world.getBlockState(pos.west()).isNormalCube()) {
                 this.motionX = 0.02D;
@@ -814,9 +785,9 @@ public class FluxLevitatorEntity extends Entity implements IFluxLevitatorEntity 
     }
 
     private void restrictMotionUnpowered() {
-        double d17 = Math.sqrt(this.motionX * this.motionX + this.motionZ * this.motionZ);
+        double length = Math.sqrt(this.motionX * this.motionX + this.motionZ * this.motionZ);
 
-        if (d17 < 0.03D) {
+        if (length < 0.03D) {
             this.motionX = 0.0D;
             this.motionY = 0.0D;
             this.motionZ = 0.0D;
@@ -877,28 +848,28 @@ public class FluxLevitatorEntity extends Entity implements IFluxLevitatorEntity 
 
     // Calculate yaw and pitch based on block below the levitator
     private Pair<Float, Float> calculateYawPitch() {
-        Vec3d vec3d = getPos(posX, posY, posZ);
+        Vec3d oldPos = getPos(posX, posY, posZ);
         float yaw = rotationYaw;
         float pitch = rotationPitch;
 
-        if (vec3d != null) {
-            Vec3d vec3d1 = getPosOffset(posX, posY, posZ, 0.3D);
-            Vec3d vec3d2 = getPosOffset(posX, posY, posZ, -0.3D);
+        if (oldPos != null) {
+            Vec3d posUp = getPosOffset(posX, posY, posZ, 0.3D);
+            Vec3d posDown = getPosOffset(posX, posY, posZ, -0.3D);
 
-            if (vec3d1 == null) {
-                vec3d1 = vec3d;
+            if (posUp == null) {
+                posUp = oldPos;
             }
 
-            if (vec3d2 == null) {
-                vec3d2 = vec3d;
+            if (posDown == null) {
+                posDown = oldPos;
             }
 
-            Vec3d vec3d3 = vec3d2.addVector(-vec3d1.x, -vec3d1.y, -vec3d1.z);
+            Vec3d newpos = posDown.addVector(-posUp.x, -posUp.y, -posUp.z);
 
-            if (vec3d3.lengthVector() != 0.0D) {
-                vec3d3 = vec3d3.normalize();
-                yaw = (float) (Math.atan2(vec3d3.z, vec3d3.x) * 180.0D / Math.PI);
-                pitch = (float) (Math.atan(vec3d3.y) * 73.0D);
+            if (newpos.lengthVector() != 0.0D) {
+                newpos = newpos.normalize();
+                yaw = (float) (Math.atan2(newpos.z, newpos.x) * 180.0D / Math.PI);
+                pitch = (float) (Math.atan(newpos.y) * 73.0D);
             }
         }
         return Pair.of(yaw, pitch);
@@ -926,13 +897,13 @@ public class FluxLevitatorEntity extends Entity implements IFluxLevitatorEntity 
             }
 
             int[][] aint = MATRIX[dir.getMetadata()];
-            double d0 = (aint[1][0] - aint[0][0]);
-            double d1 = (aint[1][2] - aint[0][2]);
-            double d2 = Math.sqrt(d0 * d0 + d1 * d1);
-            d0 = d0 / d2;
-            d1 = d1 / d2;
-            x = x + d0 * offset;
-            z = z + d1 * offset;
+            double dx = (aint[1][0] - aint[0][0]);
+            double dz = (aint[1][2] - aint[0][2]);
+            double length = Math.sqrt(dx * dx + dz * dz);
+            dx = dx / length;
+            dz = dz / length;
+            x = x + dx * offset;
+            z = z + dz * offset;
 
             if (aint[0][1] != 0 && MathHelper.floor(x) - floorX == aint[0][0] && MathHelper.floor(z) - floorZ == aint[0][2]) {
                 y += aint[0][1];
@@ -962,36 +933,36 @@ public class FluxLevitatorEntity extends Entity implements IFluxLevitatorEntity 
         if (isValidBeamBlock(state.getBlock())) {
             EnumRailDirection dir = getBeamDirection(state);
             int[][] aint = MATRIX[dir.getMetadata()];
-            double d0 = floorX + 0.5D + aint[0][0] * 0.5D;
-            double d1 = floorY + 0.0625D + aint[0][1] * 0.5D;
-            double d2 = floorZ + 0.5D + aint[0][2] * 0.5D;
-            double d3 = floorX + 0.5D + aint[1][0] * 0.5D;
-            double d4 = floorY + 0.0625D + aint[1][1] * 0.5D;
-            double d5 = floorZ + 0.5D + aint[1][2] * 0.5D;
-            double d6 = d3 - d0;
-            double d7 = (d4 - d1) * 2.0D;
-            double d8 = d5 - d2;
+            double dx1 = floorX + 0.5D + aint[0][0] * 0.5D;
+            double dy1 = floorY + 0.0625D + aint[0][1] * 0.5D;
+            double dz1 = floorZ + 0.5D + aint[0][2] * 0.5D;
+            double dx2 = floorX + 0.5D + aint[1][0] * 0.5D;
+            double dy2 = floorY + 0.0625D + aint[1][1] * 0.5D;
+            double dz2 = floorZ + 0.5D + aint[1][2] * 0.5D;
+            double dx = dx2 - dx1;
+            double dy = (dy2 - dy1) * 2.0D;
+            double dz = dz2 - dz1;
             double d9;
 
-            if (d6 == 0.0D) {
+            if (dx == 0.0D) {
                 d9 = z - floorZ;
-            } else if (d8 == 0.0D) {
+            } else if (dz == 0.0D) {
                 d9 = x - floorX;
             } else {
-                double d10 = x - d0;
-                double d11 = z - d2;
-                d9 = (d10 * d6 + d11 * d8) * 2.0D;
+                double d10 = x - dx1;
+                double d11 = z - dz1;
+                d9 = (d10 * dx + d11 * dz) * 2.0D;
             }
 
-            x = d0 + d6 * d9;
-            y = d1 + d7 * d9;
-            z = d2 + d8 * d9;
+            x = dx1 + dx * d9;
+            y = dy1 + dy * d9;
+            z = dz1 + dz * d9;
 
-            if (d7 < 0.0D) {
+            if (dy < 0.0D) {
                 ++y;
             }
 
-            if (d7 > 0.0D) {
+            if (dy > 0.0D) {
                 y += 0.5D;
             }
 
@@ -1056,20 +1027,20 @@ public class FluxLevitatorEntity extends Entity implements IFluxLevitatorEntity 
                 if (!this.isPassenger(entityIn)) {
                     double dx = entityIn.posX - this.posX;
                     double dz = entityIn.posZ - this.posZ;
-                    double d2 = dx * dx + dz * dz;
+                    double length = dx * dx + dz * dz;
 
-                    if (d2 >= 9.999999747378752E-5D) {
-                        d2 = MathHelper.sqrt(d2);
-                        dx = dx / d2;
-                        dz = dz / d2;
-                        double d3 = 1.0D / d2;
+                    if (length >= .0001D) {
+                        length = MathHelper.sqrt(length);
+                        dx = dx / length;
+                        dz = dz / length;
+                        double invLength = 1.0D / length;
 
-                        if (d3 > 1.0D) {
-                            d3 = 1.0D;
+                        if (invLength > 1.0D) {
+                            invLength = 1.0D;
                         }
 
-                        dx = dx * d3;
-                        dz = dz * d3;
+                        dx = dx * invLength;
+                        dz = dz * invLength;
                         dx = dx * 0.1D;
                         dz = dz * 0.1D;
                         dx = dx * (1.0F - this.entityCollisionReduction);
@@ -1078,9 +1049,9 @@ public class FluxLevitatorEntity extends Entity implements IFluxLevitatorEntity 
                         dz = dz * 0.5D;
 
                         if (entityIn instanceof FluxLevitatorEntity) {
-                            double d4 = entityIn.posX - this.posX;
-                            double d5 = entityIn.posZ - this.posZ;
-                            Vec3d vec3d = (new Vec3d(d4, 0.0D, d5)).normalize();
+                            double ddx = entityIn.posX - this.posX;
+                            double ddz = entityIn.posZ - this.posZ;
+                            Vec3d vec3d = (new Vec3d(ddx, 0.0D, ddz)).normalize();
                             Vec3d vec3d1 = (new Vec3d(MathHelper.cos(this.rotationYaw * 0.017453292F), 0.0D, MathHelper.sin(this.rotationYaw * 0.017453292F))).normalize();
                             double d6 = Math.abs(vec3d.dotProduct(vec3d1));
 
