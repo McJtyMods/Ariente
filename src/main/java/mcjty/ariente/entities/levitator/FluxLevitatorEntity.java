@@ -60,6 +60,7 @@ public class FluxLevitatorEntity extends Entity implements IFluxLevitatorEntity 
             {{0, 0, 1}, {-1, 0, 0}},
             {{0, 0, -1}, {-1, 0, 0}},
             {{0, 0, -1}, {1, 0, 0}}};
+
     private int turnProgress;
     private double levitatorX;
     private double levitatorY;
@@ -70,17 +71,19 @@ public class FluxLevitatorEntity extends Entity implements IFluxLevitatorEntity 
     private double velocityY;
     private double velocityZ;
 
-    public static float defaultMaxSpeedAirLateral = 0.4f;
-    public static float defaultMaxSpeedAirVertical = -1f;
-    public static double defaultDragAir = 0.95D;
-    protected boolean canUseRail = true;
-    protected boolean canBePushed = true;
+    public static final float DEFAULT_MAX_SPEED_AIR_LATERAL = 0.4f;
+    public static final float DEFAULT_MAX_SPEED_AIR_VERTICAL = -1f;
+    public static final double DEFAULT_DRAG_AIR = 0.95D;
+    public static final double SLOPE_ADJUSTMENT = 0.0078125D;
 
-    /* Instance versions of the above physics properties */
-    private float currentSpeedRail = getMaxCartSpeedOnRail();
-    protected float maxSpeedAirLateral = defaultMaxSpeedAirLateral;
-    protected float maxSpeedAirVertical = defaultMaxSpeedAirVertical;
-    protected double dragAir = defaultDragAir;
+    /**
+     * The carts max speed when traveling on rails. Carts going faster
+     * than 1.1 cause issues with chunk loading. Carts cant traverse slopes or
+     * corners at greater than 0.5 - 0.6. This value is compared with the rails
+     * max speed and the carts current speed cap to determine the carts current
+     * max speed. A normal rail's max speed is 0.4.
+     */
+    public static final float MAX_CART_SPEED_ON_RAIL = 1.2f;
 
     private IHoloGuiEntity holoGuiFront;
     private IHoloGuiEntity holoGuiBack;
@@ -132,14 +135,6 @@ public class FluxLevitatorEntity extends Entity implements IFluxLevitatorEntity 
                 this.move(MoverType.SELF, (f - this.length), 0.0D, (f - this.width));
             }
         }
-    }
-
-    public double getLevitatorYaw() {
-        return levitatorYaw;
-    }
-
-    public double getLevitatorPitch() {
-        return levitatorPitch;
     }
 
     @Override
@@ -289,7 +284,7 @@ public class FluxLevitatorEntity extends Entity implements IFluxLevitatorEntity 
 
     @Override
     public boolean canBePushed() {
-        return canBePushed;
+        return true;
     }
 
 
@@ -420,7 +415,7 @@ public class FluxLevitatorEntity extends Entity implements IFluxLevitatorEntity 
         BlockPos blockpos = new BlockPos(floorX, floorY, floorZ);
         IBlockState state = this.world.getBlockState(blockpos);
 
-        if (canUseRail() && (isValidBeamBlock(state.getBlock()))) {
+        if (isValidBeamBlock(state.getBlock())) {
             this.moveAlongTrack(blockpos, state);
         } else {
             this.moveDerailedLevitator();
@@ -570,13 +565,13 @@ public class FluxLevitatorEntity extends Entity implements IFluxLevitatorEntity 
     }
 
     protected void moveDerailedLevitator() {
-        double speed = onGround ? this.getMaximumSpeed() : getMaxSpeedAirLateral();
+        double speed = onGround ? this.getMaximumSpeed() : DEFAULT_MAX_SPEED_AIR_LATERAL;
         this.motionX = MathHelper.clamp(this.motionX, -speed, speed);
         this.motionZ = MathHelper.clamp(this.motionZ, -speed, speed);
 
         double moveY = motionY;
-        if (getMaxSpeedAirVertical() > 0 && motionY > getMaxSpeedAirVertical()) {
-            moveY = getMaxSpeedAirVertical();
+        if (DEFAULT_MAX_SPEED_AIR_VERTICAL > 0 && motionY > DEFAULT_MAX_SPEED_AIR_VERTICAL) {
+            moveY = DEFAULT_MAX_SPEED_AIR_VERTICAL;
             if (Math.abs(motionX) < 0.3f && Math.abs(motionZ) < 0.3f) {
                 moveY = 0.15f;
                 motionY = moveY;
@@ -592,9 +587,9 @@ public class FluxLevitatorEntity extends Entity implements IFluxLevitatorEntity 
         this.move(MoverType.SELF, this.motionX, moveY, this.motionZ);
 
         if (!this.onGround) {
-            this.motionX *= getDragAir();
-            this.motionY *= getDragAir();
-            this.motionZ *= getDragAir();
+            this.motionX *= DEFAULT_DRAG_AIR;
+            this.motionY *= DEFAULT_DRAG_AIR;
+            this.motionZ *= DEFAULT_DRAG_AIR;
         }
     }
 
@@ -711,7 +706,7 @@ public class FluxLevitatorEntity extends Entity implements IFluxLevitatorEntity 
     }
 
     private void handleBeamAscend(EnumRailDirection dir) {
-        double slopeAdjustment = getSlopeAdjustment();
+        double slopeAdjustment = SLOPE_ADJUSTMENT;
         switch (dir) {
             case ASCENDING_EAST:
                 this.motionX -= slopeAdjustment;
@@ -1194,9 +1189,6 @@ public class FluxLevitatorEntity extends Entity implements IFluxLevitatorEntity 
     }
 
     protected double getMaxSpeed() {
-        if (!canUseRail()) {
-            return getMaximumSpeed();
-        }
         BlockPos pos = this.getCurrentRailPosition();
         IBlockState state = this.world.getBlockState(pos);
         if (!isValidBeamBlock(state.getBlock())) {
@@ -1204,7 +1196,7 @@ public class FluxLevitatorEntity extends Entity implements IFluxLevitatorEntity 
         }
 
         float railMaxSpeed = 5; // @todo ((BlockRailBase) state.getBlock()).getRailMaxSpeed(world, this, pos);
-        return Math.min(railMaxSpeed, getCurrentCartSpeedCapOnRail());
+        return Math.min(railMaxSpeed, MAX_CART_SPEED_ON_RAIL);
     }
 
     /**
@@ -1224,105 +1216,5 @@ public class FluxLevitatorEntity extends Entity implements IFluxLevitatorEntity 
         mX = MathHelper.clamp(mX, -max, max);
         mZ = MathHelper.clamp(mZ, -max, max);
         this.move(MoverType.SELF, mX, 0.0D, mZ);
-    }
-
-    /**
-     * This function returns an ItemStack that represents this cart.
-     * This should be an ItemStack that can be used by the player to place the cart,
-     * but is not necessary the item the cart drops when destroyed.
-     *
-     * @return An ItemStack that can be used to place the cart.
-     */
-    public ItemStack getCartItem() {
-        return new ItemStack(ModItems.fluxLevitatorItem);
-    }
-
-    /**
-     * Returns true if this cart can currently use rails.
-     * This function is mainly used to gracefully detach a levitator from a beam.
-     *
-     * @return True if the levitator can use rails.
-     */
-    public boolean canUseRail() {
-        return canUseRail;
-    }
-
-    /**
-     * Set whether the levitator can use rails.
-     * This function is mainly used to gracefully detach a levitator from a rail.
-     *
-     * @param use Whether the levitator can currently use rails.
-     */
-    public void setCanUseRail(boolean use) {
-        canUseRail = use;
-    }
-
-    /**
-     * Getters/setters for physics variables
-     */
-
-    /**
-     * Returns the carts max speed when traveling on rails. Carts going faster
-     * than 1.1 cause issues with chunk loading. Carts cant traverse slopes or
-     * corners at greater than 0.5 - 0.6. This value is compared with the rails
-     * max speed and the carts current speed cap to determine the carts current
-     * max speed. A normal rail's max speed is 0.4.
-     *
-     * @return Carts max speed.
-     */
-    public float getMaxCartSpeedOnRail() {
-        return 1.2f;
-    }
-
-    /**
-     * Returns the current speed cap for the cart when traveling on rails. This
-     * functions differs from getMaxCartSpeedOnRail() in that it controls
-     * current movement and cannot be overridden. The value however can never be
-     * higher than getMaxCartSpeedOnRail().
-     *
-     * @return
-     */
-    public final float getCurrentCartSpeedCapOnRail() {
-        return currentSpeedRail;
-    }
-
-    public final void setCurrentCartSpeedCapOnRail(float value) {
-        value = Math.min(value, getMaxCartSpeedOnRail());
-        currentSpeedRail = value;
-    }
-
-    public float getMaxSpeedAirLateral() {
-        return maxSpeedAirLateral;
-    }
-
-    public void setMaxSpeedAirLateral(float value) {
-        maxSpeedAirLateral = value;
-    }
-
-    public float getMaxSpeedAirVertical() {
-        return maxSpeedAirVertical;
-    }
-
-    public void setMaxSpeedAirVertical(float value) {
-        maxSpeedAirVertical = value;
-    }
-
-    public double getDragAir() {
-        return dragAir;
-    }
-
-    public void setDragAir(double value) {
-        dragAir = value;
-    }
-
-    public double getSlopeAdjustment() {
-        return 0.0078125D;
-    }
-
-    /**
-     * Called from Detector Rails to retrieve a redstone power level for comparators.
-     */
-    public int getComparatorLevel() {
-        return -1;
     }
 }
