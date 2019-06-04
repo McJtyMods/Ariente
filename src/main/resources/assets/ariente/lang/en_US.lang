@@ -171,6 +171,7 @@ entity.ariente_soldier.name=Soldier
 entity.ariente_master_soldier.name=Master Soldier
 entity.ariente_laser.name=Laser
 entity.ariente_flux_levitator.name=Flux Levitator
+entity.ariente_flux_elevator.name=Flux Elevator
 entity.ariente_flux_ship.name=Flux Ship
 entity.ariente_pearl.name=Warp Locator
 
