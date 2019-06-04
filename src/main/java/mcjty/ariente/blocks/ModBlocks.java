@@ -66,6 +66,7 @@ public class ModBlocks {
     public static DoubleMarbleSlabBlock doubleMarbleSlabBlock;
 
     public static BaseBlock fluxBeamBlock;
+    public static BaseBlock fluxBendBeamBlock;
 
     public static GenericBlock<SensorItemNodeTile, GenericContainer> sensorItemNode;
     public static GenericBlock<InputItemNodeTile, GenericContainer> inputItemNode;
@@ -204,6 +205,12 @@ public class ModBlocks {
                 .build();
 
         fluxBeamBlock = new BaseBlockBuilder<>(Ariente.instance, "flux_beam")
+                .rotationType(HORIZROTATION)
+                .flags(NON_OPAQUE, NON_FULLCUBE, NO_COLLISION)
+                .boundingBox((state, source, pos) -> getBeamBox(state))
+                .build();
+
+        fluxBendBeamBlock = new BaseBlockBuilder<>(Ariente.instance, "flux_bend_beam")
                 .rotationType(HORIZROTATION)
                 .flags(NON_OPAQUE, NON_FULLCUBE, NO_COLLISION)
                 .boundingBox((state, source, pos) -> getBeamBox(state))
@@ -566,6 +573,7 @@ public class ModBlocks {
         facadeBlock.initModel();
 
         fluxBeamBlock.initModel();
+        fluxBendBeamBlock.initModel();
 
         storageBlock.initModel();
         StorageRenderer.register();

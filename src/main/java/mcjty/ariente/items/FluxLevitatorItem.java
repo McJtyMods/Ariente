@@ -33,7 +33,7 @@ public class FluxLevitatorItem extends GenericItem {
     public EnumActionResult onItemUse(EntityPlayer player, World world, BlockPos pos, EnumHand hand, EnumFacing facing, float hitX, float hitY, float hitZ) {
         IBlockState state = world.getBlockState(pos);
 
-        if (state.getBlock() != ModBlocks.fluxBeamBlock) {
+        if (state.getBlock() != ModBlocks.fluxBeamBlock && state.getBlock() != ModBlocks.fluxBendBeamBlock) {
             return EnumActionResult.FAIL;
         } else {
             ItemStack itemstack = player.getHeldItem(hand);

@@ -56,6 +56,7 @@ tile.ariente.pattern.lines.name=Lines Pattern
 
 tile.ariente.reinforced_marble.name=Reinforced Marble
 tile.ariente.flux_beam.name=Flux Beam
+tile.ariente.flux_bend_beam.name=Flux Bend Beam
 
 tile.ariente.blacktech.dots.name=Tech Block Dots
 tile.ariente.blacktech.lines.name=Tech Block Lines

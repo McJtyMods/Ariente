@@ -268,6 +268,12 @@ public class BlueprintRecipeRegistry {
                 new ItemStack(ModItems.negariteDust, 1),
                 new ItemStack(ModItems.posiriteDust, 1)
         ));
+        recipes.add(new ConstructorRecipe(new ItemStack(ModBlocks.fluxBendBeamBlock), COMMON,
+                new ItemStack(ModBlocks.marble, 1),
+                new ItemStack(ModItems.silverIngot, 1),
+                new ItemStack(ModItems.negariteDust, 1),
+                new ItemStack(ModItems.posiriteDust, 1)
+        ));
         recipes.add(new ConstructorRecipe(new ItemStack(ModBlocks.levelMarkerBlock), COMMON,
                 new ItemStack(ModBlocks.marbleSlabBlock, 1),
                 new ItemStack(ModItems.silverIngot, 1)

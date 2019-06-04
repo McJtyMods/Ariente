@@ -9,7 +9,8 @@ import mcjty.ariente.items.ModItems;
 import mcjty.hologui.api.CloseStrategy;
 import mcjty.hologui.api.IHoloGuiEntity;
 import mcjty.lib.blocks.BaseBlock;
-import net.minecraft.block.BlockRailBase;
+import net.minecraft.block.Block;
+import net.minecraft.block.BlockRailBase.EnumRailDirection;
 import net.minecraft.block.state.IBlockState;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.MoverType;
@@ -48,23 +49,30 @@ public class FluxLevitatorEntity extends Entity implements IFluxLevitatorEntity 
     private static final DataParameter<Optional<UUID>> HOLO_FRONT = EntityDataManager.createKey(FluxLevitatorEntity.class, DataSerializers.OPTIONAL_UNIQUE_ID);
     private static final DataParameter<Optional<UUID>> HOLO_BACK = EntityDataManager.createKey(FluxLevitatorEntity.class, DataSerializers.OPTIONAL_UNIQUE_ID);
 
-    private static final int[][][] MATRIX = new int[][][]{{{0, 0, -1}, {0, 0, 1}}, {{-1, 0, 0}, {1, 0, 0}}, {{-1, -1, 0}, {1, 0, 0}}, {{-1, 0, 0}, {1, -1, 0}}, {{0, 0, -1}, {0, -1, 1}}, {{0, -1, -1}, {0, 0, 1}}, {{0, 0, 1}, {1, 0, 0}}, {{0, 0, 1}, {-1, 0, 0}}, {{0, 0, -1}, {-1, 0, 0}}, {{0, 0, -1}, {1, 0, 0}}};
+    private static final int[][][] MATRIX = new int[][][]{
+            {{0, 0, -1}, {0, 0, 1}},
+            {{-1, 0, 0}, {1, 0, 0}},
+            {{-1, -1, 0}, {1, 0, 0}},
+            {{-1, 0, 0}, {1, -1, 0}},
+            {{0, 0, -1}, {0, -1, 1}},
+            {{0, -1, -1}, {0, 0, 1}},
+            {{0, 0, 1}, {1, 0, 0}},
+            {{0, 0, 1}, {-1, 0, 0}},
+            {{0, 0, -1}, {-1, 0, 0}},
+            {{0, 0, -1}, {1, 0, 0}}};
     private int turnProgress;
     private double levitatorX;
     private double levitatorY;
     private double levitatorZ;
     private double levitatorYaw;
     private double levitatorPitch;
-    @SideOnly(Side.CLIENT)
     private double velocityX;
-    @SideOnly(Side.CLIENT)
     private double velocityY;
-    @SideOnly(Side.CLIENT)
     private double velocityZ;
 
     public static float defaultMaxSpeedAirLateral = 0.4f;
     public static float defaultMaxSpeedAirVertical = -1f;
-    public static double defaultDragAir = 0.94999998807907104D;
+    public static double defaultDragAir = 0.95D;
     protected boolean canUseRail = true;
     protected boolean canBePushed = true;
 
@@ -404,14 +412,15 @@ public class FluxLevitatorEntity extends Entity implements IFluxLevitatorEntity 
         int floorY = MathHelper.floor(this.posY);
         int floorZ = MathHelper.floor(this.posZ);
 
-        if (world.getBlockState(new BlockPos(floorX, floorY - 1, floorZ)).getBlock() == ModBlocks.fluxBeamBlock) {
+        Block block = world.getBlockState(new BlockPos(floorX, floorY - 1, floorZ)).getBlock();
+        if (isValidBeamBlock(block)) {
             --floorY;
         }
 
         BlockPos blockpos = new BlockPos(floorX, floorY, floorZ);
         IBlockState state = this.world.getBlockState(blockpos);
 
-        if (canUseRail() && state.getBlock() == ModBlocks.fluxBeamBlock) {
+        if (canUseRail() && (isValidBeamBlock(state.getBlock()))) {
             this.moveAlongTrack(blockpos, state);
         } else {
             this.moveDerailedLevitator();
@@ -436,6 +445,10 @@ public class FluxLevitatorEntity extends Entity implements IFluxLevitatorEntity 
 
         handleEntityCollision();
         handleWaterMovement();
+    }
+
+    private boolean isValidBeamBlock(Block block) {
+        return block == ModBlocks.fluxBeamBlock || block == ModBlocks.fluxBendBeamBlock;
     }
 
     private void handleEntityCollision() {
@@ -599,7 +612,7 @@ public class FluxLevitatorEntity extends Entity implements IFluxLevitatorEntity 
 //            flag1 = !flag;
 //        }
 
-        BlockRailBase.EnumRailDirection dir = getBeamDirection(state);
+        EnumRailDirection dir = getBeamDirection(state);
         handleBeamAscend(dir);
 
         int[][] aint = MATRIX[dir.getMetadata()];
@@ -697,7 +710,7 @@ public class FluxLevitatorEntity extends Entity implements IFluxLevitatorEntity 
         }
     }
 
-    private void handleBeamAscend(BlockRailBase.EnumRailDirection dir) {
+    private void handleBeamAscend(EnumRailDirection dir) {
         double slopeAdjustment = getSlopeAdjustment();
         switch (dir) {
             case ASCENDING_EAST:
@@ -718,10 +731,10 @@ public class FluxLevitatorEntity extends Entity implements IFluxLevitatorEntity 
         }
     }
 
-    private void handleLivingMotion(int speed, BlockRailBase.EnumRailDirection dir) {
+    private void handleLivingMotion(int speed, EnumRailDirection dir) {
 
         float yaw;
-        if (dir == BlockRailBase.EnumRailDirection.NORTH_SOUTH) {
+        if (dir == EnumRailDirection.NORTH_SOUTH) {
             if (speed > 0) {
                 yaw = -358;
             } else {
@@ -784,19 +797,19 @@ public class FluxLevitatorEntity extends Entity implements IFluxLevitatorEntity 
         }
     }
 
-    private void handlePoweredMotion(BlockPos pos, BlockRailBase.EnumRailDirection dir) {
+    private void handlePoweredMotion(BlockPos pos, EnumRailDirection dir) {
         double d15 = Math.sqrt(this.motionX * this.motionX + this.motionZ * this.motionZ);
 
         if (d15 > 0.01D) {
             this.motionX += this.motionX / d15 * 0.06D;
             this.motionZ += this.motionZ / d15 * 0.06D;
-        } else if (dir == BlockRailBase.EnumRailDirection.EAST_WEST) {
+        } else if (dir == EnumRailDirection.EAST_WEST) {
             if (this.world.getBlockState(pos.west()).isNormalCube()) {
                 this.motionX = 0.02D;
             } else if (this.world.getBlockState(pos.east()).isNormalCube()) {
                 this.motionX = -0.02D;
             }
-        } else if (dir == BlockRailBase.EnumRailDirection.NORTH_SOUTH) {
+        } else if (dir == EnumRailDirection.NORTH_SOUTH) {
             if (this.world.getBlockState(pos.north()).isNormalCube()) {
                 this.motionZ = 0.02D;
             } else if (this.world.getBlockState(pos.south()).isNormalCube()) {
@@ -819,13 +832,30 @@ public class FluxLevitatorEntity extends Entity implements IFluxLevitatorEntity 
         }
     }
 
-    public static BlockRailBase.EnumRailDirection getBeamDirection(IBlockState state) {
-        EnumFacing facing = state.getValue(BaseBlock.FACING_HORIZ);
-        if (facing == EnumFacing.NORTH || facing == EnumFacing.SOUTH) {
-            return BlockRailBase.EnumRailDirection.EAST_WEST;
+    public static EnumRailDirection getBeamDirection(IBlockState state) {
+        if (state.getBlock() == ModBlocks.fluxBeamBlock) {
+            EnumFacing facing = state.getValue(BaseBlock.FACING_HORIZ);
+            if (facing == EnumFacing.NORTH || facing == EnumFacing.SOUTH) {
+                return EnumRailDirection.EAST_WEST;
+            } else {
+                return EnumRailDirection.NORTH_SOUTH;
+            }
         } else {
-            return BlockRailBase.EnumRailDirection.NORTH_SOUTH;
+            EnumFacing facing = state.getValue(BaseBlock.FACING_HORIZ);
+            switch (facing) {
+                case NORTH:
+                    return EnumRailDirection.NORTH_EAST;
+                case SOUTH:
+                    return EnumRailDirection.NORTH_WEST;
+                case WEST:
+                    return EnumRailDirection.SOUTH_WEST;
+                case EAST:
+                    return EnumRailDirection.SOUTH_EAST;
+                default:
+                    break;
+            }
         }
+        throw new IllegalStateException("This didn't happen");
     }
 
     protected void applyDrag() {
@@ -885,14 +915,15 @@ public class FluxLevitatorEntity extends Entity implements IFluxLevitatorEntity 
         int floorY = MathHelper.floor(y);
         int floorZ = MathHelper.floor(z);
 
-        if (world.getBlockState(new BlockPos(floorX, floorY - 1, floorZ)).getBlock() == ModBlocks.fluxBeamBlock) {
+        Block block = world.getBlockState(new BlockPos(floorX, floorY - 1, floorZ)).getBlock();
+        if (isValidBeamBlock(block)) {
             --floorY;
         }
 
         IBlockState state = this.world.getBlockState(new BlockPos(floorX, floorY, floorZ));
 
-        if (state.getBlock() == ModBlocks.fluxBeamBlock) {
-            BlockRailBase.EnumRailDirection dir = getBeamDirection(state);
+        if (isValidBeamBlock(state.getBlock())) {
+            EnumRailDirection dir = getBeamDirection(state);
             y = floorY;
 
             if (dir.isAscending()) {
@@ -926,14 +957,15 @@ public class FluxLevitatorEntity extends Entity implements IFluxLevitatorEntity 
         int floorY = MathHelper.floor(y);
         int floorZ = MathHelper.floor(z);
 
-        if (world.getBlockState(new BlockPos(floorX, floorY - 1, floorZ)).getBlock() == ModBlocks.fluxBeamBlock) {
+        Block block = world.getBlockState(new BlockPos(floorX, floorY - 1, floorZ)).getBlock();
+        if (isValidBeamBlock(block)) {
             --floorY;
         }
 
         IBlockState state = this.world.getBlockState(new BlockPos(floorX, floorY, floorZ));
 
-        if (state.getBlock() == ModBlocks.fluxBeamBlock) {
-            BlockRailBase.EnumRailDirection dir = getBeamDirection(state);
+        if (isValidBeamBlock(state.getBlock())) {
+            EnumRailDirection dir = getBeamDirection(state);
             int[][] aint = MATRIX[dir.getMetadata()];
             double d0 = floorX + 0.5D + aint[0][0] * 0.5D;
             double d1 = floorY + 0.0625D + aint[0][1] * 0.5D;
@@ -1154,7 +1186,8 @@ public class FluxLevitatorEntity extends Entity implements IFluxLevitatorEntity 
         int y = MathHelper.floor(this.posY);
         int z = MathHelper.floor(this.posZ);
 
-        if (world.getBlockState(new BlockPos(x, y - 1, z)).getBlock() == ModBlocks.fluxBeamBlock) {
+        Block block = world.getBlockState(new BlockPos(x, y - 1, z)).getBlock();
+        if (isValidBeamBlock(block)) {
             y--;
         }
         return new BlockPos(x, y, z);
@@ -1166,7 +1199,7 @@ public class FluxLevitatorEntity extends Entity implements IFluxLevitatorEntity 
         }
         BlockPos pos = this.getCurrentRailPosition();
         IBlockState state = this.world.getBlockState(pos);
-        if (state.getBlock() != ModBlocks.fluxBeamBlock) {
+        if (!isValidBeamBlock(state.getBlock())) {
             return getMaximumSpeed();
         }
 
