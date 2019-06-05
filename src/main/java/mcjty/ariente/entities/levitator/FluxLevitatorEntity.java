@@ -49,6 +49,7 @@ public class FluxLevitatorEntity extends Entity implements IFluxLevitatorEntity 
     private static final DataParameter<Optional<UUID>> HOLO_FRONT = EntityDataManager.createKey(FluxLevitatorEntity.class, DataSerializers.OPTIONAL_UNIQUE_ID);
     private static final DataParameter<Optional<UUID>> HOLO_BACK = EntityDataManager.createKey(FluxLevitatorEntity.class, DataSerializers.OPTIONAL_UNIQUE_ID);
 
+    private boolean isInReverse;
     private static final int[][][] MATRIX = new int[][][]{
             {{0, 0, -1}, {0, 0, 1}},
             {{-1, 0, 0}, {1, 0, 0}},
@@ -259,10 +260,10 @@ public class FluxLevitatorEntity extends Entity implements IFluxLevitatorEntity 
 
     @Override
     protected void entityInit() {
-        this.dataManager.register(ROLLING_AMPLITUDE, Integer.valueOf(0));
-        this.dataManager.register(ROLLING_DIRECTION, Integer.valueOf(0));
-        this.dataManager.register(SPEED, Integer.valueOf(0));
-        this.dataManager.register(DAMAGE, Float.valueOf(0.0F));
+        this.dataManager.register(ROLLING_AMPLITUDE, 0);
+        this.dataManager.register(ROLLING_DIRECTION, 0);
+        this.dataManager.register(SPEED, 0);
+        this.dataManager.register(DAMAGE, 0.0F);
         this.dataManager.register(HOLO_FRONT, Optional.absent());
         this.dataManager.register(HOLO_BACK, Optional.absent());
     }
@@ -363,7 +364,10 @@ public class FluxLevitatorEntity extends Entity implements IFluxLevitatorEntity 
 
     @Override
     public EnumFacing getAdjustedHorizontalFacing() {
-        return this.getHorizontalFacing().rotateY();
+        return isInReverse
+                ? this.getHorizontalFacing().getOpposite().rotateY()
+                : this.getHorizontalFacing().rotateY();
+//        return this.getHorizontalFacing().rotateY();
     }
 
     @Override
@@ -425,12 +429,21 @@ public class FluxLevitatorEntity extends Entity implements IFluxLevitatorEntity 
 
         if (dx * dx + dz * dz > 0.001D) {
             this.rotationYaw = (float) (MathHelper.atan2(dz, dx) * 180.0D / Math.PI);
+            if (isInReverse) {
+                rotationYaw += 180;
+            }
         } else {
             if (getSpeed() > 0) {
                 changeSpeed(getSpeed() - 1);
             } else if (getSpeed() < 0) {
                 changeSpeed(getSpeed() + 1);
             }
+        }
+
+        double angle = (double)MathHelper.wrapDegrees(this.rotationYaw - this.prevRotationYaw);
+        if (angle < -170.0D || angle >= 170.0D) {
+            this.rotationYaw += 180.0F;
+            this.isInReverse = !this.isInReverse;
         }
 
         this.setRotation(this.rotationYaw, this.rotationPitch);
@@ -797,24 +810,23 @@ public class FluxLevitatorEntity extends Entity implements IFluxLevitatorEntity 
     }
 
     public static EnumRailDirection getBeamDirection(IBlockState state) {
+        EnumFacing facing = state.getValue(BaseBlock.FACING_HORIZ);
         if (state.getBlock() == ModBlocks.fluxBeamBlock) {
-            EnumFacing facing = state.getValue(BaseBlock.FACING_HORIZ);
             if (facing == EnumFacing.NORTH || facing == EnumFacing.SOUTH) {
                 return EnumRailDirection.EAST_WEST;
             } else {
                 return EnumRailDirection.NORTH_SOUTH;
             }
         } else {
-            EnumFacing facing = state.getValue(BaseBlock.FACING_HORIZ);
             switch (facing) {
                 case NORTH:
                     return EnumRailDirection.NORTH_EAST;
                 case SOUTH:
                     return EnumRailDirection.NORTH_WEST;
                 case WEST:
-                    return EnumRailDirection.SOUTH_WEST;
-                case EAST:
                     return EnumRailDirection.SOUTH_EAST;
+                case EAST:
+                    return EnumRailDirection.SOUTH_WEST;
                 default:
                     break;
             }
@@ -822,7 +834,7 @@ public class FluxLevitatorEntity extends Entity implements IFluxLevitatorEntity 
         throw new IllegalStateException("This didn't happen");
     }
 
-    protected void applyDrag() {
+    private void applyDrag() {
         if (this.isBeingRidden()) {
             this.motionX *= 0.997D;
             this.motionY *= 0.0D;
@@ -1095,7 +1107,7 @@ public class FluxLevitatorEntity extends Entity implements IFluxLevitatorEntity 
     }
 
     public void setDamage(float damage) {
-        this.dataManager.set(DAMAGE, Float.valueOf(damage));
+        this.dataManager.set(DAMAGE, damage);
     }
 
     @Override
@@ -1114,7 +1126,7 @@ public class FluxLevitatorEntity extends Entity implements IFluxLevitatorEntity 
     }
 
     public void setRollingAmplitude(int rollingAmplitude) {
-        this.dataManager.set(ROLLING_AMPLITUDE, Integer.valueOf(rollingAmplitude));
+        this.dataManager.set(ROLLING_AMPLITUDE, rollingAmplitude);
     }
 
     public int getRollingAmplitude() {
@@ -1122,7 +1134,7 @@ public class FluxLevitatorEntity extends Entity implements IFluxLevitatorEntity 
     }
 
     public void setRollingDirection(int rollingDirection) {
-        this.dataManager.set(ROLLING_DIRECTION, Integer.valueOf(rollingDirection));
+        this.dataManager.set(ROLLING_DIRECTION, rollingDirection);
     }
 
     public int getRollingDirection() {
