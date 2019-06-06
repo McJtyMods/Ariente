@@ -444,7 +444,8 @@ public class FluxLevitatorEntity extends Entity implements IFluxLevitatorEntity 
         double angle = MathHelper.wrapDegrees(this.rotationYaw - this.prevRotationYaw);
         if (angle < -170.0D || angle >= 170.0D) {
             this.rotationYaw += 180.0F;
-            this.isInReverse = !this.isInReverse;
+//            this.isInReverse = !this.isInReverse;
+            isInReverse = false;
         }
 
         this.setRotation(this.rotationYaw, this.rotationPitch);
@@ -726,8 +727,8 @@ public class FluxLevitatorEntity extends Entity implements IFluxLevitatorEntity 
                 yaw = -278;
             }
         } else {
-            yaw = (float) levitatorYaw;
-//            return;
+//            yaw = (float) levitatorYaw;
+            return;
         }
 
         double dx = -Math.sin((yaw * 0.017453292F));
@@ -748,16 +749,16 @@ public class FluxLevitatorEntity extends Entity implements IFluxLevitatorEntity 
                 this.motionZ = -Math.abs(motionZ) + dz * 0.1D;
             }
         } else {
-            if (dx > 0) {
-                this.motionX = Math.abs(motionX);
-            } else {
-                this.motionX = -Math.abs(motionX);
-            }
-            if (dz > 0) {
-                this.motionZ = Math.abs(motionZ);
-            } else {
-                this.motionZ = -Math.abs(motionZ);
-            }
+//            if (dx > 0) {
+//                this.motionX = Math.abs(motionX);
+//            } else {
+//                this.motionX = -Math.abs(motionX);
+//            }
+//            if (dz > 0) {
+//                this.motionZ = Math.abs(motionZ);
+//            } else {
+//                this.motionZ = -Math.abs(motionZ);
+//            }
         }
 
         double maxMotion = Math.abs(speed / 25.0f);
