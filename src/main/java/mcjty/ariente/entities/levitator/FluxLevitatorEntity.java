@@ -713,31 +713,42 @@ public class FluxLevitatorEntity extends Entity implements IFluxLevitatorEntity 
 
     private void handleLivingMotion(int speed, EnumRailDirection dir) {
 
+        double maxMotion;
+
+
         float yaw;
         if (dir == EnumRailDirection.NORTH_SOUTH) {
             if (speed > 0) {
-                yaw = -358;
+                yaw = -360;
             } else {
-                yaw = -178;
+                yaw = -180;
             }
         } else if (dir == EnumRailDirection.EAST_WEST) {
             if (speed > 0) {
-                yaw = -88;
+                yaw = -90;
             } else {
-                yaw = -278;
+                yaw = -270;
             }
         } else {
-//            yaw = (float) levitatorYaw;
+            // Slow down in bends
+            double dist = Math.sqrt(this.motionX * this.motionX + this.motionZ * this.motionZ) ;
+            maxMotion = Math.abs(speed / 200.0f);
+            if (dist > maxMotion) {
+                motionX /= dist / maxMotion;
+                motionZ /= dist / maxMotion;
+            }
+
             return;
         }
+
+        maxMotion = Math.abs(speed / 25.0f);
 
         double dx = -Math.sin((yaw * 0.017453292F));
         double dz = Math.cos((yaw * 0.017453292F));
         double dist = this.motionX * this.motionX + this.motionZ * this.motionZ;
 
         if (dist < 0.01D) {
-//            this.motionX += dx * 0.1D;
-//            this.motionZ += dz * 0.1D;
+            // On a straight track we kickstart some motion
             if (dx > 0) {
                 this.motionX = Math.abs(motionX) + dx * 0.1D;
             } else {
@@ -748,35 +759,13 @@ public class FluxLevitatorEntity extends Entity implements IFluxLevitatorEntity 
             } else {
                 this.motionZ = -Math.abs(motionZ) + dz * 0.1D;
             }
-        } else {
-//            if (dx > 0) {
-//                this.motionX = Math.abs(motionX);
-//            } else {
-//                this.motionX = -Math.abs(motionX);
-//            }
-//            if (dz > 0) {
-//                this.motionZ = Math.abs(motionZ);
-//            } else {
-//                this.motionZ = -Math.abs(motionZ);
-//            }
         }
 
-        double maxMotion = Math.abs(speed / 25.0f);
-        if (Math.abs(motionX) > maxMotion) {
-            motionZ /= Math.abs(motionX) / maxMotion;
-            if (motionX < 0) {
-                motionX = -maxMotion;
-            } else {
-                motionX = maxMotion;
-            }
-        }
-        if (Math.abs(motionZ) > maxMotion) {
-            motionX /= Math.abs(motionZ) / maxMotion;
-            if (motionZ < 0) {
-                motionZ = -maxMotion;
-            } else {
-                motionZ = maxMotion;
-            }
+        // Restrict speed
+        dist = Math.sqrt(this.motionX * this.motionX + this.motionZ * this.motionZ) ;
+        if (dist > maxMotion) {
+            motionX /= dist / maxMotion;
+            motionZ /= dist / maxMotion;
         }
     }
 
@@ -826,13 +815,13 @@ public class FluxLevitatorEntity extends Entity implements IFluxLevitatorEntity 
         } else {
             switch (facing) {
                 case NORTH:
-                    return EnumRailDirection.NORTH_EAST;
+                    return EnumRailDirection.SOUTH_WEST;
                 case SOUTH:
-                    return EnumRailDirection.NORTH_WEST;
+                    return EnumRailDirection.NORTH_EAST;
                 case WEST:
                     return EnumRailDirection.SOUTH_EAST;
                 case EAST:
-                    return EnumRailDirection.SOUTH_WEST;
+                    return EnumRailDirection.NORTH_WEST;
                 default:
                     break;
             }
