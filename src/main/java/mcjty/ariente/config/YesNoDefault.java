@@ -1,6 +1,6 @@
 package mcjty.ariente.config;
 
-public enum OverworldOregen {
+public enum YesNoDefault {
     DEFAULT,
     YES,
     NO

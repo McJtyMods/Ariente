@@ -2,11 +2,15 @@ package mcjty.ariente;
 
 import mcjty.ariente.blocks.utility.ILockable;
 import mcjty.ariente.config.ConfigSetup;
+import mcjty.ariente.config.WorldgenConfiguration;
 import mcjty.ariente.entities.levitator.FluxLevitatorEntity;
+import mcjty.ariente.items.BlueprintItem;
 import mcjty.ariente.items.ModItems;
 import mcjty.ariente.api.ArmorUpgradeType;
 import mcjty.ariente.items.modules.ModuleSupport;
 import mcjty.ariente.power.PowerSystem;
+import mcjty.ariente.recipes.BlueprintRecipeRegistry;
+import mcjty.ariente.recipes.ConstructorRecipe;
 import mcjty.ariente.sounds.FluxLevitatorSounds;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.EntityLivingBase;
@@ -16,6 +20,13 @@ import net.minecraft.tileentity.TileEntity;
 import net.minecraft.util.DamageSource;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.World;
+import net.minecraft.world.storage.loot.LootContext;
+import net.minecraft.world.storage.loot.LootEntryItem;
+import net.minecraft.world.storage.loot.LootPool;
+import net.minecraft.world.storage.loot.LootTableList;
+import net.minecraft.world.storage.loot.conditions.LootCondition;
+import net.minecraft.world.storage.loot.functions.LootFunction;
+import net.minecraftforge.event.LootTableLoadEvent;
 import net.minecraftforge.event.entity.EntityJoinWorldEvent;
 import net.minecraftforge.event.entity.living.LivingDamageEvent;
 import net.minecraftforge.event.entity.living.LivingFallEvent;
@@ -24,7 +35,64 @@ import net.minecraftforge.fml.client.event.ConfigChangedEvent;
 import net.minecraftforge.fml.common.eventhandler.SubscribeEvent;
 import net.minecraftforge.fml.common.gameevent.TickEvent;
 
+import java.util.Random;
+
 public class ForgeEventHandlers {
+
+    @SubscribeEvent
+    public void onLootLoad(LootTableLoadEvent event) {
+        if (WorldgenConfiguration.doDungeonLoot()) {
+            if (event.getName().equals(LootTableList.CHESTS_ABANDONED_MINESHAFT) ||
+                    event.getName().equals(LootTableList.CHESTS_IGLOO_CHEST) ||
+                    event.getName().equals(LootTableList.CHESTS_DESERT_PYRAMID) ||
+                    event.getName().equals(LootTableList.CHESTS_JUNGLE_TEMPLE) ||
+                    event.getName().equals(LootTableList.CHESTS_NETHER_BRIDGE) ||
+                    event.getName().equals(LootTableList.CHESTS_SIMPLE_DUNGEON) ||
+                    event.getName().equals(LootTableList.CHESTS_VILLAGE_BLACKSMITH)) {
+                LootPool main = event.getTable().getPool("main");
+                // Safety, check if the main lootpool is still present
+                if (main != null) {
+                    if (WorldgenConfiguration.OVERWORLD_LOOT_BLUEPRINTS.get() > 0) {
+                        LootFunction lootFunction = new LootFunction(new LootCondition[0]) {
+                            @Override
+                            public ItemStack apply(ItemStack stack, Random rand, LootContext context) {
+                                ConstructorRecipe recipe = BlueprintRecipeRegistry.getRandomRecipes().getRandom();
+                                return BlueprintItem.makeBluePrint(recipe.getDestination());
+                            }
+                        };
+                        main.addEntry(new LootEntryItem(ModItems.blueprintItem, WorldgenConfiguration.OVERWORLD_LOOT_BLUEPRINTS.get(), 0, new LootFunction[]{lootFunction},
+                                new LootCondition[0], Ariente.MODID + ":loot"));
+                    }
+                    if (WorldgenConfiguration.OVERWORLD_LOOT_ITEMS.get() > 0) {
+                        LootFunction lootFunction = new LootFunction(new LootCondition[0]) {
+                            @Override
+                            public ItemStack apply(ItemStack stack, Random rand, LootContext context) {
+                                ConstructorRecipe recipe = BlueprintRecipeRegistry.getRandomRecipes().getRandom();
+                                return recipe.getDestination();
+                            }
+                        };
+                        main.addEntry(new LootEntryItem(ModItems.blueprintItem, WorldgenConfiguration.OVERWORLD_LOOT_ITEMS.get(), 0, new LootFunction[]{lootFunction},
+                                new LootCondition[0], Ariente.MODID + ":lootresult"));
+                    }
+
+                    if (WorldgenConfiguration.OVERWORLD_LOOT_SUIT.get() > 0) {
+                        main.addEntry(new LootEntryItem(ModItems.powerSuitChest, WorldgenConfiguration.OVERWORLD_LOOT_SUIT.get(), 0, new LootFunction[0],
+                                new LootCondition[0], Ariente.MODID + ":lootchest"));
+                        main.addEntry(new LootEntryItem(ModItems.powerSuitBoots, WorldgenConfiguration.OVERWORLD_LOOT_SUIT.get(), 0, new LootFunction[0],
+                                new LootCondition[0], Ariente.MODID + ":lootboots"));
+                        main.addEntry(new LootEntryItem(ModItems.powerSuitLegs, WorldgenConfiguration.OVERWORLD_LOOT_SUIT.get(), 0, new LootFunction[0],
+                                new LootCondition[0], Ariente.MODID + ":lootlegs"));
+                        main.addEntry(new LootEntryItem(ModItems.powerSuitHelmet, WorldgenConfiguration.OVERWORLD_LOOT_SUIT.get(), 0, new LootFunction[0],
+                                new LootCondition[0], Ariente.MODID + ":loothelmet"));
+                        main.addEntry(new LootEntryItem(ModItems.energySabre, WorldgenConfiguration.OVERWORLD_LOOT_SUIT.get(), 0, new LootFunction[0],
+                                new LootCondition[0], Ariente.MODID + ":lootsabre"));
+                        main.addEntry(new LootEntryItem(ModItems.enhancedEnergySabreItem, WorldgenConfiguration.OVERWORLD_LOOT_SUIT.get(), 0, new LootFunction[0],
+                                new LootCondition[0], Ariente.MODID + ":lootesabre"));
+                    }
+                }
+            }
+        }
+    }
 
     @SubscribeEvent
     public void onConfigChanged(ConfigChangedEvent.OnConfigChangedEvent event) {
