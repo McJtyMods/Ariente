@@ -6,6 +6,7 @@ Upcoming:
 - Added a few new decorative blocks
 - Bends in the levitator network are supported
 - It is now possible to add blueprints or other ariente items to various loot tables in vanilla (for the overworld). Disabled by default unless Ariente World is not installed
+- Added a vanilla recipe for the constructor
 
 0.0.30-alpha:
 - Fixed a placement problem with the double slab block
