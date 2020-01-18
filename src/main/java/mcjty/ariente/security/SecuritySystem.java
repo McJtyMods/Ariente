@@ -2,7 +2,7 @@ package mcjty.ariente.security;
 
 import mcjty.ariente.api.ISecuritySystem;
 import mcjty.lib.worlddata.AbstractWorldData;
-import net.minecraft.nbt.NBTTagCompound;
+import net.minecraft.nbt.CompoundNBT;
 import net.minecraft.world.World;
 import net.minecraftforge.common.DimensionManager;
 
@@ -72,12 +72,12 @@ public class SecuritySystem extends AbstractWorldData<SecuritySystem> implements
     }
 
     @Override
-    public void readFromNBT(NBTTagCompound compound) {
+    public void readFromNBT(CompoundNBT compound) {
         lastSecurityID = compound.getLong("lastSecurityID");
     }
 
     @Override
-    public NBTTagCompound writeToNBT(NBTTagCompound compound) {
+    public CompoundNBT write(CompoundNBT compound) {
         compound.setLong("lastSecurityID", lastSecurityID);
         return compound;
     }

@@ -3,7 +3,7 @@ package mcjty.ariente.blocks.utility.wireless;
 import net.minecraft.block.state.BlockState;
 import net.minecraft.entity.LivingEntity;
 import net.minecraft.item.ItemStack;
-import net.minecraft.nbt.NBTTagCompound;
+import net.minecraft.nbt.CompoundNBT;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.World;
 
@@ -45,13 +45,13 @@ public class SignalTransmitterTile extends SignalChannelTileEntity {
     }
 
     @Override
-    public void readFromNBT(NBTTagCompound tagCompound) {
+    public void readFromNBT(CompoundNBT tagCompound) {
         super.readFromNBT(tagCompound);
         prevIn = tagCompound.getInteger("prevIn");
     }
 
     @Override
-    public NBTTagCompound writeToNBT(NBTTagCompound tagCompound) {
+    public CompoundNBT write(CompoundNBT tagCompound) {
         super.writeToNBT(tagCompound);
         tagCompound.setInteger("prevIn", prevIn);
         return tagCompound;

@@ -8,7 +8,7 @@ import mcjty.lib.varia.BlockPosTools;
 import net.minecraft.block.state.BlockState;
 import net.minecraft.entity.LivingEntity;
 import net.minecraft.item.ItemStack;
-import net.minecraft.nbt.NBTTagCompound;
+import net.minecraft.nbt.CompoundNBT;
 import net.minecraft.tileentity.TileEntity;
 import net.minecraft.util.Direction;
 import net.minecraft.util.math.BlockPos;
@@ -83,13 +83,13 @@ public class FieldMarkerTile extends GenericTileEntity {
     }
 
     @Override
-    public void readRestorableFromNBT(NBTTagCompound tagCompound) {
+    public void readRestorableFromNBT(CompoundNBT tagCompound) {
         super.readRestorableFromNBT(tagCompound);
         autoFieldTile = BlockPosTools.readFromNBT(tagCompound, "autofield");
     }
 
     @Override
-    public void writeRestorableToNBT(NBTTagCompound tagCompound) {
+    public void writeRestorableToNBT(CompoundNBT tagCompound) {
         super.writeRestorableToNBT(tagCompound);
         if (autoFieldTile != null) {
             BlockPosTools.writeToNBT(tagCompound, "autofield", autoFieldTile);

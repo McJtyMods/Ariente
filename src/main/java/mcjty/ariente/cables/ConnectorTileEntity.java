@@ -1,7 +1,7 @@
 package mcjty.ariente.cables;
 
 import net.minecraft.block.Block;
-import net.minecraft.nbt.NBTTagCompound;
+import net.minecraft.nbt.CompoundNBT;
 import net.minecraft.util.Direction;
 
 public class ConnectorTileEntity extends GenericCableTileEntity {
@@ -40,7 +40,7 @@ public class ConnectorTileEntity extends GenericCableTileEntity {
     }
 
     @Override
-    public void readFromNBT(NBTTagCompound tagCompound) {
+    public void readFromNBT(CompoundNBT tagCompound) {
         super.readFromNBT(tagCompound);
         inputFromSide = tagCompound.getIntArray("inputs");
         if (inputFromSide.length != 6) {
@@ -52,12 +52,12 @@ public class ConnectorTileEntity extends GenericCableTileEntity {
     }
 
     @Override
-    public void readRestorableFromNBT(NBTTagCompound tagCompound) {
+    public void readRestorableFromNBT(CompoundNBT tagCompound) {
         super.readRestorableFromNBT(tagCompound);
     }
 
     @Override
-    public NBTTagCompound writeToNBT(NBTTagCompound tagCompound) {
+    public CompoundNBT write(CompoundNBT tagCompound) {
         super.writeToNBT(tagCompound);
         tagCompound.setIntArray("inputs", inputFromSide);
         for (int i = 0 ; i < 6 ; i++) {
@@ -67,7 +67,7 @@ public class ConnectorTileEntity extends GenericCableTileEntity {
     }
 
     @Override
-    public void writeRestorableToNBT(NBTTagCompound tagCompound) {
+    public void writeRestorableToNBT(CompoundNBT tagCompound) {
         super.writeRestorableToNBT(tagCompound);
     }
 }

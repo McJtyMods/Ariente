@@ -3,7 +3,7 @@ package mcjty.ariente.facade;
 import net.minecraft.block.Block;
 import net.minecraft.block.state.BlockState;
 import net.minecraft.init.Blocks;
-import net.minecraft.nbt.NBTTagCompound;
+import net.minecraft.nbt.CompoundNBT;
 import net.minecraft.util.ResourceLocation;
 import net.minecraftforge.fml.common.registry.ForgeRegistries;
 
@@ -24,7 +24,7 @@ public class MimicBlockSupport {
     }
 
 
-    public void readFromNBT(NBTTagCompound tagCompound) {
+    public void readFromNBT(CompoundNBT tagCompound) {
         if (tagCompound.hasKey("regName")) {
             String regName = tagCompound.getString("regName");
             int meta = tagCompound.getInteger("meta");
@@ -39,7 +39,7 @@ public class MimicBlockSupport {
         }
     }
 
-    public void writeToNBT(NBTTagCompound tagCompound) {
+    public void writeToNBT(CompoundNBT tagCompound) {
         if (mimicBlock != null) {
             tagCompound.setString("regName", mimicBlock.getBlock().getRegistryName().toString());
             tagCompound.setInteger("meta", mimicBlock.getBlock().getMetaFromState(mimicBlock));

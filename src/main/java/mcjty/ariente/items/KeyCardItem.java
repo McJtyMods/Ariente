@@ -4,7 +4,7 @@ import mcjty.ariente.security.IKeyCardSlot;
 import net.minecraft.client.util.ITooltipFlag;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.item.ItemStack;
-import net.minecraft.nbt.NBTTagCompound;
+import net.minecraft.nbt.CompoundNBT;
 import net.minecraft.nbt.NBTTagList;
 import net.minecraft.nbt.NBTTagString;
 import net.minecraft.tileentity.TileEntity;
@@ -80,7 +80,7 @@ public class KeyCardItem extends GenericItem {
             return Collections.emptySet();
         }
         Set<String> tags = new HashSet<>();
-        NBTTagCompound compound = stack.getTagCompound();
+        CompoundNBT compound = stack.getTagCompound();
         NBTTagList tagList = compound.getTagList("tags", Constants.NBT.TAG_STRING);
         for (int i = 0; i < tagList.tagCount(); i++) {
             String tag = tagList.getStringTagAt(i);
@@ -93,7 +93,7 @@ public class KeyCardItem extends GenericItem {
         if (!stack.hasTagCompound()) {
             return false;
         }
-        NBTTagCompound compound = stack.getTagCompound();
+        CompoundNBT compound = stack.getTagCompound();
         NBTTagList tagList = compound.getTagList("tags", Constants.NBT.TAG_STRING);
         for (int i = 0; i < tagList.tagCount(); i++) {
             String t = tagList.getStringTagAt(i);
@@ -106,7 +106,7 @@ public class KeyCardItem extends GenericItem {
 
     public static void addSecurityTag(ItemStack stack, String tag) {
         if (!stack.hasTagCompound()) {
-            stack.setTagCompound(new NBTTagCompound());
+            stack.setTagCompound(new CompoundNBT());
         }
         Set<String> tags = new HashSet<>(getSecurityTags(stack));
         tags.add(tag);
@@ -130,7 +130,7 @@ public class KeyCardItem extends GenericItem {
 
     public static void setDescription(ItemStack stack, String description) {
         if (!stack.hasTagCompound()) {
-            stack.setTagCompound(new NBTTagCompound());
+            stack.setTagCompound(new CompoundNBT());
         }
         stack.getTagCompound().setString("description", description);
     }

@@ -1,14 +1,11 @@
 package mcjty.ariente.sounds;
 
 import mcjty.ariente.entities.levitator.FluxLevitatorEntity;
-import net.minecraft.client.audio.MovingSound;
+import net.minecraft.client.audio.TickableSound;
 import net.minecraft.util.SoundCategory;
 import net.minecraft.util.math.MathHelper;
-import net.minecraftforge.fml.relauncher.Side;
-import net.minecraftforge.fml.relauncher.SideOnly;
 
-@SideOnly(Side.CLIENT)
-public class MovingSoundLevitator extends MovingSound {
+public class MovingSoundLevitator extends TickableSound {
     private final FluxLevitatorEntity levitator;
     private float distance = 0.0F;
 
@@ -20,13 +17,13 @@ public class MovingSoundLevitator extends MovingSound {
     }
 
     @Override
-    public void update() {
-        if (this.levitator.isDead) {
+    public void tick() {
+        if (!this.levitator.isAlive()) {
             this.donePlaying = true;
         } else {
-            this.xPosF = (float) this.levitator.posX;
-            this.yPosF = (float) this.levitator.posY;
-            this.zPosF = (float) this.levitator.posZ;
+            this.x = (float) this.levitator.posX;
+            this.y = (float) this.levitator.posY;
+            this.z = (float) this.levitator.posZ;
             float f = Math.abs(this.levitator.getSpeed()) / 50.0f;
 //            float f = MathHelper.sqrt(this.levitator.motionX * this.levitator.motionX + this.levitator.motionZ * this.levitator.motionZ);
 

@@ -15,7 +15,7 @@ import net.minecraft.entity.ai.attributes.AttributeModifier;
 import net.minecraft.init.Enchantments;
 import net.minecraft.inventory.EntityEquipmentSlot;
 import net.minecraft.item.ItemStack;
-import net.minecraft.nbt.NBTTagCompound;
+import net.minecraft.nbt.CompoundNBT;
 import net.minecraft.potion.Potion;
 import net.minecraft.potion.PotionEffect;
 import net.minecraft.util.text.TextFormatting;
@@ -85,7 +85,7 @@ public class EnhancedEnergySabreItem extends EnergySabreItem {
             list.add(TextFormatting.GRAY + "Configure with: " + TextFormatting.WHITE + "key " + KeyBindings.configureArmor.getDisplayName());
         }
         if (stack.hasTagCompound()) {
-            NBTTagCompound compound = stack.getTagCompound();
+            CompoundNBT compound = stack.getTagCompound();
             for (ArmorUpgradeType type : ArmorUpgradeType.VALUES) {
                 String key = "module_" + type.getName();
                 if (compound.hasKey(key)) {
@@ -127,7 +127,7 @@ public class EnhancedEnergySabreItem extends EnergySabreItem {
             return;
         }
 
-        NBTTagCompound compound = stack.getTagCompound();
+        CompoundNBT compound = stack.getTagCompound();
 
         if (!ModuleSupport.managePower(stack, entity)) {
             compound.setBoolean(ArmorUpgradeType.INHIBIT.getWorkingKey(), false);

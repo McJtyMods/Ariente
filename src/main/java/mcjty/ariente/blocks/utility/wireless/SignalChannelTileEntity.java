@@ -21,7 +21,7 @@ import net.minecraft.init.Blocks;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemBlock;
 import net.minecraft.item.ItemStack;
-import net.minecraft.nbt.NBTTagCompound;
+import net.minecraft.nbt.CompoundNBT;
 import net.minecraft.tileentity.TileEntity;
 import net.minecraft.util.Direction;
 import net.minecraft.util.Hand;
@@ -121,14 +121,14 @@ public abstract class SignalChannelTileEntity extends GenericTileEntity implemen
     }
 
     @Override
-    public void readRestorableFromNBT(NBTTagCompound tagCompound) {
+    public void readRestorableFromNBT(CompoundNBT tagCompound) {
         super.readRestorableFromNBT(tagCompound);
         channel = tagCompound.getInteger("channel");
         desiredChannel = tagCompound.getInteger("desired");
     }
 
     @Override
-    public void writeRestorableToNBT(NBTTagCompound tagCompound) {
+    public void writeRestorableToNBT(CompoundNBT tagCompound) {
         super.writeRestorableToNBT(tagCompound);
         tagCompound.setInteger("channel", channel);
         tagCompound.setInteger("desired", desiredChannel);
@@ -162,9 +162,9 @@ public abstract class SignalChannelTileEntity extends GenericTileEntity implemen
         if (te instanceof SignalChannelTileEntity) {
             if(!world.isRemote) {
                 SignalChannelTileEntity rcte = (SignalChannelTileEntity)te;
-                NBTTagCompound tagCompound = stack.getTagCompound();
+                CompoundNBT tagCompound = stack.getTagCompound();
                 if (tagCompound == null) {
-                    tagCompound = new NBTTagCompound();
+                    tagCompound = new CompoundNBT();
                     stack.setTagCompound(tagCompound);
                 }
                 int channel;

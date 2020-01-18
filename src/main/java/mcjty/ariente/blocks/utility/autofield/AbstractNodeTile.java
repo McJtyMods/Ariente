@@ -22,7 +22,7 @@ import net.minecraft.entity.LivingEntity;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.item.EnumDyeColor;
 import net.minecraft.item.ItemStack;
-import net.minecraft.nbt.NBTTagCompound;
+import net.minecraft.nbt.CompoundNBT;
 import net.minecraft.tileentity.TileEntity;
 import net.minecraft.util.Direction;
 import net.minecraft.util.Hand;
@@ -207,7 +207,7 @@ public abstract class AbstractNodeTile extends GenericTileEntity implements IGui
     }
 
     @Override
-    public void readRestorableFromNBT(NBTTagCompound tagCompound) {
+    public void readRestorableFromNBT(CompoundNBT tagCompound) {
         super.readRestorableFromNBT(tagCompound);
         for (int i = 0 ; i < filters.length ; i++) {
             if (tagCompound.hasKey("f" + i)) {
@@ -219,7 +219,7 @@ public abstract class AbstractNodeTile extends GenericTileEntity implements IGui
     }
 
     @Override
-    public void writeRestorableToNBT(NBTTagCompound tagCompound) {
+    public void writeRestorableToNBT(CompoundNBT tagCompound) {
         for (int i = 0 ; i < filters.length ; i++) {
             if (filters[i] != null) {
                 tagCompound.setInteger("f" + i, filters[i].ordinal());

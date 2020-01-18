@@ -29,7 +29,7 @@ import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.inventory.IInventory;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
-import net.minecraft.nbt.NBTTagCompound;
+import net.minecraft.nbt.CompoundNBT;
 import net.minecraft.nbt.NBTTagList;
 import net.minecraft.network.NetworkManager;
 import net.minecraft.network.play.server.SPacketUpdateTileEntity;
@@ -110,7 +110,7 @@ public class StorageTile extends GenericTileEntity implements IGuiTile, IInvento
     }
 
     @Override
-    public void readRestorableFromNBT(NBTTagCompound tagCompound) {
+    public void readRestorableFromNBT(CompoundNBT tagCompound) {
         super.readRestorableFromNBT(tagCompound);
         locked = tagCompound.getBoolean("locked");
         if (tagCompound.hasKey("keyId")) {
@@ -119,8 +119,8 @@ public class StorageTile extends GenericTileEntity implements IGuiTile, IInvento
 
         NBTTagList bufferTagList = tagCompound.getTagList("Items", Constants.NBT.TAG_COMPOUND);
         for (int i = 0; i < STACKS; i++) {
-            NBTTagCompound nbtTagCompound = bufferTagList.getCompoundTagAt(i);
-            stacks.set(i, new ItemStack(nbtTagCompound));
+            CompoundNBT CompoundNBT = bufferTagList.getCompoundTagAt(i);
+            stacks.set(i, new ItemStack(CompoundNBT));
         }
         int[] cc = tagCompound.getIntArray("Counts");
         System.arraycopy(cc, 0, counts, 0, cc.length);
@@ -129,7 +129,7 @@ public class StorageTile extends GenericTileEntity implements IGuiTile, IInvento
     }
 
     @Override
-    public void writeRestorableToNBT(NBTTagCompound tagCompound) {
+    public void writeRestorableToNBT(CompoundNBT tagCompound) {
         super.writeRestorableToNBT(tagCompound);
         tagCompound.setBoolean("locked", locked);
         if (keyId != null) {
@@ -138,11 +138,11 @@ public class StorageTile extends GenericTileEntity implements IGuiTile, IInvento
         NBTTagList bufferTagList = new NBTTagList();
         for (int i = 0; i < STACKS; i++) {
             ItemStack stack = stacks.get(i);
-            NBTTagCompound nbtTagCompound = new NBTTagCompound();
+            CompoundNBT CompoundNBT = new CompoundNBT();
             if (!stack.isEmpty()) {
-                stack.writeToNBT(nbtTagCompound);
+                stack.writeToNBT(CompoundNBT);
             }
-            bufferTagList.appendTag(nbtTagCompound);
+            bufferTagList.appendTag(CompoundNBT);
         }
         tagCompound.setTag("Items", bufferTagList);
         tagCompound.setIntArray("Counts", counts);

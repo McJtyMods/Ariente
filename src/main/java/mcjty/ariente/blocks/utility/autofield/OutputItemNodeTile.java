@@ -12,7 +12,7 @@ import mcjty.lib.varia.ItemStackList;
 import net.minecraft.block.Block;
 import net.minecraft.block.state.BlockState;
 import net.minecraft.entity.LivingEntity;
-import net.minecraft.nbt.NBTTagCompound;
+import net.minecraft.nbt.CompoundNBT;
 import net.minecraft.util.Direction;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.World;
@@ -42,7 +42,7 @@ public class OutputItemNodeTile extends AbstractItemNodeTile {
     }
 
     @Override
-    public void readRestorableFromNBT(NBTTagCompound tagCompound) {
+    public void readRestorableFromNBT(CompoundNBT tagCompound) {
         super.readRestorableFromNBT(tagCompound);
         readBufferFromNBT(tagCompound, "output", outputFilter);
         outputDamage = tagCompound.getBoolean("outDamage");
@@ -52,7 +52,7 @@ public class OutputItemNodeTile extends AbstractItemNodeTile {
     }
 
     @Override
-    public void writeRestorableToNBT(NBTTagCompound tagCompound) {
+    public void writeRestorableToNBT(CompoundNBT tagCompound) {
         super.writeRestorableToNBT(tagCompound);
         writeBufferToNBT(tagCompound, "output", outputFilter);
         tagCompound.setBoolean("outDamage", outputDamage);

@@ -17,7 +17,7 @@ import net.minecraft.init.MobEffects;
 import net.minecraft.inventory.EntityEquipmentSlot;
 import net.minecraft.item.ArmorItem;
 import net.minecraft.item.ItemStack;
-import net.minecraft.nbt.NBTTagCompound;
+import net.minecraft.nbt.CompoundNBT;
 import net.minecraft.potion.PotionEffect;
 import net.minecraft.util.text.TextFormatting;
 import net.minecraft.world.World;
@@ -97,7 +97,7 @@ public class PowerSuit extends ArmorItem {
             return;
         }
 
-        NBTTagCompound compound = stack.getTagCompound();
+        CompoundNBT compound = stack.getTagCompound();
 
         if (!ModuleSupport.managePower(stack, entity)) {
             compound.setBoolean(ArmorUpgradeType.ARMOR.getWorkingKey(), false);
@@ -116,7 +116,7 @@ public class PowerSuit extends ArmorItem {
             return;
         }
 
-        NBTTagCompound compound = stack.getTagCompound();
+        CompoundNBT compound = stack.getTagCompound();
 
         if (!ModuleSupport.managePower(stack, entity)) {
             compound.setBoolean(ArmorUpgradeType.ARMOR.getWorkingKey(), false);
@@ -133,7 +133,7 @@ public class PowerSuit extends ArmorItem {
             return;
         }
 
-        NBTTagCompound compound = stack.getTagCompound();
+        CompoundNBT compound = stack.getTagCompound();
 
         if (!ModuleSupport.managePower(stack, entity)) {
             compound.setBoolean(ArmorUpgradeType.ARMOR.getWorkingKey(), false);
@@ -161,7 +161,7 @@ public class PowerSuit extends ArmorItem {
             return;
         }
 
-        NBTTagCompound compound = stack.getTagCompound();
+        CompoundNBT compound = stack.getTagCompound();
 
         if (!ModuleSupport.managePower(stack, entity)) {
             compound.setBoolean(ArmorUpgradeType.ARMOR.getWorkingKey(), false);
@@ -217,7 +217,7 @@ public class PowerSuit extends ArmorItem {
             list.add(TextFormatting.GRAY + "Configure with: " + TextFormatting.WHITE + "key " + KeyBindings.configureArmor.getDisplayName());
         }
         if (stack.hasTagCompound()) {
-            NBTTagCompound compound = stack.getTagCompound();
+            CompoundNBT compound = stack.getTagCompound();
             for (ArmorUpgradeType type : ArmorUpgradeType.VALUES) {
                 String key = "module_" + type.getName();
                 if (compound.hasKey(key)) {

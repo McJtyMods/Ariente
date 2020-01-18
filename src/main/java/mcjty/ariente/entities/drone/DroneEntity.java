@@ -13,7 +13,7 @@ import net.minecraft.entity.ai.EntityAIFindEntityNearestPlayer;
 import net.minecraft.entity.ai.EntityMoveHelper;
 import net.minecraft.entity.monster.IMob;
 import net.minecraft.entity.player.PlayerEntity;
-import net.minecraft.nbt.NBTTagCompound;
+import net.minecraft.nbt.CompoundNBT;
 import net.minecraft.network.datasync.DataParameter;
 import net.minecraft.network.datasync.DataSerializers;
 import net.minecraft.network.datasync.EntityDataManager;
@@ -182,7 +182,7 @@ public class DroneEntity extends EntityFlying implements IMob, IForcefieldImmuni
      * (abstract) Protected helper method to write subclass entity data to NBT.
      */
     @Override
-    public void writeEntityToNBT(NBTTagCompound compound) {
+    public void writeEntityToNBT(CompoundNBT compound) {
         super.writeEntityToNBT(compound);
         if (cityCenter != null) {
             compound.setInteger("cityX", cityCenter.x);
@@ -194,7 +194,7 @@ public class DroneEntity extends EntityFlying implements IMob, IForcefieldImmuni
      * (abstract) Protected helper method to read subclass entity data from NBT.
      */
     @Override
-    public void readEntityFromNBT(NBTTagCompound compound) {
+    public void readEntityFromNBT(CompoundNBT compound) {
         super.readEntityFromNBT(compound);
         if (compound.hasKey("cityX")) {
             cityCenter = new ChunkPos(compound.getInteger("cityX"), compound.getInteger("cityZ"));

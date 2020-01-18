@@ -13,7 +13,7 @@ import net.minecraft.entity.Entity;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
-import net.minecraft.nbt.NBTTagCompound;
+import net.minecraft.nbt.CompoundNBT;
 import net.minecraft.util.ActionResult;
 import net.minecraft.util.EnumActionResult;
 import net.minecraft.util.Hand;
@@ -60,9 +60,9 @@ public class EnergyHolderItem extends GenericItem {
         if (!(entity instanceof PlayerEntity)) {
             return;
         }
-        NBTTagCompound tag = stack.getTagCompound();
+        CompoundNBT tag = stack.getTagCompound();
         if (tag == null) {
-            tag = new NBTTagCompound();
+            tag = new CompoundNBT();
             stack.setTagCompound(tag);
         }
         if (getAutomatic(stack) == MODE_MANUAL) {
@@ -129,7 +129,7 @@ public class EnergyHolderItem extends GenericItem {
     }
 
     private static int getAutomatic(PlayerEntity player) {
-        NBTTagCompound tag = getCompound(player);
+        CompoundNBT tag = getCompound(player);
         if (tag == null) {
             return MODE_MANUAL;
         }
@@ -137,7 +137,7 @@ public class EnergyHolderItem extends GenericItem {
     }
 
     private static int getAutomatic(ItemStack stack) {
-        NBTTagCompound tag = stack.getTagCompound();
+        CompoundNBT tag = stack.getTagCompound();
         if (tag == null) {
             return MODE_MANUAL;
         }
@@ -145,7 +145,7 @@ public class EnergyHolderItem extends GenericItem {
     }
 
     private static void changeAutomatic(PlayerEntity player) {
-        NBTTagCompound tag = getCompound(player);
+        CompoundNBT tag = getCompound(player);
         if (tag == null) {
             return;
         }
@@ -155,7 +155,7 @@ public class EnergyHolderItem extends GenericItem {
     }
 
     private static void toPlayer(PlayerEntity player, int amount, String tagname, Item item) {
-        NBTTagCompound tag = getCompound(player);
+        CompoundNBT tag = getCompound(player);
         if (tag == null) {
             return;
         }
@@ -172,7 +172,7 @@ public class EnergyHolderItem extends GenericItem {
     }
 
     private static void toItem(PlayerEntity player, int amount, String tagname, Item item) {
-        NBTTagCompound tag = getCompound(player);
+        CompoundNBT tag = getCompound(player);
         if (tag == null) {
             return;
         }
@@ -205,21 +205,21 @@ public class EnergyHolderItem extends GenericItem {
         }
     }
 
-    private static NBTTagCompound getCompound(PlayerEntity player) {
+    private static CompoundNBT getCompound(PlayerEntity player) {
         ItemStack heldItem = player.getHeldItem(Hand.MAIN_HAND);
         if (heldItem.getItem() != ModItems.energyHolderItem) {
             return null;
         }
-        NBTTagCompound tag = heldItem.getTagCompound();
+        CompoundNBT tag = heldItem.getTagCompound();
         if (tag == null) {
-            tag = new NBTTagCompound();
+            tag = new CompoundNBT();
             heldItem.setTagCompound(tag);
         }
         return tag;
     }
 
     private static int count(PlayerEntity player, String tagname) {
-        NBTTagCompound tag = getCompound(player);
+        CompoundNBT tag = getCompound(player);
         if (tag == null) {
             return 0;
         }
@@ -227,7 +227,7 @@ public class EnergyHolderItem extends GenericItem {
     }
 
     public static int count(ItemStack stack, String tagname) {
-        NBTTagCompound tag = stack.getTagCompound();
+        CompoundNBT tag = stack.getTagCompound();
         if (tag == null) {
             return 0;
         }
@@ -235,7 +235,7 @@ public class EnergyHolderItem extends GenericItem {
     }
 
     public static int extractIfPossible(ItemStack stack, String tagname, int amount) {
-        NBTTagCompound tag = stack.getTagCompound();
+        CompoundNBT tag = stack.getTagCompound();
         if (tag == null) {
             return 0;
         }

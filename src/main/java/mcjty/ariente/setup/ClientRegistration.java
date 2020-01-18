@@ -4,12 +4,12 @@ package mcjty.ariente.setup;
 import mcjty.ariente.blocks.ModBlocks;
 import mcjty.ariente.entities.ModEntities;
 import mcjty.ariente.items.ModItems;
+import net.minecraftforge.api.distmarker.Dist;
 import net.minecraftforge.client.event.ModelRegistryEvent;
+import net.minecraftforge.eventbus.api.SubscribeEvent;
 import net.minecraftforge.fml.common.Mod;
-import net.minecraftforge.fml.common.eventhandler.SubscribeEvent;
-import net.minecraftforge.fml.relauncher.Side;
 
-@Mod.EventBusSubscriber(Side.CLIENT)
+@Mod.EventBusSubscriber(Dist.CLIENT)
 public class ClientRegistration {
 
     @SubscribeEvent

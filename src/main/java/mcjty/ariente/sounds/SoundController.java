@@ -2,23 +2,24 @@ package mcjty.ariente.sounds;
 
 import com.google.common.collect.Maps;
 import net.minecraft.client.Minecraft;
-import net.minecraft.client.audio.MovingSound;
+import net.minecraft.client.audio.TickableSound;
 import net.minecraft.util.SoundEvent;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.World;
+import net.minecraft.world.dimension.DimensionType;
 import org.apache.commons.lang3.tuple.Pair;
 
 import java.util.Map;
 
 public class SoundController {
 
-    private static final Map<Pair<Integer, BlockPos>, ForcefieldSound> forcefieldSounds = Maps.newHashMap();
+    private static final Map<Pair<DimensionType, BlockPos>, ForcefieldSound> forcefieldSounds = Maps.newHashMap();
 
     public static void stopForcefieldSounds(World worldObj, BlockPos pos) {
-        Pair<Integer, BlockPos> g = fromPosition(worldObj, pos);
+        Pair<DimensionType, BlockPos> g = fromPosition(worldObj, pos);
         if (forcefieldSounds.containsKey(g)) {
-            MovingSound movingSound = forcefieldSounds.get(g);
-            Minecraft.getMinecraft().getSoundHandler().stopSound(movingSound);
+            TickableSound movingSound = forcefieldSounds.get(g);
+            Minecraft.getInstance().getSoundHandler().stop(movingSound);
             forcefieldSounds.remove(g);
         }
     }
@@ -26,8 +27,8 @@ public class SoundController {
     public static void playForcefieldSound(World worldObj, BlockPos pos, SoundEvent soundType, float baseVolume, int ticks) {
         ForcefieldSound sound = new ForcefieldSound(soundType, worldObj, pos, baseVolume, ticks);
         stopForcefieldSounds(worldObj, pos);
-        Minecraft.getMinecraft().getSoundHandler().playSound(sound);
-        Pair<Integer, BlockPos> g = Pair.of(worldObj.provider.getDimension(), pos);
+        Minecraft.getInstance().getSoundHandler().play(sound);
+        Pair<DimensionType, BlockPos> g = Pair.of(worldObj.getDimension().getType(), pos);
         forcefieldSounds.put(g, sound);
     }
 
@@ -41,8 +42,8 @@ public class SoundController {
     }
 
 
-    private static Pair<Integer, BlockPos> fromPosition(World world, BlockPos producerPos){
-        return Pair.of(world.provider.getDimension(), producerPos);
+    private static Pair<DimensionType, BlockPos> fromPosition(World world, BlockPos producerPos){
+        return Pair.of(world.getDimension().getType(), producerPos);
     }
 
 }

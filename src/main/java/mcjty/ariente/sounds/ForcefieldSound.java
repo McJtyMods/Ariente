@@ -1,16 +1,13 @@
 package mcjty.ariente.sounds;
 
-import net.minecraft.client.audio.MovingSound;
+import net.minecraft.client.audio.TickableSound;
 import net.minecraft.tileentity.TileEntity;
 import net.minecraft.util.SoundCategory;
 import net.minecraft.util.SoundEvent;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.World;
-import net.minecraftforge.fml.relauncher.Side;
-import net.minecraftforge.fml.relauncher.SideOnly;
 
-@SideOnly(Side.CLIENT)
-public class ForcefieldSound extends MovingSound {
+public class ForcefieldSound extends TickableSound {
 
     private final World world;
     private final BlockPos pos;
@@ -22,9 +19,9 @@ public class ForcefieldSound extends MovingSound {
         super(event, SoundCategory.BLOCKS);
         this.world = world;
         this.pos = pos;
-        this.xPosF = pos.getX();
-        this.yPosF = pos.getY();
-        this.zPosF = pos.getZ();
+        this.x = pos.getX();
+        this.y = pos.getY();
+        this.z = pos.getZ();
         this.attenuationType = AttenuationType.LINEAR;
         this.repeat = true;
         this.repeatDelay = 0;
@@ -38,7 +35,7 @@ public class ForcefieldSound extends MovingSound {
     }
 
     @Override
-    public void update() {
+    public void tick() {
         TileEntity te = world.getTileEntity(pos);
         if (!(te instanceof ISoundProducer)) {
             donePlaying = true;

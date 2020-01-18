@@ -9,7 +9,7 @@ import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.inventory.EntityEquipmentSlot;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
-import net.minecraft.nbt.NBTTagCompound;
+import net.minecraft.nbt.CompoundNBT;
 import org.apache.commons.lang3.tuple.Pair;
 
 import javax.annotation.Nonnull;
@@ -26,7 +26,7 @@ public class ModuleSupport {
     private static void handleHotkey(PlayerEntity player, int index, EntityEquipmentSlot slot, Item armorItem) {
         ItemStack armorStack = player.getItemStackFromSlot(slot);
         if (!armorStack.isEmpty() && armorStack.getItem() == armorItem && armorStack.hasTagCompound()) {
-            NBTTagCompound compound = armorStack.getTagCompound();
+            CompoundNBT compound = armorStack.getTagCompound();
             for (ArmorUpgradeType type : ArmorUpgradeType.VALUES) {
                 int idx = compound.getInteger(type.getHotkeyKey());
                 if (idx == index) {
@@ -49,7 +49,7 @@ public class ModuleSupport {
     public static Pair<Integer, Integer> getPowerUsage(ItemStack stack) {
         int power = 0;
         int maxPower = UtilityConfiguration.POWERSUIT_MAXPOWER.get();
-        NBTTagCompound compound = stack.getTagCompound();
+        CompoundNBT compound = stack.getTagCompound();
         if (compound == null) {
             return Pair.of(power, maxPower);
         }
@@ -80,7 +80,7 @@ public class ModuleSupport {
             return true;
         }
 
-        NBTTagCompound compound = stack.getTagCompound();
+        CompoundNBT compound = stack.getTagCompound();
 
         int power = compound.getInteger("power");
         if (power <= 0) {
@@ -113,7 +113,7 @@ public class ModuleSupport {
         return true;
     }
 
-    private static boolean checkAutofeed(LivingEntity entity, NBTTagCompound compound) {
+    private static boolean checkAutofeed(LivingEntity entity, CompoundNBT compound) {
         if (compound.getBoolean(ArmorUpgradeType.AUTOFEED.getModuleKey())) {
             if (entity instanceof PlayerEntity) {
                 // Only auto-feed with player

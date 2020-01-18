@@ -7,25 +7,21 @@ import mcjty.lib.tileentity.GenericTileEntity;
 import mcjty.theoneprobe.api.IProbeHitData;
 import mcjty.theoneprobe.api.IProbeInfo;
 import mcjty.theoneprobe.api.ProbeMode;
-import mcp.mobius.waila.api.IWailaConfigHandler;
-import mcp.mobius.waila.api.IWailaDataAccessor;
 import net.minecraft.block.Block;
-import net.minecraft.block.properties.PropertyEnum;
-import net.minecraft.block.state.BlockState;
+import net.minecraft.block.BlockState;
 import net.minecraft.entity.LivingEntity;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.item.ItemStack;
-import net.minecraft.nbt.NBTTagCompound;
+import net.minecraft.nbt.CompoundNBT;
+import net.minecraft.state.EnumProperty;
 import net.minecraft.tileentity.TileEntity;
+import net.minecraft.tileentity.TileEntityType;
 import net.minecraft.util.Direction;
 import net.minecraft.util.Hand;
 import net.minecraft.util.math.AxisAlignedBB;
 import net.minecraft.util.math.BlockPos;
-import net.minecraft.world.IBlockAccess;
+import net.minecraft.world.IWorld;
 import net.minecraft.world.World;
-import net.minecraftforge.fml.common.Optional;
-import net.minecraftforge.fml.relauncher.Side;
-import net.minecraftforge.fml.relauncher.SideOnly;
 
 import java.util.List;
 
@@ -33,7 +29,7 @@ import static mcjty.ariente.blocks.utility.autofield.NodeOrientation.*;
 
 public class RoundRobinNodeTile extends GenericTileEntity {
 
-    public static final PropertyEnum<NodeOrientation> ORIENTATION = PropertyEnum.create("orientation", NodeOrientation.class, NodeOrientation.values());
+    public static final EnumProperty<NodeOrientation> ORIENTATION = EnumProperty.create("orientation", NodeOrientation.class, NodeOrientation.values());
 
     public static BlockState getStateForPlacement(World world, BlockPos pos, Direction facing, float hitX, float hitY, float hitZ, int meta, LivingEntity placer) {
         NodeOrientation orientation = getOrientationFromPlacement(facing, hitX, hitY, hitZ);
@@ -71,6 +67,10 @@ public class RoundRobinNodeTile extends GenericTileEntity {
     private static final AxisAlignedBB AABB_EAST_UN = new AxisAlignedBB(1-T, 0.5+A, 0.0+A,    1, 1.0-A, 0.5-A);
     private static final AxisAlignedBB AABB_EAST_US = new AxisAlignedBB(1-T, 0.5+A, 0.5+A,    1, 1.0-A, 1.0-A);
 
+    public RoundRobinNodeTile(TileEntityType<?> type) {
+        super(type);
+    }
+
     @Override
     public Block getBlockType() {
         return ModBlocks.roundRobinNode;
@@ -98,8 +98,8 @@ public class RoundRobinNodeTile extends GenericTileEntity {
         AutoFieldTile.notifyField(world, pos);
     }
 
-    public static AxisAlignedBB getBoundingBox(BlockState state, IBlockAccess world, BlockPos pos) {
-        NodeOrientation orientation = state.getValue(ORIENTATION);
+    public static AxisAlignedBB getBoundingBox(BlockState state, IWorld world, BlockPos pos) {
+        NodeOrientation orientation = state.get(ORIENTATION);
         switch (orientation) {
             case DOWN_NE: return AABB_DOWN_NE;
             case DOWN_NW: return AABB_DOWN_NW;
@@ -131,7 +131,7 @@ public class RoundRobinNodeTile extends GenericTileEntity {
 
     @Override
     public boolean onBlockActivated(BlockState state, PlayerEntity player, Hand hand, Direction side, float hitX, float hitY, float hitZ) {
-        Ariente.guiHandler.openHoloGuiEntity(world, pos, player, state.getValue(ORIENTATION).getSlot().name(), 1.0);
+        Ariente.guiHandler.openHoloGuiEntity(world, pos, player, state.get(ORIENTATION).getSlot().name(), 1.0);
         return true;
     }
 
@@ -196,15 +196,15 @@ public class RoundRobinNodeTile extends GenericTileEntity {
     }
 
     @Override
-    public void readFromNBT(NBTTagCompound tagCompound) {
-        super.readFromNBT(tagCompound);
-        index = tagCompound.getInteger("index");
+    public void read(CompoundNBT tagCompound) {
+        super.read(tagCompound);
+        index = tagCompound.getInt("index");
     }
 
     @Override
-    public NBTTagCompound writeToNBT(NBTTagCompound tagCompound) {
-        tagCompound.setInteger("index", index);
-        return super.writeToNBT(tagCompound);
+    public CompoundNBT write(CompoundNBT tagCompound) {
+        tagCompound.putInt("index", index);
+        return super.write(tagCompound);
     }
 
     public int fetchIndex() {
@@ -212,16 +212,17 @@ public class RoundRobinNodeTile extends GenericTileEntity {
         return index++;
     }
 
-    @Override
-    @Optional.Method(modid = "theoneprobe")
-    public void addProbeInfo(ProbeMode mode, IProbeInfo probeInfo, PlayerEntity player, World world, BlockState blockState, IProbeHitData data) {
-        super.addProbeInfo(mode, probeInfo, player, world, blockState, data);
-    }
-
-    @SideOnly(Side.CLIENT)
-    @Override
-    @Optional.Method(modid = "waila")
-    public void addWailaBody(ItemStack itemStack, List<String> currenttip, IWailaDataAccessor accessor, IWailaConfigHandler config) {
-        super.addWailaBody(itemStack, currenttip, accessor, config);
-    }
+    // @todo 1.14
+//    @Override
+//    @Optional.Method(modid = "theoneprobe")
+//    public void addProbeInfo(ProbeMode mode, IProbeInfo probeInfo, PlayerEntity player, World world, BlockState blockState, IProbeHitData data) {
+//        super.addProbeInfo(mode, probeInfo, player, world, blockState, data);
+//    }
+//
+//    @SideOnly(Side.CLIENT)
+//    @Override
+//    @Optional.Method(modid = "waila")
+//    public void addWailaBody(ItemStack itemStack, List<String> currenttip, IWailaDataAccessor accessor, IWailaConfigHandler config) {
+//        super.addWailaBody(itemStack, currenttip, accessor, config);
+//    }
 }

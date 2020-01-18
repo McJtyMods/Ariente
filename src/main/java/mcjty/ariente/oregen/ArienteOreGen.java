@@ -5,7 +5,7 @@ import mcjty.ariente.blocks.ModBlocks;
 import mcjty.ariente.config.WorldgenConfiguration;
 import net.minecraft.block.Block;
 import net.minecraft.init.Blocks;
-import net.minecraft.nbt.NBTTagCompound;
+import net.minecraft.nbt.CompoundNBT;
 import net.minecraft.nbt.NBTTagList;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.World;
@@ -80,7 +80,7 @@ public class ArienteOreGen implements IWorldGenerator {
 
     @SubscribeEvent
     public void handleChunkSaveEvent(ChunkDataEvent.Save event) {
-        NBTTagCompound genTag = event.getData().getCompoundTag(RETRO_NAME);
+        CompoundNBT genTag = event.getData().getCompoundTag(RETRO_NAME);
         if (!genTag.hasKey("generated")) {
             // If we did not have this key then this is a new chunk and we will have proper ores generated.
             // Otherwise we are saving a chunk for which ores are not yet generated.
@@ -94,7 +94,7 @@ public class ArienteOreGen implements IWorldGenerator {
         int dim = event.getWorld().provider.getDimension();
 
         boolean regen = false;
-        NBTTagCompound tag = (NBTTagCompound) event.getData().getTag(RETRO_NAME);
+        CompoundNBT tag = (CompoundNBT) event.getData().getTag(RETRO_NAME);
         NBTTagList list = null;
         Pair<Integer,Integer> cCoord = Pair.of(event.getChunk().x, event.getChunk().z);
 

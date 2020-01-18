@@ -16,7 +16,7 @@ import net.minecraft.entity.MoverType;
 import net.minecraft.entity.monster.EntityIronGolem;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.item.ItemStack;
-import net.minecraft.nbt.NBTTagCompound;
+import net.minecraft.nbt.CompoundNBT;
 import net.minecraft.network.datasync.DataParameter;
 import net.minecraft.network.datasync.DataSerializers;
 import net.minecraft.network.datasync.EntityDataManager;
@@ -751,7 +751,7 @@ public class FluxElevatorEntity extends Entity {
     }
 
     @Override
-    protected void readEntityFromNBT(NBTTagCompound compound) {
+    protected void readEntityFromNBT(CompoundNBT compound) {
         if (compound.hasUniqueId("holo")) {
             setHoloUUID(compound.getUniqueId("holo"));
         }
@@ -764,7 +764,7 @@ public class FluxElevatorEntity extends Entity {
     }
 
     @Override
-    protected void writeEntityToNBT(NBTTagCompound compound) {
+    protected void writeEntityToNBT(CompoundNBT compound) {
         if (getHoloUUID() != null) {
             compound.setUniqueId("holo", getHoloUUID());
         }

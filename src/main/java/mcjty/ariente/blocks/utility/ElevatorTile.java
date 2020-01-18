@@ -4,39 +4,32 @@ import mcjty.ariente.Ariente;
 import mcjty.ariente.api.ICityAI;
 import mcjty.ariente.api.ICityEquipment;
 import mcjty.ariente.api.IElevator;
-import mcjty.hologui.api.*;
-import mcjty.hologui.api.components.IPanel;
 import mcjty.ariente.power.IPowerReceiver;
 import mcjty.ariente.power.PowerReceiverSupport;
+import mcjty.hologui.api.*;
+import mcjty.hologui.api.components.IPanel;
+import mcjty.lib.McJtyLib;
 import mcjty.lib.tileentity.GenericTileEntity;
-import mcjty.theoneprobe.api.IProbeHitData;
-import mcjty.theoneprobe.api.IProbeInfo;
-import mcjty.theoneprobe.api.ProbeMode;
-import mcjty.theoneprobe.api.TextStyleClass;
-import mcp.mobius.waila.api.IWailaConfigHandler;
-import mcp.mobius.waila.api.IWailaDataAccessor;
-import net.minecraft.block.state.BlockState;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.player.PlayerEntity;
-import net.minecraft.item.ItemStack;
-import net.minecraft.nbt.NBTTagCompound;
+import net.minecraft.nbt.CompoundNBT;
 import net.minecraft.network.NetworkManager;
-import net.minecraft.network.play.server.SPacketUpdateTileEntity;
+import net.minecraft.network.play.server.SUpdateTileEntityPacket;
+import net.minecraft.tileentity.ITickableTileEntity;
 import net.minecraft.tileentity.TileEntity;
-import net.minecraft.util.ITickable;
+import net.minecraft.tileentity.TileEntityType;
 import net.minecraft.util.math.AxisAlignedBB;
 import net.minecraft.util.math.BlockPos;
+import net.minecraft.util.math.Vec3d;
 import net.minecraft.world.World;
-import net.minecraftforge.fml.common.Optional;
-import net.minecraftforge.fml.relauncher.Side;
-import net.minecraftforge.fml.relauncher.SideOnly;
+import net.minecraftforge.common.util.Constants;
 
 import javax.annotation.Nullable;
 import java.util.*;
 
 import static mcjty.hologui.api.Icons.*;
 
-public class ElevatorTile extends GenericTileEntity implements IGuiTile, ITickable, IPowerReceiver, ICityEquipment, IElevator {
+public class ElevatorTile extends GenericTileEntity implements IGuiTile, ITickableTileEntity, IPowerReceiver, ICityEquipment, IElevator {
 
     public static final String TAG_ELEVATOR = "elevator";
 
@@ -51,8 +44,12 @@ public class ElevatorTile extends GenericTileEntity implements IGuiTile, ITickab
     // Client side only
     private int moveToFloor = -1;
 
+    public ElevatorTile(TileEntityType<?> type) {
+        super(type);
+    }
+
     @Override
-    public void update() {
+    public void tick() {
         if (!world.isRemote) {
             PowerReceiverSupport.consumePower(world, pos, POWER_USAGE, true);
 
@@ -67,25 +64,28 @@ public class ElevatorTile extends GenericTileEntity implements IGuiTile, ITickab
             removeStaleHoloEntries();
         } else {
             List<Integer> floors = findFloors();
-            PlayerEntity clientPlayer = Ariente.proxy.getClientPlayer();
-            if (clientPlayer.getEntityBoundingBox().intersects(getBeamBox())) {
+            PlayerEntity clientPlayer = McJtyLib.proxy.getClientPlayer();
+            if (clientPlayer.getBoundingBox().intersects(getBeamBox())) {
                 clientPlayer.isAirBorne = true;
                 clientPlayer.fallDistance = 0;
                 if (floors.size() < 2) {
+                    double motionY;
                     if (clientPlayer.isSneaking()) {
-                        clientPlayer.motionY = -0.7;
-                    } else if (Ariente.proxy.isJumpKeyDown()) {
-                        clientPlayer.motionY = 0.5;
+                        motionY = -0.7;
+                    } else if (McJtyLib.proxy.isJumpKeyDown()) {
+                        motionY = 0.5;
                     } else {
-                        clientPlayer.motionY = 0.0;
+                        motionY = 0.0;
                     }
+                    Vec3d motion = clientPlayer.getMotion();
+                    clientPlayer.setMotion(motion.x, motionY, motion.z);
                 } else {
                     if (moveToFloor == -1) {
                         if (clientPlayer.isSneaking()) {
                             moveToFloor = findLowerFloor(floors, (int) clientPlayer.posY);
                             System.out.println("DOWN: moveToFloor = " + moveToFloor);
                             clientPlayer.setPosition(pos.getX() + .5, clientPlayer.posY, pos.getZ() + .5);
-                        } else if (Ariente.proxy.isJumpKeyDown()) {
+                        } else if (McJtyLib.proxy.isJumpKeyDown()) {
                             moveToFloor = findUpperFloor(floors, (int) clientPlayer.posY);
                             System.out.println("UP: moveToFloor = " + moveToFloor);
                             clientPlayer.setPosition(pos.getX() + .5, clientPlayer.posY, pos.getZ() + .5);
@@ -97,16 +97,20 @@ public class ElevatorTile extends GenericTileEntity implements IGuiTile, ITickab
                         moveToFloor = -1;
                     }
                     if (moveToFloor != -1) {
+                        double motionY;
                         if (clientPlayer.posY > floors.get(moveToFloor)) {
-                            clientPlayer.motionY = -Math.min(1.4, clientPlayer.posY - floors.get(moveToFloor));
+                            motionY = -Math.min(1.4, clientPlayer.posY - floors.get(moveToFloor));
                         } else if (clientPlayer.posY < floors.get(moveToFloor)) {
-                            clientPlayer.motionY = Math.min(1.0, floors.get(moveToFloor) - clientPlayer.posY);
+                            motionY = Math.min(1.0, floors.get(moveToFloor) - clientPlayer.posY);
                         } else {
-                            clientPlayer.motionY = 0.0;
+                            motionY = 0.0;
                             moveToFloor = -1;
                         }
+                        Vec3d motion = clientPlayer.getMotion();
+                        clientPlayer.setMotion(motion.x, motionY, motion.z);
                     } else {
-                        clientPlayer.motionY = 0.0;
+                        Vec3d motion = clientPlayer.getMotion();
+                        clientPlayer.setMotion(motion.x, 0, motion.z);
                     }
                 }
             } else {
@@ -154,7 +158,7 @@ public class ElevatorTile extends GenericTileEntity implements IGuiTile, ITickab
                 holoEntity.setTimeout(5);
                 Entity h = holoEntity.getEntity();
                 double oldPosY = h.posY;
-                double newPosY = player.posY+player.eyeHeight - .5;
+                double newPosY = player.posY+player.getEyeHeight() - .5;
                 double y = (newPosY + oldPosY) / 2;
                 h.setPositionAndUpdate(h.posX, y, h.posZ);
             }
@@ -220,7 +224,7 @@ public class ElevatorTile extends GenericTileEntity implements IGuiTile, ITickab
     }
 
     @Override
-    public void onDataPacket(NetworkManager net, SPacketUpdateTileEntity packet) {
+    public void onDataPacket(NetworkManager net, SUpdateTileEntityPacket packet) {
         int oldheight = height;
 
         super.onDataPacket(net, packet);
@@ -228,7 +232,7 @@ public class ElevatorTile extends GenericTileEntity implements IGuiTile, ITickab
         if (getWorld().isRemote) {
             // If needed send a render update.
             if (oldheight != height) {
-                getWorld().markBlockRangeForRenderUpdate(getPos(), getPos());
+                world.notifyBlockUpdate(pos, getBlockState(), getBlockState(), Constants.BlockFlags.BLOCK_UPDATE + Constants.BlockFlags.NOTIFY_NEIGHBORS);
                 cachedBox = null;
             }
         }
@@ -253,51 +257,64 @@ public class ElevatorTile extends GenericTileEntity implements IGuiTile, ITickab
     public void setup(ICityAI cityAI, World world, boolean firstTime) {
     }
 
-    @Override
-    public void readRestorableFromNBT(NBTTagCompound tagCompound) {
-        super.readRestorableFromNBT(tagCompound);
-        height = tagCompound.getInteger("height");
+    // @todo 1.14 loot
+    public void readRestorableFromNBT(CompoundNBT tagCompound) {
+        height = tagCompound.getInt("height");
     }
 
     @Override
-    public void writeRestorableToNBT(NBTTagCompound tagCompound) {
-        super.writeRestorableToNBT(tagCompound);
-        tagCompound.setInteger("height", height);
+    public void read(CompoundNBT tagCompound) {
+        super.read(tagCompound);
+        readRestorableFromNBT(tagCompound);
+    }
+
+    public void writeRestorableToNBT(CompoundNBT tagCompound) {
+        tagCompound.putInt("height", height);
     }
 
     @Override
-    @Optional.Method(modid = "theoneprobe")
-    public void addProbeInfo(ProbeMode mode, IProbeInfo probeInfo, PlayerEntity player, World world, BlockState blockState, IProbeHitData data) {
-        super.addProbeInfo(mode, probeInfo, player, world, blockState, data);
-        probeInfo.text(TextStyleClass.LABEL + "Using: " + TextStyleClass.INFO + POWER_USAGE + " flux");
-
-//        Boolean working = isWorking();
-//        if (working) {
-//            probeInfo.text(TextFormatting.GREEN + "Producing " + getRfPerTick() + " RF/t");
-//        }
+    public CompoundNBT write(CompoundNBT tagCompound) {
+        writeRestorableToNBT(tagCompound);
+        return super.write(tagCompound);
     }
 
-    @SideOnly(Side.CLIENT)
-    @Override
-    @Optional.Method(modid = "waila")
-    public void addWailaBody(ItemStack itemStack, List<String> currenttip, IWailaDataAccessor accessor, IWailaConfigHandler config) {
-        super.addWailaBody(itemStack, currenttip, accessor, config);
-//        if (isWorking()) {
-//            currenttip.add(TextFormatting.GREEN + "Producing " + getRfPerTick() + " RF/t");
-//        }
-    }
+    // @todo 1.14
+//    @Override
+//    @Optional.Method(modid = "theoneprobe")
+//    public void addProbeInfo(ProbeMode mode, IProbeInfo probeInfo, PlayerEntity player, World world, BlockState blockState, IProbeHitData data) {
+//        super.addProbeInfo(mode, probeInfo, player, world, blockState, data);
+//        probeInfo.text(TextStyleClass.LABEL + "Using: " + TextStyleClass.INFO + POWER_USAGE + " flux");
+//
+////        Boolean working = isWorking();
+////        if (working) {
+////            probeInfo.text(TextFormatting.GREEN + "Producing " + getRfPerTick() + " RF/t");
+////        }
+//    }
+//
+//    @SideOnly(Side.CLIENT)
+//    @Override
+//    @Optional.Method(modid = "waila")
+//    public void addWailaBody(ItemStack itemStack, List<String> currenttip, IWailaDataAccessor accessor, IWailaConfigHandler config) {
+//        super.addWailaBody(itemStack, currenttip, accessor, config);
+////        if (isWorking()) {
+////            currenttip.add(TextFormatting.GREEN + "Producing " + getRfPerTick() + " RF/t");
+////        }
+//    }
+//
+
+    // @todo 1.14
+//    @SideOnly(Side.CLIENT)
+//    @Override
+//    public AxisAlignedBB getRenderBoundingBox() {
+//        return getBeamBox();
+//    }
 
 
-    @SideOnly(Side.CLIENT)
-    @Override
-    public AxisAlignedBB getRenderBoundingBox() {
-        return getBeamBox();
-    }
-
-    @Override
-    public boolean shouldRenderInPass(int pass) {
-        return pass == 1;
-    }
+    // @todo 1.14
+//    @Override
+//    public boolean shouldRenderInPass(int pass) {
+//        return pass == 1;
+//    }
 
     private AxisAlignedBB getBeamBox() {
         if (cachedBox == null) {

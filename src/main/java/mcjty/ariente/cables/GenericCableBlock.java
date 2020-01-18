@@ -28,7 +28,7 @@ import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemBlock;
 import net.minecraft.item.ItemStack;
-import net.minecraft.nbt.NBTTagCompound;
+import net.minecraft.nbt.CompoundNBT;
 import net.minecraft.tileentity.TileEntity;
 import net.minecraft.util.Direction;
 import net.minecraft.util.Hand;
@@ -119,9 +119,9 @@ public abstract class GenericCableBlock extends Block implements WailaInfoProvid
     protected ItemStack updateColorInStack(ItemStack item, CableColor color) {
         if (color != null) {
             if (item.getTagCompound() == null) {
-                item.setTagCompound(new NBTTagCompound());
+                item.setTagCompound(new CompoundNBT());
             }
-            NBTTagCompound display = new NBTTagCompound();
+            CompoundNBT display = new CompoundNBT();
             String unlocname = getUnlocalizedName() + "_" + color.getName() + ".name";
             display.setString("LocName", unlocname);
             item.getTagCompound().setTag("display", display);

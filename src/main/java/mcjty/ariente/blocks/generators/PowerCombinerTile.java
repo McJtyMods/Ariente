@@ -13,37 +13,28 @@ import mcjty.hologui.api.IGuiComponentRegistry;
 import mcjty.hologui.api.IGuiTile;
 import mcjty.hologui.api.StyledColor;
 import mcjty.lib.tileentity.GenericTileEntity;
-import mcjty.theoneprobe.api.IProbeHitData;
-import mcjty.theoneprobe.api.IProbeInfo;
-import mcjty.theoneprobe.api.ProbeMode;
-import mcjty.theoneprobe.api.TextStyleClass;
-import mcp.mobius.waila.api.IWailaConfigHandler;
-import mcp.mobius.waila.api.IWailaDataAccessor;
-import net.minecraft.block.state.BlockState;
-import net.minecraft.entity.player.PlayerEntity;
-import net.minecraft.item.ItemStack;
-import net.minecraft.nbt.NBTTagCompound;
+import mcjty.lib.varia.OrientationTools;
+import net.minecraft.nbt.CompoundNBT;
+import net.minecraft.tileentity.ITickableTileEntity;
 import net.minecraft.tileentity.TileEntity;
+import net.minecraft.tileentity.TileEntityType;
 import net.minecraft.util.Direction;
-import net.minecraft.util.ITickable;
 import net.minecraft.util.math.BlockPos;
-import net.minecraft.world.World;
-import net.minecraftforge.fml.common.Optional;
-import net.minecraftforge.fml.relauncher.Side;
-import net.minecraftforge.fml.relauncher.SideOnly;
-
-import java.util.List;
 
 import static mcjty.hologui.api.Icons.*;
 
-public class PowerCombinerTile extends GenericTileEntity implements ITickable, IPowerReceiver, IGuiTile {
+public class PowerCombinerTile extends GenericTileEntity implements ITickableTileEntity, IPowerReceiver, IGuiTile {
 
     private long usingPower = 0;
 
     private int powerTransfer = 100;
 
+    public PowerCombinerTile(TileEntityType<?> type) {
+        super(type);
+    }
+
     @Override
-    public void update() {
+    public void tick() {
         if (!world.isRemote) {
             usingPower = 0;
             if (PowerReceiverSupport.consumePower(world, pos, powerTransfer, false)) {
@@ -63,7 +54,7 @@ public class PowerCombinerTile extends GenericTileEntity implements ITickable, I
 
         PowerSystem powerSystem = PowerSystem.getPowerSystem(world);
         int cnt = 0;
-        for (Direction facing : Direction.VALUES) {
+        for (Direction facing : OrientationTools.DIRECTION_VALUES) {
             BlockPos p = pos.offset(facing);
             TileEntity te = world.getTileEntity(p);
             if (te instanceof ConnectorTileEntity) {
@@ -77,7 +68,7 @@ public class PowerCombinerTile extends GenericTileEntity implements ITickable, I
         if (cnt > 0) {
             long pPerConnector = power / cnt;
             long p = pPerConnector + power % cnt;
-            for (Direction facing : Direction.VALUES) {
+            for (Direction facing : OrientationTools.DIRECTION_VALUES) {
                 TileEntity te = world.getTileEntity(pos.offset(facing));
                 if (te instanceof ConnectorTileEntity) {
                     ConnectorTileEntity connector = (ConnectorTileEntity) te;
@@ -112,49 +103,49 @@ public class PowerCombinerTile extends GenericTileEntity implements ITickable, I
     }
 
 
-    @Override
-    public void readRestorableFromNBT(NBTTagCompound tagCompound) {
-        super.readRestorableFromNBT(tagCompound);
-        powerTransfer = tagCompound.getInteger("transfer");
+    // @todo 1.14 LOOT
+    public void readRestorableFromNBT(CompoundNBT tagCompound) {
+        powerTransfer = tagCompound.getInt("transfer");
+    }
+
+    public void writeRestorableToNBT(CompoundNBT tagCompound) {
+        tagCompound.putInt("transfer", powerTransfer);
     }
 
     @Override
-    public void writeRestorableToNBT(NBTTagCompound tagCompound) {
-        super.writeRestorableToNBT(tagCompound);
-        tagCompound.setInteger("transfer", powerTransfer);
+    public void read(CompoundNBT tagCompound) {
+        super.read(tagCompound);
+        readRestorableFromNBT(tagCompound);
     }
 
     @Override
-    public void readFromNBT(NBTTagCompound tagCompound) {
-        super.readFromNBT(tagCompound);
-    }
-
-    @Override
-    public NBTTagCompound writeToNBT(NBTTagCompound tagCompound) {
-        tagCompound = super.writeToNBT(tagCompound);
+    public CompoundNBT write(CompoundNBT tagCompound) {
+        tagCompound = super.write(tagCompound);
+        writeRestorableToNBT(tagCompound);
         return tagCompound;
     }
 
-    @Override
-    @Optional.Method(modid = "theoneprobe")
-    public void addProbeInfo(ProbeMode mode, IProbeInfo probeInfo, PlayerEntity player, World world, BlockState blockState, IProbeHitData data) {
-        super.addProbeInfo(mode, probeInfo, player, world, blockState, data);
-        probeInfo.text(TextStyleClass.LABEL + "Using: " + TextStyleClass.INFO + usingPower + " flux");
-//        Boolean working = isWorking();
-//        if (working) {
-//            probeInfo.text(TextFormatting.GREEN + "Producing " + getRfPerTick() + " RF/t");
-//        }
-    }
-
-    @SideOnly(Side.CLIENT)
-    @Override
-    @Optional.Method(modid = "waila")
-    public void addWailaBody(ItemStack itemStack, List<String> currenttip, IWailaDataAccessor accessor, IWailaConfigHandler config) {
-        super.addWailaBody(itemStack, currenttip, accessor, config);
-//        if (isWorking()) {
-//            currenttip.add(TextFormatting.GREEN + "Producing " + getRfPerTick() + " RF/t");
-//        }
-    }
+    // @todo 1.14
+//    @Override
+//    @Optional.Method(modid = "theoneprobe")
+//    public void addProbeInfo(ProbeMode mode, IProbeInfo probeInfo, PlayerEntity player, World world, BlockState blockState, IProbeHitData data) {
+//        super.addProbeInfo(mode, probeInfo, player, world, blockState, data);
+//        probeInfo.text(TextStyleClass.LABEL + "Using: " + TextStyleClass.INFO + usingPower + " flux");
+////        Boolean working = isWorking();
+////        if (working) {
+////            probeInfo.text(TextFormatting.GREEN + "Producing " + getRfPerTick() + " RF/t");
+////        }
+//    }
+//
+//    @SideOnly(Side.CLIENT)
+//    @Override
+//    @Optional.Method(modid = "waila")
+//    public void addWailaBody(ItemStack itemStack, List<String> currenttip, IWailaDataAccessor accessor, IWailaConfigHandler config) {
+//        super.addWailaBody(itemStack, currenttip, accessor, config);
+////        if (isWorking()) {
+////            currenttip.add(TextFormatting.GREEN + "Producing " + getRfPerTick() + " RF/t");
+////        }
+//    }
 
     @Override
     public IGuiComponent<?> createGui(String tag, IGuiComponentRegistry registry) {

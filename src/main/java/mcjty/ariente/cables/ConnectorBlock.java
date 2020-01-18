@@ -21,7 +21,7 @@ import net.minecraft.entity.LivingEntity;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.init.Blocks;
 import net.minecraft.item.ItemStack;
-import net.minecraft.nbt.NBTTagCompound;
+import net.minecraft.nbt.CompoundNBT;
 import net.minecraft.tileentity.TileEntity;
 import net.minecraft.util.BlockRenderLayer;
 import net.minecraft.util.Direction;
@@ -285,7 +285,7 @@ public class ConnectorBlock extends GenericCableBlock implements ITileEntityProv
             World world = (World) blockAccess;
             for (ItemStack drop : drops) {
                 if (!drop.hasTagCompound()) {
-                    drop.setTagCompound(new NBTTagCompound());
+                    drop.setTagCompound(new CompoundNBT());
                 }
 //                WorldBlob worldBlob = XNetBlobData.getBlobData(world).getWorldBlob(world);
 //                ConsumerId consumer = worldBlob.getConsumerAt(pos);

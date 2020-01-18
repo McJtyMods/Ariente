@@ -16,7 +16,7 @@ import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.inventory.EntityEquipmentSlot;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
-import net.minecraft.nbt.NBTTagCompound;
+import net.minecraft.nbt.CompoundNBT;
 import org.apache.commons.lang3.tuple.Pair;
 
 import static mcjty.hologui.api.Icons.*;
@@ -220,7 +220,7 @@ public class ArmorGui {
         if (isValidPowerArmorPiece(stack)) {
             return 0;
         }
-        NBTTagCompound compound = stack.getTagCompound();
+        CompoundNBT compound = stack.getTagCompound();
         if (compound == null) {
             return 0;
         }
@@ -232,9 +232,9 @@ public class ArmorGui {
         if (isValidPowerArmorPiece(stack)) {
             return;
         }
-        NBTTagCompound compound = stack.getTagCompound();
+        CompoundNBT compound = stack.getTagCompound();
         if (compound == null) {
-            compound = new NBTTagCompound();
+            compound = new CompoundNBT();
             stack.setTagCompound(compound);
         }
         int number = compound.getInteger(itemTag);
@@ -278,7 +278,7 @@ public class ArmorGui {
             return;
         }
         ItemStack stack = player.getItemStackFromSlot(slot);
-        NBTTagCompound compound = stack.getTagCompound();
+        CompoundNBT compound = stack.getTagCompound();
         int index = compound.getInteger(moduleItem.getType().getHotkeyKey());
         index++;
         if (index >= 5) {
@@ -292,7 +292,7 @@ public class ArmorGui {
             return 0;
         }
         ItemStack stack = player.getItemStackFromSlot(slot);
-        NBTTagCompound compound = stack.getTagCompound();
+        CompoundNBT compound = stack.getTagCompound();
         return compound.getInteger(moduleItem.getType().getHotkeyKey());
     }
 
@@ -301,7 +301,7 @@ public class ArmorGui {
             return false;
         }
         ItemStack stack = player.getItemStackFromSlot(slot);
-        NBTTagCompound compound = stack.getTagCompound();
+        CompoundNBT compound = stack.getTagCompound();
         return compound.getBoolean(moduleItem.getType().getModuleKey());
     }
 
@@ -324,7 +324,7 @@ public class ArmorGui {
         if (!stack.hasTagCompound()) {
             return false;
         }
-        NBTTagCompound compound = stack.getTagCompound();
+        CompoundNBT compound = stack.getTagCompound();
         return compound.hasKey(moduleItem.getType().getModuleKey());
     }
 
@@ -333,7 +333,7 @@ public class ArmorGui {
             return;
         }
         ItemStack stack = player.getItemStackFromSlot(slot);
-        NBTTagCompound compound = stack.getTagCompound();
+        CompoundNBT compound = stack.getTagCompound();
         String key = moduleItem.getType().getModuleKey();
         compound.setBoolean(key, !compound.getBoolean(key));
     }
@@ -363,9 +363,9 @@ public class ArmorGui {
             ItemStack moduleStack = player.inventory.getStackInSlot(i);
             ItemStack splitted = moduleStack.splitStack(1);
             if (!stack.hasTagCompound()) {
-                stack.setTagCompound(new NBTTagCompound());
+                stack.setTagCompound(new CompoundNBT());
             }
-            NBTTagCompound compound = stack.getTagCompound();
+            CompoundNBT compound = stack.getTagCompound();
             compound.setBoolean(moduleItem.getType().getModuleKey(), false);
             return;
         } else {
@@ -375,7 +375,7 @@ public class ArmorGui {
                 player.entityDropItem(module, 1.05f);
             }
             ItemStack stack = player.getItemStackFromSlot(slot);
-            NBTTagCompound compound = stack.getTagCompound();
+            CompoundNBT compound = stack.getTagCompound();
             String key = moduleItem.getType().getModuleKey();
             compound.removeTag(key);
         }

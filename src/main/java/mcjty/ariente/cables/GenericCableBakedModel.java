@@ -3,9 +3,11 @@ package mcjty.ariente.cables;
 import com.google.common.base.Function;
 import mcjty.ariente.Ariente;
 import mcjty.ariente.facade.FacadeBlockId;
-import net.minecraft.block.state.BlockState;
+import net.minecraft.block.BlockState;
 import net.minecraft.client.Minecraft;
-import net.minecraft.client.renderer.block.model.*;
+import net.minecraft.client.renderer.model.BakedQuad;
+import net.minecraft.client.renderer.model.IBakedModel;
+import net.minecraft.client.renderer.model.ModelResourceLocation;
 import net.minecraft.client.renderer.texture.TextureAtlasSprite;
 import net.minecraft.client.renderer.vertex.VertexFormat;
 import net.minecraft.util.BlockRenderLayer;
@@ -13,7 +15,6 @@ import net.minecraft.util.Direction;
 import net.minecraft.util.math.Vec3d;
 import net.minecraftforge.client.MinecraftForgeClient;
 import net.minecraftforge.client.model.pipeline.UnpackedBakedQuad;
-import net.minecraftforge.common.property.IExtendedBlockState;
 
 import java.util.ArrayList;
 import java.util.Collections;
@@ -73,16 +74,16 @@ public class GenericCableBakedModel implements IBakedModel {
                 int i = color.ordinal();
                 String typeName = color.getName();
                 tt[i] = new CableTextures();
-                tt[i].spriteConnector = Minecraft.getMinecraft().getTextureMapBlocks().getAtlasSprite(Ariente.MODID + ":blocks/cables/" + typeName + "/connector");
-                tt[i].spriteNormalCable = Minecraft.getMinecraft().getTextureMapBlocks().getAtlasSprite(Ariente.MODID + ":blocks/cables/" + typeName + "/normal_netcable");
-                tt[i].spriteNoneCable = Minecraft.getMinecraft().getTextureMapBlocks().getAtlasSprite(Ariente.MODID + ":blocks/cables/" + typeName + "/normal_none_netcable");
-                tt[i].spriteEndCable = Minecraft.getMinecraft().getTextureMapBlocks().getAtlasSprite(Ariente.MODID + ":blocks/cables/" + typeName + "/normal_end_netcable");
-                tt[i].spriteCornerCable = Minecraft.getMinecraft().getTextureMapBlocks().getAtlasSprite(Ariente.MODID + ":blocks/cables/" + typeName + "/normal_corner_netcable");
-                tt[i].spriteThreeCable = Minecraft.getMinecraft().getTextureMapBlocks().getAtlasSprite(Ariente.MODID + ":blocks/cables/" + typeName + "/normal_three_netcable");
-                tt[i].spriteCrossCable = Minecraft.getMinecraft().getTextureMapBlocks().getAtlasSprite(Ariente.MODID + ":blocks/cables/" + typeName + "/normal_cross_netcable");
+                tt[i].spriteConnector = Minecraft.getInstance().getTextureMap().getAtlasSprite(Ariente.MODID + ":blocks/cables/" + typeName + "/connector");
+                tt[i].spriteNormalCable = Minecraft.getInstance().getTextureMap().getAtlasSprite(Ariente.MODID + ":blocks/cables/" + typeName + "/normal_netcable");
+                tt[i].spriteNoneCable = Minecraft.getInstance().getTextureMap().getAtlasSprite(Ariente.MODID + ":blocks/cables/" + typeName + "/normal_none_netcable");
+                tt[i].spriteEndCable = Minecraft.getInstance().getTextureMap().getAtlasSprite(Ariente.MODID + ":blocks/cables/" + typeName + "/normal_end_netcable");
+                tt[i].spriteCornerCable = Minecraft.getInstance().getTextureMap().getAtlasSprite(Ariente.MODID + ":blocks/cables/" + typeName + "/normal_corner_netcable");
+                tt[i].spriteThreeCable = Minecraft.getInstance().getTextureMap().getAtlasSprite(Ariente.MODID + ":blocks/cables/" + typeName + "/normal_three_netcable");
+                tt[i].spriteCrossCable = Minecraft.getInstance().getTextureMap().getAtlasSprite(Ariente.MODID + ":blocks/cables/" + typeName + "/normal_cross_netcable");
             }
 
-            spriteSide = Minecraft.getMinecraft().getTextureMapBlocks().getAtlasSprite(Ariente.MODID + ":blocks/cables/connector_side");
+            spriteSide = Minecraft.getInstance().getTextureMap().getAtlasSprite(Ariente.MODID + ":blocks/cables/connector_side");
             cableTextures = tt;
         }
     }
@@ -183,15 +184,15 @@ public class GenericCableBakedModel implements IBakedModel {
             return Collections.emptyList();
         }
 
-        IExtendedBlockState extendedBlockState = (IExtendedBlockState) state;
-        FacadeBlockId facadeId = extendedBlockState.getValue(GenericCableBlock.FACADEID);
+        BlockState extendedBlockState = state;
+        FacadeBlockId facadeId = extendedBlockState.get(GenericCableBlock.FACADEID);
         if (facadeId != null) {
             BlockState facadeState = facadeId.getBlockState();
             BlockRenderLayer layer = MinecraftForgeClient.getRenderLayer();
             if (layer != null && !facadeState.getBlock().canRenderInLayer(facadeState, layer)) { // always render in the null layer or the block-breaking textures don't show up
                 return Collections.emptyList();
             }
-            IBakedModel model = Minecraft.getMinecraft().getBlockRendererDispatcher().getBlockModelShapes().getModelForState(facadeState);
+            IBakedModel model = Minecraft.getInstance().getBlockRendererDispatcher().getBlockModelShapes().getModelForState(facadeState);
             try {
                 return model.getQuads(state, side, rand);
             } catch (Exception e) {
@@ -205,13 +206,13 @@ public class GenericCableBakedModel implements IBakedModel {
 
         // Called with the blockstate from our block. Here we get the values of the six properties and pass that to
         // our baked model implementation.
-        ConnectorType north = extendedBlockState.getValue(GenericCableBlock.NORTH);
-        ConnectorType south = extendedBlockState.getValue(GenericCableBlock.SOUTH);
-        ConnectorType west = extendedBlockState.getValue(GenericCableBlock.WEST);
-        ConnectorType east = extendedBlockState.getValue(GenericCableBlock.EAST);
-        ConnectorType up = extendedBlockState.getValue(GenericCableBlock.UP);
-        ConnectorType down = extendedBlockState.getValue(GenericCableBlock.DOWN);
-        CableColor cableColor = extendedBlockState.getValue(GenericCableBlock.COLOR);
+        ConnectorType north = extendedBlockState.get(GenericCableBlock.NORTH);
+        ConnectorType south = extendedBlockState.get(GenericCableBlock.SOUTH);
+        ConnectorType west = extendedBlockState.get(GenericCableBlock.WEST);
+        ConnectorType east = extendedBlockState.get(GenericCableBlock.EAST);
+        ConnectorType up = extendedBlockState.get(GenericCableBlock.UP);
+        ConnectorType down = extendedBlockState.get(GenericCableBlock.DOWN);
+        CableColor cableColor = extendedBlockState.get(GenericCableBlock.COLOR);
         int index = cableColor.ordinal();
 
         initTextures();
@@ -397,7 +398,7 @@ public class GenericCableBakedModel implements IBakedModel {
 
     @Override
     public TextureAtlasSprite getParticleTexture() {
-        return spriteCable == null ? Minecraft.getMinecraft().getTextureMapBlocks().getMissingSprite() : spriteCable;
+        return spriteCable == null ? Minecraft.getInstance().getTextureMap().getMissingSprite() : spriteCable;
     }
 
     @Override

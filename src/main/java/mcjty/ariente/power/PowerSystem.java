@@ -1,7 +1,7 @@
 package mcjty.ariente.power;
 
 import mcjty.lib.worlddata.AbstractWorldData;
-import net.minecraft.nbt.NBTTagCompound;
+import net.minecraft.nbt.CompoundNBT;
 import net.minecraft.world.World;
 
 import javax.annotation.Nonnull;
@@ -118,12 +118,12 @@ public class PowerSystem extends AbstractWorldData<PowerSystem> {
 
 
     @Override
-    public void readFromNBT(NBTTagCompound nbt) {
+    public void readFromNBT(CompoundNBT nbt) {
         lastId = nbt.getInteger("lastId");
     }
 
     @Override
-    public NBTTagCompound writeToNBT(NBTTagCompound compound) {
+    public CompoundNBT write(CompoundNBT compound) {
         compound.setInteger("lastId", lastId);
         return compound;
     }

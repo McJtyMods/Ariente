@@ -8,7 +8,7 @@ import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.init.Blocks;
 import net.minecraft.item.ItemBlock;
 import net.minecraft.item.ItemStack;
-import net.minecraft.nbt.NBTTagCompound;
+import net.minecraft.nbt.CompoundNBT;
 import net.minecraft.tileentity.TileEntity;
 import net.minecraft.util.*;
 import net.minecraft.util.math.BlockPos;
@@ -30,14 +30,14 @@ public class FacadeItemBlock extends ItemBlock {
     }
 
     public static void setMimicBlock(@Nonnull ItemStack item, BlockState mimicBlock) {
-        NBTTagCompound tagCompound = new NBTTagCompound();
+        CompoundNBT tagCompound = new CompoundNBT();
         tagCompound.setString("regName", mimicBlock.getBlock().getRegistryName().toString());
         tagCompound.setInteger("meta", mimicBlock.getBlock().getMetaFromState(mimicBlock));
         item.setTagCompound(tagCompound);
     }
 
     public static BlockState getMimicBlock(@Nonnull ItemStack stack) {
-        NBTTagCompound tagCompound = stack.getTagCompound();
+        CompoundNBT tagCompound = stack.getTagCompound();
         if (tagCompound == null || !tagCompound.hasKey("regName")) {
             return Blocks.COBBLESTONE.getDefaultState();
         } else {
@@ -90,7 +90,7 @@ public class FacadeItemBlock extends ItemBlock {
     @Override
     public void addInformation(ItemStack stack, @Nullable World playerIn, List<String> tooltip, ITooltipFlag advanced) {
         super.addInformation(stack, null, tooltip, advanced);
-        NBTTagCompound tagCompound = stack.getTagCompound();
+        CompoundNBT tagCompound = stack.getTagCompound();
         if (tagCompound == null || !tagCompound.hasKey("regName")) {
             tooltip.add(TextFormatting.BLUE + "Right or sneak-right click on block to mimic");
             tooltip.add(TextFormatting.BLUE + "Right or sneak-right click on cable/connector to hide");

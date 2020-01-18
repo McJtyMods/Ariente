@@ -14,7 +14,7 @@ import net.minecraft.block.Block;
 import net.minecraft.block.state.BlockState;
 import net.minecraft.entity.LivingEntity;
 import net.minecraft.item.EnumDyeColor;
-import net.minecraft.nbt.NBTTagCompound;
+import net.minecraft.nbt.CompoundNBT;
 import net.minecraft.util.Direction;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.World;
@@ -85,7 +85,7 @@ public class SensorItemNodeTile extends AbstractNodeTile {
     }
 
     @Override
-    public void readRestorableFromNBT(NBTTagCompound tagCompound) {
+    public void readRestorableFromNBT(CompoundNBT tagCompound) {
         super.readRestorableFromNBT(tagCompound);
         if (tagCompound.hasKey("outColor")) {
             outputColor[0] = EnumDyeColor.values()[tagCompound.getInteger("outColor")];
@@ -95,7 +95,7 @@ public class SensorItemNodeTile extends AbstractNodeTile {
     }
 
     @Override
-    public void writeRestorableToNBT(NBTTagCompound tagCompound) {
+    public void writeRestorableToNBT(CompoundNBT tagCompound) {
         super.writeRestorableToNBT(tagCompound);
         tagCompound.setInteger("outColor", outputColor[0].ordinal());
         tagCompound.setInteger("op", operator);

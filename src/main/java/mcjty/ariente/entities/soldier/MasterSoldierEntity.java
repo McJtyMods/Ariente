@@ -2,7 +2,7 @@ package mcjty.ariente.entities.soldier;
 
 import mcjty.ariente.api.SoldierBehaviourType;
 import net.minecraft.init.MobEffects;
-import net.minecraft.nbt.NBTTagCompound;
+import net.minecraft.nbt.CompoundNBT;
 import net.minecraft.potion.PotionEffect;
 import net.minecraft.util.DamageSource;
 import net.minecraft.util.math.ChunkPos;
@@ -56,13 +56,13 @@ public class MasterSoldierEntity extends SoldierEntity {
     }
 
     @Override
-    public void readEntityFromNBT(NBTTagCompound compound) {
+    public void readEntityFromNBT(CompoundNBT compound) {
         super.readEntityFromNBT(compound);
         noregenCounter = compound.getInteger("noregen");
     }
 
     @Override
-    public void writeEntityToNBT(NBTTagCompound compound) {
+    public void writeEntityToNBT(CompoundNBT compound) {
         super.writeEntityToNBT(compound);
         compound.setInteger("noregen", noregenCounter);
     }

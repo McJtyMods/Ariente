@@ -13,7 +13,7 @@ import net.minecraft.client.renderer.block.model.ModelResourceLocation;
 import net.minecraft.client.util.ITooltipFlag;
 import net.minecraft.creativetab.CreativeTabs;
 import net.minecraft.item.ItemStack;
-import net.minecraft.nbt.NBTTagCompound;
+import net.minecraft.nbt.CompoundNBT;
 import net.minecraft.util.NonNullList;
 import net.minecraft.util.ResourceLocation;
 import net.minecraft.util.text.TextFormatting;
@@ -67,7 +67,7 @@ public class BlueprintItem extends GenericItem implements ITooltipExtras {
 
     public static ItemStack makeBluePrint(ItemStack destination) {
         ItemStack dest = new ItemStack(ModItems.blueprintItem);
-        NBTTagCompound nbt = new NBTTagCompound();
+        CompoundNBT nbt = new CompoundNBT();
         JsonObject json = ItemStackTools.itemStackToJson(destination);
         nbt.setString("destination", json.toString());
         dest.setTagCompound(nbt);
@@ -75,7 +75,7 @@ public class BlueprintItem extends GenericItem implements ITooltipExtras {
     }
 
     public static ItemStack getDestination(ItemStack stack) {
-        NBTTagCompound nbt = stack.getTagCompound();
+        CompoundNBT nbt = stack.getTagCompound();
         if (nbt == null) {
             return ItemStack.EMPTY;
         }

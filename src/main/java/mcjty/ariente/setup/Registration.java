@@ -6,26 +6,27 @@ import mcjty.ariente.ModCrafting;
 import mcjty.ariente.blocks.ModBlocks;
 import mcjty.ariente.items.ModItems;
 import mcjty.ariente.sounds.ModSounds;
-import mcjty.lib.McJtyRegister;
 import net.minecraft.block.Block;
 import net.minecraft.item.Item;
 import net.minecraft.potion.Potion;
 import net.minecraft.util.SoundEvent;
 import net.minecraftforge.event.RegistryEvent;
+import net.minecraftforge.eventbus.api.SubscribeEvent;
 import net.minecraftforge.fml.common.Mod;
-import net.minecraftforge.fml.common.eventhandler.SubscribeEvent;
 
 @Mod.EventBusSubscriber
 public class Registration {
 
     @SubscribeEvent
     public static void registerBlocks(RegistryEvent.Register<Block> event) {
-        McJtyRegister.registerBlocks(Ariente.instance, event.getRegistry());
+        // @todo 1.14
+//        McJtyRegister.registerBlocks(Ariente.instance, event.getRegistry());
     }
 
     @SubscribeEvent
     public static void registerItems(RegistryEvent.Register<Item> event) {
-        McJtyRegister.registerItems(Ariente.instance, event.getRegistry());
+        // @todo 1.14
+//        McJtyRegister.registerItems(Ariente.instance, event.getRegistry());
         ModBlocks.initOreDict();
         ModItems.initOreDict();
         ModCrafting.init();
