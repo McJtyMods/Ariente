@@ -27,15 +27,15 @@ import mcjty.theoneprobe.api.TextStyleClass;
 import mcp.mobius.waila.api.IWailaConfigHandler;
 import mcp.mobius.waila.api.IWailaDataAccessor;
 import net.minecraft.block.properties.PropertyBool;
-import net.minecraft.block.state.IBlockState;
-import net.minecraft.entity.player.EntityPlayer;
+import net.minecraft.block.state.BlockState;
+import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.init.Items;
 import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.network.NetworkManager;
 import net.minecraft.network.play.server.SPacketUpdateTileEntity;
 import net.minecraft.tileentity.TileEntity;
-import net.minecraft.util.EnumFacing;
+import net.minecraft.util.Direction;
 import net.minecraft.util.ITickable;
 import net.minecraft.util.ResourceLocation;
 import net.minecraft.world.World;
@@ -208,7 +208,7 @@ public class AutoConstructorTile extends GenericTileEntity implements DefaultSid
                     int ci = craftIndex;
                     // @todo optimize
                     List<BlueprintStorageTile> storageTiles = new ArrayList<>();
-                    for (EnumFacing value : EnumFacing.VALUES) {
+                    for (Direction value : Direction.VALUES) {
                         TileEntity te = world.getTileEntity(pos.offset(value));
                         if (te instanceof BlueprintStorageTile) {
                             BlueprintStorageTile blueprints = (BlueprintStorageTile) te;
@@ -242,7 +242,7 @@ public class AutoConstructorTile extends GenericTileEntity implements DefaultSid
     }
 
     @Override
-    public IBlockState getActualState(IBlockState state) {
+    public BlockState getActualState(BlockState state) {
         return state.withProperty(WORKING, isWorking());
     }
 
@@ -272,7 +272,7 @@ public class AutoConstructorTile extends GenericTileEntity implements DefaultSid
     }
 
     @Override
-    public int[] getSlotsForFace(EnumFacing side) {
+    public int[] getSlotsForFace(Direction side) {
         if (slots == null) {
             slots = new int[inventoryHelper.getCount()];
             for (int i = 0 ; i < inventoryHelper.getCount() ; i++) {
@@ -283,7 +283,7 @@ public class AutoConstructorTile extends GenericTileEntity implements DefaultSid
     }
 
     @Override
-    public boolean canInsertItem(int index, ItemStack stack, EnumFacing direction) {
+    public boolean canInsertItem(int index, ItemStack stack, Direction direction) {
         if (isOutputSlot(index)) {
             return false;
         }
@@ -303,7 +303,7 @@ public class AutoConstructorTile extends GenericTileEntity implements DefaultSid
     }
 
     @Override
-    public boolean canExtractItem(int index, ItemStack stack, EnumFacing direction) {
+    public boolean canExtractItem(int index, ItemStack stack, Direction direction) {
         return isOutputSlot(index);
     }
 
@@ -313,7 +313,7 @@ public class AutoConstructorTile extends GenericTileEntity implements DefaultSid
     }
 
     @Override
-    public boolean isUsableByPlayer(EntityPlayer player) {
+    public boolean isUsableByPlayer(PlayerEntity player) {
         return canPlayerAccess(player);
     }
 
@@ -345,7 +345,7 @@ public class AutoConstructorTile extends GenericTileEntity implements DefaultSid
 
     @Override
     @Optional.Method(modid = "theoneprobe")
-    public void addProbeInfo(ProbeMode mode, IProbeInfo probeInfo, EntityPlayer player, World world, IBlockState blockState, IProbeHitData data) {
+    public void addProbeInfo(ProbeMode mode, IProbeInfo probeInfo, PlayerEntity player, World world, BlockState blockState, IProbeHitData data) {
         super.addProbeInfo(mode, probeInfo, player, world, blockState, data);
         probeInfo.text(TextStyleClass.LABEL + "Using: " + TextStyleClass.INFO + usingPower + " flux");
     }
@@ -459,7 +459,7 @@ public class AutoConstructorTile extends GenericTileEntity implements DefaultSid
 
     private boolean isIngredient(ItemStack stack) {
         // @todo optimize!
-        for (EnumFacing value : EnumFacing.VALUES) {
+        for (Direction value : Direction.VALUES) {
             TileEntity te = world.getTileEntity(pos.offset(value));
             if (te instanceof BlueprintStorageTile) {
                 BlueprintStorageTile blueprints = (BlueprintStorageTile) te;
@@ -489,7 +489,7 @@ public class AutoConstructorTile extends GenericTileEntity implements DefaultSid
     }
 
 
-    private void transferToPlayer(EntityPlayer player, IHoloGuiEntity entity, String compName) {
+    private void transferToPlayer(PlayerEntity player, IHoloGuiEntity entity, String compName) {
         entity.findComponent(compName).ifPresent(component -> {
             if (component instanceof ISlots) {
                 int selected = ((ISlots) component).getSelected();
@@ -508,7 +508,7 @@ public class AutoConstructorTile extends GenericTileEntity implements DefaultSid
         });
     }
 
-    private void transferToMachine(EntityPlayer player, IHoloGuiEntity entity) {
+    private void transferToMachine(PlayerEntity player, IHoloGuiEntity entity) {
         // @todo don't put in output slots!
         entity.findComponent("playerslots").ifPresent(component -> {
             if (component instanceof IPlayerSlots) {

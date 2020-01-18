@@ -12,8 +12,8 @@ import mcjty.theoneprobe.api.IProbeInfo;
 import mcjty.theoneprobe.api.ProbeMode;
 import mcjty.theoneprobe.api.TextStyleClass;
 import net.minecraft.block.properties.PropertyBool;
-import net.minecraft.block.state.IBlockState;
-import net.minecraft.entity.player.EntityPlayer;
+import net.minecraft.block.state.BlockState;
+import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.network.NetworkManager;
 import net.minecraft.network.play.server.SPacketUpdateTileEntity;
@@ -123,12 +123,12 @@ public class WirelessLockTile extends SignalChannelTileEntity implements ILockab
     }
 
     @Override
-    public IBlockState getActualState(IBlockState state) {
+    public BlockState getActualState(BlockState state) {
         return state.withProperty(LOCKED, locked);
     }
 
     @Override
-    public void onBlockBreak(World world, BlockPos pos, IBlockState state) {
+    public void onBlockBreak(World world, BlockPos pos, BlockState state) {
         doLock(false);
         super.onBlockBreak(world, pos, state);
     }
@@ -205,7 +205,7 @@ public class WirelessLockTile extends SignalChannelTileEntity implements ILockab
 
     @Override
     @Optional.Method(modid = "theoneprobe")
-    public void addProbeInfo(ProbeMode mode, IProbeInfo probeInfo, EntityPlayer player, World world, IBlockState blockState, IProbeHitData data) {
+    public void addProbeInfo(ProbeMode mode, IProbeInfo probeInfo, PlayerEntity player, World world, BlockState blockState, IProbeHitData data) {
         super.addProbeInfo(mode, probeInfo, player, world, blockState, data);
         if (isLocked()) {
             probeInfo.text(TextStyleClass.WARNING + "Locked!");

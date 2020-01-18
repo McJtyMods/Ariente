@@ -17,15 +17,15 @@ import mcp.mobius.waila.api.IWailaConfigHandler;
 import mcp.mobius.waila.api.IWailaDataAccessor;
 import net.minecraft.block.Block;
 import net.minecraft.block.properties.PropertyEnum;
-import net.minecraft.block.state.IBlockState;
-import net.minecraft.entity.EntityLivingBase;
-import net.minecraft.entity.player.EntityPlayer;
+import net.minecraft.block.state.BlockState;
+import net.minecraft.entity.LivingEntity;
+import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.item.EnumDyeColor;
 import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.tileentity.TileEntity;
-import net.minecraft.util.EnumFacing;
-import net.minecraft.util.EnumHand;
+import net.minecraft.util.Direction;
+import net.minecraft.util.Hand;
 import net.minecraft.util.math.AxisAlignedBB;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.IBlockAccess;
@@ -95,7 +95,7 @@ public abstract class AbstractNodeTile extends GenericTileEntity implements IGui
     }
 
     @Override
-    public void onBlockPlacedBy(World world, BlockPos pos, IBlockState state, EntityLivingBase placer, ItemStack stack) {
+    public void onBlockPlacedBy(World world, BlockPos pos, BlockState state, LivingEntity placer, ItemStack stack) {
         AutoFieldTile.notifyField(world, pos);
     }
 
@@ -105,11 +105,11 @@ public abstract class AbstractNodeTile extends GenericTileEntity implements IGui
     }
 
     @Override
-    public void onBlockBreak(World world, BlockPos pos, IBlockState state) {
+    public void onBlockBreak(World world, BlockPos pos, BlockState state) {
         AutoFieldTile.notifyField(world, pos);
     }
 
-    public static AxisAlignedBB getBoundingBox(IBlockState state, IBlockAccess world, BlockPos pos) {
+    public static AxisAlignedBB getBoundingBox(BlockState state, IBlockAccess world, BlockPos pos) {
         NodeOrientation orientation = state.getValue(ORIENTATION);
         switch (orientation) {
             case DOWN_NE: return AABB_DOWN_NE;
@@ -141,19 +141,19 @@ public abstract class AbstractNodeTile extends GenericTileEntity implements IGui
     }
 
     @Override
-    public boolean onBlockActivated(IBlockState state, EntityPlayer player, EnumHand hand, EnumFacing side, float hitX, float hitY, float hitZ) {
+    public boolean onBlockActivated(BlockState state, PlayerEntity player, Hand hand, Direction side, float hitX, float hitY, float hitZ) {
         Ariente.guiHandler.openHoloGuiEntity(world, pos, player, state.getValue(ORIENTATION).getSlot().name(), 1.0);
         return true;
     }
 
     @Override
-    public void onPartAdded(PartSlot slot, IBlockState state, TileEntity multipartTile) {
+    public void onPartAdded(PartSlot slot, BlockState state, TileEntity multipartTile) {
         this.world = multipartTile.getWorld();
         this.pos = multipartTile.getPos();
         AutoFieldTile.notifyField(world, pos);
     }
 
-    public static NodeOrientation getOrientationFromPlacement(EnumFacing side, float hitX, float hitY, float hitZ) {
+    public static NodeOrientation getOrientationFromPlacement(Direction side, float hitX, float hitY, float hitZ) {
         side = side.getOpposite();
         NodeOrientation facing;
         switch (side) {
@@ -230,7 +230,7 @@ public abstract class AbstractNodeTile extends GenericTileEntity implements IGui
 
     @Override
     @Optional.Method(modid = "theoneprobe")
-    public void addProbeInfo(ProbeMode mode, IProbeInfo probeInfo, EntityPlayer player, World world, IBlockState blockState, IProbeHitData data) {
+    public void addProbeInfo(ProbeMode mode, IProbeInfo probeInfo, PlayerEntity player, World world, BlockState blockState, IProbeHitData data) {
         super.addProbeInfo(mode, probeInfo, player, world, blockState, data);
     }
 
@@ -297,10 +297,10 @@ public abstract class AbstractNodeTile extends GenericTileEntity implements IGui
 
     @Nullable
     public IItemHandler getConnectedItemHandler(PartPos partPos) {
-        IBlockState state = MultipartHelper.getBlockState(world, pos, partPos.getSlot());
+        BlockState state = MultipartHelper.getBlockState(world, pos, partPos.getSlot());
         if (state != null && state.getBlock() == getBlockType()) {
             NodeOrientation orientation = state.getValue(ORIENTATION);
-            EnumFacing mainDirection = orientation.getMainDirection();
+            Direction mainDirection = orientation.getMainDirection();
             TileEntity otherTe = world.getTileEntity(pos.offset(mainDirection));
             if (otherTe != null && otherTe.hasCapability(CapabilityItemHandler.ITEM_HANDLER_CAPABILITY, mainDirection.getOpposite())) {
                 return otherTe.getCapability(CapabilityItemHandler.ITEM_HANDLER_CAPABILITY, mainDirection.getOpposite());

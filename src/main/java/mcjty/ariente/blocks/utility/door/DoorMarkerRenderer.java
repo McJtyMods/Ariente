@@ -2,14 +2,14 @@ package mcjty.ariente.blocks.utility.door;
 
 import mcjty.ariente.Ariente;
 import mcjty.ariente.blocks.ModBlocks;
-import net.minecraft.block.state.IBlockState;
+import net.minecraft.block.state.BlockState;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.renderer.BufferBuilder;
 import net.minecraft.client.renderer.GlStateManager;
 import net.minecraft.client.renderer.Tessellator;
 import net.minecraft.client.renderer.tileentity.TileEntitySpecialRenderer;
 import net.minecraft.client.renderer.vertex.DefaultVertexFormats;
-import net.minecraft.util.EnumFacing;
+import net.minecraft.util.Direction;
 import net.minecraft.util.ResourceLocation;
 import net.minecraftforge.fml.client.registry.ClientRegistry;
 import net.minecraftforge.fml.relauncher.Side;
@@ -26,15 +26,15 @@ public class DoorMarkerRenderer extends TileEntitySpecialRenderer<DoorMarkerTile
 
     @Override
     public void render(DoorMarkerTile te, double x, double y, double z, float time, int breakTime, float alpha) {
-        IBlockState state = getWorld().getBlockState(te.getPos());
+        BlockState state = getWorld().getBlockState(te.getPos());
         if (state.getBlock() != ModBlocks.doorMarkerBlock) {
             return;
         }
 
         GlStateManager.pushMatrix();
 
-        EnumFacing frontDirection = ModBlocks.doorMarkerBlock.getFrontDirection(state);
-        if (EnumFacing.NORTH.equals(frontDirection) || EnumFacing.SOUTH.equals(frontDirection)) {
+        Direction frontDirection = ModBlocks.doorMarkerBlock.getFrontDirection(state);
+        if (Direction.NORTH.equals(frontDirection) || Direction.SOUTH.equals(frontDirection)) {
             GlStateManager.translate(x, y, z+.5);
             GlStateManager.rotate(90, 0, 1, 0);
         } else {

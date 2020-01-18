@@ -2,7 +2,7 @@ package mcjty.ariente.sounds;
 
 import mcjty.ariente.entities.levitator.FluxLevitatorEntity;
 import net.minecraft.client.audio.MovingSound;
-import net.minecraft.entity.player.EntityPlayer;
+import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.util.SoundCategory;
 import net.minecraft.util.math.MathHelper;
 import net.minecraftforge.fml.relauncher.Side;
@@ -10,10 +10,10 @@ import net.minecraftforge.fml.relauncher.SideOnly;
 
 @SideOnly(Side.CLIENT)
 public class MovingSoundLevitatorRiding extends MovingSound {
-    private final EntityPlayer player;
+    private final PlayerEntity player;
     private final FluxLevitatorEntity levitator;
 
-    public MovingSoundLevitatorRiding(EntityPlayer playerRiding, FluxLevitatorEntity levitator) {
+    public MovingSoundLevitatorRiding(PlayerEntity playerRiding, FluxLevitatorEntity levitator) {
         super(ModSounds.levitator, SoundCategory.NEUTRAL);
         this.player = playerRiding;
         this.levitator = levitator;

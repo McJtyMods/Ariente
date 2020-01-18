@@ -15,9 +15,9 @@ import mcjty.theoneprobe.api.ProbeMode;
 import mcjty.theoneprobe.api.TextStyleClass;
 import mcp.mobius.waila.api.IWailaConfigHandler;
 import mcp.mobius.waila.api.IWailaDataAccessor;
-import net.minecraft.block.state.IBlockState;
+import net.minecraft.block.state.BlockState;
 import net.minecraft.entity.Entity;
-import net.minecraft.entity.player.EntityPlayer;
+import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.network.NetworkManager;
@@ -56,8 +56,8 @@ public class ElevatorTile extends GenericTileEntity implements IGuiTile, ITickab
         if (!world.isRemote) {
             PowerReceiverSupport.consumePower(world, pos, POWER_USAGE, true);
 
-            List<EntityPlayer> players = world.getEntitiesWithinAABB(EntityPlayer.class, getBeamBox());
-            for (EntityPlayer player : players) {
+            List<PlayerEntity> players = world.getEntitiesWithinAABB(PlayerEntity.class, getBeamBox());
+            for (PlayerEntity player : players) {
                 if (openOrMoveHoloGui(player)) {
                     player.setPositionAndUpdate(pos.getX() + .5, player.posY, pos.getZ() + .5);
                 }
@@ -67,7 +67,7 @@ public class ElevatorTile extends GenericTileEntity implements IGuiTile, ITickab
             removeStaleHoloEntries();
         } else {
             List<Integer> floors = findFloors();
-            EntityPlayer clientPlayer = Ariente.proxy.getClientPlayer();
+            PlayerEntity clientPlayer = Ariente.proxy.getClientPlayer();
             if (clientPlayer.getEntityBoundingBox().intersects(getBeamBox())) {
                 clientPlayer.isAirBorne = true;
                 clientPlayer.fallDistance = 0;
@@ -134,7 +134,7 @@ public class ElevatorTile extends GenericTileEntity implements IGuiTile, ITickab
     }
 
     // Return true if the gui was opened now
-    private boolean openOrMoveHoloGui(EntityPlayer player) {
+    private boolean openOrMoveHoloGui(PlayerEntity player) {
         Integer holoID = playerToHoloGui.get(player.getUniqueID());
         if (holoID == null) {
 //            List<Integer> floors = findFloors();
@@ -267,7 +267,7 @@ public class ElevatorTile extends GenericTileEntity implements IGuiTile, ITickab
 
     @Override
     @Optional.Method(modid = "theoneprobe")
-    public void addProbeInfo(ProbeMode mode, IProbeInfo probeInfo, EntityPlayer player, World world, IBlockState blockState, IProbeHitData data) {
+    public void addProbeInfo(ProbeMode mode, IProbeInfo probeInfo, PlayerEntity player, World world, BlockState blockState, IProbeHitData data) {
         super.addProbeInfo(mode, probeInfo, player, world, blockState, data);
         probeInfo.text(TextStyleClass.LABEL + "Using: " + TextStyleClass.INFO + POWER_USAGE + " flux");
 

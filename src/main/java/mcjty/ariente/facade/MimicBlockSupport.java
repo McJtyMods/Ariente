@@ -1,7 +1,7 @@
 package mcjty.ariente.facade;
 
 import net.minecraft.block.Block;
-import net.minecraft.block.state.IBlockState;
+import net.minecraft.block.state.BlockState;
 import net.minecraft.init.Blocks;
 import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.util.ResourceLocation;
@@ -12,14 +12,14 @@ import javax.annotation.Nullable;
 public class MimicBlockSupport {
 
     @Nullable
-    private IBlockState mimicBlock = null;
+    private BlockState mimicBlock = null;
 
     @Nullable
-    public IBlockState getMimicBlock() {
+    public BlockState getMimicBlock() {
         return mimicBlock;
     }
 
-    public void setMimicBlock(@Nullable IBlockState mimicBlock) {
+    public void setMimicBlock(@Nullable BlockState mimicBlock) {
         this.mimicBlock = mimicBlock;
     }
 

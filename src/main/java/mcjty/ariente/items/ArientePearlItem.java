@@ -5,9 +5,9 @@ import mcjty.ariente.blocks.utility.WarperTile;
 import mcjty.ariente.compat.arienteworld.ArienteWorldCompat;
 import mcjty.ariente.config.UtilityConfiguration;
 import mcjty.ariente.entities.EntityArientePearl;
-import net.minecraft.block.state.IBlockState;
+import net.minecraft.block.state.BlockState;
 import net.minecraft.client.util.ITooltipFlag;
-import net.minecraft.entity.player.EntityPlayer;
+import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.init.SoundEvents;
 import net.minecraft.item.ItemStack;
 import net.minecraft.tileentity.TileEntity;
@@ -37,8 +37,8 @@ public class ArientePearlItem extends GenericItem {
     }
 
     @Override
-    public EnumActionResult onItemUseFirst(EntityPlayer player, World world, BlockPos pos, EnumFacing facing, float hitX, float hitY, float hitZ, EnumHand hand) {
-        IBlockState state = world.getBlockState(pos);
+    public EnumActionResult onItemUseFirst(PlayerEntity player, World world, BlockPos pos, Direction facing, float hitX, float hitY, float hitZ, Hand hand) {
+        BlockState state = world.getBlockState(pos);
         ItemStack itemstack = player.getHeldItem(hand);
 
         if (player.canPlayerEdit(pos.offset(facing), facing, itemstack) && state.getBlock() == ModBlocks.warperBlock) {
@@ -75,13 +75,13 @@ public class ArientePearlItem extends GenericItem {
     }
 
     @Override
-    public EnumActionResult onItemUse(EntityPlayer player, World world, BlockPos pos, EnumHand hand, EnumFacing facing, float hitX, float hitY, float hitZ) {
+    public EnumActionResult onItemUse(PlayerEntity player, World world, BlockPos pos, Hand hand, Direction facing, float hitX, float hitY, float hitZ) {
         return EnumActionResult.PASS;
     }
 
 
     @Override
-    public ActionResult<ItemStack> onItemRightClick(World world, EntityPlayer player, EnumHand hand) {
+    public ActionResult<ItemStack> onItemRightClick(World world, PlayerEntity player, Hand hand) {
         ItemStack itemstack = player.getHeldItem(hand);
 
         if (world.provider.getDimension() != 0) {

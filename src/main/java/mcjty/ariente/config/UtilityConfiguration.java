@@ -1,30 +1,30 @@
 package mcjty.ariente.config;
 
-import mcjty.lib.thirteen.ConfigSpec;
+import net.minecraftforge.common.ForgeConfigSpec;
 
 public class UtilityConfiguration {
 
     private static final String CATEGORY_UTILITY = "utility";
 
-    public static ConfigSpec.IntValue MAX_DOOR_HEIGHT;
-    public static ConfigSpec.IntValue POWERSUIT_MAXPOWER;
-    public static ConfigSpec.IntValue POWERSUIT_MAXPOWER_OPTIMIZED;
-    public static ConfigSpec.IntValue POWERSUIT_TICKS;
-    public static ConfigSpec.IntValue POWERSUIT_TICKS_OPTIMIZED;
-    public static ConfigSpec.DoubleValue POWERSUIT_FLYVERTICAL_FACTOR;
-    public static ConfigSpec.DoubleValue POWERSUIT_MAX_FORWARD_GROUND_SPEED;
-    public static ConfigSpec.DoubleValue POWERSUIT_MAX_FORWARD_FLY_SPEED;
-    public static ConfigSpec.DoubleValue POWERSUIT_MAX_BACK_GROUND_SPEED;
-    public static ConfigSpec.DoubleValue POWERSUIT_MAX_BACK_FLY_SPEED;
+    public static ForgeConfigSpec.IntValue MAX_DOOR_HEIGHT;
+    public static ForgeConfigSpec.IntValue POWERSUIT_MAXPOWER;
+    public static ForgeConfigSpec.IntValue POWERSUIT_MAXPOWER_OPTIMIZED;
+    public static ForgeConfigSpec.IntValue POWERSUIT_TICKS;
+    public static ForgeConfigSpec.IntValue POWERSUIT_TICKS_OPTIMIZED;
+    public static ForgeConfigSpec.DoubleValue POWERSUIT_FLYVERTICAL_FACTOR;
+    public static ForgeConfigSpec.DoubleValue POWERSUIT_MAX_FORWARD_GROUND_SPEED;
+    public static ForgeConfigSpec.DoubleValue POWERSUIT_MAX_FORWARD_FLY_SPEED;
+    public static ForgeConfigSpec.DoubleValue POWERSUIT_MAX_BACK_GROUND_SPEED;
+    public static ForgeConfigSpec.DoubleValue POWERSUIT_MAX_BACK_FLY_SPEED;
 
-    public static ConfigSpec.IntValue WARPER_MAX_CHARGES;
+    public static ForgeConfigSpec.IntValue WARPER_MAX_CHARGES;
 
-    public static ConfigSpec.IntValue AUTOFIELD_POWER_PER_OPERATION;
-    public static ConfigSpec.DoubleValue AUTOFIELD_FACTOR_PER_COMBINED_STACK;
-    public static ConfigSpec.IntValue AUTOFIELD_ACCUMULATE_PER_TICK;
-    public static ConfigSpec.IntValue AUTOFIELD_MAX_ACCUMULATED_POWER;
+    public static ForgeConfigSpec.IntValue AUTOFIELD_POWER_PER_OPERATION;
+    public static ForgeConfigSpec.DoubleValue AUTOFIELD_FACTOR_PER_COMBINED_STACK;
+    public static ForgeConfigSpec.IntValue AUTOFIELD_ACCUMULATE_PER_TICK;
+    public static ForgeConfigSpec.IntValue AUTOFIELD_MAX_ACCUMULATED_POWER;
 
-    public static void init(ConfigSpec.Builder SERVER_BUILDER, ConfigSpec.Builder CLIENT_BUILDER) {
+    public static void init(ForgeConfigSpec.Builder SERVER_BUILDER, ForgeConfigSpec.Builder CLIENT_BUILDER) {
         CLIENT_BUILDER.comment("Utility settings").push(CATEGORY_UTILITY);
         SERVER_BUILDER.comment("Utility settings").push(CATEGORY_UTILITY);
 

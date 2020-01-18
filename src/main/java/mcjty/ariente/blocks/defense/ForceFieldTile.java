@@ -2,7 +2,7 @@ package mcjty.ariente.blocks.defense;
 
 import mcjty.ariente.api.*;
 import mcjty.ariente.compat.arienteworld.ArienteWorldCompat;
-import mcjty.ariente.config.ConfigSetup;
+import mcjty.ariente.config.Config;
 import mcjty.ariente.config.DamageConfiguration;
 import mcjty.ariente.config.PowerConfiguration;
 import mcjty.ariente.items.KeyCardItem;
@@ -17,38 +17,30 @@ import mcjty.hologui.api.IGuiTile;
 import mcjty.hologui.api.StyledColor;
 import mcjty.lib.tileentity.GenericTileEntity;
 import mcjty.lib.varia.RedstoneMode;
-import mcjty.theoneprobe.api.IProbeHitData;
-import mcjty.theoneprobe.api.IProbeInfo;
-import mcjty.theoneprobe.api.ProbeMode;
-import mcjty.theoneprobe.api.TextStyleClass;
-import mcp.mobius.waila.api.IWailaConfigHandler;
-import mcp.mobius.waila.api.IWailaDataAccessor;
-import net.minecraft.block.state.IBlockState;
 import net.minecraft.entity.Entity;
-import net.minecraft.entity.EntityLivingBase;
 import net.minecraft.entity.IProjectile;
-import net.minecraft.entity.player.EntityPlayer;
-import net.minecraft.entity.projectile.EntityArrow;
-import net.minecraft.entity.projectile.EntityThrowable;
-import net.minecraft.item.ItemStack;
-import net.minecraft.nbt.NBTTagCompound;
+import net.minecraft.entity.LivingEntity;
+import net.minecraft.entity.player.PlayerEntity;
+import net.minecraft.entity.projectile.ArrowEntity;
+import net.minecraft.entity.projectile.ThrowableEntity;
+import net.minecraft.nbt.CompoundNBT;
+import net.minecraft.tileentity.ITickableTileEntity;
+import net.minecraft.tileentity.TileEntityType;
 import net.minecraft.util.DamageSource;
-import net.minecraft.util.ITickable;
 import net.minecraft.util.math.AxisAlignedBB;
 import net.minecraft.util.math.ChunkPos;
 import net.minecraft.util.math.Vec3d;
+import net.minecraft.world.Explosion;
 import net.minecraft.world.World;
-import net.minecraftforge.fml.common.Optional;
-import net.minecraftforge.fml.relauncher.Side;
-import net.minecraftforge.fml.relauncher.SideOnly;
+import net.minecraftforge.fml.network.PacketDistributor;
 
 import javax.annotation.Nullable;
 import java.util.*;
 
-import static mcjty.ariente.config.ConfigSetup.SHIELD_PANEL_LIFE;
+import static mcjty.ariente.config.Config.SHIELD_PANEL_LIFE;
 import static mcjty.hologui.api.Icons.*;
 
-public class ForceFieldTile extends GenericTileEntity implements IGuiTile, ITickable, ISoundProducer, IPowerReceiver, ICityEquipment, IAlarmMode, IForceFieldTile {
+public class ForceFieldTile extends GenericTileEntity implements IGuiTile, ITickableTileEntity, ISoundProducer, IPowerReceiver, ICityEquipment, IAlarmMode, IForceFieldTile {
 
     private PanelInfo[] panelInfo = new PanelInfo[PentakisDodecahedron.MAX_TRIANGLES];
     private int[] panelDestroyTimeout = new int[PentakisDodecahedron.MAX_TRIANGLES];    // @todo persist to NBT?
@@ -62,7 +54,8 @@ public class ForceFieldTile extends GenericTileEntity implements IGuiTile, ITick
 
     private static int[] shuffledIndices = null;
 
-    public ForceFieldTile() {
+    public ForceFieldTile(TileEntityType<?> type) {
+        super(type);
         for (int i = 0 ; i < PentakisDodecahedron.MAX_TRIANGLES ; i++) {
             panelInfo[i] = null;
             panelDestroyTimeout[i] = 0;
@@ -101,7 +94,7 @@ public class ForceFieldTile extends GenericTileEntity implements IGuiTile, ITick
         float quality = 0;
         for (int i = 0 ; i < PentakisDodecahedron.MAX_TRIANGLES ; i++) {
             if (panelInfo[i] != null && panelInfo[i].getLife() > 0) {
-                quality += panelInfo[i].getLife() / (float) ConfigSetup.SHIELD_PANEL_LIFE;
+                quality += panelInfo[i].getLife() / (float) Config.SHIELD_PANEL_LIFE;
             }
         }
         return (int) (quality * 100 / PentakisDodecahedron.MAX_TRIANGLES);
@@ -126,7 +119,7 @@ public class ForceFieldTile extends GenericTileEntity implements IGuiTile, ITick
     }
 
     @Override
-    public void update() {
+    public void tick() {
         if (!world.isRemote) {
             usingPower = 0;
             long desiredPower = calculateIdleUsage();
@@ -170,7 +163,7 @@ public class ForceFieldTile extends GenericTileEntity implements IGuiTile, ITick
         double radius = getScaleDouble();
 
         Vec3d fieldCenter = new Vec3d(x, y, z);
-        AxisAlignedBB box = entity.getEntityBoundingBox();
+        AxisAlignedBB box = entity.getBoundingBox();
         Vec3d entityCenter = new Vec3d(box.minX + (box.maxX - box.minX) * 0.5D, box.minY + (box.maxY - box.minY) * 0.5D, box.minZ + (box.maxZ - box.minZ) * 0.5D);
         double squareDist = fieldCenter.squareDistanceTo(entityCenter);
         return Math.abs(Math.sqrt(squareDist) - radius) < 10;
@@ -201,19 +194,19 @@ public class ForceFieldTile extends GenericTileEntity implements IGuiTile, ITick
                 if (entity instanceof IForcefieldImmunity && ((IForcefieldImmunity) entity).isImmuneToForcefield(this)) {
                     return false;
                 }
-                if (entity instanceof EntityLivingBase) {
-                    if (entity instanceof EntityPlayer && cityCenter != null) {
+                if (entity instanceof LivingEntity) {
+                    if (entity instanceof PlayerEntity && cityCenter != null) {
                         ICityAISystem system = ArienteWorldCompat.getCityAISystem(world);
                         ICityAI cityAI = system.getCityAI(cityCenter);
                         if (cityAI != null) {
-                            EntityPlayer player = (EntityPlayer) entity;
+                            PlayerEntity player = (PlayerEntity) entity;
                             String forcefieldId = cityAI.getForcefieldId();
                             if (KeyCardItem.hasPlayerKeycard(player, forcefieldId)) {
                                 return false;   // No damage, player is protected
                             }
                         }
                     }
-                    AxisAlignedBB box = entity.getEntityBoundingBox();
+                    AxisAlignedBB box = entity.getBoundingBox();
                     Vec3d entityCenter = new Vec3d(box.minX + (box.maxX - box.minX) * 0.5D, box.minY + (box.maxY - box.minY) * 0.5D, box.minZ + (box.maxZ - box.minZ) * 0.5D);
 
                     double squareDist = fieldCenter.squareDistanceTo(entityCenter);
@@ -234,18 +227,18 @@ public class ForceFieldTile extends GenericTileEntity implements IGuiTile, ITick
                         Vec3d intersection = info.testCollisionSegment(p1, p2, getScaleDouble());
                         if (intersection != null) {
 //                            world.newExplosion(entity, entity.posX, entity.posY, entity.posZ, 2.0f, false, false);
-                            entity.setDead();
+                            entity.remove();
                             int life = info.getLife();
                             life -= 10; // @todo make dependant on arrow
                             if (life <= 0) {
                                 panelDestroyTimeout[info.getIndex()] = 100;
                                 panelInfo[info.getIndex()] = null;
-                                world.newExplosion(entity, entity.posX, entity.posY, entity.posZ, 2.0f, false, false);
+                                world.createExplosion(entity, entity.posX, entity.posY, entity.posZ, 2.0f, false, Explosion.Mode.DESTROY);
                             } else {
                                 info.setLife(life);
                                 System.out.println("life = " + life + " (index " + info.getIndex() + ")");
                                 if (cityCenter != null) {
-                                    EntityPlayer player = determineAttacker(entity);
+                                    PlayerEntity player = determineAttacker(entity);
                                     if (player != null) {
                                         ICityAISystem system = ArienteWorldCompat.getCityAISystem(world);
                                         ICityAI cityAI = system.getCityAI(cityCenter);
@@ -256,9 +249,8 @@ public class ForceFieldTile extends GenericTileEntity implements IGuiTile, ITick
                                     }
                                 }
 
-                                ArienteMessages.INSTANCE.sendToDimension(
-                                        new PacketDamageForcefield(pos, info.getIndex(), intersection),
-                                        world.provider.getDimension());
+                                ArienteMessages.INSTANCE.send(PacketDistributor.DIMENSION.with(() -> world.getDimension().getType()),
+                                        new PacketDamageForcefield(pos, info.getIndex(), intersection));
                             }
                             changed = true;
                         }
@@ -268,8 +260,8 @@ public class ForceFieldTile extends GenericTileEntity implements IGuiTile, ITick
                 for (PanelInfo info : getPanelInfo()) {
                     if (info != null && info.getLife() > 0) {
                         if (info.testCollisionEntity(entity, getScaleDouble())) {
-                            entity.attackEntityFrom(DamageSource.GENERIC, (float) DamageConfiguration.FORCEFIELD_DAMAGE.get());
-                            ((EntityLivingBase)entity).knockBack(entity, 1.0f, pos.getX() - entity.posX, pos.getZ() - entity.posZ);
+                            entity.attackEntityFrom(DamageSource.GENERIC, (float) (double) DamageConfiguration.FORCEFIELD_DAMAGE.get());
+                            ((LivingEntity)entity).knockBack(entity, 1.0f, pos.getX() - entity.posX, pos.getZ() - entity.posZ);
                         }
                     }
                 }
@@ -281,30 +273,31 @@ public class ForceFieldTile extends GenericTileEntity implements IGuiTile, ITick
     }
 
     @Nullable
-    private EntityPlayer determineAttacker(Entity entity) {
-        if (entity instanceof EntityArrow) {
-            Entity shootingEntity = ((EntityArrow) entity).shootingEntity;
-            if (shootingEntity instanceof EntityPlayer) {
-                return (EntityPlayer) shootingEntity;
+    private PlayerEntity determineAttacker(Entity entity) {
+        if (entity instanceof ArrowEntity) {
+            Entity shootingEntity = ((ArrowEntity) entity).getShooter();
+            if (shootingEntity instanceof PlayerEntity) {
+                return (PlayerEntity) shootingEntity;
             }
-        } else if (entity instanceof EntityThrowable) {
-            EntityLivingBase thrower = ((EntityThrowable) entity).getThrower();
-            if (thrower instanceof EntityPlayer) {
-                return (EntityPlayer) thrower;
+        } else if (entity instanceof ThrowableEntity) {
+            LivingEntity thrower = ((ThrowableEntity) entity).getThrower();
+            if (thrower instanceof PlayerEntity) {
+                return (PlayerEntity) thrower;
             }
-        } else if (entity instanceof EntityPlayer) {
-            return (EntityPlayer) entity;
+        } else if (entity instanceof PlayerEntity) {
+            return (PlayerEntity) entity;
         }
         return null;
     }
 
+
     @Override
-    public void invalidate() {
+    public void remove() {
         disableShield();
         if (world.isRemote) {
             ForceFieldRenderer.unregister(pos);
         }
-        super.invalidate();
+        super.remove();
     }
 
     private static int[] getShuffledIndices() {
@@ -426,21 +419,18 @@ public class ForceFieldTile extends GenericTileEntity implements IGuiTile, ITick
         }
     }
 
-    @Override
-    public void readRestorableFromNBT(NBTTagCompound tagCompound) {
-        super.readRestorableFromNBT(tagCompound);
-        scale = tagCompound.getInteger("scale");
+    // @todo 1.14 LOOT
+    public void readRestorable(CompoundNBT tagCompound) {
+        scale = tagCompound.getInt("scale");
+    }
+
+    public void writeRestorable(CompoundNBT tagCompound) {
+        tagCompound.putInt("scale", scale);
     }
 
     @Override
-    public void writeRestorableToNBT(NBTTagCompound tagCompound) {
-        super.writeRestorableToNBT(tagCompound);
-        tagCompound.setInteger("scale", scale);
-    }
-
-    @Override
-    public void readFromNBT(NBTTagCompound tagCompound) {
-        super.readFromNBT(tagCompound);
+    public void read(CompoundNBT tagCompound) {
+        super.read(tagCompound);
         for (int i = 0 ; i < panelInfo.length ; i++) {
             panelInfo[i] = null;
         }
@@ -453,11 +443,12 @@ public class ForceFieldTile extends GenericTileEntity implements IGuiTile, ITick
                 panelInfo[i].setLife(lifeIdx[i]);
             }
         }
+        readRestorable(tagCompound);
     }
 
     @Override
-    public NBTTagCompound writeToNBT(NBTTagCompound tagCompound) {
-        tagCompound = super.writeToNBT(tagCompound);
+    public CompoundNBT write(CompoundNBT tagCompound) {
+        tagCompound = super.write(tagCompound);
         int[] lifeIdx = new int[PentakisDodecahedron.MAX_TRIANGLES];
         int i = 0;
         for (PanelInfo info : panelInfo) {
@@ -468,30 +459,32 @@ public class ForceFieldTile extends GenericTileEntity implements IGuiTile, ITick
             }
         }
 
-        tagCompound.setIntArray("life", lifeIdx);
+        tagCompound.putIntArray("life", lifeIdx);
+        writeRestorable(tagCompound);
         return tagCompound;
     }
 
-    @Override
-    @Optional.Method(modid = "theoneprobe")
-    public void addProbeInfo(ProbeMode mode, IProbeInfo probeInfo, EntityPlayer player, World world, IBlockState blockState, IProbeHitData data) {
-        super.addProbeInfo(mode, probeInfo, player, world, blockState, data);
-        probeInfo.text(TextStyleClass.LABEL + "Using: " + TextStyleClass.INFO + usingPower + " flux");
-//        Boolean working = isWorking();
-//        if (working) {
-//            probeInfo.text(TextFormatting.GREEN + "Producing " + getRfPerTick() + " RF/t");
-//        }
-    }
-
-    @SideOnly(Side.CLIENT)
-    @Override
-    @Optional.Method(modid = "waila")
-    public void addWailaBody(ItemStack itemStack, List<String> currenttip, IWailaDataAccessor accessor, IWailaConfigHandler config) {
-        super.addWailaBody(itemStack, currenttip, accessor, config);
-//        if (isWorking()) {
-//            currenttip.add(TextFormatting.GREEN + "Producing " + getRfPerTick() + " RF/t");
-//        }
-    }
+    // @todo 1.14
+//    @Override
+//    @Optional.Method(modid = "theoneprobe")
+//    public void addProbeInfo(ProbeMode mode, IProbeInfo probeInfo, PlayerEntity player, World world, BlockState blockState, IProbeHitData data) {
+//        super.addProbeInfo(mode, probeInfo, player, world, blockState, data);
+//        probeInfo.text(TextStyleClass.LABEL + "Using: " + TextStyleClass.INFO + usingPower + " flux");
+////        Boolean working = isWorking();
+////        if (working) {
+////            probeInfo.text(TextFormatting.GREEN + "Producing " + getRfPerTick() + " RF/t");
+////        }
+//    }
+//
+//    @SideOnly(Side.CLIENT)
+//    @Override
+//    @Optional.Method(modid = "waila")
+//    public void addWailaBody(ItemStack itemStack, List<String> currenttip, IWailaDataAccessor accessor, IWailaConfigHandler config) {
+//        super.addWailaBody(itemStack, currenttip, accessor, config);
+////        if (isWorking()) {
+////            currenttip.add(TextFormatting.GREEN + "Producing " + getRfPerTick() + " RF/t");
+////        }
+//    }
 
     @Override
     public IGuiComponent<?> createGui(String tag, IGuiComponentRegistry registry) {

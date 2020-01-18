@@ -3,13 +3,13 @@ package mcjty.ariente.cables;
 import com.google.common.base.Function;
 import mcjty.ariente.Ariente;
 import mcjty.ariente.facade.FacadeBlockId;
-import net.minecraft.block.state.IBlockState;
+import net.minecraft.block.state.BlockState;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.renderer.block.model.*;
 import net.minecraft.client.renderer.texture.TextureAtlasSprite;
 import net.minecraft.client.renderer.vertex.VertexFormat;
 import net.minecraft.util.BlockRenderLayer;
-import net.minecraft.util.EnumFacing;
+import net.minecraft.util.Direction;
 import net.minecraft.util.math.Vec3d;
 import net.minecraftforge.client.MinecraftForgeClient;
 import net.minecraftforge.client.model.pipeline.UnpackedBakedQuad;
@@ -178,7 +178,7 @@ public class GenericCableBakedModel implements IBakedModel {
     }
 
     @Override
-    public List<BakedQuad> getQuads(IBlockState state, EnumFacing side, long rand) {
+    public List<BakedQuad> getQuads(BlockState state, Direction side, long rand) {
         if (state == null) {
             return Collections.emptyList();
         }
@@ -186,7 +186,7 @@ public class GenericCableBakedModel implements IBakedModel {
         IExtendedBlockState extendedBlockState = (IExtendedBlockState) state;
         FacadeBlockId facadeId = extendedBlockState.getValue(GenericCableBlock.FACADEID);
         if (facadeId != null) {
-            IBlockState facadeState = facadeId.getBlockState();
+            BlockState facadeState = facadeId.getBlockState();
             BlockRenderLayer layer = MinecraftForgeClient.getRenderLayer();
             if (layer != null && !facadeState.getBlock().canRenderInLayer(facadeState, layer)) { // always render in the null layer or the block-breaking textures don't show up
                 return Collections.emptyList();

@@ -3,10 +3,10 @@ package mcjty.ariente.entities.fluxship;
 import mcjty.hologui.api.IHoloGuiEntity;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.MoverType;
-import net.minecraft.entity.player.EntityPlayer;
+import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.nbt.NBTTagCompound;
-import net.minecraft.util.EnumFacing;
-import net.minecraft.util.EnumHand;
+import net.minecraft.util.Direction;
+import net.minecraft.util.Hand;
 import net.minecraft.util.math.AxisAlignedBB;
 import net.minecraft.util.math.Vec3d;
 import net.minecraft.world.World;
@@ -101,7 +101,7 @@ public class FluxShipEntity extends Entity {
     }
 
     @Override
-    public boolean processInitialInteract(EntityPlayer player, EnumHand hand) {
+    public boolean processInitialInteract(PlayerEntity player, Hand hand) {
         if (player.isSneaking()) {
             return false;
 //        } else if (this.isBeingRidden()) {    // @todo
@@ -172,7 +172,7 @@ public class FluxShipEntity extends Entity {
     }
 
     @Override
-    public EnumFacing getAdjustedHorizontalFacing() {
+    public Direction getAdjustedHorizontalFacing() {
         return this.getHorizontalFacing().rotateY();
     }
 

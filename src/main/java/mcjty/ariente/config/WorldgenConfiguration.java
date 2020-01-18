@@ -1,19 +1,19 @@
 package mcjty.ariente.config;
 
 import mcjty.ariente.Ariente;
-import mcjty.lib.thirteen.ConfigSpec;
+import net.minecraftforge.common.ForgeConfigSpec;
 
 public class WorldgenConfiguration {
 
     private static final String CATEGORY_WORLDGEN = "worldgen";
 
-    public static ConfigSpec.ConfigValue<YesNoDefault> OVERWORLD_OREGEN;
-    public static ConfigSpec.ConfigValue<YesNoDefault> OVERWORLD_DUNGEON_LOOT;
-    public static ConfigSpec.IntValue OVERWORLD_LOOT_BLUEPRINTS;
-    public static ConfigSpec.IntValue OVERWORLD_LOOT_ITEMS;
-    public static ConfigSpec.IntValue OVERWORLD_LOOT_SUIT;
+    public static ForgeConfigSpec.ConfigValue<YesNoDefault> OVERWORLD_OREGEN;
+    public static ForgeConfigSpec.ConfigValue<YesNoDefault> OVERWORLD_DUNGEON_LOOT;
+    public static ForgeConfigSpec.IntValue OVERWORLD_LOOT_BLUEPRINTS;
+    public static ForgeConfigSpec.IntValue OVERWORLD_LOOT_ITEMS;
+    public static ForgeConfigSpec.IntValue OVERWORLD_LOOT_SUIT;
 
-    public static void init(ConfigSpec.Builder SERVER_BUILDER, ConfigSpec.Builder CLIENT_BUILDER) {
+    public static void init(ForgeConfigSpec.Builder SERVER_BUILDER, ForgeConfigSpec.Builder CLIENT_BUILDER) {
         SERVER_BUILDER.comment("World generation settings").push(CATEGORY_WORLDGEN);
 
         OVERWORLD_OREGEN = SERVER_BUILDER

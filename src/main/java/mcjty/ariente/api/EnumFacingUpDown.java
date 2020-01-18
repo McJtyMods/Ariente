@@ -1,7 +1,7 @@
 package mcjty.ariente.api;
 
 import com.google.common.collect.Maps;
-import net.minecraft.block.properties.PropertyEnum;
+import net.minecraft.state.EnumProperty;
 import net.minecraft.util.IStringSerializable;
 
 import javax.annotation.Nullable;
@@ -18,7 +18,7 @@ public enum EnumFacingUpDown implements IStringSerializable {
     WEST_UP("west_up"),
     EAST_UP("east_up");
 
-    public static final PropertyEnum<EnumFacingUpDown> FACING = PropertyEnum.create("facing", EnumFacingUpDown.class);
+    public static final EnumProperty<EnumFacingUpDown> FACING = EnumProperty.create("facing", EnumFacingUpDown.class);
 
     private final String name;
     public static final EnumFacingUpDown[] VALUES = new EnumFacingUpDown[8];

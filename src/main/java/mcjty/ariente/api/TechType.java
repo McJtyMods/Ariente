@@ -1,6 +1,6 @@
 package mcjty.ariente.api;
 
-import net.minecraft.block.properties.PropertyEnum;
+import net.minecraft.state.EnumProperty;
 import net.minecraft.util.IStringSerializable;
 
 public enum TechType implements IStringSerializable {
@@ -21,7 +21,7 @@ public enum TechType implements IStringSerializable {
 
     public static final TechType[] VALUES = new TechType[TechType.values().length];
 
-    public static final PropertyEnum<TechType> TYPE = PropertyEnum.create("type", TechType.class);
+    public static final EnumProperty<TechType> TYPE = EnumProperty.create("type", TechType.class);
 
     static {
         int i = 0;

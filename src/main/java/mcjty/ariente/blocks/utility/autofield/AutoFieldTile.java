@@ -22,8 +22,8 @@ import mcjty.theoneprobe.api.ProbeMode;
 import mcjty.theoneprobe.api.TextStyleClass;
 import mcp.mobius.waila.api.IWailaConfigHandler;
 import mcp.mobius.waila.api.IWailaDataAccessor;
-import net.minecraft.block.state.IBlockState;
-import net.minecraft.entity.player.EntityPlayer;
+import net.minecraft.block.state.BlockState;
+import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.entity.player.EntityPlayerMP;
 import net.minecraft.item.EnumDyeColor;
 import net.minecraft.item.ItemStack;
@@ -31,7 +31,7 @@ import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.network.NetworkManager;
 import net.minecraft.network.play.server.SPacketUpdateTileEntity;
 import net.minecraft.tileentity.TileEntity;
-import net.minecraft.util.EnumFacing;
+import net.minecraft.util.Direction;
 import net.minecraft.util.ITickable;
 import net.minecraft.util.math.AxisAlignedBB;
 import net.minecraft.util.math.BlockPos;
@@ -539,12 +539,12 @@ public class AutoFieldTile extends GenericTileEntity implements IGuiTile, ITicka
         todo.add(getPos());
         while (!todo.isEmpty()) {
             BlockPos pos = todo.poll();
-            for (EnumFacing facing : EnumFacing.HORIZONTALS) {
+            for (Direction facing : Direction.HORIZONTALS) {
                 BlockPos p = pos.offset(facing);
                 if (!markers.contains(p)) {
                     TileEntity te = world.getTileEntity(p);
                     if (te instanceof MultipartTE) {
-                        IBlockState state = MultipartHelper.getBlockState(world, p, PartSlot.DOWN);
+                        BlockState state = MultipartHelper.getBlockState(world, p, PartSlot.DOWN);
                         if (state != null && state.getBlock() == ModBlocks.fieldMarker) {
                             if (fieldBox == null) {
                                 fieldBox = new AxisAlignedBB(p, p.add(0, height, 0));
@@ -600,7 +600,7 @@ public class AutoFieldTile extends GenericTileEntity implements IGuiTile, ITicka
 
     @Override
     @net.minecraftforge.fml.common.Optional.Method(modid = "theoneprobe")
-    public void addProbeInfo(ProbeMode mode, IProbeInfo probeInfo, EntityPlayer player, World world, IBlockState blockState, IProbeHitData data) {
+    public void addProbeInfo(ProbeMode mode, IProbeInfo probeInfo, PlayerEntity player, World world, BlockState blockState, IProbeHitData data) {
         super.addProbeInfo(mode, probeInfo, player, world, blockState, data);
         probeInfo.text(TextStyleClass.LABEL + "Using: " + TextStyleClass.INFO + usingPower + " flux");
 //        Boolean working = isWorking();

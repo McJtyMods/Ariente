@@ -9,7 +9,7 @@ import net.minecraft.client.util.ITooltipFlag;
 import net.minecraft.enchantment.Enchantment;
 import net.minecraft.enchantment.EnchantmentHelper;
 import net.minecraft.entity.Entity;
-import net.minecraft.entity.EntityLivingBase;
+import net.minecraft.entity.LivingEntity;
 import net.minecraft.entity.SharedMonsterAttributes;
 import net.minecraft.entity.ai.attributes.AttributeModifier;
 import net.minecraft.init.Enchantments;
@@ -33,7 +33,7 @@ public class EnhancedEnergySabreItem extends EnergySabreItem {
     }
 
     @Override
-    public boolean hitEntity(ItemStack stack, EntityLivingBase target, EntityLivingBase attacker) {
+    public boolean hitEntity(ItemStack stack, LivingEntity target, LivingEntity attacker) {
         super.hitEntity(stack, target, attacker);
         if (ModuleSupport.hasWorkingUpgrade(stack, ArmorUpgradeType.INHIBIT)) {
             if (target instanceof MasterSoldierEntity) {
@@ -44,7 +44,7 @@ public class EnhancedEnergySabreItem extends EnergySabreItem {
         return true;
     }
 
-    private void removeGoodEffects(EntityLivingBase target) {
+    private void removeGoodEffects(LivingEntity target) {
         if (target.getEntityWorld().isRemote) {
             return;
         }
@@ -114,15 +114,15 @@ public class EnhancedEnergySabreItem extends EnergySabreItem {
 
     @Override
     public void onUpdate(ItemStack stack, World world, Entity entity, int itemSlot, boolean isSelected) {
-        if (entity instanceof EntityLivingBase && !world.isRemote) {
+        if (entity instanceof LivingEntity && !world.isRemote) {
             if (itemSlot != EntityEquipmentSlot.MAINHAND.getIndex()) {
                 return;
             }
-            onUpdateSabre(stack, world, (EntityLivingBase) entity);
+            onUpdateSabre(stack, world, (LivingEntity) entity);
         }
     }
 
-    private void onUpdateSabre(ItemStack stack, World world, EntityLivingBase entity) {
+    private void onUpdateSabre(ItemStack stack, World world, LivingEntity entity) {
         if (stack.isEmpty() || stack.getItem() != ModItems.enhancedEnergySabreItem || !stack.hasTagCompound()) {
             return;
         }

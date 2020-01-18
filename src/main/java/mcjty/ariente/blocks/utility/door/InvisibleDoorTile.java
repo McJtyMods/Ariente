@@ -4,7 +4,7 @@ import mcjty.ariente.blocks.utility.ILockable;
 import mcjty.ariente.config.UtilityConfiguration;
 import mcjty.lib.tileentity.GenericTileEntity;
 import net.minecraft.block.Block;
-import net.minecraft.block.state.IBlockState;
+import net.minecraft.block.state.BlockState;
 import net.minecraft.entity.Entity;
 import net.minecraft.pathfinding.PathNodeType;
 import net.minecraft.tileentity.TileEntity;
@@ -19,7 +19,7 @@ import java.util.List;
 public class InvisibleDoorTile extends GenericTileEntity implements ILockable {
 
     @Nullable
-    public static PathNodeType getAiPathNodeType(IBlockState state, IBlockAccess world, BlockPos pos) {
+    public static PathNodeType getAiPathNodeType(BlockState state, IBlockAccess world, BlockPos pos) {
         TileEntity te = world.getTileEntity(pos);
         if (te instanceof InvisibleDoorTile) {
             DoorMarkerTile door = ((InvisibleDoorTile) te).findDoorMarker();
@@ -30,7 +30,7 @@ public class InvisibleDoorTile extends GenericTileEntity implements ILockable {
         return PathNodeType.BLOCKED;
     }
 
-    public static AxisAlignedBB getCollisionBoundingBox(IBlockState blockState, IBlockAccess world, BlockPos pos) {
+    public static AxisAlignedBB getCollisionBoundingBox(BlockState blockState, IBlockAccess world, BlockPos pos) {
         TileEntity te = world.getTileEntity(pos);
         if (te instanceof InvisibleDoorTile) {
             DoorMarkerTile door = ((InvisibleDoorTile) te).findDoorMarker();
@@ -41,7 +41,7 @@ public class InvisibleDoorTile extends GenericTileEntity implements ILockable {
         return Block.FULL_BLOCK_AABB;
     }
 
-    public static boolean addCollisionBoxToList(IBlockState state, World world, BlockPos pos, AxisAlignedBB entityBox, List<AxisAlignedBB> collidingBoxes, @Nullable Entity entityIn, boolean isActualState) {
+    public static boolean addCollisionBoxToList(BlockState state, World world, BlockPos pos, AxisAlignedBB entityBox, List<AxisAlignedBB> collidingBoxes, @Nullable Entity entityIn, boolean isActualState) {
         TileEntity te = world.getTileEntity(pos);
         if (te instanceof InvisibleDoorTile) {
             DoorMarkerTile door = ((InvisibleDoorTile) te).findDoorMarker();

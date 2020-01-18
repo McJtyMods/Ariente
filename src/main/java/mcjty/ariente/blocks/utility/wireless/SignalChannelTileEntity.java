@@ -15,16 +15,16 @@ import mcp.mobius.waila.api.IWailaDataAccessor;
 import net.minecraft.block.Block;
 import net.minecraft.block.BlockRedstoneWire;
 import net.minecraft.block.properties.PropertyBool;
-import net.minecraft.block.state.IBlockState;
-import net.minecraft.entity.player.EntityPlayer;
+import net.minecraft.block.state.BlockState;
+import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.init.Blocks;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemBlock;
 import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.tileentity.TileEntity;
-import net.minecraft.util.EnumFacing;
-import net.minecraft.util.EnumHand;
+import net.minecraft.util.Direction;
+import net.minecraft.util.Hand;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.text.TextFormatting;
 import net.minecraft.world.IBlockAccess;
@@ -81,23 +81,23 @@ public abstract class SignalChannelTileEntity extends GenericTileEntity implemen
         }
         powerOutput = newout;
         markDirty();
-        IBlockState state = world.getBlockState(pos);
-        EnumFacing outputSide = getFacing(state).getOpposite();
+        BlockState state = world.getBlockState(pos);
+        Direction outputSide = getFacing(state).getOpposite();
         getWorld().neighborChanged(this.pos.offset(outputSide), this.getBlockType(), this.pos);
         markDirtyClient();
     }
 
-    private EnumFacing getFacing(IBlockState state) {
+    private Direction getFacing(BlockState state) {
         return BaseBlock.getFrontDirection(BaseBlock.RotationType.ROTATION, state);
     }
 
     @Override
-    public IBlockState getActualState(IBlockState state) {
+    public BlockState getActualState(BlockState state) {
         return state.withProperty(POWER, getPowerOutput() > 0);
     }
 
     @Override
-    public int getRedstoneOutput(IBlockState state, IBlockAccess world, BlockPos pos, EnumFacing side) {
+    public int getRedstoneOutput(BlockState state, IBlockAccess world, BlockPos pos, Direction side) {
         if (side == getFacing(state)) {
             return getPowerOutput();
         } else {
@@ -136,7 +136,7 @@ public abstract class SignalChannelTileEntity extends GenericTileEntity implemen
 
     @Override
     @Optional.Method(modid = "theoneprobe")
-    public void addProbeInfo(ProbeMode mode, IProbeInfo probeInfo, EntityPlayer player, World world, IBlockState blockState, IProbeHitData data) {
+    public void addProbeInfo(ProbeMode mode, IProbeInfo probeInfo, PlayerEntity player, World world, BlockState blockState, IProbeHitData data) {
         super.addProbeInfo(mode, probeInfo, player, world, blockState, data);
         probeInfo.text(TextFormatting.GREEN + "Channel: " + getChannel(false));
     }
@@ -149,7 +149,7 @@ public abstract class SignalChannelTileEntity extends GenericTileEntity implemen
         currenttip.add(TextFormatting.GREEN + "Channel: " + getChannel(false));
     }
 
-    public static boolean onBlockActivated(World world, BlockPos pos, EntityPlayer player, EnumHand hand, EnumFacing side, float hitX, float hitY, float hitZ) {
+    public static boolean onBlockActivated(World world, BlockPos pos, PlayerEntity player, Hand hand, Direction side, float hitX, float hitY, float hitZ) {
         ItemStack stack = player.getHeldItem(hand);
         if(SignalChannelTileEntity.isRedstoneChannelItem(stack.getItem())) {
             setChannel(world, pos, player, stack);
@@ -157,7 +157,7 @@ public abstract class SignalChannelTileEntity extends GenericTileEntity implemen
         return true;
     }
 
-    public static void setChannel(World world, BlockPos pos, EntityPlayer player, ItemStack stack) {
+    public static void setChannel(World world, BlockPos pos, PlayerEntity player, ItemStack stack) {
         TileEntity te = world.getTileEntity(pos);
         if (te instanceof SignalChannelTileEntity) {
             if(!world.isRemote) {
@@ -192,13 +192,13 @@ public abstract class SignalChannelTileEntity extends GenericTileEntity implemen
     /**
      * Returns the signal strength at one input of the block
      */
-    protected int getInputStrength(World world, BlockPos pos, EnumFacing side) {
+    protected int getInputStrength(World world, BlockPos pos, Direction side) {
         int power = world.getRedstonePower(pos.offset(side), side);
         if (power < 15) {
             // Check if there is no redstone wire there. If there is a 'bend' in the redstone wire it is
             // not detected with world.getRedstonePower().
             // Not exactly pretty, but it's how vanilla redstone repeaters do it.
-            IBlockState blockState = world.getBlockState(pos.offset(side));
+            BlockState blockState = world.getBlockState(pos.offset(side));
             Block b = blockState.getBlock();
             if (b == Blocks.REDSTONE_WIRE) {
                 power = Math.max(power, blockState.getValue(BlockRedstoneWire.POWER));
@@ -210,7 +210,7 @@ public abstract class SignalChannelTileEntity extends GenericTileEntity implemen
 
     @Override
     public void checkRedstone(World world, BlockPos pos) {
-        EnumFacing inputSide = getFacing(world.getBlockState(pos)).getOpposite();
+        Direction inputSide = getFacing(world.getBlockState(pos)).getOpposite();
         int power = getInputStrength(world, pos, inputSide);
         setPowerInput(power);
     }

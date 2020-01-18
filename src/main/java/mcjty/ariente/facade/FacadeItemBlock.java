@@ -2,9 +2,9 @@ package mcjty.ariente.facade;
 
 import net.minecraft.block.Block;
 import net.minecraft.block.SoundType;
-import net.minecraft.block.state.IBlockState;
+import net.minecraft.block.state.BlockState;
 import net.minecraft.client.util.ITooltipFlag;
-import net.minecraft.entity.player.EntityPlayer;
+import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.init.Blocks;
 import net.minecraft.item.ItemBlock;
 import net.minecraft.item.ItemStack;
@@ -29,14 +29,14 @@ public class FacadeItemBlock extends ItemBlock {
         super(block);
     }
 
-    public static void setMimicBlock(@Nonnull ItemStack item, IBlockState mimicBlock) {
+    public static void setMimicBlock(@Nonnull ItemStack item, BlockState mimicBlock) {
         NBTTagCompound tagCompound = new NBTTagCompound();
         tagCompound.setString("regName", mimicBlock.getBlock().getRegistryName().toString());
         tagCompound.setInteger("meta", mimicBlock.getBlock().getMetaFromState(mimicBlock));
         item.setTagCompound(tagCompound);
     }
 
-    public static IBlockState getMimicBlock(@Nonnull ItemStack stack) {
+    public static BlockState getMimicBlock(@Nonnull ItemStack stack) {
         NBTTagCompound tagCompound = stack.getTagCompound();
         if (tagCompound == null || !tagCompound.hasKey("regName")) {
             return Blocks.COBBLESTONE.getDefaultState();
@@ -50,13 +50,13 @@ public class FacadeItemBlock extends ItemBlock {
 
     @SideOnly(Side.CLIENT)
     @Override
-    public boolean canPlaceBlockOnSide(World worldIn, BlockPos pos, EnumFacing side, EntityPlayer player, ItemStack stack) {
+    public boolean canPlaceBlockOnSide(World worldIn, BlockPos pos, Direction side, PlayerEntity player, ItemStack stack) {
         return true;
     }
 
     @Override
-    public EnumActionResult onItemUse(EntityPlayer player, World world, BlockPos pos, EnumHand hand, EnumFacing facing, float hitX, float hitY, float hitZ) {
-        IBlockState state = world.getBlockState(pos);
+    public EnumActionResult onItemUse(PlayerEntity player, World world, BlockPos pos, Hand hand, Direction facing, float hitX, float hitY, float hitZ) {
+        BlockState state = world.getBlockState(pos);
         Block block = state.getBlock();
 
         ItemStack itemstack = player.getHeldItem(hand);

@@ -2,7 +2,7 @@ package mcjty.ariente.setup;
 
 import mcjty.lib.blocks.GenericBlock;
 import net.minecraft.block.Block;
-import net.minecraft.entity.player.EntityPlayer;
+import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.tileentity.TileEntity;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.World;
@@ -15,7 +15,7 @@ public class GuiProxy implements IGuiHandler {
     public static final int GUI_NEGARITE_GENERATOR = guiId++;
 
     @Override
-    public Object getServerGuiElement(int guiid, EntityPlayer entityPlayer, World world, int x, int y, int z) {
+    public Object getServerGuiElement(int guiid, PlayerEntity entityPlayer, World world, int x, int y, int z) {
         BlockPos pos = new BlockPos(x, y, z);
         Block block = world.getBlockState(pos).getBlock();
         if (block instanceof GenericBlock) {
@@ -27,7 +27,7 @@ public class GuiProxy implements IGuiHandler {
     }
 
     @Override
-    public Object getClientGuiElement(int guiid, EntityPlayer entityPlayer, World world, int x, int y, int z) {
+    public Object getClientGuiElement(int guiid, PlayerEntity entityPlayer, World world, int x, int y, int z) {
         BlockPos pos = new BlockPos(x, y, z);
         Block block = world.getBlockState(pos).getBlock();
         if (block instanceof GenericBlock) {

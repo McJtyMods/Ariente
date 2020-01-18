@@ -1,7 +1,7 @@
 package mcjty.ariente;
 
 import mcjty.ariente.blocks.utility.ILockable;
-import mcjty.ariente.config.ConfigSetup;
+import mcjty.ariente.config.Config;
 import mcjty.ariente.config.WorldgenConfiguration;
 import mcjty.ariente.entities.levitator.FluxLevitatorEntity;
 import mcjty.ariente.items.BlueprintItem;
@@ -13,7 +13,7 @@ import mcjty.ariente.recipes.BlueprintRecipeRegistry;
 import mcjty.ariente.recipes.ConstructorRecipe;
 import mcjty.ariente.sounds.FluxLevitatorSounds;
 import net.minecraft.entity.Entity;
-import net.minecraft.entity.EntityLivingBase;
+import net.minecraft.entity.LivingEntity;
 import net.minecraft.inventory.EntityEquipmentSlot;
 import net.minecraft.item.ItemStack;
 import net.minecraft.tileentity.TileEntity;
@@ -96,8 +96,8 @@ public class ForgeEventHandlers {
 
     @SubscribeEvent
     public void onConfigChanged(ConfigChangedEvent.OnConfigChangedEvent event) {
-        if (ConfigSetup.mainConfig.hasChanged()) {
-            ConfigSetup.mainConfig.save();
+        if (Config.mainConfig.hasChanged()) {
+            Config.mainConfig.save();
         }
     }
 
@@ -122,8 +122,8 @@ public class ForgeEventHandlers {
     public void onDamage(LivingDamageEvent event) {
         Entity entity = event.getEntity();
         World world = entity.getEntityWorld();
-        if (!world.isRemote && entity instanceof EntityLivingBase) {
-            ItemStack chestStack = ((EntityLivingBase) entity).getItemStackFromSlot(EntityEquipmentSlot.CHEST);
+        if (!world.isRemote && entity instanceof LivingEntity) {
+            ItemStack chestStack = ((LivingEntity) entity).getItemStackFromSlot(EntityEquipmentSlot.CHEST);
             if (chestStack.getItem() == ModItems.powerSuitChest) {
                 if (ModuleSupport.hasWorkingUpgrade(chestStack, ArmorUpgradeType.FORCEFIELD)) {
                     float damage = event.getAmount();

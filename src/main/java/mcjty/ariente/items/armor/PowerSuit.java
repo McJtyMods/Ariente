@@ -10,12 +10,12 @@ import mcjty.lib.McJtyRegister;
 import net.minecraft.client.model.ModelBiped;
 import net.minecraft.client.util.ITooltipFlag;
 import net.minecraft.entity.Entity;
-import net.minecraft.entity.EntityLivingBase;
+import net.minecraft.entity.LivingEntity;
 import net.minecraft.entity.SharedMonsterAttributes;
 import net.minecraft.entity.ai.attributes.AttributeModifier;
 import net.minecraft.init.MobEffects;
 import net.minecraft.inventory.EntityEquipmentSlot;
-import net.minecraft.item.ItemArmor;
+import net.minecraft.item.ArmorItem;
 import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.potion.PotionEffect;
@@ -27,7 +27,7 @@ import javax.annotation.Nullable;
 import java.util.List;
 import java.util.UUID;
 
-public class PowerSuit extends ItemArmor {
+public class PowerSuit extends ArmorItem {
 
     private static final UUID[] ARMOR_EXT_MODIFIERS = new UUID[] {UUID.randomUUID(), UUID.randomUUID(), UUID.randomUUID(), UUID.randomUUID()};
 
@@ -61,28 +61,28 @@ public class PowerSuit extends ItemArmor {
 
     @Nullable
     @Override
-    public ModelBiped getArmorModel(EntityLivingBase entityLiving, ItemStack itemStack, EntityEquipmentSlot armorSlot, ModelBiped _default) {
+    public ModelBiped getArmorModel(LivingEntity entityLiving, ItemStack itemStack, EntityEquipmentSlot armorSlot, ModelBiped _default) {
         return PowerSuitModel.getModel(entityLiving, itemStack);
     }
 
     @Override
     public void onUpdate(ItemStack stack, World world, Entity entity, int itemSlot, boolean isSelected) {
-        if (entity instanceof EntityLivingBase && !world.isRemote) {
+        if (entity instanceof LivingEntity && !world.isRemote) {
             if (itemSlot != armorType.getIndex()) {
                 return;
             }
             switch (armorType) {
                 case FEET:
-                    onUpdateFeet(stack, world, (EntityLivingBase) entity);
+                    onUpdateFeet(stack, world, (LivingEntity) entity);
                     break;
                 case LEGS:
-                    onUpdateLegs(stack, world, (EntityLivingBase) entity);
+                    onUpdateLegs(stack, world, (LivingEntity) entity);
                     break;
                 case CHEST:
-                    onUpdateChest(stack, world, (EntityLivingBase) entity);
+                    onUpdateChest(stack, world, (LivingEntity) entity);
                     break;
                 case HEAD:
-                    onUpdateHead(stack, world, (EntityLivingBase) entity);
+                    onUpdateHead(stack, world, (LivingEntity) entity);
                     break;
                 case MAINHAND:
                 case OFFHAND:
@@ -92,7 +92,7 @@ public class PowerSuit extends ItemArmor {
         }
     }
 
-    private void onUpdateFeet(ItemStack stack, World world, EntityLivingBase entity) {
+    private void onUpdateFeet(ItemStack stack, World world, LivingEntity entity) {
         if (stack.isEmpty() || stack.getItem() != ModItems.powerSuitBoots || !stack.hasTagCompound()) {
             return;
         }
@@ -111,7 +111,7 @@ public class PowerSuit extends ItemArmor {
         compound.setBoolean(ArmorUpgradeType.STEPASSIST.getWorkingKey(), compound.getBoolean(ArmorUpgradeType.STEPASSIST.getModuleKey()));
     }
 
-    private void onUpdateLegs(ItemStack stack, World world, EntityLivingBase entity) {
+    private void onUpdateLegs(ItemStack stack, World world, LivingEntity entity) {
         if (stack.isEmpty() || stack.getItem() != ModItems.powerSuitLegs || !stack.hasTagCompound()) {
             return;
         }
@@ -128,7 +128,7 @@ public class PowerSuit extends ItemArmor {
         compound.setBoolean(ArmorUpgradeType.SPEED.getWorkingKey(), compound.getBoolean(ArmorUpgradeType.SPEED.getModuleKey()));
     }
 
-    private void onUpdateChest(ItemStack stack, World world, EntityLivingBase entity) {
+    private void onUpdateChest(ItemStack stack, World world, LivingEntity entity) {
         if (stack.isEmpty() || stack.getItem() != ModItems.powerSuitChest || !stack.hasTagCompound()) {
             return;
         }
@@ -156,7 +156,7 @@ public class PowerSuit extends ItemArmor {
         }
     }
 
-    private void onUpdateHead(ItemStack stack, World world, EntityLivingBase entity) {
+    private void onUpdateHead(ItemStack stack, World world, LivingEntity entity) {
         if (stack.isEmpty() || stack.getItem() != ModItems.powerSuitHelmet || !stack.hasTagCompound()) {
             return;
         }
@@ -185,7 +185,7 @@ public class PowerSuit extends ItemArmor {
         }
     }
 
-    public static boolean hasFullArmor(EntityLivingBase player) {
+    public static boolean hasFullArmor(LivingEntity player) {
         if (player == null) {
             return false;
         }

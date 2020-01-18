@@ -1,14 +1,14 @@
 package mcjty.ariente.blocks.defense;
 
+import com.mojang.blaze3d.platform.GlStateManager;
 import mcjty.ariente.Ariente;
 import mcjty.ariente.items.armor.PowerSuitModel;
 import mcjty.ariente.varia.Triangle;
 import net.minecraft.client.Minecraft;
-import net.minecraft.client.multiplayer.WorldClient;
 import net.minecraft.client.renderer.BufferBuilder;
-import net.minecraft.client.renderer.GlStateManager;
 import net.minecraft.client.renderer.Tessellator;
 import net.minecraft.client.renderer.vertex.DefaultVertexFormats;
+import net.minecraft.client.world.ClientWorld;
 import net.minecraft.entity.Entity;
 import net.minecraft.tileentity.TileEntity;
 import net.minecraft.util.ResourceLocation;
@@ -75,23 +75,23 @@ public class ForceFieldRenderer {
 
 
         Set<BlockPos> toRemove = new HashSet<>();
-        WorldClient world = Minecraft.getMinecraft().world;
+        ClientWorld world = Minecraft.getInstance().world;
         for (BlockPos pos : forceFields) {
             TileEntity te = world.getTileEntity(pos);
             if (te instanceof ForceFieldTile) {
-                Minecraft mc = Minecraft.getMinecraft();
-                mc.entityRenderer.disableLightmap();
-                GlStateManager.enableTexture2D();
+                Minecraft mc = Minecraft.getInstance();
+                mc.gameRenderer.disableLightmap();
+                GlStateManager.enableTexture();
                 GlStateManager.disableLighting();
                 GlStateManager.enableBlend();
                 GlStateManager.depthMask(false);
-                GlStateManager.color(1.0f, 1.0f, 1.0f, FIELD_ALPHA);
-                mc.renderEngine.bindTexture(FORCEFIELD);
+                GlStateManager.color4f(1.0f, 1.0f, 1.0f, FIELD_ALPHA);
+                mc.getTextureManager().bindTexture(FORCEFIELD);
 
                 Tessellator t = Tessellator.getInstance();
                 BufferBuilder builder = t.getBuffer();
 
-                Entity renderViewEntity = Minecraft.getMinecraft().getRenderViewEntity();
+                Entity renderViewEntity = Minecraft.getInstance().getRenderViewEntity();
                 double dx = renderViewEntity.lastTickPosX + (renderViewEntity.posX - renderViewEntity.lastTickPosX) * partialTicks;
                 double dy = renderViewEntity.lastTickPosY + (renderViewEntity.posY - renderViewEntity.lastTickPosY) * partialTicks;
                 double dz = renderViewEntity.lastTickPosZ + (renderViewEntity.posZ - renderViewEntity.lastTickPosZ) * partialTicks;
@@ -105,12 +105,12 @@ public class ForceFieldRenderer {
 
                 randomSeedCounter++;
                 renderPanels(pos, t, builder, x, y, z, scale, panelInfo);
-                GlStateManager.color(1.0f, 1.0f, 1.0f, 0.6f);
+                GlStateManager.color4f(1.0f, 1.0f, 1.0f, 0.6f);
                 renderPanels(pos, t, builder, x, y+1, z, .5, panelInfo);
 
                 tickDamageEffects(pos, panelInfo, .5 - dx, .5 - dy, .5 - dz, scale);
 
-                GlStateManager.enableTexture2D();
+                GlStateManager.enableTexture();
                 GlStateManager.depthMask(true);
                 GlStateManager.enableLighting();
 //                mc.entityRenderer.enableLightmap();
@@ -139,7 +139,7 @@ public class ForceFieldRenderer {
     }
 
     private static void tickDamageEffects(BlockPos pos, PanelInfo[] panelInfo, double x, double y, double z, double scale) {
-        Minecraft.getMinecraft().renderEngine.bindTexture(FORCEFIELD_HIT);
+        Minecraft.getInstance().getTextureManager().bindTexture(FORCEFIELD_HIT);
         for (PanelInfo info : panelInfo) {
             if (info != null) {
                 Pair<BlockPos, Integer> key = Pair.of(pos, info.getIndex());

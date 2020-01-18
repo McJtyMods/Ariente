@@ -12,7 +12,7 @@ import mcjty.hologui.api.IGuiComponentRegistry;
 import mcjty.hologui.api.IHoloGuiEntity;
 import mcjty.hologui.api.StyledColor;
 import mcjty.hologui.api.components.IPanel;
-import net.minecraft.entity.player.EntityPlayer;
+import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.inventory.EntityEquipmentSlot;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
@@ -23,7 +23,7 @@ import static mcjty.hologui.api.Icons.*;
 
 public class ArmorGui {
 
-    public static IGuiComponent<?> create(EntityPlayer player) {
+    public static IGuiComponent<?> create(PlayerEntity player) {
         IGuiComponentRegistry registry = Ariente.guiHandler.getComponentRegistry();
         IPanel panel = HoloGuiTools.createPanelWithHelp(registry, entity -> entity.switchGui(ModGuis.GUI_ARMOR_HELP))
                 .add(registry.text(0, 1, 1, 1).text("Configure armor").color(registry.color(StyledColor.LABEL)));
@@ -44,7 +44,7 @@ public class ArmorGui {
         return panel;
     }
 
-    public static IGuiComponent<?> createHelpGui(EntityPlayer player) {
+    public static IGuiComponent<?> createHelpGui(PlayerEntity player) {
         IGuiComponentRegistry registry = Ariente.guiHandler.getComponentRegistry();
         return HoloGuiTools.createHelpGui(registry, HelpBuilder.create()
                 .line("With this GUI you can configure")
@@ -62,7 +62,7 @@ public class ArmorGui {
         );
     }
 
-    public static IGuiComponent<?> createHelmetGui(EntityPlayer player) {
+    public static IGuiComponent<?> createHelmetGui(PlayerEntity player) {
         IGuiComponentRegistry registry = Ariente.guiHandler.getComponentRegistry();
         EntityEquipmentSlot slot = EntityEquipmentSlot.HEAD;
 
@@ -80,7 +80,7 @@ public class ArmorGui {
         return panel;
     }
 
-    public static IGuiComponent<?> createChestGui(EntityPlayer player) {
+    public static IGuiComponent<?> createChestGui(PlayerEntity player) {
         IGuiComponentRegistry registry = Ariente.guiHandler.getComponentRegistry();
         EntityEquipmentSlot slot = EntityEquipmentSlot.CHEST;
 
@@ -99,7 +99,7 @@ public class ArmorGui {
         return panel;
     }
 
-    public static IGuiComponent<?> createLegsGui(EntityPlayer player) {
+    public static IGuiComponent<?> createLegsGui(PlayerEntity player) {
         IGuiComponentRegistry registry = Ariente.guiHandler.getComponentRegistry();
         EntityEquipmentSlot slot = EntityEquipmentSlot.LEGS;
 
@@ -116,7 +116,7 @@ public class ArmorGui {
     }
 
 
-    public static IGuiComponent<?> createBootsGui(EntityPlayer player) {
+    public static IGuiComponent<?> createBootsGui(PlayerEntity player) {
         IGuiComponentRegistry registry = Ariente.guiHandler.getComponentRegistry();
         EntityEquipmentSlot slot = EntityEquipmentSlot.FEET;
 
@@ -133,7 +133,7 @@ public class ArmorGui {
         return panel;
     }
 
-    public static IGuiComponent<?> createSabreGui(EntityPlayer player) {
+    public static IGuiComponent<?> createSabreGui(PlayerEntity player) {
         IGuiComponentRegistry registry = Ariente.guiHandler.getComponentRegistry();
         EntityEquipmentSlot slot = EntityEquipmentSlot.MAINHAND;
 
@@ -186,7 +186,7 @@ public class ArmorGui {
         ;
     }
 
-    private static int calculatePowerUsage(EntityPlayer player, EntityEquipmentSlot slot) {
+    private static int calculatePowerUsage(PlayerEntity player, EntityEquipmentSlot slot) {
         ItemStack stack = player.getItemStackFromSlot(slot);
         if (isValidPowerArmorPiece(stack)) {
             return 0;
@@ -198,7 +198,7 @@ public class ArmorGui {
         return stack.isEmpty() || (!(stack.getItem() instanceof PowerSuit) && stack.getItem() != ModItems.enhancedEnergySabreItem);
     }
 
-    private static int calculatePowerColor(EntityPlayer player, EntityEquipmentSlot slot) {
+    private static int calculatePowerColor(PlayerEntity player, EntityEquipmentSlot slot) {
         ItemStack stack = player.getItemStackFromSlot(slot);
         if (isValidPowerArmorPiece(stack)) {
             return 0;
@@ -207,7 +207,7 @@ public class ArmorGui {
         return usage.getLeft() <= usage.getRight() ? 0xffffff : 0xff0000;
     }
 
-    private static int calculateMaxPowerUsage(EntityPlayer player, EntityEquipmentSlot slot) {
+    private static int calculateMaxPowerUsage(PlayerEntity player, EntityEquipmentSlot slot) {
         ItemStack stack = player.getItemStackFromSlot(slot);
         if (isValidPowerArmorPiece(stack)) {
             return 0;
@@ -215,7 +215,7 @@ public class ArmorGui {
         return ModuleSupport.getPowerUsage(stack).getRight();
     }
 
-    private static int countArmor(EntityPlayer player, EntityEquipmentSlot slot, String itemTag) {
+    private static int countArmor(PlayerEntity player, EntityEquipmentSlot slot, String itemTag) {
         ItemStack stack = player.getItemStackFromSlot(slot);
         if (isValidPowerArmorPiece(stack)) {
             return 0;
@@ -227,7 +227,7 @@ public class ArmorGui {
         return compound.getInteger(itemTag);
     }
 
-    private static void toArmor(EntityPlayer player, EntityEquipmentSlot slot, String itemTag, Item item, int amount) {
+    private static void toArmor(PlayerEntity player, EntityEquipmentSlot slot, String itemTag, Item item, int amount) {
         ItemStack stack = player.getItemStackFromSlot(slot);
         if (isValidPowerArmorPiece(stack)) {
             return;
@@ -273,7 +273,7 @@ public class ArmorGui {
         );
     }
 
-    private static void switchHotkey(EntityPlayer player, EntityEquipmentSlot slot, ArmorModuleItem moduleItem) {
+    private static void switchHotkey(PlayerEntity player, EntityEquipmentSlot slot, ArmorModuleItem moduleItem) {
         if (!hasModule(player, slot, moduleItem)) {
             return;
         }
@@ -287,7 +287,7 @@ public class ArmorGui {
         compound.setInteger(moduleItem.getType().getHotkeyKey(), index);
     }
 
-    private static Integer getHotkey(EntityPlayer player, EntityEquipmentSlot slot, ArmorModuleItem moduleItem) {
+    private static Integer getHotkey(PlayerEntity player, EntityEquipmentSlot slot, ArmorModuleItem moduleItem) {
         if (!hasModule(player, slot, moduleItem)) {
             return 0;
         }
@@ -296,7 +296,7 @@ public class ArmorGui {
         return compound.getInteger(moduleItem.getType().getHotkeyKey());
     }
 
-    private static Boolean isModuleActivated(EntityPlayer player, EntityEquipmentSlot slot, ArmorModuleItem moduleItem) {
+    private static Boolean isModuleActivated(PlayerEntity player, EntityEquipmentSlot slot, ArmorModuleItem moduleItem) {
         if (!hasModule(player, slot, moduleItem)) {
             return false;
         }
@@ -305,7 +305,7 @@ public class ArmorGui {
         return compound.getBoolean(moduleItem.getType().getModuleKey());
     }
 
-    private static Boolean hasModuleAndCheckPlayerToo(EntityPlayer player, EntityEquipmentSlot slot, ArmorModuleItem moduleItem) {
+    private static Boolean hasModuleAndCheckPlayerToo(PlayerEntity player, EntityEquipmentSlot slot, ArmorModuleItem moduleItem) {
         if (hasModule(player, slot, moduleItem)) {
             return true;
         }
@@ -316,7 +316,7 @@ public class ArmorGui {
         return false;       // Player has a module. It can be installed
     }
 
-    private static Boolean hasModule(EntityPlayer player, EntityEquipmentSlot slot, ArmorModuleItem moduleItem) {
+    private static Boolean hasModule(PlayerEntity player, EntityEquipmentSlot slot, ArmorModuleItem moduleItem) {
         ItemStack stack = player.getItemStackFromSlot(slot);
         if (stack.isEmpty()) {
             return false;
@@ -328,7 +328,7 @@ public class ArmorGui {
         return compound.hasKey(moduleItem.getType().getModuleKey());
     }
 
-    private static void toggleActivation(EntityPlayer player, EntityEquipmentSlot slot, ArmorModuleItem moduleItem) {
+    private static void toggleActivation(PlayerEntity player, EntityEquipmentSlot slot, ArmorModuleItem moduleItem) {
         if (!hasModule(player, slot, moduleItem)) {
             return;
         }
@@ -338,7 +338,7 @@ public class ArmorGui {
         compound.setBoolean(key, !compound.getBoolean(key));
     }
 
-    private static int findModule(EntityPlayer player, EntityEquipmentSlot slot, ArmorModuleItem moduleItem) {
+    private static int findModule(PlayerEntity player, EntityEquipmentSlot slot, ArmorModuleItem moduleItem) {
         for (int i = 0; i < player.inventory.getSizeInventory(); i++) {
             ItemStack moduleStack = player.inventory.getStackInSlot(i);
             if (moduleStack.getItem() == moduleItem) {
@@ -348,7 +348,7 @@ public class ArmorGui {
         return -1;
     }
 
-    private static void toggleModuleInstall(EntityPlayer player, EntityEquipmentSlot slot, ArmorModuleItem moduleItem) {
+    private static void toggleModuleInstall(PlayerEntity player, EntityEquipmentSlot slot, ArmorModuleItem moduleItem) {
         if (!hasModule(player, slot, moduleItem)) {
             // Module is not available. Install it if possible
             ItemStack stack = player.getItemStackFromSlot(slot);
@@ -381,7 +381,7 @@ public class ArmorGui {
         }
     }
 
-    private static double createMenuEntry(IGuiComponentRegistry registry, EntityPlayer player, IPanel panel, double x, double y, EntityEquipmentSlot slot, Item armorItem) {
+    private static double createMenuEntry(IGuiComponentRegistry registry, PlayerEntity player, IPanel panel, double x, double y, EntityEquipmentSlot slot, Item armorItem) {
         ItemStack armorStack = player.getItemStackFromSlot(slot);
         if (!armorStack.isEmpty() && armorStack.getItem() == armorItem) {
             panel
@@ -394,7 +394,7 @@ public class ArmorGui {
         return y;
     }
 
-    private static void hitArmorConfigureButton(EntityEquipmentSlot slot, IGuiComponent component, EntityPlayer player, IHoloGuiEntity entity) {
+    private static void hitArmorConfigureButton(EntityEquipmentSlot slot, IGuiComponent component, PlayerEntity player, IHoloGuiEntity entity) {
         switch (slot) {
             case FEET:
                 entity.switchGui(ModGuis.GUI_ARMOR_BOOTS);

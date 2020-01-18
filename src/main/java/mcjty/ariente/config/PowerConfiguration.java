@@ -1,14 +1,14 @@
 package mcjty.ariente.config;
 
-import mcjty.lib.thirteen.ConfigSpec;
+import net.minecraftforge.common.ForgeConfigSpec;
 
 public class PowerConfiguration {
 
     private static final String CATEGORY_POWER = "power";
 
-    public static ConfigSpec.IntValue FORCEFIELD_BUILDUP_POWER;
+    public static ForgeConfigSpec.IntValue FORCEFIELD_BUILDUP_POWER;
 
-    public static void init(ConfigSpec.Builder SERVER_BUILDER, ConfigSpec.Builder CLIENT_BUILDER) {
+    public static void init(ForgeConfigSpec.Builder SERVER_BUILDER, ForgeConfigSpec.Builder CLIENT_BUILDER) {
         SERVER_BUILDER.comment("Power settings").push(CATEGORY_POWER);
 
         FORCEFIELD_BUILDUP_POWER = SERVER_BUILDER

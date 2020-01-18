@@ -6,13 +6,13 @@ import mcjty.hologui.api.IGuiComponentRegistry;
 import mcjty.hologui.api.IHoloGuiEntity;
 import mcjty.hologui.api.StyledColor;
 import net.minecraft.entity.Entity;
-import net.minecraft.entity.player.EntityPlayer;
+import net.minecraft.entity.player.PlayerEntity;
 
 import static mcjty.hologui.api.Icons.*;
 
 public class FluxLevitatorGui {
 
-    public static IGuiComponent<?> createGui(EntityPlayer player) {
+    public static IGuiComponent<?> createGui(PlayerEntity player) {
         IGuiComponentRegistry registry = Ariente.guiHandler.getComponentRegistry();
         return registry.panel(0, 0, 8, 8)
 

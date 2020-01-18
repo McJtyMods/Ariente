@@ -2,7 +2,7 @@ package mcjty.ariente.blocks.utility;
 
 import net.minecraft.item.ItemStack;
 import net.minecraft.tileentity.TileEntity;
-import net.minecraft.util.EnumFacing;
+import net.minecraft.util.Direction;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.World;
 import net.minecraftforge.items.IItemHandler;
@@ -26,7 +26,7 @@ public class BlueprintItemHandler implements IItemHandler {
     public List<BlockPos> getStorages() {
         // @todo optimize!
         storageList = new ArrayList<>();
-        for (EnumFacing value : EnumFacing.VALUES) {
+        for (Direction value : Direction.VALUES) {
             BlockPos offset = pos.offset(value);
             TileEntity te = world.getTileEntity(offset);
             if (te instanceof BlueprintStorageTile) {

@@ -1,42 +1,35 @@
 package mcjty.ariente.items.armor;
 
-import io.netty.buffer.ByteBuf;
 import mcjty.ariente.items.modules.ModuleSupport;
-import mcjty.lib.thirteen.Context;
-import net.minecraft.entity.player.EntityPlayerMP;
-import net.minecraftforge.fml.common.network.simpleimpl.IMessage;
+import net.minecraft.entity.player.PlayerEntity;
+import net.minecraft.network.PacketBuffer;
+import net.minecraftforge.fml.network.NetworkEvent;
 
 import java.util.function.Supplier;
 
-public class PacketArmorHotkey implements IMessage {
+public class PacketArmorHotkey {
 
     private int index;
 
-    @Override
-    public void fromBytes(ByteBuf buf) {
-        index = buf.readInt();
-    }
-
-    @Override
-    public void toBytes(ByteBuf buf) {
+    public void toBytes(PacketBuffer buf) {
         buf.writeInt(index);
     }
 
     public PacketArmorHotkey() {
     }
 
-    public PacketArmorHotkey(ByteBuf buf) {
-        fromBytes(buf);
+    public PacketArmorHotkey(PacketBuffer buf) {
+        index = buf.readInt();
     }
 
     public PacketArmorHotkey(int index) {
         this.index = index;
     }
 
-    public void handle(Supplier<Context> supplier) {
-        Context ctx = supplier.get();
+    public void handle(Supplier<NetworkEvent.Context> supplier) {
+        NetworkEvent.Context ctx = supplier.get();
         ctx.enqueueWork(() -> {
-            EntityPlayerMP playerEntity = ctx.getSender();
+            PlayerEntity playerEntity = ctx.getSender();
             ModuleSupport.receivedHotkey(playerEntity, index);
         });
         ctx.setPacketHandled(true);

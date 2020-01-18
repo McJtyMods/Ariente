@@ -1,18 +1,14 @@
 package mcjty.ariente.blocks.decorative;
 
-import mcjty.ariente.Ariente;
 import mcjty.lib.blocks.BaseBlock;
+import mcjty.lib.blocks.RotationType;
+import mcjty.lib.builder.BlockBuilder;
+import net.minecraft.block.BlockState;
 import net.minecraft.block.material.Material;
-import net.minecraft.block.state.IBlockState;
-import net.minecraft.entity.Entity;
-import net.minecraft.item.ItemBlock;
-import net.minecraft.util.EnumFacing;
+import net.minecraft.util.Direction;
 import net.minecraft.util.math.AxisAlignedBB;
-import net.minecraft.util.math.BlockPos;
-import net.minecraft.world.World;
+import net.minecraftforge.common.ToolType;
 
-import javax.annotation.Nullable;
-import java.util.List;
 import java.util.function.Consumer;
 
 public class RampBlock extends BaseBlock {
@@ -41,12 +37,11 @@ public class RampBlock extends BaseBlock {
     public static final AxisAlignedBB AABB_EAST4 = new AxisAlignedBB(0.2D, 0.6D, 0.0D, 0.4D, 0.8D, 1.0D);
     public static final AxisAlignedBB AABB_EAST5 = new AxisAlignedBB(0.0D, 0.8D, 0.0D, 0.2D, 1.0D, 1.0D);
 
-    public RampBlock(String name) {
-        super(Ariente.instance, Material.ROCK, name, ItemBlock::new);
-        setHardness(2.0f);
-        setResistance(4.0f);
-        setHarvestLevel("pickaxe", 1);
-        setCreativeTab(Ariente.setup.getTab());
+    public RampBlock() {
+        super(new BlockBuilder()
+                .properties(Properties.create(Material.ROCK).hardnessAndResistance(2.0f, 4.0f))
+                .harvestLevel(ToolType.PICKAXE, 1)
+        );
     }
 
     @Override
@@ -54,8 +49,8 @@ public class RampBlock extends BaseBlock {
         return RotationType.HORIZROTATION;
     }
 
-    public void handleAABB(IBlockState state, Consumer<AxisAlignedBB> consumer) {
-        EnumFacing direction = getFrontDirection(state);
+    public void handleAABB(BlockState state, Consumer<AxisAlignedBB> consumer) {
+        Direction direction = getFrontDirection(state);
         switch (direction) {
             case NORTH:
                 consumer.accept(AABB_NORTH1);
@@ -91,28 +86,29 @@ public class RampBlock extends BaseBlock {
         }
     }
 
-    @Override
-    public void addCollisionBoxToList(IBlockState state, World worldIn, BlockPos pos, AxisAlignedBB entityBox, List<AxisAlignedBB> collidingBoxes, @Nullable Entity entityIn, boolean isActualState) {
-        handleAABB(state, aabb -> addCollisionBoxToList(pos, entityBox, collidingBoxes, aabb));
-    }
-
-    @Override
-    public AxisAlignedBB getSelectedBoundingBox(IBlockState state, World worldIn, BlockPos pos) {
-        return super.getSelectedBoundingBox(state, worldIn, pos);
-    }
-
-    @Override
-    public boolean isTopSolid(IBlockState state) {
-        return false;
-    }
-
-    @Override
-    public boolean isOpaqueCube(IBlockState state) {
-        return false;
-    }
-
-    @Override
-    public boolean isFullCube(IBlockState state) {
-        return false;
-    }
+    // @todo 1.14
+//    @Override
+//    public void addCollisionBoxToList(BlockState state, World worldIn, BlockPos pos, AxisAlignedBB entityBox, List<AxisAlignedBB> collidingBoxes, @Nullable Entity entityIn, boolean isActualState) {
+//        handleAABB(state, aabb -> addCollisionBoxToList(pos, entityBox, collidingBoxes, aabb));
+//    }
+//
+//    @Override
+//    public AxisAlignedBB getSelectedBoundingBox(BlockState state, World worldIn, BlockPos pos) {
+//        return super.getSelectedBoundingBox(state, worldIn, pos);
+//    }
+//
+//    @Override
+//    public boolean isTopSolid(BlockState state) {
+//        return false;
+//    }
+//
+//    @Override
+//    public boolean isOpaqueCube(BlockState state) {
+//        return false;
+//    }
+//
+//    @Override
+//    public boolean isFullCube(BlockState state) {
+//        return false;
+//    }
 }

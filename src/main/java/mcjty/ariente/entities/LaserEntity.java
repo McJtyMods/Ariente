@@ -4,7 +4,7 @@ import mcjty.ariente.api.IForceFieldTile;
 import mcjty.ariente.api.IForcefieldImmunity;
 import mcjty.ariente.sounds.ModSounds;
 import net.minecraft.entity.Entity;
-import net.minecraft.entity.EntityLivingBase;
+import net.minecraft.entity.LivingEntity;
 import net.minecraft.entity.projectile.ProjectileHelper;
 import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.nbt.NBTTagList;
@@ -28,7 +28,7 @@ public class LaserEntity extends Entity implements IForcefieldImmunity {
     private static final DataParameter<Float> SPAWN_YAW = EntityDataManager.<Float>createKey(LaserEntity.class, DataSerializers.FLOAT);
     private static final DataParameter<Float> SPAWN_PITCH = EntityDataManager.<Float>createKey(LaserEntity.class, DataSerializers.FLOAT);
 
-    private EntityLivingBase shootingEntity;
+    private LivingEntity shootingEntity;
     private int ticksAlive;
     private int ticksInAir;
     private double accelerationX;
@@ -91,7 +91,7 @@ public class LaserEntity extends Entity implements IForcefieldImmunity {
         this.accelerationZ = accelZ / d0 * 0.1D;
     }
 
-    public LaserEntity(World worldIn, EntityLivingBase shooter, double accelX, double accelY, double accelZ) {
+    public LaserEntity(World worldIn, LivingEntity shooter, double accelX, double accelY, double accelZ) {
         super(worldIn);
         this.shootingEntity = shooter;
         this.setSize(1.0F, 1.0F);
@@ -250,8 +250,8 @@ public class LaserEntity extends Entity implements IForcefieldImmunity {
                     this.accelerationZ = this.motionZ * 0.1D;
                 }
 
-                if (source.getTrueSource() instanceof EntityLivingBase) {
-                    this.shootingEntity = (EntityLivingBase) source.getTrueSource();
+                if (source.getTrueSource() instanceof LivingEntity) {
+                    this.shootingEntity = (LivingEntity) source.getTrueSource();
                 }
 
                 return true;

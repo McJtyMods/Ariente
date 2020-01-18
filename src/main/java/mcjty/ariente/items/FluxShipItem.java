@@ -4,13 +4,13 @@ import mcjty.ariente.blocks.ModBlocks;
 import mcjty.ariente.entities.fluxship.FluxShipEntity;
 import mcjty.ariente.entities.levitator.FluxLevitatorEntity;
 import net.minecraft.block.BlockRailBase;
-import net.minecraft.block.state.IBlockState;
+import net.minecraft.block.state.BlockState;
 import net.minecraft.client.util.ITooltipFlag;
-import net.minecraft.entity.player.EntityPlayer;
+import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.item.ItemStack;
 import net.minecraft.util.EnumActionResult;
-import net.minecraft.util.EnumFacing;
-import net.minecraft.util.EnumHand;
+import net.minecraft.util.Direction;
+import net.minecraft.util.Hand;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.text.TextFormatting;
 import net.minecraft.world.World;
@@ -34,8 +34,8 @@ public class FluxShipItem extends GenericItem {
     }
 
     @Override
-    public EnumActionResult onItemUse(EntityPlayer player, World world, BlockPos pos, EnumHand hand, EnumFacing facing, float hitX, float hitY, float hitZ) {
-        IBlockState state = world.getBlockState(pos);
+    public EnumActionResult onItemUse(PlayerEntity player, World world, BlockPos pos, Hand hand, Direction facing, float hitX, float hitY, float hitZ) {
+        BlockState state = world.getBlockState(pos);
 
         ItemStack itemstack = player.getHeldItem(hand);
 

@@ -18,11 +18,11 @@ import mcjty.theoneprobe.api.IProbeInfo;
 import mcjty.theoneprobe.api.ProbeMode;
 import mcp.mobius.waila.api.IWailaConfigHandler;
 import mcp.mobius.waila.api.IWailaDataAccessor;
-import net.minecraft.block.state.IBlockState;
-import net.minecraft.entity.player.EntityPlayer;
+import net.minecraft.block.state.BlockState;
+import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.NBTTagCompound;
-import net.minecraft.util.EnumFacing;
+import net.minecraft.util.Direction;
 import net.minecraft.util.ResourceLocation;
 import net.minecraft.world.World;
 import net.minecraftforge.fml.common.Optional;
@@ -57,7 +57,7 @@ public class BlueprintStorageTile extends GenericTileEntity implements DefaultSi
     }
 
     @Override
-    public int[] getSlotsForFace(EnumFacing side) {
+    public int[] getSlotsForFace(Direction side) {
         if (slots == null) {
             slots = new int[inventoryHelper.getCount()];
             for (int i = 0 ; i < inventoryHelper.getCount() ; i++) {
@@ -68,7 +68,7 @@ public class BlueprintStorageTile extends GenericTileEntity implements DefaultSi
     }
 
     @Override
-    public boolean canInsertItem(int index, ItemStack stack, EnumFacing direction) {
+    public boolean canInsertItem(int index, ItemStack stack, Direction direction) {
         return isItemValidForSlot(index, stack);
     }
 
@@ -78,7 +78,7 @@ public class BlueprintStorageTile extends GenericTileEntity implements DefaultSi
     }
 
     @Override
-    public boolean canExtractItem(int index, ItemStack stack, EnumFacing direction) {
+    public boolean canExtractItem(int index, ItemStack stack, Direction direction) {
         return true;
     }
 
@@ -88,7 +88,7 @@ public class BlueprintStorageTile extends GenericTileEntity implements DefaultSi
     }
 
     @Override
-    public boolean isUsableByPlayer(EntityPlayer player) {
+    public boolean isUsableByPlayer(PlayerEntity player) {
         return canPlayerAccess(player);
     }
 
@@ -106,7 +106,7 @@ public class BlueprintStorageTile extends GenericTileEntity implements DefaultSi
 
     @Override
     @Optional.Method(modid = "theoneprobe")
-    public void addProbeInfo(ProbeMode mode, IProbeInfo probeInfo, EntityPlayer player, World world, IBlockState blockState, IProbeHitData data) {
+    public void addProbeInfo(ProbeMode mode, IProbeInfo probeInfo, PlayerEntity player, World world, BlockState blockState, IProbeHitData data) {
         super.addProbeInfo(mode, probeInfo, player, world, blockState, data);
     }
 
@@ -166,7 +166,7 @@ public class BlueprintStorageTile extends GenericTileEntity implements DefaultSi
         return getCapability(CapabilityItemHandler.ITEM_HANDLER_CAPABILITY, null);
     }
 
-    private void transferToPlayer(EntityPlayer player, IHoloGuiEntity entity) {
+    private void transferToPlayer(PlayerEntity player, IHoloGuiEntity entity) {
         entity.findComponent("slots").ifPresent(component -> {
             if (component instanceof ISlots) {
                 int selected = ((ISlots) component).getSelected();
@@ -185,7 +185,7 @@ public class BlueprintStorageTile extends GenericTileEntity implements DefaultSi
         });
     }
 
-    private void transferToMachine(EntityPlayer player, IHoloGuiEntity entity) {
+    private void transferToMachine(PlayerEntity player, IHoloGuiEntity entity) {
         entity.findComponent("playerslots").ifPresent(component -> {
             if (component instanceof IPlayerSlots) {
                 int selected = ((IPlayerSlots) component).getSelected();

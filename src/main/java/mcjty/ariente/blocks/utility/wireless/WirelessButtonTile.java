@@ -1,15 +1,15 @@
 package mcjty.ariente.blocks.utility.wireless;
 
 import mcjty.ariente.sounds.ModSounds;
-import net.minecraft.block.state.IBlockState;
-import net.minecraft.entity.player.EntityPlayer;
+import net.minecraft.block.state.BlockState;
+import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.network.NetworkManager;
 import net.minecraft.network.play.server.SPacketUpdateTileEntity;
 import net.minecraft.tileentity.TileEntity;
-import net.minecraft.util.EnumFacing;
-import net.minecraft.util.EnumHand;
+import net.minecraft.util.Direction;
+import net.minecraft.util.Hand;
 import net.minecraft.util.SoundCategory;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.World;
@@ -59,7 +59,7 @@ public class WirelessButtonTile extends SignalChannelTileEntity {
         markDirtyClient();
     }
 
-    public static boolean onBlockActivatedWithToggle(World world, BlockPos pos, EntityPlayer player, EnumHand hand, EnumFacing side, float hitX, float hitY, float hitZ) {
+    public static boolean onBlockActivatedWithToggle(World world, BlockPos pos, PlayerEntity player, Hand hand, Direction side, float hitX, float hitY, float hitZ) {
         ItemStack stack = player.getHeldItem(hand);
         if (SignalChannelTileEntity.isRedstoneChannelItem(stack.getItem())) {
             setChannel(world, pos, player, stack);
@@ -81,7 +81,7 @@ public class WirelessButtonTile extends SignalChannelTileEntity {
 
 
     @Override
-    public IBlockState getActualState(IBlockState state) {
+    public BlockState getActualState(BlockState state) {
         return state.withProperty(POWER, !locked);
     }
 

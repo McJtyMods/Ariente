@@ -8,33 +8,27 @@ import mcjty.theoneprobe.api.IProbeHitData;
 import mcjty.theoneprobe.api.IProbeInfo;
 import mcjty.theoneprobe.api.ProbeMode;
 import mcjty.theoneprobe.api.TextStyleClass;
-import mcp.mobius.waila.api.IWailaConfigHandler;
-import mcp.mobius.waila.api.IWailaDataAccessor;
-import net.minecraft.block.properties.PropertyEnum;
-import net.minecraft.block.state.IBlockState;
-import net.minecraft.entity.player.EntityPlayer;
+import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.item.ItemStack;
-import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.network.NetworkManager;
-import net.minecraft.network.play.server.SPacketUpdateTileEntity;
-import net.minecraft.util.ITickable;
+import net.minecraft.network.play.server.SUpdateTileEntityPacket;
+import net.minecraft.state.EnumProperty;
+import net.minecraft.tileentity.ITickableTileEntity;
 import net.minecraft.util.SoundCategory;
 import net.minecraft.world.World;
-import net.minecraftforge.fml.common.Optional;
-import net.minecraftforge.fml.relauncher.Side;
-import net.minecraftforge.fml.relauncher.SideOnly;
+import net.minecraftforge.common.util.Constants;
 
 import java.util.List;
 
-public class AlarmTile extends GenericTileEntity implements ITickable, IAlarmTile {
+public class AlarmTile extends GenericTileEntity implements ITickableTileEntity, IAlarmTile {
 
-    public static final PropertyEnum<AlarmType> ALARM = PropertyEnum.create("alarm", AlarmType.class, AlarmType.values());
+    public static final EnumProperty<AlarmType> ALARM = EnumProperty.create("alarm", AlarmType.class, AlarmType.values());
 
     private AlarmType alarmType = AlarmType.SAFE;
     private int soundTicker = 0;
 
     @Override
-    public void update() {
+    public void tick() {
         if (!world.isRemote) {
             if (alarmType == AlarmType.ALERT) {
                 soundTicker--;
@@ -59,7 +53,7 @@ public class AlarmTile extends GenericTileEntity implements ITickable, IAlarmTil
     }
 
     @Override
-    public void onDataPacket(NetworkManager net, SPacketUpdateTileEntity packet) {
+    public void onDataPacket(NetworkManager net, SUpdateTileEntityPacket packet) {
         AlarmType type = alarmType;
         super.onDataPacket(net, packet);
 
@@ -67,13 +61,13 @@ public class AlarmTile extends GenericTileEntity implements ITickable, IAlarmTil
             // If needed send a render update.
             AlarmType newType = alarmType;
             if (newType != type) {
-                world.markBlockRangeForRenderUpdate(pos, pos);
+                world.notifyBlockUpdate(pos, getBlockState(), getBlockState(), Constants.BlockFlags.BLOCK_UPDATE + Constants.BlockFlags.NOTIFY_NEIGHBORS);
             }
         }
     }
 
     @Override
-    public IBlockState getActualState(IBlockState state) {
+    public BlockState getActualState(BlockState state) {
         return state.withProperty(ALARM, alarmType);
     }
 
@@ -91,7 +85,7 @@ public class AlarmTile extends GenericTileEntity implements ITickable, IAlarmTil
 
     @Override
     @Optional.Method(modid = "theoneprobe")
-    public void addProbeInfo(ProbeMode mode, IProbeInfo probeInfo, EntityPlayer player, World world, IBlockState blockState, IProbeHitData data) {
+    public void addProbeInfo(ProbeMode mode, IProbeInfo probeInfo, PlayerEntity player, World world, BlockState blockState, IProbeHitData data) {
         super.addProbeInfo(mode, probeInfo, player, world, blockState, data);
         switch (alarmType) {
             case DEAD:

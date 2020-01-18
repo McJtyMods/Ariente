@@ -19,7 +19,7 @@ public class Binding {
     private Binding(String name, int keyCode, Runnable callable) {
         this.name = name;
         this.callable = callable;
-        binding = new KeyBinding(name, KeyConflictContext.IN_GAME, keyCode, "key.categories.ariente");
+        binding = null; // @todo 1.14 new KeyBinding(name, KeyConflictContext.IN_GAME, keyCode, "key.categories.ariente");
         ClientRegistry.registerKeyBinding(binding);
     }
 
@@ -38,7 +38,7 @@ public class Binding {
     }
 
     public String getDisplayName() {
-        return binding.getDisplayName();
+        return binding.getLocalizedName();
     }
 
     @Override

@@ -10,11 +10,11 @@ import mcjty.hologui.api.IHoloGuiEntity;
 import mcjty.lib.blocks.BaseBlock;
 import net.minecraft.block.Block;
 import net.minecraft.block.BlockRailBase.EnumRailDirection;
-import net.minecraft.block.state.IBlockState;
+import net.minecraft.block.state.BlockState;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.MoverType;
 import net.minecraft.entity.monster.EntityIronGolem;
-import net.minecraft.entity.player.EntityPlayer;
+import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.network.datasync.DataParameter;
@@ -23,8 +23,8 @@ import net.minecraft.network.datasync.EntityDataManager;
 import net.minecraft.server.MinecraftServer;
 import net.minecraft.util.DamageSource;
 import net.minecraft.util.EntitySelectors;
-import net.minecraft.util.EnumFacing;
-import net.minecraft.util.EnumHand;
+import net.minecraft.util.Direction;
+import net.minecraft.util.Hand;
 import net.minecraft.util.math.AxisAlignedBB;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.MathHelper;
@@ -232,7 +232,7 @@ public class FluxElevatorEntity extends Entity {
             } else {
                 this.markVelocityChanged();
                 this.setDamage(this.getDamage() + amount * 10.0F);
-                boolean flag = source.getTrueSource() instanceof EntityPlayer && ((EntityPlayer) source.getTrueSource()).capabilities.isCreativeMode;
+                boolean flag = source.getTrueSource() instanceof PlayerEntity && ((PlayerEntity) source.getTrueSource()).capabilities.isCreativeMode;
 
                 if (flag || this.getDamage() > 40.0F) {
                     this.removePassengers();
@@ -287,7 +287,7 @@ public class FluxElevatorEntity extends Entity {
     }
 
     @Override
-    public EnumFacing getAdjustedHorizontalFacing() {
+    public Direction getAdjustedHorizontalFacing() {
         return this.getHorizontalFacing().rotateY();
     }
 
@@ -331,7 +331,7 @@ public class FluxElevatorEntity extends Entity {
         }
 
         BlockPos blockpos = new BlockPos(floorX, floorY, floorZ);
-        IBlockState state = this.world.getBlockState(blockpos);
+        BlockState state = this.world.getBlockState(blockpos);
 
         if (isValidBeamBlock(state.getBlock())) {
             this.moveAlongTrack(blockpos, state);
@@ -373,7 +373,7 @@ public class FluxElevatorEntity extends Entity {
 
             if (!list.isEmpty()) {
                 for (Entity ent : list) {
-                    if (!(ent instanceof EntityPlayer) && !(ent instanceof EntityIronGolem) && !(ent instanceof FluxElevatorEntity) && !this.isBeingRidden() && !ent.isRiding()) {
+                    if (!(ent instanceof PlayerEntity) && !(ent instanceof EntityIronGolem) && !(ent instanceof FluxElevatorEntity) && !this.isBeingRidden() && !ent.isRiding()) {
                         ent.startRiding(this);
                     } else {
                         ent.applyEntityCollision(this);
@@ -459,7 +459,7 @@ public class FluxElevatorEntity extends Entity {
         return Math.abs(getSpeed()) / 25.0;
     }
 
-    protected void moveAlongTrack(BlockPos pos, IBlockState state) {
+    protected void moveAlongTrack(BlockPos pos, BlockState state) {
         this.fallDistance = 0.0F;
         Vec3d oldPos = this.getPos(this.posX, this.posY, this.posZ);
         this.posY = pos.getY();
@@ -605,16 +605,16 @@ public class FluxElevatorEntity extends Entity {
         }
     }
 
-    public static EnumRailDirection getBeamDirection(IBlockState state) {
+    public static EnumRailDirection getBeamDirection(BlockState state) {
         if (state.getBlock() == ModBlocks.fluxBeamBlock) {
-            EnumFacing facing = state.getValue(BaseBlock.FACING_HORIZ);
-            if (facing == EnumFacing.NORTH || facing == EnumFacing.SOUTH) {
+            Direction facing = state.getValue(BaseBlock.FACING_HORIZ);
+            if (facing == Direction.NORTH || facing == Direction.SOUTH) {
                 return EnumRailDirection.EAST_WEST;
             } else {
                 return EnumRailDirection.NORTH_SOUTH;
             }
         } else {
-            EnumFacing facing = state.getValue(BaseBlock.FACING_HORIZ);
+            Direction facing = state.getValue(BaseBlock.FACING_HORIZ);
             switch (facing) {
                 case NORTH:
                     return EnumRailDirection.NORTH_EAST;
@@ -693,7 +693,7 @@ public class FluxElevatorEntity extends Entity {
             --floorY;
         }
 
-        IBlockState state = this.world.getBlockState(new BlockPos(floorX, floorY, floorZ));
+        BlockState state = this.world.getBlockState(new BlockPos(floorX, floorY, floorZ));
 
         if (isValidBeamBlock(state.getBlock())) {
             EnumRailDirection dir = getBeamDirection(state);
@@ -726,7 +726,7 @@ public class FluxElevatorEntity extends Entity {
             --floorY;
         }
 
-        IBlockState state = this.world.getBlockState(new BlockPos(floorX, floorY, floorZ));
+        BlockState state = this.world.getBlockState(new BlockPos(floorX, floorY, floorZ));
 
         if (isValidBeamBlock(state.getBlock())) {
             EnumRailDirection dir = getBeamDirection(state);
@@ -871,7 +871,7 @@ public class FluxElevatorEntity extends Entity {
     }
 
     @Override
-    public boolean processInitialInteract(EntityPlayer player, EnumHand hand) {
+    public boolean processInitialInteract(PlayerEntity player, Hand hand) {
         if (player.isSneaking()) {
             return false;
 //        } else if (this.isBeingRidden()) {    // @todo
@@ -900,7 +900,7 @@ public class FluxElevatorEntity extends Entity {
 
     protected double getMaxSpeed() {
         BlockPos pos = this.getCurrentRailPosition();
-        IBlockState state = this.world.getBlockState(pos);
+        BlockState state = this.world.getBlockState(pos);
         if (!isValidBeamBlock(state.getBlock())) {
             return getMaximumSpeed();
         }

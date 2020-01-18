@@ -1,6 +1,5 @@
 package mcjty.ariente.entities.levitator;
 
-import com.google.common.base.Optional;
 import mcjty.ariente.Ariente;
 import mcjty.ariente.api.IFluxLevitatorEntity;
 import mcjty.ariente.blocks.ModBlocks;
@@ -10,34 +9,26 @@ import mcjty.hologui.api.CloseStrategy;
 import mcjty.hologui.api.IHoloGuiEntity;
 import mcjty.lib.blocks.BaseBlock;
 import net.minecraft.block.Block;
-import net.minecraft.block.BlockRailBase.EnumRailDirection;
-import net.minecraft.block.state.IBlockState;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.MoverType;
-import net.minecraft.entity.monster.EntityIronGolem;
-import net.minecraft.entity.player.EntityPlayer;
+import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.item.ItemStack;
-import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.network.datasync.DataParameter;
 import net.minecraft.network.datasync.DataSerializers;
 import net.minecraft.network.datasync.EntityDataManager;
 import net.minecraft.server.MinecraftServer;
 import net.minecraft.util.DamageSource;
-import net.minecraft.util.EntitySelectors;
-import net.minecraft.util.EnumFacing;
-import net.minecraft.util.EnumHand;
+import net.minecraft.util.Direction;
 import net.minecraft.util.math.AxisAlignedBB;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.MathHelper;
 import net.minecraft.util.math.Vec3d;
 import net.minecraft.world.World;
-import net.minecraft.world.WorldServer;
-import net.minecraftforge.fml.relauncher.Side;
-import net.minecraftforge.fml.relauncher.SideOnly;
 import org.apache.commons.lang3.tuple.Pair;
 
 import javax.annotation.Nullable;
 import java.util.List;
+import java.util.Optional;
 import java.util.UUID;
 
 public class FluxLevitatorEntity extends Entity implements IFluxLevitatorEntity {
@@ -301,7 +292,7 @@ public class FluxLevitatorEntity extends Entity implements IFluxLevitatorEntity 
                 this.setRollingAmplitude(10);
                 this.markVelocityChanged();
                 this.setDamage(this.getDamage() + amount * 10.0F);
-                boolean flag = source.getTrueSource() instanceof EntityPlayer && ((EntityPlayer) source.getTrueSource()).capabilities.isCreativeMode;
+                boolean flag = source.getTrueSource() instanceof PlayerEntity && ((PlayerEntity) source.getTrueSource()).capabilities.isCreativeMode;
 
                 if (flag || this.getDamage() > 40.0F) {
                     this.removePassengers();
@@ -363,7 +354,7 @@ public class FluxLevitatorEntity extends Entity implements IFluxLevitatorEntity 
     }
 
     @Override
-    public EnumFacing getAdjustedHorizontalFacing() {
+    public Direction getAdjustedHorizontalFacing() {
         return isInReverse
                 ? this.getHorizontalFacing().getOpposite().rotateY()
                 : this.getHorizontalFacing().rotateY();
@@ -414,7 +405,7 @@ public class FluxLevitatorEntity extends Entity implements IFluxLevitatorEntity 
         }
 
         BlockPos blockpos = new BlockPos(floorX, floorY, floorZ);
-        IBlockState state = world.getBlockState(blockpos);
+        BlockState state = world.getBlockState(blockpos);
 
         if (isValidBeamBlock(state.getBlock())) {
             this.moveAlongTrack(blockpos, state);
@@ -467,7 +458,7 @@ public class FluxLevitatorEntity extends Entity implements IFluxLevitatorEntity 
 
             if (!list.isEmpty()) {
                 for (Entity ent : list) {
-                    if (!(ent instanceof EntityPlayer) && !(ent instanceof EntityIronGolem) && !(ent instanceof FluxLevitatorEntity) && !this.isBeingRidden() && !ent.isRiding()) {
+                    if (!(ent instanceof PlayerEntity) && !(ent instanceof EntityIronGolem) && !(ent instanceof FluxLevitatorEntity) && !this.isBeingRidden() && !ent.isRiding()) {
                         ent.startRiding(this);
                     } else {
                         ent.applyEntityCollision(this);
@@ -591,7 +582,7 @@ public class FluxLevitatorEntity extends Entity implements IFluxLevitatorEntity 
         }
     }
 
-    private void moveAlongTrack(BlockPos pos, IBlockState state) {
+    private void moveAlongTrack(BlockPos pos, BlockState state) {
         this.fallDistance = 0.0F;
         Vec3d oldPos = this.getPos(this.posX, this.posY, this.posZ);
         this.posY = pos.getY();
@@ -804,10 +795,10 @@ public class FluxLevitatorEntity extends Entity implements IFluxLevitatorEntity 
         }
     }
 
-    public static EnumRailDirection getBeamDirection(IBlockState state) {
-        EnumFacing facing = state.getValue(BaseBlock.FACING_HORIZ);
+    public static EnumRailDirection getBeamDirection(BlockState state) {
+        Direction facing = state.getValue(BaseBlock.FACING_HORIZ);
         if (state.getBlock() == ModBlocks.fluxBeamBlock) {
-            if (facing == EnumFacing.NORTH || facing == EnumFacing.SOUTH) {
+            if (facing == Direction.NORTH || facing == Direction.SOUTH) {
                 return EnumRailDirection.EAST_WEST;
             } else {
                 return EnumRailDirection.NORTH_SOUTH;
@@ -893,7 +884,7 @@ public class FluxLevitatorEntity extends Entity implements IFluxLevitatorEntity 
             --floorY;
         }
 
-        IBlockState state = world.getBlockState(new BlockPos(floorX, floorY, floorZ));
+        BlockState state = world.getBlockState(new BlockPos(floorX, floorY, floorZ));
 
         if (isValidBeamBlock(state.getBlock())) {
             EnumRailDirection dir = getBeamDirection(state);
@@ -935,7 +926,7 @@ public class FluxLevitatorEntity extends Entity implements IFluxLevitatorEntity 
             --floorY;
         }
 
-        IBlockState state = world.getBlockState(new BlockPos(floorX, floorY, floorZ));
+        BlockState state = world.getBlockState(new BlockPos(floorX, floorY, floorZ));
 
         if (isValidBeamBlock(state.getBlock())) {
             EnumRailDirection dir = getBeamDirection(state);
@@ -1139,7 +1130,7 @@ public class FluxLevitatorEntity extends Entity implements IFluxLevitatorEntity 
     }
 
     @Override
-    public boolean processInitialInteract(EntityPlayer player, EnumHand hand) {
+    public boolean processInitialInteract(PlayerEntity player, Hand hand) {
         if (player.isSneaking()) {
             return false;
 //        } else if (this.isBeingRidden()) {    // @todo
@@ -1168,7 +1159,7 @@ public class FluxLevitatorEntity extends Entity implements IFluxLevitatorEntity 
 
     protected double getMaxSpeed() {
         BlockPos pos = this.getCurrentRailPosition();
-        IBlockState state = world.getBlockState(pos);
+        BlockState state = world.getBlockState(pos);
         if (!isValidBeamBlock(state.getBlock())) {
             return getMaximumSpeed();
         }

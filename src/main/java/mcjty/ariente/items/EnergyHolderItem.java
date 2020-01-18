@@ -10,13 +10,13 @@ import mcjty.hologui.api.StyledColor;
 import mcjty.hologui.api.components.IPanel;
 import net.minecraft.client.util.ITooltipFlag;
 import net.minecraft.entity.Entity;
-import net.minecraft.entity.player.EntityPlayer;
+import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.util.ActionResult;
 import net.minecraft.util.EnumActionResult;
-import net.minecraft.util.EnumHand;
+import net.minecraft.util.Hand;
 import net.minecraft.util.text.TextFormatting;
 import net.minecraft.world.World;
 
@@ -57,7 +57,7 @@ public class EnergyHolderItem extends GenericItem {
 
     @Override
     public void onUpdate(ItemStack stack, World world, Entity entity, int itemSlot, boolean isSelected) {
-        if (!(entity instanceof EntityPlayer)) {
+        if (!(entity instanceof PlayerEntity)) {
             return;
         }
         NBTTagCompound tag = stack.getTagCompound();
@@ -70,7 +70,7 @@ public class EnergyHolderItem extends GenericItem {
         }
 
         int index = tag.getInteger("index");
-        EntityPlayer player = (EntityPlayer) entity;
+        PlayerEntity player = (PlayerEntity) entity;
         if (index >= player.inventory.getSizeInventory()) {
             index = 0;
         }
@@ -86,14 +86,14 @@ public class EnergyHolderItem extends GenericItem {
     }
 
     @Override
-    public ActionResult<ItemStack> onItemRightClick(World worldIn, EntityPlayer player, EnumHand handIn) {
+    public ActionResult<ItemStack> onItemRightClick(World worldIn, PlayerEntity player, Hand handIn) {
         if (!worldIn.isRemote) {
             Ariente.guiHandler.openHoloGui(player, ModGuis.GUI_ENERGY_HOLDER, 1f);
         }
         return new ActionResult<>(EnumActionResult.SUCCESS, player.getHeldItem(handIn));
     }
 
-    public static IGuiComponent<?> createGui(EntityPlayer pl) {
+    public static IGuiComponent<?> createGui(PlayerEntity pl) {
         IGuiComponentRegistry registry = Ariente.guiHandler.getComponentRegistry();
         IPanel panel = HoloGuiTools.createPanelWithHelp(registry, entity -> entity.switchGui(ModGuis.GUI_ENERGY_HOLDER_HOLD))
                 .add(registry.text(0, 1, 1, 1).text("Energy Holder").color(registry.color(StyledColor.LABEL)));
@@ -128,7 +128,7 @@ public class EnergyHolderItem extends GenericItem {
                 .add(registry.number(6, yy, 1, 1).color(registry.color(StyledColor.INFORMATION)).getter((player, holo) -> count(player, negarite)));
     }
 
-    private static int getAutomatic(EntityPlayer player) {
+    private static int getAutomatic(PlayerEntity player) {
         NBTTagCompound tag = getCompound(player);
         if (tag == null) {
             return MODE_MANUAL;
@@ -144,7 +144,7 @@ public class EnergyHolderItem extends GenericItem {
         return tag.getInteger("mode");
     }
 
-    private static void changeAutomatic(EntityPlayer player) {
+    private static void changeAutomatic(PlayerEntity player) {
         NBTTagCompound tag = getCompound(player);
         if (tag == null) {
             return;
@@ -154,7 +154,7 @@ public class EnergyHolderItem extends GenericItem {
         tag.setInteger("mode", mode);
     }
 
-    private static void toPlayer(EntityPlayer player, int amount, String tagname, Item item) {
+    private static void toPlayer(PlayerEntity player, int amount, String tagname, Item item) {
         NBTTagCompound tag = getCompound(player);
         if (tag == null) {
             return;
@@ -171,7 +171,7 @@ public class EnergyHolderItem extends GenericItem {
         }
     }
 
-    private static void toItem(EntityPlayer player, int amount, String tagname, Item item) {
+    private static void toItem(PlayerEntity player, int amount, String tagname, Item item) {
         NBTTagCompound tag = getCompound(player);
         if (tag == null) {
             return;
@@ -205,8 +205,8 @@ public class EnergyHolderItem extends GenericItem {
         }
     }
 
-    private static NBTTagCompound getCompound(EntityPlayer player) {
-        ItemStack heldItem = player.getHeldItem(EnumHand.MAIN_HAND);
+    private static NBTTagCompound getCompound(PlayerEntity player) {
+        ItemStack heldItem = player.getHeldItem(Hand.MAIN_HAND);
         if (heldItem.getItem() != ModItems.energyHolderItem) {
             return null;
         }
@@ -218,7 +218,7 @@ public class EnergyHolderItem extends GenericItem {
         return tag;
     }
 
-    private static int count(EntityPlayer player, String tagname) {
+    private static int count(PlayerEntity player, String tagname) {
         NBTTagCompound tag = getCompound(player);
         if (tag == null) {
             return 0;
@@ -249,7 +249,7 @@ public class EnergyHolderItem extends GenericItem {
         return amountToExtract;
     }
 
-    public static IGuiComponent<?> createHelpGui(EntityPlayer player) {
+    public static IGuiComponent<?> createHelpGui(PlayerEntity player) {
         IGuiComponentRegistry registry = Ariente.guiHandler.getComponentRegistry();
         return HoloGuiTools.createHelpGui(registry, HelpBuilder.create()
                         .line("The Energy Holder can store")

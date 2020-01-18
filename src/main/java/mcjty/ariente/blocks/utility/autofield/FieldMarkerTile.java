@@ -5,12 +5,12 @@ import mcjty.lib.multipart.MultipartTE;
 import mcjty.lib.multipart.PartSlot;
 import mcjty.lib.tileentity.GenericTileEntity;
 import mcjty.lib.varia.BlockPosTools;
-import net.minecraft.block.state.IBlockState;
-import net.minecraft.entity.EntityLivingBase;
+import net.minecraft.block.state.BlockState;
+import net.minecraft.entity.LivingEntity;
 import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.tileentity.TileEntity;
-import net.minecraft.util.EnumFacing;
+import net.minecraft.util.Direction;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.World;
 
@@ -39,15 +39,15 @@ public class FieldMarkerTile extends GenericTileEntity {
     }
 
     @Override
-    public void onPartAdded(PartSlot slot, IBlockState state, TileEntity multipartTile) {
+    public void onPartAdded(PartSlot slot, BlockState state, TileEntity multipartTile) {
         this.world = multipartTile.getWorld();
         this.pos = multipartTile.getPos();
     }
 
     @Override
-    public void onBlockPlacedBy(World world, BlockPos pos, IBlockState state, EntityLivingBase placer, ItemStack stack) {
+    public void onBlockPlacedBy(World world, BlockPos pos, BlockState state, LivingEntity placer, ItemStack stack) {
         AutoFieldTile auto = null;
-        for (EnumFacing facing : EnumFacing.HORIZONTALS) {
+        for (Direction facing : Direction.HORIZONTALS) {
             BlockPos p = pos.offset(facing);
             TileEntity te = MultipartHelper.getTileEntity(world, p, PartSlot.DOWN);
             if (te instanceof FieldMarkerTile) {
@@ -69,7 +69,7 @@ public class FieldMarkerTile extends GenericTileEntity {
     }
 
     @Override
-    public void onBlockBreak(World world, BlockPos pos, IBlockState state) {
+    public void onBlockBreak(World world, BlockPos pos, BlockState state) {
         if (autoFieldTile != null) {
             TileEntity tileEntity = world.getTileEntity(autoFieldTile);
             if (tileEntity instanceof AutoFieldTile) {

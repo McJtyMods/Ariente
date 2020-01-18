@@ -1,6 +1,6 @@
 package mcjty.ariente.api;
 
-import net.minecraft.block.properties.PropertyEnum;
+import net.minecraft.state.EnumProperty;
 import net.minecraft.util.IStringSerializable;
 
 public enum MarbleType implements IStringSerializable {
@@ -11,7 +11,7 @@ public enum MarbleType implements IStringSerializable {
 
     public static final MarbleType[] VALUES = new MarbleType[MarbleType.values().length];
 
-    public static final PropertyEnum<MarbleType> TYPE = PropertyEnum.create("type", MarbleType.class);
+    public static final EnumProperty<MarbleType> TYPE = EnumProperty.create("type", MarbleType.class);
 
     static {
         int i = 0;

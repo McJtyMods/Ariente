@@ -1,33 +1,26 @@
 package mcjty.ariente.items.armor;
 
-import io.netty.buffer.ByteBuf;
-import mcjty.lib.thirteen.Context;
-import net.minecraft.entity.player.EntityPlayerMP;
-import net.minecraftforge.fml.common.network.simpleimpl.IMessage;
+import net.minecraft.entity.player.PlayerEntity;
+import net.minecraft.network.PacketBuffer;
+import net.minecraftforge.fml.network.NetworkEvent;
 
 import java.util.function.Supplier;
 
-public class PacketConfigureArmor implements IMessage {
+public class PacketConfigureArmor {
 
-    @Override
-    public void fromBytes(ByteBuf buf) {
-    }
-
-    @Override
-    public void toBytes(ByteBuf buf) {
+    public void toBytes(PacketBuffer buf) {
     }
 
     public PacketConfigureArmor() {
     }
 
-    public PacketConfigureArmor(ByteBuf buf) {
-        fromBytes(buf);
+    public PacketConfigureArmor(PacketBuffer buf) {
     }
 
-    public void handle(Supplier<Context> supplier) {
-        Context ctx = supplier.get();
+    public void handle(Supplier<NetworkEvent.Context> supplier) {
+        NetworkEvent.Context ctx = supplier.get();
         ctx.enqueueWork(() -> {
-            EntityPlayerMP playerEntity = ctx.getSender();
+            PlayerEntity playerEntity = ctx.getSender();
             PowerArmorConfiguration.openConfigurationGui(playerEntity);
         });
         ctx.setPacketHandled(true);

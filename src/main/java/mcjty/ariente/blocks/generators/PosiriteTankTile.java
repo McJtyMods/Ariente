@@ -13,8 +13,8 @@ import mcjty.theoneprobe.api.ProbeMode;
 import mcp.mobius.waila.api.IWailaConfigHandler;
 import mcp.mobius.waila.api.IWailaDataAccessor;
 import net.minecraft.block.properties.PropertyBool;
-import net.minecraft.block.state.IBlockState;
-import net.minecraft.entity.player.EntityPlayer;
+import net.minecraft.block.state.BlockState;
+import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.tileentity.TileEntity;
@@ -33,7 +33,7 @@ public class PosiriteTankTile extends GenericTileEntity implements IGuiTile, IAl
 
     public boolean isWorking() {
         BlockPos p = pos.down();
-        IBlockState state = world.getBlockState(p);
+        BlockState state = world.getBlockState(p);
         while (state.getBlock() == ModBlocks.posiriteTankBlock) {
             p = p.down();
             state = world.getBlockState(p);
@@ -61,14 +61,14 @@ public class PosiriteTankTile extends GenericTileEntity implements IGuiTile, IAl
     }
 
     @Override
-    public IBlockState getActualState(IBlockState state) {
+    public BlockState getActualState(BlockState state) {
         return state.withProperty(UPPER, world.getBlockState(pos.up()).getBlock() == ModBlocks.posiriteTankBlock)
                 .withProperty(LOWER, world.getBlockState(pos.down()).getBlock() == ModBlocks.posiriteTankBlock);
     }
 
     @Override
     @Optional.Method(modid = "theoneprobe")
-    public void addProbeInfo(ProbeMode mode, IProbeInfo probeInfo, EntityPlayer player, World world, IBlockState blockState, IProbeHitData data) {
+    public void addProbeInfo(ProbeMode mode, IProbeInfo probeInfo, PlayerEntity player, World world, BlockState blockState, IProbeHitData data) {
         super.addProbeInfo(mode, probeInfo, player, world, blockState, data);
 //        Boolean working = isWorking();
 //        if (working) {

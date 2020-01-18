@@ -1,76 +1,68 @@
 package mcjty.ariente.blocks;
 
-import mcjty.ariente.Ariente;
 import mcjty.lib.blocks.BaseBlock;
+import mcjty.lib.blocks.RotationType;
+import mcjty.lib.builder.BlockBuilder;
+import net.minecraft.block.Block;
+import net.minecraft.block.BlockState;
 import net.minecraft.block.material.Material;
-import net.minecraft.block.properties.PropertyEnum;
-import net.minecraft.block.state.BlockStateContainer;
-import net.minecraft.block.state.IBlockState;
-import net.minecraft.client.renderer.block.model.ModelResourceLocation;
-import net.minecraft.creativetab.CreativeTabs;
-import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
+import net.minecraft.state.EnumProperty;
+import net.minecraft.state.StateContainer;
 import net.minecraft.util.IStringSerializable;
-import net.minecraft.util.NonNullList;
 import net.minecraft.util.math.BlockPos;
-import net.minecraft.world.World;
-import net.minecraftforge.client.model.ModelLoader;
+import net.minecraft.world.IBlockReader;
+import net.minecraftforge.common.ToolType;
 
 public abstract class BaseVariantBlock<T extends Enum<T> & IStringSerializable> extends BaseBlock {
 
     public BaseVariantBlock(String name) {
-        super(Ariente.instance, Material.ROCK, name, BaseVariantItemBlock::new);
-        setHardness(2.0f);
-        setResistance(4.0f);
-        setHarvestLevel("pickaxe", 1);
-        setCreativeTab(Ariente.setup.getTab());
+        super(new BlockBuilder()
+                .properties(Properties.create(Material.ROCK)
+                    .hardnessAndResistance(2.0f, 4.0f))
+                .harvestLevel(ToolType.PICKAXE, 1));
+        // @todo 1.14
+//        super(Ariente.instance, Material.ROCK, name, BaseVariantItemBlock::new);
     }
 
-    abstract public PropertyEnum<T> getProperty();
-    abstract public T[] getValues();
+    public abstract EnumProperty<T> getProperty();
+    public abstract T[] getValues();
 
     @Override
     public RotationType getRotationType() {
         return RotationType.NONE;
     }
 
-    public void initModel() {
-        for (T type : getValues()) {
-            ModelLoader.setCustomModelResourceLocation(Item.getItemFromBlock(this), type.ordinal(), new ModelResourceLocation(getRegistryName(), "type=" + type.getName()));
-        }
-    }
+    // @todo 1.14
+//    public void initModel() {
+//        for (T type : getValues()) {
+//            ModelLoader.setCustomModelResourceLocation(Item.getItemFromBlock(this), type.ordinal(), new ModelResourceLocation(getRegistryName(), "type=" + type.getName()));
+//        }
+//    }
 
-    public String getUnlocalizedName(int meta) {
-        return super.getUnlocalizedName() + "." + getValues()[meta].getName();
-    }
+    // @todo 1.14
+//    public String getUnlocalizedName(int meta) {
+//        return super.getUnlocalizedName() + "." + getValues()[meta].getName();
+//    }
 
+    // @todo 1.14
+//    @Override
+//    public void getSubBlocks(CreativeTabs itemIn, NonNullList<ItemStack> tab) {
+//        for (T type : getValues()) {
+//            tab.add(new ItemStack(this, 1, type.ordinal()));
+//        }
+//    }
 
-    @Override
-    public void getSubBlocks(CreativeTabs itemIn, NonNullList<ItemStack> tab) {
-        for (T type : getValues()) {
-            tab.add(new ItemStack(this, 1, type.ordinal()));
-        }
-    }
-
-    @Override
-    public ItemStack getItem(World worldIn, BlockPos pos, IBlockState state) {
-        return new ItemStack(this, 1, state.getValue(getProperty()).ordinal());
-    }
 
     @Override
-    public int getMetaFromState(IBlockState state) {
-        return state.getValue(getProperty()).ordinal();
+    public ItemStack getItem(IBlockReader worldIn, BlockPos pos, BlockState state) {
+        return new ItemStack(this, 1); // @todo 1.14 META?, state.get(getProperty()).ordinal());
     }
 
     @Override
-    public IBlockState getStateFromMeta(int meta) {
-        return getDefaultState().withProperty(getProperty(), getValues()[meta]);
+    protected void fillStateContainer(StateContainer.Builder<Block, BlockState> builder) {
+        super.fillStateContainer(builder);
+        builder.add(getProperty());
     }
-
-    @Override
-    protected BlockStateContainer createBlockState() {
-        return new BlockStateContainer(this, getProperty());
-    }
-
 
 }

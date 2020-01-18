@@ -1,40 +1,32 @@
 package mcjty.ariente.blocks.utility.autofield;
 
-import io.netty.buffer.ByteBuf;
-import mcjty.lib.network.NetworkTools;
-import mcjty.lib.thirteen.Context;
+import net.minecraft.network.PacketBuffer;
 import net.minecraft.tileentity.TileEntity;
 import net.minecraft.util.math.BlockPos;
-import net.minecraftforge.fml.common.network.simpleimpl.IMessage;
+import net.minecraftforge.fml.network.NetworkEvent;
 
 import java.util.function.Supplier;
 
-public class PacketAutoFieldRequestRenderInfo implements IMessage {
+public class PacketAutoFieldRequestRenderInfo {
     private BlockPos pos;
 
-    @Override
-    public void fromBytes(ByteBuf buf) {
-        pos = NetworkTools.readPos(buf);
-    }
-
-    @Override
-    public void toBytes(ByteBuf buf) {
-        NetworkTools.writePos(buf, pos);
+    public void toBytes(PacketBuffer buf) {
+        buf.writeBlockPos(pos);
     }
 
     public PacketAutoFieldRequestRenderInfo() {
     }
 
-    public PacketAutoFieldRequestRenderInfo(ByteBuf buf) {
-        fromBytes(buf);
+    public PacketAutoFieldRequestRenderInfo(PacketBuffer buf) {
+        pos = buf.readBlockPos();
     }
 
     public PacketAutoFieldRequestRenderInfo(BlockPos pos) {
         this.pos = pos;
     }
 
-    public void handle(Supplier<Context> supplier) {
-        Context ctx = supplier.get();
+    public void handle(Supplier<NetworkEvent.Context> supplier) {
+        NetworkEvent.Context ctx = supplier.get();
         ctx.enqueueWork(() -> {
             TileEntity te = ctx.getSender().world.getTileEntity(pos);
             if (te instanceof AutoFieldTile) {

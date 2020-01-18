@@ -1,7 +1,7 @@
 package mcjty.ariente.blocks.utility.wireless;
 
-import net.minecraft.block.state.IBlockState;
-import net.minecraft.entity.EntityLivingBase;
+import net.minecraft.block.state.BlockState;
+import net.minecraft.entity.LivingEntity;
 import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.util.math.BlockPos;
@@ -40,7 +40,7 @@ public class SignalTransmitterTile extends SignalChannelTileEntity {
     }
 
     @Override
-    public IBlockState getActualState(IBlockState state) {
+    public BlockState getActualState(BlockState state) {
         return state.withProperty(POWER, powerLevel > 0);
     }
 
@@ -58,7 +58,7 @@ public class SignalTransmitterTile extends SignalChannelTileEntity {
     }
 
     @Override
-    public void onBlockPlacedBy(World world, BlockPos pos, IBlockState state, EntityLivingBase placer, ItemStack stack) {
+    public void onBlockPlacedBy(World world, BlockPos pos, BlockState state, LivingEntity placer, ItemStack stack) {
         if (!world.isRemote) {
             // @todo double check
             update();

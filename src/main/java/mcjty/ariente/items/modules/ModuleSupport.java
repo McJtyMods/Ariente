@@ -4,8 +4,8 @@ import mcjty.ariente.api.ArmorUpgradeType;
 import mcjty.ariente.config.UtilityConfiguration;
 import mcjty.ariente.items.EnergyHolderItem;
 import mcjty.ariente.items.ModItems;
-import net.minecraft.entity.EntityLivingBase;
-import net.minecraft.entity.player.EntityPlayer;
+import net.minecraft.entity.LivingEntity;
+import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.inventory.EntityEquipmentSlot;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
@@ -15,7 +15,7 @@ import org.apache.commons.lang3.tuple.Pair;
 import javax.annotation.Nonnull;
 
 public class ModuleSupport {
-    public static void receivedHotkey(EntityPlayer player, int index) {
+    public static void receivedHotkey(PlayerEntity player, int index) {
         handleHotkey(player, index, EntityEquipmentSlot.HEAD, ModItems.powerSuitHelmet);
         handleHotkey(player, index, EntityEquipmentSlot.LEGS, ModItems.powerSuitLegs);
         handleHotkey(player, index, EntityEquipmentSlot.FEET, ModItems.powerSuitBoots);
@@ -23,7 +23,7 @@ public class ModuleSupport {
         handleHotkey(player, index, EntityEquipmentSlot.MAINHAND, ModItems.enhancedEnergySabreItem);
     }
 
-    private static void handleHotkey(EntityPlayer player, int index, EntityEquipmentSlot slot, Item armorItem) {
+    private static void handleHotkey(PlayerEntity player, int index, EntityEquipmentSlot slot, Item armorItem) {
         ItemStack armorStack = player.getItemStackFromSlot(slot);
         if (!armorStack.isEmpty() && armorStack.getItem() == armorItem && armorStack.hasTagCompound()) {
             NBTTagCompound compound = armorStack.getTagCompound();
@@ -69,7 +69,7 @@ public class ModuleSupport {
         return Pair.of(power, maxPower);
     }
 
-    public static boolean managePower(ItemStack stack, EntityLivingBase entity) {
+    public static boolean managePower(ItemStack stack, LivingEntity entity) {
         Pair<Integer, Integer> powerUsage = getPowerUsage(stack);
         if (powerUsage.getLeft() > powerUsage.getRight()) {
             // Can't work
@@ -113,13 +113,13 @@ public class ModuleSupport {
         return true;
     }
 
-    private static boolean checkAutofeed(EntityLivingBase entity, NBTTagCompound compound) {
+    private static boolean checkAutofeed(LivingEntity entity, NBTTagCompound compound) {
         if (compound.getBoolean(ArmorUpgradeType.AUTOFEED.getModuleKey())) {
-            if (entity instanceof EntityPlayer) {
+            if (entity instanceof PlayerEntity) {
                 // Only auto-feed with player
                 int negariteIndex = -1;
                 int posiriteIndex = -1;
-                EntityPlayer player = (EntityPlayer) entity;
+                PlayerEntity player = (PlayerEntity) entity;
                 for (int i = 0; i < player.inventory.getSizeInventory(); i++) {
                     ItemStack itemStack = player.inventory.getStackInSlot(i);
                     if (itemStack.getItem() == ModItems.energyHolderItem) {

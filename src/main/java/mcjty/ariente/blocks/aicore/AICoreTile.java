@@ -7,32 +7,26 @@ import mcjty.ariente.api.ICityAISystem;
 import mcjty.ariente.compat.arienteworld.ArienteWorldCompat;
 import mcjty.lib.tileentity.GenericTileEntity;
 import mcjty.lib.varia.BlockPosTools;
-import mcjty.theoneprobe.api.IProbeHitData;
-import mcjty.theoneprobe.api.IProbeInfo;
-import mcjty.theoneprobe.api.ProbeMode;
-import mcjty.theoneprobe.api.TextStyleClass;
-import mcp.mobius.waila.api.IWailaConfigHandler;
-import mcp.mobius.waila.api.IWailaDataAccessor;
-import net.minecraft.block.state.IBlockState;
-import net.minecraft.entity.player.EntityPlayer;
-import net.minecraft.item.ItemStack;
-import net.minecraft.nbt.NBTTagCompound;
-import net.minecraft.util.ITickable;
+import net.minecraft.block.BlockState;
+import net.minecraft.nbt.CompoundNBT;
+import net.minecraft.tileentity.ITickableTileEntity;
+import net.minecraft.tileentity.TileEntityType;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.ChunkPos;
-import net.minecraft.util.text.TextFormatting;
 import net.minecraft.world.World;
 
-import java.util.List;
-
-public class AICoreTile extends GenericTileEntity implements ITickable, IAlarmMode, IAICoreTile {
+public class AICoreTile extends GenericTileEntity implements ITickableTileEntity, IAlarmMode, IAICoreTile {
 
     private ChunkPos cityCenter;
     private int tickCounter = 10;
     private String cityName = "";
 
+    public AICoreTile(TileEntityType<?> type) {
+        super(type);
+    }
+
     @Override
-    public void update() {
+    public void tick() {
         if (!world.isRemote) {
             if (tickCounter > 0) {
                 tickCounter--;
@@ -66,8 +60,8 @@ public class AICoreTile extends GenericTileEntity implements ITickable, IAlarmMo
     }
 
     @Override
-    public void onBlockBreak(World world, BlockPos pos, IBlockState state) {
-        super.onBlockBreak(world, pos, state);
+    public void onReplaced(World world, BlockPos pos, BlockState state, BlockState newstate) {
+        super.onReplaced(world, pos, state, newstate);
         if (!this.world.isRemote) {
             if (getCityCenter() != null) {
                 ICityAISystem cityAISystem = ArienteWorldCompat.getCityAISystem(world);
@@ -77,33 +71,36 @@ public class AICoreTile extends GenericTileEntity implements ITickable, IAlarmMo
         }
     }
 
-    @Override
-    public void addProbeInfo(ProbeMode mode, IProbeInfo probeInfo, EntityPlayer player, World world, IBlockState blockState, IProbeHitData data) {
-        super.addProbeInfo(mode, probeInfo, player, world, blockState, data);
-        probeInfo.text(TextStyleClass.LABEL + "City: " + TextStyleClass.INFO + cityName);
-    }
-
-    @Override
-    public void addWailaBody(ItemStack itemStack, List<String> currenttip, IWailaDataAccessor accessor, IWailaConfigHandler config) {
-        super.addWailaBody(itemStack, currenttip, accessor, config);
-        currenttip.add(TextFormatting.GRAY + "City: " + TextFormatting.BLUE + cityName);
-    }
+    // @todo 1.14
+//    @Override
+//    public void addProbeInfo(ProbeMode mode, IProbeInfo probeInfo, PlayerEntity player, World world, BlockState blockState, IProbeHitData data) {
+//        super.addProbeInfo(mode, probeInfo, player, world, blockState, data);
+//        probeInfo.text(TextStyleClass.LABEL + "City: " + TextStyleClass.INFO + cityName);
+//    }
+//
+//    @Override
+//    public void addWailaBody(ItemStack itemStack, List<String> currenttip, IWailaDataAccessor accessor, IWailaConfigHandler config) {
+//        super.addWailaBody(itemStack, currenttip, accessor, config);
+//        currenttip.add(TextFormatting.GRAY + "City: " + TextFormatting.BLUE + cityName);
+//    }
 
     @Override
     public BlockPos getCorePos() {
         return getPos();
     }
 
+    // @todo 1.14 LOOT TABLES
     @Override
-    public void readRestorableFromNBT(NBTTagCompound tagCompound) {
-        super.readRestorableFromNBT(tagCompound);
+    public void read(CompoundNBT tagCompound) {
+        super.read(tagCompound);
         cityName = tagCompound.getString("cityName");
     }
 
     @Override
-    public void writeRestorableToNBT(NBTTagCompound tagCompound) {
-        super.writeRestorableToNBT(tagCompound);
-        tagCompound.setString("cityName", cityName);
+    public CompoundNBT write(CompoundNBT tagCompound) {
+        tagCompound = super.write(tagCompound);
+        tagCompound.putString("cityName", cityName);
+        return tagCompound;
     }
 
     @Override

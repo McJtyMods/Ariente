@@ -6,13 +6,13 @@ import mcjty.ariente.compat.arienteworld.ArienteWorldCompat;
 import mcjty.ariente.entities.LaserEntity;
 import mcjty.ariente.sounds.ModSounds;
 import net.minecraft.entity.EntityFlying;
-import net.minecraft.entity.EntityLivingBase;
+import net.minecraft.entity.LivingEntity;
 import net.minecraft.entity.SharedMonsterAttributes;
 import net.minecraft.entity.ai.EntityAIBase;
 import net.minecraft.entity.ai.EntityAIFindEntityNearestPlayer;
 import net.minecraft.entity.ai.EntityMoveHelper;
 import net.minecraft.entity.monster.IMob;
-import net.minecraft.entity.player.EntityPlayer;
+import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.network.datasync.DataParameter;
 import net.minecraft.network.datasync.DataSerializers;
@@ -168,12 +168,12 @@ public class DroneEntity extends EntityFlying implements IMob, IForcefieldImmuni
     }
 
     @Override
-    public void setAttackTarget(@Nullable EntityLivingBase entitylivingbaseIn) {
+    public void setAttackTarget(@Nullable LivingEntity entitylivingbaseIn) {
         super.setAttackTarget(entitylivingbaseIn);
-        if (entitylivingbaseIn instanceof EntityPlayer && cityCenter != null) {
+        if (entitylivingbaseIn instanceof PlayerEntity && cityCenter != null) {
             ICityAISystem aiSystem = ArienteWorldCompat.getCityAISystem(world);
             ICityAI cityAI = aiSystem.getCityAI(cityCenter);
-            cityAI.playerSpotted((EntityPlayer) entitylivingbaseIn);
+            cityAI.playerSpotted((PlayerEntity) entitylivingbaseIn);
             aiSystem.saveSystem();
         }
     }
@@ -243,7 +243,7 @@ public class DroneEntity extends EntityFlying implements IMob, IForcefieldImmuni
          */
         @Override
         public void updateTask() {
-            EntityLivingBase target = this.drone.getAttackTarget();
+            LivingEntity target = this.drone.getAttackTarget();
             double d0 = 64.0D;
 
             if (target.getDistanceSq(this.drone) < 4096.0D && this.drone.canEntityBeSeen(target)) {
@@ -269,7 +269,7 @@ public class DroneEntity extends EntityFlying implements IMob, IForcefieldImmuni
 //                        world.playSound(world.playerEntities.get(i), target.posX, target.posY, target.posZ, ModSounds.droneShoot, SoundCategory.HOSTILE, 1.0f, 1.0f);
 //                    }
 
-//                    world.playEvent((EntityPlayer)null, 1016, new BlockPos(this.drone), 0);
+//                    world.playEvent((PlayerEntity)null, 1016, new BlockPos(this.drone), 0);
 
                     LaserEntity laser = new LaserEntity(world, this.drone, d2, d3, d4);
                     laser.posX = this.drone.posX + vec3d.x * 2.0D;
@@ -320,7 +320,7 @@ public class DroneEntity extends EntityFlying implements IMob, IForcefieldImmuni
                 this.parentEntity.rotationYaw = -((float) MathHelper.atan2(this.parentEntity.motionX, this.parentEntity.motionZ)) * (180F / (float) Math.PI);
                 this.parentEntity.renderYawOffset = this.parentEntity.rotationYaw;
             } else {
-                EntityLivingBase entitylivingbase = this.parentEntity.getAttackTarget();
+                LivingEntity entitylivingbase = this.parentEntity.getAttackTarget();
                 double d0 = 64.0D;
 
                 if (entitylivingbase.getDistanceSq(this.parentEntity) < 4096.0D) {

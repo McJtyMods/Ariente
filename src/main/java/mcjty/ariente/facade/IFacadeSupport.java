@@ -1,9 +1,9 @@
 package mcjty.ariente.facade;
 
-import net.minecraft.block.state.IBlockState;
+import net.minecraft.block.state.BlockState;
 
 public interface IFacadeSupport {
-    IBlockState getMimicBlock();
+    BlockState getMimicBlock();
 
-    void setMimicBlock(IBlockState mimicBlock);
+    void setMimicBlock(BlockState mimicBlock);
 }

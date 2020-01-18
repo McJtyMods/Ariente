@@ -23,15 +23,15 @@ import mcjty.theoneprobe.api.TextStyleClass;
 import mcp.mobius.waila.api.IWailaConfigHandler;
 import mcp.mobius.waila.api.IWailaDataAccessor;
 import net.minecraft.block.properties.PropertyBool;
-import net.minecraft.block.state.IBlockState;
-import net.minecraft.entity.EntityLivingBase;
-import net.minecraft.entity.player.EntityPlayer;
+import net.minecraft.block.state.BlockState;
+import net.minecraft.entity.LivingEntity;
+import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.entity.player.EntityPlayerMP;
 import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.network.NetworkManager;
 import net.minecraft.network.play.server.SPacketUpdateTileEntity;
-import net.minecraft.util.EnumFacing;
+import net.minecraft.util.Direction;
 import net.minecraft.util.ITickable;
 import net.minecraft.util.ResourceLocation;
 import net.minecraft.util.math.BlockPos;
@@ -168,7 +168,7 @@ public class PosiriteGeneratorTile extends GenericTileEntity implements ITickabl
 
 
     @Override
-    public IBlockState getActualState(IBlockState state) {
+    public BlockState getActualState(BlockState state) {
         return state.withProperty(WORKING, isWorking());
     }
 
@@ -182,12 +182,12 @@ public class PosiriteGeneratorTile extends GenericTileEntity implements ITickabl
     }
 
     @Override
-    public int[] getSlotsForFace(EnumFacing side) {
+    public int[] getSlotsForFace(Direction side) {
         return new int[] {SLOT_POSIRITE_INPUT};
     }
 
     @Override
-    public boolean canInsertItem(int index, ItemStack stack, EnumFacing direction) {
+    public boolean canInsertItem(int index, ItemStack stack, Direction direction) {
         return isItemValidForSlot(index, stack);
     }
 
@@ -200,7 +200,7 @@ public class PosiriteGeneratorTile extends GenericTileEntity implements ITickabl
     }
 
     @Override
-    public boolean canExtractItem(int index, ItemStack stack, EnumFacing direction) {
+    public boolean canExtractItem(int index, ItemStack stack, Direction direction) {
         return false;
     }
 
@@ -210,7 +210,7 @@ public class PosiriteGeneratorTile extends GenericTileEntity implements ITickabl
     }
 
     @Override
-    public boolean isUsableByPlayer(EntityPlayer player) {
+    public boolean isUsableByPlayer(PlayerEntity player) {
         return canPlayerAccess(player);
     }
 
@@ -256,7 +256,7 @@ public class PosiriteGeneratorTile extends GenericTileEntity implements ITickabl
 
     @Override
     @Optional.Method(modid = "theoneprobe")
-    public void addProbeInfo(ProbeMode mode, IProbeInfo probeInfo, EntityPlayer player, World world, IBlockState blockState, IProbeHitData data) {
+    public void addProbeInfo(ProbeMode mode, IProbeInfo probeInfo, PlayerEntity player, World world, BlockState blockState, IProbeHitData data) {
         super.addProbeInfo(mode, probeInfo, player, world, blockState, data);
         probeInfo.text(TextStyleClass.LABEL + "Network: " + TextStyleClass.INFO + powerBlobSupport.getCableId());
         if (isWorking()) {
@@ -330,7 +330,7 @@ public class PosiriteGeneratorTile extends GenericTileEntity implements ITickabl
         markDirtyClient();
     }
 
-    private void toPlayer(EntityPlayer player, int amount) {
+    private void toPlayer(PlayerEntity player, int amount) {
         ItemStack stack = inventoryHelper.decrStackSize(SLOT_POSIRITE_INPUT, amount);
         if ((!stack.isEmpty()) && player.inventory.addItemStackToInventory(stack)) {
             markDirtyClient();
@@ -345,7 +345,7 @@ public class PosiriteGeneratorTile extends GenericTileEntity implements ITickabl
         }
     }
 
-    private void toMachine(EntityPlayer player, int amount) {
+    private void toMachine(PlayerEntity player, int amount) {
         ItemStack toTransfer = ItemStack.EMPTY;
         ItemStack stackInSlot = inventoryHelper.getStackInSlot(SLOT_POSIRITE_INPUT);
         if (!stackInSlot.isEmpty()) {
@@ -386,7 +386,7 @@ public class PosiriteGeneratorTile extends GenericTileEntity implements ITickabl
         markDirtyClient();
     }
 
-    public Integer countPosiriteGenerator(EntityPlayer player, IHoloGuiEntity holo) {
+    public Integer countPosiriteGenerator(PlayerEntity player, IHoloGuiEntity holo) {
         int size = inventoryHelper.getCount();
         int cnt = 0;
         for (int i = 0 ; i < size ; i++) {
@@ -400,7 +400,7 @@ public class PosiriteGeneratorTile extends GenericTileEntity implements ITickabl
 
 
     @Override
-    public void onBlockPlacedBy(World world, BlockPos pos, IBlockState state, EntityLivingBase placer, ItemStack stack) {
+    public void onBlockPlacedBy(World world, BlockPos pos, BlockState state, LivingEntity placer, ItemStack stack) {
         super.onBlockPlacedBy(world, pos, state, placer, stack);
         if (!world.isRemote) {
             PowerSenderSupport.fixNetworks(world, pos);
@@ -408,7 +408,7 @@ public class PosiriteGeneratorTile extends GenericTileEntity implements ITickabl
     }
 
     @Override
-    public void onBlockBreak(World world, BlockPos pos, IBlockState state) {
+    public void onBlockBreak(World world, BlockPos pos, BlockState state) {
         super.onBlockBreak(world, pos, state);
         if (!this.world.isRemote) {
             PowerSenderSupport.fixNetworks(this.world, pos);

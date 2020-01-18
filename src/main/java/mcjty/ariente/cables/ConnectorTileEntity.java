@@ -2,19 +2,19 @@ package mcjty.ariente.cables;
 
 import net.minecraft.block.Block;
 import net.minecraft.nbt.NBTTagCompound;
-import net.minecraft.util.EnumFacing;
+import net.minecraft.util.Direction;
 
 public class ConnectorTileEntity extends GenericCableTileEntity {
 
     private int inputFromSide[] = new int[] { 0, 0, 0, 0, 0, 0 };
     private int powerOut[] = new int[] { 0, 0, 0, 0, 0, 0 };
-    private Block[] cachedNeighbours = new Block[EnumFacing.VALUES.length];
+    private Block[] cachedNeighbours = new Block[Direction.VALUES.length];
 
-    public int getPowerOut(EnumFacing side) {
+    public int getPowerOut(Direction side) {
         return powerOut[side.ordinal()];
     }
 
-    public void setPowerOut(EnumFacing side, int powerOut) {
+    public void setPowerOut(Direction side, int powerOut) {
         if (powerOut > 15) {
             powerOut = 15;
         }

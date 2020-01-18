@@ -2,7 +2,7 @@ package mcjty.ariente.power;
 
 import mcjty.ariente.cables.CableColor;
 import net.minecraft.tileentity.TileEntity;
-import net.minecraft.util.EnumFacing;
+import net.minecraft.util.Direction;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.World;
 
@@ -37,7 +37,7 @@ public class PowerSenderSupport {
         }
         int toReplace = cableId;
         setCableId(id);
-        for (EnumFacing facing : EnumFacing.VALUES) {
+        for (Direction facing : Direction.VALUES) {
             BlockPos p = pos.offset(facing);
             TileEntity te = world.getTileEntity(p);
             if (te instanceof IPowerBlob) {

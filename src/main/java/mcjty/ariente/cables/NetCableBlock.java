@@ -8,15 +8,15 @@ import mcjty.lib.McJtyLib;
 import net.minecraft.block.Block;
 import net.minecraft.block.ITileEntityProvider;
 import net.minecraft.block.material.Material;
-import net.minecraft.block.state.IBlockState;
+import net.minecraft.block.state.BlockState;
 import net.minecraft.creativetab.CreativeTabs;
-import net.minecraft.entity.EntityLivingBase;
-import net.minecraft.entity.player.EntityPlayer;
+import net.minecraft.entity.LivingEntity;
+import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.init.Blocks;
 import net.minecraft.item.ItemStack;
 import net.minecraft.tileentity.TileEntity;
 import net.minecraft.util.BlockRenderLayer;
-import net.minecraft.util.EnumFacing;
+import net.minecraft.util.Direction;
 import net.minecraft.util.NonNullList;
 import net.minecraft.util.ResourceLocation;
 import net.minecraft.util.math.BlockPos;
@@ -53,13 +53,13 @@ public class NetCableBlock extends GenericCableBlock implements ITileEntityProvi
     }
 
     @Override
-    public TileEntity createTileEntity(World world, IBlockState metadata) {
+    public TileEntity createTileEntity(World world, BlockState metadata) {
         return new NetCableTileEntity();
     }
 
 
     @Override
-    public void harvestBlock(World worldIn, EntityPlayer player, BlockPos pos, IBlockState state, @Nullable TileEntity te, ItemStack stack) {
+    public void harvestBlock(World worldIn, PlayerEntity player, BlockPos pos, BlockState state, @Nullable TileEntity te, ItemStack stack) {
         if (te instanceof NetCableTileEntity) {
             // If we are in mimic mode then the drop will be the facade as the connector will remain there
             NetCableTileEntity cableTileEntity = (NetCableTileEntity) te;
@@ -75,7 +75,7 @@ public class NetCableBlock extends GenericCableBlock implements ITileEntityProvi
     }
 
     @Override
-    public boolean removedByPlayer(IBlockState state, World world, BlockPos pos, EntityPlayer player, boolean willHarvest) {
+    public boolean removedByPlayer(BlockState state, World world, BlockPos pos, PlayerEntity player, boolean willHarvest) {
         TileEntity te = world.getTileEntity(pos);
         if (te instanceof NetCableTileEntity) {
             NetCableTileEntity cableTileEntity = (NetCableTileEntity) te;
@@ -96,9 +96,9 @@ public class NetCableBlock extends GenericCableBlock implements ITileEntityProvi
     }
 
     @Override
-    public IBlockState getExtendedState(IBlockState state, IBlockAccess world, BlockPos pos) {
+    public BlockState getExtendedState(BlockState state, IBlockAccess world, BlockPos pos) {
         IExtendedBlockState extendedBlockState = (IExtendedBlockState) super.getExtendedState(state, world, pos);
-        IBlockState mimicBlock = getMimicBlock(world, pos);
+        BlockState mimicBlock = getMimicBlock(world, pos);
         if (mimicBlock != null) {
             return extendedBlockState.withProperty(FACADEID, new FacadeBlockId(mimicBlock));
         } else {
@@ -124,8 +124,8 @@ public class NetCableBlock extends GenericCableBlock implements ITileEntityProvi
 
     @Override
     @SideOnly(Side.CLIENT)
-    public boolean shouldSideBeRendered(IBlockState blockState, IBlockAccess blockAccess, BlockPos pos, EnumFacing side) {
-        IBlockState mimicBlock = getMimicBlock(blockAccess, pos);
+    public boolean shouldSideBeRendered(BlockState blockState, IBlockAccess blockAccess, BlockPos pos, Direction side) {
+        BlockState mimicBlock = getMimicBlock(blockAccess, pos);
         if (mimicBlock == null) {
             return false;
         } else {
@@ -136,27 +136,27 @@ public class NetCableBlock extends GenericCableBlock implements ITileEntityProvi
 
     @Override
     @SideOnly(Side.CLIENT)
-    public boolean canRenderInLayer(IBlockState state, BlockRenderLayer layer) {
+    public boolean canRenderInLayer(BlockState state, BlockRenderLayer layer) {
         return true; // delegated to GenericCableBakedModel#getQuads
     }
 
 
     @Override
-    public IBlockState getStateForPlacement(World world, BlockPos pos, EnumFacing facing, float hitX, float hitY, float hitZ, int meta, EntityLivingBase placer) {
+    public BlockState getStateForPlacement(World world, BlockPos pos, Direction facing, float hitX, float hitY, float hitZ, int meta, LivingEntity placer) {
         return getPlacementState(world, pos, facing, hitX, hitY, hitZ, meta, placer);
 
     }
 
-    public IBlockState getPlacementState(World world, BlockPos pos, EnumFacing facing, float hitX, float hitY, float hitZ, int meta, EntityLivingBase placer) {
+    public BlockState getPlacementState(World world, BlockPos pos, Direction facing, float hitX, float hitY, float hitZ, int meta, LivingEntity placer) {
         // When our block is placed down we force a re-render of adjacent blocks to make sure their baked model is updated
         world.markBlockRangeForRenderUpdate(pos.add(-1, -1, -1), pos.add(1, 1, 1));
         return super.getStateForPlacement(world, pos, facing, hitX, hitY, hitZ, meta, placer);
     }
 
     @Override
-    protected ConnectorType getConnectorType(@Nonnull CableColor color, IBlockAccess world, BlockPos connectorPos, EnumFacing facing) {
+    protected ConnectorType getConnectorType(@Nonnull CableColor color, IBlockAccess world, BlockPos connectorPos, Direction facing) {
         BlockPos pos = connectorPos.offset(facing);
-        IBlockState state = world.getBlockState(pos);
+        BlockState state = world.getBlockState(pos);
         Block block = state.getBlock();
         if ((block instanceof NetCableBlock || block instanceof ConnectorBlock) && state.getValue(COLOR) == color) {
             return ConnectorType.CABLE;

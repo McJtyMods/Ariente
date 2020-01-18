@@ -4,14 +4,12 @@ import mcjty.ariente.Ariente;
 import mcjty.ariente.api.*;
 import mcjty.ariente.compat.arienteworld.ArienteWorldCompat;
 import mcjty.ariente.sounds.ModSounds;
-import net.minecraft.entity.Entity;
-import net.minecraft.entity.EntityFlying;
-import net.minecraft.entity.EntityLivingBase;
-import net.minecraft.entity.SharedMonsterAttributes;
+import net.minecraft.entity.*;
 import net.minecraft.entity.ai.EntityAIBase;
 import net.minecraft.entity.ai.EntityMoveHelper;
+import net.minecraft.entity.ai.controller.MovementController;
 import net.minecraft.entity.monster.IMob;
-import net.minecraft.entity.player.EntityPlayer;
+import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.util.DamageSource;
 import net.minecraft.util.ResourceLocation;
@@ -26,23 +24,27 @@ import net.minecraft.world.World;
 
 import javax.annotation.Nullable;
 
-public class SentinelDroneEntity extends EntityFlying implements IMob, IForcefieldImmunity, ISentinel {
+public class SentinelDroneEntity extends FlyingEntity implements IMob, IForcefieldImmunity, ISentinel {
 
     public static final ResourceLocation LOOT = new ResourceLocation(Ariente.MODID, "entities/sentinel_drone");
 
     private int sentinelId;
     private ChunkPos cityCenter;
 
-    public SentinelDroneEntity(World worldIn) {
-        super(worldIn);
-        this.setSize(1.3F, 1.3F);
-        this.isImmuneToFire = false;
+    public SentinelDroneEntity(EntityType<? extends FlyingEntity> type, World worldIn) {
+        super(type, worldIn);
+        // @todo 1.14
+//        this.setSize(1.3F, 1.3F);
+
+// @todo 1.14
+//        this.isImmuneToFire = false;
+
         this.experienceValue = 5;
-        this.moveHelper = new SentinelDroneMoveHelper(this);
+        this.moveController = new SentinelDroneMoveHelper(this);
     }
 
-    public SentinelDroneEntity(World world, int sentinelId, ChunkPos cityCenter) {
-        this(world);
+    public SentinelDroneEntity(EntityType<? extends FlyingEntity> type, World world, int sentinelId, ChunkPos cityCenter) {
+        this(type, world);
         this.sentinelId = sentinelId;
         this.cityCenter = cityCenter;
     }
@@ -54,8 +56,8 @@ public class SentinelDroneEntity extends EntityFlying implements IMob, IForcefie
 
     // Override this to make it less likely to despawn
     @Override
-    protected void despawnEntity() {
-        Entity entity = this.world.getClosestPlayerToEntity(this, -1.0D);
+    protected void checkDespawn() {
+        Entity entity = this.world.getClosestPlayer(this, -1.0D);
 
         if (entity != null) {
             double d0 = entity.posX - this.posX;
@@ -63,12 +65,13 @@ public class SentinelDroneEntity extends EntityFlying implements IMob, IForcefie
             double d2 = entity.posZ - this.posZ;
             double d3 = d0 * d0 + d1 * d1 + d2 * d2;
 
-            if (this.canDespawn() && d3 > 16384.0D) {
-                this.setDead();
+            double closest = entity.getDistanceSq(this);
+            if (this.canDespawn(closest) && d3 > 16384.0D) {
+                this.remove();
             }
 
             if (this.idleTime > 900 && this.rand.nextInt(800) == 0 && d3 > 2048.0D && this.canDespawn()) {
-                this.setDead();
+                this.remove();
             } else if (d3 < 2048.0D) {
                 this.idleTime = 0;
             }
@@ -77,14 +80,14 @@ public class SentinelDroneEntity extends EntityFlying implements IMob, IForcefie
 
 
     @Override
-    public void setAttackTarget(@Nullable EntityLivingBase entitylivingbaseIn) {
+    public void setAttackTarget(@Nullable LivingEntity entitylivingbaseIn) {
 //        super.setAttackTarget(entitylivingbaseIn);
         // This is called by EntityAIFindEntityNearestPlayer when it spots a player.
         // In this case we don't attack but notify the city AI
-        if (entitylivingbaseIn instanceof EntityPlayer && cityCenter != null) {
+        if (entitylivingbaseIn instanceof PlayerEntity && cityCenter != null) {
             ICityAISystem aiSystem = ArienteWorldCompat.getCityAISystem(world);
             ICityAI cityAI = aiSystem.getCityAI(cityCenter);
-            cityAI.playerSpotted((EntityPlayer) entitylivingbaseIn);
+            cityAI.playerSpotted((PlayerEntity) entitylivingbaseIn);
             aiSystem.saveSystem();
         }
     }
@@ -237,7 +240,7 @@ public class SentinelDroneEntity extends EntityFlying implements IMob, IForcefie
                 this.parentEntity.rotationYaw = -((float) MathHelper.atan2(this.parentEntity.motionX, this.parentEntity.motionZ)) * (180F / (float) Math.PI);
                 this.parentEntity.renderYawOffset = this.parentEntity.rotationYaw;
             } else {
-                EntityLivingBase entitylivingbase = this.parentEntity.getAttackTarget();
+                LivingEntity entitylivingbase = this.parentEntity.getAttackTarget();
                 double d0 = 64.0D;
 
                 if (entitylivingbase.getDistanceSq(this.parentEntity) < 4096.0D) {
@@ -301,7 +304,7 @@ public class SentinelDroneEntity extends EntityFlying implements IMob, IForcefie
         }
     }
 
-    static class SentinelDroneMoveHelper extends EntityMoveHelper {
+    static class SentinelDroneMoveHelper extends MovementController {
         private final SentinelDroneEntity parentEntity;
         private int courseChangeCooldown;
 
@@ -311,7 +314,7 @@ public class SentinelDroneEntity extends EntityFlying implements IMob, IForcefie
         }
 
         @Override
-        public void onUpdateMoveHelper() {
+        public void tick() {
             if (this.action == Action.MOVE_TO) {
                 double d0 = this.posX - this.parentEntity.posX;
                 double d1 = this.posY - this.parentEntity.posY;

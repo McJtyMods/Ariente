@@ -1,33 +1,26 @@
 package mcjty.ariente.bindings;
 
-import io.netty.buffer.ByteBuf;
-import mcjty.lib.thirteen.Context;
-import net.minecraft.entity.player.EntityPlayerMP;
-import net.minecraftforge.fml.common.network.simpleimpl.IMessage;
+import net.minecraft.entity.player.PlayerEntity;
+import net.minecraft.network.PacketBuffer;
+import net.minecraftforge.fml.network.NetworkEvent;
 
 import java.util.function.Supplier;
 
-public class PacketFullHealth implements IMessage {
+public class PacketFullHealth {
 
-    @Override
-    public void fromBytes(ByteBuf buf) {
-    }
-
-    @Override
-    public void toBytes(ByteBuf buf) {
+    public void toBytes(PacketBuffer buf) {
     }
 
     public PacketFullHealth() {
     }
 
-    public PacketFullHealth(ByteBuf buf) {
-        fromBytes(buf);
+    public PacketFullHealth(PacketBuffer buf) {
     }
 
-    public void handle(Supplier<Context> supplier) {
-        Context ctx = supplier.get();
+    public void handle(Supplier<NetworkEvent.Context> supplier) {
+        NetworkEvent.Context ctx = supplier.get();
         ctx.enqueueWork(() -> {
-            EntityPlayerMP playerEntity = ctx.getSender();
+            PlayerEntity playerEntity = ctx.getSender();
             playerEntity.heal(100);
         });
         ctx.setPacketHandled(true);

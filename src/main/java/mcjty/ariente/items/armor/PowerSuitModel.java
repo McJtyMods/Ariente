@@ -15,8 +15,8 @@ import net.minecraft.client.renderer.GlStateManager;
 import net.minecraft.client.renderer.Tessellator;
 import net.minecraft.client.renderer.vertex.DefaultVertexFormats;
 import net.minecraft.entity.Entity;
-import net.minecraft.entity.EntityLivingBase;
-import net.minecraft.entity.player.EntityPlayer;
+import net.minecraft.entity.LivingEntity;
+import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.inventory.EntityEquipmentSlot;
 import net.minecraft.item.ItemArmor;
 import net.minecraft.item.ItemStack;
@@ -170,7 +170,7 @@ public class PowerSuitModel extends ModelBiped {
         model.rotateAngleZ = z;
     }
 
-    public static ModelBiped getModel(EntityLivingBase entity, ItemStack stack) {
+    public static ModelBiped getModel(LivingEntity entity, ItemStack stack) {
 
         if (stack.isEmpty() || !(stack.getItem() instanceof ItemArmor)) {
             return null;
@@ -237,11 +237,11 @@ public class PowerSuitModel extends ModelBiped {
     @Override
     public void render(Entity entity, float limbSwing, float limbSwingAmount, float ageInTicks, float netHeadYaw, float headPitch, float scale) {
         
-        if(entity instanceof EntityLivingBase)	{
+        if(entity instanceof LivingEntity)	{
             this.isSneak = entity.isSneaking();
             this.isRiding = entity.isRiding();
-            this.isChild = ((EntityLivingBase)entity).isChild();
-            this.setLivingAnimations((EntityLivingBase)entity, limbSwing, limbSwingAmount, ageInTicks);
+            this.isChild = ((LivingEntity)entity).isChild();
+            this.setLivingAnimations((LivingEntity)entity, limbSwing, limbSwingAmount, ageInTicks);
         }
         
         this.setRotationAngles(limbSwing, limbSwingAmount, ageInTicks, netHeadYaw, headPitch, scale, entity);
@@ -278,11 +278,11 @@ public class PowerSuitModel extends ModelBiped {
         }
 
         if (this == modelChest) {   // @todo Proper test
-            if (entity instanceof EntityLivingBase) {
-                ItemStack chestStack = ((EntityLivingBase) entity).getItemStackFromSlot(EntityEquipmentSlot.CHEST);
+            if (entity instanceof LivingEntity) {
+                ItemStack chestStack = ((LivingEntity) entity).getItemStackFromSlot(EntityEquipmentSlot.CHEST);
                 if (chestStack.getItem() == ModItems.powerSuitChest) {
                     if (ModuleSupport.hasWorkingUpgrade(chestStack, ArmorUpgradeType.FORCEFIELD)) {
-                        ForceFieldRenderer.personalForcefields.put(new Vec3d(entity.prevPosX, entity.prevPosY, entity.prevPosZ), entity instanceof EntityPlayer);
+                        ForceFieldRenderer.personalForcefields.put(new Vec3d(entity.prevPosX, entity.prevPosY, entity.prevPosZ), entity instanceof PlayerEntity);
                     }
                 }
             }

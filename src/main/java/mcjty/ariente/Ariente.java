@@ -7,68 +7,41 @@ import mcjty.ariente.apiimpl.ArienteSystem;
 import mcjty.ariente.setup.ModSetup;
 import mcjty.hologui.api.IHoloGuiHandler;
 import mcjty.lib.base.ModBase;
-import mcjty.lib.proxy.IProxy;
-import net.minecraft.entity.player.EntityPlayer;
-import net.minecraftforge.fluids.FluidRegistry;
+import mcjty.theoneprobe.config.Config;
+import net.minecraft.entity.player.PlayerEntity;
+import net.minecraftforge.fml.ModLoadingContext;
 import net.minecraftforge.fml.common.Mod;
-import net.minecraftforge.fml.common.SidedProxy;
-import net.minecraftforge.fml.common.event.FMLInitializationEvent;
-import net.minecraftforge.fml.common.event.FMLPostInitializationEvent;
-import net.minecraftforge.fml.common.event.FMLPreInitializationEvent;
-import net.minecraftforge.fml.common.event.FMLServerStartingEvent;
+import net.minecraftforge.fml.config.ModConfig;
+import net.minecraftforge.fml.event.lifecycle.FMLCommonSetupEvent;
+import net.minecraftforge.fml.javafmlmod.FMLJavaModLoadingContext;
+import net.minecraftforge.fml.loading.FMLPaths;
 
-
-@Mod(modid = Ariente.MODID, name = Ariente.MODNAME,
-        dependencies =
-                "required-after:mcjtylib_ng@[" + Ariente.MIN_MCJTYLIB_VER + ",);" +
-                "required-after:hologui@[" + Ariente.MIN_HOLOGUI_VER + ",);" +
-                "after:forge@[" + Ariente.MIN_FORGE11_VER + ",)",
-        acceptedMinecraftVersions = "[1.12,1.13)",
-        version = Ariente.VERSION)
+@Mod(Ariente.MODID)
 public class Ariente implements ModBase, IArienteMod {
     public static final String MODID = "ariente";
-    public static final String MODNAME = "Ariente";
-    public static final String VERSION = "0.0.31-alpha";
-    public static final String MIN_FORGE11_VER = "14.23.3.2694";
-    public static final String MIN_MCJTYLIB_VER = "3.5.3";
-    public static final String MIN_HOLOGUI_VER = "0.0.9-beta";
 
-    @SidedProxy(clientSide = "mcjty.ariente.setup.ClientProxy", serverSide = "mcjty.ariente.setup.ServerProxy")
-    public static IProxy proxy;
     public static ModSetup setup = new ModSetup();
 
-    @Mod.Instance
     public static Ariente instance;
 
     public static IHoloGuiHandler guiHandler;
     public static IArienteSystem arienteSystem = new ArienteSystem();
 
     public Ariente() {
+        instance = this;
+
         // This has to be done VERY early
-        FluidRegistry.enableUniversalBucket();
-    }
+        // @todo 1.14
+//        FluidRegistry.enableUniversalBucket();
 
+        ModLoadingContext.get().registerConfig(ModConfig.Type.CLIENT, Config.CLIENT_CONFIG);
+        ModLoadingContext.get().registerConfig(ModConfig.Type.COMMON, Config.COMMON_CONFIG);
 
-    @Mod.EventHandler
-    public void preInit(FMLPreInitializationEvent event){
-        setup.preInit(event);
-        proxy.preInit(event);
-    }
+        FMLJavaModLoadingContext.get().getModEventBus().addListener((FMLCommonSetupEvent event) -> setup.init(event));
 
-    @Mod.EventHandler
-    public void init(FMLInitializationEvent e) {
-        setup.init(e);
-        proxy.init(e);
-    }
+        Config.loadConfig(Config.CLIENT_CONFIG, FMLPaths.CONFIGDIR.get().resolve("ariente-client.toml"));
+        Config.loadConfig(Config.COMMON_CONFIG, FMLPaths.CONFIGDIR.get().resolve("ariente-common.toml"));
 
-    @Mod.EventHandler
-    public void postInit(FMLPostInitializationEvent e) {
-        setup.postInit(e);
-        proxy.postInit(e);
-    }
-
-    @Mod.EventHandler
-    public void serverLoad(FMLServerStartingEvent event) {
     }
 
     @Override
@@ -82,7 +55,7 @@ public class Ariente implements ModBase, IArienteMod {
     }
 
     @Override
-    public void openManual(EntityPlayer player, int bookindex, String page) {
+    public void openManual(PlayerEntity player, int bookindex, String page) {
         // @todo
     }
 }

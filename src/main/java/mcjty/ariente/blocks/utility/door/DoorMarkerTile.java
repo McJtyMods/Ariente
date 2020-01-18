@@ -17,15 +17,15 @@ import mcjty.theoneprobe.api.ProbeMode;
 import mcp.mobius.waila.api.IWailaConfigHandler;
 import mcp.mobius.waila.api.IWailaDataAccessor;
 import net.minecraft.block.Block;
-import net.minecraft.block.state.IBlockState;
+import net.minecraft.block.state.BlockState;
 import net.minecraft.entity.Entity;
-import net.minecraft.entity.EntityLivingBase;
-import net.minecraft.entity.player.EntityPlayer;
+import net.minecraft.entity.LivingEntity;
+import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.pathfinding.PathNodeType;
 import net.minecraft.tileentity.TileEntity;
-import net.minecraft.util.EnumFacing;
+import net.minecraft.util.Direction;
 import net.minecraft.util.ITickable;
 import net.minecraft.util.SoundCategory;
 import net.minecraft.util.math.AxisAlignedBB;
@@ -60,8 +60,8 @@ public class DoorMarkerTile extends GenericTileEntity implements ITickable, IGui
         if (!world.isRemote) {
             setInvisibleBlocks();
             if (!locked) {
-                List<Entity> entities = world.getEntitiesWithinAABB(EntityLivingBase.class, getDetectionBox(),
-                        entity -> entity instanceof EntityPlayer || entity instanceof SoldierEntity);
+                List<Entity> entities = world.getEntitiesWithinAABB(LivingEntity.class, getDetectionBox(),
+                        entity -> entity instanceof PlayerEntity || entity instanceof SoldierEntity);
                 boolean o = !entities.isEmpty();
                 setOpen(o);
             }
@@ -88,7 +88,7 @@ public class DoorMarkerTile extends GenericTileEntity implements ITickable, IGui
         BlockPos p = pos.up();
         for (int i = 0 ; i < UtilityConfiguration.MAX_DOOR_HEIGHT.get() ; i++) {
             if (world.isAirBlock(p)) {
-                EnumFacing facing = getFacing();
+                Direction facing = getFacing();
                 if (facing == null) {
                     return;
                 }
@@ -112,8 +112,8 @@ public class DoorMarkerTile extends GenericTileEntity implements ITickable, IGui
         }
     }
 
-    private EnumFacing getFacing() {
-        IBlockState state = world.getBlockState(pos);
+    private Direction getFacing() {
+        BlockState state = world.getBlockState(pos);
         if (state.getBlock() != ModBlocks.doorMarkerBlock) {
             return null;
         }
@@ -162,7 +162,7 @@ public class DoorMarkerTile extends GenericTileEntity implements ITickable, IGui
     }
 
     @Nullable
-    public static PathNodeType getAiPathNodeType(IBlockState state, IBlockAccess world, BlockPos pos) {
+    public static PathNodeType getAiPathNodeType(BlockState state, IBlockAccess world, BlockPos pos) {
         TileEntity te = world.getTileEntity(pos);
         if (te instanceof DoorMarkerTile) {
             DoorMarkerTile door = (DoorMarkerTile) te;
@@ -173,7 +173,7 @@ public class DoorMarkerTile extends GenericTileEntity implements ITickable, IGui
         return PathNodeType.BLOCKED;
     }
 
-    public static AxisAlignedBB getCollisionBoundingBox(IBlockState blockState, IBlockAccess world, BlockPos pos) {
+    public static AxisAlignedBB getCollisionBoundingBox(BlockState blockState, IBlockAccess world, BlockPos pos) {
         TileEntity te = world.getTileEntity(pos);
         if (te instanceof DoorMarkerTile) {
             DoorMarkerTile door = (DoorMarkerTile) te;
@@ -184,7 +184,7 @@ public class DoorMarkerTile extends GenericTileEntity implements ITickable, IGui
         return BLOCK_AABB;
     }
 
-    public static boolean addCollisionBoxToList(IBlockState state, World world, BlockPos pos, AxisAlignedBB entityBox, List<AxisAlignedBB> collidingBoxes, @Nullable Entity entityIn, boolean isActualState) {
+    public static boolean addCollisionBoxToList(BlockState state, World world, BlockPos pos, AxisAlignedBB entityBox, List<AxisAlignedBB> collidingBoxes, @Nullable Entity entityIn, boolean isActualState) {
         TileEntity te = world.getTileEntity(pos);
         if (te instanceof DoorMarkerTile) {
             DoorMarkerTile door = (DoorMarkerTile) te;
@@ -226,7 +226,7 @@ public class DoorMarkerTile extends GenericTileEntity implements ITickable, IGui
 
     @Override
     @Optional.Method(modid = "theoneprobe")
-    public void addProbeInfo(ProbeMode mode, IProbeInfo probeInfo, EntityPlayer player, World world, IBlockState blockState, IProbeHitData data) {
+    public void addProbeInfo(ProbeMode mode, IProbeInfo probeInfo, PlayerEntity player, World world, BlockState blockState, IProbeHitData data) {
         super.addProbeInfo(mode, probeInfo, player, world, blockState, data);
 //        Boolean working = isWorking();
 //        if (working) {
@@ -250,7 +250,7 @@ public class DoorMarkerTile extends GenericTileEntity implements ITickable, IGui
     }
 
     @Override
-    public void onBlockBreak(World world, BlockPos pos, IBlockState state) {
+    public void onBlockBreak(World world, BlockPos pos, BlockState state) {
         super.onBlockBreak(world, pos, state);
         clearInvisibleBlocks();
     }

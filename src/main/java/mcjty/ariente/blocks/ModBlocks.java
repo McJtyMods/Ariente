@@ -26,9 +26,9 @@ import mcjty.lib.varia.ItemStackTools;
 import net.minecraft.block.Block;
 import net.minecraft.block.SoundType;
 import net.minecraft.block.material.Material;
-import net.minecraft.block.state.IBlockState;
+import net.minecraft.block.state.BlockState;
 import net.minecraft.client.renderer.color.BlockColors;
-import net.minecraft.util.EnumFacing;
+import net.minecraft.util.Direction;
 import net.minecraft.util.math.AxisAlignedBB;
 import net.minecraftforge.fml.relauncher.Side;
 import net.minecraftforge.fml.relauncher.SideOnly;
@@ -465,8 +465,8 @@ public class ModBlocks {
         aiCoreBlock.setHarvestLevel("pickaxe", 2);
     }
 
-    public static AxisAlignedBB getFlatBox(IBlockState state) {
-        EnumFacing facing = state.getValue(BaseBlock.FACING);
+    public static AxisAlignedBB getFlatBox(BlockState state) {
+        Direction facing = state.getValue(BaseBlock.FACING);
         switch (facing) {
             case UP:
                 return LIGHT_BLOCK_DOWN;
@@ -484,8 +484,8 @@ public class ModBlocks {
         return Block.FULL_BLOCK_AABB;
     }
 
-    public static AxisAlignedBB getBeamBox(IBlockState state) {
-        EnumFacing facing = state.getValue(BaseBlock.FACING_HORIZ);
+    public static AxisAlignedBB getBeamBox(BlockState state) {
+        Direction facing = state.getValue(BaseBlock.FACING_HORIZ);
         switch (facing) {
             case SOUTH:
                 return BEAM_BLOCK_NS_AABB;

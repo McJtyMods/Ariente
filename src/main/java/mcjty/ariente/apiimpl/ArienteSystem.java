@@ -11,13 +11,12 @@ import mcjty.ariente.items.KeyCardItem;
 import mcjty.ariente.items.modules.ModuleSupport;
 import mcjty.ariente.power.PowerSenderSupport;
 import mcjty.ariente.security.SecuritySystem;
-import net.minecraft.block.BlockRailBase;
-import net.minecraft.block.state.IBlockState;
+import net.minecraft.block.BlockState;
 import net.minecraft.entity.Entity;
-import net.minecraft.entity.EntityLiving;
-import net.minecraft.entity.EntityLivingBase;
+import net.minecraft.entity.LivingEntity;
 import net.minecraft.item.ItemStack;
-import net.minecraft.util.EnumFacing;
+import net.minecraft.state.properties.RailShape;
+import net.minecraft.util.Direction;
 import net.minecraft.util.math.AxisAlignedBB;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.ChunkPos;
@@ -30,12 +29,12 @@ import java.util.List;
 public class ArienteSystem implements IArienteSystem {
 
     @Override
-    public Class<? extends EntityLiving> getSoldierClass() {
+    public Class<? extends LivingEntity> getSoldierClass() {
         return SoldierEntity.class;
     }
 
     @Override
-    public Class<? extends EntityLiving> getMasterSoldierClass() {
+    public Class<? extends LivingEntity> getMasterSoldierClass() {
         return MasterSoldierEntity.class;
     }
 
@@ -52,17 +51,17 @@ public class ArienteSystem implements IArienteSystem {
     }
 
     @Override
-    public EntityLivingBase createSoldier(World world, BlockPos pos, EnumFacing facing, @Nullable ChunkPos cityCenter, SoldierBehaviourType type, boolean master) {
+    public LivingEntity createSoldier(World world, BlockPos pos, Direction facing, @Nullable ChunkPos cityCenter, SoldierBehaviourType type, boolean master) {
         return createSoldierInt(world, pos, facing, cityCenter, type, master);
     }
 
     @Override
-    public EntityLivingBase createSentinel(World world, int index, @Nullable ChunkPos cityCenter) {
+    public LivingEntity createSentinel(World world, int index, @Nullable ChunkPos cityCenter) {
         return new SentinelDroneEntity(world, index, cityCenter);
     }
 
     @Override
-    public EntityLivingBase createDrone(World world, @Nullable ChunkPos cityCenter) {
+    public LivingEntity createDrone(World world, @Nullable ChunkPos cityCenter) {
         return new DroneEntity(world, cityCenter);
     }
 
@@ -82,7 +81,7 @@ public class ArienteSystem implements IArienteSystem {
     }
 
     @Override
-    public BlockRailBase.EnumRailDirection getBeamDirection(IBlockState state) {
+    public RailShape getBeamDirection(BlockState state) {
         return FluxLevitatorEntity.getBeamDirection(state);
     }
 
@@ -106,7 +105,7 @@ public class ArienteSystem implements IArienteSystem {
         return new FluxLevitatorEntity(world, x, y, z);
     }
 
-    private SoldierEntity createSoldierInt(World world, BlockPos p, EnumFacing facing, @Nullable ChunkPos center, SoldierBehaviourType behaviourType,
+    private SoldierEntity createSoldierInt(World world, BlockPos p, Direction facing, @Nullable ChunkPos center, SoldierBehaviourType behaviourType,
                                            boolean master) {
         SoldierEntity entity;
         if (master) {
@@ -133,7 +132,7 @@ public class ArienteSystem implements IArienteSystem {
                 break;
         }
         entity.setLocationAndAngles(entity.posX, entity.posY, entity.posZ, yaw, 0);
-        world.spawnEntity(entity);
+        world.addEntity(entity);
         return entity;
     }
 

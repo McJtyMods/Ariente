@@ -1,29 +1,19 @@
 package mcjty.ariente.blocks.defense;
 
-import io.netty.buffer.ByteBuf;
-import mcjty.lib.network.NetworkTools;
-import mcjty.lib.thirteen.Context;
+import net.minecraft.network.PacketBuffer;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.Vec3d;
-import net.minecraftforge.fml.common.network.simpleimpl.IMessage;
+import net.minecraftforge.fml.network.NetworkEvent;
 
 import java.util.function.Supplier;
 
-public class PacketDamageForcefield implements IMessage {
+public class PacketDamageForcefield {
     private BlockPos pos;
     private int index;
     private Vec3d intersection;
 
-    @Override
-    public void fromBytes(ByteBuf buf) {
-        pos = NetworkTools.readPos(buf);
-        index = buf.readInt();
-        intersection = new Vec3d(buf.readDouble(), buf.readDouble(), buf.readDouble());
-    }
-
-    @Override
-    public void toBytes(ByteBuf buf) {
-        NetworkTools.writePos(buf, pos);
+    public void toBytes(PacketBuffer buf) {
+        buf.writeBlockPos(pos);
         buf.writeInt(index);
         buf.writeDouble(intersection.x);
         buf.writeDouble(intersection.y);
@@ -33,8 +23,10 @@ public class PacketDamageForcefield implements IMessage {
     public PacketDamageForcefield() {
     }
 
-    public PacketDamageForcefield(ByteBuf buf) {
-        fromBytes(buf);
+    public PacketDamageForcefield(PacketBuffer buf) {
+        pos = buf.readBlockPos();
+        index = buf.readInt();
+        intersection = new Vec3d(buf.readDouble(), buf.readDouble(), buf.readDouble());
     }
 
     public PacketDamageForcefield(BlockPos pos, int index, Vec3d intersection) {
@@ -43,8 +35,8 @@ public class PacketDamageForcefield implements IMessage {
         this.intersection = intersection;
     }
 
-    public void handle(Supplier<Context> supplier) {
-        Context ctx = supplier.get();
+    public void handle(Supplier<NetworkEvent.Context> supplier) {
+        NetworkEvent.Context ctx = supplier.get();
         ctx.enqueueWork(() -> {
             ForceFieldRenderer.damageField(pos, index, intersection);
         });

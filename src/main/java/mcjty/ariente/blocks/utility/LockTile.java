@@ -16,8 +16,8 @@ import mcjty.theoneprobe.api.TextStyleClass;
 import mcp.mobius.waila.api.IWailaConfigHandler;
 import mcp.mobius.waila.api.IWailaDataAccessor;
 import net.minecraft.block.properties.PropertyBool;
-import net.minecraft.block.state.IBlockState;
-import net.minecraft.entity.player.EntityPlayer;
+import net.minecraft.block.state.BlockState;
+import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.network.NetworkManager;
@@ -62,7 +62,7 @@ public class LockTile extends GenericTileEntity implements IGuiTile, IKeyCardSlo
         }
     }
 
-    public int getHorizontalRange(EntityPlayer player, IHoloGuiEntity holo) {
+    public int getHorizontalRange(PlayerEntity player, IHoloGuiEntity holo) {
         return horizontalRange;
     }
 
@@ -73,7 +73,7 @@ public class LockTile extends GenericTileEntity implements IGuiTile, IKeyCardSlo
         doLock(true);
     }
 
-    public int getVerticalRange(EntityPlayer player, IHoloGuiEntity holo) {
+    public int getVerticalRange(PlayerEntity player, IHoloGuiEntity holo) {
         return verticalRange;
     }
 
@@ -85,7 +85,7 @@ public class LockTile extends GenericTileEntity implements IGuiTile, IKeyCardSlo
     }
 
     @Override
-    public void onBlockBreak(World world, BlockPos pos, IBlockState state) {
+    public void onBlockBreak(World world, BlockPos pos, BlockState state) {
         doLock(false);
         super.onBlockBreak(world, pos, state);
     }
@@ -147,7 +147,7 @@ public class LockTile extends GenericTileEntity implements IGuiTile, IKeyCardSlo
     }
 
     @Override
-    public IBlockState getActualState(IBlockState state) {
+    public BlockState getActualState(BlockState state) {
         return state.withProperty(LOCKED, isLocked());
     }
 
@@ -203,7 +203,7 @@ public class LockTile extends GenericTileEntity implements IGuiTile, IKeyCardSlo
 
     @Override
     @Optional.Method(modid = "theoneprobe")
-    public void addProbeInfo(ProbeMode mode, IProbeInfo probeInfo, EntityPlayer player, World world, IBlockState blockState, IProbeHitData data) {
+    public void addProbeInfo(ProbeMode mode, IProbeInfo probeInfo, PlayerEntity player, World world, BlockState blockState, IProbeHitData data) {
         super.addProbeInfo(mode, probeInfo, player, world, blockState, data);
         probeInfo.text(TextStyleClass.LABEL + "Key " + TextStyleClass.INFO + keyId);
         if (isLocked()) {

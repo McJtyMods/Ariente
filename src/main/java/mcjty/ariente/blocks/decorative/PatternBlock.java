@@ -1,18 +1,18 @@
 package mcjty.ariente.blocks.decorative;
 
 import mcjty.ariente.blocks.BaseVariantBlock;
-import net.minecraft.block.properties.PropertyEnum;
+import net.minecraft.state.EnumProperty;
 
 public class PatternBlock extends BaseVariantBlock<PatternType> {
 
-    public static final PropertyEnum<PatternType> TYPE = PropertyEnum.create("type", PatternType.class);
+    public static final EnumProperty<PatternType> TYPE = EnumProperty.create("type", PatternType.class);
 
     public PatternBlock(String name) {
         super(name);
     }
 
     @Override
-    public PropertyEnum<PatternType> getProperty() {
+    public EnumProperty<PatternType> getProperty() {
         return TYPE;
     }
 

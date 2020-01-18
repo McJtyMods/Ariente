@@ -11,7 +11,7 @@ import mcjty.ariente.recipes.ConstructorRecipe;
 import mcjty.ariente.recipes.BlueprintRecipeRegistry;
 import mcjty.hologui.api.*;
 import mcjty.lib.tileentity.GenericTileEntity;
-import net.minecraft.entity.player.EntityPlayer;
+import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.item.ItemStack;
 import net.minecraft.util.ResourceLocation;
 import net.minecraft.util.text.TextFormatting;
@@ -62,7 +62,7 @@ public class ConstructorTile extends GenericTileEntity implements IGuiTile, ICit
 
     }
 
-    private boolean hasIngredient(EntityPlayer player, ItemStack ingredient) {
+    private boolean hasIngredient(PlayerEntity player, ItemStack ingredient) {
         if (ingredient.isEmpty()) {
             return true;
         }
@@ -79,7 +79,7 @@ public class ConstructorTile extends GenericTileEntity implements IGuiTile, ICit
         return false;
     }
 
-    private void consumeIngredient(EntityPlayer player, ItemStack ingredient) {
+    private void consumeIngredient(PlayerEntity player, ItemStack ingredient) {
         if (ingredient.isEmpty()) {
             return;
         }
@@ -101,7 +101,7 @@ public class ConstructorTile extends GenericTileEntity implements IGuiTile, ICit
         }
     }
 
-    private boolean canCraft(EntityPlayer player, ItemStack blueprintStack) {
+    private boolean canCraft(PlayerEntity player, ItemStack blueprintStack) {
         if (!blueprintStack.isEmpty()) {
             ItemStack destination = BlueprintItem.getDestination(blueprintStack);
             ConstructorRecipe recipe = BlueprintRecipeRegistry.findRecipe(destination);
@@ -118,7 +118,7 @@ public class ConstructorTile extends GenericTileEntity implements IGuiTile, ICit
         return false;
     }
 
-    private void attemptCraft(EntityPlayer player, ItemStack blueprintStack) {
+    private void attemptCraft(PlayerEntity player, ItemStack blueprintStack) {
         if (!blueprintStack.isEmpty()) {
             if (canCraft(player, blueprintStack)) {
                 ItemStack destination = BlueprintItem.getDestination(blueprintStack);

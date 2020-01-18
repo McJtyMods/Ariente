@@ -3,13 +3,13 @@ package mcjty.ariente.entities.drone;
 import com.google.common.base.Predicate;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.EntityLiving;
-import net.minecraft.entity.EntityLivingBase;
+import net.minecraft.entity.LivingEntity;
 import net.minecraft.entity.SharedMonsterAttributes;
 import net.minecraft.entity.ai.EntityAIBase;
 import net.minecraft.entity.ai.EntityAINearestAttackableTarget;
 import net.minecraft.entity.ai.EntityAITarget;
 import net.minecraft.entity.ai.attributes.IAttributeInstance;
-import net.minecraft.entity.player.EntityPlayer;
+import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.entity.player.EntityPlayerMP;
 import net.minecraft.scoreboard.Team;
 
@@ -21,15 +21,15 @@ public class EntityAIScanForPlayer extends EntityAIBase {
     private final EntityLiving entityLiving;
     private final Predicate<Entity> predicate;
     private final EntityAINearestAttackableTarget.Sorter sorter;
-    private EntityLivingBase entityTarget;
+    private LivingEntity entityTarget;
 
     public EntityAIScanForPlayer(EntityLiving entityLivingIn) {
         this.entityLiving = entityLivingIn;
 
         this.predicate = entity -> {
-            if (!(entity instanceof EntityPlayer)) {
+            if (!(entity instanceof PlayerEntity)) {
                 return false;
-            } else if (((EntityPlayer) entity).capabilities.disableDamage) {
+            } else if (((PlayerEntity) entity).capabilities.disableDamage) {
                 return false;
             } else {
                 double d0 = EntityAIScanForPlayer.this.maxTargetRange();
@@ -39,7 +39,7 @@ public class EntityAIScanForPlayer extends EntityAIBase {
                 }
 
                 if (entity.isInvisible()) {
-                    float f = ((EntityPlayer) entity).getArmorVisibility();
+                    float f = ((PlayerEntity) entity).getArmorVisibility();
 
                     if (f < 0.1F) {
                         f = 0.1F;
@@ -48,7 +48,7 @@ public class EntityAIScanForPlayer extends EntityAIBase {
                     d0 *= (double) (0.7F * f);
                 }
 
-                return (double) entity.getDistance(EntityAIScanForPlayer.this.entityLiving) > d0 ? false : EntityAITarget.isSuitableTarget(EntityAIScanForPlayer.this.entityLiving, (EntityLivingBase) entity, false, true);
+                return (double) entity.getDistance(EntityAIScanForPlayer.this.entityLiving) > d0 ? false : EntityAITarget.isSuitableTarget(EntityAIScanForPlayer.this.entityLiving, (LivingEntity) entity, false, true);
             }
         };
         this.sorter = new EntityAINearestAttackableTarget.Sorter(entityLivingIn);
@@ -56,7 +56,7 @@ public class EntityAIScanForPlayer extends EntityAIBase {
 
     public boolean shouldExecute() {
         double range = this.maxTargetRange();
-        List<EntityPlayer> list = this.entityLiving.world.<EntityPlayer>getEntitiesWithinAABB(EntityPlayer.class, this.entityLiving.getEntityBoundingBox().grow(range, range, range), this.predicate);
+        List<PlayerEntity> list = this.entityLiving.world.<PlayerEntity>getEntitiesWithinAABB(PlayerEntity.class, this.entityLiving.getEntityBoundingBox().grow(range, range, range), this.predicate);
         Collections.sort(list, this.sorter);
 
         if (list.isEmpty()) {
@@ -68,13 +68,13 @@ public class EntityAIScanForPlayer extends EntityAIBase {
     }
 
     public boolean shouldContinueExecuting() {
-        EntityLivingBase entitylivingbase = this.entityLiving.getAttackTarget();
+        LivingEntity entitylivingbase = this.entityLiving.getAttackTarget();
 
         if (entitylivingbase == null) {
             return false;
         } else if (!entitylivingbase.isEntityAlive()) {
             return false;
-        } else if (entitylivingbase instanceof EntityPlayer && ((EntityPlayer) entitylivingbase).capabilities.disableDamage) {
+        } else if (entitylivingbase instanceof PlayerEntity && ((PlayerEntity) entitylivingbase).capabilities.disableDamage) {
             return false;
         } else {
             Team team = this.entityLiving.getTeam();

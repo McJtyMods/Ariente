@@ -7,18 +7,16 @@ import mcjty.ariente.items.KeyCardItem;
 import mcjty.ariente.items.ModItems;
 import mcjty.ariente.items.armor.PowerSuit;
 import mcjty.ariente.sounds.ModSounds;
-import net.minecraft.block.Block;
+import net.minecraft.block.BlockState;
+import net.minecraft.block.Blocks;
 import net.minecraft.block.SoundType;
-import net.minecraft.entity.EntityLivingBase;
-import net.minecraft.entity.SharedMonsterAttributes;
-import net.minecraft.entity.ai.*;
-import net.minecraft.entity.monster.EntityMob;
-import net.minecraft.entity.monster.EntityPigZombie;
-import net.minecraft.entity.player.EntityPlayer;
-import net.minecraft.init.Blocks;
-import net.minecraft.inventory.EntityEquipmentSlot;
+import net.minecraft.entity.*;
+import net.minecraft.entity.ai.goal.*;
+import net.minecraft.entity.monster.ZombiePigmanEntity;
+import net.minecraft.entity.player.PlayerEntity;
+import net.minecraft.inventory.EquipmentSlotType;
 import net.minecraft.item.ItemStack;
-import net.minecraft.nbt.NBTTagCompound;
+import net.minecraft.nbt.CompoundNBT;
 import net.minecraft.network.datasync.DataParameter;
 import net.minecraft.network.datasync.DataSerializers;
 import net.minecraft.network.datasync.EntityDataManager;
@@ -28,13 +26,11 @@ import net.minecraft.util.SoundEvent;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.ChunkPos;
 import net.minecraft.world.World;
-import net.minecraftforge.fml.relauncher.Side;
-import net.minecraftforge.fml.relauncher.SideOnly;
 
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 
-public class SoldierEntity extends EntityMob implements IArmRaisable, IForcefieldImmunity, ISoldier {
+public class SoldierEntity extends CreatureEntity implements IArmRaisable, IForcefieldImmunity, ISoldier {
 
     private static final DataParameter<Boolean> ARMS_RAISED = EntityDataManager.createKey(SoldierEntity.class, DataSerializers.BOOLEAN);
     public static final ResourceLocation LOOT = new ResourceLocation(Ariente.MODID, "entities/soldier");
@@ -44,39 +40,40 @@ public class SoldierEntity extends EntityMob implements IArmRaisable, IForcefiel
     private SoldierBehaviourType behaviourType = SoldierBehaviourType.SOLDIER_FIGHTER;
 
 
-    public SoldierEntity(World worldIn) {
-        super(worldIn);
-        if (isMaster()) {
-            setSize(0.7F, 2.7F);
-        } else {
-            setSize(0.6F, 1.95F);
-        }
+    public SoldierEntity(EntityType<? extends CreatureEntity> type, World worldIn) {
+        super(type, worldIn);
+        // @todo 1.14?
+//        if (isMaster()) {
+//            setSize(0.7F, 2.7F);
+//        } else {
+//            setSize(0.6F, 1.95F);
+//        }
     }
 
-    public SoldierEntity(World world, ChunkPos cityCenter, SoldierBehaviourType behaviourType) {
-        this(world);
+    public SoldierEntity(EntityType<? extends CreatureEntity> type, World world, ChunkPos cityCenter, SoldierBehaviourType behaviourType) {
+        this(type, world);
         this.cityCenter = cityCenter;
         this.behaviourType = behaviourType;
     }
 
     @Override
-    public void onUpdate() {
-        super.onUpdate();
-        if (!world.isRemote && !isDead && cityCenter != null) {
+    public void tick() {
+        super.tick();
+        if (!world.isRemote && isAlive() && cityCenter != null) {
             ICityAISystem aiSystem = ArienteWorldCompat.getCityAISystem(world);
             ICityAI cityAI = aiSystem.getCityAI(cityCenter);
             if (cityAI != null && !cityAI.isDead(world)) {
-                feedPowerIfNeeded(EntityEquipmentSlot.HEAD);
-                feedPowerIfNeeded(EntityEquipmentSlot.FEET);
-                feedPowerIfNeeded(EntityEquipmentSlot.CHEST);
-                feedPowerIfNeeded(EntityEquipmentSlot.LEGS);
+                feedPowerIfNeeded(EquipmentSlotType.HEAD);
+                feedPowerIfNeeded(EquipmentSlotType.FEET);
+                feedPowerIfNeeded(EquipmentSlotType.CHEST);
+                feedPowerIfNeeded(EquipmentSlotType.LEGS);
             } else {
                 cityCenter = null;
             }
         }
     }
 
-    private void feedPowerIfNeeded(EntityEquipmentSlot slot) {
+    private void feedPowerIfNeeded(EquipmentSlotType slot) {
         ItemStack stack = getItemStackFromSlot(slot);
         if (stack.isEmpty()) {
             return;
@@ -84,17 +81,17 @@ public class SoldierEntity extends EntityMob implements IArmRaisable, IForcefiel
         if (!(stack.getItem() instanceof PowerSuit)) {
             return;
         }
-        NBTTagCompound compound = stack.getTagCompound();
+        CompoundNBT compound = stack.getTag();
         if (compound == null) {
             return;
         }
-        int negarite = compound.getInteger("negarite");
+        int negarite = compound.getInt("negarite");
         if (negarite < 2) {
-            compound.setInteger("negarite", 2);
+            compound.putInt("negarite", 2);
         }
-        int posirite = compound.getInteger("posirite");
+        int posirite = compound.getInt("posirite");
         if (posirite < 2) {
-            compound.setInteger("posirite", 2);
+            compound.putInt("posirite", 2);
         }
     }
 
@@ -114,30 +111,30 @@ public class SoldierEntity extends EntityMob implements IArmRaisable, IForcefiel
 
     // Guards don't despawn. Spawning and despawning is managed by the cities
     @Override
-    protected boolean canDespawn() {
-        return behaviourType != SoldierBehaviourType.SOLDIER_GUARD;
+    public boolean preventDespawn() {
+        return behaviourType == SoldierBehaviourType.SOLDIER_GUARD;
     }
 
     @Override
-    protected void entityInit() {
-        super.entityInit();
+    protected void registerData() {
+        super.registerData();
         this.getDataManager().register(ARMS_RAISED, Boolean.valueOf(false));
 //        LootTable lootTableFromLocation = worldObj.getLootTableManager().getLootTableFromLocation(LOOT);
 //        System.out.println("lootTableFromLocation = " + lootTableFromLocation);
     }
 
     @Override
-    protected void applyEntityAttributes() {
-        super.applyEntityAttributes();
-        this.getEntityAttribute(SharedMonsterAttributes.FOLLOW_RANGE).setBaseValue(35.0D);
-        this.getEntityAttribute(SharedMonsterAttributes.MOVEMENT_SPEED).setBaseValue(0.32D);
+    protected void registerAttributes() {
+        super.registerAttributes();
+        this.getAttribute(SharedMonsterAttributes.FOLLOW_RANGE).setBaseValue(35.0D);
+        this.getAttribute(SharedMonsterAttributes.MOVEMENT_SPEED).setBaseValue(0.32D);
         if (isMaster()) {
-            this.getEntityAttribute(SharedMonsterAttributes.MAX_HEALTH).setBaseValue(150.0D);
-            this.getEntityAttribute(SharedMonsterAttributes.ATTACK_DAMAGE).setBaseValue(8.0D);
-            this.getEntityAttribute(SharedMonsterAttributes.ARMOR).setBaseValue(6.0D);
+            this.getAttribute(SharedMonsterAttributes.MAX_HEALTH).setBaseValue(150.0D);
+            this.getAttribute(SharedMonsterAttributes.ATTACK_DAMAGE).setBaseValue(8.0D);
+            this.getAttribute(SharedMonsterAttributes.ARMOR).setBaseValue(6.0D);
         } else {
-            this.getEntityAttribute(SharedMonsterAttributes.ATTACK_DAMAGE).setBaseValue(4.0D);
-            this.getEntityAttribute(SharedMonsterAttributes.ARMOR).setBaseValue(4.0D);
+            this.getAttribute(SharedMonsterAttributes.ATTACK_DAMAGE).setBaseValue(4.0D);
+            this.getAttribute(SharedMonsterAttributes.ARMOR).setBaseValue(4.0D);
         }
     }
 
@@ -150,14 +147,13 @@ public class SoldierEntity extends EntityMob implements IArmRaisable, IForcefiel
         this.getDataManager().set(ARMS_RAISED, Boolean.valueOf(armsRaised));
     }
 
-    @SideOnly(Side.CLIENT)
     public boolean isArmsRaised() {
         return this.getDataManager().get(ARMS_RAISED).booleanValue();
     }
 
     @Override
-    protected void dropLoot(boolean wasRecentlyHit, int lootingModifier, DamageSource source) {
-        super.dropLoot(wasRecentlyHit, lootingModifier, source);
+    protected void dropLoot(DamageSource damageSourceIn, boolean p_213354_2_) {
+        super.dropLoot(damageSourceIn, p_213354_2_);
         if (attackingPlayer != null) {
             if (Ariente.setup.arienteWorld) {
                 double chance = ArienteWorldCompat.getArienteWorld().getSoldierCityKeyChance();
@@ -181,54 +177,50 @@ public class SoldierEntity extends EntityMob implements IArmRaisable, IForcefiel
     }
 
     @Override
-    protected void initEntityAI() {
-        this.tasks.addTask(0, new EntityAISwimming(this));
-        this.tasks.addTask(2, new EntityAISoldierAttack(this, this, 1.0D, false));
-        this.tasks.addTask(5, new EntityAIMoveTowardsRestriction(this, 1.0D));
-        this.tasks.addTask(7, new EntityAISoldierWander(this, 1.0D));
-        this.tasks.addTask(8, new EntityAIWatchClosest(this, EntityPlayer.class, 8.0F));
-        this.tasks.addTask(8, new EntityAILookIdle(this));
-        this.applyEntityAI();
+    protected void registerGoals() {
+        this.goalSelector.addGoal(0, new SwimGoal(this));
+        this.goalSelector.addGoal(2, new EntityAISoldierAttack(this, this, 1.0D, false));
+        this.goalSelector.addGoal(5, new MoveTowardsRestrictionGoal(this, 1.0D));
+        this.goalSelector.addGoal(7, new EntityAISoldierWander(this, 1.0D));
+        this.goalSelector.addGoal(8, new LookAtGoal(this, PlayerEntity.class, 8.0F));
+        this.goalSelector.addGoal(8, new LookRandomlyGoal(this));
+        this.targetSelector.addGoal(1, new HurtByTargetGoal(this, ZombiePigmanEntity.class));
+        this.targetSelector.addGoal(2, new NearestAttackableTargetGoal<>(this, PlayerEntity.class, true));
     }
 
-    private void applyEntityAI() {
-        this.targetTasks.addTask(1, new EntityAIHurtByTarget(this, true, new Class[]{EntityPigZombie.class}));
-        this.targetTasks.addTask(2, new EntityAINearestAttackableTarget(this, EntityPlayer.class, true));
-    }
 
     @Override
-    public void writeEntityToNBT(NBTTagCompound compound) {
-        super.writeEntityToNBT(compound);
+    public void writeAdditional(CompoundNBT compound) {
+        super.writeAdditional(compound);
         if (cityCenter != null) {
-            compound.setInteger("cityX", cityCenter.x);
-            compound.setInteger("cityZ", cityCenter.z);
+            compound.putInt("cityX", cityCenter.x);
+            compound.putInt("cityZ", cityCenter.z);
         }
-        compound.setInteger("behaviour", behaviourType.ordinal());
+        compound.putInt("behaviour", behaviourType.ordinal());
     }
 
-    /**
-     * (abstract) Protected helper method to read subclass entity data from NBT.
-     */
     @Override
-    public void readEntityFromNBT(NBTTagCompound compound) {
-        super.readEntityFromNBT(compound);
-        if (compound.hasKey("cityX")) {
-            cityCenter = new ChunkPos(compound.getInteger("cityX"), compound.getInteger("cityZ"));
+    public void readAdditional(CompoundNBT compound) {
+        super.readAdditional(compound);
+        if (compound.contains("cityX")) {
+            cityCenter = new ChunkPos(compound.getInt("cityX"), compound.getInt("cityZ"));
         }
-        behaviourType = SoldierBehaviourType.values()[compound.getInteger("behaviour")];
+        behaviourType = SoldierBehaviourType.values()[compound.getInt("behaviour")];
     }
 
-    @Override
-    @Nullable
-    protected ResourceLocation getLootTable() {
-        return LOOT;
-    }
+// @todo 1.14
+//    @Override
+//    @Nullable
+//    protected ResourceLocation getLootTable() {
+//        return LOOT;
+//    }
 
 
-    @Override
-    protected boolean isValidLightLevel() {
-        return super.isValidLightLevel();
-    }
+    // @todo 1.14
+//    @Override
+//    protected boolean isValidLightLevel() {
+//        return super.isValidLightLevel();
+//    }
 
     @Override
     public int getMaxSpawnedInChunk() {
@@ -236,18 +228,18 @@ public class SoldierEntity extends EntityMob implements IArmRaisable, IForcefiel
     }
 
     @Override
-    public void setAttackTarget(@Nullable EntityLivingBase entitylivingbaseIn) {
+    public void setAttackTarget(@Nullable LivingEntity entitylivingbaseIn) {
         super.setAttackTarget(entitylivingbaseIn);
-        if (entitylivingbaseIn instanceof EntityPlayer && cityCenter != null) {
+        if (entitylivingbaseIn instanceof PlayerEntity && cityCenter != null) {
             if (behaviourType == SoldierBehaviourType.SOLDIER_GUARD) {
-                alertCity((EntityPlayer) entitylivingbaseIn);
+                alertCity((PlayerEntity) entitylivingbaseIn);
             } else if (this instanceof MasterSoldierEntity) {
-                alertCity((EntityPlayer) entitylivingbaseIn);
+                alertCity((PlayerEntity) entitylivingbaseIn);
             }
         }
     }
 
-    private void alertCity(@Nonnull EntityPlayer player) {
+    private void alertCity(@Nonnull PlayerEntity player) {
         ICityAISystem aiSystem = ArienteWorldCompat.getCityAISystem(world);
         ICityAI cityAI = aiSystem.getCityAI(cityCenter);
         cityAI.playerSpotted(player);
@@ -255,13 +247,13 @@ public class SoldierEntity extends EntityMob implements IArmRaisable, IForcefiel
     }
 
     @Override
-    protected void playStepSound(BlockPos pos, Block blockIn) {
-        SoundType soundtype = blockIn.getSoundType(world.getBlockState(pos), world, pos, this);
+    protected void playStepSound(BlockPos pos, BlockState state) {
+        SoundType soundtype = state.getBlock().getSoundType(state, world, pos, this);
 
-        if (this.world.getBlockState(pos.up()).getBlock() == Blocks.SNOW_LAYER) {
-            soundtype = Blocks.SNOW_LAYER.getSoundType();
+        if (this.world.getBlockState(pos.up()).getBlock() == Blocks.SNOW) {
+            soundtype = Blocks.SNOW.getSoundType(null);
             this.playSound(soundtype.getStepSound(), soundtype.getVolume() * 0.15F, soundtype.getPitch());
-        } else if (!blockIn.getDefaultState().getMaterial().isLiquid()) {
+        } else if (!state.getBlock().getDefaultState().getMaterial().isLiquid()) {
             this.playSound(soundtype.getStepSound(), soundtype.getVolume() * 0.15F, soundtype.getPitch());
         } else {
             this.playSound(ModSounds.step, 0.15f, isMaster() ? 0.5f : 1.0f);

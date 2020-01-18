@@ -2,7 +2,7 @@ package mcjty.ariente.blocks.utility;
 
 import mcjty.lib.blocks.GenericBlock;
 import net.minecraft.block.Block;
-import net.minecraft.block.state.IBlockState;
+import net.minecraft.block.state.BlockState;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.entity.EntityPlayerSP;
 import net.minecraft.client.gui.FontRenderer;
@@ -11,7 +11,7 @@ import net.minecraft.client.renderer.*;
 import net.minecraft.client.renderer.tileentity.TileEntitySpecialRenderer;
 import net.minecraft.client.renderer.vertex.DefaultVertexFormats;
 import net.minecraft.item.ItemStack;
-import net.minecraft.util.EnumFacing;
+import net.minecraft.util.Direction;
 import net.minecraft.util.math.MathHelper;
 import net.minecraft.util.math.RayTraceResult;
 import net.minecraftforge.fml.client.registry.ClientRegistry;
@@ -38,7 +38,7 @@ public class StorageRenderer extends TileEntitySpecialRenderer<StorageTile> {
             index = -2;
         }
 
-        IBlockState state = te.getWorld().getBlockState(te.getPos());
+        BlockState state = te.getWorld().getBlockState(te.getPos());
         Block block = state.getBlock();
         if (!(block instanceof GenericBlock)) {
             return;
@@ -49,23 +49,23 @@ public class StorageRenderer extends TileEntitySpecialRenderer<StorageTile> {
         GenericBlock gb = (GenericBlock) block;
 
         GlStateManager.pushMatrix();
-        EnumFacing facing = gb.getFrontDirection(gb.getRotationType(), state);
+        Direction facing = gb.getFrontDirection(gb.getRotationType(), state);
 
         GlStateManager.translate((float) x + 0.5F, (float) y + 0.75F, (float) z + 0.5F);
 
-        if (facing == EnumFacing.UP) {
+        if (facing == Direction.UP) {
             GlStateManager.rotate(-90.0F, 1.0F, 0.0F, 0.0F);
             GlStateManager.translate(0.0F, 0.0F, -0.68F);
-        } else if (facing == EnumFacing.DOWN) {
+        } else if (facing == Direction.DOWN) {
             GlStateManager.rotate(90.0F, 1.0F, 0.0F, 0.0F);
             GlStateManager.translate(0.0F, 0.0F, -.184F);
         } else {
             float rotY = 0.0F;
-            if (facing == EnumFacing.NORTH) {
+            if (facing == Direction.NORTH) {
                 rotY = 180.0F;
-            } else if (facing == EnumFacing.WEST) {
+            } else if (facing == Direction.WEST) {
                 rotY = 90.0F;
-            } else if (facing == EnumFacing.EAST) {
+            } else if (facing == Direction.EAST) {
                 rotY = -90.0F;
             }
             GlStateManager.rotate(-rotY, 0.0F, 1.0F, 0.0F);

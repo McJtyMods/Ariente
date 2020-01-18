@@ -1,27 +1,19 @@
 package mcjty.ariente.blocks.utility;
 
-import io.netty.buffer.ByteBuf;
-import mcjty.lib.thirteen.Context;
-import net.minecraft.entity.player.EntityPlayerMP;
+import net.minecraft.entity.player.PlayerEntity;
+import net.minecraft.network.PacketBuffer;
 import net.minecraft.tileentity.TileEntity;
 import net.minecraft.util.math.BlockPos;
-import net.minecraftforge.fml.common.network.simpleimpl.IMessage;
+import net.minecraftforge.fml.network.NetworkEvent;
 
 import java.util.function.Supplier;
 
-public class PacketClickStorage implements IMessage {
+public class PacketClickStorage {
     private BlockPos pos;
     private int index;
 
 
-    @Override
-    public void fromBytes(ByteBuf buf) {
-        pos = new BlockPos(buf.readInt(), buf.readInt(), buf.readInt());
-        index = buf.readInt();
-    }
-
-    @Override
-    public void toBytes(ByteBuf buf) {
+    public void toBytes(PacketBuffer buf) {
         buf.writeInt(pos.getX());
         buf.writeInt(pos.getY());
         buf.writeInt(pos.getZ());
@@ -31,8 +23,9 @@ public class PacketClickStorage implements IMessage {
     public PacketClickStorage() {
     }
 
-    public PacketClickStorage(ByteBuf buf) {
-        fromBytes(buf);
+    public PacketClickStorage(PacketBuffer buf) {
+        pos = new BlockPos(buf.readInt(), buf.readInt(), buf.readInt());
+        index = buf.readInt();
     }
 
     public PacketClickStorage(BlockPos pos, int index) {
@@ -40,10 +33,10 @@ public class PacketClickStorage implements IMessage {
         this.index = index;
     }
 
-    public void handle(Supplier<Context> supplier) {
-        Context ctx = supplier.get();
+    public void handle(Supplier<NetworkEvent.Context> supplier) {
+        NetworkEvent.Context ctx = supplier.get();
         ctx.enqueueWork(() -> {
-            EntityPlayerMP playerEntity = ctx.getSender();
+            PlayerEntity playerEntity = ctx.getSender();
             TileEntity te = playerEntity.getEntityWorld().getTileEntity(pos);
             if (te instanceof StorageTile) {
                 StorageTile storageTile = (StorageTile) te;

@@ -2,7 +2,7 @@ package mcjty.ariente.blocks.decorative;
 
 import mcjty.ariente.api.MarbleType;
 import mcjty.ariente.blocks.BaseVariantBlock;
-import net.minecraft.block.properties.PropertyEnum;
+import net.minecraft.state.EnumProperty;
 
 public class MarbleTechBlock extends BaseVariantBlock<MarbleType> {
 
@@ -11,7 +11,7 @@ public class MarbleTechBlock extends BaseVariantBlock<MarbleType> {
     }
 
     @Override
-    public PropertyEnum<MarbleType> getProperty() {
+    public EnumProperty<MarbleType> getProperty() {
         return MarbleType.TYPE;
     }
 

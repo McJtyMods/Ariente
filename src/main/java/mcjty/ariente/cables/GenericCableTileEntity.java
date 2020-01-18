@@ -8,7 +8,7 @@ import mcjty.ariente.power.IPowerBlob;
 import mcjty.ariente.power.PowerSenderSupport;
 import mcjty.lib.tileentity.GenericTileEntity;
 import net.minecraft.block.Block;
-import net.minecraft.block.state.IBlockState;
+import net.minecraft.block.state.BlockState;
 import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.network.NetworkManager;
 import net.minecraft.network.play.server.SPacketUpdateTileEntity;
@@ -57,7 +57,7 @@ public abstract class GenericCableTileEntity extends GenericTileEntity implement
 
     @Override
     public void onDataPacket(NetworkManager net, SPacketUpdateTileEntity packet) {
-        IBlockState oldMimicBlock = mimicBlockSupport.getMimicBlock();
+        BlockState oldMimicBlock = mimicBlockSupport.getMimicBlock();
 
         super.onDataPacket(net, packet);
 
@@ -71,7 +71,7 @@ public abstract class GenericCableTileEntity extends GenericTileEntity implement
 
     @Override
     public CableColor getCableColor() {
-        IBlockState state = world.getBlockState(pos);
+        BlockState state = world.getBlockState(pos);
         if (state.getBlock() instanceof GenericCableBlock) {
             return state.getValue(GenericCableBlock.COLOR);
         }
@@ -84,12 +84,12 @@ public abstract class GenericCableTileEntity extends GenericTileEntity implement
     }
 
     @Override
-    public IBlockState getMimicBlock() {
+    public BlockState getMimicBlock() {
         return mimicBlockSupport.getMimicBlock();
     }
 
     @Override
-    public void setMimicBlock(IBlockState mimicBlock) {
+    public void setMimicBlock(BlockState mimicBlock) {
         mimicBlockSupport.setMimicBlock(mimicBlock);
         markDirtyClient();
     }

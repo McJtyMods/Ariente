@@ -23,9 +23,9 @@ import mcjty.theoneprobe.api.ProbeMode;
 import mcjty.theoneprobe.api.TextStyleClass;
 import mcp.mobius.waila.api.IWailaConfigHandler;
 import mcp.mobius.waila.api.IWailaDataAccessor;
-import net.minecraft.block.state.IBlockState;
+import net.minecraft.block.state.BlockState;
 import net.minecraft.client.Minecraft;
-import net.minecraft.entity.player.EntityPlayer;
+import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.inventory.IInventory;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
@@ -34,8 +34,8 @@ import net.minecraft.nbt.NBTTagList;
 import net.minecraft.network.NetworkManager;
 import net.minecraft.network.play.server.SPacketUpdateTileEntity;
 import net.minecraft.tileentity.TileEntity;
-import net.minecraft.util.EnumFacing;
-import net.minecraft.util.EnumHand;
+import net.minecraft.util.Direction;
+import net.minecraft.util.Hand;
 import net.minecraft.util.ResourceLocation;
 import net.minecraft.util.SoundCategory;
 import net.minecraft.util.math.BlockPos;
@@ -178,7 +178,7 @@ public class StorageTile extends GenericTileEntity implements IGuiTile, IInvento
     }
 
 //    @Override
-//    public IBlockState getActualState(IBlockState state) {
+//    public BlockState getActualState(BlockState state) {
 //        return state.withProperty(LOCKED, isLocked());
 //    }
 //
@@ -196,7 +196,7 @@ public class StorageTile extends GenericTileEntity implements IGuiTile, IInvento
 
     @Override
     @Optional.Method(modid = "theoneprobe")
-    public void addProbeInfo(ProbeMode mode, IProbeInfo probeInfo, EntityPlayer player, World world, IBlockState blockState, IProbeHitData data) {
+    public void addProbeInfo(ProbeMode mode, IProbeInfo probeInfo, PlayerEntity player, World world, BlockState blockState, IProbeHitData data) {
         super.addProbeInfo(mode, probeInfo, player, world, blockState, data);
         if (locked) {
             if (keyId != null && !keyId.isEmpty()) {
@@ -240,11 +240,11 @@ public class StorageTile extends GenericTileEntity implements IGuiTile, IInvento
         return getSlot(world, mouseOver.getBlockPos(), mouseOver.sideHit, mouseOver.hitVec);
     }
 
-    public static int getSlot(World world, BlockPos pos, EnumFacing sideHit, Vec3d hitVec) {
+    public static int getSlot(World world, BlockPos pos, Direction sideHit, Vec3d hitVec) {
         int x = pos.getX();
         int y = pos.getY();
         int z = pos.getZ();
-        EnumFacing k = ModBlocks.storageBlock.getFrontDirection(world.getBlockState(pos));
+        Direction k = ModBlocks.storageBlock.getFrontDirection(world.getBlockState(pos));
         if (sideHit == k) {
             float sx = (float) (hitVec.x - x);
             float sy = (float) (hitVec.y - y);
@@ -255,7 +255,7 @@ public class StorageTile extends GenericTileEntity implements IGuiTile, IInvento
         }
     }
 
-    public void giveToPlayer(int type, EntityPlayer player) {
+    public void giveToPlayer(int type, PlayerEntity player) {
         if (locked) {
             Ariente.guiHandler.openHoloGui(world, pos, player);
             return;
@@ -266,7 +266,7 @@ public class StorageTile extends GenericTileEntity implements IGuiTile, IInvento
         ItemStack stack = getStackFromType(type, player.isSneaking() ? 10000 : 1);
         if (!stack.isEmpty()) {
             if (player.getHeldItemMainhand().isEmpty()) {
-                player.setHeldItem(EnumHand.MAIN_HAND, stack);
+                player.setHeldItem(Hand.MAIN_HAND, stack);
             } else if (ItemHandlerHelper.canItemStacksStack(player.getHeldItemMainhand(), stack)) {
                 boolean added = player.inventory.add(player.inventory.currentItem, stack);
                 if (!added) {
@@ -330,7 +330,7 @@ public class StorageTile extends GenericTileEntity implements IGuiTile, IInvento
         }
     }
 
-    public static void onClick(World world, BlockPos pos, EntityPlayer player) {
+    public static void onClick(World world, BlockPos pos, PlayerEntity player) {
         if (world.isRemote) {
             // On client. We find out what part of the block was hit and send that to the server.
             RayTraceResult mouseOver = Minecraft.getMinecraft().objectMouseOver;
@@ -343,8 +343,8 @@ public class StorageTile extends GenericTileEntity implements IGuiTile, IInvento
 
     private static long doubleClickTime = -1;
 
-    public static boolean onActivate(World world, BlockPos pos, EntityPlayer player, EnumFacing side, float sx, float sy, float sz) {
-        EnumFacing k = ModBlocks.storageBlock.getFrontDirection(world.getBlockState(pos));
+    public static boolean onActivate(World world, BlockPos pos, PlayerEntity player, Direction side, float sx, float sy, float sz) {
+        Direction k = ModBlocks.storageBlock.getFrontDirection(world.getBlockState(pos));
         if (side == k) {
             TileEntity tileEntity = world.getTileEntity(pos);
             if (!world.isRemote) {
@@ -382,7 +382,7 @@ public class StorageTile extends GenericTileEntity implements IGuiTile, IInvento
         return true;
     }
 
-    private static void placeAll(EntityPlayer player, StorageTile te, int type, ItemStack heldItem) {
+    private static void placeAll(PlayerEntity player, StorageTile te, int type, ItemStack heldItem) {
         for (int i = 0 ; i < player.inventory.getSizeInventory() ; i++) {
             ItemStack stack = player.inventory.getStackInSlot(i);
             if (ItemHandlerHelper.canItemStacksStack(stack, heldItem)) {
@@ -395,9 +395,9 @@ public class StorageTile extends GenericTileEntity implements IGuiTile, IInvento
         }
     }
 
-    private static void placeHeld(EntityPlayer player, StorageTile te, int type, ItemStack heldItem) {
+    private static void placeHeld(PlayerEntity player, StorageTile te, int type, ItemStack heldItem) {
         ItemStack remaining = insertItem(te.getInvHandler(), heldItem, type);
-        player.setHeldItem(EnumHand.MAIN_HAND, remaining);
+        player.setHeldItem(Hand.MAIN_HAND, remaining);
     }
 
     @Nonnull
@@ -417,7 +417,7 @@ public class StorageTile extends GenericTileEntity implements IGuiTile, IInvento
     }
 
 
-    private static int calculateHitIndex(float sx, float sy, float sz, EnumFacing k) {
+    private static int calculateHitIndex(float sx, float sy, float sz, Direction k) {
         int index = -1;
         switch (k) {
             case DOWN:
@@ -579,17 +579,17 @@ public class StorageTile extends GenericTileEntity implements IGuiTile, IInvento
     }
 
     @Override
-    public boolean isUsableByPlayer(EntityPlayer player) {
+    public boolean isUsableByPlayer(PlayerEntity player) {
         return canPlayerAccess(player);
     }
 
     @Override
-    public void openInventory(EntityPlayer player) {
+    public void openInventory(PlayerEntity player) {
 
     }
 
     @Override
-    public void closeInventory(EntityPlayer player) {
+    public void closeInventory(PlayerEntity player) {
 
     }
 
@@ -643,7 +643,7 @@ public class StorageTile extends GenericTileEntity implements IGuiTile, IInvento
     }
 
     @Override
-    public boolean hasCapability(Capability<?> capability, EnumFacing facing) {
+    public boolean hasCapability(Capability<?> capability, Direction facing) {
         if (capability == CapabilityItemHandler.ITEM_HANDLER_CAPABILITY) {
             return true;
         }
@@ -651,7 +651,7 @@ public class StorageTile extends GenericTileEntity implements IGuiTile, IInvento
     }
 
     @Override
-    public <T> T getCapability(Capability<T> capability, EnumFacing facing) {
+    public <T> T getCapability(Capability<T> capability, Direction facing) {
         if (capability == CapabilityItemHandler.ITEM_HANDLER_CAPABILITY) {
             return CapabilityItemHandler.ITEM_HANDLER_CAPABILITY.cast(getInvHandler());
         }

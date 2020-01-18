@@ -4,14 +4,14 @@ import mcjty.ariente.api.ICityAI;
 import mcjty.ariente.api.ICityAISystem;
 import mcjty.ariente.api.SoldierBehaviourType;
 import mcjty.ariente.compat.arienteworld.ArienteWorldCompat;
-import net.minecraft.entity.ai.EntityAIBase;
 import net.minecraft.entity.ai.RandomPositionGenerator;
+import net.minecraft.entity.ai.goal.Goal;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.Vec3d;
 
 import javax.annotation.Nullable;
 
-public class EntityAISoldierWander extends EntityAIBase {
+public class EntityAISoldierWander extends Goal {
     protected final SoldierEntity entity;
     protected double x;
     protected double y;
@@ -28,7 +28,8 @@ public class EntityAISoldierWander extends EntityAIBase {
         this.entity = creatureIn;
         this.speed = speedIn;
         this.executionChance = chance;
-        this.setMutexBits(1);
+        // @todo 1.14
+//        this.setMutexBits(1);
     }
 
     @Override

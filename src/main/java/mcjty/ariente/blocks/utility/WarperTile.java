@@ -16,8 +16,8 @@ import mcjty.theoneprobe.api.ProbeMode;
 import mcjty.theoneprobe.api.TextStyleClass;
 import mcp.mobius.waila.api.IWailaConfigHandler;
 import mcp.mobius.waila.api.IWailaDataAccessor;
-import net.minecraft.block.state.IBlockState;
-import net.minecraft.entity.player.EntityPlayer;
+import net.minecraft.block.state.BlockState;
+import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.util.math.AxisAlignedBB;
@@ -94,7 +94,7 @@ public class WarperTile extends GenericTileEntity implements IGuiTile, IWarper {
 
     @Override
     @Optional.Method(modid = "theoneprobe")
-    public void addProbeInfo(ProbeMode mode, IProbeInfo probeInfo, EntityPlayer player, World world, IBlockState blockState, IProbeHitData data) {
+    public void addProbeInfo(ProbeMode mode, IProbeInfo probeInfo, PlayerEntity player, World world, BlockState blockState, IProbeHitData data) {
         super.addProbeInfo(mode, probeInfo, player, world, blockState, data);
         int pct = getChargePercentage();
         probeInfo.text(TextStyleClass.LABEL + "Charged: " + TextStyleClass.INFO + pct + "%");
@@ -132,7 +132,7 @@ public class WarperTile extends GenericTileEntity implements IGuiTile, IWarper {
         return pass == 1;
     }
 
-    private void warp(EntityPlayer player) {
+    private void warp(PlayerEntity player) {
         if (world.provider.getDimension() == 0) {
             if (!world.isRemote) {
                 if (Ariente.setup.arienteWorld) {

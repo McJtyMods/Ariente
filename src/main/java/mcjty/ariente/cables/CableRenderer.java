@@ -3,7 +3,7 @@ package mcjty.ariente.cables;
 import mcjty.ariente.Ariente;
 import mcjty.lib.client.RenderHelper;
 import net.minecraft.block.Block;
-import net.minecraft.block.state.IBlockState;
+import net.minecraft.block.state.BlockState;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.entity.EntityPlayerSP;
 import net.minecraft.client.renderer.BufferBuilder;
@@ -112,7 +112,7 @@ public class CableRenderer extends TileEntitySpecialRenderer<GenericCableTileEnt
 
             // ----------------------------------------
 
-            IBlockState state = te.getWorld().getBlockState(te.getPos());
+            BlockState state = te.getWorld().getBlockState(te.getPos());
             Block block = state.getBlock();
             if (block instanceof GenericCableBlock) {
                 int mask_ud = ((GenericCableBlock) block).getUpDownMask(state, te.getWorld(), te.getPos());

@@ -3,8 +3,8 @@ package mcjty.ariente.items;
 import com.google.common.collect.Multimap;
 import net.minecraft.block.Block;
 import net.minecraft.block.material.Material;
-import net.minecraft.block.state.IBlockState;
-import net.minecraft.entity.EntityLivingBase;
+import net.minecraft.block.state.BlockState;
+import net.minecraft.entity.LivingEntity;
 import net.minecraft.entity.SharedMonsterAttributes;
 import net.minecraft.entity.ai.attributes.AttributeModifier;
 import net.minecraft.inventory.EntityEquipmentSlot;
@@ -32,20 +32,20 @@ public class EnergySabreItem extends GenericItem {
     }
 
     @Override
-    public float getDestroySpeed(ItemStack stack, IBlockState state) {
+    public float getDestroySpeed(ItemStack stack, BlockState state) {
         Block block = state.getBlock();
         Material material = state.getMaterial();
         return material != Material.PLANTS && material != Material.VINE && material != Material.CORAL && material != Material.LEAVES && material != Material.GOURD ? 1.0F : 1.5F;
     }
 
     @Override
-    public boolean hitEntity(ItemStack stack, EntityLivingBase target, EntityLivingBase attacker) {
+    public boolean hitEntity(ItemStack stack, LivingEntity target, LivingEntity attacker) {
         stack.damageItem(1, attacker);
         return true;
     }
 
     @Override
-    public boolean onBlockDestroyed(ItemStack stack, World worldIn, IBlockState state, BlockPos pos, EntityLivingBase entityLiving) {
+    public boolean onBlockDestroyed(ItemStack stack, World worldIn, BlockState state, BlockPos pos, LivingEntity entityLiving) {
         if (state.getBlockHardness(worldIn, pos) != 0.0D) {
             stack.damageItem(2, entityLiving);
         }
@@ -53,7 +53,7 @@ public class EnergySabreItem extends GenericItem {
     }
 
     @Override
-    public boolean canHarvestBlock(IBlockState blockIn) {
+    public boolean canHarvestBlock(BlockState blockIn) {
         return false;
     }
 

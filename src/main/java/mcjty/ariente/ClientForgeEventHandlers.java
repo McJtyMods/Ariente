@@ -11,7 +11,7 @@ import mcjty.ariente.items.modules.ModuleSupport;
 import mcjty.ariente.network.ArienteMessages;
 import mcjty.ariente.network.PacketHitForcefield;
 import mcjty.ariente.sounds.FluxLevitatorSounds;
-import net.minecraft.block.state.IBlockState;
+import net.minecraft.block.state.BlockState;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.entity.EntityPlayerSP;
 import net.minecraft.client.renderer.GlStateManager;
@@ -19,7 +19,7 @@ import net.minecraft.client.renderer.RenderGlobal;
 import net.minecraft.client.renderer.block.model.BuiltInModel;
 import net.minecraft.client.renderer.block.model.ItemCameraTransforms;
 import net.minecraft.client.renderer.block.model.ItemOverrideList;
-import net.minecraft.entity.player.EntityPlayer;
+import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.inventory.EntityEquipmentSlot;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
@@ -58,8 +58,8 @@ public class ClientForgeEventHandlers {
     public void onDrawBlockHighlight(DrawBlockHighlightEvent event) {
         if (event.getTarget().typeOfHit == RayTraceResult.Type.BLOCK) {
             BlockPos pos = event.getTarget().getBlockPos();
-            EntityPlayer player = event.getPlayer();
-            IBlockState state = player.getEntityWorld().getBlockState(pos);
+            PlayerEntity player = event.getPlayer();
+            BlockState state = player.getEntityWorld().getBlockState(pos);
             if (state.getBlock() == ModBlocks.rampBlock) {
                 drawSelectionBox(state, player, pos, event.getPartialTicks());
                 event.setCanceled(true);
@@ -67,7 +67,7 @@ public class ClientForgeEventHandlers {
         }
     }
 
-    private static void drawSelectionBox(IBlockState state, EntityPlayer player, BlockPos pos, float partialTicks) {
+    private static void drawSelectionBox(BlockState state, PlayerEntity player, BlockPos pos, float partialTicks) {
         GlStateManager.enableBlend();
         GlStateManager.tryBlendFuncSeparate(GlStateManager.SourceFactor.SRC_ALPHA, GlStateManager.DestFactor.ONE_MINUS_SRC_ALPHA, GlStateManager.SourceFactor.ONE, GlStateManager.DestFactor.ZERO);
         GlStateManager.glLineWidth(2.0F);
@@ -93,8 +93,8 @@ public class ClientForgeEventHandlers {
     public void onEntityMount(EntityMountEvent event) {
         if (event.isMounting() && event.getWorldObj().isRemote && event.getEntityBeingMounted() instanceof FluxLevitatorEntity) {
             FluxLevitatorEntity levitator = (FluxLevitatorEntity) event.getEntityBeingMounted();
-            if (event.getEntityMounting() instanceof EntityPlayer) {
-                FluxLevitatorSounds.playMovingSoundClientInside((EntityPlayer) event.getEntityMounting(), levitator);
+            if (event.getEntityMounting() instanceof PlayerEntity) {
+                FluxLevitatorSounds.playMovingSoundClientInside((PlayerEntity) event.getEntityMounting(), levitator);
             }
         }
     }

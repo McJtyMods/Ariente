@@ -1,13 +1,13 @@
 package mcjty.ariente.entities.soldier;
 
-import net.minecraft.entity.EntityCreature;
-import net.minecraft.entity.ai.EntityAIAttackMelee;
+import net.minecraft.entity.CreatureEntity;
+import net.minecraft.entity.ai.goal.MeleeAttackGoal;
 
-public class EntityAISoldierAttack extends EntityAIAttackMelee {
+public class EntityAISoldierAttack extends MeleeAttackGoal {
     private final IArmRaisable raisable;
     private int raiseArmTicks;
 
-    public EntityAISoldierAttack(EntityCreature zombieIn, IArmRaisable raisable, double speedIn, boolean longMemoryIn) {
+    public EntityAISoldierAttack(CreatureEntity zombieIn, IArmRaisable raisable, double speedIn, boolean longMemoryIn) {
         super(zombieIn, speedIn, longMemoryIn);
         this.raisable = raisable;
     }
@@ -33,8 +33,9 @@ public class EntityAISoldierAttack extends EntityAIAttackMelee {
     /**
      * Updates the task
      */
-    public void updateTask() {
-        super.updateTask();
+    @Override
+    public void tick() {
+        super.tick();
         ++this.raiseArmTicks;
 
         if (this.raiseArmTicks >= 5 && this.attackTick < 10) {
