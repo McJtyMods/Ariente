@@ -42,7 +42,7 @@ public class LaserRender extends Render<LaserEntity> {
         GlStateManager.enableBlend();
         GlStateManager.blendFunc(GL11.GL_ONE, GL11.GL_ONE);
 
-        Minecraft mc = Minecraft.getMinecraft();
+        Minecraft mc = Minecraft.getInstance();
         EntityPlayerSP p = mc.player;
         double doubleX = p.lastTickPosX + (p.posX - p.lastTickPosX) * partialTicks;
         double doubleY = p.lastTickPosY + (p.posY - p.lastTickPosY) * partialTicks;

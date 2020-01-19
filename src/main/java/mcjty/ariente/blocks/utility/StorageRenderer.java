@@ -30,7 +30,7 @@ public class StorageRenderer extends TileEntitySpecialRenderer<StorageTile> {
     @Override
     public void render(StorageTile te, double x, double y, double z, float partialTicks, int destroyStage, float alpha) {
 
-        RayTraceResult mouseOver = Minecraft.getMinecraft().objectMouseOver;
+        RayTraceResult mouseOver = Minecraft.getInstance().objectMouseOver;
         int index;
         if (mouseOver != null && te.getPos().equals(mouseOver.getBlockPos())) {
             index = StorageTile.getSlot(mouseOver, te.getWorld());
@@ -44,7 +44,7 @@ public class StorageRenderer extends TileEntitySpecialRenderer<StorageTile> {
             return;
         }
 
-        Minecraft.getMinecraft().entityRenderer.disableLightmap();
+        Minecraft.getInstance().entityRenderer.disableLightmap();
 
         GenericBlock gb = (GenericBlock) block;
 
@@ -80,7 +80,7 @@ public class StorageRenderer extends TileEntitySpecialRenderer<StorageTile> {
         renderSlots(te);
 
         GlStateManager.popMatrix();
-        Minecraft.getMinecraft().entityRenderer.enableLightmap();
+        Minecraft.getInstance().entityRenderer.enableLightmap();
     }
 
     private void renderSlotHilight(int index) {
@@ -113,7 +113,7 @@ public class StorageRenderer extends TileEntitySpecialRenderer<StorageTile> {
         GL11.glTranslatef(-0.5F, 0.5F, -0.15F);
         GL11.glScalef(f3 * factor, -f3 * factor, 0.0001f);
 
-        RenderItem itemRender = Minecraft.getMinecraft().getRenderItem();
+        RenderItem itemRender = Minecraft.getInstance().getRenderItem();
 
         for (int i = 0; i < StorageTile.STACKS; i++) {
             ItemStack stack = te.getTotalStack(i);
@@ -129,7 +129,7 @@ public class StorageRenderer extends TileEntitySpecialRenderer<StorageTile> {
         for (int i = 0; i < StorageTile.STACKS; i++) {
             ItemStack stack = te.getTotalStack(i);
             if (!stack.isEmpty()) {
-                renderItemOverlayIntoGUI(Minecraft.getMinecraft().fontRenderer, stack, xx[i] * 2 + 15, yy[i] * 2 + 16, getSize(stack.getCount()));
+                renderItemOverlayIntoGUI(Minecraft.getInstance().fontRenderer, stack, xx[i] * 2 + 15, yy[i] * 2 + 16, getSize(stack.getCount()));
             }
         }
 
@@ -190,8 +190,8 @@ public class StorageRenderer extends TileEntitySpecialRenderer<StorageTile> {
                 GlStateManager.enableDepth();
             }
 
-            EntityPlayerSP entityplayersp = Minecraft.getMinecraft().player;
-            float f3 = entityplayersp == null ? 0.0F : entityplayersp.getCooldownTracker().getCooldown(stack.getItem(), Minecraft.getMinecraft().getRenderPartialTicks());
+            EntityPlayerSP entityplayersp = Minecraft.getInstance().player;
+            float f3 = entityplayersp == null ? 0.0F : entityplayersp.getCooldownTracker().getCooldown(stack.getItem(), Minecraft.getInstance().getRenderPartialTicks());
 
             if (f3 > 0.0F) {
                 GlStateManager.disableLighting();

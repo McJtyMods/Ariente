@@ -67,7 +67,7 @@ public class AutoFieldRenderer extends TileEntitySpecialRenderer<AutoFieldTile> 
         ResourceLocation beamIcon = beams[random.nextInt(3)];
         bindTexture(beamIcon);
 
-        Minecraft mc = Minecraft.getMinecraft();
+        Minecraft mc = Minecraft.getInstance();
         EntityPlayerSP p = mc.player;
         double doubleX = p.lastTickPosX + (p.posX - p.lastTickPosX) * time;
         double doubleY = p.lastTickPosY + (p.posY - p.lastTickPosY) * time;
@@ -133,7 +133,7 @@ public class AutoFieldRenderer extends TileEntitySpecialRenderer<AutoFieldTile> 
         GlStateManager.pushMatrix();
         GlStateManager.translate(x, y, z);
         net.minecraft.client.renderer.RenderHelper.enableStandardItemLighting();
-        Minecraft.getMinecraft().entityRenderer.disableLightmap();
+        Minecraft.getInstance().entityRenderer.disableLightmap();
         GlStateManager.enableAlpha();
 
         TransferRender[] transferRenders = te.getTransferRenders();
@@ -158,7 +158,7 @@ public class AutoFieldRenderer extends TileEntitySpecialRenderer<AutoFieldTile> 
                 }
             }
         }
-        Minecraft.getMinecraft().entityRenderer.enableLightmap();
+        Minecraft.getInstance().entityRenderer.enableLightmap();
         GlStateManager.disableAlpha();
 
         GlStateManager.popMatrix();

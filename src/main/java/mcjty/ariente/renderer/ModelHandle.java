@@ -181,7 +181,7 @@ public class ModelHandle {
 
         initialized = true;
 
-        IResourceManager rm = Minecraft.getMinecraft().getResourceManager();
+        IResourceManager rm = Minecraft.getInstance().getResourceManager();
         if (rm instanceof IReloadableResourceManager) {
             ((IReloadableResourceManager) rm).registerReloadListener(new IResourceManagerReloadListener() {
                 @Override

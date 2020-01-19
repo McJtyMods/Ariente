@@ -2,16 +2,17 @@ package mcjty.ariente.entities;
 
 import mcjty.ariente.items.ModItems;
 import net.minecraft.entity.Entity;
-import net.minecraft.entity.item.EntityItem;
-import net.minecraft.init.SoundEvents;
+import net.minecraft.entity.EntityType;
+import net.minecraft.entity.item.ItemEntity;
 import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.CompoundNBT;
-import net.minecraft.util.EnumParticleTypes;
+import net.minecraft.network.IPacket;
+import net.minecraft.particles.ParticleTypes;
+import net.minecraft.util.SoundEvents;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.MathHelper;
 import net.minecraft.world.World;
-import net.minecraftforge.fml.relauncher.Side;
-import net.minecraftforge.fml.relauncher.SideOnly;
+import net.minecraftforge.fml.network.NetworkHooks;
 
 public class EntityArientePearl extends Entity {
 
@@ -21,19 +22,34 @@ public class EntityArientePearl extends Entity {
     private int despawnTimer;
     private boolean shatterOrDrop;
 
-    public EntityArientePearl(World worldIn) {
-        super(worldIn);
-        this.setSize(0.25F, 0.25F);
+    public EntityArientePearl(EntityType<?> entityTypeIn, World worldIn) {
+        super(entityTypeIn, worldIn);
+        // @todo 1.14
+//        this.setSize(0.25F, 0.25F);
+    }
+
+    public EntityArientePearl(EntityType<?> entityTypeIn, World worldIn, double x, double y, double z) {
+        super(entityTypeIn, worldIn);
+        this.despawnTimer = 0;
+        // @todo 1.14
+//        this.setSize(0.25F, 0.25F);
+        this.setPosition(x, y, z);
     }
 
     @Override
-    protected void entityInit() {
+    protected void registerData() {
+
     }
 
     @Override
-    @SideOnly(Side.CLIENT)
+    public IPacket<?> createSpawnPacket() {
+        return NetworkHooks.getEntitySpawningPacket(this);
+
+    }
+
+    @Override
     public boolean isInRangeToRenderDist(double distance) {
-        double d0 = this.getEntityBoundingBox().getAverageEdgeLength() * 4.0D;
+        double d0 = this.getBoundingBox().getAverageEdgeLength() * 4.0D;
 
         if (Double.isNaN(d0)) {
             d0 = 4.0D;
@@ -41,13 +57,6 @@ public class EntityArientePearl extends Entity {
 
         d0 = d0 * 64.0D;
         return distance < d0 * d0;
-    }
-
-    public EntityArientePearl(World worldIn, double x, double y, double z) {
-        super(worldIn);
-        this.despawnTimer = 0;
-        this.setSize(0.25F, 0.25F);
-        this.setPosition(x, y, z);
     }
 
     public void moveTowards(BlockPos pos) {
@@ -73,11 +82,8 @@ public class EntityArientePearl extends Entity {
     }
 
     @Override
-    @SideOnly(Side.CLIENT)
     public void setVelocity(double x, double y, double z) {
-        this.motionX = x;
-        this.motionY = y;
-        this.motionZ = z;
+        setMotion(x, y, z);
 
         if (this.prevRotationPitch == 0.0F && this.prevRotationYaw == 0.0F) {
             float f = MathHelper.sqrt(x * x + z * z);
@@ -89,18 +95,21 @@ public class EntityArientePearl extends Entity {
     }
 
     @Override
-    public void onUpdate() {
+    public void tick() {
         this.lastTickPosX = this.posX;
         this.lastTickPosY = this.posY;
         this.lastTickPosZ = this.posZ;
-        super.onUpdate();
-        this.posX += this.motionX;
-        this.posY += this.motionY;
-        this.posZ += this.motionZ;
-        float f = MathHelper.sqrt(this.motionX * this.motionX + this.motionZ * this.motionZ);
-        this.rotationYaw = (float) (MathHelper.atan2(this.motionX, this.motionZ) * (180D / Math.PI));
+        super.tick();
+        double motionX = this.getMotion().x;
+        double motionY = this.getMotion().y;
+        double motionZ = this.getMotion().z;
+        this.posX += motionX;
+        this.posY += motionY;
+        this.posZ += motionZ;
+        float f = MathHelper.sqrt(motionX * motionX + motionZ * motionZ);
+        this.rotationYaw = (float) (MathHelper.atan2(motionX, motionZ) * (180D / Math.PI));
 
-        for (this.rotationPitch = (float) (MathHelper.atan2(this.motionY, f) * (180D / Math.PI)); this.rotationPitch - this.prevRotationPitch < -180.0F; this.prevRotationPitch -= 360.0F) {
+        for (this.rotationPitch = (float) (MathHelper.atan2(motionY, f) * (180D / Math.PI)); this.rotationPitch - this.prevRotationPitch < -180.0F; this.prevRotationPitch -= 360.0F) {
             ;
         }
 
@@ -128,27 +137,28 @@ public class EntityArientePearl extends Entity {
 
             if (f1 < 1.0F) {
                 d2 *= 0.8D;
-                this.motionY *= 0.8D;
+                motionY *= 0.8D;
             }
 
-            this.motionX = Math.cos(f2) * d2;
-            this.motionZ = Math.sin(f2) * d2;
+            motionX = Math.cos(f2) * d2;
+            motionZ = Math.sin(f2) * d2;
 
             if (this.posY < this.targetY) {
-                this.motionY += (1.0D - this.motionY) * 0.015;
+                motionY += (1.0D - motionY) * 0.015;
             } else {
-                this.motionY += (-1.0D - this.motionY) * 0.015;
+                motionY += (-1.0D - motionY) * 0.015;
             }
+            setMotion(motionX, motionY, motionZ);
         }
 
         float f3 = 0.25F;
 
         if (this.isInWater()) {
             for (int i = 0; i < 4; ++i) {
-                this.world.spawnParticle(EnumParticleTypes.WATER_BUBBLE, this.posX - this.motionX * 0.25D, this.posY - this.motionY * 0.25D, this.posZ - this.motionZ * 0.25D, this.motionX, this.motionY, this.motionZ);
+                this.world.addParticle(ParticleTypes.DRIPPING_WATER, this.posX - motionX * 0.25D, this.posY - motionY * 0.25D, this.posZ - motionZ * 0.25D, motionX, motionY, motionZ);
             }
         } else {
-            this.world.spawnParticle(EnumParticleTypes.PORTAL, this.posX - this.motionX * 0.25D + this.rand.nextDouble() * 0.6D - 0.3D, this.posY - this.motionY * 0.25D - 0.5D, this.posZ - this.motionZ * 0.25D + this.rand.nextDouble() * 0.6D - 0.3D, this.motionX, this.motionY, this.motionZ);
+            this.world.addParticle(ParticleTypes.PORTAL, this.posX - motionX * 0.25D + this.rand.nextDouble() * 0.6D - 0.3D, this.posY - motionY * 0.25D - 0.5D, this.posZ - motionZ * 0.25D + this.rand.nextDouble() * 0.6D - 0.3D, motionX, motionY, motionZ);
         }
 
         if (!this.world.isRemote) {
@@ -156,11 +166,11 @@ public class EntityArientePearl extends Entity {
             ++this.despawnTimer;
 
             if (this.despawnTimer > 80 && !this.world.isRemote) {
-                this.playSound(SoundEvents.ENTITY_ENDEREYE_DEATH, 1.0F, 1.0F);
-                this.setDead();
+                this.playSound(SoundEvents.ENTITY_ENDER_EYE_DEATH, 1.0F, 1.0F);
+                this.remove();
 
                 if (this.shatterOrDrop) {
-                    this.world.spawnEntity(new EntityItem(this.world, this.posX, this.posY, this.posZ, new ItemStack(ModItems.arientePearlItem)));
+                    this.world.addEntity(new ItemEntity(this.world, this.posX, this.posY, this.posZ, new ItemStack(ModItems.arientePearlItem)));
                 } else {
                     this.world.playEvent(2003, new BlockPos(this), 0);
                 }
@@ -169,11 +179,11 @@ public class EntityArientePearl extends Entity {
     }
 
     @Override
-    public void writeEntityToNBT(CompoundNBT compound) {
+    public void writeAdditional(CompoundNBT compound) {
     }
 
     @Override
-    public void readEntityFromNBT(CompoundNBT compound) {
+    public void readAdditional(CompoundNBT compound) {
     }
 
     @Override
@@ -181,11 +191,12 @@ public class EntityArientePearl extends Entity {
         return 1.0F;
     }
 
-    @Override
-    @SideOnly(Side.CLIENT)
-    public int getBrightnessForRender() {
-        return 15728880;
-    }
+    // @todo 1.14
+//    @Override
+//    @SideOnly(Side.CLIENT)
+//    public int getBrightnessForRender() {
+//        return 15728880;
+//    }
 
     @Override
     public boolean canBeAttackedWithItem() {

@@ -17,7 +17,7 @@ public class BlueprintRenderer extends TileEntityItemStackRenderer {
 
         // Render our item
         GlStateManager.translate(.5, .5, 0);
-        Minecraft.getMinecraft().getRenderItem().renderItem(new ItemStack(ModItems.blueprintItem), ItemCameraTransforms.TransformType.NONE);
+        Minecraft.getInstance().getRenderItem().renderItem(new ItemStack(ModItems.blueprintItem), ItemCameraTransforms.TransformType.NONE);
 
         ItemStack destination = BlueprintItem.getDestination(stack);
         if (!destination.isEmpty()) {
@@ -41,7 +41,7 @@ public class BlueprintRenderer extends TileEntityItemStackRenderer {
             long angle = (System.currentTimeMillis() / 50) % 360;
             GlStateManager.rotate(angle, 0, 1, 0);
 
-            Minecraft.getMinecraft().getRenderItem().renderItem(stack, ItemCameraTransforms.TransformType.NONE);
+            Minecraft.getInstance().getRenderItem().renderItem(stack, ItemCameraTransforms.TransformType.NONE);
         }
     }
 

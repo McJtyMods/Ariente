@@ -49,7 +49,7 @@ public class ElevatorRenderer extends TileEntitySpecialRenderer<ElevatorTile> {
         ResourceLocation beamIcon = halo;
         bindTexture(beamIcon);
 
-        Minecraft mc = Minecraft.getMinecraft();
+        Minecraft mc = Minecraft.getInstance();
         EntityPlayerSP p = mc.player;
         double doubleX = p.lastTickPosX + (p.posX - p.lastTickPosX) * time;
         double doubleY = p.lastTickPosY + (p.posY - p.lastTickPosY) * time;

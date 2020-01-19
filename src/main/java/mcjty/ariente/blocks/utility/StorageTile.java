@@ -333,7 +333,7 @@ public class StorageTile extends GenericTileEntity implements IGuiTile, IInvento
     public static void onClick(World world, BlockPos pos, PlayerEntity player) {
         if (world.isRemote) {
             // On client. We find out what part of the block was hit and send that to the server.
-            RayTraceResult mouseOver = Minecraft.getMinecraft().objectMouseOver;
+            RayTraceResult mouseOver = Minecraft.getInstance().objectMouseOver;
             int index = getSlot(mouseOver, world);
             if (index >= 0) {
                 ArienteMessages.INSTANCE.sendToServer(new PacketClickStorage(pos, index));

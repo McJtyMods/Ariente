@@ -110,7 +110,7 @@ public class ClientForgeEventHandlers {
         EventPriority phase = event.getPhase();
         if (phase == EventPriority.NORMAL) {
             EntityPlayerSP player = (EntityPlayerSP) Ariente.proxy.getClientPlayer();
-            if (player != null && Minecraft.getMinecraft().currentScreen == null) {
+            if (player != null && Minecraft.getInstance().currentScreen == null) {
                 ItemStack chestStack = player.getItemStackFromSlot(EntityEquipmentSlot.CHEST);
                 boolean hovering = false;
                 boolean hasFlight = false;

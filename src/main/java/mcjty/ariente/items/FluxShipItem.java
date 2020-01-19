@@ -21,7 +21,7 @@ import java.util.List;
 public class FluxShipItem extends Item {
 
     public FluxShipItem() {
-        super(new Item.Properties().maxStackSize(1))
+        super(new Item.Properties().maxStackSize(1));
 //        super("flux_ship");
     }
 

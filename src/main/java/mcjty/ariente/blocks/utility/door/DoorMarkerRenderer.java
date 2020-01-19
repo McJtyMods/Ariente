@@ -59,11 +59,11 @@ public class DoorMarkerRenderer extends TileEntitySpecialRenderer<DoorMarkerTile
         GlStateManager.enableTexture2D();
 
 //        GlStateManager.disableLighting();
-//        Minecraft.getMinecraft().entityRenderer.disableLightmap();
+//        Minecraft.getInstance().entityRenderer.disableLightmap();
         GlStateManager.enableLighting();
 //        GlStateManager.enableRescaleNormal();
-        Minecraft.getMinecraft().entityRenderer.enableLightmap();
-//        int light = Minecraft.getMinecraft().world.getCombinedLight(new BlockPos(MathHelper.floor(te.getPos().getX()), MathHelper.floor(te.getPos().getY()), MathHelper.floor(te.getPos().getZ())), 0);
+        Minecraft.getInstance().entityRenderer.enableLightmap();
+//        int light = Minecraft.getInstance().world.getCombinedLight(new BlockPos(MathHelper.floor(te.getPos().getX()), MathHelper.floor(te.getPos().getY()), MathHelper.floor(te.getPos().getZ())), 0);
 //        OpenGlHelper.setLightmapTextureCoords(OpenGlHelper.lightmapTexUnit, (float)(light & 0xFFFF), (float)((light >> 16) & 0xFFFF));
 
 //        GlStateManager.enableLighting();
