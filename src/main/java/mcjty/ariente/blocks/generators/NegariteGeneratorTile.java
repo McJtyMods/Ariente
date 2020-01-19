@@ -23,6 +23,7 @@ import net.minecraft.block.BlockState;
 import net.minecraft.entity.LivingEntity;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.item.ItemStack;
+import net.minecraft.nbt.CompoundNBT;
 import net.minecraft.network.NetworkManager;
 import net.minecraft.network.play.server.SUpdateTileEntityPacket;
 import net.minecraft.state.BooleanProperty;
@@ -215,34 +216,32 @@ public class NegariteGeneratorTile extends GenericTileEntity implements ITickabl
     }
 
     @Override
-    public void readFromNBT(CompoundNBT tagCompound) {
-        super.readFromNBT(tagCompound);
-        powerBlobSupport.setCableId(tagCompound.getInteger("cableId"));
+    public void read(CompoundNBT tagCompound) {
+        super.read(tagCompound);
+        powerBlobSupport.setCableId(tagCompound.getInt("cableId"));
+        readRestorableFromNBT(tagCompound);
     }
 
     @Override
     public CompoundNBT write(CompoundNBT tagCompound) {
-        tagCompound.setInteger("cableId", powerBlobSupport.getCableId());
-        return super.writeToNBT(tagCompound);
+        tagCompound.putInt("cableId", powerBlobSupport.getCableId());
+        writeRestorableToNBT(tagCompound);
+        return super.write(tagCompound);
     }
 
-    @Override
+    // @todo 1.14 loot
     public void readRestorableFromNBT(CompoundNBT tagCompound) {
-        super.readRestorableFromNBT(tagCompound);
-
-        readBufferFromNBT(tagCompound, inventoryHelper);
-        dustCounter = tagCompound.getInteger("dust");
+//        readBufferFromNBT(tagCompound, inventoryHelper);
+        dustCounter = tagCompound.getInt("dust");
     }
 
-    @Override
     public void writeRestorableToNBT(CompoundNBT tagCompound) {
-        super.writeRestorableToNBT(tagCompound);
-        writeBufferToNBT(tagCompound, inventoryHelper);
-        tagCompound.setInteger("dust", dustCounter);
+//        writeBufferToNBT(tagCompound, inventoryHelper);
+        tagCompound.putInt("dust", dustCounter);
     }
 
     @Override
-    public boolean execute(EntityPlayerMP playerMP, String command, TypedMap params) {
+    public boolean execute(PlayerEntity playerMP, String command, TypedMap params) {
         boolean rc = super.execute(playerMP, command, params);
         if (rc) {
             return true;
@@ -255,26 +254,27 @@ public class NegariteGeneratorTile extends GenericTileEntity implements ITickabl
         return false;
     }
 
-    @Override
-    @Optional.Method(modid = "theoneprobe")
-    public void addProbeInfo(ProbeMode mode, IProbeInfo probeInfo, PlayerEntity player, World world, BlockState blockState, IProbeHitData data) {
-        super.addProbeInfo(mode, probeInfo, player, world, blockState, data);
-        probeInfo.text(TextStyleClass.LABEL + "Network: " + TextStyleClass.INFO + powerBlobSupport.getCableId());
-        if (isWorking()) {
-            probeInfo.text(TextStyleClass.LABEL + "Generating: " + TextStyleClass.INFO + POWERGEN + " flux");
-        }
-    }
-
-
-    @SideOnly(Side.CLIENT)
-    @Override
-    @Optional.Method(modid = "waila")
-    public void addWailaBody(ItemStack itemStack, List<String> currenttip, IWailaDataAccessor accessor, IWailaConfigHandler config) {
-        super.addWailaBody(itemStack, currenttip, accessor, config);
+    // @todo 1.14
+//    @Override
+//    @Optional.Method(modid = "theoneprobe")
+//    public void addProbeInfo(ProbeMode mode, IProbeInfo probeInfo, PlayerEntity player, World world, BlockState blockState, IProbeHitData data) {
+//        super.addProbeInfo(mode, probeInfo, player, world, blockState, data);
+//        probeInfo.text(TextStyleClass.LABEL + "Network: " + TextStyleClass.INFO + powerBlobSupport.getCableId());
 //        if (isWorking()) {
-//            currenttip.add(TextFormatting.GREEN + "Producing " + getRfPerTick() + " RF/t");
+//            probeInfo.text(TextStyleClass.LABEL + "Generating: " + TextStyleClass.INFO + POWERGEN + " flux");
 //        }
-    }
+//    }
+//
+//
+//    @SideOnly(Side.CLIENT)
+//    @Override
+//    @Optional.Method(modid = "waila")
+//    public void addWailaBody(ItemStack itemStack, List<String> currenttip, IWailaDataAccessor accessor, IWailaConfigHandler config) {
+//        super.addWailaBody(itemStack, currenttip, accessor, config);
+////        if (isWorking()) {
+////            currenttip.add(TextFormatting.GREEN + "Producing " + getRfPerTick() + " RF/t");
+////        }
+//    }
 
     @Override
     public int getCableId() {
@@ -355,7 +355,7 @@ public class NegariteGeneratorTile extends GenericTileEntity implements ITickabl
         for (int i = 0 ; i < player.inventory.getSizeInventory() ; i++) {
             ItemStack stack = player.inventory.getStackInSlot(i);
             if (stack.getItem() == ModItems.negariteDust) {
-                ItemStack splitted = stack.splitStack(amount);
+                ItemStack splitted = stack.split(amount);
                 if ((!splitted.isEmpty())) {
                     if (toTransfer.isEmpty()) {
                         toTransfer = splitted;
@@ -407,8 +407,8 @@ public class NegariteGeneratorTile extends GenericTileEntity implements ITickabl
     }
 
     @Override
-    public void onBlockBreak(World world, BlockPos pos, BlockState state) {
-        super.onBlockBreak(world, pos, state);
+    public void onReplaced(World world, BlockPos pos, BlockState state, BlockState newstate) {
+        super.onReplaced(world, pos, state, newstate);
         if (!this.world.isRemote) {
             PowerSenderSupport.fixNetworks(this.world, pos);
         }

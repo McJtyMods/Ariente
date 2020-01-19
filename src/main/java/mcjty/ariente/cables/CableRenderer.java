@@ -1,22 +1,18 @@
 package mcjty.ariente.cables;
 
+import com.mojang.blaze3d.platform.GlStateManager;
 import mcjty.ariente.Ariente;
 import mcjty.lib.client.RenderHelper;
 import net.minecraft.block.Block;
-import net.minecraft.block.state.BlockState;
+import net.minecraft.block.BlockState;
 import net.minecraft.client.Minecraft;
-import net.minecraft.client.entity.EntityPlayerSP;
 import net.minecraft.client.renderer.BufferBuilder;
-import net.minecraft.client.renderer.GlStateManager;
 import net.minecraft.client.renderer.Tessellator;
-import net.minecraft.client.renderer.tileentity.TileEntitySpecialRenderer;
+import net.minecraft.client.renderer.tileentity.TileEntityRenderer;
 import net.minecraft.client.renderer.vertex.DefaultVertexFormats;
-import net.minecraft.tileentity.TileEntity;
 import net.minecraft.util.ResourceLocation;
 import net.minecraft.util.math.BlockPos;
 import net.minecraftforge.fml.client.registry.ClientRegistry;
-import net.minecraftforge.fml.relauncher.Side;
-import net.minecraftforge.fml.relauncher.SideOnly;
 import org.lwjgl.opengl.GL11;
 
 import java.util.ArrayList;
@@ -24,8 +20,7 @@ import java.util.List;
 import java.util.Random;
 import java.util.function.BiConsumer;
 
-@SideOnly(Side.CLIENT)
-public class CableRenderer extends TileEntitySpecialRenderer<GenericCableTileEntity> {
+public class CableRenderer extends TileEntityRenderer<GenericCableTileEntity> {
 
     private Random random = new Random();
     private static ResourceLocation negarite_laserbeams[] = new ResourceLocation[4];
@@ -74,9 +69,8 @@ public class CableRenderer extends TileEntitySpecialRenderer<GenericCableTileEnt
                 player, .1f);
     }
 
-
     @Override
-    public void render(GenericCableTileEntity te, double x, double y, double z, float partialTicks, int destroyStage, float alpha) {
+    public void render(GenericCableTileEntity te, double x, double y, double z, float partialTicks, int destroyStage) {
         if (true) { // @todo only when it has power
             switch (te.getCableColor()) {
                 case NEGARITE:
