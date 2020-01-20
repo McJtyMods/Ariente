@@ -8,13 +8,15 @@ import mcjty.ariente.power.IPowerBlob;
 import mcjty.ariente.power.PowerSenderSupport;
 import mcjty.lib.tileentity.GenericTileEntity;
 import net.minecraft.block.Block;
-import net.minecraft.block.state.BlockState;
+import net.minecraft.block.BlockState;
 import net.minecraft.nbt.CompoundNBT;
 import net.minecraft.network.NetworkManager;
-import net.minecraft.network.play.server.SPacketUpdateTileEntity;
+import net.minecraft.network.play.server.SUpdateTileEntityPacket;
+import net.minecraft.tileentity.TileEntityType;
 import net.minecraft.util.ResourceLocation;
 import net.minecraft.world.World;
-import net.minecraftforge.fml.common.registry.ForgeRegistries;
+import net.minecraftforge.common.util.Constants;
+import net.minecraftforge.registries.ForgeRegistries;
 
 import javax.annotation.Nullable;
 import java.util.HashMap;
@@ -25,6 +27,10 @@ public abstract class GenericCableTileEntity extends GenericTileEntity implement
     private MimicBlockSupport mimicBlockSupport = new MimicBlockSupport();
     private PowerSenderSupport powerBlobSupport = new PowerSenderSupport();
 
+    public GenericCableTileEntity(TileEntityType<?> type) {
+        super(type);
+    }
+
     @Nullable
     @Override
     public Map<String, Object> save() {
@@ -34,7 +40,8 @@ public abstract class GenericCableTileEntity extends GenericTileEntity implement
         Map<String, Object> data = new HashMap<>();
         Block mimic = mimicBlockSupport.getMimicBlock().getBlock();
         data.put("mimic", mimic.getRegistryName().toString());
-        data.put("meta", mimic.getMetaFromState(mimicBlockSupport.getMimicBlock()));
+        // @todo 1.14 meta
+//        data.put("meta", mimic.getMetaFromState(mimicBlockSupport.getMimicBlock()));
         return data;
     }
 
@@ -45,8 +52,9 @@ public abstract class GenericCableTileEntity extends GenericTileEntity implement
             if (mimic == null) {
                 System.out.println("Something went wrnog loading mimic state for: '" + data.get("mimic") + "'!");
             } else {
-                int meta = (Integer) data.get("meta");
-                mimicBlockSupport.setMimicBlock(mimic.getStateFromMeta(meta));
+//                int meta = (Integer) data.get("meta");
+                // @todo 1.14 meta
+                mimicBlockSupport.setMimicBlock(mimic.getDefaultState());
             }
         }
     }
@@ -56,7 +64,7 @@ public abstract class GenericCableTileEntity extends GenericTileEntity implement
     }
 
     @Override
-    public void onDataPacket(NetworkManager net, SPacketUpdateTileEntity packet) {
+    public void onDataPacket(NetworkManager net, SUpdateTileEntityPacket packet) {
         BlockState oldMimicBlock = mimicBlockSupport.getMimicBlock();
 
         super.onDataPacket(net, packet);
@@ -64,7 +72,7 @@ public abstract class GenericCableTileEntity extends GenericTileEntity implement
         if (world.isRemote) {
             // If needed send a render update.
             if (mimicBlockSupport.getMimicBlock() != oldMimicBlock) {
-                world.markBlockRangeForRenderUpdate(getPos(), getPos());
+                world.notifyBlockUpdate(pos, getBlockState(), getBlockState(), Constants.BlockFlags.BLOCK_UPDATE + Constants.BlockFlags.NOTIFY_NEIGHBORS);
             }
         }
     }
@@ -73,15 +81,16 @@ public abstract class GenericCableTileEntity extends GenericTileEntity implement
     public CableColor getCableColor() {
         BlockState state = world.getBlockState(pos);
         if (state.getBlock() instanceof GenericCableBlock) {
-            return state.getValue(GenericCableBlock.COLOR);
+            return state.get(GenericCableBlock.COLOR);
         }
         return CableColor.COMBINED;
     }
 
-    @Override
-    public boolean shouldRenderInPass(int pass) {
-        return pass == 1;
-    }
+    // @todo 1.14
+//    @Override
+//    public boolean shouldRenderInPass(int pass) {
+//        return pass == 1;
+//    }
 
     @Override
     public BlockState getMimicBlock() {
@@ -112,27 +121,16 @@ public abstract class GenericCableTileEntity extends GenericTileEntity implement
     }
 
     @Override
-    public void readFromNBT(CompoundNBT tagCompound) {
-        super.readFromNBT(tagCompound);
+    public void read(CompoundNBT tagCompound) {
+        super.read(tagCompound);
         mimicBlockSupport.readFromNBT(tagCompound);
-        powerBlobSupport.setCableId(tagCompound.getInteger("cableId"));
-    }
-
-    @Override
-    public void readRestorableFromNBT(CompoundNBT tagCompound) {
-        super.readRestorableFromNBT(tagCompound);
+        powerBlobSupport.setCableId(tagCompound.getInt("cableId"));
     }
 
     @Override
     public CompoundNBT write(CompoundNBT tagCompound) {
-        super.writeToNBT(tagCompound);
+        super.write(tagCompound);
         mimicBlockSupport.writeToNBT(tagCompound);
-        tagCompound.setInteger("cableId", powerBlobSupport.getCableId());
         return tagCompound;
-    }
-
-    @Override
-    public void writeRestorableToNBT(CompoundNBT tagCompound) {
-        super.writeRestorableToNBT(tagCompound);
     }
 }

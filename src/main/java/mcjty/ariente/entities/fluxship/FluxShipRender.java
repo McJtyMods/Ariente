@@ -2,15 +2,15 @@ package mcjty.ariente.entities.fluxship;
 
 import mcjty.ariente.Ariente;
 import mcjty.ariente.renderer.ModelHandle;
-import net.minecraft.client.renderer.GlStateManager;
+
 import net.minecraft.client.renderer.entity.Render;
 import net.minecraft.client.renderer.entity.RenderManager;
 import net.minecraft.client.renderer.texture.TextureMap;
 import net.minecraft.client.renderer.vertex.DefaultVertexFormats;
 import net.minecraft.util.ResourceLocation;
 import net.minecraftforge.fml.client.registry.IRenderFactory;
-import net.minecraftforge.fml.relauncher.Side;
-import net.minecraftforge.fml.relauncher.SideOnly;
+
+
 
 @SideOnly(Side.CLIENT)
 public class FluxShipRender extends Render<FluxShipEntity> {

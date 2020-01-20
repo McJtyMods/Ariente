@@ -4,15 +4,14 @@ import mcjty.ariente.blocks.ModBlocks;
 import mcjty.ariente.recipes.ConstructorRecipe;
 import mcjty.ariente.recipes.BlueprintRecipeRegistry;
 import mezz.jei.api.*;
-import mezz.jei.api.recipe.IRecipeCategoryRegistration;
 import net.minecraft.item.ItemStack;
 
 import javax.annotation.Nonnull;
 import java.util.ArrayList;
 import java.util.List;
 
-@JEIPlugin
-public class JeiPlugin implements IModPlugin {
+//@JEIPlugin
+public class JeiPlugin {} /* @todo 1.14 implements IModPlugin {
 
     public static final String ARIENTE_CRAFTING_ID = "Ariente.Crafting";
 
@@ -42,3 +41,4 @@ public class JeiPlugin implements IModPlugin {
     }
 
 }
+*/

@@ -1,9 +1,11 @@
 package mcjty.ariente.blocks.utility.wireless;
 
-import net.minecraft.block.state.BlockState;
+
+import net.minecraft.block.BlockState;
 import net.minecraft.entity.LivingEntity;
 import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.CompoundNBT;
+import net.minecraft.tileentity.TileEntityType;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.World;
 
@@ -11,7 +13,8 @@ public class SignalTransmitterTile extends SignalChannelTileEntity {
 
     private int prevIn = -1;
 
-    public SignalTransmitterTile() {
+    public SignalTransmitterTile(TileEntityType<?> type) {
+        super(type);
     }
 
     @Override
@@ -39,21 +42,22 @@ public class SignalTransmitterTile extends SignalChannelTileEntity {
         }
     }
 
-    @Override
-    public BlockState getActualState(BlockState state) {
-        return state.withProperty(POWER, powerLevel > 0);
-    }
+    // @todo 1.14
+//    @Override
+//    public BlockState getActualState(BlockState state) {
+//        return state.with(POWER, powerLevel > 0);
+//    }
 
     @Override
-    public void readFromNBT(CompoundNBT tagCompound) {
-        super.readFromNBT(tagCompound);
-        prevIn = tagCompound.getInteger("prevIn");
+    public void read(CompoundNBT tagCompound) {
+        super.read(tagCompound);
+        prevIn = tagCompound.getInt("prevIn");
     }
 
     @Override
     public CompoundNBT write(CompoundNBT tagCompound) {
-        super.writeToNBT(tagCompound);
-        tagCompound.setInteger("prevIn", prevIn);
+        super.write(tagCompound);
+        tagCompound.putInt("prevIn", prevIn);
         return tagCompound;
     }
 

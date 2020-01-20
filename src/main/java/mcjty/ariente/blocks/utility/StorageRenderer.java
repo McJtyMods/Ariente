@@ -1,38 +1,39 @@
 package mcjty.ariente.blocks.utility;
 
-import mcjty.lib.blocks.GenericBlock;
+import com.mojang.blaze3d.platform.GlStateManager;
+import mcjty.lib.blocks.BaseBlock;
 import net.minecraft.block.Block;
-import net.minecraft.block.state.BlockState;
+import net.minecraft.block.BlockState;
 import net.minecraft.client.Minecraft;
-import net.minecraft.client.entity.EntityPlayerSP;
 import net.minecraft.client.gui.FontRenderer;
-import net.minecraft.client.gui.Gui;
-import net.minecraft.client.renderer.*;
-import net.minecraft.client.renderer.tileentity.TileEntitySpecialRenderer;
+import net.minecraft.client.gui.screen.Screen;
+import net.minecraft.client.renderer.BufferBuilder;
+import net.minecraft.client.renderer.ItemRenderer;
+import net.minecraft.client.renderer.RenderHelper;
+import net.minecraft.client.renderer.Tessellator;
+import net.minecraft.client.renderer.tileentity.TileEntityRenderer;
 import net.minecraft.client.renderer.vertex.DefaultVertexFormats;
+import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.item.ItemStack;
 import net.minecraft.util.Direction;
+import net.minecraft.util.math.BlockRayTraceResult;
 import net.minecraft.util.math.MathHelper;
 import net.minecraft.util.math.RayTraceResult;
 import net.minecraftforge.fml.client.registry.ClientRegistry;
-import net.minecraftforge.fml.relauncher.Side;
-import net.minecraftforge.fml.relauncher.SideOnly;
 import org.lwjgl.opengl.GL11;
 
 import javax.annotation.Nullable;
 
-@SideOnly(Side.CLIENT)
-public class StorageRenderer extends TileEntitySpecialRenderer<StorageTile> {
+public class StorageRenderer extends TileEntityRenderer<StorageTile> {
 
     private static int xx[] = new int[]{11, 36, 11, 36};
     private static int yy[] = new int[]{9, 9, 34, 34};
 
     @Override
-    public void render(StorageTile te, double x, double y, double z, float partialTicks, int destroyStage, float alpha) {
-
+    public void render(StorageTile te, double x, double y, double z, float partialTicks, int destroyStage) {
         RayTraceResult mouseOver = Minecraft.getInstance().objectMouseOver;
         int index;
-        if (mouseOver != null && te.getPos().equals(mouseOver.getBlockPos())) {
+        if (mouseOver instanceof BlockRayTraceResult && te.getPos().equals(((BlockRayTraceResult) mouseOver).getPos())) {
             index = StorageTile.getSlot(mouseOver, te.getWorld());
         } else {
             index = -2;
@@ -40,25 +41,25 @@ public class StorageRenderer extends TileEntitySpecialRenderer<StorageTile> {
 
         BlockState state = te.getWorld().getBlockState(te.getPos());
         Block block = state.getBlock();
-        if (!(block instanceof GenericBlock)) {
+        if (!(block instanceof BaseBlock)) {
             return;
         }
 
-        Minecraft.getInstance().entityRenderer.disableLightmap();
+        Minecraft.getInstance().gameRenderer.disableLightmap();
 
-        GenericBlock gb = (GenericBlock) block;
+        BaseBlock gb = (BaseBlock) block;
 
         GlStateManager.pushMatrix();
         Direction facing = gb.getFrontDirection(gb.getRotationType(), state);
 
-        GlStateManager.translate((float) x + 0.5F, (float) y + 0.75F, (float) z + 0.5F);
+        GlStateManager.translatef((float) x + 0.5F, (float) y + 0.75F, (float) z + 0.5F);
 
         if (facing == Direction.UP) {
-            GlStateManager.rotate(-90.0F, 1.0F, 0.0F, 0.0F);
-            GlStateManager.translate(0.0F, 0.0F, -0.68F);
+            GlStateManager.rotatef(-90.0F, 1.0F, 0.0F, 0.0F);
+            GlStateManager.translatef(0.0F, 0.0F, -0.68F);
         } else if (facing == Direction.DOWN) {
-            GlStateManager.rotate(90.0F, 1.0F, 0.0F, 0.0F);
-            GlStateManager.translate(0.0F, 0.0F, -.184F);
+            GlStateManager.rotatef(90.0F, 1.0F, 0.0F, 0.0F);
+            GlStateManager.translatef(0.0F, 0.0F, -.184F);
         } else {
             float rotY = 0.0F;
             if (facing == Direction.NORTH) {
@@ -68,19 +69,19 @@ public class StorageRenderer extends TileEntitySpecialRenderer<StorageTile> {
             } else if (facing == Direction.EAST) {
                 rotY = -90.0F;
             }
-            GlStateManager.rotate(-rotY, 0.0F, 1.0F, 0.0F);
-            GlStateManager.translate(0.0F, -0.2500F, -0.4375F);
+            GlStateManager.rotatef(-rotY, 0.0F, 1.0F, 0.0F);
+            GlStateManager.translatef(0.0F, -0.2500F, -0.4375F);
         }
 
-        GlStateManager.translate(0.0F, 0.0F, 0.9F);
+        GlStateManager.translatef(0.0F, 0.0F, 0.9F);
         GlStateManager.depthMask(true);
-        GlStateManager.enableDepth();
+        GlStateManager.enableDepthTest();
 
         renderSlotHilight(index);
         renderSlots(te);
 
         GlStateManager.popMatrix();
-        Minecraft.getInstance().entityRenderer.enableLightmap();
+        Minecraft.getInstance().gameRenderer.enableLightmap();
     }
 
     private void renderSlotHilight(int index) {
@@ -88,8 +89,8 @@ public class StorageRenderer extends TileEntitySpecialRenderer<StorageTile> {
 
         float factor = 2.0f;
         float f3 = 0.0075F;
-        GlStateManager.translate(-0.5F, 0.5F, -0.155F);
-        GlStateManager.scale(f3 * factor, -f3 * factor, f3);
+        GlStateManager.translatef(-0.5F, 0.5F, -0.155F);
+        GlStateManager.scalef(f3 * factor, -f3 * factor, f3);
         GlStateManager.disableLighting();
 
         for (int i = 0; i < 4; i++) {
@@ -98,7 +99,7 @@ public class StorageRenderer extends TileEntitySpecialRenderer<StorageTile> {
 //            Gui.drawRect(xx[i] - 4, yy[i] - 4, xx[i] - 3, yy[i] + 22, 0xff222222);
 //            Gui.drawRect(xx[i] + 21, yy[i] - 4, xx[i] + 22, yy[i] + 22, 0xff222222);
             if (index == i) {
-                Gui.drawRect(xx[i] - 3, yy[i] - 3, xx[i] + 21, yy[i] + 21, index == i ? 0x55666666 : 0x55000000);
+                Screen.fill(xx[i] - 3, yy[i] - 3, xx[i] + 21, yy[i] + 21, index == i ? 0x55666666 : 0x55000000);
             }
         }
 
@@ -113,7 +114,7 @@ public class StorageRenderer extends TileEntitySpecialRenderer<StorageTile> {
         GL11.glTranslatef(-0.5F, 0.5F, -0.15F);
         GL11.glScalef(f3 * factor, -f3 * factor, 0.0001f);
 
-        RenderItem itemRender = Minecraft.getInstance().getRenderItem();
+        ItemRenderer itemRender = Minecraft.getInstance().getItemRenderer();
 
         for (int i = 0; i < StorageTile.STACKS; i++) {
             ItemStack stack = te.getTotalStack(i);
@@ -123,9 +124,9 @@ public class StorageRenderer extends TileEntitySpecialRenderer<StorageTile> {
         }
 
         GL11.glTranslatef(0F, 0F, 500F);
-        GlStateManager.scale(.5, .5, .5);
+        GlStateManager.scaled(.5, .5, .5);
         GlStateManager.depthMask(true);
-        GlStateManager.enableDepth();
+        GlStateManager.enableDepthTest();
         for (int i = 0; i < StorageTile.STACKS; i++) {
             ItemStack stack = te.getTotalStack(i);
             if (!stack.isEmpty()) {
@@ -156,13 +157,13 @@ public class StorageRenderer extends TileEntitySpecialRenderer<StorageTile> {
             if (stack.getCount() != 1 || text != null) {
                 String s = text == null ? String.valueOf(stack.getCount()) : text;
                 GlStateManager.disableLighting();
-                GlStateManager.enableDepth();
+                GlStateManager.enableDepthTest();
 //                GlStateManager.disableDepth();
                 GlStateManager.disableBlend();
-                fr.drawString(s, (xPosition + 19 - 2 - fr.getStringWidth(s)), (yPosition + 6 + 3), 16777215, false);
+                fr.drawString(s, (xPosition + 19 - 2 - fr.getStringWidth(s)), (yPosition + 6 + 3), 16777215);
 //                fr.drawStringWithShadow(s, (float) (xPosition + 19 - 2 - fr.getStringWidth(s)), (float) (yPosition + 6 + 3), 16777215);
                 GlStateManager.enableLighting();
-                GlStateManager.enableDepth();
+                GlStateManager.enableDepthTest();
                 // Fixes opaque cooldown overlay a bit lower
                 // TODO: check if enabled blending still screws things up down the line.
                 GlStateManager.enableBlend();
@@ -170,10 +171,10 @@ public class StorageRenderer extends TileEntitySpecialRenderer<StorageTile> {
 
             if (stack.getItem().showDurabilityBar(stack)) {
                 GlStateManager.disableLighting();
-                GlStateManager.enableDepth();
+                GlStateManager.enableDepthTest();
 //                GlStateManager.disableDepth();
-                GlStateManager.disableTexture2D();
-                GlStateManager.disableAlpha();
+                GlStateManager.disableTexture();
+                GlStateManager.disableAlphaTest();
                 GlStateManager.disableBlend();
                 Tessellator tessellator = Tessellator.getInstance();
                 BufferBuilder bufferbuilder = tessellator.getBuffer();
@@ -184,26 +185,26 @@ public class StorageRenderer extends TileEntitySpecialRenderer<StorageTile> {
                 draw(bufferbuilder, xPosition + 2, yPosition + 13, 13, 2, 0, 0, 0, 255);
                 draw(bufferbuilder, xPosition + 2, yPosition + 13, i, 1, j >> 16 & 255, j >> 8 & 255, j & 255, 255);
                 GlStateManager.enableBlend();
-                GlStateManager.enableAlpha();
-                GlStateManager.enableTexture2D();
+                GlStateManager.enableAlphaTest();
+                GlStateManager.enableTexture();
                 GlStateManager.enableLighting();
-                GlStateManager.enableDepth();
+                GlStateManager.enableDepthTest();
             }
 
-            EntityPlayerSP entityplayersp = Minecraft.getInstance().player;
+            PlayerEntity entityplayersp = Minecraft.getInstance().player;
             float f3 = entityplayersp == null ? 0.0F : entityplayersp.getCooldownTracker().getCooldown(stack.getItem(), Minecraft.getInstance().getRenderPartialTicks());
 
             if (f3 > 0.0F) {
                 GlStateManager.disableLighting();
-                GlStateManager.enableDepth();
+                GlStateManager.enableDepthTest();
 //                GlStateManager.disableDepth();
-                GlStateManager.disableTexture2D();
+                GlStateManager.disableTexture();
                 Tessellator tessellator1 = Tessellator.getInstance();
                 BufferBuilder bufferbuilder1 = tessellator1.getBuffer();
                 draw(bufferbuilder1, xPosition, yPosition + MathHelper.floor(16.0F * (1.0F - f3)), 16, MathHelper.ceil(16.0F * f3), 255, 255, 255, 127);
-                GlStateManager.enableTexture2D();
+                GlStateManager.enableTexture();
                 GlStateManager.enableLighting();
-                GlStateManager.enableDepth();
+                GlStateManager.enableDepthTest();
             }
         }
     }

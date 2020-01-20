@@ -1,25 +1,27 @@
 package mcjty.ariente.blocks.utility.wireless;
 
 import mcjty.ariente.sounds.ModSounds;
-import net.minecraft.block.state.BlockState;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.CompoundNBT;
 import net.minecraft.network.NetworkManager;
-import net.minecraft.network.play.server.SPacketUpdateTileEntity;
+import net.minecraft.network.play.server.SUpdateTileEntityPacket;
 import net.minecraft.tileentity.TileEntity;
+import net.minecraft.tileentity.TileEntityType;
 import net.minecraft.util.Direction;
 import net.minecraft.util.Hand;
 import net.minecraft.util.SoundCategory;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.World;
+import net.minecraftforge.common.util.Constants;
 
 public class WirelessButtonTile extends SignalChannelTileEntity {
 
     private boolean locked = false;
     private int prevIn = -1;
 
-    public WirelessButtonTile() {
+    public WirelessButtonTile(TileEntityType<?> type) {
+        super(type);
     }
 
     @Override
@@ -28,7 +30,7 @@ public class WirelessButtonTile extends SignalChannelTileEntity {
     }
 
     @Override
-    public void onDataPacket(NetworkManager net, SPacketUpdateTileEntity packet) {
+    public void onDataPacket(NetworkManager net, SUpdateTileEntityPacket packet) {
         boolean locked = isLocked();
 
         super.onDataPacket(net, packet);
@@ -37,7 +39,7 @@ public class WirelessButtonTile extends SignalChannelTileEntity {
             // If needed send a render update.
             boolean newLocked = isLocked();
             if (newLocked != locked) {
-                world.markBlockRangeForRenderUpdate(pos, pos);
+                world.notifyBlockUpdate(pos, getBlockState(), getBlockState(), Constants.BlockFlags.BLOCK_UPDATE + Constants.BlockFlags.NOTIFY_NEIGHBORS);
             }
         }
     }
@@ -80,24 +82,26 @@ public class WirelessButtonTile extends SignalChannelTileEntity {
     }
 
 
-    @Override
-    public BlockState getActualState(BlockState state) {
-        return state.withProperty(POWER, !locked);
-    }
+    // @todo 1.14
+//    @Override
+//    public BlockState getActualState(BlockState state) {
+//        return state.withProperty(POWER, !locked);
+//    }
 
     @Override
-    public void readFromNBT(CompoundNBT tagCompound) {
-        super.readFromNBT(tagCompound);
-        prevIn = tagCompound.getInteger("prevIn");
+    public void read(CompoundNBT tagCompound) {
+        super.read(tagCompound);
+        prevIn = tagCompound.getInt("prevIn");
     }
 
     @Override
     public CompoundNBT write(CompoundNBT tagCompound) {
-        super.writeToNBT(tagCompound);
-        tagCompound.setInteger("prevIn", prevIn);
+        super.write(tagCompound);
+        tagCompound.putInt("prevIn", prevIn);
         return tagCompound;
     }
 
+    // @todo 1.14 loot
     @Override
     public void readRestorableFromNBT(CompoundNBT tagCompound) {
         super.readRestorableFromNBT(tagCompound);
@@ -107,7 +111,7 @@ public class WirelessButtonTile extends SignalChannelTileEntity {
     @Override
     public void writeRestorableToNBT(CompoundNBT tagCompound) {
         super.writeRestorableToNBT(tagCompound);
-        tagCompound.setBoolean("locked", locked);
+        tagCompound.putBoolean("locked", locked);
     }
 
 }

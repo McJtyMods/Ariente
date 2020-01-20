@@ -1,23 +1,20 @@
 package mcjty.ariente.blocks.utility.door;
 
+import com.mojang.blaze3d.platform.GlStateManager;
 import mcjty.ariente.Ariente;
 import mcjty.ariente.blocks.ModBlocks;
-import net.minecraft.block.state.BlockState;
+import net.minecraft.block.BlockState;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.renderer.BufferBuilder;
-import net.minecraft.client.renderer.GlStateManager;
 import net.minecraft.client.renderer.Tessellator;
-import net.minecraft.client.renderer.tileentity.TileEntitySpecialRenderer;
+import net.minecraft.client.renderer.tileentity.TileEntityRenderer;
 import net.minecraft.client.renderer.vertex.DefaultVertexFormats;
 import net.minecraft.util.Direction;
 import net.minecraft.util.ResourceLocation;
 import net.minecraftforge.fml.client.registry.ClientRegistry;
-import net.minecraftforge.fml.relauncher.Side;
-import net.minecraftforge.fml.relauncher.SideOnly;
 import org.lwjgl.opengl.GL11;
 
-@SideOnly(Side.CLIENT)
-public class DoorMarkerRenderer extends TileEntitySpecialRenderer<DoorMarkerTile> {
+public class DoorMarkerRenderer extends TileEntityRenderer<DoorMarkerTile> {
 
     public static ResourceLocation halo = new ResourceLocation(Ariente.MODID, "textures/gui/guielements.png");
 
@@ -25,20 +22,20 @@ public class DoorMarkerRenderer extends TileEntitySpecialRenderer<DoorMarkerTile
     }
 
     @Override
-    public void render(DoorMarkerTile te, double x, double y, double z, float time, int breakTime, float alpha) {
+    public void render(DoorMarkerTile te, double x, double y, double z, float partialTicks, int destroyStage) {
         BlockState state = getWorld().getBlockState(te.getPos());
-        if (state.getBlock() != ModBlocks.doorMarkerBlock) {
+        if (state.getBlock() != ModBlocks.doorMarkerBlock.get()) {
             return;
         }
 
         GlStateManager.pushMatrix();
 
-        Direction frontDirection = ModBlocks.doorMarkerBlock.getFrontDirection(state);
+        Direction frontDirection = ModBlocks.doorMarkerBlock.get().getFrontDirection(state);
         if (Direction.NORTH.equals(frontDirection) || Direction.SOUTH.equals(frontDirection)) {
-            GlStateManager.translate(x, y, z+.5);
-            GlStateManager.rotate(90, 0, 1, 0);
+            GlStateManager.translated(x, y, z+.5);
+            GlStateManager.rotatef(90, 0, 1, 0);
         } else {
-            GlStateManager.translate(x + .5, y, z);
+            GlStateManager.translated(x + .5, y, z);
         }
 
         bindTexture(halo);
@@ -54,15 +51,15 @@ public class DoorMarkerRenderer extends TileEntitySpecialRenderer<DoorMarkerTile
         Tessellator tessellator = Tessellator.getInstance();
         //        RenderHelper.enableStandardItemLighting();
         GlStateManager.disableBlend();
-        GlStateManager.enableDepth();
+        GlStateManager.enableDepthTest();
         GlStateManager.depthMask(true);
-        GlStateManager.enableTexture2D();
+        GlStateManager.enableTexture();
 
 //        GlStateManager.disableLighting();
 //        Minecraft.getInstance().entityRenderer.disableLightmap();
         GlStateManager.enableLighting();
 //        GlStateManager.enableRescaleNormal();
-        Minecraft.getInstance().entityRenderer.enableLightmap();
+        Minecraft.getInstance().gameRenderer.enableLightmap();
 //        int light = Minecraft.getInstance().world.getCombinedLight(new BlockPos(MathHelper.floor(te.getPos().getX()), MathHelper.floor(te.getPos().getY()), MathHelper.floor(te.getPos().getZ())), 0);
 //        OpenGlHelper.setLightmapTextureCoords(OpenGlHelper.lightmapTexUnit, (float)(light & 0xFFFF), (float)((light >> 16) & 0xFFFF));
 
@@ -79,7 +76,7 @@ public class DoorMarkerRenderer extends TileEntitySpecialRenderer<DoorMarkerTile
 
         if (openphase < 1000) {
 
-            GlStateManager.color(1, 1, 1, 1);
+            GlStateManager.color4f(1, 1, 1, 1);
 
             BufferBuilder renderer = tessellator.getBuffer();
             renderer.begin(GL11.GL_QUADS, DefaultVertexFormats.POSITION_TEX);

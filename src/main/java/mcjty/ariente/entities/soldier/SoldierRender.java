@@ -2,7 +2,7 @@ package mcjty.ariente.entities.soldier;
 
 import mcjty.ariente.Ariente;
 import net.minecraft.client.model.ModelZombie;
-import net.minecraft.client.renderer.GlStateManager;
+
 import net.minecraft.client.renderer.entity.Render;
 import net.minecraft.client.renderer.entity.RenderBiped;
 import net.minecraft.client.renderer.entity.RenderManager;

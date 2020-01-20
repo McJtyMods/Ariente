@@ -10,22 +10,21 @@ import mcjty.hologui.api.components.IIconChoice;
 import mcjty.hologui.api.components.IPanel;
 import mcjty.hologui.api.components.ITextChoice;
 import mcjty.lib.multipart.PartPos;
-import net.minecraft.block.Block;
-import net.minecraft.block.state.BlockState;
+import net.minecraft.block.BlockState;
 import net.minecraft.entity.LivingEntity;
-import net.minecraft.item.EnumDyeColor;
+import net.minecraft.item.DyeColor;
 import net.minecraft.nbt.CompoundNBT;
+import net.minecraft.tileentity.TileEntityType;
 import net.minecraft.util.Direction;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.World;
-import net.minecraftforge.items.IItemHandler;
 import org.apache.commons.lang3.tuple.Pair;
 
 import static mcjty.hologui.api.Icons.*;
 
 public class SensorItemNodeTile extends AbstractNodeTile {
 
-    private EnumDyeColor[] outputColor = new EnumDyeColor[] { EnumDyeColor.WHITE };
+    private DyeColor[] outputColor = new DyeColor[] { DyeColor.WHITE };
     private int operator = 0;
     private int amount = 0;
 
@@ -34,7 +33,11 @@ public class SensorItemNodeTile extends AbstractNodeTile {
     public static BlockState getStateForPlacement(World world, BlockPos pos, Direction facing, float hitX, float hitY, float hitZ, int meta, LivingEntity placer) {
         NodeOrientation orientation = getOrientationFromPlacement(facing, hitX, hitY, hitZ);
         // Since this is a multipart we can use state that isn't convertable to metadata
-        return ModBlocks.sensorItemNode.getDefaultState().withProperty(ORIENTATION, orientation);
+        return ModBlocks.sensorItemNode.get().getDefaultState().with(ORIENTATION, orientation);
+    }
+
+    public SensorItemNodeTile(TileEntityType<?> type) {
+        super(type);
     }
 
     // Return true if we already know the operator is succesful. Check false if we already know the operator can never succeed.
@@ -64,42 +67,42 @@ public class SensorItemNodeTile extends AbstractNodeTile {
     }
 
     public boolean sense(PartPos sensorPos) {
-        IItemHandler itemHandler = getConnectedItemHandler(sensorPos);
-        if (itemHandler != null) {
+        return getConnectedItemHandler(sensorPos).map(h -> {
             int cnt = 0;
-            for (int i = 0 ; i < itemHandler.getSlots() ; i++) {
-                cnt += itemHandler.getStackInSlot(i).getCount();
+            for (int i = 0 ; i < h.getSlots() ; i++) {
+                cnt += h.getStackInSlot(i).getCount();
                 Boolean earlyCheck = checkOperatorEarly(cnt);
                 if (earlyCheck != null) {
                     return earlyCheck;
                 }
             }
             return checkOperator(cnt);
-        }
-        return false;
+        }).orElse(false);
     }
 
-    @Override
-    public Block getBlockType() {
-        return ModBlocks.sensorItemNode;
-    }
+    // @todo 1.14
+//    @Override
+//    public Block getBlockType() {
+//        return ModBlocks.sensorItemNode;
+//    }
 
+    // @todo 1.14 loot
     @Override
     public void readRestorableFromNBT(CompoundNBT tagCompound) {
         super.readRestorableFromNBT(tagCompound);
-        if (tagCompound.hasKey("outColor")) {
-            outputColor[0] = EnumDyeColor.values()[tagCompound.getInteger("outColor")];
+        if (tagCompound.contains("outColor")) {
+            outputColor[0] = DyeColor.values()[tagCompound.getInt("outColor")];
         }
-        operator = tagCompound.getInteger("op");
-        amount = tagCompound.getInteger("amount");
+        operator = tagCompound.getInt("op");
+        amount = tagCompound.getInt("amount");
     }
 
     @Override
     public void writeRestorableToNBT(CompoundNBT tagCompound) {
         super.writeRestorableToNBT(tagCompound);
-        tagCompound.setInteger("outColor", outputColor[0].ordinal());
-        tagCompound.setInteger("op", operator);
-        tagCompound.setInteger("amount", amount);
+        tagCompound.putInt("outColor", outputColor[0].ordinal());
+        tagCompound.putInt("op", operator);
+        tagCompound.putInt("amount", amount);
     }
 
     @Override
@@ -135,7 +138,7 @@ public class SensorItemNodeTile extends AbstractNodeTile {
         notifyField();
     }
 
-    public EnumDyeColor getOutputColor() {
+    public DyeColor getOutputColor() {
         return outputColor[0];
     }
 

@@ -3,15 +3,15 @@ package mcjty.ariente.entities.fluxelevator;
 import mcjty.ariente.Ariente;
 import mcjty.hologui.api.IHoloGuiEntity;
 import net.minecraft.client.model.ModelBase;
-import net.minecraft.client.renderer.GlStateManager;
+
 import net.minecraft.client.renderer.entity.Render;
 import net.minecraft.client.renderer.entity.RenderManager;
 import net.minecraft.util.ResourceLocation;
 import net.minecraft.util.math.MathHelper;
 import net.minecraft.util.math.Vec3d;
 import net.minecraftforge.fml.client.registry.IRenderFactory;
-import net.minecraftforge.fml.relauncher.Side;
-import net.minecraftforge.fml.relauncher.SideOnly;
+
+
 
 @SideOnly(Side.CLIENT)
 public class FluxElevatorRender extends Render<FluxElevatorEntity> {

@@ -1,61 +1,47 @@
 package mcjty.ariente.cables;
 
-import mcjty.ariente.Ariente;
 import mcjty.ariente.blocks.ModBlocks;
-import mcjty.ariente.facade.FacadeBlockId;
 import mcjty.ariente.facade.FacadeItemBlock;
-import mcjty.lib.McJtyLib;
+import mcjty.lib.compat.theoneprobe.TOPDriver;
 import net.minecraft.block.Block;
-import net.minecraft.block.ITileEntityProvider;
+import net.minecraft.block.BlockState;
+import net.minecraft.block.Blocks;
 import net.minecraft.block.material.Material;
-import net.minecraft.block.state.BlockState;
-import net.minecraft.creativetab.CreativeTabs;
-import net.minecraft.entity.LivingEntity;
 import net.minecraft.entity.player.PlayerEntity;
-import net.minecraft.init.Blocks;
+import net.minecraft.fluid.IFluidState;
+import net.minecraft.item.BlockItemUseContext;
 import net.minecraft.item.ItemStack;
 import net.minecraft.tileentity.TileEntity;
-import net.minecraft.util.BlockRenderLayer;
 import net.minecraft.util.Direction;
-import net.minecraft.util.NonNullList;
-import net.minecraft.util.ResourceLocation;
 import net.minecraft.util.math.BlockPos;
-import net.minecraft.world.IBlockAccess;
+import net.minecraft.world.IBlockReader;
 import net.minecraft.world.World;
-import net.minecraftforge.common.property.IExtendedBlockState;
-import net.minecraftforge.fml.common.registry.GameRegistry;
-import net.minecraftforge.fml.relauncher.Side;
-import net.minecraftforge.fml.relauncher.SideOnly;
+import net.minecraftforge.common.util.Constants;
 
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 
-public class NetCableBlock extends GenericCableBlock implements ITileEntityProvider {
+public class NetCableBlock extends GenericCableBlock {
 
     public static final String NETCABLE = "netcable";
 
     public NetCableBlock() {
-        this(Material.CLOTH, NETCABLE);
+        this(Material.CARPET);
     }
 
-    public NetCableBlock(Material material, String name) {
-        super(material, name);
-        initTileEntity();
-    }
-
-    protected void initTileEntity() {
-        GameRegistry.registerTileEntity(NetCableTileEntity.class, new ResourceLocation(Ariente.MODID, "netcable"));
+    public NetCableBlock(Material material) {
+        super(material);
     }
 
     @Override
-    public TileEntity createNewTileEntity(World world, int i) {
+    public TOPDriver getProbeDriver() {
         return null;
     }
 
-    @Override
-    public TileEntity createTileEntity(World world, BlockState metadata) {
-        return new NetCableTileEntity();
-    }
+    // @todo 1.14
+//    protected void initTileEntity() {
+//        GameRegistry.registerTileEntity(NetCableTileEntity.class, new ResourceLocation(Ariente.MODID, "netcable"));
+//    }
 
 
     @Override
@@ -75,7 +61,7 @@ public class NetCableBlock extends GenericCableBlock implements ITileEntityProvi
     }
 
     @Override
-    public boolean removedByPlayer(BlockState state, World world, BlockPos pos, PlayerEntity player, boolean willHarvest) {
+    public boolean removedByPlayer(BlockState state, World world, BlockPos pos, PlayerEntity player, boolean willHarvest, IFluidState fluid) {
         TileEntity te = world.getTileEntity(pos);
         if (te instanceof NetCableTileEntity) {
             NetCableTileEntity cableTileEntity = (NetCableTileEntity) te;
@@ -85,80 +71,91 @@ public class NetCableBlock extends GenericCableBlock implements ITileEntityProvi
             } else {
                 // We are in mimic mode. Don't remove the connector
                 this.onBlockHarvested(world, pos, state, player);
-                if(player.capabilities.isCreativeMode) {
-                    cableTileEntity.setMimicBlock(null);
-                }
+// @todo 1.14
+                //                if(player.capabilities.isCreativeMode) {
+//                    cableTileEntity.setMimicBlock(null);
+//                }
             }
         } else {
-            return super.removedByPlayer(state, world, pos, player, willHarvest);
+            return super.removedByPlayer(state, world, pos, player, willHarvest, fluid);
         }
         return true;
     }
 
+    // @todo 1.14
+//    @Override
+//    public BlockState getExtendedState(BlockState state, IBlockReader world, BlockPos pos) {
+//        IExtendedBlockState extendedBlockState = (IExtendedBlockState) super.getExtendedState(state, world, pos);
+//        BlockState mimicBlock = getMimicBlock(world, pos);
+//        if (mimicBlock != null) {
+//            return extendedBlockState.withProperty(FACADEID, new FacadeBlockId(mimicBlock));
+//        } else {
+//            return extendedBlockState;
+//        }
+//    }
+
+
+    // @todo 1.14
+//    @Override
+//    public void initModel() {
+//        super.initModel();
+//        // To make sure that our ISBM model is chosen for all states we use this custom state mapper:
+//        McJtyLib.proxy.initStateMapper(this, GenericCableBakedModel.modelCable);
+//        CableRenderer.register(NetCableTileEntity.class);
+//    }
+
+    // @todo 1.14
+//    @Override
+//    public void getSubBlocks(CreativeTabs tab, NonNullList<ItemStack> items) {
+//        for (CableColor value : CableColor.VALUES) {
+//            items.add(updateColorInStack(new ItemStack(this, 1, value.ordinal()), value));
+//        }
+//    }
+
+    // @todo 1.14
+//    @Override
+//    @SideOnly(Side.CLIENT)
+//    public boolean shouldSideBeRendered(BlockState blockState, IBlockAccess blockAccess, BlockPos pos, Direction side) {
+//        BlockState mimicBlock = getMimicBlock(blockAccess, pos);
+//        if (mimicBlock == null) {
+//            return false;
+//        } else {
+//            return mimicBlock.shouldSideBeRendered(blockAccess, pos, side);
+//        }
+//    }
+//
+//
+//    @Override
+//    @SideOnly(Side.CLIENT)
+//    public boolean canRenderInLayer(BlockState state, BlockRenderLayer layer) {
+//        return true; // delegated to GenericCableBakedModel#getQuads
+//    }
+
+
+    @Nullable
     @Override
-    public BlockState getExtendedState(BlockState state, IBlockAccess world, BlockPos pos) {
-        IExtendedBlockState extendedBlockState = (IExtendedBlockState) super.getExtendedState(state, world, pos);
-        BlockState mimicBlock = getMimicBlock(world, pos);
-        if (mimicBlock != null) {
-            return extendedBlockState.withProperty(FACADEID, new FacadeBlockId(mimicBlock));
-        } else {
-            return extendedBlockState;
-        }
+    public BlockState getStateForPlacement(BlockItemUseContext context) {
+        return getPlacementState(context);
+
     }
 
-
-    @Override
-    public void initModel() {
-        super.initModel();
-        // To make sure that our ISBM model is chosen for all states we use this custom state mapper:
-        McJtyLib.proxy.initStateMapper(this, GenericCableBakedModel.modelCable);
-        CableRenderer.register(NetCableTileEntity.class);
-    }
-
-    @Override
-    public void getSubBlocks(CreativeTabs tab, NonNullList<ItemStack> items) {
-        for (CableColor value : CableColor.VALUES) {
-            items.add(updateColorInStack(new ItemStack(this, 1, value.ordinal()), value));
-        }
-    }
-
-    @Override
-    @SideOnly(Side.CLIENT)
-    public boolean shouldSideBeRendered(BlockState blockState, IBlockAccess blockAccess, BlockPos pos, Direction side) {
-        BlockState mimicBlock = getMimicBlock(blockAccess, pos);
-        if (mimicBlock == null) {
-            return false;
-        } else {
-            return mimicBlock.shouldSideBeRendered(blockAccess, pos, side);
-        }
-    }
-
-
-    @Override
-    @SideOnly(Side.CLIENT)
-    public boolean canRenderInLayer(BlockState state, BlockRenderLayer layer) {
-        return true; // delegated to GenericCableBakedModel#getQuads
-    }
-
-
-    @Override
-    public BlockState getStateForPlacement(World world, BlockPos pos, Direction facing, float hitX, float hitY, float hitZ, int meta, LivingEntity placer) {
-        return getPlacementState(world, pos, facing, hitX, hitY, hitZ, meta, placer);
-
-    }
-
-    public BlockState getPlacementState(World world, BlockPos pos, Direction facing, float hitX, float hitY, float hitZ, int meta, LivingEntity placer) {
+    public BlockState getPlacementState(BlockItemUseContext context) {
         // When our block is placed down we force a re-render of adjacent blocks to make sure their baked model is updated
-        world.markBlockRangeForRenderUpdate(pos.add(-1, -1, -1), pos.add(1, 1, 1));
-        return super.getStateForPlacement(world, pos, facing, hitX, hitY, hitZ, meta, placer);
+        World world = context.getWorld();
+        BlockPos pos = context.getPos();
+        BlockState state = world.getBlockState(pos);
+        // @todo 1.14
+        world.notifyBlockUpdate(pos, state, state, Constants.BlockFlags.BLOCK_UPDATE + Constants.BlockFlags.NOTIFY_NEIGHBORS);
+//        world.markBlockRangeForRenderUpdate(pos.add(-1, -1, -1), pos.add(1, 1, 1));
+        return super.getStateForPlacement(context);
     }
 
     @Override
-    protected ConnectorType getConnectorType(@Nonnull CableColor color, IBlockAccess world, BlockPos connectorPos, Direction facing) {
+    protected ConnectorType getConnectorType(@Nonnull CableColor color, IBlockReader world, BlockPos connectorPos, Direction facing) {
         BlockPos pos = connectorPos.offset(facing);
         BlockState state = world.getBlockState(pos);
         Block block = state.getBlock();
-        if ((block instanceof NetCableBlock || block instanceof ConnectorBlock) && state.getValue(COLOR) == color) {
+        if ((block instanceof NetCableBlock || block instanceof ConnectorBlock) && state.get(COLOR) == color) {
             return ConnectorType.CABLE;
         } else {
             return ConnectorType.NONE;

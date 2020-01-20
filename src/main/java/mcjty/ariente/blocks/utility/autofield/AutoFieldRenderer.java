@@ -1,29 +1,26 @@
 package mcjty.ariente.blocks.utility.autofield;
 
+import com.mojang.blaze3d.platform.GlStateManager;
 import mcjty.ariente.Ariente;
 import mcjty.lib.client.RenderHelper;
 import mcjty.lib.client.RenderHelper.Vector;
 import mcjty.lib.client.RenderSettings;
 import net.minecraft.client.Minecraft;
-import net.minecraft.client.entity.EntityPlayerSP;
 import net.minecraft.client.renderer.BufferBuilder;
-import net.minecraft.client.renderer.GlStateManager;
 import net.minecraft.client.renderer.Tessellator;
-import net.minecraft.client.renderer.tileentity.TileEntitySpecialRenderer;
+import net.minecraft.client.renderer.tileentity.TileEntityRenderer;
 import net.minecraft.client.renderer.vertex.DefaultVertexFormats;
+import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.util.ResourceLocation;
 import net.minecraft.util.math.AxisAlignedBB;
 import net.minecraftforge.fml.client.registry.ClientRegistry;
-import net.minecraftforge.fml.relauncher.Side;
-import net.minecraftforge.fml.relauncher.SideOnly;
 import org.lwjgl.opengl.GL11;
 
 import java.util.Random;
 
 import static mcjty.lib.client.RenderHelper.Vector.Vector;
 
-@SideOnly(Side.CLIENT)
-public class AutoFieldRenderer extends TileEntitySpecialRenderer<AutoFieldTile> {
+public class AutoFieldRenderer extends TileEntityRenderer<AutoFieldTile> {
 
     private static ResourceLocation beams[] = new ResourceLocation[3];
     static {
@@ -38,7 +35,7 @@ public class AutoFieldRenderer extends TileEntitySpecialRenderer<AutoFieldTile> 
     }
 
     @Override
-    public void render(AutoFieldTile te, double x, double y, double z, float time, int breakTime, float alpha) {
+    public void render(AutoFieldTile te, double x, double y, double z, float time, int destroyStage) {
         AxisAlignedBB box = te.getFieldBox();
         if (box == null) {
             return;
@@ -62,24 +59,24 @@ public class AutoFieldRenderer extends TileEntitySpecialRenderer<AutoFieldTile> 
         GlStateManager.blendFunc(GL11.GL_ONE, GL11.GL_ONE);
 //        GlStateManager.alphaFunc(GL11.GL_GREATER, 0.003921569F);
         GlStateManager.disableCull();
-        GlStateManager.enableDepth();
+        GlStateManager.enableDepthTest();
 
         ResourceLocation beamIcon = beams[random.nextInt(3)];
         bindTexture(beamIcon);
 
         Minecraft mc = Minecraft.getInstance();
-        EntityPlayerSP p = mc.player;
+        PlayerEntity p = mc.player;
         double doubleX = p.lastTickPosX + (p.posX - p.lastTickPosX) * time;
         double doubleY = p.lastTickPosY + (p.posY - p.lastTickPosY) * time;
         double doubleZ = p.lastTickPosZ + (p.posZ - p.lastTickPosZ) * time;
 
-        GlStateManager.translate(-doubleX, -doubleY, -doubleZ);
+        GlStateManager.translated(-doubleX, -doubleY, -doubleZ);
 
         Vector player = new Vector((float) doubleX, (float) doubleY + p.getEyeHeight(), (float) doubleZ);
 
         long tt = System.currentTimeMillis() / 100;
 
-        GlStateManager.color(1, 1, 1, 1);
+        GlStateManager.color4f(1, 1, 1, 1);
 
         BufferBuilder renderer = tessellator.getBuffer();
         renderer.begin(GL11.GL_QUADS, DefaultVertexFormats.POSITION_TEX_LMAP_COLOR);
@@ -121,7 +118,7 @@ public class AutoFieldRenderer extends TileEntitySpecialRenderer<AutoFieldTile> 
 
         GlStateManager.depthMask(true);
         GlStateManager.enableLighting();
-        GlStateManager.enableDepth();
+        GlStateManager.enableDepthTest();
         GlStateManager.alphaFunc(GL11.GL_GREATER, 0.1F);
 
         GlStateManager.popMatrix();
@@ -131,10 +128,10 @@ public class AutoFieldRenderer extends TileEntitySpecialRenderer<AutoFieldTile> 
         te.clientRequestRenderInfo();
 
         GlStateManager.pushMatrix();
-        GlStateManager.translate(x, y, z);
+        GlStateManager.translated(x, y, z);
         net.minecraft.client.renderer.RenderHelper.enableStandardItemLighting();
-        Minecraft.getInstance().entityRenderer.disableLightmap();
-        GlStateManager.enableAlpha();
+        Minecraft.getInstance().gameRenderer.disableLightmap();
+        GlStateManager.enableAlphaTest();
 
         TransferRender[] transferRenders = te.getTransferRenders();
         for (int i = 0 ; i < transferRenders.length ; i++) {
@@ -158,8 +155,8 @@ public class AutoFieldRenderer extends TileEntitySpecialRenderer<AutoFieldTile> 
                 }
             }
         }
-        Minecraft.getInstance().entityRenderer.enableLightmap();
-        GlStateManager.disableAlpha();
+        Minecraft.getInstance().gameRenderer.enableLightmap();
+        GlStateManager.disableAlphaTest();
 
         GlStateManager.popMatrix();
     }

@@ -1,6 +1,5 @@
 package mcjty.ariente.blocks.utility;
 
-import mcjty.ariente.Ariente;
 import mcjty.ariente.api.ICityAI;
 import mcjty.ariente.api.ICityEquipment;
 import mcjty.ariente.blocks.ModBlocks;
@@ -10,42 +9,35 @@ import mcjty.ariente.items.BlueprintItem;
 import mcjty.ariente.items.ModItems;
 import mcjty.ariente.power.IPowerReceiver;
 import mcjty.ariente.power.PowerReceiverSupport;
-import mcjty.ariente.recipes.ConstructorRecipe;
 import mcjty.ariente.recipes.BlueprintRecipeRegistry;
+import mcjty.ariente.recipes.ConstructorRecipe;
 import mcjty.hologui.api.*;
 import mcjty.hologui.api.components.IPlayerSlots;
 import mcjty.hologui.api.components.ISlots;
+import mcjty.lib.container.AutomationFilterItemHander;
 import mcjty.lib.container.ContainerFactory;
-import mcjty.lib.container.DefaultSidedInventory;
 import mcjty.lib.container.InventoryHelper;
+import mcjty.lib.container.NoDirectionItemHander;
 import mcjty.lib.tileentity.GenericTileEntity;
+import mcjty.lib.varia.OrientationTools;
 import mcjty.lib.varia.RedstoneMode;
-import mcjty.theoneprobe.api.IProbeHitData;
-import mcjty.theoneprobe.api.IProbeInfo;
-import mcjty.theoneprobe.api.ProbeMode;
-import mcjty.theoneprobe.api.TextStyleClass;
-import mcp.mobius.waila.api.IWailaConfigHandler;
-import mcp.mobius.waila.api.IWailaDataAccessor;
-import net.minecraft.block.properties.PropertyBool;
-import net.minecraft.block.state.BlockState;
 import net.minecraft.entity.player.PlayerEntity;
-import net.minecraft.init.Items;
 import net.minecraft.item.ItemStack;
+import net.minecraft.item.Items;
 import net.minecraft.nbt.CompoundNBT;
 import net.minecraft.network.NetworkManager;
-import net.minecraft.network.play.server.SPacketUpdateTileEntity;
+import net.minecraft.network.play.server.SUpdateTileEntityPacket;
+import net.minecraft.state.BooleanProperty;
+import net.minecraft.tileentity.ITickableTileEntity;
 import net.minecraft.tileentity.TileEntity;
+import net.minecraft.tileentity.TileEntityType;
 import net.minecraft.util.Direction;
-import net.minecraft.util.ITickable;
-import net.minecraft.util.ResourceLocation;
 import net.minecraft.world.World;
-import net.minecraftforge.fml.common.Optional;
-import net.minecraftforge.fml.relauncher.Side;
-import net.minecraftforge.fml.relauncher.SideOnly;
-import net.minecraftforge.items.CapabilityItemHandler;
-import net.minecraftforge.items.IItemHandler;
+import net.minecraftforge.common.util.Constants;
+import net.minecraftforge.common.util.LazyOptional;
 import net.minecraftforge.items.ItemHandlerHelper;
 
+import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 import java.util.ArrayList;
 import java.util.List;
@@ -55,16 +47,20 @@ import static mcjty.ariente.blocks.utility.BlueprintStorageTile.BLUEPRINTS;
 import static mcjty.ariente.blocks.utility.BlueprintStorageTile.SLOT_BLUEPRINT;
 import static mcjty.hologui.api.Icons.*;
 
-public class AutoConstructorTile extends GenericTileEntity implements DefaultSidedInventory, IGuiTile, ITickable, IPowerReceiver, ICityEquipment {
+public class AutoConstructorTile extends GenericTileEntity implements IGuiTile, ITickableTileEntity, IPowerReceiver, ICityEquipment {
 
-    public static final PropertyBool WORKING = PropertyBool.create("working");
-    public static final ContainerFactory CONTAINER_FACTORY = new ContainerFactory(new ResourceLocation(Ariente.MODID, "gui/constructor.gui"));
+    public static final BooleanProperty WORKING = BooleanProperty.create("working");
     public static final int INGREDIENTS = 6*3;
     public static final int OUTPUT = 6;
     public static final int SLOT_INGREDIENTS = 0;
     public static final int SLOT_OUTPUT = SLOT_INGREDIENTS + INGREDIENTS;
     public static int[] slots = null;
-    private InventoryHelper inventoryHelper = new InventoryHelper(this, CONTAINER_FACTORY, INGREDIENTS + OUTPUT);
+    public static final ContainerFactory CONTAINER_FACTORY = new ContainerFactory(INGREDIENTS + OUTPUT); // @todo 1.14 new ResourceLocation(Ariente.MODID, "gui/constructor.gui"));
+//    private InventoryHelper inventoryHelper = new InventoryHelper(this, CONTAINER_FACTORY, INGREDIENTS + OUTPUT);
+
+    private NoDirectionItemHander items = createItemHandler();
+    private LazyOptional<NoDirectionItemHander> itemHandler = LazyOptional.of(() -> items);
+    private LazyOptional<AutomationFilterItemHander> automationItemHandler = LazyOptional.of(() -> new AutomationFilterItemHander(items));
 
     public static String TAG_INGREDIENTS = "ingredients";
 
@@ -72,13 +68,12 @@ public class AutoConstructorTile extends GenericTileEntity implements DefaultSid
     private int craftIndex = 0;
     private int busyCounter = 0;
 
-    @Override
-    protected boolean needsRedstoneMode() {
-        return true;
+    public AutoConstructorTile(TileEntityType<?> type) {
+        super(type);
     }
 
     @Override
-    protected boolean needsCustomInvWrapper() {
+    protected boolean needsRedstoneMode() {
         return true;
     }
 
@@ -88,7 +83,7 @@ public class AutoConstructorTile extends GenericTileEntity implements DefaultSid
         }
         int needed = ingredient.getCount();
         for (int i = SLOT_INGREDIENTS; i < SLOT_INGREDIENTS + INGREDIENTS; i++) {
-            ItemStack stack = getStackInSlot(i);
+            ItemStack stack = items.getStackInSlot(i);
             if (ItemStack.areItemsEqual(ingredient, stack)) {
                 needed -= stack.getCount();
                 if (needed <= 0) {
@@ -124,7 +119,7 @@ public class AutoConstructorTile extends GenericTileEntity implements DefaultSid
 
         int needed = ingredient.getCount();
         for (int i = SLOT_INGREDIENTS; i < SLOT_INGREDIENTS + INGREDIENTS; i++) {
-            ItemStack stack = getStackInSlot(i);
+            ItemStack stack = items.getStackInSlot(i);
             if (ItemStack.areItemsEqual(ingredient, stack)) {
                 markDirtyQuick();
                 if (needed <= stack.getCount()) {
@@ -149,11 +144,11 @@ public class AutoConstructorTile extends GenericTileEntity implements DefaultSid
                 // Check if we have room for the destination
                 boolean ok = false;
                 for (int i = SLOT_OUTPUT; i < SLOT_OUTPUT + OUTPUT; i++) {
-                    ItemStack outputSlot = getStackInSlot(i);
+                    ItemStack outputSlot = items.getStackInSlot(i);
                     if (outputSlot.isEmpty()) {
                         if (PowerReceiverSupport.consumePower(world, pos, 100, true)) {
                             usingPower += 100;
-                            setInventorySlotContents(i, recipe.getDestination().copy());
+                            items.setStackInSlot(i, recipe.getDestination().copy());
                             ok = true;
                         } else {
                             return; // Do nothing. Not enough power
@@ -187,7 +182,7 @@ public class AutoConstructorTile extends GenericTileEntity implements DefaultSid
     }
 
     @Override
-    public void update() {
+    public void tick() {
         if (!world.isRemote) {
 
             boolean wasUsing = usingPower > 0;
@@ -208,7 +203,7 @@ public class AutoConstructorTile extends GenericTileEntity implements DefaultSid
                     int ci = craftIndex;
                     // @todo optimize
                     List<BlueprintStorageTile> storageTiles = new ArrayList<>();
-                    for (Direction value : Direction.VALUES) {
+                    for (Direction value : OrientationTools.DIRECTION_VALUES) {
                         TileEntity te = world.getTileEntity(pos.offset(value));
                         if (te instanceof BlueprintStorageTile) {
                             BlueprintStorageTile blueprints = (BlueprintStorageTile) te;
@@ -241,18 +236,18 @@ public class AutoConstructorTile extends GenericTileEntity implements DefaultSid
         }
     }
 
-    @Override
-    public BlockState getActualState(BlockState state) {
-        return state.withProperty(WORKING, isWorking());
-    }
+    // @todo 1.14
+//    @Override
+//    public BlockState getActualState(BlockState state) {
+//        return state.withProperty(WORKING, isWorking());
+//    }
 
     public boolean isWorking() {
         return usingPower > 0 && isMachineEnabled();
     }
 
-
     @Override
-    public void onDataPacket(NetworkManager net, SPacketUpdateTileEntity packet) {
+    public void onDataPacket(NetworkManager net, SUpdateTileEntityPacket packet) {
         boolean working = isWorking();
 
         super.onDataPacket(net, packet);
@@ -261,101 +256,54 @@ public class AutoConstructorTile extends GenericTileEntity implements DefaultSid
             // If needed send a render update.
             boolean newWorking = isWorking();
             if (newWorking != working) {
-                world.markBlockRangeForRenderUpdate(getPos(), getPos());
+                world.notifyBlockUpdate(pos, getBlockState(), getBlockState(), Constants.BlockFlags.BLOCK_UPDATE + Constants.BlockFlags.NOTIFY_NEIGHBORS);
             }
         }
-    }
-
-    @Override
-    public InventoryHelper getInventoryHelper() {
-        return inventoryHelper;
-    }
-
-    @Override
-    public int[] getSlotsForFace(Direction side) {
-        if (slots == null) {
-            slots = new int[inventoryHelper.getCount()];
-            for (int i = 0 ; i < inventoryHelper.getCount() ; i++) {
-                slots[i] = i;
-            }
-        }
-        return slots;
-    }
-
-    @Override
-    public boolean canInsertItem(int index, ItemStack stack, Direction direction) {
-        if (isOutputSlot(index)) {
-            return false;
-        }
-        return isItemValidForSlot(index, stack);
-    }
-
-    @Override
-    public boolean isItemValidForSlot(int index, ItemStack stack) {
-        if (isIngredientSlot(index)) {
-            return stack.getItem() != ModItems.blueprintItem;
-        }
-        return true;
     }
 
     private boolean isOutputSlot(int index) {
         return index >= SLOT_OUTPUT;
     }
 
-    @Override
-    public boolean canExtractItem(int index, ItemStack stack, Direction direction) {
-        return isOutputSlot(index);
-    }
 
     @Override
-    public boolean isEmpty() {
-        return false;
-    }
-
-    @Override
-    public boolean isUsableByPlayer(PlayerEntity player) {
-        return canPlayerAccess(player);
-    }
-
-    @Override
-    public void readFromNBT(CompoundNBT tagCompound) {
-        super.readFromNBT(tagCompound);
-        craftIndex = tagCompound.getInteger("craftIndex");
-        busyCounter = tagCompound.getInteger("busy");
+    public void read(CompoundNBT tagCompound) {
+        super.read(tagCompound);
+        readRestorableFromNBT(tagCompound);
+        craftIndex = tagCompound.getInt("craftIndex");
+        busyCounter = tagCompound.getInt("busy");
     }
 
     @Override
     public CompoundNBT write(CompoundNBT tagCompound) {
-        tagCompound.setInteger("craftIndex", craftIndex);
-        tagCompound.setInteger("busy", busyCounter);
-        return super.writeToNBT(tagCompound);
+        tagCompound.putInt("craftIndex", craftIndex);
+        tagCompound.putInt("busy", busyCounter);
+        return super.write(tagCompound);
     }
 
-    @Override
+    // @todo 1.14 loot
     public void readRestorableFromNBT(CompoundNBT tagCompound) {
-        super.readRestorableFromNBT(tagCompound);
-        readBufferFromNBT(tagCompound, inventoryHelper);
+//        readBufferFromNBT(tagCompound, inventoryHelper);
     }
 
-    @Override
     public void writeRestorableToNBT(CompoundNBT tagCompound) {
-        super.writeRestorableToNBT(tagCompound);
-        writeBufferToNBT(tagCompound, inventoryHelper);
+//        writeBufferToNBT(tagCompound, inventoryHelper);
     }
 
-    @Override
-    @Optional.Method(modid = "theoneprobe")
-    public void addProbeInfo(ProbeMode mode, IProbeInfo probeInfo, PlayerEntity player, World world, BlockState blockState, IProbeHitData data) {
-        super.addProbeInfo(mode, probeInfo, player, world, blockState, data);
-        probeInfo.text(TextStyleClass.LABEL + "Using: " + TextStyleClass.INFO + usingPower + " flux");
-    }
-
-    @SideOnly(Side.CLIENT)
-    @Override
-    @Optional.Method(modid = "waila")
-    public void addWailaBody(ItemStack itemStack, List<String> currenttip, IWailaDataAccessor accessor, IWailaConfigHandler config) {
-        super.addWailaBody(itemStack, currenttip, accessor, config);
-    }
+    // @todo 1.14
+//    @Override
+//    @Optional.Method(modid = "theoneprobe")
+//    public void addProbeInfo(ProbeMode mode, IProbeInfo probeInfo, PlayerEntity player, World world, BlockState blockState, IProbeHitData data) {
+//        super.addProbeInfo(mode, probeInfo, player, world, blockState, data);
+//        probeInfo.text(TextStyleClass.LABEL + "Using: " + TextStyleClass.INFO + usingPower + " flux");
+//    }
+//
+//    @SideOnly(Side.CLIENT)
+//    @Override
+//    @Optional.Method(modid = "waila")
+//    public void addWailaBody(ItemStack itemStack, List<String> currenttip, IWailaDataAccessor accessor, IWailaConfigHandler config) {
+//        super.addWailaBody(itemStack, currenttip, accessor, config);
+//    }
 
 
     @Nullable
@@ -416,13 +364,13 @@ public class AutoConstructorTile extends GenericTileEntity implements DefaultSid
 
                 .add(registry.text(0, 5, 1, 1).text("Output").color(registry.color(StyledColor.LABEL)))
 
-                .add(registry.stackIcon(0, 6.5, 1, 1).itemStack(new ItemStack(ModBlocks.constructorBlock)))
+                .add(registry.stackIcon(0, 6.5, 1, 1).itemStack(new ItemStack(ModBlocks.constructorBlock.get())))
                 .add(registry.slots(1.5, 6.5, 6, 1)
                         .name("outputslots")
                         .withAmount()
                         .filter((stack, index) -> isOutputSlot(index))
                         .doubleClickEvent((component, player, entity, x, y, stack, index) -> transferToPlayer(player, entity, "outputslots"))
-                        .itemHandler(getItemHandler()))
+                        .itemHandler(items))
                 ;
     }
 
@@ -443,13 +391,13 @@ public class AutoConstructorTile extends GenericTileEntity implements DefaultSid
                 .add(registry.iconButton(3, 4.2, 1, 1).icon(registry.image(GRAY_ARROW_UP)).hover(registry.image(WHITE_ARROW_UP))
                         .hitEvent((component, player, entity, x, y) -> transferToPlayer(player, entity, "slots")))
 
-                .add(registry.stackIcon(0, 5.5, 1, 1).itemStack(new ItemStack(ModBlocks.constructorBlock)))
+                .add(registry.stackIcon(0, 5.5, 1, 1).itemStack(new ItemStack(ModBlocks.constructorBlock.get())))
                 .add(registry.slots(1.5, 5.5, 6, 3)
                         .name("slots")
                         .withAmount()
                         .doubleClickEvent((component, player, entity, x, y, stack, index) -> transferToPlayer(player, entity, "slots"))
                         .filter((stack, index) -> isIngredientSlot(index))
-                        .itemHandler(getItemHandler()))
+                        .itemHandler(items))
                 ;
     }
 
@@ -459,7 +407,7 @@ public class AutoConstructorTile extends GenericTileEntity implements DefaultSid
 
     private boolean isIngredient(ItemStack stack) {
         // @todo optimize!
-        for (Direction value : Direction.VALUES) {
+        for (Direction value : OrientationTools.DIRECTION_VALUES) {
             TileEntity te = world.getTileEntity(pos.offset(value));
             if (te instanceof BlueprintStorageTile) {
                 BlueprintStorageTile blueprints = (BlueprintStorageTile) te;
@@ -484,20 +432,15 @@ public class AutoConstructorTile extends GenericTileEntity implements DefaultSid
     }
 
 
-    private IItemHandler getItemHandler() {
-        return getCapability(CapabilityItemHandler.ITEM_HANDLER_CAPABILITY, null);
-    }
-
-
     private void transferToPlayer(PlayerEntity player, IHoloGuiEntity entity, String compName) {
         entity.findComponent(compName).ifPresent(component -> {
             if (component instanceof ISlots) {
                 int selected = ((ISlots) component).getSelected();
                 if (selected != -1) {
-                    ItemStack extracted = getItemHandler().extractItem(selected, 64, false);
+                    ItemStack extracted = items.extractItem(selected, 64, false);
                     if (!extracted.isEmpty()) {
                         if (!player.inventory.addItemStackToInventory(extracted)) {
-                            getItemHandler().insertItem(selected, extracted, false);
+                            items.insertItem(selected, extracted, false);
                         } else {
                             ((ISlots) component).setSelection(-1);
                         }
@@ -516,7 +459,7 @@ public class AutoConstructorTile extends GenericTileEntity implements DefaultSid
                 if (selected != -1) {
                     ItemStack extracted = player.inventory.getStackInSlot(selected);
                     if (!extracted.isEmpty()) {
-                        ItemStack notInserted = ItemHandlerHelper.insertItem(getItemHandler(), extracted, false);
+                        ItemStack notInserted = ItemHandlerHelper.insertItem(items, extracted, false);
                         player.inventory.setInventorySlotContents(selected, notInserted);
                         if (notInserted.isEmpty()) {
                             ((IPlayerSlots) component).setSelection(-1);
@@ -540,5 +483,14 @@ public class AutoConstructorTile extends GenericTileEntity implements DefaultSid
     @Override
     public void syncToClient() {
         markDirtyClient();
+    }
+
+    private NoDirectionItemHander createItemHandler() {
+        return new NoDirectionItemHander(AutoConstructorTile.this, CONTAINER_FACTORY) {
+            @Override
+            public boolean isItemValid(int slot, @Nonnull ItemStack stack) {
+                return stack.getItem() != ModItems.blueprintItem;
+            }
+        };
     }
 }

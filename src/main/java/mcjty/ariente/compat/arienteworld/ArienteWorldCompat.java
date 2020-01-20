@@ -4,14 +4,17 @@ import mcjty.ariente.api.IArienteWorld;
 import mcjty.ariente.api.ICityAISystem;
 import mcjty.lib.varia.Logging;
 import net.minecraft.world.World;
-import net.minecraftforge.fml.common.event.FMLInterModComms;
 
 import javax.annotation.Nullable;
 
 public class ArienteWorldCompat {
 
     public static void register() {
-        FMLInterModComms.sendFunctionMessage("arienteworld", "getArienteWorld", "mcjty.ariente.compat.arienteworld.ArienteWorldCompat$GetArienteWorld");
+// @todo 1.14
+        //        InterModComms.sendTo("arienteworld", "getArienteWorld", () -> {
+//
+//        })
+//        FMLInterModComms.sendFunctionMessage("arienteworld", "getArienteWorld", "mcjty.ariente.compat.arienteworld.ArienteWorldCompat$GetArienteWorld");
     }
 
     public static ICityAISystem getCityAISystem(World world) {

@@ -5,12 +5,11 @@ import mcjty.ariente.api.*;
 import mcjty.ariente.compat.arienteworld.ArienteWorldCompat;
 import mcjty.ariente.entities.LaserEntity;
 import mcjty.ariente.sounds.ModSounds;
-import net.minecraft.entity.EntityFlying;
+import net.minecraft.entity.EntityType;
+import net.minecraft.entity.FlyingEntity;
 import net.minecraft.entity.LivingEntity;
 import net.minecraft.entity.SharedMonsterAttributes;
-import net.minecraft.entity.ai.EntityAIBase;
-import net.minecraft.entity.ai.EntityAIFindEntityNearestPlayer;
-import net.minecraft.entity.ai.EntityMoveHelper;
+import net.minecraft.entity.ai.controller.MovementController;
 import net.minecraft.entity.monster.IMob;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.nbt.CompoundNBT;
@@ -22,15 +21,13 @@ import net.minecraft.util.ResourceLocation;
 import net.minecraft.util.SoundCategory;
 import net.minecraft.util.SoundEvent;
 import net.minecraft.util.math.*;
-import net.minecraft.world.EnumDifficulty;
+import net.minecraft.world.Difficulty;
 import net.minecraft.world.World;
-import net.minecraftforge.fml.relauncher.Side;
-import net.minecraftforge.fml.relauncher.SideOnly;
 
 import javax.annotation.Nullable;
 import java.util.Random;
 
-public class DroneEntity extends EntityFlying implements IMob, IForcefieldImmunity, IDrone {
+public class DroneEntity extends FlyingEntity implements IMob, IForcefieldImmunity, IDrone {
 
     private static final DataParameter<Boolean> ATTACKING = EntityDataManager.createKey(DroneEntity.class, DataSerializers.BOOLEAN);
     public static final ResourceLocation LOOT = new ResourceLocation(Ariente.MODID, "entities/drone");
@@ -38,31 +35,34 @@ public class DroneEntity extends EntityFlying implements IMob, IForcefieldImmuni
     // If this drone is controlled by a city then this will be set
     private ChunkPos cityCenter;
 
-    public DroneEntity(World worldIn) {
-        super(worldIn);
-        this.setSize(2.0F, 2.0F);
-        this.isImmuneToFire = false;
+    public DroneEntity(EntityType<? extends FlyingEntity> type, World worldIn) {
+        super(type, worldIn);
+        // @todo 1.14
+//        this.setSize(2.0F, 2.0F);
+//        this.isImmuneToFire = false;
         this.experienceValue = 5;
-        this.moveHelper = new DroneMoveHelper(this);
+        this.moveController = new DroneMoveHelper(this);
     }
 
-    public DroneEntity(World world, ChunkPos cityCenter) {
-        this(world);
+    public DroneEntity(EntityType<? extends FlyingEntity> type, World world, ChunkPos cityCenter) {
+        this(type, world);
         this.cityCenter = cityCenter;
     }
 
     @Override
-    protected void initEntityAI() {
-        this.tasks.addTask(5, new AIDroneFly(this));
-        this.tasks.addTask(7, new AILookAround(this));
-        this.tasks.addTask(7, new AILaserAttack(this));
-        this.targetTasks.addTask(1, new EntityAIFindEntityNearestPlayer(this));
+    protected void registerGoals() {
+        super.registerGoals();
+        this.goalSelector.addGoal(5, new AIDroneFly(this));
+        this.goalSelector.addGoal(7, new AILookAround(this));
+        this.goalSelector.addGoal(7, new AILaserAttack(this));
+        this.targetSelector.addGoal(1, new EntityAIFindEntityNearestPlayer(this));
     }
 
-    @SideOnly(Side.CLIENT)
-    public boolean isAttacking() {
-        return this.dataManager.get(ATTACKING).booleanValue();
-    }
+    // @todo 1.14
+//    @SideOnly(Side.CLIENT)
+//    public boolean isAttacking() {
+//        return this.dataManager.get(ATTACKING).booleanValue();
+//    }
 
     public void setAttacking(boolean attacking) {
         this.dataManager.set(ATTACKING, Boolean.valueOf(attacking));
@@ -77,11 +77,11 @@ public class DroneEntity extends EntityFlying implements IMob, IForcefieldImmuni
      * Called to update the entity's position/logic.
      */
     @Override
-    public void onUpdate() {
-        super.onUpdate();
+    public void tick() {
+        super.tick();
 
-        if (!this.getEntityWorld().isRemote && this.getEntityWorld().getDifficulty() == EnumDifficulty.PEACEFUL) {
-            this.setDead();
+        if (!this.getEntityWorld().isRemote && this.getEntityWorld().getDifficulty() == Difficulty.PEACEFUL) {
+            this.remove();
         }
     }
 
@@ -90,24 +90,25 @@ public class DroneEntity extends EntityFlying implements IMob, IForcefieldImmuni
      */
     @Override
     public boolean attackEntityFrom(DamageSource source, float amount) {
-        if (this.isEntityInvulnerable(source)) {
-            return false;
-        } else {
+// @todo 1.14
+        //        if (this.isEntityInvulnerable(source)) {
+//            return false;
+//        } else {
             return super.attackEntityFrom(source, amount);
-        }
+//        }
     }
 
     @Override
-    protected void entityInit() {
-        super.entityInit();
+    protected void registerData() {
+        super.registerData();
         this.dataManager.register(ATTACKING, Boolean.valueOf(false));
     }
 
     @Override
-    protected void applyEntityAttributes() {
-        super.applyEntityAttributes();
-        this.getEntityAttribute(SharedMonsterAttributes.MAX_HEALTH).setBaseValue(30.0D);
-        this.getEntityAttribute(SharedMonsterAttributes.FOLLOW_RANGE).setBaseValue(50.0D);  // Configurable
+    protected void registerAttributes() {
+        super.registerAttributes();
+        this.getAttribute(SharedMonsterAttributes.MAX_HEALTH).setBaseValue(30.0D);
+        this.getAttribute(SharedMonsterAttributes.FOLLOW_RANGE).setBaseValue(50.0D);  // Configurable
     }
 
     @Override
@@ -390,7 +391,7 @@ public class DroneEntity extends EntityFlying implements IMob, IForcefieldImmuni
         }
     }
 
-    static class DroneMoveHelper extends EntityMoveHelper {
+    static class DroneMoveHelper extends MovementController {
         private final DroneEntity parentEntity;
         private int courseChangeCooldown;
 
@@ -400,7 +401,7 @@ public class DroneEntity extends EntityFlying implements IMob, IForcefieldImmuni
         }
 
         @Override
-        public void onUpdateMoveHelper() {
+        public void tick() {
             if (this.action == Action.MOVE_TO) {
                 double d0 = this.posX - this.parentEntity.posX;
                 double d1 = this.posY - this.parentEntity.posY;
@@ -412,9 +413,13 @@ public class DroneEntity extends EntityFlying implements IMob, IForcefieldImmuni
                     d3 = Math.sqrt(d3);
 
                     if (this.isNotColliding(this.posX, this.posY, this.posZ, d3)) {
-                        this.parentEntity.motionX += d0 / d3 * 0.1D;
-                        this.parentEntity.motionY += d1 / d3 * 0.1D;
-                        this.parentEntity.motionZ += d2 / d3 * 0.1D;
+                        double motionX = this.parentEntity.getMotion().x;
+                        double motionY = this.parentEntity.getMotion().y;
+                        double motionZ = this.parentEntity.getMotion().z;
+                        motionX += d0 / d3 * 0.1D;
+                        motionY += d1 / d3 * 0.1D;
+                        motionZ += d2 / d3 * 0.1D;
+                        parentEntity.setMotion(motionX, motionY, motionZ);
                     } else {
                         this.action = Action.WAIT;
                     }
@@ -429,14 +434,15 @@ public class DroneEntity extends EntityFlying implements IMob, IForcefieldImmuni
             double d0 = (x - this.parentEntity.posX) / p_179926_7_;
             double d1 = (y - this.parentEntity.posY) / p_179926_7_;
             double d2 = (z - this.parentEntity.posZ) / p_179926_7_;
-            AxisAlignedBB axisalignedbb = this.parentEntity.getEntityBoundingBox();
+            AxisAlignedBB axisalignedbb = this.parentEntity.getBoundingBox();
 
             for (int i = 1; i < p_179926_7_; ++i) {
                 axisalignedbb = axisalignedbb.offset(d0, d1, d2);
 
-                if (!this.parentEntity.getEntityWorld().getCollisionBoxes(this.parentEntity, axisalignedbb).isEmpty()) {
-                    return false;
-                }
+                // @todo 1.14
+//                if (!this.parentEntity.getEntityWorld().getCollisionBoxes(this.parentEntity, axisalignedbb).isEmpty()) {
+//                    return false;
+//                }
             }
 
             return true;

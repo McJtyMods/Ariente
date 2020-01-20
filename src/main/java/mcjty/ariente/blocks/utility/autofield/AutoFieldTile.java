@@ -16,30 +16,24 @@ import mcjty.lib.multipart.MultipartTE;
 import mcjty.lib.multipart.PartPos;
 import mcjty.lib.multipart.PartSlot;
 import mcjty.lib.tileentity.GenericTileEntity;
-import mcjty.theoneprobe.api.IProbeHitData;
-import mcjty.theoneprobe.api.IProbeInfo;
-import mcjty.theoneprobe.api.ProbeMode;
-import mcjty.theoneprobe.api.TextStyleClass;
-import mcp.mobius.waila.api.IWailaConfigHandler;
-import mcp.mobius.waila.api.IWailaDataAccessor;
-import net.minecraft.block.state.BlockState;
+import mcjty.lib.varia.OrientationTools;
+import net.minecraft.block.BlockState;
 import net.minecraft.entity.player.PlayerEntity;
-import net.minecraft.entity.player.EntityPlayerMP;
-import net.minecraft.item.EnumDyeColor;
+import net.minecraft.entity.player.ServerPlayerEntity;
+import net.minecraft.item.DyeColor;
 import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.CompoundNBT;
 import net.minecraft.network.NetworkManager;
-import net.minecraft.network.play.server.SPacketUpdateTileEntity;
+import net.minecraft.network.play.server.SUpdateTileEntityPacket;
+import net.minecraft.tileentity.ITickableTileEntity;
 import net.minecraft.tileentity.TileEntity;
+import net.minecraft.tileentity.TileEntityType;
 import net.minecraft.util.Direction;
-import net.minecraft.util.ITickable;
 import net.minecraft.util.math.AxisAlignedBB;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.World;
-import net.minecraftforge.fml.common.Optional;
-import net.minecraftforge.fml.relauncher.Side;
-import net.minecraftforge.fml.relauncher.SideOnly;
-import net.minecraftforge.items.IItemHandler;
+import net.minecraftforge.common.util.Constants;
+import net.minecraftforge.fml.network.NetworkDirection;
 import net.minecraftforge.items.ItemHandlerHelper;
 
 import java.util.*;
@@ -48,7 +42,7 @@ import java.util.stream.Collectors;
 
 import static mcjty.hologui.api.Icons.*;
 
-public class AutoFieldTile extends GenericTileEntity implements IGuiTile, ITickable, IPowerReceiver {
+public class AutoFieldTile extends GenericTileEntity implements IGuiTile, ITickableTileEntity, IPowerReceiver {
 
     private int height = 1;
     private AxisAlignedBB fieldBox = null;
@@ -57,8 +51,8 @@ public class AutoFieldTile extends GenericTileEntity implements IGuiTile, ITicka
     private Set<PartPos> inputItemNodes = null;
     private Set<PartPos> outputItemNodes = null;
     private Set<PartPos> outputmodifierNodes = null;
-    private Map<EnumDyeColor, List<PartPos>> sensorNodes = null;
-    private final Map<EnumDyeColor, Boolean> sensorMeasurements = new HashMap<>();
+    private Map<DyeColor, List<PartPos>> sensorNodes = null;
+    private final Map<DyeColor, Boolean> sensorMeasurements = new HashMap<>();
 
     private ConsumerInfo consumerInfo = null;
     private ProducerInfo producerInfo = null;
@@ -79,8 +73,12 @@ public class AutoFieldTile extends GenericTileEntity implements IGuiTile, ITicka
     private int ticker = 20;
     private long usingPower = 0;
 
+    public AutoFieldTile(TileEntityType<?> type) {
+        super(type);
+    }
+
     @Override
-    public void update() {
+    public void tick() {
         if (world.isRemote) {
             return;
         }
@@ -125,8 +123,8 @@ public class AutoFieldTile extends GenericTileEntity implements IGuiTile, ITicka
     }
 
     private boolean canNodeWork(AbstractNodeTile tile) {
-        for (int i = 0 ; i < tile.getFilters().length ; i++) {
-            EnumDyeColor filter = tile.getFilters()[i];
+        for (int i = 0; i < tile.getFilters().length; i++) {
+            DyeColor filter = tile.getFilters()[i];
             if (filter != null) {
                 boolean result = getSensorOutput(filter);
                 if (result == i >= 2) {      // i < 2 are the positive filters
@@ -139,11 +137,10 @@ public class AutoFieldTile extends GenericTileEntity implements IGuiTile, ITicka
 
     private boolean tryProducer(PartPos sourcePos, OutputItemNodeTile producingItemNode, ProducerInfo.Producer producer) {
         AtomicBoolean didSomeWork = new AtomicBoolean(false);
-        IItemHandler producingItemHandler = producingItemNode.getConnectedItemHandler(sourcePos);
-        if (producingItemHandler != null) {
+        producingItemNode.getConnectedItemHandler(sourcePos).ifPresent(h -> {
             int minStackSize = producer.getMinStackSize();
-            for (int i = 0 ; i < producingItemHandler.getSlots() ; i++) {
-                ItemStack stack = producingItemHandler.extractItem(i, minStackSize, true);
+            for (int i = 0; i < h.getSlots(); i++) {
+                ItemStack stack = h.extractItem(i, minStackSize, true);
                 if (!stack.isEmpty()) {
                     if (stack.getCount() >= minStackSize) {
                         long neededPower = computeNeededPower(stack);
@@ -169,7 +166,7 @@ public class AutoFieldTile extends GenericTileEntity implements IGuiTile, ITicka
                                     }
                                     PartPos destPos = destinations.get(index);
                                     accumulatedPower -= neededPower;
-                                    ItemStack extracted = producingItemHandler.extractItem(finalI, minStackSize, false);
+                                    ItemStack extracted = h.extractItem(finalI, minStackSize, false);
                                     doInsert(sourcePos, destPos, extracted);
                                     didSomeWork.set(true);
                                 }
@@ -178,7 +175,7 @@ public class AutoFieldTile extends GenericTileEntity implements IGuiTile, ITicka
                     }
                 }
             }
-        }
+        });
         return didSomeWork.get();
     }
 
@@ -205,7 +202,7 @@ public class AutoFieldTile extends GenericTileEntity implements IGuiTile, ITicka
     }
 
     private long computeNeededPower(ItemStack stack) {
-        return (long) (UtilityConfiguration.AUTOFIELD_POWER_PER_OPERATION.get() + (stack.getCount()-1) * UtilityConfiguration.AUTOFIELD_FACTOR_PER_COMBINED_STACK.get());
+        return (long) (UtilityConfiguration.AUTOFIELD_POWER_PER_OPERATION.get() + (stack.getCount() - 1) * UtilityConfiguration.AUTOFIELD_FACTOR_PER_COMBINED_STACK.get());
     }
 
     // Call client side to request render info
@@ -223,13 +220,13 @@ public class AutoFieldTile extends GenericTileEntity implements IGuiTile, ITicka
         double z = pos.getZ();
         double radius = 50;
         PacketAutoFieldReturnRenderInfo info = new PacketAutoFieldReturnRenderInfo(pos, renderInfo);
-        for (EntityPlayerMP player : world.getMinecraftServer().getPlayerList().getPlayers()) {
+        for (PlayerEntity player : world.getServer().getPlayerList().getPlayers()) {
             double dx = x - player.posX;
             double dy = y - player.posY;
             double dz = z - player.posZ;
 
             if (dx * dx + dy * dy + dz * dz < radius * radius) {
-                ArienteMessages.INSTANCE.sendTo(info, player);
+                ArienteMessages.INSTANCE.sendTo(info, ((ServerPlayerEntity) player).connection.netManager, NetworkDirection.PLAY_TO_CLIENT);
             }
         }
     }
@@ -274,11 +271,10 @@ public class AutoFieldTile extends GenericTileEntity implements IGuiTile, ITicka
     private boolean canInsert(PartPos partPos, ItemStack stack) {
         InputItemNodeTile itemNode = getInputItemNodeAt(partPos);
         if (itemNode != null && canNodeWork(itemNode)) {
-            IItemHandler connectedItemHandler = itemNode.getConnectedItemHandler(partPos);
-            if (connectedItemHandler != null) {
-                ItemStack remainer = ItemHandlerHelper.insertItem(connectedItemHandler, stack, true);
+            return itemNode.getConnectedItemHandler(partPos).map(h -> {
+                ItemStack remainer = ItemHandlerHelper.insertItem(h, stack, true);
                 return remainer.isEmpty();
-            }
+            }).orElse(false);
         }
         return false;
     }
@@ -286,13 +282,12 @@ public class AutoFieldTile extends GenericTileEntity implements IGuiTile, ITicka
     private void doInsert(PartPos sourcePos, PartPos destPos, ItemStack stack) {
         InputItemNodeTile itemNode = getInputItemNodeAt(destPos);
         if (itemNode != null) {
-            IItemHandler connectedItemHandler = itemNode.getConnectedItemHandler(destPos);
-            if (connectedItemHandler != null) {
+            itemNode.getConnectedItemHandler(destPos).ifPresent(connectedItemHandler -> {
                 ItemHandlerHelper.insertItem(connectedItemHandler, stack, false);
                 if (renderItems) {
                     renderInfo.registerTransfer(sourcePos, destPos, stack);
                 }
-            }
+            });
         }
     }
 
@@ -330,7 +325,7 @@ public class AutoFieldTile extends GenericTileEntity implements IGuiTile, ITicka
         if (inputItemNodes == null) {
             inputItemNodes = new HashSet<>();
             for (BlockPos mpos : getMarkers()) {
-                for (int y = 0 ; y <= height ; y++) {
+                for (int y = 0; y <= height; y++) {
                     BlockPos p = mpos.up(y);
                     for (PartSlot slot : PartSlot.VALUES) {
                         TileEntity te = MultipartHelper.getTileEntity(world, p, slot);
@@ -344,7 +339,7 @@ public class AutoFieldTile extends GenericTileEntity implements IGuiTile, ITicka
         return inputItemNodes;
     }
 
-    private boolean getSensorOutput(EnumDyeColor color) {
+    private boolean getSensorOutput(DyeColor color) {
         if (!sensorMeasurements.containsKey(color)) {
             sensorMeasurements.put(color, false);
             for (PartPos sensorPos : getSensorNodes().getOrDefault(color, Collections.emptyList())) {
@@ -363,7 +358,7 @@ public class AutoFieldTile extends GenericTileEntity implements IGuiTile, ITicka
         return sensorMeasurements.get(color);
     }
 
-    private Map<EnumDyeColor, List<PartPos>> getSensorNodes() {
+    private Map<DyeColor, List<PartPos>> getSensorNodes() {
         if (sensorNodes == null) {
             findSensorNodes();
         }
@@ -388,7 +383,7 @@ public class AutoFieldTile extends GenericTileEntity implements IGuiTile, ITicka
         outputItemNodes = new HashSet<>();
         outputmodifierNodes = new HashSet<>();
         for (BlockPos mpos : getMarkers()) {
-            for (int y = 0 ; y <= height ; y++) {
+            for (int y = 0; y <= height; y++) {
                 BlockPos p = mpos.up(y);
                 for (NodeOrientation orientation : NodeOrientation.VALUES) {
                     PartSlot slot = orientation.getSlot();
@@ -409,13 +404,13 @@ public class AutoFieldTile extends GenericTileEntity implements IGuiTile, ITicka
     private void findSensorNodes() {
         sensorNodes = new HashMap<>();
         for (BlockPos mpos : getMarkers()) {
-            for (int y = 0 ; y <= height ; y++) {
+            for (int y = 0; y <= height; y++) {
                 BlockPos p = mpos.up(y);
                 for (NodeOrientation orientation : NodeOrientation.VALUES) {
                     PartSlot slot = orientation.getSlot();
                     TileEntity te = MultipartHelper.getTileEntity(world, p, slot);
                     if (te instanceof SensorItemNodeTile) {
-                        EnumDyeColor outputColor = ((SensorItemNodeTile) te).getOutputColor();
+                        DyeColor outputColor = ((SensorItemNodeTile) te).getOutputColor();
                         sensorNodes.computeIfAbsent(outputColor, color -> new ArrayList<>());
                         sensorNodes.get(outputColor).add(PartPos.create(p, slot));
                     }
@@ -425,8 +420,8 @@ public class AutoFieldTile extends GenericTileEntity implements IGuiTile, ITicka
     }
 
     @Override
-    public void invalidate() {
-        super.invalidate();
+    public void remove() {
+        super.remove();
         for (BlockPos marker : markers) {
             TileEntity tileEntity = world.getTileEntity(marker);
             if (tileEntity instanceof FieldMarkerTile) {
@@ -539,13 +534,13 @@ public class AutoFieldTile extends GenericTileEntity implements IGuiTile, ITicka
         todo.add(getPos());
         while (!todo.isEmpty()) {
             BlockPos pos = todo.poll();
-            for (Direction facing : Direction.HORIZONTALS) {
+            for (Direction facing : OrientationTools.HORIZONTAL_DIRECTION_VALUES) {
                 BlockPos p = pos.offset(facing);
                 if (!markers.contains(p)) {
                     TileEntity te = world.getTileEntity(p);
                     if (te instanceof MultipartTE) {
                         BlockState state = MultipartHelper.getBlockState(world, p, PartSlot.DOWN);
-                        if (state != null && state.getBlock() == ModBlocks.fieldMarker) {
+                        if (state != null && state.getBlock() == ModBlocks.fieldMarker.get()) {
                             if (fieldBox == null) {
                                 fieldBox = new AxisAlignedBB(p, p.add(0, height, 0));
                             } else {
@@ -570,70 +565,69 @@ public class AutoFieldTile extends GenericTileEntity implements IGuiTile, ITicka
     }
 
     @Override
-    public void readFromNBT(CompoundNBT tagCompound) {
-        super.readFromNBT(tagCompound);
+    public void read(CompoundNBT tagCompound) {
+        super.read(tagCompound);
+        readRestorableFromNBT(tagCompound);
         accumulatedPower = tagCompound.getLong("accPower");
     }
 
     @Override
     public CompoundNBT write(CompoundNBT tagCompound) {
-        tagCompound.setLong("accPower", accumulatedPower);
-        return super.writeToNBT(tagCompound);
+        tagCompound.putLong("accPower", accumulatedPower);
+        writeRestorableToNBT(tagCompound);
+        return super.write(tagCompound);
     }
 
-    @Override
+    // @todo 1.14 loot
     public void readRestorableFromNBT(CompoundNBT tagCompound) {
-        super.readRestorableFromNBT(tagCompound);
-        height = tagCompound.getInteger("height");
+        height = tagCompound.getInt("height");
         renderItems = tagCompound.getBoolean("renderItems");
         renderOutline = tagCompound.getBoolean("renderOutline");
     }
 
-    @Override
     public void writeRestorableToNBT(CompoundNBT tagCompound) {
-        super.writeRestorableToNBT(tagCompound);
-        tagCompound.setInteger("height", height);
-        tagCompound.setBoolean("renderItems", renderItems);
-        tagCompound.setBoolean("renderOutline", renderOutline);
+        tagCompound.putInt("height", height);
+        tagCompound.putBoolean("renderItems", renderItems);
+        tagCompound.putBoolean("renderOutline", renderOutline);
     }
+
+// @todo 1.14
+//    @Override
+//    @net.minecraftforge.fml.common.Optional.Method(modid = "theoneprobe")
+//    public void addProbeInfo(ProbeMode mode, IProbeInfo probeInfo, PlayerEntity player, World world, BlockState blockState, IProbeHitData data) {
+//        super.addProbeInfo(mode, probeInfo, player, world, blockState, data);
+//        probeInfo.text(TextStyleClass.LABEL + "Using: " + TextStyleClass.INFO + usingPower + " flux");
+////        Boolean working = isWorking();
+////        if (working) {
+////            probeInfo.text(TextFormatting.GREEN + "Producing " + getRfPerTick() + " RF/t");
+////        }
+//    }
+//
+//    @SideOnly(Side.CLIENT)
+//    @Override
+//    @Optional.Method(modid = "waila")
+//    public void addWailaBody(ItemStack itemStack, List<String> currenttip, IWailaDataAccessor accessor, IWailaConfigHandler config) {
+//        super.addWailaBody(itemStack, currenttip, accessor, config);
+////        if (isWorking()) {
+////            currenttip.add(TextFormatting.GREEN + "Producing " + getRfPerTick() + " RF/t");
+////        }
+//    }
+
+// @todo 1.14
+//    @SideOnly(Side.CLIENT)
+//    @Override
+//    public AxisAlignedBB getRenderBoundingBox() {
+//        return getRenderBox();
+//    }
+//
+//    @Override
+//    public boolean shouldRenderInPass(int pass) {
+//        return pass == 1;
+//    }
 
 
     @Override
-    @net.minecraftforge.fml.common.Optional.Method(modid = "theoneprobe")
-    public void addProbeInfo(ProbeMode mode, IProbeInfo probeInfo, PlayerEntity player, World world, BlockState blockState, IProbeHitData data) {
-        super.addProbeInfo(mode, probeInfo, player, world, blockState, data);
-        probeInfo.text(TextStyleClass.LABEL + "Using: " + TextStyleClass.INFO + usingPower + " flux");
-//        Boolean working = isWorking();
-//        if (working) {
-//            probeInfo.text(TextFormatting.GREEN + "Producing " + getRfPerTick() + " RF/t");
-//        }
-    }
-
-    @SideOnly(Side.CLIENT)
-    @Override
-    @Optional.Method(modid = "waila")
-    public void addWailaBody(ItemStack itemStack, List<String> currenttip, IWailaDataAccessor accessor, IWailaConfigHandler config) {
-        super.addWailaBody(itemStack, currenttip, accessor, config);
-//        if (isWorking()) {
-//            currenttip.add(TextFormatting.GREEN + "Producing " + getRfPerTick() + " RF/t");
-//        }
-    }
-
-
-    @SideOnly(Side.CLIENT)
-    @Override
-    public AxisAlignedBB getRenderBoundingBox() {
-        return getRenderBox();
-    }
-
-    @Override
-    public boolean shouldRenderInPass(int pass) {
-        return pass == 1;
-    }
-
-
-    @Override
-    public void onDataPacket(NetworkManager net, SPacketUpdateTileEntity packet) {
+    public void onDataPacket(NetworkManager net, SUpdateTileEntityPacket packet) {
         int oldheight = height;
 
         super.onDataPacket(net, packet);
@@ -641,7 +635,7 @@ public class AutoFieldTile extends GenericTileEntity implements IGuiTile, ITicka
         if (world.isRemote) {
             // If needed send a render update.
             if (oldheight != height) {
-                world.markBlockRangeForRenderUpdate(pos, pos);
+                world.notifyBlockUpdate(pos, getBlockState(), getBlockState(), Constants.BlockFlags.BLOCK_UPDATE + Constants.BlockFlags.NOTIFY_NEIGHBORS);
                 invalidateBox();
             }
         }
@@ -668,7 +662,7 @@ public class AutoFieldTile extends GenericTileEntity implements IGuiTile, ITicka
     private IGuiComponent<?> createMainGui(IGuiComponentRegistry registry) {
         return HoloGuiTools.createPanelWithHelp(registry)
                 .add(registry.text(0, 2, 1, 1).text("Height").color(registry.color(StyledColor.LABEL)))
-                .add(registry.number(3, 4, 1, 1).color(registry.color(StyledColor.INFORMATION)).getter((p,h) -> getHeight()))
+                .add(registry.number(3, 4, 1, 1).color(registry.color(StyledColor.INFORMATION)).getter((p, h) -> getHeight()))
 
                 .add(registry.iconButton(1, 4, 1, 1).icon(registry.image(GRAY_DOUBLE_ARROW_LEFT)).hover(registry.image(WHITE_DOUBLE_ARROW_LEFT))
                         .hitEvent((component, player, entity1, x, y) -> changeHeight(-8)))

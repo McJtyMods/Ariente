@@ -5,21 +5,22 @@ import mcjty.ariente.items.modules.ArmorModuleItem;
 import mcjty.ariente.api.ArmorUpgradeType;
 import net.minecraft.client.renderer.block.model.ModelResourceLocation;
 import net.minecraft.inventory.EntityEquipmentSlot;
+import net.minecraft.item.Item;
 import net.minecraftforge.client.model.ModelLoader;
-import net.minecraftforge.fml.relauncher.Side;
-import net.minecraftforge.fml.relauncher.SideOnly;
+
+
 import net.minecraftforge.oredict.OreDictionary;
 
 public class ModItems {
 
-    public static GenericItem platinumIngot;
-    public static GenericItem lithiumIngot;
-    public static GenericItem manganeseIngot;
-    public static GenericItem silverIngot;
-    public static GenericItem silicon;
+    public static Item platinumIngot;
+    public static Item lithiumIngot;
+    public static Item manganeseIngot;
+    public static Item silverIngot;
+    public static Item silicon;
 
-    public static GenericItem negariteDust;
-    public static GenericItem posiriteDust;
+    public static Item negariteDust;
+    public static Item posiriteDust;
 
     public static EnergySabreItem energySabre;
     public static EnhancedEnergySabreItem enhancedEnergySabreItem;

@@ -5,54 +5,51 @@ import mcjty.ariente.api.ICityEquipment;
 import mcjty.ariente.api.ISignalChannel;
 import mcjty.ariente.blocks.ModBlocks;
 import mcjty.lib.blocks.BaseBlock;
+import mcjty.lib.blocks.RotationType;
 import mcjty.lib.tileentity.GenericTileEntity;
 import mcjty.lib.varia.Logging;
-import mcjty.theoneprobe.api.IProbeHitData;
-import mcjty.theoneprobe.api.IProbeInfo;
-import mcjty.theoneprobe.api.ProbeMode;
-import mcp.mobius.waila.api.IWailaConfigHandler;
-import mcp.mobius.waila.api.IWailaDataAccessor;
 import net.minecraft.block.Block;
-import net.minecraft.block.BlockRedstoneWire;
-import net.minecraft.block.properties.PropertyBool;
-import net.minecraft.block.state.BlockState;
+import net.minecraft.block.BlockState;
+import net.minecraft.block.Blocks;
+import net.minecraft.block.RedstoneWireBlock;
 import net.minecraft.entity.player.PlayerEntity;
-import net.minecraft.init.Blocks;
+import net.minecraft.item.BlockItem;
 import net.minecraft.item.Item;
-import net.minecraft.item.ItemBlock;
 import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.CompoundNBT;
+import net.minecraft.state.BooleanProperty;
 import net.minecraft.tileentity.TileEntity;
+import net.minecraft.tileentity.TileEntityType;
 import net.minecraft.util.Direction;
 import net.minecraft.util.Hand;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.text.TextFormatting;
-import net.minecraft.world.IBlockAccess;
+import net.minecraft.world.IBlockReader;
 import net.minecraft.world.World;
-import net.minecraftforge.fml.common.Optional;
-import net.minecraftforge.fml.relauncher.Side;
-import net.minecraftforge.fml.relauncher.SideOnly;
 
 import javax.annotation.Nullable;
 import java.util.HashMap;
-import java.util.List;
 import java.util.Map;
 
 public abstract class SignalChannelTileEntity extends GenericTileEntity implements ICityEquipment, ISignalChannel {
 
-    public static final PropertyBool POWER = PropertyBool.create("power");
+    public static final BooleanProperty POWER = BooleanProperty.create("power");
 
     protected int channel = -1;
     protected int powerOutput = 0;
 
     private int desiredChannel; // Only used for city AI
 
+    public SignalChannelTileEntity(TileEntityType<?> type) {
+        super(type);
+    }
+
     static boolean isRedstoneChannelItem(Item item) {
-        return (item instanceof ItemBlock &&
-                (((ItemBlock)item).getBlock() == ModBlocks.signalTransmitterBlock
-                        || ((ItemBlock)item).getBlock() == ModBlocks.signalReceiverBlock
-                        || ((ItemBlock)item).getBlock() == ModBlocks.wirelessLockBlock
-                        || ((ItemBlock)item).getBlock() == ModBlocks.wirelessButtonBlock));
+        return (item instanceof BlockItem &&
+                (((BlockItem)item).getBlock() == ModBlocks.signalTransmitterBlock.get()
+                        || ((BlockItem)item).getBlock() == ModBlocks.signalReceiverBlock.get()
+                        || ((BlockItem)item).getBlock() == ModBlocks.wirelessLockBlock.get()
+                        || ((BlockItem)item).getBlock() == ModBlocks.wirelessButtonBlock.get()));
     }
 
 //    @Override
@@ -83,21 +80,22 @@ public abstract class SignalChannelTileEntity extends GenericTileEntity implemen
         markDirty();
         BlockState state = world.getBlockState(pos);
         Direction outputSide = getFacing(state).getOpposite();
-        getWorld().neighborChanged(this.pos.offset(outputSide), this.getBlockType(), this.pos);
+        getWorld().neighborChanged(this.pos.offset(outputSide), this.getBlockState().getBlock(), this.pos);
         markDirtyClient();
     }
 
     private Direction getFacing(BlockState state) {
-        return BaseBlock.getFrontDirection(BaseBlock.RotationType.ROTATION, state);
+        return BaseBlock.getFrontDirection(RotationType.ROTATION, state);
     }
 
-    @Override
-    public BlockState getActualState(BlockState state) {
-        return state.withProperty(POWER, getPowerOutput() > 0);
-    }
+    // @todo 1.14
+//    @Override
+//    public BlockState getActualState(BlockState state) {
+//        return state.withProperty(POWER, getPowerOutput() > 0);
+//    }
 
     @Override
-    public int getRedstoneOutput(BlockState state, IBlockAccess world, BlockPos pos, Direction side) {
+    public int getRedstoneOutput(BlockState state, IBlockReader world, BlockPos pos, Direction side) {
         if (side == getFacing(state)) {
             return getPowerOutput();
         } else {
@@ -120,34 +118,32 @@ public abstract class SignalChannelTileEntity extends GenericTileEntity implemen
         markDirtyClient();
     }
 
-    @Override
+    // @todo 1.14 loot
     public void readRestorableFromNBT(CompoundNBT tagCompound) {
-        super.readRestorableFromNBT(tagCompound);
-        channel = tagCompound.getInteger("channel");
-        desiredChannel = tagCompound.getInteger("desired");
+        channel = tagCompound.getInt("channel");
+        desiredChannel = tagCompound.getInt("desired");
     }
 
-    @Override
     public void writeRestorableToNBT(CompoundNBT tagCompound) {
-        super.writeRestorableToNBT(tagCompound);
-        tagCompound.setInteger("channel", channel);
-        tagCompound.setInteger("desired", desiredChannel);
+        tagCompound.putInt("channel", channel);
+        tagCompound.putInt("desired", desiredChannel);
     }
 
-    @Override
-    @Optional.Method(modid = "theoneprobe")
-    public void addProbeInfo(ProbeMode mode, IProbeInfo probeInfo, PlayerEntity player, World world, BlockState blockState, IProbeHitData data) {
-        super.addProbeInfo(mode, probeInfo, player, world, blockState, data);
-        probeInfo.text(TextFormatting.GREEN + "Channel: " + getChannel(false));
-    }
-
-    @SideOnly(Side.CLIENT)
-    @Override
-    @Optional.Method(modid = "waila")
-    public void addWailaBody(ItemStack itemStack, List<String> currenttip, IWailaDataAccessor accessor, IWailaConfigHandler config) {
-        super.addWailaBody(itemStack, currenttip, accessor, config);
-        currenttip.add(TextFormatting.GREEN + "Channel: " + getChannel(false));
-    }
+    // @todo 1.14
+//    @Override
+//    @Optional.Method(modid = "theoneprobe")
+//    public void addProbeInfo(ProbeMode mode, IProbeInfo probeInfo, PlayerEntity player, World world, BlockState blockState, IProbeHitData data) {
+//        super.addProbeInfo(mode, probeInfo, player, world, blockState, data);
+//        probeInfo.text(TextFormatting.GREEN + "Channel: " + getChannel(false));
+//    }
+//
+//    @SideOnly(Side.CLIENT)
+//    @Override
+//    @Optional.Method(modid = "waila")
+//    public void addWailaBody(ItemStack itemStack, List<String> currenttip, IWailaDataAccessor accessor, IWailaConfigHandler config) {
+//        super.addWailaBody(itemStack, currenttip, accessor, config);
+//        currenttip.add(TextFormatting.GREEN + "Channel: " + getChannel(false));
+//    }
 
     public static boolean onBlockActivated(World world, BlockPos pos, PlayerEntity player, Hand hand, Direction side, float hitX, float hitY, float hitZ) {
         ItemStack stack = player.getHeldItem(hand);
@@ -162,25 +158,21 @@ public abstract class SignalChannelTileEntity extends GenericTileEntity implemen
         if (te instanceof SignalChannelTileEntity) {
             if(!world.isRemote) {
                 SignalChannelTileEntity rcte = (SignalChannelTileEntity)te;
-                CompoundNBT tagCompound = stack.getTagCompound();
-                if (tagCompound == null) {
-                    tagCompound = new CompoundNBT();
-                    stack.setTagCompound(tagCompound);
-                }
+                CompoundNBT tagCompound = stack.getOrCreateTag();
                 int channel;
                 if(!player.isSneaking()) {
                     channel = rcte.getChannel(true);
-                    tagCompound.setInteger("channel", channel);
+                    tagCompound.putInt("channel", channel);
                 } else {
-                    if (tagCompound.hasKey("channel")) {
-                        channel = tagCompound.getInteger("channel");
+                    if (tagCompound.contains("channel")) {
+                        channel = tagCompound.getInt("channel");
                     } else {
                         channel = -1;
                     }
                     if(channel == -1) {
                         RedstoneChannels redstoneChannels = RedstoneChannels.getChannels(world);
                         channel = redstoneChannels.newChannel();
-                        tagCompound.setInteger("channel", channel);
+                        tagCompound.putInt("channel", channel);
                     }
                     rcte.setChannel(channel);
                 }
@@ -201,7 +193,7 @@ public abstract class SignalChannelTileEntity extends GenericTileEntity implemen
             BlockState blockState = world.getBlockState(pos.offset(side));
             Block b = blockState.getBlock();
             if (b == Blocks.REDSTONE_WIRE) {
-                power = Math.max(power, blockState.getValue(BlockRedstoneWire.POWER));
+                power = Math.max(power, blockState.get(RedstoneWireBlock.POWER));
             }
         }
 

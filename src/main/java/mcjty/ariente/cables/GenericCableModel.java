@@ -1,20 +1,6 @@
 package mcjty.ariente.cables;
 
-import com.google.common.collect.ImmutableSet;
-import mcjty.ariente.Ariente;
-import net.minecraft.client.renderer.block.model.IBakedModel;
-import net.minecraft.client.renderer.texture.TextureAtlasSprite;
-import net.minecraft.client.renderer.vertex.VertexFormat;
-import net.minecraft.util.ResourceLocation;
-import net.minecraftforge.client.model.IModel;
-import net.minecraftforge.common.model.IModelState;
-import net.minecraftforge.common.model.TRSRTransformation;
-
-import java.util.Collection;
-import java.util.Collections;
-import java.util.function.Function;
-
-public class GenericCableModel implements IModel {
+public class GenericCableModel {} /* @todo 1.14 implements IModel {
 
     @Override
     public IBakedModel bake(IModelState state, VertexFormat format, Function<ResourceLocation, TextureAtlasSprite> bakedTextureGetter) {
@@ -67,3 +53,4 @@ public class GenericCableModel implements IModel {
         return TRSRTransformation.identity();
     }
 }
+*/

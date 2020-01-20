@@ -9,37 +9,29 @@ import mcjty.ariente.sounds.ModSounds;
 import mcjty.hologui.api.IGuiComponent;
 import mcjty.hologui.api.IGuiComponentRegistry;
 import mcjty.hologui.api.IGuiTile;
-import mcjty.lib.blocks.BaseBlock;
 import mcjty.lib.tileentity.GenericTileEntity;
-import mcjty.theoneprobe.api.IProbeHitData;
-import mcjty.theoneprobe.api.IProbeInfo;
-import mcjty.theoneprobe.api.ProbeMode;
-import mcp.mobius.waila.api.IWailaConfigHandler;
-import mcp.mobius.waila.api.IWailaDataAccessor;
-import net.minecraft.block.Block;
-import net.minecraft.block.state.BlockState;
+import net.minecraft.block.BlockState;
+import net.minecraft.block.Blocks;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.LivingEntity;
 import net.minecraft.entity.player.PlayerEntity;
-import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.CompoundNBT;
 import net.minecraft.pathfinding.PathNodeType;
+import net.minecraft.state.properties.BlockStateProperties;
+import net.minecraft.tileentity.ITickableTileEntity;
 import net.minecraft.tileentity.TileEntity;
+import net.minecraft.tileentity.TileEntityType;
 import net.minecraft.util.Direction;
-import net.minecraft.util.ITickable;
 import net.minecraft.util.SoundCategory;
 import net.minecraft.util.math.AxisAlignedBB;
 import net.minecraft.util.math.BlockPos;
-import net.minecraft.world.IBlockAccess;
+import net.minecraft.world.IBlockReader;
 import net.minecraft.world.World;
-import net.minecraftforge.fml.common.Optional;
-import net.minecraftforge.fml.relauncher.Side;
-import net.minecraftforge.fml.relauncher.SideOnly;
 
 import javax.annotation.Nullable;
 import java.util.List;
 
-public class DoorMarkerTile extends GenericTileEntity implements ITickable, IGuiTile, ILockable {
+public class DoorMarkerTile extends GenericTileEntity implements ITickableTileEntity, IGuiTile, ILockable {
 
     public static final AxisAlignedBB BLOCK_AABB = new AxisAlignedBB(0.0D, 0.0D, 0.0D, 1.0D, 0.1D, 1.0D);
     public static final AxisAlignedBB OPEN_BLOCK_AABB = new AxisAlignedBB(0.0D, 0.0D, 0.0D, 0.0D, 0.0D, 0.0D);
@@ -55,8 +47,12 @@ public class DoorMarkerTile extends GenericTileEntity implements ITickable, IGui
     private int opening;  // 0 is closed, 1000 is open
     private long lastTime = -1;  // For rendering
 
+    public DoorMarkerTile(TileEntityType<?> type) {
+        super(type);
+    }
+
     @Override
-    public void update() {
+    public void tick() {
         if (!world.isRemote) {
             setInvisibleBlocks();
             if (!locked) {
@@ -92,7 +88,7 @@ public class DoorMarkerTile extends GenericTileEntity implements ITickable, IGui
                 if (facing == null) {
                     return;
                 }
-                world.setBlockState(p, ModBlocks.invisibleDoorBlock.getDefaultState().withProperty(BaseBlock.FACING_HORIZ, facing), 3);
+                world.setBlockState(p, ModBlocks.invisibleDoorBlock.get().getDefaultState().with(BlockStateProperties.HORIZONTAL_FACING, facing), 3);
             } else {
                 return;
             }
@@ -103,8 +99,8 @@ public class DoorMarkerTile extends GenericTileEntity implements ITickable, IGui
     private void clearInvisibleBlocks() {
         BlockPos p = pos.up();
         for (int i = 0 ; i < UtilityConfiguration.MAX_DOOR_HEIGHT.get() ; i++) {
-            if (world.getBlockState(p).getBlock() == ModBlocks.invisibleDoorBlock) {
-                world.setBlockToAir(p);
+            if (world.getBlockState(p).getBlock() == ModBlocks.invisibleDoorBlock.get()) {
+                world.setBlockState(p, Blocks.AIR.getDefaultState());
             } else {
                 return;
             }
@@ -114,10 +110,10 @@ public class DoorMarkerTile extends GenericTileEntity implements ITickable, IGui
 
     private Direction getFacing() {
         BlockState state = world.getBlockState(pos);
-        if (state.getBlock() != ModBlocks.doorMarkerBlock) {
+        if (state.getBlock() != ModBlocks.doorMarkerBlock.get()) {
             return null;
         }
-        return state.getValue(BaseBlock.FACING_HORIZ);
+        return state.get(BlockStateProperties.HORIZONTAL_FACING);
     }
 
     private void setOpen(boolean o) {
@@ -162,7 +158,7 @@ public class DoorMarkerTile extends GenericTileEntity implements ITickable, IGui
     }
 
     @Nullable
-    public static PathNodeType getAiPathNodeType(BlockState state, IBlockAccess world, BlockPos pos) {
+    public static PathNodeType getAiPathNodeType(BlockState state, IBlockReader world, BlockPos pos) {
         TileEntity te = world.getTileEntity(pos);
         if (te instanceof DoorMarkerTile) {
             DoorMarkerTile door = (DoorMarkerTile) te;
@@ -173,7 +169,7 @@ public class DoorMarkerTile extends GenericTileEntity implements ITickable, IGui
         return PathNodeType.BLOCKED;
     }
 
-    public static AxisAlignedBB getCollisionBoundingBox(BlockState blockState, IBlockAccess world, BlockPos pos) {
+    public static AxisAlignedBB getCollisionBoundingBox(BlockState blockState, IBlockReader world, BlockPos pos) {
         TileEntity te = world.getTileEntity(pos);
         if (te instanceof DoorMarkerTile) {
             DoorMarkerTile door = (DoorMarkerTile) te;
@@ -189,69 +185,72 @@ public class DoorMarkerTile extends GenericTileEntity implements ITickable, IGui
         if (te instanceof DoorMarkerTile) {
             DoorMarkerTile door = (DoorMarkerTile) te;
             if (!door.isOpen()) {
-                AxisAlignedBB box = Block.FULL_BLOCK_AABB.offset(pos);
-                if (entityBox.intersects(box)) {
-                    collidingBoxes.add(box);
-                }
+// @todo 1.14
+                //                AxisAlignedBB box = Block.FULL_BLOCK_AABB.offset(pos);
+//                if (entityBox.intersects(box)) {
+//                    collidingBoxes.add(box);
+//                }
             }
         }
         return true;
     }
 
     @Override
-    public void readFromNBT(CompoundNBT tagCompound) {
-        super.readFromNBT(tagCompound);
+    public void read(CompoundNBT tagCompound) {
+        super.read(tagCompound);
         open = tagCompound.getBoolean("open");
+        readRestorableFromNBT(tagCompound);
     }
 
     @Override
     public CompoundNBT write(CompoundNBT tagCompound) {
-        tagCompound.setBoolean("open", open);
-        return super.writeToNBT(tagCompound);
+        tagCompound.putBoolean("open", open);
+        writeRestorableToNBT(tagCompound);
+        return super.write(tagCompound);
     }
 
-    @Override
+    // @todo 1.14 loot
     public void readRestorableFromNBT(CompoundNBT tagCompound) {
-        super.readRestorableFromNBT(tagCompound);
-        iconIndex = tagCompound.getInteger("icon");
+        iconIndex = tagCompound.getInt("icon");
         locked = tagCompound.getBoolean("locked");
     }
 
-    @Override
     public void writeRestorableToNBT(CompoundNBT tagCompound) {
-        super.writeRestorableToNBT(tagCompound);
-        tagCompound.setInteger("icon", iconIndex);
-        tagCompound.setBoolean("locked", locked);
+        tagCompound.putInt("icon", iconIndex);
+        tagCompound.putBoolean("locked", locked);
     }
 
-    @Override
-    @Optional.Method(modid = "theoneprobe")
-    public void addProbeInfo(ProbeMode mode, IProbeInfo probeInfo, PlayerEntity player, World world, BlockState blockState, IProbeHitData data) {
-        super.addProbeInfo(mode, probeInfo, player, world, blockState, data);
-//        Boolean working = isWorking();
-//        if (working) {
-//            probeInfo.text(TextFormatting.GREEN + "Producing " + getRfPerTick() + " RF/t");
-//        }
-    }
+    // @todo 1.14
+//    @Override
+//    @Optional.Method(modid = "theoneprobe")
+//    public void addProbeInfo(ProbeMode mode, IProbeInfo probeInfo, PlayerEntity player, World world, BlockState blockState, IProbeHitData data) {
+//        super.addProbeInfo(mode, probeInfo, player, world, blockState, data);
+////        Boolean working = isWorking();
+////        if (working) {
+////            probeInfo.text(TextFormatting.GREEN + "Producing " + getRfPerTick() + " RF/t");
+////        }
+//    }
+//
+//    @SideOnly(Side.CLIENT)
+//    @Override
+//    @Optional.Method(modid = "waila")
+//    public void addWailaBody(ItemStack itemStack, List<String> currenttip, IWailaDataAccessor accessor, IWailaConfigHandler config) {
+//        super.addWailaBody(itemStack, currenttip, accessor, config);
+////        if (isWorking()) {
+////            currenttip.add(TextFormatting.GREEN + "Producing " + getRfPerTick() + " RF/t");
+////        }
+//    }
 
-    @SideOnly(Side.CLIENT)
-    @Override
-    @Optional.Method(modid = "waila")
-    public void addWailaBody(ItemStack itemStack, List<String> currenttip, IWailaDataAccessor accessor, IWailaConfigHandler config) {
-        super.addWailaBody(itemStack, currenttip, accessor, config);
-//        if (isWorking()) {
-//            currenttip.add(TextFormatting.GREEN + "Producing " + getRfPerTick() + " RF/t");
-//        }
-    }
+    // @todo 1.14
+//    @Override
+//    public boolean shouldRenderInPass(int pass) {
+//        return pass == 0;
+//    }
+
 
     @Override
-    public boolean shouldRenderInPass(int pass) {
-        return pass == 0;
-    }
-
-    @Override
-    public void onBlockBreak(World world, BlockPos pos, BlockState state) {
-        super.onBlockBreak(world, pos, state);
+    public void onReplaced(World world, BlockPos pos, BlockState state, BlockState newstate) {
+        super.onReplaced(world, pos, state, newstate);
         clearInvisibleBlocks();
     }
 

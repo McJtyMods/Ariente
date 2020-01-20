@@ -5,11 +5,13 @@ import mcjty.lib.multipart.MultipartTE;
 import mcjty.lib.multipart.PartSlot;
 import mcjty.lib.tileentity.GenericTileEntity;
 import mcjty.lib.varia.BlockPosTools;
-import net.minecraft.block.state.BlockState;
+import mcjty.lib.varia.OrientationTools;
+import net.minecraft.block.BlockState;
 import net.minecraft.entity.LivingEntity;
 import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.CompoundNBT;
 import net.minecraft.tileentity.TileEntity;
+import net.minecraft.tileentity.TileEntityType;
 import net.minecraft.util.Direction;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.World;
@@ -17,6 +19,10 @@ import net.minecraft.world.World;
 public class FieldMarkerTile extends GenericTileEntity {
 
     private BlockPos autoFieldTile = null;
+
+    public FieldMarkerTile(TileEntityType<?> type) {
+        super(type);
+    }
 
     @Override
     public void markDirty() {
@@ -47,7 +53,7 @@ public class FieldMarkerTile extends GenericTileEntity {
     @Override
     public void onBlockPlacedBy(World world, BlockPos pos, BlockState state, LivingEntity placer, ItemStack stack) {
         AutoFieldTile auto = null;
-        for (Direction facing : Direction.HORIZONTALS) {
+        for (Direction facing : OrientationTools.HORIZONTAL_DIRECTION_VALUES) {
             BlockPos p = pos.offset(facing);
             TileEntity te = MultipartHelper.getTileEntity(world, p, PartSlot.DOWN);
             if (te instanceof FieldMarkerTile) {
@@ -69,7 +75,7 @@ public class FieldMarkerTile extends GenericTileEntity {
     }
 
     @Override
-    public void onBlockBreak(World world, BlockPos pos, BlockState state) {
+    public void onReplaced(World world, BlockPos pos, BlockState state, BlockState newstate) {
         if (autoFieldTile != null) {
             TileEntity tileEntity = world.getTileEntity(autoFieldTile);
             if (tileEntity instanceof AutoFieldTile) {
@@ -82,17 +88,14 @@ public class FieldMarkerTile extends GenericTileEntity {
         return autoFieldTile;
     }
 
-    @Override
+    // @todo 1.14 loot
     public void readRestorableFromNBT(CompoundNBT tagCompound) {
-        super.readRestorableFromNBT(tagCompound);
-        autoFieldTile = BlockPosTools.readFromNBT(tagCompound, "autofield");
+        autoFieldTile = BlockPosTools.read(tagCompound, "autofield");
     }
 
-    @Override
     public void writeRestorableToNBT(CompoundNBT tagCompound) {
-        super.writeRestorableToNBT(tagCompound);
         if (autoFieldTile != null) {
-            BlockPosTools.writeToNBT(tagCompound, "autofield", autoFieldTile);
+            BlockPosTools.write(tagCompound, "autofield", autoFieldTile);
         }
     }
 }

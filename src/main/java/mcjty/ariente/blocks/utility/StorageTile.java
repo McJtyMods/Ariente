@@ -8,8 +8,8 @@ import mcjty.ariente.blocks.ModBlocks;
 import mcjty.ariente.items.BlueprintItem;
 import mcjty.ariente.items.KeyCardItem;
 import mcjty.ariente.network.ArienteMessages;
-import mcjty.ariente.recipes.ConstructorRecipe;
 import mcjty.ariente.recipes.BlueprintRecipeRegistry;
+import mcjty.ariente.recipes.ConstructorRecipe;
 import mcjty.ariente.security.IKeyCardSlot;
 import mcjty.ariente.sounds.ModSounds;
 import mcjty.hologui.api.IGuiComponent;
@@ -17,49 +17,39 @@ import mcjty.hologui.api.IGuiComponentRegistry;
 import mcjty.hologui.api.IGuiTile;
 import mcjty.lib.tileentity.GenericTileEntity;
 import mcjty.lib.varia.ItemStackList;
-import mcjty.theoneprobe.api.IProbeHitData;
-import mcjty.theoneprobe.api.IProbeInfo;
-import mcjty.theoneprobe.api.ProbeMode;
-import mcjty.theoneprobe.api.TextStyleClass;
-import mcp.mobius.waila.api.IWailaConfigHandler;
-import mcp.mobius.waila.api.IWailaDataAccessor;
-import net.minecraft.block.state.BlockState;
 import net.minecraft.client.Minecraft;
 import net.minecraft.entity.player.PlayerEntity;
-import net.minecraft.inventory.IInventory;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.CompoundNBT;
-import net.minecraft.nbt.NBTTagList;
+import net.minecraft.nbt.ListNBT;
 import net.minecraft.network.NetworkManager;
-import net.minecraft.network.play.server.SPacketUpdateTileEntity;
+import net.minecraft.network.play.server.SUpdateTileEntityPacket;
 import net.minecraft.tileentity.TileEntity;
+import net.minecraft.tileentity.TileEntityType;
 import net.minecraft.util.Direction;
 import net.minecraft.util.Hand;
 import net.minecraft.util.ResourceLocation;
 import net.minecraft.util.SoundCategory;
 import net.minecraft.util.math.BlockPos;
+import net.minecraft.util.math.BlockRayTraceResult;
 import net.minecraft.util.math.RayTraceResult;
 import net.minecraft.util.math.Vec3d;
 import net.minecraft.world.World;
 import net.minecraftforge.common.capabilities.Capability;
 import net.minecraftforge.common.util.Constants;
-import net.minecraftforge.fml.common.Optional;
-import net.minecraftforge.fml.common.registry.ForgeRegistries;
-import net.minecraftforge.fml.relauncher.Side;
-import net.minecraftforge.fml.relauncher.SideOnly;
+import net.minecraftforge.common.util.LazyOptional;
 import net.minecraftforge.items.CapabilityItemHandler;
 import net.minecraftforge.items.IItemHandler;
 import net.minecraftforge.items.ItemHandlerHelper;
-import net.minecraftforge.items.wrapper.InvWrapper;
+import net.minecraftforge.registries.ForgeRegistries;
 
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
-import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
-public class StorageTile extends GenericTileEntity implements IGuiTile, IInventory, ICityEquipment, IKeyCardSlot, ILockable, IStorageTile {
+public class StorageTile extends GenericTileEntity implements IGuiTile, ICityEquipment, IKeyCardSlot, ILockable, IStorageTile {
 
 //    public static final PropertyBool LOCKED = PropertyBool.create("locked");
 
@@ -73,8 +63,12 @@ public class StorageTile extends GenericTileEntity implements IGuiTile, IInvento
     private int[] counts = new int[STACKS * STACKS_PER_TYPE];
     private int[] totals = new int[STACKS];
 
+    public StorageTile(TileEntityType<?> type) {
+        super(type);
+    }
+
     @Override
-    public void onDataPacket(NetworkManager net, SPacketUpdateTileEntity packet) {
+    public void onDataPacket(NetworkManager net, SUpdateTileEntityPacket packet) {
         boolean locked = isLocked();
 
         super.onDataPacket(net, packet);
@@ -83,7 +77,7 @@ public class StorageTile extends GenericTileEntity implements IGuiTile, IInvento
             // If needed send a render update.
             boolean newLocked = isLocked();
             if (newLocked != locked) {
-                world.markBlockRangeForRenderUpdate(pos, pos);
+                world.notifyBlockUpdate(pos, getBlockState(), getBlockState(), Constants.BlockFlags.BLOCK_UPDATE + Constants.BlockFlags.NOTIFY_NEIGHBORS);
             }
         }
     }
@@ -109,18 +103,17 @@ public class StorageTile extends GenericTileEntity implements IGuiTile, IInvento
         }
     }
 
-    @Override
+    // @todo 1.14 loot
     public void readRestorableFromNBT(CompoundNBT tagCompound) {
-        super.readRestorableFromNBT(tagCompound);
         locked = tagCompound.getBoolean("locked");
-        if (tagCompound.hasKey("keyId")) {
+        if (tagCompound.contains("keyId")) {
             keyId = tagCompound.getString("keyId");
         }
 
-        NBTTagList bufferTagList = tagCompound.getTagList("Items", Constants.NBT.TAG_COMPOUND);
+        ListNBT bufferTagList = tagCompound.getList("Items", Constants.NBT.TAG_COMPOUND);
         for (int i = 0; i < STACKS; i++) {
-            CompoundNBT CompoundNBT = bufferTagList.getCompoundTagAt(i);
-            stacks.set(i, new ItemStack(CompoundNBT));
+            CompoundNBT CompoundNBT = bufferTagList.getCompound(i);
+            stacks.set(i, ItemStack.read(CompoundNBT));
         }
         int[] cc = tagCompound.getIntArray("Counts");
         System.arraycopy(cc, 0, counts, 0, cc.length);
@@ -128,25 +121,23 @@ public class StorageTile extends GenericTileEntity implements IGuiTile, IInvento
         System.arraycopy(ct, 0, totals, 0, ct.length);
     }
 
-    @Override
     public void writeRestorableToNBT(CompoundNBT tagCompound) {
-        super.writeRestorableToNBT(tagCompound);
-        tagCompound.setBoolean("locked", locked);
+        tagCompound.putBoolean("locked", locked);
         if (keyId != null) {
-            tagCompound.setString("keyId", keyId);
+            tagCompound.putString("keyId", keyId);
         }
-        NBTTagList bufferTagList = new NBTTagList();
+        ListNBT bufferTagList = new ListNBT();
         for (int i = 0; i < STACKS; i++) {
             ItemStack stack = stacks.get(i);
             CompoundNBT CompoundNBT = new CompoundNBT();
             if (!stack.isEmpty()) {
-                stack.writeToNBT(CompoundNBT);
+                stack.write(CompoundNBT);
             }
-            bufferTagList.appendTag(CompoundNBT);
+            bufferTagList.add(CompoundNBT);
         }
-        tagCompound.setTag("Items", bufferTagList);
-        tagCompound.setIntArray("Counts", counts);
-        tagCompound.setIntArray("Totals", totals);
+        tagCompound.put("Items", bufferTagList);
+        tagCompound.putIntArray("Counts", counts);
+        tagCompound.putIntArray("Totals", totals);
     }
 
     @Override
@@ -194,20 +185,21 @@ public class StorageTile extends GenericTileEntity implements IGuiTile, IInvento
         }
     }
 
-    @Override
-    @Optional.Method(modid = "theoneprobe")
-    public void addProbeInfo(ProbeMode mode, IProbeInfo probeInfo, PlayerEntity player, World world, BlockState blockState, IProbeHitData data) {
-        super.addProbeInfo(mode, probeInfo, player, world, blockState, data);
-        if (locked) {
-            if (keyId != null && !keyId.isEmpty()) {
-                probeInfo.text(TextStyleClass.LABEL + "Key " + TextStyleClass.INFO + keyId);
-            }
-            if (isLocked()) {
-                probeInfo.text(TextStyleClass.WARNING + "Locked!");
-            }
-
-        }
-    }
+    // @todo 1.14
+//    @Override
+//    @Optional.Method(modid = "theoneprobe")
+//    public void addProbeInfo(ProbeMode mode, IProbeInfo probeInfo, PlayerEntity player, World world, BlockState blockState, IProbeHitData data) {
+//        super.addProbeInfo(mode, probeInfo, player, world, blockState, data);
+//        if (locked) {
+//            if (keyId != null && !keyId.isEmpty()) {
+//                probeInfo.text(TextStyleClass.LABEL + "Key " + TextStyleClass.INFO + keyId);
+//            }
+//            if (isLocked()) {
+//                probeInfo.text(TextStyleClass.WARNING + "Locked!");
+//            }
+//
+//        }
+//    }
 
     public ItemStack getTotalStack(int type) {
         if (totals[type] == 0) {
@@ -226,25 +218,26 @@ public class StorageTile extends GenericTileEntity implements IGuiTile, IInvento
         totals[type] = stack.getCount();
     }
 
-    @SideOnly(Side.CLIENT)
-    @Override
-    @Optional.Method(modid = "waila")
-    public void addWailaBody(ItemStack itemStack, List<String> currenttip, IWailaDataAccessor accessor, IWailaConfigHandler config) {
-        super.addWailaBody(itemStack, currenttip, accessor, config);
-//        if (isWorking()) {
-//            currenttip.add(TextFormatting.GREEN + "Producing " + getRfPerTick() + " RF/t");
-//        }
-    }
+    // @todo 1.14
+//    @SideOnly(Side.CLIENT)
+//    @Override
+//    @Optional.Method(modid = "waila")
+//    public void addWailaBody(ItemStack itemStack, List<String> currenttip, IWailaDataAccessor accessor, IWailaConfigHandler config) {
+//        super.addWailaBody(itemStack, currenttip, accessor, config);
+////        if (isWorking()) {
+////            currenttip.add(TextFormatting.GREEN + "Producing " + getRfPerTick() + " RF/t");
+////        }
+//    }
 
-    public static int getSlot(RayTraceResult mouseOver, World world) {
-        return getSlot(world, mouseOver.getBlockPos(), mouseOver.sideHit, mouseOver.hitVec);
+    public static int getSlot(BlockRayTraceResult mouseOver, World world) {
+        return getSlot(world, mouseOver.getPos(), mouseOver.getFace(), mouseOver.getHitVec());
     }
 
     public static int getSlot(World world, BlockPos pos, Direction sideHit, Vec3d hitVec) {
         int x = pos.getX();
         int y = pos.getY();
         int z = pos.getZ();
-        Direction k = ModBlocks.storageBlock.getFrontDirection(world.getBlockState(pos));
+        Direction k = ModBlocks.storageBlock.get().getFrontDirection(world.getBlockState(pos));
         if (sideHit == k) {
             float sx = (float) (hitVec.x - x);
             float sy = (float) (hitVec.y - y);
@@ -334,9 +327,11 @@ public class StorageTile extends GenericTileEntity implements IGuiTile, IInvento
         if (world.isRemote) {
             // On client. We find out what part of the block was hit and send that to the server.
             RayTraceResult mouseOver = Minecraft.getInstance().objectMouseOver;
-            int index = getSlot(mouseOver, world);
-            if (index >= 0) {
-                ArienteMessages.INSTANCE.sendToServer(new PacketClickStorage(pos, index));
+            if (mouseOver instanceof BlockRayTraceResult) {
+                int index = getSlot((BlockRayTraceResult)mouseOver, world);
+                if (index >= 0) {
+                    ArienteMessages.INSTANCE.sendToServer(new PacketClickStorage(pos, index));
+                }
             }
         }
     }
@@ -344,7 +339,7 @@ public class StorageTile extends GenericTileEntity implements IGuiTile, IInvento
     private static long doubleClickTime = -1;
 
     public static boolean onActivate(World world, BlockPos pos, PlayerEntity player, Direction side, float sx, float sy, float sz) {
-        Direction k = ModBlocks.storageBlock.getFrontDirection(world.getBlockState(pos));
+        Direction k = ModBlocks.storageBlock.get().getFrontDirection(world.getBlockState(pos));
         if (side == k) {
             TileEntity tileEntity = world.getTileEntity(pos);
             if (!world.isRemote) {
@@ -481,180 +476,148 @@ public class StorageTile extends GenericTileEntity implements IGuiTile, IInvento
             Item item = ForgeRegistries.ITEMS.getValue(id);
             if (item != null) {
                 if (doBlueprint) {
-                    ItemStack blueprint = BlueprintItem.makeBluePrint(new ItemStack(item, 1, meta));
+                    // @todo 1.14 meta
+                    ItemStack blueprint = BlueprintItem.makeBluePrint(new ItemStack(item, 1));
                     initTotalStack(i, blueprint);
                 } else {
-                    initTotalStack(i, new ItemStack(item, amount, meta));
+                    // @todo 1.14 meta
+                    initTotalStack(i, new ItemStack(item, amount));
                 }
             }
         }
     }
 
-    @Override
-    public int getSizeInventory() {
-        return STACKS * STACKS_PER_TYPE;
-    }
-
-    @Override
-    public boolean isEmpty() {
-        return false;
-    }
-
-    @Override
-    public ItemStack getStackInSlot(int index) {
-        if (counts[index] == 0) {
-            return ItemStack.EMPTY;
-        } else {
-            int type = index / STACKS_PER_TYPE;
-            ItemStack stack = stacks.get(type).copy();
-            if (!stack.isEmpty()) {
-                stack.setCount(counts[index]);
-            }
-            return stack;
-        }
-    }
-
-    @Override
-    public ItemStack decrStackSize(int index, int count) {
-        if (counts[index] == 0) {
-            return ItemStack.EMPTY;
-        } else {
-            int type = index / STACKS_PER_TYPE;
-            ItemStack stack = stacks.get(type).copy();
-            if (!stack.isEmpty()) {
-                if (count <= counts[index]) {
-                    counts[index] -= count;
-                    totals[type] -= count;
-                    stack.setCount(count);
-                } else {
-                    totals[type] -= counts[index];
-                    stack.setCount(counts[index]);
-                    counts[index] = 0;
-                }
-                updateTotals(type);
-                markDirtyClient();
-            }
-            return stack;
-        }
-    }
-
-    @Override
-    public ItemStack removeStackFromSlot(int index) {
-        if (counts[index] == 0) {
-            return ItemStack.EMPTY;
-        } else {
-            int type = index / STACKS_PER_TYPE;
-            ItemStack stack = stacks.get(type).copy();
-            if (!stack.isEmpty()) {
-                totals[type] -= counts[index];
-                stack.setCount(counts[index]);
-                counts[index] = 0;
-                updateTotals(type);
-                markDirtyClient();
-            }
-            return stack;
-        }
-    }
-
-    @Override
-    public void setInventorySlotContents(int index, ItemStack stack) {
-        // We assume here that the actual stack is valid for this slot
-        int type = index / STACKS_PER_TYPE;
-        totals[type] -= counts[index];
-        counts[index] = stack.getCount();
-        totals[type] += counts[index];
-        if (totals[type] == 0) {
-            // @todo lock
-            stacks.set(type, ItemStack.EMPTY);
-        } else {
-            stacks.set(type, stack);
-        }
-        updateTotals(type);
-        markDirtyClient();
-    }
-
-    @Override
-    public int getInventoryStackLimit() {
-        return 64;
-    }
-
-    @Override
-    public boolean isUsableByPlayer(PlayerEntity player) {
-        return canPlayerAccess(player);
-    }
-
-    @Override
-    public void openInventory(PlayerEntity player) {
-
-    }
-
-    @Override
-    public void closeInventory(PlayerEntity player) {
-
-    }
-
-    @Override
-    public boolean isItemValidForSlot(int index, ItemStack stack) {
-        int type = index / STACKS_PER_TYPE;
-        if (stacks.get(type).isEmpty()) {
-            return true;
-        } else {
-            return ItemHandlerHelper.canItemStacksStack(stacks.get(type), stack);
-        }
-    }
-
-    @Override
-    public int getField(int id) {
-        return 0;
-    }
-
-    @Override
-    public void setField(int id, int value) {
-
-    }
-
-    @Override
-    public int getFieldCount() {
-        return 0;
-    }
-
-    @Override
-    public void clear() {
-
-    }
-
-    @Override
-    public String getName() {
-        return "storage";
-    }
-
-    @Override
-    public boolean hasCustomName() {
-        return false;
-    }
+    // @todo 1.14
+//    @Override
+//    public int getSizeInventory() {
+//        return STACKS * STACKS_PER_TYPE;
+//    }
+//
+//    @Override
+//    public boolean isEmpty() {
+//        return false;
+//    }
+//
+//    @Override
+//    public ItemStack getStackInSlot(int index) {
+//        if (counts[index] == 0) {
+//            return ItemStack.EMPTY;
+//        } else {
+//            int type = index / STACKS_PER_TYPE;
+//            ItemStack stack = stacks.get(type).copy();
+//            if (!stack.isEmpty()) {
+//                stack.setCount(counts[index]);
+//            }
+//            return stack;
+//        }
+//    }
+//
+//    @Override
+//    public ItemStack decrStackSize(int index, int count) {
+//        if (counts[index] == 0) {
+//            return ItemStack.EMPTY;
+//        } else {
+//            int type = index / STACKS_PER_TYPE;
+//            ItemStack stack = stacks.get(type).copy();
+//            if (!stack.isEmpty()) {
+//                if (count <= counts[index]) {
+//                    counts[index] -= count;
+//                    totals[type] -= count;
+//                    stack.setCount(count);
+//                } else {
+//                    totals[type] -= counts[index];
+//                    stack.setCount(counts[index]);
+//                    counts[index] = 0;
+//                }
+//                updateTotals(type);
+//                markDirtyClient();
+//            }
+//            return stack;
+//        }
+//    }
+//
+//    @Override
+//    public ItemStack removeStackFromSlot(int index) {
+//        if (counts[index] == 0) {
+//            return ItemStack.EMPTY;
+//        } else {
+//            int type = index / STACKS_PER_TYPE;
+//            ItemStack stack = stacks.get(type).copy();
+//            if (!stack.isEmpty()) {
+//                totals[type] -= counts[index];
+//                stack.setCount(counts[index]);
+//                counts[index] = 0;
+//                updateTotals(type);
+//                markDirtyClient();
+//            }
+//            return stack;
+//        }
+//    }
+//
+//    @Override
+//    public void setInventorySlotContents(int index, ItemStack stack) {
+//        // We assume here that the actual stack is valid for this slot
+//        int type = index / STACKS_PER_TYPE;
+//        totals[type] -= counts[index];
+//        counts[index] = stack.getCount();
+//        totals[type] += counts[index];
+//        if (totals[type] == 0) {
+//            // @todo lock
+//            stacks.set(type, ItemStack.EMPTY);
+//        } else {
+//            stacks.set(type, stack);
+//        }
+//        updateTotals(type);
+//        markDirtyClient();
+//    }
+//
+//    @Override
+//    public int getInventoryStackLimit() {
+//        return 64;
+//    }
+//
+//    @Override
+//    public boolean isUsableByPlayer(PlayerEntity player) {
+//        return canPlayerAccess(player);
+//    }
+//
+//    @Override
+//    public void openInventory(PlayerEntity player) {
+//
+//    }
+//
+//    @Override
+//    public void closeInventory(PlayerEntity player) {
+//
+//    }
+//
+//    @Override
+//    public boolean isItemValidForSlot(int index, ItemStack stack) {
+//        int type = index / STACKS_PER_TYPE;
+//        if (stacks.get(type).isEmpty()) {
+//            return true;
+//        } else {
+//            return ItemHandlerHelper.canItemStacksStack(stacks.get(type), stack);
+//        }
+//    }
 
     private IItemHandler invHandler;
 
     private IItemHandler getInvHandler() {
         if (invHandler == null) {
-            invHandler = new InvWrapper(this);
+            // @todo 1.14
+//            invHandler = new InvWrapper(this);
         }
         return invHandler;
     }
 
+    @Nonnull
     @Override
-    public boolean hasCapability(Capability<?> capability, Direction facing) {
-        if (capability == CapabilityItemHandler.ITEM_HANDLER_CAPABILITY) {
-            return true;
+    public <T> LazyOptional<T> getCapability(@Nonnull Capability<T> cap) {
+        if (cap == CapabilityItemHandler.ITEM_HANDLER_CAPABILITY) {
+            // @todo 1.14
+//            return CapabilityItemHandler.ITEM_HANDLER_CAPABILITY.cast(getInvHandler());
         }
-        return super.hasCapability(capability, facing);
-    }
-
-    @Override
-    public <T> T getCapability(Capability<T> capability, Direction facing) {
-        if (capability == CapabilityItemHandler.ITEM_HANDLER_CAPABILITY) {
-            return CapabilityItemHandler.ITEM_HANDLER_CAPABILITY.cast(getInvHandler());
-        }
-        return super.getCapability(capability, facing);
+        return super.getCapability(cap);
     }
 }

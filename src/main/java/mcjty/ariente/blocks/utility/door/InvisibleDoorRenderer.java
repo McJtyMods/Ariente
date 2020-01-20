@@ -1,18 +1,17 @@
 package mcjty.ariente.blocks.utility.door;
 
+import com.mojang.blaze3d.platform.GlStateManager;
 import mcjty.ariente.Ariente;
 import mcjty.ariente.blocks.ModBlocks;
-import net.minecraft.block.state.BlockState;
-import net.minecraft.client.renderer.GlStateManager;
-import net.minecraft.client.renderer.tileentity.TileEntitySpecialRenderer;
+import net.minecraft.block.BlockState;
+import net.minecraft.client.renderer.tileentity.TileEntityRenderer;
 import net.minecraft.util.Direction;
 import net.minecraft.util.ResourceLocation;
 import net.minecraftforge.fml.client.registry.ClientRegistry;
-import net.minecraftforge.fml.relauncher.Side;
-import net.minecraftforge.fml.relauncher.SideOnly;
 
-@SideOnly(Side.CLIENT)
-public class InvisibleDoorRenderer extends TileEntitySpecialRenderer<InvisibleDoorTile> {
+
+
+public class InvisibleDoorRenderer extends TileEntityRenderer<InvisibleDoorTile> {
 
     private ResourceLocation halo = new ResourceLocation(Ariente.MODID, "textures/gui/guielements.png");
 
@@ -20,9 +19,9 @@ public class InvisibleDoorRenderer extends TileEntitySpecialRenderer<InvisibleDo
     }
 
     @Override
-    public void render(InvisibleDoorTile te, double x, double y, double z, float time, int breakTime, float alpha) {
+    public void render(InvisibleDoorTile te, double x, double y, double z, float partialTicks, int destroyStage) {
         BlockState state = getWorld().getBlockState(te.getPos());
-        if (state.getBlock() != ModBlocks.invisibleDoorBlock) {
+        if (state.getBlock() != ModBlocks.invisibleDoorBlock.get()) {
             return;
         }
 
@@ -36,12 +35,12 @@ public class InvisibleDoorRenderer extends TileEntitySpecialRenderer<InvisibleDo
 
         GlStateManager.pushMatrix();
 
-        Direction frontDirection = ModBlocks.invisibleDoorBlock.getFrontDirection(state);
+        Direction frontDirection = ModBlocks.invisibleDoorBlock.get().getFrontDirection(state);
         if (Direction.NORTH.equals(frontDirection) || Direction.SOUTH.equals(frontDirection)) {
-            GlStateManager.translate(x, y, z+.5);
-            GlStateManager.rotate(90, 0, 1, 0);
+            GlStateManager.translated(x, y, z+.5);
+            GlStateManager.rotatef(90, 0, 1, 0);
         } else {
-            GlStateManager.translate(x + .5, y, z);
+            GlStateManager.translated(x + .5, y, z);
         }
 
         bindTexture(halo);

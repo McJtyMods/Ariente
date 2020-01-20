@@ -1,6 +1,5 @@
 package mcjty.ariente.blocks.utility;
 
-import mcjty.ariente.Ariente;
 import mcjty.ariente.api.ICityAI;
 import mcjty.ariente.api.ICityEquipment;
 import mcjty.ariente.blocks.ModBlocks;
@@ -9,113 +8,62 @@ import mcjty.ariente.items.ModItems;
 import mcjty.hologui.api.*;
 import mcjty.hologui.api.components.IPlayerSlots;
 import mcjty.hologui.api.components.ISlots;
+import mcjty.lib.container.AutomationFilterItemHander;
 import mcjty.lib.container.ContainerFactory;
-import mcjty.lib.container.DefaultSidedInventory;
-import mcjty.lib.container.InventoryHelper;
+import mcjty.lib.container.NoDirectionItemHander;
 import mcjty.lib.tileentity.GenericTileEntity;
-import mcjty.theoneprobe.api.IProbeHitData;
-import mcjty.theoneprobe.api.IProbeInfo;
-import mcjty.theoneprobe.api.ProbeMode;
-import mcp.mobius.waila.api.IWailaConfigHandler;
-import mcp.mobius.waila.api.IWailaDataAccessor;
-import net.minecraft.block.state.BlockState;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.CompoundNBT;
-import net.minecraft.util.Direction;
-import net.minecraft.util.ResourceLocation;
+import net.minecraft.tileentity.TileEntityType;
 import net.minecraft.world.World;
-import net.minecraftforge.fml.common.Optional;
-import net.minecraftforge.fml.relauncher.Side;
-import net.minecraftforge.fml.relauncher.SideOnly;
-import net.minecraftforge.items.CapabilityItemHandler;
-import net.minecraftforge.items.IItemHandler;
+import net.minecraftforge.common.util.LazyOptional;
 import net.minecraftforge.items.ItemHandlerHelper;
 
+import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
-import java.util.List;
 import java.util.Map;
 
 import static mcjty.hologui.api.Icons.*;
 
-public class BlueprintStorageTile extends GenericTileEntity implements DefaultSidedInventory, IGuiTile, ICityEquipment {
+public class BlueprintStorageTile extends GenericTileEntity implements IGuiTile, ICityEquipment {
 
-    public static final ContainerFactory CONTAINER_FACTORY = new ContainerFactory(new ResourceLocation(Ariente.MODID, "gui/blueprint_storage.gui"));
     public static final int BLUEPRINTS = 6;
     public static final int SLOT_BLUEPRINT = 0;
     public static int[] slots = null;
-    private InventoryHelper inventoryHelper = new InventoryHelper(this, CONTAINER_FACTORY, BLUEPRINTS);
+    public static final ContainerFactory CONTAINER_FACTORY = new ContainerFactory(BLUEPRINTS);// @todo 1.14 new ResourceLocation(Ariente.MODID, "gui/blueprint_storage.gui"));
+//    private InventoryHelper inventoryHelper = new InventoryHelper(this, CONTAINER_FACTORY, BLUEPRINTS);
 
-    @Override
-    protected boolean needsCustomInvWrapper() {
-        return true;
+    private NoDirectionItemHander items = createItemHandler();
+    private LazyOptional<NoDirectionItemHander> itemHandler = LazyOptional.of(() -> items);
+    private LazyOptional<AutomationFilterItemHander> automationItemHandler = LazyOptional.of(() -> new AutomationFilterItemHander(items));
+
+    public BlueprintStorageTile(TileEntityType<?> type) {
+        super(type);
     }
 
-    @Override
-    public InventoryHelper getInventoryHelper() {
-        return inventoryHelper;
-    }
-
-    @Override
-    public int[] getSlotsForFace(Direction side) {
-        if (slots == null) {
-            slots = new int[inventoryHelper.getCount()];
-            for (int i = 0 ; i < inventoryHelper.getCount() ; i++) {
-                slots[i] = i;
-            }
-        }
-        return slots;
-    }
-
-    @Override
-    public boolean canInsertItem(int index, ItemStack stack, Direction direction) {
-        return isItemValidForSlot(index, stack);
-    }
-
-    @Override
-    public boolean isItemValidForSlot(int index, ItemStack stack) {
-        return stack.getItem() == ModItems.blueprintItem;
-    }
-
-    @Override
-    public boolean canExtractItem(int index, ItemStack stack, Direction direction) {
-        return true;
-    }
-
-    @Override
-    public boolean isEmpty() {
-        return false;
-    }
-
-    @Override
-    public boolean isUsableByPlayer(PlayerEntity player) {
-        return canPlayerAccess(player);
-    }
-
-    @Override
+    // @todo 1.14 loot
     public void readRestorableFromNBT(CompoundNBT tagCompound) {
-        super.readRestorableFromNBT(tagCompound);
-        readBufferFromNBT(tagCompound, inventoryHelper);
+//        readBufferFromNBT(tagCompound, inventoryHelper);
     }
 
-    @Override
     public void writeRestorableToNBT(CompoundNBT tagCompound) {
-        super.writeRestorableToNBT(tagCompound);
-        writeBufferToNBT(tagCompound, inventoryHelper);
+//        writeBufferToNBT(tagCompound, inventoryHelper);
     }
 
-    @Override
-    @Optional.Method(modid = "theoneprobe")
-    public void addProbeInfo(ProbeMode mode, IProbeInfo probeInfo, PlayerEntity player, World world, BlockState blockState, IProbeHitData data) {
-        super.addProbeInfo(mode, probeInfo, player, world, blockState, data);
-    }
-
-    @SideOnly(Side.CLIENT)
-    @Override
-    @Optional.Method(modid = "waila")
-    public void addWailaBody(ItemStack itemStack, List<String> currenttip, IWailaDataAccessor accessor, IWailaConfigHandler config) {
-        super.addWailaBody(itemStack, currenttip, accessor, config);
-    }
+    // @todo 1.14
+//    @Override
+//    @Optional.Method(modid = "theoneprobe")
+//    public void addProbeInfo(ProbeMode mode, IProbeInfo probeInfo, PlayerEntity player, World world, BlockState blockState, IProbeHitData data) {
+//        super.addProbeInfo(mode, probeInfo, player, world, blockState, data);
+//    }
+//
+//    @SideOnly(Side.CLIENT)
+//    @Override
+//    @Optional.Method(modid = "waila")
+//    public void addWailaBody(ItemStack itemStack, List<String> currenttip, IWailaDataAccessor accessor, IWailaConfigHandler config) {
+//        super.addWailaBody(itemStack, currenttip, accessor, config);
+//    }
 
 
     @Nullable
@@ -154,16 +102,12 @@ public class BlueprintStorageTile extends GenericTileEntity implements DefaultSi
                 .add(registry.iconButton(3, 3.5, 1, 1).icon(registry.image(GRAY_ARROW_UP)).hover(registry.image(WHITE_ARROW_UP))
                         .hitEvent((component, player, entity, x, y) -> transferToPlayer(player, entity)))
 
-                .add(registry.stackIcon(0, 4.5, 1, 1).itemStack(new ItemStack(ModBlocks.constructorBlock)))
+                .add(registry.stackIcon(0, 4.5, 1, 1).itemStack(new ItemStack(ModBlocks.constructorBlock.get())))
                 .add(registry.slots(1.5, 4.5, 6, 1)
                         .name("slots")
                         .doubleClickEvent((component, player, entity, x, y, stack, index) -> transferToPlayer(player, entity))
-                        .itemHandler(getItemHandler()))
+                        .itemHandler(items))
                 ;
-    }
-
-    public IItemHandler getItemHandler() {
-        return getCapability(CapabilityItemHandler.ITEM_HANDLER_CAPABILITY, null);
     }
 
     private void transferToPlayer(PlayerEntity player, IHoloGuiEntity entity) {
@@ -171,10 +115,10 @@ public class BlueprintStorageTile extends GenericTileEntity implements DefaultSi
             if (component instanceof ISlots) {
                 int selected = ((ISlots) component).getSelected();
                 if (selected != -1) {
-                    ItemStack extracted = getItemHandler().extractItem(selected, 64, false);
+                    ItemStack extracted = items.extractItem(selected, 64, false);
                     if (!extracted.isEmpty()) {
                         if (!player.inventory.addItemStackToInventory(extracted)) {
-                            getItemHandler().insertItem(selected, extracted, false);
+                            items.insertItem(selected, extracted, false);
                         } else {
                             ((ISlots) component).setSelection(-1);
                         }
@@ -192,7 +136,7 @@ public class BlueprintStorageTile extends GenericTileEntity implements DefaultSi
                 if (selected != -1) {
                     ItemStack extracted = player.inventory.getStackInSlot(selected);
                     if (!extracted.isEmpty()) {
-                        ItemStack notInserted = ItemHandlerHelper.insertItem(getItemHandler(), extracted, false);
+                        ItemStack notInserted = ItemHandlerHelper.insertItem(items, extracted, false);
                         player.inventory.setInventorySlotContents(selected, notInserted);
                         if (notInserted.isEmpty()) {
                             ((IPlayerSlots) component).setSelection(-1);
@@ -206,5 +150,14 @@ public class BlueprintStorageTile extends GenericTileEntity implements DefaultSi
 
     @Override
     public void syncToClient() {
+    }
+
+    private NoDirectionItemHander createItemHandler() {
+        return new NoDirectionItemHander(BlueprintStorageTile.this, CONTAINER_FACTORY) {
+            @Override
+            public boolean isItemValid(int slot, @Nonnull ItemStack stack) {
+                return stack.getItem() == ModItems.blueprintItem;
+            }
+        };
     }
 }

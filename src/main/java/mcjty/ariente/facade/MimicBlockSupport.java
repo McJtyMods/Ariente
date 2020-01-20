@@ -1,11 +1,11 @@
 package mcjty.ariente.facade;
 
 import net.minecraft.block.Block;
-import net.minecraft.block.state.BlockState;
-import net.minecraft.init.Blocks;
+import net.minecraft.block.BlockState;
+import net.minecraft.block.Blocks;
 import net.minecraft.nbt.CompoundNBT;
 import net.minecraft.util.ResourceLocation;
-import net.minecraftforge.fml.common.registry.ForgeRegistries;
+import net.minecraftforge.registries.ForgeRegistries;
 
 import javax.annotation.Nullable;
 
@@ -25,14 +25,16 @@ public class MimicBlockSupport {
 
 
     public void readFromNBT(CompoundNBT tagCompound) {
-        if (tagCompound.hasKey("regName")) {
+        if (tagCompound.contains("regName")) {
             String regName = tagCompound.getString("regName");
-            int meta = tagCompound.getInteger("meta");
+            // @todo 1.14 meta
+//            int meta = tagCompound.getInt("meta");
             Block value = ForgeRegistries.BLOCKS.getValue(new ResourceLocation(regName));
             if (value == null) {
                 mimicBlock = Blocks.COBBLESTONE.getDefaultState();
             } else {
-                mimicBlock = value.getStateFromMeta(meta);
+                // @todo 1.14 meta
+                mimicBlock = value.getDefaultState();
             }
         } else {
             mimicBlock = null;
@@ -41,8 +43,9 @@ public class MimicBlockSupport {
 
     public void writeToNBT(CompoundNBT tagCompound) {
         if (mimicBlock != null) {
-            tagCompound.setString("regName", mimicBlock.getBlock().getRegistryName().toString());
-            tagCompound.setInteger("meta", mimicBlock.getBlock().getMetaFromState(mimicBlock));
+            tagCompound.putString("regName", mimicBlock.getBlock().getRegistryName().toString());
+            // @todo 1.14 meta
+//            tagCompound.putInt("meta", mimicBlock.getBlock().getMetaFromState(mimicBlock));
         }
     }
 }

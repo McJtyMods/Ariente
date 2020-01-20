@@ -1,12 +1,11 @@
 package mcjty.ariente.blocks.utility.autofield;
 
-import mcjty.lib.multipart.PartPos;
 import mcjty.lib.multipart.MultipartHelper;
+import mcjty.lib.multipart.PartPos;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
 import net.minecraft.tileentity.TileEntity;
 import net.minecraft.world.World;
-import net.minecraftforge.oredict.OreDictionary;
 
 import java.util.*;
 import java.util.stream.Stream;
@@ -29,11 +28,12 @@ public class ConsumerInfo {
                 for (ItemStack stack : itemNode.getInputFilter()) {
                     if (!stack.isEmpty()) {
                         if (inputOredict) {
-                            int[] oreIDs = OreDictionary.getOreIDs(stack);
-                            for (int oreID : oreIDs) {
-                                wantedOredictItems.putIfAbsent(oreID, new ArrayList<>());
-                                wantedOredictItems.get(oreID).add(new WantedItem(pair, inputDamage, inputNbt));
-                            }
+// @todo 1.14 oredict
+                            //                            int[] oreIDs = OreDictionary.getOreIDs(stack);
+//                            for (int oreID : oreIDs) {
+//                                wantedOredictItems.putIfAbsent(oreID, new ArrayList<>());
+//                                wantedOredictItems.get(oreID).add(new WantedItem(pair, inputDamage, inputNbt));
+//                            }
                         } else {
                             wantedItems.putIfAbsent(stack.getItem(), new ArrayList<>());
                             wantedItems.get(stack.getItem()).add(new WantedItem(pair, inputDamage, inputNbt));
@@ -45,7 +45,7 @@ public class ConsumerInfo {
     }
 
     public Stream<PartPos> getWantedStream(ItemStack stack) {
-        int[] oreIDs = OreDictionary.getOreIDs(stack);
+        int[] oreIDs = new int[0];// @todo 1.14 oredict OreDictionary.getOreIDs(stack);
         Stream<PartPos> oreDictStream = Arrays.stream(oreIDs)
                 .boxed()
                 .flatMap(oreID -> wantedOredictItems.getOrDefault(oreID, Collections.emptyList())

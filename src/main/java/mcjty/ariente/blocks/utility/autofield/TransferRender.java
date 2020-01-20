@@ -1,9 +1,9 @@
 package mcjty.ariente.blocks.utility.autofield;
 
+import com.mojang.blaze3d.platform.GlStateManager;
 import mcjty.lib.client.RenderHelper;
 import mcjty.lib.multipart.PartSlot;
 import mcjty.lib.spline.CatmullRomSpline;
-import net.minecraft.client.renderer.GlStateManager;
 import net.minecraft.item.ItemStack;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.Vec3d;
@@ -61,7 +61,8 @@ public class TransferRender {
 
     public TransferRender(AutoFieldRenderInfo.TransferPath path, AutoFieldRenderInfo.Transfer transfer, BlockPos relative) {
         startTime = System.currentTimeMillis();
-        stack = new ItemStack(transfer.getItem(), 1, transfer.getMeta());
+        // @todo 1.14 meta transfer.getMeta()
+        stack = new ItemStack(transfer.getItem(), 1);
 
         Vec3d sta = new Vec3d(path.getSourcePos().getPos().subtract(relative)).add(getPos(path.getSourcePos().getSlot()));
         Vec3d end = new Vec3d(path.getDestPos().getPos().subtract(relative)).add(getPos(path.getDestPos().getSlot()));
@@ -69,7 +70,7 @@ public class TransferRender {
         duration = (long) (distance * 600) + 100;
 
         double jitter = distance / 5.0;
-        Vec3d mid = sta.add(end).scale(0.5).addVector(
+        Vec3d mid = sta.add(end).scale(0.5).add(
                 random.nextFloat() * jitter - (jitter/2.0),
                 random.nextFloat() * jitter - (jitter/2.0),
                 random.nextFloat() * jitter - (jitter/2.0));
@@ -108,9 +109,9 @@ public class TransferRender {
 
     private void renderStack(ItemStack stack, Vec3d pos, double rotation, double size) {
         GlStateManager.pushMatrix();
-        GlStateManager.translate(pos.x, pos.y, pos.z);
-        GlStateManager.rotate((float) rotation, 0, 1, 0);
-        GlStateManager.scale(size, size, size);
+        GlStateManager.translated(pos.x, pos.y, pos.z);
+        GlStateManager.rotatef((float) rotation, 0, 1, 0);
+        GlStateManager.scaled(size, size, size);
         RenderHelper.renderStackOnGround(stack, 1.0f);
 
         GlStateManager.popMatrix();

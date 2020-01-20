@@ -16,29 +16,26 @@ import mcjty.ariente.cables.ConnectorBlock;
 import mcjty.ariente.cables.NetCableBlock;
 import mcjty.ariente.facade.FacadeBlock;
 import mcjty.lib.blocks.BaseBlock;
-import mcjty.lib.blocks.GenericBlock;
-import mcjty.lib.builder.BaseBlockBuilder;
-import mcjty.lib.builder.GenericBlockBuilderFactory;
 import mcjty.lib.container.GenericContainer;
 import mcjty.lib.multipart.MultipartItemBlock;
 import mcjty.lib.multipart.PartSlot;
 import mcjty.lib.varia.ItemStackTools;
 import net.minecraft.block.Block;
+import net.minecraft.block.BlockState;
 import net.minecraft.block.SoundType;
 import net.minecraft.block.material.Material;
-import net.minecraft.block.state.BlockState;
 import net.minecraft.client.renderer.color.BlockColors;
 import net.minecraft.util.Direction;
 import net.minecraft.util.math.AxisAlignedBB;
-import net.minecraftforge.fml.relauncher.Side;
-import net.minecraftforge.fml.relauncher.SideOnly;
-import net.minecraftforge.oredict.OreDictionary;
+import net.minecraftforge.fml.RegistryObject;
+import net.minecraftforge.registries.DeferredRegister;
+import net.minecraftforge.registries.ForgeRegistries;
 
-import static mcjty.lib.blocks.BaseBlock.RotationType.HORIZROTATION;
-import static mcjty.lib.blocks.BaseBlock.RotationType.NONE;
 import static mcjty.lib.builder.BlockFlags.*;
 
 public class ModBlocks {
+
+    public static final DeferredRegister<Block> BLOCKS = new DeferredRegister<>(ForgeRegistries.BLOCKS, Ariente.MODID);
 
     public static final AxisAlignedBB FLAT_BLOCK_AABB = new AxisAlignedBB(0.0D, 0.0D, 0.0D, 1.0D, 0.1D, 1.0D);
     public static final AxisAlignedBB BEAM_BLOCK_NS_AABB = new AxisAlignedBB(0.0D, 0.0D, 0.3D, 1.0D, 0.3D, 0.7D);
@@ -68,38 +65,40 @@ public class ModBlocks {
     public static BaseBlock fluxBeamBlock;
     public static BaseBlock fluxBendBeamBlock;
 
-    public static GenericBlock<SensorItemNodeTile, GenericContainer> sensorItemNode;
-    public static GenericBlock<InputItemNodeTile, GenericContainer> inputItemNode;
-    public static GenericBlock<OutputItemNodeTile, GenericContainer> outputItemNode;
-    public static GenericBlock<RoundRobinNodeTile, GenericContainer> roundRobinNode;
-    public static GenericBlock<FieldMarkerTile, GenericContainer> fieldMarker;
+    //    public static final RegistryObject<BaseBlock> BUILDER = BLOCKS.register("builder", BuilderTileEntity::createBlock);
+
+    public static final RegistryObject<BaseBlock> sensorItemNode = BLOCKS.register("", null);
+    public static final RegistryObject<BaseBlock> inputItemNode = BLOCKS.register("", null);
+    public static final RegistryObject<BaseBlock> outputItemNode = BLOCKS.register("", null);
+    public static final RegistryObject<BaseBlock> roundRobinNode = BLOCKS.register("", null);
+    public static final RegistryObject<BaseBlock> fieldMarker = BLOCKS.register("", null);
 
     public static BaseBlock reinforcedMarble;
     public static BaseBlock fluxGlow;
 
-    public static GenericBlock<PowerCombinerTile, GenericContainer> powerCombinerBlock;
-    public static GenericBlock<NegariteGeneratorTile, GenericContainer> negariteGeneratorBlock;
-    public static GenericBlock<NegariteTankTile, GenericContainer> negariteTankBlock;
-    public static GenericBlock<PosiriteTankTile, GenericContainer> posiriteTankBlock;
-    public static GenericBlock<PosiriteGeneratorTile, GenericContainer> posiriteGeneratorBlock;
-    public static GenericBlock<StorageTile, GenericContainer> storageBlock;
-    public static GenericBlock<ElevatorTile, GenericContainer> elevatorBlock;
-    public static GenericBlock<LevelMarkerTile, GenericContainer> levelMarkerBlock;
-    public static GenericBlock<DoorMarkerTile, GenericContainer> doorMarkerBlock;
-    public static GenericBlock<InvisibleDoorTile, GenericContainer> invisibleDoorBlock;
-    public static GenericBlock<ForceFieldTile, GenericContainer> forceFieldBlock;
-    public static GenericBlock<AICoreTile, GenericContainer> aiCoreBlock;
-    public static GenericBlock<WarperTile, GenericContainer> warperBlock;
-    public static GenericBlock<LockTile, GenericContainer> lockBlock;
-    public static GenericBlock<SignalReceiverTile, GenericContainer> signalReceiverBlock;
-    public static GenericBlock<SignalTransmitterTile, GenericContainer> signalTransmitterBlock;
-    public static GenericBlock<WirelessButtonTile, GenericContainer> wirelessButtonBlock;
-    public static GenericBlock<WirelessLockTile, GenericContainer> wirelessLockBlock;
-    public static GenericBlock<AlarmTile, GenericContainer> alarmBlock;
-    public static GenericBlock<ConstructorTile, GenericContainer> constructorBlock;
-    public static GenericBlock<AutoConstructorTile, GenericContainer> autoConstructorBlock;
-    public static GenericBlock<BlueprintStorageTile, GenericContainer> blueprintStorageBlock;
-    public static GenericBlock<AutoFieldTile, GenericContainer> autoFieldBlock;
+    public static final RegistryObject<BaseBlock> powerCombinerBlock = BLOCKS.register("", null);
+    public static final RegistryObject<BaseBlock> negariteGeneratorBlock = BLOCKS.register("", null);
+    public static final RegistryObject<BaseBlock> negariteTankBlock = BLOCKS.register("", null);
+    public static final RegistryObject<BaseBlock> posiriteTankBlock = BLOCKS.register("", null);
+    public static final RegistryObject<BaseBlock> posiriteGeneratorBlock = BLOCKS.register("", null);
+    public static final RegistryObject<BaseBlock> storageBlock = BLOCKS.register("", null);
+    public static final RegistryObject<BaseBlock> elevatorBlock = BLOCKS.register("", null);
+    public static final RegistryObject<BaseBlock> levelMarkerBlock = BLOCKS.register("", null);
+    public static final RegistryObject<BaseBlock> doorMarkerBlock = BLOCKS.register("", null);
+    public static final RegistryObject<BaseBlock> invisibleDoorBlock = BLOCKS.register("", null);
+    public static final RegistryObject<BaseBlock> forceFieldBlock = BLOCKS.register("", null);
+    public static final RegistryObject<BaseBlock> aiCoreBlock = BLOCKS.register("", null);
+    public static final RegistryObject<BaseBlock> warperBlock = BLOCKS.register("", null);
+    public static final RegistryObject<BaseBlock> lockBlock = BLOCKS.register("", null);
+    public static final RegistryObject<BaseBlock> signalReceiverBlock = BLOCKS.register("", null);
+    public static final RegistryObject<BaseBlock> signalTransmitterBlock = BLOCKS.register("", null);
+    public static final RegistryObject<BaseBlock> wirelessButtonBlock = BLOCKS.register("", null);
+    public static final RegistryObject<BaseBlock> wirelessLockBlock = BLOCKS.register("", null);
+    public static final RegistryObject<BaseBlock> alarmBlock = BLOCKS.register("", null);
+    public static final RegistryObject<BaseBlock> constructorBlock = BLOCKS.register("", null);
+    public static final RegistryObject<BaseBlock> autoConstructorBlock = BLOCKS.register("", null);
+    public static final RegistryObject<BaseBlock> blueprintStorageBlock = BLOCKS.register("", null);
+    public static final RegistryObject<BaseBlock> autoFieldBlock = BLOCKS.register("", null);
 
     public static BaseBlock flatLightBlock;
 
@@ -113,8 +112,6 @@ public class ModBlocks {
     public static PaneBlock blueGlassFence;
     public static PaneBlock marbleFence;
     public static PaneBlock techFence;
-
-    public static GenericBlockBuilderFactory builderFactory;
 
     public static final AxisAlignedBB LIGHT_BLOCK_DOWN  = new AxisAlignedBB(0.125F, 0.0F, 0.125F, 0.875F, 0.125F, 0.875F);
     public static final AxisAlignedBB LIGHT_BLOCK_UP    = new AxisAlignedBB(0.125F, 0.875F, 0.125F, 0.875F, 1.0F, 0.875F);
@@ -466,7 +463,7 @@ public class ModBlocks {
     }
 
     public static AxisAlignedBB getFlatBox(BlockState state) {
-        Direction facing = state.getValue(BaseBlock.FACING);
+        Direction facing = state.get(BaseBlock.FACING);
         switch (facing) {
             case UP:
                 return LIGHT_BLOCK_DOWN;

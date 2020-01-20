@@ -3,35 +3,27 @@ package mcjty.ariente.blocks.utility;
 import mcjty.ariente.Ariente;
 import mcjty.ariente.api.ICityAI;
 import mcjty.ariente.api.ICityEquipment;
-import mcjty.hologui.api.*;
 import mcjty.ariente.blocks.utility.door.DoorMarkerTile;
 import mcjty.ariente.items.KeyCardItem;
 import mcjty.ariente.security.IKeyCardSlot;
 import mcjty.ariente.sounds.ModSounds;
+import mcjty.hologui.api.*;
 import mcjty.lib.tileentity.GenericTileEntity;
-import mcjty.theoneprobe.api.IProbeHitData;
-import mcjty.theoneprobe.api.IProbeInfo;
-import mcjty.theoneprobe.api.ProbeMode;
-import mcjty.theoneprobe.api.TextStyleClass;
-import mcp.mobius.waila.api.IWailaConfigHandler;
-import mcp.mobius.waila.api.IWailaDataAccessor;
-import net.minecraft.block.properties.PropertyBool;
-import net.minecraft.block.state.BlockState;
+import net.minecraft.block.BlockState;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.CompoundNBT;
 import net.minecraft.network.NetworkManager;
-import net.minecraft.network.play.server.SPacketUpdateTileEntity;
+import net.minecraft.network.play.server.SUpdateTileEntityPacket;
+import net.minecraft.state.BooleanProperty;
 import net.minecraft.tileentity.TileEntity;
+import net.minecraft.tileentity.TileEntityType;
 import net.minecraft.util.SoundCategory;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.World;
-import net.minecraftforge.fml.common.Optional;
-import net.minecraftforge.fml.relauncher.Side;
-import net.minecraftforge.fml.relauncher.SideOnly;
+import net.minecraftforge.common.util.Constants;
 
 import java.util.HashMap;
-import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
@@ -39,7 +31,7 @@ import static mcjty.hologui.api.Icons.*;
 
 public class LockTile extends GenericTileEntity implements IGuiTile, IKeyCardSlot, ICityEquipment, ILockable {
 
-    public static final PropertyBool LOCKED = PropertyBool.create("locked");
+    public static final BooleanProperty LOCKED = BooleanProperty.create("locked");
 
     private boolean locked = false;
     private String keyId;
@@ -47,8 +39,12 @@ public class LockTile extends GenericTileEntity implements IGuiTile, IKeyCardSlo
     private int horizontalRange = 5;
     private int verticalRange = 3;
 
+    public LockTile(TileEntityType<?> type) {
+        super(type);
+    }
+
     @Override
-    public void onDataPacket(NetworkManager net, SPacketUpdateTileEntity packet) {
+    public void onDataPacket(NetworkManager net, SUpdateTileEntityPacket packet) {
         boolean locked = isLocked();
 
         super.onDataPacket(net, packet);
@@ -57,7 +53,7 @@ public class LockTile extends GenericTileEntity implements IGuiTile, IKeyCardSlo
             // If needed send a render update.
             boolean newLocked = isLocked();
             if (newLocked != locked) {
-                world.markBlockRangeForRenderUpdate(pos, pos);
+                world.notifyBlockUpdate(pos, getBlockState(), getBlockState(), Constants.BlockFlags.BLOCK_UPDATE + Constants.BlockFlags.NOTIFY_NEIGHBORS);
             }
         }
     }
@@ -85,9 +81,9 @@ public class LockTile extends GenericTileEntity implements IGuiTile, IKeyCardSlo
     }
 
     @Override
-    public void onBlockBreak(World world, BlockPos pos, BlockState state) {
+    public void onReplaced(World world, BlockPos pos, BlockState state, BlockState newstate) {
         doLock(false);
-        super.onBlockBreak(world, pos, state);
+        super.onReplaced(world, pos, state, newstate);
     }
 
     private void doLock(boolean l) {
@@ -146,10 +142,11 @@ public class LockTile extends GenericTileEntity implements IGuiTile, IKeyCardSlo
         markDirty();
     }
 
-    @Override
-    public BlockState getActualState(BlockState state) {
-        return state.withProperty(LOCKED, isLocked());
-    }
+    // @todo 1.14
+//    @Override
+//    public BlockState getActualState(BlockState state) {
+//        return state.withProperty(LOCKED, isLocked());
+//    }
 
     @Override
     public Map<String, Object> save() {
@@ -177,49 +174,47 @@ public class LockTile extends GenericTileEntity implements IGuiTile, IKeyCardSlo
         }
     }
 
-    @Override
+    // @todo 1.14 loot
     public void readRestorableFromNBT(CompoundNBT tagCompound) {
-        super.readRestorableFromNBT(tagCompound);
         locked = tagCompound.getBoolean("locked");
         keyId = tagCompound.getString("keyId");
-        if (tagCompound.hasKey("vertical")) {
-            verticalRange = tagCompound.getInteger("vertical");
+        if (tagCompound.contains("vertical")) {
+            verticalRange = tagCompound.getInt("vertical");
         }
-        if (tagCompound.hasKey("horizontal")) {
-            horizontalRange = tagCompound.getInteger("horizontal");
+        if (tagCompound.contains("horizontal")) {
+            horizontalRange = tagCompound.getInt("horizontal");
         }
     }
 
-    @Override
     public void writeRestorableToNBT(CompoundNBT tagCompound) {
-        super.writeRestorableToNBT(tagCompound);
-        tagCompound.setBoolean("locked", locked);
+        tagCompound.putBoolean("locked", locked);
         if (keyId != null) {
-            tagCompound.setString("keyId", keyId);
+            tagCompound.putString("keyId", keyId);
         }
-        tagCompound.setInteger("vertical", verticalRange);
-        tagCompound.setInteger("horizontal", horizontalRange);
+        tagCompound.putInt("vertical", verticalRange);
+        tagCompound.putInt("horizontal", horizontalRange);
     }
 
-    @Override
-    @Optional.Method(modid = "theoneprobe")
-    public void addProbeInfo(ProbeMode mode, IProbeInfo probeInfo, PlayerEntity player, World world, BlockState blockState, IProbeHitData data) {
-        super.addProbeInfo(mode, probeInfo, player, world, blockState, data);
-        probeInfo.text(TextStyleClass.LABEL + "Key " + TextStyleClass.INFO + keyId);
-        if (isLocked()) {
-            probeInfo.text(TextStyleClass.WARNING + "Locked!");
-        }
-    }
-
-    @SideOnly(Side.CLIENT)
-    @Override
-    @Optional.Method(modid = "waila")
-    public void addWailaBody(ItemStack itemStack, List<String> currenttip, IWailaDataAccessor accessor, IWailaConfigHandler config) {
-        super.addWailaBody(itemStack, currenttip, accessor, config);
-//        if (isWorking()) {
-//            currenttip.add(TextFormatting.GREEN + "Producing " + getRfPerTick() + " RF/t");
+    // @todo 1.14
+//    @Override
+//    @Optional.Method(modid = "theoneprobe")
+//    public void addProbeInfo(ProbeMode mode, IProbeInfo probeInfo, PlayerEntity player, World world, BlockState blockState, IProbeHitData data) {
+//        super.addProbeInfo(mode, probeInfo, player, world, blockState, data);
+//        probeInfo.text(TextStyleClass.LABEL + "Key " + TextStyleClass.INFO + keyId);
+//        if (isLocked()) {
+//            probeInfo.text(TextStyleClass.WARNING + "Locked!");
 //        }
-    }
+//    }
+//
+//    @SideOnly(Side.CLIENT)
+//    @Override
+//    @Optional.Method(modid = "waila")
+//    public void addWailaBody(ItemStack itemStack, List<String> currenttip, IWailaDataAccessor accessor, IWailaConfigHandler config) {
+//        super.addWailaBody(itemStack, currenttip, accessor, config);
+////        if (isWorking()) {
+////            currenttip.add(TextFormatting.GREEN + "Producing " + getRfPerTick() + " RF/t");
+////        }
+//    }
 
     private void changeHorizontalRange(int dy) {
         int h = horizontalRange + dy;

@@ -10,24 +10,13 @@ import mcjty.hologui.api.IGuiTile;
 import mcjty.hologui.api.StyledColor;
 import mcjty.lib.tileentity.GenericTileEntity;
 import mcjty.lib.varia.TeleportationTools;
-import mcjty.theoneprobe.api.IProbeHitData;
-import mcjty.theoneprobe.api.IProbeInfo;
-import mcjty.theoneprobe.api.ProbeMode;
-import mcjty.theoneprobe.api.TextStyleClass;
-import mcp.mobius.waila.api.IWailaConfigHandler;
-import mcp.mobius.waila.api.IWailaDataAccessor;
-import net.minecraft.block.state.BlockState;
 import net.minecraft.entity.player.PlayerEntity;
-import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.CompoundNBT;
+import net.minecraft.tileentity.TileEntityType;
 import net.minecraft.util.math.AxisAlignedBB;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.World;
-import net.minecraftforge.fml.common.Optional;
-import net.minecraftforge.fml.relauncher.Side;
-import net.minecraftforge.fml.relauncher.SideOnly;
-
-import java.util.List;
+import net.minecraft.world.dimension.DimensionType;
 
 public class WarperTile extends GenericTileEntity implements IGuiTile, IWarper {
 
@@ -36,12 +25,16 @@ public class WarperTile extends GenericTileEntity implements IGuiTile, IWarper {
 
     private int charges = 0;
 
+    public WarperTile(TileEntityType<?> type) {
+        super(type);
+    }
+
     @Override
     public void setWorld(World worldIn) {
         super.setWorld(worldIn);
         if (Ariente.setup.arienteWorld) {
-            int dim = ArienteWorldCompat.getArienteWorld().getDimension();
-            if (worldIn != null && worldIn.provider.getDimension() == dim) {
+            DimensionType dim = ArienteWorldCompat.getArienteWorld().getDimension();
+            if (worldIn != null && worldIn.getDimension().getType() == dim) {
                 charges = UtilityConfiguration.WARPER_MAX_CHARGES.get();
             }
         }
@@ -71,34 +64,44 @@ public class WarperTile extends GenericTileEntity implements IGuiTile, IWarper {
     }
 
     @Override
-    public void readFromNBT(CompoundNBT tagCompound) {
-        super.readFromNBT(tagCompound);
+    public void read(CompoundNBT tagCompound) {
+        readRestorableFromNBT(tagCompound);
+        super.read(tagCompound);
     }
 
     @Override
     public CompoundNBT write(CompoundNBT tagCompound) {
-        return super.writeToNBT(tagCompound);
+        writeRestorableToNBT(tagCompound);
+        return super.write(tagCompound);
     }
 
-    @Override
+    // @todo 1.14 loot
     public void readRestorableFromNBT(CompoundNBT tagCompound) {
-        super.readRestorableFromNBT(tagCompound);
-        charges = tagCompound.getInteger("charges");
+        charges = tagCompound.getInt("charges");
     }
 
-    @Override
     public void writeRestorableToNBT(CompoundNBT tagCompound) {
-        super.writeRestorableToNBT(tagCompound);
-        tagCompound.setInteger("charges", charges);
+        tagCompound.putInt("charges", charges);
     }
 
-    @Override
-    @Optional.Method(modid = "theoneprobe")
-    public void addProbeInfo(ProbeMode mode, IProbeInfo probeInfo, PlayerEntity player, World world, BlockState blockState, IProbeHitData data) {
-        super.addProbeInfo(mode, probeInfo, player, world, blockState, data);
-        int pct = getChargePercentage();
-        probeInfo.text(TextStyleClass.LABEL + "Charged: " + TextStyleClass.INFO + pct + "%");
-    }
+    // @todo 1.14
+//    @Override
+//    @Optional.Method(modid = "theoneprobe")
+//    public void addProbeInfo(ProbeMode mode, IProbeInfo probeInfo, PlayerEntity player, World world, BlockState blockState, IProbeHitData data) {
+//        super.addProbeInfo(mode, probeInfo, player, world, blockState, data);
+//        int pct = getChargePercentage();
+//        probeInfo.text(TextStyleClass.LABEL + "Charged: " + TextStyleClass.INFO + pct + "%");
+//    }
+//
+//    @SideOnly(Side.CLIENT)
+//    @Override
+//    @Optional.Method(modid = "waila")
+//    public void addWailaBody(ItemStack itemStack, List<String> currenttip, IWailaDataAccessor accessor, IWailaConfigHandler config) {
+//        super.addWailaBody(itemStack, currenttip, accessor, config);
+////        if (isWorking()) {
+////            currenttip.add(TextFormatting.GREEN + "Producing " + getRfPerTick() + " RF/t");
+////        }
+//    }
 
     public int getChargePercentage() {
         int pct;
@@ -110,30 +113,20 @@ public class WarperTile extends GenericTileEntity implements IGuiTile, IWarper {
         return pct;
     }
 
-    @SideOnly(Side.CLIENT)
-    @Override
-    @Optional.Method(modid = "waila")
-    public void addWailaBody(ItemStack itemStack, List<String> currenttip, IWailaDataAccessor accessor, IWailaConfigHandler config) {
-        super.addWailaBody(itemStack, currenttip, accessor, config);
-//        if (isWorking()) {
-//            currenttip.add(TextFormatting.GREEN + "Producing " + getRfPerTick() + " RF/t");
-//        }
-    }
-
-    @SideOnly(Side.CLIENT)
-    @Override
-    public AxisAlignedBB getRenderBoundingBox() {
-        return getBeamBox();
-    }
-
-
-    @Override
-    public boolean shouldRenderInPass(int pass) {
-        return pass == 1;
-    }
+    // @todo 1.14
+//    @SideOnly(Side.CLIENT)
+//    @Override
+//    public AxisAlignedBB getRenderBoundingBox() {
+//        return getBeamBox();
+//    }
+//
+//    @Override
+//    public boolean shouldRenderInPass(int pass) {
+//        return pass == 1;
+//    }
 
     private void warp(PlayerEntity player) {
-        if (world.provider.getDimension() == 0) {
+        if (world.getDimension().getType() == DimensionType.OVERWORLD) {
             if (!world.isRemote) {
                 if (Ariente.setup.arienteWorld) {
                     // @todo for future usage
@@ -143,14 +136,14 @@ public class WarperTile extends GenericTileEntity implements IGuiTile, IWarper {
             }
         } else {
             if (!world.isRemote) {
-                BlockPos bedLocation = player.getBedLocation(0);
+                BlockPos bedLocation = player.getBedLocation(DimensionType.OVERWORLD);
                 if (bedLocation == null) {
                     bedLocation = world.getSpawnPoint();
                 }
                 while (!world.isAirBlock(bedLocation) && !world.isAirBlock(bedLocation.up()) && bedLocation.getY() < world.getHeight()-2) {
                     bedLocation = bedLocation.up();
                 }
-                TeleportationTools.teleportToDimension(player, 0, bedLocation.getX(), bedLocation.getY(), bedLocation.getZ());
+                TeleportationTools.teleportToDimension(player, DimensionType.OVERWORLD, bedLocation.getX(), bedLocation.getY(), bedLocation.getZ());
             }
         }
     }

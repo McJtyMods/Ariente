@@ -1,17 +1,6 @@
 package mcjty.ariente.compat.jei;
 
-import mezz.jei.api.ingredients.IIngredients;
-import mezz.jei.api.ingredients.VanillaTypes;
-import mezz.jei.api.recipe.wrapper.ICraftingRecipeWrapper;
-import net.minecraft.client.Minecraft;
-import net.minecraft.item.ItemStack;
-
-import javax.annotation.Nonnull;
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.List;
-
-class JeiConstructorRecipeWrapper implements ICraftingRecipeWrapper {
+class JeiConstructorRecipeWrapper {} /* @todo 1.14 implements ICraftingRecipeWrapper {
 
     private final JeiConstructorRecipe recipe;
 
@@ -35,3 +24,4 @@ class JeiConstructorRecipeWrapper implements ICraftingRecipeWrapper {
         return Collections.emptyList();
     }
 }
+*/

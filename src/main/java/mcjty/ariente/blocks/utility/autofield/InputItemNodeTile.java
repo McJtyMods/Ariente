@@ -9,8 +9,7 @@ import mcjty.hologui.api.Icons;
 import mcjty.hologui.api.StyledColor;
 import mcjty.hologui.api.components.IPanel;
 import mcjty.lib.varia.ItemStackList;
-import net.minecraft.block.Block;
-import net.minecraft.block.state.BlockState;
+import net.minecraft.block.BlockState;
 import net.minecraft.entity.LivingEntity;
 import net.minecraft.nbt.CompoundNBT;
 import net.minecraft.util.Direction;
@@ -29,19 +28,20 @@ public class InputItemNodeTile extends AbstractItemNodeTile {
     public static BlockState getStateForPlacement(World world, BlockPos pos, Direction facing, float hitX, float hitY, float hitZ, int meta, LivingEntity placer) {
         NodeOrientation orientation = getOrientationFromPlacement(facing, hitX, hitY, hitZ);
         // Since this is a multipart we can use state that isn't convertable to metadata
-        return ModBlocks.inputItemNode.getDefaultState().withProperty(ORIENTATION, orientation);
+        return ModBlocks.inputItemNode.get().getDefaultState().with(ORIENTATION, orientation);
     }
 
+// @todo 1.14
+//    @Override
+//    public Block getBlockType() {
+//        return ModBlocks.inputItemNode;
+//    }
 
-    @Override
-    public Block getBlockType() {
-        return ModBlocks.inputItemNode;
-    }
-
+    // @todo 1.14 loot
     @Override
     public void readRestorableFromNBT(CompoundNBT tagCompound) {
         super.readRestorableFromNBT(tagCompound);
-        readBufferFromNBT(tagCompound, "input", inputFilter);
+//        readBufferFromNBT(tagCompound, "input", inputFilter);
         inputDamage = tagCompound.getBoolean("inDamage");
         inputNbt = tagCompound.getBoolean("inNBT");
         inputOredict = tagCompound.getBoolean("inOre");
@@ -50,10 +50,10 @@ public class InputItemNodeTile extends AbstractItemNodeTile {
     @Override
     public void writeRestorableToNBT(CompoundNBT tagCompound) {
         super.writeRestorableToNBT(tagCompound);
-        writeBufferToNBT(tagCompound, "input", inputFilter);
-        tagCompound.setBoolean("inDamage", inputDamage);
-        tagCompound.setBoolean("inNBT", inputNbt);
-        tagCompound.setBoolean("inOre", inputOredict);
+//        writeBufferToNBT(tagCompound, "input", inputFilter);
+        tagCompound.putBoolean("inDamage", inputDamage);
+        tagCompound.putBoolean("inNBT", inputNbt);
+        tagCompound.putBoolean("inOre", inputOredict);
     }
 
     public ItemStackList getInputFilter() {

@@ -4,7 +4,7 @@ import mcjty.ariente.api.MarbleColor;
 import mcjty.ariente.blocks.ModBlocks;
 import mcjty.ariente.config.WorldgenConfiguration;
 import net.minecraft.block.Block;
-import net.minecraft.init.Blocks;
+
 import net.minecraft.nbt.CompoundNBT;
 import net.minecraft.nbt.NBTTagList;
 import net.minecraft.util.math.BlockPos;

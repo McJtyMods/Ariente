@@ -9,8 +9,7 @@ import mcjty.hologui.api.Icons;
 import mcjty.hologui.api.StyledColor;
 import mcjty.hologui.api.components.IPanel;
 import mcjty.lib.varia.ItemStackList;
-import net.minecraft.block.Block;
-import net.minecraft.block.state.BlockState;
+import net.minecraft.block.BlockState;
 import net.minecraft.entity.LivingEntity;
 import net.minecraft.nbt.CompoundNBT;
 import net.minecraft.util.Direction;
@@ -32,33 +31,35 @@ public class OutputItemNodeTile extends AbstractItemNodeTile {
     public static BlockState getStateForPlacement(World world, BlockPos pos, Direction facing, float hitX, float hitY, float hitZ, int meta, LivingEntity placer) {
         NodeOrientation orientation = getOrientationFromPlacement(facing, hitX, hitY, hitZ);
         // Since this is a multipart we can use state that isn't convertable to metadata
-        return ModBlocks.outputItemNode.getDefaultState().withProperty(ORIENTATION, orientation);
+        return ModBlocks.outputItemNode.get().getDefaultState().with(ORIENTATION, orientation);
     }
 
 
-    @Override
-    public Block getBlockType() {
-        return ModBlocks.outputItemNode;
-    }
+    // @todo 1.14
+//    @Override
+//    public Block getBlockType() {
+//        return ModBlocks.outputItemNode.get();
+//    }
 
+    // @todo 1.14 loot
     @Override
     public void readRestorableFromNBT(CompoundNBT tagCompound) {
         super.readRestorableFromNBT(tagCompound);
-        readBufferFromNBT(tagCompound, "output", outputFilter);
+//        readBufferFromNBT(tagCompound, "output", outputFilter);
         outputDamage = tagCompound.getBoolean("outDamage");
         outputNbt = tagCompound.getBoolean("outNBT");
         outputOredict = tagCompound.getBoolean("outOre");
-        outputStackSize = tagCompound.getInteger("outSS");
+        outputStackSize = tagCompound.getInt("outSS");
     }
 
     @Override
     public void writeRestorableToNBT(CompoundNBT tagCompound) {
         super.writeRestorableToNBT(tagCompound);
-        writeBufferToNBT(tagCompound, "output", outputFilter);
-        tagCompound.setBoolean("outDamage", outputDamage);
-        tagCompound.setBoolean("outNBT", outputNbt);
-        tagCompound.setBoolean("outOre", outputOredict);
-        tagCompound.setInteger("outSS", outputStackSize);
+//        writeBufferToNBT(tagCompound, "output", outputFilter);
+        tagCompound.putBoolean("outDamage", outputDamage);
+        tagCompound.putBoolean("outNBT", outputNbt);
+        tagCompound.putBoolean("outOre", outputOredict);
+        tagCompound.putInt("outSS", outputStackSize);
     }
 
     public ItemStackList getOutputFilter() {

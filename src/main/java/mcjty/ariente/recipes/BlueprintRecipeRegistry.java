@@ -6,7 +6,7 @@ import mcjty.ariente.cables.CableColor;
 import mcjty.ariente.cables.NetCableBlock;
 import mcjty.ariente.items.ModItems;
 import mcjty.lib.varia.WeightedRandom;
-import net.minecraft.init.Blocks;
+
 import net.minecraft.init.Items;
 import net.minecraft.item.EnumDyeColor;
 import net.minecraft.item.ItemStack;

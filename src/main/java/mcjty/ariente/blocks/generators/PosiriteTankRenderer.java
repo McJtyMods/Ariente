@@ -1,21 +1,18 @@
 package mcjty.ariente.blocks.generators;
 
+import com.mojang.blaze3d.platform.GlStateManager;
 import mcjty.ariente.Ariente;
 import net.minecraft.client.renderer.BufferBuilder;
-import net.minecraft.client.renderer.GlStateManager;
 import net.minecraft.client.renderer.Tessellator;
-import net.minecraft.client.renderer.tileentity.TileEntitySpecialRenderer;
+import net.minecraft.client.renderer.tileentity.TileEntityRenderer;
 import net.minecraft.client.renderer.vertex.DefaultVertexFormats;
 import net.minecraft.util.ResourceLocation;
 import net.minecraftforge.fml.client.registry.ClientRegistry;
-import net.minecraftforge.fml.relauncher.Side;
-import net.minecraftforge.fml.relauncher.SideOnly;
 import org.lwjgl.opengl.GL11;
 
 import java.util.Random;
 
-@SideOnly(Side.CLIENT)
-public class PosiriteTankRenderer extends TileEntitySpecialRenderer<PosiriteTankTile> {
+public class PosiriteTankRenderer extends TileEntityRenderer<PosiriteTankTile> {
 
     private ResourceLocation halo = new ResourceLocation(Ariente.MODID, "textures/blocks/machines/posirite_beam.png");
     private Random random = new Random();
@@ -27,21 +24,20 @@ public class PosiriteTankRenderer extends TileEntitySpecialRenderer<PosiriteTank
         renderer.pos(x, y, z).tex(u, v).color(1.0f, 1.0f, 1.0f, 1.0f).lightmap(0, 240).endVertex();
     }
 
-
     @Override
-    public void render(PosiriteTankTile te, double x, double y, double z, float time, int breakTime, float alpha) {
+    public void render(PosiriteTankTile te, double x, double y, double z, float partialTicks, int destroyStage) {
         if (te.isWorking()) {
             Tessellator tessellator = Tessellator.getInstance();
 //            GlStateManager.pushAttrib();
             GlStateManager.pushMatrix();
-            GlStateManager.translate(x, y, z);
+            GlStateManager.translated(x, y, z);
 
             GlStateManager.enableBlend();
             GlStateManager.depthMask(false);
             GlStateManager.blendFunc(GL11.GL_SRC_ALPHA, GL11.GL_ONE);
             GlStateManager.alphaFunc(GL11.GL_GREATER, 0.003921569F);
             GlStateManager.disableCull();
-            GlStateManager.enableDepth();
+            GlStateManager.enableDepthTest();
 
             ResourceLocation beamIcon = halo;
             bindTexture(beamIcon);
@@ -50,7 +46,7 @@ public class PosiriteTankRenderer extends TileEntitySpecialRenderer<PosiriteTank
             float i1 = ticks / 10.0f;
             float i2 = i1 + .1f;
 
-            GlStateManager.color(1, 1, 1, 1);
+            GlStateManager.color4f(1, 1, 1, 1);
 
             BufferBuilder renderer = tessellator.getBuffer();
             renderer.begin(GL11.GL_QUADS, DefaultVertexFormats.PARTICLE_POSITION_TEX_COLOR_LMAP);

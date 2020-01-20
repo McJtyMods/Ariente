@@ -2,10 +2,10 @@ package mcjty.ariente.entities.levitator;
 
 import net.minecraft.client.model.ModelBase;
 import net.minecraft.client.model.ModelRenderer;
-import net.minecraft.client.renderer.GlStateManager;
+
 import net.minecraft.entity.Entity;
-import net.minecraftforge.fml.relauncher.Side;
-import net.minecraftforge.fml.relauncher.SideOnly;
+
+
 
 @SideOnly(Side.CLIENT)
 public class FluxLevitatorModel extends ModelBase {

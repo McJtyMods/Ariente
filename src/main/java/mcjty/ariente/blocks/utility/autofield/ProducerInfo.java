@@ -7,7 +7,6 @@ import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
 import net.minecraft.tileentity.TileEntity;
 import net.minecraft.world.World;
-import net.minecraftforge.oredict.OreDictionary;
 
 import javax.annotation.Nullable;
 import java.util.*;
@@ -34,7 +33,9 @@ public class ProducerInfo {
                                 outputNode.getOutputStackSize(), roundRobin ? pair.getSlot().getBackSlot() : null));
                         int[] oreIDs;
                         if (outputOredict) {
-                            oreIDs = OreDictionary.getOreIDs(stack);
+// @todo 1.14 oredict
+                            //                            oreIDs = OreDictionary.getOreIDs(stack);
+                            oreIDs = EMPTY_OREIDS;
                         } else {
                             oreIDs = EMPTY_OREIDS;
                         }
@@ -107,8 +108,9 @@ public class ProducerInfo {
                 return true;
             }
             if (matchOredict) {
-                int[] oreIDs = OreDictionary.getOreIDs(stack);
-                return Arrays.stream(oreIDs).anyMatch(isProvidedOre::contains);
+// @todo 1.14 oredict
+                //                int[] oreIDs = OreDictionary.getOreIDs(stack);
+//                return Arrays.stream(oreIDs).anyMatch(isProvidedOre::contains);
             }
             return false;
         }
@@ -117,14 +119,16 @@ public class ProducerInfo {
         public ProvidedItem getProvidedItem(ItemStack stack) {
             int[] oreIDs = EMPTY_OREIDS;
             if (matchOredict) {
-                oreIDs = OreDictionary.getOreIDs(stack);
+// @todo 1.14 oredict
+                //                oreIDs = OreDictionary.getOreIDs(stack);
             }
             if (isProvidedItem.contains(stack.getItem()) || Arrays.stream(oreIDs).anyMatch(isProvidedOre::contains)) {
                 for (ProvidedItem item : providedItems) {
                     if (matchOredict) {
-                        if (!OreDictionary.itemMatches(stack, item.getStack(), false)) {
-                            continue;
-                        }
+// @todo 1.14 oredict
+                        //                        if (!OreDictionary.itemMatches(stack, item.getStack(), false)) {
+//                            continue;
+//                        }
                     } else {
                         if (!stack.isItemEqualIgnoreDurability(item.getStack())) {
                             continue;
