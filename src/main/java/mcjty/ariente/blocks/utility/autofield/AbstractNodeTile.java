@@ -10,45 +10,38 @@ import mcjty.lib.multipart.MultipartHelper;
 import mcjty.lib.multipart.PartPos;
 import mcjty.lib.multipart.PartSlot;
 import mcjty.lib.tileentity.GenericTileEntity;
-import mcjty.theoneprobe.api.IProbeHitData;
-import mcjty.theoneprobe.api.IProbeInfo;
-import mcjty.theoneprobe.api.ProbeMode;
-import mcp.mobius.waila.api.IWailaConfigHandler;
-import mcp.mobius.waila.api.IWailaDataAccessor;
-import net.minecraft.block.Block;
-import net.minecraft.block.properties.PropertyEnum;
-import net.minecraft.block.state.BlockState;
+import net.minecraft.block.BlockState;
 import net.minecraft.entity.LivingEntity;
 import net.minecraft.entity.player.PlayerEntity;
-import net.minecraft.item.EnumDyeColor;
+import net.minecraft.item.DyeColor;
 import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.CompoundNBT;
+import net.minecraft.state.EnumProperty;
 import net.minecraft.tileentity.TileEntity;
+import net.minecraft.tileentity.TileEntityType;
 import net.minecraft.util.Direction;
 import net.minecraft.util.Hand;
 import net.minecraft.util.math.AxisAlignedBB;
 import net.minecraft.util.math.BlockPos;
-import net.minecraft.world.IBlockAccess;
+import net.minecraft.util.math.BlockRayTraceResult;
+import net.minecraft.world.IBlockReader;
 import net.minecraft.world.World;
-import net.minecraftforge.fml.common.Optional;
-import net.minecraftforge.fml.relauncher.Side;
-import net.minecraftforge.fml.relauncher.SideOnly;
+import net.minecraftforge.common.util.LazyOptional;
 import net.minecraftforge.items.CapabilityItemHandler;
 import net.minecraftforge.items.IItemHandler;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.lang3.tuple.Pair;
 
-import javax.annotation.Nullable;
-import java.util.List;
+import javax.annotation.Nonnull;
 
 import static mcjty.ariente.blocks.utility.autofield.NodeOrientation.*;
 import static mcjty.hologui.api.Icons.*;
 
 public abstract class AbstractNodeTile extends GenericTileEntity implements IGuiTile {
 
-    public static final PropertyEnum<NodeOrientation> ORIENTATION = PropertyEnum.create("orientation", NodeOrientation.class, NodeOrientation.values());
+    public static final EnumProperty<NodeOrientation> ORIENTATION = EnumProperty.create("orientation", NodeOrientation.class, NodeOrientation.values());
 
-    protected EnumDyeColor[] filters = new EnumDyeColor[] { null, null, null, null };
+    protected DyeColor[] filters = new DyeColor[] { null, null, null, null };
 
     private static final float T = 0.2f;
     private static final float A = 0.14F;
@@ -78,6 +71,10 @@ public abstract class AbstractNodeTile extends GenericTileEntity implements IGui
     private static final AxisAlignedBB AABB_EAST_UN = new AxisAlignedBB(1-T, 0.5+A, 0.0+A,    1, 1.0-A, 0.5-A);
     private static final AxisAlignedBB AABB_EAST_US = new AxisAlignedBB(1-T, 0.5+A, 0.5+A,    1, 1.0-A, 1.0-A);
 
+    public AbstractNodeTile(TileEntityType<?> type) {
+        super(type);
+    }
+
     @Override
     public void markDirty() {
         // Make sure to mark the MultipartTE as dirty
@@ -90,7 +87,7 @@ public abstract class AbstractNodeTile extends GenericTileEntity implements IGui
         ((GenericTileEntity)world.getTileEntity(pos)).markDirtyQuick();
     }
 
-    public EnumDyeColor[] getFilters() {
+    public DyeColor[] getFilters() {
         return filters;
     }
 
@@ -105,12 +102,12 @@ public abstract class AbstractNodeTile extends GenericTileEntity implements IGui
     }
 
     @Override
-    public void onBlockBreak(World world, BlockPos pos, BlockState state) {
+    public void onReplaced(World world, BlockPos pos, BlockState state, BlockState newstate) {
         AutoFieldTile.notifyField(world, pos);
     }
 
-    public static AxisAlignedBB getBoundingBox(BlockState state, IBlockAccess world, BlockPos pos) {
-        NodeOrientation orientation = state.getValue(ORIENTATION);
+    public static AxisAlignedBB getBoundingBox(BlockState state, IBlockReader world, BlockPos pos) {
+        NodeOrientation orientation = state.get(ORIENTATION);
         switch (orientation) {
             case DOWN_NE: return AABB_DOWN_NE;
             case DOWN_NW: return AABB_DOWN_NW;
@@ -137,12 +134,14 @@ public abstract class AbstractNodeTile extends GenericTileEntity implements IGui
             case EAST_UN: return AABB_EAST_UN;
             case EAST_US: return AABB_EAST_US;
         }
-        return Block.NULL_AABB;
+        // @todo 1.14
+        return null;
+//        return Block.NULL_AABB;
     }
 
     @Override
-    public boolean onBlockActivated(BlockState state, PlayerEntity player, Hand hand, Direction side, float hitX, float hitY, float hitZ) {
-        Ariente.guiHandler.openHoloGuiEntity(world, pos, player, state.getValue(ORIENTATION).getSlot().name(), 1.0);
+    public boolean onBlockActivated(BlockState state, PlayerEntity player, Hand hand, BlockRayTraceResult result) {
+        Ariente.guiHandler.openHoloGuiEntity(world, pos, player, state.get(ORIENTATION).getSlot().name(), 1.0);
         return true;
     }
 
@@ -206,40 +205,50 @@ public abstract class AbstractNodeTile extends GenericTileEntity implements IGui
         return facing;
     }
 
-    @Override
+    // @todo 1.14 loot
     public void readRestorableFromNBT(CompoundNBT tagCompound) {
-        super.readRestorableFromNBT(tagCompound);
         for (int i = 0 ; i < filters.length ; i++) {
-            if (tagCompound.hasKey("f" + i)) {
-                filters[i] = EnumDyeColor.values()[tagCompound.getInteger("f" + i)];
+            if (tagCompound.contains("f" + i)) {
+                filters[i] = DyeColor.values()[tagCompound.getInt("f" + i)];
             } else {
                 filters[i] = null;
             }
         }
     }
 
-    @Override
     public void writeRestorableToNBT(CompoundNBT tagCompound) {
         for (int i = 0 ; i < filters.length ; i++) {
             if (filters[i] != null) {
-                tagCompound.setInteger("f" + i, filters[i].ordinal());
+                tagCompound.putInt("f" + i, filters[i].ordinal());
             }
         }
-        super.writeRestorableToNBT(tagCompound);
     }
 
     @Override
-    @Optional.Method(modid = "theoneprobe")
-    public void addProbeInfo(ProbeMode mode, IProbeInfo probeInfo, PlayerEntity player, World world, BlockState blockState, IProbeHitData data) {
-        super.addProbeInfo(mode, probeInfo, player, world, blockState, data);
+    public void read(CompoundNBT tagCompound) {
+        super.read(tagCompound);
+        readRestorableFromNBT(tagCompound);
     }
 
-    @SideOnly(Side.CLIENT)
     @Override
-    @Optional.Method(modid = "waila")
-    public void addWailaBody(ItemStack itemStack, List<String> currenttip, IWailaDataAccessor accessor, IWailaConfigHandler config) {
-        super.addWailaBody(itemStack, currenttip, accessor, config);
+    public CompoundNBT write(CompoundNBT tagCompound) {
+        writeRestorableToNBT(tagCompound);
+        return super.write(tagCompound);
     }
+
+    // @todo 1.14
+//    @Override
+//    @Optional.Method(modid = "theoneprobe")
+//    public void addProbeInfo(ProbeMode mode, IProbeInfo probeInfo, PlayerEntity player, World world, BlockState blockState, IProbeHitData data) {
+//        super.addProbeInfo(mode, probeInfo, player, world, blockState, data);
+//    }
+//
+//    @SideOnly(Side.CLIENT)
+//    @Override
+//    @Optional.Method(modid = "waila")
+//    public void addWailaBody(ItemStack itemStack, List<String> currenttip, IWailaDataAccessor accessor, IWailaConfigHandler config) {
+//        super.addWailaBody(itemStack, currenttip, accessor, config);
+//    }
 
     protected Pair<String, String> getSlotTag(String tag) {
         String[] split = StringUtils.split(tag, ":");
@@ -282,30 +291,30 @@ public abstract class AbstractNodeTile extends GenericTileEntity implements IGui
         );
     }
 
-    protected IEvent changeColor(EnumDyeColor[] filters, int i) {
+    protected IEvent changeColor(DyeColor[] filters, int i) {
         return (component, player, entity, x, y) -> {
             if (filters[i] == null) {
-                filters[i] = EnumDyeColor.WHITE;
-            } else if (filters[i] == EnumDyeColor.BLACK) {
+                filters[i] = DyeColor.WHITE;
+            } else if (filters[i] == DyeColor.BLACK) {
                 filters[i] = null;
             } else {
-                filters[i] = EnumDyeColor.values()[filters[i].ordinal() + 1];
+                filters[i] = DyeColor.values()[filters[i].ordinal() + 1];
             }
             markDirtyClient();
         };
     }
 
-    @Nullable
-    public IItemHandler getConnectedItemHandler(PartPos partPos) {
+    @Nonnull
+    public LazyOptional<IItemHandler> getConnectedItemHandler(PartPos partPos) {
         BlockState state = MultipartHelper.getBlockState(world, pos, partPos.getSlot());
-        if (state != null && state.getBlock() == getBlockType()) {
-            NodeOrientation orientation = state.getValue(ORIENTATION);
+        if (state != null && state.getBlock() == getBlockState().getBlock()) {
+            NodeOrientation orientation = state.get(ORIENTATION);
             Direction mainDirection = orientation.getMainDirection();
             TileEntity otherTe = world.getTileEntity(pos.offset(mainDirection));
-            if (otherTe != null && otherTe.hasCapability(CapabilityItemHandler.ITEM_HANDLER_CAPABILITY, mainDirection.getOpposite())) {
+            if (otherTe != null) {
                 return otherTe.getCapability(CapabilityItemHandler.ITEM_HANDLER_CAPABILITY, mainDirection.getOpposite());
             }
         }
-        return null;
+        return LazyOptional.empty();
     }
 }

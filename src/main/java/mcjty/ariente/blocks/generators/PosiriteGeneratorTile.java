@@ -30,6 +30,8 @@ import net.minecraft.world.World;
 import net.minecraftforge.common.util.Constants;
 import net.minecraftforge.common.util.LazyOptional;
 
+import javax.annotation.Nonnull;
+
 import static mcjty.hologui.api.Icons.*;
 
 public class PosiriteGeneratorTile extends GenericTileEntity implements ITickableTileEntity, IGuiTile, IPowerBlob, IAlarmMode, IPowerSender, IGenerator {
@@ -374,6 +376,13 @@ public class PosiriteGeneratorTile extends GenericTileEntity implements ITickabl
 
     private NoDirectionItemHander createItemHandler() {
         return new NoDirectionItemHander(PosiriteGeneratorTile.this, CONTAINER_FACTORY) {
+            @Override
+            public boolean isItemValid(int slot, @Nonnull ItemStack stack) {
+                if (slot == SLOT_POSIRITE_INPUT) {
+                    return stack.getItem() == ModItems.posiriteDust;
+                }
+                return true;
+            }
         };
     }
 }

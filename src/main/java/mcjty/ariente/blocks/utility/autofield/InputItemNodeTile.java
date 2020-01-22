@@ -12,6 +12,7 @@ import mcjty.lib.varia.ItemStackList;
 import net.minecraft.block.BlockState;
 import net.minecraft.entity.LivingEntity;
 import net.minecraft.nbt.CompoundNBT;
+import net.minecraft.tileentity.TileEntityType;
 import net.minecraft.util.Direction;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.World;
@@ -24,6 +25,10 @@ public class InputItemNodeTile extends AbstractItemNodeTile {
     private boolean inputOredict = false;
     private boolean inputDamage = false;
     private boolean inputNbt = false;
+
+    public InputItemNodeTile(TileEntityType<?> type) {
+        super(type);
+    }
 
     public static BlockState getStateForPlacement(World world, BlockPos pos, Direction facing, float hitX, float hitY, float hitZ, int meta, LivingEntity placer) {
         NodeOrientation orientation = getOrientationFromPlacement(facing, hitX, hitY, hitZ);

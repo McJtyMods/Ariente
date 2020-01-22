@@ -3,13 +3,14 @@ package mcjty.ariente.blocks.decorative;
 public class DoubleMarbleSlabBlock extends MarbleSlabBlock {
 
     public DoubleMarbleSlabBlock(String name) {
-        super(name);
+        super();    // @todo 1.14 name
     }
 
-    @Override
-    public boolean isDouble() {
-        return true;
-    }
+    // @todo 1.14
+//    @Override
+//    public boolean isDouble() {
+//        return true;
+//    }
 
 // @todo 1.14
 //    public void initModel() {

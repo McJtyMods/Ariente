@@ -5,6 +5,7 @@ import mcjty.hologui.api.IGuiComponentRegistry;
 import mcjty.hologui.api.IGuiTile;
 import mcjty.hologui.api.StyledColor;
 import mcjty.lib.tileentity.GenericTileEntity;
+import net.minecraft.tileentity.TileEntityType;
 
 public class LevelMarkerTile extends GenericTileEntity implements IGuiTile {
 
@@ -13,6 +14,10 @@ public class LevelMarkerTile extends GenericTileEntity implements IGuiTile {
         // @todo implement this
         return registry.panel(0, 0, 8, 8)
                 .add(registry.text(0, 2, 1, 1).text("Floor name (WIP)").color(registry.color(StyledColor.LABEL)));
+    }
+
+    public LevelMarkerTile(TileEntityType<?> type) {
+        super(type);
     }
 
     @Override

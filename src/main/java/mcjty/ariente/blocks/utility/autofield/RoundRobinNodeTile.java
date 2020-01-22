@@ -4,10 +4,6 @@ import mcjty.ariente.Ariente;
 import mcjty.ariente.blocks.ModBlocks;
 import mcjty.lib.multipart.PartSlot;
 import mcjty.lib.tileentity.GenericTileEntity;
-import mcjty.theoneprobe.api.IProbeHitData;
-import mcjty.theoneprobe.api.IProbeInfo;
-import mcjty.theoneprobe.api.ProbeMode;
-import net.minecraft.block.Block;
 import net.minecraft.block.BlockState;
 import net.minecraft.entity.LivingEntity;
 import net.minecraft.entity.player.PlayerEntity;
@@ -20,10 +16,9 @@ import net.minecraft.util.Direction;
 import net.minecraft.util.Hand;
 import net.minecraft.util.math.AxisAlignedBB;
 import net.minecraft.util.math.BlockPos;
+import net.minecraft.util.math.BlockRayTraceResult;
 import net.minecraft.world.IWorld;
 import net.minecraft.world.World;
-
-import java.util.List;
 
 import static mcjty.ariente.blocks.utility.autofield.NodeOrientation.*;
 
@@ -34,7 +29,7 @@ public class RoundRobinNodeTile extends GenericTileEntity {
     public static BlockState getStateForPlacement(World world, BlockPos pos, Direction facing, float hitX, float hitY, float hitZ, int meta, LivingEntity placer) {
         NodeOrientation orientation = getOrientationFromPlacement(facing, hitX, hitY, hitZ);
         // Since this is a multipart we can use state that isn't convertable to metadata
-        return ModBlocks.roundRobinNode.getDefaultState().withProperty(ORIENTATION, orientation);
+        return ModBlocks.roundRobinNode.get().getDefaultState().with(ORIENTATION, orientation);
     }
 
     private int index = 0;
@@ -71,10 +66,11 @@ public class RoundRobinNodeTile extends GenericTileEntity {
         super(type);
     }
 
-    @Override
-    public Block getBlockType() {
-        return ModBlocks.roundRobinNode;
-    }
+    // @todo 1.14
+//    @Override
+//    public Block getBlockType() {
+//        return ModBlocks.roundRobinNode;
+//    }
 
     @Override
     public void markDirty() {
@@ -94,7 +90,7 @@ public class RoundRobinNodeTile extends GenericTileEntity {
     }
 
     @Override
-    public void onBlockBreak(World world, BlockPos pos, BlockState state) {
+    public void onReplaced(World world, BlockPos pos, BlockState state, BlockState newstate) {
         AutoFieldTile.notifyField(world, pos);
     }
 
@@ -126,11 +122,11 @@ public class RoundRobinNodeTile extends GenericTileEntity {
             case EAST_UN: return AABB_EAST_UN;
             case EAST_US: return AABB_EAST_US;
         }
-        return Block.NULL_AABB;
+        return null; // @todo 1.14 Block.NULL_AABB;
     }
 
     @Override
-    public boolean onBlockActivated(BlockState state, PlayerEntity player, Hand hand, Direction side, float hitX, float hitY, float hitZ) {
+    public boolean onBlockActivated(BlockState state, PlayerEntity player, Hand hand, BlockRayTraceResult result) {
         Ariente.guiHandler.openHoloGuiEntity(world, pos, player, state.get(ORIENTATION).getSlot().name(), 1.0);
         return true;
     }

@@ -7,7 +7,6 @@ import mcjty.hologui.api.IHoloGuiHandler;
 import mcjty.lib.multipart.MultipartTE;
 import mcjty.lib.varia.Logging;
 import net.minecraft.tileentity.TileEntity;
-import net.minecraftforge.fml.common.event.FMLInterModComms;
 
 import javax.annotation.Nullable;
 
@@ -20,7 +19,11 @@ public class HoloGuiCompatibility {
             return;
         }
         registered = true;
-        FMLInterModComms.sendFunctionMessage("hologui", "getHoloHandler", "mcjty.ariente.gui.HoloGuiCompatibility$GetHoloHandler");
+// @todo 1.14
+        //        InterModComms.sendTo("hologui", "getHoloHandler", () -> {
+//
+//        });
+//        FMLInterModComms.sendFunctionMessage("hologui", "getHoloHandler", "mcjty.ariente.gui.HoloGuiCompatibility$GetHoloHandler");
     }
 
 

@@ -1,14 +1,20 @@
 package mcjty.ariente.cables;
 
+import mcjty.lib.varia.OrientationTools;
 import net.minecraft.block.Block;
 import net.minecraft.nbt.CompoundNBT;
+import net.minecraft.tileentity.TileEntityType;
 import net.minecraft.util.Direction;
 
 public class ConnectorTileEntity extends GenericCableTileEntity {
 
     private int inputFromSide[] = new int[] { 0, 0, 0, 0, 0, 0 };
     private int powerOut[] = new int[] { 0, 0, 0, 0, 0, 0 };
-    private Block[] cachedNeighbours = new Block[Direction.VALUES.length];
+    private Block[] cachedNeighbours = new Block[OrientationTools.DIRECTION_VALUES.length];
+
+    public ConnectorTileEntity(TileEntityType<?> type) {
+        super(type);
+    }
 
     public int getPowerOut(Direction side) {
         return powerOut[side.ordinal()];
@@ -23,7 +29,7 @@ public class ConnectorTileEntity extends GenericCableTileEntity {
         }
         this.powerOut[side.ordinal()] = powerOut;
         markDirty();
-        world.neighborChanged(pos.offset(side), this.getBlockType(), this.pos);
+        world.neighborChanged(pos.offset(side), this.getBlockState().getBlock(), this.pos); // @todo 1.14 is this right?
     }
 
     @Override
@@ -40,8 +46,8 @@ public class ConnectorTileEntity extends GenericCableTileEntity {
     }
 
     @Override
-    public void readFromNBT(CompoundNBT tagCompound) {
-        super.readFromNBT(tagCompound);
+    public void read(CompoundNBT tagCompound) {
+        super.read(tagCompound);
         inputFromSide = tagCompound.getIntArray("inputs");
         if (inputFromSide.length != 6) {
             inputFromSide = new int[] { 0, 0, 0, 0, 0, 0 };
@@ -52,22 +58,13 @@ public class ConnectorTileEntity extends GenericCableTileEntity {
     }
 
     @Override
-    public void readRestorableFromNBT(CompoundNBT tagCompound) {
-        super.readRestorableFromNBT(tagCompound);
-    }
-
-    @Override
     public CompoundNBT write(CompoundNBT tagCompound) {
-        super.writeToNBT(tagCompound);
-        tagCompound.setIntArray("inputs", inputFromSide);
+        super.write(tagCompound);
+        tagCompound.putIntArray("inputs", inputFromSide);
         for (int i = 0 ; i < 6 ; i++) {
-            tagCompound.setByte("p" + i, (byte) powerOut[i]);
+            tagCompound.putByte("p" + i, (byte) powerOut[i]);
         }
         return tagCompound;
     }
 
-    @Override
-    public void writeRestorableToNBT(CompoundNBT tagCompound) {
-        super.writeRestorableToNBT(tagCompound);
-    }
 }

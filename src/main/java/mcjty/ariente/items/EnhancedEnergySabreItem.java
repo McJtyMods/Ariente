@@ -8,16 +8,18 @@ import mcjty.ariente.items.modules.ModuleSupport;
 import net.minecraft.client.util.ITooltipFlag;
 import net.minecraft.enchantment.Enchantment;
 import net.minecraft.enchantment.EnchantmentHelper;
+import net.minecraft.enchantment.Enchantments;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.LivingEntity;
 import net.minecraft.entity.SharedMonsterAttributes;
 import net.minecraft.entity.ai.attributes.AttributeModifier;
-import net.minecraft.init.Enchantments;
-import net.minecraft.inventory.EntityEquipmentSlot;
+import net.minecraft.inventory.EquipmentSlotType;
 import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.CompoundNBT;
-import net.minecraft.potion.Potion;
-import net.minecraft.potion.PotionEffect;
+import net.minecraft.potion.Effect;
+import net.minecraft.potion.EffectInstance;
+import net.minecraft.util.text.ITextComponent;
+import net.minecraft.util.text.StringTextComponent;
 import net.minecraft.util.text.TextFormatting;
 import net.minecraft.world.World;
 import org.apache.commons.lang3.tuple.Pair;
@@ -27,9 +29,10 @@ import java.util.*;
 
 public class EnhancedEnergySabreItem extends EnergySabreItem {
 
-    public EnhancedEnergySabreItem(String name) {
-        super(name);
-        setMaxDamage(0);
+    public EnhancedEnergySabreItem() {
+        super();
+        // @todo 1.14 custom properties?
+//        setMaxDamage(0);
     }
 
     @Override
@@ -48,29 +51,29 @@ public class EnhancedEnergySabreItem extends EnergySabreItem {
         if (target.getEntityWorld().isRemote) {
             return;
         }
-        Iterator<PotionEffect> iterator = target.getActivePotionMap().values().iterator();
+        Iterator<EffectInstance> iterator = target.getActivePotionMap().values().iterator();
 
-        Set<Potion> potionsToRemove = new HashSet<>();
+        Set<Effect> potionsToRemove = new HashSet<>();
         while (iterator.hasNext()) {
-            PotionEffect effect = iterator.next();
+            EffectInstance effect = iterator.next();
             if (effect.getPotion().isBeneficial()) {
                 potionsToRemove.add(effect.getPotion());
             }
         }
-        for (Potion potion : potionsToRemove) {
+        for (Effect potion : potionsToRemove) {
             target.removePotionEffect(potion);
         }
     }
 
 
     @Override
-    public Multimap<String, AttributeModifier> getAttributeModifiers(EntityEquipmentSlot slot, ItemStack stack) {
+    public Multimap<String, AttributeModifier> getAttributeModifiers(EquipmentSlotType slot, ItemStack stack) {
         Multimap<String, AttributeModifier> multimap = super.getOriginalAttributeModifiers(slot, stack);
 
-        if (slot == EntityEquipmentSlot.MAINHAND) {
+        if (slot == EquipmentSlotType.MAINHAND) {
             float factor = ModuleSupport.hasWorkingUpgrade(stack, ArmorUpgradeType.POWER) ? 2 : 1;
-            multimap.put(SharedMonsterAttributes.ATTACK_DAMAGE.getName(), new AttributeModifier(ATTACK_DAMAGE_MODIFIER, "Weapon modifier", this.attackDamage * factor, 0));
-            multimap.put(SharedMonsterAttributes.ATTACK_SPEED.getName(), new AttributeModifier(ATTACK_SPEED_MODIFIER, "Weapon modifier", -2.4000000953674316D, 0));
+            multimap.put(SharedMonsterAttributes.ATTACK_DAMAGE.getName(), new AttributeModifier(ATTACK_DAMAGE_MODIFIER, "Weapon modifier", this.attackDamage * factor, AttributeModifier.Operation.ADDITION));
+            multimap.put(SharedMonsterAttributes.ATTACK_SPEED.getName(), new AttributeModifier(ATTACK_SPEED_MODIFIER, "Weapon modifier", -2.4000000953674316D, AttributeModifier.Operation.ADDITION));
         }
 
         return multimap;
@@ -78,32 +81,32 @@ public class EnhancedEnergySabreItem extends EnergySabreItem {
 
 
     @Override
-    public void addInformation(ItemStack stack, @Nullable World worldIn, List<String> list, ITooltipFlag flagIn) {
+    public void addInformation(ItemStack stack, @Nullable World worldIn, List<ITextComponent> list, ITooltipFlag flagIn) {
         super.addInformation(stack, worldIn, list, flagIn);
-        list.add(TextFormatting.GOLD + "Modular energy sabre");
+        list.add(new StringTextComponent(TextFormatting.GOLD + "Modular energy sabre"));
         if (KeyBindings.configureArmor != null) {
-            list.add(TextFormatting.GRAY + "Configure with: " + TextFormatting.WHITE + "key " + KeyBindings.configureArmor.getDisplayName());
+            list.add(new StringTextComponent(TextFormatting.GRAY + "Configure with: " + TextFormatting.WHITE + "key " + KeyBindings.configureArmor.getDisplayName()));
         }
-        if (stack.hasTagCompound()) {
-            CompoundNBT compound = stack.getTagCompound();
+        if (stack.hasTag()) {
+            CompoundNBT compound = stack.getTag();
             for (ArmorUpgradeType type : ArmorUpgradeType.VALUES) {
                 String key = "module_" + type.getName();
-                if (compound.hasKey(key)) {
+                if (compound.contains(key)) {
                     boolean activated = compound.getBoolean(key);
                     if (activated) {
-                        list.add("    " + TextFormatting.GREEN + type.getDescription() + " (on)");
+                        list.add(new StringTextComponent("    " + TextFormatting.GREEN + type.getDescription() + " (on)"));
                     } else {
-                        list.add("    " + TextFormatting.GRAY + type.getDescription() + " (off)");
+                        list.add(new StringTextComponent("    " + TextFormatting.GRAY + type.getDescription() + " (off)"));
                     }
                 }
             }
             Pair<Integer, Integer> usage = ModuleSupport.getPowerUsage(stack);
-            list.add(TextFormatting.WHITE + "Power: " + TextFormatting.YELLOW + usage.getLeft() + " / " + usage.getRight());
+            list.add(new StringTextComponent(TextFormatting.WHITE + "Power: " + TextFormatting.YELLOW + usage.getLeft() + " / " + usage.getRight()));
 
-            int negarite = compound.getInteger("negarite");
-            int posirite = compound.getInteger("posirite");
-            list.add(TextFormatting.WHITE + "Negarite: " + TextFormatting.YELLOW + negarite);
-            list.add(TextFormatting.WHITE + "Posirite: " + TextFormatting.YELLOW + posirite);
+            int negarite = compound.getInt("negarite");
+            int posirite = compound.getInt("posirite");
+            list.add(new StringTextComponent(TextFormatting.WHITE + "Negarite: " + TextFormatting.YELLOW + negarite));
+            list.add(new StringTextComponent(TextFormatting.WHITE + "Posirite: " + TextFormatting.YELLOW + posirite));
         }
     }
 
@@ -113,9 +116,9 @@ public class EnhancedEnergySabreItem extends EnergySabreItem {
     }
 
     @Override
-    public void onUpdate(ItemStack stack, World world, Entity entity, int itemSlot, boolean isSelected) {
+    public void inventoryTick(ItemStack stack, World world, Entity entity, int itemSlot, boolean isSelected) {
         if (entity instanceof LivingEntity && !world.isRemote) {
-            if (itemSlot != EntityEquipmentSlot.MAINHAND.getIndex()) {
+            if (itemSlot != EquipmentSlotType.MAINHAND.getIndex()) {
                 return;
             }
             onUpdateSabre(stack, world, (LivingEntity) entity);
@@ -123,15 +126,15 @@ public class EnhancedEnergySabreItem extends EnergySabreItem {
     }
 
     private void onUpdateSabre(ItemStack stack, World world, LivingEntity entity) {
-        if (stack.isEmpty() || stack.getItem() != ModItems.enhancedEnergySabreItem || !stack.hasTagCompound()) {
+        if (stack.isEmpty() || stack.getItem() != ModItems.enhancedEnergySabreItem || !stack.hasTag()) {
             return;
         }
 
-        CompoundNBT compound = stack.getTagCompound();
+        CompoundNBT compound = stack.getTag();
 
         if (!ModuleSupport.managePower(stack, entity)) {
-            compound.setBoolean(ArmorUpgradeType.INHIBIT.getWorkingKey(), false);
-            compound.setBoolean(ArmorUpgradeType.POWER.getWorkingKey(), false);
+            compound.putBoolean(ArmorUpgradeType.INHIBIT.getWorkingKey(), false);
+            compound.putBoolean(ArmorUpgradeType.POWER.getWorkingKey(), false);
             int lootingLevel = EnchantmentHelper.getEnchantmentLevel(Enchantments.LOOTING, stack);
             int fireLevel = EnchantmentHelper.getEnchantmentLevel(Enchantments.FIRE_ASPECT, stack);
             if (lootingLevel > 0 || fireLevel > 0) {
@@ -140,8 +143,8 @@ public class EnhancedEnergySabreItem extends EnergySabreItem {
             return;
         }
 
-        compound.setBoolean(ArmorUpgradeType.INHIBIT.getWorkingKey(), compound.getBoolean(ArmorUpgradeType.INHIBIT.getModuleKey()));
-        compound.setBoolean(ArmorUpgradeType.POWER.getWorkingKey(), compound.getBoolean(ArmorUpgradeType.POWER.getModuleKey()));
+        compound.putBoolean(ArmorUpgradeType.INHIBIT.getWorkingKey(), compound.getBoolean(ArmorUpgradeType.INHIBIT.getModuleKey()));
+        compound.putBoolean(ArmorUpgradeType.POWER.getWorkingKey(), compound.getBoolean(ArmorUpgradeType.POWER.getModuleKey()));
 
         Map<Enchantment, Integer> ench = new HashMap<>();
         if (compound.getBoolean(ArmorUpgradeType.LOOTING.getModuleKey())) {

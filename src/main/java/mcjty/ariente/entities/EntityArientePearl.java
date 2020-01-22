@@ -1,8 +1,10 @@
 package mcjty.ariente.entities;
 
 import mcjty.ariente.items.ModItems;
+import mcjty.ariente.setup.Registration;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.EntityType;
+import net.minecraft.entity.IRendersAsItem;
 import net.minecraft.entity.item.ItemEntity;
 import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.CompoundNBT;
@@ -14,7 +16,7 @@ import net.minecraft.util.math.MathHelper;
 import net.minecraft.world.World;
 import net.minecraftforge.fml.network.NetworkHooks;
 
-public class EntityArientePearl extends Entity {
+public class EntityArientePearl extends Entity implements IRendersAsItem {
 
     private double targetX;
     private double targetY;
@@ -22,18 +24,20 @@ public class EntityArientePearl extends Entity {
     private int despawnTimer;
     private boolean shatterOrDrop;
 
-    public EntityArientePearl(EntityType<?> entityTypeIn, World worldIn) {
+    public EntityArientePearl(EntityType<? extends EntityArientePearl> entityTypeIn, World worldIn) {
         super(entityTypeIn, worldIn);
-        // @todo 1.14
-//        this.setSize(0.25F, 0.25F);
     }
 
-    public EntityArientePearl(EntityType<?> entityTypeIn, World worldIn, double x, double y, double z) {
-        super(entityTypeIn, worldIn);
-        this.despawnTimer = 0;
-        // @todo 1.14
-//        this.setSize(0.25F, 0.25F);
-        this.setPosition(x, y, z);
+    @Override
+    public ItemStack getItem() {
+        return new ItemStack(ModItems.arientePearlItem);
+    }
+
+    public static EntityArientePearl create(World worldIn, double x, double y, double z) {
+        EntityArientePearl entity = new EntityArientePearl(Registration.PEARL.get(), worldIn);
+        entity.despawnTimer = 0;
+        entity.setPosition(x, y, z);
+        return entity;
     }
 
     @Override

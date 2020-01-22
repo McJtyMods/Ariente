@@ -53,7 +53,7 @@ public class FluxLevitatorItem extends Item {
                     d0 = 0.5D;
                 }
 
-                FluxLevitatorEntity levitator = new FluxLevitatorEntity(world, pos.getX() + 0.5D, pos.getY() + 0.0625D + d0, pos.getZ() + 0.5D);
+                FluxLevitatorEntity levitator = FluxLevitatorEntity.create(world, pos.getX() + 0.5D, pos.getY() + 0.0625D + d0, pos.getZ() + 0.5D);
 
                 if (itemstack.hasDisplayName()) {
                     levitator.setCustomName(itemstack.getDisplayName());

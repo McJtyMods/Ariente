@@ -1,19 +1,18 @@
 package mcjty.ariente.entities.fluxship;
 
+import com.mojang.blaze3d.platform.GlStateManager;
 import mcjty.ariente.Ariente;
 import mcjty.ariente.renderer.ModelHandle;
-
-import net.minecraft.client.renderer.entity.Render;
-import net.minecraft.client.renderer.entity.RenderManager;
-import net.minecraft.client.renderer.texture.TextureMap;
+import net.minecraft.client.renderer.entity.EntityRenderer;
+import net.minecraft.client.renderer.entity.EntityRendererManager;
+import net.minecraft.client.renderer.texture.AtlasTexture;
 import net.minecraft.client.renderer.vertex.DefaultVertexFormats;
 import net.minecraft.util.ResourceLocation;
 import net.minecraftforge.fml.client.registry.IRenderFactory;
 
 
 
-@SideOnly(Side.CLIENT)
-public class FluxShipRender extends Render<FluxShipEntity> {
+public class FluxShipRender extends EntityRenderer<FluxShipEntity> {
 
     public static final ResourceLocation TEXTURE = new ResourceLocation("ariente:entity/flux_ship");
 
@@ -21,7 +20,7 @@ public class FluxShipRender extends Render<FluxShipEntity> {
             .vertexFormat(DefaultVertexFormats.POSITION_TEX_LMAP_COLOR)
             .replace("#None", TEXTURE.toString());
 
-    public FluxShipRender(RenderManager renderManagerIn) {
+    public FluxShipRender(EntityRendererManager renderManagerIn) {
         super(renderManagerIn);
         this.shadowSize = 0.5F;
     }
@@ -33,11 +32,11 @@ public class FluxShipRender extends Render<FluxShipEntity> {
         GlStateManager.disableLighting();
 
         GlStateManager.pushMatrix();
-        GlStateManager.translate((float) x, (float) y, (float) z);
+        GlStateManager.translatef((float) x, (float) y, (float) z);
         GlStateManager.enableRescaleNormal();
-        GlStateManager.scale(scale, scale, scale);
+        GlStateManager.scalef(scale, scale, scale);
 
-        bindTexture(TextureMap.LOCATION_BLOCKS_TEXTURE);
+        bindTexture(AtlasTexture.LOCATION_BLOCKS_TEXTURE);
 
         HANDLE.render();
 
@@ -57,7 +56,7 @@ public class FluxShipRender extends Render<FluxShipEntity> {
     public static class Factory implements IRenderFactory<FluxShipEntity> {
 
         @Override
-        public Render<? super FluxShipEntity> createRenderFor(RenderManager manager) {
+        public EntityRenderer<? super FluxShipEntity> createRenderFor(EntityRendererManager manager) {
             return new FluxShipRender(manager);
         }
 

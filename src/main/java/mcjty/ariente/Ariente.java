@@ -4,7 +4,9 @@ package mcjty.ariente;
 import mcjty.ariente.api.IArienteMod;
 import mcjty.ariente.api.IArienteSystem;
 import mcjty.ariente.apiimpl.ArienteSystem;
+import mcjty.ariente.setup.ClientSetup;
 import mcjty.ariente.setup.ModSetup;
+import mcjty.ariente.setup.Registration;
 import mcjty.hologui.api.IHoloGuiHandler;
 import mcjty.lib.base.ModBase;
 import mcjty.theoneprobe.config.Config;
@@ -14,7 +16,6 @@ import net.minecraftforge.fml.common.Mod;
 import net.minecraftforge.fml.config.ModConfig;
 import net.minecraftforge.fml.event.lifecycle.FMLCommonSetupEvent;
 import net.minecraftforge.fml.javafmlmod.FMLJavaModLoadingContext;
-import net.minecraftforge.fml.loading.FMLPaths;
 
 @Mod(Ariente.MODID)
 public class Ariente implements ModBase, IArienteMod {
@@ -37,11 +38,10 @@ public class Ariente implements ModBase, IArienteMod {
         ModLoadingContext.get().registerConfig(ModConfig.Type.CLIENT, Config.CLIENT_CONFIG);
         ModLoadingContext.get().registerConfig(ModConfig.Type.COMMON, Config.COMMON_CONFIG);
 
+        Registration.register();
+
         FMLJavaModLoadingContext.get().getModEventBus().addListener((FMLCommonSetupEvent event) -> setup.init(event));
-
-        Config.loadConfig(Config.CLIENT_CONFIG, FMLPaths.CONFIGDIR.get().resolve("ariente-client.toml"));
-        Config.loadConfig(Config.COMMON_CONFIG, FMLPaths.CONFIGDIR.get().resolve("ariente-common.toml"));
-
+        FMLJavaModLoadingContext.get().getModEventBus().addListener(ClientSetup::init);
     }
 
     @Override

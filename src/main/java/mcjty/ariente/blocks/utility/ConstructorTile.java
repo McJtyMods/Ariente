@@ -10,9 +10,11 @@ import mcjty.ariente.items.BlueprintItem;
 import mcjty.ariente.recipes.ConstructorRecipe;
 import mcjty.ariente.recipes.BlueprintRecipeRegistry;
 import mcjty.hologui.api.*;
+import mcjty.lib.McJtyLib;
 import mcjty.lib.tileentity.GenericTileEntity;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.item.ItemStack;
+import net.minecraft.tileentity.TileEntityType;
 import net.minecraft.util.ResourceLocation;
 import net.minecraft.util.text.TextFormatting;
 import net.minecraft.world.World;
@@ -35,14 +37,13 @@ public class ConstructorTile extends GenericTileEntity implements IGuiTile, ICit
         return true;
     }
 
-    @Override
-    protected boolean needsCustomInvWrapper() {
-        return true;
+    public ConstructorTile(TileEntityType<?> type) {
+        super(type);
     }
 
     @Override
-    public void invalidate() {
-        super.invalidate();
+    public void remove() {
+        super.remove();
         blueprintItemHandler = null;
     }
 
@@ -176,7 +177,7 @@ public class ConstructorTile extends GenericTileEntity implements IGuiTile, ICit
 
                 .add(registry.text(0, 4.5, 8, 1).text("Craft").color(registry.color(StyledColor.LABEL)))
 
-                .add(registry.stackIcon(0, 5.5, 1, 1).itemStack(new ItemStack(ModBlocks.constructorBlock)))
+                .add(registry.stackIcon(0, 5.5, 1, 1).itemStack(new ItemStack(ModBlocks.constructorBlock.get())))
                 .add(registry.slots(1.5, 5.5, 6, 3)
                         .name("outputslots")
                         .doubleClickEvent((component, player, entity, x, y, stack, index) -> attemptCraft(player, stack))
@@ -195,7 +196,7 @@ public class ConstructorTile extends GenericTileEntity implements IGuiTile, ICit
                     boolean ok = true;
                     // Check if we have enough
                     for (ItemStack ingredient : recipe.getIngredients()) {
-                        if (!hasIngredient(Ariente.proxy.getClientPlayer(), ingredient)) {
+                        if (!hasIngredient(McJtyLib.proxy.getClientPlayer(), ingredient)) {
                             tooltip.add(TextFormatting.RED + "Missing: " + TextFormatting.WHITE + ingredient.getDisplayName());
                             ok = false;
                         }
@@ -209,7 +210,7 @@ public class ConstructorTile extends GenericTileEntity implements IGuiTile, ICit
     }
 
     private IImage getCraftableOverlay(IGuiComponentRegistry registry, ItemStack stack) {
-        if (canCraft(Ariente.proxy.getClientPlayer(), stack)) {
+        if (canCraft(McJtyLib.proxy.getClientPlayer(), stack)) {
             return null;
         } else {
             return registry.image(Icons.RED_CROSS);

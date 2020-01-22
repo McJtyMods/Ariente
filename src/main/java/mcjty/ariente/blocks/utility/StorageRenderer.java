@@ -34,7 +34,7 @@ public class StorageRenderer extends TileEntityRenderer<StorageTile> {
         RayTraceResult mouseOver = Minecraft.getInstance().objectMouseOver;
         int index;
         if (mouseOver instanceof BlockRayTraceResult && te.getPos().equals(((BlockRayTraceResult) mouseOver).getPos())) {
-            index = StorageTile.getSlot(mouseOver, te.getWorld());
+            index = StorageTile.getSlot((BlockRayTraceResult)mouseOver, te.getWorld());
         } else {
             index = -2;
         }

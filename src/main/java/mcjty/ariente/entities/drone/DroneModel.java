@@ -4,8 +4,9 @@ import com.mojang.blaze3d.platform.GlStateManager;
 import net.minecraft.client.renderer.entity.model.EntityModel;
 import net.minecraft.client.renderer.entity.model.RendererModel;
 import net.minecraft.entity.Entity;
+import net.minecraft.entity.FlyingEntity;
 
-public class DroneModel extends EntityModel<SentinelDroneEntity> {
+public class DroneModel <T extends FlyingEntity> extends EntityModel<T> {
     RendererModel body;
 
     public DroneModel() {
@@ -16,7 +17,8 @@ public class DroneModel extends EntityModel<SentinelDroneEntity> {
     public void setRotationAngles(float limbSwing, float limbSwingAmount, float ageInTicks, float netHeadYaw, float headPitch, float scaleFactor, Entity entityIn) {
     }
 
-    public void render(SentinelDroneEntity entityIn, float limbSwing, float limbSwingAmount, float ageInTicks, float netHeadYaw, float headPitch, float scale) {
+    @Override
+    public void render(T entityIn, float limbSwing, float limbSwingAmount, float ageInTicks, float netHeadYaw, float headPitch, float scale) {
         this.setRotationAngles(limbSwing, limbSwingAmount, ageInTicks, netHeadYaw, headPitch, scale, entityIn);
         GlStateManager.pushMatrix();
         GlStateManager.translatef(0.0F, 0.6F, 0.0F);

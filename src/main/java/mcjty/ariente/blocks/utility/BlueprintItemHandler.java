@@ -1,5 +1,6 @@
 package mcjty.ariente.blocks.utility;
 
+import mcjty.lib.varia.OrientationTools;
 import net.minecraft.item.ItemStack;
 import net.minecraft.tileentity.TileEntity;
 import net.minecraft.util.Direction;
@@ -23,10 +24,15 @@ public class BlueprintItemHandler implements IItemHandler {
         this.pos = pos;
     }
 
+    @Override
+    public boolean isItemValid(int slot, @Nonnull ItemStack stack) {
+        return true;
+    }
+
     public List<BlockPos> getStorages() {
         // @todo optimize!
         storageList = new ArrayList<>();
-        for (Direction value : Direction.VALUES) {
+        for (Direction value : OrientationTools.DIRECTION_VALUES) {
             BlockPos offset = pos.offset(value);
             TileEntity te = world.getTileEntity(offset);
             if (te instanceof BlueprintStorageTile) {
@@ -53,7 +59,7 @@ public class BlueprintItemHandler implements IItemHandler {
         TileEntity te = world.getTileEntity(pos);
         if (te instanceof BlueprintStorageTile) {
             BlueprintStorageTile storage = (BlueprintStorageTile) te;
-            return storage.getStackInSlot(BlueprintStorageTile.SLOT_BLUEPRINT + slot % BlueprintStorageTile.BLUEPRINTS);
+            return storage.getItems().getStackInSlot(BlueprintStorageTile.SLOT_BLUEPRINT + slot % BlueprintStorageTile.BLUEPRINTS);
         }
         return ItemStack.EMPTY;
     }
@@ -75,7 +81,7 @@ public class BlueprintItemHandler implements IItemHandler {
         TileEntity te = world.getTileEntity(pos);
         if (te instanceof BlueprintStorageTile) {
             BlueprintStorageTile storage = (BlueprintStorageTile) te;
-            return storage.getItemHandler().extractItem(BlueprintStorageTile.SLOT_BLUEPRINT + slot % BlueprintStorageTile.BLUEPRINTS, amount, simulate);
+            return storage.getItems().extractItem(BlueprintStorageTile.SLOT_BLUEPRINT + slot % BlueprintStorageTile.BLUEPRINTS, amount, simulate);
         }
         return ItemStack.EMPTY;
     }
@@ -90,7 +96,7 @@ public class BlueprintItemHandler implements IItemHandler {
         TileEntity te = world.getTileEntity(pos);
         if (te instanceof BlueprintStorageTile) {
             BlueprintStorageTile storage = (BlueprintStorageTile) te;
-            return storage.getItemHandler().getSlotLimit(BlueprintStorageTile.SLOT_BLUEPRINT + slot % BlueprintStorageTile.BLUEPRINTS);
+            return storage.getItems().getSlotLimit(BlueprintStorageTile.SLOT_BLUEPRINT + slot % BlueprintStorageTile.BLUEPRINTS);
         }
         return 0;
     }

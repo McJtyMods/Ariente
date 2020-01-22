@@ -6,7 +6,7 @@ import mcjty.ariente.items.EnergyHolderItem;
 import mcjty.ariente.items.ModItems;
 import net.minecraft.entity.LivingEntity;
 import net.minecraft.entity.player.PlayerEntity;
-import net.minecraft.inventory.EntityEquipmentSlot;
+import net.minecraft.inventory.EquipmentSlotType;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.CompoundNBT;
@@ -16,46 +16,46 @@ import javax.annotation.Nonnull;
 
 public class ModuleSupport {
     public static void receivedHotkey(PlayerEntity player, int index) {
-        handleHotkey(player, index, EntityEquipmentSlot.HEAD, ModItems.powerSuitHelmet);
-        handleHotkey(player, index, EntityEquipmentSlot.LEGS, ModItems.powerSuitLegs);
-        handleHotkey(player, index, EntityEquipmentSlot.FEET, ModItems.powerSuitBoots);
-        handleHotkey(player, index, EntityEquipmentSlot.CHEST, ModItems.powerSuitChest);
-        handleHotkey(player, index, EntityEquipmentSlot.MAINHAND, ModItems.enhancedEnergySabreItem);
+        handleHotkey(player, index, EquipmentSlotType.HEAD, ModItems.powerSuitHelmet);
+        handleHotkey(player, index, EquipmentSlotType.LEGS, ModItems.powerSuitLegs);
+        handleHotkey(player, index, EquipmentSlotType.FEET, ModItems.powerSuitBoots);
+        handleHotkey(player, index, EquipmentSlotType.CHEST, ModItems.powerSuitChest);
+        handleHotkey(player, index, EquipmentSlotType.MAINHAND, ModItems.enhancedEnergySabreItem);
     }
 
-    private static void handleHotkey(PlayerEntity player, int index, EntityEquipmentSlot slot, Item armorItem) {
+    private static void handleHotkey(PlayerEntity player, int index, EquipmentSlotType slot, Item armorItem) {
         ItemStack armorStack = player.getItemStackFromSlot(slot);
-        if (!armorStack.isEmpty() && armorStack.getItem() == armorItem && armorStack.hasTagCompound()) {
-            CompoundNBT compound = armorStack.getTagCompound();
+        if (!armorStack.isEmpty() && armorStack.getItem() == armorItem && armorStack.hasTag()) {
+            CompoundNBT compound = armorStack.getTag();
             for (ArmorUpgradeType type : ArmorUpgradeType.VALUES) {
-                int idx = compound.getInteger(type.getHotkeyKey());
+                int idx = compound.getInt(type.getHotkeyKey());
                 if (idx == index) {
                     boolean on = compound.getBoolean(type.getModuleKey());
                     on = !on;
-                    compound.setBoolean(type.getModuleKey(), on);
+                    compound.putBoolean(type.getModuleKey(), on);
                 }
             }
         }
     }
 
     public static boolean hasWorkingUpgrade(ItemStack stack, ArmorUpgradeType type) {
-        if (stack.isEmpty() || !stack.hasTagCompound()) {
+        if (stack.isEmpty() || !stack.hasTag()) {
             return false;
         }
-        return stack.getTagCompound().getBoolean(type.getWorkingKey());
+        return stack.getTag().getBoolean(type.getWorkingKey());
     }
 
     @Nonnull
     public static Pair<Integer, Integer> getPowerUsage(ItemStack stack) {
         int power = 0;
         int maxPower = UtilityConfiguration.POWERSUIT_MAXPOWER.get();
-        CompoundNBT compound = stack.getTagCompound();
+        CompoundNBT compound = stack.getTag();
         if (compound == null) {
             return Pair.of(power, maxPower);
         }
         for (ArmorUpgradeType type : ArmorUpgradeType.VALUES) {
             String key = "module_" + type.getName();
-            if (compound.hasKey(key)) {
+            if (compound.contains(key)) {
                 boolean activated = compound.getBoolean(key);
                 if (activated) {
                     if (type.getPowerUsage() > 0) {
@@ -80,13 +80,13 @@ public class ModuleSupport {
             return true;
         }
 
-        CompoundNBT compound = stack.getTagCompound();
+        CompoundNBT compound = stack.getTag();
 
-        int power = compound.getInteger("power");
+        int power = compound.getInt("power");
         if (power <= 0) {
             // We need a new negarite/posirite injection
-            int negarite = compound.getInteger("negarite");
-            int posirite = compound.getInteger("posirite");
+            int negarite = compound.getInt("negarite");
+            int posirite = compound.getInt("posirite");
             negarite--;
             posirite--;
             if (negarite < 0 || posirite < 0) {
@@ -99,16 +99,16 @@ public class ModuleSupport {
                     negarite = 0;
                 }
             }
-            compound.setInteger("negarite", negarite);
-            compound.setInteger("posirite", posirite);
+            compound.putInt("negarite", negarite);
+            compound.putInt("posirite", posirite);
             int max = UtilityConfiguration.POWERSUIT_TICKS.get();
             if (powerUsage.getRight() > UtilityConfiguration.POWERSUIT_MAXPOWER.get()) {  // If > we have an energy optimizer
                 max = UtilityConfiguration.POWERSUIT_TICKS_OPTIMIZED.get();
             }
-            compound.setInteger("power", max / powerUsage.getLeft());
+            compound.putInt("power", max / powerUsage.getLeft());
         } else {
             power--;
-            compound.setInteger("power", power);
+            compound.putInt("power", power);
         }
         return true;
     }

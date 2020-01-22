@@ -216,7 +216,7 @@ public class AutoConstructorTile extends GenericTileEntity implements IGuiTile, 
                     }
                     BlueprintStorageTile blueprints = storageTiles.get((ci / BLUEPRINTS) % storageTiles.size());
                     int index = ci % BLUEPRINTS;
-                    InventoryHelper helper = blueprints.getInventoryHelper();
+                    NoDirectionItemHander helper = blueprints.getItems();
                     ItemStack blueprintStack = helper.getStackInSlot(SLOT_BLUEPRINT + index);
                     if (blueprintStack.isEmpty()) {
                         // Nothing to do. Decrease busyCounter so we skip to the next blueprint faster
@@ -411,7 +411,7 @@ public class AutoConstructorTile extends GenericTileEntity implements IGuiTile, 
             TileEntity te = world.getTileEntity(pos.offset(value));
             if (te instanceof BlueprintStorageTile) {
                 BlueprintStorageTile blueprints = (BlueprintStorageTile) te;
-                InventoryHelper helper = blueprints.getInventoryHelper();
+                NoDirectionItemHander helper = blueprints.getItems();
                 for (int i = SLOT_BLUEPRINT; i < SLOT_BLUEPRINT + BLUEPRINTS; i++) {
                     ItemStack blueprintStack = helper.getStackInSlot(i);
                     if (!blueprintStack.isEmpty()) {

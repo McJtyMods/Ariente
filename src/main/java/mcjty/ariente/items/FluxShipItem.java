@@ -44,7 +44,7 @@ public class FluxShipItem extends Item {
         ItemStack itemstack = player.getHeldItem(hand);
 
         if (!world.isRemote) {
-            FluxShipEntity ship = new FluxShipEntity(world, pos.getX() + 0.5D, pos.getY() + 0.0625D, pos.getZ() + 0.5D);
+            FluxShipEntity ship = new FluxShipEntity(null /* @todo 1.14 */, world, pos.getX() + 0.5D, pos.getY() + 0.0625D, pos.getZ() + 0.5D);
 
             if (itemstack.hasDisplayName()) {
                 ship.setCustomName(itemstack.getDisplayName());

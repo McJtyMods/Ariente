@@ -1,15 +1,11 @@
 package mcjty.ariente.items;
 
+import mcjty.ariente.Ariente;
+import mcjty.ariente.api.ArmorUpgradeType;
 import mcjty.ariente.items.armor.PowerSuit;
 import mcjty.ariente.items.modules.ArmorModuleItem;
-import mcjty.ariente.api.ArmorUpgradeType;
-import net.minecraft.client.renderer.block.model.ModelResourceLocation;
-import net.minecraft.inventory.EntityEquipmentSlot;
+import net.minecraft.inventory.EquipmentSlotType;
 import net.minecraft.item.Item;
-import net.minecraftforge.client.model.ModelLoader;
-
-
-import net.minecraftforge.oredict.OreDictionary;
 
 public class ModItems {
 
@@ -58,17 +54,17 @@ public class ModItems {
     public static ArmorModuleItem moduleFire;
 
     public static void init() {
-        platinumIngot = new GenericItem("ingot_platinum");
-        lithiumIngot = new GenericItem("ingot_lithium");
-        manganeseIngot = new GenericItem("ingot_manganese");
-        silverIngot = new GenericItem("ingot_silver");
-        silicon = new GenericItem("silicon");
+        platinumIngot = new Item(new Item.Properties().group(Ariente.setup.getTab()));// @todo 1.14 "ingot_platinum");
+        lithiumIngot = new Item(new Item.Properties().group(Ariente.setup.getTab()));// @todo 1.14 "ingot_lithium");
+        manganeseIngot = new Item(new Item.Properties().group(Ariente.setup.getTab()));// @todo 1.14 "ingot_manganese");
+        silverIngot = new Item(new Item.Properties().group(Ariente.setup.getTab()));// @todo 1.14 "ingot_silver");
+        silicon = new Item(new Item.Properties().group(Ariente.setup.getTab()));// @todo 1.14 "silicon");
 
-        negariteDust = new GenericItem("dust_negarite");
-        posiriteDust = new GenericItem("dust_posirite");
+        negariteDust = new Item(new Item.Properties().group(Ariente.setup.getTab()));// @todo 1.14 "dust_negarite");
+        posiriteDust = new Item(new Item.Properties().group(Ariente.setup.getTab()));// @todo 1.14 "dust_posirite");
 
-        energySabre = new EnergySabreItem("energy_sabre");
-        enhancedEnergySabreItem = new EnhancedEnergySabreItem("enhanced_energy_sabre");
+        energySabre = new EnergySabreItem();    // @todo 1.14 "energy_sabre"
+        enhancedEnergySabreItem = new EnhancedEnergySabreItem();    // @todo 1.14 "enhanced_energy_sabre"
         keyCardItem = new KeyCardItem();
         blueprintItem = new BlueprintItem();
         fluxLevitatorItem = new FluxLevitatorItem();
@@ -80,85 +76,87 @@ public class ModItems {
 
         arientePearlItem = new ArientePearlItem();
 
-        powerSuitBoots = new PowerSuit(EntityEquipmentSlot.FEET);
-        powerSuitChest = new PowerSuit(EntityEquipmentSlot.CHEST);
-        powerSuitHelmet = new PowerSuit(EntityEquipmentSlot.HEAD);
-        powerSuitLegs = new PowerSuit(EntityEquipmentSlot.LEGS);
+        powerSuitBoots = new PowerSuit(EquipmentSlotType.FEET);
+        powerSuitChest = new PowerSuit(EquipmentSlotType.CHEST);
+        powerSuitHelmet = new PowerSuit(EquipmentSlotType.HEAD);
+        powerSuitLegs = new PowerSuit(EquipmentSlotType.LEGS);
 
-        moduleArmor = new ArmorModuleItem("module_armor", ArmorUpgradeType.ARMOR);
-        moduleEnergy = new ArmorModuleItem("module_energy", ArmorUpgradeType.ENERGY);
-        moduleFeatherFalling = new ArmorModuleItem("module_featherfalling", ArmorUpgradeType.FEATHERFALLING);
-        moduleFlight = new ArmorModuleItem("module_flight", ArmorUpgradeType.FLIGHT);
-        moduleHover = new ArmorModuleItem("module_hover", ArmorUpgradeType.HOVER);
-        moduleForcefield = new ArmorModuleItem("module_forcefield", ArmorUpgradeType.FORCEFIELD);
-        moduleInvisibility = new ArmorModuleItem("module_invisibility", ArmorUpgradeType.INVISIBILITY);
-        moduleNightvision = new ArmorModuleItem("module_nightvision", ArmorUpgradeType.NIGHTVISION);
-        moduleRegeneration = new ArmorModuleItem("module_regeneration", ArmorUpgradeType.REGENERATION);
-        moduleScramble = new ArmorModuleItem("module_scramble", ArmorUpgradeType.SCRAMBLE);
-        moduleAutofeed = new ArmorModuleItem("module_autofeed", ArmorUpgradeType.AUTOFEED);
-        moduleSpeed = new ArmorModuleItem("module_speed", ArmorUpgradeType.SPEED);
-        moduleStepassist = new ArmorModuleItem("module_stepassist", ArmorUpgradeType.STEPASSIST);
+        moduleArmor = new ArmorModuleItem(ArmorUpgradeType.ARMOR);  // @todo 1.14 "module_armor"
+        moduleEnergy = new ArmorModuleItem(ArmorUpgradeType.ENERGY);    // @todo 1.14 "module_energy"
+        moduleFeatherFalling = new ArmorModuleItem(ArmorUpgradeType.FEATHERFALLING);    // @todo 1.14 "module_featherfalling"
+        moduleFlight = new ArmorModuleItem(ArmorUpgradeType.FLIGHT);    // @todo 1.14 "module_flight"
+        moduleHover = new ArmorModuleItem(ArmorUpgradeType.HOVER);  // @todo 1.14 "module_hover"
+        moduleForcefield = new ArmorModuleItem(ArmorUpgradeType.FORCEFIELD);    // @todo 1.14 "module_forcefield"
+        moduleInvisibility = new ArmorModuleItem(ArmorUpgradeType.INVISIBILITY);    // @todo 1.14 "module_invisibility"
+        moduleNightvision = new ArmorModuleItem(ArmorUpgradeType.NIGHTVISION);  // @todo 1.14 "module_nightvision"
+        moduleRegeneration = new ArmorModuleItem(ArmorUpgradeType.REGENERATION);    // @todo 1.14 "module_regeneration"
+        moduleScramble = new ArmorModuleItem(ArmorUpgradeType.SCRAMBLE);    // @todo 1.14 "module_scramble"
+        moduleAutofeed = new ArmorModuleItem(ArmorUpgradeType.AUTOFEED);    // @todo 1.14 "module_autofeed"
+        moduleSpeed = new ArmorModuleItem(ArmorUpgradeType.SPEED);  // @todo 1.14 "module_speed"
+        moduleStepassist = new ArmorModuleItem(ArmorUpgradeType.STEPASSIST);    // @todo 1.14 "module_stepassist"
 
-        moduleInhibit = new ArmorModuleItem("module_inhibit", ArmorUpgradeType.INHIBIT);
-        modulePower = new ArmorModuleItem("module_power", ArmorUpgradeType.POWER);
-        moduleLooting = new ArmorModuleItem("module_looting", ArmorUpgradeType.LOOTING);
-        moduleFire = new ArmorModuleItem("module_fire", ArmorUpgradeType.FIRE);
+        moduleInhibit = new ArmorModuleItem(ArmorUpgradeType.INHIBIT);  // @todo 1.14 "module_inhibit"
+        modulePower = new ArmorModuleItem(ArmorUpgradeType.POWER);  // @todo 1.14 "module_power"
+        moduleLooting = new ArmorModuleItem(ArmorUpgradeType.LOOTING);  // @todo 1.14 "module_looting"
+        moduleFire = new ArmorModuleItem(ArmorUpgradeType.FIRE);    // @todo 1.14 "module_fire"
     }
 
     public static void initOreDict() {
-        OreDictionary.registerOre("ingotSilver", silverIngot);
-        OreDictionary.registerOre("ingotPlatinum", platinumIngot);
-        OreDictionary.registerOre("ingotManganese", manganeseIngot);
-        OreDictionary.registerOre("ingotLithium", lithiumIngot);
-        OreDictionary.registerOre("silicon", silicon);
+        // @todo 1.14 oredict
+//        OreDictionary.registerOre("ingotSilver", silverIngot);
+//        OreDictionary.registerOre("ingotPlatinum", platinumIngot);
+//        OreDictionary.registerOre("ingotManganese", manganeseIngot);
+//        OreDictionary.registerOre("ingotLithium", lithiumIngot);
+//        OreDictionary.registerOre("silicon", silicon);
     }
 
-    @SideOnly(Side.CLIENT)
-    public static void initModels() {
-        platinumIngot.initModel();
-        lithiumIngot.initModel();
-        manganeseIngot.initModel();
-        silverIngot.initModel();
-        negariteDust.initModel();
-        posiriteDust.initModel();
-        silicon.initModel();
-
-        energySabre.initModel();
-        enhancedEnergySabreItem.initModel();
-        keyCardItem.initModel();
-        fluxLevitatorItem.initModel();
-        fluxShipItem.initModel();
-        blueprintItem.initModel();
-        fluxCapacitorItem.initModel();
-        circuitItem.initModel();
-        advancedCircuitItem.initModel();
-        energyHolderItem.initModel();
-
-        arientePearlItem.initModel();
-
-        moduleArmor.initModel();
-        moduleEnergy.initModel();
-        moduleFeatherFalling.initModel();
-        moduleFlight.initModel();
-        moduleHover.initModel();
-        moduleForcefield.initModel();
-        moduleInvisibility.initModel();
-        moduleNightvision.initModel();
-        moduleRegeneration.initModel();
-        moduleScramble.initModel();
-        moduleAutofeed.initModel();
-        moduleSpeed.initModel();
-        moduleStepassist.initModel();
-
-        moduleInhibit.initModel();
-        modulePower.initModel();
-        moduleLooting.initModel();
-        moduleFire.initModel();
-
-        ModelLoader.setCustomModelResourceLocation(powerSuitBoots, 0, new ModelResourceLocation(powerSuitBoots.getRegistryName(), "inventory"));
-        ModelLoader.setCustomModelResourceLocation(powerSuitChest, 0, new ModelResourceLocation(powerSuitChest.getRegistryName(), "inventory"));
-        ModelLoader.setCustomModelResourceLocation(powerSuitHelmet, 0, new ModelResourceLocation(powerSuitHelmet.getRegistryName(), "inventory"));
-        ModelLoader.setCustomModelResourceLocation(powerSuitLegs, 0, new ModelResourceLocation(powerSuitLegs.getRegistryName(), "inventory"));
-    }
+    // @todo 1.14
+//    @SideOnly(Side.CLIENT)
+//    public static void initModels() {
+//        platinumIngot.initModel();
+//        lithiumIngot.initModel();
+//        manganeseIngot.initModel();
+//        silverIngot.initModel();
+//        negariteDust.initModel();
+//        posiriteDust.initModel();
+//        silicon.initModel();
+//
+//        energySabre.initModel();
+//        enhancedEnergySabreItem.initModel();
+//        keyCardItem.initModel();
+//        fluxLevitatorItem.initModel();
+//        fluxShipItem.initModel();
+//        blueprintItem.initModel();
+//        fluxCapacitorItem.initModel();
+//        circuitItem.initModel();
+//        advancedCircuitItem.initModel();
+//        energyHolderItem.initModel();
+//
+//        arientePearlItem.initModel();
+//
+//        moduleArmor.initModel();
+//        moduleEnergy.initModel();
+//        moduleFeatherFalling.initModel();
+//        moduleFlight.initModel();
+//        moduleHover.initModel();
+//        moduleForcefield.initModel();
+//        moduleInvisibility.initModel();
+//        moduleNightvision.initModel();
+//        moduleRegeneration.initModel();
+//        moduleScramble.initModel();
+//        moduleAutofeed.initModel();
+//        moduleSpeed.initModel();
+//        moduleStepassist.initModel();
+//
+//        moduleInhibit.initModel();
+//        modulePower.initModel();
+//        moduleLooting.initModel();
+//        moduleFire.initModel();
+//
+//        ModelLoader.setCustomModelResourceLocation(powerSuitBoots, 0, new ModelResourceLocation(powerSuitBoots.getRegistryName(), "inventory"));
+//        ModelLoader.setCustomModelResourceLocation(powerSuitChest, 0, new ModelResourceLocation(powerSuitChest.getRegistryName(), "inventory"));
+//        ModelLoader.setCustomModelResourceLocation(powerSuitHelmet, 0, new ModelResourceLocation(powerSuitHelmet.getRegistryName(), "inventory"));
+//        ModelLoader.setCustomModelResourceLocation(powerSuitLegs, 0, new ModelResourceLocation(powerSuitLegs.getRegistryName(), "inventory"));
+//    }
 
 }

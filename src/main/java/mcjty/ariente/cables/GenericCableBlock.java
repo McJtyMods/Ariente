@@ -18,6 +18,7 @@ import net.minecraft.util.Direction;
 import net.minecraft.util.math.AxisAlignedBB;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.IBlockReader;
+import net.minecraft.world.IWorldReader;
 import net.minecraft.world.World;
 import net.minecraftforge.client.model.data.ModelProperty;
 import net.minecraftforge.common.ToolType;
@@ -269,49 +270,50 @@ public abstract class GenericCableBlock extends Block implements WailaInfoProvid
     }
 
 
+    public int getUpDownMask(BlockState state, IWorldReader world, BlockPos pos) {
+        CableColor color = state.get(COLOR);
+        int mask = 0;
+        ConnectorType up = getConnectorType(color, world, pos, Direction.UP);
+        if (up != ConnectorType.NONE) {
+            mask |= 1 << 1;
+        }
+        ConnectorType down = getConnectorType(color, world, pos, Direction.DOWN);
+        if (down != ConnectorType.NONE) {
+            mask |= 1 << 0;
+        }
+        return mask;
+    }
+
+    public int getEastWestMask(BlockState state, IWorldReader world, BlockPos pos) {
+        CableColor color = state.get(COLOR);
+        int mask = 0;
+        ConnectorType west = getConnectorType(color, world, pos, Direction.WEST);
+        if (west != ConnectorType.NONE) {
+            mask |= 1 << 1;
+        }
+        ConnectorType east = getConnectorType(color, world, pos, Direction.EAST);
+        if (east != ConnectorType.NONE) {
+            mask |= 1 << 0;
+        }
+        return mask;
+    }
+
+    public int getNorthSouthMask(BlockState state, IWorldReader world, BlockPos pos) {
+        CableColor color = state.get(COLOR);
+        int mask = 0;
+        ConnectorType north = getConnectorType(color, world, pos, Direction.NORTH);
+        if (north != ConnectorType.NONE) {
+            mask |= 1 << 1;
+        }
+        ConnectorType south = getConnectorType(color, world, pos, Direction.SOUTH);
+        if (south != ConnectorType.NONE) {
+            mask |= 1 << 0;
+        }
+        return mask;
+    }
+
     // @todo 1.14
-//    public int getUpDownMask(BlockState state, IBlockAccess world, BlockPos pos) {
-//        CableColor color = state.getValue(COLOR);
-//        int mask = 0;
-//        ConnectorType up = getConnectorType(color, world, pos, Direction.UP);
-//        if (up != ConnectorType.NONE) {
-//            mask |= 1 << 1;
-//        }
-//        ConnectorType down = getConnectorType(color, world, pos, Direction.DOWN);
-//        if (down != ConnectorType.NONE) {
-//            mask |= 1 << 0;
-//        }
-//        return mask;
-//    }
-//
-//    public int getEastWestMask(BlockState state, IBlockAccess world, BlockPos pos) {
-//        CableColor color = state.getValue(COLOR);
-//        int mask = 0;
-//        ConnectorType west = getConnectorType(color, world, pos, Direction.WEST);
-//        if (west != ConnectorType.NONE) {
-//            mask |= 1 << 1;
-//        }
-//        ConnectorType east = getConnectorType(color, world, pos, Direction.EAST);
-//        if (east != ConnectorType.NONE) {
-//            mask |= 1 << 0;
-//        }
-//        return mask;
-//    }
-//
-//    public int getNorthSouthMask(BlockState state, IBlockAccess world, BlockPos pos) {
-//        CableColor color = state.getValue(COLOR);
-//        int mask = 0;
-//        ConnectorType north = getConnectorType(color, world, pos, Direction.NORTH);
-//        if (north != ConnectorType.NONE) {
-//            mask |= 1 << 1;
-//        }
-//        ConnectorType south = getConnectorType(color, world, pos, Direction.SOUTH);
-//        if (south != ConnectorType.NONE) {
-//            mask |= 1 << 0;
-//        }
-//        return mask;
-//    }
-//
+
 //    public BlockState getStateInternal(BlockState state, IBlockAccess world, BlockPos pos) {
 //        IExtendedBlockState extendedBlockState = (IExtendedBlockState) state;
 //        CableColor color = state.getValue(COLOR);

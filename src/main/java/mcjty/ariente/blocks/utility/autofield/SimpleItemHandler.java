@@ -26,6 +26,11 @@ public class SimpleItemHandler implements IItemHandler {
         return list.get(slot);
     }
 
+    @Override
+    public boolean isItemValid(int slot, @Nonnull ItemStack stack) {
+        return true;
+    }
+
     @Nonnull
     @Override
     public ItemStack insertItem(int slot, @Nonnull ItemStack stack, boolean simulate) {

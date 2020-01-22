@@ -1,9 +1,12 @@
 package mcjty.ariente.entities.soldier;
 
 import mcjty.ariente.api.SoldierBehaviourType;
-import net.minecraft.init.MobEffects;
+import mcjty.ariente.setup.Registration;
+import net.minecraft.entity.CreatureEntity;
+import net.minecraft.entity.EntityType;
 import net.minecraft.nbt.CompoundNBT;
-import net.minecraft.potion.PotionEffect;
+import net.minecraft.potion.EffectInstance;
+import net.minecraft.potion.Effects;
 import net.minecraft.util.DamageSource;
 import net.minecraft.util.math.ChunkPos;
 import net.minecraft.world.World;
@@ -12,26 +15,31 @@ public class MasterSoldierEntity extends SoldierEntity {
 
     private int noregenCounter = 0;
 
-    public MasterSoldierEntity(World worldIn) {
-        super(worldIn);
-        isImmuneToFire = true;
+    public MasterSoldierEntity(EntityType<? extends CreatureEntity> type, World worldIn) {
+        super(type, worldIn);
+        // @todo 1.14 move to type
+        //isImmuneToFire = true;
     }
 
-    public MasterSoldierEntity(World world, ChunkPos cityCenter, SoldierBehaviourType behaviourType) {
-        super(world, cityCenter, behaviourType);
-        isImmuneToFire = true;
+    public static MasterSoldierEntity create(World world, ChunkPos cityCenter, SoldierBehaviourType behaviourType) {
+        MasterSoldierEntity entity = new MasterSoldierEntity(Registration.MASTER_SOLDIER.get(), world);
+        entity.cityCenter = cityCenter;
+        entity.behaviourType = behaviourType;
+        // @todo 1.14 move to type
+//        isImmuneToFire = true;
+        return entity;
     }
 
     @Override
-    public void onUpdate() {
-        super.onUpdate();
+    public void tick() {
+        super.tick();
 
         if (noregenCounter > 0) {
             noregenCounter--;
         } else {
-            PotionEffect effect = getActivePotionEffect(MobEffects.REGENERATION);
+            EffectInstance effect = getActivePotionEffect(Effects.REGENERATION);
             if (effect == null || effect.getDuration() <= 0) {
-                addPotionEffect(new PotionEffect(MobEffects.REGENERATION, 30, 3, false, false));
+                addPotionEffect(new EffectInstance(Effects.REGENERATION, 30, 3, false, false));
             }
         }
     }
@@ -41,8 +49,8 @@ public class MasterSoldierEntity extends SoldierEntity {
     }
 
     @Override
-    public boolean isEntityInvulnerable(DamageSource source) {
-        boolean rc = super.isEntityInvulnerable(source);
+    public boolean isInvulnerableTo(DamageSource source) {
+        boolean rc = super.isInvulnerableTo(source);
         if (rc) {
             return rc;
         }
@@ -56,15 +64,15 @@ public class MasterSoldierEntity extends SoldierEntity {
     }
 
     @Override
-    public void readEntityFromNBT(CompoundNBT compound) {
-        super.readEntityFromNBT(compound);
-        noregenCounter = compound.getInteger("noregen");
+    public void readAdditional(CompoundNBT compound) {
+        super.readAdditional(compound);
+        noregenCounter = compound.getInt("noregen");
     }
 
     @Override
-    public void writeEntityToNBT(CompoundNBT compound) {
-        super.writeEntityToNBT(compound);
-        compound.setInteger("noregen", noregenCounter);
+    public void writeAdditional(CompoundNBT compound) {
+        super.writeAdditional(compound);
+        compound.putInt("noregen", noregenCounter);
     }
 
     @Override

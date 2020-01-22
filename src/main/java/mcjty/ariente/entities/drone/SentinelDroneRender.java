@@ -1,15 +1,17 @@
 package mcjty.ariente.entities.drone;
 
 import com.mojang.blaze3d.platform.GlStateManager;
+import net.minecraft.client.renderer.entity.EntityRenderer;
 import net.minecraft.client.renderer.entity.EntityRendererManager;
 import net.minecraft.client.renderer.entity.LivingRenderer;
 import net.minecraft.util.ResourceLocation;
+import net.minecraftforge.fml.client.registry.IRenderFactory;
 
-public class SentinelDroneRender extends LivingRenderer<SentinelDroneEntity, DroneModel> {
+public class SentinelDroneRender extends LivingRenderer<SentinelDroneEntity, DroneModel<SentinelDroneEntity>> {
     private ResourceLocation mobTexture = new ResourceLocation("ariente:textures/entity/sentinel_drone.png");
 
     public SentinelDroneRender(EntityRendererManager rendererManager) {
-        super(rendererManager, new DroneModel(), 0.5F);
+        super(rendererManager, new DroneModel<SentinelDroneEntity>(), 0.5F);
     }
 
     /**
@@ -32,13 +34,15 @@ public class SentinelDroneRender extends LivingRenderer<SentinelDroneEntity, Dro
         GlStateManager.color4f(1.0F, 1.0F, 1.0F, 1.0F);
     }
 
-//    public static class Factory implements IRenderFactory<SentinelDroneEntity> {
-//
-//        @Override
-//        public Render<? super SentinelDroneEntity> createRenderFor(EntityRendererManager manager) {
-//            return new SentinelDroneRender(manager);
-//        }
-//
-//    }
+    public static final Factory FACTORY = new Factory();
+
+    public static class Factory implements IRenderFactory<SentinelDroneEntity> {
+
+        @Override
+        public EntityRenderer<? super SentinelDroneEntity> createRenderFor(EntityRendererManager manager) {
+            return new SentinelDroneRender(manager);
+        }
+
+    }
 
 }

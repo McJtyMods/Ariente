@@ -1,11 +1,10 @@
 package mcjty.ariente.blocks.utility.autofield;
 
-import io.netty.buffer.ByteBuf;
 import mcjty.lib.multipart.PartPos;
 import mcjty.lib.multipart.PartSlot;
-import mcjty.lib.network.NetworkTools;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
+import net.minecraft.network.PacketBuffer;
 import net.minecraft.util.math.BlockPos;
 
 import javax.annotation.Nonnull;
@@ -24,7 +23,7 @@ public class AutoFieldRenderInfo {
             return;
         }
         long time = System.currentTimeMillis();
-        Transfer transfer = new Transfer(stack.getItem(), stack.getMetadata(), time);
+        Transfer transfer = new Transfer(stack.getItem(), 0 /* @todo 1.14 stack.getMetadata()*/, time);
         TransferPath path = new TransferPath(sourcePos, destPos);
         transfers.computeIfAbsent(path, p -> new TreeSet<>());
         TreeSet<Transfer> treeSet = this.transfers.get(path);
@@ -93,13 +92,13 @@ public class AutoFieldRenderInfo {
 //        System.out.println("transfers.size() = " + transfers.size());
 //    }
 
-    public void toBytes(ByteBuf buf) {
+    public void toBytes(PacketBuffer buf) {
         buf.writeInt(transfers.size());
         for (Map.Entry<TransferPath, TreeSet<Transfer>> entry : transfers.entrySet()) {
             TransferPath path = entry.getKey();
-            NetworkTools.writePos(buf, path.sourcePos.getPos());
+            buf.writeBlockPos(path.sourcePos.getPos());
             buf.writeByte(path.sourcePos.getSlot().ordinal());
-            NetworkTools.writePos(buf, path.destPos.getPos());
+            buf.writeBlockPos(path.destPos.getPos());
             buf.writeByte(path.destPos.getSlot().ordinal());
             TreeSet<Transfer> values = entry.getValue();
             buf.writeInt(values.size());
@@ -111,13 +110,13 @@ public class AutoFieldRenderInfo {
         }
     }
 
-    public void fromBytes(ByteBuf buf) {
+    public void fromBytes(PacketBuffer buf) {
         transfers.clear();
         int size = buf.readInt();
         for (int i = 0 ; i < size ; i++) {
-            BlockPos sourcePos = NetworkTools.readPos(buf);
+            BlockPos sourcePos = buf.readBlockPos();
             PartSlot sourceSlot = PartSlot.VALUES[buf.readByte()];
-            BlockPos destPos = NetworkTools.readPos(buf);
+            BlockPos destPos = buf.readBlockPos();
             PartSlot destSlot = PartSlot.VALUES[buf.readByte()];
             TransferPath path = new TransferPath(PartPos.create(sourcePos, sourceSlot), PartPos.create(destPos, destSlot));
             TreeSet<Transfer> values = new TreeSet<>();

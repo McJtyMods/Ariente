@@ -12,6 +12,7 @@ import mcjty.lib.varia.ItemStackList;
 import net.minecraft.block.BlockState;
 import net.minecraft.entity.LivingEntity;
 import net.minecraft.nbt.CompoundNBT;
+import net.minecraft.tileentity.TileEntityType;
 import net.minecraft.util.Direction;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.World;
@@ -34,8 +35,11 @@ public class OutputItemNodeTile extends AbstractItemNodeTile {
         return ModBlocks.outputItemNode.get().getDefaultState().with(ORIENTATION, orientation);
     }
 
+    public OutputItemNodeTile(TileEntityType<?> type) {
+        super(type);
+    }
 
-    // @todo 1.14
+// @todo 1.14
 //    @Override
 //    public Block getBlockType() {
 //        return ModBlocks.outputItemNode.get();

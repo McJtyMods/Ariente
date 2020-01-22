@@ -2,34 +2,30 @@ package mcjty.ariente.entities.drone;
 
 import com.google.common.base.Predicate;
 import net.minecraft.entity.Entity;
-import net.minecraft.entity.EntityLiving;
 import net.minecraft.entity.LivingEntity;
 import net.minecraft.entity.SharedMonsterAttributes;
-import net.minecraft.entity.ai.EntityAIBase;
-import net.minecraft.entity.ai.EntityAINearestAttackableTarget;
-import net.minecraft.entity.ai.EntityAITarget;
 import net.minecraft.entity.ai.attributes.IAttributeInstance;
+import net.minecraft.entity.ai.goal.Goal;
 import net.minecraft.entity.player.PlayerEntity;
-import net.minecraft.entity.player.EntityPlayerMP;
+import net.minecraft.entity.player.ServerPlayerEntity;
 import net.minecraft.scoreboard.Team;
 
-import java.util.Collections;
 import java.util.List;
 
-public class EntityAIScanForPlayer extends EntityAIBase {
+public class EntityAIScanForPlayer extends Goal {
 
-    private final EntityLiving entityLiving;
+    private final LivingEntity entityLiving;
     private final Predicate<Entity> predicate;
-    private final EntityAINearestAttackableTarget.Sorter sorter;
+    //    private final EntityAINearestAttackableTarget.Sorter sorter;
     private LivingEntity entityTarget;
 
-    public EntityAIScanForPlayer(EntityLiving entityLivingIn) {
+    public EntityAIScanForPlayer(LivingEntity entityLivingIn) {
         this.entityLiving = entityLivingIn;
 
         this.predicate = entity -> {
             if (!(entity instanceof PlayerEntity)) {
                 return false;
-            } else if (((PlayerEntity) entity).capabilities.disableDamage) {
+            } else if (((PlayerEntity) entity).abilities.disableDamage) {
                 return false;
             } else {
                 double d0 = EntityAIScanForPlayer.this.maxTargetRange();
@@ -39,25 +35,31 @@ public class EntityAIScanForPlayer extends EntityAIBase {
                 }
 
                 if (entity.isInvisible()) {
-                    float f = ((PlayerEntity) entity).getArmorVisibility();
-
-                    if (f < 0.1F) {
-                        f = 0.1F;
-                    }
-
-                    d0 *= (double) (0.7F * f);
+                    // @todo 1.14
+//                    float f = ((PlayerEntity) entity).getArmorVisibility();
+//
+//                    if (f < 0.1F) {
+//                        f = 0.1F;
+//                    }
+//
+//                    d0 *= (double) (0.7F * f);
                 }
 
-                return (double) entity.getDistance(EntityAIScanForPlayer.this.entityLiving) > d0 ? false : EntityAITarget.isSuitableTarget(EntityAIScanForPlayer.this.entityLiving, (LivingEntity) entity, false, true);
+                // @todo 1.14
+//                return (double) entity.getDistance(EntityAIScanForPlayer.this.entityLiving) > d0 ? false : EntityAITarget.isSuitableTarget(EntityAIScanForPlayer.this.entityLiving, (LivingEntity) entity, false, true);
+                return false;
             }
         };
-        this.sorter = new EntityAINearestAttackableTarget.Sorter(entityLivingIn);
+        // @todo 1.14
+//        this.sorter = new EntityAINearestAttackableTarget.Sorter(entityLivingIn);
     }
 
+    @Override
     public boolean shouldExecute() {
         double range = this.maxTargetRange();
-        List<PlayerEntity> list = this.entityLiving.world.<PlayerEntity>getEntitiesWithinAABB(PlayerEntity.class, this.entityLiving.getEntityBoundingBox().grow(range, range, range), this.predicate);
-        Collections.sort(list, this.sorter);
+        List<PlayerEntity> list = this.entityLiving.world.<PlayerEntity>getEntitiesWithinAABB(PlayerEntity.class, this.entityLiving.getBoundingBox().grow(range, range, range), this.predicate);
+        // @todo 1.14
+//        Collections.sort(list, this.sorter);
 
         if (list.isEmpty()) {
             return false;
@@ -67,14 +69,15 @@ public class EntityAIScanForPlayer extends EntityAIBase {
         }
     }
 
+    @Override
     public boolean shouldContinueExecuting() {
-        LivingEntity entitylivingbase = this.entityLiving.getAttackTarget();
+        LivingEntity entitylivingbase = this.entityLiving.getRevengeTarget();
 
         if (entitylivingbase == null) {
             return false;
-        } else if (!entitylivingbase.isEntityAlive()) {
+        } else if (!entitylivingbase.isAlive()) {
             return false;
-        } else if (entitylivingbase instanceof PlayerEntity && ((PlayerEntity) entitylivingbase).capabilities.disableDamage) {
+        } else if (entitylivingbase instanceof PlayerEntity && ((PlayerEntity) entitylivingbase).abilities.disableDamage) {
             return false;
         } else {
             Team team = this.entityLiving.getTeam();
@@ -88,24 +91,26 @@ public class EntityAIScanForPlayer extends EntityAIBase {
                 if (this.entityLiving.getDistanceSq(entitylivingbase) > d0 * d0) {
                     return false;
                 } else {
-                    return !(entitylivingbase instanceof EntityPlayerMP) || !((EntityPlayerMP) entitylivingbase).interactionManager.isCreative();
+                    return !(entitylivingbase instanceof ServerPlayerEntity) || !((ServerPlayerEntity) entitylivingbase).interactionManager.isCreative();
                 }
             }
         }
     }
 
+    @Override
     public void startExecuting() {
-        this.entityLiving.setAttackTarget(this.entityTarget);
+        this.entityLiving.setRevengeTarget(this.entityTarget);
         super.startExecuting();
     }
 
+    @Override
     public void resetTask() {
-        this.entityLiving.setAttackTarget(null);
+        this.entityLiving.setRevengeTarget(null);
         super.startExecuting();
     }
 
     protected double maxTargetRange() {
-        IAttributeInstance iattributeinstance = this.entityLiving.getEntityAttribute(SharedMonsterAttributes.FOLLOW_RANGE);
-        return iattributeinstance == null ? 16.0D : iattributeinstance.getAttributeValue();
+        IAttributeInstance iattributeinstance = this.entityLiving.getAttribute(SharedMonsterAttributes.FOLLOW_RANGE);
+        return iattributeinstance == null ? 16.0D : iattributeinstance.getValue();
     }
 }

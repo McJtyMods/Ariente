@@ -66,6 +66,10 @@ public class BlueprintStorageTile extends GenericTileEntity implements IGuiTile,
 //    }
 
 
+    public NoDirectionItemHander getItems() {
+        return items;
+    }
+
     @Nullable
     @Override
     public Map<String, Object> save() {

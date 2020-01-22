@@ -15,25 +15,25 @@ import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.CompoundNBT;
 import net.minecraft.util.ActionResult;
-import net.minecraft.util.EnumActionResult;
+import net.minecraft.util.ActionResultType;
 import net.minecraft.util.Hand;
+import net.minecraft.util.text.ITextComponent;
+import net.minecraft.util.text.StringTextComponent;
 import net.minecraft.util.text.TextFormatting;
 import net.minecraft.world.World;
 
 import javax.annotation.Nullable;
 import java.util.List;
-import java.util.Random;
 
 import static mcjty.hologui.api.Icons.*;
 
-public class EnergyHolderItem extends GenericItem {
+public class EnergyHolderItem extends Item {
 
     public static final int MODE_MANUAL = 0;
     public static final int MODE_AUTOMATIC = 1;
 
     public EnergyHolderItem() {
-        super("energy_holder");
-        this.maxStackSize = 1;
+        super(new Properties().group(Ariente.setup.getTab()).maxStackSize(1));
     }
 
     @Override
@@ -46,41 +46,37 @@ public class EnergyHolderItem extends GenericItem {
 
 
     @Override
-    public void addInformation(ItemStack stack, @Nullable World worldIn, List<String> tooltip, ITooltipFlag flagIn) {
+    public void addInformation(ItemStack stack, @Nullable World worldIn, List<ITextComponent> tooltip, ITooltipFlag flagIn) {
         super.addInformation(stack, worldIn, tooltip, flagIn);
-        tooltip.add("The Energy Holder can store");
-        tooltip.add("negarite and posirite dust");
-        tooltip.add(TextFormatting.YELLOW + "Negarite: " + TextFormatting.GRAY + count(stack, "negarite"));
-        tooltip.add(TextFormatting.BLUE + "Posirite: " + TextFormatting.GRAY + count(stack, "posirite"));
-        tooltip.add(TextFormatting.GOLD + "Mode: " + TextFormatting.GRAY + (getAutomatic(stack) == MODE_MANUAL ? "Manual" : "Automatic"));
+        tooltip.add(new StringTextComponent("The Energy Holder can store"));
+        tooltip.add(new StringTextComponent("negarite and posirite dust"));
+        tooltip.add(new StringTextComponent(TextFormatting.YELLOW + "Negarite: " + TextFormatting.GRAY + count(stack, "negarite")));
+        tooltip.add(new StringTextComponent(TextFormatting.BLUE + "Posirite: " + TextFormatting.GRAY + count(stack, "posirite")));
+        tooltip.add(new StringTextComponent(TextFormatting.GOLD + "Mode: " + TextFormatting.GRAY + (getAutomatic(stack) == MODE_MANUAL ? "Manual" : "Automatic")));
     }
 
     @Override
-    public void onUpdate(ItemStack stack, World world, Entity entity, int itemSlot, boolean isSelected) {
+    public void inventoryTick(ItemStack stack, World worldIn, Entity entity, int itemSlot, boolean isSelected) {
         if (!(entity instanceof PlayerEntity)) {
             return;
         }
-        CompoundNBT tag = stack.getTagCompound();
-        if (tag == null) {
-            tag = new CompoundNBT();
-            stack.setTagCompound(tag);
-        }
+        CompoundNBT tag = stack.getOrCreateTag();
         if (getAutomatic(stack) == MODE_MANUAL) {
             return;
         }
 
-        int index = tag.getInteger("index");
+        int index = tag.getInt("index");
         PlayerEntity player = (PlayerEntity) entity;
         if (index >= player.inventory.getSizeInventory()) {
             index = 0;
         }
-        tag.setInteger("index", index+1);
+        tag.putInt("index", index+1);
         ItemStack playerStack = player.inventory.getStackInSlot(index);
         if (playerStack.getItem() == ModItems.negariteDust) {
-            tag.setInteger("negarite", tag.getInteger("negarite") + playerStack.getCount());
+            tag.putInt("negarite", tag.getInt("negarite") + playerStack.getCount());
             player.inventory.setInventorySlotContents(index, ItemStack.EMPTY);
         } else if (playerStack.getItem() == ModItems.posiriteDust) {
-            tag.setInteger("posirite", tag.getInteger("posirite") + playerStack.getCount());
+            tag.putInt("posirite", tag.getInt("posirite") + playerStack.getCount());
             player.inventory.setInventorySlotContents(index, ItemStack.EMPTY);
         }
     }
@@ -90,7 +86,7 @@ public class EnergyHolderItem extends GenericItem {
         if (!worldIn.isRemote) {
             Ariente.guiHandler.openHoloGui(player, ModGuis.GUI_ENERGY_HOLDER, 1f);
         }
-        return new ActionResult<>(EnumActionResult.SUCCESS, player.getHeldItem(handIn));
+        return new ActionResult<>(ActionResultType.SUCCESS, player.getHeldItem(handIn));
     }
 
     public static IGuiComponent<?> createGui(PlayerEntity pl) {
@@ -108,7 +104,7 @@ public class EnergyHolderItem extends GenericItem {
         return panel;
     }
 
-    private static void addDustControl(IGuiComponentRegistry registry, IPanel panel, double yy, GenericItem negariteDust, String negarite) {
+    private static void addDustControl(IGuiComponentRegistry registry, IPanel panel, double yy, Item negariteDust, String negarite) {
         panel
                 .add(registry.stackIcon(0, yy, 1, 1).itemStack(new ItemStack(negariteDust)))
 
@@ -133,15 +129,15 @@ public class EnergyHolderItem extends GenericItem {
         if (tag == null) {
             return MODE_MANUAL;
         }
-        return tag.getInteger("mode");
+        return tag.getInt("mode");
     }
 
     private static int getAutomatic(ItemStack stack) {
-        CompoundNBT tag = stack.getTagCompound();
+        CompoundNBT tag = stack.getTag();
         if (tag == null) {
             return MODE_MANUAL;
         }
-        return tag.getInteger("mode");
+        return tag.getInt("mode");
     }
 
     private static void changeAutomatic(PlayerEntity player) {
@@ -149,9 +145,9 @@ public class EnergyHolderItem extends GenericItem {
         if (tag == null) {
             return;
         }
-        int mode = tag.getInteger("mode");
+        int mode = tag.getInt("mode");
         mode = mode == 0 ? 1 : 0;
-        tag.setInteger("mode", mode);
+        tag.putInt("mode", mode);
     }
 
     private static void toPlayer(PlayerEntity player, int amount, String tagname, Item item) {
@@ -159,7 +155,7 @@ public class EnergyHolderItem extends GenericItem {
         if (tag == null) {
             return;
         }
-        int total = tag.getInteger(tagname);
+        int total = tag.getInt(tagname);
         int actuallyExtracted = Math.min(total, amount);
         if (actuallyExtracted <= 0) {
             return;
@@ -167,7 +163,7 @@ public class EnergyHolderItem extends GenericItem {
         total -= actuallyExtracted;
 
         if (player.inventory.addItemStackToInventory(new ItemStack(item, actuallyExtracted))) {
-            tag.setInteger(tagname, total);
+            tag.putInt(tagname, total);
         }
     }
 
@@ -176,13 +172,13 @@ public class EnergyHolderItem extends GenericItem {
         if (tag == null) {
             return;
         }
-        int total = tag.getInteger(tagname);
+        int total = tag.getInt(tagname);
         ItemStack toTransfer = ItemStack.EMPTY;
 
         for (int i = 0 ; i < player.inventory.getSizeInventory() ; i++) {
             ItemStack stack = player.inventory.getStackInSlot(i);
             if (stack.getItem() == item) {
-                ItemStack splitted = stack.splitStack(amount);
+                ItemStack splitted = stack.split(amount);
                 if ((!splitted.isEmpty())) {
                     if (toTransfer.isEmpty()) {
                         toTransfer = splitted;
@@ -201,7 +197,7 @@ public class EnergyHolderItem extends GenericItem {
             if (total != 0) {
                 toTransfer.grow(total);
             }
-            tag.setInteger(tagname, toTransfer.getCount());
+            tag.putInt(tagname, toTransfer.getCount());
         }
     }
 
@@ -210,12 +206,7 @@ public class EnergyHolderItem extends GenericItem {
         if (heldItem.getItem() != ModItems.energyHolderItem) {
             return null;
         }
-        CompoundNBT tag = heldItem.getTagCompound();
-        if (tag == null) {
-            tag = new CompoundNBT();
-            heldItem.setTagCompound(tag);
-        }
-        return tag;
+        return heldItem.getOrCreateTag();
     }
 
     private static int count(PlayerEntity player, String tagname) {
@@ -223,29 +214,29 @@ public class EnergyHolderItem extends GenericItem {
         if (tag == null) {
             return 0;
         }
-        return tag.getInteger(tagname);
+        return tag.getInt(tagname);
     }
 
     public static int count(ItemStack stack, String tagname) {
-        CompoundNBT tag = stack.getTagCompound();
+        CompoundNBT tag = stack.getTag();
         if (tag == null) {
             return 0;
         }
-        return tag.getInteger(tagname);
+        return tag.getInt(tagname);
     }
 
     public static int extractIfPossible(ItemStack stack, String tagname, int amount) {
-        CompoundNBT tag = stack.getTagCompound();
+        CompoundNBT tag = stack.getTag();
         if (tag == null) {
             return 0;
         }
-        int count = tag.getInteger(tagname);
+        int count = tag.getInt(tagname);
         if (count <= 0) {
             return 0;
         }
         int amountToExtract = Math.min(amount, count);
         count -= amountToExtract;
-        tag.setInteger(tagname, count);
+        tag.putInt(tagname, count);
         return amountToExtract;
     }
 

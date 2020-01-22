@@ -1,5 +1,6 @@
 package mcjty.ariente.power;
 
+import mcjty.lib.varia.OrientationTools;
 import net.minecraft.tileentity.TileEntity;
 import net.minecraft.util.Direction;
 import net.minecraft.util.math.BlockPos;
@@ -34,7 +35,7 @@ public class PowerReceiverSupport {
         long amountNegarite = amount;
         long amountPosirite = amount;
         Set<Integer> handled = new HashSet<>();
-        for (Direction facing : Direction.VALUES) {
+        for (Direction facing : OrientationTools.DIRECTION_VALUES) {
             BlockPos p = pos.offset(facing);
             TileEntity te = world.getTileEntity(p);
             if (te instanceof IPowerBlob) {
@@ -73,7 +74,7 @@ public class PowerReceiverSupport {
 
         long totalNegarite = 0;
         long totalPosirite = 0;
-        for (Direction facing : Direction.VALUES) {
+        for (Direction facing : OrientationTools.DIRECTION_VALUES) {
             BlockPos p = pos.offset(facing);
             TileEntity te = world.getTileEntity(p);
             if (te instanceof IPowerBlob) {

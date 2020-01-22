@@ -27,7 +27,8 @@ public class ClientForgeEventHandlers {
 
     @SubscribeEvent
     public void colorHandlerEventBlock(ColorHandlerEvent.Block event) {
-        ModBlocks.initColorHandlers(event.getBlockColors());
+        // @todo 1.14
+//        ModBlocks.initColorHandlers(event.getBlockColors());
     }
 
     @SubscribeEvent
@@ -101,7 +102,7 @@ public class ClientForgeEventHandlers {
 //        if (phase == EventPriority.NORMAL) {
 //            EntityPlayerSP player = (EntityPlayerSP) Ariente.proxy.getClientPlayer();
 //            if (player != null && Minecraft.getInstance().currentScreen == null) {
-//                ItemStack chestStack = player.getItemStackFromSlot(EntityEquipmentSlot.CHEST);
+//                ItemStack chestStack = player.getItemStackFromSlot(EquipmentSlotType.CHEST);
 //                boolean hovering = false;
 //                boolean hasFlight = false;
 //                if (isValidArmorPiece(chestStack, ModItems.powerSuitChest)) {
@@ -124,7 +125,7 @@ public class ClientForgeEventHandlers {
 //                    }
 //                }
 //
-//                ItemStack feetStack = player.getItemStackFromSlot(EntityEquipmentSlot.FEET);
+//                ItemStack feetStack = player.getItemStackFromSlot(EquipmentSlotType.FEET);
 //                player.stepHeight = 0.6f;
 //                if (isValidArmorPiece(feetStack, ModItems.powerSuitBoots)) {
 //                    if (ModuleSupport.hasWorkingUpgrade(feetStack, ArmorUpgradeType.STEPASSIST)) {
@@ -132,7 +133,7 @@ public class ClientForgeEventHandlers {
 //                    }
 //                }
 //
-//                ItemStack legsStack = player.getItemStackFromSlot(EntityEquipmentSlot.LEGS);
+//                ItemStack legsStack = player.getItemStackFromSlot(EquipmentSlotType.LEGS);
 //                if (isValidArmorPiece(legsStack, ModItems.powerSuitLegs)) {
 //                    if (ModuleSupport.hasWorkingUpgrade(legsStack, ArmorUpgradeType.SPEED)) {
 //                        if (Ariente.proxy.isForwardKeyDown()) {

@@ -6,11 +6,15 @@ import mcjty.ariente.compat.arienteworld.ArienteWorldCompat;
 import mcjty.ariente.items.KeyCardItem;
 import mcjty.ariente.items.ModItems;
 import mcjty.ariente.items.armor.PowerSuit;
+import mcjty.ariente.setup.Registration;
 import mcjty.ariente.sounds.ModSounds;
 import net.minecraft.block.BlockState;
 import net.minecraft.block.Blocks;
 import net.minecraft.block.SoundType;
-import net.minecraft.entity.*;
+import net.minecraft.entity.CreatureEntity;
+import net.minecraft.entity.EntityType;
+import net.minecraft.entity.LivingEntity;
+import net.minecraft.entity.SharedMonsterAttributes;
 import net.minecraft.entity.ai.goal.*;
 import net.minecraft.entity.monster.ZombiePigmanEntity;
 import net.minecraft.entity.player.PlayerEntity;
@@ -36,24 +40,19 @@ public class SoldierEntity extends CreatureEntity implements IArmRaisable, IForc
     public static final ResourceLocation LOOT = new ResourceLocation(Ariente.MODID, "entities/soldier");
 
     // If this entity is controlled by a city then this will be set
-    private ChunkPos cityCenter;
-    private SoldierBehaviourType behaviourType = SoldierBehaviourType.SOLDIER_FIGHTER;
+    protected ChunkPos cityCenter;
+    protected SoldierBehaviourType behaviourType = SoldierBehaviourType.SOLDIER_FIGHTER;
 
 
     public SoldierEntity(EntityType<? extends CreatureEntity> type, World worldIn) {
         super(type, worldIn);
-        // @todo 1.14?
-//        if (isMaster()) {
-//            setSize(0.7F, 2.7F);
-//        } else {
-//            setSize(0.6F, 1.95F);
-//        }
     }
 
-    public SoldierEntity(EntityType<? extends CreatureEntity> type, World world, ChunkPos cityCenter, SoldierBehaviourType behaviourType) {
-        this(type, world);
-        this.cityCenter = cityCenter;
-        this.behaviourType = behaviourType;
+    public static SoldierEntity create(World world, ChunkPos cityCenter, SoldierBehaviourType behaviourType) {
+        SoldierEntity entity = new SoldierEntity(Registration.SOLDIER.get(), world);
+        entity.cityCenter = cityCenter;
+        entity.behaviourType = behaviourType;
+        return entity;
     }
 
     @Override

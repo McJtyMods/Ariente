@@ -27,6 +27,7 @@ public class ModSounds {
     public static final SoundEvent levitator = new SoundEvent(new ResourceLocation(Ariente.MODID, "levitator")).setRegistryName(new ResourceLocation(Ariente.MODID, "levitator"));
 
     public static void init(IForgeRegistry<SoundEvent> registry) {
+        // @todo 1.14 use DeferredRegistry
         registry.register(step);
         registry.register(droneAmbient);
         registry.register(droneHurt);

@@ -1,11 +1,11 @@
 package mcjty.ariente.entities.levitator;
 
+import com.mojang.blaze3d.platform.GlStateManager;
 import mcjty.ariente.Ariente;
 import mcjty.hologui.api.IHoloGuiEntity;
-import net.minecraft.client.model.ModelBase;
-
-import net.minecraft.client.renderer.entity.Render;
-import net.minecraft.client.renderer.entity.RenderManager;
+import net.minecraft.client.renderer.entity.EntityRenderer;
+import net.minecraft.client.renderer.entity.EntityRendererManager;
+import net.minecraft.client.renderer.entity.model.EntityModel;
 import net.minecraft.util.ResourceLocation;
 import net.minecraft.util.math.MathHelper;
 import net.minecraft.util.math.Vec3d;
@@ -13,13 +13,12 @@ import net.minecraftforge.fml.client.registry.IRenderFactory;
 
 
 
-@SideOnly(Side.CLIENT)
-public class FluxLevitatorRender extends Render<FluxLevitatorEntity> {
+public class FluxLevitatorRender extends EntityRenderer<FluxLevitatorEntity> {
 
     private static final ResourceLocation TEXTURE = new ResourceLocation("ariente:textures/entity/flux_levitator.png");
-    private ModelBase model = new FluxLevitatorModel();
+    private EntityModel model = new FluxLevitatorModel();
 
-    public FluxLevitatorRender(RenderManager renderManagerIn) {
+    public FluxLevitatorRender(EntityRendererManager renderManagerIn) {
         super(renderManagerIn);
         this.shadowSize = 0.5F;
     }
@@ -56,18 +55,18 @@ public class FluxLevitatorRender extends Render<FluxLevitatorEntity> {
             x += vec3d.x - interX;
             y += (vec3d1.y + vec3d2.y) / 2.0D - interY;
             z += vec3d.z - interZ;
-            Vec3d vec3d3 = vec3d2.addVector(-vec3d1.x, -vec3d1.y, -vec3d1.z);
+            Vec3d vec3d3 = vec3d2.add(-vec3d1.x, -vec3d1.y, -vec3d1.z);
 
-            if (vec3d3.lengthVector() != 0.0D) {
+            if (vec3d3.length() != 0.0D) {
                 vec3d3 = vec3d3.normalize();
                 entityYaw = (float) (Math.atan2(vec3d3.z, vec3d3.x) * 180.0D / Math.PI);
                 pitch = (float) (Math.atan(vec3d3.y) * 73.0D);
             }
         }
 
-        GlStateManager.translate((float) x, (float) y + 0.375F, (float) z);
-        GlStateManager.rotate(180.0F - entityYaw, 0.0F, 1.0F, 0.0F);
-        GlStateManager.rotate(-pitch, 0.0F, 0.0F, 1.0F);
+        GlStateManager.translatef((float) x, (float) y + 0.375F, (float) z);
+        GlStateManager.rotatef(180.0F - entityYaw, 0.0F, 1.0F, 0.0F);
+        GlStateManager.rotatef(-pitch, 0.0F, 0.0F, 1.0F);
         float f5 = entity.getRollingAmplitude() - partialTicks;
         float f6 = entity.getDamage() - partialTicks;
 
@@ -76,28 +75,28 @@ public class FluxLevitatorRender extends Render<FluxLevitatorEntity> {
         }
 
         if (f5 > 0.0F) {
-            GlStateManager.rotate(MathHelper.sin(f5) * f5 * f6 / 10.0F * entity.getRollingDirection(), 1.0F, 0.0F, 0.0F);
+            GlStateManager.rotatef(MathHelper.sin(f5) * f5 * f6 / 10.0F * entity.getRollingDirection(), 1.0F, 0.0F, 0.0F);
         }
 
         this.bindEntityTexture(entity);
 
         if (this.renderOutlines) {
             GlStateManager.enableColorMaterial();
-            GlStateManager.enableOutlineMode(this.getTeamColor(entity));
+            GlStateManager.setupSolidRenderingTextureCombine(this.getTeamColor(entity));
         }
 
-        GlStateManager.scale(-1.0F, -1.0F, 1.0F);
+        GlStateManager.scalef(-1.0F, -1.0F, 1.0F);
         this.model.render(entity, 0.0F, 0.0F, -0.1F, 0.0F, 0.0F, 0.0625F);
 
         IHoloGuiEntity holoGui = entity.getHoloGuiFront();
         if (holoGui != null) {
-            GlStateManager.scale(-1.0F, -1.0F, 1.0F);
+            GlStateManager.scalef(-1.0F, -1.0F, 1.0F);
             Ariente.guiHandler.render(holoGui, 1, 0, 0, -90);
         }
         holoGui = entity.getHoloGuiBack();
         if (holoGui != null) {
-            GlStateManager.scale(-1.0F, -1.0F, 1.0F);
-            GlStateManager.rotate(180, 1, 0, 0);
+            GlStateManager.scalef(-1.0F, -1.0F, 1.0F);
+            GlStateManager.rotatef(180, 1, 0, 0);
             Ariente.guiHandler.render(holoGui, 1, 0, 0, -90);
         }
 
@@ -105,7 +104,7 @@ public class FluxLevitatorRender extends Render<FluxLevitatorEntity> {
         GlStateManager.popMatrix();
 
         if (this.renderOutlines) {
-            GlStateManager.disableOutlineMode();
+            GlStateManager.tearDownSolidRenderingTextureCombine();
             GlStateManager.disableColorMaterial();
         }
 
@@ -120,7 +119,7 @@ public class FluxLevitatorRender extends Render<FluxLevitatorEntity> {
     public static class Factory implements IRenderFactory<FluxLevitatorEntity> {
 
         @Override
-        public Render<? super FluxLevitatorEntity> createRenderFor(RenderManager manager) {
+        public EntityRenderer<? super FluxLevitatorEntity> createRenderFor(EntityRendererManager manager) {
             return new FluxLevitatorRender(manager);
         }
 

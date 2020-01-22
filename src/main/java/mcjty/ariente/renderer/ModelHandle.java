@@ -5,18 +5,17 @@ import com.google.common.collect.Maps;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.renderer.BufferBuilder;
 import net.minecraft.client.renderer.Tessellator;
-import net.minecraft.client.renderer.block.model.BakedQuad;
-import net.minecraft.client.renderer.block.model.IBakedModel;
+import net.minecraft.client.renderer.model.BakedQuad;
+import net.minecraft.client.renderer.model.IBakedModel;
 import net.minecraft.client.renderer.vertex.DefaultVertexFormats;
 import net.minecraft.client.renderer.vertex.VertexFormat;
-import net.minecraft.client.resources.IReloadableResourceManager;
-import net.minecraft.client.resources.IResourceManager;
-import net.minecraft.client.resources.IResourceManagerReloadListener;
 import net.minecraft.crash.CrashReport;
-import net.minecraft.util.ReportedException;
+import net.minecraft.crash.ReportedException;
+import net.minecraft.resources.IReloadableResourceManager;
+import net.minecraft.resources.IResourceManager;
+import net.minecraft.resources.IResourceManagerReloadListener;
 import net.minecraft.util.ResourceLocation;
 import net.minecraftforge.client.model.IModel;
-import net.minecraftforge.client.model.ModelLoader;
 import net.minecraftforge.client.model.ModelLoaderRegistry;
 import net.minecraftforge.client.model.pipeline.LightUtil;
 import net.minecraftforge.common.model.IModelState;
@@ -25,6 +24,7 @@ import org.lwjgl.opengl.GL11;
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 import java.util.Map;
+import java.util.Random;
 
 // Kindly 'stolen' from gigaherz! Thanks!
 public class ModelHandle {
@@ -183,7 +183,7 @@ public class ModelHandle {
 
         IResourceManager rm = Minecraft.getInstance().getResourceManager();
         if (rm instanceof IReloadableResourceManager) {
-            ((IReloadableResourceManager) rm).registerReloadListener(new IResourceManagerReloadListener() {
+            ((IReloadableResourceManager) rm).addReloadListener(new IResourceManagerReloadListener() {
                 @Override
                 public void onResourceManagerReload(IResourceManager __) {
                     loadedModels.clear();
@@ -207,7 +207,7 @@ public class ModelHandle {
         Tessellator tessellator = Tessellator.getInstance();
         BufferBuilder worldrenderer = tessellator.getBuffer();
         worldrenderer.begin(GL11.GL_QUADS, fmt);
-        for (BakedQuad bakedquad : model.getQuads(null, null, 0)) {
+        for (BakedQuad bakedquad : model.getQuads(null, null, new Random())) {  // @todo 1.14 new Random?
             worldrenderer.addVertexData(bakedquad.getVertexData());
         }
         tessellator.draw();
@@ -217,7 +217,7 @@ public class ModelHandle {
         Tessellator tessellator = Tessellator.getInstance();
         BufferBuilder worldrenderer = tessellator.getBuffer();
         worldrenderer.begin(GL11.GL_QUADS, fmt);
-        for (BakedQuad bakedquad : model.getQuads(null, null, 0)) {
+        for (BakedQuad bakedquad : model.getQuads(null, null, new Random())) {  // @todo 1.14 new Random?
             LightUtil.renderQuadColor(worldrenderer, bakedquad, color);
         }
         tessellator.draw();
@@ -234,11 +234,13 @@ public class ModelHandle {
                 mod = mod.retexture(ImmutableMap.copyOf(handle.getTextureReplacements()));
             }
             if (handle.uvLocked()) {
-                mod = mod.uvlock(true);
+                // @todo 1.14
+//                mod = mod.uvlock(true);
             }
             IModelState state = handle.getState();
             if (state == null) state = mod.getDefaultState();
-            model = mod.bake(state, handle.getVertexFormat(), ModelLoader.defaultTextureGetter());
+            // @todo 1.14
+//            model = mod.bake(state, handle.getVertexFormat(), ModelLoader.defaultTextureGetter());
             loadedModels.put(handle.getKey(), model);
             return model;
         } catch (Exception e) {

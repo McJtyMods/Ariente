@@ -8,7 +8,6 @@ import mcjty.ariente.gui.HoloGuiCompatibility;
 import mcjty.ariente.items.ModItems;
 import mcjty.ariente.network.ArienteMessages;
 import mcjty.ariente.oregen.WorldGen;
-import mcjty.ariente.oregen.WorldTickHandler;
 import mcjty.ariente.potions.ModPotions;
 import mcjty.lib.compat.MainCompatHandler;
 import mcjty.lib.setup.DefaultModSetup;
@@ -29,7 +28,7 @@ public class ModSetup extends DefaultModSetup {
     public void init(FMLCommonSetupEvent e) {
         super.init(e);
 
-        MinecraftForge.EVENT_BUS.register(WorldTickHandler.instance);
+//        MinecraftForge.EVENT_BUS.register(WorldTickHandler.instance); // @todo 1.14
         MinecraftForge.EVENT_BUS.register(new ForgeEventHandlers());
 //        NetworkRegistry.INSTANCE.registerGuiHandler(Ariente.instance, new GuiProxy());
 

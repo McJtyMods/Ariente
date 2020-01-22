@@ -28,12 +28,6 @@ public class PowerSystem extends AbstractWorldData<PowerSystem> {
         return tickCounter;
     }
 
-    @Override
-    public void clear() {
-        powerBlobs.clear();
-        tickCounter = 0;
-    }
-
     public void removeId(int id) {
         powerBlobs.remove(id);
     }
@@ -113,18 +107,18 @@ public class PowerSystem extends AbstractWorldData<PowerSystem> {
 
     @Nonnull
     public static PowerSystem getPowerSystem(World world) {
-        return getData(world, PowerSystem.class, NAME);
+        return getData(world, () -> new PowerSystem(NAME), NAME);
     }
 
 
     @Override
-    public void readFromNBT(CompoundNBT nbt) {
-        lastId = nbt.getInteger("lastId");
+    public void read(CompoundNBT nbt) {
+        lastId = nbt.getInt("lastId");
     }
 
     @Override
     public CompoundNBT write(CompoundNBT compound) {
-        compound.setInteger("lastId", lastId);
+        compound.putInt("lastId", lastId);
         return compound;
     }
 }

@@ -1,10 +1,10 @@
 package mcjty.ariente.security;
 
 import mcjty.ariente.api.ISecuritySystem;
+import mcjty.lib.varia.WorldTools;
 import mcjty.lib.worlddata.AbstractWorldData;
 import net.minecraft.nbt.CompoundNBT;
 import net.minecraft.world.World;
-import net.minecraftforge.common.DimensionManager;
 
 import javax.annotation.Nonnull;
 import java.util.ArrayList;
@@ -22,11 +22,6 @@ public class SecuritySystem extends AbstractWorldData<SecuritySystem> implements
         super(name);
     }
 
-    @Override
-    public void clear() {
-        lastSecurityID = 1;
-    }
-
     public long newSecurityID() {
         long id = lastSecurityID;
         lastSecurityID++;
@@ -37,7 +32,8 @@ public class SecuritySystem extends AbstractWorldData<SecuritySystem> implements
     @Override
     public String generateKeyId() {
         long id = newSecurityID();
-        World world = DimensionManager.getWorld(0);
+        // @todo 1.14 avoid this!
+        World world = WorldTools.getOverworld();
         Random rnd = new Random(world.getSeed() + 234516783139L);       // A fixed seed for this work
         rnd.nextFloat();
         rnd.nextFloat();
@@ -68,17 +64,17 @@ public class SecuritySystem extends AbstractWorldData<SecuritySystem> implements
 
     @Nonnull
     public static SecuritySystem getSecuritySystem(World world) {
-        return getData(world, SecuritySystem.class, NAME);
+        return getData(world, () -> new SecuritySystem(NAME), NAME);
     }
 
     @Override
-    public void readFromNBT(CompoundNBT compound) {
+    public void read(CompoundNBT compound) {
         lastSecurityID = compound.getLong("lastSecurityID");
     }
 
     @Override
     public CompoundNBT write(CompoundNBT compound) {
-        compound.setLong("lastSecurityID", lastSecurityID);
+        compound.putLong("lastSecurityID", lastSecurityID);
         return compound;
     }
 }

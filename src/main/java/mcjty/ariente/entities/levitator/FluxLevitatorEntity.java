@@ -5,6 +5,7 @@ import mcjty.ariente.api.IFluxLevitatorEntity;
 import mcjty.ariente.blocks.ModBlocks;
 import mcjty.ariente.gui.ModGuis;
 import mcjty.ariente.items.ModItems;
+import mcjty.ariente.setup.Registration;
 import mcjty.hologui.api.CloseStrategy;
 import mcjty.hologui.api.IHoloGuiEntity;
 import net.minecraft.block.Block;
@@ -12,9 +13,11 @@ import net.minecraft.block.BlockState;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.EntityType;
 import net.minecraft.entity.MoverType;
+import net.minecraft.entity.passive.IronGolemEntity;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.CompoundNBT;
+import net.minecraft.network.IPacket;
 import net.minecraft.network.datasync.DataParameter;
 import net.minecraft.network.datasync.DataSerializers;
 import net.minecraft.network.datasync.EntityDataManager;
@@ -28,7 +31,11 @@ import net.minecraft.util.math.AxisAlignedBB;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.MathHelper;
 import net.minecraft.util.math.Vec3d;
+import net.minecraft.world.GameRules;
 import net.minecraft.world.World;
+import net.minecraft.world.dimension.DimensionType;
+import net.minecraft.world.server.ServerWorld;
+import net.minecraftforge.fml.network.NetworkHooks;
 import org.apache.commons.lang3.tuple.Pair;
 
 import javax.annotation.Nullable;
@@ -87,10 +94,11 @@ public class FluxLevitatorEntity extends Entity implements IFluxLevitatorEntity 
 
     private BlockPos desiredDestination = null;
 
-    public FluxLevitatorEntity(EntityType<?> entityTypeIn, World worldIn) {
+    public FluxLevitatorEntity(EntityType<? extends FluxLevitatorEntity> entityTypeIn, World worldIn) {
         super(entityTypeIn, worldIn);
         this.preventEntitySpawning = true;
-        this.setSize(1.30F, 0.9F);
+        // @todo 1.14
+//        this.setSize(1.30F, 0.9F);
     }
 
 
@@ -108,28 +116,29 @@ public class FluxLevitatorEntity extends Entity implements IFluxLevitatorEntity 
         this.dataManager.set(SPEED, speed);
     }
 
-    @Override
-    protected void setSize(float width, float height) {
-        if (width != this.width || height != this.height) {
-            float f = this.width;
-            this.width = width;
-            this.height = height;
-
-            if (this.width < f) {
-                double dx = LENGTH / 2.0D;
-                double d0 = width / 2.0D;
-                this.setEntityBoundingBox(new AxisAlignedBB(this.posX - dx, this.posY, this.posZ - d0, this.posX + dx, this.posY + this.height, this.posZ + d0));
-                return;
-            }
-
-            AxisAlignedBB axisalignedbb = this.getEntityBoundingBox();
-            this.setEntityBoundingBox(new AxisAlignedBB(axisalignedbb.minX, axisalignedbb.minY, axisalignedbb.minZ, axisalignedbb.minX + this.LENGTH, axisalignedbb.minY + this.height, axisalignedbb.minZ + this.width));
-
-            if (this.width > f && !this.firstUpdate && !world.isRemote) {
-                this.move(MoverType.SELF, (f - this.LENGTH), 0.0D, (f - this.width));
-            }
-        }
-    }
+    // @todo 1.14
+//    @Override
+//    protected void setSize(float width, float height) {
+//        if (width != this.width || height != this.height) {
+//            float f = this.width;
+//            this.width = width;
+//            this.height = height;
+//
+//            if (this.width < f) {
+//                double dx = LENGTH / 2.0D;
+//                double d0 = width / 2.0D;
+//                this.setEntityBoundingBox(new AxisAlignedBB(this.posX - dx, this.posY, this.posZ - d0, this.posX + dx, this.posY + this.height, this.posZ + d0));
+//                return;
+//            }
+//
+//            AxisAlignedBB axisalignedbb = this.getEntityBoundingBox();
+//            this.setEntityBoundingBox(new AxisAlignedBB(axisalignedbb.minX, axisalignedbb.minY, axisalignedbb.minZ, axisalignedbb.minX + this.LENGTH, axisalignedbb.minY + this.height, axisalignedbb.minZ + this.width));
+//
+//            if (this.width > f && !this.firstUpdate && !world.isRemote) {
+//                this.move(MoverType.SELF, (f - this.LENGTH), 0.0D, (f - this.width));
+//            }
+//        }
+//    }
 
     @Override
     protected boolean canFitPassenger(Entity passenger) {
@@ -154,7 +163,7 @@ public class FluxLevitatorEntity extends Entity implements IFluxLevitatorEntity 
     public IHoloGuiEntity getHoloGuiFront() {
         if (holoGuiFront == null) {
             if (getHoloFrontUUID() != null) {
-                for (Entity entity : world.getEntitiesWithinAABB(Ariente.guiHandler.getHoloEntityClass(), getEntityBoundingBox().grow(10))) {
+                for (Entity entity : world.getEntitiesWithinAABB(Ariente.guiHandler.getHoloEntityClass(), getBoundingBox().grow(10))) {
                     if (entity instanceof IHoloGuiEntity && getHoloFrontUUID().equals(entity.getUniqueID())) {
                         holoGuiFront = (IHoloGuiEntity) entity;
                         entity.startRiding(this);
@@ -177,7 +186,7 @@ public class FluxLevitatorEntity extends Entity implements IFluxLevitatorEntity 
     public IHoloGuiEntity getHoloGuiBack() {
         if (holoGuiBack == null) {
             if (getHoloBackUUID() != null) {
-                for (Entity entity : world.getEntitiesWithinAABB(Ariente.guiHandler.getHoloEntityClass(), getEntityBoundingBox().grow(10))) {
+                for (Entity entity : world.getEntitiesWithinAABB(Ariente.guiHandler.getHoloEntityClass(), getBoundingBox().grow(10))) {
                     if (getHoloBackUUID().equals(entity.getUniqueID())) {
                         holoGuiBack = (IHoloGuiEntity) entity;
                         entity.startRiding(this);
@@ -197,20 +206,19 @@ public class FluxLevitatorEntity extends Entity implements IFluxLevitatorEntity 
         return holoGuiBack;
     }
 
-    public FluxLevitatorEntity(World worldIn, double x, double y, double z) {
-        this(worldIn);
-        this.setPosition(x, y, z);
-        this.motionX = 0.0D;
-        this.motionY = 0.0D;
-        this.motionZ = 0.0D;
-        this.prevPosX = x;
-        this.prevPosY = y;
-        this.prevPosZ = z;
+    public static FluxLevitatorEntity create(World worldIn, double x, double y, double z) {
+        FluxLevitatorEntity entity = new FluxLevitatorEntity(Registration.FLUX_LEVITATOR.get(), worldIn);
+        entity.setPosition(x, y, z);
+        entity.setMotion(0, 0, 0);
+        entity.prevPosX = x;
+        entity.prevPosY = y;
+        entity.prevPosZ = z;
+        return entity;
     }
 
     @Override
-    public void move(MoverType type, double x, double y, double z) {
-        super.move(type, x, y, z);
+    public void move(MoverType typeIn, Vec3d pos) {
+        super.move(typeIn, pos);
         updateHoloGui();        // @todo check if needed
     }
 
@@ -227,20 +235,20 @@ public class FluxLevitatorEntity extends Entity implements IFluxLevitatorEntity 
     }
 
     public void setHoloFrontUUID(UUID holoFront) {
-        this.dataManager.set(HOLO_FRONT, Optional.fromNullable(holoFront));
+        this.dataManager.set(HOLO_FRONT, Optional.ofNullable(holoFront));
     }
 
     public UUID getHoloFrontUUID() {
-        return (UUID) ((Optional) this.dataManager.get(HOLO_FRONT)).orNull();
+        return (UUID) ((Optional) this.dataManager.get(HOLO_FRONT)).orElse(null);
     }
 
 
     public void setHoloBackUUID(UUID holoBack) {
-        this.dataManager.set(HOLO_BACK, Optional.fromNullable(holoBack));
+        this.dataManager.set(HOLO_BACK, Optional.ofNullable(holoBack));
     }
 
     public UUID getHoloBackUUID() {
-        return (UUID) ((Optional) this.dataManager.get(HOLO_BACK)).orNull();
+        return (UUID) ((Optional) this.dataManager.get(HOLO_BACK)).orElse(null);
     }
 
 
@@ -255,19 +263,19 @@ public class FluxLevitatorEntity extends Entity implements IFluxLevitatorEntity 
     }
 
     @Override
-    protected void entityInit() {
+    protected void registerData() {
         this.dataManager.register(ROLLING_AMPLITUDE, 0);
         this.dataManager.register(ROLLING_DIRECTION, 0);
         this.dataManager.register(SPEED, 0);
         this.dataManager.register(DAMAGE, 0.0F);
-        this.dataManager.register(HOLO_FRONT, Optional.absent());
-        this.dataManager.register(HOLO_BACK, Optional.absent());
+        this.dataManager.register(HOLO_FRONT, Optional.empty());
+        this.dataManager.register(HOLO_BACK, Optional.empty());
     }
 
     @Override
     @Nullable
     public AxisAlignedBB getCollisionBox(Entity entityIn) {
-        return entityIn.canBePushed() ? entityIn.getEntityBoundingBox() : null;
+        return entityIn.canBePushed() ? entityIn.getBoundingBox() : null;
     }
 
     @Override
@@ -289,21 +297,21 @@ public class FluxLevitatorEntity extends Entity implements IFluxLevitatorEntity 
 
     @Override
     public boolean attackEntityFrom(DamageSource source, float amount) {
-        if (!world.isRemote && !this.isDead) {
-            if (this.isEntityInvulnerable(source)) {
+        if (!world.isRemote && this.isAlive()) {
+            if (this.isInvulnerableTo(source)) {
                 return false;
             } else {
                 this.setRollingDirection(-this.getRollingDirection());
                 this.setRollingAmplitude(10);
                 this.markVelocityChanged();
                 this.setDamage(this.getDamage() + amount * 10.0F);
-                boolean flag = source.getTrueSource() instanceof PlayerEntity && ((PlayerEntity) source.getTrueSource()).capabilities.isCreativeMode;
+                boolean flag = source.getTrueSource() instanceof PlayerEntity && ((PlayerEntity) source.getTrueSource()).abilities.isCreativeMode;
 
                 if (flag || this.getDamage() > 40.0F) {
                     this.removePassengers();
 
                     if (flag && !this.hasCustomName()) {
-                        this.setDead();
+                        this.remove();
                     } else {
                         this.killLevitator(source);
                     }
@@ -317,28 +325,28 @@ public class FluxLevitatorEntity extends Entity implements IFluxLevitatorEntity 
     }
 
     @Override
-    public void setDead() {
+    public void remove() {
         if (getHoloGuiFront() != null) {
-            holoGuiFront.getEntity().dismountRidingEntity();
-            holoGuiFront.getEntity().setDead();
+            holoGuiFront.getEntity().stopRiding();
+            holoGuiFront.getEntity().remove();
             holoGuiFront = null;
         }
         if (getHoloGuiBack() != null) {
-            holoGuiBack.getEntity().dismountRidingEntity();
-            holoGuiBack.getEntity().setDead();
+            holoGuiBack.getEntity().stopRiding();
+            holoGuiBack.getEntity().remove();
             holoGuiBack = null;
         }
-        super.setDead();
+        super.remove();
     }
 
     public void killLevitator(DamageSource source) {
-        this.setDead();
+        this.remove();
 
-        if (world.getGameRules().getBoolean("doEntityDrops")) {
+        if (world.getGameRules().getBoolean(GameRules.DO_ENTITY_DROPS)) {
             ItemStack itemstack = new ItemStack(ModItems.fluxLevitatorItem, 1);
 
             if (this.hasCustomName()) {
-                itemstack.setStackDisplayName(this.getCustomNameTag());
+                itemstack.setDisplayName(this.getCustomName());
             }
 
             this.entityDropItem(itemstack, 0.0F);
@@ -346,7 +354,6 @@ public class FluxLevitatorEntity extends Entity implements IFluxLevitatorEntity 
     }
 
     @Override
-    @SideOnly(Side.CLIENT)
     public void performHurtAnimation() {
         this.setRollingDirection(-this.getRollingDirection());
         this.setRollingAmplitude(10);
@@ -355,7 +362,7 @@ public class FluxLevitatorEntity extends Entity implements IFluxLevitatorEntity 
 
     @Override
     public boolean canBeCollidedWith() {
-        return !this.isDead;
+        return this.isAlive();
     }
 
     @Override
@@ -367,7 +374,7 @@ public class FluxLevitatorEntity extends Entity implements IFluxLevitatorEntity 
     }
 
     @Override
-    public void onUpdate() {
+    public void tick() {
         if (this.getRollingAmplitude() > 0) {
             this.setRollingAmplitude(this.getRollingAmplitude() - 1);
         }
@@ -397,7 +404,7 @@ public class FluxLevitatorEntity extends Entity implements IFluxLevitatorEntity 
         this.prevPosZ = this.posZ;
 
         if (!this.hasNoGravity()) {
-            this.motionY -= 0.04D;
+            setMotion(getMotion().x, getMotion().y - 0.04D, getMotion().z);
         }
 
         int floorX = MathHelper.floor(this.posX);
@@ -456,14 +463,14 @@ public class FluxLevitatorEntity extends Entity implements IFluxLevitatorEntity 
 
     private void handleEntityCollision() {
         AxisAlignedBB box;
-        box = this.getEntityBoundingBox().grow(0.2D, 0.0D, 0.2D);
+        box = this.getBoundingBox().grow(0.2D, 0.0D, 0.2D);
 
-        if (this.motionX * this.motionX + this.motionZ * this.motionZ > 0.01D) {
-            List<Entity> list = world.getEntitiesInAABBexcluding(this, box, EntitySelectors.getTeamCollisionPredicate(this));
+        if (getMotion().x * getMotion().x + getMotion().z * getMotion().z > 0.01D) {
+            List<Entity> list = world.getEntitiesInAABBexcluding(this, box, entity -> true); // @todo 1.14 EntitySelectors.getTeamCollisionPredicate(this));
 
             if (!list.isEmpty()) {
                 for (Entity ent : list) {
-                    if (!(ent instanceof PlayerEntity) && !(ent instanceof EntityIronGolem) && !(ent instanceof FluxLevitatorEntity) && !this.isBeingRidden() && !ent.isRiding()) {
+                    if (!(ent instanceof PlayerEntity) && !(ent instanceof IronGolemEntity) && !(ent instanceof FluxLevitatorEntity) && !this.isBeingRidden() && !ent.isPassenger()) {
                         ent.startRiding(this);
                     } else {
                         ent.applyEntityCollision(this);
@@ -497,21 +504,21 @@ public class FluxLevitatorEntity extends Entity implements IFluxLevitatorEntity 
     }
 
     private void handlePortal() {
-        if (!world.isRemote && world instanceof WorldServer) {
-            MinecraftServer minecraftserver = world.getMinecraftServer();
+        if (!world.isRemote && world instanceof ServerWorld) {
+            MinecraftServer minecraftserver = world.getServer();
             int i = getMaxInPortalTime();
 
             if (this.inPortal) {
                 if (minecraftserver.getAllowNether()) {
-                    if (!this.isRiding() && this.portalCounter++ >= i) {
+                    if (!this.isPassenger() && this.portalCounter++ >= i) {
                         this.portalCounter = i;
                         this.timeUntilPortal = this.getPortalCooldown();
-                        int id;
+                        DimensionType id;
 
-                        if (world.provider.getDimensionType().getId() == -1) {
-                            id = 0;
+                        if (world.getDimension().getType() == DimensionType.THE_NETHER) {
+                            id = DimensionType.OVERWORLD;
                         } else {
-                            id = -1;
+                            id = DimensionType.THE_NETHER;
                         }
 
                         this.changeDimension(id);
@@ -567,23 +574,31 @@ public class FluxLevitatorEntity extends Entity implements IFluxLevitatorEntity 
 
     private void moveDerailedLevitator() {
         double speed = onGround ? this.getMaximumSpeed() : DEFAULT_MAX_SPEED_AIR_LATERAL;
-        this.motionX = MathHelper.clamp(this.motionX, -speed, speed);
-        this.motionZ = MathHelper.clamp(this.motionZ, -speed, speed);
+        double motionX = getMotion().x;
+        double motionY = getMotion().y;
+        double motionZ = getMotion().z;
+        motionX = MathHelper.clamp(motionX, -speed, speed);
+        motionZ = MathHelper.clamp(motionZ, -speed, speed);
 
         double moveY = motionY;
 
         if (this.onGround) {
-            this.motionX *= 0.5D;
-            this.motionY *= 0.5D;
-            this.motionZ *= 0.5D;
+            motionX *= 0.5D;
+            motionY *= 0.5D;
+            motionZ *= 0.5D;
         }
 
-        this.move(MoverType.SELF, this.motionX, moveY, this.motionZ);
+        setMotion(motionX, motionY, motionZ);
+        this.move(MoverType.SELF, new Vec3d(motionX, moveY, motionZ));
 
         if (!this.onGround) {
-            this.motionX *= DEFAULT_DRAG_AIR;
-            this.motionY *= DEFAULT_DRAG_AIR;
-            this.motionZ *= DEFAULT_DRAG_AIR;
+            motionX = getMotion().x;
+            motionY = getMotion().y;
+            motionZ = getMotion().z;
+            motionX *= DEFAULT_DRAG_AIR;
+            motionY *= DEFAULT_DRAG_AIR;
+            motionZ *= DEFAULT_DRAG_AIR;
+            setMotion(motionX, motionY, motionZ);
         }
     }
 
@@ -595,27 +610,32 @@ public class FluxLevitatorEntity extends Entity implements IFluxLevitatorEntity 
         boolean powered = speed != 0;    // Like powered
         boolean unpowered = speed == 0;
 
-        EnumRailDirection dir = getBeamDirection(state);
+        RailShape dir = getBeamDirection(state);
 //        handleBeamAscend(dir);        // Ascend not supported
 
-        int[][] aint = MATRIX[dir.getMetadata()];
+        double motionX = getMotion().x;
+        double motionY = getMotion().y;
+        double motionZ = getMotion().z;
+
+        int[][] aint = MATRIX[dir.getMeta()];
         double ddx = (aint[1][0] - aint[0][0]);
         double ddz = (aint[1][2] - aint[0][2]);
         double ddist = Math.sqrt(ddx * ddx + ddz * ddz);
-        double direction = this.motionX * ddx + this.motionZ * ddz;
+        double direction = motionX * ddx + motionZ * ddz;
         if (direction < 0.0D) {
             ddx = -ddx;
             ddz = -ddz;
         }
 
-        double motionLength = Math.sqrt(this.motionX * this.motionX + this.motionZ * this.motionZ);
+        double motionLength = Math.sqrt(motionX * motionX + motionZ * motionZ);
 
         if (motionLength > 2.0D) {
             motionLength = 2.0D;
         }
 
-        this.motionX = motionLength * ddx / ddist;
-        this.motionZ = motionLength * ddz / ddist;
+        motionX = motionLength * ddx / ddist;
+        motionZ = motionLength * ddz / ddist;
+        setMotion(motionX, motionY, motionZ);
 
         if (speed != 0) {
             handleLivingMotion(speed, dir);
@@ -661,11 +681,16 @@ public class FluxLevitatorEntity extends Entity implements IFluxLevitatorEntity 
 
         if (newPos != null && oldPos != null) {
             double d14 = (oldPos.y - newPos.y) * 0.05D;
-            motionLength = Math.sqrt(this.motionX * this.motionX + this.motionZ * this.motionZ);
+            motionLength = Math.sqrt(motionX * motionX + motionZ * motionZ);
 
             if (motionLength > 0.0D) {
-                this.motionX = this.motionX / motionLength * (motionLength + d14);
-                this.motionZ = this.motionZ / motionLength * (motionLength + d14);
+                motionX = getMotion().x;
+                motionY = getMotion().y;
+                motionZ = getMotion().z;
+
+                motionX = motionX / motionLength * (motionLength + d14);
+                motionZ = motionZ / motionLength * (motionLength + d14);
+                setMotion(motionX, motionY, motionZ);
             }
 
             this.setPosition(this.posX, newPos.y, this.posZ);
@@ -675,11 +700,14 @@ public class FluxLevitatorEntity extends Entity implements IFluxLevitatorEntity 
         int floorZ = MathHelper.floor(this.posZ);
 
         if (floorX != pos.getX() || floorZ != pos.getZ()) {
-            motionLength = Math.sqrt(this.motionX * this.motionX + this.motionZ * this.motionZ);
-            this.motionX = motionLength * (floorX - pos.getX());
-            this.motionZ = motionLength * (floorZ - pos.getZ());
+            motionLength = Math.sqrt(motionX * motionX + motionZ * motionZ);
+            motionX = getMotion().x;
+            motionY = getMotion().y;
+            motionZ = getMotion().z;
+            motionX = motionLength * (floorX - pos.getX());
+            motionZ = motionLength * (floorZ - pos.getZ());
+            setMotion(motionX, motionY, motionZ);
         }
-
 
         if (powered) {
             handlePoweredMotion(pos, dir);
@@ -781,15 +809,15 @@ public class FluxLevitatorEntity extends Entity implements IFluxLevitatorEntity 
             motionX += motionX / length * 0.06D;
             motionZ += motionZ / length * 0.06D;
         } else if (dir == RailShape.EAST_WEST) {
-            if (world.getBlockState(pos.west()).isNormalCube()) {
+            if (world.getBlockState(pos.west()).isNormalCube(world, pos.west())) {
                 motionX = 0.02D;
-            } else if (world.getBlockState(pos.east()).isNormalCube()) {
+            } else if (world.getBlockState(pos.east()).isNormalCube(world, pos.east())) {
                 motionX = -0.02D;
             }
         } else if (dir == RailShape.NORTH_SOUTH) {
-            if (world.getBlockState(pos.north()).isNormalCube()) {
+            if (world.getBlockState(pos.north()).isNormalCube(world, pos.north())) {
                 motionZ = 0.02D;
-            } else if (world.getBlockState(pos.south()).isNormalCube()) {
+            } else if (world.getBlockState(pos.south()).isNormalCube(world, pos.south())) {
                 motionZ = -0.02D;
             }
         }
@@ -1009,7 +1037,7 @@ public class FluxLevitatorEntity extends Entity implements IFluxLevitatorEntity 
 //    @Override
 //    @SideOnly(Side.CLIENT)
 //    public AxisAlignedBB getRenderBoundingBox() {
-//        return this.getEntityBoundingBox();
+//        return this.getBoundingBox();
 //    }
 
     @Override
@@ -1126,6 +1154,12 @@ public class FluxLevitatorEntity extends Entity implements IFluxLevitatorEntity 
         updateHoloGui();
     }
 
+    @Override
+    public IPacket<?> createSpawnPacket() {
+        return NetworkHooks.getEntitySpawningPacket(this);
+    }
+
+
     public void setDamage(float damage) {
         this.dataManager.set(DAMAGE, damage);
     }
@@ -1213,6 +1247,6 @@ public class FluxLevitatorEntity extends Entity implements IFluxLevitatorEntity 
         double max = this.getMaxSpeed();
         mX = MathHelper.clamp(mX, -max, max);
         mZ = MathHelper.clamp(mZ, -max, max);
-        this.move(MoverType.SELF, mX, 0.0D, mZ);
+        this.move(MoverType.SELF, new Vec3d(mX, 0.0D, mZ));
     }
 }

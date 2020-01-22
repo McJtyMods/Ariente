@@ -71,10 +71,9 @@ public class NetCableBlock extends GenericCableBlock {
             } else {
                 // We are in mimic mode. Don't remove the connector
                 this.onBlockHarvested(world, pos, state, player);
-// @todo 1.14
-                //                if(player.capabilities.isCreativeMode) {
-//                    cableTileEntity.setMimicBlock(null);
-//                }
+                if (player.abilities.isCreativeMode) {
+                    cableTileEntity.setMimicBlock(null);
+                }
             }
         } else {
             return super.removedByPlayer(state, world, pos, player, willHarvest, fluid);

@@ -1,27 +1,24 @@
 package mcjty.ariente.entities;
 
+import com.mojang.blaze3d.platform.GlStateManager;
 import mcjty.ariente.Ariente;
 import mcjty.lib.client.RenderHelper;
 import net.minecraft.client.Minecraft;
-import net.minecraft.client.entity.EntityPlayerSP;
 import net.minecraft.client.renderer.BufferBuilder;
-
 import net.minecraft.client.renderer.Tessellator;
-import net.minecraft.client.renderer.entity.Render;
-import net.minecraft.client.renderer.entity.RenderManager;
-import net.minecraft.client.renderer.texture.TextureMap;
+import net.minecraft.client.renderer.entity.EntityRenderer;
+import net.minecraft.client.renderer.entity.EntityRendererManager;
+import net.minecraft.client.renderer.texture.AtlasTexture;
 import net.minecraft.client.renderer.vertex.DefaultVertexFormats;
+import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.util.ResourceLocation;
 import net.minecraft.util.math.Vec3d;
 import net.minecraftforge.fml.client.registry.IRenderFactory;
-
-
 import org.lwjgl.opengl.GL11;
 
 import java.util.Random;
 
-@SideOnly(Side.CLIENT)
-public class LaserRender extends Render<LaserEntity> {
+public class LaserRender extends EntityRenderer<LaserEntity> {
 
     private Random random = new Random();
     private static ResourceLocation laserbeams[] = new ResourceLocation[4];
@@ -32,7 +29,7 @@ public class LaserRender extends Render<LaserEntity> {
         laserbeams[3] = new ResourceLocation(Ariente.MODID, "textures/effects/negarite_laserbeam4.png");
     }
 
-    public LaserRender(RenderManager renderManager) {
+    public LaserRender(EntityRendererManager renderManager) {
         super(renderManager);
     }
 
@@ -43,7 +40,7 @@ public class LaserRender extends Render<LaserEntity> {
         GlStateManager.blendFunc(GL11.GL_ONE, GL11.GL_ONE);
 
         Minecraft mc = Minecraft.getInstance();
-        EntityPlayerSP p = mc.player;
+        PlayerEntity p = mc.player;
         double doubleX = p.lastTickPosX + (p.posX - p.lastTickPosX) * partialTicks;
         double doubleY = p.lastTickPosY + (p.posY - p.lastTickPosY) * partialTicks;
         double doubleZ = p.lastTickPosZ + (p.posZ - p.lastTickPosZ) * partialTicks;
@@ -51,9 +48,9 @@ public class LaserRender extends Render<LaserEntity> {
 //        RenderHelper.Vector start = new RenderHelper.Vector((float) x, (float) y, (float) z);
 
         GlStateManager.pushMatrix();
-        GlStateManager.translate((float)x, (float)y, (float)z);
-        GlStateManager.rotate(180.0F - entity.getSpawnYaw(), 0.0F, 1.0F, 0.0F);
-        GlStateManager.rotate(180.0F - entity.getSpawnPitch(), 1.0F, 0.0F, 0.0F);
+        GlStateManager.translatef((float)x, (float)y, (float)z);
+        GlStateManager.rotatef(180.0F - entity.getSpawnYaw(), 0.0F, 1.0F, 0.0F);
+        GlStateManager.rotatef(180.0F - entity.getSpawnPitch(), 1.0F, 0.0F, 0.0F);
 
 //        GlStateManager.rotate(180.0F - this.renderManager.playerViewY, 0.0F, 1.0F, 0.0F);
 //        GlStateManager.rotate((this.renderManager.options.thirdPersonView == 2 ? -1 : 1) * -this.renderManager.playerViewX, 1.0F, 0.0F, 0.0F);
@@ -140,13 +137,13 @@ public class LaserRender extends Render<LaserEntity> {
 
     @Override
     protected ResourceLocation getEntityTexture(LaserEntity entity) {
-        return TextureMap.LOCATION_BLOCKS_TEXTURE;
+        return AtlasTexture.LOCATION_BLOCKS_TEXTURE;
     }
 
     public static class Factory implements IRenderFactory<LaserEntity> {
 
         @Override
-        public Render<? super LaserEntity> createRenderFor(RenderManager manager) {
+        public EntityRenderer<? super LaserEntity> createRenderFor(EntityRendererManager manager) {
             return new LaserRender(manager);
         }
 

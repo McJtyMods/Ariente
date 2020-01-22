@@ -10,6 +10,7 @@ import net.minecraft.client.renderer.BufferBuilder;
 import net.minecraft.client.renderer.Tessellator;
 import net.minecraft.client.renderer.tileentity.TileEntityRenderer;
 import net.minecraft.client.renderer.vertex.DefaultVertexFormats;
+import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.util.ResourceLocation;
 import net.minecraft.util.math.BlockPos;
 import net.minecraftforge.fml.client.registry.ClientRegistry;
@@ -91,7 +92,7 @@ public class CableRenderer extends TileEntityRenderer<GenericCableTileEntity> {
             GlStateManager.blendFunc(GL11.GL_ONE, GL11.GL_ONE);
 
             Minecraft mc = Minecraft.getInstance();
-            EntityPlayerSP p = mc.player;
+            PlayerEntity p = mc.player;
             double doubleX = p.lastTickPosX + (p.posX - p.lastTickPosX) * partialTicks;
             double doubleY = p.lastTickPosY + (p.posY - p.lastTickPosY) * partialTicks;
             double doubleZ = p.lastTickPosZ + (p.posZ - p.lastTickPosZ) * partialTicks;
@@ -99,7 +100,7 @@ public class CableRenderer extends TileEntityRenderer<GenericCableTileEntity> {
             RenderHelper.Vector player = new RenderHelper.Vector((float) doubleX, (float) doubleY + p.getEyeHeight(), (float) doubleZ);
 
             GlStateManager.pushMatrix();
-            GlStateManager.translate(-doubleX, -doubleY, -doubleZ);
+            GlStateManager.translated(-doubleX, -doubleY, -doubleZ);
 
             Tessellator tessellator = Tessellator.getInstance();
             BufferBuilder buffer = tessellator.getBuffer();
