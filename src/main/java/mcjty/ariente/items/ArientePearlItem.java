@@ -113,7 +113,7 @@ public class ArientePearlItem extends Item {
                 BlockPos blockpos = ArienteWorldCompat.getArienteWorld().getNearestDungeon(world, new BlockPos(player));
 
                 if (blockpos != null) {
-                    EntityArientePearl entityendereye = new EntityArientePearl(null /* @todo 1.14 */, world, player.posX, player.posY + (player.getHeight() / 2.0F), player.posZ);
+                    EntityArientePearl entityendereye = EntityArientePearl.create(world, player.posX, player.posY + (player.getHeight() / 2.0F), player.posZ);
                     entityendereye.moveTowards(blockpos);
                     world.addEntity(entityendereye);
 

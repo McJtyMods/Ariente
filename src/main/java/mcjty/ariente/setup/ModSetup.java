@@ -36,7 +36,6 @@ public class ModSetup extends DefaultModSetup {
 
         ModBlocks.init();
         ModItems.init();
-        ModEntities.init();
         WorldGen.init();
         ModPotions.init();
     }

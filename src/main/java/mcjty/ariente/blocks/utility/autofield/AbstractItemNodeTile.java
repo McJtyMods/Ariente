@@ -5,11 +5,16 @@ import mcjty.hologui.api.components.IPlayerInventory;
 import mcjty.hologui.api.components.ISlots;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.item.ItemStack;
+import net.minecraft.tileentity.TileEntityType;
 import net.minecraftforge.items.ItemHandlerHelper;
 
 public abstract class AbstractItemNodeTile extends AbstractNodeTile {
 
     public static final int FILTER_AMOUNT = 12;
+
+    public AbstractItemNodeTile(TileEntityType<?> type) {
+        super(type);
+    }
 
     protected void addToFilter(PlayerEntity player, IHoloGuiEntity entity, SimpleItemHandler filter) {
         entity.findComponent("playerSlots").ifPresent(component -> {

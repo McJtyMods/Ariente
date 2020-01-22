@@ -57,12 +57,12 @@ public class ArienteSystem implements IArienteSystem {
 
     @Override
     public LivingEntity createSentinel(World world, int index, @Nullable ChunkPos cityCenter) {
-        return new SentinelDroneEntity(null /* @todo 1.14 */, world, index, cityCenter);
+        return SentinelDroneEntity.create(world, index, cityCenter);
     }
 
     @Override
     public LivingEntity createDrone(World world, @Nullable ChunkPos cityCenter) {
-        return new DroneEntity(null /* @todo 1.14 */, world, cityCenter);
+        return DroneEntity.create(world, cityCenter);
     }
 
     @Override
@@ -109,9 +109,9 @@ public class ArienteSystem implements IArienteSystem {
                                            boolean master) {
         SoldierEntity entity;
         if (master) {
-            entity = new MasterSoldierEntity(null /* @todo 1.14 */, world, center, behaviourType);
+            entity = MasterSoldierEntity.create(world, center, behaviourType);
         } else {
-            entity = new SoldierEntity(null /* @todo 1.14 */, world, center, behaviourType);
+            entity = SoldierEntity.create(world, center, behaviourType);
         }
         entity.setPosition(p.getX()+.5, p.getY(), p.getZ()+.5);
         float yaw = 0;
