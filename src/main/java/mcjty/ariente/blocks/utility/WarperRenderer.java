@@ -48,9 +48,9 @@ public class WarperRenderer extends TileEntityRenderer<WarperTile> {
 
         Minecraft mc = Minecraft.getInstance();
         PlayerEntity p = mc.player;
-        double doubleX = p.lastTickPosX + (p.posX - p.lastTickPosX) * time;
-        double doubleY = p.lastTickPosY + (p.posY - p.lastTickPosY) * time;
-        double doubleZ = p.lastTickPosZ + (p.posZ - p.lastTickPosZ) * time;
+        double doubleX = p.lastTickPosX + (p.getPosX() - p.lastTickPosX) * time;
+        double doubleY = p.lastTickPosY + (p.getPosY() - p.lastTickPosY) * time;
+        double doubleZ = p.lastTickPosZ + (p.getPosZ() - p.lastTickPosZ) * time;
 
         GlStateManager.translated(-doubleX, -doubleY, -doubleZ);
 

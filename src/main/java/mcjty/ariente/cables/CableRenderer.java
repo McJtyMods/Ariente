@@ -93,9 +93,9 @@ public class CableRenderer extends TileEntityRenderer<GenericCableTileEntity> {
 
             Minecraft mc = Minecraft.getInstance();
             PlayerEntity p = mc.player;
-            double doubleX = p.lastTickPosX + (p.posX - p.lastTickPosX) * partialTicks;
-            double doubleY = p.lastTickPosY + (p.posY - p.lastTickPosY) * partialTicks;
-            double doubleZ = p.lastTickPosZ + (p.posZ - p.lastTickPosZ) * partialTicks;
+            double doubleX = p.lastTickPosX + (p.getPosX() - p.lastTickPosX) * partialTicks;
+            double doubleY = p.lastTickPosY + (p.getPosY() - p.lastTickPosY) * partialTicks;
+            double doubleZ = p.lastTickPosZ + (p.getPosZ() - p.lastTickPosZ) * partialTicks;
 
             RenderHelper.Vector player = new RenderHelper.Vector((float) doubleX, (float) doubleY + p.getEyeHeight(), (float) doubleZ);
 

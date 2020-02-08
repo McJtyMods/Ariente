@@ -3,7 +3,6 @@ package mcjty.ariente.blocks.decorative;
 import mcjty.lib.McJtyLib;
 import net.minecraft.block.SoundType;
 import net.minecraft.block.material.Material;
-import net.minecraft.util.BlockRenderLayer;
 
 public class PaneBlock extends net.minecraft.block.PaneBlock {
 
@@ -24,12 +23,13 @@ public class PaneBlock extends net.minecraft.block.PaneBlock {
         McJtyLib.proxy.initStandardItemModel(this);
     }
 
-    @Override
-    public BlockRenderLayer getRenderLayer() {
-        if (transluscent) {
-            return BlockRenderLayer.TRANSLUCENT;
-        } else {
-            return super.getRenderLayer();
-        }
-    }
+    // @todo 1.15
+//    @Override
+//    public BlockRenderLayer getRenderLayer() {
+//        if (transluscent) {
+//            return BlockRenderLayer.TRANSLUCENT;
+//        } else {
+//            return super.getRenderLayer();
+//        }
+//    }
 }

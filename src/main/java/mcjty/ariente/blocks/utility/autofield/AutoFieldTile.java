@@ -221,9 +221,9 @@ public class AutoFieldTile extends GenericTileEntity implements IGuiTile, ITicka
         double radius = 50;
         PacketAutoFieldReturnRenderInfo info = new PacketAutoFieldReturnRenderInfo(pos, renderInfo);
         for (PlayerEntity player : world.getServer().getPlayerList().getPlayers()) {
-            double dx = x - player.posX;
-            double dy = y - player.posY;
-            double dz = z - player.posZ;
+            double dx = x - player.getPosX();
+            double dy = y - player.getPosY();
+            double dz = z - player.getPosZ();
 
             if (dx * dx + dy * dy + dz * dz < radius * radius) {
                 ArienteMessages.INSTANCE.sendTo(info, ((ServerPlayerEntity) player).connection.netManager, NetworkDirection.PLAY_TO_CLIENT);

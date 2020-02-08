@@ -35,9 +35,9 @@ public class FluxElevatorRender extends EntityRenderer<FluxElevatorEntity> {
 //        float fz = (((i >> 24 & 7L) + 0.5F) / 8.0F - 0.5F) * 0.004F;
 //        GlStateManager.translate(fx, fy, fz);
 
-        double interX = entity.lastTickPosX + (entity.posX - entity.lastTickPosX) * partialTicks;
-        double interY = entity.lastTickPosY + (entity.posY - entity.lastTickPosY) * partialTicks;
-        double interZ = entity.lastTickPosZ + (entity.posZ - entity.lastTickPosZ) * partialTicks;
+        double interX = entity.lastTickPosX + (entity.getPosX() - entity.lastTickPosX) * partialTicks;
+        double interY = entity.lastTickPosY + (entity.getPosY() - entity.lastTickPosY) * partialTicks;
+        double interZ = entity.lastTickPosZ + (entity.getPosZ() - entity.lastTickPosZ) * partialTicks;
         Vec3d vec3d = entity.getPos(interX, interY, interZ);
         float pitch = entity.prevRotationPitch + (entity.rotationPitch - entity.prevRotationPitch) * partialTicks;
 

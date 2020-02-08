@@ -44,7 +44,7 @@ public class ClientForgeEventHandlers {
     }
 
     @SubscribeEvent
-    public void onDrawBlockHighlight(DrawBlockHighlightEvent event) {
+    public void onDrawBlockHighlight(DrawHighlightEvent event) {
         if (event.getTarget().getType() == RayTraceResult.Type.BLOCK && event.getTarget() instanceof BlockRayTraceResult) {
             BlockPos pos = ((BlockRayTraceResult) event.getTarget()).getPos();
             PlayerEntity player = Minecraft.getInstance().player;
@@ -58,14 +58,14 @@ public class ClientForgeEventHandlers {
 
     private static void drawSelectionBox(BlockState state, PlayerEntity player, BlockPos pos, float partialTicks) {
         GlStateManager.enableBlend();
-        GlStateManager.blendFuncSeparate(GlStateManager.SourceFactor.SRC_ALPHA, GlStateManager.DestFactor.ONE_MINUS_SRC_ALPHA, GlStateManager.SourceFactor.ONE, GlStateManager.DestFactor.ZERO);
+        GlStateManager.blendFuncSeparate(GlStateManager.SourceFactor.SRC_ALPHA.param, GlStateManager.DestFactor.ONE_MINUS_SRC_ALPHA.param, GlStateManager.SourceFactor.ONE.param, GlStateManager.DestFactor.ZERO.param);
         GlStateManager.lineWidth(2.0F);
         GlStateManager.disableTexture();
         GlStateManager.depthMask(false);
 
-        double d3 = player.lastTickPosX + (player.posX - player.lastTickPosX) * partialTicks;
-        double d4 = player.lastTickPosY + (player.posY - player.lastTickPosY) * partialTicks;
-        double d5 = player.lastTickPosZ + (player.posZ - player.lastTickPosZ) * partialTicks;
+        double d3 = player.lastTickPosX + (player.getPosX() - player.lastTickPosX) * partialTicks;
+        double d4 = player.lastTickPosY + (player.getPosY() - player.lastTickPosY) * partialTicks;
+        double d5 = player.lastTickPosZ + (player.getPosZ() - player.lastTickPosZ) * partialTicks;
         // @todo 1.14
 //        ModBlocks.rampBlock.handleAABB(state, aabb -> RenderGlobal.drawSelectionBoundingBox(aabb.offset(pos).grow(0.002D).offset(-d3, -d4, -d5), 0.0F, 0.0F, 0.0F, 0.4F));
 

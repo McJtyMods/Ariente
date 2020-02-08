@@ -41,9 +41,9 @@ public class LaserRender extends EntityRenderer<LaserEntity> {
 
         Minecraft mc = Minecraft.getInstance();
         PlayerEntity p = mc.player;
-        double doubleX = p.lastTickPosX + (p.posX - p.lastTickPosX) * partialTicks;
-        double doubleY = p.lastTickPosY + (p.posY - p.lastTickPosY) * partialTicks;
-        double doubleZ = p.lastTickPosZ + (p.posZ - p.lastTickPosZ) * partialTicks;
+        double doubleX = p.lastTickPosX + (p.getPosX() - p.lastTickPosX) * partialTicks;
+        double doubleY = p.lastTickPosY + (p.getPosY() - p.lastTickPosY) * partialTicks;
+        double doubleZ = p.lastTickPosZ + (p.getPosZ() - p.lastTickPosZ) * partialTicks;
 
 //        RenderHelper.Vector start = new RenderHelper.Vector((float) x, (float) y, (float) z);
 

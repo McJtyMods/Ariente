@@ -113,11 +113,11 @@ public class ArientePearlItem extends Item {
                 BlockPos blockpos = ArienteWorldCompat.getArienteWorld().getNearestDungeon(world, new BlockPos(player));
 
                 if (blockpos != null) {
-                    EntityArientePearl entityendereye = EntityArientePearl.create(world, player.posX, player.posY + (player.getHeight() / 2.0F), player.posZ);
+                    EntityArientePearl entityendereye = EntityArientePearl.create(world, player.getPosX(), player.getPosY() + (player.getHeight() / 2.0F), player.getPosZ());
                     entityendereye.moveTowards(blockpos);
                     world.addEntity(entityendereye);
 
-                    world.playSound(null, player.posX, player.posY, player.posZ, SoundEvents.ENTITY_ENDER_EYE_LAUNCH, SoundCategory.NEUTRAL, 0.5F, 0.4F / (random.nextFloat() * 0.4F + 0.8F));
+                    world.playSound(null, player.getPosX(), player.getPosY(), player.getPosZ(), SoundEvents.ENTITY_ENDER_EYE_LAUNCH, SoundCategory.NEUTRAL, 0.5F, 0.4F / (random.nextFloat() * 0.4F + 0.8F));
                     world.playEvent(null, 1003, new BlockPos(player), 0);
 
                     if (!player.abilities.isCreativeMode) {

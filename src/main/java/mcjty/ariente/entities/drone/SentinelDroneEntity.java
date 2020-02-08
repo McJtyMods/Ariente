@@ -54,13 +54,13 @@ public class SentinelDroneEntity extends FlyingEntity implements IMob, IForcefie
 
     // Override this to make it less likely to despawn
     @Override
-    protected void checkDespawn() {
+    public void checkDespawn() {
         Entity entity = this.world.getClosestPlayer(this, -1.0D);
 
         if (entity != null) {
-            double d0 = entity.posX - this.posX;
-            double d1 = entity.posY - this.posY;
-            double d2 = entity.posZ - this.posZ;
+            double d0 = entity.getPosX() - this.getPosX();
+            double d1 = entity.getPosY() - this.getPosY();
+            double d2 = entity.getPosZ() - this.getPosZ();
             double d3 = d0 * d0 + d1 * d1 + d2 * d2;
 
             double closest = entity.getDistanceSq(this);
@@ -240,8 +240,8 @@ public class SentinelDroneEntity extends FlyingEntity implements IMob, IForcefie
                 double d0 = 64.0D;
 
                 if (entitylivingbase.getDistanceSq(this.parentEntity) < 4096.0D) {
-                    double d1 = entitylivingbase.posX - this.parentEntity.posX;
-                    double d2 = entitylivingbase.posZ - this.parentEntity.posZ;
+                    double d1 = entitylivingbase.getPosX() - this.parentEntity.getPosX();
+                    double d2 = entitylivingbase.getPosZ() - this.parentEntity.getPosZ();
                     this.parentEntity.rotationYaw = -((float) MathHelper.atan2(d1, d2)) * (180F / (float) Math.PI);
                     this.parentEntity.renderYawOffset = this.parentEntity.rotationYaw;
                 }
@@ -268,9 +268,9 @@ public class SentinelDroneEntity extends FlyingEntity implements IMob, IForcefie
             if (!controller.isUpdating()) {
                 return true;
             } else {
-                double d0 = controller.getX() - this.parentEntity.posX;
-                double d1 = controller.getY() - this.parentEntity.posY;
-                double d2 = controller.getZ() - this.parentEntity.posZ;
+                double d0 = controller.getX() - this.parentEntity.getPosX();
+                double d1 = controller.getY() - this.parentEntity.getPosY();
+                double d2 = controller.getZ() - this.parentEntity.getPosZ();
                 double d3 = d0 * d0 + d1 * d1 + d2 * d2;
                 return d3 < 1.0D || d3 > 3600.0D;
             }
@@ -313,9 +313,9 @@ public class SentinelDroneEntity extends FlyingEntity implements IMob, IForcefie
         @Override
         public void tick() {
             if (this.action == Action.MOVE_TO) {
-                double d0 = this.posX - this.parentEntity.posX;
-                double d1 = this.posY - this.parentEntity.posY;
-                double d2 = this.posZ - this.parentEntity.posZ;
+                double d0 = this.posX - this.parentEntity.getPosX();
+                double d1 = this.posY - this.parentEntity.getPosY();
+                double d2 = this.posZ - this.parentEntity.getPosZ();
                 double d3 = d0 * d0 + d1 * d1 + d2 * d2;
 
                 if (this.courseChangeCooldown-- <= 0) {
@@ -336,9 +336,9 @@ public class SentinelDroneEntity extends FlyingEntity implements IMob, IForcefie
          * Checks if entity bounding box is not colliding with terrain
          */
         private boolean isNotColliding(double x, double y, double z, double p_179926_7_) {
-            double d0 = (x - this.parentEntity.posX) / p_179926_7_;
-            double d1 = (y - this.parentEntity.posY) / p_179926_7_;
-            double d2 = (z - this.parentEntity.posZ) / p_179926_7_;
+            double d0 = (x - this.parentEntity.getPosX()) / p_179926_7_;
+            double d1 = (y - this.parentEntity.getPosY()) / p_179926_7_;
+            double d2 = (z - this.parentEntity.getPosZ()) / p_179926_7_;
             AxisAlignedBB axisalignedbb = this.parentEntity.getBoundingBox();
 
             for (int i = 1; i < p_179926_7_; ++i) {

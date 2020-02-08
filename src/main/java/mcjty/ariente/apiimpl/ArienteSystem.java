@@ -131,7 +131,7 @@ public class ArienteSystem implements IArienteSystem {
             default:
                 break;
         }
-        entity.setLocationAndAngles(entity.posX, entity.posY, entity.posZ, yaw, 0);
+        entity.setLocationAndAngles(entity.getPosX(), entity.getPosY(), entity.getPosZ(), yaw, 0);
         world.addEntity(entity);
         return entity;
     }

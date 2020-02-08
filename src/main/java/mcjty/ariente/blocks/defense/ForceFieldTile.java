@@ -180,12 +180,12 @@ public class ForceFieldTile extends GenericTileEntity implements IGuiTile, ITick
 
         List<Entity> entities = world.getEntitiesWithinAABB(Entity.class, getShieldAABB(), entity -> {
             if (entity instanceof IProjectile) {
-                Vec3d entityPos = new Vec3d(entity.posX, entity.posY, entity.posZ);
+                Vec3d entityPos = new Vec3d(entity.getPosX(), entity.getPosY(), entity.getPosZ());
                 double squareDist = fieldCenter.squareDistanceTo(entityPos);
                 if (Math.abs(squareDist - squaredRadius) < 10 * 10) {
                     return true;
                 }
-                entityPos = new Vec3d((entity.posX + entity.prevPosX) / 2.0, (entity.posY + entity.prevPosY) / 2.0, (entity.posZ + entity.prevPosZ) / 2.0);
+                entityPos = new Vec3d((entity.getPosX() + entity.prevPosX) / 2.0, (entity.getPosY() + entity.prevPosY) / 2.0, (entity.getPosZ() + entity.prevPosZ) / 2.0);
                 squareDist = fieldCenter.squareDistanceTo(entityPos);
                 if (Math.abs(squareDist - squaredRadius) < 10 * 10) {
                     return true;
@@ -221,19 +221,19 @@ public class ForceFieldTile extends GenericTileEntity implements IGuiTile, ITick
         for (Entity entity : entities) {
             if (entity instanceof IProjectile) {
                 Vec3d p1 = new Vec3d(entity.prevPosX, entity.prevPosY, entity.prevPosZ);
-                Vec3d p2 = new Vec3d(entity.posX, entity.posY, entity.posZ);
+                Vec3d p2 = new Vec3d(entity.getPosX(), entity.getPosY(), entity.getPosZ());
                 for (PanelInfo info : getPanelInfo()) {
                     if (info != null && info.getLife() > 0) {
                         Vec3d intersection = info.testCollisionSegment(p1, p2, getScaleDouble());
                         if (intersection != null) {
-//                            world.newExplosion(entity, entity.posX, entity.posY, entity.posZ, 2.0f, false, false);
+//                            world.newExplosion(entity, entity.getPosX(), entity.getPosY(), entity.getPosZ(), 2.0f, false, false);
                             entity.remove();
                             int life = info.getLife();
                             life -= 10; // @todo make dependant on arrow
                             if (life <= 0) {
                                 panelDestroyTimeout[info.getIndex()] = 100;
                                 panelInfo[info.getIndex()] = null;
-                                world.createExplosion(entity, entity.posX, entity.posY, entity.posZ, 2.0f, false, Explosion.Mode.DESTROY);
+                                world.createExplosion(entity, entity.getPosX(), entity.getPosY(), entity.getPosZ(), 2.0f, false, Explosion.Mode.DESTROY);
                             } else {
                                 info.setLife(life);
                                 System.out.println("life = " + life + " (index " + info.getIndex() + ")");
@@ -261,7 +261,7 @@ public class ForceFieldTile extends GenericTileEntity implements IGuiTile, ITick
                     if (info != null && info.getLife() > 0) {
                         if (info.testCollisionEntity(entity, getScaleDouble())) {
                             entity.attackEntityFrom(DamageSource.GENERIC, (float) (double) DamageConfiguration.FORCEFIELD_DAMAGE.get());
-                            ((LivingEntity)entity).knockBack(entity, 1.0f, pos.getX() - entity.posX, pos.getZ() - entity.posZ);
+                            ((LivingEntity)entity).knockBack(entity, 1.0f, pos.getX() - entity.getPosX(), pos.getZ() - entity.getPosZ());
                         }
                     }
                 }

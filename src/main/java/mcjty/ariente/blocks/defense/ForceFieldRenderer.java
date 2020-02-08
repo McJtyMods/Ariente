@@ -80,7 +80,7 @@ public class ForceFieldRenderer {
             TileEntity te = world.getTileEntity(pos);
             if (te instanceof ForceFieldTile) {
                 Minecraft mc = Minecraft.getInstance();
-                mc.gameRenderer.disableLightmap();
+                mc.gameRenderer.getLightTexture().disableLightmap();
                 GlStateManager.enableTexture();
                 GlStateManager.disableLighting();
                 GlStateManager.enableBlend();
@@ -92,9 +92,9 @@ public class ForceFieldRenderer {
                 BufferBuilder builder = t.getBuffer();
 
                 Entity renderViewEntity = Minecraft.getInstance().getRenderViewEntity();
-                double dx = renderViewEntity.lastTickPosX + (renderViewEntity.posX - renderViewEntity.lastTickPosX) * partialTicks;
-                double dy = renderViewEntity.lastTickPosY + (renderViewEntity.posY - renderViewEntity.lastTickPosY) * partialTicks;
-                double dz = renderViewEntity.lastTickPosZ + (renderViewEntity.posZ - renderViewEntity.lastTickPosZ) * partialTicks;
+                double dx = renderViewEntity.lastTickPosX + (renderViewEntity.getPosX() - renderViewEntity.lastTickPosX) * partialTicks;
+                double dy = renderViewEntity.lastTickPosY + (renderViewEntity.getPosY() - renderViewEntity.lastTickPosY) * partialTicks;
+                double dz = renderViewEntity.lastTickPosZ + (renderViewEntity.getPosZ() - renderViewEntity.lastTickPosZ) * partialTicks;
                 double x = pos.getX() + .5 - dx;
                 double y = pos.getY() + .5 - dy;
                 double z = pos.getZ() + .5 - dz;

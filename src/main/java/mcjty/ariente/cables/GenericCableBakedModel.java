@@ -2,19 +2,16 @@ package mcjty.ariente.cables;
 
 import com.google.common.base.Function;
 import mcjty.ariente.Ariente;
+import mcjty.lib.client.AbstractDynamicBakedModel;
 import net.minecraft.block.BlockState;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.renderer.model.*;
 import net.minecraft.client.renderer.texture.TextureAtlasSprite;
 import net.minecraft.client.renderer.vertex.VertexFormat;
-import net.minecraft.util.BlockRenderLayer;
 import net.minecraft.util.Direction;
 import net.minecraft.util.ResourceLocation;
 import net.minecraft.util.math.Vec3d;
-import net.minecraftforge.client.MinecraftForgeClient;
-import net.minecraftforge.client.model.data.IDynamicBakedModel;
 import net.minecraftforge.client.model.data.IModelData;
-import net.minecraftforge.client.model.pipeline.UnpackedBakedQuad;
 
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
@@ -27,7 +24,7 @@ import static mcjty.ariente.cables.CablePatterns.SpriteIdx.*;
 import static mcjty.ariente.cables.ConnectorType.BLOCK;
 import static mcjty.ariente.cables.ConnectorType.CABLE;
 
-public class GenericCableBakedModel implements IDynamicBakedModel {
+public class GenericCableBakedModel extends AbstractDynamicBakedModel {
 
     public static final ModelResourceLocation modelConnector = new ModelResourceLocation(Ariente.MODID + ":" + ConnectorBlock.CONNECTOR);
     public static final ModelResourceLocation modelCable = new ModelResourceLocation(Ariente.MODID + ":" + NetCableBlock.NETCABLE);
@@ -77,16 +74,16 @@ public class GenericCableBakedModel implements IDynamicBakedModel {
                 int i = color.ordinal();
                 String typeName = color.getName();
                 tt[i] = new CableTextures();
-                tt[i].spriteConnector = Minecraft.getInstance().getTextureMap().getAtlasSprite(Ariente.MODID + ":blocks/cables/" + typeName + "/connector");
-                tt[i].spriteNormalCable = Minecraft.getInstance().getTextureMap().getAtlasSprite(Ariente.MODID + ":blocks/cables/" + typeName + "/normal_netcable");
-                tt[i].spriteNoneCable = Minecraft.getInstance().getTextureMap().getAtlasSprite(Ariente.MODID + ":blocks/cables/" + typeName + "/normal_none_netcable");
-                tt[i].spriteEndCable = Minecraft.getInstance().getTextureMap().getAtlasSprite(Ariente.MODID + ":blocks/cables/" + typeName + "/normal_end_netcable");
-                tt[i].spriteCornerCable = Minecraft.getInstance().getTextureMap().getAtlasSprite(Ariente.MODID + ":blocks/cables/" + typeName + "/normal_corner_netcable");
-                tt[i].spriteThreeCable = Minecraft.getInstance().getTextureMap().getAtlasSprite(Ariente.MODID + ":blocks/cables/" + typeName + "/normal_three_netcable");
-                tt[i].spriteCrossCable = Minecraft.getInstance().getTextureMap().getAtlasSprite(Ariente.MODID + ":blocks/cables/" + typeName + "/normal_cross_netcable");
+                tt[i].spriteConnector = getTexture(new ResourceLocation(Ariente.MODID, "blocks/cables/" + typeName + "/connector"));
+                tt[i].spriteNormalCable = getTexture(new ResourceLocation(Ariente.MODID, "blocks/cables/" + typeName + "/normal_netcable"));
+                tt[i].spriteNoneCable = getTexture(new ResourceLocation(Ariente.MODID, "blocks/cables/" + typeName + "/normal_none_netcable"));
+                tt[i].spriteEndCable = getTexture(new ResourceLocation(Ariente.MODID, "blocks/cables/" + typeName + "/normal_end_netcable"));
+                tt[i].spriteCornerCable = getTexture(new ResourceLocation(Ariente.MODID, "blocks/cables/" + typeName + "/normal_corner_netcable"));
+                tt[i].spriteThreeCable = getTexture(new ResourceLocation(Ariente.MODID, "blocks/cables/" + typeName + "/normal_three_netcable"));
+                tt[i].spriteCrossCable = getTexture(new ResourceLocation(Ariente.MODID, "blocks/cables/" + typeName + "/normal_cross_netcable"));
             }
 
-            spriteSide = Minecraft.getInstance().getTextureMap().getAtlasSprite(Ariente.MODID + ":blocks/cables/connector_side");
+            spriteSide = getTexture(new ResourceLocation(Ariente.MODID, "blocks/cables/connector_side"));
             cableTextures = tt;
         }
     }
@@ -115,33 +112,6 @@ public class GenericCableBakedModel implements IDynamicBakedModel {
         this.format = format;
     }
 
-    private void putVertex(UnpackedBakedQuad.Builder builder, Vec3d normal,
-                           double x, double y, double z, float u, float v, TextureAtlasSprite sprite, float color) {
-        for (int e = 0; e < format.getElementCount(); e++) {
-            switch (format.getElement(e).getUsage()) {
-                case POSITION:
-                    builder.put(e, (float)x, (float)y, (float)z, 1.0f);
-                    break;
-                case COLOR:
-                    builder.put(e, color, color, color, 1.0f);
-                    break;
-                case UV:
-                    if (format.getElement(e).getIndex() == 0) {
-                        u = sprite.getInterpolatedU(u);
-                        v = sprite.getInterpolatedV(v);
-                        builder.put(e, u, v, 0f, 1f);
-                        break;
-                    }
-                case NORMAL:
-                    builder.put(e, (float) normal.x, (float) normal.y, (float) normal.z, 0f);
-                    break;
-                default:
-                    builder.put(e);
-                    break;
-            }
-        }
-    }
-
     private void createQuad(List<BakedQuad> quads, Vec3d v1, Vec3d v2, Vec3d v3, Vec3d v4, TextureAtlasSprite sprite, int rotation, float hilight) {
         switch (rotation) {
             case 0:
@@ -161,24 +131,8 @@ public class GenericCableBakedModel implements IDynamicBakedModel {
     }
 
     private void createQuad(List<BakedQuad> quads, Vec3d v1, Vec3d v2, Vec3d v3, Vec3d v4, TextureAtlasSprite sprite, float hilight) {
-        createQuadI(quads, v1, v2, v3, v4, sprite, hilight);
-        createQuadI(quads, v4, v3, v2, v1, sprite, hilight);
-    }
-
-    private void createQuadI(List<BakedQuad> quads, Vec3d v1, Vec3d v2, Vec3d v3, Vec3d v4, TextureAtlasSprite sprite, float hilight) {
-        Vec3d normal = v3.subtract(v2).crossProduct(v1.subtract(v2)).normalize();
-
-        UnpackedBakedQuad.Builder builder = new UnpackedBakedQuad.Builder(format);
-        builder.setTexture(sprite);
-        putVertex(builder, normal, v1.x, v1.y, v1.z, 0, 0, sprite, hilight);
-        putVertex(builder, normal, v2.x, v2.y, v2.z, 0, 16, sprite, hilight);
-        putVertex(builder, normal, v3.x, v3.y, v3.z, 16, 16, sprite, hilight);
-        putVertex(builder, normal, v4.x, v4.y, v4.z, 16, 0, sprite, hilight);
-        quads.add(builder.build());
-    }
-
-    private static Vec3d v(double x, double y, double z) {
-        return new Vec3d(x, y, z);
+        quads.add(super.createQuad(v1, v2, v3, v4, sprite, hilight));
+        quads.add(super.createQuad(v4, v3, v2, v1, sprite, hilight));
     }
 
     @Nonnull
@@ -191,10 +145,11 @@ public class GenericCableBakedModel implements IDynamicBakedModel {
         BlockState facadeId = extraData.getData(GenericCableBlock.FACADEID);
         if (facadeId != null) {
             BlockState facadeState = facadeId.getBlockState();
-            BlockRenderLayer layer = MinecraftForgeClient.getRenderLayer();
-            if (layer != null && !facadeState.getBlock().canRenderInLayer(facadeState, layer)) { // always render in the null layer or the block-breaking textures don't show up
-                return Collections.emptyList();
-            }
+            // @todo 1.15
+//            BlockRenderLayer layer = MinecraftForgeClient.getRenderLayer();
+//            if (layer != null && !facadeState.getBlock().canRenderInLayer(facadeState, layer)) { // always render in the null layer or the block-breaking textures don't show up
+//                return Collections.emptyList();
+//            }
             IBakedModel model = Minecraft.getInstance().getBlockRendererDispatcher().getBlockModelShapes().getModel(facadeState);
             try {
                 return model.getQuads(state, side, rand);
@@ -203,9 +158,10 @@ public class GenericCableBakedModel implements IDynamicBakedModel {
             }
         }
 
-        if (side != null || (MinecraftForgeClient.getRenderLayer() != BlockRenderLayer.CUTOUT_MIPPED)) {
-            return Collections.emptyList();
-        }
+        // @todo 1.15
+//        if (side != null || (MinecraftForgeClient.getRenderLayer() != BlockRenderLayer.CUTOUT_MIPPED)) {
+//            return Collections.emptyList();
+//        }
 
         // Called with the blockstate from our block. Here we get the values of the six properties and pass that to
         // our baked model implementation.
@@ -401,7 +357,7 @@ public class GenericCableBakedModel implements IDynamicBakedModel {
 
     @Override
     public TextureAtlasSprite getParticleTexture() {
-        return spriteCable == null ? Minecraft.getInstance().getTextureMap().getSprite(new ResourceLocation("minecraft", "missingno")) : spriteCable;
+        return spriteCable == null ? getTexture(new ResourceLocation("minecraft", "missingno")) : spriteCable;
     }
 
     @Override

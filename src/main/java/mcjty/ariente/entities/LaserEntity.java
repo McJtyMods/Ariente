@@ -101,8 +101,8 @@ public class LaserEntity extends Entity implements IForcefieldImmunity {
     public static LaserEntity create(World worldIn, LivingEntity shooter, double accelX, double accelY, double accelZ) {
         LaserEntity entity = new LaserEntity(Registration.LASER.get(), worldIn);
         entity.shootingEntity = shooter;
-        entity.setLocationAndAngles(shooter.posX, shooter.posY, shooter.posZ, shooter.rotationYaw, shooter.rotationPitch);
-        entity.setPosition(entity.posX, entity.posY, entity.posZ);
+        entity.setLocationAndAngles(shooter.getPosX(), shooter.getPosY(), shooter.getPosZ(), shooter.rotationYaw, shooter.rotationPitch);
+        entity.setPosition(entity.getPosX(), entity.getPosY(), entity.getPosZ());
         entity.setMotion(0, 0, 0);
         accelX = accelX + entity.rand.nextGaussian() * 0.4D;
         accelY = accelY + entity.rand.nextGaussian() * 0.4D;
@@ -121,7 +121,7 @@ public class LaserEntity extends Entity implements IForcefieldImmunity {
 
         soundTicker--;
         if (soundTicker <= 0) {
-            world.playSound(null, posX, posY, posZ, ModSounds.laser, SoundCategory.HOSTILE, 5.0f, 1.0f);
+            world.playSound(null, getPosX(), getPosY(), getPosZ(), ModSounds.laser, SoundCategory.HOSTILE, 5.0f, 1.0f);
             soundTicker = 40;
         }
     }
@@ -143,16 +143,20 @@ public class LaserEntity extends Entity implements IForcefieldImmunity {
             double motionX = this.getMotion().x;
             double motionY = this.getMotion().y;
             double motionZ = this.getMotion().z;
-            this.posX += motionX;
-            this.posY += motionY;
-            this.posZ += motionZ;
+
+            // @todo 1.15 is this right? setRawPosition
+//            this.posX += motionX;
+//            this.posY += motionY;
+//            this.posZ += motionZ;
+            this.setRawPosition(getPosX() + motionX, getPosY() + motionY, getPosZ() + motionZ);
+
             ProjectileHelper.rotateTowardsMovement(this, 0.2F);
             float f = this.getMotionFactor();
 
             if (this.isInWater()) {
                 for (int i = 0; i < 4; ++i) {
                     float f1 = 0.25F;
-                    this.world.addParticle(ParticleTypes.DRIPPING_WATER, this.posX - motionX * 0.25D, this.posY - motionY * 0.25D, this.posZ - motionZ * 0.25D, motionX, motionY, motionZ);
+                    this.world.addParticle(ParticleTypes.DRIPPING_WATER, this.getPosX() - motionX * 0.25D, this.getPosY() - motionY * 0.25D, this.getPosZ() - motionZ * 0.25D, motionX, motionY, motionZ);
                 }
 
                 f = 0.8F;
@@ -165,8 +169,8 @@ public class LaserEntity extends Entity implements IForcefieldImmunity {
             motionY *= f;
             motionZ *= f;
             setMotion(motionX, motionY, motionZ);
-//            this.world.spawnParticle(this.getParticleType(), this.posX, this.posY + 0.5D, this.posZ, 0.0D, 0.0D, 0.0D);
-            this.setPosition(this.posX, this.posY, this.posZ);
+//            this.world.spawnParticle(this.getParticleType(), this.getPosX(), this.getPosY() + 0.5D, this.getPosZ(), 0.0D, 0.0D, 0.0D);
+            this.setPosition(this.getPosX(), this.getPosY(), this.getPosZ());
         } else {
             this.remove();
         }
@@ -272,8 +276,9 @@ public class LaserEntity extends Entity implements IForcefieldImmunity {
         return 1.0F;
     }
 
-    @Override
-    public int getBrightnessForRender() {
-        return 15728880;
-    }
+// @todo 1.15
+//    @Override
+//    public int getBrightnessForRender() {
+//        return 15728880;
+//    }
 }

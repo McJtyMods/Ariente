@@ -21,9 +21,9 @@ public class MovingSoundLevitator extends TickableSound {
         if (!this.levitator.isAlive()) {
             this.donePlaying = true;
         } else {
-            this.x = (float) this.levitator.posX;
-            this.y = (float) this.levitator.posY;
-            this.z = (float) this.levitator.posZ;
+            this.x = (float) this.levitator.getPosX();
+            this.y = (float) this.levitator.getPosY();
+            this.z = (float) this.levitator.getPosZ();
             float f = Math.abs(this.levitator.getSpeed()) / 50.0f;
 //            float f = MathHelper.sqrt(this.levitator.motionX * this.levitator.motionX + this.levitator.motionZ * this.levitator.motionZ);
 

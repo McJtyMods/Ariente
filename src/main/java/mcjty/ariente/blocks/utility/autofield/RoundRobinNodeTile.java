@@ -12,6 +12,7 @@ import net.minecraft.nbt.CompoundNBT;
 import net.minecraft.state.EnumProperty;
 import net.minecraft.tileentity.TileEntity;
 import net.minecraft.tileentity.TileEntityType;
+import net.minecraft.util.ActionResultType;
 import net.minecraft.util.Direction;
 import net.minecraft.util.Hand;
 import net.minecraft.util.math.AxisAlignedBB;
@@ -126,9 +127,9 @@ public class RoundRobinNodeTile extends GenericTileEntity {
     }
 
     @Override
-    public boolean onBlockActivated(BlockState state, PlayerEntity player, Hand hand, BlockRayTraceResult result) {
+    public ActionResultType onBlockActivated(BlockState state, PlayerEntity player, Hand hand, BlockRayTraceResult result) {
         Ariente.guiHandler.openHoloGuiEntity(world, pos, player, state.get(ORIENTATION).getSlot().name(), 1.0);
-        return true;
+        return ActionResultType.SUCCESS;
     }
 
     @Override

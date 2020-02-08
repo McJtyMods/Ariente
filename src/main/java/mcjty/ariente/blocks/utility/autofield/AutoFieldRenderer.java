@@ -1,5 +1,6 @@
 package mcjty.ariente.blocks.utility.autofield;
 
+import com.mojang.blaze3d.matrix.MatrixStack;
 import com.mojang.blaze3d.platform.GlStateManager;
 import mcjty.ariente.Ariente;
 import mcjty.lib.client.RenderHelper;
@@ -7,13 +8,14 @@ import mcjty.lib.client.RenderHelper.Vector;
 import mcjty.lib.client.RenderSettings;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.renderer.BufferBuilder;
+import net.minecraft.client.renderer.IRenderTypeBuffer;
 import net.minecraft.client.renderer.Tessellator;
 import net.minecraft.client.renderer.tileentity.TileEntityRenderer;
+import net.minecraft.client.renderer.tileentity.TileEntityRendererDispatcher;
 import net.minecraft.client.renderer.vertex.DefaultVertexFormats;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.util.ResourceLocation;
 import net.minecraft.util.math.AxisAlignedBB;
-import net.minecraftforge.fml.client.registry.ClientRegistry;
 import org.lwjgl.opengl.GL11;
 
 import java.util.Random;
@@ -31,20 +33,22 @@ public class AutoFieldRenderer extends TileEntityRenderer<AutoFieldTile> {
 
     private Random random = new Random();
 
-    public AutoFieldRenderer() {
+    public AutoFieldRenderer(TileEntityRendererDispatcher rendererDispatcherIn) {
+        super(rendererDispatcherIn);
     }
 
     @Override
-    public void render(AutoFieldTile te, double x, double y, double z, float time, int destroyStage) {
+    public void render(AutoFieldTile te, float partialTicks, MatrixStack matrixStack, IRenderTypeBuffer buffer, int combinedLightIn, int combinedOverlayIn) {
         AxisAlignedBB box = te.getFieldBox();
         if (box == null) {
             return;
         }
         if (te.isRenderOutline()) {
-            renderBeamBox(time, box);
+            renderBeamBox(partialTicks, box);
         }
         if (te.isRenderItems()) {
-            renderItemTransfers(te, x, y, z);
+            // @todo 1.15
+//            renderItemTransfers(te, x, y, z);
         }
     }
 
@@ -62,13 +66,14 @@ public class AutoFieldRenderer extends TileEntityRenderer<AutoFieldTile> {
         GlStateManager.enableDepthTest();
 
         ResourceLocation beamIcon = beams[random.nextInt(3)];
-        bindTexture(beamIcon);
+        // @todo 1.15
+//        bindTexture(beamIcon);
 
         Minecraft mc = Minecraft.getInstance();
         PlayerEntity p = mc.player;
-        double doubleX = p.lastTickPosX + (p.posX - p.lastTickPosX) * time;
-        double doubleY = p.lastTickPosY + (p.posY - p.lastTickPosY) * time;
-        double doubleZ = p.lastTickPosZ + (p.posZ - p.lastTickPosZ) * time;
+        double doubleX = p.lastTickPosX + (p.getPosX() - p.lastTickPosX) * time;
+        double doubleY = p.lastTickPosY + (p.getPosY() - p.lastTickPosY) * time;
+        double doubleZ = p.lastTickPosZ + (p.getPosZ() - p.lastTickPosZ) * time;
 
         GlStateManager.translated(-doubleX, -doubleY, -doubleZ);
 
@@ -79,7 +84,7 @@ public class AutoFieldRenderer extends TileEntityRenderer<AutoFieldTile> {
         GlStateManager.color4f(1, 1, 1, 1);
 
         BufferBuilder renderer = tessellator.getBuffer();
-        renderer.begin(GL11.GL_QUADS, DefaultVertexFormats.POSITION_TEX_LMAP_COLOR);
+        renderer.begin(GL11.GL_QUADS, DefaultVertexFormats.POSITION_TEX_LIGHTMAP_COLOR);
 
         float mx = (float) box.minX;
         float my = (float) box.minY;
@@ -130,7 +135,7 @@ public class AutoFieldRenderer extends TileEntityRenderer<AutoFieldTile> {
         GlStateManager.pushMatrix();
         GlStateManager.translated(x, y, z);
         net.minecraft.client.renderer.RenderHelper.enableStandardItemLighting();
-        Minecraft.getInstance().gameRenderer.disableLightmap();
+        Minecraft.getInstance().gameRenderer.getLightTexture().disableLightmap();
         GlStateManager.enableAlphaTest();
 
         TransferRender[] transferRenders = te.getTransferRenders();
@@ -155,7 +160,7 @@ public class AutoFieldRenderer extends TileEntityRenderer<AutoFieldTile> {
                 }
             }
         }
-        Minecraft.getInstance().gameRenderer.enableLightmap();
+        Minecraft.getInstance().gameRenderer.getLightTexture().enableLightmap();
         GlStateManager.disableAlphaTest();
 
         GlStateManager.popMatrix();
@@ -167,6 +172,7 @@ public class AutoFieldRenderer extends TileEntityRenderer<AutoFieldTile> {
     }
 
     public static void register() {
-        ClientRegistry.bindTileEntitySpecialRenderer(AutoFieldTile.class, new AutoFieldRenderer());
+        // @todo 1.15
+//        ClientRegistry.bindTileEntitySpecialRenderer(AutoFieldTile.class, new AutoFieldRenderer());
     }
 }

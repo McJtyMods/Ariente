@@ -89,7 +89,7 @@ public class FluxShipEntity extends Entity {
 
     @Override
     public boolean processInitialInteract(PlayerEntity player, Hand hand) {
-        if (player.isSneaking()) {
+        if (player.isShiftKeyDown()) {
             return false;
 //        } else if (this.isBeingRidden()) {    // @todo
 //            return true;

@@ -1,10 +1,13 @@
 package mcjty.ariente.blocks.generators;
 
+import com.mojang.blaze3d.matrix.MatrixStack;
 import com.mojang.blaze3d.platform.GlStateManager;
 import mcjty.ariente.Ariente;
 import net.minecraft.client.renderer.BufferBuilder;
+import net.minecraft.client.renderer.IRenderTypeBuffer;
 import net.minecraft.client.renderer.Tessellator;
 import net.minecraft.client.renderer.tileentity.TileEntityRenderer;
+import net.minecraft.client.renderer.tileentity.TileEntityRendererDispatcher;
 import net.minecraft.client.renderer.vertex.DefaultVertexFormats;
 import net.minecraft.util.ResourceLocation;
 import net.minecraftforge.fml.client.registry.ClientRegistry;
@@ -17,21 +20,21 @@ public class NegariteTankRenderer extends TileEntityRenderer<NegariteTankTile> {
     private ResourceLocation halo = new ResourceLocation(Ariente.MODID, "textures/blocks/machines/negarite_beam.png");
     private Random random = new Random();
 
-    public NegariteTankRenderer() {
+    public NegariteTankRenderer(TileEntityRendererDispatcher rendererDispatcherIn) {
+        super(rendererDispatcherIn);
     }
 
     private static void p(BufferBuilder renderer, double x, double y, double z, double u, double v) {
-        renderer.pos(x, y, z).tex(u, v).color(1.0f, 1.0f, 1.0f, 1.0f).lightmap(0, 240).endVertex();
+        renderer.pos(x, y, z).tex((float)u, (float)v).color(1.0f, 1.0f, 1.0f, 1.0f).lightmap(0, 240).endVertex();
     }
 
-
     @Override
-    public void render(NegariteTankTile te, double x, double y, double z, float partialTicks, int destroyStage) {
+    public void render(NegariteTankTile te, float partialTicks, MatrixStack matrixStack, IRenderTypeBuffer buffer, int combinedLightIn, int combinedOverlayIn) {
         if (te.isWorking()) {
             Tessellator tessellator = Tessellator.getInstance();
-//            GlStateManager.pushAttrib();
             GlStateManager.pushMatrix();
-            GlStateManager.translated(x, y, z);
+// @todo 1.15
+            //            GlStateManager.translated(x, y, z);
 
             GlStateManager.enableBlend();
             GlStateManager.depthMask(false);
@@ -41,7 +44,8 @@ public class NegariteTankRenderer extends TileEntityRenderer<NegariteTankTile> {
             GlStateManager.enableDepthTest();
 
             ResourceLocation beamIcon = halo;
-            bindTexture(beamIcon);
+            // @todo 1.15
+//            bindTexture(beamIcon);
 
             long ticks = (System.currentTimeMillis() / 100) % 10;
             float i1 = ticks / 10.0f;
@@ -87,6 +91,7 @@ public class NegariteTankRenderer extends TileEntityRenderer<NegariteTankTile> {
     }
 
     public static void register() {
-        ClientRegistry.bindTileEntitySpecialRenderer(NegariteTankTile.class, new NegariteTankRenderer());
+        // @todo 1.15
+//        ClientRegistry.bindTileEntityRenderer(NegariteTankTile.class, NegariteTankRenderer);
     }
 }

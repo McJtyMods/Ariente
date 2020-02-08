@@ -94,7 +94,7 @@ public class FluxElevatorEntity extends Entity {
 //            if (this.width < f) {
 //                double dx = LENGTH / 2.0D;
 //                double d0 = width / 2.0D;
-//                this.setEntityBoundingBox(new AxisAlignedBB(this.posX - dx, this.posY, this.posZ - d0, this.posX + dx, this.posY + this.height, this.posZ + d0));
+//                this.setEntityBoundingBox(new AxisAlignedBB(this.getPosX() - dx, this.getPosY(), this.getPosZ() - d0, this.getPosX() + dx, this.getPosY() + this.height, this.getPosZ() + d0));
 //                return;
 //            }
 //
@@ -304,7 +304,7 @@ public class FluxElevatorEntity extends Entity {
             this.setDamage(this.getDamage() - 1.0F);
         }
 
-        if (this.posY < -64.0D) {
+        if (this.getPosY() < -64.0D) {
             this.outOfWorld();
         }
 
@@ -320,9 +320,9 @@ public class FluxElevatorEntity extends Entity {
     }
 
     private void onUpdateServer() {
-        this.prevPosX = this.posX;
-        this.prevPosY = this.posY;
-        this.prevPosZ = this.posZ;
+        this.prevPosX = this.getPosX();
+        this.prevPosY = this.getPosY();
+        this.prevPosZ = this.getPosZ();
 
         double motionX = getMotion().x;
         double motionY = getMotion().y;
@@ -332,9 +332,9 @@ public class FluxElevatorEntity extends Entity {
             motionY -= 0.04D;
         }
 
-        int floorX = MathHelper.floor(this.posX);
-        int floorY = MathHelper.floor(this.posY);
-        int floorZ = MathHelper.floor(this.posZ);
+        int floorX = MathHelper.floor(this.getPosX());
+        int floorY = MathHelper.floor(this.getPosY());
+        int floorZ = MathHelper.floor(this.getPosZ());
 
         Block block = world.getBlockState(new BlockPos(floorX, floorY - 1, floorZ)).getBlock();
         if (isValidBeamBlock(block)) {
@@ -353,8 +353,8 @@ public class FluxElevatorEntity extends Entity {
 
         this.doBlockCollisions();
         this.rotationPitch = 0.0F;
-        double dx = this.prevPosX - this.posX;
-        double dz = this.prevPosZ - this.posZ;
+        double dx = this.prevPosX - this.getPosX();
+        double dz = this.prevPosZ - this.getPosZ();
 
         if (dx * dx + dz * dz > 0.001D) {
             this.rotationYaw = (float) (MathHelper.atan2(dz, dx) * 180.0D / Math.PI);
@@ -403,7 +403,7 @@ public class FluxElevatorEntity extends Entity {
     }
 
     private void onUpdateClient() {
-        this.setPosition(this.posX, this.posY, this.posZ);
+        this.setPosition(this.getPosX(), this.getPosY(), this.getPosZ());
         this.setRotation(this.rotationYaw, this.rotationPitch);
     }
 
@@ -457,7 +457,7 @@ public class FluxElevatorEntity extends Entity {
         float yaw = pair.getLeft() + offset * 90;
         float pitch = pair.getRight();
 
-        Vec3d vec3d = getPosOffset(posX, posY, posZ, offset);
+        Vec3d vec3d = getPosOffset(getPosX(), getPosY(), getPosZ(), offset);
         if (vec3d != null) {
             double x = vec3d.x;
             double y = vec3d.y + .38;
@@ -474,8 +474,8 @@ public class FluxElevatorEntity extends Entity {
 
     protected void moveAlongTrack(BlockPos pos, BlockState state) {
         this.fallDistance = 0.0F;
-        Vec3d oldPos = this.getPos(this.posX, this.posY, this.posZ);
-        this.posY = pos.getY();
+        Vec3d oldPos = this.getPos(this.getPosX(), this.getPosY(), this.getPosZ());
+        setRawPosition(getPosX(), pos.getY(), getPosZ());   // @todo 1.15 is this right?
         int speed = getSpeed();
         boolean powered = speed != 0;    // Like powered
         boolean unpowered = speed == 0;
@@ -491,11 +491,11 @@ public class FluxElevatorEntity extends Entity {
             restrictMotionUnpowered();
         }
 
-        this.setPosition(this.posX, this.posY, this.posZ);
+        this.setPosition(this.getPosX(), this.getPosY(), this.getPosZ());
         this.moveLevitatorOnBeam(pos);
 
         this.applyDrag();
-        Vec3d newPos = this.getPos(this.posX, this.posY, this.posZ);
+        Vec3d newPos = this.getPos(this.getPosX(), this.getPosY(), this.getPosZ());
 
         if (newPos != null && oldPos != null) {
             double motionX = getMotion().x;
@@ -511,11 +511,11 @@ public class FluxElevatorEntity extends Entity {
             }
 
             setMotion(motionX, motionY, motionZ);
-            this.setPosition(this.posX, newPos.y, this.posZ);
+            this.setPosition(this.getPosX(), newPos.y, this.getPosZ());
         }
 
-        int floorX = MathHelper.floor(this.posX);
-        int floorZ = MathHelper.floor(this.posZ);
+        int floorX = MathHelper.floor(this.getPosX());
+        int floorZ = MathHelper.floor(this.getPosZ());
 
         if (powered) {
             handlePoweredMotion(pos, dir);
@@ -680,9 +680,7 @@ public class FluxElevatorEntity extends Entity {
 
     @Override
     public void setPosition(double x, double y, double z) {
-        this.posX = x;
-        this.posY = y;
-        this.posZ = z;
+        setRawPosition(x, y, z);    // @todo 1.15 is this right?
         float f = this.getWidth() / 2.0F;
         float f1 = this.getHeight();
         this.setBoundingBox(new AxisAlignedBB(x - f, y, z - f, x + f, y + f1, z + f));
@@ -690,13 +688,13 @@ public class FluxElevatorEntity extends Entity {
 
     // Calculate yaw and pitch based on block below the levitator
     private Pair<Float, Float> calculateYawPitch() {
-        Vec3d oldPos = getPos(posX, posY, posZ);
+        Vec3d oldPos = getPos(getPosX(), getPosY(), getPosZ());
         float yaw = rotationYaw;
         float pitch = rotationPitch;
 
         if (oldPos != null) {
-            Vec3d posUp = getPosOffset(posX, posY, posZ, 0.3D);
-            Vec3d posDown = getPosOffset(posX, posY, posZ, -0.3D);
+            Vec3d posUp = getPosOffset(getPosX(), getPosY(), getPosZ(), 0.3D);
+            Vec3d posDown = getPosOffset(getPosX(), getPosY(), getPosZ(), -0.3D);
 
             if (posUp == null) {
                 posUp = oldPos;
@@ -815,8 +813,8 @@ public class FluxElevatorEntity extends Entity {
         if (!this.world.isRemote) {
             if (!entityIn.noClip && !this.noClip) {
                 if (!this.isPassenger(entityIn)) {
-                    double dx = entityIn.posX - this.posX;
-                    double dz = entityIn.posZ - this.posZ;
+                    double dx = entityIn.getPosX() - this.getPosX();
+                    double dz = entityIn.getPosZ() - this.getPosZ();
                     double length = dx * dx + dz * dz;
 
                     if (length >= .0001D) {
@@ -839,8 +837,8 @@ public class FluxElevatorEntity extends Entity {
                         dz = dz * 0.5D;
 
                         if (entityIn instanceof FluxElevatorEntity) {
-                            double ddx = entityIn.posX - this.posX;
-                            double ddz = entityIn.posZ - this.posZ;
+                            double ddx = entityIn.getPosX() - this.getPosX();
+                            double ddz = entityIn.getPosZ() - this.getPosZ();
                             Vec3d vec3d = (new Vec3d(ddx, 0.0D, ddz)).normalize();
                             Vec3d vec3d1 = (new Vec3d(MathHelper.cos(this.rotationYaw * 0.017453292F), 0.0D, MathHelper.sin(this.rotationYaw * 0.017453292F))).normalize();
                             double d6 = Math.abs(vec3d.dotProduct(vec3d1));
@@ -905,7 +903,7 @@ public class FluxElevatorEntity extends Entity {
 
     @Override
     public boolean processInitialInteract(PlayerEntity player, Hand hand) {
-        if (player.isSneaking()) {
+        if (player.isShiftKeyDown()) {
             return false;
 //        } else if (this.isBeingRidden()) {    // @todo
 //            return true;
@@ -920,9 +918,9 @@ public class FluxElevatorEntity extends Entity {
 
 
     private BlockPos getCurrentRailPosition() {
-        int x = MathHelper.floor(this.posX);
-        int y = MathHelper.floor(this.posY);
-        int z = MathHelper.floor(this.posZ);
+        int x = MathHelper.floor(this.getPosX());
+        int y = MathHelper.floor(this.getPosY());
+        int z = MathHelper.floor(this.getPosZ());
 
         Block block = world.getBlockState(new BlockPos(x, y - 1, z)).getBlock();
         if (isValidBeamBlock(block)) {

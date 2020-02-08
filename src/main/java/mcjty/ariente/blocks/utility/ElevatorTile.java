@@ -56,7 +56,7 @@ public class ElevatorTile extends GenericTileEntity implements IGuiTile, ITickab
             List<PlayerEntity> players = world.getEntitiesWithinAABB(PlayerEntity.class, getBeamBox());
             for (PlayerEntity player : players) {
                 if (openOrMoveHoloGui(player)) {
-                    player.setPositionAndUpdate(pos.getX() + .5, player.posY, pos.getZ() + .5);
+                    player.setPositionAndUpdate(pos.getX() + .5, player.getPosY(), pos.getZ() + .5);
                 }
                 player.isAirBorne = true;
                 player.fallDistance = 0;
@@ -82,13 +82,13 @@ public class ElevatorTile extends GenericTileEntity implements IGuiTile, ITickab
                 } else {
                     if (moveToFloor == -1) {
                         if (clientPlayer.isSneaking()) {
-                            moveToFloor = findLowerFloor(floors, (int) clientPlayer.posY);
+                            moveToFloor = findLowerFloor(floors, (int) clientPlayer.getPosY());
                             System.out.println("DOWN: moveToFloor = " + moveToFloor);
-                            clientPlayer.setPosition(pos.getX() + .5, clientPlayer.posY, pos.getZ() + .5);
+                            clientPlayer.setPosition(pos.getX() + .5, clientPlayer.getPosY(), pos.getZ() + .5);
                         } else if (McJtyLib.proxy.isJumpKeyDown()) {
-                            moveToFloor = findUpperFloor(floors, (int) clientPlayer.posY);
+                            moveToFloor = findUpperFloor(floors, (int) clientPlayer.getPosY());
                             System.out.println("UP: moveToFloor = " + moveToFloor);
-                            clientPlayer.setPosition(pos.getX() + .5, clientPlayer.posY, pos.getZ() + .5);
+                            clientPlayer.setPosition(pos.getX() + .5, clientPlayer.getPosY(), pos.getZ() + .5);
                         } else {
                             moveToFloor = -1;
                         }
@@ -98,10 +98,10 @@ public class ElevatorTile extends GenericTileEntity implements IGuiTile, ITickab
                     }
                     if (moveToFloor != -1) {
                         double motionY;
-                        if (clientPlayer.posY > floors.get(moveToFloor)) {
-                            motionY = -Math.min(1.4, clientPlayer.posY - floors.get(moveToFloor));
-                        } else if (clientPlayer.posY < floors.get(moveToFloor)) {
-                            motionY = Math.min(1.0, floors.get(moveToFloor) - clientPlayer.posY);
+                        if (clientPlayer.getPosY() > floors.get(moveToFloor)) {
+                            motionY = -Math.min(1.4, clientPlayer.getPosY() - floors.get(moveToFloor));
+                        } else if (clientPlayer.getPosY() < floors.get(moveToFloor)) {
+                            motionY = Math.min(1.0, floors.get(moveToFloor) - clientPlayer.getPosY());
                         } else {
                             motionY = 0.0;
                             moveToFloor = -1;
@@ -157,10 +157,10 @@ public class ElevatorTile extends GenericTileEntity implements IGuiTile, ITickab
                 IHoloGuiEntity holoEntity = (IHoloGuiEntity) entity;
                 holoEntity.setTimeout(5);
                 Entity h = holoEntity.getEntity();
-                double oldPosY = h.posY;
-                double newPosY = player.posY+player.getEyeHeight() - .5;
+                double oldPosY = h.getPosY();
+                double newPosY = player.getPosY()+player.getEyeHeight() - .5;
                 double y = (newPosY + oldPosY) / 2;
-                h.setPositionAndUpdate(h.posX, y, h.posZ);
+                h.setPositionAndUpdate(h.getPosX(), y, h.getPosZ());
             }
             return false;
         }
@@ -341,7 +341,7 @@ public class ElevatorTile extends GenericTileEntity implements IGuiTile, ITickab
                             .text("" + idx)
                             .hitClientEvent((component, player, entity1, x1, y1) -> {
                                 moveToFloor = finalIdx - 1;
-                                player.setPosition(pos.getX() + .5, player.posY, pos.getZ() + .5);
+                                player.setPosition(pos.getX() + .5, player.getPosY(), pos.getZ() + .5);
                             }));
                     y++;
                     if (y > 8) {
