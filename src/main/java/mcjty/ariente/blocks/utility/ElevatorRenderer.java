@@ -1,16 +1,18 @@
 package mcjty.ariente.blocks.utility;
 
+import com.mojang.blaze3d.matrix.MatrixStack;
 import com.mojang.blaze3d.platform.GlStateManager;
 import mcjty.ariente.Ariente;
 import mcjty.lib.client.RenderHelper;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.renderer.BufferBuilder;
+import net.minecraft.client.renderer.IRenderTypeBuffer;
 import net.minecraft.client.renderer.Tessellator;
 import net.minecraft.client.renderer.tileentity.TileEntityRenderer;
+import net.minecraft.client.renderer.tileentity.TileEntityRendererDispatcher;
 import net.minecraft.client.renderer.vertex.DefaultVertexFormats;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.util.ResourceLocation;
-import net.minecraftforge.fml.client.registry.ClientRegistry;
 import org.lwjgl.opengl.GL11;
 
 import java.util.Random;
@@ -20,7 +22,8 @@ public class ElevatorRenderer extends TileEntityRenderer<ElevatorTile> {
     private ResourceLocation halo = new ResourceLocation(Ariente.MODID, "textures/blocks/machines/elevator_beam.png");
     private Random random = new Random();
 
-    public ElevatorRenderer() {
+    public ElevatorRenderer(TileEntityRendererDispatcher rendererDispatcherIn) {
+        super(rendererDispatcherIn);
     }
 
     private static float randomX[] = new float[]{.2f, .3f, .2f, .7f, .8f, .5f, .2f, .8f, .4f, .6f};
@@ -28,7 +31,7 @@ public class ElevatorRenderer extends TileEntityRenderer<ElevatorTile> {
     private static int randomY[] = new int[]{0, 3, 2, 1, 6, 5, 6, 8, 2, 3};
 
     @Override
-    public void render(ElevatorTile te, double x, double y, double z, float time, int destroyStage) {
+    public void render(ElevatorTile te, float partialTicks, MatrixStack matrixStack, IRenderTypeBuffer buffer, int combinedLightIn, int combinedOverlayIn) {
 //        if (te.isWorking()) {
         Tessellator tessellator = Tessellator.getInstance();
         GlStateManager.pushMatrix();
@@ -44,13 +47,14 @@ public class ElevatorRenderer extends TileEntityRenderer<ElevatorTile> {
         GlStateManager.enableDepthTest();
 
         ResourceLocation beamIcon = halo;
-        bindTexture(beamIcon);
+        // @todo 1.15
+//        bindTexture(beamIcon);
 
         Minecraft mc = Minecraft.getInstance();
         PlayerEntity p = mc.player;
-        double doubleX = p.lastTickPosX + (p.getPosX() - p.lastTickPosX) * time;
-        double doubleY = p.lastTickPosY + (p.getPosY() - p.lastTickPosY) * time;
-        double doubleZ = p.lastTickPosZ + (p.getPosZ() - p.lastTickPosZ) * time;
+        double doubleX = p.lastTickPosX + (p.getPosX() - p.lastTickPosX) * partialTicks;
+        double doubleY = p.lastTickPosY + (p.getPosY() - p.lastTickPosY) * partialTicks;
+        double doubleZ = p.lastTickPosZ + (p.getPosZ() - p.lastTickPosZ) * partialTicks;
 
         GlStateManager.translated(-doubleX, -doubleY, -doubleZ);
 
@@ -61,7 +65,7 @@ public class ElevatorRenderer extends TileEntityRenderer<ElevatorTile> {
         GlStateManager.color4f(1, 1, 1, 1);
 
         BufferBuilder renderer = tessellator.getBuffer();
-        renderer.begin(GL11.GL_QUADS, DefaultVertexFormats.POSITION_TEX_LMAP_COLOR);
+        renderer.begin(GL11.GL_QUADS, DefaultVertexFormats.POSITION_COLOR_TEX_LIGHTMAP);
 
         float height = te.getHeight();
 
@@ -99,6 +103,7 @@ public class ElevatorRenderer extends TileEntityRenderer<ElevatorTile> {
     }
 
     public static void register() {
-        ClientRegistry.bindTileEntitySpecialRenderer(ElevatorTile.class, new ElevatorRenderer());
+        // @todo 1.15
+//        ClientRegistry.bindTileEntitySpecialRenderer(ElevatorTile.class, new ElevatorRenderer());
     }
 }

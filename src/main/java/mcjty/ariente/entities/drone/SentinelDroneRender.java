@@ -1,5 +1,6 @@
 package mcjty.ariente.entities.drone;
 
+import com.mojang.blaze3d.matrix.MatrixStack;
 import com.mojang.blaze3d.platform.GlStateManager;
 import net.minecraft.client.renderer.entity.EntityRenderer;
 import net.minecraft.client.renderer.entity.EntityRendererManager;
@@ -18,17 +19,15 @@ public class SentinelDroneRender extends LivingRenderer<SentinelDroneEntity, Dro
      * Returns the location of an entity's texture. Doesn't seem to be called unless you call Render.bindEntityTexture.
      */
     @Override
-    protected ResourceLocation getEntityTexture(SentinelDroneEntity entity) {
+    public ResourceLocation getEntityTexture(SentinelDroneEntity entity) {
         return mobTexture;
     }
 
 //    public static final SentinelDroneRender.Factory FACTORY = new SentinelDroneRender.Factory();
 
-    /**
-     * Allows the render to do state modifications necessary before the model is rendered.
-     */
+
     @Override
-    protected void preRenderCallback(SentinelDroneEntity entitylivingbaseIn, float partialTickTime) {
+    protected void preRenderCallback(SentinelDroneEntity entitylivingbaseIn, MatrixStack matrixStackIn, float partialTickTime) {
 //        GlStateManager.scale(1.5F, 1.5F, 1.5F);
         GlStateManager.scalef(1F, 1F, 1F);
         GlStateManager.color4f(1.0F, 1.0F, 1.0F, 1.0F);

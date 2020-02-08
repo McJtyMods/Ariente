@@ -1,15 +1,16 @@
 package mcjty.ariente.entities;
 
+import com.mojang.blaze3d.matrix.MatrixStack;
 import com.mojang.blaze3d.platform.GlStateManager;
 import mcjty.ariente.Ariente;
 import mcjty.lib.client.RenderHelper;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.renderer.BufferBuilder;
+import net.minecraft.client.renderer.IRenderTypeBuffer;
 import net.minecraft.client.renderer.Tessellator;
 import net.minecraft.client.renderer.entity.EntityRenderer;
 import net.minecraft.client.renderer.entity.EntityRendererManager;
 import net.minecraft.client.renderer.texture.AtlasTexture;
-import net.minecraft.client.renderer.vertex.DefaultVertexFormats;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.util.ResourceLocation;
 import net.minecraft.util.math.Vec3d;
@@ -34,7 +35,7 @@ public class LaserRender extends EntityRenderer<LaserEntity> {
     }
 
     @Override
-    public void doRender(LaserEntity entity, double x, double y, double z, float entityYaw, float partialTicks) {
+    public void render(LaserEntity entity, float entityYaw, float partialTicks, MatrixStack matrixStack, IRenderTypeBuffer buffer, int packedLightIn) {
         GlStateManager.depthMask(false);
         GlStateManager.enableBlend();
         GlStateManager.blendFunc(GL11.GL_ONE, GL11.GL_ONE);
@@ -48,7 +49,8 @@ public class LaserRender extends EntityRenderer<LaserEntity> {
 //        RenderHelper.Vector start = new RenderHelper.Vector((float) x, (float) y, (float) z);
 
         GlStateManager.pushMatrix();
-        GlStateManager.translatef((float)x, (float)y, (float)z);
+        // @todo 1.15
+//        GlStateManager.translatef((float)x, (float)y, (float)z);
         GlStateManager.rotatef(180.0F - entity.getSpawnYaw(), 0.0F, 1.0F, 0.0F);
         GlStateManager.rotatef(180.0F - entity.getSpawnPitch(), 1.0F, 0.0F, 0.0F);
 
@@ -59,15 +61,16 @@ public class LaserRender extends EntityRenderer<LaserEntity> {
 //        GlStateManager.translate(-doubleX - x, -doubleY - y, -doubleZ - z);
 
         Tessellator tessellator = Tessellator.getInstance();
-        BufferBuilder buffer = tessellator.getBuffer();
+        // @todo 1.15
+//        BufferBuilder buffer = tessellator.getBuffer();
 
         Vec3d lv = entity.getLookVec();
 
         // ----------------------------------------
 
-        this.bindTexture(laserbeams[random.nextInt(4)]);
-
-        buffer.begin(GL11.GL_QUADS, DefaultVertexFormats.POSITION_TEX_LMAP_COLOR);
+        // @todo 1.15
+//        this.bindTexture(laserbeams[random.nextInt(4)]);
+//        buffer.begin(GL11.GL_QUADS, DefaultVertexFormats.POSITION_TEX_LIGHTMAP_COLOR);
 
         float size = .05f;
         int length = 2;
@@ -128,15 +131,15 @@ public class LaserRender extends EntityRenderer<LaserEntity> {
         int b2 = brightness & 65535;
 
         BufferBuilder buffer = tessellator.getBuffer();
-        buffer.pos(p1.getX(), p1.getY(), p1.getZ()).tex(0.3D, 0.3D).lightmap(b1, b2).color(255, 255, 255, 128).endVertex();
-        buffer.pos(p2.getX(), p2.getY(), p2.getZ()).tex(0.7D, 0.3D).lightmap(b1, b2).color(255, 255, 255, 128).endVertex();
-        buffer.pos(p3.getX(), p3.getY(), p3.getZ()).tex(0.7D, 0.7D).lightmap(b1, b2).color(255, 255, 255, 128).endVertex();
-        buffer.pos(p4.getX(), p4.getY(), p4.getZ()).tex(0.3D, 0.7D).lightmap(b1, b2).color(255, 255, 255, 128).endVertex();
+        buffer.pos(p1.getX(), p1.getY(), p1.getZ()).tex(0.3f, 0.3f).lightmap(b1, b2).color(255, 255, 255, 128).endVertex();
+        buffer.pos(p2.getX(), p2.getY(), p2.getZ()).tex(0.7f, 0.3f).lightmap(b1, b2).color(255, 255, 255, 128).endVertex();
+        buffer.pos(p3.getX(), p3.getY(), p3.getZ()).tex(0.7f, 0.7f).lightmap(b1, b2).color(255, 255, 255, 128).endVertex();
+        buffer.pos(p4.getX(), p4.getY(), p4.getZ()).tex(0.3f, 0.7f).lightmap(b1, b2).color(255, 255, 255, 128).endVertex();
     }
 
 
     @Override
-    protected ResourceLocation getEntityTexture(LaserEntity entity) {
+    public ResourceLocation getEntityTexture(LaserEntity entity) {
         return AtlasTexture.LOCATION_BLOCKS_TEXTURE;
     }
 

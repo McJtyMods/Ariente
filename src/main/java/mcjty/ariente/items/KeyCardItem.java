@@ -116,7 +116,7 @@ public class KeyCardItem extends Item {
         tags.add(tag);
         ListNBT tagList = new ListNBT();
         for (String t : tags) {
-            tagList.add(new StringNBT(t));
+            tagList.add(StringNBT.valueOf(t));
         }
         stack.getOrCreateTag().put("tags", tagList);
     }

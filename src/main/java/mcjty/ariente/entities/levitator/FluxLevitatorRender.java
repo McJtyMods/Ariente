@@ -1,8 +1,10 @@
 package mcjty.ariente.entities.levitator;
 
+import com.mojang.blaze3d.matrix.MatrixStack;
 import com.mojang.blaze3d.platform.GlStateManager;
 import mcjty.ariente.Ariente;
 import mcjty.hologui.api.IHoloGuiEntity;
+import net.minecraft.client.renderer.IRenderTypeBuffer;
 import net.minecraft.client.renderer.entity.EntityRenderer;
 import net.minecraft.client.renderer.entity.EntityRendererManager;
 import net.minecraft.client.renderer.entity.model.EntityModel;
@@ -24,7 +26,7 @@ public class FluxLevitatorRender extends EntityRenderer<FluxLevitatorEntity> {
     }
 
     @Override
-    public void doRender(FluxLevitatorEntity entity, double x, double y, double z, float entityYaw, float partialTicks) {
+    public void render(FluxLevitatorEntity entity, float entityYaw, float partialTicks, MatrixStack matrixStack, IRenderTypeBuffer buffer, int packedLightIn) {
         GlStateManager.pushMatrix();
 //        long i = entity.getEntityId() * 493286711L;
 //        i = i * i * 4392167121L + i * 98761L;
@@ -52,9 +54,10 @@ public class FluxLevitatorRender extends EntityRenderer<FluxLevitatorEntity> {
                 vec3d2 = vec3d;
             }
 
-            x += vec3d.x - interX;
-            y += (vec3d1.y + vec3d2.y) / 2.0D - interY;
-            z += vec3d.z - interZ;
+            // @todo 1.15
+//            x += vec3d.x - interX;
+//            y += (vec3d1.y + vec3d2.y) / 2.0D - interY;
+//            z += vec3d.z - interZ;
             Vec3d vec3d3 = vec3d2.add(-vec3d1.x, -vec3d1.y, -vec3d1.z);
 
             if (vec3d3.length() != 0.0D) {
@@ -64,7 +67,8 @@ public class FluxLevitatorRender extends EntityRenderer<FluxLevitatorEntity> {
             }
         }
 
-        GlStateManager.translatef((float) x, (float) y + 0.375F, (float) z);
+        // @todo 1.15
+//        GlStateManager.translatef((float) x, (float) y + 0.375F, (float) z);
         GlStateManager.rotatef(180.0F - entityYaw, 0.0F, 1.0F, 0.0F);
         GlStateManager.rotatef(-pitch, 0.0F, 0.0F, 1.0F);
         float f5 = entity.getRollingAmplitude() - partialTicks;
@@ -78,15 +82,16 @@ public class FluxLevitatorRender extends EntityRenderer<FluxLevitatorEntity> {
             GlStateManager.rotatef(MathHelper.sin(f5) * f5 * f6 / 10.0F * entity.getRollingDirection(), 1.0F, 0.0F, 0.0F);
         }
 
-        this.bindEntityTexture(entity);
-
-        if (this.renderOutlines) {
-            GlStateManager.enableColorMaterial();
-            GlStateManager.setupSolidRenderingTextureCombine(this.getTeamColor(entity));
-        }
-
-        GlStateManager.scalef(-1.0F, -1.0F, 1.0F);
-        this.model.render(entity, 0.0F, 0.0F, -0.1F, 0.0F, 0.0F, 0.0625F);
+        // @todo 1.15
+//        this.bindEntityTexture(entity);
+//
+//        if (this.renderOutlines) {
+//            GlStateManager.enableColorMaterial();
+//            GlStateManager.setupSolidRenderingTextureCombine(this.getTeamColor(entity));
+//        }
+//
+//        GlStateManager.scalef(-1.0F, -1.0F, 1.0F);
+//        this.model.render(entity, 0.0F, 0.0F, -0.1F, 0.0F, 0.0F, 0.0625F);
 
         IHoloGuiEntity holoGui = entity.getHoloGuiFront();
         if (holoGui != null) {
@@ -103,16 +108,17 @@ public class FluxLevitatorRender extends EntityRenderer<FluxLevitatorEntity> {
 
         GlStateManager.popMatrix();
 
-        if (this.renderOutlines) {
-            GlStateManager.tearDownSolidRenderingTextureCombine();
-            GlStateManager.disableColorMaterial();
-        }
-
-        super.doRender(entity, x, y, z, entityYaw, partialTicks);
+        // @todo 1.15
+//        if (this.renderOutlines) {
+//            GlStateManager.tearDownSolidRenderingTextureCombine();
+//            GlStateManager.disableColorMaterial();
+//        }
+//
+//        super.doRender(entity, x, y, z, entityYaw, partialTicks);
     }
 
     @Override
-    protected ResourceLocation getEntityTexture(FluxLevitatorEntity entity) {
+    public ResourceLocation getEntityTexture(FluxLevitatorEntity entity) {
         return TEXTURE;
     }
 

@@ -1,5 +1,6 @@
 package mcjty.ariente.blocks.utility;
 
+import com.mojang.blaze3d.matrix.MatrixStack;
 import com.mojang.blaze3d.platform.GlStateManager;
 import mcjty.lib.blocks.BaseBlock;
 import net.minecraft.block.Block;
@@ -7,11 +8,9 @@ import net.minecraft.block.BlockState;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.FontRenderer;
 import net.minecraft.client.gui.screen.Screen;
-import net.minecraft.client.renderer.BufferBuilder;
-import net.minecraft.client.renderer.ItemRenderer;
-import net.minecraft.client.renderer.RenderHelper;
-import net.minecraft.client.renderer.Tessellator;
+import net.minecraft.client.renderer.*;
 import net.minecraft.client.renderer.tileentity.TileEntityRenderer;
+import net.minecraft.client.renderer.tileentity.TileEntityRendererDispatcher;
 import net.minecraft.client.renderer.vertex.DefaultVertexFormats;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.item.ItemStack;
@@ -19,7 +18,6 @@ import net.minecraft.util.Direction;
 import net.minecraft.util.math.BlockRayTraceResult;
 import net.minecraft.util.math.MathHelper;
 import net.minecraft.util.math.RayTraceResult;
-import net.minecraftforge.fml.client.registry.ClientRegistry;
 import org.lwjgl.opengl.GL11;
 
 import javax.annotation.Nullable;
@@ -29,8 +27,12 @@ public class StorageRenderer extends TileEntityRenderer<StorageTile> {
     private static int xx[] = new int[]{11, 36, 11, 36};
     private static int yy[] = new int[]{9, 9, 34, 34};
 
+    public StorageRenderer(TileEntityRendererDispatcher rendererDispatcherIn) {
+        super(rendererDispatcherIn);
+    }
+
     @Override
-    public void render(StorageTile te, double x, double y, double z, float partialTicks, int destroyStage) {
+    public void render(StorageTile te, float partialTicks, MatrixStack matrixStack, IRenderTypeBuffer buffer, int combinedLightIn, int combinedOverlayIn) {
         RayTraceResult mouseOver = Minecraft.getInstance().objectMouseOver;
         int index;
         if (mouseOver instanceof BlockRayTraceResult && te.getPos().equals(((BlockRayTraceResult) mouseOver).getPos())) {
@@ -45,14 +47,15 @@ public class StorageRenderer extends TileEntityRenderer<StorageTile> {
             return;
         }
 
-        Minecraft.getInstance().gameRenderer.disableLightmap();
+        Minecraft.getInstance().gameRenderer.getLightTexture().disableLightmap();
 
         BaseBlock gb = (BaseBlock) block;
 
         GlStateManager.pushMatrix();
         Direction facing = gb.getFrontDirection(gb.getRotationType(), state);
 
-        GlStateManager.translatef((float) x + 0.5F, (float) y + 0.75F, (float) z + 0.5F);
+        // @todo 1.15
+//        GlStateManager.translatef((float) x + 0.5F, (float) y + 0.75F, (float) z + 0.5F);
 
         if (facing == Direction.UP) {
             GlStateManager.rotatef(-90.0F, 1.0F, 0.0F, 0.0F);
@@ -81,7 +84,7 @@ public class StorageRenderer extends TileEntityRenderer<StorageTile> {
         renderSlots(te);
 
         GlStateManager.popMatrix();
-        Minecraft.getInstance().gameRenderer.enableLightmap();
+        Minecraft.getInstance().gameRenderer.getLightTexture().enableLightmap();
     }
 
     private void renderSlotHilight(int index) {
@@ -107,7 +110,8 @@ public class StorageRenderer extends TileEntityRenderer<StorageTile> {
     }
 
     private void renderSlots(StorageTile te) {
-        RenderHelper.enableGUIStandardItemLighting();
+        // @todo 1.15
+//        RenderHelper.enableGUIStandardItemLighting();
 
         float factor = 2.0f;
         float f3 = 0.0075F;
@@ -219,6 +223,7 @@ public class StorageRenderer extends TileEntityRenderer<StorageTile> {
     }
 
     public static void register() {
-        ClientRegistry.bindTileEntitySpecialRenderer(StorageTile.class, new StorageRenderer());
+        // @todo 1.15
+//        ClientRegistry.bindTileEntitySpecialRenderer(StorageTile.class, new StorageRenderer());
     }
 }

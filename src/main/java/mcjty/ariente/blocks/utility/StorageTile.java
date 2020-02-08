@@ -256,7 +256,7 @@ public class StorageTile extends GenericTileEntity implements IGuiTile, ICityEqu
         if (totals[type] == 0) {
             return;
         }
-        ItemStack stack = getStackFromType(type, player.isSneaking() ? 10000 : 1);
+        ItemStack stack = getStackFromType(type, player.isShiftKeyDown() ? 10000 : 1);
         if (!stack.isEmpty()) {
             if (player.getHeldItemMainhand().isEmpty()) {
                 player.setHeldItem(Hand.MAIN_HAND, stack);

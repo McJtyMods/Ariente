@@ -1,6 +1,7 @@
 package mcjty.ariente.entities.drone;
 
 
+import com.mojang.blaze3d.matrix.MatrixStack;
 import com.mojang.blaze3d.platform.GlStateManager;
 import net.minecraft.client.renderer.entity.EntityRenderer;
 import net.minecraft.client.renderer.entity.EntityRendererManager;
@@ -22,17 +23,14 @@ public class DroneRender extends LivingRenderer<DroneEntity, DroneModel<DroneEnt
      * Returns the location of an entity's texture. Doesn't seem to be called unless you call Render.bindEntityTexture.
      */
     @Override
-    protected ResourceLocation getEntityTexture(DroneEntity entity) {
+    public ResourceLocation getEntityTexture(DroneEntity entity) {
         return entity.isAttacking() ? mobShootingTexture : mobTexture;
     }
 
     public static final DroneRender.Factory FACTORY = new DroneRender.Factory();
 
-    /**
-     * Allows the render to do state modifications necessary before the model is rendered.
-     */
     @Override
-    protected void preRenderCallback(DroneEntity entitylivingbaseIn, float partialTickTime) {
+    protected void preRenderCallback(DroneEntity entitylivingbaseIn, MatrixStack matrixStackIn, float partialTickTime) {
         GlStateManager.scalef(1.5F, 1.5F, 1.5F);
         GlStateManager.color4f(1.0F, 1.0F, 1.0F, 1.0F);
     }

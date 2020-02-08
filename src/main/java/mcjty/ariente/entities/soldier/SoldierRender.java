@@ -1,5 +1,6 @@
 package mcjty.ariente.entities.soldier;
 
+import com.mojang.blaze3d.matrix.MatrixStack;
 import com.mojang.blaze3d.platform.GlStateManager;
 import mcjty.ariente.Ariente;
 import net.minecraft.client.renderer.entity.BipedRenderer;
@@ -34,7 +35,7 @@ public class SoldierRender extends BipedRenderer<SoldierEntity, BipedModel<Soldi
     }
 
     @Override
-    protected void preRenderCallback(SoldierEntity entitylivingbaseIn, float partialTickTime) {
+    protected void preRenderCallback(SoldierEntity entitylivingbaseIn, MatrixStack matrixStackIn, float partialTickTime) {
         if (entitylivingbaseIn instanceof MasterSoldierEntity) {
             GlStateManager.scaled(1.4, 1.4, 1.4);
         }
@@ -42,7 +43,7 @@ public class SoldierRender extends BipedRenderer<SoldierEntity, BipedModel<Soldi
 
     @Override
     @Nonnull
-    protected ResourceLocation getEntityTexture(@Nonnull SoldierEntity entity) {
+    public ResourceLocation getEntityTexture(@Nonnull SoldierEntity entity) {
         return mobTexture;
     }
 

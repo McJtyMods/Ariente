@@ -70,7 +70,7 @@ public class ElevatorTile extends GenericTileEntity implements IGuiTile, ITickab
                 clientPlayer.fallDistance = 0;
                 if (floors.size() < 2) {
                     double motionY;
-                    if (clientPlayer.isSneaking()) {
+                    if (clientPlayer.isShiftKeyDown()) {
                         motionY = -0.7;
                     } else if (McJtyLib.proxy.isJumpKeyDown()) {
                         motionY = 0.5;
@@ -81,7 +81,7 @@ public class ElevatorTile extends GenericTileEntity implements IGuiTile, ITickab
                     clientPlayer.setMotion(motion.x, motionY, motion.z);
                 } else {
                     if (moveToFloor == -1) {
-                        if (clientPlayer.isSneaking()) {
+                        if (clientPlayer.isShiftKeyDown()) {
                             moveToFloor = findLowerFloor(floors, (int) clientPlayer.getPosY());
                             System.out.println("DOWN: moveToFloor = " + moveToFloor);
                             clientPlayer.setPosition(pos.getX() + .5, clientPlayer.getPosY(), pos.getZ() + .5);

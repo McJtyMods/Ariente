@@ -30,8 +30,8 @@ public class WarperTile extends GenericTileEntity implements IGuiTile, IWarper {
     }
 
     @Override
-    public void setWorld(World worldIn) {
-        super.setWorld(worldIn);
+    public void setWorldAndPos(World worldIn, BlockPos pos) {
+        super.setWorldAndPos(worldIn, pos);
         if (Ariente.setup.arienteWorld) {
             DimensionType dim = ArienteWorldCompat.getArienteWorld().getDimension();
             if (worldIn != null && worldIn.getDimension().getType() == dim) {

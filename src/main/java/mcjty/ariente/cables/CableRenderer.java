@@ -1,19 +1,17 @@
 package mcjty.ariente.cables;
 
+import com.mojang.blaze3d.matrix.MatrixStack;
 import com.mojang.blaze3d.platform.GlStateManager;
 import mcjty.ariente.Ariente;
 import mcjty.lib.client.RenderHelper;
-import net.minecraft.block.Block;
-import net.minecraft.block.BlockState;
 import net.minecraft.client.Minecraft;
-import net.minecraft.client.renderer.BufferBuilder;
+import net.minecraft.client.renderer.IRenderTypeBuffer;
 import net.minecraft.client.renderer.Tessellator;
 import net.minecraft.client.renderer.tileentity.TileEntityRenderer;
-import net.minecraft.client.renderer.vertex.DefaultVertexFormats;
+import net.minecraft.client.renderer.tileentity.TileEntityRendererDispatcher;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.util.ResourceLocation;
 import net.minecraft.util.math.BlockPos;
-import net.minecraftforge.fml.client.registry.ClientRegistry;
 import org.lwjgl.opengl.GL11;
 
 import java.util.ArrayList;
@@ -70,20 +68,27 @@ public class CableRenderer extends TileEntityRenderer<GenericCableTileEntity> {
                 player, .1f);
     }
 
+    public CableRenderer(TileEntityRendererDispatcher rendererDispatcherIn) {
+        super(rendererDispatcherIn);
+    }
+
     @Override
-    public void render(GenericCableTileEntity te, double x, double y, double z, float partialTicks, int destroyStage) {
+    public void render(GenericCableTileEntity te, float partialTicks, MatrixStack matrixStack, IRenderTypeBuffer buffer, int combinedLightIn, int combinedOverlayIn) {
         if (true) { // @todo only when it has power
             switch (te.getCableColor()) {
                 case NEGARITE:
-                    this.bindTexture(negarite_laserbeams[random.nextInt(4)]);
+// @todo 1.15
+                    //                    this.bindTexture(negarite_laserbeams[random.nextInt(4)]);
                     break;
                 case POSIRITE:
-                    this.bindTexture(posirite_laserbeams[random.nextInt(4)]);
+// @todo 1.15
+//                    this.bindTexture(posirite_laserbeams[random.nextInt(4)]);
                     break;
                 case COMBINED:
                     return;
                 case DATA:
-                    this.bindTexture(data_laserbeams[random.nextInt(4)]);
+// @todo 1.15
+//                    this.bindTexture(data_laserbeams[random.nextInt(4)]);
                     break;
             }
 
@@ -103,25 +108,26 @@ public class CableRenderer extends TileEntityRenderer<GenericCableTileEntity> {
             GlStateManager.translated(-doubleX, -doubleY, -doubleZ);
 
             Tessellator tessellator = Tessellator.getInstance();
-            BufferBuilder buffer = tessellator.getBuffer();
-
-            // ----------------------------------------
-
-            BlockState state = te.getWorld().getBlockState(te.getPos());
-            Block block = state.getBlock();
-            if (block instanceof GenericCableBlock) {
-                int mask_ud = ((GenericCableBlock) block).getUpDownMask(state, te.getWorld(), te.getPos());
-                int mask_ew = ((GenericCableBlock) block).getEastWestMask(state, te.getWorld(), te.getPos());
-                int mask_ns = ((GenericCableBlock) block).getNorthSouthMask(state, te.getWorld(), te.getPos());
-
-                buffer.begin(GL11.GL_QUADS, DefaultVertexFormats.POSITION_TEX_LMAP_COLOR);
-
-                BEAM_RENDERERS_UP_DOWN.get(mask_ud).accept(player, te.getPos());
-                BEAM_RENDERERS_NORTH_SOUTH.get(mask_ns).accept(player, te.getPos());
-                BEAM_RENDERERS_EAST_WEST.get(mask_ew).accept(player, te.getPos());
-
-                tessellator.draw();
-            }
+            // @todo 1.15
+//            BufferBuilder buffer = tessellator.getBuffer();
+//
+//            // ----------------------------------------
+//
+//            BlockState state = te.getWorld().getBlockState(te.getPos());
+//            Block block = state.getBlock();
+//            if (block instanceof GenericCableBlock) {
+//                int mask_ud = ((GenericCableBlock) block).getUpDownMask(state, te.getWorld(), te.getPos());
+//                int mask_ew = ((GenericCableBlock) block).getEastWestMask(state, te.getWorld(), te.getPos());
+//                int mask_ns = ((GenericCableBlock) block).getNorthSouthMask(state, te.getWorld(), te.getPos());
+//
+//                buffer.begin(GL11.GL_QUADS, DefaultVertexFormats.POSITION_TEX_LMAP_COLOR);
+//
+//                BEAM_RENDERERS_UP_DOWN.get(mask_ud).accept(player, te.getPos());
+//                BEAM_RENDERERS_NORTH_SOUTH.get(mask_ns).accept(player, te.getPos());
+//                BEAM_RENDERERS_EAST_WEST.get(mask_ew).accept(player, te.getPos());
+//
+//                tessellator.draw();
+//            }
 
 
             GlStateManager.popMatrix();
@@ -133,7 +139,8 @@ public class CableRenderer extends TileEntityRenderer<GenericCableTileEntity> {
     }
 
     public static void register(Class<? extends GenericCableTileEntity> clazz) {
-        ClientRegistry.bindTileEntitySpecialRenderer(clazz, new CableRenderer());
+        // @todo 1.15
+//        ClientRegistry.bindTileEntitySpecialRenderer(clazz, new CableRenderer());
     }
 
 }

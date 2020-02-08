@@ -1,15 +1,18 @@
 package mcjty.ariente.items;
 
+import com.mojang.blaze3d.matrix.MatrixStack;
 import com.mojang.blaze3d.platform.GlStateManager;
 import net.minecraft.client.Minecraft;
+import net.minecraft.client.renderer.IRenderTypeBuffer;
 import net.minecraft.client.renderer.model.ItemCameraTransforms;
 import net.minecraft.client.renderer.tileentity.ItemStackTileEntityRenderer;
 import net.minecraft.item.ItemStack;
 
 public class BlueprintRenderer extends ItemStackTileEntityRenderer {
 
+
     @Override
-    public void renderByItem(ItemStack stack) {
+    public void render(ItemStack stack, MatrixStack matrixStackIn, IRenderTypeBuffer bufferIn, int combinedLightIn, int combinedOverlayIn) {
         GlStateManager.pushMatrix();
 
         // Translate to the location of our tile entity
@@ -17,7 +20,8 @@ public class BlueprintRenderer extends ItemStackTileEntityRenderer {
 
         // Render our item
         GlStateManager.translated(.5, .5, 0);
-        Minecraft.getInstance().getItemRenderer().renderItem(new ItemStack(ModItems.blueprintItem), ItemCameraTransforms.TransformType.NONE);
+        // @todo 1.15
+//        Minecraft.getInstance().getItemRenderer().renderItem(new ItemStack(ModItems.blueprintItem), ItemCameraTransforms.TransformType.NONE);
 
         ItemStack destination = BlueprintItem.getDestination(stack);
         if (!destination.isEmpty()) {
@@ -41,9 +45,9 @@ public class BlueprintRenderer extends ItemStackTileEntityRenderer {
             long angle = (System.currentTimeMillis() / 50) % 360;
             GlStateManager.rotatef(angle, 0, 1, 0);
 
-            Minecraft.getInstance().getItemRenderer().renderItem(stack, ItemCameraTransforms.TransformType.NONE);
+            // @todo 1.15
+//            Minecraft.getInstance().getItemRenderer().renderItem(stack, ItemCameraTransforms.TransformType.NONE);
         }
     }
-
 
 }
