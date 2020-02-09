@@ -208,7 +208,7 @@ public class BlueprintRecipeRegistry {
                 new ItemStack(ModItems.lithiumIngot, 2),
                 new ItemStack(ModItems.posiriteDust, 40)
         ));
-        recipes.add(new ConstructorRecipe(new ItemStack(ModBlocks.powerCombinerBlock.get()), COMMON,
+        recipes.add(new ConstructorRecipe(new ItemStack(ModBlocks.POWER_COMBINER.get()), COMMON,
                 new ItemStack(ModItems.circuitItem, 1),
                 new ItemStack(ModItems.silverIngot, 3),
                 new ItemStack(ModItems.silicon, 2),
@@ -324,13 +324,13 @@ public class BlueprintRecipeRegistry {
                 new ItemStack(ModItems.lithiumIngot, 1),
                 new ItemStack(Items.ENDER_PEARL, 1)
         ));
-        recipes.add(new ConstructorRecipe(new ItemStack(ModBlocks.slopeBlock), COMMON,
+        recipes.add(new ConstructorRecipe(new ItemStack(ModBlocks.SLOPE_BLOCK), COMMON,
                 new ItemStack(ModBlocks.MARBLE, 1) // @todo 1.14 , MarbleColor.BLACK.ordinal())
         ));
         recipes.add(new ConstructorRecipe(new ItemStack(ModBlocks.MARBLE_SLAB_BLOCK, 2), COMMON,
                 new ItemStack(ModBlocks.MARBLE, 1) // @todo 1.14 , MarbleColor.BLACK.ordinal())
         ));
-        recipes.add(new ConstructorRecipe(new ItemStack(ModBlocks.reinforcedMarble, 1), UNCOMMON,
+        recipes.add(new ConstructorRecipe(new ItemStack(ModBlocks.REINFORCED_MARBLE, 1), UNCOMMON,
                 new ItemStack(ModBlocks.MARBLE, 4),
                 new ItemStack(Blocks.OBSIDIAN, 4)
         ));
@@ -366,11 +366,11 @@ public class BlueprintRecipeRegistry {
                 new ItemStack(ModItems.silicon, 1),
                 new ItemStack(ModItems.silverIngot, 2)
         ));
-        recipes.add(new ConstructorRecipe(new ItemStack(ModBlocks.fluxGlow), COMMON,
+        recipes.add(new ConstructorRecipe(new ItemStack(ModBlocks.FLUX_GLOW), COMMON,
                 new ItemStack(ModBlocks.MARBLE, 1),
                 new ItemStack(Items.GLOWSTONE_DUST, 8)
         ));
-        recipes.add(new ConstructorRecipe(new ItemStack(ModBlocks.flatLightBlock), COMMON,
+        recipes.add(new ConstructorRecipe(new ItemStack(ModBlocks.FLAT_LIGHT_BLOCK), COMMON,
                 new ItemStack(ModBlocks.MARBLE_SLAB_BLOCK, 1),
                 new ItemStack(Items.GLOWSTONE_DUST, 8)
         ));

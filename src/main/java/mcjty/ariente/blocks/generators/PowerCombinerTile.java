@@ -1,5 +1,7 @@
 package mcjty.ariente.blocks.generators;
 
+import mcjty.ariente.Ariente;
+import mcjty.ariente.blocks.ModBlocks;
 import mcjty.ariente.cables.CableColor;
 import mcjty.ariente.cables.ConnectorTileEntity;
 import mcjty.ariente.gui.HelpBuilder;
@@ -12,14 +14,21 @@ import mcjty.hologui.api.IGuiComponent;
 import mcjty.hologui.api.IGuiComponentRegistry;
 import mcjty.hologui.api.IGuiTile;
 import mcjty.hologui.api.StyledColor;
+import mcjty.lib.blocks.BaseBlock;
+import mcjty.lib.builder.BlockBuilder;
 import mcjty.lib.tileentity.GenericTileEntity;
 import mcjty.lib.varia.OrientationTools;
+import net.minecraft.block.BlockState;
+import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.nbt.CompoundNBT;
 import net.minecraft.tileentity.ITickableTileEntity;
 import net.minecraft.tileentity.TileEntity;
 import net.minecraft.tileentity.TileEntityType;
+import net.minecraft.util.ActionResultType;
 import net.minecraft.util.Direction;
+import net.minecraft.util.Hand;
 import net.minecraft.util.math.BlockPos;
+import net.minecraft.util.math.BlockRayTraceResult;
 
 import static mcjty.hologui.api.Icons.*;
 
@@ -29,8 +38,28 @@ public class PowerCombinerTile extends GenericTileEntity implements ITickableTil
 
     private int powerTransfer = 100;
 
-    public PowerCombinerTile(TileEntityType<?> type) {
-        super(type);
+    public PowerCombinerTile() {
+        super(ModBlocks.POWER_COMBINER_TILE.get());
+    }
+
+    public static BaseBlock createBlock() {
+        return new BaseBlock(new BlockBuilder()
+                .tileEntitySupplier(PowerCombinerTile::new)
+            );
+        //        powerCombinerBlock = builderFactory.<PowerCombinerTile> builder("power_combiner")
+//                .tileEntityClass(PowerCombinerTile.class)
+//                .rotationType(BaseBlock.RotationType.ROTATION)
+//                .flags(RENDER_SOLID, RENDER_CUTOUT)
+//                .activateAction((world, pos, player, hand, side, hitX, hitY, hitZ) -> Ariente.guiHandler.openHoloGui(world, pos, player))
+//                .info("message.ariente.shiftmessage")
+//                .infoExtended("message.ariente.power_combiner")
+//                .build();
+    }
+
+    @Override
+    public ActionResultType onBlockActivated(BlockState state, PlayerEntity player, Hand hand, BlockRayTraceResult result) {
+        Ariente.guiHandler.openHoloGui(world, pos, player);
+        return ActionResultType.SUCCESS;
     }
 
     @Override

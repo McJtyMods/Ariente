@@ -1,6 +1,5 @@
 package mcjty.ariente.blocks.decorative;
 
-import mcjty.lib.McJtyLib;
 import net.minecraft.block.SoundType;
 import net.minecraft.block.material.Material;
 
@@ -19,9 +18,9 @@ public class PaneBlock extends net.minecraft.block.PaneBlock {
         return this;
     }
 
-    public void initModel() {
-        McJtyLib.proxy.initStandardItemModel(this);
-    }
+//    public void initModel() {
+//        McJtyLib.proxy.initStandardItemModel(this);
+//    }
 
     // @todo 1.15
 //    @Override

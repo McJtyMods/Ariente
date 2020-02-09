@@ -1,13 +1,16 @@
 package mcjty.ariente.blocks;
 
 import mcjty.ariente.blocks.decorative.*;
+import mcjty.ariente.blocks.generators.PowerCombinerTile;
 import mcjty.ariente.blocks.utility.BaseBeamBlock;
 import mcjty.ariente.blocks.utility.autofield.*;
 import mcjty.ariente.cables.ConnectorBlock;
 import mcjty.ariente.cables.NetCableBlock;
 import mcjty.ariente.facade.FacadeBlock;
 import mcjty.lib.blocks.BaseBlock;
+import mcjty.lib.blocks.RotationType;
 import mcjty.lib.builder.BlockBuilder;
+import net.minecraft.block.Block;
 import net.minecraft.block.SoundType;
 import net.minecraft.block.material.Material;
 import net.minecraft.tileentity.TileEntityType;
@@ -65,11 +68,37 @@ public class ModBlocks {
     public static final RegistryObject<BaseBlock> FIELD_MARKER = BLOCKS.register("field_marker", FieldMarkerTile::createBlock);
     public static final RegistryObject<TileEntityType<FieldMarkerTile>> FIELD_MARKER_TILE = TILES.register("field_marker", () -> TileEntityType.Builder.create(FieldMarkerTile::new, ROUND_ROBIN_NODE.get()).build(null));
 
+    public static final RegistryObject<RampBlock> RAMP_BLOCK = BLOCKS.register("ramp", RampBlock::new);
+    public static final RegistryObject<SlopeBlock> SLOPE_BLOCK = BLOCKS.register("slope", SlopeBlock::new);
+    public static final RegistryObject<PaneBlock> GLANCE_FENCE = BLOCKS.register("glance_fence", () -> new PaneBlock(Material.GLASS, SoundType.GLASS)
+            .setTransluscent(true));
+    public static final RegistryObject<PaneBlock> BLUE_GLASS_FENCE = BLOCKS.register("blue_glass_fence", () -> new PaneBlock(Material.GLASS, SoundType.GLASS)
+            .setTransluscent(true));
+    public static final RegistryObject<PaneBlock> MARBLE_FENCE = BLOCKS.register("marble_fence", () -> new PaneBlock(Material.ROCK, SoundType.STONE));
+    public static final RegistryObject<PaneBlock> TECH_FENCE = BLOCKS.register("tech_fence", () -> new PaneBlock(Material.ROCK, SoundType.STONE));
 
-    public static BaseBlock reinforcedMarble;
-    public static BaseBlock fluxGlow;
+    public static final RegistryObject<BaseBlock> REINFORCED_MARBLE = BLOCKS.register("reinforced_marble", () -> new BaseBlock(new BlockBuilder()
+            .properties(Block.Properties.create(Material.ROCK).hardnessAndResistance(80.0f, 3000.0f))
+//                .info("message.ariente.shiftmessage")
+//                .infoExtended("message.ariente.lock")
+    ) {
+        @Override
+        public RotationType getRotationType() {
+            return RotationType.NONE;
+        }
+    });
 
-    public static final RegistryObject<BaseBlock> powerCombinerBlock = BLOCKS.register("", null);
+    public static final RegistryObject<BaseBlock> FLUX_GLOW = BLOCKS.register("fluxglow", () -> new BaseBlock(new BlockBuilder()
+        .properties(Block.Properties.create(Material.GLASS).lightValue(15))) {
+        @Override
+        public RotationType getRotationType() {
+            return RotationType.NONE;
+        }
+    });
+
+    public static final RegistryObject<BaseBlock> POWER_COMBINER = BLOCKS.register("power_combiner", PowerCombinerTile::createBlock);
+    public static final RegistryObject<TileEntityType<PowerCombinerTile>> POWER_COMBINER_TILE = TILES.register("power_combiner", () -> TileEntityType.Builder.create(PowerCombinerTile::new, POWER_COMBINER.get()).build(null));
+
     public static final RegistryObject<BaseBlock> negariteGeneratorBlock = BLOCKS.register("", null);
     public static final RegistryObject<BaseBlock> negariteTankBlock = BLOCKS.register("", null);
     public static final RegistryObject<BaseBlock> posiriteTankBlock = BLOCKS.register("", null);
@@ -93,18 +122,12 @@ public class ModBlocks {
     public static final RegistryObject<BaseBlock> blueprintStorageBlock = BLOCKS.register("", null);
     public static final RegistryObject<BaseBlock> autoFieldBlock = BLOCKS.register("", null);
 
-    public static BaseBlock flatLightBlock;
+    public static final RegistryObject<BaseBlock> FLAT_LIGHT_BLOCK = BLOCKS.register("flatlight", () -> new BaseBlock(new BlockBuilder()
+            .properties(Block.Properties.create(Material.GLASS).lightValue(15))));
 
     public static NetCableBlock netCableBlock;
     public static ConnectorBlock connectorBlock;
     public static FacadeBlock facadeBlock;
-
-    public static RampBlock rampBlock;
-    public static SlopeBlock slopeBlock;
-    public static PaneBlock glassFence;
-    public static PaneBlock blueGlassFence;
-    public static PaneBlock marbleFence;
-    public static PaneBlock techFence;
 
     public static final AxisAlignedBB LIGHT_BLOCK_DOWN = new AxisAlignedBB(0.125F, 0.0F, 0.125F, 0.875F, 0.125F, 0.875F);
     public static final AxisAlignedBB LIGHT_BLOCK_UP = new AxisAlignedBB(0.125F, 0.875F, 0.125F, 0.875F, 1.0F, 0.875F);
@@ -115,9 +138,6 @@ public class ModBlocks {
 
 
     public static void init() {
-        initDecorative();
-        initOres();
-        initTechnical();
     }
 
     private static void initTechnical() {
@@ -126,19 +146,6 @@ public class ModBlocks {
         facadeBlock = new FacadeBlock();
 
         // @todo 1.14
-//        flatLightBlock = new BaseBlockBuilder<>(Ariente.instance, "flatlight")
-//                .creativeTabs(Ariente.setup.getTab())
-//                .lightValue(15)
-//                .flags(NON_OPAQUE, NON_FULLCUBE)
-//                .boundingBox((state, source, pos) -> getFlatBox(state))
-//                .build();
-//
-//        fluxGlow = new BaseBlockBuilder<>(Ariente.instance, "fluxglow")
-//                .creativeTabs(Ariente.setup.getTab())
-//                .rotationType(NONE)
-//                .lightValue(15)
-//                .build();
-//
 //        fluxBeamBlock = new BaseBlockBuilder<>(Ariente.instance, "flux_beam")
 //                .rotationType(HORIZROTATION)
 //                .flags(NON_OPAQUE, NON_FULLCUBE, NO_COLLISION)
@@ -150,14 +157,6 @@ public class ModBlocks {
 //                .flags(NON_OPAQUE, NON_FULLCUBE, NO_COLLISION)
 //                .boundingBox((state, source, pos) -> getBeamBox(state))
 //                .build();
-//
-//        reinforcedMarble = new BaseBlockBuilder<>(Ariente.instance, "reinforced_marble")
-//                .creativeTabs(Ariente.setup.getTab())
-//                .rotationType(NONE)
-//                .info("message.ariente.shiftmessage")
-//                .infoExtended("message.ariente.lock")
-//                .build();
-//        reinforcedMarble.setHardness(80.0F).setResistance(3000.0F);
 //
 //        constructorBlock = builderFactory.<ConstructorTile> builder("constructor")
 //                .tileEntityClass(ConstructorTile.class)
@@ -258,15 +257,6 @@ public class ModBlocks {
 //                .info("message.ariente.shiftmessage")
 //                .infoExtended("message.ariente.signal_transmitter")
 //                .infoExtendedParameter(ItemStackTools.intGetter("channel", -1))
-//                .build();
-//
-//        powerCombinerBlock = builderFactory.<PowerCombinerTile> builder("power_combiner")
-//                .tileEntityClass(PowerCombinerTile.class)
-//                .rotationType(BaseBlock.RotationType.ROTATION)
-//                .flags(RENDER_SOLID, RENDER_CUTOUT)
-//                .activateAction((world, pos, player, hand, side, hitX, hitY, hitZ) -> Ariente.guiHandler.openHoloGui(world, pos, player))
-//                .info("message.ariente.shiftmessage")
-//                .infoExtended("message.ariente.power_combiner")
 //                .build();
 //
 //        negariteGeneratorBlock = builderFactory.<NegariteGeneratorTile> builder("negarite_generator")
@@ -433,36 +423,6 @@ public class ModBlocks {
 //        }
 //        return Block.FULL_BLOCK_AABB;
 //    }
-
-
-    private static void initDecorative() {
-        BLACK_TECH_BLOCK = new BlackTechBlock("blacktech");
-        MARBLE_TECH_BLOCK = new MarbleTechBlock("marbletech");
-        PATTERN_BLOCK = new PatternBlock("pattern");
-        MARBLE = new MarbleBlock("marble");
-        MARBLE_SMOOTH = new MarbleBlock("marble_smooth");
-        MARBLE_PILAR = new MarbleBlock("marble_pilar");
-        MARBLE_BRICKS = new MarbleBlock("marble_bricks");
-        MARBLE_SLAB_BLOCK = new MarbleSlabBlock();    // @todo 1.14 "marble_slab"
-        DOUBLE_MARBLE_SLAB_BLOCK = new DoubleMarbleSlabBlock("double_marble_slab");
-        rampBlock = new RampBlock();    // @todo 1.14 "ramp"
-        slopeBlock = new SlopeBlock();      // @todo 1.14 "slope"
-        glassFence = (PaneBlock) new PaneBlock(Material.GLASS, SoundType.GLASS)   // @todo 1.14 "glass_fence",
-                .setTransluscent(true);
-//                .setHardness(0.3F);   // @todo 1.14
-        blueGlassFence = (PaneBlock) new PaneBlock(Material.GLASS, SoundType.GLASS)   // @todo 1.14 "blue_glass_fence",
-                .setTransluscent(true);
-//                .setHardness(0.3F);   // @todo 1.14
-        marbleFence = (PaneBlock) new PaneBlock(Material.ROCK, SoundType.STONE);   // @todo 1.14 "marble_fence",
-        //.setHardness(3.0F).setResistance(8.0F);   // @todo 1.14
-        techFence = (PaneBlock) new PaneBlock(Material.ROCK, SoundType.STONE); // @todo 1.14 "tech_fence",
-//                .setHardness(3.0F).setResistance(8.0F);   // @todo 1.14
-    }
-
-    private static void initOres() {
-        // @todo 1.14
-
-    }
 
 
     public static void initOreDict() {
