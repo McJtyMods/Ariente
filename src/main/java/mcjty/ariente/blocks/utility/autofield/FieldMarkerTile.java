@@ -1,5 +1,9 @@
 package mcjty.ariente.blocks.utility.autofield;
 
+import mcjty.ariente.blocks.ModBlocks;
+import mcjty.lib.blocks.BaseBlock;
+import mcjty.lib.blocks.RotationType;
+import mcjty.lib.builder.BlockBuilder;
 import mcjty.lib.multipart.MultipartHelper;
 import mcjty.lib.multipart.MultipartTE;
 import mcjty.lib.multipart.PartSlot;
@@ -16,12 +20,31 @@ import net.minecraft.util.Direction;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.World;
 
+import javax.annotation.Nonnull;
+
 public class FieldMarkerTile extends GenericTileEntity {
 
     private BlockPos autoFieldTile = null;
 
-    public FieldMarkerTile(TileEntityType<?> type) {
-        super(type);
+    public FieldMarkerTile() {
+        super(ModBlocks.FIELD_MARKER_TILE.get());
+    }
+
+    public static BaseBlock createBlock() {
+        return new BaseBlock(new BlockBuilder()
+                .tileEntitySupplier(FieldMarkerTile::new)
+        ) {
+            @Override
+            public RotationType getRotationType() {
+                return RotationType.NONE;
+            }
+
+            @Nonnull
+            @Override
+            public PartSlot getSlotFromState(World world, BlockPos pos, BlockState newState) {
+                return PartSlot.DOWN;
+            }
+        };
     }
 
     @Override

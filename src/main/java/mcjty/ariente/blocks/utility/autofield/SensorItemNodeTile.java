@@ -9,15 +9,11 @@ import mcjty.hologui.api.StyledColor;
 import mcjty.hologui.api.components.IIconChoice;
 import mcjty.hologui.api.components.IPanel;
 import mcjty.hologui.api.components.ITextChoice;
+import mcjty.lib.blocks.BaseBlock;
+import mcjty.lib.builder.BlockBuilder;
 import mcjty.lib.multipart.PartPos;
-import net.minecraft.block.BlockState;
-import net.minecraft.entity.LivingEntity;
 import net.minecraft.item.DyeColor;
 import net.minecraft.nbt.CompoundNBT;
-import net.minecraft.tileentity.TileEntityType;
-import net.minecraft.util.Direction;
-import net.minecraft.util.math.BlockPos;
-import net.minecraft.world.World;
 import org.apache.commons.lang3.tuple.Pair;
 
 import static mcjty.hologui.api.Icons.*;
@@ -30,14 +26,8 @@ public class SensorItemNodeTile extends AbstractNodeTile {
 
     private static String[] operators = new String[] { "<",  "<=", ">", ">=", "=", "<>" };
 
-    public static BlockState getStateForPlacement(World world, BlockPos pos, Direction facing, float hitX, float hitY, float hitZ, int meta, LivingEntity placer) {
-        NodeOrientation orientation = getOrientationFromPlacement(facing, hitX, hitY, hitZ);
-        // Since this is a multipart we can use state that isn't convertable to metadata
-        return ModBlocks.sensorItemNode.get().getDefaultState().with(ORIENTATION, orientation);
-    }
-
-    public SensorItemNodeTile(TileEntityType<?> type) {
-        super(type);
+    public SensorItemNodeTile() {
+        super(ModBlocks.SENSOR_ITEM_TILE.get());
     }
 
     // Return true if we already know the operator is succesful. Check false if we already know the operator can never succeed.

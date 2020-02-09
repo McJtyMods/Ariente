@@ -6,10 +6,6 @@ import net.minecraft.state.EnumProperty;
 
 public class MarbleBlock extends BaseVariantBlock<MarbleColor> {
 
-    public MarbleBlock(String name) {
-        super(name);
-    }
-
     @Override
     public EnumProperty<MarbleColor> getProperty() {
         return MarbleColor.COLOR;

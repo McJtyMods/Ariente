@@ -45,60 +45,42 @@ public class Registration {
         ENTITIES.register(FMLJavaModLoadingContext.get().getModEventBus());
     }
 
-    public static final RegistryObject<EntityType<LaserEntity>> LASER = ENTITIES.register("ariente_laser", () -> {
-        return EntityType.Builder.create(LaserEntity::new, EntityClassification.MISC)
-                .size(1, 1)
-                .setShouldReceiveVelocityUpdates(false)
-                .build("ariente_laser");
-    });
-    public static final RegistryObject<EntityType<FluxLevitatorEntity>> FLUX_LEVITATOR = ENTITIES.register("ariente_flux_levitator", () -> {
-        return EntityType.Builder.create(FluxLevitatorEntity::new, EntityClassification.MISC)
-                .size(1.30F, 0.9F)
-                .setShouldReceiveVelocityUpdates(false)
-                .build("ariente_flux_levitator");
-    });
-    public static final RegistryObject<EntityType<FluxShipEntity>> FLUX_SHIP = ENTITIES.register("ariente_flux_ship", () -> {
-        return EntityType.Builder.create(FluxShipEntity::new, EntityClassification.MISC)
-                .size(2.50F, 1.5F)
-                .setShouldReceiveVelocityUpdates(false)
-                .build("ariente_flux_ship");
-    });
-    public static final RegistryObject<EntityType<EntityArientePearl>> PEARL = ENTITIES.register("ariente_ariente_pearl", () -> {
-        return EntityType.Builder.create(EntityArientePearl::new, EntityClassification.MISC)
-                .size(0.25F, 0.25F)
-                .setShouldReceiveVelocityUpdates(false)
-                .build("ariente_ariente_pearl");
-    });
-    public static final RegistryObject<EntityType<FluxElevatorEntity>> ELEVATOR = ENTITIES.register("ariente_flux_elevator", () -> {
-        return EntityType.Builder.create(FluxElevatorEntity::new, EntityClassification.MISC)
-                .size(1.30F, 0.9F)
-                .setShouldReceiveVelocityUpdates(false)
-                .build("ariente_flux_elevator");
-    });
-    public static final RegistryObject<EntityType<DroneEntity>> DRONE = ENTITIES.register("ariente_drone", () -> {
-        return EntityType.Builder.create(DroneEntity::new, EntityClassification.MISC)
-                .size(2.0F, 2.0F)
-                .setShouldReceiveVelocityUpdates(false)
-                .build("ariente_drone");
-    });
-    public static final RegistryObject<EntityType<SentinelDroneEntity>> SENTINEL_DRONE = ENTITIES.register("ariente_sentinel_drone", () -> {
-        return EntityType.Builder.create(SentinelDroneEntity::new, EntityClassification.MISC)
-                .size(1.3F, 1.3F)
-                .setShouldReceiveVelocityUpdates(false)
-                .build("ariente_sentinel_drone");
-    });
-    public static final RegistryObject<EntityType<SoldierEntity>> SOLDIER = ENTITIES.register("soldier", () -> {
-        return EntityType.Builder.create(SoldierEntity::new, EntityClassification.MISC)
-                .size(0.6F, 1.95F)
-                .setShouldReceiveVelocityUpdates(false)
-                .build("soldier");
-    });
-    public static final RegistryObject<EntityType<MasterSoldierEntity>> MASTER_SOLDIER = ENTITIES.register("master_soldier", () -> {
-        return EntityType.Builder.create(MasterSoldierEntity::new, EntityClassification.MISC)
-                .size(0.7F, 2.7F)
-                .setShouldReceiveVelocityUpdates(false)
-                .build("master_soldier");
-    });
+    public static final RegistryObject<EntityType<LaserEntity>> LASER = ENTITIES.register("ariente_laser", () -> EntityType.Builder.create(LaserEntity::new, EntityClassification.MISC)
+            .size(1, 1)
+            .setShouldReceiveVelocityUpdates(false)
+            .build("ariente_laser"));
+    public static final RegistryObject<EntityType<FluxLevitatorEntity>> FLUX_LEVITATOR = ENTITIES.register("ariente_flux_levitator", () -> EntityType.Builder.create(FluxLevitatorEntity::new, EntityClassification.MISC)
+            .size(1.30F, 0.9F)
+            .setShouldReceiveVelocityUpdates(false)
+            .build("ariente_flux_levitator"));
+    public static final RegistryObject<EntityType<FluxShipEntity>> FLUX_SHIP = ENTITIES.register("ariente_flux_ship", () -> EntityType.Builder.create(FluxShipEntity::new, EntityClassification.MISC)
+            .size(2.50F, 1.5F)
+            .setShouldReceiveVelocityUpdates(false)
+            .build("ariente_flux_ship"));
+    public static final RegistryObject<EntityType<EntityArientePearl>> PEARL = ENTITIES.register("ariente_ariente_pearl", () -> EntityType.Builder.create(EntityArientePearl::new, EntityClassification.MISC)
+            .size(0.25F, 0.25F)
+            .setShouldReceiveVelocityUpdates(false)
+            .build("ariente_ariente_pearl"));
+    public static final RegistryObject<EntityType<FluxElevatorEntity>> ELEVATOR = ENTITIES.register("ariente_flux_elevator", () -> EntityType.Builder.create(FluxElevatorEntity::new, EntityClassification.MISC)
+            .size(1.30F, 0.9F)
+            .setShouldReceiveVelocityUpdates(false)
+            .build("ariente_flux_elevator"));
+    public static final RegistryObject<EntityType<DroneEntity>> DRONE = ENTITIES.register("ariente_drone", () -> EntityType.Builder.create(DroneEntity::new, EntityClassification.MISC)
+            .size(2.0F, 2.0F)
+            .setShouldReceiveVelocityUpdates(false)
+            .build("ariente_drone"));
+    public static final RegistryObject<EntityType<SentinelDroneEntity>> SENTINEL_DRONE = ENTITIES.register("ariente_sentinel_drone", () -> EntityType.Builder.create(SentinelDroneEntity::new, EntityClassification.MISC)
+            .size(1.3F, 1.3F)
+            .setShouldReceiveVelocityUpdates(false)
+            .build("ariente_sentinel_drone"));
+    public static final RegistryObject<EntityType<SoldierEntity>> SOLDIER = ENTITIES.register("soldier", () -> EntityType.Builder.create(SoldierEntity::new, EntityClassification.MISC)
+            .size(0.6F, 1.95F)
+            .setShouldReceiveVelocityUpdates(false)
+            .build("soldier"));
+    public static final RegistryObject<EntityType<MasterSoldierEntity>> MASTER_SOLDIER = ENTITIES.register("master_soldier", () -> EntityType.Builder.create(MasterSoldierEntity::new, EntityClassification.MISC)
+            .size(0.7F, 2.7F)
+            .setShouldReceiveVelocityUpdates(false)
+            .build("master_soldier"));
 
     // @todo 1.14
     public static void registerItems() {

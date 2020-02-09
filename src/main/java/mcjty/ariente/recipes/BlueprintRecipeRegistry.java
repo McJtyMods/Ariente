@@ -229,13 +229,13 @@ public class BlueprintRecipeRegistry {
                 new ItemStack(ModItems.silicon, 2)
         ));
         recipes.add(new ConstructorRecipe(new ItemStack(ModBlocks.storageBlock.get()), COMMON,
-                new ItemStack(ModBlocks.marble, 1),
+                new ItemStack(ModBlocks.MARBLE, 1),
                 new ItemStack(ModItems.silverIngot, 3),
                 new ItemStack(Blocks.CHEST, 1),
                 new ItemStack(Blocks.GLASS_PANE, 4)
         ));
         recipes.add(new ConstructorRecipe(new ItemStack(ModBlocks.blueprintStorageBlock.get()), COMMON,
-                new ItemStack(ModBlocks.marble, 1),
+                new ItemStack(ModBlocks.MARBLE, 1),
                 new ItemStack(ModItems.silverIngot, 3),
                 new ItemStack(ModItems.silicon, 2),
                 new ItemStack(Blocks.CHEST, 1),
@@ -243,7 +243,7 @@ public class BlueprintRecipeRegistry {
         ));
         recipes.add(new ConstructorRecipe(new ItemStack(ModBlocks.elevatorBlock.get()), COMMON,
                 new ItemStack(ModItems.circuitItem, 1),
-                new ItemStack(ModBlocks.marbleSlabBlock, 1),
+                new ItemStack(ModBlocks.MARBLE_SLAB_BLOCK, 1),
                 new ItemStack(ModItems.silverIngot, 3)
         ));
         recipes.add(new ConstructorRecipe(new ItemStack(ModBlocks.negariteTankBlock.get()), COMMON,
@@ -258,30 +258,30 @@ public class BlueprintRecipeRegistry {
                 new ItemStack(Blocks.GLASS, 4),
                 new ItemStack(ModItems.posiriteDust, 20)
         ));
-        recipes.add(new ConstructorRecipe(new ItemStack(ModBlocks.fluxBeamBlock), COMMON,
-                new ItemStack(ModBlocks.marble, 1),
+        recipes.add(new ConstructorRecipe(new ItemStack(ModBlocks.FLUX_BEAM_BLOCK), COMMON,
+                new ItemStack(ModBlocks.MARBLE, 1),
                 new ItemStack(ModItems.silverIngot, 1),
                 new ItemStack(ModItems.negariteDust, 1),
                 new ItemStack(ModItems.posiriteDust, 1)
         ));
-        recipes.add(new ConstructorRecipe(new ItemStack(ModBlocks.fluxBendBeamBlock), COMMON,
-                new ItemStack(ModBlocks.marble, 1),
+        recipes.add(new ConstructorRecipe(new ItemStack(ModBlocks.FLUX_BEND_BEAM_BLOCK), COMMON,
+                new ItemStack(ModBlocks.MARBLE, 1),
                 new ItemStack(ModItems.silverIngot, 1),
                 new ItemStack(ModItems.negariteDust, 1),
                 new ItemStack(ModItems.posiriteDust, 1)
         ));
         recipes.add(new ConstructorRecipe(new ItemStack(ModBlocks.levelMarkerBlock.get()), COMMON,
-                new ItemStack(ModBlocks.marbleSlabBlock, 1),
+                new ItemStack(ModBlocks.MARBLE_SLAB_BLOCK, 1),
                 new ItemStack(ModItems.silverIngot, 1)
         ));
         recipes.add(new ConstructorRecipe(new ItemStack(ModBlocks.doorMarkerBlock.get()), COMMON,
-                new ItemStack(ModBlocks.marbleSlabBlock, 1),
+                new ItemStack(ModBlocks.MARBLE_SLAB_BLOCK, 1),
                 new ItemStack(ModItems.silicon, 3),
                 new ItemStack(ModItems.silverIngot, 1)
         ));
         recipes.add(new ConstructorRecipe(new ItemStack(ModBlocks.alarmBlock.get()), UNCOMMON,
                 new ItemStack(ModItems.circuitItem, 1),
-                new ItemStack(ModBlocks.marble, 1),
+                new ItemStack(ModBlocks.MARBLE, 1),
                 new ItemStack(ModItems.silicon, 1),
                 new ItemStack(ModItems.lithiumIngot, 1),
                 new ItemStack(Items.GLOWSTONE_DUST, 1),
@@ -296,7 +296,7 @@ public class BlueprintRecipeRegistry {
         ));
         recipes.add(new ConstructorRecipe(new ItemStack(ModBlocks.signalReceiverBlock.get()), UNCOMMON,
                 new ItemStack(ModItems.circuitItem, 1),
-                new ItemStack(ModBlocks.marbleSlabBlock, 1),
+                new ItemStack(ModBlocks.MARBLE_SLAB_BLOCK, 1),
                 new ItemStack(ModItems.silicon, 1),
                 new ItemStack(ModItems.lithiumIngot, 1),
                 new ItemStack(Items.ENDER_PEARL, 1),
@@ -304,34 +304,34 @@ public class BlueprintRecipeRegistry {
         ));
         recipes.add(new ConstructorRecipe(new ItemStack(ModBlocks.signalTransmitterBlock.get()), UNCOMMON,
                 new ItemStack(ModItems.circuitItem, 1),
-                new ItemStack(ModBlocks.marbleSlabBlock, 1),
+                new ItemStack(ModBlocks.MARBLE_SLAB_BLOCK, 1),
                 new ItemStack(ModItems.silicon, 2),
                 new ItemStack(ModItems.lithiumIngot, 1),
                 new ItemStack(Items.ENDER_PEARL, 1)
         ));
         recipes.add(new ConstructorRecipe(new ItemStack(ModBlocks.wirelessButtonBlock.get()), UNCOMMON,
                 new ItemStack(ModItems.circuitItem, 1),
-                new ItemStack(ModBlocks.marbleSlabBlock, 1),
+                new ItemStack(ModBlocks.MARBLE_SLAB_BLOCK, 1),
                 new ItemStack(ModItems.silicon, 2),
                 new ItemStack(ModItems.lithiumIngot, 1),
                 new ItemStack(Items.ENDER_PEARL, 1)
         ));
         recipes.add(new ConstructorRecipe(new ItemStack(ModBlocks.wirelessLockBlock.get()), UNCOMMON,
                 new ItemStack(ModItems.circuitItem, 1),
-                new ItemStack(ModBlocks.marbleSlabBlock, 1),
+                new ItemStack(ModBlocks.MARBLE_SLAB_BLOCK, 1),
                 new ItemStack(ModItems.silicon, 4),
                 new ItemStack(ModItems.silverIngot, 2),
                 new ItemStack(ModItems.lithiumIngot, 1),
                 new ItemStack(Items.ENDER_PEARL, 1)
         ));
         recipes.add(new ConstructorRecipe(new ItemStack(ModBlocks.slopeBlock), COMMON,
-                new ItemStack(ModBlocks.marble, 1) // @todo 1.14 , MarbleColor.BLACK.ordinal())
+                new ItemStack(ModBlocks.MARBLE, 1) // @todo 1.14 , MarbleColor.BLACK.ordinal())
         ));
-        recipes.add(new ConstructorRecipe(new ItemStack(ModBlocks.marbleSlabBlock, 2), COMMON,
-                new ItemStack(ModBlocks.marble, 1) // @todo 1.14 , MarbleColor.BLACK.ordinal())
+        recipes.add(new ConstructorRecipe(new ItemStack(ModBlocks.MARBLE_SLAB_BLOCK, 2), COMMON,
+                new ItemStack(ModBlocks.MARBLE, 1) // @todo 1.14 , MarbleColor.BLACK.ordinal())
         ));
         recipes.add(new ConstructorRecipe(new ItemStack(ModBlocks.reinforcedMarble, 1), UNCOMMON,
-                new ItemStack(ModBlocks.marble, 4),
+                new ItemStack(ModBlocks.MARBLE, 4),
                 new ItemStack(Blocks.OBSIDIAN, 4)
         ));
         recipes.add(new ConstructorRecipe(new ItemStack(ModBlocks.autoFieldBlock.get()), UNCOMMON,
@@ -341,37 +341,37 @@ public class BlueprintRecipeRegistry {
                 new ItemStack(Items.ENDER_PEARL, 1),
                 new ItemStack(ModItems.silverIngot, 2)
         ));
-        recipes.add(new ConstructorRecipe(new ItemStack(ModBlocks.sensorItemNode.get()), UNCOMMON,
+        recipes.add(new ConstructorRecipe(new ItemStack(ModBlocks.SENSOR_ITEM_NODE.get()), UNCOMMON,
                 new ItemStack(ModItems.circuitItem, 1),
                 new ItemStack(ModItems.silicon, 2),
                 new ItemStack(ModItems.silverIngot, 2)
         ));
-        recipes.add(new ConstructorRecipe(new ItemStack(ModBlocks.inputItemNode.get()), COMMON,
+        recipes.add(new ConstructorRecipe(new ItemStack(ModBlocks.INPUT_ITEM_NODE.get()), COMMON,
                 new ItemStack(ModItems.circuitItem, 1),
                 new ItemStack(ModItems.silicon, 2),
                 new ItemStack(ModItems.silverIngot, 2)
         ));
-        recipes.add(new ConstructorRecipe(new ItemStack(ModBlocks.outputItemNode.get()), COMMON,
+        recipes.add(new ConstructorRecipe(new ItemStack(ModBlocks.OUTPUT_ITEM_NODE.get()), COMMON,
                 new ItemStack(ModItems.circuitItem, 1),
                 new ItemStack(ModItems.silicon, 2),
                 new ItemStack(ModItems.silverIngot, 2)
         ));
-        recipes.add(new ConstructorRecipe(new ItemStack(ModBlocks.roundRobinNode.get()), UNCOMMON,
+        recipes.add(new ConstructorRecipe(new ItemStack(ModBlocks.ROUND_ROBIN_NODE.get()), UNCOMMON,
                 new ItemStack(ModItems.circuitItem, 1),
                 new ItemStack(ModItems.silicon, 1),
                 new ItemStack(ModItems.silverIngot, 2)
         ));
-        recipes.add(new ConstructorRecipe(new ItemStack(ModBlocks.fieldMarker.get()), COMMON,
-                new ItemStack(ModBlocks.marbleSlabBlock, 1),
+        recipes.add(new ConstructorRecipe(new ItemStack(ModBlocks.FIELD_MARKER.get()), COMMON,
+                new ItemStack(ModBlocks.MARBLE_SLAB_BLOCK, 1),
                 new ItemStack(ModItems.silicon, 1),
                 new ItemStack(ModItems.silverIngot, 2)
         ));
         recipes.add(new ConstructorRecipe(new ItemStack(ModBlocks.fluxGlow), COMMON,
-                new ItemStack(ModBlocks.marble, 1),
+                new ItemStack(ModBlocks.MARBLE, 1),
                 new ItemStack(Items.GLOWSTONE_DUST, 8)
         ));
         recipes.add(new ConstructorRecipe(new ItemStack(ModBlocks.flatLightBlock), COMMON,
-                new ItemStack(ModBlocks.marbleSlabBlock, 1),
+                new ItemStack(ModBlocks.MARBLE_SLAB_BLOCK, 1),
                 new ItemStack(Items.GLOWSTONE_DUST, 8)
         ));
         recipes.add(new ConstructorRecipe(new ItemStack(ModBlocks.netCableBlock, 8 /* @todo 1.14 , CableColor.NEGARITE.ordinal())*/), COMMON,

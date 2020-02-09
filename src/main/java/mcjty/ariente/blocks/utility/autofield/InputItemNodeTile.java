@@ -9,13 +9,7 @@ import mcjty.hologui.api.Icons;
 import mcjty.hologui.api.StyledColor;
 import mcjty.hologui.api.components.IPanel;
 import mcjty.lib.varia.ItemStackList;
-import net.minecraft.block.BlockState;
-import net.minecraft.entity.LivingEntity;
 import net.minecraft.nbt.CompoundNBT;
-import net.minecraft.tileentity.TileEntityType;
-import net.minecraft.util.Direction;
-import net.minecraft.util.math.BlockPos;
-import net.minecraft.world.World;
 import org.apache.commons.lang3.tuple.Pair;
 
 public class InputItemNodeTile extends AbstractItemNodeTile {
@@ -26,14 +20,8 @@ public class InputItemNodeTile extends AbstractItemNodeTile {
     private boolean inputDamage = false;
     private boolean inputNbt = false;
 
-    public InputItemNodeTile(TileEntityType<?> type) {
-        super(type);
-    }
-
-    public static BlockState getStateForPlacement(World world, BlockPos pos, Direction facing, float hitX, float hitY, float hitZ, int meta, LivingEntity placer) {
-        NodeOrientation orientation = getOrientationFromPlacement(facing, hitX, hitY, hitZ);
-        // Since this is a multipart we can use state that isn't convertable to metadata
-        return ModBlocks.inputItemNode.get().getDefaultState().with(ORIENTATION, orientation);
+    public InputItemNodeTile() {
+        super(ModBlocks.INPUT_ITEM_TILE.get());
     }
 
 // @todo 1.14

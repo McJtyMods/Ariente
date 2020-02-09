@@ -9,9 +9,7 @@ import net.minecraft.entity.LivingEntity;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.CompoundNBT;
-import net.minecraft.state.EnumProperty;
 import net.minecraft.tileentity.TileEntity;
-import net.minecraft.tileentity.TileEntityType;
 import net.minecraft.util.ActionResultType;
 import net.minecraft.util.Direction;
 import net.minecraft.util.Hand;
@@ -21,17 +19,10 @@ import net.minecraft.util.math.BlockRayTraceResult;
 import net.minecraft.world.IWorld;
 import net.minecraft.world.World;
 
+import static mcjty.ariente.blocks.utility.autofield.AbstractNodeTile.ORIENTATION;
 import static mcjty.ariente.blocks.utility.autofield.NodeOrientation.*;
 
 public class RoundRobinNodeTile extends GenericTileEntity {
-
-    public static final EnumProperty<NodeOrientation> ORIENTATION = EnumProperty.create("orientation", NodeOrientation.class, NodeOrientation.values());
-
-    public static BlockState getStateForPlacement(World world, BlockPos pos, Direction facing, float hitX, float hitY, float hitZ, int meta, LivingEntity placer) {
-        NodeOrientation orientation = getOrientationFromPlacement(facing, hitX, hitY, hitZ);
-        // Since this is a multipart we can use state that isn't convertable to metadata
-        return ModBlocks.roundRobinNode.get().getDefaultState().with(ORIENTATION, orientation);
-    }
 
     private int index = 0;
 
@@ -63,8 +54,8 @@ public class RoundRobinNodeTile extends GenericTileEntity {
     private static final AxisAlignedBB AABB_EAST_UN = new AxisAlignedBB(1-T, 0.5+A, 0.0+A,    1, 1.0-A, 0.5-A);
     private static final AxisAlignedBB AABB_EAST_US = new AxisAlignedBB(1-T, 0.5+A, 0.5+A,    1, 1.0-A, 1.0-A);
 
-    public RoundRobinNodeTile(TileEntityType<?> type) {
-        super(type);
+    public RoundRobinNodeTile() {
+        super(ModBlocks.ROUND_ROBIN_TILE.get());
     }
 
     // @todo 1.14

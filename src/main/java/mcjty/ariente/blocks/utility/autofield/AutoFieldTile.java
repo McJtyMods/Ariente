@@ -540,7 +540,7 @@ public class AutoFieldTile extends GenericTileEntity implements IGuiTile, ITicka
                     TileEntity te = world.getTileEntity(p);
                     if (te instanceof MultipartTE) {
                         BlockState state = MultipartHelper.getBlockState(world, p, PartSlot.DOWN);
-                        if (state != null && state.getBlock() == ModBlocks.fieldMarker.get()) {
+                        if (state != null && state.getBlock() == ModBlocks.FIELD_MARKER.get()) {
                             if (fieldBox == null) {
                                 fieldBox = new AxisAlignedBB(p, p.add(0, height, 0));
                             } else {

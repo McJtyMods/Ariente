@@ -1,6 +1,7 @@
 package mcjty.ariente.blocks.utility.autofield;
 
 import mcjty.ariente.Ariente;
+import mcjty.ariente.blocks.ModBlocks;
 import mcjty.hologui.api.IEvent;
 import mcjty.hologui.api.IGuiComponentRegistry;
 import mcjty.hologui.api.IGuiTile;
@@ -10,6 +11,7 @@ import mcjty.lib.multipart.MultipartHelper;
 import mcjty.lib.multipart.PartPos;
 import mcjty.lib.multipart.PartSlot;
 import mcjty.lib.tileentity.GenericTileEntity;
+import net.minecraft.block.Block;
 import net.minecraft.block.BlockState;
 import net.minecraft.entity.LivingEntity;
 import net.minecraft.entity.player.PlayerEntity;
@@ -74,6 +76,12 @@ public abstract class AbstractNodeTile extends GenericTileEntity implements IGui
 
     public AbstractNodeTile(TileEntityType<?> type) {
         super(type);
+    }
+
+    public static BlockState getStateForPlacement(Block block, Direction facing, double hitX, double hitY, double hitZ) {
+        NodeOrientation orientation = getOrientationFromPlacement(facing, hitX, hitY, hitZ);
+        // Since this is a multipart we can use state that isn't convertable to metadata
+        return block.getDefaultState().with(ORIENTATION, orientation);
     }
 
     @Override
@@ -153,7 +161,7 @@ public abstract class AbstractNodeTile extends GenericTileEntity implements IGui
         AutoFieldTile.notifyField(world, pos);
     }
 
-    public static NodeOrientation getOrientationFromPlacement(Direction side, float hitX, float hitY, float hitZ) {
+    public static NodeOrientation getOrientationFromPlacement(Direction side, double hitX, double hitY, double hitZ) {
         side = side.getOpposite();
         NodeOrientation facing;
         switch (side) {

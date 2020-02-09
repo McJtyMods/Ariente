@@ -1,23 +1,21 @@
 package mcjty.ariente.blocks;
 
-import mcjty.ariente.Ariente;
 import mcjty.ariente.blocks.decorative.*;
+import mcjty.ariente.blocks.utility.BaseBeamBlock;
+import mcjty.ariente.blocks.utility.autofield.*;
 import mcjty.ariente.cables.ConnectorBlock;
 import mcjty.ariente.cables.NetCableBlock;
 import mcjty.ariente.facade.FacadeBlock;
-import mcjty.ariente.setup.Registration;
 import mcjty.lib.blocks.BaseBlock;
-import net.minecraft.block.Block;
-import net.minecraft.block.BlockState;
+import mcjty.lib.builder.BlockBuilder;
 import net.minecraft.block.SoundType;
 import net.minecraft.block.material.Material;
-import net.minecraft.util.Direction;
+import net.minecraft.tileentity.TileEntityType;
 import net.minecraft.util.math.AxisAlignedBB;
 import net.minecraftforge.fml.RegistryObject;
-import net.minecraftforge.registries.DeferredRegister;
-import net.minecraftforge.registries.ForgeRegistries;
 
 import static mcjty.ariente.setup.Registration.BLOCKS;
+import static mcjty.ariente.setup.Registration.TILES;
 
 public class ModBlocks {
 
@@ -25,37 +23,48 @@ public class ModBlocks {
     public static final AxisAlignedBB BEAM_BLOCK_NS_AABB = new AxisAlignedBB(0.0D, 0.0D, 0.3D, 1.0D, 0.3D, 0.7D);
     public static final AxisAlignedBB BEAM_BLOCK_EW_AABB = new AxisAlignedBB(0.3D, 0.0D, 0.0D, 0.7D, 0.3D, 1.0D);
 
-    public static BlackTechBlock blackTechBlock;
-    public static MarbleTechBlock marbleTechBlock;
-    public static PatternBlock patternBlock;
+    public static final RegistryObject<BlackTechBlock> BLACK_TECH_BLOCK = BLOCKS.register("blacktech", BlackTechBlock::new);
+    public static final RegistryObject<MarbleTechBlock> MARBLE_TECH_BLOCK = BLOCKS.register("marbletech", MarbleTechBlock::new);
+    public static final RegistryObject<PatternBlock> PATTERN_BLOCK = BLOCKS.register("pattern", PatternBlock::new);
 
-    public static MarbleBlock marble;
-    public static MarbleBlock marble_smooth;
-    public static MarbleBlock marble_pilar;
-    public static MarbleBlock marble_bricks;
+    public static final RegistryObject<MarbleBlock> MARBLE = BLOCKS.register("marble", MarbleBlock::new);
+    public static final RegistryObject<MarbleBlock> MARBLE_SMOOTH = BLOCKS.register("marble_smooth", MarbleBlock::new);
+    public static final RegistryObject<MarbleBlock> MARBLE_PILAR = BLOCKS.register("marble_pilar", MarbleBlock::new);
+    public static final RegistryObject<MarbleBlock> MARBLE_BRICKS = BLOCKS.register("marble_bricks", MarbleBlock::new);
 
-    public static BaseBlock lithiumore;
-    public static BaseBlock manganeseore;
-    public static BaseBlock siliconore;
-    public static BaseBlock silverore;
-    public static BaseBlock platinumore;
-    public static BaseBlock posirite;
-    public static BaseBlock negarite;
+    public static final RegistryObject<MarbleSlabBlock> MARBLE_SLAB_BLOCK = BLOCKS.register("marble_slab", MarbleSlabBlock::new);
+    public static final RegistryObject<DoubleMarbleSlabBlock> DOUBLE_MARBLE_SLAB_BLOCK = BLOCKS.register("double_marble_slab", DoubleMarbleSlabBlock::new);
 
+    public static final RegistryObject<BaseBlock> ORE_LITHIUM = BLOCKS.register("lithiumore", BaseOreBlock::new);
+    public static final RegistryObject<BaseBlock> ORE_MANGANESE = BLOCKS.register("manganeseore", BaseOreBlock::new);
+    public static final RegistryObject<BaseBlock> ORE_SILICON = BLOCKS.register("siliconore", BaseOreBlock::new);
+    public static final RegistryObject<BaseBlock> ORE_SILVER = BLOCKS.register("silverore", BaseOreBlock::new);
+    public static final RegistryObject<BaseBlock> ORE_PLATINUM = BLOCKS.register("platinumore", BaseOreBlock::new);
+    public static final RegistryObject<BaseBlock> ORE_POSIRITE = BLOCKS.register("posirite", BaseOreBlock::new);
+    public static final RegistryObject<BaseBlock> ORE_NEGARITE = BLOCKS.register("negarite", BaseOreBlock::new);
 
-    public static MarbleSlabBlock marbleSlabBlock;
-    public static DoubleMarbleSlabBlock doubleMarbleSlabBlock;
+    public static final RegistryObject<BaseBlock> FLUX_BEAM_BLOCK = BLOCKS.register("flux_beam", () -> new BaseBeamBlock(new BlockBuilder()));
+    public static final RegistryObject<BaseBlock> FLUX_BEND_BEAM_BLOCK = BLOCKS.register("flux_bend_beam", () -> new BaseBeamBlock(new BlockBuilder()));
 
-    public static BaseBlock fluxBeamBlock;
-    public static BaseBlock fluxBendBeamBlock;
+    public static final RegistryObject<BaseBlock> SENSOR_ITEM_NODE = BLOCKS.register("sensor_item_node", () -> new BaseNodeBlock(new BlockBuilder()
+            .tileEntitySupplier(SensorItemNodeTile::new)));
+    public static final RegistryObject<TileEntityType<SensorItemNodeTile>> SENSOR_ITEM_TILE = TILES.register("sensor_item_node", () -> TileEntityType.Builder.create(SensorItemNodeTile::new, SENSOR_ITEM_NODE.get()).build(null));
 
-    //    public static final RegistryObject<BaseBlock> BUILDER = BLOCKS.register("builder", BuilderTileEntity::createBlock);
+    public static final RegistryObject<BaseBlock> INPUT_ITEM_NODE = BLOCKS.register("input_item_node", () -> new BaseNodeBlock(new BlockBuilder()
+            .tileEntitySupplier(InputItemNodeTile::new)));
+    public static final RegistryObject<TileEntityType<InputItemNodeTile>> INPUT_ITEM_TILE = TILES.register("input_item_node", () -> TileEntityType.Builder.create(InputItemNodeTile::new, INPUT_ITEM_NODE.get()).build(null));
 
-    public static final RegistryObject<BaseBlock> sensorItemNode = BLOCKS.register("", null);
-    public static final RegistryObject<BaseBlock> inputItemNode = BLOCKS.register("", null);
-    public static final RegistryObject<BaseBlock> outputItemNode = BLOCKS.register("", null);
-    public static final RegistryObject<BaseBlock> roundRobinNode = BLOCKS.register("", null);
-    public static final RegistryObject<BaseBlock> fieldMarker = BLOCKS.register("", null);
+    public static final RegistryObject<BaseBlock> OUTPUT_ITEM_NODE = BLOCKS.register("output_item_node", () -> new BaseNodeBlock(new BlockBuilder()
+            .tileEntitySupplier(OutputItemNodeTile::new)));
+    public static final RegistryObject<TileEntityType<OutputItemNodeTile>> OUTPUT_ITEM_TILE = TILES.register("output_item_node", () -> TileEntityType.Builder.create(OutputItemNodeTile::new, OUTPUT_ITEM_NODE.get()).build(null));
+
+    public static final RegistryObject<BaseBlock> ROUND_ROBIN_NODE = BLOCKS.register("round_robin_node", () -> new BaseNodeBlock(new BlockBuilder()
+            .tileEntitySupplier(RoundRobinNodeTile::new)));
+    public static final RegistryObject<TileEntityType<RoundRobinNodeTile>> ROUND_ROBIN_TILE = TILES.register("round_robin_node", () -> TileEntityType.Builder.create(RoundRobinNodeTile::new, ROUND_ROBIN_NODE.get()).build(null));
+
+    public static final RegistryObject<BaseBlock> FIELD_MARKER = BLOCKS.register("field_marker", FieldMarkerTile::createBlock);
+    public static final RegistryObject<TileEntityType<FieldMarkerTile>> FIELD_MARKER_TILE = TILES.register("field_marker", () -> TileEntityType.Builder.create(FieldMarkerTile::new, ROUND_ROBIN_NODE.get()).build(null));
+
 
     public static BaseBlock reinforcedMarble;
     public static BaseBlock fluxGlow;
@@ -97,12 +106,12 @@ public class ModBlocks {
     public static PaneBlock marbleFence;
     public static PaneBlock techFence;
 
-    public static final AxisAlignedBB LIGHT_BLOCK_DOWN  = new AxisAlignedBB(0.125F, 0.0F, 0.125F, 0.875F, 0.125F, 0.875F);
-    public static final AxisAlignedBB LIGHT_BLOCK_UP    = new AxisAlignedBB(0.125F, 0.875F, 0.125F, 0.875F, 1.0F, 0.875F);
+    public static final AxisAlignedBB LIGHT_BLOCK_DOWN = new AxisAlignedBB(0.125F, 0.0F, 0.125F, 0.875F, 0.125F, 0.875F);
+    public static final AxisAlignedBB LIGHT_BLOCK_UP = new AxisAlignedBB(0.125F, 0.875F, 0.125F, 0.875F, 1.0F, 0.875F);
     public static final AxisAlignedBB LIGHT_BLOCK_NORTH = new AxisAlignedBB(0.125F, 0.125F, 0.0F, 0.875F, 0.875F, 0.125F);
     public static final AxisAlignedBB LIGHT_BLOCK_SOUTH = new AxisAlignedBB(0.125F, 0.125F, 0.875F, 0.875F, 0.8750F, 1.0F);
-    public static final AxisAlignedBB LIGHT_BLOCK_WEST  = new AxisAlignedBB(0.0F, 0.125F, 0.125F, 0.125F, 0.875F, 0.8750F);
-    public static final AxisAlignedBB LIGHT_BLOCK_EAST  = new AxisAlignedBB(0.875F, 0.125F, 0.125F, 1.0F, 0.875F, 0.8750F);
+    public static final AxisAlignedBB LIGHT_BLOCK_WEST = new AxisAlignedBB(0.0F, 0.125F, 0.125F, 0.125F, 0.875F, 0.8750F);
+    public static final AxisAlignedBB LIGHT_BLOCK_EAST = new AxisAlignedBB(0.875F, 0.125F, 0.125F, 1.0F, 0.875F, 0.8750F);
 
 
     public static void init() {
@@ -128,60 +137,6 @@ public class ModBlocks {
 //                .creativeTabs(Ariente.setup.getTab())
 //                .rotationType(NONE)
 //                .lightValue(15)
-//                .build();
-//
-//        sensorItemNode = builderFactory.<SensorItemNodeTile> builder("sensor_item_node")
-//                .tileEntityClass(SensorItemNodeTile.class)
-//                .emptyContainer()
-//                .rotationType(NONE)
-//                .itemBlockFactory(MultipartItemBlock::new)
-//                .property(AbstractNodeTile.ORIENTATION)
-//                .placementGetter(SensorItemNodeTile::getStateForPlacement)
-//                .slotGetter((world, pos, newState) -> newState.getValue(AbstractNodeTile.ORIENTATION).getSlot())
-//                .flags(NON_OPAQUE, NON_FULLCUBE)
-//                .boundingBox(AbstractNodeTile::getBoundingBox)
-//                .build();
-//        inputItemNode = builderFactory.<InputItemNodeTile> builder("input_item_node")
-//                .tileEntityClass(InputItemNodeTile.class)
-//                .emptyContainer()
-//                .rotationType(NONE)
-//                .itemBlockFactory(MultipartItemBlock::new)
-//                .property(AbstractNodeTile.ORIENTATION)
-//                .placementGetter(InputItemNodeTile::getStateForPlacement)
-//                .slotGetter((world, pos, newState) -> newState.getValue(AbstractNodeTile.ORIENTATION).getSlot())
-//                .flags(NON_OPAQUE, NON_FULLCUBE)
-//                .boundingBox(AbstractNodeTile::getBoundingBox)
-//                .build();
-//        outputItemNode = builderFactory.<OutputItemNodeTile> builder("output_item_node")
-//                .tileEntityClass(OutputItemNodeTile.class)
-//                .emptyContainer()
-//                .rotationType(NONE)
-//                .itemBlockFactory(MultipartItemBlock::new)
-//                .property(AbstractNodeTile.ORIENTATION)
-//                .placementGetter(OutputItemNodeTile::getStateForPlacement)
-//                .slotGetter((world, pos, newState) -> newState.getValue(AbstractNodeTile.ORIENTATION).getSlot())
-//                .flags(NON_OPAQUE, NON_FULLCUBE)
-//                .boundingBox(AbstractNodeTile::getBoundingBox)
-//                .build();
-//        roundRobinNode = builderFactory.<RoundRobinNodeTile> builder("round_robin_node")
-//                .tileEntityClass(RoundRobinNodeTile.class)
-//                .emptyContainer()
-//                .rotationType(NONE)
-//                .itemBlockFactory(MultipartItemBlock::new)
-//                .property(RoundRobinNodeTile.ORIENTATION)
-//                .placementGetter(RoundRobinNodeTile::getStateForPlacement)
-//                .slotGetter((world, pos, newState) -> newState.getValue(RoundRobinNodeTile.ORIENTATION).getBackSlot())
-//                .flags(NON_OPAQUE, NON_FULLCUBE)
-//                .boundingBox(RoundRobinNodeTile::getBoundingBox)
-//                .build();
-//        fieldMarker = builderFactory.<FieldMarkerTile> builder("field_marker")
-//                .tileEntityClass(FieldMarkerTile.class)
-//                .emptyContainer()
-//                .rotationType(NONE)
-//                .itemBlockFactory(MultipartItemBlock::new)
-//                .slotGetter((world, pos, newState) -> PartSlot.DOWN)
-//                .flags(NON_OPAQUE, NON_FULLCUBE)
-//                .boundingBox((state, source, pos) -> FLAT_BLOCK_AABB)
 //                .build();
 //
 //        fluxBeamBlock = new BaseBlockBuilder<>(Ariente.instance, "flux_beam")
@@ -481,15 +436,15 @@ public class ModBlocks {
 
 
     private static void initDecorative() {
-        blackTechBlock = new BlackTechBlock("blacktech");
-        marbleTechBlock = new MarbleTechBlock("marbletech");
-        patternBlock = new PatternBlock("pattern");
-        marble = new MarbleBlock("marble");
-        marble_smooth = new MarbleBlock("marble_smooth");
-        marble_pilar = new MarbleBlock("marble_pilar");
-        marble_bricks = new MarbleBlock("marble_bricks");
-        marbleSlabBlock = new MarbleSlabBlock();    // @todo 1.14 "marble_slab"
-        doubleMarbleSlabBlock = new DoubleMarbleSlabBlock("double_marble_slab");
+        BLACK_TECH_BLOCK = new BlackTechBlock("blacktech");
+        MARBLE_TECH_BLOCK = new MarbleTechBlock("marbletech");
+        PATTERN_BLOCK = new PatternBlock("pattern");
+        MARBLE = new MarbleBlock("marble");
+        MARBLE_SMOOTH = new MarbleBlock("marble_smooth");
+        MARBLE_PILAR = new MarbleBlock("marble_pilar");
+        MARBLE_BRICKS = new MarbleBlock("marble_bricks");
+        MARBLE_SLAB_BLOCK = new MarbleSlabBlock();    // @todo 1.14 "marble_slab"
+        DOUBLE_MARBLE_SLAB_BLOCK = new DoubleMarbleSlabBlock("double_marble_slab");
         rampBlock = new RampBlock();    // @todo 1.14 "ramp"
         slopeBlock = new SlopeBlock();      // @todo 1.14 "slope"
         glassFence = (PaneBlock) new PaneBlock(Material.GLASS, SoundType.GLASS)   // @todo 1.14 "glass_fence",
@@ -499,41 +454,14 @@ public class ModBlocks {
                 .setTransluscent(true);
 //                .setHardness(0.3F);   // @todo 1.14
         marbleFence = (PaneBlock) new PaneBlock(Material.ROCK, SoundType.STONE);   // @todo 1.14 "marble_fence",
-                //.setHardness(3.0F).setResistance(8.0F);   // @todo 1.14
+        //.setHardness(3.0F).setResistance(8.0F);   // @todo 1.14
         techFence = (PaneBlock) new PaneBlock(Material.ROCK, SoundType.STONE); // @todo 1.14 "tech_fence",
 //                .setHardness(3.0F).setResistance(8.0F);   // @todo 1.14
     }
 
     private static void initOres() {
         // @todo 1.14
-//        lithiumore = new BaseBlockBuilder<>(Ariente.instance, "lithiumore")
-//                .rotationType(NONE)
-//                .creativeTabs(Ariente.setup.getTab())
-//                .build();
-//        manganeseore = new BaseBlockBuilder<>(Ariente.instance, "manganeseore")
-//                .rotationType(NONE)
-//                .creativeTabs(Ariente.setup.getTab())
-//                .build();
-//        siliconore = new BaseBlockBuilder<>(Ariente.instance, "siliconore")
-//                .rotationType(NONE)
-//                .creativeTabs(Ariente.setup.getTab())
-//                .build();
-//        silverore = new BaseBlockBuilder<>(Ariente.instance, "silverore")
-//                .rotationType(NONE)
-//                .creativeTabs(Ariente.setup.getTab())
-//                .build();
-//        platinumore = new BaseBlockBuilder<>(Ariente.instance, "platinumore")
-//                .rotationType(NONE)
-//                .creativeTabs(Ariente.setup.getTab())
-//                .build();
-//        posirite = new BaseBlockBuilder<>(Ariente.instance, "posirite")
-//                .rotationType(NONE)
-//                .creativeTabs(Ariente.setup.getTab())
-//                .build();
-//        negarite = new BaseBlockBuilder<>(Ariente.instance, "negarite")
-//                .rotationType(NONE)
-//                .creativeTabs(Ariente.setup.getTab())
-//                .build();
+
     }
 
 

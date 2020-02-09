@@ -6,10 +6,6 @@ import net.minecraft.state.EnumProperty;
 
 public class BlackTechBlock extends BaseVariantBlock<TechType> {
 
-    public BlackTechBlock(String name) {
-        super(name);
-    }
-
     @Override
     public EnumProperty<TechType> getProperty() {
         return TechType.TYPE;

@@ -16,7 +16,7 @@ import net.minecraftforge.common.ToolType;
 
 public abstract class BaseVariantBlock<T extends Enum<T> & IStringSerializable> extends BaseBlock {
 
-    public BaseVariantBlock(String name) {
+    public BaseVariantBlock() {
         super(new BlockBuilder()
                 .properties(Properties.create(Material.ROCK)
                     .hardnessAndResistance(2.0f, 4.0f))
