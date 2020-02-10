@@ -192,7 +192,7 @@ public class BlueprintRecipeRegistry {
                 new ItemStack(ModItems.negariteDust, 10),
                 new ItemStack(Items.NETHER_STAR, 1)
         ));
-        recipes.add(new ConstructorRecipe(new ItemStack(ModBlocks.negariteGeneratorBlock.get()), COMMON,
+        recipes.add(new ConstructorRecipe(new ItemStack(ModBlocks.NEGARITE_GENERATOR.get()), COMMON,
                 new ItemStack(ModItems.circuitItem, 1),
                 new ItemStack(ModItems.silverIngot, 5),
                 new ItemStack(ModItems.silicon, 5),
@@ -200,7 +200,7 @@ public class BlueprintRecipeRegistry {
                 new ItemStack(ModItems.lithiumIngot, 2),
                 new ItemStack(ModItems.negariteDust, 40)
         ));
-        recipes.add(new ConstructorRecipe(new ItemStack(ModBlocks.posiriteGeneratorBlock.get()), COMMON,
+        recipes.add(new ConstructorRecipe(new ItemStack(ModBlocks.POSIRITE_GENERATOR.get()), COMMON,
                 new ItemStack(ModItems.circuitItem, 1),
                 new ItemStack(ModItems.silverIngot, 5),
                 new ItemStack(ModItems.silicon, 5),
@@ -246,13 +246,13 @@ public class BlueprintRecipeRegistry {
                 new ItemStack(ModBlocks.MARBLE_SLAB_BLOCK, 1),
                 new ItemStack(ModItems.silverIngot, 3)
         ));
-        recipes.add(new ConstructorRecipe(new ItemStack(ModBlocks.negariteTankBlock.get()), COMMON,
+        recipes.add(new ConstructorRecipe(new ItemStack(ModBlocks.NEGARITE_TANK.get()), COMMON,
                 new ItemStack(ModItems.silverIngot, 4),
                 new ItemStack(ModItems.manganeseIngot, 1),
                 new ItemStack(Blocks.GLASS, 4),
                 new ItemStack(ModItems.negariteDust, 20)
         ));
-        recipes.add(new ConstructorRecipe(new ItemStack(ModBlocks.posiriteTankBlock.get()), COMMON,
+        recipes.add(new ConstructorRecipe(new ItemStack(ModBlocks.POSIRITE_TANK.get()), COMMON,
                 new ItemStack(ModItems.silverIngot, 4),
                 new ItemStack(ModItems.manganeseIngot, 1),
                 new ItemStack(Blocks.GLASS, 4),

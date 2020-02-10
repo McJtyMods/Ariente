@@ -6,10 +6,14 @@ import mcjty.hologui.api.IGuiComponent;
 import mcjty.hologui.api.IGuiComponentRegistry;
 import mcjty.hologui.api.IGuiTile;
 import mcjty.hologui.api.StyledColor;
+import mcjty.lib.blocks.BaseBlock;
+import mcjty.lib.blocks.RotationType;
+import mcjty.lib.builder.BlockBuilder;
 import mcjty.lib.tileentity.GenericTileEntity;
+import net.minecraft.block.Block;
 import net.minecraft.block.BlockState;
-import net.minecraft.nbt.CompoundNBT;
 import net.minecraft.state.BooleanProperty;
+import net.minecraft.state.StateContainer;
 import net.minecraft.tileentity.TileEntity;
 import net.minecraft.tileentity.TileEntityType;
 import net.minecraft.util.math.BlockPos;
@@ -19,14 +23,34 @@ public class PosiriteTankTile extends GenericTileEntity implements IGuiTile, IAl
     public static final BooleanProperty UPPER = BooleanProperty.create("upper");
     public static final BooleanProperty LOWER = BooleanProperty.create("lower");
 
-    public PosiriteTankTile(TileEntityType<?> type) {
-        super(type);
+    public PosiriteTankTile() {
+        super(ModBlocks.POSIRITE_TANK_TILE.get());
     }
+
+    public static BaseBlock createBlock() {
+        return new BaseBlock(new BlockBuilder()
+//                .info("message.ariente.shiftmessage")
+//                .infoExtended("message.ariente.posirite_tank")
+                .tileEntitySupplier(PosiriteTankTile::new)
+        ) {
+            @Override
+            public RotationType getRotationType() {
+                return RotationType.NONE;
+            }
+
+            @Override
+            protected void fillStateContainer(StateContainer.Builder<Block, BlockState> builder) {
+                super.fillStateContainer(builder);
+                builder.add(UPPER).add(LOWER);
+            }
+        };
+    }
+
 
     public boolean isWorking() {
         BlockPos p = pos.down();
         BlockState state = world.getBlockState(p);
-        while (state.getBlock() == ModBlocks.posiriteTankBlock.get()) {
+        while (state.getBlock() == ModBlocks.POSIRITE_TANK.get()) {
             p = p.down();
             state = world.getBlockState(p);
         }

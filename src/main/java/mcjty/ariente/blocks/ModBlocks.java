@@ -1,7 +1,7 @@
 package mcjty.ariente.blocks;
 
 import mcjty.ariente.blocks.decorative.*;
-import mcjty.ariente.blocks.generators.PowerCombinerTile;
+import mcjty.ariente.blocks.generators.*;
 import mcjty.ariente.blocks.utility.BaseBeamBlock;
 import mcjty.ariente.blocks.utility.autofield.*;
 import mcjty.ariente.cables.ConnectorBlock;
@@ -99,12 +99,45 @@ public class ModBlocks {
     public static final RegistryObject<BaseBlock> POWER_COMBINER = BLOCKS.register("power_combiner", PowerCombinerTile::createBlock);
     public static final RegistryObject<TileEntityType<PowerCombinerTile>> POWER_COMBINER_TILE = TILES.register("power_combiner", () -> TileEntityType.Builder.create(PowerCombinerTile::new, POWER_COMBINER.get()).build(null));
 
-    public static final RegistryObject<BaseBlock> negariteGeneratorBlock = BLOCKS.register("", null);
-    public static final RegistryObject<BaseBlock> negariteTankBlock = BLOCKS.register("", null);
-    public static final RegistryObject<BaseBlock> posiriteTankBlock = BLOCKS.register("", null);
-    public static final RegistryObject<BaseBlock> posiriteGeneratorBlock = BLOCKS.register("", null);
+    public static final RegistryObject<BaseBlock> NEGARITE_GENERATOR = BLOCKS.register("negarite_generator", NegariteGeneratorTile::createBlock);
+    public static final RegistryObject<TileEntityType<NegariteGeneratorTile>> NEGARITE_GENERATOR_TILE = TILES.register("negarite_generator", () -> TileEntityType.Builder.create(NegariteGeneratorTile::new, NEGARITE_GENERATOR.get()).build(null));
+
+    public static final RegistryObject<BaseBlock> POSIRITE_GENERATOR = BLOCKS.register("posirite_generator", PosiriteGeneratorTile::createBlock);
+    public static final RegistryObject<TileEntityType<PosiriteGeneratorTile>> POSIRITE_GENERATOR_TILE = TILES.register("posirite_generator", () -> TileEntityType.Builder.create(PosiriteGeneratorTile::new, POSIRITE_GENERATOR.get()).build(null));
+
+    public static final RegistryObject<BaseBlock> NEGARITE_TANK = BLOCKS.register("negarite_tank", NegariteTankTile::createBlock);
+    public static final RegistryObject<TileEntityType<NegariteTankTile>> NEGARITE_TANK_TILE = TILES.register("negarite_tank", () -> TileEntityType.Builder.create(NegariteTankTile::new, NEGARITE_TANK.get()).build(null));
+
+    public static final RegistryObject<BaseBlock> POSIRITE_TANK = BLOCKS.register("posirite_tank", PosiriteTankTile::createBlock);
+    public static final RegistryObject<TileEntityType<PosiriteTankTile>> POSIRITE_TANK_TILE = TILES.register("posirite_tank", () -> TileEntityType.Builder.create(PosiriteTankTile::new, POSIRITE_TANK.get()).build(null));
+
     public static final RegistryObject<BaseBlock> storageBlock = BLOCKS.register("", null);
+    //        storageBlock = builderFactory.<StorageTile> builder("storage")
+//                .tileEntityClass(StorageTile.class)
+//                .emptyContainer()
+////                .property(StorageTile.LOCKED)
+//                .flags(RENDER_SOLID, RENDER_TRANSLUCENT)
+//                .rotationType(BaseBlock.RotationType.ROTATION)
+//                .clickAction(StorageTile::onClick)
+//                .activateAction((world, pos, player, hand, side, hitX, hitY, hitZ) -> StorageTile.onActivate(world, pos, player, side, hitX, hitY, hitZ))
+//                .info("message.ariente.shiftmessage")
+//                .infoExtended("message.ariente.storage")
+//                .build();
+//
+
+
     public static final RegistryObject<BaseBlock> elevatorBlock = BLOCKS.register("", null);
+    //        elevatorBlock = builderFactory.<ElevatorTile> builder("elevator")
+//                .tileEntityClass(ElevatorTile.class)
+//                .emptyContainer()
+//                .flags(RENDER_SOLID, RENDER_TRANSLUCENT)
+//                .rotationType(NONE)
+//                .activateAction((world, pos, player, hand, side, hitX, hitY, hitZ) -> Ariente.guiHandler.openHoloGui(world, pos, player))
+//                .info("message.ariente.shiftmessage")
+//                .infoExtended("message.ariente.elevator")
+//                .build();
+//
+
     public static final RegistryObject<BaseBlock> levelMarkerBlock = BLOCKS.register("", null);
     public static final RegistryObject<BaseBlock> doorMarkerBlock = BLOCKS.register("", null);
     public static final RegistryObject<BaseBlock> invisibleDoorBlock = BLOCKS.register("", null);
@@ -257,74 +290,6 @@ public class ModBlocks {
 //                .info("message.ariente.shiftmessage")
 //                .infoExtended("message.ariente.signal_transmitter")
 //                .infoExtendedParameter(ItemStackTools.intGetter("channel", -1))
-//                .build();
-//
-//        negariteGeneratorBlock = builderFactory.<NegariteGeneratorTile> builder("negarite_generator")
-//                .tileEntityClass(NegariteGeneratorTile.class)
-//                .container(NegariteGeneratorTile.CONTAINER_FACTORY)
-//                .rotationType(HORIZROTATION)
-//                .flags(REDSTONE_CHECK, RENDER_SOLID, RENDER_CUTOUT)
-//                .property(NegariteGeneratorTile.WORKING)
-//                .activateAction((world, pos, player, hand, side, hitX, hitY, hitZ) -> Ariente.guiHandler.openHoloGui(world, pos, player))
-//                .info("message.ariente.shiftmessage")
-//                .infoExtended("message.ariente.negarite_generator")
-//                .build();
-//
-//        posiriteGeneratorBlock = builderFactory.<PosiriteGeneratorTile> builder("posirite_generator")
-//                .tileEntityClass(PosiriteGeneratorTile.class)
-//                .container(PosiriteGeneratorTile.CONTAINER_FACTORY)
-//                .rotationType(HORIZROTATION)
-//                .flags(REDSTONE_CHECK, RENDER_SOLID, RENDER_CUTOUT)
-//                .property(PosiriteGeneratorTile.WORKING)
-//                .activateAction((world, pos, player, hand, side, hitX, hitY, hitZ) -> Ariente.guiHandler.openHoloGui(world, pos, player))
-//                .info("message.ariente.shiftmessage")
-//                .infoExtended("message.ariente.posirite_generator")
-//                .build();
-//
-//        negariteTankBlock = builderFactory.<NegariteTankTile> builder("negarite_tank")
-//                .tileEntityClass(NegariteTankTile.class)
-//                .emptyContainer()
-//                .flags(NON_OPAQUE, RENDER_SOLID, RENDER_TRANSLUCENT)
-//                .property(NegariteTankTile.LOWER)
-//                .property(NegariteTankTile.UPPER)
-//                .rotationType(NONE)
-//                .activateAction((world, pos, player, hand, side, hitX, hitY, hitZ) -> Ariente.guiHandler.openHoloGui(world, pos, player))
-//                .info("message.ariente.shiftmessage")
-//                .infoExtended("message.ariente.negarite_tank")
-//                .build();
-//
-//        posiriteTankBlock = builderFactory.<PosiriteTankTile> builder("posirite_tank")
-//                .tileEntityClass(PosiriteTankTile.class)
-//                .emptyContainer()
-//                .flags(NON_OPAQUE, RENDER_SOLID, RENDER_TRANSLUCENT)
-//                .property(PosiriteTankTile.LOWER)
-//                .property(PosiriteTankTile.UPPER)
-//                .rotationType(NONE)
-//                .activateAction((world, pos, player, hand, side, hitX, hitY, hitZ) -> Ariente.guiHandler.openHoloGui(world, pos, player))
-//                .info("message.ariente.shiftmessage")
-//                .infoExtended("message.ariente.posirite_tank")
-//                .build();
-//
-//        storageBlock = builderFactory.<StorageTile> builder("storage")
-//                .tileEntityClass(StorageTile.class)
-//                .emptyContainer()
-////                .property(StorageTile.LOCKED)
-//                .flags(RENDER_SOLID, RENDER_TRANSLUCENT)
-//                .rotationType(BaseBlock.RotationType.ROTATION)
-//                .clickAction(StorageTile::onClick)
-//                .activateAction((world, pos, player, hand, side, hitX, hitY, hitZ) -> StorageTile.onActivate(world, pos, player, side, hitX, hitY, hitZ))
-//                .info("message.ariente.shiftmessage")
-//                .infoExtended("message.ariente.storage")
-//                .build();
-//
-//        elevatorBlock = builderFactory.<ElevatorTile> builder("elevator")
-//                .tileEntityClass(ElevatorTile.class)
-//                .emptyContainer()
-//                .flags(RENDER_SOLID, RENDER_TRANSLUCENT)
-//                .rotationType(NONE)
-//                .activateAction((world, pos, player, hand, side, hitX, hitY, hitZ) -> Ariente.guiHandler.openHoloGui(world, pos, player))
-//                .info("message.ariente.shiftmessage")
-//                .infoExtended("message.ariente.elevator")
 //                .build();
 //
 //        levelMarkerBlock = builderFactory.<LevelMarkerTile> builder("level_marker")

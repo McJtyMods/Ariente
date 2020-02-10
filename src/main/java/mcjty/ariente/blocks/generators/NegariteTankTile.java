@@ -1,5 +1,6 @@
 package mcjty.ariente.blocks.generators;
 
+import mcjty.ariente.Ariente;
 import mcjty.ariente.api.IAlarmMode;
 import mcjty.ariente.blocks.ModBlocks;
 import mcjty.hologui.api.IGuiComponent;
@@ -7,27 +8,60 @@ import mcjty.hologui.api.IGuiComponentRegistry;
 import mcjty.hologui.api.IGuiTile;
 import mcjty.hologui.api.StyledColor;
 import mcjty.hologui.api.components.IPanel;
+import mcjty.lib.blocks.BaseBlock;
+import mcjty.lib.blocks.RotationType;
+import mcjty.lib.builder.BlockBuilder;
 import mcjty.lib.tileentity.GenericTileEntity;
+import net.minecraft.block.Block;
 import net.minecraft.block.BlockState;
+import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.item.ItemStack;
 import net.minecraft.state.BooleanProperty;
+import net.minecraft.state.StateContainer;
 import net.minecraft.tileentity.TileEntity;
-import net.minecraft.tileentity.TileEntityType;
+import net.minecraft.util.ActionResultType;
+import net.minecraft.util.Hand;
 import net.minecraft.util.math.BlockPos;
+import net.minecraft.util.math.BlockRayTraceResult;
 
 public class NegariteTankTile extends GenericTileEntity implements IGuiTile, IAlarmMode {
 
     public static final BooleanProperty UPPER = BooleanProperty.create("upper");
     public static final BooleanProperty LOWER = BooleanProperty.create("lower");
 
-    public NegariteTankTile(TileEntityType<?> type) {
-        super(type);
+    public NegariteTankTile() {
+        super(ModBlocks.NEGARITE_TANK_TILE.get());
+    }
+
+    public static BaseBlock createBlock() {
+        return new BaseBlock(new BlockBuilder()
+//                .info("message.ariente.shiftmessage")
+//                .infoExtended("message.ariente.negarite_tank")
+                .tileEntitySupplier(NegariteTankTile::new)
+        ) {
+            @Override
+            public RotationType getRotationType() {
+                return RotationType.NONE;
+            }
+
+            @Override
+            protected void fillStateContainer(StateContainer.Builder<Block, BlockState> builder) {
+                super.fillStateContainer(builder);
+                builder.add(UPPER).add(LOWER);
+            }
+        };
+    }
+
+    @Override
+    public ActionResultType onBlockActivated(BlockState state, PlayerEntity player, Hand hand, BlockRayTraceResult result) {
+        Ariente.guiHandler.openHoloGui(world, pos, player);
+        return ActionResultType.SUCCESS;
     }
 
     public boolean isWorking() {
         BlockPos p = pos.down();
         BlockState state = world.getBlockState(p);
-        while (state.getBlock() == ModBlocks.negariteTankBlock.get()) {
+        while (state.getBlock() == ModBlocks.NEGARITE_TANK.get()) {
             p = p.down();
             state = world.getBlockState(p);
         }
@@ -90,7 +124,7 @@ public class NegariteTankTile extends GenericTileEntity implements IGuiTile, IAl
                     panel.add(registry.icon(i % 8, i / 8, 1, 1).icon(registry.image(128+64, 128)));
                     break;
                 case 2:
-                    panel.add(registry.stackIcon(i % 8, i / 8, 1, 1).itemStack(new ItemStack(ModBlocks.negariteGeneratorBlock.get())));
+                    panel.add(registry.stackIcon(i % 8, i / 8, 1, 1).itemStack(new ItemStack(ModBlocks.NEGARITE_GENERATOR.get())));
                     break;
             }
         }

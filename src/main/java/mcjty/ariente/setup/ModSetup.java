@@ -3,7 +3,6 @@ package mcjty.ariente.setup;
 import mcjty.ariente.ForgeEventHandlers;
 import mcjty.ariente.blocks.ModBlocks;
 import mcjty.ariente.compat.arienteworld.ArienteWorldCompat;
-import mcjty.ariente.entities.ModEntities;
 import mcjty.ariente.gui.HoloGuiCompatibility;
 import mcjty.ariente.items.ModItems;
 import mcjty.ariente.network.ArienteMessages;
@@ -21,7 +20,7 @@ public class ModSetup extends DefaultModSetup {
     public boolean arienteWorld = false;
 
     public ModSetup() {
-        createTab("ariente", () -> new ItemStack(ModBlocks.posiriteGeneratorBlock.get()));
+        createTab("ariente", () -> new ItemStack(ModBlocks.POSIRITE_GENERATOR.get()));
     }
 
     @Override

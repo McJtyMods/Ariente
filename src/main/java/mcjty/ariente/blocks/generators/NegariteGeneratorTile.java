@@ -1,5 +1,6 @@
 package mcjty.ariente.blocks.generators;
 
+import mcjty.ariente.Ariente;
 import mcjty.ariente.api.IAlarmMode;
 import mcjty.ariente.api.IGenerator;
 import mcjty.ariente.blocks.ModBlocks;
@@ -8,6 +9,9 @@ import mcjty.ariente.gui.HoloGuiTools;
 import mcjty.ariente.items.ModItems;
 import mcjty.ariente.power.*;
 import mcjty.hologui.api.*;
+import mcjty.lib.blocks.BaseBlock;
+import mcjty.lib.blocks.RotationType;
+import mcjty.lib.builder.BlockBuilder;
 import mcjty.lib.container.AutomationFilterItemHander;
 import mcjty.lib.container.ContainerFactory;
 import mcjty.lib.container.NoDirectionItemHander;
@@ -15,6 +19,7 @@ import mcjty.lib.gui.widgets.ImageChoiceLabel;
 import mcjty.lib.tileentity.GenericTileEntity;
 import mcjty.lib.typed.TypedMap;
 import mcjty.lib.varia.RedstoneMode;
+import net.minecraft.block.Block;
 import net.minecraft.block.BlockState;
 import net.minecraft.entity.LivingEntity;
 import net.minecraft.entity.player.PlayerEntity;
@@ -23,9 +28,12 @@ import net.minecraft.nbt.CompoundNBT;
 import net.minecraft.network.NetworkManager;
 import net.minecraft.network.play.server.SUpdateTileEntityPacket;
 import net.minecraft.state.BooleanProperty;
+import net.minecraft.state.StateContainer;
 import net.minecraft.tileentity.ITickableTileEntity;
-import net.minecraft.tileentity.TileEntityType;
+import net.minecraft.util.ActionResultType;
+import net.minecraft.util.Hand;
 import net.minecraft.util.math.BlockPos;
+import net.minecraft.util.math.BlockRayTraceResult;
 import net.minecraft.world.World;
 import net.minecraftforge.common.util.Constants;
 import net.minecraftforge.common.util.LazyOptional;
@@ -53,6 +61,33 @@ public class NegariteGeneratorTile extends GenericTileEntity implements ITickabl
     // @todo, temporary: base on tanks later!
     private int dustCounter;        // Number of ticks before the current dust depletes
 
+
+    public static BaseBlock createBlock() {
+        return new BaseBlock(new BlockBuilder()
+//                .flags(REDSTONE_CHECK, RENDER_SOLID, RENDER_CUTOUT)
+//                .info("message.ariente.shiftmessage")
+//                .infoExtended("message.ariente.negarite_generator")
+                .tileEntitySupplier(NegariteGeneratorTile::new)
+        ) {
+            @Override
+            public RotationType getRotationType() {
+                return RotationType.HORIZROTATION;
+            }
+
+            @Override
+            protected void fillStateContainer(StateContainer.Builder<Block, BlockState> builder) {
+                super.fillStateContainer(builder);
+                builder.add(WORKING);
+            }
+        };
+    }
+
+    @Override
+    public ActionResultType onBlockActivated(BlockState state, PlayerEntity player, Hand hand, BlockRayTraceResult result) {
+        Ariente.guiHandler.openHoloGui(world, pos, player);
+        return ActionResultType.SUCCESS;
+    }
+
     @Override
     public boolean isHighAlert() {
         return false;
@@ -63,8 +98,8 @@ public class NegariteGeneratorTile extends GenericTileEntity implements ITickabl
         return true;
     }
 
-    public NegariteGeneratorTile(TileEntityType<?> type) {
-        super(type);
+    public NegariteGeneratorTile() {
+        super(ModBlocks.NEGARITE_GENERATOR_TILE.get());
     }
 
     @Override
@@ -151,7 +186,7 @@ public class NegariteGeneratorTile extends GenericTileEntity implements ITickabl
                 world.notifyBlockUpdate(pos, getBlockState(), getBlockState(), Constants.BlockFlags.BLOCK_UPDATE + Constants.BlockFlags.NOTIFY_NEIGHBORS);
                 BlockPos p = pos.up();
                 BlockState state = world.getBlockState(p);
-                while (state.getBlock() == ModBlocks.negariteTankBlock.get()) {
+                while (state.getBlock() == ModBlocks.NEGARITE_TANK.get()) {
                     world.notifyBlockUpdate(p, state, state, Constants.BlockFlags.BLOCK_UPDATE + Constants.BlockFlags.NOTIFY_NEIGHBORS);
                     p = p.up();
                     state = world.getBlockState(p);
@@ -274,7 +309,7 @@ public class NegariteGeneratorTile extends GenericTileEntity implements ITickabl
                 .add(registry.iconButton(6, 4, 1, 1).icon(registry.image(GRAY_DOUBLE_ARROW_RIGHT)).hover(registry.image(WHITE_DOUBLE_ARROW_RIGHT))
                     .hitEvent((component, player, e, x, y) -> toMachine(player, 64)))
 
-                .add(registry.stackIcon(5, 3, 1, 1).itemStack(new ItemStack(ModBlocks.negariteGeneratorBlock.get())))
+                .add(registry.stackIcon(5, 3, 1, 1).itemStack(new ItemStack(ModBlocks.NEGARITE_GENERATOR.get())))
                 .add(registry.number(6, 3, 1, 1).color(registry.color(StyledColor.INFORMATION)).getter(this::countNegariteGenerator))
 
                 .add(registry.iconChoice(7, 6, 1, 1)
