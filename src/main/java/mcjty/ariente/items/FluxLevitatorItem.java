@@ -1,6 +1,6 @@
 package mcjty.ariente.items;
 
-import mcjty.ariente.blocks.ModBlocks;
+import mcjty.ariente.setup.Registration;
 import mcjty.ariente.entities.levitator.FluxLevitatorEntity;
 import net.minecraft.block.BlockState;
 import net.minecraft.client.util.ITooltipFlag;
@@ -40,7 +40,7 @@ public class FluxLevitatorItem extends Item {
         Hand hand = context.getHand();
         BlockState state = world.getBlockState(pos);
 
-        if (state.getBlock() != ModBlocks.FLUX_BEAM.get() && state.getBlock() != ModBlocks.FLUX_BEND_BEAM.get()) {
+        if (state.getBlock() != Registration.FLUX_BEAM.get() && state.getBlock() != Registration.FLUX_BEND_BEAM.get()) {
             return ActionResultType.FAIL;
         } else {
             ItemStack itemstack = player.getHeldItem(hand);

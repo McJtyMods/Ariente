@@ -1,6 +1,6 @@
 package mcjty.ariente.blocks.utility.autofield;
 
-import mcjty.ariente.blocks.ModBlocks;
+import mcjty.ariente.setup.Registration;
 import mcjty.ariente.gui.HelpBuilder;
 import mcjty.ariente.gui.HoloGuiTools;
 import mcjty.hologui.api.IGuiComponent;
@@ -9,8 +9,6 @@ import mcjty.hologui.api.StyledColor;
 import mcjty.hologui.api.components.IIconChoice;
 import mcjty.hologui.api.components.IPanel;
 import mcjty.hologui.api.components.ITextChoice;
-import mcjty.lib.blocks.BaseBlock;
-import mcjty.lib.builder.BlockBuilder;
 import mcjty.lib.multipart.PartPos;
 import net.minecraft.item.DyeColor;
 import net.minecraft.nbt.CompoundNBT;
@@ -27,7 +25,7 @@ public class SensorItemNodeTile extends AbstractNodeTile {
     private static String[] operators = new String[] { "<",  "<=", ">", ">=", "=", "<>" };
 
     public SensorItemNodeTile() {
-        super(ModBlocks.SENSOR_ITEM_TILE.get());
+        super(Registration.SENSOR_ITEM_TILE.get());
     }
 
     // Return true if we already know the operator is succesful. Check false if we already know the operator can never succeed.

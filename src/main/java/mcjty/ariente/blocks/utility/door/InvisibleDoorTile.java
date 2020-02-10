@@ -1,6 +1,6 @@
 package mcjty.ariente.blocks.utility.door;
 
-import mcjty.ariente.blocks.ModBlocks;
+import mcjty.ariente.setup.Registration;
 import mcjty.ariente.blocks.utility.ILockable;
 import mcjty.ariente.config.UtilityConfiguration;
 import mcjty.lib.blocks.BaseBlock;
@@ -23,7 +23,7 @@ import java.util.List;
 public class InvisibleDoorTile extends GenericTileEntity implements ILockable {
 
     public InvisibleDoorTile() {
-        super(ModBlocks.INVISIBLE_DOOR_TILE.get());
+        super(Registration.INVISIBLE_DOOR_TILE.get());
     }
 
     public static BaseBlock createBlock() {

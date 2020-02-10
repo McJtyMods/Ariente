@@ -3,7 +3,7 @@ package mcjty.ariente.blocks.utility;
 import mcjty.ariente.Ariente;
 import mcjty.ariente.api.ICityAI;
 import mcjty.ariente.api.ICityEquipment;
-import mcjty.ariente.blocks.ModBlocks;
+import mcjty.ariente.setup.Registration;
 import mcjty.ariente.items.BlueprintItem;
 import mcjty.hologui.api.*;
 import mcjty.hologui.api.components.IPlayerSlots;
@@ -45,7 +45,7 @@ public class BlueprintStorageTile extends GenericTileEntity implements IGuiTile,
     private LazyOptional<AutomationFilterItemHander> automationItemHandler = LazyOptional.of(() -> new AutomationFilterItemHander(items));
 
     public BlueprintStorageTile() {
-        super(ModBlocks.BLUEPRINT_STORAGE_TILE.get());
+        super(Registration.BLUEPRINT_STORAGE_TILE.get());
     }
 
     public static BaseBlock createBlock() {
@@ -132,7 +132,7 @@ public class BlueprintStorageTile extends GenericTileEntity implements IGuiTile,
                 .add(registry.iconButton(3, 3.5, 1, 1).icon(registry.image(GRAY_ARROW_UP)).hover(registry.image(WHITE_ARROW_UP))
                         .hitEvent((component, player, entity, x, y) -> transferToPlayer(player, entity)))
 
-                .add(registry.stackIcon(0, 4.5, 1, 1).itemStack(new ItemStack(ModBlocks.CONSTRUCTOR.get())))
+                .add(registry.stackIcon(0, 4.5, 1, 1).itemStack(new ItemStack(Registration.CONSTRUCTOR.get())))
                 .add(registry.slots(1.5, 4.5, 6, 1)
                         .name("slots")
                         .doubleClickEvent((component, player, entity, x, y, stack, index) -> transferToPlayer(player, entity))
@@ -186,7 +186,7 @@ public class BlueprintStorageTile extends GenericTileEntity implements IGuiTile,
         return new NoDirectionItemHander(BlueprintStorageTile.this, CONTAINER_FACTORY) {
             @Override
             public boolean isItemValid(int slot, @Nonnull ItemStack stack) {
-                return stack.getItem() == ModBlocks.BLUEPRINT.get();
+                return stack.getItem() == Registration.BLUEPRINT.get();
             }
         };
     }

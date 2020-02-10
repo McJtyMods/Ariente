@@ -1,6 +1,6 @@
 package mcjty.ariente.blocks.utility.autofield;
 
-import mcjty.ariente.blocks.ModBlocks;
+import mcjty.ariente.setup.Registration;
 import mcjty.ariente.gui.HelpBuilder;
 import mcjty.ariente.gui.HoloGuiTools;
 import mcjty.hologui.api.IGuiComponent;
@@ -21,7 +21,7 @@ public class InputItemNodeTile extends AbstractItemNodeTile {
     private boolean inputNbt = false;
 
     public InputItemNodeTile() {
-        super(ModBlocks.INPUT_ITEM_TILE.get());
+        super(Registration.INPUT_ITEM_TILE.get());
     }
 
 // @todo 1.14

@@ -1,6 +1,6 @@
 package mcjty.ariente.blocks.utility.autofield;
 
-import mcjty.ariente.blocks.ModBlocks;
+import mcjty.ariente.setup.Registration;
 import mcjty.lib.blocks.BaseBlock;
 import mcjty.lib.blocks.RotationType;
 import mcjty.lib.builder.BlockBuilder;
@@ -15,7 +15,6 @@ import net.minecraft.entity.LivingEntity;
 import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.CompoundNBT;
 import net.minecraft.tileentity.TileEntity;
-import net.minecraft.tileentity.TileEntityType;
 import net.minecraft.util.Direction;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.World;
@@ -27,7 +26,7 @@ public class FieldMarkerTile extends GenericTileEntity {
     private BlockPos autoFieldTile = null;
 
     public FieldMarkerTile() {
-        super(ModBlocks.FIELD_MARKER_TILE.get());
+        super(Registration.FIELD_MARKER_TILE.get());
     }
 
     public static BaseBlock createBlock() {

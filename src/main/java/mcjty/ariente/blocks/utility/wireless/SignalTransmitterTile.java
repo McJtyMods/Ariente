@@ -1,7 +1,7 @@
 package mcjty.ariente.blocks.utility.wireless;
 
 
-import mcjty.ariente.blocks.ModBlocks;
+import mcjty.ariente.setup.Registration;
 import mcjty.lib.blocks.BaseBlock;
 import mcjty.lib.builder.BlockBuilder;
 import mcjty.lib.varia.ItemStackTools;
@@ -23,7 +23,7 @@ public class SignalTransmitterTile extends SignalChannelTileEntity {
     private int prevIn = -1;
 
     public SignalTransmitterTile() {
-        super(ModBlocks.SIGNAL_TRANSMITTER_TILE.get());
+        super(Registration.SIGNAL_TRANSMITTER_TILE.get());
     }
 
     public static BaseBlock createBlock() {

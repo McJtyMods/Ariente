@@ -1,7 +1,7 @@
 package mcjty.ariente.blocks.generators;
 
 import mcjty.ariente.Ariente;
-import mcjty.ariente.blocks.ModBlocks;
+import mcjty.ariente.setup.Registration;
 import mcjty.ariente.cables.CableColor;
 import mcjty.ariente.cables.ConnectorTileEntity;
 import mcjty.ariente.gui.HelpBuilder;
@@ -23,7 +23,6 @@ import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.nbt.CompoundNBT;
 import net.minecraft.tileentity.ITickableTileEntity;
 import net.minecraft.tileentity.TileEntity;
-import net.minecraft.tileentity.TileEntityType;
 import net.minecraft.util.ActionResultType;
 import net.minecraft.util.Direction;
 import net.minecraft.util.Hand;
@@ -39,7 +38,7 @@ public class PowerCombinerTile extends GenericTileEntity implements ITickableTil
     private int powerTransfer = 100;
 
     public PowerCombinerTile() {
-        super(ModBlocks.POWER_COMBINER_TILE.get());
+        super(Registration.POWER_COMBINER_TILE.get());
     }
 
     public static BaseBlock createBlock() {

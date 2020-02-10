@@ -3,7 +3,7 @@ package mcjty.ariente.blocks.utility;
 import mcjty.ariente.Ariente;
 import mcjty.ariente.api.ICityAI;
 import mcjty.ariente.api.ICityEquipment;
-import mcjty.ariente.blocks.ModBlocks;
+import mcjty.ariente.setup.Registration;
 import mcjty.ariente.gui.HelpBuilder;
 import mcjty.ariente.gui.HoloGuiTools;
 import mcjty.ariente.items.BlueprintItem;
@@ -44,7 +44,7 @@ public class ConstructorTile extends GenericTileEntity implements IGuiTile, ICit
     }
 
     public ConstructorTile() {
-        super(ModBlocks.CONSTRUCTOR_TILE.get());
+        super(Registration.CONSTRUCTOR_TILE.get());
     }
 
     public static BaseBlock createBlock() {
@@ -203,7 +203,7 @@ public class ConstructorTile extends GenericTileEntity implements IGuiTile, ICit
 
                 .add(registry.text(0, 4.5, 8, 1).text("Craft").color(registry.color(StyledColor.LABEL)))
 
-                .add(registry.stackIcon(0, 5.5, 1, 1).itemStack(new ItemStack(ModBlocks.CONSTRUCTOR.get())))
+                .add(registry.stackIcon(0, 5.5, 1, 1).itemStack(new ItemStack(Registration.CONSTRUCTOR.get())))
                 .add(registry.slots(1.5, 5.5, 6, 3)
                         .name("outputslots")
                         .doubleClickEvent((component, player, entity, x, y, stack, index) -> attemptCraft(player, stack))

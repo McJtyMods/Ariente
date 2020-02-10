@@ -1,7 +1,7 @@
 package mcjty.ariente.blocks.generators;
 
 import mcjty.ariente.api.IAlarmMode;
-import mcjty.ariente.blocks.ModBlocks;
+import mcjty.ariente.setup.Registration;
 import mcjty.hologui.api.IGuiComponent;
 import mcjty.hologui.api.IGuiComponentRegistry;
 import mcjty.hologui.api.IGuiTile;
@@ -15,7 +15,6 @@ import net.minecraft.block.BlockState;
 import net.minecraft.state.BooleanProperty;
 import net.minecraft.state.StateContainer;
 import net.minecraft.tileentity.TileEntity;
-import net.minecraft.tileentity.TileEntityType;
 import net.minecraft.util.math.BlockPos;
 
 public class PosiriteTankTile extends GenericTileEntity implements IGuiTile, IAlarmMode {
@@ -24,7 +23,7 @@ public class PosiriteTankTile extends GenericTileEntity implements IGuiTile, IAl
     public static final BooleanProperty LOWER = BooleanProperty.create("lower");
 
     public PosiriteTankTile() {
-        super(ModBlocks.POSIRITE_TANK_TILE.get());
+        super(Registration.POSIRITE_TANK_TILE.get());
     }
 
     public static BaseBlock createBlock() {
@@ -50,7 +49,7 @@ public class PosiriteTankTile extends GenericTileEntity implements IGuiTile, IAl
     public boolean isWorking() {
         BlockPos p = pos.down();
         BlockState state = world.getBlockState(p);
-        while (state.getBlock() == ModBlocks.POSIRITE_TANK.get()) {
+        while (state.getBlock() == Registration.POSIRITE_TANK.get()) {
             p = p.down();
             state = world.getBlockState(p);
         }

@@ -3,7 +3,7 @@ package mcjty.ariente.blocks.generators;
 import mcjty.ariente.Ariente;
 import mcjty.ariente.api.IAlarmMode;
 import mcjty.ariente.api.IGenerator;
-import mcjty.ariente.blocks.ModBlocks;
+import mcjty.ariente.setup.Registration;
 import mcjty.ariente.cables.CableColor;
 import mcjty.ariente.gui.HoloGuiTools;
 import mcjty.ariente.power.*;
@@ -62,7 +62,7 @@ public class PosiriteGeneratorTile extends GenericTileEntity implements ITickabl
     private int dustCounter;        // Number of ticks before the current dust depletes
 
     public PosiriteGeneratorTile() {
-        super(ModBlocks.POSIRITE_GENERATOR_TILE.get());
+        super(Registration.POSIRITE_GENERATOR_TILE.get());
     }
 
     public static BaseBlock createBlock() {
@@ -105,7 +105,7 @@ public class PosiriteGeneratorTile extends GenericTileEntity implements ITickabl
     @Override
     public void feedDust(int amount) {
         if (items.getStackInSlot(NegariteGeneratorTile.SLOT_NEGARITE_INPUT).isEmpty()) {
-            items.setStackInSlot(NegariteGeneratorTile.SLOT_NEGARITE_INPUT, new ItemStack(ModBlocks.DUST_POSIRITE.get(), amount));
+            items.setStackInSlot(NegariteGeneratorTile.SLOT_NEGARITE_INPUT, new ItemStack(Registration.DUST_POSIRITE.get(), amount));
             markDirtyClient();
         }
     }
@@ -147,7 +147,7 @@ public class PosiriteGeneratorTile extends GenericTileEntity implements ITickabl
 
     private boolean canProceed() {
         ItemStack stack = items.getStackInSlot(SLOT_POSIRITE_INPUT);
-        return !stack.isEmpty() && stack.getItem() == ModBlocks.DUST_POSIRITE.get();
+        return !stack.isEmpty() && stack.getItem() == Registration.DUST_POSIRITE.get();
     }
 
     private void sendPower() {
@@ -288,10 +288,10 @@ public class PosiriteGeneratorTile extends GenericTileEntity implements ITickabl
     public IGuiComponent<?> createGui(String tag, IGuiComponentRegistry registry) {
         return registry.panel(0, 0, 8, 8)
                 .add(registry.text(0, 0, 8, 1).text("Posirite").color(registry.color(StyledColor.LABEL)))
-                .add(registry.stackIcon(0, 3, 1, 1).itemStack(new ItemStack(ModBlocks.DUST_POSIRITE.get())))
+                .add(registry.stackIcon(0, 3, 1, 1).itemStack(new ItemStack(Registration.DUST_POSIRITE.get())))
 
                 .add(registry.icon(1, 3, 1, 1).icon(registry.image(WHITE_PLAYER)))
-                .add(registry.number(2, 3, 1, 1).color(registry.color(StyledColor.INFORMATION)).getter((p,h) -> HoloGuiTools.countItem(p, ModBlocks.DUST_POSIRITE.get())))
+                .add(registry.number(2, 3, 1, 1).color(registry.color(StyledColor.INFORMATION)).getter((p,h) -> HoloGuiTools.countItem(p, Registration.DUST_POSIRITE.get())))
 
                 .add(registry.iconButton(2, 4, 1, 1).icon(registry.image(GRAY_DOUBLE_ARROW_LEFT)).hover(registry.image(WHITE_DOUBLE_ARROW_LEFT))
                         .hitEvent((component, player, e, x, y) -> toPlayer(player, 64)))
@@ -302,7 +302,7 @@ public class PosiriteGeneratorTile extends GenericTileEntity implements ITickabl
                 .add(registry.iconButton(6, 4, 1, 1).icon(registry.image(GRAY_DOUBLE_ARROW_RIGHT)).hover(registry.image(WHITE_DOUBLE_ARROW_RIGHT))
                         .hitEvent((component, player, e, x, y) -> toMachine(player, 64)))
 
-                .add(registry.stackIcon(5, 3, 1, 1).itemStack(new ItemStack(ModBlocks.POSIRITE_GENERATOR.get())))
+                .add(registry.stackIcon(5, 3, 1, 1).itemStack(new ItemStack(Registration.POSIRITE_GENERATOR.get())))
                 .add(registry.number(6, 3, 1, 1).color(registry.color(StyledColor.INFORMATION)).getter(this::countPosiriteGenerator))
 
                 .add(registry.iconChoice(7, 6, 1, 1)
@@ -347,7 +347,7 @@ public class PosiriteGeneratorTile extends GenericTileEntity implements ITickabl
 
         for (int i = 0 ; i < player.inventory.getSizeInventory() ; i++) {
             ItemStack stack = player.inventory.getStackInSlot(i);
-            if (stack.getItem() == ModBlocks.DUST_POSIRITE.get()) {
+            if (stack.getItem() == Registration.DUST_POSIRITE.get()) {
                 ItemStack splitted = stack.split(amount);
                 if ((!splitted.isEmpty())) {
                     if (toTransfer.isEmpty()) {
@@ -384,7 +384,7 @@ public class PosiriteGeneratorTile extends GenericTileEntity implements ITickabl
         int cnt = 0;
         for (int i = 0 ; i < size ; i++) {
             ItemStack stack = items.getStackInSlot(i);
-            if (!stack.isEmpty() && stack.getItem() == ModBlocks.DUST_POSIRITE.get()) {
+            if (!stack.isEmpty() && stack.getItem() == Registration.DUST_POSIRITE.get()) {
                 cnt += stack.getCount();
             }
         }
@@ -413,7 +413,7 @@ public class PosiriteGeneratorTile extends GenericTileEntity implements ITickabl
             @Override
             public boolean isItemValid(int slot, @Nonnull ItemStack stack) {
                 if (slot == SLOT_POSIRITE_INPUT) {
-                    return stack.getItem() == ModBlocks.DUST_POSIRITE.get();
+                    return stack.getItem() == Registration.DUST_POSIRITE.get();
                 }
                 return true;
             }

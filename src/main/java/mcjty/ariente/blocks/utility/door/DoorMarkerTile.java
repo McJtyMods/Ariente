@@ -1,7 +1,7 @@
 package mcjty.ariente.blocks.utility.door;
 
 import mcjty.ariente.Ariente;
-import mcjty.ariente.blocks.ModBlocks;
+import mcjty.ariente.setup.Registration;
 import mcjty.ariente.blocks.utility.ILockable;
 import mcjty.ariente.config.UtilityConfiguration;
 import mcjty.ariente.entities.soldier.SoldierEntity;
@@ -53,7 +53,7 @@ public class DoorMarkerTile extends GenericTileEntity implements ITickableTileEn
     private long lastTime = -1;  // For rendering
 
     public DoorMarkerTile() {
-        super(ModBlocks.DOOR_MARKER_TILE.get());
+        super(Registration.DOOR_MARKER_TILE.get());
     }
 
     public static BaseBlock createBlock() {
@@ -117,7 +117,7 @@ public class DoorMarkerTile extends GenericTileEntity implements ITickableTileEn
                 if (facing == null) {
                     return;
                 }
-                world.setBlockState(p, ModBlocks.INVISIBLE_DOOR.get().getDefaultState().with(BlockStateProperties.HORIZONTAL_FACING, facing), 3);
+                world.setBlockState(p, Registration.INVISIBLE_DOOR.get().getDefaultState().with(BlockStateProperties.HORIZONTAL_FACING, facing), 3);
             } else {
                 return;
             }
@@ -128,7 +128,7 @@ public class DoorMarkerTile extends GenericTileEntity implements ITickableTileEn
     private void clearInvisibleBlocks() {
         BlockPos p = pos.up();
         for (int i = 0 ; i < UtilityConfiguration.MAX_DOOR_HEIGHT.get() ; i++) {
-            if (world.getBlockState(p).getBlock() == ModBlocks.INVISIBLE_DOOR.get()) {
+            if (world.getBlockState(p).getBlock() == Registration.INVISIBLE_DOOR.get()) {
                 world.setBlockState(p, Blocks.AIR.getDefaultState());
             } else {
                 return;
@@ -139,7 +139,7 @@ public class DoorMarkerTile extends GenericTileEntity implements ITickableTileEn
 
     private Direction getFacing() {
         BlockState state = world.getBlockState(pos);
-        if (state.getBlock() != ModBlocks.DOOR_MARKER.get()) {
+        if (state.getBlock() != Registration.DOOR_MARKER.get()) {
             return null;
         }
         return state.get(BlockStateProperties.HORIZONTAL_FACING);

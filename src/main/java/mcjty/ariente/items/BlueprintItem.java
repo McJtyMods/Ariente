@@ -4,7 +4,7 @@ import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
 import com.google.gson.JsonParser;
 import mcjty.ariente.Ariente;
-import mcjty.ariente.blocks.ModBlocks;
+import mcjty.ariente.setup.Registration;
 import mcjty.ariente.recipes.ConstructorRecipe;
 import mcjty.ariente.recipes.BlueprintRecipeRegistry;
 import mcjty.lib.tooltips.ITooltipExtras;
@@ -68,7 +68,7 @@ public class BlueprintItem extends Item implements ITooltipExtras {
 //    }
 
     public static ItemStack makeBluePrint(ItemStack destination) {
-        ItemStack dest = new ItemStack(ModBlocks.BLUEPRINT.get());
+        ItemStack dest = new ItemStack(Registration.BLUEPRINT.get());
         CompoundNBT nbt = new CompoundNBT();
         JsonObject json = ItemStackTools.itemStackToJson(destination);
         nbt.putString("destination", json.toString());

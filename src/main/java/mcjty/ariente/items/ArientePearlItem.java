@@ -1,7 +1,7 @@
 package mcjty.ariente.items;
 
 import mcjty.ariente.Ariente;
-import mcjty.ariente.blocks.ModBlocks;
+import mcjty.ariente.setup.Registration;
 import mcjty.ariente.blocks.utility.WarperTile;
 import mcjty.ariente.compat.arienteworld.ArienteWorldCompat;
 import mcjty.ariente.config.UtilityConfiguration;
@@ -52,7 +52,7 @@ public class ArientePearlItem extends Item {
         BlockState state = world.getBlockState(pos);
         ItemStack itemstack = player.getHeldItem(hand);
 
-        if (player.canPlayerEdit(pos.offset(facing), facing, itemstack) && state.getBlock() == ModBlocks.WARPER.get()) {
+        if (player.canPlayerEdit(pos.offset(facing), facing, itemstack) && state.getBlock() == Registration.WARPER.get()) {
             if (world.isRemote) {
                 return ActionResultType.SUCCESS;
             } else {
@@ -104,7 +104,7 @@ public class ArientePearlItem extends Item {
 
         RayTraceResult raytraceresult = this.rayTrace(world, player, RayTraceContext.FluidMode.NONE);
 
-        if (raytraceresult instanceof BlockRayTraceResult && raytraceresult.getType() == RayTraceResult.Type.BLOCK && world.getBlockState(((BlockRayTraceResult) raytraceresult).getPos()).getBlock() == ModBlocks.WARPER.get()) {
+        if (raytraceresult instanceof BlockRayTraceResult && raytraceresult.getType() == RayTraceResult.Type.BLOCK && world.getBlockState(((BlockRayTraceResult) raytraceresult).getPos()).getBlock() == Registration.WARPER.get()) {
             return new ActionResult<>(ActionResultType.PASS, itemstack);
         } else {
             player.setActiveHand(hand);

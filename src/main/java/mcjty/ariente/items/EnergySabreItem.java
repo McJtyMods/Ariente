@@ -2,7 +2,7 @@ package mcjty.ariente.items;
 
 import com.google.common.collect.Multimap;
 import mcjty.ariente.Ariente;
-import mcjty.ariente.blocks.ModBlocks;
+import mcjty.ariente.setup.Registration;
 import net.minecraft.block.Block;
 import net.minecraft.block.BlockState;
 import net.minecraft.block.material.Material;
@@ -76,7 +76,7 @@ public class EnergySabreItem extends Item {
 
     @Override
     public boolean getIsRepairable(ItemStack toRepair, ItemStack repair) {
-        ItemStack mat = new ItemStack(ModBlocks.INGOT_LITHIUM.get());
+        ItemStack mat = new ItemStack(Registration.INGOT_LITHIUM.get());
         // @todo 1.14 oredict
 //        if (!mat.isEmpty() && net.minecraftforge.oredict.OreDictionary.itemMatches(mat, repair, false)) {
 //            return true;

@@ -4,7 +4,7 @@ import mcjty.ariente.api.IAICoreTile;
 import mcjty.ariente.api.IAlarmMode;
 import mcjty.ariente.api.ICityAI;
 import mcjty.ariente.api.ICityAISystem;
-import mcjty.ariente.blocks.ModBlocks;
+import mcjty.ariente.setup.Registration;
 import mcjty.ariente.compat.arienteworld.ArienteWorldCompat;
 import mcjty.lib.blocks.BaseBlock;
 import mcjty.lib.blocks.RotationType;
@@ -28,7 +28,7 @@ public class AICoreTile extends GenericTileEntity implements ITickableTileEntity
     private String cityName = "";
 
     public AICoreTile() {
-        super(ModBlocks.AICORE_TILE.get());
+        super(Registration.AICORE_TILE.get());
     }
 
     public static BaseBlock createBlock() {

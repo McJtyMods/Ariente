@@ -1,6 +1,6 @@
 package mcjty.ariente.cables;
 
-import mcjty.ariente.blocks.ModBlocks;
+import mcjty.ariente.setup.Registration;
 import mcjty.ariente.blocks.generators.PowerCombinerTile;
 import mcjty.ariente.facade.FacadeItemBlock;
 import mcjty.ariente.power.IPowerReceiver;
@@ -67,7 +67,7 @@ public class ConnectorBlock extends GenericCableBlock {
             // If we are in mimic mode then the drop will be the facade as the connector will remain there
             ConnectorTileEntity connectorTileEntity = (ConnectorTileEntity) te;
             if (connectorTileEntity.getMimicBlock() != null) {
-                ItemStack item = new ItemStack(ModBlocks.FACADE.get());
+                ItemStack item = new ItemStack(Registration.FACADE.get());
                 FacadeItemBlock.setMimicBlock(item, connectorTileEntity.getMimicBlock());
                 connectorTileEntity.setMimicBlock(null);
                 spawnAsEntity(worldIn, pos, item);

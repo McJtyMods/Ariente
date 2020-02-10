@@ -4,7 +4,7 @@ import mcjty.ariente.Ariente;
 import mcjty.ariente.api.ICityAI;
 import mcjty.ariente.api.ICityEquipment;
 import mcjty.ariente.api.IElevator;
-import mcjty.ariente.blocks.ModBlocks;
+import mcjty.ariente.setup.Registration;
 import mcjty.ariente.power.IPowerReceiver;
 import mcjty.ariente.power.PowerReceiverSupport;
 import mcjty.hologui.api.*;
@@ -52,7 +52,7 @@ public class ElevatorTile extends GenericTileEntity implements IGuiTile, ITickab
     private int moveToFloor = -1;
 
     public ElevatorTile() {
-        super(ModBlocks.ELEVATOR_TILE.get());
+        super(Registration.ELEVATOR_TILE.get());
     }
 
     public static BaseBlock createBlock() {

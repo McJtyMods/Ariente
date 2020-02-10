@@ -3,7 +3,7 @@ package mcjty.ariente.blocks.utility;
 import mcjty.ariente.Ariente;
 import mcjty.ariente.api.ICityAI;
 import mcjty.ariente.api.ICityEquipment;
-import mcjty.ariente.blocks.ModBlocks;
+import mcjty.ariente.setup.Registration;
 import mcjty.ariente.gui.HelpBuilder;
 import mcjty.ariente.gui.HoloGuiTools;
 import mcjty.ariente.items.BlueprintItem;
@@ -76,7 +76,7 @@ public class AutoConstructorTile extends GenericTileEntity implements IGuiTile, 
     private int busyCounter = 0;
 
     public AutoConstructorTile() {
-        super(ModBlocks.AUTO_CONSTRUCTOR_TILE.get());
+        super(Registration.AUTO_CONSTRUCTOR_TILE.get());
     }
 
     public static BaseBlock createBlock() {
@@ -398,7 +398,7 @@ public class AutoConstructorTile extends GenericTileEntity implements IGuiTile, 
 
                 .add(registry.text(0, 5, 1, 1).text("Output").color(registry.color(StyledColor.LABEL)))
 
-                .add(registry.stackIcon(0, 6.5, 1, 1).itemStack(new ItemStack(ModBlocks.CONSTRUCTOR.get())))
+                .add(registry.stackIcon(0, 6.5, 1, 1).itemStack(new ItemStack(Registration.CONSTRUCTOR.get())))
                 .add(registry.slots(1.5, 6.5, 6, 1)
                         .name("outputslots")
                         .withAmount()
@@ -425,7 +425,7 @@ public class AutoConstructorTile extends GenericTileEntity implements IGuiTile, 
                 .add(registry.iconButton(3, 4.2, 1, 1).icon(registry.image(GRAY_ARROW_UP)).hover(registry.image(WHITE_ARROW_UP))
                         .hitEvent((component, player, entity, x, y) -> transferToPlayer(player, entity, "slots")))
 
-                .add(registry.stackIcon(0, 5.5, 1, 1).itemStack(new ItemStack(ModBlocks.CONSTRUCTOR.get())))
+                .add(registry.stackIcon(0, 5.5, 1, 1).itemStack(new ItemStack(Registration.CONSTRUCTOR.get())))
                 .add(registry.slots(1.5, 5.5, 6, 3)
                         .name("slots")
                         .withAmount()
@@ -523,7 +523,7 @@ public class AutoConstructorTile extends GenericTileEntity implements IGuiTile, 
         return new NoDirectionItemHander(AutoConstructorTile.this, CONTAINER_FACTORY) {
             @Override
             public boolean isItemValid(int slot, @Nonnull ItemStack stack) {
-                return stack.getItem() != ModBlocks.BLUEPRINT.get();
+                return stack.getItem() != Registration.BLUEPRINT.get();
             }
         };
     }

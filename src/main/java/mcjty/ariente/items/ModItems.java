@@ -1,15 +1,5 @@
 package mcjty.ariente.items;
 
-import mcjty.ariente.api.ArmorUpgradeType;
-import mcjty.ariente.blocks.ModBlocks;
-import mcjty.ariente.items.armor.PowerSuit;
-import mcjty.ariente.items.modules.ArmorModuleItem;
-import net.minecraft.inventory.EquipmentSlotType;
-import net.minecraft.item.Item;
-import net.minecraftforge.fml.RegistryObject;
-
-import static mcjty.ariente.setup.Registration.ITEMS;
-
 public class ModItems {
 
 

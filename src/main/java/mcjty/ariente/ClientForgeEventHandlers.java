@@ -1,7 +1,7 @@
 package mcjty.ariente;
 
 import com.mojang.blaze3d.platform.GlStateManager;
-import mcjty.ariente.blocks.ModBlocks;
+import mcjty.ariente.setup.Registration;
 import mcjty.ariente.blocks.defense.ForceFieldRenderer;
 import mcjty.ariente.entities.levitator.FluxLevitatorEntity;
 import mcjty.ariente.network.ArienteMessages;
@@ -49,7 +49,7 @@ public class ClientForgeEventHandlers {
             BlockPos pos = ((BlockRayTraceResult) event.getTarget()).getPos();
             PlayerEntity player = Minecraft.getInstance().player;
             BlockState state = player.getEntityWorld().getBlockState(pos);
-            if (state.getBlock() == ModBlocks.RAMP.get()) {
+            if (state.getBlock() == Registration.RAMP.get()) {
                 drawSelectionBox(state, player, pos, event.getPartialTicks());
                 event.setCanceled(true);
             }

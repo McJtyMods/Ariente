@@ -2,9 +2,8 @@ package mcjty.ariente.entities.levitator;
 
 import mcjty.ariente.Ariente;
 import mcjty.ariente.api.IFluxLevitatorEntity;
-import mcjty.ariente.blocks.ModBlocks;
-import mcjty.ariente.gui.ModGuis;
 import mcjty.ariente.setup.Registration;
+import mcjty.ariente.gui.ModGuis;
 import mcjty.hologui.api.CloseStrategy;
 import mcjty.hologui.api.IHoloGuiEntity;
 import net.minecraft.block.Block;
@@ -206,7 +205,7 @@ public class FluxLevitatorEntity extends Entity implements IFluxLevitatorEntity 
     }
 
     public static FluxLevitatorEntity create(World worldIn, double x, double y, double z) {
-        FluxLevitatorEntity entity = new FluxLevitatorEntity(Registration.FLUX_LEVITATOR.get(), worldIn);
+        FluxLevitatorEntity entity = new FluxLevitatorEntity(Registration.ENTITY_FLUX_LEVITATOR.get(), worldIn);
         entity.setPosition(x, y, z);
         entity.setMotion(0, 0, 0);
         entity.prevPosX = x;
@@ -342,7 +341,7 @@ public class FluxLevitatorEntity extends Entity implements IFluxLevitatorEntity 
         this.remove();
 
         if (world.getGameRules().getBoolean(GameRules.DO_ENTITY_DROPS)) {
-            ItemStack itemstack = new ItemStack(ModBlocks.FLUX_LEVITATOR.get(), 1);
+            ItemStack itemstack = new ItemStack(Registration.FLUX_LEVITATOR.get(), 1);
 
             if (this.hasCustomName()) {
                 itemstack.setDisplayName(this.getCustomName());
@@ -457,7 +456,7 @@ public class FluxLevitatorEntity extends Entity implements IFluxLevitatorEntity 
     }
 
     private boolean isValidBeamBlock(Block block) {
-        return block == ModBlocks.FLUX_BEAM.get() || block == ModBlocks.FLUX_BEND_BEAM.get();
+        return block == Registration.FLUX_BEAM.get() || block == Registration.FLUX_BEND_BEAM.get();
     }
 
     private void handleEntityCollision() {
@@ -846,7 +845,7 @@ public class FluxLevitatorEntity extends Entity implements IFluxLevitatorEntity 
 
     public static RailShape getBeamDirection(BlockState state) {
         Direction facing = state.get(BlockStateProperties.HORIZONTAL_FACING);
-        if (state.getBlock() == ModBlocks.FLUX_BEAM.get()) {
+        if (state.getBlock() == Registration.FLUX_BEAM.get()) {
             if (facing == Direction.NORTH || facing == Direction.SOUTH) {
                 return RailShape.EAST_WEST;
             } else {

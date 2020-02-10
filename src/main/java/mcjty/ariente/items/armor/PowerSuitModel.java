@@ -2,7 +2,7 @@ package mcjty.ariente.items.armor;
 
 import com.mojang.blaze3d.platform.GlStateManager;
 import mcjty.ariente.api.ArmorUpgradeType;
-import mcjty.ariente.blocks.ModBlocks;
+import mcjty.ariente.setup.Registration;
 import mcjty.ariente.blocks.defense.ForceFieldRenderer;
 import mcjty.ariente.blocks.defense.PanelInfo;
 import mcjty.ariente.blocks.defense.PentakisDodecahedron;
@@ -283,7 +283,7 @@ public class PowerSuitModel extends BipedModel {
         if (this == modelChest) {   // @todo Proper test
             if (entity instanceof LivingEntity) {
                 ItemStack chestStack = ((LivingEntity) entity).getItemStackFromSlot(EquipmentSlotType.CHEST);
-                if (chestStack.getItem() == ModBlocks.POWERSUIT_CHEST.get()) {
+                if (chestStack.getItem() == Registration.POWERSUIT_CHEST.get()) {
                     if (ModuleSupport.hasWorkingUpgrade(chestStack, ArmorUpgradeType.FORCEFIELD)) {
                         ForceFieldRenderer.personalForcefields.put(new Vec3d(entity.prevPosX, entity.prevPosY, entity.prevPosZ), entity instanceof PlayerEntity);
                     }

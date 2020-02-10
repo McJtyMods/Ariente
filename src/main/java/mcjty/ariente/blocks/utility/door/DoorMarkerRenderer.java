@@ -3,7 +3,7 @@ package mcjty.ariente.blocks.utility.door;
 import com.mojang.blaze3d.matrix.MatrixStack;
 import com.mojang.blaze3d.platform.GlStateManager;
 import mcjty.ariente.Ariente;
-import mcjty.ariente.blocks.ModBlocks;
+import mcjty.ariente.setup.Registration;
 import net.minecraft.block.BlockState;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.renderer.BufferBuilder;
@@ -26,7 +26,7 @@ public class DoorMarkerRenderer extends TileEntityRenderer<DoorMarkerTile> {
     @Override
     public void render(DoorMarkerTile te, float partialTicks, MatrixStack matrixStack, IRenderTypeBuffer buffer, int combinedLightIn, int combinedOverlayIn) {
         BlockState state = te.getWorld().getBlockState(te.getPos());
-        if (state.getBlock() != ModBlocks.DOOR_MARKER.get()) {
+        if (state.getBlock() != Registration.DOOR_MARKER.get()) {
             return;
         }
 

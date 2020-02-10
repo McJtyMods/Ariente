@@ -12,7 +12,6 @@ import net.minecraft.util.Hand;
 import net.minecraft.util.math.AxisAlignedBB;
 import net.minecraft.util.math.Vec3d;
 import net.minecraft.world.World;
-import net.minecraftforge.fluids.FluidStack;
 import net.minecraftforge.fml.network.NetworkHooks;
 
 import javax.annotation.Nullable;
@@ -29,7 +28,7 @@ public class FluxShipEntity extends Entity {
     }
 
     public static FluxShipEntity create(World worldIn, double x, double y, double z) {
-        FluxShipEntity entity = new FluxShipEntity(Registration.FLUX_SHIP.get(), worldIn);
+        FluxShipEntity entity = new FluxShipEntity(Registration.ENTITY_FLUX_SHIP.get(), worldIn);
         entity.setPosition(x, y, z);
         entity.setMotion(0, 0, 0);
         entity.prevPosX = x;

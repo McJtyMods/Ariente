@@ -22,7 +22,7 @@ public class MasterSoldierEntity extends SoldierEntity {
     }
 
     public static MasterSoldierEntity create(World world, ChunkPos cityCenter, SoldierBehaviourType behaviourType) {
-        MasterSoldierEntity entity = new MasterSoldierEntity(Registration.MASTER_SOLDIER.get(), world);
+        MasterSoldierEntity entity = new MasterSoldierEntity(Registration.ENTITY_MASTER_SOLDIER.get(), world);
         entity.cityCenter = cityCenter;
         entity.behaviourType = behaviourType;
         // @todo 1.14 move to type

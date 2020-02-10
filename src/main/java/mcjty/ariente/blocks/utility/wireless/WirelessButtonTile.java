@@ -1,6 +1,6 @@
 package mcjty.ariente.blocks.utility.wireless;
 
-import mcjty.ariente.blocks.ModBlocks;
+import mcjty.ariente.setup.Registration;
 import mcjty.ariente.sounds.ModSounds;
 import mcjty.lib.blocks.BaseBlock;
 import mcjty.lib.builder.BlockBuilder;
@@ -28,7 +28,7 @@ public class WirelessButtonTile extends SignalChannelTileEntity {
     private int prevIn = -1;
 
     public WirelessButtonTile() {
-        super(ModBlocks.WIRELESS_BUTTON_TILE.get());
+        super(Registration.WIRELESS_BUTTON_TILE.get());
     }
 
     public static BaseBlock createBlock() {

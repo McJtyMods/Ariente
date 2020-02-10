@@ -3,14 +3,13 @@ package mcjty.ariente.blocks.utility;
 import mcjty.ariente.Ariente;
 import mcjty.ariente.api.ICityAI;
 import mcjty.ariente.api.ICityEquipment;
-import mcjty.ariente.blocks.ModBlocks;
+import mcjty.ariente.setup.Registration;
 import mcjty.ariente.blocks.utility.door.DoorMarkerTile;
 import mcjty.ariente.items.KeyCardItem;
 import mcjty.ariente.security.IKeyCardSlot;
 import mcjty.ariente.sounds.ModSounds;
 import mcjty.hologui.api.*;
 import mcjty.lib.blocks.BaseBlock;
-import mcjty.lib.blocks.RotationType;
 import mcjty.lib.builder.BlockBuilder;
 import mcjty.lib.tileentity.GenericTileEntity;
 import net.minecraft.block.Block;
@@ -48,7 +47,7 @@ public class LockTile extends GenericTileEntity implements IGuiTile, IKeyCardSlo
     private int verticalRange = 3;
 
     public LockTile() {
-        super(ModBlocks.LOCK_TILE.get());
+        super(Registration.LOCK_TILE.get());
     }
 
     public static BaseBlock createBlock() {

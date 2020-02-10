@@ -1,6 +1,6 @@
 package mcjty.ariente.blocks.utility.autofield;
 
-import mcjty.ariente.blocks.ModBlocks;
+import mcjty.ariente.setup.Registration;
 import mcjty.ariente.gui.HelpBuilder;
 import mcjty.ariente.gui.HoloGuiTools;
 import mcjty.hologui.api.IGuiComponent;
@@ -24,7 +24,7 @@ public class OutputItemNodeTile extends AbstractItemNodeTile {
     private int outputStackSize = 1;
 
     public OutputItemNodeTile() {
-        super(ModBlocks.OUTPUT_ITEM_TILE.get());
+        super(Registration.OUTPUT_ITEM_TILE.get());
     }
 
 // @todo 1.14

@@ -1,7 +1,7 @@
 package mcjty.ariente.items;
 
 import mcjty.ariente.Ariente;
-import mcjty.ariente.blocks.ModBlocks;
+import mcjty.ariente.setup.Registration;
 import mcjty.ariente.security.IKeyCardSlot;
 import net.minecraft.client.util.ITooltipFlag;
 import net.minecraft.entity.player.PlayerEntity;
@@ -36,7 +36,7 @@ public class KeyCardItem extends Item {
     public static boolean hasPlayerKeycard(PlayerEntity player, String tag) {
         for (int i = 0 ; i < player.inventory.getSizeInventory() ; i++) {
             ItemStack stack = player.inventory.getStackInSlot(i);
-            if (!stack.isEmpty() && stack.getItem() == ModBlocks.KEY_CARD.get()) {
+            if (!stack.isEmpty() && stack.getItem() == Registration.KEY_CARD.get()) {
                 if (hasSecurityTag(stack, tag)) {
                     return true;
                 }

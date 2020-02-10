@@ -1,7 +1,7 @@
 package mcjty.ariente.blocks.utility.autofield;
 
 import mcjty.ariente.Ariente;
-import mcjty.ariente.blocks.ModBlocks;
+import mcjty.ariente.setup.Registration;
 import mcjty.lib.multipart.PartSlot;
 import mcjty.lib.tileentity.GenericTileEntity;
 import net.minecraft.block.BlockState;
@@ -55,7 +55,7 @@ public class RoundRobinNodeTile extends GenericTileEntity {
     private static final AxisAlignedBB AABB_EAST_US = new AxisAlignedBB(1-T, 0.5+A, 0.5+A,    1, 1.0-A, 1.0-A);
 
     public RoundRobinNodeTile() {
-        super(ModBlocks.ROUND_ROBIN_TILE.get());
+        super(Registration.ROUND_ROBIN_TILE.get());
     }
 
     // @todo 1.14

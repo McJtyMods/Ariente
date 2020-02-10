@@ -3,7 +3,7 @@ package mcjty.ariente.blocks.utility.wireless;
 import mcjty.ariente.api.ICityAI;
 import mcjty.ariente.api.ICityEquipment;
 import mcjty.ariente.api.ISignalChannel;
-import mcjty.ariente.blocks.ModBlocks;
+import mcjty.ariente.setup.Registration;
 import mcjty.lib.blocks.BaseBlock;
 import mcjty.lib.blocks.RotationType;
 import mcjty.lib.tileentity.GenericTileEntity;
@@ -46,10 +46,10 @@ public abstract class SignalChannelTileEntity extends GenericTileEntity implemen
 
     static boolean isRedstoneChannelItem(Item item) {
         return (item instanceof BlockItem &&
-                (((BlockItem)item).getBlock() == ModBlocks.SIGNAL_TRANSMITTER.get()
-                        || ((BlockItem)item).getBlock() == ModBlocks.SIGNAL_RECEIVER.get()
-                        || ((BlockItem)item).getBlock() == ModBlocks.WIRELESS_LOCK.get()
-                        || ((BlockItem)item).getBlock() == ModBlocks.WIRELESS_BUTTON.get()));
+                (((BlockItem)item).getBlock() == Registration.SIGNAL_TRANSMITTER.get()
+                        || ((BlockItem)item).getBlock() == Registration.SIGNAL_RECEIVER.get()
+                        || ((BlockItem)item).getBlock() == Registration.WIRELESS_LOCK.get()
+                        || ((BlockItem)item).getBlock() == Registration.WIRELESS_BUTTON.get()));
     }
 
 //    @Override

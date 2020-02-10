@@ -1,7 +1,7 @@
 package mcjty.ariente.blocks.utility.wireless;
 
 import mcjty.ariente.Ariente;
-import mcjty.ariente.blocks.ModBlocks;
+import mcjty.ariente.setup.Registration;
 import mcjty.ariente.blocks.utility.ILockable;
 import mcjty.ariente.blocks.utility.door.DoorMarkerTile;
 import mcjty.hologui.api.IGuiComponent;
@@ -21,7 +21,6 @@ import net.minecraft.state.BooleanProperty;
 import net.minecraft.state.StateContainer;
 import net.minecraft.tileentity.ITickableTileEntity;
 import net.minecraft.tileentity.TileEntity;
-import net.minecraft.tileentity.TileEntityType;
 import net.minecraft.util.ActionResultType;
 import net.minecraft.util.Hand;
 import net.minecraft.util.math.BlockPos;
@@ -42,7 +41,7 @@ public class WirelessLockTile extends SignalChannelTileEntity implements ILockab
     private int verticalRange = 3;
 
     public WirelessLockTile() {
-        super(ModBlocks.WIRELESS_LOCK_TILE.get());
+        super(Registration.WIRELESS_LOCK_TILE.get());
     }
 
     public static BaseBlock createBlock() {

@@ -1,8 +1,7 @@
 package mcjty.ariente.blocks.utility.autofield;
 
 import mcjty.ariente.Ariente;
-import mcjty.ariente.blocks.ModBlocks;
-import mcjty.ariente.blocks.utility.BlueprintStorageTile;
+import mcjty.ariente.setup.Registration;
 import mcjty.ariente.config.UtilityConfiguration;
 import mcjty.ariente.gui.HelpBuilder;
 import mcjty.ariente.gui.HoloGuiTools;
@@ -32,7 +31,6 @@ import net.minecraft.network.NetworkManager;
 import net.minecraft.network.play.server.SUpdateTileEntityPacket;
 import net.minecraft.tileentity.ITickableTileEntity;
 import net.minecraft.tileentity.TileEntity;
-import net.minecraft.tileentity.TileEntityType;
 import net.minecraft.util.ActionResultType;
 import net.minecraft.util.Direction;
 import net.minecraft.util.Hand;
@@ -82,7 +80,7 @@ public class AutoFieldTile extends GenericTileEntity implements IGuiTile, ITicka
     private long usingPower = 0;
 
     public AutoFieldTile() {
-        super(ModBlocks.AUTOFIELD_TILE.get());
+        super(Registration.AUTOFIELD_TILE.get());
     }
 
     public static BaseBlock createBlock() {
@@ -568,7 +566,7 @@ public class AutoFieldTile extends GenericTileEntity implements IGuiTile, ITicka
                     TileEntity te = world.getTileEntity(p);
                     if (te instanceof MultipartTE) {
                         BlockState state = MultipartHelper.getBlockState(world, p, PartSlot.DOWN);
-                        if (state != null && state.getBlock() == ModBlocks.FIELD_MARKER.get()) {
+                        if (state != null && state.getBlock() == Registration.FIELD_MARKER.get()) {
                             if (fieldBox == null) {
                                 fieldBox = new AxisAlignedBB(p, p.add(0, height, 0));
                             } else {

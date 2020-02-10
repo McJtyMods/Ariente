@@ -2,7 +2,7 @@ package mcjty.ariente.blocks.utility;
 
 import mcjty.ariente.api.AlarmType;
 import mcjty.ariente.api.IAlarmTile;
-import mcjty.ariente.blocks.ModBlocks;
+import mcjty.ariente.setup.Registration;
 import mcjty.ariente.sounds.ModSounds;
 import mcjty.lib.blocks.BaseBlock;
 import mcjty.lib.builder.BlockBuilder;
@@ -26,7 +26,7 @@ public class AlarmTile extends GenericTileEntity implements ITickableTileEntity,
     private int soundTicker = 0;
 
     public AlarmTile() {
-        super(ModBlocks.ALARM_TILE.get());
+        super(Registration.ALARM_TILE.get());
     }
 
     public static BaseBlock createBlock() {

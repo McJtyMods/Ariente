@@ -1,6 +1,6 @@
 package mcjty.ariente.blocks.utility.wireless;
 
-import mcjty.ariente.blocks.ModBlocks;
+import mcjty.ariente.setup.Registration;
 import mcjty.lib.blocks.BaseBlock;
 import mcjty.lib.builder.BlockBuilder;
 import mcjty.lib.varia.ItemStackTools;
@@ -17,7 +17,7 @@ import net.minecraft.util.math.BlockRayTraceResult;
 public class SignalReceiverTile extends SignalChannelTileEntity implements ITickableTileEntity {
 
     public SignalReceiverTile() {
-        super(ModBlocks.SIGNAL_RECEIVER_TILE.get());
+        super(Registration.SIGNAL_RECEIVER_TILE.get());
     }
 
     public static BaseBlock createBlock() {

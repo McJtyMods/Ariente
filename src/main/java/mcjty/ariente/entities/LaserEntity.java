@@ -88,7 +88,7 @@ public class LaserEntity extends Entity implements IForcefieldImmunity {
     }
 
     public static LaserEntity create(World worldIn, double x, double y, double z, double accelX, double accelY, double accelZ) {
-        LaserEntity entity = new LaserEntity(Registration.LASER.get(), worldIn);
+        LaserEntity entity = new LaserEntity(Registration.ENTITY_LASER.get(), worldIn);
         entity.setLocationAndAngles(x, y, z, entity.rotationYaw, entity.rotationPitch);
         entity.setPosition(x, y, z);
         double d0 = MathHelper.sqrt(accelX * accelX + accelY * accelY + accelZ * accelZ);
@@ -99,7 +99,7 @@ public class LaserEntity extends Entity implements IForcefieldImmunity {
     }
 
     public static LaserEntity create(World worldIn, LivingEntity shooter, double accelX, double accelY, double accelZ) {
-        LaserEntity entity = new LaserEntity(Registration.LASER.get(), worldIn);
+        LaserEntity entity = new LaserEntity(Registration.ENTITY_LASER.get(), worldIn);
         entity.shootingEntity = shooter;
         entity.setLocationAndAngles(shooter.getPosX(), shooter.getPosY(), shooter.getPosZ(), shooter.rotationYaw, shooter.rotationPitch);
         entity.setPosition(entity.getPosX(), entity.getPosY(), entity.getPosZ());

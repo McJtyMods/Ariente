@@ -2,8 +2,7 @@ package mcjty.ariente.blocks.utility;
 
 import mcjty.ariente.Ariente;
 import mcjty.ariente.api.IWarper;
-import mcjty.ariente.blocks.ModBlocks;
-import mcjty.ariente.blocks.defense.ForceFieldTile;
+import mcjty.ariente.setup.Registration;
 import mcjty.ariente.compat.arienteworld.ArienteWorldCompat;
 import mcjty.ariente.config.UtilityConfiguration;
 import mcjty.hologui.api.IGuiComponent;
@@ -34,7 +33,7 @@ public class WarperTile extends GenericTileEntity implements IGuiTile, IWarper {
     private int charges = 0;
 
     public WarperTile() {
-        super(ModBlocks.WARPER_TILE.get());
+        super(Registration.WARPER_TILE.get());
     }
 
     public static BaseBlock createBlock() {

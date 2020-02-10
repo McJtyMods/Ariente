@@ -2,7 +2,7 @@ package mcjty.ariente.blocks.generators;
 
 import mcjty.ariente.Ariente;
 import mcjty.ariente.api.IAlarmMode;
-import mcjty.ariente.blocks.ModBlocks;
+import mcjty.ariente.setup.Registration;
 import mcjty.hologui.api.IGuiComponent;
 import mcjty.hologui.api.IGuiComponentRegistry;
 import mcjty.hologui.api.IGuiTile;
@@ -30,7 +30,7 @@ public class NegariteTankTile extends GenericTileEntity implements IGuiTile, IAl
     public static final BooleanProperty LOWER = BooleanProperty.create("lower");
 
     public NegariteTankTile() {
-        super(ModBlocks.NEGARITE_TANK_TILE.get());
+        super(Registration.NEGARITE_TANK_TILE.get());
     }
 
     public static BaseBlock createBlock() {
@@ -61,7 +61,7 @@ public class NegariteTankTile extends GenericTileEntity implements IGuiTile, IAl
     public boolean isWorking() {
         BlockPos p = pos.down();
         BlockState state = world.getBlockState(p);
-        while (state.getBlock() == ModBlocks.NEGARITE_TANK.get()) {
+        while (state.getBlock() == Registration.NEGARITE_TANK.get()) {
             p = p.down();
             state = world.getBlockState(p);
         }
@@ -124,7 +124,7 @@ public class NegariteTankTile extends GenericTileEntity implements IGuiTile, IAl
                     panel.add(registry.icon(i % 8, i / 8, 1, 1).icon(registry.image(128+64, 128)));
                     break;
                 case 2:
-                    panel.add(registry.stackIcon(i % 8, i / 8, 1, 1).itemStack(new ItemStack(ModBlocks.NEGARITE_GENERATOR.get())));
+                    panel.add(registry.stackIcon(i % 8, i / 8, 1, 1).itemStack(new ItemStack(Registration.NEGARITE_GENERATOR.get())));
                     break;
             }
         }

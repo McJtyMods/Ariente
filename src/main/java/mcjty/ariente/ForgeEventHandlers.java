@@ -1,7 +1,7 @@
 package mcjty.ariente;
 
 import mcjty.ariente.api.ArmorUpgradeType;
-import mcjty.ariente.blocks.ModBlocks;
+import mcjty.ariente.setup.Registration;
 import mcjty.ariente.blocks.utility.ILockable;
 import mcjty.ariente.config.WorldgenConfiguration;
 import mcjty.ariente.entities.levitator.FluxLevitatorEntity;
@@ -112,7 +112,7 @@ public class ForgeEventHandlers {
     @SubscribeEvent
     public void onLivingFall(LivingFallEvent event) {
         ItemStack feetStack = event.getEntityLiving().getItemStackFromSlot(EquipmentSlotType.FEET);
-        if (feetStack.getItem() == ModBlocks.POWERSUIT_FEET.get()) {
+        if (feetStack.getItem() == Registration.POWERSUIT_FEET.get()) {
             if (ModuleSupport.hasWorkingUpgrade(feetStack, ArmorUpgradeType.FEATHERFALLING)) {
                 event.setCanceled(true);
             }
@@ -125,7 +125,7 @@ public class ForgeEventHandlers {
         World world = entity.getEntityWorld();
         if (!world.isRemote && entity instanceof LivingEntity) {
             ItemStack chestStack = ((LivingEntity) entity).getItemStackFromSlot(EquipmentSlotType.CHEST);
-            if (chestStack.getItem() == ModBlocks.POWERSUIT_CHEST.get()) {
+            if (chestStack.getItem() == Registration.POWERSUIT_CHEST.get()) {
                 if (ModuleSupport.hasWorkingUpgrade(chestStack, ArmorUpgradeType.FORCEFIELD)) {
                     float damage = event.getAmount();
                     DamageSource source = event.getSource();

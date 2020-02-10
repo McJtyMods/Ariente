@@ -2,8 +2,8 @@ package mcjty.ariente.entities.drone;
 
 import mcjty.ariente.Ariente;
 import mcjty.ariente.api.*;
-import mcjty.ariente.compat.arienteworld.ArienteWorldCompat;
 import mcjty.ariente.setup.Registration;
+import mcjty.ariente.compat.arienteworld.ArienteWorldCompat;
 import mcjty.ariente.sounds.ModSounds;
 import net.minecraft.entity.*;
 import net.minecraft.entity.ai.controller.MovementController;
@@ -41,7 +41,7 @@ public class SentinelDroneEntity extends FlyingEntity implements IMob, IForcefie
     }
 
     public static SentinelDroneEntity create(World world, int sentinelId, ChunkPos cityCenter) {
-        SentinelDroneEntity entity = new SentinelDroneEntity(Registration.SENTINEL_DRONE.get(), world);
+        SentinelDroneEntity entity = new SentinelDroneEntity(Registration.ENTITY_SENTINEL_DRONE.get(), world);
         entity.sentinelId = sentinelId;
         entity.cityCenter = cityCenter;
         return entity;

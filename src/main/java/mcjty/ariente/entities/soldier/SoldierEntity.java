@@ -2,11 +2,10 @@ package mcjty.ariente.entities.soldier;
 
 import mcjty.ariente.Ariente;
 import mcjty.ariente.api.*;
-import mcjty.ariente.blocks.ModBlocks;
+import mcjty.ariente.setup.Registration;
 import mcjty.ariente.compat.arienteworld.ArienteWorldCompat;
 import mcjty.ariente.items.KeyCardItem;
 import mcjty.ariente.items.armor.PowerSuit;
-import mcjty.ariente.setup.Registration;
 import mcjty.ariente.sounds.ModSounds;
 import net.minecraft.block.BlockState;
 import net.minecraft.block.Blocks;
@@ -49,7 +48,7 @@ public class SoldierEntity extends CreatureEntity implements IArmRaisable, IForc
     }
 
     public static SoldierEntity create(World world, ChunkPos cityCenter, SoldierBehaviourType behaviourType) {
-        SoldierEntity entity = new SoldierEntity(Registration.SOLDIER.get(), world);
+        SoldierEntity entity = new SoldierEntity(Registration.ENTITY_SOLDIER.get(), world);
         entity.cityCenter = cityCenter;
         entity.behaviourType = behaviourType;
         return entity;
@@ -160,7 +159,7 @@ public class SoldierEntity extends CreatureEntity implements IArmRaisable, IForc
                     ICityAISystem aiSystem = ArienteWorldCompat.getCityAISystem(world);
                     ICityAI cityAI = aiSystem.getCityAI(cityCenter);
                     if (cityAI != null) {
-                        ItemStack stack = new ItemStack(ModBlocks.KEY_CARD.get());
+                        ItemStack stack = new ItemStack(Registration.KEY_CARD.get());
                         float r = rand.nextFloat();
                         if (r < .4f) {
                             KeyCardItem.addSecurityTag(stack, cityAI.getKeyId());

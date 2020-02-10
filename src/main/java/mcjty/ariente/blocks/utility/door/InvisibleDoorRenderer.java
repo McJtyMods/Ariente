@@ -3,7 +3,7 @@ package mcjty.ariente.blocks.utility.door;
 import com.mojang.blaze3d.matrix.MatrixStack;
 import com.mojang.blaze3d.platform.GlStateManager;
 import mcjty.ariente.Ariente;
-import mcjty.ariente.blocks.ModBlocks;
+import mcjty.ariente.setup.Registration;
 import net.minecraft.block.BlockState;
 import net.minecraft.client.renderer.IRenderTypeBuffer;
 import net.minecraft.client.renderer.tileentity.TileEntityRenderer;
@@ -24,7 +24,7 @@ public class InvisibleDoorRenderer extends TileEntityRenderer<InvisibleDoorTile>
     @Override
     public void render(InvisibleDoorTile te, float partialTicks, MatrixStack matrixStack, IRenderTypeBuffer buffer, int combinedLightIn, int combinedOverlayIn) {
         BlockState state = te.getWorld().getBlockState(te.getPos());
-        if (state.getBlock() != ModBlocks.INVISIBLE_DOOR.get()) {
+        if (state.getBlock() != Registration.INVISIBLE_DOOR.get()) {
             return;
         }
 
@@ -38,7 +38,7 @@ public class InvisibleDoorRenderer extends TileEntityRenderer<InvisibleDoorTile>
 
         GlStateManager.pushMatrix();
 
-        Direction frontDirection = ModBlocks.INVISIBLE_DOOR.get().getFrontDirection(state);
+        Direction frontDirection = Registration.INVISIBLE_DOOR.get().getFrontDirection(state);
         if (Direction.NORTH.equals(frontDirection) || Direction.SOUTH.equals(frontDirection)) {
             // @todo 1.15
 //            GlStateManager.translated(x, y, z+.5);

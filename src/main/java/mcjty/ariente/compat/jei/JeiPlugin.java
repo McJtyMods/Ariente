@@ -1,15 +1,5 @@
 package mcjty.ariente.compat.jei;
 
-import mcjty.ariente.blocks.ModBlocks;
-import mcjty.ariente.recipes.ConstructorRecipe;
-import mcjty.ariente.recipes.BlueprintRecipeRegistry;
-import mezz.jei.api.*;
-import net.minecraft.item.ItemStack;
-
-import javax.annotation.Nonnull;
-import java.util.ArrayList;
-import java.util.List;
-
 //@JEIPlugin
 public class JeiPlugin {} /* @todo 1.14 implements IModPlugin {
 

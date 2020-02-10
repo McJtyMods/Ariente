@@ -1,7 +1,6 @@
 package mcjty.ariente.blocks.utility.autofield;
 
 import mcjty.ariente.Ariente;
-import mcjty.ariente.blocks.ModBlocks;
 import mcjty.hologui.api.IEvent;
 import mcjty.hologui.api.IGuiComponentRegistry;
 import mcjty.hologui.api.IGuiTile;

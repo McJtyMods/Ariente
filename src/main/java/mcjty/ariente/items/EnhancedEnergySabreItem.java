@@ -3,7 +3,7 @@ package mcjty.ariente.items;
 import com.google.common.collect.Multimap;
 import mcjty.ariente.api.ArmorUpgradeType;
 import mcjty.ariente.bindings.KeyBindings;
-import mcjty.ariente.blocks.ModBlocks;
+import mcjty.ariente.setup.Registration;
 import mcjty.ariente.entities.soldier.MasterSoldierEntity;
 import mcjty.ariente.items.modules.ModuleSupport;
 import net.minecraft.client.util.ITooltipFlag;
@@ -127,7 +127,7 @@ public class EnhancedEnergySabreItem extends EnergySabreItem {
     }
 
     private void onUpdateSabre(ItemStack stack, World world, LivingEntity entity) {
-        if (stack.isEmpty() || stack.getItem() != ModBlocks.ENHANCED_ENERGY_SABRE.get() || !stack.hasTag()) {
+        if (stack.isEmpty() || stack.getItem() != Registration.ENHANCED_ENERGY_SABRE.get() || !stack.hasTag()) {
             return;
         }
 
