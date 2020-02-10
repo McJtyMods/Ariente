@@ -1,21 +1,31 @@
 package mcjty.ariente.blocks.utility.wireless;
 
 import mcjty.ariente.Ariente;
+import mcjty.ariente.blocks.ModBlocks;
 import mcjty.ariente.blocks.utility.ILockable;
 import mcjty.ariente.blocks.utility.door.DoorMarkerTile;
 import mcjty.hologui.api.IGuiComponent;
 import mcjty.hologui.api.IGuiComponentRegistry;
 import mcjty.hologui.api.IGuiTile;
 import mcjty.hologui.api.StyledColor;
+import mcjty.lib.blocks.BaseBlock;
+import mcjty.lib.builder.BlockBuilder;
+import mcjty.lib.varia.ItemStackTools;
+import net.minecraft.block.Block;
 import net.minecraft.block.BlockState;
+import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.nbt.CompoundNBT;
 import net.minecraft.network.NetworkManager;
 import net.minecraft.network.play.server.SUpdateTileEntityPacket;
 import net.minecraft.state.BooleanProperty;
+import net.minecraft.state.StateContainer;
 import net.minecraft.tileentity.ITickableTileEntity;
 import net.minecraft.tileentity.TileEntity;
 import net.minecraft.tileentity.TileEntityType;
+import net.minecraft.util.ActionResultType;
+import net.minecraft.util.Hand;
 import net.minecraft.util.math.BlockPos;
+import net.minecraft.util.math.BlockRayTraceResult;
 import net.minecraft.world.World;
 import net.minecraftforge.common.util.Constants;
 
@@ -31,9 +41,32 @@ public class WirelessLockTile extends SignalChannelTileEntity implements ILockab
     private int horizontalRange = 5;
     private int verticalRange = 3;
 
-    public WirelessLockTile(TileEntityType<?> type) {
-        super(type);
+    public WirelessLockTile() {
+        super(ModBlocks.WIRELESS_LOCK_TILE.get());
     }
+
+    public static BaseBlock createBlock() {
+        return new BaseBlock(new BlockBuilder()
+//                .flags(REDSTONE_CHECK, RENDER_SOLID, RENDER_CUTOUT)
+                .info("message.ariente.shiftmessage")
+                .infoExtended("message.ariente.wireless_lock")
+                .infoExtendedParameter(ItemStackTools.intGetter("channel", -1))
+                .tileEntitySupplier(WirelessLockTile::new)
+        ) {
+            @Override
+            protected void fillStateContainer(StateContainer.Builder<Block, BlockState> builder) {
+                super.fillStateContainer(builder);
+                builder.add(LOCKED);
+            }
+        };
+    }
+
+    @Override
+    public ActionResultType onBlockActivated(BlockState state, PlayerEntity player, Hand hand, BlockRayTraceResult result) {
+        Ariente.guiHandler.openHoloGui(world, pos, player);
+        return ActionResultType.SUCCESS;
+    }
+
 
     @Override
     public void tick() {

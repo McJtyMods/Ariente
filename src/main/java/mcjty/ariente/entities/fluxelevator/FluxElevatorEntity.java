@@ -373,7 +373,7 @@ public class FluxElevatorEntity extends Entity {
     }
 
     private boolean isValidBeamBlock(Block block) {
-        return block == ModBlocks.FLUX_BEAM_BLOCK || block == ModBlocks.FLUX_BEND_BEAM_BLOCK;
+        return block == ModBlocks.FLUX_BEAM_BLOCK.get() || block == ModBlocks.FLUX_BEND_BEAM_BLOCK.get();
     }
 
     private void handleEntityCollision() {
@@ -637,7 +637,7 @@ public class FluxElevatorEntity extends Entity {
     }
 
     public static RailShape getBeamDirection(BlockState state) {
-        if (state.getBlock() == ModBlocks.FLUX_BEAM_BLOCK) {
+        if (state.getBlock() == ModBlocks.FLUX_BEAM_BLOCK.get()) {
             Direction facing = state.get(BlockStateProperties.HORIZONTAL_FACING);
             if (facing == Direction.NORTH || facing == Direction.SOUTH) {
                 return RailShape.EAST_WEST;

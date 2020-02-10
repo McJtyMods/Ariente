@@ -24,7 +24,7 @@ public class InvisibleDoorRenderer extends TileEntityRenderer<InvisibleDoorTile>
     @Override
     public void render(InvisibleDoorTile te, float partialTicks, MatrixStack matrixStack, IRenderTypeBuffer buffer, int combinedLightIn, int combinedOverlayIn) {
         BlockState state = te.getWorld().getBlockState(te.getPos());
-        if (state.getBlock() != ModBlocks.invisibleDoorBlock.get()) {
+        if (state.getBlock() != ModBlocks.INVISIBLE_DOOR.get()) {
             return;
         }
 
@@ -38,7 +38,7 @@ public class InvisibleDoorRenderer extends TileEntityRenderer<InvisibleDoorTile>
 
         GlStateManager.pushMatrix();
 
-        Direction frontDirection = ModBlocks.invisibleDoorBlock.get().getFrontDirection(state);
+        Direction frontDirection = ModBlocks.INVISIBLE_DOOR.get().getFrontDirection(state);
         if (Direction.NORTH.equals(frontDirection) || Direction.SOUTH.equals(frontDirection)) {
             // @todo 1.15
 //            GlStateManager.translated(x, y, z+.5);

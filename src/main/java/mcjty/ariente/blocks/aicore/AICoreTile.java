@@ -4,16 +4,22 @@ import mcjty.ariente.api.IAICoreTile;
 import mcjty.ariente.api.IAlarmMode;
 import mcjty.ariente.api.ICityAI;
 import mcjty.ariente.api.ICityAISystem;
+import mcjty.ariente.blocks.ModBlocks;
 import mcjty.ariente.compat.arienteworld.ArienteWorldCompat;
+import mcjty.lib.blocks.BaseBlock;
+import mcjty.lib.blocks.RotationType;
+import mcjty.lib.builder.BlockBuilder;
 import mcjty.lib.tileentity.GenericTileEntity;
 import mcjty.lib.varia.BlockPosTools;
+import net.minecraft.block.Block;
 import net.minecraft.block.BlockState;
+import net.minecraft.block.material.Material;
 import net.minecraft.nbt.CompoundNBT;
 import net.minecraft.tileentity.ITickableTileEntity;
-import net.minecraft.tileentity.TileEntityType;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.ChunkPos;
 import net.minecraft.world.World;
+import net.minecraftforge.common.ToolType;
 
 public class AICoreTile extends GenericTileEntity implements ITickableTileEntity, IAlarmMode, IAICoreTile {
 
@@ -21,8 +27,24 @@ public class AICoreTile extends GenericTileEntity implements ITickableTileEntity
     private int tickCounter = 10;
     private String cityName = "";
 
-    public AICoreTile(TileEntityType<?> type) {
-        super(type);
+    public AICoreTile() {
+        super(ModBlocks.AICORE_TILE.get());
+    }
+
+    public static BaseBlock createBlock() {
+        return new BaseBlock(new BlockBuilder()
+                .properties(Block.Properties.create(Material.IRON)
+                        .harvestTool(ToolType.PICKAXE)
+                        .harvestLevel(2)
+                        .hardnessAndResistance(20.0f, 800))
+//                .flags(REDSTONE_CHECK, RENDER_SOLID, RENDER_CUTOUT)
+                .tileEntitySupplier(AICoreTile::new)
+        ) {
+            @Override
+            public RotationType getRotationType() {
+                return RotationType.NONE;
+            }
+        };
     }
 
     @Override

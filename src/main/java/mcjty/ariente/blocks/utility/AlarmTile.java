@@ -2,14 +2,19 @@ package mcjty.ariente.blocks.utility;
 
 import mcjty.ariente.api.AlarmType;
 import mcjty.ariente.api.IAlarmTile;
+import mcjty.ariente.blocks.ModBlocks;
 import mcjty.ariente.sounds.ModSounds;
+import mcjty.lib.blocks.BaseBlock;
+import mcjty.lib.builder.BlockBuilder;
 import mcjty.lib.tileentity.GenericTileEntity;
+import net.minecraft.block.Block;
+import net.minecraft.block.BlockState;
 import net.minecraft.nbt.CompoundNBT;
 import net.minecraft.network.NetworkManager;
 import net.minecraft.network.play.server.SUpdateTileEntityPacket;
 import net.minecraft.state.EnumProperty;
+import net.minecraft.state.StateContainer;
 import net.minecraft.tileentity.ITickableTileEntity;
-import net.minecraft.tileentity.TileEntityType;
 import net.minecraft.util.SoundCategory;
 import net.minecraftforge.common.util.Constants;
 
@@ -20,9 +25,25 @@ public class AlarmTile extends GenericTileEntity implements ITickableTileEntity,
     private AlarmType alarmType = AlarmType.SAFE;
     private int soundTicker = 0;
 
-    public AlarmTile(TileEntityType<?> type) {
-        super(type);
+    public AlarmTile() {
+        super(ModBlocks.ALARM_TILE.get());
     }
+
+    public static BaseBlock createBlock() {
+        return new BaseBlock(new BlockBuilder()
+//                .flags(REDSTONE_CHECK, RENDER_SOLID, RENDER_CUTOUT)
+                .info("message.ariente.shiftmessage")
+                .infoExtended("message.ariente.alarm")
+                .tileEntitySupplier(AlarmTile::new)
+        ) {
+            @Override
+            protected void fillStateContainer(StateContainer.Builder<Block, BlockState> builder) {
+                super.fillStateContainer(builder);
+                builder.add(ALARM);
+            }
+        };
+    }
+
 
     @Override
     public void tick() {

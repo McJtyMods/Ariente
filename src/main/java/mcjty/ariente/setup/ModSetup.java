@@ -33,7 +33,6 @@ public class ModSetup extends DefaultModSetup {
 
         ArienteMessages.registerMessages("ariente");
 
-        ModBlocks.init();
         ModItems.init();
         WorldGen.init();
         ModPotions.init();

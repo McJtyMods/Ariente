@@ -26,7 +26,7 @@ public class DoorMarkerRenderer extends TileEntityRenderer<DoorMarkerTile> {
     @Override
     public void render(DoorMarkerTile te, float partialTicks, MatrixStack matrixStack, IRenderTypeBuffer buffer, int combinedLightIn, int combinedOverlayIn) {
         BlockState state = te.getWorld().getBlockState(te.getPos());
-        if (state.getBlock() != ModBlocks.doorMarkerBlock.get()) {
+        if (state.getBlock() != ModBlocks.DOOR_MARKER.get()) {
             return;
         }
 

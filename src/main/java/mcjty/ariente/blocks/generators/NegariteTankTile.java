@@ -35,8 +35,8 @@ public class NegariteTankTile extends GenericTileEntity implements IGuiTile, IAl
 
     public static BaseBlock createBlock() {
         return new BaseBlock(new BlockBuilder()
-//                .info("message.ariente.shiftmessage")
-//                .infoExtended("message.ariente.negarite_tank")
+                .info("message.ariente.shiftmessage")
+                .infoExtended("message.ariente.negarite_tank")
                 .tileEntitySupplier(NegariteTankTile::new)
         ) {
             @Override

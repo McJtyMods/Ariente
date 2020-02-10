@@ -1,11 +1,22 @@
 package mcjty.ariente.blocks.utility;
 
+import mcjty.ariente.Ariente;
+import mcjty.ariente.blocks.ModBlocks;
 import mcjty.hologui.api.IGuiComponent;
 import mcjty.hologui.api.IGuiComponentRegistry;
 import mcjty.hologui.api.IGuiTile;
 import mcjty.hologui.api.StyledColor;
+import mcjty.lib.blocks.BaseBlock;
+import mcjty.lib.blocks.RotationType;
+import mcjty.lib.builder.BlockBuilder;
 import mcjty.lib.tileentity.GenericTileEntity;
-import net.minecraft.tileentity.TileEntityType;
+import net.minecraft.block.Block;
+import net.minecraft.block.BlockState;
+import net.minecraft.entity.player.PlayerEntity;
+import net.minecraft.state.StateContainer;
+import net.minecraft.util.ActionResultType;
+import net.minecraft.util.Hand;
+import net.minecraft.util.math.BlockRayTraceResult;
 
 public class LevelMarkerTile extends GenericTileEntity implements IGuiTile {
 
@@ -16,8 +27,27 @@ public class LevelMarkerTile extends GenericTileEntity implements IGuiTile {
                 .add(registry.text(0, 2, 1, 1).text("Floor name (WIP)").color(registry.color(StyledColor.LABEL)));
     }
 
-    public LevelMarkerTile(TileEntityType<?> type) {
-        super(type);
+    public LevelMarkerTile() {
+        super(ModBlocks.LEVEL_MARKER_TILE.get());
+    }
+
+    public static BaseBlock createBlock() {
+        return new BaseBlock(new BlockBuilder()
+                .info("message.ariente.shiftmessage")
+                .infoExtended("message.ariente.level_marker")
+                .tileEntitySupplier(LevelMarkerTile::new)
+        ) {
+            @Override
+            public RotationType getRotationType() {
+                return RotationType.NONE;
+            }
+        };
+    }
+
+    @Override
+    public ActionResultType onBlockActivated(BlockState state, PlayerEntity player, Hand hand, BlockRayTraceResult result) {
+        Ariente.guiHandler.openHoloGui(world, pos, player);
+        return ActionResultType.SUCCESS;
     }
 
     @Override

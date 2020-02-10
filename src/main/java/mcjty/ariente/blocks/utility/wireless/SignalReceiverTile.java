@@ -1,13 +1,45 @@
 package mcjty.ariente.blocks.utility.wireless;
 
+import mcjty.ariente.blocks.ModBlocks;
+import mcjty.lib.blocks.BaseBlock;
+import mcjty.lib.builder.BlockBuilder;
+import mcjty.lib.varia.ItemStackTools;
+import net.minecraft.block.Block;
+import net.minecraft.block.BlockState;
+import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.nbt.CompoundNBT;
+import net.minecraft.state.StateContainer;
 import net.minecraft.tileentity.ITickableTileEntity;
-import net.minecraft.tileentity.TileEntityType;
+import net.minecraft.util.ActionResultType;
+import net.minecraft.util.Hand;
+import net.minecraft.util.math.BlockRayTraceResult;
 
 public class SignalReceiverTile extends SignalChannelTileEntity implements ITickableTileEntity {
 
-    public SignalReceiverTile(TileEntityType<?> type) {
-        super(type);
+    public SignalReceiverTile() {
+        super(ModBlocks.SIGNAL_RECEIVER_TILE.get());
+    }
+
+    public static BaseBlock createBlock() {
+        return new BaseBlock(new BlockBuilder()
+//                .flags(REDSTONE_CHECK, RENDER_SOLID, RENDER_CUTOUT)
+                .info("message.ariente.shiftmessage")
+                .infoExtended("message.ariente.signal_receiver")
+                .infoExtendedParameter(ItemStackTools.intGetter("channel", -1))
+                .tileEntitySupplier(SignalReceiverTile::new)
+        ) {
+            @Override
+            protected void fillStateContainer(StateContainer.Builder<Block, BlockState> builder) {
+                super.fillStateContainer(builder);
+                builder.add(SignalChannelTileEntity.POWER);
+            }
+        };
+    }
+
+    @Override
+    public ActionResultType onBlockActivated(BlockState state, PlayerEntity player, Hand hand, BlockRayTraceResult result) {
+        SignalChannelTileEntity.onBlockActivatedInt(world, pos, player, hand);
+        return ActionResultType.SUCCESS;
     }
 
     @Override

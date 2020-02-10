@@ -3,12 +3,17 @@ package mcjty.ariente.blocks.utility;
 import mcjty.ariente.Ariente;
 import mcjty.ariente.api.ICityAI;
 import mcjty.ariente.api.ICityEquipment;
+import mcjty.ariente.blocks.ModBlocks;
 import mcjty.ariente.blocks.utility.door.DoorMarkerTile;
 import mcjty.ariente.items.KeyCardItem;
 import mcjty.ariente.security.IKeyCardSlot;
 import mcjty.ariente.sounds.ModSounds;
 import mcjty.hologui.api.*;
+import mcjty.lib.blocks.BaseBlock;
+import mcjty.lib.blocks.RotationType;
+import mcjty.lib.builder.BlockBuilder;
 import mcjty.lib.tileentity.GenericTileEntity;
+import net.minecraft.block.Block;
 import net.minecraft.block.BlockState;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.item.ItemStack;
@@ -16,10 +21,13 @@ import net.minecraft.nbt.CompoundNBT;
 import net.minecraft.network.NetworkManager;
 import net.minecraft.network.play.server.SUpdateTileEntityPacket;
 import net.minecraft.state.BooleanProperty;
+import net.minecraft.state.StateContainer;
 import net.minecraft.tileentity.TileEntity;
-import net.minecraft.tileentity.TileEntityType;
+import net.minecraft.util.ActionResultType;
+import net.minecraft.util.Hand;
 import net.minecraft.util.SoundCategory;
 import net.minecraft.util.math.BlockPos;
+import net.minecraft.util.math.BlockRayTraceResult;
 import net.minecraft.world.World;
 import net.minecraftforge.common.util.Constants;
 
@@ -39,9 +47,32 @@ public class LockTile extends GenericTileEntity implements IGuiTile, IKeyCardSlo
     private int horizontalRange = 5;
     private int verticalRange = 3;
 
-    public LockTile(TileEntityType<?> type) {
-        super(type);
+    public LockTile() {
+        super(ModBlocks.LOCK_TILE.get());
     }
+
+    public static BaseBlock createBlock() {
+        return new BaseBlock(new BlockBuilder()
+//                .flags(REDSTONE_CHECK, RENDER_SOLID, RENDER_CUTOUT)
+                .info("message.ariente.shiftmessage")
+                .infoExtended("message.ariente.lock")
+                .tileEntitySupplier(LockTile::new)
+        ) {
+            @Override
+            protected void fillStateContainer(StateContainer.Builder<Block, BlockState> builder) {
+                super.fillStateContainer(builder);
+                builder.add(LOCKED);
+            }
+        };
+    }
+
+    @Override
+    public ActionResultType onBlockActivated(BlockState state, PlayerEntity player, Hand hand, BlockRayTraceResult result) {
+        Ariente.guiHandler.openHoloGui(world, pos, player);
+        return ActionResultType.SUCCESS;
+    }
+
+
 
     @Override
     public void onDataPacket(NetworkManager net, SUpdateTileEntityPacket packet) {

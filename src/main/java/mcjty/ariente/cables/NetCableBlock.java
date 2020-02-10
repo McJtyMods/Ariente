@@ -50,7 +50,7 @@ public class NetCableBlock extends GenericCableBlock {
             // If we are in mimic mode then the drop will be the facade as the connector will remain there
             NetCableTileEntity cableTileEntity = (NetCableTileEntity) te;
             if (cableTileEntity.getMimicBlock() != null) {
-                ItemStack item = new ItemStack(ModBlocks.facadeBlock);
+                ItemStack item = new ItemStack(ModBlocks.FACADE.get());
                 FacadeItemBlock.setMimicBlock(item, cableTileEntity.getMimicBlock());
                 cableTileEntity.setMimicBlock(null);
                 spawnAsEntity(worldIn, pos, item);

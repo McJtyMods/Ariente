@@ -49,7 +49,7 @@ public class ClientForgeEventHandlers {
             BlockPos pos = ((BlockRayTraceResult) event.getTarget()).getPos();
             PlayerEntity player = Minecraft.getInstance().player;
             BlockState state = player.getEntityWorld().getBlockState(pos);
-            if (state.getBlock() == ModBlocks.RAMP_BLOCK) {
+            if (state.getBlock() == ModBlocks.RAMP_BLOCK.get()) {
                 drawSelectionBox(state, player, pos, event.getPartialTicks());
                 event.setCanceled(true);
             }

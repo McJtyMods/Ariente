@@ -46,10 +46,10 @@ public abstract class SignalChannelTileEntity extends GenericTileEntity implemen
 
     static boolean isRedstoneChannelItem(Item item) {
         return (item instanceof BlockItem &&
-                (((BlockItem)item).getBlock() == ModBlocks.signalTransmitterBlock.get()
-                        || ((BlockItem)item).getBlock() == ModBlocks.signalReceiverBlock.get()
-                        || ((BlockItem)item).getBlock() == ModBlocks.wirelessLockBlock.get()
-                        || ((BlockItem)item).getBlock() == ModBlocks.wirelessButtonBlock.get()));
+                (((BlockItem)item).getBlock() == ModBlocks.SIGNAL_TRANSMITTER.get()
+                        || ((BlockItem)item).getBlock() == ModBlocks.SIGNAL_RECEIVER.get()
+                        || ((BlockItem)item).getBlock() == ModBlocks.WIRELESS_LOCK.get()
+                        || ((BlockItem)item).getBlock() == ModBlocks.WIRELESS_BUTTON.get()));
     }
 
 //    @Override
@@ -145,7 +145,7 @@ public abstract class SignalChannelTileEntity extends GenericTileEntity implemen
 //        currenttip.add(TextFormatting.GREEN + "Channel: " + getChannel(false));
 //    }
 
-    public static boolean onBlockActivated(World world, BlockPos pos, PlayerEntity player, Hand hand, Direction side, float hitX, float hitY, float hitZ) {
+    public static boolean onBlockActivatedInt(World world, BlockPos pos, PlayerEntity player, Hand hand) {
         ItemStack stack = player.getHeldItem(hand);
         if(SignalChannelTileEntity.isRedstoneChannelItem(stack.getItem())) {
             setChannel(world, pos, player, stack);

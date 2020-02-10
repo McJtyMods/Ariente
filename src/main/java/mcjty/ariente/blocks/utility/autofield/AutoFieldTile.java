@@ -1,6 +1,8 @@
 package mcjty.ariente.blocks.utility.autofield;
 
+import mcjty.ariente.Ariente;
 import mcjty.ariente.blocks.ModBlocks;
+import mcjty.ariente.blocks.utility.BlueprintStorageTile;
 import mcjty.ariente.config.UtilityConfiguration;
 import mcjty.ariente.gui.HelpBuilder;
 import mcjty.ariente.gui.HoloGuiTools;
@@ -11,6 +13,9 @@ import mcjty.hologui.api.IGuiComponent;
 import mcjty.hologui.api.IGuiComponentRegistry;
 import mcjty.hologui.api.IGuiTile;
 import mcjty.hologui.api.StyledColor;
+import mcjty.lib.blocks.BaseBlock;
+import mcjty.lib.blocks.RotationType;
+import mcjty.lib.builder.BlockBuilder;
 import mcjty.lib.multipart.MultipartHelper;
 import mcjty.lib.multipart.MultipartTE;
 import mcjty.lib.multipart.PartPos;
@@ -28,9 +33,12 @@ import net.minecraft.network.play.server.SUpdateTileEntityPacket;
 import net.minecraft.tileentity.ITickableTileEntity;
 import net.minecraft.tileentity.TileEntity;
 import net.minecraft.tileentity.TileEntityType;
+import net.minecraft.util.ActionResultType;
 import net.minecraft.util.Direction;
+import net.minecraft.util.Hand;
 import net.minecraft.util.math.AxisAlignedBB;
 import net.minecraft.util.math.BlockPos;
+import net.minecraft.util.math.BlockRayTraceResult;
 import net.minecraft.world.World;
 import net.minecraftforge.common.util.Constants;
 import net.minecraftforge.fml.network.NetworkDirection;
@@ -73,9 +81,29 @@ public class AutoFieldTile extends GenericTileEntity implements IGuiTile, ITicka
     private int ticker = 20;
     private long usingPower = 0;
 
-    public AutoFieldTile(TileEntityType<?> type) {
-        super(type);
+    public AutoFieldTile() {
+        super(ModBlocks.AUTOFIELD_TILE.get());
     }
+
+    public static BaseBlock createBlock() {
+        return new BaseBlock(new BlockBuilder()
+                .info("message.ariente.shiftmessage")
+                .infoExtended("message.ariente.automation_field")
+                .tileEntitySupplier(AutoFieldTile::new)
+        ) {
+            @Override
+            public RotationType getRotationType() {
+                return RotationType.HORIZROTATION;
+            }
+        };
+    }
+
+    @Override
+    public ActionResultType onBlockActivated(BlockState state, PlayerEntity player, Hand hand, BlockRayTraceResult result) {
+        Ariente.guiHandler.openHoloGui(world, pos, player);
+        return ActionResultType.SUCCESS;
+    }
+
 
     @Override
     public void tick() {

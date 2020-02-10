@@ -69,8 +69,8 @@ public class PosiriteGeneratorTile extends GenericTileEntity implements ITickabl
     public static BaseBlock createBlock() {
         return new BaseBlock(new BlockBuilder()
 //                .flags(REDSTONE_CHECK, RENDER_SOLID, RENDER_CUTOUT)
-//                .info("message.ariente.shiftmessage")
-//                .infoExtended("message.ariente.negarite_generator")
+                .info("message.ariente.shiftmessage")
+                .infoExtended("message.ariente.negarite_generator")
                 .tileEntitySupplier(PosiriteGeneratorTile::new)
         ) {
             @Override

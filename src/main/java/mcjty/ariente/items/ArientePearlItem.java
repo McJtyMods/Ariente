@@ -52,7 +52,7 @@ public class ArientePearlItem extends Item {
         BlockState state = world.getBlockState(pos);
         ItemStack itemstack = player.getHeldItem(hand);
 
-        if (player.canPlayerEdit(pos.offset(facing), facing, itemstack) && state.getBlock() == ModBlocks.warperBlock.get()) {
+        if (player.canPlayerEdit(pos.offset(facing), facing, itemstack) && state.getBlock() == ModBlocks.WARPER.get()) {
             if (world.isRemote) {
                 return ActionResultType.SUCCESS;
             } else {
@@ -104,7 +104,7 @@ public class ArientePearlItem extends Item {
 
         RayTraceResult raytraceresult = this.rayTrace(world, player, RayTraceContext.FluidMode.NONE);
 
-        if (raytraceresult instanceof BlockRayTraceResult && raytraceresult.getType() == RayTraceResult.Type.BLOCK && world.getBlockState(((BlockRayTraceResult) raytraceresult).getPos()).getBlock() == ModBlocks.warperBlock.get()) {
+        if (raytraceresult instanceof BlockRayTraceResult && raytraceresult.getType() == RayTraceResult.Type.BLOCK && world.getBlockState(((BlockRayTraceResult) raytraceresult).getPos()).getBlock() == ModBlocks.WARPER.get()) {
             return new ActionResult<>(ActionResultType.PASS, itemstack);
         } else {
             player.setActiveHand(hand);

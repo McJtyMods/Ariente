@@ -1,5 +1,6 @@
 package mcjty.ariente.blocks.utility;
 
+import mcjty.ariente.Ariente;
 import mcjty.ariente.api.ICityAI;
 import mcjty.ariente.api.ICityEquipment;
 import mcjty.ariente.blocks.ModBlocks;
@@ -14,13 +15,17 @@ import mcjty.ariente.recipes.ConstructorRecipe;
 import mcjty.hologui.api.*;
 import mcjty.hologui.api.components.IPlayerSlots;
 import mcjty.hologui.api.components.ISlots;
+import mcjty.lib.blocks.BaseBlock;
+import mcjty.lib.blocks.RotationType;
+import mcjty.lib.builder.BlockBuilder;
 import mcjty.lib.container.AutomationFilterItemHander;
 import mcjty.lib.container.ContainerFactory;
-import mcjty.lib.container.InventoryHelper;
 import mcjty.lib.container.NoDirectionItemHander;
 import mcjty.lib.tileentity.GenericTileEntity;
 import mcjty.lib.varia.OrientationTools;
 import mcjty.lib.varia.RedstoneMode;
+import net.minecraft.block.Block;
+import net.minecraft.block.BlockState;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.item.ItemStack;
 import net.minecraft.item.Items;
@@ -28,10 +33,14 @@ import net.minecraft.nbt.CompoundNBT;
 import net.minecraft.network.NetworkManager;
 import net.minecraft.network.play.server.SUpdateTileEntityPacket;
 import net.minecraft.state.BooleanProperty;
+import net.minecraft.state.StateContainer;
 import net.minecraft.tileentity.ITickableTileEntity;
 import net.minecraft.tileentity.TileEntity;
 import net.minecraft.tileentity.TileEntityType;
+import net.minecraft.util.ActionResultType;
 import net.minecraft.util.Direction;
+import net.minecraft.util.Hand;
+import net.minecraft.util.math.BlockRayTraceResult;
 import net.minecraft.world.World;
 import net.minecraftforge.common.util.Constants;
 import net.minecraftforge.common.util.LazyOptional;
@@ -68,9 +77,36 @@ public class AutoConstructorTile extends GenericTileEntity implements IGuiTile, 
     private int craftIndex = 0;
     private int busyCounter = 0;
 
-    public AutoConstructorTile(TileEntityType<?> type) {
-        super(type);
+    public AutoConstructorTile() {
+        super(ModBlocks.AUTO_CONSTRUCTOR_TILE.get());
     }
+
+    public static BaseBlock createBlock() {
+        return new BaseBlock(new BlockBuilder()
+                .info("message.ariente.shiftmessage")
+                .infoExtended("message.ariente.auto_constructor")
+                .tileEntitySupplier(AutoConstructorTile::new)
+        ) {
+            @Override
+            public RotationType getRotationType() {
+                return RotationType.HORIZROTATION;
+            }
+
+            @Override
+            protected void fillStateContainer(StateContainer.Builder<Block, BlockState> builder) {
+                super.fillStateContainer(builder);
+                builder.add(WORKING);
+            }
+        };
+    }
+
+    @Override
+    public ActionResultType onBlockActivated(BlockState state, PlayerEntity player, Hand hand, BlockRayTraceResult result) {
+        Ariente.guiHandler.openHoloGui(world, pos, player);
+        return ActionResultType.SUCCESS;
+    }
+
+
 
     @Override
     protected boolean needsRedstoneMode() {
@@ -364,7 +400,7 @@ public class AutoConstructorTile extends GenericTileEntity implements IGuiTile, 
 
                 .add(registry.text(0, 5, 1, 1).text("Output").color(registry.color(StyledColor.LABEL)))
 
-                .add(registry.stackIcon(0, 6.5, 1, 1).itemStack(new ItemStack(ModBlocks.constructorBlock.get())))
+                .add(registry.stackIcon(0, 6.5, 1, 1).itemStack(new ItemStack(ModBlocks.CONSTRUCTOR.get())))
                 .add(registry.slots(1.5, 6.5, 6, 1)
                         .name("outputslots")
                         .withAmount()
@@ -391,7 +427,7 @@ public class AutoConstructorTile extends GenericTileEntity implements IGuiTile, 
                 .add(registry.iconButton(3, 4.2, 1, 1).icon(registry.image(GRAY_ARROW_UP)).hover(registry.image(WHITE_ARROW_UP))
                         .hitEvent((component, player, entity, x, y) -> transferToPlayer(player, entity, "slots")))
 
-                .add(registry.stackIcon(0, 5.5, 1, 1).itemStack(new ItemStack(ModBlocks.constructorBlock.get())))
+                .add(registry.stackIcon(0, 5.5, 1, 1).itemStack(new ItemStack(ModBlocks.CONSTRUCTOR.get())))
                 .add(registry.slots(1.5, 5.5, 6, 3)
                         .name("slots")
                         .withAmount()

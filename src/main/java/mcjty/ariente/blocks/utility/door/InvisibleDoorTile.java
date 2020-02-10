@@ -1,13 +1,16 @@
 package mcjty.ariente.blocks.utility.door;
 
+import mcjty.ariente.blocks.ModBlocks;
 import mcjty.ariente.blocks.utility.ILockable;
 import mcjty.ariente.config.UtilityConfiguration;
+import mcjty.lib.blocks.BaseBlock;
+import mcjty.lib.blocks.RotationType;
+import mcjty.lib.builder.BlockBuilder;
 import mcjty.lib.tileentity.GenericTileEntity;
 import net.minecraft.block.BlockState;
 import net.minecraft.entity.Entity;
 import net.minecraft.pathfinding.PathNodeType;
 import net.minecraft.tileentity.TileEntity;
-import net.minecraft.tileentity.TileEntityType;
 import net.minecraft.util.math.AxisAlignedBB;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.IBlockReader;
@@ -19,8 +22,22 @@ import java.util.List;
 
 public class InvisibleDoorTile extends GenericTileEntity implements ILockable {
 
-    public InvisibleDoorTile(TileEntityType<?> type) {
-        super(type);
+    public InvisibleDoorTile() {
+        super(ModBlocks.INVISIBLE_DOOR_TILE.get());
+    }
+
+    public static BaseBlock createBlock() {
+        return new BaseBlock(new BlockBuilder()
+//                .addCollisionBoxToList(InvisibleDoorTile::addCollisionBoxToList)
+//                .boundingBox(InvisibleDoorTile::getCollisionBoundingBox)
+//                .getAIPathNodeType(InvisibleDoorTile::getAiPathNodeType)
+                .tileEntitySupplier(InvisibleDoorTile::new)
+        ) {
+            @Override
+            public RotationType getRotationType() {
+                return RotationType.HORIZROTATION;
+            }
+        };
     }
 
     @Nonnull

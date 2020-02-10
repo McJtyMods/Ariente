@@ -1,5 +1,6 @@
 package mcjty.ariente.blocks.utility;
 
+import mcjty.ariente.Ariente;
 import mcjty.ariente.api.ICityAI;
 import mcjty.ariente.api.ICityEquipment;
 import mcjty.ariente.blocks.ModBlocks;
@@ -8,14 +9,20 @@ import mcjty.ariente.items.ModItems;
 import mcjty.hologui.api.*;
 import mcjty.hologui.api.components.IPlayerSlots;
 import mcjty.hologui.api.components.ISlots;
+import mcjty.lib.blocks.BaseBlock;
+import mcjty.lib.blocks.RotationType;
+import mcjty.lib.builder.BlockBuilder;
 import mcjty.lib.container.AutomationFilterItemHander;
 import mcjty.lib.container.ContainerFactory;
 import mcjty.lib.container.NoDirectionItemHander;
 import mcjty.lib.tileentity.GenericTileEntity;
+import net.minecraft.block.BlockState;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.CompoundNBT;
-import net.minecraft.tileentity.TileEntityType;
+import net.minecraft.util.ActionResultType;
+import net.minecraft.util.Hand;
+import net.minecraft.util.math.BlockRayTraceResult;
 import net.minecraft.world.World;
 import net.minecraftforge.common.util.LazyOptional;
 import net.minecraftforge.items.ItemHandlerHelper;
@@ -38,9 +45,29 @@ public class BlueprintStorageTile extends GenericTileEntity implements IGuiTile,
     private LazyOptional<NoDirectionItemHander> itemHandler = LazyOptional.of(() -> items);
     private LazyOptional<AutomationFilterItemHander> automationItemHandler = LazyOptional.of(() -> new AutomationFilterItemHander(items));
 
-    public BlueprintStorageTile(TileEntityType<?> type) {
-        super(type);
+    public BlueprintStorageTile() {
+        super(ModBlocks.BLUEPRINT_STORAGE_TILE.get());
     }
+
+    public static BaseBlock createBlock() {
+        return new BaseBlock(new BlockBuilder()
+                .info("message.ariente.shiftmessage")
+                .infoExtended("message.ariente.blueprint_storage")
+                .tileEntitySupplier(BlueprintStorageTile::new)
+        ) {
+            @Override
+            public RotationType getRotationType() {
+                return RotationType.HORIZROTATION;
+            }
+        };
+    }
+
+    @Override
+    public ActionResultType onBlockActivated(BlockState state, PlayerEntity player, Hand hand, BlockRayTraceResult result) {
+        Ariente.guiHandler.openHoloGui(world, pos, player);
+        return ActionResultType.SUCCESS;
+    }
+
 
     // @todo 1.14 loot
     public void readRestorableFromNBT(CompoundNBT tagCompound) {
@@ -106,7 +133,7 @@ public class BlueprintStorageTile extends GenericTileEntity implements IGuiTile,
                 .add(registry.iconButton(3, 3.5, 1, 1).icon(registry.image(GRAY_ARROW_UP)).hover(registry.image(WHITE_ARROW_UP))
                         .hitEvent((component, player, entity, x, y) -> transferToPlayer(player, entity)))
 
-                .add(registry.stackIcon(0, 4.5, 1, 1).itemStack(new ItemStack(ModBlocks.constructorBlock.get())))
+                .add(registry.stackIcon(0, 4.5, 1, 1).itemStack(new ItemStack(ModBlocks.CONSTRUCTOR.get())))
                 .add(registry.slots(1.5, 4.5, 6, 1)
                         .name("slots")
                         .doubleClickEvent((component, player, entity, x, y, stack, index) -> transferToPlayer(player, entity))

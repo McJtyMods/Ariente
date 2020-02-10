@@ -1,9 +1,17 @@
 package mcjty.ariente.blocks;
 
+import mcjty.ariente.blocks.aicore.AICoreTile;
 import mcjty.ariente.blocks.decorative.*;
+import mcjty.ariente.blocks.defense.ForceFieldTile;
 import mcjty.ariente.blocks.generators.*;
-import mcjty.ariente.blocks.utility.BaseBeamBlock;
+import mcjty.ariente.blocks.utility.*;
 import mcjty.ariente.blocks.utility.autofield.*;
+import mcjty.ariente.blocks.utility.door.DoorMarkerTile;
+import mcjty.ariente.blocks.utility.door.InvisibleDoorTile;
+import mcjty.ariente.blocks.utility.wireless.SignalReceiverTile;
+import mcjty.ariente.blocks.utility.wireless.SignalTransmitterTile;
+import mcjty.ariente.blocks.utility.wireless.WirelessButtonTile;
+import mcjty.ariente.blocks.utility.wireless.WirelessLockTile;
 import mcjty.ariente.cables.ConnectorBlock;
 import mcjty.ariente.cables.NetCableBlock;
 import mcjty.ariente.facade.FacadeBlock;
@@ -111,56 +119,66 @@ public class ModBlocks {
     public static final RegistryObject<BaseBlock> POSIRITE_TANK = BLOCKS.register("posirite_tank", PosiriteTankTile::createBlock);
     public static final RegistryObject<TileEntityType<PosiriteTankTile>> POSIRITE_TANK_TILE = TILES.register("posirite_tank", () -> TileEntityType.Builder.create(PosiriteTankTile::new, POSIRITE_TANK.get()).build(null));
 
-    public static final RegistryObject<BaseBlock> storageBlock = BLOCKS.register("", null);
-    //        storageBlock = builderFactory.<StorageTile> builder("storage")
-//                .tileEntityClass(StorageTile.class)
-//                .emptyContainer()
-////                .property(StorageTile.LOCKED)
-//                .flags(RENDER_SOLID, RENDER_TRANSLUCENT)
-//                .rotationType(BaseBlock.RotationType.ROTATION)
-//                .clickAction(StorageTile::onClick)
-//                .activateAction((world, pos, player, hand, side, hitX, hitY, hitZ) -> StorageTile.onActivate(world, pos, player, side, hitX, hitY, hitZ))
-//                .info("message.ariente.shiftmessage")
-//                .infoExtended("message.ariente.storage")
-//                .build();
-//
+    public static final RegistryObject<BaseBlock> STORAGE_BLOCK = BLOCKS.register("storage", StorageTile::createBlock);
+    public static final RegistryObject<TileEntityType<StorageTile>> STORAGE_TILE = TILES.register("storage", () -> TileEntityType.Builder.create(StorageTile::new, STORAGE_BLOCK.get()).build(null));
 
+    public static final RegistryObject<BaseBlock> ELEVATOR_BLOCK = BLOCKS.register("elevator", ElevatorTile::createBlock);
+    public static final RegistryObject<TileEntityType<ElevatorTile>> ELEVATOR_TILE = TILES.register("elevator", () -> TileEntityType.Builder.create(ElevatorTile::new, ELEVATOR_BLOCK.get()).build(null));
 
-    public static final RegistryObject<BaseBlock> elevatorBlock = BLOCKS.register("", null);
-    //        elevatorBlock = builderFactory.<ElevatorTile> builder("elevator")
-//                .tileEntityClass(ElevatorTile.class)
-//                .emptyContainer()
-//                .flags(RENDER_SOLID, RENDER_TRANSLUCENT)
-//                .rotationType(NONE)
-//                .activateAction((world, pos, player, hand, side, hitX, hitY, hitZ) -> Ariente.guiHandler.openHoloGui(world, pos, player))
-//                .info("message.ariente.shiftmessage")
-//                .infoExtended("message.ariente.elevator")
-//                .build();
-//
+    public static final RegistryObject<BaseBlock> LEVEL_MARKER = BLOCKS.register("level_marker", LevelMarkerTile::createBlock);
+    public static final RegistryObject<TileEntityType<LevelMarkerTile>> LEVEL_MARKER_TILE = TILES.register("level_marker", () -> TileEntityType.Builder.create(LevelMarkerTile::new, LEVEL_MARKER.get()).build(null));
 
-    public static final RegistryObject<BaseBlock> levelMarkerBlock = BLOCKS.register("", null);
-    public static final RegistryObject<BaseBlock> doorMarkerBlock = BLOCKS.register("", null);
-    public static final RegistryObject<BaseBlock> invisibleDoorBlock = BLOCKS.register("", null);
-    public static final RegistryObject<BaseBlock> forceFieldBlock = BLOCKS.register("", null);
-    public static final RegistryObject<BaseBlock> aiCoreBlock = BLOCKS.register("", null);
-    public static final RegistryObject<BaseBlock> warperBlock = BLOCKS.register("", null);
-    public static final RegistryObject<BaseBlock> lockBlock = BLOCKS.register("", null);
-    public static final RegistryObject<BaseBlock> signalReceiverBlock = BLOCKS.register("", null);
-    public static final RegistryObject<BaseBlock> signalTransmitterBlock = BLOCKS.register("", null);
-    public static final RegistryObject<BaseBlock> wirelessButtonBlock = BLOCKS.register("", null);
-    public static final RegistryObject<BaseBlock> wirelessLockBlock = BLOCKS.register("", null);
-    public static final RegistryObject<BaseBlock> alarmBlock = BLOCKS.register("", null);
-    public static final RegistryObject<BaseBlock> constructorBlock = BLOCKS.register("", null);
-    public static final RegistryObject<BaseBlock> autoConstructorBlock = BLOCKS.register("", null);
-    public static final RegistryObject<BaseBlock> blueprintStorageBlock = BLOCKS.register("", null);
-    public static final RegistryObject<BaseBlock> autoFieldBlock = BLOCKS.register("", null);
+    public static final RegistryObject<BaseBlock> DOOR_MARKER = BLOCKS.register("door_marker", DoorMarkerTile::createBlock);
+    public static final RegistryObject<TileEntityType<DoorMarkerTile>> DOOR_MARKER_TILE = TILES.register("door_marker", () -> TileEntityType.Builder.create(DoorMarkerTile::new, DOOR_MARKER.get()).build(null));
+
+    public static final RegistryObject<BaseBlock> INVISIBLE_DOOR = BLOCKS.register("invisible_door", InvisibleDoorTile::createBlock);
+    public static final RegistryObject<TileEntityType<InvisibleDoorTile>> INVISIBLE_DOOR_TILE = TILES.register("invisible_door", () -> TileEntityType.Builder.create(InvisibleDoorTile::new, INVISIBLE_DOOR.get()).build(null));
+
+    public static final RegistryObject<BaseBlock> FORCEFIELD = BLOCKS.register("forcefield", ForceFieldTile::createBlock);
+    public static final RegistryObject<TileEntityType<ForceFieldTile>> FORCEFIELD_TILE = TILES.register("forcefield", () -> TileEntityType.Builder.create(ForceFieldTile::new, FORCEFIELD.get()).build(null));
+
+    public static final RegistryObject<BaseBlock> AICORE = BLOCKS.register("aicore", AICoreTile::createBlock);
+    public static final RegistryObject<TileEntityType<AICoreTile>> AICORE_TILE = TILES.register("aicore", () -> TileEntityType.Builder.create(AICoreTile::new, AICORE.get()).build(null));
+
+    public static final RegistryObject<BaseBlock> WARPER = BLOCKS.register("warper", WarperTile::createBlock);
+    public static final RegistryObject<TileEntityType<WarperTile>> WARPER_TILE = TILES.register("warper", () -> TileEntityType.Builder.create(WarperTile::new, WARPER.get()).build(null));
+
+    public static final RegistryObject<BaseBlock> LOCK = BLOCKS.register("lock", LockTile::createBlock);
+    public static final RegistryObject<TileEntityType<LockTile>> LOCK_TILE = TILES.register("lock", () -> TileEntityType.Builder.create(LockTile::new, LOCK.get()).build(null));
+
+    public static final RegistryObject<BaseBlock> SIGNAL_RECEIVER = BLOCKS.register("signal_receiver", SignalReceiverTile::createBlock);
+    public static final RegistryObject<TileEntityType<SignalReceiverTile>> SIGNAL_RECEIVER_TILE = TILES.register("signal_receiver", () -> TileEntityType.Builder.create(SignalReceiverTile::new, SIGNAL_RECEIVER.get()).build(null));
+
+    public static final RegistryObject<BaseBlock> SIGNAL_TRANSMITTER = BLOCKS.register("signal_transmitter", SignalTransmitterTile::createBlock);
+    public static final RegistryObject<TileEntityType<SignalTransmitterTile>> SIGNAL_TRANSMITTER_TILE = TILES.register("signal_transmitter", () -> TileEntityType.Builder.create(SignalTransmitterTile::new, SIGNAL_TRANSMITTER.get()).build(null));
+
+    public static final RegistryObject<BaseBlock> WIRELESS_BUTTON = BLOCKS.register("wireless_button", WirelessButtonTile::createBlock);
+    public static final RegistryObject<TileEntityType<WirelessButtonTile>> WIRELESS_BUTTON_TILE = TILES.register("wireless_button", () -> TileEntityType.Builder.create(WirelessButtonTile::new, WIRELESS_BUTTON.get()).build(null));
+
+    public static final RegistryObject<BaseBlock> WIRELESS_LOCK = BLOCKS.register("wireless_lock", WirelessLockTile::createBlock);
+    public static final RegistryObject<TileEntityType<WirelessLockTile>> WIRELESS_LOCK_TILE = TILES.register("wireless_lock", () -> TileEntityType.Builder.create(WirelessLockTile::new, WIRELESS_LOCK.get()).build(null));
+
+    public static final RegistryObject<BaseBlock> ALARM = BLOCKS.register("alarm", AlarmTile::createBlock);
+    public static final RegistryObject<TileEntityType<AlarmTile>> ALARM_TILE = TILES.register("alarm", () -> TileEntityType.Builder.create(AlarmTile::new, ALARM.get()).build(null));
+
+    public static final RegistryObject<BaseBlock> CONSTRUCTOR = BLOCKS.register("constructor", ConstructorTile::createBlock);
+    public static final RegistryObject<TileEntityType<ConstructorTile>> CONSTRUCTOR_TILE = TILES.register("constructor", () -> TileEntityType.Builder.create(ConstructorTile::new, CONSTRUCTOR.get()).build(null));
+
+    public static final RegistryObject<BaseBlock> AUTO_CONSTRUCTOR = BLOCKS.register("auto_constructor", AutoConstructorTile::createBlock);
+    public static final RegistryObject<TileEntityType<AutoConstructorTile>> AUTO_CONSTRUCTOR_TILE = TILES.register("auto_constructor", () -> TileEntityType.Builder.create(AutoConstructorTile::new, AUTO_CONSTRUCTOR.get()).build(null));
+
+    public static final RegistryObject<BaseBlock> BLUEPRINT_STORAGE = BLOCKS.register("blueprint_storage", BlueprintStorageTile::createBlock);
+    public static final RegistryObject<TileEntityType<BlueprintStorageTile>> BLUEPRINT_STORAGE_TILE = TILES.register("blueprint_storage", () -> TileEntityType.Builder.create(BlueprintStorageTile::new, BLUEPRINT_STORAGE.get()).build(null));
+
+    public static final RegistryObject<BaseBlock> AUTOMATION_FIELD = BLOCKS.register("automation_field", AutoFieldTile::createBlock);
+    public static final RegistryObject<TileEntityType<AutoFieldTile>> AUTOFIELD_TILE = TILES.register("automation_field", () -> TileEntityType.Builder.create(AutoFieldTile::new, AUTOMATION_FIELD.get()).build(null));
 
     public static final RegistryObject<BaseBlock> FLAT_LIGHT_BLOCK = BLOCKS.register("flatlight", () -> new BaseBlock(new BlockBuilder()
             .properties(Block.Properties.create(Material.GLASS).lightValue(15))));
 
-    public static NetCableBlock netCableBlock;
-    public static ConnectorBlock connectorBlock;
-    public static FacadeBlock facadeBlock;
+    public static final RegistryObject<NetCableBlock> NETCABLE = BLOCKS.register("netcable", NetCableBlock::new);
+    public static final RegistryObject<ConnectorBlock> CONNECTOR = BLOCKS.register("connector", ConnectorBlock::new);
+    public static final RegistryObject<FacadeBlock> FACADE = BLOCKS.register("facade", FacadeBlock::new);
 
     public static final AxisAlignedBB LIGHT_BLOCK_DOWN = new AxisAlignedBB(0.125F, 0.0F, 0.125F, 0.875F, 0.125F, 0.875F);
     public static final AxisAlignedBB LIGHT_BLOCK_UP = new AxisAlignedBB(0.125F, 0.875F, 0.125F, 0.875F, 1.0F, 0.875F);
@@ -169,191 +187,6 @@ public class ModBlocks {
     public static final AxisAlignedBB LIGHT_BLOCK_WEST = new AxisAlignedBB(0.0F, 0.125F, 0.125F, 0.125F, 0.875F, 0.8750F);
     public static final AxisAlignedBB LIGHT_BLOCK_EAST = new AxisAlignedBB(0.875F, 0.125F, 0.125F, 1.0F, 0.875F, 0.8750F);
 
-
-    public static void init() {
-    }
-
-    private static void initTechnical() {
-        netCableBlock = new NetCableBlock();
-        connectorBlock = new ConnectorBlock();
-        facadeBlock = new FacadeBlock();
-
-        // @todo 1.14
-//        fluxBeamBlock = new BaseBlockBuilder<>(Ariente.instance, "flux_beam")
-//                .rotationType(HORIZROTATION)
-//                .flags(NON_OPAQUE, NON_FULLCUBE, NO_COLLISION)
-//                .boundingBox((state, source, pos) -> getBeamBox(state))
-//                .build();
-//
-//        fluxBendBeamBlock = new BaseBlockBuilder<>(Ariente.instance, "flux_bend_beam")
-//                .rotationType(HORIZROTATION)
-//                .flags(NON_OPAQUE, NON_FULLCUBE, NO_COLLISION)
-//                .boundingBox((state, source, pos) -> getBeamBox(state))
-//                .build();
-//
-//        constructorBlock = builderFactory.<ConstructorTile> builder("constructor")
-//                .tileEntityClass(ConstructorTile.class)
-//                .rotationType(HORIZROTATION)
-//                .activateAction((world, pos, player, hand, side, hitX, hitY, hitZ) -> Ariente.guiHandler.openHoloGui(world, pos, player))
-//                .info("message.ariente.shiftmessage")
-//                .infoExtended("message.ariente.constructor")
-//                .build();
-//
-//        autoConstructorBlock = builderFactory.<AutoConstructorTile> builder("auto_constructor")
-//                .tileEntityClass(AutoConstructorTile.class)
-//                .container(AutoConstructorTile.CONTAINER_FACTORY)
-//                .rotationType(HORIZROTATION)
-//                .flags(REDSTONE_CHECK)
-//                .property(AutoConstructorTile.WORKING)
-//                .activateAction((world, pos, player, hand, side, hitX, hitY, hitZ) -> Ariente.guiHandler.openHoloGui(world, pos, player))
-//                .info("message.ariente.shiftmessage")
-//                .infoExtended("message.ariente.auto_constructor")
-//                .build();
-//
-//        autoFieldBlock = builderFactory.<AutoFieldTile> builder("automation_field")
-//                .tileEntityClass(AutoFieldTile.class)
-//                .emptyContainer()
-//                .rotationType(HORIZROTATION)
-//                .flags(RENDER_SOLID, RENDER_TRANSLUCENT, REDSTONE_CHECK)
-//                .activateAction((world, pos, player, hand, side, hitX, hitY, hitZ) -> Ariente.guiHandler.openHoloGui(world, pos, player))
-//                .info("message.ariente.shiftmessage")
-//                .infoExtended("message.ariente.automation_field")
-//                .build();
-//
-//        blueprintStorageBlock = builderFactory.<BlueprintStorageTile> builder("blueprint_storage")
-//                .tileEntityClass(BlueprintStorageTile.class)
-//                .container(BlueprintStorageTile.CONTAINER_FACTORY)
-//                .rotationType(HORIZROTATION)
-//                .activateAction((world, pos, player, hand, side, hitX, hitY, hitZ) -> Ariente.guiHandler.openHoloGui(world, pos, player))
-//                .info("message.ariente.shiftmessage")
-//                .infoExtended("message.ariente.blueprint_storage")
-//                .build();
-//
-//        alarmBlock = builderFactory.<AlarmTile> builder("alarm")
-//                .tileEntityClass(AlarmTile.class)
-//                .property(AlarmTile.ALARM)
-//                .flags(NON_OPAQUE, NON_FULLCUBE, RENDER_SOLID, RENDER_CUTOUT)
-//                .boundingBox((state, source, pos) -> getFlatBox(state))
-//                .info("message.ariente.shiftmessage")
-//                .infoExtended("message.ariente.alarm")
-//                .build();
-//
-//        lockBlock = builderFactory.<LockTile> builder("lock")
-//                .tileEntityClass(LockTile.class)
-//                .property(LockTile.LOCKED)
-//                .flags(NON_OPAQUE, NON_FULLCUBE, RENDER_SOLID, RENDER_CUTOUT)
-//                .boundingBox((state, source, pos) -> getFlatBox(state))
-//                .activateAction((world, pos, player, hand, side, hitX, hitY, hitZ) -> Ariente.guiHandler.openHoloGui(world, pos, player))
-//                .info("message.ariente.shiftmessage")
-//                .infoExtended("message.ariente.lock")
-//                .build();
-//
-//        wirelessLockBlock = builderFactory.<WirelessLockTile> builder("wireless_lock")
-//                .tileEntityClass(WirelessLockTile.class)
-//                .property(WirelessLockTile.LOCKED)
-//                .flags(NON_OPAQUE, NON_FULLCUBE, RENDER_SOLID, RENDER_CUTOUT)
-//                .boundingBox((state, source, pos) -> getFlatBox(state))
-//                .activateAction((world, pos, player, hand, side, hitX, hitY, hitZ) -> Ariente.guiHandler.openHoloGui(world, pos, player))
-//                .info("message.ariente.shiftmessage")
-//                .infoExtended("message.ariente.wireless_lock")
-//                .infoExtendedParameter(ItemStackTools.intGetter("channel", -1))
-//                .build();
-//
-//        wirelessButtonBlock = builderFactory.<WirelessButtonTile> builder("wireless_button")
-//                .tileEntityClass(WirelessButtonTile.class)
-//                .property(WirelessButtonTile.POWER)
-//                .flags(NON_OPAQUE, NON_FULLCUBE, RENDER_SOLID, RENDER_CUTOUT)
-//                .boundingBox((state, source, pos) -> getFlatBox(state))
-//                .activateAction(WirelessButtonTile::onBlockActivatedWithToggle)
-//                .info("message.ariente.shiftmessage")
-//                .infoExtended("message.ariente.wireless_button")
-//                .infoExtendedParameter(ItemStackTools.intGetter("channel", -1))
-//                .build();
-//
-//        signalReceiverBlock = builderFactory.<SignalReceiverTile> builder("signal_receiver")
-//                .tileEntityClass(SignalReceiverTile.class)
-//                .property(SignalChannelTileEntity.POWER)
-//                .flags(NON_OPAQUE, NON_FULLCUBE, REDSTONE_OUTPUT, RENDER_SOLID, RENDER_CUTOUT)
-//                .boundingBox((state, source, pos) -> getFlatBox(state))
-//                .activateAction(SignalChannelTileEntity::onBlockActivated)
-//                .info("message.ariente.shiftmessage")
-//                .infoExtended("message.ariente.signal_receiver")
-//                .infoExtendedParameter(ItemStackTools.intGetter("channel", -1))
-//                .build();
-//
-//        signalTransmitterBlock = builderFactory.<SignalTransmitterTile> builder("signal_transmitter")
-//                .tileEntityClass(SignalTransmitterTile.class)
-//                .property(SignalChannelTileEntity.POWER)
-//                .flags(NON_OPAQUE, NON_FULLCUBE, REDSTONE_CHECK, RENDER_SOLID, RENDER_CUTOUT)
-//                .boundingBox((state, source, pos) -> getFlatBox(state))
-//                .activateAction(SignalChannelTileEntity::onBlockActivated)
-//                .info("message.ariente.shiftmessage")
-//                .infoExtended("message.ariente.signal_transmitter")
-//                .infoExtendedParameter(ItemStackTools.intGetter("channel", -1))
-//                .build();
-//
-//        levelMarkerBlock = builderFactory.<LevelMarkerTile> builder("level_marker")
-//                .tileEntityClass(LevelMarkerTile.class)
-//                .emptyContainer()
-//                .rotationType(NONE)
-//                .flags(NON_OPAQUE, NON_FULLCUBE, NO_COLLISION)
-//                .activateAction((world, pos, player, hand, side, hitX, hitY, hitZ) -> Ariente.guiHandler.openHoloGui(world, pos, player))
-//                .boundingBox((state, source, pos) -> FLAT_BLOCK_AABB)
-//                .info("message.ariente.shiftmessage")
-//                .infoExtended("message.ariente.level_marker")
-//                .build();
-//
-//        doorMarkerBlock = builderFactory.<DoorMarkerTile> builder("door_marker")
-//                .tileEntityClass(DoorMarkerTile.class)
-//                .emptyContainer()
-//                .rotationType(HORIZROTATION)
-//                .flags(NON_OPAQUE, NON_FULLCUBE)
-//                .activateAction((world, pos, player, hand, side, hitX, hitY, hitZ) -> Ariente.guiHandler.openHoloGui(world, pos, player))
-//                .addCollisionBoxToList(DoorMarkerTile::addCollisionBoxToList)
-//                .boundingBox(DoorMarkerTile::getCollisionBoundingBox)
-//                .getAIPathNodeType(DoorMarkerTile::getAiPathNodeType)
-//                .info("message.ariente.shiftmessage")
-//                .infoExtended("message.ariente.door_marker")
-//                .build();
-//
-//        invisibleDoorBlock = builderFactory.<InvisibleDoorTile> builder("invisible_door")
-//                .tileEntityClass(InvisibleDoorTile.class)
-//                .emptyContainer()
-//                .rotationType(HORIZROTATION)
-//                .flags(NON_OPAQUE, NON_FULLCUBE)
-//                .addCollisionBoxToList(InvisibleDoorTile::addCollisionBoxToList)
-//                .boundingBox(InvisibleDoorTile::getCollisionBoundingBox)
-//                .getAIPathNodeType(InvisibleDoorTile::getAiPathNodeType)
-//                .build();
-//
-//        forceFieldBlock = builderFactory.<ForceFieldTile> builder("forcefield")
-//                .tileEntityClass(ForceFieldTile.class)
-//                .emptyContainer()
-//                .flags(REDSTONE_CHECK)
-//                .rotationType(NONE)
-//                .activateAction((world, pos, player, hand, side, hitX, hitY, hitZ) -> Ariente.guiHandler.openHoloGui(world, pos, player))
-//                .info("message.ariente.shiftmessage")
-//                .infoExtended("message.ariente.forcefield")
-//                .build();
-//
-//        warperBlock = builderFactory.<WarperTile> builder("warper")
-//                .tileEntityClass(WarperTile.class)
-//                .emptyContainer()
-//                .rotationType(NONE)
-//                .activateAction((world, pos, player, hand, side, hitX, hitY, hitZ) -> Ariente.guiHandler.openHoloGui(world, pos, player))
-//                .lightValue(8)
-//                .info("message.ariente.shiftmessage")
-//                .infoExtended("message.ariente.warper")
-//                .build();
-//
-//        aiCoreBlock = builderFactory.<AICoreTile> builder("aicore")
-//                .tileEntityClass(AICoreTile.class)
-//                .emptyContainer()
-//                .rotationType(NONE)
-//                .build();
-//        aiCoreBlock.setHardness(20.0f).setResistance(800);
-//        aiCoreBlock.setHarvestLevel("pickaxe", 2);
-    }
 
 //    public static AxisAlignedBB getFlatBox(BlockState state) {
 //        Direction facing = state.get(BaseBlock.FACING);

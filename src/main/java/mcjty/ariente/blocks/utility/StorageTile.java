@@ -15,8 +15,13 @@ import mcjty.ariente.sounds.ModSounds;
 import mcjty.hologui.api.IGuiComponent;
 import mcjty.hologui.api.IGuiComponentRegistry;
 import mcjty.hologui.api.IGuiTile;
+import mcjty.lib.blocks.BaseBlock;
+import mcjty.lib.blocks.RotationType;
+import mcjty.lib.builder.BlockBuilder;
 import mcjty.lib.tileentity.GenericTileEntity;
 import mcjty.lib.varia.ItemStackList;
+import net.minecraft.block.Block;
+import net.minecraft.block.BlockState;
 import net.minecraft.client.Minecraft;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.item.Item;
@@ -25,12 +30,9 @@ import net.minecraft.nbt.CompoundNBT;
 import net.minecraft.nbt.ListNBT;
 import net.minecraft.network.NetworkManager;
 import net.minecraft.network.play.server.SUpdateTileEntityPacket;
+import net.minecraft.state.StateContainer;
 import net.minecraft.tileentity.TileEntity;
-import net.minecraft.tileentity.TileEntityType;
-import net.minecraft.util.Direction;
-import net.minecraft.util.Hand;
-import net.minecraft.util.ResourceLocation;
-import net.minecraft.util.SoundCategory;
+import net.minecraft.util.*;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.BlockRayTraceResult;
 import net.minecraft.util.math.RayTraceResult;
@@ -63,8 +65,39 @@ public class StorageTile extends GenericTileEntity implements IGuiTile, ICityEqu
     private int[] counts = new int[STACKS * STACKS_PER_TYPE];
     private int[] totals = new int[STACKS];
 
-    public StorageTile(TileEntityType<?> type) {
-        super(type);
+    public StorageTile() {
+        super(ModBlocks.STORAGE_TILE.get());
+    }
+
+    public static BaseBlock createBlock() {
+        return new BaseBlock(new BlockBuilder()
+                .info("message.ariente.shiftmessage")
+                .infoExtended("message.ariente.storage")
+                .tileEntitySupplier(StorageTile::new)
+        ) {
+            @Override
+            public RotationType getRotationType() {
+                return RotationType.HORIZROTATION;
+            }
+
+            @Override
+            protected void fillStateContainer(StateContainer.Builder<Block, BlockState> builder) {
+                super.fillStateContainer(builder);
+//                builder.add(LOCKED);
+            }
+
+            @Override
+            public void onBlockClicked(BlockState state, World worldIn, BlockPos pos, PlayerEntity player) {
+                onClick(worldIn, pos, player);
+            }
+        };
+    }
+
+    @Override
+    public ActionResultType onBlockActivated(BlockState state, PlayerEntity player, Hand hand, BlockRayTraceResult result) {
+        Vec3d hit = result.getHitVec();
+        StorageTile.onActivate(world, pos, player, result.getFace(), hit.x, hit.y, hit.z);
+        return ActionResultType.SUCCESS;
     }
 
     @Override
@@ -237,7 +270,7 @@ public class StorageTile extends GenericTileEntity implements IGuiTile, ICityEqu
         int x = pos.getX();
         int y = pos.getY();
         int z = pos.getZ();
-        Direction k = ModBlocks.storageBlock.get().getFrontDirection(world.getBlockState(pos));
+        Direction k = ModBlocks.STORAGE_BLOCK.get().getFrontDirection(world.getBlockState(pos));
         if (sideHit == k) {
             float sx = (float) (hitVec.x - x);
             float sy = (float) (hitVec.y - y);
@@ -338,8 +371,8 @@ public class StorageTile extends GenericTileEntity implements IGuiTile, ICityEqu
 
     private static long doubleClickTime = -1;
 
-    public static boolean onActivate(World world, BlockPos pos, PlayerEntity player, Direction side, float sx, float sy, float sz) {
-        Direction k = ModBlocks.storageBlock.get().getFrontDirection(world.getBlockState(pos));
+    public static boolean onActivate(World world, BlockPos pos, PlayerEntity player, Direction side, double sx, double sy, double sz) {
+        Direction k = ModBlocks.STORAGE_BLOCK.get().getFrontDirection(world.getBlockState(pos));
         if (side == k) {
             TileEntity tileEntity = world.getTileEntity(pos);
             if (!world.isRemote) {
@@ -412,7 +445,7 @@ public class StorageTile extends GenericTileEntity implements IGuiTile, ICityEqu
     }
 
 
-    private static int calculateHitIndex(float sx, float sy, float sz, Direction k) {
+    private static int calculateHitIndex(double sx, double sy, double sz, Direction k) {
         int index = -1;
         switch (k) {
             case DOWN:

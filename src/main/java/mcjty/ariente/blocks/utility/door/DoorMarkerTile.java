@@ -9,6 +9,9 @@ import mcjty.ariente.sounds.ModSounds;
 import mcjty.hologui.api.IGuiComponent;
 import mcjty.hologui.api.IGuiComponentRegistry;
 import mcjty.hologui.api.IGuiTile;
+import mcjty.lib.blocks.BaseBlock;
+import mcjty.lib.blocks.RotationType;
+import mcjty.lib.builder.BlockBuilder;
 import mcjty.lib.tileentity.GenericTileEntity;
 import net.minecraft.block.BlockState;
 import net.minecraft.block.Blocks;
@@ -20,11 +23,13 @@ import net.minecraft.pathfinding.PathNodeType;
 import net.minecraft.state.properties.BlockStateProperties;
 import net.minecraft.tileentity.ITickableTileEntity;
 import net.minecraft.tileentity.TileEntity;
-import net.minecraft.tileentity.TileEntityType;
+import net.minecraft.util.ActionResultType;
 import net.minecraft.util.Direction;
+import net.minecraft.util.Hand;
 import net.minecraft.util.SoundCategory;
 import net.minecraft.util.math.AxisAlignedBB;
 import net.minecraft.util.math.BlockPos;
+import net.minecraft.util.math.BlockRayTraceResult;
 import net.minecraft.world.IBlockReader;
 import net.minecraft.world.World;
 
@@ -47,8 +52,30 @@ public class DoorMarkerTile extends GenericTileEntity implements ITickableTileEn
     private int opening;  // 0 is closed, 1000 is open
     private long lastTime = -1;  // For rendering
 
-    public DoorMarkerTile(TileEntityType<?> type) {
-        super(type);
+    public DoorMarkerTile() {
+        super(ModBlocks.DOOR_MARKER_TILE.get());
+    }
+
+    public static BaseBlock createBlock() {
+        return new BaseBlock(new BlockBuilder()
+                .info("message.ariente.shiftmessage")
+                .infoExtended("message.ariente.door_marker")
+//                .addCollisionBoxToList(DoorMarkerTile::addCollisionBoxToList)
+//                .boundingBox(DoorMarkerTile::getCollisionBoundingBox)
+//                .getAIPathNodeType(DoorMarkerTile::getAiPathNodeType)
+                .tileEntitySupplier(DoorMarkerTile::new)
+        ) {
+            @Override
+            public RotationType getRotationType() {
+                return RotationType.NONE;
+            }
+        };
+    }
+
+    @Override
+    public ActionResultType onBlockActivated(BlockState state, PlayerEntity player, Hand hand, BlockRayTraceResult result) {
+        Ariente.guiHandler.openHoloGui(world, pos, player);
+        return ActionResultType.SUCCESS;
     }
 
     @Override
@@ -63,6 +90,8 @@ public class DoorMarkerTile extends GenericTileEntity implements ITickableTileEn
             }
         }
     }
+
+
 
     private AxisAlignedBB getDetectionBox() {
         if (detectionBox == null) {
@@ -88,7 +117,7 @@ public class DoorMarkerTile extends GenericTileEntity implements ITickableTileEn
                 if (facing == null) {
                     return;
                 }
-                world.setBlockState(p, ModBlocks.invisibleDoorBlock.get().getDefaultState().with(BlockStateProperties.HORIZONTAL_FACING, facing), 3);
+                world.setBlockState(p, ModBlocks.INVISIBLE_DOOR.get().getDefaultState().with(BlockStateProperties.HORIZONTAL_FACING, facing), 3);
             } else {
                 return;
             }
@@ -99,7 +128,7 @@ public class DoorMarkerTile extends GenericTileEntity implements ITickableTileEn
     private void clearInvisibleBlocks() {
         BlockPos p = pos.up();
         for (int i = 0 ; i < UtilityConfiguration.MAX_DOOR_HEIGHT.get() ; i++) {
-            if (world.getBlockState(p).getBlock() == ModBlocks.invisibleDoorBlock.get()) {
+            if (world.getBlockState(p).getBlock() == ModBlocks.INVISIBLE_DOOR.get()) {
                 world.setBlockState(p, Blocks.AIR.getDefaultState());
             } else {
                 return;
@@ -110,7 +139,7 @@ public class DoorMarkerTile extends GenericTileEntity implements ITickableTileEn
 
     private Direction getFacing() {
         BlockState state = world.getBlockState(pos);
-        if (state.getBlock() != ModBlocks.doorMarkerBlock.get()) {
+        if (state.getBlock() != ModBlocks.DOOR_MARKER.get()) {
             return null;
         }
         return state.get(BlockStateProperties.HORIZONTAL_FACING);

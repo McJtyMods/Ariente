@@ -44,6 +44,8 @@ public class PowerCombinerTile extends GenericTileEntity implements ITickableTil
 
     public static BaseBlock createBlock() {
         return new BaseBlock(new BlockBuilder()
+                .info("message.ariente.shiftmessage")
+                .infoExtended("message.ariente.power_combiner")
                 .tileEntitySupplier(PowerCombinerTile::new)
             );
         //        powerCombinerBlock = builderFactory.<PowerCombinerTile> builder("power_combiner")
@@ -51,8 +53,6 @@ public class PowerCombinerTile extends GenericTileEntity implements ITickableTil
 //                .rotationType(BaseBlock.RotationType.ROTATION)
 //                .flags(RENDER_SOLID, RENDER_CUTOUT)
 //                .activateAction((world, pos, player, hand, side, hitX, hitY, hitZ) -> Ariente.guiHandler.openHoloGui(world, pos, player))
-//                .info("message.ariente.shiftmessage")
-//                .infoExtended("message.ariente.power_combiner")
 //                .build();
     }
 

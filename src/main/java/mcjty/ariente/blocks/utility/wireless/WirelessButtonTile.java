@@ -1,17 +1,24 @@
 package mcjty.ariente.blocks.utility.wireless;
 
+import mcjty.ariente.blocks.ModBlocks;
 import mcjty.ariente.sounds.ModSounds;
+import mcjty.lib.blocks.BaseBlock;
+import mcjty.lib.builder.BlockBuilder;
+import mcjty.lib.varia.ItemStackTools;
+import net.minecraft.block.Block;
+import net.minecraft.block.BlockState;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.CompoundNBT;
 import net.minecraft.network.NetworkManager;
 import net.minecraft.network.play.server.SUpdateTileEntityPacket;
+import net.minecraft.state.StateContainer;
 import net.minecraft.tileentity.TileEntity;
-import net.minecraft.tileentity.TileEntityType;
-import net.minecraft.util.Direction;
+import net.minecraft.util.ActionResultType;
 import net.minecraft.util.Hand;
 import net.minecraft.util.SoundCategory;
 import net.minecraft.util.math.BlockPos;
+import net.minecraft.util.math.BlockRayTraceResult;
 import net.minecraft.world.World;
 import net.minecraftforge.common.util.Constants;
 
@@ -20,9 +27,32 @@ public class WirelessButtonTile extends SignalChannelTileEntity {
     private boolean locked = false;
     private int prevIn = -1;
 
-    public WirelessButtonTile(TileEntityType<?> type) {
-        super(type);
+    public WirelessButtonTile() {
+        super(ModBlocks.WIRELESS_BUTTON_TILE.get());
     }
+
+    public static BaseBlock createBlock() {
+        return new BaseBlock(new BlockBuilder()
+//                .flags(REDSTONE_CHECK, RENDER_SOLID, RENDER_CUTOUT)
+                .info("message.ariente.shiftmessage")
+                .infoExtended("message.ariente.wireless_button")
+                .infoExtendedParameter(ItemStackTools.intGetter("channel", -1))
+                .tileEntitySupplier(WirelessButtonTile::new)
+        ) {
+            @Override
+            protected void fillStateContainer(StateContainer.Builder<Block, BlockState> builder) {
+                super.fillStateContainer(builder);
+                builder.add(POWER);
+            }
+        };
+    }
+
+    @Override
+    public ActionResultType onBlockActivated(BlockState state, PlayerEntity player, Hand hand, BlockRayTraceResult result) {
+        onBlockActivatedWithToggle(world, pos, player, hand);
+        return ActionResultType.SUCCESS;
+    }
+
 
     @Override
     public void setChannel(int channel) {
@@ -61,7 +91,7 @@ public class WirelessButtonTile extends SignalChannelTileEntity {
         markDirtyClient();
     }
 
-    public static boolean onBlockActivatedWithToggle(World world, BlockPos pos, PlayerEntity player, Hand hand, Direction side, float hitX, float hitY, float hitZ) {
+    public static boolean onBlockActivatedWithToggle(World world, BlockPos pos, PlayerEntity player, Hand hand) {
         ItemStack stack = player.getHeldItem(hand);
         if (SignalChannelTileEntity.isRedstoneChannelItem(stack.getItem())) {
             setChannel(world, pos, player, stack);

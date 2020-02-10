@@ -7,15 +7,21 @@ import mcjty.ariente.blocks.ModBlocks;
 import mcjty.ariente.gui.HelpBuilder;
 import mcjty.ariente.gui.HoloGuiTools;
 import mcjty.ariente.items.BlueprintItem;
-import mcjty.ariente.recipes.ConstructorRecipe;
 import mcjty.ariente.recipes.BlueprintRecipeRegistry;
+import mcjty.ariente.recipes.ConstructorRecipe;
 import mcjty.hologui.api.*;
 import mcjty.lib.McJtyLib;
+import mcjty.lib.blocks.BaseBlock;
+import mcjty.lib.blocks.RotationType;
+import mcjty.lib.builder.BlockBuilder;
 import mcjty.lib.tileentity.GenericTileEntity;
+import net.minecraft.block.BlockState;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.item.ItemStack;
-import net.minecraft.tileentity.TileEntityType;
+import net.minecraft.util.ActionResultType;
+import net.minecraft.util.Hand;
 import net.minecraft.util.ResourceLocation;
+import net.minecraft.util.math.BlockRayTraceResult;
 import net.minecraft.util.text.TextFormatting;
 import net.minecraft.world.World;
 import net.minecraftforge.items.IItemHandler;
@@ -37,9 +43,29 @@ public class ConstructorTile extends GenericTileEntity implements IGuiTile, ICit
         return true;
     }
 
-    public ConstructorTile(TileEntityType<?> type) {
-        super(type);
+    public ConstructorTile() {
+        super(ModBlocks.CONSTRUCTOR_TILE.get());
     }
+
+    public static BaseBlock createBlock() {
+        return new BaseBlock(new BlockBuilder()
+                .info("message.ariente.shiftmessage")
+                .infoExtended("message.ariente.constructor")
+                .tileEntitySupplier(ConstructorTile::new)
+        ) {
+            @Override
+            public RotationType getRotationType() {
+                return RotationType.HORIZROTATION;
+            }
+        };
+    }
+
+    @Override
+    public ActionResultType onBlockActivated(BlockState state, PlayerEntity player, Hand hand, BlockRayTraceResult result) {
+        Ariente.guiHandler.openHoloGui(world, pos, player);
+        return ActionResultType.SUCCESS;
+    }
+
 
     @Override
     public void remove() {
@@ -177,7 +203,7 @@ public class ConstructorTile extends GenericTileEntity implements IGuiTile, ICit
 
                 .add(registry.text(0, 4.5, 8, 1).text("Craft").color(registry.color(StyledColor.LABEL)))
 
-                .add(registry.stackIcon(0, 5.5, 1, 1).itemStack(new ItemStack(ModBlocks.constructorBlock.get())))
+                .add(registry.stackIcon(0, 5.5, 1, 1).itemStack(new ItemStack(ModBlocks.CONSTRUCTOR.get())))
                 .add(registry.slots(1.5, 5.5, 6, 3)
                         .name("outputslots")
                         .doubleClickEvent((component, player, entity, x, y, stack, index) -> attemptCraft(player, stack))
