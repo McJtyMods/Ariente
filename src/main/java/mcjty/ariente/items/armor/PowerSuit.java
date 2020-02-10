@@ -4,7 +4,7 @@ import com.google.common.collect.Multimap;
 import mcjty.ariente.Ariente;
 import mcjty.ariente.api.ArmorUpgradeType;
 import mcjty.ariente.bindings.KeyBindings;
-import mcjty.ariente.items.ModItems;
+import mcjty.ariente.blocks.ModBlocks;
 import mcjty.ariente.items.modules.ModuleSupport;
 import net.minecraft.client.renderer.entity.model.BipedModel;
 import net.minecraft.client.util.ITooltipFlag;
@@ -92,7 +92,7 @@ public class PowerSuit extends ArmorItem {
     }
 
     private void onUpdateFeet(ItemStack stack, World world, LivingEntity entity) {
-        if (stack.isEmpty() || stack.getItem() != ModItems.powerSuitBoots || !stack.hasTag()) {
+        if (stack.isEmpty() || stack.getItem() != ModBlocks.POWERSUIT_FEET.get() || !stack.hasTag()) {
             return;
         }
 
@@ -111,7 +111,7 @@ public class PowerSuit extends ArmorItem {
     }
 
     private void onUpdateLegs(ItemStack stack, World world, LivingEntity entity) {
-        if (stack.isEmpty() || stack.getItem() != ModItems.powerSuitLegs || !stack.hasTag()) {
+        if (stack.isEmpty() || stack.getItem() != ModBlocks.POWERSUIT_LEGS.get() || !stack.hasTag()) {
             return;
         }
 
@@ -128,7 +128,7 @@ public class PowerSuit extends ArmorItem {
     }
 
     private void onUpdateChest(ItemStack stack, World world, LivingEntity entity) {
-        if (stack.isEmpty() || stack.getItem() != ModItems.powerSuitChest || !stack.hasTag()) {
+        if (stack.isEmpty() || stack.getItem() != ModBlocks.POWERSUIT_CHEST.get() || !stack.hasTag()) {
             return;
         }
 
@@ -156,7 +156,7 @@ public class PowerSuit extends ArmorItem {
     }
 
     private void onUpdateHead(ItemStack stack, World world, LivingEntity entity) {
-        if (stack.isEmpty() || stack.getItem() != ModItems.powerSuitHelmet || !stack.hasTag()) {
+        if (stack.isEmpty() || stack.getItem() != ModBlocks.POWERSUIT_HEAD.get() || !stack.hasTag()) {
             return;
         }
 

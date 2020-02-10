@@ -4,7 +4,6 @@ import mcjty.ariente.Ariente;
 import mcjty.ariente.api.IFluxLevitatorEntity;
 import mcjty.ariente.blocks.ModBlocks;
 import mcjty.ariente.gui.ModGuis;
-import mcjty.ariente.items.ModItems;
 import mcjty.ariente.setup.Registration;
 import mcjty.hologui.api.CloseStrategy;
 import mcjty.hologui.api.IHoloGuiEntity;
@@ -343,7 +342,7 @@ public class FluxLevitatorEntity extends Entity implements IFluxLevitatorEntity 
         this.remove();
 
         if (world.getGameRules().getBoolean(GameRules.DO_ENTITY_DROPS)) {
-            ItemStack itemstack = new ItemStack(ModItems.fluxLevitatorItem, 1);
+            ItemStack itemstack = new ItemStack(ModBlocks.FLUX_LEVITATOR.get(), 1);
 
             if (this.hasCustomName()) {
                 itemstack.setDisplayName(this.getCustomName());

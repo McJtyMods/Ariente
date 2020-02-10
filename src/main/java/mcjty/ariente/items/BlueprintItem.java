@@ -4,6 +4,7 @@ import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
 import com.google.gson.JsonParser;
 import mcjty.ariente.Ariente;
+import mcjty.ariente.blocks.ModBlocks;
 import mcjty.ariente.recipes.ConstructorRecipe;
 import mcjty.ariente.recipes.BlueprintRecipeRegistry;
 import mcjty.lib.tooltips.ITooltipExtras;
@@ -14,13 +15,11 @@ import net.minecraft.client.util.ITooltipFlag;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.CompoundNBT;
-import net.minecraft.util.NonNullList;
 import net.minecraft.util.ResourceLocation;
 import net.minecraft.util.text.ITextComponent;
 import net.minecraft.util.text.StringTextComponent;
 import net.minecraft.util.text.TextFormatting;
 import net.minecraft.world.World;
-import net.minecraftforge.client.model.ModelLoader;
 
 
 import org.apache.commons.lang3.tuple.Pair;
@@ -69,7 +68,7 @@ public class BlueprintItem extends Item implements ITooltipExtras {
 //    }
 
     public static ItemStack makeBluePrint(ItemStack destination) {
-        ItemStack dest = new ItemStack(ModItems.blueprintItem);
+        ItemStack dest = new ItemStack(ModBlocks.BLUEPRINT.get());
         CompoundNBT nbt = new CompoundNBT();
         JsonObject json = ItemStackTools.itemStackToJson(destination);
         nbt.putString("destination", json.toString());

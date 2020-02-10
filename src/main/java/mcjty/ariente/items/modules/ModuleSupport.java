@@ -1,9 +1,9 @@
 package mcjty.ariente.items.modules;
 
 import mcjty.ariente.api.ArmorUpgradeType;
+import mcjty.ariente.blocks.ModBlocks;
 import mcjty.ariente.config.UtilityConfiguration;
 import mcjty.ariente.items.EnergyHolderItem;
-import mcjty.ariente.items.ModItems;
 import net.minecraft.entity.LivingEntity;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.inventory.EquipmentSlotType;
@@ -16,11 +16,11 @@ import javax.annotation.Nonnull;
 
 public class ModuleSupport {
     public static void receivedHotkey(PlayerEntity player, int index) {
-        handleHotkey(player, index, EquipmentSlotType.HEAD, ModItems.powerSuitHelmet);
-        handleHotkey(player, index, EquipmentSlotType.LEGS, ModItems.powerSuitLegs);
-        handleHotkey(player, index, EquipmentSlotType.FEET, ModItems.powerSuitBoots);
-        handleHotkey(player, index, EquipmentSlotType.CHEST, ModItems.powerSuitChest);
-        handleHotkey(player, index, EquipmentSlotType.MAINHAND, ModItems.enhancedEnergySabreItem);
+        handleHotkey(player, index, EquipmentSlotType.HEAD, ModBlocks.POWERSUIT_HEAD.get());
+        handleHotkey(player, index, EquipmentSlotType.LEGS, ModBlocks.POWERSUIT_LEGS.get());
+        handleHotkey(player, index, EquipmentSlotType.FEET, ModBlocks.POWERSUIT_FEET.get());
+        handleHotkey(player, index, EquipmentSlotType.CHEST, ModBlocks.POWERSUIT_CHEST.get());
+        handleHotkey(player, index, EquipmentSlotType.MAINHAND, ModBlocks.ENHANCED_ENERGY_SABRE.get());
     }
 
     private static void handleHotkey(PlayerEntity player, int index, EquipmentSlotType slot, Item armorItem) {
@@ -122,7 +122,7 @@ public class ModuleSupport {
                 PlayerEntity player = (PlayerEntity) entity;
                 for (int i = 0; i < player.inventory.getSizeInventory(); i++) {
                     ItemStack itemStack = player.inventory.getStackInSlot(i);
-                    if (itemStack.getItem() == ModItems.energyHolderItem) {
+                    if (itemStack.getItem() == ModBlocks.ENERGY_HOLDER.get()) {
                         int negarite = EnergyHolderItem.count(itemStack, "negarite");
                         if (negarite > 0) {
                             negariteIndex = i;
@@ -134,14 +134,14 @@ public class ModuleSupport {
                         if (negariteIndex != -1 && posiriteIndex != -1) {
                             break;
                         }
-                    } else if (itemStack.getItem() == ModItems.negariteDust.get()) {
+                    } else if (itemStack.getItem() == ModBlocks.DUST_NEGARITE.get()) {
                         if (!itemStack.isEmpty()) {
                             negariteIndex = i;
                             if (posiriteIndex != -1) {
                                 break;
                             }
                         }
-                    } else if (itemStack.getItem() == ModItems.posiriteDust.get()) {
+                    } else if (itemStack.getItem() == ModBlocks.DUST_POSIRITE.get()) {
                         if (!itemStack.isEmpty()) {
                             posiriteIndex = i;
                             if (negariteIndex != -1) {
@@ -152,14 +152,14 @@ public class ModuleSupport {
                 }
                 if (negariteIndex != -1 && posiriteIndex != -1) {
                     ItemStack negariteStack = player.inventory.getStackInSlot(negariteIndex);
-                    if (negariteStack.getItem() == ModItems.energyHolderItem) {
+                    if (negariteStack.getItem() == ModBlocks.ENERGY_HOLDER.get()) {
                         EnergyHolderItem.extractIfPossible(negariteStack, "negarite", 1);
                     } else {
                         negariteStack.shrink(1);
                     }
 
                     ItemStack posiriteStack = player.inventory.getStackInSlot(posiriteIndex);
-                    if (posiriteStack.getItem() == ModItems.energyHolderItem) {
+                    if (posiriteStack.getItem() == ModBlocks.ENERGY_HOLDER.get()) {
                         EnergyHolderItem.extractIfPossible(negariteStack, "posirite", 1);
                     } else {
                         posiriteStack.shrink(1);

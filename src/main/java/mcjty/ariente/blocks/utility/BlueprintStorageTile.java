@@ -5,7 +5,6 @@ import mcjty.ariente.api.ICityAI;
 import mcjty.ariente.api.ICityEquipment;
 import mcjty.ariente.blocks.ModBlocks;
 import mcjty.ariente.items.BlueprintItem;
-import mcjty.ariente.items.ModItems;
 import mcjty.hologui.api.*;
 import mcjty.hologui.api.components.IPlayerSlots;
 import mcjty.hologui.api.components.ISlots;
@@ -187,7 +186,7 @@ public class BlueprintStorageTile extends GenericTileEntity implements IGuiTile,
         return new NoDirectionItemHander(BlueprintStorageTile.this, CONTAINER_FACTORY) {
             @Override
             public boolean isItemValid(int slot, @Nonnull ItemStack stack) {
-                return stack.getItem() == ModItems.blueprintItem;
+                return stack.getItem() == ModBlocks.BLUEPRINT.get();
             }
         };
     }

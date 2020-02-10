@@ -7,7 +7,6 @@ import mcjty.ariente.blocks.ModBlocks;
 import mcjty.ariente.gui.HelpBuilder;
 import mcjty.ariente.gui.HoloGuiTools;
 import mcjty.ariente.items.BlueprintItem;
-import mcjty.ariente.items.ModItems;
 import mcjty.ariente.power.IPowerReceiver;
 import mcjty.ariente.power.PowerReceiverSupport;
 import mcjty.ariente.recipes.BlueprintRecipeRegistry;
@@ -36,7 +35,6 @@ import net.minecraft.state.BooleanProperty;
 import net.minecraft.state.StateContainer;
 import net.minecraft.tileentity.ITickableTileEntity;
 import net.minecraft.tileentity.TileEntity;
-import net.minecraft.tileentity.TileEntityType;
 import net.minecraft.util.ActionResultType;
 import net.minecraft.util.Direction;
 import net.minecraft.util.Hand;
@@ -525,7 +523,7 @@ public class AutoConstructorTile extends GenericTileEntity implements IGuiTile, 
         return new NoDirectionItemHander(AutoConstructorTile.this, CONTAINER_FACTORY) {
             @Override
             public boolean isItemValid(int slot, @Nonnull ItemStack stack) {
-                return stack.getItem() != ModItems.blueprintItem;
+                return stack.getItem() != ModBlocks.BLUEPRINT.get();
             }
         };
     }

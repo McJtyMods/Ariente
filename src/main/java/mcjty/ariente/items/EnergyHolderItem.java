@@ -1,6 +1,7 @@
 package mcjty.ariente.items;
 
 import mcjty.ariente.Ariente;
+import mcjty.ariente.blocks.ModBlocks;
 import mcjty.ariente.gui.HelpBuilder;
 import mcjty.ariente.gui.HoloGuiTools;
 import mcjty.ariente.gui.ModGuis;
@@ -72,10 +73,10 @@ public class EnergyHolderItem extends Item {
         }
         tag.putInt("index", index+1);
         ItemStack playerStack = player.inventory.getStackInSlot(index);
-        if (playerStack.getItem() == ModItems.negariteDust.get()) {
+        if (playerStack.getItem() == ModBlocks.DUST_NEGARITE.get()) {
             tag.putInt("negarite", tag.getInt("negarite") + playerStack.getCount());
             player.inventory.setInventorySlotContents(index, ItemStack.EMPTY);
-        } else if (playerStack.getItem() == ModItems.posiriteDust.get()) {
+        } else if (playerStack.getItem() == ModBlocks.DUST_POSIRITE.get()) {
             tag.putInt("posirite", tag.getInt("posirite") + playerStack.getCount());
             player.inventory.setInventorySlotContents(index, ItemStack.EMPTY);
         }
@@ -94,8 +95,8 @@ public class EnergyHolderItem extends Item {
         IPanel panel = HoloGuiTools.createPanelWithHelp(registry, entity -> entity.switchGui(ModGuis.GUI_ENERGY_HOLDER_HOLD))
                 .add(registry.text(0, 1, 1, 1).text("Energy Holder").color(registry.color(StyledColor.LABEL)));
 
-        addDustControl(registry, panel, 2.3, ModItems.negariteDust.get(), "negarite");
-        addDustControl(registry, panel, 4.7, ModItems.posiriteDust.get(), "posirite");
+        addDustControl(registry, panel, 2.3, ModBlocks.DUST_NEGARITE.get(), "negarite");
+        addDustControl(registry, panel, 4.7, ModBlocks.DUST_POSIRITE.get(), "posirite");
 
         panel.add(registry.textChoice(0, 7, 2, 1).addText("Manual").addText("Automatic")
                 .getter(EnergyHolderItem::getAutomatic)
@@ -120,7 +121,7 @@ public class EnergyHolderItem extends Item {
                 .add(registry.iconButton(6, yy + 1, 1, 1).icon(registry.image(GRAY_DOUBLE_ARROW_RIGHT)).hover(registry.image(WHITE_DOUBLE_ARROW_RIGHT))
                         .hitEvent((component, player, e, x, y) -> toItem(player, 64, negarite, negariteDust)))
 
-                .add(registry.stackIcon(5, yy, 1, 1).itemStack(new ItemStack(ModItems.energyHolderItem)))
+                .add(registry.stackIcon(5, yy, 1, 1).itemStack(new ItemStack(ModBlocks.ENERGY_HOLDER.get())))
                 .add(registry.number(6, yy, 1, 1).color(registry.color(StyledColor.INFORMATION)).getter((player, holo) -> count(player, negarite)));
     }
 
@@ -203,7 +204,7 @@ public class EnergyHolderItem extends Item {
 
     private static CompoundNBT getCompound(PlayerEntity player) {
         ItemStack heldItem = player.getHeldItem(Hand.MAIN_HAND);
-        if (heldItem.getItem() != ModItems.energyHolderItem) {
+        if (heldItem.getItem() != ModBlocks.ENERGY_HOLDER.get()) {
             return null;
         }
         return heldItem.getOrCreateTag();

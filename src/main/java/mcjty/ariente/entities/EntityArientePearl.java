@@ -1,6 +1,6 @@
 package mcjty.ariente.entities;
 
-import mcjty.ariente.items.ModItems;
+import mcjty.ariente.blocks.ModBlocks;
 import mcjty.ariente.setup.Registration;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.EntityType;
@@ -30,7 +30,7 @@ public class EntityArientePearl extends Entity implements IRendersAsItem {
 
     @Override
     public ItemStack getItem() {
-        return new ItemStack(ModItems.arientePearlItem);
+        return new ItemStack(ModBlocks.ARIENTE_PEARL.get());
     }
 
     public static EntityArientePearl create(World worldIn, double x, double y, double z) {
@@ -172,7 +172,7 @@ public class EntityArientePearl extends Entity implements IRendersAsItem {
                 this.remove();
 
                 if (this.shatterOrDrop) {
-                    this.world.addEntity(new ItemEntity(this.world, this.getPosX(), this.getPosY(), this.getPosZ(), new ItemStack(ModItems.arientePearlItem)));
+                    this.world.addEntity(new ItemEntity(this.world, this.getPosX(), this.getPosY(), this.getPosZ(), new ItemStack(ModBlocks.ARIENTE_PEARL.get())));
                 } else {
                     this.world.playEvent(2003, new BlockPos(this), 0);
                 }

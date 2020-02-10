@@ -2,9 +2,9 @@ package mcjty.ariente.entities.soldier;
 
 import mcjty.ariente.Ariente;
 import mcjty.ariente.api.*;
+import mcjty.ariente.blocks.ModBlocks;
 import mcjty.ariente.compat.arienteworld.ArienteWorldCompat;
 import mcjty.ariente.items.KeyCardItem;
-import mcjty.ariente.items.ModItems;
 import mcjty.ariente.items.armor.PowerSuit;
 import mcjty.ariente.setup.Registration;
 import mcjty.ariente.sounds.ModSounds;
@@ -160,7 +160,7 @@ public class SoldierEntity extends CreatureEntity implements IArmRaisable, IForc
                     ICityAISystem aiSystem = ArienteWorldCompat.getCityAISystem(world);
                     ICityAI cityAI = aiSystem.getCityAI(cityCenter);
                     if (cityAI != null) {
-                        ItemStack stack = new ItemStack(ModItems.keyCardItem);
+                        ItemStack stack = new ItemStack(ModBlocks.KEY_CARD.get());
                         float r = rand.nextFloat();
                         if (r < .4f) {
                             KeyCardItem.addSecurityTag(stack, cityAI.getKeyId());

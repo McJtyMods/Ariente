@@ -1,11 +1,11 @@
 package mcjty.ariente;
 
 import mcjty.ariente.api.ArmorUpgradeType;
+import mcjty.ariente.blocks.ModBlocks;
 import mcjty.ariente.blocks.utility.ILockable;
 import mcjty.ariente.config.WorldgenConfiguration;
 import mcjty.ariente.entities.levitator.FluxLevitatorEntity;
 import mcjty.ariente.items.BlueprintItem;
-import mcjty.ariente.items.ModItems;
 import mcjty.ariente.items.modules.ModuleSupport;
 import mcjty.ariente.power.PowerSystem;
 import mcjty.ariente.recipes.BlueprintRecipeRegistry;
@@ -112,7 +112,7 @@ public class ForgeEventHandlers {
     @SubscribeEvent
     public void onLivingFall(LivingFallEvent event) {
         ItemStack feetStack = event.getEntityLiving().getItemStackFromSlot(EquipmentSlotType.FEET);
-        if (feetStack.getItem() == ModItems.powerSuitBoots) {
+        if (feetStack.getItem() == ModBlocks.POWERSUIT_FEET.get()) {
             if (ModuleSupport.hasWorkingUpgrade(feetStack, ArmorUpgradeType.FEATHERFALLING)) {
                 event.setCanceled(true);
             }
@@ -125,7 +125,7 @@ public class ForgeEventHandlers {
         World world = entity.getEntityWorld();
         if (!world.isRemote && entity instanceof LivingEntity) {
             ItemStack chestStack = ((LivingEntity) entity).getItemStackFromSlot(EquipmentSlotType.CHEST);
-            if (chestStack.getItem() == ModItems.powerSuitChest) {
+            if (chestStack.getItem() == ModBlocks.POWERSUIT_CHEST.get()) {
                 if (ModuleSupport.hasWorkingUpgrade(chestStack, ArmorUpgradeType.FORCEFIELD)) {
                     float damage = event.getAmount();
                     DamageSource source = event.getSource();

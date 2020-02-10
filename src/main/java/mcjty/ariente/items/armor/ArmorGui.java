@@ -1,10 +1,10 @@
 package mcjty.ariente.items.armor;
 
 import mcjty.ariente.Ariente;
+import mcjty.ariente.blocks.ModBlocks;
 import mcjty.ariente.gui.HelpBuilder;
 import mcjty.ariente.gui.HoloGuiTools;
 import mcjty.ariente.gui.ModGuis;
-import mcjty.ariente.items.ModItems;
 import mcjty.ariente.items.modules.ArmorModuleItem;
 import mcjty.ariente.items.modules.ModuleSupport;
 import mcjty.hologui.api.IGuiComponent;
@@ -30,11 +30,11 @@ public class ArmorGui {
 
         double x = 0.5;
         double y = 2.5;
-        y = createMenuEntry(registry, player, panel, x, y, EquipmentSlotType.HEAD, ModItems.powerSuitHelmet);
-        y = createMenuEntry(registry, player, panel, x, y, EquipmentSlotType.CHEST, ModItems.powerSuitChest);
-        y = createMenuEntry(registry, player, panel, x, y, EquipmentSlotType.LEGS, ModItems.powerSuitLegs);
-        y = createMenuEntry(registry, player, panel, x, y, EquipmentSlotType.FEET, ModItems.powerSuitBoots);
-        y = createMenuEntry(registry, player, panel, x, y, EquipmentSlotType.MAINHAND, ModItems.enhancedEnergySabreItem);
+        y = createMenuEntry(registry, player, panel, x, y, EquipmentSlotType.HEAD, ModBlocks.POWERSUIT_HEAD.get());
+        y = createMenuEntry(registry, player, panel, x, y, EquipmentSlotType.CHEST, ModBlocks.POWERSUIT_CHEST.get());
+        y = createMenuEntry(registry, player, panel, x, y, EquipmentSlotType.LEGS, ModBlocks.POWERSUIT_LEGS.get());
+        y = createMenuEntry(registry, player, panel, x, y, EquipmentSlotType.FEET, ModBlocks.POWERSUIT_FEET.get());
+        y = createMenuEntry(registry, player, panel, x, y, EquipmentSlotType.MAINHAND, ModBlocks.ENHANCED_ENERGY_SABRE.get());
 
         if (y <= 2.6) {
             // No armor
@@ -68,12 +68,12 @@ public class ArmorGui {
 
         IPanel panel = createPieceGui(registry, slot);
 
-        createModuleEntry(registry, panel, slot, 1, 2, ModItems.moduleEnergy);
-        createModuleEntry(registry, panel, slot, 5, 2, ModItems.moduleAutofeed);
-        createModuleEntry(registry, panel, slot, 1, 3, ModItems.moduleArmor);
-        createModuleEntry(registry, panel, slot, 5, 3, ModItems.moduleNightvision);
-        createModuleEntry(registry, panel, slot, 1, 4, ModItems.moduleScramble);
-//        createModuleEntry(panel, slot, 5, 4, ModItems.moduleInvisibility);
+        createModuleEntry(registry, panel, slot, 1, 2, ModBlocks.MODULE_ENERGY.get());
+        createModuleEntry(registry, panel, slot, 5, 2, ModBlocks.MODULE_AUTOFEED.get());
+        createModuleEntry(registry, panel, slot, 1, 3, ModBlocks.MODULE_ARMOR.get());
+        createModuleEntry(registry, panel, slot, 5, 3, ModBlocks.MODULE_NIGHTVISION.get());
+        createModuleEntry(registry, panel, slot, 1, 4, ModBlocks.MODULE_SCRAMBLE.get());
+//        createModuleEntry(panel, slot, 5, 4, ModItems.moduleInvisibility.get());
 
         addPowerGui(registry, slot, panel);
 
@@ -86,13 +86,13 @@ public class ArmorGui {
 
         IPanel panel = createPieceGui(registry, slot);
 
-        createModuleEntry(registry, panel, slot, 1, 2, ModItems.moduleEnergy);
-        createModuleEntry(registry, panel, slot, 5, 2, ModItems.moduleAutofeed);
-        createModuleEntry(registry, panel, slot, 1, 3, ModItems.moduleArmor);
-        createModuleEntry(registry, panel, slot, 5, 3, ModItems.moduleForcefield);
-        createModuleEntry(registry, panel, slot, 1, 4, ModItems.moduleRegeneration);
-        createModuleEntry(registry, panel, slot, 5, 4, ModItems.moduleFlight);
-        createModuleEntry(registry, panel, slot, 1, 5, ModItems.moduleHover);
+        createModuleEntry(registry, panel, slot, 1, 2, ModBlocks.MODULE_ENERGY.get());
+        createModuleEntry(registry, panel, slot, 5, 2, ModBlocks.MODULE_AUTOFEED.get());
+        createModuleEntry(registry, panel, slot, 1, 3, ModBlocks.MODULE_ARMOR.get());
+        createModuleEntry(registry, panel, slot, 5, 3, ModBlocks.MODULE_FORCEFIELD.get());
+        createModuleEntry(registry, panel, slot, 1, 4, ModBlocks.MODULE_REGENERATION.get());
+        createModuleEntry(registry, panel, slot, 5, 4, ModBlocks.MODULE_FLIGHT.get());
+        createModuleEntry(registry, panel, slot, 1, 5, ModBlocks.MODULE_HOVER.get());
 
         addPowerGui(registry, slot, panel);
 
@@ -105,10 +105,10 @@ public class ArmorGui {
 
         IPanel panel = createPieceGui(registry, slot);
 
-        createModuleEntry(registry, panel, slot, 1, 2, ModItems.moduleEnergy);
-        createModuleEntry(registry, panel, slot, 5, 2, ModItems.moduleAutofeed);
-        createModuleEntry(registry, panel, slot, 1, 3, ModItems.moduleArmor);
-        createModuleEntry(registry, panel, slot, 5, 3, ModItems.moduleSpeed);
+        createModuleEntry(registry, panel, slot, 1, 2, ModBlocks.MODULE_ENERGY.get());
+        createModuleEntry(registry, panel, slot, 5, 2, ModBlocks.MODULE_AUTOFEED.get());
+        createModuleEntry(registry, panel, slot, 1, 3, ModBlocks.MODULE_ARMOR.get());
+        createModuleEntry(registry, panel, slot, 5, 3, ModBlocks.MODULE_SPEED.get());
 
         addPowerGui(registry, slot, panel);
 
@@ -122,11 +122,11 @@ public class ArmorGui {
 
         IPanel panel = createPieceGui(registry, slot);
 
-        createModuleEntry(registry, panel, slot, 1, 2, ModItems.moduleEnergy);
-        createModuleEntry(registry, panel, slot, 5, 2, ModItems.moduleAutofeed);
-        createModuleEntry(registry, panel, slot, 1, 3, ModItems.moduleArmor);
-        createModuleEntry(registry, panel, slot, 5, 3, ModItems.moduleFeatherFalling);
-        createModuleEntry(registry, panel, slot, 1, 4, ModItems.moduleStepassist);
+        createModuleEntry(registry, panel, slot, 1, 2, ModBlocks.MODULE_ENERGY.get());
+        createModuleEntry(registry, panel, slot, 5, 2, ModBlocks.MODULE_AUTOFEED.get());
+        createModuleEntry(registry, panel, slot, 1, 3, ModBlocks.MODULE_ARMOR.get());
+        createModuleEntry(registry, panel, slot, 5, 3, ModBlocks.MODULE_FEATHERFALLING.get());
+        createModuleEntry(registry, panel, slot, 1, 4, ModBlocks.MODULE_STEPASSIST.get());
 
         addPowerGui(registry, slot, panel);
 
@@ -139,12 +139,12 @@ public class ArmorGui {
 
         IPanel panel = createPieceGui(registry, slot);
 
-        createModuleEntry(registry, panel, slot, 1, 2, ModItems.moduleEnergy);
-        createModuleEntry(registry, panel, slot, 5, 2, ModItems.moduleAutofeed);
-        createModuleEntry(registry, panel, slot, 1, 3, ModItems.modulePower);
-        createModuleEntry(registry, panel, slot, 5, 3, ModItems.moduleInhibit);
-        createModuleEntry(registry, panel, slot, 1, 4, ModItems.moduleLooting);
-        createModuleEntry(registry, panel, slot, 5, 4, ModItems.moduleFire);
+        createModuleEntry(registry, panel, slot, 1, 2, ModBlocks.MODULE_ENERGY.get());
+        createModuleEntry(registry, panel, slot, 5, 2, ModBlocks.MODULE_AUTOFEED.get());
+        createModuleEntry(registry, panel, slot, 1, 3, ModBlocks.MODULE_POWER.get());
+        createModuleEntry(registry, panel, slot, 5, 3, ModBlocks.MODULE_INHIBIT.get());
+        createModuleEntry(registry, panel, slot, 1, 4, ModBlocks.MODULE_LOOTING.get());
+        createModuleEntry(registry, panel, slot, 5, 4, ModBlocks.MODULE_FIRE.get());
 
         addPowerGui(registry, slot, panel);
 
@@ -168,20 +168,20 @@ public class ArmorGui {
 
     private static void addPowerGui(IGuiComponentRegistry registry, EquipmentSlotType slot, IPanel panel) {
         panel
-                .add(registry.stackIcon(0, 6, 1, 1).itemStack(new ItemStack(ModItems.negariteDust.get())))
-                .add(registry.number(1, 6, 1, 1).color(registry.color(StyledColor.INFORMATION)).getter((p, h) -> HoloGuiTools.countItem(p, ModItems.negariteDust.get())))
+                .add(registry.stackIcon(0, 6, 1, 1).itemStack(new ItemStack(ModBlocks.DUST_NEGARITE.get())))
+                .add(registry.number(1, 6, 1, 1).color(registry.color(StyledColor.INFORMATION)).getter((p, h) -> HoloGuiTools.countItem(p, ModBlocks.DUST_NEGARITE.get())))
                 .add(registry.iconButton(3, 6, 1, 1).icon(registry.image(GRAY_ARROW_RIGHT)).hover(registry.image(WHITE_ARROW_RIGHT))
-                        .hitEvent((component, p, entity1, x, y) -> toArmor(p, slot, "negarite", ModItems.negariteDust.get(), 1)))
+                        .hitEvent((component, p, entity1, x, y) -> toArmor(p, slot, "negarite", ModBlocks.DUST_NEGARITE.get(), 1)))
                 .add(registry.iconButton(4, 6, 1, 1).icon(registry.image(GRAY_DOUBLE_ARROW_RIGHT)).hover(registry.image(WHITE_DOUBLE_ARROW_RIGHT))
-                        .hitEvent((component, p, entity1, x, y) -> toArmor(p, slot, "negarite", ModItems.negariteDust.get(), 64)))
+                        .hitEvent((component, p, entity1, x, y) -> toArmor(p, slot, "negarite", ModBlocks.DUST_NEGARITE.get(), 64)))
                 .add(registry.number(5, 6, 1, 1).color(registry.color(StyledColor.INFORMATION)).getter((p, h) -> countArmor(p, slot, "negarite")))
 
-                .add(registry.stackIcon(0, 7, 1, 1).itemStack(new ItemStack(ModItems.posiriteDust.get())))
-                .add(registry.number(1, 7, 1, 1).color(registry.color(StyledColor.INFORMATION)).getter((p, h) -> HoloGuiTools.countItem(p, ModItems.posiriteDust.get())))
+                .add(registry.stackIcon(0, 7, 1, 1).itemStack(new ItemStack(ModBlocks.DUST_POSIRITE.get())))
+                .add(registry.number(1, 7, 1, 1).color(registry.color(StyledColor.INFORMATION)).getter((p, h) -> HoloGuiTools.countItem(p, ModBlocks.DUST_POSIRITE.get())))
                 .add(registry.iconButton(3, 7, 1, 1).icon(registry.image(GRAY_ARROW_RIGHT)).hover(registry.image(WHITE_ARROW_RIGHT))
-                        .hitEvent((component, p, entity1, x, y) -> toArmor(p, slot, "posirite", ModItems.posiriteDust.get(), 1)))
+                        .hitEvent((component, p, entity1, x, y) -> toArmor(p, slot, "posirite", ModBlocks.DUST_POSIRITE.get(), 1)))
                 .add(registry.iconButton(4, 7, 1, 1).icon(registry.image(GRAY_DOUBLE_ARROW_RIGHT)).hover(registry.image(WHITE_DOUBLE_ARROW_RIGHT))
-                        .hitEvent((component, p, entity1, x, y) -> toArmor(p, slot, "posirite", ModItems.posiriteDust.get(), 64)))
+                        .hitEvent((component, p, entity1, x, y) -> toArmor(p, slot, "posirite", ModBlocks.DUST_POSIRITE.get(), 64)))
                 .add(registry.number(5, 7, 1, 1).color(registry.color(StyledColor.INFORMATION)).getter((p, h) -> countArmor(p, slot, "posirite")))
         ;
     }
@@ -195,7 +195,7 @@ public class ArmorGui {
     }
 
     private static boolean isValidPowerArmorPiece(ItemStack stack) {
-        return stack.isEmpty() || (!(stack.getItem() instanceof PowerSuit) && stack.getItem() != ModItems.enhancedEnergySabreItem);
+        return stack.isEmpty() || (!(stack.getItem() instanceof PowerSuit) && stack.getItem() != ModBlocks.ENHANCED_ENERGY_SABRE.get());
     }
 
     private static int calculatePowerColor(PlayerEntity player, EquipmentSlotType slot) {
