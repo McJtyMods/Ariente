@@ -105,7 +105,7 @@ public class NegariteGeneratorTile extends GenericTileEntity implements ITickabl
     @Override
     public void feedDust(int amount) {
         if (items.getStackInSlot(NegariteGeneratorTile.SLOT_NEGARITE_INPUT).isEmpty()) {
-            items.setStackInSlot(NegariteGeneratorTile.SLOT_NEGARITE_INPUT, new ItemStack(ModItems.negariteDust, amount));
+            items.setStackInSlot(NegariteGeneratorTile.SLOT_NEGARITE_INPUT, new ItemStack(ModItems.negariteDust.get(), amount));
             markDirtyClient();
         }
     }
@@ -147,7 +147,7 @@ public class NegariteGeneratorTile extends GenericTileEntity implements ITickabl
 
     private boolean canProceed() {
         ItemStack stack = items.getStackInSlot(SLOT_NEGARITE_INPUT);
-        return !stack.isEmpty() && stack.getItem() == ModItems.negariteDust;
+        return !stack.isEmpty() && stack.getItem() == ModItems.negariteDust.get();
     }
 
     private void sendPower() {
@@ -295,10 +295,10 @@ public class NegariteGeneratorTile extends GenericTileEntity implements ITickabl
     public IGuiComponent<?> createGui(String tag, IGuiComponentRegistry registry) {
         return registry.panel(0, 0, 8, 8)
                 .add(registry.text(0, 0, 8, 1).text("Negarite").color(registry.color(StyledColor.LABEL)))
-                .add(registry.stackIcon(0, 3, 1, 1).itemStack(new ItemStack(ModItems.negariteDust)))
+                .add(registry.stackIcon(0, 3, 1, 1).itemStack(new ItemStack(ModItems.negariteDust.get())))
 
                 .add(registry.icon(1, 3, 1, 1).icon(registry.image(WHITE_PLAYER)))
-                .add(registry.number(2, 3, 1, 1).color(registry.color(StyledColor.INFORMATION)).getter((p,h) -> HoloGuiTools.countItem(p, ModItems.negariteDust)))
+                .add(registry.number(2, 3, 1, 1).color(registry.color(StyledColor.INFORMATION)).getter((p,h) -> HoloGuiTools.countItem(p, ModItems.negariteDust.get())))
 
                 .add(registry.iconButton(2, 4, 1, 1).icon(registry.image(GRAY_DOUBLE_ARROW_LEFT)).hover(registry.image(WHITE_DOUBLE_ARROW_LEFT))
                     .hitEvent((component, player, e, x, y) -> toPlayer(player, 64)))
@@ -354,7 +354,7 @@ public class NegariteGeneratorTile extends GenericTileEntity implements ITickabl
 
         for (int i = 0 ; i < player.inventory.getSizeInventory() ; i++) {
             ItemStack stack = player.inventory.getStackInSlot(i);
-            if (stack.getItem() == ModItems.negariteDust) {
+            if (stack.getItem() == ModItems.negariteDust.get()) {
                 ItemStack splitted = stack.split(amount);
                 if ((!splitted.isEmpty())) {
                     if (toTransfer.isEmpty()) {
@@ -391,7 +391,7 @@ public class NegariteGeneratorTile extends GenericTileEntity implements ITickabl
         int cnt = 0;
         for (int i = 0 ; i < size ; i++) {
             ItemStack stack = items.getStackInSlot(i);
-            if (!stack.isEmpty() && stack.getItem() == ModItems.negariteDust) {
+            if (!stack.isEmpty() && stack.getItem() == ModItems.negariteDust.get()) {
                 cnt += stack.getCount();
             }
         }
@@ -419,7 +419,7 @@ public class NegariteGeneratorTile extends GenericTileEntity implements ITickabl
             @Override
             public boolean isItemValid(int slot, @Nonnull ItemStack stack) {
                 if (slot == SLOT_NEGARITE_INPUT) {
-                    return stack.getItem() == ModItems.negariteDust;
+                    return stack.getItem() == ModItems.negariteDust.get();
                 }
                 return true;
             }

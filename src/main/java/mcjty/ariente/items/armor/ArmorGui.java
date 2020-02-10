@@ -168,20 +168,20 @@ public class ArmorGui {
 
     private static void addPowerGui(IGuiComponentRegistry registry, EquipmentSlotType slot, IPanel panel) {
         panel
-                .add(registry.stackIcon(0, 6, 1, 1).itemStack(new ItemStack(ModItems.negariteDust)))
-                .add(registry.number(1, 6, 1, 1).color(registry.color(StyledColor.INFORMATION)).getter((p, h) -> HoloGuiTools.countItem(p, ModItems.negariteDust)))
+                .add(registry.stackIcon(0, 6, 1, 1).itemStack(new ItemStack(ModItems.negariteDust.get())))
+                .add(registry.number(1, 6, 1, 1).color(registry.color(StyledColor.INFORMATION)).getter((p, h) -> HoloGuiTools.countItem(p, ModItems.negariteDust.get())))
                 .add(registry.iconButton(3, 6, 1, 1).icon(registry.image(GRAY_ARROW_RIGHT)).hover(registry.image(WHITE_ARROW_RIGHT))
-                        .hitEvent((component, p, entity1, x, y) -> toArmor(p, slot, "negarite", ModItems.negariteDust, 1)))
+                        .hitEvent((component, p, entity1, x, y) -> toArmor(p, slot, "negarite", ModItems.negariteDust.get(), 1)))
                 .add(registry.iconButton(4, 6, 1, 1).icon(registry.image(GRAY_DOUBLE_ARROW_RIGHT)).hover(registry.image(WHITE_DOUBLE_ARROW_RIGHT))
-                        .hitEvent((component, p, entity1, x, y) -> toArmor(p, slot, "negarite", ModItems.negariteDust, 64)))
+                        .hitEvent((component, p, entity1, x, y) -> toArmor(p, slot, "negarite", ModItems.negariteDust.get(), 64)))
                 .add(registry.number(5, 6, 1, 1).color(registry.color(StyledColor.INFORMATION)).getter((p, h) -> countArmor(p, slot, "negarite")))
 
-                .add(registry.stackIcon(0, 7, 1, 1).itemStack(new ItemStack(ModItems.posiriteDust)))
-                .add(registry.number(1, 7, 1, 1).color(registry.color(StyledColor.INFORMATION)).getter((p, h) -> HoloGuiTools.countItem(p, ModItems.posiriteDust)))
+                .add(registry.stackIcon(0, 7, 1, 1).itemStack(new ItemStack(ModItems.posiriteDust.get())))
+                .add(registry.number(1, 7, 1, 1).color(registry.color(StyledColor.INFORMATION)).getter((p, h) -> HoloGuiTools.countItem(p, ModItems.posiriteDust.get())))
                 .add(registry.iconButton(3, 7, 1, 1).icon(registry.image(GRAY_ARROW_RIGHT)).hover(registry.image(WHITE_ARROW_RIGHT))
-                        .hitEvent((component, p, entity1, x, y) -> toArmor(p, slot, "posirite", ModItems.posiriteDust, 1)))
+                        .hitEvent((component, p, entity1, x, y) -> toArmor(p, slot, "posirite", ModItems.posiriteDust.get(), 1)))
                 .add(registry.iconButton(4, 7, 1, 1).icon(registry.image(GRAY_DOUBLE_ARROW_RIGHT)).hover(registry.image(WHITE_DOUBLE_ARROW_RIGHT))
-                        .hitEvent((component, p, entity1, x, y) -> toArmor(p, slot, "posirite", ModItems.posiriteDust, 64)))
+                        .hitEvent((component, p, entity1, x, y) -> toArmor(p, slot, "posirite", ModItems.posiriteDust.get(), 64)))
                 .add(registry.number(5, 7, 1, 1).color(registry.color(StyledColor.INFORMATION)).getter((p, h) -> countArmor(p, slot, "posirite")))
         ;
     }

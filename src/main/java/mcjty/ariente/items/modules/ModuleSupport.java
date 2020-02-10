@@ -134,14 +134,14 @@ public class ModuleSupport {
                         if (negariteIndex != -1 && posiriteIndex != -1) {
                             break;
                         }
-                    } else if (itemStack.getItem() == ModItems.negariteDust) {
+                    } else if (itemStack.getItem() == ModItems.negariteDust.get()) {
                         if (!itemStack.isEmpty()) {
                             negariteIndex = i;
                             if (posiriteIndex != -1) {
                                 break;
                             }
                         }
-                    } else if (itemStack.getItem() == ModItems.posiriteDust) {
+                    } else if (itemStack.getItem() == ModItems.posiriteDust.get()) {
                         if (!itemStack.isEmpty()) {
                             posiriteIndex = i;
                             if (negariteIndex != -1) {

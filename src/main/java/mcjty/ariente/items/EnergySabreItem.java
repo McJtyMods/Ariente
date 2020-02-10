@@ -75,7 +75,7 @@ public class EnergySabreItem extends Item {
 
     @Override
     public boolean getIsRepairable(ItemStack toRepair, ItemStack repair) {
-        ItemStack mat = new ItemStack(ModItems.lithiumIngot);
+        ItemStack mat = new ItemStack(ModItems.lithiumIngot.get());
         // @todo 1.14 oredict
 //        if (!mat.isEmpty() && net.minecraftforge.oredict.OreDictionary.itemMatches(mat, repair, false)) {
 //            return true;

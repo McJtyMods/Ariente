@@ -2,21 +2,28 @@ package mcjty.ariente.items;
 
 import mcjty.ariente.Ariente;
 import mcjty.ariente.api.ArmorUpgradeType;
+import mcjty.ariente.blocks.ModBlocks;
 import mcjty.ariente.items.armor.PowerSuit;
 import mcjty.ariente.items.modules.ArmorModuleItem;
 import net.minecraft.inventory.EquipmentSlotType;
+import net.minecraft.item.BlockItem;
 import net.minecraft.item.Item;
+import net.minecraftforge.fml.RegistryObject;
+
+import static mcjty.ariente.setup.Registration.ITEMS;
 
 public class ModItems {
 
-    public static Item platinumIngot;
-    public static Item lithiumIngot;
-    public static Item manganeseIngot;
-    public static Item silverIngot;
-    public static Item silicon;
+//    public static final RegistryObject<Item> MARBLE_TECH_BLOCK_ITEM = ITEMS.register("marbletech", () -> new BlockItem(MARBLE_TECH_BLOCK.get(), createStandardProperties()));
 
-    public static Item negariteDust;
-    public static Item posiriteDust;
+    public static final RegistryObject<Item> platinumIngot = ITEMS.register("ingot_platinum", () -> new Item(ModBlocks.createStandardProperties()));
+    public static final RegistryObject<Item> lithiumIngot = ITEMS.register("ingot_lithium", () -> new Item(ModBlocks.createStandardProperties()));
+    public static final RegistryObject<Item> manganeseIngot = ITEMS.register("ingot_manganese", () -> new Item(ModBlocks.createStandardProperties()));
+    public static final RegistryObject<Item> silverIngot = ITEMS.register("ingot_silver", () -> new Item(ModBlocks.createStandardProperties()));
+    public static final RegistryObject<Item> silicon = ITEMS.register("silicon", () -> new Item(ModBlocks.createStandardProperties()));
+    public static final RegistryObject<Item> negariteDust = ITEMS.register("dust_negarite", () -> new Item(ModBlocks.createStandardProperties()));
+    public static final RegistryObject<Item> posiriteDust = ITEMS.register("dust_posirite", () -> new Item(ModBlocks.createStandardProperties()));
+
 
     public static EnergySabreItem energySabre;
     public static EnhancedEnergySabreItem enhancedEnergySabreItem;
@@ -54,15 +61,6 @@ public class ModItems {
     public static ArmorModuleItem moduleFire;
 
     public static void init() {
-        platinumIngot = new Item(new Item.Properties().group(Ariente.setup.getTab()));// @todo 1.14 "ingot_platinum");
-        lithiumIngot = new Item(new Item.Properties().group(Ariente.setup.getTab()));// @todo 1.14 "ingot_lithium");
-        manganeseIngot = new Item(new Item.Properties().group(Ariente.setup.getTab()));// @todo 1.14 "ingot_manganese");
-        silverIngot = new Item(new Item.Properties().group(Ariente.setup.getTab()));// @todo 1.14 "ingot_silver");
-        silicon = new Item(new Item.Properties().group(Ariente.setup.getTab()));// @todo 1.14 "silicon");
-
-        negariteDust = new Item(new Item.Properties().group(Ariente.setup.getTab()));// @todo 1.14 "dust_negarite");
-        posiriteDust = new Item(new Item.Properties().group(Ariente.setup.getTab()));// @todo 1.14 "dust_posirite");
-
         energySabre = new EnergySabreItem();    // @todo 1.14 "energy_sabre"
         enhancedEnergySabreItem = new EnhancedEnergySabreItem();    // @todo 1.14 "enhanced_energy_sabre"
         keyCardItem = new KeyCardItem();

@@ -72,10 +72,10 @@ public class EnergyHolderItem extends Item {
         }
         tag.putInt("index", index+1);
         ItemStack playerStack = player.inventory.getStackInSlot(index);
-        if (playerStack.getItem() == ModItems.negariteDust) {
+        if (playerStack.getItem() == ModItems.negariteDust.get()) {
             tag.putInt("negarite", tag.getInt("negarite") + playerStack.getCount());
             player.inventory.setInventorySlotContents(index, ItemStack.EMPTY);
-        } else if (playerStack.getItem() == ModItems.posiriteDust) {
+        } else if (playerStack.getItem() == ModItems.posiriteDust.get()) {
             tag.putInt("posirite", tag.getInt("posirite") + playerStack.getCount());
             player.inventory.setInventorySlotContents(index, ItemStack.EMPTY);
         }
@@ -94,8 +94,8 @@ public class EnergyHolderItem extends Item {
         IPanel panel = HoloGuiTools.createPanelWithHelp(registry, entity -> entity.switchGui(ModGuis.GUI_ENERGY_HOLDER_HOLD))
                 .add(registry.text(0, 1, 1, 1).text("Energy Holder").color(registry.color(StyledColor.LABEL)));
 
-        addDustControl(registry, panel, 2.3, ModItems.negariteDust, "negarite");
-        addDustControl(registry, panel, 4.7, ModItems.posiriteDust, "posirite");
+        addDustControl(registry, panel, 2.3, ModItems.negariteDust.get(), "negarite");
+        addDustControl(registry, panel, 4.7, ModItems.posiriteDust.get(), "posirite");
 
         panel.add(registry.textChoice(0, 7, 2, 1).addText("Manual").addText("Automatic")
                 .getter(EnergyHolderItem::getAutomatic)

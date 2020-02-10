@@ -40,7 +40,7 @@ public class FluxLevitatorItem extends Item {
         Hand hand = context.getHand();
         BlockState state = world.getBlockState(pos);
 
-        if (state.getBlock() != ModBlocks.FLUX_BEAM_BLOCK.get() && state.getBlock() != ModBlocks.FLUX_BEND_BEAM_BLOCK.get()) {
+        if (state.getBlock() != ModBlocks.FLUX_BEAM.get() && state.getBlock() != ModBlocks.FLUX_BEND_BEAM.get()) {
             return ActionResultType.FAIL;
         } else {
             ItemStack itemstack = player.getHeldItem(hand);

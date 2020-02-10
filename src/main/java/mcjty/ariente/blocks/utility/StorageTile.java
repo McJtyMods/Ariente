@@ -270,7 +270,7 @@ public class StorageTile extends GenericTileEntity implements IGuiTile, ICityEqu
         int x = pos.getX();
         int y = pos.getY();
         int z = pos.getZ();
-        Direction k = ModBlocks.STORAGE_BLOCK.get().getFrontDirection(world.getBlockState(pos));
+        Direction k = ModBlocks.STORAGE.get().getFrontDirection(world.getBlockState(pos));
         if (sideHit == k) {
             float sx = (float) (hitVec.x - x);
             float sy = (float) (hitVec.y - y);
@@ -372,7 +372,7 @@ public class StorageTile extends GenericTileEntity implements IGuiTile, ICityEqu
     private static long doubleClickTime = -1;
 
     public static boolean onActivate(World world, BlockPos pos, PlayerEntity player, Direction side, double sx, double sy, double sz) {
-        Direction k = ModBlocks.STORAGE_BLOCK.get().getFrontDirection(world.getBlockState(pos));
+        Direction k = ModBlocks.STORAGE.get().getFrontDirection(world.getBlockState(pos));
         if (side == k) {
             TileEntity tileEntity = world.getTileEntity(pos);
             if (!world.isRemote) {
