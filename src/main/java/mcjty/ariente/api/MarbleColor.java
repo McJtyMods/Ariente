@@ -4,13 +4,13 @@ import net.minecraft.state.EnumProperty;
 import net.minecraft.util.IStringSerializable;
 
 public enum MarbleColor implements IStringSerializable {
-    GRAY("gray"),
-    WHITE("white"),
-    BLUE("blue"),
-    BLACK("black"),
-    LIME("lime"),
-    RED("red"),
-    DARKBLUE("darkblue")
+    GRAY("gray", "graymarble"),
+    WHITE("white", "whitemarble"),
+    BLUE("blue", "bluemarble"),
+    BLACK("black", "blackmarble"),
+    LIME("lime", "limemarble"),
+    RED("red", "redmarble"),
+    DARKBLUE("darkblue", "darkbluemarble")
     ;
 
     public static final MarbleColor[] VALUES = new MarbleColor[MarbleColor.values().length];
@@ -25,9 +25,11 @@ public enum MarbleColor implements IStringSerializable {
     }
 
     private final String name;
+    private final String texture;
 
-    MarbleColor(String name) {
+    MarbleColor(String name, String texture) {
         this.name = name;
+        this.texture = texture;
     }
 
     @Override
@@ -35,9 +37,18 @@ public enum MarbleColor implements IStringSerializable {
         return name;
     }
 
+    public String getTexture() {
+        return texture;
+    }
+
     public String getUnlocalizedName()
     {
         return name;
     }
 
+
+    @Override
+    public String toString() {
+        return name;
+    }
 }

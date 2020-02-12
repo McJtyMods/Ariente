@@ -60,4 +60,9 @@ public enum NodeOrientation implements IStringSerializable {
     public PartSlot getBackSlot() {
         return backSlot;
     }
+
+    @Override
+    public String toString() {
+        return name;
+    }
 }

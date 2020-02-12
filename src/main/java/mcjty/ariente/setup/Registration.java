@@ -3,6 +3,8 @@ package mcjty.ariente.setup;
 import mcjty.ariente.Ariente;
 import mcjty.ariente.ModCrafting;
 import mcjty.ariente.api.ArmorUpgradeType;
+import mcjty.ariente.api.MarbleColor;
+import mcjty.ariente.api.MarbleType;
 import mcjty.ariente.api.TechType;
 import mcjty.ariente.blocks.BaseOreBlock;
 import mcjty.ariente.blocks.aicore.AICoreTile;
@@ -33,6 +35,7 @@ import mcjty.ariente.items.*;
 import mcjty.ariente.items.armor.PowerSuit;
 import mcjty.ariente.items.modules.ArmorModuleItem;
 import mcjty.lib.blocks.BaseBlock;
+import mcjty.lib.blocks.BlockStateItem;
 import mcjty.lib.blocks.RotationType;
 import mcjty.lib.builder.BlockBuilder;
 import net.minecraft.block.Block;
@@ -90,34 +93,44 @@ public class Registration {
     public static final AxisAlignedBB LIGHT_BLOCK_EAST = new AxisAlignedBB(0.875F, 0.125F, 0.125F, 1.0F, 0.875F, 0.8750F);
 
     public static final RegistryObject<BlackTechBlock> BLACK_TECH = BLOCKS.register("blacktech", BlackTechBlock::new);
-    // @todo can't be BlockItem!
-    public static final Map<TechType, RegistryObject<BlockItem>> BLACK_TECH_ITEMS = Arrays.stream(TechType.values())
-            .map(type -> Pair.of(type, ITEMS.register("blacktech_" + type.getName(), () -> new BlockItem(BLACK_TECH.get(), createStandardProperties()))))
+    public static final Map<TechType, RegistryObject<BlockStateItem>> BLACK_TECH_ITEMS = Arrays.stream(TechType.values())
+            .map(type -> Pair.of(type, ITEMS.register("blacktech_" + type.getName(), () -> new BlockStateItem(BLACK_TECH.get().getDefaultState().with(TechType.TYPE, type), createStandardProperties()))))
             .collect(Collectors.toMap(Pair::getKey, Pair::getValue));
 
     public static final RegistryObject<MarbleTechBlock> MARBLE_TECH = BLOCKS.register("marbletech", MarbleTechBlock::new);
-    public static final RegistryObject<Item> MARBLE_TECH_ITEM = ITEMS.register("marbletech", () -> new BlockItem(MARBLE_TECH.get(), createStandardProperties()));
+    public static final Map<MarbleType, RegistryObject<BlockStateItem>> MARBLE_TECH_ITEMS = Arrays.stream(MarbleType.values())
+            .map(type -> Pair.of(type, ITEMS.register("marbletech_" + type.getName(), () -> new BlockStateItem(MARBLE_TECH.get().getDefaultState().with(MarbleType.TYPE, type), createStandardProperties()))))
+            .collect(Collectors.toMap(Pair::getKey, Pair::getValue));
 
     public static final RegistryObject<PatternBlock> PATTERN = BLOCKS.register("pattern", PatternBlock::new);
-    public static final RegistryObject<Item> PATTERN_ITEM = ITEMS.register("pattern", () -> new BlockItem(PATTERN.get(), createStandardProperties()));
+    public static final Map<PatternType, RegistryObject<BlockStateItem>> PATTERN_ITEMS = Arrays.stream(PatternType.values())
+            .map(type -> Pair.of(type, ITEMS.register("pattern_" + type.getName(), () -> new BlockStateItem(PATTERN.get().getDefaultState().with(PatternBlock.TYPE, type), createStandardProperties()))))
+            .collect(Collectors.toMap(Pair::getKey, Pair::getValue));
 
     public static final RegistryObject<MarbleBlock> MARBLE = BLOCKS.register("marble", MarbleBlock::new);
-    public static final RegistryObject<Item> MARBLE_ITEM = ITEMS.register("marble", () -> new BlockItem(MARBLE.get(), createStandardProperties()));
+    public static final Map<MarbleColor, RegistryObject<BlockStateItem>> MARBLE_ITEMS = Arrays.stream(MarbleColor.values())
+            .map(type -> Pair.of(type, ITEMS.register("marble_" + type.getName(), () -> new BlockStateItem(MARBLE.get().getDefaultState().with(MarbleColor.COLOR, type), createStandardProperties()))))
+            .collect(Collectors.toMap(Pair::getKey, Pair::getValue));
 
     public static final RegistryObject<MarbleBlock> MARBLE_SMOOTH = BLOCKS.register("marble_smooth", MarbleBlock::new);
-    public static final RegistryObject<Item> MARBLE_SMOOTH_ITEM = ITEMS.register("marble_smooth", () -> new BlockItem(MARBLE_SMOOTH.get(), createStandardProperties()));
+    public static final Map<MarbleColor, RegistryObject<BlockStateItem>> MARBLE_SMOOTH_ITEMS = Arrays.stream(MarbleColor.values())
+            .map(type -> Pair.of(type, ITEMS.register("marble_smooth_" + type.getName(), () -> new BlockStateItem(MARBLE_SMOOTH.get().getDefaultState().with(MarbleColor.COLOR, type), createStandardProperties()))))
+            .collect(Collectors.toMap(Pair::getKey, Pair::getValue));
 
     public static final RegistryObject<MarbleBlock> MARBLE_PILAR = BLOCKS.register("marble_pilar", MarbleBlock::new);
-    public static final RegistryObject<Item> MARBLE_PILAR_ITEM = ITEMS.register("marble_pilar", () -> new BlockItem(MARBLE_PILAR.get(), createStandardProperties()));
+    public static final Map<MarbleColor, RegistryObject<BlockStateItem>> MARBLE_PILAR_ITEMS = Arrays.stream(MarbleColor.values())
+            .map(type -> Pair.of(type, ITEMS.register("marble_pilar_" + type.getName(), () -> new BlockStateItem(MARBLE_PILAR.get().getDefaultState().with(MarbleColor.COLOR, type), createStandardProperties()))))
+            .collect(Collectors.toMap(Pair::getKey, Pair::getValue));
 
     public static final RegistryObject<MarbleBlock> MARBLE_BRICKS = BLOCKS.register("marble_bricks", MarbleBlock::new);
-    public static final RegistryObject<Item> MARBLE_BRICKS_ITEM = ITEMS.register("marble_bricks", () -> new BlockItem(MARBLE_BRICKS.get(), createStandardProperties()));
+    public static final Map<MarbleColor, RegistryObject<BlockStateItem>> MARBLE_BRICKS_ITEMS = Arrays.stream(MarbleColor.values())
+            .map(type -> Pair.of(type, ITEMS.register("marble_bricks_" + type.getName(), () -> new BlockStateItem(MARBLE_BRICKS.get().getDefaultState().with(MarbleColor.COLOR, type), createStandardProperties()))))
+            .collect(Collectors.toMap(Pair::getKey, Pair::getValue));
 
     public static final RegistryObject<MarbleSlabBlock> MARBLE_SLAB = BLOCKS.register("marble_slab", MarbleSlabBlock::new);
-    public static final RegistryObject<Item> MARBLE_SLAB_ITEM = ITEMS.register("marble_slab", () -> new BlockItem(MARBLE_SLAB.get(), createStandardProperties()));
-
-    public static final RegistryObject<DoubleMarbleSlabBlock> DOUBLE_MARBLE_SLAB = BLOCKS.register("double_marble_slab", DoubleMarbleSlabBlock::new);
-    public static final RegistryObject<Item> DOUBLE_MARBLE_SLAB_ITEM = ITEMS.register("double_marble_slab", () -> new BlockItem(DOUBLE_MARBLE_SLAB.get(), createStandardProperties()));
+    public static final Map<MarbleColor, RegistryObject<BlockStateItem>> MARBLE_SLAB_ITEMS = Arrays.stream(MarbleColor.values())
+            .map(type -> Pair.of(type, ITEMS.register("marble_slab_" + type.getName(), () -> new BlockStateItem(MARBLE_SLAB.get().getDefaultState().with(MarbleColor.COLOR, type), createStandardProperties()))))
+            .collect(Collectors.toMap(Pair::getKey, Pair::getValue));
 
     public static final RegistryObject<BaseBlock> ORE_LITHIUM = BLOCKS.register("lithiumore", BaseOreBlock::new);
     public static final RegistryObject<Item> ORE_LITHIUM_ITEM = ITEMS.register("lithiumore", () -> new BlockItem(ORE_LITHIUM.get(), createStandardProperties()));
@@ -436,87 +449,6 @@ public class Registration {
 //        OreDictionary.registerOre("orePosirite", posirite);
     }
 
-    // @todo 1.14
-//    public static void initModels() {
-//        netCableBlock.initModel();
-//        connectorBlock.initModel();
-//        facadeBlock.initModel();
-//
-//        fluxBeamBlock.initModel();
-//        fluxBendBeamBlock.initModel();
-//
-//        storageBlock.initModel();
-//        StorageRenderer.register();
-//
-//        elevatorBlock.initModel();
-//        ElevatorRenderer.register();
-//        levelMarkerBlock.initModel();
-//
-//        doorMarkerBlock.initModel();
-//        DoorMarkerRenderer.register();
-//        invisibleDoorBlock.initModel();
-//        InvisibleDoorRenderer.register();
-//
-//        forceFieldBlock.initModel();
-//
-//        roundRobinNode.initModel();
-//        inputItemNode.initModel();
-//        sensorItemNode.initModel();
-//        outputItemNode.initModel();
-//        fieldMarker.initModel();
-//        autoFieldBlock.initModel();
-//        AutoFieldRenderer.register();
-//
-//        constructorBlock.initModel();
-//        autoConstructorBlock.initModel();
-//        blueprintStorageBlock.initModel();
-//        flatLightBlock.initModel();
-//        fluxGlow.initModel();
-//        powerCombinerBlock.initModel();
-//        posiriteGeneratorBlock.initModel();
-//        negariteGeneratorBlock.initModel();
-//        negariteTankBlock.initModel();
-//        NegariteTankRenderer.register();
-//        posiriteTankBlock.initModel();
-//        PosiriteTankRenderer.register();
-//
-//        alarmBlock.initModel();
-//        warperBlock.initModel();
-//        WarperRenderer.register();
-//        lockBlock.initModel();
-//        wirelessButtonBlock.initModel();
-//        wirelessLockBlock.initModel();
-//        signalReceiverBlock.initModel();
-//        signalTransmitterBlock.initModel();
-//
-//        reinforcedMarble.initModel();
-//        aiCoreBlock.initModel();
-//
-//        blackTechBlock.initModel();
-//        marbleTechBlock.initModel();
-//        patternBlock.initModel();
-//        rampBlock.initModel();
-//        slopeBlock.initModel();
-//        marble.initModel();
-//        marble_smooth.initModel();
-//        marble_pilar.initModel();
-//        marble_bricks.initModel();
-//        marbleSlabBlock.initModel();
-//        doubleMarbleSlabBlock.initModel();
-//        blueGlassFence.initModel();
-//        glassFence.initModel();
-//        marbleFence.initModel();
-//        techFence.initModel();
-//
-//        lithiumore.initModel();
-//        manganeseore.initModel();
-//        siliconore.initModel();
-//        silverore.initModel();
-//        platinumore.initModel();
-//        posirite.initModel();
-//        negarite.initModel();
-//    }
-//
 //    @SideOnly(Side.CLIENT)
 //    public static void initItemModels() {
 //        facadeBlock.initItemModel();

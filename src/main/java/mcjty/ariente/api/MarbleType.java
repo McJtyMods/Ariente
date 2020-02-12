@@ -4,9 +4,9 @@ import net.minecraft.state.EnumProperty;
 import net.minecraft.util.IStringSerializable;
 
 public enum MarbleType implements IStringSerializable {
-    VARIATION1("variation1"),
-    VARIATION2("variation2"),
-    VARIATION3("variation3"),
+    VARIATION1("variation1", "marbletech1"),
+    VARIATION2("variation2", "marbletech2"),
+    VARIATION3("variation3", "marbletech3"),
     ;
 
     public static final MarbleType[] VALUES = new MarbleType[MarbleType.values().length];
@@ -21,9 +21,11 @@ public enum MarbleType implements IStringSerializable {
     }
 
     private final String name;
+    private final String texture;
 
-    MarbleType(String name) {
+    MarbleType(String name, String texture) {
         this.name = name;
+        this.texture = texture;
     }
 
     @Override
@@ -31,4 +33,12 @@ public enum MarbleType implements IStringSerializable {
         return name;
     }
 
+    public String getTexture() {
+        return texture;
+    }
+
+    @Override
+    public String toString() {
+        return name;
+    }
 }
