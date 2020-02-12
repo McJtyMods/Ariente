@@ -8,6 +8,7 @@ import net.minecraft.block.material.Material;
 import net.minecraft.state.StateContainer;
 
 import static mcjty.ariente.api.MarbleColor.COLOR;
+import static net.minecraft.state.properties.BlockStateProperties.HALF;
 
 public class MarbleSlabBlock extends SlabBlock {
 
@@ -47,10 +48,9 @@ public class MarbleSlabBlock extends SlabBlock {
 //        return super.getUnlocalizedName() + "." + MarbleColor.VALUES[meta].getUnlocalizedName();
 //    }
 
-//    @Override
-//    public boolean isDouble() {
-//        return false;
-//    }
+    public boolean isDouble() {
+        return false;
+    }
 
 //    @Override
 //    public IProperty<?> getVariantProperty() {
@@ -112,8 +112,11 @@ public class MarbleSlabBlock extends SlabBlock {
     @Override
     protected void fillStateContainer(StateContainer.Builder<Block, BlockState> builder) {
         super.fillStateContainer(builder);
-        // @todo 1.14
-//        return this.isDouble() ? new BlockStateContainer(this, COLOR) : new BlockStateContainer(this, HALF, COLOR);
+        if (isDouble()) {
+            builder.add(HALF).add(COLOR);
+        } else {
+            builder.add(COLOR);
+        }
     }
 
     // @todo 1.14

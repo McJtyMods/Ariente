@@ -15,7 +15,7 @@ public enum MarbleColor implements IStringSerializable {
 
     public static final MarbleColor[] VALUES = new MarbleColor[MarbleColor.values().length];
 
-    public static final EnumProperty<MarbleColor> COLOR = EnumProperty.create("type", MarbleColor.class);
+    public static final EnumProperty<MarbleColor> COLOR = EnumProperty.create("color", MarbleColor.class);
 
     static {
         int i = 0;

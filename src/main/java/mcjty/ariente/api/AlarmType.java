@@ -17,4 +17,9 @@ public enum AlarmType implements IStringSerializable {
     public String getName() {
         return name;
     }
+
+    @Override
+    public String toString() {
+        return name;
+    }
 }
