@@ -2,6 +2,7 @@ package mcjty.ariente.datagen;
 
 import mcjty.ariente.Ariente;
 import mcjty.ariente.api.AlarmType;
+import mcjty.ariente.api.TechType;
 import mcjty.ariente.blocks.utility.AlarmTile;
 import mcjty.ariente.blocks.utility.AutoConstructorTile;
 import mcjty.ariente.setup.Registration;
@@ -27,6 +28,7 @@ public class BlockStates extends BaseBlockStateProvider {
 
     private BlockModelBuilder flatglow;
     private BlockModelBuilder frontglow;
+    private BlockModelBuilder fullglow;
     private BlockModelBuilder front;
 
     @Override
@@ -36,6 +38,15 @@ public class BlockStates extends BaseBlockStateProvider {
         registerAlarm();
         registerAutoConstructor();
         registerAutomationField();
+
+        VariantBlockStateBuilder builder = getVariantBuilder(Registration.BLACK_TECH.get());
+        for (TechType type : TechType.values()) {
+            builder.partialState().with(TechType.TYPE, type)
+                    .modelForState()
+                    .modelFile(fullGlowModel("block/decoration/blacktech_" + type.getName(), "block/blacktech/" + type.getTexture(), "block/blacktech/" + type.getTextureGlow()))
+                    .addModel();
+        }
+
     }
 
     private void registerAutomationField() {
@@ -136,6 +147,22 @@ public class BlockStates extends BaseBlockStateProvider {
                 .texture("side", modLoc("block/base/machineside"))
                 .texture("bottom", modLoc("block/base/machinebottom"))
                 .texture("top", modLoc("block/base/machinebottom"));
+
+        fullglow = models().getBuilder("/block/base/fullglow");
+        // @todo support CTM
+        fullglow.element().from(0, 0, 0).to(16, 16, 16)
+                .face(DOWN).uvs(0, 0, 16, 16).texture("#all").cullface(DOWN).end()
+                .face(UP).uvs(0, 0, 16, 16).texture("#all").cullface(UP).end()
+                .face(NORTH).uvs(0, 0, 16, 16).texture("#all").cullface(NORTH).end()
+                .face(SOUTH).uvs(0, 0, 16, 16).texture("#all").cullface(SOUTH).end()
+                .face(WEST).uvs(0, 0, 16, 16).texture("#all").cullface(WEST).end()
+                .face(EAST).uvs(0, 0, 16, 16).texture("#all").cullface(EAST).end()
+                .end();
     }
 
+    private BlockModelBuilder fullGlowModel(String modelName, String texture, String glowTexture) {
+        return models().getBuilder(modelName)
+                .parent(fullglow)
+                .texture("all", modLoc(texture));
+    }
 }

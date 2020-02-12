@@ -3,6 +3,7 @@ package mcjty.ariente.setup;
 import mcjty.ariente.Ariente;
 import mcjty.ariente.ModCrafting;
 import mcjty.ariente.api.ArmorUpgradeType;
+import mcjty.ariente.api.TechType;
 import mcjty.ariente.blocks.BaseOreBlock;
 import mcjty.ariente.blocks.aicore.AICoreTile;
 import mcjty.ariente.blocks.decorative.*;
@@ -50,6 +51,11 @@ import net.minecraftforge.fml.RegistryObject;
 import net.minecraftforge.fml.javafmlmod.FMLJavaModLoadingContext;
 import net.minecraftforge.registries.DeferredRegister;
 import net.minecraftforge.registries.ForgeRegistries;
+import org.apache.commons.lang3.tuple.Pair;
+
+import java.util.Arrays;
+import java.util.Map;
+import java.util.stream.Collectors;
 
 import static mcjty.ariente.Ariente.MODID;
 
@@ -83,14 +89,17 @@ public class Registration {
     public static final AxisAlignedBB LIGHT_BLOCK_WEST = new AxisAlignedBB(0.0F, 0.125F, 0.125F, 0.125F, 0.875F, 0.8750F);
     public static final AxisAlignedBB LIGHT_BLOCK_EAST = new AxisAlignedBB(0.875F, 0.125F, 0.125F, 1.0F, 0.875F, 0.8750F);
 
-    public static final RegistryObject<BlackTechBlock> BLACK_TECH_BLOCK = BLOCKS.register("blacktech", BlackTechBlock::new);
-    public static final RegistryObject<Item> BLACK_TECH_BLOCK_ITEM = ITEMS.register("blacktech", () -> new BlockItem(BLACK_TECH_BLOCK.get(), createStandardProperties()));
+    public static final RegistryObject<BlackTechBlock> BLACK_TECH = BLOCKS.register("blacktech", BlackTechBlock::new);
+    // @todo can't be BlockItem!
+    public static final Map<TechType, RegistryObject<BlockItem>> BLACK_TECH_ITEMS = Arrays.stream(TechType.values())
+            .map(type -> Pair.of(type, ITEMS.register("blacktech_" + type.getName(), () -> new BlockItem(BLACK_TECH.get(), createStandardProperties()))))
+            .collect(Collectors.toMap(Pair::getKey, Pair::getValue));
 
-    public static final RegistryObject<MarbleTechBlock> MARBLE_TECH_BLOCK = BLOCKS.register("marbletech", MarbleTechBlock::new);
-    public static final RegistryObject<Item> MARBLE_TECH_BLOCK_ITEM = ITEMS.register("marbletech", () -> new BlockItem(MARBLE_TECH_BLOCK.get(), createStandardProperties()));
+    public static final RegistryObject<MarbleTechBlock> MARBLE_TECH = BLOCKS.register("marbletech", MarbleTechBlock::new);
+    public static final RegistryObject<Item> MARBLE_TECH_ITEM = ITEMS.register("marbletech", () -> new BlockItem(MARBLE_TECH.get(), createStandardProperties()));
 
-    public static final RegistryObject<PatternBlock> PATTERN_BLOCK = BLOCKS.register("pattern", PatternBlock::new);
-    public static final RegistryObject<Item> PATTERN_BLOCK_ITEM = ITEMS.register("pattern", () -> new BlockItem(PATTERN_BLOCK.get(), createStandardProperties()));
+    public static final RegistryObject<PatternBlock> PATTERN = BLOCKS.register("pattern", PatternBlock::new);
+    public static final RegistryObject<Item> PATTERN_ITEM = ITEMS.register("pattern", () -> new BlockItem(PATTERN.get(), createStandardProperties()));
 
     public static final RegistryObject<MarbleBlock> MARBLE = BLOCKS.register("marble", MarbleBlock::new);
     public static final RegistryObject<Item> MARBLE_ITEM = ITEMS.register("marble", () -> new BlockItem(MARBLE.get(), createStandardProperties()));
