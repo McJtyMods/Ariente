@@ -1,14 +1,15 @@
 package mcjty.ariente.blocks.utility.autofield;
 
-import mcjty.ariente.setup.Registration;
 import mcjty.ariente.gui.HelpBuilder;
 import mcjty.ariente.gui.HoloGuiTools;
+import mcjty.ariente.setup.Registration;
 import mcjty.hologui.api.IGuiComponent;
 import mcjty.hologui.api.IGuiComponentRegistry;
 import mcjty.hologui.api.StyledColor;
 import mcjty.hologui.api.components.IIconChoice;
 import mcjty.hologui.api.components.IPanel;
 import mcjty.hologui.api.components.ITextChoice;
+import mcjty.lib.builder.BlockBuilder;
 import mcjty.lib.multipart.PartPos;
 import net.minecraft.item.DyeColor;
 import net.minecraft.nbt.CompoundNBT;
@@ -26,6 +27,11 @@ public class SensorItemNodeTile extends AbstractNodeTile {
 
     public SensorItemNodeTile() {
         super(Registration.SENSOR_ITEM_TILE.get());
+    }
+
+    public static BaseNodeBlock createBlock() {
+        return new BaseNodeBlock(new BlockBuilder()
+                .tileEntitySupplier(SensorItemNodeTile::new));
     }
 
     // Return true if we already know the operator is succesful. Check false if we already know the operator can never succeed.

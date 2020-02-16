@@ -25,6 +25,9 @@ import net.minecraftforge.client.model.generators.*;
 import org.apache.commons.lang3.tuple.Pair;
 
 import java.util.Arrays;
+import java.util.HashMap;
+import java.util.Map;
+import java.util.function.Function;
 
 import static net.minecraft.util.Direction.*;
 
@@ -62,27 +65,27 @@ public class BlockStates extends BaseBlockStateProvider {
         registerOres();
         registerMarbleSlabs();
         registerFluxBeams();
-
-        ResourceLocation texture = modLoc("block/base/machinebottom");
-        ResourceLocation frontTexture = modLoc("block/machines/sensor_item_node");
-        BlockModelBuilder sensorModelTL = models().getBuilder("block/utility/sensor_item_node")
-                .parent(nodeblock_tl)
-                .texture("front", frontTexture)
-                .texture("back", texture)
-                .texture("side", texture);
-        VariantBlockStateBuilder builder = getVariantBuilder(Registration.SENSOR_ITEM_NODE.get());
-        for (NodeOrientation orientation : NodeOrientation.VALUES) {
-            ConfiguredModel.Builder<VariantBlockStateBuilder> bld = builder.partialState().with(AbstractNodeTile.ORIENTATION, orientation)
-                    .modelForState().modelFile(sensorModelTL);
-            applyRotation(bld, orientation.getMainDirection());
-//            bld.
-            // @todo
-            bld.addModel();
-        }
+        registerSensorItemNode();
 
         registerHorizontalParentedBlock(Registration.AUTOMATION_FIELD.get(), front, "block/machines/automation_field", "block/machines/automation_field");
         registerHorizontalParentedBlock(Registration.BLUEPRINT_STORAGE.get(), front, "block/machines/blueprint_storage", "block/machines/blueprint_storage");
         registerHorizontalParentedBlock(Registration.CONSTRUCTOR.get(), frontglow, "block/machines/constructor", "block/machines/constructor");
+    }
+
+    private void registerSensorItemNode() {
+        ResourceLocation texture = modLoc("block/base/machinebottom");
+        ResourceLocation frontTexture = modLoc("block/machines/sensor_item_node");
+        Map<String, BlockModelBuilder> modelMap = getPartModelMap(pair -> models().getBuilder("block/utility/sensor_item_node_" + pair.getKey())
+                .parent(pair.getValue())
+                .texture("front", frontTexture)
+                .texture("back", texture)
+                .texture("side", texture));
+        VariantBlockStateBuilder builder = getVariantBuilder(Registration.SENSOR_ITEM_NODE.get());
+        for (NodeOrientation orientation : NodeOrientation.VALUES) {
+            ConfiguredModel.Builder<VariantBlockStateBuilder> bld = builder.partialState().with(AbstractNodeTile.ORIENTATION, orientation)
+                    .modelForState().modelFile(modelMap.get(orientation.getModelSuffix()));
+            applyRotation(bld, orientation.getMainDirection());
+        }
     }
 
     private void registerFluxBeams() {
@@ -137,7 +140,7 @@ public class BlockStates extends BaseBlockStateProvider {
     private void registerOres() {
         simpleBlock(Registration.ORE_LITHIUM.get(), models().cubeAll("block/ores/lithium", modLoc("block/ores/lithiumore")));
         simpleBlock(Registration.ORE_MANGANESE.get(), models().cubeAll("block/ores/manganese", modLoc("block/ores/manganeseore")));
-        simpleBlock(Registration.ORE_SILICON.get(), models().cubeAll("block/ores/silicon", modLoc("block/ores/siliconeore")));
+        simpleBlock(Registration.ORE_SILICON.get(), models().cubeAll("block/ores/silicon", modLoc("block/ores/siliconore")));
         simpleBlock(Registration.ORE_SILVER.get(), models().cubeAll("block/ores/silver", modLoc("block/ores/silverore")));
         simpleBlock(Registration.ORE_PLATINUM.get(), models().cubeAll("block/ores/platinum", modLoc("block/ores/platinumore")));
         simpleBlock(Registration.ORE_POSIRITE.get(), models().cubeAll("block/ores/posirite", modLoc("block/ores/posirite")));
@@ -406,6 +409,16 @@ public class BlockStates extends BaseBlockStateProvider {
                 .parent(parent)
                 .texture("front", modLoc(textureName));
         horizontalOrientedBlock(block, model);
+    }
+
+
+    private Map<String, BlockModelBuilder> getPartModelMap(Function<Pair<String,BlockModelBuilder>, BlockModelBuilder> transformer) {
+        Map<String, BlockModelBuilder> modelMap = new HashMap<>();
+        modelMap.put("tl", transformer.apply(Pair.of("tl", nodeblock_tl)));
+        modelMap.put("tr", transformer.apply(Pair.of("tr", nodeblock_tr)));
+        modelMap.put("bl", transformer.apply(Pair.of("bl", nodeblock_bl)));
+        modelMap.put("br", transformer.apply(Pair.of("br", nodeblock_br)));
+        return modelMap;
     }
 
 }
