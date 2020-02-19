@@ -77,7 +77,7 @@ public class StorageTile extends GenericTileEntity implements IGuiTile, ICityEqu
         ) {
             @Override
             public RotationType getRotationType() {
-                return RotationType.HORIZROTATION;
+                return RotationType.ROTATION;
             }
 
             @Override

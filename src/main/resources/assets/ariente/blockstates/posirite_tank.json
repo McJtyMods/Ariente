@@ -1,75 +1,16 @@
 {
-  "forge_marker": 1,
-  "defaults": {
-    "model": "forge:multi-layer",
-    "custom": {
-      "base": "ariente:posirite_tank#base",
-      "Solid": "ariente:posirite_tank#base",
-      "Translucent": "ariente:posirite_tank#window"
-    },
-    "transform": "forge:default-block"
-  },
   "variants": {
-    "normal": [{}],
-    "inventory": [{}],
-    "base": [{
-      "custom": { "flip-v": true },
-      "model": "ariente:glasscube.obj"
-    }],
-    "base_top": [{
-      "custom": { "flip-v": true },
-      "model": "ariente:glasscube_top.obj"
-    }],
-    "base_bot": [{
-      "custom": { "flip-v": true },
-      "model": "ariente:glasscube_bot.obj"
-    }],
-    "base_full": [{
-      "custom": { "flip-v": true },
-      "model": "ariente:glasscube_full.obj"
-    }],
-    "window": [{
-      "model": "ariente:windows", "textures": { "overlay": "ariente:blocks/machines/negarite_tank_window" }
-    }],
-    "lower=false,upper=false": [
-      {
-        "model": "forge:multi-layer",
-        "custom": {
-          "base": "ariente:posirite_tank#base",
-          "Solid": "ariente:posirite_tank#base",
-          "Translucent": "ariente:posirite_tank#window"
-        }
-      }
-    ],
-    "lower=false,upper=true": [
-      {
-        "model": "forge:multi-layer",
-        "custom": {
-          "base": "ariente:negarite_tank#base_bot",
-          "Solid": "ariente:negarite_tank#base_bot",
-          "Translucent": "ariente:negarite_tank#window"
-        }
-      }
-    ],
-    "lower=true,upper=false": [
-      {
-        "model": "forge:multi-layer",
-        "custom": {
-          "base": "ariente:negarite_tank#base_top",
-          "Solid": "ariente:negarite_tank#base_top",
-          "Translucent": "ariente:negarite_tank#window"
-        }
-      }
-    ],
-    "lower=true,upper=true": [
-      {
-        "model": "forge:multi-layer",
-        "custom": {
-          "base": "ariente:negarite_tank#base_full",
-          "Solid": "ariente:negarite_tank#base_full",
-          "Translucent": "ariente:negarite_tank#window"
-        }
-      }
-    ]
+    "lower=false,upper=false": {
+      "model": "ariente:block/machines/posirite_tank_both"
+    },
+    "lower=true,upper=false": {
+      "model": "ariente:block/machines/posirite_tank_bottom"
+    },
+    "lower=false,upper=true": {
+      "model": "ariente:block/machines/posirite_tank_top"
+    },
+    "lower=true,upper=true": {
+      "model": "ariente:block/machines/posirite_tank_middle"
+    }
   }
 }

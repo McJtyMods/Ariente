@@ -1,0 +1,6 @@
+{
+  "parent": "ariente:block/base/frontglow",
+  "textures": {
+    "front": "ariente:block/machines/negarite_generator_off"
+  }
+}

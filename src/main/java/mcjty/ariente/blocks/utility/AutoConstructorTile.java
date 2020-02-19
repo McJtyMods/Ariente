@@ -50,13 +50,13 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 
+import static mcjty.ariente.blocks.BlockProperties.WORKING;
 import static mcjty.ariente.blocks.utility.BlueprintStorageTile.BLUEPRINTS;
 import static mcjty.ariente.blocks.utility.BlueprintStorageTile.SLOT_BLUEPRINT;
 import static mcjty.hologui.api.Icons.*;
 
 public class AutoConstructorTile extends GenericTileEntity implements IGuiTile, ITickableTileEntity, IPowerReceiver, ICityEquipment {
 
-    public static final BooleanProperty WORKING = BooleanProperty.create("working");
     public static final int INGREDIENTS = 6*3;
     public static final int OUTPUT = 6;
     public static final int SLOT_INGREDIENTS = 0;

@@ -1,5 +1,6 @@
 package mcjty.ariente.blocks.utility.wireless;
 
+import mcjty.ariente.blocks.BlockProperties;
 import mcjty.ariente.setup.Registration;
 import mcjty.lib.blocks.BaseBlock;
 import mcjty.lib.builder.BlockBuilder;
@@ -31,7 +32,7 @@ public class SignalReceiverTile extends SignalChannelTileEntity implements ITick
             @Override
             protected void fillStateContainer(StateContainer.Builder<Block, BlockState> builder) {
                 super.fillStateContainer(builder);
-                builder.add(SignalChannelTileEntity.POWER);
+                builder.add(BlockProperties.POWER);
             }
         };
     }

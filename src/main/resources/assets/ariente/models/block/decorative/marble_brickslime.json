@@ -1,0 +1,6 @@
+{
+  "parent": "block/cube_all",
+  "textures": {
+    "all": "ariente:block/marble/limemarble_bricks"
+  }
+}

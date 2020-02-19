@@ -1,0 +1,8 @@
+{
+  "parent": "ariente:block/base/thin",
+  "textures": {
+    "side": "ariente:block/marble/blackmarble",
+    "top": "ariente:block/machines/field_marker",
+    "bottom": "ariente:block/marble/blackmarble"
+  }
+}

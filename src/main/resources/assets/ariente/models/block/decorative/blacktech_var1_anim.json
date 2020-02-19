@@ -1,0 +1,6 @@
+{
+  "parent": "ariente:block/base/fullglow",
+  "textures": {
+    "all": "ariente:block/blacktech/blacktech_blue_var1_anim"
+  }
+}

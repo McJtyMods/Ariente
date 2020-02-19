@@ -1,0 +1,6 @@
+{
+  "parent": "ariente:block/base/front",
+  "textures": {
+    "front": "ariente:block/machines/automation_field"
+  }
+}

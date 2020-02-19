@@ -1,16 +1,7 @@
 {
-  "forge_marker": 1,
-  "defaults": {
-    "model": "ariente:thinblock",
-    "textures": {
-      "up": "ariente:blocks/machines/field_marker",
-      "side": "ariente:blocks/marble/blackmarble",
-      "bottom": "ariente:blocks/marble/blackmarble"
-    },
-    "transform": "forge:default-block"
-  },
   "variants": {
-    "normal": [{}],
-    "inventory": [{}]
+    "": {
+      "model": "ariente:block/utility/field_marker"
+    }
   }
 }

@@ -4,9 +4,8 @@ package mcjty.ariente;
 import mcjty.ariente.api.IArienteMod;
 import mcjty.ariente.api.IArienteSystem;
 import mcjty.ariente.apiimpl.ArienteSystem;
-import mcjty.ariente.setup.Registration;
-import mcjty.ariente.setup.ClientSetup;
 import mcjty.ariente.setup.ModSetup;
+import mcjty.ariente.setup.Registration;
 import mcjty.hologui.api.IHoloGuiHandler;
 import mcjty.lib.base.ModBase;
 import mcjty.theoneprobe.config.Config;
@@ -41,7 +40,6 @@ public class Ariente implements ModBase, IArienteMod {
         Registration.register();
 
         FMLJavaModLoadingContext.get().getModEventBus().addListener((FMLCommonSetupEvent event) -> setup.init(event));
-        FMLJavaModLoadingContext.get().getModEventBus().addListener(ClientSetup::init);
     }
 
     @Override

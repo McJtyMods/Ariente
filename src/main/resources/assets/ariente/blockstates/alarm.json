@@ -1,59 +1,73 @@
 {
-  "forge_marker": 1,
-  "defaults": {
-    "model": "ariente:flatblock_glow",
-    "textures": {
-      "bottom": "ariente:blocks/base/machinebottom",
-      "side": "ariente:blocks/base/machinebottom",
-      "up": "ariente:blocks/machines/alarm_safe",
-      "glow_bottom": "ariente:blocks/base/empty_glow",
-      "glow_side": "ariente:blocks/base/empty_glow",
-      "glow_up": "ariente:blocks/machines/alarm_safe_glow"
-    },
-    "transform": "forge:default-block"
-  },
   "variants": {
-    "normal": [{}],
-    "inventory": [{}],
-    "facing": {
-      "north": {},
-      "south": {"y": 180},
-      "west": {"y": 270},
-      "east": {"y": 90},
-      "up": {"x": -90},
-      "down": {"x": 90}
+    "alarm=dead,facing=down": {
+      "model": "ariente:block/machines/alarm_dead",
+      "x": 90
     },
-    "alarm": {
-      "dead": {
-        "textures": {
-          "bottom": "ariente:blocks/base/machinebottom",
-          "side": "ariente:blocks/base/machinebottom",
-          "up": "ariente:blocks/machines/alarm_dead",
-          "glow_bottom": "ariente:blocks/base/empty_glow",
-          "glow_side": "ariente:blocks/base/empty_glow",
-          "glow_up": "ariente:blocks/base/empty_glow"
-        }
-      },
-      "safe": {
-        "textures": {
-          "bottom": "ariente:blocks/base/machinebottom",
-          "side": "ariente:blocks/base/machinebottom",
-          "up": "ariente:blocks/machines/alarm_safe",
-          "glow_bottom": "ariente:blocks/base/empty_glow",
-          "glow_side": "ariente:blocks/base/empty_glow",
-          "glow_up": "ariente:blocks/machines/alarm_safe_glow"
-        }
-      },
-      "alert": {
-        "textures": {
-          "bottom": "ariente:blocks/base/machinebottom",
-          "side": "ariente:blocks/base/machinebottom",
-          "up": "ariente:blocks/machines/alarm_alert",
-          "glow_bottom": "ariente:blocks/base/empty_glow",
-          "glow_side": "ariente:blocks/base/empty_glow",
-          "glow_up": "ariente:blocks/machines/alarm_alert_glow"
-        }
-      }
+    "alarm=safe,facing=down": {
+      "model": "ariente:block/machines/alarm_safe",
+      "x": 90
+    },
+    "alarm=alert,facing=down": {
+      "model": "ariente:block/machines/alarm_alert",
+      "x": 90
+    },
+    "alarm=dead,facing=up": {
+      "model": "ariente:block/machines/alarm_dead",
+      "x": -90
+    },
+    "alarm=safe,facing=up": {
+      "model": "ariente:block/machines/alarm_safe",
+      "x": -90
+    },
+    "alarm=alert,facing=up": {
+      "model": "ariente:block/machines/alarm_alert",
+      "x": -90
+    },
+    "alarm=dead,facing=north": {
+      "model": "ariente:block/machines/alarm_dead"
+    },
+    "alarm=safe,facing=north": {
+      "model": "ariente:block/machines/alarm_safe"
+    },
+    "alarm=alert,facing=north": {
+      "model": "ariente:block/machines/alarm_alert"
+    },
+    "alarm=dead,facing=south": {
+      "model": "ariente:block/machines/alarm_dead",
+      "y": 180
+    },
+    "alarm=safe,facing=south": {
+      "model": "ariente:block/machines/alarm_safe",
+      "y": 180
+    },
+    "alarm=alert,facing=south": {
+      "model": "ariente:block/machines/alarm_alert",
+      "y": 180
+    },
+    "alarm=dead,facing=west": {
+      "model": "ariente:block/machines/alarm_dead",
+      "y": 270
+    },
+    "alarm=safe,facing=west": {
+      "model": "ariente:block/machines/alarm_safe",
+      "y": 270
+    },
+    "alarm=alert,facing=west": {
+      "model": "ariente:block/machines/alarm_alert",
+      "y": 270
+    },
+    "alarm=dead,facing=east": {
+      "model": "ariente:block/machines/alarm_dead",
+      "y": 90
+    },
+    "alarm=safe,facing=east": {
+      "model": "ariente:block/machines/alarm_safe",
+      "y": 90
+    },
+    "alarm=alert,facing=east": {
+      "model": "ariente:block/machines/alarm_alert",
+      "y": 90
     }
   }
 }

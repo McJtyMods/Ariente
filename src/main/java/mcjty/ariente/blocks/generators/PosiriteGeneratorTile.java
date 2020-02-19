@@ -39,13 +39,12 @@ import net.minecraftforge.common.util.LazyOptional;
 
 import javax.annotation.Nonnull;
 
+import static mcjty.ariente.blocks.BlockProperties.WORKING;
 import static mcjty.hologui.api.Icons.*;
 
 public class PosiriteGeneratorTile extends GenericTileEntity implements ITickableTileEntity, IGuiTile, IPowerBlob, IAlarmMode, IPowerSender, IGenerator {
 
     public static final String CMD_RSMODE = "posirite_gen.setRsMode";
-
-    public static final BooleanProperty WORKING = BooleanProperty.create("working");
 
     public static final int POWERGEN = 1000;        // @todo configurable and based on tanks!
 

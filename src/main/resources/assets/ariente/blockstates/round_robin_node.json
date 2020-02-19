@@ -1,52 +1,96 @@
 {
-  "forge_marker": 1,
-  "defaults": {
-    "model": "ariente:flatnodeblock",
-    "textures": {
-      "bottom": "ariente:blocks/base/machinebottom",
-      "side": "ariente:blocks/base/machinebottom",
-      "up": "ariente:blocks/machines/round_robin_node"
-    },
-    "transform": "forge:default-block"
-  },
   "variants": {
-    "normal": [{}],
-    "inventory": [
-      {
-        "transform": {
-          "gui": {
-            "scale": 2.0,
-            "translation": [-0.8, 0.4, 0.0],
-            "rotation": [{"x": 15},{"y": 145}]
-          }
-        }
-      }
-    ],
-    "orientation": {
-      "south_dw": {},
-      "north_de": {"y": 180},
-      "west_dn": {"y": 90},
-      "east_ds": {"y": 270},
-      "south_ue": { "transform": { "rotation": [ { "z" : 180 } ] } },
-      "north_uw": { "transform": { "rotation": [ { "z" : 180 }, { "y": 180 } ] } },
-      "west_us": { "transform": { "rotation": [ { "z" : 180 }, { "y": 90 } ] } },
-      "east_un": { "transform": { "rotation": [ { "z" : 180 }, { "y": 270 } ] } },
-      "west_un": { "transform": { "rotation": [ { "x" : 90 }, { "y": 270 } ] } },
-      "east_dn": { "transform": { "rotation": [ { "x" : 90 }, { "y": 90 } ] } },
-      "down_nw": { "transform": { "rotation": [ { "x" : 90 } ] } },
-      "up_ne": { "transform": { "rotation": [ { "x" : 90 }, { "y": 180 } ] } },
-      "west_ds": { "transform": { "rotation": [ { "x" : 270 }, { "y": 270 } ] } },
-      "east_us": { "transform": { "rotation": [ { "x" : 270 }, { "y": 90 } ] } },
-      "down_se": { "transform": { "rotation": [ { "x" : 270 }, { "y": 180 } ] } },
-      "up_sw": { "transform": { "rotation": [ { "x" : 270 } ] } },
-      "south_uw": { "transform": { "rotation": [ { "z" : 270 } ] } },
-      "north_dw": { "transform": { "rotation": [ { "z" : 270 }, { "y": 180 }  ] } },
-      "down_sw": { "transform": { "rotation": [ { "z" : 270 }, { "y": 90 }  ] } },
-      "up_nw": { "transform": { "rotation": [ { "z" : 270 }, { "y": 270 }  ] } },
-      "south_de": { "transform": { "rotation": [ { "z" : 90 } ] } },
-      "north_ue": { "transform": { "rotation": [ { "z" : 90 }, { "y": 180 }  ] } },
-      "down_ne": { "transform": { "rotation": [ { "z" : 90 }, { "y": 270 }  ] } },
-      "up_se": { "transform": { "rotation": [ { "z" : 90 }, { "y": 90 }  ] } }
+    "orientation=down_ne": {
+      "model": "ariente:block/utility/round_robin_node_bl",
+      "x": 90
+    },
+    "orientation=down_nw": {
+      "model": "ariente:block/utility/round_robin_node_br",
+      "x": 90
+    },
+    "orientation=down_se": {
+      "model": "ariente:block/utility/round_robin_node_tl",
+      "x": 90
+    },
+    "orientation=down_sw": {
+      "model": "ariente:block/utility/round_robin_node_tr",
+      "x": 90
+    },
+    "orientation=up_ne": {
+      "model": "ariente:block/utility/round_robin_node_bl",
+      "x": -90
+    },
+    "orientation=up_nw": {
+      "model": "ariente:block/utility/round_robin_node_br",
+      "x": -90
+    },
+    "orientation=up_se": {
+      "model": "ariente:block/utility/round_robin_node_tl",
+      "x": -90
+    },
+    "orientation=up_sw": {
+      "model": "ariente:block/utility/round_robin_node_tr",
+      "x": -90
+    },
+    "orientation=north_de": {
+      "model": "ariente:block/utility/round_robin_node_bl"
+    },
+    "orientation=north_dw": {
+      "model": "ariente:block/utility/round_robin_node_br"
+    },
+    "orientation=north_ue": {
+      "model": "ariente:block/utility/round_robin_node_tl"
+    },
+    "orientation=north_uw": {
+      "model": "ariente:block/utility/round_robin_node_tr"
+    },
+    "orientation=south_de": {
+      "model": "ariente:block/utility/round_robin_node_bl",
+      "y": 180
+    },
+    "orientation=south_dw": {
+      "model": "ariente:block/utility/round_robin_node_br",
+      "y": 180
+    },
+    "orientation=south_ue": {
+      "model": "ariente:block/utility/round_robin_node_tl",
+      "y": 180
+    },
+    "orientation=south_uw": {
+      "model": "ariente:block/utility/round_robin_node_tr",
+      "y": 180
+    },
+    "orientation=west_dn": {
+      "model": "ariente:block/utility/round_robin_node_bl",
+      "y": 270
+    },
+    "orientation=west_ds": {
+      "model": "ariente:block/utility/round_robin_node_br",
+      "y": 270
+    },
+    "orientation=west_un": {
+      "model": "ariente:block/utility/round_robin_node_tl",
+      "y": 270
+    },
+    "orientation=west_us": {
+      "model": "ariente:block/utility/round_robin_node_tr",
+      "y": 270
+    },
+    "orientation=east_dn": {
+      "model": "ariente:block/utility/round_robin_node_bl",
+      "y": 90
+    },
+    "orientation=east_ds": {
+      "model": "ariente:block/utility/round_robin_node_br",
+      "y": 90
+    },
+    "orientation=east_un": {
+      "model": "ariente:block/utility/round_robin_node_tl",
+      "y": 90
+    },
+    "orientation=east_us": {
+      "model": "ariente:block/utility/round_robin_node_tr",
+      "y": 90
     }
   }
 }

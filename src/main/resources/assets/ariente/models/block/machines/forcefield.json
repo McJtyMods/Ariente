@@ -1,0 +1,6 @@
+{
+  "parent": "ariente:block/base/sideglow",
+  "textures": {
+    "side": "ariente:block/machines/forcefield"
+  }
+}

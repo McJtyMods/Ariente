@@ -1,13 +1,7 @@
 {
-  "forge_marker": 1,
-  "defaults": {
-    "model": "cube_all",
-    "textures": {
-      "all": "ariente:blocks/base/reinforced_marble"
-    }
-  },
   "variants": {
-    "normal": [{}],
-    "inventory": [{}]
+    "": {
+      "model": "ariente:decorative/reinforced_marble"
+    }
   }
 }

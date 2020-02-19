@@ -1,19 +1,25 @@
 {
-  "forge_marker": 1,
-  "defaults": {
-    "model": "cube_all"
-  },
   "variants": {
-    "normal": [{}],
-    "inventory": [{}],
-    "type": {
-      "gray": { "textures": { "all": "ariente:blocks/marble/graymarble_bricks" } },
-      "black": { "textures": { "all": "ariente:blocks/marble/blackmarble_bricks" } },
-      "blue": { "textures": { "all": "ariente:blocks/marble/bluemarble_bricks" } },
-      "white": { "textures": { "all": "ariente:blocks/marble/whitemarble_bricks" } },
-      "lime": { "textures": { "all": "ariente:blocks/marble/limemarble_bricks" } },
-      "red": { "textures": { "all": "ariente:blocks/marble/redmarble_bricks" } },
-      "darkblue": { "textures": { "all": "ariente:blocks/marble/darkbluemarble_bricks" } }
+    "color=gray": {
+      "model": "ariente:block/decorative/marble_bricksgray"
+    },
+    "color=white": {
+      "model": "ariente:block/decorative/marble_brickswhite"
+    },
+    "color=blue": {
+      "model": "ariente:block/decorative/marble_bricksblue"
+    },
+    "color=black": {
+      "model": "ariente:block/decorative/marble_bricksblack"
+    },
+    "color=lime": {
+      "model": "ariente:block/decorative/marble_brickslime"
+    },
+    "color=red": {
+      "model": "ariente:block/decorative/marble_bricksred"
+    },
+    "color=darkblue": {
+      "model": "ariente:block/decorative/marble_bricksdarkblue"
     }
   }
 }

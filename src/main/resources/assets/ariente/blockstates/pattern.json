@@ -1,14 +1,10 @@
 {
-  "forge_marker": 1,
-  "defaults": {
-    "model": "cube_all"
-  },
   "variants": {
-    "normal": [{}],
-    "inventory": [{}],
-    "type": {
-      "dots": { "textures": { "all": "ariente:blocks/pattern/pattern_dots" } },
-      "lines": { "textures": { "all": "ariente:blocks/pattern/pattern_lines" } }
+    "type=dots": {
+      "model": "ariente:block/decorative/pattern_dots"
+    },
+    "type=lines": {
+      "model": "ariente:block/decorative/pattern_lines"
     }
   }
 }

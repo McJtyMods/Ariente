@@ -1,14 +1,7 @@
 {
-  "forge_marker": 1,
-  "defaults": {
-    "model": "ariente:sideblock_glow",
-    "textures": {
-      "side": "ariente:blocks/machines/elevator",
-      "glow": "ariente:blocks/machines/elevator_glow"
-    }
-  },
   "variants": {
-    "normal": [{}],
-    "inventory": [{}]
+    "": {
+      "model": "ariente:block/utility/elevator"
+    }
   }
 }

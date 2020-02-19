@@ -1,53 +1,61 @@
 package mcjty.ariente.items;
 
 import com.mojang.blaze3d.matrix.MatrixStack;
-import com.mojang.blaze3d.platform.GlStateManager;
+import mcjty.ariente.setup.Registration;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.renderer.IRenderTypeBuffer;
+import net.minecraft.client.renderer.ItemRenderer;
+import net.minecraft.client.renderer.Vector3f;
+import net.minecraft.client.renderer.model.IBakedModel;
 import net.minecraft.client.renderer.model.ItemCameraTransforms;
+import net.minecraft.client.renderer.texture.OverlayTexture;
 import net.minecraft.client.renderer.tileentity.ItemStackTileEntityRenderer;
+import net.minecraft.entity.LivingEntity;
 import net.minecraft.item.ItemStack;
+
+import java.util.concurrent.Callable;
 
 public class BlueprintRenderer extends ItemStackTileEntityRenderer {
 
 
     @Override
-    public void render(ItemStack stack, MatrixStack matrixStackIn, IRenderTypeBuffer bufferIn, int combinedLightIn, int combinedOverlayIn) {
-        GlStateManager.pushMatrix();
-
-        // Translate to the location of our tile entity
-        GlStateManager.disableRescaleNormal();
+    public void render(ItemStack stack, MatrixStack matrixStack, IRenderTypeBuffer buffer, int combinedLightIn, int combinedOverlayIn) {
+        matrixStack.push();
 
         // Render our item
-        GlStateManager.translated(.5, .5, 0);
-        // @todo 1.15
-//        Minecraft.getInstance().getItemRenderer().renderItem(new ItemStack(ModItems.blueprintItem), ItemCameraTransforms.TransformType.NONE);
+        matrixStack.translate(.5, .5, 0);
+
+        ItemRenderer itemRender = Minecraft.getInstance().getItemRenderer();
+        ItemStack itm = new ItemStack(Registration.BLUEPRINT.get());
+        IBakedModel ibakedmodel = itemRender.getItemModelWithOverrides(itm, Minecraft.getInstance().world, (LivingEntity)null);
+        int lightmapValue = 140;
+        itemRender.renderItem(itm, ItemCameraTransforms.TransformType.GUI, false, matrixStack, buffer, lightmapValue, OverlayTexture.DEFAULT_LIGHT, ibakedmodel);
 
         ItemStack destination = BlueprintItem.getDestination(stack);
         if (!destination.isEmpty()) {
-            renderItem(destination);
+            renderItem(destination, matrixStack, buffer);
         }
 
-        GlStateManager.popMatrix();
-
-        GlStateManager.enableBlend();       // Restore GL state
-
+        matrixStack.pop();
     }
 
-    private void renderItem(ItemStack stack) {
+    private void renderItem(ItemStack stack, MatrixStack matrixStack, IRenderTypeBuffer buffer) {
         if (!stack.isEmpty()) {
-//            RenderHelper.enableStandardItemLighting();
-            GlStateManager.enableLighting();
             // Translate to the center of the block and .9 points higher
-            GlStateManager.translated(0, 0, .5);
-            GlStateManager.scalef(.5f, .5f, .5f);
-            GlStateManager.rotatef(30, 1, 0, 0);
+            matrixStack.translate(0, 0, .5);
+            matrixStack.scale(.5f, .5f, .5f);
+            matrixStack.rotate(Vector3f.XP.rotationDegrees(30));
             long angle = (System.currentTimeMillis() / 50) % 360;
-            GlStateManager.rotatef(angle, 0, 1, 0);
+            matrixStack.rotate(Vector3f.YP.rotationDegrees(angle));
 
-            // @todo 1.15
-//            Minecraft.getInstance().getItemRenderer().renderItem(stack, ItemCameraTransforms.TransformType.NONE);
+            ItemRenderer itemRender = Minecraft.getInstance().getItemRenderer();
+            IBakedModel ibakedmodel = itemRender.getItemModelWithOverrides(stack, Minecraft.getInstance().world, (LivingEntity)null);
+            int lightmapValue = 140;
+            itemRender.renderItem(stack, ItemCameraTransforms.TransformType.GUI, false, matrixStack, buffer, lightmapValue, OverlayTexture.DEFAULT_LIGHT, ibakedmodel);
         }
     }
 
+    public static Callable createRenderer() {
+        return BlueprintRenderer::new;
+    }
 }

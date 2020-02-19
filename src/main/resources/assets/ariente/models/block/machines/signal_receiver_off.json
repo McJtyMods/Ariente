@@ -1,0 +1,8 @@
+{
+  "parent": "ariente:block/base/flatglow",
+  "textures": {
+    "side": "ariente:block/base/machinebottom",
+    "front": "ariente:block/machines/signal_receiver_off",
+    "back": "ariente:block/base/machinebottom"
+  }
+}

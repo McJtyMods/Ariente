@@ -17,10 +17,10 @@ import net.minecraft.state.StateContainer;
 import net.minecraft.tileentity.TileEntity;
 import net.minecraft.util.math.BlockPos;
 
-public class PosiriteTankTile extends GenericTileEntity implements IGuiTile, IAlarmMode {
+import static mcjty.ariente.blocks.BlockProperties.LOWER;
+import static mcjty.ariente.blocks.BlockProperties.UPPER;
 
-    public static final BooleanProperty UPPER = BooleanProperty.create("upper");
-    public static final BooleanProperty LOWER = BooleanProperty.create("lower");
+public class PosiriteTankTile extends GenericTileEntity implements IGuiTile, IAlarmMode {
 
     public PosiriteTankTile() {
         super(Registration.POSIRITE_TANK_TILE.get());

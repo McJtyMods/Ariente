@@ -1,30 +1,77 @@
 {
-  "forge_marker": 1,
-  "defaults": {
-    "model": "pane_post",
-    "textures": { "edge": "ariente:blocks/decorative/marble_fence_top", "pane": "ariente:blocks/decorative/marble_fence" },
-    "transform": "forge:default-block"
-  },
-  "variants": {
-    "normal": [{}],
-    "inventory": [{
-      "submodel": "pane_side", "y": 90, "textures": { "edge": "ariente:blocks/decorative/marble_fence_top", "pane": "ariente:blocks/decorative/marble_fence" }
-    }],
-    "east": {
-      "false": { "submodel": "pane_noside_alt", "textures": { "pane": "ariente:blocks/decorative/marble_fence" } },
-      "true": { "submodel": "pane_side", "y": 90, "textures": { "edge": "ariente:blocks/decorative/marble_fence_top", "pane": "ariente:blocks/decorative/marble_fence" } }
+  "multipart": [
+    {
+      "apply": {
+        "model": "ariente:block/decorative/marble_fence_pane_post"
+      }
     },
-    "west": {
-      "false": { "submodel": "pane_noside", "y": 270, "textures": { "pane": "ariente:blocks/decorative/marble_fence" } },
-      "true": { "submodel": "pane_side_alt", "y": 90, "textures": { "edge": "ariente:blocks/decorative/marble_fence_top", "pane": "ariente:blocks/decorative/marble_fence" } }
+    {
+      "when": {
+        "north": "true"
+      },
+      "apply": {
+        "model": "ariente:block/decorative/marble_fence_pane_side"
+      }
     },
-    "south": {
-      "false": { "submodel": "pane_noside_alt", "y": 90, "textures": { "pane": "ariente:blocks/decorative/marble_fence" } },
-      "true": { "submodel": "pane_side_alt", "textures": { "edge": "ariente:blocks/decorative/marble_fence_top", "pane": "ariente:blocks/decorative/marble_fence" } }
+    {
+      "when": {
+        "north": "false"
+      },
+      "apply": {
+        "model": "ariente:block/decorative/marble_fence_pane_noside"
+      }
     },
-    "north": {
-      "false": { "submodel": "pane_noside", "textures": { "pane": "ariente:blocks/decorative/marble_fence" } },
-      "true": { "submodel": "pane_side", "textures": { "edge": "ariente:blocks/decorative/marble_fence_top", "pane": "ariente:blocks/decorative/marble_fence" } }
+    {
+      "when": {
+        "south": "true"
+      },
+      "apply": {
+        "model": "ariente:block/decorative/marble_fence_pane_side_alt"
+      }
+    },
+    {
+      "when": {
+        "south": "false"
+      },
+      "apply": {
+        "model": "ariente:block/decorative/marble_fence_pane_noside_alt",
+        "y": 90
+      }
+    },
+    {
+      "when": {
+        "west": "true"
+      },
+      "apply": {
+        "model": "ariente:block/decorative/marble_fence_pane_side_alt",
+        "y": 90
+      }
+    },
+    {
+      "when": {
+        "west": "false"
+      },
+      "apply": {
+        "model": "ariente:block/decorative/marble_fence_pane_noside",
+        "y": 270
+      }
+    },
+    {
+      "when": {
+        "east": "true"
+      },
+      "apply": {
+        "model": "ariente:block/decorative/marble_fence_pane_side",
+        "y": 90
+      }
+    },
+    {
+      "when": {
+        "east": "false"
+      },
+      "apply": {
+        "model": "ariente:block/decorative/marble_fence_pane_noside_alt"
+      }
     }
-  }
+  ]
 }

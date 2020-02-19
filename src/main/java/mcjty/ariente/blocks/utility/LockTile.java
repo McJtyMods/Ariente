@@ -3,6 +3,7 @@ package mcjty.ariente.blocks.utility;
 import mcjty.ariente.Ariente;
 import mcjty.ariente.api.ICityAI;
 import mcjty.ariente.api.ICityEquipment;
+import mcjty.ariente.blocks.BlockProperties;
 import mcjty.ariente.setup.Registration;
 import mcjty.ariente.blocks.utility.door.DoorMarkerTile;
 import mcjty.ariente.items.KeyCardItem;
@@ -19,7 +20,6 @@ import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.CompoundNBT;
 import net.minecraft.network.NetworkManager;
 import net.minecraft.network.play.server.SUpdateTileEntityPacket;
-import net.minecraft.state.BooleanProperty;
 import net.minecraft.state.StateContainer;
 import net.minecraft.tileentity.TileEntity;
 import net.minecraft.util.ActionResultType;
@@ -37,8 +37,6 @@ import java.util.Set;
 import static mcjty.hologui.api.Icons.*;
 
 public class LockTile extends GenericTileEntity implements IGuiTile, IKeyCardSlot, ICityEquipment, ILockable {
-
-    public static final BooleanProperty LOCKED = BooleanProperty.create("locked");
 
     private boolean locked = false;
     private String keyId;
@@ -60,7 +58,7 @@ public class LockTile extends GenericTileEntity implements IGuiTile, IKeyCardSlo
             @Override
             protected void fillStateContainer(StateContainer.Builder<Block, BlockState> builder) {
                 super.fillStateContainer(builder);
-                builder.add(LOCKED);
+                builder.add(BlockProperties.LOCKED);
             }
         };
     }

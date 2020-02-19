@@ -33,8 +33,6 @@ import java.util.Map;
 
 public abstract class SignalChannelTileEntity extends GenericTileEntity implements ICityEquipment, ISignalChannel {
 
-    public static final BooleanProperty POWER = BooleanProperty.create("power");
-
     protected int channel = -1;
     protected int powerOutput = 0;
 

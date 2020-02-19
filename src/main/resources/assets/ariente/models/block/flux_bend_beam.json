@@ -1,8 +1,0 @@
-{
-  "parent": "ariente:block/bendblock",
-  "textures": {
-    "up": "ariente:blocks/machines/flux_beam",
-    "side": "ariente:blocks/machines/flux_beam",
-    "bottom": "ariente:blocks/machines/flux_beam"
-  }
-}

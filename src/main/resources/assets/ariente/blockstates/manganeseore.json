@@ -1,13 +1,7 @@
 {
-  "forge_marker": 1,
-  "defaults": {
-    "model": "cube_all",
-    "textures": {
-      "all": "ariente:blocks/ores/manganeseore"
-    }
-  },
   "variants": {
-    "normal": [{}],
-    "inventory": [{}]
+    "": {
+      "model": "ariente:block/ores/manganese"
+    }
   }
 }

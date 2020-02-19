@@ -1,25 +1,43 @@
 {
-  "forge_marker": 1,
-  "defaults": {
-    "model": "ariente:fullblock_glow"
-  },
   "variants": {
-    "normal": [{}],
-    "inventory": [{}],
-    "type": {
-      "dots": { "textures": { "all": "ariente:blocks/blacktech/blacktech_dots", "glow":  "ariente:blocks/blacktech/blacktech_dots_glow" } },
-      "lines": { "textures": { "all": "ariente:blocks/blacktech/blacktech_lines", "glow":  "ariente:blocks/blacktech/blacktech_lines_glow" } },
-      "var1": { "textures": { "all": "ariente:blocks/blacktech/blacktech_var1", "glow":  "ariente:blocks/blacktech/blacktech_var1_glow" } },
-      "red_var1": { "textures": { "all": "ariente:blocks/blacktech/blacktech_red_var1", "glow":  "ariente:blocks/blacktech/blacktech_red_var1_glow" } },
-      "lines_glow": { "textures": { "all": "ariente:blocks/blacktech/blacktech_anim_lines", "glow":  "ariente:blocks/blacktech/blacktech_anim_lines_glow" } },
-      "red_lines_glow": { "textures": { "all": "ariente:blocks/blacktech/blacktech_red_anim_lines", "glow":  "ariente:blocks/blacktech/blacktech_red_anim_lines_glow" } },
-      "panel": { "textures": { "all": "ariente:blocks/blacktech/blacktech_panel", "glow":  "ariente:blocks/blacktech/blacktech_panel_glow" } },
-      "red_lines": { "textures": { "all": "ariente:blocks/blacktech/blacktech_red_lines", "glow":  "ariente:blocks/blacktech/blacktech_red_lines_glow" } },
-      "darkblue_blue": { "textures": { "all": "ariente:blocks/blacktech/blacktech_blue_blue", "glow":  "ariente:blocks/blacktech/blacktech_lines_glow" } },
-      "darkblue_red": { "textures": { "all": "ariente:blocks/blacktech/blacktech_blue_red", "glow":  "ariente:blocks/blacktech/blacktech_red_lines_glow" } },
-      "dots2": { "textures": { "all": "ariente:blocks/blacktech/blacktech_dots2", "glow":  "ariente:blocks/blacktech/blacktech_dots2_glow" } },
-      "var1_anim": { "textures": { "all": "ariente:blocks/blacktech/blacktech_blue_var1_anim", "glow":  "ariente:blocks/blacktech/blacktech_blue_var1_anim_glow" } },
-      "red_var1_anim": { "textures": { "all": "ariente:blocks/blacktech/blacktech_red_var1_anim", "glow":  "ariente:blocks/blacktech/blacktech_red_var1_anim_glow" } }
+    "type=dots": {
+      "model": "ariente:block/decorative/blacktech_dots"
+    },
+    "type=lines": {
+      "model": "ariente:block/decorative/blacktech_lines"
+    },
+    "type=var1": {
+      "model": "ariente:block/decorative/blacktech_var1"
+    },
+    "type=red_var1": {
+      "model": "ariente:block/decorative/blacktech_red_var1"
+    },
+    "type=lines_glow": {
+      "model": "ariente:block/decorative/blacktech_lines_glow"
+    },
+    "type=red_lines_glow": {
+      "model": "ariente:block/decorative/blacktech_red_lines_glow"
+    },
+    "type=panel": {
+      "model": "ariente:block/decorative/blacktech_panel"
+    },
+    "type=red_lines": {
+      "model": "ariente:block/decorative/blacktech_red_lines"
+    },
+    "type=darkblue_blue": {
+      "model": "ariente:block/decorative/blacktech_darkblue_blue"
+    },
+    "type=darkblue_red": {
+      "model": "ariente:block/decorative/blacktech_darkblue_red"
+    },
+    "type=dots2": {
+      "model": "ariente:block/decorative/blacktech_dots2"
+    },
+    "type=var1_anim": {
+      "model": "ariente:block/decorative/blacktech_var1_anim"
+    },
+    "type=red_var1_anim": {
+      "model": "ariente:block/decorative/blacktech_red_var1_anim"
     }
   }
 }

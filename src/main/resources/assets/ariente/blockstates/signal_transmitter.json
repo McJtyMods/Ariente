@@ -1,49 +1,50 @@
 {
-  "forge_marker": 1,
-  "defaults": {
-    "model": "ariente:flatblock_glow",
-    "textures": {
-      "bottom": "ariente:blocks/base/machinebottom",
-      "side": "ariente:blocks/base/machinebottom",
-      "up": "ariente:blocks/machines/signal_transmitter_on",
-      "glow_bottom": "ariente:blocks/base/empty_glow",
-      "glow_side": "ariente:blocks/base/empty_glow",
-      "glow_up": "ariente:blocks/machines/signal_transmitter_on_glow"
-    },
-    "transform": "forge:default-block"
-  },
   "variants": {
-    "normal": [{}],
-    "inventory": [{}],
-    "facing": {
-      "north": {},
-      "south": {"y": 180},
-      "west": {"y": 270},
-      "east": {"y": 90},
-      "up": {"x": -90},
-      "down": {"x": 90}
+    "facing=down,power=false": {
+      "model": "ariente:block/machines/signal_transmitter_off",
+      "x": 90
     },
-    "power": {
-      "false": {
-        "textures": {
-          "bottom": "ariente:blocks/base/machinebottom",
-          "side": "ariente:blocks/base/machinebottom",
-          "up": "ariente:blocks/machines/signal_transmitter_off",
-          "glow_bottom": "ariente:blocks/base/empty_glow",
-          "glow_side": "ariente:blocks/base/empty_glow",
-          "glow_up": "ariente:blocks/machines/signal_transmitter_off_glow"
-        }
-      },
-      "true": {
-        "textures": {
-          "bottom": "ariente:blocks/base/machinebottom",
-          "side": "ariente:blocks/base/machinebottom",
-          "up": "ariente:blocks/machines/signal_transmitter_on",
-          "glow_bottom": "ariente:blocks/base/empty_glow",
-          "glow_side": "ariente:blocks/base/empty_glow",
-          "glow_up": "ariente:blocks/machines/signal_transmitter_on_glow"
-        }
-      }
+    "facing=up,power=false": {
+      "model": "ariente:block/machines/signal_transmitter_off",
+      "x": -90
+    },
+    "facing=north,power=false": {
+      "model": "ariente:block/machines/signal_transmitter_off"
+    },
+    "facing=south,power=false": {
+      "model": "ariente:block/machines/signal_transmitter_off",
+      "y": 180
+    },
+    "facing=west,power=false": {
+      "model": "ariente:block/machines/signal_transmitter_off",
+      "y": 270
+    },
+    "facing=east,power=false": {
+      "model": "ariente:block/machines/signal_transmitter_off",
+      "y": 90
+    },
+    "facing=down,power=true": {
+      "model": "ariente:block/machines/signal_transmitter_on",
+      "x": 90
+    },
+    "facing=up,power=true": {
+      "model": "ariente:block/machines/signal_transmitter_on",
+      "x": -90
+    },
+    "facing=north,power=true": {
+      "model": "ariente:block/machines/signal_transmitter_on"
+    },
+    "facing=south,power=true": {
+      "model": "ariente:block/machines/signal_transmitter_on",
+      "y": 180
+    },
+    "facing=west,power=true": {
+      "model": "ariente:block/machines/signal_transmitter_on",
+      "y": 270
+    },
+    "facing=east,power=true": {
+      "model": "ariente:block/machines/signal_transmitter_on",
+      "y": 90
     }
   }
 }

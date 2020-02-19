@@ -1,16 +1,19 @@
 {
-  "forge_marker": 1,
-  "defaults": {
-    "model": "ariente:flux_beam"
-  },
   "variants": {
-    "normal": [{}],
-    "inventory": [{}],
-    "facing": {
-      "north": {},
-      "south": {"y": 180},
-      "west": {"y": 270},
-      "east": {"y": 90}
+    "facing=north": {
+      "model": "ariente:block/utility/flux_beam"
+    },
+    "facing=south": {
+      "model": "ariente:block/utility/flux_beam",
+      "y": 180
+    },
+    "facing=west": {
+      "model": "ariente:block/utility/flux_beam",
+      "y": 270
+    },
+    "facing=east": {
+      "model": "ariente:block/utility/flux_beam",
+      "y": 90
     }
   }
 }

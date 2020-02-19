@@ -1,20 +1,19 @@
 {
-  "forge_marker": 1,
-  "defaults": {
-    "model": "ariente:frontblock_glow",
-    "textures": {
-      "front": "ariente:blocks/machines/constructor",
-      "frontglow": "ariente:blocks/machines/constructor_glow"
-    }
-  },
   "variants": {
-    "normal": [{}],
-    "inventory": [{}],
-    "facing": {
-      "north": {},
-      "south": {"y": 180},
-      "west": {"y": 270},
-      "east": {"y": 90}
+    "facing=north": {
+      "model": "ariente:block/machines/constructor"
+    },
+    "facing=south": {
+      "model": "ariente:block/machines/constructor",
+      "y": 180
+    },
+    "facing=west": {
+      "model": "ariente:block/machines/constructor",
+      "y": 270
+    },
+    "facing=east": {
+      "model": "ariente:block/machines/constructor",
+      "y": 90
     }
   }
 }

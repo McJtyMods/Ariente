@@ -8,6 +8,7 @@ import mcjty.hologui.api.IGuiComponentRegistry;
 import mcjty.hologui.api.Icons;
 import mcjty.hologui.api.StyledColor;
 import mcjty.hologui.api.components.IPanel;
+import mcjty.lib.builder.BlockBuilder;
 import mcjty.lib.varia.ItemStackList;
 import net.minecraft.nbt.CompoundNBT;
 import org.apache.commons.lang3.tuple.Pair;
@@ -22,6 +23,11 @@ public class InputItemNodeTile extends AbstractItemNodeTile {
 
     public InputItemNodeTile() {
         super(Registration.INPUT_ITEM_TILE.get());
+    }
+
+    public static BaseNodeBlock createBlock() {
+        return new BaseNodeBlock(new BlockBuilder()
+                .tileEntitySupplier(InputItemNodeTile::new));
     }
 
 // @todo 1.14

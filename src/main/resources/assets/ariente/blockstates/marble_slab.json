@@ -1,24 +1,73 @@
 {
-  "forge_marker": 1,
-  "defaults": {
-    "model": "half_slab",
-    "textures": { "bottom": "ariente:blocks/marble/graymarble", "top": "ariente:blocks/marble/graymarble", "side": "ariente:blocks/marble/graymarble" }
-  },
   "variants": {
-    "normal": [{}],
-    "inventory": [{}],
-    "type": {
-      "gray": { "textures": { "bottom": "ariente:blocks/marble/graymarble_smooth", "top": "ariente:blocks/marble/graymarble_smooth", "side": "ariente:blocks/marble/graymarble_smooth" } },
-      "black": { "textures": { "bottom": "ariente:blocks/marble/blackmarble_smooth", "top": "ariente:blocks/marble/blackmarble_smooth", "side": "ariente:blocks/marble/blackmarble_smooth" } },
-      "blue": { "textures": { "bottom": "ariente:blocks/marble/bluemarble_smooth", "top": "ariente:blocks/marble/bluemarble_smooth", "side": "ariente:blocks/marble/bluemarble_smooth" } },
-      "white": { "textures": { "bottom": "ariente:blocks/marble/whitemarble_smooth", "top": "ariente:blocks/marble/whitemarble_smooth", "side": "ariente:blocks/marble/whitemarble_smooth" } },
-      "lime": { "textures": { "bottom": "ariente:blocks/marble/limemarble_smooth", "top": "ariente:blocks/marble/limemarble_smooth", "side": "ariente:blocks/marble/limemarble_smooth" } },
-      "red": { "textures": { "bottom": "ariente:blocks/marble/redmarble_smooth", "top": "ariente:blocks/marble/redmarble_smooth", "side": "ariente:blocks/marble/redmarble_smooth" } },
-      "darkblue": { "textures": { "bottom": "ariente:blocks/marble/darkbluemarble_smooth", "top": "ariente:blocks/marble/darkbluemarble_smooth", "side": "ariente:blocks/marble/darkbluemarble_smooth" } }
-    },
-    "half": {
-      "bottom": { "model": "half_slab" },
-      "top": { "model": "upper_slab" }
-    }
+    "type=top": [
+      {
+        "model": "ariente:block/decorative/marble_slab_gray_top"
+      },
+      {
+        "model": "ariente:block/decorative/marble_slab_white_top"
+      },
+      {
+        "model": "ariente:block/decorative/marble_slab_blue_top"
+      },
+      {
+        "model": "ariente:block/decorative/marble_slab_black_top"
+      },
+      {
+        "model": "ariente:block/decorative/marble_slab_lime_top"
+      },
+      {
+        "model": "ariente:block/decorative/marble_slab_red_top"
+      },
+      {
+        "model": "ariente:block/decorative/marble_slab_darkblue_top"
+      }
+    ],
+    "type=bottom": [
+      {
+        "model": "ariente:block/decorative/marble_slab_gray"
+      },
+      {
+        "model": "ariente:block/decorative/marble_slab_white"
+      },
+      {
+        "model": "ariente:block/decorative/marble_slab_blue"
+      },
+      {
+        "model": "ariente:block/decorative/marble_slab_black"
+      },
+      {
+        "model": "ariente:block/decorative/marble_slab_lime"
+      },
+      {
+        "model": "ariente:block/decorative/marble_slab_red"
+      },
+      {
+        "model": "ariente:block/decorative/marble_slab_darkblue"
+      }
+    ],
+    "type=double": [
+      {
+        "model": "ariente:block/decorative/double_marble_slab_gray"
+      },
+      {
+        "model": "ariente:block/decorative/double_marble_slab_white"
+      },
+      {
+        "model": "ariente:block/decorative/double_marble_slab_blue"
+      },
+      {
+        "model": "ariente:block/decorative/double_marble_slab_black"
+      },
+      {
+        "model": "ariente:block/decorative/double_marble_slab_lime"
+      },
+      {
+        "model": "ariente:block/decorative/double_marble_slab_red"
+      },
+      {
+        "model": "ariente:block/decorative/double_marble_slab_darkblue"
+      }
+    ]
   }
 }

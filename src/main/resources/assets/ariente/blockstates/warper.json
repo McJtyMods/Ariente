@@ -1,18 +1,7 @@
 {
-  "forge_marker": 1,
-  "defaults": {
-    "model": "ariente:topblock_glow",
-    "textures": {
-      "side": "ariente:blocks/base/machineside",
-      "sideglow": "ariente:blocks/base/empty_glow",
-      "down": "ariente:blocks/base/machinebottom",
-      "downglow": "ariente:blocks/base/empty_glow",
-      "top": "ariente:blocks/machines/warper",
-      "topglow": "ariente:blocks/machines/warper_glow"
-    }
-  },
   "variants": {
-    "normal": [{}],
-    "inventory": [{}]
+    "": {
+      "model": "ariente:block/utility/warper"
+    }
   }
 }

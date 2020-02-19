@@ -1,29 +1,30 @@
 package mcjty.ariente.blocks.utility;
 
 import com.mojang.blaze3d.matrix.MatrixStack;
-import com.mojang.blaze3d.platform.GlStateManager;
+import com.mojang.blaze3d.vertex.IVertexBuilder;
 import mcjty.ariente.Ariente;
+import mcjty.ariente.setup.Registration;
 import mcjty.lib.client.RenderHelper;
 import net.minecraft.client.Minecraft;
-import net.minecraft.client.renderer.BufferBuilder;
 import net.minecraft.client.renderer.IRenderTypeBuffer;
-import net.minecraft.client.renderer.Tessellator;
+import net.minecraft.client.renderer.RenderType;
+import net.minecraft.client.renderer.texture.AtlasTexture;
+import net.minecraft.client.renderer.texture.TextureAtlasSprite;
 import net.minecraft.client.renderer.tileentity.TileEntityRenderer;
 import net.minecraft.client.renderer.tileentity.TileEntityRendererDispatcher;
-import net.minecraft.client.renderer.vertex.DefaultVertexFormats;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.util.ResourceLocation;
-import org.lwjgl.opengl.GL11;
+import net.minecraftforge.fml.client.registry.ClientRegistry;
 
 import java.util.Random;
 
 public class ElevatorRenderer extends TileEntityRenderer<ElevatorTile> {
 
-    private ResourceLocation halo = new ResourceLocation(Ariente.MODID, "textures/blocks/machines/elevator_beam.png");
+    public static final ResourceLocation ELEVATOR_BEAM = new ResourceLocation(Ariente.MODID, "blocks/machines/elevator_beam");
     private Random random = new Random();
 
-    public ElevatorRenderer(TileEntityRendererDispatcher rendererDispatcherIn) {
-        super(rendererDispatcherIn);
+    public ElevatorRenderer(TileEntityRendererDispatcher dispatcher) {
+        super(dispatcher);
     }
 
     private static float randomX[] = new float[]{.2f, .3f, .2f, .7f, .8f, .5f, .2f, .8f, .4f, .6f};
@@ -32,40 +33,32 @@ public class ElevatorRenderer extends TileEntityRenderer<ElevatorTile> {
 
     @Override
     public void render(ElevatorTile te, float partialTicks, MatrixStack matrixStack, IRenderTypeBuffer buffer, int combinedLightIn, int combinedOverlayIn) {
-//        if (te.isWorking()) {
-        Tessellator tessellator = Tessellator.getInstance();
-        GlStateManager.pushMatrix();
-//            GlStateManager.translate(x, y, z);
+        matrixStack.push();
 
-        GlStateManager.enableBlend();
-        GlStateManager.depthMask(false);
-//        GlStateManager.blendFunc(GL11.GL_SRC_ALPHA, GL11.GL_ONE);
-//        GlStateManager.alphaFunc(GL11.GL_GREATER, 0.003921569F);
-        GlStateManager.blendFunc(GL11.GL_ONE, GL11.GL_ONE);
-//        GlStateManager.alphaFunc(GL11.GL_GREATER, 0.003921569F);
-        GlStateManager.disableCull();
-        GlStateManager.enableDepthTest();
+        // @tod o1.15
+//        GlStateManager.enableBlend();
+//        GlStateManager.depthMask(false);
+//        GlStateManager.blendFunc(GL11.GL_ONE, GL11.GL_ONE);
+//        GlStateManager.disableCull();
+//        GlStateManager.enableDepthTest();
 
-        ResourceLocation beamIcon = halo;
-        // @todo 1.15
-//        bindTexture(beamIcon);
+        TextureAtlasSprite sprite = Minecraft.getInstance().getTextureGetter(AtlasTexture.LOCATION_BLOCKS_TEXTURE).apply(ELEVATOR_BEAM);
 
+
+//
         Minecraft mc = Minecraft.getInstance();
         PlayerEntity p = mc.player;
         double doubleX = p.lastTickPosX + (p.getPosX() - p.lastTickPosX) * partialTicks;
         double doubleY = p.lastTickPosY + (p.getPosY() - p.lastTickPosY) * partialTicks;
         double doubleZ = p.lastTickPosZ + (p.getPosZ() - p.lastTickPosZ) * partialTicks;
-
-        GlStateManager.translated(-doubleX, -doubleY, -doubleZ);
-
+//
+//        GlStateManager.translated(-doubleX, -doubleY, -doubleZ);
+//
         RenderHelper.Vector player = new RenderHelper.Vector((float) doubleX, (float) doubleY + p.getEyeHeight(), (float) doubleZ);
 
         long tt = System.currentTimeMillis() / 100;
 
-        GlStateManager.color4f(1, 1, 1, 1);
-
-        BufferBuilder renderer = tessellator.getBuffer();
-        renderer.begin(GL11.GL_QUADS, DefaultVertexFormats.POSITION_COLOR_TEX_LIGHTMAP);
+        IVertexBuilder builder = buffer.getBuffer(RenderType.translucent());
 
         float height = te.getHeight();
 
@@ -79,22 +72,20 @@ public class ElevatorRenderer extends TileEntityRenderer<ElevatorTile> {
             float xx = te.getPos().getX() + randomX[ii];
             float zz = te.getPos().getZ() + randomZ[ii];
             float yy = te.getPos().getY() - 1.0f + i1 + (randomY[ii] * height) / 8.0f;
-            RenderHelper.drawBeam(new RenderHelper.Vector(xx, yy, zz), new RenderHelper.Vector(xx, yy + 4, zz), player, 0.2f);
+            RenderHelper.drawBeam(matrixStack.getLast().getPositionMatrix(), builder, sprite, new RenderHelper.Vector(xx, yy, zz), new RenderHelper.Vector(xx, yy + 4, zz), player, 0.2f);
         }
 
 //        net.minecraft.util.math.Vec3d cameraPos = net.minecraft.client.renderer.ActiveRenderInfo.getCameraPosition();
 //        tessellator.getBuffer().sortVertexData((float) (player.x + doubleX), (float) (player.y + doubleY), (float) (player.z + doubleZ));
 //        tessellator.getBuffer().sortVertexData((float)(cameraPos.x+doubleX), (float)(cameraPos.y+doubleY), (float)(cameraPos.z+doubleZ));
-        tessellator.draw();
 
-        GlStateManager.depthMask(true);
-        GlStateManager.enableLighting();
-        GlStateManager.enableDepthTest();
-        GlStateManager.alphaFunc(GL11.GL_GREATER, 0.1F);
+        // @todo 1.15
+//        GlStateManager.depthMask(true);
+//        GlStateManager.enableLighting();
+//        GlStateManager.enableDepthTest();
+//        GlStateManager.alphaFunc(GL11.GL_GREATER, 0.1F);
 
-        GlStateManager.popMatrix();
-//        }
-
+        matrixStack.pop();
     }
 
     @Override
@@ -103,7 +94,6 @@ public class ElevatorRenderer extends TileEntityRenderer<ElevatorTile> {
     }
 
     public static void register() {
-        // @todo 1.15
-//        ClientRegistry.bindTileEntitySpecialRenderer(ElevatorTile.class, new ElevatorRenderer());
+        ClientRegistry.bindTileEntityRenderer(Registration.ELEVATOR_TILE.get(), ElevatorRenderer::new);
     }
 }

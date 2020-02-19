@@ -32,7 +32,9 @@ import java.util.stream.Collectors;
 public class BlueprintItem extends Item implements ITooltipExtras {
 
     public BlueprintItem() {
-        super(new Properties().group(Ariente.setup.getTab()).maxStackSize(1));
+        super(new Properties().group(Ariente.setup.getTab())
+                .setISTER(BlueprintRenderer::createRenderer)
+                .maxStackSize(1));
         // @todo 1.14
 //        setHasSubtypes(true);
     }
@@ -89,6 +91,7 @@ public class BlueprintItem extends Item implements ITooltipExtras {
         JsonElement json = parser.parse(jsonString);
         return ItemStackTools.jsonToItemStack(json.getAsJsonObject());
     }
+
 
     // @todo 1.14
 //    @SideOnly(Side.CLIENT)

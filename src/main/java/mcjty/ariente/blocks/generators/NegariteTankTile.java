@@ -2,6 +2,7 @@ package mcjty.ariente.blocks.generators;
 
 import mcjty.ariente.Ariente;
 import mcjty.ariente.api.IAlarmMode;
+import mcjty.ariente.blocks.BlockProperties;
 import mcjty.ariente.setup.Registration;
 import mcjty.hologui.api.IGuiComponent;
 import mcjty.hologui.api.IGuiComponentRegistry;
@@ -16,7 +17,6 @@ import net.minecraft.block.Block;
 import net.minecraft.block.BlockState;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.item.ItemStack;
-import net.minecraft.state.BooleanProperty;
 import net.minecraft.state.StateContainer;
 import net.minecraft.tileentity.TileEntity;
 import net.minecraft.util.ActionResultType;
@@ -25,9 +25,6 @@ import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.BlockRayTraceResult;
 
 public class NegariteTankTile extends GenericTileEntity implements IGuiTile, IAlarmMode {
-
-    public static final BooleanProperty UPPER = BooleanProperty.create("upper");
-    public static final BooleanProperty LOWER = BooleanProperty.create("lower");
 
     public NegariteTankTile() {
         super(Registration.NEGARITE_TANK_TILE.get());
@@ -47,7 +44,7 @@ public class NegariteTankTile extends GenericTileEntity implements IGuiTile, IAl
             @Override
             protected void fillStateContainer(StateContainer.Builder<Block, BlockState> builder) {
                 super.fillStateContainer(builder);
-                builder.add(UPPER).add(LOWER);
+                builder.add(BlockProperties.UPPER).add(BlockProperties.LOWER);
             }
         };
     }

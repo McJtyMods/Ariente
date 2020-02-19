@@ -1,9 +1,9 @@
 package mcjty.ariente.blocks.utility.wireless;
 
 import mcjty.ariente.Ariente;
-import mcjty.ariente.setup.Registration;
 import mcjty.ariente.blocks.utility.ILockable;
 import mcjty.ariente.blocks.utility.door.DoorMarkerTile;
+import mcjty.ariente.setup.Registration;
 import mcjty.hologui.api.IGuiComponent;
 import mcjty.hologui.api.IGuiComponentRegistry;
 import mcjty.hologui.api.IGuiTile;
@@ -17,7 +17,6 @@ import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.nbt.CompoundNBT;
 import net.minecraft.network.NetworkManager;
 import net.minecraft.network.play.server.SUpdateTileEntityPacket;
-import net.minecraft.state.BooleanProperty;
 import net.minecraft.state.StateContainer;
 import net.minecraft.tileentity.ITickableTileEntity;
 import net.minecraft.tileentity.TileEntity;
@@ -30,11 +29,10 @@ import net.minecraftforge.common.util.Constants;
 
 import java.util.Map;
 
+import static mcjty.ariente.blocks.BlockProperties.LOCKED;
 import static mcjty.hologui.api.Icons.*;
 
 public class WirelessLockTile extends SignalChannelTileEntity implements ILockable, IGuiTile, ITickableTileEntity {
-
-    public static final BooleanProperty LOCKED = BooleanProperty.create("locked");
 
     private boolean locked = false;
     private int horizontalRange = 5;

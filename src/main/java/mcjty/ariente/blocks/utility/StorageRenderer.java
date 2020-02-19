@@ -2,6 +2,7 @@ package mcjty.ariente.blocks.utility;
 
 import com.mojang.blaze3d.matrix.MatrixStack;
 import com.mojang.blaze3d.platform.GlStateManager;
+import mcjty.ariente.setup.Registration;
 import mcjty.lib.blocks.BaseBlock;
 import net.minecraft.block.Block;
 import net.minecraft.block.BlockState;
@@ -18,6 +19,7 @@ import net.minecraft.util.Direction;
 import net.minecraft.util.math.BlockRayTraceResult;
 import net.minecraft.util.math.MathHelper;
 import net.minecraft.util.math.RayTraceResult;
+import net.minecraftforge.fml.client.registry.ClientRegistry;
 import org.lwjgl.opengl.GL11;
 
 import javax.annotation.Nullable;
@@ -47,22 +49,23 @@ public class StorageRenderer extends TileEntityRenderer<StorageTile> {
             return;
         }
 
-        Minecraft.getInstance().gameRenderer.getLightTexture().disableLightmap();
+        // @todo 1.15
+//        Minecraft.getInstance().gameRenderer.getLightTexture().disableLightmap();
 
         BaseBlock gb = (BaseBlock) block;
 
-        GlStateManager.pushMatrix();
+        matrixStack.push();
         Direction facing = gb.getFrontDirection(gb.getRotationType(), state);
 
         // @todo 1.15
 //        GlStateManager.translatef((float) x + 0.5F, (float) y + 0.75F, (float) z + 0.5F);
 
         if (facing == Direction.UP) {
-            GlStateManager.rotatef(-90.0F, 1.0F, 0.0F, 0.0F);
-            GlStateManager.translatef(0.0F, 0.0F, -0.68F);
+            matrixStack.rotate(Vector3f.XP.rotationDegrees(-90.0F));
+            matrixStack.translate(0.0F, 0.0F, -0.68F);
         } else if (facing == Direction.DOWN) {
-            GlStateManager.rotatef(90.0F, 1.0F, 0.0F, 0.0F);
-            GlStateManager.translatef(0.0F, 0.0F, -.184F);
+            matrixStack.rotate(Vector3f.XP.rotationDegrees(90.0F));
+            matrixStack.translate(0.0F, 0.0F, -.184F);
         } else {
             float rotY = 0.0F;
             if (facing == Direction.NORTH) {
@@ -72,29 +75,34 @@ public class StorageRenderer extends TileEntityRenderer<StorageTile> {
             } else if (facing == Direction.EAST) {
                 rotY = -90.0F;
             }
-            GlStateManager.rotatef(-rotY, 0.0F, 1.0F, 0.0F);
-            GlStateManager.translatef(0.0F, -0.2500F, -0.4375F);
+            matrixStack.rotate(Vector3f.YP.rotationDegrees(-rotY));
+            matrixStack.translate(0.0F, -0.2500F, -0.4375F);
         }
 
-        GlStateManager.translatef(0.0F, 0.0F, 0.9F);
-        GlStateManager.depthMask(true);
-        GlStateManager.enableDepthTest();
+        matrixStack.translate(0.0F, 0.0F, 0.9F);
 
-        renderSlotHilight(index);
-        renderSlots(te);
+        // @todo 1.15
+//        GlStateManager.depthMask(true);
+//        GlStateManager.enableDepthTest();
 
-        GlStateManager.popMatrix();
-        Minecraft.getInstance().gameRenderer.getLightTexture().enableLightmap();
+        renderSlotHilight(matrixStack, buffer, index);
+        renderSlots(matrixStack, buffer, te);
+
+        matrixStack.pop();
+        // @todo 1.15
+//        Minecraft.getInstance().gameRenderer.getLightTexture().enableLightmap();
     }
 
-    private void renderSlotHilight(int index) {
-        GlStateManager.pushMatrix();
+    private void renderSlotHilight(MatrixStack matrixStack, IRenderTypeBuffer buffer, int index) {
+        matrixStack.push();
 
         float factor = 2.0f;
         float f3 = 0.0075F;
-        GlStateManager.translatef(-0.5F, 0.5F, -0.155F);
-        GlStateManager.scalef(f3 * factor, -f3 * factor, f3);
-        GlStateManager.disableLighting();
+        matrixStack.translate(-0.5F, 0.5F, -0.155F);
+        matrixStack.scale(f3 * factor, -f3 * factor, f3);
+
+        // @todo 1.15
+//        GlStateManager.disableLighting();
 
         for (int i = 0; i < 4; i++) {
 //            Gui.drawRect(xx[i] - 4, yy[i] - 4, xx[i] + 22, yy[i] - 3, 0xff222222);
@@ -102,21 +110,21 @@ public class StorageRenderer extends TileEntityRenderer<StorageTile> {
 //            Gui.drawRect(xx[i] - 4, yy[i] - 4, xx[i] - 3, yy[i] + 22, 0xff222222);
 //            Gui.drawRect(xx[i] + 21, yy[i] - 4, xx[i] + 22, yy[i] + 22, 0xff222222);
             if (index == i) {
-                Screen.fill(xx[i] - 3, yy[i] - 3, xx[i] + 21, yy[i] + 21, index == i ? 0x55666666 : 0x55000000);
+                mcjty.lib.client.RenderHelper.fill(matrixStack, buffer, xx[i] - 3, yy[i] - 3, xx[i] + 21, yy[i] + 21, index == i ? 0x55666666 : 0x55000000, 140);
             }
         }
 
-        GlStateManager.popMatrix();
+        matrixStack.pop();
     }
 
-    private void renderSlots(StorageTile te) {
+    private void renderSlots(MatrixStack matrixStack, IRenderTypeBuffer buffer, StorageTile te) {
         // @todo 1.15
 //        RenderHelper.enableGUIStandardItemLighting();
 
         float factor = 2.0f;
         float f3 = 0.0075F;
-        GL11.glTranslatef(-0.5F, 0.5F, -0.15F);
-        GL11.glScalef(f3 * factor, -f3 * factor, 0.0001f);
+        matrixStack.translate(-0.5F, 0.5F, -0.15F);
+        matrixStack.scale(f3 * factor, -f3 * factor, 0.0001f);
 
         ItemRenderer itemRender = Minecraft.getInstance().getItemRenderer();
 
@@ -127,10 +135,11 @@ public class StorageRenderer extends TileEntityRenderer<StorageTile> {
             }
         }
 
-        GL11.glTranslatef(0F, 0F, 500F);
-        GlStateManager.scaled(.5, .5, .5);
-        GlStateManager.depthMask(true);
-        GlStateManager.enableDepthTest();
+        matrixStack.translate(0F, 0F, 500F);
+        matrixStack.scale(.5f, .5f, .5f);
+        // @todo 1.15
+//        GlStateManager.depthMask(true);
+//        GlStateManager.enableDepthTest();
         for (int i = 0; i < StorageTile.STACKS; i++) {
             ItemStack stack = te.getTotalStack(i);
             if (!stack.isEmpty()) {
@@ -223,7 +232,6 @@ public class StorageRenderer extends TileEntityRenderer<StorageTile> {
     }
 
     public static void register() {
-        // @todo 1.15
-//        ClientRegistry.bindTileEntitySpecialRenderer(StorageTile.class, new StorageRenderer());
+        ClientRegistry.bindTileEntityRenderer(Registration.STORAGE_TILE.get(), StorageRenderer::new);
     }
 }

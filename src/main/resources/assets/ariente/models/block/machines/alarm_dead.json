@@ -1,0 +1,8 @@
+{
+  "parent": "ariente:block/base/flatglow",
+  "textures": {
+    "side": "ariente:block/base/machinebottom",
+    "front": "ariente:block/machines/alarm_dead",
+    "back": "ariente:block/base/machinebottom"
+  }
+}

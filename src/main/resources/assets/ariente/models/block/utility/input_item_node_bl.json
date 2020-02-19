@@ -1,0 +1,8 @@
+{
+  "parent": "ariente:block/base/nodeblock_botleft",
+  "textures": {
+    "front": "ariente:block/machines/input_item_node",
+    "back": "ariente:block/base/machinebottom",
+    "side": "ariente:block/base/machinebottom"
+  }
+}

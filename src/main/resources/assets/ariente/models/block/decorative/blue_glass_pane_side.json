@@ -1,0 +1,7 @@
+{
+  "parent": "block/template_glass_pane_side",
+  "textures": {
+    "pane": "ariente:block/decorative/blue_glass_fence",
+    "edge": "ariente:block/decorative/blue_glass_fence"
+  }
+}

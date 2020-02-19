@@ -1,14 +1,7 @@
 {
-  "forge_marker": 1,
-  "defaults": {
-    "model": "ariente:sideblock_glow",
-    "textures": {
-      "side": "ariente:blocks/machines/forcefield",
-      "glow": "ariente:blocks/machines/forcefield_glow"
-    }
-  },
   "variants": {
-    "normal": [{}],
-    "inventory": [{}]
+    "": {
+      "model": "ariente:block/machines/forcefield"
+    }
   }
 }

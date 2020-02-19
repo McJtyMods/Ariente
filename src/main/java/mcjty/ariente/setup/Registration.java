@@ -163,8 +163,7 @@ public class Registration {
     public static final RegistryObject<Item> SENSOR_ITEM_NODE_ITEM = ITEMS.register("sensor_item_node", () -> new BlockItem(SENSOR_ITEM_NODE.get(), createStandardProperties()));
     public static final RegistryObject<TileEntityType<SensorItemNodeTile>> SENSOR_ITEM_TILE = TILES.register("sensor_item_node", () -> TileEntityType.Builder.create(SensorItemNodeTile::new, SENSOR_ITEM_NODE.get()).build(null));
 
-    public static final RegistryObject<BaseBlock> INPUT_ITEM_NODE = BLOCKS.register("input_item_node", () -> new BaseNodeBlock(new BlockBuilder()
-            .tileEntitySupplier(InputItemNodeTile::new)));
+    public static final RegistryObject<BaseBlock> INPUT_ITEM_NODE = BLOCKS.register("input_item_node", InputItemNodeTile::createBlock);
     public static final RegistryObject<Item> INPUT_ITEM_NODE_ITEM = ITEMS.register("input_item_node", () -> new BlockItem(INPUT_ITEM_NODE.get(), createStandardProperties()));
     public static final RegistryObject<TileEntityType<InputItemNodeTile>> INPUT_ITEM_TILE = TILES.register("input_item_node", () -> TileEntityType.Builder.create(InputItemNodeTile::new, INPUT_ITEM_NODE.get()).build(null));
 
@@ -185,6 +184,7 @@ public class Registration {
     public static final RegistryObject<RampBlock> RAMP = BLOCKS.register("ramp", RampBlock::new);
     public static final RegistryObject<Item> RAMP_ITEM = ITEMS.register("ramp", () -> new BlockItem(RAMP.get(), createStandardProperties()));
 
+    // @todo slope model!
     public static final RegistryObject<SlopeBlock> SLOPE = BLOCKS.register("slope", SlopeBlock::new);
     public static final RegistryObject<Item> SLOPE_ITEM = ITEMS.register("slope", () -> new BlockItem(SLOPE.get(), createStandardProperties()));
 
@@ -241,6 +241,34 @@ public class Registration {
     public static final RegistryObject<Item> POSIRITE_TANK_ITEM = ITEMS.register("posirite_tank", () -> new BlockItem(POSIRITE_TANK.get(), createStandardProperties()));
     public static final RegistryObject<TileEntityType<PosiriteTankTile>> POSIRITE_TANK_TILE = TILES.register("posirite_tank", () -> TileEntityType.Builder.create(PosiriteTankTile::new, POSIRITE_TANK.get()).build(null));
 
+    public static final RegistryObject<BaseBlock> DOOR_MARKER = BLOCKS.register("door_marker", DoorMarkerTile::createBlock);
+    public static final RegistryObject<Item> DOOR_MARKER_ITEM = ITEMS.register("door_marker", () -> new BlockItem(DOOR_MARKER.get(), createStandardProperties()));
+    public static final RegistryObject<TileEntityType<DoorMarkerTile>> DOOR_MARKER_TILE = TILES.register("door_marker", () -> TileEntityType.Builder.create(DoorMarkerTile::new, DOOR_MARKER.get()).build(null));
+
+    public static final RegistryObject<BaseBlock> AICORE = BLOCKS.register("aicore", AICoreTile::createBlock);
+    public static final RegistryObject<Item> AICORE_ITEM = ITEMS.register("aicore", () -> new BlockItem(AICORE.get(), createStandardProperties()));
+    public static final RegistryObject<TileEntityType<AICoreTile>> AICORE_TILE = TILES.register("aicore", () -> TileEntityType.Builder.create(AICoreTile::new, AICORE.get()).build(null));
+
+    public static final RegistryObject<BaseBlock> ALARM = BLOCKS.register("alarm", AlarmTile::createBlock);
+    public static final RegistryObject<Item> ALARM_ITEM = ITEMS.register("alarm", () -> new BlockItem(ALARM.get(), createStandardProperties()));
+    public static final RegistryObject<TileEntityType<AlarmTile>> ALARM_TILE = TILES.register("alarm", () -> TileEntityType.Builder.create(AlarmTile::new, ALARM.get()).build(null));
+
+    public static final RegistryObject<BaseBlock> CONSTRUCTOR = BLOCKS.register("constructor", ConstructorTile::createBlock);
+    public static final RegistryObject<Item> CONSTRUCTOR_ITEM = ITEMS.register("constructor", () -> new BlockItem(CONSTRUCTOR.get(), createStandardProperties()));
+    public static final RegistryObject<TileEntityType<ConstructorTile>> CONSTRUCTOR_TILE = TILES.register("constructor", () -> TileEntityType.Builder.create(ConstructorTile::new, CONSTRUCTOR.get()).build(null));
+
+    public static final RegistryObject<BaseBlock> AUTO_CONSTRUCTOR = BLOCKS.register("auto_constructor", AutoConstructorTile::createBlock);
+    public static final RegistryObject<Item> AUTO_CONSTRUCTOR_ITEM = ITEMS.register("auto_constructor", () -> new BlockItem(AUTO_CONSTRUCTOR.get(), createStandardProperties()));
+    public static final RegistryObject<TileEntityType<AutoConstructorTile>> AUTO_CONSTRUCTOR_TILE = TILES.register("auto_constructor", () -> TileEntityType.Builder.create(AutoConstructorTile::new, AUTO_CONSTRUCTOR.get()).build(null));
+
+    public static final RegistryObject<BaseBlock> BLUEPRINT_STORAGE = BLOCKS.register("blueprint_storage", BlueprintStorageTile::createBlock);
+    public static final RegistryObject<Item> BLUEPRINT_STORAGE_ITEM = ITEMS.register("blueprint_storage", () -> new BlockItem(BLUEPRINT_STORAGE.get(), createStandardProperties()));
+    public static final RegistryObject<TileEntityType<BlueprintStorageTile>> BLUEPRINT_STORAGE_TILE = TILES.register("blueprint_storage", () -> TileEntityType.Builder.create(BlueprintStorageTile::new, BLUEPRINT_STORAGE.get()).build(null));
+
+    public static final RegistryObject<BaseBlock> AUTOMATION_FIELD = BLOCKS.register("automation_field", AutoFieldTile::createBlock);
+    public static final RegistryObject<Item> AUTOMATION_FIELD_ITEM = ITEMS.register("automation_field", () -> new BlockItem(AUTOMATION_FIELD.get(), createStandardProperties()));
+    public static final RegistryObject<TileEntityType<AutoFieldTile>> AUTOFIELD_TILE = TILES.register("automation_field", () -> TileEntityType.Builder.create(AutoFieldTile::new, AUTOMATION_FIELD.get()).build(null));
+
     public static final RegistryObject<BaseBlock> STORAGE = BLOCKS.register("storage", StorageTile::createBlock);
     public static final RegistryObject<Item> STORAGE_ITEM = ITEMS.register("storage", () -> new BlockItem(STORAGE.get(), createStandardProperties()));
     public static final RegistryObject<TileEntityType<StorageTile>> STORAGE_TILE = TILES.register("storage", () -> TileEntityType.Builder.create(StorageTile::new, STORAGE.get()).build(null));
@@ -253,20 +281,12 @@ public class Registration {
     public static final RegistryObject<Item> LEVEL_MARKER_ITEM = ITEMS.register("level_marker", () -> new BlockItem(LEVEL_MARKER.get(), createStandardProperties()));
     public static final RegistryObject<TileEntityType<LevelMarkerTile>> LEVEL_MARKER_TILE = TILES.register("level_marker", () -> TileEntityType.Builder.create(LevelMarkerTile::new, LEVEL_MARKER.get()).build(null));
 
-    public static final RegistryObject<BaseBlock> DOOR_MARKER = BLOCKS.register("door_marker", DoorMarkerTile::createBlock);
-    public static final RegistryObject<Item> DOOR_MARKER_ITEM = ITEMS.register("door_marker", () -> new BlockItem(DOOR_MARKER.get(), createStandardProperties()));
-    public static final RegistryObject<TileEntityType<DoorMarkerTile>> DOOR_MARKER_TILE = TILES.register("door_marker", () -> TileEntityType.Builder.create(DoorMarkerTile::new, DOOR_MARKER.get()).build(null));
-
     public static final RegistryObject<BaseBlock> INVISIBLE_DOOR = BLOCKS.register("invisible_door", InvisibleDoorTile::createBlock);
     public static final RegistryObject<TileEntityType<InvisibleDoorTile>> INVISIBLE_DOOR_TILE = TILES.register("invisible_door", () -> TileEntityType.Builder.create(InvisibleDoorTile::new, INVISIBLE_DOOR.get()).build(null));
 
     public static final RegistryObject<BaseBlock> FORCEFIELD = BLOCKS.register("forcefield", ForceFieldTile::createBlock);
     public static final RegistryObject<Item> FORCEFIELD_ITEM = ITEMS.register("forcefield", () -> new BlockItem(FORCEFIELD.get(), createStandardProperties()));
     public static final RegistryObject<TileEntityType<ForceFieldTile>> FORCEFIELD_TILE = TILES.register("forcefield", () -> TileEntityType.Builder.create(ForceFieldTile::new, FORCEFIELD.get()).build(null));
-
-    public static final RegistryObject<BaseBlock> AICORE = BLOCKS.register("aicore", AICoreTile::createBlock);
-    public static final RegistryObject<Item> AICORE_ITEM = ITEMS.register("aicore", () -> new BlockItem(AICORE.get(), createStandardProperties()));
-    public static final RegistryObject<TileEntityType<AICoreTile>> AICORE_TILE = TILES.register("aicore", () -> TileEntityType.Builder.create(AICoreTile::new, AICORE.get()).build(null));
 
     public static final RegistryObject<BaseBlock> WARPER = BLOCKS.register("warper", WarperTile::createBlock);
     public static final RegistryObject<Item> WARPER_ITEM = ITEMS.register("warper", () -> new BlockItem(WARPER.get(), createStandardProperties()));
@@ -292,29 +312,11 @@ public class Registration {
     public static final RegistryObject<Item> WIRELESS_LOCK_ITEM = ITEMS.register("wireless_lock", () -> new BlockItem(WIRELESS_LOCK.get(), createStandardProperties()));
     public static final RegistryObject<TileEntityType<WirelessLockTile>> WIRELESS_LOCK_TILE = TILES.register("wireless_lock", () -> TileEntityType.Builder.create(WirelessLockTile::new, WIRELESS_LOCK.get()).build(null));
 
-    public static final RegistryObject<BaseBlock> ALARM = BLOCKS.register("alarm", AlarmTile::createBlock);
-    public static final RegistryObject<Item> ALARM_ITEM = ITEMS.register("alarm", () -> new BlockItem(ALARM.get(), createStandardProperties()));
-    public static final RegistryObject<TileEntityType<AlarmTile>> ALARM_TILE = TILES.register("alarm", () -> TileEntityType.Builder.create(AlarmTile::new, ALARM.get()).build(null));
-
-    public static final RegistryObject<BaseBlock> CONSTRUCTOR = BLOCKS.register("constructor", ConstructorTile::createBlock);
-    public static final RegistryObject<Item> CONSTRUCTOR_ITEM = ITEMS.register("constructor", () -> new BlockItem(CONSTRUCTOR.get(), createStandardProperties()));
-    public static final RegistryObject<TileEntityType<ConstructorTile>> CONSTRUCTOR_TILE = TILES.register("constructor", () -> TileEntityType.Builder.create(ConstructorTile::new, CONSTRUCTOR.get()).build(null));
-
-    public static final RegistryObject<BaseBlock> AUTO_CONSTRUCTOR = BLOCKS.register("auto_constructor", AutoConstructorTile::createBlock);
-    public static final RegistryObject<Item> AUTO_CONSTRUCTOR_ITEM = ITEMS.register("auto_constructor", () -> new BlockItem(AUTO_CONSTRUCTOR.get(), createStandardProperties()));
-    public static final RegistryObject<TileEntityType<AutoConstructorTile>> AUTO_CONSTRUCTOR_TILE = TILES.register("auto_constructor", () -> TileEntityType.Builder.create(AutoConstructorTile::new, AUTO_CONSTRUCTOR.get()).build(null));
-
-    public static final RegistryObject<BaseBlock> BLUEPRINT_STORAGE = BLOCKS.register("blueprint_storage", BlueprintStorageTile::createBlock);
-    public static final RegistryObject<Item> BLUEPRINT_STORAGE_ITEM = ITEMS.register("blueprint_storage", () -> new BlockItem(BLUEPRINT_STORAGE.get(), createStandardProperties()));
-    public static final RegistryObject<TileEntityType<BlueprintStorageTile>> BLUEPRINT_STORAGE_TILE = TILES.register("blueprint_storage", () -> TileEntityType.Builder.create(BlueprintStorageTile::new, BLUEPRINT_STORAGE.get()).build(null));
-
-    public static final RegistryObject<BaseBlock> AUTOMATION_FIELD = BLOCKS.register("automation_field", AutoFieldTile::createBlock);
-    public static final RegistryObject<Item> AUTOMATION_FIELD_ITEM = ITEMS.register("automation_field", () -> new BlockItem(AUTOMATION_FIELD.get(), createStandardProperties()));
-    public static final RegistryObject<TileEntityType<AutoFieldTile>> AUTOFIELD_TILE = TILES.register("automation_field", () -> TileEntityType.Builder.create(AutoFieldTile::new, AUTOMATION_FIELD.get()).build(null));
-
     public static final RegistryObject<BaseBlock> FLAT_LIGHT = BLOCKS.register("flatlight", () -> new BaseBlock(new BlockBuilder()
             .properties(Block.Properties.create(Material.GLASS).lightValue(15))));
     public static final RegistryObject<Item> FLAT_LIGHT_ITEM = ITEMS.register("flatlight", () -> new BlockItem(FLAT_LIGHT.get(), createStandardProperties()));
+
+
 
     public static final RegistryObject<NetCableBlock> NETCABLE = BLOCKS.register("netcable", NetCableBlock::new);
     public static final RegistryObject<Item> NETCABLE_ITEM = ITEMS.register("netcable", () -> new BlockItem(NETCABLE.get(), createStandardProperties()));
@@ -322,6 +324,9 @@ public class Registration {
     public static final RegistryObject<Item> CONNECTOR_ITEM = ITEMS.register("connector", () -> new BlockItem(CONNECTOR.get(), createStandardProperties()));
     public static final RegistryObject<FacadeBlock> FACADE = BLOCKS.register("facade", FacadeBlock::new);
     public static final RegistryObject<Item> FACADE_ITEM = ITEMS.register("facade", () -> new BlockItem(FACADE.get(), createStandardProperties()));
+
+
+
 
     public static final RegistryObject<Item> INGOT_PLATINUM = ITEMS.register("ingot_platinum", () -> new Item(createStandardProperties()));
     public static final RegistryObject<Item> INGOT_LITHIUM = ITEMS.register("ingot_lithium", () -> new Item(createStandardProperties()));

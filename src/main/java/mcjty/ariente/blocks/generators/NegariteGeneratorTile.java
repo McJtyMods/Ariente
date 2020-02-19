@@ -3,6 +3,7 @@ package mcjty.ariente.blocks.generators;
 import mcjty.ariente.Ariente;
 import mcjty.ariente.api.IAlarmMode;
 import mcjty.ariente.api.IGenerator;
+import mcjty.ariente.blocks.BlockProperties;
 import mcjty.ariente.setup.Registration;
 import mcjty.ariente.cables.CableColor;
 import mcjty.ariente.gui.HoloGuiTools;
@@ -26,7 +27,6 @@ import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.CompoundNBT;
 import net.minecraft.network.NetworkManager;
 import net.minecraft.network.play.server.SUpdateTileEntityPacket;
-import net.minecraft.state.BooleanProperty;
 import net.minecraft.state.StateContainer;
 import net.minecraft.tileentity.ITickableTileEntity;
 import net.minecraft.util.ActionResultType;
@@ -44,7 +44,6 @@ import static mcjty.hologui.api.Icons.*;
 public class NegariteGeneratorTile extends GenericTileEntity implements ITickableTileEntity, IGuiTile, IPowerBlob, IAlarmMode, IPowerSender, IGenerator {
 
     public static final String CMD_RSMODE = "negarite_gen.setRsMode";
-    public static final BooleanProperty WORKING = BooleanProperty.create("working");
 
     public static final int POWERGEN = 1000;        // @todo configurable and based on tanks!
 
@@ -76,7 +75,7 @@ public class NegariteGeneratorTile extends GenericTileEntity implements ITickabl
             @Override
             protected void fillStateContainer(StateContainer.Builder<Block, BlockState> builder) {
                 super.fillStateContainer(builder);
-                builder.add(WORKING);
+                builder.add(BlockProperties.WORKING);
             }
         };
     }

@@ -1,19 +1,17 @@
 package mcjty.ariente.blocks.utility.door;
 
 import com.mojang.blaze3d.matrix.MatrixStack;
-import com.mojang.blaze3d.platform.GlStateManager;
+import com.mojang.blaze3d.vertex.IVertexBuilder;
 import mcjty.ariente.Ariente;
 import mcjty.ariente.setup.Registration;
 import net.minecraft.block.BlockState;
-import net.minecraft.client.Minecraft;
-import net.minecraft.client.renderer.BufferBuilder;
 import net.minecraft.client.renderer.IRenderTypeBuffer;
-import net.minecraft.client.renderer.Tessellator;
+import net.minecraft.client.renderer.Matrix4f;
+import net.minecraft.client.renderer.RenderType;
 import net.minecraft.client.renderer.tileentity.TileEntityRenderer;
 import net.minecraft.client.renderer.tileentity.TileEntityRendererDispatcher;
-import net.minecraft.client.renderer.vertex.DefaultVertexFormats;
 import net.minecraft.util.ResourceLocation;
-import org.lwjgl.opengl.GL11;
+import net.minecraftforge.fml.client.registry.ClientRegistry;
 
 public class DoorMarkerRenderer extends TileEntityRenderer<DoorMarkerTile> {
 
@@ -30,7 +28,7 @@ public class DoorMarkerRenderer extends TileEntityRenderer<DoorMarkerTile> {
             return;
         }
 
-        GlStateManager.pushMatrix();
+        matrixStack.push();
 
         // @todo 1.15
 //        Direction frontDirection = ModBlocks.doorMarkerBlock.get().getFrontDirection(state);
@@ -45,28 +43,20 @@ public class DoorMarkerRenderer extends TileEntityRenderer<DoorMarkerTile> {
 
         int openphase = getOpenphase(te);
         int iconIndex = te.getIconIndex();
-        renderDoorSegment(openphase, iconIndex);
+        renderDoorSegment(matrixStack, buffer, openphase, iconIndex);
 
-        GlStateManager.popMatrix();
+        matrixStack.pop();
     }
 
-    public static void renderDoorSegment(int openphase, int iconIndex) {
-        Tessellator tessellator = Tessellator.getInstance();
-        //        RenderHelper.enableStandardItemLighting();
-        GlStateManager.disableBlend();
-        GlStateManager.enableDepthTest();
-        GlStateManager.depthMask(true);
-        GlStateManager.enableTexture();
-
-//        GlStateManager.disableLighting();
-//        Minecraft.getInstance().entityRenderer.disableLightmap();
-        GlStateManager.enableLighting();
-//        GlStateManager.enableRescaleNormal();
-        Minecraft.getInstance().gameRenderer.getLightTexture().enableLightmap();
-//        int light = Minecraft.getInstance().world.getCombinedLight(new BlockPos(MathHelper.floor(te.getPos().getX()), MathHelper.floor(te.getPos().getY()), MathHelper.floor(te.getPos().getZ())), 0);
-//        OpenGlHelper.setLightmapTextureCoords(OpenGlHelper.lightmapTexUnit, (float)(light & 0xFFFF), (float)((light >> 16) & 0xFFFF));
-
+    public static void renderDoorSegment(MatrixStack matrixStack, IRenderTypeBuffer buffer, int openphase, int iconIndex) {
+        // @todo 1.15
+//        GlStateManager.disableBlend();
+//        GlStateManager.enableDepthTest();
+//        GlStateManager.depthMask(true);
+//        GlStateManager.enableTexture();
+//
 //        GlStateManager.enableLighting();
+//        Minecraft.getInstance().gameRenderer.getLightTexture().enableLightmap();
         // @todo figure out why entities cause this to flicker if the TE is rendered in pass 0 instead of pass 1
 
 
@@ -79,25 +69,21 @@ public class DoorMarkerRenderer extends TileEntityRenderer<DoorMarkerTile> {
 
         if (openphase < 1000) {
 
-            GlStateManager.color4f(1, 1, 1, 1);
-
-            BufferBuilder renderer = tessellator.getBuffer();
-            renderer.begin(GL11.GL_QUADS, DefaultVertexFormats.POSITION_TEX);
-
-            BufferBuilder buffer = tessellator.getBuffer();
+            IVertexBuilder builder = buffer.getBuffer(RenderType.solid());
 
             float o = openphase / 2000.0f;
             float p = 1 - o;
 
-            buffer.pos(-0.1, o, o).tex(u, v).endVertex();
-            buffer.pos(-0.1, o, p).tex(u+duv, v).endVertex();
-            buffer.pos(-0.1, p, p).tex(u+duv, v+duv).endVertex();
-            buffer.pos(-0.1, p, o).tex(u, v+duv).endVertex();
+            Matrix4f matrix = matrixStack.getLast().getPositionMatrix();
+            builder.pos(matrix, -0.1f, o, o).tex(u, v).endVertex();
+            builder.pos(matrix, -0.1f, o, p).tex(u+duv, v).endVertex();
+            builder.pos(matrix, -0.1f, p, p).tex(u+duv, v+duv).endVertex();
+            builder.pos(matrix, -0.1f, p, o).tex(u, v+duv).endVertex();
 
-            buffer.pos(.1, p, o).tex(u, v).endVertex();
-            buffer.pos(.1, p, p).tex(u+duv, v).endVertex();
-            buffer.pos(.1, o, p).tex(u+duv, v+duv).endVertex();
-            buffer.pos(.1, o, o).tex(u, v+duv).endVertex();
+            builder.pos(matrix, .1f, p, o).tex(u, v).endVertex();
+            builder.pos(matrix, .1f, p, p).tex(u+duv, v).endVertex();
+            builder.pos(matrix, .1f, o, p).tex(u+duv, v+duv).endVertex();
+            builder.pos(matrix, .1f, o, o).tex(u, v+duv).endVertex();
 
 //            for (int yy = 1; yy < 10; yy++) {
 //                if (getWorld().isAirBlock(te.getPos().up(yy))) {
@@ -114,8 +100,6 @@ public class DoorMarkerRenderer extends TileEntityRenderer<DoorMarkerTile> {
 //                    break;
 //                }
 //            }
-
-            tessellator.draw();
         }
     }
 
@@ -144,7 +128,6 @@ public class DoorMarkerRenderer extends TileEntityRenderer<DoorMarkerTile> {
     }
 
     public static void register() {
-        // @todo 1.15
-//        ClientRegistry.bindTileEntitySpecialRenderer(DoorMarkerTile.class, new DoorMarkerRenderer());
+        ClientRegistry.bindTileEntityRenderer(Registration.DOOR_MARKER_TILE.get(), DoorMarkerRenderer::new);
     }
 }
