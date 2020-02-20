@@ -5,5 +5,5 @@ import net.minecraft.client.renderer.entity.SpriteRenderer;
 import net.minecraftforge.fml.client.registry.IRenderFactory;
 
 public class RenderArientePearl {
-    static IRenderFactory<EntityArientePearl> FACTORY = manager -> new SpriteRenderer(manager, Minecraft.getInstance().getItemRenderer());
+    public static IRenderFactory<EntityArientePearl> FACTORY = manager -> new SpriteRenderer(manager, Minecraft.getInstance().getItemRenderer());
 }

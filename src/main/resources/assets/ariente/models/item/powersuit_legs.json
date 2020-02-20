@@ -1,6 +1,6 @@
 {
   "parent": "item/generated",
   "textures": {
-    "layer0": "ariente:items/armor/powersuit_legs"
+    "layer0": "ariente:item/armor/powersuit_legs"
   }
 }

@@ -1,6 +1,6 @@
 {
     "parent": "item/generated",
     "textures": {
-        "layer0": "ariente:items/modules/module_looting"
+        "layer0": "ariente:item/modules/module_looting"
     }
 }

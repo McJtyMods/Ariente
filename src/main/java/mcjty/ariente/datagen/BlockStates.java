@@ -129,13 +129,16 @@ public class BlockStates extends BaseBlockStateProvider {
         registerSignalTransmitter();
         registerFlatLight();
 
+        simpleBlock(Registration.NETCABLE.get(), empty);
+        simpleBlock(Registration.FACADE.get(), empty);
+        simpleBlock(Registration.CONNECTOR.get(), empty);
         simpleBlock(Registration.INVISIBLE_DOOR.get(), empty);
 
         registerTank(Registration.NEGARITE_TANK.get(), "negarite");
         registerTank(Registration.POSIRITE_TANK.get(), "posirite");
 
-        singleTextureBlock(Registration.REINFORCED_MARBLE.get(), "decorative/reinforced_marble", TXT_REINFORCED_MARBLE);
-        singleTextureBlock(Registration.FLUX_GLOW.get(), "decorative/flux_glow", TXT_GLOWING_FLUX);
+        singleTextureBlock(Registration.REINFORCED_MARBLE.get(), BLOCK_FOLDER + "/decorative/reinforced_marble", TXT_REINFORCED_MARBLE);
+        singleTextureBlock(Registration.FLUX_GLOW.get(), BLOCK_FOLDER + "/decorative/flux_glow", TXT_GLOWING_FLUX);
 
         registerWorkingHorizontalGlowBlock("auto_constructor", Registration.AUTO_CONSTRUCTOR.get());
         registerWorkingHorizontalGlowBlock("negarite_generator", Registration.NEGARITE_GENERATOR.get());

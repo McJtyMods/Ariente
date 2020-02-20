@@ -1,6 +1,6 @@
 {
   "parent": "item/generated",
   "textures": {
-    "layer0": "ariente:items/dusts/dust_negarite"
+    "layer0": "ariente:item/dusts/dust_negarite"
   }
 }

@@ -1,7 +1,7 @@
 {
   "variants": {
     "": {
-      "model": "ariente:decorative/flux_glow"
+      "model": "ariente:block/decorative/flux_glow"
     }
   }
 }

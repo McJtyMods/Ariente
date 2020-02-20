@@ -1,6 +1,6 @@
 {
     "parent": "item/handheld",
     "textures": {
-        "layer0": "ariente:items/tools/ariente_pearl"
+        "layer0": "ariente:item/tools/ariente_pearl"
     }
 }

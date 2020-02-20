@@ -1,7 +1,7 @@
 {
   "variants": {
     "": {
-      "model": "ariente:decorative/reinforced_marble"
+      "model": "ariente:block/decorative/reinforced_marble"
     }
   }
 }
