@@ -1,0 +1,24 @@
+{
+  "type": "minecraft:block",
+  "pools": [
+    {
+      "name": "marble_pilar",
+      "rolls": 1,
+      "entries": [
+        {
+          "type": "minecraft:item",
+          "functions": [
+            {
+              "function": "minecraft:copy_state",
+              "block": "ariente:marble_pilar",
+              "properties": [
+                "color"
+              ]
+            }
+          ],
+          "name": "ariente:marble_pilar_darkblue"
+        }
+      ]
+    }
+  ]
+}

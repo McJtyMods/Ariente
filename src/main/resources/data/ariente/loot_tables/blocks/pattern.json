@@ -1,0 +1,24 @@
+{
+  "type": "minecraft:block",
+  "pools": [
+    {
+      "name": "pattern",
+      "rolls": 1,
+      "entries": [
+        {
+          "type": "minecraft:item",
+          "functions": [
+            {
+              "function": "minecraft:copy_state",
+              "block": "ariente:pattern",
+              "properties": [
+                "type"
+              ]
+            }
+          ],
+          "name": "ariente:pattern_lines"
+        }
+      ]
+    }
+  ]
+}

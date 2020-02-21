@@ -1,6 +1,9 @@
 package mcjty.ariente.datagen;
 
 import mcjty.ariente.api.MarbleColor;
+import mcjty.ariente.api.MarbleType;
+import mcjty.ariente.api.TechType;
+import mcjty.ariente.blocks.decorative.PatternBlock;
 import mcjty.ariente.setup.Registration;
 import mcjty.lib.datagen.BaseLootTableProvider;
 import net.minecraft.data.DataGenerator;
@@ -41,8 +44,14 @@ public class LootTables extends BaseLootTableProvider {
         addStandardTable(Registration.STORAGE.get());
         addStandardTable(Registration.WARPER.get());
 
-        // @todo marble and decorative stuff
         addBlockStateTable(Registration.MARBLE.get(), MarbleColor.COLOR);
+        addBlockStateTable(Registration.MARBLE_BRICKS.get(), MarbleColor.COLOR);
+        addBlockStateTable(Registration.MARBLE_SMOOTH.get(), MarbleColor.COLOR);
+        addBlockStateTable(Registration.MARBLE_PILAR.get(), MarbleColor.COLOR);
+        addBlockStateTable(Registration.MARBLE_SLAB.get(), MarbleColor.COLOR);
+        addBlockStateTable(Registration.BLACK_TECH.get(), TechType.TYPE);
+        addBlockStateTable(Registration.MARBLE_TECH.get(), MarbleType.TYPE);
+        addBlockStateTable(Registration.PATTERN.get(), PatternBlock.TYPE);
 
     }
 

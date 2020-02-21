@@ -1,0 +1,24 @@
+{
+  "type": "minecraft:block",
+  "pools": [
+    {
+      "name": "marbletech",
+      "rolls": 1,
+      "entries": [
+        {
+          "type": "minecraft:item",
+          "functions": [
+            {
+              "function": "minecraft:copy_state",
+              "block": "ariente:marbletech",
+              "properties": [
+                "type"
+              ]
+            }
+          ],
+          "name": "ariente:marbletech_variation3"
+        }
+      ]
+    }
+  ]
+}

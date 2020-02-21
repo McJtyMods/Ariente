@@ -1,0 +1,24 @@
+{
+  "type": "minecraft:block",
+  "pools": [
+    {
+      "name": "marble",
+      "rolls": 1,
+      "entries": [
+        {
+          "type": "minecraft:item",
+          "functions": [
+            {
+              "function": "minecraft:copy_state",
+              "block": "ariente:marble",
+              "properties": [
+                "color"
+              ]
+            }
+          ],
+          "name": "ariente:marble_darkblue"
+        }
+      ]
+    }
+  ]
+}
