@@ -78,16 +78,6 @@ public class SignalReceiverTile extends SignalChannelTileEntity implements ITick
         return tagCompound;
     }
 
-    @Override
-    public void readRestorableFromNBT(CompoundNBT tagCompound) {
-        super.readRestorableFromNBT(tagCompound);
-    }
-
-    @Override
-    public void writeRestorableToNBT(CompoundNBT tagCompound) {
-        super.writeRestorableToNBT(tagCompound);
-    }
-
     // @todo 1.14
 //    @Override
 //    @Optional.Method(modid = "theoneprobe")

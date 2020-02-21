@@ -213,21 +213,24 @@ public abstract class AbstractNodeTile extends GenericTileEntity implements IGui
         return facing;
     }
 
-    // @todo 1.14 loot
     public void readRestorableFromNBT(CompoundNBT tagCompound) {
-        for (int i = 0 ; i < filters.length ; i++) {
-            if (tagCompound.contains("f" + i)) {
-                filters[i] = DyeColor.values()[tagCompound.getInt("f" + i)];
-            } else {
-                filters[i] = null;
+        CompoundNBT info = tagCompound.getCompound("Info");
+        if (!info.isEmpty()) {
+            for (int i = 0; i < filters.length; i++) {
+                if (tagCompound.contains("f" + i)) {
+                    filters[i] = DyeColor.values()[tagCompound.getInt("f" + i)];
+                } else {
+                    filters[i] = null;
+                }
             }
         }
     }
 
     public void writeRestorableToNBT(CompoundNBT tagCompound) {
+        CompoundNBT info = getOrCreateInfo(tagCompound);
         for (int i = 0 ; i < filters.length ; i++) {
             if (filters[i] != null) {
-                tagCompound.putInt("f" + i, filters[i].ordinal());
+                info.putInt("f" + i, filters[i].ordinal());
             }
         }
     }

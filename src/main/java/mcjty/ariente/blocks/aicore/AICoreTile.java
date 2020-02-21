@@ -111,17 +111,17 @@ public class AICoreTile extends GenericTileEntity implements ITickableTileEntity
         return getPos();
     }
 
-    // @todo 1.14 LOOT TABLES
     @Override
     public void read(CompoundNBT tagCompound) {
         super.read(tagCompound);
-        cityName = tagCompound.getString("cityName");
+        CompoundNBT info = tagCompound.getCompound("Info");
+        cityName = info.getString("cityName");
     }
 
     @Override
     public CompoundNBT write(CompoundNBT tagCompound) {
         tagCompound = super.write(tagCompound);
-        tagCompound.putString("cityName", cityName);
+        getOrCreateInfo(tagCompound).putString("cityName", cityName);
         return tagCompound;
     }
 

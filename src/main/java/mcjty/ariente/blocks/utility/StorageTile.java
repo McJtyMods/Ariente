@@ -136,28 +136,31 @@ public class StorageTile extends GenericTileEntity implements IGuiTile, ICityEqu
         }
     }
 
-    // @todo 1.14 loot
     public void readRestorableFromNBT(CompoundNBT tagCompound) {
-        locked = tagCompound.getBoolean("locked");
-        if (tagCompound.contains("keyId")) {
-            keyId = tagCompound.getString("keyId");
-        }
+        CompoundNBT info = tagCompound.getCompound("Info");
+        if (!info.isEmpty()) {
+            locked = info.getBoolean("locked");
+            if (info.contains("keyId")) {
+                keyId = info.getString("keyId");
+            }
 
-        ListNBT bufferTagList = tagCompound.getList("Items", Constants.NBT.TAG_COMPOUND);
-        for (int i = 0; i < STACKS; i++) {
-            CompoundNBT CompoundNBT = bufferTagList.getCompound(i);
-            stacks.set(i, ItemStack.read(CompoundNBT));
+            ListNBT bufferTagList = info.getList("Items", Constants.NBT.TAG_COMPOUND);
+            for (int i = 0; i < STACKS; i++) {
+                CompoundNBT CompoundNBT = bufferTagList.getCompound(i);
+                stacks.set(i, ItemStack.read(CompoundNBT));
+            }
+            int[] cc = info.getIntArray("Counts");
+            System.arraycopy(cc, 0, counts, 0, cc.length);
+            int[] ct = info.getIntArray("Totals");
+            System.arraycopy(ct, 0, totals, 0, ct.length);
         }
-        int[] cc = tagCompound.getIntArray("Counts");
-        System.arraycopy(cc, 0, counts, 0, cc.length);
-        int[] ct = tagCompound.getIntArray("Totals");
-        System.arraycopy(ct, 0, totals, 0, ct.length);
     }
 
     public void writeRestorableToNBT(CompoundNBT tagCompound) {
-        tagCompound.putBoolean("locked", locked);
+        CompoundNBT info = getOrCreateInfo(tagCompound);
+        info.putBoolean("locked", locked);
         if (keyId != null) {
-            tagCompound.putString("keyId", keyId);
+            info.putString("keyId", keyId);
         }
         ListNBT bufferTagList = new ListNBT();
         for (int i = 0; i < STACKS; i++) {
@@ -168,9 +171,9 @@ public class StorageTile extends GenericTileEntity implements IGuiTile, ICityEqu
             }
             bufferTagList.add(CompoundNBT);
         }
-        tagCompound.put("Items", bufferTagList);
-        tagCompound.putIntArray("Counts", counts);
-        tagCompound.putIntArray("Totals", totals);
+        info.put("Items", bufferTagList);
+        info.putIntArray("Counts", counts);
+        info.putIntArray("Totals", totals);
     }
 
     @Override

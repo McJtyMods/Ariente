@@ -116,15 +116,30 @@ public abstract class SignalChannelTileEntity extends GenericTileEntity implemen
         markDirtyClient();
     }
 
-    // @todo 1.14 loot
+    @Override
+    public void read(CompoundNBT tagCompound) {
+        super.read(tagCompound);
+        readRestorableFromNBT(tagCompound);
+    }
+
     public void readRestorableFromNBT(CompoundNBT tagCompound) {
-        channel = tagCompound.getInt("channel");
-        desiredChannel = tagCompound.getInt("desired");
+        CompoundNBT info = tagCompound.getCompound("Info");
+        if (!info.isEmpty()) {
+            channel = info.getInt("channel");
+            desiredChannel = info.getInt("desired");
+        }
+    }
+
+    @Override
+    public CompoundNBT write(CompoundNBT tagCompound) {
+        writeRestorableToNBT(tagCompound);
+        return super.write(tagCompound);
     }
 
     public void writeRestorableToNBT(CompoundNBT tagCompound) {
-        tagCompound.putInt("channel", channel);
-        tagCompound.putInt("desired", desiredChannel);
+        CompoundNBT info = getOrCreateInfo(tagCompound);
+        info.putInt("channel", channel);
+        info.putInt("desired", desiredChannel);
     }
 
     // @todo 1.14

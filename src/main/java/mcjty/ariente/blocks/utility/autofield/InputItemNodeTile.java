@@ -1,8 +1,8 @@
 package mcjty.ariente.blocks.utility.autofield;
 
-import mcjty.ariente.setup.Registration;
 import mcjty.ariente.gui.HelpBuilder;
 import mcjty.ariente.gui.HoloGuiTools;
+import mcjty.ariente.setup.Registration;
 import mcjty.hologui.api.IGuiComponent;
 import mcjty.hologui.api.IGuiComponentRegistry;
 import mcjty.hologui.api.Icons;
@@ -36,23 +36,26 @@ public class InputItemNodeTile extends AbstractItemNodeTile {
 //        return ModBlocks.inputItemNode;
 //    }
 
-    // @todo 1.14 loot
     @Override
     public void readRestorableFromNBT(CompoundNBT tagCompound) {
         super.readRestorableFromNBT(tagCompound);
 //        readBufferFromNBT(tagCompound, "input", inputFilter);
-        inputDamage = tagCompound.getBoolean("inDamage");
-        inputNbt = tagCompound.getBoolean("inNBT");
-        inputOredict = tagCompound.getBoolean("inOre");
+        CompoundNBT info = tagCompound.getCompound("Info");
+        if (!info.isEmpty()) {
+            inputDamage = info.getBoolean("inDamage");
+            inputNbt = info.getBoolean("inNBT");
+            inputOredict = info.getBoolean("inOre");
+        }
     }
 
     @Override
     public void writeRestorableToNBT(CompoundNBT tagCompound) {
         super.writeRestorableToNBT(tagCompound);
 //        writeBufferToNBT(tagCompound, "input", inputFilter);
-        tagCompound.putBoolean("inDamage", inputDamage);
-        tagCompound.putBoolean("inNBT", inputNbt);
-        tagCompound.putBoolean("inOre", inputOredict);
+        CompoundNBT info = getOrCreateInfo(tagCompound);
+        info.putBoolean("inDamage", inputDamage);
+        info.putBoolean("inNBT", inputNbt);
+        info.putBoolean("inOre", inputOredict);
     }
 
     public ItemStackList getInputFilter() {

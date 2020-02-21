@@ -4,10 +4,10 @@ import mcjty.ariente.Ariente;
 import mcjty.ariente.api.IAlarmMode;
 import mcjty.ariente.api.IGenerator;
 import mcjty.ariente.blocks.BlockProperties;
-import mcjty.ariente.setup.Registration;
 import mcjty.ariente.cables.CableColor;
 import mcjty.ariente.gui.HoloGuiTools;
 import mcjty.ariente.power.*;
+import mcjty.ariente.setup.Registration;
 import mcjty.hologui.api.*;
 import mcjty.lib.blocks.BaseBlock;
 import mcjty.lib.blocks.RotationType;
@@ -217,25 +217,19 @@ public class NegariteGeneratorTile extends GenericTileEntity implements ITickabl
     public void read(CompoundNBT tagCompound) {
         super.read(tagCompound);
         powerBlobSupport.setCableId(tagCompound.getInt("cableId"));
-        readRestorableFromNBT(tagCompound);
+        //        readBufferFromNBT(tagCompound, inventoryHelper);
+        CompoundNBT info = tagCompound.getCompound("Info");
+        if (info.contains("dust")) {
+            dustCounter = info.getInt("dust");
+        }
     }
 
     @Override
     public CompoundNBT write(CompoundNBT tagCompound) {
         tagCompound.putInt("cableId", powerBlobSupport.getCableId());
-        writeRestorableToNBT(tagCompound);
+        //        writeBufferToNBT(tagCompound, inventoryHelper);
+        getOrCreateInfo(tagCompound).putInt("dust", dustCounter);
         return super.write(tagCompound);
-    }
-
-    // @todo 1.14 loot
-    public void readRestorableFromNBT(CompoundNBT tagCompound) {
-//        readBufferFromNBT(tagCompound, inventoryHelper);
-        dustCounter = tagCompound.getInt("dust");
-    }
-
-    public void writeRestorableToNBT(CompoundNBT tagCompound) {
-//        writeBufferToNBT(tagCompound, inventoryHelper);
-        tagCompound.putInt("dust", dustCounter);
     }
 
     @Override

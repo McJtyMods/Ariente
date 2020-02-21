@@ -228,25 +228,20 @@ public class DoorMarkerTile extends GenericTileEntity implements ITickableTileEn
     public void read(CompoundNBT tagCompound) {
         super.read(tagCompound);
         open = tagCompound.getBoolean("open");
-        readRestorableFromNBT(tagCompound);
+        CompoundNBT info = tagCompound.getCompound("Info");
+        if (!info.isEmpty()) {
+            iconIndex = info.getInt("icon");
+            locked = info.getBoolean("locked");
+        }
     }
 
     @Override
     public CompoundNBT write(CompoundNBT tagCompound) {
         tagCompound.putBoolean("open", open);
-        writeRestorableToNBT(tagCompound);
+        CompoundNBT info = getOrCreateInfo(tagCompound);
+        info.putInt("icon", iconIndex);
+        info.putBoolean("locked", locked);
         return super.write(tagCompound);
-    }
-
-    // @todo 1.14 loot
-    public void readRestorableFromNBT(CompoundNBT tagCompound) {
-        iconIndex = tagCompound.getInt("icon");
-        locked = tagCompound.getBoolean("locked");
-    }
-
-    public void writeRestorableToNBT(CompoundNBT tagCompound) {
-        tagCompound.putInt("icon", iconIndex);
-        tagCompound.putBoolean("locked", locked);
     }
 
     // @todo 1.14

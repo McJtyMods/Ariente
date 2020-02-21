@@ -80,23 +80,26 @@ public class SensorItemNodeTile extends AbstractNodeTile {
 //        return ModBlocks.sensorItemNode;
 //    }
 
-    // @todo 1.14 loot
     @Override
     public void readRestorableFromNBT(CompoundNBT tagCompound) {
         super.readRestorableFromNBT(tagCompound);
-        if (tagCompound.contains("outColor")) {
-            outputColor[0] = DyeColor.values()[tagCompound.getInt("outColor")];
+        CompoundNBT info = tagCompound.getCompound("Info");
+        if (!info.isEmpty()) {
+            if (info.contains("outColor")) {
+                outputColor[0] = DyeColor.values()[info.getInt("outColor")];
+            }
+            operator = info.getInt("op");
+            amount = info.getInt("amount");
         }
-        operator = tagCompound.getInt("op");
-        amount = tagCompound.getInt("amount");
     }
 
     @Override
     public void writeRestorableToNBT(CompoundNBT tagCompound) {
         super.writeRestorableToNBT(tagCompound);
-        tagCompound.putInt("outColor", outputColor[0].ordinal());
-        tagCompound.putInt("op", operator);
-        tagCompound.putInt("amount", amount);
+        CompoundNBT info = getOrCreateInfo(tagCompound);
+        info.putInt("outColor", outputColor[0].ordinal());
+        info.putInt("op", operator);
+        info.putInt("amount", amount);
     }
 
     @Override

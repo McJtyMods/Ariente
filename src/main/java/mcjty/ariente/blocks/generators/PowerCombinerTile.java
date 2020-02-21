@@ -131,25 +131,19 @@ public class PowerCombinerTile extends GenericTileEntity implements ITickableTil
     }
 
 
-    // @todo 1.14 LOOT
-    public void readRestorableFromNBT(CompoundNBT tagCompound) {
-        powerTransfer = tagCompound.getInt("transfer");
-    }
-
-    public void writeRestorableToNBT(CompoundNBT tagCompound) {
-        tagCompound.putInt("transfer", powerTransfer);
-    }
-
     @Override
     public void read(CompoundNBT tagCompound) {
         super.read(tagCompound);
-        readRestorableFromNBT(tagCompound);
+        CompoundNBT info = tagCompound.getCompound("Info");
+        if (info.contains("transfer")) {
+            powerTransfer = info.getInt("transfer");
+        }
     }
 
     @Override
     public CompoundNBT write(CompoundNBT tagCompound) {
         tagCompound = super.write(tagCompound);
-        writeRestorableToNBT(tagCompound);
+        getOrCreateInfo(tagCompound).putInt("transfer", powerTransfer);
         return tagCompound;
     }
 

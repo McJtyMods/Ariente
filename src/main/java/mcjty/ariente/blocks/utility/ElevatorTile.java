@@ -284,24 +284,18 @@ public class ElevatorTile extends GenericTileEntity implements IGuiTile, ITickab
     public void setup(ICityAI cityAI, World world, boolean firstTime) {
     }
 
-    // @todo 1.14 loot
-    public void readRestorableFromNBT(CompoundNBT tagCompound) {
-        height = tagCompound.getInt("height");
-    }
-
     @Override
     public void read(CompoundNBT tagCompound) {
         super.read(tagCompound);
-        readRestorableFromNBT(tagCompound);
-    }
-
-    public void writeRestorableToNBT(CompoundNBT tagCompound) {
-        tagCompound.putInt("height", height);
+        CompoundNBT info = tagCompound.getCompound("Info");
+        if (info.contains("height")) {
+            height = info.getInt("height");
+        }
     }
 
     @Override
     public CompoundNBT write(CompoundNBT tagCompound) {
-        writeRestorableToNBT(tagCompound);
+        getOrCreateInfo(tagCompound).putInt("height", height);
         return super.write(tagCompound);
     }
 

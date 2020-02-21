@@ -315,7 +315,6 @@ public class AutoConstructorTile extends GenericTileEntity implements IGuiTile, 
         return super.write(tagCompound);
     }
 
-    // @todo 1.14 loot
     public void readRestorableFromNBT(CompoundNBT tagCompound) {
 //        readBufferFromNBT(tagCompound, inventoryHelper);
     }

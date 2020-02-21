@@ -447,15 +447,6 @@ public class ForceFieldTile extends GenericTileEntity implements IGuiTile, ITick
         }
     }
 
-    // @todo 1.14 LOOT
-    public void readRestorable(CompoundNBT tagCompound) {
-        scale = tagCompound.getInt("scale");
-    }
-
-    public void writeRestorable(CompoundNBT tagCompound) {
-        tagCompound.putInt("scale", scale);
-    }
-
     @Override
     public void read(CompoundNBT tagCompound) {
         super.read(tagCompound);
@@ -471,7 +462,10 @@ public class ForceFieldTile extends GenericTileEntity implements IGuiTile, ITick
                 panelInfo[i].setLife(lifeIdx[i]);
             }
         }
-        readRestorable(tagCompound);
+        CompoundNBT info = tagCompound.getCompound("Info");
+        if (info.contains("scale")) {
+            scale = info.getInt("scale");
+        }
     }
 
     @Override
@@ -488,7 +482,7 @@ public class ForceFieldTile extends GenericTileEntity implements IGuiTile, ITick
         }
 
         tagCompound.putIntArray("life", lifeIdx);
-        writeRestorable(tagCompound);
+        getOrCreateInfo(tagCompound).putInt("scale", scale);
         return tagCompound;
     }
 

@@ -593,31 +593,25 @@ public class AutoFieldTile extends GenericTileEntity implements IGuiTile, ITicka
     @Override
     public void read(CompoundNBT tagCompound) {
         super.read(tagCompound);
-        readRestorableFromNBT(tagCompound);
+        CompoundNBT info = tagCompound.getCompound("Info");
+        if (!info.isEmpty()) {
+            height = info.getInt("height");
+            renderItems = info.getBoolean("renderItems");
+            renderOutline = info.getBoolean("renderOutline");
+        }
         accumulatedPower = tagCompound.getLong("accPower");
     }
 
     @Override
     public CompoundNBT write(CompoundNBT tagCompound) {
         tagCompound.putLong("accPower", accumulatedPower);
-        writeRestorableToNBT(tagCompound);
+        getOrCreateInfo(tagCompound).putInt("height", height);
+        getOrCreateInfo(tagCompound).putBoolean("renderItems", renderItems);
+        getOrCreateInfo(tagCompound).putBoolean("renderOutline", renderOutline);
         return super.write(tagCompound);
     }
 
-    // @todo 1.14 loot
-    public void readRestorableFromNBT(CompoundNBT tagCompound) {
-        height = tagCompound.getInt("height");
-        renderItems = tagCompound.getBoolean("renderItems");
-        renderOutline = tagCompound.getBoolean("renderOutline");
-    }
-
-    public void writeRestorableToNBT(CompoundNBT tagCompound) {
-        tagCompound.putInt("height", height);
-        tagCompound.putBoolean("renderItems", renderItems);
-        tagCompound.putBoolean("renderOutline", renderOutline);
-    }
-
-// @todo 1.14
+    // @todo 1.14
 //    @Override
 //    @net.minecraftforge.fml.common.Optional.Method(modid = "theoneprobe")
 //    public void addProbeInfo(ProbeMode mode, IProbeInfo probeInfo, PlayerEntity player, World world, BlockState blockState, IProbeHitData data) {

@@ -2,9 +2,9 @@ package mcjty.ariente.blocks.utility;
 
 import mcjty.ariente.Ariente;
 import mcjty.ariente.api.IWarper;
-import mcjty.ariente.setup.Registration;
 import mcjty.ariente.compat.arienteworld.ArienteWorldCompat;
 import mcjty.ariente.config.UtilityConfiguration;
+import mcjty.ariente.setup.Registration;
 import mcjty.hologui.api.IGuiComponent;
 import mcjty.hologui.api.IGuiComponentRegistry;
 import mcjty.hologui.api.IGuiTile;
@@ -94,23 +94,17 @@ public class WarperTile extends GenericTileEntity implements IGuiTile, IWarper {
 
     @Override
     public void read(CompoundNBT tagCompound) {
-        readRestorableFromNBT(tagCompound);
+        CompoundNBT info = tagCompound.getCompound("Info");
+        if (info.contains("charges")) {
+            charges = info.getInt("charges");
+        }
         super.read(tagCompound);
     }
 
     @Override
     public CompoundNBT write(CompoundNBT tagCompound) {
-        writeRestorableToNBT(tagCompound);
+        getOrCreateInfo(tagCompound).putInt("charges", charges);
         return super.write(tagCompound);
-    }
-
-    // @todo 1.14 loot
-    public void readRestorableFromNBT(CompoundNBT tagCompound) {
-        charges = tagCompound.getInt("charges");
-    }
-
-    public void writeRestorableToNBT(CompoundNBT tagCompound) {
-        tagCompound.putInt("charges", charges);
     }
 
     // @todo 1.14

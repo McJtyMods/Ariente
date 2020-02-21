@@ -33,25 +33,28 @@ public class OutputItemNodeTile extends AbstractItemNodeTile {
 //        return ModBlocks.outputItemNode.get();
 //    }
 
-    // @todo 1.14 loot
     @Override
     public void readRestorableFromNBT(CompoundNBT tagCompound) {
         super.readRestorableFromNBT(tagCompound);
 //        readBufferFromNBT(tagCompound, "output", outputFilter);
-        outputDamage = tagCompound.getBoolean("outDamage");
-        outputNbt = tagCompound.getBoolean("outNBT");
-        outputOredict = tagCompound.getBoolean("outOre");
-        outputStackSize = tagCompound.getInt("outSS");
+        CompoundNBT info = tagCompound.getCompound("Info");
+        if (!info.isEmpty()) {
+            outputDamage = info.getBoolean("outDamage");
+            outputNbt = info.getBoolean("outNBT");
+            outputOredict = info.getBoolean("outOre");
+            outputStackSize = info.getInt("outSS");
+        }
     }
 
     @Override
     public void writeRestorableToNBT(CompoundNBT tagCompound) {
         super.writeRestorableToNBT(tagCompound);
 //        writeBufferToNBT(tagCompound, "output", outputFilter);
-        tagCompound.putBoolean("outDamage", outputDamage);
-        tagCompound.putBoolean("outNBT", outputNbt);
-        tagCompound.putBoolean("outOre", outputOredict);
-        tagCompound.putInt("outSS", outputStackSize);
+        CompoundNBT info = getOrCreateInfo(tagCompound);
+        info.putBoolean("outDamage", outputDamage);
+        info.putBoolean("outNBT", outputNbt);
+        info.putBoolean("outOre", outputOredict);
+        info.putInt("outSS", outputStackSize);
     }
 
     public ItemStackList getOutputFilter() {

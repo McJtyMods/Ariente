@@ -202,27 +202,6 @@ public class LockTile extends GenericTileEntity implements IGuiTile, IKeyCardSlo
         }
     }
 
-    // @todo 1.14 loot
-    public void readRestorableFromNBT(CompoundNBT tagCompound) {
-        locked = tagCompound.getBoolean("locked");
-        keyId = tagCompound.getString("keyId");
-        if (tagCompound.contains("vertical")) {
-            verticalRange = tagCompound.getInt("vertical");
-        }
-        if (tagCompound.contains("horizontal")) {
-            horizontalRange = tagCompound.getInt("horizontal");
-        }
-    }
-
-    public void writeRestorableToNBT(CompoundNBT tagCompound) {
-        tagCompound.putBoolean("locked", locked);
-        if (keyId != null) {
-            tagCompound.putString("keyId", keyId);
-        }
-        tagCompound.putInt("vertical", verticalRange);
-        tagCompound.putInt("horizontal", horizontalRange);
-    }
-
     // @todo 1.14
 //    @Override
 //    @Optional.Method(modid = "theoneprobe")

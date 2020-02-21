@@ -565,8 +565,9 @@ public class BlockStates extends BaseBlockStateProvider {
     }
 
     private void registerBaseModels() {
-        flatglow = models().getBuilder(BLOCK_FOLDER + "/base/flatglow");
+        flatglow = models().withExistingParent(BLOCK_FOLDER + "/base/flatglow", mcLoc("block"));
         // @todo support CTM
+        flatglow.parent(models().getExistingFile(mcLoc("block")));
         flatglow.element().from(2, 2, 13).to(14, 14, 16)
                 .face(DOWN).uvs(0, 0, 16, 16).texture("#side").end()
                 .face(UP).uvs(0, 0, 16, 16).texture("#side").end()
@@ -576,7 +577,7 @@ public class BlockStates extends BaseBlockStateProvider {
                 .face(EAST).uvs(0, 0, 16, 16).texture("#side").end()
                 .end();
 
-        frontglow = models().getBuilder(BLOCK_FOLDER + "/base/frontglow");
+        frontglow = models().withExistingParent(BLOCK_FOLDER + "/base/frontglow", mcLoc("block"));
         // @todo support CTM
         frontglow.element().from(0, 0, 0).to(16, 16, 16)
                 .face(DOWN).uvs(0, 0, 16, 16).texture("#bottom").cullface(DOWN).end()
@@ -590,7 +591,7 @@ public class BlockStates extends BaseBlockStateProvider {
                 .texture("bottom", modLoc(TXT_MACHINEBOTTOM))
                 .texture("top", modLoc(TXT_MACHINEBOTTOM));
 
-        topglow = models().getBuilder(BLOCK_FOLDER + "/base/topglow");
+        topglow = models().withExistingParent(BLOCK_FOLDER + "/base/topglow", mcLoc("block"));
         // @todo support CTM
         topglow.element().from(0, 0, 0).to(16, 16, 16)
                 .face(DOWN).uvs(0, 0, 16, 16).texture("#bottom").cullface(DOWN).end()
@@ -601,7 +602,7 @@ public class BlockStates extends BaseBlockStateProvider {
                 .face(EAST).uvs(0, 0, 16, 16).texture("#side").cullface(EAST).end()
                 .end();
 
-        front = models().getBuilder(BLOCK_FOLDER + "/base/front");
+        front = models().withExistingParent(BLOCK_FOLDER + "/base/front", mcLoc("block"));
         front.element().from(0, 0, 0).to(16, 16, 16)
                 .face(DOWN).uvs(0, 0, 16, 16).texture("#bottom").cullface(DOWN).end()
                 .face(UP).uvs(0, 0, 16, 16).texture("#top").cullface(UP).end()
@@ -614,7 +615,7 @@ public class BlockStates extends BaseBlockStateProvider {
                 .texture("bottom", modLoc(TXT_MACHINEBOTTOM))
                 .texture("top", modLoc(TXT_MACHINETOP));
 
-        fullglow = models().getBuilder(BLOCK_FOLDER + "/base/fullglow");
+        fullglow = models().withExistingParent(BLOCK_FOLDER + "/base/fullglow", mcLoc("block"));
         // @todo support CTM
         fullglow.element().from(0, 0, 0).to(16, 16, 16)
                 .face(DOWN).uvs(0, 0, 16, 16).texture("#all").cullface(DOWN).end()
@@ -625,7 +626,7 @@ public class BlockStates extends BaseBlockStateProvider {
                 .face(EAST).uvs(0, 0, 16, 16).texture("#all").cullface(EAST).end()
                 .end();
 
-        sideglow = models().getBuilder(BLOCK_FOLDER + "/base/sideglow");
+        sideglow = models().withExistingParent(BLOCK_FOLDER + "/base/sideglow", mcLoc("block"));
         // @todo support CTM
         sideglow.element().from(0, 0, 0).to(16, 16, 16)
                 .face(DOWN).uvs(0, 0, 16, 16).texture("#bottom").cullface(DOWN).end()
@@ -638,7 +639,7 @@ public class BlockStates extends BaseBlockStateProvider {
                 .texture("bottom", modLoc(TXT_MACHINEBOTTOM))
                 .texture("top", modLoc(TXT_MACHINETOP));
 
-        thin = models().getBuilder(BLOCK_FOLDER + "/base/thin");
+        thin = models().withExistingParent(BLOCK_FOLDER + "/base/thin", mcLoc("block"));
         thin.element().from(0, 0, 0).to(16, 1, 16)
                 .face(DOWN).uvs(0, 0, 16, 16).texture("#bottom").cullface(DOWN).end()
                 .face(UP).uvs(0, 0, 16, 16).texture("#top").end()
@@ -648,7 +649,7 @@ public class BlockStates extends BaseBlockStateProvider {
                 .face(EAST).uvs(0, 0, 16, 16).texture("#side").cullface(EAST).end()
                 .end();
 
-        nodeblock_tl = models().getBuilder(BLOCK_FOLDER + "/base/nodeblock_topleft");
+        nodeblock_tl = models().withExistingParent(BLOCK_FOLDER + "/base/nodeblock_topleft", mcLoc("block"));
         nodeblock_tl.element().from(2, 2, 14).to(6, 6, 16)
                 .face(DOWN).uvs(0, 0, 16, 16).texture("#side").cullface(DOWN).end()
                 .face(UP).uvs(0, 0, 16, 16).texture("#side").cullface(UP).end()
@@ -658,7 +659,7 @@ public class BlockStates extends BaseBlockStateProvider {
                 .face(EAST).uvs(0, 0, 16, 16).texture("#side").cullface(EAST).end()
                 .end();
 
-        nodeblock_tr = models().getBuilder(BLOCK_FOLDER + "/base/nodeblock_topright");
+        nodeblock_tr = models().withExistingParent(BLOCK_FOLDER + "/base/nodeblock_topright", mcLoc("block"));
         nodeblock_tr.element().from(10, 2, 14).to(14, 6, 16)
                 .face(DOWN).uvs(0, 0, 16, 16).texture("#side").cullface(DOWN).end()
                 .face(UP).uvs(0, 0, 16, 16).texture("#side").cullface(UP).end()
@@ -668,7 +669,7 @@ public class BlockStates extends BaseBlockStateProvider {
                 .face(EAST).uvs(0, 0, 16, 16).texture("#side").cullface(EAST).end()
                 .end();
 
-        nodeblock_bl = models().getBuilder(BLOCK_FOLDER + "/base/nodeblock_botleft");
+        nodeblock_bl = models().withExistingParent(BLOCK_FOLDER + "/base/nodeblock_botleft", mcLoc("block"));
         nodeblock_bl.element().from(2, 10, 14).to(6, 14, 16)
                 .face(DOWN).uvs(0, 0, 16, 16).texture("#side").cullface(DOWN).end()
                 .face(UP).uvs(0, 0, 16, 16).texture("#side").cullface(UP).end()
@@ -678,7 +679,7 @@ public class BlockStates extends BaseBlockStateProvider {
                 .face(EAST).uvs(0, 0, 16, 16).texture("#side").cullface(EAST).end()
                 .end();
 
-        nodeblock_br = models().getBuilder(BLOCK_FOLDER + "/base/nodeblock_botright");
+        nodeblock_br = models().withExistingParent(BLOCK_FOLDER + "/base/nodeblock_botright", mcLoc("block"));
         nodeblock_br.element().from(10, 10, 14).to(14, 14, 16)
                 .face(DOWN).uvs(0, 0, 16, 16).texture("#side").cullface(DOWN).end()
                 .face(UP).uvs(0, 0, 16, 16).texture("#side").cullface(UP).end()

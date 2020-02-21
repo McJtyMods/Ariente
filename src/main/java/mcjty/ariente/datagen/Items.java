@@ -9,7 +9,9 @@ import mcjty.ariente.setup.Registration;
 import mcjty.lib.blocks.BlockStateItem;
 import mcjty.lib.datagen.BaseItemModelProvider;
 import net.minecraft.data.DataGenerator;
+import net.minecraft.item.Item;
 import net.minecraftforge.client.model.generators.ExistingFileHelper;
+import net.minecraftforge.client.model.generators.ModelFile;
 import net.minecraftforge.fml.RegistryObject;
 
 import java.util.Map;
@@ -62,10 +64,12 @@ public class Items extends BaseItemModelProvider {
         for (Map.Entry<MarbleColor, RegistryObject<BlockStateItem>> entry : Registration.MARBLE_SLAB_ITEMS.entrySet()) {
             parentedItem(entry.getValue().get(), "block/decorative/marble_slab_" + entry.getKey().getName());
         }
-        parentedItem(Registration.BLUE_GLASS_FENCE_ITEM.get(), "block/decorative/blue_glass_fence");
-        parentedItem(Registration.GLASS_FENCE_ITEM.get(), "block/decorative/glass_fence");
-        parentedItem(Registration.MARBLE_FENCE_ITEM.get(), "block/decorative/marble_fence");
-        parentedItem(Registration.TECH_FENCE_ITEM.get(), "block/decorative/tech_fence");
+
+        fenceItem(Registration.BLUE_GLASS_FENCE_ITEM.get(), "block/decorative/blue_glass_fence");
+        fenceItem(Registration.GLASS_FENCE_ITEM.get(), "block/decorative/glass_fence");
+        fenceItem(Registration.MARBLE_FENCE_ITEM.get(), "block/decorative/marble_fence");
+        fenceItem(Registration.TECH_FENCE_ITEM.get(), "block/decorative/tech_fence");
+
         parentedItem(Registration.DOOR_MARKER_ITEM.get(), "block/utility/door_marker");
         parentedItem(Registration.LEVEL_MARKER_ITEM.get(), "block/utility/level_marker");
         parentedItem(Registration.FIELD_MARKER_ITEM.get(), "block/utility/field_marker");
@@ -92,6 +96,13 @@ public class Items extends BaseItemModelProvider {
         parentedItem(Registration.ORE_PLATINUM_ITEM.get(), "block/ores/platinum");
         parentedItem(Registration.ORE_NEGARITE_ITEM.get(), "block/ores/negarite");
         parentedItem(Registration.ORE_POSIRITE_ITEM.get(), "block/ores/posirite");
+    }
+
+    private void fenceItem(Item item, String texture) {
+        ModelFile.UncheckedModelFile parent = new ModelFile.UncheckedModelFile(mcLoc(BLOCK_FOLDER + "/fence_inventory"));
+        getBuilder(item.getRegistryName().getPath())
+                .parent(parent)
+                .texture("texture", modLoc(texture));
     }
 
     @Override

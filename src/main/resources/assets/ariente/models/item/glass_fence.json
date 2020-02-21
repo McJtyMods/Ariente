@@ -1,3 +1,6 @@
 {
-  "parent": "ariente:block/decorative/glass_fence"
+  "parent": "block/fence_inventory",
+  "textures": {
+    "texture": "ariente:block/decorative/glass_fence"
+  }
 }

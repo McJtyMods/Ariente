@@ -193,23 +193,26 @@ public class WirelessLockTile extends SignalChannelTileEntity implements ILockab
         return super.write(tagCompound);
     }
 
-    // @todo 1.14 loot
     @Override
     public void readRestorableFromNBT(CompoundNBT tagCompound) {
         super.readRestorableFromNBT(tagCompound);
-        if (tagCompound.contains("vertical")) {
-            verticalRange = tagCompound.getInt("vertical");
-        }
-        if (tagCompound.contains("horizontal")) {
-            horizontalRange = tagCompound.getInt("horizontal");
+        CompoundNBT info = tagCompound.getCompound("Info");
+        if (!info.isEmpty()) {
+            if (info.contains("vertical")) {
+                verticalRange = info.getInt("vertical");
+            }
+            if (info.contains("horizontal")) {
+                horizontalRange = info.getInt("horizontal");
+            }
         }
     }
 
     @Override
     public void writeRestorableToNBT(CompoundNBT tagCompound) {
         super.writeRestorableToNBT(tagCompound);
-        tagCompound.putInt("vertical", verticalRange);
-        tagCompound.putInt("horizontal", horizontalRange);
+        CompoundNBT info = getOrCreateInfo(tagCompound);
+        info.putInt("vertical", verticalRange);
+        info.putInt("horizontal", horizontalRange);
     }
 
     private void changeHorizontalRange(int dy) {

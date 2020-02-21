@@ -110,14 +110,20 @@ public class FieldMarkerTile extends GenericTileEntity {
         return autoFieldTile;
     }
 
-    // @todo 1.14 loot
-    public void readRestorableFromNBT(CompoundNBT tagCompound) {
-        autoFieldTile = BlockPosTools.read(tagCompound, "autofield");
+    @Override
+    public void read(CompoundNBT tagCompound) {
+        super.read(tagCompound);
+        CompoundNBT info = tagCompound.getCompound("Info");
+        if (info.contains("autofield")) {
+            autoFieldTile = BlockPosTools.read(info, "autofield");
+        }
     }
 
-    public void writeRestorableToNBT(CompoundNBT tagCompound) {
+    @Override
+    public CompoundNBT write(CompoundNBT tagCompound) {
         if (autoFieldTile != null) {
-            BlockPosTools.write(tagCompound, "autofield", autoFieldTile);
+            BlockPosTools.write(getOrCreateInfo(tagCompound), "autofield", autoFieldTile);
         }
+        return super.write(tagCompound);
     }
 }

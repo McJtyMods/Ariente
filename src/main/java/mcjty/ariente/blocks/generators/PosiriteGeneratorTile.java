@@ -26,7 +26,6 @@ import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.CompoundNBT;
 import net.minecraft.network.NetworkManager;
 import net.minecraft.network.play.server.SUpdateTileEntityPacket;
-import net.minecraft.state.BooleanProperty;
 import net.minecraft.state.StateContainer;
 import net.minecraft.tileentity.ITickableTileEntity;
 import net.minecraft.util.ActionResultType;
@@ -210,25 +209,19 @@ public class PosiriteGeneratorTile extends GenericTileEntity implements ITickabl
     public void read(CompoundNBT tagCompound) {
         super.read(tagCompound);
         powerBlobSupport.setCableId(tagCompound.getInt("cableId"));
-        readRestorableFromNBT(tagCompound);
+        //        readBufferFromNBT(tagCompound, inventoryHelper);
+        CompoundNBT info = tagCompound.getCompound("Info");
+        if (info.contains("dust")) {
+            dustCounter = info.getInt("dust");
+        }
     }
 
     @Override
     public CompoundNBT write(CompoundNBT tagCompound) {
         tagCompound.putInt("cableId", powerBlobSupport.getCableId());
-        writeRestorableToNBT(tagCompound);
+        //        writeBufferToNBT(tagCompound, inventoryHelper);
+        getOrCreateInfo(tagCompound).putInt("dust", dustCounter);
         return super.write(tagCompound);
-    }
-
-    // @todo 1.14 loot
-    public void readRestorableFromNBT(CompoundNBT tagCompound) {
-//        readBufferFromNBT(tagCompound, inventoryHelper);
-        dustCounter = tagCompound.getInt("dust");
-    }
-
-    public void writeRestorableToNBT(CompoundNBT tagCompound) {
-//        writeBufferToNBT(tagCompound, inventoryHelper);
-        tagCompound.putInt("dust", dustCounter);
     }
 
     @Override
