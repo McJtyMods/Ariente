@@ -4,6 +4,7 @@ import com.mojang.blaze3d.matrix.MatrixStack;
 import com.mojang.blaze3d.vertex.IVertexBuilder;
 import mcjty.ariente.Ariente;
 import mcjty.ariente.setup.Registration;
+import mcjty.lib.client.CustomRenderTypes;
 import mcjty.lib.client.RenderHelper;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.renderer.IRenderTypeBuffer;
@@ -20,7 +21,7 @@ import java.util.Random;
 
 public class ElevatorRenderer extends TileEntityRenderer<ElevatorTile> {
 
-    public static final ResourceLocation ELEVATOR_BEAM = new ResourceLocation(Ariente.MODID, "blocks/machines/elevator_beam");
+    public static final ResourceLocation ELEVATOR_BEAM = new ResourceLocation(Ariente.MODID, "block/machines/elevator_beam");
     private Random random = new Random();
 
     public ElevatorRenderer(TileEntityRendererDispatcher dispatcher) {
@@ -35,30 +36,20 @@ public class ElevatorRenderer extends TileEntityRenderer<ElevatorTile> {
     public void render(ElevatorTile te, float partialTicks, MatrixStack matrixStack, IRenderTypeBuffer buffer, int combinedLightIn, int combinedOverlayIn) {
         matrixStack.push();
 
-        // @tod o1.15
-//        GlStateManager.enableBlend();
-//        GlStateManager.depthMask(false);
-//        GlStateManager.blendFunc(GL11.GL_ONE, GL11.GL_ONE);
-//        GlStateManager.disableCull();
-//        GlStateManager.enableDepthTest();
 
         TextureAtlasSprite sprite = Minecraft.getInstance().getTextureGetter(AtlasTexture.LOCATION_BLOCKS_TEXTURE).apply(ELEVATOR_BEAM);
 
-
-//
         Minecraft mc = Minecraft.getInstance();
         PlayerEntity p = mc.player;
         double doubleX = p.lastTickPosX + (p.getPosX() - p.lastTickPosX) * partialTicks;
         double doubleY = p.lastTickPosY + (p.getPosY() - p.lastTickPosY) * partialTicks;
         double doubleZ = p.lastTickPosZ + (p.getPosZ() - p.lastTickPosZ) * partialTicks;
-//
-//        GlStateManager.translated(-doubleX, -doubleY, -doubleZ);
-//
-        RenderHelper.Vector player = new RenderHelper.Vector((float) doubleX, (float) doubleY + p.getEyeHeight(), (float) doubleZ);
+
+        RenderHelper.Vector player = new RenderHelper.Vector((float) doubleX - te.getPos().getX(), (float) doubleY + p.getEyeHeight() - te.getPos().getY(), (float) doubleZ - te.getPos().getZ());
 
         long tt = System.currentTimeMillis() / 100;
 
-        IVertexBuilder builder = buffer.getBuffer(RenderType.translucent());
+        IVertexBuilder builder = buffer.getBuffer(CustomRenderTypes.TRANSLUCENT_ADD);
 
         float height = te.getHeight();
 
@@ -69,21 +60,11 @@ public class ElevatorRenderer extends TileEntityRenderer<ElevatorTile> {
                 ticks = 80 - ticks;
             }
             float i1 = ticks / 40.0f;
-            float xx = te.getPos().getX() + randomX[ii];
-            float zz = te.getPos().getZ() + randomZ[ii];
-            float yy = te.getPos().getY() - 1.0f + i1 + (randomY[ii] * height) / 8.0f;
+            float xx = randomX[ii];
+            float zz = randomZ[ii];
+            float yy = - 1.0f + i1 + (randomY[ii] * height) / 8.0f;
             RenderHelper.drawBeam(matrixStack.getLast().getPositionMatrix(), builder, sprite, new RenderHelper.Vector(xx, yy, zz), new RenderHelper.Vector(xx, yy + 4, zz), player, 0.2f);
         }
-
-//        net.minecraft.util.math.Vec3d cameraPos = net.minecraft.client.renderer.ActiveRenderInfo.getCameraPosition();
-//        tessellator.getBuffer().sortVertexData((float) (player.x + doubleX), (float) (player.y + doubleY), (float) (player.z + doubleZ));
-//        tessellator.getBuffer().sortVertexData((float)(cameraPos.x+doubleX), (float)(cameraPos.y+doubleY), (float)(cameraPos.z+doubleZ));
-
-        // @todo 1.15
-//        GlStateManager.depthMask(true);
-//        GlStateManager.enableLighting();
-//        GlStateManager.enableDepthTest();
-//        GlStateManager.alphaFunc(GL11.GL_GREATER, 0.1F);
 
         matrixStack.pop();
     }

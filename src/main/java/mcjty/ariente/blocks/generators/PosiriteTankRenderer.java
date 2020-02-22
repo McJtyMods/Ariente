@@ -11,7 +11,7 @@ import net.minecraftforge.fml.client.registry.ClientRegistry;
 
 public class PosiriteTankRenderer extends TileEntityRenderer<PosiriteTankTile> {
 
-    public static final ResourceLocation POSIRITE_BEAM = new ResourceLocation(Ariente.MODID, "blocks/machines/posirite_beam");
+    public static final ResourceLocation POSIRITE_BEAM = new ResourceLocation(Ariente.MODID, "block/machines/posirite_beam");
 
     public PosiriteTankRenderer(TileEntityRendererDispatcher dispatcher) {
         super(dispatcher);

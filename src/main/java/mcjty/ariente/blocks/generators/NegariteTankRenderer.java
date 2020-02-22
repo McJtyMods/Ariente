@@ -11,7 +11,7 @@ import net.minecraftforge.fml.client.registry.ClientRegistry;
 
 public class NegariteTankRenderer extends TileEntityRenderer<NegariteTankTile> {
 
-    public static final ResourceLocation NEGARITE_BEAM = new ResourceLocation(Ariente.MODID, "blocks/machines/negarite_beam");
+    public static final ResourceLocation NEGARITE_BEAM = new ResourceLocation(Ariente.MODID, "block/machines/negarite_beam");
 
     public NegariteTankRenderer(TileEntityRendererDispatcher dispatcher) {
         super(dispatcher);
