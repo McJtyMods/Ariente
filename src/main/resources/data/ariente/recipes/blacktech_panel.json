@@ -1,0 +1,26 @@
+{
+  "type": "minecraft:crafting_shaped",
+  "group": "ariente",
+  "pattern": [
+    "MMM",
+    "Smr",
+    "MMM"
+  ],
+  "key": {
+    "M": {
+      "item": "ariente:marble_black"
+    },
+    "S": {
+      "item": "ariente:marble_darkblue"
+    },
+    "m": {
+      "item": "ariente:marble_red"
+    },
+    "r": {
+      "item": "minecraft:redstone"
+    }
+  },
+  "result": {
+    "item": "ariente:blacktech_panel"
+  }
+}

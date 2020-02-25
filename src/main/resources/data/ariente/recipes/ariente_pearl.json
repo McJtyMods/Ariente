@@ -1,0 +1,20 @@
+{
+  "type": "minecraft:crafting_shaped",
+  "group": "ariente",
+  "pattern": [
+    "mmm",
+    "mom",
+    "mmm"
+  ],
+  "key": {
+    "m": {
+      "item": "minecraft:quartz"
+    },
+    "o": {
+      "tag": "forge:ender_pearls"
+    }
+  },
+  "result": {
+    "item": "ariente:ariente_pearl"
+  }
+}

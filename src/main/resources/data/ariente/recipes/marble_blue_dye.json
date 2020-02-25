@@ -1,0 +1,15 @@
+{
+  "type": "minecraft:crafting_shapeless",
+  "group": "ariente",
+  "ingredients": [
+    {
+      "tag": "forge:marble"
+    },
+    {
+      "tag": "forge:dyes/light_blue"
+    }
+  ],
+  "result": {
+    "item": "ariente:marble_blue"
+  }
+}

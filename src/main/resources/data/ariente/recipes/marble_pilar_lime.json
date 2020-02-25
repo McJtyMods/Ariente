@@ -1,0 +1,17 @@
+{
+  "type": "minecraft:crafting_shaped",
+  "group": "ariente",
+  "pattern": [
+    "m",
+    "m"
+  ],
+  "key": {
+    "m": {
+      "item": "ariente:marble_lime"
+    }
+  },
+  "result": {
+    "item": "ariente:marble_pilar_lime",
+    "count": 2
+  }
+}

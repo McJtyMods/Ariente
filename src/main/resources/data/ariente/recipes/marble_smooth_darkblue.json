@@ -1,0 +1,12 @@
+{
+  "type": "minecraft:crafting_shapeless",
+  "group": "ariente",
+  "ingredients": [
+    {
+      "item": "ariente:marble_darkblue"
+    }
+  ],
+  "result": {
+    "item": "ariente:marble_smooth_darkblue"
+  }
+}

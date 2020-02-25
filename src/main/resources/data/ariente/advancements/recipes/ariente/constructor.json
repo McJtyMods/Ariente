@@ -1,0 +1,32 @@
+{
+  "parent": "minecraft:recipes/root",
+  "rewards": {
+    "recipes": [
+      "ariente:constructor"
+    ]
+  },
+  "criteria": {
+    "silver": {
+      "trigger": "minecraft:inventory_changed",
+      "conditions": {
+        "items": [
+          {
+            "item": "ariente:ingot_silver"
+          }
+        ]
+      }
+    },
+    "has_the_recipe": {
+      "trigger": "minecraft:recipe_unlocked",
+      "conditions": {
+        "recipe": "ariente:constructor"
+      }
+    }
+  },
+  "requirements": [
+    [
+      "silver",
+      "has_the_recipe"
+    ]
+  ]
+}

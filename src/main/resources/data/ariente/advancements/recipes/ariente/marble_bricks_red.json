@@ -1,0 +1,32 @@
+{
+  "parent": "minecraft:recipes/root",
+  "rewards": {
+    "recipes": [
+      "ariente:marble_bricks_red"
+    ]
+  },
+  "criteria": {
+    "marble": {
+      "trigger": "minecraft:inventory_changed",
+      "conditions": {
+        "items": [
+          {
+            "item": "ariente:marble_darkblue"
+          }
+        ]
+      }
+    },
+    "has_the_recipe": {
+      "trigger": "minecraft:recipe_unlocked",
+      "conditions": {
+        "recipe": "ariente:marble_bricks_red"
+      }
+    }
+  },
+  "requirements": [
+    [
+      "marble",
+      "has_the_recipe"
+    ]
+  ]
+}

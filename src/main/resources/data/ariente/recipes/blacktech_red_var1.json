@@ -1,0 +1,20 @@
+{
+  "type": "minecraft:crafting_shaped",
+  "group": "ariente",
+  "pattern": [
+    "MmM",
+    "mmm",
+    "MmM"
+  ],
+  "key": {
+    "M": {
+      "item": "ariente:marble_black"
+    },
+    "m": {
+      "item": "ariente:marble_red"
+    }
+  },
+  "result": {
+    "item": "ariente:blacktech_red_var1"
+  }
+}

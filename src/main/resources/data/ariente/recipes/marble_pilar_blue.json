@@ -1,0 +1,17 @@
+{
+  "type": "minecraft:crafting_shaped",
+  "group": "ariente",
+  "pattern": [
+    "m",
+    "m"
+  ],
+  "key": {
+    "m": {
+      "item": "ariente:marble_blue"
+    }
+  },
+  "result": {
+    "item": "ariente:marble_pilar_blue",
+    "count": 2
+  }
+}

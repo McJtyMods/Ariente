@@ -1,0 +1,20 @@
+{
+  "type": "minecraft:crafting_shaped",
+  "group": "ariente",
+  "pattern": [
+    "xxx",
+    "xMx",
+    "xxx"
+  ],
+  "key": {
+    "x": {
+      "tag": "forge:ingots/lithium"
+    },
+    "M": {
+      "item": "ariente:energy_sabre"
+    }
+  },
+  "result": {
+    "item": "ariente:enhanced_energy_sabre"
+  }
+}

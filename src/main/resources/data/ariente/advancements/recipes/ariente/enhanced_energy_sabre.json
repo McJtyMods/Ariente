@@ -1,0 +1,32 @@
+{
+  "parent": "minecraft:recipes/root",
+  "rewards": {
+    "recipes": [
+      "ariente:enhanced_energy_sabre"
+    ]
+  },
+  "criteria": {
+    "sabre": {
+      "trigger": "minecraft:inventory_changed",
+      "conditions": {
+        "items": [
+          {
+            "item": "ariente:energy_sabre"
+          }
+        ]
+      }
+    },
+    "has_the_recipe": {
+      "trigger": "minecraft:recipe_unlocked",
+      "conditions": {
+        "recipe": "ariente:enhanced_energy_sabre"
+      }
+    }
+  },
+  "requirements": [
+    [
+      "sabre",
+      "has_the_recipe"
+    ]
+  ]
+}

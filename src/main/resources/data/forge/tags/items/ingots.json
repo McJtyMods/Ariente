@@ -1,0 +1,9 @@
+{
+  "replace": false,
+  "values": [
+    "ariente:ingot_lithium",
+    "ariente:ingot_silver",
+    "ariente:ingot_platinum",
+    "ariente:ingot_manganese"
+  ]
+}

@@ -1,0 +1,11 @@
+{
+  "replace": false,
+  "values": [
+    "ariente:posirite",
+    "ariente:negarite",
+    "ariente:siliconore",
+    "ariente:silverore",
+    "ariente:manganeseore",
+    "ariente:platinumore"
+  ]
+}

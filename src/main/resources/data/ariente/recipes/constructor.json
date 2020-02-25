@@ -1,0 +1,23 @@
+{
+  "type": "minecraft:crafting_shaped",
+  "group": "ariente",
+  "pattern": [
+    "iii",
+    "isi",
+    "lll"
+  ],
+  "key": {
+    "l": {
+      "tag": "forge:ingots/silver"
+    },
+    "s": {
+      "tag": "forge:ingots/platinum"
+    },
+    "i": {
+      "tag": "forge:ingots/iron"
+    }
+  },
+  "result": {
+    "item": "ariente:constructor"
+  }
+}

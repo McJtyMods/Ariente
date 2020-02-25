@@ -47,7 +47,11 @@ import net.minecraft.inventory.EquipmentSlotType;
 import net.minecraft.inventory.container.ContainerType;
 import net.minecraft.item.BlockItem;
 import net.minecraft.item.Item;
+import net.minecraft.tags.BlockTags;
+import net.minecraft.tags.ItemTags;
+import net.minecraft.tags.Tag;
 import net.minecraft.tileentity.TileEntityType;
+import net.minecraft.util.ResourceLocation;
 import net.minecraft.util.SoundEvent;
 import net.minecraft.util.math.AxisAlignedBB;
 import net.minecraftforge.fml.RegistryObject;
@@ -80,6 +84,21 @@ public class Registration {
         ENTITIES.register(FMLJavaModLoadingContext.get().getModEventBus());
     }
 
+    public static final Tag<Item> TAG_INGOT_SILVER = new ItemTags.Wrapper(new ResourceLocation("forge", "ingots/silver"));
+    public static final Tag<Item> TAG_INGOT_PLATINUM = new ItemTags.Wrapper(new ResourceLocation("forge", "ingots/platinum"));
+    public static final Tag<Item> TAG_INGOT_LITHIUM = new ItemTags.Wrapper(new ResourceLocation("forge", "ingots/lithium"));
+    public static final Tag<Item> TAG_INGOT_MANGANESE = new ItemTags.Wrapper(new ResourceLocation("forge", "ingots/manganese"));
+    public static final Tag<Item> TAG_DUSTS_SILICON = new ItemTags.Wrapper(new ResourceLocation("forge", "dusts/silicon"));
+    public static final Tag<Item> TAG_DUSTS_NEGARITE = new ItemTags.Wrapper(new ResourceLocation("forge", "dusts/negarite"));
+    public static final Tag<Item> TAG_DUSTS_POSIRITE = new ItemTags.Wrapper(new ResourceLocation("forge", "dusts/posirite"));
+    public static final Tag<Block> TAG_ORE_SILVER = new BlockTags.Wrapper(new ResourceLocation("forge", "ores/silver"));
+    public static final Tag<Block> TAG_ORE_PLATINUM = new BlockTags.Wrapper(new ResourceLocation("forge", "ores/platinum"));
+    public static final Tag<Block> TAG_ORE_LITHIUM = new BlockTags.Wrapper(new ResourceLocation("forge", "ores/lithium"));
+    public static final Tag<Block> TAG_ORE_MANGANESE = new BlockTags.Wrapper(new ResourceLocation("forge", "ores/manganese"));
+    public static final Tag<Block> TAG_ORE_SILICON = new BlockTags.Wrapper(new ResourceLocation("forge", "ores/silicon"));
+    public static final Tag<Block> TAG_ORE_NEGARITE = new BlockTags.Wrapper(new ResourceLocation("forge", "ores/negarite"));
+    public static final Tag<Block> TAG_ORE_POSIRITE = new BlockTags.Wrapper(new ResourceLocation("forge", "ores/posirite"));
+    public static final Tag<Item> TAG_MARBLE = new ItemTags.Wrapper(new ResourceLocation("forge", "marble"));
 
     public static final AxisAlignedBB FLAT_BLOCK_AABB = new AxisAlignedBB(0.0D, 0.0D, 0.0D, 1.0D, 0.1D, 1.0D);
     public static final AxisAlignedBB BEAM_BLOCK_NS_AABB = new AxisAlignedBB(0.0D, 0.0D, 0.3D, 1.0D, 0.3D, 0.7D);
@@ -332,7 +351,7 @@ public class Registration {
     public static final RegistryObject<Item> INGOT_LITHIUM = ITEMS.register("ingot_lithium", () -> new Item(createStandardProperties()));
     public static final RegistryObject<Item> INGOT_MANGANESE = ITEMS.register("ingot_manganese", () -> new Item(createStandardProperties()));
     public static final RegistryObject<Item> INGOT_SILVER = ITEMS.register("ingot_silver", () -> new Item(createStandardProperties()));
-    public static final RegistryObject<Item> SILICON = ITEMS.register("silicon", () -> new Item(createStandardProperties()));
+    public static final RegistryObject<Item> DUST_SILICON = ITEMS.register("silicon", () -> new Item(createStandardProperties()));
     public static final RegistryObject<Item> DUST_NEGARITE = ITEMS.register("dust_negarite", () -> new Item(createStandardProperties()));
     public static final RegistryObject<Item> DUST_POSIRITE = ITEMS.register("dust_posirite", () -> new Item(createStandardProperties()));
     public static final RegistryObject<EnergySabreItem> ENERGY_SABRE = ITEMS.register("energy_sabre", EnergySabreItem::new);
