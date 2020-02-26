@@ -1,3 +1,3 @@
 {
-  "parent": "ariente:block/machines/signal_receiver"
+  "parent": "ariente:block/machines/signal_receiver_on"
 }

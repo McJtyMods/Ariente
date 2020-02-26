@@ -1,25 +1,25 @@
 {
   "variants": {
     "color=gray": {
-      "model": "ariente:block/decorative/marble_pilargray"
+      "model": "ariente:block/decorative/marble_pilar_gray"
     },
     "color=white": {
-      "model": "ariente:block/decorative/marble_pilarwhite"
+      "model": "ariente:block/decorative/marble_pilar_white"
     },
     "color=blue": {
-      "model": "ariente:block/decorative/marble_pilarblue"
+      "model": "ariente:block/decorative/marble_pilar_blue"
     },
     "color=black": {
-      "model": "ariente:block/decorative/marble_pilarblack"
+      "model": "ariente:block/decorative/marble_pilar_black"
     },
     "color=lime": {
-      "model": "ariente:block/decorative/marble_pilarlime"
+      "model": "ariente:block/decorative/marble_pilar_lime"
     },
     "color=red": {
-      "model": "ariente:block/decorative/marble_pilarred"
+      "model": "ariente:block/decorative/marble_pilar_red"
     },
     "color=darkblue": {
-      "model": "ariente:block/decorative/marble_pilardarkblue"
+      "model": "ariente:block/decorative/marble_pilar_darkblue"
     }
   }
 }

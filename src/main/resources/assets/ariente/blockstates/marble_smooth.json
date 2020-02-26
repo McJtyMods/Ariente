@@ -1,25 +1,25 @@
 {
   "variants": {
     "color=gray": {
-      "model": "ariente:block/decorative/marble_smoothgray"
+      "model": "ariente:block/decorative/marble_smooth_gray"
     },
     "color=white": {
-      "model": "ariente:block/decorative/marble_smoothwhite"
+      "model": "ariente:block/decorative/marble_smooth_white"
     },
     "color=blue": {
-      "model": "ariente:block/decorative/marble_smoothblue"
+      "model": "ariente:block/decorative/marble_smooth_blue"
     },
     "color=black": {
-      "model": "ariente:block/decorative/marble_smoothblack"
+      "model": "ariente:block/decorative/marble_smooth_black"
     },
     "color=lime": {
-      "model": "ariente:block/decorative/marble_smoothlime"
+      "model": "ariente:block/decorative/marble_smooth_lime"
     },
     "color=red": {
-      "model": "ariente:block/decorative/marble_smoothred"
+      "model": "ariente:block/decorative/marble_smooth_red"
     },
     "color=darkblue": {
-      "model": "ariente:block/decorative/marble_smoothdarkblue"
+      "model": "ariente:block/decorative/marble_smooth_darkblue"
     }
   }
 }

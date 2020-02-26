@@ -28,17 +28,16 @@ public class Items extends BaseItemModelProvider {
 
         parentedItem(Registration.ALARM_ITEM.get(), "block/machines/alarm_safe");
         parentedItem(Registration.LOCK_ITEM.get(), "block/machines/lock_unlocked");
-        parentedItem(Registration.SIGNAL_RECEIVER_ITEM.get(), "block/machines/signal_receiver");
-        parentedItem(Registration.SIGNAL_TRANSMITTER_ITEM.get(), "block/machines/signal_transmitter");
-        parentedItem(Registration.WIRELESS_BUTTON_ITEM.get(), "block/machines/wireless_button");
-        parentedItem(Registration.WIRELESS_LOCK_ITEM.get(), "block/machines/wireless_lock");
-        parentedItem(Registration.FLAT_LIGHT_ITEM.get(), "block/machines/flatlight");
-        parentedItem(Registration.AUTO_CONSTRUCTOR_ITEM.get(), "block/machines/auto_constructor");
+        parentedItem(Registration.SIGNAL_RECEIVER_ITEM.get(), "block/machines/signal_receiver_on");
+        parentedItem(Registration.SIGNAL_TRANSMITTER_ITEM.get(), "block/machines/signal_transmitter_on");
+        parentedItem(Registration.WIRELESS_BUTTON_ITEM.get(), "block/machines/wireless_button_unlocked");
+        parentedItem(Registration.WIRELESS_LOCK_ITEM.get(), "block/machines/wireless_lock_unlocked");
+        parentedItem(Registration.FLAT_LIGHT_ITEM.get(), "block/machines/flatglow");
+        parentedItem(Registration.AUTO_CONSTRUCTOR_ITEM.get(), "block/machines/auto_constructor_on");
+        parentedItem(Registration.CONSTRUCTOR_ITEM.get(), "block/machines/constructor");
         parentedItem(Registration.AUTOMATION_FIELD_ITEM.get(), "block/machines/automation_field");
         parentedItem(Registration.BLUEPRINT_STORAGE_ITEM.get(), "block/machines/blueprint_storage");
         parentedItem(Registration.POWER_COMBINER_ITEM.get(), "block/machines/power_combiner");
-        parentedItem(Registration.NEGARITE_GENERATOR_ITEM.get(), "block/machines/negarite_generator");
-        parentedItem(Registration.POSIRITE_GENERATOR_ITEM.get(), "block/machines/posirite_generator");
 
         for (Map.Entry<TechType, RegistryObject<BlockStateItem>> entry : Registration.BLACK_TECH_ITEMS.entrySet()) {
             parentedItem(entry.getValue().get(), "block/decorative/blacktech_" + entry.getKey().getName());
@@ -74,16 +73,18 @@ public class Items extends BaseItemModelProvider {
         parentedItem(Registration.LEVEL_MARKER_ITEM.get(), "block/utility/level_marker");
         parentedItem(Registration.FIELD_MARKER_ITEM.get(), "block/utility/field_marker");
         parentedItem(Registration.FLUX_BEAM_ITEM.get(), "block/utility/flux_beam");
-        parentedItem(Registration.FLUX_BEND_BEAM_ITEM.get(), "block/utility/flux_beam_beam");
-        parentedItem(Registration.SENSOR_ITEM_NODE_ITEM.get(), "block/utility/sensor_item_node");
-        parentedItem(Registration.INPUT_ITEM_NODE_ITEM.get(), "block/utility/input_item_node");
-        parentedItem(Registration.OUTPUT_ITEM_NODE_ITEM.get(), "block/utility/output_item_node");
-        parentedItem(Registration.ROUND_ROBIN_NODE_ITEM.get(), "block/utility/round_robin_node");
+        parentedItem(Registration.FLUX_BEND_BEAM_ITEM.get(), "block/utility/flux_bend_beam");
+        parentedItem(Registration.SENSOR_ITEM_NODE_ITEM.get(), "block/utility/sensor_item_node_tl");
+        parentedItem(Registration.INPUT_ITEM_NODE_ITEM.get(), "block/utility/input_item_node_tl");
+        parentedItem(Registration.OUTPUT_ITEM_NODE_ITEM.get(), "block/utility/output_item_node_tl");
+        parentedItem(Registration.ROUND_ROBIN_NODE_ITEM.get(), "block/utility/round_robin_node_tl");
         parentedItem(Registration.RAMP_ITEM.get(), "block/decorative/ramp");
         parentedItem(Registration.REINFORCED_MARBLE_ITEM.get(), "block/decorative/reinforced_marble");
         parentedItem(Registration.FLUX_GLOW_ITEM.get(), "block/decorative/flux_glow");
-        parentedItem(Registration.NEGARITE_TANK_ITEM.get(), "block/machines/negarite_tank");
-        parentedItem(Registration.POSIRITE_TANK_ITEM.get(), "block/machines/posirite_tank");
+        parentedItem(Registration.NEGARITE_TANK_ITEM.get(), "block/machines/negarite_tank_both");
+        parentedItem(Registration.POSIRITE_TANK_ITEM.get(), "block/machines/posirite_tank_both");
+        parentedItem(Registration.NEGARITE_GENERATOR_ITEM.get(), "block/machines/negarite_generator_on");
+        parentedItem(Registration.POSIRITE_GENERATOR_ITEM.get(), "block/machines/posirite_generator_on");
         parentedItem(Registration.STORAGE_ITEM.get(), "block/utility/storage");
         parentedItem(Registration.ELEVATOR_ITEM.get(), "block/utility/elevator");
         parentedItem(Registration.FORCEFIELD_ITEM.get(), "block/machines/forcefield");

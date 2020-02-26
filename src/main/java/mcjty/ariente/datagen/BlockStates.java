@@ -494,7 +494,7 @@ public class BlockStates extends BaseBlockStateProvider {
         for (MarbleColor type : MarbleColor.values()) {
             builder.partialState().with(MarbleColor.COLOR, type)
                     .modelForState()
-                    .modelFile(models().cubeAll(BLOCK_FOLDER + "/decorative/marble_smooth" + type.getName(), modLoc("block/marble/" + type.getTexture() + "_smooth")))
+                    .modelFile(models().cubeAll(BLOCK_FOLDER + "/decorative/marble_smooth_" + type.getName(), modLoc("block/marble/" + type.getTexture() + "_smooth")))
                     .addModel();
         }
     }
@@ -504,7 +504,7 @@ public class BlockStates extends BaseBlockStateProvider {
         for (MarbleColor type : MarbleColor.values()) {
             builder.partialState().with(MarbleColor.COLOR, type)
                     .modelForState()
-                    .modelFile(models().cubeAll(BLOCK_FOLDER + "/decorative/marble_pilar" + type.getName(), modLoc("block/marble/" + type.getTexture() + "_pilar")))
+                    .modelFile(models().cubeAll(BLOCK_FOLDER + "/decorative/marble_pilar_" + type.getName(), modLoc("block/marble/" + type.getTexture() + "_pilar")))
                     .addModel();
         }
     }
@@ -514,7 +514,7 @@ public class BlockStates extends BaseBlockStateProvider {
         for (MarbleColor type : MarbleColor.values()) {
             builder.partialState().with(MarbleColor.COLOR, type)
                     .modelForState()
-                    .modelFile(models().cubeAll(BLOCK_FOLDER + "/decorative/marble_bricks" + type.getName(), modLoc("block/marble/" + type.getTexture() + "_bricks")))
+                    .modelFile(models().cubeAll(BLOCK_FOLDER + "/decorative/marble_bricks_" + type.getName(), modLoc("block/marble/" + type.getTexture() + "_bricks")))
                     .addModel();
         }
     }
