@@ -306,12 +306,10 @@ public class ElevatorTile extends GenericTileEntity implements IGuiTile, ITickab
         return super.write(tagCompound);
     }
 
-    // @todo 1.14
-//    @SideOnly(Side.CLIENT)
-//    @Override
-//    public AxisAlignedBB getRenderBoundingBox() {
-//        return getBeamBox();
-//    }
+    @Override
+    public AxisAlignedBB getRenderBoundingBox() {
+        return getBeamBox();
+    }
 
 
     // @todo 1.14
