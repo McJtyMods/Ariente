@@ -134,7 +134,7 @@ public class ConstructorTile extends GenericTileEntity implements IGuiTile, ICit
             ConstructorRecipe recipe = BlueprintRecipeRegistry.findRecipe(destination);
             if (recipe != null) {
                 // Check if we have enough
-                for (ItemStack ingredient : recipe.getIngredients()) {
+                for (ItemStack ingredient : recipe.getIngredientList()) {
                     if (!hasIngredient(player, ingredient)) {
                         return false; // Can't craft
                     }
@@ -152,7 +152,7 @@ public class ConstructorTile extends GenericTileEntity implements IGuiTile, ICit
                 ConstructorRecipe recipe = BlueprintRecipeRegistry.findRecipe(destination);
                 if (recipe != null) {
                     // We have enough. Consume and craft
-                    for (ItemStack ingredient : recipe.getIngredients()) {
+                    for (ItemStack ingredient : recipe.getIngredientList()) {
                         consumeIngredient(player, ingredient);
                     }
 
@@ -221,7 +221,7 @@ public class ConstructorTile extends GenericTileEntity implements IGuiTile, ICit
                 if (recipe != null) {
                     boolean ok = true;
                     // Check if we have enough
-                    for (ItemStack ingredient : recipe.getIngredients()) {
+                    for (ItemStack ingredient : recipe.getIngredientList()) {
                         if (!hasIngredient(McJtyLib.proxy.getClientPlayer(), ingredient)) {
                             tooltip.add(TextFormatting.RED + "Missing: " + TextFormatting.WHITE + ingredient.getDisplayName());
                             ok = false;
@@ -252,7 +252,7 @@ public class ConstructorTile extends GenericTileEntity implements IGuiTile, ICit
                 ItemStack destination = BlueprintItem.getDestination(blueprintStack);
                 ConstructorRecipe recipe = BlueprintRecipeRegistry.findRecipe(destination);
                 if (recipe != null) {
-                    for (ItemStack ingredient : recipe.getIngredients()) {
+                    for (ItemStack ingredient : recipe.getIngredientList()) {
                         if (ItemStack.areItemsEqual(ingredient, stack)) {
                             return true;
                         }

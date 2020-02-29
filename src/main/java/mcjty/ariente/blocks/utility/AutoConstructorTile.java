@@ -135,7 +135,7 @@ public class AutoConstructorTile extends GenericTileEntity implements IGuiTile, 
             ConstructorRecipe recipe = BlueprintRecipeRegistry.findRecipe(destination);
             if (recipe != null) {
                 // Check if we have enough
-                for (ItemStack ingredient : recipe.getIngredients()) {
+                for (ItemStack ingredient : recipe.getIngredientList()) {
                     if (!hasIngredient(ingredient)) {
                         return false; // Can't craft
                     }
@@ -207,7 +207,7 @@ public class AutoConstructorTile extends GenericTileEntity implements IGuiTile, 
 
                 if (ok) {
                     // We have enough. Consume and craft
-                    for (ItemStack ingredient : recipe.getIngredients()) {
+                    for (ItemStack ingredient : recipe.getIngredientList()) {
                         consumeIngredient(ingredient);
                     }
                 }
@@ -451,7 +451,7 @@ public class AutoConstructorTile extends GenericTileEntity implements IGuiTile, 
                         ItemStack destination = BlueprintItem.getDestination(blueprintStack);
                         ConstructorRecipe recipe = BlueprintRecipeRegistry.findRecipe(destination);
                         if (recipe != null) {
-                            for (ItemStack ingredient : recipe.getIngredients()) {
+                            for (ItemStack ingredient : recipe.getIngredientList()) {
                                 if (ItemStack.areItemsEqual(ingredient, stack)) {
                                     return true;
                                 }

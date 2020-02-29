@@ -5,6 +5,7 @@ import mcjty.ariente.api.IArienteMod;
 import mcjty.ariente.api.IArienteSystem;
 import mcjty.ariente.apiimpl.ArienteSystem;
 import mcjty.ariente.config.Config;
+import mcjty.ariente.recipes.BlueprintRecipeRegistry;
 import mcjty.ariente.setup.ModSetup;
 import mcjty.ariente.setup.Registration;
 import mcjty.hologui.api.IHoloGuiHandler;
@@ -38,6 +39,7 @@ public class Ariente implements ModBase, IArienteMod {
         ModLoadingContext.get().registerConfig(ModConfig.Type.COMMON, Config.COMMON_CONFIG);
 
         Registration.register();
+        BlueprintRecipeRegistry.register();
 
         FMLJavaModLoadingContext.get().getModEventBus().addListener((FMLCommonSetupEvent event) -> setup.init(event));
     }

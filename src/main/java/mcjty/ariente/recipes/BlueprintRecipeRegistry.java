@@ -5,15 +5,41 @@ import mcjty.lib.varia.WeightedRandom;
 import net.minecraft.block.Blocks;
 import net.minecraft.item.ItemStack;
 import net.minecraft.item.Items;
+import net.minecraft.item.crafting.IRecipeSerializer;
+import net.minecraft.item.crafting.IRecipeType;
+import net.minecraft.util.ResourceLocation;
+import net.minecraft.util.registry.Registry;
+import net.minecraftforge.fml.RegistryObject;
+import net.minecraftforge.fml.javafmlmod.FMLJavaModLoadingContext;
 import net.minecraftforge.items.ItemHandlerHelper;
+import net.minecraftforge.registries.DeferredRegister;
+import net.minecraftforge.registries.ForgeRegistries;
 
 import java.util.ArrayList;
 import java.util.List;
 
+import static mcjty.ariente.Ariente.MODID;
+
 public class BlueprintRecipeRegistry {
 
-    // @todo work on this?
-//    public static final IRecipeType<IRecipe<?>> CONSTRUCTOR_RECIPES = IRecipeType.register("ariente_constructor");
+
+    public static final DeferredRegister<IRecipeSerializer<?>> RECIPE_SERIALIZERS = new DeferredRegister<>(ForgeRegistries.RECIPE_SERIALIZERS, MODID);
+
+    public static void register() {
+        RECIPE_SERIALIZERS.register(FMLJavaModLoadingContext.get().getModEventBus());
+    }
+
+    public static final RegistryObject<IRecipeSerializer<ConstructorRecipe>> CONSTRUCTOR_RECIPES = RECIPE_SERIALIZERS.register("constructor",
+            ConstructorRecipeSerializer::new);
+
+    public static final ResourceLocation RECIPE_CONSTRUCTOR = new ResourceLocation(MODID, "constructor");
+    public static IRecipeType<ConstructorRecipe> CONSTRUCTOR = Registry.register(Registry.RECIPE_TYPE, RECIPE_CONSTRUCTOR,
+            new IRecipeType<ConstructorRecipe>() {
+                @Override
+                public String toString() {
+                    return RECIPE_CONSTRUCTOR.toString();
+                }
+            });
 
     private static List<ConstructorRecipe> recipes = new ArrayList<>();
     private static WeightedRandom<ConstructorRecipe> randomRecipes = null;
