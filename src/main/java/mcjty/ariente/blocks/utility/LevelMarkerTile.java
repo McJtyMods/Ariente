@@ -16,6 +16,8 @@ import net.minecraft.util.ActionResultType;
 import net.minecraft.util.Hand;
 import net.minecraft.util.math.BlockRayTraceResult;
 
+import static mcjty.ariente.compat.ArienteTOPDriver.DRIVER;
+
 public class LevelMarkerTile extends GenericTileEntity implements IGuiTile {
 
     @Override
@@ -33,6 +35,7 @@ public class LevelMarkerTile extends GenericTileEntity implements IGuiTile {
         return new BaseBlock(new BlockBuilder()
                 .info("message.ariente.shiftmessage")
                 .infoExtended("message.ariente.level_marker")
+                .topDriver(DRIVER)
                 .tileEntitySupplier(LevelMarkerTile::new)
         ) {
             @Override

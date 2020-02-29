@@ -30,6 +30,7 @@ import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 import java.util.Map;
 
+import static mcjty.ariente.compat.ArienteTOPDriver.DRIVER;
 import static mcjty.hologui.api.Icons.*;
 
 public class BlueprintStorageTile extends GenericTileEntity implements IGuiTile, ICityEquipment {
@@ -52,6 +53,7 @@ public class BlueprintStorageTile extends GenericTileEntity implements IGuiTile,
         return new BaseBlock(new BlockBuilder()
                 .info("message.ariente.shiftmessage")
                 .infoExtended("message.ariente.blueprint_storage")
+                .topDriver(DRIVER)
                 .tileEntitySupplier(BlueprintStorageTile::new)
         ) {
             @Override
@@ -76,21 +78,6 @@ public class BlueprintStorageTile extends GenericTileEntity implements IGuiTile,
     public void writeRestorableToNBT(CompoundNBT tagCompound) {
 //        writeBufferToNBT(tagCompound, inventoryHelper);
     }
-
-    // @todo 1.14
-//    @Override
-//    @Optional.Method(modid = "theoneprobe")
-//    public void addProbeInfo(ProbeMode mode, IProbeInfo probeInfo, PlayerEntity player, World world, BlockState blockState, IProbeHitData data) {
-//        super.addProbeInfo(mode, probeInfo, player, world, blockState, data);
-//    }
-//
-//    @SideOnly(Side.CLIENT)
-//    @Override
-//    @Optional.Method(modid = "waila")
-//    public void addWailaBody(ItemStack itemStack, List<String> currenttip, IWailaDataAccessor accessor, IWailaConfigHandler config) {
-//        super.addWailaBody(itemStack, currenttip, accessor, config);
-//    }
-
 
     public NoDirectionItemHander getItems() {
         return items;

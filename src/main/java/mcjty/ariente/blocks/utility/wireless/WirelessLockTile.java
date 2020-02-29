@@ -30,6 +30,7 @@ import net.minecraftforge.common.util.Constants;
 import java.util.Map;
 
 import static mcjty.ariente.blocks.BlockProperties.LOCKED;
+import static mcjty.ariente.compat.ArienteTOPDriver.DRIVER;
 import static mcjty.hologui.api.Icons.*;
 
 public class WirelessLockTile extends SignalChannelTileEntity implements ILockable, IGuiTile, ITickableTileEntity {
@@ -48,6 +49,7 @@ public class WirelessLockTile extends SignalChannelTileEntity implements ILockab
                 .info("message.ariente.shiftmessage")
                 .infoExtended("message.ariente.wireless_lock")
                 .infoExtendedParameter(ItemStackTools.intGetter("channel", -1))
+                .topDriver(DRIVER)
                 .tileEntitySupplier(WirelessLockTile::new)
         ) {
             @Override
@@ -235,16 +237,6 @@ public class WirelessLockTile extends SignalChannelTileEntity implements ILockab
         }
         setVerticalRange(h);
     }
-
-    // @todo 1.14
-//    @Override
-//    @Optional.Method(modid = "theoneprobe")
-//    public void addProbeInfo(ProbeMode mode, IProbeInfo probeInfo, PlayerEntity player, World world, BlockState blockState, IProbeHitData data) {
-//        super.addProbeInfo(mode, probeInfo, player, world, blockState, data);
-//        if (isLocked()) {
-//            probeInfo.text(TextStyleClass.WARNING + "Locked!");
-//        }
-//    }
 
     @Override
     public IGuiComponent<?> createGui(String tag, IGuiComponentRegistry registry) {

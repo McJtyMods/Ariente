@@ -3,10 +3,10 @@ package mcjty.ariente.blocks.generators;
 import mcjty.ariente.Ariente;
 import mcjty.ariente.api.IAlarmMode;
 import mcjty.ariente.api.IGenerator;
-import mcjty.ariente.setup.Registration;
 import mcjty.ariente.cables.CableColor;
 import mcjty.ariente.gui.HoloGuiTools;
 import mcjty.ariente.power.*;
+import mcjty.ariente.setup.Registration;
 import mcjty.hologui.api.*;
 import mcjty.lib.blocks.BaseBlock;
 import mcjty.lib.blocks.RotationType;
@@ -39,6 +39,7 @@ import net.minecraftforge.common.util.LazyOptional;
 import javax.annotation.Nonnull;
 
 import static mcjty.ariente.blocks.BlockProperties.WORKING;
+import static mcjty.ariente.compat.ArienteTOPDriver.DRIVER;
 import static mcjty.hologui.api.Icons.*;
 
 public class PosiriteGeneratorTile extends GenericTileEntity implements ITickableTileEntity, IGuiTile, IPowerBlob, IAlarmMode, IPowerSender, IGenerator {
@@ -68,6 +69,7 @@ public class PosiriteGeneratorTile extends GenericTileEntity implements ITickabl
 //                .flags(REDSTONE_CHECK, RENDER_SOLID, RENDER_CUTOUT)
                 .info("message.ariente.shiftmessage")
                 .infoExtended("message.ariente.negarite_generator")
+                .topDriver(DRIVER)
                 .tileEntitySupplier(PosiriteGeneratorTile::new)
         ) {
             @Override
@@ -237,28 +239,6 @@ public class PosiriteGeneratorTile extends GenericTileEntity implements ITickabl
 
         return false;
     }
-
-    // @todo 1.14
-//    @Override
-//    @Optional.Method(modid = "theoneprobe")
-//    public void addProbeInfo(ProbeMode mode, IProbeInfo probeInfo, PlayerEntity player, World world, BlockState blockState, IProbeHitData data) {
-//        super.addProbeInfo(mode, probeInfo, player, world, blockState, data);
-//        probeInfo.text(TextStyleClass.LABEL + "Network: " + TextStyleClass.INFO + powerBlobSupport.getCableId());
-//        if (isWorking()) {
-//            probeInfo.text(TextStyleClass.LABEL + "Generating: " + TextStyleClass.INFO + POWERGEN + " flux");
-//        }
-//    }
-//
-//
-//    @SideOnly(Side.CLIENT)
-//    @Override
-//    @Optional.Method(modid = "waila")
-//    public void addWailaBody(ItemStack itemStack, List<String> currenttip, IWailaDataAccessor accessor, IWailaConfigHandler config) {
-//        super.addWailaBody(itemStack, currenttip, accessor, config);
-////        if (isWorking()) {
-////            currenttip.add(TextFormatting.GREEN + "Producing " + getRfPerTick() + " RF/t");
-////        }
-//    }
 
     @Override
     public int getCableId() {

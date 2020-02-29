@@ -36,6 +36,8 @@ import net.minecraft.world.World;
 import javax.annotation.Nullable;
 import java.util.List;
 
+import static mcjty.ariente.compat.ArienteTOPDriver.DRIVER;
+
 public class DoorMarkerTile extends GenericTileEntity implements ITickableTileEntity, IGuiTile, ILockable {
 
     public static final AxisAlignedBB BLOCK_AABB = new AxisAlignedBB(0.0D, 0.0D, 0.0D, 1.0D, 0.1D, 1.0D);
@@ -60,6 +62,7 @@ public class DoorMarkerTile extends GenericTileEntity implements ITickableTileEn
         return new BaseBlock(new BlockBuilder()
                 .info("message.ariente.shiftmessage")
                 .infoExtended("message.ariente.door_marker")
+                .topDriver(DRIVER)
 //                .addCollisionBoxToList(DoorMarkerTile::addCollisionBoxToList)
 //                .boundingBox(DoorMarkerTile::getCollisionBoundingBox)
 //                .getAIPathNodeType(DoorMarkerTile::getAiPathNodeType)
@@ -243,27 +246,6 @@ public class DoorMarkerTile extends GenericTileEntity implements ITickableTileEn
         info.putBoolean("locked", locked);
         return super.write(tagCompound);
     }
-
-    // @todo 1.14
-//    @Override
-//    @Optional.Method(modid = "theoneprobe")
-//    public void addProbeInfo(ProbeMode mode, IProbeInfo probeInfo, PlayerEntity player, World world, BlockState blockState, IProbeHitData data) {
-//        super.addProbeInfo(mode, probeInfo, player, world, blockState, data);
-////        Boolean working = isWorking();
-////        if (working) {
-////            probeInfo.text(TextFormatting.GREEN + "Producing " + getRfPerTick() + " RF/t");
-////        }
-//    }
-//
-//    @SideOnly(Side.CLIENT)
-//    @Override
-//    @Optional.Method(modid = "waila")
-//    public void addWailaBody(ItemStack itemStack, List<String> currenttip, IWailaDataAccessor accessor, IWailaConfigHandler config) {
-//        super.addWailaBody(itemStack, currenttip, accessor, config);
-////        if (isWorking()) {
-////            currenttip.add(TextFormatting.GREEN + "Producing " + getRfPerTick() + " RF/t");
-////        }
-//    }
 
     // @todo 1.14
 //    @Override

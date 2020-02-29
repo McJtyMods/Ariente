@@ -142,22 +142,6 @@ public abstract class SignalChannelTileEntity extends GenericTileEntity implemen
         info.putInt("desired", desiredChannel);
     }
 
-    // @todo 1.14
-//    @Override
-//    @Optional.Method(modid = "theoneprobe")
-//    public void addProbeInfo(ProbeMode mode, IProbeInfo probeInfo, PlayerEntity player, World world, BlockState blockState, IProbeHitData data) {
-//        super.addProbeInfo(mode, probeInfo, player, world, blockState, data);
-//        probeInfo.text(TextFormatting.GREEN + "Channel: " + getChannel(false));
-//    }
-//
-//    @SideOnly(Side.CLIENT)
-//    @Override
-//    @Optional.Method(modid = "waila")
-//    public void addWailaBody(ItemStack itemStack, List<String> currenttip, IWailaDataAccessor accessor, IWailaConfigHandler config) {
-//        super.addWailaBody(itemStack, currenttip, accessor, config);
-//        currenttip.add(TextFormatting.GREEN + "Channel: " + getChannel(false));
-//    }
-
     public static boolean onBlockActivatedInt(World world, BlockPos pos, PlayerEntity player, Hand hand) {
         ItemStack stack = player.getHeldItem(hand);
         if(SignalChannelTileEntity.isRedstoneChannelItem(stack.getItem())) {

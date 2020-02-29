@@ -15,6 +15,8 @@ import net.minecraft.util.ActionResultType;
 import net.minecraft.util.Hand;
 import net.minecraft.util.math.BlockRayTraceResult;
 
+import static mcjty.ariente.compat.ArienteTOPDriver.DRIVER;
+
 public class SignalReceiverTile extends SignalChannelTileEntity implements ITickableTileEntity {
 
     public SignalReceiverTile() {
@@ -27,6 +29,7 @@ public class SignalReceiverTile extends SignalChannelTileEntity implements ITick
                 .info("message.ariente.shiftmessage")
                 .infoExtended("message.ariente.signal_receiver")
                 .infoExtendedParameter(ItemStackTools.intGetter("channel", -1))
+                .topDriver(DRIVER)
                 .tileEntitySupplier(SignalReceiverTile::new)
         ) {
             @Override
@@ -77,19 +80,4 @@ public class SignalReceiverTile extends SignalChannelTileEntity implements ITick
         tagCompound.putInt("rs", powerOutput);
         return tagCompound;
     }
-
-    // @todo 1.14
-//    @Override
-//    @Optional.Method(modid = "theoneprobe")
-//    public void addProbeInfo(ProbeMode mode, IProbeInfo probeInfo, PlayerEntity player, World world, BlockState blockState, IProbeHitData data) {
-//        super.addProbeInfo(mode, probeInfo, player, world, blockState, data);
-//        probeInfo.text(TextFormatting.GREEN + "Output: " + TextFormatting.WHITE + checkOutput());
-//    }
-//
-//    @SideOnly(Side.CLIENT)
-//    @Override
-//    @Optional.Method(modid = "waila")
-//    public void addWailaBody(ItemStack itemStack, List<String> currenttip, IWailaDataAccessor accessor, IWailaConfigHandler config) {
-//        super.addWailaBody(itemStack, currenttip, accessor, config);
-//    }
 }

@@ -25,6 +25,8 @@ import net.minecraft.util.math.BlockRayTraceResult;
 import net.minecraft.world.World;
 import net.minecraft.world.dimension.DimensionType;
 
+import static mcjty.ariente.compat.ArienteTOPDriver.DRIVER;
+
 public class WarperTile extends GenericTileEntity implements IGuiTile, IWarper {
 
     private AxisAlignedBB renderBox = null;
@@ -42,6 +44,7 @@ public class WarperTile extends GenericTileEntity implements IGuiTile, IWarper {
 //                .flags(REDSTONE_CHECK, RENDER_SOLID, RENDER_CUTOUT)
                 .info("message.ariente.shiftmessage")
                 .infoExtended("message.ariente.warper")
+                .topDriver(DRIVER)
                 .tileEntitySupplier(WarperTile::new)
         ) {
             @Override
@@ -106,25 +109,6 @@ public class WarperTile extends GenericTileEntity implements IGuiTile, IWarper {
         getOrCreateInfo(tagCompound).putInt("charges", charges);
         return super.write(tagCompound);
     }
-
-    // @todo 1.14
-//    @Override
-//    @Optional.Method(modid = "theoneprobe")
-//    public void addProbeInfo(ProbeMode mode, IProbeInfo probeInfo, PlayerEntity player, World world, BlockState blockState, IProbeHitData data) {
-//        super.addProbeInfo(mode, probeInfo, player, world, blockState, data);
-//        int pct = getChargePercentage();
-//        probeInfo.text(TextStyleClass.LABEL + "Charged: " + TextStyleClass.INFO + pct + "%");
-//    }
-//
-//    @SideOnly(Side.CLIENT)
-//    @Override
-//    @Optional.Method(modid = "waila")
-//    public void addWailaBody(ItemStack itemStack, List<String> currenttip, IWailaDataAccessor accessor, IWailaConfigHandler config) {
-//        super.addWailaBody(itemStack, currenttip, accessor, config);
-////        if (isWorking()) {
-////            currenttip.add(TextFormatting.GREEN + "Producing " + getRfPerTick() + " RF/t");
-////        }
-//    }
 
     public int getChargePercentage() {
         int pct;

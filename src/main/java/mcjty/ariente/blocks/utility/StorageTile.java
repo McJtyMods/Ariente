@@ -4,13 +4,13 @@ import mcjty.ariente.Ariente;
 import mcjty.ariente.api.ICityAI;
 import mcjty.ariente.api.ICityEquipment;
 import mcjty.ariente.api.IStorageTile;
-import mcjty.ariente.setup.Registration;
 import mcjty.ariente.items.BlueprintItem;
 import mcjty.ariente.items.KeyCardItem;
 import mcjty.ariente.network.ArienteMessages;
 import mcjty.ariente.recipes.BlueprintRecipeRegistry;
 import mcjty.ariente.recipes.ConstructorRecipe;
 import mcjty.ariente.security.IKeyCardSlot;
+import mcjty.ariente.setup.Registration;
 import mcjty.ariente.sounds.ModSounds;
 import mcjty.hologui.api.IGuiComponent;
 import mcjty.hologui.api.IGuiComponentRegistry;
@@ -51,6 +51,8 @@ import javax.annotation.Nullable;
 import java.util.Map;
 import java.util.Set;
 
+import static mcjty.ariente.compat.ArienteTOPDriver.DRIVER;
+
 public class StorageTile extends GenericTileEntity implements IGuiTile, ICityEquipment, IKeyCardSlot, ILockable, IStorageTile {
 
 //    public static final PropertyBool LOCKED = PropertyBool.create("locked");
@@ -73,6 +75,7 @@ public class StorageTile extends GenericTileEntity implements IGuiTile, ICityEqu
         return new BaseBlock(new BlockBuilder()
                 .info("message.ariente.shiftmessage")
                 .infoExtended("message.ariente.storage")
+                .topDriver(DRIVER)
                 .tileEntitySupplier(StorageTile::new)
         ) {
             @Override
@@ -220,22 +223,6 @@ public class StorageTile extends GenericTileEntity implements IGuiTile, ICityEqu
             world.playSound(null, pos, ModSounds.buzzError, SoundCategory.BLOCKS, 1.0f, 1.0f);
         }
     }
-
-    // @todo 1.14
-//    @Override
-//    @Optional.Method(modid = "theoneprobe")
-//    public void addProbeInfo(ProbeMode mode, IProbeInfo probeInfo, PlayerEntity player, World world, BlockState blockState, IProbeHitData data) {
-//        super.addProbeInfo(mode, probeInfo, player, world, blockState, data);
-//        if (locked) {
-//            if (keyId != null && !keyId.isEmpty()) {
-//                probeInfo.text(TextStyleClass.LABEL + "Key " + TextStyleClass.INFO + keyId);
-//            }
-//            if (isLocked()) {
-//                probeInfo.text(TextStyleClass.WARNING + "Locked!");
-//            }
-//
-//        }
-//    }
 
     public ItemStack getTotalStack(int type) {
         if (totals[type] == 0) {

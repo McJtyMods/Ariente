@@ -12,13 +12,13 @@ import mcjty.lib.builder.BlockBuilder;
 import mcjty.lib.tileentity.GenericTileEntity;
 import net.minecraft.block.Block;
 import net.minecraft.block.BlockState;
-import net.minecraft.state.BooleanProperty;
 import net.minecraft.state.StateContainer;
 import net.minecraft.tileentity.TileEntity;
 import net.minecraft.util.math.BlockPos;
 
 import static mcjty.ariente.blocks.BlockProperties.LOWER;
 import static mcjty.ariente.blocks.BlockProperties.UPPER;
+import static mcjty.ariente.compat.ArienteTOPDriver.DRIVER;
 
 public class PosiriteTankTile extends GenericTileEntity implements IGuiTile, IAlarmMode {
 
@@ -30,6 +30,7 @@ public class PosiriteTankTile extends GenericTileEntity implements IGuiTile, IAl
         return new BaseBlock(new BlockBuilder()
                 .info("message.ariente.shiftmessage")
                 .infoExtended("message.ariente.posirite_tank")
+                .topDriver(DRIVER)
                 .tileEntitySupplier(PosiriteTankTile::new)
         ) {
             @Override
@@ -70,28 +71,6 @@ public class PosiriteTankTile extends GenericTileEntity implements IGuiTile, IAl
 //    public BlockState getActualState(BlockState state) {
 //        return state.withProperty(UPPER, world.getBlockState(pos.up()).getBlock() == ModBlocks.posiriteTankBlock.get())
 //                .withProperty(LOWER, world.getBlockState(pos.down()).getBlock() == ModBlocks.posiriteTankBlock.get());
-//    }
-
-    // @todo 1.14
-//    @Override
-//    @Optional.Method(modid = "theoneprobe")
-//    public void addProbeInfo(ProbeMode mode, IProbeInfo probeInfo, PlayerEntity player, World world, BlockState blockState, IProbeHitData data) {
-//        super.addProbeInfo(mode, probeInfo, player, world, blockState, data);
-////        Boolean working = isWorking();
-////        if (working) {
-////            probeInfo.text(TextFormatting.GREEN + "Producing " + getRfPerTick() + " RF/t");
-////        }
-//    }
-//
-//
-//    @SideOnly(Side.CLIENT)
-//    @Override
-//    @Optional.Method(modid = "waila")
-//    public void addWailaBody(ItemStack itemStack, List<String> currenttip, IWailaDataAccessor accessor, IWailaConfigHandler config) {
-//        super.addWailaBody(itemStack, currenttip, accessor, config);
-////        if (isWorking()) {
-////            currenttip.add(TextFormatting.GREEN + "Producing " + getRfPerTick() + " RF/t");
-////        }
 //    }
 
     // @todo 1.14

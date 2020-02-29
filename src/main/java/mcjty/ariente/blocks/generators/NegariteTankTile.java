@@ -24,6 +24,8 @@ import net.minecraft.util.Hand;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.BlockRayTraceResult;
 
+import static mcjty.ariente.compat.ArienteTOPDriver.DRIVER;
+
 public class NegariteTankTile extends GenericTileEntity implements IGuiTile, IAlarmMode {
 
     public NegariteTankTile() {
@@ -34,6 +36,7 @@ public class NegariteTankTile extends GenericTileEntity implements IGuiTile, IAl
         return new BaseBlock(new BlockBuilder()
                 .info("message.ariente.shiftmessage")
                 .infoExtended("message.ariente.negarite_tank")
+                .topDriver(DRIVER)
                 .tileEntitySupplier(NegariteTankTile::new)
         ) {
             @Override
@@ -79,28 +82,6 @@ public class NegariteTankTile extends GenericTileEntity implements IGuiTile, IAl
 //    public BlockState getActualState(BlockState state) {
 //        return state.withProperty(UPPER, world.getBlockState(pos.up()).getBlock() == ModBlocks.negariteTankBlock)
 //                .withProperty(LOWER, world.getBlockState(pos.down()).getBlock() == ModBlocks.negariteTankBlock);
-//    }
-
-    // @todo 1.14
-//    @Override
-//    @Optional.Method(modid = "theoneprobe")
-//    public void addProbeInfo(ProbeMode mode, IProbeInfo probeInfo, PlayerEntity player, World world, BlockState blockState, IProbeHitData data) {
-//        super.addProbeInfo(mode, probeInfo, player, world, blockState, data);
-////        Boolean working = isWorking();
-////        if (working) {
-////            probeInfo.text(TextFormatting.GREEN + "Producing " + getRfPerTick() + " RF/t");
-////        }
-//    }
-//
-//
-//    @SideOnly(Side.CLIENT)
-//    @Override
-//    @Optional.Method(modid = "waila")
-//    public void addWailaBody(ItemStack itemStack, List<String> currenttip, IWailaDataAccessor accessor, IWailaConfigHandler config) {
-//        super.addWailaBody(itemStack, currenttip, accessor, config);
-////        if (isWorking()) {
-////            currenttip.add(TextFormatting.GREEN + "Producing " + getRfPerTick() + " RF/t");
-////        }
 //    }
 
     // @todo 1.14

@@ -1,15 +1,12 @@
 package mcjty.ariente.blocks.generators;
 
 import mcjty.ariente.Ariente;
-import mcjty.ariente.setup.Registration;
 import mcjty.ariente.cables.CableColor;
 import mcjty.ariente.cables.ConnectorTileEntity;
 import mcjty.ariente.gui.HelpBuilder;
 import mcjty.ariente.gui.HoloGuiTools;
-import mcjty.ariente.power.IPowerReceiver;
-import mcjty.ariente.power.PowerReceiverSupport;
-import mcjty.ariente.power.PowerSystem;
-import mcjty.ariente.power.PowerType;
+import mcjty.ariente.power.*;
+import mcjty.ariente.setup.Registration;
 import mcjty.hologui.api.IGuiComponent;
 import mcjty.hologui.api.IGuiComponentRegistry;
 import mcjty.hologui.api.IGuiTile;
@@ -29,9 +26,10 @@ import net.minecraft.util.Hand;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.BlockRayTraceResult;
 
+import static mcjty.ariente.compat.ArienteTOPDriver.DRIVER;
 import static mcjty.hologui.api.Icons.*;
 
-public class PowerCombinerTile extends GenericTileEntity implements ITickableTileEntity, IPowerReceiver, IGuiTile {
+public class PowerCombinerTile extends GenericTileEntity implements ITickableTileEntity, IPowerReceiver, IGuiTile, IPowerUser {
 
     private long usingPower = 0;
 
@@ -45,6 +43,7 @@ public class PowerCombinerTile extends GenericTileEntity implements ITickableTil
         return new BaseBlock(new BlockBuilder()
                 .info("message.ariente.shiftmessage")
                 .infoExtended("message.ariente.power_combiner")
+                .topDriver(DRIVER)
                 .tileEntitySupplier(PowerCombinerTile::new)
             );
         //        powerCombinerBlock = builderFactory.<PowerCombinerTile> builder("power_combiner")
@@ -147,27 +146,10 @@ public class PowerCombinerTile extends GenericTileEntity implements ITickableTil
         return tagCompound;
     }
 
-    // @todo 1.14
-//    @Override
-//    @Optional.Method(modid = "theoneprobe")
-//    public void addProbeInfo(ProbeMode mode, IProbeInfo probeInfo, PlayerEntity player, World world, BlockState blockState, IProbeHitData data) {
-//        super.addProbeInfo(mode, probeInfo, player, world, blockState, data);
-//        probeInfo.text(TextStyleClass.LABEL + "Using: " + TextStyleClass.INFO + usingPower + " flux");
-////        Boolean working = isWorking();
-////        if (working) {
-////            probeInfo.text(TextFormatting.GREEN + "Producing " + getRfPerTick() + " RF/t");
-////        }
-//    }
-//
-//    @SideOnly(Side.CLIENT)
-//    @Override
-//    @Optional.Method(modid = "waila")
-//    public void addWailaBody(ItemStack itemStack, List<String> currenttip, IWailaDataAccessor accessor, IWailaConfigHandler config) {
-//        super.addWailaBody(itemStack, currenttip, accessor, config);
-////        if (isWorking()) {
-////            currenttip.add(TextFormatting.GREEN + "Producing " + getRfPerTick() + " RF/t");
-////        }
-//    }
+    @Override
+    public long getUsingPower() {
+        return usingPower;
+    }
 
     @Override
     public IGuiComponent<?> createGui(String tag, IGuiComponentRegistry registry) {

@@ -19,6 +19,8 @@ import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.BlockRayTraceResult;
 import net.minecraft.world.World;
 
+import static mcjty.ariente.compat.ArienteTOPDriver.DRIVER;
+
 public class SignalTransmitterTile extends SignalChannelTileEntity {
 
     private int prevIn = -1;
@@ -33,6 +35,7 @@ public class SignalTransmitterTile extends SignalChannelTileEntity {
                 .info("message.ariente.shiftmessage")
                 .infoExtended("message.ariente.signal_transmitter")
                 .infoExtendedParameter(ItemStackTools.intGetter("channel", -1))
+                .topDriver(DRIVER)
                 .tileEntitySupplier(SignalTransmitterTile::new)
         ) {
             @Override

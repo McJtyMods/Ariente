@@ -2,7 +2,6 @@ package mcjty.ariente.blocks.defense;
 
 import mcjty.ariente.Ariente;
 import mcjty.ariente.api.*;
-import mcjty.ariente.setup.Registration;
 import mcjty.ariente.compat.arienteworld.ArienteWorldCompat;
 import mcjty.ariente.config.Config;
 import mcjty.ariente.config.DamageConfiguration;
@@ -10,7 +9,9 @@ import mcjty.ariente.config.PowerConfiguration;
 import mcjty.ariente.items.KeyCardItem;
 import mcjty.ariente.network.ArienteMessages;
 import mcjty.ariente.power.IPowerReceiver;
+import mcjty.ariente.power.IPowerUser;
 import mcjty.ariente.power.PowerReceiverSupport;
+import mcjty.ariente.setup.Registration;
 import mcjty.ariente.sounds.ISoundProducer;
 import mcjty.ariente.varia.Triangle;
 import mcjty.hologui.api.IGuiComponent;
@@ -45,10 +46,11 @@ import net.minecraftforge.fml.network.PacketDistributor;
 import javax.annotation.Nullable;
 import java.util.*;
 
+import static mcjty.ariente.compat.ArienteTOPDriver.DRIVER;
 import static mcjty.ariente.config.Config.SHIELD_PANEL_LIFE;
 import static mcjty.hologui.api.Icons.*;
 
-public class ForceFieldTile extends GenericTileEntity implements IGuiTile, ITickableTileEntity, ISoundProducer, IPowerReceiver, ICityEquipment, IAlarmMode, IForceFieldTile {
+public class ForceFieldTile extends GenericTileEntity implements IGuiTile, ITickableTileEntity, ISoundProducer, IPowerReceiver, ICityEquipment, IAlarmMode, IForceFieldTile, IPowerUser {
 
     private PanelInfo[] panelInfo = new PanelInfo[PentakisDodecahedron.MAX_TRIANGLES];
     private int[] panelDestroyTimeout = new int[PentakisDodecahedron.MAX_TRIANGLES];    // @todo persist to NBT?
@@ -75,6 +77,7 @@ public class ForceFieldTile extends GenericTileEntity implements IGuiTile, ITick
 //                .flags(REDSTONE_CHECK, RENDER_SOLID, RENDER_CUTOUT)
                 .info("message.ariente.shiftmessage")
                 .infoExtended("message.ariente.forcefield")
+                .topDriver(DRIVER)
                 .tileEntitySupplier(ForceFieldTile::new)
         ) {
             @Override
@@ -88,6 +91,11 @@ public class ForceFieldTile extends GenericTileEntity implements IGuiTile, ITick
     public ActionResultType onBlockActivated(BlockState state, PlayerEntity player, Hand hand, BlockRayTraceResult result) {
         Ariente.guiHandler.openHoloGui(world, pos, player);
         return ActionResultType.SUCCESS;
+    }
+
+    @Override
+    public long getUsingPower() {
+        return usingPower;
     }
 
     @Override
@@ -485,28 +493,6 @@ public class ForceFieldTile extends GenericTileEntity implements IGuiTile, ITick
         getOrCreateInfo(tagCompound).putInt("scale", scale);
         return tagCompound;
     }
-
-    // @todo 1.14
-//    @Override
-//    @Optional.Method(modid = "theoneprobe")
-//    public void addProbeInfo(ProbeMode mode, IProbeInfo probeInfo, PlayerEntity player, World world, BlockState blockState, IProbeHitData data) {
-//        super.addProbeInfo(mode, probeInfo, player, world, blockState, data);
-//        probeInfo.text(TextStyleClass.LABEL + "Using: " + TextStyleClass.INFO + usingPower + " flux");
-////        Boolean working = isWorking();
-////        if (working) {
-////            probeInfo.text(TextFormatting.GREEN + "Producing " + getRfPerTick() + " RF/t");
-////        }
-//    }
-//
-//    @SideOnly(Side.CLIENT)
-//    @Override
-//    @Optional.Method(modid = "waila")
-//    public void addWailaBody(ItemStack itemStack, List<String> currenttip, IWailaDataAccessor accessor, IWailaConfigHandler config) {
-//        super.addWailaBody(itemStack, currenttip, accessor, config);
-////        if (isWorking()) {
-////            currenttip.add(TextFormatting.GREEN + "Producing " + getRfPerTick() + " RF/t");
-////        }
-//    }
 
     @Override
     public IGuiComponent<?> createGui(String tag, IGuiComponentRegistry registry) {

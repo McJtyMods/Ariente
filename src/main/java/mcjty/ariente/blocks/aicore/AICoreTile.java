@@ -4,8 +4,8 @@ import mcjty.ariente.api.IAICoreTile;
 import mcjty.ariente.api.IAlarmMode;
 import mcjty.ariente.api.ICityAI;
 import mcjty.ariente.api.ICityAISystem;
-import mcjty.ariente.setup.Registration;
 import mcjty.ariente.compat.arienteworld.ArienteWorldCompat;
+import mcjty.ariente.setup.Registration;
 import mcjty.lib.blocks.BaseBlock;
 import mcjty.lib.blocks.RotationType;
 import mcjty.lib.builder.BlockBuilder;
@@ -20,6 +20,8 @@ import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.ChunkPos;
 import net.minecraft.world.World;
 import net.minecraftforge.common.ToolType;
+
+import static mcjty.ariente.compat.ArienteTOPDriver.DRIVER;
 
 public class AICoreTile extends GenericTileEntity implements ITickableTileEntity, IAlarmMode, IAICoreTile {
 
@@ -38,6 +40,7 @@ public class AICoreTile extends GenericTileEntity implements ITickableTileEntity
                         .harvestLevel(2)
                         .hardnessAndResistance(20.0f, 800))
 //                .flags(REDSTONE_CHECK, RENDER_SOLID, RENDER_CUTOUT)
+                .topDriver(DRIVER)
                 .tileEntitySupplier(AICoreTile::new)
         ) {
             @Override
@@ -92,19 +95,6 @@ public class AICoreTile extends GenericTileEntity implements ITickableTileEntity
             }
         }
     }
-
-    // @todo 1.14
-//    @Override
-//    public void addProbeInfo(ProbeMode mode, IProbeInfo probeInfo, PlayerEntity player, World world, BlockState blockState, IProbeHitData data) {
-//        super.addProbeInfo(mode, probeInfo, player, world, blockState, data);
-//        probeInfo.text(TextStyleClass.LABEL + "City: " + TextStyleClass.INFO + cityName);
-//    }
-//
-//    @Override
-//    public void addWailaBody(ItemStack itemStack, List<String> currenttip, IWailaDataAccessor accessor, IWailaConfigHandler config) {
-//        super.addWailaBody(itemStack, currenttip, accessor, config);
-//        currenttip.add(TextFormatting.GRAY + "City: " + TextFormatting.BLUE + cityName);
-//    }
 
     @Override
     public BlockPos getCorePos() {

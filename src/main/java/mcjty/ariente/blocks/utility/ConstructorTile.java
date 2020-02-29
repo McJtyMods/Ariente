@@ -30,6 +30,7 @@ import javax.annotation.Nullable;
 import java.util.List;
 import java.util.Map;
 
+import static mcjty.ariente.compat.ArienteTOPDriver.DRIVER;
 import static mcjty.hologui.api.Icons.WHITE_PLAYER;
 
 public class ConstructorTile extends GenericTileEntity implements IGuiTile, ICityEquipment {
@@ -51,6 +52,7 @@ public class ConstructorTile extends GenericTileEntity implements IGuiTile, ICit
         return new BaseBlock(new BlockBuilder()
                 .info("message.ariente.shiftmessage")
                 .infoExtended("message.ariente.constructor")
+                .topDriver(DRIVER)
                 .tileEntitySupplier(ConstructorTile::new)
         ) {
             @Override

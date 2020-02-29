@@ -65,6 +65,7 @@ import java.util.Map;
 import java.util.stream.Collectors;
 
 import static mcjty.ariente.Ariente.MODID;
+import static mcjty.ariente.compat.ArienteTOPDriver.DRIVER;
 
 public class Registration {
 
@@ -192,6 +193,7 @@ public class Registration {
     public static final RegistryObject<TileEntityType<OutputItemNodeTile>> OUTPUT_ITEM_TILE = TILES.register("output_item_node", () -> TileEntityType.Builder.create(OutputItemNodeTile::new, OUTPUT_ITEM_NODE.get()).build(null));
 
     public static final RegistryObject<BaseBlock> ROUND_ROBIN_NODE = BLOCKS.register("round_robin_node", () -> new BaseNodeBlock(new BlockBuilder()
+            .topDriver(DRIVER)
             .tileEntitySupplier(RoundRobinNodeTile::new)));
     public static final RegistryObject<Item> ROUND_ROBIN_NODE_ITEM = ITEMS.register("round_robin_node", () -> new BlockItem(ROUND_ROBIN_NODE.get(), createStandardProperties()));
     public static final RegistryObject<TileEntityType<RoundRobinNodeTile>> ROUND_ROBIN_TILE = TILES.register("round_robin_node", () -> TileEntityType.Builder.create(RoundRobinNodeTile::new, ROUND_ROBIN_NODE.get()).build(null));

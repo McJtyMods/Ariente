@@ -1,13 +1,14 @@
 package mcjty.ariente.blocks.utility.autofield;
 
 import mcjty.ariente.Ariente;
-import mcjty.ariente.setup.Registration;
 import mcjty.ariente.config.UtilityConfiguration;
 import mcjty.ariente.gui.HelpBuilder;
 import mcjty.ariente.gui.HoloGuiTools;
 import mcjty.ariente.network.ArienteMessages;
 import mcjty.ariente.power.IPowerReceiver;
+import mcjty.ariente.power.IPowerUser;
 import mcjty.ariente.power.PowerReceiverSupport;
+import mcjty.ariente.setup.Registration;
 import mcjty.hologui.api.IGuiComponent;
 import mcjty.hologui.api.IGuiComponentRegistry;
 import mcjty.hologui.api.IGuiTile;
@@ -46,9 +47,10 @@ import java.util.*;
 import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.stream.Collectors;
 
+import static mcjty.ariente.compat.ArienteTOPDriver.DRIVER;
 import static mcjty.hologui.api.Icons.*;
 
-public class AutoFieldTile extends GenericTileEntity implements IGuiTile, ITickableTileEntity, IPowerReceiver {
+public class AutoFieldTile extends GenericTileEntity implements IGuiTile, ITickableTileEntity, IPowerReceiver, IPowerUser {
 
     private int height = 1;
     private AxisAlignedBB fieldBox = null;
@@ -87,6 +89,7 @@ public class AutoFieldTile extends GenericTileEntity implements IGuiTile, ITicka
         return new BaseBlock(new BlockBuilder()
                 .info("message.ariente.shiftmessage")
                 .infoExtended("message.ariente.automation_field")
+                .topDriver(DRIVER)
                 .tileEntitySupplier(AutoFieldTile::new)
         ) {
             @Override
@@ -611,27 +614,10 @@ public class AutoFieldTile extends GenericTileEntity implements IGuiTile, ITicka
         return super.write(tagCompound);
     }
 
-    // @todo 1.14
-//    @Override
-//    @net.minecraftforge.fml.common.Optional.Method(modid = "theoneprobe")
-//    public void addProbeInfo(ProbeMode mode, IProbeInfo probeInfo, PlayerEntity player, World world, BlockState blockState, IProbeHitData data) {
-//        super.addProbeInfo(mode, probeInfo, player, world, blockState, data);
-//        probeInfo.text(TextStyleClass.LABEL + "Using: " + TextStyleClass.INFO + usingPower + " flux");
-////        Boolean working = isWorking();
-////        if (working) {
-////            probeInfo.text(TextFormatting.GREEN + "Producing " + getRfPerTick() + " RF/t");
-////        }
-//    }
-//
-//    @SideOnly(Side.CLIENT)
-//    @Override
-//    @Optional.Method(modid = "waila")
-//    public void addWailaBody(ItemStack itemStack, List<String> currenttip, IWailaDataAccessor accessor, IWailaConfigHandler config) {
-//        super.addWailaBody(itemStack, currenttip, accessor, config);
-////        if (isWorking()) {
-////            currenttip.add(TextFormatting.GREEN + "Producing " + getRfPerTick() + " RF/t");
-////        }
-//    }
+    @Override
+    public long getUsingPower() {
+        return usingPower;
+    }
 
 // @todo 1.14
 //    @SideOnly(Side.CLIENT)

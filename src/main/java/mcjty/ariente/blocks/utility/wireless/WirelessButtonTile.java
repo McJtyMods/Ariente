@@ -23,6 +23,8 @@ import net.minecraft.util.math.BlockRayTraceResult;
 import net.minecraft.world.World;
 import net.minecraftforge.common.util.Constants;
 
+import static mcjty.ariente.compat.ArienteTOPDriver.DRIVER;
+
 public class WirelessButtonTile extends SignalChannelTileEntity {
 
     private boolean locked = false;
@@ -38,6 +40,7 @@ public class WirelessButtonTile extends SignalChannelTileEntity {
                 .info("message.ariente.shiftmessage")
                 .infoExtended("message.ariente.wireless_button")
                 .infoExtendedParameter(ItemStackTools.intGetter("channel", -1))
+                .topDriver(DRIVER)
                 .tileEntitySupplier(WirelessButtonTile::new)
         ) {
             @Override

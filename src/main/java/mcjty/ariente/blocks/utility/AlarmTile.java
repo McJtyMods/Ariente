@@ -18,6 +18,8 @@ import net.minecraft.tileentity.ITickableTileEntity;
 import net.minecraft.util.SoundCategory;
 import net.minecraftforge.common.util.Constants;
 
+import static mcjty.ariente.compat.ArienteTOPDriver.DRIVER;
+
 public class AlarmTile extends GenericTileEntity implements ITickableTileEntity, IAlarmTile {
 
     public static final EnumProperty<AlarmType> ALARM = EnumProperty.create("alarm", AlarmType.class, AlarmType.values());
@@ -34,6 +36,7 @@ public class AlarmTile extends GenericTileEntity implements ITickableTileEntity,
 //                .flags(REDSTONE_CHECK, RENDER_SOLID, RENDER_CUTOUT)
                 .info("message.ariente.shiftmessage")
                 .infoExtended("message.ariente.alarm")
+                .topDriver(DRIVER)
                 .tileEntitySupplier(AlarmTile::new)
         ) {
             @Override
@@ -101,32 +104,4 @@ public class AlarmTile extends GenericTileEntity implements ITickableTileEntity,
         tagCompound.putInt("alarm", alarmType.ordinal());
         return super.write(tagCompound);
     }
-
-    // @todo 1.14
-//    @Override
-//    @Optional.Method(modid = "theoneprobe")
-//    public void addProbeInfo(ProbeMode mode, IProbeInfo probeInfo, PlayerEntity player, World world, BlockState blockState, IProbeHitData data) {
-//        super.addProbeInfo(mode, probeInfo, player, world, blockState, data);
-//        switch (alarmType) {
-//            case DEAD:
-//                probeInfo.text(TextStyleClass.INFO + "City eliminated!");
-//                break;
-//            case SAFE:
-//                probeInfo.text(TextStyleClass.INFO + "City ok");
-//                break;
-//            case ALERT:
-//                probeInfo.text(TextStyleClass.INFO + "City Alert!");
-//                break;
-//        }
-//    }
-//
-//    @SideOnly(Side.CLIENT)
-//    @Override
-//    @Optional.Method(modid = "waila")
-//    public void addWailaBody(ItemStack itemStack, List<String> currenttip, IWailaDataAccessor accessor, IWailaConfigHandler config) {
-//        super.addWailaBody(itemStack, currenttip, accessor, config);
-////        if (isWorking()) {
-////            currenttip.add(TextFormatting.GREEN + "Producing " + getRfPerTick() + " RF/t");
-////        }
-//    }
 }

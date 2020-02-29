@@ -3,14 +3,15 @@ package mcjty.ariente.blocks.utility;
 import mcjty.ariente.Ariente;
 import mcjty.ariente.api.ICityAI;
 import mcjty.ariente.api.ICityEquipment;
-import mcjty.ariente.setup.Registration;
 import mcjty.ariente.gui.HelpBuilder;
 import mcjty.ariente.gui.HoloGuiTools;
 import mcjty.ariente.items.BlueprintItem;
 import mcjty.ariente.power.IPowerReceiver;
+import mcjty.ariente.power.IPowerUser;
 import mcjty.ariente.power.PowerReceiverSupport;
 import mcjty.ariente.recipes.BlueprintRecipeRegistry;
 import mcjty.ariente.recipes.ConstructorRecipe;
+import mcjty.ariente.setup.Registration;
 import mcjty.hologui.api.*;
 import mcjty.hologui.api.components.IPlayerSlots;
 import mcjty.hologui.api.components.ISlots;
@@ -31,7 +32,6 @@ import net.minecraft.item.Items;
 import net.minecraft.nbt.CompoundNBT;
 import net.minecraft.network.NetworkManager;
 import net.minecraft.network.play.server.SUpdateTileEntityPacket;
-import net.minecraft.state.BooleanProperty;
 import net.minecraft.state.StateContainer;
 import net.minecraft.tileentity.ITickableTileEntity;
 import net.minecraft.tileentity.TileEntity;
@@ -53,9 +53,10 @@ import java.util.Map;
 import static mcjty.ariente.blocks.BlockProperties.WORKING;
 import static mcjty.ariente.blocks.utility.BlueprintStorageTile.BLUEPRINTS;
 import static mcjty.ariente.blocks.utility.BlueprintStorageTile.SLOT_BLUEPRINT;
+import static mcjty.ariente.compat.ArienteTOPDriver.DRIVER;
 import static mcjty.hologui.api.Icons.*;
 
-public class AutoConstructorTile extends GenericTileEntity implements IGuiTile, ITickableTileEntity, IPowerReceiver, ICityEquipment {
+public class AutoConstructorTile extends GenericTileEntity implements IGuiTile, ITickableTileEntity, IPowerReceiver, ICityEquipment, IPowerUser {
 
     public static final int INGREDIENTS = 6*3;
     public static final int OUTPUT = 6;
@@ -83,6 +84,7 @@ public class AutoConstructorTile extends GenericTileEntity implements IGuiTile, 
         return new BaseBlock(new BlockBuilder()
                 .info("message.ariente.shiftmessage")
                 .infoExtended("message.ariente.auto_constructor")
+                .topDriver(DRIVER)
                 .tileEntitySupplier(AutoConstructorTile::new)
         ) {
             @Override
@@ -104,7 +106,10 @@ public class AutoConstructorTile extends GenericTileEntity implements IGuiTile, 
         return ActionResultType.SUCCESS;
     }
 
-
+    @Override
+    public long getUsingPower() {
+        return usingPower;
+    }
 
     @Override
     protected boolean needsRedstoneMode() {
@@ -322,22 +327,6 @@ public class AutoConstructorTile extends GenericTileEntity implements IGuiTile, 
     public void writeRestorableToNBT(CompoundNBT tagCompound) {
 //        writeBufferToNBT(tagCompound, inventoryHelper);
     }
-
-    // @todo 1.14
-//    @Override
-//    @Optional.Method(modid = "theoneprobe")
-//    public void addProbeInfo(ProbeMode mode, IProbeInfo probeInfo, PlayerEntity player, World world, BlockState blockState, IProbeHitData data) {
-//        super.addProbeInfo(mode, probeInfo, player, world, blockState, data);
-//        probeInfo.text(TextStyleClass.LABEL + "Using: " + TextStyleClass.INFO + usingPower + " flux");
-//    }
-//
-//    @SideOnly(Side.CLIENT)
-//    @Override
-//    @Optional.Method(modid = "waila")
-//    public void addWailaBody(ItemStack itemStack, List<String> currenttip, IWailaDataAccessor accessor, IWailaConfigHandler config) {
-//        super.addWailaBody(itemStack, currenttip, accessor, config);
-//    }
-
 
     @Nullable
     @Override

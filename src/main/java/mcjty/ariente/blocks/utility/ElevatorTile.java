@@ -4,9 +4,10 @@ import mcjty.ariente.Ariente;
 import mcjty.ariente.api.ICityAI;
 import mcjty.ariente.api.ICityEquipment;
 import mcjty.ariente.api.IElevator;
-import mcjty.ariente.setup.Registration;
 import mcjty.ariente.power.IPowerReceiver;
+import mcjty.ariente.power.IPowerUser;
 import mcjty.ariente.power.PowerReceiverSupport;
+import mcjty.ariente.setup.Registration;
 import mcjty.hologui.api.*;
 import mcjty.hologui.api.components.IPanel;
 import mcjty.lib.McJtyLib;
@@ -34,9 +35,10 @@ import net.minecraftforge.common.util.Constants;
 import javax.annotation.Nullable;
 import java.util.*;
 
+import static mcjty.ariente.compat.ArienteTOPDriver.DRIVER;
 import static mcjty.hologui.api.Icons.*;
 
-public class ElevatorTile extends GenericTileEntity implements IGuiTile, ITickableTileEntity, IPowerReceiver, ICityEquipment, IElevator {
+public class ElevatorTile extends GenericTileEntity implements IGuiTile, ITickableTileEntity, IPowerReceiver, ICityEquipment, IElevator, IPowerUser {
 
     public static final String TAG_ELEVATOR = "elevator";
 
@@ -59,6 +61,7 @@ public class ElevatorTile extends GenericTileEntity implements IGuiTile, ITickab
         return new BaseBlock(new BlockBuilder()
                 .info("message.ariente.shiftmessage")
                 .infoExtended("message.ariente.elevator")
+                .topDriver(DRIVER)
                 .tileEntitySupplier(ElevatorTile::new)
         ) {
             @Override
@@ -74,6 +77,10 @@ public class ElevatorTile extends GenericTileEntity implements IGuiTile, ITickab
         return ActionResultType.SUCCESS;
     }
 
+    @Override
+    public long getUsingPower() {
+        return POWER_USAGE;
+    }
 
     @Override
     public void tick() {
@@ -298,30 +305,6 @@ public class ElevatorTile extends GenericTileEntity implements IGuiTile, ITickab
         getOrCreateInfo(tagCompound).putInt("height", height);
         return super.write(tagCompound);
     }
-
-    // @todo 1.14
-//    @Override
-//    @Optional.Method(modid = "theoneprobe")
-//    public void addProbeInfo(ProbeMode mode, IProbeInfo probeInfo, PlayerEntity player, World world, BlockState blockState, IProbeHitData data) {
-//        super.addProbeInfo(mode, probeInfo, player, world, blockState, data);
-//        probeInfo.text(TextStyleClass.LABEL + "Using: " + TextStyleClass.INFO + POWER_USAGE + " flux");
-//
-////        Boolean working = isWorking();
-////        if (working) {
-////            probeInfo.text(TextFormatting.GREEN + "Producing " + getRfPerTick() + " RF/t");
-////        }
-//    }
-//
-//    @SideOnly(Side.CLIENT)
-//    @Override
-//    @Optional.Method(modid = "waila")
-//    public void addWailaBody(ItemStack itemStack, List<String> currenttip, IWailaDataAccessor accessor, IWailaConfigHandler config) {
-//        super.addWailaBody(itemStack, currenttip, accessor, config);
-////        if (isWorking()) {
-////            currenttip.add(TextFormatting.GREEN + "Producing " + getRfPerTick() + " RF/t");
-////        }
-//    }
-//
 
     // @todo 1.14
 //    @SideOnly(Side.CLIENT)
