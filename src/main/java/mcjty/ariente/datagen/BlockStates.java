@@ -263,46 +263,39 @@ public class BlockStates extends BaseBlockStateProvider {
                 .face(EAST).cullface(EAST).texture("#side").end()
                 .face(WEST).cullface(WEST).texture("#side").end()
                 .face(UP).cullface(UP).texture("#top").end()
-                .face(DOWN).cullface(DOWN).texture("#bottom").end()
-                .end()
-                .texture("front", sideTxt)
-                .texture("side", sideTxt)
-                .texture("top", topTxt)
-                .texture("bottom", botTxt);
+                .face(DOWN).cullface(DOWN).texture("#bottom").end();
         model.element()
                 .from(0, 0, 0).to(16, 1, 2)
                 .face(NORTH).texture("#front").end()
-                .face(DOWN).texture("#side").end()
-                .end()
-                .texture("side", sideTxt)
-                .texture("front", sideTxt);
+                .face(UP).texture("#sideIn").end();
         model.element()
                 .from(0, 15, 0).to(16, 16, 2)
                 .face(NORTH).texture("#front").end()
-                .face(UP).texture("#side").end()
-                .end()
-                .texture("side", sideTxt)
-                .texture("front", sideTxt);
+                .face(DOWN).texture("#sideIn").end();
         model.element()
                 .from(0, 1, 0).to(1, 15, 2)
                 .face(NORTH).texture("#front").end()
-                .face(EAST).texture("#side").end()
-                .end()
-                .texture("side", sideTxt)
-                .texture("front", sideTxt);
+                .face(EAST).texture("#sideIn").end();
         model.element()
                 .from(15, 1, 0).to(16, 15, 2)
                 .face(NORTH).texture("#front").end()
-                .face(WEST).texture("#side").end()
-                .end()
-                .texture("side", sideTxt)
-                .texture("front", sideTxt);
-
+                .face(WEST).texture("#sideIn").end();
         model.element()
-                .from(0, 0, 2).to(16, 16, 2)
-                .face(NORTH).texture("#front").end()
-                .end()
-                .texture("front", modLoc(TXT_STORAGE_WINDOW));
+                .from(1, 1, 2).to(15, 15, 2)
+                .face(NORTH).texture("#sideIn").end();
+
+        model   .texture("front", sideTxt)
+                .texture("side", sideTxt)
+                .texture("sideIn", modLoc(TXT_BLACKMARBLE))
+                .texture("top", topTxt)
+                .texture("bottom", botTxt);
+
+
+//        model.element()
+//                .from(0, 0, 2).to(16, 16, 2)
+//                .face(NORTH).texture("#front").end()
+//                .end()
+//                .texture("front", modLoc(TXT_STORAGE_WINDOW));
 
         orientedBlock(Registration.STORAGE.get(), model);
     }

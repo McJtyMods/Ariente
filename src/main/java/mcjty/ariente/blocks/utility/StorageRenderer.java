@@ -2,14 +2,19 @@ package mcjty.ariente.blocks.utility;
 
 import com.mojang.blaze3d.matrix.MatrixStack;
 import com.mojang.blaze3d.platform.GlStateManager;
+import com.mojang.blaze3d.vertex.IVertexBuilder;
 import mcjty.ariente.setup.Registration;
 import mcjty.lib.blocks.BaseBlock;
+import mcjty.lib.client.CustomRenderTypes;
+import mcjty.lib.client.RenderHelper;
 import net.minecraft.block.Block;
 import net.minecraft.block.BlockState;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.FontRenderer;
-import net.minecraft.client.gui.screen.Screen;
 import net.minecraft.client.renderer.*;
+import net.minecraft.client.renderer.model.IBakedModel;
+import net.minecraft.client.renderer.model.ItemCameraTransforms;
+import net.minecraft.client.renderer.texture.OverlayTexture;
 import net.minecraft.client.renderer.tileentity.TileEntityRenderer;
 import net.minecraft.client.renderer.tileentity.TileEntityRendererDispatcher;
 import net.minecraft.client.renderer.vertex.DefaultVertexFormats;
@@ -20,7 +25,6 @@ import net.minecraft.util.math.BlockRayTraceResult;
 import net.minecraft.util.math.MathHelper;
 import net.minecraft.util.math.RayTraceResult;
 import net.minecraftforge.fml.client.registry.ClientRegistry;
-import org.lwjgl.opengl.GL11;
 
 import javax.annotation.Nullable;
 
@@ -58,7 +62,10 @@ public class StorageRenderer extends TileEntityRenderer<StorageTile> {
         Direction facing = gb.getFrontDirection(gb.getRotationType(), state);
 
         // @todo 1.15
-//        GlStateManager.translatef((float) x + 0.5F, (float) y + 0.75F, (float) z + 0.5F);
+        float x = 0;
+        float y = 0;
+        float z = 0;
+        matrixStack.translate((float) x + 0.5F, (float) y + 0.75F, (float) z + 0.5F);
 
         if (facing == Direction.UP) {
             matrixStack.rotate(Vector3f.XP.rotationDegrees(-90.0F));
@@ -79,7 +86,7 @@ public class StorageRenderer extends TileEntityRenderer<StorageTile> {
             matrixStack.translate(0.0F, -0.2500F, -0.4375F);
         }
 
-        matrixStack.translate(0.0F, 0.0F, 0.9F);
+        matrixStack.translate(0.0F, 0.0F, 0.9F+.1);
 
         // @todo 1.15
 //        GlStateManager.depthMask(true);
@@ -105,12 +112,12 @@ public class StorageRenderer extends TileEntityRenderer<StorageTile> {
 //        GlStateManager.disableLighting();
 
         for (int i = 0; i < 4; i++) {
-//            Gui.drawRect(xx[i] - 4, yy[i] - 4, xx[i] + 22, yy[i] - 3, 0xff222222);
-//            Gui.drawRect(xx[i] - 4, yy[i] + 21, xx[i] + 22, yy[i] + 22, 0xff222222);
-//            Gui.drawRect(xx[i] - 4, yy[i] - 4, xx[i] - 3, yy[i] + 22, 0xff222222);
-//            Gui.drawRect(xx[i] + 21, yy[i] - 4, xx[i] + 22, yy[i] + 22, 0xff222222);
+            RenderHelper.fill(matrixStack, buffer, xx[i] - 4, yy[i] - 4, xx[i] + 22, yy[i] - 3, 0xff222222, 0xf000f0);
+            RenderHelper.fill(matrixStack, buffer, xx[i] - 4, yy[i] + 21, xx[i] + 22, yy[i] + 22, 0xff222222, 0xf000f0);
+            RenderHelper.fill(matrixStack, buffer, xx[i] - 4, yy[i] - 4, xx[i] - 3, yy[i] + 22, 0xff222222, 0xf000f0);
+            RenderHelper.fill(matrixStack, buffer, xx[i] + 21, yy[i] - 4, xx[i] + 22, yy[i] + 22, 0xff222222, 0xf000f0);
             if (index == i) {
-                mcjty.lib.client.RenderHelper.fill(matrixStack, buffer, xx[i] - 3, yy[i] - 3, xx[i] + 21, yy[i] + 21, index == i ? 0x55666666 : 0x55000000, 140);
+                RenderHelper.fill(matrixStack, buffer, xx[i] - 3, yy[i] - 3, xx[i] + 21, yy[i] + 21, index == i ? 0x55666666 : 0x55000000, 0xf000f0);
             }
         }
 
@@ -131,7 +138,16 @@ public class StorageRenderer extends TileEntityRenderer<StorageTile> {
         for (int i = 0; i < StorageTile.STACKS; i++) {
             ItemStack stack = te.getTotalStack(i);
             if (!stack.isEmpty()) {
-                itemRender.renderItemAndEffectIntoGUI(stack, xx[i], yy[i]);
+//                itemRender.renderItemAndEffectIntoGUI(stack, xx[i], yy[i]);
+
+                matrixStack.push();
+                matrixStack.translate(xx[i], yy[i], 0);
+                matrixStack.scale(16, 16, 16);
+                matrixStack.translate(.5, .5, 0);
+                IBakedModel ibakedmodel = itemRender.getItemModelWithOverrides(stack, Minecraft.getInstance().world, null);
+                int lightmapValue = 0xf000f0;
+                itemRender.renderItem(stack, ItemCameraTransforms.TransformType.GUI, false, matrixStack, buffer, lightmapValue, OverlayTexture.DEFAULT_LIGHT, ibakedmodel);
+                matrixStack.pop();
             }
         }
 
@@ -143,11 +159,57 @@ public class StorageRenderer extends TileEntityRenderer<StorageTile> {
         for (int i = 0; i < StorageTile.STACKS; i++) {
             ItemStack stack = te.getTotalStack(i);
             if (!stack.isEmpty()) {
-                renderItemOverlayIntoGUI(Minecraft.getInstance().fontRenderer, stack, xx[i] * 2 + 15, yy[i] * 2 + 16, getSize(stack.getCount()));
+//                renderItemOverlayIntoGUI(Minecraft.getInstance().fontRenderer, stack, xx[i] * 2 + 15, yy[i] * 2 + 16, getSize(stack.getCount()));
+                renderSlotOverlay(matrixStack, buffer, Minecraft.getInstance().fontRenderer, yy[i] * 2 + 16, stack, xx[i] * 2 + 15, 0xf000f0);
             }
         }
 
-        RenderHelper.enableStandardItemLighting();
+//        RenderHelper.enableStandardItemLighting();
+    }
+
+    private int renderSlotOverlay(MatrixStack matrixStack, IRenderTypeBuffer buffer, FontRenderer fontRenderer, int currenty, ItemStack itm, int x, int lightmapValue) {
+        if (!itm.isEmpty()) {
+            int size = itm.getCount();
+            if (size > 1) {
+                String s1;
+                if (size < 10000) {
+                    s1 = String.valueOf(size);
+                } else if (size < 1000000) {
+                    s1 = String.valueOf(size / 1000) + "k";
+                } else if (size < 1000000000) {
+                    s1 = String.valueOf(size / 1000000) + "m";
+                } else {
+                    s1 = String.valueOf(size / 1000000000) + "g";
+                }
+                fontRenderer.renderString(s1, x + 19 - 2 - fontRenderer.getStringWidth(s1), currenty + 6 + 3, 16777215, false, matrixStack.getLast().getPositionMatrix(), buffer, false, 0, lightmapValue);
+            }
+
+            if (itm.getItem().showDurabilityBar(itm)) {
+                double health = itm.getItem().getDurabilityForDisplay(itm);
+                int j1 = (int) Math.round(13.0D - health * 13.0D);
+                int k = (int) Math.round(255.0D - health * 255.0D);
+                IVertexBuilder builder = buffer.getBuffer(CustomRenderTypes.QUADS_NOTEXTURE);
+                int r1 = 255 - k;
+                int g1 = k;
+                int b1 = 0;
+                int r2 = (255-k)/4;
+                int g2 = 0x3f;
+                int b2 = 0;
+
+                renderQuad(builder, x + 2, currenty + 13, 13, 2, 0, 0, 0, 0.0D);
+                renderQuad(builder, x + 2, currenty + 13, 12, 1, r2, g2, b2, 0.02D);
+                renderQuad(builder, x + 2, currenty + 13, j1, 1, r1, g1, b1, 0.04D);
+            }
+        }
+        x += 30;
+        return x;
+    }
+
+    private static void renderQuad(IVertexBuilder builder, int x, int y, int width, int height, int r, int g, int b, double offset) {
+        builder.pos(x, y, offset).color(r, g, b, 255).lightmap(0xf000f0).endVertex();
+        builder.pos(x, (y + height), offset).color(r, g, b, 255).lightmap(0xf000f0).endVertex();
+        builder.pos((x + width), (y + height), offset).color(r, g, b, 255).lightmap(0xf000f0).endVertex();
+        builder.pos((x + width), y, offset).color(r, g, b, 255).lightmap(0xf000f0).endVertex();
     }
 
 

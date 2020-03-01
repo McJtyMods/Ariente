@@ -1,7 +1,8 @@
 {
   "textures": {
-    "front": "ariente:block/machines/storage_window",
+    "front": "ariente:block/base/machineside",
     "side": "ariente:block/base/machineside",
+    "sideIn": "ariente:block/marble/blackmarble",
     "top": "ariente:block/base/machinetop",
     "bottom": "ariente:block/base/machinebottom"
   },
@@ -52,8 +53,8 @@
         2
       ],
       "faces": {
-        "down": {
-          "texture": "#side"
+        "up": {
+          "texture": "#sideIn"
         },
         "north": {
           "texture": "#front"
@@ -72,8 +73,8 @@
         2
       ],
       "faces": {
-        "up": {
-          "texture": "#side"
+        "down": {
+          "texture": "#sideIn"
         },
         "north": {
           "texture": "#front"
@@ -96,7 +97,7 @@
           "texture": "#front"
         },
         "east": {
-          "texture": "#side"
+          "texture": "#sideIn"
         }
       }
     },
@@ -116,24 +117,24 @@
           "texture": "#front"
         },
         "west": {
-          "texture": "#side"
+          "texture": "#sideIn"
         }
       }
     },
     {
       "from": [
-        0,
-        0,
+        1,
+        1,
         2
       ],
       "to": [
-        16,
-        16,
+        15,
+        15,
         2
       ],
       "faces": {
         "north": {
-          "texture": "#front"
+          "texture": "#sideIn"
         }
       }
     }
