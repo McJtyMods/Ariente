@@ -26,7 +26,6 @@ public class NegariteTankRenderer extends TileEntityRenderer<NegariteTankTile> {
     }
 
     public static void register() {
-        // @todo 1.15
         ClientRegistry.bindTileEntityRenderer(Registration.NEGARITE_TANK_TILE.get(), NegariteTankRenderer::new);
     }
 }

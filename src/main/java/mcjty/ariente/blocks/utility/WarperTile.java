@@ -120,13 +120,12 @@ public class WarperTile extends GenericTileEntity implements IGuiTile, IWarper {
         return pct;
     }
 
-    // @todo 1.14
-//    @SideOnly(Side.CLIENT)
-//    @Override
-//    public AxisAlignedBB getRenderBoundingBox() {
-//        return getBeamBox();
-//    }
-//
+    @Override
+    public AxisAlignedBB getRenderBoundingBox() {
+        return getBeamBox();
+    }
+
+    // @todo 1.15
 //    @Override
 //    public boolean shouldRenderInPass(int pass) {
 //        return pass == 1;

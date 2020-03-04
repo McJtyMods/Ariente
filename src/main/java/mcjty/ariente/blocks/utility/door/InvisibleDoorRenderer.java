@@ -40,17 +40,13 @@ public class InvisibleDoorRenderer extends TileEntityRenderer<InvisibleDoorTile>
 
         Direction frontDirection = Registration.INVISIBLE_DOOR.get().getFrontDirection(state);
         if (Direction.NORTH.equals(frontDirection) || Direction.SOUTH.equals(frontDirection)) {
-            // @todo 1.15
-//            matrixStack.translate(x, y, z+.5);
+            matrixStack.translate(0, 0, .5);
             matrixStack.rotate(Vector3f.YP.rotationDegrees(90));
         } else {
-            // @todo 1.15
-//            GlStateManager.translated(x + .5, y, z);
+            matrixStack.translate(.5, 0, 0);
         }
 
-        // @todo 1.15
-//        bindTexture(halo);
-        DoorMarkerRenderer.renderDoorSegment(matrixStack, buffer, openphase, iconIndex);
+        DoorMarkerRenderer.renderDoorSegment(matrixStack, buffer, openphase, iconIndex, combinedLightIn, combinedOverlayIn);
 
         matrixStack.pop();
     }

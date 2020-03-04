@@ -26,6 +26,8 @@ import net.minecraft.util.Hand;
 import net.minecraft.util.math.AxisAlignedBB;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.BlockRayTraceResult;
+import net.minecraft.util.math.shapes.VoxelShape;
+import net.minecraft.util.math.shapes.VoxelShapes;
 import net.minecraft.world.IBlockReader;
 import net.minecraft.world.World;
 import net.minecraftforge.common.util.LazyOptional;
@@ -48,30 +50,30 @@ public abstract class AbstractNodeTile extends GenericTileEntity implements IGui
     private static final float T = 0.2f;
     private static final float A = 0.14F;
 
-    private static final AxisAlignedBB AABB_DOWN_NW = new AxisAlignedBB(0.0+A, 0, 0.0+A,      0.5-A, T, 0.5-A);
-    private static final AxisAlignedBB AABB_DOWN_NE = new AxisAlignedBB(0.5+A, 0, 0.0+A,      1.0-A, T, 0.5-A);
-    private static final AxisAlignedBB AABB_DOWN_SW = new AxisAlignedBB(0.0+A, 0, 0.5+A,      0.5-A, T, 1.0-A);
-    private static final AxisAlignedBB AABB_DOWN_SE = new AxisAlignedBB(0.5+A, 0, 0.5+A,      1.0-A, T, 1.0-A);
-    private static final AxisAlignedBB AABB_UP_NW = new AxisAlignedBB(0.0+A, 1-T, 0.0+A,      0.5-A, 1, 0.5-A);
-    private static final AxisAlignedBB AABB_UP_NE = new AxisAlignedBB(0.5+A, 1-T, 0.0+A,      1.0-A, 1, 0.5-A);
-    private static final AxisAlignedBB AABB_UP_SW = new AxisAlignedBB(0.0+A, 1-T, 0.5+A,      0.5-A, 1, 1.0-A);
-    private static final AxisAlignedBB AABB_UP_SE = new AxisAlignedBB(0.5+A, 1-T, 0.5+A,      1.0-A, 1, 1.0-A);
-    private static final AxisAlignedBB AABB_NORTH_DE = new AxisAlignedBB(0.5+A, 0.0+A, 0,     1.0-A, 0.5-A, T);
-    private static final AxisAlignedBB AABB_NORTH_DW = new AxisAlignedBB(0.0+A, 0.0+A, 0,     0.5-A, 0.5-A, T);
-    private static final AxisAlignedBB AABB_NORTH_UE = new AxisAlignedBB(0.5+A, 0.5+A, 0,     1.0-A, 1.0-A, T);
-    private static final AxisAlignedBB AABB_NORTH_UW = new AxisAlignedBB(0.0+A, 0.5+A, 0,     0.5-A, 1.0-A, T);
-    private static final AxisAlignedBB AABB_SOUTH_DE = new AxisAlignedBB(0.5+A, 0.0+A, 1-T,   1.0-A, 0.5-A, 1);
-    private static final AxisAlignedBB AABB_SOUTH_DW = new AxisAlignedBB(0.0+A, 0.0+A, 1-T,   0.5-A, 0.5-A, 1);
-    private static final AxisAlignedBB AABB_SOUTH_UE = new AxisAlignedBB(0.5+A, 0.5+A, 1-T,   1.0-A, 1.0-A, 1);
-    private static final AxisAlignedBB AABB_SOUTH_UW = new AxisAlignedBB(0.0+A, 0.5+A, 1-T,   0.5-A, 1.0-A, 1);
-    private static final AxisAlignedBB AABB_WEST_DN = new AxisAlignedBB(0, 0.0+A, 0.0+A,      T, 0.5-A, 0.5-A);
-    private static final AxisAlignedBB AABB_WEST_DS = new AxisAlignedBB(0, 0.0+A, 0.5+A,      T, 0.5-A, 1.0-A);
-    private static final AxisAlignedBB AABB_WEST_UN = new AxisAlignedBB(0, 0.5+A, 0.0+A,      T, 1.0-A, 0.5-A);
-    private static final AxisAlignedBB AABB_WEST_US = new AxisAlignedBB(0, 0.5+A, 0.5+A,      T, 1.0-A, 1.0-A);
-    private static final AxisAlignedBB AABB_EAST_DN = new AxisAlignedBB(1-T, 0.0+A, 0.0+A,    1, 0.5-A, 0.5-A);
-    private static final AxisAlignedBB AABB_EAST_DS = new AxisAlignedBB(1-T, 0.0+A, 0.5+A,    1, 0.5-A, 1.0-A);
-    private static final AxisAlignedBB AABB_EAST_UN = new AxisAlignedBB(1-T, 0.5+A, 0.0+A,    1, 1.0-A, 0.5-A);
-    private static final AxisAlignedBB AABB_EAST_US = new AxisAlignedBB(1-T, 0.5+A, 0.5+A,    1, 1.0-A, 1.0-A);
+    private static final VoxelShape AABB_DOWN_NW = VoxelShapes.create(0.0+A, 0, 0.0+A,      0.5-A, T, 0.5-A);
+    private static final VoxelShape AABB_DOWN_NE = VoxelShapes.create(0.5+A, 0, 0.0+A,      1.0-A, T, 0.5-A);
+    private static final VoxelShape AABB_DOWN_SW = VoxelShapes.create(0.0+A, 0, 0.5+A,      0.5-A, T, 1.0-A);
+    private static final VoxelShape AABB_DOWN_SE = VoxelShapes.create(0.5+A, 0, 0.5+A,      1.0-A, T, 1.0-A);
+    private static final VoxelShape AABB_UP_NW = VoxelShapes.create(0.0+A, 1-T, 0.0+A,      0.5-A, 1, 0.5-A);
+    private static final VoxelShape AABB_UP_NE = VoxelShapes.create(0.5+A, 1-T, 0.0+A,      1.0-A, 1, 0.5-A);
+    private static final VoxelShape AABB_UP_SW = VoxelShapes.create(0.0+A, 1-T, 0.5+A,      0.5-A, 1, 1.0-A);
+    private static final VoxelShape AABB_UP_SE = VoxelShapes.create(0.5+A, 1-T, 0.5+A,      1.0-A, 1, 1.0-A);
+    private static final VoxelShape AABB_NORTH_DE = VoxelShapes.create(0.5+A, 0.0+A, 0,     1.0-A, 0.5-A, T);
+    private static final VoxelShape AABB_NORTH_DW = VoxelShapes.create(0.0+A, 0.0+A, 0,     0.5-A, 0.5-A, T);
+    private static final VoxelShape AABB_NORTH_UE = VoxelShapes.create(0.5+A, 0.5+A, 0,     1.0-A, 1.0-A, T);
+    private static final VoxelShape AABB_NORTH_UW = VoxelShapes.create(0.0+A, 0.5+A, 0,     0.5-A, 1.0-A, T);
+    private static final VoxelShape AABB_SOUTH_DE = VoxelShapes.create(0.5+A, 0.0+A, 1-T,   1.0-A, 0.5-A, 1);
+    private static final VoxelShape AABB_SOUTH_DW = VoxelShapes.create(0.0+A, 0.0+A, 1-T,   0.5-A, 0.5-A, 1);
+    private static final VoxelShape AABB_SOUTH_UE = VoxelShapes.create(0.5+A, 0.5+A, 1-T,   1.0-A, 1.0-A, 1);
+    private static final VoxelShape AABB_SOUTH_UW = VoxelShapes.create(0.0+A, 0.5+A, 1-T,   0.5-A, 1.0-A, 1);
+    private static final VoxelShape AABB_WEST_DN = VoxelShapes.create(0, 0.0+A, 0.0+A,      T, 0.5-A, 0.5-A);
+    private static final VoxelShape AABB_WEST_DS = VoxelShapes.create(0, 0.0+A, 0.5+A,      T, 0.5-A, 1.0-A);
+    private static final VoxelShape AABB_WEST_UN = VoxelShapes.create(0, 0.5+A, 0.0+A,      T, 1.0-A, 0.5-A);
+    private static final VoxelShape AABB_WEST_US = VoxelShapes.create(0, 0.5+A, 0.5+A,      T, 1.0-A, 1.0-A);
+    private static final VoxelShape AABB_EAST_DN = VoxelShapes.create(1-T, 0.0+A, 0.0+A,    1, 0.5-A, 0.5-A);
+    private static final VoxelShape AABB_EAST_DS = VoxelShapes.create(1-T, 0.0+A, 0.5+A,    1, 0.5-A, 1.0-A);
+    private static final VoxelShape AABB_EAST_UN = VoxelShapes.create(1-T, 0.5+A, 0.0+A,    1, 1.0-A, 0.5-A);
+    private static final VoxelShape AABB_EAST_US = VoxelShapes.create(1-T, 0.5+A, 0.5+A,    1, 1.0-A, 1.0-A);
 
     public AbstractNodeTile(TileEntityType<?> type) {
         super(type);
@@ -114,7 +116,7 @@ public abstract class AbstractNodeTile extends GenericTileEntity implements IGui
         AutoFieldTile.notifyField(world, pos);
     }
 
-    public static AxisAlignedBB getBoundingBox(BlockState state, IBlockReader world, BlockPos pos) {
+    public static VoxelShape getVoxelShape(BlockState state, IBlockReader world, BlockPos pos) {
         NodeOrientation orientation = state.get(ORIENTATION);
         switch (orientation) {
             case DOWN_NE: return AABB_DOWN_NE;
@@ -142,9 +144,7 @@ public abstract class AbstractNodeTile extends GenericTileEntity implements IGui
             case EAST_UN: return AABB_EAST_UN;
             case EAST_US: return AABB_EAST_US;
         }
-        // @todo 1.14
-        return null;
-//        return Block.NULL_AABB;
+        return VoxelShapes.empty();
     }
 
     @Override
@@ -248,12 +248,6 @@ public abstract class AbstractNodeTile extends GenericTileEntity implements IGui
     }
 
     // @todo 1.14
-//    @Override
-//    @Optional.Method(modid = "theoneprobe")
-//    public void addProbeInfo(ProbeMode mode, IProbeInfo probeInfo, PlayerEntity player, World world, BlockState blockState, IProbeHitData data) {
-//        super.addProbeInfo(mode, probeInfo, player, world, blockState, data);
-//    }
-//
 //    @SideOnly(Side.CLIENT)
 //    @Override
 //    @Optional.Method(modid = "waila")

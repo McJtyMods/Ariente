@@ -1,4 +1,4 @@
-package mcjty.ariente.renderer;
+package mcjty.ariente.client;
 
 // Kindly 'stolen' from gigaherz! Thanks!
 public class ModelHandle {

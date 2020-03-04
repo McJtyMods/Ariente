@@ -619,13 +619,12 @@ public class AutoFieldTile extends GenericTileEntity implements IGuiTile, ITicka
         return usingPower;
     }
 
-// @todo 1.14
-//    @SideOnly(Side.CLIENT)
-//    @Override
-//    public AxisAlignedBB getRenderBoundingBox() {
-//        return getRenderBox();
-//    }
-//
+    @Override
+    public AxisAlignedBB getRenderBoundingBox() {
+        return getRenderBox();
+    }
+
+    // @todo 1.14
 //    @Override
 //    public boolean shouldRenderInPass(int pass) {
 //        return pass == 1;

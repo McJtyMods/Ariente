@@ -1,10 +1,10 @@
 package mcjty.ariente.blocks.utility.door;
 
 import mcjty.ariente.Ariente;
-import mcjty.ariente.setup.Registration;
 import mcjty.ariente.blocks.utility.ILockable;
 import mcjty.ariente.config.UtilityConfiguration;
 import mcjty.ariente.entities.soldier.SoldierEntity;
+import mcjty.ariente.setup.Registration;
 import mcjty.ariente.sounds.ModSounds;
 import mcjty.hologui.api.IGuiComponent;
 import mcjty.hologui.api.IGuiComponentRegistry;
@@ -17,6 +17,7 @@ import net.minecraft.block.BlockState;
 import net.minecraft.block.Blocks;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.LivingEntity;
+import net.minecraft.entity.MobEntity;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.nbt.CompoundNBT;
 import net.minecraft.pathfinding.PathNodeType;
@@ -30,9 +31,13 @@ import net.minecraft.util.SoundCategory;
 import net.minecraft.util.math.AxisAlignedBB;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.BlockRayTraceResult;
+import net.minecraft.util.math.shapes.ISelectionContext;
+import net.minecraft.util.math.shapes.VoxelShape;
+import net.minecraft.util.math.shapes.VoxelShapes;
 import net.minecraft.world.IBlockReader;
 import net.minecraft.world.World;
 
+import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 import java.util.List;
 
@@ -40,8 +45,9 @@ import static mcjty.ariente.compat.ArienteTOPDriver.DRIVER;
 
 public class DoorMarkerTile extends GenericTileEntity implements ITickableTileEntity, IGuiTile, ILockable {
 
-    public static final AxisAlignedBB BLOCK_AABB = new AxisAlignedBB(0.0D, 0.0D, 0.0D, 1.0D, 0.1D, 1.0D);
-    public static final AxisAlignedBB OPEN_BLOCK_AABB = new AxisAlignedBB(0.0D, 0.0D, 0.0D, 0.0D, 0.0D, 0.0D);
+    public static final VoxelShape BLOCK_AABB = VoxelShapes.create(0.0D, 0.0D, 0.0D, 1.0D, 0.1D, 1.0D);
+    public static final VoxelShape OPEN_BLOCK_AABB = VoxelShapes.empty();
+    public static final VoxelShape CLOSED_BLOCK_AABB = VoxelShapes.fullCube();
 
     private AxisAlignedBB detectionBox = null;
     private AxisAlignedBB renderBox = null;
@@ -63,14 +69,22 @@ public class DoorMarkerTile extends GenericTileEntity implements ITickableTileEn
                 .info("message.ariente.shiftmessage")
                 .infoExtended("message.ariente.door_marker")
                 .topDriver(DRIVER)
-//                .addCollisionBoxToList(DoorMarkerTile::addCollisionBoxToList)
-//                .boundingBox(DoorMarkerTile::getCollisionBoundingBox)
-//                .getAIPathNodeType(DoorMarkerTile::getAiPathNodeType)
                 .tileEntitySupplier(DoorMarkerTile::new)
         ) {
             @Override
             public RotationType getRotationType() {
                 return RotationType.NONE;
+            }
+
+            @Override
+            public VoxelShape getCollisionShape(BlockState state, IBlockReader worldIn, BlockPos pos, ISelectionContext context) {
+                return InvisibleDoorTile.getCollisionShape(state, worldIn, pos);
+            }
+
+            @Nullable
+            @Override
+            public PathNodeType getAiPathNodeType(BlockState state, IBlockReader world, BlockPos pos, @Nullable MobEntity entity) {
+                return InvisibleDoorTile.getAiPathNodeType(state, world, pos);
             }
         };
     }
@@ -189,7 +203,7 @@ public class DoorMarkerTile extends GenericTileEntity implements ITickableTileEn
         this.lastTime = lastTime;
     }
 
-    @Nullable
+    @Nonnull
     public static PathNodeType getAiPathNodeType(BlockState state, IBlockReader world, BlockPos pos) {
         TileEntity te = world.getTileEntity(pos);
         if (te instanceof DoorMarkerTile) {
@@ -201,7 +215,7 @@ public class DoorMarkerTile extends GenericTileEntity implements ITickableTileEn
         return PathNodeType.BLOCKED;
     }
 
-    public static AxisAlignedBB getCollisionBoundingBox(BlockState blockState, IBlockReader world, BlockPos pos) {
+    public static VoxelShape getCollisionShape(BlockState blockState, IBlockReader world, BlockPos pos) {
         TileEntity te = world.getTileEntity(pos);
         if (te instanceof DoorMarkerTile) {
             DoorMarkerTile door = (DoorMarkerTile) te;
@@ -210,21 +224,6 @@ public class DoorMarkerTile extends GenericTileEntity implements ITickableTileEn
             }
         }
         return BLOCK_AABB;
-    }
-
-    public static boolean addCollisionBoxToList(BlockState state, World world, BlockPos pos, AxisAlignedBB entityBox, List<AxisAlignedBB> collidingBoxes, @Nullable Entity entityIn, boolean isActualState) {
-        TileEntity te = world.getTileEntity(pos);
-        if (te instanceof DoorMarkerTile) {
-            DoorMarkerTile door = (DoorMarkerTile) te;
-            if (!door.isOpen()) {
-// @todo 1.14
-                //                AxisAlignedBB box = Block.FULL_BLOCK_AABB.offset(pos);
-//                if (entityBox.intersects(box)) {
-//                    collidingBoxes.add(box);
-//                }
-            }
-        }
-        return true;
     }
 
     @Override

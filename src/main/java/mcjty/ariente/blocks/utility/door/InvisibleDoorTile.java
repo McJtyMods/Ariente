@@ -1,24 +1,23 @@
 package mcjty.ariente.blocks.utility.door;
 
-import mcjty.ariente.setup.Registration;
 import mcjty.ariente.blocks.utility.ILockable;
 import mcjty.ariente.config.UtilityConfiguration;
+import mcjty.ariente.setup.Registration;
 import mcjty.lib.blocks.BaseBlock;
 import mcjty.lib.blocks.RotationType;
 import mcjty.lib.builder.BlockBuilder;
 import mcjty.lib.tileentity.GenericTileEntity;
 import net.minecraft.block.BlockState;
-import net.minecraft.entity.Entity;
+import net.minecraft.entity.MobEntity;
 import net.minecraft.pathfinding.PathNodeType;
 import net.minecraft.tileentity.TileEntity;
-import net.minecraft.util.math.AxisAlignedBB;
 import net.minecraft.util.math.BlockPos;
+import net.minecraft.util.math.shapes.ISelectionContext;
+import net.minecraft.util.math.shapes.VoxelShape;
 import net.minecraft.world.IBlockReader;
-import net.minecraft.world.World;
 
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
-import java.util.List;
 
 public class InvisibleDoorTile extends GenericTileEntity implements ILockable {
 
@@ -28,14 +27,22 @@ public class InvisibleDoorTile extends GenericTileEntity implements ILockable {
 
     public static BaseBlock createBlock() {
         return new BaseBlock(new BlockBuilder()
-//                .addCollisionBoxToList(InvisibleDoorTile::addCollisionBoxToList)
-//                .boundingBox(InvisibleDoorTile::getCollisionBoundingBox)
-//                .getAIPathNodeType(InvisibleDoorTile::getAiPathNodeType)
                 .tileEntitySupplier(InvisibleDoorTile::new)
         ) {
             @Override
             public RotationType getRotationType() {
                 return RotationType.HORIZROTATION;
+            }
+
+            @Override
+            public VoxelShape getCollisionShape(BlockState state, IBlockReader worldIn, BlockPos pos, ISelectionContext context) {
+                return InvisibleDoorTile.getCollisionShape(state, worldIn, pos);
+            }
+
+            @Nullable
+            @Override
+            public PathNodeType getAiPathNodeType(BlockState state, IBlockReader world, BlockPos pos, @Nullable MobEntity entity) {
+                return InvisibleDoorTile.getAiPathNodeType(state, world, pos);
             }
         };
     }
@@ -52,7 +59,7 @@ public class InvisibleDoorTile extends GenericTileEntity implements ILockable {
         return PathNodeType.BLOCKED;
     }
 
-    public static AxisAlignedBB getCollisionBoundingBox(BlockState blockState, IBlockReader world, BlockPos pos) {
+    public static VoxelShape getCollisionShape(BlockState blockState, IBlockReader world, BlockPos pos) {
         TileEntity te = world.getTileEntity(pos);
         if (te instanceof InvisibleDoorTile) {
             DoorMarkerTile door = ((InvisibleDoorTile) te).findDoorMarker();
@@ -60,24 +67,7 @@ public class InvisibleDoorTile extends GenericTileEntity implements ILockable {
                 return DoorMarkerTile.OPEN_BLOCK_AABB;
             }
         }
-//        return Block.FULL_BLOCK_AABB;
-            // @todo 1.14
-        return null;
-    }
-
-    public static boolean addCollisionBoxToList(BlockState state, World world, BlockPos pos, AxisAlignedBB entityBox, List<AxisAlignedBB> collidingBoxes, @Nullable Entity entityIn, boolean isActualState) {
-        TileEntity te = world.getTileEntity(pos);
-        if (te instanceof InvisibleDoorTile) {
-            DoorMarkerTile door = ((InvisibleDoorTile) te).findDoorMarker();
-            if (door != null && !door.isOpen()) {
-// @todo 1.14
-                //                AxisAlignedBB box = Block.FULL_BLOCK_AABB.offset(pos);
-//                if (entityBox.intersects(box)) {
-//                    collidingBoxes.add(box);
-//                }
-            }
-        }
-        return true;
+        return DoorMarkerTile.CLOSED_BLOCK_AABB;
     }
 
     @Override

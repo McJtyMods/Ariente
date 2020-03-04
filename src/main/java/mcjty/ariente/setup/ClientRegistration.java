@@ -9,6 +9,7 @@ import mcjty.ariente.blocks.utility.ElevatorRenderer;
 import mcjty.ariente.blocks.utility.StorageRenderer;
 import mcjty.ariente.blocks.utility.door.DoorMarkerRenderer;
 import mcjty.ariente.blocks.utility.door.InvisibleDoorRenderer;
+import mcjty.ariente.client.ArienteSpriteUploader;
 import mcjty.ariente.entities.LaserRender;
 import mcjty.ariente.entities.RenderArientePearl;
 import mcjty.ariente.entities.drone.DroneRender;
@@ -17,7 +18,12 @@ import mcjty.ariente.entities.fluxelevator.FluxElevatorRender;
 import mcjty.ariente.entities.fluxship.FluxShipRender;
 import mcjty.ariente.entities.levitator.FluxLevitatorRender;
 import mcjty.ariente.entities.soldier.SoldierRender;
+import net.minecraft.client.Minecraft;
+import net.minecraft.client.renderer.RenderType;
+import net.minecraft.client.renderer.RenderTypeLookup;
 import net.minecraft.client.renderer.texture.AtlasTexture;
+import net.minecraft.resources.IReloadableResourceManager;
+import net.minecraft.resources.IResourceManager;
 import net.minecraftforge.api.distmarker.Dist;
 import net.minecraftforge.client.event.TextureStitchEvent;
 import net.minecraftforge.common.MinecraftForge;
@@ -48,6 +54,9 @@ public class ClientRegistration {
         StorageRenderer.register();
         DoorMarkerRenderer.register();
         InvisibleDoorRenderer.register();
+
+        RenderTypeLookup.setRenderLayer(Registration.GLASS_FENCE.get(), RenderType.translucent());
+        RenderTypeLookup.setRenderLayer(Registration.BLUE_GLASS_FENCE.get(), RenderType.translucent());
     }
 
     @SubscribeEvent
@@ -70,5 +79,13 @@ public class ClientRegistration {
         RenderingRegistry.registerEntityRenderingHandler(Registration.ENTITY_ELEVATOR.get(), new FluxElevatorRender.Factory());
         RenderingRegistry.registerEntityRenderingHandler(Registration.ENTITY_FLUX_SHIP.get(), new FluxShipRender.Factory());
         RenderingRegistry.registerEntityRenderingHandler(Registration.ENTITY_PEARL.get(), RenderArientePearl.FACTORY);
+    }
+
+    public static void setupSpriteUploader() {
+        IResourceManager resourceManager = Minecraft.getInstance().getResourceManager();
+        if (resourceManager instanceof IReloadableResourceManager) {
+            ArienteSpriteUploader.INSTANCE = new ArienteSpriteUploader(Minecraft.getInstance().getTextureManager());
+            ((IReloadableResourceManager) resourceManager).addReloadListener(ArienteSpriteUploader.INSTANCE);
+        }
     }
 }
