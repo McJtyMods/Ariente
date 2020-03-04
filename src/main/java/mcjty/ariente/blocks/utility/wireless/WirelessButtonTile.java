@@ -119,7 +119,7 @@ public class WirelessButtonTile extends SignalChannelTileEntity {
     // @todo 1.14
 //    @Override
 //    public BlockState getActualState(BlockState state) {
-//        return state.withProperty(POWER, !locked);
+//        return state.with(POWER, !locked);
 //    }
 
     @Override

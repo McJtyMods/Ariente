@@ -89,7 +89,7 @@ public abstract class SignalChannelTileEntity extends GenericTileEntity implemen
     // @todo 1.14
 //    @Override
 //    public BlockState getActualState(BlockState state) {
-//        return state.withProperty(POWER, getPowerOutput() > 0);
+//        return state.with(POWER, getPowerOutput() > 0);
 //    }
 
     @Override

@@ -13,8 +13,8 @@ public class MarbleSlabBlock extends SlabBlock {
 
     public MarbleSlabBlock() {
         super(Properties.create(Material.ROCK));
-        BlockState iblockstate = this.getDefaultState();
-        this.setDefaultState(iblockstate.with(COLOR, MarbleColor.BLACK));
+        BlockState BlockState = this.getDefaultState();
+        this.setDefaultState(BlockState.with(COLOR, MarbleColor.BLACK));
     }
 
     @Override

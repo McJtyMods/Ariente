@@ -174,7 +174,7 @@ public class LockTile extends GenericTileEntity implements IGuiTile, IKeyCardSlo
     // @todo 1.14
 //    @Override
 //    public BlockState getActualState(BlockState state) {
-//        return state.withProperty(LOCKED, isLocked());
+//        return state.with(LOCKED, isLocked());
 //    }
 
     @Override

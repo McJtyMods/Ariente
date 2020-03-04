@@ -69,8 +69,8 @@ public class PosiriteTankTile extends GenericTileEntity implements IGuiTile, IAl
     // @todo 1.14
 //    @Override
 //    public BlockState getActualState(BlockState state) {
-//        return state.withProperty(UPPER, world.getBlockState(pos.up()).getBlock() == ModBlocks.posiriteTankBlock.get())
-//                .withProperty(LOWER, world.getBlockState(pos.down()).getBlock() == ModBlocks.posiriteTankBlock.get());
+//        return state.with(UPPER, world.getBlockState(pos.up()).getBlock() == ModBlocks.posiriteTankBlock.get())
+//                .with(LOWER, world.getBlockState(pos.down()).getBlock() == ModBlocks.posiriteTankBlock.get());
 //    }
 
     // @todo 1.14

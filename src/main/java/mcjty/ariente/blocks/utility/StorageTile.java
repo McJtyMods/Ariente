@@ -215,7 +215,7 @@ public class StorageTile extends GenericTileEntity implements IGuiTile, ICityEqu
 
 //    @Override
 //    public BlockState getActualState(BlockState state) {
-//        return state.withProperty(LOCKED, isLocked());
+//        return state.with(LOCKED, isLocked());
 //    }
 //
 

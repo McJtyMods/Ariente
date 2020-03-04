@@ -154,7 +154,7 @@ public class WirelessLockTile extends SignalChannelTileEntity implements ILockab
     // @todo 1.14
 //    @Override
 //    public BlockState getActualState(BlockState state) {
-//        return state.withProperty(LOCKED, locked);
+//        return state.with(LOCKED, locked);
 //    }
 
 

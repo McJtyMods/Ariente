@@ -208,7 +208,7 @@ public class NegariteGeneratorTile extends GenericTileEntity implements ITickabl
     // @todo 1.14
 //    @Override
 //    public BlockState getActualState(BlockState state) {
-//        return state.withProperty(WORKING, isWorking());
+//        return state.with(WORKING, isWorking());
 //    }
 
     public boolean isWorking() {

@@ -90,7 +90,7 @@ public class AlarmTile extends GenericTileEntity implements ITickableTileEntity,
     // @todo 1.14
 //    @Override
 //    public BlockState getActualState(BlockState state) {
-//        return state.withProperty(ALARM, alarmType);
+//        return state.with(ALARM, alarmType);
 //    }
 
     @Override

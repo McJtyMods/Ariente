@@ -280,7 +280,7 @@ public class AutoConstructorTile extends GenericTileEntity implements IGuiTile, 
     // @todo 1.14
 //    @Override
 //    public BlockState getActualState(BlockState state) {
-//        return state.withProperty(WORKING, isWorking());
+//        return state.with(WORKING, isWorking());
 //    }
 
     public boolean isWorking() {

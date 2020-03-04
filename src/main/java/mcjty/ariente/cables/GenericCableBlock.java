@@ -326,12 +326,12 @@ public abstract class GenericCableBlock extends Block implements WailaInfoProvid
 //        ConnectorType down = getConnectorType(color, world, pos, Direction.DOWN);
 //
 //        return extendedBlockState
-//                .withProperty(NORTH, north)
-//                .withProperty(SOUTH, south)
-//                .withProperty(WEST, west)
-//                .withProperty(EAST, east)
-//                .withProperty(UP, up)
-//                .withProperty(DOWN, down);
+//                .with(NORTH, north)
+//                .with(SOUTH, south)
+//                .with(WEST, west)
+//                .with(EAST, east)
+//                .with(UP, up)
+//                .with(DOWN, down);
 //    }
 
     protected abstract ConnectorType getConnectorType(@Nonnull CableColor thisColor, IBlockReader world, BlockPos pos, Direction facing);

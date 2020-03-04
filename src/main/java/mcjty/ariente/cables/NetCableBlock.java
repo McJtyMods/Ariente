@@ -87,7 +87,7 @@ public class NetCableBlock extends GenericCableBlock {
 //        IExtendedBlockState extendedBlockState = (IExtendedBlockState) super.getExtendedState(state, world, pos);
 //        BlockState mimicBlock = getMimicBlock(world, pos);
 //        if (mimicBlock != null) {
-//            return extendedBlockState.withProperty(FACADEID, new FacadeBlockId(mimicBlock));
+//            return extendedBlockState.with(FACADEID, new FacadeBlockId(mimicBlock));
 //        } else {
 //            return extendedBlockState;
 //        }

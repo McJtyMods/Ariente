@@ -80,8 +80,8 @@ public class NegariteTankTile extends GenericTileEntity implements IGuiTile, IAl
     // @todo 1.14
 //    @Override
 //    public BlockState getActualState(BlockState state) {
-//        return state.withProperty(UPPER, world.getBlockState(pos.up()).getBlock() == ModBlocks.negariteTankBlock)
-//                .withProperty(LOWER, world.getBlockState(pos.down()).getBlock() == ModBlocks.negariteTankBlock);
+//        return state.with(UPPER, world.getBlockState(pos.up()).getBlock() == ModBlocks.negariteTankBlock)
+//                .with(LOWER, world.getBlockState(pos.down()).getBlock() == ModBlocks.negariteTankBlock);
 //    }
 
     // @todo 1.14
