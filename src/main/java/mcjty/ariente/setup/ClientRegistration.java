@@ -55,13 +55,13 @@ public class ClientRegistration {
         DoorMarkerRenderer.register();
         InvisibleDoorRenderer.register();
 
-        RenderTypeLookup.setRenderLayer(Registration.GLASS_FENCE.get(), RenderType.translucent());
-        RenderTypeLookup.setRenderLayer(Registration.BLUE_GLASS_FENCE.get(), RenderType.translucent());
+        RenderTypeLookup.setRenderLayer(Registration.GLASS_FENCE.get(), RenderType.getTranslucent());
+        RenderTypeLookup.setRenderLayer(Registration.BLUE_GLASS_FENCE.get(), RenderType.getTranslucent());
     }
 
     @SubscribeEvent
     public static void onTextureStitch(TextureStitchEvent.Pre event) {
-        if (!event.getMap().getBasePath().equals(AtlasTexture.LOCATION_BLOCKS_TEXTURE)) {
+        if (!event.getMap().getTextureLocation().equals(AtlasTexture.LOCATION_BLOCKS_TEXTURE)) {
             return;
         }
         event.addSprite(NEGARITE_BEAM);

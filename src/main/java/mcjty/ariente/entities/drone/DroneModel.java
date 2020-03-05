@@ -19,7 +19,7 @@ public class DroneModel <T extends FlyingEntity> extends EntityModel<T> {
     }
 
     @Override
-    public void render(T entityIn, float limbSwing, float limbSwingAmount, float ageInTicks, float netHeadYaw, float headPitch) {
+    public void setRotationAngles(T entityIn, float limbSwing, float limbSwingAmount, float ageInTicks, float netHeadYaw, float headPitch) {
         this.setRotationAngles(limbSwing, limbSwingAmount, ageInTicks, netHeadYaw, headPitch, 1.0f /* @todo 1.15 scale*/, entityIn);
     }
 

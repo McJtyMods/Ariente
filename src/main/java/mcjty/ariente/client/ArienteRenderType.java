@@ -12,8 +12,8 @@ public class ArienteRenderType extends RenderType {
         super(name, format, p_i225992_3_, p_i225992_4_, p_i225992_5_, p_i225992_6_, setup, clear);
     }
 
-    public static final RenderType ARIENTE_SOLID = get("ariente_solid", DefaultVertexFormats.BLOCK, GL11.GL_QUADS, 2097152, true, false,
-            RenderType.State.builder()
+    public static final RenderType ARIENTE_SOLID = makeType("ariente_solid", DefaultVertexFormats.BLOCK, GL11.GL_QUADS, 2097152, true, false,
+            RenderType.State.getBuilder()
                     .shadeModel(SHADE_ENABLED)
                     .lightmap(LIGHTMAP_ENABLED)
                     .texture(new TextureState(ArienteSpriteUploader.ARIENTE_ATLAS, false, false)).build(true));

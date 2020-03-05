@@ -236,7 +236,7 @@ public class PowerSuitModel extends BipedModel {
     }
 
     @Override
-    public void render(Entity entity, float limbSwing, float limbSwingAmount, float ageInTicks, float netHeadYaw, float headPitch) {
+    public void setRotationAngles(Entity entity, float limbSwing, float limbSwingAmount, float ageInTicks, float netHeadYaw, float headPitch) {
 
         if(entity instanceof LivingEntity)	{
             this.isSneak = entity.isShiftKeyDown();

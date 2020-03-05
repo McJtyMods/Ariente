@@ -67,7 +67,7 @@ public class DoorMarkerRenderer extends TileEntityRenderer<DoorMarkerTile> {
             float o = openphase / 2000.0f;
             float p = 1 - o;
 
-            Matrix4f matrix = matrixStack.getLast().getPositionMatrix();
+            Matrix4f matrix = matrixStack.getLast().getMatrix();
 
             RenderHelper.vt(builder, matrix, -0.1f, o, o, u, v, combinedLightIn, combinedOverlayIn, 255, 255, 255, 255);
             RenderHelper.vt(builder, matrix, -0.1f, o, p, u+duv, v, combinedLightIn, combinedOverlayIn, 255, 255, 255, 255);

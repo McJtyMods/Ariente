@@ -29,7 +29,7 @@ public class BlueprintRenderer extends ItemStackTileEntityRenderer {
         ItemStack itm = new ItemStack(Registration.BLUEPRINT.get());
         IBakedModel ibakedmodel = itemRender.getItemModelWithOverrides(itm, Minecraft.getInstance().world, (LivingEntity)null);
         int lightmapValue = 140;
-        itemRender.renderItem(itm, ItemCameraTransforms.TransformType.GUI, false, matrixStack, buffer, lightmapValue, OverlayTexture.DEFAULT_LIGHT, ibakedmodel);
+        itemRender.renderItem(itm, ItemCameraTransforms.TransformType.GUI, false, matrixStack, buffer, lightmapValue, OverlayTexture.NO_OVERLAY, ibakedmodel);
 
         ItemStack destination = BlueprintItem.getDestination(stack);
         if (!destination.isEmpty()) {
@@ -51,7 +51,7 @@ public class BlueprintRenderer extends ItemStackTileEntityRenderer {
             ItemRenderer itemRender = Minecraft.getInstance().getItemRenderer();
             IBakedModel ibakedmodel = itemRender.getItemModelWithOverrides(stack, Minecraft.getInstance().world, (LivingEntity)null);
             int lightmapValue = 140;
-            itemRender.renderItem(stack, ItemCameraTransforms.TransformType.GUI, false, matrixStack, buffer, lightmapValue, OverlayTexture.DEFAULT_LIGHT, ibakedmodel);
+            itemRender.renderItem(stack, ItemCameraTransforms.TransformType.GUI, false, matrixStack, buffer, lightmapValue, OverlayTexture.NO_OVERLAY, ibakedmodel);
         }
     }
 

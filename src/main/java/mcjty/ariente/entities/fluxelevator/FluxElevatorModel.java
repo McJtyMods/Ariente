@@ -63,7 +63,7 @@ public class FluxElevatorModel extends EntityModel {
     }
 
     @Override
-    public void render(Entity entity, float limbSwing, float limbSwingAmount, float ageInTicks, float netHeadYaw, float headPitch) {
+    public void setRotationAngles(Entity entity, float limbSwing, float limbSwingAmount, float ageInTicks, float netHeadYaw, float headPitch) {
         // @todo 1.15
 //        this.sideModels3.render(headPitch);
 //        this.sideModelsS1.render(headPitch);
