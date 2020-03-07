@@ -73,7 +73,7 @@ public class DoorMarkerTile extends GenericTileEntity implements ITickableTileEn
         ) {
             @Override
             public RotationType getRotationType() {
-                return RotationType.NONE;
+                return RotationType.HORIZROTATION;
             }
 
             @Override

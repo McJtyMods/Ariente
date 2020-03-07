@@ -20,7 +20,7 @@ public class HoloGuiCompatibility {
             return;
         }
         registered = true;
-        InterModComms.sendTo("hologui", "getHoloHandler", () -> new GetHoloHandler());
+        InterModComms.sendTo("hologui", "getHoloHandler", GetHoloHandler::new);
     }
 
 

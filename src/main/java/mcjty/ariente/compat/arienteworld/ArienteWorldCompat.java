@@ -4,17 +4,15 @@ import mcjty.ariente.api.IArienteWorld;
 import mcjty.ariente.api.ICityAISystem;
 import mcjty.lib.varia.Logging;
 import net.minecraft.world.World;
+import net.minecraftforge.fml.InterModComms;
 
 import javax.annotation.Nullable;
+import java.util.function.Function;
 
 public class ArienteWorldCompat {
 
     public static void register() {
-// @todo 1.14
-        //        InterModComms.sendTo("arienteworld", "getArienteWorld", () -> {
-//
-//        })
-//        FMLInterModComms.sendFunctionMessage("arienteworld", "getArienteWorld", "mcjty.ariente.compat.arienteworld.ArienteWorldCompat$GetArienteWorld");
+        InterModComms.sendTo("arienteworld", "getArienteWorld", ArienteWorldCompat.GetArienteWorld::new);
     }
 
     public static ICityAISystem getCityAISystem(World world) {
@@ -25,14 +23,14 @@ public class ArienteWorldCompat {
         return GetArienteWorld.arienteWorld;
     }
 
-    public static class GetArienteWorld implements com.google.common.base.Function<IArienteWorld, Void> {
+    public static class GetArienteWorld implements Function<IArienteWorld, Void> {
 
         public static IArienteWorld arienteWorld;
 
         @Nullable
         @Override
-        public Void apply(IArienteWorld theOneProbe) {
-            arienteWorld = theOneProbe;
+        public Void apply(IArienteWorld arienteWorld) {
+            GetArienteWorld.arienteWorld = arienteWorld;
             Logging.log("Enabled support for Ariente World");
             return null;
         }
