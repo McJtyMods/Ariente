@@ -78,13 +78,13 @@ public class DoorMarkerTile extends GenericTileEntity implements ITickableTileEn
 
             @Override
             public VoxelShape getCollisionShape(BlockState state, IBlockReader worldIn, BlockPos pos, ISelectionContext context) {
-                return InvisibleDoorTile.getCollisionShape(state, worldIn, pos);
+                return DoorMarkerTile.getCollisionShape(state, worldIn, pos);
             }
 
             @Nullable
             @Override
             public PathNodeType getAiPathNodeType(BlockState state, IBlockReader world, BlockPos pos, @Nullable MobEntity entity) {
-                return InvisibleDoorTile.getAiPathNodeType(state, world, pos);
+                return DoorMarkerTile.getAiPathNodeType(state, world, pos);
             }
         };
     }
