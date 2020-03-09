@@ -423,10 +423,13 @@ public class BlockStates extends BaseBlockStateProvider {
         VariantBlockStateBuilder builder = getVariantBuilder(Registration.MARBLE_SLAB.get());
         for (MarbleColor color : MarbleColor.VALUES) {
             ResourceLocation marble = modLoc("block/marble/" + color.getName() + "marble_smooth");
-            BlockModelBuilder model = models().cubeBottomTop(BLOCK_FOLDER + "/decorative/double_marble_slab_" + color.getName(),
-                    modLoc("block/marble/" + color.getName() + "marble_double_slab"), marble, marble);
-            slabBlock(builder, BLOCK_FOLDER + "/decorative/marble_slab_" + color.getName(),
-                    modLoc("block/decorative/double_marble_slab_" + color.getName()), marble, marble, marble);
+//            BlockModelBuilder model = models().cubeBottomTop(BLOCK_FOLDER + "/decorative/double_marble_slab_" + color.getName(),
+//                    modLoc("block/marble/" + color.getName() + "marble_double_slab"), marble, marble);
+            String name = BLOCK_FOLDER + "/decorative/marble_slab_" + color.getName();
+            builder
+                    .partialState().with(MarbleColor.COLOR, color).with(SlabBlock.TYPE, SlabType.BOTTOM).addModels(new ConfiguredModel(models().slab(name, marble, marble, marble)))
+                    .partialState().with(MarbleColor.COLOR, color).with(SlabBlock.TYPE, SlabType.TOP).addModels(new ConfiguredModel(models().slabTop(name + "_top", marble, marble, marble)))
+                    .partialState().with(MarbleColor.COLOR, color).with(SlabBlock.TYPE, SlabType.DOUBLE).addModels(new ConfiguredModel(models().getExistingFile(modLoc("block/decorative/double_marble_slab_" + color.getName()))));
         }
     }
 
