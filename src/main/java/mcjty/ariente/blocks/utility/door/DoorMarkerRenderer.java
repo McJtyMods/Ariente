@@ -2,14 +2,16 @@ package mcjty.ariente.blocks.utility.door;
 
 import com.mojang.blaze3d.matrix.MatrixStack;
 import com.mojang.blaze3d.vertex.IVertexBuilder;
+import mcjty.ariente.Ariente;
 import mcjty.ariente.client.ArienteRenderType;
+import mcjty.ariente.client.ArienteSpriteUploader;
 import mcjty.ariente.setup.Registration;
-import mcjty.hologui.HoloGui;
 import mcjty.lib.client.RenderHelper;
 import net.minecraft.block.BlockState;
 import net.minecraft.client.renderer.IRenderTypeBuffer;
 import net.minecraft.client.renderer.Matrix4f;
 import net.minecraft.client.renderer.Vector3f;
+import net.minecraft.client.renderer.texture.TextureAtlasSprite;
 import net.minecraft.client.renderer.tileentity.TileEntityRenderer;
 import net.minecraft.client.renderer.tileentity.TileEntityRendererDispatcher;
 import net.minecraft.util.Direction;
@@ -18,7 +20,7 @@ import net.minecraftforge.fml.client.registry.ClientRegistry;
 
 public class DoorMarkerRenderer extends TileEntityRenderer<DoorMarkerTile> {
 
-    public static final ResourceLocation DOOR_MARKER_TEXTURE = new ResourceLocation(HoloGui.MODID, "doormarkers");
+    public static final ResourceLocation DOOR_MARKER_TEXTURE = new ResourceLocation(Ariente.MODID, "doormarkers");
 
     public DoorMarkerRenderer(TileEntityRendererDispatcher rendererDispatcherIn) {
         super(rendererDispatcherIn);
@@ -50,12 +52,15 @@ public class DoorMarkerRenderer extends TileEntityRenderer<DoorMarkerTile> {
 
     public static void renderDoorSegment(MatrixStack matrixStack, IRenderTypeBuffer buffer, int openphase, int iconIndex, int combinedLightIn, int combinedOverlayIn) {
 
+        TextureAtlasSprite sprite = ArienteSpriteUploader.INSTANCE.getSprite(DOOR_MARKER_TEXTURE);
+
         float u = (iconIndex % 4);
         float v = (iconIndex / 4);
 
-        u = (u*16) / 256.0f;
-        v = (v*16) / 256.0f;
-        float duv = 16.0f / 256.0f;
+        float du = (sprite.getMaxU() - sprite.getMinU()) / 8.0f;
+        float dv = (sprite.getMaxV() - sprite.getMinV()) / 4.0f;
+        u = sprite.getMinU() + u * du;
+        v = sprite.getMinV() + v * dv;
 
         if (openphase < 1000) {
 
@@ -67,14 +72,14 @@ public class DoorMarkerRenderer extends TileEntityRenderer<DoorMarkerTile> {
             Matrix4f matrix = matrixStack.getLast().getMatrix();
 
             RenderHelper.vt(builder, matrix, -0.1f, o, o, u, v, combinedLightIn, combinedOverlayIn, 255, 255, 255, 255);
-            RenderHelper.vt(builder, matrix, -0.1f, o, p, u+duv, v, combinedLightIn, combinedOverlayIn, 255, 255, 255, 255);
-            RenderHelper.vt(builder, matrix, -0.1f, p, p, u+duv, v+duv, combinedLightIn, combinedOverlayIn, 255, 255, 255, 255);
-            RenderHelper.vt(builder, matrix, -0.1f, p, o, u, v+duv, combinedLightIn, combinedOverlayIn, 255, 255, 255, 255);
+            RenderHelper.vt(builder, matrix, -0.1f, o, p, u+du, v, combinedLightIn, combinedOverlayIn, 255, 255, 255, 255);
+            RenderHelper.vt(builder, matrix, -0.1f, p, p, u+du, v+dv, combinedLightIn, combinedOverlayIn, 255, 255, 255, 255);
+            RenderHelper.vt(builder, matrix, -0.1f, p, o, u, v+dv, combinedLightIn, combinedOverlayIn, 255, 255, 255, 255);
 
             RenderHelper.vt(builder, matrix, .1f, p, o, u, v, combinedLightIn, combinedOverlayIn, 255, 255, 255, 255);
-            RenderHelper.vt(builder, matrix, .1f, p, p, u+duv, v, combinedLightIn, combinedOverlayIn, 255, 255, 255, 255);
-            RenderHelper.vt(builder, matrix, .1f, o, p, u+duv, v+duv, combinedLightIn, combinedOverlayIn, 255, 255, 255, 255);
-            RenderHelper.vt(builder, matrix, .1f, o, o, u, v+duv, combinedLightIn, combinedOverlayIn, 255, 255, 255, 255);
+            RenderHelper.vt(builder, matrix, .1f, p, p, u+du, v, combinedLightIn, combinedOverlayIn, 255, 255, 255, 255);
+            RenderHelper.vt(builder, matrix, .1f, o, p, u+du, v+dv, combinedLightIn, combinedOverlayIn, 255, 255, 255, 255);
+            RenderHelper.vt(builder, matrix, .1f, o, o, u, v+dv, combinedLightIn, combinedOverlayIn, 255, 255, 255, 255);
 
 //            for (int yy = 1; yy < 10; yy++) {
 //                if (getWorld().isAirBlock(te.getPos().up(yy))) {

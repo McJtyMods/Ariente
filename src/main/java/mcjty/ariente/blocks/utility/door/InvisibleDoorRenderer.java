@@ -15,8 +15,6 @@ import net.minecraftforge.fml.client.registry.ClientRegistry;
 
 public class InvisibleDoorRenderer extends TileEntityRenderer<InvisibleDoorTile> {
 
-    private ResourceLocation halo = new ResourceLocation(Ariente.MODID, "textures/gui/guielements.png");
-
     public InvisibleDoorRenderer(TileEntityRendererDispatcher rendererDispatcherIn) {
         super(rendererDispatcherIn);
     }
