@@ -13,8 +13,10 @@ import mcjty.lib.blocks.BaseBlock;
 import mcjty.lib.blocks.RotationType;
 import mcjty.lib.builder.BlockBuilder;
 import mcjty.lib.tileentity.GenericTileEntity;
+import net.minecraft.block.Block;
 import net.minecraft.block.BlockState;
 import net.minecraft.block.Blocks;
+import net.minecraft.block.material.Material;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.LivingEntity;
 import net.minecraft.entity.MobEntity;
@@ -45,7 +47,7 @@ import static mcjty.ariente.compat.ArienteTOPDriver.DRIVER;
 
 public class DoorMarkerTile extends GenericTileEntity implements ITickableTileEntity, IGuiTile, ILockable {
 
-    public static final VoxelShape BLOCK_AABB = VoxelShapes.create(0.0D, 0.0D, 0.0D, 1.0D, 0.1D, 1.0D);
+    public static final VoxelShape BLOCK_AABB = VoxelShapes.create(0.0D, 0.0D, 0.0D, 1.0D, 1.0D/16.0, 1.0D);
     public static final VoxelShape OPEN_BLOCK_AABB = VoxelShapes.empty();
     public static final VoxelShape CLOSED_BLOCK_AABB = VoxelShapes.fullCube();
 
@@ -66,6 +68,9 @@ public class DoorMarkerTile extends GenericTileEntity implements ITickableTileEn
 
     public static BaseBlock createBlock() {
         return new BaseBlock(new BlockBuilder()
+                .properties(Block.Properties.create(Material.IRON)
+                        .doesNotBlockMovement()
+                        .variableOpacity())
                 .info("message.ariente.shiftmessage")
                 .infoExtended("message.ariente.door_marker")
                 .topDriver(DRIVER)
@@ -79,6 +84,11 @@ public class DoorMarkerTile extends GenericTileEntity implements ITickableTileEn
             @Override
             public VoxelShape getCollisionShape(BlockState state, IBlockReader worldIn, BlockPos pos, ISelectionContext context) {
                 return DoorMarkerTile.getCollisionShape(state, worldIn, pos);
+            }
+
+            @Override
+            public VoxelShape getShape(BlockState state, IBlockReader reader, BlockPos pos, ISelectionContext context) {
+                return BLOCK_AABB;
             }
 
             @Nullable

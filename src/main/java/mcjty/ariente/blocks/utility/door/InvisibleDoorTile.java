@@ -7,13 +7,16 @@ import mcjty.lib.blocks.BaseBlock;
 import mcjty.lib.blocks.RotationType;
 import mcjty.lib.builder.BlockBuilder;
 import mcjty.lib.tileentity.GenericTileEntity;
+import net.minecraft.block.Block;
 import net.minecraft.block.BlockState;
+import net.minecraft.block.material.Material;
 import net.minecraft.entity.MobEntity;
 import net.minecraft.pathfinding.PathNodeType;
 import net.minecraft.tileentity.TileEntity;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.shapes.ISelectionContext;
 import net.minecraft.util.math.shapes.VoxelShape;
+import net.minecraft.util.math.shapes.VoxelShapes;
 import net.minecraft.world.IBlockReader;
 
 import javax.annotation.Nonnull;
@@ -27,6 +30,9 @@ public class InvisibleDoorTile extends GenericTileEntity implements ILockable {
 
     public static BaseBlock createBlock() {
         return new BaseBlock(new BlockBuilder()
+                .properties(Block.Properties.create(Material.IRON)
+                        .doesNotBlockMovement()
+                        .variableOpacity())
                 .tileEntitySupplier(InvisibleDoorTile::new)
         ) {
             @Override
@@ -37,6 +43,11 @@ public class InvisibleDoorTile extends GenericTileEntity implements ILockable {
             @Override
             public VoxelShape getCollisionShape(BlockState state, IBlockReader worldIn, BlockPos pos, ISelectionContext context) {
                 return InvisibleDoorTile.getCollisionShape(state, worldIn, pos);
+            }
+
+            @Override
+            public VoxelShape getShape(BlockState state, IBlockReader reader, BlockPos pos, ISelectionContext context) {
+                return VoxelShapes.empty();
             }
 
             @Nullable
