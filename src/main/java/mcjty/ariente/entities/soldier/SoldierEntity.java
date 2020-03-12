@@ -15,6 +15,7 @@ import net.minecraft.entity.EntityType;
 import net.minecraft.entity.LivingEntity;
 import net.minecraft.entity.SharedMonsterAttributes;
 import net.minecraft.entity.ai.goal.*;
+import net.minecraft.entity.monster.MonsterEntity;
 import net.minecraft.entity.monster.ZombiePigmanEntity;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.inventory.EquipmentSlotType;
@@ -33,7 +34,7 @@ import net.minecraft.world.World;
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 
-public class SoldierEntity extends CreatureEntity implements IArmRaisable, IForcefieldImmunity, ISoldier {
+public class SoldierEntity extends MonsterEntity implements IArmRaisable, IForcefieldImmunity, ISoldier {
 
     private static final DataParameter<Boolean> ARMS_RAISED = EntityDataManager.createKey(SoldierEntity.class, DataSerializers.BOOLEAN);
     public static final ResourceLocation LOOT = new ResourceLocation(Ariente.MODID, "entities/soldier");
@@ -43,7 +44,7 @@ public class SoldierEntity extends CreatureEntity implements IArmRaisable, IForc
     protected SoldierBehaviourType behaviourType = SoldierBehaviourType.SOLDIER_FIGHTER;
 
 
-    public SoldierEntity(EntityType<? extends CreatureEntity> type, World worldIn) {
+    public SoldierEntity(EntityType<? extends MonsterEntity> type, World worldIn) {
         super(type, worldIn);
     }
 
@@ -129,10 +130,10 @@ public class SoldierEntity extends CreatureEntity implements IArmRaisable, IForc
         this.getAttribute(SharedMonsterAttributes.MOVEMENT_SPEED).setBaseValue(0.32D);
         if (isMaster()) {
             this.getAttribute(SharedMonsterAttributes.MAX_HEALTH).setBaseValue(150.0D);
-            this.getAttributes().registerAttribute(SharedMonsterAttributes.ATTACK_DAMAGE).setBaseValue(8.0D);
+            this.getAttribute(SharedMonsterAttributes.ATTACK_DAMAGE).setBaseValue(8.0D);
             this.getAttribute(SharedMonsterAttributes.ARMOR).setBaseValue(6.0D);
         } else {
-            this.getAttributes().registerAttribute(SharedMonsterAttributes.ATTACK_DAMAGE).setBaseValue(4.0D);
+            this.getAttribute(SharedMonsterAttributes.ATTACK_DAMAGE).setBaseValue(4.0D);
             this.getAttribute(SharedMonsterAttributes.ARMOR).setBaseValue(4.0D);
         }
     }

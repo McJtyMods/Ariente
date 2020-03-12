@@ -4,6 +4,7 @@ import mcjty.ariente.api.SoldierBehaviourType;
 import mcjty.ariente.setup.Registration;
 import net.minecraft.entity.CreatureEntity;
 import net.minecraft.entity.EntityType;
+import net.minecraft.entity.monster.MonsterEntity;
 import net.minecraft.nbt.CompoundNBT;
 import net.minecraft.potion.EffectInstance;
 import net.minecraft.potion.Effects;
@@ -15,7 +16,7 @@ public class MasterSoldierEntity extends SoldierEntity {
 
     private int noregenCounter = 0;
 
-    public MasterSoldierEntity(EntityType<? extends CreatureEntity> type, World worldIn) {
+    public MasterSoldierEntity(EntityType<? extends MonsterEntity> type, World worldIn) {
         super(type, worldIn);
         // @todo 1.14 move to type
         //isImmuneToFire = true;
