@@ -24,6 +24,10 @@ import net.minecraft.util.ActionResultType;
 import net.minecraft.util.Hand;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.BlockRayTraceResult;
+import net.minecraft.util.math.shapes.ISelectionContext;
+import net.minecraft.util.math.shapes.VoxelShape;
+import net.minecraft.util.math.shapes.VoxelShapes;
+import net.minecraft.world.IBlockReader;
 import net.minecraft.world.World;
 import net.minecraftforge.common.util.Constants;
 
@@ -38,6 +42,8 @@ public class WirelessLockTile extends SignalChannelTileEntity implements ILockab
     private boolean locked = false;
     private int horizontalRange = 5;
     private int verticalRange = 3;
+
+    private static final VoxelShape BLOCK_AABB = VoxelShapes.create(1.0D/16.0, 1.0D/16.0, 15.0D/16.0, 15.0D/16.0, 15.0D/16.0, 1.0D);
 
     public WirelessLockTile() {
         super(Registration.WIRELESS_LOCK_TILE.get());
@@ -56,6 +62,11 @@ public class WirelessLockTile extends SignalChannelTileEntity implements ILockab
             protected void fillStateContainer(StateContainer.Builder<Block, BlockState> builder) {
                 super.fillStateContainer(builder);
                 builder.add(LOCKED);
+            }
+
+            @Override
+            public VoxelShape getShape(BlockState state, IBlockReader reader, BlockPos pos, ISelectionContext context) {
+                return BLOCK_AABB;
             }
         };
     }

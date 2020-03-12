@@ -1,7 +1,19 @@
 {
   "variants": {
-    "": {
+    "facing=north": {
       "model": "ariente:block/utility/door_marker"
+    },
+    "facing=south": {
+      "model": "ariente:block/utility/door_marker",
+      "y": 180
+    },
+    "facing=west": {
+      "model": "ariente:block/utility/door_marker",
+      "y": 270
+    },
+    "facing=east": {
+      "model": "ariente:block/utility/door_marker",
+      "y": 90
     }
   }
 }

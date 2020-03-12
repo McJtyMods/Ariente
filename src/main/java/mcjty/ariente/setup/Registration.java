@@ -39,6 +39,7 @@ import mcjty.lib.blocks.BlockStateItem;
 import mcjty.lib.blocks.RotationType;
 import mcjty.lib.builder.BlockBuilder;
 import net.minecraft.block.Block;
+import net.minecraft.block.BlockState;
 import net.minecraft.block.SoundType;
 import net.minecraft.block.material.Material;
 import net.minecraft.entity.EntityClassification;
@@ -54,6 +55,11 @@ import net.minecraft.tileentity.TileEntityType;
 import net.minecraft.util.ResourceLocation;
 import net.minecraft.util.SoundEvent;
 import net.minecraft.util.math.AxisAlignedBB;
+import net.minecraft.util.math.BlockPos;
+import net.minecraft.util.math.shapes.ISelectionContext;
+import net.minecraft.util.math.shapes.VoxelShape;
+import net.minecraft.util.math.shapes.VoxelShapes;
+import net.minecraft.world.IBlockReader;
 import net.minecraftforge.fml.RegistryObject;
 import net.minecraftforge.fml.javafmlmod.FMLJavaModLoadingContext;
 import net.minecraftforge.registries.DeferredRegister;
@@ -331,8 +337,8 @@ public class Registration {
     public static final RegistryObject<Item> WIRELESS_LOCK_ITEM = ITEMS.register("wireless_lock", () -> new BlockItem(WIRELESS_LOCK.get(), createStandardProperties()));
     public static final RegistryObject<TileEntityType<WirelessLockTile>> WIRELESS_LOCK_TILE = TILES.register("wireless_lock", () -> TileEntityType.Builder.create(WirelessLockTile::new, WIRELESS_LOCK.get()).build(null));
 
-    public static final RegistryObject<BaseBlock> FLAT_LIGHT = BLOCKS.register("flatlight", () -> new BaseBlock(new BlockBuilder()
-            .properties(Block.Properties.create(Material.GLASS).lightValue(15))));
+    public static final RegistryObject<BaseBlock> FLAT_LIGHT = BLOCKS.register("flatlight", Registration::createFlatLightBlock);
+
     public static final RegistryObject<Item> FLAT_LIGHT_ITEM = ITEMS.register("flatlight", () -> new BlockItem(FLAT_LIGHT.get(), createStandardProperties()));
 
 
@@ -489,6 +495,19 @@ public class Registration {
 
     public static Item.Properties createStandardProperties() {
         return new Item.Properties().group(Ariente.setup.getTab());
+    }
+
+    private static final VoxelShape FLAT_LIGHT_AABB = VoxelShapes.create(1.0D/16.0, 1.0D/16.0, 14.0D/16.0, 15.0D/16.0, 15.0D/16.0, 1.0D);
+
+    private static BaseBlock createFlatLightBlock() {
+        return new BaseBlock(new BlockBuilder()
+                .properties(Block.Properties.create(Material.GLASS).lightValue(15))) {
+            @Override
+            public VoxelShape getShape(BlockState state, IBlockReader reader, BlockPos pos, ISelectionContext context) {
+                return FLAT_LIGHT_AABB;
+            }
+
+        };
     }
 
     // @todo 1.14

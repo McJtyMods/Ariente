@@ -16,6 +16,11 @@ import net.minecraft.state.EnumProperty;
 import net.minecraft.state.StateContainer;
 import net.minecraft.tileentity.ITickableTileEntity;
 import net.minecraft.util.SoundCategory;
+import net.minecraft.util.math.BlockPos;
+import net.minecraft.util.math.shapes.ISelectionContext;
+import net.minecraft.util.math.shapes.VoxelShape;
+import net.minecraft.util.math.shapes.VoxelShapes;
+import net.minecraft.world.IBlockReader;
 import net.minecraftforge.common.util.Constants;
 
 import static mcjty.ariente.compat.ArienteTOPDriver.DRIVER;
@@ -23,6 +28,8 @@ import static mcjty.ariente.compat.ArienteTOPDriver.DRIVER;
 public class AlarmTile extends GenericTileEntity implements ITickableTileEntity, IAlarmTile {
 
     public static final EnumProperty<AlarmType> ALARM = EnumProperty.create("alarm", AlarmType.class, AlarmType.values());
+
+    private static final VoxelShape BLOCK_AABB = VoxelShapes.create(1.0D/16.0, 1.0D/16.0, 15.0D/16.0, 15.0D/16.0, 15.0D/16.0, 1.0D);
 
     private AlarmType alarmType = AlarmType.SAFE;
     private int soundTicker = 0;
@@ -43,6 +50,11 @@ public class AlarmTile extends GenericTileEntity implements ITickableTileEntity,
             protected void fillStateContainer(StateContainer.Builder<Block, BlockState> builder) {
                 super.fillStateContainer(builder);
                 builder.add(ALARM);
+            }
+
+            @Override
+            public VoxelShape getShape(BlockState state, IBlockReader reader, BlockPos pos, ISelectionContext context) {
+                return BLOCK_AABB;
             }
         };
     }

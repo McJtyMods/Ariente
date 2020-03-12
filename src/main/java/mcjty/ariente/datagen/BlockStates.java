@@ -448,7 +448,7 @@ public class BlockStates extends BaseBlockStateProvider {
 
     private void registerDoorMarker() {
         BlockModelBuilder model = createdParentedModel("/utility/door_marker", thin, TXT_BLACKMARBLE, "top", TXT_DOOR_MARKER, "bottom", TXT_BLACKMARBLE);
-        simpleBlock(Registration.DOOR_MARKER.get(), model);
+        horizontalOrientedBlock(Registration.DOOR_MARKER.get(), model);
     }
 
     private void registerFieldMarker() {

@@ -120,6 +120,7 @@ public class SoldierEntity extends CreatureEntity implements IArmRaisable, IForc
 //        LootTable lootTableFromLocation = worldObj.getLootTableManager().getLootTableFromLocation(LOOT);
 //        System.out.println("lootTableFromLocation = " + lootTableFromLocation);
     }
+//            this.getAttributes().registerAttribute(SharedMonsterAttributes.FOLLOW_RANGE).setBaseValue(16.0D);
 
     @Override
     protected void registerAttributes() {
@@ -128,10 +129,10 @@ public class SoldierEntity extends CreatureEntity implements IArmRaisable, IForc
         this.getAttribute(SharedMonsterAttributes.MOVEMENT_SPEED).setBaseValue(0.32D);
         if (isMaster()) {
             this.getAttribute(SharedMonsterAttributes.MAX_HEALTH).setBaseValue(150.0D);
-            this.getAttribute(SharedMonsterAttributes.ATTACK_DAMAGE).setBaseValue(8.0D);
+            this.getAttributes().registerAttribute(SharedMonsterAttributes.ATTACK_DAMAGE).setBaseValue(8.0D);
             this.getAttribute(SharedMonsterAttributes.ARMOR).setBaseValue(6.0D);
         } else {
-            this.getAttribute(SharedMonsterAttributes.ATTACK_DAMAGE).setBaseValue(4.0D);
+            this.getAttributes().registerAttribute(SharedMonsterAttributes.ATTACK_DAMAGE).setBaseValue(4.0D);
             this.getAttribute(SharedMonsterAttributes.ARMOR).setBaseValue(4.0D);
         }
     }

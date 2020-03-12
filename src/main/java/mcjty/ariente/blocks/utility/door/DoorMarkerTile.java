@@ -69,7 +69,6 @@ public class DoorMarkerTile extends GenericTileEntity implements ITickableTileEn
     public static BaseBlock createBlock() {
         return new BaseBlock(new BlockBuilder()
                 .properties(Block.Properties.create(Material.IRON)
-                        .doesNotBlockMovement()
                         .variableOpacity())
                 .info("message.ariente.shiftmessage")
                 .infoExtended("message.ariente.door_marker")

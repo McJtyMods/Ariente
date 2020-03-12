@@ -26,6 +26,10 @@ import net.minecraft.util.Hand;
 import net.minecraft.util.SoundCategory;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.BlockRayTraceResult;
+import net.minecraft.util.math.shapes.ISelectionContext;
+import net.minecraft.util.math.shapes.VoxelShape;
+import net.minecraft.util.math.shapes.VoxelShapes;
+import net.minecraft.world.IBlockReader;
 import net.minecraft.world.World;
 import net.minecraftforge.common.util.Constants;
 
@@ -44,6 +48,8 @@ public class LockTile extends GenericTileEntity implements IGuiTile, IKeyCardSlo
     private int horizontalRange = 5;
     private int verticalRange = 3;
 
+    private static final VoxelShape BLOCK_AABB = VoxelShapes.create(1.0D/16.0, 1.0D/16.0, 15.0D/16.0, 15.0D/16.0, 15.0D/16.0, 1.0D);
+
     public LockTile() {
         super(Registration.LOCK_TILE.get());
     }
@@ -60,6 +66,11 @@ public class LockTile extends GenericTileEntity implements IGuiTile, IKeyCardSlo
             protected void fillStateContainer(StateContainer.Builder<Block, BlockState> builder) {
                 super.fillStateContainer(builder);
                 builder.add(BlockProperties.LOCKED);
+            }
+
+            @Override
+            public VoxelShape getShape(BlockState state, IBlockReader reader, BlockPos pos, ISelectionContext context) {
+                return BLOCK_AABB;
             }
         };
     }

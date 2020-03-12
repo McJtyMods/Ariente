@@ -31,7 +31,6 @@ public class InvisibleDoorTile extends GenericTileEntity implements ILockable {
     public static BaseBlock createBlock() {
         return new BaseBlock(new BlockBuilder()
                 .properties(Block.Properties.create(Material.IRON)
-                        .doesNotBlockMovement()
                         .variableOpacity())
                 .tileEntitySupplier(InvisibleDoorTile::new)
         ) {

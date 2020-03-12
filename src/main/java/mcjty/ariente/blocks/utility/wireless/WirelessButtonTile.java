@@ -20,6 +20,10 @@ import net.minecraft.util.Hand;
 import net.minecraft.util.SoundCategory;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.BlockRayTraceResult;
+import net.minecraft.util.math.shapes.ISelectionContext;
+import net.minecraft.util.math.shapes.VoxelShape;
+import net.minecraft.util.math.shapes.VoxelShapes;
+import net.minecraft.world.IBlockReader;
 import net.minecraft.world.World;
 import net.minecraftforge.common.util.Constants;
 
@@ -29,6 +33,8 @@ public class WirelessButtonTile extends SignalChannelTileEntity {
 
     private boolean locked = false;
     private int prevIn = -1;
+
+    private static final VoxelShape BLOCK_AABB = VoxelShapes.create(1.0D/16.0, 1.0D/16.0, 15.0D/16.0, 15.0D/16.0, 15.0D/16.0, 1.0D);
 
     public WirelessButtonTile() {
         super(Registration.WIRELESS_BUTTON_TILE.get());
@@ -47,6 +53,11 @@ public class WirelessButtonTile extends SignalChannelTileEntity {
             protected void fillStateContainer(StateContainer.Builder<Block, BlockState> builder) {
                 super.fillStateContainer(builder);
                 builder.add(BlockProperties.POWER);
+            }
+
+            @Override
+            public VoxelShape getShape(BlockState state, IBlockReader reader, BlockPos pos, ISelectionContext context) {
+                return BLOCK_AABB;
             }
         };
     }

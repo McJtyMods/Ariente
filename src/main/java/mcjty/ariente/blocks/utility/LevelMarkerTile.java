@@ -14,11 +14,18 @@ import net.minecraft.block.BlockState;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.util.ActionResultType;
 import net.minecraft.util.Hand;
+import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.BlockRayTraceResult;
+import net.minecraft.util.math.shapes.ISelectionContext;
+import net.minecraft.util.math.shapes.VoxelShape;
+import net.minecraft.util.math.shapes.VoxelShapes;
+import net.minecraft.world.IBlockReader;
 
 import static mcjty.ariente.compat.ArienteTOPDriver.DRIVER;
 
 public class LevelMarkerTile extends GenericTileEntity implements IGuiTile {
+
+    private static final VoxelShape BLOCK_AABB = VoxelShapes.create(0.0D, 0.0D, 0.0D, 1.0D, 1.0D/16.0, 1.0D);
 
     @Override
     public IGuiComponent<?> createGui(String tag, IGuiComponentRegistry registry) {
@@ -41,6 +48,11 @@ public class LevelMarkerTile extends GenericTileEntity implements IGuiTile {
             @Override
             public RotationType getRotationType() {
                 return RotationType.NONE;
+            }
+
+            @Override
+            public VoxelShape getShape(BlockState state, IBlockReader reader, BlockPos pos, ISelectionContext context) {
+                return BLOCK_AABB;
             }
         };
     }
