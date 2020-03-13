@@ -7,7 +7,6 @@ import net.minecraft.client.renderer.entity.BipedRenderer;
 import net.minecraft.client.renderer.entity.EntityRenderer;
 import net.minecraft.client.renderer.entity.EntityRendererManager;
 import net.minecraft.client.renderer.entity.model.BipedModel;
-import net.minecraft.client.renderer.entity.model.ZombieModel;
 import net.minecraft.util.ResourceLocation;
 import net.minecraftforge.fml.client.registry.IRenderFactory;
 
@@ -21,14 +20,14 @@ public class SoldierRender extends BipedRenderer<SoldierEntity, BipedModel<Soldi
     public static final MasterFactory MASTER_FACTORY = new MasterFactory();
 
     public SoldierRender(EntityRendererManager rendermanagerIn, float scale) {
-        super(rendermanagerIn, new ZombieModel(scale-1.0f, false), 0.5F * scale);
+        super(rendermanagerIn, new SoldierModel<>(scale-1.0f, false), 0.5F * scale);
 // @todo 1.14
         //        BipedArmorLayer layerbipedarmor = new BipedArmorLayer(this) {
 //
 //            @Override
 //            protected void initArmor() {
-//                this.modelLeggings = new ZombieModel(0.5F * scale, true);
-//                this.modelArmor = new ZombieModel(1.0F * scale, true);
+//                this.modelLeggings = new SoldierModel(0.5F * scale, true);
+//                this.modelArmor = new SoldierModel(1.0F * scale, true);
 //            }
 //        };
 //        this.addLayer(layerbipedarmor);
