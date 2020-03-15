@@ -127,7 +127,7 @@ public class LockTile extends GenericTileEntity implements IGuiTile, IKeyCardSlo
     }
 
     private void doLock(boolean l) {
-        if (!world.isRemote) {
+        if (world != null && !world.isRemote) {
             for (int dx = -horizontalRange ; dx <= horizontalRange ; dx++) {
                 for (int dy = -verticalRange ; dy <= verticalRange ; dy++) {
                     for (int dz = -horizontalRange ; dz <= horizontalRange ; dz++) {
