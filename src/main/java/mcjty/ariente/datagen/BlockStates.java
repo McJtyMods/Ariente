@@ -129,9 +129,10 @@ public class BlockStates extends BaseBlockStateProvider {
         registerSignalTransmitter();
         registerFlatLight();
 
-        simpleBlock(Registration.NETCABLE.get(), empty);
-        simpleBlock(Registration.FACADE.get(), empty);
-        simpleBlock(Registration.CONNECTOR.get(), empty);
+        // @todo 1.15 datagen for cable loader
+//        simpleBlock(Registration.NETCABLE.get(), empty);
+//        simpleBlock(Registration.FACADE.get(), empty);
+//        simpleBlock(Registration.CONNECTOR.get(), empty);
         simpleBlock(Registration.INVISIBLE_DOOR.get(), empty);
 
         registerTank(Registration.NEGARITE_TANK.get(), "negarite");

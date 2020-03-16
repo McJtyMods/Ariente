@@ -5,12 +5,16 @@ import mcjty.ariente.Ariente;
 import mcjty.lib.client.AbstractDynamicBakedModel;
 import net.minecraft.block.BlockState;
 import net.minecraft.client.Minecraft;
-import net.minecraft.client.renderer.model.*;
+import net.minecraft.client.renderer.RenderType;
+import net.minecraft.client.renderer.model.BakedQuad;
+import net.minecraft.client.renderer.model.IBakedModel;
+import net.minecraft.client.renderer.model.ItemCameraTransforms;
+import net.minecraft.client.renderer.model.ItemOverrideList;
 import net.minecraft.client.renderer.texture.TextureAtlasSprite;
-import net.minecraft.client.renderer.vertex.VertexFormat;
 import net.minecraft.util.Direction;
 import net.minecraft.util.ResourceLocation;
 import net.minecraft.util.math.Vec3d;
+import net.minecraftforge.client.MinecraftForgeClient;
 import net.minecraftforge.client.model.data.IModelData;
 
 import javax.annotation.Nonnull;
@@ -25,9 +29,6 @@ import static mcjty.ariente.cables.ConnectorType.BLOCK;
 import static mcjty.ariente.cables.ConnectorType.CABLE;
 
 public class GenericCableBakedModel extends AbstractDynamicBakedModel {
-
-    public static final ModelResourceLocation modelConnector = new ModelResourceLocation(Ariente.MODID + ":" + ConnectorBlock.CONNECTOR);
-    public static final ModelResourceLocation modelCable = new ModelResourceLocation(Ariente.MODID + ":" + NetCableBlock.NETCABLE);
 
     private TextureAtlasSprite spriteCable;
     private TextureAtlasSprite spriteConnector;
@@ -45,8 +46,6 @@ public class GenericCableBakedModel extends AbstractDynamicBakedModel {
 
     private static CableTextures[] cableTextures = null;
     private static TextureAtlasSprite spriteSide;
-
-    private VertexFormat format;
 
     static {
         CablePatterns.PATTERNS.put(new CablePatterns.Pattern(false, false, false, false), new CablePatterns.QuadSetting(SPRITE_NONE, 0));
@@ -74,16 +73,16 @@ public class GenericCableBakedModel extends AbstractDynamicBakedModel {
                 int i = color.ordinal();
                 String typeName = color.getName();
                 tt[i] = new CableTextures();
-                tt[i].spriteConnector = getTexture(new ResourceLocation(Ariente.MODID, "blocks/cables/" + typeName + "/connector"));
-                tt[i].spriteNormalCable = getTexture(new ResourceLocation(Ariente.MODID, "blocks/cables/" + typeName + "/normal_netcable"));
-                tt[i].spriteNoneCable = getTexture(new ResourceLocation(Ariente.MODID, "blocks/cables/" + typeName + "/normal_none_netcable"));
-                tt[i].spriteEndCable = getTexture(new ResourceLocation(Ariente.MODID, "blocks/cables/" + typeName + "/normal_end_netcable"));
-                tt[i].spriteCornerCable = getTexture(new ResourceLocation(Ariente.MODID, "blocks/cables/" + typeName + "/normal_corner_netcable"));
-                tt[i].spriteThreeCable = getTexture(new ResourceLocation(Ariente.MODID, "blocks/cables/" + typeName + "/normal_three_netcable"));
-                tt[i].spriteCrossCable = getTexture(new ResourceLocation(Ariente.MODID, "blocks/cables/" + typeName + "/normal_cross_netcable"));
+                tt[i].spriteConnector = getTexture(new ResourceLocation(Ariente.MODID, "block/cables/" + typeName + "/connector"));
+                tt[i].spriteNormalCable = getTexture(new ResourceLocation(Ariente.MODID, "block/cables/" + typeName + "/normal_netcable"));
+                tt[i].spriteNoneCable = getTexture(new ResourceLocation(Ariente.MODID, "block/cables/" + typeName + "/normal_none_netcable"));
+                tt[i].spriteEndCable = getTexture(new ResourceLocation(Ariente.MODID, "block/cables/" + typeName + "/normal_end_netcable"));
+                tt[i].spriteCornerCable = getTexture(new ResourceLocation(Ariente.MODID, "block/cables/" + typeName + "/normal_corner_netcable"));
+                tt[i].spriteThreeCable = getTexture(new ResourceLocation(Ariente.MODID, "block/cables/" + typeName + "/normal_three_netcable"));
+                tt[i].spriteCrossCable = getTexture(new ResourceLocation(Ariente.MODID, "block/cables/" + typeName + "/normal_cross_netcable"));
             }
 
-            spriteSide = getTexture(new ResourceLocation(Ariente.MODID, "blocks/cables/connector_side"));
+            spriteSide = getTexture(new ResourceLocation(Ariente.MODID, "block/cables/connector_side"));
             cableTextures = tt;
         }
     }
@@ -106,10 +105,6 @@ public class GenericCableBakedModel extends AbstractDynamicBakedModel {
                 return cableTexture.spriteCrossCable;
         }
         return cableTexture.spriteNoneCable;
-    }
-
-    public GenericCableBakedModel(VertexFormat format) {
-        this.format = format;
     }
 
     private void createQuad(List<BakedQuad> quads, Vec3d v1, Vec3d v2, Vec3d v3, Vec3d v4, TextureAtlasSprite sprite, int rotation, float hilight) {
@@ -145,6 +140,7 @@ public class GenericCableBakedModel extends AbstractDynamicBakedModel {
         BlockState facadeId = extraData.getData(GenericCableBlock.FACADEID);
         if (facadeId != null) {
             BlockState facadeState = facadeId.getBlockState();
+            RenderType layer = MinecraftForgeClient.getRenderLayer();
             // @todo 1.15
 //            BlockRenderLayer layer = MinecraftForgeClient.getRenderLayer();
 //            if (layer != null && !facadeState.getBlock().canRenderInLayer(facadeState, layer)) { // always render in the null layer or the block-breaking textures don't show up
@@ -158,6 +154,9 @@ public class GenericCableBakedModel extends AbstractDynamicBakedModel {
             }
         }
 
+        if (side != null) {
+            return Collections.emptyList();
+        }
         // @todo 1.15
 //        if (side != null || (MinecraftForgeClient.getRenderLayer() != BlockRenderLayer.CUTOUT_MIPPED)) {
 //            return Collections.emptyList();

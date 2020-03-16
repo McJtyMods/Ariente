@@ -1,16 +1,11 @@
 package mcjty.ariente.facade;
 
-import mcjty.ariente.Ariente;
 import mcjty.ariente.cables.NetCableBlock;
 import net.minecraft.block.material.Material;
-import net.minecraft.client.renderer.model.ModelResourceLocation;
-import net.minecraft.util.ResourceLocation;
 
 public class FacadeBlock extends NetCableBlock {
 
     public static final String FACADE = "facade";
-
-    public static final ModelResourceLocation MODEL_RESOURCE_LOCATION = new ModelResourceLocation(new ResourceLocation(Ariente.MODID, "facade"), "inventory");
 
     public FacadeBlock() {
         super(Material.IRON);

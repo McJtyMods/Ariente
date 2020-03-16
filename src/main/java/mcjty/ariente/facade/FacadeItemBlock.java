@@ -1,5 +1,6 @@
 package mcjty.ariente.facade;
 
+import mcjty.ariente.Ariente;
 import net.minecraft.block.Block;
 import net.minecraft.block.BlockState;
 import net.minecraft.block.Blocks;
@@ -7,9 +8,11 @@ import net.minecraft.block.SoundType;
 import net.minecraft.client.util.ITooltipFlag;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.item.BlockItem;
+import net.minecraft.item.BlockItemUseContext;
 import net.minecraft.item.ItemStack;
 import net.minecraft.item.ItemUseContext;
 import net.minecraft.nbt.CompoundNBT;
+import net.minecraft.nbt.NBTUtil;
 import net.minecraft.tileentity.TileEntity;
 import net.minecraft.util.ActionResultType;
 import net.minecraft.util.Hand;
@@ -29,38 +32,30 @@ import java.util.List;
 public class FacadeItemBlock extends BlockItem {
 
     public FacadeItemBlock(FacadeBlock block) {
-        super(block, new Properties());
-        // @todo 1.14 Properties?
+        super(block, new Properties()
+                .group(Ariente.setup.getTab()));
     }
 
     public static void setMimicBlock(@Nonnull ItemStack item, BlockState mimicBlock) {
         CompoundNBT tagCompound = new CompoundNBT();
-        tagCompound.putString("regName", mimicBlock.getBlock().getRegistryName().toString());
-// @todo 1.14 meta
-        //        tagCompound.setInteger("meta", mimicBlock.getBlock().getMetaFromState(mimicBlock));
+        CompoundNBT nbt = NBTUtil.writeBlockState(mimicBlock);
+        tagCompound.put("mimic", nbt);
         item.setTag(tagCompound);
     }
 
     public static BlockState getMimicBlock(@Nonnull ItemStack stack) {
         CompoundNBT tagCompound = stack.getTag();
-        if (tagCompound == null || !tagCompound.contains("regName")) {
+        if (tagCompound == null || !tagCompound.contains("mimic")) {
             return Blocks.COBBLESTONE.getDefaultState();
         } else {
-            String regName = tagCompound.getString("regName");
-            // @todo 1.14 meta
-//            int meta = tagCompound.getInteger("meta");
-            Block value = ForgeRegistries.BLOCKS.getValue(new ResourceLocation(regName));
-            return value.getDefaultState();
+            return NBTUtil.readBlockState(tagCompound.getCompound("mimic"));
         }
     }
 
-    // @todo 1.14
-//    @SideOnly(Side.CLIENT)
-//    @Override
-//    public boolean canPlaceBlockOnSide(World worldIn, BlockPos pos, Direction side, PlayerEntity player, ItemStack stack) {
-//        return true;
-//    }
-
+    @Override
+    protected boolean canPlace(BlockItemUseContext context, BlockState state) {
+        return true;
+    }
 
     @Override
     public ActionResultType onItemUse(ItemUseContext context) {

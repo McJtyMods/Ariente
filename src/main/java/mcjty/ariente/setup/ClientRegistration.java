@@ -9,6 +9,7 @@ import mcjty.ariente.blocks.utility.ElevatorRenderer;
 import mcjty.ariente.blocks.utility.StorageRenderer;
 import mcjty.ariente.blocks.utility.door.DoorMarkerRenderer;
 import mcjty.ariente.blocks.utility.door.InvisibleDoorRenderer;
+import mcjty.ariente.cables.CableModelLoader;
 import mcjty.ariente.client.ArienteSpriteUploader;
 import mcjty.ariente.entities.LaserRender;
 import mcjty.ariente.entities.RenderArientePearl;
@@ -24,8 +25,10 @@ import net.minecraft.client.renderer.RenderTypeLookup;
 import net.minecraft.client.renderer.texture.AtlasTexture;
 import net.minecraft.resources.IReloadableResourceManager;
 import net.minecraft.resources.IResourceManager;
+import net.minecraft.util.ResourceLocation;
 import net.minecraftforge.api.distmarker.Dist;
 import net.minecraftforge.client.event.TextureStitchEvent;
+import net.minecraftforge.client.model.ModelLoaderRegistry;
 import net.minecraftforge.common.MinecraftForge;
 import net.minecraftforge.eventbus.api.SubscribeEvent;
 import net.minecraftforge.fml.client.registry.RenderingRegistry;
@@ -57,6 +60,8 @@ public class ClientRegistration {
 
         RenderTypeLookup.setRenderLayer(Registration.GLASS_FENCE.get(), RenderType.getTranslucent());
         RenderTypeLookup.setRenderLayer(Registration.BLUE_GLASS_FENCE.get(), RenderType.getTranslucent());
+
+        ModelLoaderRegistry.registerLoader(new ResourceLocation(Ariente.MODID, "cableloader"), new CableModelLoader());
     }
 
     @SubscribeEvent
