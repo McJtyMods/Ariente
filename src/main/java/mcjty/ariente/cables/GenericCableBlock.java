@@ -295,6 +295,10 @@ public abstract class GenericCableBlock extends Block implements WailaInfoProvid
         if (!world.isRemote) {
             PowerSenderSupport.fixNetworks(world, pos);
         }
+        BlockState blockState = calculateState(world, pos, state);
+        if (state != blockState) {
+            world.setBlockState(pos, blockState);
+        }
     }
 
 
