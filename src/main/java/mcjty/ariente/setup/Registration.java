@@ -20,7 +20,9 @@ import mcjty.ariente.blocks.utility.wireless.SignalTransmitterTile;
 import mcjty.ariente.blocks.utility.wireless.WirelessButtonTile;
 import mcjty.ariente.blocks.utility.wireless.WirelessLockTile;
 import mcjty.ariente.cables.ConnectorBlock;
+import mcjty.ariente.cables.ConnectorTileEntity;
 import mcjty.ariente.cables.NetCableBlock;
+import mcjty.ariente.cables.NetCableTileEntity;
 import mcjty.ariente.entities.EntityArientePearl;
 import mcjty.ariente.entities.LaserEntity;
 import mcjty.ariente.entities.drone.DroneEntity;
@@ -31,6 +33,7 @@ import mcjty.ariente.entities.levitator.FluxLevitatorEntity;
 import mcjty.ariente.entities.soldier.MasterSoldierEntity;
 import mcjty.ariente.entities.soldier.SoldierEntity;
 import mcjty.ariente.facade.FacadeBlock;
+import mcjty.ariente.facade.FacadeItemBlock;
 import mcjty.ariente.items.*;
 import mcjty.ariente.items.armor.PowerSuit;
 import mcjty.ariente.items.modules.ArmorModuleItem;
@@ -345,12 +348,12 @@ public class Registration {
 
     public static final RegistryObject<NetCableBlock> NETCABLE = BLOCKS.register("netcable", NetCableBlock::new);
     public static final RegistryObject<Item> NETCABLE_ITEM = ITEMS.register("netcable", () -> new BlockItem(NETCABLE.get(), createStandardProperties()));
+    public static final RegistryObject<TileEntityType<NetCableTileEntity>> NETCABLE_TILE = TILES.register("netcable", () -> TileEntityType.Builder.create(NetCableTileEntity::new, NETCABLE.get()).build(null));
     public static final RegistryObject<ConnectorBlock> CONNECTOR = BLOCKS.register("connector", ConnectorBlock::new);
     public static final RegistryObject<Item> CONNECTOR_ITEM = ITEMS.register("connector", () -> new BlockItem(CONNECTOR.get(), createStandardProperties()));
+    public static final RegistryObject<TileEntityType<ConnectorTileEntity>> CONNECTOR_TILE = TILES.register("connector", () -> TileEntityType.Builder.create(ConnectorTileEntity::new, CONNECTOR.get()).build(null));
     public static final RegistryObject<FacadeBlock> FACADE = BLOCKS.register("facade", FacadeBlock::new);
-    public static final RegistryObject<Item> FACADE_ITEM = ITEMS.register("facade", () -> new BlockItem(FACADE.get(), createStandardProperties()));
-
-
+    public static final RegistryObject<Item> FACADE_ITEM = ITEMS.register("facade", () -> new FacadeItemBlock(FACADE.get()));
 
 
     public static final RegistryObject<Item> INGOT_PLATINUM = ITEMS.register("ingot_platinum", () -> new Item(createStandardProperties()));

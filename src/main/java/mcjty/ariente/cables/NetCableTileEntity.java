@@ -1,6 +1,6 @@
 package mcjty.ariente.cables;
 
-import net.minecraft.tileentity.TileEntityType;
+import mcjty.ariente.setup.Registration;
 
 public class NetCableTileEntity extends GenericCableTileEntity {
 
@@ -9,7 +9,7 @@ public class NetCableTileEntity extends GenericCableTileEntity {
         return false;
     }
 
-    public NetCableTileEntity(TileEntityType<?> type) {
-        super(type);
+    public NetCableTileEntity() {
+        super(Registration.NETCABLE_TILE.get());
     }
 }

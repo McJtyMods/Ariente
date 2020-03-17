@@ -73,6 +73,17 @@ public abstract class GenericCableBlock extends Block implements WailaInfoProvid
         setDefaultState(getDefaultState().with(COLOR, CableColor.NEGARITE));
     }
 
+    @Override
+    public boolean hasTileEntity(BlockState state) {
+        return true;
+    }
+
+    @Nullable
+    @Override
+    public TileEntity createTileEntity(BlockState state, IBlockReader world) {
+        return new NetCableTileEntity();
+    }
+
     private void makeShapes() {
         if (shapeCache == null) {
             int length = ConnectorType.values().length;
@@ -390,6 +401,11 @@ public abstract class GenericCableBlock extends Block implements WailaInfoProvid
         BlockState state = calculateState(world, pos, getDefaultState());
         System.out.println("state = " + state);
         return state;
+    }
+
+    @Override
+    public BlockState updatePostPlacement(BlockState state, Direction direction, BlockState neighbourState, IWorld world, BlockPos current, BlockPos offset) {
+        return calculateState(world, current, state);
     }
 
     @Nonnull

@@ -1,10 +1,10 @@
 package mcjty.ariente.cables;
 
-import mcjty.ariente.setup.Registration;
 import mcjty.ariente.blocks.generators.PowerCombinerTile;
 import mcjty.ariente.facade.FacadeItemBlock;
 import mcjty.ariente.power.IPowerReceiver;
 import mcjty.ariente.power.IPowerSender;
+import mcjty.ariente.setup.Registration;
 import mcjty.lib.compat.theoneprobe.TOPDriver;
 import net.minecraft.block.Block;
 import net.minecraft.block.BlockState;
@@ -33,15 +33,21 @@ public class ConnectorBlock extends GenericCableBlock {
     }
 
     @Override
+    public boolean hasTileEntity(BlockState state) {
+        return true;
+    }
+
+    @Nullable
+    @Override
+    public TileEntity createTileEntity(BlockState state, IBlockReader world) {
+        return new ConnectorTileEntity();
+    }
+
+    @Override
     public TOPDriver getProbeDriver() {
         // @todo 1.14
         return null;
     }
-
-    // @todo 1.14
-//    protected void initTileEntity() {
-//        GameRegistry.registerTileEntity(ConnectorTileEntity.class, new ResourceLocation(Ariente.MODID, "connector"));
-//    }
 
     // @todo 1.14
 //    @Override

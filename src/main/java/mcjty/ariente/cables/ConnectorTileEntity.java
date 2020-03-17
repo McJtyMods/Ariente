@@ -1,9 +1,9 @@
 package mcjty.ariente.cables;
 
+import mcjty.ariente.setup.Registration;
 import mcjty.lib.varia.OrientationTools;
 import net.minecraft.block.Block;
 import net.minecraft.nbt.CompoundNBT;
-import net.minecraft.tileentity.TileEntityType;
 import net.minecraft.util.Direction;
 
 public class ConnectorTileEntity extends GenericCableTileEntity {
@@ -12,8 +12,8 @@ public class ConnectorTileEntity extends GenericCableTileEntity {
     private int powerOut[] = new int[] { 0, 0, 0, 0, 0, 0 };
     private Block[] cachedNeighbours = new Block[OrientationTools.DIRECTION_VALUES.length];
 
-    public ConnectorTileEntity(TileEntityType<?> type) {
-        super(type);
+    public ConnectorTileEntity() {
+        super(Registration.CONNECTOR_TILE.get());
     }
 
     public int getPowerOut(Direction side) {

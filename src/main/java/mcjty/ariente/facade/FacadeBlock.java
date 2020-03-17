@@ -1,7 +1,20 @@
 package mcjty.ariente.facade;
 
+import mcjty.ariente.cables.CableColor;
+import mcjty.ariente.cables.GenericCableTileEntity;
 import mcjty.ariente.cables.NetCableBlock;
+import mcjty.ariente.setup.Registration;
+import net.minecraft.block.BlockState;
+import net.minecraft.block.Blocks;
 import net.minecraft.block.material.Material;
+import net.minecraft.entity.player.PlayerEntity;
+import net.minecraft.fluid.IFluidState;
+import net.minecraft.item.ItemStack;
+import net.minecraft.tileentity.TileEntity;
+import net.minecraft.util.math.BlockPos;
+import net.minecraft.world.World;
+
+import javax.annotation.Nullable;
 
 public class FacadeBlock extends NetCableBlock {
 
@@ -12,6 +25,29 @@ public class FacadeBlock extends NetCableBlock {
         // @todo 1.14
 //        setHardness(0.8f);
     }
+
+    @Override
+    public void harvestBlock(World worldIn, PlayerEntity player, BlockPos pos, BlockState state, @Nullable TileEntity te, ItemStack stack) {
+        ItemStack item = new ItemStack(Registration.FACADE.get());
+        BlockState mimicBlock;
+        if (te instanceof GenericCableTileEntity) {
+            mimicBlock = ((GenericCableTileEntity) te).getMimicBlock();
+        } else {
+            mimicBlock = Blocks.COBBLESTONE.getDefaultState();
+        }
+        FacadeItemBlock.setMimicBlock(item, mimicBlock);
+
+        spawnAsEntity(worldIn, pos, item);
+    }
+
+
+    @Override
+    public boolean removedByPlayer(BlockState state, World world, BlockPos pos, PlayerEntity player, boolean willHarvest, IFluidState fluid) {
+        CableColor color = state.get(COLOR);
+        this.onBlockHarvested(world, pos, state, player);
+        return world.setBlockState(pos, Registration.NETCABLE.get().getDefaultState().with(COLOR, color), world.isRemote ? 11 : 3);
+    }
+
 
     // @todo 1.14
 //    @Override
