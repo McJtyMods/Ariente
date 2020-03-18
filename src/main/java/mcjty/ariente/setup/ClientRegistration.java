@@ -10,6 +10,7 @@ import mcjty.ariente.blocks.utility.StorageRenderer;
 import mcjty.ariente.blocks.utility.door.DoorMarkerRenderer;
 import mcjty.ariente.blocks.utility.door.InvisibleDoorRenderer;
 import mcjty.ariente.cables.CableModelLoader;
+import mcjty.ariente.cables.CableRenderer;
 import mcjty.ariente.client.ArienteSpriteUploader;
 import mcjty.ariente.entities.LaserRender;
 import mcjty.ariente.entities.RenderArientePearl;
@@ -57,6 +58,8 @@ public class ClientRegistration {
         StorageRenderer.register();
         DoorMarkerRenderer.register();
         InvisibleDoorRenderer.register();
+        CableRenderer.register(Registration.NETCABLE_TILE.get());
+        CableRenderer.register(Registration.CONNECTOR_TILE.get());
 
         RenderTypeLookup.setRenderLayer(Registration.GLASS_FENCE.get(), RenderType.getTranslucent());
         RenderTypeLookup.setRenderLayer(Registration.BLUE_GLASS_FENCE.get(), RenderType.getTranslucent());
