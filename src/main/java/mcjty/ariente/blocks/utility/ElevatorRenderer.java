@@ -34,9 +34,6 @@ public class ElevatorRenderer extends TileEntityRenderer<ElevatorTile> {
 
     @Override
     public void render(ElevatorTile te, float partialTicks, MatrixStack matrixStack, IRenderTypeBuffer buffer, int combinedLightIn, int combinedOverlayIn) {
-        matrixStack.push();
-
-
         TextureAtlasSprite sprite = Minecraft.getInstance().getAtlasSpriteGetter(AtlasTexture.LOCATION_BLOCKS_TEXTURE).apply(ELEVATOR_BEAM);
 
         Minecraft mc = Minecraft.getInstance();
@@ -65,8 +62,6 @@ public class ElevatorRenderer extends TileEntityRenderer<ElevatorTile> {
             float yy = - 1.0f + i1 + (randomY[ii] * height) / 8.0f;
             RenderHelper.drawBeam(matrixStack.getLast().getMatrix(), builder, sprite, new RenderHelper.Vector(xx, yy, zz), new RenderHelper.Vector(xx, yy + 4, zz), player, 0.2f);
         }
-
-        matrixStack.pop();
     }
 
     @Override
