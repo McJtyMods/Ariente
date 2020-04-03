@@ -28,6 +28,8 @@ import net.minecraft.util.math.BlockRayTraceResult;
 
 import static mcjty.ariente.compat.ArienteTOPDriver.DRIVER;
 import static mcjty.hologui.api.Icons.*;
+import static mcjty.lib.builder.TooltipBuilder.header;
+import static mcjty.lib.builder.TooltipBuilder.key;
 
 public class PowerCombinerTile extends GenericTileEntity implements ITickableTileEntity, IPowerReceiver, IGuiTile, IPowerUser {
 
@@ -41,8 +43,8 @@ public class PowerCombinerTile extends GenericTileEntity implements ITickableTil
 
     public static BaseBlock createBlock() {
         return new BaseBlock(new BlockBuilder()
-                .info("message.ariente.shiftmessage")
-                .infoExtended("message.ariente.power_combiner")
+                .info(key("message.ariente.shiftmessage"))
+                .infoShift(header())
                 .topDriver(DRIVER)
                 .tileEntitySupplier(PowerCombinerTile::new)
             );

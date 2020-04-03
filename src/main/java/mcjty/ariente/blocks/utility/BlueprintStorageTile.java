@@ -34,6 +34,8 @@ import java.util.Map;
 
 import static mcjty.ariente.compat.ArienteTOPDriver.DRIVER;
 import static mcjty.hologui.api.Icons.*;
+import static mcjty.lib.builder.TooltipBuilder.header;
+import static mcjty.lib.builder.TooltipBuilder.key;
 
 public class BlueprintStorageTile extends GenericTileEntity implements IGuiTile, ICityEquipment {
 
@@ -53,8 +55,8 @@ public class BlueprintStorageTile extends GenericTileEntity implements IGuiTile,
 
     public static BaseBlock createBlock() {
         return new BaseBlock(new BlockBuilder()
-                .info("message.ariente.shiftmessage")
-                .infoExtended("message.ariente.blueprint_storage")
+                .info(key("message.ariente.shiftmessage"))
+                .infoShift(header())
                 .topDriver(DRIVER)
                 .tileEntitySupplier(BlueprintStorageTile::new)
         ) {

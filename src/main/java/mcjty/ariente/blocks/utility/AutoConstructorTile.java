@@ -57,6 +57,8 @@ import static mcjty.ariente.blocks.utility.BlueprintStorageTile.BLUEPRINTS;
 import static mcjty.ariente.blocks.utility.BlueprintStorageTile.SLOT_BLUEPRINT;
 import static mcjty.ariente.compat.ArienteTOPDriver.DRIVER;
 import static mcjty.hologui.api.Icons.*;
+import static mcjty.lib.builder.TooltipBuilder.header;
+import static mcjty.lib.builder.TooltipBuilder.key;
 
 public class AutoConstructorTile extends GenericTileEntity implements IGuiTile, ITickableTileEntity, IPowerReceiver, ICityEquipment, IPowerUser {
 
@@ -84,8 +86,8 @@ public class AutoConstructorTile extends GenericTileEntity implements IGuiTile, 
 
     public static BaseBlock createBlock() {
         return new BaseBlock(new BlockBuilder()
-                .info("message.ariente.shiftmessage")
-                .infoExtended("message.ariente.auto_constructor")
+                .info(key("message.ariente.shiftmessage"))
+                .infoShift(header())
                 .topDriver(DRIVER)
                 .tileEntitySupplier(AutoConstructorTile::new)
         ) {

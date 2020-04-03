@@ -36,6 +36,9 @@ import java.util.Map;
 import static mcjty.ariente.blocks.BlockProperties.LOCKED;
 import static mcjty.ariente.compat.ArienteTOPDriver.DRIVER;
 import static mcjty.hologui.api.Icons.*;
+import static mcjty.lib.builder.TooltipBuilder.header;
+import static mcjty.lib.builder.TooltipBuilder.key;
+import static mcjty.lib.builder.TooltipBuilder.parameter;
 
 public class WirelessLockTile extends SignalChannelTileEntity implements ILockable, IGuiTile, ITickableTileEntity {
 
@@ -52,9 +55,8 @@ public class WirelessLockTile extends SignalChannelTileEntity implements ILockab
     public static BaseBlock createBlock() {
         return new BaseBlock(new BlockBuilder()
 //                .flags(REDSTONE_CHECK, RENDER_SOLID, RENDER_CUTOUT)
-                .info("message.ariente.shiftmessage")
-                .infoExtended("message.ariente.wireless_lock")
-                .infoExtendedParameter(ItemStackTools.intGetter("channel", -1))
+                .info(key("message.ariente.shiftmessage"))
+                .infoShift(header(), parameter("channel", ItemStackTools.intGetter("channel", -1)))
                 .topDriver(DRIVER)
                 .tileEntitySupplier(WirelessLockTile::new)
         ) {

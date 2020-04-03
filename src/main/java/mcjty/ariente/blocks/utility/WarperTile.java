@@ -26,6 +26,8 @@ import net.minecraft.world.World;
 import net.minecraft.world.dimension.DimensionType;
 
 import static mcjty.ariente.compat.ArienteTOPDriver.DRIVER;
+import static mcjty.lib.builder.TooltipBuilder.header;
+import static mcjty.lib.builder.TooltipBuilder.key;
 
 public class WarperTile extends GenericTileEntity implements IGuiTile, IWarper {
 
@@ -42,8 +44,8 @@ public class WarperTile extends GenericTileEntity implements IGuiTile, IWarper {
         return new BaseBlock(new BlockBuilder()
                 .properties(BlockBuilder.STANDARD_IRON.lightValue(8))
 //                .flags(REDSTONE_CHECK, RENDER_SOLID, RENDER_CUTOUT)
-                .info("message.ariente.shiftmessage")
-                .infoExtended("message.ariente.warper")
+                .info(key("message.ariente.shiftmessage"))
+                .infoShift(header())
                 .topDriver(DRIVER)
                 .tileEntitySupplier(WarperTile::new)
         ) {

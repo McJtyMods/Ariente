@@ -53,6 +53,8 @@ import java.util.Map;
 import java.util.Set;
 
 import static mcjty.ariente.compat.ArienteTOPDriver.DRIVER;
+import static mcjty.lib.builder.TooltipBuilder.header;
+import static mcjty.lib.builder.TooltipBuilder.key;
 
 public class StorageTile extends GenericTileEntity implements IGuiTile, ICityEquipment, IKeyCardSlot, ILockable, IStorageTile {
 
@@ -74,8 +76,8 @@ public class StorageTile extends GenericTileEntity implements IGuiTile, ICityEqu
 
     public static BaseBlock createBlock() {
         return new BaseBlock(new BlockBuilder()
-                .info("message.ariente.shiftmessage")
-                .infoExtended("message.ariente.storage")
+                .info(key("message.ariente.shiftmessage"))
+                .infoShift(header())
                 .topDriver(DRIVER)
                 .tileEntitySupplier(StorageTile::new)
         ) {

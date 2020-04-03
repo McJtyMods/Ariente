@@ -28,6 +28,9 @@ import net.minecraft.world.World;
 import net.minecraftforge.common.util.Constants;
 
 import static mcjty.ariente.compat.ArienteTOPDriver.DRIVER;
+import static mcjty.lib.builder.TooltipBuilder.header;
+import static mcjty.lib.builder.TooltipBuilder.key;
+import static mcjty.lib.builder.TooltipBuilder.parameter;
 
 public class WirelessButtonTile extends SignalChannelTileEntity {
 
@@ -43,9 +46,8 @@ public class WirelessButtonTile extends SignalChannelTileEntity {
     public static BaseBlock createBlock() {
         return new BaseBlock(new BlockBuilder()
 //                .flags(REDSTONE_CHECK, RENDER_SOLID, RENDER_CUTOUT)
-                .info("message.ariente.shiftmessage")
-                .infoExtended("message.ariente.wireless_button")
-                .infoExtendedParameter(ItemStackTools.intGetter("channel", -1))
+                .info(key("message.ariente.shiftmessage"))
+                .infoShift(header(), parameter("channel", ItemStackTools.intGetter("channel", -1)))
                 .topDriver(DRIVER)
                 .tileEntitySupplier(WirelessButtonTile::new)
         ) {

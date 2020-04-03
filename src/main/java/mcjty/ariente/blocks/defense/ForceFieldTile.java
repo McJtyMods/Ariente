@@ -49,6 +49,8 @@ import java.util.*;
 import static mcjty.ariente.compat.ArienteTOPDriver.DRIVER;
 import static mcjty.ariente.config.Config.SHIELD_PANEL_LIFE;
 import static mcjty.hologui.api.Icons.*;
+import static mcjty.lib.builder.TooltipBuilder.header;
+import static mcjty.lib.builder.TooltipBuilder.key;
 
 public class ForceFieldTile extends GenericTileEntity implements IGuiTile, ITickableTileEntity, ISoundProducer, IPowerReceiver, ICityEquipment, IAlarmMode, IForceFieldTile, IPowerUser {
 
@@ -75,8 +77,8 @@ public class ForceFieldTile extends GenericTileEntity implements IGuiTile, ITick
     public static BaseBlock createBlock() {
         return new BaseBlock(new BlockBuilder()
 //                .flags(REDSTONE_CHECK, RENDER_SOLID, RENDER_CUTOUT)
-                .info("message.ariente.shiftmessage")
-                .infoExtended("message.ariente.forcefield")
+                .info(key("message.ariente.shiftmessage"))
+                .infoShift(header())
                 .topDriver(DRIVER)
                 .tileEntitySupplier(ForceFieldTile::new)
         ) {

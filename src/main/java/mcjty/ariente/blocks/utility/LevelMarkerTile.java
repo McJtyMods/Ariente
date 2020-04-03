@@ -22,6 +22,8 @@ import net.minecraft.util.math.shapes.VoxelShapes;
 import net.minecraft.world.IBlockReader;
 
 import static mcjty.ariente.compat.ArienteTOPDriver.DRIVER;
+import static mcjty.lib.builder.TooltipBuilder.header;
+import static mcjty.lib.builder.TooltipBuilder.key;
 
 public class LevelMarkerTile extends GenericTileEntity implements IGuiTile {
 
@@ -40,8 +42,8 @@ public class LevelMarkerTile extends GenericTileEntity implements IGuiTile {
 
     public static BaseBlock createBlock() {
         return new BaseBlock(new BlockBuilder()
-                .info("message.ariente.shiftmessage")
-                .infoExtended("message.ariente.level_marker")
+                .info(key("message.ariente.shiftmessage"))
+                .infoShift(header())
                 .topDriver(DRIVER)
                 .tileEntitySupplier(LevelMarkerTile::new)
         ) {

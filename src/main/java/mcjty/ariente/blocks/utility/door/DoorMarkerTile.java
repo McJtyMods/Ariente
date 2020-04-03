@@ -44,6 +44,8 @@ import javax.annotation.Nullable;
 import java.util.List;
 
 import static mcjty.ariente.compat.ArienteTOPDriver.DRIVER;
+import static mcjty.lib.builder.TooltipBuilder.header;
+import static mcjty.lib.builder.TooltipBuilder.key;
 
 public class DoorMarkerTile extends GenericTileEntity implements ITickableTileEntity, IGuiTile, ILockable {
 
@@ -70,8 +72,8 @@ public class DoorMarkerTile extends GenericTileEntity implements ITickableTileEn
         return new BaseBlock(new BlockBuilder()
                 .properties(Block.Properties.create(Material.IRON)
                         .variableOpacity())
-                .info("message.ariente.shiftmessage")
-                .infoExtended("message.ariente.door_marker")
+                .info(key("message.ariente.shiftmessage"))
+                .infoShift(header())
                 .topDriver(DRIVER)
                 .tileEntitySupplier(DoorMarkerTile::new)
         ) {

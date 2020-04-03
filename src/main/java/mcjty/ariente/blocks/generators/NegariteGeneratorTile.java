@@ -41,6 +41,8 @@ import javax.annotation.Nonnull;
 
 import static mcjty.ariente.compat.ArienteTOPDriver.DRIVER;
 import static mcjty.hologui.api.Icons.*;
+import static mcjty.lib.builder.TooltipBuilder.header;
+import static mcjty.lib.builder.TooltipBuilder.key;
 
 public class NegariteGeneratorTile extends GenericTileEntity implements ITickableTileEntity, IGuiTile, IPowerBlob, IAlarmMode, IPowerSender, IGenerator {
 
@@ -64,8 +66,8 @@ public class NegariteGeneratorTile extends GenericTileEntity implements ITickabl
     public static BaseBlock createBlock() {
         return new BaseBlock(new BlockBuilder()
 //                .flags(REDSTONE_CHECK, RENDER_SOLID, RENDER_CUTOUT)
-                .info("message.ariente.shiftmessage")
-                .infoExtended("message.ariente.negarite_generator")
+                .info(key("message.ariente.shiftmessage"))
+                .infoShift(header())
                 .topDriver(DRIVER)
                 .tileEntitySupplier(NegariteGeneratorTile::new)
         ) {

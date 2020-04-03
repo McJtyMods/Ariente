@@ -39,6 +39,8 @@ import java.util.Set;
 
 import static mcjty.ariente.compat.ArienteTOPDriver.DRIVER;
 import static mcjty.hologui.api.Icons.*;
+import static mcjty.lib.builder.TooltipBuilder.header;
+import static mcjty.lib.builder.TooltipBuilder.key;
 
 public class LockTile extends GenericTileEntity implements IGuiTile, IKeyCardSlot, ICityEquipment, ILockable {
 
@@ -57,8 +59,8 @@ public class LockTile extends GenericTileEntity implements IGuiTile, IKeyCardSlo
     public static BaseBlock createBlock() {
         return new BaseBlock(new BlockBuilder()
 //                .flags(REDSTONE_CHECK, RENDER_SOLID, RENDER_CUTOUT)
-                .info("message.ariente.shiftmessage")
-                .infoExtended("message.ariente.lock")
+                .info(key("message.ariente.shiftmessage"))
+                .infoShift(header())
                 .topDriver(DRIVER)
                 .tileEntitySupplier(LockTile::new)
         ) {

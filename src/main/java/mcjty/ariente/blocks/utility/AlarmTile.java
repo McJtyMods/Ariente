@@ -24,6 +24,8 @@ import net.minecraft.world.IBlockReader;
 import net.minecraftforge.common.util.Constants;
 
 import static mcjty.ariente.compat.ArienteTOPDriver.DRIVER;
+import static mcjty.lib.builder.TooltipBuilder.header;
+import static mcjty.lib.builder.TooltipBuilder.key;
 
 public class AlarmTile extends GenericTileEntity implements ITickableTileEntity, IAlarmTile {
 
@@ -41,8 +43,8 @@ public class AlarmTile extends GenericTileEntity implements ITickableTileEntity,
     public static BaseBlock createBlock() {
         return new BaseBlock(new BlockBuilder()
 //                .flags(REDSTONE_CHECK, RENDER_SOLID, RENDER_CUTOUT)
-                .info("message.ariente.shiftmessage")
-                .infoExtended("message.ariente.alarm")
+                .info(key("message.ariente.shiftmessage"))
+                .infoShift(header())
                 .topDriver(DRIVER)
                 .tileEntitySupplier(AlarmTile::new)
         ) {

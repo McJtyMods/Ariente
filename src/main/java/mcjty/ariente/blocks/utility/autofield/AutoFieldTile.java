@@ -49,6 +49,8 @@ import java.util.stream.Collectors;
 
 import static mcjty.ariente.compat.ArienteTOPDriver.DRIVER;
 import static mcjty.hologui.api.Icons.*;
+import static mcjty.lib.builder.TooltipBuilder.header;
+import static mcjty.lib.builder.TooltipBuilder.key;
 
 public class AutoFieldTile extends GenericTileEntity implements IGuiTile, ITickableTileEntity, IPowerReceiver, IPowerUser {
 
@@ -87,8 +89,8 @@ public class AutoFieldTile extends GenericTileEntity implements IGuiTile, ITicka
 
     public static BaseBlock createBlock() {
         return new BaseBlock(new BlockBuilder()
-                .info("message.ariente.shiftmessage")
-                .infoExtended("message.ariente.automation_field")
+                .info(key("message.ariente.shiftmessage"))
+                .infoShift(header())
                 .topDriver(DRIVER)
                 .tileEntitySupplier(AutoFieldTile::new)
         ) {

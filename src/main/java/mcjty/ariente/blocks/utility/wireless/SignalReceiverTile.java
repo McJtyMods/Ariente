@@ -21,6 +21,7 @@ import net.minecraft.util.math.shapes.VoxelShapes;
 import net.minecraft.world.IBlockReader;
 
 import static mcjty.ariente.compat.ArienteTOPDriver.DRIVER;
+import static mcjty.lib.builder.TooltipBuilder.*;
 
 public class SignalReceiverTile extends SignalChannelTileEntity implements ITickableTileEntity {
 
@@ -33,9 +34,8 @@ public class SignalReceiverTile extends SignalChannelTileEntity implements ITick
     public static BaseBlock createBlock() {
         return new BaseBlock(new BlockBuilder()
 //                .flags(REDSTONE_CHECK, RENDER_SOLID, RENDER_CUTOUT)
-                .info("message.ariente.shiftmessage")
-                .infoExtended("message.ariente.signal_receiver")
-                .infoExtendedParameter(ItemStackTools.intGetter("channel", -1))
+                .info(key("message.ariente.shiftmessage"))
+                .infoShift(header(), parameter("channel", ItemStackTools.intGetter("channel", -1)))
                 .topDriver(DRIVER)
                 .tileEntitySupplier(SignalReceiverTile::new)
         ) {
