@@ -1,6 +1,8 @@
 package mcjty.ariente.facade;
 
 import mcjty.ariente.Ariente;
+import mcjty.lib.builder.TooltipBuilder;
+import mcjty.lib.tooltips.ITooltipSettings;
 import net.minecraft.block.Block;
 import net.minecraft.block.BlockState;
 import net.minecraft.block.Blocks;
@@ -21,19 +23,52 @@ import net.minecraft.util.SoundCategory;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.text.ITextComponent;
 import net.minecraft.util.text.StringTextComponent;
-import net.minecraft.util.text.TextFormatting;
 import net.minecraft.world.World;
 import net.minecraftforge.registries.ForgeRegistries;
 
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
+
 import java.util.List;
 
-public class FacadeItemBlock extends BlockItem {
+import static mcjty.lib.builder.TooltipBuilder.*;
+
+public class FacadeItemBlock extends BlockItem implements ITooltipSettings {
+
+    private TooltipBuilder tooltipBuilder = new TooltipBuilder()
+            .info(header(),
+                    gold(stack -> !isMimicing(stack)),
+                    parameter("info", FacadeItemBlock::isMimicing, FacadeItemBlock::getMimicingString));
+
+    private static boolean isMimicing(ItemStack stack) {
+        CompoundNBT tag = stack.getTag();
+        return tag != null && tag.contains("regName");
+    }
+
+    private static String getMimicingString(ItemStack stack) {
+        CompoundNBT tag = stack.getTag();
+        if (tag != null) {
+            String regName = tag.getString("regName");
+            Block value = ForgeRegistries.BLOCKS.getValue(new ResourceLocation(regName));
+            if (value != null) {
+                ItemStack s = new ItemStack(value, 1);
+                if (s.getItem() != null) {
+                    return s.getDisplayName().getFormattedText();
+                }
+            }
+        }
+        return "<unset>";
+    }
 
     public FacadeItemBlock(FacadeBlock block) {
         super(block, new Properties()
                 .group(Ariente.setup.getTab()));
+    }
+
+    @Override
+    public void addInformation(ItemStack stack, @Nullable World worldIn, List<ITextComponent> tooltip, ITooltipFlag flag) {
+        super.addInformation(stack, worldIn, tooltip, flag);
+        tooltipBuilder.makeTooltip(getRegistryName(), stack, tooltip, flag);
     }
 
     public static void setMimicBlock(@Nonnull ItemStack item, BlockState mimicBlock) {
@@ -91,27 +126,6 @@ public class FacadeItemBlock extends BlockItem {
             return ActionResultType.SUCCESS;
         } else {
             return ActionResultType.FAIL;
-        }
-    }
-
-    @Override
-    public void addInformation(ItemStack stack, @Nullable World playerIn, List<ITextComponent> tooltip, ITooltipFlag advanced) {
-        super.addInformation(stack, null, tooltip, advanced);
-        CompoundNBT tagCompound = stack.getTag();
-        if (tagCompound == null || !tagCompound.contains("regName")) {
-            tooltip.add(new StringTextComponent(TextFormatting.BLUE + "Right or sneak-right click on block to mimic"));
-            tooltip.add(new StringTextComponent(TextFormatting.BLUE + "Right or sneak-right click on cable/connector to hide"));
-        } else {
-            String regName = tagCompound.getString("regName");
-            // @todo 1.14 meta
-//            int meta = tagCompound.getInteger("meta");
-            Block value = ForgeRegistries.BLOCKS.getValue(new ResourceLocation(regName));
-            if (value != null) {
-                ItemStack s = new ItemStack(value, 1);
-                if (s.getItem() != null) {
-                    tooltip.add(new StringTextComponent(TextFormatting.BLUE + "Mimicing " + s.getDisplayName()));
-                }
-            }
         }
     }
 }

@@ -3,9 +3,12 @@ package mcjty.ariente.items;
 import com.google.common.collect.Multimap;
 import mcjty.ariente.api.ArmorUpgradeType;
 import mcjty.ariente.bindings.KeyBindings;
-import mcjty.ariente.setup.Registration;
 import mcjty.ariente.entities.soldier.MasterSoldierEntity;
 import mcjty.ariente.items.modules.ModuleSupport;
+import mcjty.ariente.setup.Registration;
+import mcjty.lib.builder.TooltipBuilder;
+import mcjty.lib.tooltips.ITooltipSettings;
+import mcjty.lib.varia.NBTTools;
 import net.minecraft.client.util.ITooltipFlag;
 import net.minecraft.enchantment.Enchantment;
 import net.minecraft.enchantment.EnchantmentHelper;
@@ -20,15 +23,77 @@ import net.minecraft.nbt.CompoundNBT;
 import net.minecraft.potion.Effect;
 import net.minecraft.potion.EffectInstance;
 import net.minecraft.util.text.ITextComponent;
-import net.minecraft.util.text.StringTextComponent;
-import net.minecraft.util.text.TextFormatting;
 import net.minecraft.world.World;
 import org.apache.commons.lang3.tuple.Pair;
 
 import javax.annotation.Nullable;
 import java.util.*;
 
-public class EnhancedEnergySabreItem extends EnergySabreItem {
+import static mcjty.lib.builder.TooltipBuilder.*;
+
+public class EnhancedEnergySabreItem extends EnergySabreItem implements ITooltipSettings {
+
+    private final TooltipBuilder tooltipBuilder = new TooltipBuilder()
+            .info(header(), key("message.ariente.shiftmessage"))
+            .infoShift(header(),
+                    parameter("key", stack -> KeyBindings.configureArmor != null, stack -> KeyBindings.configureArmor.getDisplayName()),
+                    repeatingParameter("module", stack -> Arrays.stream(ArmorUpgradeType.values()).map(t -> getModuleDescription(stack, t))),
+                    parameter("power", this::getPowerString),
+                    parameter("negarite", this::getNegariteString),
+                    parameter("posirite", this::getPosiriteString));
+
+    private String getModuleDescription(ItemStack stack, ArmorUpgradeType type) {
+        CompoundNBT compound = stack.getTag();
+        if (compound != null) {
+            String key = "module_" + type.getName();
+            if (compound.contains(key)) {
+                boolean activated = compound.getBoolean(key);
+                if (activated) {
+                    return type.getDescription() + " (on)";
+                } else {
+                    return type.getDescription() + " (off)";
+                }
+            }
+        }
+        return "<unset>";
+    }
+
+    private String getPowerString(ItemStack stack) {
+        Pair<Integer, Integer> usage = ModuleSupport.getPowerUsage(stack);
+        return usage.getLeft() + " / " + usage.getRight();
+    }
+
+    private String getNegariteString(ItemStack stack) {
+        return Integer.toString(NBTTools.getInt(stack, "negarite", 0));
+    }
+
+    private String getPosiriteString(ItemStack stack) {
+        return Integer.toString(NBTTools.getInt(stack, "posirite", 0));
+    }
+    /*
+        if (stack.hasTag()) {
+            CompoundNBT compound = stack.getTag();
+            for (ArmorUpgradeType type : ArmorUpgradeType.VALUES) {
+                String key = "module_" + type.getName();
+                if (compound.contains(key)) {
+                    boolean activated = compound.getBoolean(key);
+                    if (activated) {
+                        list.add(new StringTextComponent("    " + TextFormatting.GREEN + type.getDescription() + " (on)"));
+                    } else {
+                        list.add(new StringTextComponent("    " + TextFormatting.GRAY + type.getDescription() + " (off)"));
+                    }
+                }
+            }
+            Pair<Integer, Integer> usage = ModuleSupport.getPowerUsage(stack);
+            list.add(new StringTextComponent(TextFormatting.WHITE + "Power: " + TextFormatting.YELLOW + usage.getLeft() + " / " + usage.getRight()));
+
+            int negarite = compound.getInt("negarite");
+            int posirite = compound.getInt("posirite");
+            list.add(new StringTextComponent(TextFormatting.WHITE + "Negarite: " + TextFormatting.YELLOW + negarite));
+            list.add(new StringTextComponent(TextFormatting.WHITE + "Posirite: " + TextFormatting.YELLOW + posirite));
+        }
+
+     */
 
     public EnhancedEnergySabreItem() {
         super();
@@ -82,33 +147,9 @@ public class EnhancedEnergySabreItem extends EnergySabreItem {
 
 
     @Override
-    public void addInformation(ItemStack stack, @Nullable World worldIn, List<ITextComponent> list, ITooltipFlag flagIn) {
-        super.addInformation(stack, worldIn, list, flagIn);
-        list.add(new StringTextComponent(TextFormatting.GOLD + "Modular energy sabre"));
-        if (KeyBindings.configureArmor != null) {
-            list.add(new StringTextComponent(TextFormatting.GRAY + "Configure with: " + TextFormatting.WHITE + "key " + KeyBindings.configureArmor.getDisplayName()));
-        }
-        if (stack.hasTag()) {
-            CompoundNBT compound = stack.getTag();
-            for (ArmorUpgradeType type : ArmorUpgradeType.VALUES) {
-                String key = "module_" + type.getName();
-                if (compound.contains(key)) {
-                    boolean activated = compound.getBoolean(key);
-                    if (activated) {
-                        list.add(new StringTextComponent("    " + TextFormatting.GREEN + type.getDescription() + " (on)"));
-                    } else {
-                        list.add(new StringTextComponent("    " + TextFormatting.GRAY + type.getDescription() + " (off)"));
-                    }
-                }
-            }
-            Pair<Integer, Integer> usage = ModuleSupport.getPowerUsage(stack);
-            list.add(new StringTextComponent(TextFormatting.WHITE + "Power: " + TextFormatting.YELLOW + usage.getLeft() + " / " + usage.getRight()));
-
-            int negarite = compound.getInt("negarite");
-            int posirite = compound.getInt("posirite");
-            list.add(new StringTextComponent(TextFormatting.WHITE + "Negarite: " + TextFormatting.YELLOW + negarite));
-            list.add(new StringTextComponent(TextFormatting.WHITE + "Posirite: " + TextFormatting.YELLOW + posirite));
-        }
+    public void addInformation(ItemStack stack, @Nullable World worldIn, List<ITextComponent> list, ITooltipFlag flag) {
+        super.addInformation(stack, worldIn, list, flag);
+        tooltipBuilder.makeTooltip(getRegistryName(), stack, list, flag);
     }
 
     @Override

@@ -2,20 +2,36 @@ package mcjty.ariente.items.modules;
 
 import mcjty.ariente.Ariente;
 import mcjty.ariente.api.ArmorUpgradeType;
+import mcjty.lib.builder.TooltipBuilder;
+import mcjty.lib.tooltips.ITooltipSettings;
 import net.minecraft.client.util.ITooltipFlag;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
+import net.minecraft.util.ResourceLocation;
 import net.minecraft.util.text.ITextComponent;
-import net.minecraft.util.text.StringTextComponent;
-import net.minecraft.util.text.TextFormatting;
 import net.minecraft.world.World;
 
 import javax.annotation.Nullable;
 import java.util.List;
 
-public class ArmorModuleItem extends Item {
+import static mcjty.lib.builder.TooltipBuilder.*;
+
+public class ArmorModuleItem extends Item implements ITooltipSettings {
 
     private final ArmorUpgradeType type;
+
+    private final TooltipBuilder tooltipBuilder = new TooltipBuilder()
+            .info(header(),
+                    gold(this::is30MoreEfficient),
+                    parameter("info", stack -> !is30MoreEfficient(stack), this::getPowerUsageString));
+
+
+    private String getPowerUsageString(ItemStack stack) {
+        return Integer.toString(type.getPowerUsage());
+    }
+    private boolean is30MoreEfficient(ItemStack stack) {
+        return type.getPowerUsage() == -1;
+    }
 
     public ArmorModuleItem(ArmorUpgradeType type) {
         super(new Properties().group(Ariente.setup.getTab()));
@@ -23,13 +39,9 @@ public class ArmorModuleItem extends Item {
     }
 
     @Override
-    public void addInformation(ItemStack stack, @Nullable World worldIn, List<ITextComponent> tooltip, ITooltipFlag flagIn) {
-        super.addInformation(stack, worldIn, tooltip, flagIn);
-        if (type.getPowerUsage() > 0) {
-            tooltip.add(new StringTextComponent(TextFormatting.GRAY + "Power usage: " + TextFormatting.YELLOW + type.getPowerUsage()));
-        } else if (type.getPowerUsage() == -1) {
-            tooltip.add(new StringTextComponent(TextFormatting.GRAY + "Power: " + TextFormatting.YELLOW + "30% more efficient"));
-        }
+    public void addInformation(ItemStack stack, @Nullable World worldIn, List<ITextComponent> tooltip, ITooltipFlag flag) {
+        super.addInformation(stack, worldIn, tooltip, flag);
+        tooltipBuilder.makeTooltip(new ResourceLocation(Ariente.MODID, "armormodule"), stack, tooltip, flag);
     }
 
     public ArmorUpgradeType getType() {

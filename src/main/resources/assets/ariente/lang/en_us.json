@@ -179,6 +179,34 @@
   "_comment": "Messages",
   "message.ariente.shiftmessage": "<Press Shift>",
 
+  "message.ariente.facade.header": "This block can mimic other blocks and be used to cover Ariente cables",
+  "message.ariente.facade.gold": "Right or sneak-right click on block to mimic. Right or sneak-right click on cable/connector to hide",
+  "message.ariente.facade.info": "Mimicing: ",
+
+  "message.ariente.ariente_pearl.header": "With this item you can locate the mystical Ariente dungeons and charge them",
+
+  "message.ariente.circuit.header": "The Circuit is a crafting ingredient for some of the Ariente machines",
+  "message.ariente.advanced_circuit.header": "The Advanced Circuit is a crafting ingredient for some of the Ariente machines",
+
+  "message.ariente.energy_holder.header": "The Energy Holder can store negarite and posirite dust",
+  "message.ariente.energy_holder.negarite": "Negarite: ",
+  "message.ariente.energy_holder.posirite": "Posirite: ",
+  "message.ariente.energy_holder.mode": "Mode: ",
+
+  "message.ariente.enhanced_energy_sabre.header": "Modular energy sabre",
+  "message.ariente.enhanced_energy_sabre.key": "Configuration key: ",
+  "message.ariente.enhanced_energy_sabre.module": "Module: ",
+  "message.ariente.enhanced_energy_sabre.power": "Power Usage: ",
+  "message.ariente.enhanced_energy_sabre.negarite": "Negarite: ",
+  "message.ariente.enhanced_energy_sabre.posirite": "Posirite: ",
+
+  "message.ariente.armormodule.header": "This module can be installed in the power armor to enhance it's abilities",
+  "message.ariente.armormodule.gold": "Improves power usage efficiency with 30%",
+  "message.ariente.armormodule.info": "Power: ",
+
+  "message.ariente.blueprint.header": "This item can be used as a recipe holder for other items. It's used by the Constructor and Auto Constructor",
+  "message.ariente.blueprint.info": "Result: ",
+
   "message.ariente.forcefield.header": "Forcefield generator",
   "message.ariente.storage.header": "Can store large amounts of 4 different item types",
   "message.ariente.power_combiner.header": "This machine combines negarite and posirite flux and feeds it into a combined cable",

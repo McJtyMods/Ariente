@@ -4,24 +4,21 @@ import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
 import com.google.gson.JsonParser;
 import mcjty.ariente.Ariente;
-import mcjty.ariente.setup.Registration;
-import mcjty.ariente.recipes.ConstructorRecipe;
 import mcjty.ariente.recipes.BlueprintRecipeRegistry;
+import mcjty.ariente.recipes.ConstructorRecipe;
+import mcjty.ariente.setup.Registration;
+import mcjty.lib.builder.TooltipBuilder;
 import mcjty.lib.tooltips.ITooltipExtras;
+import mcjty.lib.tooltips.ITooltipSettings;
 import mcjty.lib.varia.ItemStackTools;
 import net.minecraft.client.renderer.model.ModelResourceLocation;
 import net.minecraft.client.util.ITooltipFlag;
-
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.CompoundNBT;
 import net.minecraft.util.ResourceLocation;
 import net.minecraft.util.text.ITextComponent;
-import net.minecraft.util.text.StringTextComponent;
-import net.minecraft.util.text.TextFormatting;
 import net.minecraft.world.World;
-
-
 import org.apache.commons.lang3.tuple.Pair;
 
 import javax.annotation.Nullable;
@@ -29,7 +26,13 @@ import java.util.Collections;
 import java.util.List;
 import java.util.stream.Collectors;
 
-public class BlueprintItem extends Item implements ITooltipExtras {
+import static mcjty.lib.builder.TooltipBuilder.header;
+import static mcjty.lib.builder.TooltipBuilder.parameter;
+
+public class BlueprintItem extends Item implements ITooltipExtras, ITooltipSettings {
+
+    private final TooltipBuilder tooltipBuilder = new TooltipBuilder()
+            .info(header(), parameter("info", stack -> getDestination(stack).getDisplayName().getFormattedText()));
 
     public BlueprintItem() {
         super(new Properties().group(Ariente.setup.getTab())
@@ -51,10 +54,9 @@ public class BlueprintItem extends Item implements ITooltipExtras {
     }
 
     @Override
-    public void addInformation(ItemStack stack, @Nullable World worldIn, List<ITextComponent> tooltip, ITooltipFlag flagIn) {
-        super.addInformation(stack, worldIn, tooltip, flagIn);
-        ItemStack destination = getDestination(stack);
-        tooltip.add(new StringTextComponent(TextFormatting.GRAY + "Result: " + TextFormatting.GREEN + destination.getDisplayName()));
+    public void addInformation(ItemStack stack, @Nullable World worldIn, List<ITextComponent> tooltip, ITooltipFlag flag) {
+        super.addInformation(stack, worldIn, tooltip, flag);
+        tooltipBuilder.makeTooltip(getRegistryName(), stack, tooltip, flag);
     }
 
     public static ModelResourceLocation EMPTY_BLUEPRINT_MODEL = new ModelResourceLocation(new ResourceLocation(Ariente.MODID, "empty_blueprint"), "inventory");

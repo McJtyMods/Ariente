@@ -1,14 +1,16 @@
 package mcjty.ariente.items;
 
 import mcjty.ariente.Ariente;
-import mcjty.ariente.setup.Registration;
 import mcjty.ariente.gui.HelpBuilder;
 import mcjty.ariente.gui.HoloGuiTools;
 import mcjty.ariente.gui.ModGuis;
+import mcjty.ariente.setup.Registration;
 import mcjty.hologui.api.IGuiComponent;
 import mcjty.hologui.api.IGuiComponentRegistry;
 import mcjty.hologui.api.StyledColor;
 import mcjty.hologui.api.components.IPanel;
+import mcjty.lib.builder.TooltipBuilder;
+import mcjty.lib.tooltips.ITooltipSettings;
 import net.minecraft.client.util.ITooltipFlag;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.player.PlayerEntity;
@@ -19,19 +21,25 @@ import net.minecraft.util.ActionResult;
 import net.minecraft.util.ActionResultType;
 import net.minecraft.util.Hand;
 import net.minecraft.util.text.ITextComponent;
-import net.minecraft.util.text.StringTextComponent;
-import net.minecraft.util.text.TextFormatting;
 import net.minecraft.world.World;
 
 import javax.annotation.Nullable;
 import java.util.List;
 
 import static mcjty.hologui.api.Icons.*;
+import static mcjty.lib.builder.TooltipBuilder.header;
+import static mcjty.lib.builder.TooltipBuilder.parameter;
 
-public class EnergyHolderItem extends Item {
+public class EnergyHolderItem extends Item implements ITooltipSettings {
 
     public static final int MODE_MANUAL = 0;
     public static final int MODE_AUTOMATIC = 1;
+
+    private final TooltipBuilder tooltipBuilder = new TooltipBuilder()
+            .info(header(),
+                    parameter("negarite", stack -> Integer.toString(count(stack, "negarite"))),
+                    parameter("posirite", stack -> Integer.toString(count(stack, "posirite"))),
+                    parameter("mode", stack -> (getAutomatic(stack) == MODE_MANUAL ? "Manual" : "Automatic")));
 
     public EnergyHolderItem() {
         super(new Properties().group(Ariente.setup.getTab()).maxStackSize(1));
@@ -47,13 +55,9 @@ public class EnergyHolderItem extends Item {
 
 
     @Override
-    public void addInformation(ItemStack stack, @Nullable World worldIn, List<ITextComponent> tooltip, ITooltipFlag flagIn) {
-        super.addInformation(stack, worldIn, tooltip, flagIn);
-        tooltip.add(new StringTextComponent("The Energy Holder can store"));
-        tooltip.add(new StringTextComponent("negarite and posirite dust"));
-        tooltip.add(new StringTextComponent(TextFormatting.YELLOW + "Negarite: " + TextFormatting.GRAY + count(stack, "negarite")));
-        tooltip.add(new StringTextComponent(TextFormatting.BLUE + "Posirite: " + TextFormatting.GRAY + count(stack, "posirite")));
-        tooltip.add(new StringTextComponent(TextFormatting.GOLD + "Mode: " + TextFormatting.GRAY + (getAutomatic(stack) == MODE_MANUAL ? "Manual" : "Automatic")));
+    public void addInformation(ItemStack stack, @Nullable World worldIn, List<ITextComponent> tooltip, ITooltipFlag flag) {
+        super.addInformation(stack, worldIn, tooltip, flag);
+        tooltipBuilder.makeTooltip(getRegistryName(), stack, tooltip, flag);
     }
 
     @Override
