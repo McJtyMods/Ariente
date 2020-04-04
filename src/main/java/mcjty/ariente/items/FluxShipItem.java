@@ -1,6 +1,8 @@
 package mcjty.ariente.items;
 
 import mcjty.ariente.entities.fluxship.FluxShipEntity;
+import mcjty.lib.builder.TooltipBuilder;
+import mcjty.lib.tooltips.ITooltipSettings;
 import net.minecraft.block.BlockState;
 import net.minecraft.client.util.ITooltipFlag;
 import net.minecraft.entity.player.PlayerEntity;
@@ -11,26 +13,28 @@ import net.minecraft.util.ActionResultType;
 import net.minecraft.util.Hand;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.text.ITextComponent;
-import net.minecraft.util.text.StringTextComponent;
-import net.minecraft.util.text.TextFormatting;
 import net.minecraft.world.World;
 
 import javax.annotation.Nullable;
 import java.util.List;
 
-public class FluxShipItem extends Item {
+import static mcjty.lib.builder.TooltipBuilder.gold;
+import static mcjty.lib.builder.TooltipBuilder.header;
+import static mcjty.lib.builder.TooltipBuilder.warning;
+
+public class FluxShipItem extends Item implements ITooltipSettings {
+
+    private final TooltipBuilder tooltipBuilder = new TooltipBuilder()
+            .info(header(), warning());
 
     public FluxShipItem() {
         super(new Item.Properties().maxStackSize(1));
-//        super("flux_ship");
     }
 
     @Override
-    public void addInformation(ItemStack stack, @Nullable World worldIn, List<ITextComponent> tooltip, ITooltipFlag flagIn) {
-        super.addInformation(stack, worldIn, tooltip, flagIn);
-        tooltip.add(new StringTextComponent("Flux Ship"));
-        tooltip.add(new StringTextComponent(TextFormatting.RED + "Work In Progress!"));
-        tooltip.add(new StringTextComponent(TextFormatting.RED + "Does not work yet!"));
+    public void addInformation(ItemStack stack, @Nullable World worldIn, List<ITextComponent> tooltip, ITooltipFlag flag) {
+        super.addInformation(stack, worldIn, tooltip, flag);
+        tooltipBuilder.makeTooltip(getRegistryName(), stack, tooltip, flag);
     }
 
     @Override

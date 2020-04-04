@@ -185,6 +185,7 @@
 
   "message.ariente.ariente_pearl.header": "With this item you can locate the mystical Ariente dungeons and charge them",
 
+  "message.ariente.flux_capacitor.header": "The Flux Capacitor is a crafting ingredient for some of the Ariente machines",
   "message.ariente.circuit.header": "The Circuit is a crafting ingredient for some of the Ariente machines",
   "message.ariente.advanced_circuit.header": "The Advanced Circuit is a crafting ingredient for some of the Ariente machines",
 
@@ -206,6 +207,16 @@
 
   "message.ariente.blueprint.header": "This item can be used as a recipe holder for other items. It's used by the Constructor and Auto Constructor",
   "message.ariente.blueprint.info": "Result: ",
+
+  "message.ariente.flux_levitator.header": "Flux Levitator",
+
+  "message.ariente.flux_ship.header": "Flux Ship",
+  "message.ariente.flux_ship.warning": "Work in progress! This does not work yet",
+
+  "message.ariente.key_card.header": "Security card. This card can give you access to unlock storages or press certain locked buttons",
+  "message.ariente.key_card.gold": "This card is empty",
+  "message.ariente.key_card.info": "Description: ",
+  "message.ariente.key_card.tag": "Tag: ",
 
   "message.ariente.forcefield.header": "Forcefield generator",
   "message.ariente.storage.header": "Can store large amounts of 4 different item types",

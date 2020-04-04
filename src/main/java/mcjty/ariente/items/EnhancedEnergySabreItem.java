@@ -37,7 +37,10 @@ public class EnhancedEnergySabreItem extends EnergySabreItem implements ITooltip
             .info(header(), key("message.ariente.shiftmessage"))
             .infoShift(header(),
                     parameter("key", stack -> KeyBindings.configureArmor != null, stack -> KeyBindings.configureArmor.getDisplayName()),
-                    repeatingParameter("module", stack -> Arrays.stream(ArmorUpgradeType.values()).map(t -> getModuleDescription(stack, t))),
+                    repeatingParameter("module",
+                            stack -> Arrays.stream(ArmorUpgradeType.values())
+                                    .filter(t -> hasModule(stack, t))
+                                    .map(t -> getModuleDescription(stack, t))),
                     parameter("power", this::getPowerString),
                     parameter("negarite", this::getNegariteString),
                     parameter("posirite", this::getPosiriteString));
@@ -56,6 +59,15 @@ public class EnhancedEnergySabreItem extends EnergySabreItem implements ITooltip
             }
         }
         return "<unset>";
+    }
+
+    private boolean hasModule(ItemStack stack, ArmorUpgradeType type) {
+        CompoundNBT compound = stack.getTag();
+        if (compound != null) {
+            String key = "module_" + type.getName();
+            return compound.contains(key);
+        }
+        return false;
     }
 
     private String getPowerString(ItemStack stack) {

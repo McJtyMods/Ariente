@@ -1,8 +1,10 @@
 package mcjty.ariente.items;
 
 import mcjty.ariente.Ariente;
-import mcjty.ariente.setup.Registration;
 import mcjty.ariente.security.IKeyCardSlot;
+import mcjty.ariente.setup.Registration;
+import mcjty.lib.builder.TooltipBuilder;
+import mcjty.lib.tooltips.ITooltipSettings;
 import net.minecraft.client.util.ITooltipFlag;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.item.Item;
@@ -16,8 +18,6 @@ import net.minecraft.util.ActionResultType;
 import net.minecraft.util.Hand;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.text.ITextComponent;
-import net.minecraft.util.text.StringTextComponent;
-import net.minecraft.util.text.TextFormatting;
 import net.minecraft.world.World;
 import net.minecraftforge.common.util.Constants;
 
@@ -27,7 +27,15 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 
-public class KeyCardItem extends Item {
+import static mcjty.lib.builder.TooltipBuilder.*;
+
+public class KeyCardItem extends Item implements ITooltipSettings {
+
+    private final TooltipBuilder tooltipBuilder = new TooltipBuilder()
+            .info(header(),
+                    gold(stack -> getSecurityTags(stack).isEmpty()),
+                    parameter("info", stack -> getDescription(stack) != null, KeyCardItem::getDescription),
+                    repeatingParameter("tag", stack -> getSecurityTags(stack).stream()));
 
     public KeyCardItem() {
         super(new Properties().maxStackSize(1).group(Ariente.setup.getTab()));
@@ -46,22 +54,9 @@ public class KeyCardItem extends Item {
     }
 
     @Override
-    public void addInformation(ItemStack stack, @Nullable World worldIn, List<ITextComponent> tooltip, ITooltipFlag flagIn) {
-        super.addInformation(stack, worldIn, tooltip, flagIn);
-        tooltip.add(new StringTextComponent("Security card"));
-        Set<String> tags = getSecurityTags(stack);
-        if (tags.isEmpty()) {
-            tooltip.add(new StringTextComponent(TextFormatting.YELLOW + "Security card is empty!"));
-        } else {
-            tooltip.add(new StringTextComponent(TextFormatting.YELLOW + "Tags:"));
-            for (String tag : tags) {
-                tooltip.add(new StringTextComponent("   " + TextFormatting.GREEN + tag));
-            }
-        }
-        String description = getDescription(stack);
-        if (description != null) {
-            tooltip.add(new StringTextComponent(TextFormatting.BLUE + description));
-        }
+    public void addInformation(ItemStack stack, @Nullable World worldIn, List<ITextComponent> tooltip, ITooltipFlag flag) {
+        super.addInformation(stack, worldIn, tooltip, flag);
+        tooltipBuilder.makeTooltip(getRegistryName(), stack, tooltip, flag);
     }
 
 
