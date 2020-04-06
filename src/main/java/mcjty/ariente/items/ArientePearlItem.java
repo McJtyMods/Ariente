@@ -1,11 +1,13 @@
 package mcjty.ariente.items;
 
 import mcjty.ariente.Ariente;
-import mcjty.ariente.setup.Registration;
 import mcjty.ariente.blocks.utility.WarperTile;
 import mcjty.ariente.compat.arienteworld.ArienteWorldCompat;
 import mcjty.ariente.config.UtilityConfiguration;
 import mcjty.ariente.entities.EntityArientePearl;
+import mcjty.ariente.setup.Registration;
+import mcjty.lib.builder.TooltipBuilder;
+import mcjty.lib.tooltips.ITooltipSettings;
 import net.minecraft.block.BlockState;
 import net.minecraft.client.util.ITooltipFlag;
 import net.minecraft.entity.player.PlayerEntity;
@@ -28,7 +30,12 @@ import net.minecraft.world.dimension.DimensionType;
 import javax.annotation.Nullable;
 import java.util.List;
 
-public class ArientePearlItem extends Item {
+import static mcjty.lib.builder.TooltipBuilder.header;
+
+public class ArientePearlItem extends Item implements ITooltipSettings {
+
+    private final TooltipBuilder tooltipBuilder = new TooltipBuilder()
+            .info(header());
 
     public ArientePearlItem() {
         super(new Properties().maxStackSize(16).group(Ariente.setup.getTab()));
@@ -37,9 +44,7 @@ public class ArientePearlItem extends Item {
     @Override
     public void addInformation(ItemStack stack, @Nullable World worldIn, List<ITextComponent> tooltip, ITooltipFlag flagIn) {
         super.addInformation(stack, worldIn, tooltip, flagIn);
-        tooltip.add(new StringTextComponent(TextFormatting.GOLD + "With this item you can"));
-        tooltip.add(new StringTextComponent(TextFormatting.GOLD + "locate the mystical Ariente"));
-        tooltip.add(new StringTextComponent(TextFormatting.GOLD + "dungeons and charge them"));
+        tooltipBuilder.makeTooltip(getRegistryName(), stack, tooltip, flagIn);
     }
 
     @Override
