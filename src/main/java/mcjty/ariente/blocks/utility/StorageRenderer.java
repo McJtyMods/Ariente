@@ -65,7 +65,7 @@ public class StorageRenderer extends TileEntityRenderer<StorageTile> {
         float x = 0;
         float y = 0;
         float z = 0;
-        matrixStack.translate((float) x + 0.5F, (float) y + 0.75F, (float) z + 0.5F);
+        matrixStack.translate(x + 0.5F, y + 0.75F, z + 0.5F);
 
         if (facing == Direction.UP) {
             matrixStack.rotate(Vector3f.XP.rotationDegrees(-90.0F));
