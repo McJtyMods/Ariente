@@ -127,6 +127,10 @@ public class WirelessLockTile extends SignalChannelTileEntity implements ILockab
 
 
     private void doLock(boolean l) {
+        if (world == null) {
+            // Safety because this can actually happen during worldgen/load
+            return;
+        }
         if (!world.isRemote) {
             for (int dx = -horizontalRange ; dx <= horizontalRange ; dx++) {
                 for (int dy = -verticalRange ; dy <= verticalRange ; dy++) {
