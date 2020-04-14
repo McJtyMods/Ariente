@@ -1,8 +1,8 @@
 package mcjty.ariente.entities.fluxelevator;
 
 import mcjty.ariente.Ariente;
-import mcjty.ariente.setup.Registration;
 import mcjty.ariente.gui.ModGuis;
+import mcjty.ariente.setup.Registration;
 import mcjty.hologui.api.CloseStrategy;
 import mcjty.hologui.api.IHoloGuiEntity;
 import net.minecraft.block.Block;

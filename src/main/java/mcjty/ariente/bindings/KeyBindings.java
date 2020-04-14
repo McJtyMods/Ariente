@@ -3,13 +3,8 @@ package mcjty.ariente.bindings;
 import mcjty.ariente.entities.fluxship.FluxShipEntity;
 import mcjty.ariente.entities.fluxship.FlyAction;
 import mcjty.ariente.entities.fluxship.PacketShipAction;
-import mcjty.ariente.items.armor.PacketArmorHotkey;
-import mcjty.ariente.items.armor.PacketConfigureArmor;
 import mcjty.ariente.network.ArienteMessages;
 import net.minecraft.client.Minecraft;
-import net.minecraft.client.settings.KeyBinding;
-import net.minecraft.client.util.InputMappings;
-import net.minecraftforge.client.settings.KeyConflictContext;
 
 public class KeyBindings {
 

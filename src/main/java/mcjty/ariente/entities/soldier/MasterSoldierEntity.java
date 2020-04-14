@@ -2,7 +2,6 @@ package mcjty.ariente.entities.soldier;
 
 import mcjty.ariente.api.SoldierBehaviourType;
 import mcjty.ariente.setup.Registration;
-import net.minecraft.entity.CreatureEntity;
 import net.minecraft.entity.EntityType;
 import net.minecraft.entity.monster.MonsterEntity;
 import net.minecraft.nbt.CompoundNBT;

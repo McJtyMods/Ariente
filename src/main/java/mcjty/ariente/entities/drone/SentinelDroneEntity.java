@@ -2,8 +2,8 @@ package mcjty.ariente.entities.drone;
 
 import mcjty.ariente.Ariente;
 import mcjty.ariente.api.*;
-import mcjty.ariente.setup.Registration;
 import mcjty.ariente.compat.arienteworld.ArienteWorldCompat;
+import mcjty.ariente.setup.Registration;
 import mcjty.ariente.sounds.ModSounds;
 import net.minecraft.entity.*;
 import net.minecraft.entity.ai.controller.MovementController;

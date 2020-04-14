@@ -36,9 +36,7 @@ import java.util.Map;
 import static mcjty.ariente.blocks.BlockProperties.LOCKED;
 import static mcjty.ariente.compat.ArienteTOPDriver.DRIVER;
 import static mcjty.hologui.api.Icons.*;
-import static mcjty.lib.builder.TooltipBuilder.header;
-import static mcjty.lib.builder.TooltipBuilder.key;
-import static mcjty.lib.builder.TooltipBuilder.parameter;
+import static mcjty.lib.builder.TooltipBuilder.*;
 
 public class WirelessLockTile extends SignalChannelTileEntity implements ILockable, IGuiTile, ITickableTileEntity {
 

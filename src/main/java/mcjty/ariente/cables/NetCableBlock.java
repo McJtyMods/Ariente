@@ -1,7 +1,7 @@
 package mcjty.ariente.cables;
 
-import mcjty.ariente.setup.Registration;
 import mcjty.ariente.facade.FacadeItemBlock;
+import mcjty.ariente.setup.Registration;
 import mcjty.lib.compat.theoneprobe.TOPDriver;
 import net.minecraft.block.Block;
 import net.minecraft.block.BlockState;

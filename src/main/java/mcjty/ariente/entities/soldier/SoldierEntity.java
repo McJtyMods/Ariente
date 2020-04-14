@@ -2,15 +2,14 @@ package mcjty.ariente.entities.soldier;
 
 import mcjty.ariente.Ariente;
 import mcjty.ariente.api.*;
-import mcjty.ariente.setup.Registration;
 import mcjty.ariente.compat.arienteworld.ArienteWorldCompat;
 import mcjty.ariente.items.KeyCardItem;
 import mcjty.ariente.items.armor.PowerSuit;
+import mcjty.ariente.setup.Registration;
 import mcjty.ariente.sounds.ModSounds;
 import net.minecraft.block.BlockState;
 import net.minecraft.block.Blocks;
 import net.minecraft.block.SoundType;
-import net.minecraft.entity.CreatureEntity;
 import net.minecraft.entity.EntityType;
 import net.minecraft.entity.LivingEntity;
 import net.minecraft.entity.SharedMonsterAttributes;

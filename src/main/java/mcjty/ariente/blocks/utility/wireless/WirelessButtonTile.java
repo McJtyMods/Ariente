@@ -28,9 +28,7 @@ import net.minecraft.world.World;
 import net.minecraftforge.common.util.Constants;
 
 import static mcjty.ariente.compat.ArienteTOPDriver.DRIVER;
-import static mcjty.lib.builder.TooltipBuilder.header;
-import static mcjty.lib.builder.TooltipBuilder.key;
-import static mcjty.lib.builder.TooltipBuilder.parameter;
+import static mcjty.lib.builder.TooltipBuilder.*;
 
 public class WirelessButtonTile extends SignalChannelTileEntity {
 

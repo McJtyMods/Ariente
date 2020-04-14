@@ -1,9 +1,9 @@
 package mcjty.ariente.items.modules;
 
 import mcjty.ariente.api.ArmorUpgradeType;
-import mcjty.ariente.setup.Registration;
 import mcjty.ariente.config.UtilityConfiguration;
 import mcjty.ariente.items.EnergyHolderItem;
+import mcjty.ariente.setup.Registration;
 import net.minecraft.entity.LivingEntity;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.inventory.EquipmentSlotType;

@@ -1,7 +1,6 @@
 package mcjty.ariente.bindings;
 
 import net.minecraft.client.settings.KeyBinding;
-import net.minecraftforge.client.settings.KeyConflictContext;
 import net.minecraftforge.fml.client.registry.ClientRegistry;
 
 import java.util.ArrayList;

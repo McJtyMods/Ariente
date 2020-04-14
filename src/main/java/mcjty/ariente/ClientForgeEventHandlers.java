@@ -1,11 +1,11 @@
 package mcjty.ariente;
 
 import com.mojang.blaze3d.platform.GlStateManager;
-import mcjty.ariente.setup.Registration;
 import mcjty.ariente.blocks.defense.ForceFieldRenderer;
 import mcjty.ariente.entities.levitator.FluxLevitatorEntity;
 import mcjty.ariente.network.ArienteMessages;
 import mcjty.ariente.network.PacketHitForcefield;
+import mcjty.ariente.setup.Registration;
 import mcjty.ariente.sounds.FluxLevitatorSounds;
 import net.minecraft.block.BlockState;
 import net.minecraft.client.Minecraft;

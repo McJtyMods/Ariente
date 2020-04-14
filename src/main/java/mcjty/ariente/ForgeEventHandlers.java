@@ -1,7 +1,6 @@
 package mcjty.ariente;
 
 import mcjty.ariente.api.ArmorUpgradeType;
-import mcjty.ariente.setup.Registration;
 import mcjty.ariente.blocks.utility.ILockable;
 import mcjty.ariente.config.WorldgenConfiguration;
 import mcjty.ariente.entities.levitator.FluxLevitatorEntity;
@@ -10,6 +9,7 @@ import mcjty.ariente.items.modules.ModuleSupport;
 import mcjty.ariente.power.PowerSystem;
 import mcjty.ariente.recipes.BlueprintRecipeRegistry;
 import mcjty.ariente.recipes.ConstructorRecipe;
+import mcjty.ariente.setup.Registration;
 import mcjty.ariente.sounds.FluxLevitatorSounds;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.LivingEntity;
