@@ -49,7 +49,7 @@ public class BlueprintItem extends Item implements ITooltipExtras, ITooltipSetti
         if (recipe == null) {
             return Collections.emptyList();
         } else {
-            return recipe.getIngredientList().stream().map(s -> Pair.of(s, -1)).collect(Collectors.toList());
+            return recipe.getIngredientList().stream().map(s -> Pair.of(s, ITooltipExtras.NOERROR)).collect(Collectors.toList());
         }
     }
 
