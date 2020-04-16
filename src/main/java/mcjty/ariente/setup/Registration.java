@@ -108,6 +108,13 @@ public class Registration {
     public static final Tag<Block> TAG_ORE_SILICON = new BlockTags.Wrapper(new ResourceLocation("forge", "ores/silicon"));
     public static final Tag<Block> TAG_ORE_NEGARITE = new BlockTags.Wrapper(new ResourceLocation("forge", "ores/negarite"));
     public static final Tag<Block> TAG_ORE_POSIRITE = new BlockTags.Wrapper(new ResourceLocation("forge", "ores/posirite"));
+    public static final Tag<Item> TAG_ORE_SILVER_ITEM = new ItemTags.Wrapper(new ResourceLocation("forge", "ores/silver"));
+    public static final Tag<Item> TAG_ORE_PLATINUM_ITEM = new ItemTags.Wrapper(new ResourceLocation("forge", "ores/platinum"));
+    public static final Tag<Item> TAG_ORE_LITHIUM_ITEM = new ItemTags.Wrapper(new ResourceLocation("forge", "ores/lithium"));
+    public static final Tag<Item> TAG_ORE_MANGANESE_ITEM = new ItemTags.Wrapper(new ResourceLocation("forge", "ores/manganese"));
+    public static final Tag<Item> TAG_ORE_SILICON_ITEM = new ItemTags.Wrapper(new ResourceLocation("forge", "ores/silicon"));
+    public static final Tag<Item> TAG_ORE_NEGARITE_ITEM = new ItemTags.Wrapper(new ResourceLocation("forge", "ores/negarite"));
+    public static final Tag<Item> TAG_ORE_POSIRITE_ITEM = new ItemTags.Wrapper(new ResourceLocation("forge", "ores/posirite"));
     public static final Tag<Item> TAG_MARBLE = new ItemTags.Wrapper(new ResourceLocation("forge", "marble"));
 
     public static final AxisAlignedBB FLAT_BLOCK_AABB = new AxisAlignedBB(0.0D, 0.0D, 0.0D, 1.0D, 0.1D, 1.0D);

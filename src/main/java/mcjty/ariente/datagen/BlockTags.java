@@ -20,12 +20,14 @@ public class BlockTags extends BlockTagsProvider {
                 Registration.ORE_NEGARITE.get(),
                 Registration.ORE_SILICON.get(),
                 Registration.ORE_SILVER.get(),
+                Registration.ORE_LITHIUM.get(),
                 Registration.ORE_MANGANESE.get(),
                 Registration.ORE_PLATINUM.get());
         addTag(Registration.TAG_ORE_POSIRITE, Registration.ORE_POSIRITE.get());
         addTag(Registration.TAG_ORE_NEGARITE, Registration.ORE_NEGARITE.get());
         addTag(Registration.TAG_ORE_SILICON, Registration.ORE_SILICON.get());
         addTag(Registration.TAG_ORE_SILVER, Registration.ORE_SILVER.get());
+        addTag(Registration.TAG_ORE_LITHIUM, Registration.ORE_LITHIUM.get());
         addTag(Registration.TAG_ORE_MANGANESE, Registration.ORE_MANGANESE.get());
         addTag(Registration.TAG_ORE_PLATINUM, Registration.ORE_PLATINUM.get());
     }

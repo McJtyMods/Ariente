@@ -19,6 +19,22 @@ public class ItemTags extends ItemTagsProvider {
 
     @Override
     protected void registerTags() {
+        addTag(Tags.Items.ORES,
+                Registration.ORE_POSIRITE_ITEM.get(),
+                Registration.ORE_NEGARITE_ITEM.get(),
+                Registration.ORE_SILICON_ITEM.get(),
+                Registration.ORE_SILVER_ITEM.get(),
+                Registration.ORE_LITHIUM_ITEM.get(),
+                Registration.ORE_MANGANESE_ITEM.get(),
+                Registration.ORE_PLATINUM_ITEM.get());
+        addTag(Registration.TAG_ORE_POSIRITE_ITEM, Registration.ORE_POSIRITE_ITEM.get());
+        addTag(Registration.TAG_ORE_NEGARITE_ITEM, Registration.ORE_NEGARITE_ITEM.get());
+        addTag(Registration.TAG_ORE_SILICON_ITEM, Registration.ORE_SILICON_ITEM.get());
+        addTag(Registration.TAG_ORE_SILVER_ITEM, Registration.ORE_SILVER_ITEM.get());
+        addTag(Registration.TAG_ORE_LITHIUM_ITEM, Registration.ORE_LITHIUM_ITEM.get());
+        addTag(Registration.TAG_ORE_MANGANESE_ITEM, Registration.ORE_MANGANESE_ITEM.get());
+        addTag(Registration.TAG_ORE_PLATINUM_ITEM, Registration.ORE_PLATINUM_ITEM.get());
+
         addTag(Tags.Items.INGOTS,
                 Registration.INGOT_LITHIUM.get(),
                 Registration.INGOT_SILVER.get(),
