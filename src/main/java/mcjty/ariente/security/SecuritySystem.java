@@ -30,10 +30,9 @@ public class SecuritySystem extends AbstractWorldData<SecuritySystem> implements
     }
 
     @Override
-    public String generateKeyId() {
+    public String generateKeyId(World w) {
         long id = newSecurityID();
-        // @todo 1.14 avoid this!
-        World world = WorldTools.getOverworld();
+        World world = WorldTools.getOverworld(w);
         Random rnd = new Random(world.getSeed() + 234516783139L);       // A fixed seed for this work
         rnd.nextFloat();
         rnd.nextFloat();

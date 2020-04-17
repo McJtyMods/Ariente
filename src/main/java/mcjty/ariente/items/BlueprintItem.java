@@ -10,7 +10,7 @@ import mcjty.ariente.setup.Registration;
 import mcjty.lib.builder.TooltipBuilder;
 import mcjty.lib.tooltips.ITooltipExtras;
 import mcjty.lib.tooltips.ITooltipSettings;
-import mcjty.lib.varia.ItemStackTools;
+import mcjty.lib.varia.JSonTools;
 import net.minecraft.client.renderer.model.ModelResourceLocation;
 import net.minecraft.client.util.ITooltipFlag;
 import net.minecraft.item.Item;
@@ -74,7 +74,7 @@ public class BlueprintItem extends Item implements ITooltipExtras, ITooltipSetti
     public static ItemStack makeBluePrint(ItemStack destination) {
         ItemStack dest = new ItemStack(Registration.BLUEPRINT.get());
         CompoundNBT nbt = new CompoundNBT();
-        JsonObject json = ItemStackTools.itemStackToJson(destination);
+        JsonObject json = JSonTools.itemStackToJson(destination);
         nbt.putString("destination", json.toString());
         dest.setTag(nbt);
         return dest;
@@ -91,7 +91,7 @@ public class BlueprintItem extends Item implements ITooltipExtras, ITooltipSetti
         String jsonString = nbt.getString("destination");
         JsonParser parser = new JsonParser();
         JsonElement json = parser.parse(jsonString);
-        return ItemStackTools.jsonToItemStack(json.getAsJsonObject());
+        return JSonTools.jsonToItemStack(json.getAsJsonObject());
     }
 
 

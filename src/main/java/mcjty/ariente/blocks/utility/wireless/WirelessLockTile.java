@@ -10,7 +10,7 @@ import mcjty.hologui.api.IGuiTile;
 import mcjty.hologui.api.StyledColor;
 import mcjty.lib.blocks.BaseBlock;
 import mcjty.lib.builder.BlockBuilder;
-import mcjty.lib.varia.ItemStackTools;
+import mcjty.lib.varia.NBTTools;
 import net.minecraft.block.Block;
 import net.minecraft.block.BlockState;
 import net.minecraft.entity.player.PlayerEntity;
@@ -54,7 +54,7 @@ public class WirelessLockTile extends SignalChannelTileEntity implements ILockab
         return new BaseBlock(new BlockBuilder()
 //                .flags(REDSTONE_CHECK, RENDER_SOLID, RENDER_CUTOUT)
                 .info(key("message.ariente.shiftmessage"))
-                .infoShift(header(), parameter("channel", ItemStackTools.intGetter("channel", -1)))
+                .infoShift(header(), parameter("channel", NBTTools.intGetter("channel", -1)))
                 .topDriver(DRIVER)
                 .tileEntitySupplier(WirelessLockTile::new)
         ) {
