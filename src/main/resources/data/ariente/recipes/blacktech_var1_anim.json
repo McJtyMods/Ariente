@@ -1,6 +1,5 @@
 {
   "type": "minecraft:crafting_shaped",
-  "group": "ariente",
   "pattern": [
     "MmM",
     "mmm",
