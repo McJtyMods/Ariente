@@ -42,6 +42,7 @@ import net.minecraft.util.math.BlockRayTraceResult;
 import net.minecraft.world.World;
 import net.minecraftforge.common.capabilities.Capability;
 import net.minecraftforge.common.util.Constants;
+import net.minecraftforge.common.util.Lazy;
 import net.minecraftforge.common.util.LazyOptional;
 import net.minecraftforge.items.CapabilityItemHandler;
 import net.minecraftforge.items.ItemHandlerHelper;
@@ -66,8 +67,7 @@ public class AutoConstructorTile extends GenericTileEntity implements IGuiTile, 
     public static final int OUTPUT = 6;
     public static final int SLOT_INGREDIENTS = 0;
     public static final int SLOT_OUTPUT = SLOT_INGREDIENTS + INGREDIENTS;
-    public static int[] slots = null;
-    public static final ContainerFactory CONTAINER_FACTORY = new ContainerFactory(INGREDIENTS + OUTPUT); // @todo 1.14 new ResourceLocation(Ariente.MODID, "gui/constructor.gui"));
+    public static final Lazy<ContainerFactory> CONTAINER_FACTORY = Lazy.of(() -> new ContainerFactory(INGREDIENTS + OUTPUT)); // @todo 1.14 new ResourceLocation(Ariente.MODID, "gui/constructor.gui"));
 //    private InventoryHelper inventoryHelper = new InventoryHelper(this, CONTAINER_FACTORY, INGREDIENTS + OUTPUT);
 
     private NoDirectionItemHander items = createItemHandler();
@@ -512,7 +512,7 @@ public class AutoConstructorTile extends GenericTileEntity implements IGuiTile, 
     }
 
     private NoDirectionItemHander createItemHandler() {
-        return new NoDirectionItemHander(AutoConstructorTile.this, CONTAINER_FACTORY) {
+        return new NoDirectionItemHander(AutoConstructorTile.this, CONTAINER_FACTORY.get()) {
             @Override
             public boolean isItemValid(int slot, @Nonnull ItemStack stack) {
                 return stack.getItem() != Registration.BLUEPRINT.get();

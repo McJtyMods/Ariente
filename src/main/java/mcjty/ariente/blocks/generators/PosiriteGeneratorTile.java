@@ -34,6 +34,7 @@ import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.BlockRayTraceResult;
 import net.minecraft.world.World;
 import net.minecraftforge.common.util.Constants;
+import net.minecraftforge.common.util.Lazy;
 import net.minecraftforge.common.util.LazyOptional;
 
 import javax.annotation.Nonnull;
@@ -51,7 +52,7 @@ public class PosiriteGeneratorTile extends GenericTileEntity implements ITickabl
     public static final int POWERGEN = 1000;        // @todo configurable and based on tanks!
 
     public static final int SLOT_POSIRITE_INPUT = 0;
-    public static final ContainerFactory CONTAINER_FACTORY = new ContainerFactory(1);//@todo 1.14new ResourceLocation(Ariente.MODID, "gui/posirite_generator.gui"));
+    public static final Lazy<ContainerFactory> CONTAINER_FACTORY = Lazy.of(() -> new ContainerFactory(1));//@todo 1.14new ResourceLocation(Ariente.MODID, "gui/posirite_generator.gui"));
 //    private InventoryHelper inventoryHelper = new InventoryHelper(this, CONTAINER_FACTORY, 1);
     private PowerSenderSupport powerBlobSupport = new PowerSenderSupport();
 
@@ -383,7 +384,7 @@ public class PosiriteGeneratorTile extends GenericTileEntity implements ITickabl
     }
 
     private NoDirectionItemHander createItemHandler() {
-        return new NoDirectionItemHander(PosiriteGeneratorTile.this, CONTAINER_FACTORY) {
+        return new NoDirectionItemHander(PosiriteGeneratorTile.this, CONTAINER_FACTORY.get()) {
             @Override
             public boolean isItemValid(int slot, @Nonnull ItemStack stack) {
                 if (slot == SLOT_POSIRITE_INPUT) {

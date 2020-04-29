@@ -35,6 +35,7 @@ import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.BlockRayTraceResult;
 import net.minecraft.world.World;
 import net.minecraftforge.common.util.Constants;
+import net.minecraftforge.common.util.Lazy;
 import net.minecraftforge.common.util.LazyOptional;
 
 import javax.annotation.Nonnull;
@@ -50,7 +51,7 @@ public class NegariteGeneratorTile extends GenericTileEntity implements ITickabl
 
     public static final int POWERGEN = 1000;        // @todo configurable and based on tanks!
 
-    public static final ContainerFactory CONTAINER_FACTORY = new ContainerFactory(1); // @todo 1.14new ResourceLocation(Ariente.MODID, "gui/negarite_generator.gui"));
+    public static final Lazy<ContainerFactory> CONTAINER_FACTORY = Lazy.of(() -> new ContainerFactory(1)); // @todo 1.14new ResourceLocation(Ariente.MODID, "gui/negarite_generator.gui"));
     public static final int SLOT_NEGARITE_INPUT = 0;
 
     private NoDirectionItemHander items = createItemHandler();
@@ -389,7 +390,7 @@ public class NegariteGeneratorTile extends GenericTileEntity implements ITickabl
     }
 
     private NoDirectionItemHander createItemHandler() {
-        return new NoDirectionItemHander(NegariteGeneratorTile.this, CONTAINER_FACTORY) {
+        return new NoDirectionItemHander(NegariteGeneratorTile.this, CONTAINER_FACTORY.get()) {
             @Override
             public boolean isItemValid(int slot, @Nonnull ItemStack stack) {
                 if (slot == SLOT_NEGARITE_INPUT) {

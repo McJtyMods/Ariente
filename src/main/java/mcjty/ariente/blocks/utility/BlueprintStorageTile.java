@@ -24,6 +24,7 @@ import net.minecraft.util.Hand;
 import net.minecraft.util.math.BlockRayTraceResult;
 import net.minecraft.world.World;
 import net.minecraftforge.common.capabilities.Capability;
+import net.minecraftforge.common.util.Lazy;
 import net.minecraftforge.common.util.LazyOptional;
 import net.minecraftforge.items.CapabilityItemHandler;
 import net.minecraftforge.items.ItemHandlerHelper;
@@ -41,9 +42,7 @@ public class BlueprintStorageTile extends GenericTileEntity implements IGuiTile,
 
     public static final int BLUEPRINTS = 6;
     public static final int SLOT_BLUEPRINT = 0;
-    public static int[] slots = null;
-    public static final ContainerFactory CONTAINER_FACTORY = new ContainerFactory(BLUEPRINTS);// @todo 1.14 new ResourceLocation(Ariente.MODID, "gui/blueprint_storage.gui"));
-//    private InventoryHelper inventoryHelper = new InventoryHelper(this, CONTAINER_FACTORY, BLUEPRINTS);
+    public static final Lazy<ContainerFactory> CONTAINER_FACTORY = Lazy.of(() -> new ContainerFactory(BLUEPRINTS));// @todo 1.14 new ResourceLocation(Ariente.MODID, "gui/blueprint_storage.gui"));
 
     private NoDirectionItemHander items = createItemHandler();
     private LazyOptional<NoDirectionItemHander> itemHandler = LazyOptional.of(() -> items);
@@ -174,7 +173,7 @@ public class BlueprintStorageTile extends GenericTileEntity implements IGuiTile,
     }
 
     private NoDirectionItemHander createItemHandler() {
-        return new NoDirectionItemHander(BlueprintStorageTile.this, CONTAINER_FACTORY) {
+        return new NoDirectionItemHander(BlueprintStorageTile.this, CONTAINER_FACTORY.get()) {
             @Override
             public boolean isItemValid(int slot, @Nonnull ItemStack stack) {
                 return stack.getItem() == Registration.BLUEPRINT.get();
