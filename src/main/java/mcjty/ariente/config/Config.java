@@ -4,22 +4,22 @@ import net.minecraftforge.common.ForgeConfigSpec;
 
 public class Config {
 
-    private static final ForgeConfigSpec.Builder COMMON_BUILDER = new ForgeConfigSpec.Builder();
+    private static final ForgeConfigSpec.Builder SERVER_BUILDER = new ForgeConfigSpec.Builder();
     private static final ForgeConfigSpec.Builder CLIENT_BUILDER = new ForgeConfigSpec.Builder();
 
     static {
-        GeneralConfiguration.init(COMMON_BUILDER, CLIENT_BUILDER);
-        DamageConfiguration.init(COMMON_BUILDER, CLIENT_BUILDER);
-        PowerConfiguration.init(COMMON_BUILDER, CLIENT_BUILDER);
-        UtilityConfiguration.init(COMMON_BUILDER, CLIENT_BUILDER);
-        SoundConfiguration.init(COMMON_BUILDER, CLIENT_BUILDER);
-        WorldgenConfiguration.init(COMMON_BUILDER, CLIENT_BUILDER);
+        GeneralConfiguration.init(SERVER_BUILDER, CLIENT_BUILDER);
+        DamageConfiguration.init(SERVER_BUILDER, CLIENT_BUILDER);
+        PowerConfiguration.init(SERVER_BUILDER, CLIENT_BUILDER);
+        UtilityConfiguration.init(SERVER_BUILDER, CLIENT_BUILDER);
+        SoundConfiguration.init(SERVER_BUILDER, CLIENT_BUILDER);
+        WorldgenConfiguration.init(SERVER_BUILDER, CLIENT_BUILDER);
 
-        COMMON_CONFIG = COMMON_BUILDER.build();
+        SERVER_CONFIG = SERVER_BUILDER.build();
         CLIENT_CONFIG = CLIENT_BUILDER.build();
     }
 
-    public static ForgeConfigSpec COMMON_CONFIG;
+    public static ForgeConfigSpec SERVER_CONFIG;
     public static ForgeConfigSpec CLIENT_CONFIG;
 
 
