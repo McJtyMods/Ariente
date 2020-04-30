@@ -54,7 +54,7 @@ import static mcjty.lib.builder.TooltipBuilder.key;
 
 public class ForceFieldTile extends GenericTileEntity implements IGuiTile, ITickableTileEntity, ISoundProducer, IPowerReceiver, ICityEquipment, IAlarmMode, IForceFieldTile, IPowerUser {
 
-    private PanelInfo[] panelInfo = new PanelInfo[PentakisDodecahedron.MAX_TRIANGLES];
+    private final PanelInfo[] panelInfo = new PanelInfo[PentakisDodecahedron.MAX_TRIANGLES];
     private int[] panelDestroyTimeout = new int[PentakisDodecahedron.MAX_TRIANGLES];    // @todo persist to NBT?
     private AxisAlignedBB aabb = null;
     private int scale = 10;

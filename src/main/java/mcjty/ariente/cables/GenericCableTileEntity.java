@@ -24,8 +24,8 @@ import java.util.Map;
 
 public abstract class GenericCableTileEntity extends GenericTileEntity implements IFacadeSupport, IPowerBlob, ICityEquipment {
 
-    private MimicBlockSupport mimicBlockSupport = new MimicBlockSupport();
-    private PowerSenderSupport powerBlobSupport = new PowerSenderSupport();
+    private final MimicBlockSupport mimicBlockSupport = new MimicBlockSupport();
+    private final PowerSenderSupport powerBlobSupport = new PowerSenderSupport();
 
     public GenericCableTileEntity(TileEntityType<?> type) {
         super(type);

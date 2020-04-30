@@ -44,9 +44,9 @@ public class BlueprintStorageTile extends GenericTileEntity implements IGuiTile,
     public static final int SLOT_BLUEPRINT = 0;
     public static final Lazy<ContainerFactory> CONTAINER_FACTORY = Lazy.of(() -> new ContainerFactory(BLUEPRINTS));// @todo 1.14 new ResourceLocation(Ariente.MODID, "gui/blueprint_storage.gui"));
 
-    private NoDirectionItemHander items = createItemHandler();
-    private LazyOptional<NoDirectionItemHander> itemHandler = LazyOptional.of(() -> items);
-    private LazyOptional<AutomationFilterItemHander> automationItemHandler = LazyOptional.of(() -> new AutomationFilterItemHander(items));
+    private final NoDirectionItemHander items = createItemHandler();
+    private final LazyOptional<NoDirectionItemHander> itemHandler = LazyOptional.of(() -> items);
+    private final LazyOptional<AutomationFilterItemHander> automationItemHandler = LazyOptional.of(() -> new AutomationFilterItemHander(items));
 
     public BlueprintStorageTile() {
         super(Registration.BLUEPRINT_STORAGE_TILE.get());

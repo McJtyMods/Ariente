@@ -54,11 +54,11 @@ public class NegariteGeneratorTile extends GenericTileEntity implements ITickabl
     public static final Lazy<ContainerFactory> CONTAINER_FACTORY = Lazy.of(() -> new ContainerFactory(1)); // @todo 1.14new ResourceLocation(Ariente.MODID, "gui/negarite_generator.gui"));
     public static final int SLOT_NEGARITE_INPUT = 0;
 
-    private NoDirectionItemHander items = createItemHandler();
-    private LazyOptional<NoDirectionItemHander> itemHandler = LazyOptional.of(() -> items);
-    private LazyOptional<AutomationFilterItemHander> automationItemHandler = LazyOptional.of(() -> new AutomationFilterItemHander(items));
+    private final NoDirectionItemHander items = createItemHandler();
+    private final LazyOptional<NoDirectionItemHander> itemHandler = LazyOptional.of(() -> items);
+    private final LazyOptional<AutomationFilterItemHander> automationItemHandler = LazyOptional.of(() -> new AutomationFilterItemHander(items));
 
-    private PowerSenderSupport powerBlobSupport = new PowerSenderSupport();
+    private final PowerSenderSupport powerBlobSupport = new PowerSenderSupport();
 
     // @todo, temporary: base on tanks later!
     private int dustCounter;        // Number of ticks before the current dust depletes

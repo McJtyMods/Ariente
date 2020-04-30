@@ -66,7 +66,7 @@ public class StorageTile extends GenericTileEntity implements IGuiTile, ICityEqu
     public static final int STACKS_PER_TYPE = 64;
     public static final int STACKS = 4;
 
-    private ItemStackList stacks = ItemStackList.create(4);
+    private final ItemStackList stacks = ItemStackList.create(4);
     private int[] counts = new int[STACKS * STACKS_PER_TYPE];
     private int[] totals = new int[STACKS];
 
