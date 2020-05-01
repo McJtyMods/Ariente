@@ -11,7 +11,6 @@ import mcjty.ariente.setup.ModSetup;
 import mcjty.ariente.setup.Registration;
 import mcjty.hologui.api.IHoloGuiHandler;
 import mcjty.lib.base.ModBase;
-import net.minecraft.entity.player.PlayerEntity;
 import net.minecraftforge.client.event.ColorHandlerEvent;
 import net.minecraftforge.eventbus.api.EventPriority;
 import net.minecraftforge.fml.ModLoadingContext;
@@ -59,8 +58,4 @@ public class Ariente implements ModBase, IArienteMod {
         return Ariente.MODID;
     }
 
-    @Override
-    public void openManual(PlayerEntity player, int bookindex, String page) {
-        // @todo
-    }
 }
