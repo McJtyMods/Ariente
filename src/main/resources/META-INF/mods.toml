@@ -33,6 +33,6 @@ Base mod for all McJty mods
 [[dependencies.ariente]]
     modId="mcjtylib"
     mandatory=false
-#    versionRange="[1.14-3.5.8,1.14-4.0.0)"
+    versionRange="[1.15-4.0.9,)"
     ordering="AFTER"
     side="BOTH"
