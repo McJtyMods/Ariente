@@ -17,6 +17,7 @@ public class BlueprintItemHandler implements IItemHandler {
     private final World world;
     private final BlockPos pos;
 
+    @SuppressWarnings("FieldCanBeLocal")
     private List<BlockPos> storageList = null;
 
     public BlueprintItemHandler(World world, BlockPos pos) {

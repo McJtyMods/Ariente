@@ -26,7 +26,7 @@ public class AutoFieldRenderInfo {
         Transfer transfer = new Transfer(stack.getItem(), 0 /* @todo 1.14 stack.getMetadata()*/, time);
         TransferPath path = new TransferPath(sourcePos, destPos);
         transfers.computeIfAbsent(path, p -> new TreeSet<>());
-        TreeSet<Transfer> treeSet = this.transfers.get(path);
+        Set<Transfer> treeSet = this.transfers.get(path);
         treeSet.add(transfer);
     }
 
@@ -65,7 +65,7 @@ public class AutoFieldRenderInfo {
     public void cleanOldTransfers() {
         long time = System.currentTimeMillis();
         for (TransferPath path : transfers.keySet()) {
-            TreeSet<Transfer> treeSet = this.transfers.get(path);
+            Iterable<Transfer> treeSet = this.transfers.get(path);
 
             TreeSet<Transfer> newTreeSet = new TreeSet<>();
             for (Transfer tr : treeSet) {
@@ -100,7 +100,7 @@ public class AutoFieldRenderInfo {
             buf.writeByte(path.sourcePos.getSlot().ordinal());
             buf.writeBlockPos(path.destPos.getPos());
             buf.writeByte(path.destPos.getSlot().ordinal());
-            TreeSet<Transfer> values = entry.getValue();
+            Set<Transfer> values = entry.getValue();
             buf.writeInt(values.size());
             for (Transfer transfer : entry.getValue()) {
                 int id = Item.getIdFromItem(transfer.item);

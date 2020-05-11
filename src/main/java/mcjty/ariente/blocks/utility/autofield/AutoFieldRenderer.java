@@ -2,6 +2,7 @@ package mcjty.ariente.blocks.utility.autofield;
 
 import com.mojang.blaze3d.matrix.MatrixStack;
 import com.mojang.blaze3d.platform.GlStateManager;
+import com.mojang.blaze3d.systems.RenderSystem;
 import mcjty.ariente.Ariente;
 import mcjty.lib.client.RenderHelper;
 import mcjty.lib.client.RenderHelper.Vector;
@@ -54,7 +55,7 @@ public class AutoFieldRenderer extends TileEntityRenderer<AutoFieldTile> {
 
     private void renderBeamBox(float time, AxisAlignedBB box) {
         Tessellator tessellator = Tessellator.getInstance();
-        GlStateManager.pushMatrix();
+        RenderSystem.pushMatrix();
 
         GlStateManager.enableBlend();
         GlStateManager.depthMask(false);
@@ -122,21 +123,21 @@ public class AutoFieldRenderer extends TileEntityRenderer<AutoFieldTile> {
         tessellator.draw();
 
         GlStateManager.depthMask(true);
-        GlStateManager.enableLighting();
+        RenderSystem.enableLighting();
         GlStateManager.enableDepthTest();
-        GlStateManager.alphaFunc(GL11.GL_GREATER, 0.1F);
+        RenderSystem.alphaFunc(GL11.GL_GREATER, 0.1F);
 
-        GlStateManager.popMatrix();
+        RenderSystem.popMatrix();
     }
 
     private void renderItemTransfers(AutoFieldTile te, double x, double y, double z) {
         te.clientRequestRenderInfo();
 
-        GlStateManager.pushMatrix();
-        GlStateManager.translated(x, y, z);
+        RenderSystem.pushMatrix();
+        RenderSystem.translated(x, y, z);
         net.minecraft.client.renderer.RenderHelper.enableStandardItemLighting();
         Minecraft.getInstance().gameRenderer.getLightTexture().disableLightmap();
-        GlStateManager.enableAlphaTest();
+        RenderSystem.enableAlphaTest();
 
         TransferRender[] transferRenders = te.getTransferRenders();
         for (int i = 0 ; i < transferRenders.length ; i++) {
@@ -161,9 +162,9 @@ public class AutoFieldRenderer extends TileEntityRenderer<AutoFieldTile> {
             }
         }
         Minecraft.getInstance().gameRenderer.getLightTexture().enableLightmap();
-        GlStateManager.disableAlphaTest();
+        RenderSystem.disableAlphaTest();
 
-        GlStateManager.popMatrix();
+        RenderSystem.popMatrix();
     }
 
     @Override

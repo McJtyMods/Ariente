@@ -11,9 +11,7 @@ public class ForcefieldSound extends TickableSound {
 
     private final World world;
     private final BlockPos pos;
-    private final SoundEvent sound;
-
-    private int ticksRemaining;
+    private final SoundEvent soundEvent;
 
     public ForcefieldSound(SoundEvent event, World world, BlockPos pos, float baseVolume, int ticks) {
         super(event, SoundCategory.BLOCKS);
@@ -25,9 +23,8 @@ public class ForcefieldSound extends TickableSound {
         this.attenuationType = AttenuationType.LINEAR;
         this.repeat = true;
         this.repeatDelay = 0;
-        this.sound = event;
+        this.soundEvent = event;
         this.volume = baseVolume;
-        ticksRemaining = ticks;
     }
 
     public void setVolume(float v) {
@@ -50,7 +47,7 @@ public class ForcefieldSound extends TickableSound {
     }
 
     protected boolean isSoundType(SoundEvent event){
-        return sound == event;
+        return soundEvent == event;
     }
 
 }

@@ -48,11 +48,6 @@ public class FluxElevatorEntity extends Entity {
     private static final float LENGTH = 2.5f;
     public static final float MAX_SPEED = 1.2f;
 
-    private double elevatorX;
-    private double elevatorY;
-    private double elevatorZ;
-    private double elevatorYaw;
-    private double elevatorPitch;
     private double velocityX;
     private double velocityY;
     private double velocityZ;
@@ -873,11 +868,6 @@ public class FluxElevatorEntity extends Entity {
 
     @Override
     public void setPositionAndRotationDirect(double x, double y, double z, float yaw, float pitch, int posRotationIncrements, boolean teleport) {
-        this.elevatorX = x;
-        this.elevatorY = y;
-        this.elevatorZ = z;
-        this.elevatorYaw = yaw;
-        this.elevatorPitch = pitch;
         setMotion(velocityX, velocityY, velocityZ);
 
         updateHoloGui();

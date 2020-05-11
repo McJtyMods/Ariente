@@ -17,8 +17,6 @@ public class TransferRender {
     private final ItemStack stack;
     private final CatmullRomSpline<AnimatedPoint> spline;
 
-    private final Random random = new Random();
-
     private static class AnimatedPoint {
         private final double x;
         private final double y;
@@ -70,6 +68,7 @@ public class TransferRender {
         duration = (long) (distance * 600) + 100;
 
         double jitter = distance / 5.0;
+        Random random = new Random();
         Vec3d mid = sta.add(end).scale(0.5).add(
                 random.nextFloat() * jitter - (jitter/2.0),
                 random.nextFloat() * jitter - (jitter/2.0),

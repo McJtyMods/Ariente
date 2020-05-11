@@ -28,7 +28,7 @@ public enum ArmorUpgradeType {
     private final String description;
     private final int powerUsage;
 
-    private static Map<String, ArmorUpgradeType> MAP = new HashMap<>();
+    private static final Map<String, ArmorUpgradeType> MAP = new HashMap<>();
 
     public static final ArmorUpgradeType[] VALUES = new ArmorUpgradeType[ArmorUpgradeType.values().length];
 

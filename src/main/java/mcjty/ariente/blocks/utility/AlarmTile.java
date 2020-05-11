@@ -54,6 +54,7 @@ public class AlarmTile extends GenericTileEntity implements ITickableTileEntity,
                 builder.add(ALARM);
             }
 
+            @SuppressWarnings({"NullableProblems", "deprecation"})
             @Override
             public VoxelShape getShape(BlockState state, IBlockReader reader, BlockPos pos, ISelectionContext context) {
                 return BLOCK_AABB;

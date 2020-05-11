@@ -21,6 +21,7 @@ public class BaseBeamBlock extends BaseBlock {
         return RotationType.HORIZROTATION;
     }
 
+    @SuppressWarnings({"NullableProblems", "deprecation"})
     @Override
     public VoxelShape getCollisionShape(BlockState state, IBlockReader worldIn, BlockPos pos, ISelectionContext context) {
         return VoxelShapes.empty();

@@ -54,6 +54,7 @@ public abstract class BaseVariantBlock<T extends Enum<T> & IStringSerializable> 
 //    }
 
 
+    @SuppressWarnings({"NullableProblems", "deprecation"})
     @Override
     public ItemStack getItem(IBlockReader worldIn, BlockPos pos, BlockState state) {
         return new ItemStack(this, 1); // @todo 1.14 META?, state.get(getProperty()).ordinal());

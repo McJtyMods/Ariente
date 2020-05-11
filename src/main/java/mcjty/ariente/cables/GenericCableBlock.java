@@ -359,7 +359,7 @@ public abstract class GenericCableBlock extends Block implements WailaInfoProvid
         }
         ConnectorType down = getConnectorType(color, world, pos, Direction.DOWN);
         if (down != ConnectorType.NONE) {
-            mask |= 1 << 0;
+            mask |= 1;  // 1 << 0
         }
         return mask;
     }
@@ -373,7 +373,7 @@ public abstract class GenericCableBlock extends Block implements WailaInfoProvid
         }
         ConnectorType east = getConnectorType(color, world, pos, Direction.EAST);
         if (east != ConnectorType.NONE) {
-            mask |= 1 << 0;
+            mask |= 1; // 1 << 0;
         }
         return mask;
     }
@@ -387,7 +387,7 @@ public abstract class GenericCableBlock extends Block implements WailaInfoProvid
         }
         ConnectorType south = getConnectorType(color, world, pos, Direction.SOUTH);
         if (south != ConnectorType.NONE) {
-            mask |= 1 << 0;
+            mask |= 1; // 1 << 0;
         }
         return mask;
     }

@@ -31,17 +31,15 @@ import static mcjty.ariente.cables.ConnectorType.CABLE;
 public class GenericCableBakedModel extends AbstractDynamicBakedModel {
 
     private TextureAtlasSprite spriteCable;
-    private TextureAtlasSprite spriteConnector;
 
     public static class CableTextures {
-        TextureAtlasSprite spriteConnector;
-
-        TextureAtlasSprite spriteNoneCable;
-        TextureAtlasSprite spriteNormalCable;
-        TextureAtlasSprite spriteEndCable;
-        TextureAtlasSprite spriteCornerCable;
-        TextureAtlasSprite spriteThreeCable;
-        TextureAtlasSprite spriteCrossCable;
+        private TextureAtlasSprite spriteConnector;
+        private TextureAtlasSprite spriteNoneCable;
+        private TextureAtlasSprite spriteNormalCable;
+        private TextureAtlasSprite spriteEndCable;
+        private TextureAtlasSprite spriteCornerCable;
+        private TextureAtlasSprite spriteThreeCable;
+        private TextureAtlasSprite spriteCrossCable;
     }
 
     private static CableTextures[] cableTextures = null;
@@ -177,7 +175,7 @@ public class GenericCableBakedModel extends AbstractDynamicBakedModel {
         CableTextures ct = cableTextures[index];
         spriteCable = ct.spriteNormalCable;
         GenericCableBlock block = (GenericCableBlock) state.getBlock();
-        spriteConnector = ct.spriteConnector;
+        TextureAtlasSprite spriteConnector = ct.spriteConnector;
         Function<CablePatterns.SpriteIdx, TextureAtlasSprite> getSprite = idx -> getSpriteNormal(idx, index);
         float hilight = 1.0f;
         if (block instanceof ConnectorBlock) {
