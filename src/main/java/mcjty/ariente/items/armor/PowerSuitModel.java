@@ -239,7 +239,7 @@ public class PowerSuitModel extends BipedModel {
     public void setRotationAngles(Entity entity, float limbSwing, float limbSwingAmount, float ageInTicks, float netHeadYaw, float headPitch) {
 
         if(entity instanceof LivingEntity)	{
-            this.isSneak = entity.isShiftKeyDown();
+            this.isSneak = entity.isSneaking();
             // @todo 1.14
 //            this.isRiding = entity.isRiding();
             this.isChild = ((LivingEntity)entity).isChild();

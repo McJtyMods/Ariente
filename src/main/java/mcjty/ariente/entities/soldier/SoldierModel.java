@@ -12,7 +12,8 @@ public class SoldierModel<T extends SoldierEntity> extends AbstractZombieModel<T
         super(modelSize, yOffsetIn, textureWidthIn, textureHeightIn);
     }
 
-    public boolean func_212850_a_(T p_212850_1_) {
+    @Override
+    public boolean isAggressive(T p_212850_1_) {
         return p_212850_1_.isAggressive();
     }
 }

@@ -156,7 +156,7 @@ public abstract class SignalChannelTileEntity extends GenericTileEntity implemen
                 SignalChannelTileEntity rcte = (SignalChannelTileEntity)te;
                 CompoundNBT tagCompound = stack.getOrCreateTag();
                 int channel;
-                if(!player.isShiftKeyDown()) {
+                if(!player.isSneaking()) {
                     channel = rcte.getChannel(true);
                     tagCompound.putInt("channel", channel);
                 } else {

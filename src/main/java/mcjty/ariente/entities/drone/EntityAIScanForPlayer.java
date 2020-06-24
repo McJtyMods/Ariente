@@ -30,7 +30,7 @@ public class EntityAIScanForPlayer extends Goal {
             } else {
                 double d0 = EntityAIScanForPlayer.this.maxTargetRange();
 
-                if (entity.isShiftKeyDown()) {
+                if (entity.isSneaking()) {
                     d0 *= 0.8;
                 }
 

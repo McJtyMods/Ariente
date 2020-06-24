@@ -1192,7 +1192,7 @@ public class FluxLevitatorEntity extends Entity implements IFluxLevitatorEntity 
 
     @Override
     public boolean processInitialInteract(PlayerEntity player, Hand hand) {
-        if (player.isShiftKeyDown()) {
+        if (player.isSneaking()) {
             return false;
 //        } else if (this.isBeingRidden()) {    // @todo
 //            return true;
