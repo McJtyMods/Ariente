@@ -14,9 +14,7 @@ import mcjty.lib.builder.BlockBuilder;
 import mcjty.lib.container.AutomationFilterItemHander;
 import mcjty.lib.container.ContainerFactory;
 import mcjty.lib.container.NoDirectionItemHander;
-import mcjty.lib.gui.widgets.ImageChoiceLabel;
 import mcjty.lib.tileentity.GenericTileEntity;
-import mcjty.lib.typed.TypedMap;
 import mcjty.lib.varia.RedstoneMode;
 import net.minecraft.block.Block;
 import net.minecraft.block.BlockState;
@@ -46,8 +44,6 @@ import static mcjty.lib.builder.TooltipBuilder.header;
 import static mcjty.lib.builder.TooltipBuilder.key;
 
 public class PosiriteGeneratorTile extends GenericTileEntity implements ITickableTileEntity, IGuiTile, IPowerBlob, IAlarmMode, IPowerSender, IGenerator {
-
-    public static final String CMD_RSMODE = "posirite_gen.setRsMode";
 
     public static final int POWERGEN = 1000;        // @todo configurable and based on tanks!
 
@@ -227,20 +223,6 @@ public class PosiriteGeneratorTile extends GenericTileEntity implements ITickabl
         //        writeBufferToNBT(tagCompound, inventoryHelper);
         getOrCreateInfo(tagCompound).putInt("dust", dustCounter);
         return super.write(tagCompound);
-    }
-
-    @Override
-    public boolean execute(PlayerEntity playerMP, String command, TypedMap params) {
-        boolean rc = super.execute(playerMP, command, params);
-        if (rc) {
-            return true;
-        }
-        if (CMD_RSMODE.equals(command)) {
-            setRSMode(RedstoneMode.values()[params.get(ImageChoiceLabel.PARAM_CHOICE_IDX)]);
-            return true;
-        }
-
-        return false;
     }
 
     @Override
