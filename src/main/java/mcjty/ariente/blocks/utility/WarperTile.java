@@ -13,6 +13,7 @@ import mcjty.lib.blocks.BaseBlock;
 import mcjty.lib.blocks.RotationType;
 import mcjty.lib.builder.BlockBuilder;
 import mcjty.lib.tileentity.GenericTileEntity;
+import mcjty.lib.varia.DimensionId;
 import mcjty.lib.varia.TeleportationTools;
 import net.minecraft.block.BlockState;
 import net.minecraft.entity.player.PlayerEntity;
@@ -67,8 +68,8 @@ public class WarperTile extends GenericTileEntity implements IGuiTile, IWarper {
     public void setWorldAndPos(World worldIn, BlockPos pos) {
         super.setWorldAndPos(worldIn, pos);
         if (Ariente.setup.arienteWorld) {
-            DimensionType dim = ArienteWorldCompat.getArienteWorld().getDimension();
-            if (worldIn != null && worldIn.getDimension().getType() == dim) {
+            DimensionId dim = ArienteWorldCompat.getArienteWorld().getDimension();
+            if (worldIn != null && dim.sameDimension(worldIn)) {
                 charges = UtilityConfiguration.WARPER_MAX_CHARGES.get();
             }
         }
@@ -151,7 +152,7 @@ public class WarperTile extends GenericTileEntity implements IGuiTile, IWarper {
                 while (!world.isAirBlock(bedLocation) && !world.isAirBlock(bedLocation.up()) && bedLocation.getY() < world.getHeight()-2) {
                     bedLocation = bedLocation.up();
                 }
-                TeleportationTools.teleportToDimension(player, DimensionType.OVERWORLD, bedLocation.getX(), bedLocation.getY(), bedLocation.getZ());
+                TeleportationTools.teleportToDimension(player, DimensionId.overworld(), bedLocation.getX(), bedLocation.getY(), bedLocation.getZ());
             }
         }
     }

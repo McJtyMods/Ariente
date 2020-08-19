@@ -1,13 +1,13 @@
 package mcjty.ariente.api;
 
+import mcjty.lib.varia.DimensionId;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.ChunkPos;
 import net.minecraft.world.World;
-import net.minecraft.world.dimension.DimensionType;
 
 public interface IArienteWorld {
 
-    DimensionType getDimension();
+    DimensionId getDimension();
 
     BlockPos getNearestTeleportationSpot(BlockPos pos);
 
