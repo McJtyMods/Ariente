@@ -16,10 +16,7 @@ import mcjty.ariente.setup.Registration;
 import mcjty.lib.compat.theoneprobe.McJtyLibTOPDriver;
 import mcjty.lib.compat.theoneprobe.TOPDriver;
 import mcjty.lib.varia.Tools;
-import mcjty.theoneprobe.api.IProbeHitData;
-import mcjty.theoneprobe.api.IProbeInfo;
-import mcjty.theoneprobe.api.ProbeMode;
-import mcjty.theoneprobe.api.TextStyleClass;
+import mcjty.theoneprobe.api.*;
 import net.minecraft.block.Block;
 import net.minecraft.block.BlockState;
 import net.minecraft.entity.player.PlayerEntity;
@@ -29,6 +26,9 @@ import net.minecraft.world.World;
 
 import java.util.HashMap;
 import java.util.Map;
+
+import static mcjty.theoneprobe.api.TextStyleClass.INFO;
+import static mcjty.theoneprobe.api.TextStyleClass.WARNING;
 
 public class ArienteTOPDriver implements TOPDriver {
 
@@ -74,13 +74,13 @@ public class ArienteTOPDriver implements TOPDriver {
         public void addProbeInfo(ProbeMode mode, IProbeInfo probeInfo, PlayerEntity player, World world, BlockState blockState, IProbeHitData data) {
             McJtyLibTOPDriver.DRIVER.addStandardProbeInfo(mode, probeInfo, player, world, blockState, data);
             Tools.safeConsume(world.getTileEntity(data.getPos()), (IPowerBlob te) -> {
-                probeInfo.text(TextStyleClass.LABEL + "Network: " + TextStyleClass.INFO + te.getCableId());
+                probeInfo.text(CompoundText.createLabelInfo("Network: ", te.getCableId()));
             });
             Tools.safeConsume(world.getTileEntity(data.getPos()), (ISignalChannel te) -> {
-                probeInfo.text(TextFormatting.GREEN + "Channel: " + te.getChannel(false));
+                probeInfo.text(CompoundText.createLabelInfo("Channel: ", te.getChannel(false)));
             });
             Tools.safeConsume(world.getTileEntity(data.getPos()), (IPowerUser te) -> {
-                probeInfo.text(TextStyleClass.LABEL + "Using: " + TextStyleClass.INFO + te.getUsingPower() + " flux");
+                probeInfo.text(CompoundText.createLabelInfo("Using: ", te.getUsingPower() + " flux"));
             });
         }
     }
@@ -90,7 +90,7 @@ public class ArienteTOPDriver implements TOPDriver {
         public void addProbeInfo(ProbeMode mode, IProbeInfo probeInfo, PlayerEntity player, World world, BlockState blockState, IProbeHitData data) {
             super.addProbeInfo(mode, probeInfo, player, world, blockState, data);
             Tools.safeConsume(world.getTileEntity(data.getPos()), (AICoreTile te) -> {
-                probeInfo.text(TextStyleClass.LABEL + "City: " + TextStyleClass.INFO + te.getCityName());
+                probeInfo.text(CompoundText.createLabelInfo("City: ", te.getCityName()));
             }, "Bad tile entity!");
         }
     }
@@ -101,7 +101,7 @@ public class ArienteTOPDriver implements TOPDriver {
             super.addProbeInfo(mode, probeInfo, player, world, blockState, data);
             Tools.safeConsume(world.getTileEntity(data.getPos()), (NegariteGeneratorTile te) -> {
                 if (te.isWorking()) {
-                    probeInfo.text(TextStyleClass.LABEL + "Generating: " + TextStyleClass.INFO + NegariteGeneratorTile.POWERGEN + " flux");
+                    probeInfo.text(CompoundText.createLabelInfo("Generating: ",NegariteGeneratorTile.POWERGEN + " flux"));
                 }
             }, "Bad tile entity!");
         }
@@ -113,7 +113,7 @@ public class ArienteTOPDriver implements TOPDriver {
             super.addProbeInfo(mode, probeInfo, player, world, blockState, data);
             Tools.safeConsume(world.getTileEntity(data.getPos()), (PosiriteGeneratorTile te) -> {
                 if (te.isWorking()) {
-                    probeInfo.text(TextStyleClass.LABEL + "Generating: " + TextStyleClass.INFO + PosiriteGeneratorTile.POWERGEN + " flux");
+                    probeInfo.text(CompoundText.createLabelInfo("Generating: ", PosiriteGeneratorTile.POWERGEN + " flux"));
                 }
             }, "Bad tile entity!");
         }
@@ -124,7 +124,7 @@ public class ArienteTOPDriver implements TOPDriver {
         public void addProbeInfo(ProbeMode mode, IProbeInfo probeInfo, PlayerEntity player, World world, BlockState blockState, IProbeHitData data) {
             super.addProbeInfo(mode, probeInfo, player, world, blockState, data);
             Tools.safeConsume(world.getTileEntity(data.getPos()), (SignalReceiverTile te) -> {
-                probeInfo.text(TextFormatting.GREEN + "Output: " + TextFormatting.WHITE + te.checkOutput());
+                probeInfo.text(CompoundText.create().style(WARNING).text("Output: ").style(TextStyleClass.HIGHLIGHTED).text(String.valueOf(te.checkOutput())));
             }, "Bad tile entity!");
         }
     }
@@ -135,7 +135,7 @@ public class ArienteTOPDriver implements TOPDriver {
             super.addProbeInfo(mode, probeInfo, player, world, blockState, data);
             Tools.safeConsume(world.getTileEntity(data.getPos()), (WirelessLockTile te) -> {
                 if (te.isLocked()) {
-                    probeInfo.text(TextStyleClass.WARNING + "Locked!");
+                    probeInfo.text(CompoundText.create().style(WARNING).text("Locked!"));
                 }
             }, "Bad tile entity!");
         }
@@ -146,9 +146,9 @@ public class ArienteTOPDriver implements TOPDriver {
         public void addProbeInfo(ProbeMode mode, IProbeInfo probeInfo, PlayerEntity player, World world, BlockState blockState, IProbeHitData data) {
             super.addProbeInfo(mode, probeInfo, player, world, blockState, data);
             Tools.safeConsume(world.getTileEntity(data.getPos()), (LockTile te) -> {
-                probeInfo.text(TextStyleClass.LABEL + "Key " + TextStyleClass.INFO + te.getKeyId());
+                probeInfo.text(CompoundText.createLabelInfo("Key ", te.getKeyId()));
                 if (te.isLocked()) {
-                    probeInfo.text(TextStyleClass.WARNING + "Locked!");
+                    probeInfo.text(CompoundText.create().style(WARNING).text("Locked!"));
                 }
             }, "Bad tile entity!");
         }
@@ -161,13 +161,13 @@ public class ArienteTOPDriver implements TOPDriver {
             Tools.safeConsume(world.getTileEntity(data.getPos()), (AlarmTile te) -> {
                 switch (te.getAlarmType()) {
                     case DEAD:
-                        probeInfo.text(TextStyleClass.INFO + "City eliminated!");
+                        probeInfo.text(CompoundText.create().style(INFO).text("City eliminated!"));
                         break;
                     case SAFE:
-                        probeInfo.text(TextStyleClass.INFO + "City ok");
+                        probeInfo.text(CompoundText.create().style(INFO).text("City ok"));
                         break;
                     case ALERT:
-                        probeInfo.text(TextStyleClass.INFO + "City Alert!");
+                        probeInfo.text(CompoundText.create().style(INFO).text("City Alert!"));
                         break;
                 }
             }, "Bad tile entity!");
@@ -181,10 +181,10 @@ public class ArienteTOPDriver implements TOPDriver {
             Tools.safeConsume(world.getTileEntity(data.getPos()), (StorageTile te) -> {
                 String keyId = te.getKeyId();
                 if (keyId != null && !keyId.isEmpty()) {
-                    probeInfo.text(TextStyleClass.LABEL + "Key " + TextStyleClass.INFO + keyId);
+                    probeInfo.text(CompoundText.createLabelInfo("Key ", keyId));
                 }
                 if (te.isLocked()) {
-                    probeInfo.text(TextStyleClass.WARNING + "Locked!");
+                    probeInfo.text(CompoundText.create().style(WARNING).text("Locked!"));
                 }
             }, "Bad tile entity!");
         }
@@ -196,7 +196,7 @@ public class ArienteTOPDriver implements TOPDriver {
             super.addProbeInfo(mode, probeInfo, player, world, blockState, data);
             Tools.safeConsume(world.getTileEntity(data.getPos()), (WarperTile te) -> {
                 int pct = te.getChargePercentage();
-                probeInfo.text(TextStyleClass.LABEL + "Charged: " + TextStyleClass.INFO + pct + "%");
+                probeInfo.text(CompoundText.createLabelInfo( "Charged: ", pct + "%"));
             }, "Bad tile entity!");
         }
     }
