@@ -28,6 +28,7 @@ import net.minecraft.resources.IReloadableResourceManager;
 import net.minecraft.resources.IResourceManager;
 import net.minecraft.util.ResourceLocation;
 import net.minecraftforge.api.distmarker.Dist;
+import net.minecraftforge.client.event.ModelRegistryEvent;
 import net.minecraftforge.client.event.TextureStitchEvent;
 import net.minecraftforge.client.model.ModelLoaderRegistry;
 import net.minecraftforge.common.MinecraftForge;
@@ -48,9 +49,6 @@ public class ClientRegistration {
         MinecraftForge.EVENT_BUS.register(new ClientForgeEventHandlers());
         MinecraftForge.EVENT_BUS.register(new KeyInputHandler());
         initModels();
-        // @todo 1.14
-//        ModelLoaderRegistry.registerLoader(new BakedModelLoader());
-//        ModBlocks.initItemModels();
 
         NegariteTankRenderer.register();
         PosiriteTankRenderer.register();
@@ -63,7 +61,10 @@ public class ClientRegistration {
 
         RenderTypeLookup.setRenderLayer(Registration.GLASS_FENCE.get(), RenderType.getTranslucent());
         RenderTypeLookup.setRenderLayer(Registration.BLUE_GLASS_FENCE.get(), RenderType.getTranslucent());
+    }
 
+    @SubscribeEvent
+    public static void onModelLoad(ModelRegistryEvent event) {
         ModelLoaderRegistry.registerLoader(new ResourceLocation(Ariente.MODID, "cableloader"), new CableModelLoader());
     }
 
