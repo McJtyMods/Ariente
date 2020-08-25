@@ -10,7 +10,6 @@ import mcjty.ariente.setup.ClientRegistration;
 import mcjty.ariente.setup.ModSetup;
 import mcjty.ariente.setup.Registration;
 import mcjty.hologui.api.IHoloGuiHandler;
-import mcjty.lib.base.ModBase;
 import net.minecraftforge.client.event.ColorHandlerEvent;
 import net.minecraftforge.eventbus.api.EventPriority;
 import net.minecraftforge.fml.ModLoadingContext;
@@ -20,7 +19,7 @@ import net.minecraftforge.fml.event.lifecycle.FMLCommonSetupEvent;
 import net.minecraftforge.fml.javafmlmod.FMLJavaModLoadingContext;
 
 @Mod(Ariente.MODID)
-public class Ariente implements ModBase, IArienteMod {
+public class Ariente implements IArienteMod {
     public static final String MODID = "ariente";
 
     public static ModSetup setup = new ModSetup();
@@ -52,10 +51,4 @@ public class Ariente implements ModBase, IArienteMod {
     public IArienteSystem getSystem() {
         return arienteSystem;
     }
-
-    @Override
-    public String getModId() {
-        return Ariente.MODID;
-    }
-
 }
