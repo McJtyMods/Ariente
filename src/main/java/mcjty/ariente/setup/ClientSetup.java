@@ -27,28 +27,22 @@ import net.minecraft.client.renderer.texture.AtlasTexture;
 import net.minecraft.resources.IReloadableResourceManager;
 import net.minecraft.resources.IResourceManager;
 import net.minecraft.util.ResourceLocation;
-import net.minecraftforge.api.distmarker.Dist;
 import net.minecraftforge.client.event.ModelRegistryEvent;
 import net.minecraftforge.client.event.TextureStitchEvent;
 import net.minecraftforge.client.model.ModelLoaderRegistry;
 import net.minecraftforge.common.MinecraftForge;
-import net.minecraftforge.eventbus.api.SubscribeEvent;
 import net.minecraftforge.fml.client.registry.RenderingRegistry;
-import net.minecraftforge.fml.common.Mod;
 import net.minecraftforge.fml.event.lifecycle.FMLClientSetupEvent;
 
 import static mcjty.ariente.blocks.generators.NegariteTankRenderer.NEGARITE_BEAM;
 import static mcjty.ariente.blocks.generators.PosiriteTankRenderer.POSIRITE_BEAM;
 import static mcjty.ariente.blocks.utility.ElevatorRenderer.ELEVATOR_BEAM;
 
-@Mod.EventBusSubscriber(modid = Ariente.MODID, value = Dist.CLIENT, bus = Mod.EventBusSubscriber.Bus.MOD)
-public class ClientRegistration {
+public class ClientSetup {
 
-    @SubscribeEvent
     public static void init(FMLClientSetupEvent event) {
         MinecraftForge.EVENT_BUS.register(new ClientForgeEventHandlers());
         MinecraftForge.EVENT_BUS.register(new KeyInputHandler());
-        initModels();
 
         NegariteTankRenderer.register();
         PosiriteTankRenderer.register();
@@ -63,22 +57,8 @@ public class ClientRegistration {
         RenderTypeLookup.setRenderLayer(Registration.BLUE_GLASS_FENCE.get(), RenderType.getTranslucent());
     }
 
-    @SubscribeEvent
-    public static void onModelLoad(ModelRegistryEvent event) {
+    public static void initModels(ModelRegistryEvent event) {
         ModelLoaderRegistry.registerLoader(new ResourceLocation(Ariente.MODID, "cableloader"), new CableModelLoader());
-    }
-
-    @SubscribeEvent
-    public static void onTextureStitch(TextureStitchEvent.Pre event) {
-        if (!event.getMap().getTextureLocation().equals(AtlasTexture.LOCATION_BLOCKS_TEXTURE)) {
-            return;
-        }
-        event.addSprite(NEGARITE_BEAM);
-        event.addSprite(POSIRITE_BEAM);
-        event.addSprite(ELEVATOR_BEAM);
-    }
-
-    public static void initModels() {
         RenderingRegistry.registerEntityRenderingHandler(Registration.ENTITY_LASER.get(), new LaserRender.Factory());
         RenderingRegistry.registerEntityRenderingHandler(Registration.ENTITY_DRONE.get(), DroneRender.FACTORY);
         RenderingRegistry.registerEntityRenderingHandler(Registration.ENTITY_SENTINEL_DRONE.get(), SentinelDroneRender.FACTORY);
@@ -88,6 +68,15 @@ public class ClientRegistration {
         RenderingRegistry.registerEntityRenderingHandler(Registration.ENTITY_ELEVATOR.get(), new FluxElevatorRender.Factory());
         RenderingRegistry.registerEntityRenderingHandler(Registration.ENTITY_FLUX_SHIP.get(), new FluxShipRender.Factory());
         RenderingRegistry.registerEntityRenderingHandler(Registration.ENTITY_PEARL.get(), RenderArientePearl.FACTORY);
+    }
+
+    public static void onTextureStitch(TextureStitchEvent.Pre event) {
+        if (!event.getMap().getTextureLocation().equals(AtlasTexture.LOCATION_BLOCKS_TEXTURE)) {
+            return;
+        }
+        event.addSprite(NEGARITE_BEAM);
+        event.addSprite(POSIRITE_BEAM);
+        event.addSprite(ELEVATOR_BEAM);
     }
 
     public static void setupSpriteUploader() {

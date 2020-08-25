@@ -6,7 +6,7 @@ import mcjty.ariente.api.IArienteSystem;
 import mcjty.ariente.apiimpl.ArienteSystem;
 import mcjty.ariente.config.Config;
 import mcjty.ariente.recipes.BlueprintRecipeRegistry;
-import mcjty.ariente.setup.ClientRegistration;
+import mcjty.ariente.setup.ClientSetup;
 import mcjty.ariente.setup.ModSetup;
 import mcjty.ariente.setup.Registration;
 import mcjty.hologui.api.IHoloGuiHandler;
@@ -15,7 +15,6 @@ import net.minecraftforge.eventbus.api.EventPriority;
 import net.minecraftforge.fml.ModLoadingContext;
 import net.minecraftforge.fml.common.Mod;
 import net.minecraftforge.fml.config.ModConfig;
-import net.minecraftforge.fml.event.lifecycle.FMLCommonSetupEvent;
 import net.minecraftforge.fml.javafmlmod.FMLJavaModLoadingContext;
 
 @Mod(Ariente.MODID)
@@ -42,9 +41,12 @@ public class Ariente implements IArienteMod {
         Registration.register();
         BlueprintRecipeRegistry.register();
         // The following is needed to make sure our SpriteUploader is setup at exactly the right moment
-        FMLJavaModLoadingContext.get().getModEventBus().addListener(EventPriority.NORMAL, false, ColorHandlerEvent.Block.class, event -> ClientRegistration.setupSpriteUploader());
+        FMLJavaModLoadingContext.get().getModEventBus().addListener(EventPriority.NORMAL, false, ColorHandlerEvent.Block.class, event -> ClientSetup.setupSpriteUploader());
 
-        FMLJavaModLoadingContext.get().getModEventBus().addListener((FMLCommonSetupEvent event) -> setup.init(event));
+        FMLJavaModLoadingContext.get().getModEventBus().addListener(setup::init);
+        FMLJavaModLoadingContext.get().getModEventBus().addListener(ClientSetup::init);
+        FMLJavaModLoadingContext.get().getModEventBus().addListener(ClientSetup::initModels);
+        FMLJavaModLoadingContext.get().getModEventBus().addListener(ClientSetup::onTextureStitch);
     }
 
     @Override
