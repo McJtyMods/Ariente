@@ -1,3 +1,6 @@
+Upcoming:
+- Fixed a problem on servers
+
 0.0.31-alpha:
 - Speed module no longer changes FOV and also works in flight mode
 - New hover module to hover while flying
