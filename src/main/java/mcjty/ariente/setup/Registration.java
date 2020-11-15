@@ -41,6 +41,7 @@ import mcjty.lib.blocks.BaseBlock;
 import mcjty.lib.blocks.BlockStateItem;
 import mcjty.lib.blocks.RotationType;
 import mcjty.lib.builder.BlockBuilder;
+import mcjty.lib.multipart.MultipartItemBlock;
 import net.minecraft.block.Block;
 import net.minecraft.block.BlockState;
 import net.minecraft.block.SoundType;
@@ -196,26 +197,26 @@ public class Registration {
     public static final RegistryObject<Item> FLUX_BEND_BEAM_ITEM = ITEMS.register("flux_bend_beam", () -> new BlockItem(FLUX_BEND_BEAM.get(), createStandardProperties()));
 
     public static final RegistryObject<BaseBlock> SENSOR_ITEM_NODE = BLOCKS.register("sensor_item_node", SensorItemNodeTile::createBlock);
-    public static final RegistryObject<Item> SENSOR_ITEM_NODE_ITEM = ITEMS.register("sensor_item_node", () -> new BlockItem(SENSOR_ITEM_NODE.get(), createStandardProperties()));
+    public static final RegistryObject<Item> SENSOR_ITEM_NODE_ITEM = ITEMS.register("sensor_item_node", () -> new MultipartItemBlock(SENSOR_ITEM_NODE.get()));
     public static final RegistryObject<TileEntityType<SensorItemNodeTile>> SENSOR_ITEM_TILE = TILES.register("sensor_item_node", () -> TileEntityType.Builder.create(SensorItemNodeTile::new, SENSOR_ITEM_NODE.get()).build(null));
 
     public static final RegistryObject<BaseBlock> INPUT_ITEM_NODE = BLOCKS.register("input_item_node", InputItemNodeTile::createBlock);
-    public static final RegistryObject<Item> INPUT_ITEM_NODE_ITEM = ITEMS.register("input_item_node", () -> new BlockItem(INPUT_ITEM_NODE.get(), createStandardProperties()));
+    public static final RegistryObject<Item> INPUT_ITEM_NODE_ITEM = ITEMS.register("input_item_node", () -> new MultipartItemBlock(INPUT_ITEM_NODE.get()));
     public static final RegistryObject<TileEntityType<InputItemNodeTile>> INPUT_ITEM_TILE = TILES.register("input_item_node", () -> TileEntityType.Builder.create(InputItemNodeTile::new, INPUT_ITEM_NODE.get()).build(null));
 
     public static final RegistryObject<BaseBlock> OUTPUT_ITEM_NODE = BLOCKS.register("output_item_node", () -> new BaseNodeBlock(new BlockBuilder()
             .tileEntitySupplier(OutputItemNodeTile::new)));
-    public static final RegistryObject<Item> OUTPUT_ITEM_NODE_ITEM = ITEMS.register("output_item_node", () -> new BlockItem(OUTPUT_ITEM_NODE.get(), createStandardProperties()));
+    public static final RegistryObject<Item> OUTPUT_ITEM_NODE_ITEM = ITEMS.register("output_item_node", () -> new MultipartItemBlock(OUTPUT_ITEM_NODE.get()));
     public static final RegistryObject<TileEntityType<OutputItemNodeTile>> OUTPUT_ITEM_TILE = TILES.register("output_item_node", () -> TileEntityType.Builder.create(OutputItemNodeTile::new, OUTPUT_ITEM_NODE.get()).build(null));
 
     public static final RegistryObject<BaseBlock> ROUND_ROBIN_NODE = BLOCKS.register("round_robin_node", () -> new BaseNodeBlock(new BlockBuilder()
             .topDriver(DRIVER)
             .tileEntitySupplier(RoundRobinNodeTile::new)));
-    public static final RegistryObject<Item> ROUND_ROBIN_NODE_ITEM = ITEMS.register("round_robin_node", () -> new BlockItem(ROUND_ROBIN_NODE.get(), createStandardProperties()));
+    public static final RegistryObject<Item> ROUND_ROBIN_NODE_ITEM = ITEMS.register("round_robin_node", () -> new MultipartItemBlock(ROUND_ROBIN_NODE.get()));
     public static final RegistryObject<TileEntityType<RoundRobinNodeTile>> ROUND_ROBIN_TILE = TILES.register("round_robin_node", () -> TileEntityType.Builder.create(RoundRobinNodeTile::new, ROUND_ROBIN_NODE.get()).build(null));
 
     public static final RegistryObject<BaseBlock> FIELD_MARKER = BLOCKS.register("field_marker", FieldMarkerTile::createBlock);
-    public static final RegistryObject<Item> FIELD_MARKER_ITEM = ITEMS.register("field_marker", () -> new BlockItem(FIELD_MARKER.get(), createStandardProperties()));
+    public static final RegistryObject<Item> FIELD_MARKER_ITEM = ITEMS.register("field_marker", () -> new MultipartItemBlock(FIELD_MARKER.get()));
     public static final RegistryObject<TileEntityType<FieldMarkerTile>> FIELD_MARKER_TILE = TILES.register("field_marker", () -> TileEntityType.Builder.create(FieldMarkerTile::new, ROUND_ROBIN_NODE.get()).build(null));
 
     public static final RegistryObject<RampBlock> RAMP = BLOCKS.register("ramp", RampBlock::new);
