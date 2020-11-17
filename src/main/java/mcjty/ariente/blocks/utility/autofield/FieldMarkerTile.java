@@ -16,7 +16,12 @@ import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.CompoundNBT;
 import net.minecraft.tileentity.TileEntity;
 import net.minecraft.util.Direction;
+import net.minecraft.util.math.AxisAlignedBB;
 import net.minecraft.util.math.BlockPos;
+import net.minecraft.util.math.shapes.ISelectionContext;
+import net.minecraft.util.math.shapes.VoxelShape;
+import net.minecraft.util.math.shapes.VoxelShapes;
+import net.minecraft.world.IBlockReader;
 import net.minecraft.world.World;
 
 import javax.annotation.Nonnull;
@@ -24,6 +29,9 @@ import javax.annotation.Nonnull;
 public class FieldMarkerTile extends GenericTileEntity {
 
     private BlockPos autoFieldTile = null;
+
+    public static final VoxelShape FLAT_SHAPE = VoxelShapes.create(0.0D, 0.0D, 0.0D, 1.0D, 0.1D, 1.0D);
+
 
     public FieldMarkerTile() {
         super(Registration.FIELD_MARKER_TILE.get());
@@ -42,6 +50,11 @@ public class FieldMarkerTile extends GenericTileEntity {
             @Override
             public PartSlot getSlotFromState(World world, BlockPos pos, BlockState newState) {
                 return PartSlot.DOWN;
+            }
+
+            @Override
+            public VoxelShape getShape(BlockState state, IBlockReader worldIn, BlockPos pos, ISelectionContext context) {
+                return FLAT_SHAPE;
             }
         };
     }

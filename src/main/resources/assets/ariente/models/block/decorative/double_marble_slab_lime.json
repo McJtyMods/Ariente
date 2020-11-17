@@ -1,8 +1,0 @@
-{
-  "parent": "block/cube_bottom_top",
-  "textures": {
-    "side": "ariente:block/marble/limemarble_double_slab",
-    "bottom": "ariente:block/marble/limemarble_smooth",
-    "top": "ariente:block/marble/limemarble_smooth"
-  }
-}

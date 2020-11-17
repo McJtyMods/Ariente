@@ -1,6 +1,0 @@
-{
-    "parent": "item/handheld",
-    "textures": {
-        "layer0": "ariente:item/tools/advanced_circuit"
-    }
-}
