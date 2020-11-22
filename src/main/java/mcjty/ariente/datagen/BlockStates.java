@@ -645,7 +645,7 @@ public class BlockStates extends BaseBlockStateProvider {
                 .end();
 
         nodeblock_tl = models().withExistingParent(BLOCK_FOLDER + "/base/nodeblock_topleft", mcLoc("block"));
-        nodeblock_tl.element().from(2, 2, 14).to(6, 6, 16)
+        nodeblock_tl.element().from(2, 10, 14).to(6, 14, 16)
                 .face(DOWN).uvs(0, 0, 16, 16).texture("#side").cullface(DOWN).end()
                 .face(UP).uvs(0, 0, 16, 16).texture("#side").cullface(UP).end()
                 .face(NORTH).uvs(0, 0, 16, 16).texture("#front").cullface(NORTH).end()
@@ -655,7 +655,7 @@ public class BlockStates extends BaseBlockStateProvider {
                 .end();
 
         nodeblock_tr = models().withExistingParent(BLOCK_FOLDER + "/base/nodeblock_topright", mcLoc("block"));
-        nodeblock_tr.element().from(10, 2, 14).to(14, 6, 16)
+        nodeblock_tr.element().from(10, 10, 14).to(14, 14, 16)
                 .face(DOWN).uvs(0, 0, 16, 16).texture("#side").cullface(DOWN).end()
                 .face(UP).uvs(0, 0, 16, 16).texture("#side").cullface(UP).end()
                 .face(NORTH).uvs(0, 0, 16, 16).texture("#front").cullface(NORTH).end()
@@ -665,7 +665,7 @@ public class BlockStates extends BaseBlockStateProvider {
                 .end();
 
         nodeblock_bl = models().withExistingParent(BLOCK_FOLDER + "/base/nodeblock_botleft", mcLoc("block"));
-        nodeblock_bl.element().from(2, 10, 14).to(6, 14, 16)
+        nodeblock_bl.element().from(2, 2, 14).to(6, 6, 16)
                 .face(DOWN).uvs(0, 0, 16, 16).texture("#side").cullface(DOWN).end()
                 .face(UP).uvs(0, 0, 16, 16).texture("#side").cullface(UP).end()
                 .face(NORTH).uvs(0, 0, 16, 16).texture("#front").cullface(NORTH).end()
@@ -675,7 +675,7 @@ public class BlockStates extends BaseBlockStateProvider {
                 .end();
 
         nodeblock_br = models().withExistingParent(BLOCK_FOLDER + "/base/nodeblock_botright", mcLoc("block"));
-        nodeblock_br.element().from(10, 10, 14).to(14, 14, 16)
+        nodeblock_br.element().from(10, 2, 14).to(14, 6, 16)
                 .face(DOWN).uvs(0, 0, 16, 16).texture("#side").cullface(DOWN).end()
                 .face(UP).uvs(0, 0, 16, 16).texture("#side").cullface(UP).end()
                 .face(NORTH).uvs(0, 0, 16, 16).texture("#front").cullface(NORTH).end()
@@ -744,7 +744,7 @@ public class BlockStates extends BaseBlockStateProvider {
         for (NodeOrientation orientation : NodeOrientation.VALUES) {
             ConfiguredModel.Builder<VariantBlockStateBuilder> bld = builder.partialState().with(AbstractNodeTile.ORIENTATION, orientation)
                     .modelForState().modelFile(modelMap.get(orientation.getModelSuffix()));
-            applyRotation(bld, orientation.getMainDirection());
+            applyRotation(bld, orientation.getMainDirection().getOpposite());
         }
     }
 

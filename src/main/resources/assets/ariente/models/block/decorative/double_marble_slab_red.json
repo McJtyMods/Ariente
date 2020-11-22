@@ -1,0 +1,8 @@
+{
+  "parent": "block/cube_bottom_top",
+  "textures": {
+    "side": "ariente:block/marble/redmarble_double_slab",
+    "bottom": "ariente:block/marble/redmarble_smooth",
+    "top": "ariente:block/marble/redmarble_smooth"
+  }
+}

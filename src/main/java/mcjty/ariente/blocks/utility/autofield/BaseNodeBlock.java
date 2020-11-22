@@ -44,12 +44,14 @@ public class BaseNodeBlock extends BaseBlock {
     @Nullable
     @Override
     public BlockState getStateForPlacement(BlockItemUseContext context) {
-        TileEntity te = context.getWorld().getTileEntity(context.getPos());
-        if (te instanceof SensorItemNodeTile) {
+        BlockPos pos = context.getPos();
+        TileEntity te = context.getWorld().getTileEntity(pos);
+//        if (te instanceof MultipartTE) {
             Vec3d hit = context.getHitVec();
-            return AbstractNodeTile.getStateForPlacement(this, context.getFace(), hit.x, hit.y, hit.z);
-        }
-        return super.getStateForPlacement(context);
+        return AbstractNodeTile.getStateForPlacement(this, context.getFace(),
+                hit.x - pos.getX(), hit.y - pos.getY(), hit.z - pos.getZ());
+//        }
+//        return super.getStateForPlacement(context);
     }
 
     @Nonnull
