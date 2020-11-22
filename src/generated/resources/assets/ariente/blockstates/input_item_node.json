@@ -1,35 +1,35 @@
 {
   "variants": {
     "orientation=down_ne": {
-      "model": "ariente:block/utility/input_item_node_bl",
+      "model": "ariente:block/utility/input_item_node_br",
       "x": -90
     },
     "orientation=down_nw": {
-      "model": "ariente:block/utility/input_item_node_br",
+      "model": "ariente:block/utility/input_item_node_bl",
       "x": -90
     },
     "orientation=down_se": {
-      "model": "ariente:block/utility/input_item_node_tl",
+      "model": "ariente:block/utility/input_item_node_tr",
       "x": -90
     },
     "orientation=down_sw": {
-      "model": "ariente:block/utility/input_item_node_tr",
+      "model": "ariente:block/utility/input_item_node_tl",
       "x": -90
     },
     "orientation=up_ne": {
-      "model": "ariente:block/utility/input_item_node_bl",
+      "model": "ariente:block/utility/input_item_node_tr",
       "x": 90
     },
     "orientation=up_nw": {
-      "model": "ariente:block/utility/input_item_node_br",
-      "x": 90
-    },
-    "orientation=up_se": {
       "model": "ariente:block/utility/input_item_node_tl",
       "x": 90
     },
+    "orientation=up_se": {
+      "model": "ariente:block/utility/input_item_node_br",
+      "x": 90
+    },
     "orientation=up_sw": {
-      "model": "ariente:block/utility/input_item_node_tr",
+      "model": "ariente:block/utility/input_item_node_bl",
       "x": 90
     },
     "orientation=north_de": {
@@ -49,16 +49,16 @@
       "y": 180
     },
     "orientation=south_de": {
-      "model": "ariente:block/utility/input_item_node_bl"
-    },
-    "orientation=south_dw": {
       "model": "ariente:block/utility/input_item_node_br"
     },
+    "orientation=south_dw": {
+      "model": "ariente:block/utility/input_item_node_bl"
+    },
     "orientation=south_ue": {
-      "model": "ariente:block/utility/input_item_node_tl"
+      "model": "ariente:block/utility/input_item_node_tr"
     },
     "orientation=south_uw": {
-      "model": "ariente:block/utility/input_item_node_tr"
+      "model": "ariente:block/utility/input_item_node_tl"
     },
     "orientation=west_dn": {
       "model": "ariente:block/utility/input_item_node_bl",
@@ -77,19 +77,19 @@
       "y": 90
     },
     "orientation=east_dn": {
-      "model": "ariente:block/utility/input_item_node_bl",
-      "y": 270
-    },
-    "orientation=east_ds": {
       "model": "ariente:block/utility/input_item_node_br",
       "y": 270
     },
+    "orientation=east_ds": {
+      "model": "ariente:block/utility/input_item_node_bl",
+      "y": 270
+    },
     "orientation=east_un": {
-      "model": "ariente:block/utility/input_item_node_tl",
+      "model": "ariente:block/utility/input_item_node_tr",
       "y": 270
     },
     "orientation=east_us": {
-      "model": "ariente:block/utility/input_item_node_tr",
+      "model": "ariente:block/utility/input_item_node_tl",
       "y": 270
     }
   }
