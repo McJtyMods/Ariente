@@ -453,10 +453,12 @@ public class AutoFieldTile extends GenericTileEntity implements IGuiTile, ITicka
     @Override
     public void remove() {
         super.remove();
-        for (BlockPos marker : markers) {
-            TileEntity tileEntity = world.getTileEntity(marker);
-            if (tileEntity instanceof FieldMarkerTile) {
-                ((FieldMarkerTile) tileEntity).setAutoFieldTile(null);
+        if (markers != null) {
+            for (BlockPos marker : markers) {
+                TileEntity tileEntity = world.getTileEntity(marker);
+                if (tileEntity instanceof FieldMarkerTile) {
+                    ((FieldMarkerTile) tileEntity).setAutoFieldTile(null);
+                }
             }
         }
     }

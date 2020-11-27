@@ -646,42 +646,42 @@ public class BlockStates extends BaseBlockStateProvider {
 
         nodeblock_tl = models().withExistingParent(BLOCK_FOLDER + "/base/nodeblock_topleft", mcLoc("block"));
         nodeblock_tl.element().from(2, 10, 14).to(6, 14, 16)
-                .face(DOWN).uvs(0, 0, 16, 16).texture("#side").cullface(DOWN).end()
-                .face(UP).uvs(0, 0, 16, 16).texture("#side").cullface(UP).end()
-                .face(NORTH).uvs(0, 0, 16, 16).texture("#front").cullface(NORTH).end()
-                .face(SOUTH).uvs(0, 0, 16, 16).texture("#back").cullface(SOUTH).end()
-                .face(WEST).uvs(0, 0, 16, 16).texture("#side").cullface(WEST).end()
-                .face(EAST).uvs(0, 0, 16, 16).texture("#side").cullface(EAST).end()
+                .face(DOWN).uvs(0, 0, 16, 16).texture("#side").end()
+                .face(UP).uvs(0, 0, 16, 16).texture("#side").end()
+                .face(NORTH).uvs(0, 0, 16, 16).texture("#front").end()
+                .face(SOUTH).uvs(0, 0, 16, 16).texture("#back").end()
+                .face(WEST).uvs(0, 0, 16, 16).texture("#side").end()
+                .face(EAST).uvs(0, 0, 16, 16).texture("#side").end()
                 .end();
 
         nodeblock_tr = models().withExistingParent(BLOCK_FOLDER + "/base/nodeblock_topright", mcLoc("block"));
         nodeblock_tr.element().from(10, 10, 14).to(14, 14, 16)
-                .face(DOWN).uvs(0, 0, 16, 16).texture("#side").cullface(DOWN).end()
-                .face(UP).uvs(0, 0, 16, 16).texture("#side").cullface(UP).end()
-                .face(NORTH).uvs(0, 0, 16, 16).texture("#front").cullface(NORTH).end()
-                .face(SOUTH).uvs(0, 0, 16, 16).texture("#back").cullface(SOUTH).end()
-                .face(WEST).uvs(0, 0, 16, 16).texture("#side").cullface(WEST).end()
-                .face(EAST).uvs(0, 0, 16, 16).texture("#side").cullface(EAST).end()
+                .face(DOWN).uvs(0, 0, 16, 16).texture("#side").end()
+                .face(UP).uvs(0, 0, 16, 16).texture("#side").end()
+                .face(NORTH).uvs(0, 0, 16, 16).texture("#front").end()
+                .face(SOUTH).uvs(0, 0, 16, 16).texture("#back").end()
+                .face(WEST).uvs(0, 0, 16, 16).texture("#side").end()
+                .face(EAST).uvs(0, 0, 16, 16).texture("#side").end()
                 .end();
 
         nodeblock_bl = models().withExistingParent(BLOCK_FOLDER + "/base/nodeblock_botleft", mcLoc("block"));
         nodeblock_bl.element().from(2, 2, 14).to(6, 6, 16)
-                .face(DOWN).uvs(0, 0, 16, 16).texture("#side").cullface(DOWN).end()
-                .face(UP).uvs(0, 0, 16, 16).texture("#side").cullface(UP).end()
-                .face(NORTH).uvs(0, 0, 16, 16).texture("#front").cullface(NORTH).end()
-                .face(SOUTH).uvs(0, 0, 16, 16).texture("#back").cullface(SOUTH).end()
-                .face(WEST).uvs(0, 0, 16, 16).texture("#side").cullface(WEST).end()
-                .face(EAST).uvs(0, 0, 16, 16).texture("#side").cullface(EAST).end()
+                .face(DOWN).uvs(0, 0, 16, 16).texture("#side").end()
+                .face(UP).uvs(0, 0, 16, 16).texture("#side").end()
+                .face(NORTH).uvs(0, 0, 16, 16).texture("#front").end()
+                .face(SOUTH).uvs(0, 0, 16, 16).texture("#back").end()
+                .face(WEST).uvs(0, 0, 16, 16).texture("#side").end()
+                .face(EAST).uvs(0, 0, 16, 16).texture("#side").end()
                 .end();
 
         nodeblock_br = models().withExistingParent(BLOCK_FOLDER + "/base/nodeblock_botright", mcLoc("block"));
         nodeblock_br.element().from(10, 2, 14).to(14, 6, 16)
-                .face(DOWN).uvs(0, 0, 16, 16).texture("#side").cullface(DOWN).end()
-                .face(UP).uvs(0, 0, 16, 16).texture("#side").cullface(UP).end()
-                .face(NORTH).uvs(0, 0, 16, 16).texture("#front").cullface(NORTH).end()
-                .face(SOUTH).uvs(0, 0, 16, 16).texture("#back").cullface(SOUTH).end()
-                .face(WEST).uvs(0, 0, 16, 16).texture("#side").cullface(WEST).end()
-                .face(EAST).uvs(0, 0, 16, 16).texture("#side").cullface(EAST).end()
+                .face(DOWN).uvs(0, 0, 16, 16).texture("#side").end()
+                .face(UP).uvs(0, 0, 16, 16).texture("#side").end()
+                .face(NORTH).uvs(0, 0, 16, 16).texture("#front").end()
+                .face(SOUTH).uvs(0, 0, 16, 16).texture("#back").end()
+                .face(WEST).uvs(0, 0, 16, 16).texture("#side").end()
+                .face(EAST).uvs(0, 0, 16, 16).texture("#side").end()
                 .end();
 
         empty = models().getBuilder(BLOCK_FOLDER + "/base/empty");

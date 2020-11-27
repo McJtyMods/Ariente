@@ -2,6 +2,7 @@ package mcjty.ariente.cables;
 
 import mcjty.ariente.facade.IFacadeSupport;
 import mcjty.ariente.power.PowerSenderSupport;
+import mcjty.ariente.setup.Registration;
 import mcjty.lib.compat.theoneprobe.TOPInfoProvider;
 import mcjty.lib.compat.waila.WailaInfoProvider;
 import net.minecraft.block.Block;
@@ -10,7 +11,9 @@ import net.minecraft.block.SoundType;
 import net.minecraft.block.material.Material;
 import net.minecraft.entity.LivingEntity;
 import net.minecraft.item.BlockItemUseContext;
+import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
+import net.minecraft.item.Items;
 import net.minecraft.nbt.CompoundNBT;
 import net.minecraft.state.EnumProperty;
 import net.minecraft.state.StateContainer;
@@ -67,7 +70,7 @@ public abstract class GenericCableBlock extends Block implements WailaInfoProvid
                 .hardnessAndResistance(1.0f)
                 .harvestTool(ToolType.PICKAXE)
                 .harvestLevel(0)
-            );
+        );
         makeShapes();
         setDefaultState(getDefaultState().with(COLOR, CableColor.NEGARITE));
     }
@@ -154,16 +157,24 @@ public abstract class GenericCableBlock extends Block implements WailaInfoProvid
 //        return block.onBlockActivated(world, pos, state, player, hand, facing, hitX, hitY, hitZ);
 //    }
 
-//    public static Collection<IProperty<?>> getPropertyKeys(BlockState state) {
-//        return state.getPropertyKeys();
-//    }
+    @Override
+    public ItemStack getItem(IBlockReader worldIn, BlockPos pos, BlockState state) {
+        return new ItemStack(getItem(state.get(COLOR)));
+    }
 
-    // @todo 1.14
-//    @Override
-//    public ItemStack getItem(World worldIn, BlockPos pos, BlockState state) {
-//        ItemStack item = super.getItem(worldIn, pos, state);
-//        return updateColorInStack(item, state.getValue(COLOR));
-//    }
+    protected Item getItem(CableColor color) {
+        switch (color) {
+            case NEGARITE:
+                return Registration.NETCABLE_NEGARITE.get();
+            case POSIRITE:
+                return Registration.NETCABLE_POSIRITE.get();
+            case COMBINED:
+                return Registration.NETCABLE_COMBINED.get();
+            case DATA:
+                return Registration.NETCABLE_DATA.get();
+        };
+        return Items.AIR;
+    }
 
     protected ItemStack updateColorInStack(ItemStack item, CableColor color) {
         if (color != null) {

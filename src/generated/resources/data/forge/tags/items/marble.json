@@ -2,11 +2,11 @@
   "replace": false,
   "values": [
     "ariente:marble_red",
-    "ariente:marble_white",
-    "ariente:marble_gray",
+    "ariente:marble_blue",
     "ariente:marble_darkblue",
+    "ariente:marble_white",
     "ariente:marble_lime",
     "ariente:marble_black",
-    "ariente:marble_blue"
+    "ariente:marble_gray"
   ]
 }

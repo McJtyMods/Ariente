@@ -38,12 +38,6 @@ public class NetCableBlock extends GenericCableBlock {
         return null;
     }
 
-    // @todo 1.14
-//    protected void initTileEntity() {
-//        GameRegistry.registerTileEntity(NetCableTileEntity.class, new ResourceLocation(Ariente.MODID, "netcable"));
-//    }
-
-
     @Override
     public void harvestBlock(World worldIn, PlayerEntity player, BlockPos pos, BlockState state, @Nullable TileEntity te, ItemStack stack) {
         if (te instanceof NetCableTileEntity) {
@@ -93,15 +87,6 @@ public class NetCableBlock extends GenericCableBlock {
 //        }
 //    }
 
-
-    // @todo 1.14
-//    @Override
-//    public void initModel() {
-//        super.initModel();
-//        // To make sure that our ISBM model is chosen for all states we use this custom state mapper:
-//        McJtyLib.proxy.initStateMapper(this, GenericCableBakedModel.modelCable);
-//        CableRenderer.register(NetCableTileEntity.class);
-//    }
 
     // @todo 1.14
 //    @Override

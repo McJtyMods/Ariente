@@ -50,7 +50,7 @@ public abstract class GenericCableTileEntity extends GenericTileEntity implement
         if (data.get("mimic") instanceof String) {
             Block mimic = ForgeRegistries.BLOCKS.getValue(new ResourceLocation((String) data.get("mimic")));
             if (mimic == null) {
-                System.out.println("Something went wrnog loading mimic state for: '" + data.get("mimic") + "'!");
+                System.out.println("Something went wrong loading mimic state for: '" + data.get("mimic") + "'!");
             } else {
 //                int meta = (Integer) data.get("meta");
                 // @todo 1.14 meta

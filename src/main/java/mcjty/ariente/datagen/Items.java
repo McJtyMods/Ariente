@@ -1,10 +1,12 @@
 package mcjty.ariente.datagen;
 
 import mcjty.ariente.Ariente;
+import mcjty.ariente.api.ArmorUpgradeType;
 import mcjty.ariente.api.MarbleColor;
 import mcjty.ariente.api.MarbleType;
 import mcjty.ariente.api.TechType;
 import mcjty.ariente.blocks.decorative.PatternType;
+import mcjty.ariente.items.modules.ArmorModuleItem;
 import mcjty.ariente.setup.Registration;
 import mcjty.lib.blocks.BlockStateItem;
 import mcjty.lib.datagen.BaseItemModelProvider;
@@ -97,6 +99,51 @@ public class Items extends BaseItemModelProvider {
         parentedItem(Registration.ORE_PLATINUM_ITEM.get(), "block/ores/platinum");
         parentedItem(Registration.ORE_NEGARITE_ITEM.get(), "block/ores/negarite");
         parentedItem(Registration.ORE_POSIRITE_ITEM.get(), "block/ores/posirite");
+
+        itemGenerated(Registration.INGOT_LITHIUM.get(), "item/ingots/ingot_lithium");
+        itemGenerated(Registration.INGOT_MANGANESE.get(), "item/ingots/ingot_manganese");
+        itemGenerated(Registration.INGOT_SILVER.get(), "item/ingots/ingot_silver");
+        itemGenerated(Registration.INGOT_PLATINUM.get(), "item/ingots/ingot_platinum");
+
+        itemGenerated(Registration.DUST_SILICON.get(), "item/dusts/silicon");
+        itemGenerated(Registration.DUST_NEGARITE.get(), "item/dusts/dust_negarite");
+        itemGenerated(Registration.DUST_POSIRITE.get(), "item/dusts/dust_posirite");
+
+        itemGenerated(Registration.ENERGY_HOLDER.get(), "item/tools/energy_holder");
+        itemGenerated(Registration.ENERGY_SABRE.get(), "item/weapons/energy_sabre");
+        itemGenerated(Registration.ENHANCED_ENERGY_SABRE.get(), "item/weapons/enhanced_energy_sabre");
+        itemGenerated(Registration.KEY_CARD.get(), "item/tools/key_card");
+        itemGenerated(Registration.BLUEPRINT.get(), "item/tools/blueprint");
+        itemGenerated(Registration.ARIENTE_PEARL.get(), "item/tools/ariente_pearl");
+        itemGenerated(Registration.FLUX_LEVITATOR.get(), "item/tools/flux_levitator");
+        itemGenerated(Registration.FLUX_SHIP.get(), "item/tools/flux_ship");
+        itemGenerated(Registration.FLUX_CAPACITOR.get(), "item/tools/flux_capacitor");
+        itemGenerated(Registration.CIRCUIT.get(), "item/tools/circuit");
+        itemGenerated(Registration.ADVANCED_CIRCUIT.get(), "item/tools/advanced_circuit");
+        itemGenerated(Registration.ENERGY_HOLDER.get(), "item/tools/energy_holder");
+
+        itemGenerated(Registration.POWERSUIT_CHEST.get(), "item/armor/powersuit_chest");
+        itemGenerated(Registration.POWERSUIT_FEET.get(), "item/armor/powersuit_feet");
+        itemGenerated(Registration.POWERSUIT_HEAD.get(), "item/armor/powersuit_head");
+        itemGenerated(Registration.POWERSUIT_LEGS.get(), "item/armor/powersuit_legs");
+
+        itemGenerated(Registration.MODULE_ARMOR.get(), "item/modules/module_armor");
+        itemGenerated(Registration.MODULE_ENERGY.get(), "item/modules/module_energy");
+        itemGenerated(Registration.MODULE_FEATHERFALLING.get(), "item/modules/module_featherfalling");
+        itemGenerated(Registration.MODULE_FLIGHT.get(), "item/modules/module_flight");
+        itemGenerated(Registration.MODULE_HOVER.get(), "item/modules/module_hover");
+        itemGenerated(Registration.MODULE_FORCEFIELD.get(), "item/modules/module_forcefield");
+        itemGenerated(Registration.MODULE_INVISIBILITY.get(), "item/modules/module_invisibility");
+        itemGenerated(Registration.MODULE_NIGHTVISION.get(), "item/modules/module_nightvision");
+        itemGenerated(Registration.MODULE_REGENERATION.get(), "item/modules/module_regeneration");
+        itemGenerated(Registration.MODULE_SCRAMBLE.get(), "item/modules/module_scramble");
+        itemGenerated(Registration.MODULE_AUTOFEED.get(), "item/modules/module_autofeed");
+        itemGenerated(Registration.MODULE_SPEED.get(), "item/modules/module_speed");
+        itemGenerated(Registration.MODULE_STEPASSIST.get(), "item/modules/module_stepassist");
+        itemGenerated(Registration.MODULE_INHIBIT.get(), "item/modules/module_inhibit");
+        itemGenerated(Registration.MODULE_POWER.get(), "item/modules/module_power");
+        itemGenerated(Registration.MODULE_LOOTING.get(), "item/modules/module_looting");
+        itemGenerated(Registration.MODULE_FIRE.get(), "item/modules/module_fire");
     }
 
     private void fenceItem(Item item, String texture) {

@@ -53,6 +53,7 @@ public class ClientSetup {
         CableRenderer.register(Registration.NETCABLE_TILE.get());
         CableRenderer.register(Registration.CONNECTOR_TILE.get());
 
+        RenderTypeLookup.setRenderLayer(Registration.NETCABLE.get(), (RenderType) -> true);
         RenderTypeLookup.setRenderLayer(Registration.GLASS_FENCE.get(), RenderType.getTranslucent());
         RenderTypeLookup.setRenderLayer(Registration.BLUE_GLASS_FENCE.get(), RenderType.getTranslucent());
     }

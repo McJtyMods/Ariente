@@ -13,7 +13,9 @@ import net.minecraft.block.material.Material;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.fluid.IFluidState;
 import net.minecraft.item.BlockItemUseContext;
+import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
+import net.minecraft.item.Items;
 import net.minecraft.tileentity.TileEntity;
 import net.minecraft.util.Direction;
 import net.minecraft.util.math.BlockPos;
@@ -48,6 +50,22 @@ public class ConnectorBlock extends GenericCableBlock {
         // @todo 1.14
         return null;
     }
+
+    @Override
+    protected Item getItem(CableColor color) {
+        switch (color) {
+            case NEGARITE:
+                return Registration.CONNECTOR_NEGARITE.get();
+            case POSIRITE:
+                return Registration.CONNECTOR_POSIRITE.get();
+            case COMBINED:
+                return Registration.CONNECTOR_COMBINED.get();
+            case DATA:
+                return Registration.CONNECTOR_DATA.get();
+        };
+        return Items.AIR;
+    }
+
 
     // @todo 1.14
 //    @Override

@@ -17,6 +17,7 @@ import net.minecraft.client.renderer.tileentity.TileEntityRendererDispatcher;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.tileentity.TileEntityType;
 import net.minecraft.util.ResourceLocation;
+import net.minecraft.util.math.Vec3d;
 import net.minecraftforge.fml.client.registry.ClientRegistry;
 
 import java.util.ArrayList;
@@ -131,11 +132,18 @@ public class CableRenderer extends TileEntityRenderer<GenericCableTileEntity> {
 
                 Minecraft mc = Minecraft.getInstance();
                 PlayerEntity p = mc.player;
-                double doubleX = p.lastTickPosX + (p.getPosX() - p.lastTickPosX) * partialTicks;
-                double doubleY = p.lastTickPosY + (p.getPosY() - p.lastTickPosY) * partialTicks;
-                double doubleZ = p.lastTickPosZ + (p.getPosZ() - p.lastTickPosZ) * partialTicks;
+//                double doubleX = p.lastTickPosX + (p.getPosX() - p.lastTickPosX) * partialTicks;
+//                double doubleY = p.lastTickPosY + (p.getPosY() - p.lastTickPosY) * partialTicks;
+//                double doubleZ = p.lastTickPosZ + (p.getPosZ() - p.lastTickPosZ) * partialTicks;
+                int tex = te.getPos().getX();
+                int tey = te.getPos().getY();
+                int tez = te.getPos().getZ();
+                Vec3d projectedView = Minecraft.getInstance().gameRenderer.getActiveRenderInfo().getProjectedView().add(-tex, -tey, -tez);
+//                RenderHelper.Vector start = new RenderHelper.Vector(.5f, .5f, .5f);
+//                RenderHelper.Vector end = new RenderHelper.Vector(destination.getX() - tex + .5f, destination.getY() - tey + .5f, destination.getZ() - tez + .5f);
+                RenderHelper.Vector player = new RenderHelper.Vector((float)projectedView.x, (float)projectedView.y, (float)projectedView.z);
 
-                RenderHelper.Vector player = new RenderHelper.Vector((float) doubleX - te.getPos().getX(), (float) doubleY + p.getEyeHeight() - te.getPos().getY(), (float) doubleZ - te.getPos().getZ());
+//                RenderHelper.Vector player = new RenderHelper.Vector((float) doubleX - te.getPos().getX(), (float) doubleY + p.getEyeHeight() - te.getPos().getY(), (float) doubleZ - te.getPos().getZ());
 
                 Matrix4f matrix = matrixStack.getLast().getMatrix();
                 TextureAtlasSprite sprite = ArienteSpriteUploader.INSTANCE.getSprite(txt);
