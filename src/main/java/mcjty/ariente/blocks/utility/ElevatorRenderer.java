@@ -12,8 +12,8 @@ import net.minecraft.client.renderer.texture.AtlasTexture;
 import net.minecraft.client.renderer.texture.TextureAtlasSprite;
 import net.minecraft.client.renderer.tileentity.TileEntityRenderer;
 import net.minecraft.client.renderer.tileentity.TileEntityRendererDispatcher;
-import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.util.ResourceLocation;
+import net.minecraft.util.math.Vec3d;
 import net.minecraftforge.fml.client.registry.ClientRegistry;
 
 import java.util.Random;
@@ -35,13 +35,11 @@ public class ElevatorRenderer extends TileEntityRenderer<ElevatorTile> {
     public void render(ElevatorTile te, float partialTicks, MatrixStack matrixStack, IRenderTypeBuffer buffer, int combinedLightIn, int combinedOverlayIn) {
         TextureAtlasSprite sprite = Minecraft.getInstance().getAtlasSpriteGetter(AtlasTexture.LOCATION_BLOCKS_TEXTURE).apply(ELEVATOR_BEAM);
 
-        Minecraft mc = Minecraft.getInstance();
-        PlayerEntity p = mc.player;
-        double doubleX = p.lastTickPosX + (p.getPosX() - p.lastTickPosX) * partialTicks;
-        double doubleY = p.lastTickPosY + (p.getPosY() - p.lastTickPosY) * partialTicks;
-        double doubleZ = p.lastTickPosZ + (p.getPosZ() - p.lastTickPosZ) * partialTicks;
-
-        RenderHelper.Vector player = new RenderHelper.Vector((float) doubleX - te.getPos().getX(), (float) doubleY + p.getEyeHeight() - te.getPos().getY(), (float) doubleZ - te.getPos().getZ());
+        int tex = te.getPos().getX();
+        int tey = te.getPos().getY();
+        int tez = te.getPos().getZ();
+        Vec3d projectedView = Minecraft.getInstance().gameRenderer.getActiveRenderInfo().getProjectedView().add(-tex, -tey, -tez);
+        RenderHelper.Vector player = new RenderHelper.Vector((float)projectedView.x, (float)projectedView.y, (float)projectedView.z);
 
         long tt = System.currentTimeMillis() / 100;
 
