@@ -19,10 +19,7 @@ import mcjty.ariente.blocks.utility.wireless.SignalReceiverTile;
 import mcjty.ariente.blocks.utility.wireless.SignalTransmitterTile;
 import mcjty.ariente.blocks.utility.wireless.WirelessButtonTile;
 import mcjty.ariente.blocks.utility.wireless.WirelessLockTile;
-import mcjty.ariente.cables.ConnectorBlock;
-import mcjty.ariente.cables.ConnectorTileEntity;
-import mcjty.ariente.cables.NetCableBlock;
-import mcjty.ariente.cables.NetCableTileEntity;
+import mcjty.ariente.cables.*;
 import mcjty.ariente.entities.EntityArientePearl;
 import mcjty.ariente.entities.LaserEntity;
 import mcjty.ariente.entities.drone.DroneEntity;
@@ -357,14 +354,14 @@ public class Registration {
     public static final RegistryObject<NetCableBlock> NETCABLE = BLOCKS.register("netcable", NetCableBlock::new);
     public static final RegistryObject<ConnectorBlock> CONNECTOR = BLOCKS.register("connector", ConnectorBlock::new);
 
-    public static final RegistryObject<Item> NETCABLE_NEGARITE = ITEMS.register("netcable_negarite", () -> new BlockItem(NETCABLE.get(), createStandardProperties()));
-    public static final RegistryObject<Item> NETCABLE_POSIRITE = ITEMS.register("netcable_posirite", () -> new BlockItem(NETCABLE.get(), createStandardProperties()));
-    public static final RegistryObject<Item> NETCABLE_COMBINED = ITEMS.register("netcable_combined", () -> new BlockItem(NETCABLE.get(), createStandardProperties()));
-    public static final RegistryObject<Item> NETCABLE_DATA = ITEMS.register("netcable_data", () -> new BlockItem(NETCABLE.get(), createStandardProperties()));
-    public static final RegistryObject<Item> CONNECTOR_NEGARITE = ITEMS.register("connector_negarite", () -> new BlockItem(CONNECTOR.get(), createStandardProperties()));
-    public static final RegistryObject<Item> CONNECTOR_POSIRITE = ITEMS.register("connector_posirite", () -> new BlockItem(CONNECTOR.get(), createStandardProperties()));
-    public static final RegistryObject<Item> CONNECTOR_COMBINED = ITEMS.register("connector_combined", () -> new BlockItem(CONNECTOR.get(), createStandardProperties()));
-    public static final RegistryObject<Item> CONNECTOR_DATA = ITEMS.register("connector_data", () -> new BlockItem(CONNECTOR.get(), createStandardProperties()));
+    public static final RegistryObject<Item> NETCABLE_NEGARITE = ITEMS.register("netcable_negarite", () -> new CableBlockItem(NETCABLE.get(), createStandardProperties(), CableColor.NEGARITE));
+    public static final RegistryObject<Item> NETCABLE_POSIRITE = ITEMS.register("netcable_posirite", () -> new CableBlockItem(NETCABLE.get(), createStandardProperties(), CableColor.POSIRITE));
+    public static final RegistryObject<Item> NETCABLE_COMBINED = ITEMS.register("netcable_combined", () -> new CableBlockItem(NETCABLE.get(), createStandardProperties(), CableColor.COMBINED));
+    public static final RegistryObject<Item> NETCABLE_DATA = ITEMS.register("netcable_data", () -> new CableBlockItem(NETCABLE.get(), createStandardProperties(), CableColor.DATA));
+    public static final RegistryObject<Item> CONNECTOR_NEGARITE = ITEMS.register("connector_negarite", () -> new CableBlockItem(CONNECTOR.get(), createStandardProperties(), CableColor.NEGARITE));
+    public static final RegistryObject<Item> CONNECTOR_POSIRITE = ITEMS.register("connector_posirite", () -> new CableBlockItem(CONNECTOR.get(), createStandardProperties(), CableColor.POSIRITE));
+    public static final RegistryObject<Item> CONNECTOR_COMBINED = ITEMS.register("connector_combined", () -> new CableBlockItem(CONNECTOR.get(), createStandardProperties(), CableColor.COMBINED));
+    public static final RegistryObject<Item> CONNECTOR_DATA = ITEMS.register("connector_data", () -> new CableBlockItem(CONNECTOR.get(), createStandardProperties(), CableColor.DATA));
 
     public static final RegistryObject<TileEntityType<NetCableTileEntity>> NETCABLE_TILE = TILES.register("netcable", () -> TileEntityType.Builder.create(NetCableTileEntity::new, NETCABLE.get()).build(null));
     public static final RegistryObject<TileEntityType<ConnectorTileEntity>> CONNECTOR_TILE = TILES.register("connector", () -> TileEntityType.Builder.create(ConnectorTileEntity::new, CONNECTOR.get()).build(null));
