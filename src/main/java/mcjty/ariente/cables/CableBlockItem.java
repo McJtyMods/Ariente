@@ -1,7 +1,6 @@
 package mcjty.ariente.cables;
 
 import mcjty.ariente.Ariente;
-import mcjty.ariente.setup.Registration;
 import net.minecraft.block.Block;
 import net.minecraft.block.BlockState;
 import net.minecraft.item.BlockItem;
@@ -42,14 +41,7 @@ public class CableBlockItem extends BlockItem {
     @Override
     public void fillItemGroup(ItemGroup group, NonNullList<ItemStack> items) {
         if (Ariente.setup.getTab().equals(group)) {
-            items.add(new ItemStack(Registration.NETCABLE_NEGARITE.get()));
-            items.add(new ItemStack(Registration.NETCABLE_POSIRITE.get()));
-            items.add(new ItemStack(Registration.NETCABLE_COMBINED.get()));
-            items.add(new ItemStack(Registration.NETCABLE_DATA.get()));
-            items.add(new ItemStack(Registration.CONNECTOR_NEGARITE.get()));
-            items.add(new ItemStack(Registration.CONNECTOR_POSIRITE.get()));
-            items.add(new ItemStack(Registration.CONNECTOR_COMBINED.get()));
-            items.add(new ItemStack(Registration.CONNECTOR_DATA.get()));
+            items.add(new ItemStack(this));
         }
     }
 }

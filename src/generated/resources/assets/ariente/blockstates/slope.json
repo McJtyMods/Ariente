@@ -1,0 +1,38 @@
+{
+  "variants": {
+    "facing=north": {
+      "model": "ariente:block/slope"
+    },
+    "facing=south": {
+      "model": "ariente:block/slope",
+      "y": 180
+    },
+    "facing=west": {
+      "model": "ariente:block/slope",
+      "y": 270
+    },
+    "facing=east": {
+      "model": "ariente:block/slope",
+      "y": 90
+    },
+    "facing=north_up": {
+      "model": "ariente:block/slope",
+      "x": 180
+    },
+    "facing=south_up": {
+      "model": "ariente:block/slope",
+      "x": 180,
+      "y": 180
+    },
+    "facing=west_up": {
+      "model": "ariente:block/slope",
+      "x": 180,
+      "y": 270
+    },
+    "facing=east_up": {
+      "model": "ariente:block/slope",
+      "x": 180,
+      "y": 90
+    }
+  }
+}

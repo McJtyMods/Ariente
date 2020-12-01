@@ -219,7 +219,6 @@ public class Registration {
     public static final RegistryObject<RampBlock> RAMP = BLOCKS.register("ramp", RampBlock::new);
     public static final RegistryObject<Item> RAMP_ITEM = ITEMS.register("ramp", () -> new BlockItem(RAMP.get(), createStandardProperties()));
 
-    // @todo slope model!
     public static final RegistryObject<SlopeBlock> SLOPE = BLOCKS.register("slope", SlopeBlock::new);
     public static final RegistryObject<Item> SLOPE_ITEM = ITEMS.register("slope", () -> new BlockItem(SLOPE.get(), createStandardProperties()));
 

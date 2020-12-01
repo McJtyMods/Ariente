@@ -1,0 +1,6 @@
+{
+  "parent": "block/cube",
+  "loader": "forge:obj",
+  "model": "ariente:models/block/slope.obj",
+  "flip-v": true
+}

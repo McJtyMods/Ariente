@@ -1,0 +1,6 @@
+{
+  "parent": "ariente:block/mediumblock",
+  "textures": {
+    "all": "ariente:block/cables/negarite/connector"
+  }
+}

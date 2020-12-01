@@ -1,10 +1,7 @@
 package mcjty.ariente.datagen;
 
 import mcjty.ariente.Ariente;
-import mcjty.ariente.api.AlarmType;
-import mcjty.ariente.api.MarbleColor;
-import mcjty.ariente.api.MarbleType;
-import mcjty.ariente.api.TechType;
+import mcjty.ariente.api.*;
 import mcjty.ariente.blocks.BlockProperties;
 import mcjty.ariente.blocks.decorative.PatternBlock;
 import mcjty.ariente.blocks.decorative.PatternType;
@@ -128,11 +125,8 @@ public class BlockStates extends BaseBlockStateProvider {
         registerSignalReceiver();
         registerSignalTransmitter();
         registerFlatLight();
+        registerSlope();
 
-        // @todo 1.15 datagen for cable loader
-//        simpleBlock(Registration.NETCABLE.get(), empty);
-//        simpleBlock(Registration.FACADE.get(), empty);
-//        simpleBlock(Registration.CONNECTOR.get(), empty);
         simpleBlock(Registration.INVISIBLE_DOOR.get(), empty);
 
         registerTank(Registration.NEGARITE_TANK.get(), "negarite");
@@ -149,6 +143,45 @@ public class BlockStates extends BaseBlockStateProvider {
         registerHorizontalParentedBlock(Registration.BLUEPRINT_STORAGE.get(), front, "machines/blueprint_storage", TXT_BLUEPRINT_STORAGE);
         registerHorizontalParentedBlock(Registration.CONSTRUCTOR.get(), frontglow, "machines/constructor", TXT_CONSTRUCTOR);
         registerOrientedParentedBlock(Registration.POWER_COMBINER.get(), frontglow, "machines/power_combiner", TXT_POWER_COMBINER);
+    }
+
+    private void registerSlope() {
+        ModelFile model = models().getExistingFile(modLoc("block/slope"));
+        VariantBlockStateBuilder builder = getVariantBuilder(Registration.SLOPE.get());
+        builder.partialState().with(EnumFacingUpDown.FACING, EnumFacingUpDown.NORTH)
+                .modelForState().modelFile(model)
+                .addModel();
+        builder.partialState().with(EnumFacingUpDown.FACING, EnumFacingUpDown.SOUTH)
+                .modelForState().modelFile(model)
+                .rotationY(180)
+                .addModel();
+        builder.partialState().with(EnumFacingUpDown.FACING, EnumFacingUpDown.WEST)
+                .modelForState().modelFile(model)
+                .rotationY(270)
+                .addModel();
+        builder.partialState().with(EnumFacingUpDown.FACING, EnumFacingUpDown.EAST)
+                .modelForState().modelFile(model)
+                .rotationY(90)
+                .addModel();
+        builder.partialState().with(EnumFacingUpDown.FACING, EnumFacingUpDown.NORTH_UP)
+                .modelForState().modelFile(model)
+                .rotationX(180)
+                .addModel();
+        builder.partialState().with(EnumFacingUpDown.FACING, EnumFacingUpDown.SOUTH_UP)
+                .modelForState().modelFile(model)
+                .rotationX(180)
+                .rotationY(180)
+                .addModel();
+        builder.partialState().with(EnumFacingUpDown.FACING, EnumFacingUpDown.WEST_UP)
+                .modelForState().modelFile(model)
+                .rotationX(180)
+                .rotationY(270)
+                .addModel();
+        builder.partialState().with(EnumFacingUpDown.FACING, EnumFacingUpDown.EAST_UP)
+                .modelForState().modelFile(model)
+                .rotationX(180)
+                .rotationY(90)
+                .addModel();
     }
 
     private void registerFlatLight() {

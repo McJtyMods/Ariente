@@ -1,12 +1,10 @@
 package mcjty.ariente.datagen;
 
 import mcjty.ariente.Ariente;
-import mcjty.ariente.api.ArmorUpgradeType;
 import mcjty.ariente.api.MarbleColor;
 import mcjty.ariente.api.MarbleType;
 import mcjty.ariente.api.TechType;
 import mcjty.ariente.blocks.decorative.PatternType;
-import mcjty.ariente.items.modules.ArmorModuleItem;
 import mcjty.ariente.setup.Registration;
 import mcjty.lib.blocks.BlockStateItem;
 import mcjty.lib.datagen.BaseItemModelProvider;
@@ -40,6 +38,19 @@ public class Items extends BaseItemModelProvider {
         parentedItem(Registration.AUTOMATION_FIELD_ITEM.get(), "block/machines/automation_field");
         parentedItem(Registration.BLUEPRINT_STORAGE_ITEM.get(), "block/machines/blueprint_storage");
         parentedItem(Registration.POWER_COMBINER_ITEM.get(), "block/machines/power_combiner");
+
+        getBuilder(Registration.NETCABLE_POSIRITE.get().getRegistryName().getPath())
+                .parent(new ModelFile.UncheckedModelFile(modLoc("block/smallblock")))
+                .texture("all", modLoc("block/cables/posirite/connector"));
+
+        cableItem(Registration.NETCABLE_POSIRITE.get(), "posirite");
+        cableItem(Registration.NETCABLE_NEGARITE.get(), "negarite");
+        cableItem(Registration.NETCABLE_COMBINED.get(), "combined");
+        cableItem(Registration.NETCABLE_DATA.get(), "data");
+        connectorItem(Registration.CONNECTOR_POSIRITE.get(), "posirite");
+        connectorItem(Registration.CONNECTOR_NEGARITE.get(), "negarite");
+        connectorItem(Registration.CONNECTOR_COMBINED.get(), "combined");
+        connectorItem(Registration.CONNECTOR_DATA.get(), "data");
 
         for (Map.Entry<TechType, RegistryObject<BlockStateItem>> entry : Registration.BLACK_TECH_ITEMS.entrySet()) {
             parentedItem(entry.getValue().get(), "block/decorative/blacktech_" + entry.getKey().getName());
@@ -91,6 +102,7 @@ public class Items extends BaseItemModelProvider {
         parentedItem(Registration.ELEVATOR_ITEM.get(), "block/utility/elevator");
         parentedItem(Registration.FORCEFIELD_ITEM.get(), "block/machines/forcefield");
         parentedItem(Registration.WARPER_ITEM.get(), "block/utility/warper");
+        parentedItem(Registration.SLOPE_ITEM.get(), "block/slope");
 
         parentedItem(Registration.ORE_LITHIUM_ITEM.get(), "block/ores/lithium");
         parentedItem(Registration.ORE_MANGANESE_ITEM.get(), "block/ores/manganese");
@@ -144,6 +156,18 @@ public class Items extends BaseItemModelProvider {
         itemGenerated(Registration.MODULE_POWER.get(), "item/modules/module_power");
         itemGenerated(Registration.MODULE_LOOTING.get(), "item/modules/module_looting");
         itemGenerated(Registration.MODULE_FIRE.get(), "item/modules/module_fire");
+    }
+
+    private void cableItem(Item item, String type) {
+        getBuilder(item.getRegistryName().getPath())
+                .parent(new ModelFile.UncheckedModelFile(modLoc("block/smallblock")))
+                .texture("all", modLoc("block/cables/" + type + "/cable_item"));
+    }
+
+    private void connectorItem(Item item, String type) {
+        getBuilder(item.getRegistryName().getPath())
+                .parent(new ModelFile.UncheckedModelFile(modLoc("block/mediumblock")))
+                .texture("all", modLoc("block/cables/" + type + "/connector"));
     }
 
     private void fenceItem(Item item, String texture) {

@@ -1,0 +1,6 @@
+{
+  "parent": "ariente:block/smallblock",
+  "textures": {
+    "all": "ariente:block/cables/negarite/cable_item"
+  }
+}
