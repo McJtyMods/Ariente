@@ -162,7 +162,9 @@ dependencies {
     if (findProject(':McJtyLib') != null) {
         compile project(':McJtyLib')
     } else {
-        compileOnly fg.deobf("com.github.mcjty:mcjtylib:${mcjtylib_version}:api")
+        compileOnly fg.deobf("com.github.mcjty:mcjtylib:${mcjtylib_version}")
+        // API version appears to be an empty jar file
+        // compileOnly fg.deobf("com.github.mcjty:mcjtylib:${mcjtylib_version}:api")
         runtimeOnly fg.deobf("com.github.mcjty:mcjtylib:${mcjtylib_version}")
     }
     // if (findProject(':HoloGui') != null) {
