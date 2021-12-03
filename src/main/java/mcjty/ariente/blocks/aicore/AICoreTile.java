@@ -77,7 +77,7 @@ public class AICoreTile extends GenericTileEntity implements ITickableTileEntity
 
     private ChunkPos getCityCenter() {
         if (cityCenter == null) {
-            cityCenter = BlockPosTools.getChunkCoordFromPos(worldPosition);
+            cityCenter = new ChunkPos(worldPosition.getX() >> 4, worldPosition.getZ() >> 4);
             // @todo check if Ariente World is there!
             cityCenter = ArienteWorldCompat.getArienteWorld().getNearestCityCenter(cityCenter);
         }

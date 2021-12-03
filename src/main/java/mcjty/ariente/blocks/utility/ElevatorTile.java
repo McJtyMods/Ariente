@@ -16,6 +16,7 @@ import mcjty.lib.blocks.RotationType;
 import mcjty.lib.builder.BlockBuilder;
 import mcjty.lib.tileentity.GenericTileEntity;
 import net.minecraft.block.BlockState;
+import net.minecraft.client.Minecraft;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.nbt.CompoundNBT;
@@ -108,7 +109,7 @@ public class ElevatorTile extends GenericTileEntity implements IGuiTile, ITickab
                     double motionY;
                     if (clientPlayer.isShiftKeyDown()) {
                         motionY = -0.7;
-                    } else if (McJtyLib.proxy.isJumpKeyDown()) {
+                    } else if (isJumpKeyDown()) {
                         motionY = 0.5;
                     } else {
                         motionY = 0.0;
@@ -121,7 +122,7 @@ public class ElevatorTile extends GenericTileEntity implements IGuiTile, ITickab
                             moveToFloor = findLowerFloor(floors, (int) clientPlayer.getY());
                             System.out.println("DOWN: moveToFloor = " + moveToFloor);
                             clientPlayer.setPos(worldPosition.getX() + .5, clientPlayer.getY(), worldPosition.getZ() + .5);
-                        } else if (McJtyLib.proxy.isJumpKeyDown()) {
+                        } else if (isJumpKeyDown()) {
                             moveToFloor = findUpperFloor(floors, (int) clientPlayer.getY());
                             System.out.println("UP: moveToFloor = " + moveToFloor);
                             clientPlayer.setPos(worldPosition.getX() + .5, clientPlayer.getY(), worldPosition.getZ() + .5);
@@ -153,6 +154,11 @@ public class ElevatorTile extends GenericTileEntity implements IGuiTile, ITickab
                 moveToFloor = -1;
             }
         }
+    }
+
+    private boolean isJumpKeyDown() {
+        // Was McJtyLib.proxy.isJumpKeyDown()
+        return Minecraft.getInstance().options.keyJump.isDown();
     }
 
     private int findLowerFloor(List<Integer> floors, int y) {
