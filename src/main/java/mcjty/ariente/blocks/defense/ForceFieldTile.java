@@ -218,12 +218,12 @@ public class ForceFieldTile extends GenericTileEntity implements IGuiTile, ITick
 
         List<Entity> entities = world.getEntitiesWithinAABB(Entity.class, getShieldAABB(), entity -> {
             if (entity instanceof ProjectileEntity) {
-                Vector3d entityPos = entity.position();
+                Vector3d entityPos = entity.getPositionVec();
                 double squareDist = fieldCenter.squareDistanceTo(entityPos);
                 if (Math.abs(squareDist - squaredRadius) < 10 * 10) {
                     return true;
                 }
-                entityPos = new Vector3d((entity.getX() + entity.xOld) / 2.0, (entity.getY() + entity.yOld) / 2.0, (entity.getZ() + entity.zOld) / 2.0);
+                entityPos = new Vector3d((entity.getPosX() + entity.prevPosX) / 2.0, (entity.getPosY() + entity.prevPosY) / 2.0, (entity.getPosZ() + entity.prevPosZ) / 2.0);
                 squareDist = fieldCenter.squareDistanceTo(entityPos);
                 if (Math.abs(squareDist - squaredRadius) < 10 * 10) {
                     return true;
@@ -258,8 +258,8 @@ public class ForceFieldTile extends GenericTileEntity implements IGuiTile, ITick
 
         for (Entity entity : entities) {
             if (entity instanceof ProjectileEntity) {
-                Vector3d p1 = new Vector3d(entity.xOld, entity.yOld, entity.zOld);
-                Vector3d p2 = new Vector3d(entity.getX(), entity.getY(), entity.getZ());
+                Vector3d p1 = new Vector3d(entity.prevPosX, entity.prevPosY, entity.prevPosZ);
+                Vector3d p2 = entity.getPositionVec();
                 for (PanelInfo info : getPanelInfo()) {
                     if (info != null && info.getLife() > 0) {
                         Vector3d intersection = info.testCollisionSegment(p1, p2, getScaleDouble());
@@ -271,7 +271,7 @@ public class ForceFieldTile extends GenericTileEntity implements IGuiTile, ITick
                             if (life <= 0) {
                                 panelDestroyTimeout[info.getIndex()] = 100;
                                 panelInfo[info.getIndex()] = null;
-                                world.createExplosion(entity, entity.getX(), entity.getY(), entity.getZ(), 2.0f, false, Explosion.Mode.DESTROY);
+                                world.createExplosion(entity, entity.getPosX(), entity.getPosY(), entity.getPosZ(), 2.0f, false, Explosion.Mode.DESTROY);
                             } else {
                                 info.setLife(life);
                                 System.out.println("life = " + life + " (index " + info.getIndex() + ")");
@@ -287,7 +287,7 @@ public class ForceFieldTile extends GenericTileEntity implements IGuiTile, ITick
                                     }
                                 }
 
-                                ArienteMessages.INSTANCE.send(PacketDistributor.DIMENSION.with(() -> world.getDimension().getType()),
+                                ArienteMessages.INSTANCE.send(PacketDistributor.DIMENSION.with(() -> world.getDimensionKey()),
                                         new PacketDamageForcefield(pos, info.getIndex(), intersection));
                             }
                             changed = true;
@@ -299,7 +299,7 @@ public class ForceFieldTile extends GenericTileEntity implements IGuiTile, ITick
                     if (info != null && info.getLife() > 0) {
                         if (info.testCollisionEntity(entity, getScaleDouble())) {
                             entity.attackEntityFrom(DamageSource.GENERIC, (float) (double) DamageConfiguration.FORCEFIELD_DAMAGE.get());
-                            ((LivingEntity)entity).knockBack(entity, 1.0f, pos.getX() - entity.getPosX(), pos.getZ() - entity.getPosZ());
+                            ((LivingEntity)entity).applyKnockback(1.0f, pos.getX() - entity.getPosX(), pos.getZ() - entity.getPosZ());
                         }
                     }
                 }
@@ -312,15 +312,10 @@ public class ForceFieldTile extends GenericTileEntity implements IGuiTile, ITick
 
     @Nullable
     private PlayerEntity determineAttacker(Entity entity) {
-        if (entity instanceof ArrowEntity) {
-            Entity shootingEntity = ((ArrowEntity) entity).getShooter();
+        if (entity instanceof ProjectileEntity) {
+            Entity shootingEntity = ((ProjectileEntity) entity).getShooter();
             if (shootingEntity instanceof PlayerEntity) {
                 return (PlayerEntity) shootingEntity;
-            }
-        } else if (entity instanceof ThrowableEntity) {
-            LivingEntity thrower = ((ThrowableEntity) entity).getThrower();
-            if (thrower instanceof PlayerEntity) {
-                return (PlayerEntity) thrower;
             }
         } else if (entity instanceof PlayerEntity) {
             return (PlayerEntity) entity;

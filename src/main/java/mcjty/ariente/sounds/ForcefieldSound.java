@@ -35,7 +35,7 @@ public class ForcefieldSound extends TickableSound {
     public void tick() {
         TileEntity te = world.getTileEntity(pos);
         if (!(te instanceof ISoundProducer)) {
-            donePlaying = true;
+            finishPlaying();
             return;
         }
 //        if (ticksRemaining != -1) {

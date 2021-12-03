@@ -38,7 +38,7 @@ public class EntityAISoldierAttack extends MeleeAttackGoal {
         super.tick();
         ++this.raiseArmTicks;
 
-        if (this.raiseArmTicks >= 5 && this.attackTick < 10) {
+        if (this.raiseArmTicks >= 5 && this.getSwingCooldown() < 10) {
             this.raisable.setArmsRaised(true);
         } else {
             this.raisable.setArmsRaised(false);

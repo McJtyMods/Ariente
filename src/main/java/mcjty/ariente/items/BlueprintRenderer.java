@@ -19,7 +19,7 @@ public class BlueprintRenderer extends ItemStackTileEntityRenderer {
 
 
     @Override
-    public void render(ItemStack stack, MatrixStack matrixStack, IRenderTypeBuffer buffer, int combinedLightIn, int combinedOverlayIn) {
+    public void func_239207_a_(ItemStack stack, ItemCameraTransforms.TransformType p_239207_2_, MatrixStack matrixStack, IRenderTypeBuffer buffer, int combinedLightIn, int combinedOverlayIn) {
         matrixStack.push();
 
         // Render our item

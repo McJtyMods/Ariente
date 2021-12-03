@@ -52,7 +52,7 @@ public class FacadeItemBlock extends BlockItem implements ITooltipSettings {
             if (value != null) {
                 ItemStack s = new ItemStack(value, 1);
                 if (s.getItem() != null) {
-                    return s.getDisplayName().getFormattedText();
+                    return s.getDisplayName().getString();
                 }
             }
         }

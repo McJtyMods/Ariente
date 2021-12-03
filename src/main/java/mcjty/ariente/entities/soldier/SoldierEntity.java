@@ -13,6 +13,7 @@ import net.minecraft.block.SoundType;
 import net.minecraft.entity.EntityType;
 import net.minecraft.entity.LivingEntity;
 import net.minecraft.entity.ai.attributes.Attributes;
+import net.minecraft.entity.ai.attributes.AttributeModifierMap;
 import net.minecraft.entity.ai.goal.*;
 import net.minecraft.entity.monster.MonsterEntity;
 import net.minecraft.entity.monster.ZombifiedPiglinEntity;
@@ -122,19 +123,15 @@ public class SoldierEntity extends MonsterEntity implements IArmRaisable, IForce
     }
 //            this.getAttributes().registerAttribute(Attributes.FOLLOW_RANGE).setBaseValue(16.0D);
 
-    @Override
-    protected void registerAttributes() {
-        super.registerAttributes();
-        this.getAttribute(Attributes.FOLLOW_RANGE).setBaseValue(35.0D);
-        this.getAttribute(Attributes.MOVEMENT_SPEED).setBaseValue(0.32D);
-        if (isMaster()) {
-            this.getAttribute(Attributes.MAX_HEALTH).setBaseValue(150.0D);
-            this.getAttribute(Attributes.ATTACK_DAMAGE).setBaseValue(8.0D);
-            this.getAttribute(Attributes.ARMOR).setBaseValue(6.0D);
-        } else {
-            this.getAttribute(Attributes.ATTACK_DAMAGE).setBaseValue(4.0D);
-            this.getAttribute(Attributes.ARMOR).setBaseValue(4.0D);
-        }
+    public static AttributeModifierMap.MutableAttribute registerAttributes() {
+        AttributeModifierMap.MutableAttribute attributes = LivingEntity.registerAttributes();
+        attributes
+            .createMutableAttribute(Attributes.FOLLOW_RANGE, 35.0D)
+            .createMutableAttribute(Attributes.MOVEMENT_SPEED, 0.32D)
+            .createMutableAttribute(Attributes.ATTACK_DAMAGE, 4.0D)
+            .createMutableAttribute(Attributes.ARMOR, 4.0D);
+
+        return attributes;
     }
 
     public SoldierBehaviourType getBehaviourType() {

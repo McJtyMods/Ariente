@@ -181,7 +181,7 @@ public abstract class GenericCableBlock extends Block implements WailaInfoProvid
             CompoundNBT tag = item.getOrCreateTag();
             CompoundNBT display = new CompoundNBT();
             // @todo 1.14 check
-            String unlocname = getTranslationKey() + "_" + color.getName() + ".name";
+            String unlocname = getTranslationKey() + "_" + color.getString() + ".name";
             display.putString("LocName", unlocname);
             tag.put("display", display);
         }

@@ -2,7 +2,10 @@ package mcjty.ariente.entities.soldier;
 
 import mcjty.ariente.api.SoldierBehaviourType;
 import mcjty.ariente.setup.Registration;
+import net.minecraft.entity.LivingEntity;
 import net.minecraft.entity.EntityType;
+import net.minecraft.entity.ai.attributes.Attributes;
+import net.minecraft.entity.ai.attributes.AttributeModifierMap;
 import net.minecraft.entity.monster.MonsterEntity;
 import net.minecraft.nbt.CompoundNBT;
 import net.minecraft.potion.EffectInstance;
@@ -28,6 +31,18 @@ public class MasterSoldierEntity extends SoldierEntity {
         // @todo 1.14 move to type
 //        isImmuneToFire = true;
         return entity;
+    }
+
+    public static AttributeModifierMap.MutableAttribute registerAttributes() {
+        AttributeModifierMap.MutableAttribute attributes = LivingEntity.registerAttributes();
+        attributes
+            .createMutableAttribute(Attributes.FOLLOW_RANGE, 35.0D)
+            .createMutableAttribute(Attributes.MOVEMENT_SPEED, 0.32D)
+            .createMutableAttribute(Attributes.MAX_HEALTH, 150.0D)
+            .createMutableAttribute(Attributes.ATTACK_DAMAGE, 8.0D)
+            .createMutableAttribute(Attributes.ARMOR, 6.0D);
+
+        return attributes;
     }
 
     @Override

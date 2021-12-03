@@ -33,7 +33,7 @@ public class MovingSoundLevitatorRiding extends TickableSound {
                 this.volume = 0.0F;
             }
         } else {
-            this.donePlaying = true;
+            finishPlaying();
         }
     }
 }

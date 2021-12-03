@@ -10,7 +10,7 @@ public enum ConnectorType implements IStringSerializable {
     public static final ConnectorType[] VALUES = values();
 
     @Override
-    public String getName() {
+    public String getString() {
         return name().toLowerCase();
     }
 }

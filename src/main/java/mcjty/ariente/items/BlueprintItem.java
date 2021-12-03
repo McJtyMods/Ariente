@@ -32,7 +32,7 @@ import static mcjty.lib.builder.TooltipBuilder.parameter;
 public class BlueprintItem extends Item implements ITooltipExtras, ITooltipSettings {
 
     private final TooltipBuilder tooltipBuilder = new TooltipBuilder()
-            .info(header(), parameter("info", stack -> getDestination(stack).getDisplayName().getFormattedText()));
+            .info(header(), parameter("info", stack -> getDestination(stack).getDisplayName().getString()));
 
     public BlueprintItem() {
         super(new Properties().group(Ariente.setup.getTab())

@@ -6,6 +6,8 @@ import mcjty.ariente.compat.arienteworld.ArienteWorldCompat;
 import mcjty.ariente.setup.Registration;
 import mcjty.ariente.sounds.ModSounds;
 import net.minecraft.entity.*;
+import net.minecraft.entity.ai.attributes.Attributes;
+import net.minecraft.entity.ai.attributes.AttributeModifierMap;
 import net.minecraft.entity.ai.controller.MovementController;
 import net.minecraft.entity.ai.goal.Goal;
 import net.minecraft.entity.monster.IMob;
@@ -122,11 +124,13 @@ public class SentinelDroneEntity extends FlyingEntity implements IMob, IForcefie
         }
     }
 
-    @Override
-    protected void registerAttributes() {
-        super.registerAttributes();
-        this.getAttribute(SharedMonsterAttributes.MAX_HEALTH).setBaseValue(10.0D);
-        this.getAttribute(SharedMonsterAttributes.FOLLOW_RANGE).setBaseValue(50); // Configurable
+    public static AttributeModifierMap.MutableAttribute registerAttributes() {
+        AttributeModifierMap.MutableAttribute attributes = LivingEntity.registerAttributes();
+        attributes
+            .createMutableAttribute(Attributes.MAX_HEALTH, 10.0D)
+            .createMutableAttribute(Attributes.FOLLOW_RANGE, 50.0D); // Configurable
+
+        return attributes;
     }
 
     @Override

@@ -100,14 +100,14 @@ public class ArientePearlItem extends Item implements ITooltipSettings {
     public ActionResult<ItemStack> onItemRightClick(World world, PlayerEntity player, Hand hand) {
         ItemStack itemstack = player.getHeldItem(hand);
 
-        if (world.getDimension().getType() != DimensionType.OVERWORLD) {
+        if (world.getDimensionKey() != World.OVERWORLD) {
             if (world.isRemote) {
                 player.sendStatusMessage(new StringTextComponent(TextFormatting.RED + "Doesn't work in this dimension!"), false);
             }
             return new ActionResult<>(ActionResultType.FAIL, itemstack);
         }
 
-        RayTraceResult raytraceresult = this.rayTrace(world, player, RayTraceContext.FluidMode.NONE);
+        RayTraceResult raytraceresult = Item.rayTrace(world, player, RayTraceContext.FluidMode.NONE);
 
         if (raytraceresult instanceof BlockRayTraceResult && raytraceresult.getType() == RayTraceResult.Type.BLOCK && world.getBlockState(((BlockRayTraceResult) raytraceresult).getPos()).getBlock() == Registration.WARPER.get()) {
             return new ActionResult<>(ActionResultType.PASS, itemstack);
@@ -115,7 +115,7 @@ public class ArientePearlItem extends Item implements ITooltipSettings {
             player.setActiveHand(hand);
 
             if (!world.isRemote) {
-                BlockPos blockpos = ArienteWorldCompat.getArienteWorld().getNearestDungeon(world, new BlockPos(player));
+                BlockPos blockpos = ArienteWorldCompat.getArienteWorld().getNearestDungeon(world, player.getPosition());
 
                 if (blockpos != null) {
                     EntityArientePearl entityendereye = EntityArientePearl.create(world, player.getPosX(), player.getPosY() + (player.getHeight() / 2.0F), player.getPosZ());
@@ -123,7 +123,7 @@ public class ArientePearlItem extends Item implements ITooltipSettings {
                     world.addEntity(entityendereye);
 
                     world.playSound(null, player.getPosX(), player.getPosY(), player.getPosZ(), SoundEvents.ENTITY_ENDER_EYE_LAUNCH, SoundCategory.NEUTRAL, 0.5F, 0.4F / (random.nextFloat() * 0.4F + 0.8F));
-                    world.playEvent(null, 1003, new BlockPos(player), 0);
+                    world.playEvent(null, 1003, player.getPosition(), 0);
 
                     if (!player.abilities.isCreativeMode) {
                         itemstack.shrink(1);

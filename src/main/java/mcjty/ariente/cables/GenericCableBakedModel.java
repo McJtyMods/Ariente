@@ -71,7 +71,7 @@ public class GenericCableBakedModel extends AbstractDynamicBakedModel {
             CableTextures[] tt = new CableTextures[CableColor.VALUES.length];
             for (CableColor color : CableColor.VALUES) {
                 int i = color.ordinal();
-                String typeName = color.getName();
+                String typeName = color.getString();
                 tt[i] = new CableTextures();
                 tt[i].spriteConnector = getTexture(new ResourceLocation(Ariente.MODID, "block/cables/" + typeName + "/connector"));
                 tt[i].spriteNormalCable = getTexture(new ResourceLocation(Ariente.MODID, "block/cables/" + typeName + "/normal_netcable"));

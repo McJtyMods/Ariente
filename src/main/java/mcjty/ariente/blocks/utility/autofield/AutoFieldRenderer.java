@@ -45,17 +45,17 @@ public class AutoFieldRenderer extends TileEntityRenderer<AutoFieldTile> {
             return;
         }
         if (te.isRenderOutline()) {
-            renderBeamBox(partialTicks, box);
+            renderBeamBox(matrixStack, partialTicks, box);
         }
         if (te.isRenderItems()) {
             // @todo 1.15
-//            renderItemTransfers(te, x, y, z);
+//            renderItemTransfers(matrixStack, te, x, y, z);
         }
     }
 
-    private void renderBeamBox(float time, AxisAlignedBB box) {
+    private void renderBeamBox(MatrixStack matrixStack, float time, AxisAlignedBB box) {
         Tessellator tessellator = Tessellator.getInstance();
-        RenderSystem.pushMatrix();
+        matrixStack.push();
 
         GlStateManager.enableBlend();
         GlStateManager.depthMask(false);
@@ -76,7 +76,7 @@ public class AutoFieldRenderer extends TileEntityRenderer<AutoFieldTile> {
         double doubleY = p.lastTickPosY + (p.getPosY() - p.lastTickPosY) * time;
         double doubleZ = p.lastTickPosZ + (p.getPosZ() - p.lastTickPosZ) * time;
 
-        GlStateManager.translated(-doubleX, -doubleY, -doubleZ);
+        matrixStack.translate(-doubleX, -doubleY, -doubleZ);
 
         Vector player = new Vector((float) doubleX, (float) doubleY + p.getEyeHeight(), (float) doubleZ);
 
@@ -127,14 +127,14 @@ public class AutoFieldRenderer extends TileEntityRenderer<AutoFieldTile> {
         GlStateManager.enableDepthTest();
         RenderSystem.alphaFunc(GL11.GL_GREATER, 0.1F);
 
-        RenderSystem.popMatrix();
+        matrixStack.pop();
     }
 
-    private void renderItemTransfers(AutoFieldTile te, double x, double y, double z) {
+    private void renderItemTransfers(MatrixStack matrixStack, AutoFieldTile te, double x, double y, double z) {
         te.clientRequestRenderInfo();
 
-        RenderSystem.pushMatrix();
-        RenderSystem.translated(x, y, z);
+        matrixStack.push();
+        matrixStack.translate(x, y, z);
         net.minecraft.client.renderer.RenderHelper.enableStandardItemLighting();
         Minecraft.getInstance().gameRenderer.getLightTexture().disableLightmap();
         RenderSystem.enableAlphaTest();
@@ -156,7 +156,7 @@ public class AutoFieldRenderer extends TileEntityRenderer<AutoFieldTile> {
                     }
                 }
             } else {
-                if (!render.render()) {
+                if (!render.render(matrixStack)) {
                     transferRenders[i] = null;
                 }
             }
@@ -164,7 +164,7 @@ public class AutoFieldRenderer extends TileEntityRenderer<AutoFieldTile> {
         Minecraft.getInstance().gameRenderer.getLightTexture().enableLightmap();
         RenderSystem.disableAlphaTest();
 
-        RenderSystem.popMatrix();
+        matrixStack.pop();
     }
 
     @Override

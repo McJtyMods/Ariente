@@ -5,6 +5,7 @@ import mcjty.lib.varia.WorldTools;
 import mcjty.lib.worlddata.AbstractWorldData;
 import net.minecraft.nbt.CompoundNBT;
 import net.minecraft.world.World;
+import net.minecraft.world.server.ServerWorld;
 
 import javax.annotation.Nonnull;
 import java.util.ArrayList;
@@ -32,7 +33,7 @@ public class SecuritySystem extends AbstractWorldData<SecuritySystem> implements
     @Override
     public String generateKeyId(World w) {
         long id = newSecurityID();
-        World world = WorldTools.getOverworld(w);
+        ServerWorld world = WorldTools.getOverworld(w);
         Random rnd = new Random(world.getSeed() + 234516783139L);       // A fixed seed for this work
         rnd.nextFloat();
         rnd.nextFloat();

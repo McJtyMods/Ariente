@@ -19,7 +19,7 @@ public class MovingSoundLevitator extends TickableSound {
     @Override
     public void tick() {
         if (!this.levitator.isAlive()) {
-            this.donePlaying = true;
+            finishPlaying();
         } else {
             this.x = (float) this.levitator.getPosX();
             this.y = (float) this.levitator.getPosY();

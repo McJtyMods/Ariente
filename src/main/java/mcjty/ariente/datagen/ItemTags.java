@@ -2,10 +2,12 @@ package mcjty.ariente.datagen;
 
 import mcjty.ariente.setup.Registration;
 import mcjty.lib.blocks.BlockStateItem;
+import net.minecraft.data.BlockTagsProvider;
 import net.minecraft.data.DataGenerator;
 import net.minecraft.data.ItemTagsProvider;
+import net.minecraft.data.TagsProvider;
 import net.minecraft.item.Item;
-import net.minecraft.tags.Tag;
+import net.minecraft.tags.ITag;
 import net.minecraftforge.common.Tags;
 import net.minecraftforge.fml.RegistryObject;
 
@@ -13,8 +15,8 @@ import java.util.Collection;
 
 public class ItemTags extends ItemTagsProvider {
 
-    public ItemTags(DataGenerator generator) {
-        super(generator);
+    public ItemTags(DataGenerator generator, BlockTagsProvider blockTags) {
+        super(generator, blockTags, "ariente", null);
     }
 
     @Override
@@ -56,18 +58,16 @@ public class ItemTags extends ItemTagsProvider {
         addTag(Registration.TAG_MARBLE, Registration.MARBLE_ITEMS.values());
     }
 
-    private void addTag(Tag<Item> tag, Collection<RegistryObject<BlockStateItem>> items) {
-        Tag.Builder<Item> builder = getBuilder(tag);
+    private void addTag(ITag.INamedTag<Item> tag, Collection<RegistryObject<BlockStateItem>> items) {
+        TagsProvider.Builder<Item> builder = getOrCreateBuilder(tag);
         for (RegistryObject<BlockStateItem> item : items) {
             builder.add(item.get());
         }
-        builder.build(tag.getId());
     }
 
-    private void addTag(Tag<Item> tag, Item... items) {
-        getBuilder(tag)
-                .add(items)
-                .build(tag.getId());
+    private void addTag(ITag.INamedTag<Item> tag, Item... items) {
+        getOrCreateBuilder(tag)
+                .add(items);
     }
 
     @Override

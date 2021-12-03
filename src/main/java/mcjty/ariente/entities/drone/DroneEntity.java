@@ -10,6 +10,8 @@ import net.minecraft.entity.*;
 import net.minecraft.entity.ai.controller.MovementController;
 import net.minecraft.entity.ai.goal.Goal;
 import net.minecraft.entity.ai.goal.NearestAttackableTargetGoal;
+import net.minecraft.entity.ai.attributes.Attributes;
+import net.minecraft.entity.ai.attributes.AttributeModifierMap;
 import net.minecraft.entity.monster.IMob;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.nbt.CompoundNBT;
@@ -109,11 +111,13 @@ public class DroneEntity extends FlyingEntity implements IMob, IForcefieldImmuni
         this.dataManager.register(ATTACKING, Boolean.valueOf(false));
     }
 
-    @Override
-    protected void registerAttributes() {
-        super.registerAttributes();
-        this.getAttribute(SharedMonsterAttributes.MAX_HEALTH).setBaseValue(30.0D);
-        this.getAttribute(SharedMonsterAttributes.FOLLOW_RANGE).setBaseValue(50.0D);  // Configurable
+    public static AttributeModifierMap.MutableAttribute registerAttributes() {
+        AttributeModifierMap.MutableAttribute attributes = LivingEntity.registerAttributes();
+        attributes
+            .createMutableAttribute(Attributes.MAX_HEALTH, 30.0D)
+            .createMutableAttribute(Attributes.FOLLOW_RANGE, 50.0D); // Configurable
+
+        return attributes;
     }
 
     @Override

@@ -25,7 +25,7 @@ import org.lwjgl.opengl.GL11;
 
 import static mcjty.ariente.blocks.defense.ForceFieldRenderer.FORCEFIELD;
 
-public class PowerSuitModel extends BipedModel {
+public class PowerSuitModel extends BipedModel<LivingEntity> {
 
     public static PowerSuitModel modelHelm;
     public static PowerSuitModel modelChest;
@@ -236,7 +236,7 @@ public class PowerSuitModel extends BipedModel {
     }
 
     @Override
-    public void setRotationAngles(Entity entity, float limbSwing, float limbSwingAmount, float ageInTicks, float netHeadYaw, float headPitch) {
+    public void setRotationAngles(LivingEntity entity, float limbSwing, float limbSwingAmount, float ageInTicks, float netHeadYaw, float headPitch) {
 
         if(entity instanceof LivingEntity)	{
             this.isSneak = entity.isSneaking();

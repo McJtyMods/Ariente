@@ -24,6 +24,7 @@ import net.minecraft.util.math.AxisAlignedBB;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.BlockRayTraceResult;
 import net.minecraft.world.World;
+import net.minecraft.world.storage.IWorldInfo;
 import net.minecraft.world.DimensionType;
 
 import static mcjty.ariente.compat.ArienteTOPDriver.DRIVER;
@@ -43,7 +44,7 @@ public class WarperTile extends GenericTileEntity implements IGuiTile, IWarper {
 
     public static BaseBlock createBlock() {
         return new BaseBlock(new BlockBuilder()
-                .properties(BlockBuilder.STANDARD_IRON.lightValue(8))
+                .properties(BlockBuilder.STANDARD_IRON.setLightLevel((light) -> { return 8; }))
 //                .flags(REDSTONE_CHECK, RENDER_SOLID, RENDER_CUTOUT)
                 .info(key("message.ariente.shiftmessage"))
                 .infoShift(header())
@@ -135,7 +136,7 @@ public class WarperTile extends GenericTileEntity implements IGuiTile, IWarper {
 //    }
 
     private void warp(PlayerEntity player) {
-        if (world.getDimension().getType() == DimensionType.OVERWORLD) {
+        if (world.getDimensionKey() == World.OVERWORLD) {
             if (!world.isRemote) {
                 if (Ariente.setup.arienteWorld) {
                     // @todo for future usage
@@ -145,9 +146,10 @@ public class WarperTile extends GenericTileEntity implements IGuiTile, IWarper {
             }
         } else {
             if (!world.isRemote) {
-                BlockPos bedLocation = player.getBedLocation(DimensionType.OVERWORLD);
+                BlockPos bedLocation = player.getBedPosition().get();
                 if (bedLocation == null) {
-                    bedLocation = world.getSpawnPoint();
+                    IWorldInfo worldInfo = world.getWorldInfo();
+                    bedLocation = new BlockPos(worldInfo.getSpawnX(),worldInfo.getSpawnY(), worldInfo.getSpawnZ());
                 }
                 while (!world.isAirBlock(bedLocation) && !world.isAirBlock(bedLocation.up()) && bedLocation.getY() < world.getHeight()-2) {
                     bedLocation = bedLocation.up();

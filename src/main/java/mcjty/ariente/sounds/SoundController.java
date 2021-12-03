@@ -28,7 +28,7 @@ public class SoundController {
         ForcefieldSound sound = new ForcefieldSound(soundType, worldObj, pos, baseVolume, ticks);
         stopForcefieldSounds(worldObj, pos);
         Minecraft.getInstance().getSoundHandler().play(sound);
-        Pair<DimensionType, BlockPos> g = Pair.of(worldObj.getDimension().getType(), pos);
+        Pair<DimensionType, BlockPos> g = Pair.of(worldObj.getDimensionType(), pos);
         forcefieldSounds.put(g, sound);
     }
 
@@ -43,7 +43,7 @@ public class SoundController {
 
 
     private static Pair<DimensionType, BlockPos> fromPosition(World world, BlockPos producerPos){
-        return Pair.of(world.getDimension().getType(), producerPos);
+        return Pair.of(world.getDimensionType(), producerPos);
     }
 
 }

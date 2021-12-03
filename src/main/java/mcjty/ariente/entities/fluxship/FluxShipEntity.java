@@ -88,7 +88,7 @@ public class FluxShipEntity extends Entity {
     }
 
     @Override
-    public ActionResultType interact(PlayerEntity player, Hand hand) {
+    public ActionResultType processInitialInteract(PlayerEntity player, Hand hand) {
         if (player.isSneaking()) {
             return ActionResultType.PASS;
 //        } else if (this.isBeingRidden()) {    // @todo

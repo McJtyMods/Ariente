@@ -52,6 +52,7 @@ import net.minecraft.item.Item;
 import net.minecraft.tags.BlockTags;
 import net.minecraft.tags.ItemTags;
 import net.minecraft.tags.Tag;
+import net.minecraft.tags.ITag;
 import net.minecraft.tileentity.TileEntityType;
 import net.minecraft.util.ResourceLocation;
 import net.minecraft.util.SoundEvent;
@@ -92,28 +93,28 @@ public class Registration {
         ENTITIES.register(FMLJavaModLoadingContext.get().getModEventBus());
     }
 
-    public static final Tag<Item> TAG_INGOT_SILVER = new ItemTags.Wrapper(new ResourceLocation("forge", "ingots/silver"));
-    public static final Tag<Item> TAG_INGOT_PLATINUM = new ItemTags.Wrapper(new ResourceLocation("forge", "ingots/platinum"));
-    public static final Tag<Item> TAG_INGOT_LITHIUM = new ItemTags.Wrapper(new ResourceLocation("forge", "ingots/lithium"));
-    public static final Tag<Item> TAG_INGOT_MANGANESE = new ItemTags.Wrapper(new ResourceLocation("forge", "ingots/manganese"));
-    public static final Tag<Item> TAG_DUSTS_SILICON = new ItemTags.Wrapper(new ResourceLocation("forge", "dusts/silicon"));
-    public static final Tag<Item> TAG_DUSTS_NEGARITE = new ItemTags.Wrapper(new ResourceLocation("forge", "dusts/negarite"));
-    public static final Tag<Item> TAG_DUSTS_POSIRITE = new ItemTags.Wrapper(new ResourceLocation("forge", "dusts/posirite"));
-    public static final Tag<Block> TAG_ORE_SILVER = new BlockTags.Wrapper(new ResourceLocation("forge", "ores/silver"));
-    public static final Tag<Block> TAG_ORE_PLATINUM = new BlockTags.Wrapper(new ResourceLocation("forge", "ores/platinum"));
-    public static final Tag<Block> TAG_ORE_LITHIUM = new BlockTags.Wrapper(new ResourceLocation("forge", "ores/lithium"));
-    public static final Tag<Block> TAG_ORE_MANGANESE = new BlockTags.Wrapper(new ResourceLocation("forge", "ores/manganese"));
-    public static final Tag<Block> TAG_ORE_SILICON = new BlockTags.Wrapper(new ResourceLocation("forge", "ores/silicon"));
-    public static final Tag<Block> TAG_ORE_NEGARITE = new BlockTags.Wrapper(new ResourceLocation("forge", "ores/negarite"));
-    public static final Tag<Block> TAG_ORE_POSIRITE = new BlockTags.Wrapper(new ResourceLocation("forge", "ores/posirite"));
-    public static final Tag<Item> TAG_ORE_SILVER_ITEM = new ItemTags.Wrapper(new ResourceLocation("forge", "ores/silver"));
-    public static final Tag<Item> TAG_ORE_PLATINUM_ITEM = new ItemTags.Wrapper(new ResourceLocation("forge", "ores/platinum"));
-    public static final Tag<Item> TAG_ORE_LITHIUM_ITEM = new ItemTags.Wrapper(new ResourceLocation("forge", "ores/lithium"));
-    public static final Tag<Item> TAG_ORE_MANGANESE_ITEM = new ItemTags.Wrapper(new ResourceLocation("forge", "ores/manganese"));
-    public static final Tag<Item> TAG_ORE_SILICON_ITEM = new ItemTags.Wrapper(new ResourceLocation("forge", "ores/silicon"));
-    public static final Tag<Item> TAG_ORE_NEGARITE_ITEM = new ItemTags.Wrapper(new ResourceLocation("forge", "ores/negarite"));
-    public static final Tag<Item> TAG_ORE_POSIRITE_ITEM = new ItemTags.Wrapper(new ResourceLocation("forge", "ores/posirite"));
-    public static final Tag<Item> TAG_MARBLE = new ItemTags.Wrapper(new ResourceLocation("forge", "marble"));
+    public static final ITag.INamedTag<Item> TAG_INGOT_SILVER = ItemTags.createOptional(new ResourceLocation("forge", "ingots/silver"));
+    public static final ITag.INamedTag<Item> TAG_INGOT_PLATINUM = ItemTags.createOptional(new ResourceLocation("forge", "ingots/platinum"));
+    public static final ITag.INamedTag<Item> TAG_INGOT_LITHIUM = ItemTags.createOptional(new ResourceLocation("forge", "ingots/lithium"));
+    public static final ITag.INamedTag<Item> TAG_INGOT_MANGANESE = ItemTags.createOptional(new ResourceLocation("forge", "ingots/manganese"));
+    public static final ITag.INamedTag<Item> TAG_DUSTS_SILICON = ItemTags.createOptional(new ResourceLocation("forge", "dusts/silicon"));
+    public static final ITag.INamedTag<Item> TAG_DUSTS_NEGARITE = ItemTags.createOptional(new ResourceLocation("forge", "dusts/negarite"));
+    public static final ITag.INamedTag<Item> TAG_DUSTS_POSIRITE = ItemTags.createOptional(new ResourceLocation("forge", "dusts/posirite"));
+    public static final ITag.INamedTag<Block> TAG_ORE_SILVER = BlockTags.createOptional(new ResourceLocation("forge", "ores/silver"));
+    public static final ITag.INamedTag<Block> TAG_ORE_PLATINUM = BlockTags.createOptional(new ResourceLocation("forge", "ores/platinum"));
+    public static final ITag.INamedTag<Block> TAG_ORE_LITHIUM = BlockTags.createOptional(new ResourceLocation("forge", "ores/lithium"));
+    public static final ITag.INamedTag<Block> TAG_ORE_MANGANESE = BlockTags.createOptional(new ResourceLocation("forge", "ores/manganese"));
+    public static final ITag.INamedTag<Block> TAG_ORE_SILICON = BlockTags.createOptional(new ResourceLocation("forge", "ores/silicon"));
+    public static final ITag.INamedTag<Block> TAG_ORE_NEGARITE = BlockTags.createOptional(new ResourceLocation("forge", "ores/negarite"));
+    public static final ITag.INamedTag<Block> TAG_ORE_POSIRITE = BlockTags.createOptional(new ResourceLocation("forge", "ores/posirite"));
+    public static final ITag.INamedTag<Item> TAG_ORE_SILVER_ITEM = ItemTags.createOptional(new ResourceLocation("forge", "ores/silver"));
+    public static final ITag.INamedTag<Item> TAG_ORE_PLATINUM_ITEM = ItemTags.createOptional(new ResourceLocation("forge", "ores/platinum"));
+    public static final ITag.INamedTag<Item> TAG_ORE_LITHIUM_ITEM = ItemTags.createOptional(new ResourceLocation("forge", "ores/lithium"));
+    public static final ITag.INamedTag<Item> TAG_ORE_MANGANESE_ITEM = ItemTags.createOptional(new ResourceLocation("forge", "ores/manganese"));
+    public static final ITag.INamedTag<Item> TAG_ORE_SILICON_ITEM = ItemTags.createOptional(new ResourceLocation("forge", "ores/silicon"));
+    public static final ITag.INamedTag<Item> TAG_ORE_NEGARITE_ITEM = ItemTags.createOptional(new ResourceLocation("forge", "ores/negarite"));
+    public static final ITag.INamedTag<Item> TAG_ORE_POSIRITE_ITEM = ItemTags.createOptional(new ResourceLocation("forge", "ores/posirite"));
+    public static final ITag.INamedTag<Item> TAG_MARBLE = ItemTags.createOptional(new ResourceLocation("forge", "marble"));
 
     public static final AxisAlignedBB FLAT_BLOCK_AABB = new AxisAlignedBB(0.0D, 0.0D, 0.0D, 1.0D, 0.1D, 1.0D);
     public static final AxisAlignedBB BEAM_BLOCK_NS_AABB = new AxisAlignedBB(0.0D, 0.0D, 0.3D, 1.0D, 0.3D, 0.7D);
@@ -245,7 +246,7 @@ public class Registration {
     public static final RegistryObject<Item> REINFORCED_MARBLE_ITEM = ITEMS.register("reinforced_marble", () -> new BlockItem(REINFORCED_MARBLE.get(), createStandardProperties()));
 
     public static final RegistryObject<BaseBlock> FLUX_GLOW = BLOCKS.register("fluxglow", () -> new BaseBlock(new BlockBuilder()
-        .properties(Block.Properties.create(Material.GLASS).lightValue(15))) {
+        .properties(Block.Properties.create(Material.GLASS).setLightLevel((light) -> { return 15; }))) {
         @Override
         public RotationType getRotationType() {
             return RotationType.NONE;
@@ -516,7 +517,7 @@ public class Registration {
 
     private static BaseBlock createFlatLightBlock() {
         return new BaseBlock(new BlockBuilder()
-                .properties(Block.Properties.create(Material.GLASS).lightValue(15))) {
+                .properties(Block.Properties.create(Material.GLASS).setLightLevel((light) -> { return 15; }))) {
             @Override
             public VoxelShape getShape(BlockState state, IBlockReader reader, BlockPos pos, ISelectionContext context) {
                 return FLAT_LIGHT_AABB;

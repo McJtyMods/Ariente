@@ -1,11 +1,12 @@
 package mcjty.ariente.blocks.utility.autofield;
 
-import com.mojang.blaze3d.platform.GlStateManager;
+import com.mojang.blaze3d.matrix.MatrixStack;
 import mcjty.lib.client.RenderHelper;
 import mcjty.lib.multipart.PartSlot;
 import mcjty.lib.spline.CatmullRomSpline;
 import net.minecraft.item.ItemStack;
 import net.minecraft.util.math.BlockPos;
+import net.minecraft.util.math.vector.Quaternion;
 import net.minecraft.util.math.vector.Vector3d;
 
 import java.util.Random;
@@ -62,8 +63,10 @@ public class TransferRender {
         // @todo 1.14 meta transfer.getMeta()
         stack = new ItemStack(transfer.getItem(), 1);
 
-        Vector3d sta = new Vector3d(path.getSourcePos().getPos().subtract(relative)).add(getPos(path.getSourcePos().getSlot()));
-        Vector3d end = new Vector3d(path.getDestPos().getPos().subtract(relative)).add(getPos(path.getDestPos().getSlot()));
+        BlockPos staBlock = path.getSourcePos().getPos().subtract(relative);
+        BlockPos endBlock = path.getDestPos().getPos().subtract(relative);
+        Vector3d sta = new Vector3d(staBlock.getX(), staBlock.getY(), staBlock.getZ()).add(getPos(path.getSourcePos().getSlot()));
+        Vector3d end = new Vector3d(endBlock.getX(), endBlock.getY(), endBlock.getZ()).add(getPos(path.getDestPos().getSlot()));
         double distance = Math.sqrt(sta.squareDistanceTo(end));
         duration = (long) (distance * 600) + 100;
 
@@ -93,7 +96,7 @@ public class TransferRender {
         spline.insertPoint(point90.withSize(0.4), 0.8f, 3);
     }
 
-    public boolean render() {
+    public boolean render(MatrixStack matrixStack) {
         long time = System.currentTimeMillis();
         if (time > startTime+duration) {
             return false;
@@ -101,19 +104,19 @@ public class TransferRender {
         double factor = (time - startTime) / (double) duration;
         spline.calculate((float) factor);
         AnimatedPoint pos = spline.getInterpolated();
-        renderStack(stack, new Vector3d(pos.x, pos.y, pos.z), pos.rotation, pos.size);
+        renderStack(matrixStack, stack, new Vector3d(pos.x, pos.y, pos.z), pos.rotation, pos.size);
 
         return true;
     }
 
-    private void renderStack(ItemStack stack, Vector3d pos, double rotation, double size) {
-        GlStateManager.pushMatrix();
-        GlStateManager.translated(pos.x, pos.y, pos.z);
-        GlStateManager.rotatef((float) rotation, 0, 1, 0);
-        GlStateManager.scaled(size, size, size);
-        RenderHelper.renderStackOnGround(stack, 1.0f);
+    private void renderStack(MatrixStack matrixStack, ItemStack stack, Vector3d pos, double rotation, double size) {
+        matrixStack.push();
+        matrixStack.translate(pos.x, pos.y, pos.z);
+        matrixStack.rotate(new Quaternion((float) rotation, 0, 1, 0));
+        matrixStack.scale((float) size, (float) size, (float) size);
+        RenderHelper.renderStackOnGround(matrixStack, stack, 1.0f);
 
-        GlStateManager.popMatrix();
+        matrixStack.pop();
     }
 
 

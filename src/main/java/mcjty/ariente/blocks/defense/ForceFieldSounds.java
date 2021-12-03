@@ -20,7 +20,7 @@ public class ForceFieldSounds {
             for (PanelInfo info : forcefield.getPanelInfo()) {
                 if (info != null) {
                     if (info.getLife() > 0) {
-                        double sqdist = info.getSquaredDistance(player.getPositionVector(), forcefield.getScaleDouble());
+                        double sqdist = info.getSquaredDistance(player.getPositionVec(), forcefield.getScaleDouble());
                         if (sqdist < minDistance) {
                             minDistance = sqdist;
                             minInfo = info;

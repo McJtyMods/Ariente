@@ -37,7 +37,7 @@ public class Binding {
     }
 
     public String getDisplayName() {
-        return binding.getLocalizedName();
+        return binding.getTranslationKey();
     }
 
     @Override

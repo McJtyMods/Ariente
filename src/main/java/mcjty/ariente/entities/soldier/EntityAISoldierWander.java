@@ -68,7 +68,7 @@ public class EntityAISoldierWander extends Goal {
             ICityAI cityAI = aiSystem.getCityAI(entity.getCityCenter());
             BlockPos pos = cityAI.requestNewSoldierPosition(entity.world, entity.getAttackTarget());
             if (pos != null) {
-                return new Vector3d(pos);
+                return new Vector3d(pos.getX(), pos.getY(), pos.getZ());
             } else {
                 return RandomPositionGenerator.findRandomTarget(this.entity, 10, 7);
             }

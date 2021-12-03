@@ -39,7 +39,7 @@ public class Recipes extends BaseRecipeProvider {
                 "xxx", "xMx", "xxx");
 
         for (MarbleColor color : MarbleColor.VALUES) {
-            build(consumer, new ResourceLocation(Ariente.MODID, "marble_" + color.getName() + "_dye"), ShapelessRecipeBuilder.shapelessRecipe(Registration.MARBLE_ITEMS.get(color).get())
+            build(consumer, new ResourceLocation(Ariente.MODID, "marble_" + color.getString() + "_dye"), ShapelessRecipeBuilder.shapelessRecipe(Registration.MARBLE_ITEMS.get(color).get())
                     .addCriterion("marble", hasItem(Registration.MARBLE.get()))
                     .addIngredient(Registration.TAG_MARBLE)
                     .addIngredient(color.getColor().getTag()));
