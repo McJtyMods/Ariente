@@ -80,7 +80,7 @@ public class WarperRenderer extends TileEntityRenderer<WarperTile> {
             float xx = te.getBlockPos().getX() + randomX[ii];
             float zz = te.getBlockPos().getZ() + randomZ[ii];
             float yy = te.getBlockPos().getY() - 1.0f + i1 + (randomY[ii] * height) / 8.0f;
-            RenderHelper.drawBeam(new Vector3f(xx, yy, zz), new Vector3f(xx, yy + 4, zz), player, 0.2f);
+            // @todo: RenderHelper.drawBeam(new Vector3f(xx, yy, zz), new Vector3f(xx, yy + 4, zz), player, 0.2f);
         }
 
 //        net.minecraft.util.math.vector.Vector3d cameraPos = net.minecraft.client.renderer.ActiveRenderInfo.getCameraPosition();

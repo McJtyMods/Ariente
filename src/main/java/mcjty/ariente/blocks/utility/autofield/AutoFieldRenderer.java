@@ -100,20 +100,20 @@ public class AutoFieldRenderer extends TileEntityRenderer<AutoFieldTile> {
                 .brightness(100)
                 .build();
 
-        RenderHelper.drawBeam(new Vector3f(mx, my, mz), new Vector3f(px, my, mz), player, settings);
-        RenderHelper.drawBeam(new Vector3f(mx, my, mz), new Vector3f(mx, py, mz), player, settings);
-        RenderHelper.drawBeam(new Vector3f(mx, my, mz), new Vector3f(mx, my, pz), player, settings);
+        // @todo RenderHelper.drawBeam(new Vector3f(mx, my, mz), new Vector3f(px, my, mz), player, settings);
+        // @todo RenderHelper.drawBeam(new Vector3f(mx, my, mz), new Vector3f(mx, py, mz), player, settings);
+        // @todo RenderHelper.drawBeam(new Vector3f(mx, my, mz), new Vector3f(mx, my, pz), player, settings);
 
-        RenderHelper.drawBeam(new Vector3f(px, py, pz), new Vector3f(mx, py, pz), player, settings);
-        RenderHelper.drawBeam(new Vector3f(px, py, pz), new Vector3f(px, my, pz), player, settings);
-        RenderHelper.drawBeam(new Vector3f(px, py, pz), new Vector3f(px, py, mz), player, settings);
+        // @todo RenderHelper.drawBeam(new Vector3f(px, py, pz), new Vector3f(mx, py, pz), player, settings);
+        // @todo RenderHelper.drawBeam(new Vector3f(px, py, pz), new Vector3f(px, my, pz), player, settings);
+        // @todo RenderHelper.drawBeam(new Vector3f(px, py, pz), new Vector3f(px, py, mz), player, settings);
 
-        RenderHelper.drawBeam(new Vector3f(px, my, mz), new Vector3f(px, py, mz), player, settings);
-        RenderHelper.drawBeam(new Vector3f(px, my, mz), new Vector3f(px, my, pz), player, settings);
-        RenderHelper.drawBeam(new Vector3f(mx, py, mz), new Vector3f(px, py, mz), player, settings);
-        RenderHelper.drawBeam(new Vector3f(mx, py, mz), new Vector3f(mx, py, pz), player, settings);
-        RenderHelper.drawBeam(new Vector3f(mx, my, pz), new Vector3f(px, my, pz), player, settings);
-        RenderHelper.drawBeam(new Vector3f(mx, my, pz), new Vector3f(mx, py, pz), player, settings);
+        // @todo RenderHelper.drawBeam(new Vector3f(px, my, mz), new Vector3f(px, py, mz), player, settings);
+        // @todo RenderHelper.drawBeam(new Vector3f(px, my, mz), new Vector3f(px, my, pz), player, settings);
+        // @todo RenderHelper.drawBeam(new Vector3f(mx, py, mz), new Vector3f(px, py, mz), player, settings);
+        // @todo RenderHelper.drawBeam(new Vector3f(mx, py, mz), new Vector3f(mx, py, pz), player, settings);
+        // @todo RenderHelper.drawBeam(new Vector3f(mx, my, pz), new Vector3f(px, my, pz), player, settings);
+        // @todo RenderHelper.drawBeam(new Vector3f(mx, my, pz), new Vector3f(mx, py, pz), player, settings);
 
 //        net.minecraft.util.math.vector.Vector3d cameraPos = net.minecraft.client.renderer.ActiveRenderInfo.getCameraPosition();
 //        tessellator.getBuffer().sortVertexData((float) (player.x + doubleX), (float) (player.y + doubleY), (float) (player.z + doubleZ));
