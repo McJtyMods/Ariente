@@ -412,15 +412,16 @@ public class FluxElevatorEntity extends Entity {
                     if (!this.isPassenger() && this.portalCounter++ >= i) {
                         this.portalCounter = i;
                         this.timeUntilPortal = this.getPortalCooldown();
-                        DimensionType id;
+                        // @todo 1.16
+                        // DimensionType id;
 
-                        if (this.world.getDimension().getType() == DimensionType.THE_NETHER) {
-                            id = DimensionType.OVERWORLD;
-                        } else {
-                            id = DimensionType.THE_NETHER;
-                        }
+                        // if (this.world.getDimension().getType() == DimensionType.THE_NETHER) {
+                        //     id = DimensionType.OVERWORLD;
+                        // } else {
+                        //     id = DimensionType.THE_NETHER;
+                        // }
 
-                        this.changeDimension(id);
+                        // this.changeDimension(id);
                     }
 
                     this.inPortal = false;
