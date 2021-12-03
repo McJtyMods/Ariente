@@ -3,7 +3,8 @@
 buildscript {
     repositories {
         maven { url = 'https://maven.minecraftforge.net' }
-        maven { url 'https://plugins.gradle.org/m2/' }
+        maven { url = 'https://plugins.gradle.org/m2/' }
+        jcenter()
         mavenCentral()
     }
     dependencies {
@@ -20,28 +21,16 @@ apply plugin: 'maven-publish'
 repositories {
     maven { // JEI
         url "https://dvs1.progwml6.com/files/maven"
-        content {
-            includeGroup "mezz.jei"
-        }
     }
     maven { // Patchouli
         url "https://maven.blamejared.com"
-        content {
-            includeGroup "vazkii.patchouli"
-        }
     }
     maven { // TOP
         name 'tterrag maven'
         url "https://maven.tterrag.com/"
-        content {
-            includeGroup "mcjty.theoneprobe"
-        }
     }
     maven { // McJtyLib
-        url "https://maven.k-4u.nl"
-        content {
-            includeGroup "com.github.mcjty"
-        }
+        url "https://maven.k-4u.nl/"
     }
 }
 
@@ -150,22 +139,20 @@ dependencies {
     compileOnly fg.deobf("mezz.jei:jei-${jei_version}:api")
     runtimeOnly fg.deobf("mezz.jei:jei-${jei_version}")
 
-    compileOnly fg.deobf("vazkii.patchouli:Patchouli:${patchouli_version}:api")
-    runtimeOnly fg.deobf("vazkii.patchouli:Patchouli:${patchouli_version}")
-
     if (findProject(':TheOneProbe') != null) {
-        compile project(':TheOneProbe')
+        implementation project(':TheOneProbe')
     } else {
-        compileOnly fg.deobf("mcjty.theoneprobe:TheOneProbe-${top_version}:api")
-        runtimeOnly fg.deobf("mcjty.theoneprobe:TheOneProbe-${top_version}")
+        implementation fg.deobf(project.dependencies.create("mcjty.theoneprobe:TheOneProbe-${top_version}") {
+            transitive = false
+        })
     }
     if (findProject(':McJtyLib') != null) {
-        compile project(':McJtyLib')
+        implementation project(':McJtyLib')
     } else {
-        compileOnly fg.deobf("com.github.mcjty:mcjtylib:${mcjtylib_version}")
-        // API version appears to be an empty jar file
-        // compileOnly fg.deobf("com.github.mcjty:mcjtylib:${mcjtylib_version}:api")
-        runtimeOnly fg.deobf("com.github.mcjty:mcjtylib:${mcjtylib_version}")
+        implementation fg.deobf (project.dependencies.create("com.github.mcjty:mcjtylib:${mcjtylib_version}") {
+            transitive = false
+        })
+
     }
     if (findProject(':HoloGui') != null) {
         compile project(':HoloGui')
@@ -178,7 +165,7 @@ dependencies {
 task apiJar(type: Jar) {
     classifier = "api"
     from(sourceSets.main.output) {
-        include "mcjty/mcjtylib/api/**"
+        include "mcjty/ariente/api/**"
     }
 }
 
