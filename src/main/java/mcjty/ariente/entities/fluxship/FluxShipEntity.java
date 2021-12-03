@@ -7,10 +7,11 @@ import net.minecraft.entity.EntityType;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.nbt.CompoundNBT;
 import net.minecraft.network.IPacket;
+import net.minecraft.util.ActionResultType;
 import net.minecraft.util.Direction;
 import net.minecraft.util.Hand;
 import net.minecraft.util.math.AxisAlignedBB;
-import net.minecraft.util.math.Vec3d;
+import net.minecraft.util.math.vector.Vector3d;
 import net.minecraft.world.World;
 import net.minecraftforge.fml.network.NetworkHooks;
 
@@ -59,7 +60,7 @@ public class FluxShipEntity extends Entity {
 
 
     public void handleAction(FlyAction action) {
-        Vec3d look = getLook(1.0f);
+        Vector3d look = getLook(1.0f);
         switch (action) {
             case FORWARD:
                 setMotion(look.x * 1, look.y * 1, look.z * 1);
@@ -87,9 +88,9 @@ public class FluxShipEntity extends Entity {
     }
 
     @Override
-    public boolean processInitialInteract(PlayerEntity player, Hand hand) {
+    public ActionResultType interact(PlayerEntity player, Hand hand) {
         if (player.isSneaking()) {
-            return false;
+            return ActionResultType.PASS;
 //        } else if (this.isBeingRidden()) {    // @todo
 //            return true;
         } else {
@@ -97,7 +98,7 @@ public class FluxShipEntity extends Entity {
                 player.startRiding(this);
             }
 
-            return true;
+            return ActionResultType.SUCCESS;
         }
     }
 
@@ -151,13 +152,13 @@ public class FluxShipEntity extends Entity {
         return NetworkHooks.getEntitySpawningPacket(this);
     }
 
-    @Override
+    //@Override
     @Nullable
     public AxisAlignedBB getCollisionBox(Entity entityIn) {
         return entityIn.canBePushed() ? entityIn.getBoundingBox() : null;
     }
 
-    @Override
+    //@Override
     @Nullable
     public AxisAlignedBB getCollisionBoundingBox() {
         return null;

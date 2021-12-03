@@ -8,7 +8,7 @@ import net.minecraft.client.renderer.entity.EntityRendererManager;
 import net.minecraft.client.renderer.entity.model.EntityModel;
 import net.minecraft.util.ResourceLocation;
 import net.minecraft.util.math.MathHelper;
-import net.minecraft.util.math.Vec3d;
+import net.minecraft.util.math.vector.Vector3d;
 import net.minecraftforge.fml.client.registry.IRenderFactory;
 
 
@@ -36,13 +36,13 @@ public class FluxElevatorRender extends EntityRenderer<FluxElevatorEntity> {
         double interX = entity.lastTickPosX + (entity.getPosX() - entity.lastTickPosX) * partialTicks;
         double interY = entity.lastTickPosY + (entity.getPosY() - entity.lastTickPosY) * partialTicks;
         double interZ = entity.lastTickPosZ + (entity.getPosZ() - entity.lastTickPosZ) * partialTicks;
-        Vec3d vec3d = entity.getPos(interX, interY, interZ);
+        Vector3d vec3d = entity.getPos(interX, interY, interZ);
         float pitch = entity.prevRotationPitch + (entity.rotationPitch - entity.prevRotationPitch) * partialTicks;
 
 
         if (vec3d != null) {
-            Vec3d vec3d1 = entity.getPosOffset(interX, interY, interZ, 0.3D);
-            Vec3d vec3d2 = entity.getPosOffset(interX, interY, interZ, -0.3D);
+            Vector3d vec3d1 = entity.getPosOffset(interX, interY, interZ, 0.3D);
+            Vector3d vec3d2 = entity.getPosOffset(interX, interY, interZ, -0.3D);
 
             if (vec3d1 == null) {
                 vec3d1 = vec3d;
@@ -56,7 +56,7 @@ public class FluxElevatorRender extends EntityRenderer<FluxElevatorEntity> {
 //            x += vec3d.x - interX;
 //            y += (vec3d1.y + vec3d2.y) / 2.0D - interY;
 //            z += vec3d.z - interZ;
-            Vec3d vec3d3 = vec3d2.add(-vec3d1.x, -vec3d1.y, -vec3d1.z);
+            Vector3d vec3d3 = vec3d2.add(-vec3d1.x, -vec3d1.y, -vec3d1.z);
 
             if (vec3d3.length() != 0.0D) {
                 vec3d3 = vec3d3.normalize();

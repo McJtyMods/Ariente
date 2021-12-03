@@ -21,16 +21,17 @@ import net.minecraft.network.datasync.EntityDataManager;
 import net.minecraft.server.MinecraftServer;
 import net.minecraft.state.properties.BlockStateProperties;
 import net.minecraft.state.properties.RailShape;
+import net.minecraft.util.ActionResultType;
 import net.minecraft.util.DamageSource;
 import net.minecraft.util.Direction;
 import net.minecraft.util.Hand;
 import net.minecraft.util.math.AxisAlignedBB;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.MathHelper;
-import net.minecraft.util.math.Vec3d;
+import net.minecraft.util.math.vector.Vector3d;
 import net.minecraft.world.GameRules;
 import net.minecraft.world.World;
-import net.minecraft.world.dimension.DimensionType;
+import net.minecraft.world.DimensionType;
 import net.minecraft.world.server.ServerWorld;
 import net.minecraftforge.fml.network.NetworkHooks;
 import org.apache.commons.lang3.tuple.Pair;
@@ -51,6 +52,7 @@ public class FluxElevatorEntity extends Entity {
     private double velocityX;
     private double velocityY;
     private double velocityZ;
+    private int timeUntilPortal;
 
     private IHoloGuiEntity holoGui;
 
@@ -137,7 +139,7 @@ public class FluxElevatorEntity extends Entity {
                 }
             }
             if (holoGui == null && !world.isRemote ) {
-                IHoloGuiEntity holoGui = Ariente.guiHandler.openHoloGuiRelative(this, new Vec3d(0, .5, 1), ModGuis.GUI_ELEVATOR);
+                IHoloGuiEntity holoGui = Ariente.guiHandler.openHoloGuiRelative(this, new Vector3d(0, .5, 1), ModGuis.GUI_ELEVATOR);
                 holoGui.setScale(0.75f);
                 holoGui.setCloseStrategy(CloseStrategy.NEVER);
                 holoGui.getEntity().startRiding(this);
@@ -159,7 +161,7 @@ public class FluxElevatorEntity extends Entity {
     }
 
     @Override
-    public void move(MoverType typeIn, Vec3d pos) {
+    public void move(MoverType typeIn, Vector3d pos) {
         super.move(typeIn, pos);
         updateHoloGui();        // @todo check if needed
     }
@@ -373,7 +375,7 @@ public class FluxElevatorEntity extends Entity {
         AxisAlignedBB box;
         box = this.getBoundingBox().grow(0.2D, 0.0D, 0.2D);
 
-        Vec3d motion = getMotion();
+        Vector3d motion = getMotion();
         if (motion.x * motion.x + motion.z * motion.z > 0.01D) {
             List<Entity> list = this.world.getEntitiesInAABBexcluding(this, box, entity -> true);//@todo 1.14 EntitySelectors.getTeamCollisionPredicate(this));
 
@@ -450,7 +452,7 @@ public class FluxElevatorEntity extends Entity {
         float yaw = pair.getLeft() + offset * 90;
         float pitch = pair.getRight();
 
-        Vec3d vec3d = getPosOffset(getPosX(), getPosY(), getPosZ(), offset);
+        Vector3d vec3d = getPosOffset(getPosX(), getPosY(), getPosZ(), offset);
         if (vec3d != null) {
             double x = vec3d.x;
             double y = vec3d.y + .38;
@@ -467,7 +469,7 @@ public class FluxElevatorEntity extends Entity {
 
     protected void moveAlongTrack(BlockPos pos, BlockState state) {
         this.fallDistance = 0.0F;
-        Vec3d oldPos = this.getPos(this.getPosX(), this.getPosY(), this.getPosZ());
+        Vector3d oldPos = this.getPos(this.getPosX(), this.getPosY(), this.getPosZ());
         setRawPosition(getPosX(), pos.getY(), getPosZ());   // @todo 1.15 is this right?
         int speed = getSpeed();
         boolean powered = speed != 0;    // Like powered
@@ -488,7 +490,7 @@ public class FluxElevatorEntity extends Entity {
         this.moveLevitatorOnBeam(pos);
 
         this.applyDrag();
-        Vec3d newPos = this.getPos(this.getPosX(), this.getPosY(), this.getPosZ());
+        Vector3d newPos = this.getPos(this.getPosX(), this.getPosY(), this.getPosZ());
 
         if (newPos != null && oldPos != null) {
             double motionX = getMotion().x;
@@ -681,13 +683,13 @@ public class FluxElevatorEntity extends Entity {
 
     // Calculate yaw and pitch based on block below the levitator
     private Pair<Float, Float> calculateYawPitch() {
-        Vec3d oldPos = getPos(getPosX(), getPosY(), getPosZ());
+        Vector3d oldPos = getPos(getPosX(), getPosY(), getPosZ());
         float yaw = rotationYaw;
         float pitch = rotationPitch;
 
         if (oldPos != null) {
-            Vec3d posUp = getPosOffset(getPosX(), getPosY(), getPosZ(), 0.3D);
-            Vec3d posDown = getPosOffset(getPosX(), getPosY(), getPosZ(), -0.3D);
+            Vector3d posUp = getPosOffset(getPosX(), getPosY(), getPosZ(), 0.3D);
+            Vector3d posDown = getPosOffset(getPosX(), getPosY(), getPosZ(), -0.3D);
 
             if (posUp == null) {
                 posUp = oldPos;
@@ -697,7 +699,7 @@ public class FluxElevatorEntity extends Entity {
                 posDown = oldPos;
             }
 
-            Vec3d newpos = posDown.add(-posUp.x, -posUp.y, -posUp.z);
+            Vector3d newpos = posDown.add(-posUp.x, -posUp.y, -posUp.z);
 
             if (newpos.length() != 0.0D) {
                 newpos = newpos.normalize();
@@ -709,7 +711,7 @@ public class FluxElevatorEntity extends Entity {
     }
 
     @Nullable
-    public Vec3d getPosOffset(double x, double y, double z, double offset) {
+    public Vector3d getPosOffset(double x, double y, double z, double offset) {
         int floorX = MathHelper.floor(x);
         int floorY = MathHelper.floor(y);
         int floorZ = MathHelper.floor(z);
@@ -742,7 +744,7 @@ public class FluxElevatorEntity extends Entity {
     }
 
     @Nullable
-    public Vec3d getPos(double x, double y, double z) {
+    public Vector3d getPos(double x, double y, double z) {
         int floorX = MathHelper.floor(x);
         int floorY = MathHelper.floor(y);
         int floorZ = MathHelper.floor(z);
@@ -756,7 +758,7 @@ public class FluxElevatorEntity extends Entity {
 
         if (isValidBeamBlock(state.getBlock())) {
             RailShape dir = getBeamDirection(state);
-            return new Vec3d(x, y, z);
+            return new Vector3d(x, y, z);
         } else {
             return null;
         }
@@ -832,8 +834,8 @@ public class FluxElevatorEntity extends Entity {
                         if (entityIn instanceof FluxElevatorEntity) {
                             double ddx = entityIn.getPosX() - this.getPosX();
                             double ddz = entityIn.getPosZ() - this.getPosZ();
-                            Vec3d vec3d = (new Vec3d(ddx, 0.0D, ddz)).normalize();
-                            Vec3d vec3d1 = (new Vec3d(MathHelper.cos(this.rotationYaw * 0.017453292F), 0.0D, MathHelper.sin(this.rotationYaw * 0.017453292F))).normalize();
+                            Vector3d vec3d = (new Vector3d(ddx, 0.0D, ddz)).normalize();
+                            Vector3d vec3d1 = (new Vector3d(MathHelper.cos(this.rotationYaw * 0.017453292F), 0.0D, MathHelper.sin(this.rotationYaw * 0.017453292F))).normalize();
                             double d6 = Math.abs(vec3d.dotProduct(vec3d1));
 
                             if (d6 < 0.8D) {
@@ -890,9 +892,9 @@ public class FluxElevatorEntity extends Entity {
     }
 
     @Override
-    public boolean processInitialInteract(PlayerEntity player, Hand hand) {
+    public ActionResultType interact(PlayerEntity player, Hand hand) {
         if (player.isSneaking()) {
-            return false;
+            return ActionResultType.PASS;
 //        } else if (this.isBeingRidden()) {    // @todo
 //            return true;
         } else {
@@ -900,7 +902,7 @@ public class FluxElevatorEntity extends Entity {
                 player.startRiding(this);
             }
 
-            return true;
+            return ActionResultType.SUCCESS;
         }
     }
 
@@ -944,6 +946,6 @@ public class FluxElevatorEntity extends Entity {
         double max = this.getMaxSpeed();
         mX = MathHelper.clamp(mX, -max, max);
         mZ = MathHelper.clamp(mZ, -max, max);
-        this.move(MoverType.SELF, new Vec3d(mX, 0.0D, mZ));
+        this.move(MoverType.SELF, new Vector3d(mX, 0.0D, mZ));
     }
 }

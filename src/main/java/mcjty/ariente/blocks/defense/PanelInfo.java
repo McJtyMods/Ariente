@@ -4,7 +4,7 @@ import mcjty.ariente.varia.Intersections;
 import mcjty.ariente.varia.Triangle;
 import net.minecraft.entity.Entity;
 import net.minecraft.util.math.AxisAlignedBB;
-import net.minecraft.util.math.Vec3d;
+import net.minecraft.util.math.vector.Vector3d;
 
 import javax.annotation.Nullable;
 
@@ -45,61 +45,61 @@ public class PanelInfo {
         AxisAlignedBB box = entity.getBoundingBox().grow(0, -.4, 0);
         Triangle triangle = PentakisDodecahedron.getTriangle(getIndex());
         // @todo not very efficient
-        Vec3d offs = triangle.getMid().scale(scale);
-        Vec3d entityPos = new Vec3d(x, y, z);
-        Vec3d a = triangle.getA().scale(scale).subtract(offs).add(entityPos);
-        Vec3d b = triangle.getB().scale(scale).subtract(offs).add(entityPos);
-        Vec3d c = triangle.getC().scale(scale).subtract(offs).add(entityPos);
+        Vector3d offs = triangle.getMid().scale(scale);
+        Vector3d entityPos = new Vector3d(x, y, z);
+        Vector3d a = triangle.getA().scale(scale).subtract(offs).add(entityPos);
+        Vector3d b = triangle.getB().scale(scale).subtract(offs).add(entityPos);
+        Vector3d c = triangle.getC().scale(scale).subtract(offs).add(entityPos);
         return Intersections.boxTriangleTest(box, new Triangle(a, b, c));
     }
 
     @Nullable
-    public Vec3d testCollisionSegment(Vec3d p1, Vec3d p2, double scale) {
+    public Vector3d testCollisionSegment(Vector3d p1, Vector3d p2, double scale) {
         Triangle triangle = PentakisDodecahedron.getTriangle(getIndex());
         // @todo not very efficient, cache
-        Vec3d offs = triangle.getMid().scale(scale);
-        Vec3d entityPos = new Vec3d(x, y, z);
-        Vec3d a = triangle.getA().scale(scale).subtract(offs).add(entityPos);
-        Vec3d b = triangle.getB().scale(scale).subtract(offs).add(entityPos);
-        Vec3d c = triangle.getC().scale(scale).subtract(offs).add(entityPos);
+        Vector3d offs = triangle.getMid().scale(scale);
+        Vector3d entityPos = new Vector3d(x, y, z);
+        Vector3d a = triangle.getA().scale(scale).subtract(offs).add(entityPos);
+        Vector3d b = triangle.getB().scale(scale).subtract(offs).add(entityPos);
+        Vector3d c = triangle.getC().scale(scale).subtract(offs).add(entityPos);
         return Intersections.segmentTriangleTest(p1, p2, new Triangle(a, b, c));
     }
 
-    public double getSquaredDistance(Vec3d p, double scale) {
+    public double getSquaredDistance(Vector3d p, double scale) {
         // @todo optimize/cache?
         Triangle triangle = PentakisDodecahedron.getTriangle(getIndex());
-        Vec3d offs = triangle.getMid().scale(scale);
-        Vec3d entityPos = new Vec3d(x, y, z);
-        Vec3d a = triangle.getA().scale(scale).subtract(offs).add(entityPos);
-        Vec3d b = triangle.getB().scale(scale).subtract(offs).add(entityPos);
-        Vec3d c = triangle.getC().scale(scale).subtract(offs).add(entityPos);
+        Vector3d offs = triangle.getMid().scale(scale);
+        Vector3d entityPos = new Vector3d(x, y, z);
+        Vector3d a = triangle.getA().scale(scale).subtract(offs).add(entityPos);
+        Vector3d b = triangle.getB().scale(scale).subtract(offs).add(entityPos);
+        Vector3d c = triangle.getC().scale(scale).subtract(offs).add(entityPos);
 
         // Calculate triangle normal
-        Vec3d e0 = b.subtract(a);
-        Vec3d n = e0.crossProduct(c.subtract(a)).normalize();
+        Vector3d e0 = b.subtract(a);
+        Vector3d n = e0.crossProduct(c.subtract(a)).normalize();
 
-        Vec3d v = p.subtract(a);
+        Vector3d v = p.subtract(a);
         double dot = v.dotProduct(n);
-        Vec3d s = v.subtract(n.scale(dot));
+        Vector3d s = v.subtract(n.scale(dot));
         return s.x*s.x + s.y*s.y + s.z*s.z;
     }
 
-    public Vec3d getClosestPoint(Vec3d p, double scale) {
+    public Vector3d getClosestPoint(Vector3d p, double scale) {
         // @todo optimize/cache?
         Triangle triangle = PentakisDodecahedron.getTriangle(getIndex());
-        Vec3d offs = triangle.getMid().scale(scale);
-        Vec3d entityPos = new Vec3d(x, y, z);
-        Vec3d a = triangle.getA().scale(scale).subtract(offs).add(entityPos);
-        Vec3d b = triangle.getB().scale(scale).subtract(offs).add(entityPos);
-        Vec3d c = triangle.getC().scale(scale).subtract(offs).add(entityPos);
+        Vector3d offs = triangle.getMid().scale(scale);
+        Vector3d entityPos = new Vector3d(x, y, z);
+        Vector3d a = triangle.getA().scale(scale).subtract(offs).add(entityPos);
+        Vector3d b = triangle.getB().scale(scale).subtract(offs).add(entityPos);
+        Vector3d c = triangle.getC().scale(scale).subtract(offs).add(entityPos);
 
         // Calculate triangle normal
-        Vec3d e0 = b.subtract(a);
-        Vec3d n = e0.crossProduct(c.subtract(a)).normalize();
+        Vector3d e0 = b.subtract(a);
+        Vector3d n = e0.crossProduct(c.subtract(a)).normalize();
 
-        Vec3d v = p.subtract(a);
+        Vector3d v = p.subtract(a);
         double dot = v.dotProduct(n);
-        Vec3d s = v.subtract(n.scale(dot));
+        Vector3d s = v.subtract(n.scale(dot));
         return a.add(s);
     }
 }

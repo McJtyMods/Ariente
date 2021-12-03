@@ -28,7 +28,7 @@ import net.minecraft.util.Hand;
 import net.minecraft.util.math.AxisAlignedBB;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.BlockRayTraceResult;
-import net.minecraft.util.math.Vec3d;
+import net.minecraft.util.math.vector.Vector3d;
 import net.minecraft.world.World;
 import net.minecraftforge.common.util.Constants;
 
@@ -113,7 +113,7 @@ public class ElevatorTile extends GenericTileEntity implements IGuiTile, ITickab
                     } else {
                         motionY = 0.0;
                     }
-                    Vec3d motion = clientPlayer.getMotion();
+                    Vector3d motion = clientPlayer.getMotion();
                     clientPlayer.setMotion(motion.x, motionY, motion.z);
                 } else {
                     if (moveToFloor == -1) {
@@ -142,10 +142,10 @@ public class ElevatorTile extends GenericTileEntity implements IGuiTile, ITickab
                             motionY = 0.0;
                             moveToFloor = -1;
                         }
-                        Vec3d motion = clientPlayer.getMotion();
+                        Vector3d motion = clientPlayer.getMotion();
                         clientPlayer.setMotion(motion.x, motionY, motion.z);
                     } else {
-                        Vec3d motion = clientPlayer.getMotion();
+                        Vector3d motion = clientPlayer.getMotion();
                         clientPlayer.setMotion(motion.x, 0, motion.z);
                     }
                 }

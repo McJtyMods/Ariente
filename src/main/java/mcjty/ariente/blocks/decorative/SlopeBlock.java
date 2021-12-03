@@ -7,7 +7,7 @@ import mcjty.lib.builder.BlockBuilder;
 import net.minecraft.block.BlockState;
 import net.minecraft.block.material.Material;
 import net.minecraft.item.BlockItemUseContext;
-import net.minecraft.state.IProperty;
+import net.minecraft.state.Property;
 import net.minecraft.util.Direction;
 import net.minecraft.util.Rotation;
 import net.minecraft.util.math.BlockPos;
@@ -18,7 +18,7 @@ import javax.annotation.Nullable;
 
 public class SlopeBlock extends BaseBlock {
 
-    private static final IProperty[] PROPERTIES = {EnumFacingUpDown.FACING};
+    private static final Property[] PROPERTIES = {EnumFacingUpDown.FACING};
 
     public SlopeBlock() {
         super(new BlockBuilder()
@@ -75,7 +75,7 @@ public class SlopeBlock extends BaseBlock {
     }
 
     @Override
-    protected IProperty<?>[] getProperties() {
+    protected Property<?>[] getProperties() {
         return PROPERTIES;
     }
 }

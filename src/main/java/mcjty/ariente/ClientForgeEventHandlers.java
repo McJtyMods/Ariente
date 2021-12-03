@@ -15,7 +15,7 @@ import net.minecraft.item.ItemStack;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.BlockRayTraceResult;
 import net.minecraft.util.math.RayTraceResult;
-import net.minecraft.util.math.Vec3d;
+import net.minecraft.util.math.vector.Vector3d;
 import net.minecraftforge.client.event.*;
 import net.minecraftforge.event.entity.EntityMountEvent;
 import net.minecraftforge.event.entity.player.PlayerInteractEvent;
@@ -152,13 +152,13 @@ public class ClientForgeEventHandlers {
     }
 
     private void handleSpeed(PlayerEntity player, double v2, double powersuitMaxForwardGroundSpeed, double powersuitMaxForwardFlySpeed, boolean hasFlight) {
-        Vec3d vec3d = player.getLookVec().normalize().scale(v2);
+        Vector3d vec3d = player.getLookVec().normalize().scale(v2);
         double motionX = player.getMotion().x;
         double motionY = player.getMotion().y;
         double motionZ = player.getMotion().z;
         motionX += vec3d.x;
         motionZ += vec3d.z;
-        Vec3d v = new Vec3d(motionX, motionY, motionZ);
+        Vector3d v = new Vector3d(motionX, motionY, motionZ);
         double max = (player.onGround || !hasFlight) ?
                 powersuitMaxForwardGroundSpeed :
                 powersuitMaxForwardFlySpeed;

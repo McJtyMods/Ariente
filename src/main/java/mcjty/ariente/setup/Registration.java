@@ -128,42 +128,42 @@ public class Registration {
 
     public static final RegistryObject<BlackTechBlock> BLACK_TECH = BLOCKS.register("blacktech", BlackTechBlock::new);
     public static final Map<TechType, RegistryObject<BlockStateItem>> BLACK_TECH_ITEMS = Arrays.stream(TechType.values())
-            .map(type -> Pair.of(type, ITEMS.register("blacktech_" + type.getName(), () -> new BlockStateItem(BLACK_TECH.get().getDefaultState().with(TechType.TYPE, type), createStandardProperties()))))
+            .map(type -> Pair.of(type, ITEMS.register("blacktech_" + type.getString(), () -> new BlockStateItem(BLACK_TECH.get().getDefaultState().with(TechType.TYPE, type), createStandardProperties()))))
             .collect(Collectors.toMap(Pair::getKey, Pair::getValue));
 
     public static final RegistryObject<MarbleTechBlock> MARBLE_TECH = BLOCKS.register("marbletech", MarbleTechBlock::new);
     public static final Map<MarbleType, RegistryObject<BlockStateItem>> MARBLE_TECH_ITEMS = Arrays.stream(MarbleType.values())
-            .map(type -> Pair.of(type, ITEMS.register("marbletech_" + type.getName(), () -> new BlockStateItem(MARBLE_TECH.get().getDefaultState().with(MarbleType.TYPE, type), createStandardProperties()))))
+            .map(type -> Pair.of(type, ITEMS.register("marbletech_" + type.getString(), () -> new BlockStateItem(MARBLE_TECH.get().getDefaultState().with(MarbleType.TYPE, type), createStandardProperties()))))
             .collect(Collectors.toMap(Pair::getKey, Pair::getValue));
 
     public static final RegistryObject<PatternBlock> PATTERN = BLOCKS.register("pattern", PatternBlock::new);
     public static final Map<PatternType, RegistryObject<BlockStateItem>> PATTERN_ITEMS = Arrays.stream(PatternType.values())
-            .map(type -> Pair.of(type, ITEMS.register("pattern_" + type.getName(), () -> new BlockStateItem(PATTERN.get().getDefaultState().with(PatternBlock.TYPE, type), createStandardProperties()))))
+            .map(type -> Pair.of(type, ITEMS.register("pattern_" + type.getString(), () -> new BlockStateItem(PATTERN.get().getDefaultState().with(PatternBlock.TYPE, type), createStandardProperties()))))
             .collect(Collectors.toMap(Pair::getKey, Pair::getValue));
 
     public static final RegistryObject<MarbleBlock> MARBLE = BLOCKS.register("marble", MarbleBlock::new);
     public static final Map<MarbleColor, RegistryObject<BlockStateItem>> MARBLE_ITEMS = Arrays.stream(MarbleColor.values())
-            .map(type -> Pair.of(type, ITEMS.register("marble_" + type.getName(), () -> new BlockStateItem(MARBLE.get().getDefaultState().with(MarbleColor.COLOR, type), createStandardProperties()))))
+            .map(type -> Pair.of(type, ITEMS.register("marble_" + type.getString(), () -> new BlockStateItem(MARBLE.get().getDefaultState().with(MarbleColor.COLOR, type), createStandardProperties()))))
             .collect(Collectors.toMap(Pair::getKey, Pair::getValue));
 
     public static final RegistryObject<MarbleBlock> MARBLE_SMOOTH = BLOCKS.register("marble_smooth", MarbleBlock::new);
     public static final Map<MarbleColor, RegistryObject<BlockStateItem>> MARBLE_SMOOTH_ITEMS = Arrays.stream(MarbleColor.values())
-            .map(type -> Pair.of(type, ITEMS.register("marble_smooth_" + type.getName(), () -> new BlockStateItem(MARBLE_SMOOTH.get().getDefaultState().with(MarbleColor.COLOR, type), createStandardProperties()))))
+            .map(type -> Pair.of(type, ITEMS.register("marble_smooth_" + type.getString(), () -> new BlockStateItem(MARBLE_SMOOTH.get().getDefaultState().with(MarbleColor.COLOR, type), createStandardProperties()))))
             .collect(Collectors.toMap(Pair::getKey, Pair::getValue));
 
     public static final RegistryObject<MarbleBlock> MARBLE_PILAR = BLOCKS.register("marble_pilar", MarbleBlock::new);
     public static final Map<MarbleColor, RegistryObject<BlockStateItem>> MARBLE_PILAR_ITEMS = Arrays.stream(MarbleColor.values())
-            .map(type -> Pair.of(type, ITEMS.register("marble_pilar_" + type.getName(), () -> new BlockStateItem(MARBLE_PILAR.get().getDefaultState().with(MarbleColor.COLOR, type), createStandardProperties()))))
+            .map(type -> Pair.of(type, ITEMS.register("marble_pilar_" + type.getString(), () -> new BlockStateItem(MARBLE_PILAR.get().getDefaultState().with(MarbleColor.COLOR, type), createStandardProperties()))))
             .collect(Collectors.toMap(Pair::getKey, Pair::getValue));
 
     public static final RegistryObject<MarbleBlock> MARBLE_BRICKS = BLOCKS.register("marble_bricks", MarbleBlock::new);
     public static final Map<MarbleColor, RegistryObject<BlockStateItem>> MARBLE_BRICKS_ITEMS = Arrays.stream(MarbleColor.values())
-            .map(type -> Pair.of(type, ITEMS.register("marble_bricks_" + type.getName(), () -> new BlockStateItem(MARBLE_BRICKS.get().getDefaultState().with(MarbleColor.COLOR, type), createStandardProperties()))))
+            .map(type -> Pair.of(type, ITEMS.register("marble_bricks_" + type.getString(), () -> new BlockStateItem(MARBLE_BRICKS.get().getDefaultState().with(MarbleColor.COLOR, type), createStandardProperties()))))
             .collect(Collectors.toMap(Pair::getKey, Pair::getValue));
 
     public static final RegistryObject<MarbleSlabBlock> MARBLE_SLAB = BLOCKS.register("marble_slab", MarbleSlabBlock::new);
     public static final Map<MarbleColor, RegistryObject<BlockStateItem>> MARBLE_SLAB_ITEMS = Arrays.stream(MarbleColor.values())
-            .map(type -> Pair.of(type, ITEMS.register("marble_slab_" + type.getName(), () -> new BlockStateItem(MARBLE_SLAB.get().getDefaultState().with(MarbleColor.COLOR, type), createStandardProperties()))))
+            .map(type -> Pair.of(type, ITEMS.register("marble_slab_" + type.getString(), () -> new BlockStateItem(MARBLE_SLAB.get().getDefaultState().with(MarbleColor.COLOR, type), createStandardProperties()))))
             .collect(Collectors.toMap(Pair::getKey, Pair::getValue));
 
     public static final RegistryObject<BaseBlock> ORE_LITHIUM = BLOCKS.register("lithiumore", BaseOreBlock::new);

@@ -13,7 +13,7 @@ import net.minecraft.entity.Entity;
 import net.minecraft.tileentity.TileEntity;
 import net.minecraft.util.ResourceLocation;
 import net.minecraft.util.math.BlockPos;
-import net.minecraft.util.math.Vec3d;
+import net.minecraft.util.math.vector.Vector3d;
 import org.apache.commons.lang3.tuple.Pair;
 import org.lwjgl.opengl.GL11;
 
@@ -27,14 +27,14 @@ public class ForceFieldRenderer {
     private static final Set<BlockPos> forceFields = new HashSet<>();    // A set of force fields that are in render range
     private static Random random = new Random();
 
-    public static Map<Vec3d, Boolean> personalForcefields = new HashMap<>();
+    public static Map<Vector3d, Boolean> personalForcefields = new HashMap<>();
 
     private static class DamageInfo {
         float damage;
         long prevticks;
-        Vec3d intersection;
+        Vector3d intersection;
 
-        public DamageInfo(float damage, long prevticks, Vec3d intersection) {
+        public DamageInfo(float damage, long prevticks, Vector3d intersection) {
             this.damage = damage;
             this.prevticks = prevticks;
             this.intersection = intersection;
@@ -60,7 +60,7 @@ public class ForceFieldRenderer {
         }
     }
 
-    public static void damageField(BlockPos pos, int index, Vec3d intersection) {
+    public static void damageField(BlockPos pos, int index, Vector3d intersection) {
         Pair<BlockPos, Integer> key = Pair.of(pos, index);
         damageStats.put(key, new DamageInfo(1.0f, -1, intersection));
     }
@@ -68,7 +68,7 @@ public class ForceFieldRenderer {
     private static long randomSeedCounter = 0;
 
     public static void renderForceFields(float partialTicks) {
-        for (Vec3d vec3d : personalForcefields.keySet()) {
+        for (Vector3d vec3d : personalForcefields.keySet()) {
             PowerSuitModel.renderForcefield(vec3d.x, vec3d.y+.6, vec3d.z, personalForcefields.get(vec3d) ? 1 : partialTicks);
         }
         personalForcefields.clear();
@@ -147,17 +147,17 @@ public class ForceFieldRenderer {
                 if (damage != null) {
                     Triangle triangle = PentakisDodecahedron.getTriangle(info.getIndex());
 
-                    Vec3d offs = triangle.getMid().scale(scale);
+                    Vector3d offs = triangle.getMid().scale(scale);
 
                     // @todo optimize/cache?
-                    Vec3d t0 = triangle.getA().scale(scale).subtract(offs);
-                    Vec3d t1 = triangle.getB().scale(scale).subtract(offs);
-                    Vec3d t2 = triangle.getC().scale(scale).subtract(offs);
+                    Vector3d t0 = triangle.getA().scale(scale).subtract(offs);
+                    Vector3d t1 = triangle.getB().scale(scale).subtract(offs);
+                    Vector3d t2 = triangle.getC().scale(scale).subtract(offs);
                     // Calculate triangle normal
-                    Vec3d e0 = t1.subtract(t0);
-                    Vec3d n = e0.crossProduct(t2.subtract(t0)).normalize();
+                    Vector3d e0 = t1.subtract(t0);
+                    Vector3d n = e0.crossProduct(t2.subtract(t0)).normalize();
                     e0 = e0.normalize();
-                    Vec3d e1 = e0.crossProduct(n).normalize();
+                    Vector3d e1 = e0.crossProduct(n).normalize();
 
                     Tessellator t = Tessellator.getInstance();
                     BufferBuilder builder = t.getBuffer();
@@ -169,10 +169,10 @@ public class ForceFieldRenderer {
                     e0 = e0.scale(sc);
                     e1 = e1.scale(sc);
 
-                    Vec3d v0 = damage.intersection.subtract(e0).subtract(e1);
-                    Vec3d v1 = damage.intersection.add(e0).subtract(e1);
-                    Vec3d v2 = damage.intersection.add(e0).add(e1);
-                    Vec3d v3 = damage.intersection.subtract(e0).add(e1);
+                    Vector3d v0 = damage.intersection.subtract(e0).subtract(e1);
+                    Vector3d v1 = damage.intersection.add(e0).subtract(e1);
+                    Vector3d v2 = damage.intersection.add(e0).add(e1);
+                    Vector3d v3 = damage.intersection.subtract(e0).add(e1);
 
                     builder.pos(x + v0.x, y + v0.y, z + v0.z).tex(0, 0).color(1, 1, 1, a).endVertex();
                     builder.pos(x + v1.x, y + v1.y, z + v1.z).tex(1, 0).color(1, 1, 1, a).endVertex();
@@ -235,15 +235,15 @@ public class ForceFieldRenderer {
         int index = info.getIndex();
         Triangle triangle = PentakisDodecahedron.getTriangle(index);
 
-        Vec3d offs = triangle.getMid().scale(scale);
+        Vector3d offs = triangle.getMid().scale(scale);
         x += offs.x;
         y += offs.y;
         z += offs.z;
 
         // @todo optimize?
-        Vec3d v0 = triangle.getA().scale(scale).subtract(offs);
-        Vec3d v1 = triangle.getB().scale(scale).subtract(offs);
-        Vec3d v2 = triangle.getC().scale(scale).subtract(offs);
+        Vector3d v0 = triangle.getA().scale(scale).subtract(offs);
+        Vector3d v1 = triangle.getB().scale(scale).subtract(offs);
+        Vector3d v2 = triangle.getC().scale(scale).subtract(offs);
 
         builder.pos(x + v0.x, y + v0.y, z + v0.z).tex(0, 0).color(r, g, b, a).endVertex();
         builder.pos(x + v1.x, y + v1.y, z + v1.z).tex(1, 0).color(r, g, b, a).endVertex();

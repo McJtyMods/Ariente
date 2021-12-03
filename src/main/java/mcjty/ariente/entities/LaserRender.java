@@ -13,7 +13,7 @@ import net.minecraft.client.renderer.entity.EntityRendererManager;
 import net.minecraft.client.renderer.texture.AtlasTexture;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.util.ResourceLocation;
-import net.minecraft.util.math.Vec3d;
+import net.minecraft.util.math.vector.Vector3d;
 import net.minecraftforge.fml.client.registry.IRenderFactory;
 import org.lwjgl.opengl.GL11;
 
@@ -64,7 +64,7 @@ public class LaserRender extends EntityRenderer<LaserEntity> {
         // @todo 1.15
 //        BufferBuilder buffer = tessellator.getBuffer();
 
-        Vec3d lv = entity.getLookVec();
+        Vector3d lv = entity.getLookVec();
 
         // ----------------------------------------
 

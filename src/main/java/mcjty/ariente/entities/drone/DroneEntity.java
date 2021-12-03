@@ -21,6 +21,7 @@ import net.minecraft.util.ResourceLocation;
 import net.minecraft.util.SoundCategory;
 import net.minecraft.util.SoundEvent;
 import net.minecraft.util.math.*;
+import net.minecraft.util.math.vector.Vector3d;
 import net.minecraft.world.Difficulty;
 import net.minecraft.world.IWorld;
 import net.minecraft.world.IWorldReader;
@@ -258,7 +259,7 @@ public class DroneEntity extends FlyingEntity implements IMob, IForcefieldImmuni
 
                 if (this.attackTimer == 20) {
                     double d1 = 4.0D;
-                    Vec3d vec3d = this.drone.getLook(1.0F);
+                    Vector3d vec3d = this.drone.getLook(1.0F);
 
 //                    world.playSound(null, target.getPosX() - vec3d.x * 8.0d, target.getPosY() - vec3d.y * 8.0d, target.getPosZ() - vec3d.z * 8.0d, ModSounds.droneShoot, SoundCategory.HOSTILE, 5.0f, 1.0f);
 

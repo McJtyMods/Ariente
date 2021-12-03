@@ -6,7 +6,7 @@ import mcjty.lib.multipart.PartSlot;
 import mcjty.lib.spline.CatmullRomSpline;
 import net.minecraft.item.ItemStack;
 import net.minecraft.util.math.BlockPos;
-import net.minecraft.util.math.Vec3d;
+import net.minecraft.util.math.vector.Vector3d;
 
 import java.util.Random;
 
@@ -62,14 +62,14 @@ public class TransferRender {
         // @todo 1.14 meta transfer.getMeta()
         stack = new ItemStack(transfer.getItem(), 1);
 
-        Vec3d sta = new Vec3d(path.getSourcePos().getPos().subtract(relative)).add(getPos(path.getSourcePos().getSlot()));
-        Vec3d end = new Vec3d(path.getDestPos().getPos().subtract(relative)).add(getPos(path.getDestPos().getSlot()));
+        Vector3d sta = new Vector3d(path.getSourcePos().getPos().subtract(relative)).add(getPos(path.getSourcePos().getSlot()));
+        Vector3d end = new Vector3d(path.getDestPos().getPos().subtract(relative)).add(getPos(path.getDestPos().getSlot()));
         double distance = Math.sqrt(sta.squareDistanceTo(end));
         duration = (long) (distance * 600) + 100;
 
         double jitter = distance / 5.0;
         Random random = new Random();
-        Vec3d mid = sta.add(end).scale(0.5).add(
+        Vector3d mid = sta.add(end).scale(0.5).add(
                 random.nextFloat() * jitter - (jitter/2.0),
                 random.nextFloat() * jitter - (jitter/2.0),
                 random.nextFloat() * jitter - (jitter/2.0));
@@ -101,12 +101,12 @@ public class TransferRender {
         double factor = (time - startTime) / (double) duration;
         spline.calculate((float) factor);
         AnimatedPoint pos = spline.getInterpolated();
-        renderStack(stack, new Vec3d(pos.x, pos.y, pos.z), pos.rotation, pos.size);
+        renderStack(stack, new Vector3d(pos.x, pos.y, pos.z), pos.rotation, pos.size);
 
         return true;
     }
 
-    private void renderStack(ItemStack stack, Vec3d pos, double rotation, double size) {
+    private void renderStack(ItemStack stack, Vector3d pos, double rotation, double size) {
         GlStateManager.pushMatrix();
         GlStateManager.translated(pos.x, pos.y, pos.z);
         GlStateManager.rotatef((float) rotation, 0, 1, 0);
@@ -117,74 +117,74 @@ public class TransferRender {
     }
 
 
-    private static Vec3d getPos(PartSlot slot) {
+    private static Vector3d getPos(PartSlot slot) {
         double d = .3;
         double e = .7;
         switch (slot) {
             case NONE:
-                return Vec3d.ZERO;
+                return Vector3d.ZERO;
             case DOWN:
-                return new Vec3d(.5, d, .5);
+                return new Vector3d(.5, d, .5);
             case UP:
-                return new Vec3d(.5, e, .5);
+                return new Vector3d(.5, e, .5);
             case NORTH:
-                return new Vec3d(.5, .5, d);
+                return new Vector3d(.5, .5, d);
             case SOUTH:
-                return new Vec3d(.5, .5, e);
+                return new Vector3d(.5, .5, e);
             case WEST:
-                return new Vec3d(d, .5, .5);
+                return new Vector3d(d, .5, .5);
             case EAST:
-                return new Vec3d(e, .5, .5);
+                return new Vector3d(e, .5, .5);
             case DOWN_NW:
-                return new Vec3d(.25, d, .25);
+                return new Vector3d(.25, d, .25);
             case DOWN_NE:
-                return new Vec3d(.75, d, .25);
+                return new Vector3d(.75, d, .25);
             case DOWN_SW:
-                return new Vec3d(.25, d, .75);
+                return new Vector3d(.25, d, .75);
             case DOWN_SE:
-                return new Vec3d(.75, d, .75);
+                return new Vector3d(.75, d, .75);
             case UP_NW:
-                return new Vec3d(.25, e, .25);
+                return new Vector3d(.25, e, .25);
             case UP_NE:
-                return new Vec3d(.75, e, .25);
+                return new Vector3d(.75, e, .25);
             case UP_SW:
-                return new Vec3d(.25, e, .75);
+                return new Vector3d(.25, e, .75);
             case UP_SE:
-                return new Vec3d(.75, e, .75);
+                return new Vector3d(.75, e, .75);
             case NORTH_UW:
-                return new Vec3d(.25, .75, d);
+                return new Vector3d(.25, .75, d);
             case NORTH_UE:
-                return new Vec3d(.75, .75, d);
+                return new Vector3d(.75, .75, d);
             case NORTH_DW:
-                return new Vec3d(.25, .25, d);
+                return new Vector3d(.25, .25, d);
             case NORTH_DE:
-                return new Vec3d(.75, .25, d);
+                return new Vector3d(.75, .25, d);
             case SOUTH_UW:
-                return new Vec3d(.25, .75, e);
+                return new Vector3d(.25, .75, e);
             case SOUTH_UE:
-                return new Vec3d(.75, .75, e);
+                return new Vector3d(.75, .75, e);
             case SOUTH_DW:
-                return new Vec3d(.25, .25, e);
+                return new Vector3d(.25, .25, e);
             case SOUTH_DE:
-                return new Vec3d(.75, .25, e);
+                return new Vector3d(.75, .25, e);
             case WEST_US:
-                return new Vec3d(d, .75, .75);
+                return new Vector3d(d, .75, .75);
             case WEST_UN:
-                return new Vec3d(d, .75, .25);
+                return new Vector3d(d, .75, .25);
             case WEST_DS:
-                return new Vec3d(d, .25, .75);
+                return new Vector3d(d, .25, .75);
             case WEST_DN:
-                return new Vec3d(d, .25, .25);
+                return new Vector3d(d, .25, .25);
             case EAST_US:
-                return new Vec3d(e, .75, .75);
+                return new Vector3d(e, .75, .75);
             case EAST_UN:
-                return new Vec3d(e, .75, .25);
+                return new Vector3d(e, .75, .25);
             case EAST_DS:
-                return new Vec3d(e, .25, .75);
+                return new Vector3d(e, .25, .75);
             case EAST_DN:
-                return new Vec3d(e, .25, .25);
+                return new Vector3d(e, .25, .25);
         }
-        return Vec3d.ZERO;
+        return Vector3d.ZERO;
     }
 
 

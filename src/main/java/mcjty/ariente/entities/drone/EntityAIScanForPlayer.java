@@ -3,8 +3,8 @@ package mcjty.ariente.entities.drone;
 import com.google.common.base.Predicate;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.LivingEntity;
-import net.minecraft.entity.SharedMonsterAttributes;
-import net.minecraft.entity.ai.attributes.IAttributeInstance;
+import net.minecraft.entity.ai.attributes.Attributes;
+import net.minecraft.entity.ai.attributes.ModifiableAttributeInstance;
 import net.minecraft.entity.ai.goal.Goal;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.entity.player.ServerPlayerEntity;
@@ -110,7 +110,7 @@ public class EntityAIScanForPlayer extends Goal {
     }
 
     protected double maxTargetRange() {
-        IAttributeInstance iattributeinstance = this.entityLiving.getAttribute(SharedMonsterAttributes.FOLLOW_RANGE);
+        ModifiableAttributeInstance iattributeinstance = this.entityLiving.getAttribute(Attributes.FOLLOW_RANGE);
         return iattributeinstance == null ? 16.0D : iattributeinstance.getValue();
     }
 }

@@ -16,6 +16,7 @@ import net.minecraft.util.ResourceLocation;
 import net.minecraft.util.SoundCategory;
 import net.minecraft.util.SoundEvent;
 import net.minecraft.util.math.*;
+import net.minecraft.util.math.vector.Vector3d;
 import net.minecraft.world.Difficulty;
 import net.minecraft.world.IWorld;
 import net.minecraft.world.IWorldReader;
@@ -323,7 +324,7 @@ public class SentinelDroneEntity extends FlyingEntity implements IMob, IForcefie
                     d3 = Math.sqrt(d3);
 
                     if (this.isNotColliding(this.posX, this.posY, this.posZ, d3)) {
-                        Vec3d motion = this.parentEntity.getMotion();
+                        Vector3d motion = this.parentEntity.getMotion();
                         this.parentEntity.setMotion(motion.add(d0 / d3 * 0.1D, d1 / d3 * 0.1D, d2 / d3 * 0.1D));
                     } else {
                         this.action = Action.WAIT;

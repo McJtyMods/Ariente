@@ -20,7 +20,7 @@ import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.inventory.EquipmentSlotType;
 import net.minecraft.item.ArmorItem;
 import net.minecraft.item.ItemStack;
-import net.minecraft.util.math.Vec3d;
+import net.minecraft.util.math.vector.Vector3d;
 import org.lwjgl.opengl.GL11;
 
 import static mcjty.ariente.blocks.defense.ForceFieldRenderer.FORCEFIELD;
@@ -285,7 +285,7 @@ public class PowerSuitModel extends BipedModel {
                 ItemStack chestStack = ((LivingEntity) entity).getItemStackFromSlot(EquipmentSlotType.CHEST);
                 if (chestStack.getItem() == Registration.POWERSUIT_CHEST.get()) {
                     if (ModuleSupport.hasWorkingUpgrade(chestStack, ArmorUpgradeType.FORCEFIELD)) {
-                        ForceFieldRenderer.personalForcefields.put(new Vec3d(entity.prevPosX, entity.prevPosY, entity.prevPosZ), entity instanceof PlayerEntity);
+                        ForceFieldRenderer.personalForcefields.put(new Vector3d(entity.prevPosX, entity.prevPosY, entity.prevPosZ), entity instanceof PlayerEntity);
                     }
                 }
             }
@@ -335,7 +335,7 @@ public class PowerSuitModel extends BipedModel {
         }
         for (int i = 0 ; i < PentakisDodecahedron.MAX_TRIANGLES ; i++) {
             Triangle triangle = PentakisDodecahedron.getTriangle(i);
-            Vec3d offs = triangle.getMid().scale(scale);
+            Vector3d offs = triangle.getMid().scale(scale);
             double x = posX+.5 + offs.x;
             double y = posY+.5 + offs.y;
             double z = posZ+.5 + offs.z;

@@ -25,7 +25,7 @@ import mcjty.lib.tileentity.GenericTileEntity;
 import mcjty.lib.varia.RedstoneMode;
 import net.minecraft.block.BlockState;
 import net.minecraft.entity.Entity;
-import net.minecraft.entity.IProjectile;
+import net.minecraft.entity.projectile.ProjectileEntity;
 import net.minecraft.entity.LivingEntity;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.entity.projectile.ArrowEntity;
@@ -38,7 +38,7 @@ import net.minecraft.util.Hand;
 import net.minecraft.util.math.AxisAlignedBB;
 import net.minecraft.util.math.BlockRayTraceResult;
 import net.minecraft.util.math.ChunkPos;
-import net.minecraft.util.math.Vec3d;
+import net.minecraft.util.math.vector.Vector3d;
 import net.minecraft.world.Explosion;
 import net.minecraft.world.World;
 import net.minecraftforge.fml.network.PacketDistributor;
@@ -200,9 +200,9 @@ public class ForceFieldTile extends GenericTileEntity implements IGuiTile, ITick
         double z = pos.getZ() + .5;
         double radius = getScaleDouble();
 
-        Vec3d fieldCenter = new Vec3d(x, y, z);
+        Vector3d fieldCenter = new Vector3d(x, y, z);
         AxisAlignedBB box = entity.getBoundingBox();
-        Vec3d entityCenter = new Vec3d(box.minX + (box.maxX - box.minX) * 0.5D, box.minY + (box.maxY - box.minY) * 0.5D, box.minZ + (box.maxZ - box.minZ) * 0.5D);
+        Vector3d entityCenter = new Vector3d(box.minX + (box.maxX - box.minX) * 0.5D, box.minY + (box.maxY - box.minY) * 0.5D, box.minZ + (box.maxZ - box.minZ) * 0.5D);
         double squareDist = fieldCenter.squareDistanceTo(entityCenter);
         return Math.abs(Math.sqrt(squareDist) - radius) < 10;
     }
@@ -211,19 +211,19 @@ public class ForceFieldTile extends GenericTileEntity implements IGuiTile, ITick
         double x = pos.getX() + .5;
         double y = pos.getY() + .5;
         double z = pos.getZ() + .5;
-        Vec3d fieldCenter = new Vec3d(x, y, z);
+        Vector3d fieldCenter = new Vector3d(x, y, z);
         double squaredRadius = getScaleDouble() * getScaleDouble();
 
         boolean changed = false;
 
         List<Entity> entities = world.getEntitiesWithinAABB(Entity.class, getShieldAABB(), entity -> {
-            if (entity instanceof IProjectile) {
-                Vec3d entityPos = new Vec3d(entity.getPosX(), entity.getPosY(), entity.getPosZ());
+            if (entity instanceof ProjectileEntity) {
+                Vector3d entityPos = entity.position();
                 double squareDist = fieldCenter.squareDistanceTo(entityPos);
                 if (Math.abs(squareDist - squaredRadius) < 10 * 10) {
                     return true;
                 }
-                entityPos = new Vec3d((entity.getPosX() + entity.prevPosX) / 2.0, (entity.getPosY() + entity.prevPosY) / 2.0, (entity.getPosZ() + entity.prevPosZ) / 2.0);
+                entityPos = new Vector3d((entity.getX() + entity.xOld) / 2.0, (entity.getY() + entity.yOld) / 2.0, (entity.getZ() + entity.zOld) / 2.0);
                 squareDist = fieldCenter.squareDistanceTo(entityPos);
                 if (Math.abs(squareDist - squaredRadius) < 10 * 10) {
                     return true;
@@ -245,7 +245,7 @@ public class ForceFieldTile extends GenericTileEntity implements IGuiTile, ITick
                         }
                     }
                     AxisAlignedBB box = entity.getBoundingBox();
-                    Vec3d entityCenter = new Vec3d(box.minX + (box.maxX - box.minX) * 0.5D, box.minY + (box.maxY - box.minY) * 0.5D, box.minZ + (box.maxZ - box.minZ) * 0.5D);
+                    Vector3d entityCenter = new Vector3d(box.minX + (box.maxX - box.minX) * 0.5D, box.minY + (box.maxY - box.minY) * 0.5D, box.minZ + (box.maxZ - box.minZ) * 0.5D);
 
                     double squareDist = fieldCenter.squareDistanceTo(entityCenter);
                     if (Math.abs(squareDist - squaredRadius) < 10*10) {
@@ -257,12 +257,12 @@ public class ForceFieldTile extends GenericTileEntity implements IGuiTile, ITick
         });
 
         for (Entity entity : entities) {
-            if (entity instanceof IProjectile) {
-                Vec3d p1 = new Vec3d(entity.prevPosX, entity.prevPosY, entity.prevPosZ);
-                Vec3d p2 = new Vec3d(entity.getPosX(), entity.getPosY(), entity.getPosZ());
+            if (entity instanceof ProjectileEntity) {
+                Vector3d p1 = new Vector3d(entity.xOld, entity.yOld, entity.zOld);
+                Vector3d p2 = new Vector3d(entity.getX(), entity.getY(), entity.getZ());
                 for (PanelInfo info : getPanelInfo()) {
                     if (info != null && info.getLife() > 0) {
-                        Vec3d intersection = info.testCollisionSegment(p1, p2, getScaleDouble());
+                        Vector3d intersection = info.testCollisionSegment(p1, p2, getScaleDouble());
                         if (intersection != null) {
 //                            world.newExplosion(entity, entity.getPosX(), entity.getPosY(), entity.getPosZ(), 2.0f, false, false);
                             entity.remove();
@@ -271,7 +271,7 @@ public class ForceFieldTile extends GenericTileEntity implements IGuiTile, ITick
                             if (life <= 0) {
                                 panelDestroyTimeout[info.getIndex()] = 100;
                                 panelInfo[info.getIndex()] = null;
-                                world.createExplosion(entity, entity.getPosX(), entity.getPosY(), entity.getPosZ(), 2.0f, false, Explosion.Mode.DESTROY);
+                                world.createExplosion(entity, entity.getX(), entity.getY(), entity.getZ(), 2.0f, false, Explosion.Mode.DESTROY);
                             } else {
                                 info.setLife(life);
                                 System.out.println("life = " + life + " (index " + info.getIndex() + ")");
@@ -419,7 +419,7 @@ public class ForceFieldTile extends GenericTileEntity implements IGuiTile, ITick
 
     private void createPanelInfo(int i) {
         Triangle triangle = PentakisDodecahedron.getTriangle(i);
-        Vec3d offs = triangle.getMid().scale(getScaleDouble());
+        Vector3d offs = triangle.getMid().scale(getScaleDouble());
         double x = pos.getX()+.5 + offs.x;
         double y = pos.getY()+.5 + offs.y;
         double z = pos.getZ()+.5 + offs.z;

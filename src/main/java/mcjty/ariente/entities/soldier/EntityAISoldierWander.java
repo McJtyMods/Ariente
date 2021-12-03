@@ -7,7 +7,7 @@ import mcjty.ariente.compat.arienteworld.ArienteWorldCompat;
 import net.minecraft.entity.ai.RandomPositionGenerator;
 import net.minecraft.entity.ai.goal.Goal;
 import net.minecraft.util.math.BlockPos;
-import net.minecraft.util.math.Vec3d;
+import net.minecraft.util.math.vector.Vector3d;
 
 import javax.annotation.Nullable;
 
@@ -44,7 +44,7 @@ public class EntityAISoldierWander extends Goal {
             }
         }
 
-        Vec3d vec3d = this.getPosition();
+        Vector3d vec3d = this.getPosition();
 
         if (vec3d == null) {
             return false;
@@ -58,7 +58,7 @@ public class EntityAISoldierWander extends Goal {
     }
 
     @Nullable
-    protected Vec3d getPosition() {
+    protected Vector3d getPosition() {
         if (entity.getBehaviourType() == SoldierBehaviourType.SOLDIER_GUARD) {
             return null;
         } else if (entity.getCityCenter() == null) {
@@ -68,7 +68,7 @@ public class EntityAISoldierWander extends Goal {
             ICityAI cityAI = aiSystem.getCityAI(entity.getCityCenter());
             BlockPos pos = cityAI.requestNewSoldierPosition(entity.world, entity.getAttackTarget());
             if (pos != null) {
-                return new Vec3d(pos);
+                return new Vector3d(pos);
             } else {
                 return RandomPositionGenerator.findRandomTarget(this.entity, 10, 7);
             }

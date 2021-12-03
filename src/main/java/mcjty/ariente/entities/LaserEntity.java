@@ -251,7 +251,7 @@ public class LaserEntity extends Entity implements IForcefieldImmunity {
             this.markVelocityChanged();
 
             if (source.getTrueSource() != null) {
-                Vec3d vec3d = source.getTrueSource().getLookVec();
+                Vector3d vec3d = source.getTrueSource().getLookVec();
 
                 if (vec3d != null) {
                     setMotion(vec3d);

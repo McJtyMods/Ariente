@@ -117,7 +117,7 @@ public class AutoFieldRenderer extends TileEntityRenderer<AutoFieldTile> {
         RenderHelper.drawBeam(Vector(mx, my, pz), Vector(px, my, pz), player, settings);
         RenderHelper.drawBeam(Vector(mx, my, pz), Vector(mx, py, pz), player, settings);
 
-//        net.minecraft.util.math.Vec3d cameraPos = net.minecraft.client.renderer.ActiveRenderInfo.getCameraPosition();
+//        net.minecraft.util.math.vector.Vector3d cameraPos = net.minecraft.client.renderer.ActiveRenderInfo.getCameraPosition();
 //        tessellator.getBuffer().sortVertexData((float) (player.x + doubleX), (float) (player.y + doubleY), (float) (player.z + doubleZ));
 //        tessellator.getBuffer().sortVertexData((float)(cameraPos.x+doubleX), (float)(cameraPos.y+doubleY), (float)(cameraPos.z+doubleZ));
         tessellator.draw();

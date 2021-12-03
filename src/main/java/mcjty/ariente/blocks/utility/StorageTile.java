@@ -36,7 +36,7 @@ import net.minecraft.util.*;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.BlockRayTraceResult;
 import net.minecraft.util.math.RayTraceResult;
-import net.minecraft.util.math.Vec3d;
+import net.minecraft.util.math.vector.Vector3d;
 import net.minecraft.world.World;
 import net.minecraftforge.common.capabilities.Capability;
 import net.minecraftforge.common.util.Constants;
@@ -101,7 +101,7 @@ public class StorageTile extends GenericTileEntity implements IGuiTile, ICityEqu
 
     @Override
     public ActionResultType onBlockActivated(BlockState state, PlayerEntity player, Hand hand, BlockRayTraceResult result) {
-        Vec3d hit = result.getHitVec();
+        Vector3d hit = result.getHitVec();
         BlockPos pos = result.getPos();
         StorageTile.onActivate(world, this.pos, player, result.getFace(), hit.x - pos.getX(), hit.y - pos.getY(), hit.z - pos.getZ());
         return ActionResultType.SUCCESS;
@@ -264,7 +264,7 @@ public class StorageTile extends GenericTileEntity implements IGuiTile, ICityEqu
         return getSlot(world, mouseOver.getPos(), mouseOver.getFace(), mouseOver.getHitVec());
     }
 
-    public static int getSlot(World world, BlockPos pos, Direction sideHit, Vec3d hitVec) {
+    public static int getSlot(World world, BlockPos pos, Direction sideHit, Vector3d hitVec) {
         int x = pos.getX();
         int y = pos.getY();
         int z = pos.getZ();

@@ -6,7 +6,7 @@ import net.minecraft.client.audio.TickableSound;
 import net.minecraft.util.SoundEvent;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.World;
-import net.minecraft.world.dimension.DimensionType;
+import net.minecraft.world.DimensionType;
 import org.apache.commons.lang3.tuple.Pair;
 
 import java.util.Map;

@@ -173,7 +173,7 @@ public class EntityArientePearl extends Entity implements IRendersAsItem {
                 if (this.shatterOrDrop) {
                     this.world.addEntity(new ItemEntity(this.world, this.getPosX(), this.getPosY(), this.getPosZ(), new ItemStack(Registration.ARIENTE_PEARL.get())));
                 } else {
-                    this.world.playEvent(2003, new BlockPos(this), 0);
+                    this.world.playEvent(2003, new BlockPos(this.getPos()), 0);
                 }
             }
         }

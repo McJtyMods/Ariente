@@ -12,10 +12,10 @@ import net.minecraft.block.Blocks;
 import net.minecraft.block.SoundType;
 import net.minecraft.entity.EntityType;
 import net.minecraft.entity.LivingEntity;
-import net.minecraft.entity.SharedMonsterAttributes;
+import net.minecraft.entity.ai.attributes.Attributes;
 import net.minecraft.entity.ai.goal.*;
 import net.minecraft.entity.monster.MonsterEntity;
-import net.minecraft.entity.monster.ZombiePigmanEntity;
+import net.minecraft.entity.monster.ZombifiedPiglinEntity;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.inventory.EquipmentSlotType;
 import net.minecraft.item.ItemStack;
@@ -120,20 +120,20 @@ public class SoldierEntity extends MonsterEntity implements IArmRaisable, IForce
 //        LootTable lootTableFromLocation = worldObj.getLootTableManager().getLootTableFromLocation(LOOT);
 //        System.out.println("lootTableFromLocation = " + lootTableFromLocation);
     }
-//            this.getAttributes().registerAttribute(SharedMonsterAttributes.FOLLOW_RANGE).setBaseValue(16.0D);
+//            this.getAttributes().registerAttribute(Attributes.FOLLOW_RANGE).setBaseValue(16.0D);
 
     @Override
     protected void registerAttributes() {
         super.registerAttributes();
-        this.getAttribute(SharedMonsterAttributes.FOLLOW_RANGE).setBaseValue(35.0D);
-        this.getAttribute(SharedMonsterAttributes.MOVEMENT_SPEED).setBaseValue(0.32D);
+        this.getAttribute(Attributes.FOLLOW_RANGE).setBaseValue(35.0D);
+        this.getAttribute(Attributes.MOVEMENT_SPEED).setBaseValue(0.32D);
         if (isMaster()) {
-            this.getAttribute(SharedMonsterAttributes.MAX_HEALTH).setBaseValue(150.0D);
-            this.getAttribute(SharedMonsterAttributes.ATTACK_DAMAGE).setBaseValue(8.0D);
-            this.getAttribute(SharedMonsterAttributes.ARMOR).setBaseValue(6.0D);
+            this.getAttribute(Attributes.MAX_HEALTH).setBaseValue(150.0D);
+            this.getAttribute(Attributes.ATTACK_DAMAGE).setBaseValue(8.0D);
+            this.getAttribute(Attributes.ARMOR).setBaseValue(6.0D);
         } else {
-            this.getAttribute(SharedMonsterAttributes.ATTACK_DAMAGE).setBaseValue(4.0D);
-            this.getAttribute(SharedMonsterAttributes.ARMOR).setBaseValue(4.0D);
+            this.getAttribute(Attributes.ATTACK_DAMAGE).setBaseValue(4.0D);
+            this.getAttribute(Attributes.ARMOR).setBaseValue(4.0D);
         }
     }
 
@@ -183,7 +183,7 @@ public class SoldierEntity extends MonsterEntity implements IArmRaisable, IForce
         this.goalSelector.addGoal(7, new EntityAISoldierWander(this, 1.0D));
         this.goalSelector.addGoal(8, new LookAtGoal(this, PlayerEntity.class, 8.0F));
         this.goalSelector.addGoal(8, new LookRandomlyGoal(this));
-        this.targetSelector.addGoal(1, new HurtByTargetGoal(this, ZombiePigmanEntity.class));
+        this.targetSelector.addGoal(1, new HurtByTargetGoal(this, ZombifiedPiglinEntity.class));
         this.targetSelector.addGoal(2, new NearestAttackableTargetGoal<>(this, PlayerEntity.class, true));
     }
 

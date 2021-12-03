@@ -10,7 +10,7 @@ import net.minecraft.item.BlockItemUseContext;
 import net.minecraft.state.StateContainer;
 import net.minecraft.tileentity.TileEntity;
 import net.minecraft.util.math.BlockPos;
-import net.minecraft.util.math.Vec3d;
+import net.minecraft.util.math.vector.Vector3d;
 import net.minecraft.util.math.shapes.ISelectionContext;
 import net.minecraft.util.math.shapes.VoxelShape;
 import net.minecraft.world.IBlockReader;
@@ -47,7 +47,7 @@ public class BaseNodeBlock extends BaseBlock {
         BlockPos pos = context.getPos();
         TileEntity te = context.getWorld().getTileEntity(pos);
 //        if (te instanceof MultipartTE) {
-            Vec3d hit = context.getHitVec();
+            Vector3d hit = context.getHitVec();
         return AbstractNodeTile.getStateForPlacement(this, context.getFace(),
                 hit.x - pos.getX(), hit.y - pos.getY(), hit.z - pos.getZ());
 //        }
