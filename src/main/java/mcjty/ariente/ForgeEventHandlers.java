@@ -23,6 +23,7 @@ import net.minecraft.world.World;
 import net.minecraft.world.DimensionType;
 import net.minecraft.loot.LootContext;
 import net.minecraft.loot.LootFunction;
+import net.minecraft.loot.LootFunctionType;
 import net.minecraft.loot.LootPool;
 import net.minecraft.loot.LootTables;
 import net.minecraft.loot.conditions.ILootCondition;
@@ -56,6 +57,12 @@ public class ForgeEventHandlers {
                                 ConstructorRecipe recipe = BlueprintRecipeRegistry.getRandomRecipes().getRandom();
                                 return BlueprintItem.makeBluePrint(recipe.getDestination());
                             }
+
+                            @Override
+                            public LootFunctionType getFunctionType() {
+                                // TODO Auto-generated method stub
+                                return null;
+                            }
                         };
                         // @todo 1.14
 //                        main.addEntry(new LootEntryItem(ModItems.blueprintItem, WorldgenConfiguration.OVERWORLD_LOOT_BLUEPRINTS.get(), 0, new LootFunction[]{lootFunction},
@@ -67,6 +74,12 @@ public class ForgeEventHandlers {
                             public ItemStack doApply(ItemStack stack, LootContext context) {
                                 ConstructorRecipe recipe = BlueprintRecipeRegistry.getRandomRecipes().getRandom();
                                 return recipe.getDestination();
+                            }
+
+                            @Override
+                            public LootFunctionType getFunctionType() {
+                                // TODO Auto-generated method stub
+                                return null;
                             }
                         };
                         // @todo 1.14
