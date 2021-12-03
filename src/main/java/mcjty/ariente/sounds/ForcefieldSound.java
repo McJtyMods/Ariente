@@ -7,6 +7,8 @@ import net.minecraft.util.SoundEvent;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.World;
 
+import net.minecraft.client.audio.ISound.AttenuationType;
+
 public class ForcefieldSound extends TickableSound {
 
     private final World world;
@@ -20,9 +22,9 @@ public class ForcefieldSound extends TickableSound {
         this.x = pos.getX();
         this.y = pos.getY();
         this.z = pos.getZ();
-        this.attenuationType = AttenuationType.LINEAR;
-        this.repeat = true;
-        this.repeatDelay = 0;
+        this.attenuation = AttenuationType.LINEAR;
+        this.looping = true;
+        this.delay = 0;
         this.soundEvent = event;
         this.volume = baseVolume;
     }
@@ -33,9 +35,9 @@ public class ForcefieldSound extends TickableSound {
 
     @Override
     public void tick() {
-        TileEntity te = world.getTileEntity(pos);
+        TileEntity te = world.getBlockEntity(pos);
         if (!(te instanceof ISoundProducer)) {
-            finishPlaying();
+            stop();
             return;
         }
 //        if (ticksRemaining != -1) {

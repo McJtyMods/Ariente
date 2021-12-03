@@ -25,7 +25,7 @@ import static mcjty.lib.builder.TooltipBuilder.*;
 
 public class SignalReceiverTile extends SignalChannelTileEntity implements ITickableTileEntity {
 
-    private static final VoxelShape BLOCK_AABB = VoxelShapes.create(1.0D/16.0, 1.0D/16.0, 15.0D/16.0, 15.0D/16.0, 15.0D/16.0, 1.0D);
+    private static final VoxelShape BLOCK_AABB = VoxelShapes.box(1.0D/16.0, 1.0D/16.0, 15.0D/16.0, 15.0D/16.0, 15.0D/16.0, 1.0D);
 
     public SignalReceiverTile() {
         super(Registration.SIGNAL_RECEIVER_TILE.get());
@@ -40,8 +40,8 @@ public class SignalReceiverTile extends SignalChannelTileEntity implements ITick
                 .tileEntitySupplier(SignalReceiverTile::new)
         ) {
             @Override
-            protected void fillStateContainer(StateContainer.Builder<Block, BlockState> builder) {
-                super.fillStateContainer(builder);
+            protected void createBlockStateDefinition(StateContainer.Builder<Block, BlockState> builder) {
+                super.createBlockStateDefinition(builder);
                 builder.add(BlockProperties.POWER);
             }
 
@@ -54,13 +54,13 @@ public class SignalReceiverTile extends SignalChannelTileEntity implements ITick
 
     @Override
     public ActionResultType onBlockActivated(BlockState state, PlayerEntity player, Hand hand, BlockRayTraceResult result) {
-        SignalChannelTileEntity.onBlockActivatedInt(world, pos, player, hand);
+        SignalChannelTileEntity.onBlockActivatedInt(level, worldPosition, player, hand);
         return ActionResultType.SUCCESS;
     }
 
     @Override
     public void tick() {
-        if (!world.isRemote) {
+        if (!level.isClientSide) {
             checkStateServer();
         }
     }
@@ -71,7 +71,7 @@ public class SignalReceiverTile extends SignalChannelTileEntity implements ITick
 
     public int checkOutput() {
         if (channel != -1) {
-            RedstoneChannels channels = RedstoneChannels.getChannels(getWorld());
+            RedstoneChannels channels = RedstoneChannels.getChannels(getLevel());
             RedstoneChannels.RedstoneChannel ch = channels.getChannel(channel);
             if (ch != null) {
                 return ch.getValue();
@@ -87,8 +87,8 @@ public class SignalReceiverTile extends SignalChannelTileEntity implements ITick
     }
 
     @Override
-    public CompoundNBT write(CompoundNBT tagCompound) {
-        super.write(tagCompound);
+    public CompoundNBT save(CompoundNBT tagCompound) {
+        super.save(tagCompound);
         tagCompound.putInt("rs", powerOutput);
         return tagCompound;
     }

@@ -58,15 +58,15 @@ public class PowerCombinerTile extends GenericTileEntity implements ITickableTil
 
     @Override
     public ActionResultType onBlockActivated(BlockState state, PlayerEntity player, Hand hand, BlockRayTraceResult result) {
-        Ariente.guiHandler.openHoloGui(world, pos, player);
+        Ariente.guiHandler.openHoloGui(level, worldPosition, player);
         return ActionResultType.SUCCESS;
     }
 
     @Override
     public void tick() {
-        if (!world.isRemote) {
+        if (!level.isClientSide) {
             usingPower = 0;
-            if (PowerReceiverSupport.consumePower(world, pos, powerTransfer, false)) {
+            if (PowerReceiverSupport.consumePower(level, worldPosition, powerTransfer, false)) {
                 usingPower += powerTransfer;
                 sendPower();
             }
@@ -81,11 +81,11 @@ public class PowerCombinerTile extends GenericTileEntity implements ITickableTil
 
         int power = getPowerToTransfer();
 
-        PowerSystem powerSystem = PowerSystem.getPowerSystem(world);
+        PowerSystem powerSystem = PowerSystem.getPowerSystem(level);
         int cnt = 0;
         for (Direction facing : OrientationTools.DIRECTION_VALUES) {
-            BlockPos p = pos.offset(facing);
-            TileEntity te = world.getTileEntity(p);
+            BlockPos p = worldPosition.relative(facing);
+            TileEntity te = level.getBlockEntity(p);
             if (te instanceof ConnectorTileEntity) {
                 ConnectorTileEntity connector = (ConnectorTileEntity) te;
                 if (connector.getCableColor() == CableColor.COMBINED) {
@@ -98,7 +98,7 @@ public class PowerCombinerTile extends GenericTileEntity implements ITickableTil
             long pPerConnector = power / cnt;
             long p = pPerConnector + power % cnt;
             for (Direction facing : OrientationTools.DIRECTION_VALUES) {
-                TileEntity te = world.getTileEntity(pos.offset(facing));
+                TileEntity te = level.getBlockEntity(worldPosition.relative(facing));
                 if (te instanceof ConnectorTileEntity) {
                     ConnectorTileEntity connector = (ConnectorTileEntity) te;
                     if (connector.getCableColor() == CableColor.COMBINED) {
@@ -142,8 +142,8 @@ public class PowerCombinerTile extends GenericTileEntity implements ITickableTil
     }
 
     @Override
-    public CompoundNBT write(CompoundNBT tagCompound) {
-        tagCompound = super.write(tagCompound);
+    public CompoundNBT save(CompoundNBT tagCompound) {
+        tagCompound = super.save(tagCompound);
         getOrCreateInfo(tagCompound).putInt("transfer", powerTransfer);
         return tagCompound;
     }

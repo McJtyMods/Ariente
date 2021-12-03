@@ -97,8 +97,8 @@ public class AutoConstructorTile extends GenericTileEntity implements IGuiTile, 
             }
 
             @Override
-            protected void fillStateContainer(StateContainer.Builder<Block, BlockState> builder) {
-                super.fillStateContainer(builder);
+            protected void createBlockStateDefinition(StateContainer.Builder<Block, BlockState> builder) {
+                super.createBlockStateDefinition(builder);
                 builder.add(WORKING);
             }
         };
@@ -106,7 +106,7 @@ public class AutoConstructorTile extends GenericTileEntity implements IGuiTile, 
 
     @Override
     public ActionResultType onBlockActivated(BlockState state, PlayerEntity player, Hand hand, BlockRayTraceResult result) {
-        Ariente.guiHandler.openHoloGui(world, pos, player);
+        Ariente.guiHandler.openHoloGui(level, worldPosition, player);
         return ActionResultType.SUCCESS;
     }
 
@@ -127,7 +127,7 @@ public class AutoConstructorTile extends GenericTileEntity implements IGuiTile, 
         int needed = ingredient.getCount();
         for (int i = SLOT_INGREDIENTS; i < SLOT_INGREDIENTS + INGREDIENTS; i++) {
             ItemStack stack = items.getStackInSlot(i);
-            if (ItemStack.areItemsEqual(ingredient, stack)) {
+            if (ItemStack.isSame(ingredient, stack)) {
                 needed -= stack.getCount();
                 if (needed <= 0) {
                     return true;
@@ -163,7 +163,7 @@ public class AutoConstructorTile extends GenericTileEntity implements IGuiTile, 
         int needed = ingredient.getCount();
         for (int i = SLOT_INGREDIENTS; i < SLOT_INGREDIENTS + INGREDIENTS; i++) {
             ItemStack stack = items.getStackInSlot(i);
-            if (ItemStack.areItemsEqual(ingredient, stack)) {
+            if (ItemStack.isSame(ingredient, stack)) {
                 markDirtyQuick();
                 if (needed <= stack.getCount()) {
                     stack.shrink(needed);
@@ -189,7 +189,7 @@ public class AutoConstructorTile extends GenericTileEntity implements IGuiTile, 
                 for (int i = SLOT_OUTPUT; i < SLOT_OUTPUT + OUTPUT; i++) {
                     ItemStack outputSlot = items.getStackInSlot(i);
                     if (outputSlot.isEmpty()) {
-                        if (PowerReceiverSupport.consumePower(world, pos, 100, true)) {
+                        if (PowerReceiverSupport.consumePower(level, worldPosition, 100, true)) {
                             usingPower += 100;
                             items.setStackInSlot(i, recipe.getDestination().copy());
                             ok = true;
@@ -200,7 +200,7 @@ public class AutoConstructorTile extends GenericTileEntity implements IGuiTile, 
                     } else {
                         if (ItemHandlerHelper.canItemStacksStack(recipe.getDestination(), outputSlot)) {
                             if (outputSlot.getCount() < outputSlot.getMaxStackSize()) {
-                                if (PowerReceiverSupport.consumePower(world, pos, 100, true)) {
+                                if (PowerReceiverSupport.consumePower(level, worldPosition, 100, true)) {
                                     usingPower += 100;
                                     outputSlot.grow(1);
                                     markDirtyQuick();
@@ -226,12 +226,12 @@ public class AutoConstructorTile extends GenericTileEntity implements IGuiTile, 
 
     @Override
     public void tick() {
-        if (!world.isRemote) {
+        if (!level.isClientSide) {
 
             boolean wasUsing = usingPower > 0;
             usingPower = 0;
             if (isMachineEnabled()) {
-                if (PowerReceiverSupport.consumePower(world, pos, 10, true)) {
+                if (PowerReceiverSupport.consumePower(level, worldPosition, 10, true)) {
                     usingPower = 10;
                     markDirtyQuick();
 
@@ -247,7 +247,7 @@ public class AutoConstructorTile extends GenericTileEntity implements IGuiTile, 
                     // @todo optimize
                     List<BlueprintStorageTile> storageTiles = new ArrayList<>();
                     for (Direction value : OrientationTools.DIRECTION_VALUES) {
-                        TileEntity te = world.getTileEntity(pos.offset(value));
+                        TileEntity te = level.getBlockEntity(worldPosition.relative(value));
                         if (te instanceof BlueprintStorageTile) {
                             BlueprintStorageTile blueprints = (BlueprintStorageTile) te;
                             storageTiles.add(blueprints);
@@ -295,11 +295,11 @@ public class AutoConstructorTile extends GenericTileEntity implements IGuiTile, 
 
         super.onDataPacket(net, packet);
 
-        if (world.isRemote) {
+        if (level.isClientSide) {
             // If needed send a render update.
             boolean newWorking = isWorking();
             if (newWorking != working) {
-                world.notifyBlockUpdate(pos, getBlockState(), getBlockState(), Constants.BlockFlags.BLOCK_UPDATE + Constants.BlockFlags.NOTIFY_NEIGHBORS);
+                level.sendBlockUpdated(worldPosition, getBlockState(), getBlockState(), Constants.BlockFlags.BLOCK_UPDATE + Constants.BlockFlags.NOTIFY_NEIGHBORS);
             }
         }
     }
@@ -318,10 +318,10 @@ public class AutoConstructorTile extends GenericTileEntity implements IGuiTile, 
     }
 
     @Override
-    public CompoundNBT write(CompoundNBT tagCompound) {
+    public CompoundNBT save(CompoundNBT tagCompound) {
         tagCompound.putInt("craftIndex", craftIndex);
         tagCompound.putInt("busy", busyCounter);
-        return super.write(tagCompound);
+        return super.save(tagCompound);
     }
 
     public void readRestorableFromNBT(CompoundNBT tagCompound) {
@@ -434,7 +434,7 @@ public class AutoConstructorTile extends GenericTileEntity implements IGuiTile, 
     private boolean isIngredient(ItemStack stack) {
         // @todo optimize!
         for (Direction value : OrientationTools.DIRECTION_VALUES) {
-            TileEntity te = world.getTileEntity(pos.offset(value));
+            TileEntity te = level.getBlockEntity(worldPosition.relative(value));
             if (te instanceof BlueprintStorageTile) {
                 BlueprintStorageTile blueprints = (BlueprintStorageTile) te;
                 NoDirectionItemHander helper = blueprints.getItems();
@@ -445,7 +445,7 @@ public class AutoConstructorTile extends GenericTileEntity implements IGuiTile, 
                         ConstructorRecipe recipe = BlueprintRecipeRegistry.findRecipe(destination);
                         if (recipe != null) {
                             for (ItemStack ingredient : recipe.getIngredientList()) {
-                                if (ItemStack.areItemsEqual(ingredient, stack)) {
+                                if (ItemStack.isSame(ingredient, stack)) {
                                     return true;
                                 }
                             }
@@ -465,7 +465,7 @@ public class AutoConstructorTile extends GenericTileEntity implements IGuiTile, 
                 if (selected != -1) {
                     ItemStack extracted = items.extractItem(selected, 64, false);
                     if (!extracted.isEmpty()) {
-                        if (!player.inventory.addItemStackToInventory(extracted)) {
+                        if (!player.inventory.add(extracted)) {
                             items.insertItem(selected, extracted, false);
                         } else {
                             ((ISlots) component).setSelection(-1);
@@ -483,10 +483,10 @@ public class AutoConstructorTile extends GenericTileEntity implements IGuiTile, 
             if (component instanceof IPlayerSlots) {
                 int selected = ((IPlayerSlots) component).getSelected();
                 if (selected != -1) {
-                    ItemStack extracted = player.inventory.getStackInSlot(selected);
+                    ItemStack extracted = player.inventory.getItem(selected);
                     if (!extracted.isEmpty()) {
                         ItemStack notInserted = ItemHandlerHelper.insertItem(items, extracted, false);
-                        player.inventory.setInventorySlotContents(selected, notInserted);
+                        player.inventory.setItem(selected, notInserted);
                         if (notInserted.isEmpty()) {
                             ((IPlayerSlots) component).setSelection(-1);
                         }

@@ -30,12 +30,14 @@ import javax.annotation.Nullable;
 import java.util.List;
 import java.util.UUID;
 
+import net.minecraft.item.Item.Properties;
+
 public class PowerSuit extends ArmorItem {
 
     private static final UUID[] ARMOR_EXT_MODIFIERS = new UUID[] {UUID.randomUUID(), UUID.randomUUID(), UUID.randomUUID(), UUID.randomUUID()};
 
     public PowerSuit(EquipmentSlotType slot) {
-        super(ArmorMaterial.LEATHER, slot, new Properties().maxDamage(0).group(Ariente.setup.getTab()));
+        super(ArmorMaterial.LEATHER, slot, new Properties().durability(0).tab(Ariente.setup.getTab()));
         // @todo 1.14
 //        setRegistryName("powersuit_" + slot.getName());
     }
@@ -67,7 +69,7 @@ public class PowerSuit extends ArmorItem {
 
     @Override
     public void inventoryTick(ItemStack stack, World world, Entity entity, int itemSlot, boolean isSelected) {
-        if (entity instanceof LivingEntity && !world.isRemote) {
+        if (entity instanceof LivingEntity && !world.isClientSide) {
             if (itemSlot != slot.getIndex()) {
                 return;
             }
@@ -149,9 +151,9 @@ public class PowerSuit extends ArmorItem {
         compound.putBoolean(ArmorUpgradeType.FORCEFIELD.getWorkingKey(), compound.getBoolean(ArmorUpgradeType.FORCEFIELD.getModuleKey()));
 
         if (compound.getBoolean(ArmorUpgradeType.REGENERATION.getModuleKey())) {
-            EffectInstance effect = entity.getActivePotionEffect(Effects.REGENERATION);
+            EffectInstance effect = entity.getEffect(Effects.REGENERATION);
             if (effect == null || effect.getDuration() <= 50) {
-                entity.addPotionEffect(new EffectInstance(Effects.REGENERATION, 100, 2, false, false));
+                entity.addEffect(new EffectInstance(Effects.REGENERATION, 100, 2, false, false));
             }
         }
     }
@@ -172,15 +174,15 @@ public class PowerSuit extends ArmorItem {
         compound.putBoolean(ArmorUpgradeType.SCRAMBLE.getWorkingKey(), compound.getBoolean(ArmorUpgradeType.SCRAMBLE.getModuleKey()));
 
         if (compound.getBoolean(ArmorUpgradeType.NIGHTVISION.getModuleKey())) {
-            EffectInstance effect = entity.getActivePotionEffect(Effects.NIGHT_VISION);
+            EffectInstance effect = entity.getEffect(Effects.NIGHT_VISION);
             if (effect == null || effect.getDuration() <= 300) {
-                entity.addPotionEffect(new EffectInstance(Effects.NIGHT_VISION, 400, 1, false, false));
+                entity.addEffect(new EffectInstance(Effects.NIGHT_VISION, 400, 1, false, false));
             }
         }
         if (compound.getBoolean(ArmorUpgradeType.INVISIBILITY.getModuleKey())) {
-            EffectInstance effect = entity.getActivePotionEffect(Effects.INVISIBILITY);
+            EffectInstance effect = entity.getEffect(Effects.INVISIBILITY);
             if (effect == null || effect.getDuration() <= 120) {
-                entity.addPotionEffect(new EffectInstance(Effects.INVISIBILITY, 200, 1, false, false));
+                entity.addEffect(new EffectInstance(Effects.INVISIBILITY, 200, 1, false, false));
             }
         }
     }
@@ -189,29 +191,29 @@ public class PowerSuit extends ArmorItem {
         if (player == null) {
             return false;
         }
-        if (!(player.getItemStackFromSlot(EquipmentSlotType.HEAD).getItem() instanceof PowerSuit)) {
+        if (!(player.getItemBySlot(EquipmentSlotType.HEAD).getItem() instanceof PowerSuit)) {
             return false;
         }
-        if (!(player.getItemStackFromSlot(EquipmentSlotType.LEGS).getItem() instanceof PowerSuit)) {
+        if (!(player.getItemBySlot(EquipmentSlotType.LEGS).getItem() instanceof PowerSuit)) {
             return false;
         }
-        if (!(player.getItemStackFromSlot(EquipmentSlotType.CHEST).getItem() instanceof PowerSuit)) {
+        if (!(player.getItemBySlot(EquipmentSlotType.CHEST).getItem() instanceof PowerSuit)) {
             return false;
         }
-        if (!(player.getItemStackFromSlot(EquipmentSlotType.FEET).getItem() instanceof PowerSuit)) {
+        if (!(player.getItemBySlot(EquipmentSlotType.FEET).getItem() instanceof PowerSuit)) {
             return false;
         }
         return true;
     }
 
     @Override
-    public boolean hasEffect(ItemStack stack) {
+    public boolean isFoil(ItemStack stack) {
         return false;
     }
 
     @Override
-    public void addInformation(ItemStack stack, World world, List<ITextComponent> list, ITooltipFlag b) {
-        super.addInformation(stack, world, list, b);
+    public void appendHoverText(ItemStack stack, World world, List<ITextComponent> list, ITooltipFlag b) {
+        super.appendHoverText(stack, world, list, b);
         list.add(new StringTextComponent("Power suit part"));
         if (KeyBindings.configureArmor != null) {
             list.add(new StringTextComponent(TextFormatting.GRAY + "Configure with: " + TextFormatting.WHITE + "key " + KeyBindings.configureArmor.getDisplayName()));

@@ -59,8 +59,8 @@ public class PowerSuitModel extends BipedModel<LivingEntity> {
     public PowerSuitModel(float scale) {
         super(scale);
 
-    	this.textureWidth = 64;
-        this.textureHeight = 128;
+    	this.texWidth = 64;
+        this.texHeight = 128;
         float s = 0.01F;
 
         // @todo 1.15
@@ -75,100 +75,100 @@ public class PowerSuitModel extends BipedModel<LivingEntity> {
         //helmet
         this.mask = new ModelRenderer(this, 0, 0);
         this.mask.addBox(-4.5F, -9.0F, -4.5F, 9, 13, 9, s);
-        this.mask.setRotationPoint(0.0F, 0.0F, 0.0F);
+        this.mask.setPos(0.0F, 0.0F, 0.0F);
         
         this.respirator = new ModelRenderer(this, 36, 0);
         this.respirator.addBox(-2.5F, -5.0F, -5.5F, 5, 4, 4, s);
-        this.respirator.setRotationPoint(0.0F, 0.0F, 0.0F);
+        this.respirator.setPos(0.0F, 0.0F, 0.0F);
         this.setRotation(respirator, 0.5235987755982988F, 0.0F, 0.0F);
         
         this.resp_l = new ModelRenderer(this, 36, 8);
         this.resp_l.addBox(0.0F, 0.0F, -2.5F, 3, 3, 3, s);
-        this.resp_l.setRotationPoint(0.5F, -4.0F, -5.5F);
+        this.resp_l.setPos(0.5F, -4.0F, -5.5F);
         this.setRotation(resp_l, 0.0F, -0.7853981633974483F, 0.0F);
         this.resp_l.mirror = true;
         
         this.resp_r = new ModelRenderer(this, 36, 8);
         this.resp_r.addBox(-3.0F, 0.0F, -2.5F, 3, 3, 3, s);
-        this.resp_r.setRotationPoint(-0.5F, -4.0F, -5.5F);
+        this.resp_r.setPos(-0.5F, -4.0F, -5.5F);
         this.setRotation(resp_r, 0.0F, 0.7853981633974483F, 0.0F);
    
-        this.bipedHead.addChild(mask);
-        this.bipedHead.addChild(respirator);
+        this.head.addChild(mask);
+        this.head.addChild(respirator);
         this.respirator.addChild(resp_l);
         this.respirator.addChild(resp_r);
         
         //chestplate
         this.body = new ModelRenderer(this, 0, 22);
         this.body.addBox(-4.5F, 0.0F, -3.0F, 9, 9, 6, s);
-        this.body.setRotationPoint(0.0F, 0.0F, 0.0F);
+        this.body.setPos(0.0F, 0.0F, 0.0F);
         
         this.arm_l = new ModelRenderer(this, 0, 37);
         this.arm_l.addBox(-1.5F, -2.5F, -2.9F, 5, 8, 6, s);
-        this.arm_l.setRotationPoint(0.0F, 0.0F, 0.0F);
+        this.arm_l.setPos(0.0F, 0.0F, 0.0F);
         this.arm_l.mirror = true;
         
         this.glove_l = new ModelRenderer(this, 22, 37);
         this.glove_l.addBox(-1.5F, 5.5F, -2.5F, 5, 5, 5, s);
-        this.glove_l.setRotationPoint(0.0F, 0.0F, 0.0F);
+        this.glove_l.setPos(0.0F, 0.0F, 0.0F);
         this.glove_l.mirror = true;
         
         this.arm_r = new ModelRenderer(this, 0, 37);
         this.arm_r.addBox(-3.5F, -2.5F, -3.0F, 5, 8, 6, s);
-        this.arm_r.setRotationPoint(0.0F, 0.0F, 0.0F);
+        this.arm_r.setPos(0.0F, 0.0F, 0.0F);
         
         this.glove_r = new ModelRenderer(this, 22, 37);
         this.glove_r.addBox(-3.5F, 5.5F, -2.5F, 5, 5, 5, s);
-        this.glove_r.setRotationPoint(0.0F, 0.0F, 0.0F);
+        this.glove_r.setPos(0.0F, 0.0F, 0.0F);
         
-        this.bipedBody.addChild(body);
-        this.bipedRightArm.addChild(arm_r);
-        this.bipedRightArm.addChild(glove_r);
-        this.bipedLeftArm.addChild(arm_l);
-        this.bipedLeftArm.addChild(glove_l);
+        this.body.addChild(body);
+        this.rightArm.addChild(arm_r);
+        this.rightArm.addChild(glove_r);
+        this.leftArm.addChild(arm_l);
+        this.leftArm.addChild(glove_l);
 
         //legs
         
         this.belt = new ModelRenderer(this, 0, 52);
         this.belt.addBox(-4.5F, 9.0F, -3.0F, 9, 5, 6, s);
-        this.belt.setRotationPoint(0.0F, 0.0F, 0.0F);
+        this.belt.setPos(0.0F, 0.0F, 0.0F);
         
         this.leg_l = new ModelRenderer(this, 0, 63);
         this.leg_l.addBox(-2.0F, -3.0F, -2.55F, 5, 9, 5, s);
-        this.leg_l.setRotationPoint(0.0F, 0.0F, 0.0F);
+        this.leg_l.setPos(0.0F, 0.0F, 0.0F);
         
         this.leg_r = new ModelRenderer(this, 0, 63);
         this.leg_r.addBox(-3.0F, -3.0F, -2.55F, 5, 9, 5, s);
-        this.leg_r.setRotationPoint(0.0F, 0.0F, 0.0F);
+        this.leg_r.setPos(0.0F, 0.0F, 0.0F);
         
-        this.bipedRightLeg.addChild(leg_r);
-        this.bipedLeftLeg.addChild(leg_l);
-        this.bipedBody.addChild(belt);
+        this.rightLeg.addChild(leg_r);
+        this.leftLeg.addChild(leg_l);
+        this.body.addChild(belt);
         
         //boots
         bootsLeft = new ModelRenderer(this, 0, 0);
         bootsRight = new ModelRenderer(this, 0, 0);
     
         this.boot_l = new ModelRenderer(this, 0, 77);
-        this.boot_l.setRotationPoint(0,0,0);
+        this.boot_l.setPos(0,0,0);
         this.boot_l.addBox(-2.0F, 6.0F, -2.5F, 5, 6, 5, s);
         
         this.boot_r = new ModelRenderer(this, 0, 77);
-        this.boot_r.setRotationPoint(0, 0 ,0);
+        this.boot_r.setPos(0, 0 ,0);
         this.boot_r.addBox(-2.95F, 6.0F, -2.5F, 5, 6, 5, s);
     
         this.bootsLeft.addChild(boot_l);
         this.bootsRight.addChild(boot_r);
         
-        this.bipedLeftLeg.addChild(bootsLeft);
-        this.bipedRightLeg.addChild(bootsRight);
+        this.leftLeg.addChild(bootsLeft);
+        this.rightLeg.addChild(bootsRight);
 
     }
 
     private void setRotation(ModelRenderer model, float x, float y, float z) {
-        model.rotateAngleX = x;
-        model.rotateAngleY = y;
-        model.rotateAngleZ = z;
+        model.xRot = x;
+        model.yRot = y;
+        model.zRot = z;
     }
 
     public static BipedModel getModel(LivingEntity entity, ItemStack stack) {
@@ -176,7 +176,7 @@ public class PowerSuitModel extends BipedModel<LivingEntity> {
         if (stack.isEmpty() || !(stack.getItem() instanceof ArmorItem)) {
             return null;
         }
-        EquipmentSlotType slot = ((ArmorItem) stack.getItem()).getEquipmentSlot();
+        EquipmentSlotType slot = ((ArmorItem) stack.getItem()).getSlot();
 
         PowerSuitModel armor;
         
@@ -192,42 +192,42 @@ public class PowerSuitModel extends BipedModel<LivingEntity> {
 
         armor = new PowerSuitModel(0.0625f);
         
-        armor.bipedHead.showModel = false;
-        armor.bipedBody.showModel = false;
-        armor.bipedLeftArm.showModel = false;
-        armor.bipedRightArm.showModel = false;
-        armor.bipedLeftLeg.showModel = false;
-        armor.bipedRightLeg.showModel = false;
-        armor.bootsLeft.showModel = false;
-        armor.bootsRight.showModel = false;
+        armor.head.visible = false;
+        armor.body.visible = false;
+        armor.leftArm.visible = false;
+        armor.rightArm.visible = false;
+        armor.leftLeg.visible = false;
+        armor.rightLeg.visible = false;
+        armor.bootsLeft.visible = false;
+        armor.bootsRight.visible = false;
 
         switch (slot) {
             case HEAD:
-                armor.bipedHead.showModel = true;
+                armor.head.visible = true;
                 modelHelm = armor;
                 break;
                 
             case FEET:
-                armor.bipedRightLeg.showModel = true;
-                armor.bipedLeftLeg.showModel = true;
-                armor.leg_l.showModel = false;
-                armor.leg_r.showModel = false;
-                armor.bootsLeft.showModel = true;
-                armor.bootsRight.showModel = true;
+                armor.rightLeg.visible = true;
+                armor.leftLeg.visible = true;
+                armor.leg_l.visible = false;
+                armor.leg_r.visible = false;
+                armor.bootsLeft.visible = true;
+                armor.bootsRight.visible = true;
                 modelBoots = armor;
                 break;
                 
             case LEGS:
-                armor.bipedLeftLeg.showModel = true;
-                armor.bipedRightLeg.showModel = true;
+                armor.leftLeg.visible = true;
+                armor.rightLeg.visible = true;
                 modelLegs = armor;
                 break;
                 
             case CHEST:
-                armor.bipedBody.showModel = true;
-                armor.body.showModel = true;
-                armor.bipedLeftArm.showModel = true;
-                armor.bipedRightArm.showModel = true;
+                armor.body.visible = true;
+                armor.body.visible = true;
+                armor.leftArm.visible = true;
+                armor.rightArm.visible = true;
                 modelChest = armor;
                 break;
         }
@@ -236,14 +236,14 @@ public class PowerSuitModel extends BipedModel<LivingEntity> {
     }
 
     @Override
-    public void setRotationAngles(LivingEntity entity, float limbSwing, float limbSwingAmount, float ageInTicks, float netHeadYaw, float headPitch) {
+    public void setupAnim(LivingEntity entity, float limbSwing, float limbSwingAmount, float ageInTicks, float netHeadYaw, float headPitch) {
 
         if(entity instanceof LivingEntity)	{
-            this.isSneak = entity.isSneaking();
+            this.crouching = entity.isShiftKeyDown();
             // @todo 1.14
 //            this.isRiding = entity.isRiding();
-            this.isChild = ((LivingEntity)entity).isChild();
-            this.setLivingAnimations((LivingEntity)entity, limbSwing, limbSwingAmount, ageInTicks);
+            this.young = ((LivingEntity)entity).isBaby();
+            this.prepareMobModel((LivingEntity)entity, limbSwing, limbSwingAmount, ageInTicks);
             // @todo 1.15
 //            this.setRotationAngles((LivingEntity) entity, limbSwing, limbSwingAmount, ageInTicks, netHeadYaw, headPitch, scale);
         }
@@ -282,10 +282,10 @@ public class PowerSuitModel extends BipedModel<LivingEntity> {
 
         if (this == modelChest) {   // @todo Proper test
             if (entity instanceof LivingEntity) {
-                ItemStack chestStack = ((LivingEntity) entity).getItemStackFromSlot(EquipmentSlotType.CHEST);
+                ItemStack chestStack = ((LivingEntity) entity).getItemBySlot(EquipmentSlotType.CHEST);
                 if (chestStack.getItem() == Registration.POWERSUIT_CHEST.get()) {
                     if (ModuleSupport.hasWorkingUpgrade(chestStack, ArmorUpgradeType.FORCEFIELD)) {
-                        ForceFieldRenderer.personalForcefields.put(new Vector3d(entity.prevPosX, entity.prevPosY, entity.prevPosZ), entity instanceof PlayerEntity);
+                        ForceFieldRenderer.personalForcefields.put(new Vector3d(entity.xo, entity.yo, entity.zo), entity instanceof PlayerEntity);
                     }
                 }
             }
@@ -298,34 +298,34 @@ public class PowerSuitModel extends BipedModel<LivingEntity> {
 //        GlStateManager.pushMatrix();
 //        GlStateManager.translate(-.75, 0, -.5);
         Minecraft mc = Minecraft.getInstance();
-        mc.gameRenderer.getLightTexture().disableLightmap();
-        GlStateManager.enableTexture();
-        GlStateManager.disableLighting();
-        GlStateManager.enableBlend();
-        GlStateManager.depthMask(false);
-        GlStateManager.enableDepthTest();
-        GlStateManager.color4f(1.0f, 1.0f, 1.0f, 0.1f);
-        mc.getTextureManager().bindTexture(FORCEFIELD);
+        mc.gameRenderer.lightTexture().turnOffLightLayer();
+        GlStateManager._enableTexture();
+        GlStateManager._disableLighting();
+        GlStateManager._enableBlend();
+        GlStateManager._depthMask(false);
+        GlStateManager._enableDepthTest();
+        GlStateManager._color4f(1.0f, 1.0f, 1.0f, 0.1f);
+        mc.getTextureManager().bind(FORCEFIELD);
 
         Tessellator t = Tessellator.getInstance();
-        BufferBuilder builder = t.getBuffer();
+        BufferBuilder builder = t.getBuilder();
 
-        Entity renderViewEntity = Minecraft.getInstance().getRenderViewEntity();
-        double dx = renderViewEntity.lastTickPosX + (renderViewEntity.getPosX() - renderViewEntity.lastTickPosX) * partialTicks;
-        double dy = renderViewEntity.lastTickPosY + (renderViewEntity.getPosY() - renderViewEntity.lastTickPosY) * partialTicks;
-        double dz = renderViewEntity.lastTickPosZ + (renderViewEntity.getPosZ() - renderViewEntity.lastTickPosZ) * partialTicks;
+        Entity renderViewEntity = Minecraft.getInstance().getCameraEntity();
+        double dx = renderViewEntity.xOld + (renderViewEntity.getX() - renderViewEntity.xOld) * partialTicks;
+        double dy = renderViewEntity.yOld + (renderViewEntity.getY() - renderViewEntity.yOld) * partialTicks;
+        double dz = renderViewEntity.zOld + (renderViewEntity.getZ() - renderViewEntity.zOld) * partialTicks;
         double x = posX + 0 - dx;
         double y = posY + .4 - dy;
         double z = posZ + 0 - dz;
 
         double scale = 1.2;
 
-        GlStateManager.color4f(1.0f, 1.0f, 1.0f, 0.2f);
+        GlStateManager._color4f(1.0f, 1.0f, 1.0f, 0.2f);
         renderPanels(t, builder, x, y, z, scale, getPanelInfo(posX, posY, posZ, scale));
 
-        GlStateManager.enableTexture();
-        GlStateManager.depthMask(true);
-        GlStateManager.enableLighting();
+        GlStateManager._enableTexture();
+        GlStateManager._depthMask(true);
+        GlStateManager._enableLighting();
 //        GlStateManager.popMatrix();
     }
 
@@ -353,7 +353,7 @@ public class PowerSuitModel extends BipedModel<LivingEntity> {
                 renderPanel(x, y, z, scale, info);
             }
         }
-        t.draw();
+        t.end();
     }
 
     private static void renderPanel(double x, double y, double z, double scale, PanelInfo info) {

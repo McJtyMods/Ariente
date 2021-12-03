@@ -33,7 +33,7 @@ public class FluxElevatorGui {
     }
 
     private static int getSpeed(IHoloGuiEntity holo) {
-        Entity ridingEntity = holo.getEntity().getRidingEntity();
+        Entity ridingEntity = holo.getEntity().getVehicle();
         if (ridingEntity instanceof FluxElevatorEntity) {
             FluxElevatorEntity levitator = (FluxElevatorEntity) ridingEntity;
             return levitator.getSpeed();
@@ -43,7 +43,7 @@ public class FluxElevatorGui {
     }
 
     private static void changeSpeed(IHoloGuiEntity holo, int amount) {
-        Entity ridingEntity = holo.getEntity().getRidingEntity();
+        Entity ridingEntity = holo.getEntity().getVehicle();
         if (ridingEntity instanceof FluxElevatorEntity) {
             FluxElevatorEntity levitator = (FluxElevatorEntity) ridingEntity;
             if (amount != 0) {

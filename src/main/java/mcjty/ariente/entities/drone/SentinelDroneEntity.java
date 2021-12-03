@@ -26,6 +26,8 @@ import net.minecraft.world.World;
 
 import javax.annotation.Nullable;
 
+import net.minecraft.entity.ai.controller.MovementController.Action;
+
 public class SentinelDroneEntity extends FlyingEntity implements IMob, IForcefieldImmunity, ISentinel {
 
     public static final ResourceLocation LOOT = new ResourceLocation(Ariente.MODID, "entities/sentinel_drone");
@@ -39,8 +41,8 @@ public class SentinelDroneEntity extends FlyingEntity implements IMob, IForcefie
 // @todo 1.14
 //        this.isImmuneToFire = false;
 
-        this.experienceValue = 5;
-        this.moveController = new SentinelDroneMoveHelper(this);
+        this.xpReward = 5;
+        this.moveControl = new SentinelDroneMoveHelper(this);
     }
 
     public static SentinelDroneEntity create(World world, int sentinelId, ChunkPos cityCenter) {
@@ -58,35 +60,35 @@ public class SentinelDroneEntity extends FlyingEntity implements IMob, IForcefie
     // Override this to make it less likely to despawn
     @Override
     public void checkDespawn() {
-        Entity entity = this.world.getClosestPlayer(this, -1.0D);
+        Entity entity = this.level.getNearestPlayer(this, -1.0D);
 
         if (entity != null) {
-            double d0 = entity.getPosX() - this.getPosX();
-            double d1 = entity.getPosY() - this.getPosY();
-            double d2 = entity.getPosZ() - this.getPosZ();
+            double d0 = entity.getX() - this.getX();
+            double d1 = entity.getY() - this.getY();
+            double d2 = entity.getZ() - this.getZ();
             double d3 = d0 * d0 + d1 * d1 + d2 * d2;
 
-            double closest = entity.getDistanceSq(this);
-            if (this.canDespawn(closest) && d3 > 16384.0D) {
+            double closest = entity.distanceToSqr(this);
+            if (this.removeWhenFarAway(closest) && d3 > 16384.0D) {
                 this.remove();
             }
 
-            if (this.idleTime > 900 && this.rand.nextInt(800) == 0 && d3 > 2048.0D && this.canDespawn(closest)) {
+            if (this.noActionTime > 900 && this.random.nextInt(800) == 0 && d3 > 2048.0D && this.removeWhenFarAway(closest)) {
                 this.remove();
             } else if (d3 < 2048.0D) {
-                this.idleTime = 0;
+                this.noActionTime = 0;
             }
         }
     }
 
 
     @Override
-    public void setAttackTarget(@Nullable LivingEntity entitylivingbaseIn) {
+    public void setTarget(@Nullable LivingEntity entitylivingbaseIn) {
 //        super.setAttackTarget(entitylivingbaseIn);
         // This is called by EntityAIFindEntityNearestPlayer when it spots a player.
         // In this case we don't attack but notify the city AI
         if (entitylivingbaseIn instanceof PlayerEntity && cityCenter != null) {
-            ICityAISystem aiSystem = ArienteWorldCompat.getCityAISystem(world);
+            ICityAISystem aiSystem = ArienteWorldCompat.getCityAISystem(level);
             ICityAI cityAI = aiSystem.getCityAI(cityCenter);
             cityAI.playerSpotted((PlayerEntity) entitylivingbaseIn);
             aiSystem.saveSystem();
@@ -107,7 +109,7 @@ public class SentinelDroneEntity extends FlyingEntity implements IMob, IForcefie
     public void tick() {
         super.tick();
 
-        if (!this.getEntityWorld().isRemote && this.getEntityWorld().getDifficulty() == Difficulty.PEACEFUL) {
+        if (!this.getCommandSenderWorld().isClientSide && this.getCommandSenderWorld().getDifficulty() == Difficulty.PEACEFUL) {
             this.remove();
         }
     }
@@ -116,25 +118,25 @@ public class SentinelDroneEntity extends FlyingEntity implements IMob, IForcefie
      * Called when the entity is attacked.
      */
     @Override
-    public boolean attackEntityFrom(DamageSource source, float amount) {
+    public boolean hurt(DamageSource source, float amount) {
         if (this.isInvulnerableTo(source)) {
             return false;
         } else {
-            return super.attackEntityFrom(source, amount);
+            return super.hurt(source, amount);
         }
     }
 
     public static AttributeModifierMap.MutableAttribute registerAttributes() {
-        AttributeModifierMap.MutableAttribute attributes = LivingEntity.registerAttributes();
+        AttributeModifierMap.MutableAttribute attributes = LivingEntity.createLivingAttributes();
         attributes
-            .createMutableAttribute(Attributes.MAX_HEALTH, 10.0D)
-            .createMutableAttribute(Attributes.FOLLOW_RANGE, 50.0D); // Configurable
+            .add(Attributes.MAX_HEALTH, 10.0D)
+            .add(Attributes.FOLLOW_RANGE, 50.0D); // Configurable
 
         return attributes;
     }
 
     @Override
-    public SoundCategory getSoundCategory() {
+    public SoundCategory getSoundSource() {
         return SoundCategory.HOSTILE;
     }
 
@@ -155,7 +157,7 @@ public class SentinelDroneEntity extends FlyingEntity implements IMob, IForcefie
     }
 
     @Override
-    protected ResourceLocation getLootTable() {
+    protected ResourceLocation getDefaultLootTable() {
         return LOOT;
     }
 
@@ -168,13 +170,13 @@ public class SentinelDroneEntity extends FlyingEntity implements IMob, IForcefie
     }
 
     @Override
-    public boolean canSpawn(IWorld worldIn, SpawnReason spawnReasonIn) {
-        boolean b = (this.rand.nextInt(100) == 0) && super.canSpawn(worldIn, spawnReasonIn) && this.getEntityWorld().getDifficulty() != Difficulty.PEACEFUL;
+    public boolean checkSpawnRules(IWorld worldIn, SpawnReason spawnReasonIn) {
+        boolean b = (this.random.nextInt(100) == 0) && super.checkSpawnRules(worldIn, spawnReasonIn) && this.getCommandSenderWorld().getDifficulty() != Difficulty.PEACEFUL;
         return b;
     }
 
     @Override
-    public boolean isNotColliding(IWorldReader worldIn) {
+    public boolean checkSpawnObstruction(IWorldReader worldIn) {
         return true;
     }
 
@@ -182,7 +184,7 @@ public class SentinelDroneEntity extends FlyingEntity implements IMob, IForcefie
      * Will return how many at most can spawn in a chunk at once.
      */
     @Override
-    public int getMaxSpawnedInChunk() {
+    public int getMaxSpawnClusterSize() {
         return 1;
     }
 
@@ -190,8 +192,8 @@ public class SentinelDroneEntity extends FlyingEntity implements IMob, IForcefie
      * (abstract) Protected helper method to write subclass entity data to NBT.
      */
     @Override
-    public void writeAdditional(CompoundNBT compound) {
-        super.writeAdditional(compound);
+    public void addAdditionalSaveData(CompoundNBT compound) {
+        super.addAdditionalSaveData(compound);
         if (cityCenter != null) {
             compound.putInt("cityX", cityCenter.x);
             compound.putInt("cityZ", cityCenter.z);
@@ -202,8 +204,8 @@ public class SentinelDroneEntity extends FlyingEntity implements IMob, IForcefie
      * (abstract) Protected helper method to read subclass entity data from NBT.
      */
     @Override
-    public void readAdditional(CompoundNBT compound) {
-        super.readAdditional(compound);
+    public void readAdditionalSaveData(CompoundNBT compound) {
+        super.readAdditionalSaveData(compound);
         if (compound.contains("cityX")) {
             cityCenter = new ChunkPos(compound.getInt("cityX"), compound.getInt("cityZ"));
         }
@@ -228,7 +230,7 @@ public class SentinelDroneEntity extends FlyingEntity implements IMob, IForcefie
          * Returns whether the EntityAIBase should begin execution.
          */
         @Override
-        public boolean shouldExecute() {
+        public boolean canUse() {
             return true;
         }
 
@@ -237,18 +239,18 @@ public class SentinelDroneEntity extends FlyingEntity implements IMob, IForcefie
          */
         @Override
         public void tick() {
-            if (this.parentEntity.getAttackTarget() == null) {
-                this.parentEntity.rotationYaw = -((float) MathHelper.atan2(this.parentEntity.getMotion().x, this.parentEntity.getMotion().z)) * (180F / (float) Math.PI);
-                this.parentEntity.renderYawOffset = this.parentEntity.rotationYaw;
+            if (this.parentEntity.getTarget() == null) {
+                this.parentEntity.yRot = -((float) MathHelper.atan2(this.parentEntity.getDeltaMovement().x, this.parentEntity.getDeltaMovement().z)) * (180F / (float) Math.PI);
+                this.parentEntity.yBodyRot = this.parentEntity.yRot;
             } else {
-                LivingEntity entitylivingbase = this.parentEntity.getAttackTarget();
+                LivingEntity entitylivingbase = this.parentEntity.getTarget();
                 double d0 = 64.0D;
 
-                if (entitylivingbase.getDistanceSq(this.parentEntity) < 4096.0D) {
-                    double d1 = entitylivingbase.getPosX() - this.parentEntity.getPosX();
-                    double d2 = entitylivingbase.getPosZ() - this.parentEntity.getPosZ();
-                    this.parentEntity.rotationYaw = -((float) MathHelper.atan2(d1, d2)) * (180F / (float) Math.PI);
-                    this.parentEntity.renderYawOffset = this.parentEntity.rotationYaw;
+                if (entitylivingbase.distanceToSqr(this.parentEntity) < 4096.0D) {
+                    double d1 = entitylivingbase.getX() - this.parentEntity.getX();
+                    double d2 = entitylivingbase.getZ() - this.parentEntity.getZ();
+                    this.parentEntity.yRot = -((float) MathHelper.atan2(d1, d2)) * (180F / (float) Math.PI);
+                    this.parentEntity.yBodyRot = this.parentEntity.yRot;
                 }
             }
         }
@@ -267,15 +269,15 @@ public class SentinelDroneEntity extends FlyingEntity implements IMob, IForcefie
          * Returns whether the EntityAIBase should begin execution.
          */
         @Override
-        public boolean shouldExecute() {
-            MovementController controller = this.parentEntity.getMoveHelper();
+        public boolean canUse() {
+            MovementController controller = this.parentEntity.getMoveControl();
 
-            if (!controller.isUpdating()) {
+            if (!controller.hasWanted()) {
                 return true;
             } else {
-                double d0 = controller.getX() - this.parentEntity.getPosX();
-                double d1 = controller.getY() - this.parentEntity.getPosY();
-                double d2 = controller.getZ() - this.parentEntity.getPosZ();
+                double d0 = controller.getWantedX() - this.parentEntity.getX();
+                double d1 = controller.getWantedY() - this.parentEntity.getY();
+                double d2 = controller.getWantedZ() - this.parentEntity.getZ();
                 double d3 = d0 * d0 + d1 * d1 + d2 * d2;
                 return d3 < 1.0D || d3 > 3600.0D;
             }
@@ -285,7 +287,7 @@ public class SentinelDroneEntity extends FlyingEntity implements IMob, IForcefie
          * Returns whether an in-progress EntityAIBase should continue executing
          */
         @Override
-        public boolean shouldContinueExecuting() {
+        public boolean canContinueToUse() {
             return false;
         }
 
@@ -293,15 +295,15 @@ public class SentinelDroneEntity extends FlyingEntity implements IMob, IForcefie
          * Execute a one shot task or start executing a continuous task
          */
         @Override
-        public void startExecuting() {
+        public void start() {
             if (parentEntity.cityCenter == null) {
                 return;
             }
-            ICityAISystem aiSystem = ArienteWorldCompat.getCityAISystem(parentEntity.world);
+            ICityAISystem aiSystem = ArienteWorldCompat.getCityAISystem(parentEntity.level);
             ICityAI cityAI = aiSystem.getCityAI(parentEntity.cityCenter);
-            BlockPos pos = cityAI.requestNewSentinelPosition(parentEntity.world, parentEntity.sentinelId);
+            BlockPos pos = cityAI.requestNewSentinelPosition(parentEntity.level, parentEntity.sentinelId);
             if (pos != null) {
-                this.parentEntity.getMoveHelper().setMoveTo(pos.getX(), pos.getY(), pos.getZ(), 2.0D);
+                this.parentEntity.getMoveControl().setWantedPosition(pos.getX(), pos.getY(), pos.getZ(), 2.0D);
             }
         }
     }
@@ -317,21 +319,21 @@ public class SentinelDroneEntity extends FlyingEntity implements IMob, IForcefie
 
         @Override
         public void tick() {
-            if (this.action == Action.MOVE_TO) {
-                double d0 = this.posX - this.parentEntity.getPosX();
-                double d1 = this.posY - this.parentEntity.getPosY();
-                double d2 = this.posZ - this.parentEntity.getPosZ();
+            if (this.operation == Action.MOVE_TO) {
+                double d0 = this.wantedX - this.parentEntity.getX();
+                double d1 = this.wantedY - this.parentEntity.getY();
+                double d2 = this.wantedZ - this.parentEntity.getZ();
                 double d3 = d0 * d0 + d1 * d1 + d2 * d2;
 
                 if (this.courseChangeCooldown-- <= 0) {
-                    this.courseChangeCooldown += this.parentEntity.getRNG().nextInt(5) + 2;
+                    this.courseChangeCooldown += this.parentEntity.getRandom().nextInt(5) + 2;
                     d3 = Math.sqrt(d3);
 
-                    if (this.isNotColliding(this.posX, this.posY, this.posZ, d3)) {
-                        Vector3d motion = this.parentEntity.getMotion();
-                        this.parentEntity.setMotion(motion.add(d0 / d3 * 0.1D, d1 / d3 * 0.1D, d2 / d3 * 0.1D));
+                    if (this.isNotColliding(this.wantedX, this.wantedY, this.wantedZ, d3)) {
+                        Vector3d motion = this.parentEntity.getDeltaMovement();
+                        this.parentEntity.setDeltaMovement(motion.add(d0 / d3 * 0.1D, d1 / d3 * 0.1D, d2 / d3 * 0.1D));
                     } else {
-                        this.action = Action.WAIT;
+                        this.operation = Action.WAIT;
                     }
                 }
             }
@@ -341,13 +343,13 @@ public class SentinelDroneEntity extends FlyingEntity implements IMob, IForcefie
          * Checks if entity bounding box is not colliding with terrain
          */
         private boolean isNotColliding(double x, double y, double z, double p_179926_7_) {
-            double d0 = (x - this.parentEntity.getPosX()) / p_179926_7_;
-            double d1 = (y - this.parentEntity.getPosY()) / p_179926_7_;
-            double d2 = (z - this.parentEntity.getPosZ()) / p_179926_7_;
+            double d0 = (x - this.parentEntity.getX()) / p_179926_7_;
+            double d1 = (y - this.parentEntity.getY()) / p_179926_7_;
+            double d2 = (z - this.parentEntity.getZ()) / p_179926_7_;
             AxisAlignedBB axisalignedbb = this.parentEntity.getBoundingBox();
 
             for (int i = 1; i < p_179926_7_; ++i) {
-                axisalignedbb = axisalignedbb.offset(d0, d1, d2);
+                axisalignedbb = axisalignedbb.move(d0, d1, d2);
 
                 // @todo 1.14
 //                if (!this.parentEntity.getEntityWorld().getCollisionBoxes(this.parentEntity, axisalignedbb).isEmpty()) {

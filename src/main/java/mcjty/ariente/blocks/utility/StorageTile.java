@@ -87,13 +87,13 @@ public class StorageTile extends GenericTileEntity implements IGuiTile, ICityEqu
             }
 
             @Override
-            protected void fillStateContainer(StateContainer.Builder<Block, BlockState> builder) {
-                super.fillStateContainer(builder);
+            protected void createBlockStateDefinition(StateContainer.Builder<Block, BlockState> builder) {
+                super.createBlockStateDefinition(builder);
 //                builder.add(LOCKED);
             }
 
             @Override
-            public void onBlockClicked(BlockState state, World worldIn, BlockPos pos, PlayerEntity player) {
+            public void attack(BlockState state, World worldIn, BlockPos pos, PlayerEntity player) {
                 onClick(worldIn, pos, player);
             }
         };
@@ -101,9 +101,9 @@ public class StorageTile extends GenericTileEntity implements IGuiTile, ICityEqu
 
     @Override
     public ActionResultType onBlockActivated(BlockState state, PlayerEntity player, Hand hand, BlockRayTraceResult result) {
-        Vector3d hit = result.getHitVec();
-        BlockPos pos = result.getPos();
-        StorageTile.onActivate(world, this.pos, player, result.getFace(), hit.x - pos.getX(), hit.y - pos.getY(), hit.z - pos.getZ());
+        Vector3d hit = result.getLocation();
+        BlockPos pos = result.getBlockPos();
+        StorageTile.onActivate(level, this.worldPosition, player, result.getDirection(), hit.x - pos.getX(), hit.y - pos.getY(), hit.z - pos.getZ());
         return ActionResultType.SUCCESS;
     }
 
@@ -113,11 +113,11 @@ public class StorageTile extends GenericTileEntity implements IGuiTile, ICityEqu
 
         super.onDataPacket(net, packet);
 
-        if (world.isRemote) {
+        if (level.isClientSide) {
             // If needed send a render update.
             boolean newLocked = isLocked();
             if (newLocked != locked) {
-                world.notifyBlockUpdate(pos, getBlockState(), getBlockState(), Constants.BlockFlags.BLOCK_UPDATE + Constants.BlockFlags.NOTIFY_NEIGHBORS);
+                level.sendBlockUpdated(worldPosition, getBlockState(), getBlockState(), Constants.BlockFlags.BLOCK_UPDATE + Constants.BlockFlags.NOTIFY_NEIGHBORS);
             }
         }
     }
@@ -156,7 +156,7 @@ public class StorageTile extends GenericTileEntity implements IGuiTile, ICityEqu
             ListNBT bufferTagList = info.getList("Items", Constants.NBT.TAG_COMPOUND);
             for (int i = 0; i < STACKS; i++) {
                 CompoundNBT CompoundNBT = bufferTagList.getCompound(i);
-                stacks.set(i, ItemStack.read(CompoundNBT));
+                stacks.set(i, ItemStack.of(CompoundNBT));
             }
             int[] cc = info.getIntArray("Counts");
             System.arraycopy(cc, 0, counts, 0, cc.length);
@@ -166,7 +166,7 @@ public class StorageTile extends GenericTileEntity implements IGuiTile, ICityEqu
     }
 
     @Override
-    public CompoundNBT write(CompoundNBT tagCompound) {
+    public CompoundNBT save(CompoundNBT tagCompound) {
         CompoundNBT info = getOrCreateInfo(tagCompound);
         info.putBoolean("locked", locked);
         if (keyId != null) {
@@ -177,14 +177,14 @@ public class StorageTile extends GenericTileEntity implements IGuiTile, ICityEqu
             ItemStack stack = stacks.get(i);
             CompoundNBT CompoundNBT = new CompoundNBT();
             if (!stack.isEmpty()) {
-                stack.write(CompoundNBT);
+                stack.save(CompoundNBT);
             }
             bufferTagList.add(CompoundNBT);
         }
         info.put("Items", bufferTagList);
         info.putIntArray("Counts", counts);
         info.putIntArray("Totals", totals);
-        return super.write(tagCompound);
+        return super.save(tagCompound);
     }
 
     @Override
@@ -201,7 +201,7 @@ public class StorageTile extends GenericTileEntity implements IGuiTile, ICityEqu
     }
 
     public void toggleLock() {
-        if (!world.isRemote) {
+        if (!level.isClientSide) {
             setLocked(!locked);
         }
     }
@@ -212,7 +212,7 @@ public class StorageTile extends GenericTileEntity implements IGuiTile, ICityEqu
 
     public void setKeyId(String keyId) {
         this.keyId = keyId;
-        markDirty();
+        setChanged();
     }
 
 //    @Override
@@ -225,10 +225,10 @@ public class StorageTile extends GenericTileEntity implements IGuiTile, ICityEqu
     public void acceptKeyCard(ItemStack stack) {
         Set<String> tags = KeyCardItem.getSecurityTags(stack);
         if (tags.contains(keyId)) {
-            world.playSound(null, pos, ModSounds.buzzOk, SoundCategory.BLOCKS, 1.0f, 1.0f);
+            level.playSound(null, worldPosition, ModSounds.buzzOk, SoundCategory.BLOCKS, 1.0f, 1.0f);
             toggleLock();
         } else {
-            world.playSound(null, pos, ModSounds.buzzError, SoundCategory.BLOCKS, 1.0f, 1.0f);
+            level.playSound(null, worldPosition, ModSounds.buzzError, SoundCategory.BLOCKS, 1.0f, 1.0f);
         }
     }
 
@@ -261,7 +261,7 @@ public class StorageTile extends GenericTileEntity implements IGuiTile, ICityEqu
 //    }
 
     public static int getSlot(BlockRayTraceResult mouseOver, World world) {
-        return getSlot(world, mouseOver.getPos(), mouseOver.getFace(), mouseOver.getHitVec());
+        return getSlot(world, mouseOver.getBlockPos(), mouseOver.getDirection(), mouseOver.getLocation());
     }
 
     public static int getSlot(World world, BlockPos pos, Direction sideHit, Vector3d hitVec) {
@@ -281,29 +281,29 @@ public class StorageTile extends GenericTileEntity implements IGuiTile, ICityEqu
 
     public void giveToPlayer(int type, PlayerEntity player) {
         if (locked) {
-            Ariente.guiHandler.openHoloGui(world, pos, player);
+            Ariente.guiHandler.openHoloGui(level, worldPosition, player);
             return;
         }
         if (totals[type] == 0) {
             return;
         }
-        ItemStack stack = getStackFromType(type, player.isSneaking() ? 10000 : 1);
+        ItemStack stack = getStackFromType(type, player.isShiftKeyDown() ? 10000 : 1);
         if (!stack.isEmpty()) {
-            if (player.getHeldItemMainhand().isEmpty()) {
-                player.setHeldItem(Hand.MAIN_HAND, stack);
-            } else if (ItemHandlerHelper.canItemStacksStack(player.getHeldItemMainhand(), stack)) {
-                boolean added = player.inventory.add(player.inventory.currentItem, stack);
+            if (player.getMainHandItem().isEmpty()) {
+                player.setItemInHand(Hand.MAIN_HAND, stack);
+            } else if (ItemHandlerHelper.canItemStacksStack(player.getMainHandItem(), stack)) {
+                boolean added = player.inventory.add(player.inventory.selected, stack);
                 if (!added) {
-                    if (!player.inventory.addItemStackToInventory(stack)) {
-                        player.entityDropItem(stack, 1.05f);
+                    if (!player.inventory.add(stack)) {
+                        player.spawnAtLocation(stack, 1.05f);
                     }
                 }
             } else {
-                if (!player.inventory.addItemStackToInventory(stack)) {
-                    player.entityDropItem(stack, 1.05f);
+                if (!player.inventory.add(stack)) {
+                    player.spawnAtLocation(stack, 1.05f);
                 }
             }
-            player.openContainer.detectAndSendChanges();
+            player.containerMenu.broadcastChanges();
         }
     }
 
@@ -355,9 +355,9 @@ public class StorageTile extends GenericTileEntity implements IGuiTile, ICityEqu
     }
 
     public static void onClick(World world, BlockPos pos, PlayerEntity player) {
-        if (world.isRemote) {
+        if (world.isClientSide) {
             // On client. We find out what part of the block was hit and send that to the server.
-            RayTraceResult mouseOver = Minecraft.getInstance().objectMouseOver;
+            RayTraceResult mouseOver = Minecraft.getInstance().hitResult;
             if (mouseOver instanceof BlockRayTraceResult) {
                 int index = getSlot((BlockRayTraceResult) mouseOver, world);
                 if (index >= 0) {
@@ -372,8 +372,8 @@ public class StorageTile extends GenericTileEntity implements IGuiTile, ICityEqu
     public static boolean onActivate(World world, BlockPos pos, PlayerEntity player, Direction side, double sx, double sy, double sz) {
         Direction k = Registration.STORAGE.get().getFrontDirection(world.getBlockState(pos));
         if (side == k) {
-            TileEntity tileEntity = world.getTileEntity(pos);
-            if (!world.isRemote) {
+            TileEntity tileEntity = world.getBlockEntity(pos);
+            if (!world.isClientSide) {
                 if (tileEntity instanceof StorageTile) {
                     StorageTile te = (StorageTile) tileEntity;
                     if (te.isLocked()) {
@@ -388,7 +388,7 @@ public class StorageTile extends GenericTileEntity implements IGuiTile, ICityEqu
                         return true;
                     }
 
-                    ItemStack heldItem = player.getHeldItemMainhand();
+                    ItemStack heldItem = player.getMainHandItem();
                     long time = System.currentTimeMillis();
                     if (doubleClickTime != -1 && (time < (doubleClickTime + 250)) && !te.stacks.get(type).isEmpty()) {
                         // Doubleclick
@@ -401,7 +401,7 @@ public class StorageTile extends GenericTileEntity implements IGuiTile, ICityEqu
                         }
                     }
                     te.markDirtyClient();
-                    player.openContainer.detectAndSendChanges();
+                    player.containerMenu.broadcastChanges();
                 }
             }
         }
@@ -409,11 +409,11 @@ public class StorageTile extends GenericTileEntity implements IGuiTile, ICityEqu
     }
 
     private static void placeAll(PlayerEntity player, StorageTile te, int type, ItemStack heldItem) {
-        for (int i = 0; i < player.inventory.getSizeInventory(); i++) {
-            ItemStack stack = player.inventory.getStackInSlot(i);
+        for (int i = 0; i < player.inventory.getContainerSize(); i++) {
+            ItemStack stack = player.inventory.getItem(i);
             if (ItemHandlerHelper.canItemStacksStack(stack, heldItem)) {
                 ItemStack remaining = insertItem(te.getInvHandler(), stack, type);
-                player.inventory.setInventorySlotContents(i, remaining);
+                player.inventory.setItem(i, remaining);
                 if (!remaining.isEmpty()) {
                     break;  // Storage is full
                 }
@@ -423,7 +423,7 @@ public class StorageTile extends GenericTileEntity implements IGuiTile, ICityEqu
 
     private static void placeHeld(PlayerEntity player, StorageTile te, int type, ItemStack heldItem) {
         ItemStack remaining = insertItem(te.getInvHandler(), heldItem, type);
-        player.setHeldItem(Hand.MAIN_HAND, remaining);
+        player.setItemInHand(Hand.MAIN_HAND, remaining);
     }
 
     @Nonnull

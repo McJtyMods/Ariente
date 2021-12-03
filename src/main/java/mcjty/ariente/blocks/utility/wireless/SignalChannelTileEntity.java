@@ -74,10 +74,10 @@ public abstract class SignalChannelTileEntity extends GenericTileEntity implemen
             return;
         }
         powerOutput = newout;
-        markDirty();
-        BlockState state = world.getBlockState(pos);
+        setChanged();
+        BlockState state = level.getBlockState(worldPosition);
         Direction outputSide = getFacing(state).getOpposite();
-        getWorld().neighborChanged(this.pos.offset(outputSide), this.getBlockState().getBlock(), this.pos);
+        getLevel().neighborChanged(this.worldPosition.relative(outputSide), this.getBlockState().getBlock(), this.worldPosition);
         markDirtyClient();
     }
 
@@ -103,7 +103,7 @@ public abstract class SignalChannelTileEntity extends GenericTileEntity implemen
     @Override
     public int getChannel(boolean initialize) {
         if(initialize && channel == -1) {
-            RedstoneChannels redstoneChannels = RedstoneChannels.getChannels(world);
+            RedstoneChannels redstoneChannels = RedstoneChannels.getChannels(level);
             setChannel(redstoneChannels.newChannel());
         }
         return channel;
@@ -130,9 +130,9 @@ public abstract class SignalChannelTileEntity extends GenericTileEntity implemen
     }
 
     @Override
-    public CompoundNBT write(CompoundNBT tagCompound) {
+    public CompoundNBT save(CompoundNBT tagCompound) {
         writeRestorableToNBT(tagCompound);
-        return super.write(tagCompound);
+        return super.save(tagCompound);
     }
 
     public void writeRestorableToNBT(CompoundNBT tagCompound) {
@@ -142,7 +142,7 @@ public abstract class SignalChannelTileEntity extends GenericTileEntity implemen
     }
 
     public static boolean onBlockActivatedInt(World world, BlockPos pos, PlayerEntity player, Hand hand) {
-        ItemStack stack = player.getHeldItem(hand);
+        ItemStack stack = player.getItemInHand(hand);
         if(SignalChannelTileEntity.isRedstoneChannelItem(stack.getItem())) {
             setChannel(world, pos, player, stack);
         }
@@ -150,13 +150,13 @@ public abstract class SignalChannelTileEntity extends GenericTileEntity implemen
     }
 
     public static void setChannel(World world, BlockPos pos, PlayerEntity player, ItemStack stack) {
-        TileEntity te = world.getTileEntity(pos);
+        TileEntity te = world.getBlockEntity(pos);
         if (te instanceof SignalChannelTileEntity) {
-            if(!world.isRemote) {
+            if(!world.isClientSide) {
                 SignalChannelTileEntity rcte = (SignalChannelTileEntity)te;
                 CompoundNBT tagCompound = stack.getOrCreateTag();
                 int channel;
-                if(!player.isSneaking()) {
+                if(!player.isShiftKeyDown()) {
                     channel = rcte.getChannel(true);
                     tagCompound.putInt("channel", channel);
                 } else {
@@ -181,15 +181,15 @@ public abstract class SignalChannelTileEntity extends GenericTileEntity implemen
      * Returns the signal strength at one input of the block
      */
     protected int getInputStrength(World world, BlockPos pos, Direction side) {
-        int power = world.getRedstonePower(pos.offset(side), side);
+        int power = world.getSignal(pos.relative(side), side);
         if (power < 15) {
             // Check if there is no redstone wire there. If there is a 'bend' in the redstone wire it is
             // not detected with world.getRedstonePower().
             // Not exactly pretty, but it's how vanilla redstone repeaters do it.
-            BlockState blockState = world.getBlockState(pos.offset(side));
+            BlockState blockState = world.getBlockState(pos.relative(side));
             Block b = blockState.getBlock();
             if (b == Blocks.REDSTONE_WIRE) {
-                power = Math.max(power, blockState.get(RedstoneWireBlock.POWER));
+                power = Math.max(power, blockState.getValue(RedstoneWireBlock.POWER));
             }
         }
 

@@ -14,7 +14,7 @@ public class BlockTags extends BlockTagsProvider {
     }
 
     @Override
-    protected void registerTags() {
+    protected void addTags() {
         addTag(Tags.Blocks.ORES,
                 Registration.ORE_POSIRITE.get(),
                 Registration.ORE_NEGARITE.get(),
@@ -33,7 +33,7 @@ public class BlockTags extends BlockTagsProvider {
     }
 
     private void addTag(ITag.INamedTag<Block> tag, Block... items) {
-        getOrCreateBuilder(tag)
+        tag(tag)
                 .add(items);
     }
 

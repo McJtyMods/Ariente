@@ -37,7 +37,7 @@ public class PacketClickStorage {
         NetworkEvent.Context ctx = supplier.get();
         ctx.enqueueWork(() -> {
             PlayerEntity playerEntity = ctx.getSender();
-            TileEntity te = playerEntity.getEntityWorld().getTileEntity(pos);
+            TileEntity te = playerEntity.getCommandSenderWorld().getBlockEntity(pos);
             if (te instanceof StorageTile) {
                 StorageTile storageTile = (StorageTile) te;
                 storageTile.giveToPlayer(index, playerEntity);

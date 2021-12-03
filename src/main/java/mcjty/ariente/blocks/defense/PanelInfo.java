@@ -42,7 +42,7 @@ public class PanelInfo {
     }
 
     public boolean testCollisionEntity(Entity entity, double scale) {
-        AxisAlignedBB box = entity.getBoundingBox().grow(0, -.4, 0);
+        AxisAlignedBB box = entity.getBoundingBox().inflate(0, -.4, 0);
         Triangle triangle = PentakisDodecahedron.getTriangle(getIndex());
         // @todo not very efficient
         Vector3d offs = triangle.getMid().scale(scale);
@@ -76,10 +76,10 @@ public class PanelInfo {
 
         // Calculate triangle normal
         Vector3d e0 = b.subtract(a);
-        Vector3d n = e0.crossProduct(c.subtract(a)).normalize();
+        Vector3d n = e0.cross(c.subtract(a)).normalize();
 
         Vector3d v = p.subtract(a);
-        double dot = v.dotProduct(n);
+        double dot = v.dot(n);
         Vector3d s = v.subtract(n.scale(dot));
         return s.x*s.x + s.y*s.y + s.z*s.z;
     }
@@ -95,10 +95,10 @@ public class PanelInfo {
 
         // Calculate triangle normal
         Vector3d e0 = b.subtract(a);
-        Vector3d n = e0.crossProduct(c.subtract(a)).normalize();
+        Vector3d n = e0.cross(c.subtract(a)).normalize();
 
         Vector3d v = p.subtract(a);
-        double dot = v.dotProduct(n);
+        double dot = v.dot(n);
         Vector3d s = v.subtract(n.scale(dot));
         return a.add(s);
     }

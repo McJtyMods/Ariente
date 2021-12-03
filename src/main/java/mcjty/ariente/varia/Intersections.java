@@ -47,12 +47,12 @@ public class Intersections {
         // Get triangle edge vectors and plane normal
         Vector3d u = tri.b.subtract(tri.a);
         Vector3d v = tri.c.subtract(tri.a);
-        Vector3d n = u.crossProduct(v);
+        Vector3d n = u.cross(v);
 
         Vector3d dir = p2.subtract(p1);              // ray direction vector
         Vector3d w0 = p1.subtract(tri.a);
-        double a = -n.dotProduct(w0);
-        double b = n.dotProduct(dir);
+        double a = -n.dot(w0);
+        double b = n.dot(dir);
 
         if (Math.abs(b) < 0.00000001) {     // ray is  parallel to triangle plane
             return null;
@@ -68,12 +68,12 @@ public class Intersections {
         Vector3d intersection = p1.add(dir.scale(r));// intersect point of ray and plane
 
         // is I inside T?
-        double uu = u.dotProduct(u);;
-        double uv = u.dotProduct(v);;
-        double vv = v.dotProduct(v);
+        double uu = u.dot(u);;
+        double uv = u.dot(v);;
+        double vv = v.dot(v);
         Vector3d w = intersection.subtract(tri.a);
-        double wu = w.dotProduct(u);
-        double wv = w.dotProduct(v);
+        double wu = w.dot(u);
+        double wv = w.dot(v);
         double D = uv * uv - uu * vv;
 
         // get and test parametric coords
@@ -182,8 +182,8 @@ public class Intersections {
 
         // test if the box intersects the plane of the triangle
         // compute plane equation of triangle: normal*x+d=0
-        normal = e0.crossProduct(e1);
-        double d = -normal.dotProduct(v0);
+        normal = e0.cross(e1);
+        double d = -normal.dot(v0);
         if (!planeBoxOverlap(normal, d, extent)) {
             return false;
         }
@@ -223,11 +223,11 @@ public class Intersections {
         }
 
         Vector3d vmin = new Vector3d(vminx, vminy, vminz);
-        if (normal.dotProduct(vmin) + d > 0.0) {
+        if (normal.dot(vmin) + d > 0.0) {
             return false;
         }
         Vector3d vmax = new Vector3d(vmaxx, vmaxy, vmaxz);
-        if (normal.dotProduct(vmax) + d >= 0.0) {
+        if (normal.dot(vmax) + d >= 0.0) {
             return true;
         }
         return false;

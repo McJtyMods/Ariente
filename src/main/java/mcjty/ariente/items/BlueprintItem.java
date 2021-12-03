@@ -29,15 +29,17 @@ import java.util.stream.Collectors;
 import static mcjty.lib.builder.TooltipBuilder.header;
 import static mcjty.lib.builder.TooltipBuilder.parameter;
 
+import net.minecraft.item.Item.Properties;
+
 public class BlueprintItem extends Item implements ITooltipExtras, ITooltipSettings {
 
     private final TooltipBuilder tooltipBuilder = new TooltipBuilder()
-            .info(header(), parameter("info", stack -> getDestination(stack).getDisplayName().getString()));
+            .info(header(), parameter("info", stack -> getDestination(stack).getHoverName().getString()));
 
     public BlueprintItem() {
-        super(new Properties().group(Ariente.setup.getTab())
+        super(new Properties().tab(Ariente.setup.getTab())
                 .setISTER(BlueprintRenderer::createRenderer)
-                .maxStackSize(1));
+                .stacksTo(1));
         // @todo 1.14
 //        setHasSubtypes(true);
     }
@@ -54,8 +56,8 @@ public class BlueprintItem extends Item implements ITooltipExtras, ITooltipSetti
     }
 
     @Override
-    public void addInformation(ItemStack stack, @Nullable World worldIn, List<ITextComponent> tooltip, ITooltipFlag flag) {
-        super.addInformation(stack, worldIn, tooltip, flag);
+    public void appendHoverText(ItemStack stack, @Nullable World worldIn, List<ITextComponent> tooltip, ITooltipFlag flag) {
+        super.appendHoverText(stack, worldIn, tooltip, flag);
         tooltipBuilder.makeTooltip(getRegistryName(), stack, tooltip, flag);
     }
 

@@ -35,7 +35,7 @@ public class WirelessButtonTile extends SignalChannelTileEntity {
     private boolean locked = false;
     private int prevIn = -1;
 
-    private static final VoxelShape BLOCK_AABB = VoxelShapes.create(1.0D/16.0, 1.0D/16.0, 15.0D/16.0, 15.0D/16.0, 15.0D/16.0, 1.0D);
+    private static final VoxelShape BLOCK_AABB = VoxelShapes.box(1.0D/16.0, 1.0D/16.0, 15.0D/16.0, 15.0D/16.0, 15.0D/16.0, 1.0D);
 
     public WirelessButtonTile() {
         super(Registration.WIRELESS_BUTTON_TILE.get());
@@ -50,8 +50,8 @@ public class WirelessButtonTile extends SignalChannelTileEntity {
                 .tileEntitySupplier(WirelessButtonTile::new)
         ) {
             @Override
-            protected void fillStateContainer(StateContainer.Builder<Block, BlockState> builder) {
-                super.fillStateContainer(builder);
+            protected void createBlockStateDefinition(StateContainer.Builder<Block, BlockState> builder) {
+                super.createBlockStateDefinition(builder);
                 builder.add(BlockProperties.POWER);
             }
 
@@ -64,7 +64,7 @@ public class WirelessButtonTile extends SignalChannelTileEntity {
 
     @Override
     public ActionResultType onBlockActivated(BlockState state, PlayerEntity player, Hand hand, BlockRayTraceResult result) {
-        onBlockActivatedWithToggle(world, pos, player, hand);
+        onBlockActivatedWithToggle(level, worldPosition, player, hand);
         return ActionResultType.SUCCESS;
     }
 
@@ -80,11 +80,11 @@ public class WirelessButtonTile extends SignalChannelTileEntity {
 
         super.onDataPacket(net, packet);
 
-        if (world.isRemote) {
+        if (level.isClientSide) {
             // If needed send a render update.
             boolean newLocked = isLocked();
             if (newLocked != locked) {
-                world.notifyBlockUpdate(pos, getBlockState(), getBlockState(), Constants.BlockFlags.BLOCK_UPDATE + Constants.BlockFlags.NOTIFY_NEIGHBORS);
+                level.sendBlockUpdated(worldPosition, getBlockState(), getBlockState(), Constants.BlockFlags.BLOCK_UPDATE + Constants.BlockFlags.NOTIFY_NEIGHBORS);
             }
         }
     }
@@ -99,7 +99,7 @@ public class WirelessButtonTile extends SignalChannelTileEntity {
         }
         if (channel != -1) {
             this.locked = locked;
-            RedstoneChannels channels = RedstoneChannels.getChannels(getWorld());
+            RedstoneChannels channels = RedstoneChannels.getChannels(getLevel());
             RedstoneChannels.RedstoneChannel ch = channels.getOrCreateChannel(channel);
             ch.setValue(locked ? 15 : 0);
         }
@@ -107,11 +107,11 @@ public class WirelessButtonTile extends SignalChannelTileEntity {
     }
 
     public static boolean onBlockActivatedWithToggle(World world, BlockPos pos, PlayerEntity player, Hand hand) {
-        ItemStack stack = player.getHeldItem(hand);
+        ItemStack stack = player.getItemInHand(hand);
         if (SignalChannelTileEntity.isRedstoneChannelItem(stack.getItem())) {
             setChannel(world, pos, player, stack);
         } else {
-            TileEntity te = world.getTileEntity(pos);
+            TileEntity te = world.getBlockEntity(pos);
             if (te instanceof WirelessButtonTile) {
                 world.playSound(null, pos, ModSounds.buzzOk, SoundCategory.BLOCKS, 1.0f, 1.0f);
                 ((WirelessButtonTile) te).toggleLock();
@@ -121,7 +121,7 @@ public class WirelessButtonTile extends SignalChannelTileEntity {
     }
 
     public void toggleLock() {
-        if (!world.isRemote) {
+        if (!level.isClientSide) {
             setLocked(!locked);
         }
     }
@@ -140,8 +140,8 @@ public class WirelessButtonTile extends SignalChannelTileEntity {
     }
 
     @Override
-    public CompoundNBT write(CompoundNBT tagCompound) {
-        super.write(tagCompound);
+    public CompoundNBT save(CompoundNBT tagCompound) {
+        super.save(tagCompound);
         tagCompound.putInt("prevIn", prevIn);
         return tagCompound;
     }

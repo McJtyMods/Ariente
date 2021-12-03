@@ -40,7 +40,7 @@ public class ArienteSpriteUploader extends SpriteUploader {
     }
 
     @Override
-    protected Stream<ResourceLocation> getResourceLocations() {
+    protected Stream<ResourceLocation> getResourcesToLoad() {
         return textures.stream();
     }
 

@@ -43,9 +43,9 @@ import java.util.UUID;
 
 public class FluxElevatorEntity extends Entity {
 
-    private static final DataParameter<Integer> SPEED = EntityDataManager.createKey(FluxElevatorEntity.class, DataSerializers.VARINT);
-    private static final DataParameter<Float> DAMAGE = EntityDataManager.createKey(FluxElevatorEntity.class, DataSerializers.FLOAT);
-    private static final DataParameter<Optional<UUID>> HOLO = EntityDataManager.createKey(FluxElevatorEntity.class, DataSerializers.OPTIONAL_UNIQUE_ID);
+    private static final DataParameter<Integer> SPEED = EntityDataManager.defineId(FluxElevatorEntity.class, DataSerializers.INT);
+    private static final DataParameter<Float> DAMAGE = EntityDataManager.defineId(FluxElevatorEntity.class, DataSerializers.FLOAT);
+    private static final DataParameter<Optional<UUID>> HOLO = EntityDataManager.defineId(FluxElevatorEntity.class, DataSerializers.OPTIONAL_UUID);
     private static final float LENGTH = 2.5f;
     public static final float MAX_SPEED = 1.2f;
 
@@ -60,13 +60,13 @@ public class FluxElevatorEntity extends Entity {
 
     public FluxElevatorEntity(EntityType<? extends FluxElevatorEntity> entityTypeIn, World worldIn) {
         super(entityTypeIn, worldIn);
-        this.preventEntitySpawning = true;
+        this.blocksBuilding = true;
         this.setSize(1.30F, 0.9F);
     }
 
 
     public int getSpeed() {
-        return dataManager.get(SPEED);
+        return entityData.get(SPEED);
     }
 
     public void changeSpeed(int speed) {
@@ -75,7 +75,7 @@ public class FluxElevatorEntity extends Entity {
         } else if (speed > 80) {
             speed = 80;
         }
-        this.dataManager.set(SPEED, speed);
+        this.entityData.set(SPEED, speed);
     }
 
     // @todo 1.14, this should override from Entity!
@@ -103,7 +103,7 @@ public class FluxElevatorEntity extends Entity {
     }
 
     @Override
-    protected boolean canFitPassenger(Entity passenger) {
+    protected boolean canAddPassenger(Entity passenger) {
         return true;    // @todo
     }
 
@@ -114,15 +114,15 @@ public class FluxElevatorEntity extends Entity {
     }
 
     @Override
-    public IPacket<?> createSpawnPacket() {
+    public IPacket<?> getAddEntityPacket() {
         return NetworkHooks.getEntitySpawningPacket(this);
     }
 
     @Override
-    public void updatePassenger(Entity passenger) {
-        if (this.isPassenger(passenger)) {
+    public void positionRider(Entity passenger) {
+        if (this.hasPassenger(passenger)) {
             if (!(passenger instanceof IHoloGuiEntity)) {
-                super.updatePassenger(passenger);
+                super.positionRider(passenger);
             }
         }
     }
@@ -130,21 +130,21 @@ public class FluxElevatorEntity extends Entity {
     public IHoloGuiEntity getHoloGui() {
         if (holoGui == null) {
             if (getHoloUUID() != null) {
-                for (Entity entity : world.getEntitiesWithinAABB(Ariente.guiHandler.getHoloEntityClass(), getBoundingBox().grow(10))) {
-                    if (entity instanceof IHoloGuiEntity && getHoloUUID().equals(entity.getUniqueID())) {
+                for (Entity entity : level.getEntitiesOfClass(Ariente.guiHandler.getHoloEntityClass(), getBoundingBox().inflate(10))) {
+                    if (entity instanceof IHoloGuiEntity && getHoloUUID().equals(entity.getUUID())) {
                         holoGui = (IHoloGuiEntity) entity;
                         entity.startRiding(this);
                         break;
                     }
                 }
             }
-            if (holoGui == null && !world.isRemote ) {
+            if (holoGui == null && !level.isClientSide ) {
                 IHoloGuiEntity holoGui = Ariente.guiHandler.openHoloGuiRelative(this, new Vector3d(0, .5, 1), ModGuis.GUI_ELEVATOR);
                 holoGui.setScale(0.75f);
                 holoGui.setCloseStrategy(CloseStrategy.NEVER);
                 holoGui.getEntity().startRiding(this);
                 this.holoGui = holoGui;
-                setHoloUUID(holoGui.getEntity().getUniqueID());
+                setHoloUUID(holoGui.getEntity().getUUID());
             }
         }
         return holoGui;
@@ -152,11 +152,11 @@ public class FluxElevatorEntity extends Entity {
 
     public static FluxElevatorEntity create(World worldIn, double x, double y, double z) {
         FluxElevatorEntity entity = new FluxElevatorEntity(Registration.ENTITY_ELEVATOR.get(), worldIn);
-        entity.setPosition(x, y, z);
-        entity.setMotion(0, 0, 0);
-        entity.prevPosX = x;
-        entity.prevPosY = y;
-        entity.prevPosZ = z;
+        entity.setPos(x, y, z);
+        entity.setDeltaMovement(0, 0, 0);
+        entity.xo = x;
+        entity.yo = y;
+        entity.zo = z;
         return entity;
     }
 
@@ -167,47 +167,47 @@ public class FluxElevatorEntity extends Entity {
     }
 
     @Override
-    public void setLocationAndAngles(double x, double y, double z, float yaw, float pitch) {
-        super.setLocationAndAngles(x, y, z, yaw, pitch);
+    public void moveTo(double x, double y, double z, float yaw, float pitch) {
+        super.moveTo(x, y, z, yaw, pitch);
         updateHoloGui();        // @todo check if needed
     }
 
     @Override
-    public void setPositionAndRotation(double x, double y, double z, float yaw, float pitch) {
-        super.setPositionAndRotation(x, y, z, yaw, pitch);
+    public void absMoveTo(double x, double y, double z, float yaw, float pitch) {
+        super.absMoveTo(x, y, z, yaw, pitch);
         updateHoloGui();        // @todo check if needed
     }
 
     public void setHoloUUID(UUID holoFront) {
-        this.dataManager.set(HOLO, Optional.ofNullable(holoFront));
+        this.entityData.set(HOLO, Optional.ofNullable(holoFront));
     }
 
     public UUID getHoloUUID() {
-        return (UUID) ((Optional) this.dataManager.get(HOLO)).orElse(null);
+        return (UUID) ((Optional) this.entityData.get(HOLO)).orElse(null);
     }
 
 
     @Override
-    protected boolean canTriggerWalking() {
+    protected boolean isMovementNoisy() {
         return false;
     }
 
     @Override
-    protected boolean canBeRidden(Entity entityIn) {
+    protected boolean canRide(Entity entityIn) {
         return true;
     }
 
     @Override
-    protected void registerData() {
-        this.dataManager.register(SPEED, Integer.valueOf(0));
-        this.dataManager.register(DAMAGE, Float.valueOf(0.0F));
-        this.dataManager.register(HOLO, Optional.empty());
+    protected void defineSynchedData() {
+        this.entityData.define(SPEED, Integer.valueOf(0));
+        this.entityData.define(DAMAGE, Float.valueOf(0.0F));
+        this.entityData.define(HOLO, Optional.empty());
     }
 
     // @todo 1.16 @Override
     @Nullable
     public AxisAlignedBB getCollisionBox(Entity entityIn) {
-        return entityIn.canBePushed() ? entityIn.getBoundingBox() : null;
+        return entityIn.isPushable() ? entityIn.getBoundingBox() : null;
     }
 
     // @todo 1.16 @Override
@@ -217,28 +217,28 @@ public class FluxElevatorEntity extends Entity {
     }
 
     @Override
-    public boolean canBePushed() {
+    public boolean isPushable() {
         return true;
     }
 
 
     @Override
-    public double getMountedYOffset() {
+    public double getPassengersRidingOffset() {
         return 0.0D;
     }
 
     @Override
-    public boolean attackEntityFrom(DamageSource source, float amount) {
-        if (!this.world.isRemote && this.isAlive()) {
+    public boolean hurt(DamageSource source, float amount) {
+        if (!this.level.isClientSide && this.isAlive()) {
             if (this.isInvulnerableTo(source)) {
                 return false;
             } else {
-                this.markVelocityChanged();
+                this.markHurt();
                 this.setDamage(this.getDamage() + amount * 10.0F);
-                boolean flag = source.getTrueSource() instanceof PlayerEntity && ((PlayerEntity) source.getTrueSource()).abilities.isCreativeMode;
+                boolean flag = source.getEntity() instanceof PlayerEntity && ((PlayerEntity) source.getEntity()).abilities.instabuild;
 
                 if (flag || this.getDamage() > 40.0F) {
-                    this.removePassengers();
+                    this.ejectPassengers();
 
                     if (flag && !this.hasCustomName()) {
                         this.remove();
@@ -267,30 +267,30 @@ public class FluxElevatorEntity extends Entity {
     public void killLevitator(DamageSource source) {
         this.remove();
 
-        if (this.world.getGameRules().getBoolean(GameRules.DO_ENTITY_DROPS)) {
+        if (this.level.getGameRules().getBoolean(GameRules.RULE_DOENTITYDROPS)) {
             ItemStack itemstack = new ItemStack(Registration.FLUX_LEVITATOR.get(), 1);
 
             if (this.hasCustomName()) {
-                itemstack.setDisplayName(this.getCustomName());
+                itemstack.setHoverName(this.getCustomName());
             }
 
-            this.entityDropItem(itemstack, 0.0F);
+            this.spawnAtLocation(itemstack, 0.0F);
         }
     }
 
     @Override
-    public void performHurtAnimation() {
+    public void animateHurt() {
         this.setDamage(this.getDamage() + this.getDamage() * 10.0F);
     }
 
     @Override
-    public boolean canBeCollidedWith() {
+    public boolean isPickable() {
         return this.isAlive();
     }
 
     @Override
-    public Direction getAdjustedHorizontalFacing() {
-        return this.getHorizontalFacing().rotateY();
+    public Direction getMotionDirection() {
+        return this.getDirection().getClockWise();
     }
 
     @Override
@@ -299,13 +299,13 @@ public class FluxElevatorEntity extends Entity {
             this.setDamage(this.getDamage() - 1.0F);
         }
 
-        if (this.getPosY() < -64.0D) {
+        if (this.getY() < -64.0D) {
             this.outOfWorld();
         }
 
         handlePortal();
 
-        if (this.world.isRemote) {
+        if (this.level.isClientSide) {
             onUpdateClient();
         } else {
             onUpdateServer();
@@ -315,44 +315,44 @@ public class FluxElevatorEntity extends Entity {
     }
 
     private void onUpdateServer() {
-        this.prevPosX = this.getPosX();
-        this.prevPosY = this.getPosY();
-        this.prevPosZ = this.getPosZ();
+        this.xo = this.getX();
+        this.yo = this.getY();
+        this.zo = this.getZ();
 
-        double motionX = getMotion().x;
-        double motionY = getMotion().y;
-        double motionZ = getMotion().z;
+        double motionX = getDeltaMovement().x;
+        double motionY = getDeltaMovement().y;
+        double motionZ = getDeltaMovement().z;
 
-        if (!this.hasNoGravity()) {
+        if (!this.isNoGravity()) {
             motionY -= 0.04D;
         }
 
-        int floorX = MathHelper.floor(this.getPosX());
-        int floorY = MathHelper.floor(this.getPosY());
-        int floorZ = MathHelper.floor(this.getPosZ());
+        int floorX = MathHelper.floor(this.getX());
+        int floorY = MathHelper.floor(this.getY());
+        int floorZ = MathHelper.floor(this.getZ());
 
-        Block block = world.getBlockState(new BlockPos(floorX, floorY - 1, floorZ)).getBlock();
+        Block block = level.getBlockState(new BlockPos(floorX, floorY - 1, floorZ)).getBlock();
         if (isValidBeamBlock(block)) {
             --floorY;
         }
 
         BlockPos blockpos = new BlockPos(floorX, floorY, floorZ);
-        BlockState state = this.world.getBlockState(blockpos);
+        BlockState state = this.level.getBlockState(blockpos);
 
         if (isValidBeamBlock(state.getBlock())) {
             this.moveAlongTrack(blockpos, state);
         } else {
             motionY = 0;        // Stop
         }
-        setMotion(motionX, motionY, motionZ);
+        setDeltaMovement(motionX, motionY, motionZ);
 
-        this.doBlockCollisions();
-        this.rotationPitch = 0.0F;
-        double dx = this.prevPosX - this.getPosX();
-        double dz = this.prevPosZ - this.getPosZ();
+        this.checkInsideBlocks();
+        this.xRot = 0.0F;
+        double dx = this.xo - this.getX();
+        double dz = this.zo - this.getZ();
 
         if (dx * dx + dz * dz > 0.001D) {
-            this.rotationYaw = (float) (MathHelper.atan2(dz, dx) * 180.0D / Math.PI);
+            this.yRot = (float) (MathHelper.atan2(dz, dx) * 180.0D / Math.PI);
         } else {
             if (getSpeed() > 0) {
                 changeSpeed(getSpeed() - 1);
@@ -361,7 +361,7 @@ public class FluxElevatorEntity extends Entity {
             }
         }
 
-        this.setRotation(this.rotationYaw, this.rotationPitch);
+        this.setRot(this.yRot, this.xRot);
 
         handleEntityCollision();
         // @todo 1.16 handleWaterMovement();
@@ -373,65 +373,65 @@ public class FluxElevatorEntity extends Entity {
 
     private void handleEntityCollision() {
         AxisAlignedBB box;
-        box = this.getBoundingBox().grow(0.2D, 0.0D, 0.2D);
+        box = this.getBoundingBox().inflate(0.2D, 0.0D, 0.2D);
 
-        Vector3d motion = getMotion();
+        Vector3d motion = getDeltaMovement();
         if (motion.x * motion.x + motion.z * motion.z > 0.01D) {
-            List<Entity> list = this.world.getEntitiesInAABBexcluding(this, box, entity -> true);//@todo 1.14 EntitySelectors.getTeamCollisionPredicate(this));
+            List<Entity> list = this.level.getEntities(this, box, entity -> true);//@todo 1.14 EntitySelectors.getTeamCollisionPredicate(this));
 
             if (!list.isEmpty()) {
                 for (Entity ent : list) {
-                    if (!(ent instanceof PlayerEntity) && !(ent instanceof IronGolemEntity) && !(ent instanceof FluxElevatorEntity) && !this.isBeingRidden() && !ent.isPassenger()) {
+                    if (!(ent instanceof PlayerEntity) && !(ent instanceof IronGolemEntity) && !(ent instanceof FluxElevatorEntity) && !this.isVehicle() && !ent.isPassenger()) {
                         ent.startRiding(this);
                     } else {
-                        ent.applyEntityCollision(this);
+                        ent.push(this);
                     }
                 }
             }
         } else {
-            for (Entity entity : this.world.getEntitiesWithinAABBExcludingEntity(this, box)) {
-                if (!this.isPassenger(entity) && entity.canBePushed() && entity instanceof FluxElevatorEntity) {
-                    entity.applyEntityCollision(this);
+            for (Entity entity : this.level.getEntities(this, box)) {
+                if (!this.hasPassenger(entity) && entity.isPushable() && entity instanceof FluxElevatorEntity) {
+                    entity.push(this);
                 }
             }
         }
     }
 
     private void onUpdateClient() {
-        this.setPosition(this.getPosX(), this.getPosY(), this.getPosZ());
-        this.setRotation(this.rotationYaw, this.rotationPitch);
+        this.setPos(this.getX(), this.getY(), this.getZ());
+        this.setRot(this.yRot, this.xRot);
     }
 
     private void handlePortal() {
-        if (!this.world.isRemote && this.world instanceof ServerWorld) {
-            MinecraftServer minecraftserver = this.world.getServer();
-            int i = this.getMaxInPortalTime();
+        if (!this.level.isClientSide && this.level instanceof ServerWorld) {
+            MinecraftServer minecraftserver = this.level.getServer();
+            int i = this.getPortalWaitTime();
 
-            if (this.inPortal) {
-                if (minecraftserver.getAllowNether()) {
-                    if (!this.isPassenger() && this.portalCounter++ >= i) {
-                        this.portalCounter = i;
-                        this.timeUntilPortal = this.getPortalCooldown();
+            if (this.isInsidePortal) {
+                if (minecraftserver.isNetherEnabled()) {
+                    if (!this.isPassenger() && this.portalTime++ >= i) {
+                        this.portalTime = i;
+                        this.timeUntilPortal = this.getDimensionChangingDelay();
                         ServerWorld id;
 
-                        if (this.world.getDimensionKey() == World.THE_NETHER) {
-                            id = minecraftserver.getWorld(World.OVERWORLD);
+                        if (this.level.dimension() == World.NETHER) {
+                            id = minecraftserver.getLevel(World.OVERWORLD);
                         } else {
-                            id = minecraftserver.getWorld(World.THE_NETHER);
+                            id = minecraftserver.getLevel(World.NETHER);
                         }
 
                         this.changeDimension(id);
                     }
 
-                    this.inPortal = false;
+                    this.isInsidePortal = false;
                 }
             } else {
-                if (this.portalCounter > 0) {
-                    this.portalCounter -= 4;
+                if (this.portalTime > 0) {
+                    this.portalTime -= 4;
                 }
 
-                if (this.portalCounter < 0) {
-                    this.portalCounter = 0;
+                if (this.portalTime < 0) {
+                    this.portalTime = 0;
                 }
             }
 
@@ -452,14 +452,14 @@ public class FluxElevatorEntity extends Entity {
         float yaw = pair.getLeft() + offset * 90;
         float pitch = pair.getRight();
 
-        Vector3d vec3d = getPosOffset(getPosX(), getPosY(), getPosZ(), offset);
+        Vector3d vec3d = getPosOffset(getX(), getY(), getZ(), offset);
         if (vec3d != null) {
             double x = vec3d.x;
             double y = vec3d.y + .38;
             double z = vec3d.z;
 
-            holo.getEntity().setLocationAndAngles(x, y, z, yaw, pitch);
-            holo.getEntity().setPositionAndUpdate(x, y, z);
+            holo.getEntity().moveTo(x, y, z, yaw, pitch);
+            holo.getEntity().teleportTo(x, y, z);
         }
     }
 
@@ -469,8 +469,8 @@ public class FluxElevatorEntity extends Entity {
 
     protected void moveAlongTrack(BlockPos pos, BlockState state) {
         this.fallDistance = 0.0F;
-        Vector3d oldPos = this.getPos(this.getPosX(), this.getPosY(), this.getPosZ());
-        setRawPosition(getPosX(), pos.getY(), getPosZ());   // @todo 1.15 is this right?
+        Vector3d oldPos = this.getPos(this.getX(), this.getY(), this.getZ());
+        setPosRaw(getX(), pos.getY(), getZ());   // @todo 1.15 is this right?
         int speed = getSpeed();
         boolean powered = speed != 0;    // Like powered
         boolean unpowered = speed == 0;
@@ -486,16 +486,16 @@ public class FluxElevatorEntity extends Entity {
             restrictMotionUnpowered();
         }
 
-        this.setPosition(this.getPosX(), this.getPosY(), this.getPosZ());
+        this.setPos(this.getX(), this.getY(), this.getZ());
         this.moveLevitatorOnBeam(pos);
 
         this.applyDrag();
-        Vector3d newPos = this.getPos(this.getPosX(), this.getPosY(), this.getPosZ());
+        Vector3d newPos = this.getPos(this.getX(), this.getY(), this.getZ());
 
         if (newPos != null && oldPos != null) {
-            double motionX = getMotion().x;
-            double motionY = getMotion().y;
-            double motionZ = getMotion().z;
+            double motionX = getDeltaMovement().x;
+            double motionY = getDeltaMovement().y;
+            double motionZ = getDeltaMovement().z;
 
             double d14 = (oldPos.y - newPos.y) * 0.05D;
             double motionLength = Math.sqrt(motionX * motionX + motionZ * motionZ);
@@ -505,12 +505,12 @@ public class FluxElevatorEntity extends Entity {
                 motionZ = motionZ / motionLength * (motionLength + d14);
             }
 
-            setMotion(motionX, motionY, motionZ);
-            this.setPosition(this.getPosX(), newPos.y, this.getPosZ());
+            setDeltaMovement(motionX, motionY, motionZ);
+            this.setPos(this.getX(), newPos.y, this.getZ());
         }
 
-        int floorX = MathHelper.floor(this.getPosX());
-        int floorZ = MathHelper.floor(this.getPosZ());
+        int floorX = MathHelper.floor(this.getX());
+        int floorZ = MathHelper.floor(this.getZ());
 
         if (powered) {
             handlePoweredMotion(pos, dir);
@@ -536,9 +536,9 @@ public class FluxElevatorEntity extends Entity {
 
         double dx = -Math.sin((yaw * 0.017453292F));
         double dz = Math.cos((yaw * 0.017453292F));
-        double motionX = getMotion().x;
-        double motionY = getMotion().y;
-        double motionZ = getMotion().z;
+        double motionX = getDeltaMovement().x;
+        double motionY = getDeltaMovement().y;
+        double motionZ = getDeltaMovement().z;
         double dist = motionX * motionX + motionZ * motionZ;
 
         if (dist < 0.01D) {
@@ -584,13 +584,13 @@ public class FluxElevatorEntity extends Entity {
                 motionZ = maxMotion;
             }
         }
-        setMotion(motionX, motionY, motionZ);
+        setDeltaMovement(motionX, motionY, motionZ);
     }
 
     private void handlePoweredMotion(BlockPos pos, RailShape dir) {
-        double motionX = getMotion().x;
-        double motionY = getMotion().y;
-        double motionZ = getMotion().z;
+        double motionX = getDeltaMovement().x;
+        double motionY = getDeltaMovement().y;
+        double motionZ = getDeltaMovement().z;
 
         double length = Math.sqrt(motionX * motionX + motionZ * motionZ);
 
@@ -598,25 +598,25 @@ public class FluxElevatorEntity extends Entity {
             motionX += motionX / length * 0.06D;
             motionZ += motionZ / length * 0.06D;
         } else if (dir == RailShape.EAST_WEST) {
-            if (this.world.getBlockState(pos.west()).isNormalCube(world, pos.west())) {
+            if (this.level.getBlockState(pos.west()).isRedstoneConductor(level, pos.west())) {
                 motionX = 0.02D;
-            } else if (this.world.getBlockState(pos.east()).isNormalCube(world, pos.east())) {
+            } else if (this.level.getBlockState(pos.east()).isRedstoneConductor(level, pos.east())) {
                 motionX = -0.02D;
             }
         } else if (dir == RailShape.NORTH_SOUTH) {
-            if (this.world.getBlockState(pos.north()).isNormalCube(world, pos.north())) {
+            if (this.level.getBlockState(pos.north()).isRedstoneConductor(level, pos.north())) {
                 motionZ = 0.02D;
-            } else if (this.world.getBlockState(pos.south()).isNormalCube(world, pos.south())) {
+            } else if (this.level.getBlockState(pos.south()).isRedstoneConductor(level, pos.south())) {
                 motionZ = -0.02D;
             }
         }
-        setMotion(motionX, motionY, motionZ);
+        setDeltaMovement(motionX, motionY, motionZ);
     }
 
     private void restrictMotionUnpowered() {
-        double motionX = getMotion().x;
-        double motionY = getMotion().y;
-        double motionZ = getMotion().z;
+        double motionX = getDeltaMovement().x;
+        double motionY = getDeltaMovement().y;
+        double motionZ = getDeltaMovement().z;
         double length = Math.sqrt(motionX * motionX + motionZ * motionZ);
 
         if (length < 0.03D) {
@@ -628,19 +628,19 @@ public class FluxElevatorEntity extends Entity {
             motionY *= 0.0D;
             motionZ *= 0.5D;
         }
-        setMotion(motionX, motionY, motionZ);
+        setDeltaMovement(motionX, motionY, motionZ);
     }
 
     public static RailShape getBeamDirection(BlockState state) {
         if (state.getBlock() == Registration.FLUX_BEAM.get()) {
-            Direction facing = state.get(BlockStateProperties.HORIZONTAL_FACING);
+            Direction facing = state.getValue(BlockStateProperties.HORIZONTAL_FACING);
             if (facing == Direction.NORTH || facing == Direction.SOUTH) {
                 return RailShape.EAST_WEST;
             } else {
                 return RailShape.NORTH_SOUTH;
             }
         } else {
-            Direction facing = state.get(BlockStateProperties.HORIZONTAL_FACING);
+            Direction facing = state.getValue(BlockStateProperties.HORIZONTAL_FACING);
             switch (facing) {
                 case NORTH:
                     return RailShape.NORTH_EAST;
@@ -658,10 +658,10 @@ public class FluxElevatorEntity extends Entity {
     }
 
     protected void applyDrag() {
-        double motionX = getMotion().x;
-        double motionY = getMotion().y;
-        double motionZ = getMotion().z;
-        if (this.isBeingRidden()) {
+        double motionX = getDeltaMovement().x;
+        double motionY = getDeltaMovement().y;
+        double motionZ = getDeltaMovement().z;
+        if (this.isVehicle()) {
             motionX *= 0.997D;
             motionY *= 0.0D;
             motionZ *= 0.997D;
@@ -670,26 +670,26 @@ public class FluxElevatorEntity extends Entity {
             motionY *= 0.0D;
             motionZ *= 0.96D;
         }
-        setMotion(motionX, motionY, motionZ);
+        setDeltaMovement(motionX, motionY, motionZ);
     }
 
     @Override
-    public void setPosition(double x, double y, double z) {
-        setRawPosition(x, y, z);    // @todo 1.15 is this right?
-        float f = this.getWidth() / 2.0F;
-        float f1 = this.getHeight();
+    public void setPos(double x, double y, double z) {
+        setPosRaw(x, y, z);    // @todo 1.15 is this right?
+        float f = this.getBbWidth() / 2.0F;
+        float f1 = this.getBbHeight();
         this.setBoundingBox(new AxisAlignedBB(x - f, y, z - f, x + f, y + f1, z + f));
     }
 
     // Calculate yaw and pitch based on block below the levitator
     private Pair<Float, Float> calculateYawPitch() {
-        Vector3d oldPos = getPos(getPosX(), getPosY(), getPosZ());
-        float yaw = rotationYaw;
-        float pitch = rotationPitch;
+        Vector3d oldPos = getPos(getX(), getY(), getZ());
+        float yaw = yRot;
+        float pitch = xRot;
 
         if (oldPos != null) {
-            Vector3d posUp = getPosOffset(getPosX(), getPosY(), getPosZ(), 0.3D);
-            Vector3d posDown = getPosOffset(getPosX(), getPosY(), getPosZ(), -0.3D);
+            Vector3d posUp = getPosOffset(getX(), getY(), getZ(), 0.3D);
+            Vector3d posDown = getPosOffset(getX(), getY(), getZ(), -0.3D);
 
             if (posUp == null) {
                 posUp = oldPos;
@@ -716,12 +716,12 @@ public class FluxElevatorEntity extends Entity {
         int floorY = MathHelper.floor(y);
         int floorZ = MathHelper.floor(z);
 
-        Block block = world.getBlockState(new BlockPos(floorX, floorY - 1, floorZ)).getBlock();
+        Block block = level.getBlockState(new BlockPos(floorX, floorY - 1, floorZ)).getBlock();
         if (isValidBeamBlock(block)) {
             --floorY;
         }
 
-        BlockState state = this.world.getBlockState(new BlockPos(floorX, floorY, floorZ));
+        BlockState state = this.level.getBlockState(new BlockPos(floorX, floorY, floorZ));
 
         if (isValidBeamBlock(state.getBlock())) {
             RailShape dir = getBeamDirection(state);
@@ -749,12 +749,12 @@ public class FluxElevatorEntity extends Entity {
         int floorY = MathHelper.floor(y);
         int floorZ = MathHelper.floor(z);
 
-        Block block = world.getBlockState(new BlockPos(floorX, floorY - 1, floorZ)).getBlock();
+        Block block = level.getBlockState(new BlockPos(floorX, floorY - 1, floorZ)).getBlock();
         if (isValidBeamBlock(block)) {
             --floorY;
         }
 
-        BlockState state = this.world.getBlockState(new BlockPos(floorX, floorY, floorZ));
+        BlockState state = this.level.getBlockState(new BlockPos(floorX, floorY, floorZ));
 
         if (isValidBeamBlock(state.getBlock())) {
             RailShape dir = getBeamDirection(state);
@@ -773,14 +773,14 @@ public class FluxElevatorEntity extends Entity {
     }
 
     @Override
-    public AxisAlignedBB getRenderBoundingBox() {
+    public AxisAlignedBB getBoundingBoxForCulling() {
         return this.getBoundingBox();
     }
 
     @Override
-    protected void readAdditional(CompoundNBT compound) {
-        if (compound.hasUniqueId("holo")) {
-            setHoloUUID(compound.getUniqueId("holo"));
+    protected void readAdditionalSaveData(CompoundNBT compound) {
+        if (compound.hasUUID("holo")) {
+            setHoloUUID(compound.getUUID("holo"));
         }
         changeSpeed(compound.getInt("speed"));
         if (compound.contains("desiredDestX")) {
@@ -791,9 +791,9 @@ public class FluxElevatorEntity extends Entity {
     }
 
     @Override
-    protected void writeAdditional(CompoundNBT compound) {
+    protected void addAdditionalSaveData(CompoundNBT compound) {
         if (getHoloUUID() != null) {
-            compound.putUniqueId("holo", getHoloUUID());
+            compound.putUUID("holo", getHoloUUID());
         }
         compound.putInt("speed", getSpeed());
         if (desiredDestination != null) {
@@ -804,12 +804,12 @@ public class FluxElevatorEntity extends Entity {
     }
 
     @Override
-    public void applyEntityCollision(Entity entityIn) {
-        if (!this.world.isRemote) {
-            if (!entityIn.noClip && !this.noClip) {
-                if (!this.isPassenger(entityIn)) {
-                    double dx = entityIn.getPosX() - this.getPosX();
-                    double dz = entityIn.getPosZ() - this.getPosZ();
+    public void push(Entity entityIn) {
+        if (!this.level.isClientSide) {
+            if (!entityIn.noPhysics && !this.noPhysics) {
+                if (!this.hasPassenger(entityIn)) {
+                    double dx = entityIn.getX() - this.getX();
+                    double dz = entityIn.getZ() - this.getZ();
                     double length = dx * dx + dz * dz;
 
                     if (length >= .0001D) {
@@ -826,25 +826,25 @@ public class FluxElevatorEntity extends Entity {
                         dz = dz * invLength;
                         dx = dx * 0.1D;
                         dz = dz * 0.1D;
-                        dx = dx * (1.0F - this.entityCollisionReduction);
-                        dz = dz * (1.0F - this.entityCollisionReduction);
+                        dx = dx * (1.0F - this.pushthrough);
+                        dz = dz * (1.0F - this.pushthrough);
                         dx = dx * 0.5D;
                         dz = dz * 0.5D;
 
                         if (entityIn instanceof FluxElevatorEntity) {
-                            double ddx = entityIn.getPosX() - this.getPosX();
-                            double ddz = entityIn.getPosZ() - this.getPosZ();
+                            double ddx = entityIn.getX() - this.getX();
+                            double ddz = entityIn.getZ() - this.getZ();
                             Vector3d vec3d = (new Vector3d(ddx, 0.0D, ddz)).normalize();
-                            Vector3d vec3d1 = (new Vector3d(MathHelper.cos(this.rotationYaw * 0.017453292F), 0.0D, MathHelper.sin(this.rotationYaw * 0.017453292F))).normalize();
-                            double d6 = Math.abs(vec3d.dotProduct(vec3d1));
+                            Vector3d vec3d1 = (new Vector3d(MathHelper.cos(this.yRot * 0.017453292F), 0.0D, MathHelper.sin(this.yRot * 0.017453292F))).normalize();
+                            double d6 = Math.abs(vec3d.dot(vec3d1));
 
                             if (d6 < 0.8D) {
                                 return;
                             }
 
-                            double motionX = entityIn.getMotion().x;
-                            double motionY = entityIn.getMotion().y;
-                            double motionZ = entityIn.getMotion().z;
+                            double motionX = entityIn.getDeltaMovement().x;
+                            double motionY = entityIn.getDeltaMovement().y;
+                            double motionZ = entityIn.getDeltaMovement().z;
                             double d7 = motionX + motionX;
                             double d8 = motionZ + motionZ;
 
@@ -852,15 +852,15 @@ public class FluxElevatorEntity extends Entity {
                             d8 = d8 / 2.0D;
                             motionX *= 0.2D;
                             motionZ *= 0.2D;
-                            entityIn.setMotion(motionX, motionY, motionZ);
-                            this.addVelocity(d7 - dx, 0.0D, d8 - dz);
+                            entityIn.setDeltaMovement(motionX, motionY, motionZ);
+                            this.push(d7 - dx, 0.0D, d8 - dz);
                             motionX *= 0.2D;
                             motionZ *= 0.2D;
-                            entityIn.setMotion(motionX, motionY, motionZ);
-                            entityIn.addVelocity(d7 + dx, 0.0D, d8 + dz);
+                            entityIn.setDeltaMovement(motionX, motionY, motionZ);
+                            entityIn.push(d7 + dx, 0.0D, d8 + dz);
                         } else {
-                            this.addVelocity(-dx, 0.0D, -dz);
-                            entityIn.addVelocity(dx / 4.0D, 0.0D, dz / 4.0D);
+                            this.push(-dx, 0.0D, -dz);
+                            entityIn.push(dx / 4.0D, 0.0D, dz / 4.0D);
                         }
                     }
                 }
@@ -869,36 +869,36 @@ public class FluxElevatorEntity extends Entity {
     }
 
     @Override
-    public void setPositionAndRotationDirect(double x, double y, double z, float yaw, float pitch, int posRotationIncrements, boolean teleport) {
-        setMotion(velocityX, velocityY, velocityZ);
+    public void lerpTo(double x, double y, double z, float yaw, float pitch, int posRotationIncrements, boolean teleport) {
+        setDeltaMovement(velocityX, velocityY, velocityZ);
 
         updateHoloGui();
     }
 
     public void setDamage(float damage) {
-        this.dataManager.set(DAMAGE, Float.valueOf(damage));
+        this.entityData.set(DAMAGE, Float.valueOf(damage));
     }
 
     @Override
-    public void setVelocity(double x, double y, double z) {
-        setMotion(x, y, z);
+    public void lerpMotion(double x, double y, double z) {
+        setDeltaMovement(x, y, z);
         this.velocityX = x;
         this.velocityY = y;
         this.velocityZ = z;
     }
 
     public float getDamage() {
-        return this.dataManager.get(DAMAGE).floatValue();
+        return this.entityData.get(DAMAGE).floatValue();
     }
 
     @Override
-    public ActionResultType processInitialInteract(PlayerEntity player, Hand hand) {
-        if (player.isSneaking()) {
+    public ActionResultType interact(PlayerEntity player, Hand hand) {
+        if (player.isShiftKeyDown()) {
             return ActionResultType.PASS;
 //        } else if (this.isBeingRidden()) {    // @todo
 //            return true;
         } else {
-            if (!this.world.isRemote) {
+            if (!this.level.isClientSide) {
                 player.startRiding(this);
             }
 
@@ -908,11 +908,11 @@ public class FluxElevatorEntity extends Entity {
 
 
     private BlockPos getCurrentRailPosition() {
-        int x = MathHelper.floor(this.getPosX());
-        int y = MathHelper.floor(this.getPosY());
-        int z = MathHelper.floor(this.getPosZ());
+        int x = MathHelper.floor(this.getX());
+        int y = MathHelper.floor(this.getY());
+        int z = MathHelper.floor(this.getZ());
 
-        Block block = world.getBlockState(new BlockPos(x, y - 1, z)).getBlock();
+        Block block = level.getBlockState(new BlockPos(x, y - 1, z)).getBlock();
         if (isValidBeamBlock(block)) {
             y--;
         }
@@ -921,7 +921,7 @@ public class FluxElevatorEntity extends Entity {
 
     protected double getMaxSpeed() {
         BlockPos pos = this.getCurrentRailPosition();
-        BlockState state = this.world.getBlockState(pos);
+        BlockState state = this.level.getBlockState(pos);
         if (!isValidBeamBlock(state.getBlock())) {
             return getMaximumSpeed();
         }
@@ -935,10 +935,10 @@ public class FluxElevatorEntity extends Entity {
      * This code handles levitator movement and speed capping when on a rail.
      */
     public void moveLevitatorOnBeam(BlockPos pos) {
-        double mX = getMotion().x;
-        double mZ = getMotion().z;
+        double mX = getDeltaMovement().x;
+        double mZ = getDeltaMovement().z;
 
-        if (this.isBeingRidden()) {
+        if (this.isVehicle()) {
             mX *= 0.75D;
             mZ *= 0.75D;
         }

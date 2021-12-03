@@ -31,7 +31,7 @@ public class ConnectorBlock extends GenericCableBlock {
     public static final String CONNECTOR = "connector";
 
     public ConnectorBlock() {
-        super(Material.IRON);
+        super(Material.METAL);
     }
 
     @Override
@@ -86,7 +86,7 @@ public class ConnectorBlock extends GenericCableBlock {
 
 
     @Override
-    public void harvestBlock(World worldIn, PlayerEntity player, BlockPos pos, BlockState state, @Nullable TileEntity te, ItemStack stack) {
+    public void playerDestroy(World worldIn, PlayerEntity player, BlockPos pos, BlockState state, @Nullable TileEntity te, ItemStack stack) {
         if (te instanceof ConnectorTileEntity) {
             // If we are in mimic mode then the drop will be the facade as the connector will remain there
             ConnectorTileEntity connectorTileEntity = (ConnectorTileEntity) te;
@@ -94,25 +94,25 @@ public class ConnectorBlock extends GenericCableBlock {
                 ItemStack item = new ItemStack(Registration.FACADE.get());
                 FacadeItemBlock.setMimicBlock(item, connectorTileEntity.getMimicBlock());
                 connectorTileEntity.setMimicBlock(null);
-                spawnAsEntity(worldIn, pos, item);
+                popResource(worldIn, pos, item);
                 return;
             }
         }
-        super.harvestBlock(worldIn, player, pos, state, te, stack);
+        super.playerDestroy(worldIn, player, pos, state, te, stack);
     }
 
     @Override
     public boolean removedByPlayer(BlockState state, World world, BlockPos pos, PlayerEntity player, boolean willHarvest, FluidState fluid) {
-        TileEntity te = world.getTileEntity(pos);
+        TileEntity te = world.getBlockEntity(pos);
         if (te instanceof ConnectorTileEntity) {
             ConnectorTileEntity connectorTileEntity = (ConnectorTileEntity) te;
             if (connectorTileEntity.getMimicBlock() == null) {
-                this.onBlockHarvested(world, pos, state, player);
-                return world.setBlockState(pos, Blocks.AIR.getDefaultState(), world.isRemote ? 11 : 3);
+                this.playerWillDestroy(world, pos, state, player);
+                return world.setBlock(pos, Blocks.AIR.defaultBlockState(), world.isClientSide ? 11 : 3);
             } else {
                 // We are in mimic mode. Don't remove the connector
-                this.onBlockHarvested(world, pos, state, player);
-                if (player.abilities.isCreativeMode) {
+                this.playerWillDestroy(world, pos, state, player);
+                if (player.abilities.instabuild) {
                     connectorTileEntity.setMimicBlock(null);
                 }
             }
@@ -178,31 +178,31 @@ public class ConnectorBlock extends GenericCableBlock {
     }
 
     private void checkRedstone(World world, BlockPos pos) {
-        TileEntity te = world.getTileEntity(pos);
+        TileEntity te = world.getBlockEntity(pos);
         if (te instanceof ConnectorTileEntity) {
-            int powered = world.getRedstonePowerFromNeighbors(pos);
+            int powered = world.getBestNeighborSignal(pos);
             ConnectorTileEntity genericTileEntity = (ConnectorTileEntity) te;
             genericTileEntity.setPowerInput(powered);
         }
     }
 
     @Override
-    public boolean canProvidePower(BlockState state) {
+    public boolean isSignalSource(BlockState state) {
         return true;
     }
 
     @Override
-    public int getWeakPower(BlockState state, IBlockReader world, BlockPos pos, Direction side) {
+    public int getSignal(BlockState state, IBlockReader world, BlockPos pos, Direction side) {
         return getRedstoneOutput(state, world, pos, side);
     }
 
     @Override
-    public int getStrongPower(BlockState state, IBlockReader world, BlockPos pos, Direction side) {
+    public int getDirectSignal(BlockState state, IBlockReader world, BlockPos pos, Direction side) {
         return getRedstoneOutput(state, world, pos, side);
     }
 
     protected int getRedstoneOutput(BlockState state, IBlockReader world, BlockPos pos, Direction side) {
-        TileEntity te = world.getTileEntity(pos);
+        TileEntity te = world.getBlockEntity(pos);
         if (state.getBlock() instanceof ConnectorBlock && te instanceof ConnectorTileEntity) {
             ConnectorTileEntity connector = (ConnectorTileEntity) te;
             return connector.getPowerOut(side.getOpposite());
@@ -221,10 +221,10 @@ public class ConnectorBlock extends GenericCableBlock {
 
     @Override
     protected ConnectorType getConnectorType(@Nonnull CableColor color, IBlockReader world, BlockPos connectorPos, Direction facing) {
-        BlockPos pos = connectorPos.offset(facing);
+        BlockPos pos = connectorPos.relative(facing);
         BlockState state = world.getBlockState(pos);
         Block block = state.getBlock();
-        if ((block instanceof NetCableBlock || block instanceof ConnectorBlock) && state.get(COLOR) == color) {
+        if ((block instanceof NetCableBlock || block instanceof ConnectorBlock) && state.getValue(COLOR) == color) {
             return ConnectorType.CABLE;
         } else if (isConnectable(world, connectorPos, facing)) {
             return ConnectorType.BLOCK;
@@ -235,19 +235,19 @@ public class ConnectorBlock extends GenericCableBlock {
 
     public static boolean isConnectable(IBlockReader world, BlockPos connectorPos, Direction facing) {
 
-        BlockPos pos = connectorPos.offset(facing);
+        BlockPos pos = connectorPos.relative(facing);
         BlockState state = world.getBlockState(pos);
         Block block = state.getBlock();
         if (block.isAir(state, world, pos)) {
             return false;
         }
 
-        ConnectorTileEntity connectorTE = (ConnectorTileEntity) world.getTileEntity(connectorPos);
+        ConnectorTileEntity connectorTE = (ConnectorTileEntity) world.getBlockEntity(connectorPos);
         if (connectorTE == null) {
             return false;
         }
 
-        TileEntity te = world.getTileEntity(pos);
+        TileEntity te = world.getBlockEntity(pos);
 
         if (block instanceof ConnectorBlock) {
             return false;

@@ -25,12 +25,12 @@ public class EntityAIScanForPlayer extends Goal {
         this.predicate = entity -> {
             if (!(entity instanceof PlayerEntity)) {
                 return false;
-            } else if (((PlayerEntity) entity).abilities.disableDamage) {
+            } else if (((PlayerEntity) entity).abilities.invulnerable) {
                 return false;
             } else {
                 double d0 = EntityAIScanForPlayer.this.maxTargetRange();
 
-                if (entity.isSneaking()) {
+                if (entity.isShiftKeyDown()) {
                     d0 *= 0.8;
                 }
 
@@ -55,9 +55,9 @@ public class EntityAIScanForPlayer extends Goal {
     }
 
     @Override
-    public boolean shouldExecute() {
+    public boolean canUse() {
         double range = this.maxTargetRange();
-        List<PlayerEntity> list = this.entityLiving.world.<PlayerEntity>getEntitiesWithinAABB(PlayerEntity.class, this.entityLiving.getBoundingBox().grow(range, range, range), this.predicate);
+        List<PlayerEntity> list = this.entityLiving.level.<PlayerEntity>getEntitiesOfClass(PlayerEntity.class, this.entityLiving.getBoundingBox().inflate(range, range, range), this.predicate);
         // @todo 1.14
 //        Collections.sort(list, this.sorter);
 
@@ -70,14 +70,14 @@ public class EntityAIScanForPlayer extends Goal {
     }
 
     @Override
-    public boolean shouldContinueExecuting() {
-        LivingEntity entitylivingbase = this.entityLiving.getRevengeTarget();
+    public boolean canContinueToUse() {
+        LivingEntity entitylivingbase = this.entityLiving.getLastHurtByMob();
 
         if (entitylivingbase == null) {
             return false;
         } else if (!entitylivingbase.isAlive()) {
             return false;
-        } else if (entitylivingbase instanceof PlayerEntity && ((PlayerEntity) entitylivingbase).abilities.disableDamage) {
+        } else if (entitylivingbase instanceof PlayerEntity && ((PlayerEntity) entitylivingbase).abilities.invulnerable) {
             return false;
         } else {
             Team team = this.entityLiving.getTeam();
@@ -88,25 +88,25 @@ public class EntityAIScanForPlayer extends Goal {
             } else {
                 double d0 = this.maxTargetRange();
 
-                if (this.entityLiving.getDistanceSq(entitylivingbase) > d0 * d0) {
+                if (this.entityLiving.distanceToSqr(entitylivingbase) > d0 * d0) {
                     return false;
                 } else {
-                    return !(entitylivingbase instanceof ServerPlayerEntity) || !((ServerPlayerEntity) entitylivingbase).interactionManager.isCreative();
+                    return !(entitylivingbase instanceof ServerPlayerEntity) || !((ServerPlayerEntity) entitylivingbase).gameMode.isCreative();
                 }
             }
         }
     }
 
     @Override
-    public void startExecuting() {
-        this.entityLiving.setRevengeTarget(this.entityTarget);
-        super.startExecuting();
+    public void start() {
+        this.entityLiving.setLastHurtByMob(this.entityTarget);
+        super.start();
     }
 
     @Override
-    public void resetTask() {
-        this.entityLiving.setRevengeTarget(null);
-        super.startExecuting();
+    public void stop() {
+        this.entityLiving.setLastHurtByMob(null);
+        super.start();
     }
 
     protected double maxTargetRange() {

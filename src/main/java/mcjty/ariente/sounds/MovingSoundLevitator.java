@@ -12,18 +12,18 @@ public class MovingSoundLevitator extends TickableSound {
     public MovingSoundLevitator(FluxLevitatorEntity levitatorIn) {
         super(ModSounds.levitator, SoundCategory.NEUTRAL);
         this.levitator = levitatorIn;
-        this.repeat = true;
-        this.repeatDelay = 0;
+        this.looping = true;
+        this.delay = 0;
     }
 
     @Override
     public void tick() {
         if (!this.levitator.isAlive()) {
-            finishPlaying();
+            stop();
         } else {
-            this.x = (float) this.levitator.getPosX();
-            this.y = (float) this.levitator.getPosY();
-            this.z = (float) this.levitator.getPosZ();
+            this.x = (float) this.levitator.getX();
+            this.y = (float) this.levitator.getY();
+            this.z = (float) this.levitator.getZ();
             float f = Math.abs(this.levitator.getSpeed()) / 50.0f;
 //            float f = MathHelper.sqrt(this.levitator.motionX * this.levitator.motionX + this.levitator.motionZ * this.levitator.motionZ);
 

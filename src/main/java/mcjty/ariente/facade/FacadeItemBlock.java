@@ -32,6 +32,8 @@ import java.util.List;
 
 import static mcjty.lib.builder.TooltipBuilder.*;
 
+import net.minecraft.item.Item.Properties;
+
 public class FacadeItemBlock extends BlockItem implements ITooltipSettings {
 
     private TooltipBuilder tooltipBuilder = new TooltipBuilder()
@@ -52,7 +54,7 @@ public class FacadeItemBlock extends BlockItem implements ITooltipSettings {
             if (value != null) {
                 ItemStack s = new ItemStack(value, 1);
                 if (s.getItem() != null) {
-                    return s.getDisplayName().getString();
+                    return s.getHoverName().getString();
                 }
             }
         }
@@ -61,12 +63,12 @@ public class FacadeItemBlock extends BlockItem implements ITooltipSettings {
 
     public FacadeItemBlock(FacadeBlock block) {
         super(block, new Properties()
-                .group(Ariente.setup.getTab()));
+                .tab(Ariente.setup.getTab()));
     }
 
     @Override
-    public void addInformation(ItemStack stack, @Nullable World worldIn, List<ITextComponent> tooltip, ITooltipFlag flag) {
-        super.addInformation(stack, worldIn, tooltip, flag);
+    public void appendHoverText(ItemStack stack, @Nullable World worldIn, List<ITextComponent> tooltip, ITooltipFlag flag) {
+        super.appendHoverText(stack, worldIn, tooltip, flag);
         tooltipBuilder.makeTooltip(getRegistryName(), stack, tooltip, flag);
     }
 
@@ -80,7 +82,7 @@ public class FacadeItemBlock extends BlockItem implements ITooltipSettings {
     public static BlockState getMimicBlock(@Nonnull ItemStack stack) {
         CompoundNBT tagCompound = stack.getTag();
         if (tagCompound == null || !tagCompound.contains("mimic")) {
-            return Blocks.COBBLESTONE.getDefaultState();
+            return Blocks.COBBLESTONE.defaultBlockState();
         } else {
             return NBTUtil.readBlockState(tagCompound.getCompound("mimic"));
         }
@@ -92,19 +94,19 @@ public class FacadeItemBlock extends BlockItem implements ITooltipSettings {
     }
 
     @Override
-    public ActionResultType onItemUse(ItemUseContext context) {
-        World world = context.getWorld();
-        BlockPos pos = context.getPos();
+    public ActionResultType useOn(ItemUseContext context) {
+        World world = context.getLevel();
+        BlockPos pos = context.getClickedPos();
         PlayerEntity player = context.getPlayer();
         Hand hand = context.getHand();
         BlockState state = world.getBlockState(pos);
         Block block = state.getBlock();
 
-        ItemStack itemstack = player.getHeldItem(hand);
+        ItemStack itemstack = player.getItemInHand(hand);
 
         if (!itemstack.isEmpty()) {
 
-            TileEntity te = world.getTileEntity(pos);
+            TileEntity te = world.getBlockEntity(pos);
             if (te instanceof IFacadeSupport) {
                 IFacadeSupport facadeSupport = (IFacadeSupport) te;
                 if (facadeSupport.getMimicBlock() == null) {
@@ -118,8 +120,8 @@ public class FacadeItemBlock extends BlockItem implements ITooltipSettings {
                 }
             } else {
                 setMimicBlock(itemstack, state);
-                if (world.isRemote) {
-                    player.sendStatusMessage(new StringTextComponent("Facade is now mimicing " + block.getTranslationKey()), false);
+                if (world.isClientSide) {
+                    player.displayClientMessage(new StringTextComponent("Facade is now mimicing " + block.getDescriptionId()), false);
                 }
             }
             return ActionResultType.SUCCESS;

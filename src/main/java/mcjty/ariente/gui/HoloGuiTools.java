@@ -16,10 +16,10 @@ public class HoloGuiTools {
 
     public static Integer countItem(PlayerEntity player, Item item) {
         PlayerInventory inventory = player.inventory;
-        int size = inventory.getSizeInventory();
+        int size = inventory.getContainerSize();
         int cnt = 0;
         for (int i = 0 ; i < size ; i++) {
-            ItemStack stack = inventory.getStackInSlot(i);
+            ItemStack stack = inventory.getItem(i);
             if (!stack.isEmpty() && stack.getItem() == item) {
                 cnt += stack.getCount();
             }

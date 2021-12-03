@@ -55,16 +55,16 @@ public class AutoFieldRenderer extends TileEntityRenderer<AutoFieldTile> {
 
     private void renderBeamBox(MatrixStack matrixStack, float time, AxisAlignedBB box) {
         Tessellator tessellator = Tessellator.getInstance();
-        matrixStack.push();
+        matrixStack.pushPose();
 
-        GlStateManager.enableBlend();
-        GlStateManager.depthMask(false);
+        GlStateManager._enableBlend();
+        GlStateManager._depthMask(false);
 //        GlStateManager.blendFunc(GL11.GL_SRC_ALPHA, GL11.GL_ONE);
 //        GlStateManager.alphaFunc(GL11.GL_GREATER, 0.003921569F);
-        GlStateManager.blendFunc(GL11.GL_ONE, GL11.GL_ONE);
+        GlStateManager._blendFunc(GL11.GL_ONE, GL11.GL_ONE);
 //        GlStateManager.alphaFunc(GL11.GL_GREATER, 0.003921569F);
-        GlStateManager.disableCull();
-        GlStateManager.enableDepthTest();
+        GlStateManager._disableCull();
+        GlStateManager._enableDepthTest();
 
         ResourceLocation beamIcon = beams[random.nextInt(3)];
         // @todo 1.15
@@ -72,9 +72,9 @@ public class AutoFieldRenderer extends TileEntityRenderer<AutoFieldTile> {
 
         Minecraft mc = Minecraft.getInstance();
         PlayerEntity p = mc.player;
-        double doubleX = p.lastTickPosX + (p.getPosX() - p.lastTickPosX) * time;
-        double doubleY = p.lastTickPosY + (p.getPosY() - p.lastTickPosY) * time;
-        double doubleZ = p.lastTickPosZ + (p.getPosZ() - p.lastTickPosZ) * time;
+        double doubleX = p.xOld + (p.getX() - p.xOld) * time;
+        double doubleY = p.yOld + (p.getY() - p.yOld) * time;
+        double doubleZ = p.zOld + (p.getZ() - p.zOld) * time;
 
         matrixStack.translate(-doubleX, -doubleY, -doubleZ);
 
@@ -82,9 +82,9 @@ public class AutoFieldRenderer extends TileEntityRenderer<AutoFieldTile> {
 
         long tt = System.currentTimeMillis() / 100;
 
-        GlStateManager.color4f(1, 1, 1, 1);
+        GlStateManager._color4f(1, 1, 1, 1);
 
-        BufferBuilder renderer = tessellator.getBuffer();
+        BufferBuilder renderer = tessellator.getBuilder();
         renderer.begin(GL11.GL_QUADS, DefaultVertexFormats.POSITION_TEX_LIGHTMAP_COLOR);
 
         float mx = (float) box.minX;
@@ -120,23 +120,23 @@ public class AutoFieldRenderer extends TileEntityRenderer<AutoFieldTile> {
 //        net.minecraft.util.math.vector.Vector3d cameraPos = net.minecraft.client.renderer.ActiveRenderInfo.getCameraPosition();
 //        tessellator.getBuffer().sortVertexData((float) (player.x + doubleX), (float) (player.y + doubleY), (float) (player.z + doubleZ));
 //        tessellator.getBuffer().sortVertexData((float)(cameraPos.x+doubleX), (float)(cameraPos.y+doubleY), (float)(cameraPos.z+doubleZ));
-        tessellator.draw();
+        tessellator.end();
 
-        GlStateManager.depthMask(true);
+        GlStateManager._depthMask(true);
         RenderSystem.enableLighting();
-        GlStateManager.enableDepthTest();
+        GlStateManager._enableDepthTest();
         RenderSystem.alphaFunc(GL11.GL_GREATER, 0.1F);
 
-        matrixStack.pop();
+        matrixStack.popPose();
     }
 
     private void renderItemTransfers(MatrixStack matrixStack, AutoFieldTile te, double x, double y, double z) {
         te.clientRequestRenderInfo();
 
-        matrixStack.push();
+        matrixStack.pushPose();
         matrixStack.translate(x, y, z);
-        net.minecraft.client.renderer.RenderHelper.enableStandardItemLighting();
-        Minecraft.getInstance().gameRenderer.getLightTexture().disableLightmap();
+        net.minecraft.client.renderer.RenderHelper.turnBackOn();
+        Minecraft.getInstance().gameRenderer.lightTexture().turnOffLightLayer();
         RenderSystem.enableAlphaTest();
 
         TransferRender[] transferRenders = te.getTransferRenders();
@@ -150,7 +150,7 @@ public class AutoFieldRenderer extends TileEntityRenderer<AutoFieldTile> {
                         if (path != null) {
                             AutoFieldRenderInfo.Transfer transfer = renderInfo.getRandomTransfer(path);
                             if (transfer != null) {
-                                transferRenders[i] = new TransferRender(path, transfer, te.getPos());
+                                transferRenders[i] = new TransferRender(path, transfer, te.getBlockPos());
                             }
                         }
                     }
@@ -161,14 +161,14 @@ public class AutoFieldRenderer extends TileEntityRenderer<AutoFieldTile> {
                 }
             }
         }
-        Minecraft.getInstance().gameRenderer.getLightTexture().enableLightmap();
+        Minecraft.getInstance().gameRenderer.lightTexture().turnOnLightLayer();
         RenderSystem.disableAlphaTest();
 
-        matrixStack.pop();
+        matrixStack.popPose();
     }
 
     @Override
-    public boolean isGlobalRenderer(AutoFieldTile te) {
+    public boolean shouldRenderOffScreen(AutoFieldTile te) {
         return true;
     }
 

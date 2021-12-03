@@ -47,8 +47,8 @@ public class NegariteTankTile extends GenericTileEntity implements IGuiTile, IAl
             }
 
             @Override
-            protected void fillStateContainer(StateContainer.Builder<Block, BlockState> builder) {
-                super.fillStateContainer(builder);
+            protected void createBlockStateDefinition(StateContainer.Builder<Block, BlockState> builder) {
+                super.createBlockStateDefinition(builder);
                 builder.add(BlockProperties.UPPER).add(BlockProperties.LOWER);
             }
         };
@@ -56,18 +56,18 @@ public class NegariteTankTile extends GenericTileEntity implements IGuiTile, IAl
 
     @Override
     public ActionResultType onBlockActivated(BlockState state, PlayerEntity player, Hand hand, BlockRayTraceResult result) {
-        Ariente.guiHandler.openHoloGui(world, pos, player);
+        Ariente.guiHandler.openHoloGui(level, worldPosition, player);
         return ActionResultType.SUCCESS;
     }
 
     public boolean isWorking() {
-        BlockPos p = pos.down();
-        BlockState state = world.getBlockState(p);
+        BlockPos p = worldPosition.below();
+        BlockState state = level.getBlockState(p);
         while (state.getBlock() == Registration.NEGARITE_TANK.get()) {
-            p = p.down();
-            state = world.getBlockState(p);
+            p = p.below();
+            state = level.getBlockState(p);
         }
-        TileEntity te = world.getTileEntity(p);
+        TileEntity te = level.getBlockEntity(p);
         if (te instanceof NegariteGeneratorTile) {
             return ((NegariteGeneratorTile)te).isWorking();
         }

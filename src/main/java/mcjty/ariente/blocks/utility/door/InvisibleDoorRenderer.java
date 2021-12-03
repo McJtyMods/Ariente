@@ -19,7 +19,7 @@ public class InvisibleDoorRenderer extends TileEntityRenderer<InvisibleDoorTile>
 
     @Override
     public void render(InvisibleDoorTile te, float partialTicks, MatrixStack matrixStack, IRenderTypeBuffer buffer, int combinedLightIn, int combinedOverlayIn) {
-        BlockState state = te.getWorld().getBlockState(te.getPos());
+        BlockState state = te.getLevel().getBlockState(te.getBlockPos());
         if (state.getBlock() != Registration.INVISIBLE_DOOR.get()) {
             return;
         }
@@ -32,19 +32,19 @@ public class InvisibleDoorRenderer extends TileEntityRenderer<InvisibleDoorTile>
         int openphase = DoorMarkerRenderer.getOpenphase(doorMarkerTile);
         int iconIndex = doorMarkerTile.getIconIndex();
 
-        matrixStack.push();
+        matrixStack.pushPose();
 
         Direction frontDirection = Registration.INVISIBLE_DOOR.get().getFrontDirection(state);
         if (Direction.NORTH.equals(frontDirection) || Direction.SOUTH.equals(frontDirection)) {
             matrixStack.translate(0, 0, .5);
-            matrixStack.rotate(Vector3f.YP.rotationDegrees(90));
+            matrixStack.mulPose(Vector3f.YP.rotationDegrees(90));
         } else {
             matrixStack.translate(.5, 0, 0);
         }
 
         DoorMarkerRenderer.renderDoorSegment(matrixStack, buffer, openphase, iconIndex, combinedLightIn, combinedOverlayIn);
 
-        matrixStack.pop();
+        matrixStack.popPose();
     }
 
     public static void register() {

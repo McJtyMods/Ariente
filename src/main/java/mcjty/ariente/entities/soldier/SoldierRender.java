@@ -34,15 +34,15 @@ public class SoldierRender extends BipedRenderer<SoldierEntity, BipedModel<Soldi
     }
 
     @Override
-    protected void preRenderCallback(SoldierEntity entitylivingbaseIn, MatrixStack matrixStackIn, float partialTickTime) {
+    protected void scale(SoldierEntity entitylivingbaseIn, MatrixStack matrixStackIn, float partialTickTime) {
         if (entitylivingbaseIn instanceof MasterSoldierEntity) {
-            GlStateManager.scaled(1.4, 1.4, 1.4);
+            GlStateManager._scaled(1.4, 1.4, 1.4);
         }
     }
 
     @Override
     @Nonnull
-    public ResourceLocation getEntityTexture(@Nonnull SoldierEntity entity) {
+    public ResourceLocation getTextureLocation(@Nonnull SoldierEntity entity) {
         return mobTexture;
     }
 

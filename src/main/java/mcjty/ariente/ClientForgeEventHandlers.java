@@ -46,9 +46,9 @@ public class ClientForgeEventHandlers {
     @SubscribeEvent
     public void onDrawBlockHighlight(DrawHighlightEvent event) {
         if (event.getTarget().getType() == RayTraceResult.Type.BLOCK && event.getTarget() instanceof BlockRayTraceResult) {
-            BlockPos pos = ((BlockRayTraceResult) event.getTarget()).getPos();
+            BlockPos pos = ((BlockRayTraceResult) event.getTarget()).getBlockPos();
             PlayerEntity player = Minecraft.getInstance().player;
-            BlockState state = player.getEntityWorld().getBlockState(pos);
+            BlockState state = player.getCommandSenderWorld().getBlockState(pos);
             if (state.getBlock() == Registration.RAMP.get()) {
                 drawSelectionBox(state, player, pos, event.getPartialTicks());
                 event.setCanceled(true);
@@ -57,21 +57,21 @@ public class ClientForgeEventHandlers {
     }
 
     private static void drawSelectionBox(BlockState state, PlayerEntity player, BlockPos pos, float partialTicks) {
-        GlStateManager.enableBlend();
-        GlStateManager.blendFuncSeparate(GlStateManager.SourceFactor.SRC_ALPHA.param, GlStateManager.DestFactor.ONE_MINUS_SRC_ALPHA.param, GlStateManager.SourceFactor.ONE.param, GlStateManager.DestFactor.ZERO.param);
-        GlStateManager.lineWidth(2.0F);
-        GlStateManager.disableTexture();
-        GlStateManager.depthMask(false);
+        GlStateManager._enableBlend();
+        GlStateManager._blendFuncSeparate(GlStateManager.SourceFactor.SRC_ALPHA.value, GlStateManager.DestFactor.ONE_MINUS_SRC_ALPHA.value, GlStateManager.SourceFactor.ONE.value, GlStateManager.DestFactor.ZERO.value);
+        GlStateManager._lineWidth(2.0F);
+        GlStateManager._disableTexture();
+        GlStateManager._depthMask(false);
 
-        double d3 = player.lastTickPosX + (player.getPosX() - player.lastTickPosX) * partialTicks;
-        double d4 = player.lastTickPosY + (player.getPosY() - player.lastTickPosY) * partialTicks;
-        double d5 = player.lastTickPosZ + (player.getPosZ() - player.lastTickPosZ) * partialTicks;
+        double d3 = player.xOld + (player.getX() - player.xOld) * partialTicks;
+        double d4 = player.yOld + (player.getY() - player.yOld) * partialTicks;
+        double d5 = player.zOld + (player.getZ() - player.zOld) * partialTicks;
         // @todo 1.14
 //        ModBlocks.rampBlock.handleAABB(state, aabb -> RenderGlobal.drawSelectionBoundingBox(aabb.offset(pos).grow(0.002D).offset(-d3, -d4, -d5), 0.0F, 0.0F, 0.0F, 0.4F));
 
-        GlStateManager.depthMask(true);
-        GlStateManager.enableTexture();
-        GlStateManager.disableBlend();
+        GlStateManager._depthMask(true);
+        GlStateManager._enableTexture();
+        GlStateManager._disableBlend();
     }
 
     @SubscribeEvent
@@ -81,7 +81,7 @@ public class ClientForgeEventHandlers {
 
     @SubscribeEvent
     public void onEntityMount(EntityMountEvent event) {
-        if (event.isMounting() && event.getWorldObj().isRemote && event.getEntityBeingMounted() instanceof FluxLevitatorEntity) {
+        if (event.isMounting() && event.getWorldObj().isClientSide && event.getEntityBeingMounted() instanceof FluxLevitatorEntity) {
             FluxLevitatorEntity levitator = (FluxLevitatorEntity) event.getEntityBeingMounted();
             if (event.getEntityMounting() instanceof PlayerEntity) {
                 FluxLevitatorSounds.playMovingSoundClientInside((PlayerEntity) event.getEntityMounting(), levitator);
@@ -152,10 +152,10 @@ public class ClientForgeEventHandlers {
     }
 
     private void handleSpeed(PlayerEntity player, double v2, double powersuitMaxForwardGroundSpeed, double powersuitMaxForwardFlySpeed, boolean hasFlight) {
-        Vector3d vec3d = player.getLookVec().normalize().scale(v2);
-        double motionX = player.getMotion().x;
-        double motionY = player.getMotion().y;
-        double motionZ = player.getMotion().z;
+        Vector3d vec3d = player.getLookAngle().normalize().scale(v2);
+        double motionX = player.getDeltaMovement().x;
+        double motionY = player.getDeltaMovement().y;
+        double motionZ = player.getDeltaMovement().z;
         motionX += vec3d.x;
         motionZ += vec3d.z;
         Vector3d v = new Vector3d(motionX, motionY, motionZ);
@@ -167,13 +167,13 @@ public class ClientForgeEventHandlers {
             max /= 2;
         }
 
-        if (v.lengthSquared() > max * max) {
+        if (v.lengthSqr() > max * max) {
             v = v.normalize().scale(max);
             motionX = v.x;
 //            player.motionY = v.y;
             motionZ = v.z;
         }
-        player.setMotion(motionX, motionY, motionZ);
+        player.setDeltaMovement(motionX, motionY, motionZ);
     }
 
 }

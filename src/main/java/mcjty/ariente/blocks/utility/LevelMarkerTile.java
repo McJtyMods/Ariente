@@ -27,7 +27,7 @@ import static mcjty.lib.builder.TooltipBuilder.key;
 
 public class LevelMarkerTile extends GenericTileEntity implements IGuiTile {
 
-    private static final VoxelShape BLOCK_AABB = VoxelShapes.create(0.0D, 0.0D, 0.0D, 1.0D, 1.0D/16.0, 1.0D);
+    private static final VoxelShape BLOCK_AABB = VoxelShapes.box(0.0D, 0.0D, 0.0D, 1.0D, 1.0D/16.0, 1.0D);
 
     @Override
     public IGuiComponent<?> createGui(String tag, IGuiComponentRegistry registry) {
@@ -61,7 +61,7 @@ public class LevelMarkerTile extends GenericTileEntity implements IGuiTile {
 
     @Override
     public ActionResultType onBlockActivated(BlockState state, PlayerEntity player, Hand hand, BlockRayTraceResult result) {
-        Ariente.guiHandler.openHoloGui(world, pos, player);
+        Ariente.guiHandler.openHoloGui(level, worldPosition, player);
         return ActionResultType.SUCCESS;
     }
 

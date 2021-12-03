@@ -112,12 +112,12 @@ public class PowerSystem extends AbstractWorldData<PowerSystem> {
 
 
     @Override
-    public void read(CompoundNBT nbt) {
+    public void load(CompoundNBT nbt) {
         lastId = nbt.getInt("lastId");
     }
 
     @Override
-    public CompoundNBT write(CompoundNBT compound) {
+    public CompoundNBT save(CompoundNBT compound) {
         compound.putInt("lastId", lastId);
         return compound;
     }

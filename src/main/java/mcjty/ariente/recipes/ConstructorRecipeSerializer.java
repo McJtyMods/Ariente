@@ -18,12 +18,12 @@ import java.util.Optional;
 public class ConstructorRecipeSerializer extends ForgeRegistryEntry<IRecipeSerializer<?>> implements IRecipeSerializer<ConstructorRecipe> {
 
     @Override
-    public ConstructorRecipe read(ResourceLocation recipeId, JsonObject json) {
-        float chance = JSONUtils.getFloat(json, "chance", 1.0f);
+    public ConstructorRecipe fromJson(ResourceLocation recipeId, JsonObject json) {
+        float chance = JSONUtils.getAsFloat(json, "chance", 1.0f);
 
-        ResourceLocation resourcelocation = new ResourceLocation(JSONUtils.getString(json, "result"));
-        ItemStack output = new ItemStack(Optional.ofNullable(ForgeRegistries.ITEMS.getValue(resourcelocation)).orElseThrow(() -> new IllegalStateException("Item: " + JSONUtils.getString(json, "result") + " does not exist")));
-        int outputAmount = JSONUtils.getInt(json, "count", 1);
+        ResourceLocation resourcelocation = new ResourceLocation(JSONUtils.getAsString(json, "result"));
+        ItemStack output = new ItemStack(Optional.ofNullable(ForgeRegistries.ITEMS.getValue(resourcelocation)).orElseThrow(() -> new IllegalStateException("Item: " + JSONUtils.getAsString(json, "result") + " does not exist")));
+        int outputAmount = JSONUtils.getAsInt(json, "count", 1);
         output.setCount(outputAmount);
 
         JsonElement input = json.get("input");
@@ -52,9 +52,9 @@ public class ConstructorRecipeSerializer extends ForgeRegistryEntry<IRecipeSeria
 
     @Nullable
     @Override
-    public ConstructorRecipe read(ResourceLocation recipeId, PacketBuffer buffer) {
+    public ConstructorRecipe fromNetwork(ResourceLocation recipeId, PacketBuffer buffer) {
         float chance = buffer.readFloat();
-        ResourceLocation resourcelocation = new ResourceLocation(buffer.readString(32767));
+        ResourceLocation resourcelocation = new ResourceLocation(buffer.readUtf(32767));
         ItemStack output = new ItemStack(Optional.ofNullable(ForgeRegistries.ITEMS.getValue(resourcelocation)).orElseThrow(() -> new IllegalStateException("Item: " + resourcelocation.toString() + " does not exist")));
         int count = buffer.readInt();
         output.setCount(count);
@@ -62,7 +62,7 @@ public class ConstructorRecipeSerializer extends ForgeRegistryEntry<IRecipeSeria
         List<ItemStack> inputItems = new ArrayList<>();
         int size = buffer.readInt();
         for (int i = 0 ; i < size ; i++) {
-            ResourceLocation rl = new ResourceLocation(buffer.readString(32767));
+            ResourceLocation rl = new ResourceLocation(buffer.readUtf(32767));
             ItemStack input = new ItemStack(Optional.ofNullable(ForgeRegistries.ITEMS.getValue(rl)).orElseThrow(() -> new IllegalStateException("Item: " + rl.toString() + " does not exist")));
             int inputCount = buffer.readInt();
             input.setCount(inputCount);
@@ -72,14 +72,14 @@ public class ConstructorRecipeSerializer extends ForgeRegistryEntry<IRecipeSeria
     }
 
     @Override
-    public void write(PacketBuffer buffer, ConstructorRecipe recipe) {
+    public void toNetwork(PacketBuffer buffer, ConstructorRecipe recipe) {
         buffer.writeFloat(recipe.getChance());
-        buffer.writeString(recipe.getRecipeOutput().getItem().getRegistryName().toString());
-        buffer.writeInt(recipe.getRecipeOutput().getCount());
+        buffer.writeUtf(recipe.getResultItem().getItem().getRegistryName().toString());
+        buffer.writeInt(recipe.getResultItem().getCount());
         List<ItemStack> list = recipe.getIngredientList();
         buffer.writeInt(list.size());
         for (ItemStack stack : list) {
-            buffer.writeString(stack.getItem().getRegistryName().toString());
+            buffer.writeUtf(stack.getItem().getRegistryName().toString());
             buffer.writeInt(stack.getCount());
         }
     }

@@ -91,7 +91,7 @@ public class ForceFieldTile extends GenericTileEntity implements IGuiTile, ITick
 
     @Override
     public ActionResultType onBlockActivated(BlockState state, PlayerEntity player, Hand hand, BlockRayTraceResult result) {
-        Ariente.guiHandler.openHoloGui(world, pos, player);
+        Ariente.guiHandler.openHoloGui(level, worldPosition, player);
         return ActionResultType.SUCCESS;
     }
 
@@ -158,10 +158,10 @@ public class ForceFieldTile extends GenericTileEntity implements IGuiTile, ITick
 
     @Override
     public void tick() {
-        if (!world.isRemote) {
+        if (!level.isClientSide) {
             usingPower = 0;
             long desiredPower = calculateIdleUsage();
-            if ((!isMachineEnabled()) || !PowerReceiverSupport.consumePower(world, pos, desiredPower, true)) {
+            if ((!isMachineEnabled()) || !PowerReceiverSupport.consumePower(level, worldPosition, desiredPower, true)) {
                 if (breakDownSkip > 0) {
                     breakDownSkip--;
                 } else {
@@ -174,7 +174,7 @@ public class ForceFieldTile extends GenericTileEntity implements IGuiTile, ITick
             }
             collideWithEntities();
         } else {
-            ForceFieldRenderer.register(pos);
+            ForceFieldRenderer.register(worldPosition);
             ForceFieldSounds.doSounds(this);
         }
     }
@@ -185,9 +185,9 @@ public class ForceFieldTile extends GenericTileEntity implements IGuiTile, ITick
 
     private AxisAlignedBB getShieldAABB() {
         if (aabb == null) {
-            double x = pos.getX() + .5;
-            double y = pos.getY() + .5;
-            double z = pos.getZ() + .5;
+            double x = worldPosition.getX() + .5;
+            double y = worldPosition.getY() + .5;
+            double z = worldPosition.getZ() + .5;
             double s = getScaleDouble() * 1.05;
             aabb = new AxisAlignedBB(x-s, y-s, z-s, x+s, y+s, z+s);
         }
@@ -195,36 +195,36 @@ public class ForceFieldTile extends GenericTileEntity implements IGuiTile, ITick
     }
 
     public boolean entityNearField(Entity entity) {
-        double x = pos.getX() + .5;
-        double y = pos.getY() + .5;
-        double z = pos.getZ() + .5;
+        double x = worldPosition.getX() + .5;
+        double y = worldPosition.getY() + .5;
+        double z = worldPosition.getZ() + .5;
         double radius = getScaleDouble();
 
         Vector3d fieldCenter = new Vector3d(x, y, z);
         AxisAlignedBB box = entity.getBoundingBox();
         Vector3d entityCenter = new Vector3d(box.minX + (box.maxX - box.minX) * 0.5D, box.minY + (box.maxY - box.minY) * 0.5D, box.minZ + (box.maxZ - box.minZ) * 0.5D);
-        double squareDist = fieldCenter.squareDistanceTo(entityCenter);
+        double squareDist = fieldCenter.distanceToSqr(entityCenter);
         return Math.abs(Math.sqrt(squareDist) - radius) < 10;
     }
 
     private void collideWithEntities() {
-        double x = pos.getX() + .5;
-        double y = pos.getY() + .5;
-        double z = pos.getZ() + .5;
+        double x = worldPosition.getX() + .5;
+        double y = worldPosition.getY() + .5;
+        double z = worldPosition.getZ() + .5;
         Vector3d fieldCenter = new Vector3d(x, y, z);
         double squaredRadius = getScaleDouble() * getScaleDouble();
 
         boolean changed = false;
 
-        List<Entity> entities = world.getEntitiesWithinAABB(Entity.class, getShieldAABB(), entity -> {
+        List<Entity> entities = level.getEntitiesOfClass(Entity.class, getShieldAABB(), entity -> {
             if (entity instanceof ProjectileEntity) {
-                Vector3d entityPos = entity.getPositionVec();
-                double squareDist = fieldCenter.squareDistanceTo(entityPos);
+                Vector3d entityPos = entity.position();
+                double squareDist = fieldCenter.distanceToSqr(entityPos);
                 if (Math.abs(squareDist - squaredRadius) < 10 * 10) {
                     return true;
                 }
-                entityPos = new Vector3d((entity.getPosX() + entity.prevPosX) / 2.0, (entity.getPosY() + entity.prevPosY) / 2.0, (entity.getPosZ() + entity.prevPosZ) / 2.0);
-                squareDist = fieldCenter.squareDistanceTo(entityPos);
+                entityPos = new Vector3d((entity.getX() + entity.xo) / 2.0, (entity.getY() + entity.yo) / 2.0, (entity.getZ() + entity.zo) / 2.0);
+                squareDist = fieldCenter.distanceToSqr(entityPos);
                 if (Math.abs(squareDist - squaredRadius) < 10 * 10) {
                     return true;
                 }
@@ -234,7 +234,7 @@ public class ForceFieldTile extends GenericTileEntity implements IGuiTile, ITick
                 }
                 if (entity instanceof LivingEntity) {
                     if (entity instanceof PlayerEntity && cityCenter != null) {
-                        ICityAISystem system = ArienteWorldCompat.getCityAISystem(world);
+                        ICityAISystem system = ArienteWorldCompat.getCityAISystem(level);
                         ICityAI cityAI = system.getCityAI(cityCenter);
                         if (cityAI != null) {
                             PlayerEntity player = (PlayerEntity) entity;
@@ -247,7 +247,7 @@ public class ForceFieldTile extends GenericTileEntity implements IGuiTile, ITick
                     AxisAlignedBB box = entity.getBoundingBox();
                     Vector3d entityCenter = new Vector3d(box.minX + (box.maxX - box.minX) * 0.5D, box.minY + (box.maxY - box.minY) * 0.5D, box.minZ + (box.maxZ - box.minZ) * 0.5D);
 
-                    double squareDist = fieldCenter.squareDistanceTo(entityCenter);
+                    double squareDist = fieldCenter.distanceToSqr(entityCenter);
                     if (Math.abs(squareDist - squaredRadius) < 10*10) {
                         return true;
                     }
@@ -258,8 +258,8 @@ public class ForceFieldTile extends GenericTileEntity implements IGuiTile, ITick
 
         for (Entity entity : entities) {
             if (entity instanceof ProjectileEntity) {
-                Vector3d p1 = new Vector3d(entity.prevPosX, entity.prevPosY, entity.prevPosZ);
-                Vector3d p2 = entity.getPositionVec();
+                Vector3d p1 = new Vector3d(entity.xo, entity.yo, entity.zo);
+                Vector3d p2 = entity.position();
                 for (PanelInfo info : getPanelInfo()) {
                     if (info != null && info.getLife() > 0) {
                         Vector3d intersection = info.testCollisionSegment(p1, p2, getScaleDouble());
@@ -271,14 +271,14 @@ public class ForceFieldTile extends GenericTileEntity implements IGuiTile, ITick
                             if (life <= 0) {
                                 panelDestroyTimeout[info.getIndex()] = 100;
                                 panelInfo[info.getIndex()] = null;
-                                world.createExplosion(entity, entity.getPosX(), entity.getPosY(), entity.getPosZ(), 2.0f, false, Explosion.Mode.DESTROY);
+                                level.explode(entity, entity.getX(), entity.getY(), entity.getZ(), 2.0f, false, Explosion.Mode.DESTROY);
                             } else {
                                 info.setLife(life);
                                 System.out.println("life = " + life + " (index " + info.getIndex() + ")");
                                 if (cityCenter != null) {
                                     PlayerEntity player = determineAttacker(entity);
                                     if (player != null) {
-                                        ICityAISystem system = ArienteWorldCompat.getCityAISystem(world);
+                                        ICityAISystem system = ArienteWorldCompat.getCityAISystem(level);
                                         ICityAI cityAI = system.getCityAI(cityCenter);
                                         if (cityAI != null) {
                                             cityAI.alertCity(player);
@@ -287,8 +287,8 @@ public class ForceFieldTile extends GenericTileEntity implements IGuiTile, ITick
                                     }
                                 }
 
-                                ArienteMessages.INSTANCE.send(PacketDistributor.DIMENSION.with(() -> world.getDimensionKey()),
-                                        new PacketDamageForcefield(pos, info.getIndex(), intersection));
+                                ArienteMessages.INSTANCE.send(PacketDistributor.DIMENSION.with(() -> level.dimension()),
+                                        new PacketDamageForcefield(worldPosition, info.getIndex(), intersection));
                             }
                             changed = true;
                         }
@@ -298,8 +298,8 @@ public class ForceFieldTile extends GenericTileEntity implements IGuiTile, ITick
                 for (PanelInfo info : getPanelInfo()) {
                     if (info != null && info.getLife() > 0) {
                         if (info.testCollisionEntity(entity, getScaleDouble())) {
-                            entity.attackEntityFrom(DamageSource.GENERIC, (float) (double) DamageConfiguration.FORCEFIELD_DAMAGE.get());
-                            ((LivingEntity)entity).applyKnockback(1.0f, pos.getX() - entity.getPosX(), pos.getZ() - entity.getPosZ());
+                            entity.hurt(DamageSource.GENERIC, (float) (double) DamageConfiguration.FORCEFIELD_DAMAGE.get());
+                            ((LivingEntity)entity).knockback(1.0f, worldPosition.getX() - entity.getX(), worldPosition.getZ() - entity.getZ());
                         }
                     }
                 }
@@ -313,7 +313,7 @@ public class ForceFieldTile extends GenericTileEntity implements IGuiTile, ITick
     @Nullable
     private PlayerEntity determineAttacker(Entity entity) {
         if (entity instanceof ProjectileEntity) {
-            Entity shootingEntity = ((ProjectileEntity) entity).getShooter();
+            Entity shootingEntity = ((ProjectileEntity) entity).getOwner();
             if (shootingEntity instanceof PlayerEntity) {
                 return (PlayerEntity) shootingEntity;
             }
@@ -325,12 +325,12 @@ public class ForceFieldTile extends GenericTileEntity implements IGuiTile, ITick
 
 
     @Override
-    public void remove() {
+    public void setRemoved() {
         disableShield();
-        if (world.isRemote) {
-            ForceFieldRenderer.unregister(pos);
+        if (level.isClientSide) {
+            ForceFieldRenderer.unregister(worldPosition);
         }
-        super.remove();
+        super.setRemoved();
     }
 
     private static int[] getShuffledIndices() {
@@ -395,7 +395,7 @@ public class ForceFieldTile extends GenericTileEntity implements IGuiTile, ITick
                 int life = info.getLife();
                 if (life < 0) {
                     // Building up!
-                    if (PowerReceiverSupport.consumePower(world, pos, PowerConfiguration.FORCEFIELD_BUILDUP_POWER.get(), true)) {
+                    if (PowerReceiverSupport.consumePower(level, worldPosition, PowerConfiguration.FORCEFIELD_BUILDUP_POWER.get(), true)) {
                         usingPower += PowerConfiguration.FORCEFIELD_BUILDUP_POWER.get();
                         life++;
                         if (life == 0) {
@@ -415,9 +415,9 @@ public class ForceFieldTile extends GenericTileEntity implements IGuiTile, ITick
     private void createPanelInfo(int i) {
         Triangle triangle = PentakisDodecahedron.getTriangle(i);
         Vector3d offs = triangle.getMid().scale(getScaleDouble());
-        double x = pos.getX()+.5 + offs.x;
-        double y = pos.getY()+.5 + offs.y;
-        double z = pos.getZ()+.5 + offs.z;
+        double x = worldPosition.getX()+.5 + offs.x;
+        double y = worldPosition.getY()+.5 + offs.y;
+        double z = worldPosition.getZ()+.5 + offs.z;
         panelInfo[i] = new PanelInfo(i, x, y, z);
         panelDestroyTimeout[i] = 0;
     }
@@ -474,8 +474,8 @@ public class ForceFieldTile extends GenericTileEntity implements IGuiTile, ITick
     }
 
     @Override
-    public CompoundNBT write(CompoundNBT tagCompound) {
-        tagCompound = super.write(tagCompound);
+    public CompoundNBT save(CompoundNBT tagCompound) {
+        tagCompound = super.save(tagCompound);
         int[] lifeIdx = new int[PentakisDodecahedron.MAX_TRIANGLES];
         int i = 0;
         for (PanelInfo info : panelInfo) {

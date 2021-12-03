@@ -40,17 +40,17 @@ public class CableModelLoader implements IModelLoader<CableModelLoader.CableMode
         @Override
         public Collection<RenderMaterial> getTextures(IModelConfiguration owner, Function<ResourceLocation, IUnbakedModel> modelGetter, Set<Pair<String, String>> missingTextureErrors) {
             List<RenderMaterial> materials = new ArrayList<>();
-            materials.add(new RenderMaterial(PlayerContainer.LOCATION_BLOCKS_TEXTURE, new ResourceLocation(Ariente.MODID, "block/cables/connector_side")));
+            materials.add(new RenderMaterial(PlayerContainer.BLOCK_ATLAS, new ResourceLocation(Ariente.MODID, "block/cables/connector_side")));
 
             for (CableColor color : CableColor.VALUES) {
-                String typeName = color.getString();
-                materials.add(new RenderMaterial(PlayerContainer.LOCATION_BLOCKS_TEXTURE, new ResourceLocation(Ariente.MODID, "block/cables/"+typeName+"/connector")));
-                materials.add(new RenderMaterial(PlayerContainer.LOCATION_BLOCKS_TEXTURE, new ResourceLocation(Ariente.MODID, "block/cables/"+typeName+"/normal_corner_netcable")));
-                materials.add(new RenderMaterial(PlayerContainer.LOCATION_BLOCKS_TEXTURE, new ResourceLocation(Ariente.MODID, "block/cables/"+typeName+"/normal_cross_netcable")));
-                materials.add(new RenderMaterial(PlayerContainer.LOCATION_BLOCKS_TEXTURE, new ResourceLocation(Ariente.MODID, "block/cables/"+typeName+"/normal_end_netcable")));
-                materials.add(new RenderMaterial(PlayerContainer.LOCATION_BLOCKS_TEXTURE, new ResourceLocation(Ariente.MODID, "block/cables/"+typeName+"/normal_netcable")));
-                materials.add(new RenderMaterial(PlayerContainer.LOCATION_BLOCKS_TEXTURE, new ResourceLocation(Ariente.MODID, "block/cables/"+typeName+"/normal_none_netcable")));
-                materials.add(new RenderMaterial(PlayerContainer.LOCATION_BLOCKS_TEXTURE, new ResourceLocation(Ariente.MODID, "block/cables/"+typeName+"/normal_three_netcable")));
+                String typeName = color.getSerializedName();
+                materials.add(new RenderMaterial(PlayerContainer.BLOCK_ATLAS, new ResourceLocation(Ariente.MODID, "block/cables/"+typeName+"/connector")));
+                materials.add(new RenderMaterial(PlayerContainer.BLOCK_ATLAS, new ResourceLocation(Ariente.MODID, "block/cables/"+typeName+"/normal_corner_netcable")));
+                materials.add(new RenderMaterial(PlayerContainer.BLOCK_ATLAS, new ResourceLocation(Ariente.MODID, "block/cables/"+typeName+"/normal_cross_netcable")));
+                materials.add(new RenderMaterial(PlayerContainer.BLOCK_ATLAS, new ResourceLocation(Ariente.MODID, "block/cables/"+typeName+"/normal_end_netcable")));
+                materials.add(new RenderMaterial(PlayerContainer.BLOCK_ATLAS, new ResourceLocation(Ariente.MODID, "block/cables/"+typeName+"/normal_netcable")));
+                materials.add(new RenderMaterial(PlayerContainer.BLOCK_ATLAS, new ResourceLocation(Ariente.MODID, "block/cables/"+typeName+"/normal_none_netcable")));
+                materials.add(new RenderMaterial(PlayerContainer.BLOCK_ATLAS, new ResourceLocation(Ariente.MODID, "block/cables/"+typeName+"/normal_three_netcable")));
             }
             return materials;
         }

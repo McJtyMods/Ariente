@@ -33,10 +33,10 @@ public class FluxLevitatorGui {
     }
 
     private static int getSpeed(IHoloGuiEntity holo) {
-        Entity ridingEntity = holo.getEntity().getRidingEntity();
+        Entity ridingEntity = holo.getEntity().getVehicle();
         if (ridingEntity instanceof FluxLevitatorEntity) {
             FluxLevitatorEntity levitator = (FluxLevitatorEntity) ridingEntity;
-            boolean front = holo.getEntity().getUniqueID().equals(levitator.getHoloFrontUUID());
+            boolean front = holo.getEntity().getUUID().equals(levitator.getHoloFrontUUID());
             return front ? levitator.getSpeed() : -levitator.getSpeed();
         } else {
             return 0;
@@ -44,11 +44,11 @@ public class FluxLevitatorGui {
     }
 
     private static void changeSpeed(IHoloGuiEntity holo, int amount) {
-        Entity ridingEntity = holo.getEntity().getRidingEntity();
+        Entity ridingEntity = holo.getEntity().getVehicle();
         if (ridingEntity instanceof FluxLevitatorEntity) {
             FluxLevitatorEntity levitator = (FluxLevitatorEntity) ridingEntity;
             if (amount != 0) {
-                boolean front = holo.getEntity().getUniqueID().equals(levitator.getHoloFrontUUID());
+                boolean front = holo.getEntity().getUUID().equals(levitator.getHoloFrontUUID());
                 if (!front) {
                     amount = -amount;
                 }

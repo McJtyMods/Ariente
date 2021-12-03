@@ -25,7 +25,7 @@ public enum PatternType implements IStringSerializable {
     }
 
     @Override
-    public String getString() {
+    public String getSerializedName() {
         return name;
     }
 

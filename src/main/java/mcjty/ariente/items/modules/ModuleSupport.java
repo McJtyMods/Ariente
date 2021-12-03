@@ -24,7 +24,7 @@ public class ModuleSupport {
     }
 
     private static void handleHotkey(PlayerEntity player, int index, EquipmentSlotType slot, Item armorItem) {
-        ItemStack armorStack = player.getItemStackFromSlot(slot);
+        ItemStack armorStack = player.getItemBySlot(slot);
         if (!armorStack.isEmpty() && armorStack.getItem() == armorItem && armorStack.hasTag()) {
             CompoundNBT compound = armorStack.getTag();
             for (ArmorUpgradeType type : ArmorUpgradeType.VALUES) {
@@ -120,8 +120,8 @@ public class ModuleSupport {
                 int negariteIndex = -1;
                 int posiriteIndex = -1;
                 PlayerEntity player = (PlayerEntity) entity;
-                for (int i = 0; i < player.inventory.getSizeInventory(); i++) {
-                    ItemStack itemStack = player.inventory.getStackInSlot(i);
+                for (int i = 0; i < player.inventory.getContainerSize(); i++) {
+                    ItemStack itemStack = player.inventory.getItem(i);
                     if (itemStack.getItem() == Registration.ENERGY_HOLDER.get()) {
                         int negarite = EnergyHolderItem.count(itemStack, "negarite");
                         if (negarite > 0) {
@@ -151,14 +151,14 @@ public class ModuleSupport {
                     }
                 }
                 if (negariteIndex != -1 && posiriteIndex != -1) {
-                    ItemStack negariteStack = player.inventory.getStackInSlot(negariteIndex);
+                    ItemStack negariteStack = player.inventory.getItem(negariteIndex);
                     if (negariteStack.getItem() == Registration.ENERGY_HOLDER.get()) {
                         EnergyHolderItem.extractIfPossible(negariteStack, "negarite", 1);
                     } else {
                         negariteStack.shrink(1);
                     }
 
-                    ItemStack posiriteStack = player.inventory.getStackInSlot(posiriteIndex);
+                    ItemStack posiriteStack = player.inventory.getItem(posiriteIndex);
                     if (posiriteStack.getItem() == Registration.ENERGY_HOLDER.get()) {
                         EnergyHolderItem.extractIfPossible(negariteStack, "posirite", 1);
                     } else {

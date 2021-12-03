@@ -34,13 +34,13 @@ public class MasterSoldierEntity extends SoldierEntity {
     }
 
     public static AttributeModifierMap.MutableAttribute registerAttributes() {
-        AttributeModifierMap.MutableAttribute attributes = LivingEntity.registerAttributes();
+        AttributeModifierMap.MutableAttribute attributes = LivingEntity.createLivingAttributes();
         attributes
-            .createMutableAttribute(Attributes.FOLLOW_RANGE, 35.0D)
-            .createMutableAttribute(Attributes.MOVEMENT_SPEED, 0.32D)
-            .createMutableAttribute(Attributes.MAX_HEALTH, 150.0D)
-            .createMutableAttribute(Attributes.ATTACK_DAMAGE, 8.0D)
-            .createMutableAttribute(Attributes.ARMOR, 6.0D);
+            .add(Attributes.FOLLOW_RANGE, 35.0D)
+            .add(Attributes.MOVEMENT_SPEED, 0.32D)
+            .add(Attributes.MAX_HEALTH, 150.0D)
+            .add(Attributes.ATTACK_DAMAGE, 8.0D)
+            .add(Attributes.ARMOR, 6.0D);
 
         return attributes;
     }
@@ -52,9 +52,9 @@ public class MasterSoldierEntity extends SoldierEntity {
         if (noregenCounter > 0) {
             noregenCounter--;
         } else {
-            EffectInstance effect = getActivePotionEffect(Effects.REGENERATION);
+            EffectInstance effect = getEffect(Effects.REGENERATION);
             if (effect == null || effect.getDuration() <= 0) {
-                addPotionEffect(new EffectInstance(Effects.REGENERATION, 30, 3, false, false));
+                addEffect(new EffectInstance(Effects.REGENERATION, 30, 3, false, false));
             }
         }
     }
@@ -69,24 +69,24 @@ public class MasterSoldierEntity extends SoldierEntity {
         if (rc) {
             return rc;
         }
-        if (source.isFireDamage()) {
+        if (source.isFire()) {
             return true;
         }
-        if (source.isMagicDamage()) {
+        if (source.isMagic()) {
             return true;
         }
         return false;
     }
 
     @Override
-    public void readAdditional(CompoundNBT compound) {
-        super.readAdditional(compound);
+    public void readAdditionalSaveData(CompoundNBT compound) {
+        super.readAdditionalSaveData(compound);
         noregenCounter = compound.getInt("noregen");
     }
 
     @Override
-    public void writeAdditional(CompoundNBT compound) {
-        super.writeAdditional(compound);
+    public void addAdditionalSaveData(CompoundNBT compound) {
+        super.addAdditionalSaveData(compound);
         compound.putInt("noregen", noregenCounter);
     }
 

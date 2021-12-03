@@ -18,7 +18,7 @@ public class FluxShipRender extends EntityRenderer<FluxShipEntity> {
 
     public FluxShipRender(EntityRendererManager renderManagerIn) {
         super(renderManagerIn);
-        this.shadowSize = 0.5F;
+        this.shadowRadius = 0.5F;
     }
 
 
@@ -47,7 +47,7 @@ public class FluxShipRender extends EntityRenderer<FluxShipEntity> {
 //    }
 
     @Override
-    public ResourceLocation getEntityTexture(FluxShipEntity entity) {
+    public ResourceLocation getTextureLocation(FluxShipEntity entity) {
         return TEXTURE;
     }
 

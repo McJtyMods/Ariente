@@ -14,12 +14,14 @@ import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.IBlockReader;
 import net.minecraftforge.common.ToolType;
 
+import net.minecraft.block.AbstractBlock.Properties;
+
 public abstract class BaseVariantBlock<T extends Enum<T> & IStringSerializable> extends BaseBlock {
 
     public BaseVariantBlock() {
         super(new BlockBuilder()
-                .properties(Properties.create(Material.ROCK)
-                    .hardnessAndResistance(2.0f, 4.0f))
+                .properties(Properties.of(Material.STONE)
+                    .strength(2.0f, 4.0f))
                 .harvestLevel(ToolType.PICKAXE, 1));
         // @todo 1.14
 //        super(Ariente.instance, Material.ROCK, name, BaseVariantItemBlock::new);
@@ -56,13 +58,13 @@ public abstract class BaseVariantBlock<T extends Enum<T> & IStringSerializable> 
 
     @SuppressWarnings({"NullableProblems", "deprecation"})
     @Override
-    public ItemStack getItem(IBlockReader worldIn, BlockPos pos, BlockState state) {
+    public ItemStack getCloneItemStack(IBlockReader worldIn, BlockPos pos, BlockState state) {
         return new ItemStack(this, 1); // @todo 1.14 META?, state.get(getProperty()).ordinal());
     }
 
     @Override
-    protected void fillStateContainer(StateContainer.Builder<Block, BlockState> builder) {
-        super.fillStateContainer(builder);
+    protected void createBlockStateDefinition(StateContainer.Builder<Block, BlockState> builder) {
+        super.createBlockStateDefinition(builder);
         builder.add(getProperty());
     }
 

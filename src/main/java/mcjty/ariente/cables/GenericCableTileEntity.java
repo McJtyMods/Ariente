@@ -54,7 +54,7 @@ public abstract class GenericCableTileEntity extends GenericTileEntity implement
             } else {
 //                int meta = (Integer) data.get("meta");
                 // @todo 1.14 meta
-                mimicBlockSupport.setMimicBlock(mimic.getDefaultState());
+                mimicBlockSupport.setMimicBlock(mimic.defaultBlockState());
             }
         }
     }
@@ -69,19 +69,19 @@ public abstract class GenericCableTileEntity extends GenericTileEntity implement
 
         super.onDataPacket(net, packet);
 
-        if (world.isRemote) {
+        if (level.isClientSide) {
             // If needed send a render update.
             if (mimicBlockSupport.getMimicBlock() != oldMimicBlock) {
-                world.notifyBlockUpdate(pos, getBlockState(), getBlockState(), Constants.BlockFlags.BLOCK_UPDATE + Constants.BlockFlags.NOTIFY_NEIGHBORS);
+                level.sendBlockUpdated(worldPosition, getBlockState(), getBlockState(), Constants.BlockFlags.BLOCK_UPDATE + Constants.BlockFlags.NOTIFY_NEIGHBORS);
             }
         }
     }
 
     @Override
     public CableColor getCableColor() {
-        BlockState state = world.getBlockState(pos);
+        BlockState state = level.getBlockState(worldPosition);
         if (state.getBlock() instanceof GenericCableBlock) {
-            return state.get(GenericCableBlock.COLOR);
+            return state.getValue(GenericCableBlock.COLOR);
         }
         return CableColor.COMBINED;
     }
@@ -117,7 +117,7 @@ public abstract class GenericCableTileEntity extends GenericTileEntity implement
 
     @Override
     public void fillCableId(int id) {
-        powerBlobSupport.fillCableId(world, pos, id, getCableColor());
+        powerBlobSupport.fillCableId(level, worldPosition, id, getCableColor());
     }
 
     @Override
@@ -128,8 +128,8 @@ public abstract class GenericCableTileEntity extends GenericTileEntity implement
     }
 
     @Override
-    public CompoundNBT write(CompoundNBT tagCompound) {
-        super.write(tagCompound);
+    public CompoundNBT save(CompoundNBT tagCompound) {
+        super.save(tagCompound);
         mimicBlockSupport.writeToNBT(tagCompound);
         return tagCompound;
     }

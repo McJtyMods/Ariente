@@ -54,8 +54,8 @@ public class ClientSetup {
         CableRenderer.register(Registration.CONNECTOR_TILE.get());
 
         RenderTypeLookup.setRenderLayer(Registration.NETCABLE.get(), (RenderType) -> true);
-        RenderTypeLookup.setRenderLayer(Registration.GLASS_FENCE.get(), RenderType.getTranslucent());
-        RenderTypeLookup.setRenderLayer(Registration.BLUE_GLASS_FENCE.get(), RenderType.getTranslucent());
+        RenderTypeLookup.setRenderLayer(Registration.GLASS_FENCE.get(), RenderType.translucent());
+        RenderTypeLookup.setRenderLayer(Registration.BLUE_GLASS_FENCE.get(), RenderType.translucent());
     }
 
     public static void initModels(ModelRegistryEvent event) {
@@ -72,7 +72,7 @@ public class ClientSetup {
     }
 
     public static void onTextureStitch(TextureStitchEvent.Pre event) {
-        if (!event.getMap().getTextureLocation().equals(AtlasTexture.LOCATION_BLOCKS_TEXTURE)) {
+        if (!event.getMap().location().equals(AtlasTexture.LOCATION_BLOCKS)) {
             return;
         }
         event.addSprite(NEGARITE_BEAM);
@@ -84,7 +84,7 @@ public class ClientSetup {
         IResourceManager resourceManager = Minecraft.getInstance().getResourceManager();
         if (resourceManager instanceof IReloadableResourceManager) {
             ArienteSpriteUploader.INSTANCE = new ArienteSpriteUploader(Minecraft.getInstance().getTextureManager());
-            ((IReloadableResourceManager) resourceManager).addReloadListener(ArienteSpriteUploader.INSTANCE);
+            ((IReloadableResourceManager) resourceManager).registerReloadListener(ArienteSpriteUploader.INSTANCE);
         }
     }
 }

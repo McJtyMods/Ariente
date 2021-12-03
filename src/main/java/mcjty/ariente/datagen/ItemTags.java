@@ -20,7 +20,7 @@ public class ItemTags extends ItemTagsProvider {
     }
 
     @Override
-    protected void registerTags() {
+    protected void addTags() {
         addTag(Tags.Items.ORES,
                 Registration.ORE_POSIRITE_ITEM.get(),
                 Registration.ORE_NEGARITE_ITEM.get(),
@@ -59,14 +59,14 @@ public class ItemTags extends ItemTagsProvider {
     }
 
     private void addTag(ITag.INamedTag<Item> tag, Collection<RegistryObject<BlockStateItem>> items) {
-        TagsProvider.Builder<Item> builder = getOrCreateBuilder(tag);
+        TagsProvider.Builder<Item> builder = tag(tag);
         for (RegistryObject<BlockStateItem> item : items) {
             builder.add(item.get());
         }
     }
 
     private void addTag(ITag.INamedTag<Item> tag, Item... items) {
-        getOrCreateBuilder(tag)
+        tag(tag)
                 .add(items);
     }
 

@@ -49,30 +49,30 @@ public abstract class AbstractNodeTile extends GenericTileEntity implements IGui
     private static final float T = 0.2f;
     private static final float A = 0.14F;
 
-    private static final VoxelShape AABB_DOWN_NW = VoxelShapes.create(0.0+A, 0, 0.0+A,      0.5-A, T, 0.5-A);
-    private static final VoxelShape AABB_DOWN_NE = VoxelShapes.create(0.5+A, 0, 0.0+A,      1.0-A, T, 0.5-A);
-    private static final VoxelShape AABB_DOWN_SW = VoxelShapes.create(0.0+A, 0, 0.5+A,      0.5-A, T, 1.0-A);
-    private static final VoxelShape AABB_DOWN_SE = VoxelShapes.create(0.5+A, 0, 0.5+A,      1.0-A, T, 1.0-A);
-    private static final VoxelShape AABB_UP_NW = VoxelShapes.create(0.0+A, 1-T, 0.0+A,      0.5-A, 1, 0.5-A);
-    private static final VoxelShape AABB_UP_NE = VoxelShapes.create(0.5+A, 1-T, 0.0+A,      1.0-A, 1, 0.5-A);
-    private static final VoxelShape AABB_UP_SW = VoxelShapes.create(0.0+A, 1-T, 0.5+A,      0.5-A, 1, 1.0-A);
-    private static final VoxelShape AABB_UP_SE = VoxelShapes.create(0.5+A, 1-T, 0.5+A,      1.0-A, 1, 1.0-A);
-    private static final VoxelShape AABB_NORTH_DE = VoxelShapes.create(0.5+A, 0.0+A, 0,     1.0-A, 0.5-A, T);
-    private static final VoxelShape AABB_NORTH_DW = VoxelShapes.create(0.0+A, 0.0+A, 0,     0.5-A, 0.5-A, T);
-    private static final VoxelShape AABB_NORTH_UE = VoxelShapes.create(0.5+A, 0.5+A, 0,     1.0-A, 1.0-A, T);
-    private static final VoxelShape AABB_NORTH_UW = VoxelShapes.create(0.0+A, 0.5+A, 0,     0.5-A, 1.0-A, T);
-    private static final VoxelShape AABB_SOUTH_DE = VoxelShapes.create(0.5+A, 0.0+A, 1-T,   1.0-A, 0.5-A, 1);
-    private static final VoxelShape AABB_SOUTH_DW = VoxelShapes.create(0.0+A, 0.0+A, 1-T,   0.5-A, 0.5-A, 1);
-    private static final VoxelShape AABB_SOUTH_UE = VoxelShapes.create(0.5+A, 0.5+A, 1-T,   1.0-A, 1.0-A, 1);
-    private static final VoxelShape AABB_SOUTH_UW = VoxelShapes.create(0.0+A, 0.5+A, 1-T,   0.5-A, 1.0-A, 1);
-    private static final VoxelShape AABB_WEST_DN = VoxelShapes.create(0, 0.0+A, 0.0+A,      T, 0.5-A, 0.5-A);
-    private static final VoxelShape AABB_WEST_DS = VoxelShapes.create(0, 0.0+A, 0.5+A,      T, 0.5-A, 1.0-A);
-    private static final VoxelShape AABB_WEST_UN = VoxelShapes.create(0, 0.5+A, 0.0+A,      T, 1.0-A, 0.5-A);
-    private static final VoxelShape AABB_WEST_US = VoxelShapes.create(0, 0.5+A, 0.5+A,      T, 1.0-A, 1.0-A);
-    private static final VoxelShape AABB_EAST_DN = VoxelShapes.create(1-T, 0.0+A, 0.0+A,    1, 0.5-A, 0.5-A);
-    private static final VoxelShape AABB_EAST_DS = VoxelShapes.create(1-T, 0.0+A, 0.5+A,    1, 0.5-A, 1.0-A);
-    private static final VoxelShape AABB_EAST_UN = VoxelShapes.create(1-T, 0.5+A, 0.0+A,    1, 1.0-A, 0.5-A);
-    private static final VoxelShape AABB_EAST_US = VoxelShapes.create(1-T, 0.5+A, 0.5+A,    1, 1.0-A, 1.0-A);
+    private static final VoxelShape AABB_DOWN_NW = VoxelShapes.box(0.0+A, 0, 0.0+A,      0.5-A, T, 0.5-A);
+    private static final VoxelShape AABB_DOWN_NE = VoxelShapes.box(0.5+A, 0, 0.0+A,      1.0-A, T, 0.5-A);
+    private static final VoxelShape AABB_DOWN_SW = VoxelShapes.box(0.0+A, 0, 0.5+A,      0.5-A, T, 1.0-A);
+    private static final VoxelShape AABB_DOWN_SE = VoxelShapes.box(0.5+A, 0, 0.5+A,      1.0-A, T, 1.0-A);
+    private static final VoxelShape AABB_UP_NW = VoxelShapes.box(0.0+A, 1-T, 0.0+A,      0.5-A, 1, 0.5-A);
+    private static final VoxelShape AABB_UP_NE = VoxelShapes.box(0.5+A, 1-T, 0.0+A,      1.0-A, 1, 0.5-A);
+    private static final VoxelShape AABB_UP_SW = VoxelShapes.box(0.0+A, 1-T, 0.5+A,      0.5-A, 1, 1.0-A);
+    private static final VoxelShape AABB_UP_SE = VoxelShapes.box(0.5+A, 1-T, 0.5+A,      1.0-A, 1, 1.0-A);
+    private static final VoxelShape AABB_NORTH_DE = VoxelShapes.box(0.5+A, 0.0+A, 0,     1.0-A, 0.5-A, T);
+    private static final VoxelShape AABB_NORTH_DW = VoxelShapes.box(0.0+A, 0.0+A, 0,     0.5-A, 0.5-A, T);
+    private static final VoxelShape AABB_NORTH_UE = VoxelShapes.box(0.5+A, 0.5+A, 0,     1.0-A, 1.0-A, T);
+    private static final VoxelShape AABB_NORTH_UW = VoxelShapes.box(0.0+A, 0.5+A, 0,     0.5-A, 1.0-A, T);
+    private static final VoxelShape AABB_SOUTH_DE = VoxelShapes.box(0.5+A, 0.0+A, 1-T,   1.0-A, 0.5-A, 1);
+    private static final VoxelShape AABB_SOUTH_DW = VoxelShapes.box(0.0+A, 0.0+A, 1-T,   0.5-A, 0.5-A, 1);
+    private static final VoxelShape AABB_SOUTH_UE = VoxelShapes.box(0.5+A, 0.5+A, 1-T,   1.0-A, 1.0-A, 1);
+    private static final VoxelShape AABB_SOUTH_UW = VoxelShapes.box(0.0+A, 0.5+A, 1-T,   0.5-A, 1.0-A, 1);
+    private static final VoxelShape AABB_WEST_DN = VoxelShapes.box(0, 0.0+A, 0.0+A,      T, 0.5-A, 0.5-A);
+    private static final VoxelShape AABB_WEST_DS = VoxelShapes.box(0, 0.0+A, 0.5+A,      T, 0.5-A, 1.0-A);
+    private static final VoxelShape AABB_WEST_UN = VoxelShapes.box(0, 0.5+A, 0.0+A,      T, 1.0-A, 0.5-A);
+    private static final VoxelShape AABB_WEST_US = VoxelShapes.box(0, 0.5+A, 0.5+A,      T, 1.0-A, 1.0-A);
+    private static final VoxelShape AABB_EAST_DN = VoxelShapes.box(1-T, 0.0+A, 0.0+A,    1, 0.5-A, 0.5-A);
+    private static final VoxelShape AABB_EAST_DS = VoxelShapes.box(1-T, 0.0+A, 0.5+A,    1, 0.5-A, 1.0-A);
+    private static final VoxelShape AABB_EAST_UN = VoxelShapes.box(1-T, 0.5+A, 0.0+A,    1, 1.0-A, 0.5-A);
+    private static final VoxelShape AABB_EAST_US = VoxelShapes.box(1-T, 0.5+A, 0.5+A,    1, 1.0-A, 1.0-A);
 
     public AbstractNodeTile(TileEntityType<?> type) {
         super(type);
@@ -81,19 +81,19 @@ public abstract class AbstractNodeTile extends GenericTileEntity implements IGui
     public static BlockState getStateForPlacement(Block block, Direction facing, double hitX, double hitY, double hitZ) {
         NodeOrientation orientation = getOrientationFromPlacement(facing, hitX, hitY, hitZ);
         // Since this is a multipart we can use state that isn't convertable to metadata
-        return block.getDefaultState().with(ORIENTATION, orientation);
+        return block.defaultBlockState().setValue(ORIENTATION, orientation);
     }
 
     @Override
-    public void markDirty() {
+    public void setChanged() {
         // Make sure to mark the MultipartTE as dirty
-        world.getTileEntity(pos).markDirty();
+        level.getBlockEntity(worldPosition).setChanged();
     }
 
     @Override
     public void markDirtyQuick() {
         // Make sure to mark the MultipartTE as dirty
-        ((GenericTileEntity)world.getTileEntity(pos)).markDirtyQuick();
+        ((GenericTileEntity)level.getBlockEntity(worldPosition)).markDirtyQuick();
     }
 
     public DyeColor[] getFilters() {
@@ -107,7 +107,7 @@ public abstract class AbstractNodeTile extends GenericTileEntity implements IGui
 
     protected void notifyField() {
         markDirtyClient();
-        AutoFieldTile.notifyField(world, pos);
+        AutoFieldTile.notifyField(level, worldPosition);
     }
 
     @Override
@@ -116,7 +116,7 @@ public abstract class AbstractNodeTile extends GenericTileEntity implements IGui
     }
 
     public static VoxelShape getVoxelShape(BlockState state, IBlockReader world, BlockPos pos) {
-        NodeOrientation orientation = state.get(ORIENTATION);
+        NodeOrientation orientation = state.getValue(ORIENTATION);
         switch (orientation) {
             case DOWN_NE: return AABB_DOWN_NE;
             case DOWN_NW: return AABB_DOWN_NW;
@@ -148,15 +148,15 @@ public abstract class AbstractNodeTile extends GenericTileEntity implements IGui
 
     @Override
     public ActionResultType onBlockActivated(BlockState state, PlayerEntity player, Hand hand, BlockRayTraceResult result) {
-        Ariente.guiHandler.openHoloGuiEntity(world, pos, player, state.get(ORIENTATION).getSlot().name(), 1.0);
+        Ariente.guiHandler.openHoloGuiEntity(level, worldPosition, player, state.getValue(ORIENTATION).getSlot().name(), 1.0);
         return ActionResultType.SUCCESS;
     }
 
     @Override
     public void onPartAdded(PartSlot slot, BlockState state, TileEntity multipartTile) {
-        this.world = multipartTile.getWorld();
-        this.pos = multipartTile.getPos();
-        AutoFieldTile.notifyField(world, pos);
+        this.level = multipartTile.getLevel();
+        this.worldPosition = multipartTile.getBlockPos();
+        AutoFieldTile.notifyField(level, worldPosition);
     }
 
     public static NodeOrientation getOrientationFromPlacement(Direction side, double hitX, double hitY, double hitZ) {
@@ -241,9 +241,9 @@ public abstract class AbstractNodeTile extends GenericTileEntity implements IGui
     }
 
     @Override
-    public CompoundNBT write(CompoundNBT tagCompound) {
+    public CompoundNBT save(CompoundNBT tagCompound) {
         writeRestorableToNBT(tagCompound);
-        return super.write(tagCompound);
+        return super.save(tagCompound);
     }
 
     // @todo 1.14
@@ -310,11 +310,11 @@ public abstract class AbstractNodeTile extends GenericTileEntity implements IGui
 
     @Nonnull
     public LazyOptional<IItemHandler> getConnectedItemHandler(PartPos partPos) {
-        BlockState state = MultipartHelper.getBlockState(world, pos, partPos.getSlot());
+        BlockState state = MultipartHelper.getBlockState(level, worldPosition, partPos.getSlot());
         if (state != null && state.getBlock() == getBlockState().getBlock()) {
-            NodeOrientation orientation = state.get(ORIENTATION);
+            NodeOrientation orientation = state.getValue(ORIENTATION);
             Direction mainDirection = orientation.getMainDirection();
-            TileEntity otherTe = world.getTileEntity(pos.offset(mainDirection));
+            TileEntity otherTe = level.getBlockEntity(worldPosition.relative(mainDirection));
             if (otherTe != null) {
                 return otherTe.getCapability(CapabilityItemHandler.ITEM_HANDLER_CAPABILITY, mainDirection.getOpposite());
             }

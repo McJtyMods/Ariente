@@ -16,13 +16,15 @@ import net.minecraftforge.common.ToolType;
 
 import javax.annotation.Nullable;
 
+import net.minecraft.block.AbstractBlock.Properties;
+
 public class SlopeBlock extends BaseBlock {
 
     private static final Property[] PROPERTIES = {EnumFacingUpDown.FACING};
 
     public SlopeBlock() {
         super(new BlockBuilder()
-                .properties(Properties.create(Material.ROCK).hardnessAndResistance(2.0f, 4.0f))
+                .properties(Properties.of(Material.STONE).strength(2.0f, 4.0f))
                 .harvestLevel(ToolType.PICKAXE, 1)
         );
     }
@@ -51,16 +53,16 @@ public class SlopeBlock extends BaseBlock {
 
     @Override
     public BlockState rotate(BlockState state, IWorld world, BlockPos pos, Rotation rot) {
-        EnumFacingUpDown facing = state.get(EnumFacingUpDown.FACING);
+        EnumFacingUpDown facing = state.getValue(EnumFacingUpDown.FACING);
         switch (rot) {
             case NONE:
                 return state;
             case CLOCKWISE_90:
-                return state.with(EnumFacingUpDown.FACING, facing.rotateY());
+                return state.setValue(EnumFacingUpDown.FACING, facing.rotateY());
             case CLOCKWISE_180:
-                return state.with(EnumFacingUpDown.FACING, facing.rotateY().rotateY());
+                return state.setValue(EnumFacingUpDown.FACING, facing.rotateY().rotateY());
             case COUNTERCLOCKWISE_90:
-                return state.with(EnumFacingUpDown.FACING, facing.rotateY().rotateY().rotateY());
+                return state.setValue(EnumFacingUpDown.FACING, facing.rotateY().rotateY().rotateY());
         }
         return state;
     }
@@ -69,9 +71,9 @@ public class SlopeBlock extends BaseBlock {
     @Override
     public BlockState getStateForPlacement(BlockItemUseContext context) {
         BlockState state = super.getStateForPlacement(context);
-        Direction dir = context.getPlayer().getHorizontalFacing().getOpposite();
-        EnumFacingUpDown updown = EnumFacingUpDown.VALUES[dir.ordinal() - 2 + (context.getFace() == Direction.DOWN ? 4 : 0)];
-        return state.with(EnumFacingUpDown.FACING, updown);
+        Direction dir = context.getPlayer().getDirection().getOpposite();
+        EnumFacingUpDown updown = EnumFacingUpDown.VALUES[dir.ordinal() - 2 + (context.getClickedFace() == Direction.DOWN ? 4 : 0)];
+        return state.setValue(EnumFacingUpDown.FACING, updown);
     }
 
     @Override

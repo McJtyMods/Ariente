@@ -73,13 +73,13 @@ public class ArienteTOPDriver implements TOPDriver {
         @Override
         public void addProbeInfo(ProbeMode mode, IProbeInfo probeInfo, PlayerEntity player, World world, BlockState blockState, IProbeHitData data) {
             McJtyLibTOPDriver.DRIVER.addStandardProbeInfo(mode, probeInfo, player, world, blockState, data);
-            Tools.safeConsume(world.getTileEntity(data.getPos()), (IPowerBlob te) -> {
+            Tools.safeConsume(world.getBlockEntity(data.getPos()), (IPowerBlob te) -> {
                 probeInfo.text(CompoundText.createLabelInfo("Network: ", te.getCableId()));
             });
-            Tools.safeConsume(world.getTileEntity(data.getPos()), (ISignalChannel te) -> {
+            Tools.safeConsume(world.getBlockEntity(data.getPos()), (ISignalChannel te) -> {
                 probeInfo.text(CompoundText.createLabelInfo("Channel: ", te.getChannel(false)));
             });
-            Tools.safeConsume(world.getTileEntity(data.getPos()), (IPowerUser te) -> {
+            Tools.safeConsume(world.getBlockEntity(data.getPos()), (IPowerUser te) -> {
                 probeInfo.text(CompoundText.createLabelInfo("Using: ", te.getUsingPower() + " flux"));
             });
         }
@@ -89,7 +89,7 @@ public class ArienteTOPDriver implements TOPDriver {
         @Override
         public void addProbeInfo(ProbeMode mode, IProbeInfo probeInfo, PlayerEntity player, World world, BlockState blockState, IProbeHitData data) {
             super.addProbeInfo(mode, probeInfo, player, world, blockState, data);
-            Tools.safeConsume(world.getTileEntity(data.getPos()), (AICoreTile te) -> {
+            Tools.safeConsume(world.getBlockEntity(data.getPos()), (AICoreTile te) -> {
                 probeInfo.text(CompoundText.createLabelInfo("City: ", te.getCityName()));
             }, "Bad tile entity!");
         }
@@ -99,7 +99,7 @@ public class ArienteTOPDriver implements TOPDriver {
         @Override
         public void addProbeInfo(ProbeMode mode, IProbeInfo probeInfo, PlayerEntity player, World world, BlockState blockState, IProbeHitData data) {
             super.addProbeInfo(mode, probeInfo, player, world, blockState, data);
-            Tools.safeConsume(world.getTileEntity(data.getPos()), (NegariteGeneratorTile te) -> {
+            Tools.safeConsume(world.getBlockEntity(data.getPos()), (NegariteGeneratorTile te) -> {
                 if (te.isWorking()) {
                     probeInfo.text(CompoundText.createLabelInfo("Generating: ",NegariteGeneratorTile.POWERGEN + " flux"));
                 }
@@ -111,7 +111,7 @@ public class ArienteTOPDriver implements TOPDriver {
         @Override
         public void addProbeInfo(ProbeMode mode, IProbeInfo probeInfo, PlayerEntity player, World world, BlockState blockState, IProbeHitData data) {
             super.addProbeInfo(mode, probeInfo, player, world, blockState, data);
-            Tools.safeConsume(world.getTileEntity(data.getPos()), (PosiriteGeneratorTile te) -> {
+            Tools.safeConsume(world.getBlockEntity(data.getPos()), (PosiriteGeneratorTile te) -> {
                 if (te.isWorking()) {
                     probeInfo.text(CompoundText.createLabelInfo("Generating: ", PosiriteGeneratorTile.POWERGEN + " flux"));
                 }
@@ -123,7 +123,7 @@ public class ArienteTOPDriver implements TOPDriver {
         @Override
         public void addProbeInfo(ProbeMode mode, IProbeInfo probeInfo, PlayerEntity player, World world, BlockState blockState, IProbeHitData data) {
             super.addProbeInfo(mode, probeInfo, player, world, blockState, data);
-            Tools.safeConsume(world.getTileEntity(data.getPos()), (SignalReceiverTile te) -> {
+            Tools.safeConsume(world.getBlockEntity(data.getPos()), (SignalReceiverTile te) -> {
                 probeInfo.text(CompoundText.create().style(WARNING).text("Output: ").style(TextStyleClass.HIGHLIGHTED).text(String.valueOf(te.checkOutput())));
             }, "Bad tile entity!");
         }
@@ -133,7 +133,7 @@ public class ArienteTOPDriver implements TOPDriver {
         @Override
         public void addProbeInfo(ProbeMode mode, IProbeInfo probeInfo, PlayerEntity player, World world, BlockState blockState, IProbeHitData data) {
             super.addProbeInfo(mode, probeInfo, player, world, blockState, data);
-            Tools.safeConsume(world.getTileEntity(data.getPos()), (WirelessLockTile te) -> {
+            Tools.safeConsume(world.getBlockEntity(data.getPos()), (WirelessLockTile te) -> {
                 if (te.isLocked()) {
                     probeInfo.text(CompoundText.create().style(WARNING).text("Locked!"));
                 }
@@ -145,7 +145,7 @@ public class ArienteTOPDriver implements TOPDriver {
         @Override
         public void addProbeInfo(ProbeMode mode, IProbeInfo probeInfo, PlayerEntity player, World world, BlockState blockState, IProbeHitData data) {
             super.addProbeInfo(mode, probeInfo, player, world, blockState, data);
-            Tools.safeConsume(world.getTileEntity(data.getPos()), (LockTile te) -> {
+            Tools.safeConsume(world.getBlockEntity(data.getPos()), (LockTile te) -> {
                 probeInfo.text(CompoundText.createLabelInfo("Key ", te.getKeyId()));
                 if (te.isLocked()) {
                     probeInfo.text(CompoundText.create().style(WARNING).text("Locked!"));
@@ -158,7 +158,7 @@ public class ArienteTOPDriver implements TOPDriver {
         @Override
         public void addProbeInfo(ProbeMode mode, IProbeInfo probeInfo, PlayerEntity player, World world, BlockState blockState, IProbeHitData data) {
             super.addProbeInfo(mode, probeInfo, player, world, blockState, data);
-            Tools.safeConsume(world.getTileEntity(data.getPos()), (AlarmTile te) -> {
+            Tools.safeConsume(world.getBlockEntity(data.getPos()), (AlarmTile te) -> {
                 switch (te.getAlarmType()) {
                     case DEAD:
                         probeInfo.text(CompoundText.create().style(INFO).text("City eliminated!"));
@@ -178,7 +178,7 @@ public class ArienteTOPDriver implements TOPDriver {
         @Override
         public void addProbeInfo(ProbeMode mode, IProbeInfo probeInfo, PlayerEntity player, World world, BlockState blockState, IProbeHitData data) {
             super.addProbeInfo(mode, probeInfo, player, world, blockState, data);
-            Tools.safeConsume(world.getTileEntity(data.getPos()), (StorageTile te) -> {
+            Tools.safeConsume(world.getBlockEntity(data.getPos()), (StorageTile te) -> {
                 String keyId = te.getKeyId();
                 if (keyId != null && !keyId.isEmpty()) {
                     probeInfo.text(CompoundText.createLabelInfo("Key ", keyId));
@@ -194,7 +194,7 @@ public class ArienteTOPDriver implements TOPDriver {
         @Override
         public void addProbeInfo(ProbeMode mode, IProbeInfo probeInfo, PlayerEntity player, World world, BlockState blockState, IProbeHitData data) {
             super.addProbeInfo(mode, probeInfo, player, world, blockState, data);
-            Tools.safeConsume(world.getTileEntity(data.getPos()), (WarperTile te) -> {
+            Tools.safeConsume(world.getBlockEntity(data.getPos()), (WarperTile te) -> {
                 int pct = te.getChargePercentage();
                 probeInfo.text(CompoundText.createLabelInfo( "Charged: ", pct + "%"));
             }, "Bad tile entity!");

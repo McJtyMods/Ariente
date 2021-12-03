@@ -30,8 +30,8 @@ public class InvisibleDoorTile extends GenericTileEntity implements ILockable {
 
     public static BaseBlock createBlock() {
         return new BaseBlock(new BlockBuilder()
-                .properties(Block.Properties.create(Material.IRON)
-                        .variableOpacity())
+                .properties(Block.Properties.of(Material.METAL)
+                        .dynamicShape())
                 .tileEntitySupplier(InvisibleDoorTile::new)
         ) {
             @Override
@@ -59,7 +59,7 @@ public class InvisibleDoorTile extends GenericTileEntity implements ILockable {
 
     @Nonnull
     public static PathNodeType getAiPathNodeType(BlockState state, IBlockReader world, BlockPos pos) {
-        TileEntity te = world.getTileEntity(pos);
+        TileEntity te = world.getBlockEntity(pos);
         if (te instanceof InvisibleDoorTile) {
             DoorMarkerTile door = ((InvisibleDoorTile) te).findDoorMarker();
             if (door.isOpen()) {
@@ -70,7 +70,7 @@ public class InvisibleDoorTile extends GenericTileEntity implements ILockable {
     }
 
     public static VoxelShape getCollisionShape(BlockState blockState, IBlockReader world, BlockPos pos) {
-        TileEntity te = world.getTileEntity(pos);
+        TileEntity te = world.getBlockEntity(pos);
         if (te instanceof InvisibleDoorTile) {
             DoorMarkerTile door = ((InvisibleDoorTile) te).findDoorMarker();
             if (door != null && door.isOpen()) {
@@ -94,14 +94,14 @@ public class InvisibleDoorTile extends GenericTileEntity implements ILockable {
     public DoorMarkerTile findDoorMarker() {
         DoorMarkerTile doorMarkerTile = null;
         // Find the parent door marker
-        BlockPos p = pos.down();
+        BlockPos p = worldPosition.below();
         for (int i = 0; i < UtilityConfiguration.MAX_DOOR_HEIGHT.get() ; i++) {
-            TileEntity marker = getWorld().getTileEntity(p);
+            TileEntity marker = getLevel().getBlockEntity(p);
             if (marker instanceof DoorMarkerTile) {
                 doorMarkerTile = (DoorMarkerTile) marker;
                 break;
             }
-            p = p.down();
+            p = p.below();
         }
         return doorMarkerTile;
     }

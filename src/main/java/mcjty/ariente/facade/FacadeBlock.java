@@ -21,31 +21,31 @@ public class FacadeBlock extends NetCableBlock {
     public static final String FACADE = "facade";
 
     public FacadeBlock() {
-        super(Material.IRON);
+        super(Material.METAL);
         // @todo 1.14
 //        setHardness(0.8f);
     }
 
     @Override
-    public void harvestBlock(World worldIn, PlayerEntity player, BlockPos pos, BlockState state, @Nullable TileEntity te, ItemStack stack) {
+    public void playerDestroy(World worldIn, PlayerEntity player, BlockPos pos, BlockState state, @Nullable TileEntity te, ItemStack stack) {
         ItemStack item = new ItemStack(Registration.FACADE.get());
         BlockState mimicBlock;
         if (te instanceof GenericCableTileEntity) {
             mimicBlock = ((GenericCableTileEntity) te).getMimicBlock();
         } else {
-            mimicBlock = Blocks.COBBLESTONE.getDefaultState();
+            mimicBlock = Blocks.COBBLESTONE.defaultBlockState();
         }
         FacadeItemBlock.setMimicBlock(item, mimicBlock);
 
-        spawnAsEntity(worldIn, pos, item);
+        popResource(worldIn, pos, item);
     }
 
 
     @Override
     public boolean removedByPlayer(BlockState state, World world, BlockPos pos, PlayerEntity player, boolean willHarvest, FluidState fluid) {
-        CableColor color = state.get(COLOR);
-        this.onBlockHarvested(world, pos, state, player);
-        return world.setBlockState(pos, Registration.NETCABLE.get().getDefaultState().with(COLOR, color), world.isRemote ? 11 : 3);
+        CableColor color = state.getValue(COLOR);
+        this.playerWillDestroy(world, pos, state, player);
+        return world.setBlock(pos, Registration.NETCABLE.get().defaultBlockState().setValue(COLOR, color), world.isClientSide ? 11 : 3);
     }
 
 

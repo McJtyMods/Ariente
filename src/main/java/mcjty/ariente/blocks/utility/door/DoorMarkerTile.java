@@ -49,9 +49,9 @@ import static mcjty.lib.builder.TooltipBuilder.key;
 
 public class DoorMarkerTile extends GenericTileEntity implements ITickableTileEntity, IGuiTile, ILockable {
 
-    public static final VoxelShape BLOCK_AABB = VoxelShapes.create(0.0D, 0.0D, 0.0D, 1.0D, 1.0D/16.0, 1.0D);
+    public static final VoxelShape BLOCK_AABB = VoxelShapes.box(0.0D, 0.0D, 0.0D, 1.0D, 1.0D/16.0, 1.0D);
     public static final VoxelShape OPEN_BLOCK_AABB = VoxelShapes.empty();
-    public static final VoxelShape CLOSED_BLOCK_AABB = VoxelShapes.fullCube();
+    public static final VoxelShape CLOSED_BLOCK_AABB = VoxelShapes.block();
 
     private AxisAlignedBB detectionBox = null;
     private AxisAlignedBB renderBox = null;
@@ -70,8 +70,8 @@ public class DoorMarkerTile extends GenericTileEntity implements ITickableTileEn
 
     public static BaseBlock createBlock() {
         return new BaseBlock(new BlockBuilder()
-                .properties(Block.Properties.create(Material.IRON)
-                        .variableOpacity())
+                .properties(Block.Properties.of(Material.METAL)
+                        .dynamicShape())
                 .info(key("message.ariente.shiftmessage"))
                 .infoShift(header())
                 .topDriver(DRIVER)
@@ -102,16 +102,16 @@ public class DoorMarkerTile extends GenericTileEntity implements ITickableTileEn
 
     @Override
     public ActionResultType onBlockActivated(BlockState state, PlayerEntity player, Hand hand, BlockRayTraceResult result) {
-        Ariente.guiHandler.openHoloGui(world, pos, player);
+        Ariente.guiHandler.openHoloGui(level, worldPosition, player);
         return ActionResultType.SUCCESS;
     }
 
     @Override
     public void tick() {
-        if (!world.isRemote) {
+        if (!level.isClientSide) {
             setInvisibleBlocks();
             if (!locked) {
-                List<Entity> entities = world.getEntitiesWithinAABB(LivingEntity.class, getDetectionBox(),
+                List<Entity> entities = level.getEntitiesOfClass(LivingEntity.class, getDetectionBox(),
                         entity -> entity instanceof PlayerEntity || entity instanceof SoldierEntity);
                 boolean o = !entities.isEmpty();
                 setOpen(o);
@@ -123,7 +123,7 @@ public class DoorMarkerTile extends GenericTileEntity implements ITickableTileEn
 
     private AxisAlignedBB getDetectionBox() {
         if (detectionBox == null) {
-            detectionBox = new AxisAlignedBB(pos.getX()-3, pos.getY()-2, pos.getZ()-3, pos.getX()+4, pos.getY()+6, pos.getZ()+4);
+            detectionBox = new AxisAlignedBB(worldPosition.getX()-3, worldPosition.getY()-2, worldPosition.getZ()-3, worldPosition.getX()+4, worldPosition.getY()+6, worldPosition.getZ()+4);
         }
         return detectionBox;
     }
@@ -138,39 +138,39 @@ public class DoorMarkerTile extends GenericTileEntity implements ITickableTileEn
     }
 
     private void setInvisibleBlocks() {
-        BlockPos p = pos.up();
+        BlockPos p = worldPosition.above();
         for (int i = 0 ; i < UtilityConfiguration.MAX_DOOR_HEIGHT.get() ; i++) {
-            if (world.isAirBlock(p)) {
+            if (level.isEmptyBlock(p)) {
                 Direction facing = getFacing();
                 if (facing == null) {
                     return;
                 }
-                world.setBlockState(p, Registration.INVISIBLE_DOOR.get().getDefaultState().with(BlockStateProperties.HORIZONTAL_FACING, facing), 3);
+                level.setBlock(p, Registration.INVISIBLE_DOOR.get().defaultBlockState().setValue(BlockStateProperties.HORIZONTAL_FACING, facing), 3);
             } else {
                 return;
             }
-            p = p.up();
+            p = p.above();
         }
     }
 
     private void clearInvisibleBlocks() {
-        BlockPos p = pos.up();
+        BlockPos p = worldPosition.above();
         for (int i = 0 ; i < UtilityConfiguration.MAX_DOOR_HEIGHT.get() ; i++) {
-            if (world.getBlockState(p).getBlock() == Registration.INVISIBLE_DOOR.get()) {
-                world.setBlockState(p, Blocks.AIR.getDefaultState());
+            if (level.getBlockState(p).getBlock() == Registration.INVISIBLE_DOOR.get()) {
+                level.setBlockAndUpdate(p, Blocks.AIR.defaultBlockState());
             } else {
                 return;
             }
-            p = p.up();
+            p = p.above();
         }
     }
 
     private Direction getFacing() {
-        BlockState state = world.getBlockState(pos);
+        BlockState state = level.getBlockState(worldPosition);
         if (state.getBlock() != Registration.DOOR_MARKER.get()) {
             return null;
         }
-        return state.get(BlockStateProperties.HORIZONTAL_FACING);
+        return state.getValue(BlockStateProperties.HORIZONTAL_FACING);
     }
 
     private void setOpen(boolean o) {
@@ -178,7 +178,7 @@ public class DoorMarkerTile extends GenericTileEntity implements ITickableTileEn
             return;
         }
         open = o;
-        world.playSound(null, getPos().getX(), getPos().getY(), getPos().getZ(), ModSounds.door, SoundCategory.BLOCKS, 0.6f, 1.0f);
+        level.playSound(null, getBlockPos().getX(), getBlockPos().getY(), getBlockPos().getZ(), ModSounds.door, SoundCategory.BLOCKS, 0.6f, 1.0f);
         markDirtyClient();
     }
 
@@ -216,7 +216,7 @@ public class DoorMarkerTile extends GenericTileEntity implements ITickableTileEn
 
     @Nonnull
     public static PathNodeType getAiPathNodeType(BlockState state, IBlockReader world, BlockPos pos) {
-        TileEntity te = world.getTileEntity(pos);
+        TileEntity te = world.getBlockEntity(pos);
         if (te instanceof DoorMarkerTile) {
             DoorMarkerTile door = (DoorMarkerTile) te;
             if (door.isOpen()) {
@@ -227,7 +227,7 @@ public class DoorMarkerTile extends GenericTileEntity implements ITickableTileEn
     }
 
     public static VoxelShape getCollisionShape(BlockState blockState, IBlockReader world, BlockPos pos) {
-        TileEntity te = world.getTileEntity(pos);
+        TileEntity te = world.getBlockEntity(pos);
         if (te instanceof DoorMarkerTile) {
             DoorMarkerTile door = (DoorMarkerTile) te;
             if (door.isOpen()) {
@@ -249,12 +249,12 @@ public class DoorMarkerTile extends GenericTileEntity implements ITickableTileEn
     }
 
     @Override
-    public CompoundNBT write(CompoundNBT tagCompound) {
+    public CompoundNBT save(CompoundNBT tagCompound) {
         tagCompound.putBoolean("open", open);
         CompoundNBT info = getOrCreateInfo(tagCompound);
         info.putInt("icon", iconIndex);
         info.putBoolean("locked", locked);
-        return super.write(tagCompound);
+        return super.save(tagCompound);
     }
 
     // @todo 1.14
@@ -273,7 +273,7 @@ public class DoorMarkerTile extends GenericTileEntity implements ITickableTileEn
     @Override
     public AxisAlignedBB getRenderBoundingBox() {
         if (renderBox == null) {
-            renderBox = new AxisAlignedBB(getPos()).grow(.3);
+            renderBox = new AxisAlignedBB(getBlockPos()).inflate(.3);
         }
         return renderBox;
     }

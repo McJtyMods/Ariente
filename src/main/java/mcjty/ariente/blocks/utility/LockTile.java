@@ -50,7 +50,7 @@ public class LockTile extends GenericTileEntity implements IGuiTile, IKeyCardSlo
     private int horizontalRange = 5;
     private int verticalRange = 3;
 
-    private static final VoxelShape BLOCK_AABB = VoxelShapes.create(1.0D/16.0, 1.0D/16.0, 15.0D/16.0, 15.0D/16.0, 15.0D/16.0, 1.0D);
+    private static final VoxelShape BLOCK_AABB = VoxelShapes.box(1.0D/16.0, 1.0D/16.0, 15.0D/16.0, 15.0D/16.0, 15.0D/16.0, 1.0D);
 
     public LockTile() {
         super(Registration.LOCK_TILE.get());
@@ -65,8 +65,8 @@ public class LockTile extends GenericTileEntity implements IGuiTile, IKeyCardSlo
                 .tileEntitySupplier(LockTile::new)
         ) {
             @Override
-            protected void fillStateContainer(StateContainer.Builder<Block, BlockState> builder) {
-                super.fillStateContainer(builder);
+            protected void createBlockStateDefinition(StateContainer.Builder<Block, BlockState> builder) {
+                super.createBlockStateDefinition(builder);
                 builder.add(BlockProperties.LOCKED);
             }
 
@@ -79,7 +79,7 @@ public class LockTile extends GenericTileEntity implements IGuiTile, IKeyCardSlo
 
     @Override
     public ActionResultType onBlockActivated(BlockState state, PlayerEntity player, Hand hand, BlockRayTraceResult result) {
-        Ariente.guiHandler.openHoloGui(world, pos, player);
+        Ariente.guiHandler.openHoloGui(level, worldPosition, player);
         return ActionResultType.SUCCESS;
     }
 
@@ -91,11 +91,11 @@ public class LockTile extends GenericTileEntity implements IGuiTile, IKeyCardSlo
 
         super.onDataPacket(net, packet);
 
-        if (world.isRemote) {
+        if (level.isClientSide) {
             // If needed send a render update.
             boolean newLocked = isLocked();
             if (newLocked != locked) {
-                world.notifyBlockUpdate(pos, getBlockState(), getBlockState(), Constants.BlockFlags.BLOCK_UPDATE + Constants.BlockFlags.NOTIFY_NEIGHBORS);
+                level.sendBlockUpdated(worldPosition, getBlockState(), getBlockState(), Constants.BlockFlags.BLOCK_UPDATE + Constants.BlockFlags.NOTIFY_NEIGHBORS);
             }
         }
     }
@@ -129,12 +129,12 @@ public class LockTile extends GenericTileEntity implements IGuiTile, IKeyCardSlo
     }
 
     private void doLock(boolean l) {
-        if (world != null && !world.isRemote) {
+        if (level != null && !level.isClientSide) {
             for (int dx = -horizontalRange ; dx <= horizontalRange ; dx++) {
                 for (int dy = -verticalRange ; dy <= verticalRange ; dy++) {
                     for (int dz = -horizontalRange ; dz <= horizontalRange ; dz++) {
-                        BlockPos p = pos.add(dx, dy, dz);
-                        TileEntity te = world.getTileEntity(p);
+                        BlockPos p = worldPosition.offset(dx, dy, dz);
+                        TileEntity te = level.getBlockEntity(p);
                         if (te instanceof DoorMarkerTile) { // @todo generalize!
                             ((DoorMarkerTile) te).setLocked(l);
                         }
@@ -159,7 +159,7 @@ public class LockTile extends GenericTileEntity implements IGuiTile, IKeyCardSlo
     }
 
     public void toggleLock() {
-        if (!world.isRemote) {
+        if (!level.isClientSide) {
             setLocked(!locked);
         }
     }
@@ -168,10 +168,10 @@ public class LockTile extends GenericTileEntity implements IGuiTile, IKeyCardSlo
     public void acceptKeyCard(ItemStack stack) {
         Set<String> tags = KeyCardItem.getSecurityTags(stack);
         if (tags.contains(keyId)) {
-            world.playSound(null, pos, ModSounds.buzzOk, SoundCategory.BLOCKS, 1.0f, 1.0f);
+            level.playSound(null, worldPosition, ModSounds.buzzOk, SoundCategory.BLOCKS, 1.0f, 1.0f);
             toggleLock();
         } else {
-            world.playSound(null, pos, ModSounds.buzzError, SoundCategory.BLOCKS, 1.0f, 1.0f);
+            level.playSound(null, worldPosition, ModSounds.buzzError, SoundCategory.BLOCKS, 1.0f, 1.0f);
         }
     }
 
@@ -181,7 +181,7 @@ public class LockTile extends GenericTileEntity implements IGuiTile, IKeyCardSlo
 
     public void setKeyId(String keyId) {
         this.keyId = keyId;
-        markDirty();
+        setChanged();
     }
 
     // @todo 1.14

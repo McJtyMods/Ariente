@@ -34,17 +34,17 @@ public class WarperRenderer extends TileEntityRenderer<WarperTile> {
     public void render(WarperTile te, float partialTicks, MatrixStack matrixStack, IRenderTypeBuffer buffer, int combinedLightIn, int combinedOverlayIn) {
 //        if (te.isWorking()) {
         Tessellator tessellator = Tessellator.getInstance();
-        GlStateManager.pushMatrix();
+        GlStateManager._pushMatrix();
 //            GlStateManager.translate(x, y, z);
 
-        GlStateManager.enableBlend();
-        GlStateManager.depthMask(false);
+        GlStateManager._enableBlend();
+        GlStateManager._depthMask(false);
 //        GlStateManager.blendFunc(GL11.GL_SRC_ALPHA, GL11.GL_ONE);
 //        GlStateManager.alphaFunc(GL11.GL_GREATER, 0.003921569F);
-        GlStateManager.blendFunc(GL11.GL_ONE, GL11.GL_ONE);
+        GlStateManager._blendFunc(GL11.GL_ONE, GL11.GL_ONE);
 //        GlStateManager.alphaFunc(GL11.GL_GREATER, 0.003921569F);
-        GlStateManager.disableCull();
-        GlStateManager.enableDepthTest();
+        GlStateManager._disableCull();
+        GlStateManager._enableDepthTest();
 
         ResourceLocation beamIcon = halo;
         // @todo 1.15
@@ -52,19 +52,19 @@ public class WarperRenderer extends TileEntityRenderer<WarperTile> {
 
         Minecraft mc = Minecraft.getInstance();
         PlayerEntity p = mc.player;
-        double doubleX = p.lastTickPosX + (p.getPosX() - p.lastTickPosX) * partialTicks;
-        double doubleY = p.lastTickPosY + (p.getPosY() - p.lastTickPosY) * partialTicks;
-        double doubleZ = p.lastTickPosZ + (p.getPosZ() - p.lastTickPosZ) * partialTicks;
+        double doubleX = p.xOld + (p.getX() - p.xOld) * partialTicks;
+        double doubleY = p.yOld + (p.getY() - p.yOld) * partialTicks;
+        double doubleZ = p.zOld + (p.getZ() - p.zOld) * partialTicks;
 
-        GlStateManager.translated(-doubleX, -doubleY, -doubleZ);
+        GlStateManager._translated(-doubleX, -doubleY, -doubleZ);
 
         RenderHelper.Vector player = new RenderHelper.Vector((float) doubleX, (float) doubleY + p.getEyeHeight(), (float) doubleZ);
 
         long tt = System.currentTimeMillis() / 100;
 
-        GlStateManager.color4f(1, 1, 1, 1);
+        GlStateManager._color4f(1, 1, 1, 1);
 
-        BufferBuilder renderer = tessellator.getBuffer();
+        BufferBuilder renderer = tessellator.getBuilder();
         renderer.begin(GL11.GL_QUADS, DefaultVertexFormats.POSITION_COLOR_TEX_LIGHTMAP);
 
         float height = 2;
@@ -76,29 +76,29 @@ public class WarperRenderer extends TileEntityRenderer<WarperTile> {
                 ticks = 80 - ticks;
             }
             float i1 = ticks / 40.0f;
-            float xx = te.getPos().getX() + randomX[ii];
-            float zz = te.getPos().getZ() + randomZ[ii];
-            float yy = te.getPos().getY() - 1.0f + i1 + (randomY[ii] * height) / 8.0f;
+            float xx = te.getBlockPos().getX() + randomX[ii];
+            float zz = te.getBlockPos().getZ() + randomZ[ii];
+            float yy = te.getBlockPos().getY() - 1.0f + i1 + (randomY[ii] * height) / 8.0f;
             RenderHelper.drawBeam(new RenderHelper.Vector(xx, yy, zz), new RenderHelper.Vector(xx, yy + 4, zz), player, 0.2f);
         }
 
 //        net.minecraft.util.math.vector.Vector3d cameraPos = net.minecraft.client.renderer.ActiveRenderInfo.getCameraPosition();
 //        tessellator.getBuffer().sortVertexData((float) (player.x + doubleX), (float) (player.y + doubleY), (float) (player.z + doubleZ));
 //        tessellator.getBuffer().sortVertexData((float)(cameraPos.x+doubleX), (float)(cameraPos.y+doubleY), (float)(cameraPos.z+doubleZ));
-        tessellator.draw();
+        tessellator.end();
 
-        GlStateManager.depthMask(true);
-        GlStateManager.enableLighting();
-        GlStateManager.enableDepthTest();
-        GlStateManager.alphaFunc(GL11.GL_GREATER, 0.1F);
+        GlStateManager._depthMask(true);
+        GlStateManager._enableLighting();
+        GlStateManager._enableDepthTest();
+        GlStateManager._alphaFunc(GL11.GL_GREATER, 0.1F);
 
-        GlStateManager.popMatrix();
+        GlStateManager._popMatrix();
 //        }
 
     }
 
     @Override
-    public boolean isGlobalRenderer(WarperTile te) {
+    public boolean shouldRenderOffScreen(WarperTile te) {
         return true;
     }
 

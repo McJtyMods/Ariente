@@ -68,12 +68,12 @@ public class SecuritySystem extends AbstractWorldData<SecuritySystem> implements
     }
 
     @Override
-    public void read(CompoundNBT compound) {
+    public void load(CompoundNBT compound) {
         lastSecurityID = compound.getLong("lastSecurityID");
     }
 
     @Override
-    public CompoundNBT write(CompoundNBT compound) {
+    public CompoundNBT save(CompoundNBT compound) {
         compound.putLong("lastSecurityID", lastSecurityID);
         return compound;
     }

@@ -16,6 +16,8 @@ import java.util.List;
 
 import static mcjty.lib.builder.TooltipBuilder.*;
 
+import net.minecraft.item.Item.Properties;
+
 public class ArmorModuleItem extends Item implements ITooltipSettings {
 
     private final ArmorUpgradeType type;
@@ -34,13 +36,13 @@ public class ArmorModuleItem extends Item implements ITooltipSettings {
     }
 
     public ArmorModuleItem(ArmorUpgradeType type) {
-        super(new Properties().group(Ariente.setup.getTab()));
+        super(new Properties().tab(Ariente.setup.getTab()));
         this.type = type;
     }
 
     @Override
-    public void addInformation(ItemStack stack, @Nullable World worldIn, List<ITextComponent> tooltip, ITooltipFlag flag) {
-        super.addInformation(stack, worldIn, tooltip, flag);
+    public void appendHoverText(ItemStack stack, @Nullable World worldIn, List<ITextComponent> tooltip, ITooltipFlag flag) {
+        super.appendHoverText(stack, worldIn, tooltip, flag);
         tooltipBuilder.makeTooltip(new ResourceLocation(Ariente.MODID, "armormodule"), stack, tooltip, flag);
     }
 

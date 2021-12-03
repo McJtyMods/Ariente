@@ -44,7 +44,7 @@ public class WirelessLockTile extends SignalChannelTileEntity implements ILockab
     private int horizontalRange = 5;
     private int verticalRange = 3;
 
-    private static final VoxelShape BLOCK_AABB = VoxelShapes.create(1.0D/16.0, 1.0D/16.0, 15.0D/16.0, 15.0D/16.0, 15.0D/16.0, 1.0D);
+    private static final VoxelShape BLOCK_AABB = VoxelShapes.box(1.0D/16.0, 1.0D/16.0, 15.0D/16.0, 15.0D/16.0, 15.0D/16.0, 1.0D);
 
     public WirelessLockTile() {
         super(Registration.WIRELESS_LOCK_TILE.get());
@@ -59,8 +59,8 @@ public class WirelessLockTile extends SignalChannelTileEntity implements ILockab
                 .tileEntitySupplier(WirelessLockTile::new)
         ) {
             @Override
-            protected void fillStateContainer(StateContainer.Builder<Block, BlockState> builder) {
-                super.fillStateContainer(builder);
+            protected void createBlockStateDefinition(StateContainer.Builder<Block, BlockState> builder) {
+                super.createBlockStateDefinition(builder);
                 builder.add(LOCKED);
             }
 
@@ -73,16 +73,16 @@ public class WirelessLockTile extends SignalChannelTileEntity implements ILockab
 
     @Override
     public ActionResultType onBlockActivated(BlockState state, PlayerEntity player, Hand hand, BlockRayTraceResult result) {
-        Ariente.guiHandler.openHoloGui(world, pos, player);
+        Ariente.guiHandler.openHoloGui(level, worldPosition, player);
         return ActionResultType.SUCCESS;
     }
 
 
     @Override
     public void tick() {
-        if (!world.isRemote) {
+        if (!level.isClientSide) {
             if (channel != -1) {
-                RedstoneChannels channels = RedstoneChannels.getChannels(getWorld());
+                RedstoneChannels channels = RedstoneChannels.getChannels(getLevel());
                 RedstoneChannels.RedstoneChannel ch = channels.getChannel(channel);
                 if (ch != null) {
                     setLocked(ch.getValue() <= 0);
@@ -99,11 +99,11 @@ public class WirelessLockTile extends SignalChannelTileEntity implements ILockab
 
         super.onDataPacket(net, packet);
 
-        if (world.isRemote) {
+        if (level.isClientSide) {
             // If needed send a render update.
             boolean newLocked = isLocked();
             if (newLocked != locked) {
-                world.notifyBlockUpdate(pos, getBlockState(), getBlockState(), Constants.BlockFlags.BLOCK_UPDATE + Constants.BlockFlags.NOTIFY_NEIGHBORS);
+                level.sendBlockUpdated(worldPosition, getBlockState(), getBlockState(), Constants.BlockFlags.BLOCK_UPDATE + Constants.BlockFlags.NOTIFY_NEIGHBORS);
             }
         }
     }
@@ -125,16 +125,16 @@ public class WirelessLockTile extends SignalChannelTileEntity implements ILockab
 
 
     private void doLock(boolean l) {
-        if (world == null) {
+        if (level == null) {
             // Safety because this can actually happen during worldgen/load
             return;
         }
-        if (!world.isRemote) {
+        if (!level.isClientSide) {
             for (int dx = -horizontalRange ; dx <= horizontalRange ; dx++) {
                 for (int dy = -verticalRange ; dy <= verticalRange ; dy++) {
                     for (int dz = -horizontalRange ; dz <= horizontalRange ; dz++) {
-                        BlockPos p = pos.add(dx, dy, dz);
-                        TileEntity te = world.getTileEntity(p);
+                        BlockPos p = worldPosition.offset(dx, dy, dz);
+                        TileEntity te = level.getBlockEntity(p);
                         if (te instanceof DoorMarkerTile) { // @todo generalize!
                             ((DoorMarkerTile) te).setLocked(l);
                         }
@@ -205,9 +205,9 @@ public class WirelessLockTile extends SignalChannelTileEntity implements ILockab
     }
 
     @Override
-    public CompoundNBT write(CompoundNBT tagCompound) {
+    public CompoundNBT save(CompoundNBT tagCompound) {
         tagCompound.putBoolean("locked", locked);
-        return super.write(tagCompound);
+        return super.save(tagCompound);
     }
 
     @Override

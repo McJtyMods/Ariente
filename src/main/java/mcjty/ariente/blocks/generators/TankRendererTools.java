@@ -13,19 +13,19 @@ public class TankRendererTools {
 
     private static void p(IVertexBuilder renderer, MatrixStack stack, float x, float y, float z, float u, float v) {
         renderer
-                .pos(stack.getLast().getMatrix(), x, y, z)
+                .vertex(stack.last().pose(), x, y, z)
                 .color(1.0f, 1.0f, 1.0f, 1.0f)
-                .tex(u, v)
-                .lightmap(0xf000f0)
+                .uv(u, v)
+                .uv2(0xf000f0)
                 .normal(1, 0, 0)
                 .endVertex();
     }
 
 
     public static void renderBeam(MatrixStack matrixStack, IRenderTypeBuffer buffer, ResourceLocation beam) {
-        matrixStack.push();
+        matrixStack.pushPose();
 
-        IVertexBuilder builder = buffer.getBuffer(RenderType.getTranslucent());
+        IVertexBuilder builder = buffer.getBuffer(RenderType.translucent());
 
 // @todo 1.15
 //            GlStateManager.enableBlend();
@@ -35,7 +35,7 @@ public class TankRendererTools {
 //            GlStateManager.disableCull();
 //            GlStateManager.enableDepthTest();
 
-        TextureAtlasSprite sprite = Minecraft.getInstance().getAtlasSpriteGetter(AtlasTexture.LOCATION_BLOCKS_TEXTURE).apply(beam);
+        TextureAtlasSprite sprite = Minecraft.getInstance().getTextureAtlas(AtlasTexture.LOCATION_BLOCKS).apply(beam);
 
         long ticks = (System.currentTimeMillis() / 100) % 10;
         float i1 = ticks / 10.0f;
@@ -68,6 +68,6 @@ public class TankRendererTools {
 //            GlStateManager.enableLighting();
 //            GlStateManager.alphaFunc(GL11.GL_GREATER, 0.1F);
 
-        matrixStack.pop();
+        matrixStack.popPose();
     }
 }

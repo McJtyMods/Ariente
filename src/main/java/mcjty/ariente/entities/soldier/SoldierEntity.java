@@ -36,7 +36,7 @@ import javax.annotation.Nullable;
 
 public class SoldierEntity extends MonsterEntity implements IArmRaisable, IForcefieldImmunity, ISoldier {
 
-    private static final DataParameter<Boolean> ARMS_RAISED = EntityDataManager.createKey(SoldierEntity.class, DataSerializers.BOOLEAN);
+    private static final DataParameter<Boolean> ARMS_RAISED = EntityDataManager.defineId(SoldierEntity.class, DataSerializers.BOOLEAN);
     public static final ResourceLocation LOOT = new ResourceLocation(Ariente.MODID, "entities/soldier");
 
     // If this entity is controlled by a city then this will be set
@@ -58,10 +58,10 @@ public class SoldierEntity extends MonsterEntity implements IArmRaisable, IForce
     @Override
     public void tick() {
         super.tick();
-        if (!world.isRemote && isAlive() && cityCenter != null) {
-            ICityAISystem aiSystem = ArienteWorldCompat.getCityAISystem(world);
+        if (!level.isClientSide && isAlive() && cityCenter != null) {
+            ICityAISystem aiSystem = ArienteWorldCompat.getCityAISystem(level);
             ICityAI cityAI = aiSystem.getCityAI(cityCenter);
-            if (cityAI != null && !cityAI.isDead(world)) {
+            if (cityAI != null && !cityAI.isDead(level)) {
                 feedPowerIfNeeded(EquipmentSlotType.HEAD);
                 feedPowerIfNeeded(EquipmentSlotType.FEET);
                 feedPowerIfNeeded(EquipmentSlotType.CHEST);
@@ -73,7 +73,7 @@ public class SoldierEntity extends MonsterEntity implements IArmRaisable, IForce
     }
 
     private void feedPowerIfNeeded(EquipmentSlotType slot) {
-        ItemStack stack = getItemStackFromSlot(slot);
+        ItemStack stack = getItemBySlot(slot);
         if (stack.isEmpty()) {
             return;
         }
@@ -110,26 +110,26 @@ public class SoldierEntity extends MonsterEntity implements IArmRaisable, IForce
 
     // Guards don't despawn. Spawning and despawning is managed by the cities
     @Override
-    public boolean preventDespawn() {
+    public boolean requiresCustomPersistence() {
         return behaviourType == SoldierBehaviourType.SOLDIER_GUARD;
     }
 
     @Override
-    protected void registerData() {
-        super.registerData();
-        this.getDataManager().register(ARMS_RAISED, Boolean.valueOf(false));
+    protected void defineSynchedData() {
+        super.defineSynchedData();
+        this.getEntityData().define(ARMS_RAISED, Boolean.valueOf(false));
 //        LootTable lootTableFromLocation = worldObj.getLootTableManager().getLootTableFromLocation(LOOT);
 //        System.out.println("lootTableFromLocation = " + lootTableFromLocation);
     }
 //            this.getAttributes().registerAttribute(Attributes.FOLLOW_RANGE).setBaseValue(16.0D);
 
     public static AttributeModifierMap.MutableAttribute registerAttributes() {
-        AttributeModifierMap.MutableAttribute attributes = LivingEntity.registerAttributes();
+        AttributeModifierMap.MutableAttribute attributes = LivingEntity.createLivingAttributes();
         attributes
-            .createMutableAttribute(Attributes.FOLLOW_RANGE, 35.0D)
-            .createMutableAttribute(Attributes.MOVEMENT_SPEED, 0.32D)
-            .createMutableAttribute(Attributes.ATTACK_DAMAGE, 4.0D)
-            .createMutableAttribute(Attributes.ARMOR, 4.0D);
+            .add(Attributes.FOLLOW_RANGE, 35.0D)
+            .add(Attributes.MOVEMENT_SPEED, 0.32D)
+            .add(Attributes.ATTACK_DAMAGE, 4.0D)
+            .add(Attributes.ARMOR, 4.0D);
 
         return attributes;
     }
@@ -140,32 +140,32 @@ public class SoldierEntity extends MonsterEntity implements IArmRaisable, IForce
 
     @Override
     public void setArmsRaised(boolean armsRaised) {
-        this.getDataManager().set(ARMS_RAISED, Boolean.valueOf(armsRaised));
+        this.getEntityData().set(ARMS_RAISED, Boolean.valueOf(armsRaised));
     }
 
     public boolean isArmsRaised() {
-        return this.getDataManager().get(ARMS_RAISED).booleanValue();
+        return this.getEntityData().get(ARMS_RAISED).booleanValue();
     }
 
     @Override
-    protected void dropLoot(DamageSource damageSourceIn, boolean p_213354_2_) {
-        super.dropLoot(damageSourceIn, p_213354_2_);
-        if (attackingPlayer != null) {
+    protected void dropFromLootTable(DamageSource damageSourceIn, boolean p_213354_2_) {
+        super.dropFromLootTable(damageSourceIn, p_213354_2_);
+        if (lastHurtByPlayer != null) {
             if (Ariente.setup.arienteWorld) {
                 double chance = ArienteWorldCompat.getArienteWorld().getSoldierCityKeyChance();
-                if (cityCenter != null && rand.nextFloat() < chance) {
-                    ICityAISystem aiSystem = ArienteWorldCompat.getCityAISystem(world);
+                if (cityCenter != null && random.nextFloat() < chance) {
+                    ICityAISystem aiSystem = ArienteWorldCompat.getCityAISystem(level);
                     ICityAI cityAI = aiSystem.getCityAI(cityCenter);
                     if (cityAI != null) {
                         ItemStack stack = new ItemStack(Registration.KEY_CARD.get());
-                        float r = rand.nextFloat();
+                        float r = random.nextFloat();
                         if (r < .4f) {
                             KeyCardItem.addSecurityTag(stack, cityAI.getKeyId());
                         } else if (r < .8f) {
                             KeyCardItem.addSecurityTag(stack, cityAI.getForcefieldId());
                         }
                         KeyCardItem.setDescription(stack, "City: " + cityAI.getCityName());
-                        entityDropItem(stack, 0.0f);
+                        spawnAtLocation(stack, 0.0f);
                     }
                 }
             }
@@ -186,8 +186,8 @@ public class SoldierEntity extends MonsterEntity implements IArmRaisable, IForce
 
 
     @Override
-    public void writeAdditional(CompoundNBT compound) {
-        super.writeAdditional(compound);
+    public void addAdditionalSaveData(CompoundNBT compound) {
+        super.addAdditionalSaveData(compound);
         if (cityCenter != null) {
             compound.putInt("cityX", cityCenter.x);
             compound.putInt("cityZ", cityCenter.z);
@@ -196,8 +196,8 @@ public class SoldierEntity extends MonsterEntity implements IArmRaisable, IForce
     }
 
     @Override
-    public void readAdditional(CompoundNBT compound) {
-        super.readAdditional(compound);
+    public void readAdditionalSaveData(CompoundNBT compound) {
+        super.readAdditionalSaveData(compound);
         if (compound.contains("cityX")) {
             cityCenter = new ChunkPos(compound.getInt("cityX"), compound.getInt("cityZ"));
         }
@@ -219,13 +219,13 @@ public class SoldierEntity extends MonsterEntity implements IArmRaisable, IForce
 //    }
 
     @Override
-    public int getMaxSpawnedInChunk() {
+    public int getMaxSpawnClusterSize() {
         return 3;
     }
 
     @Override
-    public void setAttackTarget(@Nullable LivingEntity entitylivingbaseIn) {
-        super.setAttackTarget(entitylivingbaseIn);
+    public void setTarget(@Nullable LivingEntity entitylivingbaseIn) {
+        super.setTarget(entitylivingbaseIn);
         if (entitylivingbaseIn instanceof PlayerEntity && cityCenter != null) {
             if (behaviourType == SoldierBehaviourType.SOLDIER_GUARD) {
                 alertCity((PlayerEntity) entitylivingbaseIn);
@@ -236,7 +236,7 @@ public class SoldierEntity extends MonsterEntity implements IArmRaisable, IForce
     }
 
     private void alertCity(@Nonnull PlayerEntity player) {
-        ICityAISystem aiSystem = ArienteWorldCompat.getCityAISystem(world);
+        ICityAISystem aiSystem = ArienteWorldCompat.getCityAISystem(level);
         ICityAI cityAI = aiSystem.getCityAI(cityCenter);
         cityAI.playerSpotted(player);
         aiSystem.saveSystem();
@@ -244,12 +244,12 @@ public class SoldierEntity extends MonsterEntity implements IArmRaisable, IForce
 
     @Override
     protected void playStepSound(BlockPos pos, BlockState state) {
-        SoundType soundtype = state.getBlock().getSoundType(state, world, pos, this);
+        SoundType soundtype = state.getBlock().getSoundType(state, level, pos, this);
 
-        if (this.world.getBlockState(pos.up()).getBlock() == Blocks.SNOW) {
+        if (this.level.getBlockState(pos.above()).getBlock() == Blocks.SNOW) {
             soundtype = Blocks.SNOW.getSoundType(null);
             this.playSound(soundtype.getStepSound(), soundtype.getVolume() * 0.15F, soundtype.getPitch());
-        } else if (!state.getBlock().getDefaultState().getMaterial().isLiquid()) {
+        } else if (!state.getBlock().defaultBlockState().getMaterial().isLiquid()) {
             this.playSound(soundtype.getStepSound(), soundtype.getVolume() * 0.15F, soundtype.getPitch());
         } else {
             this.playSound(ModSounds.step, 0.15f, isMaster() ? 0.5f : 1.0f);

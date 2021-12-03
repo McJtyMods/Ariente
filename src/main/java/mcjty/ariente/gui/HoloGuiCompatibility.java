@@ -33,7 +33,7 @@ public class HoloGuiCompatibility {
             Logging.log("Enabled support for Holo Gui");
             ModGuis.init();
             Ariente.guiHandler.registerProvider((world, pos) -> {
-                TileEntity tileEntity = world.getTileEntity(pos);
+                TileEntity tileEntity = world.getBlockEntity(pos);
                 if (tileEntity instanceof IGuiTile) {
                     return (IGuiTile) tileEntity;
                 } else if (tileEntity instanceof MultipartTE) {

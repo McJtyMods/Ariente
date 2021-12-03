@@ -30,14 +30,14 @@ public class Binding {
 
     public static void checkBindings() {
         for (Binding binding : BINDINGS) {
-            if (binding.binding.isPressed()) {
+            if (binding.binding.consumeClick()) {
                 binding.callable.run();
             }
         }
     }
 
     public String getDisplayName() {
-        return binding.getTranslationKey();
+        return binding.saveString();
     }
 
     @Override

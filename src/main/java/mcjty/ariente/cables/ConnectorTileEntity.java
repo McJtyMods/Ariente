@@ -28,8 +28,8 @@ public class ConnectorTileEntity extends GenericCableTileEntity {
             return;
         }
         this.powerOut[side.ordinal()] = powerOut;
-        markDirty();
-        world.neighborChanged(pos.offset(side), this.getBlockState().getBlock(), this.pos); // @todo 1.14 is this right?
+        setChanged();
+        level.neighborChanged(worldPosition.relative(side), this.getBlockState().getBlock(), this.worldPosition); // @todo 1.14 is this right?
     }
 
     @Override
@@ -58,8 +58,8 @@ public class ConnectorTileEntity extends GenericCableTileEntity {
     }
 
     @Override
-    public CompoundNBT write(CompoundNBT tagCompound) {
-        super.write(tagCompound);
+    public CompoundNBT save(CompoundNBT tagCompound) {
+        super.save(tagCompound);
         tagCompound.putIntArray("inputs", inputFromSide);
         for (int i = 0 ; i < 6 ; i++) {
             tagCompound.putByte("p" + i, (byte) powerOut[i]);

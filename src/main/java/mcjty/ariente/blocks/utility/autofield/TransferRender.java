@@ -67,7 +67,7 @@ public class TransferRender {
         BlockPos endBlock = path.getDestPos().getPos().subtract(relative);
         Vector3d sta = new Vector3d(staBlock.getX(), staBlock.getY(), staBlock.getZ()).add(getPos(path.getSourcePos().getSlot()));
         Vector3d end = new Vector3d(endBlock.getX(), endBlock.getY(), endBlock.getZ()).add(getPos(path.getDestPos().getSlot()));
-        double distance = Math.sqrt(sta.squareDistanceTo(end));
+        double distance = Math.sqrt(sta.distanceToSqr(end));
         duration = (long) (distance * 600) + 100;
 
         double jitter = distance / 5.0;
@@ -110,13 +110,13 @@ public class TransferRender {
     }
 
     private void renderStack(MatrixStack matrixStack, ItemStack stack, Vector3d pos, double rotation, double size) {
-        matrixStack.push();
+        matrixStack.pushPose();
         matrixStack.translate(pos.x, pos.y, pos.z);
-        matrixStack.rotate(new Quaternion((float) rotation, 0, 1, 0));
+        matrixStack.mulPose(new Quaternion((float) rotation, 0, 1, 0));
         matrixStack.scale((float) size, (float) size, (float) size);
         RenderHelper.renderStackOnGround(matrixStack, stack, 1.0f);
 
-        matrixStack.pop();
+        matrixStack.popPose();
     }
 
 

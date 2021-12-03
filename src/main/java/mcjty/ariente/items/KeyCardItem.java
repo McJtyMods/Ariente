@@ -29,6 +29,8 @@ import java.util.Set;
 
 import static mcjty.lib.builder.TooltipBuilder.*;
 
+import net.minecraft.item.Item.Properties;
+
 public class KeyCardItem extends Item implements ITooltipSettings {
 
     private final TooltipBuilder tooltipBuilder = new TooltipBuilder()
@@ -38,12 +40,12 @@ public class KeyCardItem extends Item implements ITooltipSettings {
                     repeatingParameter("tag", stack -> getSecurityTags(stack).stream()));
 
     public KeyCardItem() {
-        super(new Properties().maxStackSize(1).group(Ariente.setup.getTab()));
+        super(new Properties().stacksTo(1).tab(Ariente.setup.getTab()));
     }
 
     public static boolean hasPlayerKeycard(PlayerEntity player, String tag) {
-        for (int i = 0 ; i < player.inventory.getSizeInventory() ; i++) {
-            ItemStack stack = player.inventory.getStackInSlot(i);
+        for (int i = 0 ; i < player.inventory.getContainerSize() ; i++) {
+            ItemStack stack = player.inventory.getItem(i);
             if (!stack.isEmpty() && stack.getItem() == Registration.KEY_CARD.get()) {
                 if (hasSecurityTag(stack, tag)) {
                     return true;
@@ -54,27 +56,27 @@ public class KeyCardItem extends Item implements ITooltipSettings {
     }
 
     @Override
-    public void addInformation(ItemStack stack, @Nullable World worldIn, List<ITextComponent> tooltip, ITooltipFlag flag) {
-        super.addInformation(stack, worldIn, tooltip, flag);
+    public void appendHoverText(ItemStack stack, @Nullable World worldIn, List<ITextComponent> tooltip, ITooltipFlag flag) {
+        super.appendHoverText(stack, worldIn, tooltip, flag);
         tooltipBuilder.makeTooltip(getRegistryName(), stack, tooltip, flag);
     }
 
 
     @Override
     public ActionResultType onItemUseFirst(ItemStack stack, ItemUseContext context) {
-        World world = context.getWorld();
-        BlockPos pos = context.getPos();
+        World world = context.getLevel();
+        BlockPos pos = context.getClickedPos();
         Hand hand = context.getHand();
         PlayerEntity player = context.getPlayer();
-        TileEntity te = world.getTileEntity(pos);
+        TileEntity te = world.getBlockEntity(pos);
         if (te instanceof IKeyCardSlot) {
-            ((IKeyCardSlot) te).acceptKeyCard(player.getHeldItem(hand));
+            ((IKeyCardSlot) te).acceptKeyCard(player.getItemInHand(hand));
         }
         return ActionResultType.SUCCESS;
     }
 
     @Override
-    public ActionResultType onItemUse(ItemUseContext context) {
+    public ActionResultType useOn(ItemUseContext context) {
         return ActionResultType.SUCCESS;
     }
 

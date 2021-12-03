@@ -28,8 +28,8 @@ import net.minecraftforge.fml.network.NetworkHooks;
 
 public class LaserEntity extends Entity implements IForcefieldImmunity {
 
-    private static final DataParameter<Float> SPAWN_YAW = EntityDataManager.<Float>createKey(LaserEntity.class, DataSerializers.FLOAT);
-    private static final DataParameter<Float> SPAWN_PITCH = EntityDataManager.<Float>createKey(LaserEntity.class, DataSerializers.FLOAT);
+    private static final DataParameter<Float> SPAWN_YAW = EntityDataManager.<Float>defineId(LaserEntity.class, DataSerializers.FLOAT);
+    private static final DataParameter<Float> SPAWN_PITCH = EntityDataManager.<Float>defineId(LaserEntity.class, DataSerializers.FLOAT);
 
     private LivingEntity shootingEntity;
     private int ticksAlive;
@@ -41,7 +41,7 @@ public class LaserEntity extends Entity implements IForcefieldImmunity {
     private int soundTicker = 0;
 
     @Override
-    public IPacket<?> createSpawnPacket() {
+    public IPacket<?> getAddEntityPacket() {
         return NetworkHooks.getEntitySpawningPacket(this);
     }
 
@@ -53,9 +53,9 @@ public class LaserEntity extends Entity implements IForcefieldImmunity {
     }
 
     @Override
-    protected void registerData() {
-        this.dataManager.register(SPAWN_YAW, 0.0f);
-        this.dataManager.register(SPAWN_PITCH, 0.0f);
+    protected void defineSynchedData() {
+        this.entityData.define(SPAWN_YAW, 0.0f);
+        this.entityData.define(SPAWN_PITCH, 0.0f);
     }
 
     @Override
@@ -65,8 +65,8 @@ public class LaserEntity extends Entity implements IForcefieldImmunity {
     }
 
     @Override
-    public boolean isInRangeToRenderDist(double distance) {
-        double d0 = this.getBoundingBox().getAverageEdgeLength() * 4.0D;
+    public boolean shouldRenderAtSqrDistance(double distance) {
+        double d0 = this.getBoundingBox().getSize() * 4.0D;
 
         if (Double.isNaN(d0)) {
             d0 = 4.0D;
@@ -77,22 +77,22 @@ public class LaserEntity extends Entity implements IForcefieldImmunity {
     }
 
     public void setSpawnYawPitch(float spawnYaw, float spawnPitch) {
-        this.dataManager.set(SPAWN_YAW, spawnYaw);
-        this.dataManager.set(SPAWN_PITCH, spawnPitch);
+        this.entityData.set(SPAWN_YAW, spawnYaw);
+        this.entityData.set(SPAWN_PITCH, spawnPitch);
     }
 
     public float getSpawnYaw() {
-        return this.dataManager.get(SPAWN_YAW);
+        return this.entityData.get(SPAWN_YAW);
     }
 
     public float getSpawnPitch() {
-        return this.dataManager.get(SPAWN_PITCH);
+        return this.entityData.get(SPAWN_PITCH);
     }
 
     public static LaserEntity create(World worldIn, double x, double y, double z, double accelX, double accelY, double accelZ) {
         LaserEntity entity = new LaserEntity(Registration.ENTITY_LASER.get(), worldIn);
-        entity.setLocationAndAngles(x, y, z, entity.rotationYaw, entity.rotationPitch);
-        entity.setPosition(x, y, z);
+        entity.moveTo(x, y, z, entity.yRot, entity.xRot);
+        entity.setPos(x, y, z);
         double d0 = MathHelper.sqrt(accelX * accelX + accelY * accelY + accelZ * accelZ);
         entity.accelerationX = accelX / d0 * 0.1D;
         entity.accelerationY = accelY / d0 * 0.1D;
@@ -103,17 +103,17 @@ public class LaserEntity extends Entity implements IForcefieldImmunity {
     public static LaserEntity create(World worldIn, LivingEntity shooter, double accelX, double accelY, double accelZ) {
         LaserEntity entity = new LaserEntity(Registration.ENTITY_LASER.get(), worldIn);
         entity.shootingEntity = shooter;
-        entity.setLocationAndAngles(shooter.getPosX(), shooter.getPosY(), shooter.getPosZ(), shooter.rotationYaw, shooter.rotationPitch);
-        entity.setPosition(entity.getPosX(), entity.getPosY(), entity.getPosZ());
-        entity.setMotion(0, 0, 0);
-        accelX = accelX + entity.rand.nextGaussian() * 0.4D;
-        accelY = accelY + entity.rand.nextGaussian() * 0.4D;
-        accelZ = accelZ + entity.rand.nextGaussian() * 0.4D;
+        entity.moveTo(shooter.getX(), shooter.getY(), shooter.getZ(), shooter.yRot, shooter.xRot);
+        entity.setPos(entity.getX(), entity.getY(), entity.getZ());
+        entity.setDeltaMovement(0, 0, 0);
+        accelX = accelX + entity.random.nextGaussian() * 0.4D;
+        accelY = accelY + entity.random.nextGaussian() * 0.4D;
+        accelZ = accelZ + entity.random.nextGaussian() * 0.4D;
         double d0 = MathHelper.sqrt(accelX * accelX + accelY * accelY + accelZ * accelZ);
         entity.accelerationX = accelX / d0 * 0.1D;
         entity.accelerationY = accelY / d0 * 0.1D;
         entity.accelerationZ = accelZ / d0 * 0.1D;
-        entity.setSpawnYawPitch(shooter.rotationYaw, shooter.rotationPitch);
+        entity.setSpawnYawPitch(shooter.yRot, shooter.xRot);
         return entity;
     }
 
@@ -123,34 +123,34 @@ public class LaserEntity extends Entity implements IForcefieldImmunity {
 
         soundTicker--;
         if (soundTicker <= 0) {
-            world.playSound(null, getPosX(), getPosY(), getPosZ(), ModSounds.laser, SoundCategory.HOSTILE, 5.0f, 1.0f);
+            level.playSound(null, getX(), getY(), getZ(), ModSounds.laser, SoundCategory.HOSTILE, 5.0f, 1.0f);
             soundTicker = 40;
         }
     }
 
     @Override
     public void tick() {
-        if (this.world.isRemote || (this.shootingEntity == null || this.shootingEntity.isAlive()) && this.world.isBlockLoaded(this.getPosition())) {
+        if (this.level.isClientSide || (this.shootingEntity == null || this.shootingEntity.isAlive()) && this.level.hasChunkAt(this.blockPosition())) {
             super.tick();
 
 
             ++this.ticksInAir;
 //            RayTraceResult raytraceresult = ProjectileHelper.forwardsRaycast(this, true, this.ticksInAir >= 25, this.shootingEntity);
-            RayTraceResult raytraceresult = ProjectileHelper.func_234618_a_(this, (entity) -> { return entity != this.shootingEntity || this.ticksInAir >= 25; });
+            RayTraceResult raytraceresult = ProjectileHelper.getHitResult(this, (entity) -> { return entity != this.shootingEntity || this.ticksInAir >= 25; });
 
             if (raytraceresult != null && !net.minecraftforge.event.ForgeEventFactory.onProjectileImpact(this, raytraceresult)) {
                 this.onImpact(raytraceresult);
             }
 
-            double motionX = this.getMotion().x;
-            double motionY = this.getMotion().y;
-            double motionZ = this.getMotion().z;
+            double motionX = this.getDeltaMovement().x;
+            double motionY = this.getDeltaMovement().y;
+            double motionZ = this.getDeltaMovement().z;
 
             // @todo 1.15 is this right? setRawPosition
 //            this.posX += motionX;
 //            this.posY += motionY;
 //            this.posZ += motionZ;
-            this.setRawPosition(getPosX() + motionX, getPosY() + motionY, getPosZ() + motionZ);
+            this.setPosRaw(getX() + motionX, getY() + motionY, getZ() + motionZ);
 
             ProjectileHelper.rotateTowardsMovement(this, 0.2F);
             float f = this.getMotionFactor();
@@ -158,7 +158,7 @@ public class LaserEntity extends Entity implements IForcefieldImmunity {
             if (this.isInWater()) {
                 for (int i = 0; i < 4; ++i) {
                     float f1 = 0.25F;
-                    this.world.addParticle(ParticleTypes.DRIPPING_WATER, this.getPosX() - motionX * 0.25D, this.getPosY() - motionY * 0.25D, this.getPosZ() - motionZ * 0.25D, motionX, motionY, motionZ);
+                    this.level.addParticle(ParticleTypes.DRIPPING_WATER, this.getX() - motionX * 0.25D, this.getY() - motionY * 0.25D, this.getZ() - motionZ * 0.25D, motionX, motionY, motionZ);
                 }
 
                 f = 0.8F;
@@ -170,9 +170,9 @@ public class LaserEntity extends Entity implements IForcefieldImmunity {
             motionX *= f;
             motionY *= f;
             motionZ *= f;
-            setMotion(motionX, motionY, motionZ);
+            setDeltaMovement(motionX, motionY, motionZ);
 //            this.world.spawnParticle(this.getParticleType(), this.getPosX(), this.getPosY() + 0.5D, this.getPosZ(), 0.0D, 0.0D, 0.0D);
-            this.setPosition(this.getPosX(), this.getPosY(), this.getPosZ());
+            this.setPos(this.getX(), this.getY(), this.getZ());
         } else {
             this.remove();
         }
@@ -187,9 +187,9 @@ public class LaserEntity extends Entity implements IForcefieldImmunity {
     }
 
     protected void onImpact(RayTraceResult result) {
-        if (!this.world.isRemote && result instanceof EntityRayTraceResult) {
+        if (!this.level.isClientSide && result instanceof EntityRayTraceResult) {
             if (((EntityRayTraceResult) result).getEntity() != null) {
-                ((EntityRayTraceResult) result).getEntity().attackEntityFrom(DamageSource.causeIndirectMagicDamage(this, this.shootingEntity), 10.0F);
+                ((EntityRayTraceResult) result).getEntity().hurt(DamageSource.indirectMagic(this, this.shootingEntity), 10.0F);
 
 //                this.applyEnchantments(this.shootingEntity, result.entityHit);
             }
@@ -201,16 +201,16 @@ public class LaserEntity extends Entity implements IForcefieldImmunity {
     }
 
     @Override
-    public void writeAdditional(CompoundNBT compound) {
-        compound.put("direction", this.newDoubleNBTList(new double[]{this.getMotion().x, this.getMotion().y, this.getMotion().z}));
-        compound.put("power", this.newDoubleNBTList(new double[]{this.accelerationX, this.accelerationY, this.accelerationZ}));
+    public void addAdditionalSaveData(CompoundNBT compound) {
+        compound.put("direction", this.newDoubleList(new double[]{this.getDeltaMovement().x, this.getDeltaMovement().y, this.getDeltaMovement().z}));
+        compound.put("power", this.newDoubleList(new double[]{this.accelerationX, this.accelerationY, this.accelerationZ}));
         compound.putInt("life", this.ticksAlive);
         compound.putFloat("spawnYaw", getSpawnYaw());
         compound.putFloat("spawnPitch", getSpawnPitch());
     }
 
     @Override
-    public void readAdditional(CompoundNBT compound) {
+    public void readAdditionalSaveData(CompoundNBT compound) {
         if (compound.contains("power", 9)) {
             ListNBT nbttaglist = compound.getList("power", 6);
 
@@ -225,7 +225,7 @@ public class LaserEntity extends Entity implements IForcefieldImmunity {
 
         if (compound.contains("direction", 9) && compound.getList("direction", 6).size() == 3) {
             ListNBT lst = compound.getList("direction", 6);
-            setMotion(lst.getDouble(0), lst.getDouble(1), lst.getDouble(2));
+            setDeltaMovement(lst.getDouble(0), lst.getDouble(1), lst.getDouble(2));
         } else {
             this.remove();
         }
@@ -236,34 +236,34 @@ public class LaserEntity extends Entity implements IForcefieldImmunity {
     }
 
     @Override
-    public boolean canBeCollidedWith() {
+    public boolean isPickable() {
         return true;
     }
 
     @Override
-    public float getCollisionBorderSize() {
+    public float getPickRadius() {
         return 1.0F;
     }
 
     @Override
-    public boolean attackEntityFrom(DamageSource source, float amount) {
+    public boolean hurt(DamageSource source, float amount) {
         if (this.isInvulnerableTo(source)) {
             return false;
         } else {
-            this.markVelocityChanged();
+            this.markHurt();
 
-            if (source.getTrueSource() != null) {
-                Vector3d vec3d = source.getTrueSource().getLookVec();
+            if (source.getEntity() != null) {
+                Vector3d vec3d = source.getEntity().getLookAngle();
 
                 if (vec3d != null) {
-                    setMotion(vec3d);
+                    setDeltaMovement(vec3d);
                     this.accelerationX = vec3d.x * 0.1D;
                     this.accelerationY = vec3d.y * 0.1D;
                     this.accelerationZ = vec3d.z * 0.1D;
                 }
 
-                if (source.getTrueSource() instanceof LivingEntity) {
-                    this.shootingEntity = (LivingEntity) source.getTrueSource();
+                if (source.getEntity() instanceof LivingEntity) {
+                    this.shootingEntity = (LivingEntity) source.getEntity();
                 }
 
                 return true;

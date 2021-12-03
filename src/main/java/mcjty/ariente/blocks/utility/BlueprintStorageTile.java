@@ -68,7 +68,7 @@ public class BlueprintStorageTile extends GenericTileEntity implements IGuiTile,
 
     @Override
     public ActionResultType onBlockActivated(BlockState state, PlayerEntity player, Hand hand, BlockRayTraceResult result) {
-        Ariente.guiHandler.openHoloGui(world, pos, player);
+        Ariente.guiHandler.openHoloGui(level, worldPosition, player);
         return ActionResultType.SUCCESS;
     }
 
@@ -137,7 +137,7 @@ public class BlueprintStorageTile extends GenericTileEntity implements IGuiTile,
                 if (selected != -1) {
                     ItemStack extracted = items.extractItem(selected, 64, false);
                     if (!extracted.isEmpty()) {
-                        if (!player.inventory.addItemStackToInventory(extracted)) {
+                        if (!player.inventory.add(extracted)) {
                             items.insertItem(selected, extracted, false);
                         } else {
                             ((ISlots) component).setSelection(-1);
@@ -154,10 +154,10 @@ public class BlueprintStorageTile extends GenericTileEntity implements IGuiTile,
             if (component instanceof IPlayerSlots) {
                 int selected = ((IPlayerSlots) component).getSelected();
                 if (selected != -1) {
-                    ItemStack extracted = player.inventory.getStackInSlot(selected);
+                    ItemStack extracted = player.inventory.getItem(selected);
                     if (!extracted.isEmpty()) {
                         ItemStack notInserted = ItemHandlerHelper.insertItem(items, extracted, false);
-                        player.inventory.setInventorySlotContents(selected, notInserted);
+                        player.inventory.setItem(selected, notInserted);
                         if (notInserted.isEmpty()) {
                             ((IPlayerSlots) component).setSelection(-1);
                         }

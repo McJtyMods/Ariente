@@ -33,13 +33,13 @@ public class EntityAISoldierWander extends Goal {
     }
 
     @Override
-    public boolean shouldExecute() {
+    public boolean canUse() {
         if (!this.mustUpdate) {
-            if (this.entity.getIdleTime() >= 100) {
+            if (this.entity.getNoActionTime() >= 100) {
                 return false;
             }
 
-            if (this.entity.getRNG().nextInt(this.executionChance) != 0) {
+            if (this.entity.getRandom().nextInt(this.executionChance) != 0) {
                 return false;
             }
         }
@@ -62,27 +62,27 @@ public class EntityAISoldierWander extends Goal {
         if (entity.getBehaviourType() == SoldierBehaviourType.SOLDIER_GUARD) {
             return null;
         } else if (entity.getCityCenter() == null) {
-            return RandomPositionGenerator.findRandomTarget(this.entity, 10, 7);
+            return RandomPositionGenerator.getPos(this.entity, 10, 7);
         } else {
-            ICityAISystem aiSystem = ArienteWorldCompat.getCityAISystem(entity.world);
+            ICityAISystem aiSystem = ArienteWorldCompat.getCityAISystem(entity.level);
             ICityAI cityAI = aiSystem.getCityAI(entity.getCityCenter());
-            BlockPos pos = cityAI.requestNewSoldierPosition(entity.world, entity.getAttackTarget());
+            BlockPos pos = cityAI.requestNewSoldierPosition(entity.level, entity.getTarget());
             if (pos != null) {
                 return new Vector3d(pos.getX(), pos.getY(), pos.getZ());
             } else {
-                return RandomPositionGenerator.findRandomTarget(this.entity, 10, 7);
+                return RandomPositionGenerator.getPos(this.entity, 10, 7);
             }
         }
     }
 
     @Override
-    public boolean shouldContinueExecuting() {
-        return !this.entity.getNavigator().noPath();
+    public boolean canContinueToUse() {
+        return !this.entity.getNavigation().isDone();
     }
 
     @Override
-    public void startExecuting() {
-        this.entity.getNavigator().tryMoveToXYZ(this.x, this.y, this.z, this.speed);
+    public void start() {
+        this.entity.getNavigation().moveTo(this.x, this.y, this.z, this.speed);
     }
 
     public void makeUpdate() {

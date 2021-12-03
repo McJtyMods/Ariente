@@ -22,12 +22,12 @@ public class FluxLevitatorRender extends EntityRenderer<FluxLevitatorEntity> {
 
     public FluxLevitatorRender(EntityRendererManager renderManagerIn) {
         super(renderManagerIn);
-        this.shadowSize = 0.5F;
+        this.shadowRadius = 0.5F;
     }
 
     @Override
     public void render(FluxLevitatorEntity entity, float entityYaw, float partialTicks, MatrixStack matrixStack, IRenderTypeBuffer buffer, int packedLightIn) {
-        GlStateManager.pushMatrix();
+        GlStateManager._pushMatrix();
 //        long i = entity.getEntityId() * 493286711L;
 //        i = i * i * 4392167121L + i * 98761L;
 //        float fx = (((i >> 16 & 7L) + 0.5F) / 8.0F - 0.5F) * 0.004F;
@@ -35,11 +35,11 @@ public class FluxLevitatorRender extends EntityRenderer<FluxLevitatorEntity> {
 //        float fz = (((i >> 24 & 7L) + 0.5F) / 8.0F - 0.5F) * 0.004F;
 //        GlStateManager.translate(fx, fy, fz);
 
-        double interX = entity.lastTickPosX + (entity.getPosX() - entity.lastTickPosX) * partialTicks;
-        double interY = entity.lastTickPosY + (entity.getPosY() - entity.lastTickPosY) * partialTicks;
-        double interZ = entity.lastTickPosZ + (entity.getPosZ() - entity.lastTickPosZ) * partialTicks;
+        double interX = entity.xOld + (entity.getX() - entity.xOld) * partialTicks;
+        double interY = entity.yOld + (entity.getY() - entity.yOld) * partialTicks;
+        double interZ = entity.zOld + (entity.getZ() - entity.zOld) * partialTicks;
         Vector3d vec3d = entity.getPos(interX, interY, interZ);
-        float pitch = entity.prevRotationPitch + (entity.rotationPitch - entity.prevRotationPitch) * partialTicks;
+        float pitch = entity.xRotO + (entity.xRot - entity.xRotO) * partialTicks;
 
 
         if (vec3d != null) {
@@ -69,8 +69,8 @@ public class FluxLevitatorRender extends EntityRenderer<FluxLevitatorEntity> {
 
         // @todo 1.15
 //        GlStateManager.translatef((float) x, (float) y + 0.375F, (float) z);
-        GlStateManager.rotatef(180.0F - entityYaw, 0.0F, 1.0F, 0.0F);
-        GlStateManager.rotatef(-pitch, 0.0F, 0.0F, 1.0F);
+        GlStateManager._rotatef(180.0F - entityYaw, 0.0F, 1.0F, 0.0F);
+        GlStateManager._rotatef(-pitch, 0.0F, 0.0F, 1.0F);
         float f5 = entity.getRollingAmplitude() - partialTicks;
         float f6 = entity.getDamage() - partialTicks;
 
@@ -79,7 +79,7 @@ public class FluxLevitatorRender extends EntityRenderer<FluxLevitatorEntity> {
         }
 
         if (f5 > 0.0F) {
-            GlStateManager.rotatef(MathHelper.sin(f5) * f5 * f6 / 10.0F * entity.getRollingDirection(), 1.0F, 0.0F, 0.0F);
+            GlStateManager._rotatef(MathHelper.sin(f5) * f5 * f6 / 10.0F * entity.getRollingDirection(), 1.0F, 0.0F, 0.0F);
         }
 
         // @todo 1.15
@@ -95,18 +95,18 @@ public class FluxLevitatorRender extends EntityRenderer<FluxLevitatorEntity> {
 
         IHoloGuiEntity holoGui = entity.getHoloGuiFront();
         if (holoGui != null) {
-            GlStateManager.scalef(-1.0F, -1.0F, 1.0F);
+            GlStateManager._scalef(-1.0F, -1.0F, 1.0F);
             Ariente.guiHandler.render(holoGui, 1, 0, 0, -90);
         }
         holoGui = entity.getHoloGuiBack();
         if (holoGui != null) {
-            GlStateManager.scalef(-1.0F, -1.0F, 1.0F);
-            GlStateManager.rotatef(180, 1, 0, 0);
+            GlStateManager._scalef(-1.0F, -1.0F, 1.0F);
+            GlStateManager._rotatef(180, 1, 0, 0);
             Ariente.guiHandler.render(holoGui, 1, 0, 0, -90);
         }
 
 
-        GlStateManager.popMatrix();
+        GlStateManager._popMatrix();
 
         // @todo 1.15
 //        if (this.renderOutlines) {
@@ -118,7 +118,7 @@ public class FluxLevitatorRender extends EntityRenderer<FluxLevitatorEntity> {
     }
 
     @Override
-    public ResourceLocation getEntityTexture(FluxLevitatorEntity entity) {
+    public ResourceLocation getTextureLocation(FluxLevitatorEntity entity) {
         return TEXTURE;
     }
 

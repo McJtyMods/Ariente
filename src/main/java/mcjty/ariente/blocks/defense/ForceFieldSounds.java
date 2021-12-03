@@ -11,8 +11,8 @@ import net.minecraft.util.math.BlockPos;
 public class ForceFieldSounds {
 
     public static void doSounds(ForceFieldTile forcefield) {
-        BlockPos pos = forcefield.getPos();
-        ClientWorld world = Minecraft.getInstance().world;
+        BlockPos pos = forcefield.getBlockPos();
+        ClientWorld world = Minecraft.getInstance().level;
         PlayerEntity player = Minecraft.getInstance().player;
         double minDistance = 100000000000.0;
         PanelInfo minInfo = null;
@@ -20,7 +20,7 @@ public class ForceFieldSounds {
             for (PanelInfo info : forcefield.getPanelInfo()) {
                 if (info != null) {
                     if (info.getLife() > 0) {
-                        double sqdist = info.getSquaredDistance(player.getPositionVec(), forcefield.getScaleDouble());
+                        double sqdist = info.getSquaredDistance(player.position(), forcefield.getScaleDouble());
                         if (sqdist < minDistance) {
                             minDistance = sqdist;
                             minInfo = info;

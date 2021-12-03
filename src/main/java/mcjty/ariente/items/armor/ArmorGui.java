@@ -187,7 +187,7 @@ public class ArmorGui {
     }
 
     private static int calculatePowerUsage(PlayerEntity player, EquipmentSlotType slot) {
-        ItemStack stack = player.getItemStackFromSlot(slot);
+        ItemStack stack = player.getItemBySlot(slot);
         if (isValidPowerArmorPiece(stack)) {
             return 0;
         }
@@ -199,7 +199,7 @@ public class ArmorGui {
     }
 
     private static int calculatePowerColor(PlayerEntity player, EquipmentSlotType slot) {
-        ItemStack stack = player.getItemStackFromSlot(slot);
+        ItemStack stack = player.getItemBySlot(slot);
         if (isValidPowerArmorPiece(stack)) {
             return 0;
         }
@@ -208,7 +208,7 @@ public class ArmorGui {
     }
 
     private static int calculateMaxPowerUsage(PlayerEntity player, EquipmentSlotType slot) {
-        ItemStack stack = player.getItemStackFromSlot(slot);
+        ItemStack stack = player.getItemBySlot(slot);
         if (isValidPowerArmorPiece(stack)) {
             return 0;
         }
@@ -216,7 +216,7 @@ public class ArmorGui {
     }
 
     private static int countArmor(PlayerEntity player, EquipmentSlotType slot, String itemTag) {
-        ItemStack stack = player.getItemStackFromSlot(slot);
+        ItemStack stack = player.getItemBySlot(slot);
         if (isValidPowerArmorPiece(stack)) {
             return 0;
         }
@@ -228,14 +228,14 @@ public class ArmorGui {
     }
 
     private static void toArmor(PlayerEntity player, EquipmentSlotType slot, String itemTag, Item item, int amount) {
-        ItemStack stack = player.getItemStackFromSlot(slot);
+        ItemStack stack = player.getItemBySlot(slot);
         if (isValidPowerArmorPiece(stack)) {
             return;
         }
         CompoundNBT compound = stack.getOrCreateTag();
         int number = compound.getInt(itemTag);
-        for (int i = 0; i < player.inventory.getSizeInventory(); i++) {
-            ItemStack itemStack = player.inventory.getStackInSlot(i);
+        for (int i = 0; i < player.inventory.getContainerSize(); i++) {
+            ItemStack itemStack = player.inventory.getItem(i);
             if (itemStack.getItem() == item) {
                 int n = Math.min(amount, itemStack.getCount());
                 itemStack.shrink(n);
@@ -273,7 +273,7 @@ public class ArmorGui {
         if (!hasModule(player, slot, moduleItem)) {
             return;
         }
-        ItemStack stack = player.getItemStackFromSlot(slot);
+        ItemStack stack = player.getItemBySlot(slot);
         CompoundNBT compound = stack.getTag();
         int index = compound.getInt(moduleItem.getType().getHotkeyKey());
         index++;
@@ -287,7 +287,7 @@ public class ArmorGui {
         if (!hasModule(player, slot, moduleItem)) {
             return 0;
         }
-        ItemStack stack = player.getItemStackFromSlot(slot);
+        ItemStack stack = player.getItemBySlot(slot);
         CompoundNBT compound = stack.getTag();
         return compound.getInt(moduleItem.getType().getHotkeyKey());
     }
@@ -296,7 +296,7 @@ public class ArmorGui {
         if (!hasModule(player, slot, moduleItem)) {
             return false;
         }
-        ItemStack stack = player.getItemStackFromSlot(slot);
+        ItemStack stack = player.getItemBySlot(slot);
         CompoundNBT compound = stack.getTag();
         return compound.getBoolean(moduleItem.getType().getModuleKey());
     }
@@ -313,7 +313,7 @@ public class ArmorGui {
     }
 
     private static Boolean hasModule(PlayerEntity player, EquipmentSlotType slot, ArmorModuleItem moduleItem) {
-        ItemStack stack = player.getItemStackFromSlot(slot);
+        ItemStack stack = player.getItemBySlot(slot);
         if (stack.isEmpty()) {
             return false;
         }
@@ -328,15 +328,15 @@ public class ArmorGui {
         if (!hasModule(player, slot, moduleItem)) {
             return;
         }
-        ItemStack stack = player.getItemStackFromSlot(slot);
+        ItemStack stack = player.getItemBySlot(slot);
         CompoundNBT compound = stack.getTag();
         String key = moduleItem.getType().getModuleKey();
         compound.putBoolean(key, !compound.getBoolean(key));
     }
 
     private static int findModule(PlayerEntity player, EquipmentSlotType slot, ArmorModuleItem moduleItem) {
-        for (int i = 0; i < player.inventory.getSizeInventory(); i++) {
-            ItemStack moduleStack = player.inventory.getStackInSlot(i);
+        for (int i = 0; i < player.inventory.getContainerSize(); i++) {
+            ItemStack moduleStack = player.inventory.getItem(i);
             if (moduleStack.getItem() == moduleItem) {
                 return i;
             }
@@ -347,7 +347,7 @@ public class ArmorGui {
     private static void toggleModuleInstall(PlayerEntity player, EquipmentSlotType slot, ArmorModuleItem moduleItem) {
         if (!hasModule(player, slot, moduleItem)) {
             // Module is not available. Install it if possible
-            ItemStack stack = player.getItemStackFromSlot(slot);
+            ItemStack stack = player.getItemBySlot(slot);
             if (stack.isEmpty()) {
                 return;
             }
@@ -356,7 +356,7 @@ public class ArmorGui {
             if (i == -1) {
                 return;
             }
-            ItemStack moduleStack = player.inventory.getStackInSlot(i);
+            ItemStack moduleStack = player.inventory.getItem(i);
             ItemStack splitted = moduleStack.split(1);
             CompoundNBT compound = stack.getOrCreateTag();
             compound.putBoolean(moduleItem.getType().getModuleKey(), false);
@@ -364,10 +364,10 @@ public class ArmorGui {
         } else {
             // Remove installed module
             ItemStack module = new ItemStack(moduleItem);
-            if (!player.inventory.addItemStackToInventory(module)) {
-                player.entityDropItem(module, 1.05f);
+            if (!player.inventory.add(module)) {
+                player.spawnAtLocation(module, 1.05f);
             }
-            ItemStack stack = player.getItemStackFromSlot(slot);
+            ItemStack stack = player.getItemBySlot(slot);
             CompoundNBT compound = stack.getTag();
             String key = moduleItem.getType().getModuleKey();
             compound.remove(key);
@@ -375,7 +375,7 @@ public class ArmorGui {
     }
 
     private static double createMenuEntry(IGuiComponentRegistry registry, PlayerEntity player, IPanel panel, double x, double y, EquipmentSlotType slot, Item armorItem) {
-        ItemStack armorStack = player.getItemStackFromSlot(slot);
+        ItemStack armorStack = player.getItemBySlot(slot);
         if (!armorStack.isEmpty() && armorStack.getItem() == armorItem) {
             panel
                     .add(registry.stackIcon(x, y, 1, 1).itemStack(new ItemStack(armorItem)))
