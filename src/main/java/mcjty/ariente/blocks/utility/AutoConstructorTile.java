@@ -20,7 +20,7 @@ import mcjty.lib.blocks.RotationType;
 import mcjty.lib.builder.BlockBuilder;
 import mcjty.lib.container.AutomationFilterItemHander;
 import mcjty.lib.container.ContainerFactory;
-import mcjty.lib.container.NoDirectionItemHander;
+import mcjty.lib.container.GenericItemHandler;
 import mcjty.lib.tileentity.GenericTileEntity;
 import mcjty.lib.varia.OrientationTools;
 import mcjty.lib.varia.RedstoneMode;
@@ -70,8 +70,8 @@ public class AutoConstructorTile extends GenericTileEntity implements IGuiTile, 
     public static final Lazy<ContainerFactory> CONTAINER_FACTORY = Lazy.of(() -> new ContainerFactory(INGREDIENTS + OUTPUT)); // @todo 1.14 new ResourceLocation(Ariente.MODID, "gui/constructor.gui"));
 //    private InventoryHelper inventoryHelper = new InventoryHelper(this, CONTAINER_FACTORY, INGREDIENTS + OUTPUT);
 
-    private final NoDirectionItemHander items = createItemHandler();
-    private final LazyOptional<NoDirectionItemHander> itemHandler = LazyOptional.of(() -> items);
+    private final GenericItemHandler items = createItemHandler();
+    private final LazyOptional<GenericItemHandler> itemHandler = LazyOptional.of(() -> items);
     private final LazyOptional<AutomationFilterItemHander> automationItemHandler = LazyOptional.of(() -> new AutomationFilterItemHander(items));
 
     public static String TAG_INGREDIENTS = "ingredients";
@@ -259,7 +259,7 @@ public class AutoConstructorTile extends GenericTileEntity implements IGuiTile, 
                     }
                     BlueprintStorageTile blueprints = storageTiles.get((ci / BLUEPRINTS) % storageTiles.size());
                     int index = ci % BLUEPRINTS;
-                    NoDirectionItemHander helper = blueprints.getItems();
+                    GenericItemHandler helper = blueprints.getItems();
                     ItemStack blueprintStack = helper.getStackInSlot(SLOT_BLUEPRINT + index);
                     if (blueprintStack.isEmpty()) {
                         // Nothing to do. Decrease busyCounter so we skip to the next blueprint faster
@@ -437,7 +437,7 @@ public class AutoConstructorTile extends GenericTileEntity implements IGuiTile, 
             TileEntity te = level.getBlockEntity(worldPosition.relative(value));
             if (te instanceof BlueprintStorageTile) {
                 BlueprintStorageTile blueprints = (BlueprintStorageTile) te;
-                NoDirectionItemHander helper = blueprints.getItems();
+                GenericItemHandler helper = blueprints.getItems();
                 for (int i = SLOT_BLUEPRINT; i < SLOT_BLUEPRINT + BLUEPRINTS; i++) {
                     ItemStack blueprintStack = helper.getStackInSlot(i);
                     if (!blueprintStack.isEmpty()) {
@@ -511,8 +511,8 @@ public class AutoConstructorTile extends GenericTileEntity implements IGuiTile, 
         markDirtyClient();
     }
 
-    private NoDirectionItemHander createItemHandler() {
-        return new NoDirectionItemHander(AutoConstructorTile.this, CONTAINER_FACTORY.get()) {
+    private GenericItemHandler createItemHandler() {
+        return new GenericItemHandler(AutoConstructorTile.this, CONTAINER_FACTORY.get()) {
             @Override
             public boolean isItemValid(int slot, @Nonnull ItemStack stack) {
                 return stack.getItem() != Registration.BLUEPRINT.get();

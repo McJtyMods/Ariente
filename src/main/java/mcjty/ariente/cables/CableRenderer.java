@@ -17,6 +17,7 @@ import net.minecraft.client.renderer.tileentity.TileEntityRendererDispatcher;
 import net.minecraft.tileentity.TileEntityType;
 import net.minecraft.util.ResourceLocation;
 import net.minecraft.util.math.vector.Vector3d;
+import net.minecraft.util.math.vector.Vector3f;
 import net.minecraftforge.fml.client.registry.ClientRegistry;
 
 import java.util.ArrayList;
@@ -61,12 +62,12 @@ public class CableRenderer extends TileEntityRenderer<GenericCableTileEntity> {
 
 
     private static class RenderInfo {
-        public final RenderHelper.Vector player;
+        public final Vector3f player;
         public final Matrix4f matrix;
         public final IVertexBuilder builder;
         public final TextureAtlasSprite sprite;
 
-        public RenderInfo(RenderHelper.Vector player, Matrix4f matrix, IVertexBuilder builder, TextureAtlasSprite sprite) {
+        public RenderInfo(Vector3f player, Matrix4f matrix, IVertexBuilder builder, TextureAtlasSprite sprite) {
             this.player = player;
             this.matrix = matrix;
             this.builder = builder;
@@ -97,8 +98,8 @@ public class CableRenderer extends TileEntityRenderer<GenericCableTileEntity> {
 
     private static void beam(RenderInfo info, float sx, float sy, float sz, float dx, float dy, float dz) {
         RenderHelper.drawBeam(info.matrix, info.builder, info.sprite,
-                new RenderHelper.Vector(sx, sy, sz),
-                new RenderHelper.Vector(dx, dy, dz),
+                new Vector3f(sx, sy, sz),
+                new Vector3f(dx, dy, dz),
                 info.player, .1f);
     }
 
@@ -133,7 +134,7 @@ public class CableRenderer extends TileEntityRenderer<GenericCableTileEntity> {
                 int tey = te.getBlockPos().getY();
                 int tez = te.getBlockPos().getZ();
                 Vector3d projectedView = Minecraft.getInstance().gameRenderer.getMainCamera().getPosition().add(-tex, -tey, -tez);
-                RenderHelper.Vector player = new RenderHelper.Vector((float)projectedView.x, (float)projectedView.y, (float)projectedView.z);
+                Vector3f player = new Vector3f((float)projectedView.x, (float)projectedView.y, (float)projectedView.z);
 
                 Matrix4f matrix = matrixStack.last().pose();
                 TextureAtlasSprite sprite = ArienteSpriteUploader.INSTANCE.getSprite(txt);

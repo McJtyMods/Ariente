@@ -13,7 +13,7 @@ import mcjty.lib.blocks.RotationType;
 import mcjty.lib.builder.BlockBuilder;
 import mcjty.lib.container.AutomationFilterItemHander;
 import mcjty.lib.container.ContainerFactory;
-import mcjty.lib.container.NoDirectionItemHander;
+import mcjty.lib.container.GenericItemHandler;
 import mcjty.lib.tileentity.GenericTileEntity;
 import mcjty.lib.varia.RedstoneMode;
 import net.minecraft.block.Block;
@@ -52,8 +52,8 @@ public class PosiriteGeneratorTile extends GenericTileEntity implements ITickabl
 //    private InventoryHelper inventoryHelper = new InventoryHelper(this, CONTAINER_FACTORY, 1);
     private final PowerSenderSupport powerBlobSupport = new PowerSenderSupport();
 
-    private final NoDirectionItemHander items = createItemHandler();
-    private final LazyOptional<NoDirectionItemHander> itemHandler = LazyOptional.of(() -> items);
+    private final GenericItemHandler items = createItemHandler();
+    private final LazyOptional<GenericItemHandler> itemHandler = LazyOptional.of(() -> items);
     private final LazyOptional<AutomationFilterItemHander> automationItemHandler = LazyOptional.of(() -> new AutomationFilterItemHander(items));
 
     // @todo, temporary: base on tanks later!
@@ -365,8 +365,8 @@ public class PosiriteGeneratorTile extends GenericTileEntity implements ITickabl
         }
     }
 
-    private NoDirectionItemHander createItemHandler() {
-        return new NoDirectionItemHander(PosiriteGeneratorTile.this, CONTAINER_FACTORY.get()) {
+    private GenericItemHandler createItemHandler() {
+        return new GenericItemHandler(PosiriteGeneratorTile.this, CONTAINER_FACTORY.get()) {
             @Override
             public boolean isItemValid(int slot, @Nonnull ItemStack stack) {
                 if (slot == SLOT_POSIRITE_INPUT) {

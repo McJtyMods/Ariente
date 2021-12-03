@@ -14,6 +14,7 @@ import net.minecraft.client.renderer.tileentity.TileEntityRenderer;
 import net.minecraft.client.renderer.tileentity.TileEntityRendererDispatcher;
 import net.minecraft.util.ResourceLocation;
 import net.minecraft.util.math.vector.Vector3d;
+import net.minecraft.util.math.vector.Vector3f;
 import net.minecraftforge.fml.client.registry.ClientRegistry;
 
 import java.util.Random;
@@ -39,7 +40,7 @@ public class ElevatorRenderer extends TileEntityRenderer<ElevatorTile> {
         int tey = te.getBlockPos().getY();
         int tez = te.getBlockPos().getZ();
         Vector3d projectedView = Minecraft.getInstance().gameRenderer.getMainCamera().getPosition().add(-tex, -tey, -tez);
-        RenderHelper.Vector player = new RenderHelper.Vector((float)projectedView.x, (float)projectedView.y, (float)projectedView.z);
+        Vector3f player = new Vector3f((float)projectedView.x, (float)projectedView.y, (float)projectedView.z);
 
         long tt = System.currentTimeMillis() / 100;
 
@@ -57,7 +58,7 @@ public class ElevatorRenderer extends TileEntityRenderer<ElevatorTile> {
             float xx = randomX[ii];
             float zz = randomZ[ii];
             float yy = - 1.0f + i1 + (randomY[ii] * height) / 8.0f;
-            RenderHelper.drawBeam(matrixStack.last().pose(), builder, sprite, new RenderHelper.Vector(xx, yy, zz), new RenderHelper.Vector(xx, yy + 4, zz), player, 0.2f);
+            RenderHelper.drawBeam(matrixStack.last().pose(), builder, sprite, new Vector3f(xx, yy, zz), new Vector3f(xx, yy + 4, zz), player, 0.2f);
         }
     }
 

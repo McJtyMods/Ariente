@@ -13,6 +13,7 @@ import net.minecraft.client.renderer.tileentity.TileEntityRendererDispatcher;
 import net.minecraft.client.renderer.vertex.DefaultVertexFormats;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.util.ResourceLocation;
+import net.minecraft.util.math.vector.Vector3f;
 import org.lwjgl.opengl.GL11;
 
 import java.util.Random;
@@ -58,7 +59,7 @@ public class WarperRenderer extends TileEntityRenderer<WarperTile> {
 
         GlStateManager._translated(-doubleX, -doubleY, -doubleZ);
 
-        RenderHelper.Vector player = new RenderHelper.Vector((float) doubleX, (float) doubleY + p.getEyeHeight(), (float) doubleZ);
+        Vector3f player = new Vector3f((float) doubleX, (float) doubleY + p.getEyeHeight(), (float) doubleZ);
 
         long tt = System.currentTimeMillis() / 100;
 
@@ -79,7 +80,7 @@ public class WarperRenderer extends TileEntityRenderer<WarperTile> {
             float xx = te.getBlockPos().getX() + randomX[ii];
             float zz = te.getBlockPos().getZ() + randomZ[ii];
             float yy = te.getBlockPos().getY() - 1.0f + i1 + (randomY[ii] * height) / 8.0f;
-            RenderHelper.drawBeam(new RenderHelper.Vector(xx, yy, zz), new RenderHelper.Vector(xx, yy + 4, zz), player, 0.2f);
+            RenderHelper.drawBeam(new Vector3f(xx, yy, zz), new Vector3f(xx, yy + 4, zz), player, 0.2f);
         }
 
 //        net.minecraft.util.math.vector.Vector3d cameraPos = net.minecraft.client.renderer.ActiveRenderInfo.getCameraPosition();

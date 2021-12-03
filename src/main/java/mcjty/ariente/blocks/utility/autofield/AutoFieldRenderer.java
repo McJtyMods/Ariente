@@ -5,7 +5,6 @@ import com.mojang.blaze3d.platform.GlStateManager;
 import com.mojang.blaze3d.systems.RenderSystem;
 import mcjty.ariente.Ariente;
 import mcjty.lib.client.RenderHelper;
-import mcjty.lib.client.RenderHelper.Vector;
 import mcjty.lib.client.RenderSettings;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.renderer.BufferBuilder;
@@ -17,11 +16,10 @@ import net.minecraft.client.renderer.vertex.DefaultVertexFormats;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.util.ResourceLocation;
 import net.minecraft.util.math.AxisAlignedBB;
+import net.minecraft.util.math.vector.Vector3f;
 import org.lwjgl.opengl.GL11;
 
 import java.util.Random;
-
-import static mcjty.lib.client.RenderHelper.Vector.Vector;
 
 public class AutoFieldRenderer extends TileEntityRenderer<AutoFieldTile> {
 
@@ -78,7 +76,7 @@ public class AutoFieldRenderer extends TileEntityRenderer<AutoFieldTile> {
 
         matrixStack.translate(-doubleX, -doubleY, -doubleZ);
 
-        Vector player = new Vector((float) doubleX, (float) doubleY + p.getEyeHeight(), (float) doubleZ);
+        Vector3f player = new Vector3f((float) doubleX, (float) doubleY + p.getEyeHeight(), (float) doubleZ);
 
         long tt = System.currentTimeMillis() / 100;
 
@@ -102,20 +100,20 @@ public class AutoFieldRenderer extends TileEntityRenderer<AutoFieldTile> {
                 .brightness(100)
                 .build();
 
-        RenderHelper.drawBeam(Vector(mx, my, mz), Vector(px, my, mz), player, settings);
-        RenderHelper.drawBeam(Vector(mx, my, mz), Vector(mx, py, mz), player, settings);
-        RenderHelper.drawBeam(Vector(mx, my, mz), Vector(mx, my, pz), player, settings);
+        RenderHelper.drawBeam(new Vector3f(mx, my, mz), new Vector3f(px, my, mz), player, settings);
+        RenderHelper.drawBeam(new Vector3f(mx, my, mz), new Vector3f(mx, py, mz), player, settings);
+        RenderHelper.drawBeam(new Vector3f(mx, my, mz), new Vector3f(mx, my, pz), player, settings);
 
-        RenderHelper.drawBeam(Vector(px, py, pz), Vector(mx, py, pz), player, settings);
-        RenderHelper.drawBeam(Vector(px, py, pz), Vector(px, my, pz), player, settings);
-        RenderHelper.drawBeam(Vector(px, py, pz), Vector(px, py, mz), player, settings);
+        RenderHelper.drawBeam(new Vector3f(px, py, pz), new Vector3f(mx, py, pz), player, settings);
+        RenderHelper.drawBeam(new Vector3f(px, py, pz), new Vector3f(px, my, pz), player, settings);
+        RenderHelper.drawBeam(new Vector3f(px, py, pz), new Vector3f(px, py, mz), player, settings);
 
-        RenderHelper.drawBeam(Vector(px, my, mz), Vector(px, py, mz), player, settings);
-        RenderHelper.drawBeam(Vector(px, my, mz), Vector(px, my, pz), player, settings);
-        RenderHelper.drawBeam(Vector(mx, py, mz), Vector(px, py, mz), player, settings);
-        RenderHelper.drawBeam(Vector(mx, py, mz), Vector(mx, py, pz), player, settings);
-        RenderHelper.drawBeam(Vector(mx, my, pz), Vector(px, my, pz), player, settings);
-        RenderHelper.drawBeam(Vector(mx, my, pz), Vector(mx, py, pz), player, settings);
+        RenderHelper.drawBeam(new Vector3f(px, my, mz), new Vector3f(px, py, mz), player, settings);
+        RenderHelper.drawBeam(new Vector3f(px, my, mz), new Vector3f(px, my, pz), player, settings);
+        RenderHelper.drawBeam(new Vector3f(mx, py, mz), new Vector3f(px, py, mz), player, settings);
+        RenderHelper.drawBeam(new Vector3f(mx, py, mz), new Vector3f(mx, py, pz), player, settings);
+        RenderHelper.drawBeam(new Vector3f(mx, my, pz), new Vector3f(px, my, pz), player, settings);
+        RenderHelper.drawBeam(new Vector3f(mx, my, pz), new Vector3f(mx, py, pz), player, settings);
 
 //        net.minecraft.util.math.vector.Vector3d cameraPos = net.minecraft.client.renderer.ActiveRenderInfo.getCameraPosition();
 //        tessellator.getBuffer().sortVertexData((float) (player.x + doubleX), (float) (player.y + doubleY), (float) (player.z + doubleZ));

@@ -14,6 +14,7 @@ import net.minecraft.client.renderer.texture.AtlasTexture;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.util.ResourceLocation;
 import net.minecraft.util.math.vector.Vector3d;
+import net.minecraft.util.math.vector.Vector3f;
 import net.minecraftforge.fml.client.registry.IRenderFactory;
 import org.lwjgl.opengl.GL11;
 
@@ -46,7 +47,7 @@ public class LaserRender extends EntityRenderer<LaserEntity> {
         double doubleY = p.yOld + (p.getY() - p.yOld) * partialTicks;
         double doubleZ = p.zOld + (p.getZ() - p.zOld) * partialTicks;
 
-//        RenderHelper.Vector start = new RenderHelper.Vector((float) x, (float) y, (float) z);
+//        Vector3f start = new Vector3f((float) x, (float) y, (float) z);
 
         GlStateManager._pushMatrix();
         // @todo 1.15
@@ -75,40 +76,40 @@ public class LaserRender extends EntityRenderer<LaserEntity> {
         float size = .05f;
         int length = 2;
         drawQuad(tessellator,
-                new RenderHelper.Vector(-size, -size, 0),
-                new RenderHelper.Vector(-size, -size, length),
-                new RenderHelper.Vector(-size, size, length),
-                new RenderHelper.Vector(-size, size, 0)
+                new Vector3f(-size, -size, 0),
+                new Vector3f(-size, -size, length),
+                new Vector3f(-size, size, length),
+                new Vector3f(-size, size, 0)
         );
         drawQuad(tessellator,
-                new RenderHelper.Vector(size, size, 0),
-                new RenderHelper.Vector(size, size, length),
-                new RenderHelper.Vector(size, -size, length),
-                new RenderHelper.Vector(size, -size, 0)
+                new Vector3f(size, size, 0),
+                new Vector3f(size, size, length),
+                new Vector3f(size, -size, length),
+                new Vector3f(size, -size, 0)
         );
         drawQuad(tessellator,
-                new RenderHelper.Vector(-size, size, 0),
-                new RenderHelper.Vector(-size, size, length),
-                new RenderHelper.Vector(size, size, length),
-                new RenderHelper.Vector(size, size, 0)
+                new Vector3f(-size, size, 0),
+                new Vector3f(-size, size, length),
+                new Vector3f(size, size, length),
+                new Vector3f(size, size, 0)
         );
         drawQuad(tessellator,
-                new RenderHelper.Vector(size, -size, 0),
-                new RenderHelper.Vector(size, -size, length),
-                new RenderHelper.Vector(-size, -size, length),
-                new RenderHelper.Vector(-size, -size, 0)
+                new Vector3f(size, -size, 0),
+                new Vector3f(size, -size, length),
+                new Vector3f(-size, -size, length),
+                new Vector3f(-size, -size, 0)
         );
         drawQuad(tessellator,
-                new RenderHelper.Vector(size, -size, 0),
-                new RenderHelper.Vector(-size, -size, 0),
-                new RenderHelper.Vector(-size, size, 0),
-                new RenderHelper.Vector(size, size, 0)
+                new Vector3f(size, -size, 0),
+                new Vector3f(-size, -size, 0),
+                new Vector3f(-size, size, 0),
+                new Vector3f(size, size, 0)
         );
         drawQuad(tessellator,
-                new RenderHelper.Vector(-size, -size, length),
-                new RenderHelper.Vector(size, -size, length),
-                new RenderHelper.Vector(size, size, length),
-                new RenderHelper.Vector(-size, size, length)
+                new Vector3f(-size, -size, length),
+                new Vector3f(size, -size, length),
+                new Vector3f(size, size, length),
+                new Vector3f(-size, size, length)
         );
 
 //        RenderHelper.drawBeam(
@@ -125,16 +126,16 @@ public class LaserRender extends EntityRenderer<LaserEntity> {
         GlStateManager._depthMask(true);
     }
 
-    private static void drawQuad(Tessellator tessellator, RenderHelper.Vector p1, RenderHelper.Vector p2, RenderHelper.Vector p3, RenderHelper.Vector p4) {
+    private static void drawQuad(Tessellator tessellator, Vector3f p1, Vector3f p2, Vector3f p3, Vector3f p4) {
         int brightness = 240;
         int b1 = brightness >> 16 & 65535;
         int b2 = brightness & 65535;
 
         BufferBuilder buffer = tessellator.getBuilder();
-        buffer.vertex(p1.getX(), p1.getY(), p1.getZ()).uv(0.3f, 0.3f).uv2(b1, b2).color(255, 255, 255, 128).endVertex();
-        buffer.vertex(p2.getX(), p2.getY(), p2.getZ()).uv(0.7f, 0.3f).uv2(b1, b2).color(255, 255, 255, 128).endVertex();
-        buffer.vertex(p3.getX(), p3.getY(), p3.getZ()).uv(0.7f, 0.7f).uv2(b1, b2).color(255, 255, 255, 128).endVertex();
-        buffer.vertex(p4.getX(), p4.getY(), p4.getZ()).uv(0.3f, 0.7f).uv2(b1, b2).color(255, 255, 255, 128).endVertex();
+        buffer.vertex(p1.x(), p1.y(), p1.z()).uv(0.3f, 0.3f).uv2(b1, b2).color(255, 255, 255, 128).endVertex();
+        buffer.vertex(p2.x(), p2.y(), p2.z()).uv(0.7f, 0.3f).uv2(b1, b2).color(255, 255, 255, 128).endVertex();
+        buffer.vertex(p3.x(), p3.y(), p3.z()).uv(0.7f, 0.7f).uv2(b1, b2).color(255, 255, 255, 128).endVertex();
+        buffer.vertex(p4.x(), p4.y(), p4.z()).uv(0.3f, 0.7f).uv2(b1, b2).color(255, 255, 255, 128).endVertex();
     }
 
 

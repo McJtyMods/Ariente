@@ -1,7 +1,7 @@
 package mcjty.ariente.security;
 
 import mcjty.ariente.api.ISecuritySystem;
-import mcjty.lib.varia.WorldTools;
+import mcjty.lib.varia.LevelTools;
 import mcjty.lib.worlddata.AbstractWorldData;
 import net.minecraft.nbt.CompoundNBT;
 import net.minecraft.world.World;
@@ -33,7 +33,7 @@ public class SecuritySystem extends AbstractWorldData<SecuritySystem> implements
     @Override
     public String generateKeyId(World w) {
         long id = newSecurityID();
-        ServerWorld world = WorldTools.getOverworld(w);
+        ServerWorld world = LevelTools.getOverworld(w);
         Random rnd = new Random(world.getSeed() + 234516783139L);       // A fixed seed for this work
         rnd.nextFloat();
         rnd.nextFloat();
