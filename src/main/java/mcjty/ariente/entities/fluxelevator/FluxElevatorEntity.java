@@ -204,13 +204,13 @@ public class FluxElevatorEntity extends Entity {
         this.dataManager.register(HOLO, Optional.empty());
     }
 
-    @Override
+    // @todo 1.16 @Override
     @Nullable
     public AxisAlignedBB getCollisionBox(Entity entityIn) {
         return entityIn.canBePushed() ? entityIn.getBoundingBox() : null;
     }
 
-    @Override
+    // @todo 1.16 @Override
     @Nullable
     public AxisAlignedBB getCollisionBoundingBox() {
         return null;
@@ -364,7 +364,7 @@ public class FluxElevatorEntity extends Entity {
         this.setRotation(this.rotationYaw, this.rotationPitch);
 
         handleEntityCollision();
-        handleWaterMovement();
+        // @todo 1.16 handleWaterMovement();
     }
 
     private boolean isValidBeamBlock(Block block) {
