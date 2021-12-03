@@ -158,10 +158,11 @@ dependencies {
 
     }
     if (findProject(':HoloGui') != null) {
-        compile project(':HoloGui')
+        implementation project(':HoloGui')
     } else {
-        compileOnly fg.deobf("com.github.mcjty:hologui:${hologui_version}:api")
-        runtimeOnly fg.deobf("com.github.mcjty:hologui:${hologui_version}")
+        implementation fg.deobf (project.dependencies.create("com.github.mcjty:hologui:${hologui_version}") {
+            transitive = false
+        })
     }
 }
 
