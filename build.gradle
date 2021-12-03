@@ -167,13 +167,12 @@ dependencies {
         // compileOnly fg.deobf("com.github.mcjty:mcjtylib:${mcjtylib_version}:api")
         runtimeOnly fg.deobf("com.github.mcjty:mcjtylib:${mcjtylib_version}")
     }
-    // if (findProject(':HoloGui') != null) {
-    //     compile project(':HoloGui')
-    // } else {
-    //     compile fg.deobf (project.dependencies.create("com.github.mcjty:hologui:${hologui_version}") {
-    //         transitive = false
-    //     })
-    // }
+    if (findProject(':HoloGui') != null) {
+        compile project(':HoloGui')
+    } else {
+        compileOnly fg.deobf("com.github.mcjty:hologui:${hologui_version}:api")
+        runtimeOnly fg.deobf("com.github.mcjty:hologui:${hologui_version}")
+    }
 }
 
 task apiJar(type: Jar) {
