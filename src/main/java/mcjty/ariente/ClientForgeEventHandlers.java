@@ -159,11 +159,11 @@ public class ClientForgeEventHandlers {
         motionX += vec3d.x;
         motionZ += vec3d.z;
         Vector3d v = new Vector3d(motionX, motionY, motionZ);
-        double max = (player.onGround || !hasFlight) ?
+        double max = (player.isOnGround() || !hasFlight) ?
                 powersuitMaxForwardGroundSpeed :
                 powersuitMaxForwardFlySpeed;
 
-        if (player.onGround && !player.isSprinting()) {
+        if (player.isOnGround() && !player.isSprinting()) {
             max /= 2;
         }
 
