@@ -1,5 +1,6 @@
 package mcjty.ariente.datagen;
 
+import mcjty.ariente.Ariente;
 import mcjty.ariente.setup.Registration;
 import net.minecraft.block.Block;
 import net.minecraft.data.BlockTagsProvider;
@@ -10,7 +11,7 @@ import net.minecraftforge.common.Tags;
 public class BlockTags extends BlockTagsProvider {
 
     public BlockTags(DataGenerator generator) {
-        super(generator, "ariente", null);
+        super(generator, Ariente.MODID, null);
     }
 
     @Override

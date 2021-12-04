@@ -1,5 +1,6 @@
 package mcjty.ariente.datagen;
 
+import mcjty.ariente.Ariente;
 import mcjty.ariente.setup.Registration;
 import mcjty.lib.blocks.BlockStateItem;
 import net.minecraft.data.BlockTagsProvider;
@@ -16,7 +17,7 @@ import java.util.Collection;
 public class ItemTags extends ItemTagsProvider {
 
     public ItemTags(DataGenerator generator, BlockTagsProvider blockTags) {
-        super(generator, blockTags, "ariente", null);
+        super(generator, blockTags, Ariente.MODID, null);
     }
 
     @Override
