@@ -1,5 +1,6 @@
 package mcjty.ariente.items.armor;
 
+import com.google.common.collect.ImmutableMultimap;
 import com.google.common.collect.Multimap;
 import mcjty.ariente.Ariente;
 import mcjty.ariente.api.ArmorUpgradeType;
@@ -52,13 +53,18 @@ public class PowerSuit extends ArmorItem {
     public Multimap<Attribute, AttributeModifier> getAttributeModifiers(EquipmentSlotType slot, ItemStack stack) {
         Multimap<Attribute, AttributeModifier> multimap = super.getAttributeModifiers(slot, stack);
 
-        if (slot == this.slot) {
-            double extra = ModuleSupport.hasWorkingUpgrade(stack, ArmorUpgradeType.ARMOR) ? 4 : 0;
-            multimap.put(Attributes.ARMOR, new AttributeModifier(ARMOR_EXT_MODIFIERS[slot.getIndex()],
-                    "Armor extra modifier", extra, AttributeModifier.Operation.ADDITION));
+        if (slot != this.slot) {
+            return multimap;
         }
 
-        return multimap;
+        double extra = ModuleSupport.hasWorkingUpgrade(stack, ArmorUpgradeType.ARMOR) ? 4 : 0;
+        ImmutableMultimap.Builder<Attribute, AttributeModifier> builder = new ImmutableMultimap.Builder<Attribute, AttributeModifier>();
+
+        builder.putAll(multimap)
+            .put(Attributes.ARMOR, new AttributeModifier(ARMOR_EXT_MODIFIERS[slot.getIndex()],
+                    "Armor extra modifier", extra, AttributeModifier.Operation.ADDITION));
+
+        return builder.build();
     }
 
     @Nullable

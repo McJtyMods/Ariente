@@ -1,5 +1,6 @@
 package mcjty.ariente.items;
 
+import com.google.common.collect.ImmutableMultimap;
 import com.google.common.collect.Multimap;
 import mcjty.ariente.Ariente;
 import mcjty.ariente.setup.Registration;
@@ -16,10 +17,6 @@ import net.minecraft.item.ItemStack;
 import net.minecraft.item.ItemTier;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.World;
-
-
-
-import net.minecraft.item.Item.Properties;
 
 public class EnergySabreItem extends Item {
 
@@ -91,12 +88,16 @@ public class EnergySabreItem extends Item {
     public Multimap<Attribute, AttributeModifier> getAttributeModifiers(EquipmentSlotType slot, ItemStack stack) {
         Multimap<Attribute, AttributeModifier> multimap = getOriginalAttributeModifiers(slot, stack);
 
-        if (slot == EquipmentSlotType.MAINHAND) {
-            multimap.put(Attributes.ATTACK_DAMAGE, new AttributeModifier(BASE_ATTACK_DAMAGE_UUID, "Weapon modifier", this.attackDamage, AttributeModifier.Operation.ADDITION));
-            multimap.put(Attributes.ATTACK_SPEED, new AttributeModifier(BASE_ATTACK_SPEED_UUID, "Weapon modifier", -2.4000000953674316D, AttributeModifier.Operation.ADDITION));
+        if (slot != EquipmentSlotType.MAINHAND) {
+            return multimap;
         }
 
-        return multimap;
+        ImmutableMultimap.Builder<Attribute, AttributeModifier> builder = new ImmutableMultimap.Builder<Attribute, AttributeModifier>();
+        builder.putAll(multimap)
+            .put(Attributes.ATTACK_DAMAGE, new AttributeModifier(BASE_ATTACK_DAMAGE_UUID, "Weapon modifier", this.attackDamage, AttributeModifier.Operation.ADDITION))
+            .put(Attributes.ATTACK_SPEED, new AttributeModifier(BASE_ATTACK_SPEED_UUID, "Weapon modifier", -2.4000000953674316D, AttributeModifier.Operation.ADDITION));
+
+        return builder.build();
     }
 
     protected Multimap<Attribute, AttributeModifier> getOriginalAttributeModifiers(EquipmentSlotType slot, ItemStack stack) {
