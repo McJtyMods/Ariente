@@ -13,7 +13,8 @@ import net.minecraft.client.renderer.entity.EntityRendererManager;
 import net.minecraft.client.renderer.texture.AtlasTexture;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.util.ResourceLocation;
-import net.minecraft.util.math.Vec3d;
+import net.minecraft.util.math.vector.Vector3d;
+import net.minecraft.util.math.vector.Vector3f;
 import net.minecraftforge.fml.client.registry.IRenderFactory;
 import org.lwjgl.opengl.GL11;
 
@@ -36,23 +37,23 @@ public class LaserRender extends EntityRenderer<LaserEntity> {
 
     @Override
     public void render(LaserEntity entity, float entityYaw, float partialTicks, MatrixStack matrixStack, IRenderTypeBuffer buffer, int packedLightIn) {
-        GlStateManager.depthMask(false);
-        GlStateManager.enableBlend();
-        GlStateManager.blendFunc(GL11.GL_ONE, GL11.GL_ONE);
+        GlStateManager._depthMask(false);
+        GlStateManager._enableBlend();
+        GlStateManager._blendFunc(GL11.GL_ONE, GL11.GL_ONE);
 
         Minecraft mc = Minecraft.getInstance();
         PlayerEntity p = mc.player;
-        double doubleX = p.lastTickPosX + (p.getPosX() - p.lastTickPosX) * partialTicks;
-        double doubleY = p.lastTickPosY + (p.getPosY() - p.lastTickPosY) * partialTicks;
-        double doubleZ = p.lastTickPosZ + (p.getPosZ() - p.lastTickPosZ) * partialTicks;
+        double doubleX = p.xOld + (p.getX() - p.xOld) * partialTicks;
+        double doubleY = p.yOld + (p.getY() - p.yOld) * partialTicks;
+        double doubleZ = p.zOld + (p.getZ() - p.zOld) * partialTicks;
 
-//        RenderHelper.Vector start = new RenderHelper.Vector((float) x, (float) y, (float) z);
+//        Vector3f start = new Vector3f((float) x, (float) y, (float) z);
 
-        GlStateManager.pushMatrix();
+        GlStateManager._pushMatrix();
         // @todo 1.15
 //        GlStateManager.translatef((float)x, (float)y, (float)z);
-        GlStateManager.rotatef(180.0F - entity.getSpawnYaw(), 0.0F, 1.0F, 0.0F);
-        GlStateManager.rotatef(180.0F - entity.getSpawnPitch(), 1.0F, 0.0F, 0.0F);
+        GlStateManager._rotatef(180.0F - entity.getSpawnYaw(), 0.0F, 1.0F, 0.0F);
+        GlStateManager._rotatef(180.0F - entity.getSpawnPitch(), 1.0F, 0.0F, 0.0F);
 
 //        GlStateManager.rotate(180.0F - this.renderManager.playerViewY, 0.0F, 1.0F, 0.0F);
 //        GlStateManager.rotate((this.renderManager.options.thirdPersonView == 2 ? -1 : 1) * -this.renderManager.playerViewX, 1.0F, 0.0F, 0.0F);
@@ -64,7 +65,7 @@ public class LaserRender extends EntityRenderer<LaserEntity> {
         // @todo 1.15
 //        BufferBuilder buffer = tessellator.getBuffer();
 
-        Vec3d lv = entity.getLookVec();
+        Vector3d lv = entity.getLookAngle();
 
         // ----------------------------------------
 
@@ -75,40 +76,40 @@ public class LaserRender extends EntityRenderer<LaserEntity> {
         float size = .05f;
         int length = 2;
         drawQuad(tessellator,
-                new RenderHelper.Vector(-size, -size, 0),
-                new RenderHelper.Vector(-size, -size, length),
-                new RenderHelper.Vector(-size, size, length),
-                new RenderHelper.Vector(-size, size, 0)
+                new Vector3f(-size, -size, 0),
+                new Vector3f(-size, -size, length),
+                new Vector3f(-size, size, length),
+                new Vector3f(-size, size, 0)
         );
         drawQuad(tessellator,
-                new RenderHelper.Vector(size, size, 0),
-                new RenderHelper.Vector(size, size, length),
-                new RenderHelper.Vector(size, -size, length),
-                new RenderHelper.Vector(size, -size, 0)
+                new Vector3f(size, size, 0),
+                new Vector3f(size, size, length),
+                new Vector3f(size, -size, length),
+                new Vector3f(size, -size, 0)
         );
         drawQuad(tessellator,
-                new RenderHelper.Vector(-size, size, 0),
-                new RenderHelper.Vector(-size, size, length),
-                new RenderHelper.Vector(size, size, length),
-                new RenderHelper.Vector(size, size, 0)
+                new Vector3f(-size, size, 0),
+                new Vector3f(-size, size, length),
+                new Vector3f(size, size, length),
+                new Vector3f(size, size, 0)
         );
         drawQuad(tessellator,
-                new RenderHelper.Vector(size, -size, 0),
-                new RenderHelper.Vector(size, -size, length),
-                new RenderHelper.Vector(-size, -size, length),
-                new RenderHelper.Vector(-size, -size, 0)
+                new Vector3f(size, -size, 0),
+                new Vector3f(size, -size, length),
+                new Vector3f(-size, -size, length),
+                new Vector3f(-size, -size, 0)
         );
         drawQuad(tessellator,
-                new RenderHelper.Vector(size, -size, 0),
-                new RenderHelper.Vector(-size, -size, 0),
-                new RenderHelper.Vector(-size, size, 0),
-                new RenderHelper.Vector(size, size, 0)
+                new Vector3f(size, -size, 0),
+                new Vector3f(-size, -size, 0),
+                new Vector3f(-size, size, 0),
+                new Vector3f(size, size, 0)
         );
         drawQuad(tessellator,
-                new RenderHelper.Vector(-size, -size, length),
-                new RenderHelper.Vector(size, -size, length),
-                new RenderHelper.Vector(size, size, length),
-                new RenderHelper.Vector(-size, size, length)
+                new Vector3f(-size, -size, length),
+                new Vector3f(size, -size, length),
+                new Vector3f(size, size, length),
+                new Vector3f(-size, size, length)
         );
 
 //        RenderHelper.drawBeam(
@@ -116,31 +117,31 @@ public class LaserRender extends EntityRenderer<LaserEntity> {
 //                end,
 //                player, .1f);
 
-        tessellator.draw();
+        tessellator.end();
 
-        GlStateManager.popMatrix();
+        GlStateManager._popMatrix();
 
-        GlStateManager.enableBlend();
-        GlStateManager.blendFunc(GL11.GL_SRC_ALPHA, GL11.GL_ONE_MINUS_SRC_ALPHA);
-        GlStateManager.depthMask(true);
+        GlStateManager._enableBlend();
+        GlStateManager._blendFunc(GL11.GL_SRC_ALPHA, GL11.GL_ONE_MINUS_SRC_ALPHA);
+        GlStateManager._depthMask(true);
     }
 
-    private static void drawQuad(Tessellator tessellator, RenderHelper.Vector p1, RenderHelper.Vector p2, RenderHelper.Vector p3, RenderHelper.Vector p4) {
+    private static void drawQuad(Tessellator tessellator, Vector3f p1, Vector3f p2, Vector3f p3, Vector3f p4) {
         int brightness = 240;
         int b1 = brightness >> 16 & 65535;
         int b2 = brightness & 65535;
 
-        BufferBuilder buffer = tessellator.getBuffer();
-        buffer.pos(p1.getX(), p1.getY(), p1.getZ()).tex(0.3f, 0.3f).lightmap(b1, b2).color(255, 255, 255, 128).endVertex();
-        buffer.pos(p2.getX(), p2.getY(), p2.getZ()).tex(0.7f, 0.3f).lightmap(b1, b2).color(255, 255, 255, 128).endVertex();
-        buffer.pos(p3.getX(), p3.getY(), p3.getZ()).tex(0.7f, 0.7f).lightmap(b1, b2).color(255, 255, 255, 128).endVertex();
-        buffer.pos(p4.getX(), p4.getY(), p4.getZ()).tex(0.3f, 0.7f).lightmap(b1, b2).color(255, 255, 255, 128).endVertex();
+        BufferBuilder buffer = tessellator.getBuilder();
+        buffer.vertex(p1.x(), p1.y(), p1.z()).uv(0.3f, 0.3f).uv2(b1, b2).color(255, 255, 255, 128).endVertex();
+        buffer.vertex(p2.x(), p2.y(), p2.z()).uv(0.7f, 0.3f).uv2(b1, b2).color(255, 255, 255, 128).endVertex();
+        buffer.vertex(p3.x(), p3.y(), p3.z()).uv(0.7f, 0.7f).uv2(b1, b2).color(255, 255, 255, 128).endVertex();
+        buffer.vertex(p4.x(), p4.y(), p4.z()).uv(0.3f, 0.7f).uv2(b1, b2).color(255, 255, 255, 128).endVertex();
     }
 
 
     @Override
-    public ResourceLocation getEntityTexture(LaserEntity entity) {
-        return AtlasTexture.LOCATION_BLOCKS_TEXTURE;
+    public ResourceLocation getTextureLocation(LaserEntity entity) {
+        return AtlasTexture.LOCATION_BLOCKS;
     }
 
     public static class Factory implements IRenderFactory<LaserEntity> {

@@ -6,7 +6,7 @@ import net.minecraft.client.audio.TickableSound;
 import net.minecraft.util.SoundEvent;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.World;
-import net.minecraft.world.dimension.DimensionType;
+import net.minecraft.world.DimensionType;
 import org.apache.commons.lang3.tuple.Pair;
 
 import java.util.Map;
@@ -19,7 +19,7 @@ public class SoundController {
         Pair<DimensionType, BlockPos> g = fromPosition(worldObj, pos);
         if (forcefieldSounds.containsKey(g)) {
             TickableSound movingSound = forcefieldSounds.get(g);
-            Minecraft.getInstance().getSoundHandler().stop(movingSound);
+            Minecraft.getInstance().getSoundManager().stop(movingSound);
             forcefieldSounds.remove(g);
         }
     }
@@ -27,8 +27,8 @@ public class SoundController {
     public static void playForcefieldSound(World worldObj, BlockPos pos, SoundEvent soundType, float baseVolume, int ticks) {
         ForcefieldSound sound = new ForcefieldSound(soundType, worldObj, pos, baseVolume, ticks);
         stopForcefieldSounds(worldObj, pos);
-        Minecraft.getInstance().getSoundHandler().play(sound);
-        Pair<DimensionType, BlockPos> g = Pair.of(worldObj.getDimension().getType(), pos);
+        Minecraft.getInstance().getSoundManager().play(sound);
+        Pair<DimensionType, BlockPos> g = Pair.of(worldObj.dimensionType(), pos);
         forcefieldSounds.put(g, sound);
     }
 
@@ -43,7 +43,7 @@ public class SoundController {
 
 
     private static Pair<DimensionType, BlockPos> fromPosition(World world, BlockPos producerPos){
-        return Pair.of(world.getDimension().getType(), producerPos);
+        return Pair.of(world.dimensionType(), producerPos);
     }
 
 }

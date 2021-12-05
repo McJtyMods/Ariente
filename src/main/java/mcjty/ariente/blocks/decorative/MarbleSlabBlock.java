@@ -9,17 +9,19 @@ import net.minecraft.state.StateContainer;
 
 import static mcjty.ariente.api.MarbleColor.COLOR;
 
+import net.minecraft.block.AbstractBlock.Properties;
+
 public class MarbleSlabBlock extends SlabBlock {
 
     public MarbleSlabBlock() {
-        super(Properties.create(Material.ROCK));
-        BlockState blockState = this.getDefaultState();
-        this.setDefaultState(blockState.with(COLOR, MarbleColor.BLACK));
+        super(Properties.of(Material.STONE));
+        BlockState blockState = this.defaultBlockState();
+        this.registerDefaultState(blockState.setValue(COLOR, MarbleColor.BLACK));
     }
 
     @Override
-    protected void fillStateContainer(StateContainer.Builder<Block, BlockState> builder) {
-        super.fillStateContainer(builder);
+    protected void createBlockStateDefinition(StateContainer.Builder<Block, BlockState> builder) {
+        super.createBlockStateDefinition(builder);
         builder.add(COLOR);
     }
 }

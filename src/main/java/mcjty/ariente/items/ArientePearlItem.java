@@ -25,12 +25,14 @@ import net.minecraft.util.text.ITextComponent;
 import net.minecraft.util.text.StringTextComponent;
 import net.minecraft.util.text.TextFormatting;
 import net.minecraft.world.World;
-import net.minecraft.world.dimension.DimensionType;
+import net.minecraft.world.DimensionType;
 
 import javax.annotation.Nullable;
 import java.util.List;
 
 import static mcjty.lib.builder.TooltipBuilder.header;
+
+import net.minecraft.item.Item.Properties;
 
 public class ArientePearlItem extends Item implements ITooltipSettings {
 
@@ -38,40 +40,40 @@ public class ArientePearlItem extends Item implements ITooltipSettings {
             .info(header());
 
     public ArientePearlItem() {
-        super(new Properties().maxStackSize(16).group(Ariente.setup.getTab()));
+        super(new Properties().stacksTo(16).tab(Ariente.setup.getTab()));
     }
 
     @Override
-    public void addInformation(ItemStack stack, @Nullable World worldIn, List<ITextComponent> tooltip, ITooltipFlag flagIn) {
-        super.addInformation(stack, worldIn, tooltip, flagIn);
+    public void appendHoverText(ItemStack stack, @Nullable World worldIn, List<ITextComponent> tooltip, ITooltipFlag flagIn) {
+        super.appendHoverText(stack, worldIn, tooltip, flagIn);
         tooltipBuilder.makeTooltip(getRegistryName(), stack, tooltip, flagIn);
     }
 
     @Override
     public ActionResultType onItemUseFirst(ItemStack stack, ItemUseContext context) {
-        World world = context.getWorld();
-        BlockPos pos = context.getPos();
+        World world = context.getLevel();
+        BlockPos pos = context.getClickedPos();
         Hand hand = context.getHand();
         PlayerEntity player = context.getPlayer();
-        Direction facing = context.getFace();
+        Direction facing = context.getClickedFace();
         BlockState state = world.getBlockState(pos);
-        ItemStack itemstack = player.getHeldItem(hand);
+        ItemStack itemstack = player.getItemInHand(hand);
 
-        if (player.canPlayerEdit(pos.offset(facing), facing, itemstack) && state.getBlock() == Registration.WARPER.get()) {
-            if (world.isRemote) {
+        if (player.mayUseItemAt(pos.relative(facing), facing, itemstack) && state.getBlock() == Registration.WARPER.get()) {
+            if (world.isClientSide) {
                 return ActionResultType.SUCCESS;
             } else {
-                TileEntity te = world.getTileEntity(pos);
+                TileEntity te = world.getBlockEntity(pos);
                 if (te instanceof WarperTile) {
                     WarperTile warper = (WarperTile) te;
                     int charges = warper.getCharges();
                     if (charges >= UtilityConfiguration.WARPER_MAX_CHARGES.get()) {
-                        player.sendStatusMessage(new StringTextComponent("Already fully charged!"), false);
+                        player.displayClientMessage(new StringTextComponent("Already fully charged!"), false);
                         return ActionResultType.SUCCESS;
                     }
                     warper.setCharges(charges+1);
                     int pct = warper.getChargePercentage();
-                    player.sendStatusMessage(new StringTextComponent("Charged to " + pct + "%"), false);
+                    player.displayClientMessage(new StringTextComponent("Charged to " + pct + "%"), false);
                 }
                 itemstack.shrink(1);
 
@@ -82,7 +84,7 @@ public class ArientePearlItem extends Item implements ITooltipSettings {
                     world.addParticle(ParticleTypes.SMOKE, dx, dy, dz, 0.0D, 0.0D, 0.0D);
                 }
 
-                world.playSound(null, pos, SoundEvents.BLOCK_END_PORTAL_FRAME_FILL, SoundCategory.BLOCKS, 1.0F, 1.0F);
+                world.playSound(null, pos, SoundEvents.END_PORTAL_FRAME_FILL, SoundCategory.BLOCKS, 1.0F, 1.0F);
                 return ActionResultType.SUCCESS;
             }
         } else {
@@ -91,47 +93,47 @@ public class ArientePearlItem extends Item implements ITooltipSettings {
     }
 
     @Override
-    public ActionResultType onItemUse(ItemUseContext context) {
+    public ActionResultType useOn(ItemUseContext context) {
         return ActionResultType.PASS;
     }
 
 
     @Override
-    public ActionResult<ItemStack> onItemRightClick(World world, PlayerEntity player, Hand hand) {
-        ItemStack itemstack = player.getHeldItem(hand);
+    public ActionResult<ItemStack> use(World world, PlayerEntity player, Hand hand) {
+        ItemStack itemstack = player.getItemInHand(hand);
 
-        if (world.getDimension().getType() != DimensionType.OVERWORLD) {
-            if (world.isRemote) {
-                player.sendStatusMessage(new StringTextComponent(TextFormatting.RED + "Doesn't work in this dimension!"), false);
+        if (world.dimension() != World.OVERWORLD) {
+            if (world.isClientSide) {
+                player.displayClientMessage(new StringTextComponent(TextFormatting.RED + "Doesn't work in this dimension!"), false);
             }
             return new ActionResult<>(ActionResultType.FAIL, itemstack);
         }
 
-        RayTraceResult raytraceresult = this.rayTrace(world, player, RayTraceContext.FluidMode.NONE);
+        RayTraceResult raytraceresult = Item.getPlayerPOVHitResult(world, player, RayTraceContext.FluidMode.NONE);
 
-        if (raytraceresult instanceof BlockRayTraceResult && raytraceresult.getType() == RayTraceResult.Type.BLOCK && world.getBlockState(((BlockRayTraceResult) raytraceresult).getPos()).getBlock() == Registration.WARPER.get()) {
+        if (raytraceresult instanceof BlockRayTraceResult && raytraceresult.getType() == RayTraceResult.Type.BLOCK && world.getBlockState(((BlockRayTraceResult) raytraceresult).getBlockPos()).getBlock() == Registration.WARPER.get()) {
             return new ActionResult<>(ActionResultType.PASS, itemstack);
         } else {
-            player.setActiveHand(hand);
+            player.startUsingItem(hand);
 
-            if (!world.isRemote) {
-                BlockPos blockpos = ArienteWorldCompat.getArienteWorld().getNearestDungeon(world, new BlockPos(player));
+            if (!world.isClientSide) {
+                BlockPos blockpos = ArienteWorldCompat.getArienteWorld().getNearestDungeon(world, player.blockPosition());
 
                 if (blockpos != null) {
-                    EntityArientePearl entityendereye = EntityArientePearl.create(world, player.getPosX(), player.getPosY() + (player.getHeight() / 2.0F), player.getPosZ());
+                    EntityArientePearl entityendereye = EntityArientePearl.create(world, player.getX(), player.getY() + (player.getBbHeight() / 2.0F), player.getZ());
                     entityendereye.moveTowards(blockpos);
-                    world.addEntity(entityendereye);
+                    world.addFreshEntity(entityendereye);
 
-                    world.playSound(null, player.getPosX(), player.getPosY(), player.getPosZ(), SoundEvents.ENTITY_ENDER_EYE_LAUNCH, SoundCategory.NEUTRAL, 0.5F, 0.4F / (random.nextFloat() * 0.4F + 0.8F));
-                    world.playEvent(null, 1003, new BlockPos(player), 0);
+                    world.playSound(null, player.getX(), player.getY(), player.getZ(), SoundEvents.ENDER_EYE_LAUNCH, SoundCategory.NEUTRAL, 0.5F, 0.4F / (random.nextFloat() * 0.4F + 0.8F));
+                    world.levelEvent(null, 1003, player.blockPosition(), 0);
 
-                    if (!player.abilities.isCreativeMode) {
+                    if (!player.abilities.instabuild) {
                         itemstack.shrink(1);
                     }
 
                     return new ActionResult<>(ActionResultType.SUCCESS, itemstack);
                 } else {
-                    player.sendStatusMessage(new StringTextComponent("Can't find any nearby Ariente dungeon!"), false);
+                    player.displayClientMessage(new StringTextComponent("Can't find any nearby Ariente dungeon!"), false);
                 }
             }
 

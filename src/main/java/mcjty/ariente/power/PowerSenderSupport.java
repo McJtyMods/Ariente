@@ -39,8 +39,8 @@ public class PowerSenderSupport {
         int toReplace = cableId;
         setCableId(id);
         for (Direction facing : OrientationTools.DIRECTION_VALUES) {
-            BlockPos p = pos.offset(facing);
-            TileEntity te = world.getTileEntity(p);
+            BlockPos p = pos.relative(facing);
+            TileEntity te = world.getBlockEntity(p);
             if (te instanceof IPowerBlob) {
                 IPowerBlob blob = (IPowerBlob) te;
                 CableColor cableColor = blob.getCableColor();
@@ -61,8 +61,8 @@ public class PowerSenderSupport {
         for (int dx = -1 ; dx <= 1 ; dx++) {
             for (int dy = -1 ; dy <= 1 ; dy++) {
                 for (int dz = -1 ; dz <= 1 ; dz++) {
-                    BlockPos p = pos.add(dx, dy, dz);
-                    TileEntity te = world.getTileEntity(p);
+                    BlockPos p = pos.offset(dx, dy, dz);
+                    TileEntity te = world.getBlockEntity(p);
                     if (te instanceof IPowerBlob) {
                         IPowerBlob blob = (IPowerBlob) te;
                         int cableId = blob.getCableId();
@@ -79,8 +79,8 @@ public class PowerSenderSupport {
         for (int dx = -1 ; dx <= 1 ; dx++) {
             for (int dy = -1; dy <= 1; dy++) {
                 for (int dz = -1; dz <= 1; dz++) {
-                    BlockPos p = pos.add(dx, dy, dz);
-                    TileEntity te = world.getTileEntity(p);
+                    BlockPos p = pos.offset(dx, dy, dz);
+                    TileEntity te = world.getBlockEntity(p);
                     if (te instanceof IPowerBlob) {
                         IPowerBlob blob = (IPowerBlob) te;
                         int cableId = blob.getCableId();

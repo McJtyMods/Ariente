@@ -27,32 +27,32 @@ public class FluxShipItem extends Item implements ITooltipSettings {
             .info(header(), warning());
 
     public FluxShipItem() {
-        super(new Item.Properties().maxStackSize(1));
+        super(new Item.Properties().stacksTo(1));
     }
 
     @Override
-    public void addInformation(ItemStack stack, @Nullable World worldIn, List<ITextComponent> tooltip, ITooltipFlag flag) {
-        super.addInformation(stack, worldIn, tooltip, flag);
+    public void appendHoverText(ItemStack stack, @Nullable World worldIn, List<ITextComponent> tooltip, ITooltipFlag flag) {
+        super.appendHoverText(stack, worldIn, tooltip, flag);
         tooltipBuilder.makeTooltip(getRegistryName(), stack, tooltip, flag);
     }
 
     @Override
-    public ActionResultType onItemUse(ItemUseContext context) {
-        World world = context.getWorld();
-        BlockPos pos = context.getPos();
+    public ActionResultType useOn(ItemUseContext context) {
+        World world = context.getLevel();
+        BlockPos pos = context.getClickedPos();
         PlayerEntity player = context.getPlayer();
         Hand hand = context.getHand();
         BlockState state = world.getBlockState(pos);
 
-        ItemStack itemstack = player.getHeldItem(hand);
+        ItemStack itemstack = player.getItemInHand(hand);
 
-        if (!world.isRemote) {
+        if (!world.isClientSide) {
             FluxShipEntity ship = FluxShipEntity.create(world, pos.getX() + 0.5D, pos.getY() + 0.0625D, pos.getZ() + 0.5D);
 
-            if (itemstack.hasDisplayName()) {
-                ship.setCustomName(itemstack.getDisplayName());
+            if (itemstack.hasCustomHoverName()) {
+                ship.setCustomName(itemstack.getHoverName());
             }
-            world.addEntity(ship);
+            world.addFreshEntity(ship);
         }
 
         itemstack.shrink(1);

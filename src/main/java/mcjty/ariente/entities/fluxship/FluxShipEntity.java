@@ -7,10 +7,11 @@ import net.minecraft.entity.EntityType;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.nbt.CompoundNBT;
 import net.minecraft.network.IPacket;
+import net.minecraft.util.ActionResultType;
 import net.minecraft.util.Direction;
 import net.minecraft.util.Hand;
 import net.minecraft.util.math.AxisAlignedBB;
-import net.minecraft.util.math.Vec3d;
+import net.minecraft.util.math.vector.Vector3d;
 import net.minecraft.world.World;
 import net.minecraftforge.fml.network.NetworkHooks;
 
@@ -24,34 +25,34 @@ public class FluxShipEntity extends Entity {
 
     public FluxShipEntity(EntityType<? extends FluxShipEntity> entityTypeIn, World worldIn) {
         super(entityTypeIn, worldIn);
-        this.preventEntitySpawning = true;
+        this.blocksBuilding = true;
     }
 
     public static FluxShipEntity create(World worldIn, double x, double y, double z) {
         FluxShipEntity entity = new FluxShipEntity(Registration.ENTITY_FLUX_SHIP.get(), worldIn);
-        entity.setPosition(x, y, z);
-        entity.setMotion(0, 0, 0);
-        entity.prevPosX = x;
-        entity.prevPosY = y;
-        entity.prevPosZ = z;
+        entity.setPos(x, y, z);
+        entity.setDeltaMovement(0, 0, 0);
+        entity.xo = x;
+        entity.yo = y;
+        entity.zo = z;
         return entity;
     }
 
     @Override
-    public void setPositionAndRotationDirect(double x, double y, double z, float yaw, float pitch, int posRotationIncrements, boolean teleport) {
+    public void lerpTo(double x, double y, double z, float yaw, float pitch, int posRotationIncrements, boolean teleport) {
 //        this.levitatorX = x;
 //        this.levitatorY = y;
 //        this.levitatorZ = z;
 //        this.levitatorYaw = yaw;
 //        this.levitatorPitch = pitch;
 //        this.turnProgress = posRotationIncrements + 2;
-        super.setPositionAndRotationDirect(x, y, z, yaw, pitch, posRotationIncrements, teleport);
-        setMotion(velocityX, velocityY, velocityZ);
+        super.lerpTo(x, y, z, yaw, pitch, posRotationIncrements, teleport);
+        setDeltaMovement(velocityX, velocityY, velocityZ);
     }
 
     @Override
-    public void setVelocity(double x, double y, double z) {
-        setMotion(x, y, z);
+    public void lerpMotion(double x, double y, double z) {
+        setDeltaMovement(x, y, z);
         this.velocityX = x;
         this.velocityY = y;
         this.velocityZ = z;
@@ -59,25 +60,25 @@ public class FluxShipEntity extends Entity {
 
 
     public void handleAction(FlyAction action) {
-        Vec3d look = getLook(1.0f);
+        Vector3d look = getViewVector(1.0f);
         switch (action) {
             case FORWARD:
-                setMotion(look.x * 1, look.y * 1, look.z * 1);
+                setDeltaMovement(look.x * 1, look.y * 1, look.z * 1);
                 break;
             case BACKWARD:
-                setMotion(look.x * -1, look.y * -1, look.z * -1);
+                setDeltaMovement(look.x * -1, look.y * -1, look.z * -1);
                 break;
             case TURNLEFT:
-                setRotation(rotationYaw-.1f, rotationPitch);
+                setRot(yRot-.1f, xRot);
                 break;
             case TURNRIGHT:
-                setRotation(rotationYaw+.1f, rotationPitch);
+                setRot(yRot+.1f, xRot);
                 break;
             case UP:
-                setMotion(getMotion().x, .2f, getMotion().z);
+                setDeltaMovement(getDeltaMovement().x, .2f, getDeltaMovement().z);
                 break;
             case DOWN:
-                setMotion(getMotion().x, -.2f, getMotion().z);
+                setDeltaMovement(getDeltaMovement().x, -.2f, getDeltaMovement().z);
                 break;
             case START:
                 break;
@@ -87,22 +88,22 @@ public class FluxShipEntity extends Entity {
     }
 
     @Override
-    public boolean processInitialInteract(PlayerEntity player, Hand hand) {
-        if (player.isSneaking()) {
-            return false;
+    public ActionResultType interact(PlayerEntity player, Hand hand) {
+        if (player.isShiftKeyDown()) {
+            return ActionResultType.PASS;
 //        } else if (this.isBeingRidden()) {    // @todo
 //            return true;
         } else {
-            if (!this.world.isRemote) {
+            if (!this.level.isClientSide) {
                 player.startRiding(this);
             }
 
-            return true;
+            return ActionResultType.SUCCESS;
         }
     }
 
     @Override
-    protected boolean canFitPassenger(Entity passenger) {
+    protected boolean canAddPassenger(Entity passenger) {
         return true;    // @todo
     }
 
@@ -113,69 +114,69 @@ public class FluxShipEntity extends Entity {
     }
 
     @Override
-    public void updatePassenger(Entity passenger) {
-        if (this.isPassenger(passenger)) {
+    public void positionRider(Entity passenger) {
+        if (this.hasPassenger(passenger)) {
             if (!(passenger instanceof IHoloGuiEntity)) {
-                super.updatePassenger(passenger);
+                super.positionRider(passenger);
             }
         }
     }
 
     @Override
-    protected boolean canTriggerWalking() {
+    protected boolean isMovementNoisy() {
         return false;
     }
 
     @Override
-    protected boolean canBeRidden(Entity entityIn) {
+    protected boolean canRide(Entity entityIn) {
         return true;
     }
 
     @Override
-    protected void registerData() {
+    protected void defineSynchedData() {
 
     }
 
     @Override
-    protected void readAdditional(CompoundNBT compound) {
+    protected void readAdditionalSaveData(CompoundNBT compound) {
 
     }
 
     @Override
-    protected void writeAdditional(CompoundNBT compound) {
+    protected void addAdditionalSaveData(CompoundNBT compound) {
 
     }
 
     @Override
-    public IPacket<?> createSpawnPacket() {
+    public IPacket<?> getAddEntityPacket() {
         return NetworkHooks.getEntitySpawningPacket(this);
     }
 
-    @Override
+    //@Override
     @Nullable
     public AxisAlignedBB getCollisionBox(Entity entityIn) {
-        return entityIn.canBePushed() ? entityIn.getBoundingBox() : null;
+        return entityIn.isPushable() ? entityIn.getBoundingBox() : null;
     }
 
-    @Override
+    //@Override
     @Nullable
     public AxisAlignedBB getCollisionBoundingBox() {
         return null;
     }
 
     @Override
-    public double getMountedYOffset() {
+    public double getPassengersRidingOffset() {
         return 0.0D;
     }
 
     @Override
-    public boolean canBeCollidedWith() {
+    public boolean isPickable() {
         return this.isAlive();
     }
 
     @Override
-    public Direction getAdjustedHorizontalFacing() {
-        return this.getHorizontalFacing().rotateY();
+    public Direction getMotionDirection() {
+        return this.getDirection().getClockWise();
     }
 
     @Override
@@ -183,11 +184,11 @@ public class FluxShipEntity extends Entity {
     }
 
     @Override
-    public AxisAlignedBB getRenderBoundingBox() {
+    public AxisAlignedBB getBoundingBoxForCulling() {
         return this.getBoundingBox();
     }
 
     @Override
-    public void applyEntityCollision(Entity entityIn) {
+    public void push(Entity entityIn) {
     }
 }

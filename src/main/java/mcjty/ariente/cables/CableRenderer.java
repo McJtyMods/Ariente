@@ -10,13 +10,14 @@ import net.minecraft.block.Block;
 import net.minecraft.block.BlockState;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.renderer.IRenderTypeBuffer;
-import net.minecraft.client.renderer.Matrix4f;
+import net.minecraft.util.math.vector.Matrix4f;
 import net.minecraft.client.renderer.texture.TextureAtlasSprite;
 import net.minecraft.client.renderer.tileentity.TileEntityRenderer;
 import net.minecraft.client.renderer.tileentity.TileEntityRendererDispatcher;
 import net.minecraft.tileentity.TileEntityType;
 import net.minecraft.util.ResourceLocation;
-import net.minecraft.util.math.Vec3d;
+import net.minecraft.util.math.vector.Vector3d;
+import net.minecraft.util.math.vector.Vector3f;
 import net.minecraftforge.fml.client.registry.ClientRegistry;
 
 import java.util.ArrayList;
@@ -61,12 +62,12 @@ public class CableRenderer extends TileEntityRenderer<GenericCableTileEntity> {
 
 
     private static class RenderInfo {
-        public final RenderHelper.Vector player;
+        public final Vector3f player;
         public final Matrix4f matrix;
         public final IVertexBuilder builder;
         public final TextureAtlasSprite sprite;
 
-        public RenderInfo(RenderHelper.Vector player, Matrix4f matrix, IVertexBuilder builder, TextureAtlasSprite sprite) {
+        public RenderInfo(Vector3f player, Matrix4f matrix, IVertexBuilder builder, TextureAtlasSprite sprite) {
             this.player = player;
             this.matrix = matrix;
             this.builder = builder;
@@ -97,8 +98,8 @@ public class CableRenderer extends TileEntityRenderer<GenericCableTileEntity> {
 
     private static void beam(RenderInfo info, float sx, float sy, float sz, float dx, float dy, float dz) {
         RenderHelper.drawBeam(info.matrix, info.builder, info.sprite,
-                new RenderHelper.Vector(sx, sy, sz),
-                new RenderHelper.Vector(dx, dy, dz),
+                new Vector3f(sx, sy, sz),
+                new Vector3f(dx, dy, dz),
                 info.player, .1f);
     }
 
@@ -109,7 +110,7 @@ public class CableRenderer extends TileEntityRenderer<GenericCableTileEntity> {
     @Override
     public void render(GenericCableTileEntity te, float partialTicks, MatrixStack matrixStack, IRenderTypeBuffer buffer, int combinedLightIn, int combinedOverlayIn) {
         if (true) { // @todo only when it has power
-            BlockState state = te.getWorld().getBlockState(te.getPos());
+            BlockState state = te.getLevel().getBlockState(te.getBlockPos());
             Block block = state.getBlock();
             if (block instanceof GenericCableBlock) {
                 ResourceLocation txt;
@@ -129,19 +130,19 @@ public class CableRenderer extends TileEntityRenderer<GenericCableTileEntity> {
                         return;
                 }
 
-                int tex = te.getPos().getX();
-                int tey = te.getPos().getY();
-                int tez = te.getPos().getZ();
-                Vec3d projectedView = Minecraft.getInstance().gameRenderer.getActiveRenderInfo().getProjectedView().add(-tex, -tey, -tez);
-                RenderHelper.Vector player = new RenderHelper.Vector((float)projectedView.x, (float)projectedView.y, (float)projectedView.z);
+                int tex = te.getBlockPos().getX();
+                int tey = te.getBlockPos().getY();
+                int tez = te.getBlockPos().getZ();
+                Vector3d projectedView = Minecraft.getInstance().gameRenderer.getMainCamera().getPosition().add(-tex, -tey, -tez);
+                Vector3f player = new Vector3f((float)projectedView.x, (float)projectedView.y, (float)projectedView.z);
 
-                Matrix4f matrix = matrixStack.getLast().getMatrix();
+                Matrix4f matrix = matrixStack.last().pose();
                 TextureAtlasSprite sprite = ArienteSpriteUploader.INSTANCE.getSprite(txt);
                 IVertexBuilder builder = buffer.getBuffer(ArienteRenderType.ARIENTE_TRANSLUCENT);
 
-                int mask_ud = ((GenericCableBlock) block).getUpDownMask(state, te.getWorld(), te.getPos());
-                int mask_ew = ((GenericCableBlock) block).getEastWestMask(state, te.getWorld(), te.getPos());
-                int mask_ns = ((GenericCableBlock) block).getNorthSouthMask(state, te.getWorld(), te.getPos());
+                int mask_ud = ((GenericCableBlock) block).getUpDownMask(state, te.getLevel(), te.getBlockPos());
+                int mask_ew = ((GenericCableBlock) block).getEastWestMask(state, te.getLevel(), te.getBlockPos());
+                int mask_ns = ((GenericCableBlock) block).getNorthSouthMask(state, te.getLevel(), te.getBlockPos());
 
                 RenderInfo info = new RenderInfo(player, matrix, builder, sprite);
                 BEAM_RENDERERS_UP_DOWN.get(mask_ud).accept(info);

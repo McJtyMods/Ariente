@@ -5,7 +5,6 @@ import com.mojang.blaze3d.platform.GlStateManager;
 import com.mojang.blaze3d.systems.RenderSystem;
 import mcjty.ariente.Ariente;
 import mcjty.lib.client.RenderHelper;
-import mcjty.lib.client.RenderHelper.Vector;
 import mcjty.lib.client.RenderSettings;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.renderer.BufferBuilder;
@@ -17,11 +16,10 @@ import net.minecraft.client.renderer.vertex.DefaultVertexFormats;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.util.ResourceLocation;
 import net.minecraft.util.math.AxisAlignedBB;
+import net.minecraft.util.math.vector.Vector3f;
 import org.lwjgl.opengl.GL11;
 
 import java.util.Random;
-
-import static mcjty.lib.client.RenderHelper.Vector.Vector;
 
 public class AutoFieldRenderer extends TileEntityRenderer<AutoFieldTile> {
 
@@ -45,26 +43,26 @@ public class AutoFieldRenderer extends TileEntityRenderer<AutoFieldTile> {
             return;
         }
         if (te.isRenderOutline()) {
-            renderBeamBox(partialTicks, box);
+            renderBeamBox(matrixStack, partialTicks, box);
         }
         if (te.isRenderItems()) {
             // @todo 1.15
-//            renderItemTransfers(te, x, y, z);
+//            renderItemTransfers(matrixStack, te, x, y, z);
         }
     }
 
-    private void renderBeamBox(float time, AxisAlignedBB box) {
+    private void renderBeamBox(MatrixStack matrixStack, float time, AxisAlignedBB box) {
         Tessellator tessellator = Tessellator.getInstance();
-        RenderSystem.pushMatrix();
+        matrixStack.pushPose();
 
-        GlStateManager.enableBlend();
-        GlStateManager.depthMask(false);
+        GlStateManager._enableBlend();
+        GlStateManager._depthMask(false);
 //        GlStateManager.blendFunc(GL11.GL_SRC_ALPHA, GL11.GL_ONE);
 //        GlStateManager.alphaFunc(GL11.GL_GREATER, 0.003921569F);
-        GlStateManager.blendFunc(GL11.GL_ONE, GL11.GL_ONE);
+        GlStateManager._blendFunc(GL11.GL_ONE, GL11.GL_ONE);
 //        GlStateManager.alphaFunc(GL11.GL_GREATER, 0.003921569F);
-        GlStateManager.disableCull();
-        GlStateManager.enableDepthTest();
+        GlStateManager._disableCull();
+        GlStateManager._enableDepthTest();
 
         ResourceLocation beamIcon = beams[random.nextInt(3)];
         // @todo 1.15
@@ -72,19 +70,19 @@ public class AutoFieldRenderer extends TileEntityRenderer<AutoFieldTile> {
 
         Minecraft mc = Minecraft.getInstance();
         PlayerEntity p = mc.player;
-        double doubleX = p.lastTickPosX + (p.getPosX() - p.lastTickPosX) * time;
-        double doubleY = p.lastTickPosY + (p.getPosY() - p.lastTickPosY) * time;
-        double doubleZ = p.lastTickPosZ + (p.getPosZ() - p.lastTickPosZ) * time;
+        double doubleX = p.xOld + (p.getX() - p.xOld) * time;
+        double doubleY = p.yOld + (p.getY() - p.yOld) * time;
+        double doubleZ = p.zOld + (p.getZ() - p.zOld) * time;
 
-        GlStateManager.translated(-doubleX, -doubleY, -doubleZ);
+        matrixStack.translate(-doubleX, -doubleY, -doubleZ);
 
-        Vector player = new Vector((float) doubleX, (float) doubleY + p.getEyeHeight(), (float) doubleZ);
+        Vector3f player = new Vector3f((float) doubleX, (float) doubleY + p.getEyeHeight(), (float) doubleZ);
 
         long tt = System.currentTimeMillis() / 100;
 
-        GlStateManager.color4f(1, 1, 1, 1);
+        GlStateManager._color4f(1, 1, 1, 1);
 
-        BufferBuilder renderer = tessellator.getBuffer();
+        BufferBuilder renderer = tessellator.getBuilder();
         renderer.begin(GL11.GL_QUADS, DefaultVertexFormats.POSITION_TEX_LIGHTMAP_COLOR);
 
         float mx = (float) box.minX;
@@ -102,41 +100,41 @@ public class AutoFieldRenderer extends TileEntityRenderer<AutoFieldTile> {
                 .brightness(100)
                 .build();
 
-        RenderHelper.drawBeam(Vector(mx, my, mz), Vector(px, my, mz), player, settings);
-        RenderHelper.drawBeam(Vector(mx, my, mz), Vector(mx, py, mz), player, settings);
-        RenderHelper.drawBeam(Vector(mx, my, mz), Vector(mx, my, pz), player, settings);
+        // @todo RenderHelper.drawBeam(new Vector3f(mx, my, mz), new Vector3f(px, my, mz), player, settings);
+        // @todo RenderHelper.drawBeam(new Vector3f(mx, my, mz), new Vector3f(mx, py, mz), player, settings);
+        // @todo RenderHelper.drawBeam(new Vector3f(mx, my, mz), new Vector3f(mx, my, pz), player, settings);
 
-        RenderHelper.drawBeam(Vector(px, py, pz), Vector(mx, py, pz), player, settings);
-        RenderHelper.drawBeam(Vector(px, py, pz), Vector(px, my, pz), player, settings);
-        RenderHelper.drawBeam(Vector(px, py, pz), Vector(px, py, mz), player, settings);
+        // @todo RenderHelper.drawBeam(new Vector3f(px, py, pz), new Vector3f(mx, py, pz), player, settings);
+        // @todo RenderHelper.drawBeam(new Vector3f(px, py, pz), new Vector3f(px, my, pz), player, settings);
+        // @todo RenderHelper.drawBeam(new Vector3f(px, py, pz), new Vector3f(px, py, mz), player, settings);
 
-        RenderHelper.drawBeam(Vector(px, my, mz), Vector(px, py, mz), player, settings);
-        RenderHelper.drawBeam(Vector(px, my, mz), Vector(px, my, pz), player, settings);
-        RenderHelper.drawBeam(Vector(mx, py, mz), Vector(px, py, mz), player, settings);
-        RenderHelper.drawBeam(Vector(mx, py, mz), Vector(mx, py, pz), player, settings);
-        RenderHelper.drawBeam(Vector(mx, my, pz), Vector(px, my, pz), player, settings);
-        RenderHelper.drawBeam(Vector(mx, my, pz), Vector(mx, py, pz), player, settings);
+        // @todo RenderHelper.drawBeam(new Vector3f(px, my, mz), new Vector3f(px, py, mz), player, settings);
+        // @todo RenderHelper.drawBeam(new Vector3f(px, my, mz), new Vector3f(px, my, pz), player, settings);
+        // @todo RenderHelper.drawBeam(new Vector3f(mx, py, mz), new Vector3f(px, py, mz), player, settings);
+        // @todo RenderHelper.drawBeam(new Vector3f(mx, py, mz), new Vector3f(mx, py, pz), player, settings);
+        // @todo RenderHelper.drawBeam(new Vector3f(mx, my, pz), new Vector3f(px, my, pz), player, settings);
+        // @todo RenderHelper.drawBeam(new Vector3f(mx, my, pz), new Vector3f(mx, py, pz), player, settings);
 
-//        net.minecraft.util.math.Vec3d cameraPos = net.minecraft.client.renderer.ActiveRenderInfo.getCameraPosition();
+//        net.minecraft.util.math.vector.Vector3d cameraPos = net.minecraft.client.renderer.ActiveRenderInfo.getCameraPosition();
 //        tessellator.getBuffer().sortVertexData((float) (player.x + doubleX), (float) (player.y + doubleY), (float) (player.z + doubleZ));
 //        tessellator.getBuffer().sortVertexData((float)(cameraPos.x+doubleX), (float)(cameraPos.y+doubleY), (float)(cameraPos.z+doubleZ));
-        tessellator.draw();
+        tessellator.end();
 
-        GlStateManager.depthMask(true);
+        GlStateManager._depthMask(true);
         RenderSystem.enableLighting();
-        GlStateManager.enableDepthTest();
+        GlStateManager._enableDepthTest();
         RenderSystem.alphaFunc(GL11.GL_GREATER, 0.1F);
 
-        RenderSystem.popMatrix();
+        matrixStack.popPose();
     }
 
-    private void renderItemTransfers(AutoFieldTile te, double x, double y, double z) {
+    private void renderItemTransfers(MatrixStack matrixStack, AutoFieldTile te, double x, double y, double z) {
         te.clientRequestRenderInfo();
 
-        RenderSystem.pushMatrix();
-        RenderSystem.translated(x, y, z);
-        net.minecraft.client.renderer.RenderHelper.enableStandardItemLighting();
-        Minecraft.getInstance().gameRenderer.getLightTexture().disableLightmap();
+        matrixStack.pushPose();
+        matrixStack.translate(x, y, z);
+        net.minecraft.client.renderer.RenderHelper.turnBackOn();
+        Minecraft.getInstance().gameRenderer.lightTexture().turnOffLightLayer();
         RenderSystem.enableAlphaTest();
 
         TransferRender[] transferRenders = te.getTransferRenders();
@@ -150,25 +148,25 @@ public class AutoFieldRenderer extends TileEntityRenderer<AutoFieldTile> {
                         if (path != null) {
                             AutoFieldRenderInfo.Transfer transfer = renderInfo.getRandomTransfer(path);
                             if (transfer != null) {
-                                transferRenders[i] = new TransferRender(path, transfer, te.getPos());
+                                transferRenders[i] = new TransferRender(path, transfer, te.getBlockPos());
                             }
                         }
                     }
                 }
             } else {
-                if (!render.render()) {
+                if (!render.render(matrixStack)) {
                     transferRenders[i] = null;
                 }
             }
         }
-        Minecraft.getInstance().gameRenderer.getLightTexture().enableLightmap();
+        Minecraft.getInstance().gameRenderer.lightTexture().turnOnLightLayer();
         RenderSystem.disableAlphaTest();
 
-        RenderSystem.popMatrix();
+        matrixStack.popPose();
     }
 
     @Override
-    public boolean isGlobalRenderer(AutoFieldTile te) {
+    public boolean shouldRenderOffScreen(AutoFieldTile te) {
         return true;
     }
 

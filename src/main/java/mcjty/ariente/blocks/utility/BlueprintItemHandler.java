@@ -34,8 +34,8 @@ public class BlueprintItemHandler implements IItemHandler {
         // @todo optimize!
         storageList = new ArrayList<>();
         for (Direction value : OrientationTools.DIRECTION_VALUES) {
-            BlockPos offset = pos.offset(value);
-            TileEntity te = world.getTileEntity(offset);
+            BlockPos offset = pos.relative(value);
+            TileEntity te = world.getBlockEntity(offset);
             if (te instanceof BlueprintStorageTile) {
                 storageList.add(offset);
             }
@@ -57,7 +57,7 @@ public class BlueprintItemHandler implements IItemHandler {
             return ItemStack.EMPTY;
         }
         BlockPos pos = getStorages().get(slot / BlueprintStorageTile.BLUEPRINTS);
-        TileEntity te = world.getTileEntity(pos);
+        TileEntity te = world.getBlockEntity(pos);
         if (te instanceof BlueprintStorageTile) {
             BlueprintStorageTile storage = (BlueprintStorageTile) te;
             return storage.getItems().getStackInSlot(BlueprintStorageTile.SLOT_BLUEPRINT + slot % BlueprintStorageTile.BLUEPRINTS);
@@ -79,7 +79,7 @@ public class BlueprintItemHandler implements IItemHandler {
             return ItemStack.EMPTY;
         }
         BlockPos pos = getStorages().get(slot / BlueprintStorageTile.BLUEPRINTS);
-        TileEntity te = world.getTileEntity(pos);
+        TileEntity te = world.getBlockEntity(pos);
         if (te instanceof BlueprintStorageTile) {
             BlueprintStorageTile storage = (BlueprintStorageTile) te;
             return storage.getItems().extractItem(BlueprintStorageTile.SLOT_BLUEPRINT + slot % BlueprintStorageTile.BLUEPRINTS, amount, simulate);
@@ -94,7 +94,7 @@ public class BlueprintItemHandler implements IItemHandler {
             return 0;
         }
         BlockPos pos = getStorages().get(slot / BlueprintStorageTile.BLUEPRINTS);
-        TileEntity te = world.getTileEntity(pos);
+        TileEntity te = world.getBlockEntity(pos);
         if (te instanceof BlueprintStorageTile) {
             BlueprintStorageTile storage = (BlueprintStorageTile) te;
             return storage.getItems().getSlotLimit(BlueprintStorageTile.SLOT_BLUEPRINT + slot % BlueprintStorageTile.BLUEPRINTS);

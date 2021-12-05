@@ -10,6 +10,8 @@ import net.minecraft.entity.*;
 import net.minecraft.entity.ai.controller.MovementController;
 import net.minecraft.entity.ai.goal.Goal;
 import net.minecraft.entity.ai.goal.NearestAttackableTargetGoal;
+import net.minecraft.entity.ai.attributes.Attributes;
+import net.minecraft.entity.ai.attributes.AttributeModifierMap;
 import net.minecraft.entity.monster.IMob;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.nbt.CompoundNBT;
@@ -21,6 +23,7 @@ import net.minecraft.util.ResourceLocation;
 import net.minecraft.util.SoundCategory;
 import net.minecraft.util.SoundEvent;
 import net.minecraft.util.math.*;
+import net.minecraft.util.math.vector.Vector3d;
 import net.minecraft.world.Difficulty;
 import net.minecraft.world.IWorld;
 import net.minecraft.world.IWorldReader;
@@ -29,9 +32,11 @@ import net.minecraft.world.World;
 import javax.annotation.Nullable;
 import java.util.Random;
 
+import net.minecraft.entity.ai.controller.MovementController.Action;
+
 public class DroneEntity extends FlyingEntity implements IMob, IForcefieldImmunity, IDrone {
 
-    private static final DataParameter<Boolean> ATTACKING = EntityDataManager.createKey(DroneEntity.class, DataSerializers.BOOLEAN);
+    private static final DataParameter<Boolean> ATTACKING = EntityDataManager.defineId(DroneEntity.class, DataSerializers.BOOLEAN);
     public static final ResourceLocation LOOT = new ResourceLocation(Ariente.MODID, "entities/drone");
 
     // If this drone is controlled by a city then this will be set
@@ -41,8 +46,8 @@ public class DroneEntity extends FlyingEntity implements IMob, IForcefieldImmuni
         super(type, worldIn);
         // @todo 1.14
 //        this.isImmuneToFire = false;
-        this.experienceValue = 5;
-        this.moveController = new DroneMoveHelper(this);
+        this.xpReward = 5;
+        this.moveControl = new DroneMoveHelper(this);
     }
 
     public static DroneEntity create(World world, ChunkPos cityCenter) {
@@ -58,18 +63,18 @@ public class DroneEntity extends FlyingEntity implements IMob, IForcefieldImmuni
         this.goalSelector.addGoal(7, new AILookAround(this));
         this.goalSelector.addGoal(7, new AILaserAttack(this));
         this.targetSelector.addGoal(1, new NearestAttackableTargetGoal<>(this, PlayerEntity.class, 10, true, false, (p_213812_1_) -> {
-            return Math.abs(p_213812_1_.getPosY() - this.getPosY()) <= 4.0D;
+            return Math.abs(p_213812_1_.getY() - this.getY()) <= 4.0D;
         }));
     }
 
     // @todo 1.14
 //    @SideOnly(Side.CLIENT)
     public boolean isAttacking() {
-        return this.dataManager.get(ATTACKING).booleanValue();
+        return this.entityData.get(ATTACKING).booleanValue();
     }
 
     public void setAttacking(boolean attacking) {
-        this.dataManager.set(ATTACKING, Boolean.valueOf(attacking));
+        this.entityData.set(ATTACKING, Boolean.valueOf(attacking));
     }
 
     @Override
@@ -84,7 +89,7 @@ public class DroneEntity extends FlyingEntity implements IMob, IForcefieldImmuni
     public void tick() {
         super.tick();
 
-        if (!this.getEntityWorld().isRemote && this.getEntityWorld().getDifficulty() == Difficulty.PEACEFUL) {
+        if (!this.getCommandSenderWorld().isClientSide && this.getCommandSenderWorld().getDifficulty() == Difficulty.PEACEFUL) {
             this.remove();
         }
     }
@@ -93,30 +98,32 @@ public class DroneEntity extends FlyingEntity implements IMob, IForcefieldImmuni
      * Called when the entity is attacked.
      */
     @Override
-    public boolean attackEntityFrom(DamageSource source, float amount) {
+    public boolean hurt(DamageSource source, float amount) {
 // @todo 1.14
         //        if (this.isEntityInvulnerable(source)) {
 //            return false;
 //        } else {
-            return super.attackEntityFrom(source, amount);
+            return super.hurt(source, amount);
 //        }
     }
 
     @Override
-    protected void registerData() {
-        super.registerData();
-        this.dataManager.register(ATTACKING, Boolean.valueOf(false));
+    protected void defineSynchedData() {
+        super.defineSynchedData();
+        this.entityData.define(ATTACKING, Boolean.valueOf(false));
+    }
+
+    public static AttributeModifierMap.MutableAttribute registerAttributes() {
+        AttributeModifierMap.MutableAttribute attributes = LivingEntity.createLivingAttributes();
+        attributes
+            .add(Attributes.MAX_HEALTH, 30.0D)
+            .add(Attributes.FOLLOW_RANGE, 50.0D); // Configurable
+
+        return attributes;
     }
 
     @Override
-    protected void registerAttributes() {
-        super.registerAttributes();
-        this.getAttribute(SharedMonsterAttributes.MAX_HEALTH).setBaseValue(30.0D);
-        this.getAttribute(SharedMonsterAttributes.FOLLOW_RANGE).setBaseValue(50.0D);  // Configurable
-    }
-
-    @Override
-    public SoundCategory getSoundCategory() {
+    public SoundCategory getSoundSource() {
         return SoundCategory.HOSTILE;
     }
 
@@ -137,7 +144,7 @@ public class DroneEntity extends FlyingEntity implements IMob, IForcefieldImmuni
     }
 
     @Override
-    protected ResourceLocation getLootTable() {
+    protected ResourceLocation getDefaultLootTable() {
         return LOOT;
     }
 
@@ -150,13 +157,13 @@ public class DroneEntity extends FlyingEntity implements IMob, IForcefieldImmuni
     }
 
     @Override
-    public boolean canSpawn(IWorld worldIn, SpawnReason spawnReasonIn) {
-        boolean b = (this.rand.nextInt(100) == 0) && super.canSpawn(worldIn, spawnReasonIn) && this.getEntityWorld().getDifficulty() != Difficulty.PEACEFUL;
+    public boolean checkSpawnRules(IWorld worldIn, SpawnReason spawnReasonIn) {
+        boolean b = (this.random.nextInt(100) == 0) && super.checkSpawnRules(worldIn, spawnReasonIn) && this.getCommandSenderWorld().getDifficulty() != Difficulty.PEACEFUL;
         return b;
     }
 
     @Override
-    public boolean isNotColliding(IWorldReader worldIn) {
+    public boolean checkSpawnObstruction(IWorldReader worldIn) {
         return true;
     }
 
@@ -164,15 +171,15 @@ public class DroneEntity extends FlyingEntity implements IMob, IForcefieldImmuni
      * Will return how many at most can spawn in a chunk at once.
      */
     @Override
-    public int getMaxSpawnedInChunk() {
+    public int getMaxSpawnClusterSize() {
         return 1;
     }
 
     @Override
-    public void setAttackTarget(@Nullable LivingEntity entitylivingbaseIn) {
-        super.setAttackTarget(entitylivingbaseIn);
+    public void setTarget(@Nullable LivingEntity entitylivingbaseIn) {
+        super.setTarget(entitylivingbaseIn);
         if (entitylivingbaseIn instanceof PlayerEntity && cityCenter != null) {
-            ICityAISystem aiSystem = ArienteWorldCompat.getCityAISystem(world);
+            ICityAISystem aiSystem = ArienteWorldCompat.getCityAISystem(level);
             ICityAI cityAI = aiSystem.getCityAI(cityCenter);
             cityAI.playerSpotted((PlayerEntity) entitylivingbaseIn);
             aiSystem.saveSystem();
@@ -183,8 +190,8 @@ public class DroneEntity extends FlyingEntity implements IMob, IForcefieldImmuni
      * (abstract) Protected helper method to write subclass entity data to NBT.
      */
     @Override
-    public void writeAdditional(CompoundNBT compound) {
-        super.writeAdditional(compound);
+    public void addAdditionalSaveData(CompoundNBT compound) {
+        super.addAdditionalSaveData(compound);
         if (cityCenter != null) {
             compound.putInt("cityX", cityCenter.x);
             compound.putInt("cityZ", cityCenter.z);
@@ -195,8 +202,8 @@ public class DroneEntity extends FlyingEntity implements IMob, IForcefieldImmuni
      * (abstract) Protected helper method to read subclass entity data from NBT.
      */
     @Override
-    public void readAdditional(CompoundNBT compound) {
-        super.readAdditional(compound);
+    public void readAdditionalSaveData(CompoundNBT compound) {
+        super.readAdditionalSaveData(compound);
         if (compound.contains("cityX")) {
             cityCenter = new ChunkPos(compound.getInt("cityX"), compound.getInt("cityZ"));
         }
@@ -220,15 +227,15 @@ public class DroneEntity extends FlyingEntity implements IMob, IForcefieldImmuni
          * Returns whether the EntityAIBase should begin execution.
          */
         @Override
-        public boolean shouldExecute() {
-            return this.drone.getAttackTarget() != null;
+        public boolean canUse() {
+            return this.drone.getTarget() != null;
         }
 
         /**
          * Execute a one shot task or start executing a continuous task
          */
         @Override
-        public void startExecuting() {
+        public void start() {
             this.attackTimer = 0;
         }
 
@@ -236,7 +243,7 @@ public class DroneEntity extends FlyingEntity implements IMob, IForcefieldImmuni
          * Resets the task
          */
         @Override
-        public void resetTask() {
+        public void stop() {
             this.drone.setAttacking(false);
         }
 
@@ -245,11 +252,11 @@ public class DroneEntity extends FlyingEntity implements IMob, IForcefieldImmuni
          */
         @Override
         public void tick() {
-            LivingEntity target = this.drone.getAttackTarget();
+            LivingEntity target = this.drone.getTarget();
             double d0 = 64.0D;
 
-            if (target.getDistanceSq(this.drone) < 4096.0D && this.drone.canEntityBeSeen(target)) {
-                World world = this.drone.getEntityWorld();
+            if (target.distanceToSqr(this.drone) < 4096.0D && this.drone.canSee(target)) {
+                World world = this.drone.getCommandSenderWorld();
                 ++this.attackTimer;
 
                 if (this.attackTimer == 10) {
@@ -258,13 +265,13 @@ public class DroneEntity extends FlyingEntity implements IMob, IForcefieldImmuni
 
                 if (this.attackTimer == 20) {
                     double d1 = 4.0D;
-                    Vec3d vec3d = this.drone.getLook(1.0F);
+                    Vector3d vec3d = this.drone.getViewVector(1.0F);
 
 //                    world.playSound(null, target.getPosX() - vec3d.x * 8.0d, target.getPosY() - vec3d.y * 8.0d, target.getPosZ() - vec3d.z * 8.0d, ModSounds.droneShoot, SoundCategory.HOSTILE, 5.0f, 1.0f);
 
-                    double d2 = target.getPosX() - (this.drone.getPosX() + vec3d.x * 4.0D);
-                    double d3 = target.getBoundingBox().minY + ((target.getHeight()+2) / 2.0F) - (0.5D + this.drone.getPosY() + (this.drone.getHeight() / 2.0F));
-                    double d4 = target.getPosZ() - (this.drone.getPosZ() + vec3d.z * 4.0D);
+                    double d2 = target.getX() - (this.drone.getX() + vec3d.x * 4.0D);
+                    double d3 = target.getBoundingBox().minY + ((target.getBbHeight()+2) / 2.0F) - (0.5D + this.drone.getY() + (this.drone.getBbHeight() / 2.0F));
+                    double d4 = target.getZ() - (this.drone.getZ() + vec3d.z * 4.0D);
 //                    world.playEvent(null, 1016, new BlockPos(this.parentEntity), 0);
 //                    for (int i = 0; i < world.playerEntities.size(); ++i) {
 //                        world.playSound(world.playerEntities.get(i), d2, d3, d4, ModSounds.droneShoot, SoundCategory.HOSTILE, 1.0f, 1.0f);
@@ -274,20 +281,20 @@ public class DroneEntity extends FlyingEntity implements IMob, IForcefieldImmuni
 //                    world.playEvent((PlayerEntity)null, 1016, new BlockPos(this.drone), 0);
 
                     LaserEntity laser = LaserEntity.create(world, this.drone, d2, d3, d4);
-                    double laserX = this.drone.getPosX() + vec3d.x * 2.0D;
-                    double laserY = this.drone.getPosY() + (this.drone.getHeight() / 2.0F) + 0.5D;
-                    double laserZ = this.drone.getPosZ() + vec3d.z * 2.0D;
-                    laser.setRawPosition(laserX, laserY, laserZ); // @todo 1.15 is this right?
+                    double laserX = this.drone.getX() + vec3d.x * 2.0D;
+                    double laserY = this.drone.getY() + (this.drone.getBbHeight() / 2.0F) + 0.5D;
+                    double laserZ = this.drone.getZ() + vec3d.z * 2.0D;
+                    laser.setPosRaw(laserX, laserY, laserZ); // @todo 1.15 is this right?
 
-                    double dx = target.getPosX() - laser.getPosX();
-                    double dy = target.getPosY() + target.getEyeHeight() - laser.getPosY() + 0;
-                    double dz = target.getPosZ() - laser.getPosZ();
+                    double dx = target.getX() - laser.getX();
+                    double dy = target.getY() + target.getEyeHeight() - laser.getY() + 0;
+                    double dz = target.getZ() - laser.getZ();
                     double dpitch = MathHelper.sqrt(dx * dx + dz * dz);
 //                    float f = (float)(MathHelper.atan2(d2, d0) * (180D / Math.PI)) - 90.0F;
                     float f1 = (float)(-(MathHelper.atan2(dy, dpitch) * (180D / Math.PI)));
                     laser.setSpawnYawPitch(laser.getSpawnYaw(), f1);
 
-                    world.addEntity(laser);
+                    world.addFreshEntity(laser);
                     this.attackTimer = -40;
                 }
             } else if (this.attackTimer > 0) {
@@ -311,7 +318,7 @@ public class DroneEntity extends FlyingEntity implements IMob, IForcefieldImmuni
          * Returns whether the EntityAIBase should begin execution.
          */
         @Override
-        public boolean shouldExecute() {
+        public boolean canUse() {
             return true;
         }
 
@@ -320,18 +327,18 @@ public class DroneEntity extends FlyingEntity implements IMob, IForcefieldImmuni
          */
         @Override
         public void tick() {
-            if (this.parentEntity.getAttackTarget() == null) {
-                this.parentEntity.rotationYaw = -((float) MathHelper.atan2(this.parentEntity.getMotion().x, this.parentEntity.getMotion().z)) * (180F / (float) Math.PI);
-                this.parentEntity.renderYawOffset = this.parentEntity.rotationYaw;
+            if (this.parentEntity.getTarget() == null) {
+                this.parentEntity.yRot = -((float) MathHelper.atan2(this.parentEntity.getDeltaMovement().x, this.parentEntity.getDeltaMovement().z)) * (180F / (float) Math.PI);
+                this.parentEntity.yBodyRot = this.parentEntity.yRot;
             } else {
-                LivingEntity entitylivingbase = this.parentEntity.getAttackTarget();
+                LivingEntity entitylivingbase = this.parentEntity.getTarget();
                 double d0 = 64.0D;
 
-                if (entitylivingbase.getDistanceSq(this.parentEntity) < 4096.0D) {
-                    double d1 = entitylivingbase.getPosX() - this.parentEntity.getPosX();
-                    double d2 = entitylivingbase.getPosZ() - this.parentEntity.getPosZ();
-                    this.parentEntity.rotationYaw = -((float) MathHelper.atan2(d1, d2)) * (180F / (float) Math.PI);
-                    this.parentEntity.renderYawOffset = this.parentEntity.rotationYaw;
+                if (entitylivingbase.distanceToSqr(this.parentEntity) < 4096.0D) {
+                    double d1 = entitylivingbase.getX() - this.parentEntity.getX();
+                    double d2 = entitylivingbase.getZ() - this.parentEntity.getZ();
+                    this.parentEntity.yRot = -((float) MathHelper.atan2(d1, d2)) * (180F / (float) Math.PI);
+                    this.parentEntity.yBodyRot = this.parentEntity.yRot;
                 }
             }
         }
@@ -350,15 +357,15 @@ public class DroneEntity extends FlyingEntity implements IMob, IForcefieldImmuni
          * Returns whether the EntityAIBase should begin execution.
          */
         @Override
-        public boolean shouldExecute() {
-            MovementController controller = this.parentEntity.getMoveHelper();
+        public boolean canUse() {
+            MovementController controller = this.parentEntity.getMoveControl();
 
-            if (!controller.isUpdating()) {
+            if (!controller.hasWanted()) {
                 return true;
             } else {
-                double d0 = controller.getX() - this.parentEntity.getPosX();
-                double d1 = controller.getY() - this.parentEntity.getPosY();
-                double d2 = controller.getZ() - this.parentEntity.getPosZ();
+                double d0 = controller.getWantedX() - this.parentEntity.getX();
+                double d1 = controller.getWantedY() - this.parentEntity.getY();
+                double d2 = controller.getWantedZ() - this.parentEntity.getZ();
                 double d3 = d0 * d0 + d1 * d1 + d2 * d2;
                 return d3 < 1.0D || d3 > 3600.0D;
             }
@@ -368,7 +375,7 @@ public class DroneEntity extends FlyingEntity implements IMob, IForcefieldImmuni
          * Returns whether an in-progress EntityAIBase should continue executing
          */
         @Override
-        public boolean shouldContinueExecuting() {
+        public boolean canContinueToUse() {
             return false;
         }
 
@@ -376,20 +383,20 @@ public class DroneEntity extends FlyingEntity implements IMob, IForcefieldImmuni
          * Execute a one shot task or start executing a continuous task
          */
         @Override
-        public void startExecuting() {
+        public void start() {
             if (parentEntity.cityCenter == null) {
-                Random random = this.parentEntity.getRNG();
-                double d0 = this.parentEntity.getPosX() + ((random.nextFloat() * 2.0F - 1.0F) * 32.0F);
-                double d1 = this.parentEntity.getPosY() + ((random.nextFloat() * 2.0F - 1.0F) * 32.0F);
-                double d2 = this.parentEntity.getPosZ() + ((random.nextFloat() * 2.0F - 1.0F) * 32.0F);
-                this.parentEntity.getMoveHelper().setMoveTo(d0, d1, d2, 1.0D);
+                Random random = this.parentEntity.getRandom();
+                double d0 = this.parentEntity.getX() + ((random.nextFloat() * 2.0F - 1.0F) * 32.0F);
+                double d1 = this.parentEntity.getY() + ((random.nextFloat() * 2.0F - 1.0F) * 32.0F);
+                double d2 = this.parentEntity.getZ() + ((random.nextFloat() * 2.0F - 1.0F) * 32.0F);
+                this.parentEntity.getMoveControl().setWantedPosition(d0, d1, d2, 1.0D);
             } else {
                 // City controls movement
-                ICityAISystem aiSystem = ArienteWorldCompat.getCityAISystem(parentEntity.world);
+                ICityAISystem aiSystem = ArienteWorldCompat.getCityAISystem(parentEntity.level);
                 ICityAI cityAI = aiSystem.getCityAI(parentEntity.cityCenter);
-                BlockPos pos = cityAI.requestNewDronePosition(parentEntity.world, parentEntity.getAttackTarget());
+                BlockPos pos = cityAI.requestNewDronePosition(parentEntity.level, parentEntity.getTarget());
                 if (pos != null) {
-                    this.parentEntity.getMoveHelper().setMoveTo(pos.getX(), pos.getY(), pos.getZ(), 2.0D);
+                    this.parentEntity.getMoveControl().setWantedPosition(pos.getX(), pos.getY(), pos.getZ(), 2.0D);
                 }
             }
         }
@@ -406,26 +413,26 @@ public class DroneEntity extends FlyingEntity implements IMob, IForcefieldImmuni
 
         @Override
         public void tick() {
-            if (this.action == Action.MOVE_TO) {
-                double d0 = this.posX - this.parentEntity.getPosX();
-                double d1 = this.posY - this.parentEntity.getPosY();
-                double d2 = this.posZ - this.parentEntity.getPosZ();
+            if (this.operation == Action.MOVE_TO) {
+                double d0 = this.wantedX - this.parentEntity.getX();
+                double d1 = this.wantedY - this.parentEntity.getY();
+                double d2 = this.wantedZ - this.parentEntity.getZ();
                 double d3 = d0 * d0 + d1 * d1 + d2 * d2;
 
                 if (this.courseChangeCooldown-- <= 0) {
-                    this.courseChangeCooldown += this.parentEntity.getRNG().nextInt(5) + 2;
+                    this.courseChangeCooldown += this.parentEntity.getRandom().nextInt(5) + 2;
                     d3 = Math.sqrt(d3);
 
-                    if (this.isNotColliding(this.posX, this.posY, this.posZ, d3)) {
-                        double motionX = this.parentEntity.getMotion().x;
-                        double motionY = this.parentEntity.getMotion().y;
-                        double motionZ = this.parentEntity.getMotion().z;
+                    if (this.isNotColliding(this.wantedX, this.wantedY, this.wantedZ, d3)) {
+                        double motionX = this.parentEntity.getDeltaMovement().x;
+                        double motionY = this.parentEntity.getDeltaMovement().y;
+                        double motionZ = this.parentEntity.getDeltaMovement().z;
                         motionX += d0 / d3 * 0.1D;
                         motionY += d1 / d3 * 0.1D;
                         motionZ += d2 / d3 * 0.1D;
-                        parentEntity.setMotion(motionX, motionY, motionZ);
+                        parentEntity.setDeltaMovement(motionX, motionY, motionZ);
                     } else {
-                        this.action = Action.WAIT;
+                        this.operation = Action.WAIT;
                     }
                 }
             }
@@ -435,13 +442,13 @@ public class DroneEntity extends FlyingEntity implements IMob, IForcefieldImmuni
          * Checks if entity bounding box is not colliding with terrain
          */
         private boolean isNotColliding(double x, double y, double z, double p_179926_7_) {
-            double d0 = (x - this.parentEntity.getPosX()) / p_179926_7_;
-            double d1 = (y - this.parentEntity.getPosY()) / p_179926_7_;
-            double d2 = (z - this.parentEntity.getPosZ()) / p_179926_7_;
+            double d0 = (x - this.parentEntity.getX()) / p_179926_7_;
+            double d1 = (y - this.parentEntity.getY()) / p_179926_7_;
+            double d2 = (z - this.parentEntity.getZ()) / p_179926_7_;
             AxisAlignedBB axisalignedbb = this.parentEntity.getBoundingBox();
 
             for (int i = 1; i < p_179926_7_; ++i) {
-                axisalignedbb = axisalignedbb.offset(d0, d1, d2);
+                axisalignedbb = axisalignedbb.move(d0, d1, d2);
 
                 // @todo 1.14
 //                if (!this.parentEntity.getEntityWorld().getCollisionBoxes(this.parentEntity, axisalignedbb).isEmpty()) {

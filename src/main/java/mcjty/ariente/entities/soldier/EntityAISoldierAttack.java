@@ -16,8 +16,8 @@ public class EntityAISoldierAttack extends MeleeAttackGoal {
      * Execute a one shot task or start executing a continuous task
      */
     @Override
-    public void startExecuting() {
-        super.startExecuting();
+    public void start() {
+        super.start();
         this.raiseArmTicks = 0;
     }
 
@@ -25,8 +25,8 @@ public class EntityAISoldierAttack extends MeleeAttackGoal {
      * Resets the task
      */
     @Override
-    public void resetTask() {
-        super.resetTask();
+    public void stop() {
+        super.stop();
         this.raisable.setArmsRaised(false);
     }
 
@@ -38,7 +38,7 @@ public class EntityAISoldierAttack extends MeleeAttackGoal {
         super.tick();
         ++this.raiseArmTicks;
 
-        if (this.raiseArmTicks >= 5 && this.attackTick < 10) {
+        if (this.raiseArmTicks >= 5 && this.getTicksUntilNextAttack() < 10) {
             this.raisable.setArmsRaised(true);
         } else {
             this.raisable.setArmsRaised(false);

@@ -47,7 +47,7 @@ public enum NodeOrientation implements IStringSerializable {
     }
 
     @Override
-    public String getName() {
+    public String getSerializedName() {
         return name;
     }
 

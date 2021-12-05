@@ -45,7 +45,7 @@ public class KeyBindings {
 
     private static void performFlyAction(FlyAction forward) {
         // First check if we're actually on a ship
-        if (Minecraft.getInstance().player.getRidingEntity() instanceof FluxShipEntity) {
+        if (Minecraft.getInstance().player.getVehicle() instanceof FluxShipEntity) {
             toServer(new PacketShipAction(forward));
         }
     }

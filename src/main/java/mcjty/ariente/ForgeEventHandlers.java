@@ -20,12 +20,13 @@ import net.minecraft.util.DamageSource;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.IWorld;
 import net.minecraft.world.World;
-import net.minecraft.world.dimension.DimensionType;
-import net.minecraft.world.storage.loot.LootContext;
-import net.minecraft.world.storage.loot.LootFunction;
-import net.minecraft.world.storage.loot.LootPool;
-import net.minecraft.world.storage.loot.LootTables;
-import net.minecraft.world.storage.loot.conditions.ILootCondition;
+import net.minecraft.world.DimensionType;
+import net.minecraft.loot.LootContext;
+import net.minecraft.loot.LootFunction;
+import net.minecraft.loot.LootFunctionType;
+import net.minecraft.loot.LootPool;
+import net.minecraft.loot.LootTables;
+import net.minecraft.loot.conditions.ILootCondition;
 import net.minecraftforge.event.LootTableLoadEvent;
 import net.minecraftforge.event.TickEvent;
 import net.minecraftforge.event.entity.EntityJoinWorldEvent;
@@ -39,22 +40,28 @@ public class ForgeEventHandlers {
     @SubscribeEvent
     public void onLootLoad(LootTableLoadEvent event) {
         if (WorldgenConfiguration.doDungeonLoot()) {
-            if (event.getName().equals(LootTables.CHESTS_ABANDONED_MINESHAFT) ||
-                    event.getName().equals(LootTables.CHESTS_IGLOO_CHEST) ||
-                    event.getName().equals(LootTables.CHESTS_DESERT_PYRAMID) ||
-                    event.getName().equals(LootTables.CHESTS_JUNGLE_TEMPLE) ||
-                    event.getName().equals(LootTables.CHESTS_NETHER_BRIDGE) ||
-                    event.getName().equals(LootTables.CHESTS_SIMPLE_DUNGEON) ||
-                    event.getName().equals(LootTables.CHESTS_VILLAGE_VILLAGE_TOOLSMITH)) {
+            if (event.getName().equals(LootTables.ABANDONED_MINESHAFT) ||
+                    event.getName().equals(LootTables.IGLOO_CHEST) ||
+                    event.getName().equals(LootTables.DESERT_PYRAMID) ||
+                    event.getName().equals(LootTables.JUNGLE_TEMPLE) ||
+                    event.getName().equals(LootTables.NETHER_BRIDGE) ||
+                    event.getName().equals(LootTables.SIMPLE_DUNGEON) ||
+                    event.getName().equals(LootTables.VILLAGE_TOOLSMITH)) {
                 LootPool main = event.getTable().getPool("main");
                 // Safety, check if the main lootpool is still present
                 if (main != null) {
                     if (WorldgenConfiguration.OVERWORLD_LOOT_BLUEPRINTS.get() > 0) {
                         LootFunction lootFunction = new LootFunction(new ILootCondition[0]) {
                             @Override
-                            protected ItemStack doApply(ItemStack stack, LootContext context) {
+                            protected ItemStack run(ItemStack stack, LootContext context) {
                                 ConstructorRecipe recipe = BlueprintRecipeRegistry.getRandomRecipes().getRandom();
                                 return BlueprintItem.makeBluePrint(recipe.getDestination());
+                            }
+
+                            @Override
+                            public LootFunctionType getType() {
+                                // TODO Auto-generated method stub
+                                return null;
                             }
                         };
                         // @todo 1.14
@@ -64,9 +71,15 @@ public class ForgeEventHandlers {
                     if (WorldgenConfiguration.OVERWORLD_LOOT_ITEMS.get() > 0) {
                         LootFunction lootFunction = new LootFunction(new ILootCondition[0]) {
                             @Override
-                            public ItemStack doApply(ItemStack stack, LootContext context) {
+                            public ItemStack run(ItemStack stack, LootContext context) {
                                 ConstructorRecipe recipe = BlueprintRecipeRegistry.getRandomRecipes().getRandom();
                                 return recipe.getDestination();
+                            }
+
+                            @Override
+                            public LootFunctionType getType() {
+                                // TODO Auto-generated method stub
+                                return null;
                             }
                         };
                         // @todo 1.14
@@ -104,14 +117,14 @@ public class ForgeEventHandlers {
 
     @SubscribeEvent
     public void onWorldTick(TickEvent.WorldTickEvent event) {
-        if (event.phase == TickEvent.Phase.START && !event.world.isRemote && event.world.getDimension().getType() == DimensionType.OVERWORLD) {
+        if (event.phase == TickEvent.Phase.START && !event.world.isClientSide && event.world.dimension() == World.OVERWORLD) {
             PowerSystem.getPowerSystem(event.world).tick();
         }
     }
 
     @SubscribeEvent
     public void onLivingFall(LivingFallEvent event) {
-        ItemStack feetStack = event.getEntityLiving().getItemStackFromSlot(EquipmentSlotType.FEET);
+        ItemStack feetStack = event.getEntityLiving().getItemBySlot(EquipmentSlotType.FEET);
         if (feetStack.getItem() == Registration.POWERSUIT_FEET.get()) {
             if (ModuleSupport.hasWorkingUpgrade(feetStack, ArmorUpgradeType.FEATHERFALLING)) {
                 event.setCanceled(true);
@@ -122,9 +135,9 @@ public class ForgeEventHandlers {
     @SubscribeEvent
     public void onDamage(LivingDamageEvent event) {
         Entity entity = event.getEntity();
-        World world = entity.getEntityWorld();
-        if (!world.isRemote && entity instanceof LivingEntity) {
-            ItemStack chestStack = ((LivingEntity) entity).getItemStackFromSlot(EquipmentSlotType.CHEST);
+        World world = entity.getCommandSenderWorld();
+        if (!world.isClientSide && entity instanceof LivingEntity) {
+            ItemStack chestStack = ((LivingEntity) entity).getItemBySlot(EquipmentSlotType.CHEST);
             if (chestStack.getItem() == Registration.POWERSUIT_CHEST.get()) {
                 if (ModuleSupport.hasWorkingUpgrade(chestStack, ArmorUpgradeType.FORCEFIELD)) {
                     float damage = event.getAmount();
@@ -133,7 +146,7 @@ public class ForgeEventHandlers {
                         event.setAmount(damage / 5);
                     } else if (source.isProjectile()) {
                         event.setCanceled(true);
-                    } else if (!source.isUnblockable()) {
+                    } else if (!source.isBypassArmor()) {
                         event.setAmount(damage / 2);
                     }
                 }
@@ -149,7 +162,7 @@ public class ForgeEventHandlers {
     private void onBlockBreakNormal(BlockEvent.BreakEvent event) {
         IWorld world = event.getWorld();
         BlockPos pos = event.getPos();
-        TileEntity te = world.getTileEntity(pos);
+        TileEntity te = world.getBlockEntity(pos);
         if (te instanceof ILockable) {
             if (((ILockable) te).isLocked()) {
                 event.setCanceled(true);
@@ -160,7 +173,7 @@ public class ForgeEventHandlers {
     @SubscribeEvent
     public void onEntityJoin(EntityJoinWorldEvent event) {
         World world = event.getWorld();
-        if (world.isRemote) {
+        if (world.isClientSide) {
             Entity entity = event.getEntity();
             if (entity instanceof FluxLevitatorEntity) {
                 FluxLevitatorSounds.playMovingSoundClient((FluxLevitatorEntity) entity);

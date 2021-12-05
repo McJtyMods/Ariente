@@ -9,8 +9,8 @@ import mcjty.ariente.setup.Registration;
 import mcjty.lib.client.RenderHelper;
 import net.minecraft.block.BlockState;
 import net.minecraft.client.renderer.IRenderTypeBuffer;
-import net.minecraft.client.renderer.Matrix4f;
-import net.minecraft.client.renderer.Vector3f;
+import net.minecraft.util.math.vector.Matrix4f;
+import net.minecraft.util.math.vector.Vector3f;
 import net.minecraft.client.renderer.texture.TextureAtlasSprite;
 import net.minecraft.client.renderer.tileentity.TileEntityRenderer;
 import net.minecraft.client.renderer.tileentity.TileEntityRendererDispatcher;
@@ -28,17 +28,17 @@ public class DoorMarkerRenderer extends TileEntityRenderer<DoorMarkerTile> {
 
     @Override
     public void render(DoorMarkerTile te, float partialTicks, MatrixStack matrixStack, IRenderTypeBuffer buffer, int combinedLightIn, int combinedOverlayIn) {
-        BlockState state = te.getWorld().getBlockState(te.getPos());
+        BlockState state = te.getLevel().getBlockState(te.getBlockPos());
         if (state.getBlock() != Registration.DOOR_MARKER.get()) {
             return;
         }
 
-        matrixStack.push();
+        matrixStack.pushPose();
 
         Direction frontDirection = Registration.DOOR_MARKER.get().getFrontDirection(state);
         if (Direction.NORTH.equals(frontDirection) || Direction.SOUTH.equals(frontDirection)) {
             matrixStack.translate(0, 0, .5);
-            matrixStack.rotate(Vector3f.YP.rotationDegrees(90));
+            matrixStack.mulPose(Vector3f.YP.rotationDegrees(90));
         } else {
             matrixStack.translate(.5, 0, 0);
         }
@@ -47,7 +47,7 @@ public class DoorMarkerRenderer extends TileEntityRenderer<DoorMarkerTile> {
         int iconIndex = te.getIconIndex();
         renderDoorSegment(matrixStack, buffer, openphase, iconIndex, combinedLightIn, combinedOverlayIn);
 
-        matrixStack.pop();
+        matrixStack.popPose();
     }
 
     public static void renderDoorSegment(MatrixStack matrixStack, IRenderTypeBuffer buffer, int openphase, int iconIndex, int combinedLightIn, int combinedOverlayIn) {
@@ -57,10 +57,10 @@ public class DoorMarkerRenderer extends TileEntityRenderer<DoorMarkerTile> {
         float u = (iconIndex % 4);
         float v = (iconIndex / 4);
 
-        float du = (sprite.getMaxU() - sprite.getMinU()) / 8.0f;
-        float dv = (sprite.getMaxV() - sprite.getMinV()) / 4.0f;
-        u = sprite.getMinU() + u * du;
-        v = sprite.getMinV() + v * dv;
+        float du = (sprite.getU1() - sprite.getU0()) / 8.0f;
+        float dv = (sprite.getV1() - sprite.getV0()) / 4.0f;
+        u = sprite.getU0() + u * du;
+        v = sprite.getV0() + v * dv;
 
         if (openphase < 1000) {
 
@@ -69,7 +69,7 @@ public class DoorMarkerRenderer extends TileEntityRenderer<DoorMarkerTile> {
             float o = openphase / 2000.0f;
             float p = 1 - o;
 
-            Matrix4f matrix = matrixStack.getLast().getMatrix();
+            Matrix4f matrix = matrixStack.last().pose();
 
             RenderHelper.vt(builder, matrix, -0.1f, o, o, u, v, combinedLightIn, combinedOverlayIn, 255, 255, 255, 255);
             RenderHelper.vt(builder, matrix, -0.1f, o, p, u+du, v, combinedLightIn, combinedOverlayIn, 255, 255, 255, 255);

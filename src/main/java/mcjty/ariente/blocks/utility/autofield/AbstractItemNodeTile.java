@@ -21,7 +21,7 @@ public abstract class AbstractItemNodeTile extends AbstractNodeTile {
             if (component instanceof IPlayerInventory) {
                 int selected = ((IPlayerInventory) component).getSelected();
                 if (selected != -1) {
-                    ItemStack extracted = player.inventory.getStackInSlot(selected);
+                    ItemStack extracted = player.inventory.getItem(selected);
                     if (!extracted.isEmpty()) {
                         ItemHandlerHelper.insertItem(filter, extracted, false);
                         notifyField();

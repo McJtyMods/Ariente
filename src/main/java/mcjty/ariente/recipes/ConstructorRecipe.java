@@ -52,17 +52,17 @@ public class ConstructorRecipe implements IRecipe<ConstructorContext> {
     }
 
     @Override
-    public ItemStack getCraftingResult(ConstructorContext inv) {
+    public ItemStack assemble(ConstructorContext inv) {
         return null;
     }
 
     @Override
-    public boolean canFit(int width, int height) {
+    public boolean canCraftInDimensions(int width, int height) {
         return true;
     }
 
     @Override
-    public ItemStack getRecipeOutput() {
+    public ItemStack getResultItem() {
         return destination;
     }
 

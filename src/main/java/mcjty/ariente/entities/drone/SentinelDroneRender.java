@@ -19,7 +19,7 @@ public class SentinelDroneRender extends LivingRenderer<SentinelDroneEntity, Dro
      * Returns the location of an entity's texture. Doesn't seem to be called unless you call Render.bindEntityTexture.
      */
     @Override
-    public ResourceLocation getEntityTexture(SentinelDroneEntity entity) {
+    public ResourceLocation getTextureLocation(SentinelDroneEntity entity) {
         return mobTexture;
     }
 
@@ -27,10 +27,10 @@ public class SentinelDroneRender extends LivingRenderer<SentinelDroneEntity, Dro
 
 
     @Override
-    protected void preRenderCallback(SentinelDroneEntity entitylivingbaseIn, MatrixStack matrixStackIn, float partialTickTime) {
+    protected void scale(SentinelDroneEntity entitylivingbaseIn, MatrixStack matrixStackIn, float partialTickTime) {
 //        GlStateManager.scale(1.5F, 1.5F, 1.5F);
-        GlStateManager.scalef(1F, 1F, 1F);
-        GlStateManager.color4f(1.0F, 1.0F, 1.0F, 1.0F);
+        GlStateManager._scalef(1F, 1F, 1F);
+        GlStateManager._color4f(1.0F, 1.0F, 1.0F, 1.0F);
     }
 
     public static final Factory FACTORY = new Factory();

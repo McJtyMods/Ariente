@@ -19,51 +19,51 @@ public class FluxElevatorModel extends EntityModel {
     public ModelRenderer sideModelsS2;
 
     public FluxElevatorModel() {
-        this.textureWidth = 64;
-        this.textureHeight = 32;
+        this.texWidth = 64;
+        this.texHeight = 32;
         this.sideModels3 = new ModelRenderer(this, 0, 0);
-        this.sideModels3.setRotationPoint(15.0F, 4.0F, 0.0F);
+        this.sideModels3.setPos(15.0F, 4.0F, 0.0F);
         this.sideModels3.addBox(-8.0F, -10.0F, 4.0F, 16, 9, 2, 0.0F);
         this.setRotateAngle(sideModels3, 0.0F, 1.5707963267948966F, 0.0F);
         this.sideModelsS1 = new ModelRenderer(this, 0, 0);
-        this.sideModelsS1.setRotationPoint(-15.0F, 4.0F, 0.0F);
+        this.sideModelsS1.setPos(-15.0F, 4.0F, 0.0F);
         this.sideModelsS1.addBox(6.5F, -19.5F, 5.0F, 2, 11, 2, 0.0F);
         this.setRotateAngle(sideModelsS1, 0.0F, 4.71238898038469F, 0.17453292519943295F);
         this.sideModels5 = new ModelRenderer(this, 0, 0);
-        this.sideModels5.setRotationPoint(0.0F, 4.0F, 7.0F);
+        this.sideModels5.setPos(0.0F, 4.0F, 7.0F);
         this.sideModels5.addBox(-14.0F, -10.0F, 0.5F, 28, 9, 2, 0.0F);
         this.sideModelsS2 = new ModelRenderer(this, 0, 0);
-        this.sideModelsS2.setRotationPoint(-15.0F, 4.0F, 0.0F);
+        this.sideModelsS2.setPos(-15.0F, 4.0F, 0.0F);
         this.sideModelsS2.addBox(-8.5F, -19.5F, 5.0F, 2, 11, 2, 0.0F);
         this.setRotateAngle(sideModelsS2, 0.0F, 4.71238898038469F, 0.17453292519943295F);
         this.sideModelsS4 = new ModelRenderer(this, 0, 0);
-        this.sideModelsS4.setRotationPoint(15.0F, 4.0F, 0.0F);
+        this.sideModelsS4.setPos(15.0F, 4.0F, 0.0F);
         this.sideModelsS4.addBox(-8.5F, -19.5F, -6.5F, 2, 11, 2, 0.0F);
         this.setRotateAngle(sideModelsS4, 0.0F, 4.71238898038469F, -0.17453292519943295F);
         this.sideModels2 = new ModelRenderer(this, 0, 0);
-        this.sideModels2.setRotationPoint(-15.0F, 4.0F, 0.0F);
+        this.sideModels2.setPos(-15.0F, 4.0F, 0.0F);
         this.sideModels2.addBox(-8.0F, -10.0F, 4.0F, 16, 9, 2, 0.0F);
         this.setRotateAngle(sideModels2, 0.0F, 4.71238898038469F, 0.0F);
         this.sideModels4 = new ModelRenderer(this, 0, 0);
-        this.sideModels4.setRotationPoint(0.0F, 4.0F, -7.0F);
+        this.sideModels4.setPos(0.0F, 4.0F, -7.0F);
         this.sideModels4.addBox(-14.0F, -10.0F, 0.5F, 28, 9, 2, 0.0F);
         this.setRotateAngle(sideModels4, 0.0F, 3.141592653589793F, 0.0F);
         this.sideModelsS3 = new ModelRenderer(this, 0, 0);
-        this.sideModelsS3.setRotationPoint(15.0F, 4.0F, 0.0F);
+        this.sideModelsS3.setPos(15.0F, 4.0F, 0.0F);
         this.sideModelsS3.addBox(6.5F, -19.5F, -6.5F, 2, 11, 2, 0.0F);
         this.setRotateAngle(sideModelsS3, 0.0F, 4.71238898038469F, -0.17453292519943295F);
         this.sideModelsB = new ModelRenderer(this, 0, 10);
-        this.sideModelsB.setRotationPoint(0.0F, 4.0F, 0.0F);
+        this.sideModelsB.setPos(0.0F, 4.0F, 0.0F);
         this.sideModelsB.addBox(-14.0F, -8.0F, -1.0F, 28, 16, 2, 0.0F);
         this.setRotateAngle(sideModelsB, 1.5707963267948966F, 0.0F, 0.0F);
         this.sideModelsT = new ModelRenderer(this, 0, 10);
-        this.sideModelsT.setRotationPoint(0.0F, 0.0F, 0.0F);
+        this.sideModelsT.setPos(0.0F, 0.0F, 0.0F);
         this.sideModelsT.addBox(-14.0F, -8.0F, 15.0F, 28, 16, 2, 0.0F);
         this.setRotateAngle(sideModelsT, 1.5707963267948966F, 0.0F, 0.0F);
     }
 
     @Override
-    public void setRotationAngles(Entity entity, float limbSwing, float limbSwingAmount, float ageInTicks, float netHeadYaw, float headPitch) {
+    public void setupAnim(Entity entity, float limbSwing, float limbSwingAmount, float ageInTicks, float netHeadYaw, float headPitch) {
         // @todo 1.15
 //        this.sideModels3.render(headPitch);
 //        this.sideModelsS1.render(headPitch);
@@ -106,7 +106,7 @@ public class FluxElevatorModel extends EntityModel {
     }
 
     @Override
-    public void render(MatrixStack matrixStackIn, IVertexBuilder bufferIn, int packedLightIn, int packedOverlayIn, float red, float green, float blue, float alpha) {
+    public void renderToBuffer(MatrixStack matrixStackIn, IVertexBuilder bufferIn, int packedLightIn, int packedOverlayIn, float red, float green, float blue, float alpha) {
         // @todo 1.15
     }
 
@@ -114,8 +114,8 @@ public class FluxElevatorModel extends EntityModel {
      * This is a helper function from Tabula to set the rotation of model parts
      */
     public void setRotateAngle(ModelRenderer modelRenderer, float x, float y, float z) {
-        modelRenderer.rotateAngleX = x;
-        modelRenderer.rotateAngleY = y;
-        modelRenderer.rotateAngleZ = z;
+        modelRenderer.xRot = x;
+        modelRenderer.yRot = y;
+        modelRenderer.zRot = z;
     }
 }

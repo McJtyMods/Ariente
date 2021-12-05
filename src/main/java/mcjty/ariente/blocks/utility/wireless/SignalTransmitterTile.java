@@ -30,7 +30,7 @@ public class SignalTransmitterTile extends SignalChannelTileEntity {
 
     private int prevIn = -1;
 
-    private static final VoxelShape BLOCK_AABB = VoxelShapes.create(1.0D/16.0, 1.0D/16.0, 15.0D/16.0, 15.0D/16.0, 15.0D/16.0, 1.0D);
+    private static final VoxelShape BLOCK_AABB = VoxelShapes.box(1.0D/16.0, 1.0D/16.0, 15.0D/16.0, 15.0D/16.0, 15.0D/16.0, 1.0D);
 
     public SignalTransmitterTile() {
         super(Registration.SIGNAL_TRANSMITTER_TILE.get());
@@ -45,8 +45,8 @@ public class SignalTransmitterTile extends SignalChannelTileEntity {
                 .tileEntitySupplier(SignalTransmitterTile::new)
         ) {
             @Override
-            protected void fillStateContainer(StateContainer.Builder<Block, BlockState> builder) {
-                super.fillStateContainer(builder);
+            protected void createBlockStateDefinition(StateContainer.Builder<Block, BlockState> builder) {
+                super.createBlockStateDefinition(builder);
                 builder.add(BlockProperties.POWER);
             }
 
@@ -59,7 +59,7 @@ public class SignalTransmitterTile extends SignalChannelTileEntity {
 
     @Override
     public ActionResultType onBlockActivated(BlockState state, PlayerEntity player, Hand hand, BlockRayTraceResult result) {
-        SignalChannelTileEntity.onBlockActivatedInt(world, pos, player, hand);
+        SignalChannelTileEntity.onBlockActivatedInt(level, worldPosition, player, hand);
         return ActionResultType.SUCCESS;
     }
 
@@ -72,7 +72,7 @@ public class SignalTransmitterTile extends SignalChannelTileEntity {
     }
 
     public void update() {
-        if (getWorld().isRemote) {
+        if (getLevel().isClientSide) {
             return;
         }
 
@@ -83,7 +83,7 @@ public class SignalTransmitterTile extends SignalChannelTileEntity {
         if (powerLevel != prevIn) {
             prevIn = powerLevel;
             markDirtyClient();
-            RedstoneChannels channels = RedstoneChannels.getChannels(getWorld());
+            RedstoneChannels channels = RedstoneChannels.getChannels(getLevel());
             RedstoneChannels.RedstoneChannel ch = channels.getOrCreateChannel(channel);
             ch.setValue(powerLevel);
             channels.save();
@@ -103,15 +103,15 @@ public class SignalTransmitterTile extends SignalChannelTileEntity {
     }
 
     @Override
-    public CompoundNBT write(CompoundNBT tagCompound) {
-        super.write(tagCompound);
+    public CompoundNBT save(CompoundNBT tagCompound) {
+        super.save(tagCompound);
         tagCompound.putInt("prevIn", prevIn);
         return tagCompound;
     }
 
     @Override
     public void onBlockPlacedBy(World world, BlockPos pos, BlockState state, LivingEntity placer, ItemStack stack) {
-        if (!world.isRemote) {
+        if (!world.isClientSide) {
             // @todo double check
             update();
         }

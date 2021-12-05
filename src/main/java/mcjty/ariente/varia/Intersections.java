@@ -1,7 +1,7 @@
 package mcjty.ariente.varia;
 
 import net.minecraft.util.math.AxisAlignedBB;
-import net.minecraft.util.math.Vec3d;
+import net.minecraft.util.math.vector.Vector3d;
 
 public class Intersections {
 
@@ -43,16 +43,16 @@ public class Intersections {
         return (min > rad || max < -rad);
     }
 
-    public static Vec3d segmentTriangleTest(Vec3d p1, Vec3d p2, Triangle tri) {
+    public static Vector3d segmentTriangleTest(Vector3d p1, Vector3d p2, Triangle tri) {
         // Get triangle edge vectors and plane normal
-        Vec3d u = tri.b.subtract(tri.a);
-        Vec3d v = tri.c.subtract(tri.a);
-        Vec3d n = u.crossProduct(v);
+        Vector3d u = tri.b.subtract(tri.a);
+        Vector3d v = tri.c.subtract(tri.a);
+        Vector3d n = u.cross(v);
 
-        Vec3d dir = p2.subtract(p1);              // ray direction vector
-        Vec3d w0 = p1.subtract(tri.a);
-        double a = -n.dotProduct(w0);
-        double b = n.dotProduct(dir);
+        Vector3d dir = p2.subtract(p1);              // ray direction vector
+        Vector3d w0 = p1.subtract(tri.a);
+        double a = -n.dot(w0);
+        double b = n.dot(dir);
 
         if (Math.abs(b) < 0.00000001) {     // ray is  parallel to triangle plane
             return null;
@@ -65,15 +65,15 @@ public class Intersections {
         }
         // for a segment, also test if (r > 1.0) => no intersect
 
-        Vec3d intersection = p1.add(dir.scale(r));// intersect point of ray and plane
+        Vector3d intersection = p1.add(dir.scale(r));// intersect point of ray and plane
 
         // is I inside T?
-        double uu = u.dotProduct(u);;
-        double uv = u.dotProduct(v);;
-        double vv = v.dotProduct(v);
-        Vec3d w = intersection.subtract(tri.a);
-        double wu = w.dotProduct(u);
-        double wv = w.dotProduct(v);
+        double uu = u.dot(u);;
+        double uv = u.dot(v);;
+        double vv = v.dot(v);
+        Vector3d w = intersection.subtract(tri.a);
+        double wu = w.dot(u);
+        double wv = w.dot(v);
         double D = uv * uv - uu * vv;
 
         // get and test parametric coords
@@ -99,23 +99,23 @@ public class Intersections {
         // 2) normal of the triangle
         // 3) crossproduct(edge from tri, {x,y,z}-directin)
         // this gives 3x3=9 more tests
-        Vec3d normal;
+        Vector3d normal;
 
         // Move to center of box
-        Vec3d center = new Vec3d(aabb.minX + (aabb.maxX - aabb.minX) * 0.5D, aabb.minY + (aabb.maxY - aabb.minY) * 0.5D, aabb.minZ + (aabb.maxZ - aabb.minZ) * 0.5D);
-        Vec3d v0 = tri.a.subtract(center);
-        Vec3d v1 = tri.b.subtract(center);
-        Vec3d v2 = tri.c.subtract(center);
+        Vector3d center = new Vector3d(aabb.minX + (aabb.maxX - aabb.minX) * 0.5D, aabb.minY + (aabb.maxY - aabb.minY) * 0.5D, aabb.minZ + (aabb.maxZ - aabb.minZ) * 0.5D);
+        Vector3d v0 = tri.a.subtract(center);
+        Vector3d v1 = tri.b.subtract(center);
+        Vector3d v2 = tri.c.subtract(center);
 
         // Triangle edges
-        Vec3d e0 = v1.subtract(v0);
-        Vec3d e1 = v2.subtract(v1);
-        Vec3d e2 = v0.subtract(v2);
+        Vector3d e0 = v1.subtract(v0);
+        Vector3d e1 = v2.subtract(v1);
+        Vector3d e2 = v0.subtract(v2);
 
-        Vec3d extent = new Vec3d(aabb.maxX - aabb.minX, aabb.maxY - aabb.minY, aabb.maxZ - aabb.minZ);
+        Vector3d extent = new Vector3d(aabb.maxX - aabb.minX, aabb.maxY - aabb.minY, aabb.maxZ - aabb.minZ);
 
         // test the 9 tests first (this was faster)
-        Vec3d f = new Vec3d(Math.abs(e0.x), Math.abs(e0.y), Math.abs(e0.z));
+        Vector3d f = new Vector3d(Math.abs(e0.x), Math.abs(e0.y), Math.abs(e0.z));
         if (testAxis(e0.z, -e0.y, f.z, f.y, v0.y, v0.z, v2.y, v2.z, extent.y,
                 extent.z)) {
             return false;
@@ -129,7 +129,7 @@ public class Intersections {
             return false;
         }
 
-        f = new Vec3d(Math.abs(e1.x), Math.abs(e1.y), Math.abs(e1.z));
+        f = new Vector3d(Math.abs(e1.x), Math.abs(e1.y), Math.abs(e1.z));
         if (testAxis(e1.z, -e1.y, f.z, f.y, v0.y, v0.z, v2.y, v2.z, extent.y,
                 extent.z)) {
             return false;
@@ -143,7 +143,7 @@ public class Intersections {
             return false;
         }
 
-        f = new Vec3d(Math.abs(e2.x), Math.abs(e2.y), Math.abs(e2.z));
+        f = new Vector3d(Math.abs(e2.x), Math.abs(e2.y), Math.abs(e2.z));
         if (testAxis(e2.z, -e2.y, f.z, f.y, v0.y, v0.z, v1.y, v1.z, extent.y,
                 extent.z)) {
             return false;
@@ -182,15 +182,15 @@ public class Intersections {
 
         // test if the box intersects the plane of the triangle
         // compute plane equation of triangle: normal*x+d=0
-        normal = e0.crossProduct(e1);
-        double d = -normal.dotProduct(v0);
+        normal = e0.cross(e1);
+        double d = -normal.dot(v0);
         if (!planeBoxOverlap(normal, d, extent)) {
             return false;
         }
         return true;
     }
 
-    private static boolean planeBoxOverlap(Vec3d normal, double d, Vec3d maxbox) {
+    private static boolean planeBoxOverlap(Vector3d normal, double d, Vector3d maxbox) {
         double vminx;
         double vmaxx;
         double vminy;
@@ -222,12 +222,12 @@ public class Intersections {
             vmaxz = -maxbox.z;
         }
 
-        Vec3d vmin = new Vec3d(vminx, vminy, vminz);
-        if (normal.dotProduct(vmin) + d > 0.0) {
+        Vector3d vmin = new Vector3d(vminx, vminy, vminz);
+        if (normal.dot(vmin) + d > 0.0) {
             return false;
         }
-        Vec3d vmax = new Vec3d(vmaxx, vmaxy, vmaxz);
-        if (normal.dotProduct(vmax) + d >= 0.0) {
+        Vector3d vmax = new Vector3d(vmaxx, vmaxy, vmaxz);
+        if (normal.dot(vmax) + d >= 0.0) {
             return true;
         }
         return false;

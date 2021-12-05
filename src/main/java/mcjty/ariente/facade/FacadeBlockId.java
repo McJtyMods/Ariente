@@ -16,6 +16,6 @@ public class FacadeBlockId {
     }
 
     public BlockState getBlockState() {
-        return ForgeRegistries.BLOCKS.getValue(new ResourceLocation(registryName)).getDefaultState();
+        return ForgeRegistries.BLOCKS.getValue(new ResourceLocation(registryName)).defaultBlockState();
     }
 }

@@ -41,8 +41,8 @@ public class PosiriteTankTile extends GenericTileEntity implements IGuiTile, IAl
             }
 
             @Override
-            protected void fillStateContainer(StateContainer.Builder<Block, BlockState> builder) {
-                super.fillStateContainer(builder);
+            protected void createBlockStateDefinition(StateContainer.Builder<Block, BlockState> builder) {
+                super.createBlockStateDefinition(builder);
                 builder.add(UPPER).add(LOWER);
             }
         };
@@ -50,13 +50,13 @@ public class PosiriteTankTile extends GenericTileEntity implements IGuiTile, IAl
 
 
     public boolean isWorking() {
-        BlockPos p = pos.down();
-        BlockState state = world.getBlockState(p);
+        BlockPos p = worldPosition.below();
+        BlockState state = level.getBlockState(p);
         while (state.getBlock() == Registration.POSIRITE_TANK.get()) {
-            p = p.down();
-            state = world.getBlockState(p);
+            p = p.below();
+            state = level.getBlockState(p);
         }
-        TileEntity te = world.getTileEntity(p);
+        TileEntity te = level.getBlockEntity(p);
         if (te instanceof PosiriteGeneratorTile) {
             return ((PosiriteGeneratorTile)te).isWorking();
         }

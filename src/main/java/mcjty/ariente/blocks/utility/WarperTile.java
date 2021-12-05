@@ -13,18 +13,18 @@ import mcjty.lib.blocks.BaseBlock;
 import mcjty.lib.blocks.RotationType;
 import mcjty.lib.builder.BlockBuilder;
 import mcjty.lib.tileentity.GenericTileEntity;
-import mcjty.lib.varia.DimensionId;
 import mcjty.lib.varia.TeleportationTools;
 import net.minecraft.block.BlockState;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.nbt.CompoundNBT;
 import net.minecraft.util.ActionResultType;
 import net.minecraft.util.Hand;
+import net.minecraft.util.RegistryKey;
 import net.minecraft.util.math.AxisAlignedBB;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.BlockRayTraceResult;
 import net.minecraft.world.World;
-import net.minecraft.world.dimension.DimensionType;
+import net.minecraft.world.storage.IWorldInfo;
 
 import static mcjty.ariente.compat.ArienteTOPDriver.DRIVER;
 import static mcjty.lib.builder.TooltipBuilder.header;
@@ -43,7 +43,7 @@ public class WarperTile extends GenericTileEntity implements IGuiTile, IWarper {
 
     public static BaseBlock createBlock() {
         return new BaseBlock(new BlockBuilder()
-                .properties(BlockBuilder.STANDARD_IRON.lightValue(8))
+                .properties(BlockBuilder.STANDARD_IRON.lightLevel((light) -> { return 8; }))
 //                .flags(REDSTONE_CHECK, RENDER_SOLID, RENDER_CUTOUT)
                 .info(key("message.ariente.shiftmessage"))
                 .infoShift(header())
@@ -59,17 +59,17 @@ public class WarperTile extends GenericTileEntity implements IGuiTile, IWarper {
 
     @Override
     public ActionResultType onBlockActivated(BlockState state, PlayerEntity player, Hand hand, BlockRayTraceResult result) {
-        Ariente.guiHandler.openHoloGui(world, pos, player);
+        Ariente.guiHandler.openHoloGui(level, worldPosition, player);
         return ActionResultType.SUCCESS;
     }
 
 
     @Override
-    public void setWorldAndPos(World worldIn, BlockPos pos) {
-        super.setWorldAndPos(worldIn, pos);
+    public void setLevelAndPosition(World worldIn, BlockPos pos) {
+        super.setLevelAndPosition(worldIn, pos);
         if (Ariente.setup.arienteWorld) {
-            DimensionId dim = ArienteWorldCompat.getArienteWorld().getDimension();
-            if (worldIn != null && dim.sameDimension(worldIn)) {
+            RegistryKey<World> dim = ArienteWorldCompat.getArienteWorld().getDimension();
+            if (worldIn != null && dim == worldIn.dimension()) {
                 charges = UtilityConfiguration.WARPER_MAX_CHARGES.get();
             }
         }
@@ -77,14 +77,14 @@ public class WarperTile extends GenericTileEntity implements IGuiTile, IWarper {
 
     private AxisAlignedBB getBeamBox() {
         if (renderBox == null) {
-            renderBox = new AxisAlignedBB(getPos()).union(new AxisAlignedBB(new BlockPos(pos.getX(), pos.getY() + 10, pos.getZ())));
+            renderBox = new AxisAlignedBB(getBlockPos()).minmax(new AxisAlignedBB(new BlockPos(worldPosition.getX(), worldPosition.getY() + 10, worldPosition.getZ())));
         }
         return renderBox;
     }
 
     private AxisAlignedBB getDetectionBox() {
         if (detectionBox == null) {
-            detectionBox = new AxisAlignedBB(pos.getX()-3, pos.getY()-2, pos.getZ()-3, pos.getX()+4, pos.getY()+6, pos.getZ()+4);
+            detectionBox = new AxisAlignedBB(worldPosition.getX()-3, worldPosition.getY()-2, worldPosition.getZ()-3, worldPosition.getX()+4, worldPosition.getY()+6, worldPosition.getZ()+4);
         }
         return detectionBox;
     }
@@ -108,9 +108,9 @@ public class WarperTile extends GenericTileEntity implements IGuiTile, IWarper {
     }
 
     @Override
-    public CompoundNBT write(CompoundNBT tagCompound) {
+    public CompoundNBT save(CompoundNBT tagCompound) {
         getOrCreateInfo(tagCompound).putInt("charges", charges);
-        return super.write(tagCompound);
+        return super.save(tagCompound);
     }
 
     public int getChargePercentage() {
@@ -135,24 +135,25 @@ public class WarperTile extends GenericTileEntity implements IGuiTile, IWarper {
 //    }
 
     private void warp(PlayerEntity player) {
-        if (world.getDimension().getType() == DimensionType.OVERWORLD) {
-            if (!world.isRemote) {
+        if (level.dimension() == World.OVERWORLD) {
+            if (!level.isClientSide) {
                 if (Ariente.setup.arienteWorld) {
                     // @todo for future usage
-                    BlockPos nearest = ArienteWorldCompat.getArienteWorld().getNearestTeleportationSpot(player.getPosition());
+                    BlockPos nearest = ArienteWorldCompat.getArienteWorld().getNearestTeleportationSpot(player.blockPosition());
                     TeleportationTools.teleportToDimension(player, ArienteWorldCompat.getArienteWorld().getDimension(), nearest.getX(), nearest.getY(), nearest.getZ());
                 }
             }
         } else {
-            if (!world.isRemote) {
-                BlockPos bedLocation = player.getBedLocation(DimensionType.OVERWORLD);
+            if (!level.isClientSide) {
+                BlockPos bedLocation = player.getSleepingPos().get();
                 if (bedLocation == null) {
-                    bedLocation = world.getSpawnPoint();
+                    IWorldInfo worldInfo = level.getLevelData();
+                    bedLocation = new BlockPos(worldInfo.getXSpawn(),worldInfo.getYSpawn(), worldInfo.getZSpawn());
                 }
-                while (!world.isAirBlock(bedLocation) && !world.isAirBlock(bedLocation.up()) && bedLocation.getY() < world.getHeight()-2) {
-                    bedLocation = bedLocation.up();
+                while (!level.isEmptyBlock(bedLocation) && !level.isEmptyBlock(bedLocation.above()) && bedLocation.getY() < level.getMaxBuildHeight()-2) {
+                    bedLocation = bedLocation.above();
                 }
-                TeleportationTools.teleportToDimension(player, DimensionId.overworld(), bedLocation.getX(), bedLocation.getY(), bedLocation.getZ());
+                TeleportationTools.teleportToDimension(player, World.OVERWORLD, bedLocation.getX(), bedLocation.getY(), bedLocation.getZ());
             }
         }
     }

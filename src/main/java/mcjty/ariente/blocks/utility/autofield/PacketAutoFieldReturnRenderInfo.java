@@ -36,7 +36,7 @@ public class PacketAutoFieldReturnRenderInfo {
     public void handle(Supplier<NetworkEvent.Context> supplier) {
         NetworkEvent.Context ctx = supplier.get();
         ctx.enqueueWork(() -> {
-            TileEntity te = McJtyLib.proxy.getClientWorld().getTileEntity(pos);
+            TileEntity te = McJtyLib.proxy.getClientWorld().getBlockEntity(pos);
             if (te instanceof AutoFieldTile) {
                 ((AutoFieldTile) te).clientRenderInfoReceived(renderInfo);
             }

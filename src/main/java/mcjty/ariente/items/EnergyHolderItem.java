@@ -30,6 +30,8 @@ import static mcjty.hologui.api.Icons.*;
 import static mcjty.lib.builder.TooltipBuilder.header;
 import static mcjty.lib.builder.TooltipBuilder.parameter;
 
+import net.minecraft.item.Item.Properties;
+
 public class EnergyHolderItem extends Item implements ITooltipSettings {
 
     public static final int MODE_MANUAL = 0;
@@ -42,7 +44,7 @@ public class EnergyHolderItem extends Item implements ITooltipSettings {
                     parameter("mode", stack -> (getAutomatic(stack) == MODE_MANUAL ? "Manual" : "Automatic")));
 
     public EnergyHolderItem() {
-        super(new Properties().group(Ariente.setup.getTab()).maxStackSize(1));
+        super(new Properties().tab(Ariente.setup.getTab()).stacksTo(1));
     }
 
     @Override
@@ -55,8 +57,8 @@ public class EnergyHolderItem extends Item implements ITooltipSettings {
 
 
     @Override
-    public void addInformation(ItemStack stack, @Nullable World worldIn, List<ITextComponent> tooltip, ITooltipFlag flag) {
-        super.addInformation(stack, worldIn, tooltip, flag);
+    public void appendHoverText(ItemStack stack, @Nullable World worldIn, List<ITextComponent> tooltip, ITooltipFlag flag) {
+        super.appendHoverText(stack, worldIn, tooltip, flag);
         tooltipBuilder.makeTooltip(getRegistryName(), stack, tooltip, flag);
     }
 
@@ -72,26 +74,26 @@ public class EnergyHolderItem extends Item implements ITooltipSettings {
 
         int index = tag.getInt("index");
         PlayerEntity player = (PlayerEntity) entity;
-        if (index >= player.inventory.getSizeInventory()) {
+        if (index >= player.inventory.getContainerSize()) {
             index = 0;
         }
         tag.putInt("index", index+1);
-        ItemStack playerStack = player.inventory.getStackInSlot(index);
+        ItemStack playerStack = player.inventory.getItem(index);
         if (playerStack.getItem() == Registration.DUST_NEGARITE.get()) {
             tag.putInt("negarite", tag.getInt("negarite") + playerStack.getCount());
-            player.inventory.setInventorySlotContents(index, ItemStack.EMPTY);
+            player.inventory.setItem(index, ItemStack.EMPTY);
         } else if (playerStack.getItem() == Registration.DUST_POSIRITE.get()) {
             tag.putInt("posirite", tag.getInt("posirite") + playerStack.getCount());
-            player.inventory.setInventorySlotContents(index, ItemStack.EMPTY);
+            player.inventory.setItem(index, ItemStack.EMPTY);
         }
     }
 
     @Override
-    public ActionResult<ItemStack> onItemRightClick(World worldIn, PlayerEntity player, Hand handIn) {
-        if (!worldIn.isRemote) {
+    public ActionResult<ItemStack> use(World worldIn, PlayerEntity player, Hand handIn) {
+        if (!worldIn.isClientSide) {
             Ariente.guiHandler.openHoloGui(player, ModGuis.GUI_ENERGY_HOLDER, 1f);
         }
-        return new ActionResult<>(ActionResultType.SUCCESS, player.getHeldItem(handIn));
+        return new ActionResult<>(ActionResultType.SUCCESS, player.getItemInHand(handIn));
     }
 
     public static IGuiComponent<?> createGui(PlayerEntity pl) {
@@ -167,7 +169,7 @@ public class EnergyHolderItem extends Item implements ITooltipSettings {
         }
         total -= actuallyExtracted;
 
-        if (player.inventory.addItemStackToInventory(new ItemStack(item, actuallyExtracted))) {
+        if (player.inventory.add(new ItemStack(item, actuallyExtracted))) {
             tag.putInt(tagname, total);
         }
     }
@@ -180,8 +182,8 @@ public class EnergyHolderItem extends Item implements ITooltipSettings {
         int total = tag.getInt(tagname);
         ItemStack toTransfer = ItemStack.EMPTY;
 
-        for (int i = 0 ; i < player.inventory.getSizeInventory() ; i++) {
-            ItemStack stack = player.inventory.getStackInSlot(i);
+        for (int i = 0 ; i < player.inventory.getContainerSize() ; i++) {
+            ItemStack stack = player.inventory.getItem(i);
             if (stack.getItem() == item) {
                 ItemStack splitted = stack.split(amount);
                 if ((!splitted.isEmpty())) {
@@ -207,7 +209,7 @@ public class EnergyHolderItem extends Item implements ITooltipSettings {
     }
 
     private static CompoundNBT getCompound(PlayerEntity player) {
-        ItemStack heldItem = player.getHeldItem(Hand.MAIN_HAND);
+        ItemStack heldItem = player.getItemInHand(Hand.MAIN_HAND);
         if (heldItem.getItem() != Registration.ENERGY_HOLDER.get()) {
             return null;
         }

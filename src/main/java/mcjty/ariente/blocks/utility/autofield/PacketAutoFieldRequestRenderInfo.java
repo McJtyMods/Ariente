@@ -28,7 +28,7 @@ public class PacketAutoFieldRequestRenderInfo {
     public void handle(Supplier<NetworkEvent.Context> supplier) {
         NetworkEvent.Context ctx = supplier.get();
         ctx.enqueueWork(() -> {
-            TileEntity te = ctx.getSender().world.getTileEntity(pos);
+            TileEntity te = ctx.getSender().level.getBlockEntity(pos);
             if (te instanceof AutoFieldTile) {
                 ((AutoFieldTile) te).renderInfoRequested();
             }

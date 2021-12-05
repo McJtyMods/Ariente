@@ -5,6 +5,9 @@ import net.minecraft.client.renderer.vertex.DefaultVertexFormats;
 import net.minecraft.client.renderer.vertex.VertexFormat;
 import org.lwjgl.opengl.GL11;
 
+import net.minecraft.client.renderer.RenderState.TextureState;
+import net.minecraft.client.renderer.RenderType.State;
+
 public class ArienteRenderType extends RenderType {
 
     // Dummy
@@ -14,19 +17,19 @@ public class ArienteRenderType extends RenderType {
 
     public static final TextureState ARIENTE_TEXTURE_STATE = new TextureState(ArienteSpriteUploader.ARIENTE_ATLAS, false, false);
 
-    public static final RenderType ARIENTE_SOLID = makeType("ariente_solid", DefaultVertexFormats.BLOCK, GL11.GL_QUADS, 2097152, true, false,
-            RenderType.State.getBuilder()
-                    .shadeModel(SHADE_ENABLED)
-                    .lightmap(LIGHTMAP_ENABLED)
-                    .texture(ARIENTE_TEXTURE_STATE)
-                    .build(true));
+    public static final RenderType ARIENTE_SOLID = create("ariente_solid", DefaultVertexFormats.BLOCK, GL11.GL_QUADS, 2097152, true, false,
+            RenderType.State.builder()
+                    .setShadeModelState(SMOOTH_SHADE)
+                    .setLightmapState(LIGHTMAP)
+                    .setTextureState(ARIENTE_TEXTURE_STATE)
+                    .createCompositeState(true));
 
-    public static final RenderType ARIENTE_TRANSLUCENT = makeType("ariente_translucent", DefaultVertexFormats.BLOCK, GL11.GL_QUADS, 262144, true, true,
-            State.getBuilder()
-                    .shadeModel(SHADE_ENABLED)
-                    .lightmap(LIGHTMAP_ENABLED)
-                    .texture(BLOCK_SHEET_MIPPED)
-                    .transparency(TRANSLUCENT_TRANSPARENCY)
-                    .texture(ARIENTE_TEXTURE_STATE)
-                    .build(true));
+    public static final RenderType ARIENTE_TRANSLUCENT = create("ariente_translucent", DefaultVertexFormats.BLOCK, GL11.GL_QUADS, 262144, true, true,
+            State.builder()
+                    .setShadeModelState(SMOOTH_SHADE)
+                    .setLightmapState(LIGHTMAP)
+                    .setTextureState(BLOCK_SHEET_MIPPED)
+                    .setTransparencyState(TRANSLUCENT_TRANSPARENCY)
+                    .setTextureState(ARIENTE_TEXTURE_STATE)
+                    .createCompositeState(true));
 }

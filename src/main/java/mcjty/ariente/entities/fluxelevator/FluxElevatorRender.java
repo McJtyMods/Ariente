@@ -8,7 +8,7 @@ import net.minecraft.client.renderer.entity.EntityRendererManager;
 import net.minecraft.client.renderer.entity.model.EntityModel;
 import net.minecraft.util.ResourceLocation;
 import net.minecraft.util.math.MathHelper;
-import net.minecraft.util.math.Vec3d;
+import net.minecraft.util.math.vector.Vector3d;
 import net.minecraftforge.fml.client.registry.IRenderFactory;
 
 
@@ -20,12 +20,12 @@ public class FluxElevatorRender extends EntityRenderer<FluxElevatorEntity> {
 
     public FluxElevatorRender(EntityRendererManager renderManagerIn) {
         super(renderManagerIn);
-        this.shadowSize = 0.5F;
+        this.shadowRadius = 0.5F;
     }
 
     @Override
     public void render(FluxElevatorEntity entity, float entityYaw, float partialTicks, MatrixStack matrixStack, IRenderTypeBuffer buffer, int packedLightIn) {
-        GlStateManager.pushMatrix();
+        GlStateManager._pushMatrix();
 //        long i = entity.getEntityId() * 493286711L;
 //        i = i * i * 4392167121L + i * 98761L;
 //        float fx = (((i >> 16 & 7L) + 0.5F) / 8.0F - 0.5F) * 0.004F;
@@ -33,16 +33,16 @@ public class FluxElevatorRender extends EntityRenderer<FluxElevatorEntity> {
 //        float fz = (((i >> 24 & 7L) + 0.5F) / 8.0F - 0.5F) * 0.004F;
 //        GlStateManager.translate(fx, fy, fz);
 
-        double interX = entity.lastTickPosX + (entity.getPosX() - entity.lastTickPosX) * partialTicks;
-        double interY = entity.lastTickPosY + (entity.getPosY() - entity.lastTickPosY) * partialTicks;
-        double interZ = entity.lastTickPosZ + (entity.getPosZ() - entity.lastTickPosZ) * partialTicks;
-        Vec3d vec3d = entity.getPos(interX, interY, interZ);
-        float pitch = entity.prevRotationPitch + (entity.rotationPitch - entity.prevRotationPitch) * partialTicks;
+        double interX = entity.xOld + (entity.getX() - entity.xOld) * partialTicks;
+        double interY = entity.yOld + (entity.getY() - entity.yOld) * partialTicks;
+        double interZ = entity.zOld + (entity.getZ() - entity.zOld) * partialTicks;
+        Vector3d vec3d = entity.getPos(interX, interY, interZ);
+        float pitch = entity.xRotO + (entity.xRot - entity.xRotO) * partialTicks;
 
 
         if (vec3d != null) {
-            Vec3d vec3d1 = entity.getPosOffset(interX, interY, interZ, 0.3D);
-            Vec3d vec3d2 = entity.getPosOffset(interX, interY, interZ, -0.3D);
+            Vector3d vec3d1 = entity.getPosOffset(interX, interY, interZ, 0.3D);
+            Vector3d vec3d2 = entity.getPosOffset(interX, interY, interZ, -0.3D);
 
             if (vec3d1 == null) {
                 vec3d1 = vec3d;
@@ -56,7 +56,7 @@ public class FluxElevatorRender extends EntityRenderer<FluxElevatorEntity> {
 //            x += vec3d.x - interX;
 //            y += (vec3d1.y + vec3d2.y) / 2.0D - interY;
 //            z += vec3d.z - interZ;
-            Vec3d vec3d3 = vec3d2.add(-vec3d1.x, -vec3d1.y, -vec3d1.z);
+            Vector3d vec3d3 = vec3d2.add(-vec3d1.x, -vec3d1.y, -vec3d1.z);
 
             if (vec3d3.length() != 0.0D) {
                 vec3d3 = vec3d3.normalize();
@@ -67,8 +67,8 @@ public class FluxElevatorRender extends EntityRenderer<FluxElevatorEntity> {
 
         // @todo 1.15
 //        GlStateManager.translatef((float) x, (float) y + 0.375F, (float) z);
-        GlStateManager.rotatef(180.0F - entityYaw, 0.0F, 1.0F, 0.0F);
-        GlStateManager.rotatef(-pitch, 0.0F, 0.0F, 1.0F);
+        GlStateManager._rotatef(180.0F - entityYaw, 0.0F, 1.0F, 0.0F);
+        GlStateManager._rotatef(-pitch, 0.0F, 0.0F, 1.0F);
         float f5 = 0 - partialTicks;    // @todo
         float f6 = entity.getDamage() - partialTicks;
 
@@ -77,7 +77,7 @@ public class FluxElevatorRender extends EntityRenderer<FluxElevatorEntity> {
         }
 
         if (f5 > 0.0F) {
-            GlStateManager.rotatef(MathHelper.sin(f5) * f5 * f6 / 10.0F * 0, 1.0F, 0.0F, 0.0F);  // @todo
+            GlStateManager._rotatef(MathHelper.sin(f5) * f5 * f6 / 10.0F * 0, 1.0F, 0.0F, 0.0F);  // @todo
         }
 
         // @todo 1.15
@@ -108,7 +108,7 @@ public class FluxElevatorRender extends EntityRenderer<FluxElevatorEntity> {
     }
 
     @Override
-    public ResourceLocation getEntityTexture(FluxElevatorEntity entity) {
+    public ResourceLocation getTextureLocation(FluxElevatorEntity entity) {
         return TEXTURE;
     }
 

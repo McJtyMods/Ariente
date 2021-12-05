@@ -23,16 +23,16 @@ public class DroneRender extends LivingRenderer<DroneEntity, DroneModel<DroneEnt
      * Returns the location of an entity's texture. Doesn't seem to be called unless you call Render.bindEntityTexture.
      */
     @Override
-    public ResourceLocation getEntityTexture(DroneEntity entity) {
+    public ResourceLocation getTextureLocation(DroneEntity entity) {
         return entity.isAttacking() ? mobShootingTexture : mobTexture;
     }
 
     public static final DroneRender.Factory FACTORY = new DroneRender.Factory();
 
     @Override
-    protected void preRenderCallback(DroneEntity entitylivingbaseIn, MatrixStack matrixStackIn, float partialTickTime) {
-        GlStateManager.scalef(1.5F, 1.5F, 1.5F);
-        GlStateManager.color4f(1.0F, 1.0F, 1.0F, 1.0F);
+    protected void scale(DroneEntity entitylivingbaseIn, MatrixStack matrixStackIn, float partialTickTime) {
+        GlStateManager._scalef(1.5F, 1.5F, 1.5F);
+        GlStateManager._color4f(1.0F, 1.0F, 1.0F, 1.0F);
     }
 
     public static class Factory implements IRenderFactory<DroneEntity> {

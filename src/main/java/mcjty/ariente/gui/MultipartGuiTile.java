@@ -22,7 +22,7 @@ public class MultipartGuiTile implements IGuiTile {
 
     @Override
     public IGuiComponent<?> createGui(String tag, IGuiComponentRegistry registry) {
-        TileEntity tileEntity = world.getTileEntity(pos);
+        TileEntity tileEntity = world.getBlockEntity(pos);
         if (tileEntity instanceof MultipartTE) {
             String[] split = StringUtils.split(tag, ":");
             PartSlot slot = PartSlot.byName(split[0]);

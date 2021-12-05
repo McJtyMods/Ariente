@@ -30,7 +30,7 @@ public class PacketShipAction {
         NetworkEvent.Context ctx = supplier.get();
         ctx.enqueueWork(() -> {
             PlayerEntity player = ctx.getSender();
-            Entity ridingEntity = player.getRidingEntity();
+            Entity ridingEntity = player.getVehicle();
             if (ridingEntity instanceof FluxShipEntity) {
                 ((FluxShipEntity) ridingEntity).handleAction(action);
             }

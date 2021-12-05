@@ -10,7 +10,7 @@ import net.minecraft.item.BlockItemUseContext;
 import net.minecraft.state.StateContainer;
 import net.minecraft.tileentity.TileEntity;
 import net.minecraft.util.math.BlockPos;
-import net.minecraft.util.math.Vec3d;
+import net.minecraft.util.math.vector.Vector3d;
 import net.minecraft.util.math.shapes.ISelectionContext;
 import net.minecraft.util.math.shapes.VoxelShape;
 import net.minecraft.world.IBlockReader;
@@ -31,8 +31,8 @@ public class BaseNodeBlock extends BaseBlock {
     }
 
     @Override
-    protected void fillStateContainer(StateContainer.Builder<Block, BlockState> builder) {
-        super.fillStateContainer(builder);
+    protected void createBlockStateDefinition(StateContainer.Builder<Block, BlockState> builder) {
+        super.createBlockStateDefinition(builder);
         builder.add(AbstractNodeTile.ORIENTATION);
     }
 
@@ -44,11 +44,11 @@ public class BaseNodeBlock extends BaseBlock {
     @Nullable
     @Override
     public BlockState getStateForPlacement(BlockItemUseContext context) {
-        BlockPos pos = context.getPos();
-        TileEntity te = context.getWorld().getTileEntity(pos);
+        BlockPos pos = context.getClickedPos();
+        TileEntity te = context.getLevel().getBlockEntity(pos);
 //        if (te instanceof MultipartTE) {
-            Vec3d hit = context.getHitVec();
-        return AbstractNodeTile.getStateForPlacement(this, context.getFace(),
+            Vector3d hit = context.getClickLocation();
+        return AbstractNodeTile.getStateForPlacement(this, context.getClickedFace(),
                 hit.x - pos.getX(), hit.y - pos.getY(), hit.z - pos.getZ());
 //        }
 //        return super.getStateForPlacement(context);
@@ -57,7 +57,7 @@ public class BaseNodeBlock extends BaseBlock {
     @Nonnull
     @Override
     public PartSlot getSlotFromState(World world, BlockPos pos, BlockState newState) {
-        return newState.get(AbstractNodeTile.ORIENTATION).getSlot();
+        return newState.getValue(AbstractNodeTile.ORIENTATION).getSlot();
     }
 
 }

@@ -14,6 +14,7 @@ import mcjty.lib.datagen.BaseBlockStateProvider;
 import mcjty.lib.varia.OrientationTools;
 import net.minecraft.block.Block;
 import net.minecraft.block.SlabBlock;
+import net.minecraftforge.common.data.ExistingFileHelper;
 import net.minecraft.data.DataGenerator;
 import net.minecraft.state.properties.BlockStateProperties;
 import net.minecraft.state.properties.SlabType;
@@ -456,12 +457,12 @@ public class BlockStates extends BaseBlockStateProvider {
     private void registerMarbleSlabs() {
         VariantBlockStateBuilder builder = getVariantBuilder(Registration.MARBLE_SLAB.get());
         for (MarbleColor color : MarbleColor.VALUES) {
-            ResourceLocation marble = modLoc("block/marble/" + color.getName() + "marble_smooth");
-            String name = BLOCK_FOLDER + "/decorative/marble_slab_" + color.getName();
+            ResourceLocation marble = modLoc("block/marble/" + color.getSerializedName() + "marble_smooth");
+            String name = BLOCK_FOLDER + "/decorative/marble_slab_" + color.getSerializedName();
             builder
                     .partialState().with(MarbleColor.COLOR, color).with(SlabBlock.TYPE, SlabType.BOTTOM).addModels(new ConfiguredModel(models().slab(name, marble, marble, marble)))
                     .partialState().with(MarbleColor.COLOR, color).with(SlabBlock.TYPE, SlabType.TOP).addModels(new ConfiguredModel(models().slabTop(name + "_top", marble, marble, marble)))
-                    .partialState().with(MarbleColor.COLOR, color).with(SlabBlock.TYPE, SlabType.DOUBLE).addModels(new ConfiguredModel(models().getExistingFile(modLoc("block/decorative/double_marble_slab_" + color.getName()))));
+                    .partialState().with(MarbleColor.COLOR, color).with(SlabBlock.TYPE, SlabType.DOUBLE).addModels(new ConfiguredModel(models().getExistingFile(modLoc("block/decorative/double_marble_slab_" + color.getSerializedName()))));
         }
     }
 
@@ -502,7 +503,7 @@ public class BlockStates extends BaseBlockStateProvider {
         for (PatternType type : PatternType.values()) {
             builder.partialState().with(PatternBlock.TYPE, type)
                     .modelForState()
-                    .modelFile(models().cubeAll(BLOCK_FOLDER + "/decorative/pattern_" + type.getName(), modLoc("block/pattern/" + type.getTexture())))
+                    .modelFile(models().cubeAll(BLOCK_FOLDER + "/decorative/pattern_" + type.getSerializedName(), modLoc("block/pattern/" + type.getTexture())))
                     .addModel();
         }
     }
@@ -512,7 +513,7 @@ public class BlockStates extends BaseBlockStateProvider {
         for (MarbleColor type : MarbleColor.values()) {
             builder.partialState().with(MarbleColor.COLOR, type)
                     .modelForState()
-                    .modelFile(models().cubeAll(BLOCK_FOLDER + "/decorative/marble_" + type.getName(), modLoc("block/marble/" + type.getTexture())))
+                    .modelFile(models().cubeAll(BLOCK_FOLDER + "/decorative/marble_" + type.getSerializedName(), modLoc("block/marble/" + type.getTexture())))
                     .addModel();
         }
     }
@@ -522,7 +523,7 @@ public class BlockStates extends BaseBlockStateProvider {
         for (MarbleColor type : MarbleColor.values()) {
             builder.partialState().with(MarbleColor.COLOR, type)
                     .modelForState()
-                    .modelFile(models().cubeAll(BLOCK_FOLDER + "/decorative/marble_smooth_" + type.getName(), modLoc("block/marble/" + type.getTexture() + "_smooth")))
+                    .modelFile(models().cubeAll(BLOCK_FOLDER + "/decorative/marble_smooth_" + type.getSerializedName(), modLoc("block/marble/" + type.getTexture() + "_smooth")))
                     .addModel();
         }
     }
@@ -532,7 +533,7 @@ public class BlockStates extends BaseBlockStateProvider {
         for (MarbleColor type : MarbleColor.values()) {
             builder.partialState().with(MarbleColor.COLOR, type)
                     .modelForState()
-                    .modelFile(models().cubeAll(BLOCK_FOLDER + "/decorative/marble_pilar_" + type.getName(), modLoc("block/marble/" + type.getTexture() + "_pilar")))
+                    .modelFile(models().cubeAll(BLOCK_FOLDER + "/decorative/marble_pilar_" + type.getSerializedName(), modLoc("block/marble/" + type.getTexture() + "_pilar")))
                     .addModel();
         }
     }
@@ -542,7 +543,7 @@ public class BlockStates extends BaseBlockStateProvider {
         for (MarbleColor type : MarbleColor.values()) {
             builder.partialState().with(MarbleColor.COLOR, type)
                     .modelForState()
-                    .modelFile(models().cubeAll(BLOCK_FOLDER + "/decorative/marble_bricks_" + type.getName(), modLoc("block/marble/" + type.getTexture() + "_bricks")))
+                    .modelFile(models().cubeAll(BLOCK_FOLDER + "/decorative/marble_bricks_" + type.getSerializedName(), modLoc("block/marble/" + type.getTexture() + "_bricks")))
                     .addModel();
         }
     }
@@ -552,7 +553,7 @@ public class BlockStates extends BaseBlockStateProvider {
         for (MarbleType type : MarbleType.values()) {
             builder.partialState().with(MarbleType.TYPE, type)
                     .modelForState()
-                    .modelFile(models().cubeAll(BLOCK_FOLDER + "/decorative/marbletech_" + type.getName(), modLoc("block/marbletech/" + type.getTexture())))
+                    .modelFile(models().cubeAll(BLOCK_FOLDER + "/decorative/marbletech_" + type.getSerializedName(), modLoc("block/marbletech/" + type.getTexture())))
                     .addModel();
         }
     }
@@ -562,7 +563,7 @@ public class BlockStates extends BaseBlockStateProvider {
         for (TechType type : TechType.values()) {
             builder.partialState().with(TechType.TYPE, type)
                     .modelForState()
-                    .modelFile(fullGlowModel(BLOCK_FOLDER + "/decorative/blacktech_" + type.getName(), "block/blacktech/" + type.getTexture(), "block/blacktech/" + type.getTextureGlow()))
+                    .modelFile(fullGlowModel(BLOCK_FOLDER + "/decorative/blacktech_" + type.getSerializedName(), "block/blacktech/" + type.getTexture(), "block/blacktech/" + type.getTextureGlow()))
                     .addModel();
         }
     }

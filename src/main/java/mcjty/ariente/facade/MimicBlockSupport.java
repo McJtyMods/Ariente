@@ -31,10 +31,10 @@ public class MimicBlockSupport {
 //            int meta = tagCompound.getInt("meta");
             Block value = ForgeRegistries.BLOCKS.getValue(new ResourceLocation(regName));
             if (value == null) {
-                mimicBlock = Blocks.COBBLESTONE.getDefaultState();
+                mimicBlock = Blocks.COBBLESTONE.defaultBlockState();
             } else {
                 // @todo 1.14 meta
-                mimicBlock = value.getDefaultState();
+                mimicBlock = value.defaultBlockState();
             }
         } else {
             mimicBlock = null;

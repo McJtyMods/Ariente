@@ -1,5 +1,6 @@
 package mcjty.ariente.items;
 
+import com.google.common.collect.ImmutableMultimap;
 import com.google.common.collect.Multimap;
 import mcjty.ariente.api.ArmorUpgradeType;
 import mcjty.ariente.bindings.KeyBindings;
@@ -15,7 +16,8 @@ import net.minecraft.enchantment.EnchantmentHelper;
 import net.minecraft.enchantment.Enchantments;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.LivingEntity;
-import net.minecraft.entity.SharedMonsterAttributes;
+import net.minecraft.entity.ai.attributes.Attribute;
+import net.minecraft.entity.ai.attributes.Attributes;
 import net.minecraft.entity.ai.attributes.AttributeModifier;
 import net.minecraft.inventory.EquipmentSlotType;
 import net.minecraft.item.ItemStack;
@@ -114,8 +116,8 @@ public class EnhancedEnergySabreItem extends EnergySabreItem implements ITooltip
     }
 
     @Override
-    public boolean hitEntity(ItemStack stack, LivingEntity target, LivingEntity attacker) {
-        super.hitEntity(stack, target, attacker);
+    public boolean hurtEnemy(ItemStack stack, LivingEntity target, LivingEntity attacker) {
+        super.hurtEnemy(stack, target, attacker);
         if (ModuleSupport.hasWorkingUpgrade(stack, ArmorUpgradeType.INHIBIT)) {
             if (target instanceof MasterSoldierEntity) {
                 ((MasterSoldierEntity) target).setNoregenCounter(200);
@@ -126,41 +128,44 @@ public class EnhancedEnergySabreItem extends EnergySabreItem implements ITooltip
     }
 
     private void removeGoodEffects(LivingEntity target) {
-        if (target.getEntityWorld().isRemote) {
+        if (target.getCommandSenderWorld().isClientSide) {
             return;
         }
-        Iterator<EffectInstance> iterator = target.getActivePotionMap().values().iterator();
+        Iterator<EffectInstance> iterator = target.getActiveEffectsMap().values().iterator();
 
         Set<Effect> potionsToRemove = new HashSet<>();
         while (iterator.hasNext()) {
             EffectInstance effect = iterator.next();
-            if (effect.getPotion().isBeneficial()) {
-                potionsToRemove.add(effect.getPotion());
+            if (effect.getEffect().isBeneficial()) {
+                potionsToRemove.add(effect.getEffect());
             }
         }
         for (Effect potion : potionsToRemove) {
-            target.removePotionEffect(potion);
+            target.removeEffect(potion);
         }
     }
 
-
     @Override
-    public Multimap<String, AttributeModifier> getAttributeModifiers(EquipmentSlotType slot, ItemStack stack) {
-        Multimap<String, AttributeModifier> multimap = super.getOriginalAttributeModifiers(slot, stack);
+    public Multimap<Attribute, AttributeModifier> getAttributeModifiers(EquipmentSlotType slot, ItemStack stack) {
+        Multimap<Attribute, AttributeModifier> multimap = super.getOriginalAttributeModifiers(slot, stack);
 
-        if (slot == EquipmentSlotType.MAINHAND) {
-            float factor = ModuleSupport.hasWorkingUpgrade(stack, ArmorUpgradeType.POWER) ? 2 : 1;
-            multimap.put(SharedMonsterAttributes.ATTACK_DAMAGE.getName(), new AttributeModifier(ATTACK_DAMAGE_MODIFIER, "Weapon modifier", this.attackDamage * factor, AttributeModifier.Operation.ADDITION));
-            multimap.put(SharedMonsterAttributes.ATTACK_SPEED.getName(), new AttributeModifier(ATTACK_SPEED_MODIFIER, "Weapon modifier", -2.4000000953674316D, AttributeModifier.Operation.ADDITION));
+        if (slot != EquipmentSlotType.MAINHAND) {
+            return multimap;
         }
 
-        return multimap;
+        float factor = ModuleSupport.hasWorkingUpgrade(stack, ArmorUpgradeType.POWER) ? 2 : 1;
+        ImmutableMultimap.Builder<Attribute, AttributeModifier> builder = new ImmutableMultimap.Builder<Attribute, AttributeModifier>();
+
+        builder.putAll(multimap)
+            .put(Attributes.ATTACK_DAMAGE, new AttributeModifier(BASE_ATTACK_DAMAGE_UUID, "Weapon modifier", this.attackDamage * factor, AttributeModifier.Operation.ADDITION))
+            .put(Attributes.ATTACK_SPEED, new AttributeModifier(BASE_ATTACK_SPEED_UUID, "Weapon modifier", -2.4000000953674316D, AttributeModifier.Operation.ADDITION));
+
+        return builder.build();
     }
 
-
     @Override
-    public void addInformation(ItemStack stack, @Nullable World worldIn, List<ITextComponent> list, ITooltipFlag flag) {
-        super.addInformation(stack, worldIn, list, flag);
+    public void appendHoverText(ItemStack stack, @Nullable World worldIn, List<ITextComponent> list, ITooltipFlag flag) {
+        super.appendHoverText(stack, worldIn, list, flag);
         tooltipBuilder.makeTooltip(getRegistryName(), stack, list, flag);
     }
 
@@ -171,7 +176,7 @@ public class EnhancedEnergySabreItem extends EnergySabreItem implements ITooltip
 
     @Override
     public void inventoryTick(ItemStack stack, World world, Entity entity, int itemSlot, boolean isSelected) {
-        if (entity instanceof LivingEntity && !world.isRemote) {
+        if (entity instanceof LivingEntity && !world.isClientSide) {
             if (itemSlot != EquipmentSlotType.MAINHAND.getIndex()) {
                 return;
             }
@@ -189,8 +194,8 @@ public class EnhancedEnergySabreItem extends EnergySabreItem implements ITooltip
         if (!ModuleSupport.managePower(stack, entity)) {
             compound.putBoolean(ArmorUpgradeType.INHIBIT.getWorkingKey(), false);
             compound.putBoolean(ArmorUpgradeType.POWER.getWorkingKey(), false);
-            int lootingLevel = EnchantmentHelper.getEnchantmentLevel(Enchantments.LOOTING, stack);
-            int fireLevel = EnchantmentHelper.getEnchantmentLevel(Enchantments.FIRE_ASPECT, stack);
+            int lootingLevel = EnchantmentHelper.getItemEnchantmentLevel(Enchantments.MOB_LOOTING, stack);
+            int fireLevel = EnchantmentHelper.getItemEnchantmentLevel(Enchantments.FIRE_ASPECT, stack);
             if (lootingLevel > 0 || fireLevel > 0) {
                 EnchantmentHelper.setEnchantments(Collections.emptyMap(), stack);
             }
@@ -202,7 +207,7 @@ public class EnhancedEnergySabreItem extends EnergySabreItem implements ITooltip
 
         Map<Enchantment, Integer> ench = new HashMap<>();
         if (compound.getBoolean(ArmorUpgradeType.LOOTING.getModuleKey())) {
-            ench.put(Enchantments.LOOTING, 3);
+            ench.put(Enchantments.MOB_LOOTING, 3);
         }
         if (compound.getBoolean(ArmorUpgradeType.FIRE.getModuleKey())) {
             ench.put(Enchantments.FIRE_ASPECT, 3);

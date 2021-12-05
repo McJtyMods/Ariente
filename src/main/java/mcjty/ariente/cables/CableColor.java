@@ -19,7 +19,7 @@ public enum CableColor implements IStringSerializable {
     }
 
     @Override
-    public String getName() {
+    public String getSerializedName() {
         return name;
     }
 

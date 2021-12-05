@@ -130,17 +130,17 @@ public class ProducerInfo {
 //                            continue;
 //                        }
                     } else {
-                        if (!stack.isItemEqualIgnoreDurability(item.getStack())) {
+                        if (!stack.sameItemStackIgnoreDurability(item.getStack())) {
                             continue;
                         }
                     }
                     if (matchDamage) {
-                        if (!stack.isItemEqual(item.getStack())) {
+                        if (!stack.sameItem(item.getStack())) {
                             continue;
                         }
                     }
                     if (matchNbt) {
-                        if (!ItemStack.areItemStacksEqual(stack, item.getStack())) {
+                        if (!ItemStack.matches(stack, item.getStack())) {
                             continue;
                         }
                     }

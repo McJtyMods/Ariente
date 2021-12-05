@@ -7,7 +7,7 @@ import mcjty.ariente.compat.arienteworld.ArienteWorldCompat;
 import net.minecraft.entity.ai.RandomPositionGenerator;
 import net.minecraft.entity.ai.goal.Goal;
 import net.minecraft.util.math.BlockPos;
-import net.minecraft.util.math.Vec3d;
+import net.minecraft.util.math.vector.Vector3d;
 
 import javax.annotation.Nullable;
 
@@ -33,18 +33,18 @@ public class EntityAISoldierWander extends Goal {
     }
 
     @Override
-    public boolean shouldExecute() {
+    public boolean canUse() {
         if (!this.mustUpdate) {
-            if (this.entity.getIdleTime() >= 100) {
+            if (this.entity.getNoActionTime() >= 100) {
                 return false;
             }
 
-            if (this.entity.getRNG().nextInt(this.executionChance) != 0) {
+            if (this.entity.getRandom().nextInt(this.executionChance) != 0) {
                 return false;
             }
         }
 
-        Vec3d vec3d = this.getPosition();
+        Vector3d vec3d = this.getPosition();
 
         if (vec3d == null) {
             return false;
@@ -58,31 +58,31 @@ public class EntityAISoldierWander extends Goal {
     }
 
     @Nullable
-    protected Vec3d getPosition() {
+    protected Vector3d getPosition() {
         if (entity.getBehaviourType() == SoldierBehaviourType.SOLDIER_GUARD) {
             return null;
         } else if (entity.getCityCenter() == null) {
-            return RandomPositionGenerator.findRandomTarget(this.entity, 10, 7);
+            return RandomPositionGenerator.getPos(this.entity, 10, 7);
         } else {
-            ICityAISystem aiSystem = ArienteWorldCompat.getCityAISystem(entity.world);
+            ICityAISystem aiSystem = ArienteWorldCompat.getCityAISystem(entity.level);
             ICityAI cityAI = aiSystem.getCityAI(entity.getCityCenter());
-            BlockPos pos = cityAI.requestNewSoldierPosition(entity.world, entity.getAttackTarget());
+            BlockPos pos = cityAI.requestNewSoldierPosition(entity.level, entity.getTarget());
             if (pos != null) {
-                return new Vec3d(pos);
+                return new Vector3d(pos.getX(), pos.getY(), pos.getZ());
             } else {
-                return RandomPositionGenerator.findRandomTarget(this.entity, 10, 7);
+                return RandomPositionGenerator.getPos(this.entity, 10, 7);
             }
         }
     }
 
     @Override
-    public boolean shouldContinueExecuting() {
-        return !this.entity.getNavigator().noPath();
+    public boolean canContinueToUse() {
+        return !this.entity.getNavigation().isDone();
     }
 
     @Override
-    public void startExecuting() {
-        this.entity.getNavigator().tryMoveToXYZ(this.x, this.y, this.z, this.speed);
+    public void start() {
+        this.entity.getNavigation().moveTo(this.x, this.y, this.z, this.speed);
     }
 
     public void makeUpdate() {

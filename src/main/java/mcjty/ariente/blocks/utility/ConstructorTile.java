@@ -66,14 +66,14 @@ public class ConstructorTile extends GenericTileEntity implements IGuiTile, ICit
 
     @Override
     public ActionResultType onBlockActivated(BlockState state, PlayerEntity player, Hand hand, BlockRayTraceResult result) {
-        Ariente.guiHandler.openHoloGui(world, pos, player);
+        Ariente.guiHandler.openHoloGui(level, worldPosition, player);
         return ActionResultType.SUCCESS;
     }
 
 
     @Override
-    public void remove() {
-        super.remove();
+    public void setRemoved() {
+        super.setRemoved();
         blueprintItemHandler = null;
     }
 
@@ -98,9 +98,9 @@ public class ConstructorTile extends GenericTileEntity implements IGuiTile, ICit
             return true;
         }
         int needed = ingredient.getCount();
-        for (int i = 0; i < player.inventory.getSizeInventory(); i++) {
-            ItemStack stack = player.inventory.getStackInSlot(i);
-            if (ItemStack.areItemsEqual(ingredient, stack)) {
+        for (int i = 0; i < player.inventory.getContainerSize(); i++) {
+            ItemStack stack = player.inventory.getItem(i);
+            if (ItemStack.isSame(ingredient, stack)) {
                 needed -= stack.getCount();
                 if (needed <= 0) {
                     return true;
@@ -116,9 +116,9 @@ public class ConstructorTile extends GenericTileEntity implements IGuiTile, ICit
         }
 
         int needed = ingredient.getCount();
-        for (int i = 0; i < player.inventory.getSizeInventory(); i++) {
-            ItemStack stack = player.inventory.getStackInSlot(i);
-            if (ItemStack.areItemsEqual(ingredient, stack)) {
+        for (int i = 0; i < player.inventory.getContainerSize(); i++) {
+            ItemStack stack = player.inventory.getItem(i);
+            if (ItemStack.isSame(ingredient, stack)) {
                 if (needed <= stack.getCount()) {
                     stack.shrink(needed);
                     return;
@@ -162,12 +162,12 @@ public class ConstructorTile extends GenericTileEntity implements IGuiTile, ICit
 
                     markDirtyClient();
 
-                    if (!player.inventory.addItemStackToInventory(destination)) {
-                        player.entityDropItem(destination, 1.05f);
+                    if (!player.inventory.add(destination)) {
+                        player.spawnAtLocation(destination, 1.05f);
                     }
 
-                    if (player.openContainer != null) {
-                        player.openContainer.detectAndSendChanges();
+                    if (player.containerMenu != null) {
+                        player.containerMenu.broadcastChanges();
                     }
                 }
             }
@@ -227,7 +227,7 @@ public class ConstructorTile extends GenericTileEntity implements IGuiTile, ICit
                     // Check if we have enough
                     for (ItemStack ingredient : recipe.getIngredientList()) {
                         if (!hasIngredient(McJtyLib.proxy.getClientPlayer(), ingredient)) {
-                            tooltip.add(TextFormatting.RED + "Missing: " + TextFormatting.WHITE + ingredient.getDisplayName());
+                            tooltip.add(TextFormatting.RED + "Missing: " + TextFormatting.WHITE + ingredient.getHoverName());
                             ok = false;
                         }
                     }
@@ -257,7 +257,7 @@ public class ConstructorTile extends GenericTileEntity implements IGuiTile, ICit
                 ConstructorRecipe recipe = BlueprintRecipeRegistry.findRecipe(destination);
                 if (recipe != null) {
                     for (ItemStack ingredient : recipe.getIngredientList()) {
-                        if (ItemStack.areItemsEqual(ingredient, stack)) {
+                        if (ItemStack.isSame(ingredient, stack)) {
                             return true;
                         }
                     }
@@ -270,7 +270,7 @@ public class ConstructorTile extends GenericTileEntity implements IGuiTile, ICit
     private IItemHandler getItemHandler() {
         // Get a virtual item handler with all collected slots from blueprint storages around this
         if (blueprintItemHandler == null) {
-            blueprintItemHandler = new BlueprintItemHandler(world, pos);
+            blueprintItemHandler = new BlueprintItemHandler(level, worldPosition);
         }
         return blueprintItemHandler;
     }

@@ -65,15 +65,15 @@ public class RoundRobinNodeTile extends GenericTileEntity {
 //    }
 
     @Override
-    public void markDirty() {
+    public void setChanged() {
         // Make sure to mark the MultipartTE as dirty
-        world.getTileEntity(pos).markDirty();
+        level.getBlockEntity(worldPosition).setChanged();
     }
 
     @Override
     public void markDirtyQuick() {
         // Make sure to mark the MultipartTE as dirty
-        ((GenericTileEntity)world.getTileEntity(pos)).markDirtyQuick();
+        ((GenericTileEntity)level.getBlockEntity(worldPosition)).markDirtyQuick();
     }
 
     @Override
@@ -87,7 +87,7 @@ public class RoundRobinNodeTile extends GenericTileEntity {
     }
 
     public static AxisAlignedBB getBoundingBox(BlockState state, IWorld world, BlockPos pos) {
-        NodeOrientation orientation = state.get(ORIENTATION);
+        NodeOrientation orientation = state.getValue(ORIENTATION);
         switch (orientation) {
             case DOWN_NE: return AABB_DOWN_NE;
             case DOWN_NW: return AABB_DOWN_NW;
@@ -119,15 +119,15 @@ public class RoundRobinNodeTile extends GenericTileEntity {
 
     @Override
     public ActionResultType onBlockActivated(BlockState state, PlayerEntity player, Hand hand, BlockRayTraceResult result) {
-        Ariente.guiHandler.openHoloGuiEntity(world, pos, player, state.get(ORIENTATION).getSlot().name(), 1.0);
+        Ariente.guiHandler.openHoloGuiEntity(level, worldPosition, player, state.getValue(ORIENTATION).getSlot().name(), 1.0);
         return ActionResultType.SUCCESS;
     }
 
     @Override
     public void onPartAdded(PartSlot slot, BlockState state, TileEntity multipartTile) {
-        this.world = multipartTile.getWorld();
-        this.pos = multipartTile.getPos();
-        AutoFieldTile.notifyField(world, pos);
+        this.level = multipartTile.getLevel();
+        this.worldPosition = multipartTile.getBlockPos();
+        AutoFieldTile.notifyField(level, worldPosition);
     }
 
     public static NodeOrientation getOrientationFromPlacement(Direction side, float hitX, float hitY, float hitZ) {
@@ -190,13 +190,13 @@ public class RoundRobinNodeTile extends GenericTileEntity {
     }
 
     @Override
-    public CompoundNBT write(CompoundNBT tagCompound) {
+    public CompoundNBT save(CompoundNBT tagCompound) {
         tagCompound.putInt("index", index);
-        return super.write(tagCompound);
+        return super.save(tagCompound);
     }
 
     public int fetchIndex() {
-        markDirty();
+        setChanged();
         return index++;
     }
 }

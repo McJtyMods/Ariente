@@ -36,8 +36,8 @@ public class PowerReceiverSupport {
         long amountPosirite = amount;
         Set<Integer> handled = new HashSet<>();
         for (Direction facing : OrientationTools.DIRECTION_VALUES) {
-            BlockPos p = pos.offset(facing);
-            TileEntity te = world.getTileEntity(p);
+            BlockPos p = pos.relative(facing);
+            TileEntity te = world.getBlockEntity(p);
             if (te instanceof IPowerBlob) {
                 IPowerBlob blob = (IPowerBlob) te;
                 int id = blob.getCableId();
@@ -75,8 +75,8 @@ public class PowerReceiverSupport {
         long totalNegarite = 0;
         long totalPosirite = 0;
         for (Direction facing : OrientationTools.DIRECTION_VALUES) {
-            BlockPos p = pos.offset(facing);
-            TileEntity te = world.getTileEntity(p);
+            BlockPos p = pos.relative(facing);
+            TileEntity te = world.getBlockEntity(p);
             if (te instanceof IPowerBlob) {
                 IPowerBlob blob = (IPowerBlob) te;
                 if (blob.canSendPower()) {

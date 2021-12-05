@@ -103,7 +103,7 @@ public class AutoFieldRenderInfo {
             Set<Transfer> values = entry.getValue();
             buf.writeInt(values.size());
             for (Transfer transfer : entry.getValue()) {
-                int id = Item.getIdFromItem(transfer.item);
+                int id = Item.getId(transfer.item);
                 buf.writeInt(id);
                 buf.writeInt(transfer.meta);
             }
@@ -123,7 +123,7 @@ public class AutoFieldRenderInfo {
             int s = buf.readInt();
             for (int j = 0 ; j < s ; j++) {
                 int id = buf.readInt();
-                Item item = Item.getItemById(id);
+                Item item = Item.byId(id);
                 int meta = buf.readInt();
                 // On the client the time doesn't matter so we put 0 there
                 values.add(new Transfer(item, meta, 0));

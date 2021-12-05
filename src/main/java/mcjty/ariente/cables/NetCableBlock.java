@@ -8,7 +8,7 @@ import net.minecraft.block.BlockState;
 import net.minecraft.block.Blocks;
 import net.minecraft.block.material.Material;
 import net.minecraft.entity.player.PlayerEntity;
-import net.minecraft.fluid.IFluidState;
+import net.minecraft.fluid.FluidState;
 import net.minecraft.item.BlockItemUseContext;
 import net.minecraft.item.ItemStack;
 import net.minecraft.tileentity.TileEntity;
@@ -26,7 +26,7 @@ public class NetCableBlock extends GenericCableBlock {
     public static final String NETCABLE = "netcable";
 
     public NetCableBlock() {
-        this(Material.CARPET);
+        this(Material.CLOTH_DECORATION);
     }
 
     public NetCableBlock(Material material) {
@@ -39,7 +39,7 @@ public class NetCableBlock extends GenericCableBlock {
     }
 
     @Override
-    public void harvestBlock(World worldIn, PlayerEntity player, BlockPos pos, BlockState state, @Nullable TileEntity te, ItemStack stack) {
+    public void playerDestroy(World worldIn, PlayerEntity player, BlockPos pos, BlockState state, @Nullable TileEntity te, ItemStack stack) {
         if (te instanceof NetCableTileEntity) {
             // If we are in mimic mode then the drop will be the facade as the connector will remain there
             NetCableTileEntity cableTileEntity = (NetCableTileEntity) te;
@@ -47,25 +47,25 @@ public class NetCableBlock extends GenericCableBlock {
                 ItemStack item = new ItemStack(Registration.FACADE.get());
                 FacadeItemBlock.setMimicBlock(item, cableTileEntity.getMimicBlock());
                 cableTileEntity.setMimicBlock(null);
-                spawnAsEntity(worldIn, pos, item);
+                popResource(worldIn, pos, item);
                 return;
             }
         }
-        super.harvestBlock(worldIn, player, pos, state, te, stack);
+        super.playerDestroy(worldIn, player, pos, state, te, stack);
     }
 
     @Override
-    public boolean removedByPlayer(BlockState state, World world, BlockPos pos, PlayerEntity player, boolean willHarvest, IFluidState fluid) {
-        TileEntity te = world.getTileEntity(pos);
+    public boolean removedByPlayer(BlockState state, World world, BlockPos pos, PlayerEntity player, boolean willHarvest, FluidState fluid) {
+        TileEntity te = world.getBlockEntity(pos);
         if (te instanceof NetCableTileEntity) {
             NetCableTileEntity cableTileEntity = (NetCableTileEntity) te;
             if (cableTileEntity.getMimicBlock() == null) {
-                this.onBlockHarvested(world, pos, state, player);
-                return world.setBlockState(pos, Blocks.AIR.getDefaultState(), world.isRemote ? 11 : 3);
+                this.playerWillDestroy(world, pos, state, player);
+                return world.setBlock(pos, Blocks.AIR.defaultBlockState(), world.isClientSide ? 11 : 3);
             } else {
                 // We are in mimic mode. Don't remove the connector
-                this.onBlockHarvested(world, pos, state, player);
-                if (player.abilities.isCreativeMode) {
+                this.playerWillDestroy(world, pos, state, player);
+                if (player.abilities.instabuild) {
                     cableTileEntity.setMimicBlock(null);
                 }
             }
@@ -125,21 +125,21 @@ public class NetCableBlock extends GenericCableBlock {
 
     public BlockState getPlacementState(BlockItemUseContext context) {
         // When our block is placed down we force a re-render of adjacent blocks to make sure their baked model is updated
-        World world = context.getWorld();
-        BlockPos pos = context.getPos();
+        World world = context.getLevel();
+        BlockPos pos = context.getClickedPos();
         BlockState state = world.getBlockState(pos);
         // @todo 1.14
-        world.notifyBlockUpdate(pos, state, state, Constants.BlockFlags.BLOCK_UPDATE + Constants.BlockFlags.NOTIFY_NEIGHBORS);
+        world.sendBlockUpdated(pos, state, state, Constants.BlockFlags.BLOCK_UPDATE + Constants.BlockFlags.NOTIFY_NEIGHBORS);
 //        world.markBlockRangeForRenderUpdate(pos.add(-1, -1, -1), pos.add(1, 1, 1));
         return super.getStateForPlacement(context);
     }
 
     @Override
     protected ConnectorType getConnectorType(@Nonnull CableColor color, IBlockReader world, BlockPos connectorPos, Direction facing) {
-        BlockPos pos = connectorPos.offset(facing);
+        BlockPos pos = connectorPos.relative(facing);
         BlockState state = world.getBlockState(pos);
         Block block = state.getBlock();
-        if ((block instanceof NetCableBlock || block instanceof ConnectorBlock) && state.get(COLOR) == color) {
+        if ((block instanceof NetCableBlock || block instanceof ConnectorBlock) && state.getValue(COLOR) == color) {
             return ConnectorType.CABLE;
         } else {
             return ConnectorType.NONE;

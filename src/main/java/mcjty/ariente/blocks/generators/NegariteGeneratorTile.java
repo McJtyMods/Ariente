@@ -14,7 +14,7 @@ import mcjty.lib.blocks.RotationType;
 import mcjty.lib.builder.BlockBuilder;
 import mcjty.lib.container.AutomationFilterItemHander;
 import mcjty.lib.container.ContainerFactory;
-import mcjty.lib.container.NoDirectionItemHander;
+import mcjty.lib.container.GenericItemHandler;
 import mcjty.lib.tileentity.GenericTileEntity;
 import mcjty.lib.varia.RedstoneMode;
 import net.minecraft.block.Block;
@@ -50,8 +50,8 @@ public class NegariteGeneratorTile extends GenericTileEntity implements ITickabl
     public static final Lazy<ContainerFactory> CONTAINER_FACTORY = Lazy.of(() -> new ContainerFactory(1)); // @todo 1.14new ResourceLocation(Ariente.MODID, "gui/negarite_generator.gui"));
     public static final int SLOT_NEGARITE_INPUT = 0;
 
-    private final NoDirectionItemHander items = createItemHandler();
-    private final LazyOptional<NoDirectionItemHander> itemHandler = LazyOptional.of(() -> items);
+    private final GenericItemHandler items = createItemHandler();
+    private final LazyOptional<GenericItemHandler> itemHandler = LazyOptional.of(() -> items);
     private final LazyOptional<AutomationFilterItemHander> automationItemHandler = LazyOptional.of(() -> new AutomationFilterItemHander(items));
 
     private final PowerSenderSupport powerBlobSupport = new PowerSenderSupport();
@@ -74,8 +74,8 @@ public class NegariteGeneratorTile extends GenericTileEntity implements ITickabl
             }
 
             @Override
-            protected void fillStateContainer(StateContainer.Builder<Block, BlockState> builder) {
-                super.fillStateContainer(builder);
+            protected void createBlockStateDefinition(StateContainer.Builder<Block, BlockState> builder) {
+                super.createBlockStateDefinition(builder);
                 builder.add(BlockProperties.WORKING);
             }
         };
@@ -83,7 +83,7 @@ public class NegariteGeneratorTile extends GenericTileEntity implements ITickabl
 
     @Override
     public ActionResultType onBlockActivated(BlockState state, PlayerEntity player, Hand hand, BlockRayTraceResult result) {
-        Ariente.guiHandler.openHoloGui(world, pos, player);
+        Ariente.guiHandler.openHoloGui(level, worldPosition, player);
         return ActionResultType.SUCCESS;
     }
 
@@ -121,7 +121,7 @@ public class NegariteGeneratorTile extends GenericTileEntity implements ITickabl
 
     @Override
     public void tick() {
-        if (!world.isRemote) {
+        if (!level.isClientSide) {
             if (!isMachineEnabled()) {
                 return;
             }
@@ -151,13 +151,13 @@ public class NegariteGeneratorTile extends GenericTileEntity implements ITickabl
 
     private void sendPower() {
         int cnt = 0;
-        BlockPos p = pos.up();
-        while (world.getTileEntity(p) instanceof NegariteTankTile) {
+        BlockPos p = worldPosition.above();
+        while (level.getBlockEntity(p) instanceof NegariteTankTile) {
             cnt++;
-            p = p.up();
+            p = p.above();
         }
         if (cnt > 0) {
-            PowerSystem powerSystem = PowerSystem.getPowerSystem(world);
+            PowerSystem powerSystem = PowerSystem.getPowerSystem(level);
             powerSystem.addPower(powerBlobSupport.getCableId(), POWERGEN * cnt, PowerType.NEGARITE);
         }
     }
@@ -178,17 +178,17 @@ public class NegariteGeneratorTile extends GenericTileEntity implements ITickabl
 
         super.onDataPacket(net, packet);
 
-        if (world.isRemote) {
+        if (level.isClientSide) {
             // If needed send a render update.
             boolean newWorking = isWorking();
             if (newWorking != working) {
-                world.notifyBlockUpdate(pos, getBlockState(), getBlockState(), Constants.BlockFlags.BLOCK_UPDATE + Constants.BlockFlags.NOTIFY_NEIGHBORS);
-                BlockPos p = pos.up();
-                BlockState state = world.getBlockState(p);
+                level.sendBlockUpdated(worldPosition, getBlockState(), getBlockState(), Constants.BlockFlags.BLOCK_UPDATE + Constants.BlockFlags.NOTIFY_NEIGHBORS);
+                BlockPos p = worldPosition.above();
+                BlockState state = level.getBlockState(p);
                 while (state.getBlock() == Registration.NEGARITE_TANK.get()) {
-                    world.notifyBlockUpdate(p, state, state, Constants.BlockFlags.BLOCK_UPDATE + Constants.BlockFlags.NOTIFY_NEIGHBORS);
-                    p = p.up();
-                    state = world.getBlockState(p);
+                    level.sendBlockUpdated(p, state, state, Constants.BlockFlags.BLOCK_UPDATE + Constants.BlockFlags.NOTIFY_NEIGHBORS);
+                    p = p.above();
+                    state = level.getBlockState(p);
                 }
             }
         }
@@ -226,11 +226,11 @@ public class NegariteGeneratorTile extends GenericTileEntity implements ITickabl
     }
 
     @Override
-    public CompoundNBT write(CompoundNBT tagCompound) {
+    public CompoundNBT save(CompoundNBT tagCompound) {
         tagCompound.putInt("cableId", powerBlobSupport.getCableId());
         //        writeBufferToNBT(tagCompound, inventoryHelper);
         getOrCreateInfo(tagCompound).putInt("dust", dustCounter);
-        return super.write(tagCompound);
+        return super.save(tagCompound);
     }
 
     @Override
@@ -240,7 +240,7 @@ public class NegariteGeneratorTile extends GenericTileEntity implements ITickabl
 
     @Override
     public void fillCableId(int id) {
-        powerBlobSupport.fillCableId(world, pos, id, getCableColor());
+        powerBlobSupport.fillCableId(level, worldPosition, id, getCableColor());
     }
 
     @Override
@@ -289,7 +289,7 @@ public class NegariteGeneratorTile extends GenericTileEntity implements ITickabl
 
     private void toPlayer(PlayerEntity player, int amount) {
         ItemStack stack = items.extractItem(SLOT_NEGARITE_INPUT, amount, false);
-        if ((!stack.isEmpty()) && player.inventory.addItemStackToInventory(stack)) {
+        if ((!stack.isEmpty()) && player.inventory.add(stack)) {
             markDirtyClient();
         } else {
             ItemStack stillThere = items.getStackInSlot(SLOT_NEGARITE_INPUT);
@@ -309,8 +309,8 @@ public class NegariteGeneratorTile extends GenericTileEntity implements ITickabl
             amount = Math.min(amount, 64 - stackInSlot.getCount());    // @todo item specific max stacksize
         }
 
-        for (int i = 0 ; i < player.inventory.getSizeInventory() ; i++) {
-            ItemStack stack = player.inventory.getStackInSlot(i);
+        for (int i = 0 ; i < player.inventory.getContainerSize() ; i++) {
+            ItemStack stack = player.inventory.getItem(i);
             if (stack.getItem() == Registration.DUST_NEGARITE.get()) {
                 ItemStack splitted = stack.split(amount);
                 if ((!splitted.isEmpty())) {
@@ -358,7 +358,7 @@ public class NegariteGeneratorTile extends GenericTileEntity implements ITickabl
     @Override
     public void onBlockPlacedBy(World world, BlockPos pos, BlockState state, LivingEntity placer, ItemStack stack) {
         super.onBlockPlacedBy(world, pos, state, placer, stack);
-        if (!world.isRemote) {
+        if (!world.isClientSide) {
             PowerSenderSupport.fixNetworks(world, pos);
         }
     }
@@ -366,13 +366,13 @@ public class NegariteGeneratorTile extends GenericTileEntity implements ITickabl
     @Override
     public void onReplaced(World world, BlockPos pos, BlockState state, BlockState newstate) {
         super.onReplaced(world, pos, state, newstate);
-        if (!this.world.isRemote) {
-            PowerSenderSupport.fixNetworks(this.world, pos);
+        if (!this.level.isClientSide) {
+            PowerSenderSupport.fixNetworks(this.level, pos);
         }
     }
 
-    private NoDirectionItemHander createItemHandler() {
-        return new NoDirectionItemHander(NegariteGeneratorTile.this, CONTAINER_FACTORY.get()) {
+    private GenericItemHandler createItemHandler() {
+        return new GenericItemHandler(NegariteGeneratorTile.this, CONTAINER_FACTORY.get()) {
             @Override
             public boolean isItemValid(int slot, @Nonnull ItemStack stack) {
                 if (slot == SLOT_NEGARITE_INPUT) {

@@ -14,17 +14,19 @@ import java.util.List;
 
 import static mcjty.lib.builder.TooltipBuilder.header;
 
+import net.minecraft.item.Item.Properties;
+
 public class CircuitItem extends Item implements ITooltipSettings {
 
     private final TooltipBuilder tooltipBuilder = new TooltipBuilder().info(header());
 
     public CircuitItem(boolean advanced) {
-        super(new Properties().group(Ariente.setup.getTab()).maxStackSize(64));
+        super(new Properties().tab(Ariente.setup.getTab()).stacksTo(64));
     }
 
     @Override
-    public void addInformation(ItemStack stack, @Nullable World worldIn, List<ITextComponent> tooltip, ITooltipFlag flag) {
-        super.addInformation(stack, worldIn, tooltip, flag);
+    public void appendHoverText(ItemStack stack, @Nullable World worldIn, List<ITextComponent> tooltip, ITooltipFlag flag) {
+        super.appendHoverText(stack, worldIn, tooltip, flag);
         tooltipBuilder.makeTooltip(getRegistryName(), stack, tooltip, flag);
     }
 }

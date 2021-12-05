@@ -41,13 +41,13 @@ public class ArienteSystem implements IArienteSystem {
     @Nonnull
     @Override
     public List<? extends ISoldier> getSoldiersWithinAABB(World world, AxisAlignedBB aabb) {
-        return world.getEntitiesWithinAABB(SoldierEntity.class, aabb);
+        return world.getEntitiesOfClass(SoldierEntity.class, aabb);
     }
 
     @Nonnull
     @Override
     public List<? extends IFluxLevitatorEntity> getLevitatorsWithinAABB(World world, AxisAlignedBB aabb) {
-        return world.getEntitiesWithinAABB(FluxLevitatorEntity.class, aabb);
+        return world.getEntitiesOfClass(FluxLevitatorEntity.class, aabb);
     }
 
     @Override
@@ -113,7 +113,7 @@ public class ArienteSystem implements IArienteSystem {
         } else {
             entity = SoldierEntity.create(world, center, behaviourType);
         }
-        entity.setPosition(p.getX()+.5, p.getY(), p.getZ()+.5);
+        entity.setPos(p.getX()+.5, p.getY(), p.getZ()+.5);
         float yaw = 0;
         switch (facing) {
             case NORTH:
@@ -131,8 +131,8 @@ public class ArienteSystem implements IArienteSystem {
             default:
                 break;
         }
-        entity.setLocationAndAngles(entity.getPosX(), entity.getPosY(), entity.getPosZ(), yaw, 0);
-        world.addEntity(entity);
+        entity.moveTo(entity.getX(), entity.getY(), entity.getZ(), yaw, 0);
+        world.addFreshEntity(entity);
         return entity;
     }
 

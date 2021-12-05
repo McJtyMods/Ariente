@@ -35,10 +35,10 @@ public class AICoreTile extends GenericTileEntity implements ITickableTileEntity
 
     public static BaseBlock createBlock() {
         return new BaseBlock(new BlockBuilder()
-                .properties(Block.Properties.create(Material.IRON)
+                .properties(Block.Properties.of(Material.METAL)
                         .harvestTool(ToolType.PICKAXE)
                         .harvestLevel(2)
-                        .hardnessAndResistance(20.0f, 800))
+                        .strength(20.0f, 800))
 //                .flags(REDSTONE_CHECK, RENDER_SOLID, RENDER_CUTOUT)
                 .topDriver(DRIVER)
                 .tileEntitySupplier(AICoreTile::new)
@@ -52,7 +52,7 @@ public class AICoreTile extends GenericTileEntity implements ITickableTileEntity
 
     @Override
     public void tick() {
-        if (!world.isRemote) {
+        if (!level.isClientSide) {
             if (tickCounter > 0) {
                 tickCounter--;
                 return;
@@ -61,7 +61,7 @@ public class AICoreTile extends GenericTileEntity implements ITickableTileEntity
 
             // @todo check if Ariente World is there!
             if (getCityCenter() != null) {
-                ICityAISystem cityAISystem = ArienteWorldCompat.getCityAISystem(world);
+                ICityAISystem cityAISystem = ArienteWorldCompat.getCityAISystem(level);
                 ICityAI cityAI = cityAISystem.getCityAI(cityCenter);
                 if (cityAI.tick(this)) {
                     cityAISystem.saveSystem();
@@ -77,7 +77,7 @@ public class AICoreTile extends GenericTileEntity implements ITickableTileEntity
 
     private ChunkPos getCityCenter() {
         if (cityCenter == null) {
-            cityCenter = BlockPosTools.getChunkCoordFromPos(pos);
+            cityCenter = new ChunkPos(worldPosition.getX() >> 4, worldPosition.getZ() >> 4);
             // @todo check if Ariente World is there!
             cityCenter = ArienteWorldCompat.getArienteWorld().getNearestCityCenter(cityCenter);
         }
@@ -87,7 +87,7 @@ public class AICoreTile extends GenericTileEntity implements ITickableTileEntity
     @Override
     public void onReplaced(World world, BlockPos pos, BlockState state, BlockState newstate) {
         super.onReplaced(world, pos, state, newstate);
-        if (!this.world.isRemote) {
+        if (!this.level.isClientSide) {
             if (getCityCenter() != null) {
                 ICityAISystem cityAISystem = ArienteWorldCompat.getCityAISystem(world);
                 ICityAI cityAI = cityAISystem.getCityAI(cityCenter);
@@ -98,7 +98,7 @@ public class AICoreTile extends GenericTileEntity implements ITickableTileEntity
 
     @Override
     public BlockPos getCorePos() {
-        return getPos();
+        return getBlockPos();
     }
 
     @Override
@@ -109,8 +109,8 @@ public class AICoreTile extends GenericTileEntity implements ITickableTileEntity
     }
 
     @Override
-    public CompoundNBT write(CompoundNBT tagCompound) {
-        tagCompound = super.write(tagCompound);
+    public CompoundNBT save(CompoundNBT tagCompound) {
+        tagCompound = super.save(tagCompound);
         getOrCreateInfo(tagCompound).putString("cityName", cityName);
         return tagCompound;
     }

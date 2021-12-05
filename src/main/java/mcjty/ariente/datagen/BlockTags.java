@@ -1,20 +1,21 @@
 package mcjty.ariente.datagen;
 
+import mcjty.ariente.Ariente;
 import mcjty.ariente.setup.Registration;
 import net.minecraft.block.Block;
 import net.minecraft.data.BlockTagsProvider;
 import net.minecraft.data.DataGenerator;
-import net.minecraft.tags.Tag;
+import net.minecraft.tags.ITag;
 import net.minecraftforge.common.Tags;
 
 public class BlockTags extends BlockTagsProvider {
 
     public BlockTags(DataGenerator generator) {
-        super(generator);
+        super(generator, Ariente.MODID, null);
     }
 
     @Override
-    protected void registerTags() {
+    protected void addTags() {
         addTag(Tags.Blocks.ORES,
                 Registration.ORE_POSIRITE.get(),
                 Registration.ORE_NEGARITE.get(),
@@ -32,10 +33,9 @@ public class BlockTags extends BlockTagsProvider {
         addTag(Registration.TAG_ORE_PLATINUM, Registration.ORE_PLATINUM.get());
     }
 
-    private void addTag(Tag<Block> tag, Block... items) {
-        getBuilder(tag)
-                .add(items)
-                .build(tag.getId());
+    private void addTag(ITag.INamedTag<Block> tag, Block... items) {
+        tag(tag)
+                .add(items);
     }
 
     @Override

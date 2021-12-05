@@ -13,7 +13,7 @@ import mcjty.lib.blocks.RotationType;
 import mcjty.lib.builder.BlockBuilder;
 import mcjty.lib.container.AutomationFilterItemHander;
 import mcjty.lib.container.ContainerFactory;
-import mcjty.lib.container.NoDirectionItemHander;
+import mcjty.lib.container.GenericItemHandler;
 import mcjty.lib.tileentity.GenericTileEntity;
 import net.minecraft.block.BlockState;
 import net.minecraft.entity.player.PlayerEntity;
@@ -44,8 +44,8 @@ public class BlueprintStorageTile extends GenericTileEntity implements IGuiTile,
     public static final int SLOT_BLUEPRINT = 0;
     public static final Lazy<ContainerFactory> CONTAINER_FACTORY = Lazy.of(() -> new ContainerFactory(BLUEPRINTS));// @todo 1.14 new ResourceLocation(Ariente.MODID, "gui/blueprint_storage.gui"));
 
-    private final NoDirectionItemHander items = createItemHandler();
-    private final LazyOptional<NoDirectionItemHander> itemHandler = LazyOptional.of(() -> items);
+    private final GenericItemHandler items = createItemHandler();
+    private final LazyOptional<GenericItemHandler> itemHandler = LazyOptional.of(() -> items);
     private final LazyOptional<AutomationFilterItemHander> automationItemHandler = LazyOptional.of(() -> new AutomationFilterItemHander(items));
 
     public BlueprintStorageTile() {
@@ -68,7 +68,7 @@ public class BlueprintStorageTile extends GenericTileEntity implements IGuiTile,
 
     @Override
     public ActionResultType onBlockActivated(BlockState state, PlayerEntity player, Hand hand, BlockRayTraceResult result) {
-        Ariente.guiHandler.openHoloGui(world, pos, player);
+        Ariente.guiHandler.openHoloGui(level, worldPosition, player);
         return ActionResultType.SUCCESS;
     }
 
@@ -82,7 +82,7 @@ public class BlueprintStorageTile extends GenericTileEntity implements IGuiTile,
 //        writeBufferToNBT(tagCompound, inventoryHelper);
     }
 
-    public NoDirectionItemHander getItems() {
+    public GenericItemHandler getItems() {
         return items;
     }
 
@@ -137,7 +137,7 @@ public class BlueprintStorageTile extends GenericTileEntity implements IGuiTile,
                 if (selected != -1) {
                     ItemStack extracted = items.extractItem(selected, 64, false);
                     if (!extracted.isEmpty()) {
-                        if (!player.inventory.addItemStackToInventory(extracted)) {
+                        if (!player.inventory.add(extracted)) {
                             items.insertItem(selected, extracted, false);
                         } else {
                             ((ISlots) component).setSelection(-1);
@@ -154,10 +154,10 @@ public class BlueprintStorageTile extends GenericTileEntity implements IGuiTile,
             if (component instanceof IPlayerSlots) {
                 int selected = ((IPlayerSlots) component).getSelected();
                 if (selected != -1) {
-                    ItemStack extracted = player.inventory.getStackInSlot(selected);
+                    ItemStack extracted = player.inventory.getItem(selected);
                     if (!extracted.isEmpty()) {
                         ItemStack notInserted = ItemHandlerHelper.insertItem(items, extracted, false);
-                        player.inventory.setInventorySlotContents(selected, notInserted);
+                        player.inventory.setItem(selected, notInserted);
                         if (notInserted.isEmpty()) {
                             ((IPlayerSlots) component).setSelection(-1);
                         }
@@ -172,8 +172,8 @@ public class BlueprintStorageTile extends GenericTileEntity implements IGuiTile,
     public void syncToClient() {
     }
 
-    private NoDirectionItemHander createItemHandler() {
-        return new NoDirectionItemHander(BlueprintStorageTile.this, CONTAINER_FACTORY.get()) {
+    private GenericItemHandler createItemHandler() {
+        return new GenericItemHandler(BlueprintStorageTile.this, CONTAINER_FACTORY.get()) {
             @Override
             public boolean isItemValid(int slot, @Nonnull ItemStack stack) {
                 return stack.getItem() == Registration.BLUEPRINT.get();

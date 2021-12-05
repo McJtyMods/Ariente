@@ -8,6 +8,8 @@ import net.minecraft.util.math.MathHelper;
 
 
 
+import net.minecraft.client.audio.ISound.AttenuationType;
+
 public class MovingSoundLevitatorRiding extends TickableSound {
     private final PlayerEntity player;
     private final FluxLevitatorEntity levitator;
@@ -16,14 +18,14 @@ public class MovingSoundLevitatorRiding extends TickableSound {
         super(ModSounds.levitator, SoundCategory.NEUTRAL);
         this.player = playerRiding;
         this.levitator = levitator;
-        this.attenuationType = AttenuationType.NONE;
-        this.repeat = true;
-        this.repeatDelay = 0;
+        this.attenuation = AttenuationType.NONE;
+        this.looping = true;
+        this.delay = 0;
     }
 
     @Override
     public void tick() {
-        if (this.levitator.isAlive() && this.player.isPassenger() && this.player.getRidingEntity() == this.levitator) {
+        if (this.levitator.isAlive() && this.player.isPassenger() && this.player.getVehicle() == this.levitator) {
             float f = Math.abs(this.levitator.getSpeed()) / 50.0f;
 //            float f = MathHelper.sqrt(this.levitator.motionX * this.levitator.motionX + this.levitator.motionZ * this.levitator.motionZ);
 
@@ -33,7 +35,7 @@ public class MovingSoundLevitatorRiding extends TickableSound {
                 this.volume = 0.0F;
             }
         } else {
-            this.donePlaying = true;
+            stop();
         }
     }
 }

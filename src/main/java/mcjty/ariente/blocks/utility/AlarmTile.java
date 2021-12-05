@@ -31,7 +31,7 @@ public class AlarmTile extends GenericTileEntity implements ITickableTileEntity,
 
     public static final EnumProperty<AlarmType> ALARM = EnumProperty.create("alarm", AlarmType.class, AlarmType.values());
 
-    private static final VoxelShape BLOCK_AABB = VoxelShapes.create(1.0D/16.0, 1.0D/16.0, 15.0D/16.0, 15.0D/16.0, 15.0D/16.0, 1.0D);
+    private static final VoxelShape BLOCK_AABB = VoxelShapes.box(1.0D/16.0, 1.0D/16.0, 15.0D/16.0, 15.0D/16.0, 15.0D/16.0, 1.0D);
 
     private AlarmType alarmType = AlarmType.SAFE;
     private int soundTicker = 0;
@@ -49,8 +49,8 @@ public class AlarmTile extends GenericTileEntity implements ITickableTileEntity,
                 .tileEntitySupplier(AlarmTile::new)
         ) {
             @Override
-            protected void fillStateContainer(StateContainer.Builder<Block, BlockState> builder) {
-                super.fillStateContainer(builder);
+            protected void createBlockStateDefinition(StateContainer.Builder<Block, BlockState> builder) {
+                super.createBlockStateDefinition(builder);
                 builder.add(ALARM);
             }
 
@@ -65,14 +65,14 @@ public class AlarmTile extends GenericTileEntity implements ITickableTileEntity,
 
     @Override
     public void tick() {
-        if (!world.isRemote) {
+        if (!level.isClientSide) {
             if (alarmType == AlarmType.ALERT) {
                 soundTicker--;
                 if (soundTicker >= 0) {
                     return;
                 }
                 soundTicker = 60;
-                world.playSound(null, getPos().getX(), getPos().getY(), getPos().getZ(), ModSounds.alarm, SoundCategory.BLOCKS, 0.1f, 1.0f);
+                level.playSound(null, getBlockPos().getX(), getBlockPos().getY(), getBlockPos().getZ(), ModSounds.alarm, SoundCategory.BLOCKS, 0.1f, 1.0f);
             }
         }
     }
@@ -93,11 +93,11 @@ public class AlarmTile extends GenericTileEntity implements ITickableTileEntity,
         AlarmType type = alarmType;
         super.onDataPacket(net, packet);
 
-        if (world.isRemote) {
+        if (level.isClientSide) {
             // If needed send a render update.
             AlarmType newType = alarmType;
             if (newType != type) {
-                world.notifyBlockUpdate(pos, getBlockState(), getBlockState(), Constants.BlockFlags.BLOCK_UPDATE + Constants.BlockFlags.NOTIFY_NEIGHBORS);
+                level.sendBlockUpdated(worldPosition, getBlockState(), getBlockState(), Constants.BlockFlags.BLOCK_UPDATE + Constants.BlockFlags.NOTIFY_NEIGHBORS);
             }
         }
     }
@@ -115,8 +115,8 @@ public class AlarmTile extends GenericTileEntity implements ITickableTileEntity,
     }
 
     @Override
-    public CompoundNBT write(CompoundNBT tagCompound) {
+    public CompoundNBT save(CompoundNBT tagCompound) {
         tagCompound.putInt("alarm", alarmType.ordinal());
-        return super.write(tagCompound);
+        return super.save(tagCompound);
     }
 }

@@ -103,14 +103,14 @@ public class AutoFieldTile extends GenericTileEntity implements IGuiTile, ITicka
 
     @Override
     public ActionResultType onBlockActivated(BlockState state, PlayerEntity player, Hand hand, BlockRayTraceResult result) {
-        Ariente.guiHandler.openHoloGui(world, pos, player);
+        Ariente.guiHandler.openHoloGui(level, worldPosition, player);
         return ActionResultType.SUCCESS;
     }
 
 
     @Override
     public void tick() {
-        if (world.isRemote) {
+        if (level.isClientSide) {
             return;
         }
 
@@ -188,7 +188,7 @@ public class AutoFieldTile extends GenericTileEntity implements IGuiTile, ITicka
                                         PartSlot roundRobinSlot = producer.getRoundRobinSlot();
                                         if (roundRobinSlot != null) {
                                             // @todo more efficient way to get to the round robin index?
-                                            TileEntity roundRobinModifier = MultipartHelper.getTileEntity(world, sourcePos.getPos(), roundRobinSlot);
+                                            TileEntity roundRobinModifier = MultipartHelper.getTileEntity(level, sourcePos.getPos(), roundRobinSlot);
                                             if (roundRobinModifier instanceof RoundRobinNodeTile) {
                                                 index = ((RoundRobinNodeTile) roundRobinModifier).fetchIndex();
                                                 index = index % destinations.size();
@@ -211,7 +211,7 @@ public class AutoFieldTile extends GenericTileEntity implements IGuiTile, ITicka
     }
 
     private boolean handleAccumulatedPower() {
-        long availablePower = PowerReceiverSupport.getPowerAvailable(world, pos, true);
+        long availablePower = PowerReceiverSupport.getPowerAvailable(level, worldPosition, true);
         if (availablePower == 0) {
             // If there is no power available all accumulated power is lost and nothing can happen
             accumulatedPower = 0;
@@ -225,7 +225,7 @@ public class AutoFieldTile extends GenericTileEntity implements IGuiTile, ITicka
         }
 
         if (toAccumulate > 0) {
-            PowerReceiverSupport.consumerPowerNoCheck(world, pos, toAccumulate, true);
+            PowerReceiverSupport.consumerPowerNoCheck(level, worldPosition, toAccumulate, true);
             usingPower = toAccumulate;
             accumulatedPower += toAccumulate;
         }
@@ -240,24 +240,24 @@ public class AutoFieldTile extends GenericTileEntity implements IGuiTile, ITicka
     public void clientRequestRenderInfo() {
         long time = System.currentTimeMillis();
         if (clientRenderInfo == null || time > clientRenderInfoAge + 1000) {
-            ArienteMessages.INSTANCE.sendToServer(new PacketAutoFieldRequestRenderInfo(pos));
+            ArienteMessages.INSTANCE.sendToServer(new PacketAutoFieldRequestRenderInfo(worldPosition));
         }
     }
 
     // Called server side when a client has requested render info
     public void renderInfoRequested() {
-        double x = pos.getX();
-        double y = pos.getY();
-        double z = pos.getZ();
+        double x = worldPosition.getX();
+        double y = worldPosition.getY();
+        double z = worldPosition.getZ();
         double radius = 50;
-        PacketAutoFieldReturnRenderInfo info = new PacketAutoFieldReturnRenderInfo(pos, renderInfo);
-        for (PlayerEntity player : world.getServer().getPlayerList().getPlayers()) {
-            double dx = x - player.getPosX();
-            double dy = y - player.getPosY();
-            double dz = z - player.getPosZ();
+        PacketAutoFieldReturnRenderInfo info = new PacketAutoFieldReturnRenderInfo(worldPosition, renderInfo);
+        for (PlayerEntity player : level.getServer().getPlayerList().getPlayers()) {
+            double dx = x - player.getX();
+            double dy = y - player.getY();
+            double dz = z - player.getZ();
 
             if (dx * dx + dy * dy + dz * dz < radius * radius) {
-                ArienteMessages.INSTANCE.sendTo(info, ((ServerPlayerEntity) player).connection.netManager, NetworkDirection.PLAY_TO_CLIENT);
+                ArienteMessages.INSTANCE.sendTo(info, ((ServerPlayerEntity) player).connection.connection, NetworkDirection.PLAY_TO_CLIENT);
             }
         }
     }
@@ -323,7 +323,7 @@ public class AutoFieldTile extends GenericTileEntity implements IGuiTile, ITicka
     }
 
     private InputItemNodeTile getInputItemNodeAt(PartPos partPos) {
-        TileEntity te = MultipartHelper.getTileEntity(world, partPos);
+        TileEntity te = MultipartHelper.getTileEntity(level, partPos);
         if (te instanceof InputItemNodeTile) {
             return (InputItemNodeTile) te;
         } else {
@@ -332,7 +332,7 @@ public class AutoFieldTile extends GenericTileEntity implements IGuiTile, ITicka
     }
 
     private OutputItemNodeTile getOutputItemNodeAt(PartPos partPos) {
-        TileEntity te = MultipartHelper.getTileEntity(world, partPos);
+        TileEntity te = MultipartHelper.getTileEntity(level, partPos);
         if (te instanceof OutputItemNodeTile) {
             return (OutputItemNodeTile) te;
         } else {
@@ -342,13 +342,13 @@ public class AutoFieldTile extends GenericTileEntity implements IGuiTile, ITicka
 
     private void findConsumers() {
         if (consumerInfo == null) {
-            consumerInfo = new ConsumerInfo(world, getInputItemNodes());
+            consumerInfo = new ConsumerInfo(level, getInputItemNodes());
         }
     }
 
     private void findProducers() {
         if (producerInfo == null) {
-            producerInfo = new ProducerInfo(world, getOutputItemNodes(), getOutputModifierNodes());
+            producerInfo = new ProducerInfo(level, getOutputItemNodes(), getOutputModifierNodes());
         }
     }
 
@@ -357,9 +357,9 @@ public class AutoFieldTile extends GenericTileEntity implements IGuiTile, ITicka
             inputItemNodes = new HashSet<>();
             for (BlockPos mpos : getMarkers()) {
                 for (int y = 0; y <= height; y++) {
-                    BlockPos p = mpos.up(y);
+                    BlockPos p = mpos.above(y);
                     for (PartSlot slot : PartSlot.VALUES) {
-                        TileEntity te = MultipartHelper.getTileEntity(world, p, slot);
+                        TileEntity te = MultipartHelper.getTileEntity(level, p, slot);
                         if (te instanceof InputItemNodeTile) {
                             inputItemNodes.add(PartPos.create(p, slot));
                         }
@@ -374,7 +374,7 @@ public class AutoFieldTile extends GenericTileEntity implements IGuiTile, ITicka
         if (!sensorMeasurements.containsKey(color)) {
             sensorMeasurements.put(color, false);
             for (PartPos sensorPos : getSensorNodes().getOrDefault(color, Collections.emptyList())) {
-                TileEntity te = MultipartHelper.getTileEntity(world, sensorPos);
+                TileEntity te = MultipartHelper.getTileEntity(level, sensorPos);
                 if (te instanceof SensorItemNodeTile) {
                     SensorItemNodeTile sensor = (SensorItemNodeTile) te;
                     // This recursion will work even if we need the same color because
@@ -415,15 +415,15 @@ public class AutoFieldTile extends GenericTileEntity implements IGuiTile, ITicka
         outputmodifierNodes = new HashSet<>();
         for (BlockPos mpos : getMarkers()) {
             for (int y = 0; y <= height; y++) {
-                BlockPos p = mpos.up(y);
+                BlockPos p = mpos.above(y);
                 for (NodeOrientation orientation : NodeOrientation.VALUES) {
                     PartSlot slot = orientation.getSlot();
-                    TileEntity te = MultipartHelper.getTileEntity(world, p, slot);
+                    TileEntity te = MultipartHelper.getTileEntity(level, p, slot);
                     if (te instanceof OutputItemNodeTile) {
                         outputItemNodes.add(PartPos.create(p, slot));
                     }
                     PartSlot backSlot = orientation.getBackSlot();
-                    te = MultipartHelper.getTileEntity(world, p, backSlot);
+                    te = MultipartHelper.getTileEntity(level, p, backSlot);
                     if (te instanceof RoundRobinNodeTile) {
                         outputmodifierNodes.add(PartPos.create(p, slot));  // Use 'slot' even if the round robin modifier is at backSlot
                     }
@@ -436,10 +436,10 @@ public class AutoFieldTile extends GenericTileEntity implements IGuiTile, ITicka
         sensorNodes = new HashMap<>();
         for (BlockPos mpos : getMarkers()) {
             for (int y = 0; y <= height; y++) {
-                BlockPos p = mpos.up(y);
+                BlockPos p = mpos.above(y);
                 for (NodeOrientation orientation : NodeOrientation.VALUES) {
                     PartSlot slot = orientation.getSlot();
-                    TileEntity te = MultipartHelper.getTileEntity(world, p, slot);
+                    TileEntity te = MultipartHelper.getTileEntity(level, p, slot);
                     if (te instanceof SensorItemNodeTile) {
                         DyeColor outputColor = ((SensorItemNodeTile) te).getOutputColor();
                         sensorNodes.computeIfAbsent(outputColor, color -> new ArrayList<>());
@@ -451,11 +451,11 @@ public class AutoFieldTile extends GenericTileEntity implements IGuiTile, ITicka
     }
 
     @Override
-    public void remove() {
-        super.remove();
+    public void setRemoved() {
+        super.setRemoved();
         if (markers != null) {
             for (BlockPos marker : markers) {
-                TileEntity tileEntity = world.getTileEntity(marker);
+                TileEntity tileEntity = level.getBlockEntity(marker);
                 if (tileEntity instanceof FieldMarkerTile) {
                     ((FieldMarkerTile) tileEntity).setAutoFieldTile(null);
                 }
@@ -483,14 +483,14 @@ public class AutoFieldTile extends GenericTileEntity implements IGuiTile, ITicka
             if (te instanceof FieldMarkerTile) {
                 BlockPos fieldPos = ((FieldMarkerTile) te).getAutoFieldTile();
                 if (fieldPos != null) {
-                    TileEntity tileEntity = world.getTileEntity(fieldPos);
+                    TileEntity tileEntity = world.getBlockEntity(fieldPos);
                     if (tileEntity instanceof AutoFieldTile) {
                         ((AutoFieldTile) tileEntity).notifyNode(originalPos);
                     }
                 }
                 return;
             }
-            pos = pos.down();
+            pos = pos.below();
         }
     }
 
@@ -564,25 +564,25 @@ public class AutoFieldTile extends GenericTileEntity implements IGuiTile, ITicka
         fieldBox = null;
         markers = new HashSet<>();
         Queue<BlockPos> todo = new ArrayDeque<>();
-        todo.add(getPos());
+        todo.add(getBlockPos());
         while (!todo.isEmpty()) {
             BlockPos pos = todo.poll();
             for (Direction facing : OrientationTools.HORIZONTAL_DIRECTION_VALUES) {
-                BlockPos p = pos.offset(facing);
+                BlockPos p = pos.relative(facing);
                 if (!markers.contains(p)) {
-                    TileEntity te = world.getTileEntity(p);
+                    TileEntity te = level.getBlockEntity(p);
                     if (te instanceof MultipartTE) {
-                        BlockState state = MultipartHelper.getBlockState(world, p, PartSlot.DOWN);
+                        BlockState state = MultipartHelper.getBlockState(level, p, PartSlot.DOWN);
                         if (state != null && state.getBlock() == Registration.FIELD_MARKER.get()) {
                             if (fieldBox == null) {
-                                fieldBox = new AxisAlignedBB(p, p.add(0, height, 0));
+                                fieldBox = new AxisAlignedBB(p, p.offset(0, height, 0));
                             } else {
-                                fieldBox = fieldBox.union(new AxisAlignedBB(p));
+                                fieldBox = fieldBox.minmax(new AxisAlignedBB(p));
                             }
                             markers.add(p);
-                            TileEntity markerTE = MultipartHelper.getTileEntity(world, p, PartSlot.DOWN);
+                            TileEntity markerTE = MultipartHelper.getTileEntity(level, p, PartSlot.DOWN);
                             if (markerTE instanceof FieldMarkerTile) {
-                                ((FieldMarkerTile) markerTE).setAutoFieldTile(this.pos);
+                                ((FieldMarkerTile) markerTE).setAutoFieldTile(this.worldPosition);
                             }
                             todo.add(p);
                         }
@@ -591,9 +591,9 @@ public class AutoFieldTile extends GenericTileEntity implements IGuiTile, ITicka
             }
         }
 
-        renderBox = new AxisAlignedBB(getPos());
+        renderBox = new AxisAlignedBB(getBlockPos());
         if (fieldBox != null) {
-            renderBox = renderBox.union(fieldBox);
+            renderBox = renderBox.minmax(fieldBox);
         }
     }
 
@@ -610,12 +610,12 @@ public class AutoFieldTile extends GenericTileEntity implements IGuiTile, ITicka
     }
 
     @Override
-    public CompoundNBT write(CompoundNBT tagCompound) {
+    public CompoundNBT save(CompoundNBT tagCompound) {
         tagCompound.putLong("accPower", accumulatedPower);
         getOrCreateInfo(tagCompound).putInt("height", height);
         getOrCreateInfo(tagCompound).putBoolean("renderItems", renderItems);
         getOrCreateInfo(tagCompound).putBoolean("renderOutline", renderOutline);
-        return super.write(tagCompound);
+        return super.save(tagCompound);
     }
 
     @Override
@@ -641,10 +641,10 @@ public class AutoFieldTile extends GenericTileEntity implements IGuiTile, ITicka
 
         super.onDataPacket(net, packet);
 
-        if (world.isRemote) {
+        if (level.isClientSide) {
             // If needed send a render update.
             if (oldheight != height) {
-                world.notifyBlockUpdate(pos, getBlockState(), getBlockState(), Constants.BlockFlags.BLOCK_UPDATE + Constants.BlockFlags.NOTIFY_NEIGHBORS);
+                level.sendBlockUpdated(worldPosition, getBlockState(), getBlockState(), Constants.BlockFlags.BLOCK_UPDATE + Constants.BlockFlags.NOTIFY_NEIGHBORS);
                 invalidateBox();
             }
         }
