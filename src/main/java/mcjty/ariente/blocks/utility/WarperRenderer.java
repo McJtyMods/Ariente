@@ -2,25 +2,32 @@ package mcjty.ariente.blocks.utility;
 
 import com.mojang.blaze3d.matrix.MatrixStack;
 import com.mojang.blaze3d.platform.GlStateManager;
+import com.mojang.blaze3d.vertex.IVertexBuilder;
 import mcjty.ariente.Ariente;
+import mcjty.ariente.setup.Registration;
+import mcjty.lib.client.CustomRenderTypes;
 import mcjty.lib.client.RenderHelper;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.renderer.BufferBuilder;
 import net.minecraft.client.renderer.IRenderTypeBuffer;
 import net.minecraft.client.renderer.Tessellator;
+import net.minecraft.client.renderer.texture.AtlasTexture;
+import net.minecraft.client.renderer.texture.TextureAtlasSprite;
 import net.minecraft.client.renderer.tileentity.TileEntityRenderer;
 import net.minecraft.client.renderer.tileentity.TileEntityRendererDispatcher;
 import net.minecraft.client.renderer.vertex.DefaultVertexFormats;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.util.ResourceLocation;
+import net.minecraft.util.math.vector.Matrix4f;
 import net.minecraft.util.math.vector.Vector3f;
+import net.minecraftforge.fml.client.registry.ClientRegistry;
 import org.lwjgl.opengl.GL11;
 
 import java.util.Random;
 
 public class WarperRenderer extends TileEntityRenderer<WarperTile> {
 
-    private ResourceLocation halo = new ResourceLocation(Ariente.MODID, "textures/blocks/machines/elevator_beam.png");
+    private static ResourceLocation halo = new ResourceLocation(Ariente.MODID, "textures/blocks/machines/elevator_beam.png");
     private Random random = new Random();
 
     public WarperRenderer(TileEntityRendererDispatcher rendererDispatcherIn) {
@@ -48,8 +55,6 @@ public class WarperRenderer extends TileEntityRenderer<WarperTile> {
         GlStateManager._enableDepthTest();
 
         ResourceLocation beamIcon = halo;
-        // @todo 1.15
-//        bindTexture(beamIcon);
 
         Minecraft mc = Minecraft.getInstance();
         PlayerEntity p = mc.player;
@@ -70,6 +75,10 @@ public class WarperRenderer extends TileEntityRenderer<WarperTile> {
 
         float height = 2;
 
+        Matrix4f matrix = matrixStack.last().pose();
+        IVertexBuilder builder = buffer.getBuffer(CustomRenderTypes.TRANSLUCENT_ADD);
+        TextureAtlasSprite sprite = mc.getTextureAtlas(AtlasTexture.LOCATION_BLOCKS).apply(beamIcon);
+
         for (int i = 0; i < 10; i++) {
             int ii = i % 10;
             long ticks = (tt + randomY[ii]) % 80;
@@ -80,7 +89,7 @@ public class WarperRenderer extends TileEntityRenderer<WarperTile> {
             float xx = te.getBlockPos().getX() + randomX[ii];
             float zz = te.getBlockPos().getZ() + randomZ[ii];
             float yy = te.getBlockPos().getY() - 1.0f + i1 + (randomY[ii] * height) / 8.0f;
-            // @todo: RenderHelper.drawBeam(new Vector3f(xx, yy, zz), new Vector3f(xx, yy + 4, zz), player, 0.2f);
+            RenderHelper.drawBeam(matrix, builder, sprite, new Vector3f(xx, yy, zz), new Vector3f(xx, yy + 4, zz), player, 0.2f);
         }
 
 //        net.minecraft.util.math.vector.Vector3d cameraPos = net.minecraft.client.renderer.ActiveRenderInfo.getCameraPosition();
@@ -104,7 +113,6 @@ public class WarperRenderer extends TileEntityRenderer<WarperTile> {
     }
 
     public static void register() {
-        // @todo 1.15
-//        ClientRegistry.bindTileEntitySpecialRenderer(WarperTile.class, new WarperRenderer());
+        ClientRegistry.bindTileEntityRenderer(Registration.WARPER_TILE.get(), WarperRenderer::new);
     }
 }

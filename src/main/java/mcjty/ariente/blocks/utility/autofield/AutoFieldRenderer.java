@@ -2,21 +2,28 @@ package mcjty.ariente.blocks.utility.autofield;
 
 import com.mojang.blaze3d.matrix.MatrixStack;
 import com.mojang.blaze3d.platform.GlStateManager;
+import com.mojang.blaze3d.vertex.IVertexBuilder;
 import com.mojang.blaze3d.systems.RenderSystem;
 import mcjty.ariente.Ariente;
+import mcjty.ariente.setup.Registration;
+import mcjty.lib.client.CustomRenderTypes;
 import mcjty.lib.client.RenderHelper;
 import mcjty.lib.client.RenderSettings;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.renderer.BufferBuilder;
 import net.minecraft.client.renderer.IRenderTypeBuffer;
 import net.minecraft.client.renderer.Tessellator;
+import net.minecraft.client.renderer.texture.AtlasTexture;
+import net.minecraft.client.renderer.texture.TextureAtlasSprite;
 import net.minecraft.client.renderer.tileentity.TileEntityRenderer;
 import net.minecraft.client.renderer.tileentity.TileEntityRendererDispatcher;
 import net.minecraft.client.renderer.vertex.DefaultVertexFormats;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.util.ResourceLocation;
 import net.minecraft.util.math.AxisAlignedBB;
+import net.minecraft.util.math.vector.Matrix4f;
 import net.minecraft.util.math.vector.Vector3f;
+import net.minecraftforge.fml.client.registry.ClientRegistry;
 import org.lwjgl.opengl.GL11;
 
 import java.util.Random;
@@ -43,7 +50,7 @@ public class AutoFieldRenderer extends TileEntityRenderer<AutoFieldTile> {
             return;
         }
         if (te.isRenderOutline()) {
-            renderBeamBox(matrixStack, partialTicks, box);
+            renderBeamBox(matrixStack, partialTicks, box, buffer);
         }
         if (te.isRenderItems()) {
             // @todo 1.15
@@ -51,7 +58,7 @@ public class AutoFieldRenderer extends TileEntityRenderer<AutoFieldTile> {
         }
     }
 
-    private void renderBeamBox(MatrixStack matrixStack, float time, AxisAlignedBB box) {
+    private void renderBeamBox(MatrixStack matrixStack, float time, AxisAlignedBB box, IRenderTypeBuffer buffer) {
         Tessellator tessellator = Tessellator.getInstance();
         matrixStack.pushPose();
 
@@ -65,8 +72,6 @@ public class AutoFieldRenderer extends TileEntityRenderer<AutoFieldTile> {
         GlStateManager._enableDepthTest();
 
         ResourceLocation beamIcon = beams[random.nextInt(3)];
-        // @todo 1.15
-//        bindTexture(beamIcon);
 
         Minecraft mc = Minecraft.getInstance();
         PlayerEntity p = mc.player;
@@ -92,6 +97,9 @@ public class AutoFieldRenderer extends TileEntityRenderer<AutoFieldTile> {
         float py = (float) (box.maxY + 0.0f);
         float pz = (float) (box.maxZ + 0.0f);
 
+        Matrix4f matrix = matrixStack.last().pose();
+        IVertexBuilder builder = buffer.getBuffer(CustomRenderTypes.TRANSLUCENT_ADD);
+        TextureAtlasSprite sprite = mc.getTextureAtlas(AtlasTexture.LOCATION_BLOCKS).apply(beamIcon);
         // @todo move to a static final once experimentation is done
         RenderSettings settings = RenderSettings.builder()
                 .width(0.1f)
@@ -100,20 +108,20 @@ public class AutoFieldRenderer extends TileEntityRenderer<AutoFieldTile> {
                 .brightness(100)
                 .build();
 
-        // @todo RenderHelper.drawBeam(new Vector3f(mx, my, mz), new Vector3f(px, my, mz), player, settings);
-        // @todo RenderHelper.drawBeam(new Vector3f(mx, my, mz), new Vector3f(mx, py, mz), player, settings);
-        // @todo RenderHelper.drawBeam(new Vector3f(mx, my, mz), new Vector3f(mx, my, pz), player, settings);
+        RenderHelper.drawBeam(matrix, builder, sprite, new Vector3f(mx, my, mz), new Vector3f(px, my, mz), player, settings);
+        RenderHelper.drawBeam(matrix, builder, sprite, new Vector3f(mx, my, mz), new Vector3f(mx, py, mz), player, settings);
+        RenderHelper.drawBeam(matrix, builder, sprite, new Vector3f(mx, my, mz), new Vector3f(mx, my, pz), player, settings);
 
-        // @todo RenderHelper.drawBeam(new Vector3f(px, py, pz), new Vector3f(mx, py, pz), player, settings);
-        // @todo RenderHelper.drawBeam(new Vector3f(px, py, pz), new Vector3f(px, my, pz), player, settings);
-        // @todo RenderHelper.drawBeam(new Vector3f(px, py, pz), new Vector3f(px, py, mz), player, settings);
+        RenderHelper.drawBeam(matrix, builder, sprite, new Vector3f(px, py, pz), new Vector3f(mx, py, pz), player, settings);
+        RenderHelper.drawBeam(matrix, builder, sprite, new Vector3f(px, py, pz), new Vector3f(px, my, pz), player, settings);
+        RenderHelper.drawBeam(matrix, builder, sprite, new Vector3f(px, py, pz), new Vector3f(px, py, mz), player, settings);
 
-        // @todo RenderHelper.drawBeam(new Vector3f(px, my, mz), new Vector3f(px, py, mz), player, settings);
-        // @todo RenderHelper.drawBeam(new Vector3f(px, my, mz), new Vector3f(px, my, pz), player, settings);
-        // @todo RenderHelper.drawBeam(new Vector3f(mx, py, mz), new Vector3f(px, py, mz), player, settings);
-        // @todo RenderHelper.drawBeam(new Vector3f(mx, py, mz), new Vector3f(mx, py, pz), player, settings);
-        // @todo RenderHelper.drawBeam(new Vector3f(mx, my, pz), new Vector3f(px, my, pz), player, settings);
-        // @todo RenderHelper.drawBeam(new Vector3f(mx, my, pz), new Vector3f(mx, py, pz), player, settings);
+        RenderHelper.drawBeam(matrix, builder, sprite, new Vector3f(px, my, mz), new Vector3f(px, py, mz), player, settings);
+        RenderHelper.drawBeam(matrix, builder, sprite, new Vector3f(px, my, mz), new Vector3f(px, my, pz), player, settings);
+        RenderHelper.drawBeam(matrix, builder, sprite, new Vector3f(mx, py, mz), new Vector3f(px, py, mz), player, settings);
+        RenderHelper.drawBeam(matrix, builder, sprite, new Vector3f(mx, py, mz), new Vector3f(mx, py, pz), player, settings);
+        RenderHelper.drawBeam(matrix, builder, sprite, new Vector3f(mx, my, pz), new Vector3f(px, my, pz), player, settings);
+        RenderHelper.drawBeam(matrix, builder, sprite, new Vector3f(mx, my, pz), new Vector3f(mx, py, pz), player, settings);
 
 //        net.minecraft.util.math.vector.Vector3d cameraPos = net.minecraft.client.renderer.ActiveRenderInfo.getCameraPosition();
 //        tessellator.getBuffer().sortVertexData((float) (player.x + doubleX), (float) (player.y + doubleY), (float) (player.z + doubleZ));
@@ -171,7 +179,6 @@ public class AutoFieldRenderer extends TileEntityRenderer<AutoFieldTile> {
     }
 
     public static void register() {
-        // @todo 1.15
-//        ClientRegistry.bindTileEntitySpecialRenderer(AutoFieldTile.class, new AutoFieldRenderer());
+        ClientRegistry.bindTileEntityRenderer(Registration.AUTOFIELD_TILE.get(), AutoFieldRenderer::new);
     }
 }
