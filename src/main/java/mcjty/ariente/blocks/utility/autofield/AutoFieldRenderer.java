@@ -22,6 +22,7 @@ import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.util.ResourceLocation;
 import net.minecraft.util.math.AxisAlignedBB;
 import net.minecraft.util.math.vector.Matrix4f;
+import net.minecraft.util.math.vector.Vector3d;
 import net.minecraft.util.math.vector.Vector3f;
 import net.minecraftforge.fml.client.registry.ClientRegistry;
 import org.lwjgl.opengl.GL11;
@@ -50,7 +51,7 @@ public class AutoFieldRenderer extends TileEntityRenderer<AutoFieldTile> {
             return;
         }
         if (te.isRenderOutline()) {
-            renderBeamBox(matrixStack, partialTicks, box, buffer);
+            renderBeamBox(te, matrixStack, partialTicks, box, buffer);
         }
         if (te.isRenderItems()) {
             // @todo 1.15
@@ -58,48 +59,29 @@ public class AutoFieldRenderer extends TileEntityRenderer<AutoFieldTile> {
         }
     }
 
-    private void renderBeamBox(MatrixStack matrixStack, float time, AxisAlignedBB box, IRenderTypeBuffer buffer) {
-        Tessellator tessellator = Tessellator.getInstance();
-        matrixStack.pushPose();
-
-        GlStateManager._enableBlend();
-        GlStateManager._depthMask(false);
-//        GlStateManager.blendFunc(GL11.GL_SRC_ALPHA, GL11.GL_ONE);
-//        GlStateManager.alphaFunc(GL11.GL_GREATER, 0.003921569F);
-        GlStateManager._blendFunc(GL11.GL_ONE, GL11.GL_ONE);
-//        GlStateManager.alphaFunc(GL11.GL_GREATER, 0.003921569F);
-        GlStateManager._disableCull();
-        GlStateManager._enableDepthTest();
-
-        ResourceLocation beamIcon = BEAMS[random.nextInt(3)];
-
+    private void renderBeamBox(AutoFieldTile te, MatrixStack matrixStack, float time, AxisAlignedBB box, IRenderTypeBuffer buffer) {
         Minecraft mc = Minecraft.getInstance();
-        PlayerEntity p = mc.player;
-        double doubleX = p.xOld + (p.getX() - p.xOld) * time;
-        double doubleY = p.yOld + (p.getY() - p.yOld) * time;
-        double doubleZ = p.zOld + (p.getZ() - p.zOld) * time;
 
-        matrixStack.translate(-doubleX, -doubleY, -doubleZ);
+        TextureAtlasSprite sprite = mc.getTextureAtlas(AtlasTexture.LOCATION_BLOCKS).apply(BEAMS[random.nextInt(3)]);
 
-        Vector3f player = new Vector3f((float) doubleX, (float) doubleY + p.getEyeHeight(), (float) doubleZ);
+        int tex = te.getBlockPos().getX();
+        int tey = te.getBlockPos().getY();
+        int tez = te.getBlockPos().getZ();
+        Vector3d projectedView = mc.gameRenderer.getMainCamera().getPosition().add(-tex, -tey, -tez);
+        Vector3f player = new Vector3f((float)projectedView.x, (float)projectedView.y, (float)projectedView.z);
 
         long tt = System.currentTimeMillis() / 100;
 
-        GlStateManager._color4f(1, 1, 1, 1);
+        IVertexBuilder builder = buffer.getBuffer(CustomRenderTypes.TRANSLUCENT_ADD);
 
-        BufferBuilder renderer = tessellator.getBuilder();
-        renderer.begin(GL11.GL_QUADS, DefaultVertexFormats.POSITION_TEX_LIGHTMAP_COLOR);
-
-        float mx = (float) box.minX;
-        float my = (float) box.minY;
-        float mz = (float) box.minZ;
-        float px = (float) (box.maxX + 0.0f);
-        float py = (float) (box.maxY + 0.0f);
-        float pz = (float) (box.maxZ + 0.0f);
+        float mx = (float) box.minX - tex;
+        float my = (float) box.minY - tey;
+        float mz = (float) box.minZ - tez;
+        float px = (float) box.maxX - tex;
+        float py = (float) box.maxY - tey;
+        float pz = (float) box.maxZ - tez;
 
         Matrix4f matrix = matrixStack.last().pose();
-        IVertexBuilder builder = buffer.getBuffer(CustomRenderTypes.TRANSLUCENT_ADD);
-        TextureAtlasSprite sprite = mc.getTextureAtlas(AtlasTexture.LOCATION_BLOCKS).apply(beamIcon);
         // @todo move to a static final once experimentation is done
         RenderSettings settings = RenderSettings.builder()
                 .width(0.1f)
@@ -122,18 +104,6 @@ public class AutoFieldRenderer extends TileEntityRenderer<AutoFieldTile> {
         RenderHelper.drawBeam(matrix, builder, sprite, new Vector3f(mx, py, mz), new Vector3f(mx, py, pz), player, settings);
         RenderHelper.drawBeam(matrix, builder, sprite, new Vector3f(mx, my, pz), new Vector3f(px, my, pz), player, settings);
         RenderHelper.drawBeam(matrix, builder, sprite, new Vector3f(mx, my, pz), new Vector3f(mx, py, pz), player, settings);
-
-//        net.minecraft.util.math.vector.Vector3d cameraPos = net.minecraft.client.renderer.ActiveRenderInfo.getCameraPosition();
-//        tessellator.getBuffer().sortVertexData((float) (player.x + doubleX), (float) (player.y + doubleY), (float) (player.z + doubleZ));
-//        tessellator.getBuffer().sortVertexData((float)(cameraPos.x+doubleX), (float)(cameraPos.y+doubleY), (float)(cameraPos.z+doubleZ));
-        tessellator.end();
-
-        GlStateManager._depthMask(true);
-        RenderSystem.enableLighting();
-        GlStateManager._enableDepthTest();
-        RenderSystem.alphaFunc(GL11.GL_GREATER, 0.1F);
-
-        matrixStack.popPose();
     }
 
     private void renderItemTransfers(MatrixStack matrixStack, AutoFieldTile te, double x, double y, double z) {
