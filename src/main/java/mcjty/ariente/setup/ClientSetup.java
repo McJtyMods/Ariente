@@ -7,6 +7,8 @@ import mcjty.ariente.blocks.generators.NegariteTankRenderer;
 import mcjty.ariente.blocks.generators.PosiriteTankRenderer;
 import mcjty.ariente.blocks.utility.ElevatorRenderer;
 import mcjty.ariente.blocks.utility.StorageRenderer;
+import mcjty.ariente.blocks.utility.WarperRenderer;
+import mcjty.ariente.blocks.utility.autofield.AutoFieldRenderer;
 import mcjty.ariente.blocks.utility.door.DoorMarkerRenderer;
 import mcjty.ariente.blocks.utility.door.InvisibleDoorRenderer;
 import mcjty.ariente.cables.CableModelLoader;
@@ -50,6 +52,8 @@ public class ClientSetup {
         StorageRenderer.register();
         DoorMarkerRenderer.register();
         InvisibleDoorRenderer.register();
+        AutoFieldRenderer.register();
+        WarperRenderer.register();
         CableRenderer.register(Registration.NETCABLE_TILE.get());
         CableRenderer.register(Registration.CONNECTOR_TILE.get());
 
@@ -78,6 +82,10 @@ public class ClientSetup {
         event.addSprite(NEGARITE_BEAM);
         event.addSprite(POSIRITE_BEAM);
         event.addSprite(ELEVATOR_BEAM);
+        for (int i = 0; i < AutoFieldRenderer.BEAMS.length; i++) {
+            event.addSprite(AutoFieldRenderer.BEAMS[i]);
+        }
+        event.addSprite(WarperRenderer.HALO);
     }
 
     public static void setupSpriteUploader() {

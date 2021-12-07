@@ -27,7 +27,7 @@ import java.util.Random;
 
 public class WarperRenderer extends TileEntityRenderer<WarperTile> {
 
-    private static ResourceLocation halo = new ResourceLocation(Ariente.MODID, "textures/blocks/machines/elevator_beam.png");
+    public static ResourceLocation HALO = new ResourceLocation(Ariente.MODID, "textures/blocks/machines/elevator_beam.png");
     private Random random = new Random();
 
     public WarperRenderer(TileEntityRendererDispatcher rendererDispatcherIn) {
@@ -54,7 +54,7 @@ public class WarperRenderer extends TileEntityRenderer<WarperTile> {
         GlStateManager._disableCull();
         GlStateManager._enableDepthTest();
 
-        ResourceLocation beamIcon = halo;
+        ResourceLocation beamIcon = HALO;
 
         Minecraft mc = Minecraft.getInstance();
         PlayerEntity p = mc.player;
