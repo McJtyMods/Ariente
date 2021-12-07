@@ -19,6 +19,7 @@ import net.minecraft.client.renderer.vertex.DefaultVertexFormats;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.util.ResourceLocation;
 import net.minecraft.util.math.vector.Matrix4f;
+import net.minecraft.util.math.vector.Vector3d;
 import net.minecraft.util.math.vector.Vector3f;
 import net.minecraftforge.fml.client.registry.ClientRegistry;
 import org.lwjgl.opengl.GL11;
@@ -40,38 +41,21 @@ public class WarperRenderer extends TileEntityRenderer<WarperTile> {
 
     @Override
     public void render(WarperTile te, float partialTicks, MatrixStack matrixStack, IRenderTypeBuffer buffer, int combinedLightIn, int combinedOverlayIn) {
-//        if (te.isWorking()) {
-        Tessellator tessellator = Tessellator.getInstance();
-        GlStateManager._pushMatrix();
-//            GlStateManager.translate(x, y, z);
-
-        GlStateManager._enableBlend();
-        GlStateManager._depthMask(false);
-//        GlStateManager.blendFunc(GL11.GL_SRC_ALPHA, GL11.GL_ONE);
-//        GlStateManager.alphaFunc(GL11.GL_GREATER, 0.003921569F);
-        GlStateManager._blendFunc(GL11.GL_ONE, GL11.GL_ONE);
-//        GlStateManager.alphaFunc(GL11.GL_GREATER, 0.003921569F);
-        GlStateManager._disableCull();
-        GlStateManager._enableDepthTest();
+        // if (!te.isWorking()) {
+            // // Skip rendering beams if it is not working
+            // return;
+        // }
 
         ResourceLocation beamIcon = HALO;
 
         Minecraft mc = Minecraft.getInstance();
-        PlayerEntity p = mc.player;
-        double doubleX = p.xOld + (p.getX() - p.xOld) * partialTicks;
-        double doubleY = p.yOld + (p.getY() - p.yOld) * partialTicks;
-        double doubleZ = p.zOld + (p.getZ() - p.zOld) * partialTicks;
-
-        GlStateManager._translated(-doubleX, -doubleY, -doubleZ);
-
-        Vector3f player = new Vector3f((float) doubleX, (float) doubleY + p.getEyeHeight(), (float) doubleZ);
+        int tex = te.getBlockPos().getX();
+        int tey = te.getBlockPos().getY();
+        int tez = te.getBlockPos().getZ();
+        Vector3d projectedView = mc.gameRenderer.getMainCamera().getPosition().add(-tex, -tey, -tez);
+        Vector3f player = new Vector3f((float)projectedView.x, (float)projectedView.y, (float)projectedView.z);
 
         long tt = System.currentTimeMillis() / 100;
-
-        GlStateManager._color4f(1, 1, 1, 1);
-
-        BufferBuilder renderer = tessellator.getBuilder();
-        renderer.begin(GL11.GL_QUADS, DefaultVertexFormats.POSITION_COLOR_TEX_LIGHTMAP);
 
         float height = 2;
 
@@ -86,25 +70,11 @@ public class WarperRenderer extends TileEntityRenderer<WarperTile> {
                 ticks = 80 - ticks;
             }
             float i1 = ticks / 40.0f;
-            float xx = te.getBlockPos().getX() + randomX[ii];
-            float zz = te.getBlockPos().getZ() + randomZ[ii];
-            float yy = te.getBlockPos().getY() - 1.0f + i1 + (randomY[ii] * height) / 8.0f;
+            float xx = randomX[ii];
+            float zz = randomZ[ii];
+            float yy = - 1.0f + i1 + (randomY[ii] * height) / 8.0f;
             RenderHelper.drawBeam(matrix, builder, sprite, new Vector3f(xx, yy, zz), new Vector3f(xx, yy + 4, zz), player, 0.2f);
         }
-
-//        net.minecraft.util.math.vector.Vector3d cameraPos = net.minecraft.client.renderer.ActiveRenderInfo.getCameraPosition();
-//        tessellator.getBuffer().sortVertexData((float) (player.x + doubleX), (float) (player.y + doubleY), (float) (player.z + doubleZ));
-//        tessellator.getBuffer().sortVertexData((float)(cameraPos.x+doubleX), (float)(cameraPos.y+doubleY), (float)(cameraPos.z+doubleZ));
-        tessellator.end();
-
-        GlStateManager._depthMask(true);
-        GlStateManager._enableLighting();
-        GlStateManager._enableDepthTest();
-        GlStateManager._alphaFunc(GL11.GL_GREATER, 0.1F);
-
-        GlStateManager._popMatrix();
-//        }
-
     }
 
     @Override
