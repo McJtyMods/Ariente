@@ -9,15 +9,11 @@ import mcjty.lib.client.CustomRenderTypes;
 import mcjty.lib.client.RenderHelper;
 import mcjty.lib.client.RenderSettings;
 import net.minecraft.client.Minecraft;
-import net.minecraft.client.renderer.BufferBuilder;
 import net.minecraft.client.renderer.IRenderTypeBuffer;
-import net.minecraft.client.renderer.Tessellator;
-import net.minecraft.client.renderer.texture.AtlasTexture;
 import net.minecraft.client.renderer.texture.TextureAtlasSprite;
 import net.minecraft.client.renderer.tileentity.TileEntityRenderer;
 import net.minecraft.client.renderer.tileentity.TileEntityRendererDispatcher;
-import net.minecraft.client.renderer.vertex.DefaultVertexFormats;
-import net.minecraft.entity.player.PlayerEntity;
+import net.minecraft.inventory.container.PlayerContainer;
 import net.minecraft.util.ResourceLocation;
 import net.minecraft.util.math.AxisAlignedBB;
 import net.minecraft.util.math.vector.Matrix4f;
@@ -29,11 +25,11 @@ import java.util.Random;
 
 public class AutoFieldRenderer extends TileEntityRenderer<AutoFieldTile> {
 
-    public static ResourceLocation BEAMS[] = new ResourceLocation[3];
+    public static final ResourceLocation BEAMS[] = new ResourceLocation[3];
     static {
-        BEAMS[0] = new ResourceLocation(Ariente.MODID, "textures/effects/autobeam1.png");
-        BEAMS[1] = new ResourceLocation(Ariente.MODID, "textures/effects/autobeam2.png");
-        BEAMS[2] = new ResourceLocation(Ariente.MODID, "textures/effects/autobeam3.png");
+        BEAMS[0] = new ResourceLocation(Ariente.MODID, "effects/autobeam1");
+        BEAMS[1] = new ResourceLocation(Ariente.MODID, "effects/autobeam2");
+        BEAMS[2] = new ResourceLocation(Ariente.MODID, "effects/autobeam3");
     }
 
     private Random random = new Random();
@@ -49,7 +45,7 @@ public class AutoFieldRenderer extends TileEntityRenderer<AutoFieldTile> {
             return;
         }
         if (te.isRenderOutline()) {
-            renderBeamBox(te, matrixStack, partialTicks, box, buffer);
+            renderBeamBox(te, matrixStack, box, buffer);
         }
         if (te.isRenderItems()) {
             // @todo 1.15
@@ -57,18 +53,16 @@ public class AutoFieldRenderer extends TileEntityRenderer<AutoFieldTile> {
         }
     }
 
-    private void renderBeamBox(AutoFieldTile te, MatrixStack matrixStack, float time, AxisAlignedBB box, IRenderTypeBuffer buffer) {
+    private void renderBeamBox(AutoFieldTile te, MatrixStack matrixStack, AxisAlignedBB box, IRenderTypeBuffer buffer) {
         Minecraft mc = Minecraft.getInstance();
 
-        TextureAtlasSprite sprite = mc.getTextureAtlas(AtlasTexture.LOCATION_BLOCKS).apply(BEAMS[random.nextInt(3)]);
+        TextureAtlasSprite sprite = mc.getTextureAtlas(PlayerContainer.BLOCK_ATLAS).apply(BEAMS[random.nextInt(3)]);
 
         int tex = te.getBlockPos().getX();
         int tey = te.getBlockPos().getY();
         int tez = te.getBlockPos().getZ();
         Vector3d projectedView = mc.gameRenderer.getMainCamera().getPosition().add(-tex, -tey, -tez);
         Vector3f player = new Vector3f((float)projectedView.x, (float)projectedView.y, (float)projectedView.z);
-
-        long tt = System.currentTimeMillis() / 100;
 
         IVertexBuilder builder = buffer.getBuffer(CustomRenderTypes.TRANSLUCENT_ADD);
 

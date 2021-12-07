@@ -7,27 +7,20 @@ import mcjty.ariente.setup.Registration;
 import mcjty.lib.client.CustomRenderTypes;
 import mcjty.lib.client.RenderHelper;
 import net.minecraft.client.Minecraft;
-import net.minecraft.client.renderer.BufferBuilder;
 import net.minecraft.client.renderer.IRenderTypeBuffer;
-import net.minecraft.client.renderer.Tessellator;
-import net.minecraft.client.renderer.texture.AtlasTexture;
 import net.minecraft.client.renderer.texture.TextureAtlasSprite;
 import net.minecraft.client.renderer.tileentity.TileEntityRenderer;
 import net.minecraft.client.renderer.tileentity.TileEntityRendererDispatcher;
-import net.minecraft.client.renderer.vertex.DefaultVertexFormats;
-import net.minecraft.entity.player.PlayerEntity;
+import net.minecraft.inventory.container.PlayerContainer;
 import net.minecraft.util.ResourceLocation;
 import net.minecraft.util.math.vector.Matrix4f;
 import net.minecraft.util.math.vector.Vector3d;
 import net.minecraft.util.math.vector.Vector3f;
 import net.minecraftforge.fml.client.registry.ClientRegistry;
 
-import java.util.Random;
-
 public class WarperRenderer extends TileEntityRenderer<WarperTile> {
 
-    public static ResourceLocation HALO = new ResourceLocation(Ariente.MODID, "textures/blocks/machines/elevator_beam.png");
-    private Random random = new Random();
+    public static final ResourceLocation HALO = new ResourceLocation(Ariente.MODID, "block/machines/warper_beam");
 
     public WarperRenderer(TileEntityRendererDispatcher rendererDispatcherIn) {
         super(rendererDispatcherIn);
@@ -59,7 +52,7 @@ public class WarperRenderer extends TileEntityRenderer<WarperTile> {
 
         Matrix4f matrix = matrixStack.last().pose();
         IVertexBuilder builder = buffer.getBuffer(CustomRenderTypes.TRANSLUCENT_ADD);
-        TextureAtlasSprite sprite = mc.getTextureAtlas(AtlasTexture.LOCATION_BLOCKS).apply(beamIcon);
+        TextureAtlasSprite sprite = mc.getTextureAtlas(PlayerContainer.BLOCK_ATLAS).apply(beamIcon);
 
         for (int i = 0; i < 10; i++) {
             int ii = i % 10;
