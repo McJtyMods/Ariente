@@ -1,5 +1,5 @@
 {
-  "parent": "block/template_glass_pane_side_alt",
+  "parent": "minecraft:block/template_glass_pane_side_alt",
   "textures": {
     "pane": "ariente:block/decorative/glass_fence",
     "edge": "ariente:block/decorative/glass_fence"

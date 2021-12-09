@@ -1,0 +1,15 @@
+{
+  "type": "minecraft:block",
+  "pools": [
+    {
+      "name": "marbletech_variation3",
+      "rolls": 1,
+      "entries": [
+        {
+          "type": "minecraft:item",
+          "name": "ariente:marbletech_variation3"
+        }
+      ]
+    }
+  ]
+}

@@ -1,0 +1,15 @@
+{
+  "type": "minecraft:block",
+  "pools": [
+    {
+      "name": "blacktech_lines_glow",
+      "rolls": 1,
+      "entries": [
+        {
+          "type": "minecraft:item",
+          "name": "ariente:blacktech_lines_glow"
+        }
+      ]
+    }
+  ]
+}
