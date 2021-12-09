@@ -1,0 +1,13 @@
+{
+  "variants": {
+    "type=top": {
+      "model": "ariente:block/decorative/marble_slab_blue_top"
+    },
+    "type=bottom": {
+      "model": "ariente:block/decorative/marble_slab_blue"
+    },
+    "type=double": {
+      "model": "ariente:block/decorative/double_marble_slab_blue"
+    }
+  }
+}
