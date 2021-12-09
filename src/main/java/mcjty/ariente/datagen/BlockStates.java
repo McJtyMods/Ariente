@@ -3,6 +3,7 @@ package mcjty.ariente.datagen;
 import mcjty.ariente.Ariente;
 import mcjty.ariente.api.*;
 import mcjty.ariente.blocks.BlockProperties;
+import mcjty.ariente.blocks.decorative.DecorativeBlockModule;
 import mcjty.ariente.blocks.decorative.PatternBlock;
 import mcjty.ariente.blocks.decorative.PatternType;
 import mcjty.ariente.blocks.utility.AlarmTile;
@@ -15,6 +16,7 @@ import mcjty.lib.varia.OrientationTools;
 import net.minecraft.block.Block;
 import net.minecraft.block.SlabBlock;
 import net.minecraftforge.common.data.ExistingFileHelper;
+import net.minecraftforge.fml.RegistryObject;
 import net.minecraft.data.DataGenerator;
 import net.minecraft.state.properties.BlockStateProperties;
 import net.minecraft.state.properties.SlabType;
@@ -509,62 +511,44 @@ public class BlockStates extends BaseBlockStateProvider {
     }
 
     private void registerMarble() {
-        VariantBlockStateBuilder builder = getVariantBuilder(Registration.MARBLE.get());
-        for (MarbleColor type : MarbleColor.values()) {
-            builder.partialState().with(MarbleColor.COLOR, type)
-                    .modelForState()
-                    .modelFile(models().cubeAll(BLOCK_FOLDER + "/decorative/marble_" + type.getSerializedName(), modLoc("block/marble/" + type.getTexture())))
-                    .addModel();
+        for (Map.Entry<MarbleColor, RegistryObject<BaseBlock>> entry : DecorativeBlockModule.MARBLE.entrySet()) {
+                MarbleColor type = entry.getKey();
+                singleTextureBlock(entry.getValue().get(), BLOCK_FOLDER + "/decorative/marble_" + type.getSerializedName(), "block/marble/" + type.getTexture());
         }
     }
 
     private void registerMarbleSmooth() {
-        VariantBlockStateBuilder builder = getVariantBuilder(Registration.MARBLE_SMOOTH.get());
-        for (MarbleColor type : MarbleColor.values()) {
-            builder.partialState().with(MarbleColor.COLOR, type)
-                    .modelForState()
-                    .modelFile(models().cubeAll(BLOCK_FOLDER + "/decorative/marble_smooth_" + type.getSerializedName(), modLoc("block/marble/" + type.getTexture() + "_smooth")))
-                    .addModel();
+        for (Map.Entry<MarbleColor, RegistryObject<BaseBlock>> entry : DecorativeBlockModule.MARBLE_SMOOTH.entrySet()) {
+                MarbleColor type = entry.getKey();
+                singleTextureBlock(entry.getValue().get(), BLOCK_FOLDER + "/decorative/marble_smooth_" + type.getSerializedName(), "block/marble/" + type.getTexture() + "_smooth");
         }
     }
 
     private void registerMarblePilar() {
-        VariantBlockStateBuilder builder = getVariantBuilder(Registration.MARBLE_PILAR.get());
-        for (MarbleColor type : MarbleColor.values()) {
-            builder.partialState().with(MarbleColor.COLOR, type)
-                    .modelForState()
-                    .modelFile(models().cubeAll(BLOCK_FOLDER + "/decorative/marble_pilar_" + type.getSerializedName(), modLoc("block/marble/" + type.getTexture() + "_pilar")))
-                    .addModel();
+        for (Map.Entry<MarbleColor, RegistryObject<BaseBlock>> entry : DecorativeBlockModule.MARBLE_PILAR.entrySet()) {
+                MarbleColor type = entry.getKey();
+                singleTextureBlock(entry.getValue().get(), BLOCK_FOLDER + "/decorative/marble_pilar_" + type.getSerializedName(), "block/marble/" + type.getTexture() + "_pilar");
         }
     }
 
     private void registerMarbleBricks() {
-        VariantBlockStateBuilder builder = getVariantBuilder(Registration.MARBLE_BRICKS.get());
-        for (MarbleColor type : MarbleColor.values()) {
-            builder.partialState().with(MarbleColor.COLOR, type)
-                    .modelForState()
-                    .modelFile(models().cubeAll(BLOCK_FOLDER + "/decorative/marble_bricks_" + type.getSerializedName(), modLoc("block/marble/" + type.getTexture() + "_bricks")))
-                    .addModel();
+        for (Map.Entry<MarbleColor, RegistryObject<BaseBlock>> entry : DecorativeBlockModule.MARBLE_BRICKS.entrySet()) {
+                MarbleColor type = entry.getKey();
+                singleTextureBlock(entry.getValue().get(), BLOCK_FOLDER + "/decorative/marble_bricks_" + type.getSerializedName(), "block/marble/" + type.getTexture() + "_bricks");
         }
     }
 
     private void registerMarbleTech() {
-        VariantBlockStateBuilder builder = getVariantBuilder(Registration.MARBLE_TECH.get());
-        for (MarbleType type : MarbleType.values()) {
-            builder.partialState().with(MarbleType.TYPE, type)
-                    .modelForState()
-                    .modelFile(models().cubeAll(BLOCK_FOLDER + "/decorative/marbletech_" + type.getSerializedName(), modLoc("block/marbletech/" + type.getTexture())))
-                    .addModel();
+        for (Map.Entry<MarbleType, RegistryObject<BaseBlock>> entry : DecorativeBlockModule.MARBLE_TECH.entrySet()) {
+                MarbleType type = entry.getKey();
+                singleTextureBlock(entry.getValue().get(), BLOCK_FOLDER + "/decorative/marbletech_" + type.getSerializedName(), "block/marbletech/" + type.getTexture());
         }
     }
 
     private void registerBlackTech() {
-        VariantBlockStateBuilder builder = getVariantBuilder(Registration.BLACK_TECH.get());
-        for (TechType type : TechType.values()) {
-            builder.partialState().with(TechType.TYPE, type)
-                    .modelForState()
-                    .modelFile(fullGlowModel(BLOCK_FOLDER + "/decorative/blacktech_" + type.getSerializedName(), "block/blacktech/" + type.getTexture(), "block/blacktech/" + type.getTextureGlow()))
-                    .addModel();
+        for (Map.Entry<TechType, RegistryObject<BaseBlock>> entry : DecorativeBlockModule.BLACK_TECH.entrySet()) {
+                TechType type = entry.getKey();
+                singleTextureBlock(entry.getValue().get(), BLOCK_FOLDER + "/decorative/blacktech_" + type.getSerializedName(), "block/blacktech/" + type.getTexture());
         }
     }
 

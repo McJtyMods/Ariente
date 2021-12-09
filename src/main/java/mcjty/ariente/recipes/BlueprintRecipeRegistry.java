@@ -1,5 +1,7 @@
 package mcjty.ariente.recipes;
 
+import mcjty.ariente.api.MarbleColor;
+import mcjty.ariente.blocks.decorative.DecorativeBlockModule;
 import mcjty.ariente.setup.Registration;
 import mcjty.lib.varia.WeightedRandom;
 import net.minecraft.block.Blocks;
@@ -258,13 +260,13 @@ public class BlueprintRecipeRegistry {
                 new ItemStack(Registration.DUST_SILICON.get(), 2)
         ));
         recipes.add(new ConstructorRecipe(new ItemStack(Registration.STORAGE.get()), COMMON,
-                new ItemStack(Registration.MARBLE.get(), 1),
+                new ItemStack(DecorativeBlockModule.MARBLE.get(MarbleColor.BLACK).get(), 1),
                 new ItemStack(Registration.INGOT_SILVER.get(), 3),
                 new ItemStack(Blocks.CHEST, 1),
                 new ItemStack(Blocks.GLASS_PANE, 4)
         ));
         recipes.add(new ConstructorRecipe(new ItemStack(Registration.BLUEPRINT_STORAGE.get()), COMMON,
-                new ItemStack(Registration.MARBLE.get(), 1),
+                new ItemStack(DecorativeBlockModule.MARBLE.get(MarbleColor.BLACK).get(), 1),
                 new ItemStack(Registration.INGOT_SILVER.get(), 3),
                 new ItemStack(Registration.DUST_SILICON.get(), 2),
                 new ItemStack(Blocks.CHEST, 1),
@@ -288,13 +290,13 @@ public class BlueprintRecipeRegistry {
                 new ItemStack(Registration.DUST_POSIRITE.get(), 20)
         ));
         recipes.add(new ConstructorRecipe(new ItemStack(Registration.FLUX_BEAM.get()), COMMON,
-                new ItemStack(Registration.MARBLE.get(), 1),
+                new ItemStack(DecorativeBlockModule.MARBLE.get(MarbleColor.BLACK).get(), 1),
                 new ItemStack(Registration.INGOT_SILVER.get(), 1),
                 new ItemStack(Registration.DUST_NEGARITE.get(), 1),
                 new ItemStack(Registration.DUST_POSIRITE.get(), 1)
         ));
         recipes.add(new ConstructorRecipe(new ItemStack(Registration.FLUX_BEND_BEAM.get()), COMMON,
-                new ItemStack(Registration.MARBLE.get(), 1),
+                new ItemStack(DecorativeBlockModule.MARBLE.get(MarbleColor.BLACK).get(), 1),
                 new ItemStack(Registration.INGOT_SILVER.get(), 1),
                 new ItemStack(Registration.DUST_NEGARITE.get(), 1),
                 new ItemStack(Registration.DUST_POSIRITE.get(), 1)
@@ -310,7 +312,7 @@ public class BlueprintRecipeRegistry {
         ));
         recipes.add(new ConstructorRecipe(new ItemStack(Registration.ALARM.get()), UNCOMMON,
                 new ItemStack(Registration.CIRCUIT.get(), 1),
-                new ItemStack(Registration.MARBLE.get(), 1),
+                new ItemStack(DecorativeBlockModule.MARBLE.get(MarbleColor.BLACK).get(), 1),
                 new ItemStack(Registration.DUST_SILICON.get(), 1),
                 new ItemStack(Registration.INGOT_LITHIUM.get(), 1),
                 new ItemStack(Items.GLOWSTONE_DUST, 1),
@@ -354,13 +356,13 @@ public class BlueprintRecipeRegistry {
                 new ItemStack(Items.ENDER_PEARL, 1)
         ));
         recipes.add(new ConstructorRecipe(new ItemStack(Registration.SLOPE.get()), COMMON,
-                new ItemStack(Registration.MARBLE.get(), 1) // @todo 1.14 , MarbleColor.BLACK.ordinal())
+                new ItemStack(DecorativeBlockModule.MARBLE.get(MarbleColor.BLACK).get(), 1) // @todo 1.14 , MarbleColor.BLACK.ordinal())
         ));
         recipes.add(new ConstructorRecipe(new ItemStack(Registration.MARBLE_SLAB.get(), 2), COMMON,
-                new ItemStack(Registration.MARBLE.get(), 1) // @todo 1.14 , MarbleColor.BLACK.ordinal())
+                new ItemStack(DecorativeBlockModule.MARBLE.get(MarbleColor.BLACK).get(), 1) // @todo 1.14 , MarbleColor.BLACK.ordinal())
         ));
         recipes.add(new ConstructorRecipe(new ItemStack(Registration.REINFORCED_MARBLE.get(), 1), UNCOMMON,
-                new ItemStack(Registration.MARBLE.get(), 4),
+                new ItemStack(DecorativeBlockModule.MARBLE.get(MarbleColor.BLACK).get(), 4),
                 new ItemStack(Blocks.OBSIDIAN, 4)
         ));
         recipes.add(new ConstructorRecipe(new ItemStack(Registration.AUTOMATION_FIELD.get()), UNCOMMON,
@@ -396,7 +398,7 @@ public class BlueprintRecipeRegistry {
                 new ItemStack(Registration.INGOT_SILVER.get(), 2)
         ));
         recipes.add(new ConstructorRecipe(new ItemStack(Registration.FLUX_GLOW.get()), COMMON,
-                new ItemStack(Registration.MARBLE.get(), 1),
+                new ItemStack(DecorativeBlockModule.MARBLE.get(MarbleColor.BLACK).get(), 1),
                 new ItemStack(Items.GLOWSTONE_DUST, 8)
         ));
         recipes.add(new ConstructorRecipe(new ItemStack(Registration.FLAT_LIGHT.get()), COMMON,

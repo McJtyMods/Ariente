@@ -7,11 +7,12 @@ import net.minecraft.data.BlockTagsProvider;
 import net.minecraft.data.DataGenerator;
 import net.minecraft.tags.ITag;
 import net.minecraftforge.common.Tags;
+import net.minecraftforge.common.data.ExistingFileHelper;
 
 public class BlockTags extends BlockTagsProvider {
 
-    public BlockTags(DataGenerator generator) {
-        super(generator, Ariente.MODID, null);
+    public BlockTags(DataGenerator generator, ExistingFileHelper helper) {
+        super(generator, Ariente.MODID, helper);
     }
 
     @Override
