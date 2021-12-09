@@ -58,7 +58,7 @@ public class Recipes extends BaseRecipeProvider {
         }
 
         for (MarbleColor color : MarbleColor.VALUES) {
-            build(consumer, ShapedRecipeBuilder.shaped(Registration.MARBLE_SLAB_ITEMS.get(color).get(), 6)
+            build(consumer, ShapedRecipeBuilder.shaped(DecorativeBlockModule.MARBLE_SLAB_ITEMS.get(color).get(), 6)
                         .unlockedBy("marble", has(DecorativeBlockModule.MARBLE.get(color).get()))
                         .define('m', DecorativeBlockModule.MARBLE_ITEMS.get(color).get()),
                         "mmm");

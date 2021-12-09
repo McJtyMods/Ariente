@@ -8,6 +8,10 @@ import mcjty.ariente.setup.Registration;
 import mcjty.ariente.api.MarbleColor;
 import mcjty.ariente.api.MarbleType;
 import mcjty.ariente.api.TechType;
+import net.minecraft.block.Block;
+import net.minecraft.block.SlabBlock;
+import net.minecraft.block.AbstractBlock.Properties;
+import net.minecraft.block.material.Material;
 import net.minecraft.item.BlockItem;
 import net.minecraft.item.Item;
 import net.minecraft.util.IStringSerializable;
@@ -21,7 +25,7 @@ import static mcjty.ariente.setup.Registration.BLOCKS;
 import static mcjty.ariente.setup.Registration.ITEMS;
 
 /**
- * Simple decorative full blocks
+ * Simple decorative full and slab blocks
  */
 public class DecorativeBlockModule implements IModule {
 
@@ -46,6 +50,9 @@ public class DecorativeBlockModule implements IModule {
     public static final Map<MarbleColor, RegistryObject<BaseBlock>> MARBLE_BRICKS = createBlockMap("marble_bricks_", MarbleColor.values());
     public static final Map<MarbleColor, RegistryObject<Item>> MARBLE_BRICKS_ITEMS = createItemMap("marble_bricks_", MarbleColor.values(), MARBLE_BRICKS);
 
+    public static final Map<MarbleColor, RegistryObject<SlabBlock>> MARBLE_SLAB = createSlabBlockMap("marble_slab_", MarbleColor.values(), Properties.of(Material.STONE));
+    public static final Map<MarbleColor, RegistryObject<Item>> MARBLE_SLAB_ITEMS = createItemMap("marble_slab_", MarbleColor.values(), MARBLE_SLAB);
+
     private static <T extends IStringSerializable> Map<T, RegistryObject<BaseBlock>> createBlockMap(String prefix, T[] variants) {
         ImmutableMap.Builder<T, RegistryObject<BaseBlock>> builder = new ImmutableMap.Builder<>();
 
@@ -56,7 +63,17 @@ public class DecorativeBlockModule implements IModule {
         return builder.build();
     }
 
-    private static <T extends IStringSerializable> Map<T, RegistryObject<Item>> createItemMap(String prefix, T[] variants, Map<T, RegistryObject<BaseBlock>> blocks) {
+    private static <T extends IStringSerializable> Map<T, RegistryObject<SlabBlock>> createSlabBlockMap(String prefix, T[] variants, Properties properties) {
+        ImmutableMap.Builder<T, RegistryObject<SlabBlock>> builder = new ImmutableMap.Builder<>();
+
+        for (T variant: variants) {
+            builder.put(variant, BLOCKS.register(prefix + variant.getSerializedName(), () -> new SlabBlock(properties)));
+        }
+
+        return builder.build();
+    }
+
+    private static <T extends IStringSerializable, B extends Block> Map<T, RegistryObject<Item>> createItemMap(String prefix, T[] variants, Map<T, RegistryObject<B>> blocks) {
         ImmutableMap.Builder<T, RegistryObject<Item>> builder = new ImmutableMap.Builder<>();
 
         for (T variant: variants) {

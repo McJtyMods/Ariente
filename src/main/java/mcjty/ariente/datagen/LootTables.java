@@ -1,11 +1,12 @@
 package mcjty.ariente.datagen;
 
-import mcjty.ariente.api.MarbleColor;
 import mcjty.ariente.blocks.decorative.DecorativeBlockModule;
 import mcjty.ariente.blocks.decorative.PatternBlock;
 import mcjty.ariente.setup.Registration;
 import mcjty.lib.blocks.BaseBlock;
 import mcjty.lib.datagen.BaseLootTableProvider;
+import net.minecraft.block.Block;
+import net.minecraft.block.SlabBlock;
 import net.minecraft.data.DataGenerator;
 import net.minecraftforge.fml.RegistryObject;
 
@@ -63,12 +64,17 @@ public class LootTables extends BaseLootTableProvider {
         for (RegistryObject<BaseBlock> entry : DecorativeBlockModule.MARBLE_BRICKS.values()) {
             addSimpleTable(entry.get());
         }
+        for (RegistryObject<SlabBlock> entry : DecorativeBlockModule.MARBLE_SLAB.values()) {
+            addSimpleSlab(entry.get());
+        }
 
-        addBlockStateTable(Registration.MARBLE_SLAB.get(), MarbleColor.COLOR);
         addBlockStateTable(Registration.PATTERN.get(), PatternBlock.TYPE);
 
     }
 
+    protected void addSimpleSlab(Block block) {
+        lootTables.put(block, BlockLootUtility.createSlabItemTable(block));
+    }
 
     @Override
     public String getName() {

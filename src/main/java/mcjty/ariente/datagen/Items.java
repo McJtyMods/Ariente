@@ -10,6 +10,7 @@ import mcjty.ariente.setup.Registration;
 import mcjty.lib.blocks.BaseBlock;
 import mcjty.lib.blocks.BlockStateItem;
 import mcjty.lib.datagen.BaseItemModelProvider;
+import net.minecraft.block.SlabBlock;
 import net.minecraft.data.DataGenerator;
 import net.minecraft.item.Item;
 import net.minecraftforge.common.data.ExistingFileHelper;
@@ -76,8 +77,8 @@ public class Items extends BaseItemModelProvider {
         for (Entry<MarbleColor, RegistryObject<BaseBlock>> entry : DecorativeBlockModule.MARBLE_BRICKS.entrySet()) {
             parentedBlock(entry.getValue().get(), "block/decorative/marble_bricks_" + entry.getKey().getSerializedName());
         }
-        for (Map.Entry<MarbleColor, RegistryObject<BlockStateItem>> entry : Registration.MARBLE_SLAB_ITEMS.entrySet()) {
-            parentedItem(entry.getValue().get(), "block/decorative/marble_slab_" + entry.getKey().getSerializedName());
+        for (Entry<MarbleColor, RegistryObject<SlabBlock>> entry : DecorativeBlockModule.MARBLE_SLAB.entrySet()) {
+            parentedBlock(entry.getValue().get(), "block/decorative/marble_slab_" + entry.getKey().getSerializedName());
         }
 
         fenceItem(Registration.BLUE_GLASS_FENCE_ITEM.get(), "block/decorative/blue_glass_fence");

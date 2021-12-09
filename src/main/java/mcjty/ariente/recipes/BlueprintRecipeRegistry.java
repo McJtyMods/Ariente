@@ -274,7 +274,7 @@ public class BlueprintRecipeRegistry {
         ));
         recipes.add(new ConstructorRecipe(new ItemStack(Registration.ELEVATOR.get()), COMMON,
                 new ItemStack(Registration.CIRCUIT.get(), 1),
-                new ItemStack(Registration.MARBLE_SLAB.get(), 1),
+                new ItemStack(DecorativeBlockModule.MARBLE_SLAB.get(MarbleColor.BLACK).get(), 1),
                 new ItemStack(Registration.INGOT_SILVER.get(), 3)
         ));
         recipes.add(new ConstructorRecipe(new ItemStack(Registration.NEGARITE_TANK.get()), COMMON,
@@ -302,11 +302,11 @@ public class BlueprintRecipeRegistry {
                 new ItemStack(Registration.DUST_POSIRITE.get(), 1)
         ));
         recipes.add(new ConstructorRecipe(new ItemStack(Registration.LEVEL_MARKER.get()), COMMON,
-                new ItemStack(Registration.MARBLE_SLAB.get(), 1),
+                new ItemStack(DecorativeBlockModule.MARBLE_SLAB.get(MarbleColor.BLACK).get(), 1),
                 new ItemStack(Registration.INGOT_SILVER.get(), 1)
         ));
         recipes.add(new ConstructorRecipe(new ItemStack(Registration.DOOR_MARKER.get()), COMMON,
-                new ItemStack(Registration.MARBLE_SLAB.get(), 1),
+                new ItemStack(DecorativeBlockModule.MARBLE_SLAB.get(MarbleColor.BLACK).get(), 1),
                 new ItemStack(Registration.DUST_SILICON.get(), 3),
                 new ItemStack(Registration.INGOT_SILVER.get(), 1)
         ));
@@ -327,7 +327,7 @@ public class BlueprintRecipeRegistry {
         ));
         recipes.add(new ConstructorRecipe(new ItemStack(Registration.SIGNAL_RECEIVER.get()), UNCOMMON,
                 new ItemStack(Registration.CIRCUIT.get(), 1),
-                new ItemStack(Registration.MARBLE_SLAB.get(), 1),
+                new ItemStack(DecorativeBlockModule.MARBLE_SLAB.get(MarbleColor.BLACK).get(), 1),
                 new ItemStack(Registration.DUST_SILICON.get(), 1),
                 new ItemStack(Registration.INGOT_LITHIUM.get(), 1),
                 new ItemStack(Items.ENDER_PEARL, 1),
@@ -335,21 +335,21 @@ public class BlueprintRecipeRegistry {
         ));
         recipes.add(new ConstructorRecipe(new ItemStack(Registration.SIGNAL_TRANSMITTER.get()), UNCOMMON,
                 new ItemStack(Registration.CIRCUIT.get(), 1),
-                new ItemStack(Registration.MARBLE_SLAB.get(), 1),
+                new ItemStack(DecorativeBlockModule.MARBLE_SLAB.get(MarbleColor.BLACK).get(), 1),
                 new ItemStack(Registration.DUST_SILICON.get(), 2),
                 new ItemStack(Registration.INGOT_LITHIUM.get(), 1),
                 new ItemStack(Items.ENDER_PEARL, 1)
         ));
         recipes.add(new ConstructorRecipe(new ItemStack(Registration.WIRELESS_BUTTON.get()), UNCOMMON,
                 new ItemStack(Registration.CIRCUIT.get(), 1),
-                new ItemStack(Registration.MARBLE_SLAB.get(), 1),
+                new ItemStack(DecorativeBlockModule.MARBLE_SLAB.get(MarbleColor.BLACK).get(), 1),
                 new ItemStack(Registration.DUST_SILICON.get(), 2),
                 new ItemStack(Registration.INGOT_LITHIUM.get(), 1),
                 new ItemStack(Items.ENDER_PEARL, 1)
         ));
         recipes.add(new ConstructorRecipe(new ItemStack(Registration.WIRELESS_LOCK.get()), UNCOMMON,
                 new ItemStack(Registration.CIRCUIT.get(), 1),
-                new ItemStack(Registration.MARBLE_SLAB.get(), 1),
+                new ItemStack(DecorativeBlockModule.MARBLE_SLAB.get(MarbleColor.BLACK).get(), 1),
                 new ItemStack(Registration.DUST_SILICON.get(), 4),
                 new ItemStack(Registration.INGOT_SILVER.get(), 2),
                 new ItemStack(Registration.INGOT_LITHIUM.get(), 1),
@@ -358,7 +358,7 @@ public class BlueprintRecipeRegistry {
         recipes.add(new ConstructorRecipe(new ItemStack(Registration.SLOPE.get()), COMMON,
                 new ItemStack(DecorativeBlockModule.MARBLE.get(MarbleColor.BLACK).get(), 1) // @todo 1.14 , MarbleColor.BLACK.ordinal())
         ));
-        recipes.add(new ConstructorRecipe(new ItemStack(Registration.MARBLE_SLAB.get(), 2), COMMON,
+        recipes.add(new ConstructorRecipe(new ItemStack(DecorativeBlockModule.MARBLE_SLAB.get(MarbleColor.BLACK).get(), 2), COMMON,
                 new ItemStack(DecorativeBlockModule.MARBLE.get(MarbleColor.BLACK).get(), 1) // @todo 1.14 , MarbleColor.BLACK.ordinal())
         ));
         recipes.add(new ConstructorRecipe(new ItemStack(Registration.REINFORCED_MARBLE.get(), 1), UNCOMMON,
@@ -393,7 +393,7 @@ public class BlueprintRecipeRegistry {
                 new ItemStack(Registration.INGOT_SILVER.get(), 2)
         ));
         recipes.add(new ConstructorRecipe(new ItemStack(Registration.FIELD_MARKER.get()), COMMON,
-                new ItemStack(Registration.MARBLE_SLAB.get(), 1),
+                new ItemStack(DecorativeBlockModule.MARBLE_SLAB.get(MarbleColor.BLACK).get(), 1),
                 new ItemStack(Registration.DUST_SILICON.get(), 1),
                 new ItemStack(Registration.INGOT_SILVER.get(), 2)
         ));
@@ -402,7 +402,7 @@ public class BlueprintRecipeRegistry {
                 new ItemStack(Items.GLOWSTONE_DUST, 8)
         ));
         recipes.add(new ConstructorRecipe(new ItemStack(Registration.FLAT_LIGHT.get()), COMMON,
-                new ItemStack(Registration.MARBLE_SLAB.get(), 1),
+                new ItemStack(DecorativeBlockModule.MARBLE_SLAB.get(MarbleColor.BLACK).get(), 1),
                 new ItemStack(Items.GLOWSTONE_DUST, 8)
         ));
         recipes.add(new ConstructorRecipe(new ItemStack(Registration.NETCABLE.get(), 8 /* @todo 1.14 , CableColor.NEGARITE.ordinal())*/), COMMON,

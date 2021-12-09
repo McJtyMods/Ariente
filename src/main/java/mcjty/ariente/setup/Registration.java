@@ -132,11 +132,6 @@ public class Registration {
             .map(type -> Pair.of(type, ITEMS.register("pattern_" + type.getSerializedName(), () -> new BlockStateItem(PATTERN.get().defaultBlockState().setValue(PatternBlock.TYPE, type), createStandardProperties()))))
             .collect(Collectors.toMap(Pair::getKey, Pair::getValue));
 
-    public static final RegistryObject<MarbleSlabBlock> MARBLE_SLAB = BLOCKS.register("marble_slab", MarbleSlabBlock::new);
-    public static final Map<MarbleColor, RegistryObject<BlockStateItem>> MARBLE_SLAB_ITEMS = Arrays.stream(MarbleColor.values())
-            .map(type -> Pair.of(type, ITEMS.register("marble_slab_" + type.getSerializedName(), () -> new BlockStateItem(MARBLE_SLAB.get().defaultBlockState().setValue(MarbleColor.COLOR, type), createStandardProperties()))))
-            .collect(Collectors.toMap(Pair::getKey, Pair::getValue));
-
     public static final RegistryObject<BaseBlock> ORE_LITHIUM = BLOCKS.register("lithiumore", BaseOreBlock::new);
     public static final RegistryObject<Item> ORE_LITHIUM_ITEM = ITEMS.register("lithiumore", () -> new BlockItem(ORE_LITHIUM.get(), createStandardProperties()));
 
