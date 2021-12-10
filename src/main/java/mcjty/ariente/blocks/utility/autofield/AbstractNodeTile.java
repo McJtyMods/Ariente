@@ -235,15 +235,14 @@ public abstract class AbstractNodeTile extends GenericTileEntity implements IGui
     }
 
     @Override
-    public void read(CompoundNBT tagCompound) {
-        super.read(tagCompound);
+    public void load(CompoundNBT tagCompound) {
+        super.load(tagCompound);
         readRestorableFromNBT(tagCompound);
     }
 
     @Override
-    public CompoundNBT save(CompoundNBT tagCompound) {
+    public void saveAdditional(CompoundNBT tagCompound) {
         writeRestorableToNBT(tagCompound);
-        return super.save(tagCompound);
     }
 
     // @todo 1.14

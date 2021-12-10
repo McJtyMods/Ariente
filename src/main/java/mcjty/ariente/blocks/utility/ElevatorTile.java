@@ -300,8 +300,8 @@ public class ElevatorTile extends GenericTileEntity implements IGuiTile, ITickab
     }
 
     @Override
-    public void read(CompoundNBT tagCompound) {
-        super.read(tagCompound);
+    public void load(CompoundNBT tagCompound) {
+        super.load(tagCompound);
         CompoundNBT info = tagCompound.getCompound("Info");
         if (info.contains("height")) {
             height = info.getInt("height");
@@ -309,9 +309,9 @@ public class ElevatorTile extends GenericTileEntity implements IGuiTile, ITickab
     }
 
     @Override
-    public CompoundNBT save(CompoundNBT tagCompound) {
+    public void saveAdditional(CompoundNBT tagCompound) {
         getOrCreateInfo(tagCompound).putInt("height", height);
-        return super.save(tagCompound);
+        super.saveAdditional(tagCompound);
     }
 
     @Override

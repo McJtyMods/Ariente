@@ -102,17 +102,16 @@ public class AICoreTile extends GenericTileEntity implements ITickableTileEntity
     }
 
     @Override
-    public void read(CompoundNBT tagCompound) {
-        super.read(tagCompound);
+    public void load(CompoundNBT tagCompound) {
+        super.load(tagCompound);
         CompoundNBT info = tagCompound.getCompound("Info");
         cityName = info.getString("cityName");
     }
 
     @Override
-    public CompoundNBT save(CompoundNBT tagCompound) {
-        tagCompound = super.save(tagCompound);
+    public void saveAdditional(CompoundNBT tagCompound) {
+        super.saveAdditional(tagCompound);
         getOrCreateInfo(tagCompound).putString("cityName", cityName);
-        return tagCompound;
     }
 
     @Override

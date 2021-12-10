@@ -207,8 +207,8 @@ public class PosiriteGeneratorTile extends GenericTileEntity implements ITickabl
     }
 
     @Override
-    public void read(CompoundNBT tagCompound) {
-        super.read(tagCompound);
+    public void load(CompoundNBT tagCompound) {
+        super.load(tagCompound);
         powerBlobSupport.setCableId(tagCompound.getInt("cableId"));
         //        readBufferFromNBT(tagCompound, inventoryHelper);
         CompoundNBT info = tagCompound.getCompound("Info");
@@ -218,11 +218,11 @@ public class PosiriteGeneratorTile extends GenericTileEntity implements ITickabl
     }
 
     @Override
-    public CompoundNBT save(CompoundNBT tagCompound) {
+    public void saveAdditional(CompoundNBT tagCompound) {
         tagCompound.putInt("cableId", powerBlobSupport.getCableId());
         //        writeBufferToNBT(tagCompound, inventoryHelper);
         getOrCreateInfo(tagCompound).putInt("dust", dustCounter);
-        return super.save(tagCompound);
+        super.saveAdditional(tagCompound);
     }
 
     @Override

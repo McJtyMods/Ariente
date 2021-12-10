@@ -199,15 +199,15 @@ public class WirelessLockTile extends SignalChannelTileEntity implements ILockab
     }
 
     @Override
-    public void read(CompoundNBT tagCompound) {
-        super.read(tagCompound);
+    public void load(CompoundNBT tagCompound) {
+        super.load(tagCompound);
         locked = tagCompound.getBoolean("locked");
     }
 
     @Override
-    public CompoundNBT save(CompoundNBT tagCompound) {
+    public void saveAdditional(CompoundNBT tagCompound) {
         tagCompound.putBoolean("locked", locked);
-        return super.save(tagCompound);
+        super.saveAdditional(tagCompound);
     }
 
     @Override

@@ -184,15 +184,14 @@ public class RoundRobinNodeTile extends GenericTileEntity {
     }
 
     @Override
-    public void read(CompoundNBT tagCompound) {
-        super.read(tagCompound);
+    public void load(CompoundNBT tagCompound) {
+        super.load(tagCompound);
         index = tagCompound.getInt("index");
     }
 
     @Override
-    public CompoundNBT save(CompoundNBT tagCompound) {
+    public void saveAdditional(CompoundNBT tagCompound) {
         tagCompound.putInt("index", index);
-        return super.save(tagCompound);
     }
 
     public int fetchIndex() {

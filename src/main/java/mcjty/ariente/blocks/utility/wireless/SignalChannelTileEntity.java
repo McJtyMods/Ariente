@@ -116,8 +116,8 @@ public abstract class SignalChannelTileEntity extends GenericTileEntity implemen
     }
 
     @Override
-    public void read(CompoundNBT tagCompound) {
-        super.read(tagCompound);
+    public void load(CompoundNBT tagCompound) {
+        super.load(tagCompound);
         readRestorableFromNBT(tagCompound);
     }
 
@@ -130,9 +130,9 @@ public abstract class SignalChannelTileEntity extends GenericTileEntity implemen
     }
 
     @Override
-    public CompoundNBT save(CompoundNBT tagCompound) {
+    public void saveAdditional(CompoundNBT tagCompound) {
         writeRestorableToNBT(tagCompound);
-        return super.save(tagCompound);
+        super.saveAdditional(tagCompound);
     }
 
     public void writeRestorableToNBT(CompoundNBT tagCompound) {

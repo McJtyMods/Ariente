@@ -453,8 +453,8 @@ public class ForceFieldTile extends GenericTileEntity implements IGuiTile, ITick
     }
 
     @Override
-    public void read(CompoundNBT tagCompound) {
-        super.read(tagCompound);
+    public void load(CompoundNBT tagCompound) {
+        super.load(tagCompound);
         for (int i = 0 ; i < panelInfo.length ; i++) {
             panelInfo[i] = null;
         }
@@ -474,8 +474,8 @@ public class ForceFieldTile extends GenericTileEntity implements IGuiTile, ITick
     }
 
     @Override
-    public CompoundNBT save(CompoundNBT tagCompound) {
-        tagCompound = super.save(tagCompound);
+    public void saveAdditional(CompoundNBT tagCompound) {
+        super.saveAdditional(tagCompound);
         int[] lifeIdx = new int[PentakisDodecahedron.MAX_TRIANGLES];
         int i = 0;
         for (PanelInfo info : panelInfo) {
@@ -488,7 +488,6 @@ public class ForceFieldTile extends GenericTileEntity implements IGuiTile, ITick
 
         tagCompound.putIntArray("life", lifeIdx);
         getOrCreateInfo(tagCompound).putInt("scale", scale);
-        return tagCompound;
     }
 
     @Override

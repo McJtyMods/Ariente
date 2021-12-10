@@ -109,14 +109,14 @@ public class AlarmTile extends GenericTileEntity implements ITickableTileEntity,
 //    }
 
     @Override
-    public void read(CompoundNBT tagCompound) {
-        super.read(tagCompound);
+    public void load(CompoundNBT tagCompound) {
+        super.load(tagCompound);
         alarmType = AlarmType.values()[tagCompound.getInt("alarm")];
     }
 
     @Override
-    public CompoundNBT save(CompoundNBT tagCompound) {
+    public void saveAdditional(CompoundNBT tagCompound) {
         tagCompound.putInt("alarm", alarmType.ordinal());
-        return super.save(tagCompound);
+        super.saveAdditional(tagCompound);
     }
 }

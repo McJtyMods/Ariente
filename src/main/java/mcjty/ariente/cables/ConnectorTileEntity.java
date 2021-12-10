@@ -46,8 +46,8 @@ public class ConnectorTileEntity extends GenericCableTileEntity {
     }
 
     @Override
-    public void read(CompoundNBT tagCompound) {
-        super.read(tagCompound);
+    public void load(CompoundNBT tagCompound) {
+        super.load(tagCompound);
         inputFromSide = tagCompound.getIntArray("inputs");
         if (inputFromSide.length != 6) {
             inputFromSide = new int[] { 0, 0, 0, 0, 0, 0 };
@@ -58,13 +58,12 @@ public class ConnectorTileEntity extends GenericCableTileEntity {
     }
 
     @Override
-    public CompoundNBT save(CompoundNBT tagCompound) {
-        super.save(tagCompound);
+    public void saveAdditional(CompoundNBT tagCompound) {
+        super.saveAdditional(tagCompound);
         tagCompound.putIntArray("inputs", inputFromSide);
         for (int i = 0 ; i < 6 ; i++) {
             tagCompound.putByte("p" + i, (byte) powerOut[i]);
         }
-        return tagCompound;
     }
 
 }

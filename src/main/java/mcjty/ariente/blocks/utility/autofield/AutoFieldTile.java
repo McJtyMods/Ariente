@@ -598,8 +598,8 @@ public class AutoFieldTile extends GenericTileEntity implements IGuiTile, ITicka
     }
 
     @Override
-    public void read(CompoundNBT tagCompound) {
-        super.read(tagCompound);
+    public void load(CompoundNBT tagCompound) {
+        super.load(tagCompound);
         CompoundNBT info = tagCompound.getCompound("Info");
         if (!info.isEmpty()) {
             height = info.getInt("height");
@@ -610,12 +610,12 @@ public class AutoFieldTile extends GenericTileEntity implements IGuiTile, ITicka
     }
 
     @Override
-    public CompoundNBT save(CompoundNBT tagCompound) {
+    public void saveAdditional(CompoundNBT tagCompound) {
         tagCompound.putLong("accPower", accumulatedPower);
         getOrCreateInfo(tagCompound).putInt("height", height);
         getOrCreateInfo(tagCompound).putBoolean("renderItems", renderItems);
         getOrCreateInfo(tagCompound).putBoolean("renderOutline", renderOutline);
-        return super.save(tagCompound);
+        super.saveAdditional(tagCompound);
     }
 
     @Override

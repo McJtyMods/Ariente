@@ -144,8 +144,8 @@ public class StorageTile extends GenericTileEntity implements IGuiTile, ICityEqu
     }
 
     @Override
-    public void read(CompoundNBT tagCompound) {
-        super.read(tagCompound);
+    public void load(CompoundNBT tagCompound) {
+        super.load(tagCompound);
         CompoundNBT info = tagCompound.getCompound("Info");
         if (!info.isEmpty()) {
             locked = info.getBoolean("locked");
@@ -166,7 +166,7 @@ public class StorageTile extends GenericTileEntity implements IGuiTile, ICityEqu
     }
 
     @Override
-    public CompoundNBT save(CompoundNBT tagCompound) {
+    public void saveAdditional(CompoundNBT tagCompound) {
         CompoundNBT info = getOrCreateInfo(tagCompound);
         info.putBoolean("locked", locked);
         if (keyId != null) {
@@ -184,7 +184,7 @@ public class StorageTile extends GenericTileEntity implements IGuiTile, ICityEqu
         info.put("Items", bufferTagList);
         info.putIntArray("Counts", counts);
         info.putIntArray("Totals", totals);
-        return super.save(tagCompound);
+        super.saveAdditional(tagCompound);
     }
 
     @Override

@@ -124,8 +124,8 @@ public class FieldMarkerTile extends GenericTileEntity {
     }
 
     @Override
-    public void read(CompoundNBT tagCompound) {
-        super.read(tagCompound);
+    public void load(CompoundNBT tagCompound) {
+        super.load(tagCompound);
         CompoundNBT info = tagCompound.getCompound("Info");
         if (info.contains("autofield")) {
             autoFieldTile = BlockPosTools.read(info, "autofield");
@@ -133,10 +133,10 @@ public class FieldMarkerTile extends GenericTileEntity {
     }
 
     @Override
-    public CompoundNBT save(CompoundNBT tagCompound) {
+    public void saveAdditional(CompoundNBT tagCompound) {
         if (autoFieldTile != null) {
             BlockPosTools.write(getOrCreateInfo(tagCompound), "autofield", autoFieldTile);
         }
-        return super.save(tagCompound);
+        super.saveAdditional(tagCompound);
     }
 }

@@ -121,16 +121,15 @@ public abstract class GenericCableTileEntity extends GenericTileEntity implement
     }
 
     @Override
-    public void read(CompoundNBT tagCompound) {
-        super.read(tagCompound);
+    public void load(CompoundNBT tagCompound) {
+        super.load(tagCompound);
         mimicBlockSupport.readFromNBT(tagCompound);
         powerBlobSupport.setCableId(tagCompound.getInt("cableId"));
     }
 
     @Override
-    public CompoundNBT save(CompoundNBT tagCompound) {
-        super.save(tagCompound);
+    public void saveAdditional(CompoundNBT tagCompound) {
+        super.saveAdditional(tagCompound);
         mimicBlockSupport.writeToNBT(tagCompound);
-        return tagCompound;
     }
 }

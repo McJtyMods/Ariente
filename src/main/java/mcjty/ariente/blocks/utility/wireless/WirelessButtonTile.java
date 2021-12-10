@@ -134,16 +134,15 @@ public class WirelessButtonTile extends SignalChannelTileEntity {
 //    }
 
     @Override
-    public void read(CompoundNBT tagCompound) {
-        super.read(tagCompound);
+    public void load(CompoundNBT tagCompound) {
+        super.load(tagCompound);
         prevIn = tagCompound.getInt("prevIn");
     }
 
     @Override
-    public CompoundNBT save(CompoundNBT tagCompound) {
-        super.save(tagCompound);
+    public void saveAdditional(CompoundNBT tagCompound) {
+        super.saveAdditional(tagCompound);
         tagCompound.putInt("prevIn", prevIn);
-        return tagCompound;
     }
 
     @Override

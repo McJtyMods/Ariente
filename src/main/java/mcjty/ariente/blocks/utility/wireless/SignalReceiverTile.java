@@ -81,15 +81,14 @@ public class SignalReceiverTile extends SignalChannelTileEntity implements ITick
     }
 
     @Override
-    public void read(CompoundNBT tagCompound) {
-        super.read(tagCompound);
+    public void load(CompoundNBT tagCompound) {
+        super.load(tagCompound);
         powerOutput = tagCompound.getInt("rs");
     }
 
     @Override
-    public CompoundNBT save(CompoundNBT tagCompound) {
-        super.save(tagCompound);
+    public void saveAdditional(CompoundNBT tagCompound) {
+        super.saveAdditional(tagCompound);
         tagCompound.putInt("rs", powerOutput);
-        return tagCompound;
     }
 }

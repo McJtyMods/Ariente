@@ -310,18 +310,18 @@ public class AutoConstructorTile extends GenericTileEntity implements IGuiTile, 
 
 
     @Override
-    public void read(CompoundNBT tagCompound) {
-        super.read(tagCompound);
+    public void load(CompoundNBT tagCompound) {
+        super.load(tagCompound);
         readRestorableFromNBT(tagCompound);
         craftIndex = tagCompound.getInt("craftIndex");
         busyCounter = tagCompound.getInt("busy");
     }
 
     @Override
-    public CompoundNBT save(CompoundNBT tagCompound) {
+    public void saveAdditional(CompoundNBT tagCompound) {
         tagCompound.putInt("craftIndex", craftIndex);
         tagCompound.putInt("busy", busyCounter);
-        return super.save(tagCompound);
+        super.saveAdditional(tagCompound);
     }
 
     public void readRestorableFromNBT(CompoundNBT tagCompound) {

@@ -99,18 +99,18 @@ public class WarperTile extends GenericTileEntity implements IGuiTile, IWarper {
     }
 
     @Override
-    public void read(CompoundNBT tagCompound) {
+    public void load(CompoundNBT tagCompound) {
         CompoundNBT info = tagCompound.getCompound("Info");
         if (info.contains("charges")) {
             charges = info.getInt("charges");
         }
-        super.read(tagCompound);
+        super.load(tagCompound);
     }
 
     @Override
-    public CompoundNBT save(CompoundNBT tagCompound) {
+    public void saveAdditional(CompoundNBT tagCompound) {
         getOrCreateInfo(tagCompound).putInt("charges", charges);
-        return super.save(tagCompound);
+        super.saveAdditional(tagCompound);
     }
 
     public int getChargePercentage() {

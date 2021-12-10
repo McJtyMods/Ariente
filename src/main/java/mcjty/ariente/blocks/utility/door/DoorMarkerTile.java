@@ -238,8 +238,8 @@ public class DoorMarkerTile extends GenericTileEntity implements ITickableTileEn
     }
 
     @Override
-    public void read(CompoundNBT tagCompound) {
-        super.read(tagCompound);
+    public void load(CompoundNBT tagCompound) {
+        super.load(tagCompound);
         open = tagCompound.getBoolean("open");
         CompoundNBT info = tagCompound.getCompound("Info");
         if (!info.isEmpty()) {
@@ -249,12 +249,12 @@ public class DoorMarkerTile extends GenericTileEntity implements ITickableTileEn
     }
 
     @Override
-    public CompoundNBT save(CompoundNBT tagCompound) {
+    public void saveAdditional(CompoundNBT tagCompound) {
         tagCompound.putBoolean("open", open);
         CompoundNBT info = getOrCreateInfo(tagCompound);
         info.putInt("icon", iconIndex);
         info.putBoolean("locked", locked);
-        return super.save(tagCompound);
+        super.saveAdditional(tagCompound);
     }
 
     // @todo 1.14

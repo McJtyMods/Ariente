@@ -25,7 +25,7 @@ Ariente is a high-tech mod based on alien technolgoy
 [[dependencies.ariente]]
     modId="mcjtylib"
     mandatory=true
-    versionRange="[1.16-5.1.0,)"
+    versionRange="[1.16-5.1.2,)"
     ordering="AFTER"
     side="BOTH"
 [[dependencies.ariente]]

@@ -133,8 +133,8 @@ public class PowerCombinerTile extends GenericTileEntity implements ITickableTil
 
 
     @Override
-    public void read(CompoundNBT tagCompound) {
-        super.read(tagCompound);
+    public void load(CompoundNBT tagCompound) {
+        super.load(tagCompound);
         CompoundNBT info = tagCompound.getCompound("Info");
         if (info.contains("transfer")) {
             powerTransfer = info.getInt("transfer");
@@ -142,10 +142,9 @@ public class PowerCombinerTile extends GenericTileEntity implements ITickableTil
     }
 
     @Override
-    public CompoundNBT save(CompoundNBT tagCompound) {
+    public void saveAdditional(CompoundNBT tagCompound) {
         tagCompound = super.save(tagCompound);
         getOrCreateInfo(tagCompound).putInt("transfer", powerTransfer);
-        return tagCompound;
     }
 
     @Override
