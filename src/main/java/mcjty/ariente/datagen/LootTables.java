@@ -1,12 +1,14 @@
 package mcjty.ariente.datagen;
 
-import mcjty.ariente.api.MarbleColor;
-import mcjty.ariente.api.MarbleType;
-import mcjty.ariente.api.TechType;
+import mcjty.ariente.blocks.decorative.DecorativeBlockModule;
 import mcjty.ariente.blocks.decorative.PatternBlock;
 import mcjty.ariente.setup.Registration;
+import mcjty.lib.blocks.BaseBlock;
 import mcjty.lib.datagen.BaseLootTableProvider;
+import net.minecraft.block.Block;
+import net.minecraft.block.SlabBlock;
 import net.minecraft.data.DataGenerator;
+import net.minecraftforge.fml.RegistryObject;
 
 public class LootTables extends BaseLootTableProvider {
 
@@ -44,17 +46,35 @@ public class LootTables extends BaseLootTableProvider {
         addStandardTable(Registration.STORAGE.get());
         addStandardTable(Registration.WARPER.get());
 
-        addBlockStateTable(Registration.MARBLE.get(), MarbleColor.COLOR);
-        addBlockStateTable(Registration.MARBLE_BRICKS.get(), MarbleColor.COLOR);
-        addBlockStateTable(Registration.MARBLE_SMOOTH.get(), MarbleColor.COLOR);
-        addBlockStateTable(Registration.MARBLE_PILAR.get(), MarbleColor.COLOR);
-        addBlockStateTable(Registration.MARBLE_SLAB.get(), MarbleColor.COLOR);
-        addBlockStateTable(Registration.BLACK_TECH.get(), TechType.TYPE);
-        addBlockStateTable(Registration.MARBLE_TECH.get(), MarbleType.TYPE);
+        for (RegistryObject<BaseBlock> entry : DecorativeBlockModule.BLACK_TECH.values()) {
+            addSimpleTable(entry.get());
+        }
+        for (RegistryObject<BaseBlock> entry : DecorativeBlockModule.MARBLE_TECH.values()) {
+            addSimpleTable(entry.get());
+        }
+        for (RegistryObject<BaseBlock> entry : DecorativeBlockModule.MARBLE.values()) {
+            addSimpleTable(entry.get());
+        }
+        for (RegistryObject<BaseBlock> entry : DecorativeBlockModule.MARBLE_SMOOTH.values()) {
+            addSimpleTable(entry.get());
+        }
+        for (RegistryObject<BaseBlock> entry : DecorativeBlockModule.MARBLE_PILAR.values()) {
+            addSimpleTable(entry.get());
+        }
+        for (RegistryObject<BaseBlock> entry : DecorativeBlockModule.MARBLE_BRICKS.values()) {
+            addSimpleTable(entry.get());
+        }
+        for (RegistryObject<SlabBlock> entry : DecorativeBlockModule.MARBLE_SLAB.values()) {
+            addSimpleSlab(entry.get());
+        }
+
         addBlockStateTable(Registration.PATTERN.get(), PatternBlock.TYPE);
 
     }
 
+    protected void addSimpleSlab(Block block) {
+        lootTables.put(block, BlockLootUtility.createSlabItemTable(block));
+    }
 
     @Override
     public String getName() {

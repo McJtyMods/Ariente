@@ -1,8 +1,8 @@
 package mcjty.ariente.datagen;
 
 import mcjty.ariente.Ariente;
+import mcjty.ariente.blocks.decorative.DecorativeBlockModule;
 import mcjty.ariente.setup.Registration;
-import mcjty.lib.blocks.BlockStateItem;
 import net.minecraft.data.BlockTagsProvider;
 import net.minecraft.data.DataGenerator;
 import net.minecraft.data.ItemTagsProvider;
@@ -11,13 +11,14 @@ import net.minecraft.item.Item;
 import net.minecraft.tags.ITag;
 import net.minecraftforge.common.Tags;
 import net.minecraftforge.fml.RegistryObject;
+import net.minecraftforge.common.data.ExistingFileHelper;
 
 import java.util.Collection;
 
 public class ItemTags extends ItemTagsProvider {
 
-    public ItemTags(DataGenerator generator, BlockTagsProvider blockTags) {
-        super(generator, blockTags, Ariente.MODID, null);
+    public ItemTags(DataGenerator generator, BlockTagsProvider blockTags, ExistingFileHelper helper) {
+        super(generator, blockTags, Ariente.MODID, helper);
     }
 
     @Override
@@ -56,12 +57,12 @@ public class ItemTags extends ItemTagsProvider {
         addTag(Registration.TAG_DUSTS_POSIRITE, Registration.DUST_NEGARITE.get());
         addTag(Registration.TAG_DUSTS_SILICON, Registration.DUST_NEGARITE.get());
 
-        addTag(Registration.TAG_MARBLE, Registration.MARBLE_ITEMS.values());
+        addTag(Registration.TAG_MARBLE, DecorativeBlockModule.MARBLE_ITEMS.values());
     }
 
-    private void addTag(ITag.INamedTag<Item> tag, Collection<RegistryObject<BlockStateItem>> items) {
+    private void addTag(ITag.INamedTag<Item> tag, Collection<RegistryObject<Item>> items) {
         TagsProvider.Builder<Item> builder = tag(tag);
-        for (RegistryObject<BlockStateItem> item : items) {
+        for (RegistryObject<Item> item : items) {
             builder.add(item.get());
         }
     }

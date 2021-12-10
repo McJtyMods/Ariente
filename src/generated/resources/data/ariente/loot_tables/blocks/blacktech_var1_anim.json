@@ -1,0 +1,15 @@
+{
+  "type": "minecraft:block",
+  "pools": [
+    {
+      "name": "blacktech_var1_anim",
+      "rolls": 1,
+      "entries": [
+        {
+          "type": "minecraft:item",
+          "name": "ariente:blacktech_var1_anim"
+        }
+      ]
+    }
+  ]
+}

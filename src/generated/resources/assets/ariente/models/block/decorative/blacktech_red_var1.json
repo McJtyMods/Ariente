@@ -1,5 +1,5 @@
 {
-  "parent": "ariente:block/base/fullglow",
+  "parent": "minecraft:block/cube_all",
   "textures": {
     "all": "ariente:block/blacktech/blacktech_red_var1"
   }
