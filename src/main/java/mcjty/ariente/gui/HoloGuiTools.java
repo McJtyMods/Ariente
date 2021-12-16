@@ -2,10 +2,10 @@ package mcjty.ariente.gui;
 
 import mcjty.hologui.api.*;
 import mcjty.hologui.api.components.IPanel;
-import net.minecraft.entity.player.PlayerEntity;
+import net.minecraft.world.entity.player.Player;
 import net.minecraft.entity.player.PlayerInventory;
 import net.minecraft.item.Item;
-import net.minecraft.item.ItemStack;
+import net.minecraft.world.item.ItemStack;
 
 import java.util.function.Consumer;
 
@@ -14,7 +14,7 @@ import static mcjty.hologui.api.IGuiTile.TAG_MAIN;
 
 public class HoloGuiTools {
 
-    public static Integer countItem(PlayerEntity player, Item item) {
+    public static Integer countItem(Player player, Item item) {
         PlayerInventory inventory = player.inventory;
         int size = inventory.getContainerSize();
         int cnt = 0;

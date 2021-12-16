@@ -1,7 +1,7 @@
 package mcjty.ariente.blocks.decorative;
 
 import mcjty.ariente.blocks.BaseVariantBlock;
-import net.minecraft.state.EnumProperty;
+import net.minecraft.world.level.block.state.properties.EnumProperty;
 
 public class PatternBlock extends BaseVariantBlock<PatternType> {
 

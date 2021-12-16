@@ -25,10 +25,10 @@ import mcjty.ariente.entities.soldier.SoldierRender;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.renderer.RenderType;
 import net.minecraft.client.renderer.RenderTypeLookup;
-import net.minecraft.client.renderer.texture.AtlasTexture;
-import net.minecraft.resources.IReloadableResourceManager;
-import net.minecraft.resources.IResourceManager;
-import net.minecraft.util.ResourceLocation;
+import net.minecraft.client.renderer.texture.TextureAtlas;
+import net.minecraft.resources.ResourceLocation;
+import net.minecraft.server.packs.resources.ReloadableResourceManager;
+import net.minecraft.server.packs.resources.ResourceManager;
 import net.minecraftforge.client.event.ModelRegistryEvent;
 import net.minecraftforge.client.event.TextureStitchEvent;
 import net.minecraftforge.client.model.ModelLoaderRegistry;
@@ -76,7 +76,7 @@ public class ClientSetup {
     }
 
     public static void onTextureStitch(TextureStitchEvent.Pre event) {
-        if (!event.getMap().location().equals(AtlasTexture.LOCATION_BLOCKS)) {
+        if (!event.getMap().location().equals(TextureAtlas.LOCATION_BLOCKS)) {
             return;
         }
         event.addSprite(NEGARITE_BEAM);
@@ -89,10 +89,10 @@ public class ClientSetup {
     }
 
     public static void setupSpriteUploader() {
-        IResourceManager resourceManager = Minecraft.getInstance().getResourceManager();
-        if (resourceManager instanceof IReloadableResourceManager) {
+        ResourceManager resourceManager = Minecraft.getInstance().getResourceManager();
+        if (resourceManager instanceof ReloadableResourceManager) {
             ArienteSpriteUploader.INSTANCE = new ArienteSpriteUploader(Minecraft.getInstance().getTextureManager());
-            ((IReloadableResourceManager) resourceManager).registerReloadListener(ArienteSpriteUploader.INSTANCE);
+            ((ReloadableResourceManager) resourceManager).registerReloadListener(ArienteSpriteUploader.INSTANCE);
         }
     }
 }

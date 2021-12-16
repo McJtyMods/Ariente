@@ -17,21 +17,21 @@ import mcjty.lib.container.ContainerFactory;
 import mcjty.lib.container.GenericItemHandler;
 import mcjty.lib.tileentity.GenericTileEntity;
 import mcjty.lib.varia.RedstoneMode;
-import net.minecraft.block.Block;
-import net.minecraft.block.BlockState;
-import net.minecraft.entity.LivingEntity;
-import net.minecraft.entity.player.PlayerEntity;
-import net.minecraft.item.ItemStack;
-import net.minecraft.nbt.CompoundNBT;
-import net.minecraft.network.NetworkManager;
-import net.minecraft.network.play.server.SUpdateTileEntityPacket;
-import net.minecraft.state.StateContainer;
+import net.minecraft.core.BlockPos;
+import net.minecraft.nbt.CompoundTag;
+import net.minecraft.network.protocol.game.ClientboundBlockEntityDataPacket;
+import net.minecraft.world.InteractionHand;
+import net.minecraft.world.item.ItemStack;
+import net.minecraft.world.level.Level;
+import net.minecraft.world.level.block.Block;
+import net.minecraft.world.level.block.state.BlockState;
+import net.minecraft.world.entity.LivingEntity;
+import net.minecraft.world.entity.player.Player;
+import net.minecraft.network.Connection;
+import net.minecraft.world.level.block.state.StateDefinition;
 import net.minecraft.tileentity.ITickableTileEntity;
-import net.minecraft.util.ActionResultType;
-import net.minecraft.util.Hand;
-import net.minecraft.util.math.BlockPos;
-import net.minecraft.util.math.BlockRayTraceResult;
-import net.minecraft.world.World;
+import net.minecraft.world.InteractionResult;
+import net.minecraft.world.phys.BlockHitResult;
 import net.minecraftforge.common.util.Constants;
 import net.minecraftforge.common.util.Lazy;
 import net.minecraftforge.common.util.LazyOptional;
@@ -74,7 +74,7 @@ public class NegariteGeneratorTile extends GenericTileEntity implements ITickabl
             }
 
             @Override
-            protected void createBlockStateDefinition(StateContainer.Builder<Block, BlockState> builder) {
+            protected void createBlockStateDefinition(StateDefinition.Builder<Block, BlockState> builder) {
                 super.createBlockStateDefinition(builder);
                 builder.add(BlockProperties.WORKING);
             }
@@ -82,9 +82,9 @@ public class NegariteGeneratorTile extends GenericTileEntity implements ITickabl
     }
 
     @Override
-    public ActionResultType onBlockActivated(BlockState state, PlayerEntity player, Hand hand, BlockRayTraceResult result) {
+    public InteractionResult onBlockActivated(BlockState state, Player player, InteractionHand hand, BlockHitResult result) {
         Ariente.guiHandler.openHoloGui(level, worldPosition, player);
-        return ActionResultType.SUCCESS;
+        return InteractionResult.SUCCESS;
     }
 
     @Override
@@ -173,7 +173,7 @@ public class NegariteGeneratorTile extends GenericTileEntity implements ITickabl
     }
 
     @Override
-    public void onDataPacket(NetworkManager net, SUpdateTileEntityPacket packet) {
+    public void onDataPacket(Connection net, ClientboundBlockEntityDataPacket packet) {
         boolean working = isWorking();
 
         super.onDataPacket(net, packet);
@@ -215,18 +215,18 @@ public class NegariteGeneratorTile extends GenericTileEntity implements ITickabl
     }
 
     @Override
-    public void load(CompoundNBT tagCompound) {
+    public void load(CompoundTag tagCompound) {
         super.load(tagCompound);
         powerBlobSupport.setCableId(tagCompound.getInt("cableId"));
         //        readBufferFromNBT(tagCompound, inventoryHelper);
-        CompoundNBT info = tagCompound.getCompound("Info");
+        CompoundTag info = tagCompound.getCompound("Info");
         if (info.contains("dust")) {
             dustCounter = info.getInt("dust");
         }
     }
 
     @Override
-    public void saveAdditional(CompoundNBT tagCompound) {
+    public void saveAdditional(CompoundTag tagCompound) {
         tagCompound.putInt("cableId", powerBlobSupport.getCableId());
         //        writeBufferToNBT(tagCompound, inventoryHelper);
         getOrCreateInfo(tagCompound).putInt("dust", dustCounter);
@@ -287,7 +287,7 @@ public class NegariteGeneratorTile extends GenericTileEntity implements ITickabl
         markDirtyClient();
     }
 
-    private void toPlayer(PlayerEntity player, int amount) {
+    private void toPlayer(Player player, int amount) {
         ItemStack stack = items.extractItem(SLOT_NEGARITE_INPUT, amount, false);
         if ((!stack.isEmpty()) && player.inventory.add(stack)) {
             markDirtyClient();
@@ -302,7 +302,7 @@ public class NegariteGeneratorTile extends GenericTileEntity implements ITickabl
         }
     }
 
-    private void toMachine(PlayerEntity player, int amount) {
+    private void toMachine(Player player, int amount) {
         ItemStack toTransfer = ItemStack.EMPTY;
         ItemStack stackInSlot = items.getStackInSlot(SLOT_NEGARITE_INPUT);
         if (!stackInSlot.isEmpty()) {
@@ -343,7 +343,7 @@ public class NegariteGeneratorTile extends GenericTileEntity implements ITickabl
         markDirtyClient();
     }
 
-    public Integer countNegariteGenerator(PlayerEntity player, IHoloGuiEntity holo) {
+    public Integer countNegariteGenerator(Player player, IHoloGuiEntity holo) {
         int size = items.getSlots();
         int cnt = 0;
         for (int i = 0 ; i < size ; i++) {
@@ -356,7 +356,7 @@ public class NegariteGeneratorTile extends GenericTileEntity implements ITickabl
     }
 
     @Override
-    public void onBlockPlacedBy(World world, BlockPos pos, BlockState state, LivingEntity placer, ItemStack stack) {
+    public void onBlockPlacedBy(Level world, BlockPos pos, BlockState state, LivingEntity placer, ItemStack stack) {
         super.onBlockPlacedBy(world, pos, state, placer, stack);
         if (!world.isClientSide) {
             PowerSenderSupport.fixNetworks(world, pos);
@@ -364,7 +364,7 @@ public class NegariteGeneratorTile extends GenericTileEntity implements ITickabl
     }
 
     @Override
-    public void onReplaced(World world, BlockPos pos, BlockState state, BlockState newstate) {
+    public void onReplaced(Level world, BlockPos pos, BlockState state, BlockState newstate) {
         super.onReplaced(world, pos, state, newstate);
         if (!this.level.isClientSide) {
             PowerSenderSupport.fixNetworks(this.level, pos);

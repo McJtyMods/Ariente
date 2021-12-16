@@ -1,17 +1,17 @@
 package mcjty.ariente.recipes;
 
-import net.minecraft.item.ItemStack;
-import net.minecraft.item.crafting.IRecipe;
-import net.minecraft.item.crafting.IRecipeSerializer;
-import net.minecraft.item.crafting.IRecipeType;
-import net.minecraft.util.ResourceLocation;
-import net.minecraft.world.World;
+import net.minecraft.resources.ResourceLocation;
+import net.minecraft.world.item.ItemStack;
+import net.minecraft.world.item.crafting.Recipe;
+import net.minecraft.world.item.crafting.RecipeSerializer;
+import net.minecraft.world.item.crafting.RecipeType;
+import net.minecraft.world.level.Level;
 
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 
-public class ConstructorRecipe implements IRecipe<ConstructorContext> {
+public class ConstructorRecipe implements Recipe<ConstructorContext> {
 
     private final ResourceLocation id;
     private final ItemStack destination;
@@ -47,7 +47,7 @@ public class ConstructorRecipe implements IRecipe<ConstructorContext> {
     }
 
     @Override
-    public boolean matches(ConstructorContext inv, World worldIn) {
+    public boolean matches(ConstructorContext inv, Level worldIn) {
         return false;
     }
 
@@ -72,12 +72,12 @@ public class ConstructorRecipe implements IRecipe<ConstructorContext> {
     }
 
     @Override
-    public IRecipeSerializer<?> getSerializer() {
+    public RecipeSerializer<?> getSerializer() {
         return BlueprintRecipeRegistry.CONSTRUCTOR_RECIPES.get();
     }
 
     @Override
-    public IRecipeType<?> getType() {
+    public RecipeType<?> getType() {
         return BlueprintRecipeRegistry.CONSTRUCTOR;
     }
 }

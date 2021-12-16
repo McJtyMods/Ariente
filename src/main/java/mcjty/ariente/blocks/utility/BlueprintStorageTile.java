@@ -15,14 +15,14 @@ import mcjty.lib.container.AutomationFilterItemHander;
 import mcjty.lib.container.ContainerFactory;
 import mcjty.lib.container.GenericItemHandler;
 import mcjty.lib.tileentity.GenericTileEntity;
-import net.minecraft.block.BlockState;
-import net.minecraft.entity.player.PlayerEntity;
-import net.minecraft.item.ItemStack;
-import net.minecraft.nbt.CompoundNBT;
-import net.minecraft.util.ActionResultType;
-import net.minecraft.util.Hand;
-import net.minecraft.util.math.BlockRayTraceResult;
-import net.minecraft.world.World;
+import net.minecraft.nbt.CompoundTag;
+import net.minecraft.world.InteractionHand;
+import net.minecraft.world.InteractionResult;
+import net.minecraft.world.entity.player.Player;
+import net.minecraft.world.item.ItemStack;
+import net.minecraft.world.level.Level;
+import net.minecraft.world.level.block.state.BlockState;
+import net.minecraft.world.phys.BlockHitResult;
 import net.minecraftforge.common.capabilities.Capability;
 import net.minecraftforge.common.util.Lazy;
 import net.minecraftforge.common.util.LazyOptional;
@@ -67,18 +67,18 @@ public class BlueprintStorageTile extends GenericTileEntity implements IGuiTile,
     }
 
     @Override
-    public ActionResultType onBlockActivated(BlockState state, PlayerEntity player, Hand hand, BlockRayTraceResult result) {
+    public InteractionResult onBlockActivated(BlockState state, Player player, InteractionHand hand, BlockHitResult result) {
         Ariente.guiHandler.openHoloGui(level, worldPosition, player);
-        return ActionResultType.SUCCESS;
+        return InteractionResult.SUCCESS;
     }
 
 
     // @todo 1.14 loot
-    public void readRestorableFromNBT(CompoundNBT tagCompound) {
+    public void readRestorableFromNBT(CompoundTag tagCompound) {
 //        readBufferFromNBT(tagCompound, inventoryHelper);
     }
 
-    public void writeRestorableToNBT(CompoundNBT tagCompound) {
+    public void writeRestorableToNBT(CompoundTag tagCompound) {
 //        writeBufferToNBT(tagCompound, inventoryHelper);
     }
 
@@ -98,7 +98,7 @@ public class BlueprintStorageTile extends GenericTileEntity implements IGuiTile,
     }
 
     @Override
-    public void setup(ICityAI cityAI, World world, boolean firstTime) {
+    public void setup(ICityAI cityAI, Level world, boolean firstTime) {
 
     }
 
@@ -130,7 +130,7 @@ public class BlueprintStorageTile extends GenericTileEntity implements IGuiTile,
                 ;
     }
 
-    private void transferToPlayer(PlayerEntity player, IHoloGuiEntity entity) {
+    private void transferToPlayer(Player player, IHoloGuiEntity entity) {
         entity.findComponent("slots").ifPresent(component -> {
             if (component instanceof ISlots) {
                 int selected = ((ISlots) component).getSelected();
@@ -149,7 +149,7 @@ public class BlueprintStorageTile extends GenericTileEntity implements IGuiTile,
         });
     }
 
-    private void transferToMachine(PlayerEntity player, IHoloGuiEntity entity) {
+    private void transferToMachine(Player player, IHoloGuiEntity entity) {
         entity.findComponent("playerslots").ifPresent(component -> {
             if (component instanceof IPlayerSlots) {
                 int selected = ((IPlayerSlots) component).getSelected();

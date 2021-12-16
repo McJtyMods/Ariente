@@ -11,17 +11,16 @@ import mcjty.ariente.recipes.BlueprintRecipeRegistry;
 import mcjty.ariente.recipes.ConstructorRecipe;
 import mcjty.ariente.setup.Registration;
 import mcjty.ariente.sounds.FluxLevitatorSounds;
-import net.minecraft.entity.Entity;
-import net.minecraft.entity.LivingEntity;
-import net.minecraft.inventory.EquipmentSlotType;
-import net.minecraft.item.ItemStack;
-import net.minecraft.tileentity.TileEntity;
+import net.minecraft.world.entity.Entity;
+import net.minecraft.world.entity.LivingEntity;
+import net.minecraft.world.entity.EquipmentSlot;
+import net.minecraft.world.item.ItemStack;
+import net.minecraft.world.level.block.entity.BlockEntity;
 import net.minecraft.util.DamageSource;
-import net.minecraft.util.math.BlockPos;
-import net.minecraft.world.IWorld;
-import net.minecraft.world.World;
+import net.minecraft.core.BlockPos;
+import net.minecraft.world.level.Level;
 import net.minecraft.world.DimensionType;
-import net.minecraft.loot.LootContext;
+import net.minecraft.world.level.storage.loot.LootContext;
 import net.minecraft.loot.LootFunction;
 import net.minecraft.loot.LootFunctionType;
 import net.minecraft.loot.LootPool;
@@ -117,14 +116,14 @@ public class ForgeEventHandlers {
 
     @SubscribeEvent
     public void onWorldTick(TickEvent.WorldTickEvent event) {
-        if (event.phase == TickEvent.Phase.START && !event.world.isClientSide && event.world.dimension() == World.OVERWORLD) {
+        if (event.phase == TickEvent.Phase.START && !event.world.isClientSide && event.world.dimension() == Level.OVERWORLD) {
             PowerSystem.getPowerSystem(event.world).tick();
         }
     }
 
     @SubscribeEvent
     public void onLivingFall(LivingFallEvent event) {
-        ItemStack feetStack = event.getEntityLiving().getItemBySlot(EquipmentSlotType.FEET);
+        ItemStack feetStack = event.getEntityLiving().getItemBySlot(EquipmentSlot.FEET);
         if (feetStack.getItem() == Registration.POWERSUIT_FEET.get()) {
             if (ModuleSupport.hasWorkingUpgrade(feetStack, ArmorUpgradeType.FEATHERFALLING)) {
                 event.setCanceled(true);
@@ -135,9 +134,9 @@ public class ForgeEventHandlers {
     @SubscribeEvent
     public void onDamage(LivingDamageEvent event) {
         Entity entity = event.getEntity();
-        World world = entity.getCommandSenderWorld();
+        Level world = entity.getCommandSenderWorld();
         if (!world.isClientSide && entity instanceof LivingEntity) {
-            ItemStack chestStack = ((LivingEntity) entity).getItemBySlot(EquipmentSlotType.CHEST);
+            ItemStack chestStack = ((LivingEntity) entity).getItemBySlot(EquipmentSlot.CHEST);
             if (chestStack.getItem() == Registration.POWERSUIT_CHEST.get()) {
                 if (ModuleSupport.hasWorkingUpgrade(chestStack, ArmorUpgradeType.FORCEFIELD)) {
                     float damage = event.getAmount();
@@ -160,9 +159,9 @@ public class ForgeEventHandlers {
 //    }
 
     private void onBlockBreakNormal(BlockEvent.BreakEvent event) {
-        IWorld world = event.getWorld();
+        Level world = event.getWorld();
         BlockPos pos = event.getPos();
-        TileEntity te = world.getBlockEntity(pos);
+        BlockEntity te = world.getBlockEntity(pos);
         if (te instanceof ILockable) {
             if (((ILockable) te).isLocked()) {
                 event.setCanceled(true);
@@ -172,7 +171,7 @@ public class ForgeEventHandlers {
 
     @SubscribeEvent
     public void onEntityJoin(EntityJoinWorldEvent event) {
-        World world = event.getWorld();
+        Level world = event.getWorld();
         if (world.isClientSide) {
             Entity entity = event.getEntity();
             if (entity instanceof FluxLevitatorEntity) {

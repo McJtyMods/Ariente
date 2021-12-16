@@ -1,10 +1,10 @@
 package mcjty.ariente.entities.drone;
 
-import com.mojang.blaze3d.matrix.MatrixStack;
-import com.mojang.blaze3d.vertex.IVertexBuilder;
+import com.mojang.blaze3d.vertex.PoseStack;
+import com.mojang.blaze3d.vertex.VertexConsumer;
 import net.minecraft.client.renderer.entity.model.EntityModel;
 import net.minecraft.client.renderer.model.ModelRenderer;
-import net.minecraft.entity.Entity;
+import net.minecraft.world.entity.Entity;
 import net.minecraft.entity.FlyingEntity;
 
 public class DroneModel <T extends FlyingEntity> extends EntityModel<T> {
@@ -24,7 +24,7 @@ public class DroneModel <T extends FlyingEntity> extends EntityModel<T> {
     }
 
     @Override
-    public void renderToBuffer(MatrixStack matrixStackIn, IVertexBuilder bufferIn, int packedLightIn, int packedOverlayIn, float red, float green, float blue, float alpha) {
+    public void renderToBuffer(PoseStack matrixStackIn, VertexConsumer bufferIn, int packedLightIn, int packedOverlayIn, float red, float green, float blue, float alpha) {
         matrixStackIn.pushPose();
         matrixStackIn.translate(0.0F, 0.6F, 0.0F);
         this.body.render(matrixStackIn, bufferIn, packedLightIn, packedOverlayIn);

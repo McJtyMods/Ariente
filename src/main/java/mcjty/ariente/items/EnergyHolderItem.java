@@ -11,17 +11,17 @@ import mcjty.hologui.api.StyledColor;
 import mcjty.hologui.api.components.IPanel;
 import mcjty.lib.builder.TooltipBuilder;
 import mcjty.lib.tooltips.ITooltipSettings;
-import net.minecraft.client.util.ITooltipFlag;
-import net.minecraft.entity.Entity;
-import net.minecraft.entity.player.PlayerEntity;
+import net.minecraft.world.item.TooltipFlag;
+import net.minecraft.nbt.CompoundTag;
+import net.minecraft.world.InteractionHand;
+import net.minecraft.world.InteractionResult;
+import net.minecraft.world.entity.Entity;
+import net.minecraft.world.entity.player.Player;
 import net.minecraft.item.Item;
-import net.minecraft.item.ItemStack;
-import net.minecraft.nbt.CompoundNBT;
+import net.minecraft.world.item.ItemStack;
 import net.minecraft.util.ActionResult;
-import net.minecraft.util.ActionResultType;
-import net.minecraft.util.Hand;
-import net.minecraft.util.text.ITextComponent;
-import net.minecraft.world.World;
+import net.minecraft.network.chat.TextComponent;
+import net.minecraft.world.level.Level;
 
 import javax.annotation.Nullable;
 import java.util.List;
@@ -57,23 +57,23 @@ public class EnergyHolderItem extends Item implements ITooltipSettings {
 
 
     @Override
-    public void appendHoverText(ItemStack stack, @Nullable World worldIn, List<ITextComponent> tooltip, ITooltipFlag flag) {
+    public void appendHoverText(ItemStack stack, @Nullable Level worldIn, List<TextComponent> tooltip, TooltipFlag flag) {
         super.appendHoverText(stack, worldIn, tooltip, flag);
         tooltipBuilder.makeTooltip(getRegistryName(), stack, tooltip, flag);
     }
 
     @Override
-    public void inventoryTick(ItemStack stack, World worldIn, Entity entity, int itemSlot, boolean isSelected) {
-        if (!(entity instanceof PlayerEntity)) {
+    public void inventoryTick(ItemStack stack, Level worldIn, Entity entity, int itemSlot, boolean isSelected) {
+        if (!(entity instanceof Player)) {
             return;
         }
-        CompoundNBT tag = stack.getOrCreateTag();
+        CompoundTag tag = stack.getOrCreateTag();
         if (getAutomatic(stack) == MODE_MANUAL) {
             return;
         }
 
         int index = tag.getInt("index");
-        PlayerEntity player = (PlayerEntity) entity;
+        Player player = (Player) entity;
         if (index >= player.inventory.getContainerSize()) {
             index = 0;
         }
@@ -89,14 +89,14 @@ public class EnergyHolderItem extends Item implements ITooltipSettings {
     }
 
     @Override
-    public ActionResult<ItemStack> use(World worldIn, PlayerEntity player, Hand handIn) {
+    public ActionResult<ItemStack> use(Level worldIn, Player player, InteractionHand handIn) {
         if (!worldIn.isClientSide) {
             Ariente.guiHandler.openHoloGui(player, ModGuis.GUI_ENERGY_HOLDER, 1f);
         }
-        return new ActionResult<>(ActionResultType.SUCCESS, player.getItemInHand(handIn));
+        return new ActionResult<>(InteractionResult.SUCCESS, player.getItemInHand(handIn));
     }
 
-    public static IGuiComponent<?> createGui(PlayerEntity pl) {
+    public static IGuiComponent<?> createGui(Player pl) {
         IGuiComponentRegistry registry = Ariente.guiHandler.getComponentRegistry();
         IPanel panel = HoloGuiTools.createPanelWithHelp(registry, entity -> entity.switchGui(ModGuis.GUI_ENERGY_HOLDER_HOLD))
                 .add(registry.text(0, 1, 1, 1).text("Energy Holder").color(registry.color(StyledColor.LABEL)));
@@ -131,8 +131,8 @@ public class EnergyHolderItem extends Item implements ITooltipSettings {
                 .add(registry.number(6, yy, 1, 1).color(registry.color(StyledColor.INFORMATION)).getter((player, holo) -> count(player, negarite)));
     }
 
-    private static int getAutomatic(PlayerEntity player) {
-        CompoundNBT tag = getCompound(player);
+    private static int getAutomatic(Player player) {
+        CompoundTag tag = getCompound(player);
         if (tag == null) {
             return MODE_MANUAL;
         }
@@ -140,15 +140,15 @@ public class EnergyHolderItem extends Item implements ITooltipSettings {
     }
 
     private static int getAutomatic(ItemStack stack) {
-        CompoundNBT tag = stack.getTag();
+        CompoundTag tag = stack.getTag();
         if (tag == null) {
             return MODE_MANUAL;
         }
         return tag.getInt("mode");
     }
 
-    private static void changeAutomatic(PlayerEntity player) {
-        CompoundNBT tag = getCompound(player);
+    private static void changeAutomatic(Player player) {
+        CompoundTag tag = getCompound(player);
         if (tag == null) {
             return;
         }
@@ -157,8 +157,8 @@ public class EnergyHolderItem extends Item implements ITooltipSettings {
         tag.putInt("mode", mode);
     }
 
-    private static void toPlayer(PlayerEntity player, int amount, String tagname, Item item) {
-        CompoundNBT tag = getCompound(player);
+    private static void toPlayer(Player player, int amount, String tagname, Item item) {
+        CompoundTag tag = getCompound(player);
         if (tag == null) {
             return;
         }
@@ -174,8 +174,8 @@ public class EnergyHolderItem extends Item implements ITooltipSettings {
         }
     }
 
-    private static void toItem(PlayerEntity player, int amount, String tagname, Item item) {
-        CompoundNBT tag = getCompound(player);
+    private static void toItem(Player player, int amount, String tagname, Item item) {
+        CompoundTag tag = getCompound(player);
         if (tag == null) {
             return;
         }
@@ -208,16 +208,16 @@ public class EnergyHolderItem extends Item implements ITooltipSettings {
         }
     }
 
-    private static CompoundNBT getCompound(PlayerEntity player) {
-        ItemStack heldItem = player.getItemInHand(Hand.MAIN_HAND);
+    private static CompoundTag getCompound(Player player) {
+        ItemStack heldItem = player.getItemInHand(InteractionHand.MAIN_HAND);
         if (heldItem.getItem() != Registration.ENERGY_HOLDER.get()) {
             return null;
         }
         return heldItem.getOrCreateTag();
     }
 
-    private static int count(PlayerEntity player, String tagname) {
-        CompoundNBT tag = getCompound(player);
+    private static int count(Player player, String tagname) {
+        CompoundTag tag = getCompound(player);
         if (tag == null) {
             return 0;
         }
@@ -225,7 +225,7 @@ public class EnergyHolderItem extends Item implements ITooltipSettings {
     }
 
     public static int count(ItemStack stack, String tagname) {
-        CompoundNBT tag = stack.getTag();
+        CompoundTag tag = stack.getTag();
         if (tag == null) {
             return 0;
         }
@@ -233,7 +233,7 @@ public class EnergyHolderItem extends Item implements ITooltipSettings {
     }
 
     public static int extractIfPossible(ItemStack stack, String tagname, int amount) {
-        CompoundNBT tag = stack.getTag();
+        CompoundTag tag = stack.getTag();
         if (tag == null) {
             return 0;
         }
@@ -247,7 +247,7 @@ public class EnergyHolderItem extends Item implements ITooltipSettings {
         return amountToExtract;
     }
 
-    public static IGuiComponent<?> createHelpGui(PlayerEntity player) {
+    public static IGuiComponent<?> createHelpGui(Player player) {
         IGuiComponentRegistry registry = Ariente.guiHandler.getComponentRegistry();
         return HoloGuiTools.createHelpGui(registry, HelpBuilder.create()
                         .line("The Energy Holder can store")

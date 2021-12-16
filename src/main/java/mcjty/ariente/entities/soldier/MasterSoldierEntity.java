@@ -2,29 +2,29 @@ package mcjty.ariente.entities.soldier;
 
 import mcjty.ariente.api.SoldierBehaviourType;
 import mcjty.ariente.setup.Registration;
-import net.minecraft.entity.LivingEntity;
-import net.minecraft.entity.EntityType;
+import net.minecraft.nbt.CompoundTag;
+import net.minecraft.world.entity.LivingEntity;
+import net.minecraft.world.entity.EntityType;
 import net.minecraft.entity.ai.attributes.Attributes;
-import net.minecraft.entity.ai.attributes.AttributeModifierMap;
+import net.minecraft.world.entity.ai.attributes.AttributeSupplier;
 import net.minecraft.entity.monster.MonsterEntity;
-import net.minecraft.nbt.CompoundNBT;
 import net.minecraft.potion.EffectInstance;
 import net.minecraft.potion.Effects;
 import net.minecraft.util.DamageSource;
-import net.minecraft.util.math.ChunkPos;
-import net.minecraft.world.World;
+import net.minecraft.world.level.ChunkPos;
+import net.minecraft.world.level.Level;
 
 public class MasterSoldierEntity extends SoldierEntity {
 
     private int noregenCounter = 0;
 
-    public MasterSoldierEntity(EntityType<? extends MonsterEntity> type, World worldIn) {
+    public MasterSoldierEntity(EntityType<? extends MonsterEntity> type, Level worldIn) {
         super(type, worldIn);
         // @todo 1.14 move to type
         //isImmuneToFire = true;
     }
 
-    public static MasterSoldierEntity create(World world, ChunkPos cityCenter, SoldierBehaviourType behaviourType) {
+    public static MasterSoldierEntity create(Level world, ChunkPos cityCenter, SoldierBehaviourType behaviourType) {
         MasterSoldierEntity entity = new MasterSoldierEntity(Registration.ENTITY_MASTER_SOLDIER.get(), world);
         entity.cityCenter = cityCenter;
         entity.behaviourType = behaviourType;
@@ -33,8 +33,8 @@ public class MasterSoldierEntity extends SoldierEntity {
         return entity;
     }
 
-    public static AttributeModifierMap.MutableAttribute registerAttributes() {
-        AttributeModifierMap.MutableAttribute attributes = LivingEntity.createLivingAttributes();
+    public static AttributeSupplier.MutableAttribute registerAttributes() {
+        AttributeSupplier.MutableAttribute attributes = LivingEntity.createLivingAttributes();
         attributes
             .add(Attributes.FOLLOW_RANGE, 35.0D)
             .add(Attributes.MOVEMENT_SPEED, 0.32D)
@@ -79,13 +79,13 @@ public class MasterSoldierEntity extends SoldierEntity {
     }
 
     @Override
-    public void readAdditionalSaveData(CompoundNBT compound) {
+    public void readAdditionalSaveData(CompoundTag compound) {
         super.readAdditionalSaveData(compound);
         noregenCounter = compound.getInt("noregen");
     }
 
     @Override
-    public void addAdditionalSaveData(CompoundNBT compound) {
+    public void addAdditionalSaveData(CompoundTag compound) {
         super.addAdditionalSaveData(compound);
         compound.putInt("noregen", noregenCounter);
     }

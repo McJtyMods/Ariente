@@ -13,14 +13,14 @@ import net.minecraft.client.renderer.BufferBuilder;
 import net.minecraft.client.renderer.Tessellator;
 import net.minecraft.client.renderer.entity.model.BipedModel;
 import net.minecraft.client.renderer.model.ModelRenderer;
-import net.minecraft.client.renderer.vertex.DefaultVertexFormats;
-import net.minecraft.entity.Entity;
-import net.minecraft.entity.LivingEntity;
-import net.minecraft.entity.player.PlayerEntity;
-import net.minecraft.inventory.EquipmentSlotType;
+import com.mojang.blaze3d.vertex.DefaultVertexFormat;
+import net.minecraft.world.entity.Entity;
+import net.minecraft.world.entity.EquipmentSlot;
+import net.minecraft.world.entity.LivingEntity;
+import net.minecraft.world.entity.player.Player;
 import net.minecraft.item.ArmorItem;
-import net.minecraft.item.ItemStack;
-import net.minecraft.util.math.vector.Vector3d;
+import net.minecraft.world.item.ItemStack;
+import net.minecraft.world.phys.Vec3;
 import org.lwjgl.opengl.GL11;
 
 import static mcjty.ariente.blocks.defense.ForceFieldRenderer.FORCEFIELD;
@@ -176,17 +176,17 @@ public class PowerSuitModel extends BipedModel<LivingEntity> {
         if (stack.isEmpty() || !(stack.getItem() instanceof ArmorItem)) {
             return null;
         }
-        EquipmentSlotType slot = ((ArmorItem) stack.getItem()).getSlot();
+        EquipmentSlot slot = ((ArmorItem) stack.getItem()).getSlot();
 
         PowerSuitModel armor;
         
-        if (slot == EquipmentSlotType.HEAD && modelHelm != null) {
+        if (slot == EquipmentSlot.HEAD && modelHelm != null) {
             return modelHelm;
-        } else if (slot == EquipmentSlotType.CHEST && modelChest != null) {
+        } else if (slot == EquipmentSlot.CHEST && modelChest != null) {
             return modelChest;
-        } else if (slot == EquipmentSlotType.LEGS && modelLegs != null) {
+        } else if (slot == EquipmentSlot.LEGS && modelLegs != null) {
             return modelLegs;
-        } else if (slot == EquipmentSlotType.FEET && modelBoots!= null) {
+        } else if (slot == EquipmentSlot.FEET && modelBoots!= null) {
             return modelBoots;
         }
 
@@ -282,10 +282,10 @@ public class PowerSuitModel extends BipedModel<LivingEntity> {
 
         if (this == modelChest) {   // @todo Proper test
             if (entity instanceof LivingEntity) {
-                ItemStack chestStack = ((LivingEntity) entity).getItemBySlot(EquipmentSlotType.CHEST);
+                ItemStack chestStack = ((LivingEntity) entity).getItemBySlot(EquipmentSlot.CHEST);
                 if (chestStack.getItem() == Registration.POWERSUIT_CHEST.get()) {
                     if (ModuleSupport.hasWorkingUpgrade(chestStack, ArmorUpgradeType.FORCEFIELD)) {
-                        ForceFieldRenderer.personalForcefields.put(new Vector3d(entity.xo, entity.yo, entity.zo), entity instanceof PlayerEntity);
+                        ForceFieldRenderer.personalForcefields.put(new Vec3(entity.xo, entity.yo, entity.zo), entity instanceof Player);
                     }
                 }
             }
@@ -335,7 +335,7 @@ public class PowerSuitModel extends BipedModel<LivingEntity> {
         }
         for (int i = 0 ; i < PentakisDodecahedron.MAX_TRIANGLES ; i++) {
             Triangle triangle = PentakisDodecahedron.getTriangle(i);
-            Vector3d offs = triangle.getMid().scale(scale);
+            Vec3 offs = triangle.getMid().scale(scale);
             double x = posX+.5 + offs.x;
             double y = posY+.5 + offs.y;
             double z = posZ+.5 + offs.z;
@@ -346,7 +346,7 @@ public class PowerSuitModel extends BipedModel<LivingEntity> {
 
 
     private static void renderPanels(Tessellator t, BufferBuilder builder, double x, double y, double z, double scale, PanelInfo[] panelInfo) {
-        builder.begin(GL11.GL_TRIANGLES, DefaultVertexFormats.POSITION_TEX_COLOR);
+        builder.begin(GL11.GL_TRIANGLES, DefaultVertexFormat.POSITION_TEX_COLOR);
 
         for (PanelInfo info : panelInfo) {
             if (info != null) {

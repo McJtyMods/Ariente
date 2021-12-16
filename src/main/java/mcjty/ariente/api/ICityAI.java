@@ -1,32 +1,32 @@
 package mcjty.ariente.api;
 
-import net.minecraft.entity.LivingEntity;
-import net.minecraft.entity.player.PlayerEntity;
-import net.minecraft.tileentity.TileEntity;
-import net.minecraft.util.math.BlockPos;
-import net.minecraft.world.World;
+import net.minecraft.core.BlockPos;
+import net.minecraft.world.entity.LivingEntity;
+import net.minecraft.world.entity.player.Player;
+import net.minecraft.world.level.block.entity.BlockEntity;
+import net.minecraft.world.level.Level;
 
 public interface ICityAI {
 
-    void breakAICore(World world, BlockPos pos);
+    void breakAICore(Level world, BlockPos pos);
 
     /**
      * Return true if we potentially have to save the city system state.
      * Parameter should be an AICoreTile
      */
-    boolean tick(TileEntity tile);
+    boolean tick(BlockEntity tile);
 
-    boolean isDead(World world);
+    boolean isDead(Level world);
 
-    BlockPos requestNewSoldierPosition(World world, LivingEntity currentTarget);
+    BlockPos requestNewSoldierPosition(Level world, LivingEntity currentTarget);
 
-    BlockPos requestNewDronePosition(World world, LivingEntity currentTarget);
+    BlockPos requestNewDronePosition(Level world, LivingEntity currentTarget);
 
-    BlockPos requestNewSentinelPosition(World world, int sentinelId);
+    BlockPos requestNewSentinelPosition(Level world, int sentinelId);
 
-    void playerSpotted(PlayerEntity player);
+    void playerSpotted(Player player);
 
-    void alertCity(PlayerEntity player);
+    void alertCity(Player player);
 
     String getKeyId();
 

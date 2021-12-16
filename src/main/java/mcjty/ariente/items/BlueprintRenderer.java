@@ -1,17 +1,17 @@
 package mcjty.ariente.items;
 
-import com.mojang.blaze3d.matrix.MatrixStack;
+import com.mojang.blaze3d.vertex.PoseStack;
+import com.mojang.math.Vector3f;
 import mcjty.ariente.setup.Registration;
 import net.minecraft.client.Minecraft;
-import net.minecraft.client.renderer.IRenderTypeBuffer;
-import net.minecraft.client.renderer.ItemRenderer;
-import net.minecraft.util.math.vector.Vector3f;
-import net.minecraft.client.renderer.model.IBakedModel;
-import net.minecraft.client.renderer.model.ItemCameraTransforms;
+import net.minecraft.client.renderer.MultiBufferSource;
+import net.minecraft.client.renderer.entity.ItemRenderer;
+import net.minecraft.client.renderer.block.model.ItemTransforms;
+import net.minecraft.client.resources.model.BakedModel;
 import net.minecraft.client.renderer.texture.OverlayTexture;
 import net.minecraft.client.renderer.tileentity.ItemStackTileEntityRenderer;
-import net.minecraft.entity.LivingEntity;
-import net.minecraft.item.ItemStack;
+import net.minecraft.world.entity.LivingEntity;
+import net.minecraft.world.item.ItemStack;
 
 import java.util.concurrent.Callable;
 
@@ -19,7 +19,7 @@ public class BlueprintRenderer extends ItemStackTileEntityRenderer {
 
 
     @Override
-    public void renderByItem(ItemStack stack, ItemCameraTransforms.TransformType p_239207_2_, MatrixStack matrixStack, IRenderTypeBuffer buffer, int combinedLightIn, int combinedOverlayIn) {
+    public void renderByItem(ItemStack stack, ItemTransforms.TransformType p_239207_2_, PoseStack matrixStack, MultiBufferSource buffer, int combinedLightIn, int combinedOverlayIn) {
         matrixStack.pushPose();
 
         // Render our item
@@ -27,9 +27,9 @@ public class BlueprintRenderer extends ItemStackTileEntityRenderer {
 
         ItemRenderer itemRender = Minecraft.getInstance().getItemRenderer();
         ItemStack itm = new ItemStack(Registration.BLUEPRINT.get());
-        IBakedModel ibakedmodel = itemRender.getModel(itm, Minecraft.getInstance().level, (LivingEntity)null);
+        BakedModel ibakedmodel = itemRender.getModel(itm, Minecraft.getInstance().level, (LivingEntity)null);
         int lightmapValue = 140;
-        itemRender.render(itm, ItemCameraTransforms.TransformType.GUI, false, matrixStack, buffer, lightmapValue, OverlayTexture.NO_OVERLAY, ibakedmodel);
+        itemRender.render(itm, ItemTransforms.TransformType.GUI, false, matrixStack, buffer, lightmapValue, OverlayTexture.NO_OVERLAY, ibakedmodel);
 
         ItemStack destination = BlueprintItem.getDestination(stack);
         if (!destination.isEmpty()) {
@@ -39,7 +39,7 @@ public class BlueprintRenderer extends ItemStackTileEntityRenderer {
         matrixStack.popPose();
     }
 
-    private void renderItem(ItemStack stack, MatrixStack matrixStack, IRenderTypeBuffer buffer) {
+    private void renderItem(ItemStack stack, PoseStack matrixStack, MultiBufferSource buffer) {
         if (!stack.isEmpty()) {
             // Translate to the center of the block and .9 points higher
             matrixStack.translate(0, 0, .5);
@@ -49,9 +49,9 @@ public class BlueprintRenderer extends ItemStackTileEntityRenderer {
             matrixStack.mulPose(Vector3f.YP.rotationDegrees(angle));
 
             ItemRenderer itemRender = Minecraft.getInstance().getItemRenderer();
-            IBakedModel ibakedmodel = itemRender.getModel(stack, Minecraft.getInstance().level, (LivingEntity)null);
+            BakedModel ibakedmodel = itemRender.getModel(stack, Minecraft.getInstance().level, (LivingEntity)null);
             int lightmapValue = 140;
-            itemRender.render(stack, ItemCameraTransforms.TransformType.GUI, false, matrixStack, buffer, lightmapValue, OverlayTexture.NO_OVERLAY, ibakedmodel);
+            itemRender.render(stack, ItemTransforms.TransformType.GUI, false, matrixStack, buffer, lightmapValue, OverlayTexture.NO_OVERLAY, ibakedmodel);
         }
     }
 

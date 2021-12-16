@@ -1,21 +1,21 @@
 package mcjty.ariente.blocks.utility.door;
 
-import com.mojang.blaze3d.matrix.MatrixStack;
-import com.mojang.blaze3d.vertex.IVertexBuilder;
+import com.mojang.blaze3d.vertex.PoseStack;
+import com.mojang.blaze3d.vertex.VertexConsumer;
+import com.mojang.math.Matrix4f;
+import com.mojang.math.Vector3f;
 import mcjty.ariente.Ariente;
 import mcjty.ariente.client.ArienteRenderType;
 import mcjty.ariente.client.ArienteSpriteUploader;
 import mcjty.ariente.setup.Registration;
 import mcjty.lib.client.RenderHelper;
-import net.minecraft.block.BlockState;
-import net.minecraft.client.renderer.IRenderTypeBuffer;
-import net.minecraft.util.math.vector.Matrix4f;
-import net.minecraft.util.math.vector.Vector3f;
+import net.minecraft.core.Direction;
+import net.minecraft.resources.ResourceLocation;
+import net.minecraft.world.level.block.state.BlockState;
+import net.minecraft.client.renderer.MultiBufferSource;
 import net.minecraft.client.renderer.texture.TextureAtlasSprite;
 import net.minecraft.client.renderer.tileentity.TileEntityRenderer;
 import net.minecraft.client.renderer.tileentity.TileEntityRendererDispatcher;
-import net.minecraft.util.Direction;
-import net.minecraft.util.ResourceLocation;
 import net.minecraftforge.fml.client.registry.ClientRegistry;
 
 public class DoorMarkerRenderer extends TileEntityRenderer<DoorMarkerTile> {
@@ -27,7 +27,7 @@ public class DoorMarkerRenderer extends TileEntityRenderer<DoorMarkerTile> {
     }
 
     @Override
-    public void render(DoorMarkerTile te, float partialTicks, MatrixStack matrixStack, IRenderTypeBuffer buffer, int combinedLightIn, int combinedOverlayIn) {
+    public void render(DoorMarkerTile te, float partialTicks, PoseStack matrixStack, MultiBufferSource buffer, int combinedLightIn, int combinedOverlayIn) {
         BlockState state = te.getLevel().getBlockState(te.getBlockPos());
         if (state.getBlock() != Registration.DOOR_MARKER.get()) {
             return;
@@ -50,7 +50,7 @@ public class DoorMarkerRenderer extends TileEntityRenderer<DoorMarkerTile> {
         matrixStack.popPose();
     }
 
-    public static void renderDoorSegment(MatrixStack matrixStack, IRenderTypeBuffer buffer, int openphase, int iconIndex, int combinedLightIn, int combinedOverlayIn) {
+    public static void renderDoorSegment(PoseStack matrixStack, MultiBufferSource buffer, int openphase, int iconIndex, int combinedLightIn, int combinedOverlayIn) {
 
         TextureAtlasSprite sprite = ArienteSpriteUploader.INSTANCE.getSprite(DOOR_MARKER_TEXTURE);
 
@@ -64,7 +64,7 @@ public class DoorMarkerRenderer extends TileEntityRenderer<DoorMarkerTile> {
 
         if (openphase < 1000) {
 
-            IVertexBuilder builder = buffer.getBuffer(ArienteRenderType.ARIENTE_SOLID);
+            VertexConsumer builder = buffer.getBuffer(ArienteRenderType.ARIENTE_SOLID);
 
             float o = openphase / 2000.0f;
             float p = 1 - o;

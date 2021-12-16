@@ -1,8 +1,8 @@
 package mcjty.ariente.blocks.decorative;
 
-import net.minecraft.util.IStringSerializable;
+import net.minecraft.util.StringRepresentable;
 
-public enum PatternType implements IStringSerializable {
+public enum PatternType implements StringRepresentable {
     DOTS("dots", "pattern_dots"),
     LINES("lines", "pattern_lines")
     ;

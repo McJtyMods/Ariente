@@ -6,25 +6,25 @@ import mcjty.ariente.sounds.ModSounds;
 import mcjty.lib.blocks.BaseBlock;
 import mcjty.lib.builder.BlockBuilder;
 import mcjty.lib.varia.NBTTools;
-import net.minecraft.block.Block;
-import net.minecraft.block.BlockState;
-import net.minecraft.entity.player.PlayerEntity;
-import net.minecraft.item.ItemStack;
-import net.minecraft.nbt.CompoundNBT;
-import net.minecraft.network.NetworkManager;
-import net.minecraft.network.play.server.SUpdateTileEntityPacket;
-import net.minecraft.state.StateContainer;
-import net.minecraft.tileentity.TileEntity;
-import net.minecraft.util.ActionResultType;
-import net.minecraft.util.Hand;
-import net.minecraft.util.SoundCategory;
-import net.minecraft.util.math.BlockPos;
-import net.minecraft.util.math.BlockRayTraceResult;
-import net.minecraft.util.math.shapes.ISelectionContext;
-import net.minecraft.util.math.shapes.VoxelShape;
-import net.minecraft.util.math.shapes.VoxelShapes;
-import net.minecraft.world.IBlockReader;
-import net.minecraft.world.World;
+import net.minecraft.core.BlockPos;
+import net.minecraft.nbt.CompoundTag;
+import net.minecraft.network.Connection;
+import net.minecraft.world.level.BlockGetter;
+import net.minecraft.world.level.block.Block;
+import net.minecraft.world.level.block.state.BlockState;
+import net.minecraft.world.entity.player.Player;
+import net.minecraft.world.item.ItemStack;
+import net.minecraft.network.protocol.game.ClientboundBlockEntityDataPacket;
+import net.minecraft.world.level.block.state.StateDefinition;
+import net.minecraft.world.level.block.entity.BlockEntity;
+import net.minecraft.world.InteractionResult;
+import net.minecraft.world.InteractionHand;
+import net.minecraft.sounds.SoundSource;
+import net.minecraft.world.phys.BlockHitResult;
+import net.minecraft.world.phys.shapes.CollisionContext;
+import net.minecraft.world.phys.shapes.Shapes;
+import net.minecraft.world.phys.shapes.VoxelShape;
+import net.minecraft.world.level.Level;
 import net.minecraftforge.common.util.Constants;
 
 import static mcjty.ariente.compat.ArienteTOPDriver.DRIVER;
@@ -35,7 +35,7 @@ public class WirelessButtonTile extends SignalChannelTileEntity {
     private boolean locked = false;
     private int prevIn = -1;
 
-    private static final VoxelShape BLOCK_AABB = VoxelShapes.box(1.0D/16.0, 1.0D/16.0, 15.0D/16.0, 15.0D/16.0, 15.0D/16.0, 1.0D);
+    private static final VoxelShape BLOCK_AABB = Shapes.box(1.0D/16.0, 1.0D/16.0, 15.0D/16.0, 15.0D/16.0, 15.0D/16.0, 1.0D);
 
     public WirelessButtonTile() {
         super(Registration.WIRELESS_BUTTON_TILE.get());
@@ -50,22 +50,22 @@ public class WirelessButtonTile extends SignalChannelTileEntity {
                 .tileEntitySupplier(WirelessButtonTile::new)
         ) {
             @Override
-            protected void createBlockStateDefinition(StateContainer.Builder<Block, BlockState> builder) {
+            protected void createBlockStateDefinition(StateDefinition.Builder<Block, BlockState> builder) {
                 super.createBlockStateDefinition(builder);
                 builder.add(BlockProperties.POWER);
             }
 
             @Override
-            public VoxelShape getShape(BlockState state, IBlockReader reader, BlockPos pos, ISelectionContext context) {
+            public VoxelShape getShape(BlockState state, BlockGetter reader, BlockPos pos, CollisionContext context) {
                 return BLOCK_AABB;
             }
         };
     }
 
     @Override
-    public ActionResultType onBlockActivated(BlockState state, PlayerEntity player, Hand hand, BlockRayTraceResult result) {
+    public InteractionResult onBlockActivated(BlockState state, Player player, InteractionHand hand, BlockHitResult result) {
         onBlockActivatedWithToggle(level, worldPosition, player, hand);
-        return ActionResultType.SUCCESS;
+        return InteractionResult.SUCCESS;
     }
 
 
@@ -75,7 +75,7 @@ public class WirelessButtonTile extends SignalChannelTileEntity {
     }
 
     @Override
-    public void onDataPacket(NetworkManager net, SUpdateTileEntityPacket packet) {
+    public void onDataPacket(Connection net, ClientboundBlockEntityDataPacket packet) {
         boolean locked = isLocked();
 
         super.onDataPacket(net, packet);
@@ -106,14 +106,14 @@ public class WirelessButtonTile extends SignalChannelTileEntity {
         markDirtyClient();
     }
 
-    public static boolean onBlockActivatedWithToggle(World world, BlockPos pos, PlayerEntity player, Hand hand) {
+    public static boolean onBlockActivatedWithToggle(Level world, BlockPos pos, Player player, InteractionHand hand) {
         ItemStack stack = player.getItemInHand(hand);
         if (SignalChannelTileEntity.isRedstoneChannelItem(stack.getItem())) {
             setChannel(world, pos, player, stack);
         } else {
-            TileEntity te = world.getBlockEntity(pos);
+            BlockEntity te = world.getBlockEntity(pos);
             if (te instanceof WirelessButtonTile) {
-                world.playSound(null, pos, ModSounds.buzzOk, SoundCategory.BLOCKS, 1.0f, 1.0f);
+                world.playSound(null, pos, ModSounds.buzzOk, SoundSource.BLOCKS, 1.0f, 1.0f);
                 ((WirelessButtonTile) te).toggleLock();
             }
         }
@@ -134,28 +134,28 @@ public class WirelessButtonTile extends SignalChannelTileEntity {
 //    }
 
     @Override
-    public void load(CompoundNBT tagCompound) {
+    public void load(CompoundTag tagCompound) {
         super.load(tagCompound);
         prevIn = tagCompound.getInt("prevIn");
     }
 
     @Override
-    public void saveAdditional(CompoundNBT tagCompound) {
+    public void saveAdditional(CompoundTag tagCompound) {
         super.saveAdditional(tagCompound);
         tagCompound.putInt("prevIn", prevIn);
     }
 
     @Override
-    public void readRestorableFromNBT(CompoundNBT tagCompound) {
+    public void readRestorableFromNBT(CompoundTag tagCompound) {
         super.readRestorableFromNBT(tagCompound);
-        CompoundNBT info = tagCompound.getCompound("Info");
+        CompoundTag info = tagCompound.getCompound("Info");
         if (info.contains("locked")) {
             locked = info.getBoolean("locked");
         }
     }
 
     @Override
-    public void writeRestorableToNBT(CompoundNBT tagCompound) {
+    public void writeRestorableToNBT(CompoundTag tagCompound) {
         super.writeRestorableToNBT(tagCompound);
         getOrCreateInfo(tagCompound).putBoolean("locked", locked);
     }

@@ -1,18 +1,18 @@
 package mcjty.ariente.entities;
 
 import mcjty.ariente.setup.Registration;
-import net.minecraft.entity.Entity;
-import net.minecraft.entity.EntityType;
+import net.minecraft.core.BlockPos;
+import net.minecraft.network.protocol.Packet;
+import net.minecraft.world.entity.Entity;
+import net.minecraft.world.entity.EntityType;
 import net.minecraft.entity.IRendersAsItem;
 import net.minecraft.entity.item.ItemEntity;
-import net.minecraft.item.ItemStack;
-import net.minecraft.nbt.CompoundNBT;
-import net.minecraft.network.IPacket;
+import net.minecraft.world.item.ItemStack;
+import net.minecraft.nbt.CompoundTag;
 import net.minecraft.particles.ParticleTypes;
 import net.minecraft.util.SoundEvents;
-import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.MathHelper;
-import net.minecraft.world.World;
+import net.minecraft.world.level.Level;
 import net.minecraftforge.fml.network.NetworkHooks;
 
 public class EntityArientePearl extends Entity implements IRendersAsItem {
@@ -23,7 +23,7 @@ public class EntityArientePearl extends Entity implements IRendersAsItem {
     private int despawnTimer;
     private boolean shatterOrDrop;
 
-    public EntityArientePearl(EntityType<? extends EntityArientePearl> entityTypeIn, World worldIn) {
+    public EntityArientePearl(EntityType<? extends EntityArientePearl> entityTypeIn, Level worldIn) {
         super(entityTypeIn, worldIn);
     }
 
@@ -32,7 +32,7 @@ public class EntityArientePearl extends Entity implements IRendersAsItem {
         return new ItemStack(Registration.ARIENTE_PEARL.get());
     }
 
-    public static EntityArientePearl create(World worldIn, double x, double y, double z) {
+    public static EntityArientePearl create(Level worldIn, double x, double y, double z) {
         EntityArientePearl entity = new EntityArientePearl(Registration.ENTITY_PEARL.get(), worldIn);
         entity.despawnTimer = 0;
         entity.setPos(x, y, z);
@@ -45,7 +45,7 @@ public class EntityArientePearl extends Entity implements IRendersAsItem {
     }
 
     @Override
-    public IPacket<?> getAddEntityPacket() {
+    public Packet<?> getAddEntityPacket() {
         return NetworkHooks.getEntitySpawningPacket(this);
 
     }
@@ -180,11 +180,11 @@ public class EntityArientePearl extends Entity implements IRendersAsItem {
     }
 
     @Override
-    public void addAdditionalSaveData(CompoundNBT compound) {
+    public void addAdditionalSaveData(CompoundTag compound) {
     }
 
     @Override
-    public void readAdditionalSaveData(CompoundNBT compound) {
+    public void readAdditionalSaveData(CompoundTag compound) {
     }
 
     @Override

@@ -1,13 +1,13 @@
 package mcjty.ariente.entities.drone;
 
 import com.google.common.base.Predicate;
-import net.minecraft.entity.Entity;
-import net.minecraft.entity.LivingEntity;
+import net.minecraft.server.level.ServerPlayer;
+import net.minecraft.world.entity.Entity;
+import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.entity.ai.attributes.Attributes;
 import net.minecraft.entity.ai.attributes.ModifiableAttributeInstance;
 import net.minecraft.entity.ai.goal.Goal;
-import net.minecraft.entity.player.PlayerEntity;
-import net.minecraft.entity.player.ServerPlayerEntity;
+import net.minecraft.world.entity.player.Player;
 import net.minecraft.scoreboard.Team;
 
 import java.util.List;
@@ -23,9 +23,9 @@ public class EntityAIScanForPlayer extends Goal {
         this.entityLiving = entityLivingIn;
 
         this.predicate = entity -> {
-            if (!(entity instanceof PlayerEntity)) {
+            if (!(entity instanceof Player)) {
                 return false;
-            } else if (((PlayerEntity) entity).abilities.invulnerable) {
+            } else if (((Player) entity).abilities.invulnerable) {
                 return false;
             } else {
                 double d0 = EntityAIScanForPlayer.this.maxTargetRange();
@@ -57,7 +57,7 @@ public class EntityAIScanForPlayer extends Goal {
     @Override
     public boolean canUse() {
         double range = this.maxTargetRange();
-        List<PlayerEntity> list = this.entityLiving.level.<PlayerEntity>getEntitiesOfClass(PlayerEntity.class, this.entityLiving.getBoundingBox().inflate(range, range, range), this.predicate);
+        List<Player> list = this.entityLiving.level.<Player>getEntitiesOfClass(Player.class, this.entityLiving.getBoundingBox().inflate(range, range, range), this.predicate);
         // @todo 1.14
 //        Collections.sort(list, this.sorter);
 
@@ -77,7 +77,7 @@ public class EntityAIScanForPlayer extends Goal {
             return false;
         } else if (!entitylivingbase.isAlive()) {
             return false;
-        } else if (entitylivingbase instanceof PlayerEntity && ((PlayerEntity) entitylivingbase).abilities.invulnerable) {
+        } else if (entitylivingbase instanceof Player && ((Player) entitylivingbase).abilities.invulnerable) {
             return false;
         } else {
             Team team = this.entityLiving.getTeam();
@@ -91,7 +91,7 @@ public class EntityAIScanForPlayer extends Goal {
                 if (this.entityLiving.distanceToSqr(entitylivingbase) > d0 * d0) {
                     return false;
                 } else {
-                    return !(entitylivingbase instanceof ServerPlayerEntity) || !((ServerPlayerEntity) entitylivingbase).gameMode.isCreative();
+                    return !(entitylivingbase instanceof ServerPlayer) || !((ServerPlayer) entitylivingbase).gameMode.isCreative();
                 }
             }
         }

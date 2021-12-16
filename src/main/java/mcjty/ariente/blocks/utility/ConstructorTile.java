@@ -15,15 +15,15 @@ import mcjty.lib.blocks.BaseBlock;
 import mcjty.lib.blocks.RotationType;
 import mcjty.lib.builder.BlockBuilder;
 import mcjty.lib.tileentity.GenericTileEntity;
-import net.minecraft.block.BlockState;
-import net.minecraft.entity.player.PlayerEntity;
-import net.minecraft.item.ItemStack;
-import net.minecraft.util.ActionResultType;
-import net.minecraft.util.Hand;
-import net.minecraft.util.ResourceLocation;
-import net.minecraft.util.math.BlockRayTraceResult;
-import net.minecraft.util.text.TextFormatting;
-import net.minecraft.world.World;
+import net.minecraft.ChatFormatting;
+import net.minecraft.resources.ResourceLocation;
+import net.minecraft.world.InteractionHand;
+import net.minecraft.world.entity.player.Player;
+import net.minecraft.world.item.ItemStack;
+import net.minecraft.world.level.block.state.BlockState;
+import net.minecraft.world.InteractionResult;
+import net.minecraft.world.phys.BlockHitResult;
+import net.minecraft.world.level.Level;
 import net.minecraftforge.items.IItemHandler;
 
 import javax.annotation.Nullable;
@@ -65,9 +65,9 @@ public class ConstructorTile extends GenericTileEntity implements IGuiTile, ICit
     }
 
     @Override
-    public ActionResultType onBlockActivated(BlockState state, PlayerEntity player, Hand hand, BlockRayTraceResult result) {
+    public InteractionResult onBlockActivated(BlockState state, Player player, InteractionHand hand, BlockHitResult result) {
         Ariente.guiHandler.openHoloGui(level, worldPosition, player);
-        return ActionResultType.SUCCESS;
+        return InteractionResult.SUCCESS;
     }
 
 
@@ -89,11 +89,11 @@ public class ConstructorTile extends GenericTileEntity implements IGuiTile, ICit
     }
 
     @Override
-    public void setup(ICityAI cityAI, World world, boolean firstTime) {
+    public void setup(ICityAI cityAI, Level world, boolean firstTime) {
 
     }
 
-    private boolean hasIngredient(PlayerEntity player, ItemStack ingredient) {
+    private boolean hasIngredient(Player player, ItemStack ingredient) {
         if (ingredient.isEmpty()) {
             return true;
         }
@@ -110,7 +110,7 @@ public class ConstructorTile extends GenericTileEntity implements IGuiTile, ICit
         return false;
     }
 
-    private void consumeIngredient(PlayerEntity player, ItemStack ingredient) {
+    private void consumeIngredient(Player player, ItemStack ingredient) {
         if (ingredient.isEmpty()) {
             return;
         }
@@ -132,7 +132,7 @@ public class ConstructorTile extends GenericTileEntity implements IGuiTile, ICit
         }
     }
 
-    private boolean canCraft(PlayerEntity player, ItemStack blueprintStack) {
+    private boolean canCraft(Player player, ItemStack blueprintStack) {
         if (!blueprintStack.isEmpty()) {
             ItemStack destination = BlueprintItem.getDestination(blueprintStack);
             ConstructorRecipe recipe = BlueprintRecipeRegistry.findRecipe(destination);
@@ -149,7 +149,7 @@ public class ConstructorTile extends GenericTileEntity implements IGuiTile, ICit
         return false;
     }
 
-    private void attemptCraft(PlayerEntity player, ItemStack blueprintStack) {
+    private void attemptCraft(Player player, ItemStack blueprintStack) {
         if (!blueprintStack.isEmpty()) {
             if (canCraft(player, blueprintStack)) {
                 ItemStack destination = BlueprintItem.getDestination(blueprintStack);
@@ -227,12 +227,12 @@ public class ConstructorTile extends GenericTileEntity implements IGuiTile, ICit
                     // Check if we have enough
                     for (ItemStack ingredient : recipe.getIngredientList()) {
                         if (!hasIngredient(McJtyLib.proxy.getClientPlayer(), ingredient)) {
-                            tooltip.add(TextFormatting.RED + "Missing: " + TextFormatting.WHITE + ingredient.getHoverName());
+                            tooltip.add(ChatFormatting.RED + "Missing: " + ChatFormatting.WHITE + ingredient.getHoverName());
                             ok = false;
                         }
                     }
                     if (ok) {
-                        tooltip.add(0, TextFormatting.GOLD + "Doubleclick to craft!");
+                        tooltip.add(0, ChatFormatting.GOLD + "Doubleclick to craft!");
                     }
                 }
             }

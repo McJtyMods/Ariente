@@ -1,14 +1,14 @@
 package mcjty.ariente.entities.fluxelevator;
 
-import com.mojang.blaze3d.matrix.MatrixStack;
+import com.mojang.blaze3d.vertex.PoseStack;
 import com.mojang.blaze3d.platform.GlStateManager;
-import net.minecraft.client.renderer.IRenderTypeBuffer;
+import net.minecraft.client.renderer.MultiBufferSource;
 import net.minecraft.client.renderer.entity.EntityRenderer;
-import net.minecraft.client.renderer.entity.EntityRendererManager;
+import net.minecraft.client.renderer.entity.EntityRendererProvider;
 import net.minecraft.client.renderer.entity.model.EntityModel;
-import net.minecraft.util.ResourceLocation;
+import net.minecraft.resources.ResourceLocation;
 import net.minecraft.util.math.MathHelper;
-import net.minecraft.util.math.vector.Vector3d;
+import net.minecraft.world.phys.Vec3;
 import net.minecraftforge.fml.client.registry.IRenderFactory;
 
 
@@ -18,13 +18,13 @@ public class FluxElevatorRender extends EntityRenderer<FluxElevatorEntity> {
     private static final ResourceLocation TEXTURE = new ResourceLocation("ariente:textures/entity/flux_levitator.png");
     private EntityModel model = new FluxElevatorModel();
 
-    public FluxElevatorRender(EntityRendererManager renderManagerIn) {
+    public FluxElevatorRender(EntityRendererProvider.Context renderManagerIn) {
         super(renderManagerIn);
         this.shadowRadius = 0.5F;
     }
 
     @Override
-    public void render(FluxElevatorEntity entity, float entityYaw, float partialTicks, MatrixStack matrixStack, IRenderTypeBuffer buffer, int packedLightIn) {
+    public void render(FluxElevatorEntity entity, float entityYaw, float partialTicks, PoseStack matrixStack, MultiBufferSource buffer, int packedLightIn) {
         GlStateManager._pushMatrix();
 //        long i = entity.getEntityId() * 493286711L;
 //        i = i * i * 4392167121L + i * 98761L;
@@ -36,13 +36,13 @@ public class FluxElevatorRender extends EntityRenderer<FluxElevatorEntity> {
         double interX = entity.xOld + (entity.getX() - entity.xOld) * partialTicks;
         double interY = entity.yOld + (entity.getY() - entity.yOld) * partialTicks;
         double interZ = entity.zOld + (entity.getZ() - entity.zOld) * partialTicks;
-        Vector3d vec3d = entity.getPos(interX, interY, interZ);
+        Vec3 vec3d = entity.getPos(interX, interY, interZ);
         float pitch = entity.xRotO + (entity.xRot - entity.xRotO) * partialTicks;
 
 
         if (vec3d != null) {
-            Vector3d vec3d1 = entity.getPosOffset(interX, interY, interZ, 0.3D);
-            Vector3d vec3d2 = entity.getPosOffset(interX, interY, interZ, -0.3D);
+            Vec3 vec3d1 = entity.getPosOffset(interX, interY, interZ, 0.3D);
+            Vec3 vec3d2 = entity.getPosOffset(interX, interY, interZ, -0.3D);
 
             if (vec3d1 == null) {
                 vec3d1 = vec3d;
@@ -56,7 +56,7 @@ public class FluxElevatorRender extends EntityRenderer<FluxElevatorEntity> {
 //            x += vec3d.x - interX;
 //            y += (vec3d1.y + vec3d2.y) / 2.0D - interY;
 //            z += vec3d.z - interZ;
-            Vector3d vec3d3 = vec3d2.add(-vec3d1.x, -vec3d1.y, -vec3d1.z);
+            Vec3 vec3d3 = vec3d2.add(-vec3d1.x, -vec3d1.y, -vec3d1.z);
 
             if (vec3d3.length() != 0.0D) {
                 vec3d3 = vec3d3.normalize();
@@ -115,7 +115,7 @@ public class FluxElevatorRender extends EntityRenderer<FluxElevatorEntity> {
     public static class Factory implements IRenderFactory<FluxElevatorEntity> {
 
         @Override
-        public EntityRenderer<? super FluxElevatorEntity> createRenderFor(EntityRendererManager manager) {
+        public EntityRenderer<? super FluxElevatorEntity> createRenderFor(EntityRendererProvider.Context manager) {
             return new FluxElevatorRender(manager);
         }
 

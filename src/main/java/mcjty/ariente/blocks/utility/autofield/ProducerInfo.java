@@ -4,9 +4,9 @@ import mcjty.lib.multipart.MultipartHelper;
 import mcjty.lib.multipart.PartPos;
 import mcjty.lib.multipart.PartSlot;
 import net.minecraft.item.Item;
-import net.minecraft.item.ItemStack;
-import net.minecraft.tileentity.TileEntity;
-import net.minecraft.world.World;
+import net.minecraft.world.item.ItemStack;
+import net.minecraft.world.level.block.entity.BlockEntity;
+import net.minecraft.world.level.Level;
 
 import javax.annotation.Nullable;
 import java.util.*;
@@ -16,9 +16,9 @@ public class ProducerInfo {
     private Map<PartPos, Producer> producers = new HashMap<>();
     public static final int[] EMPTY_OREIDS = new int[0];
 
-    public ProducerInfo(World world, Set<PartPos> itemNodes, Set<PartPos> modifierNodes) {
+    public ProducerInfo(Level world, Set<PartPos> itemNodes, Set<PartPos> modifierNodes) {
         for (PartPos pair : itemNodes) {
-            TileEntity te = MultipartHelper.getTileEntity(world, pair.getPos(), pair.getSlot());
+            BlockEntity te = MultipartHelper.getTileEntity(world, pair.getPos(), pair.getSlot());
             if (te instanceof OutputItemNodeTile) {
                 OutputItemNodeTile outputNode = (OutputItemNodeTile) te;
 

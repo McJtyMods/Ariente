@@ -9,7 +9,7 @@ import mcjty.hologui.api.Icons;
 import mcjty.hologui.api.StyledColor;
 import mcjty.hologui.api.components.IPanel;
 import mcjty.lib.varia.ItemStackList;
-import net.minecraft.nbt.CompoundNBT;
+import net.minecraft.nbt.CompoundTag;
 import org.apache.commons.lang3.tuple.Pair;
 
 import static mcjty.hologui.api.Icons.*;
@@ -34,10 +34,10 @@ public class OutputItemNodeTile extends AbstractItemNodeTile {
 //    }
 
     @Override
-    public void readRestorableFromNBT(CompoundNBT tagCompound) {
+    public void readRestorableFromNBT(CompoundTag tagCompound) {
         super.readRestorableFromNBT(tagCompound);
 //        readBufferFromNBT(tagCompound, "output", outputFilter);
-        CompoundNBT info = tagCompound.getCompound("Info");
+        CompoundTag info = tagCompound.getCompound("Info");
         if (!info.isEmpty()) {
             outputDamage = info.getBoolean("outDamage");
             outputNbt = info.getBoolean("outNBT");
@@ -47,10 +47,10 @@ public class OutputItemNodeTile extends AbstractItemNodeTile {
     }
 
     @Override
-    public void writeRestorableToNBT(CompoundNBT tagCompound) {
+    public void writeRestorableToNBT(CompoundTag tagCompound) {
         super.writeRestorableToNBT(tagCompound);
 //        writeBufferToNBT(tagCompound, "output", outputFilter);
-        CompoundNBT info = getOrCreateInfo(tagCompound);
+        CompoundTag info = getOrCreateInfo(tagCompound);
         info.putBoolean("outDamage", outputDamage);
         info.putBoolean("outNBT", outputNbt);
         info.putBoolean("outOre", outputOredict);

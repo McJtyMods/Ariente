@@ -5,36 +5,33 @@ import mcjty.ariente.power.PowerSenderSupport;
 import mcjty.ariente.setup.Registration;
 import mcjty.lib.compat.theoneprobe.TOPInfoProvider;
 import mcjty.lib.compat.waila.WailaInfoProvider;
-import net.minecraft.block.Block;
-import net.minecraft.block.BlockState;
-import net.minecraft.block.SoundType;
-import net.minecraft.block.material.Material;
-import net.minecraft.entity.LivingEntity;
+import net.minecraft.core.BlockPos;
+import net.minecraft.core.Direction;
+import net.minecraft.nbt.CompoundTag;
+import net.minecraft.world.entity.LivingEntity;
+import net.minecraft.world.item.ItemStack;
+import net.minecraft.world.item.Items;
+import net.minecraft.world.level.Level;
+import net.minecraft.world.level.block.Block;
+import net.minecraft.world.level.block.SoundType;
+import net.minecraft.world.level.block.entity.BlockEntity;
+import net.minecraft.world.level.block.state.BlockState;
+import net.minecraft.world.level.material.Material;
 import net.minecraft.item.BlockItemUseContext;
 import net.minecraft.item.Item;
-import net.minecraft.item.ItemStack;
-import net.minecraft.item.Items;
-import net.minecraft.nbt.CompoundNBT;
-import net.minecraft.state.EnumProperty;
-import net.minecraft.state.StateContainer;
-import net.minecraft.tileentity.TileEntity;
-import net.minecraft.util.Direction;
-import net.minecraft.util.math.BlockPos;
+import net.minecraft.world.level.block.state.StateDefinition;
+import net.minecraft.world.level.block.state.properties.EnumProperty;
 import net.minecraft.util.math.shapes.IBooleanFunction;
-import net.minecraft.util.math.shapes.ISelectionContext;
-import net.minecraft.util.math.shapes.VoxelShape;
-import net.minecraft.util.math.shapes.VoxelShapes;
-import net.minecraft.world.IBlockReader;
-import net.minecraft.world.IWorld;
+import net.minecraft.world.phys.shapes.CollisionContext;
+import net.minecraft.world.phys.shapes.Shapes;
+import net.minecraft.world.phys.shapes.VoxelShape;
+import net.minecraft.world.level.BlockGetter;
 import net.minecraft.world.IWorldReader;
-import net.minecraft.world.World;
 import net.minecraftforge.client.model.data.ModelProperty;
 import net.minecraftforge.common.ToolType;
 
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
-
-import net.minecraft.block.AbstractBlock.Properties;
 
 public abstract class GenericCableBlock extends Block implements WailaInfoProvider, TOPInfoProvider {
 
@@ -51,19 +48,19 @@ public abstract class GenericCableBlock extends Block implements WailaInfoProvid
 
     private static VoxelShape[] shapeCache = null;
 
-    private static final VoxelShape SHAPE_CABLE_NORTH = VoxelShapes.box(.4, .4, 0, .6, .6, .4);
-    private static final VoxelShape SHAPE_CABLE_SOUTH = VoxelShapes.box(.4, .4, .6, .6, .6, 1);
-    private static final VoxelShape SHAPE_CABLE_WEST = VoxelShapes.box(0, .4, .4, .4, .6, .6);
-    private static final VoxelShape SHAPE_CABLE_EAST = VoxelShapes.box(.6, .4, .4, 1, .6, .6);
-    private static final VoxelShape SHAPE_CABLE_UP = VoxelShapes.box(.4, .6, .4, .6, 1, .6);
-    private static final VoxelShape SHAPE_CABLE_DOWN = VoxelShapes.box(.4, 0, .4, .6, .4, .6);
+    private static final VoxelShape SHAPE_CABLE_NORTH = Shapes.box(.4, .4, 0, .6, .6, .4);
+    private static final VoxelShape SHAPE_CABLE_SOUTH = Shapes.box(.4, .4, .6, .6, .6, 1);
+    private static final VoxelShape SHAPE_CABLE_WEST = Shapes.box(0, .4, .4, .4, .6, .6);
+    private static final VoxelShape SHAPE_CABLE_EAST = Shapes.box(.6, .4, .4, 1, .6, .6);
+    private static final VoxelShape SHAPE_CABLE_UP = Shapes.box(.4, .6, .4, .6, 1, .6);
+    private static final VoxelShape SHAPE_CABLE_DOWN = Shapes.box(.4, 0, .4, .6, .4, .6);
 
-    private static final VoxelShape SHAPE_BLOCK_NORTH = VoxelShapes.box(.2, .2, 0, .8, .8, .1);
-    private static final VoxelShape SHAPE_BLOCK_SOUTH = VoxelShapes.box(.2, .2, .9, .8, .8, 1);
-    private static final VoxelShape SHAPE_BLOCK_WEST = VoxelShapes.box(0, .2, .2, .1, .8, .8);
-    private static final VoxelShape SHAPE_BLOCK_EAST = VoxelShapes.box(.9, .2, .2, 1, .8, .8);
-    private static final VoxelShape SHAPE_BLOCK_UP = VoxelShapes.box(.2, .9, .2, .8, 1, .8);
-    private static final VoxelShape SHAPE_BLOCK_DOWN = VoxelShapes.box(.2, 0, .2, .8, .1, .8);
+    private static final VoxelShape SHAPE_BLOCK_NORTH = Shapes.box(.2, .2, 0, .8, .8, .1);
+    private static final VoxelShape SHAPE_BLOCK_SOUTH = Shapes.box(.2, .2, .9, .8, .8, 1);
+    private static final VoxelShape SHAPE_BLOCK_WEST = Shapes.box(0, .2, .2, .1, .8, .8);
+    private static final VoxelShape SHAPE_BLOCK_EAST = Shapes.box(.9, .2, .2, 1, .8, .8);
+    private static final VoxelShape SHAPE_BLOCK_UP = Shapes.box(.2, .9, .2, .8, 1, .8);
+    private static final VoxelShape SHAPE_BLOCK_DOWN = Shapes.box(.2, 0, .2, .8, .1, .8);
 
 
     public GenericCableBlock(Material material) {
@@ -84,7 +81,7 @@ public abstract class GenericCableBlock extends Block implements WailaInfoProvid
 
     @Nullable
     @Override
-    public TileEntity createTileEntity(BlockState state, IBlockReader world) {
+    public BlockEntity createTileEntity(BlockState state, BlockGetter world) {
         return new NetCableTileEntity();
     }
 
@@ -111,7 +108,7 @@ public abstract class GenericCableBlock extends Block implements WailaInfoProvid
     }
 
     private VoxelShape makeShape(ConnectorType north, ConnectorType south, ConnectorType west, ConnectorType east, ConnectorType up, ConnectorType down) {
-        VoxelShape shape = VoxelShapes.box(.4, .4, .4, .6, .6, .6);
+        VoxelShape shape = Shapes.box(.4, .4, .4, .6, .6, .6);
         shape = combineShape(shape, north, SHAPE_CABLE_NORTH, SHAPE_BLOCK_NORTH);
         shape = combineShape(shape, south, SHAPE_CABLE_SOUTH, SHAPE_BLOCK_SOUTH);
         shape = combineShape(shape, west, SHAPE_CABLE_WEST, SHAPE_BLOCK_WEST);
@@ -123,9 +120,9 @@ public abstract class GenericCableBlock extends Block implements WailaInfoProvid
 
     private VoxelShape combineShape(VoxelShape shape, ConnectorType connectorType, VoxelShape cableShape, VoxelShape blockShape) {
         if (connectorType == ConnectorType.CABLE) {
-            return VoxelShapes.join(shape, cableShape, IBooleanFunction.OR);
+            return Shapes.join(shape, cableShape, IBooleanFunction.OR);
         } else if (connectorType == ConnectorType.BLOCK) {
-            return VoxelShapes.join(shape, blockShape, IBooleanFunction.OR);
+            return Shapes.join(shape, blockShape, IBooleanFunction.OR);
         } else {
             return shape;
         }
@@ -139,7 +136,7 @@ public abstract class GenericCableBlock extends Block implements WailaInfoProvid
 
 
     @Override
-    public VoxelShape getShape(BlockState state, IBlockReader world, BlockPos pos, ISelectionContext context) {
+    public VoxelShape getShape(BlockState state, BlockGetter world, BlockPos pos, CollisionContext context) {
         if (getMimicBlock(world, pos) != null) {
             // In mimic mode we use original block
             return getMimicBlock(world, pos).getShape(world, pos, context);
@@ -160,7 +157,7 @@ public abstract class GenericCableBlock extends Block implements WailaInfoProvid
 //    }
 
     @Override
-    public ItemStack getCloneItemStack(IBlockReader worldIn, BlockPos pos, BlockState state) {
+    public ItemStack getCloneItemStack(BlockGetter worldIn, BlockPos pos, BlockState state) {
         return new ItemStack(getItem(state.getValue(COLOR)));
     }
 
@@ -180,8 +177,8 @@ public abstract class GenericCableBlock extends Block implements WailaInfoProvid
 
     protected ItemStack updateColorInStack(ItemStack item, CableColor color) {
         if (color != null) {
-            CompoundNBT tag = item.getOrCreateTag();
-            CompoundNBT display = new CompoundNBT();
+            CompoundTag tag = item.getOrCreateTag();
+            CompoundTag display = new CompoundTag();
             // @todo 1.14 check
             String unlocname = getDescriptionId() + "_" + color.getSerializedName() + ".name";
             display.putString("LocName", unlocname);
@@ -207,8 +204,8 @@ public abstract class GenericCableBlock extends Block implements WailaInfoProvid
 //    }
 
     @Nullable
-    protected BlockState getMimicBlock(IBlockReader blockAccess, BlockPos pos) {
-        TileEntity te = blockAccess.getBlockEntity(pos);
+    protected BlockState getMimicBlock(BlockGetter blockAccess, BlockPos pos) {
+        BlockEntity te = blockAccess.getBlockEntity(pos);
         if (te instanceof IFacadeSupport) {
             return ((IFacadeSupport) te).getMimicBlock();
         } else {
@@ -313,7 +310,7 @@ public abstract class GenericCableBlock extends Block implements WailaInfoProvid
 //    }
 
     @Override
-    public void setPlacedBy(World world, BlockPos pos, BlockState state, LivingEntity placer, ItemStack stack) {
+    public void setPlacedBy(Level world, BlockPos pos, BlockState state, LivingEntity placer, ItemStack stack) {
         super.setPlacedBy(world, pos, state, placer, stack);
         if (!world.isClientSide) {
             PowerSenderSupport.fixNetworks(world, pos);
@@ -326,7 +323,7 @@ public abstract class GenericCableBlock extends Block implements WailaInfoProvid
 
 
     @Override
-    public void onRemove(BlockState state, World world, BlockPos pos, BlockState newState, boolean isMoving) {
+    public void onRemove(BlockState state, Level world, BlockPos pos, BlockState newState, boolean isMoving) {
         super.onRemove(state, world, pos, newState, isMoving);
         if (!world.isClientSide) {
             PowerSenderSupport.fixNetworks(world, pos);
@@ -357,7 +354,7 @@ public abstract class GenericCableBlock extends Block implements WailaInfoProvid
 
 
     @Override
-    protected void createBlockStateDefinition(StateContainer.Builder<Block, BlockState> builder) {
+    protected void createBlockStateDefinition(StateDefinition.Builder<Block, BlockState> builder) {
         super.createBlockStateDefinition(builder);
         builder.add(COLOR, NORTH, SOUTH, WEST, EAST, UP, DOWN);
     }
@@ -408,7 +405,7 @@ public abstract class GenericCableBlock extends Block implements WailaInfoProvid
     @Nullable
     @Override
     public BlockState getStateForPlacement(BlockItemUseContext context) {
-        World world = context.getLevel();
+        Level world = context.getLevel();
         BlockPos pos = context.getClickedPos();
         BlockState state = calculateState(world, pos, defaultBlockState());
         System.out.println("state = " + state);
@@ -416,12 +413,12 @@ public abstract class GenericCableBlock extends Block implements WailaInfoProvid
     }
 
     @Override
-    public BlockState updateShape(BlockState state, Direction direction, BlockState neighbourState, IWorld world, BlockPos current, BlockPos offset) {
+    public BlockState updateShape(BlockState state, Direction direction, BlockState neighbourState, Level world, BlockPos current, BlockPos offset) {
         return calculateState(world, current, state);
     }
 
     @Nonnull
-    public BlockState calculateState(IWorld world, BlockPos pos, BlockState state) {
+    public BlockState calculateState(Level world, BlockPos pos, BlockState state) {
         CableColor color = state.getValue(COLOR);
         ConnectorType north = getConnectorType(color, world, pos, Direction.NORTH);
         ConnectorType south = getConnectorType(color, world, pos, Direction.SOUTH);
@@ -462,5 +459,5 @@ public abstract class GenericCableBlock extends Block implements WailaInfoProvid
 //                .with(DOWN, down);
 //    }
 
-    protected abstract ConnectorType getConnectorType(@Nonnull CableColor thisColor, IBlockReader world, BlockPos pos, Direction facing);
+    protected abstract ConnectorType getConnectorType(@Nonnull CableColor thisColor, BlockGetter world, BlockPos pos, Direction facing);
 }

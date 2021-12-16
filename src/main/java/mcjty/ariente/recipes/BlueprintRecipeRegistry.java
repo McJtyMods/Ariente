@@ -4,14 +4,14 @@ import mcjty.ariente.api.MarbleColor;
 import mcjty.ariente.blocks.decorative.DecorativeBlockModule;
 import mcjty.ariente.setup.Registration;
 import mcjty.lib.varia.WeightedRandom;
-import net.minecraft.block.Blocks;
-import net.minecraft.item.ItemStack;
-import net.minecraft.item.Items;
-import net.minecraft.item.crafting.IRecipeSerializer;
-import net.minecraft.item.crafting.IRecipeType;
-import net.minecraft.util.ResourceLocation;
-import net.minecraft.util.registry.Registry;
-import net.minecraftforge.fml.RegistryObject;
+import net.minecraft.world.item.Items;
+import net.minecraft.world.level.block.Block;
+import net.minecraft.resources.ResourceLocation;
+import net.minecraft.world.item.ItemStack;
+import net.minecraft.world.item.crafting.RecipeSerializer;
+import net.minecraft.world.item.crafting.RecipeType;
+import net.minecraft.core.Registry;
+import net.minecraftforge.registries.RegistryObject;
 import net.minecraftforge.fml.javafmlmod.FMLJavaModLoadingContext;
 import net.minecraftforge.items.ItemHandlerHelper;
 import net.minecraftforge.registries.DeferredRegister;
@@ -25,18 +25,18 @@ import static mcjty.ariente.Ariente.MODID;
 public class BlueprintRecipeRegistry {
 
 
-    public static final DeferredRegister<IRecipeSerializer<?>> RECIPE_SERIALIZERS = DeferredRegister.create(ForgeRegistries.RECIPE_SERIALIZERS, MODID);
+    public static final DeferredRegister<RecipeSerializer<?>> RECIPE_SERIALIZERS = DeferredRegister.create(ForgeRegistries.RECIPE_SERIALIZERS, MODID);
 
     public static void register() {
         RECIPE_SERIALIZERS.register(FMLJavaModLoadingContext.get().getModEventBus());
     }
 
-    public static final RegistryObject<IRecipeSerializer<ConstructorRecipe>> CONSTRUCTOR_RECIPES = RECIPE_SERIALIZERS.register("constructor",
+    public static final RegistryObject<RecipeSerializer<ConstructorRecipe>> CONSTRUCTOR_RECIPES = RECIPE_SERIALIZERS.register("constructor",
             ConstructorRecipeSerializer::new);
 
     public static final ResourceLocation RECIPE_CONSTRUCTOR = new ResourceLocation(MODID, "constructor");
-    public static IRecipeType<ConstructorRecipe> CONSTRUCTOR = Registry.register(Registry.RECIPE_TYPE, RECIPE_CONSTRUCTOR,
-            new IRecipeType<ConstructorRecipe>() {
+    public static RecipeType<ConstructorRecipe> CONSTRUCTOR = Registry.register(Registry.RECIPE_TYPE, RECIPE_CONSTRUCTOR,
+            new RecipeType<ConstructorRecipe>() {
                 @Override
                 public String toString() {
                     return RECIPE_CONSTRUCTOR.toString();
@@ -136,7 +136,7 @@ public class BlueprintRecipeRegistry {
                 new ItemStack(Registration.CIRCUIT.get(), 1),
                 new ItemStack(Registration.INGOT_SILVER.get(), 1),
                 new ItemStack(Registration.DUST_SILICON.get(), 1),
-                new ItemStack(Blocks.MAGMA_BLOCK, 1),
+                new ItemStack(Block.MAGMA_BLOCK, 1),
                 new ItemStack(Items.FLINT_AND_STEEL, 5)
         ));
         recipes.add(new ConstructorRecipe(new ItemStack(Registration.MODULE_FLIGHT.get()), EXTREME,
@@ -262,15 +262,15 @@ public class BlueprintRecipeRegistry {
         recipes.add(new ConstructorRecipe(new ItemStack(Registration.STORAGE.get()), COMMON,
                 new ItemStack(DecorativeBlockModule.MARBLE.get(MarbleColor.BLACK).get(), 1),
                 new ItemStack(Registration.INGOT_SILVER.get(), 3),
-                new ItemStack(Blocks.CHEST, 1),
-                new ItemStack(Blocks.GLASS_PANE, 4)
+                new ItemStack(Block.CHEST, 1),
+                new ItemStack(Block.GLASS_PANE, 4)
         ));
         recipes.add(new ConstructorRecipe(new ItemStack(Registration.BLUEPRINT_STORAGE.get()), COMMON,
                 new ItemStack(DecorativeBlockModule.MARBLE.get(MarbleColor.BLACK).get(), 1),
                 new ItemStack(Registration.INGOT_SILVER.get(), 3),
                 new ItemStack(Registration.DUST_SILICON.get(), 2),
-                new ItemStack(Blocks.CHEST, 1),
-                new ItemStack(Blocks.GLASS_PANE, 4)
+                new ItemStack(Block.CHEST, 1),
+                new ItemStack(Block.GLASS_PANE, 4)
         ));
         recipes.add(new ConstructorRecipe(new ItemStack(Registration.ELEVATOR.get()), COMMON,
                 new ItemStack(Registration.CIRCUIT.get(), 1),
@@ -280,13 +280,13 @@ public class BlueprintRecipeRegistry {
         recipes.add(new ConstructorRecipe(new ItemStack(Registration.NEGARITE_TANK.get()), COMMON,
                 new ItemStack(Registration.INGOT_SILVER.get(), 4),
                 new ItemStack(Registration.INGOT_MANGANESE.get(), 1),
-                new ItemStack(Blocks.GLASS, 4),
+                new ItemStack(Block.GLASS, 4),
                 new ItemStack(Registration.DUST_NEGARITE.get(), 20)
         ));
         recipes.add(new ConstructorRecipe(new ItemStack(Registration.POSIRITE_TANK.get()), COMMON,
                 new ItemStack(Registration.INGOT_SILVER.get(), 4),
                 new ItemStack(Registration.INGOT_MANGANESE.get(), 1),
-                new ItemStack(Blocks.GLASS, 4),
+                new ItemStack(Block.GLASS, 4),
                 new ItemStack(Registration.DUST_POSIRITE.get(), 20)
         ));
         recipes.add(new ConstructorRecipe(new ItemStack(Registration.FLUX_BEAM.get()), COMMON,
@@ -363,7 +363,7 @@ public class BlueprintRecipeRegistry {
         ));
         recipes.add(new ConstructorRecipe(new ItemStack(Registration.REINFORCED_MARBLE.get(), 1), UNCOMMON,
                 new ItemStack(DecorativeBlockModule.MARBLE.get(MarbleColor.BLACK).get(), 4),
-                new ItemStack(Blocks.OBSIDIAN, 4)
+                new ItemStack(Block.OBSIDIAN, 4)
         ));
         recipes.add(new ConstructorRecipe(new ItemStack(Registration.AUTOMATION_FIELD.get()), UNCOMMON,
                 new ItemStack(Registration.CIRCUIT.get(), 1),
@@ -408,19 +408,19 @@ public class BlueprintRecipeRegistry {
         recipes.add(new ConstructorRecipe(new ItemStack(Registration.NETCABLE.get(), 8 /* @todo 1.14 , CableColor.NEGARITE.ordinal())*/), COMMON,
                 new ItemStack(Registration.DUST_SILICON.get(), 1),
                 new ItemStack(Registration.INGOT_SILVER.get(), 1),
-                new ItemStack(Blocks.GLASS_PANE, 3),
+                new ItemStack(Block.GLASS_PANE, 3),
                 new ItemStack(Registration.DUST_NEGARITE.get(), 2)
         ));
         recipes.add(new ConstructorRecipe(new ItemStack(Registration.NETCABLE.get(), 8 /* @todo 1.14 , CableColor.POSIRITE.ordinal())*/), COMMON,
                 new ItemStack(Registration.DUST_SILICON.get(), 1),
                 new ItemStack(Registration.INGOT_SILVER.get(), 1),
-                new ItemStack(Blocks.GLASS_PANE, 3),
+                new ItemStack(Block.GLASS_PANE, 3),
                 new ItemStack(Registration.DUST_POSIRITE.get(), 2)
         ));
         recipes.add(new ConstructorRecipe(new ItemStack(Registration.NETCABLE.get(), 8 /* @todo 1.14 , CableColor.COMBINED.ordinal())*/), COMMON,
                 new ItemStack(Registration.DUST_SILICON.get(), 1),
                 new ItemStack(Registration.INGOT_SILVER.get(), 1),
-                new ItemStack(Blocks.GLASS_PANE, 3),
+                new ItemStack(Block.GLASS_PANE, 3),
                 new ItemStack(Registration.DUST_NEGARITE.get(), 2),
                 new ItemStack(Registration.DUST_POSIRITE.get(), 2)
         ));

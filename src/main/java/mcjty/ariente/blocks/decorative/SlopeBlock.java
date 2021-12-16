@@ -4,19 +4,17 @@ import mcjty.ariente.api.EnumFacingUpDown;
 import mcjty.lib.blocks.BaseBlock;
 import mcjty.lib.blocks.RotationType;
 import mcjty.lib.builder.BlockBuilder;
-import net.minecraft.block.BlockState;
-import net.minecraft.block.material.Material;
+import net.minecraft.core.Direction;
+import net.minecraft.world.level.Level;
+import net.minecraft.world.level.block.state.BlockState;
+import net.minecraft.world.level.material.Material;
 import net.minecraft.item.BlockItemUseContext;
 import net.minecraft.state.Property;
-import net.minecraft.util.Direction;
 import net.minecraft.util.Rotation;
-import net.minecraft.util.math.BlockPos;
-import net.minecraft.world.IWorld;
+import net.minecraft.core.BlockPos;
 import net.minecraftforge.common.ToolType;
 
 import javax.annotation.Nullable;
-
-import net.minecraft.block.AbstractBlock.Properties;
 
 public class SlopeBlock extends BaseBlock {
 
@@ -52,7 +50,7 @@ public class SlopeBlock extends BaseBlock {
 
 
     @Override
-    public BlockState rotate(BlockState state, IWorld world, BlockPos pos, Rotation rot) {
+    public BlockState rotate(BlockState state, Level world, BlockPos pos, Rotation rot) {
         EnumFacingUpDown facing = state.getValue(EnumFacingUpDown.FACING);
         switch (rot) {
             case NONE:

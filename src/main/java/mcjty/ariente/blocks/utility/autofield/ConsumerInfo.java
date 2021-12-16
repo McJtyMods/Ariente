@@ -3,9 +3,9 @@ package mcjty.ariente.blocks.utility.autofield;
 import mcjty.lib.multipart.MultipartHelper;
 import mcjty.lib.multipart.PartPos;
 import net.minecraft.item.Item;
-import net.minecraft.item.ItemStack;
-import net.minecraft.tileentity.TileEntity;
-import net.minecraft.world.World;
+import net.minecraft.world.item.ItemStack;
+import net.minecraft.world.level.block.entity.BlockEntity;
+import net.minecraft.world.level.Level;
 
 import java.util.*;
 import java.util.stream.Stream;
@@ -16,9 +16,9 @@ public class ConsumerInfo {
     private Map<Integer, List<WantedItem>> wantedOredictItems = new HashMap<>();
 
 
-    public ConsumerInfo(World world, Set<PartPos> itemNodes) {
+    public ConsumerInfo(Level world, Set<PartPos> itemNodes) {
         for (PartPos pair : itemNodes) {
-            TileEntity te = MultipartHelper.getTileEntity(world, pair.getPos(), pair.getSlot());
+            BlockEntity te = MultipartHelper.getTileEntity(world, pair.getPos(), pair.getSlot());
             if (te instanceof InputItemNodeTile) {
                 InputItemNodeTile itemNode = (InputItemNodeTile) te;
 

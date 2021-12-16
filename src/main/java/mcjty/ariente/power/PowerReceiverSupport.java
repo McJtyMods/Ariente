@@ -1,10 +1,10 @@
 package mcjty.ariente.power;
 
 import mcjty.lib.varia.OrientationTools;
-import net.minecraft.tileentity.TileEntity;
-import net.minecraft.util.Direction;
-import net.minecraft.util.math.BlockPos;
-import net.minecraft.world.World;
+import net.minecraft.core.BlockPos;
+import net.minecraft.world.level.block.entity.BlockEntity;
+import net.minecraft.core.Direction;
+import net.minecraft.world.level.Level;
 
 import java.util.HashSet;
 import java.util.Set;
@@ -17,7 +17,7 @@ public class PowerReceiverSupport {
      * Check if there is enough power and consume that power if that's the case
      * @return true if there was enough power and exactly the given amount of power is consumed from the network
      */
-    public static boolean consumePower(World world, BlockPos pos, long amount, boolean doCombined) {
+    public static boolean consumePower(Level world, BlockPos pos, long amount, boolean doCombined) {
         long powerAvailable = getPowerAvailable(world, pos, doCombined);
         if (amount > powerAvailable) {
             return false;
@@ -30,14 +30,14 @@ public class PowerReceiverSupport {
      * Consume the given amount of power without checking if that power is actually available. Use this method
      * with care (and call getPowerAvailable first!)
      */
-    public static void consumerPowerNoCheck(World world, BlockPos pos, long amount, boolean doCombined) {
+    public static void consumerPowerNoCheck(Level world, BlockPos pos, long amount, boolean doCombined) {
         PowerSystem powerSystem = PowerSystem.getPowerSystem(world);
         long amountNegarite = amount;
         long amountPosirite = amount;
         Set<Integer> handled = new HashSet<>();
         for (Direction facing : OrientationTools.DIRECTION_VALUES) {
             BlockPos p = pos.relative(facing);
-            TileEntity te = world.getBlockEntity(p);
+            BlockEntity te = world.getBlockEntity(p);
             if (te instanceof IPowerBlob) {
                 IPowerBlob blob = (IPowerBlob) te;
                 int id = blob.getCableId();
@@ -68,7 +68,7 @@ public class PowerReceiverSupport {
     /**
      * Check how much power is available without c onsuming it
      */
-    public static long getPowerAvailable(World world, BlockPos pos, boolean doCombined) {
+    public static long getPowerAvailable(Level world, BlockPos pos, boolean doCombined) {
         PowerSystem powerSystem = PowerSystem.getPowerSystem(world);
         Set<Integer> handled = new HashSet<>();
 
@@ -76,7 +76,7 @@ public class PowerReceiverSupport {
         long totalPosirite = 0;
         for (Direction facing : OrientationTools.DIRECTION_VALUES) {
             BlockPos p = pos.relative(facing);
-            TileEntity te = world.getBlockEntity(p);
+            BlockEntity te = world.getBlockEntity(p);
             if (te instanceof IPowerBlob) {
                 IPowerBlob blob = (IPowerBlob) te;
                 if (blob.canSendPower()) {

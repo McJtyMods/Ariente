@@ -1,8 +1,8 @@
 package mcjty.ariente.cables;
 
-import net.minecraft.util.IStringSerializable;
+import net.minecraft.util.StringRepresentable;
 
-public enum CableColor implements IStringSerializable {
+public enum CableColor implements StringRepresentable {
     NEGARITE("negarite", "dyeBlue"),
     POSIRITE("posirite", "dyeRed"),
     COMBINED("combined", "dyeYellow"),

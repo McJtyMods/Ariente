@@ -2,10 +2,10 @@ package mcjty.ariente.blocks.utility.autofield;
 
 import mcjty.lib.multipart.PartPos;
 import mcjty.lib.multipart.PartSlot;
+import net.minecraft.core.BlockPos;
 import net.minecraft.item.Item;
-import net.minecraft.item.ItemStack;
-import net.minecraft.network.PacketBuffer;
-import net.minecraft.util.math.BlockPos;
+import net.minecraft.network.FriendlyByteBuf;
+import net.minecraft.world.item.ItemStack;
 
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
@@ -92,7 +92,7 @@ public class AutoFieldRenderInfo {
 //        System.out.println("transfers.size() = " + transfers.size());
 //    }
 
-    public void toBytes(PacketBuffer buf) {
+    public void toBytes(FriendlyByteBuf buf) {
         buf.writeInt(transfers.size());
         for (Map.Entry<TransferPath, TreeSet<Transfer>> entry : transfers.entrySet()) {
             TransferPath path = entry.getKey();
@@ -110,7 +110,7 @@ public class AutoFieldRenderInfo {
         }
     }
 
-    public void fromBytes(PacketBuffer buf) {
+    public void fromBytes(FriendlyByteBuf buf) {
         transfers.clear();
         int size = buf.readInt();
         for (int i = 0 ; i < size ; i++) {

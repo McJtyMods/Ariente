@@ -10,7 +10,7 @@ import mcjty.hologui.api.StyledColor;
 import mcjty.hologui.api.components.IPanel;
 import mcjty.lib.builder.BlockBuilder;
 import mcjty.lib.varia.ItemStackList;
-import net.minecraft.nbt.CompoundNBT;
+import net.minecraft.nbt.CompoundTag;
 import org.apache.commons.lang3.tuple.Pair;
 
 public class InputItemNodeTile extends AbstractItemNodeTile {
@@ -37,10 +37,10 @@ public class InputItemNodeTile extends AbstractItemNodeTile {
 //    }
 
     @Override
-    public void readRestorableFromNBT(CompoundNBT tagCompound) {
+    public void readRestorableFromNBT(CompoundTag tagCompound) {
         super.readRestorableFromNBT(tagCompound);
 //        readBufferFromNBT(tagCompound, "input", inputFilter);
-        CompoundNBT info = tagCompound.getCompound("Info");
+        CompoundTag info = tagCompound.getCompound("Info");
         if (!info.isEmpty()) {
             inputDamage = info.getBoolean("inDamage");
             inputNbt = info.getBoolean("inNBT");
@@ -49,10 +49,10 @@ public class InputItemNodeTile extends AbstractItemNodeTile {
     }
 
     @Override
-    public void writeRestorableToNBT(CompoundNBT tagCompound) {
+    public void writeRestorableToNBT(CompoundTag tagCompound) {
         super.writeRestorableToNBT(tagCompound);
 //        writeBufferToNBT(tagCompound, "input", inputFilter);
-        CompoundNBT info = getOrCreateInfo(tagCompound);
+        CompoundTag info = getOrCreateInfo(tagCompound);
         info.putBoolean("inDamage", inputDamage);
         info.putBoolean("inNBT", inputNbt);
         info.putBoolean("inOre", inputOredict);

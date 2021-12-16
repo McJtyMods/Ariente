@@ -1,23 +1,23 @@
 package mcjty.ariente.cables;
 
-import com.mojang.blaze3d.matrix.MatrixStack;
-import com.mojang.blaze3d.vertex.IVertexBuilder;
+import com.mojang.blaze3d.vertex.PoseStack;
+import com.mojang.blaze3d.vertex.VertexConsumer;
+import com.mojang.math.Matrix4f;
+import com.mojang.math.Vector3f;
 import mcjty.ariente.Ariente;
 import mcjty.ariente.client.ArienteRenderType;
 import mcjty.ariente.client.ArienteSpriteUploader;
 import mcjty.lib.client.RenderHelper;
-import net.minecraft.block.Block;
-import net.minecraft.block.BlockState;
+import net.minecraft.client.renderer.MultiBufferSource;
+import net.minecraft.resources.ResourceLocation;
+import net.minecraft.world.level.block.Block;
+import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.client.Minecraft;
-import net.minecraft.client.renderer.IRenderTypeBuffer;
-import net.minecraft.util.math.vector.Matrix4f;
 import net.minecraft.client.renderer.texture.TextureAtlasSprite;
 import net.minecraft.client.renderer.tileentity.TileEntityRenderer;
 import net.minecraft.client.renderer.tileentity.TileEntityRendererDispatcher;
-import net.minecraft.tileentity.TileEntityType;
-import net.minecraft.util.ResourceLocation;
-import net.minecraft.util.math.vector.Vector3d;
-import net.minecraft.util.math.vector.Vector3f;
+import net.minecraft.world.level.block.entity.BlockEntityType;
+import net.minecraft.world.phys.Vec3;
 import net.minecraftforge.fml.client.registry.ClientRegistry;
 
 import java.util.ArrayList;
@@ -64,10 +64,10 @@ public class CableRenderer extends TileEntityRenderer<GenericCableTileEntity> {
     private static class RenderInfo {
         public final Vector3f player;
         public final Matrix4f matrix;
-        public final IVertexBuilder builder;
+        public final VertexConsumer builder;
         public final TextureAtlasSprite sprite;
 
-        public RenderInfo(Vector3f player, Matrix4f matrix, IVertexBuilder builder, TextureAtlasSprite sprite) {
+        public RenderInfo(Vector3f player, Matrix4f matrix, VertexConsumer builder, TextureAtlasSprite sprite) {
             this.player = player;
             this.matrix = matrix;
             this.builder = builder;
@@ -108,7 +108,7 @@ public class CableRenderer extends TileEntityRenderer<GenericCableTileEntity> {
     }
 
     @Override
-    public void render(GenericCableTileEntity te, float partialTicks, MatrixStack matrixStack, IRenderTypeBuffer buffer, int combinedLightIn, int combinedOverlayIn) {
+    public void render(GenericCableTileEntity te, float partialTicks, PoseStack matrixStack, MultiBufferSource buffer, int combinedLightIn, int combinedOverlayIn) {
         if (true) { // @todo only when it has power
             BlockState state = te.getLevel().getBlockState(te.getBlockPos());
             Block block = state.getBlock();
@@ -133,12 +133,12 @@ public class CableRenderer extends TileEntityRenderer<GenericCableTileEntity> {
                 int tex = te.getBlockPos().getX();
                 int tey = te.getBlockPos().getY();
                 int tez = te.getBlockPos().getZ();
-                Vector3d projectedView = Minecraft.getInstance().gameRenderer.getMainCamera().getPosition().add(-tex, -tey, -tez);
+                Vec3 projectedView = Minecraft.getInstance().gameRenderer.getMainCamera().getPosition().add(-tex, -tey, -tez);
                 Vector3f player = new Vector3f((float)projectedView.x, (float)projectedView.y, (float)projectedView.z);
 
                 Matrix4f matrix = matrixStack.last().pose();
                 TextureAtlasSprite sprite = ArienteSpriteUploader.INSTANCE.getSprite(txt);
-                IVertexBuilder builder = buffer.getBuffer(ArienteRenderType.ARIENTE_TRANSLUCENT);
+                VertexConsumer builder = buffer.getBuffer(ArienteRenderType.ARIENTE_TRANSLUCENT);
 
                 int mask_ud = ((GenericCableBlock) block).getUpDownMask(state, te.getLevel(), te.getBlockPos());
                 int mask_ew = ((GenericCableBlock) block).getEastWestMask(state, te.getLevel(), te.getBlockPos());
@@ -152,7 +152,7 @@ public class CableRenderer extends TileEntityRenderer<GenericCableTileEntity> {
         }
     }
 
-    public static void register(TileEntityType<? extends GenericCableTileEntity> type) {
+    public static void register(BlockEntityType<? extends GenericCableTileEntity> type) {
         ClientRegistry.bindTileEntityRenderer(type, CableRenderer::new);
     }
 

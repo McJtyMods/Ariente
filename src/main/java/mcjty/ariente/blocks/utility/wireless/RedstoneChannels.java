@@ -2,9 +2,9 @@ package mcjty.ariente.blocks.utility.wireless;
 
 import mcjty.ariente.api.IRedstoneChannels;
 import mcjty.lib.worlddata.AbstractWorldData;
-import net.minecraft.nbt.CompoundNBT;
+import net.minecraft.nbt.CompoundTag;
 import net.minecraft.nbt.ListNBT;
-import net.minecraft.world.World;
+import net.minecraft.world.level.Level;
 import net.minecraftforge.common.util.Constants;
 
 import java.util.HashMap;
@@ -22,7 +22,7 @@ public class RedstoneChannels extends AbstractWorldData<RedstoneChannels> implem
         super(name);
     }
 
-    public static RedstoneChannels getChannels(World world) {
+    public static RedstoneChannels getChannels(Level world) {
         return getData(world, () -> new RedstoneChannels(REDSTONE_CHANNELS_NAME), REDSTONE_CHANNELS_NAME);
     }
 
@@ -51,11 +51,11 @@ public class RedstoneChannels extends AbstractWorldData<RedstoneChannels> implem
     }
 
     @Override
-    public void load(CompoundNBT tagCompound) {
+    public void load(CompoundTag tagCompound) {
         channels.clear();
         ListNBT lst = tagCompound.getList("channels", Constants.NBT.TAG_COMPOUND);
         for (int i = 0 ; i < lst.size() ; i++) {
-            CompoundNBT tc = lst.getCompound(i);
+            CompoundTag tc = lst.getCompound(i);
             int channel = tc.getInt("channel");
             int v = tc.getInt("value");
 
@@ -67,10 +67,10 @@ public class RedstoneChannels extends AbstractWorldData<RedstoneChannels> implem
     }
 
     @Override
-    public CompoundNBT save(CompoundNBT tagCompound) {
+    public CompoundTag save(CompoundTag tagCompound) {
         ListNBT lst = new ListNBT();
         for (Map.Entry<Integer, RedstoneChannel> entry : channels.entrySet()) {
-            CompoundNBT tc = new CompoundNBT();
+            CompoundTag tc = new CompoundTag();
             tc.putInt("channel", entry.getKey());
             tc.putInt("value", entry.getValue().getValue());
             lst.add(tc);

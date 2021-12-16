@@ -1,35 +1,34 @@
 package mcjty.ariente.entities;
 
 import com.mojang.datafixers.DataFixer;
-import java.util.function.Predicate;
 import mcjty.ariente.api.IForceFieldTile;
 import mcjty.ariente.api.IForcefieldImmunity;
 import mcjty.ariente.setup.Registration;
 import mcjty.ariente.sounds.ModSounds;
-import net.minecraft.entity.Entity;
-import net.minecraft.entity.EntityType;
-import net.minecraft.entity.LivingEntity;
+import net.minecraft.nbt.CompoundTag;
+import net.minecraft.world.entity.Entity;
+import net.minecraft.world.entity.EntityType;
+import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.entity.projectile.ProjectileHelper;
-import net.minecraft.nbt.CompoundNBT;
 import net.minecraft.nbt.ListNBT;
-import net.minecraft.network.IPacket;
-import net.minecraft.network.datasync.DataParameter;
-import net.minecraft.network.datasync.DataSerializers;
-import net.minecraft.network.datasync.EntityDataManager;
+import net.minecraft.network.protocol.Packet;
+import net.minecraft.network.syncher.EntityDataAccessor;
+import net.minecraft.network.syncher.EntityDataSerializers;
+import net.minecraft.network.syncher.SynchedEntityData;
 import net.minecraft.particles.ParticleType;
 import net.minecraft.particles.ParticleTypes;
 import net.minecraft.util.DamageSource;
-import net.minecraft.util.SoundCategory;
+import net.minecraft.sounds.SoundSource;
 import net.minecraft.util.math.*;
-import net.minecraft.util.math.vector.Vector3d;
-import net.minecraft.world.World;
+import net.minecraft.world.level.Level;
+import net.minecraft.world.phys.Vec3;
 import net.minecraftforge.fml.network.NetworkHooks;
 
 
 public class LaserEntity extends Entity implements IForcefieldImmunity {
 
-    private static final DataParameter<Float> SPAWN_YAW = EntityDataManager.<Float>defineId(LaserEntity.class, DataSerializers.FLOAT);
-    private static final DataParameter<Float> SPAWN_PITCH = EntityDataManager.<Float>defineId(LaserEntity.class, DataSerializers.FLOAT);
+    private static final EntityDataAccessor<Float> SPAWN_YAW = SynchedEntityData.<Float>defineId(LaserEntity.class, EntityDataSerializers.FLOAT);
+    private static final EntityDataAccessor<Float> SPAWN_PITCH = SynchedEntityData.<Float>defineId(LaserEntity.class, EntityDataSerializers.FLOAT);
 
     private LivingEntity shootingEntity;
     private int ticksAlive;
@@ -41,12 +40,12 @@ public class LaserEntity extends Entity implements IForcefieldImmunity {
     private int soundTicker = 0;
 
     @Override
-    public IPacket<?> getAddEntityPacket() {
+    public Packet<?> getAddEntityPacket() {
         return NetworkHooks.getEntitySpawningPacket(this);
     }
 
 
-    public LaserEntity(EntityType<? extends LaserEntity> type, World worldIn) {
+    public LaserEntity(EntityType<? extends LaserEntity> type, Level worldIn) {
         super(type, worldIn);
         // @todo 1.14
 //        this.setSize(1.0F, 1.0F);
@@ -89,7 +88,7 @@ public class LaserEntity extends Entity implements IForcefieldImmunity {
         return this.entityData.get(SPAWN_PITCH);
     }
 
-    public static LaserEntity create(World worldIn, double x, double y, double z, double accelX, double accelY, double accelZ) {
+    public static LaserEntity create(Level worldIn, double x, double y, double z, double accelX, double accelY, double accelZ) {
         LaserEntity entity = new LaserEntity(Registration.ENTITY_LASER.get(), worldIn);
         entity.moveTo(x, y, z, entity.yRot, entity.xRot);
         entity.setPos(x, y, z);
@@ -100,7 +99,7 @@ public class LaserEntity extends Entity implements IForcefieldImmunity {
         return entity;
     }
 
-    public static LaserEntity create(World worldIn, LivingEntity shooter, double accelX, double accelY, double accelZ) {
+    public static LaserEntity create(Level worldIn, LivingEntity shooter, double accelX, double accelY, double accelZ) {
         LaserEntity entity = new LaserEntity(Registration.ENTITY_LASER.get(), worldIn);
         entity.shootingEntity = shooter;
         entity.moveTo(shooter.getX(), shooter.getY(), shooter.getZ(), shooter.yRot, shooter.xRot);
@@ -123,7 +122,7 @@ public class LaserEntity extends Entity implements IForcefieldImmunity {
 
         soundTicker--;
         if (soundTicker <= 0) {
-            level.playSound(null, getX(), getY(), getZ(), ModSounds.laser, SoundCategory.HOSTILE, 5.0f, 1.0f);
+            level.playSound(null, getX(), getY(), getZ(), ModSounds.laser, SoundSource.HOSTILE, 5.0f, 1.0f);
             soundTicker = 40;
         }
     }
@@ -201,7 +200,7 @@ public class LaserEntity extends Entity implements IForcefieldImmunity {
     }
 
     @Override
-    public void addAdditionalSaveData(CompoundNBT compound) {
+    public void addAdditionalSaveData(CompoundTag compound) {
         compound.put("direction", this.newDoubleList(new double[]{this.getDeltaMovement().x, this.getDeltaMovement().y, this.getDeltaMovement().z}));
         compound.put("power", this.newDoubleList(new double[]{this.accelerationX, this.accelerationY, this.accelerationZ}));
         compound.putInt("life", this.ticksAlive);
@@ -210,7 +209,7 @@ public class LaserEntity extends Entity implements IForcefieldImmunity {
     }
 
     @Override
-    public void readAdditionalSaveData(CompoundNBT compound) {
+    public void readAdditionalSaveData(CompoundTag compound) {
         if (compound.contains("power", 9)) {
             ListNBT nbttaglist = compound.getList("power", 6);
 
@@ -253,7 +252,7 @@ public class LaserEntity extends Entity implements IForcefieldImmunity {
             this.markHurt();
 
             if (source.getEntity() != null) {
-                Vector3d vec3d = source.getEntity().getLookAngle();
+                Vec3 vec3d = source.getEntity().getLookAngle();
 
                 if (vec3d != null) {
                     setDeltaMovement(vec3d);

@@ -6,9 +6,10 @@ import com.mojang.datafixers.util.Pair;
 import mcjty.ariente.Ariente;
 import net.minecraft.client.renderer.model.*;
 import net.minecraft.client.renderer.texture.TextureAtlasSprite;
+import net.minecraft.client.resources.model.BakedModel;
 import net.minecraft.inventory.container.PlayerContainer;
-import net.minecraft.resources.IResourceManager;
-import net.minecraft.util.ResourceLocation;
+import net.minecraft.resources.ResourceLocation;
+import net.minecraft.server.packs.resources.ResourceManager;
 import net.minecraftforge.client.model.IModelConfiguration;
 import net.minecraftforge.client.model.IModelLoader;
 import net.minecraftforge.client.model.geometry.IModelGeometry;
@@ -22,7 +23,7 @@ import java.util.function.Function;
 public class CableModelLoader implements IModelLoader<CableModelLoader.CableModelGeometry> {
 
     @Override
-    public void onResourceManagerReload(IResourceManager resourceManager) {
+    public void onResourceManagerReload(ResourceManager resourceManager) {
 
     }
 
@@ -33,7 +34,7 @@ public class CableModelLoader implements IModelLoader<CableModelLoader.CableMode
 
     public static class CableModelGeometry implements IModelGeometry<CableModelGeometry> {
         @Override
-        public IBakedModel bake(IModelConfiguration owner, ModelBakery bakery, Function<RenderMaterial, TextureAtlasSprite> spriteGetter, IModelTransform modelTransform, ItemOverrideList overrides, ResourceLocation modelLocation) {
+        public BakedModel bake(IModelConfiguration owner, ModelBakery bakery, Function<RenderMaterial, TextureAtlasSprite> spriteGetter, IModelTransform modelTransform, ItemOverrideList overrides, ResourceLocation modelLocation) {
             return new GenericCableBakedModel();
         }
 

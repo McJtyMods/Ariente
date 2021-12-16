@@ -2,8 +2,8 @@ package mcjty.ariente.sounds;
 
 import mcjty.ariente.entities.levitator.FluxLevitatorEntity;
 import net.minecraft.client.audio.TickableSound;
-import net.minecraft.entity.player.PlayerEntity;
-import net.minecraft.util.SoundCategory;
+import net.minecraft.sounds.SoundSource;
+import net.minecraft.world.entity.player.Player;
 import net.minecraft.util.math.MathHelper;
 
 
@@ -11,11 +11,11 @@ import net.minecraft.util.math.MathHelper;
 import net.minecraft.client.audio.ISound.AttenuationType;
 
 public class MovingSoundLevitatorRiding extends TickableSound {
-    private final PlayerEntity player;
+    private final Player player;
     private final FluxLevitatorEntity levitator;
 
-    public MovingSoundLevitatorRiding(PlayerEntity playerRiding, FluxLevitatorEntity levitator) {
-        super(ModSounds.levitator, SoundCategory.NEUTRAL);
+    public MovingSoundLevitatorRiding(Player playerRiding, FluxLevitatorEntity levitator) {
+        super(ModSounds.levitator, SoundSource.NEUTRAL);
         this.player = playerRiding;
         this.levitator = levitator;
         this.attenuation = AttenuationType.NONE;

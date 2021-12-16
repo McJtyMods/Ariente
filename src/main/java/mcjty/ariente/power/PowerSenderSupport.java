@@ -2,10 +2,10 @@ package mcjty.ariente.power;
 
 import mcjty.ariente.cables.CableColor;
 import mcjty.lib.varia.OrientationTools;
-import net.minecraft.tileentity.TileEntity;
-import net.minecraft.util.Direction;
-import net.minecraft.util.math.BlockPos;
-import net.minecraft.world.World;
+import net.minecraft.core.BlockPos;
+import net.minecraft.core.Direction;
+import net.minecraft.world.level.block.entity.BlockEntity;
+import net.minecraft.world.level.Level;
 
 import java.util.HashSet;
 import java.util.Set;
@@ -32,7 +32,7 @@ public class PowerSenderSupport {
         return false;
     }
 
-    public void fillCableId(World world, BlockPos pos, int id, CableColor color) {
+    public void fillCableId(Level world, BlockPos pos, int id, CableColor color) {
         if (cableId == id) {
             return; // Already ok
         }
@@ -40,7 +40,7 @@ public class PowerSenderSupport {
         setCableId(id);
         for (Direction facing : OrientationTools.DIRECTION_VALUES) {
             BlockPos p = pos.relative(facing);
-            TileEntity te = world.getBlockEntity(p);
+            BlockEntity te = world.getBlockEntity(p);
             if (te instanceof IPowerBlob) {
                 IPowerBlob blob = (IPowerBlob) te;
                 CableColor cableColor = blob.getCableColor();
@@ -52,7 +52,7 @@ public class PowerSenderSupport {
     }
 
 
-    public static void fixNetworks(World world, BlockPos pos) {
+    public static void fixNetworks(Level world, BlockPos pos) {
         PowerSystem powerSystem = PowerSystem.getPowerSystem(world);
 
         // Fix all networks in a 3x3x3 centered around this block
@@ -62,7 +62,7 @@ public class PowerSenderSupport {
             for (int dy = -1 ; dy <= 1 ; dy++) {
                 for (int dz = -1 ; dz <= 1 ; dz++) {
                     BlockPos p = pos.offset(dx, dy, dz);
-                    TileEntity te = world.getBlockEntity(p);
+                    BlockEntity te = world.getBlockEntity(p);
                     if (te instanceof IPowerBlob) {
                         IPowerBlob blob = (IPowerBlob) te;
                         int cableId = blob.getCableId();
@@ -80,7 +80,7 @@ public class PowerSenderSupport {
             for (int dy = -1; dy <= 1; dy++) {
                 for (int dz = -1; dz <= 1; dz++) {
                     BlockPos p = pos.offset(dx, dy, dz);
-                    TileEntity te = world.getBlockEntity(p);
+                    BlockEntity te = world.getBlockEntity(p);
                     if (te instanceof IPowerBlob) {
                         IPowerBlob blob = (IPowerBlob) te;
                         int cableId = blob.getCableId();

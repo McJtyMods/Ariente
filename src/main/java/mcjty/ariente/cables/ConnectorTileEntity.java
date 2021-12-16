@@ -2,9 +2,9 @@ package mcjty.ariente.cables;
 
 import mcjty.ariente.setup.Registration;
 import mcjty.lib.varia.OrientationTools;
-import net.minecraft.block.Block;
-import net.minecraft.nbt.CompoundNBT;
-import net.minecraft.util.Direction;
+import net.minecraft.nbt.CompoundTag;
+import net.minecraft.world.level.block.Block;
+import net.minecraft.core.Direction;
 
 public class ConnectorTileEntity extends GenericCableTileEntity {
 
@@ -46,7 +46,7 @@ public class ConnectorTileEntity extends GenericCableTileEntity {
     }
 
     @Override
-    public void load(CompoundNBT tagCompound) {
+    public void load(CompoundTag tagCompound) {
         super.load(tagCompound);
         inputFromSide = tagCompound.getIntArray("inputs");
         if (inputFromSide.length != 6) {
@@ -58,7 +58,7 @@ public class ConnectorTileEntity extends GenericCableTileEntity {
     }
 
     @Override
-    public void saveAdditional(CompoundNBT tagCompound) {
+    public void saveAdditional(CompoundTag tagCompound) {
         super.saveAdditional(tagCompound);
         tagCompound.putIntArray("inputs", inputFromSide);
         for (int i = 0 ; i < 6 ; i++) {

@@ -8,9 +8,9 @@ import net.minecraft.data.DataGenerator;
 import net.minecraft.data.ItemTagsProvider;
 import net.minecraft.data.TagsProvider;
 import net.minecraft.item.Item;
-import net.minecraft.tags.ITag;
+import net.minecraft.tags.Tag;
 import net.minecraftforge.common.Tags;
-import net.minecraftforge.fml.RegistryObject;
+import net.minecraftforge.registries.RegistryObject;
 import net.minecraftforge.common.data.ExistingFileHelper;
 
 import java.util.Collection;
@@ -60,14 +60,14 @@ public class ItemTags extends ItemTagsProvider {
         addTag(Registration.TAG_MARBLE, DecorativeBlockModule.MARBLE_ITEMS.values());
     }
 
-    private void addTag(ITag.INamedTag<Item> tag, Collection<RegistryObject<Item>> items) {
+    private void addTag(Tag.INamedTag<Item> tag, Collection<RegistryObject<Item>> items) {
         TagsProvider.Builder<Item> builder = tag(tag);
         for (RegistryObject<Item> item : items) {
             builder.add(item.get());
         }
     }
 
-    private void addTag(ITag.INamedTag<Item> tag, Item... items) {
+    private void addTag(Tag.INamedTag<Item> tag, Item... items) {
         tag(tag)
                 .add(items);
     }

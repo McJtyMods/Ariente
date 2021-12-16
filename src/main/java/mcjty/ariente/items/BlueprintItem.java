@@ -12,13 +12,13 @@ import mcjty.lib.tooltips.ITooltipExtras;
 import mcjty.lib.tooltips.ITooltipSettings;
 import mcjty.lib.varia.JSonTools;
 import net.minecraft.client.renderer.model.ModelResourceLocation;
-import net.minecraft.client.util.ITooltipFlag;
+import net.minecraft.network.chat.TextComponent;
+import net.minecraft.world.item.TooltipFlag;
 import net.minecraft.item.Item;
-import net.minecraft.item.ItemStack;
-import net.minecraft.nbt.CompoundNBT;
-import net.minecraft.util.ResourceLocation;
-import net.minecraft.util.text.ITextComponent;
-import net.minecraft.world.World;
+import net.minecraft.world.item.ItemStack;
+import net.minecraft.nbt.CompoundTag;
+import net.minecraft.resources.ResourceLocation;
+import net.minecraft.world.level.Level;
 import org.apache.commons.lang3.tuple.Pair;
 
 import javax.annotation.Nullable;
@@ -56,7 +56,7 @@ public class BlueprintItem extends Item implements ITooltipExtras, ITooltipSetti
     }
 
     @Override
-    public void appendHoverText(ItemStack stack, @Nullable World worldIn, List<ITextComponent> tooltip, ITooltipFlag flag) {
+    public void appendHoverText(ItemStack stack, @Nullable Level worldIn, List<TextComponent> tooltip, TooltipFlag flag) {
         super.appendHoverText(stack, worldIn, tooltip, flag);
         tooltipBuilder.makeTooltip(getRegistryName(), stack, tooltip, flag);
     }
@@ -75,7 +75,7 @@ public class BlueprintItem extends Item implements ITooltipExtras, ITooltipSetti
 
     public static ItemStack makeBluePrint(ItemStack destination) {
         ItemStack dest = new ItemStack(Registration.BLUEPRINT.get());
-        CompoundNBT nbt = new CompoundNBT();
+        CompoundTag nbt = new CompoundTag();
         JsonObject json = JSonTools.itemStackToJson(destination);
         nbt.putString("destination", json.toString());
         dest.setTag(nbt);
@@ -83,7 +83,7 @@ public class BlueprintItem extends Item implements ITooltipExtras, ITooltipSetti
     }
 
     public static ItemStack getDestination(ItemStack stack) {
-        CompoundNBT nbt = stack.getTag();
+        CompoundTag nbt = stack.getTag();
         if (nbt == null) {
             return ItemStack.EMPTY;
         }

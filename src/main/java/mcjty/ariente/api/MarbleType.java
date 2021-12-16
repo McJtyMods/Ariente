@@ -1,9 +1,9 @@
 package mcjty.ariente.api;
 
-import net.minecraft.state.EnumProperty;
-import net.minecraft.util.IStringSerializable;
+import net.minecraft.world.level.block.state.properties.EnumProperty;
+import net.minecraft.util.StringRepresentable;
 
-public enum MarbleType implements IStringSerializable {
+public enum MarbleType implements StringRepresentable {
     VARIATION1("variation1", "marbletech1"),
     VARIATION2("variation2", "marbletech2"),
     VARIATION3("variation3", "marbletech3"),

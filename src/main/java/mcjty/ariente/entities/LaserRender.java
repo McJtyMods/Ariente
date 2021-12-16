@@ -1,20 +1,20 @@
 package mcjty.ariente.entities;
 
-import com.mojang.blaze3d.matrix.MatrixStack;
+import com.mojang.blaze3d.vertex.PoseStack;
 import com.mojang.blaze3d.platform.GlStateManager;
+import com.mojang.math.Vector3f;
 import mcjty.ariente.Ariente;
-import mcjty.lib.client.RenderHelper;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.renderer.BufferBuilder;
-import net.minecraft.client.renderer.IRenderTypeBuffer;
+import net.minecraft.client.renderer.MultiBufferSource;
 import net.minecraft.client.renderer.Tessellator;
 import net.minecraft.client.renderer.entity.EntityRenderer;
-import net.minecraft.client.renderer.entity.EntityRendererManager;
-import net.minecraft.client.renderer.texture.AtlasTexture;
-import net.minecraft.entity.player.PlayerEntity;
-import net.minecraft.util.ResourceLocation;
-import net.minecraft.util.math.vector.Vector3d;
-import net.minecraft.util.math.vector.Vector3f;
+import net.minecraft.client.renderer.entity.EntityRendererProvider.Context;
+import net.minecraft.client.renderer.entity.EntityRendererProvider;
+import net.minecraft.client.renderer.texture.TextureAtlas;
+import net.minecraft.resources.ResourceLocation;
+import net.minecraft.world.entity.player.Player;
+import net.minecraft.world.phys.Vec3;
 import net.minecraftforge.fml.client.registry.IRenderFactory;
 import org.lwjgl.opengl.GL11;
 
@@ -31,18 +31,18 @@ public class LaserRender extends EntityRenderer<LaserEntity> {
         laserbeams[3] = new ResourceLocation(Ariente.MODID, "textures/effects/negarite_laserbeam4.png");
     }
 
-    public LaserRender(EntityRendererManager renderManager) {
+    public LaserRender(Context renderManager) {
         super(renderManager);
     }
 
     @Override
-    public void render(LaserEntity entity, float entityYaw, float partialTicks, MatrixStack matrixStack, IRenderTypeBuffer buffer, int packedLightIn) {
+    public void render(LaserEntity entity, float entityYaw, float partialTicks, PoseStack matrixStack, MultiBufferSource buffer, int packedLightIn) {
         GlStateManager._depthMask(false);
         GlStateManager._enableBlend();
         GlStateManager._blendFunc(GL11.GL_ONE, GL11.GL_ONE);
 
         Minecraft mc = Minecraft.getInstance();
-        PlayerEntity p = mc.player;
+        Player p = mc.player;
         double doubleX = p.xOld + (p.getX() - p.xOld) * partialTicks;
         double doubleY = p.yOld + (p.getY() - p.yOld) * partialTicks;
         double doubleZ = p.zOld + (p.getZ() - p.zOld) * partialTicks;
@@ -65,7 +65,7 @@ public class LaserRender extends EntityRenderer<LaserEntity> {
         // @todo 1.15
 //        BufferBuilder buffer = tessellator.getBuffer();
 
-        Vector3d lv = entity.getLookAngle();
+        Vec3 lv = entity.getLookAngle();
 
         // ----------------------------------------
 
@@ -141,13 +141,13 @@ public class LaserRender extends EntityRenderer<LaserEntity> {
 
     @Override
     public ResourceLocation getTextureLocation(LaserEntity entity) {
-        return AtlasTexture.LOCATION_BLOCKS;
+        return TextureAtlas.LOCATION_BLOCKS;
     }
 
     public static class Factory implements IRenderFactory<LaserEntity> {
 
         @Override
-        public EntityRenderer<? super LaserEntity> createRenderFor(EntityRendererManager manager) {
+        public EntityRenderer<? super LaserEntity> createRenderFor(Context manager) {
             return new LaserRender(manager);
         }
 

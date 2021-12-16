@@ -7,24 +7,24 @@ import mcjty.ariente.api.ArmorUpgradeType;
 import mcjty.ariente.bindings.KeyBindings;
 import mcjty.ariente.items.modules.ModuleSupport;
 import mcjty.ariente.setup.Registration;
+import net.minecraft.ChatFormatting;
 import net.minecraft.client.renderer.entity.model.BipedModel;
-import net.minecraft.client.util.ITooltipFlag;
-import net.minecraft.entity.Entity;
-import net.minecraft.entity.LivingEntity;
-import net.minecraft.entity.ai.attributes.Attribute;
+import net.minecraft.world.entity.EquipmentSlot;
+import net.minecraft.world.entity.ai.attributes.Attribute;
+import net.minecraft.world.entity.ai.attributes.AttributeModifier;
+import net.minecraft.world.item.TooltipFlag;
+import net.minecraft.nbt.CompoundTag;
+import net.minecraft.world.entity.Entity;
+import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.entity.ai.attributes.Attributes;
-import net.minecraft.entity.ai.attributes.AttributeModifier;
-import net.minecraft.inventory.EquipmentSlotType;
 import net.minecraft.item.ArmorItem;
 import net.minecraft.item.ArmorMaterial;
-import net.minecraft.item.ItemStack;
-import net.minecraft.nbt.CompoundNBT;
+import net.minecraft.world.item.ItemStack;
 import net.minecraft.potion.EffectInstance;
 import net.minecraft.potion.Effects;
-import net.minecraft.util.text.ITextComponent;
+import net.minecraft.network.chat.TextComponent;
 import net.minecraft.util.text.StringTextComponent;
-import net.minecraft.util.text.TextFormatting;
-import net.minecraft.world.World;
+import net.minecraft.world.level.Level;
 import org.apache.commons.lang3.tuple.Pair;
 
 import javax.annotation.Nullable;
@@ -37,7 +37,7 @@ public class PowerSuit extends ArmorItem {
 
     private static final UUID[] ARMOR_EXT_MODIFIERS = new UUID[] {UUID.randomUUID(), UUID.randomUUID(), UUID.randomUUID(), UUID.randomUUID()};
 
-    public PowerSuit(EquipmentSlotType slot) {
+    public PowerSuit(EquipmentSlot slot) {
         super(ArmorMaterial.LEATHER, slot, new Properties().durability(0).tab(Ariente.setup.getTab()));
         // @todo 1.14
 //        setRegistryName("powersuit_" + slot.getName());
@@ -45,12 +45,12 @@ public class PowerSuit extends ArmorItem {
 
     @Nullable
     @Override
-    public String getArmorTexture(ItemStack stack, Entity entity, EquipmentSlotType slot, String type) {
+    public String getArmorTexture(ItemStack stack, Entity entity, EquipmentSlot slot, String type) {
         return Ariente.MODID + ":textures/armor/suit.png";
     }
 
     @Override
-    public Multimap<Attribute, AttributeModifier> getAttributeModifiers(EquipmentSlotType slot, ItemStack stack) {
+    public Multimap<Attribute, AttributeModifier> getAttributeModifiers(EquipmentSlot slot, ItemStack stack) {
         Multimap<Attribute, AttributeModifier> multimap = super.getAttributeModifiers(slot, stack);
 
         if (slot != this.slot) {
@@ -69,12 +69,12 @@ public class PowerSuit extends ArmorItem {
 
     @Nullable
     @Override
-    public BipedModel getArmorModel(LivingEntity entityLiving, ItemStack itemStack, EquipmentSlotType armorSlot, BipedModel _default) {
+    public BipedModel getArmorModel(LivingEntity entityLiving, ItemStack itemStack, EquipmentSlot armorSlot, BipedModel _default) {
         return PowerSuitModel.getModel(entityLiving, itemStack);
     }
 
     @Override
-    public void inventoryTick(ItemStack stack, World world, Entity entity, int itemSlot, boolean isSelected) {
+    public void inventoryTick(ItemStack stack, Level world, Entity entity, int itemSlot, boolean isSelected) {
         if (entity instanceof LivingEntity && !world.isClientSide) {
             if (itemSlot != slot.getIndex()) {
                 return;
@@ -100,12 +100,12 @@ public class PowerSuit extends ArmorItem {
         }
     }
 
-    private void onUpdateFeet(ItemStack stack, World world, LivingEntity entity) {
+    private void onUpdateFeet(ItemStack stack, Level world, LivingEntity entity) {
         if (stack.isEmpty() || stack.getItem() != Registration.POWERSUIT_FEET.get() || !stack.hasTag()) {
             return;
         }
 
-        CompoundNBT compound = stack.getTag();
+        CompoundTag compound = stack.getTag();
 
         if (!ModuleSupport.managePower(stack, entity)) {
             compound.putBoolean(ArmorUpgradeType.ARMOR.getWorkingKey(), false);
@@ -119,12 +119,12 @@ public class PowerSuit extends ArmorItem {
         compound.putBoolean(ArmorUpgradeType.STEPASSIST.getWorkingKey(), compound.getBoolean(ArmorUpgradeType.STEPASSIST.getModuleKey()));
     }
 
-    private void onUpdateLegs(ItemStack stack, World world, LivingEntity entity) {
+    private void onUpdateLegs(ItemStack stack, Level world, LivingEntity entity) {
         if (stack.isEmpty() || stack.getItem() != Registration.POWERSUIT_LEGS.get() || !stack.hasTag()) {
             return;
         }
 
-        CompoundNBT compound = stack.getTag();
+        CompoundTag compound = stack.getTag();
 
         if (!ModuleSupport.managePower(stack, entity)) {
             compound.putBoolean(ArmorUpgradeType.ARMOR.getWorkingKey(), false);
@@ -136,12 +136,12 @@ public class PowerSuit extends ArmorItem {
         compound.putBoolean(ArmorUpgradeType.SPEED.getWorkingKey(), compound.getBoolean(ArmorUpgradeType.SPEED.getModuleKey()));
     }
 
-    private void onUpdateChest(ItemStack stack, World world, LivingEntity entity) {
+    private void onUpdateChest(ItemStack stack, Level world, LivingEntity entity) {
         if (stack.isEmpty() || stack.getItem() != Registration.POWERSUIT_CHEST.get() || !stack.hasTag()) {
             return;
         }
 
-        CompoundNBT compound = stack.getTag();
+        CompoundTag compound = stack.getTag();
 
         if (!ModuleSupport.managePower(stack, entity)) {
             compound.putBoolean(ArmorUpgradeType.ARMOR.getWorkingKey(), false);
@@ -164,12 +164,12 @@ public class PowerSuit extends ArmorItem {
         }
     }
 
-    private void onUpdateHead(ItemStack stack, World world, LivingEntity entity) {
+    private void onUpdateHead(ItemStack stack, Level world, LivingEntity entity) {
         if (stack.isEmpty() || stack.getItem() != Registration.POWERSUIT_HEAD.get() || !stack.hasTag()) {
             return;
         }
 
-        CompoundNBT compound = stack.getTag();
+        CompoundTag compound = stack.getTag();
 
         if (!ModuleSupport.managePower(stack, entity)) {
             compound.putBoolean(ArmorUpgradeType.ARMOR.getWorkingKey(), false);
@@ -197,16 +197,16 @@ public class PowerSuit extends ArmorItem {
         if (player == null) {
             return false;
         }
-        if (!(player.getItemBySlot(EquipmentSlotType.HEAD).getItem() instanceof PowerSuit)) {
+        if (!(player.getItemBySlot(EquipmentSlot.HEAD).getItem() instanceof PowerSuit)) {
             return false;
         }
-        if (!(player.getItemBySlot(EquipmentSlotType.LEGS).getItem() instanceof PowerSuit)) {
+        if (!(player.getItemBySlot(EquipmentSlot.LEGS).getItem() instanceof PowerSuit)) {
             return false;
         }
-        if (!(player.getItemBySlot(EquipmentSlotType.CHEST).getItem() instanceof PowerSuit)) {
+        if (!(player.getItemBySlot(EquipmentSlot.CHEST).getItem() instanceof PowerSuit)) {
             return false;
         }
-        if (!(player.getItemBySlot(EquipmentSlotType.FEET).getItem() instanceof PowerSuit)) {
+        if (!(player.getItemBySlot(EquipmentSlot.FEET).getItem() instanceof PowerSuit)) {
             return false;
         }
         return true;
@@ -218,32 +218,32 @@ public class PowerSuit extends ArmorItem {
     }
 
     @Override
-    public void appendHoverText(ItemStack stack, World world, List<ITextComponent> list, ITooltipFlag b) {
+    public void appendHoverText(ItemStack stack, Level world, List<TextComponent> list, TooltipFlag b) {
         super.appendHoverText(stack, world, list, b);
         list.add(new StringTextComponent("Power suit part"));
         if (KeyBindings.configureArmor != null) {
-            list.add(new StringTextComponent(TextFormatting.GRAY + "Configure with: " + TextFormatting.WHITE + "key " + KeyBindings.configureArmor.getDisplayName()));
+            list.add(new StringTextComponent(ChatFormatting.GRAY + "Configure with: " + ChatFormatting.WHITE + "key " + KeyBindings.configureArmor.getDisplayName()));
         }
         if (stack.hasTag()) {
-            CompoundNBT compound = stack.getTag();
+            CompoundTag compound = stack.getTag();
             for (ArmorUpgradeType type : ArmorUpgradeType.VALUES) {
                 String key = "module_" + type.getName();
                 if (compound.contains(key)) {
                     boolean activated = compound.getBoolean(key);
                     if (activated) {
-                        list.add(new StringTextComponent("    " + TextFormatting.GREEN + type.getDescription() + " (on)"));
+                        list.add(new StringTextComponent("    " + ChatFormatting.GREEN + type.getDescription() + " (on)"));
                     } else {
-                        list.add(new StringTextComponent("    " + TextFormatting.GRAY + type.getDescription() + " (off)"));
+                        list.add(new StringTextComponent("    " + ChatFormatting.GRAY + type.getDescription() + " (off)"));
                     }
                 }
             }
             Pair<Integer, Integer> usage = ModuleSupport.getPowerUsage(stack);
-            list.add(new StringTextComponent(TextFormatting.WHITE + "Power: " + TextFormatting.YELLOW + usage.getLeft() + " / " + usage.getRight()));
+            list.add(new StringTextComponent(ChatFormatting.WHITE + "Power: " + ChatFormatting.YELLOW + usage.getLeft() + " / " + usage.getRight()));
 
             int negarite = compound.getInt("negarite");
             int posirite = compound.getInt("posirite");
-            list.add(new StringTextComponent(TextFormatting.WHITE + "Negarite: " + TextFormatting.YELLOW + negarite));
-            list.add(new StringTextComponent(TextFormatting.WHITE + "Posirite: " + TextFormatting.YELLOW + posirite));
+            list.add(new StringTextComponent(ChatFormatting.WHITE + "Negarite: " + ChatFormatting.YELLOW + negarite));
+            list.add(new StringTextComponent(ChatFormatting.WHITE + "Posirite: " + ChatFormatting.YELLOW + posirite));
         }
     }
 

@@ -1,7 +1,7 @@
 package mcjty.ariente.blocks.utility.autofield;
 
 import mcjty.lib.varia.ItemStackList;
-import net.minecraft.item.ItemStack;
+import net.minecraft.world.item.ItemStack;
 import net.minecraftforge.items.IItemHandler;
 import net.minecraftforge.items.ItemHandlerHelper;
 

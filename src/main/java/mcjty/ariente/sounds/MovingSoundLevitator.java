@@ -2,7 +2,7 @@ package mcjty.ariente.sounds;
 
 import mcjty.ariente.entities.levitator.FluxLevitatorEntity;
 import net.minecraft.client.audio.TickableSound;
-import net.minecraft.util.SoundCategory;
+import net.minecraft.sounds.SoundSource;
 import net.minecraft.util.math.MathHelper;
 
 public class MovingSoundLevitator extends TickableSound {
@@ -10,7 +10,7 @@ public class MovingSoundLevitator extends TickableSound {
     private float distance = 0.0F;
 
     public MovingSoundLevitator(FluxLevitatorEntity levitatorIn) {
-        super(ModSounds.levitator, SoundCategory.NEUTRAL);
+        super(ModSounds.levitator, SoundSource.NEUTRAL);
         this.levitator = levitatorIn;
         this.looping = true;
         this.delay = 0;

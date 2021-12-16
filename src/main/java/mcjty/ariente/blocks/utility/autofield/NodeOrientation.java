@@ -1,10 +1,10 @@
 package mcjty.ariente.blocks.utility.autofield;
 
 import mcjty.lib.multipart.PartSlot;
-import net.minecraft.util.Direction;
-import net.minecraft.util.IStringSerializable;
+import net.minecraft.core.Direction;
+import net.minecraft.util.StringRepresentable;
 
-public enum NodeOrientation implements IStringSerializable {
+public enum NodeOrientation implements StringRepresentable {
     DOWN_NE("down_ne", Direction.DOWN, PartSlot.DOWN_NE, PartSlot.DOWN_NE_BACK, "br"),
     DOWN_NW("down_nw", Direction.DOWN, PartSlot.DOWN_NW, PartSlot.DOWN_NW_BACK, "bl"),
     DOWN_SE("down_se", Direction.DOWN, PartSlot.DOWN_SE, PartSlot.DOWN_SE_BACK, "tr"),

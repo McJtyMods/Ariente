@@ -1,14 +1,14 @@
 package mcjty.ariente.api;
 
 import com.google.common.collect.Maps;
-import net.minecraft.state.EnumProperty;
-import net.minecraft.util.IStringSerializable;
+import net.minecraft.world.level.block.state.properties.EnumProperty;
+import net.minecraft.util.StringRepresentable;
 
 import javax.annotation.Nullable;
 import java.util.Locale;
 import java.util.Map;
 
-public enum EnumFacingUpDown implements IStringSerializable {
+public enum EnumFacingUpDown implements StringRepresentable {
     NORTH("north"),
     SOUTH("south"),
     WEST("west"),

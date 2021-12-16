@@ -4,19 +4,19 @@ import com.google.common.collect.ImmutableMultimap;
 import com.google.common.collect.Multimap;
 import mcjty.ariente.Ariente;
 import mcjty.ariente.setup.Registration;
-import net.minecraft.block.Block;
-import net.minecraft.block.BlockState;
-import net.minecraft.block.material.Material;
-import net.minecraft.entity.LivingEntity;
-import net.minecraft.entity.ai.attributes.Attribute;
+import net.minecraft.world.entity.EquipmentSlot;
+import net.minecraft.world.entity.LivingEntity;
+import net.minecraft.world.item.ItemStack;
+import net.minecraft.world.level.block.Block;
+import net.minecraft.world.level.block.state.BlockState;
+import net.minecraft.world.level.material.Material;
+import net.minecraft.world.entity.ai.attributes.Attribute;
 import net.minecraft.entity.ai.attributes.Attributes;
-import net.minecraft.entity.ai.attributes.AttributeModifier;
-import net.minecraft.inventory.EquipmentSlotType;
+import net.minecraft.world.entity.ai.attributes.AttributeModifier;
 import net.minecraft.item.Item;
-import net.minecraft.item.ItemStack;
 import net.minecraft.item.ItemTier;
-import net.minecraft.util.math.BlockPos;
-import net.minecraft.world.World;
+import net.minecraft.core.BlockPos;
+import net.minecraft.world.level.Level;
 
 public class EnergySabreItem extends Item {
 
@@ -47,7 +47,7 @@ public class EnergySabreItem extends Item {
     }
 
     @Override
-    public boolean mineBlock(ItemStack stack, World worldIn, BlockState state, BlockPos pos, LivingEntity entityLiving) {
+    public boolean mineBlock(ItemStack stack, Level worldIn, BlockState state, BlockPos pos, LivingEntity entityLiving) {
         if (state.getDestroySpeed(worldIn, pos) != 0.0D) {
             stack.hurtAndBreak(2, entityLiving, livingEntity -> {});
         }
@@ -85,10 +85,10 @@ public class EnergySabreItem extends Item {
     }
 
     @Override
-    public Multimap<Attribute, AttributeModifier> getAttributeModifiers(EquipmentSlotType slot, ItemStack stack) {
+    public Multimap<Attribute, AttributeModifier> getAttributeModifiers(EquipmentSlot slot, ItemStack stack) {
         Multimap<Attribute, AttributeModifier> multimap = getOriginalAttributeModifiers(slot, stack);
 
-        if (slot != EquipmentSlotType.MAINHAND) {
+        if (slot != EquipmentSlot.MAINHAND) {
             return multimap;
         }
 
@@ -100,7 +100,7 @@ public class EnergySabreItem extends Item {
         return builder.build();
     }
 
-    protected Multimap<Attribute, AttributeModifier> getOriginalAttributeModifiers(EquipmentSlotType slot, ItemStack stack) {
+    protected Multimap<Attribute, AttributeModifier> getOriginalAttributeModifiers(EquipmentSlot slot, ItemStack stack) {
         return super.getAttributeModifiers(slot, stack);
     }
 }

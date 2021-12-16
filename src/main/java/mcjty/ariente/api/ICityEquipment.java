@@ -1,6 +1,6 @@
 package mcjty.ariente.api;
 
-import net.minecraft.world.World;
+import net.minecraft.world.level.Level;
 
 import javax.annotation.Nullable;
 import java.util.Map;
@@ -24,5 +24,5 @@ public interface ICityEquipment {
      * If 'firstTime' is true then this should also do
      * initialization that is only relevant the first time
      */
-    void setup(ICityAI cityAI, World world, boolean firstTime);
+    void setup(ICityAI cityAI, Level world, boolean firstTime);
 }

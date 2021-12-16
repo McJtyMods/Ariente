@@ -15,16 +15,16 @@ import mcjty.lib.blocks.BaseBlock;
 import mcjty.lib.builder.BlockBuilder;
 import mcjty.lib.tileentity.GenericTileEntity;
 import mcjty.lib.varia.OrientationTools;
-import net.minecraft.block.BlockState;
-import net.minecraft.entity.player.PlayerEntity;
-import net.minecraft.nbt.CompoundNBT;
+import net.minecraft.core.Direction;
+import net.minecraft.world.InteractionResult;
+import net.minecraft.world.level.block.entity.BlockEntity;
+import net.minecraft.world.level.block.state.BlockState;
+import net.minecraft.world.entity.player.Player;
+import net.minecraft.nbt.CompoundTag;
 import net.minecraft.tileentity.ITickableTileEntity;
-import net.minecraft.tileentity.TileEntity;
-import net.minecraft.util.ActionResultType;
-import net.minecraft.util.Direction;
-import net.minecraft.util.Hand;
-import net.minecraft.util.math.BlockPos;
-import net.minecraft.util.math.BlockRayTraceResult;
+import net.minecraft.world.InteractionHand;
+import net.minecraft.core.BlockPos;
+import net.minecraft.world.phys.BlockHitResult;
 
 import static mcjty.ariente.compat.ArienteTOPDriver.DRIVER;
 import static mcjty.hologui.api.Icons.*;
@@ -57,9 +57,9 @@ public class PowerCombinerTile extends GenericTileEntity implements ITickableTil
     }
 
     @Override
-    public ActionResultType onBlockActivated(BlockState state, PlayerEntity player, Hand hand, BlockRayTraceResult result) {
+    public InteractionResult onBlockActivated(BlockState state, Player player, InteractionHand hand, BlockHitResult result) {
         Ariente.guiHandler.openHoloGui(level, worldPosition, player);
-        return ActionResultType.SUCCESS;
+        return InteractionResult.SUCCESS;
     }
 
     @Override
@@ -85,7 +85,7 @@ public class PowerCombinerTile extends GenericTileEntity implements ITickableTil
         int cnt = 0;
         for (Direction facing : OrientationTools.DIRECTION_VALUES) {
             BlockPos p = worldPosition.relative(facing);
-            TileEntity te = level.getBlockEntity(p);
+            BlockEntity te = level.getBlockEntity(p);
             if (te instanceof ConnectorTileEntity) {
                 ConnectorTileEntity connector = (ConnectorTileEntity) te;
                 if (connector.getCableColor() == CableColor.COMBINED) {
@@ -98,7 +98,7 @@ public class PowerCombinerTile extends GenericTileEntity implements ITickableTil
             long pPerConnector = power / cnt;
             long p = pPerConnector + power % cnt;
             for (Direction facing : OrientationTools.DIRECTION_VALUES) {
-                TileEntity te = level.getBlockEntity(worldPosition.relative(facing));
+                BlockEntity te = level.getBlockEntity(worldPosition.relative(facing));
                 if (te instanceof ConnectorTileEntity) {
                     ConnectorTileEntity connector = (ConnectorTileEntity) te;
                     if (connector.getCableColor() == CableColor.COMBINED) {
@@ -133,16 +133,16 @@ public class PowerCombinerTile extends GenericTileEntity implements ITickableTil
 
 
     @Override
-    public void load(CompoundNBT tagCompound) {
+    public void load(CompoundTag tagCompound) {
         super.load(tagCompound);
-        CompoundNBT info = tagCompound.getCompound("Info");
+        CompoundTag info = tagCompound.getCompound("Info");
         if (info.contains("transfer")) {
             powerTransfer = info.getInt("transfer");
         }
     }
 
     @Override
-    public void saveAdditional(CompoundNBT tagCompound) {
+    public void saveAdditional(CompoundTag tagCompound) {
         tagCompound = super.save(tagCompound);
         getOrCreateInfo(tagCompound).putInt("transfer", powerTransfer);
     }

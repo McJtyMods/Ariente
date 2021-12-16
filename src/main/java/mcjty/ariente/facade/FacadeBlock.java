@@ -4,15 +4,15 @@ import mcjty.ariente.cables.CableColor;
 import mcjty.ariente.cables.GenericCableTileEntity;
 import mcjty.ariente.cables.NetCableBlock;
 import mcjty.ariente.setup.Registration;
-import net.minecraft.block.BlockState;
-import net.minecraft.block.Blocks;
-import net.minecraft.block.material.Material;
-import net.minecraft.entity.player.PlayerEntity;
+import net.minecraft.core.BlockPos;
+import net.minecraft.world.entity.player.Player;
+import net.minecraft.world.item.ItemStack;
+import net.minecraft.world.level.Level;
+import net.minecraft.world.level.block.Block;
+import net.minecraft.world.level.block.entity.BlockEntity;
+import net.minecraft.world.level.block.state.BlockState;
+import net.minecraft.world.level.material.Material;
 import net.minecraft.fluid.FluidState;
-import net.minecraft.item.ItemStack;
-import net.minecraft.tileentity.TileEntity;
-import net.minecraft.util.math.BlockPos;
-import net.minecraft.world.World;
 
 import javax.annotation.Nullable;
 
@@ -27,13 +27,13 @@ public class FacadeBlock extends NetCableBlock {
     }
 
     @Override
-    public void playerDestroy(World worldIn, PlayerEntity player, BlockPos pos, BlockState state, @Nullable TileEntity te, ItemStack stack) {
+    public void playerDestroy(Level worldIn, Player player, BlockPos pos, BlockState state, @Nullable BlockEntity te, ItemStack stack) {
         ItemStack item = new ItemStack(Registration.FACADE.get());
         BlockState mimicBlock;
         if (te instanceof GenericCableTileEntity) {
             mimicBlock = ((GenericCableTileEntity) te).getMimicBlock();
         } else {
-            mimicBlock = Blocks.COBBLESTONE.defaultBlockState();
+            mimicBlock = Block.COBBLESTONE.defaultBlockState();
         }
         FacadeItemBlock.setMimicBlock(item, mimicBlock);
 
@@ -42,7 +42,7 @@ public class FacadeBlock extends NetCableBlock {
 
 
     @Override
-    public boolean removedByPlayer(BlockState state, World world, BlockPos pos, PlayerEntity player, boolean willHarvest, FluidState fluid) {
+    public boolean removedByPlayer(BlockState state, Level world, BlockPos pos, Player player, boolean willHarvest, FluidState fluid) {
         CableColor color = state.getValue(COLOR);
         this.playerWillDestroy(world, pos, state, player);
         return world.setBlock(pos, Registration.NETCABLE.get().defaultBlockState().setValue(COLOR, color), world.isClientSide ? 11 : 3);

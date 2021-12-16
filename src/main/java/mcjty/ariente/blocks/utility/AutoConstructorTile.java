@@ -24,22 +24,22 @@ import mcjty.lib.container.GenericItemHandler;
 import mcjty.lib.tileentity.GenericTileEntity;
 import mcjty.lib.varia.OrientationTools;
 import mcjty.lib.varia.RedstoneMode;
-import net.minecraft.block.Block;
-import net.minecraft.block.BlockState;
-import net.minecraft.entity.player.PlayerEntity;
-import net.minecraft.item.ItemStack;
-import net.minecraft.item.Items;
-import net.minecraft.nbt.CompoundNBT;
-import net.minecraft.network.NetworkManager;
-import net.minecraft.network.play.server.SUpdateTileEntityPacket;
-import net.minecraft.state.StateContainer;
+import net.minecraft.core.Direction;
+import net.minecraft.nbt.CompoundTag;
+import net.minecraft.world.InteractionHand;
+import net.minecraft.world.entity.player.Player;
+import net.minecraft.world.item.ItemStack;
+import net.minecraft.world.level.Level;
+import net.minecraft.world.level.block.Block;
+import net.minecraft.world.level.block.state.BlockState;
+import net.minecraft.world.item.Items;
+import net.minecraft.network.Connection;
+import net.minecraft.network.protocol.game.ClientboundBlockEntityDataPacket;
+import net.minecraft.world.level.block.state.StateDefinition;
 import net.minecraft.tileentity.ITickableTileEntity;
-import net.minecraft.tileentity.TileEntity;
-import net.minecraft.util.ActionResultType;
-import net.minecraft.util.Direction;
-import net.minecraft.util.Hand;
-import net.minecraft.util.math.BlockRayTraceResult;
-import net.minecraft.world.World;
+import net.minecraft.world.level.block.entity.BlockEntity;
+import net.minecraft.world.InteractionResult;
+import net.minecraft.world.phys.BlockHitResult;
 import net.minecraftforge.common.capabilities.Capability;
 import net.minecraftforge.common.util.Constants;
 import net.minecraftforge.common.util.Lazy;
@@ -97,7 +97,7 @@ public class AutoConstructorTile extends GenericTileEntity implements IGuiTile, 
             }
 
             @Override
-            protected void createBlockStateDefinition(StateContainer.Builder<Block, BlockState> builder) {
+            protected void createBlockStateDefinition(StateDefinition.Builder<Block, BlockState> builder) {
                 super.createBlockStateDefinition(builder);
                 builder.add(WORKING);
             }
@@ -105,9 +105,9 @@ public class AutoConstructorTile extends GenericTileEntity implements IGuiTile, 
     }
 
     @Override
-    public ActionResultType onBlockActivated(BlockState state, PlayerEntity player, Hand hand, BlockRayTraceResult result) {
+    public InteractionResult onBlockActivated(BlockState state, Player player, InteractionHand hand, BlockHitResult result) {
         Ariente.guiHandler.openHoloGui(level, worldPosition, player);
-        return ActionResultType.SUCCESS;
+        return InteractionResult.SUCCESS;
     }
 
     @Override
@@ -247,7 +247,7 @@ public class AutoConstructorTile extends GenericTileEntity implements IGuiTile, 
                     // @todo optimize
                     List<BlueprintStorageTile> storageTiles = new ArrayList<>();
                     for (Direction value : OrientationTools.DIRECTION_VALUES) {
-                        TileEntity te = level.getBlockEntity(worldPosition.relative(value));
+                        BlockEntity te = level.getBlockEntity(worldPosition.relative(value));
                         if (te instanceof BlueprintStorageTile) {
                             BlueprintStorageTile blueprints = (BlueprintStorageTile) te;
                             storageTiles.add(blueprints);
@@ -290,7 +290,7 @@ public class AutoConstructorTile extends GenericTileEntity implements IGuiTile, 
     }
 
     @Override
-    public void onDataPacket(NetworkManager net, SUpdateTileEntityPacket packet) {
+    public void onDataPacket(Connection net, ClientboundBlockEntityDataPacket packet) {
         boolean working = isWorking();
 
         super.onDataPacket(net, packet);
@@ -310,7 +310,7 @@ public class AutoConstructorTile extends GenericTileEntity implements IGuiTile, 
 
 
     @Override
-    public void load(CompoundNBT tagCompound) {
+    public void load(CompoundTag tagCompound) {
         super.load(tagCompound);
         readRestorableFromNBT(tagCompound);
         craftIndex = tagCompound.getInt("craftIndex");
@@ -318,17 +318,17 @@ public class AutoConstructorTile extends GenericTileEntity implements IGuiTile, 
     }
 
     @Override
-    public void saveAdditional(CompoundNBT tagCompound) {
+    public void saveAdditional(CompoundTag tagCompound) {
         tagCompound.putInt("craftIndex", craftIndex);
         tagCompound.putInt("busy", busyCounter);
         super.saveAdditional(tagCompound);
     }
 
-    public void readRestorableFromNBT(CompoundNBT tagCompound) {
+    public void readRestorableFromNBT(CompoundTag tagCompound) {
 //        readBufferFromNBT(tagCompound, inventoryHelper);
     }
 
-    public void writeRestorableToNBT(CompoundNBT tagCompound) {
+    public void writeRestorableToNBT(CompoundTag tagCompound) {
 //        writeBufferToNBT(tagCompound, inventoryHelper);
     }
 
@@ -344,7 +344,7 @@ public class AutoConstructorTile extends GenericTileEntity implements IGuiTile, 
     }
 
     @Override
-    public void setup(ICityAI cityAI, World world, boolean firstTime) {
+    public void setup(ICityAI cityAI, Level world, boolean firstTime) {
 
     }
 
@@ -434,7 +434,7 @@ public class AutoConstructorTile extends GenericTileEntity implements IGuiTile, 
     private boolean isIngredient(ItemStack stack) {
         // @todo optimize!
         for (Direction value : OrientationTools.DIRECTION_VALUES) {
-            TileEntity te = level.getBlockEntity(worldPosition.relative(value));
+            BlockEntity te = level.getBlockEntity(worldPosition.relative(value));
             if (te instanceof BlueprintStorageTile) {
                 BlueprintStorageTile blueprints = (BlueprintStorageTile) te;
                 GenericItemHandler helper = blueprints.getItems();
@@ -458,7 +458,7 @@ public class AutoConstructorTile extends GenericTileEntity implements IGuiTile, 
     }
 
 
-    private void transferToPlayer(PlayerEntity player, IHoloGuiEntity entity, String compName) {
+    private void transferToPlayer(Player player, IHoloGuiEntity entity, String compName) {
         entity.findComponent(compName).ifPresent(component -> {
             if (component instanceof ISlots) {
                 int selected = ((ISlots) component).getSelected();
@@ -477,7 +477,7 @@ public class AutoConstructorTile extends GenericTileEntity implements IGuiTile, 
         });
     }
 
-    private void transferToMachine(PlayerEntity player, IHoloGuiEntity entity) {
+    private void transferToMachine(Player player, IHoloGuiEntity entity) {
         // @todo don't put in output slots!
         entity.findComponent("playerslots").ifPresent(component -> {
             if (component instanceof IPlayerSlots) {

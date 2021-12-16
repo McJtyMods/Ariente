@@ -1,30 +1,31 @@
 package mcjty.ariente.blocks.utility;
 
-import com.mojang.blaze3d.matrix.MatrixStack;
+import com.mojang.blaze3d.vertex.PoseStack;
 import com.mojang.blaze3d.platform.GlStateManager;
-import com.mojang.blaze3d.vertex.IVertexBuilder;
+import com.mojang.blaze3d.vertex.VertexConsumer;
+import com.mojang.math.Vector3f;
 import mcjty.ariente.setup.Registration;
 import mcjty.lib.blocks.BaseBlock;
 import mcjty.lib.client.CustomRenderTypes;
 import mcjty.lib.client.RenderHelper;
-import net.minecraft.block.Block;
-import net.minecraft.block.BlockState;
+import net.minecraft.client.renderer.entity.ItemRenderer;
+import net.minecraft.world.level.block.Block;
+import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.FontRenderer;
 import net.minecraft.client.renderer.*;
-import net.minecraft.client.renderer.model.IBakedModel;
-import net.minecraft.client.renderer.model.ItemCameraTransforms;
+import net.minecraft.client.resources.model.BakedModel;
+import net.minecraft.client.renderer.block.model.ItemTransforms;
 import net.minecraft.client.renderer.texture.OverlayTexture;
 import net.minecraft.client.renderer.tileentity.TileEntityRenderer;
 import net.minecraft.client.renderer.tileentity.TileEntityRendererDispatcher;
-import net.minecraft.client.renderer.vertex.DefaultVertexFormats;
-import net.minecraft.entity.player.PlayerEntity;
-import net.minecraft.item.ItemStack;
-import net.minecraft.util.Direction;
-import net.minecraft.util.math.BlockRayTraceResult;
+import com.mojang.blaze3d.vertex.DefaultVertexFormat;
+import net.minecraft.world.entity.player.Player;
+import net.minecraft.world.item.ItemStack;
+import net.minecraft.core.Direction;
+import net.minecraft.world.phys.BlockHitResult;
 import net.minecraft.util.math.MathHelper;
 import net.minecraft.util.math.RayTraceResult;
-import net.minecraft.util.math.vector.Vector3f;
 import net.minecraftforge.fml.client.registry.ClientRegistry;
 
 import javax.annotation.Nullable;
@@ -39,11 +40,11 @@ public class StorageRenderer extends TileEntityRenderer<StorageTile> {
     }
 
     @Override
-    public void render(StorageTile te, float partialTicks, MatrixStack matrixStack, IRenderTypeBuffer buffer, int combinedLightIn, int combinedOverlayIn) {
+    public void render(StorageTile te, float partialTicks, PoseStack matrixStack, MultiBufferSource buffer, int combinedLightIn, int combinedOverlayIn) {
         RayTraceResult mouseOver = Minecraft.getInstance().hitResult;
         int index;
-        if (mouseOver instanceof BlockRayTraceResult && te.getBlockPos().equals(((BlockRayTraceResult) mouseOver).getBlockPos())) {
-            index = StorageTile.getSlot((BlockRayTraceResult)mouseOver, te.getLevel());
+        if (mouseOver instanceof BlockHitResult && te.getBlockPos().equals(((BlockHitResult) mouseOver).getBlockPos())) {
+            index = StorageTile.getSlot((BlockHitResult)mouseOver, te.getLevel());
         } else {
             index = -2;
         }
@@ -101,7 +102,7 @@ public class StorageRenderer extends TileEntityRenderer<StorageTile> {
 //        Minecraft.getInstance().gameRenderer.getLightTexture().enableLightmap();
     }
 
-    private void renderSlotHilight(MatrixStack matrixStack, IRenderTypeBuffer buffer, int index) {
+    private void renderSlotHilight(PoseStack matrixStack, MultiBufferSource buffer, int index) {
         matrixStack.pushPose();
 
         float factor = 2.0f;
@@ -125,7 +126,7 @@ public class StorageRenderer extends TileEntityRenderer<StorageTile> {
         matrixStack.popPose();
     }
 
-    private void renderSlots(MatrixStack matrixStack, IRenderTypeBuffer buffer, StorageTile te) {
+    private void renderSlots(PoseStack matrixStack, MultiBufferSource buffer, StorageTile te) {
         // @todo 1.15
 //        RenderHelper.enableGUIStandardItemLighting();
 
@@ -145,9 +146,9 @@ public class StorageRenderer extends TileEntityRenderer<StorageTile> {
                 matrixStack.translate(xx[i], yy[i], 0);
                 matrixStack.scale(16, 16, 16);
                 matrixStack.translate(.5, .5, 0);
-                IBakedModel ibakedmodel = itemRender.getModel(stack, Minecraft.getInstance().level, null);
+                BakedModel ibakedmodel = itemRender.getModel(stack, Minecraft.getInstance().level, null);
                 int lightmapValue = 0xf000f0;
-                itemRender.render(stack, ItemCameraTransforms.TransformType.GUI, false, matrixStack, buffer, lightmapValue, OverlayTexture.NO_OVERLAY, ibakedmodel);
+                itemRender.render(stack, ItemTransforms.TransformType.GUI, false, matrixStack, buffer, lightmapValue, OverlayTexture.NO_OVERLAY, ibakedmodel);
                 matrixStack.popPose();
             }
         }
@@ -168,7 +169,7 @@ public class StorageRenderer extends TileEntityRenderer<StorageTile> {
 //        RenderHelper.enableStandardItemLighting();
     }
 
-    private int renderSlotOverlay(MatrixStack matrixStack, IRenderTypeBuffer buffer, FontRenderer fontRenderer, int currenty, ItemStack itm, int x, int lightmapValue) {
+    private int renderSlotOverlay(PoseStack matrixStack, MultiBufferSource buffer, FontRenderer fontRenderer, int currenty, ItemStack itm, int x, int lightmapValue) {
         if (!itm.isEmpty()) {
             int size = itm.getCount();
             if (size > 1) {
@@ -189,7 +190,7 @@ public class StorageRenderer extends TileEntityRenderer<StorageTile> {
                 double health = itm.getItem().getDurabilityForDisplay(itm);
                 int j1 = (int) Math.round(13.0D - health * 13.0D);
                 int k = (int) Math.round(255.0D - health * 255.0D);
-                IVertexBuilder builder = buffer.getBuffer(CustomRenderTypes.QUADS_NOTEXTURE);
+                VertexConsumer builder = buffer.getBuffer(CustomRenderTypes.QUADS_NOTEXTURE);
                 int r1 = 255 - k;
                 int g1 = k;
                 int b1 = 0;
@@ -206,7 +207,7 @@ public class StorageRenderer extends TileEntityRenderer<StorageTile> {
         return x;
     }
 
-    private static void renderQuad(IVertexBuilder builder, int x, int y, int width, int height, int r, int g, int b, double offset) {
+    private static void renderQuad(VertexConsumer builder, int x, int y, int width, int height, int r, int g, int b, double offset) {
         builder.vertex(x, y, offset).color(r, g, b, 255).uv2(0xf000f0).endVertex();
         builder.vertex(x, (y + height), offset).color(r, g, b, 255).uv2(0xf000f0).endVertex();
         builder.vertex((x + width), (y + height), offset).color(r, g, b, 255).uv2(0xf000f0).endVertex();
@@ -228,7 +229,7 @@ public class StorageRenderer extends TileEntityRenderer<StorageTile> {
         }
     }
 
-    private static void renderItemOverlayIntoGUI(MatrixStack matrixStack, FontRenderer fr, ItemStack stack, int xPosition, int yPosition, @Nullable String text) {
+    private static void renderItemOverlayIntoGUI(PoseStack matrixStack, FontRenderer fr, ItemStack stack, int xPosition, int yPosition, @Nullable String text) {
         if (!stack.isEmpty()) {
             if (stack.getCount() != 1 || text != null) {
                 String s = text == null ? String.valueOf(stack.getCount()) : text;
@@ -267,7 +268,7 @@ public class StorageRenderer extends TileEntityRenderer<StorageTile> {
                 GlStateManager._enableDepthTest();
             }
 
-            PlayerEntity entityplayersp = Minecraft.getInstance().player;
+            Player entityplayersp = Minecraft.getInstance().player;
             float f3 = entityplayersp == null ? 0.0F : entityplayersp.getCooldowns().getCooldownPercent(stack.getItem(), Minecraft.getInstance().getFrameTime());
 
             if (f3 > 0.0F) {
@@ -286,7 +287,7 @@ public class StorageRenderer extends TileEntityRenderer<StorageTile> {
     }
 
     private static void draw(BufferBuilder renderer, int x, int y, int width, int height, int red, int green, int blue, int alpha) {
-        renderer.begin(7, DefaultVertexFormats.POSITION_COLOR);
+        renderer.begin(7, DefaultVertexFormat.POSITION_COLOR);
         renderer.vertex((x + 0), (y + 0), 0.0D).color(red, green, blue, alpha).endVertex();
         renderer.vertex((x + 0), (y + height), 0.0D).color(red, green, blue, alpha).endVertex();
         renderer.vertex((x + width), (y + height), 0.0D).color(red, green, blue, alpha).endVertex();

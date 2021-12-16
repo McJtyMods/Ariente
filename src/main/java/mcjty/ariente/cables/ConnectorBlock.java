@@ -6,22 +6,21 @@ import mcjty.ariente.power.IPowerReceiver;
 import mcjty.ariente.power.IPowerSender;
 import mcjty.ariente.setup.Registration;
 import mcjty.lib.compat.theoneprobe.TOPDriver;
-import net.minecraft.block.Block;
-import net.minecraft.block.BlockState;
-import net.minecraft.block.Blocks;
-import net.minecraft.block.material.Material;
-import net.minecraft.entity.player.PlayerEntity;
+import net.minecraft.core.BlockPos;
+import net.minecraft.core.Direction;
+import net.minecraft.world.entity.player.Player;
+import net.minecraft.world.item.ItemStack;
+import net.minecraft.world.level.BlockGetter;
+import net.minecraft.world.level.block.Block;
+import net.minecraft.world.level.block.entity.BlockEntity;
+import net.minecraft.world.level.block.state.BlockState;
+import net.minecraft.world.level.material.Material;
 import net.minecraft.fluid.FluidState;
 import net.minecraft.item.BlockItemUseContext;
 import net.minecraft.item.Item;
-import net.minecraft.item.ItemStack;
-import net.minecraft.item.Items;
-import net.minecraft.tileentity.TileEntity;
-import net.minecraft.util.Direction;
-import net.minecraft.util.math.BlockPos;
-import net.minecraft.world.IBlockReader;
+import net.minecraft.world.item.Items;
 import net.minecraft.world.IWorldReader;
-import net.minecraft.world.World;
+import net.minecraft.world.level.Level;
 
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
@@ -41,7 +40,7 @@ public class ConnectorBlock extends GenericCableBlock {
 
     @Nullable
     @Override
-    public TileEntity createTileEntity(BlockState state, IBlockReader world) {
+    public BlockEntity createTileEntity(BlockState state, BlockGetter world) {
         return new ConnectorTileEntity();
     }
 
@@ -86,7 +85,7 @@ public class ConnectorBlock extends GenericCableBlock {
 
 
     @Override
-    public void playerDestroy(World worldIn, PlayerEntity player, BlockPos pos, BlockState state, @Nullable TileEntity te, ItemStack stack) {
+    public void playerDestroy(Level worldIn, Player player, BlockPos pos, BlockState state, @Nullable BlockEntity te, ItemStack stack) {
         if (te instanceof ConnectorTileEntity) {
             // If we are in mimic mode then the drop will be the facade as the connector will remain there
             ConnectorTileEntity connectorTileEntity = (ConnectorTileEntity) te;
@@ -102,13 +101,13 @@ public class ConnectorBlock extends GenericCableBlock {
     }
 
     @Override
-    public boolean removedByPlayer(BlockState state, World world, BlockPos pos, PlayerEntity player, boolean willHarvest, FluidState fluid) {
-        TileEntity te = world.getBlockEntity(pos);
+    public boolean removedByPlayer(BlockState state, Level world, BlockPos pos, Player player, boolean willHarvest, FluidState fluid) {
+        BlockEntity te = world.getBlockEntity(pos);
         if (te instanceof ConnectorTileEntity) {
             ConnectorTileEntity connectorTileEntity = (ConnectorTileEntity) te;
             if (connectorTileEntity.getMimicBlock() == null) {
                 this.playerWillDestroy(world, pos, state, player);
-                return world.setBlock(pos, Blocks.AIR.defaultBlockState(), world.isClientSide ? 11 : 3);
+                return world.setBlock(pos, Block.AIR.defaultBlockState(), world.isClientSide ? 11 : 3);
             } else {
                 // We are in mimic mode. Don't remove the connector
                 this.playerWillDestroy(world, pos, state, player);
@@ -152,7 +151,7 @@ public class ConnectorBlock extends GenericCableBlock {
 
 
     @Override
-    public void neighborChanged(BlockState state, World world, BlockPos pos, Block blockIn, BlockPos fromPos, boolean isMoving) {
+    public void neighborChanged(BlockState state, Level world, BlockPos pos, Block blockIn, BlockPos fromPos, boolean isMoving) {
         checkRedstone(world, pos);
     }
 
@@ -177,8 +176,8 @@ public class ConnectorBlock extends GenericCableBlock {
         return false;
     }
 
-    private void checkRedstone(World world, BlockPos pos) {
-        TileEntity te = world.getBlockEntity(pos);
+    private void checkRedstone(Level world, BlockPos pos) {
+        BlockEntity te = world.getBlockEntity(pos);
         if (te instanceof ConnectorTileEntity) {
             int powered = world.getBestNeighborSignal(pos);
             ConnectorTileEntity genericTileEntity = (ConnectorTileEntity) te;
@@ -192,17 +191,17 @@ public class ConnectorBlock extends GenericCableBlock {
     }
 
     @Override
-    public int getSignal(BlockState state, IBlockReader world, BlockPos pos, Direction side) {
+    public int getSignal(BlockState state, BlockGetter world, BlockPos pos, Direction side) {
         return getRedstoneOutput(state, world, pos, side);
     }
 
     @Override
-    public int getDirectSignal(BlockState state, IBlockReader world, BlockPos pos, Direction side) {
+    public int getDirectSignal(BlockState state, BlockGetter world, BlockPos pos, Direction side) {
         return getRedstoneOutput(state, world, pos, side);
     }
 
-    protected int getRedstoneOutput(BlockState state, IBlockReader world, BlockPos pos, Direction side) {
-        TileEntity te = world.getBlockEntity(pos);
+    protected int getRedstoneOutput(BlockState state, BlockGetter world, BlockPos pos, Direction side) {
+        BlockEntity te = world.getBlockEntity(pos);
         if (state.getBlock() instanceof ConnectorBlock && te instanceof ConnectorTileEntity) {
             ConnectorTileEntity connector = (ConnectorTileEntity) te;
             return connector.getPowerOut(side.getOpposite());
@@ -220,7 +219,7 @@ public class ConnectorBlock extends GenericCableBlock {
     }
 
     @Override
-    protected ConnectorType getConnectorType(@Nonnull CableColor color, IBlockReader world, BlockPos connectorPos, Direction facing) {
+    protected ConnectorType getConnectorType(@Nonnull CableColor color, BlockGetter world, BlockPos connectorPos, Direction facing) {
         BlockPos pos = connectorPos.relative(facing);
         BlockState state = world.getBlockState(pos);
         Block block = state.getBlock();
@@ -233,7 +232,7 @@ public class ConnectorBlock extends GenericCableBlock {
         }
     }
 
-    public static boolean isConnectable(IBlockReader world, BlockPos connectorPos, Direction facing) {
+    public static boolean isConnectable(BlockGetter world, BlockPos connectorPos, Direction facing) {
 
         BlockPos pos = connectorPos.relative(facing);
         BlockState state = world.getBlockState(pos);
@@ -247,7 +246,7 @@ public class ConnectorBlock extends GenericCableBlock {
             return false;
         }
 
-        TileEntity te = world.getBlockEntity(pos);
+        BlockEntity te = world.getBlockEntity(pos);
 
         if (block instanceof ConnectorBlock) {
             return false;

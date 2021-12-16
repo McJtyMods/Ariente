@@ -5,20 +5,20 @@ import mcjty.ariente.security.IKeyCardSlot;
 import mcjty.ariente.setup.Registration;
 import mcjty.lib.builder.TooltipBuilder;
 import mcjty.lib.tooltips.ITooltipSettings;
-import net.minecraft.client.util.ITooltipFlag;
-import net.minecraft.entity.player.PlayerEntity;
+import net.minecraft.world.item.TooltipFlag;
+import net.minecraft.world.InteractionHand;
+import net.minecraft.world.InteractionResult;
+import net.minecraft.world.entity.player.Player;
 import net.minecraft.item.Item;
-import net.minecraft.item.ItemStack;
+import net.minecraft.world.item.ItemStack;
 import net.minecraft.item.ItemUseContext;
-import net.minecraft.nbt.CompoundNBT;
+import net.minecraft.nbt.CompoundTag;
 import net.minecraft.nbt.ListNBT;
 import net.minecraft.nbt.StringNBT;
-import net.minecraft.tileentity.TileEntity;
-import net.minecraft.util.ActionResultType;
-import net.minecraft.util.Hand;
-import net.minecraft.util.math.BlockPos;
-import net.minecraft.util.text.ITextComponent;
-import net.minecraft.world.World;
+import net.minecraft.world.level.block.entity.BlockEntity;
+import net.minecraft.core.BlockPos;
+import net.minecraft.network.chat.TextComponent;
+import net.minecraft.world.level.Level;
 import net.minecraftforge.common.util.Constants;
 
 import javax.annotation.Nullable;
@@ -43,7 +43,7 @@ public class KeyCardItem extends Item implements ITooltipSettings {
         super(new Properties().stacksTo(1).tab(Ariente.setup.getTab()));
     }
 
-    public static boolean hasPlayerKeycard(PlayerEntity player, String tag) {
+    public static boolean hasPlayerKeycard(Player player, String tag) {
         for (int i = 0 ; i < player.inventory.getContainerSize() ; i++) {
             ItemStack stack = player.inventory.getItem(i);
             if (!stack.isEmpty() && stack.getItem() == Registration.KEY_CARD.get()) {
@@ -56,28 +56,28 @@ public class KeyCardItem extends Item implements ITooltipSettings {
     }
 
     @Override
-    public void appendHoverText(ItemStack stack, @Nullable World worldIn, List<ITextComponent> tooltip, ITooltipFlag flag) {
+    public void appendHoverText(ItemStack stack, @Nullable Level worldIn, List<TextComponent> tooltip, TooltipFlag flag) {
         super.appendHoverText(stack, worldIn, tooltip, flag);
         tooltipBuilder.makeTooltip(getRegistryName(), stack, tooltip, flag);
     }
 
 
     @Override
-    public ActionResultType onItemUseFirst(ItemStack stack, ItemUseContext context) {
-        World world = context.getLevel();
+    public InteractionResult onItemUseFirst(ItemStack stack, ItemUseContext context) {
+        Level world = context.getLevel();
         BlockPos pos = context.getClickedPos();
-        Hand hand = context.getHand();
-        PlayerEntity player = context.getPlayer();
-        TileEntity te = world.getBlockEntity(pos);
+        InteractionHand hand = context.getHand();
+        Player player = context.getPlayer();
+        BlockEntity te = world.getBlockEntity(pos);
         if (te instanceof IKeyCardSlot) {
             ((IKeyCardSlot) te).acceptKeyCard(player.getItemInHand(hand));
         }
-        return ActionResultType.SUCCESS;
+        return InteractionResult.SUCCESS;
     }
 
     @Override
-    public ActionResultType useOn(ItemUseContext context) {
-        return ActionResultType.SUCCESS;
+    public InteractionResult useOn(ItemUseContext context) {
+        return InteractionResult.SUCCESS;
     }
 
     public static Set<String> getSecurityTags(ItemStack stack) {
@@ -85,7 +85,7 @@ public class KeyCardItem extends Item implements ITooltipSettings {
             return Collections.emptySet();
         }
         Set<String> tags = new HashSet<>();
-        CompoundNBT compound = stack.getTag();
+        CompoundTag compound = stack.getTag();
         ListNBT tagList = compound.getList("tags", Constants.NBT.TAG_STRING);
         for (int i = 0; i < tagList.size(); i++) {
             String tag = tagList.getString(i);
@@ -98,7 +98,7 @@ public class KeyCardItem extends Item implements ITooltipSettings {
         if (!stack.hasTag()) {
             return false;
         }
-        CompoundNBT compound = stack.getTag();
+        CompoundTag compound = stack.getTag();
         ListNBT tagList = compound.getList("tags", Constants.NBT.TAG_STRING);
         for (int i = 0; i < tagList.size(); i++) {
             String t = tagList.getString(i);

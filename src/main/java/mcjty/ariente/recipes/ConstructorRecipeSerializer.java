@@ -2,11 +2,11 @@ package mcjty.ariente.recipes;
 
 import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
-import net.minecraft.item.ItemStack;
-import net.minecraft.item.crafting.IRecipeSerializer;
-import net.minecraft.network.PacketBuffer;
-import net.minecraft.util.JSONUtils;
-import net.minecraft.util.ResourceLocation;
+import com.mojang.realmsclient.util.JsonUtils;
+import net.minecraft.resources.ResourceLocation;
+import net.minecraft.world.item.ItemStack;
+import net.minecraft.world.item.crafting.RecipeSerializer;
+import net.minecraft.network.FriendlyByteBuf;
 import net.minecraftforge.registries.ForgeRegistries;
 import net.minecraftforge.registries.ForgeRegistryEntry;
 
@@ -15,15 +15,15 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 
-public class ConstructorRecipeSerializer extends ForgeRegistryEntry<IRecipeSerializer<?>> implements IRecipeSerializer<ConstructorRecipe> {
+public class ConstructorRecipeSerializer extends ForgeRegistryEntry<RecipeSerializer<?>> implements RecipeSerializer<ConstructorRecipe> {
 
     @Override
     public ConstructorRecipe fromJson(ResourceLocation recipeId, JsonObject json) {
-        float chance = JSONUtils.getAsFloat(json, "chance", 1.0f);
+        float chance = JsonUtils.getAsFloat(json, "chance", 1.0f);
 
-        ResourceLocation resourcelocation = new ResourceLocation(JSONUtils.getAsString(json, "result"));
-        ItemStack output = new ItemStack(Optional.ofNullable(ForgeRegistries.ITEMS.getValue(resourcelocation)).orElseThrow(() -> new IllegalStateException("Item: " + JSONUtils.getAsString(json, "result") + " does not exist")));
-        int outputAmount = JSONUtils.getAsInt(json, "count", 1);
+        ResourceLocation resourcelocation = new ResourceLocation(JsonUtils.getAsString(json, "result"));
+        ItemStack output = new ItemStack(Optional.ofNullable(ForgeRegistries.ITEMS.getValue(resourcelocation)).orElseThrow(() -> new IllegalStateException("Item: " + JsonUtils.getAsString(json, "result") + " does not exist")));
+        int outputAmount = JsonUtils.getAsInt(json, "count", 1);
         output.setCount(outputAmount);
 
         JsonElement input = json.get("input");
@@ -52,7 +52,7 @@ public class ConstructorRecipeSerializer extends ForgeRegistryEntry<IRecipeSeria
 
     @Nullable
     @Override
-    public ConstructorRecipe fromNetwork(ResourceLocation recipeId, PacketBuffer buffer) {
+    public ConstructorRecipe fromNetwork(ResourceLocation recipeId, FriendlyByteBuf buffer) {
         float chance = buffer.readFloat();
         ResourceLocation resourcelocation = new ResourceLocation(buffer.readUtf(32767));
         ItemStack output = new ItemStack(Optional.ofNullable(ForgeRegistries.ITEMS.getValue(resourcelocation)).orElseThrow(() -> new IllegalStateException("Item: " + resourcelocation.toString() + " does not exist")));
@@ -72,7 +72,7 @@ public class ConstructorRecipeSerializer extends ForgeRegistryEntry<IRecipeSeria
     }
 
     @Override
-    public void toNetwork(PacketBuffer buffer, ConstructorRecipe recipe) {
+    public void toNetwork(FriendlyByteBuf buffer, ConstructorRecipe recipe) {
         buffer.writeFloat(recipe.getChance());
         buffer.writeUtf(recipe.getResultItem().getItem().getRegistryName().toString());
         buffer.writeInt(recipe.getResultItem().getCount());

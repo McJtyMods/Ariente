@@ -11,8 +11,8 @@ import mcjty.hologui.api.components.IPanel;
 import mcjty.hologui.api.components.ITextChoice;
 import mcjty.lib.builder.BlockBuilder;
 import mcjty.lib.multipart.PartPos;
-import net.minecraft.item.DyeColor;
-import net.minecraft.nbt.CompoundNBT;
+import net.minecraft.world.item.DyeColor;
+import net.minecraft.nbt.CompoundTag;
 import org.apache.commons.lang3.tuple.Pair;
 
 import static mcjty.hologui.api.Icons.*;
@@ -81,9 +81,9 @@ public class SensorItemNodeTile extends AbstractNodeTile {
 //    }
 
     @Override
-    public void readRestorableFromNBT(CompoundNBT tagCompound) {
+    public void readRestorableFromNBT(CompoundTag tagCompound) {
         super.readRestorableFromNBT(tagCompound);
-        CompoundNBT info = tagCompound.getCompound("Info");
+        CompoundTag info = tagCompound.getCompound("Info");
         if (!info.isEmpty()) {
             if (info.contains("outColor")) {
                 outputColor[0] = DyeColor.values()[info.getInt("outColor")];
@@ -94,9 +94,9 @@ public class SensorItemNodeTile extends AbstractNodeTile {
     }
 
     @Override
-    public void writeRestorableToNBT(CompoundNBT tagCompound) {
+    public void writeRestorableToNBT(CompoundTag tagCompound) {
         super.writeRestorableToNBT(tagCompound);
-        CompoundNBT info = getOrCreateInfo(tagCompound);
+        CompoundTag info = getOrCreateInfo(tagCompound);
         info.putInt("outColor", outputColor[0].ordinal());
         info.putInt("op", operator);
         info.putInt("amount", amount);

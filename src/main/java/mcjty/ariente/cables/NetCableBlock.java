@@ -3,19 +3,18 @@ package mcjty.ariente.cables;
 import mcjty.ariente.facade.FacadeItemBlock;
 import mcjty.ariente.setup.Registration;
 import mcjty.lib.compat.theoneprobe.TOPDriver;
-import net.minecraft.block.Block;
-import net.minecraft.block.BlockState;
-import net.minecraft.block.Blocks;
-import net.minecraft.block.material.Material;
-import net.minecraft.entity.player.PlayerEntity;
+import net.minecraft.core.BlockPos;
+import net.minecraft.world.entity.player.Player;
+import net.minecraft.world.item.ItemStack;
+import net.minecraft.world.level.Level;
+import net.minecraft.world.level.block.Block;
+import net.minecraft.world.level.block.entity.BlockEntity;
+import net.minecraft.world.level.block.state.BlockState;
+import net.minecraft.world.level.material.Material;
 import net.minecraft.fluid.FluidState;
 import net.minecraft.item.BlockItemUseContext;
-import net.minecraft.item.ItemStack;
-import net.minecraft.tileentity.TileEntity;
-import net.minecraft.util.Direction;
-import net.minecraft.util.math.BlockPos;
-import net.minecraft.world.IBlockReader;
-import net.minecraft.world.World;
+import net.minecraft.core.Direction;
+import net.minecraft.world.level.BlockGetter;
 import net.minecraftforge.common.util.Constants;
 
 import javax.annotation.Nonnull;
@@ -39,7 +38,7 @@ public class NetCableBlock extends GenericCableBlock {
     }
 
     @Override
-    public void playerDestroy(World worldIn, PlayerEntity player, BlockPos pos, BlockState state, @Nullable TileEntity te, ItemStack stack) {
+    public void playerDestroy(Level worldIn, Player player, BlockPos pos, BlockState state, @Nullable BlockEntity te, ItemStack stack) {
         if (te instanceof NetCableTileEntity) {
             // If we are in mimic mode then the drop will be the facade as the connector will remain there
             NetCableTileEntity cableTileEntity = (NetCableTileEntity) te;
@@ -55,13 +54,13 @@ public class NetCableBlock extends GenericCableBlock {
     }
 
     @Override
-    public boolean removedByPlayer(BlockState state, World world, BlockPos pos, PlayerEntity player, boolean willHarvest, FluidState fluid) {
-        TileEntity te = world.getBlockEntity(pos);
+    public boolean removedByPlayer(BlockState state, Level world, BlockPos pos, Player player, boolean willHarvest, FluidState fluid) {
+        BlockEntity te = world.getBlockEntity(pos);
         if (te instanceof NetCableTileEntity) {
             NetCableTileEntity cableTileEntity = (NetCableTileEntity) te;
             if (cableTileEntity.getMimicBlock() == null) {
                 this.playerWillDestroy(world, pos, state, player);
-                return world.setBlock(pos, Blocks.AIR.defaultBlockState(), world.isClientSide ? 11 : 3);
+                return world.setBlock(pos, Block.AIR.defaultBlockState(), world.isClientSide ? 11 : 3);
             } else {
                 // We are in mimic mode. Don't remove the connector
                 this.playerWillDestroy(world, pos, state, player);
@@ -125,7 +124,7 @@ public class NetCableBlock extends GenericCableBlock {
 
     public BlockState getPlacementState(BlockItemUseContext context) {
         // When our block is placed down we force a re-render of adjacent blocks to make sure their baked model is updated
-        World world = context.getLevel();
+        Level world = context.getLevel();
         BlockPos pos = context.getClickedPos();
         BlockState state = world.getBlockState(pos);
         // @todo 1.14
@@ -135,7 +134,7 @@ public class NetCableBlock extends GenericCableBlock {
     }
 
     @Override
-    protected ConnectorType getConnectorType(@Nonnull CableColor color, IBlockReader world, BlockPos connectorPos, Direction facing) {
+    protected ConnectorType getConnectorType(@Nonnull CableColor color, BlockGetter world, BlockPos connectorPos, Direction facing) {
         BlockPos pos = connectorPos.relative(facing);
         BlockState state = world.getBlockState(pos);
         Block block = state.getBlock();

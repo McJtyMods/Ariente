@@ -1,8 +1,8 @@
 package mcjty.ariente.cables;
 
-import net.minecraft.util.IStringSerializable;
+import net.minecraft.util.StringRepresentable;
 
-public enum ConnectorType implements IStringSerializable {
+public enum ConnectorType implements StringRepresentable {
     NONE,
     CABLE,
     BLOCK;

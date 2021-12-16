@@ -4,20 +4,19 @@ import mcjty.ariente.Ariente;
 import mcjty.ariente.setup.Registration;
 import mcjty.lib.multipart.PartSlot;
 import mcjty.lib.tileentity.GenericTileEntity;
-import net.minecraft.block.BlockState;
-import net.minecraft.entity.LivingEntity;
-import net.minecraft.entity.player.PlayerEntity;
-import net.minecraft.item.ItemStack;
-import net.minecraft.nbt.CompoundNBT;
-import net.minecraft.tileentity.TileEntity;
-import net.minecraft.util.ActionResultType;
-import net.minecraft.util.Direction;
-import net.minecraft.util.Hand;
-import net.minecraft.util.math.AxisAlignedBB;
-import net.minecraft.util.math.BlockPos;
-import net.minecraft.util.math.BlockRayTraceResult;
-import net.minecraft.world.IWorld;
-import net.minecraft.world.World;
+import net.minecraft.nbt.CompoundTag;
+import net.minecraft.world.InteractionHand;
+import net.minecraft.world.item.ItemStack;
+import net.minecraft.world.level.Level;
+import net.minecraft.world.level.block.entity.BlockEntity;
+import net.minecraft.world.level.block.state.BlockState;
+import net.minecraft.world.entity.LivingEntity;
+import net.minecraft.world.entity.player.Player;
+import net.minecraft.world.InteractionResult;
+import net.minecraft.core.Direction;
+import net.minecraft.world.phys.AABB;
+import net.minecraft.core.BlockPos;
+import net.minecraft.world.phys.BlockHitResult;
 
 import static mcjty.ariente.blocks.utility.autofield.AbstractNodeTile.ORIENTATION;
 import static mcjty.ariente.blocks.utility.autofield.NodeOrientation.*;
@@ -29,30 +28,30 @@ public class RoundRobinNodeTile extends GenericTileEntity {
     private static final float T = 0.1f;
     private static final float A = 0.05F;
 
-    private static final AxisAlignedBB AABB_DOWN_NW = new AxisAlignedBB(0.0+A, 0, 0.0+A,      0.5-A, T, 0.5-A);
-    private static final AxisAlignedBB AABB_DOWN_NE = new AxisAlignedBB(0.5+A, 0, 0.0+A,      1.0-A, T, 0.5-A);
-    private static final AxisAlignedBB AABB_DOWN_SW = new AxisAlignedBB(0.0+A, 0, 0.5+A,      0.5-A, T, 1.0-A);
-    private static final AxisAlignedBB AABB_DOWN_SE = new AxisAlignedBB(0.5+A, 0, 0.5+A,      1.0-A, T, 1.0-A);
-    private static final AxisAlignedBB AABB_UP_NW = new AxisAlignedBB(0.0+A, 1-T, 0.0+A,      0.5-A, 1, 0.5-A);
-    private static final AxisAlignedBB AABB_UP_NE = new AxisAlignedBB(0.5+A, 1-T, 0.0+A,      1.0-A, 1, 0.5-A);
-    private static final AxisAlignedBB AABB_UP_SW = new AxisAlignedBB(0.0+A, 1-T, 0.5+A,      0.5-A, 1, 1.0-A);
-    private static final AxisAlignedBB AABB_UP_SE = new AxisAlignedBB(0.5+A, 1-T, 0.5+A,      1.0-A, 1, 1.0-A);
-    private static final AxisAlignedBB AABB_NORTH_DE = new AxisAlignedBB(0.5+A, 0.0+A, 0,     1.0-A, 0.5-A, T);
-    private static final AxisAlignedBB AABB_NORTH_DW = new AxisAlignedBB(0.0+A, 0.0+A, 0,     0.5-A, 0.5-A, T);
-    private static final AxisAlignedBB AABB_NORTH_UE = new AxisAlignedBB(0.5+A, 0.5+A, 0,     1.0-A, 1.0-A, T);
-    private static final AxisAlignedBB AABB_NORTH_UW = new AxisAlignedBB(0.0+A, 0.5+A, 0,     0.5-A, 1.0-A, T);
-    private static final AxisAlignedBB AABB_SOUTH_DE = new AxisAlignedBB(0.5+A, 0.0+A, 1-T,   1.0-A, 0.5-A, 1);
-    private static final AxisAlignedBB AABB_SOUTH_DW = new AxisAlignedBB(0.0+A, 0.0+A, 1-T,   0.5-A, 0.5-A, 1);
-    private static final AxisAlignedBB AABB_SOUTH_UE = new AxisAlignedBB(0.5+A, 0.5+A, 1-T,   1.0-A, 1.0-A, 1);
-    private static final AxisAlignedBB AABB_SOUTH_UW = new AxisAlignedBB(0.0+A, 0.5+A, 1-T,   0.5-A, 1.0-A, 1);
-    private static final AxisAlignedBB AABB_WEST_DN = new AxisAlignedBB(0, 0.0+A, 0.0+A,      T, 0.5-A, 0.5-A);
-    private static final AxisAlignedBB AABB_WEST_DS = new AxisAlignedBB(0, 0.0+A, 0.5+A,      T, 0.5-A, 1.0-A);
-    private static final AxisAlignedBB AABB_WEST_UN = new AxisAlignedBB(0, 0.5+A, 0.0+A,      T, 1.0-A, 0.5-A);
-    private static final AxisAlignedBB AABB_WEST_US = new AxisAlignedBB(0, 0.5+A, 0.5+A,      T, 1.0-A, 1.0-A);
-    private static final AxisAlignedBB AABB_EAST_DN = new AxisAlignedBB(1-T, 0.0+A, 0.0+A,    1, 0.5-A, 0.5-A);
-    private static final AxisAlignedBB AABB_EAST_DS = new AxisAlignedBB(1-T, 0.0+A, 0.5+A,    1, 0.5-A, 1.0-A);
-    private static final AxisAlignedBB AABB_EAST_UN = new AxisAlignedBB(1-T, 0.5+A, 0.0+A,    1, 1.0-A, 0.5-A);
-    private static final AxisAlignedBB AABB_EAST_US = new AxisAlignedBB(1-T, 0.5+A, 0.5+A,    1, 1.0-A, 1.0-A);
+    private static final AABB AABB_DOWN_NW = new AABB(0.0+A, 0, 0.0+A,      0.5-A, T, 0.5-A);
+    private static final AABB AABB_DOWN_NE = new AABB(0.5+A, 0, 0.0+A,      1.0-A, T, 0.5-A);
+    private static final AABB AABB_DOWN_SW = new AABB(0.0+A, 0, 0.5+A,      0.5-A, T, 1.0-A);
+    private static final AABB AABB_DOWN_SE = new AABB(0.5+A, 0, 0.5+A,      1.0-A, T, 1.0-A);
+    private static final AABB AABB_UP_NW = new AABB(0.0+A, 1-T, 0.0+A,      0.5-A, 1, 0.5-A);
+    private static final AABB AABB_UP_NE = new AABB(0.5+A, 1-T, 0.0+A,      1.0-A, 1, 0.5-A);
+    private static final AABB AABB_UP_SW = new AABB(0.0+A, 1-T, 0.5+A,      0.5-A, 1, 1.0-A);
+    private static final AABB AABB_UP_SE = new AABB(0.5+A, 1-T, 0.5+A,      1.0-A, 1, 1.0-A);
+    private static final AABB AABB_NORTH_DE = new AABB(0.5+A, 0.0+A, 0,     1.0-A, 0.5-A, T);
+    private static final AABB AABB_NORTH_DW = new AABB(0.0+A, 0.0+A, 0,     0.5-A, 0.5-A, T);
+    private static final AABB AABB_NORTH_UE = new AABB(0.5+A, 0.5+A, 0,     1.0-A, 1.0-A, T);
+    private static final AABB AABB_NORTH_UW = new AABB(0.0+A, 0.5+A, 0,     0.5-A, 1.0-A, T);
+    private static final AABB AABB_SOUTH_DE = new AABB(0.5+A, 0.0+A, 1-T,   1.0-A, 0.5-A, 1);
+    private static final AABB AABB_SOUTH_DW = new AABB(0.0+A, 0.0+A, 1-T,   0.5-A, 0.5-A, 1);
+    private static final AABB AABB_SOUTH_UE = new AABB(0.5+A, 0.5+A, 1-T,   1.0-A, 1.0-A, 1);
+    private static final AABB AABB_SOUTH_UW = new AABB(0.0+A, 0.5+A, 1-T,   0.5-A, 1.0-A, 1);
+    private static final AABB AABB_WEST_DN = new AABB(0, 0.0+A, 0.0+A,      T, 0.5-A, 0.5-A);
+    private static final AABB AABB_WEST_DS = new AABB(0, 0.0+A, 0.5+A,      T, 0.5-A, 1.0-A);
+    private static final AABB AABB_WEST_UN = new AABB(0, 0.5+A, 0.0+A,      T, 1.0-A, 0.5-A);
+    private static final AABB AABB_WEST_US = new AABB(0, 0.5+A, 0.5+A,      T, 1.0-A, 1.0-A);
+    private static final AABB AABB_EAST_DN = new AABB(1-T, 0.0+A, 0.0+A,    1, 0.5-A, 0.5-A);
+    private static final AABB AABB_EAST_DS = new AABB(1-T, 0.0+A, 0.5+A,    1, 0.5-A, 1.0-A);
+    private static final AABB AABB_EAST_UN = new AABB(1-T, 0.5+A, 0.0+A,    1, 1.0-A, 0.5-A);
+    private static final AABB AABB_EAST_US = new AABB(1-T, 0.5+A, 0.5+A,    1, 1.0-A, 1.0-A);
 
     public RoundRobinNodeTile() {
         super(Registration.ROUND_ROBIN_TILE.get());
@@ -77,16 +76,16 @@ public class RoundRobinNodeTile extends GenericTileEntity {
     }
 
     @Override
-    public void onBlockPlacedBy(World world, BlockPos pos, BlockState state, LivingEntity placer, ItemStack stack) {
+    public void onBlockPlacedBy(Level world, BlockPos pos, BlockState state, LivingEntity placer, ItemStack stack) {
         AutoFieldTile.notifyField(world, pos);
     }
 
     @Override
-    public void onReplaced(World world, BlockPos pos, BlockState state, BlockState newstate) {
+    public void onReplaced(Level world, BlockPos pos, BlockState state, BlockState newstate) {
         AutoFieldTile.notifyField(world, pos);
     }
 
-    public static AxisAlignedBB getBoundingBox(BlockState state, IWorld world, BlockPos pos) {
+    public static AABB getBoundingBox(BlockState state, Level world, BlockPos pos) {
         NodeOrientation orientation = state.getValue(ORIENTATION);
         switch (orientation) {
             case DOWN_NE: return AABB_DOWN_NE;
@@ -118,13 +117,13 @@ public class RoundRobinNodeTile extends GenericTileEntity {
     }
 
     @Override
-    public ActionResultType onBlockActivated(BlockState state, PlayerEntity player, Hand hand, BlockRayTraceResult result) {
+    public InteractionResult onBlockActivated(BlockState state, Player player, InteractionHand hand, BlockHitResult result) {
         Ariente.guiHandler.openHoloGuiEntity(level, worldPosition, player, state.getValue(ORIENTATION).getSlot().name(), 1.0);
-        return ActionResultType.SUCCESS;
+        return InteractionResult.SUCCESS;
     }
 
     @Override
-    public void onPartAdded(PartSlot slot, BlockState state, TileEntity multipartTile) {
+    public void onPartAdded(PartSlot slot, BlockState state, BlockEntity multipartTile) {
         this.level = multipartTile.getLevel();
         this.worldPosition = multipartTile.getBlockPos();
         AutoFieldTile.notifyField(level, worldPosition);
@@ -184,13 +183,13 @@ public class RoundRobinNodeTile extends GenericTileEntity {
     }
 
     @Override
-    public void load(CompoundNBT tagCompound) {
+    public void load(CompoundTag tagCompound) {
         super.load(tagCompound);
         index = tagCompound.getInt("index");
     }
 
     @Override
-    public void saveAdditional(CompoundNBT tagCompound) {
+    public void saveAdditional(CompoundTag tagCompound) {
         tagCompound.putInt("index", index);
     }
 

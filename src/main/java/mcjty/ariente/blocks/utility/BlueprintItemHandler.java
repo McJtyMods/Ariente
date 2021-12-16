@@ -1,11 +1,11 @@
 package mcjty.ariente.blocks.utility;
 
 import mcjty.lib.varia.OrientationTools;
-import net.minecraft.item.ItemStack;
-import net.minecraft.tileentity.TileEntity;
-import net.minecraft.util.Direction;
-import net.minecraft.util.math.BlockPos;
-import net.minecraft.world.World;
+import net.minecraft.core.BlockPos;
+import net.minecraft.core.Direction;
+import net.minecraft.world.item.ItemStack;
+import net.minecraft.world.level.block.entity.BlockEntity;
+import net.minecraft.world.level.Level;
 import net.minecraftforge.items.IItemHandler;
 
 import javax.annotation.Nonnull;
@@ -14,13 +14,13 @@ import java.util.List;
 
 public class BlueprintItemHandler implements IItemHandler {
 
-    private final World world;
+    private final Level world;
     private final BlockPos pos;
 
     @SuppressWarnings("FieldCanBeLocal")
     private List<BlockPos> storageList = null;
 
-    public BlueprintItemHandler(World world, BlockPos pos) {
+    public BlueprintItemHandler(Level world, BlockPos pos) {
         this.world = world;
         this.pos = pos;
     }
@@ -35,7 +35,7 @@ public class BlueprintItemHandler implements IItemHandler {
         storageList = new ArrayList<>();
         for (Direction value : OrientationTools.DIRECTION_VALUES) {
             BlockPos offset = pos.relative(value);
-            TileEntity te = world.getBlockEntity(offset);
+            BlockEntity te = world.getBlockEntity(offset);
             if (te instanceof BlueprintStorageTile) {
                 storageList.add(offset);
             }
@@ -57,7 +57,7 @@ public class BlueprintItemHandler implements IItemHandler {
             return ItemStack.EMPTY;
         }
         BlockPos pos = getStorages().get(slot / BlueprintStorageTile.BLUEPRINTS);
-        TileEntity te = world.getBlockEntity(pos);
+        BlockEntity te = world.getBlockEntity(pos);
         if (te instanceof BlueprintStorageTile) {
             BlueprintStorageTile storage = (BlueprintStorageTile) te;
             return storage.getItems().getStackInSlot(BlueprintStorageTile.SLOT_BLUEPRINT + slot % BlueprintStorageTile.BLUEPRINTS);
@@ -79,7 +79,7 @@ public class BlueprintItemHandler implements IItemHandler {
             return ItemStack.EMPTY;
         }
         BlockPos pos = getStorages().get(slot / BlueprintStorageTile.BLUEPRINTS);
-        TileEntity te = world.getBlockEntity(pos);
+        BlockEntity te = world.getBlockEntity(pos);
         if (te instanceof BlueprintStorageTile) {
             BlueprintStorageTile storage = (BlueprintStorageTile) te;
             return storage.getItems().extractItem(BlueprintStorageTile.SLOT_BLUEPRINT + slot % BlueprintStorageTile.BLUEPRINTS, amount, simulate);
@@ -94,7 +94,7 @@ public class BlueprintItemHandler implements IItemHandler {
             return 0;
         }
         BlockPos pos = getStorages().get(slot / BlueprintStorageTile.BLUEPRINTS);
-        TileEntity te = world.getBlockEntity(pos);
+        BlockEntity te = world.getBlockEntity(pos);
         if (te instanceof BlueprintStorageTile) {
             BlueprintStorageTile storage = (BlueprintStorageTile) te;
             return storage.getItems().getSlotLimit(BlueprintStorageTile.SLOT_BLUEPRINT + slot % BlueprintStorageTile.BLUEPRINTS);

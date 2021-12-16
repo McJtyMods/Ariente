@@ -3,18 +3,18 @@ package mcjty.ariente.cables;
 import com.google.common.base.Function;
 import mcjty.ariente.Ariente;
 import mcjty.lib.client.AbstractDynamicBakedModel;
-import net.minecraft.block.BlockState;
+import net.minecraft.client.renderer.block.model.ItemTransforms;
+import net.minecraft.client.resources.model.BakedModel;
+import net.minecraft.resources.ResourceLocation;
+import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.renderer.RenderType;
 import net.minecraft.client.renderer.RenderTypeLookup;
 import net.minecraft.client.renderer.model.BakedQuad;
-import net.minecraft.client.renderer.model.IBakedModel;
-import net.minecraft.client.renderer.model.ItemCameraTransforms;
 import net.minecraft.client.renderer.model.ItemOverrideList;
 import net.minecraft.client.renderer.texture.TextureAtlasSprite;
-import net.minecraft.util.Direction;
-import net.minecraft.util.ResourceLocation;
-import net.minecraft.util.math.vector.Vector3d;
+import net.minecraft.core.Direction;
+import net.minecraft.world.phys.Vec3;
 import net.minecraftforge.client.MinecraftForgeClient;
 import net.minecraftforge.client.model.data.EmptyModelData;
 import net.minecraftforge.client.model.data.IModelData;
@@ -107,7 +107,7 @@ public class GenericCableBakedModel extends AbstractDynamicBakedModel {
         return cableTexture.spriteNoneCable;
     }
 
-    private void createQuad(List<BakedQuad> quads, Vector3d v1, Vector3d v2, Vector3d v3, Vector3d v4, TextureAtlasSprite sprite, int rotation, float hilight) {
+    private void createQuad(List<BakedQuad> quads, Vec3 v1, Vec3 v2, Vec3 v3, Vec3 v4, TextureAtlasSprite sprite, int rotation, float hilight) {
         switch (rotation) {
             case 0:
                 createQuad(quads, v1, v2, v3, v4, sprite, hilight);
@@ -125,7 +125,7 @@ public class GenericCableBakedModel extends AbstractDynamicBakedModel {
         createQuad(quads, v1, v2, v3, v4, sprite, hilight);
     }
 
-    private void createQuad(List<BakedQuad> quads, Vector3d v1, Vector3d v2, Vector3d v3, Vector3d v4, TextureAtlasSprite sprite, float hilight) {
+    private void createQuad(List<BakedQuad> quads, Vec3 v1, Vec3 v2, Vec3 v3, Vec3 v4, TextureAtlasSprite sprite, float hilight) {
         quads.add(super.createQuad(v1, v2, v3, v4, sprite, hilight));
         quads.add(super.createQuad(v4, v3, v2, v1, sprite, hilight));
     }
@@ -142,7 +142,7 @@ public class GenericCableBakedModel extends AbstractDynamicBakedModel {
             BlockState facadeState = facadeId.getBlockState();
             RenderType layer = MinecraftForgeClient.getRenderLayer();
             if (layer == null || RenderTypeLookup.canRenderInLayer(facadeState, layer)) { // always render in the null layer or the block-breaking textures don't show up
-                IBakedModel model = Minecraft.getInstance().getBlockRenderer().getBlockModelShaper().getBlockModel(facadeState);
+                BakedModel model = Minecraft.getInstance().getBlockRenderer().getBlockModelShaper().getBlockModel(facadeState);
                 try {
                     return new ArrayList<>(model.getQuads(state, side, rand, EmptyModelData.INSTANCE));
                 } catch (Exception e) {
@@ -351,8 +351,8 @@ public class GenericCableBakedModel extends AbstractDynamicBakedModel {
     }
 
     @Override
-    public ItemCameraTransforms getTransforms() {
-        return ItemCameraTransforms.NO_TRANSFORMS;
+    public ItemTransforms getTransforms() {
+        return ItemTransforms.NO_TRANSFORMS;
     }
 
     @Override

@@ -1,7 +1,7 @@
 package mcjty.ariente.datagen;
 
-import net.minecraft.block.Block;
-import net.minecraft.loot.LootTable;
+import net.minecraft.world.level.block.Block;
+import net.minecraft.world.level.storage.loot.LootTable;
 import net.minecraft.data.loot.BlockLootTables;
 
 /**
