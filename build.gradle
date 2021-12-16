@@ -41,10 +41,10 @@ repositories {
 group = "com.github.mcjty"
 archivesBaseName = "ariente"
 
-java.toolchain.languageVersion = JavaLanguageVersion.of(8)
+java.toolchain.languageVersion = JavaLanguageVersion.of(17)
 
 minecraft {
-    mappings channel: 'parchment', version: "2021.10.03-1.16.5"
+    mappings channel: 'official', version: '1.18.1'
     accessTransformer = file('src/main/resources/META-INF/accesstransformer.cfg')
 
     runs {
