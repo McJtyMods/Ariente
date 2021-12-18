@@ -16,18 +16,17 @@ import net.minecraft.nbt.CompoundTag;
 import net.minecraft.network.Connection;
 import net.minecraft.world.level.block.state.properties.EnumProperty;
 import net.minecraft.world.level.block.state.StateDefinition;
-import net.minecraft.tileentity.ITickableTileEntity;
+// @todo 1.18 import net.minecraft.tileentity.ITickableTileEntity;
 import net.minecraft.core.BlockPos;
 import net.minecraft.world.phys.shapes.CollisionContext;
 import net.minecraft.world.phys.shapes.Shapes;
 import net.minecraft.world.phys.shapes.VoxelShape;
-import net.minecraftforge.common.util.Constants;
 
 import static mcjty.ariente.compat.ArienteTOPDriver.DRIVER;
 import static mcjty.lib.builder.TooltipBuilder.header;
 import static mcjty.lib.builder.TooltipBuilder.key;
 
-public class AlarmTile extends GenericTileEntity implements ITickableTileEntity, IAlarmTile {
+public class AlarmTile extends GenericTileEntity implements /* @todo 1.18 ITickableTileEntity, */ IAlarmTile {
 
     public static final EnumProperty<AlarmType> ALARM = EnumProperty.create("alarm", AlarmType.class, AlarmType.values());
 
@@ -36,8 +35,8 @@ public class AlarmTile extends GenericTileEntity implements ITickableTileEntity,
     private AlarmType alarmType = AlarmType.SAFE;
     private int soundTicker = 0;
 
-    public AlarmTile() {
-        super(Registration.ALARM_TILE.get());
+    public AlarmTile(BlockPos pos, BlockState state) {
+        super(Registration.ALARM_TILE.get(), pos, state);
     }
 
     public static BaseBlock createBlock() {
@@ -63,17 +62,15 @@ public class AlarmTile extends GenericTileEntity implements ITickableTileEntity,
     }
 
 
-    @Override
-    public void tick() {
-        if (!level.isClientSide) {
-            if (alarmType == AlarmType.ALERT) {
-                soundTicker--;
-                if (soundTicker >= 0) {
-                    return;
-                }
-                soundTicker = 60;
-                level.playSound(null, getBlockPos().getX(), getBlockPos().getY(), getBlockPos().getZ(), ModSounds.alarm, SoundSource.BLOCKS, 0.1f, 1.0f);
+    //@Override
+    public void tickServer() {
+        if (alarmType == AlarmType.ALERT) {
+            soundTicker--;
+            if (soundTicker >= 0) {
+                return;
             }
+            soundTicker = 60;
+            level.playSound(null, getBlockPos().getX(), getBlockPos().getY(), getBlockPos().getZ(), ModSounds.alarm, SoundSource.BLOCKS, 0.1f, 1.0f);
         }
     }
 
@@ -97,7 +94,7 @@ public class AlarmTile extends GenericTileEntity implements ITickableTileEntity,
             // If needed send a render update.
             AlarmType newType = alarmType;
             if (newType != type) {
-                level.sendBlockUpdated(worldPosition, getBlockState(), getBlockState(), Constants.BlockFlags.BLOCK_UPDATE + Constants.BlockFlags.NOTIFY_NEIGHBORS);
+                level.sendBlockUpdated(worldPosition, getBlockState(), getBlockState(), Block.UPDATE_CLIENTS + Block.UPDATE_NEIGHBORS);
             }
         }
     }

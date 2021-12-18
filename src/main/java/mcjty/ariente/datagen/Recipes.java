@@ -8,9 +8,9 @@ import mcjty.ariente.blocks.decorative.PatternType;
 import mcjty.ariente.setup.Registration;
 import mcjty.lib.datagen.BaseRecipeProvider;
 import net.minecraft.data.DataGenerator;
-import net.minecraft.data.IFinishedRecipe;
-import net.minecraft.data.ShapedRecipeBuilder;
-import net.minecraft.data.ShapelessRecipeBuilder;
+import net.minecraft.data.recipes.FinishedRecipe;
+import net.minecraft.data.recipes.ShapedRecipeBuilder;
+import net.minecraft.data.recipes.ShapelessRecipeBuilder;
 import net.minecraft.world.item.Items;
 import net.minecraft.resources.ResourceLocation;
 
@@ -23,7 +23,7 @@ public class Recipes extends BaseRecipeProvider {
     }
 
     @Override
-    protected void buildShapelessRecipes(Consumer<IFinishedRecipe> consumer) {
+    protected void buildCraftingRecipes(Consumer<FinishedRecipe> consumer) {
         build(consumer, ShapedRecipeBuilder.shaped(Registration.ARIENTE_PEARL.get())
                         .define('m', Items.QUARTZ)
                         .unlockedBy("enderpearl", has(Items.ENDER_PEARL)),

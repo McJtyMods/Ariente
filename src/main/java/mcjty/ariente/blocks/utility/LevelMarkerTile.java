@@ -36,8 +36,8 @@ public class LevelMarkerTile extends GenericTileEntity implements IGuiTile {
                 .add(registry.text(0, 2, 1, 1).text("Floor name (WIP)").color(registry.color(StyledColor.LABEL)));
     }
 
-    public LevelMarkerTile() {
-        super(Registration.LEVEL_MARKER_TILE.get());
+    public LevelMarkerTile(BlockPos pos, BlockState state) {
+        super(Registration.LEVEL_MARKER_TILE.get(), pos, state);
     }
 
     public static BaseBlock createBlock() {

@@ -1,17 +1,15 @@
 package mcjty.ariente.cables;
 
 import mcjty.ariente.Ariente;
+import net.minecraft.core.NonNullList;
+import net.minecraft.world.item.BlockItem;
+import net.minecraft.world.item.CreativeModeTab;
+import net.minecraft.world.item.context.BlockPlaceContext;
 import net.minecraft.world.level.block.Block;
 import net.minecraft.world.level.block.state.BlockState;
-import net.minecraft.item.BlockItem;
-import net.minecraft.item.BlockItemUseContext;
-import net.minecraft.item.ItemGroup;
 import net.minecraft.world.item.ItemStack;
-import net.minecraft.util.NonNullList;
 
 import javax.annotation.Nullable;
-
-import net.minecraft.item.Item.Properties;
 
 public class CableBlockItem extends BlockItem {
 
@@ -24,7 +22,7 @@ public class CableBlockItem extends BlockItem {
 
     @Nullable
     @Override
-    protected BlockState getPlacementState(BlockItemUseContext context) {
+    protected BlockState getPlacementState(BlockPlaceContext context) {
         BlockState blockstate = ((GenericCableBlock)this.getBlock()).calculateState(context.getLevel(),
                 context.getClickedPos(), this.getBlock().defaultBlockState().setValue(GenericCableBlock.COLOR, color));
         if (canPlace(context, blockstate)) {
@@ -41,7 +39,7 @@ public class CableBlockItem extends BlockItem {
     }
 
     @Override
-    public void fillItemCategory(ItemGroup group, NonNullList<ItemStack> items) {
+    public void fillItemCategory(CreativeModeTab group, NonNullList<ItemStack> items) {
         if (Ariente.setup.getTab().equals(group)) {
             items.add(new ItemStack(this));
         }

@@ -1,7 +1,7 @@
 package mcjty.ariente.bindings;
 
-import net.minecraft.client.settings.KeyBinding;
-import net.minecraftforge.fml.client.registry.ClientRegistry;
+import net.minecraft.client.KeyMapping;
+import net.minecraftforge.client.ClientRegistry;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -10,7 +10,7 @@ import java.util.Objects;
 public class Binding {
 
     private final String name;
-    private final KeyBinding binding;
+    private final KeyMapping binding;
     private final Runnable callable;
 
     private static final List<Binding> BINDINGS = new ArrayList<>();

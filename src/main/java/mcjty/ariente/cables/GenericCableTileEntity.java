@@ -7,6 +7,7 @@ import mcjty.ariente.facade.MimicBlockSupport;
 import mcjty.ariente.power.IPowerBlob;
 import mcjty.ariente.power.PowerSenderSupport;
 import mcjty.lib.tileentity.GenericTileEntity;
+import net.minecraft.core.BlockPos;
 import net.minecraft.network.protocol.game.ClientboundBlockEntityDataPacket;
 import net.minecraft.world.level.block.Block;
 import net.minecraft.world.level.block.entity.BlockEntityType;
@@ -15,7 +16,6 @@ import net.minecraft.nbt.CompoundTag;
 import net.minecraft.network.Connection;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.level.Level;
-import net.minecraftforge.common.util.Constants;
 import net.minecraftforge.registries.ForgeRegistries;
 
 import javax.annotation.Nullable;
@@ -27,8 +27,8 @@ public abstract class GenericCableTileEntity extends GenericTileEntity implement
     private final MimicBlockSupport mimicBlockSupport = new MimicBlockSupport();
     private final PowerSenderSupport powerBlobSupport = new PowerSenderSupport();
 
-    public GenericCableTileEntity(BlockEntityType<?> type) {
-        super(type);
+    public GenericCableTileEntity(BlockEntityType<?> type, BlockPos pos, BlockState state) {
+        super(type, pos, state);
     }
 
     @Nullable
@@ -72,7 +72,7 @@ public abstract class GenericCableTileEntity extends GenericTileEntity implement
         if (level.isClientSide) {
             // If needed send a render update.
             if (mimicBlockSupport.getMimicBlock() != oldMimicBlock) {
-                level.sendBlockUpdated(worldPosition, getBlockState(), getBlockState(), Constants.BlockFlags.BLOCK_UPDATE + Constants.BlockFlags.NOTIFY_NEIGHBORS);
+                level.sendBlockUpdated(worldPosition, getBlockState(), getBlockState(), Block.UPDATE_ALL);
             }
         }
     }

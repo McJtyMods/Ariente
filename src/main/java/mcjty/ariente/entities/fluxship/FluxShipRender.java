@@ -1,10 +1,9 @@
 package mcjty.ariente.entities.fluxship;
 
 import net.minecraft.client.renderer.entity.EntityRenderer;
+import net.minecraft.client.renderer.entity.EntityRendererProvider;
 import net.minecraft.client.renderer.entity.EntityRendererProvider.Context;
 import net.minecraft.resources.ResourceLocation;
-import net.minecraftforge.fml.client.registry.IRenderFactory;
-
 
 
 public class FluxShipRender extends EntityRenderer<FluxShipEntity> {
@@ -51,10 +50,10 @@ public class FluxShipRender extends EntityRenderer<FluxShipEntity> {
         return TEXTURE;
     }
 
-    public static class Factory implements IRenderFactory<FluxShipEntity> {
+    public static class Factory implements EntityRendererProvider<FluxShipEntity> {
 
         @Override
-        public EntityRenderer<? super FluxShipEntity> createRenderFor(Context manager) {
+        public EntityRenderer<FluxShipEntity> create(Context manager) {
             return new FluxShipRender(manager);
         }
 

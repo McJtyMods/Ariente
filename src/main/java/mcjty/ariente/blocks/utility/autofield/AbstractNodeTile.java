@@ -74,8 +74,8 @@ public abstract class AbstractNodeTile extends GenericTileEntity implements IGui
     private static final VoxelShape AABB_EAST_UN = Shapes.box(1-T, 0.5+A, 0.0+A,    1, 1.0-A, 0.5-A);
     private static final VoxelShape AABB_EAST_US = Shapes.box(1-T, 0.5+A, 0.5+A,    1, 1.0-A, 1.0-A);
 
-    public AbstractNodeTile(BlockEntityType<?> type) {
-        super(type);
+    public AbstractNodeTile(BlockEntityType<?> type, BlockPos pos, BlockState state) {
+        super(type, pos, state);
     }
 
     public static BlockState getStateForPlacement(Block block, Direction facing, double hitX, double hitY, double hitZ) {
@@ -155,7 +155,7 @@ public abstract class AbstractNodeTile extends GenericTileEntity implements IGui
     @Override
     public void onPartAdded(PartSlot slot, BlockState state, BlockEntity multipartTile) {
         this.level = multipartTile.getLevel();
-        this.worldPosition = multipartTile.getBlockPos();
+        // @todo 1.18 this.worldPosition = multipartTile.getBlockPos();
         AutoFieldTile.notifyField(level, worldPosition);
     }
 

@@ -1,6 +1,10 @@
 package mcjty.ariente.entities.soldier;
 
-import net.minecraft.client.renderer.entity.model.AbstractZombieModel;
+import net.minecraft.client.model.AbstractZombieModel;
+import net.minecraft.client.model.geom.ModelPart;
+
+import java.util.List;
+import java.util.Map;
 
 public class SoldierModel<T extends SoldierEntity> extends AbstractZombieModel<T> {
 
@@ -9,7 +13,8 @@ public class SoldierModel<T extends SoldierEntity> extends AbstractZombieModel<T
     }
 
     protected SoldierModel(float modelSize, float yOffsetIn, int textureWidthIn, int textureHeightIn) {
-        super(modelSize, yOffsetIn, textureWidthIn, textureHeightIn);
+        // @todo 1.18 super(modelSize, yOffsetIn, textureWidthIn, textureHeightIn);
+        super(new ModelPart(List.of(), Map.of()));
     }
 
     @Override

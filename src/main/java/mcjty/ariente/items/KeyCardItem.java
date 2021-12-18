@@ -5,21 +5,22 @@ import mcjty.ariente.security.IKeyCardSlot;
 import mcjty.ariente.setup.Registration;
 import mcjty.lib.builder.TooltipBuilder;
 import mcjty.lib.tooltips.ITooltipSettings;
+import net.minecraft.nbt.ListTag;
+import net.minecraft.nbt.Tag;
+import net.minecraft.network.chat.Component;
 import net.minecraft.world.item.TooltipFlag;
 import net.minecraft.world.InteractionHand;
 import net.minecraft.world.InteractionResult;
 import net.minecraft.world.entity.player.Player;
-import net.minecraft.item.Item;
+import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemStack;
-import net.minecraft.item.ItemUseContext;
+import net.minecraft.world.item.context.UseOnContext;
 import net.minecraft.nbt.CompoundTag;
-import net.minecraft.nbt.ListNBT;
-import net.minecraft.nbt.StringNBT;
+import net.minecraft.nbt.StringTag;
 import net.minecraft.world.level.block.entity.BlockEntity;
 import net.minecraft.core.BlockPos;
 import net.minecraft.network.chat.TextComponent;
 import net.minecraft.world.level.Level;
-import net.minecraftforge.common.util.Constants;
 
 import javax.annotation.Nullable;
 import java.util.Collections;
@@ -28,8 +29,6 @@ import java.util.List;
 import java.util.Set;
 
 import static mcjty.lib.builder.TooltipBuilder.*;
-
-import net.minecraft.item.Item.Properties;
 
 public class KeyCardItem extends Item implements ITooltipSettings {
 
@@ -44,8 +43,8 @@ public class KeyCardItem extends Item implements ITooltipSettings {
     }
 
     public static boolean hasPlayerKeycard(Player player, String tag) {
-        for (int i = 0 ; i < player.inventory.getContainerSize() ; i++) {
-            ItemStack stack = player.inventory.getItem(i);
+        for (int i = 0 ; i < player.getInventory().getContainerSize() ; i++) {
+            ItemStack stack = player.getInventory().getItem(i);
             if (!stack.isEmpty() && stack.getItem() == Registration.KEY_CARD.get()) {
                 if (hasSecurityTag(stack, tag)) {
                     return true;
@@ -56,14 +55,14 @@ public class KeyCardItem extends Item implements ITooltipSettings {
     }
 
     @Override
-    public void appendHoverText(ItemStack stack, @Nullable Level worldIn, List<TextComponent> tooltip, TooltipFlag flag) {
+    public void appendHoverText(ItemStack stack, @Nullable Level worldIn, List<Component> tooltip, TooltipFlag flag) {
         super.appendHoverText(stack, worldIn, tooltip, flag);
         tooltipBuilder.makeTooltip(getRegistryName(), stack, tooltip, flag);
     }
 
 
     @Override
-    public InteractionResult onItemUseFirst(ItemStack stack, ItemUseContext context) {
+    public InteractionResult onItemUseFirst(ItemStack stack, UseOnContext context) {
         Level world = context.getLevel();
         BlockPos pos = context.getClickedPos();
         InteractionHand hand = context.getHand();
@@ -76,7 +75,7 @@ public class KeyCardItem extends Item implements ITooltipSettings {
     }
 
     @Override
-    public InteractionResult useOn(ItemUseContext context) {
+    public InteractionResult useOn(UseOnContext context) {
         return InteractionResult.SUCCESS;
     }
 
@@ -86,7 +85,7 @@ public class KeyCardItem extends Item implements ITooltipSettings {
         }
         Set<String> tags = new HashSet<>();
         CompoundTag compound = stack.getTag();
-        ListNBT tagList = compound.getList("tags", Constants.NBT.TAG_STRING);
+        ListTag tagList = compound.getList("tags", Tag.TAG_STRING);
         for (int i = 0; i < tagList.size(); i++) {
             String tag = tagList.getString(i);
             tags.add(tag);
@@ -99,7 +98,7 @@ public class KeyCardItem extends Item implements ITooltipSettings {
             return false;
         }
         CompoundTag compound = stack.getTag();
-        ListNBT tagList = compound.getList("tags", Constants.NBT.TAG_STRING);
+        ListTag tagList = compound.getList("tags", Tag.TAG_STRING);
         for (int i = 0; i < tagList.size(); i++) {
             String t = tagList.getString(i);
             if (tag.equals(t)) {
@@ -112,9 +111,9 @@ public class KeyCardItem extends Item implements ITooltipSettings {
     public static void addSecurityTag(ItemStack stack, String tag) {
         Set<String> tags = new HashSet<>(getSecurityTags(stack));
         tags.add(tag);
-        ListNBT tagList = new ListNBT();
+        ListTag tagList = new ListTag();
         for (String t : tags) {
-            tagList.add(StringNBT.valueOf(t));
+            tagList.add(StringTag.valueOf(t));
         }
         stack.getOrCreateTag().put("tags", tagList);
     }

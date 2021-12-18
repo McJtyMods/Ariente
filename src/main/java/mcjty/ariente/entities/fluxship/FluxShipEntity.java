@@ -13,7 +13,7 @@ import net.minecraft.world.InteractionResult;
 import net.minecraft.world.phys.AABB;
 import net.minecraft.world.phys.Vec3;
 import net.minecraft.world.level.Level;
-import net.minecraftforge.fml.network.NetworkHooks;
+import net.minecraftforge.network.NetworkHooks;
 
 import javax.annotation.Nullable;
 
@@ -69,10 +69,10 @@ public class FluxShipEntity extends Entity {
                 setDeltaMovement(look.x * -1, look.y * -1, look.z * -1);
                 break;
             case TURNLEFT:
-                setRot(yRot-.1f, xRot);
+                setRot(getYRot()-.1f, getXRot());
                 break;
             case TURNRIGHT:
-                setRot(yRot+.1f, xRot);
+                setRot(getYRot()+.1f, getXRot());
                 break;
             case UP:
                 setDeltaMovement(getDeltaMovement().x, .2f, getDeltaMovement().z);
@@ -123,8 +123,8 @@ public class FluxShipEntity extends Entity {
     }
 
     @Override
-    protected boolean isMovementNoisy() {
-        return false;
+    protected Entity.MovementEmission getMovementEmission() {
+        return MovementEmission.EVENTS;
     }
 
     @Override

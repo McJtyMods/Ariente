@@ -10,35 +10,35 @@ import mcjty.lib.builder.TooltipBuilder;
 import mcjty.lib.tooltips.ITooltipSettings;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
+import net.minecraft.core.particles.ParticleTypes;
+import net.minecraft.network.chat.Component;
 import net.minecraft.network.chat.TextComponent;
+import net.minecraft.sounds.SoundEvents;
 import net.minecraft.sounds.SoundSource;
 import net.minecraft.world.InteractionHand;
 import net.minecraft.world.InteractionResult;
+import net.minecraft.world.InteractionResultHolder;
 import net.minecraft.world.entity.player.Player;
+import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.TooltipFlag;
+import net.minecraft.world.item.context.UseOnContext;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.level.block.state.BlockState;
-import net.minecraft.item.Item;
-import net.minecraft.item.ItemUseContext;
-import net.minecraft.particles.ParticleTypes;
 import net.minecraft.world.level.block.entity.BlockEntity;
 import net.minecraft.world.phys.BlockHitResult;
-import net.minecraft.util.math.RayTraceContext;
-import net.minecraft.util.math.RayTraceResult;
-import net.minecraft.util.text.StringTextComponent;
+import net.minecraft.world.level.ClipContext;
+import net.minecraft.world.phys.HitResult;
 import net.minecraft.ChatFormatting;
-import net.minecraft.world.DimensionType;
 
 import javax.annotation.Nullable;
 import java.util.List;
+import java.util.Random;
 
 import static mcjty.lib.builder.TooltipBuilder.header;
 
-import net.minecraft.item.Item.Properties;
-
 public class ArientePearlItem extends Item implements ITooltipSettings {
-
+    private static Random random = new Random();
     private final TooltipBuilder tooltipBuilder = new TooltipBuilder()
             .info(header());
 
@@ -47,13 +47,13 @@ public class ArientePearlItem extends Item implements ITooltipSettings {
     }
 
     @Override
-    public void appendHoverText(ItemStack stack, @Nullable Level worldIn, List<TextComponent> tooltip, TooltipFlag flagIn) {
+    public void appendHoverText(ItemStack stack, @Nullable Level worldIn, List<Component> tooltip, TooltipFlag flagIn) {
         super.appendHoverText(stack, worldIn, tooltip, flagIn);
         tooltipBuilder.makeTooltip(getRegistryName(), stack, tooltip, flagIn);
     }
 
     @Override
-    public InteractionResult onItemUseFirst(ItemStack stack, ItemUseContext context) {
+    public InteractionResult onItemUseFirst(ItemStack stack, UseOnContext context) {
         Level world = context.getLevel();
         BlockPos pos = context.getClickedPos();
         InteractionHand hand = context.getHand();
@@ -71,12 +71,12 @@ public class ArientePearlItem extends Item implements ITooltipSettings {
                     WarperTile warper = (WarperTile) te;
                     int charges = warper.getCharges();
                     if (charges >= UtilityConfiguration.WARPER_MAX_CHARGES.get()) {
-                        player.displayClientMessage(new StringTextComponent("Already fully charged!"), false);
+                        player.displayClientMessage(new TextComponent("Already fully charged!"), false);
                         return InteractionResult.SUCCESS;
                     }
                     warper.setCharges(charges+1);
                     int pct = warper.getChargePercentage();
-                    player.displayClientMessage(new StringTextComponent("Charged to " + pct + "%"), false);
+                    player.displayClientMessage(new TextComponent("Charged to " + pct + "%"), false);
                 }
                 itemstack.shrink(1);
 
@@ -96,26 +96,26 @@ public class ArientePearlItem extends Item implements ITooltipSettings {
     }
 
     @Override
-    public InteractionResult useOn(ItemUseContext context) {
+    public InteractionResult useOn(UseOnContext context) {
         return InteractionResult.PASS;
     }
 
 
     @Override
-    public ActionResult<ItemStack> use(Level world, Player player, InteractionHand hand) {
+    public InteractionResultHolder<ItemStack> use(Level world, Player player, InteractionHand hand) {
         ItemStack itemstack = player.getItemInHand(hand);
 
         if (world.dimension() != Level.OVERWORLD) {
             if (world.isClientSide) {
-                player.displayClientMessage(new StringTextComponent(ChatFormatting.RED + "Doesn't work in this dimension!"), false);
+                player.displayClientMessage(new TextComponent(ChatFormatting.RED + "Doesn't work in this dimension!"), false);
             }
-            return new ActionResult<>(InteractionResult.FAIL, itemstack);
+            return new InteractionResultHolder<>(InteractionResult.FAIL, itemstack);
         }
 
-        RayTraceResult raytraceresult = Item.getPlayerPOVHitResult(world, player, RayTraceContext.FluidMode.NONE);
+        HitResult raytraceresult = Item.getPlayerPOVHitResult(world, player, ClipContext.Fluid.NONE);
 
-        if (raytraceresult instanceof BlockHitResult && raytraceresult.getType() == RayTraceResult.Type.BLOCK && world.getBlockState(((BlockHitResult) raytraceresult).getBlockPos()).getBlock() == Registration.WARPER.get()) {
-            return new ActionResult<>(InteractionResult.PASS, itemstack);
+        if (raytraceresult instanceof BlockHitResult && raytraceresult.getType() == HitResult.Type.BLOCK && world.getBlockState(((BlockHitResult) raytraceresult).getBlockPos()).getBlock() == Registration.WARPER.get()) {
+            return new InteractionResultHolder<>(InteractionResult.PASS, itemstack);
         } else {
             player.startUsingItem(hand);
 
@@ -130,17 +130,17 @@ public class ArientePearlItem extends Item implements ITooltipSettings {
                     world.playSound(null, player.getX(), player.getY(), player.getZ(), SoundEvents.ENDER_EYE_LAUNCH, SoundSource.NEUTRAL, 0.5F, 0.4F / (random.nextFloat() * 0.4F + 0.8F));
                     world.levelEvent(null, 1003, player.blockPosition(), 0);
 
-                    if (!player.abilities.instabuild) {
+                    if (!player.getAbilities().instabuild) {
                         itemstack.shrink(1);
                     }
 
-                    return new ActionResult<>(InteractionResult.SUCCESS, itemstack);
+                    return new InteractionResultHolder<>(InteractionResult.SUCCESS, itemstack);
                 } else {
-                    player.displayClientMessage(new StringTextComponent("Can't find any nearby Ariente dungeon!"), false);
+                    player.displayClientMessage(new TextComponent("Can't find any nearby Ariente dungeon!"), false);
                 }
             }
 
-            return new ActionResult<>(InteractionResult.SUCCESS, itemstack);
+            return new InteractionResultHolder<>(InteractionResult.SUCCESS, itemstack);
         }
     }
 

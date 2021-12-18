@@ -11,16 +11,16 @@ import mcjty.hologui.api.StyledColor;
 import mcjty.hologui.api.components.IPanel;
 import mcjty.lib.builder.TooltipBuilder;
 import mcjty.lib.tooltips.ITooltipSettings;
+import net.minecraft.world.InteractionResultHolder;
+import net.minecraft.world.item.Item;
 import net.minecraft.world.item.TooltipFlag;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.world.InteractionHand;
 import net.minecraft.world.InteractionResult;
 import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.player.Player;
-import net.minecraft.item.Item;
 import net.minecraft.world.item.ItemStack;
-import net.minecraft.util.ActionResult;
-import net.minecraft.network.chat.TextComponent;
+import net.minecraft.network.chat.Component;
 import net.minecraft.world.level.Level;
 
 import javax.annotation.Nullable;
@@ -29,8 +29,6 @@ import java.util.List;
 import static mcjty.hologui.api.Icons.*;
 import static mcjty.lib.builder.TooltipBuilder.header;
 import static mcjty.lib.builder.TooltipBuilder.parameter;
-
-import net.minecraft.item.Item.Properties;
 
 public class EnergyHolderItem extends Item implements ITooltipSettings {
 
@@ -57,7 +55,7 @@ public class EnergyHolderItem extends Item implements ITooltipSettings {
 
 
     @Override
-    public void appendHoverText(ItemStack stack, @Nullable Level worldIn, List<TextComponent> tooltip, TooltipFlag flag) {
+    public void appendHoverText(ItemStack stack, @Nullable Level worldIn, List<Component> tooltip, TooltipFlag flag) {
         super.appendHoverText(stack, worldIn, tooltip, flag);
         tooltipBuilder.makeTooltip(getRegistryName(), stack, tooltip, flag);
     }
@@ -74,26 +72,26 @@ public class EnergyHolderItem extends Item implements ITooltipSettings {
 
         int index = tag.getInt("index");
         Player player = (Player) entity;
-        if (index >= player.inventory.getContainerSize()) {
+        if (index >= player.getInventory().getContainerSize()) {
             index = 0;
         }
         tag.putInt("index", index+1);
-        ItemStack playerStack = player.inventory.getItem(index);
+        ItemStack playerStack = player.getInventory().getItem(index);
         if (playerStack.getItem() == Registration.DUST_NEGARITE.get()) {
             tag.putInt("negarite", tag.getInt("negarite") + playerStack.getCount());
-            player.inventory.setItem(index, ItemStack.EMPTY);
+            player.getInventory().setItem(index, ItemStack.EMPTY);
         } else if (playerStack.getItem() == Registration.DUST_POSIRITE.get()) {
             tag.putInt("posirite", tag.getInt("posirite") + playerStack.getCount());
-            player.inventory.setItem(index, ItemStack.EMPTY);
+            player.getInventory().setItem(index, ItemStack.EMPTY);
         }
     }
 
     @Override
-    public ActionResult<ItemStack> use(Level worldIn, Player player, InteractionHand handIn) {
+    public InteractionResultHolder<ItemStack> use(Level worldIn, Player player, InteractionHand handIn) {
         if (!worldIn.isClientSide) {
             Ariente.guiHandler.openHoloGui(player, ModGuis.GUI_ENERGY_HOLDER, 1f);
         }
-        return new ActionResult<>(InteractionResult.SUCCESS, player.getItemInHand(handIn));
+        return new InteractionResultHolder<>(InteractionResult.SUCCESS, player.getItemInHand(handIn));
     }
 
     public static IGuiComponent<?> createGui(Player pl) {
@@ -169,7 +167,7 @@ public class EnergyHolderItem extends Item implements ITooltipSettings {
         }
         total -= actuallyExtracted;
 
-        if (player.inventory.add(new ItemStack(item, actuallyExtracted))) {
+        if (player.getInventory().add(new ItemStack(item, actuallyExtracted))) {
             tag.putInt(tagname, total);
         }
     }
@@ -182,8 +180,8 @@ public class EnergyHolderItem extends Item implements ITooltipSettings {
         int total = tag.getInt(tagname);
         ItemStack toTransfer = ItemStack.EMPTY;
 
-        for (int i = 0 ; i < player.inventory.getContainerSize() ; i++) {
-            ItemStack stack = player.inventory.getItem(i);
+        for (int i = 0 ; i < player.getInventory().getContainerSize() ; i++) {
+            ItemStack stack = player.getInventory().getItem(i);
             if (stack.getItem() == item) {
                 ItemStack splitted = stack.split(amount);
                 if ((!splitted.isEmpty())) {

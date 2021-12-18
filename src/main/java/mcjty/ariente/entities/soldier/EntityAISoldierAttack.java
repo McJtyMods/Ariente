@@ -1,13 +1,13 @@
 package mcjty.ariente.entities.soldier;
 
-import net.minecraft.entity.CreatureEntity;
-import net.minecraft.entity.ai.goal.MeleeAttackGoal;
+import net.minecraft.world.entity.PathfinderMob;
+import net.minecraft.world.entity.ai.goal.MeleeAttackGoal;
 
 public class EntityAISoldierAttack extends MeleeAttackGoal {
     private final IArmRaisable raisable;
     private int raiseArmTicks;
 
-    public EntityAISoldierAttack(CreatureEntity zombieIn, IArmRaisable raisable, double speedIn, boolean longMemoryIn) {
+    public EntityAISoldierAttack(PathfinderMob zombieIn, IArmRaisable raisable, double speedIn, boolean longMemoryIn) {
         super(zombieIn, speedIn, longMemoryIn);
         this.raisable = raisable;
     }

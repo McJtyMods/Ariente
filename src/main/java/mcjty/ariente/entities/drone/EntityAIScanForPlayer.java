@@ -4,11 +4,11 @@ import com.google.common.base.Predicate;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.LivingEntity;
-import net.minecraft.entity.ai.attributes.Attributes;
-import net.minecraft.entity.ai.attributes.ModifiableAttributeInstance;
-import net.minecraft.entity.ai.goal.Goal;
+import net.minecraft.world.entity.ai.attributes.Attributes;
+import net.minecraft.world.entity.ai.attributes.AttributeInstance;
+import net.minecraft.world.entity.ai.goal.Goal;
 import net.minecraft.world.entity.player.Player;
-import net.minecraft.scoreboard.Team;
+import net.minecraft.world.scores.Team;
 
 import java.util.List;
 
@@ -25,7 +25,7 @@ public class EntityAIScanForPlayer extends Goal {
         this.predicate = entity -> {
             if (!(entity instanceof Player)) {
                 return false;
-            } else if (((Player) entity).abilities.invulnerable) {
+            } else if (((Player) entity).getAbilities().invulnerable) {
                 return false;
             } else {
                 double d0 = EntityAIScanForPlayer.this.maxTargetRange();
@@ -77,7 +77,7 @@ public class EntityAIScanForPlayer extends Goal {
             return false;
         } else if (!entitylivingbase.isAlive()) {
             return false;
-        } else if (entitylivingbase instanceof Player && ((Player) entitylivingbase).abilities.invulnerable) {
+        } else if (entitylivingbase instanceof Player && ((Player) entitylivingbase).getAbilities().invulnerable) {
             return false;
         } else {
             Team team = this.entityLiving.getTeam();
@@ -110,7 +110,7 @@ public class EntityAIScanForPlayer extends Goal {
     }
 
     protected double maxTargetRange() {
-        ModifiableAttributeInstance iattributeinstance = this.entityLiving.getAttribute(Attributes.FOLLOW_RANGE);
+        AttributeInstance iattributeinstance = this.entityLiving.getAttribute(Attributes.FOLLOW_RANGE);
         return iattributeinstance == null ? 16.0D : iattributeinstance.getValue();
     }
 }

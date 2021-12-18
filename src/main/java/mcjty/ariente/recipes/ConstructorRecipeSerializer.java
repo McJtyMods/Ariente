@@ -2,7 +2,7 @@ package mcjty.ariente.recipes;
 
 import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
-import com.mojang.realmsclient.util.JsonUtils;
+import net.minecraft.util.GsonHelper;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.crafting.RecipeSerializer;
@@ -19,11 +19,11 @@ public class ConstructorRecipeSerializer extends ForgeRegistryEntry<RecipeSerial
 
     @Override
     public ConstructorRecipe fromJson(ResourceLocation recipeId, JsonObject json) {
-        float chance = JsonUtils.getAsFloat(json, "chance", 1.0f);
+        float chance = GsonHelper.getAsFloat(json, "chance", 1.0f);
 
-        ResourceLocation resourcelocation = new ResourceLocation(JsonUtils.getAsString(json, "result"));
-        ItemStack output = new ItemStack(Optional.ofNullable(ForgeRegistries.ITEMS.getValue(resourcelocation)).orElseThrow(() -> new IllegalStateException("Item: " + JsonUtils.getAsString(json, "result") + " does not exist")));
-        int outputAmount = JsonUtils.getAsInt(json, "count", 1);
+        ResourceLocation resourcelocation = new ResourceLocation(GsonHelper.getAsString(json, "result"));
+        ItemStack output = new ItemStack(Optional.ofNullable(ForgeRegistries.ITEMS.getValue(resourcelocation)).orElseThrow(() -> new IllegalStateException("Item: " + GsonHelper.getAsString(json, "result") + " does not exist")));
+        int outputAmount = GsonHelper.getAsInt(json, "count", 1);
         output.setCount(outputAmount);
 
         JsonElement input = json.get("input");

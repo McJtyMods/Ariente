@@ -24,8 +24,8 @@ import static mcjty.lib.builder.TooltipBuilder.key;
 
 public class PosiriteTankTile extends GenericTileEntity implements IGuiTile, IAlarmMode {
 
-    public PosiriteTankTile() {
-        super(Registration.POSIRITE_TANK_TILE.get());
+    public PosiriteTankTile(BlockPos pos, BlockState state) {
+        super(Registration.POSIRITE_TANK_TILE.get(), pos, state);
     }
 
     public static BaseBlock createBlock() {

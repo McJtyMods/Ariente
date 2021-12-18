@@ -20,7 +20,7 @@ import net.minecraft.world.level.block.Block;
 import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.network.Connection;
 import net.minecraft.world.level.block.state.StateDefinition;
-import net.minecraft.tileentity.ITickableTileEntity;
+// @todo 1.18 import net.minecraft.tileentity.ITickableTileEntity;
 import net.minecraft.world.level.block.entity.BlockEntity;
 import net.minecraft.world.InteractionResult;
 import net.minecraft.world.phys.BlockHitResult;
@@ -29,7 +29,6 @@ import net.minecraft.world.phys.shapes.Shapes;
 import net.minecraft.world.phys.shapes.VoxelShape;
 import net.minecraft.world.level.BlockGetter;
 import net.minecraft.world.level.Level;
-import net.minecraftforge.common.util.Constants;
 
 import java.util.Map;
 
@@ -38,7 +37,7 @@ import static mcjty.ariente.compat.ArienteTOPDriver.DRIVER;
 import static mcjty.hologui.api.Icons.*;
 import static mcjty.lib.builder.TooltipBuilder.*;
 
-public class WirelessLockTile extends SignalChannelTileEntity implements ILockable, IGuiTile, ITickableTileEntity {
+public class WirelessLockTile extends SignalChannelTileEntity implements ILockable, IGuiTile /* @todo 1.18, ITickableTileEntity */ {
 
     private boolean locked = false;
     private int horizontalRange = 5;
@@ -46,8 +45,8 @@ public class WirelessLockTile extends SignalChannelTileEntity implements ILockab
 
     private static final VoxelShape BLOCK_AABB = Shapes.box(1.0D/16.0, 1.0D/16.0, 15.0D/16.0, 15.0D/16.0, 15.0D/16.0, 1.0D);
 
-    public WirelessLockTile() {
-        super(Registration.WIRELESS_LOCK_TILE.get());
+    public WirelessLockTile(BlockPos pos, BlockState state) {
+        super(Registration.WIRELESS_LOCK_TILE.get(), pos, state);
     }
 
     public static BaseBlock createBlock() {
@@ -78,17 +77,15 @@ public class WirelessLockTile extends SignalChannelTileEntity implements ILockab
     }
 
 
-    @Override
-    public void tick() {
-        if (!level.isClientSide) {
-            if (channel != -1) {
-                RedstoneChannels channels = RedstoneChannels.getChannels(getLevel());
-                RedstoneChannels.RedstoneChannel ch = channels.getChannel(channel);
-                if (ch != null) {
-                    setLocked(ch.getValue() <= 0);
-                } else {
-                    setLocked(true);
-                }
+    //@Override
+    public void tickServer() {
+        if (channel != -1) {
+            RedstoneChannels channels = RedstoneChannels.getChannels(getLevel());
+            RedstoneChannels.RedstoneChannel ch = channels.getChannel(channel);
+            if (ch != null) {
+                setLocked(ch.getValue() <= 0);
+            } else {
+                setLocked(true);
             }
         }
     }
@@ -103,7 +100,7 @@ public class WirelessLockTile extends SignalChannelTileEntity implements ILockab
             // If needed send a render update.
             boolean newLocked = isLocked();
             if (newLocked != locked) {
-                level.sendBlockUpdated(worldPosition, getBlockState(), getBlockState(), Constants.BlockFlags.BLOCK_UPDATE + Constants.BlockFlags.NOTIFY_NEIGHBORS);
+                level.sendBlockUpdated(worldPosition, getBlockState(), getBlockState(), Block.UPDATE_ALL);
             }
         }
     }

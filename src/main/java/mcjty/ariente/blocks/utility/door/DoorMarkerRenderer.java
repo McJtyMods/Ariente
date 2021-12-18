@@ -9,21 +9,24 @@ import mcjty.ariente.client.ArienteRenderType;
 import mcjty.ariente.client.ArienteSpriteUploader;
 import mcjty.ariente.setup.Registration;
 import mcjty.lib.client.RenderHelper;
+import net.minecraft.client.renderer.blockentity.BlockEntityRenderDispatcher;
+import net.minecraft.client.renderer.blockentity.BlockEntityRendererProvider;
+import net.minecraft.client.renderer.blockentity.BlockEntityRenderers;
 import net.minecraft.core.Direction;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.client.renderer.MultiBufferSource;
 import net.minecraft.client.renderer.texture.TextureAtlasSprite;
-import net.minecraft.client.renderer.tileentity.TileEntityRenderer;
-import net.minecraft.client.renderer.tileentity.TileEntityRendererDispatcher;
-import net.minecraftforge.fml.client.registry.ClientRegistry;
+import net.minecraft.client.renderer.blockentity.BlockEntityRenderer;
+import net.minecraftforge.client.ClientRegistry;
 
-public class DoorMarkerRenderer extends TileEntityRenderer<DoorMarkerTile> {
+public class DoorMarkerRenderer implements BlockEntityRenderer<DoorMarkerTile> {
 
+    protected BlockEntityRendererProvider.Context context;
     public static final ResourceLocation DOOR_MARKER_TEXTURE = new ResourceLocation(Ariente.MODID, "doormarkers");
 
-    public DoorMarkerRenderer(TileEntityRendererDispatcher rendererDispatcherIn) {
-        super(rendererDispatcherIn);
+    public DoorMarkerRenderer(BlockEntityRendererProvider.Context pContext) {
+        context = pContext;
     }
 
     @Override
@@ -124,6 +127,6 @@ public class DoorMarkerRenderer extends TileEntityRenderer<DoorMarkerTile> {
     }
 
     public static void register() {
-        ClientRegistry.bindTileEntityRenderer(Registration.DOOR_MARKER_TILE.get(), DoorMarkerRenderer::new);
+        BlockEntityRenderers.register(Registration.DOOR_MARKER_TILE.get(), DoorMarkerRenderer::new);
     }
 }

@@ -2,19 +2,23 @@ package mcjty.ariente.blocks.utility.door;
 
 import com.mojang.blaze3d.vertex.PoseStack;
 import mcjty.ariente.setup.Registration;
+import net.minecraft.client.renderer.blockentity.BlockEntityRenderer;
+import net.minecraft.client.renderer.blockentity.BlockEntityRendererProvider;
+import net.minecraft.client.renderer.blockentity.BlockEntityRenderers;
 import net.minecraft.core.Direction;
 import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.client.renderer.MultiBufferSource;
 import com.mojang.math.Vector3f;
-import net.minecraft.client.renderer.tileentity.TileEntityRenderer;
-import net.minecraft.client.renderer.tileentity.TileEntityRendererDispatcher;
-import net.minecraftforge.fml.client.registry.ClientRegistry;
+import net.minecraft.client.renderer.blockentity.BlockEntityRenderDispatcher;
+import net.minecraftforge.client.ClientRegistry;
 
 
-public class InvisibleDoorRenderer extends TileEntityRenderer<InvisibleDoorTile> {
+public class InvisibleDoorRenderer implements BlockEntityRenderer<InvisibleDoorTile> {
 
-    public InvisibleDoorRenderer(TileEntityRendererDispatcher rendererDispatcherIn) {
-        super(rendererDispatcherIn);
+    protected BlockEntityRendererProvider.Context context;
+
+    public InvisibleDoorRenderer(BlockEntityRendererProvider.Context pContext) {
+        context = pContext;
     }
 
     @Override
@@ -48,6 +52,6 @@ public class InvisibleDoorRenderer extends TileEntityRenderer<InvisibleDoorTile>
     }
 
     public static void register() {
-        ClientRegistry.bindTileEntityRenderer(Registration.INVISIBLE_DOOR_TILE.get(), InvisibleDoorRenderer::new);
+        BlockEntityRenderers.register(Registration.INVISIBLE_DOOR_TILE.get(), InvisibleDoorRenderer::new);
     }
 }

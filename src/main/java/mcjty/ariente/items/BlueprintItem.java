@@ -11,10 +11,10 @@ import mcjty.lib.builder.TooltipBuilder;
 import mcjty.lib.tooltips.ITooltipExtras;
 import mcjty.lib.tooltips.ITooltipSettings;
 import mcjty.lib.varia.JSonTools;
-import net.minecraft.client.renderer.model.ModelResourceLocation;
-import net.minecraft.network.chat.TextComponent;
+import net.minecraft.client.resources.model.ModelResourceLocation;
+import net.minecraft.network.chat.Component;
+import net.minecraft.world.item.Item;
 import net.minecraft.world.item.TooltipFlag;
-import net.minecraft.item.Item;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.resources.ResourceLocation;
@@ -29,8 +29,6 @@ import java.util.stream.Collectors;
 import static mcjty.lib.builder.TooltipBuilder.header;
 import static mcjty.lib.builder.TooltipBuilder.parameter;
 
-import net.minecraft.item.Item.Properties;
-
 public class BlueprintItem extends Item implements ITooltipExtras, ITooltipSettings {
 
     private final TooltipBuilder tooltipBuilder = new TooltipBuilder()
@@ -38,7 +36,7 @@ public class BlueprintItem extends Item implements ITooltipExtras, ITooltipSetti
 
     public BlueprintItem() {
         super(new Properties().tab(Ariente.setup.getTab())
-                .setISTER(BlueprintRenderer::createRenderer)
+                // @todo 1.18 .setISTER(BlueprintRenderer::createRenderer)
                 .stacksTo(1));
         // @todo 1.14
 //        setHasSubtypes(true);
@@ -56,7 +54,7 @@ public class BlueprintItem extends Item implements ITooltipExtras, ITooltipSetti
     }
 
     @Override
-    public void appendHoverText(ItemStack stack, @Nullable Level worldIn, List<TextComponent> tooltip, TooltipFlag flag) {
+    public void appendHoverText(ItemStack stack, @Nullable Level worldIn, List<Component> tooltip, TooltipFlag flag) {
         super.appendHoverText(stack, worldIn, tooltip, flag);
         tooltipBuilder.makeTooltip(getRegistryName(), stack, tooltip, flag);
     }

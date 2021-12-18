@@ -23,25 +23,24 @@ import mcjty.lib.blocks.RotationType;
 import mcjty.lib.builder.BlockBuilder;
 import mcjty.lib.tileentity.GenericTileEntity;
 import mcjty.lib.varia.RedstoneMode;
+import net.minecraft.core.BlockPos;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.world.InteractionResult;
 import net.minecraft.world.entity.player.Player;
+import net.minecraft.world.entity.projectile.Projectile;
 import net.minecraft.world.level.ChunkPos;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.entity.Entity;
-import net.minecraft.entity.projectile.ProjectileEntity;
 import net.minecraft.world.entity.LivingEntity;
-import net.minecraft.entity.projectile.ArrowEntity;
-import net.minecraft.entity.projectile.ThrowableEntity;
-import net.minecraft.tileentity.ITickableTileEntity;
-import net.minecraft.util.DamageSource;
+// @todo 1.18 import net.minecraft.tileentity.ITickableTileEntity;
+import net.minecraft.world.damagesource.DamageSource;
 import net.minecraft.world.InteractionHand;
 import net.minecraft.world.phys.AABB;
 import net.minecraft.world.phys.BlockHitResult;
 import net.minecraft.world.phys.Vec3;
-import net.minecraft.world.Explosion;
-import net.minecraftforge.fml.network.PacketDistributor;
+import net.minecraft.world.level.Explosion;
+import net.minecraftforge.network.PacketDistributor;
 
 import javax.annotation.Nullable;
 import java.util.*;
@@ -52,7 +51,7 @@ import static mcjty.hologui.api.Icons.*;
 import static mcjty.lib.builder.TooltipBuilder.header;
 import static mcjty.lib.builder.TooltipBuilder.key;
 
-public class ForceFieldTile extends GenericTileEntity implements IGuiTile, ITickableTileEntity, ISoundProducer, IPowerReceiver, ICityEquipment, IAlarmMode, IForceFieldTile, IPowerUser {
+public class ForceFieldTile extends GenericTileEntity implements IGuiTile, /* @todo 1.18 ITickableTileEntity, */ ISoundProducer, IPowerReceiver, ICityEquipment, IAlarmMode, IForceFieldTile, IPowerUser {
 
     private final PanelInfo[] panelInfo = new PanelInfo[PentakisDodecahedron.MAX_TRIANGLES];
     private int[] panelDestroyTimeout = new int[PentakisDodecahedron.MAX_TRIANGLES];    // @todo persist to NBT?
@@ -66,8 +65,8 @@ public class ForceFieldTile extends GenericTileEntity implements IGuiTile, ITick
 
     private static int[] shuffledIndices = null;
 
-    public ForceFieldTile() {
-        super(Registration.FORCEFIELD_TILE.get());
+    public ForceFieldTile(BlockPos pos, BlockState state) {
+        super(Registration.FORCEFIELD_TILE.get(), pos, state);
         for (int i = 0 ; i < PentakisDodecahedron.MAX_TRIANGLES ; i++) {
             panelInfo[i] = null;
             panelDestroyTimeout[i] = 0;
@@ -156,27 +155,28 @@ public class ForceFieldTile extends GenericTileEntity implements IGuiTile, ITick
         return panelInfo;
     }
 
-    @Override
-    public void tick() {
-        if (!level.isClientSide) {
-            usingPower = 0;
-            long desiredPower = calculateIdleUsage();
-            if ((!isMachineEnabled()) || !PowerReceiverSupport.consumePower(level, worldPosition, desiredPower, true)) {
-                if (breakDownSkip > 0) {
-                    breakDownSkip--;
-                } else {
-                    breakDownShield();
-                }
+    //@Override
+    public void tickServer() {
+        usingPower = 0;
+        long desiredPower = calculateIdleUsage();
+        if ((!isMachineEnabled()) || !PowerReceiverSupport.consumePower(level, worldPosition, desiredPower, true)) {
+            if (breakDownSkip > 0) {
+                breakDownSkip--;
             } else {
-                breakDownSkip = 5;
-                usingPower += desiredPower;
-                updateShield();
+                breakDownShield();
             }
-            collideWithEntities();
         } else {
-            ForceFieldRenderer.register(worldPosition);
-            ForceFieldSounds.doSounds(this);
+            breakDownSkip = 5;
+            usingPower += desiredPower;
+            updateShield();
         }
+        collideWithEntities();
+    }
+
+    //@Override
+    public void tickClient() {
+        ForceFieldRenderer.register(worldPosition);
+        ForceFieldSounds.doSounds(this);
     }
 
     private long calculateIdleUsage() {
@@ -217,7 +217,7 @@ public class ForceFieldTile extends GenericTileEntity implements IGuiTile, ITick
         boolean changed = false;
 
         List<Entity> entities = level.getEntitiesOfClass(Entity.class, getShieldAABB(), entity -> {
-            if (entity instanceof ProjectileEntity) {
+            if (entity instanceof Projectile) {
                 Vec3 entityPos = entity.position();
                 double squareDist = fieldCenter.distanceToSqr(entityPos);
                 if (Math.abs(squareDist - squaredRadius) < 10 * 10) {
@@ -257,7 +257,7 @@ public class ForceFieldTile extends GenericTileEntity implements IGuiTile, ITick
         });
 
         for (Entity entity : entities) {
-            if (entity instanceof ProjectileEntity) {
+            if (entity instanceof Projectile) {
                 Vec3 p1 = new Vec3(entity.xo, entity.yo, entity.zo);
                 Vec3 p2 = entity.position();
                 for (PanelInfo info : getPanelInfo()) {
@@ -265,13 +265,13 @@ public class ForceFieldTile extends GenericTileEntity implements IGuiTile, ITick
                         Vec3 intersection = info.testCollisionSegment(p1, p2, getScaleDouble());
                         if (intersection != null) {
 //                            world.newExplosion(entity, entity.getPosX(), entity.getPosY(), entity.getPosZ(), 2.0f, false, false);
-                            entity.remove();
+                            entity.remove(Entity.RemovalReason.DISCARDED);
                             int life = info.getLife();
                             life -= 10; // @todo make dependant on arrow
                             if (life <= 0) {
                                 panelDestroyTimeout[info.getIndex()] = 100;
                                 panelInfo[info.getIndex()] = null;
-                                level.explode(entity, entity.getX(), entity.getY(), entity.getZ(), 2.0f, false, Explosion.Mode.DESTROY);
+                                level.explode(entity, entity.getX(), entity.getY(), entity.getZ(), 2.0f, false, Explosion.BlockInteraction.DESTROY);
                             } else {
                                 info.setLife(life);
                                 System.out.println("life = " + life + " (index " + info.getIndex() + ")");
@@ -312,8 +312,8 @@ public class ForceFieldTile extends GenericTileEntity implements IGuiTile, ITick
 
     @Nullable
     private Player determineAttacker(Entity entity) {
-        if (entity instanceof ProjectileEntity) {
-            Entity shootingEntity = ((ProjectileEntity) entity).getOwner();
+        if (entity instanceof Projectile) {
+            Entity shootingEntity = ((Projectile) entity).getOwner();
             if (shootingEntity instanceof Player) {
                 return (Player) shootingEntity;
             }

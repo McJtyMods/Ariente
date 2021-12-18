@@ -9,7 +9,9 @@ import mcjty.hologui.api.Icons;
 import mcjty.hologui.api.StyledColor;
 import mcjty.hologui.api.components.IPanel;
 import mcjty.lib.varia.ItemStackList;
+import net.minecraft.core.BlockPos;
 import net.minecraft.nbt.CompoundTag;
+import net.minecraft.world.level.block.state.BlockState;
 import org.apache.commons.lang3.tuple.Pair;
 
 import static mcjty.hologui.api.Icons.*;
@@ -23,8 +25,8 @@ public class OutputItemNodeTile extends AbstractItemNodeTile {
     private boolean outputNbt = false;
     private int outputStackSize = 1;
 
-    public OutputItemNodeTile() {
-        super(Registration.OUTPUT_ITEM_TILE.get());
+    public OutputItemNodeTile(BlockPos pos, BlockState state) {
+        super(Registration.OUTPUT_ITEM_TILE.get(), pos, state);
     }
 
 // @todo 1.14

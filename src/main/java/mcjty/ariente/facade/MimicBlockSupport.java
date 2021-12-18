@@ -2,6 +2,7 @@ package mcjty.ariente.facade;
 
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.level.block.Block;
+import net.minecraft.world.level.block.Blocks;
 import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraftforge.registries.ForgeRegistries;
@@ -30,7 +31,7 @@ public class MimicBlockSupport {
 //            int meta = tagCompound.getInt("meta");
             Block value = ForgeRegistries.BLOCKS.getValue(new ResourceLocation(regName));
             if (value == null) {
-                mimicBlock = Block.COBBLESTONE.defaultBlockState();
+                mimicBlock = Blocks.COBBLESTONE.defaultBlockState();
             } else {
                 // @todo 1.14 meta
                 mimicBlock = value.defaultBlockState();

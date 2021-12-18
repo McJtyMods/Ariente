@@ -11,7 +11,6 @@ import net.minecraft.world.phys.shapes.CollisionContext;
 import net.minecraft.world.phys.shapes.Shapes;
 import net.minecraft.world.phys.shapes.VoxelShape;
 import net.minecraft.world.level.BlockGetter;
-import net.minecraftforge.common.ToolType;
 
 public class RampBlock extends BaseBlock {
 
@@ -46,7 +45,7 @@ public class RampBlock extends BaseBlock {
     public RampBlock() {
         super(new BlockBuilder()
                 .properties(Properties.of(Material.STONE).strength(2.0f, 4.0f))
-                .harvestLevel(ToolType.PICKAXE, 1)
+                // @todo 1.18 .harvestLevel(ToolType.PICKAXE, 1)
         );
     }
 

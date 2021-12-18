@@ -2,15 +2,14 @@ package mcjty.ariente.entities.fluxelevator;
 
 import com.mojang.blaze3d.vertex.PoseStack;
 import com.mojang.blaze3d.platform.GlStateManager;
+import com.mojang.math.Quaternion;
 import net.minecraft.client.renderer.MultiBufferSource;
 import net.minecraft.client.renderer.entity.EntityRenderer;
 import net.minecraft.client.renderer.entity.EntityRendererProvider;
-import net.minecraft.client.renderer.entity.model.EntityModel;
+import net.minecraft.client.model.EntityModel;
 import net.minecraft.resources.ResourceLocation;
-import net.minecraft.util.math.MathHelper;
+import net.minecraft.util.Mth;
 import net.minecraft.world.phys.Vec3;
-import net.minecraftforge.fml.client.registry.IRenderFactory;
-
 
 
 public class FluxElevatorRender extends EntityRenderer<FluxElevatorEntity> {
@@ -25,7 +24,7 @@ public class FluxElevatorRender extends EntityRenderer<FluxElevatorEntity> {
 
     @Override
     public void render(FluxElevatorEntity entity, float entityYaw, float partialTicks, PoseStack matrixStack, MultiBufferSource buffer, int packedLightIn) {
-        GlStateManager._pushMatrix();
+        matrixStack.pushPose();
 //        long i = entity.getEntityId() * 493286711L;
 //        i = i * i * 4392167121L + i * 98761L;
 //        float fx = (((i >> 16 & 7L) + 0.5F) / 8.0F - 0.5F) * 0.004F;
@@ -37,7 +36,7 @@ public class FluxElevatorRender extends EntityRenderer<FluxElevatorEntity> {
         double interY = entity.yOld + (entity.getY() - entity.yOld) * partialTicks;
         double interZ = entity.zOld + (entity.getZ() - entity.zOld) * partialTicks;
         Vec3 vec3d = entity.getPos(interX, interY, interZ);
-        float pitch = entity.xRotO + (entity.xRot - entity.xRotO) * partialTicks;
+        float pitch = entity.xRotO + (entity.getXRot()- entity.xRotO) * partialTicks;
 
 
         if (vec3d != null) {
@@ -67,8 +66,8 @@ public class FluxElevatorRender extends EntityRenderer<FluxElevatorEntity> {
 
         // @todo 1.15
 //        GlStateManager.translatef((float) x, (float) y + 0.375F, (float) z);
-        GlStateManager._rotatef(180.0F - entityYaw, 0.0F, 1.0F, 0.0F);
-        GlStateManager._rotatef(-pitch, 0.0F, 0.0F, 1.0F);
+        matrixStack.mulPose(new Quaternion(180.0F - entityYaw, 0.0F, 1.0F, 0.0F));
+        matrixStack.mulPose(new Quaternion(-pitch, 0.0F, 0.0F, 1.0F));
         float f5 = 0 - partialTicks;    // @todo
         float f6 = entity.getDamage() - partialTicks;
 
@@ -77,7 +76,7 @@ public class FluxElevatorRender extends EntityRenderer<FluxElevatorEntity> {
         }
 
         if (f5 > 0.0F) {
-            GlStateManager._rotatef(MathHelper.sin(f5) * f5 * f6 / 10.0F * 0, 1.0F, 0.0F, 0.0F);  // @todo
+            matrixStack.mulPose(new Quaternion(Mth.sin(f5) * f5 * f6 / 10.0F * 0, 1.0F, 0.0F, 0.0F));
         }
 
         // @todo 1.15
@@ -97,7 +96,7 @@ public class FluxElevatorRender extends EntityRenderer<FluxElevatorEntity> {
 //            Ariente.guiHandler.render(holoGui, 1, 0, 0, -90);
 //        }
 //
-//        GlStateManager.popMatrix();
+        matrixStack.popPose();
 //
 //        if (this.renderOutlines) {
 //            GlStateManager.tearDownSolidRenderingTextureCombine();
@@ -112,10 +111,10 @@ public class FluxElevatorRender extends EntityRenderer<FluxElevatorEntity> {
         return TEXTURE;
     }
 
-    public static class Factory implements IRenderFactory<FluxElevatorEntity> {
+    public static class Factory implements EntityRendererProvider<FluxElevatorEntity> {
 
         @Override
-        public EntityRenderer<? super FluxElevatorEntity> createRenderFor(EntityRendererProvider.Context manager) {
+        public EntityRenderer<FluxElevatorEntity> create(EntityRendererProvider.Context manager) {
             return new FluxElevatorRender(manager);
         }
 

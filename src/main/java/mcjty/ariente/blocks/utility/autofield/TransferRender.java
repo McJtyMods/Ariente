@@ -6,7 +6,7 @@ import mcjty.lib.multipart.PartSlot;
 import mcjty.lib.spline.CatmullRomSpline;
 import net.minecraft.core.BlockPos;
 import net.minecraft.world.item.ItemStack;
-import net.minecraft.util.math.vector.Quaternion;
+import com.mojang.math.Quaternion;
 import net.minecraft.world.phys.Vec3;
 
 import java.util.Random;

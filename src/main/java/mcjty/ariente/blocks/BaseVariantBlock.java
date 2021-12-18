@@ -12,7 +12,6 @@ import net.minecraft.world.level.material.Material;
 import net.minecraft.world.level.block.state.properties.EnumProperty;
 import net.minecraft.world.level.block.state.StateDefinition;
 import net.minecraft.world.level.BlockGetter;
-import net.minecraftforge.common.ToolType;
 
 public abstract class BaseVariantBlock<T extends Enum<T> & StringRepresentable> extends BaseBlock {
 
@@ -20,7 +19,8 @@ public abstract class BaseVariantBlock<T extends Enum<T> & StringRepresentable> 
         super(new BlockBuilder()
                 .properties(Properties.of(Material.STONE)
                     .strength(2.0f, 4.0f))
-                .harvestLevel(ToolType.PICKAXE, 1));
+                // @todo 1.18 .harvestLevel(ToolType.PICKAXE, 1)
+        );
         // @todo 1.14
 //        super(Ariente.instance, Material.ROCK, name, BaseVariantItemBlock::new);
     }

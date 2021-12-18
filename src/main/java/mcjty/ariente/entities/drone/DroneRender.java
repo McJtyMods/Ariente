@@ -1,17 +1,16 @@
 package mcjty.ariente.entities.drone;
 
 
+import com.mojang.blaze3d.systems.RenderSystem;
 import com.mojang.blaze3d.vertex.PoseStack;
 import com.mojang.blaze3d.platform.GlStateManager;
 import net.minecraft.client.renderer.entity.EntityRenderer;
 import net.minecraft.client.renderer.entity.EntityRendererProvider;
-import net.minecraft.client.renderer.entity.LivingRenderer;
+import net.minecraft.client.renderer.entity.LivingEntityRenderer;
 import net.minecraft.resources.ResourceLocation;
-import net.minecraftforge.fml.client.registry.IRenderFactory;
 
 
-
-public class DroneRender extends LivingRenderer<DroneEntity, DroneModel<DroneEntity>> {
+public class DroneRender extends LivingEntityRenderer<DroneEntity, DroneModel<DroneEntity>> {
     private ResourceLocation mobTexture = new ResourceLocation("ariente:textures/entity/drone.png");
     private ResourceLocation mobShootingTexture = new ResourceLocation("ariente:textures/entity/drone_shooting.png");
 
@@ -31,14 +30,14 @@ public class DroneRender extends LivingRenderer<DroneEntity, DroneModel<DroneEnt
 
     @Override
     protected void scale(DroneEntity entitylivingbaseIn, PoseStack matrixStackIn, float partialTickTime) {
-        GlStateManager._scalef(1.5F, 1.5F, 1.5F);
-        GlStateManager._color4f(1.0F, 1.0F, 1.0F, 1.0F);
+        matrixStackIn.scale(1.5F, 1.5F, 1.5F);
+        RenderSystem.setShaderColor(1.0F, 1.0F, 1.0F, 1.0F);
     }
 
-    public static class Factory implements IRenderFactory<DroneEntity> {
+    public static class Factory implements EntityRendererProvider<DroneEntity> {
 
         @Override
-        public EntityRenderer<? super DroneEntity> createRenderFor(EntityRendererProvider.Context manager) {
+        public EntityRenderer<DroneEntity> create(EntityRendererProvider.Context manager) {
             return new DroneRender(manager);
         }
 

@@ -13,16 +13,17 @@ import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.world.InteractionHand;
+import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.level.BlockGetter;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.level.block.Block;
+import net.minecraft.world.level.block.Blocks;
 import net.minecraft.world.level.block.entity.BlockEntity;
 import net.minecraft.world.level.block.state.BlockState;
-import net.minecraft.block.RedstoneWireBlock;
+import net.minecraft.world.level.block.RedStoneWireBlock;
 import net.minecraft.world.entity.player.Player;
-import net.minecraft.item.BlockItem;
-import net.minecraft.item.Item;
+import net.minecraft.world.item.BlockItem;
 import net.minecraft.world.level.block.entity.BlockEntityType;
 
 import javax.annotation.Nullable;
@@ -30,14 +31,13 @@ import java.util.HashMap;
 import java.util.Map;
 
 public abstract class SignalChannelTileEntity extends GenericTileEntity implements ICityEquipment, ISignalChannel {
-
     protected int channel = -1;
     protected int powerOutput = 0;
 
     private int desiredChannel; // Only used for city AI
 
-    public SignalChannelTileEntity(BlockEntityType<?> type) {
-        super(type);
+    public SignalChannelTileEntity(BlockEntityType<?> type, BlockPos pos, BlockState state) {
+        super(type, pos, state);
     }
 
     static boolean isRedstoneChannelItem(Item item) {
@@ -187,8 +187,8 @@ public abstract class SignalChannelTileEntity extends GenericTileEntity implemen
             // Not exactly pretty, but it's how vanilla redstone repeaters do it.
             BlockState blockState = world.getBlockState(pos.relative(side));
             Block b = blockState.getBlock();
-            if (b == Block.REDSTONE_WIRE) {
-                power = Math.max(power, blockState.getValue(RedstoneWireBlock.POWER));
+            if (b == Blocks.REDSTONE_WIRE) {
+                power = Math.max(power, blockState.getValue(RedStoneWireBlock.POWER));
             }
         }
 

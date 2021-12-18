@@ -3,9 +3,9 @@ package mcjty.ariente.blocks.utility.wireless;
 import mcjty.ariente.api.IRedstoneChannels;
 import mcjty.lib.worlddata.AbstractWorldData;
 import net.minecraft.nbt.CompoundTag;
-import net.minecraft.nbt.ListNBT;
+import net.minecraft.nbt.ListTag;
+import net.minecraft.nbt.Tag;
 import net.minecraft.world.level.Level;
-import net.minecraftforge.common.util.Constants;
 
 import java.util.HashMap;
 import java.util.Map;
@@ -18,12 +18,18 @@ public class RedstoneChannels extends AbstractWorldData<RedstoneChannels> implem
 
     private final Map<Integer,RedstoneChannel> channels = new HashMap<>();
 
-    public RedstoneChannels(String name) {
-        super(name);
+    public RedstoneChannels() {
+        super();
     }
 
     public static RedstoneChannels getChannels(Level world) {
-        return getData(world, () -> new RedstoneChannels(REDSTONE_CHANNELS_NAME), REDSTONE_CHANNELS_NAME);
+        return getData(world, RedstoneChannels::createChannels, () -> new RedstoneChannels(), REDSTONE_CHANNELS_NAME);
+    }
+
+    private static RedstoneChannels createChannels(CompoundTag tag) {
+       RedstoneChannels channels = new RedstoneChannels();
+       channels.load(tag);
+       return channels;
     }
 
     public RedstoneChannel getOrCreateChannel(int id) {
@@ -50,10 +56,9 @@ public class RedstoneChannels extends AbstractWorldData<RedstoneChannels> implem
         return lastId;
     }
 
-    @Override
     public void load(CompoundTag tagCompound) {
         channels.clear();
-        ListNBT lst = tagCompound.getList("channels", Constants.NBT.TAG_COMPOUND);
+        ListTag lst = tagCompound.getList("channels", Tag.TAG_COMPOUND);
         for (int i = 0 ; i < lst.size() ; i++) {
             CompoundTag tc = lst.getCompound(i);
             int channel = tc.getInt("channel");
@@ -68,7 +73,7 @@ public class RedstoneChannels extends AbstractWorldData<RedstoneChannels> implem
 
     @Override
     public CompoundTag save(CompoundTag tagCompound) {
-        ListNBT lst = new ListNBT();
+        ListTag lst = new ListTag();
         for (Map.Entry<Integer, RedstoneChannel> entry : channels.entrySet()) {
             CompoundTag tc = new CompoundTag();
             tc.putInt("channel", entry.getKey());

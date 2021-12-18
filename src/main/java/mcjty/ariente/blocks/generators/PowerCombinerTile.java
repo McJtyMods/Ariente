@@ -21,7 +21,7 @@ import net.minecraft.world.level.block.entity.BlockEntity;
 import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.nbt.CompoundTag;
-import net.minecraft.tileentity.ITickableTileEntity;
+// @todo 1.18 import net.minecraft.tileentity.ITickableTileEntity;
 import net.minecraft.world.InteractionHand;
 import net.minecraft.core.BlockPos;
 import net.minecraft.world.phys.BlockHitResult;
@@ -31,14 +31,14 @@ import static mcjty.hologui.api.Icons.*;
 import static mcjty.lib.builder.TooltipBuilder.header;
 import static mcjty.lib.builder.TooltipBuilder.key;
 
-public class PowerCombinerTile extends GenericTileEntity implements ITickableTileEntity, IPowerReceiver, IGuiTile, IPowerUser {
+public class PowerCombinerTile extends GenericTileEntity implements /* @todo 1.18 ITickableTileEntity, */ IPowerReceiver, IGuiTile, IPowerUser {
 
     private long usingPower = 0;
 
     private int powerTransfer = 100;
 
-    public PowerCombinerTile() {
-        super(Registration.POWER_COMBINER_TILE.get());
+    public PowerCombinerTile(BlockPos pos, BlockState state) {
+        super(Registration.POWER_COMBINER_TILE.get(), pos, state);
     }
 
     public static BaseBlock createBlock() {
@@ -62,14 +62,12 @@ public class PowerCombinerTile extends GenericTileEntity implements ITickableTil
         return InteractionResult.SUCCESS;
     }
 
-    @Override
-    public void tick() {
-        if (!level.isClientSide) {
-            usingPower = 0;
-            if (PowerReceiverSupport.consumePower(level, worldPosition, powerTransfer, false)) {
-                usingPower += powerTransfer;
-                sendPower();
-            }
+    // @Override
+    public void tickServer() {
+        usingPower = 0;
+        if (PowerReceiverSupport.consumePower(level, worldPosition, powerTransfer, false)) {
+            usingPower += powerTransfer;
+            sendPower();
         }
     }
 

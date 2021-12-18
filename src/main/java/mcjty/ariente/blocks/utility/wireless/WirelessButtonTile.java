@@ -25,7 +25,6 @@ import net.minecraft.world.phys.shapes.CollisionContext;
 import net.minecraft.world.phys.shapes.Shapes;
 import net.minecraft.world.phys.shapes.VoxelShape;
 import net.minecraft.world.level.Level;
-import net.minecraftforge.common.util.Constants;
 
 import static mcjty.ariente.compat.ArienteTOPDriver.DRIVER;
 import static mcjty.lib.builder.TooltipBuilder.*;
@@ -37,8 +36,8 @@ public class WirelessButtonTile extends SignalChannelTileEntity {
 
     private static final VoxelShape BLOCK_AABB = Shapes.box(1.0D/16.0, 1.0D/16.0, 15.0D/16.0, 15.0D/16.0, 15.0D/16.0, 1.0D);
 
-    public WirelessButtonTile() {
-        super(Registration.WIRELESS_BUTTON_TILE.get());
+    public WirelessButtonTile(BlockPos pos, BlockState state) {
+        super(Registration.WIRELESS_BUTTON_TILE.get(), pos, state);
     }
 
     public static BaseBlock createBlock() {
@@ -84,7 +83,7 @@ public class WirelessButtonTile extends SignalChannelTileEntity {
             // If needed send a render update.
             boolean newLocked = isLocked();
             if (newLocked != locked) {
-                level.sendBlockUpdated(worldPosition, getBlockState(), getBlockState(), Constants.BlockFlags.BLOCK_UPDATE + Constants.BlockFlags.NOTIFY_NEIGHBORS);
+                level.sendBlockUpdated(worldPosition, getBlockState(), getBlockState(), Block.UPDATE_ALL);
             }
         }
     }

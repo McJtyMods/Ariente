@@ -30,8 +30,8 @@ import static mcjty.lib.builder.TooltipBuilder.key;
 
 public class NegariteTankTile extends GenericTileEntity implements IGuiTile, IAlarmMode {
 
-    public NegariteTankTile() {
-        super(Registration.NEGARITE_TANK_TILE.get());
+    public NegariteTankTile(BlockPos pos, BlockState state) {
+        super(Registration.NEGARITE_TANK_TILE.get(), pos, state);
     }
 
     public static BaseBlock createBlock() {

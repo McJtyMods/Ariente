@@ -5,23 +5,24 @@ import mcjty.lib.builder.TooltipBuilder;
 import mcjty.lib.tooltips.ITooltipSettings;
 import net.minecraft.core.BlockPos;
 import net.minecraft.nbt.CompoundTag;
+import net.minecraft.nbt.NbtUtils;
+import net.minecraft.network.chat.Component;
 import net.minecraft.network.chat.TextComponent;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.sounds.SoundSource;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.level.block.Block;
+import net.minecraft.world.level.block.Blocks;
 import net.minecraft.world.level.block.SoundType;
 import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.item.TooltipFlag;
 import net.minecraft.world.entity.player.Player;
-import net.minecraft.item.BlockItem;
-import net.minecraft.item.BlockItemUseContext;
-import net.minecraft.item.ItemUseContext;
-import net.minecraft.nbt.NBTUtil;
+import net.minecraft.world.item.BlockItem;
+import net.minecraft.world.item.context.BlockPlaceContext;
+import net.minecraft.world.item.context.UseOnContext;
 import net.minecraft.world.level.block.entity.BlockEntity;
 import net.minecraft.world.InteractionResult;
 import net.minecraft.world.InteractionHand;
-import net.minecraft.util.text.StringTextComponent;
 import net.minecraft.world.level.Level;
 import net.minecraftforge.registries.ForgeRegistries;
 
@@ -30,8 +31,6 @@ import javax.annotation.Nullable;
 import java.util.List;
 
 import static mcjty.lib.builder.TooltipBuilder.*;
-
-import net.minecraft.item.Item.Properties;
 
 public class FacadeItemBlock extends BlockItem implements ITooltipSettings {
 
@@ -66,14 +65,14 @@ public class FacadeItemBlock extends BlockItem implements ITooltipSettings {
     }
 
     @Override
-    public void appendHoverText(ItemStack stack, @Nullable Level worldIn, List<TextComponent> tooltip, TooltipFlag flag) {
+    public void appendHoverText(ItemStack stack, @Nullable Level worldIn, List<Component> tooltip, TooltipFlag flag) {
         super.appendHoverText(stack, worldIn, tooltip, flag);
         tooltipBuilder.makeTooltip(getRegistryName(), stack, tooltip, flag);
     }
 
     public static void setMimicBlock(@Nonnull ItemStack item, BlockState mimicBlock) {
         CompoundTag tagCompound = new CompoundTag();
-        CompoundTag nbt = NBTUtil.writeBlockState(mimicBlock);
+        CompoundTag nbt = NbtUtils.writeBlockState(mimicBlock);
         tagCompound.put("mimic", nbt);
         item.setTag(tagCompound);
     }
@@ -81,19 +80,19 @@ public class FacadeItemBlock extends BlockItem implements ITooltipSettings {
     public static BlockState getMimicBlock(@Nonnull ItemStack stack) {
         CompoundTag tagCompound = stack.getTag();
         if (tagCompound == null || !tagCompound.contains("mimic")) {
-            return Block.COBBLESTONE.defaultBlockState();
+            return Blocks.COBBLESTONE.defaultBlockState();
         } else {
-            return NBTUtil.readBlockState(tagCompound.getCompound("mimic"));
+            return NbtUtils.readBlockState(tagCompound.getCompound("mimic"));
         }
     }
 
     @Override
-    protected boolean canPlace(BlockItemUseContext context, BlockState state) {
+    protected boolean canPlace(BlockPlaceContext context, BlockState state) {
         return true;
     }
 
     @Override
-    public InteractionResult useOn(ItemUseContext context) {
+    public InteractionResult useOn(UseOnContext context) {
         Level world = context.getLevel();
         BlockPos pos = context.getClickedPos();
         Player player = context.getPlayer();
@@ -120,7 +119,7 @@ public class FacadeItemBlock extends BlockItem implements ITooltipSettings {
             } else {
                 setMimicBlock(itemstack, state);
                 if (world.isClientSide) {
-                    player.displayClientMessage(new StringTextComponent("Facade is now mimicing " + block.getDescriptionId()), false);
+                    player.displayClientMessage(new TextComponent("Facade is now mimicing " + block.getDescriptionId()), false);
                 }
             }
             return InteractionResult.SUCCESS;

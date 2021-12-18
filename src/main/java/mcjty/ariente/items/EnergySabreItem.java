@@ -6,26 +6,26 @@ import mcjty.ariente.Ariente;
 import mcjty.ariente.setup.Registration;
 import net.minecraft.world.entity.EquipmentSlot;
 import net.minecraft.world.entity.LivingEntity;
+import net.minecraft.world.entity.ai.attributes.Attributes;
+import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemStack;
+import net.minecraft.world.item.Tiers;
 import net.minecraft.world.level.block.Block;
 import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.level.material.Material;
 import net.minecraft.world.entity.ai.attributes.Attribute;
-import net.minecraft.entity.ai.attributes.Attributes;
 import net.minecraft.world.entity.ai.attributes.AttributeModifier;
-import net.minecraft.item.Item;
-import net.minecraft.item.ItemTier;
 import net.minecraft.core.BlockPos;
 import net.minecraft.world.level.Level;
 
 public class EnergySabreItem extends Item {
 
     protected final float attackDamage;
-    private final ItemTier tier;
+    private final Tiers tier;
 
     public EnergySabreItem() {
-        super(new Properties().tab(Ariente.setup.getTab()).stacksTo(1).durability(ItemTier.DIAMOND.getUses()));
-        this.tier = ItemTier.DIAMOND;
+        super(new Properties().tab(Ariente.setup.getTab()).stacksTo(1).durability(Tiers.DIAMOND.getUses()));
+        this.tier = Tiers.DIAMOND;
         this.attackDamage = 12.0F;
     }
 
@@ -37,7 +37,7 @@ public class EnergySabreItem extends Item {
     public float getDestroySpeed(ItemStack stack, BlockState state) {
         Block block = state.getBlock();
         Material material = state.getMaterial();
-        return material != Material.PLANT && material != Material.PLANT && material != Material.CORAL && material != Material.LEAVES && material != Material.VEGETABLE ? 1.0F : 1.5F;
+        return material != Material.PLANT && material != Material.PLANT /* @todo 1.18 && material != Material.CORAL */ && material != Material.LEAVES && material != Material.VEGETABLE ? 1.0F : 1.5F;
     }
 
     @Override

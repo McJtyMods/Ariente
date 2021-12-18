@@ -24,7 +24,7 @@ import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.InteractionHand;
 import net.minecraft.world.phys.AABB;
 import net.minecraft.world.phys.BlockHitResult;
-import net.minecraft.world.storage.IWorldInfo;
+import net.minecraft.world.level.storage.LevelData;
 
 import static mcjty.ariente.compat.ArienteTOPDriver.DRIVER;
 import static mcjty.lib.builder.TooltipBuilder.header;
@@ -37,8 +37,8 @@ public class WarperTile extends GenericTileEntity implements IGuiTile, IWarper {
 
     private int charges = 0;
 
-    public WarperTile() {
-        super(Registration.WARPER_TILE.get());
+    public WarperTile(BlockPos pos, BlockState state) {
+        super(Registration.WARPER_TILE.get(), pos, state);
     }
 
     public static BaseBlock createBlock() {
@@ -63,10 +63,9 @@ public class WarperTile extends GenericTileEntity implements IGuiTile, IWarper {
         return InteractionResult.SUCCESS;
     }
 
-
     @Override
-    public void setLevelAndPosition(Level worldIn, BlockPos pos) {
-        super.setLevelAndPosition(worldIn, pos);
+    public void setLevel(Level worldIn) {
+        super.setLevel(worldIn);
         if (Ariente.setup.arienteWorld) {
             ResourceKey<Level> dim = ArienteWorldCompat.getArienteWorld().getDimension();
             if (worldIn != null && dim == worldIn.dimension()) {
@@ -147,7 +146,7 @@ public class WarperTile extends GenericTileEntity implements IGuiTile, IWarper {
             if (!level.isClientSide) {
                 BlockPos bedLocation = player.getSleepingPos().get();
                 if (bedLocation == null) {
-                    IWorldInfo worldInfo = level.getLevelData();
+                    LevelData worldInfo = level.getLevelData();
                     bedLocation = new BlockPos(worldInfo.getXSpawn(),worldInfo.getYSpawn(), worldInfo.getZSpawn());
                 }
                 while (!level.isEmptyBlock(bedLocation) && !level.isEmptyBlock(bedLocation.above()) && bedLocation.getY() < level.getMaxBuildHeight()-2) {

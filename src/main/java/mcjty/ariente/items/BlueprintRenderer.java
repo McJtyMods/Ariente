@@ -4,19 +4,22 @@ import com.mojang.blaze3d.vertex.PoseStack;
 import com.mojang.math.Vector3f;
 import mcjty.ariente.setup.Registration;
 import net.minecraft.client.Minecraft;
+import net.minecraft.client.model.geom.EntityModelSet;
 import net.minecraft.client.renderer.MultiBufferSource;
+import net.minecraft.client.renderer.blockentity.BlockEntityRenderDispatcher;
 import net.minecraft.client.renderer.entity.ItemRenderer;
 import net.minecraft.client.renderer.block.model.ItemTransforms;
 import net.minecraft.client.resources.model.BakedModel;
 import net.minecraft.client.renderer.texture.OverlayTexture;
-import net.minecraft.client.renderer.tileentity.ItemStackTileEntityRenderer;
+import net.minecraft.client.renderer.BlockEntityWithoutLevelRenderer;
 import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.item.ItemStack;
 
-import java.util.concurrent.Callable;
+public class BlueprintRenderer extends BlockEntityWithoutLevelRenderer {
 
-public class BlueprintRenderer extends ItemStackTileEntityRenderer {
-
+    public BlueprintRenderer(BlockEntityRenderDispatcher dispatcher, EntityModelSet modelSet) {
+        super(dispatcher, modelSet);
+    }
 
     @Override
     public void renderByItem(ItemStack stack, ItemTransforms.TransformType p_239207_2_, PoseStack matrixStack, MultiBufferSource buffer, int combinedLightIn, int combinedOverlayIn) {
@@ -27,7 +30,7 @@ public class BlueprintRenderer extends ItemStackTileEntityRenderer {
 
         ItemRenderer itemRender = Minecraft.getInstance().getItemRenderer();
         ItemStack itm = new ItemStack(Registration.BLUEPRINT.get());
-        BakedModel ibakedmodel = itemRender.getModel(itm, Minecraft.getInstance().level, (LivingEntity)null);
+        BakedModel ibakedmodel = itemRender.getModel(itm, Minecraft.getInstance().level, (LivingEntity)null, 1);
         int lightmapValue = 140;
         itemRender.render(itm, ItemTransforms.TransformType.GUI, false, matrixStack, buffer, lightmapValue, OverlayTexture.NO_OVERLAY, ibakedmodel);
 
@@ -49,13 +52,9 @@ public class BlueprintRenderer extends ItemStackTileEntityRenderer {
             matrixStack.mulPose(Vector3f.YP.rotationDegrees(angle));
 
             ItemRenderer itemRender = Minecraft.getInstance().getItemRenderer();
-            BakedModel ibakedmodel = itemRender.getModel(stack, Minecraft.getInstance().level, (LivingEntity)null);
+            BakedModel ibakedmodel = itemRender.getModel(stack, Minecraft.getInstance().level, (LivingEntity)null, 1);
             int lightmapValue = 140;
             itemRender.render(stack, ItemTransforms.TransformType.GUI, false, matrixStack, buffer, lightmapValue, OverlayTexture.NO_OVERLAY, ibakedmodel);
         }
-    }
-
-    public static Callable createRenderer() {
-        return BlueprintRenderer::new;
     }
 }

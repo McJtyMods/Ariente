@@ -2,11 +2,11 @@ package mcjty.ariente.sounds;
 
 import com.google.common.collect.Maps;
 import net.minecraft.client.Minecraft;
-import net.minecraft.client.audio.TickableSound;
+import net.minecraft.client.resources.sounds.AbstractTickableSoundInstance;
 import net.minecraft.sounds.SoundEvent;
 import net.minecraft.core.BlockPos;
 import net.minecraft.world.level.Level;
-import net.minecraft.world.DimensionType;
+import net.minecraft.world.level.dimension.DimensionType;
 import org.apache.commons.lang3.tuple.Pair;
 
 import java.util.Map;
@@ -18,7 +18,7 @@ public class SoundController {
     public static void stopForcefieldSounds(Level worldObj, BlockPos pos) {
         Pair<DimensionType, BlockPos> g = fromPosition(worldObj, pos);
         if (forcefieldSounds.containsKey(g)) {
-            TickableSound movingSound = forcefieldSounds.get(g);
+            AbstractTickableSoundInstance movingSound = forcefieldSounds.get(g);
             Minecraft.getInstance().getSoundManager().stop(movingSound);
             forcefieldSounds.remove(g);
         }

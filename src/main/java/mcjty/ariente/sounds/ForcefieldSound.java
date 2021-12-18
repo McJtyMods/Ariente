@@ -1,15 +1,14 @@
 package mcjty.ariente.sounds;
 
-import net.minecraft.client.audio.TickableSound;
+import net.minecraft.client.resources.sounds.AbstractTickableSoundInstance;
+import net.minecraft.client.resources.sounds.SoundInstance.Attenuation;
 import net.minecraft.sounds.SoundEvent;
 import net.minecraft.sounds.SoundSource;
 import net.minecraft.world.level.block.entity.BlockEntity;
 import net.minecraft.core.BlockPos;
 import net.minecraft.world.level.Level;
 
-import net.minecraft.client.audio.ISound.AttenuationType;
-
-public class ForcefieldSound extends TickableSound {
+public class ForcefieldSound extends AbstractTickableSoundInstance {
 
     private final Level world;
     private final BlockPos pos;
@@ -22,7 +21,7 @@ public class ForcefieldSound extends TickableSound {
         this.x = pos.getX();
         this.y = pos.getY();
         this.z = pos.getZ();
-        this.attenuation = AttenuationType.LINEAR;
+        this.attenuation = Attenuation.LINEAR;
         this.looping = true;
         this.delay = 0;
         this.soundEvent = event;

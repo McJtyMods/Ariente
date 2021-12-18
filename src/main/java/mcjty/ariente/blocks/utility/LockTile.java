@@ -31,7 +31,6 @@ import net.minecraft.world.phys.shapes.CollisionContext;
 import net.minecraft.world.phys.shapes.VoxelShape;
 import net.minecraft.world.phys.shapes.Shapes;
 import net.minecraft.world.level.BlockGetter;
-import net.minecraftforge.common.util.Constants;
 
 import java.util.HashMap;
 import java.util.Map;
@@ -52,8 +51,8 @@ public class LockTile extends GenericTileEntity implements IGuiTile, IKeyCardSlo
 
     private static final VoxelShape BLOCK_AABB = Shapes.box(1.0D/16.0, 1.0D/16.0, 15.0D/16.0, 15.0D/16.0, 15.0D/16.0, 1.0D);
 
-    public LockTile() {
-        super(Registration.LOCK_TILE.get());
+    public LockTile(BlockPos pos, BlockState state) {
+        super(Registration.LOCK_TILE.get(), pos, state);
     }
 
     public static BaseBlock createBlock() {
@@ -95,7 +94,7 @@ public class LockTile extends GenericTileEntity implements IGuiTile, IKeyCardSlo
             // If needed send a render update.
             boolean newLocked = isLocked();
             if (newLocked != locked) {
-                level.sendBlockUpdated(worldPosition, getBlockState(), getBlockState(), Constants.BlockFlags.BLOCK_UPDATE + Constants.BlockFlags.NOTIFY_NEIGHBORS);
+                level.sendBlockUpdated(worldPosition, getBlockState(), getBlockState(), Block.UPDATE_ALL);
             }
         }
     }

@@ -13,8 +13,8 @@ import net.minecraft.world.level.block.Block;
 import net.minecraft.world.level.block.entity.BlockEntity;
 import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.level.material.Material;
-import net.minecraft.entity.MobEntity;
-import net.minecraft.pathfinding.PathNodeType;
+import net.minecraft.world.level.pathfinder.BlockPathTypes;
+import net.minecraft.world.level.pathfinder.PathComputationType;
 import net.minecraft.world.phys.shapes.CollisionContext;
 import net.minecraft.world.phys.shapes.Shapes;
 import net.minecraft.world.phys.shapes.VoxelShape;
@@ -24,8 +24,8 @@ import javax.annotation.Nullable;
 
 public class InvisibleDoorTile extends GenericTileEntity implements ILockable {
 
-    public InvisibleDoorTile() {
-        super(Registration.INVISIBLE_DOOR_TILE.get());
+    public InvisibleDoorTile(BlockPos pos, BlockState state) {
+        super(Registration.INVISIBLE_DOOR_TILE.get(), pos, state);
     }
 
     public static BaseBlock createBlock() {
@@ -49,24 +49,23 @@ public class InvisibleDoorTile extends GenericTileEntity implements ILockable {
                 return Shapes.empty();
             }
 
-            @Nullable
+            @Deprecated
             @Override
-            public PathNodeType getAiPathNodeType(BlockState state, BlockGetter world, BlockPos pos, @Nullable MobEntity entity) {
-                return InvisibleDoorTile.getAiPathNodeType(state, world, pos);
+            public boolean isPathfindable(BlockState state, BlockGetter world, BlockPos pos, PathComputationType pathType) {
+                return InvisibleDoorTile.isPathfindable(state, world, pos, pathType);
             }
         };
     }
 
-    @Nonnull
-    public static PathNodeType getAiPathNodeType(BlockState state, BlockGetter world, BlockPos pos) {
+    public static boolean isPathfindable(BlockState state, BlockGetter world, BlockPos pos, PathComputationType pathType) {
         BlockEntity te = world.getBlockEntity(pos);
-        if (te instanceof InvisibleDoorTile) {
-            DoorMarkerTile door = ((InvisibleDoorTile) te).findDoorMarker();
-            if (door.isOpen()) {
-                return PathNodeType.OPEN;
-            }
+
+        if (te instanceof InvisibleDoorTile doorMarker) {
+            DoorMarkerTile door = doorMarker.findDoorMarker();
+            return door.isOpen();
         }
-        return PathNodeType.BLOCKED;
+
+        return false;
     }
 
     public static VoxelShape getCollisionShape(BlockState blockState, BlockGetter world, BlockPos pos) {

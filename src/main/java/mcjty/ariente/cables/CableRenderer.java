@@ -9,23 +9,25 @@ import mcjty.ariente.client.ArienteRenderType;
 import mcjty.ariente.client.ArienteSpriteUploader;
 import mcjty.lib.client.RenderHelper;
 import net.minecraft.client.renderer.MultiBufferSource;
+import net.minecraft.client.renderer.blockentity.BlockEntityRenderer;
+import net.minecraft.client.renderer.blockentity.BlockEntityRendererProvider;
+import net.minecraft.client.renderer.blockentity.BlockEntityRenderers;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.level.block.Block;
 import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.renderer.texture.TextureAtlasSprite;
-import net.minecraft.client.renderer.tileentity.TileEntityRenderer;
-import net.minecraft.client.renderer.tileentity.TileEntityRendererDispatcher;
+import net.minecraft.client.renderer.blockentity.BlockEntityRenderDispatcher;
 import net.minecraft.world.level.block.entity.BlockEntityType;
 import net.minecraft.world.phys.Vec3;
-import net.minecraftforge.fml.client.registry.ClientRegistry;
+import net.minecraftforge.client.ClientRegistry;
 
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Random;
 import java.util.function.Consumer;
 
-public class CableRenderer extends TileEntityRenderer<GenericCableTileEntity> {
+public class CableRenderer implements BlockEntityRenderer<GenericCableTileEntity> {
 
     private Random random = new Random();
     private static ResourceLocation negarite_laserbeams[] = new ResourceLocation[4];
@@ -103,8 +105,10 @@ public class CableRenderer extends TileEntityRenderer<GenericCableTileEntity> {
                 info.player, .1f);
     }
 
-    public CableRenderer(TileEntityRendererDispatcher rendererDispatcherIn) {
-        super(rendererDispatcherIn);
+    protected BlockEntityRendererProvider.Context context;
+
+    public CableRenderer(BlockEntityRendererProvider.Context pContext) {
+        context = pContext;
     }
 
     @Override
@@ -153,7 +157,7 @@ public class CableRenderer extends TileEntityRenderer<GenericCableTileEntity> {
     }
 
     public static void register(BlockEntityType<? extends GenericCableTileEntity> type) {
-        ClientRegistry.bindTileEntityRenderer(type, CableRenderer::new);
+        BlockEntityRenderers.register(type, CableRenderer::new);
     }
 
 }

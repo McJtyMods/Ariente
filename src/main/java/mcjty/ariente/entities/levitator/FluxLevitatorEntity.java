@@ -11,30 +11,29 @@ import net.minecraft.core.Direction;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.network.protocol.Packet;
 import net.minecraft.server.level.ServerLevel;
+import net.minecraft.util.Mth;
 import net.minecraft.world.InteractionHand;
 import net.minecraft.world.InteractionResult;
+import net.minecraft.world.damagesource.DamageSource;
 import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.EntityType;
+import net.minecraft.world.entity.MoverType;
+import net.minecraft.world.entity.animal.IronGolem;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.ItemStack;
+import net.minecraft.world.level.GameRules;
 import net.minecraft.world.level.block.Block;
 import net.minecraft.world.level.block.state.BlockState;
-import net.minecraft.entity.MoverType;
-import net.minecraft.entity.passive.IronGolemEntity;
 import net.minecraft.network.syncher.EntityDataAccessor;
 import net.minecraft.network.syncher.EntityDataSerializers;
 import net.minecraft.network.syncher.SynchedEntityData;
 import net.minecraft.server.MinecraftServer;
-import net.minecraft.state.properties.BlockStateProperties;
+import net.minecraft.world.level.block.state.properties.BlockStateProperties;
 import net.minecraft.world.level.block.state.properties.RailShape;
-import net.minecraft.util.DamageSource;
 import net.minecraft.world.phys.AABB;
-import net.minecraft.util.math.MathHelper;
 import net.minecraft.world.phys.Vec3;
-import net.minecraft.world.GameRules;
 import net.minecraft.world.level.Level;
-import net.minecraft.world.DimensionType;
-import net.minecraftforge.fml.network.NetworkHooks;
+import net.minecraftforge.network.NetworkHooks;
 import org.apache.commons.lang3.tuple.Pair;
 
 import javax.annotation.Nullable;
@@ -253,8 +252,8 @@ public class FluxLevitatorEntity extends Entity implements IFluxLevitatorEntity 
 
 
     @Override
-    protected boolean isMovementNoisy() {
-        return false;
+    protected Entity.MovementEmission getMovementEmission() {
+        return MovementEmission.EVENTS;
     }
 
     @Override
@@ -305,13 +304,13 @@ public class FluxLevitatorEntity extends Entity implements IFluxLevitatorEntity 
                 this.setRollingAmplitude(10);
                 this.markHurt();
                 this.setDamage(this.getDamage() + amount * 10.0F);
-                boolean flag = source.getEntity() instanceof Player && ((Player) source.getEntity()).abilities.instabuild;
+                boolean flag = source.getEntity() instanceof Player && ((Player) source.getEntity()).getAbilities().instabuild;
 
                 if (flag || this.getDamage() > 40.0F) {
                     this.ejectPassengers();
 
                     if (flag && !this.hasCustomName()) {
-                        this.remove();
+                        this.remove(RemovalReason.DISCARDED);
                     } else {
                         this.killLevitator(source);
                     }
@@ -325,22 +324,22 @@ public class FluxLevitatorEntity extends Entity implements IFluxLevitatorEntity 
     }
 
     @Override
-    public void remove() {
+    public void remove(RemovalReason reason) {
         if (getHoloGuiFront() != null) {
             holoGuiFront.getEntity().stopRiding();
-            holoGuiFront.getEntity().remove();
+            holoGuiFront.getEntity().remove(reason);
             holoGuiFront = null;
         }
         if (getHoloGuiBack() != null) {
             holoGuiBack.getEntity().stopRiding();
-            holoGuiBack.getEntity().remove();
+            holoGuiBack.getEntity().remove(reason);
             holoGuiBack = null;
         }
-        super.remove();
+        super.remove(reason);
     }
 
     public void killLevitator(DamageSource source) {
-        this.remove();
+        this.remove(RemovalReason.KILLED);
 
         if (level.getGameRules().getBoolean(GameRules.RULE_DOENTITYDROPS)) {
             ItemStack itemstack = new ItemStack(Registration.FLUX_LEVITATOR.get(), 1);
@@ -407,9 +406,9 @@ public class FluxLevitatorEntity extends Entity implements IFluxLevitatorEntity 
             setDeltaMovement(getDeltaMovement().x, getDeltaMovement().y - 0.04D, getDeltaMovement().z);
         }
 
-        int floorX = MathHelper.floor(this.getX());
-        int floorY = MathHelper.floor(this.getY());
-        int floorZ = MathHelper.floor(this.getZ());
+        int floorX = Mth.floor(this.getX());
+        int floorY = Mth.floor(this.getY());
+        int floorZ = Mth.floor(this.getZ());
 
         Block block = level.getBlockState(new BlockPos(floorX, floorY - 1, floorZ)).getBlock();
         if (isValidBeamBlock(block)) {
@@ -426,14 +425,14 @@ public class FluxLevitatorEntity extends Entity implements IFluxLevitatorEntity 
         }
 
         this.checkInsideBlocks();
-        this.xRot = 0.0F;
+        this.setXRot(0.0F);
         double dx = this.xo - this.getX();
         double dz = this.zo - this.getZ();
 
         if (dx * dx + dz * dz > 0.001D) {
-            this.yRot = (float) (MathHelper.atan2(dz, dx) * 180.0D / Math.PI);
+            this.setYRot((float) (Mth.atan2(dz, dx) * 180.0D / Math.PI));
             if (isInReverse) {
-                yRot += 180;
+                setYRot(getYRot()+180);
             }
         } else {
             // If we couldn't move for some reason we slowly decrease speed
@@ -444,14 +443,14 @@ public class FluxLevitatorEntity extends Entity implements IFluxLevitatorEntity 
             }
         }
 
-        double angle = MathHelper.wrapDegrees(this.yRot - this.yRotO);
+        double angle = Mth.wrapDegrees(this.getYRot() - this.yRotO);
         if (angle < -170.0D || angle >= 170.0D) {
-            this.yRot += 180.0F;
+            setYRot(getYRot()+180);
 //            this.isInReverse = !this.isInReverse;
             isInReverse = false;
         }
 
-        this.setRot(this.yRot, this.xRot);
+        this.setRot(this.getYRot(), this.getXRot());
 
         handleEntityCollision();
         // @todo 1.16 handleWaterMovement();
@@ -470,7 +469,7 @@ public class FluxLevitatorEntity extends Entity implements IFluxLevitatorEntity 
 
             if (!list.isEmpty()) {
                 for (Entity ent : list) {
-                    if (!(ent instanceof Player) && !(ent instanceof IronGolemEntity) && !(ent instanceof FluxLevitatorEntity) && !this.isVehicle() && !ent.isPassenger()) {
+                    if (!(ent instanceof Player) && !(ent instanceof IronGolem) && !(ent instanceof FluxLevitatorEntity) && !this.isVehicle() && !ent.isPassenger()) {
                         ent.startRiding(this);
                     } else {
                         ent.push(this);
@@ -491,15 +490,15 @@ public class FluxLevitatorEntity extends Entity implements IFluxLevitatorEntity 
             double turnX = getX() + (levitatorX - getX()) / turnProgress;
             double turnY = getY() + (levitatorY - getY()) / turnProgress;
             double turnZ = getZ() + (levitatorZ - getZ()) / turnProgress;
-            double yaw = MathHelper.wrapDegrees(levitatorYaw - yRot);
-            yRot = (float) (yRot + yaw / turnProgress);
-            xRot = (float) (xRot + (levitatorPitch - xRot) / turnProgress);
+            double yaw = Mth.wrapDegrees(levitatorYaw - getYRot());
+            setYRot((float) (getYRot() + yaw / turnProgress));
+            setXRot((float) (getXRot() + (levitatorPitch - getXRot()) / turnProgress));
             --turnProgress;
             setPos(turnX, turnY, turnZ);
-            setRot(yRot, xRot);
+            setRot(getYRot(), getXRot());
         } else {
             setPos(getX(), getY(), getZ());
-            setRot(yRot, xRot);
+            setRot(getYRot(), getXRot());
         }
     }
 
@@ -577,8 +576,8 @@ public class FluxLevitatorEntity extends Entity implements IFluxLevitatorEntity 
         double motionX = getDeltaMovement().x;
         double motionY = getDeltaMovement().y;
         double motionZ = getDeltaMovement().z;
-        motionX = MathHelper.clamp(motionX, -speed, speed);
-        motionZ = MathHelper.clamp(motionZ, -speed, speed);
+        motionX = Mth.clamp(motionX, -speed, speed);
+        motionZ = Mth.clamp(motionZ, -speed, speed);
 
         double moveY = motionY;
 
@@ -672,9 +671,9 @@ public class FluxLevitatorEntity extends Entity implements IFluxLevitatorEntity 
         this.setPos(posX, this.getY(), posZ);
         this.moveLevitatorOnBeam(pos);
 
-        if (aint[0][1] != 0 && MathHelper.floor(this.getX()) - pos.getX() == aint[0][0] && MathHelper.floor(this.getZ()) - pos.getZ() == aint[0][2]) {
+        if (aint[0][1] != 0 && Mth.floor(this.getX()) - pos.getX() == aint[0][0] && Mth.floor(this.getZ()) - pos.getZ() == aint[0][2]) {
             this.setPos(this.getX(), this.getY() + aint[0][1], this.getZ());
-        } else if (aint[1][1] != 0 && MathHelper.floor(this.getX()) - pos.getX() == aint[1][0] && MathHelper.floor(this.getZ()) - pos.getZ() == aint[1][2]) {
+        } else if (aint[1][1] != 0 && Mth.floor(this.getX()) - pos.getX() == aint[1][0] && Mth.floor(this.getZ()) - pos.getZ() == aint[1][2]) {
             this.setPos(this.getX(), this.getY() + aint[1][1], this.getZ());
         }
 
@@ -698,8 +697,8 @@ public class FluxLevitatorEntity extends Entity implements IFluxLevitatorEntity 
             this.setPos(this.getX(), newPos.y, this.getZ());
         }
 
-        int floorX = MathHelper.floor(this.getX());
-        int floorZ = MathHelper.floor(this.getZ());
+        int floorX = Mth.floor(this.getX());
+        int floorZ = Mth.floor(this.getZ());
 
         if (floorX != pos.getX() || floorZ != pos.getZ()) {
             motionLength = Math.sqrt(motionX * motionX + motionZ * motionZ);
@@ -899,8 +898,8 @@ public class FluxLevitatorEntity extends Entity implements IFluxLevitatorEntity 
     // Calculate yaw and pitch based on block below the levitator
     private Pair<Float, Float> calculateYawPitch() {
         Vec3 oldPos = getPos(getX(), getY(), getZ());
-        float yaw = yRot;
-        float pitch = xRot;
+        float yaw = getYRot();
+        float pitch = getXRot();
 
         if (oldPos != null) {
             Vec3 posUp = getPosOffset(getX(), getY(), getZ(), 0.3D);
@@ -928,9 +927,9 @@ public class FluxLevitatorEntity extends Entity implements IFluxLevitatorEntity 
     // Client only
     @Nullable
     public Vec3 getPosOffset(double x, double y, double z, double offset) {
-        int floorX = MathHelper.floor(x);
-        int floorY = MathHelper.floor(y);
-        int floorZ = MathHelper.floor(z);
+        int floorX = Mth.floor(x);
+        int floorY = Mth.floor(y);
+        int floorZ = Mth.floor(z);
 
         Block block = level.getBlockState(new BlockPos(floorX, floorY - 1, floorZ)).getBlock();
         if (isValidBeamBlock(block)) {
@@ -956,9 +955,9 @@ public class FluxLevitatorEntity extends Entity implements IFluxLevitatorEntity 
             x = x + dx * offset;
             z = z + dz * offset;
 
-            if (aint[0][1] != 0 && MathHelper.floor(x) - floorX == aint[0][0] && MathHelper.floor(z) - floorZ == aint[0][2]) {
+            if (aint[0][1] != 0 && Mth.floor(x) - floorX == aint[0][0] && Mth.floor(z) - floorZ == aint[0][2]) {
                 y += aint[0][1];
-            } else if (aint[1][1] != 0 && MathHelper.floor(x) - floorX == aint[1][0] && MathHelper.floor(z) - floorZ == aint[1][2]) {
+            } else if (aint[1][1] != 0 && Mth.floor(x) - floorX == aint[1][0] && Mth.floor(z) - floorZ == aint[1][2]) {
                 y += aint[1][1];
             }
 
@@ -970,9 +969,9 @@ public class FluxLevitatorEntity extends Entity implements IFluxLevitatorEntity 
 
     @Nullable
     public Vec3 getPos(double x, double y, double z) {
-        int floorX = MathHelper.floor(x);
-        int floorY = MathHelper.floor(y);
-        int floorZ = MathHelper.floor(z);
+        int floorX = Mth.floor(x);
+        int floorY = Mth.floor(y);
+        int floorZ = Mth.floor(z);
 
         Block block = level.getBlockState(new BlockPos(floorX, floorY - 1, floorZ)).getBlock();
         if (isValidBeamBlock(block)) {
@@ -1082,7 +1081,7 @@ public class FluxLevitatorEntity extends Entity implements IFluxLevitatorEntity 
                     double length = dx * dx + dz * dz;
 
                     if (length >= .0001D) {
-                        length = MathHelper.sqrt(length);
+                        length = Mth.sqrt((float)length);
                         dx = dx / length;
                         dz = dz / length;
                         double invLength = 1.0D / length;
@@ -1095,8 +1094,8 @@ public class FluxLevitatorEntity extends Entity implements IFluxLevitatorEntity 
                         dz = dz * invLength;
                         dx = dx * 0.1D;
                         dz = dz * 0.1D;
-                        dx = dx * (1.0F - this.pushthrough);
-                        dz = dz * (1.0F - this.pushthrough);
+                        // @todo 1.18 dx = dx * (1.0F - this.pushthrough);
+                        // @todo 1.18 dz = dz * (1.0F - this.pushthrough);
                         dx = dx * 0.5D;
                         dz = dz * 0.5D;
 
@@ -1104,7 +1103,7 @@ public class FluxLevitatorEntity extends Entity implements IFluxLevitatorEntity 
                             double ddx = entityIn.getX() - this.getX();
                             double ddz = entityIn.getZ() - this.getZ();
                             Vec3 vec3d = (new Vec3(ddx, 0.0D, ddz)).normalize();
-                            Vec3 vec3d1 = (new Vec3(MathHelper.cos(this.yRot * 0.017453292F), 0.0D, MathHelper.sin(this.yRot * 0.017453292F))).normalize();
+                            Vec3 vec3d1 = (new Vec3(Mth.cos(this.getYRot() * 0.017453292F), 0.0D, Mth.sin(this.getYRot() * 0.017453292F))).normalize();
                             double d6 = Math.abs(vec3d.dot(vec3d1));
 
                             if (d6 < 0.8D) {
@@ -1209,9 +1208,9 @@ public class FluxLevitatorEntity extends Entity implements IFluxLevitatorEntity 
 
 
     private BlockPos getCurrentRailPosition() {
-        int x = MathHelper.floor(this.getX());
-        int y = MathHelper.floor(this.getY());
-        int z = MathHelper.floor(this.getZ());
+        int x = Mth.floor(this.getX());
+        int y = Mth.floor(this.getY());
+        int z = Mth.floor(this.getZ());
 
         Block block = level.getBlockState(new BlockPos(x, y - 1, z)).getBlock();
         if (isValidBeamBlock(block)) {
@@ -1245,8 +1244,8 @@ public class FluxLevitatorEntity extends Entity implements IFluxLevitatorEntity 
         }
 
         double max = this.getMaxSpeed();
-        mX = MathHelper.clamp(mX, -max, max);
-        mZ = MathHelper.clamp(mZ, -max, max);
+        mX = Mth.clamp(mX, -max, max);
+        mZ = Mth.clamp(mZ, -max, max);
         this.move(MoverType.SELF, new Vec3(mX, 0.0D, mZ));
     }
 }

@@ -29,9 +29,8 @@ import net.minecraft.world.level.block.Block;
 import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.level.block.state.StateDefinition;
-import net.minecraft.tileentity.ITickableTileEntity;
+// @todo 1.18 import net.minecraft.tileentity.ITickableTileEntity;
 import net.minecraft.world.phys.BlockHitResult;
-import net.minecraftforge.common.util.Constants;
 import net.minecraftforge.common.util.Lazy;
 import net.minecraftforge.common.util.LazyOptional;
 
@@ -43,7 +42,7 @@ import static mcjty.hologui.api.Icons.*;
 import static mcjty.lib.builder.TooltipBuilder.header;
 import static mcjty.lib.builder.TooltipBuilder.key;
 
-public class PosiriteGeneratorTile extends GenericTileEntity implements ITickableTileEntity, IGuiTile, IPowerBlob, IAlarmMode, IPowerSender, IGenerator {
+public class PosiriteGeneratorTile extends GenericTileEntity implements /* @todo 1.18 ITickableTileEntity, */ IGuiTile, IPowerBlob, IAlarmMode, IPowerSender, IGenerator {
 
     public static final int POWERGEN = 1000;        // @todo configurable and based on tanks!
 
@@ -59,8 +58,8 @@ public class PosiriteGeneratorTile extends GenericTileEntity implements ITickabl
     // @todo, temporary: base on tanks later!
     private int dustCounter;        // Number of ticks before the current dust depletes
 
-    public PosiriteGeneratorTile() {
-        super(Registration.POSIRITE_GENERATOR_TILE.get());
+    public PosiriteGeneratorTile(BlockPos pos, BlockState state) {
+        super(Registration.POSIRITE_GENERATOR_TILE.get(), pos, state);
     }
 
     public static BaseBlock createBlock() {
@@ -119,27 +118,25 @@ public class PosiriteGeneratorTile extends GenericTileEntity implements ITickabl
         return true;
     }
 
-    @Override
-    public void tick() {
-        if (!level.isClientSide) {
-            if (!isMachineEnabled()) {
-                return;
-            }
-            if (dustCounter > 0) {
-                dustCounter--;
-                if (dustCounter == 0 && !canProceed()) {
-                    markDirtyClient();
-                } else {
-                    markDirtyQuick();
-                }
-                sendPower();
+    //@Override
+    public void tickServer() {
+        if (!isMachineEnabled()) {
+            return;
+        }
+        if (dustCounter > 0) {
+            dustCounter--;
+            if (dustCounter == 0 && !canProceed()) {
+                markDirtyClient();
             } else {
-                if (canProceed()) {
-                    items.getStackInSlot(SLOT_POSIRITE_INPUT).shrink(1);
-                    dustCounter = 600;
-                    markDirtyQuick();
-                    sendPower();
-                }
+                markDirtyQuick();
+            }
+            sendPower();
+        } else {
+            if (canProceed()) {
+                items.getStackInSlot(SLOT_POSIRITE_INPUT).shrink(1);
+                dustCounter = 600;
+                markDirtyQuick();
+                sendPower();
             }
         }
     }
@@ -191,7 +188,7 @@ public class PosiriteGeneratorTile extends GenericTileEntity implements ITickabl
             // If needed send a render update.
             boolean newWorking = isWorking();
             if (newWorking != working) {
-                level.sendBlockUpdated(worldPosition, getBlockState(), getBlockState(), Constants.BlockFlags.BLOCK_UPDATE + Constants.BlockFlags.NOTIFY_NEIGHBORS);
+                level.sendBlockUpdated(worldPosition, getBlockState(), getBlockState(), Block.UPDATE_CLIENTS + Block.UPDATE_NEIGHBORS);
             }
         }
     }
@@ -282,7 +279,7 @@ public class PosiriteGeneratorTile extends GenericTileEntity implements ITickabl
 
     private void toPlayer(Player player, int amount) {
         ItemStack stack = items.extractItem(SLOT_POSIRITE_INPUT, amount, false);
-        if ((!stack.isEmpty()) && player.inventory.add(stack)) {
+        if ((!stack.isEmpty()) && player.getInventory().add(stack)) {
             markDirtyClient();
         } else {
             ItemStack stillThere = items.getStackInSlot(SLOT_POSIRITE_INPUT);
@@ -302,8 +299,8 @@ public class PosiriteGeneratorTile extends GenericTileEntity implements ITickabl
             amount = Math.min(amount, 64 - stackInSlot.getCount());    // @todo item specific max stacksize
         }
 
-        for (int i = 0 ; i < player.inventory.getContainerSize() ; i++) {
-            ItemStack stack = player.inventory.getItem(i);
+        for (int i = 0 ; i < player.getInventory().getContainerSize() ; i++) {
+            ItemStack stack = player.getInventory().getItem(i);
             if (stack.getItem() == Registration.DUST_POSIRITE.get()) {
                 ItemStack splitted = stack.split(amount);
                 if ((!splitted.isEmpty())) {

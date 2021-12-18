@@ -10,20 +10,22 @@ import mcjty.lib.client.CustomRenderTypes;
 import mcjty.lib.client.RenderHelper;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.renderer.MultiBufferSource;
+import net.minecraft.client.renderer.blockentity.BlockEntityRenderer;
+import net.minecraft.client.renderer.blockentity.BlockEntityRendererProvider;
+import net.minecraft.client.renderer.blockentity.BlockEntityRenderers;
 import net.minecraft.client.renderer.texture.TextureAtlasSprite;
-import net.minecraft.client.renderer.tileentity.TileEntityRenderer;
-import net.minecraft.client.renderer.tileentity.TileEntityRendererDispatcher;
-import net.minecraft.inventory.container.PlayerContainer;
+import net.minecraft.world.inventory.InventoryMenu;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.phys.Vec3;
-import net.minecraftforge.fml.client.registry.ClientRegistry;
 
-public class WarperRenderer extends TileEntityRenderer<WarperTile> {
+public class WarperRenderer implements BlockEntityRenderer<WarperTile> {
 
     public static final ResourceLocation HALO = new ResourceLocation(Ariente.MODID, "block/machines/warper_beam");
 
-    public WarperRenderer(TileEntityRendererDispatcher rendererDispatcherIn) {
-        super(rendererDispatcherIn);
+    protected BlockEntityRendererProvider.Context context;
+
+    public WarperRenderer(BlockEntityRendererProvider.Context pContext) {
+            context = pContext;
     }
 
     private static float randomX[] = new float[]{.2f, .3f, .2f, .7f, .8f, .5f, .2f, .8f, .4f, .6f};
@@ -52,7 +54,7 @@ public class WarperRenderer extends TileEntityRenderer<WarperTile> {
 
         Matrix4f matrix = matrixStack.last().pose();
         VertexConsumer builder = buffer.getBuffer(CustomRenderTypes.TRANSLUCENT_ADD);
-        TextureAtlasSprite sprite = mc.getTextureAtlas(PlayerContainer.BLOCK_ATLAS).apply(beamIcon);
+        TextureAtlasSprite sprite = mc.getTextureAtlas(InventoryMenu.BLOCK_ATLAS).apply(beamIcon);
 
         for (int i = 0; i < 10; i++) {
             int ii = i % 10;
@@ -74,6 +76,6 @@ public class WarperRenderer extends TileEntityRenderer<WarperTile> {
     }
 
     public static void register() {
-        ClientRegistry.bindTileEntityRenderer(Registration.WARPER_TILE.get(), WarperRenderer::new);
+        BlockEntityRenderers.register(Registration.WARPER_TILE.get(), WarperRenderer::new);
     }
 }

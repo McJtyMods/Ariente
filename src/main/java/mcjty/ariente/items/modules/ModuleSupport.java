@@ -8,7 +8,7 @@ import net.minecraft.nbt.CompoundTag;
 import net.minecraft.world.entity.EquipmentSlot;
 import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.entity.player.Player;
-import net.minecraft.item.Item;
+import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemStack;
 import org.apache.commons.lang3.tuple.Pair;
 
@@ -120,8 +120,8 @@ public class ModuleSupport {
                 int negariteIndex = -1;
                 int posiriteIndex = -1;
                 Player player = (Player) entity;
-                for (int i = 0; i < player.inventory.getContainerSize(); i++) {
-                    ItemStack itemStack = player.inventory.getItem(i);
+                for (int i = 0; i < player.getInventory().getContainerSize(); i++) {
+                    ItemStack itemStack = player.getInventory().getItem(i);
                     if (itemStack.getItem() == Registration.ENERGY_HOLDER.get()) {
                         int negarite = EnergyHolderItem.count(itemStack, "negarite");
                         if (negarite > 0) {
@@ -151,14 +151,14 @@ public class ModuleSupport {
                     }
                 }
                 if (negariteIndex != -1 && posiriteIndex != -1) {
-                    ItemStack negariteStack = player.inventory.getItem(negariteIndex);
+                    ItemStack negariteStack = player.getInventory().getItem(negariteIndex);
                     if (negariteStack.getItem() == Registration.ENERGY_HOLDER.get()) {
                         EnergyHolderItem.extractIfPossible(negariteStack, "negarite", 1);
                     } else {
                         negariteStack.shrink(1);
                     }
 
-                    ItemStack posiriteStack = player.inventory.getItem(posiriteIndex);
+                    ItemStack posiriteStack = player.getInventory().getItem(posiriteIndex);
                     if (posiriteStack.getItem() == Registration.ENERGY_HOLDER.get()) {
                         EnergyHolderItem.extractIfPossible(negariteStack, "posirite", 1);
                     } else {

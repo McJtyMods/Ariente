@@ -22,15 +22,15 @@ import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.level.BlockGetter;
 import net.minecraft.world.level.block.Block;
+import net.minecraft.world.level.block.Blocks;
 import net.minecraft.world.level.block.state.BlockState;
+import net.minecraft.world.level.block.state.properties.BlockStateProperties;
 import net.minecraft.world.level.material.Material;
-import net.minecraft.entity.MobEntity;
-import net.minecraft.pathfinding.PathNodeType;
-import net.minecraft.state.properties.BlockStateProperties;
-import net.minecraft.tileentity.ITickableTileEntity;
+// @todo 1.18 import net.minecraft.tileentity.ITickableTileEntity;
 import net.minecraft.world.level.block.entity.BlockEntity;
 import net.minecraft.core.Direction;
 import net.minecraft.sounds.SoundSource;
+import net.minecraft.world.level.pathfinder.PathComputationType;
 import net.minecraft.world.phys.AABB;
 import net.minecraft.world.phys.BlockHitResult;
 import net.minecraft.world.phys.shapes.CollisionContext;
@@ -38,15 +38,13 @@ import net.minecraft.world.phys.shapes.VoxelShape;
 import net.minecraft.world.phys.shapes.Shapes;
 import net.minecraft.world.level.Level;
 
-import javax.annotation.Nonnull;
-import javax.annotation.Nullable;
 import java.util.List;
 
 import static mcjty.ariente.compat.ArienteTOPDriver.DRIVER;
 import static mcjty.lib.builder.TooltipBuilder.header;
 import static mcjty.lib.builder.TooltipBuilder.key;
 
-public class DoorMarkerTile extends GenericTileEntity implements ITickableTileEntity, IGuiTile, ILockable {
+public class DoorMarkerTile extends GenericTileEntity implements /* @todo 1.18 ITickableTileEntity, */ IGuiTile, ILockable {
 
     public static final VoxelShape BLOCK_AABB = Shapes.box(0.0D, 0.0D, 0.0D, 1.0D, 1.0D/16.0, 1.0D);
     public static final VoxelShape OPEN_BLOCK_AABB = Shapes.empty();
@@ -63,8 +61,8 @@ public class DoorMarkerTile extends GenericTileEntity implements ITickableTileEn
     private int opening;  // 0 is closed, 1000 is open
     private long lastTime = -1;  // For rendering
 
-    public DoorMarkerTile() {
-        super(Registration.DOOR_MARKER_TILE.get());
+    public DoorMarkerTile(BlockPos pos, BlockState state) {
+        super(Registration.DOOR_MARKER_TILE.get(), pos, state);
     }
 
     public static BaseBlock createBlock() {
@@ -91,10 +89,10 @@ public class DoorMarkerTile extends GenericTileEntity implements ITickableTileEn
                 return BLOCK_AABB;
             }
 
-            @Nullable
+            @Deprecated
             @Override
-            public PathNodeType getAiPathNodeType(BlockState state, BlockGetter world, BlockPos pos, @Nullable MobEntity entity) {
-                return DoorMarkerTile.getAiPathNodeType(state, world, pos);
+            public boolean isPathfindable(BlockState state, BlockGetter world, BlockPos pos, PathComputationType pathType) {
+                return DoorMarkerTile.isPathfindable(state, world, pos, pathType);
             }
         };
     }
@@ -105,20 +103,16 @@ public class DoorMarkerTile extends GenericTileEntity implements ITickableTileEn
         return InteractionResult.SUCCESS;
     }
 
-    @Override
-    public void tick() {
-        if (!level.isClientSide) {
-            setInvisibleBlocks();
-            if (!locked) {
-                List<Entity> entities = level.getEntitiesOfClass(LivingEntity.class, getDetectionBox(),
-                        entity -> entity instanceof Player || entity instanceof SoldierEntity);
-                boolean o = !entities.isEmpty();
-                setOpen(o);
-            }
+    //@Override
+    public void tickServer() {
+        setInvisibleBlocks();
+        if (!locked) {
+            List<LivingEntity> entities = level.getEntitiesOfClass(LivingEntity.class, getDetectionBox(),
+                    entity -> entity instanceof Player || entity instanceof SoldierEntity);
+            boolean o = !entities.isEmpty();
+            setOpen(o);
         }
     }
-
-
 
     private AABB getDetectionBox() {
         if (detectionBox == null) {
@@ -156,7 +150,7 @@ public class DoorMarkerTile extends GenericTileEntity implements ITickableTileEn
         BlockPos p = worldPosition.above();
         for (int i = 0 ; i < UtilityConfiguration.MAX_DOOR_HEIGHT.get() ; i++) {
             if (level.getBlockState(p).getBlock() == Registration.INVISIBLE_DOOR.get()) {
-                level.setBlockAndUpdate(p, Block.AIR.defaultBlockState());
+                level.setBlockAndUpdate(p, Blocks.AIR.defaultBlockState());
             } else {
                 return;
             }
@@ -213,16 +207,14 @@ public class DoorMarkerTile extends GenericTileEntity implements ITickableTileEn
         this.lastTime = lastTime;
     }
 
-    @Nonnull
-    public static PathNodeType getAiPathNodeType(BlockState state, BlockGetter world, BlockPos pos) {
+    public static boolean isPathfindable(BlockState state, BlockGetter world, BlockPos pos, PathComputationType pathType) {
         BlockEntity te = world.getBlockEntity(pos);
-        if (te instanceof DoorMarkerTile) {
-            DoorMarkerTile door = (DoorMarkerTile) te;
-            if (door.isOpen()) {
-                return PathNodeType.OPEN;
-            }
+
+        if (te instanceof DoorMarkerTile door) {
+            return door.isOpen();
         }
-        return PathNodeType.BLOCKED;
+
+        return false;
     }
 
     public static VoxelShape getCollisionShape(BlockState blockState, BlockGetter world, BlockPos pos) {

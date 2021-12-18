@@ -16,27 +16,24 @@ import net.minecraft.world.level.Level;
 import net.minecraft.world.level.block.Block;
 import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.level.material.Material;
-import net.minecraft.tileentity.ITickableTileEntity;
+// @todo 1.18 import net.minecraft.tileentity.ITickableTileEntity;
 import net.minecraft.core.BlockPos;
-import net.minecraftforge.common.ToolType;
 
 import static mcjty.ariente.compat.ArienteTOPDriver.DRIVER;
 
-public class AICoreTile extends GenericTileEntity implements ITickableTileEntity, IAlarmMode, IAICoreTile {
+public class AICoreTile extends GenericTileEntity implements /* @todo 1.18 ITickableTileEntity, */ IAlarmMode, IAICoreTile {
 
     private ChunkPos cityCenter;
     private int tickCounter = 10;
     private String cityName = "";
 
-    public AICoreTile() {
-        super(Registration.AICORE_TILE.get());
+    public AICoreTile(BlockPos pos, BlockState state) {
+        super(Registration.AICORE_TILE.get(), pos, state);
     }
 
     public static BaseBlock createBlock() {
         return new BaseBlock(new BlockBuilder()
                 .properties(Block.Properties.of(Material.METAL)
-                        .harvestTool(ToolType.PICKAXE)
-                        .harvestLevel(2)
                         .strength(20.0f, 800))
 //                .flags(REDSTONE_CHECK, RENDER_SOLID, RENDER_CUTOUT)
                 .topDriver(DRIVER)
@@ -49,22 +46,20 @@ public class AICoreTile extends GenericTileEntity implements ITickableTileEntity
         };
     }
 
-    @Override
-    public void tick() {
-        if (!level.isClientSide) {
-            if (tickCounter > 0) {
-                tickCounter--;
-                return;
-            }
-            tickCounter = 10;
+    //@Override
+    public void tickServer() {
+        if (tickCounter > 0) {
+            tickCounter--;
+            return;
+        }
+        tickCounter = 10;
 
-            // @todo check if Ariente World is there!
-            if (getCityCenter() != null) {
-                ICityAISystem cityAISystem = ArienteWorldCompat.getCityAISystem(level);
-                ICityAI cityAI = cityAISystem.getCityAI(cityCenter);
-                if (cityAI.tick(this)) {
-                    cityAISystem.saveSystem();
-                }
+        // @todo check if Ariente World is there!
+        if (getCityCenter() != null) {
+            ICityAISystem cityAISystem = ArienteWorldCompat.getCityAISystem(level);
+            ICityAI cityAI = cityAISystem.getCityAI(cityCenter);
+            if (cityAI.tick(this)) {
+                cityAISystem.saveSystem();
             }
         }
     }

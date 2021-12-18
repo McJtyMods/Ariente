@@ -3,7 +3,7 @@ package mcjty.ariente.blocks.utility.autofield;
 import mcjty.lib.multipart.PartPos;
 import mcjty.lib.multipart.PartSlot;
 import net.minecraft.core.BlockPos;
-import net.minecraft.item.Item;
+import net.minecraft.world.item.Item;
 import net.minecraft.network.FriendlyByteBuf;
 import net.minecraft.world.item.ItemStack;
 

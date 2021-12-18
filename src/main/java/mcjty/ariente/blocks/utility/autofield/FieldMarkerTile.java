@@ -32,8 +32,8 @@ public class FieldMarkerTile extends GenericTileEntity {
     public static final VoxelShape FLAT_SHAPE = Shapes.box(0.0D, 0.0D, 0.0D, 1.0D, 0.1D, 1.0D);
 
 
-    public FieldMarkerTile() {
-        super(Registration.FIELD_MARKER_TILE.get());
+    public FieldMarkerTile(BlockPos pos, BlockState state) {
+        super(Registration.FIELD_MARKER_TILE.get(), pos, state);
     }
 
     public static BaseBlock createBlock() {
@@ -81,7 +81,7 @@ public class FieldMarkerTile extends GenericTileEntity {
     @Override
     public void onPartAdded(PartSlot slot, BlockState state, BlockEntity multipartTile) {
         this.level = multipartTile.getLevel();
-        this.worldPosition = multipartTile.getBlockPos();
+        // @todo 1.18 this.worldPosition = multipartTile.getBlockPos();
     }
 
     @Override

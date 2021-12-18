@@ -3,7 +3,7 @@ package mcjty.ariente.items.armor;
 import mcjty.ariente.items.modules.ModuleSupport;
 import net.minecraft.network.FriendlyByteBuf;
 import net.minecraft.world.entity.player.Player;
-import net.minecraftforge.fml.network.NetworkEvent;
+import net.minecraftforge.network.NetworkEvent;
 
 import java.util.function.Supplier;
 

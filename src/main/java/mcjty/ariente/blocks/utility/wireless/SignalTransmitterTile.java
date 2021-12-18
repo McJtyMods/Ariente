@@ -32,8 +32,8 @@ public class SignalTransmitterTile extends SignalChannelTileEntity {
 
     private static final VoxelShape BLOCK_AABB = Shapes.box(1.0D/16.0, 1.0D/16.0, 15.0D/16.0, 15.0D/16.0, 15.0D/16.0, 1.0D);
 
-    public SignalTransmitterTile() {
-        super(Registration.SIGNAL_TRANSMITTER_TILE.get());
+    public SignalTransmitterTile(BlockPos pos, BlockState state) {
+        super(Registration.SIGNAL_TRANSMITTER_TILE.get(), pos, state);
     }
 
     public static BaseBlock createBlock() {

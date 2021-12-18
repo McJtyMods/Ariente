@@ -11,8 +11,10 @@ import mcjty.hologui.api.components.IPanel;
 import mcjty.hologui.api.components.ITextChoice;
 import mcjty.lib.builder.BlockBuilder;
 import mcjty.lib.multipart.PartPos;
+import net.minecraft.core.BlockPos;
 import net.minecraft.world.item.DyeColor;
 import net.minecraft.nbt.CompoundTag;
+import net.minecraft.world.level.block.state.BlockState;
 import org.apache.commons.lang3.tuple.Pair;
 
 import static mcjty.hologui.api.Icons.*;
@@ -25,8 +27,8 @@ public class SensorItemNodeTile extends AbstractNodeTile {
 
     private static String[] operators = new String[] { "<",  "<=", ">", ">=", "=", "<>" };
 
-    public SensorItemNodeTile() {
-        super(Registration.SENSOR_ITEM_TILE.get());
+    public SensorItemNodeTile(BlockPos pos, BlockState state) {
+        super(Registration.SENSOR_ITEM_TILE.get(), pos, state);
     }
 
     public static BaseNodeBlock createBlock() {

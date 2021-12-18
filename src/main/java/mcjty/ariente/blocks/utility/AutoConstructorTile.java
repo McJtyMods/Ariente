@@ -24,6 +24,7 @@ import mcjty.lib.container.GenericItemHandler;
 import mcjty.lib.tileentity.GenericTileEntity;
 import mcjty.lib.varia.OrientationTools;
 import mcjty.lib.varia.RedstoneMode;
+import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.world.InteractionHand;
@@ -36,12 +37,11 @@ import net.minecraft.world.item.Items;
 import net.minecraft.network.Connection;
 import net.minecraft.network.protocol.game.ClientboundBlockEntityDataPacket;
 import net.minecraft.world.level.block.state.StateDefinition;
-import net.minecraft.tileentity.ITickableTileEntity;
+// @todo 1.18 import net.minecraft.tileentity.ITickableTileEntity;
 import net.minecraft.world.level.block.entity.BlockEntity;
 import net.minecraft.world.InteractionResult;
 import net.minecraft.world.phys.BlockHitResult;
 import net.minecraftforge.common.capabilities.Capability;
-import net.minecraftforge.common.util.Constants;
 import net.minecraftforge.common.util.Lazy;
 import net.minecraftforge.common.util.LazyOptional;
 import net.minecraftforge.items.CapabilityItemHandler;
@@ -61,7 +61,7 @@ import static mcjty.hologui.api.Icons.*;
 import static mcjty.lib.builder.TooltipBuilder.header;
 import static mcjty.lib.builder.TooltipBuilder.key;
 
-public class AutoConstructorTile extends GenericTileEntity implements IGuiTile, ITickableTileEntity, IPowerReceiver, ICityEquipment, IPowerUser {
+public class AutoConstructorTile extends GenericTileEntity implements IGuiTile, /* @todo 1.18 ITickableTileEntity, */ IPowerReceiver, ICityEquipment, IPowerUser {
 
     public static final int INGREDIENTS = 6*3;
     public static final int OUTPUT = 6;
@@ -80,8 +80,8 @@ public class AutoConstructorTile extends GenericTileEntity implements IGuiTile, 
     private int craftIndex = 0;
     private int busyCounter = 0;
 
-    public AutoConstructorTile() {
-        super(Registration.AUTO_CONSTRUCTOR_TILE.get());
+    public AutoConstructorTile(BlockPos pos, BlockState state) {
+        super(Registration.AUTO_CONSTRUCTOR_TILE.get(), pos, state);
     }
 
     public static BaseBlock createBlock() {
@@ -224,58 +224,54 @@ public class AutoConstructorTile extends GenericTileEntity implements IGuiTile, 
         }
     }
 
-    @Override
-    public void tick() {
-        if (!level.isClientSide) {
+    //@Override
+    public void tickServer() {
+        boolean wasUsing = usingPower > 0;
+        usingPower = 0;
+        if (isMachineEnabled()) {
+            if (PowerReceiverSupport.consumePower(level, worldPosition, 10, true)) {
+                usingPower = 10;
+                markDirtyQuick();
 
-            boolean wasUsing = usingPower > 0;
-            usingPower = 0;
-            if (isMachineEnabled()) {
-                if (PowerReceiverSupport.consumePower(level, worldPosition, 10, true)) {
-                    usingPower = 10;
-                    markDirtyQuick();
-
-                    busyCounter--;
-                    if (busyCounter > 0) {
-                        return;
-                    }
-                    busyCounter = 10;
-
-                    craftIndex++;
-
-                    int ci = craftIndex;
-                    // @todo optimize
-                    List<BlueprintStorageTile> storageTiles = new ArrayList<>();
-                    for (Direction value : OrientationTools.DIRECTION_VALUES) {
-                        BlockEntity te = level.getBlockEntity(worldPosition.relative(value));
-                        if (te instanceof BlueprintStorageTile) {
-                            BlueprintStorageTile blueprints = (BlueprintStorageTile) te;
-                            storageTiles.add(blueprints);
-                        }
-                    }
-                    if (storageTiles.isEmpty()) {
-                        // Nothing to do
-                        return;
-                    }
-                    BlueprintStorageTile blueprints = storageTiles.get((ci / BLUEPRINTS) % storageTiles.size());
-                    int index = ci % BLUEPRINTS;
-                    GenericItemHandler helper = blueprints.getItems();
-                    ItemStack blueprintStack = helper.getStackInSlot(SLOT_BLUEPRINT + index);
-                    if (blueprintStack.isEmpty()) {
-                        // Nothing to do. Decrease busyCounter so we skip to the next blueprint faster
-                        busyCounter = 3;
-                        return;
-                    }
-
-                    attemptCraft(blueprintStack);
+                busyCounter--;
+                if (busyCounter > 0) {
+                    return;
                 }
-            }
+                busyCounter = 10;
 
-            boolean isUsing = usingPower > 0;
-            if (isUsing != wasUsing) {
-                markDirtyClient();
-            }
+                craftIndex++;
 
+                int ci = craftIndex;
+                // @todo optimize
+                List<BlueprintStorageTile> storageTiles = new ArrayList<>();
+                for (Direction value : OrientationTools.DIRECTION_VALUES) {
+                    BlockEntity te = level.getBlockEntity(worldPosition.relative(value));
+                    if (te instanceof BlueprintStorageTile) {
+                        BlueprintStorageTile blueprints = (BlueprintStorageTile) te;
+                        storageTiles.add(blueprints);
+                    }
+                }
+                if (storageTiles.isEmpty()) {
+                    // Nothing to do
+                    return;
+                }
+                BlueprintStorageTile blueprints = storageTiles.get((ci / BLUEPRINTS) % storageTiles.size());
+                int index = ci % BLUEPRINTS;
+                GenericItemHandler helper = blueprints.getItems();
+                ItemStack blueprintStack = helper.getStackInSlot(SLOT_BLUEPRINT + index);
+                if (blueprintStack.isEmpty()) {
+                    // Nothing to do. Decrease busyCounter so we skip to the next blueprint faster
+                    busyCounter = 3;
+                    return;
+                }
+
+                attemptCraft(blueprintStack);
+            }
+        }
+
+        boolean isUsing = usingPower > 0;
+        if (isUsing != wasUsing) {
+            markDirtyClient();
         }
     }
 
@@ -299,7 +295,7 @@ public class AutoConstructorTile extends GenericTileEntity implements IGuiTile, 
             // If needed send a render update.
             boolean newWorking = isWorking();
             if (newWorking != working) {
-                level.sendBlockUpdated(worldPosition, getBlockState(), getBlockState(), Constants.BlockFlags.BLOCK_UPDATE + Constants.BlockFlags.NOTIFY_NEIGHBORS);
+                level.sendBlockUpdated(worldPosition, getBlockState(), getBlockState(), Block.UPDATE_ALL);
             }
         }
     }
@@ -465,7 +461,7 @@ public class AutoConstructorTile extends GenericTileEntity implements IGuiTile, 
                 if (selected != -1) {
                     ItemStack extracted = items.extractItem(selected, 64, false);
                     if (!extracted.isEmpty()) {
-                        if (!player.inventory.add(extracted)) {
+                        if (!player.getInventory().add(extracted)) {
                             items.insertItem(selected, extracted, false);
                         } else {
                             ((ISlots) component).setSelection(-1);
@@ -483,10 +479,10 @@ public class AutoConstructorTile extends GenericTileEntity implements IGuiTile, 
             if (component instanceof IPlayerSlots) {
                 int selected = ((IPlayerSlots) component).getSelected();
                 if (selected != -1) {
-                    ItemStack extracted = player.inventory.getItem(selected);
+                    ItemStack extracted = player.getInventory().getItem(selected);
                     if (!extracted.isEmpty()) {
                         ItemStack notInserted = ItemHandlerHelper.insertItem(items, extracted, false);
-                        player.inventory.setItem(selected, notInserted);
+                        player.getInventory().setItem(selected, notInserted);
                         if (notInserted.isEmpty()) {
                             ((IPlayerSlots) component).setSelection(-1);
                         }

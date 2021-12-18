@@ -3,15 +3,15 @@ package mcjty.ariente.cables;
 import com.google.common.base.Function;
 import mcjty.ariente.Ariente;
 import mcjty.lib.client.AbstractDynamicBakedModel;
+import net.minecraft.client.renderer.ItemBlockRenderTypes;
+import net.minecraft.client.renderer.block.model.BakedQuad;
 import net.minecraft.client.renderer.block.model.ItemTransforms;
 import net.minecraft.client.resources.model.BakedModel;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.renderer.RenderType;
-import net.minecraft.client.renderer.RenderTypeLookup;
-import net.minecraft.client.renderer.model.BakedQuad;
-import net.minecraft.client.renderer.model.ItemOverrideList;
+import net.minecraft.client.renderer.block.model.ItemOverrides;
 import net.minecraft.client.renderer.texture.TextureAtlasSprite;
 import net.minecraft.core.Direction;
 import net.minecraft.world.phys.Vec3;
@@ -139,9 +139,9 @@ public class GenericCableBakedModel extends AbstractDynamicBakedModel {
 
         BlockState facadeId = extraData.getData(GenericCableBlock.FACADEID);
         if (facadeId != null) {
-            BlockState facadeState = facadeId.getBlockState();
-            RenderType layer = MinecraftForgeClient.getRenderLayer();
-            if (layer == null || RenderTypeLookup.canRenderInLayer(facadeState, layer)) { // always render in the null layer or the block-breaking textures don't show up
+            BlockState facadeState = facadeId; // @todo 1.18 facadeId.getBlockState();
+            RenderType layer = MinecraftForgeClient.getRenderType();
+            if (layer == null || ItemBlockRenderTypes.canRenderInLayer(facadeState, layer)) { // always render in the null layer or the block-breaking textures don't show up
                 BakedModel model = Minecraft.getInstance().getBlockRenderer().getBlockModelShaper().getBlockModel(facadeState);
                 try {
                     return new ArrayList<>(model.getQuads(state, side, rand, EmptyModelData.INSTANCE));
@@ -152,7 +152,7 @@ public class GenericCableBakedModel extends AbstractDynamicBakedModel {
 
         List<BakedQuad> quads = new ArrayList<>();
 
-        RenderType layer = MinecraftForgeClient.getRenderLayer();
+        RenderType layer = MinecraftForgeClient.getRenderType();
         if (side == null && (layer == null || layer.equals(RenderType.cutout()))) {
 
             // Called with the blockstate from our block. Here we get the values of the six properties and pass that to
@@ -356,8 +356,8 @@ public class GenericCableBakedModel extends AbstractDynamicBakedModel {
     }
 
     @Override
-    public ItemOverrideList getOverrides() {
-        return ItemOverrideList.EMPTY;
+    public ItemOverrides getOverrides() {
+        return ItemOverrides.EMPTY;
     }
 
 }

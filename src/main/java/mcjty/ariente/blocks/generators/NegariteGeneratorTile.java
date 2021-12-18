@@ -29,10 +29,9 @@ import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.network.Connection;
 import net.minecraft.world.level.block.state.StateDefinition;
-import net.minecraft.tileentity.ITickableTileEntity;
+// @todo 1.18 import net.minecraft.tileentity.ITickableTileEntity;
 import net.minecraft.world.InteractionResult;
 import net.minecraft.world.phys.BlockHitResult;
-import net.minecraftforge.common.util.Constants;
 import net.minecraftforge.common.util.Lazy;
 import net.minecraftforge.common.util.LazyOptional;
 
@@ -43,7 +42,7 @@ import static mcjty.hologui.api.Icons.*;
 import static mcjty.lib.builder.TooltipBuilder.header;
 import static mcjty.lib.builder.TooltipBuilder.key;
 
-public class NegariteGeneratorTile extends GenericTileEntity implements ITickableTileEntity, IGuiTile, IPowerBlob, IAlarmMode, IPowerSender, IGenerator {
+public class NegariteGeneratorTile extends GenericTileEntity implements /* @todo 1.18 ITickableTileEntity, */ IGuiTile, IPowerBlob, IAlarmMode, IPowerSender, IGenerator {
 
     public static final int POWERGEN = 1000;        // @todo configurable and based on tanks!
 
@@ -97,8 +96,8 @@ public class NegariteGeneratorTile extends GenericTileEntity implements ITickabl
         return true;
     }
 
-    public NegariteGeneratorTile() {
-        super(Registration.NEGARITE_GENERATOR_TILE.get());
+    public NegariteGeneratorTile(BlockPos pos, BlockState state) {
+        super(Registration.NEGARITE_GENERATOR_TILE.get(), pos, state);
     }
 
     @Override
@@ -119,27 +118,25 @@ public class NegariteGeneratorTile extends GenericTileEntity implements ITickabl
         return false;
     }
 
-    @Override
-    public void tick() {
-        if (!level.isClientSide) {
-            if (!isMachineEnabled()) {
-                return;
-            }
-            if (dustCounter > 0) {
-                dustCounter--;
-                if (dustCounter == 0 && !canProceed()) {
-                    markDirtyClient();
-                } else {
-                    markDirtyQuick();
-                }
-                sendPower();
+    //@Override
+    public void tickServer() {
+        if (!isMachineEnabled()) {
+            return;
+        }
+        if (dustCounter > 0) {
+            dustCounter--;
+            if (dustCounter == 0 && !canProceed()) {
+                markDirtyClient();
             } else {
-                if (canProceed()) {
-                    items.extractItem(SLOT_NEGARITE_INPUT, 1, false);
-                    dustCounter = 600;
-                    markDirtyQuick();
-                    sendPower();
-                }
+                markDirtyQuick();
+            }
+            sendPower();
+        } else {
+            if (canProceed()) {
+                items.extractItem(SLOT_NEGARITE_INPUT, 1, false);
+                dustCounter = 600;
+                markDirtyQuick();
+                sendPower();
             }
         }
     }
@@ -182,11 +179,11 @@ public class NegariteGeneratorTile extends GenericTileEntity implements ITickabl
             // If needed send a render update.
             boolean newWorking = isWorking();
             if (newWorking != working) {
-                level.sendBlockUpdated(worldPosition, getBlockState(), getBlockState(), Constants.BlockFlags.BLOCK_UPDATE + Constants.BlockFlags.NOTIFY_NEIGHBORS);
+                level.sendBlockUpdated(worldPosition, getBlockState(), getBlockState(), Block.UPDATE_CLIENTS + Block.UPDATE_NEIGHBORS);
                 BlockPos p = worldPosition.above();
                 BlockState state = level.getBlockState(p);
                 while (state.getBlock() == Registration.NEGARITE_TANK.get()) {
-                    level.sendBlockUpdated(p, state, state, Constants.BlockFlags.BLOCK_UPDATE + Constants.BlockFlags.NOTIFY_NEIGHBORS);
+                    level.sendBlockUpdated(p, state, state, Block.UPDATE_CLIENTS + Block.UPDATE_NEIGHBORS);
                     p = p.above();
                     state = level.getBlockState(p);
                 }
@@ -289,7 +286,7 @@ public class NegariteGeneratorTile extends GenericTileEntity implements ITickabl
 
     private void toPlayer(Player player, int amount) {
         ItemStack stack = items.extractItem(SLOT_NEGARITE_INPUT, amount, false);
-        if ((!stack.isEmpty()) && player.inventory.add(stack)) {
+        if ((!stack.isEmpty()) && player.getInventory().add(stack)) {
             markDirtyClient();
         } else {
             ItemStack stillThere = items.getStackInSlot(SLOT_NEGARITE_INPUT);
@@ -309,8 +306,8 @@ public class NegariteGeneratorTile extends GenericTileEntity implements ITickabl
             amount = Math.min(amount, 64 - stackInSlot.getCount());    // @todo item specific max stacksize
         }
 
-        for (int i = 0 ; i < player.inventory.getContainerSize() ; i++) {
-            ItemStack stack = player.inventory.getItem(i);
+        for (int i = 0 ; i < player.getInventory().getContainerSize() ; i++) {
+            ItemStack stack = player.getInventory().getItem(i);
             if (stack.getItem() == Registration.DUST_NEGARITE.get()) {
                 ItemStack splitted = stack.split(amount);
                 if ((!splitted.isEmpty())) {

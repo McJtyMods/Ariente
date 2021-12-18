@@ -9,10 +9,11 @@ import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.level.block.Block;
+import net.minecraft.world.level.block.Blocks;
 import net.minecraft.world.level.block.entity.BlockEntity;
 import net.minecraft.world.level.block.state.BlockState;
+import net.minecraft.world.level.material.FluidState;
 import net.minecraft.world.level.material.Material;
-import net.minecraft.fluid.FluidState;
 
 import javax.annotation.Nullable;
 
@@ -33,7 +34,7 @@ public class FacadeBlock extends NetCableBlock {
         if (te instanceof GenericCableTileEntity) {
             mimicBlock = ((GenericCableTileEntity) te).getMimicBlock();
         } else {
-            mimicBlock = Block.COBBLESTONE.defaultBlockState();
+            mimicBlock = Blocks.COBBLESTONE.defaultBlockState();
         }
         FacadeItemBlock.setMimicBlock(item, mimicBlock);
 

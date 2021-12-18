@@ -31,16 +31,16 @@ import net.minecraft.world.InteractionResult;
 import net.minecraft.world.item.DyeColor;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.level.Level;
+import net.minecraft.world.level.block.Block;
 import net.minecraft.world.level.block.entity.BlockEntity;
 import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.server.level.ServerPlayer;
-import net.minecraft.tileentity.ITickableTileEntity;
+// @todo 1.18 import net.minecraft.tileentity.ITickableTileEntity;
 import net.minecraft.core.Direction;
 import net.minecraft.world.phys.AABB;
 import net.minecraft.world.phys.BlockHitResult;
-import net.minecraftforge.common.util.Constants;
-import net.minecraftforge.fml.network.NetworkDirection;
+import net.minecraftforge.network.NetworkDirection;
 import net.minecraftforge.items.ItemHandlerHelper;
 
 import java.util.*;
@@ -52,7 +52,7 @@ import static mcjty.hologui.api.Icons.*;
 import static mcjty.lib.builder.TooltipBuilder.header;
 import static mcjty.lib.builder.TooltipBuilder.key;
 
-public class AutoFieldTile extends GenericTileEntity implements IGuiTile, ITickableTileEntity, IPowerReceiver, IPowerUser {
+public class AutoFieldTile extends GenericTileEntity implements IGuiTile, /* @todo 1.18 ITickableTileEntity, */ IPowerReceiver, IPowerUser {
 
     private int height = 1;
     private AABB fieldBox = null;
@@ -83,8 +83,8 @@ public class AutoFieldTile extends GenericTileEntity implements IGuiTile, ITicka
     private int ticker = 20;
     private long usingPower = 0;
 
-    public AutoFieldTile() {
-        super(Registration.AUTOFIELD_TILE.get());
+    public AutoFieldTile(BlockPos pos, BlockState state) {
+        super(Registration.AUTOFIELD_TILE.get(), pos, state);
     }
 
     public static BaseBlock createBlock() {
@@ -108,12 +108,8 @@ public class AutoFieldTile extends GenericTileEntity implements IGuiTile, ITicka
     }
 
 
-    @Override
-    public void tick() {
-        if (level.isClientSide) {
-            return;
-        }
-
+    //@Override
+    public void tickServer() {
         findConsumers();
         findProducers();
 
@@ -644,7 +640,7 @@ public class AutoFieldTile extends GenericTileEntity implements IGuiTile, ITicka
         if (level.isClientSide) {
             // If needed send a render update.
             if (oldheight != height) {
-                level.sendBlockUpdated(worldPosition, getBlockState(), getBlockState(), Constants.BlockFlags.BLOCK_UPDATE + Constants.BlockFlags.NOTIFY_NEIGHBORS);
+                level.sendBlockUpdated(worldPosition, getBlockState(), getBlockState(), Block.UPDATE_ALL);
                 invalidateBox();
             }
         }

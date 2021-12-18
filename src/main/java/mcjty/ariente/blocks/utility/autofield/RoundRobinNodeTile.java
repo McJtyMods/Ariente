@@ -53,8 +53,8 @@ public class RoundRobinNodeTile extends GenericTileEntity {
     private static final AABB AABB_EAST_UN = new AABB(1-T, 0.5+A, 0.0+A,    1, 1.0-A, 0.5-A);
     private static final AABB AABB_EAST_US = new AABB(1-T, 0.5+A, 0.5+A,    1, 1.0-A, 1.0-A);
 
-    public RoundRobinNodeTile() {
-        super(Registration.ROUND_ROBIN_TILE.get());
+    public RoundRobinNodeTile(BlockPos pos, BlockState state) {
+        super(Registration.ROUND_ROBIN_TILE.get(), pos, state);
     }
 
     // @todo 1.14
@@ -125,7 +125,7 @@ public class RoundRobinNodeTile extends GenericTileEntity {
     @Override
     public void onPartAdded(PartSlot slot, BlockState state, BlockEntity multipartTile) {
         this.level = multipartTile.getLevel();
-        this.worldPosition = multipartTile.getBlockPos();
+        // @todo 1.18 this.worldPosition = multipartTile.getBlockPos();
         AutoFieldTile.notifyField(level, worldPosition);
     }
 

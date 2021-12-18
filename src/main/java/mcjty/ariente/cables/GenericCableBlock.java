@@ -9,31 +9,30 @@ import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.world.entity.LivingEntity;
+import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.Items;
+import net.minecraft.world.item.context.BlockPlaceContext;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.level.block.Block;
+import net.minecraft.world.level.block.EntityBlock;
 import net.minecraft.world.level.block.SoundType;
 import net.minecraft.world.level.block.entity.BlockEntity;
 import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.level.material.Material;
-import net.minecraft.item.BlockItemUseContext;
-import net.minecraft.item.Item;
 import net.minecraft.world.level.block.state.StateDefinition;
 import net.minecraft.world.level.block.state.properties.EnumProperty;
-import net.minecraft.util.math.shapes.IBooleanFunction;
+import net.minecraft.world.phys.shapes.BooleanOp;
 import net.minecraft.world.phys.shapes.CollisionContext;
 import net.minecraft.world.phys.shapes.Shapes;
 import net.minecraft.world.phys.shapes.VoxelShape;
 import net.minecraft.world.level.BlockGetter;
-import net.minecraft.world.IWorldReader;
 import net.minecraftforge.client.model.data.ModelProperty;
-import net.minecraftforge.common.ToolType;
 
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 
-public abstract class GenericCableBlock extends Block implements WailaInfoProvider, TOPInfoProvider {
+public abstract class GenericCableBlock extends Block implements WailaInfoProvider, TOPInfoProvider, EntityBlock {
 
     // Properties that indicate if there is the same block in a certain direction.
     public static final EnumProperty<ConnectorType> NORTH = EnumProperty.<ConnectorType>create("north", ConnectorType.class);
@@ -67,22 +66,15 @@ public abstract class GenericCableBlock extends Block implements WailaInfoProvid
         super(Properties.of(material)
                 .sound(SoundType.METAL)
                 .strength(1.0f)
-                .harvestTool(ToolType.PICKAXE)
-                .harvestLevel(0)
         );
         makeShapes();
         registerDefaultState(defaultBlockState().setValue(COLOR, CableColor.NEGARITE));
     }
 
-    @Override
-    public boolean hasTileEntity(BlockState state) {
-        return true;
-    }
-
     @Nullable
     @Override
-    public BlockEntity createTileEntity(BlockState state, BlockGetter world) {
-        return new NetCableTileEntity();
+    public BlockEntity newBlockEntity(BlockPos pos, BlockState state) {
+        return new NetCableTileEntity(pos, state);
     }
 
     private void makeShapes() {
@@ -120,9 +112,9 @@ public abstract class GenericCableBlock extends Block implements WailaInfoProvid
 
     private VoxelShape combineShape(VoxelShape shape, ConnectorType connectorType, VoxelShape cableShape, VoxelShape blockShape) {
         if (connectorType == ConnectorType.CABLE) {
-            return Shapes.join(shape, cableShape, IBooleanFunction.OR);
+            return Shapes.join(shape, cableShape, BooleanOp.OR);
         } else if (connectorType == ConnectorType.BLOCK) {
-            return Shapes.join(shape, blockShape, IBooleanFunction.OR);
+            return Shapes.join(shape, blockShape, BooleanOp.OR);
         } else {
             return shape;
         }
@@ -360,7 +352,7 @@ public abstract class GenericCableBlock extends Block implements WailaInfoProvid
     }
 
 
-    public int getUpDownMask(BlockState state, IWorldReader world, BlockPos pos) {
+    public int getUpDownMask(BlockState state, BlockGetter world, BlockPos pos) {
         CableColor color = state.getValue(COLOR);
         int mask = 0;
         ConnectorType up = getConnectorType(color, world, pos, Direction.UP);
@@ -374,7 +366,7 @@ public abstract class GenericCableBlock extends Block implements WailaInfoProvid
         return mask;
     }
 
-    public int getEastWestMask(BlockState state, IWorldReader world, BlockPos pos) {
+    public int getEastWestMask(BlockState state, BlockGetter world, BlockPos pos) {
         CableColor color = state.getValue(COLOR);
         int mask = 0;
         ConnectorType west = getConnectorType(color, world, pos, Direction.WEST);
@@ -388,7 +380,7 @@ public abstract class GenericCableBlock extends Block implements WailaInfoProvid
         return mask;
     }
 
-    public int getNorthSouthMask(BlockState state, IWorldReader world, BlockPos pos) {
+    public int getNorthSouthMask(BlockState state, BlockGetter world, BlockPos pos) {
         CableColor color = state.getValue(COLOR);
         int mask = 0;
         ConnectorType north = getConnectorType(color, world, pos, Direction.NORTH);
@@ -404,7 +396,7 @@ public abstract class GenericCableBlock extends Block implements WailaInfoProvid
 
     @Nullable
     @Override
-    public BlockState getStateForPlacement(BlockItemUseContext context) {
+    public BlockState getStateForPlacement(BlockPlaceContext context) {
         Level world = context.getLevel();
         BlockPos pos = context.getClickedPos();
         BlockState state = calculateState(world, pos, defaultBlockState());
@@ -412,7 +404,7 @@ public abstract class GenericCableBlock extends Block implements WailaInfoProvid
         return state;
     }
 
-    @Override
+    // @todo 1.18 @Override
     public BlockState updateShape(BlockState state, Direction direction, BlockState neighbourState, Level world, BlockPos current, BlockPos offset) {
         return calculateState(world, current, state);
     }

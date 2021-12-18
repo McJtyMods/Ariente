@@ -6,41 +6,36 @@ import mcjty.ariente.compat.arienteworld.ArienteWorldCompat;
 import mcjty.ariente.setup.Registration;
 import mcjty.ariente.sounds.ModSounds;
 import net.minecraft.core.BlockPos;
-import net.minecraft.entity.*;
-import net.minecraft.entity.ai.attributes.Attributes;
+import net.minecraft.util.Mth;
+import net.minecraft.world.damagesource.DamageSource;
+import net.minecraft.world.entity.*;
+import net.minecraft.world.entity.ai.attributes.Attributes;
 import net.minecraft.world.entity.ai.attributes.AttributeSupplier;
-import net.minecraft.entity.ai.controller.MovementController;
-import net.minecraft.entity.ai.goal.Goal;
-import net.minecraft.entity.monster.IMob;
+import net.minecraft.world.entity.ai.control.MoveControl;
+import net.minecraft.world.entity.ai.goal.Goal;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.sounds.SoundSource;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.nbt.CompoundTag;
-import net.minecraft.util.DamageSource;
 import net.minecraft.sounds.SoundEvent;
-import net.minecraft.util.math.*;
 import net.minecraft.world.level.ChunkPos;
 import net.minecraft.world.phys.Vec3;
 import net.minecraft.world.Difficulty;
 import net.minecraft.world.level.Level;
-import net.minecraft.world.IWorldReader;
+import net.minecraft.world.level.BlockGetter;
 
 import javax.annotation.Nullable;
 
-import net.minecraft.entity.ai.controller.MovementController.Action;
-import net.minecraft.world.entity.Entity;
-import net.minecraft.world.entity.EntityType;
-import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.phys.AABB;
 
-public class SentinelDroneEntity extends FlyingEntity implements IMob, IForcefieldImmunity, ISentinel {
+public class SentinelDroneEntity extends FlyingMob implements IForcefieldImmunity, ISentinel {
 
     public static final ResourceLocation LOOT = new ResourceLocation(Ariente.MODID, "entities/sentinel_drone");
 
     private int sentinelId;
     private ChunkPos cityCenter;
 
-    public SentinelDroneEntity(EntityType<? extends FlyingEntity> type, Level worldIn) {
+    public SentinelDroneEntity(EntityType<? extends FlyingMob> type, Level worldIn) {
         super(type, worldIn);
 
 // @todo 1.14
@@ -75,11 +70,11 @@ public class SentinelDroneEntity extends FlyingEntity implements IMob, IForcefie
 
             double closest = entity.distanceToSqr(this);
             if (this.removeWhenFarAway(closest) && d3 > 16384.0D) {
-                this.remove();
+                this.remove(RemovalReason.DISCARDED);
             }
 
             if (this.noActionTime > 900 && this.random.nextInt(800) == 0 && d3 > 2048.0D && this.removeWhenFarAway(closest)) {
-                this.remove();
+                this.remove(RemovalReason.DISCARDED);
             } else if (d3 < 2048.0D) {
                 this.noActionTime = 0;
             }
@@ -115,7 +110,7 @@ public class SentinelDroneEntity extends FlyingEntity implements IMob, IForcefie
         super.tick();
 
         if (!this.getCommandSenderWorld().isClientSide && this.getCommandSenderWorld().getDifficulty() == Difficulty.PEACEFUL) {
-            this.remove();
+            this.remove(RemovalReason.DISCARDED);
         }
     }
 
@@ -131,8 +126,8 @@ public class SentinelDroneEntity extends FlyingEntity implements IMob, IForcefie
         }
     }
 
-    public static AttributeSupplier.MutableAttribute registerAttributes() {
-        AttributeSupplier.MutableAttribute attributes = LivingEntity.createLivingAttributes();
+    public static AttributeSupplier.Builder registerAttributes() {
+        AttributeSupplier.Builder attributes = LivingEntity.createLivingAttributes();
         attributes
             .add(Attributes.MAX_HEALTH, 10.0D)
             .add(Attributes.FOLLOW_RANGE, 50.0D); // Configurable
@@ -174,14 +169,14 @@ public class SentinelDroneEntity extends FlyingEntity implements IMob, IForcefie
         return 1.0F;
     }
 
-    @Override
-    public boolean checkSpawnRules(Level worldIn, SpawnReason spawnReasonIn) {
+    // @todo 1.18 @Override
+    public boolean checkSpawnRules(Level worldIn, MobSpawnType spawnReasonIn) {
         boolean b = (this.random.nextInt(100) == 0) && super.checkSpawnRules(worldIn, spawnReasonIn) && this.getCommandSenderWorld().getDifficulty() != Difficulty.PEACEFUL;
         return b;
     }
 
-    @Override
-    public boolean checkSpawnObstruction(IWorldReader worldIn) {
+    // @todo 1.18 @Override
+    public boolean checkSpawnObstruction(BlockGetter worldIn) {
         return true;
     }
 
@@ -245,8 +240,8 @@ public class SentinelDroneEntity extends FlyingEntity implements IMob, IForcefie
         @Override
         public void tick() {
             if (this.parentEntity.getTarget() == null) {
-                this.parentEntity.yRot = -((float) MathHelper.atan2(this.parentEntity.getDeltaMovement().x, this.parentEntity.getDeltaMovement().z)) * (180F / (float) Math.PI);
-                this.parentEntity.yBodyRot = this.parentEntity.yRot;
+                this.parentEntity.setYRot(-((float) Mth.atan2(this.parentEntity.getDeltaMovement().x, this.parentEntity.getDeltaMovement().z)) * (180F / (float) Math.PI));
+                this.parentEntity.yBodyRot = this.parentEntity.getYRot();
             } else {
                 LivingEntity entitylivingbase = this.parentEntity.getTarget();
                 double d0 = 64.0D;
@@ -254,8 +249,8 @@ public class SentinelDroneEntity extends FlyingEntity implements IMob, IForcefie
                 if (entitylivingbase.distanceToSqr(this.parentEntity) < 4096.0D) {
                     double d1 = entitylivingbase.getX() - this.parentEntity.getX();
                     double d2 = entitylivingbase.getZ() - this.parentEntity.getZ();
-                    this.parentEntity.yRot = -((float) MathHelper.atan2(d1, d2)) * (180F / (float) Math.PI);
-                    this.parentEntity.yBodyRot = this.parentEntity.yRot;
+                    this.parentEntity.setYRot(-((float) Mth.atan2(d1, d2)) * (180F / (float) Math.PI));
+                    this.parentEntity.yBodyRot = this.parentEntity.getYRot();
                 }
             }
         }
@@ -275,7 +270,7 @@ public class SentinelDroneEntity extends FlyingEntity implements IMob, IForcefie
          */
         @Override
         public boolean canUse() {
-            MovementController controller = this.parentEntity.getMoveControl();
+            MoveControl controller = this.parentEntity.getMoveControl();
 
             if (!controller.hasWanted()) {
                 return true;
@@ -313,7 +308,7 @@ public class SentinelDroneEntity extends FlyingEntity implements IMob, IForcefie
         }
     }
 
-    static class SentinelDroneMoveHelper extends MovementController {
+    static class SentinelDroneMoveHelper extends MoveControl {
         private final SentinelDroneEntity parentEntity;
         private int courseChangeCooldown;
 
@@ -324,7 +319,7 @@ public class SentinelDroneEntity extends FlyingEntity implements IMob, IForcefie
 
         @Override
         public void tick() {
-            if (this.operation == Action.MOVE_TO) {
+            if (this.operation == Operation.MOVE_TO) {
                 double d0 = this.wantedX - this.parentEntity.getX();
                 double d1 = this.wantedY - this.parentEntity.getY();
                 double d2 = this.wantedZ - this.parentEntity.getZ();
@@ -338,7 +333,7 @@ public class SentinelDroneEntity extends FlyingEntity implements IMob, IForcefie
                         Vec3 motion = this.parentEntity.getDeltaMovement();
                         this.parentEntity.setDeltaMovement(motion.add(d0 / d3 * 0.1D, d1 / d3 * 0.1D, d2 / d3 * 0.1D));
                     } else {
-                        this.operation = Action.WAIT;
+                        this.operation = Operation.WAIT;
                     }
                 }
             }

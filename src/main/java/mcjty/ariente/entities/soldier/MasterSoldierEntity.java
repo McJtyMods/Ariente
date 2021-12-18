@@ -3,14 +3,14 @@ package mcjty.ariente.entities.soldier;
 import mcjty.ariente.api.SoldierBehaviourType;
 import mcjty.ariente.setup.Registration;
 import net.minecraft.nbt.CompoundTag;
+import net.minecraft.world.effect.MobEffectInstance;
+import net.minecraft.world.effect.MobEffects;
 import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.entity.EntityType;
-import net.minecraft.entity.ai.attributes.Attributes;
+import net.minecraft.world.entity.ai.attributes.Attributes;
 import net.minecraft.world.entity.ai.attributes.AttributeSupplier;
-import net.minecraft.entity.monster.MonsterEntity;
-import net.minecraft.potion.EffectInstance;
-import net.minecraft.potion.Effects;
-import net.minecraft.util.DamageSource;
+import net.minecraft.world.entity.monster.Monster;
+import net.minecraft.world.damagesource.DamageSource;
 import net.minecraft.world.level.ChunkPos;
 import net.minecraft.world.level.Level;
 
@@ -18,7 +18,7 @@ public class MasterSoldierEntity extends SoldierEntity {
 
     private int noregenCounter = 0;
 
-    public MasterSoldierEntity(EntityType<? extends MonsterEntity> type, Level worldIn) {
+    public MasterSoldierEntity(EntityType<? extends Monster> type, Level worldIn) {
         super(type, worldIn);
         // @todo 1.14 move to type
         //isImmuneToFire = true;
@@ -33,8 +33,8 @@ public class MasterSoldierEntity extends SoldierEntity {
         return entity;
     }
 
-    public static AttributeSupplier.MutableAttribute registerAttributes() {
-        AttributeSupplier.MutableAttribute attributes = LivingEntity.createLivingAttributes();
+    public static AttributeSupplier.Builder registerAttributes() {
+        AttributeSupplier.Builder attributes = LivingEntity.createLivingAttributes();
         attributes
             .add(Attributes.FOLLOW_RANGE, 35.0D)
             .add(Attributes.MOVEMENT_SPEED, 0.32D)
@@ -52,9 +52,9 @@ public class MasterSoldierEntity extends SoldierEntity {
         if (noregenCounter > 0) {
             noregenCounter--;
         } else {
-            EffectInstance effect = getEffect(Effects.REGENERATION);
+            MobEffectInstance effect = getEffect(MobEffects.REGENERATION);
             if (effect == null || effect.getDuration() <= 0) {
-                addEffect(new EffectInstance(Effects.REGENERATION, 30, 3, false, false));
+                addEffect(new MobEffectInstance(MobEffects.REGENERATION, 30, 3, false, false));
             }
         }
     }

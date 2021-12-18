@@ -10,7 +10,9 @@ import mcjty.hologui.api.StyledColor;
 import mcjty.hologui.api.components.IPanel;
 import mcjty.lib.builder.BlockBuilder;
 import mcjty.lib.varia.ItemStackList;
+import net.minecraft.core.BlockPos;
 import net.minecraft.nbt.CompoundTag;
+import net.minecraft.world.level.block.state.BlockState;
 import org.apache.commons.lang3.tuple.Pair;
 
 public class InputItemNodeTile extends AbstractItemNodeTile {
@@ -21,8 +23,8 @@ public class InputItemNodeTile extends AbstractItemNodeTile {
     private boolean inputDamage = false;
     private boolean inputNbt = false;
 
-    public InputItemNodeTile() {
-        super(Registration.INPUT_ITEM_TILE.get());
+    public InputItemNodeTile(BlockPos pos, BlockState state) {
+        super(Registration.INPUT_ITEM_TILE.get(), pos, state);
     }
 
     public static BaseNodeBlock createBlock() {

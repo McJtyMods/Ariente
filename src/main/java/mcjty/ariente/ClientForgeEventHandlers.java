@@ -9,12 +9,12 @@ import mcjty.ariente.setup.Registration;
 import mcjty.ariente.sounds.FluxLevitatorSounds;
 import net.minecraft.core.BlockPos;
 import net.minecraft.world.entity.player.Player;
+import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.client.Minecraft;
-import net.minecraft.item.Item;
 import net.minecraft.world.phys.BlockHitResult;
-import net.minecraft.util.math.RayTraceResult;
+import net.minecraft.world.phys.HitResult;
 import net.minecraft.world.phys.Vec3;
 import net.minecraftforge.client.event.*;
 import net.minecraftforge.event.entity.EntityMountEvent;
@@ -44,8 +44,8 @@ public class ClientForgeEventHandlers {
     }
 
     @SubscribeEvent
-    public void onDrawBlockHighlight(DrawHighlightEvent event) {
-        if (event.getTarget().getType() == RayTraceResult.Type.BLOCK && event.getTarget() instanceof BlockHitResult) {
+    public void onDrawBlockHighlight(DrawSelectionEvent event) {
+        if (event.getTarget().getType() == HitResult.Type.BLOCK && event.getTarget() instanceof BlockHitResult) {
             BlockPos pos = ((BlockHitResult) event.getTarget()).getBlockPos();
             Player player = Minecraft.getInstance().player;
             BlockState state = player.getCommandSenderWorld().getBlockState(pos);
@@ -59,7 +59,7 @@ public class ClientForgeEventHandlers {
     private static void drawSelectionBox(BlockState state, Player player, BlockPos pos, float partialTicks) {
         GlStateManager._enableBlend();
         GlStateManager._blendFuncSeparate(GlStateManager.SourceFactor.SRC_ALPHA.value, GlStateManager.DestFactor.ONE_MINUS_SRC_ALPHA.value, GlStateManager.SourceFactor.ONE.value, GlStateManager.DestFactor.ZERO.value);
-        GlStateManager._lineWidth(2.0F);
+        // @todo 1.18 GlStateManager._lineWidth(2.0F);
         GlStateManager._disableTexture();
         GlStateManager._depthMask(false);
 
@@ -75,8 +75,8 @@ public class ClientForgeEventHandlers {
     }
 
     @SubscribeEvent
-    public void onRenderWorldEvent(RenderWorldLastEvent event) {
-        ForceFieldRenderer.renderForceFields(event.getPartialTicks());
+    public void onRenderWorldEvent(RenderLevelLastEvent event) {
+        ForceFieldRenderer.renderForceFields(event.getPartialTick());
     }
 
     @SubscribeEvent

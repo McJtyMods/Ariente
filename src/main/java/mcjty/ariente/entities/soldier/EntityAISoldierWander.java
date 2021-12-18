@@ -4,8 +4,8 @@ import mcjty.ariente.api.ICityAI;
 import mcjty.ariente.api.ICityAISystem;
 import mcjty.ariente.api.SoldierBehaviourType;
 import mcjty.ariente.compat.arienteworld.ArienteWorldCompat;
-import net.minecraft.entity.ai.RandomPositionGenerator;
-import net.minecraft.entity.ai.goal.Goal;
+import net.minecraft.world.entity.ai.util.LandRandomPos;
+import net.minecraft.world.entity.ai.goal.Goal;
 import net.minecraft.core.BlockPos;
 import net.minecraft.world.phys.Vec3;
 
@@ -62,7 +62,7 @@ public class EntityAISoldierWander extends Goal {
         if (entity.getBehaviourType() == SoldierBehaviourType.SOLDIER_GUARD) {
             return null;
         } else if (entity.getCityCenter() == null) {
-            return RandomPositionGenerator.getPos(this.entity, 10, 7);
+            return LandRandomPos.getPos(this.entity, 10, 7);
         } else {
             ICityAISystem aiSystem = ArienteWorldCompat.getCityAISystem(entity.level);
             ICityAI cityAI = aiSystem.getCityAI(entity.getCityCenter());
@@ -70,7 +70,7 @@ public class EntityAISoldierWander extends Goal {
             if (pos != null) {
                 return new Vec3(pos.getX(), pos.getY(), pos.getZ());
             } else {
-                return RandomPositionGenerator.getPos(this.entity, 10, 7);
+                return LandRandomPos.getPos(this.entity, 10, 7);
             }
         }
     }

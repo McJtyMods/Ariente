@@ -13,28 +13,33 @@ import net.minecraft.network.syncher.SynchedEntityData;
 import net.minecraft.sounds.SoundEvent;
 import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.entity.ai.attributes.AttributeSupplier;
+import net.minecraft.world.entity.ai.attributes.Attributes;
+import net.minecraft.world.entity.ai.goal.LookAtPlayerGoal;
+import net.minecraft.world.entity.ai.goal.MoveTowardsRestrictionGoal;
+import net.minecraft.world.entity.ai.goal.RandomLookAroundGoal;
+import net.minecraft.world.entity.ai.goal.RandomSwimmingGoal;
+import net.minecraft.world.entity.ai.goal.target.HurtByTargetGoal;
+import net.minecraft.world.entity.ai.goal.target.NearestAttackableTargetGoal;
+import net.minecraft.world.entity.monster.Monster;
+import net.minecraft.world.entity.monster.ZombifiedPiglin;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.level.ChunkPos;
 import net.minecraft.world.level.Level;
+import net.minecraft.world.level.block.Blocks;
 import net.minecraft.world.level.block.SoundType;
 import net.minecraft.world.level.block.state.BlockState;
-import net.minecraft.world.level.block.Block;
 import net.minecraft.world.entity.EntityType;
-import net.minecraft.entity.ai.attributes.Attributes;
-import net.minecraft.entity.ai.goal.*;
-import net.minecraft.entity.monster.MonsterEntity;
-import net.minecraft.entity.monster.ZombifiedPiglinEntity;
 import net.minecraft.world.entity.EquipmentSlot;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.network.syncher.EntityDataAccessor;
-import net.minecraft.util.DamageSource;
+import net.minecraft.world.damagesource.DamageSource;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.core.BlockPos;
 
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 
-public class SoldierEntity extends MonsterEntity implements IArmRaisable, IForcefieldImmunity, ISoldier {
+public class SoldierEntity extends Monster implements IArmRaisable, IForcefieldImmunity, ISoldier {
 
     private static final EntityDataAccessor<Boolean> ARMS_RAISED = SynchedEntityData.defineId(SoldierEntity.class, EntityDataSerializers.BOOLEAN);
     public static final ResourceLocation LOOT = new ResourceLocation(Ariente.MODID, "entities/soldier");
@@ -44,7 +49,7 @@ public class SoldierEntity extends MonsterEntity implements IArmRaisable, IForce
     protected SoldierBehaviourType behaviourType = SoldierBehaviourType.SOLDIER_FIGHTER;
 
 
-    public SoldierEntity(EntityType<? extends MonsterEntity> type, Level worldIn) {
+    public SoldierEntity(EntityType<? extends Monster> type, Level worldIn) {
         super(type, worldIn);
     }
 
@@ -123,8 +128,8 @@ public class SoldierEntity extends MonsterEntity implements IArmRaisable, IForce
     }
 //            this.getAttributes().registerAttribute(Attributes.FOLLOW_RANGE).setBaseValue(16.0D);
 
-    public static AttributeSupplier.MutableAttribute registerAttributes() {
-        AttributeSupplier.MutableAttribute attributes = LivingEntity.createLivingAttributes();
+    public static AttributeSupplier.Builder registerAttributes() {
+        AttributeSupplier.Builder attributes = LivingEntity.createLivingAttributes();
         attributes
             .add(Attributes.FOLLOW_RANGE, 35.0D)
             .add(Attributes.MOVEMENT_SPEED, 0.32D)
@@ -174,13 +179,13 @@ public class SoldierEntity extends MonsterEntity implements IArmRaisable, IForce
 
     @Override
     protected void registerGoals() {
-        this.goalSelector.addGoal(0, new SwimGoal(this));
+        this.goalSelector.addGoal(0, new RandomSwimmingGoal(this, 0.8D, 4));
         this.goalSelector.addGoal(2, new EntityAISoldierAttack(this, this, 1.0D, false));
         this.goalSelector.addGoal(5, new MoveTowardsRestrictionGoal(this, 1.0D));
         this.goalSelector.addGoal(7, new EntityAISoldierWander(this, 1.0D));
-        this.goalSelector.addGoal(8, new LookAtGoal(this, Player.class, 8.0F));
-        this.goalSelector.addGoal(8, new LookRandomlyGoal(this));
-        this.targetSelector.addGoal(1, new HurtByTargetGoal(this, ZombifiedPiglinEntity.class));
+        this.goalSelector.addGoal(8, new LookAtPlayerGoal(this, Player.class, 8.0F));
+        this.goalSelector.addGoal(8, new RandomLookAroundGoal(this));
+        this.targetSelector.addGoal(1, new HurtByTargetGoal(this, ZombifiedPiglin.class));
         this.targetSelector.addGoal(2, new NearestAttackableTargetGoal<>(this, Player.class, true));
     }
 
@@ -246,8 +251,8 @@ public class SoldierEntity extends MonsterEntity implements IArmRaisable, IForce
     protected void playStepSound(BlockPos pos, BlockState state) {
         SoundType soundtype = state.getBlock().getSoundType(state, level, pos, this);
 
-        if (this.level.getBlockState(pos.above()).getBlock() == Block.SNOW) {
-            soundtype = Block.SNOW.getSoundType(null);
+        if (this.level.getBlockState(pos.above()).getBlock() == Blocks.SNOW) {
+            soundtype = Blocks.SNOW.getSoundType(null);
             this.playSound(soundtype.getStepSound(), soundtype.getVolume() * 0.15F, soundtype.getPitch());
         } else if (!state.getBlock().defaultBlockState().getMaterial().isLiquid()) {
             this.playSound(soundtype.getStepSound(), soundtype.getVolume() * 0.15F, soundtype.getPitch());

@@ -10,20 +10,21 @@ import mcjty.ariente.setup.Registration;
 import mcjty.lib.builder.TooltipBuilder;
 import mcjty.lib.tooltips.ITooltipSettings;
 import mcjty.lib.varia.NBTTools;
+import net.minecraft.network.chat.Component;
 import net.minecraft.world.entity.EquipmentSlot;
 import net.minecraft.world.entity.ai.attributes.Attribute;
 import net.minecraft.world.entity.ai.attributes.AttributeModifier;
+import net.minecraft.world.entity.ai.attributes.Attributes;
 import net.minecraft.world.item.TooltipFlag;
-import net.minecraft.enchantment.Enchantment;
-import net.minecraft.enchantment.EnchantmentHelper;
-import net.minecraft.enchantment.Enchantments;
+import net.minecraft.world.item.enchantment.Enchantment;
+import net.minecraft.world.item.enchantment.EnchantmentHelper;
+import net.minecraft.world.item.enchantment.Enchantments;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.LivingEntity;
-import net.minecraft.entity.ai.attributes.Attributes;
 import net.minecraft.world.item.ItemStack;
-import net.minecraft.potion.Effect;
-import net.minecraft.potion.EffectInstance;
+import net.minecraft.world.effect.MobEffect;
+import net.minecraft.world.effect.MobEffectInstance;
 import net.minecraft.network.chat.TextComponent;
 import net.minecraft.world.level.Level;
 import org.apache.commons.lang3.tuple.Pair;
@@ -131,16 +132,16 @@ public class EnhancedEnergySabreItem extends EnergySabreItem implements ITooltip
         if (target.getCommandSenderWorld().isClientSide) {
             return;
         }
-        Iterator<EffectInstance> iterator = target.getActiveEffectsMap().values().iterator();
+        Iterator<MobEffectInstance> iterator = target.getActiveEffectsMap().values().iterator();
 
-        Set<Effect> potionsToRemove = new HashSet<>();
+        Set<MobEffect> potionsToRemove = new HashSet<>();
         while (iterator.hasNext()) {
-            EffectInstance effect = iterator.next();
+            MobEffectInstance effect = iterator.next();
             if (effect.getEffect().isBeneficial()) {
                 potionsToRemove.add(effect.getEffect());
             }
         }
-        for (Effect potion : potionsToRemove) {
+        for (MobEffect potion : potionsToRemove) {
             target.removeEffect(potion);
         }
     }
@@ -164,7 +165,7 @@ public class EnhancedEnergySabreItem extends EnergySabreItem implements ITooltip
     }
 
     @Override
-    public void appendHoverText(ItemStack stack, @Nullable Level worldIn, List<TextComponent> list, TooltipFlag flag) {
+    public void appendHoverText(ItemStack stack, @Nullable Level worldIn, List<Component> list, TooltipFlag flag) {
         super.appendHoverText(stack, worldIn, list, flag);
         tooltipBuilder.makeTooltip(getRegistryName(), stack, list, flag);
     }

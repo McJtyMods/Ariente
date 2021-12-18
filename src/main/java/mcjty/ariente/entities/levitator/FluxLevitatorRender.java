@@ -2,17 +2,16 @@ package mcjty.ariente.entities.levitator;
 
 import com.mojang.blaze3d.vertex.PoseStack;
 import com.mojang.blaze3d.platform.GlStateManager;
+import com.mojang.math.Quaternion;
 import mcjty.ariente.Ariente;
 import mcjty.hologui.api.IHoloGuiEntity;
+import net.minecraft.client.model.EntityModel;
 import net.minecraft.client.renderer.MultiBufferSource;
 import net.minecraft.client.renderer.entity.EntityRenderer;
 import net.minecraft.client.renderer.entity.EntityRendererProvider;
-import net.minecraft.client.renderer.entity.model.EntityModel;
 import net.minecraft.resources.ResourceLocation;
-import net.minecraft.util.math.MathHelper;
+import net.minecraft.util.Mth;
 import net.minecraft.world.phys.Vec3;
-import net.minecraftforge.fml.client.registry.IRenderFactory;
-
 
 
 public class FluxLevitatorRender extends EntityRenderer<FluxLevitatorEntity> {
@@ -27,7 +26,7 @@ public class FluxLevitatorRender extends EntityRenderer<FluxLevitatorEntity> {
 
     @Override
     public void render(FluxLevitatorEntity entity, float entityYaw, float partialTicks, PoseStack matrixStack, MultiBufferSource buffer, int packedLightIn) {
-        GlStateManager._pushMatrix();
+        matrixStack.pushPose();
 //        long i = entity.getEntityId() * 493286711L;
 //        i = i * i * 4392167121L + i * 98761L;
 //        float fx = (((i >> 16 & 7L) + 0.5F) / 8.0F - 0.5F) * 0.004F;
@@ -39,7 +38,7 @@ public class FluxLevitatorRender extends EntityRenderer<FluxLevitatorEntity> {
         double interY = entity.yOld + (entity.getY() - entity.yOld) * partialTicks;
         double interZ = entity.zOld + (entity.getZ() - entity.zOld) * partialTicks;
         Vec3 vec3d = entity.getPos(interX, interY, interZ);
-        float pitch = entity.xRotO + (entity.xRot - entity.xRotO) * partialTicks;
+        float pitch = entity.xRotO + (entity.getXRot() - entity.xRotO) * partialTicks;
 
 
         if (vec3d != null) {
@@ -69,8 +68,8 @@ public class FluxLevitatorRender extends EntityRenderer<FluxLevitatorEntity> {
 
         // @todo 1.15
 //        GlStateManager.translatef((float) x, (float) y + 0.375F, (float) z);
-        GlStateManager._rotatef(180.0F - entityYaw, 0.0F, 1.0F, 0.0F);
-        GlStateManager._rotatef(-pitch, 0.0F, 0.0F, 1.0F);
+        matrixStack.mulPose(new Quaternion(180.0F - entityYaw, 0.0F, 1.0F, 0.0F));
+        matrixStack.mulPose(new Quaternion(-pitch, 0.0F, 0.0F, 1.0F));
         float f5 = entity.getRollingAmplitude() - partialTicks;
         float f6 = entity.getDamage() - partialTicks;
 
@@ -79,7 +78,7 @@ public class FluxLevitatorRender extends EntityRenderer<FluxLevitatorEntity> {
         }
 
         if (f5 > 0.0F) {
-            GlStateManager._rotatef(MathHelper.sin(f5) * f5 * f6 / 10.0F * entity.getRollingDirection(), 1.0F, 0.0F, 0.0F);
+            matrixStack.mulPose(new Quaternion(Mth.sin(f5) * f5 * f6 / 10.0F * entity.getRollingDirection(), 1.0F, 0.0F, 0.0F));
         }
 
         // @todo 1.15
@@ -95,18 +94,18 @@ public class FluxLevitatorRender extends EntityRenderer<FluxLevitatorEntity> {
 
         IHoloGuiEntity holoGui = entity.getHoloGuiFront();
         if (holoGui != null) {
-            GlStateManager._scalef(-1.0F, -1.0F, 1.0F);
+            matrixStack.scale(-1.0F, -1.0F, 1.0F);
             Ariente.guiHandler.render(holoGui, 1, 0, 0, -90);
         }
         holoGui = entity.getHoloGuiBack();
         if (holoGui != null) {
-            GlStateManager._scalef(-1.0F, -1.0F, 1.0F);
-            GlStateManager._rotatef(180, 1, 0, 0);
+            matrixStack.scale(-1.0F, -1.0F, 1.0F);
+            matrixStack.mulPose(new Quaternion(180, 1, 0, 0));
             Ariente.guiHandler.render(holoGui, 1, 0, 0, -90);
         }
 
 
-        GlStateManager._popMatrix();
+        matrixStack.popPose();
 
         // @todo 1.15
 //        if (this.renderOutlines) {
@@ -122,10 +121,10 @@ public class FluxLevitatorRender extends EntityRenderer<FluxLevitatorEntity> {
         return TEXTURE;
     }
 
-    public static class Factory implements IRenderFactory<FluxLevitatorEntity> {
+    public static class Factory implements EntityRendererProvider<FluxLevitatorEntity> {
 
         @Override
-        public EntityRenderer<? super FluxLevitatorEntity> createRenderFor(EntityRendererProvider.Context manager) {
+        public EntityRenderer<FluxLevitatorEntity> create(EntityRendererProvider.Context manager) {
             return new FluxLevitatorRender(manager);
         }
 

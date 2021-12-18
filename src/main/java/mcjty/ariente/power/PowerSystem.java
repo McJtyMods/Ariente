@@ -16,8 +16,8 @@ public class PowerSystem extends AbstractWorldData<PowerSystem> {
     private Map<Integer, PowerBlob> powerBlobs = new HashMap<>();
     private int tickCounter = 1;
 
-    public PowerSystem(String name) {
-        super(name);
+    public PowerSystem() {
+        super();
     }
 
     public void tick() {
@@ -107,11 +107,15 @@ public class PowerSystem extends AbstractWorldData<PowerSystem> {
 
     @Nonnull
     public static PowerSystem getPowerSystem(Level world) {
-        return getData(world, () -> new PowerSystem(NAME), NAME);
+        return getData(world, PowerSystem::createPowerSystem, () -> new PowerSystem(), NAME);
     }
 
+    private static PowerSystem createPowerSystem(CompoundTag tag) {
+        PowerSystem system = new PowerSystem();
+        system.load(tag);
+        return system;
+    }
 
-    @Override
     public void load(CompoundTag nbt) {
         lastId = nbt.getInt("lastId");
     }

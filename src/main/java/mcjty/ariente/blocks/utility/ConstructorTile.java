@@ -16,6 +16,7 @@ import mcjty.lib.blocks.RotationType;
 import mcjty.lib.builder.BlockBuilder;
 import mcjty.lib.tileentity.GenericTileEntity;
 import net.minecraft.ChatFormatting;
+import net.minecraft.core.BlockPos;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.InteractionHand;
 import net.minecraft.world.entity.player.Player;
@@ -46,8 +47,8 @@ public class ConstructorTile extends GenericTileEntity implements IGuiTile, ICit
         return true;
     }
 
-    public ConstructorTile() {
-        super(Registration.CONSTRUCTOR_TILE.get());
+    public ConstructorTile(BlockPos pos, BlockState state) {
+        super(Registration.CONSTRUCTOR_TILE.get(), pos, state);
     }
 
     public static BaseBlock createBlock() {
@@ -98,8 +99,8 @@ public class ConstructorTile extends GenericTileEntity implements IGuiTile, ICit
             return true;
         }
         int needed = ingredient.getCount();
-        for (int i = 0; i < player.inventory.getContainerSize(); i++) {
-            ItemStack stack = player.inventory.getItem(i);
+        for (int i = 0; i < player.getInventory().getContainerSize(); i++) {
+            ItemStack stack = player.getInventory().getItem(i);
             if (ItemStack.isSame(ingredient, stack)) {
                 needed -= stack.getCount();
                 if (needed <= 0) {
@@ -116,8 +117,8 @@ public class ConstructorTile extends GenericTileEntity implements IGuiTile, ICit
         }
 
         int needed = ingredient.getCount();
-        for (int i = 0; i < player.inventory.getContainerSize(); i++) {
-            ItemStack stack = player.inventory.getItem(i);
+        for (int i = 0; i < player.getInventory().getContainerSize(); i++) {
+            ItemStack stack = player.getInventory().getItem(i);
             if (ItemStack.isSame(ingredient, stack)) {
                 if (needed <= stack.getCount()) {
                     stack.shrink(needed);
@@ -162,7 +163,7 @@ public class ConstructorTile extends GenericTileEntity implements IGuiTile, ICit
 
                     markDirtyClient();
 
-                    if (!player.inventory.add(destination)) {
+                    if (!player.getInventory().add(destination)) {
                         player.spawnAtLocation(destination, 1.05f);
                     }
 
@@ -184,7 +185,7 @@ public class ConstructorTile extends GenericTileEntity implements IGuiTile, ICit
                             .line("items from blueprints that are in")
                             .line("adjacent blueprint storages")
                             .nl()
-                            .line("Top grid: player inventory")
+                            .line("Top grid: player.getInventory()")
                             .line("Bottom grid: available blueprints")
                             .nl()
                             .line("Double click on blueprint to craft)", 0xffffff00)

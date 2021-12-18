@@ -19,8 +19,8 @@ public class SecuritySystem extends AbstractWorldData<SecuritySystem> implements
 
     private long lastSecurityID = 1;
 
-    public SecuritySystem(String name) {
-        super(name);
+    public SecuritySystem() {
+        super();
     }
 
     public long newSecurityID() {
@@ -64,10 +64,15 @@ public class SecuritySystem extends AbstractWorldData<SecuritySystem> implements
 
     @Nonnull
     public static SecuritySystem getSecuritySystem(Level world) {
-        return getData(world, () -> new SecuritySystem(NAME), NAME);
+        return getData(world, SecuritySystem::createSecuritySystem, () -> new SecuritySystem(), NAME);
     }
 
-    @Override
+    private static SecuritySystem createSecuritySystem(CompoundTag tag) {
+        SecuritySystem system = new SecuritySystem();
+        system.load(tag);
+        return system;
+    }
+
     public void load(CompoundTag compound) {
         lastSecurityID = compound.getLong("lastSecurityID");
     }

@@ -1,6 +1,10 @@
 package mcjty.ariente.items.armor;
 
 import com.mojang.blaze3d.platform.GlStateManager;
+import com.mojang.blaze3d.systems.RenderSystem;
+import com.mojang.blaze3d.vertex.BufferBuilder;
+import com.mojang.blaze3d.vertex.Tesselator;
+import com.mojang.blaze3d.vertex.VertexFormat;
 import mcjty.ariente.api.ArmorUpgradeType;
 import mcjty.ariente.blocks.defense.ForceFieldRenderer;
 import mcjty.ariente.blocks.defense.PanelInfo;
@@ -9,23 +13,25 @@ import mcjty.ariente.items.modules.ModuleSupport;
 import mcjty.ariente.setup.Registration;
 import mcjty.ariente.varia.Triangle;
 import net.minecraft.client.Minecraft;
-import net.minecraft.client.renderer.BufferBuilder;
-import net.minecraft.client.renderer.Tessellator;
-import net.minecraft.client.renderer.entity.model.BipedModel;
-import net.minecraft.client.renderer.model.ModelRenderer;
+import net.minecraft.client.model.HumanoidModel;
+// @todo 1.18 import net.minecraft.client.renderer.model.ModelRenderer;
 import com.mojang.blaze3d.vertex.DefaultVertexFormat;
+import net.minecraft.client.model.geom.ModelPart;
 import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.EquipmentSlot;
 import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.entity.player.Player;
-import net.minecraft.item.ArmorItem;
+import net.minecraft.world.item.ArmorItem;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.phys.Vec3;
 import org.lwjgl.opengl.GL11;
 
+import java.util.List;
+import java.util.Map;
+
 import static mcjty.ariente.blocks.defense.ForceFieldRenderer.FORCEFIELD;
 
-public class PowerSuitModel extends BipedModel<LivingEntity> {
+public class PowerSuitModel extends HumanoidModel<LivingEntity> {
 
     public static PowerSuitModel modelHelm;
     public static PowerSuitModel modelChest;
@@ -36,31 +42,31 @@ public class PowerSuitModel extends BipedModel<LivingEntity> {
 
     // Hazmat Suit
 
-    public ModelRenderer mask;
-    public ModelRenderer respirator;
-    public ModelRenderer resp_l;
-    public ModelRenderer resp_r;
-    
-    public ModelRenderer body;
-    public ModelRenderer arm_l;
-    public ModelRenderer arm_r;
-    public ModelRenderer glove_l;
-    public ModelRenderer glove_r;
-    
-    public ModelRenderer belt;
-    public ModelRenderer leg_l;
-    public ModelRenderer leg_r;
-    
-    private ModelRenderer bootsLeft;
-    private ModelRenderer bootsRight;
-    public ModelRenderer boot_l;
-    public ModelRenderer boot_r;
+    // @todo 1.18 public ModelRenderer mask;
+    // @todo 1.18 public ModelRenderer respirator;
+    // @todo 1.18 public ModelRenderer resp_l;
+    // @todo 1.18 public ModelRenderer resp_r;
+    // @todo 1.18
+    // @todo 1.18 public ModelRenderer body;
+    // @todo 1.18 public ModelRenderer arm_l;
+    // @todo 1.18 public ModelRenderer arm_r;
+    // @todo 1.18 public ModelRenderer glove_l;
+    // @todo 1.18 public ModelRenderer glove_r;
+    // @todo 1.18
+    // @todo 1.18 public ModelRenderer belt;
+    // @todo 1.18 public ModelRenderer leg_l;
+    // @todo 1.18 public ModelRenderer leg_r;
+    // @todo 1.18
+    // @todo 1.18 private ModelRenderer bootsLeft;
+    // @todo 1.18 private ModelRenderer bootsRight;
+    // @todo 1.18 public ModelRenderer boot_l;
+    // @todo 1.18 public ModelRenderer boot_r;
 
     public PowerSuitModel(float scale) {
-        super(scale);
+        super(new ModelPart(List.of(), Map.of()));
 
-    	this.texWidth = 64;
-        this.texHeight = 128;
+    	// @todo 1.18 this.texWidth = 64;
+        // @todo 1.18 this.texHeight = 128;
         float s = 0.01F;
 
         // @todo 1.15
@@ -73,105 +79,105 @@ public class PowerSuitModel extends BipedModel<LivingEntity> {
 //        this.bipedRightLeg.cubeList.clear();
         
         //helmet
-        this.mask = new ModelRenderer(this, 0, 0);
-        this.mask.addBox(-4.5F, -9.0F, -4.5F, 9, 13, 9, s);
-        this.mask.setPos(0.0F, 0.0F, 0.0F);
-        
-        this.respirator = new ModelRenderer(this, 36, 0);
-        this.respirator.addBox(-2.5F, -5.0F, -5.5F, 5, 4, 4, s);
-        this.respirator.setPos(0.0F, 0.0F, 0.0F);
-        this.setRotation(respirator, 0.5235987755982988F, 0.0F, 0.0F);
-        
-        this.resp_l = new ModelRenderer(this, 36, 8);
-        this.resp_l.addBox(0.0F, 0.0F, -2.5F, 3, 3, 3, s);
-        this.resp_l.setPos(0.5F, -4.0F, -5.5F);
-        this.setRotation(resp_l, 0.0F, -0.7853981633974483F, 0.0F);
-        this.resp_l.mirror = true;
-        
-        this.resp_r = new ModelRenderer(this, 36, 8);
-        this.resp_r.addBox(-3.0F, 0.0F, -2.5F, 3, 3, 3, s);
-        this.resp_r.setPos(-0.5F, -4.0F, -5.5F);
-        this.setRotation(resp_r, 0.0F, 0.7853981633974483F, 0.0F);
+        // @todo 1.18 this.mask = new ModelRenderer(this, 0, 0);
+        // @todo 1.18 this.mask.addBox(-4.5F, -9.0F, -4.5F, 9, 13, 9, s);
+        // @todo 1.18 this.mask.setPos(0.0F, 0.0F, 0.0F);
+        // @todo 1.18
+        // @todo 1.18 this.respirator = new ModelRenderer(this, 36, 0);
+        // @todo 1.18 this.respirator.addBox(-2.5F, -5.0F, -5.5F, 5, 4, 4, s);
+        // @todo 1.18 this.respirator.setPos(0.0F, 0.0F, 0.0F);
+        // @todo 1.18 this.setRotation(respirator, 0.5235987755982988F, 0.0F, 0.0F);
+        // @todo 1.18
+        // @todo 1.18 this.resp_l = new ModelRenderer(this, 36, 8);
+        // @todo 1.18 this.resp_l.addBox(0.0F, 0.0F, -2.5F, 3, 3, 3, s);
+        // @todo 1.18 this.resp_l.setPos(0.5F, -4.0F, -5.5F);
+        // @todo 1.18 this.setRotation(resp_l, 0.0F, -0.7853981633974483F, 0.0F);
+        // @todo 1.18 this.resp_l.mirror = true;
+        // @todo 1.18
+        // @todo 1.18 this.resp_r = new ModelRenderer(this, 36, 8);
+        // @todo 1.18 this.resp_r.addBox(-3.0F, 0.0F, -2.5F, 3, 3, 3, s);
+        // @todo 1.18 this.resp_r.setPos(-0.5F, -4.0F, -5.5F);
+        // @todo 1.18 this.setRotation(resp_r, 0.0F, 0.7853981633974483F, 0.0F);
    
-        this.head.addChild(mask);
-        this.head.addChild(respirator);
-        this.respirator.addChild(resp_l);
-        this.respirator.addChild(resp_r);
-        
-        //chestplate
-        this.body = new ModelRenderer(this, 0, 22);
-        this.body.addBox(-4.5F, 0.0F, -3.0F, 9, 9, 6, s);
-        this.body.setPos(0.0F, 0.0F, 0.0F);
-        
-        this.arm_l = new ModelRenderer(this, 0, 37);
-        this.arm_l.addBox(-1.5F, -2.5F, -2.9F, 5, 8, 6, s);
-        this.arm_l.setPos(0.0F, 0.0F, 0.0F);
-        this.arm_l.mirror = true;
-        
-        this.glove_l = new ModelRenderer(this, 22, 37);
-        this.glove_l.addBox(-1.5F, 5.5F, -2.5F, 5, 5, 5, s);
-        this.glove_l.setPos(0.0F, 0.0F, 0.0F);
-        this.glove_l.mirror = true;
-        
-        this.arm_r = new ModelRenderer(this, 0, 37);
-        this.arm_r.addBox(-3.5F, -2.5F, -3.0F, 5, 8, 6, s);
-        this.arm_r.setPos(0.0F, 0.0F, 0.0F);
-        
-        this.glove_r = new ModelRenderer(this, 22, 37);
-        this.glove_r.addBox(-3.5F, 5.5F, -2.5F, 5, 5, 5, s);
-        this.glove_r.setPos(0.0F, 0.0F, 0.0F);
-        
-        this.body.addChild(body);
-        this.rightArm.addChild(arm_r);
-        this.rightArm.addChild(glove_r);
-        this.leftArm.addChild(arm_l);
-        this.leftArm.addChild(glove_l);
+        // @todo 1.18 this.head.addChild(mask);
+        // @todo 1.18 this.head.addChild(respirator);
+        // @todo 1.18 this.respirator.addChild(resp_l);
+        // @todo 1.18 this.respirator.addChild(resp_r);
+        // @todo 1.18
+        // @todo 1.18 //chestplate
+        // @todo 1.18 this.body = new ModelRenderer(this, 0, 22);
+        // @todo 1.18 this.body.addBox(-4.5F, 0.0F, -3.0F, 9, 9, 6, s);
+        // @todo 1.18 this.body.setPos(0.0F, 0.0F, 0.0F);
+        // @todo 1.18
+        // @todo 1.18 this.arm_l = new ModelRenderer(this, 0, 37);
+        // @todo 1.18 this.arm_l.addBox(-1.5F, -2.5F, -2.9F, 5, 8, 6, s);
+        // @todo 1.18 this.arm_l.setPos(0.0F, 0.0F, 0.0F);
+        // @todo 1.18 this.arm_l.mirror = true;
+        // @todo 1.18
+        // @todo 1.18 this.glove_l = new ModelRenderer(this, 22, 37);
+        // @todo 1.18 this.glove_l.addBox(-1.5F, 5.5F, -2.5F, 5, 5, 5, s);
+        // @todo 1.18 this.glove_l.setPos(0.0F, 0.0F, 0.0F);
+        // @todo 1.18 this.glove_l.mirror = true;
+        // @todo 1.18
+        // @todo 1.18 this.arm_r = new ModelRenderer(this, 0, 37);
+        // @todo 1.18 this.arm_r.addBox(-3.5F, -2.5F, -3.0F, 5, 8, 6, s);
+        // @todo 1.18 this.arm_r.setPos(0.0F, 0.0F, 0.0F);
+        // @todo 1.18
+        // @todo 1.18 this.glove_r = new ModelRenderer(this, 22, 37);
+        // @todo 1.18 this.glove_r.addBox(-3.5F, 5.5F, -2.5F, 5, 5, 5, s);
+        // @todo 1.18 this.glove_r.setPos(0.0F, 0.0F, 0.0F);
+        // @todo 1.18
+        // @todo 1.18 this.body.addChild(body);
+        // @todo 1.18 this.rightArm.addChild(arm_r);
+        // @todo 1.18 this.rightArm.addChild(glove_r);
+        // @todo 1.18 this.leftArm.addChild(arm_l);
+        // @todo 1.18 this.leftArm.addChild(glove_l);
 
-        //legs
-        
-        this.belt = new ModelRenderer(this, 0, 52);
-        this.belt.addBox(-4.5F, 9.0F, -3.0F, 9, 5, 6, s);
-        this.belt.setPos(0.0F, 0.0F, 0.0F);
-        
-        this.leg_l = new ModelRenderer(this, 0, 63);
-        this.leg_l.addBox(-2.0F, -3.0F, -2.55F, 5, 9, 5, s);
-        this.leg_l.setPos(0.0F, 0.0F, 0.0F);
-        
-        this.leg_r = new ModelRenderer(this, 0, 63);
-        this.leg_r.addBox(-3.0F, -3.0F, -2.55F, 5, 9, 5, s);
-        this.leg_r.setPos(0.0F, 0.0F, 0.0F);
-        
-        this.rightLeg.addChild(leg_r);
-        this.leftLeg.addChild(leg_l);
-        this.body.addChild(belt);
-        
-        //boots
-        bootsLeft = new ModelRenderer(this, 0, 0);
-        bootsRight = new ModelRenderer(this, 0, 0);
+        // @todo 1.18 //legs
+        // @todo 1.18
+        // @todo 1.18 this.belt = new ModelRenderer(this, 0, 52);
+        // @todo 1.18 this.belt.addBox(-4.5F, 9.0F, -3.0F, 9, 5, 6, s);
+        // @todo 1.18 this.belt.setPos(0.0F, 0.0F, 0.0F);
+        // @todo 1.18
+        // @todo 1.18 this.leg_l = new ModelRenderer(this, 0, 63);
+        // @todo 1.18 this.leg_l.addBox(-2.0F, -3.0F, -2.55F, 5, 9, 5, s);
+        // @todo 1.18 this.leg_l.setPos(0.0F, 0.0F, 0.0F);
+        // @todo 1.18
+        // @todo 1.18 this.leg_r = new ModelRenderer(this, 0, 63);
+        // @todo 1.18 this.leg_r.addBox(-3.0F, -3.0F, -2.55F, 5, 9, 5, s);
+        // @todo 1.18 this.leg_r.setPos(0.0F, 0.0F, 0.0F);
+        // @todo 1.18
+        // @todo 1.18 this.rightLeg.addChild(leg_r);
+        // @todo 1.18 this.leftLeg.addChild(leg_l);
+        // @todo 1.18 this.body.addChild(belt);
+        // @todo 1.18
+        // @todo 1.18 //boots
+        // @todo 1.18 bootsLeft = new ModelRenderer(this, 0, 0);
+        // @todo 1.18 bootsRight = new ModelRenderer(this, 0, 0);
     
-        this.boot_l = new ModelRenderer(this, 0, 77);
-        this.boot_l.setPos(0,0,0);
-        this.boot_l.addBox(-2.0F, 6.0F, -2.5F, 5, 6, 5, s);
-        
-        this.boot_r = new ModelRenderer(this, 0, 77);
-        this.boot_r.setPos(0, 0 ,0);
-        this.boot_r.addBox(-2.95F, 6.0F, -2.5F, 5, 6, 5, s);
+        // @todo 1.18 this.boot_l = new ModelRenderer(this, 0, 77);
+        // @todo 1.18 this.boot_l.setPos(0,0,0);
+        // @todo 1.18 this.boot_l.addBox(-2.0F, 6.0F, -2.5F, 5, 6, 5, s);
+        // @todo 1.18
+        // @todo 1.18 this.boot_r = new ModelRenderer(this, 0, 77);
+        // @todo 1.18 this.boot_r.setPos(0, 0 ,0);
+        // @todo 1.18 this.boot_r.addBox(-2.95F, 6.0F, -2.5F, 5, 6, 5, s);
     
-        this.bootsLeft.addChild(boot_l);
-        this.bootsRight.addChild(boot_r);
-        
-        this.leftLeg.addChild(bootsLeft);
-        this.rightLeg.addChild(bootsRight);
+        // @todo 1.18 this.bootsLeft.addChild(boot_l);
+        // @todo 1.18 this.bootsRight.addChild(boot_r);
+        // @todo 1.18
+        // @todo 1.18 this.leftLeg.addChild(bootsLeft);
+        // @todo 1.18 this.rightLeg.addChild(bootsRight);
 
     }
 
-    private void setRotation(ModelRenderer model, float x, float y, float z) {
-        model.xRot = x;
-        model.yRot = y;
-        model.zRot = z;
-    }
+    // @todo 1.18 private void setRotation(ModelRenderer model, float x, float y, float z) {
+    // @todo 1.18     model.xRot = x;
+    // @todo 1.18     model.yRot = y;
+    // @todo 1.18     model.zRot = z;
+    // @todo 1.18 }
 
-    public static BipedModel getModel(LivingEntity entity, ItemStack stack) {
+    public static HumanoidModel getModel(LivingEntity entity, ItemStack stack) {
 
         if (stack.isEmpty() || !(stack.getItem() instanceof ArmorItem)) {
             return null;
@@ -198,8 +204,8 @@ public class PowerSuitModel extends BipedModel<LivingEntity> {
         armor.rightArm.visible = false;
         armor.leftLeg.visible = false;
         armor.rightLeg.visible = false;
-        armor.bootsLeft.visible = false;
-        armor.bootsRight.visible = false;
+        // @todo 1.18 armor.bootsLeft.visible = false;
+        // @todo 1.18 armor.bootsRight.visible = false;
 
         switch (slot) {
             case HEAD:
@@ -210,10 +216,10 @@ public class PowerSuitModel extends BipedModel<LivingEntity> {
             case FEET:
                 armor.rightLeg.visible = true;
                 armor.leftLeg.visible = true;
-                armor.leg_l.visible = false;
-                armor.leg_r.visible = false;
-                armor.bootsLeft.visible = true;
-                armor.bootsRight.visible = true;
+                // @todo 1.18 armor.leg_l.visible = false;
+                // @todo 1.18 armor.leg_r.visible = false;
+                // @todo 1.18 armor.bootsLeft.visible = true;
+                // @todo 1.18 armor.bootsRight.visible = true;
                 modelBoots = armor;
                 break;
                 
@@ -300,14 +306,14 @@ public class PowerSuitModel extends BipedModel<LivingEntity> {
         Minecraft mc = Minecraft.getInstance();
         mc.gameRenderer.lightTexture().turnOffLightLayer();
         GlStateManager._enableTexture();
-        GlStateManager._disableLighting();
+        // @todo 1.18 GlStateManager._disableLighting();
         GlStateManager._enableBlend();
         GlStateManager._depthMask(false);
         GlStateManager._enableDepthTest();
-        GlStateManager._color4f(1.0f, 1.0f, 1.0f, 0.1f);
-        mc.getTextureManager().bind(FORCEFIELD);
+        RenderSystem.setShaderColor(1.0f, 1.0f, 1.0f, 0.1f);
+        mc.getTextureManager().bindForSetup(FORCEFIELD);
 
-        Tessellator t = Tessellator.getInstance();
+        Tesselator t = Tesselator.getInstance();
         BufferBuilder builder = t.getBuilder();
 
         Entity renderViewEntity = Minecraft.getInstance().getCameraEntity();
@@ -320,12 +326,12 @@ public class PowerSuitModel extends BipedModel<LivingEntity> {
 
         double scale = 1.2;
 
-        GlStateManager._color4f(1.0f, 1.0f, 1.0f, 0.2f);
+        RenderSystem.setShaderColor(1.0f, 1.0f, 1.0f, 0.2f);
         renderPanels(t, builder, x, y, z, scale, getPanelInfo(posX, posY, posZ, scale));
 
         GlStateManager._enableTexture();
         GlStateManager._depthMask(true);
-        GlStateManager._enableLighting();
+        // @todo 1.18 GlStateManager._enableLighting();
 //        GlStateManager.popMatrix();
     }
 
@@ -345,8 +351,8 @@ public class PowerSuitModel extends BipedModel<LivingEntity> {
     }
 
 
-    private static void renderPanels(Tessellator t, BufferBuilder builder, double x, double y, double z, double scale, PanelInfo[] panelInfo) {
-        builder.begin(GL11.GL_TRIANGLES, DefaultVertexFormat.POSITION_TEX_COLOR);
+    private static void renderPanels(Tesselator t, BufferBuilder builder, double x, double y, double z, double scale, PanelInfo[] panelInfo) {
+        builder.begin(VertexFormat.Mode.TRIANGLES, DefaultVertexFormat.POSITION_TEX_COLOR);
 
         for (PanelInfo info : panelInfo) {
             if (info != null) {

@@ -13,7 +13,7 @@ import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.world.level.block.state.StateDefinition;
-import net.minecraft.tileentity.ITickableTileEntity;
+// @todo 1.18 import net.minecraft.tileentity.ITickableTileEntity;
 import net.minecraft.world.InteractionHand;
 import net.minecraft.world.phys.BlockHitResult;
 import net.minecraft.world.phys.shapes.CollisionContext;
@@ -23,12 +23,12 @@ import net.minecraft.world.phys.shapes.Shapes;
 import static mcjty.ariente.compat.ArienteTOPDriver.DRIVER;
 import static mcjty.lib.builder.TooltipBuilder.*;
 
-public class SignalReceiverTile extends SignalChannelTileEntity implements ITickableTileEntity {
+public class SignalReceiverTile extends SignalChannelTileEntity /* @todo 1.18 implements ITickableTileEntity */ {
 
     private static final VoxelShape BLOCK_AABB = Shapes.box(1.0D/16.0, 1.0D/16.0, 15.0D/16.0, 15.0D/16.0, 15.0D/16.0, 1.0D);
 
-    public SignalReceiverTile() {
-        super(Registration.SIGNAL_RECEIVER_TILE.get());
+    public SignalReceiverTile(BlockPos pos, BlockState state) {
+        super(Registration.SIGNAL_RECEIVER_TILE.get(), pos, state);
     }
 
     public static BaseBlock createBlock() {
@@ -58,11 +58,9 @@ public class SignalReceiverTile extends SignalChannelTileEntity implements ITick
         return InteractionResult.SUCCESS;
     }
 
-    @Override
-    public void tick() {
-        if (!level.isClientSide) {
-            checkStateServer();
-        }
+    //@Override
+    public void tickServer() {
+        checkStateServer();
     }
 
     protected void checkStateServer() {

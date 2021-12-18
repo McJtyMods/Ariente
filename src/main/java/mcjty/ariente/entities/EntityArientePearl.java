@@ -2,20 +2,19 @@ package mcjty.ariente.entities;
 
 import mcjty.ariente.setup.Registration;
 import net.minecraft.core.BlockPos;
+import net.minecraft.core.particles.ParticleTypes;
 import net.minecraft.network.protocol.Packet;
+import net.minecraft.util.Mth;
 import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.EntityType;
-import net.minecraft.entity.IRendersAsItem;
-import net.minecraft.entity.item.ItemEntity;
+import net.minecraft.world.entity.item.ItemEntity;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.nbt.CompoundTag;
-import net.minecraft.particles.ParticleTypes;
-import net.minecraft.util.SoundEvents;
-import net.minecraft.util.math.MathHelper;
+import net.minecraft.sounds.SoundEvents;
 import net.minecraft.world.level.Level;
-import net.minecraftforge.fml.network.NetworkHooks;
+import net.minecraftforge.network.NetworkHooks;
 
-public class EntityArientePearl extends Entity implements IRendersAsItem {
+public class EntityArientePearl extends Entity {
 
     private double targetX;
     private double targetY;
@@ -27,7 +26,7 @@ public class EntityArientePearl extends Entity implements IRendersAsItem {
         super(entityTypeIn, worldIn);
     }
 
-    @Override
+    // @todo 1.18 @Override
     public ItemStack getItem() {
         return new ItemStack(Registration.ARIENTE_PEARL.get());
     }
@@ -68,7 +67,7 @@ public class EntityArientePearl extends Entity implements IRendersAsItem {
         double d1 = pos.getZ();
         double d2 = d0 - this.getX();
         double d3 = d1 - this.getZ();
-        float f = MathHelper.sqrt(d2 * d2 + d3 * d3);
+        float f = Mth.sqrt((float)(d2 * d2 + d3 * d3));
 
         if (f > 12.0F) {
             this.targetX = this.getX() + d2 / f * 12.0D;
@@ -89,11 +88,11 @@ public class EntityArientePearl extends Entity implements IRendersAsItem {
         setDeltaMovement(x, y, z);
 
         if (this.xRotO == 0.0F && this.yRotO == 0.0F) {
-            float f = MathHelper.sqrt(x * x + z * z);
-            this.yRot = (float) (MathHelper.atan2(x, z) * (180D / Math.PI));
-            this.xRot = (float) (MathHelper.atan2(y, f) * (180D / Math.PI));
-            this.yRotO = this.yRot;
-            this.xRotO = this.xRot;
+            float f = Mth.sqrt((float)(x * x + z * z));
+            this.setYRot((float) (Mth.atan2(x, z) * (180D / Math.PI)));
+            this.setXRot((float) (Mth.atan2(y, f) * (180D / Math.PI)));
+            this.yRotO = this.getYRot();
+            this.xRotO = this.getXRot();
         }
     }
 
@@ -107,33 +106,33 @@ public class EntityArientePearl extends Entity implements IRendersAsItem {
         double motionY = this.getDeltaMovement().y;
         double motionZ = this.getDeltaMovement().z;
         setPosRaw(getX() + motionX, getY() + motionY, getZ() + motionZ);  // @todo 1.15 is this right?
-        float f = MathHelper.sqrt(motionX * motionX + motionZ * motionZ);
-        this.yRot = (float) (MathHelper.atan2(motionX, motionZ) * (180D / Math.PI));
+        float f = Mth.sqrt((float)(motionX * motionX + motionZ * motionZ));
+        this.setYRot((float) (Mth.atan2(motionX, motionZ) * (180D / Math.PI)));
 
-        for (this.xRot = (float) (MathHelper.atan2(motionY, f) * (180D / Math.PI)); this.xRot - this.xRotO < -180.0F; this.xRotO -= 360.0F) {
+        for (this.setXRot((float) (Mth.atan2(motionY, f) * (180D / Math.PI))); this.getXRot() - this.xRotO < -180.0F; this.xRotO -= 360.0F) {
             ;
         }
 
-        while (this.xRot - this.xRotO >= 180.0F) {
+        while (this.getXRot() - this.xRotO >= 180.0F) {
             this.xRotO += 360.0F;
         }
 
-        while (this.yRot - this.yRotO < -180.0F) {
+        while (this.getYRot() - this.yRotO < -180.0F) {
             this.yRotO -= 360.0F;
         }
 
-        while (this.yRot - this.yRotO >= 180.0F) {
+        while (this.getYRot() - this.yRotO >= 180.0F) {
             this.yRotO += 360.0F;
         }
 
-        this.xRot = this.xRotO + (this.xRot - this.xRotO) * 0.2F;
-        this.yRot = this.yRotO + (this.yRot - this.yRotO) * 0.2F;
+        this.setXRot(this.xRotO + (this.getXRot() - this.xRotO) * 0.2F);
+        this.setYRot(this.yRotO + (this.getYRot() - this.yRotO) * 0.2F);
 
         if (!this.level.isClientSide) {
             double d0 = this.targetX - this.getX();
             double d1 = this.targetZ - this.getZ();
             float f1 = (float) Math.sqrt(d0 * d0 + d1 * d1);
-            float f2 = (float) MathHelper.atan2(d1, d0);
+            float f2 = (float) Mth.atan2(d1, d0);
             double d2 = f + (f1 - f) * 0.0025D;
 
             if (f1 < 1.0F) {
@@ -168,7 +167,7 @@ public class EntityArientePearl extends Entity implements IRendersAsItem {
 
             if (this.despawnTimer > 80 && !this.level.isClientSide) {
                 this.playSound(SoundEvents.ENDER_EYE_DEATH, 1.0F, 1.0F);
-                this.remove();
+                this.remove(RemovalReason.DISCARDED);
 
                 if (this.shatterOrDrop) {
                     this.level.addFreshEntity(new ItemEntity(this.level, this.getX(), this.getY(), this.getZ(), new ItemStack(Registration.ARIENTE_PEARL.get())));

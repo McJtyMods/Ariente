@@ -22,28 +22,28 @@ import mcjty.lib.tileentity.GenericTileEntity;
 import mcjty.lib.varia.ItemStackList;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
+import net.minecraft.nbt.Tag;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.sounds.SoundSource;
 import net.minecraft.world.InteractionHand;
 import net.minecraft.world.InteractionResult;
 import net.minecraft.world.entity.player.Player;
+import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.level.block.Block;
 import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.client.Minecraft;
-import net.minecraft.item.Item;
 import net.minecraft.nbt.CompoundTag;
-import net.minecraft.nbt.ListNBT;
+import net.minecraft.nbt.ListTag;
 import net.minecraft.network.Connection;
 import net.minecraft.network.protocol.game.ClientboundBlockEntityDataPacket;
 import net.minecraft.world.level.block.state.StateDefinition;
 import net.minecraft.world.level.block.entity.BlockEntity;
 import net.minecraft.world.phys.BlockHitResult;
-import net.minecraft.util.math.RayTraceResult;
+import net.minecraft.world.phys.HitResult;
 import net.minecraft.world.phys.Vec3;
 import net.minecraftforge.common.capabilities.Capability;
-import net.minecraftforge.common.util.Constants;
 import net.minecraftforge.common.util.LazyOptional;
 import net.minecraftforge.items.CapabilityItemHandler;
 import net.minecraftforge.items.IItemHandler;
@@ -74,8 +74,8 @@ public class StorageTile extends GenericTileEntity implements IGuiTile, ICityEqu
     private int[] counts = new int[STACKS * STACKS_PER_TYPE];
     private int[] totals = new int[STACKS];
 
-    public StorageTile() {
-        super(Registration.STORAGE_TILE.get());
+    public StorageTile(BlockPos pos, BlockState state) {
+        super(Registration.STORAGE_TILE.get(), pos, state);
     }
 
     public static BaseBlock createBlock() {
@@ -121,7 +121,7 @@ public class StorageTile extends GenericTileEntity implements IGuiTile, ICityEqu
             // If needed send a render update.
             boolean newLocked = isLocked();
             if (newLocked != locked) {
-                level.sendBlockUpdated(worldPosition, getBlockState(), getBlockState(), Constants.BlockFlags.BLOCK_UPDATE + Constants.BlockFlags.NOTIFY_NEIGHBORS);
+                level.sendBlockUpdated(worldPosition, getBlockState(), getBlockState(), Block.UPDATE_ALL);
             }
         }
     }
@@ -157,7 +157,7 @@ public class StorageTile extends GenericTileEntity implements IGuiTile, ICityEqu
                 keyId = info.getString("keyId");
             }
 
-            ListNBT bufferTagList = info.getList("Items", Constants.NBT.TAG_COMPOUND);
+            ListTag bufferTagList = info.getList("Items", Tag.TAG_COMPOUND);
             for (int i = 0; i < STACKS; i++) {
                 CompoundTag CompoundNBT = bufferTagList.getCompound(i);
                 stacks.set(i, ItemStack.of(CompoundNBT));
@@ -176,7 +176,7 @@ public class StorageTile extends GenericTileEntity implements IGuiTile, ICityEqu
         if (keyId != null) {
             info.putString("keyId", keyId);
         }
-        ListNBT bufferTagList = new ListNBT();
+        ListTag bufferTagList = new ListTag();
         for (int i = 0; i < STACKS; i++) {
             ItemStack stack = stacks.get(i);
             CompoundTag CompoundNBT = new CompoundTag();
@@ -296,14 +296,14 @@ public class StorageTile extends GenericTileEntity implements IGuiTile, ICityEqu
             if (player.getMainHandItem().isEmpty()) {
                 player.setItemInHand(InteractionHand.MAIN_HAND, stack);
             } else if (ItemHandlerHelper.canItemStacksStack(player.getMainHandItem(), stack)) {
-                boolean added = player.inventory.add(player.inventory.selected, stack);
+                boolean added = player.getInventory().add(player.getInventory().selected, stack);
                 if (!added) {
-                    if (!player.inventory.add(stack)) {
+                    if (!player.getInventory().add(stack)) {
                         player.spawnAtLocation(stack, 1.05f);
                     }
                 }
             } else {
-                if (!player.inventory.add(stack)) {
+                if (!player.getInventory().add(stack)) {
                     player.spawnAtLocation(stack, 1.05f);
                 }
             }
@@ -361,7 +361,7 @@ public class StorageTile extends GenericTileEntity implements IGuiTile, ICityEqu
     public static void onClick(Level world, BlockPos pos, Player player) {
         if (world.isClientSide) {
             // On client. We find out what part of the block was hit and send that to the server.
-            RayTraceResult mouseOver = Minecraft.getInstance().hitResult;
+            HitResult mouseOver = Minecraft.getInstance().hitResult;
             if (mouseOver instanceof BlockHitResult) {
                 int index = getSlot((BlockHitResult) mouseOver, world);
                 if (index >= 0) {
@@ -413,11 +413,11 @@ public class StorageTile extends GenericTileEntity implements IGuiTile, ICityEqu
     }
 
     private static void placeAll(Player player, StorageTile te, int type, ItemStack heldItem) {
-        for (int i = 0; i < player.inventory.getContainerSize(); i++) {
-            ItemStack stack = player.inventory.getItem(i);
+        for (int i = 0; i < player.getInventory().getContainerSize(); i++) {
+            ItemStack stack = player.getInventory().getItem(i);
             if (ItemHandlerHelper.canItemStacksStack(stack, heldItem)) {
                 ItemStack remaining = insertItem(te.getInvHandler(), stack, type);
-                player.inventory.setItem(i, remaining);
+                player.getInventory().setItem(i, remaining);
                 if (!remaining.isEmpty()) {
                     break;  // Storage is full
                 }

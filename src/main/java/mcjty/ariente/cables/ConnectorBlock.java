@@ -12,14 +12,14 @@ import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.level.BlockGetter;
 import net.minecraft.world.level.block.Block;
+import net.minecraft.world.level.block.Blocks;
 import net.minecraft.world.level.block.entity.BlockEntity;
 import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.level.material.Material;
-import net.minecraft.fluid.FluidState;
-import net.minecraft.item.BlockItemUseContext;
-import net.minecraft.item.Item;
+import net.minecraft.world.level.material.FluidState;
+import net.minecraft.world.item.context.BlockPlaceContext;
+import net.minecraft.world.item.Item;
 import net.minecraft.world.item.Items;
-import net.minecraft.world.IWorldReader;
 import net.minecraft.world.level.Level;
 
 import javax.annotation.Nonnull;
@@ -33,15 +33,10 @@ public class ConnectorBlock extends GenericCableBlock {
         super(Material.METAL);
     }
 
-    @Override
-    public boolean hasTileEntity(BlockState state) {
-        return true;
-    }
-
     @Nullable
     @Override
-    public BlockEntity createTileEntity(BlockState state, BlockGetter world) {
-        return new ConnectorTileEntity();
+    public BlockEntity newBlockEntity(BlockPos pos, BlockState state) {
+        return new ConnectorTileEntity(pos, state);
     }
 
     @Override
@@ -100,23 +95,22 @@ public class ConnectorBlock extends GenericCableBlock {
         super.playerDestroy(worldIn, player, pos, state, te, stack);
     }
 
-    @Override
+    // @todo 1.18 @Override
     public boolean removedByPlayer(BlockState state, Level world, BlockPos pos, Player player, boolean willHarvest, FluidState fluid) {
         BlockEntity te = world.getBlockEntity(pos);
-        if (te instanceof ConnectorTileEntity) {
-            ConnectorTileEntity connectorTileEntity = (ConnectorTileEntity) te;
+        if (te instanceof ConnectorTileEntity connectorTileEntity) {
             if (connectorTileEntity.getMimicBlock() == null) {
                 this.playerWillDestroy(world, pos, state, player);
-                return world.setBlock(pos, Block.AIR.defaultBlockState(), world.isClientSide ? 11 : 3);
+                return world.setBlock(pos, Blocks.AIR.defaultBlockState(), world.isClientSide ? 11 : 3);
             } else {
                 // We are in mimic mode. Don't remove the connector
                 this.playerWillDestroy(world, pos, state, player);
-                if (player.abilities.instabuild) {
+                if (player.getAbilities().instabuild) {
                     connectorTileEntity.setMimicBlock(null);
                 }
             }
         } else {
-            return super.removedByPlayer(state, world, pos, player, willHarvest, fluid);
+            // @todo 1.18 return super.removedByPlayer(state, world, pos, player, willHarvest, fluid);
         }
         return true;
     }
@@ -171,8 +165,8 @@ public class ConnectorBlock extends GenericCableBlock {
 //
 
 
-    @Override
-    public boolean shouldCheckWeakPower(BlockState state, IWorldReader world, BlockPos pos, Direction side) {
+    // @todo 1.18 @Override
+    public boolean shouldCheckWeakPower(BlockState state, BlockGetter world, BlockPos pos, Direction side) {
         return false;
     }
 
@@ -211,7 +205,7 @@ public class ConnectorBlock extends GenericCableBlock {
 
     @Nullable
     @Override
-    public BlockState getStateForPlacement(BlockItemUseContext context) {
+    public BlockState getStateForPlacement(BlockPlaceContext context) {
         // When our block is placed down we force a re-render of adjacent blocks to make sure their ISBM model is updated
 // @todo 1.14
 //        world.markBlockRangeForRenderUpdate(pos.add(-1, -1, -1), pos.add(1, 1, 1));
@@ -237,7 +231,7 @@ public class ConnectorBlock extends GenericCableBlock {
         BlockPos pos = connectorPos.relative(facing);
         BlockState state = world.getBlockState(pos);
         Block block = state.getBlock();
-        if (block.isAir(state, world, pos)) {
+        if (state.isAir()) {
             return false;
         }
 

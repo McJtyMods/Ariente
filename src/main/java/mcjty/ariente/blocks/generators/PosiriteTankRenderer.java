@@ -4,17 +4,18 @@ import com.mojang.blaze3d.vertex.PoseStack;
 import mcjty.ariente.Ariente;
 import mcjty.ariente.setup.Registration;
 import net.minecraft.client.renderer.MultiBufferSource;
-import net.minecraft.client.renderer.tileentity.TileEntityRenderer;
-import net.minecraft.client.renderer.tileentity.TileEntityRendererDispatcher;
+import net.minecraft.client.renderer.blockentity.BlockEntityRenderer;
+import net.minecraft.client.renderer.blockentity.BlockEntityRendererProvider;
+import net.minecraft.client.renderer.blockentity.BlockEntityRenderers;
 import net.minecraft.resources.ResourceLocation;
-import net.minecraftforge.fml.client.registry.ClientRegistry;
 
-public class PosiriteTankRenderer extends TileEntityRenderer<PosiriteTankTile> {
+public class PosiriteTankRenderer implements BlockEntityRenderer<PosiriteTankTile> {
 
+    protected BlockEntityRendererProvider.Context context;
     public static final ResourceLocation POSIRITE_BEAM = new ResourceLocation(Ariente.MODID, "block/machines/posirite_beam");
 
-    public PosiriteTankRenderer(TileEntityRendererDispatcher dispatcher) {
-        super(dispatcher);
+    public PosiriteTankRenderer(BlockEntityRendererProvider.Context pContext) {
+        context = pContext;
     }
 
     @Override
@@ -26,6 +27,6 @@ public class PosiriteTankRenderer extends TileEntityRenderer<PosiriteTankTile> {
     }
 
     public static void register() {
-        ClientRegistry.bindTileEntityRenderer(Registration.POSIRITE_TANK_TILE.get(), PosiriteTankRenderer::new);
+        BlockEntityRenderers.register(Registration.POSIRITE_TANK_TILE.get(), PosiriteTankRenderer::new);
     }
 }

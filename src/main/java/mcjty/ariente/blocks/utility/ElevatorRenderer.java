@@ -9,23 +9,24 @@ import mcjty.lib.client.CustomRenderTypes;
 import mcjty.lib.client.RenderHelper;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.renderer.MultiBufferSource;
+import net.minecraft.client.renderer.blockentity.BlockEntityRendererProvider;
+import net.minecraft.client.renderer.blockentity.BlockEntityRenderers;
 import net.minecraft.client.renderer.texture.TextureAtlas;
 import net.minecraft.client.renderer.texture.TextureAtlasSprite;
-import net.minecraft.client.renderer.tileentity.TileEntityRenderer;
-import net.minecraft.client.renderer.tileentity.TileEntityRendererDispatcher;
+import net.minecraft.client.renderer.blockentity.BlockEntityRenderer;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.phys.Vec3;
-import net.minecraftforge.fml.client.registry.ClientRegistry;
 
 import java.util.Random;
 
-public class ElevatorRenderer extends TileEntityRenderer<ElevatorTile> {
+public class ElevatorRenderer implements BlockEntityRenderer<ElevatorTile> {
 
+    protected BlockEntityRendererProvider.Context context;
     public static final ResourceLocation ELEVATOR_BEAM = new ResourceLocation(Ariente.MODID, "block/machines/elevator_beam");
     private Random random = new Random();
 
-    public ElevatorRenderer(TileEntityRendererDispatcher dispatcher) {
-        super(dispatcher);
+    public ElevatorRenderer(BlockEntityRendererProvider.Context pContext) {
+        context = pContext;
     }
 
     private static float randomX[] = new float[]{.2f, .3f, .2f, .7f, .8f, .5f, .2f, .8f, .4f, .6f};
@@ -68,6 +69,6 @@ public class ElevatorRenderer extends TileEntityRenderer<ElevatorTile> {
     }
 
     public static void register() {
-        ClientRegistry.bindTileEntityRenderer(Registration.ELEVATOR_TILE.get(), ElevatorRenderer::new);
+        BlockEntityRenderers.register(Registration.ELEVATOR_TILE.get(), ElevatorRenderer::new);
     }
 }

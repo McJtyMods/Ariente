@@ -15,7 +15,7 @@ import mcjty.hologui.api.components.IPanel;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.world.entity.EquipmentSlot;
 import net.minecraft.world.entity.player.Player;
-import net.minecraft.item.Item;
+import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemStack;
 import org.apache.commons.lang3.tuple.Pair;
 
@@ -234,8 +234,8 @@ public class ArmorGui {
         }
         CompoundTag compound = stack.getOrCreateTag();
         int number = compound.getInt(itemTag);
-        for (int i = 0; i < player.inventory.getContainerSize(); i++) {
-            ItemStack itemStack = player.inventory.getItem(i);
+        for (int i = 0; i < player.getInventory().getContainerSize(); i++) {
+            ItemStack itemStack = player.getInventory().getItem(i);
             if (itemStack.getItem() == item) {
                 int n = Math.min(amount, itemStack.getCount());
                 itemStack.shrink(n);
@@ -335,8 +335,8 @@ public class ArmorGui {
     }
 
     private static int findModule(Player player, EquipmentSlot slot, ArmorModuleItem moduleItem) {
-        for (int i = 0; i < player.inventory.getContainerSize(); i++) {
-            ItemStack moduleStack = player.inventory.getItem(i);
+        for (int i = 0; i < player.getInventory().getContainerSize(); i++) {
+            ItemStack moduleStack = player.getInventory().getItem(i);
             if (moduleStack.getItem() == moduleItem) {
                 return i;
             }
@@ -356,7 +356,7 @@ public class ArmorGui {
             if (i == -1) {
                 return;
             }
-            ItemStack moduleStack = player.inventory.getItem(i);
+            ItemStack moduleStack = player.getInventory().getItem(i);
             ItemStack splitted = moduleStack.split(1);
             CompoundTag compound = stack.getOrCreateTag();
             compound.putBoolean(moduleItem.getType().getModuleKey(), false);
@@ -364,7 +364,7 @@ public class ArmorGui {
         } else {
             // Remove installed module
             ItemStack module = new ItemStack(moduleItem);
-            if (!player.inventory.add(module)) {
+            if (!player.getInventory().add(module)) {
                 player.spawnAtLocation(module, 1.05f);
             }
             ItemStack stack = player.getItemBySlot(slot);
