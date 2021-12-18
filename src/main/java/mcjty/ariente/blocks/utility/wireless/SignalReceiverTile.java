@@ -13,7 +13,6 @@ import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.world.level.block.state.StateDefinition;
-// @todo 1.18 import net.minecraft.tileentity.ITickableTileEntity;
 import net.minecraft.world.InteractionHand;
 import net.minecraft.world.phys.BlockHitResult;
 import net.minecraft.world.phys.shapes.CollisionContext;
@@ -23,7 +22,7 @@ import net.minecraft.world.phys.shapes.Shapes;
 import static mcjty.ariente.compat.ArienteTOPDriver.DRIVER;
 import static mcjty.lib.builder.TooltipBuilder.*;
 
-public class SignalReceiverTile extends SignalChannelTileEntity /* @todo 1.18 implements ITickableTileEntity */ {
+public class SignalReceiverTile extends SignalChannelTileEntity {
 
     private static final VoxelShape BLOCK_AABB = Shapes.box(1.0D/16.0, 1.0D/16.0, 15.0D/16.0, 15.0D/16.0, 15.0D/16.0, 1.0D);
 
@@ -58,7 +57,7 @@ public class SignalReceiverTile extends SignalChannelTileEntity /* @todo 1.18 im
         return InteractionResult.SUCCESS;
     }
 
-    //@Override
+    @Override
     public void tickServer() {
         checkStateServer();
     }

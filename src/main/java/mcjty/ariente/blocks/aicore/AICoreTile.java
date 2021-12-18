@@ -9,19 +9,18 @@ import mcjty.ariente.setup.Registration;
 import mcjty.lib.blocks.BaseBlock;
 import mcjty.lib.blocks.RotationType;
 import mcjty.lib.builder.BlockBuilder;
-import mcjty.lib.tileentity.GenericTileEntity;
+import mcjty.lib.tileentity.TickingTileEntity;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.world.level.ChunkPos;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.level.block.Block;
 import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.level.material.Material;
-// @todo 1.18 import net.minecraft.tileentity.ITickableTileEntity;
 import net.minecraft.core.BlockPos;
 
 import static mcjty.ariente.compat.ArienteTOPDriver.DRIVER;
 
-public class AICoreTile extends GenericTileEntity implements /* @todo 1.18 ITickableTileEntity, */ IAlarmMode, IAICoreTile {
+public class AICoreTile extends TickingTileEntity implements IAlarmMode, IAICoreTile {
 
     private ChunkPos cityCenter;
     private int tickCounter = 10;
@@ -46,7 +45,7 @@ public class AICoreTile extends GenericTileEntity implements /* @todo 1.18 ITick
         };
     }
 
-    //@Override
+    @Override
     public void tickServer() {
         if (tickCounter > 0) {
             tickCounter--;

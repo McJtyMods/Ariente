@@ -13,7 +13,7 @@ import mcjty.hologui.api.IGuiTile;
 import mcjty.hologui.api.StyledColor;
 import mcjty.lib.blocks.BaseBlock;
 import mcjty.lib.builder.BlockBuilder;
-import mcjty.lib.tileentity.GenericTileEntity;
+import mcjty.lib.tileentity.TickingTileEntity;
 import mcjty.lib.varia.OrientationTools;
 import net.minecraft.core.Direction;
 import net.minecraft.world.InteractionResult;
@@ -21,7 +21,6 @@ import net.minecraft.world.level.block.entity.BlockEntity;
 import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.nbt.CompoundTag;
-// @todo 1.18 import net.minecraft.tileentity.ITickableTileEntity;
 import net.minecraft.world.InteractionHand;
 import net.minecraft.core.BlockPos;
 import net.minecraft.world.phys.BlockHitResult;
@@ -31,7 +30,7 @@ import static mcjty.hologui.api.Icons.*;
 import static mcjty.lib.builder.TooltipBuilder.header;
 import static mcjty.lib.builder.TooltipBuilder.key;
 
-public class PowerCombinerTile extends GenericTileEntity implements /* @todo 1.18 ITickableTileEntity, */ IPowerReceiver, IGuiTile, IPowerUser {
+public class PowerCombinerTile extends TickingTileEntity implements IPowerReceiver, IGuiTile, IPowerUser {
 
     private long usingPower = 0;
 
@@ -62,7 +61,7 @@ public class PowerCombinerTile extends GenericTileEntity implements /* @todo 1.1
         return InteractionResult.SUCCESS;
     }
 
-    // @Override
+    @Override
     public void tickServer() {
         usingPower = 0;
         if (PowerReceiverSupport.consumePower(level, worldPosition, powerTransfer, false)) {

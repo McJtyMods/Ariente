@@ -21,7 +21,7 @@ import mcjty.lib.builder.BlockBuilder;
 import mcjty.lib.container.AutomationFilterItemHander;
 import mcjty.lib.container.ContainerFactory;
 import mcjty.lib.container.GenericItemHandler;
-import mcjty.lib.tileentity.GenericTileEntity;
+import mcjty.lib.tileentity.TickingTileEntity;
 import mcjty.lib.varia.OrientationTools;
 import mcjty.lib.varia.RedstoneMode;
 import net.minecraft.core.BlockPos;
@@ -37,7 +37,6 @@ import net.minecraft.world.item.Items;
 import net.minecraft.network.Connection;
 import net.minecraft.network.protocol.game.ClientboundBlockEntityDataPacket;
 import net.minecraft.world.level.block.state.StateDefinition;
-// @todo 1.18 import net.minecraft.tileentity.ITickableTileEntity;
 import net.minecraft.world.level.block.entity.BlockEntity;
 import net.minecraft.world.InteractionResult;
 import net.minecraft.world.phys.BlockHitResult;
@@ -61,7 +60,7 @@ import static mcjty.hologui.api.Icons.*;
 import static mcjty.lib.builder.TooltipBuilder.header;
 import static mcjty.lib.builder.TooltipBuilder.key;
 
-public class AutoConstructorTile extends GenericTileEntity implements IGuiTile, /* @todo 1.18 ITickableTileEntity, */ IPowerReceiver, ICityEquipment, IPowerUser {
+public class AutoConstructorTile extends TickingTileEntity implements IGuiTile, IPowerReceiver, ICityEquipment, IPowerUser {
 
     public static final int INGREDIENTS = 6*3;
     public static final int OUTPUT = 6;
@@ -224,7 +223,7 @@ public class AutoConstructorTile extends GenericTileEntity implements IGuiTile, 
         }
     }
 
-    //@Override
+    @Override
     public void tickServer() {
         boolean wasUsing = usingPower > 0;
         usingPower = 0;

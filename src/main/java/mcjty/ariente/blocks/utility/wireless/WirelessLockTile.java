@@ -20,7 +20,6 @@ import net.minecraft.world.level.block.Block;
 import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.network.Connection;
 import net.minecraft.world.level.block.state.StateDefinition;
-// @todo 1.18 import net.minecraft.tileentity.ITickableTileEntity;
 import net.minecraft.world.level.block.entity.BlockEntity;
 import net.minecraft.world.InteractionResult;
 import net.minecraft.world.phys.BlockHitResult;
@@ -37,7 +36,7 @@ import static mcjty.ariente.compat.ArienteTOPDriver.DRIVER;
 import static mcjty.hologui.api.Icons.*;
 import static mcjty.lib.builder.TooltipBuilder.*;
 
-public class WirelessLockTile extends SignalChannelTileEntity implements ILockable, IGuiTile /* @todo 1.18, ITickableTileEntity */ {
+public class WirelessLockTile extends SignalChannelTileEntity implements ILockable, IGuiTile {
 
     private boolean locked = false;
     private int horizontalRange = 5;
@@ -77,7 +76,7 @@ public class WirelessLockTile extends SignalChannelTileEntity implements ILockab
     }
 
 
-    //@Override
+    @Override
     public void tickServer() {
         if (channel != -1) {
             RedstoneChannels channels = RedstoneChannels.getChannels(getLevel());

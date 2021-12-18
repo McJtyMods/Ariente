@@ -6,7 +6,7 @@ import mcjty.ariente.api.ISignalChannel;
 import mcjty.ariente.setup.Registration;
 import mcjty.lib.blocks.BaseBlock;
 import mcjty.lib.blocks.RotationType;
-import mcjty.lib.tileentity.GenericTileEntity;
+import mcjty.lib.tileentity.TickingTileEntity;
 import mcjty.lib.varia.Logging;
 import net.minecraft.ChatFormatting;
 import net.minecraft.core.BlockPos;
@@ -30,7 +30,7 @@ import javax.annotation.Nullable;
 import java.util.HashMap;
 import java.util.Map;
 
-public abstract class SignalChannelTileEntity extends GenericTileEntity implements ICityEquipment, ISignalChannel {
+public abstract class SignalChannelTileEntity extends TickingTileEntity implements ICityEquipment, ISignalChannel {
     protected int channel = -1;
     protected int powerOutput = 0;
 

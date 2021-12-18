@@ -12,7 +12,7 @@ import mcjty.hologui.api.IGuiTile;
 import mcjty.lib.blocks.BaseBlock;
 import mcjty.lib.blocks.RotationType;
 import mcjty.lib.builder.BlockBuilder;
-import mcjty.lib.tileentity.GenericTileEntity;
+import mcjty.lib.tileentity.TickingTileEntity;
 import net.minecraft.core.BlockPos;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.world.InteractionHand;
@@ -26,7 +26,6 @@ import net.minecraft.world.level.block.Blocks;
 import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.level.block.state.properties.BlockStateProperties;
 import net.minecraft.world.level.material.Material;
-// @todo 1.18 import net.minecraft.tileentity.ITickableTileEntity;
 import net.minecraft.world.level.block.entity.BlockEntity;
 import net.minecraft.core.Direction;
 import net.minecraft.sounds.SoundSource;
@@ -44,7 +43,7 @@ import static mcjty.ariente.compat.ArienteTOPDriver.DRIVER;
 import static mcjty.lib.builder.TooltipBuilder.header;
 import static mcjty.lib.builder.TooltipBuilder.key;
 
-public class DoorMarkerTile extends GenericTileEntity implements /* @todo 1.18 ITickableTileEntity, */ IGuiTile, ILockable {
+public class DoorMarkerTile extends TickingTileEntity implements IGuiTile, ILockable {
 
     public static final VoxelShape BLOCK_AABB = Shapes.box(0.0D, 0.0D, 0.0D, 1.0D, 1.0D/16.0, 1.0D);
     public static final VoxelShape OPEN_BLOCK_AABB = Shapes.empty();
@@ -103,7 +102,7 @@ public class DoorMarkerTile extends GenericTileEntity implements /* @todo 1.18 I
         return InteractionResult.SUCCESS;
     }
 
-    //@Override
+    @Override
     public void tickServer() {
         setInvisibleBlocks();
         if (!locked) {

@@ -21,7 +21,7 @@ import mcjty.hologui.api.StyledColor;
 import mcjty.lib.blocks.BaseBlock;
 import mcjty.lib.blocks.RotationType;
 import mcjty.lib.builder.BlockBuilder;
-import mcjty.lib.tileentity.GenericTileEntity;
+import mcjty.lib.tileentity.TickingTileEntity;
 import mcjty.lib.varia.RedstoneMode;
 import net.minecraft.core.BlockPos;
 import net.minecraft.nbt.CompoundTag;
@@ -33,7 +33,6 @@ import net.minecraft.world.level.Level;
 import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.LivingEntity;
-// @todo 1.18 import net.minecraft.tileentity.ITickableTileEntity;
 import net.minecraft.world.damagesource.DamageSource;
 import net.minecraft.world.InteractionHand;
 import net.minecraft.world.phys.AABB;
@@ -51,7 +50,7 @@ import static mcjty.hologui.api.Icons.*;
 import static mcjty.lib.builder.TooltipBuilder.header;
 import static mcjty.lib.builder.TooltipBuilder.key;
 
-public class ForceFieldTile extends GenericTileEntity implements IGuiTile, /* @todo 1.18 ITickableTileEntity, */ ISoundProducer, IPowerReceiver, ICityEquipment, IAlarmMode, IForceFieldTile, IPowerUser {
+public class ForceFieldTile extends TickingTileEntity implements IGuiTile, ISoundProducer, IPowerReceiver, ICityEquipment, IAlarmMode, IForceFieldTile, IPowerUser {
 
     private final PanelInfo[] panelInfo = new PanelInfo[PentakisDodecahedron.MAX_TRIANGLES];
     private int[] panelDestroyTimeout = new int[PentakisDodecahedron.MAX_TRIANGLES];    // @todo persist to NBT?
@@ -155,7 +154,7 @@ public class ForceFieldTile extends GenericTileEntity implements IGuiTile, /* @t
         return panelInfo;
     }
 
-    //@Override
+    @Override
     public void tickServer() {
         usingPower = 0;
         long desiredPower = calculateIdleUsage();
@@ -173,7 +172,7 @@ public class ForceFieldTile extends GenericTileEntity implements IGuiTile, /* @t
         collideWithEntities();
     }
 
-    //@Override
+    @Override
     public void tickClient() {
         ForceFieldRenderer.register(worldPosition);
         ForceFieldSounds.doSounds(this);

@@ -20,7 +20,7 @@ import mcjty.lib.multipart.MultipartHelper;
 import mcjty.lib.multipart.MultipartTE;
 import mcjty.lib.multipart.PartPos;
 import mcjty.lib.multipart.PartSlot;
-import mcjty.lib.tileentity.GenericTileEntity;
+import mcjty.lib.tileentity.TickingTileEntity;
 import mcjty.lib.varia.OrientationTools;
 import net.minecraft.core.BlockPos;
 import net.minecraft.nbt.CompoundTag;
@@ -36,7 +36,6 @@ import net.minecraft.world.level.block.entity.BlockEntity;
 import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.server.level.ServerPlayer;
-// @todo 1.18 import net.minecraft.tileentity.ITickableTileEntity;
 import net.minecraft.core.Direction;
 import net.minecraft.world.phys.AABB;
 import net.minecraft.world.phys.BlockHitResult;
@@ -52,7 +51,7 @@ import static mcjty.hologui.api.Icons.*;
 import static mcjty.lib.builder.TooltipBuilder.header;
 import static mcjty.lib.builder.TooltipBuilder.key;
 
-public class AutoFieldTile extends GenericTileEntity implements IGuiTile, /* @todo 1.18 ITickableTileEntity, */ IPowerReceiver, IPowerUser {
+public class AutoFieldTile extends TickingTileEntity implements IGuiTile, IPowerReceiver, IPowerUser {
 
     private int height = 1;
     private AABB fieldBox = null;
@@ -108,7 +107,7 @@ public class AutoFieldTile extends GenericTileEntity implements IGuiTile, /* @to
     }
 
 
-    //@Override
+    @Override
     public void tickServer() {
         findConsumers();
         findProducers();

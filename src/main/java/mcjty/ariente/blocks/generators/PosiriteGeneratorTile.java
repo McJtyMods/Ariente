@@ -14,7 +14,7 @@ import mcjty.lib.builder.BlockBuilder;
 import mcjty.lib.container.AutomationFilterItemHander;
 import mcjty.lib.container.ContainerFactory;
 import mcjty.lib.container.GenericItemHandler;
-import mcjty.lib.tileentity.GenericTileEntity;
+import mcjty.lib.tileentity.TickingTileEntity;
 import mcjty.lib.varia.RedstoneMode;
 import net.minecraft.core.BlockPos;
 import net.minecraft.nbt.CompoundTag;
@@ -29,7 +29,6 @@ import net.minecraft.world.level.block.Block;
 import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.level.block.state.StateDefinition;
-// @todo 1.18 import net.minecraft.tileentity.ITickableTileEntity;
 import net.minecraft.world.phys.BlockHitResult;
 import net.minecraftforge.common.util.Lazy;
 import net.minecraftforge.common.util.LazyOptional;
@@ -42,7 +41,7 @@ import static mcjty.hologui.api.Icons.*;
 import static mcjty.lib.builder.TooltipBuilder.header;
 import static mcjty.lib.builder.TooltipBuilder.key;
 
-public class PosiriteGeneratorTile extends GenericTileEntity implements /* @todo 1.18 ITickableTileEntity, */ IGuiTile, IPowerBlob, IAlarmMode, IPowerSender, IGenerator {
+public class PosiriteGeneratorTile extends TickingTileEntity implements IGuiTile, IPowerBlob, IAlarmMode, IPowerSender, IGenerator {
 
     public static final int POWERGEN = 1000;        // @todo configurable and based on tanks!
 
@@ -118,7 +117,7 @@ public class PosiriteGeneratorTile extends GenericTileEntity implements /* @todo
         return true;
     }
 
-    //@Override
+    @Override
     public void tickServer() {
         if (!isMachineEnabled()) {
             return;

@@ -14,7 +14,7 @@ import mcjty.lib.McJtyLib;
 import mcjty.lib.blocks.BaseBlock;
 import mcjty.lib.blocks.RotationType;
 import mcjty.lib.builder.BlockBuilder;
-import mcjty.lib.tileentity.GenericTileEntity;
+import mcjty.lib.tileentity.TickingTileEntity;
 import net.minecraft.core.BlockPos;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.network.protocol.game.ClientboundBlockEntityDataPacket;
@@ -24,7 +24,6 @@ import net.minecraft.world.level.block.Block;
 import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.client.Minecraft;
 import net.minecraft.network.Connection;
-// @todo 1.18 import net.minecraft.tileentity.ITickableTileEntity;
 import net.minecraft.world.level.block.entity.BlockEntity;
 import net.minecraft.world.InteractionResult;
 import net.minecraft.world.InteractionHand;
@@ -41,7 +40,7 @@ import static mcjty.hologui.api.Icons.*;
 import static mcjty.lib.builder.TooltipBuilder.header;
 import static mcjty.lib.builder.TooltipBuilder.key;
 
-public class ElevatorTile extends GenericTileEntity implements IGuiTile, /* @todo 1.18 ITickableTileEntity, */ IPowerReceiver, ICityEquipment, IElevator, IPowerUser {
+public class ElevatorTile extends TickingTileEntity implements IGuiTile, IPowerReceiver, ICityEquipment, IElevator, IPowerUser {
 
     public static final String TAG_ELEVATOR = "elevator";
 
@@ -85,7 +84,7 @@ public class ElevatorTile extends GenericTileEntity implements IGuiTile, /* @tod
         return POWER_USAGE;
     }
 
-    //@Override
+    @Override
     public void tickServer() {
         PowerReceiverSupport.consumePower(level, worldPosition, POWER_USAGE, true);
 
@@ -100,7 +99,7 @@ public class ElevatorTile extends GenericTileEntity implements IGuiTile, /* @tod
         removeStaleHoloEntries();
     }
 
-    //@Override
+    @Override
     public void tickClient() {
         List<Integer> floors = findFloors();
         Player clientPlayer = McJtyLib.proxy.getClientPlayer();
