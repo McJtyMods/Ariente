@@ -15,14 +15,14 @@ public class ArienteRenderType extends RenderType {
 
     public static final RenderType ARIENTE_SOLID = create("ariente_solid", DefaultVertexFormat.BLOCK, VertexFormat.Mode.QUADS, 2097152, true, false,
             CompositeState.builder()
-                    // @todo 1.18 .setShadeModelState(SMOOTH_SHADE)
+                    .setShaderState(RENDERTYPE_ENTITY_SMOOTH_CUTOUT_SHADER)
                     .setLightmapState(LIGHTMAP)
                     .setTextureState(ARIENTE_TEXTURE_STATE)
                     .createCompositeState(true));
 
     public static final RenderType ARIENTE_TRANSLUCENT = create("ariente_translucent", DefaultVertexFormat.BLOCK, VertexFormat.Mode.QUADS, 262144, true, true,
             CompositeState.builder()
-                    // @todo 1.18 .setShadeModelState(SMOOTH_SHADE)
+                    .setShaderState(RENDERTYPE_ENTITY_SMOOTH_CUTOUT_SHADER)
                     .setLightmapState(LIGHTMAP)
                     .setTextureState(BLOCK_SHEET_MIPPED)
                     .setTransparencyState(TRANSLUCENT_TRANSPARENCY)
