@@ -4,14 +4,15 @@ import mcjty.ariente.api.MarbleColor;
 import mcjty.ariente.blocks.decorative.DecorativeBlockModule;
 import mcjty.ariente.setup.Registration;
 import mcjty.lib.varia.WeightedRandom;
-import net.minecraft.block.Blocks;
-import net.minecraft.item.ItemStack;
-import net.minecraft.item.Items;
-import net.minecraft.item.crafting.IRecipeSerializer;
-import net.minecraft.item.crafting.IRecipeType;
-import net.minecraft.util.ResourceLocation;
-import net.minecraft.util.registry.Registry;
-import net.minecraftforge.fml.RegistryObject;
+import net.minecraft.world.item.Items;
+import net.minecraft.world.level.block.Block;
+import net.minecraft.resources.ResourceLocation;
+import net.minecraft.world.item.ItemStack;
+import net.minecraft.world.item.crafting.RecipeSerializer;
+import net.minecraft.world.item.crafting.RecipeType;
+import net.minecraft.core.Registry;
+import net.minecraft.world.level.block.Blocks;
+import net.minecraftforge.registries.RegistryObject;
 import net.minecraftforge.fml.javafmlmod.FMLJavaModLoadingContext;
 import net.minecraftforge.items.ItemHandlerHelper;
 import net.minecraftforge.registries.DeferredRegister;
@@ -25,18 +26,18 @@ import static mcjty.ariente.Ariente.MODID;
 public class BlueprintRecipeRegistry {
 
 
-    public static final DeferredRegister<IRecipeSerializer<?>> RECIPE_SERIALIZERS = DeferredRegister.create(ForgeRegistries.RECIPE_SERIALIZERS, MODID);
+    public static final DeferredRegister<RecipeSerializer<?>> RECIPE_SERIALIZERS = DeferredRegister.create(ForgeRegistries.RECIPE_SERIALIZERS, MODID);
 
     public static void register() {
         RECIPE_SERIALIZERS.register(FMLJavaModLoadingContext.get().getModEventBus());
     }
 
-    public static final RegistryObject<IRecipeSerializer<ConstructorRecipe>> CONSTRUCTOR_RECIPES = RECIPE_SERIALIZERS.register("constructor",
+    public static final RegistryObject<RecipeSerializer<ConstructorRecipe>> CONSTRUCTOR_RECIPES = RECIPE_SERIALIZERS.register("constructor",
             ConstructorRecipeSerializer::new);
 
     public static final ResourceLocation RECIPE_CONSTRUCTOR = new ResourceLocation(MODID, "constructor");
-    public static IRecipeType<ConstructorRecipe> CONSTRUCTOR = Registry.register(Registry.RECIPE_TYPE, RECIPE_CONSTRUCTOR,
-            new IRecipeType<ConstructorRecipe>() {
+    public static RecipeType<ConstructorRecipe> CONSTRUCTOR = Registry.register(Registry.RECIPE_TYPE, RECIPE_CONSTRUCTOR,
+            new RecipeType<ConstructorRecipe>() {
                 @Override
                 public String toString() {
                     return RECIPE_CONSTRUCTOR.toString();

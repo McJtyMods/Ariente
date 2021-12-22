@@ -1,6 +1,6 @@
 package mcjty.ariente.blocks;
 
-import net.minecraft.state.BooleanProperty;
+import net.minecraft.world.level.block.state.properties.BooleanProperty;
 
 public class BlockProperties {
 

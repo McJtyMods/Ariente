@@ -23,17 +23,18 @@ import mcjty.ariente.entities.fluxship.FluxShipRender;
 import mcjty.ariente.entities.levitator.FluxLevitatorRender;
 import mcjty.ariente.entities.soldier.SoldierRender;
 import net.minecraft.client.Minecraft;
+import net.minecraft.client.renderer.ItemBlockRenderTypes;
 import net.minecraft.client.renderer.RenderType;
-import net.minecraft.client.renderer.RenderTypeLookup;
-import net.minecraft.client.renderer.texture.AtlasTexture;
-import net.minecraft.resources.IReloadableResourceManager;
-import net.minecraft.resources.IResourceManager;
-import net.minecraft.util.ResourceLocation;
+import net.minecraft.resources.ResourceLocation;
+import net.minecraft.server.packs.resources.ReloadableResourceManager;
+import net.minecraft.server.packs.resources.ResourceManager;
+import net.minecraft.world.inventory.InventoryMenu;
+import net.minecraftforge.client.event.EntityRenderersEvent;
 import net.minecraftforge.client.event.ModelRegistryEvent;
 import net.minecraftforge.client.event.TextureStitchEvent;
 import net.minecraftforge.client.model.ModelLoaderRegistry;
 import net.minecraftforge.common.MinecraftForge;
-import net.minecraftforge.fml.client.registry.RenderingRegistry;
+import net.minecraftforge.eventbus.api.SubscribeEvent;
 import net.minecraftforge.fml.event.lifecycle.FMLClientSetupEvent;
 
 import static mcjty.ariente.blocks.generators.NegariteTankRenderer.NEGARITE_BEAM;
@@ -57,26 +58,31 @@ public class ClientSetup {
         CableRenderer.register(Registration.NETCABLE_TILE.get());
         CableRenderer.register(Registration.CONNECTOR_TILE.get());
 
-        RenderTypeLookup.setRenderLayer(Registration.NETCABLE.get(), (RenderType) -> true);
-        RenderTypeLookup.setRenderLayer(Registration.GLASS_FENCE.get(), RenderType.translucent());
-        RenderTypeLookup.setRenderLayer(Registration.BLUE_GLASS_FENCE.get(), RenderType.translucent());
+        ItemBlockRenderTypes.setRenderLayer(Registration.NETCABLE.get(), (RenderType) -> true);
+        ItemBlockRenderTypes.setRenderLayer(Registration.GLASS_FENCE.get(), RenderType.translucent());
+        ItemBlockRenderTypes.setRenderLayer(Registration.BLUE_GLASS_FENCE.get(), RenderType.translucent());
     }
 
     public static void initModels(ModelRegistryEvent event) {
         ModelLoaderRegistry.registerLoader(new ResourceLocation(Ariente.MODID, "cableloader"), new CableModelLoader());
-        RenderingRegistry.registerEntityRenderingHandler(Registration.ENTITY_LASER.get(), new LaserRender.Factory());
-        RenderingRegistry.registerEntityRenderingHandler(Registration.ENTITY_DRONE.get(), DroneRender.FACTORY);
-        RenderingRegistry.registerEntityRenderingHandler(Registration.ENTITY_SENTINEL_DRONE.get(), SentinelDroneRender.FACTORY);
-        RenderingRegistry.registerEntityRenderingHandler(Registration.ENTITY_SOLDIER.get(), SoldierRender.FACTORY);
-        RenderingRegistry.registerEntityRenderingHandler(Registration.ENTITY_MASTER_SOLDIER.get(), SoldierRender.MASTER_FACTORY);
-        RenderingRegistry.registerEntityRenderingHandler(Registration.ENTITY_FLUX_LEVITATOR.get(), new FluxLevitatorRender.Factory());
-        RenderingRegistry.registerEntityRenderingHandler(Registration.ENTITY_ELEVATOR.get(), new FluxElevatorRender.Factory());
-        RenderingRegistry.registerEntityRenderingHandler(Registration.ENTITY_FLUX_SHIP.get(), new FluxShipRender.Factory());
-        RenderingRegistry.registerEntityRenderingHandler(Registration.ENTITY_PEARL.get(), RenderArientePearl.FACTORY);
+    }
+
+    @SubscribeEvent
+    public static void entityRenderers(EntityRenderersEvent.RegisterRenderers event)
+    {
+        event.registerEntityRenderer(Registration.ENTITY_LASER.get(), new LaserRender.Factory());
+        event.registerEntityRenderer(Registration.ENTITY_DRONE.get(), DroneRender.FACTORY);
+        event.registerEntityRenderer(Registration.ENTITY_SENTINEL_DRONE.get(), SentinelDroneRender.FACTORY);
+        event.registerEntityRenderer(Registration.ENTITY_SOLDIER.get(), SoldierRender.FACTORY);
+        event.registerEntityRenderer(Registration.ENTITY_MASTER_SOLDIER.get(), SoldierRender.MASTER_FACTORY);
+        event.registerEntityRenderer(Registration.ENTITY_FLUX_LEVITATOR.get(), new FluxLevitatorRender.Factory());
+        event.registerEntityRenderer(Registration.ENTITY_ELEVATOR.get(), new FluxElevatorRender.Factory());
+        event.registerEntityRenderer(Registration.ENTITY_FLUX_SHIP.get(), new FluxShipRender.Factory());
+        event.registerEntityRenderer(Registration.ENTITY_PEARL.get(), RenderArientePearl.FACTORY);
     }
 
     public static void onTextureStitch(TextureStitchEvent.Pre event) {
-        if (!event.getMap().location().equals(AtlasTexture.LOCATION_BLOCKS)) {
+        if (!event.getAtlas().location().equals(InventoryMenu.BLOCK_ATLAS)) {
             return;
         }
         event.addSprite(NEGARITE_BEAM);
@@ -89,10 +95,10 @@ public class ClientSetup {
     }
 
     public static void setupSpriteUploader() {
-        IResourceManager resourceManager = Minecraft.getInstance().getResourceManager();
-        if (resourceManager instanceof IReloadableResourceManager) {
+        ResourceManager resourceManager = Minecraft.getInstance().getResourceManager();
+        if (resourceManager instanceof ReloadableResourceManager) {
             ArienteSpriteUploader.INSTANCE = new ArienteSpriteUploader(Minecraft.getInstance().getTextureManager());
-            ((IReloadableResourceManager) resourceManager).registerReloadListener(ArienteSpriteUploader.INSTANCE);
+            ((ReloadableResourceManager) resourceManager).registerReloadListener(ArienteSpriteUploader.INSTANCE);
         }
     }
 }

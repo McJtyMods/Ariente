@@ -6,39 +6,38 @@ import mcjty.ariente.api.ISignalChannel;
 import mcjty.ariente.setup.Registration;
 import mcjty.lib.blocks.BaseBlock;
 import mcjty.lib.blocks.RotationType;
-import mcjty.lib.tileentity.GenericTileEntity;
+import mcjty.lib.tileentity.TickingTileEntity;
 import mcjty.lib.varia.Logging;
-import net.minecraft.block.Block;
-import net.minecraft.block.BlockState;
-import net.minecraft.block.Blocks;
-import net.minecraft.block.RedstoneWireBlock;
-import net.minecraft.entity.player.PlayerEntity;
-import net.minecraft.item.BlockItem;
-import net.minecraft.item.Item;
-import net.minecraft.item.ItemStack;
-import net.minecraft.nbt.CompoundNBT;
-import net.minecraft.tileentity.TileEntity;
-import net.minecraft.tileentity.TileEntityType;
-import net.minecraft.util.Direction;
-import net.minecraft.util.Hand;
-import net.minecraft.util.math.BlockPos;
-import net.minecraft.util.text.TextFormatting;
-import net.minecraft.world.IBlockReader;
-import net.minecraft.world.World;
+import net.minecraft.ChatFormatting;
+import net.minecraft.core.BlockPos;
+import net.minecraft.core.Direction;
+import net.minecraft.nbt.CompoundTag;
+import net.minecraft.world.InteractionHand;
+import net.minecraft.world.item.Item;
+import net.minecraft.world.item.ItemStack;
+import net.minecraft.world.level.BlockGetter;
+import net.minecraft.world.level.Level;
+import net.minecraft.world.level.block.Block;
+import net.minecraft.world.level.block.Blocks;
+import net.minecraft.world.level.block.entity.BlockEntity;
+import net.minecraft.world.level.block.state.BlockState;
+import net.minecraft.world.level.block.RedStoneWireBlock;
+import net.minecraft.world.entity.player.Player;
+import net.minecraft.world.item.BlockItem;
+import net.minecraft.world.level.block.entity.BlockEntityType;
 
 import javax.annotation.Nullable;
 import java.util.HashMap;
 import java.util.Map;
 
-public abstract class SignalChannelTileEntity extends GenericTileEntity implements ICityEquipment, ISignalChannel {
-
+public abstract class SignalChannelTileEntity extends TickingTileEntity implements ICityEquipment, ISignalChannel {
     protected int channel = -1;
     protected int powerOutput = 0;
 
     private int desiredChannel; // Only used for city AI
 
-    public SignalChannelTileEntity(TileEntityType<?> type) {
-        super(type);
+    public SignalChannelTileEntity(BlockEntityType<?> type, BlockPos pos, BlockState state) {
+        super(type, pos, state);
     }
 
     static boolean isRedstoneChannelItem(Item item) {
@@ -92,7 +91,7 @@ public abstract class SignalChannelTileEntity extends GenericTileEntity implemen
 //    }
 
     @Override
-    public int getRedstoneOutput(BlockState state, IBlockReader world, BlockPos pos, Direction side) {
+    public int getRedstoneOutput(BlockState state, BlockGetter world, BlockPos pos, Direction side) {
         if (side == getFacing(state)) {
             return getPowerOutput();
         } else {
@@ -116,13 +115,13 @@ public abstract class SignalChannelTileEntity extends GenericTileEntity implemen
     }
 
     @Override
-    public void load(CompoundNBT tagCompound) {
+    public void load(CompoundTag tagCompound) {
         super.load(tagCompound);
         readRestorableFromNBT(tagCompound);
     }
 
-    public void readRestorableFromNBT(CompoundNBT tagCompound) {
-        CompoundNBT info = tagCompound.getCompound("Info");
+    public void readRestorableFromNBT(CompoundTag tagCompound) {
+        CompoundTag info = tagCompound.getCompound("Info");
         if (!info.isEmpty()) {
             channel = info.getInt("channel");
             desiredChannel = info.getInt("desired");
@@ -130,18 +129,18 @@ public abstract class SignalChannelTileEntity extends GenericTileEntity implemen
     }
 
     @Override
-    public void saveAdditional(CompoundNBT tagCompound) {
+    public void saveAdditional(CompoundTag tagCompound) {
         writeRestorableToNBT(tagCompound);
         super.saveAdditional(tagCompound);
     }
 
-    public void writeRestorableToNBT(CompoundNBT tagCompound) {
-        CompoundNBT info = getOrCreateInfo(tagCompound);
+    public void writeRestorableToNBT(CompoundTag tagCompound) {
+        CompoundTag info = getOrCreateInfo(tagCompound);
         info.putInt("channel", channel);
         info.putInt("desired", desiredChannel);
     }
 
-    public static boolean onBlockActivatedInt(World world, BlockPos pos, PlayerEntity player, Hand hand) {
+    public static boolean onBlockActivatedInt(Level world, BlockPos pos, Player player, InteractionHand hand) {
         ItemStack stack = player.getItemInHand(hand);
         if(SignalChannelTileEntity.isRedstoneChannelItem(stack.getItem())) {
             setChannel(world, pos, player, stack);
@@ -149,12 +148,12 @@ public abstract class SignalChannelTileEntity extends GenericTileEntity implemen
         return true;
     }
 
-    public static void setChannel(World world, BlockPos pos, PlayerEntity player, ItemStack stack) {
-        TileEntity te = world.getBlockEntity(pos);
+    public static void setChannel(Level world, BlockPos pos, Player player, ItemStack stack) {
+        BlockEntity te = world.getBlockEntity(pos);
         if (te instanceof SignalChannelTileEntity) {
             if(!world.isClientSide) {
                 SignalChannelTileEntity rcte = (SignalChannelTileEntity)te;
-                CompoundNBT tagCompound = stack.getOrCreateTag();
+                CompoundTag tagCompound = stack.getOrCreateTag();
                 int channel;
                 if(!player.isShiftKeyDown()) {
                     channel = rcte.getChannel(true);
@@ -172,7 +171,7 @@ public abstract class SignalChannelTileEntity extends GenericTileEntity implemen
                     }
                     rcte.setChannel(channel);
                 }
-                Logging.message(player, TextFormatting.YELLOW + "Channel set to " + channel + "!");
+                Logging.message(player, ChatFormatting.YELLOW + "Channel set to " + channel + "!");
             }
         }
     }
@@ -180,7 +179,7 @@ public abstract class SignalChannelTileEntity extends GenericTileEntity implemen
     /**
      * Returns the signal strength at one input of the block
      */
-    protected int getInputStrength(World world, BlockPos pos, Direction side) {
+    protected int getInputStrength(Level world, BlockPos pos, Direction side) {
         int power = world.getSignal(pos.relative(side), side);
         if (power < 15) {
             // Check if there is no redstone wire there. If there is a 'bend' in the redstone wire it is
@@ -189,7 +188,7 @@ public abstract class SignalChannelTileEntity extends GenericTileEntity implemen
             BlockState blockState = world.getBlockState(pos.relative(side));
             Block b = blockState.getBlock();
             if (b == Blocks.REDSTONE_WIRE) {
-                power = Math.max(power, blockState.getValue(RedstoneWireBlock.POWER));
+                power = Math.max(power, blockState.getValue(RedStoneWireBlock.POWER));
             }
         }
 
@@ -197,7 +196,7 @@ public abstract class SignalChannelTileEntity extends GenericTileEntity implemen
     }
 
     @Override
-    public void checkRedstone(World world, BlockPos pos) {
+    public void checkRedstone(Level world, BlockPos pos) {
         Direction inputSide = getFacing(world.getBlockState(pos)).getOpposite();
         int power = getInputStrength(world, pos, inputSide);
         setPowerInput(power);
@@ -230,7 +229,7 @@ public abstract class SignalChannelTileEntity extends GenericTileEntity implemen
     }
 
     @Override
-    public void setup(ICityAI cityAI, World world, boolean firstTime) {
+    public void setup(ICityAI cityAI, Level world, boolean firstTime) {
 
     }
 }

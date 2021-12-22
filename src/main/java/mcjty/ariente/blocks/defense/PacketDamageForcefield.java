@@ -1,18 +1,18 @@
 package mcjty.ariente.blocks.defense;
 
-import net.minecraft.network.PacketBuffer;
-import net.minecraft.util.math.BlockPos;
-import net.minecraft.util.math.vector.Vector3d;
-import net.minecraftforge.fml.network.NetworkEvent;
+import net.minecraft.network.FriendlyByteBuf;
+import net.minecraft.core.BlockPos;
+import net.minecraft.world.phys.Vec3;
+import net.minecraftforge.network.NetworkEvent;
 
 import java.util.function.Supplier;
 
 public class PacketDamageForcefield {
     private BlockPos pos;
     private int index;
-    private Vector3d intersection;
+    private Vec3 intersection;
 
-    public void toBytes(PacketBuffer buf) {
+    public void toBytes(FriendlyByteBuf buf) {
         buf.writeBlockPos(pos);
         buf.writeInt(index);
         buf.writeDouble(intersection.x);
@@ -23,13 +23,13 @@ public class PacketDamageForcefield {
     public PacketDamageForcefield() {
     }
 
-    public PacketDamageForcefield(PacketBuffer buf) {
+    public PacketDamageForcefield(FriendlyByteBuf buf) {
         pos = buf.readBlockPos();
         index = buf.readInt();
-        intersection = new Vector3d(buf.readDouble(), buf.readDouble(), buf.readDouble());
+        intersection = new Vec3(buf.readDouble(), buf.readDouble(), buf.readDouble());
     }
 
-    public PacketDamageForcefield(BlockPos pos, int index, Vector3d intersection) {
+    public PacketDamageForcefield(BlockPos pos, int index, Vec3 intersection) {
         this.pos = pos;
         this.index = index;
         this.intersection = intersection;

@@ -1,6 +1,6 @@
 package mcjty.ariente.security;
 
-import net.minecraft.item.ItemStack;
+import net.minecraft.world.item.ItemStack;
 
 /**
  * Implement this interface on any TE that needs to be able

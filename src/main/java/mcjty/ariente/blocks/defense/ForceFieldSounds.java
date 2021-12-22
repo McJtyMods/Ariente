@@ -4,16 +4,16 @@ import mcjty.ariente.sounds.ForcefieldSound;
 import mcjty.ariente.sounds.ModSounds;
 import mcjty.ariente.sounds.SoundController;
 import net.minecraft.client.Minecraft;
-import net.minecraft.client.world.ClientWorld;
-import net.minecraft.entity.player.PlayerEntity;
-import net.minecraft.util.math.BlockPos;
+import net.minecraft.client.multiplayer.ClientLevel;
+import net.minecraft.world.entity.player.Player;
+import net.minecraft.core.BlockPos;
 
 public class ForceFieldSounds {
 
     public static void doSounds(ForceFieldTile forcefield) {
         BlockPos pos = forcefield.getBlockPos();
-        ClientWorld world = Minecraft.getInstance().level;
-        PlayerEntity player = Minecraft.getInstance().player;
+        ClientLevel world = Minecraft.getInstance().level;
+        Player player = Minecraft.getInstance().player;
         double minDistance = 100000000000.0;
         PanelInfo minInfo = null;
         if (forcefield.entityNearField(player)) {

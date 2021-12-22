@@ -2,9 +2,11 @@ package mcjty.ariente.cables;
 
 import mcjty.ariente.setup.Registration;
 import mcjty.lib.varia.OrientationTools;
-import net.minecraft.block.Block;
-import net.minecraft.nbt.CompoundNBT;
-import net.minecraft.util.Direction;
+import net.minecraft.core.BlockPos;
+import net.minecraft.nbt.CompoundTag;
+import net.minecraft.world.level.block.Block;
+import net.minecraft.core.Direction;
+import net.minecraft.world.level.block.state.BlockState;
 
 public class ConnectorTileEntity extends GenericCableTileEntity {
 
@@ -12,8 +14,8 @@ public class ConnectorTileEntity extends GenericCableTileEntity {
     private int powerOut[] = new int[] { 0, 0, 0, 0, 0, 0 };
     private Block[] cachedNeighbours = new Block[OrientationTools.DIRECTION_VALUES.length];
 
-    public ConnectorTileEntity() {
-        super(Registration.CONNECTOR_TILE.get());
+    public ConnectorTileEntity(BlockPos pos, BlockState state) {
+        super(Registration.CONNECTOR_TILE.get(), pos, state);
     }
 
     public int getPowerOut(Direction side) {
@@ -46,7 +48,7 @@ public class ConnectorTileEntity extends GenericCableTileEntity {
     }
 
     @Override
-    public void load(CompoundNBT tagCompound) {
+    public void load(CompoundTag tagCompound) {
         super.load(tagCompound);
         inputFromSide = tagCompound.getIntArray("inputs");
         if (inputFromSide.length != 6) {
@@ -58,7 +60,7 @@ public class ConnectorTileEntity extends GenericCableTileEntity {
     }
 
     @Override
-    public void saveAdditional(CompoundNBT tagCompound) {
+    public void saveAdditional(CompoundTag tagCompound) {
         super.saveAdditional(tagCompound);
         tagCompound.putIntArray("inputs", inputFromSide);
         for (int i = 0 ; i < 6 ; i++) {

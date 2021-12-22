@@ -4,29 +4,29 @@ import mcjty.ariente.api.ArmorUpgradeType;
 import mcjty.ariente.config.UtilityConfiguration;
 import mcjty.ariente.items.EnergyHolderItem;
 import mcjty.ariente.setup.Registration;
-import net.minecraft.entity.LivingEntity;
-import net.minecraft.entity.player.PlayerEntity;
-import net.minecraft.inventory.EquipmentSlotType;
-import net.minecraft.item.Item;
-import net.minecraft.item.ItemStack;
-import net.minecraft.nbt.CompoundNBT;
+import net.minecraft.nbt.CompoundTag;
+import net.minecraft.world.entity.EquipmentSlot;
+import net.minecraft.world.entity.LivingEntity;
+import net.minecraft.world.entity.player.Player;
+import net.minecraft.world.item.Item;
+import net.minecraft.world.item.ItemStack;
 import org.apache.commons.lang3.tuple.Pair;
 
 import javax.annotation.Nonnull;
 
 public class ModuleSupport {
-    public static void receivedHotkey(PlayerEntity player, int index) {
-        handleHotkey(player, index, EquipmentSlotType.HEAD, Registration.POWERSUIT_HEAD.get());
-        handleHotkey(player, index, EquipmentSlotType.LEGS, Registration.POWERSUIT_LEGS.get());
-        handleHotkey(player, index, EquipmentSlotType.FEET, Registration.POWERSUIT_FEET.get());
-        handleHotkey(player, index, EquipmentSlotType.CHEST, Registration.POWERSUIT_CHEST.get());
-        handleHotkey(player, index, EquipmentSlotType.MAINHAND, Registration.ENHANCED_ENERGY_SABRE.get());
+    public static void receivedHotkey(Player player, int index) {
+        handleHotkey(player, index, EquipmentSlot.HEAD, Registration.POWERSUIT_HEAD.get());
+        handleHotkey(player, index, EquipmentSlot.LEGS, Registration.POWERSUIT_LEGS.get());
+        handleHotkey(player, index, EquipmentSlot.FEET, Registration.POWERSUIT_FEET.get());
+        handleHotkey(player, index, EquipmentSlot.CHEST, Registration.POWERSUIT_CHEST.get());
+        handleHotkey(player, index, EquipmentSlot.MAINHAND, Registration.ENHANCED_ENERGY_SABRE.get());
     }
 
-    private static void handleHotkey(PlayerEntity player, int index, EquipmentSlotType slot, Item armorItem) {
+    private static void handleHotkey(Player player, int index, EquipmentSlot slot, Item armorItem) {
         ItemStack armorStack = player.getItemBySlot(slot);
         if (!armorStack.isEmpty() && armorStack.getItem() == armorItem && armorStack.hasTag()) {
-            CompoundNBT compound = armorStack.getTag();
+            CompoundTag compound = armorStack.getTag();
             for (ArmorUpgradeType type : ArmorUpgradeType.VALUES) {
                 int idx = compound.getInt(type.getHotkeyKey());
                 if (idx == index) {
@@ -49,7 +49,7 @@ public class ModuleSupport {
     public static Pair<Integer, Integer> getPowerUsage(ItemStack stack) {
         int power = 0;
         int maxPower = UtilityConfiguration.POWERSUIT_MAXPOWER.get();
-        CompoundNBT compound = stack.getTag();
+        CompoundTag compound = stack.getTag();
         if (compound == null) {
             return Pair.of(power, maxPower);
         }
@@ -80,7 +80,7 @@ public class ModuleSupport {
             return true;
         }
 
-        CompoundNBT compound = stack.getTag();
+        CompoundTag compound = stack.getTag();
 
         int power = compound.getInt("power");
         if (power <= 0) {
@@ -113,15 +113,15 @@ public class ModuleSupport {
         return true;
     }
 
-    private static boolean checkAutofeed(LivingEntity entity, CompoundNBT compound) {
+    private static boolean checkAutofeed(LivingEntity entity, CompoundTag compound) {
         if (compound.getBoolean(ArmorUpgradeType.AUTOFEED.getModuleKey())) {
-            if (entity instanceof PlayerEntity) {
+            if (entity instanceof Player) {
                 // Only auto-feed with player
                 int negariteIndex = -1;
                 int posiriteIndex = -1;
-                PlayerEntity player = (PlayerEntity) entity;
-                for (int i = 0; i < player.inventory.getContainerSize(); i++) {
-                    ItemStack itemStack = player.inventory.getItem(i);
+                Player player = (Player) entity;
+                for (int i = 0; i < player.getInventory().getContainerSize(); i++) {
+                    ItemStack itemStack = player.getInventory().getItem(i);
                     if (itemStack.getItem() == Registration.ENERGY_HOLDER.get()) {
                         int negarite = EnergyHolderItem.count(itemStack, "negarite");
                         if (negarite > 0) {
@@ -151,14 +151,14 @@ public class ModuleSupport {
                     }
                 }
                 if (negariteIndex != -1 && posiriteIndex != -1) {
-                    ItemStack negariteStack = player.inventory.getItem(negariteIndex);
+                    ItemStack negariteStack = player.getInventory().getItem(negariteIndex);
                     if (negariteStack.getItem() == Registration.ENERGY_HOLDER.get()) {
                         EnergyHolderItem.extractIfPossible(negariteStack, "negarite", 1);
                     } else {
                         negariteStack.shrink(1);
                     }
 
-                    ItemStack posiriteStack = player.inventory.getItem(posiriteIndex);
+                    ItemStack posiriteStack = player.getInventory().getItem(posiriteIndex);
                     if (posiriteStack.getItem() == Registration.ENERGY_HOLDER.get()) {
                         EnergyHolderItem.extractIfPossible(negariteStack, "posirite", 1);
                     } else {

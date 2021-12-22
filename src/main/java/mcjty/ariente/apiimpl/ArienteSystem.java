@@ -11,16 +11,16 @@ import mcjty.ariente.items.KeyCardItem;
 import mcjty.ariente.items.modules.ModuleSupport;
 import mcjty.ariente.power.PowerSenderSupport;
 import mcjty.ariente.security.SecuritySystem;
-import net.minecraft.block.BlockState;
-import net.minecraft.entity.Entity;
-import net.minecraft.entity.LivingEntity;
-import net.minecraft.item.ItemStack;
-import net.minecraft.state.properties.RailShape;
-import net.minecraft.util.Direction;
-import net.minecraft.util.math.AxisAlignedBB;
-import net.minecraft.util.math.BlockPos;
-import net.minecraft.util.math.ChunkPos;
-import net.minecraft.world.World;
+import net.minecraft.core.BlockPos;
+import net.minecraft.core.Direction;
+import net.minecraft.world.entity.Entity;
+import net.minecraft.world.entity.LivingEntity;
+import net.minecraft.world.item.ItemStack;
+import net.minecraft.world.level.ChunkPos;
+import net.minecraft.world.level.Level;
+import net.minecraft.world.level.block.state.BlockState;
+import net.minecraft.world.level.block.state.properties.RailShape;
+import net.minecraft.world.phys.AABB;
 
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
@@ -40,28 +40,28 @@ public class ArienteSystem implements IArienteSystem {
 
     @Nonnull
     @Override
-    public List<? extends ISoldier> getSoldiersWithinAABB(World world, AxisAlignedBB aabb) {
+    public List<? extends ISoldier> getSoldiersWithinAABB(Level world, AABB aabb) {
         return world.getEntitiesOfClass(SoldierEntity.class, aabb);
     }
 
     @Nonnull
     @Override
-    public List<? extends IFluxLevitatorEntity> getLevitatorsWithinAABB(World world, AxisAlignedBB aabb) {
+    public List<? extends IFluxLevitatorEntity> getLevitatorsWithinAABB(Level world, AABB aabb) {
         return world.getEntitiesOfClass(FluxLevitatorEntity.class, aabb);
     }
 
     @Override
-    public LivingEntity createSoldier(World world, BlockPos pos, Direction facing, @Nullable ChunkPos cityCenter, SoldierBehaviourType type, boolean master) {
+    public LivingEntity createSoldier(Level world, BlockPos pos, Direction facing, @Nullable ChunkPos cityCenter, SoldierBehaviourType type, boolean master) {
         return createSoldierInt(world, pos, facing, cityCenter, type, master);
     }
 
     @Override
-    public LivingEntity createSentinel(World world, int index, @Nullable ChunkPos cityCenter) {
+    public LivingEntity createSentinel(Level world, int index, @Nullable ChunkPos cityCenter) {
         return SentinelDroneEntity.create(world, index, cityCenter);
     }
 
     @Override
-    public LivingEntity createDrone(World world, @Nullable ChunkPos cityCenter) {
+    public LivingEntity createDrone(Level world, @Nullable ChunkPos cityCenter) {
         return DroneEntity.create(world, cityCenter);
     }
 
@@ -76,7 +76,7 @@ public class ArienteSystem implements IArienteSystem {
     }
 
     @Override
-    public void fixNetworks(World world, BlockPos pos) {
+    public void fixNetworks(Level world, BlockPos pos) {
         PowerSenderSupport.fixNetworks(world, pos);
     }
 
@@ -91,21 +91,21 @@ public class ArienteSystem implements IArienteSystem {
     }
 
     @Override
-    public ISecuritySystem getSecuritySystem(World world) {
+    public ISecuritySystem getSecuritySystem(Level world) {
         return SecuritySystem.getSecuritySystem(world);
     }
 
     @Override
-    public IRedstoneChannels getRedstoneChannels(World world) {
+    public IRedstoneChannels getRedstoneChannels(Level world) {
         return RedstoneChannels.getChannels(world);
     }
 
     @Override
-    public Entity createFluxLevitatorEntity(World world, double x, double y, double z) {
+    public Entity createFluxLevitatorEntity(Level world, double x, double y, double z) {
         return FluxLevitatorEntity.create(world, x, y, z);
     }
 
-    private SoldierEntity createSoldierInt(World world, BlockPos p, Direction facing, @Nullable ChunkPos center, SoldierBehaviourType behaviourType,
+    private SoldierEntity createSoldierInt(Level world, BlockPos p, Direction facing, @Nullable ChunkPos center, SoldierBehaviourType behaviourType,
                                            boolean master) {
         SoldierEntity entity;
         if (master) {

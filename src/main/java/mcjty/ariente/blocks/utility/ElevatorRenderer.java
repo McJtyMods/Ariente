@@ -1,31 +1,32 @@
 package mcjty.ariente.blocks.utility;
 
-import com.mojang.blaze3d.matrix.MatrixStack;
-import com.mojang.blaze3d.vertex.IVertexBuilder;
+import com.mojang.blaze3d.vertex.PoseStack;
+import com.mojang.blaze3d.vertex.VertexConsumer;
+import com.mojang.math.Vector3f;
 import mcjty.ariente.Ariente;
 import mcjty.ariente.setup.Registration;
 import mcjty.lib.client.CustomRenderTypes;
 import mcjty.lib.client.RenderHelper;
 import net.minecraft.client.Minecraft;
-import net.minecraft.client.renderer.IRenderTypeBuffer;
-import net.minecraft.client.renderer.texture.AtlasTexture;
+import net.minecraft.client.renderer.MultiBufferSource;
+import net.minecraft.client.renderer.blockentity.BlockEntityRendererProvider;
+import net.minecraft.client.renderer.blockentity.BlockEntityRenderers;
 import net.minecraft.client.renderer.texture.TextureAtlasSprite;
-import net.minecraft.client.renderer.tileentity.TileEntityRenderer;
-import net.minecraft.client.renderer.tileentity.TileEntityRendererDispatcher;
-import net.minecraft.util.ResourceLocation;
-import net.minecraft.util.math.vector.Vector3d;
-import net.minecraft.util.math.vector.Vector3f;
-import net.minecraftforge.fml.client.registry.ClientRegistry;
+import net.minecraft.client.renderer.blockentity.BlockEntityRenderer;
+import net.minecraft.resources.ResourceLocation;
+import net.minecraft.world.inventory.InventoryMenu;
+import net.minecraft.world.phys.Vec3;
 
 import java.util.Random;
 
-public class ElevatorRenderer extends TileEntityRenderer<ElevatorTile> {
+public class ElevatorRenderer implements BlockEntityRenderer<ElevatorTile> {
 
+    protected BlockEntityRendererProvider.Context context;
     public static final ResourceLocation ELEVATOR_BEAM = new ResourceLocation(Ariente.MODID, "block/machines/elevator_beam");
     private Random random = new Random();
 
-    public ElevatorRenderer(TileEntityRendererDispatcher dispatcher) {
-        super(dispatcher);
+    public ElevatorRenderer(BlockEntityRendererProvider.Context pContext) {
+        context = pContext;
     }
 
     private static float randomX[] = new float[]{.2f, .3f, .2f, .7f, .8f, .5f, .2f, .8f, .4f, .6f};
@@ -33,18 +34,18 @@ public class ElevatorRenderer extends TileEntityRenderer<ElevatorTile> {
     private static int randomY[] = new int[]{0, 3, 2, 1, 6, 5, 6, 8, 2, 3};
 
     @Override
-    public void render(ElevatorTile te, float partialTicks, MatrixStack matrixStack, IRenderTypeBuffer buffer, int combinedLightIn, int combinedOverlayIn) {
-        TextureAtlasSprite sprite = Minecraft.getInstance().getTextureAtlas(AtlasTexture.LOCATION_BLOCKS).apply(ELEVATOR_BEAM);
+    public void render(ElevatorTile te, float partialTicks, PoseStack matrixStack, MultiBufferSource buffer, int combinedLightIn, int combinedOverlayIn) {
+        TextureAtlasSprite sprite = Minecraft.getInstance().getTextureAtlas(InventoryMenu.BLOCK_ATLAS).apply(ELEVATOR_BEAM);
 
         int tex = te.getBlockPos().getX();
         int tey = te.getBlockPos().getY();
         int tez = te.getBlockPos().getZ();
-        Vector3d projectedView = Minecraft.getInstance().gameRenderer.getMainCamera().getPosition().add(-tex, -tey, -tez);
+        Vec3 projectedView = Minecraft.getInstance().gameRenderer.getMainCamera().getPosition().add(-tex, -tey, -tez);
         Vector3f player = new Vector3f((float)projectedView.x, (float)projectedView.y, (float)projectedView.z);
 
         long tt = System.currentTimeMillis() / 100;
 
-        IVertexBuilder builder = buffer.getBuffer(CustomRenderTypes.TRANSLUCENT_ADD);
+        VertexConsumer builder = buffer.getBuffer(CustomRenderTypes.TRANSLUCENT_ADD);
 
         float height = te.getHeight();
 
@@ -68,6 +69,6 @@ public class ElevatorRenderer extends TileEntityRenderer<ElevatorTile> {
     }
 
     public static void register() {
-        ClientRegistry.bindTileEntityRenderer(Registration.ELEVATOR_TILE.get(), ElevatorRenderer::new);
+        BlockEntityRenderers.register(Registration.ELEVATOR_TILE.get(), ElevatorRenderer::new);
     }
 }

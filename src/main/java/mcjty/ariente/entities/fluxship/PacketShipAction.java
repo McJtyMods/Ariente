@@ -1,9 +1,9 @@
 package mcjty.ariente.entities.fluxship;
 
-import net.minecraft.entity.Entity;
-import net.minecraft.entity.player.PlayerEntity;
-import net.minecraft.network.PacketBuffer;
-import net.minecraftforge.fml.network.NetworkEvent;
+import net.minecraft.network.FriendlyByteBuf;
+import net.minecraft.world.entity.Entity;
+import net.minecraft.world.entity.player.Player;
+import net.minecraftforge.network.NetworkEvent;
 
 import java.util.function.Supplier;
 
@@ -11,14 +11,14 @@ public class PacketShipAction {
 
     private FlyAction action;
 
-    public void toBytes(PacketBuffer buf) {
+    public void toBytes(FriendlyByteBuf buf) {
         buf.writeInt(action.ordinal());
     }
 
     public PacketShipAction() {
     }
 
-    public PacketShipAction(PacketBuffer buf) {
+    public PacketShipAction(FriendlyByteBuf buf) {
         action = FlyAction.values()[buf.readInt()];
     }
 
@@ -29,7 +29,7 @@ public class PacketShipAction {
     public void handle(Supplier<NetworkEvent.Context> supplier) {
         NetworkEvent.Context ctx = supplier.get();
         ctx.enqueueWork(() -> {
-            PlayerEntity player = ctx.getSender();
+            Player player = ctx.getSender();
             Entity ridingEntity = player.getVehicle();
             if (ridingEntity instanceof FluxShipEntity) {
                 ((FluxShipEntity) ridingEntity).handleAction(action);

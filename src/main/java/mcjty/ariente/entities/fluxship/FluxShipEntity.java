@@ -2,18 +2,18 @@ package mcjty.ariente.entities.fluxship;
 
 import mcjty.ariente.setup.Registration;
 import mcjty.hologui.api.IHoloGuiEntity;
-import net.minecraft.entity.Entity;
-import net.minecraft.entity.EntityType;
-import net.minecraft.entity.player.PlayerEntity;
-import net.minecraft.nbt.CompoundNBT;
-import net.minecraft.network.IPacket;
-import net.minecraft.util.ActionResultType;
-import net.minecraft.util.Direction;
-import net.minecraft.util.Hand;
-import net.minecraft.util.math.AxisAlignedBB;
-import net.minecraft.util.math.vector.Vector3d;
-import net.minecraft.world.World;
-import net.minecraftforge.fml.network.NetworkHooks;
+import net.minecraft.core.Direction;
+import net.minecraft.nbt.CompoundTag;
+import net.minecraft.world.InteractionHand;
+import net.minecraft.world.entity.Entity;
+import net.minecraft.world.entity.EntityType;
+import net.minecraft.world.entity.player.Player;
+import net.minecraft.network.protocol.Packet;
+import net.minecraft.world.InteractionResult;
+import net.minecraft.world.phys.AABB;
+import net.minecraft.world.phys.Vec3;
+import net.minecraft.world.level.Level;
+import net.minecraftforge.network.NetworkHooks;
 
 import javax.annotation.Nullable;
 
@@ -23,12 +23,12 @@ public class FluxShipEntity extends Entity {
     private double velocityY;
     private double velocityZ;
 
-    public FluxShipEntity(EntityType<? extends FluxShipEntity> entityTypeIn, World worldIn) {
+    public FluxShipEntity(EntityType<? extends FluxShipEntity> entityTypeIn, Level worldIn) {
         super(entityTypeIn, worldIn);
         this.blocksBuilding = true;
     }
 
-    public static FluxShipEntity create(World worldIn, double x, double y, double z) {
+    public static FluxShipEntity create(Level worldIn, double x, double y, double z) {
         FluxShipEntity entity = new FluxShipEntity(Registration.ENTITY_FLUX_SHIP.get(), worldIn);
         entity.setPos(x, y, z);
         entity.setDeltaMovement(0, 0, 0);
@@ -60,7 +60,7 @@ public class FluxShipEntity extends Entity {
 
 
     public void handleAction(FlyAction action) {
-        Vector3d look = getViewVector(1.0f);
+        Vec3 look = getViewVector(1.0f);
         switch (action) {
             case FORWARD:
                 setDeltaMovement(look.x * 1, look.y * 1, look.z * 1);
@@ -69,10 +69,10 @@ public class FluxShipEntity extends Entity {
                 setDeltaMovement(look.x * -1, look.y * -1, look.z * -1);
                 break;
             case TURNLEFT:
-                setRot(yRot-.1f, xRot);
+                setRot(getYRot()-.1f, getXRot());
                 break;
             case TURNRIGHT:
-                setRot(yRot+.1f, xRot);
+                setRot(getYRot()+.1f, getXRot());
                 break;
             case UP:
                 setDeltaMovement(getDeltaMovement().x, .2f, getDeltaMovement().z);
@@ -88,9 +88,9 @@ public class FluxShipEntity extends Entity {
     }
 
     @Override
-    public ActionResultType interact(PlayerEntity player, Hand hand) {
+    public InteractionResult interact(Player player, InteractionHand hand) {
         if (player.isShiftKeyDown()) {
-            return ActionResultType.PASS;
+            return InteractionResult.PASS;
 //        } else if (this.isBeingRidden()) {    // @todo
 //            return true;
         } else {
@@ -98,7 +98,7 @@ public class FluxShipEntity extends Entity {
                 player.startRiding(this);
             }
 
-            return ActionResultType.SUCCESS;
+            return InteractionResult.SUCCESS;
         }
     }
 
@@ -123,8 +123,8 @@ public class FluxShipEntity extends Entity {
     }
 
     @Override
-    protected boolean isMovementNoisy() {
-        return false;
+    protected Entity.MovementEmission getMovementEmission() {
+        return MovementEmission.EVENTS;
     }
 
     @Override
@@ -138,29 +138,29 @@ public class FluxShipEntity extends Entity {
     }
 
     @Override
-    protected void readAdditionalSaveData(CompoundNBT compound) {
+    protected void readAdditionalSaveData(CompoundTag compound) {
 
     }
 
     @Override
-    protected void addAdditionalSaveData(CompoundNBT compound) {
+    protected void addAdditionalSaveData(CompoundTag compound) {
 
     }
 
     @Override
-    public IPacket<?> getAddEntityPacket() {
+    public Packet<?> getAddEntityPacket() {
         return NetworkHooks.getEntitySpawningPacket(this);
     }
 
     //@Override
     @Nullable
-    public AxisAlignedBB getCollisionBox(Entity entityIn) {
+    public AABB getCollisionBox(Entity entityIn) {
         return entityIn.isPushable() ? entityIn.getBoundingBox() : null;
     }
 
     //@Override
     @Nullable
-    public AxisAlignedBB getCollisionBoundingBox() {
+    public AABB getCollisionBoundingBox() {
         return null;
     }
 
@@ -184,7 +184,7 @@ public class FluxShipEntity extends Entity {
     }
 
     @Override
-    public AxisAlignedBB getBoundingBoxForCulling() {
+    public AABB getBoundingBoxForCulling() {
         return this.getBoundingBox();
     }
 

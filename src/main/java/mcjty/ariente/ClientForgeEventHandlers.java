@@ -7,15 +7,15 @@ import mcjty.ariente.network.ArienteMessages;
 import mcjty.ariente.network.PacketHitForcefield;
 import mcjty.ariente.setup.Registration;
 import mcjty.ariente.sounds.FluxLevitatorSounds;
-import net.minecraft.block.BlockState;
+import net.minecraft.core.BlockPos;
+import net.minecraft.world.entity.player.Player;
+import net.minecraft.world.item.Item;
+import net.minecraft.world.item.ItemStack;
+import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.client.Minecraft;
-import net.minecraft.entity.player.PlayerEntity;
-import net.minecraft.item.Item;
-import net.minecraft.item.ItemStack;
-import net.minecraft.util.math.BlockPos;
-import net.minecraft.util.math.BlockRayTraceResult;
-import net.minecraft.util.math.RayTraceResult;
-import net.minecraft.util.math.vector.Vector3d;
+import net.minecraft.world.phys.BlockHitResult;
+import net.minecraft.world.phys.HitResult;
+import net.minecraft.world.phys.Vec3;
 import net.minecraftforge.client.event.*;
 import net.minecraftforge.event.entity.EntityMountEvent;
 import net.minecraftforge.event.entity.player.PlayerInteractEvent;
@@ -44,10 +44,10 @@ public class ClientForgeEventHandlers {
     }
 
     @SubscribeEvent
-    public void onDrawBlockHighlight(DrawHighlightEvent event) {
-        if (event.getTarget().getType() == RayTraceResult.Type.BLOCK && event.getTarget() instanceof BlockRayTraceResult) {
-            BlockPos pos = ((BlockRayTraceResult) event.getTarget()).getBlockPos();
-            PlayerEntity player = Minecraft.getInstance().player;
+    public void onDrawBlockHighlight(DrawSelectionEvent event) {
+        if (event.getTarget().getType() == HitResult.Type.BLOCK && event.getTarget() instanceof BlockHitResult) {
+            BlockPos pos = ((BlockHitResult) event.getTarget()).getBlockPos();
+            Player player = Minecraft.getInstance().player;
             BlockState state = player.getCommandSenderWorld().getBlockState(pos);
             if (state.getBlock() == Registration.RAMP.get()) {
                 drawSelectionBox(state, player, pos, event.getPartialTicks());
@@ -56,10 +56,10 @@ public class ClientForgeEventHandlers {
         }
     }
 
-    private static void drawSelectionBox(BlockState state, PlayerEntity player, BlockPos pos, float partialTicks) {
+    private static void drawSelectionBox(BlockState state, Player player, BlockPos pos, float partialTicks) {
         GlStateManager._enableBlend();
         GlStateManager._blendFuncSeparate(GlStateManager.SourceFactor.SRC_ALPHA.value, GlStateManager.DestFactor.ONE_MINUS_SRC_ALPHA.value, GlStateManager.SourceFactor.ONE.value, GlStateManager.DestFactor.ZERO.value);
-        GlStateManager._lineWidth(2.0F);
+        // @todo 1.18 GlStateManager._lineWidth(2.0F);
         GlStateManager._disableTexture();
         GlStateManager._depthMask(false);
 
@@ -75,16 +75,16 @@ public class ClientForgeEventHandlers {
     }
 
     @SubscribeEvent
-    public void onRenderWorldEvent(RenderWorldLastEvent event) {
-        ForceFieldRenderer.renderForceFields(event.getPartialTicks());
+    public void onRenderWorldEvent(RenderLevelLastEvent event) {
+        ForceFieldRenderer.renderForceFields(event.getPartialTick());
     }
 
     @SubscribeEvent
     public void onEntityMount(EntityMountEvent event) {
         if (event.isMounting() && event.getWorldObj().isClientSide && event.getEntityBeingMounted() instanceof FluxLevitatorEntity) {
             FluxLevitatorEntity levitator = (FluxLevitatorEntity) event.getEntityBeingMounted();
-            if (event.getEntityMounting() instanceof PlayerEntity) {
-                FluxLevitatorSounds.playMovingSoundClientInside((PlayerEntity) event.getEntityMounting(), levitator);
+            if (event.getEntityMounting() instanceof Player) {
+                FluxLevitatorSounds.playMovingSoundClientInside((Player) event.getEntityMounting(), levitator);
             }
         }
     }
@@ -151,14 +151,14 @@ public class ClientForgeEventHandlers {
         return !chestStack.isEmpty() && chestStack.getItem() == powerSuitChest && chestStack.hasTag();
     }
 
-    private void handleSpeed(PlayerEntity player, double v2, double powersuitMaxForwardGroundSpeed, double powersuitMaxForwardFlySpeed, boolean hasFlight) {
-        Vector3d vec3d = player.getLookAngle().normalize().scale(v2);
+    private void handleSpeed(Player player, double v2, double powersuitMaxForwardGroundSpeed, double powersuitMaxForwardFlySpeed, boolean hasFlight) {
+        Vec3 vec3d = player.getLookAngle().normalize().scale(v2);
         double motionX = player.getDeltaMovement().x;
         double motionY = player.getDeltaMovement().y;
         double motionZ = player.getDeltaMovement().z;
         motionX += vec3d.x;
         motionZ += vec3d.z;
-        Vector3d v = new Vector3d(motionX, motionY, motionZ);
+        Vec3 v = new Vec3(motionX, motionY, motionZ);
         double max = (player.isOnGround() || !hasFlight) ?
                 powersuitMaxForwardGroundSpeed :
                 powersuitMaxForwardFlySpeed;

@@ -8,14 +8,14 @@ import mcjty.ariente.setup.Registration;
 import mcjty.ariente.api.MarbleColor;
 import mcjty.ariente.api.MarbleType;
 import mcjty.ariente.api.TechType;
-import net.minecraft.block.Block;
-import net.minecraft.block.SlabBlock;
-import net.minecraft.block.AbstractBlock.Properties;
-import net.minecraft.block.material.Material;
-import net.minecraft.item.BlockItem;
-import net.minecraft.item.Item;
-import net.minecraft.util.IStringSerializable;
-import net.minecraftforge.fml.RegistryObject;
+import net.minecraft.util.StringRepresentable;
+import net.minecraft.world.item.Item;
+import net.minecraft.world.level.block.Block;
+import net.minecraft.world.level.block.SlabBlock;
+import net.minecraft.world.level.block.state.BlockBehaviour.Properties;
+import net.minecraft.world.level.material.Material;
+import net.minecraft.world.item.BlockItem;
+import net.minecraftforge.registries.RegistryObject;
 import net.minecraftforge.fml.event.lifecycle.FMLClientSetupEvent;
 import net.minecraftforge.fml.event.lifecycle.FMLCommonSetupEvent;
 
@@ -53,7 +53,7 @@ public class DecorativeBlockModule implements IModule {
     public static final Map<MarbleColor, RegistryObject<SlabBlock>> MARBLE_SLAB = createSlabBlockMap("marble_slab_", MarbleColor.values(), Properties.of(Material.STONE));
     public static final Map<MarbleColor, RegistryObject<Item>> MARBLE_SLAB_ITEMS = createItemMap("marble_slab_", MarbleColor.values(), MARBLE_SLAB);
 
-    private static <T extends IStringSerializable> Map<T, RegistryObject<BaseBlock>> createBlockMap(String prefix, T[] variants) {
+    private static <T extends StringRepresentable> Map<T, RegistryObject<BaseBlock>> createBlockMap(String prefix, T[] variants) {
         ImmutableMap.Builder<T, RegistryObject<BaseBlock>> builder = new ImmutableMap.Builder<>();
 
         for (T variant: variants) {
@@ -63,7 +63,7 @@ public class DecorativeBlockModule implements IModule {
         return builder.build();
     }
 
-    private static <T extends IStringSerializable> Map<T, RegistryObject<SlabBlock>> createSlabBlockMap(String prefix, T[] variants, Properties properties) {
+    private static <T extends StringRepresentable> Map<T, RegistryObject<SlabBlock>> createSlabBlockMap(String prefix, T[] variants, Properties properties) {
         ImmutableMap.Builder<T, RegistryObject<SlabBlock>> builder = new ImmutableMap.Builder<>();
 
         for (T variant: variants) {
@@ -73,7 +73,7 @@ public class DecorativeBlockModule implements IModule {
         return builder.build();
     }
 
-    private static <T extends IStringSerializable, B extends Block> Map<T, RegistryObject<Item>> createItemMap(String prefix, T[] variants, Map<T, RegistryObject<B>> blocks) {
+    private static <T extends StringRepresentable, B extends Block> Map<T, RegistryObject<Item>> createItemMap(String prefix, T[] variants, Map<T, RegistryObject<B>> blocks) {
         ImmutableMap.Builder<T, RegistryObject<Item>> builder = new ImmutableMap.Builder<>();
 
         for (T variant: variants) {

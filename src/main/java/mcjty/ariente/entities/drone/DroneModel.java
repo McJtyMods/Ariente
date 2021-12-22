@@ -1,18 +1,18 @@
 package mcjty.ariente.entities.drone;
 
-import com.mojang.blaze3d.matrix.MatrixStack;
-import com.mojang.blaze3d.vertex.IVertexBuilder;
-import net.minecraft.client.renderer.entity.model.EntityModel;
-import net.minecraft.client.renderer.model.ModelRenderer;
-import net.minecraft.entity.Entity;
-import net.minecraft.entity.FlyingEntity;
+import com.mojang.blaze3d.vertex.PoseStack;
+import com.mojang.blaze3d.vertex.VertexConsumer;
+import net.minecraft.client.model.EntityModel;
+// @todo 1.18 import net.minecraft.client.renderer.model.ModelRenderer;
+import net.minecraft.world.entity.Entity;
+import net.minecraft.world.entity.FlyingMob;
 
-public class DroneModel <T extends FlyingEntity> extends EntityModel<T> {
-    ModelRenderer body;
+public class DroneModel <T extends FlyingMob> extends EntityModel<T> {
+    // @todo 1.18 ModelRenderer body;
 
     public DroneModel() {
-        this.body = new ModelRenderer(this, 0, 0);
-        this.body.addBox(-8.0F, -8.0F, -8.0F, 16, 16, 16);
+        // @todo 1.18 this.body = new ModelRenderer(this, 0, 0);
+        // @todo 1.18 this.body.addBox(-8.0F, -8.0F, -8.0F, 16, 16, 16);
     }
 
     public void setRotationAngles(float limbSwing, float limbSwingAmount, float ageInTicks, float netHeadYaw, float headPitch, float scaleFactor, Entity entityIn) {
@@ -24,10 +24,10 @@ public class DroneModel <T extends FlyingEntity> extends EntityModel<T> {
     }
 
     @Override
-    public void renderToBuffer(MatrixStack matrixStackIn, IVertexBuilder bufferIn, int packedLightIn, int packedOverlayIn, float red, float green, float blue, float alpha) {
+    public void renderToBuffer(PoseStack matrixStackIn, VertexConsumer bufferIn, int packedLightIn, int packedOverlayIn, float red, float green, float blue, float alpha) {
         matrixStackIn.pushPose();
         matrixStackIn.translate(0.0F, 0.6F, 0.0F);
-        this.body.render(matrixStackIn, bufferIn, packedLightIn, packedOverlayIn);
+        // @todo 1.18 this.body.render(matrixStackIn, bufferIn, packedLightIn, packedOverlayIn);
 
         matrixStackIn.popPose();
 

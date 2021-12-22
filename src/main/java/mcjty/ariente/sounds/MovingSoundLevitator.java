@@ -1,16 +1,16 @@
 package mcjty.ariente.sounds;
 
 import mcjty.ariente.entities.levitator.FluxLevitatorEntity;
-import net.minecraft.client.audio.TickableSound;
-import net.minecraft.util.SoundCategory;
-import net.minecraft.util.math.MathHelper;
+import net.minecraft.client.resources.sounds.AbstractTickableSoundInstance;
+import net.minecraft.sounds.SoundSource;
+import net.minecraft.util.Mth;
 
-public class MovingSoundLevitator extends TickableSound {
+public class MovingSoundLevitator extends AbstractTickableSoundInstance {
     private final FluxLevitatorEntity levitator;
     private float distance = 0.0F;
 
     public MovingSoundLevitator(FluxLevitatorEntity levitatorIn) {
-        super(ModSounds.levitator, SoundCategory.NEUTRAL);
+        super(ModSounds.levitator, SoundSource.NEUTRAL);
         this.levitator = levitatorIn;
         this.looping = true;
         this.delay = 0;
@@ -28,8 +28,8 @@ public class MovingSoundLevitator extends TickableSound {
 //            float f = MathHelper.sqrt(this.levitator.motionX * this.levitator.motionX + this.levitator.motionZ * this.levitator.motionZ);
 
             if (f >= 0.01D) {
-                this.distance = MathHelper.clamp(this.distance + 0.0025F, 0.0F, 1.0F);
-                this.volume = 0.0F + MathHelper.clamp(f, 0.0F, 0.5F) * 0.7F;
+                this.distance = Mth.clamp(this.distance + 0.0025F, 0.0F, 1.0F);
+                this.volume = 0.0F + Mth.clamp(f, 0.0F, 0.5F) * 0.7F;
             } else {
                 this.distance = 0.0F;
                 this.volume = 0.0F;

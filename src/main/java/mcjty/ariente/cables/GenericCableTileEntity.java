@@ -7,15 +7,15 @@ import mcjty.ariente.facade.MimicBlockSupport;
 import mcjty.ariente.power.IPowerBlob;
 import mcjty.ariente.power.PowerSenderSupport;
 import mcjty.lib.tileentity.GenericTileEntity;
-import net.minecraft.block.Block;
-import net.minecraft.block.BlockState;
-import net.minecraft.nbt.CompoundNBT;
-import net.minecraft.network.NetworkManager;
-import net.minecraft.network.play.server.SUpdateTileEntityPacket;
-import net.minecraft.tileentity.TileEntityType;
-import net.minecraft.util.ResourceLocation;
-import net.minecraft.world.World;
-import net.minecraftforge.common.util.Constants;
+import net.minecraft.core.BlockPos;
+import net.minecraft.network.protocol.game.ClientboundBlockEntityDataPacket;
+import net.minecraft.world.level.block.Block;
+import net.minecraft.world.level.block.entity.BlockEntityType;
+import net.minecraft.world.level.block.state.BlockState;
+import net.minecraft.nbt.CompoundTag;
+import net.minecraft.network.Connection;
+import net.minecraft.resources.ResourceLocation;
+import net.minecraft.world.level.Level;
 import net.minecraftforge.registries.ForgeRegistries;
 
 import javax.annotation.Nullable;
@@ -27,8 +27,8 @@ public abstract class GenericCableTileEntity extends GenericTileEntity implement
     private final MimicBlockSupport mimicBlockSupport = new MimicBlockSupport();
     private final PowerSenderSupport powerBlobSupport = new PowerSenderSupport();
 
-    public GenericCableTileEntity(TileEntityType<?> type) {
-        super(type);
+    public GenericCableTileEntity(BlockEntityType<?> type, BlockPos pos, BlockState state) {
+        super(type, pos, state);
     }
 
     @Nullable
@@ -60,11 +60,11 @@ public abstract class GenericCableTileEntity extends GenericTileEntity implement
     }
 
     @Override
-    public void setup(ICityAI cityAI, World world, boolean firstTime) {
+    public void setup(ICityAI cityAI, Level world, boolean firstTime) {
     }
 
     @Override
-    public void onDataPacket(NetworkManager net, SUpdateTileEntityPacket packet) {
+    public void onDataPacket(Connection net, ClientboundBlockEntityDataPacket packet) {
         BlockState oldMimicBlock = mimicBlockSupport.getMimicBlock();
 
         super.onDataPacket(net, packet);
@@ -72,7 +72,7 @@ public abstract class GenericCableTileEntity extends GenericTileEntity implement
         if (level.isClientSide) {
             // If needed send a render update.
             if (mimicBlockSupport.getMimicBlock() != oldMimicBlock) {
-                level.sendBlockUpdated(worldPosition, getBlockState(), getBlockState(), Constants.BlockFlags.BLOCK_UPDATE + Constants.BlockFlags.NOTIFY_NEIGHBORS);
+                level.sendBlockUpdated(worldPosition, getBlockState(), getBlockState(), Block.UPDATE_ALL);
             }
         }
     }
@@ -121,14 +121,14 @@ public abstract class GenericCableTileEntity extends GenericTileEntity implement
     }
 
     @Override
-    public void load(CompoundNBT tagCompound) {
+    public void load(CompoundTag tagCompound) {
         super.load(tagCompound);
         mimicBlockSupport.readFromNBT(tagCompound);
         powerBlobSupport.setCableId(tagCompound.getInt("cableId"));
     }
 
     @Override
-    public void saveAdditional(CompoundNBT tagCompound) {
+    public void saveAdditional(CompoundTag tagCompound) {
         super.saveAdditional(tagCompound);
         mimicBlockSupport.writeToNBT(tagCompound);
     }

@@ -3,9 +3,9 @@ package mcjty.ariente.security;
 import mcjty.ariente.api.ISecuritySystem;
 import mcjty.lib.varia.LevelTools;
 import mcjty.lib.worlddata.AbstractWorldData;
-import net.minecraft.nbt.CompoundNBT;
-import net.minecraft.world.World;
-import net.minecraft.world.server.ServerWorld;
+import net.minecraft.nbt.CompoundTag;
+import net.minecraft.world.level.Level;
+import net.minecraft.server.level.ServerLevel;
 
 import javax.annotation.Nonnull;
 import java.util.ArrayList;
@@ -19,8 +19,8 @@ public class SecuritySystem extends AbstractWorldData<SecuritySystem> implements
 
     private long lastSecurityID = 1;
 
-    public SecuritySystem(String name) {
-        super(name);
+    public SecuritySystem() {
+        super();
     }
 
     public long newSecurityID() {
@@ -31,9 +31,9 @@ public class SecuritySystem extends AbstractWorldData<SecuritySystem> implements
     }
 
     @Override
-    public String generateKeyId(World w) {
+    public String generateKeyId(Level w) {
         long id = newSecurityID();
-        ServerWorld world = LevelTools.getOverworld(w);
+        ServerLevel world = LevelTools.getOverworld(w);
         Random rnd = new Random(world.getSeed() + 234516783139L);       // A fixed seed for this work
         rnd.nextFloat();
         rnd.nextFloat();
@@ -63,17 +63,22 @@ public class SecuritySystem extends AbstractWorldData<SecuritySystem> implements
 
 
     @Nonnull
-    public static SecuritySystem getSecuritySystem(World world) {
-        return getData(world, () -> new SecuritySystem(NAME), NAME);
+    public static SecuritySystem getSecuritySystem(Level world) {
+        return getData(world, SecuritySystem::createSecuritySystem, () -> new SecuritySystem(), NAME);
     }
 
-    @Override
-    public void load(CompoundNBT compound) {
+    private static SecuritySystem createSecuritySystem(CompoundTag tag) {
+        SecuritySystem system = new SecuritySystem();
+        system.load(tag);
+        return system;
+    }
+
+    public void load(CompoundTag compound) {
         lastSecurityID = compound.getLong("lastSecurityID");
     }
 
     @Override
-    public CompoundNBT save(CompoundNBT compound) {
+    public CompoundTag save(CompoundTag compound) {
         compound.putLong("lastSecurityID", lastSecurityID);
         return compound;
     }

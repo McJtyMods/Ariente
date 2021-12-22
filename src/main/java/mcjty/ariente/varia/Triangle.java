@@ -1,41 +1,41 @@
 package mcjty.ariente.varia;
 
-import net.minecraft.util.math.vector.Vector3d;
+import net.minecraft.world.phys.Vec3;
 
 public class Triangle {
-    public final Vector3d a;
-    public final Vector3d b;
-    public final Vector3d c;
+    public final Vec3 a;
+    public final Vec3 b;
+    public final Vec3 c;
 
-    private final Vector3d mid;
+    private final Vec3 mid;
 
-    public Triangle(Vector3d a, Vector3d b, Vector3d c, Vector3d mid) {
+    public Triangle(Vec3 a, Vec3 b, Vec3 c, Vec3 mid) {
         this.a = a;
         this.b = b;
         this.c = c;
         this.mid = mid;
     }
 
-    public Triangle(Vector3d a, Vector3d b, Vector3d c) {
+    public Triangle(Vec3 a, Vec3 b, Vec3 c) {
         this.a = a;
         this.b = b;
         this.c = c;
         this.mid = null;
     }
 
-    public Vector3d getA() {
+    public Vec3 getA() {
         return a;
     }
 
-    public Vector3d getB() {
+    public Vec3 getB() {
         return b;
     }
 
-    public Vector3d getC() {
+    public Vec3 getC() {
         return c;
     }
 
-    public Vector3d getMid() {
+    public Vec3 getMid() {
         return mid;
     }
 }

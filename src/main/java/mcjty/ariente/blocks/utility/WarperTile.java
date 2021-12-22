@@ -14,17 +14,17 @@ import mcjty.lib.blocks.RotationType;
 import mcjty.lib.builder.BlockBuilder;
 import mcjty.lib.tileentity.GenericTileEntity;
 import mcjty.lib.varia.TeleportationTools;
-import net.minecraft.block.BlockState;
-import net.minecraft.entity.player.PlayerEntity;
-import net.minecraft.nbt.CompoundNBT;
-import net.minecraft.util.ActionResultType;
-import net.minecraft.util.Hand;
-import net.minecraft.util.RegistryKey;
-import net.minecraft.util.math.AxisAlignedBB;
-import net.minecraft.util.math.BlockPos;
-import net.minecraft.util.math.BlockRayTraceResult;
-import net.minecraft.world.World;
-import net.minecraft.world.storage.IWorldInfo;
+import net.minecraft.core.BlockPos;
+import net.minecraft.nbt.CompoundTag;
+import net.minecraft.resources.ResourceKey;
+import net.minecraft.world.InteractionResult;
+import net.minecraft.world.entity.player.Player;
+import net.minecraft.world.level.Level;
+import net.minecraft.world.level.block.state.BlockState;
+import net.minecraft.world.InteractionHand;
+import net.minecraft.world.phys.AABB;
+import net.minecraft.world.phys.BlockHitResult;
+import net.minecraft.world.level.storage.LevelData;
 
 import static mcjty.ariente.compat.ArienteTOPDriver.DRIVER;
 import static mcjty.lib.builder.TooltipBuilder.header;
@@ -32,13 +32,13 @@ import static mcjty.lib.builder.TooltipBuilder.key;
 
 public class WarperTile extends GenericTileEntity implements IGuiTile, IWarper {
 
-    private AxisAlignedBB renderBox = null;
-    private AxisAlignedBB detectionBox = null;
+    private AABB renderBox = null;
+    private AABB detectionBox = null;
 
     private int charges = 0;
 
-    public WarperTile() {
-        super(Registration.WARPER_TILE.get());
+    public WarperTile(BlockPos pos, BlockState state) {
+        super(Registration.WARPER_TILE.get(), pos, state);
     }
 
     public static BaseBlock createBlock() {
@@ -58,33 +58,32 @@ public class WarperTile extends GenericTileEntity implements IGuiTile, IWarper {
     }
 
     @Override
-    public ActionResultType onBlockActivated(BlockState state, PlayerEntity player, Hand hand, BlockRayTraceResult result) {
+    public InteractionResult onBlockActivated(BlockState state, Player player, InteractionHand hand, BlockHitResult result) {
         Ariente.guiHandler.openHoloGui(level, worldPosition, player);
-        return ActionResultType.SUCCESS;
+        return InteractionResult.SUCCESS;
     }
 
-
     @Override
-    public void setLevelAndPosition(World worldIn, BlockPos pos) {
-        super.setLevelAndPosition(worldIn, pos);
+    public void setLevel(Level worldIn) {
+        super.setLevel(worldIn);
         if (Ariente.setup.arienteWorld) {
-            RegistryKey<World> dim = ArienteWorldCompat.getArienteWorld().getDimension();
+            ResourceKey<Level> dim = ArienteWorldCompat.getArienteWorld().getDimension();
             if (worldIn != null && dim == worldIn.dimension()) {
                 charges = UtilityConfiguration.WARPER_MAX_CHARGES.get();
             }
         }
     }
 
-    private AxisAlignedBB getBeamBox() {
+    private AABB getBeamBox() {
         if (renderBox == null) {
-            renderBox = new AxisAlignedBB(getBlockPos()).minmax(new AxisAlignedBB(new BlockPos(worldPosition.getX(), worldPosition.getY() + 10, worldPosition.getZ())));
+            renderBox = new AABB(getBlockPos()).minmax(new AABB(new BlockPos(worldPosition.getX(), worldPosition.getY() + 10, worldPosition.getZ())));
         }
         return renderBox;
     }
 
-    private AxisAlignedBB getDetectionBox() {
+    private AABB getDetectionBox() {
         if (detectionBox == null) {
-            detectionBox = new AxisAlignedBB(worldPosition.getX()-3, worldPosition.getY()-2, worldPosition.getZ()-3, worldPosition.getX()+4, worldPosition.getY()+6, worldPosition.getZ()+4);
+            detectionBox = new AABB(worldPosition.getX()-3, worldPosition.getY()-2, worldPosition.getZ()-3, worldPosition.getX()+4, worldPosition.getY()+6, worldPosition.getZ()+4);
         }
         return detectionBox;
     }
@@ -99,8 +98,8 @@ public class WarperTile extends GenericTileEntity implements IGuiTile, IWarper {
     }
 
     @Override
-    public void load(CompoundNBT tagCompound) {
-        CompoundNBT info = tagCompound.getCompound("Info");
+    public void load(CompoundTag tagCompound) {
+        CompoundTag info = tagCompound.getCompound("Info");
         if (info.contains("charges")) {
             charges = info.getInt("charges");
         }
@@ -108,7 +107,7 @@ public class WarperTile extends GenericTileEntity implements IGuiTile, IWarper {
     }
 
     @Override
-    public void saveAdditional(CompoundNBT tagCompound) {
+    public void saveAdditional(CompoundTag tagCompound) {
         getOrCreateInfo(tagCompound).putInt("charges", charges);
         super.saveAdditional(tagCompound);
     }
@@ -124,7 +123,7 @@ public class WarperTile extends GenericTileEntity implements IGuiTile, IWarper {
     }
 
     @Override
-    public AxisAlignedBB getRenderBoundingBox() {
+    public AABB getRenderBoundingBox() {
         return getBeamBox();
     }
 
@@ -134,8 +133,8 @@ public class WarperTile extends GenericTileEntity implements IGuiTile, IWarper {
 //        return pass == 1;
 //    }
 
-    private void warp(PlayerEntity player) {
-        if (level.dimension() == World.OVERWORLD) {
+    private void warp(Player player) {
+        if (level.dimension() == Level.OVERWORLD) {
             if (!level.isClientSide) {
                 if (Ariente.setup.arienteWorld) {
                     // @todo for future usage
@@ -147,13 +146,13 @@ public class WarperTile extends GenericTileEntity implements IGuiTile, IWarper {
             if (!level.isClientSide) {
                 BlockPos bedLocation = player.getSleepingPos().get();
                 if (bedLocation == null) {
-                    IWorldInfo worldInfo = level.getLevelData();
+                    LevelData worldInfo = level.getLevelData();
                     bedLocation = new BlockPos(worldInfo.getXSpawn(),worldInfo.getYSpawn(), worldInfo.getZSpawn());
                 }
                 while (!level.isEmptyBlock(bedLocation) && !level.isEmptyBlock(bedLocation.above()) && bedLocation.getY() < level.getMaxBuildHeight()-2) {
                     bedLocation = bedLocation.above();
                 }
-                TeleportationTools.teleportToDimension(player, World.OVERWORLD, bedLocation.getX(), bedLocation.getY(), bedLocation.getZ());
+                TeleportationTools.teleportToDimension(player, Level.OVERWORLD, bedLocation.getX(), bedLocation.getY(), bedLocation.getZ());
             }
         }
     }

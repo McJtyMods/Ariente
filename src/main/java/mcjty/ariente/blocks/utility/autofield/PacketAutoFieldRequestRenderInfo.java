@@ -1,23 +1,23 @@
 package mcjty.ariente.blocks.utility.autofield;
 
-import net.minecraft.network.PacketBuffer;
-import net.minecraft.tileentity.TileEntity;
-import net.minecraft.util.math.BlockPos;
-import net.minecraftforge.fml.network.NetworkEvent;
+import net.minecraft.network.FriendlyByteBuf;
+import net.minecraft.world.level.block.entity.BlockEntity;
+import net.minecraft.core.BlockPos;
+import net.minecraftforge.network.NetworkEvent;
 
 import java.util.function.Supplier;
 
 public class PacketAutoFieldRequestRenderInfo {
     private BlockPos pos;
 
-    public void toBytes(PacketBuffer buf) {
+    public void toBytes(FriendlyByteBuf buf) {
         buf.writeBlockPos(pos);
     }
 
     public PacketAutoFieldRequestRenderInfo() {
     }
 
-    public PacketAutoFieldRequestRenderInfo(PacketBuffer buf) {
+    public PacketAutoFieldRequestRenderInfo(FriendlyByteBuf buf) {
         pos = buf.readBlockPos();
     }
 
@@ -28,7 +28,7 @@ public class PacketAutoFieldRequestRenderInfo {
     public void handle(Supplier<NetworkEvent.Context> supplier) {
         NetworkEvent.Context ctx = supplier.get();
         ctx.enqueueWork(() -> {
-            TileEntity te = ctx.getSender().level.getBlockEntity(pos);
+            BlockEntity te = ctx.getSender().level.getBlockEntity(pos);
             if (te instanceof AutoFieldTile) {
                 ((AutoFieldTile) te).renderInfoRequested();
             }

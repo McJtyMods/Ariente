@@ -2,7 +2,7 @@ package mcjty.ariente.blocks.defense;
 
 import mcjty.ariente.varia.Intersections;
 import mcjty.ariente.varia.Triangle;
-import net.minecraft.util.math.vector.Vector3d;
+import net.minecraft.world.phys.Vec3;
 
 import static java.lang.Math.sqrt;
 
@@ -35,7 +35,7 @@ public class PentakisDodecahedron {
     public static final int MAX_VERTICES = 32;
     public static final int MAX_TRIANGLES = 60;
 
-    public static final Vector3d[] VERTICES = new Vector3d[MAX_VERTICES];
+    public static final Vec3[] VERTICES = new Vec3[MAX_VERTICES];
     public static final TriangleIdx[] TRIANGLES = new TriangleIdx[MAX_TRIANGLES];
 
     static {
@@ -44,38 +44,38 @@ public class PentakisDodecahedron {
         double c2 = 9 * (7 + 5 * sqrt(5)) / 76;
         double c3 = 3 * (1 + sqrt(5)) / 4;
 
-        VERTICES[0] = new Vector3d(0.0, c0, c3).scale(1.0f/c3);
-        VERTICES[1] = new Vector3d(0.0, c0, -c3).scale(1.0f/c3);
-        VERTICES[2] = new Vector3d(0.0, -c0, c3).scale(1.0f/c3);
-        VERTICES[3] = new Vector3d(0.0, -c0, -c3).scale(1.0f/c3);
-        VERTICES[4] = new Vector3d(c3, 0.0, c0).scale(1.0f/c3);
-        VERTICES[5] = new Vector3d(c3, 0.0, -c0).scale(1.0f/c3);
-        VERTICES[6] = new Vector3d(-c3, 0.0, c0).scale(1.0f/c3);
-        VERTICES[7] = new Vector3d(-c3, 0.0, -c0).scale(1.0f/c3);
-        VERTICES[8] = new Vector3d(c0, c3, 0.0).scale(1.0f/c3);
-        VERTICES[9] = new Vector3d(c0, -c3, 0.0).scale(1.0f/c3);
-        VERTICES[10] = new Vector3d(-c0, c3, 0.0).scale(1.0f/c3);
-        VERTICES[11] = new Vector3d(-c0, -c3, 0.0).scale(1.0f/c3);
-        VERTICES[12] = new Vector3d(c1, 0.0, c2).scale(1.0f/c3);
-        VERTICES[13] = new Vector3d(c1, 0.0, -c2).scale(1.0f/c3);
-        VERTICES[14] = new Vector3d(-c1, 0.0, c2).scale(1.0f/c3);
-        VERTICES[15] = new Vector3d(-c1, 0.0, -c2).scale(1.0f/c3);
-        VERTICES[16] = new Vector3d(c2, c1, 0.0).scale(1.0f/c3);
-        VERTICES[17] = new Vector3d(c2, -c1, 0.0).scale(1.0f/c3);
-        VERTICES[18] = new Vector3d(-c2, c1, 0.0).scale(1.0f/c3);
-        VERTICES[19] = new Vector3d(-c2, -c1, 0.0).scale(1.0f/c3);
-        VERTICES[20] = new Vector3d(0.0, c2, c1).scale(1.0f/c3);
-        VERTICES[21] = new Vector3d(0.0, c2, -c1).scale(1.0f/c3);
-        VERTICES[22] = new Vector3d(0.0, -c2, c1).scale(1.0f/c3);
-        VERTICES[23] = new Vector3d(0.0, -c2, -c1).scale(1.0f/c3);
-        VERTICES[24] = new Vector3d(1.5, 1.5, 1.5).scale(1.0f/c3);
-        VERTICES[25] = new Vector3d(1.5, 1.5, -1.5).scale(1.0f/c3);
-        VERTICES[26] = new Vector3d(1.5, -1.5, 1.5).scale(1.0f/c3);
-        VERTICES[27] = new Vector3d(1.5, -1.5, -1.5).scale(1.0f/c3);
-        VERTICES[28] = new Vector3d(-1.5, 1.5, 1.5).scale(1.0f/c3);
-        VERTICES[29] = new Vector3d(-1.5, 1.5, -1.5).scale(1.0f/c3);
-        VERTICES[30] = new Vector3d(-1.5, -1.5, 1.5).scale(1.0f/c3);
-        VERTICES[31] = new Vector3d(-1.5, -1.5, -1.5).scale(1.0f/c3);
+        VERTICES[0] = new Vec3(0.0, c0, c3).scale(1.0f/c3);
+        VERTICES[1] = new Vec3(0.0, c0, -c3).scale(1.0f/c3);
+        VERTICES[2] = new Vec3(0.0, -c0, c3).scale(1.0f/c3);
+        VERTICES[3] = new Vec3(0.0, -c0, -c3).scale(1.0f/c3);
+        VERTICES[4] = new Vec3(c3, 0.0, c0).scale(1.0f/c3);
+        VERTICES[5] = new Vec3(c3, 0.0, -c0).scale(1.0f/c3);
+        VERTICES[6] = new Vec3(-c3, 0.0, c0).scale(1.0f/c3);
+        VERTICES[7] = new Vec3(-c3, 0.0, -c0).scale(1.0f/c3);
+        VERTICES[8] = new Vec3(c0, c3, 0.0).scale(1.0f/c3);
+        VERTICES[9] = new Vec3(c0, -c3, 0.0).scale(1.0f/c3);
+        VERTICES[10] = new Vec3(-c0, c3, 0.0).scale(1.0f/c3);
+        VERTICES[11] = new Vec3(-c0, -c3, 0.0).scale(1.0f/c3);
+        VERTICES[12] = new Vec3(c1, 0.0, c2).scale(1.0f/c3);
+        VERTICES[13] = new Vec3(c1, 0.0, -c2).scale(1.0f/c3);
+        VERTICES[14] = new Vec3(-c1, 0.0, c2).scale(1.0f/c3);
+        VERTICES[15] = new Vec3(-c1, 0.0, -c2).scale(1.0f/c3);
+        VERTICES[16] = new Vec3(c2, c1, 0.0).scale(1.0f/c3);
+        VERTICES[17] = new Vec3(c2, -c1, 0.0).scale(1.0f/c3);
+        VERTICES[18] = new Vec3(-c2, c1, 0.0).scale(1.0f/c3);
+        VERTICES[19] = new Vec3(-c2, -c1, 0.0).scale(1.0f/c3);
+        VERTICES[20] = new Vec3(0.0, c2, c1).scale(1.0f/c3);
+        VERTICES[21] = new Vec3(0.0, c2, -c1).scale(1.0f/c3);
+        VERTICES[22] = new Vec3(0.0, -c2, c1).scale(1.0f/c3);
+        VERTICES[23] = new Vec3(0.0, -c2, -c1).scale(1.0f/c3);
+        VERTICES[24] = new Vec3(1.5, 1.5, 1.5).scale(1.0f/c3);
+        VERTICES[25] = new Vec3(1.5, 1.5, -1.5).scale(1.0f/c3);
+        VERTICES[26] = new Vec3(1.5, -1.5, 1.5).scale(1.0f/c3);
+        VERTICES[27] = new Vec3(1.5, -1.5, -1.5).scale(1.0f/c3);
+        VERTICES[28] = new Vec3(-1.5, 1.5, 1.5).scale(1.0f/c3);
+        VERTICES[29] = new Vec3(-1.5, 1.5, -1.5).scale(1.0f/c3);
+        VERTICES[30] = new Vec3(-1.5, -1.5, 1.5).scale(1.0f/c3);
+        VERTICES[31] = new Vec3(-1.5, -1.5, -1.5).scale(1.0f/c3);
 
         int i = 0;
         TRIANGLES[i++] = new TriangleIdx(12, 0, 2);
@@ -142,12 +142,12 @@ public class PentakisDodecahedron {
 
     public static Triangle getTriangle(int index) {
         TriangleIdx tri = TRIANGLES[index];
-        Vector3d a = VERTICES[tri.getA()];
-        Vector3d b = VERTICES[tri.getB()];
-        Vector3d c = VERTICES[tri.getC()];
+        Vec3 a = VERTICES[tri.getA()];
+        Vec3 b = VERTICES[tri.getB()];
+        Vec3 c = VERTICES[tri.getC()];
         // The mid point is horizontally the mid point but vertically the bottom point
-        Vector3d mid = a.add(b).add(c).scale(1.0/3.0);
+        Vec3 mid = a.add(b).add(c).scale(1.0/3.0);
         double miny = Intersections.min3(a.y, b.y, c.y);
-        return new Triangle(a, b, c, new Vector3d(mid.x, miny, mid.z));
+        return new Triangle(a, b, c, new Vec3(mid.x, miny, mid.z));
     }
 }

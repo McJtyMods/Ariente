@@ -1,17 +1,17 @@
 package mcjty.ariente.blocks.generators;
 
-import com.mojang.blaze3d.matrix.MatrixStack;
-import com.mojang.blaze3d.vertex.IVertexBuilder;
+import com.mojang.blaze3d.vertex.PoseStack;
+import com.mojang.blaze3d.vertex.VertexConsumer;
 import net.minecraft.client.Minecraft;
-import net.minecraft.client.renderer.IRenderTypeBuffer;
+import net.minecraft.client.renderer.MultiBufferSource;
 import net.minecraft.client.renderer.RenderType;
-import net.minecraft.client.renderer.texture.AtlasTexture;
 import net.minecraft.client.renderer.texture.TextureAtlasSprite;
-import net.minecraft.util.ResourceLocation;
+import net.minecraft.resources.ResourceLocation;
+import net.minecraft.world.inventory.InventoryMenu;
 
 public class TankRendererTools {
 
-    private static void p(IVertexBuilder renderer, MatrixStack stack, float x, float y, float z, float u, float v) {
+    private static void p(VertexConsumer renderer, PoseStack stack, float x, float y, float z, float u, float v) {
         renderer
                 .vertex(stack.last().pose(), x, y, z)
                 .color(1.0f, 1.0f, 1.0f, 1.0f)
@@ -22,10 +22,10 @@ public class TankRendererTools {
     }
 
 
-    public static void renderBeam(MatrixStack matrixStack, IRenderTypeBuffer buffer, ResourceLocation beam) {
+    public static void renderBeam(PoseStack matrixStack, MultiBufferSource buffer, ResourceLocation beam) {
         matrixStack.pushPose();
 
-        IVertexBuilder builder = buffer.getBuffer(RenderType.translucent());
+        VertexConsumer builder = buffer.getBuffer(RenderType.translucent());
 
 // @todo 1.15
 //            GlStateManager.enableBlend();
@@ -35,7 +35,7 @@ public class TankRendererTools {
 //            GlStateManager.disableCull();
 //            GlStateManager.enableDepthTest();
 
-        TextureAtlasSprite sprite = Minecraft.getInstance().getTextureAtlas(AtlasTexture.LOCATION_BLOCKS).apply(beam);
+        TextureAtlasSprite sprite = Minecraft.getInstance().getTextureAtlas(InventoryMenu.BLOCK_ATLAS).apply(beam);
 
         long ticks = (System.currentTimeMillis() / 100) % 10;
         float i1 = ticks / 10.0f;

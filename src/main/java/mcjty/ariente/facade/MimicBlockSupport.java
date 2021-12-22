@@ -1,10 +1,10 @@
 package mcjty.ariente.facade;
 
-import net.minecraft.block.Block;
-import net.minecraft.block.BlockState;
-import net.minecraft.block.Blocks;
-import net.minecraft.nbt.CompoundNBT;
-import net.minecraft.util.ResourceLocation;
+import net.minecraft.resources.ResourceLocation;
+import net.minecraft.world.level.block.Block;
+import net.minecraft.world.level.block.Blocks;
+import net.minecraft.world.level.block.state.BlockState;
+import net.minecraft.nbt.CompoundTag;
 import net.minecraftforge.registries.ForgeRegistries;
 
 import javax.annotation.Nullable;
@@ -24,7 +24,7 @@ public class MimicBlockSupport {
     }
 
 
-    public void readFromNBT(CompoundNBT tagCompound) {
+    public void readFromNBT(CompoundTag tagCompound) {
         if (tagCompound.contains("regName")) {
             String regName = tagCompound.getString("regName");
             // @todo 1.14 meta
@@ -41,7 +41,7 @@ public class MimicBlockSupport {
         }
     }
 
-    public void writeToNBT(CompoundNBT tagCompound) {
+    public void writeToNBT(CompoundTag tagCompound) {
         if (mimicBlock != null) {
             tagCompound.putString("regName", mimicBlock.getBlock().getRegistryName().toString());
             // @todo 1.14 meta

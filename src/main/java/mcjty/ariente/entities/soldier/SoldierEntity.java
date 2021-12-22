@@ -7,36 +7,41 @@ import mcjty.ariente.items.KeyCardItem;
 import mcjty.ariente.items.armor.PowerSuit;
 import mcjty.ariente.setup.Registration;
 import mcjty.ariente.sounds.ModSounds;
-import net.minecraft.block.BlockState;
-import net.minecraft.block.Blocks;
-import net.minecraft.block.SoundType;
-import net.minecraft.entity.EntityType;
-import net.minecraft.entity.LivingEntity;
-import net.minecraft.entity.ai.attributes.Attributes;
-import net.minecraft.entity.ai.attributes.AttributeModifierMap;
-import net.minecraft.entity.ai.goal.*;
-import net.minecraft.entity.monster.MonsterEntity;
-import net.minecraft.entity.monster.ZombifiedPiglinEntity;
-import net.minecraft.entity.player.PlayerEntity;
-import net.minecraft.inventory.EquipmentSlotType;
-import net.minecraft.item.ItemStack;
-import net.minecraft.nbt.CompoundNBT;
-import net.minecraft.network.datasync.DataParameter;
-import net.minecraft.network.datasync.DataSerializers;
-import net.minecraft.network.datasync.EntityDataManager;
-import net.minecraft.util.DamageSource;
-import net.minecraft.util.ResourceLocation;
-import net.minecraft.util.SoundEvent;
-import net.minecraft.util.math.BlockPos;
-import net.minecraft.util.math.ChunkPos;
-import net.minecraft.world.World;
+import net.minecraft.nbt.CompoundTag;
+import net.minecraft.network.syncher.EntityDataSerializers;
+import net.minecraft.network.syncher.SynchedEntityData;
+import net.minecraft.sounds.SoundEvent;
+import net.minecraft.world.entity.LivingEntity;
+import net.minecraft.world.entity.ai.attributes.AttributeSupplier;
+import net.minecraft.world.entity.ai.attributes.Attributes;
+import net.minecraft.world.entity.ai.goal.LookAtPlayerGoal;
+import net.minecraft.world.entity.ai.goal.MoveTowardsRestrictionGoal;
+import net.minecraft.world.entity.ai.goal.RandomLookAroundGoal;
+import net.minecraft.world.entity.ai.goal.RandomSwimmingGoal;
+import net.minecraft.world.entity.ai.goal.target.HurtByTargetGoal;
+import net.minecraft.world.entity.ai.goal.target.NearestAttackableTargetGoal;
+import net.minecraft.world.entity.monster.Monster;
+import net.minecraft.world.entity.monster.ZombifiedPiglin;
+import net.minecraft.world.entity.player.Player;
+import net.minecraft.world.level.ChunkPos;
+import net.minecraft.world.level.Level;
+import net.minecraft.world.level.block.Blocks;
+import net.minecraft.world.level.block.SoundType;
+import net.minecraft.world.level.block.state.BlockState;
+import net.minecraft.world.entity.EntityType;
+import net.minecraft.world.entity.EquipmentSlot;
+import net.minecraft.world.item.ItemStack;
+import net.minecraft.network.syncher.EntityDataAccessor;
+import net.minecraft.world.damagesource.DamageSource;
+import net.minecraft.resources.ResourceLocation;
+import net.minecraft.core.BlockPos;
 
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 
-public class SoldierEntity extends MonsterEntity implements IArmRaisable, IForcefieldImmunity, ISoldier {
+public class SoldierEntity extends Monster implements IArmRaisable, IForcefieldImmunity, ISoldier {
 
-    private static final DataParameter<Boolean> ARMS_RAISED = EntityDataManager.defineId(SoldierEntity.class, DataSerializers.BOOLEAN);
+    private static final EntityDataAccessor<Boolean> ARMS_RAISED = SynchedEntityData.defineId(SoldierEntity.class, EntityDataSerializers.BOOLEAN);
     public static final ResourceLocation LOOT = new ResourceLocation(Ariente.MODID, "entities/soldier");
 
     // If this entity is controlled by a city then this will be set
@@ -44,11 +49,11 @@ public class SoldierEntity extends MonsterEntity implements IArmRaisable, IForce
     protected SoldierBehaviourType behaviourType = SoldierBehaviourType.SOLDIER_FIGHTER;
 
 
-    public SoldierEntity(EntityType<? extends MonsterEntity> type, World worldIn) {
+    public SoldierEntity(EntityType<? extends Monster> type, Level worldIn) {
         super(type, worldIn);
     }
 
-    public static SoldierEntity create(World world, ChunkPos cityCenter, SoldierBehaviourType behaviourType) {
+    public static SoldierEntity create(Level world, ChunkPos cityCenter, SoldierBehaviourType behaviourType) {
         SoldierEntity entity = new SoldierEntity(Registration.ENTITY_SOLDIER.get(), world);
         entity.cityCenter = cityCenter;
         entity.behaviourType = behaviourType;
@@ -62,17 +67,17 @@ public class SoldierEntity extends MonsterEntity implements IArmRaisable, IForce
             ICityAISystem aiSystem = ArienteWorldCompat.getCityAISystem(level);
             ICityAI cityAI = aiSystem.getCityAI(cityCenter);
             if (cityAI != null && !cityAI.isDead(level)) {
-                feedPowerIfNeeded(EquipmentSlotType.HEAD);
-                feedPowerIfNeeded(EquipmentSlotType.FEET);
-                feedPowerIfNeeded(EquipmentSlotType.CHEST);
-                feedPowerIfNeeded(EquipmentSlotType.LEGS);
+                feedPowerIfNeeded(EquipmentSlot.HEAD);
+                feedPowerIfNeeded(EquipmentSlot.FEET);
+                feedPowerIfNeeded(EquipmentSlot.CHEST);
+                feedPowerIfNeeded(EquipmentSlot.LEGS);
             } else {
                 cityCenter = null;
             }
         }
     }
 
-    private void feedPowerIfNeeded(EquipmentSlotType slot) {
+    private void feedPowerIfNeeded(EquipmentSlot slot) {
         ItemStack stack = getItemBySlot(slot);
         if (stack.isEmpty()) {
             return;
@@ -80,7 +85,7 @@ public class SoldierEntity extends MonsterEntity implements IArmRaisable, IForce
         if (!(stack.getItem() instanceof PowerSuit)) {
             return;
         }
-        CompoundNBT compound = stack.getTag();
+        CompoundTag compound = stack.getTag();
         if (compound == null) {
             return;
         }
@@ -123,8 +128,8 @@ public class SoldierEntity extends MonsterEntity implements IArmRaisable, IForce
     }
 //            this.getAttributes().registerAttribute(Attributes.FOLLOW_RANGE).setBaseValue(16.0D);
 
-    public static AttributeModifierMap.MutableAttribute registerAttributes() {
-        AttributeModifierMap.MutableAttribute attributes = LivingEntity.createLivingAttributes();
+    public static AttributeSupplier.Builder registerAttributes() {
+        AttributeSupplier.Builder attributes = LivingEntity.createLivingAttributes();
         attributes
             .add(Attributes.FOLLOW_RANGE, 35.0D)
             .add(Attributes.MOVEMENT_SPEED, 0.32D)
@@ -174,19 +179,19 @@ public class SoldierEntity extends MonsterEntity implements IArmRaisable, IForce
 
     @Override
     protected void registerGoals() {
-        this.goalSelector.addGoal(0, new SwimGoal(this));
+        this.goalSelector.addGoal(0, new RandomSwimmingGoal(this, 0.8D, 4));
         this.goalSelector.addGoal(2, new EntityAISoldierAttack(this, this, 1.0D, false));
         this.goalSelector.addGoal(5, new MoveTowardsRestrictionGoal(this, 1.0D));
         this.goalSelector.addGoal(7, new EntityAISoldierWander(this, 1.0D));
-        this.goalSelector.addGoal(8, new LookAtGoal(this, PlayerEntity.class, 8.0F));
-        this.goalSelector.addGoal(8, new LookRandomlyGoal(this));
-        this.targetSelector.addGoal(1, new HurtByTargetGoal(this, ZombifiedPiglinEntity.class));
-        this.targetSelector.addGoal(2, new NearestAttackableTargetGoal<>(this, PlayerEntity.class, true));
+        this.goalSelector.addGoal(8, new LookAtPlayerGoal(this, Player.class, 8.0F));
+        this.goalSelector.addGoal(8, new RandomLookAroundGoal(this));
+        this.targetSelector.addGoal(1, new HurtByTargetGoal(this, ZombifiedPiglin.class));
+        this.targetSelector.addGoal(2, new NearestAttackableTargetGoal<>(this, Player.class, true));
     }
 
 
     @Override
-    public void addAdditionalSaveData(CompoundNBT compound) {
+    public void addAdditionalSaveData(CompoundTag compound) {
         super.addAdditionalSaveData(compound);
         if (cityCenter != null) {
             compound.putInt("cityX", cityCenter.x);
@@ -196,7 +201,7 @@ public class SoldierEntity extends MonsterEntity implements IArmRaisable, IForce
     }
 
     @Override
-    public void readAdditionalSaveData(CompoundNBT compound) {
+    public void readAdditionalSaveData(CompoundTag compound) {
         super.readAdditionalSaveData(compound);
         if (compound.contains("cityX")) {
             cityCenter = new ChunkPos(compound.getInt("cityX"), compound.getInt("cityZ"));
@@ -226,16 +231,16 @@ public class SoldierEntity extends MonsterEntity implements IArmRaisable, IForce
     @Override
     public void setTarget(@Nullable LivingEntity entitylivingbaseIn) {
         super.setTarget(entitylivingbaseIn);
-        if (entitylivingbaseIn instanceof PlayerEntity && cityCenter != null) {
+        if (entitylivingbaseIn instanceof Player && cityCenter != null) {
             if (behaviourType == SoldierBehaviourType.SOLDIER_GUARD) {
-                alertCity((PlayerEntity) entitylivingbaseIn);
+                alertCity((Player) entitylivingbaseIn);
             } else if (this instanceof MasterSoldierEntity) {
-                alertCity((PlayerEntity) entitylivingbaseIn);
+                alertCity((Player) entitylivingbaseIn);
             }
         }
     }
 
-    private void alertCity(@Nonnull PlayerEntity player) {
+    private void alertCity(@Nonnull Player player) {
         ICityAISystem aiSystem = ArienteWorldCompat.getCityAISystem(level);
         ICityAI cityAI = aiSystem.getCityAI(cityCenter);
         cityAI.playerSpotted(player);

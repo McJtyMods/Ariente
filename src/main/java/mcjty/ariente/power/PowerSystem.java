@@ -1,8 +1,8 @@
 package mcjty.ariente.power;
 
 import mcjty.lib.worlddata.AbstractWorldData;
-import net.minecraft.nbt.CompoundNBT;
-import net.minecraft.world.World;
+import net.minecraft.nbt.CompoundTag;
+import net.minecraft.world.level.Level;
 
 import javax.annotation.Nonnull;
 import java.util.HashMap;
@@ -16,8 +16,8 @@ public class PowerSystem extends AbstractWorldData<PowerSystem> {
     private Map<Integer, PowerBlob> powerBlobs = new HashMap<>();
     private int tickCounter = 1;
 
-    public PowerSystem(String name) {
-        super(name);
+    public PowerSystem() {
+        super();
     }
 
     public void tick() {
@@ -106,18 +106,22 @@ public class PowerSystem extends AbstractWorldData<PowerSystem> {
     }
 
     @Nonnull
-    public static PowerSystem getPowerSystem(World world) {
-        return getData(world, () -> new PowerSystem(NAME), NAME);
+    public static PowerSystem getPowerSystem(Level world) {
+        return getData(world, PowerSystem::createPowerSystem, () -> new PowerSystem(), NAME);
     }
 
+    private static PowerSystem createPowerSystem(CompoundTag tag) {
+        PowerSystem system = new PowerSystem();
+        system.load(tag);
+        return system;
+    }
 
-    @Override
-    public void load(CompoundNBT nbt) {
+    public void load(CompoundTag nbt) {
         lastId = nbt.getInt("lastId");
     }
 
     @Override
-    public CompoundNBT save(CompoundNBT compound) {
+    public CompoundTag save(CompoundTag compound) {
         compound.putInt("lastId", lastId);
         return compound;
     }

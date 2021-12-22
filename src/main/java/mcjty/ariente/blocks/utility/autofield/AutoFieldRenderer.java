@@ -1,29 +1,28 @@
 package mcjty.ariente.blocks.utility.autofield;
 
-import com.mojang.blaze3d.matrix.MatrixStack;
-import com.mojang.blaze3d.vertex.IVertexBuilder;
-import com.mojang.blaze3d.systems.RenderSystem;
+import com.mojang.blaze3d.vertex.PoseStack;
+import com.mojang.blaze3d.vertex.VertexConsumer;
+import com.mojang.math.Vector3f;
 import mcjty.ariente.Ariente;
 import mcjty.ariente.setup.Registration;
 import mcjty.lib.client.CustomRenderTypes;
 import mcjty.lib.client.RenderHelper;
 import mcjty.lib.client.RenderSettings;
 import net.minecraft.client.Minecraft;
-import net.minecraft.client.renderer.IRenderTypeBuffer;
+import net.minecraft.client.renderer.MultiBufferSource;
+import net.minecraft.client.renderer.blockentity.BlockEntityRendererProvider;
+import net.minecraft.client.renderer.blockentity.BlockEntityRenderers;
 import net.minecraft.client.renderer.texture.TextureAtlasSprite;
-import net.minecraft.client.renderer.tileentity.TileEntityRenderer;
-import net.minecraft.client.renderer.tileentity.TileEntityRendererDispatcher;
-import net.minecraft.inventory.container.PlayerContainer;
-import net.minecraft.util.ResourceLocation;
-import net.minecraft.util.math.AxisAlignedBB;
-import net.minecraft.util.math.vector.Matrix4f;
-import net.minecraft.util.math.vector.Vector3d;
-import net.minecraft.util.math.vector.Vector3f;
-import net.minecraftforge.fml.client.registry.ClientRegistry;
+import net.minecraft.client.renderer.blockentity.BlockEntityRenderer;
+import net.minecraft.world.inventory.InventoryMenu;
+import net.minecraft.resources.ResourceLocation;
+import net.minecraft.world.phys.AABB;
+import com.mojang.math.Matrix4f;
+import net.minecraft.world.phys.Vec3;
 
 import java.util.Random;
 
-public class AutoFieldRenderer extends TileEntityRenderer<AutoFieldTile> {
+public class AutoFieldRenderer implements BlockEntityRenderer<AutoFieldTile> {
 
     public static final ResourceLocation BEAMS[] = new ResourceLocation[3];
     static {
@@ -33,14 +32,15 @@ public class AutoFieldRenderer extends TileEntityRenderer<AutoFieldTile> {
     }
 
     private Random random = new Random();
+    protected BlockEntityRendererProvider.Context context;
 
-    public AutoFieldRenderer(TileEntityRendererDispatcher rendererDispatcherIn) {
-        super(rendererDispatcherIn);
+    public AutoFieldRenderer(BlockEntityRendererProvider.Context pContext) {
+        context = pContext;
     }
 
     @Override
-    public void render(AutoFieldTile te, float partialTicks, MatrixStack matrixStack, IRenderTypeBuffer buffer, int combinedLightIn, int combinedOverlayIn) {
-        AxisAlignedBB box = te.getFieldBox();
+    public void render(AutoFieldTile te, float partialTicks, PoseStack matrixStack, MultiBufferSource buffer, int combinedLightIn, int combinedOverlayIn) {
+        AABB box = te.getFieldBox();
         if (box == null) {
             return;
         }
@@ -53,18 +53,18 @@ public class AutoFieldRenderer extends TileEntityRenderer<AutoFieldTile> {
         }
     }
 
-    private void renderBeamBox(AutoFieldTile te, MatrixStack matrixStack, AxisAlignedBB box, IRenderTypeBuffer buffer) {
+    private void renderBeamBox(AutoFieldTile te, PoseStack matrixStack, AABB box, MultiBufferSource buffer) {
         Minecraft mc = Minecraft.getInstance();
 
-        TextureAtlasSprite sprite = mc.getTextureAtlas(PlayerContainer.BLOCK_ATLAS).apply(BEAMS[random.nextInt(3)]);
+        TextureAtlasSprite sprite = mc.getTextureAtlas(InventoryMenu.BLOCK_ATLAS).apply(BEAMS[random.nextInt(3)]);
 
         int tex = te.getBlockPos().getX();
         int tey = te.getBlockPos().getY();
         int tez = te.getBlockPos().getZ();
-        Vector3d projectedView = mc.gameRenderer.getMainCamera().getPosition().add(-tex, -tey, -tez);
+        Vec3 projectedView = mc.gameRenderer.getMainCamera().getPosition().add(-tex, -tey, -tez);
         Vector3f player = new Vector3f((float)projectedView.x, (float)projectedView.y, (float)projectedView.z);
 
-        IVertexBuilder builder = buffer.getBuffer(CustomRenderTypes.TRANSLUCENT_ADD);
+        VertexConsumer builder = buffer.getBuffer(CustomRenderTypes.TRANSLUCENT_ADD);
 
         float mx = (float) box.minX - tex;
         float my = (float) box.minY - tey;
@@ -98,14 +98,14 @@ public class AutoFieldRenderer extends TileEntityRenderer<AutoFieldTile> {
         RenderHelper.drawBeam(matrix, builder, sprite, new Vector3f(mx, my, pz), new Vector3f(mx, py, pz), player, settings);
     }
 
-    private void renderItemTransfers(MatrixStack matrixStack, AutoFieldTile te, double x, double y, double z) {
+    private void renderItemTransfers(PoseStack matrixStack, AutoFieldTile te, double x, double y, double z) {
         te.clientRequestRenderInfo();
 
         matrixStack.pushPose();
         matrixStack.translate(x, y, z);
-        net.minecraft.client.renderer.RenderHelper.turnBackOn();
+        // @todo 1.18 net.minecraft.client.renderer.RenderHelper.turnBackOn();
         Minecraft.getInstance().gameRenderer.lightTexture().turnOffLightLayer();
-        RenderSystem.enableAlphaTest();
+        // @todo 1.18 RenderSystem.enableAlphaTest();
 
         TransferRender[] transferRenders = te.getTransferRenders();
         for (int i = 0 ; i < transferRenders.length ; i++) {
@@ -130,7 +130,7 @@ public class AutoFieldRenderer extends TileEntityRenderer<AutoFieldTile> {
             }
         }
         Minecraft.getInstance().gameRenderer.lightTexture().turnOnLightLayer();
-        RenderSystem.disableAlphaTest();
+        // @todo 1.18 RenderSystem.disableAlphaTest();
 
         matrixStack.popPose();
     }
@@ -141,6 +141,6 @@ public class AutoFieldRenderer extends TileEntityRenderer<AutoFieldTile> {
     }
 
     public static void register() {
-        ClientRegistry.bindTileEntityRenderer(Registration.AUTOFIELD_TILE.get(), AutoFieldRenderer::new);
+        BlockEntityRenderers.register(Registration.AUTOFIELD_TILE.get(), AutoFieldRenderer::new);
     }
 }

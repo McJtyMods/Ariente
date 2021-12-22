@@ -13,25 +13,24 @@ import mcjty.hologui.api.*;
 import mcjty.lib.blocks.BaseBlock;
 import mcjty.lib.builder.BlockBuilder;
 import mcjty.lib.tileentity.GenericTileEntity;
-import net.minecraft.block.Block;
-import net.minecraft.block.BlockState;
-import net.minecraft.entity.player.PlayerEntity;
-import net.minecraft.item.ItemStack;
-import net.minecraft.network.NetworkManager;
-import net.minecraft.network.play.server.SUpdateTileEntityPacket;
-import net.minecraft.state.StateContainer;
-import net.minecraft.tileentity.TileEntity;
-import net.minecraft.util.ActionResultType;
-import net.minecraft.util.Hand;
-import net.minecraft.util.SoundCategory;
-import net.minecraft.util.math.BlockPos;
-import net.minecraft.util.math.BlockRayTraceResult;
-import net.minecraft.util.math.shapes.ISelectionContext;
-import net.minecraft.util.math.shapes.VoxelShape;
-import net.minecraft.util.math.shapes.VoxelShapes;
-import net.minecraft.world.IBlockReader;
-import net.minecraft.world.World;
-import net.minecraftforge.common.util.Constants;
+import net.minecraft.sounds.SoundSource;
+import net.minecraft.world.InteractionResult;
+import net.minecraft.world.entity.player.Player;
+import net.minecraft.world.item.ItemStack;
+import net.minecraft.world.level.Level;
+import net.minecraft.world.level.block.Block;
+import net.minecraft.world.level.block.state.BlockState;
+import net.minecraft.network.Connection;
+import net.minecraft.network.protocol.game.ClientboundBlockEntityDataPacket;
+import net.minecraft.world.level.block.state.StateDefinition;
+import net.minecraft.world.level.block.entity.BlockEntity;
+import net.minecraft.world.InteractionHand;
+import net.minecraft.core.BlockPos;
+import net.minecraft.world.phys.BlockHitResult;
+import net.minecraft.world.phys.shapes.CollisionContext;
+import net.minecraft.world.phys.shapes.VoxelShape;
+import net.minecraft.world.phys.shapes.Shapes;
+import net.minecraft.world.level.BlockGetter;
 
 import java.util.HashMap;
 import java.util.Map;
@@ -50,10 +49,10 @@ public class LockTile extends GenericTileEntity implements IGuiTile, IKeyCardSlo
     private int horizontalRange = 5;
     private int verticalRange = 3;
 
-    private static final VoxelShape BLOCK_AABB = VoxelShapes.box(1.0D/16.0, 1.0D/16.0, 15.0D/16.0, 15.0D/16.0, 15.0D/16.0, 1.0D);
+    private static final VoxelShape BLOCK_AABB = Shapes.box(1.0D/16.0, 1.0D/16.0, 15.0D/16.0, 15.0D/16.0, 15.0D/16.0, 1.0D);
 
-    public LockTile() {
-        super(Registration.LOCK_TILE.get());
+    public LockTile(BlockPos pos, BlockState state) {
+        super(Registration.LOCK_TILE.get(), pos, state);
     }
 
     public static BaseBlock createBlock() {
@@ -65,28 +64,28 @@ public class LockTile extends GenericTileEntity implements IGuiTile, IKeyCardSlo
                 .tileEntitySupplier(LockTile::new)
         ) {
             @Override
-            protected void createBlockStateDefinition(StateContainer.Builder<Block, BlockState> builder) {
+            protected void createBlockStateDefinition(StateDefinition.Builder<Block, BlockState> builder) {
                 super.createBlockStateDefinition(builder);
                 builder.add(BlockProperties.LOCKED);
             }
 
             @Override
-            public VoxelShape getShape(BlockState state, IBlockReader reader, BlockPos pos, ISelectionContext context) {
+            public VoxelShape getShape(BlockState state, BlockGetter reader, BlockPos pos, CollisionContext context) {
                 return BLOCK_AABB;
             }
         };
     }
 
     @Override
-    public ActionResultType onBlockActivated(BlockState state, PlayerEntity player, Hand hand, BlockRayTraceResult result) {
+    public InteractionResult onBlockActivated(BlockState state, Player player, InteractionHand hand, BlockHitResult result) {
         Ariente.guiHandler.openHoloGui(level, worldPosition, player);
-        return ActionResultType.SUCCESS;
+        return InteractionResult.SUCCESS;
     }
 
 
 
     @Override
-    public void onDataPacket(NetworkManager net, SUpdateTileEntityPacket packet) {
+    public void onDataPacket(Connection net, ClientboundBlockEntityDataPacket packet) {
         boolean locked = isLocked();
 
         super.onDataPacket(net, packet);
@@ -95,12 +94,12 @@ public class LockTile extends GenericTileEntity implements IGuiTile, IKeyCardSlo
             // If needed send a render update.
             boolean newLocked = isLocked();
             if (newLocked != locked) {
-                level.sendBlockUpdated(worldPosition, getBlockState(), getBlockState(), Constants.BlockFlags.BLOCK_UPDATE + Constants.BlockFlags.NOTIFY_NEIGHBORS);
+                level.sendBlockUpdated(worldPosition, getBlockState(), getBlockState(), Block.UPDATE_ALL);
             }
         }
     }
 
-    public int getHorizontalRange(PlayerEntity player, IHoloGuiEntity holo) {
+    public int getHorizontalRange(Player player, IHoloGuiEntity holo) {
         return horizontalRange;
     }
 
@@ -111,7 +110,7 @@ public class LockTile extends GenericTileEntity implements IGuiTile, IKeyCardSlo
         doLock(true);
     }
 
-    public int getVerticalRange(PlayerEntity player, IHoloGuiEntity holo) {
+    public int getVerticalRange(Player player, IHoloGuiEntity holo) {
         return verticalRange;
     }
 
@@ -123,7 +122,7 @@ public class LockTile extends GenericTileEntity implements IGuiTile, IKeyCardSlo
     }
 
     @Override
-    public void onReplaced(World world, BlockPos pos, BlockState state, BlockState newstate) {
+    public void onReplaced(Level world, BlockPos pos, BlockState state, BlockState newstate) {
         doLock(false);
         super.onReplaced(world, pos, state, newstate);
     }
@@ -134,7 +133,7 @@ public class LockTile extends GenericTileEntity implements IGuiTile, IKeyCardSlo
                 for (int dy = -verticalRange ; dy <= verticalRange ; dy++) {
                     for (int dz = -horizontalRange ; dz <= horizontalRange ; dz++) {
                         BlockPos p = worldPosition.offset(dx, dy, dz);
-                        TileEntity te = level.getBlockEntity(p);
+                        BlockEntity te = level.getBlockEntity(p);
                         if (te instanceof DoorMarkerTile) { // @todo generalize!
                             ((DoorMarkerTile) te).setLocked(l);
                         }
@@ -168,10 +167,10 @@ public class LockTile extends GenericTileEntity implements IGuiTile, IKeyCardSlo
     public void acceptKeyCard(ItemStack stack) {
         Set<String> tags = KeyCardItem.getSecurityTags(stack);
         if (tags.contains(keyId)) {
-            level.playSound(null, worldPosition, ModSounds.buzzOk, SoundCategory.BLOCKS, 1.0f, 1.0f);
+            level.playSound(null, worldPosition, ModSounds.buzzOk, SoundSource.BLOCKS, 1.0f, 1.0f);
             toggleLock();
         } else {
-            level.playSound(null, worldPosition, ModSounds.buzzError, SoundCategory.BLOCKS, 1.0f, 1.0f);
+            level.playSound(null, worldPosition, ModSounds.buzzError, SoundSource.BLOCKS, 1.0f, 1.0f);
         }
     }
 
@@ -209,7 +208,7 @@ public class LockTile extends GenericTileEntity implements IGuiTile, IKeyCardSlo
     }
 
     @Override
-    public void setup(ICityAI cityAI, World world, boolean firstTime) {
+    public void setup(ICityAI cityAI, Level world, boolean firstTime) {
         if (firstTime) {
             setKeyId(cityAI.getKeyId());
             setLocked(true);

@@ -14,24 +14,23 @@ import mcjty.lib.McJtyLib;
 import mcjty.lib.blocks.BaseBlock;
 import mcjty.lib.blocks.RotationType;
 import mcjty.lib.builder.BlockBuilder;
-import mcjty.lib.tileentity.GenericTileEntity;
-import net.minecraft.block.BlockState;
+import mcjty.lib.tileentity.TickingTileEntity;
+import net.minecraft.core.BlockPos;
+import net.minecraft.nbt.CompoundTag;
+import net.minecraft.network.protocol.game.ClientboundBlockEntityDataPacket;
+import net.minecraft.world.entity.Entity;
+import net.minecraft.world.entity.player.Player;
+import net.minecraft.world.level.block.Block;
+import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.client.Minecraft;
-import net.minecraft.entity.Entity;
-import net.minecraft.entity.player.PlayerEntity;
-import net.minecraft.nbt.CompoundNBT;
-import net.minecraft.network.NetworkManager;
-import net.minecraft.network.play.server.SUpdateTileEntityPacket;
-import net.minecraft.tileentity.ITickableTileEntity;
-import net.minecraft.tileentity.TileEntity;
-import net.minecraft.util.ActionResultType;
-import net.minecraft.util.Hand;
-import net.minecraft.util.math.AxisAlignedBB;
-import net.minecraft.util.math.BlockPos;
-import net.minecraft.util.math.BlockRayTraceResult;
-import net.minecraft.util.math.vector.Vector3d;
-import net.minecraft.world.World;
-import net.minecraftforge.common.util.Constants;
+import net.minecraft.network.Connection;
+import net.minecraft.world.level.block.entity.BlockEntity;
+import net.minecraft.world.InteractionResult;
+import net.minecraft.world.InteractionHand;
+import net.minecraft.world.phys.AABB;
+import net.minecraft.world.phys.BlockHitResult;
+import net.minecraft.world.phys.Vec3;
+import net.minecraft.world.level.Level;
 
 import javax.annotation.Nullable;
 import java.util.*;
@@ -41,13 +40,13 @@ import static mcjty.hologui.api.Icons.*;
 import static mcjty.lib.builder.TooltipBuilder.header;
 import static mcjty.lib.builder.TooltipBuilder.key;
 
-public class ElevatorTile extends GenericTileEntity implements IGuiTile, ITickableTileEntity, IPowerReceiver, ICityEquipment, IElevator, IPowerUser {
+public class ElevatorTile extends TickingTileEntity implements IGuiTile, IPowerReceiver, ICityEquipment, IElevator, IPowerUser {
 
     public static final String TAG_ELEVATOR = "elevator";
 
     public static final int POWER_USAGE = 10;
 
-    private AxisAlignedBB cachedBox = null;
+    private AABB cachedBox = null;
 
     private int height = 9;
 
@@ -56,8 +55,8 @@ public class ElevatorTile extends GenericTileEntity implements IGuiTile, ITickab
     // Client side only
     private int moveToFloor = -1;
 
-    public ElevatorTile() {
-        super(Registration.ELEVATOR_TILE.get());
+    public ElevatorTile(BlockPos pos, BlockState state) {
+        super(Registration.ELEVATOR_TILE.get(), pos, state);
     }
 
     public static BaseBlock createBlock() {
@@ -75,9 +74,9 @@ public class ElevatorTile extends GenericTileEntity implements IGuiTile, ITickab
     }
 
     @Override
-    public ActionResultType onBlockActivated(BlockState state, PlayerEntity player, Hand hand, BlockRayTraceResult result) {
+    public InteractionResult onBlockActivated(BlockState state, Player player, InteractionHand hand, BlockHitResult result) {
         Ariente.guiHandler.openHoloGui(level, worldPosition, player);
-        return ActionResultType.SUCCESS;
+        return InteractionResult.SUCCESS;
     }
 
     @Override
@@ -86,73 +85,74 @@ public class ElevatorTile extends GenericTileEntity implements IGuiTile, ITickab
     }
 
     @Override
-    public void tick() {
-        if (!level.isClientSide) {
-            PowerReceiverSupport.consumePower(level, worldPosition, POWER_USAGE, true);
+    public void tickServer() {
+        PowerReceiverSupport.consumePower(level, worldPosition, POWER_USAGE, true);
 
-            List<PlayerEntity> players = level.getEntitiesOfClass(PlayerEntity.class, getBeamBox());
-            for (PlayerEntity player : players) {
-                if (openOrMoveHoloGui(player)) {
-                    player.teleportTo(worldPosition.getX() + .5, player.getY(), worldPosition.getZ() + .5);
-                }
-                player.hasImpulse = true;
-                player.fallDistance = 0;
+        List<Player> players = level.getEntitiesOfClass(Player.class, getBeamBox());
+        for (Player player : players) {
+            if (openOrMoveHoloGui(player)) {
+                player.teleportTo(worldPosition.getX() + .5, player.getY(), worldPosition.getZ() + .5);
             }
-            removeStaleHoloEntries();
-        } else {
-            List<Integer> floors = findFloors();
-            PlayerEntity clientPlayer = McJtyLib.proxy.getClientPlayer();
-            if (clientPlayer.getBoundingBox().intersects(getBeamBox())) {
-                clientPlayer.hasImpulse = true;
-                clientPlayer.fallDistance = 0;
-                if (floors.size() < 2) {
-                    double motionY;
-                    if (clientPlayer.isShiftKeyDown()) {
-                        motionY = -0.7;
-                    } else if (isJumpKeyDown()) {
-                        motionY = 0.5;
-                    } else {
-                        motionY = 0.0;
-                    }
-                    Vector3d motion = clientPlayer.getDeltaMovement();
-                    clientPlayer.setDeltaMovement(motion.x, motionY, motion.z);
+            player.hasImpulse = true;
+            player.fallDistance = 0;
+        }
+        removeStaleHoloEntries();
+    }
+
+    @Override
+    public void tickClient() {
+        List<Integer> floors = findFloors();
+        Player clientPlayer = McJtyLib.proxy.getClientPlayer();
+        if (clientPlayer.getBoundingBox().intersects(getBeamBox())) {
+            clientPlayer.hasImpulse = true;
+            clientPlayer.fallDistance = 0;
+            if (floors.size() < 2) {
+                double motionY;
+                if (clientPlayer.isShiftKeyDown()) {
+                    motionY = -0.7;
+                } else if (isJumpKeyDown()) {
+                    motionY = 0.5;
                 } else {
-                    if (moveToFloor == -1) {
-                        if (clientPlayer.isShiftKeyDown()) {
-                            moveToFloor = findLowerFloor(floors, (int) clientPlayer.getY());
-                            System.out.println("DOWN: moveToFloor = " + moveToFloor);
-                            clientPlayer.setPos(worldPosition.getX() + .5, clientPlayer.getY(), worldPosition.getZ() + .5);
-                        } else if (isJumpKeyDown()) {
-                            moveToFloor = findUpperFloor(floors, (int) clientPlayer.getY());
-                            System.out.println("UP: moveToFloor = " + moveToFloor);
-                            clientPlayer.setPos(worldPosition.getX() + .5, clientPlayer.getY(), worldPosition.getZ() + .5);
-                        } else {
-                            moveToFloor = -1;
-                        }
-                    }
-                    if (moveToFloor >= floors.size()) {
+                    motionY = 0.0;
+                }
+                Vec3 motion = clientPlayer.getDeltaMovement();
+                clientPlayer.setDeltaMovement(motion.x, motionY, motion.z);
+            } else {
+                if (moveToFloor == -1) {
+                    if (clientPlayer.isShiftKeyDown()) {
+                        moveToFloor = findLowerFloor(floors, (int) clientPlayer.getY());
+                        System.out.println("DOWN: moveToFloor = " + moveToFloor);
+                        clientPlayer.setPos(worldPosition.getX() + .5, clientPlayer.getY(), worldPosition.getZ() + .5);
+                    } else if (isJumpKeyDown()) {
+                        moveToFloor = findUpperFloor(floors, (int) clientPlayer.getY());
+                        System.out.println("UP: moveToFloor = " + moveToFloor);
+                        clientPlayer.setPos(worldPosition.getX() + .5, clientPlayer.getY(), worldPosition.getZ() + .5);
+                    } else {
                         moveToFloor = -1;
                     }
-                    if (moveToFloor != -1) {
-                        double motionY;
-                        if (clientPlayer.getY() > floors.get(moveToFloor)) {
-                            motionY = -Math.min(1.4, clientPlayer.getY() - floors.get(moveToFloor));
-                        } else if (clientPlayer.getY() < floors.get(moveToFloor)) {
-                            motionY = Math.min(1.0, floors.get(moveToFloor) - clientPlayer.getY());
-                        } else {
-                            motionY = 0.0;
-                            moveToFloor = -1;
-                        }
-                        Vector3d motion = clientPlayer.getDeltaMovement();
-                        clientPlayer.setDeltaMovement(motion.x, motionY, motion.z);
-                    } else {
-                        Vector3d motion = clientPlayer.getDeltaMovement();
-                        clientPlayer.setDeltaMovement(motion.x, 0, motion.z);
-                    }
                 }
-            } else {
-                moveToFloor = -1;
+                if (moveToFloor >= floors.size()) {
+                    moveToFloor = -1;
+                }
+                if (moveToFloor != -1) {
+                    double motionY;
+                    if (clientPlayer.getY() > floors.get(moveToFloor)) {
+                        motionY = -Math.min(1.4, clientPlayer.getY() - floors.get(moveToFloor));
+                    } else if (clientPlayer.getY() < floors.get(moveToFloor)) {
+                        motionY = Math.min(1.0, floors.get(moveToFloor) - clientPlayer.getY());
+                    } else {
+                        motionY = 0.0;
+                        moveToFloor = -1;
+                    }
+                    Vec3 motion = clientPlayer.getDeltaMovement();
+                    clientPlayer.setDeltaMovement(motion.x, motionY, motion.z);
+                } else {
+                    Vec3 motion = clientPlayer.getDeltaMovement();
+                    clientPlayer.setDeltaMovement(motion.x, 0, motion.z);
+                }
             }
+        } else {
+            moveToFloor = -1;
         }
     }
 
@@ -180,7 +180,7 @@ public class ElevatorTile extends GenericTileEntity implements IGuiTile, ITickab
     }
 
     // Return true if the gui was opened now
-    private boolean openOrMoveHoloGui(PlayerEntity player) {
+    private boolean openOrMoveHoloGui(Player player) {
         Integer holoID = playerToHoloGui.get(player.getUUID());
         if (holoID == null) {
 //            List<Integer> floors = findFloors();
@@ -227,7 +227,7 @@ public class ElevatorTile extends GenericTileEntity implements IGuiTile, ITickab
             for (int dx = -2 ; dx <= 2 ; dx++) {
                 for (int dz = -2 ; dz <= 2 ; dz++) {
                     BlockPos p = new BlockPos(worldPosition.getX() + dx, y, worldPosition.getZ() + dz);
-                    TileEntity te = level.getBlockEntity(p);
+                    BlockEntity te = level.getBlockEntity(p);
                     if (te instanceof LevelMarkerTile) {
                         result.add(y);
                         break;
@@ -266,7 +266,7 @@ public class ElevatorTile extends GenericTileEntity implements IGuiTile, ITickab
     }
 
     @Override
-    public void onDataPacket(NetworkManager net, SUpdateTileEntityPacket packet) {
+    public void onDataPacket(Connection net, ClientboundBlockEntityDataPacket packet) {
         int oldheight = height;
 
         super.onDataPacket(net, packet);
@@ -274,7 +274,7 @@ public class ElevatorTile extends GenericTileEntity implements IGuiTile, ITickab
         if (getLevel().isClientSide) {
             // If needed send a render update.
             if (oldheight != height) {
-                level.sendBlockUpdated(worldPosition, getBlockState(), getBlockState(), Constants.BlockFlags.BLOCK_UPDATE + Constants.BlockFlags.NOTIFY_NEIGHBORS);
+                level.sendBlockUpdated(worldPosition, getBlockState(), getBlockState(), Block.UPDATE_ALL);
                 cachedBox = null;
             }
         }
@@ -296,26 +296,26 @@ public class ElevatorTile extends GenericTileEntity implements IGuiTile, ITickab
     }
 
     @Override
-    public void setup(ICityAI cityAI, World world, boolean firstTime) {
+    public void setup(ICityAI cityAI, Level world, boolean firstTime) {
     }
 
     @Override
-    public void load(CompoundNBT tagCompound) {
+    public void load(CompoundTag tagCompound) {
         super.load(tagCompound);
-        CompoundNBT info = tagCompound.getCompound("Info");
+        CompoundTag info = tagCompound.getCompound("Info");
         if (info.contains("height")) {
             height = info.getInt("height");
         }
     }
 
     @Override
-    public void saveAdditional(CompoundNBT tagCompound) {
+    public void saveAdditional(CompoundTag tagCompound) {
         getOrCreateInfo(tagCompound).putInt("height", height);
         super.saveAdditional(tagCompound);
     }
 
     @Override
-    public AxisAlignedBB getRenderBoundingBox() {
+    public AABB getRenderBoundingBox() {
         return getBeamBox();
     }
 
@@ -326,9 +326,9 @@ public class ElevatorTile extends GenericTileEntity implements IGuiTile, ITickab
 //        return pass == 1;
 //    }
 
-    private AxisAlignedBB getBeamBox() {
+    private AABB getBeamBox() {
         if (cachedBox == null) {
-            cachedBox = new AxisAlignedBB(getBlockPos()).minmax(new AxisAlignedBB(new BlockPos(worldPosition.getX(), worldPosition.getY() + height + 2, worldPosition.getZ())));
+            cachedBox = new AABB(getBlockPos()).minmax(new AABB(new BlockPos(worldPosition.getX(), worldPosition.getY() + height + 2, worldPosition.getZ())));
         }
         return cachedBox;
     }

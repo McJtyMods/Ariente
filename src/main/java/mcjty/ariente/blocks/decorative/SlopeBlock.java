@@ -4,19 +4,16 @@ import mcjty.ariente.api.EnumFacingUpDown;
 import mcjty.lib.blocks.BaseBlock;
 import mcjty.lib.blocks.RotationType;
 import mcjty.lib.builder.BlockBuilder;
-import net.minecraft.block.BlockState;
-import net.minecraft.block.material.Material;
-import net.minecraft.item.BlockItemUseContext;
-import net.minecraft.state.Property;
-import net.minecraft.util.Direction;
-import net.minecraft.util.Rotation;
-import net.minecraft.util.math.BlockPos;
-import net.minecraft.world.IWorld;
-import net.minecraftforge.common.ToolType;
+import net.minecraft.core.Direction;
+import net.minecraft.world.level.LevelAccessor;
+import net.minecraft.world.level.block.state.BlockState;
+import net.minecraft.world.level.block.state.properties.Property;
+import net.minecraft.world.level.material.Material;
+import net.minecraft.world.item.context.BlockPlaceContext;
+import net.minecraft.world.level.block.Rotation;
+import net.minecraft.core.BlockPos;
 
 import javax.annotation.Nullable;
-
-import net.minecraft.block.AbstractBlock.Properties;
 
 public class SlopeBlock extends BaseBlock {
 
@@ -25,7 +22,7 @@ public class SlopeBlock extends BaseBlock {
     public SlopeBlock() {
         super(new BlockBuilder()
                 .properties(Properties.of(Material.STONE).strength(2.0f, 4.0f))
-                .harvestLevel(ToolType.PICKAXE, 1)
+                // @todo 1.18 .harvestLevel(ToolType.PICKAXE, 1)
         );
     }
 
@@ -52,7 +49,7 @@ public class SlopeBlock extends BaseBlock {
 
 
     @Override
-    public BlockState rotate(BlockState state, IWorld world, BlockPos pos, Rotation rot) {
+    public BlockState rotate(BlockState state, LevelAccessor world, BlockPos pos, Rotation rot) {
         EnumFacingUpDown facing = state.getValue(EnumFacingUpDown.FACING);
         switch (rot) {
             case NONE:
@@ -69,7 +66,7 @@ public class SlopeBlock extends BaseBlock {
 
     @Nullable
     @Override
-    public BlockState getStateForPlacement(BlockItemUseContext context) {
+    public BlockState getStateForPlacement(BlockPlaceContext context) {
         BlockState state = super.getStateForPlacement(context);
         Direction dir = context.getPlayer().getDirection().getOpposite();
         EnumFacingUpDown updown = EnumFacingUpDown.VALUES[dir.ordinal() - 2 + (context.getClickedFace() == Direction.DOWN ? 4 : 0)];

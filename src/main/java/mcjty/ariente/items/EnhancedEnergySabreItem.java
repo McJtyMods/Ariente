@@ -10,22 +10,23 @@ import mcjty.ariente.setup.Registration;
 import mcjty.lib.builder.TooltipBuilder;
 import mcjty.lib.tooltips.ITooltipSettings;
 import mcjty.lib.varia.NBTTools;
-import net.minecraft.client.util.ITooltipFlag;
-import net.minecraft.enchantment.Enchantment;
-import net.minecraft.enchantment.EnchantmentHelper;
-import net.minecraft.enchantment.Enchantments;
-import net.minecraft.entity.Entity;
-import net.minecraft.entity.LivingEntity;
-import net.minecraft.entity.ai.attributes.Attribute;
-import net.minecraft.entity.ai.attributes.Attributes;
-import net.minecraft.entity.ai.attributes.AttributeModifier;
-import net.minecraft.inventory.EquipmentSlotType;
-import net.minecraft.item.ItemStack;
-import net.minecraft.nbt.CompoundNBT;
-import net.minecraft.potion.Effect;
-import net.minecraft.potion.EffectInstance;
-import net.minecraft.util.text.ITextComponent;
-import net.minecraft.world.World;
+import net.minecraft.network.chat.Component;
+import net.minecraft.world.entity.EquipmentSlot;
+import net.minecraft.world.entity.ai.attributes.Attribute;
+import net.minecraft.world.entity.ai.attributes.AttributeModifier;
+import net.minecraft.world.entity.ai.attributes.Attributes;
+import net.minecraft.world.item.TooltipFlag;
+import net.minecraft.world.item.enchantment.Enchantment;
+import net.minecraft.world.item.enchantment.EnchantmentHelper;
+import net.minecraft.world.item.enchantment.Enchantments;
+import net.minecraft.nbt.CompoundTag;
+import net.minecraft.world.entity.Entity;
+import net.minecraft.world.entity.LivingEntity;
+import net.minecraft.world.item.ItemStack;
+import net.minecraft.world.effect.MobEffect;
+import net.minecraft.world.effect.MobEffectInstance;
+import net.minecraft.network.chat.TextComponent;
+import net.minecraft.world.level.Level;
 import org.apache.commons.lang3.tuple.Pair;
 
 import javax.annotation.Nullable;
@@ -48,7 +49,7 @@ public class EnhancedEnergySabreItem extends EnergySabreItem implements ITooltip
                     parameter("posirite", this::getPosiriteString));
 
     private String getModuleDescription(ItemStack stack, ArmorUpgradeType type) {
-        CompoundNBT compound = stack.getTag();
+        CompoundTag compound = stack.getTag();
         if (compound != null) {
             String key = "module_" + type.getName();
             if (compound.contains(key)) {
@@ -64,7 +65,7 @@ public class EnhancedEnergySabreItem extends EnergySabreItem implements ITooltip
     }
 
     private boolean hasModule(ItemStack stack, ArmorUpgradeType type) {
-        CompoundNBT compound = stack.getTag();
+        CompoundTag compound = stack.getTag();
         if (compound != null) {
             String key = "module_" + type.getName();
             return compound.contains(key);
@@ -131,25 +132,25 @@ public class EnhancedEnergySabreItem extends EnergySabreItem implements ITooltip
         if (target.getCommandSenderWorld().isClientSide) {
             return;
         }
-        Iterator<EffectInstance> iterator = target.getActiveEffectsMap().values().iterator();
+        Iterator<MobEffectInstance> iterator = target.getActiveEffectsMap().values().iterator();
 
-        Set<Effect> potionsToRemove = new HashSet<>();
+        Set<MobEffect> potionsToRemove = new HashSet<>();
         while (iterator.hasNext()) {
-            EffectInstance effect = iterator.next();
+            MobEffectInstance effect = iterator.next();
             if (effect.getEffect().isBeneficial()) {
                 potionsToRemove.add(effect.getEffect());
             }
         }
-        for (Effect potion : potionsToRemove) {
+        for (MobEffect potion : potionsToRemove) {
             target.removeEffect(potion);
         }
     }
 
     @Override
-    public Multimap<Attribute, AttributeModifier> getAttributeModifiers(EquipmentSlotType slot, ItemStack stack) {
+    public Multimap<Attribute, AttributeModifier> getAttributeModifiers(EquipmentSlot slot, ItemStack stack) {
         Multimap<Attribute, AttributeModifier> multimap = super.getOriginalAttributeModifiers(slot, stack);
 
-        if (slot != EquipmentSlotType.MAINHAND) {
+        if (slot != EquipmentSlot.MAINHAND) {
             return multimap;
         }
 
@@ -164,7 +165,7 @@ public class EnhancedEnergySabreItem extends EnergySabreItem implements ITooltip
     }
 
     @Override
-    public void appendHoverText(ItemStack stack, @Nullable World worldIn, List<ITextComponent> list, ITooltipFlag flag) {
+    public void appendHoverText(ItemStack stack, @Nullable Level worldIn, List<Component> list, TooltipFlag flag) {
         super.appendHoverText(stack, worldIn, list, flag);
         tooltipBuilder.makeTooltip(getRegistryName(), stack, list, flag);
     }
@@ -175,21 +176,21 @@ public class EnhancedEnergySabreItem extends EnergySabreItem implements ITooltip
     }
 
     @Override
-    public void inventoryTick(ItemStack stack, World world, Entity entity, int itemSlot, boolean isSelected) {
+    public void inventoryTick(ItemStack stack, Level world, Entity entity, int itemSlot, boolean isSelected) {
         if (entity instanceof LivingEntity && !world.isClientSide) {
-            if (itemSlot != EquipmentSlotType.MAINHAND.getIndex()) {
+            if (itemSlot != EquipmentSlot.MAINHAND.getIndex()) {
                 return;
             }
             onUpdateSabre(stack, world, (LivingEntity) entity);
         }
     }
 
-    private void onUpdateSabre(ItemStack stack, World world, LivingEntity entity) {
+    private void onUpdateSabre(ItemStack stack, Level world, LivingEntity entity) {
         if (stack.isEmpty() || stack.getItem() != Registration.ENHANCED_ENERGY_SABRE.get() || !stack.hasTag()) {
             return;
         }
 
-        CompoundNBT compound = stack.getTag();
+        CompoundTag compound = stack.getTag();
 
         if (!ModuleSupport.managePower(stack, entity)) {
             compound.putBoolean(ArmorUpgradeType.INHIBIT.getWorkingKey(), false);

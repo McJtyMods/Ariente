@@ -10,11 +10,11 @@ import mcjty.lib.blocks.BaseBlock;
 import mcjty.lib.blocks.RotationType;
 import mcjty.lib.builder.BlockBuilder;
 import mcjty.lib.tileentity.GenericTileEntity;
-import net.minecraft.block.Block;
-import net.minecraft.block.BlockState;
-import net.minecraft.state.StateContainer;
-import net.minecraft.tileentity.TileEntity;
-import net.minecraft.util.math.BlockPos;
+import net.minecraft.core.BlockPos;
+import net.minecraft.world.level.block.Block;
+import net.minecraft.world.level.block.state.BlockState;
+import net.minecraft.world.level.block.state.StateDefinition;
+import net.minecraft.world.level.block.entity.BlockEntity;
 
 import static mcjty.ariente.blocks.BlockProperties.LOWER;
 import static mcjty.ariente.blocks.BlockProperties.UPPER;
@@ -24,8 +24,8 @@ import static mcjty.lib.builder.TooltipBuilder.key;
 
 public class PosiriteTankTile extends GenericTileEntity implements IGuiTile, IAlarmMode {
 
-    public PosiriteTankTile() {
-        super(Registration.POSIRITE_TANK_TILE.get());
+    public PosiriteTankTile(BlockPos pos, BlockState state) {
+        super(Registration.POSIRITE_TANK_TILE.get(), pos, state);
     }
 
     public static BaseBlock createBlock() {
@@ -41,7 +41,7 @@ public class PosiriteTankTile extends GenericTileEntity implements IGuiTile, IAl
             }
 
             @Override
-            protected void createBlockStateDefinition(StateContainer.Builder<Block, BlockState> builder) {
+            protected void createBlockStateDefinition(StateDefinition.Builder<Block, BlockState> builder) {
                 super.createBlockStateDefinition(builder);
                 builder.add(UPPER).add(LOWER);
             }
@@ -56,7 +56,7 @@ public class PosiriteTankTile extends GenericTileEntity implements IGuiTile, IAl
             p = p.below();
             state = level.getBlockState(p);
         }
-        TileEntity te = level.getBlockEntity(p);
+        BlockEntity te = level.getBlockEntity(p);
         if (te instanceof PosiriteGeneratorTile) {
             return ((PosiriteGeneratorTile)te).isWorking();
         }

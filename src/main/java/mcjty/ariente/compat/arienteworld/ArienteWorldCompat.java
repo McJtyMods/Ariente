@@ -3,7 +3,7 @@ package mcjty.ariente.compat.arienteworld;
 import mcjty.ariente.api.IArienteWorld;
 import mcjty.ariente.api.ICityAISystem;
 import mcjty.lib.varia.Logging;
-import net.minecraft.world.World;
+import net.minecraft.world.level.Level;
 import net.minecraftforge.fml.InterModComms;
 
 import javax.annotation.Nullable;
@@ -15,7 +15,7 @@ public class ArienteWorldCompat {
         InterModComms.sendTo("arienteworld", "getArienteWorld", ArienteWorldCompat.GetArienteWorld::new);
     }
 
-    public static ICityAISystem getCityAISystem(World world) {
+    public static ICityAISystem getCityAISystem(Level world) {
         return getArienteWorld().getCityAISystem(world);
     }
 

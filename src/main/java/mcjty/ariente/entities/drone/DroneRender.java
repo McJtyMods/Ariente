@@ -1,21 +1,20 @@
 package mcjty.ariente.entities.drone;
 
 
-import com.mojang.blaze3d.matrix.MatrixStack;
+import com.mojang.blaze3d.systems.RenderSystem;
+import com.mojang.blaze3d.vertex.PoseStack;
 import com.mojang.blaze3d.platform.GlStateManager;
 import net.minecraft.client.renderer.entity.EntityRenderer;
-import net.minecraft.client.renderer.entity.EntityRendererManager;
-import net.minecraft.client.renderer.entity.LivingRenderer;
-import net.minecraft.util.ResourceLocation;
-import net.minecraftforge.fml.client.registry.IRenderFactory;
+import net.minecraft.client.renderer.entity.EntityRendererProvider;
+import net.minecraft.client.renderer.entity.LivingEntityRenderer;
+import net.minecraft.resources.ResourceLocation;
 
 
-
-public class DroneRender extends LivingRenderer<DroneEntity, DroneModel<DroneEntity>> {
+public class DroneRender extends LivingEntityRenderer<DroneEntity, DroneModel<DroneEntity>> {
     private ResourceLocation mobTexture = new ResourceLocation("ariente:textures/entity/drone.png");
     private ResourceLocation mobShootingTexture = new ResourceLocation("ariente:textures/entity/drone_shooting.png");
 
-    public DroneRender(EntityRendererManager renderManagerIn) {
+    public DroneRender(EntityRendererProvider.Context renderManagerIn) {
         super(renderManagerIn, new DroneModel(), 0.8F);
     }
 
@@ -30,15 +29,15 @@ public class DroneRender extends LivingRenderer<DroneEntity, DroneModel<DroneEnt
     public static final DroneRender.Factory FACTORY = new DroneRender.Factory();
 
     @Override
-    protected void scale(DroneEntity entitylivingbaseIn, MatrixStack matrixStackIn, float partialTickTime) {
-        GlStateManager._scalef(1.5F, 1.5F, 1.5F);
-        GlStateManager._color4f(1.0F, 1.0F, 1.0F, 1.0F);
+    protected void scale(DroneEntity entitylivingbaseIn, PoseStack matrixStackIn, float partialTickTime) {
+        matrixStackIn.scale(1.5F, 1.5F, 1.5F);
+        RenderSystem.setShaderColor(1.0F, 1.0F, 1.0F, 1.0F);
     }
 
-    public static class Factory implements IRenderFactory<DroneEntity> {
+    public static class Factory implements EntityRendererProvider<DroneEntity> {
 
         @Override
-        public EntityRenderer<? super DroneEntity> createRenderFor(EntityRendererManager manager) {
+        public EntityRenderer<DroneEntity> create(EntityRendererProvider.Context manager) {
             return new DroneRender(manager);
         }
 

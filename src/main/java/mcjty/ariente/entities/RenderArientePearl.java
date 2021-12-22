@@ -1,9 +1,8 @@
 package mcjty.ariente.entities;
 
-import net.minecraft.client.Minecraft;
-import net.minecraft.client.renderer.entity.SpriteRenderer;
-import net.minecraftforge.fml.client.registry.IRenderFactory;
+import net.minecraft.client.renderer.entity.EntityRendererProvider;
+import net.minecraft.client.renderer.entity.ThrownItemRenderer;
 
 public class RenderArientePearl {
-    public static IRenderFactory<EntityArientePearl> FACTORY = manager -> new SpriteRenderer(manager, Minecraft.getInstance().getItemRenderer());
+    public static EntityRendererProvider<EntityArientePearl> FACTORY = context -> new ThrownItemRenderer(context);
 }

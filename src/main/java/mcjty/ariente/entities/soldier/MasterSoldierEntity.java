@@ -2,29 +2,29 @@ package mcjty.ariente.entities.soldier;
 
 import mcjty.ariente.api.SoldierBehaviourType;
 import mcjty.ariente.setup.Registration;
-import net.minecraft.entity.LivingEntity;
-import net.minecraft.entity.EntityType;
-import net.minecraft.entity.ai.attributes.Attributes;
-import net.minecraft.entity.ai.attributes.AttributeModifierMap;
-import net.minecraft.entity.monster.MonsterEntity;
-import net.minecraft.nbt.CompoundNBT;
-import net.minecraft.potion.EffectInstance;
-import net.minecraft.potion.Effects;
-import net.minecraft.util.DamageSource;
-import net.minecraft.util.math.ChunkPos;
-import net.minecraft.world.World;
+import net.minecraft.nbt.CompoundTag;
+import net.minecraft.world.effect.MobEffectInstance;
+import net.minecraft.world.effect.MobEffects;
+import net.minecraft.world.entity.LivingEntity;
+import net.minecraft.world.entity.EntityType;
+import net.minecraft.world.entity.ai.attributes.Attributes;
+import net.minecraft.world.entity.ai.attributes.AttributeSupplier;
+import net.minecraft.world.entity.monster.Monster;
+import net.minecraft.world.damagesource.DamageSource;
+import net.minecraft.world.level.ChunkPos;
+import net.minecraft.world.level.Level;
 
 public class MasterSoldierEntity extends SoldierEntity {
 
     private int noregenCounter = 0;
 
-    public MasterSoldierEntity(EntityType<? extends MonsterEntity> type, World worldIn) {
+    public MasterSoldierEntity(EntityType<? extends Monster> type, Level worldIn) {
         super(type, worldIn);
         // @todo 1.14 move to type
         //isImmuneToFire = true;
     }
 
-    public static MasterSoldierEntity create(World world, ChunkPos cityCenter, SoldierBehaviourType behaviourType) {
+    public static MasterSoldierEntity create(Level world, ChunkPos cityCenter, SoldierBehaviourType behaviourType) {
         MasterSoldierEntity entity = new MasterSoldierEntity(Registration.ENTITY_MASTER_SOLDIER.get(), world);
         entity.cityCenter = cityCenter;
         entity.behaviourType = behaviourType;
@@ -33,8 +33,8 @@ public class MasterSoldierEntity extends SoldierEntity {
         return entity;
     }
 
-    public static AttributeModifierMap.MutableAttribute registerAttributes() {
-        AttributeModifierMap.MutableAttribute attributes = LivingEntity.createLivingAttributes();
+    public static AttributeSupplier.Builder registerAttributes() {
+        AttributeSupplier.Builder attributes = LivingEntity.createLivingAttributes();
         attributes
             .add(Attributes.FOLLOW_RANGE, 35.0D)
             .add(Attributes.MOVEMENT_SPEED, 0.32D)
@@ -52,9 +52,9 @@ public class MasterSoldierEntity extends SoldierEntity {
         if (noregenCounter > 0) {
             noregenCounter--;
         } else {
-            EffectInstance effect = getEffect(Effects.REGENERATION);
+            MobEffectInstance effect = getEffect(MobEffects.REGENERATION);
             if (effect == null || effect.getDuration() <= 0) {
-                addEffect(new EffectInstance(Effects.REGENERATION, 30, 3, false, false));
+                addEffect(new MobEffectInstance(MobEffects.REGENERATION, 30, 3, false, false));
             }
         }
     }
@@ -79,13 +79,13 @@ public class MasterSoldierEntity extends SoldierEntity {
     }
 
     @Override
-    public void readAdditionalSaveData(CompoundNBT compound) {
+    public void readAdditionalSaveData(CompoundTag compound) {
         super.readAdditionalSaveData(compound);
         noregenCounter = compound.getInt("noregen");
     }
 
     @Override
-    public void addAdditionalSaveData(CompoundNBT compound) {
+    public void addAdditionalSaveData(CompoundTag compound) {
         super.addAdditionalSaveData(compound);
         compound.putInt("noregen", noregenCounter);
     }

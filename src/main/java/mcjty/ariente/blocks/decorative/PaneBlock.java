@@ -1,11 +1,10 @@
 package mcjty.ariente.blocks.decorative;
 
-import net.minecraft.block.SoundType;
-import net.minecraft.block.material.Material;
+import net.minecraft.world.level.block.SoundType;
+import net.minecraft.world.level.block.IronBarsBlock;
+import net.minecraft.world.level.material.Material;
 
-import net.minecraft.block.AbstractBlock.Properties;
-
-public class PaneBlock extends net.minecraft.block.PaneBlock {
+public class PaneBlock extends IronBarsBlock {
 
     public PaneBlock(Material materialIn, SoundType soundType) {
         super(Properties.of(materialIn)

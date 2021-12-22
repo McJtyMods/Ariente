@@ -4,10 +4,10 @@ import mcjty.ariente.api.ICityAI;
 import mcjty.ariente.api.ICityAISystem;
 import mcjty.ariente.api.SoldierBehaviourType;
 import mcjty.ariente.compat.arienteworld.ArienteWorldCompat;
-import net.minecraft.entity.ai.RandomPositionGenerator;
-import net.minecraft.entity.ai.goal.Goal;
-import net.minecraft.util.math.BlockPos;
-import net.minecraft.util.math.vector.Vector3d;
+import net.minecraft.world.entity.ai.util.LandRandomPos;
+import net.minecraft.world.entity.ai.goal.Goal;
+import net.minecraft.core.BlockPos;
+import net.minecraft.world.phys.Vec3;
 
 import javax.annotation.Nullable;
 
@@ -44,7 +44,7 @@ public class EntityAISoldierWander extends Goal {
             }
         }
 
-        Vector3d vec3d = this.getPosition();
+        Vec3 vec3d = this.getPosition();
 
         if (vec3d == null) {
             return false;
@@ -58,19 +58,19 @@ public class EntityAISoldierWander extends Goal {
     }
 
     @Nullable
-    protected Vector3d getPosition() {
+    protected Vec3 getPosition() {
         if (entity.getBehaviourType() == SoldierBehaviourType.SOLDIER_GUARD) {
             return null;
         } else if (entity.getCityCenter() == null) {
-            return RandomPositionGenerator.getPos(this.entity, 10, 7);
+            return LandRandomPos.getPos(this.entity, 10, 7);
         } else {
             ICityAISystem aiSystem = ArienteWorldCompat.getCityAISystem(entity.level);
             ICityAI cityAI = aiSystem.getCityAI(entity.getCityCenter());
             BlockPos pos = cityAI.requestNewSoldierPosition(entity.level, entity.getTarget());
             if (pos != null) {
-                return new Vector3d(pos.getX(), pos.getY(), pos.getZ());
+                return new Vec3(pos.getX(), pos.getY(), pos.getZ());
             } else {
-                return RandomPositionGenerator.getPos(this.entity, 10, 7);
+                return LandRandomPos.getPos(this.entity, 10, 7);
             }
         }
     }

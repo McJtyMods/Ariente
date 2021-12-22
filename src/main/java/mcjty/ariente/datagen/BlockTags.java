@@ -2,10 +2,10 @@ package mcjty.ariente.datagen;
 
 import mcjty.ariente.Ariente;
 import mcjty.ariente.setup.Registration;
-import net.minecraft.block.Block;
-import net.minecraft.data.BlockTagsProvider;
+import net.minecraft.tags.Tag;
+import net.minecraft.world.level.block.Block;
+import net.minecraft.data.tags.BlockTagsProvider;
 import net.minecraft.data.DataGenerator;
-import net.minecraft.tags.ITag;
 import net.minecraftforge.common.Tags;
 import net.minecraftforge.common.data.ExistingFileHelper;
 
@@ -34,7 +34,7 @@ public class BlockTags extends BlockTagsProvider {
         addTag(Registration.TAG_ORE_PLATINUM, Registration.ORE_PLATINUM.get());
     }
 
-    private void addTag(ITag.INamedTag<Block> tag, Block... items) {
+    private void addTag(Tag.Named<Block> tag, Block... items) {
         tag(tag)
                 .add(items);
     }

@@ -1,9 +1,9 @@
 package mcjty.ariente.api;
 
-import net.minecraft.state.EnumProperty;
-import net.minecraft.util.IStringSerializable;
+import net.minecraft.util.StringRepresentable;
+import net.minecraft.world.level.block.state.properties.EnumProperty;
 
-public enum TechType implements IStringSerializable {
+public enum TechType implements StringRepresentable {
     DOTS("dots", "blacktech_dots", "blacktech_dots_glow"),
     LINES("lines", "blacktech_lines", "blacktech_lines_glow"),
     VAR1("var1", "blacktech_var1", "blacktech_var1_glow"),

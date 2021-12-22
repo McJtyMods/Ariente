@@ -1,6 +1,8 @@
 package mcjty.ariente.cables;
 
 import mcjty.ariente.setup.Registration;
+import net.minecraft.core.BlockPos;
+import net.minecraft.world.level.block.state.BlockState;
 
 public class NetCableTileEntity extends GenericCableTileEntity {
 
@@ -9,7 +11,7 @@ public class NetCableTileEntity extends GenericCableTileEntity {
         return false;
     }
 
-    public NetCableTileEntity() {
-        super(Registration.NETCABLE_TILE.get());
+    public NetCableTileEntity(BlockPos pos, BlockState state) {
+        super(Registration.NETCABLE_TILE.get(), pos, state);
     }
 }

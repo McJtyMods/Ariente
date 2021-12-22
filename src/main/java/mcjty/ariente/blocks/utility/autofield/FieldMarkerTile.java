@@ -10,19 +10,18 @@ import mcjty.lib.multipart.PartSlot;
 import mcjty.lib.tileentity.GenericTileEntity;
 import mcjty.lib.varia.BlockPosTools;
 import mcjty.lib.varia.OrientationTools;
-import net.minecraft.block.BlockState;
-import net.minecraft.entity.LivingEntity;
-import net.minecraft.item.ItemStack;
-import net.minecraft.nbt.CompoundNBT;
-import net.minecraft.tileentity.TileEntity;
-import net.minecraft.util.Direction;
-import net.minecraft.util.math.AxisAlignedBB;
-import net.minecraft.util.math.BlockPos;
-import net.minecraft.util.math.shapes.ISelectionContext;
-import net.minecraft.util.math.shapes.VoxelShape;
-import net.minecraft.util.math.shapes.VoxelShapes;
-import net.minecraft.world.IBlockReader;
-import net.minecraft.world.World;
+import net.minecraft.core.BlockPos;
+import net.minecraft.core.Direction;
+import net.minecraft.nbt.CompoundTag;
+import net.minecraft.world.entity.LivingEntity;
+import net.minecraft.world.level.BlockGetter;
+import net.minecraft.world.level.Level;
+import net.minecraft.world.level.block.entity.BlockEntity;
+import net.minecraft.world.level.block.state.BlockState;
+import net.minecraft.world.item.ItemStack;
+import net.minecraft.world.phys.shapes.CollisionContext;
+import net.minecraft.world.phys.shapes.VoxelShape;
+import net.minecraft.world.phys.shapes.Shapes;
 
 import javax.annotation.Nonnull;
 
@@ -30,11 +29,11 @@ public class FieldMarkerTile extends GenericTileEntity {
 
     private BlockPos autoFieldTile = null;
 
-    public static final VoxelShape FLAT_SHAPE = VoxelShapes.box(0.0D, 0.0D, 0.0D, 1.0D, 0.1D, 1.0D);
+    public static final VoxelShape FLAT_SHAPE = Shapes.box(0.0D, 0.0D, 0.0D, 1.0D, 0.1D, 1.0D);
 
 
-    public FieldMarkerTile() {
-        super(Registration.FIELD_MARKER_TILE.get());
+    public FieldMarkerTile(BlockPos pos, BlockState state) {
+        super(Registration.FIELD_MARKER_TILE.get(), pos, state);
     }
 
     public static BaseBlock createBlock() {
@@ -48,12 +47,12 @@ public class FieldMarkerTile extends GenericTileEntity {
 
             @Nonnull
             @Override
-            public PartSlot getSlotFromState(World world, BlockPos pos, BlockState newState) {
+            public PartSlot getSlotFromState(Level world, BlockPos pos, BlockState newState) {
                 return PartSlot.DOWN;
             }
 
             @Override
-            public VoxelShape getShape(BlockState state, IBlockReader worldIn, BlockPos pos, ISelectionContext context) {
+            public VoxelShape getShape(BlockState state, BlockGetter worldIn, BlockPos pos, CollisionContext context) {
                 return FLAT_SHAPE;
             }
         };
@@ -68,7 +67,7 @@ public class FieldMarkerTile extends GenericTileEntity {
     @Override
     public void markDirtyQuick() {
         // Make sure to mark the MultipartTE as dirty
-        TileEntity te = level.getBlockEntity(worldPosition);
+        BlockEntity te = level.getBlockEntity(worldPosition);
         if (te instanceof MultipartTE) {
             ((MultipartTE) te).markDirtyQuick();
         }
@@ -80,21 +79,21 @@ public class FieldMarkerTile extends GenericTileEntity {
     }
 
     @Override
-    public void onPartAdded(PartSlot slot, BlockState state, TileEntity multipartTile) {
+    public void onPartAdded(PartSlot slot, BlockState state, BlockEntity multipartTile) {
         this.level = multipartTile.getLevel();
-        this.worldPosition = multipartTile.getBlockPos();
+        // @todo 1.18 this.worldPosition = multipartTile.getBlockPos();
     }
 
     @Override
-    public void onBlockPlacedBy(World world, BlockPos pos, BlockState state, LivingEntity placer, ItemStack stack) {
+    public void onBlockPlacedBy(Level world, BlockPos pos, BlockState state, LivingEntity placer, ItemStack stack) {
         AutoFieldTile auto = null;
         for (Direction facing : OrientationTools.HORIZONTAL_DIRECTION_VALUES) {
             BlockPos p = pos.relative(facing);
-            TileEntity te = MultipartHelper.getTileEntity(world, p, PartSlot.DOWN);
+            BlockEntity te = MultipartHelper.getTileEntity(world, p, PartSlot.DOWN);
             if (te instanceof FieldMarkerTile) {
                 BlockPos tile = ((FieldMarkerTile) te).getAutoFieldTile();
                 if (tile != null) {
-                    TileEntity tileEntity = world.getBlockEntity(tile);
+                    BlockEntity tileEntity = world.getBlockEntity(tile);
                     if (tileEntity instanceof AutoFieldTile) {
                         auto = (AutoFieldTile) tileEntity;
                         break;
@@ -110,9 +109,9 @@ public class FieldMarkerTile extends GenericTileEntity {
     }
 
     @Override
-    public void onReplaced(World world, BlockPos pos, BlockState state, BlockState newstate) {
+    public void onReplaced(Level world, BlockPos pos, BlockState state, BlockState newstate) {
         if (autoFieldTile != null) {
-            TileEntity tileEntity = world.getBlockEntity(autoFieldTile);
+            BlockEntity tileEntity = world.getBlockEntity(autoFieldTile);
             if (tileEntity instanceof AutoFieldTile) {
                 ((AutoFieldTile)tileEntity).removeFieldMarker(pos);
             }
@@ -124,16 +123,16 @@ public class FieldMarkerTile extends GenericTileEntity {
     }
 
     @Override
-    public void load(CompoundNBT tagCompound) {
+    public void load(CompoundTag tagCompound) {
         super.load(tagCompound);
-        CompoundNBT info = tagCompound.getCompound("Info");
+        CompoundTag info = tagCompound.getCompound("Info");
         if (info.contains("autofield")) {
             autoFieldTile = BlockPosTools.read(info, "autofield");
         }
     }
 
     @Override
-    public void saveAdditional(CompoundNBT tagCompound) {
+    public void saveAdditional(CompoundTag tagCompound) {
         if (autoFieldTile != null) {
             BlockPosTools.write(getOrCreateInfo(tagCompound), "autofield", autoFieldTile);
         }

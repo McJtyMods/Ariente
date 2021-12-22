@@ -1,10 +1,9 @@
 package mcjty.ariente.entities.fluxship;
 
 import net.minecraft.client.renderer.entity.EntityRenderer;
-import net.minecraft.client.renderer.entity.EntityRendererManager;
-import net.minecraft.util.ResourceLocation;
-import net.minecraftforge.fml.client.registry.IRenderFactory;
-
+import net.minecraft.client.renderer.entity.EntityRendererProvider;
+import net.minecraft.client.renderer.entity.EntityRendererProvider.Context;
+import net.minecraft.resources.ResourceLocation;
 
 
 public class FluxShipRender extends EntityRenderer<FluxShipEntity> {
@@ -16,7 +15,7 @@ public class FluxShipRender extends EntityRenderer<FluxShipEntity> {
 //            .vertexFormat(DefaultVertexFormats.POSITION_TEX_LMAP_COLOR)
 //            .replace("#None", TEXTURE.toString());
 
-    public FluxShipRender(EntityRendererManager renderManagerIn) {
+    public FluxShipRender(Context renderManagerIn) {
         super(renderManagerIn);
         this.shadowRadius = 0.5F;
     }
@@ -51,10 +50,10 @@ public class FluxShipRender extends EntityRenderer<FluxShipEntity> {
         return TEXTURE;
     }
 
-    public static class Factory implements IRenderFactory<FluxShipEntity> {
+    public static class Factory implements EntityRendererProvider<FluxShipEntity> {
 
         @Override
-        public EntityRenderer<? super FluxShipEntity> createRenderFor(EntityRendererManager manager) {
+        public EntityRenderer<FluxShipEntity> create(Context manager) {
             return new FluxShipRender(manager);
         }
 

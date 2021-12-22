@@ -3,27 +3,27 @@ package mcjty.ariente.facade;
 import mcjty.ariente.Ariente;
 import mcjty.lib.builder.TooltipBuilder;
 import mcjty.lib.tooltips.ITooltipSettings;
-import net.minecraft.block.Block;
-import net.minecraft.block.BlockState;
-import net.minecraft.block.Blocks;
-import net.minecraft.block.SoundType;
-import net.minecraft.client.util.ITooltipFlag;
-import net.minecraft.entity.player.PlayerEntity;
-import net.minecraft.item.BlockItem;
-import net.minecraft.item.BlockItemUseContext;
-import net.minecraft.item.ItemStack;
-import net.minecraft.item.ItemUseContext;
-import net.minecraft.nbt.CompoundNBT;
-import net.minecraft.nbt.NBTUtil;
-import net.minecraft.tileentity.TileEntity;
-import net.minecraft.util.ActionResultType;
-import net.minecraft.util.Hand;
-import net.minecraft.util.ResourceLocation;
-import net.minecraft.util.SoundCategory;
-import net.minecraft.util.math.BlockPos;
-import net.minecraft.util.text.ITextComponent;
-import net.minecraft.util.text.StringTextComponent;
-import net.minecraft.world.World;
+import net.minecraft.core.BlockPos;
+import net.minecraft.nbt.CompoundTag;
+import net.minecraft.nbt.NbtUtils;
+import net.minecraft.network.chat.Component;
+import net.minecraft.network.chat.TextComponent;
+import net.minecraft.resources.ResourceLocation;
+import net.minecraft.sounds.SoundSource;
+import net.minecraft.world.item.ItemStack;
+import net.minecraft.world.level.block.Block;
+import net.minecraft.world.level.block.Blocks;
+import net.minecraft.world.level.block.SoundType;
+import net.minecraft.world.level.block.state.BlockState;
+import net.minecraft.world.item.TooltipFlag;
+import net.minecraft.world.entity.player.Player;
+import net.minecraft.world.item.BlockItem;
+import net.minecraft.world.item.context.BlockPlaceContext;
+import net.minecraft.world.item.context.UseOnContext;
+import net.minecraft.world.level.block.entity.BlockEntity;
+import net.minecraft.world.InteractionResult;
+import net.minecraft.world.InteractionHand;
+import net.minecraft.world.level.Level;
 import net.minecraftforge.registries.ForgeRegistries;
 
 import javax.annotation.Nonnull;
@@ -31,8 +31,6 @@ import javax.annotation.Nullable;
 import java.util.List;
 
 import static mcjty.lib.builder.TooltipBuilder.*;
-
-import net.minecraft.item.Item.Properties;
 
 public class FacadeItemBlock extends BlockItem implements ITooltipSettings {
 
@@ -42,12 +40,12 @@ public class FacadeItemBlock extends BlockItem implements ITooltipSettings {
                     parameter("info", FacadeItemBlock::isMimicing, FacadeItemBlock::getMimicingString));
 
     private static boolean isMimicing(ItemStack stack) {
-        CompoundNBT tag = stack.getTag();
+        CompoundTag tag = stack.getTag();
         return tag != null && tag.contains("regName");
     }
 
     private static String getMimicingString(ItemStack stack) {
-        CompoundNBT tag = stack.getTag();
+        CompoundTag tag = stack.getTag();
         if (tag != null) {
             String regName = tag.getString("regName");
             Block value = ForgeRegistries.BLOCKS.getValue(new ResourceLocation(regName));
@@ -67,38 +65,38 @@ public class FacadeItemBlock extends BlockItem implements ITooltipSettings {
     }
 
     @Override
-    public void appendHoverText(ItemStack stack, @Nullable World worldIn, List<ITextComponent> tooltip, ITooltipFlag flag) {
+    public void appendHoverText(ItemStack stack, @Nullable Level worldIn, List<Component> tooltip, TooltipFlag flag) {
         super.appendHoverText(stack, worldIn, tooltip, flag);
         tooltipBuilder.makeTooltip(getRegistryName(), stack, tooltip, flag);
     }
 
     public static void setMimicBlock(@Nonnull ItemStack item, BlockState mimicBlock) {
-        CompoundNBT tagCompound = new CompoundNBT();
-        CompoundNBT nbt = NBTUtil.writeBlockState(mimicBlock);
+        CompoundTag tagCompound = new CompoundTag();
+        CompoundTag nbt = NbtUtils.writeBlockState(mimicBlock);
         tagCompound.put("mimic", nbt);
         item.setTag(tagCompound);
     }
 
     public static BlockState getMimicBlock(@Nonnull ItemStack stack) {
-        CompoundNBT tagCompound = stack.getTag();
+        CompoundTag tagCompound = stack.getTag();
         if (tagCompound == null || !tagCompound.contains("mimic")) {
             return Blocks.COBBLESTONE.defaultBlockState();
         } else {
-            return NBTUtil.readBlockState(tagCompound.getCompound("mimic"));
+            return NbtUtils.readBlockState(tagCompound.getCompound("mimic"));
         }
     }
 
     @Override
-    protected boolean canPlace(BlockItemUseContext context, BlockState state) {
+    protected boolean canPlace(BlockPlaceContext context, BlockState state) {
         return true;
     }
 
     @Override
-    public ActionResultType useOn(ItemUseContext context) {
-        World world = context.getLevel();
+    public InteractionResult useOn(UseOnContext context) {
+        Level world = context.getLevel();
         BlockPos pos = context.getClickedPos();
-        PlayerEntity player = context.getPlayer();
-        Hand hand = context.getHand();
+        Player player = context.getPlayer();
+        InteractionHand hand = context.getHand();
         BlockState state = world.getBlockState(pos);
         Block block = state.getBlock();
 
@@ -106,27 +104,27 @@ public class FacadeItemBlock extends BlockItem implements ITooltipSettings {
 
         if (!itemstack.isEmpty()) {
 
-            TileEntity te = world.getBlockEntity(pos);
+            BlockEntity te = world.getBlockEntity(pos);
             if (te instanceof IFacadeSupport) {
                 IFacadeSupport facadeSupport = (IFacadeSupport) te;
                 if (facadeSupport.getMimicBlock() == null) {
                     facadeSupport.setMimicBlock(getMimicBlock(itemstack));
                     SoundType soundtype = world.getBlockState(pos).getBlock().getSoundType(world.getBlockState(pos), world, pos, player);
-                    world.playSound(player, pos, soundtype.getPlaceSound(), SoundCategory.BLOCKS, (soundtype.getVolume() + 1.0F) / 2.0F, soundtype.getPitch() * 0.8F);
+                    world.playSound(player, pos, soundtype.getPlaceSound(), SoundSource.BLOCKS, (soundtype.getVolume() + 1.0F) / 2.0F, soundtype.getPitch() * 0.8F);
                     int amount = -1;
                     itemstack.grow(amount);
                 } else {
-                    return ActionResultType.FAIL;
+                    return InteractionResult.FAIL;
                 }
             } else {
                 setMimicBlock(itemstack, state);
                 if (world.isClientSide) {
-                    player.displayClientMessage(new StringTextComponent("Facade is now mimicing " + block.getDescriptionId()), false);
+                    player.displayClientMessage(new TextComponent("Facade is now mimicing " + block.getDescriptionId()), false);
                 }
             }
-            return ActionResultType.SUCCESS;
+            return InteractionResult.SUCCESS;
         } else {
-            return ActionResultType.FAIL;
+            return InteractionResult.FAIL;
         }
     }
 }

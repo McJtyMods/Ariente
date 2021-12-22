@@ -1,10 +1,10 @@
 package mcjty.ariente.recipes;
 
-import net.minecraft.entity.player.PlayerEntity;
-import net.minecraft.inventory.IInventory;
-import net.minecraft.item.ItemStack;
+import net.minecraft.world.Container;
+import net.minecraft.world.entity.player.Player;
+import net.minecraft.world.item.ItemStack;
 
-public class ConstructorContext implements IInventory {
+public class ConstructorContext implements Container {
 
     @Override
     public int getContainerSize() {
@@ -42,7 +42,7 @@ public class ConstructorContext implements IInventory {
     }
 
     @Override
-    public boolean stillValid(PlayerEntity player) {
+    public boolean stillValid(Player player) {
         return false;
     }
 

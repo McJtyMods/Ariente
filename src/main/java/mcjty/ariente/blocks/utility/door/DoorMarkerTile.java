@@ -12,49 +12,45 @@ import mcjty.hologui.api.IGuiTile;
 import mcjty.lib.blocks.BaseBlock;
 import mcjty.lib.blocks.RotationType;
 import mcjty.lib.builder.BlockBuilder;
-import mcjty.lib.tileentity.GenericTileEntity;
-import net.minecraft.block.Block;
-import net.minecraft.block.BlockState;
-import net.minecraft.block.Blocks;
-import net.minecraft.block.material.Material;
-import net.minecraft.entity.Entity;
-import net.minecraft.entity.LivingEntity;
-import net.minecraft.entity.MobEntity;
-import net.minecraft.entity.player.PlayerEntity;
-import net.minecraft.nbt.CompoundNBT;
-import net.minecraft.pathfinding.PathNodeType;
-import net.minecraft.state.properties.BlockStateProperties;
-import net.minecraft.tileentity.ITickableTileEntity;
-import net.minecraft.tileentity.TileEntity;
-import net.minecraft.util.ActionResultType;
-import net.minecraft.util.Direction;
-import net.minecraft.util.Hand;
-import net.minecraft.util.SoundCategory;
-import net.minecraft.util.math.AxisAlignedBB;
-import net.minecraft.util.math.BlockPos;
-import net.minecraft.util.math.BlockRayTraceResult;
-import net.minecraft.util.math.shapes.ISelectionContext;
-import net.minecraft.util.math.shapes.VoxelShape;
-import net.minecraft.util.math.shapes.VoxelShapes;
-import net.minecraft.world.IBlockReader;
-import net.minecraft.world.World;
+import mcjty.lib.tileentity.TickingTileEntity;
+import net.minecraft.core.BlockPos;
+import net.minecraft.nbt.CompoundTag;
+import net.minecraft.world.InteractionHand;
+import net.minecraft.world.InteractionResult;
+import net.minecraft.world.entity.Entity;
+import net.minecraft.world.entity.LivingEntity;
+import net.minecraft.world.entity.player.Player;
+import net.minecraft.world.level.BlockGetter;
+import net.minecraft.world.level.block.Block;
+import net.minecraft.world.level.block.Blocks;
+import net.minecraft.world.level.block.state.BlockState;
+import net.minecraft.world.level.block.state.properties.BlockStateProperties;
+import net.minecraft.world.level.material.Material;
+import net.minecraft.world.level.block.entity.BlockEntity;
+import net.minecraft.core.Direction;
+import net.minecraft.sounds.SoundSource;
+import net.minecraft.world.level.pathfinder.PathComputationType;
+import net.minecraft.world.phys.AABB;
+import net.minecraft.world.phys.BlockHitResult;
+import net.minecraft.world.phys.shapes.CollisionContext;
+import net.minecraft.world.phys.shapes.VoxelShape;
+import net.minecraft.world.phys.shapes.Shapes;
+import net.minecraft.world.level.Level;
 
-import javax.annotation.Nonnull;
-import javax.annotation.Nullable;
 import java.util.List;
 
 import static mcjty.ariente.compat.ArienteTOPDriver.DRIVER;
 import static mcjty.lib.builder.TooltipBuilder.header;
 import static mcjty.lib.builder.TooltipBuilder.key;
 
-public class DoorMarkerTile extends GenericTileEntity implements ITickableTileEntity, IGuiTile, ILockable {
+public class DoorMarkerTile extends TickingTileEntity implements IGuiTile, ILockable {
 
-    public static final VoxelShape BLOCK_AABB = VoxelShapes.box(0.0D, 0.0D, 0.0D, 1.0D, 1.0D/16.0, 1.0D);
-    public static final VoxelShape OPEN_BLOCK_AABB = VoxelShapes.empty();
-    public static final VoxelShape CLOSED_BLOCK_AABB = VoxelShapes.block();
+    public static final VoxelShape BLOCK_AABB = Shapes.box(0.0D, 0.0D, 0.0D, 1.0D, 1.0D/16.0, 1.0D);
+    public static final VoxelShape OPEN_BLOCK_AABB = Shapes.empty();
+    public static final VoxelShape CLOSED_BLOCK_AABB = Shapes.block();
 
-    private AxisAlignedBB detectionBox = null;
-    private AxisAlignedBB renderBox = null;
+    private AABB detectionBox = null;
+    private AABB renderBox = null;
 
     private boolean open = false;
     private int iconIndex = 0;
@@ -64,8 +60,8 @@ public class DoorMarkerTile extends GenericTileEntity implements ITickableTileEn
     private int opening;  // 0 is closed, 1000 is open
     private long lastTime = -1;  // For rendering
 
-    public DoorMarkerTile() {
-        super(Registration.DOOR_MARKER_TILE.get());
+    public DoorMarkerTile(BlockPos pos, BlockState state) {
+        super(Registration.DOOR_MARKER_TILE.get(), pos, state);
     }
 
     public static BaseBlock createBlock() {
@@ -83,47 +79,43 @@ public class DoorMarkerTile extends GenericTileEntity implements ITickableTileEn
             }
 
             @Override
-            public VoxelShape getCollisionShape(BlockState state, IBlockReader worldIn, BlockPos pos, ISelectionContext context) {
+            public VoxelShape getCollisionShape(BlockState state, BlockGetter worldIn, BlockPos pos, CollisionContext context) {
                 return DoorMarkerTile.getCollisionShape(state, worldIn, pos);
             }
 
             @Override
-            public VoxelShape getShape(BlockState state, IBlockReader reader, BlockPos pos, ISelectionContext context) {
+            public VoxelShape getShape(BlockState state, BlockGetter reader, BlockPos pos, CollisionContext context) {
                 return BLOCK_AABB;
             }
 
-            @Nullable
+            @Deprecated
             @Override
-            public PathNodeType getAiPathNodeType(BlockState state, IBlockReader world, BlockPos pos, @Nullable MobEntity entity) {
-                return DoorMarkerTile.getAiPathNodeType(state, world, pos);
+            public boolean isPathfindable(BlockState state, BlockGetter world, BlockPos pos, PathComputationType pathType) {
+                return DoorMarkerTile.isPathfindable(state, world, pos, pathType);
             }
         };
     }
 
     @Override
-    public ActionResultType onBlockActivated(BlockState state, PlayerEntity player, Hand hand, BlockRayTraceResult result) {
+    public InteractionResult onBlockActivated(BlockState state, Player player, InteractionHand hand, BlockHitResult result) {
         Ariente.guiHandler.openHoloGui(level, worldPosition, player);
-        return ActionResultType.SUCCESS;
+        return InteractionResult.SUCCESS;
     }
 
     @Override
-    public void tick() {
-        if (!level.isClientSide) {
-            setInvisibleBlocks();
-            if (!locked) {
-                List<Entity> entities = level.getEntitiesOfClass(LivingEntity.class, getDetectionBox(),
-                        entity -> entity instanceof PlayerEntity || entity instanceof SoldierEntity);
-                boolean o = !entities.isEmpty();
-                setOpen(o);
-            }
+    public void tickServer() {
+        setInvisibleBlocks();
+        if (!locked) {
+            List<LivingEntity> entities = level.getEntitiesOfClass(LivingEntity.class, getDetectionBox(),
+                    entity -> entity instanceof Player || entity instanceof SoldierEntity);
+            boolean o = !entities.isEmpty();
+            setOpen(o);
         }
     }
 
-
-
-    private AxisAlignedBB getDetectionBox() {
+    private AABB getDetectionBox() {
         if (detectionBox == null) {
-            detectionBox = new AxisAlignedBB(worldPosition.getX()-3, worldPosition.getY()-2, worldPosition.getZ()-3, worldPosition.getX()+4, worldPosition.getY()+6, worldPosition.getZ()+4);
+            detectionBox = new AABB(worldPosition.getX()-3, worldPosition.getY()-2, worldPosition.getZ()-3, worldPosition.getX()+4, worldPosition.getY()+6, worldPosition.getZ()+4);
         }
         return detectionBox;
     }
@@ -178,7 +170,7 @@ public class DoorMarkerTile extends GenericTileEntity implements ITickableTileEn
             return;
         }
         open = o;
-        level.playSound(null, getBlockPos().getX(), getBlockPos().getY(), getBlockPos().getZ(), ModSounds.door, SoundCategory.BLOCKS, 0.6f, 1.0f);
+        level.playSound(null, getBlockPos().getX(), getBlockPos().getY(), getBlockPos().getZ(), ModSounds.door, SoundSource.BLOCKS, 0.6f, 1.0f);
         markDirtyClient();
     }
 
@@ -214,20 +206,18 @@ public class DoorMarkerTile extends GenericTileEntity implements ITickableTileEn
         this.lastTime = lastTime;
     }
 
-    @Nonnull
-    public static PathNodeType getAiPathNodeType(BlockState state, IBlockReader world, BlockPos pos) {
-        TileEntity te = world.getBlockEntity(pos);
-        if (te instanceof DoorMarkerTile) {
-            DoorMarkerTile door = (DoorMarkerTile) te;
-            if (door.isOpen()) {
-                return PathNodeType.OPEN;
-            }
+    public static boolean isPathfindable(BlockState state, BlockGetter world, BlockPos pos, PathComputationType pathType) {
+        BlockEntity te = world.getBlockEntity(pos);
+
+        if (te instanceof DoorMarkerTile door) {
+            return door.isOpen();
         }
-        return PathNodeType.BLOCKED;
+
+        return false;
     }
 
-    public static VoxelShape getCollisionShape(BlockState blockState, IBlockReader world, BlockPos pos) {
-        TileEntity te = world.getBlockEntity(pos);
+    public static VoxelShape getCollisionShape(BlockState blockState, BlockGetter world, BlockPos pos) {
+        BlockEntity te = world.getBlockEntity(pos);
         if (te instanceof DoorMarkerTile) {
             DoorMarkerTile door = (DoorMarkerTile) te;
             if (door.isOpen()) {
@@ -238,10 +228,10 @@ public class DoorMarkerTile extends GenericTileEntity implements ITickableTileEn
     }
 
     @Override
-    public void load(CompoundNBT tagCompound) {
+    public void load(CompoundTag tagCompound) {
         super.load(tagCompound);
         open = tagCompound.getBoolean("open");
-        CompoundNBT info = tagCompound.getCompound("Info");
+        CompoundTag info = tagCompound.getCompound("Info");
         if (!info.isEmpty()) {
             iconIndex = info.getInt("icon");
             locked = info.getBoolean("locked");
@@ -249,9 +239,9 @@ public class DoorMarkerTile extends GenericTileEntity implements ITickableTileEn
     }
 
     @Override
-    public void saveAdditional(CompoundNBT tagCompound) {
+    public void saveAdditional(CompoundTag tagCompound) {
         tagCompound.putBoolean("open", open);
-        CompoundNBT info = getOrCreateInfo(tagCompound);
+        CompoundTag info = getOrCreateInfo(tagCompound);
         info.putInt("icon", iconIndex);
         info.putBoolean("locked", locked);
         super.saveAdditional(tagCompound);
@@ -265,15 +255,15 @@ public class DoorMarkerTile extends GenericTileEntity implements ITickableTileEn
 
 
     @Override
-    public void onReplaced(World world, BlockPos pos, BlockState state, BlockState newstate) {
+    public void onReplaced(Level world, BlockPos pos, BlockState state, BlockState newstate) {
         super.onReplaced(world, pos, state, newstate);
         clearInvisibleBlocks();
     }
 
     @Override
-    public AxisAlignedBB getRenderBoundingBox() {
+    public AABB getRenderBoundingBox() {
         if (renderBox == null) {
-            renderBox = new AxisAlignedBB(getBlockPos()).inflate(.3);
+            renderBox = new AABB(getBlockPos()).inflate(.3);
         }
         return renderBox;
     }

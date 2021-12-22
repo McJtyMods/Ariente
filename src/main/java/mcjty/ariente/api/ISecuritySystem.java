@@ -1,7 +1,7 @@
 package mcjty.ariente.api;
 
-import net.minecraft.world.World;
+import net.minecraft.world.level.Level;
 
 public interface ISecuritySystem {
-    String generateKeyId(World world);
+    String generateKeyId(Level world);
 }

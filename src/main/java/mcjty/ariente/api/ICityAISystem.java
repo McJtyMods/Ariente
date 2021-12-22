@@ -1,6 +1,6 @@
 package mcjty.ariente.api;
 
-import net.minecraft.util.math.ChunkPos;
+import net.minecraft.world.level.ChunkPos;
 
 public interface ICityAISystem {
     ICityAI getCityAI(ChunkPos cityCenter);

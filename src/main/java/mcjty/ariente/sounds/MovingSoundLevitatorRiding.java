@@ -1,24 +1,21 @@
 package mcjty.ariente.sounds;
 
 import mcjty.ariente.entities.levitator.FluxLevitatorEntity;
-import net.minecraft.client.audio.TickableSound;
-import net.minecraft.entity.player.PlayerEntity;
-import net.minecraft.util.SoundCategory;
-import net.minecraft.util.math.MathHelper;
+import net.minecraft.client.resources.sounds.AbstractTickableSoundInstance;
+import net.minecraft.client.resources.sounds.SoundInstance.Attenuation;
+import net.minecraft.sounds.SoundSource;
+import net.minecraft.world.entity.player.Player;
+import net.minecraft.util.Mth;
 
-
-
-import net.minecraft.client.audio.ISound.AttenuationType;
-
-public class MovingSoundLevitatorRiding extends TickableSound {
-    private final PlayerEntity player;
+public class MovingSoundLevitatorRiding extends AbstractTickableSoundInstance {
+    private final Player player;
     private final FluxLevitatorEntity levitator;
 
-    public MovingSoundLevitatorRiding(PlayerEntity playerRiding, FluxLevitatorEntity levitator) {
-        super(ModSounds.levitator, SoundCategory.NEUTRAL);
+    public MovingSoundLevitatorRiding(Player playerRiding, FluxLevitatorEntity levitator) {
+        super(ModSounds.levitator, SoundSource.NEUTRAL);
         this.player = playerRiding;
         this.levitator = levitator;
-        this.attenuation = AttenuationType.NONE;
+        this.attenuation = Attenuation.NONE;
         this.looping = true;
         this.delay = 0;
     }
@@ -30,7 +27,7 @@ public class MovingSoundLevitatorRiding extends TickableSound {
 //            float f = MathHelper.sqrt(this.levitator.motionX * this.levitator.motionX + this.levitator.motionZ * this.levitator.motionZ);
 
             if (f >= 0.01D) {
-                this.volume = 0.0F + MathHelper.clamp(f, 0.0F, 1.0F) * 0.75F;
+                this.volume = 0.0F + Mth.clamp(f, 0.0F, 1.0F) * 0.75F;
             } else {
                 this.volume = 0.0F;
             }

@@ -1,10 +1,10 @@
 package mcjty.ariente.api;
 
-import net.minecraft.item.DyeColor;
-import net.minecraft.state.EnumProperty;
-import net.minecraft.util.IStringSerializable;
+import net.minecraft.world.item.DyeColor;
+import net.minecraft.util.StringRepresentable;
+import net.minecraft.world.level.block.state.properties.EnumProperty;
 
-public enum MarbleColor implements IStringSerializable {
+public enum MarbleColor implements StringRepresentable {
     GRAY("gray", "graymarble", DyeColor.GRAY),
     WHITE("white", "whitemarble", DyeColor.WHITE),
     BLUE("blue", "bluemarble", DyeColor.LIGHT_BLUE),

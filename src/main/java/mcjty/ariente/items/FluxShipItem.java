@@ -3,17 +3,17 @@ package mcjty.ariente.items;
 import mcjty.ariente.entities.fluxship.FluxShipEntity;
 import mcjty.lib.builder.TooltipBuilder;
 import mcjty.lib.tooltips.ITooltipSettings;
-import net.minecraft.block.BlockState;
-import net.minecraft.client.util.ITooltipFlag;
-import net.minecraft.entity.player.PlayerEntity;
-import net.minecraft.item.Item;
-import net.minecraft.item.ItemStack;
-import net.minecraft.item.ItemUseContext;
-import net.minecraft.util.ActionResultType;
-import net.minecraft.util.Hand;
-import net.minecraft.util.math.BlockPos;
-import net.minecraft.util.text.ITextComponent;
-import net.minecraft.world.World;
+import net.minecraft.core.BlockPos;
+import net.minecraft.network.chat.Component;
+import net.minecraft.world.InteractionHand;
+import net.minecraft.world.entity.player.Player;
+import net.minecraft.world.item.ItemStack;
+import net.minecraft.world.item.TooltipFlag;
+import net.minecraft.world.level.Level;
+import net.minecraft.world.level.block.state.BlockState;
+import net.minecraft.world.item.Item;
+import net.minecraft.world.item.context.UseOnContext;
+import net.minecraft.world.InteractionResult;
 
 import javax.annotation.Nullable;
 import java.util.List;
@@ -31,17 +31,17 @@ public class FluxShipItem extends Item implements ITooltipSettings {
     }
 
     @Override
-    public void appendHoverText(ItemStack stack, @Nullable World worldIn, List<ITextComponent> tooltip, ITooltipFlag flag) {
+    public void appendHoverText(ItemStack stack, @Nullable Level worldIn, List<Component> tooltip, TooltipFlag flag) {
         super.appendHoverText(stack, worldIn, tooltip, flag);
         tooltipBuilder.makeTooltip(getRegistryName(), stack, tooltip, flag);
     }
 
     @Override
-    public ActionResultType useOn(ItemUseContext context) {
-        World world = context.getLevel();
+    public InteractionResult useOn(UseOnContext context) {
+        Level world = context.getLevel();
         BlockPos pos = context.getClickedPos();
-        PlayerEntity player = context.getPlayer();
-        Hand hand = context.getHand();
+        Player player = context.getPlayer();
+        InteractionHand hand = context.getHand();
         BlockState state = world.getBlockState(pos);
 
         ItemStack itemstack = player.getItemInHand(hand);
@@ -56,7 +56,7 @@ public class FluxShipItem extends Item implements ITooltipSettings {
         }
 
         itemstack.shrink(1);
-        return ActionResultType.SUCCESS;
+        return InteractionResult.SUCCESS;
     }
 
 }

@@ -1,25 +1,25 @@
 package mcjty.ariente.entities.soldier;
 
-import com.mojang.blaze3d.matrix.MatrixStack;
+import com.mojang.blaze3d.vertex.PoseStack;
 import com.mojang.blaze3d.platform.GlStateManager;
 import mcjty.ariente.Ariente;
-import net.minecraft.client.renderer.entity.BipedRenderer;
+import net.minecraft.client.renderer.entity.HumanoidMobRenderer;
 import net.minecraft.client.renderer.entity.EntityRenderer;
-import net.minecraft.client.renderer.entity.EntityRendererManager;
-import net.minecraft.client.renderer.entity.model.BipedModel;
-import net.minecraft.util.ResourceLocation;
-import net.minecraftforge.fml.client.registry.IRenderFactory;
+import net.minecraft.client.renderer.entity.EntityRendererProvider.Context;
+import net.minecraft.client.renderer.entity.EntityRendererProvider;
+import net.minecraft.client.model.HumanoidModel;
+import net.minecraft.resources.ResourceLocation;
 
 import javax.annotation.Nonnull;
 
-public class SoldierRender extends BipedRenderer<SoldierEntity, BipedModel<SoldierEntity>> {
+public class SoldierRender extends HumanoidMobRenderer<SoldierEntity, HumanoidModel<SoldierEntity>> {
 
     private ResourceLocation mobTexture = new ResourceLocation(Ariente.MODID, "textures/entity/soldier.png");
 
     public static final Factory FACTORY = new Factory();
     public static final MasterFactory MASTER_FACTORY = new MasterFactory();
 
-    public SoldierRender(EntityRendererManager rendermanagerIn, float scale) {
+    public SoldierRender(Context rendermanagerIn, float scale) {
         super(rendermanagerIn, new SoldierModel<>(scale-1.0f, false), 0.5F * scale);
 // @todo 1.14
         //        BipedArmorLayer layerbipedarmor = new BipedArmorLayer(this) {
@@ -34,9 +34,9 @@ public class SoldierRender extends BipedRenderer<SoldierEntity, BipedModel<Soldi
     }
 
     @Override
-    protected void scale(SoldierEntity entitylivingbaseIn, MatrixStack matrixStackIn, float partialTickTime) {
+    protected void scale(SoldierEntity entitylivingbaseIn, PoseStack matrixStackIn, float partialTickTime) {
         if (entitylivingbaseIn instanceof MasterSoldierEntity) {
-            GlStateManager._scaled(1.4, 1.4, 1.4);
+            matrixStackIn.scale(1.4F, 1.4F, 1.4F);
         }
     }
 
@@ -46,19 +46,19 @@ public class SoldierRender extends BipedRenderer<SoldierEntity, BipedModel<Soldi
         return mobTexture;
     }
 
-    public static class Factory implements IRenderFactory<SoldierEntity> {
+    public static class Factory implements EntityRendererProvider<SoldierEntity> {
 
         @Override
-        public EntityRenderer<? super SoldierEntity> createRenderFor(EntityRendererManager manager) {
+        public EntityRenderer<SoldierEntity> create(Context manager) {
             return new SoldierRender(manager, 1.0f);
         }
 
     }
 
-    public static class MasterFactory implements IRenderFactory<MasterSoldierEntity> {
+    public static class MasterFactory implements EntityRendererProvider<SoldierEntity> {
 
         @Override
-        public EntityRenderer<? super MasterSoldierEntity> createRenderFor(EntityRendererManager manager) {
+        public EntityRenderer<SoldierEntity> create(Context manager) {
             return new SoldierRender(manager, 1.5f);
         }
 

@@ -10,16 +10,16 @@ import mcjty.lib.blocks.BaseBlock;
 import mcjty.lib.blocks.RotationType;
 import mcjty.lib.builder.BlockBuilder;
 import mcjty.lib.tileentity.GenericTileEntity;
-import net.minecraft.block.BlockState;
-import net.minecraft.entity.player.PlayerEntity;
-import net.minecraft.util.ActionResultType;
-import net.minecraft.util.Hand;
-import net.minecraft.util.math.BlockPos;
-import net.minecraft.util.math.BlockRayTraceResult;
-import net.minecraft.util.math.shapes.ISelectionContext;
-import net.minecraft.util.math.shapes.VoxelShape;
-import net.minecraft.util.math.shapes.VoxelShapes;
-import net.minecraft.world.IBlockReader;
+import net.minecraft.core.BlockPos;
+import net.minecraft.world.InteractionHand;
+import net.minecraft.world.level.block.state.BlockState;
+import net.minecraft.world.entity.player.Player;
+import net.minecraft.world.InteractionResult;
+import net.minecraft.world.phys.BlockHitResult;
+import net.minecraft.world.phys.shapes.CollisionContext;
+import net.minecraft.world.phys.shapes.VoxelShape;
+import net.minecraft.world.phys.shapes.Shapes;
+import net.minecraft.world.level.BlockGetter;
 
 import static mcjty.ariente.compat.ArienteTOPDriver.DRIVER;
 import static mcjty.lib.builder.TooltipBuilder.header;
@@ -27,7 +27,7 @@ import static mcjty.lib.builder.TooltipBuilder.key;
 
 public class LevelMarkerTile extends GenericTileEntity implements IGuiTile {
 
-    private static final VoxelShape BLOCK_AABB = VoxelShapes.box(0.0D, 0.0D, 0.0D, 1.0D, 1.0D/16.0, 1.0D);
+    private static final VoxelShape BLOCK_AABB = Shapes.box(0.0D, 0.0D, 0.0D, 1.0D, 1.0D/16.0, 1.0D);
 
     @Override
     public IGuiComponent<?> createGui(String tag, IGuiComponentRegistry registry) {
@@ -36,8 +36,8 @@ public class LevelMarkerTile extends GenericTileEntity implements IGuiTile {
                 .add(registry.text(0, 2, 1, 1).text("Floor name (WIP)").color(registry.color(StyledColor.LABEL)));
     }
 
-    public LevelMarkerTile() {
-        super(Registration.LEVEL_MARKER_TILE.get());
+    public LevelMarkerTile(BlockPos pos, BlockState state) {
+        super(Registration.LEVEL_MARKER_TILE.get(), pos, state);
     }
 
     public static BaseBlock createBlock() {
@@ -53,16 +53,16 @@ public class LevelMarkerTile extends GenericTileEntity implements IGuiTile {
             }
 
             @Override
-            public VoxelShape getShape(BlockState state, IBlockReader reader, BlockPos pos, ISelectionContext context) {
+            public VoxelShape getShape(BlockState state, BlockGetter reader, BlockPos pos, CollisionContext context) {
                 return BLOCK_AABB;
             }
         };
     }
 
     @Override
-    public ActionResultType onBlockActivated(BlockState state, PlayerEntity player, Hand hand, BlockRayTraceResult result) {
+    public InteractionResult onBlockActivated(BlockState state, Player player, InteractionHand hand, BlockHitResult result) {
         Ariente.guiHandler.openHoloGui(level, worldPosition, player);
-        return ActionResultType.SUCCESS;
+        return InteractionResult.SUCCESS;
     }
 
     @Override
