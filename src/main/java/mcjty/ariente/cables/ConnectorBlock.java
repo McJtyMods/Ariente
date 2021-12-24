@@ -139,7 +139,7 @@ public class ConnectorBlock extends GenericCableBlock {
 //    public void initModel() {
 //        super.initModel();
 //        // To make sure that our ISBM model is chosen for all states we use this custom state mapper:
-//        McJtyLib.proxy.initStateMapper(this, GenericCableBakedModel.modelConnector);
+//        SafeClientTools.initStateMapper(this, GenericCableBakedModel.modelConnector);
 //        CableRenderer.register(ConnectorTileEntity.class);
 //    }
 

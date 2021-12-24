@@ -60,7 +60,7 @@ public class FacadeBlock extends NetCableBlock {
 //    @Override
 //    public void initModel() {
 //        // To make sure that our ISBM model is chosen for all states we use this custom state mapper:
-//        McJtyLib.proxy.initStateMapper(this, MODEL_RESOURCE_LOCATION);
+//        SafeClientTools.initStateMapper(this, MODEL_RESOURCE_LOCATION);
 //    }
 
 // @todo 1.14
@@ -71,6 +71,6 @@ public class FacadeBlock extends NetCableBlock {
 //        Item itemBlock = ForgeRegistries.ITEMS.getValue(new ResourceLocation(Ariente.MODID, FACADE));
 //        ModelResourceLocation itemModelResourceLocation = new ModelResourceLocation(getRegistryName(), "inventory");
 //        final int DEFAULT_ITEM_SUBTYPE = 0;
-//        McJtyLib.proxy.initItemModelMesher(itemBlock, DEFAULT_ITEM_SUBTYPE, itemModelResourceLocation);
+//        SafeClientTools.initItemModelMesher(itemBlock, DEFAULT_ITEM_SUBTYPE, itemModelResourceLocation);
 //    }
 }

@@ -10,27 +10,27 @@ import mcjty.ariente.power.PowerReceiverSupport;
 import mcjty.ariente.setup.Registration;
 import mcjty.hologui.api.*;
 import mcjty.hologui.api.components.IPanel;
-import mcjty.lib.McJtyLib;
 import mcjty.lib.blocks.BaseBlock;
 import mcjty.lib.blocks.RotationType;
 import mcjty.lib.builder.BlockBuilder;
 import mcjty.lib.tileentity.TickingTileEntity;
+import mcjty.lib.varia.SafeClientTools;
+import net.minecraft.client.Minecraft;
 import net.minecraft.core.BlockPos;
 import net.minecraft.nbt.CompoundTag;
+import net.minecraft.network.Connection;
 import net.minecraft.network.protocol.game.ClientboundBlockEntityDataPacket;
+import net.minecraft.world.InteractionHand;
+import net.minecraft.world.InteractionResult;
 import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.player.Player;
+import net.minecraft.world.level.Level;
 import net.minecraft.world.level.block.Block;
-import net.minecraft.world.level.block.state.BlockState;
-import net.minecraft.client.Minecraft;
-import net.minecraft.network.Connection;
 import net.minecraft.world.level.block.entity.BlockEntity;
-import net.minecraft.world.InteractionResult;
-import net.minecraft.world.InteractionHand;
+import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.phys.AABB;
 import net.minecraft.world.phys.BlockHitResult;
 import net.minecraft.world.phys.Vec3;
-import net.minecraft.world.level.Level;
 
 import javax.annotation.Nullable;
 import java.util.*;
@@ -102,7 +102,7 @@ public class ElevatorTile extends TickingTileEntity implements IGuiTile, IPowerR
     @Override
     public void tickClient() {
         List<Integer> floors = findFloors();
-        Player clientPlayer = McJtyLib.proxy.getClientPlayer();
+        Player clientPlayer = SafeClientTools.getClientPlayer();
         if (clientPlayer.getBoundingBox().intersects(getBeamBox())) {
             clientPlayer.hasImpulse = true;
             clientPlayer.fallDistance = 0;
@@ -157,7 +157,7 @@ public class ElevatorTile extends TickingTileEntity implements IGuiTile, IPowerR
     }
 
     private boolean isJumpKeyDown() {
-        // Was McJtyLib.proxy.isJumpKeyDown()
+        // Was SafeClientTools.isJumpKeyDown()
         return Minecraft.getInstance().options.keyJump.isDown();
     }
 

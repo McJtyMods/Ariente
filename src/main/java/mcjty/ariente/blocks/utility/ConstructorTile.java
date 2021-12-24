@@ -10,21 +10,21 @@ import mcjty.ariente.recipes.BlueprintRecipeRegistry;
 import mcjty.ariente.recipes.ConstructorRecipe;
 import mcjty.ariente.setup.Registration;
 import mcjty.hologui.api.*;
-import mcjty.lib.McJtyLib;
 import mcjty.lib.blocks.BaseBlock;
 import mcjty.lib.blocks.RotationType;
 import mcjty.lib.builder.BlockBuilder;
 import mcjty.lib.tileentity.GenericTileEntity;
+import mcjty.lib.varia.SafeClientTools;
 import net.minecraft.ChatFormatting;
 import net.minecraft.core.BlockPos;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.InteractionHand;
+import net.minecraft.world.InteractionResult;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.ItemStack;
-import net.minecraft.world.level.block.state.BlockState;
-import net.minecraft.world.InteractionResult;
-import net.minecraft.world.phys.BlockHitResult;
 import net.minecraft.world.level.Level;
+import net.minecraft.world.level.block.state.BlockState;
+import net.minecraft.world.phys.BlockHitResult;
 import net.minecraftforge.items.IItemHandler;
 
 import javax.annotation.Nullable;
@@ -227,7 +227,7 @@ public class ConstructorTile extends GenericTileEntity implements IGuiTile, ICit
                     boolean ok = true;
                     // Check if we have enough
                     for (ItemStack ingredient : recipe.getIngredientList()) {
-                        if (!hasIngredient(McJtyLib.proxy.getClientPlayer(), ingredient)) {
+                        if (!hasIngredient(SafeClientTools.getClientPlayer(), ingredient)) {
                             tooltip.add(ChatFormatting.RED + "Missing: " + ChatFormatting.WHITE + ingredient.getHoverName());
                             ok = false;
                         }
@@ -241,7 +241,7 @@ public class ConstructorTile extends GenericTileEntity implements IGuiTile, ICit
     }
 
     private IImage getCraftableOverlay(IGuiComponentRegistry registry, ItemStack stack) {
-        if (canCraft(McJtyLib.proxy.getClientPlayer(), stack)) {
+        if (canCraft(SafeClientTools.getClientPlayer(), stack)) {
             return null;
         } else {
             return registry.image(Icons.RED_CROSS);
