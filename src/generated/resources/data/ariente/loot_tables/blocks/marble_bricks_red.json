@@ -3,11 +3,12 @@
   "pools": [
     {
       "name": "marble_bricks_red",
-      "rolls": 1,
+      "rolls": 1.0,
+      "bonus_rolls": 0.0,
       "entries": [
         {
           "type": "minecraft:item",
-          "name": "ariente:marble_slab_red"
+          "name": "ariente:marble_bricks_red"
         }
       ]
     }
