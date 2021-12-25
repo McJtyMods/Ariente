@@ -110,7 +110,7 @@ public class ElevatorTile extends TickingTileEntity implements IGuiTile, IPowerR
                 double motionY;
                 if (clientPlayer.isShiftKeyDown()) {
                     motionY = -0.7;
-                } else if (isJumpKeyDown()) {
+                } else if (SafeClientTools.isJumpKeyDown()) {
                     motionY = 0.5;
                 } else {
                     motionY = 0.0;
@@ -123,7 +123,7 @@ public class ElevatorTile extends TickingTileEntity implements IGuiTile, IPowerR
                         moveToFloor = findLowerFloor(floors, (int) clientPlayer.getY());
                         System.out.println("DOWN: moveToFloor = " + moveToFloor);
                         clientPlayer.setPos(worldPosition.getX() + .5, clientPlayer.getY(), worldPosition.getZ() + .5);
-                    } else if (isJumpKeyDown()) {
+                    } else if (SafeClientTools.isJumpKeyDown()) {
                         moveToFloor = findUpperFloor(floors, (int) clientPlayer.getY());
                         System.out.println("UP: moveToFloor = " + moveToFloor);
                         clientPlayer.setPos(worldPosition.getX() + .5, clientPlayer.getY(), worldPosition.getZ() + .5);
@@ -154,11 +154,6 @@ public class ElevatorTile extends TickingTileEntity implements IGuiTile, IPowerR
         } else {
             moveToFloor = -1;
         }
-    }
-
-    private boolean isJumpKeyDown() {
-        // Was SafeClientTools.isJumpKeyDown()
-        return Minecraft.getInstance().options.keyJump.isDown();
     }
 
     private int findLowerFloor(List<Integer> floors, int y) {
