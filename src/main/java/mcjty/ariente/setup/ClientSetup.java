@@ -16,6 +16,7 @@ import mcjty.ariente.cables.CableRenderer;
 import mcjty.ariente.client.ArienteSpriteUploader;
 import mcjty.ariente.entities.LaserRender;
 import mcjty.ariente.entities.RenderArientePearl;
+import mcjty.ariente.entities.drone.DroneModel;
 import mcjty.ariente.entities.drone.DroneRender;
 import mcjty.ariente.entities.drone.SentinelDroneRender;
 import mcjty.ariente.entities.fluxelevator.FluxElevatorRender;
@@ -67,18 +68,22 @@ public class ClientSetup {
         ModelLoaderRegistry.registerLoader(new ResourceLocation(Ariente.MODID, "cableloader"), new CableModelLoader());
     }
 
-    @SubscribeEvent
     public static void entityRenderers(EntityRenderersEvent.RegisterRenderers event)
     {
         event.registerEntityRenderer(Registration.ENTITY_LASER.get(), new LaserRender.Factory());
-        event.registerEntityRenderer(Registration.ENTITY_DRONE.get(), DroneRender.FACTORY);
+        event.registerEntityRenderer(Registration.ENTITY_DRONE.get(), DroneRender::new);
         event.registerEntityRenderer(Registration.ENTITY_SENTINEL_DRONE.get(), SentinelDroneRender.FACTORY);
-        event.registerEntityRenderer(Registration.ENTITY_SOLDIER.get(), SoldierRender.FACTORY);
-        event.registerEntityRenderer(Registration.ENTITY_MASTER_SOLDIER.get(), SoldierRender.MASTER_FACTORY);
-        event.registerEntityRenderer(Registration.ENTITY_FLUX_LEVITATOR.get(), new FluxLevitatorRender.Factory());
-        event.registerEntityRenderer(Registration.ENTITY_ELEVATOR.get(), new FluxElevatorRender.Factory());
-        event.registerEntityRenderer(Registration.ENTITY_FLUX_SHIP.get(), new FluxShipRender.Factory());
+        // event.registerEntityRenderer(Registration.ENTITY_SOLDIER.get(), SoldierRender.FACTORY);
+        // event.registerEntityRenderer(Registration.ENTITY_MASTER_SOLDIER.get(), SoldierRender.MASTER_FACTORY);
+        // event.registerEntityRenderer(Registration.ENTITY_FLUX_LEVITATOR.get(), new FluxLevitatorRender.Factory());
+        // event.registerEntityRenderer(Registration.ENTITY_ELEVATOR.get(), new FluxElevatorRender.Factory());
+        // event.registerEntityRenderer(Registration.ENTITY_FLUX_SHIP.get(), new FluxShipRender.Factory());
         event.registerEntityRenderer(Registration.ENTITY_PEARL.get(), RenderArientePearl.FACTORY);
+    }
+
+    public static void layerDefinitions(EntityRenderersEvent.RegisterLayerDefinitions event)
+    {
+        DroneModel.layerDefinitions(event);
     }
 
     public static void onTextureStitch(TextureStitchEvent.Pre event) {

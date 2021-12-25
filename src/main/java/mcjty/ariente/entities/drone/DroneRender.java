@@ -3,7 +3,6 @@ package mcjty.ariente.entities.drone;
 
 import com.mojang.blaze3d.systems.RenderSystem;
 import com.mojang.blaze3d.vertex.PoseStack;
-import com.mojang.blaze3d.platform.GlStateManager;
 import net.minecraft.client.renderer.entity.EntityRenderer;
 import net.minecraft.client.renderer.entity.EntityRendererProvider;
 import net.minecraft.client.renderer.entity.LivingEntityRenderer;
@@ -14,8 +13,8 @@ public class DroneRender extends LivingEntityRenderer<DroneEntity, DroneModel<Dr
     private ResourceLocation mobTexture = new ResourceLocation("ariente:textures/entity/drone.png");
     private ResourceLocation mobShootingTexture = new ResourceLocation("ariente:textures/entity/drone_shooting.png");
 
-    public DroneRender(EntityRendererProvider.Context renderManagerIn) {
-        super(renderManagerIn, new DroneModel(), 0.8F);
+    public DroneRender(EntityRendererProvider.Context context) {
+        super(context, new DroneModel(context.bakeLayer(DroneModel.MODEL)), 0.8F);
     }
 
     /**

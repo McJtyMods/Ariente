@@ -8,10 +8,9 @@ import mcjty.ariente.setup.Registration;
 import mcjty.ariente.sounds.ModSounds;
 import net.minecraft.core.BlockPos;
 import net.minecraft.util.Mth;
-import net.minecraft.world.entity.MobSpawnType;
+import net.minecraft.world.entity.*;
 import net.minecraft.world.entity.ai.behavior.BehaviorUtils;
 import net.minecraft.world.entity.ai.control.MoveControl;
-import net.minecraft.world.entity.FlyingMob;
 import net.minecraft.world.entity.ai.goal.Goal;
 import net.minecraft.world.entity.ai.goal.target.NearestAttackableTargetGoal;
 import net.minecraft.world.damagesource.DamageSource;
@@ -32,8 +31,6 @@ import net.minecraft.world.Difficulty;
 import javax.annotation.Nullable;
 import java.util.Random;
 
-import net.minecraft.world.entity.EntityType;
-import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.phys.AABB;
 
 public class DroneEntity extends FlyingMob implements IForcefieldImmunity, IDrone {

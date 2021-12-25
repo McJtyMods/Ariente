@@ -49,10 +49,13 @@ public class Ariente implements IArienteMod {
         FMLJavaModLoadingContext.get().getModEventBus().addListener(EventPriority.NORMAL, false, ColorHandlerEvent.Block.class, event -> ClientSetup.setupSpriteUploader());
 
         FMLJavaModLoadingContext.get().getModEventBus().addListener(setup::init);
+        FMLJavaModLoadingContext.get().getModEventBus().addListener(setup::entityAttributeRegistry);
         DistExecutor.unsafeRunWhenOn(Dist.CLIENT, () -> () -> {
             FMLJavaModLoadingContext.get().getModEventBus().addListener(ClientSetup::init);
             FMLJavaModLoadingContext.get().getModEventBus().addListener(ClientSetup::initModels);
             FMLJavaModLoadingContext.get().getModEventBus().addListener(ClientSetup::onTextureStitch);
+            FMLJavaModLoadingContext.get().getModEventBus().addListener(ClientSetup::entityRenderers);
+            FMLJavaModLoadingContext.get().getModEventBus().addListener(ClientSetup::layerDefinitions);
         });
     }
 

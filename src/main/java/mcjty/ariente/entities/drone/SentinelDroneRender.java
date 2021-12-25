@@ -12,8 +12,8 @@ import net.minecraft.client.renderer.entity.EntityRendererProvider;
 public class SentinelDroneRender extends LivingEntityRenderer<SentinelDroneEntity, DroneModel<SentinelDroneEntity>> {
     private ResourceLocation mobTexture = new ResourceLocation("ariente:textures/entity/sentinel_drone.png");
 
-    public SentinelDroneRender(Context rendererManager) {
-        super(rendererManager, new DroneModel<SentinelDroneEntity>(), 0.5F);
+    public SentinelDroneRender(Context context) {
+        super(context, new DroneModel<SentinelDroneEntity>(context.bakeLayer(DroneModel.MODEL)), 0.5F);
     }
 
     /**
