@@ -25,11 +25,9 @@ import net.minecraft.network.syncher.EntityDataSerializers;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.sounds.SoundSource;
 import net.minecraft.sounds.SoundEvent;
-import net.minecraft.world.level.ChunkPos;
-import net.minecraft.world.level.Level;
+import net.minecraft.world.level.*;
 import net.minecraft.world.phys.Vec3;
 import net.minecraft.world.Difficulty;
-import net.minecraft.world.level.BlockGetter;
 
 import javax.annotation.Nullable;
 import java.util.Random;
@@ -160,14 +158,14 @@ public class DroneEntity extends FlyingMob implements IForcefieldImmunity, IDron
         return 1.0F;
     }
 
-    // @todo 1.18 @Override
-    public boolean checkSpawnRules(Level worldIn, MobSpawnType spawnReasonIn) {
+    @Override
+    public boolean checkSpawnRules(LevelAccessor worldIn, MobSpawnType spawnReasonIn) {
         boolean b = (this.random.nextInt(100) == 0) && super.checkSpawnRules(worldIn, spawnReasonIn) && this.getCommandSenderWorld().getDifficulty() != Difficulty.PEACEFUL;
         return b;
     }
 
-    // @todo 1.18 @Override
-    public boolean checkSpawnObstruction(BlockGetter worldIn) {
+    @Override
+    public boolean checkSpawnObstruction(LevelReader worldIn) {
         return true;
     }
 

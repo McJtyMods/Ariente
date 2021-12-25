@@ -18,11 +18,9 @@ import net.minecraft.sounds.SoundSource;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.sounds.SoundEvent;
-import net.minecraft.world.level.ChunkPos;
+import net.minecraft.world.level.*;
 import net.minecraft.world.phys.Vec3;
 import net.minecraft.world.Difficulty;
-import net.minecraft.world.level.Level;
-import net.minecraft.world.level.BlockGetter;
 
 import javax.annotation.Nullable;
 
@@ -169,14 +167,14 @@ public class SentinelDroneEntity extends FlyingMob implements IForcefieldImmunit
         return 1.0F;
     }
 
-    // @todo 1.18 @Override
-    public boolean checkSpawnRules(Level worldIn, MobSpawnType spawnReasonIn) {
+    @Override
+    public boolean checkSpawnRules(LevelAccessor worldIn, MobSpawnType spawnReasonIn) {
         boolean b = (this.random.nextInt(100) == 0) && super.checkSpawnRules(worldIn, spawnReasonIn) && this.getCommandSenderWorld().getDifficulty() != Difficulty.PEACEFUL;
         return b;
     }
 
-    // @todo 1.18 @Override
-    public boolean checkSpawnObstruction(BlockGetter worldIn) {
+    @Override
+    public boolean checkSpawnObstruction(LevelReader worldIn) {
         return true;
     }
 
