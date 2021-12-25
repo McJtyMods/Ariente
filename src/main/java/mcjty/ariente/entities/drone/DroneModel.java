@@ -28,7 +28,7 @@ public class DroneModel <T extends FlyingMob> extends HierarchicalModel<T> {
     public static LayerDefinition createBodyLayer() {
         MeshDefinition meshdefinition = new MeshDefinition();
         PartDefinition partdefinition = meshdefinition.getRoot();
-        partdefinition.addOrReplaceChild("body", CubeListBuilder.create().texOffs(0, 0).addBox(-8.0F, -8.0F, -8.0F, 16, 16, 16), PartPose.ZERO);
+        partdefinition.addOrReplaceChild("body", CubeListBuilder.create().texOffs(0, 0).addBox(-8.0F, 4.0F, -8.0F, 16, 16, 16), PartPose.ZERO);
 
         return LayerDefinition.create(meshdefinition, 64, 32);
     }
