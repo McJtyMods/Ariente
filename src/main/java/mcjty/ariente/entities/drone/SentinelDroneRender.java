@@ -24,24 +24,10 @@ public class SentinelDroneRender extends LivingEntityRenderer<SentinelDroneEntit
         return mobTexture;
     }
 
-//    public static final SentinelDroneRender.Factory FACTORY = new SentinelDroneRender.Factory();
-
-
     @Override
     protected void scale(SentinelDroneEntity entitylivingbaseIn, PoseStack matrixStackIn, float partialTickTime) {
         matrixStackIn.scale(1F, 1F, 1F);
         RenderSystem.setShaderColor(1.0F, 1.0F, 1.0F, 1.0F);
-    }
-
-    public static final Factory FACTORY = new Factory();
-
-    public static class Factory implements EntityRendererProvider<SentinelDroneEntity> {
-
-        @Override
-        public EntityRenderer<SentinelDroneEntity> create(Context manager) {
-            return new SentinelDroneRender(manager);
-        }
-
     }
 
 }

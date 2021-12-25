@@ -72,7 +72,7 @@ public class ClientSetup {
     {
         event.registerEntityRenderer(Registration.ENTITY_LASER.get(), new LaserRender.Factory());
         event.registerEntityRenderer(Registration.ENTITY_DRONE.get(), DroneRender::new);
-        event.registerEntityRenderer(Registration.ENTITY_SENTINEL_DRONE.get(), SentinelDroneRender.FACTORY);
+        event.registerEntityRenderer(Registration.ENTITY_SENTINEL_DRONE.get(), SentinelDroneRender::new);
         // event.registerEntityRenderer(Registration.ENTITY_SOLDIER.get(), SoldierRender.FACTORY);
         // event.registerEntityRenderer(Registration.ENTITY_MASTER_SOLDIER.get(), SoldierRender.MASTER_FACTORY);
         // event.registerEntityRenderer(Registration.ENTITY_FLUX_LEVITATOR.get(), new FluxLevitatorRender.Factory());

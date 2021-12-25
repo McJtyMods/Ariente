@@ -25,21 +25,10 @@ public class DroneRender extends LivingEntityRenderer<DroneEntity, DroneModel<Dr
         return entity.isAttacking() ? mobShootingTexture : mobTexture;
     }
 
-    public static final DroneRender.Factory FACTORY = new DroneRender.Factory();
-
     @Override
     protected void scale(DroneEntity entitylivingbaseIn, PoseStack matrixStackIn, float partialTickTime) {
         matrixStackIn.scale(1.5F, 1.5F, 1.5F);
         RenderSystem.setShaderColor(1.0F, 1.0F, 1.0F, 1.0F);
-    }
-
-    public static class Factory implements EntityRendererProvider<DroneEntity> {
-
-        @Override
-        public EntityRenderer<DroneEntity> create(EntityRendererProvider.Context manager) {
-            return new DroneRender(manager);
-        }
-
     }
 
 }
