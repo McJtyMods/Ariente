@@ -5,6 +5,7 @@ import mcjty.ariente.blocks.decorative.PatternBlock;
 import mcjty.ariente.setup.Registration;
 import mcjty.lib.blocks.BaseBlock;
 import mcjty.lib.datagen.BaseLootTableProvider;
+import net.minecraft.world.item.Item;
 import net.minecraft.world.level.block.Block;
 import net.minecraft.world.level.block.SlabBlock;
 import net.minecraft.data.DataGenerator;
@@ -70,10 +71,24 @@ public class LootTables extends BaseLootTableProvider {
 
         addBlockStateTable(Registration.PATTERN.get(), PatternBlock.TYPE);
 
+        addOreDrop(Registration.ORE_POSIRITE, Registration.DUST_POSIRITE, 1F, 3F);
+        addOreDrop(Registration.ORE_NEGARITE, Registration.DUST_NEGARITE, 1F, 3F);
+        addOreDrop(Registration.ORE_SILICON, Registration.DUST_SILICON, 1F, 3F);
+        addSimpleTable(Registration.ORE_SILVER.get());
+        addSimpleTable(Registration.ORE_LITHIUM.get());
+        addSimpleTable(Registration.ORE_MANGANESE.get());
+        addSimpleTable(Registration.ORE_PLATINUM.get());
     }
 
     protected void addSimpleSlab(Block block) {
         lootTables.put(block, BlockLootUtility.createSlabItemTable(block));
+    }
+
+    protected <T extends Block> void addOreDrop(RegistryObject<T> block, RegistryObject<Item> drop, float min, float max) {
+        lootTables.put(
+            block.get(),
+            BlockLootUtility.createOreDrops(block.get(), drop.get(), min, max)
+        );
     }
 
     @Override
