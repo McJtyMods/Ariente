@@ -43,8 +43,6 @@ public class DroneEntity extends FlyingMob implements IForcefieldImmunity, IDron
 
     public DroneEntity(EntityType<? extends FlyingMob> type, Level worldIn) {
         super(type, worldIn);
-        // @todo 1.14
-//        this.isImmuneToFire = false;
         this.xpReward = 5;
         this.moveControl = new DroneMoveHelper(this);
     }

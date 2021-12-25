@@ -381,10 +381,12 @@ public class Registration {
     public static final RegistryObject<EntityType<SentinelDroneEntity>> ENTITY_SENTINEL_DRONE = ENTITIES.register("ariente_sentinel_drone", () -> EntityType.Builder.of(SentinelDroneEntity::new, MobCategory.MISC)
             .sized(1.3F, 1.3F)
             .setShouldReceiveVelocityUpdates(false)
+            .fireImmune()
             .build("ariente_sentinel_drone"));
     public static final RegistryObject<EntityType<DroneEntity>> ENTITY_DRONE = ENTITIES.register("ariente_drone", () -> EntityType.Builder.of(DroneEntity::new, MobCategory.MISC)
             .sized(2.0F, 2.0F)
             .setShouldReceiveVelocityUpdates(false)
+            .fireImmune()
             .build("ariente_drone"));
     public static final RegistryObject<EntityType<FluxElevatorEntity>> ENTITY_ELEVATOR = ENTITIES.register("ariente_flux_elevator", () -> EntityType.Builder.of(FluxElevatorEntity::new, MobCategory.MISC)
             .sized(1.30F, 0.9F)

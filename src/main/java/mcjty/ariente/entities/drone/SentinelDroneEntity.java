@@ -35,10 +35,6 @@ public class SentinelDroneEntity extends FlyingMob implements IForcefieldImmunit
 
     public SentinelDroneEntity(EntityType<? extends FlyingMob> type, Level worldIn) {
         super(type, worldIn);
-
-// @todo 1.14
-//        this.isImmuneToFire = false;
-
         this.xpReward = 5;
         this.moveControl = new SentinelDroneMoveHelper(this);
     }
