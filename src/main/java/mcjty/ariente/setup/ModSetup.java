@@ -4,6 +4,8 @@ import mcjty.ariente.ForgeEventHandlers;
 import mcjty.ariente.compat.arienteworld.ArienteWorldCompat;
 import mcjty.ariente.entities.drone.DroneEntity;
 import mcjty.ariente.entities.drone.SentinelDroneEntity;
+import mcjty.ariente.entities.soldier.MasterSoldierEntity;
+import mcjty.ariente.entities.soldier.SoldierEntity;
 import mcjty.ariente.gui.HoloGuiCompatibility;
 import mcjty.ariente.network.ArienteMessages;
 import mcjty.ariente.oregen.WorldGen;
@@ -60,5 +62,7 @@ public class ModSetup extends DefaultModSetup {
     {
         event.put(Registration.ENTITY_DRONE.get(), DroneEntity.registerAttributes().build());
         event.put(Registration.ENTITY_SENTINEL_DRONE.get(), SentinelDroneEntity.registerAttributes().build());
+        event.put(Registration.ENTITY_SOLDIER.get(), SoldierEntity.registerAttributes().build());
+        event.put(Registration.ENTITY_MASTER_SOLDIER.get(), MasterSoldierEntity.registerAttributes().build());
     }
 }

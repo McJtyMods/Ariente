@@ -3,6 +3,7 @@ package mcjty.ariente.entities.soldier;
 import com.mojang.blaze3d.vertex.PoseStack;
 import com.mojang.blaze3d.platform.GlStateManager;
 import mcjty.ariente.Ariente;
+import net.minecraft.client.model.geom.ModelLayerLocation;
 import net.minecraft.client.renderer.entity.HumanoidMobRenderer;
 import net.minecraft.client.renderer.entity.EntityRenderer;
 import net.minecraft.client.renderer.entity.EntityRendererProvider.Context;
@@ -19,8 +20,8 @@ public class SoldierRender extends HumanoidMobRenderer<SoldierEntity, HumanoidMo
     public static final Factory FACTORY = new Factory();
     public static final MasterFactory MASTER_FACTORY = new MasterFactory();
 
-    public SoldierRender(Context rendermanagerIn, float scale) {
-        super(rendermanagerIn, new SoldierModel<>(scale-1.0f, false), 0.5F * scale);
+    public SoldierRender(Context context, ModelLayerLocation model, float scale) {
+        super(context, new SoldierModel(context.bakeLayer(model)), 0.5F * scale);
 // @todo 1.14
         //        BipedArmorLayer layerbipedarmor = new BipedArmorLayer(this) {
 //
@@ -50,7 +51,7 @@ public class SoldierRender extends HumanoidMobRenderer<SoldierEntity, HumanoidMo
 
         @Override
         public EntityRenderer<SoldierEntity> create(Context manager) {
-            return new SoldierRender(manager, 1.0f);
+            return new SoldierRender(manager, SoldierModel.MODEL, 1.0f);
         }
 
     }
@@ -59,7 +60,7 @@ public class SoldierRender extends HumanoidMobRenderer<SoldierEntity, HumanoidMo
 
         @Override
         public EntityRenderer<SoldierEntity> create(Context manager) {
-            return new SoldierRender(manager, 1.5f);
+            return new SoldierRender(manager, SoldierModel.MASTER_MODEL, 1.5f);
         }
 
     }
