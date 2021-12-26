@@ -40,7 +40,6 @@ public class FluxLevitatorRender extends EntityRenderer<FluxLevitatorEntity> {
         Vec3 vec3d = entity.getPos(interX, interY, interZ);
         float pitch = entity.xRotO + (entity.getXRot() - entity.xRotO) * partialTicks;
 
-
         if (vec3d != null) {
             Vec3 vec3d1 = entity.getPosOffset(interX, interY, interZ, 0.3D);
             Vec3 vec3d2 = entity.getPosOffset(interX, interY, interZ, -0.3D);

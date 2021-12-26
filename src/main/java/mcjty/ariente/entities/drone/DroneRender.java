@@ -1,13 +1,10 @@
 package mcjty.ariente.entities.drone;
 
-
 import com.mojang.blaze3d.systems.RenderSystem;
 import com.mojang.blaze3d.vertex.PoseStack;
-import net.minecraft.client.renderer.entity.EntityRenderer;
 import net.minecraft.client.renderer.entity.EntityRendererProvider;
 import net.minecraft.client.renderer.entity.LivingEntityRenderer;
 import net.minecraft.resources.ResourceLocation;
-
 
 public class DroneRender extends LivingEntityRenderer<DroneEntity, DroneModel<DroneEntity>> {
     private ResourceLocation mobTexture = new ResourceLocation("ariente:textures/entity/drone.png");
