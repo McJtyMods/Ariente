@@ -2,7 +2,8 @@
   "type": "minecraft:block",
   "pools": [
     {
-      "rolls": 1,
+      "rolls": 1.0,
+      "bonus_rolls": 0.0,
       "entries": [
         {
           "type": "minecraft:item",
@@ -18,13 +19,14 @@
                   }
                 }
               ],
-              "count": 2
+              "count": 2.0,
+              "add": false
             },
             {
               "function": "minecraft:explosion_decay"
             }
           ],
-          "name": "minecraft:air"
+          "name": "ariente:marble_slab_lime"
         }
       ]
     }

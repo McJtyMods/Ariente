@@ -2,13 +2,13 @@
   "type": "minecraft:block",
   "pools": [
     {
-      "name": "marble_bricks_black",
+      "name": "lithiumore",
       "rolls": 1.0,
       "bonus_rolls": 0.0,
       "entries": [
         {
           "type": "minecraft:item",
-          "name": "ariente:marble_bricks_black"
+          "name": "ariente:lithiumore"
         }
       ]
     }

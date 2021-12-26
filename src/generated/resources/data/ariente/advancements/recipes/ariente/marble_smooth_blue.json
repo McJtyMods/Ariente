@@ -11,7 +11,9 @@
       "conditions": {
         "items": [
           {
-            "item": "ariente:marble_blue"
+            "items": [
+              "ariente:marble_blue"
+            ]
           }
         ]
       }
