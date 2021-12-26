@@ -12,8 +12,8 @@ import net.minecraft.client.renderer.entity.EntityRendererProvider;
 public class SentinelDroneRender extends LivingEntityRenderer<SentinelDroneEntity, DroneModel<SentinelDroneEntity>> {
     private ResourceLocation mobTexture = new ResourceLocation("ariente:textures/entity/sentinel_drone.png");
 
-    public SentinelDroneRender(Context rendererManager) {
-        super(rendererManager, new DroneModel<SentinelDroneEntity>(), 0.5F);
+    public SentinelDroneRender(Context context) {
+        super(context, new DroneModel<SentinelDroneEntity>(context.bakeLayer(DroneModel.MODEL)), 0.5F);
     }
 
     /**
@@ -24,24 +24,10 @@ public class SentinelDroneRender extends LivingEntityRenderer<SentinelDroneEntit
         return mobTexture;
     }
 
-//    public static final SentinelDroneRender.Factory FACTORY = new SentinelDroneRender.Factory();
-
-
     @Override
     protected void scale(SentinelDroneEntity entitylivingbaseIn, PoseStack matrixStackIn, float partialTickTime) {
         matrixStackIn.scale(1F, 1F, 1F);
         RenderSystem.setShaderColor(1.0F, 1.0F, 1.0F, 1.0F);
-    }
-
-    public static final Factory FACTORY = new Factory();
-
-    public static class Factory implements EntityRendererProvider<SentinelDroneEntity> {
-
-        @Override
-        public EntityRenderer<SentinelDroneEntity> create(Context manager) {
-            return new SentinelDroneRender(manager);
-        }
-
     }
 
 }

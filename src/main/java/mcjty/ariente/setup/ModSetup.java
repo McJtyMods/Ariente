@@ -2,14 +2,25 @@ package mcjty.ariente.setup;
 
 import mcjty.ariente.ForgeEventHandlers;
 import mcjty.ariente.compat.arienteworld.ArienteWorldCompat;
+import mcjty.ariente.entities.drone.DroneEntity;
+import mcjty.ariente.entities.drone.SentinelDroneEntity;
+import mcjty.ariente.entities.soldier.MasterSoldierEntity;
+import mcjty.ariente.entities.soldier.SoldierEntity;
 import mcjty.ariente.gui.HoloGuiCompatibility;
 import mcjty.ariente.network.ArienteMessages;
 import mcjty.ariente.oregen.WorldGen;
 import mcjty.ariente.potions.ModPotions;
 import mcjty.lib.compat.MainCompatHandler;
 import mcjty.lib.setup.DefaultModSetup;
+import net.minecraft.world.entity.EntityType;
+import net.minecraft.world.entity.MobCategory;
+import net.minecraft.world.entity.ai.attributes.Attributes;
+import net.minecraft.world.entity.monster.Monster;
 import net.minecraft.world.item.ItemStack;
 import net.minecraftforge.common.MinecraftForge;
+import net.minecraftforge.event.RegistryEvent;
+import net.minecraftforge.event.entity.EntityAttributeCreationEvent;
+import net.minecraftforge.eventbus.api.SubscribeEvent;
 import net.minecraftforge.fml.ModList;
 import net.minecraftforge.fml.event.lifecycle.FMLCommonSetupEvent;
 
@@ -45,5 +56,13 @@ public class ModSetup extends DefaultModSetup {
         MainCompatHandler.registerWaila();
         MainCompatHandler.registerTOP();
         HoloGuiCompatibility.register();
+    }
+
+    public void entityAttributeRegistry(EntityAttributeCreationEvent event)
+    {
+        event.put(Registration.ENTITY_DRONE.get(), DroneEntity.registerAttributes().build());
+        event.put(Registration.ENTITY_SENTINEL_DRONE.get(), SentinelDroneEntity.registerAttributes().build());
+        event.put(Registration.ENTITY_SOLDIER.get(), SoldierEntity.registerAttributes().build());
+        event.put(Registration.ENTITY_MASTER_SOLDIER.get(), MasterSoldierEntity.registerAttributes().build());
     }
 }

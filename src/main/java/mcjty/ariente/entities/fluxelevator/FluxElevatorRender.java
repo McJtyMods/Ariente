@@ -25,12 +25,12 @@ public class FluxElevatorRender extends EntityRenderer<FluxElevatorEntity> {
     @Override
     public void render(FluxElevatorEntity entity, float entityYaw, float partialTicks, PoseStack matrixStack, MultiBufferSource buffer, int packedLightIn) {
         matrixStack.pushPose();
-//        long i = entity.getEntityId() * 493286711L;
-//        i = i * i * 4392167121L + i * 98761L;
-//        float fx = (((i >> 16 & 7L) + 0.5F) / 8.0F - 0.5F) * 0.004F;
-//        float fy = (((i >> 20 & 7L) + 0.5F) / 8.0F - 0.5F) * 0.004F;
-//        float fz = (((i >> 24 & 7L) + 0.5F) / 8.0F - 0.5F) * 0.004F;
-//        GlStateManager.translate(fx, fy, fz);
+        long i = entity.getId() * 493286711L;
+        i = i * i * 4392167121L + i * 98761L;
+        float fx = (((i >> 16 & 7L) + 0.5F) / 8.0F - 0.5F) * 0.004F;
+        float fy = (((i >> 20 & 7L) + 0.5F) / 8.0F - 0.5F) * 0.004F;
+        float fz = (((i >> 24 & 7L) + 0.5F) / 8.0F - 0.5F) * 0.004F;
+        matrixStack.translate(fx, fy, fz);
 
         double interX = entity.xOld + (entity.getX() - entity.xOld) * partialTicks;
         double interY = entity.yOld + (entity.getY() - entity.yOld) * partialTicks;
@@ -51,10 +51,9 @@ public class FluxElevatorRender extends EntityRenderer<FluxElevatorEntity> {
                 vec3d2 = vec3d;
             }
 
-            // @todo 1.15
-//            x += vec3d.x - interX;
-//            y += (vec3d1.y + vec3d2.y) / 2.0D - interY;
-//            z += vec3d.z - interZ;
+            double x = vec3d.x - interX;
+            double y = (vec3d1.y + vec3d2.y) / 2.0D - interY;
+            double z = vec3d.z - interZ;
             Vec3 vec3d3 = vec3d2.add(-vec3d1.x, -vec3d1.y, -vec3d1.z);
 
             if (vec3d3.length() != 0.0D) {
@@ -62,10 +61,10 @@ public class FluxElevatorRender extends EntityRenderer<FluxElevatorEntity> {
                 entityYaw = (float) (Math.atan2(vec3d3.z, vec3d3.x) * 180.0D / Math.PI);
                 pitch = (float) (Math.atan(vec3d3.y) * 73.0D);
             }
+
+            matrixStack.translate((float) x, (float) y + 0.375F, (float) z);
         }
 
-        // @todo 1.15
-//        GlStateManager.translatef((float) x, (float) y + 0.375F, (float) z);
         matrixStack.mulPose(new Quaternion(180.0F - entityYaw, 0.0F, 1.0F, 0.0F));
         matrixStack.mulPose(new Quaternion(-pitch, 0.0F, 0.0F, 1.0F));
         float f5 = 0 - partialTicks;    // @todo
