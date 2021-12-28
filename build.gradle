@@ -25,22 +25,18 @@ repositories {
     maven { // JEI
         url "https://dvs1.progwml6.com/files/maven"
     }
-    maven { // Patchouli
-        url "https://maven.blamejared.com"
-    }
     maven { // TOP
         url "https://maven.k-4u.nl/"
     }
 }
 
-
 group = "com.github.mcjty"
 archivesBaseName = "ariente"
 
-java.toolchain.languageVersion = JavaLanguageVersion.of(17)
+java.toolchain.languageVersion = JavaLanguageVersion.of(java_version)
 
 minecraft {
-    mappings channel: 'official', version: '1.18.1'
+    mappings channel: mc_mapping_channel, version: mc_mapping_version
     accessTransformer = file('src/main/resources/META-INF/accesstransformer.cfg')
 
     runs {
@@ -135,21 +131,17 @@ sourceSets.main.resources {
 dependencies {
     minecraft "net.minecraftforge:forge:${minecraft_version}-${forge_version}"
 
-    compileOnly fg.deobf("mezz.jei:jei-${jei_version}:api")
-    runtimeOnly fg.deobf("mezz.jei:jei-${jei_version}")
-    implementation fg.deobf("vazkii.patchouli:Patchouli:${patchouli_version}") {
-        transitive = false
-    }
+    implementation fg.deobf("mezz.jei:jei-${jei_version}")
 
     if (findProject(':TheOneProbe') != null) {
-        implementation project(':TheOneProbe')
+        implementation(project(':TheOneProbe')) { transitive = false }
     } else {
         implementation fg.deobf(project.dependencies.create("mcjty.theoneprobe:theoneprobe:${top_version}") {
             transitive = false
         })
     }
     if (findProject(':McJtyLib') != null) {
-        implementation project(':McJtyLib')
+        implementation(project(':McJtyLib')) { transitive = false }
     } else {
         implementation fg.deobf (project.dependencies.create("com.github.mcjty:mcjtylib:${mcjtylib_version}") {
             transitive = false
@@ -157,7 +149,7 @@ dependencies {
 
     }
     if (findProject(':HoloGui') != null) {
-        implementation project(':HoloGui')
+        implementation(project(':HoloGui')) { transitive = false }
     } else {
         implementation fg.deobf (project.dependencies.create("com.github.mcjty:hologui:${hologui_version}") {
             transitive = false
