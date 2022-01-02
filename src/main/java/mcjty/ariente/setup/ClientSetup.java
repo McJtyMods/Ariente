@@ -23,6 +23,7 @@ import mcjty.ariente.entities.fluxelevator.FluxElevatorRender;
 import mcjty.ariente.entities.fluxship.FluxShipRender;
 import mcjty.ariente.entities.levitator.FluxLevitatorRender;
 import mcjty.ariente.entities.soldier.SoldierRender;
+import mcjty.ariente.items.armor.PowerSuitModel;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.renderer.ItemBlockRenderTypes;
 import net.minecraft.client.renderer.RenderType;
@@ -83,6 +84,7 @@ public class ClientSetup {
     public static void layerDefinitions(EntityRenderersEvent.RegisterLayerDefinitions event)
     {
         DroneModel.layerDefinitions(event);
+        PowerSuitModel.layerDefinitions(event);
     }
 
     public static void onTextureStitch(TextureStitchEvent.Pre event) {
