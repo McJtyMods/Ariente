@@ -324,12 +324,10 @@ public class PowerSuitModel extends HumanoidModel<LivingEntity> {
 //        }
 
         if (this == modelChest) {   // @todo Proper test
-            if (entity instanceof LivingEntity) {
-                ItemStack chestStack = ((LivingEntity) entity).getItemBySlot(EquipmentSlot.CHEST);
-                if (chestStack.getItem() == Registration.POWERSUIT_CHEST.get()) {
-                    if (ModuleSupport.hasWorkingUpgrade(chestStack, ArmorUpgradeType.FORCEFIELD)) {
-                        ForceFieldRenderer.personalForcefields.put(new Vec3(entity.xo, entity.yo, entity.zo), entity instanceof Player);
-                    }
+            ItemStack chestStack = entity.getItemBySlot(EquipmentSlot.CHEST);
+            if (chestStack.getItem() == Registration.POWERSUIT_CHEST.get()) {
+                if (ModuleSupport.hasWorkingUpgrade(chestStack, ArmorUpgradeType.FORCEFIELD)) {
+                    ForceFieldRenderer.personalForcefields.put(new Vec3(entity.xo, entity.yo, entity.zo), entity instanceof Player);
                 }
             }
         }
