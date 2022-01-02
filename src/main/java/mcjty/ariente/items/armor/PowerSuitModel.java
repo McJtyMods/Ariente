@@ -20,11 +20,7 @@ import net.minecraft.client.model.geom.ModelPart;
 import net.minecraft.client.model.geom.PartPose;
 import net.minecraft.client.model.geom.builders.*;
 import net.minecraft.world.entity.Entity;
-import net.minecraft.world.entity.EquipmentSlot;
 import net.minecraft.world.entity.LivingEntity;
-import net.minecraft.world.entity.player.Player;
-import net.minecraft.world.item.ArmorItem;
-import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.phys.Vec3;
 import net.minecraftforge.client.event.EntityRenderersEvent;
 
@@ -33,10 +29,7 @@ import static mcjty.ariente.blocks.defense.ForceFieldRenderer.FORCEFIELD;
 public class PowerSuitModel extends HumanoidModel<LivingEntity> {
     public static final ModelLayerLocation MODEL = new ModelLayerLocation(Registration.POWERSUIT_CHEST.getId(), "body");
 
-    public static PowerSuitModel modelHelm;
-    public static PowerSuitModel modelChest;
-    public static PowerSuitModel modelLegs;
-    public static PowerSuitModel modelBoots;
+    public static PowerSuitModel suitModel;
 
     private static PanelInfo[] panelInfo = null;
 
@@ -59,7 +52,7 @@ public class PowerSuitModel extends HumanoidModel<LivingEntity> {
 
     public PowerSuitModel(ModelPart pRoot) {
         super(pRoot);
-        this.mask = this.head.getChild("mask");
+        this.mask = this.head;
         this.respirator = this.head.getChild("respirator");
         this.arm_l = this.leftArm.getChild("vambrace");
         this.arm_r = this.rightArm.getChild("vambrace");
@@ -77,8 +70,8 @@ public class PowerSuitModel extends HumanoidModel<LivingEntity> {
         PartDefinition partdefinition = meshdefinition.getRoot();
 
         // helmet
-        partdefinition.getChild("head").addOrReplaceChild(
-                "mask",
+        partdefinition.addOrReplaceChild(
+                "head",
                 CubeListBuilder.create()
                         .texOffs(0, 0)
                         .addBox(-4.5F, -9.0F, -4.5F, 9, 13, 9),
@@ -88,7 +81,7 @@ public class PowerSuitModel extends HumanoidModel<LivingEntity> {
         PartDefinition respirator = partdefinition.getChild("head").addOrReplaceChild(
                 "respirator",
                 CubeListBuilder.create()
-                        .texOffs(36, 0)
+                        .texOffs(37, 22)
                         .addBox(-2.5F, -5.0F, -5.5F, 5, 4, 4),
                 PartPose.rotation(0.5235987755982988F, 0.0F, 0.0F)
         );
@@ -96,7 +89,7 @@ public class PowerSuitModel extends HumanoidModel<LivingEntity> {
         respirator.addOrReplaceChild(
                 "left",
                 CubeListBuilder.create()
-                        .texOffs(36, 8)
+                        .texOffs(37, 30)
                         .addBox(0.0F, 0.0F, -2.5F, 3, 3, 3)
                         .mirror(),
                 PartPose.offsetAndRotation(0.5F, -4.0F, -5.5F, 0.0F, -0.7853981633974483F, 0.0F)
@@ -105,7 +98,7 @@ public class PowerSuitModel extends HumanoidModel<LivingEntity> {
         respirator.addOrReplaceChild(
                 "right",
                 CubeListBuilder.create()
-                        .texOffs(36, 8)
+                        .texOffs(37, 30)
                         .addBox(-3.0F, 0.0F, -2.5F, 3, 3, 3),
                 PartPose.offsetAndRotation(-0.5F, -4.0F, -5.5F, 0.0F, 0.7853981633974483F, 0.0F)
         );
@@ -209,131 +202,9 @@ public class PowerSuitModel extends HumanoidModel<LivingEntity> {
         event.registerLayerDefinition(MODEL, PowerSuitModel::createLayer);
     }
 
-    // @todo 1.18 private void setRotation(ModelRenderer model, float x, float y, float z) {
-    // @todo 1.18     model.xRot = x;
-    // @todo 1.18     model.yRot = y;
-    // @todo 1.18     model.zRot = z;
-    // @todo 1.18 }
-
-    // @todo 1.18 public static HumanoidModel getModel(LivingEntity entity, ItemStack stack) {
-
-    // @todo 1.18     if (stack.isEmpty() || !(stack.getItem() instanceof ArmorItem)) {
-    // @todo 1.18         return null;
-    // @todo 1.18     }
-    // @todo 1.18     EquipmentSlot slot = ((ArmorItem) stack.getItem()).getSlot();
-
-    // @todo 1.18     PowerSuitModel armor;
-    // @todo 1.18
-    // @todo 1.18     if (slot == EquipmentSlot.HEAD && modelHelm != null) {
-    // @todo 1.18         return modelHelm;
-    // @todo 1.18     } else if (slot == EquipmentSlot.CHEST && modelChest != null) {
-    // @todo 1.18         return modelChest;
-    // @todo 1.18     } else if (slot == EquipmentSlot.LEGS && modelLegs != null) {
-    // @todo 1.18         return modelLegs;
-    // @todo 1.18     } else if (slot == EquipmentSlot.FEET && modelBoots!= null) {
-    // @todo 1.18         return modelBoots;
-    // @todo 1.18     }
-
-    // @todo 1.18     armor = new PowerSuitModel(0.0625f);
-    // @todo 1.18
-    // @todo 1.18     armor.head.visible = false;
-    // @todo 1.18     armor.body.visible = false;
-    // @todo 1.18     armor.leftArm.visible = false;
-    // @todo 1.18     armor.rightArm.visible = false;
-    // @todo 1.18     armor.leftLeg.visible = false;
-    // @todo 1.18     armor.rightLeg.visible = false;
-    // @todo 1.18     armor.bootsLeft.visible = false;
-    // @todo 1.18     armor.bootsRight.visible = false;
-
-    // @todo 1.18     switch (slot) {
-    // @todo 1.18         case HEAD:
-    // @todo 1.18             armor.head.visible = true;
-    // @todo 1.18             modelHelm = armor;
-    // @todo 1.18             break;
-    // @todo 1.18
-    // @todo 1.18         case FEET:
-    // @todo 1.18             armor.rightLeg.visible = true;
-    // @todo 1.18             armor.leftLeg.visible = true;
-    // @todo 1.18             armor.leg_l.visible = false;
-    // @todo 1.18             armor.leg_r.visible = false;
-    // @todo 1.18             armor.bootsLeft.visible = true;
-    // @todo 1.18             armor.bootsRight.visible = true;
-    // @todo 1.18             modelBoots = armor;
-    // @todo 1.18             break;
-    // @todo 1.18
-    // @todo 1.18         case LEGS:
-    // @todo 1.18             armor.leftLeg.visible = true;
-    // @todo 1.18             armor.rightLeg.visible = true;
-    // @todo 1.18             modelLegs = armor;
-    // @todo 1.18             break;
-    // @todo 1.18
-    // @todo 1.18         case CHEST:
-    // @todo 1.18             armor.body.visible = true;
-    // @todo 1.18             armor.leftArm.visible = true;
-    // @todo 1.18             armor.rightArm.visible = true;
-    // @todo 1.18             modelChest = armor;
-    // @todo 1.18             break;
-    // @todo 1.18     }
-    // @todo 1.18
-    // @todo 1.18     return armor;
-    // @todo 1.18 }
-
-    //@Override
-    public void xxsetupAnim(LivingEntity entity, float limbSwing, float limbSwingAmount, float ageInTicks, float netHeadYaw, float headPitch) {
-
-        if(entity instanceof LivingEntity)	{
-            this.crouching = entity.isShiftKeyDown();
-            // @todo 1.14
-//            this.isRiding = entity.isRiding();
-            this.young = ((LivingEntity)entity).isBaby();
-            this.prepareMobModel((LivingEntity)entity, limbSwing, limbSwingAmount, ageInTicks);
-            // @todo 1.15
-//            this.setRotationAngles((LivingEntity) entity, limbSwing, limbSwingAmount, ageInTicks, netHeadYaw, headPitch, scale);
-        }
-
-        // @todo 1.15
-//        if (this.isChild) {
-//            float f6 = 2.0F;
-//            GlStateManager.pushMatrix();
-//            GlStateManager.scalef(1.5F / f6, 1.5F / f6, 1.5F / f6);
-//            GlStateManager.translatef(0.0F, 16.0F * scale, 0.0F);
-//            GlStateManager.blendFunc(GL11.GL_SRC_ALPHA, GL11.GL_ONE_MINUS_SRC_ALPHA);
-//            GlStateManager.enableBlend();
-//            this.bipedHead.render(scale);
-//            GlStateManager.disableBlend();
-//            GlStateManager.popMatrix();
-//            GlStateManager.pushMatrix();
-//            GlStateManager.scalef(1.0F / f6, 1.0F / f6, 1.0F / f6);
-//            GlStateManager.translatef(0.0F, 24.0F * scale, 0.0F);
-//            this.bipedBody.render(scale);
-//            this.bipedRightArm.render(scale);
-//            this.bipedLeftArm.render(scale);
-//            this.bipedRightLeg.render(scale);
-//            this.bipedLeftLeg.render(scale);
-//            GlStateManager.popMatrix();
-//        } else {
-//            GlStateManager.blendFunc(GL11.GL_SRC_ALPHA, GL11.GL_ONE_MINUS_SRC_ALPHA);
-//            GlStateManager.enableBlend();
-//            this.bipedHead.render(scale);
-//            GlStateManager.disableBlend();
-//            this.bipedBody.render(scale);
-//            this.bipedRightArm.render(scale);
-//            this.bipedLeftArm.render(scale);
-//            this.bipedRightLeg.render(scale);
-//            this.bipedLeftLeg.render(scale);
-//        }
-
-        if (this == modelChest) {   // @todo Proper test
-            ItemStack chestStack = entity.getItemBySlot(EquipmentSlot.CHEST);
-            if (chestStack.getItem() == Registration.POWERSUIT_CHEST.get()) {
-                if (ModuleSupport.hasWorkingUpgrade(chestStack, ArmorUpgradeType.FORCEFIELD)) {
-                    ForceFieldRenderer.personalForcefields.put(new Vec3(entity.xo, entity.yo, entity.zo), entity instanceof Player);
-                }
-            }
-        }
-
+    public static void addLayerDefinitions(EntityRenderersEvent.AddLayers event) {
+        suitModel = new PowerSuitModel(event.getEntityModels().bakeLayer(MODEL));
     }
-
 
     public static void renderForcefield(double posX, double posY, double posZ, float partialTicks) {
 //        GlStateManager.pushMatrix();
@@ -385,7 +256,6 @@ public class PowerSuitModel extends HumanoidModel<LivingEntity> {
         return panelInfo;
     }
 
-
     private static void renderPanels(Tesselator t, BufferBuilder builder, double x, double y, double z, double scale, PanelInfo[] panelInfo) {
         builder.begin(VertexFormat.Mode.TRIANGLES, DefaultVertexFormat.POSITION_TEX_COLOR);
 
@@ -400,6 +270,5 @@ public class PowerSuitModel extends HumanoidModel<LivingEntity> {
     private static void renderPanel(double x, double y, double z, double scale, PanelInfo info) {
         ForceFieldRenderer.doRender(info, x, y, z, scale, 1.0f, 1.0f, 1.0f, 0.2f);
     }
-
 
 }

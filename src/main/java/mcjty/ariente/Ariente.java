@@ -56,6 +56,7 @@ public class Ariente implements IArienteMod {
             FMLJavaModLoadingContext.get().getModEventBus().addListener(ClientSetup::onTextureStitch);
             FMLJavaModLoadingContext.get().getModEventBus().addListener(ClientSetup::entityRenderers);
             FMLJavaModLoadingContext.get().getModEventBus().addListener(ClientSetup::layerDefinitions);
+            FMLJavaModLoadingContext.get().getModEventBus().addListener(ClientSetup::addLayerDefinitions);
         });
     }
 
