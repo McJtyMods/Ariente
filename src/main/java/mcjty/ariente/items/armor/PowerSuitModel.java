@@ -217,7 +217,7 @@ public class PowerSuitModel extends HumanoidModel<LivingEntity> {
         GlStateManager._depthMask(false);
         GlStateManager._enableDepthTest();
         RenderSystem.setShaderColor(1.0f, 1.0f, 1.0f, 0.1f);
-        mc.getTextureManager().bindForSetup(FORCEFIELD);
+        RenderSystem.setShaderTexture(0, FORCEFIELD);
 
         Tesselator t = Tesselator.getInstance();
         BufferBuilder builder = t.getBuilder();
