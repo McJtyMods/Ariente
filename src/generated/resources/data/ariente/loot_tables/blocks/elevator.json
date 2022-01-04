@@ -33,6 +33,16 @@
                   "op": "replace"
                 }
               ]
+            },
+            {
+              "function": "minecraft:set_contents",
+              "type": "ariente:elevator",
+              "entries": [
+                {
+                  "type": "minecraft:dynamic",
+                  "name": "minecraft:contents"
+                }
+              ]
             }
           ],
           "name": "ariente:elevator"

@@ -33,6 +33,16 @@
                   "op": "replace"
                 }
               ]
+            },
+            {
+              "function": "minecraft:set_contents",
+              "type": "ariente:signal_transmitter",
+              "entries": [
+                {
+                  "type": "minecraft:dynamic",
+                  "name": "minecraft:contents"
+                }
+              ]
             }
           ],
           "name": "ariente:signal_transmitter"

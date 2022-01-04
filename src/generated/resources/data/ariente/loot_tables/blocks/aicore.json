@@ -33,6 +33,16 @@
                   "op": "replace"
                 }
               ]
+            },
+            {
+              "function": "minecraft:set_contents",
+              "type": "ariente:aicore",
+              "entries": [
+                {
+                  "type": "minecraft:dynamic",
+                  "name": "minecraft:contents"
+                }
+              ]
             }
           ],
           "name": "ariente:aicore"

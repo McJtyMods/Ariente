@@ -8,7 +8,7 @@ import mcjty.ariente.bindings.KeyBindings;
 import mcjty.ariente.items.modules.ModuleSupport;
 import mcjty.ariente.setup.Registration;
 import net.minecraft.ChatFormatting;
-// @todo 1.18 import net.minecraft.client.renderer.entity.model.BipedModel;
+import net.minecraft.client.model.HumanoidModel;
 import net.minecraft.network.chat.Component;
 import net.minecraft.world.effect.MobEffectInstance;
 import net.minecraft.world.effect.MobEffects;
@@ -24,11 +24,13 @@ import net.minecraft.world.item.ArmorItem;
 import net.minecraft.world.item.ArmorMaterials;
 import net.minecraft.network.chat.TextComponent;
 import net.minecraft.world.level.Level;
+import net.minecraftforge.client.IItemRenderProperties;
 import org.apache.commons.lang3.tuple.Pair;
 
 import javax.annotation.Nullable;
 import java.util.List;
 import java.util.UUID;
+import java.util.function.Consumer;
 
 public class PowerSuit extends ArmorItem {
 
@@ -64,11 +66,15 @@ public class PowerSuit extends ArmorItem {
         return builder.build();
     }
 
-    // @todo 1.18 @Nullable
-    // @todo 1.18 @Override
-    // @todo 1.18 public BipedModel getArmorModel(LivingEntity entityLiving, ItemStack itemStack, EquipmentSlot armorSlot, BipedModel _default) {
-    // @todo 1.18     return PowerSuitModel.getModel(entityLiving, itemStack);
-    // @todo 1.18 }
+    @Override
+    public void initializeClient(Consumer<IItemRenderProperties> consumer) {
+        consumer.accept(new IItemRenderProperties() {
+            @Override
+            public <A extends HumanoidModel<?>> A getArmorModel(LivingEntity entityLiving, ItemStack itemStack, EquipmentSlot armorSlot, A _default) {
+                return (A)PowerSuitModel.suitModel;
+            }
+        });
+    }
 
     @Override
     public void inventoryTick(ItemStack stack, Level world, Entity entity, int itemSlot, boolean isSelected) {

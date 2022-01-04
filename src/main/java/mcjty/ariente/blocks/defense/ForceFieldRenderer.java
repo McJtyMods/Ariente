@@ -73,7 +73,6 @@ public class ForceFieldRenderer {
         }
         personalForcefields.clear();
 
-
         Set<BlockPos> toRemove = new HashSet<>();
         ClientLevel world = Minecraft.getInstance().level;
         for (BlockPos pos : forceFields) {
@@ -86,7 +85,7 @@ public class ForceFieldRenderer {
                 GlStateManager._enableBlend();
                 GlStateManager._depthMask(false);
                 RenderSystem.setShaderColor(1.0f, 1.0f, 1.0f, FIELD_ALPHA);
-                mc.getTextureManager().bindForSetup(FORCEFIELD);
+                RenderSystem.setShaderTexture(0, FORCEFIELD);
 
                 Tesselator t = Tesselator.getInstance();
                 BufferBuilder builder = t.getBuilder();
@@ -139,7 +138,7 @@ public class ForceFieldRenderer {
     }
 
     private static void tickDamageEffects(BlockPos pos, PanelInfo[] panelInfo, double x, double y, double z, double scale) {
-        Minecraft.getInstance().getTextureManager().bindForSetup(FORCEFIELD_HIT);
+        RenderSystem.setShaderTexture(0, FORCEFIELD_HIT);
         for (PanelInfo info : panelInfo) {
             if (info != null) {
                 Pair<BlockPos, Integer> key = Pair.of(pos, info.getIndex());
