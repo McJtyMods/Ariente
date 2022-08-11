@@ -4,6 +4,7 @@ import mcjty.ariente.Ariente;
 import mcjty.ariente.blocks.decorative.DecorativeBlockModule;
 import mcjty.ariente.setup.Registration;
 import net.minecraft.tags.Tag;
+import net.minecraft.tags.TagKey;
 import net.minecraft.world.level.block.Block;
 import net.minecraft.data.tags.BlockTagsProvider;
 import net.minecraft.data.DataGenerator;
@@ -99,12 +100,12 @@ public class BlockTags extends BlockTagsProvider {
                 );
     }
 
-    private void addTag(Tag.Named<Block> tag, Block... items) {
+    private void addTag(TagKey<Block> tag, Block... items) {
         tag(tag)
                 .add(items);
     }
 
-    private <T extends Block> void addTag(Tag.Named<Block> tag, Collection<RegistryObject<T>> items) {
+    private <T extends Block> void addTag(TagKey<Block> tag, Collection<RegistryObject<T>> items) {
         TagAppender<Block> t = tag(tag);
         for (Iterator<RegistryObject<T>> it = items.iterator(); it.hasNext(); ) {
             RegistryObject<T> block = it.next();

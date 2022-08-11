@@ -140,7 +140,7 @@ public class PowerCombinerTile extends TickingTileEntity implements IPowerReceiv
 
     @Override
     public void saveAdditional(CompoundTag tagCompound) {
-        tagCompound = super.save(tagCompound);
+        super.saveAdditional(tagCompound);
         getOrCreateInfo(tagCompound).putInt("transfer", powerTransfer);
     }
 

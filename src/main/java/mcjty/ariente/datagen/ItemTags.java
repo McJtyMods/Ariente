@@ -7,6 +7,7 @@ import net.minecraft.data.tags.BlockTagsProvider;
 import net.minecraft.data.DataGenerator;
 import net.minecraft.data.tags.ItemTagsProvider;
 import net.minecraft.data.tags.TagsProvider;
+import net.minecraft.tags.TagKey;
 import net.minecraft.world.item.Item;
 import net.minecraft.tags.Tag;
 import net.minecraftforge.common.Tags;
@@ -60,14 +61,14 @@ public class ItemTags extends ItemTagsProvider {
         addTag(Registration.TAG_MARBLE, DecorativeBlockModule.MARBLE_ITEMS.values());
     }
 
-    private void addTag(Tag.Named<Item> tag, Collection<RegistryObject<Item>> items) {
+    private void addTag(TagKey<Item> tag, Collection<RegistryObject<Item>> items) {
         TagsProvider.TagAppender<Item> builder = tag(tag);
         for (RegistryObject<Item> item : items) {
             builder.add(item.get());
         }
     }
 
-    private void addTag(Tag.Named<Item> tag, Item... items) {
+    private void addTag(TagKey<Item> tag, Item... items) {
         tag(tag)
                 .add(items);
     }

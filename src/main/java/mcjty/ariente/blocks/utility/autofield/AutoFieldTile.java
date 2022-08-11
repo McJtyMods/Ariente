@@ -183,7 +183,7 @@ public class AutoFieldTile extends TickingTileEntity implements IGuiTile, IPower
                                         PartSlot roundRobinSlot = producer.getRoundRobinSlot();
                                         if (roundRobinSlot != null) {
                                             // @todo more efficient way to get to the round robin index?
-                                            BlockEntity roundRobinModifier = MultipartHelper.getTileEntity(level, sourcePos.getPos(), roundRobinSlot);
+                                            BlockEntity roundRobinModifier = MultipartHelper.getTileEntity(level, sourcePos.pos(), roundRobinSlot);
                                             if (roundRobinModifier instanceof RoundRobinNodeTile) {
                                                 index = ((RoundRobinNodeTile) roundRobinModifier).fetchIndex();
                                                 index = index % destinations.size();

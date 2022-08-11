@@ -96,10 +96,10 @@ public class AutoFieldRenderInfo {
         buf.writeInt(transfers.size());
         for (Map.Entry<TransferPath, TreeSet<Transfer>> entry : transfers.entrySet()) {
             TransferPath path = entry.getKey();
-            buf.writeBlockPos(path.sourcePos.getPos());
-            buf.writeByte(path.sourcePos.getSlot().ordinal());
-            buf.writeBlockPos(path.destPos.getPos());
-            buf.writeByte(path.destPos.getSlot().ordinal());
+            buf.writeBlockPos(path.sourcePos.pos());
+            buf.writeByte(path.sourcePos.slot().ordinal());
+            buf.writeBlockPos(path.destPos.pos());
+            buf.writeByte(path.destPos.slot().ordinal());
             Set<Transfer> values = entry.getValue();
             buf.writeInt(values.size());
             for (Transfer transfer : entry.getValue()) {

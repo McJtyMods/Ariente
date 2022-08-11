@@ -63,10 +63,10 @@ public class TransferRender {
         // @todo 1.14 meta transfer.getMeta()
         stack = new ItemStack(transfer.getItem(), 1);
 
-        BlockPos staBlock = path.getSourcePos().getPos().subtract(relative);
-        BlockPos endBlock = path.getDestPos().getPos().subtract(relative);
-        Vec3 sta = new Vec3(staBlock.getX(), staBlock.getY(), staBlock.getZ()).add(getPos(path.getSourcePos().getSlot()));
-        Vec3 end = new Vec3(endBlock.getX(), endBlock.getY(), endBlock.getZ()).add(getPos(path.getDestPos().getSlot()));
+        BlockPos staBlock = path.getSourcePos().pos().subtract(relative);
+        BlockPos endBlock = path.getDestPos().pos().subtract(relative);
+        Vec3 sta = new Vec3(staBlock.getX(), staBlock.getY(), staBlock.getZ()).add(getPos(path.getSourcePos().slot()));
+        Vec3 end = new Vec3(endBlock.getX(), endBlock.getY(), endBlock.getZ()).add(getPos(path.getDestPos().slot()));
         double distance = Math.sqrt(sta.distanceToSqr(end));
         duration = (long) (distance * 600) + 100;
 

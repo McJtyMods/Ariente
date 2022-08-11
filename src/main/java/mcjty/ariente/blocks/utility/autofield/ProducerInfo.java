@@ -5,8 +5,8 @@ import mcjty.lib.multipart.PartPos;
 import mcjty.lib.multipart.PartSlot;
 import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemStack;
-import net.minecraft.world.level.block.entity.BlockEntity;
 import net.minecraft.world.level.Level;
+import net.minecraft.world.level.block.entity.BlockEntity;
 
 import javax.annotation.Nullable;
 import java.util.*;
@@ -18,7 +18,7 @@ public class ProducerInfo {
 
     public ProducerInfo(Level world, Set<PartPos> itemNodes, Set<PartPos> modifierNodes) {
         for (PartPos pair : itemNodes) {
-            BlockEntity te = MultipartHelper.getTileEntity(world, pair.getPos(), pair.getSlot());
+            BlockEntity te = MultipartHelper.getTileEntity(world, pair.pos(), pair.slot());
             if (te instanceof OutputItemNodeTile) {
                 OutputItemNodeTile outputNode = (OutputItemNodeTile) te;
 
@@ -30,7 +30,7 @@ public class ProducerInfo {
                         // @todo hardcoded round robin modifier
                         boolean roundRobin = modifierNodes.contains(pair);
                         producers.putIfAbsent(pair, new Producer(outputOredict, outputDamage, outputNbt,
-                                outputNode.getOutputStackSize(), roundRobin ? pair.getSlot().getBackSlot() : null));
+                                outputNode.getOutputStackSize(), roundRobin ? pair.slot().getBackSlot() : null));
                         int[] oreIDs;
                         if (outputOredict) {
 // @todo 1.14 oredict

@@ -309,7 +309,7 @@ public abstract class AbstractNodeTile extends GenericTileEntity implements IGui
 
     @Nonnull
     public LazyOptional<IItemHandler> getConnectedItemHandler(PartPos partPos) {
-        BlockState state = MultipartHelper.getBlockState(level, worldPosition, partPos.getSlot());
+        BlockState state = MultipartHelper.getBlockState(level, worldPosition, partPos.slot());
         if (state != null && state.getBlock() == getBlockState().getBlock()) {
             NodeOrientation orientation = state.getValue(ORIENTATION);
             Direction mainDirection = orientation.getMainDirection();
