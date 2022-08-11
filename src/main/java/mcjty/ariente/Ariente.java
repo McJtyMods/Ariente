@@ -11,9 +11,11 @@ import mcjty.ariente.setup.ModSetup;
 import mcjty.ariente.setup.Registration;
 import mcjty.hologui.api.IHoloGuiHandler;
 import mcjty.lib.modules.Modules;
+import net.minecraft.world.item.Item;
 import net.minecraftforge.api.distmarker.Dist;
 import net.minecraftforge.client.event.ColorHandlerEvent;
 import net.minecraftforge.eventbus.api.EventPriority;
+import net.minecraftforge.eventbus.api.IEventBus;
 import net.minecraftforge.fml.DistExecutor;
 import net.minecraftforge.fml.ModLoadingContext;
 import net.minecraftforge.fml.common.Mod;
@@ -46,17 +48,19 @@ public class Ariente implements IArienteMod {
         Registration.register();
         BlueprintRecipeRegistry.register();
         // The following is needed to make sure our SpriteUploader is setup at exactly the right moment
-        FMLJavaModLoadingContext.get().getModEventBus().addListener(EventPriority.NORMAL, false, ColorHandlerEvent.Block.class, event -> ClientSetup.setupSpriteUploader());
+        IEventBus bus = FMLJavaModLoadingContext.get().getModEventBus();
+        bus.addListener(EventPriority.NORMAL, false, ColorHandlerEvent.Block.class, event -> ClientSetup.setupSpriteUploader());
+        bus.addGenericListener(Item.class, BlueprintRecipeRegistry::onRegister);
 
-        FMLJavaModLoadingContext.get().getModEventBus().addListener(setup::init);
-        FMLJavaModLoadingContext.get().getModEventBus().addListener(setup::entityAttributeRegistry);
+        bus.addListener(setup::init);
+        bus.addListener(setup::entityAttributeRegistry);
         DistExecutor.unsafeRunWhenOn(Dist.CLIENT, () -> () -> {
-            FMLJavaModLoadingContext.get().getModEventBus().addListener(ClientSetup::init);
-            FMLJavaModLoadingContext.get().getModEventBus().addListener(ClientSetup::initModels);
-            FMLJavaModLoadingContext.get().getModEventBus().addListener(ClientSetup::onTextureStitch);
-            FMLJavaModLoadingContext.get().getModEventBus().addListener(ClientSetup::entityRenderers);
-            FMLJavaModLoadingContext.get().getModEventBus().addListener(ClientSetup::layerDefinitions);
-            FMLJavaModLoadingContext.get().getModEventBus().addListener(ClientSetup::addLayerDefinitions);
+            bus.addListener(ClientSetup::init);
+            bus.addListener(ClientSetup::initModels);
+            bus.addListener(ClientSetup::onTextureStitch);
+            bus.addListener(ClientSetup::entityRenderers);
+            bus.addListener(ClientSetup::layerDefinitions);
+            bus.addListener(ClientSetup::addLayerDefinitions);
         });
     }
 

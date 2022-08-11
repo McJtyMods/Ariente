@@ -4,19 +4,20 @@ import mcjty.ariente.api.MarbleColor;
 import mcjty.ariente.blocks.decorative.DecorativeBlockModule;
 import mcjty.ariente.setup.Registration;
 import mcjty.lib.varia.WeightedRandom;
-import net.minecraft.world.item.Items;
-import net.minecraft.world.level.block.Block;
+import net.minecraft.core.Registry;
 import net.minecraft.resources.ResourceLocation;
+import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemStack;
+import net.minecraft.world.item.Items;
 import net.minecraft.world.item.crafting.RecipeSerializer;
 import net.minecraft.world.item.crafting.RecipeType;
-import net.minecraft.core.Registry;
 import net.minecraft.world.level.block.Blocks;
-import net.minecraftforge.registries.RegistryObject;
+import net.minecraftforge.event.RegistryEvent;
 import net.minecraftforge.fml.javafmlmod.FMLJavaModLoadingContext;
 import net.minecraftforge.items.ItemHandlerHelper;
 import net.minecraftforge.registries.DeferredRegister;
 import net.minecraftforge.registries.ForgeRegistries;
+import net.minecraftforge.registries.RegistryObject;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -36,16 +37,20 @@ public class BlueprintRecipeRegistry {
             ConstructorRecipeSerializer::new);
 
     public static final ResourceLocation RECIPE_CONSTRUCTOR = new ResourceLocation(MODID, "constructor");
-    public static RecipeType<ConstructorRecipe> CONSTRUCTOR = Registry.register(Registry.RECIPE_TYPE, RECIPE_CONSTRUCTOR,
-            new RecipeType<ConstructorRecipe>() {
-                @Override
-                public String toString() {
-                    return RECIPE_CONSTRUCTOR.toString();
-                }
-            });
+    public static RecipeType<ConstructorRecipe> CONSTRUCTOR;
 
     private static List<ConstructorRecipe> recipes = new ArrayList<>();
     private static WeightedRandom<ConstructorRecipe> randomRecipes = null;
+
+    public static void onRegister(RegistryEvent<Item> event) {
+        CONSTRUCTOR = Registry.register(Registry.RECIPE_TYPE, RECIPE_CONSTRUCTOR,
+                new RecipeType<ConstructorRecipe>() {
+                    @Override
+                    public String toString() {
+                        return RECIPE_CONSTRUCTOR.toString();
+                    }
+                });
+    }
 
     // Materials
     // - Lithium (RARE): advanced circuits
