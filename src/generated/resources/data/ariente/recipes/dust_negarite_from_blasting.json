@@ -1,0 +1,13 @@
+{
+  "type": "minecraft:blasting",
+  "category": "misc",
+  "cookingtime": 100,
+  "experience": 0.0,
+  "ingredient": {
+    "item": "ariente:negarite"
+  },
+  "result": {
+    "count": 4,
+    "item": "ariente:dust_negarite"
+  }
+}

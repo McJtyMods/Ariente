@@ -1,6 +1,7 @@
 package mcjty.ariente.datagen;
 
 import net.minecraft.world.level.block.Block;
+import net.minecraft.world.item.Item;
 import net.minecraft.world.level.storage.loot.LootTable;
 import net.minecraft.data.loot.BlockLootSubProvider;
 import net.minecraft.world.flag.FeatureFlags;
@@ -15,6 +16,10 @@ public class BlockLootUtility extends BlockLootSubProvider {
 
     @Override
     protected void generate() {
+    }
+
+    public static LootTable.Builder oreTable(Block block, Item drop) {
+        return new BlockLootUtility().createOreDrop(block, drop);
     }
 
     public static LootTable.Builder slabTable(Block block) {

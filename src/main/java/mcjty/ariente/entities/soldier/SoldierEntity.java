@@ -217,12 +217,10 @@ public class SoldierEntity extends Monster implements IArmRaisable, IForcefieldI
         behaviourType = SoldierBehaviourType.values()[compound.getInt("behaviour")];
     }
 
-// @todo 1.14
-//    @Override
-//    @Nullable
-//    protected ResourceLocation getLootTable() {
-//        return LOOT;
-//    }
+    @Override
+    protected ResourceLocation getDefaultLootTable() {
+        return LOOT;
+    }
 
 
     // @todo 1.14

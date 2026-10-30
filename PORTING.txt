@@ -44,7 +44,7 @@ WORKSPACE, HISTORY AND USER REQUIREMENTS
   implementation, or port unrelated CTM features. See TEXTURES.md for the small
   replacement format, including vanilla animation preservation.
 - The initial port checkpoint has been committed locally. These three checkouts
-  were clean at the start of this phase-1 task. Preserve unrelated edits and
+  were clean at the start of both phase-1 and phase-2 tasks. Preserve unrelated edits and
   existing staging on future tasks. Stage task changes; do not create commits.
 - Earlier work prioritized buildability, worldgen and reported bugs. A systematic
   feature-by-feature comparison with master has NOT been completed. Most gaps
@@ -181,36 +181,94 @@ Focused evidence and remaining limits
   sprint/air-speed tuning across configurations, prolonged fuel use and interaction
   with other mods. Focused checks do not certify every equipment combination.
 
+PHASE 2 - RESOURCE AND CRAFTING PROGRESSION CHECKPOINT
+=====================================================
+- All seven Ariente resource ores have loot, strength and stone-tier pickaxe
+  requirements. Metal/fuel ores drop themselves; the four metals smelt/blast to
+  one ingot, and Negarite/Posirite smelt/blast to four dust (original conversions,
+  200/100 ticks, zero XP). Silicon drops silicon with native Fortune/Silk Touch
+  behavior. Silicon processing was absent even in master; this direct drop
+  deliberately closes that original material-obtainability gap.
+- Original soldier/drone/sentinel lithium tables are restored under data/ariente,
+  retaining player-kill gating and 50% + 1% per Looting level chance. Soldier's
+  modern loot hook is active; Master Soldiers inherit it. Existing security-card
+  drops and last-core storage-access cards remain separate.
+- Optional Overworld generation uses a registered native feature/configured/
+  placed feature plus an Overworld biome modifier. Original vein size ranges,
+  attempts and Y ranges are retained, including white marble. The runtime guard
+  honors OVERWORLD_OREGEN YES/NO/DEFAULT and the actual Overworld dimension.
+  DEFAULT enables it only without ArienteWorld; no retrogen was added.
+- The inactive onLootLoad handler was removed. A registered global loot modifier
+  handles the original seven chest-table families and reads server config at roll
+  time. It preserves vanilla loot and offers one weighted extra selection: weight
+  100 for no addition, configured blueprint/result weights, and six equipment
+  entries each with the configured suit weight. Default 20/0/0 gives a 1-in-6
+  blueprint opportunity per chest, then the original weighted recipe catalog.
+  This additive adaptation does not claim identical old main-pool roll behavior.
+- Negarite/Posirite/Combined cable and connector recipes now use their distinct
+  item registrations. IDs and blueprint matching are distinct; connector inputs
+  require the matching cable. Data cable/connector recipes were absent in master
+  and remain absent. Manual crafting uses the recipe's canonical batch count,
+  regardless of the count encoded in a blueprint. Invalid blueprint JSON returns
+  an empty result instead of crashing the GUI.
+- Both Constructors reserve each ingredient once (including repeated ingredients
+  across split stacks). Auto Constructor uses full result counts for new/existing
+  output, requires space for the whole batch in one output slot, and consumes
+  ingredients only after crafting power is available. Output slots reject input.
+- JEI 15's Constructor category shows counted ingredients, full output and the
+  required blueprint as a catalyst; Constructor and Auto Constructor are machine
+  catalysts. Blueprint subtypes resolve by recipe ID. Creative/JEI lists include
+  a populated blueprint per catalog entry. Obsolete JEI wrappers and imperative
+  ModCrafting initialization were removed; processing lives in generated data.
+- Companion city loot now uses module_looting instead of nonexistent module_loot.
+  Explicit blueprints for original recipe-less modules (Power, Regeneration,
+  Scramble, Speed, Step Assist) and a silver-ingot blueprint were changed to the
+  existing item drops. These are usable loot routes, not new recipes. Hover has
+  no catalog recipe or confirmed authored loot entry; Invisibility's original
+  disabled install control remains. Do not claim every module is survival-ready.
+
+Validation and boundaries
+- Server datagen passed into isolated output: recipes, loot tables and both tag
+  providers. Only the 33 phase-2 processing/advancement/ore-loot/mining-tag files
+  were copied. Other old generated files were preserved (most differences were
+  modern default fields/order); client/full asset datagen remains phase 4 work.
+- ProgressionRegressionTests adds seven tests covering ore mining/processing (including
+  two actual furnace operations producing eight dust), catalog IDs/blueprints,
+  input reservation, real manual double-click, automatic batches/capacity/power,
+  mob lithium tables, configuration-driven native ore placement, and global loot
+  modifier/category weights plus every authored city loot reference. Some checks
+  share a test method. Runtime config toggles use an in-memory copy to avoid
+  racing NightConfig file autoreload. The dedicated suite now has 36 required tests.
+- CityGenerationTests additionally inspects generated storage loot/security and
+  destroys all cores in a generated city0_1 to verify its storage-access card.
+  City5_1 has zero authored Storage Cubes, as does city0_0; its declared loot list
+  alone does not populate containers. No new cube interior/loot rooms were added.
+- ProgressionClientChecks (ariente.progressionClientCheck=true) inspects the real
+  JEI runtime and opens the eight-Posirite-cable recipe. It verifies the catalog,
+  both catalysts, every drawable layout, focused color lookup and blueprint
+  subtypes. ariente.expectCompanion=true selects the companion launch; otherwise
+  it asserts ArienteWorld is actually absent. The no-companion launch uses only
+  local Ariente/HoloGui/McJtyLib/TOP sources, generates fresh native Overworld
+  chunks containing all seven ores, and rolls default dungeon blueprints.
+- Final Java 17 workspace builds/reobfuscation for Ariente, ArienteWorld and
+  ModHoloGui pass, along with all 36 required dedicated GameTests. Both progression
+  client modes pass.
+- Client screenshots: Ariente/build/verification/constructor-jei-false.png and
+  ArienteWorld/build/verification/constructor-jei-true.png (ignored artifacts).
+  Temporary launch scripts are /tmp/ariente-phase2-{client,alone}.gradle; the
+  latter uses a minimal temporary MultiWorkspace and an isolated vanilla save,
+  not the user's saves. It demonstrates mod-alone gameplay with local sources,
+  not successful resolution of historical standalone published dependencies.
+- Full human survival playthrough, sustained natural spawn balance, long-running
+  alerts and dedicated multiplayer/reconnect still need phase-4 validation. The
+  existing entrance/pearl/arrival/return and alert/shield regressions also run in
+  the dedicated suite; these focused checks do not certify full progression.
+
 CONFIRMED MISSING PORTS / INCOMPLETE MIGRATIONS
 ============================================
-Resources, progression, recipes and JEI
-- BaseOreBlock and datagen/LootTables.java: Ariente resource ore loot is missing.
-  ModCrafting.java has six old furnace conversions commented out; current recipe
-  data has no smelting/blasting recipes. Restore original drops/processing with
-  modern loot/recipe data, mining/tool tags and fortune/silk-touch behavior as
-  appropriate. Dimension ore placement is already active in ArienteWorld.
-- Original master has assets/ariente/loot_tables/entities/{soldier,drone,
-  sentinel_drone}.json, supplying lithium ingots. These files are ABSENT from
-  the current source tree. Port them to data/ariente/loot_tables/entities and
-  audit current entity loot hooks. Soldier's explicit hook is disabled; city-key
-  drops use separate active code. Do not infer resource loot works from AI tests.
-- Ariente-alone progression: oregen/WorldGen.java is inactive and ArienteOreGen
-  is a placeholder. Restore optional OVERWORLD_OREGEN with modern features/biome
-  modifiers, honoring configuration. This is separate from companion ore gen.
-- ForgeEventHandlers.onLootLoad is deliberately NOT subscribed: its old loot
-  injection used incompatible APIs/config timing. Replace with modern global
-  loot modifiers honoring OVERWORLD_DUNGEON_LOOT and blueprint/item/suit weights.
-  The default alternative progression without ArienteWorld currently does not
-  work. Do not re-enable the obsolete handler just to make it run.
-- recipes/BlueprintRecipeRegistry.java: colored NETCABLE/CONNECTOR outputs and
-  ingredients still use commented metadata placeholders. Produce/distinguish
-  modern variants and audit recipe IDs, blueprint matching and obtainable results.
-- compat/jei/{JeiPlugin,JeiConstructorRecipeCategory,JeiConstructorRecipeWrapper}
-  remain disabled placeholders around the old JEI API. Restore Constructor and
-  Auto Constructor categories/catalysts/display against the target JEI API.
-- AutoConstructorTile: an empty output receives the recipe's result count, while
-  an existing output grows by one. Correct batch yield/capacity/ingredient use
-  and validate power failure behavior. This is a known bug, not a missing machine.
+Resource/progression ports listed here previously are now implemented; see the
+phase-2 checkpoint above. Original missing recipes and full playthrough limits
+remain explicit.
 
 Automation, facades and remaining visuals
 - blocks/utility/autofield/{ProducerInfo,ConsumerInfo}: Ore Dictionary modes
@@ -283,7 +341,7 @@ VERIFICATION ALREADY PERFORMED AND ITS LIMITS
 ===========================================
 - Java 17 workspace builds of Ariente, ArienteWorld and ModHoloGui pass, including
   reobfuscation. workspace:compileJava passed earlier. Client loads both mods.
-- Latest dedicated suite: 29 required GameTests passed. They live in the companion's
+- Latest dedicated suite: 36 required GameTests passed. They live in the companion's
   src/gameTest, outside published jars. MachinePersistenceTests covers 31 tile
   types; MachineInteractionTests covers storage, generator/tank state, hologram
   clicks, equipment configuration and transport; CombatRegressionTests exercises
@@ -301,7 +359,7 @@ VERIFICATION ALREADY PERFORMED AND ITS LIMITS
   passed before/after resource reload in vanilla Fabulous and Embeddium/Oculus
   Fancy (0.3.31/1.8.0, no shader-pack compatibility claim). Phase-1 removal pixel
   comparisons and movement checks are separate checks described above.
-- Phase-1 Java 17 builds/reobfuscation and all 29 dedicated GameTests pass. The
+- Phase-1 Java 17 builds/reobfuscation and all 29 then-required GameTests passed. The
   movement client and final GUI pixel/removal client were run separately. Earlier
   portal/cart/worldgen client checks were not repeated for this equipment task.
 - Ignored visual artifacts: ../ArienteWorld/build/verification, notably
@@ -323,7 +381,7 @@ explicit source root is supplied. Resource/build paths are checkout-relative.
 - Machines/power: blocks/utility/, blocks/generators/, blocks/defense/, power/,
   cables/, facade/, multipart/.
 - Data/crafting: recipes/BlueprintRecipeRegistry.java, datagen/{Recipes,LootTables,
-  BlockStates,Items}.java, compat/jei/, ModCrafting.java and oregen/.
+  BlockStates,Items}.java, compat/jei/, loot/ and oregen/.
 - Shared GUI: ../ModHoloGui/src/main/java/mcjty/hologui/gui/
   {HoloGuiEntity,HoloGuiEntityRender,HoloGuiRenderTools,HoloGuiRenderType}.java,
   gui/components/{HoloStackToggle,HoloToggleIcon,HoloIconChoice}.java and
@@ -352,13 +410,13 @@ Phase 1 - Finish equipment and the current reports (implemented; focused checks 
   Exit achieved in focused survival-client and pixel checks. Continue broader
   multiplayer/configuration/interaction validation in phase 4.
 
-Phase 2 - Complete resource and crafting progression.
+Phase 2 - Complete resource and crafting progression (implemented; focused validation).
   Restore ore/mob loot, smelting, optional Overworld progression, colored recipe
   variants and Constructor JEI; fix Auto Constructor batch results. Coordinate
   city loot/spawning/entrance checks with the companion's phase 2.
-  Exit: a fresh survival path obtains the materials and crafts functioning gear
-  and machines without Creative substitutes; original missing recipes are
-  explicitly identified rather than silently reported as complete.
+  Implementation and focused resource/crafting/loot checks are recorded above.
+  Original missing recipes remain explicit; a full survival playthrough is still
+  required before release.
 
 Phase 3 - Finish remaining systems and presentation.
   Complete tag matching/routing, facade/multipart hooks, missing visual/tooltips,

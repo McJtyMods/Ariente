@@ -27,6 +27,14 @@ public class LootTables extends BaseLootTableProvider implements LootTableSubPro
     }
 
     protected void addTables() {
+        addSimpleTable(Registration.ORE_LITHIUM.get());
+        addSimpleTable(Registration.ORE_MANGANESE.get());
+        addSimpleTable(Registration.ORE_PLATINUM.get());
+        addSimpleTable(Registration.ORE_SILVER.get());
+        addSimpleTable(Registration.ORE_NEGARITE.get());
+        addSimpleTable(Registration.ORE_POSIRITE.get());
+        addLootTable(Registration.ORE_SILICON.get(), BlockLootUtility.oreTable(Registration.ORE_SILICON.get(), Registration.DUST_SILICON.get()));
+
         addStandardTable(Registration.AICORE.get(), Registration.AICORE_TILE.get());
         addStandardTable(Registration.FORCEFIELD.get(), Registration.FORCEFIELD_TILE.get());
         addSimpleTable(Registration.NEGARITE_TANK.get());

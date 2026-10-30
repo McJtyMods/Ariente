@@ -250,5 +250,8 @@
   "message.ariente.constructor.header": "Constructor",
   "message.ariente.auto_constructor.header": "Auto Constructor",
   "message.ariente.blueprint_storage.header": "Blueprint Storage",
-  "message.ariente.automation_field.header": "Automation Field"
+  "message.ariente.automation_field.header": "Automation Field",
+
+  "jei.ariente.constructor": "Constructor",
+  "jei.ariente.blueprint_required": "Place this blueprint in an adjacent Blueprint Storage"
 }

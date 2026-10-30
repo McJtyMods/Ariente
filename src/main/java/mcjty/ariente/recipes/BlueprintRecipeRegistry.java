@@ -1,6 +1,7 @@
 package mcjty.ariente.recipes;
 
 import net.minecraft.core.registries.Registries;
+import net.minecraft.util.RandomSource;
 import mcjty.ariente.api.MarbleColor;
 import mcjty.ariente.blocks.decorative.DecorativeBlockModule;
 import mcjty.ariente.setup.Registration;
@@ -411,37 +412,37 @@ public class BlueprintRecipeRegistry {
                 new ItemStack(DecorativeBlockModule.MARBLE_SLAB.get(MarbleColor.BLACK).get(), 1),
                 new ItemStack(Items.GLOWSTONE_DUST, 8)
         ));
-        recipes.add(new ConstructorRecipe(new ItemStack(Registration.NETCABLE.get(), 8 /* @todo 1.14 , CableColor.NEGARITE.ordinal())*/), COMMON,
+        recipes.add(new ConstructorRecipe(new ItemStack(Registration.NETCABLE_NEGARITE.get(), 8), COMMON,
                 new ItemStack(Registration.DUST_SILICON.get(), 1),
                 new ItemStack(Registration.INGOT_SILVER.get(), 1),
                 new ItemStack(Blocks.GLASS_PANE, 3),
                 new ItemStack(Registration.DUST_NEGARITE.get(), 2)
         ));
-        recipes.add(new ConstructorRecipe(new ItemStack(Registration.NETCABLE.get(), 8 /* @todo 1.14 , CableColor.POSIRITE.ordinal())*/), COMMON,
+        recipes.add(new ConstructorRecipe(new ItemStack(Registration.NETCABLE_POSIRITE.get(), 8), COMMON,
                 new ItemStack(Registration.DUST_SILICON.get(), 1),
                 new ItemStack(Registration.INGOT_SILVER.get(), 1),
                 new ItemStack(Blocks.GLASS_PANE, 3),
                 new ItemStack(Registration.DUST_POSIRITE.get(), 2)
         ));
-        recipes.add(new ConstructorRecipe(new ItemStack(Registration.NETCABLE.get(), 8 /* @todo 1.14 , CableColor.COMBINED.ordinal())*/), COMMON,
+        recipes.add(new ConstructorRecipe(new ItemStack(Registration.NETCABLE_COMBINED.get(), 8), COMMON,
                 new ItemStack(Registration.DUST_SILICON.get(), 1),
                 new ItemStack(Registration.INGOT_SILVER.get(), 1),
                 new ItemStack(Blocks.GLASS_PANE, 3),
                 new ItemStack(Registration.DUST_NEGARITE.get(), 2),
                 new ItemStack(Registration.DUST_POSIRITE.get(), 2)
         ));
-        recipes.add(new ConstructorRecipe(new ItemStack(Registration.CONNECTOR.get(), 1 /* @todo 1.14 , CableColor.NEGARITE.ordinal())*/), COMMON,
-                new ItemStack(Registration.NETCABLE.get(), 1 /* @todo 1.14 , CableColor.NEGARITE.ordinal()*/),
+        recipes.add(new ConstructorRecipe(new ItemStack(Registration.CONNECTOR_NEGARITE.get(), 1), COMMON,
+                new ItemStack(Registration.NETCABLE_NEGARITE.get(), 1),
                 new ItemStack(Registration.INGOT_SILVER.get(), 1),
                 new ItemStack(Registration.DUST_SILICON.get(), 1)
         ));
-        recipes.add(new ConstructorRecipe(new ItemStack(Registration.CONNECTOR.get(), 1 /* @todo 1.14 , CableColor.POSIRITE.ordinal()*/), COMMON,
-                new ItemStack(Registration.NETCABLE.get(), 1 /* @todo 1.14 , CableColor.POSIRITE.ordinal()*/),
+        recipes.add(new ConstructorRecipe(new ItemStack(Registration.CONNECTOR_POSIRITE.get(), 1), COMMON,
+                new ItemStack(Registration.NETCABLE_POSIRITE.get(), 1),
                 new ItemStack(Registration.INGOT_SILVER.get(), 1),
                 new ItemStack(Registration.DUST_SILICON.get(), 1)
         ));
-        recipes.add(new ConstructorRecipe(new ItemStack(Registration.CONNECTOR.get(), 1 /* @todo 1.14 , CableColor.COMBINED.ordinal()*/), COMMON,
-                new ItemStack(Registration.NETCABLE.get(), 1 /* @todo 1.14 , CableColor.COMBINED.ordinal()*/),
+        recipes.add(new ConstructorRecipe(new ItemStack(Registration.CONNECTOR_COMBINED.get(), 1), COMMON,
+                new ItemStack(Registration.NETCABLE_COMBINED.get(), 1),
                 new ItemStack(Registration.INGOT_SILVER.get(), 1),
                 new ItemStack(Registration.DUST_SILICON.get(), 1)
         ));
@@ -461,6 +462,18 @@ public class BlueprintRecipeRegistry {
             }
         }
         return null;
+    }
+
+    public static ConstructorRecipe getRandomRecipe(RandomSource random) {
+        double total = getRecipes().stream().mapToDouble(ConstructorRecipe::getChance).sum();
+        double roll = random.nextDouble() * total;
+        for (ConstructorRecipe recipe : getRecipes()) {
+            roll -= recipe.getChance();
+            if (roll < 0) {
+                return recipe;
+            }
+        }
+        return getRecipes().get(getRecipes().size() - 1);
     }
 
     public static WeightedRandom<ConstructorRecipe> getRandomRecipes() {

@@ -4,7 +4,6 @@ import mcjty.ariente.ForgeEventHandlers;
 import mcjty.ariente.compat.arienteworld.ArienteWorldCompat;
 import mcjty.ariente.gui.HoloGuiCompatibility;
 import mcjty.ariente.network.ArienteMessages;
-import mcjty.ariente.oregen.WorldGen;
 import mcjty.ariente.potions.ModPotions;
 import mcjty.lib.compat.MainCompatHandler;
 import mcjty.lib.setup.DefaultModSetup;
@@ -27,7 +26,6 @@ public class ModSetup extends DefaultModSetup {
 
         ArienteMessages.registerMessages("ariente");
 
-        WorldGen.init();
         ModPotions.init();
     }
 

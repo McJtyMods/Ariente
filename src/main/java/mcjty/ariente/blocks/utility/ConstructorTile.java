@@ -9,6 +9,8 @@ import mcjty.ariente.gui.HoloGuiTools;
 import mcjty.ariente.items.BlueprintItem;
 import mcjty.ariente.recipes.BlueprintRecipeRegistry;
 import mcjty.ariente.recipes.ConstructorRecipe;
+import mcjty.ariente.recipes.ConstructorCrafting;
+import net.minecraftforge.items.wrapper.InvWrapper;
 import mcjty.ariente.setup.Registration;
 import mcjty.hologui.api.*;
 import mcjty.lib.McJtyLib;
@@ -112,67 +114,38 @@ public class ConstructorTile extends GenericTileEntity implements IGuiTile, ICit
         return false;
     }
 
-    private void consumeIngredient(Player player, ItemStack ingredient) {
-        if (ingredient.isEmpty()) {
-            return;
-        }
-
-        int needed = ingredient.getCount();
-        for (int i = 0; i < player.getInventory().getContainerSize(); i++) {
-            ItemStack stack = player.getInventory().getItem(i);
-            if (ItemStack.isSameItem(ingredient, stack)) {
-                if (needed <= stack.getCount()) {
-                    stack.shrink(needed);
-                    return;
-                }
-                needed -= stack.getCount();
-                stack.shrink(stack.getCount());
-                if (needed <= 0) {
-                    return;
-                }
-            }
-        }
-    }
-
     private boolean canCraft(Player player, ItemStack blueprintStack) {
-        if (!blueprintStack.isEmpty()) {
-            ItemStack destination = BlueprintItem.getDestination(blueprintStack);
-            ConstructorRecipe recipe = BlueprintRecipeRegistry.findRecipe(destination);
-            if (recipe != null) {
-                // Check if we have enough
-                for (ItemStack ingredient : recipe.getIngredientList()) {
-                    if (!hasIngredient(player, ingredient)) {
-                        return false; // Can't craft
-                    }
-                }
-            }
-            return true;
+        if (player == null || !blueprintStack.is(Registration.BLUEPRINT.get())) {
+            return false;
         }
-        return false;
+        ConstructorRecipe recipe = BlueprintRecipeRegistry.findRecipe(BlueprintItem.getDestination(blueprintStack));
+        return recipe != null && ConstructorCrafting.planIngredients(recipe, new InvWrapper(player.getInventory()),
+                0, player.getInventory().getContainerSize()) != null;
     }
 
     private void attemptCraft(Player player, ItemStack blueprintStack) {
-        if (!blueprintStack.isEmpty()) {
-            if (canCraft(player, blueprintStack)) {
-                ItemStack destination = BlueprintItem.getDestination(blueprintStack);
-                ConstructorRecipe recipe = BlueprintRecipeRegistry.findRecipe(destination);
-                if (recipe != null) {
-                    // We have enough. Consume and craft
-                    for (ItemStack ingredient : recipe.getIngredientList()) {
-                        consumeIngredient(player, ingredient);
-                    }
-
-                    markDirtyClient();
-
-                    if (!player.getInventory().add(destination)) {
-                        player.spawnAtLocation(destination, 1.05f);
-                    }
-
-                    if (player.containerMenu != null) {
-                        player.containerMenu.broadcastChanges();
-                    }
-                }
+        if (!canCraft(player, blueprintStack)) {
+            return;
+        }
+        ConstructorRecipe recipe = BlueprintRecipeRegistry.findRecipe(BlueprintItem.getDestination(blueprintStack));
+        var inventory = new InvWrapper(player.getInventory());
+        int[] reserved = ConstructorCrafting.planIngredients(recipe, inventory, 0, inventory.getSlots());
+        if (reserved == null) {
+            return;
+        }
+        for (int slot = 0; slot < reserved.length; slot++) {
+            if (reserved[slot] > 0) {
+                inventory.extractItem(slot, reserved[slot], false);
             }
+        }
+        ItemStack result = recipe.getDestination().copy();
+        if (!player.getInventory().add(result)) {
+            player.spawnAtLocation(result, 1.05f);
+        }
+        markDirtyClient();
+        player.inventoryMenu.broadcastChanges();
+        if (player.containerMenu != player.inventoryMenu) {
+            player.containerMenu.broadcastChanges();
         }
     }
 

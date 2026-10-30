@@ -1,34 +1,50 @@
 package mcjty.ariente.compat.jei;
 
-//@JEIPlugin
-public class JeiPlugin {} /* @todo 1.14 implements IModPlugin {
+import mcjty.ariente.Ariente;
+import mcjty.ariente.items.BlueprintItem;
+import mcjty.ariente.recipes.BlueprintRecipeRegistry;
+import mcjty.ariente.recipes.ConstructorRecipe;
+import mcjty.ariente.setup.Registration;
+import mezz.jei.api.IModPlugin;
+import mezz.jei.api.recipe.RecipeType;
+import mezz.jei.api.registration.IRecipeCatalystRegistration;
+import mezz.jei.api.registration.IRecipeCategoryRegistration;
+import mezz.jei.api.registration.IRecipeRegistration;
+import mezz.jei.api.registration.ISubtypeRegistration;
+import net.minecraft.resources.ResourceLocation;
+import net.minecraft.world.item.ItemStack;
 
-    public static final String ARIENTE_CRAFTING_ID = "Ariente.Crafting";
+@mezz.jei.api.JeiPlugin
+public class JeiPlugin implements IModPlugin {
 
-    @Override
-    public void register(@Nonnull IModRegistry registry) {
-        registerGrindstoneHandling(registry);
-    }
-
-    private void registerGrindstoneHandling(@Nonnull IModRegistry registry) {
-        registry.addRecipeCatalyst(new ItemStack(ModBlocks.constructorBlock), ARIENTE_CRAFTING_ID);
-        registry.addRecipeCatalyst(new ItemStack(ModBlocks.autoConstructorBlock), ARIENTE_CRAFTING_ID);
-
-        List<JeiConstructorRecipe> recipes = new ArrayList<>();
-        for (ConstructorRecipe recipe : BlueprintRecipeRegistry.getRecipes()) {
-            recipes.add(new JeiConstructorRecipe(recipe));
-        }
-        registry.addRecipes(recipes, ARIENTE_CRAFTING_ID);
-        registry.handleRecipes(JeiConstructorRecipe.class, JeiConstructorRecipeWrapper::new, ARIENTE_CRAFTING_ID);
-    }
+    public static final RecipeType<ConstructorRecipe> CONSTRUCTOR = RecipeType.create(Ariente.MODID, "constructor", ConstructorRecipe.class);
 
     @Override
-    public void registerCategories(IRecipeCategoryRegistration registry) {
-        IJeiHelpers helpers = registry.getJeiHelpers();
-        IGuiHelper guiHelper = helpers.getGuiHelper();
-
-        registry.addRecipeCategories(new JeiConstructorRecipeCategory(guiHelper));
+    public ResourceLocation getPluginUid() {
+        return new ResourceLocation(Ariente.MODID, "constructor");
     }
 
+    @Override
+    public void registerItemSubtypes(ISubtypeRegistration registration) {
+        registration.registerSubtypeInterpreter(Registration.BLUEPRINT.get(), (stack, context) -> {
+            ConstructorRecipe recipe = BlueprintRecipeRegistry.findRecipe(BlueprintItem.getDestination(stack));
+            return recipe == null ? "empty" : recipe.getId().toString();
+        });
+    }
+
+    @Override
+    public void registerCategories(IRecipeCategoryRegistration registration) {
+        registration.addRecipeCategories(new JeiConstructorRecipeCategory(registration.getJeiHelpers().getGuiHelper()));
+    }
+
+    @Override
+    public void registerRecipes(IRecipeRegistration registration) {
+        registration.addRecipes(CONSTRUCTOR, BlueprintRecipeRegistry.getRecipes());
+    }
+
+    @Override
+    public void registerRecipeCatalysts(IRecipeCatalystRegistration registration) {
+        registration.addRecipeCatalyst(new ItemStack(Registration.CONSTRUCTOR.get()), CONSTRUCTOR);
+        registration.addRecipeCatalyst(new ItemStack(Registration.AUTO_CONSTRUCTOR.get()), CONSTRUCTOR);
+    }
 }
-*/

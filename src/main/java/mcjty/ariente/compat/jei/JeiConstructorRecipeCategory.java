@@ -1,62 +1,60 @@
 package mcjty.ariente.compat.jei;
 
-// @todo 1.14
-public class JeiConstructorRecipeCategory {} /*implements IRecipeCategory<JeiConstructorRecipeWrapper> {
+import mcjty.ariente.Ariente;
+import mcjty.ariente.items.BlueprintItem;
+import mcjty.ariente.recipes.ConstructorRecipe;
+import mcjty.ariente.setup.Registration;
+import mezz.jei.api.constants.VanillaTypes;
+import mezz.jei.api.gui.builder.IRecipeLayoutBuilder;
+import mezz.jei.api.gui.drawable.IDrawable;
+import mezz.jei.api.helpers.IGuiHelper;
+import mezz.jei.api.recipe.IFocusGroup;
+import mezz.jei.api.recipe.RecipeIngredientRole;
+import mezz.jei.api.recipe.RecipeType;
+import mezz.jei.api.recipe.category.IRecipeCategory;
+import net.minecraft.network.chat.Component;
+import net.minecraft.resources.ResourceLocation;
+import net.minecraft.world.item.ItemStack;
+
+public class JeiConstructorRecipeCategory implements IRecipeCategory<ConstructorRecipe> {
 
     private final IDrawable background;
+    private final IDrawable icon;
 
-    public JeiConstructorRecipeCategory(IGuiHelper guiHelper) {
-        ResourceLocation location = new ResourceLocation(Ariente.MODID, "textures/gui/recipe_background.png");
-        background = guiHelper.createDrawable(location, 0, 0, 160, 80);
+    public JeiConstructorRecipeCategory(IGuiHelper helper) {
+        background = helper.createDrawable(new ResourceLocation(Ariente.MODID, "textures/gui/recipe_background.png"), 0, 0, 160, 80);
+        icon = helper.createDrawableIngredient(VanillaTypes.ITEM_STACK, new ItemStack(Registration.CONSTRUCTOR.get()));
     }
 
-    @Nonnull
     @Override
-    public String getUid() {
-        return JeiPlugin.ARIENTE_CRAFTING_ID;
+    public RecipeType<ConstructorRecipe> getRecipeType() {
+        return JeiPlugin.CONSTRUCTOR;
     }
 
-    @Nonnull
     @Override
-    public String getTitle() {
-        return "Constructor";
+    public Component getTitle() {
+        return Component.translatable("jei.ariente.constructor");
     }
 
-    @Nonnull
     @Override
     public IDrawable getBackground() {
         return background;
     }
 
     @Override
-    public void drawExtras(@Nonnull Minecraft minecraft) {
+    public IDrawable getIcon() {
+        return icon;
     }
 
     @Override
-    public void setRecipe(IRecipeLayout recipeLayout, JeiConstructorRecipeWrapper recipeWrapper, IIngredients ingredients) {
-        IGuiItemStackGroup guiItemStacks = recipeLayout.getItemStacks();
-
-        List<List<ItemStack>> ingredientsInputs = ingredients.getInputs(VanillaTypes.ITEM);
-        int idx = 0;
-        for (int x = 0 ; x < 4 ; x++) {
-            for (int y = 0 ; y < 3 ; y++) {
-                if (idx < ingredientsInputs.size()) {
-                    guiItemStacks.init(idx, true, 23 + x * 18, 14 + y * 18);
-                    List<ItemStack> inputs = ingredientsInputs.get(idx);
-                    guiItemStacks.set(idx, inputs);
-                }
-                idx++;
-            }
+    public void setRecipe(IRecipeLayoutBuilder builder, ConstructorRecipe recipe, IFocusGroup focuses) {
+        for (int index = 0; index < recipe.getIngredientList().size(); index++) {
+            builder.addSlot(RecipeIngredientRole.INPUT, 23 + (index / 3) * 18, 14 + (index % 3) * 18)
+                    .addItemStack(recipe.getIngredientList().get(index));
         }
-
-        guiItemStacks.init(idx, false, 126, 50);
-        List<ItemStack> outputs = ingredients.getOutputs(VanillaTypes.ITEM).get(0);
-        guiItemStacks.set(idx, outputs);
-    }
-
-    @Override
-    public String getModName() {
-        return Ariente.MODNAME;
+        builder.addSlot(RecipeIngredientRole.CATALYST, 126, 14)
+                .addItemStack(BlueprintItem.makeBluePrint(recipe.getDestination()))
+                .addTooltipCallback((view, tooltip) -> tooltip.add(Component.translatable("jei.ariente.blueprint_required")));
+        builder.addSlot(RecipeIngredientRole.OUTPUT, 126, 50).addItemStack(recipe.getDestination());
     }
 }
-*/

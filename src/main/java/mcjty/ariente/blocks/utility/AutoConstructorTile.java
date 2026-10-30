@@ -11,6 +11,7 @@ import mcjty.ariente.power.IPowerUser;
 import mcjty.ariente.power.PowerReceiverSupport;
 import mcjty.ariente.recipes.BlueprintRecipeRegistry;
 import mcjty.ariente.recipes.ConstructorRecipe;
+import mcjty.ariente.recipes.ConstructorCrafting;
 import mcjty.ariente.setup.Registration;
 import mcjty.hologui.api.*;
 import mcjty.hologui.api.components.IPlayerSlots;
@@ -119,107 +120,40 @@ public class AutoConstructorTile extends TickingTileEntity implements IGuiTile, 
         return true;
     }
 
-    private boolean hasIngredient(ItemStack ingredient) {
-        if (ingredient.isEmpty()) {
-            return true;
-        }
-        int needed = ingredient.getCount();
-        for (int i = SLOT_INGREDIENTS; i < SLOT_INGREDIENTS + INGREDIENTS; i++) {
-            ItemStack stack = items.getStackInSlot(i);
-            if (ItemStack.isSameItem(ingredient, stack)) {
-                needed -= stack.getCount();
-                if (needed <= 0) {
-                    return true;
-                }
-            }
-        }
-        return false;
-    }
-
-
-    private boolean canCraft(ItemStack blueprintStack) {
-        if (!blueprintStack.isEmpty()) {
-            ItemStack destination = BlueprintItem.getDestination(blueprintStack);
-            ConstructorRecipe recipe = BlueprintRecipeRegistry.findRecipe(destination);
-            if (recipe != null) {
-                // Check if we have enough
-                for (ItemStack ingredient : recipe.getIngredientList()) {
-                    if (!hasIngredient(ingredient)) {
-                        return false; // Can't craft
-                    }
-                }
-            }
-            return true;
-        }
-        return false;
-    }
-
-    private void consumeIngredient(ItemStack ingredient) {
-        if (ingredient.isEmpty()) {
+    private void attemptCraft(ItemStack blueprintStack) {
+        if (!blueprintStack.is(Registration.BLUEPRINT.get())) {
             return;
         }
-
-        int needed = ingredient.getCount();
-        for (int i = SLOT_INGREDIENTS; i < SLOT_INGREDIENTS + INGREDIENTS; i++) {
-            ItemStack stack = items.getStackInSlot(i);
-            if (ItemStack.isSameItem(ingredient, stack)) {
-                markDirtyQuick();
-                if (needed <= stack.getCount()) {
-                    stack.shrink(needed);
-                    return;
-                }
-                needed -= stack.getCount();
-                stack.shrink(stack.getCount());
-                if (needed <= 0) {
-                    return;
-                }
-            }
+        ConstructorRecipe recipe = BlueprintRecipeRegistry.findRecipe(BlueprintItem.getDestination(blueprintStack));
+        if (recipe == null || recipe.getDestination().isEmpty()) {
+            return;
         }
-    }
-
-
-    private void attemptCraft(ItemStack blueprintStack) {
-        if (canCraft(blueprintStack)) {
-            ItemStack destination = BlueprintItem.getDestination(blueprintStack);
-            ConstructorRecipe recipe = BlueprintRecipeRegistry.findRecipe(destination);
-            if (recipe != null) {
-                // Check if we have room for the destination
-                boolean ok = false;
-                for (int i = SLOT_OUTPUT; i < SLOT_OUTPUT + OUTPUT; i++) {
-                    ItemStack outputSlot = items.getStackInSlot(i);
-                    if (outputSlot.isEmpty()) {
-                        if (PowerReceiverSupport.consumePower(level, worldPosition, 100, true)) {
-                            usingPower += 100;
-                            items.setStackInSlot(i, recipe.getDestination().copy());
-                            ok = true;
-                        } else {
-                            return; // Do nothing. Not enough power
-                        }
-                        break;
-                    } else {
-                        if (ItemHandlerHelper.canItemStacksStack(recipe.getDestination(), outputSlot)) {
-                            if (outputSlot.getCount() < outputSlot.getMaxStackSize()) {
-                                if (PowerReceiverSupport.consumePower(level, worldPosition, 100, true)) {
-                                    usingPower += 100;
-                                    outputSlot.grow(1);
-                                    markDirtyQuick();
-                                    ok = true;
-                                } else {
-                                    return; // Do nothing. Not enough power
-                                }
-                                break;
-                            }
-                        }
-                    }
-                }
-
-                if (ok) {
-                    // We have enough. Consume and craft
-                    for (ItemStack ingredient : recipe.getIngredientList()) {
-                        consumeIngredient(ingredient);
-                    }
+        int[] reserved = ConstructorCrafting.planIngredients(recipe, items, SLOT_INGREDIENTS, INGREDIENTS);
+        if (reserved == null) {
+            return;
+        }
+        ItemStack result = recipe.getDestination();
+        for (int slot = SLOT_OUTPUT; slot < SLOT_OUTPUT + OUTPUT; slot++) {
+            ItemStack output = items.getStackInSlot(slot);
+            int limit = Math.min(result.getMaxStackSize(), items.getSlotLimit(slot));
+            if ((!output.isEmpty() && !ItemHandlerHelper.canItemStacksStack(result, output))
+                    || output.getCount() + result.getCount() > limit) {
+                continue;
+            }
+            if (!PowerReceiverSupport.consumePower(level, worldPosition, 100, true)) {
+                return;
+            }
+            usingPower += 100;
+            for (int input = SLOT_INGREDIENTS; input < SLOT_INGREDIENTS + INGREDIENTS; input++) {
+                if (reserved[input] > 0) {
+                    items.extractItem(input, reserved[input], false);
                 }
             }
+            ItemStack crafted = result.copy();
+            crafted.grow(output.getCount());
+            items.setStackInSlot(slot, crafted);
+            markDirtyClient();
+            return;
         }
     }
 
@@ -510,7 +444,7 @@ public class AutoConstructorTile extends TickingTileEntity implements IGuiTile, 
         return new GenericItemHandler(AutoConstructorTile.this, CONTAINER_FACTORY.get()) {
             @Override
             public boolean isItemValid(int slot, @Nonnull ItemStack stack) {
-                return stack.getItem() != Registration.BLUEPRINT.get();
+                return slot < SLOT_OUTPUT && stack.getItem() != Registration.BLUEPRINT.get();
             }
         };
     }

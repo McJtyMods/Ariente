@@ -9,10 +9,7 @@ public class BaseOreBlock extends BaseBlock {
 
     public BaseOreBlock() {
         super(new BlockBuilder()
-                .properties(Properties.of().mapColor(MapColor.STONE)
-//                    .hardnessAndResistance(2.0f, 4.0f)
-                )
-                // @todo 1.18 .harvestLevel(ToolType.PICKAXE, 1)
+                .properties(Properties.of().mapColor(MapColor.STONE).strength(2.0f, 4.0f).requiresCorrectToolForDrops())
         );
     }
 

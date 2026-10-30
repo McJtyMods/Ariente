@@ -106,13 +106,11 @@ The intended route is:
 5. Build a supply of both negarite and posirite flux.
 6. Automate construction and item movement, improve equipment, and tackle larger cities.
 
-**Current progression gap:** ore generation is active, but the Ariente ore blocks
-do not yet have a complete set of resource drops and processing recipes in this
-checkout. Several recipe outputs and equipment hooks also remain unfinished.
-For development, use Creative supplies to test the systems independently rather
-than assuming that every step of this survival route is currently obtainable.
-Playing without ArienteWorld is especially incomplete: the old alternate
-Overworld loot-injection route is disabled.
+Ore drops and furnace/blast-furnace processing, colored cable/connector crafting,
+Constructor JEI and the four powered movement modules are active. A full survival
+playthrough remains required, and some original recipes/content are unfinished.
+Without ArienteWorld, the default settings now enable Overworld ores and dungeon
+blueprint loot as an alternative progression route.
 
 ## Controls and holographic interfaces
 
@@ -190,9 +188,10 @@ profiles: plains, hills, rough terrain, ocean, forest, and city. Forests contain
 the mod's tree varieties, and the landscape includes custom grass, bushes, and
 flowers. These plants are primarily scenery in the present systems.
 
-The following are **ore placement ranges**, not promises that every block drops
-the corresponding processed material. Heights are inclusive placement-origin
-ranges; veins can extend beyond them.
+The following are **ore placement ranges**. Heights are inclusive placement-origin
+ranges; veins can extend beyond them. Ariente resource ores require a stone-tier
+pickaxe. Metal and fuel ores drop themselves for processing; Silicon Ore drops
+Silicon, with Fortune and Silk Touch support.
 
 | Resource | Placement Y range | Attempts per chunk | Main role |
 | --- | --- | --- | --- |
@@ -207,8 +206,9 @@ ranges; veins can extend beyond them.
 | Glowstone | 10–29 | 3 | Lighting and night vision. |
 
 White and blue marble deposits use Y=16–69; black marble uses Y=10–39.
-The companion's features generate the nine listed ores instead of providing a
-normal Overworld ore progression. Other mods may add their own features.
+The companion generates the nine listed resources in its dimension. Ariente's
+optional Overworld feature generates its seven resource ores plus white marble,
+using the original ranges. It defaults on only when ArienteWorld is absent.
 
 There are two different kinds of city layout:
 
@@ -457,8 +457,8 @@ Its hologram transfers blueprints between the player's inventory and the six
 storage slots. Double-click the appropriate displayed slot to transfer. Installed
 blueprints are recipe references and are **not consumed by crafting**.
 
-For Creative testing, the current creative tab supplies the plain Blueprint
-item, not one populated item per recipe. A populated Storage Cube blueprint can
+The creative tab and JEI include one populated Blueprint per catalog recipe.
+JEI shows the required blueprint alongside the ingredients and full output. A populated Storage Cube blueprint can
 be made with this permission-level-2 command in **1.20.1**:
 
 ```text
@@ -503,9 +503,9 @@ redstone mode appropriately. This is a cycling crafter, not a demand-driven
 recursive autocrafting network. It does not automatically manufacture missing
 subcomponents or fetch supplies from all nearby inventories.
 
-**Current limitation:** batch-output recipes need an audit. The empty-output
-path copies the recipe's result stack, while the existing-output path adds one
-item. Do not assume equal batch yields in both cases.
+New and existing output stacks receive the full recipe batch. The machine needs
+space for the whole batch in one output slot and enough crafting power before it
+consumes ingredients. Repeated ingredients reserve each input item only once.
 
 Sources: [blueprint data](src/main/java/mcjty/ariente/items/BlueprintItem.java),
 [catalog](src/main/java/mcjty/ariente/recipes/BlueprintRecipeRegistry.java),
@@ -986,8 +986,12 @@ directory. Values below are defaults, not guaranteed server settings.
 Generator output/fuel duration, combiner loss/limit, storage capacity, and many
 machine timing constants are currently hardcoded rather than adjustable through
 these configs. Ariente's client utility settings include flight movement values,
-but adjusting them does not restore the disabled armor movement hook. Legacy
-Overworld-loot options also exist without an active loot-injection implementation.
+and the movement hooks use them. Overworld ore and dungeon-loot settings accept
+YES/NO/DEFAULT; DEFAULT enables them when ArienteWorld is absent. Dungeon loot
+preserves vanilla drops and offers one extra weighted selection: no addition has
+weight 100, blueprints/results use their configured weights, and each of the six
+suit/sabre entries uses the suit weight. Defaults 20/0/0 give a one-in-six chance
+of a blueprint addition per supported chest; recipe rarity then selects its type.
 
 Sources: [Ariente config classes](src/main/java/mcjty/ariente/config),
 [ArienteWorld config classes](../ArienteWorld/src/main/java/mcjty/arienteworld/config).
@@ -1006,8 +1010,9 @@ actually present in the corresponding Forge item tag.
 | Enhanced Energy Sabre | `LLL / LSL / LLL` | L = lithium ingot tag; S = ordinary Energy Sabre. |
 
 The Constructor also has a blueprint recipe, separate from its ordinary
-crafting entry point. There is no completed built-in ore-smelting route in this
-checkout; these recipes being registered does not solve material availability.
+crafting entry point. Lithium, Manganese, Platinum and Silver ores smelt into one
+ingot each. Negarite and Posirite ores smelt into four dust each. Smelting takes
+200 ticks; blasting takes 100 ticks with the same yields and zero experience.
 
 ### Blueprint catalog
 
@@ -1017,9 +1022,8 @@ weight class, not a crafting success chance. **Flux Capacitor**, **Circuit**, an
 **Advanced Circuit** are components consumed by other recipes, not independent
 machines to place and power.
 
-The final cable/connector entries retain the old metadata-era construction and
-do not name the distinct modern colored item registrations. They are documented
-as unresolved variants, not reliable recipes for obtaining every cable color.
+Cable and connector entries use distinct Negarite/Posirite/Combined items,
+including matching connector ingredients. Data variants have no catalog recipe.
 
 | Result | Rarity | Ingredients |
 | --- | --- | --- |
@@ -1077,17 +1081,23 @@ as unresolved variants, not reliable recipes for obtaining every cable color.
 | Flux Glow | Common | Black Marble, 8 × Glowstone Dust |
 | Flat Light | Common | Black Marble Slab, 8 × Glowstone Dust |
 
-#### Unfinished cable and connector variants
+#### Cable and connector variants
 
 | Result | Rarity | Ingredients |
 | --- | --- | --- |
-| 8 × netcable (legacy variant); intended negarite | Common | Silicon, Silver Ingot, 3 × Glass Pane, 2 × Negarite Dust |
-| 8 × netcable (legacy variant); intended posirite | Common | Silicon, Silver Ingot, 3 × Glass Pane, 2 × Posirite Dust |
-| 8 × netcable (legacy variant); intended combined | Common | Silicon, Silver Ingot, 3 × Glass Pane, 2 × Negarite Dust, 2 × Posirite Dust |
-| connector (legacy variant); intended negarite | Common | netcable (legacy variant), Silver Ingot, Silicon |
-| connector (legacy variant); intended posirite | Common | netcable (legacy variant), Silver Ingot, Silicon |
-| connector (legacy variant); intended combined | Common | netcable (legacy variant), Silver Ingot, Silicon |
+| 8 × Negarite Cable | Common | Silicon, Silver Ingot, 3 × Glass Pane, 2 × Negarite Dust |
+| 8 × Posirite Cable | Common | Silicon, Silver Ingot, 3 × Glass Pane, 2 × Posirite Dust |
+| 8 × Combined Cable | Common | Silicon, Silver Ingot, 3 × Glass Pane, 2 × Negarite Dust, 2 × Posirite Dust |
+| Negarite Connector | Common | Negarite Cable, Silver Ingot, Silicon |
+| Posirite Connector | Common | Posirite Cable, Silver Ingot, Silicon |
+| Combined Connector | Common | Combined Cable, Silver Ingot, Silicon |
 
+
+Power, Regeneration, Scramble, Speed and Step Assist modules have no Constructor
+recipe, as in the original mod; authored city loot now supplies their module
+items instead of unusable blueprints. Hover has no catalog recipe or confirmed
+authored loot entry. Invisibility's installation control remains disabled.
+City0_0 and the large city5_1 layout have no authored Storage Cubes.
 
 Ordinary decorative recipes live in
 [generated recipe data](src/generated/resources/data/ariente/recipes).
@@ -1124,10 +1134,10 @@ worlds.
 
 | Area | What remains incomplete or needs validation |
 | --- | --- |
-| Survival resources | Ariente ore drop/processing data is incomplete; generation alone is not a finished resource progression. |
-| Alternative progression without ArienteWorld | Legacy Overworld loot injection is disabled. |
-| Recipe variants | Metadata-era cable/connector catalog entries do not distinguish the modern colored items. Several registered blocks/modules have no catalog entry. |
-| Crafting integration | Constructor-specific JEI integration is not fully restored; consult blueprints/catalog rather than assuming JEI shows it all. Auto Constructor batch yields differ between empty and existing output slots. |
+| Survival resources | Ore drops, processing and mob lithium loot pass focused checks; a full survival playthrough remains. |
+| Alternative progression without ArienteWorld | Default Overworld ore generation and dungeon blueprints pass a client check without the companion. Published standalone dependency resolution remains separate. |
+| Recipe variants | Negarite/Posirite/Combined cable and connector recipes work. Data variants and several original modules still have no catalog entry. |
+| Crafting integration | Constructor JEI and full manual/automatic batch yields pass focused checks. Crafting still uses the hardcoded catalog. |
 | Armor movement | Flight, Hover, Speed and Step Assist pass focused survival-client checks. Invisibility's install control remains disabled. |
 | Equipment lifecycle | Focused fuel, equipped-slot, enchantment and effect checks pass. Dedicated multiplayer, reconnect/death and mod interaction play testing remain. |
 | Automation matching | Ore Dictionary matching is not replaced with tags; strict destination NBT/damage matching and filter persistence need audit. |

@@ -3,14 +3,10 @@ package mcjty.ariente;
 import net.minecraft.tags.DamageTypeTags;
 import mcjty.ariente.api.ArmorUpgradeType;
 import mcjty.ariente.blocks.utility.ILockable;
-import mcjty.ariente.config.WorldgenConfiguration;
 import mcjty.ariente.entities.levitator.FluxLevitatorEntity;
-import mcjty.ariente.items.BlueprintItem;
 import mcjty.ariente.items.modules.ModuleSupport;
 import mcjty.ariente.items.armor.PowerSuitEffects;
 import mcjty.ariente.power.PowerSystem;
-import mcjty.ariente.recipes.BlueprintRecipeRegistry;
-import mcjty.ariente.recipes.ConstructorRecipe;
 import mcjty.ariente.setup.Registration;
 import mcjty.ariente.sounds.FluxLevitatorSounds;
 import net.minecraft.world.damagesource.DamageSource;
@@ -23,13 +19,6 @@ import net.minecraft.world.level.LevelAccessor;
 import net.minecraft.world.level.block.entity.BlockEntity;
 import net.minecraft.core.BlockPos;
 import net.minecraft.world.level.Level;
-import net.minecraft.world.level.storage.loot.BuiltInLootTables;
-import net.minecraft.world.level.storage.loot.LootContext;
-import net.minecraft.world.level.storage.loot.LootPool;
-import net.minecraft.world.level.storage.loot.functions.LootItemFunction;
-import net.minecraft.world.level.storage.loot.functions.LootItemFunctionType;
-import net.minecraft.world.level.storage.loot.predicates.LootItemConditions;
-import net.minecraftforge.event.LootTableLoadEvent;
 import net.minecraftforge.event.TickEvent;
 import net.minecraftforge.event.entity.player.PlayerEvent;
 import net.minecraftforge.event.entity.living.LivingDeathEvent;
@@ -40,87 +29,6 @@ import net.minecraftforge.event.level.BlockEvent;
 import net.minecraftforge.eventbus.api.SubscribeEvent;
 
 public class ForgeEventHandlers {
-
-    // TODO: Replace the inactive legacy loot injection with global loot modifiers.
-    // Do not subscribe: server configuration is not loaded during loot-table parsing.
-    public void onLootLoad(LootTableLoadEvent event) {
-        if (WorldgenConfiguration.doDungeonLoot()) {
-            if (event.getName().equals(BuiltInLootTables.ABANDONED_MINESHAFT) ||
-                    event.getName().equals(BuiltInLootTables.IGLOO_CHEST) ||
-                    event.getName().equals(BuiltInLootTables.DESERT_PYRAMID) ||
-                    event.getName().equals(BuiltInLootTables.JUNGLE_TEMPLE) ||
-                    event.getName().equals(BuiltInLootTables.NETHER_BRIDGE) ||
-                    event.getName().equals(BuiltInLootTables.SIMPLE_DUNGEON) ||
-                    event.getName().equals(BuiltInLootTables.VILLAGE_TOOLSMITH)) {
-                LootPool main = event.getTable().getPool("main");
-                // Safety, check if the main lootpool is still present
-                if (main != null) {
-                    if (WorldgenConfiguration.OVERWORLD_LOOT_BLUEPRINTS.get() > 0) {
-                        LootItemFunction lootFunction = new LootItemFunction() {
-
-                            @Override
-                            public ItemStack apply(ItemStack stack, LootContext context) {
-                                ConstructorRecipe recipe = BlueprintRecipeRegistry.getRandomRecipes().getRandom();
-                                return BlueprintItem.makeBluePrint(recipe.getDestination());
-                            }
-
-                            @Override
-                            public LootItemFunctionType getType() {
-                                // TODO Auto-generated method stub
-                                return null;
-                            }
-                        };
-                        // @todo 1.14
-//                        main.addEntry(new LootEntryItem(ModItems.blueprintItem, WorldgenConfiguration.OVERWORLD_LOOT_BLUEPRINTS.get(), 0, new LootFunction[]{lootFunction},
-//                                new LootCondition[0], Ariente.MODID + ":loot"));
-                    }
-                    if (WorldgenConfiguration.OVERWORLD_LOOT_ITEMS.get() > 0) {
-                        LootItemFunction lootFunction = new LootItemFunction() {
-
-                            @Override
-                            public ItemStack apply(ItemStack stack, LootContext context) {
-                                ConstructorRecipe recipe = BlueprintRecipeRegistry.getRandomRecipes().getRandom();
-                                return recipe.getDestination();
-                            }
-
-                            @Override
-                            public LootItemFunctionType getType() {
-                                // TODO Auto-generated method stub
-                                return null;
-                            }
-                        };
-                        // @todo 1.14
-//                        main.addEntry(new LootEntryItem(ModItems.blueprintItem, WorldgenConfiguration.OVERWORLD_LOOT_ITEMS.get(), 0, new LootFunction[]{lootFunction},
-//                                new LootCondition[0], Ariente.MODID + ":lootresult"));
-                    }
-
-                    if (WorldgenConfiguration.OVERWORLD_LOOT_SUIT.get() > 0) {
-                        // @todo 1.14
-//                        main.addEntry(new LootEntryItem(ModItems.powerSuitChest, WorldgenConfiguration.OVERWORLD_LOOT_SUIT.get(), 0, new LootFunction[0],
-//                                new LootCondition[0], Ariente.MODID + ":lootchest"));
-//                        main.addEntry(new LootEntryItem(ModItems.powerSuitBoots, WorldgenConfiguration.OVERWORLD_LOOT_SUIT.get(), 0, new LootFunction[0],
-//                                new LootCondition[0], Ariente.MODID + ":lootboots"));
-//                        main.addEntry(new LootEntryItem(ModItems.powerSuitLegs, WorldgenConfiguration.OVERWORLD_LOOT_SUIT.get(), 0, new LootFunction[0],
-//                                new LootCondition[0], Ariente.MODID + ":lootlegs"));
-//                        main.addEntry(new LootEntryItem(ModItems.powerSuitHelmet, WorldgenConfiguration.OVERWORLD_LOOT_SUIT.get(), 0, new LootFunction[0],
-//                                new LootCondition[0], Ariente.MODID + ":loothelmet"));
-//                        main.addEntry(new LootEntryItem(ModItems.energySabre, WorldgenConfiguration.OVERWORLD_LOOT_SUIT.get(), 0, new LootFunction[0],
-//                                new LootCondition[0], Ariente.MODID + ":lootsabre"));
-//                        main.addEntry(new LootEntryItem(ModItems.enhancedEnergySabreItem, WorldgenConfiguration.OVERWORLD_LOOT_SUIT.get(), 0, new LootFunction[0],
-//                                new LootCondition[0], Ariente.MODID + ":lootesabre"));
-                    }
-                }
-            }
-        }
-    }
-
-    // @todo 1.14
-//    @SubscribeEvent
-//    public void onConfigChanged(ConfigChangedEvent.OnConfigChangedEvent event) {
-//        if (Config.mainConfig.hasChanged()) {
-//            Config.mainConfig.save();
-//        }
-//    }
 
     @SubscribeEvent
     public void onWorldTick(TickEvent.LevelTickEvent event) {

@@ -4,6 +4,7 @@ import mcjty.lib.varia.Tools;
 import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
 import com.google.gson.JsonParser;
+import com.google.gson.JsonParseException;
 import mcjty.ariente.Ariente;
 import mcjty.ariente.recipes.BlueprintRecipeRegistry;
 import mcjty.ariente.recipes.ConstructorRecipe;
@@ -88,10 +89,12 @@ public class BlueprintItem extends Item implements ITooltipExtras, ITooltipSetti
         if (!nbt.contains("destination")) {
             return ItemStack.EMPTY;
         }
-        String jsonString = nbt.getString("destination");
-        JsonParser parser = new JsonParser();
-        JsonElement json = parser.parse(jsonString);
-        return JSonTools.jsonToItemStack(json.getAsJsonObject());
+        try {
+            JsonElement json = JsonParser.parseString(nbt.getString("destination"));
+            return json.isJsonObject() ? JSonTools.jsonToItemStack(json.getAsJsonObject()) : ItemStack.EMPTY;
+        } catch (JsonParseException | IllegalArgumentException | IllegalStateException e) {
+            return ItemStack.EMPTY;
+        }
     }
 
 

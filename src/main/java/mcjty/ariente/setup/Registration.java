@@ -13,8 +13,9 @@ import net.minecraft.world.item.CreativeModeTab;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.network.chat.Component;
 import mcjty.ariente.Ariente;
+import mcjty.ariente.recipes.BlueprintRecipeRegistry;
+import mcjty.ariente.oregen.WorldGen;
 import mcjty.ariente.blocks.MountedPanelShapes;
-import mcjty.ariente.ModCrafting;
 import mcjty.ariente.api.ArmorUpgradeType;
 import mcjty.ariente.blocks.BaseOreBlock;
 import mcjty.ariente.blocks.aicore.AICoreTile;
@@ -81,11 +82,17 @@ import org.apache.commons.lang3.tuple.Pair;
 import java.util.Arrays;
 import java.util.Map;
 import java.util.stream.Collectors;
+import com.mojang.serialization.Codec;
+import net.minecraftforge.common.loot.IGlobalLootModifier;
+import mcjty.ariente.loot.DungeonLootModifier;
 
 import static mcjty.ariente.Ariente.MODID;
 import static mcjty.ariente.compat.ArienteTOPDriver.DRIVER;
 
 public class Registration {
+
+    public static final DeferredRegister<Codec<? extends IGlobalLootModifier>> LOOT_MODIFIERS = DeferredRegister.create(ForgeRegistries.Keys.GLOBAL_LOOT_MODIFIER_SERIALIZERS, MODID);
+    public static final RegistryObject<Codec<? extends IGlobalLootModifier>> DUNGEON_LOOT = LOOT_MODIFIERS.register("dungeon_loot", () -> DungeonLootModifier.CODEC);
 
     public static final DeferredRegister<Block> BLOCKS = DeferredRegister.create(ForgeRegistries.BLOCKS, MODID);
     public static final DeferredRegister<Item> ITEMS = DeferredRegister.create(ForgeRegistries.ITEMS, MODID);
@@ -98,10 +105,15 @@ public class Registration {
     public static final RegistryObject<CreativeModeTab> TAB = TABS.register("ariente", () -> CreativeModeTab.builder()
             .title(Component.translatable("itemGroup.ariente"))
             .icon(() -> new ItemStack(Registration.POSIRITE_GENERATOR.get()))
-            .displayItems((parameters, output) -> ITEMS.getEntries().forEach(item -> output.accept(item.get())))
+            .displayItems((parameters, output) -> {
+                ITEMS.getEntries().forEach(item -> output.accept(item.get()));
+                BlueprintRecipeRegistry.getRecipes().forEach(recipe -> output.accept(BlueprintItem.makeBluePrint(recipe.getDestination())));
+            })
             .build());
 
     public static void register() {
+        LOOT_MODIFIERS.register(FMLJavaModLoadingContext.get().getModEventBus());
+        WorldGen.register();
         ModSounds.register();
         FMLJavaModLoadingContext.get().getModEventBus().addListener(Registration::registerAttributes);
         FMLJavaModLoadingContext.get().getModEventBus().addListener(Registration::registerSpawnPlacements);
@@ -533,6 +545,5 @@ public class Registration {
     public static void registerItems() {
         initOreDict();
         ModItems.initOreDict();
-        ModCrafting.init();
     }
 }
