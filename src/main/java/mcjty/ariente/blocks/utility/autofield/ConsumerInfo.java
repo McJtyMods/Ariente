@@ -1,6 +1,6 @@
 package mcjty.ariente.blocks.utility.autofield;
 
-import mcjty.lib.multipart.MultipartHelper;
+import mcjty.ariente.multipart.MultipartHelper;
 import mcjty.lib.multipart.PartPos;
 import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemStack;
@@ -18,7 +18,7 @@ public class ConsumerInfo {
 
     public ConsumerInfo(Level world, Set<PartPos> itemNodes) {
         for (PartPos pair : itemNodes) {
-            BlockEntity te = MultipartHelper.getTileEntity(world, pair.getPos(), pair.getSlot());
+            BlockEntity te = MultipartHelper.getBlockEntity(world, pair.pos(), pair.slot());
             if (te instanceof InputItemNodeTile) {
                 InputItemNodeTile itemNode = (InputItemNodeTile) te;
 

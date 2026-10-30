@@ -1,9 +1,10 @@
 package mcjty.ariente.recipes;
 
+import net.minecraft.core.registries.Registries;
 import mcjty.ariente.api.MarbleColor;
 import mcjty.ariente.blocks.decorative.DecorativeBlockModule;
 import mcjty.ariente.setup.Registration;
-import mcjty.lib.varia.WeightedRandom;
+import mcjty.ariente.varia.WeightedRandom;
 import net.minecraft.world.item.Items;
 import net.minecraft.world.level.block.Block;
 import net.minecraft.resources.ResourceLocation;
@@ -28,7 +29,10 @@ public class BlueprintRecipeRegistry {
 
     public static final DeferredRegister<RecipeSerializer<?>> RECIPE_SERIALIZERS = DeferredRegister.create(ForgeRegistries.RECIPE_SERIALIZERS, MODID);
 
+    public static final DeferredRegister<RecipeType<?>> RECIPE_TYPES = DeferredRegister.create(Registries.RECIPE_TYPE, MODID);
+
     public static void register() {
+        RECIPE_TYPES.register(FMLJavaModLoadingContext.get().getModEventBus());
         RECIPE_SERIALIZERS.register(FMLJavaModLoadingContext.get().getModEventBus());
     }
 
@@ -36,8 +40,9 @@ public class BlueprintRecipeRegistry {
             ConstructorRecipeSerializer::new);
 
     public static final ResourceLocation RECIPE_CONSTRUCTOR = new ResourceLocation(MODID, "constructor");
-    public static RecipeType<ConstructorRecipe> CONSTRUCTOR = Registry.register(Registry.RECIPE_TYPE, RECIPE_CONSTRUCTOR,
-            new RecipeType<ConstructorRecipe>() {
+    public static final RegistryObject<RecipeType<ConstructorRecipe>> CONSTRUCTOR = RECIPE_TYPES.register("constructor",
+            () -> new RecipeType<ConstructorRecipe>() {
+
                 @Override
                 public String toString() {
                     return RECIPE_CONSTRUCTOR.toString();

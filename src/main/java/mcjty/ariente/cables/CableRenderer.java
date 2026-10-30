@@ -2,8 +2,8 @@ package mcjty.ariente.cables;
 
 import com.mojang.blaze3d.vertex.PoseStack;
 import com.mojang.blaze3d.vertex.VertexConsumer;
-import com.mojang.math.Matrix4f;
-import com.mojang.math.Vector3f;
+import org.joml.Matrix4f;
+import net.minecraft.world.phys.Vec3;
 import mcjty.ariente.Ariente;
 import mcjty.ariente.client.ArienteRenderType;
 import mcjty.ariente.client.ArienteSpriteUploader;
@@ -19,8 +19,6 @@ import net.minecraft.client.Minecraft;
 import net.minecraft.client.renderer.texture.TextureAtlasSprite;
 import net.minecraft.client.renderer.blockentity.BlockEntityRenderDispatcher;
 import net.minecraft.world.level.block.entity.BlockEntityType;
-import net.minecraft.world.phys.Vec3;
-import net.minecraftforge.client.ClientRegistry;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -64,12 +62,12 @@ public class CableRenderer implements BlockEntityRenderer<GenericCableTileEntity
 
 
     private static class RenderInfo {
-        public final Vector3f player;
-        public final Matrix4f matrix;
+        public final Vec3 player;
+        public final PoseStack matrix;
         public final VertexConsumer builder;
         public final TextureAtlasSprite sprite;
 
-        public RenderInfo(Vector3f player, Matrix4f matrix, VertexConsumer builder, TextureAtlasSprite sprite) {
+        public RenderInfo(Vec3 player, PoseStack matrix, VertexConsumer builder, TextureAtlasSprite sprite) {
             this.player = player;
             this.matrix = matrix;
             this.builder = builder;
@@ -100,8 +98,8 @@ public class CableRenderer implements BlockEntityRenderer<GenericCableTileEntity
 
     private static void beam(RenderInfo info, float sx, float sy, float sz, float dx, float dy, float dz) {
         RenderHelper.drawBeam(info.matrix, info.builder, info.sprite,
-                new Vector3f(sx, sy, sz),
-                new Vector3f(dx, dy, dz),
+                new Vec3(sx, sy, sz),
+                new Vec3(dx, dy, dz),
                 info.player, .1f);
     }
 
@@ -138,9 +136,9 @@ public class CableRenderer implements BlockEntityRenderer<GenericCableTileEntity
                 int tey = te.getBlockPos().getY();
                 int tez = te.getBlockPos().getZ();
                 Vec3 projectedView = Minecraft.getInstance().gameRenderer.getMainCamera().getPosition().add(-tex, -tey, -tez);
-                Vector3f player = new Vector3f((float)projectedView.x, (float)projectedView.y, (float)projectedView.z);
+                Vec3 player = new Vec3((float)projectedView.x, (float)projectedView.y, (float)projectedView.z);
 
-                Matrix4f matrix = matrixStack.last().pose();
+                PoseStack matrix = matrixStack;
                 TextureAtlasSprite sprite = ArienteSpriteUploader.INSTANCE.getSprite(txt);
                 VertexConsumer builder = buffer.getBuffer(ArienteRenderType.ARIENTE_TRANSLUCENT);
 

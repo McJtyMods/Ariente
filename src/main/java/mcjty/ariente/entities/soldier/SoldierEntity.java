@@ -21,6 +21,8 @@ import net.minecraft.world.entity.ai.goal.RandomSwimmingGoal;
 import net.minecraft.world.entity.ai.goal.target.HurtByTargetGoal;
 import net.minecraft.world.entity.ai.goal.target.NearestAttackableTargetGoal;
 import net.minecraft.world.entity.monster.Monster;
+import net.minecraft.world.DifficultyInstance;
+import net.minecraft.util.RandomSource;
 import net.minecraft.world.entity.monster.ZombifiedPiglin;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.level.ChunkPos;
@@ -63,10 +65,10 @@ public class SoldierEntity extends Monster implements IArmRaisable, IForcefieldI
     @Override
     public void tick() {
         super.tick();
-        if (!level.isClientSide && isAlive() && cityCenter != null) {
-            ICityAISystem aiSystem = ArienteWorldCompat.getCityAISystem(level);
+        if (!level().isClientSide && isAlive() && cityCenter != null) {
+            ICityAISystem aiSystem = ArienteWorldCompat.getCityAISystem(level());
             ICityAI cityAI = aiSystem.getCityAI(cityCenter);
-            if (cityAI != null && !cityAI.isDead(level)) {
+            if (cityAI != null && !cityAI.isDead(level())) {
                 feedPowerIfNeeded(EquipmentSlot.HEAD);
                 feedPowerIfNeeded(EquipmentSlot.FEET);
                 feedPowerIfNeeded(EquipmentSlot.CHEST);
@@ -159,7 +161,7 @@ public class SoldierEntity extends Monster implements IArmRaisable, IForcefieldI
             if (Ariente.setup.arienteWorld) {
                 double chance = ArienteWorldCompat.getArienteWorld().getSoldierCityKeyChance();
                 if (cityCenter != null && random.nextFloat() < chance) {
-                    ICityAISystem aiSystem = ArienteWorldCompat.getCityAISystem(level);
+                    ICityAISystem aiSystem = ArienteWorldCompat.getCityAISystem(level());
                     ICityAI cityAI = aiSystem.getCityAI(cityCenter);
                     if (cityAI != null) {
                         ItemStack stack = new ItemStack(Registration.KEY_CARD.get());
@@ -175,6 +177,12 @@ public class SoldierEntity extends Monster implements IArmRaisable, IForcefieldI
                 }
             }
         }
+    }
+
+    @Override
+    protected void populateDefaultEquipmentSlots(RandomSource random, DifficultyInstance difficulty) {
+        super.populateDefaultEquipmentSlots(random, difficulty);
+        setItemSlot(EquipmentSlot.MAINHAND, new ItemStack(Registration.ENERGY_SABRE.get()));
     }
 
     @Override
@@ -241,7 +249,7 @@ public class SoldierEntity extends Monster implements IArmRaisable, IForcefieldI
     }
 
     private void alertCity(@Nonnull Player player) {
-        ICityAISystem aiSystem = ArienteWorldCompat.getCityAISystem(level);
+        ICityAISystem aiSystem = ArienteWorldCompat.getCityAISystem(level());
         ICityAI cityAI = aiSystem.getCityAI(cityCenter);
         cityAI.playerSpotted(player);
         aiSystem.saveSystem();
@@ -249,26 +257,26 @@ public class SoldierEntity extends Monster implements IArmRaisable, IForcefieldI
 
     @Override
     protected void playStepSound(BlockPos pos, BlockState state) {
-        SoundType soundtype = state.getBlock().getSoundType(state, level, pos, this);
+        SoundType soundtype = state.getBlock().getSoundType(state, level(), pos, this);
 
-        if (this.level.getBlockState(pos.above()).getBlock() == Blocks.SNOW) {
+        if (this.level().getBlockState(pos.above()).getBlock() == Blocks.SNOW) {
             soundtype = Blocks.SNOW.getSoundType(null);
             this.playSound(soundtype.getStepSound(), soundtype.getVolume() * 0.15F, soundtype.getPitch());
-        } else if (!state.getBlock().defaultBlockState().getMaterial().isLiquid()) {
+        } else if (state.getFluidState().isEmpty()) {
             this.playSound(soundtype.getStepSound(), soundtype.getVolume() * 0.15F, soundtype.getPitch());
         } else {
-            this.playSound(ModSounds.step, 0.15f, isMaster() ? 0.5f : 1.0f);
+            this.playSound(ModSounds.step.get(), 0.15f, isMaster() ? 0.5f : 1.0f);
         }
     }
 
     @Override
     protected SoundEvent getHurtSound(DamageSource damageSourceIn) {
-        return isMaster() ? ModSounds.bossSoldierHurt : ModSounds.soldierHurt;
+        return isMaster() ? ModSounds.bossSoldierHurt.get() : ModSounds.soldierHurt.get();
     }
 
     @Override
     protected SoundEvent getDeathSound() {
-        return isMaster() ? ModSounds.bossSoldierDeath : ModSounds.soldierDeath;
+        return isMaster() ? ModSounds.bossSoldierDeath.get() : ModSounds.soldierDeath.get();
     }
 
     @Nullable

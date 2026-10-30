@@ -6,9 +6,6 @@ import net.minecraft.client.renderer.texture.TextureAtlasSprite;
 import net.minecraft.client.renderer.texture.TextureManager;
 import net.minecraft.resources.ResourceLocation;
 
-import java.util.ArrayList;
-import java.util.List;
-import java.util.stream.Stream;
 
 import static mcjty.ariente.blocks.utility.door.DoorMarkerRenderer.DOOR_MARKER_TEXTURE;
 import static mcjty.ariente.cables.CableRenderer.*;
@@ -19,29 +16,8 @@ public class ArienteSpriteUploader extends TextureAtlasHolder {
 
     public static final ResourceLocation ARIENTE_ATLAS = new ResourceLocation(Ariente.MODID, "textures/atlas/ariente.png");
 
-    private final List<ResourceLocation> textures = new ArrayList<>();
-
     public ArienteSpriteUploader(TextureManager textureManager) {
-        super(textureManager, ARIENTE_ATLAS, "effects");
-
-        textures.add(DOOR_MARKER_TEXTURE);
-        textures.add(NEGARITE_LASERBEAM_1);
-        textures.add(NEGARITE_LASERBEAM_2);
-        textures.add(NEGARITE_LASERBEAM_3);
-        textures.add(NEGARITE_LASERBEAM_4);
-        textures.add(POSIRITE_LASERBEAM_1);
-        textures.add(POSIRITE_LASERBEAM_2);
-        textures.add(POSIRITE_LASERBEAM_3);
-        textures.add(POSIRITE_LASERBEAM_4);
-        textures.add(DATA_LASERBEAM_1);
-        textures.add(DATA_LASERBEAM_2);
-        textures.add(DATA_LASERBEAM_3);
-        textures.add(DATA_LASERBEAM_4);
-    }
-
-    @Override
-    protected Stream<ResourceLocation> getResourcesToLoad() {
-        return textures.stream();
+        super(textureManager, ARIENTE_ATLAS, new ResourceLocation(Ariente.MODID, "ariente"));
     }
 
     @Override

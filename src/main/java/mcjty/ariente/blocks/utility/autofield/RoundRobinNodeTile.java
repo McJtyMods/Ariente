@@ -190,6 +190,7 @@ public class RoundRobinNodeTile extends GenericTileEntity {
 
     @Override
     public void saveAdditional(CompoundTag tagCompound) {
+        super.saveAdditional(tagCompound);
         tagCompound.putInt("index", index);
     }
 

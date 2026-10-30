@@ -1,5 +1,8 @@
 {
-    "animation": {
-      "frametime": 10
-    }
+  "animation": {
+    "frametime": 10
+  },
+  "ariente": {
+    "glow_texture": "ariente:block/machines/alarm_safe_glow"
+  }
 }

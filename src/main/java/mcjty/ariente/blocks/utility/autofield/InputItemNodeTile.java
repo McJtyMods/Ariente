@@ -12,6 +12,7 @@ import mcjty.lib.builder.BlockBuilder;
 import mcjty.lib.varia.ItemStackList;
 import net.minecraft.core.BlockPos;
 import net.minecraft.nbt.CompoundTag;
+import net.minecraft.world.ContainerHelper;
 import net.minecraft.world.level.block.state.BlockState;
 import org.apache.commons.lang3.tuple.Pair;
 
@@ -41,7 +42,8 @@ public class InputItemNodeTile extends AbstractItemNodeTile {
     @Override
     public void readRestorableFromNBT(CompoundTag tagCompound) {
         super.readRestorableFromNBT(tagCompound);
-//        readBufferFromNBT(tagCompound, "input", inputFilter);
+        inputFilter.clear();
+        ContainerHelper.loadAllItems(tagCompound.getCompound("input"), inputFilter);
         CompoundTag info = tagCompound.getCompound("Info");
         if (!info.isEmpty()) {
             inputDamage = info.getBoolean("inDamage");
@@ -53,7 +55,7 @@ public class InputItemNodeTile extends AbstractItemNodeTile {
     @Override
     public void writeRestorableToNBT(CompoundTag tagCompound) {
         super.writeRestorableToNBT(tagCompound);
-//        writeBufferToNBT(tagCompound, "input", inputFilter);
+        tagCompound.put("input", ContainerHelper.saveAllItems(new CompoundTag(), inputFilter));
         CompoundTag info = getOrCreateInfo(tagCompound);
         info.putBoolean("inDamage", inputDamage);
         info.putBoolean("inNBT", inputNbt);

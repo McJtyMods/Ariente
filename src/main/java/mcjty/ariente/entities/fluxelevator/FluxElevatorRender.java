@@ -1,12 +1,13 @@
 package mcjty.ariente.entities.fluxelevator;
 
+import com.mojang.math.Axis;
 import com.mojang.blaze3d.vertex.PoseStack;
 import com.mojang.blaze3d.platform.GlStateManager;
-import com.mojang.math.Quaternion;
+import org.joml.Quaternionf;
 import net.minecraft.client.renderer.MultiBufferSource;
 import net.minecraft.client.renderer.entity.EntityRenderer;
 import net.minecraft.client.renderer.entity.EntityRendererProvider;
-import net.minecraft.client.model.EntityModel;
+import net.minecraft.client.renderer.texture.OverlayTexture;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.util.Mth;
 import net.minecraft.world.phys.Vec3;
@@ -15,7 +16,7 @@ import net.minecraft.world.phys.Vec3;
 public class FluxElevatorRender extends EntityRenderer<FluxElevatorEntity> {
 
     private static final ResourceLocation TEXTURE = new ResourceLocation("ariente:textures/entity/flux_levitator.png");
-    private EntityModel model = new FluxElevatorModel();
+    private final FluxElevatorModel model = new FluxElevatorModel();
 
     public FluxElevatorRender(EntityRendererProvider.Context renderManagerIn) {
         super(renderManagerIn);
@@ -64,10 +65,9 @@ public class FluxElevatorRender extends EntityRenderer<FluxElevatorEntity> {
             }
         }
 
-        // @todo 1.15
-//        GlStateManager.translatef((float) x, (float) y + 0.375F, (float) z);
-        matrixStack.mulPose(new Quaternion(180.0F - entityYaw, 0.0F, 1.0F, 0.0F));
-        matrixStack.mulPose(new Quaternion(-pitch, 0.0F, 0.0F, 1.0F));
+        matrixStack.translate(0, .375, 0);
+        matrixStack.mulPose(Axis.YP.rotationDegrees(180.0F - entityYaw));
+        matrixStack.mulPose(Axis.ZP.rotationDegrees(-pitch));
         float f5 = 0 - partialTicks;    // @todo
         float f6 = entity.getDamage() - partialTicks;
 
@@ -76,7 +76,7 @@ public class FluxElevatorRender extends EntityRenderer<FluxElevatorEntity> {
         }
 
         if (f5 > 0.0F) {
-            matrixStack.mulPose(new Quaternion(Mth.sin(f5) * f5 * f6 / 10.0F * 0, 1.0F, 0.0F, 0.0F));
+            matrixStack.mulPose(Axis.XP.rotationDegrees(Mth.sin(f5) * f5 * f6 / 10.0F * 0));
         }
 
         // @todo 1.15
@@ -88,7 +88,8 @@ public class FluxElevatorRender extends EntityRenderer<FluxElevatorEntity> {
 //        }
 //
 //        GlStateManager.scalef(-1.0F, -1.0F, 1.0F);
-//        this.model.render(entity, 0.0F, 0.0F, -0.1F, 0.0F, 0.0F, 0.0625F);
+        matrixStack.scale(-1, -1, 1);
+        model.renderToBuffer(matrixStack, buffer.getBuffer(model.renderType(TEXTURE)), packedLightIn, OverlayTexture.NO_OVERLAY, 1, 1, 1, 1);
 //
 //        IHoloGuiEntity holoGui = entity.getHoloGui();
 //        if (holoGui != null) {

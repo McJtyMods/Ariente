@@ -1,5 +1,6 @@
 package mcjty.ariente.sounds;
 
+import net.minecraft.util.RandomSource;
 import net.minecraft.client.resources.sounds.AbstractTickableSoundInstance;
 import net.minecraft.client.resources.sounds.SoundInstance.Attenuation;
 import net.minecraft.sounds.SoundEvent;
@@ -15,7 +16,7 @@ public class ForcefieldSound extends AbstractTickableSoundInstance {
     private final SoundEvent soundEvent;
 
     public ForcefieldSound(SoundEvent event, Level world, BlockPos pos, float baseVolume, int ticks) {
-        super(event, SoundSource.BLOCKS);
+        super(event, SoundSource.BLOCKS, RandomSource.create());
         this.world = world;
         this.pos = pos;
         this.x = pos.getX();

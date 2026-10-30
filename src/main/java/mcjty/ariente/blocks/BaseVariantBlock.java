@@ -1,5 +1,6 @@
 package mcjty.ariente.blocks;
 
+import mcjty.lib.varia.Tools;
 import mcjty.lib.blocks.BaseBlock;
 import mcjty.lib.blocks.RotationType;
 import mcjty.lib.builder.BlockBuilder;
@@ -8,7 +9,7 @@ import net.minecraft.util.StringRepresentable;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.level.block.Block;
 import net.minecraft.world.level.block.state.BlockState;
-import net.minecraft.world.level.material.Material;
+import net.minecraft.world.level.material.MapColor;
 import net.minecraft.world.level.block.state.properties.EnumProperty;
 import net.minecraft.world.level.block.state.StateDefinition;
 import net.minecraft.world.level.BlockGetter;
@@ -17,7 +18,7 @@ public abstract class BaseVariantBlock<T extends Enum<T> & StringRepresentable> 
 
     public BaseVariantBlock() {
         super(new BlockBuilder()
-                .properties(Properties.of(Material.STONE)
+                .properties(Properties.of().mapColor(MapColor.STONE)
                     .strength(2.0f, 4.0f))
                 // @todo 1.18 .harvestLevel(ToolType.PICKAXE, 1)
         );

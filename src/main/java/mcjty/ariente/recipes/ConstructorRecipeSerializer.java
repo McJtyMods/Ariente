@@ -1,5 +1,6 @@
 package mcjty.ariente.recipes;
 
+import mcjty.lib.varia.Tools;
 import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
 import net.minecraft.util.GsonHelper;
@@ -8,14 +9,13 @@ import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.crafting.RecipeSerializer;
 import net.minecraft.network.FriendlyByteBuf;
 import net.minecraftforge.registries.ForgeRegistries;
-import net.minecraftforge.registries.ForgeRegistryEntry;
 
 import javax.annotation.Nullable;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 
-public class ConstructorRecipeSerializer extends ForgeRegistryEntry<RecipeSerializer<?>> implements RecipeSerializer<ConstructorRecipe> {
+public class ConstructorRecipeSerializer implements RecipeSerializer<ConstructorRecipe> {
 
     @Override
     public ConstructorRecipe fromJson(ResourceLocation recipeId, JsonObject json) {
@@ -35,7 +35,7 @@ public class ConstructorRecipeSerializer extends ForgeRegistryEntry<RecipeSerial
                 if (object.has("item")) {
                     String inputStr = object.get("item").getAsString();
                     ResourceLocation in = new ResourceLocation(inputStr);
-                    item = new ItemStack(Optional.ofNullable(ForgeRegistries.ITEMS.getValue(resourcelocation)).orElseThrow(() -> new IllegalStateException("Item: " + inputStr + " does not exist")));
+                    item = new ItemStack(Optional.ofNullable(ForgeRegistries.ITEMS.getValue(in)).orElseThrow(() -> new IllegalStateException("Item: " + inputStr + " does not exist")));
                 }
                 if (object.has("count")) {
                     int count = object.get("count").getAsInt();
@@ -47,7 +47,7 @@ public class ConstructorRecipeSerializer extends ForgeRegistryEntry<RecipeSerial
             throw new IllegalStateException("Recipe " + recipeId.toString() + ": input is in wrong format or missing!");
         }
 
-        return new ConstructorRecipe(output, chance, inputItems.toArray(new ItemStack[inputItems.size()]));
+        return new ConstructorRecipe(recipeId, output, chance, inputItems.toArray(new ItemStack[inputItems.size()]));
     }
 
     @Nullable
@@ -68,18 +68,18 @@ public class ConstructorRecipeSerializer extends ForgeRegistryEntry<RecipeSerial
             input.setCount(inputCount);
             inputItems.add(input);
         }
-        return new ConstructorRecipe(output, chance, inputItems.toArray(new ItemStack[inputItems.size()]));
+        return new ConstructorRecipe(recipeId, output, chance, inputItems.toArray(new ItemStack[inputItems.size()]));
     }
 
     @Override
     public void toNetwork(FriendlyByteBuf buffer, ConstructorRecipe recipe) {
         buffer.writeFloat(recipe.getChance());
-        buffer.writeUtf(recipe.getResultItem().getItem().getRegistryName().toString());
-        buffer.writeInt(recipe.getResultItem().getCount());
+        buffer.writeUtf(Tools.getId(recipe.getDestination().getItem()).toString());
+        buffer.writeInt(recipe.getDestination().getCount());
         List<ItemStack> list = recipe.getIngredientList();
         buffer.writeInt(list.size());
         for (ItemStack stack : list) {
-            buffer.writeUtf(stack.getItem().getRegistryName().toString());
+            buffer.writeUtf(Tools.getId(stack.getItem()).toString());
             buffer.writeInt(stack.getCount());
         }
     }

@@ -1,5 +1,6 @@
 package mcjty.ariente.items;
 
+import mcjty.lib.varia.Tools;
 import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
 import com.google.gson.JsonParser;
@@ -11,7 +12,6 @@ import mcjty.lib.builder.TooltipBuilder;
 import mcjty.lib.tooltips.ITooltipExtras;
 import mcjty.lib.tooltips.ITooltipSettings;
 import mcjty.lib.varia.JSonTools;
-import net.minecraft.client.resources.model.ModelResourceLocation;
 import net.minecraft.network.chat.Component;
 import net.minecraft.world.item.Item;
 import net.minecraft.world.item.TooltipFlag;
@@ -35,7 +35,7 @@ public class BlueprintItem extends Item implements ITooltipExtras, ITooltipSetti
             .info(header(), parameter("info", stack -> getDestination(stack).getHoverName().getString()));
 
     public BlueprintItem() {
-        super(new Properties().tab(Ariente.setup.getTab())
+        super(new Properties()
                 // @todo 1.18 .setISTER(BlueprintRenderer::createRenderer)
                 .stacksTo(1));
         // @todo 1.14
@@ -56,10 +56,10 @@ public class BlueprintItem extends Item implements ITooltipExtras, ITooltipSetti
     @Override
     public void appendHoverText(ItemStack stack, @Nullable Level worldIn, List<Component> tooltip, TooltipFlag flag) {
         super.appendHoverText(stack, worldIn, tooltip, flag);
-        tooltipBuilder.makeTooltip(getRegistryName(), stack, tooltip, flag);
+        tooltipBuilder.makeTooltip(Tools.getId(this), stack, tooltip, flag);
     }
 
-    public static ModelResourceLocation EMPTY_BLUEPRINT_MODEL = new ModelResourceLocation(new ResourceLocation(Ariente.MODID, "empty_blueprint"), "inventory");
+    public static final ResourceLocation EMPTY_BLUEPRINT_MODEL = new ResourceLocation(Ariente.MODID, "empty_blueprint");
 
     // @todo 1.14
 //    @Override

@@ -1,5 +1,6 @@
 package mcjty.ariente.items;
 
+import mcjty.lib.varia.Tools;
 import mcjty.ariente.Ariente;
 import mcjty.ariente.gui.HelpBuilder;
 import mcjty.ariente.gui.HoloGuiTools;
@@ -42,7 +43,7 @@ public class EnergyHolderItem extends Item implements ITooltipSettings {
                     parameter("mode", stack -> (getAutomatic(stack) == MODE_MANUAL ? "Manual" : "Automatic")));
 
     public EnergyHolderItem() {
-        super(new Properties().tab(Ariente.setup.getTab()).stacksTo(1));
+        super(new Properties().stacksTo(1));
     }
 
     @Override
@@ -57,7 +58,7 @@ public class EnergyHolderItem extends Item implements ITooltipSettings {
     @Override
     public void appendHoverText(ItemStack stack, @Nullable Level worldIn, List<Component> tooltip, TooltipFlag flag) {
         super.appendHoverText(stack, worldIn, tooltip, flag);
-        tooltipBuilder.makeTooltip(getRegistryName(), stack, tooltip, flag);
+        tooltipBuilder.makeTooltip(Tools.getId(this), stack, tooltip, flag);
     }
 
     @Override

@@ -1,5 +1,7 @@
 package mcjty.ariente.recipes;
 
+import net.minecraft.core.RegistryAccess;
+import mcjty.lib.varia.Tools;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.crafting.Recipe;
@@ -27,7 +29,7 @@ public class ConstructorRecipe implements Recipe<ConstructorContext> {
     }
 
     public ConstructorRecipe(ItemStack destination, float chance, ItemStack... ingredients) {
-        this.id = destination.getItem().getRegistryName();
+        this.id = Tools.getId(destination.getItem());
         this.destination = destination;
         this.ingredients = new ArrayList<>(ingredients.length);
         this.chance = chance;
@@ -52,8 +54,8 @@ public class ConstructorRecipe implements Recipe<ConstructorContext> {
     }
 
     @Override
-    public ItemStack assemble(ConstructorContext inv) {
-        return null;
+    public ItemStack assemble(ConstructorContext inv, RegistryAccess registries) {
+        return destination.copy();
     }
 
     @Override
@@ -62,7 +64,7 @@ public class ConstructorRecipe implements Recipe<ConstructorContext> {
     }
 
     @Override
-    public ItemStack getResultItem() {
+    public ItemStack getResultItem(RegistryAccess registries) {
         return destination;
     }
 
@@ -78,6 +80,6 @@ public class ConstructorRecipe implements Recipe<ConstructorContext> {
 
     @Override
     public RecipeType<?> getType() {
-        return BlueprintRecipeRegistry.CONSTRUCTOR;
+        return BlueprintRecipeRegistry.CONSTRUCTOR.get();
     }
 }

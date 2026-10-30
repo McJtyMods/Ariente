@@ -1,6 +1,9 @@
 package mcjty.ariente.facade;
 
+import mcjty.lib.varia.Tools;
 import net.minecraft.resources.ResourceLocation;
+import net.minecraft.core.registries.BuiltInRegistries;
+import net.minecraft.nbt.NbtUtils;
 import net.minecraft.world.level.block.Block;
 import net.minecraft.world.level.block.Blocks;
 import net.minecraft.world.level.block.state.BlockState;
@@ -25,7 +28,9 @@ public class MimicBlockSupport {
 
 
     public void readFromNBT(CompoundTag tagCompound) {
-        if (tagCompound.contains("regName")) {
+        if (tagCompound.contains("mimicState")) {
+            mimicBlock = NbtUtils.readBlockState(BuiltInRegistries.BLOCK.asLookup(), tagCompound.getCompound("mimicState"));
+        } else if (tagCompound.contains("regName")) {
             String regName = tagCompound.getString("regName");
             // @todo 1.14 meta
 //            int meta = tagCompound.getInt("meta");
@@ -43,7 +48,8 @@ public class MimicBlockSupport {
 
     public void writeToNBT(CompoundTag tagCompound) {
         if (mimicBlock != null) {
-            tagCompound.putString("regName", mimicBlock.getBlock().getRegistryName().toString());
+            tagCompound.put("mimicState", NbtUtils.writeBlockState(mimicBlock));
+            tagCompound.putString("regName", Tools.getId(mimicBlock.getBlock()).toString());
             // @todo 1.14 meta
 //            tagCompound.putInt("meta", mimicBlock.getBlock().getMetaFromState(mimicBlock));
         }

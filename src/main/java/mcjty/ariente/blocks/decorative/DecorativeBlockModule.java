@@ -1,5 +1,6 @@
 package mcjty.ariente.blocks.decorative;
 
+import net.minecraftforge.eventbus.api.IEventBus;
 import com.google.common.collect.ImmutableMap;
 import mcjty.lib.blocks.BaseBlock;
 import mcjty.lib.builder.BlockBuilder;
@@ -13,7 +14,7 @@ import net.minecraft.world.item.Item;
 import net.minecraft.world.level.block.Block;
 import net.minecraft.world.level.block.SlabBlock;
 import net.minecraft.world.level.block.state.BlockBehaviour.Properties;
-import net.minecraft.world.level.material.Material;
+import net.minecraft.world.level.material.MapColor;
 import net.minecraft.world.item.BlockItem;
 import net.minecraftforge.registries.RegistryObject;
 import net.minecraftforge.fml.event.lifecycle.FMLClientSetupEvent;
@@ -50,7 +51,7 @@ public class DecorativeBlockModule implements IModule {
     public static final Map<MarbleColor, RegistryObject<BaseBlock>> MARBLE_BRICKS = createBlockMap("marble_bricks_", MarbleColor.values());
     public static final Map<MarbleColor, RegistryObject<Item>> MARBLE_BRICKS_ITEMS = createItemMap("marble_bricks_", MarbleColor.values(), MARBLE_BRICKS);
 
-    public static final Map<MarbleColor, RegistryObject<SlabBlock>> MARBLE_SLAB = createSlabBlockMap("marble_slab_", MarbleColor.values(), Properties.of(Material.STONE));
+    public static final Map<MarbleColor, RegistryObject<SlabBlock>> MARBLE_SLAB = createSlabBlockMap("marble_slab_", MarbleColor.values(), Properties.of().mapColor(MapColor.STONE));
     public static final Map<MarbleColor, RegistryObject<Item>> MARBLE_SLAB_ITEMS = createItemMap("marble_slab_", MarbleColor.values(), MARBLE_SLAB);
 
     private static <T extends StringRepresentable> Map<T, RegistryObject<BaseBlock>> createBlockMap(String prefix, T[] variants) {
@@ -95,7 +96,7 @@ public class DecorativeBlockModule implements IModule {
     }
 
     @Override
-    public void initConfig() {
+    public void initConfig(IEventBus bus) {
         // no-op
     }
 }

@@ -1,9 +1,6 @@
 {
-    "ctm":{
-        "ctm_version": 1,
-        "layer":"CUTOUT",
-        "extra": {
-            "light": 14
-        }
-    }
+  "ariente": {
+    "light": 14,
+    "layer": "cutout"
+  }
 }

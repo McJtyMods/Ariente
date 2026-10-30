@@ -23,7 +23,7 @@
                 },
                 {
                   "source": "Items",
-                  "target": "BlockEntityTag.Items",
+                  "target": "BlockEntityTag.McItems",
                   "op": "replace"
                 },
                 {
@@ -40,7 +40,8 @@
                   "type": "minecraft:dynamic",
                   "name": "minecraft:contents"
                 }
-              ]
+              ],
+              "type": "ariente:wireless_button"
             }
           ],
           "name": "ariente:wireless_button"

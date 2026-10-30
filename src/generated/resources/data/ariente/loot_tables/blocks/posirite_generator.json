@@ -23,7 +23,7 @@
                 },
                 {
                   "source": "Items",
-                  "target": "BlockEntityTag.Items",
+                  "target": "BlockEntityTag.McItems",
                   "op": "replace"
                 },
                 {
@@ -40,7 +40,8 @@
                   "type": "minecraft:dynamic",
                   "name": "minecraft:contents"
                 }
-              ]
+              ],
+              "type": "ariente:posirite_generator"
             }
           ],
           "name": "ariente:posirite_generator"

@@ -39,7 +39,7 @@ public class ForceFieldSounds {
             if (soundAt != null) {
                 soundAt.setVolume(volume);
             } else {
-                SoundController.playForcefieldSound(world, pos, ModSounds.forcefield, volume, 20);
+                SoundController.playForcefieldSound(world, pos, ModSounds.forcefield.get(), volume, 20);
             }
         } else {
             SoundController.stopForcefieldSounds(world, pos);

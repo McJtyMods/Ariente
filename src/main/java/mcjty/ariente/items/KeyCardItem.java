@@ -1,5 +1,6 @@
 package mcjty.ariente.items;
 
+import mcjty.lib.varia.Tools;
 import mcjty.ariente.Ariente;
 import mcjty.ariente.security.IKeyCardSlot;
 import mcjty.ariente.setup.Registration;
@@ -19,7 +20,6 @@ import net.minecraft.nbt.CompoundTag;
 import net.minecraft.nbt.StringTag;
 import net.minecraft.world.level.block.entity.BlockEntity;
 import net.minecraft.core.BlockPos;
-import net.minecraft.network.chat.TextComponent;
 import net.minecraft.world.level.Level;
 
 import javax.annotation.Nullable;
@@ -39,7 +39,7 @@ public class KeyCardItem extends Item implements ITooltipSettings {
                     repeatingParameter("tag", stack -> getSecurityTags(stack).stream()));
 
     public KeyCardItem() {
-        super(new Properties().stacksTo(1).tab(Ariente.setup.getTab()));
+        super(new Properties().stacksTo(1));
     }
 
     public static boolean hasPlayerKeycard(Player player, String tag) {
@@ -57,7 +57,7 @@ public class KeyCardItem extends Item implements ITooltipSettings {
     @Override
     public void appendHoverText(ItemStack stack, @Nullable Level worldIn, List<Component> tooltip, TooltipFlag flag) {
         super.appendHoverText(stack, worldIn, tooltip, flag);
-        tooltipBuilder.makeTooltip(getRegistryName(), stack, tooltip, flag);
+        tooltipBuilder.makeTooltip(Tools.getId(this), stack, tooltip, flag);
     }
 
 

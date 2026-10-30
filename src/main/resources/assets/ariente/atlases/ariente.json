@@ -1,0 +1,94 @@
+{
+  "sources": [
+    {
+      "type": "minecraft:single",
+      "resource": "ariente:effects/autobeam1",
+      "sprite": "ariente:autobeam1"
+    },
+    {
+      "type": "minecraft:single",
+      "resource": "ariente:effects/autobeam2",
+      "sprite": "ariente:autobeam2"
+    },
+    {
+      "type": "minecraft:single",
+      "resource": "ariente:effects/autobeam3",
+      "sprite": "ariente:autobeam3"
+    },
+    {
+      "type": "minecraft:single",
+      "resource": "ariente:effects/data_laserbeam1",
+      "sprite": "ariente:data_laserbeam1"
+    },
+    {
+      "type": "minecraft:single",
+      "resource": "ariente:effects/data_laserbeam2",
+      "sprite": "ariente:data_laserbeam2"
+    },
+    {
+      "type": "minecraft:single",
+      "resource": "ariente:effects/data_laserbeam3",
+      "sprite": "ariente:data_laserbeam3"
+    },
+    {
+      "type": "minecraft:single",
+      "resource": "ariente:effects/data_laserbeam4",
+      "sprite": "ariente:data_laserbeam4"
+    },
+    {
+      "type": "minecraft:single",
+      "resource": "ariente:effects/doormarkers",
+      "sprite": "ariente:doormarkers"
+    },
+    {
+      "type": "minecraft:single",
+      "resource": "ariente:effects/forcefield",
+      "sprite": "ariente:forcefield"
+    },
+    {
+      "type": "minecraft:single",
+      "resource": "ariente:effects/forcefield_hit",
+      "sprite": "ariente:forcefield_hit"
+    },
+    {
+      "type": "minecraft:single",
+      "resource": "ariente:effects/negarite_laserbeam1",
+      "sprite": "ariente:negarite_laserbeam1"
+    },
+    {
+      "type": "minecraft:single",
+      "resource": "ariente:effects/negarite_laserbeam2",
+      "sprite": "ariente:negarite_laserbeam2"
+    },
+    {
+      "type": "minecraft:single",
+      "resource": "ariente:effects/negarite_laserbeam3",
+      "sprite": "ariente:negarite_laserbeam3"
+    },
+    {
+      "type": "minecraft:single",
+      "resource": "ariente:effects/negarite_laserbeam4",
+      "sprite": "ariente:negarite_laserbeam4"
+    },
+    {
+      "type": "minecraft:single",
+      "resource": "ariente:effects/posirite_laserbeam1",
+      "sprite": "ariente:posirite_laserbeam1"
+    },
+    {
+      "type": "minecraft:single",
+      "resource": "ariente:effects/posirite_laserbeam2",
+      "sprite": "ariente:posirite_laserbeam2"
+    },
+    {
+      "type": "minecraft:single",
+      "resource": "ariente:effects/posirite_laserbeam3",
+      "sprite": "ariente:posirite_laserbeam3"
+    },
+    {
+      "type": "minecraft:single",
+      "resource": "ariente:effects/posirite_laserbeam4",
+      "sprite": "ariente:posirite_laserbeam4"
+    }
+  ]
+}

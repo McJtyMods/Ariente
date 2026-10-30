@@ -2,14 +2,13 @@ package mcjty.ariente.entities.drone;
 
 import com.mojang.blaze3d.systems.RenderSystem;
 import com.mojang.blaze3d.vertex.PoseStack;
-import com.mojang.blaze3d.platform.GlStateManager;
 import net.minecraft.client.renderer.entity.EntityRenderer;
 import net.minecraft.client.renderer.entity.EntityRendererProvider.Context;
-import net.minecraft.client.renderer.entity.LivingEntityRenderer;
+import net.minecraft.client.renderer.entity.MobRenderer;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.client.renderer.entity.EntityRendererProvider;
 
-public class SentinelDroneRender extends LivingEntityRenderer<SentinelDroneEntity, DroneModel<SentinelDroneEntity>> {
+public class SentinelDroneRender extends MobRenderer<SentinelDroneEntity, DroneModel<SentinelDroneEntity>> {
     private ResourceLocation mobTexture = new ResourceLocation("ariente:textures/entity/sentinel_drone.png");
 
     public SentinelDroneRender(Context rendererManager) {

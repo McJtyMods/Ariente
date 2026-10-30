@@ -4,8 +4,8 @@ import mcjty.ariente.setup.Registration;
 import mcjty.lib.blocks.BaseBlock;
 import mcjty.lib.blocks.RotationType;
 import mcjty.lib.builder.BlockBuilder;
-import mcjty.lib.multipart.MultipartHelper;
-import mcjty.lib.multipart.MultipartTE;
+import mcjty.ariente.multipart.MultipartHelper;
+import mcjty.ariente.multipart.MultipartTE;
 import mcjty.lib.multipart.PartSlot;
 import mcjty.lib.tileentity.GenericTileEntity;
 import mcjty.lib.varia.BlockPosTools;
@@ -89,7 +89,7 @@ public class FieldMarkerTile extends GenericTileEntity {
         AutoFieldTile auto = null;
         for (Direction facing : OrientationTools.HORIZONTAL_DIRECTION_VALUES) {
             BlockPos p = pos.relative(facing);
-            BlockEntity te = MultipartHelper.getTileEntity(world, p, PartSlot.DOWN);
+            BlockEntity te = MultipartHelper.getBlockEntity(world, p, PartSlot.DOWN);
             if (te instanceof FieldMarkerTile) {
                 BlockPos tile = ((FieldMarkerTile) te).getAutoFieldTile();
                 if (tile != null) {

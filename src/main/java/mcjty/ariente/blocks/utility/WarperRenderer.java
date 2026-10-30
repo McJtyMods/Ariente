@@ -2,8 +2,8 @@ package mcjty.ariente.blocks.utility;
 
 import com.mojang.blaze3d.vertex.PoseStack;
 import com.mojang.blaze3d.vertex.VertexConsumer;
-import com.mojang.math.Matrix4f;
-import com.mojang.math.Vector3f;
+import org.joml.Matrix4f;
+import net.minecraft.world.phys.Vec3;
 import mcjty.ariente.Ariente;
 import mcjty.ariente.setup.Registration;
 import mcjty.lib.client.CustomRenderTypes;
@@ -16,7 +16,6 @@ import net.minecraft.client.renderer.blockentity.BlockEntityRenderers;
 import net.minecraft.client.renderer.texture.TextureAtlasSprite;
 import net.minecraft.world.inventory.InventoryMenu;
 import net.minecraft.resources.ResourceLocation;
-import net.minecraft.world.phys.Vec3;
 
 public class WarperRenderer implements BlockEntityRenderer<WarperTile> {
 
@@ -46,7 +45,7 @@ public class WarperRenderer implements BlockEntityRenderer<WarperTile> {
         int tey = te.getBlockPos().getY();
         int tez = te.getBlockPos().getZ();
         Vec3 projectedView = mc.gameRenderer.getMainCamera().getPosition().add(-tex, -tey, -tez);
-        Vector3f player = new Vector3f((float)projectedView.x, (float)projectedView.y, (float)projectedView.z);
+        Vec3 player = new Vec3((float)projectedView.x, (float)projectedView.y, (float)projectedView.z);
 
         long tt = System.currentTimeMillis() / 100;
 
@@ -66,7 +65,7 @@ public class WarperRenderer implements BlockEntityRenderer<WarperTile> {
             float xx = randomX[ii];
             float zz = randomZ[ii];
             float yy = - 1.0f + i1 + (randomY[ii] * height) / 8.0f;
-            RenderHelper.drawBeam(matrix, builder, sprite, new Vector3f(xx, yy, zz), new Vector3f(xx, yy + 4, zz), player, 0.2f);
+            RenderHelper.drawBeam(matrixStack, builder, sprite, new Vec3(xx, yy, zz), new Vec3(xx, yy + 4, zz), player, 0.2f);
         }
     }
 

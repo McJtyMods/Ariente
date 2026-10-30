@@ -1,7 +1,7 @@
 {
   "variants": {
     "": {
-      "model": "ariente:block/base/empty"
+      "model": "ariente:block/cable"
     }
   }
 }

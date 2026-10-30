@@ -11,6 +11,7 @@ import mcjty.hologui.api.components.IPanel;
 import mcjty.lib.varia.ItemStackList;
 import net.minecraft.core.BlockPos;
 import net.minecraft.nbt.CompoundTag;
+import net.minecraft.world.ContainerHelper;
 import net.minecraft.world.level.block.state.BlockState;
 import org.apache.commons.lang3.tuple.Pair;
 
@@ -38,7 +39,8 @@ public class OutputItemNodeTile extends AbstractItemNodeTile {
     @Override
     public void readRestorableFromNBT(CompoundTag tagCompound) {
         super.readRestorableFromNBT(tagCompound);
-//        readBufferFromNBT(tagCompound, "output", outputFilter);
+        outputFilter.clear();
+        ContainerHelper.loadAllItems(tagCompound.getCompound("output"), outputFilter);
         CompoundTag info = tagCompound.getCompound("Info");
         if (!info.isEmpty()) {
             outputDamage = info.getBoolean("outDamage");
@@ -51,7 +53,7 @@ public class OutputItemNodeTile extends AbstractItemNodeTile {
     @Override
     public void writeRestorableToNBT(CompoundTag tagCompound) {
         super.writeRestorableToNBT(tagCompound);
-//        writeBufferToNBT(tagCompound, "output", outputFilter);
+        tagCompound.put("output", ContainerHelper.saveAllItems(new CompoundTag(), outputFilter));
         CompoundTag info = getOrCreateInfo(tagCompound);
         info.putBoolean("outDamage", outputDamage);
         info.putBoolean("outNBT", outputNbt);

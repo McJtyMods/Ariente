@@ -3,13 +3,13 @@ package mcjty.ariente.blocks;
 import mcjty.lib.blocks.BaseBlock;
 import mcjty.lib.blocks.RotationType;
 import mcjty.lib.builder.BlockBuilder;
-import net.minecraft.world.level.material.Material;
+import net.minecraft.world.level.material.MapColor;
 
 public class BaseOreBlock extends BaseBlock {
 
     public BaseOreBlock() {
         super(new BlockBuilder()
-                .properties(Properties.of(Material.STONE)
+                .properties(Properties.of().mapColor(MapColor.STONE)
 //                    .hardnessAndResistance(2.0f, 4.0f)
                 )
                 // @todo 1.18 .harvestLevel(ToolType.PICKAXE, 1)

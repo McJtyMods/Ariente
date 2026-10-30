@@ -1,0 +1,280 @@
+{
+  "sources": [
+    {
+      "type": "minecraft:single",
+      "resource": "ariente:block/machines/elevator_beam"
+    },
+    {
+      "type": "minecraft:single",
+      "resource": "ariente:block/machines/flux_beam"
+    },
+    {
+      "type": "minecraft:single",
+      "resource": "ariente:block/machines/negarite_beam"
+    },
+    {
+      "type": "minecraft:single",
+      "resource": "ariente:block/machines/posirite_beam"
+    },
+    {
+      "type": "minecraft:single",
+      "resource": "ariente:block/machines/warper_beam"
+    },
+    {
+      "type": "minecraft:single",
+      "resource": "ariente:effects/autobeam1"
+    },
+    {
+      "type": "minecraft:single",
+      "resource": "ariente:effects/autobeam2"
+    },
+    {
+      "type": "minecraft:single",
+      "resource": "ariente:effects/autobeam3"
+    },
+    {
+      "type": "minecraft:single",
+      "resource": "ariente:effects/data_laserbeam1"
+    },
+    {
+      "type": "minecraft:single",
+      "resource": "ariente:effects/data_laserbeam2"
+    },
+    {
+      "type": "minecraft:single",
+      "resource": "ariente:effects/data_laserbeam3"
+    },
+    {
+      "type": "minecraft:single",
+      "resource": "ariente:effects/data_laserbeam4"
+    },
+    {
+      "type": "minecraft:single",
+      "resource": "ariente:effects/negarite_laserbeam1"
+    },
+    {
+      "type": "minecraft:single",
+      "resource": "ariente:effects/negarite_laserbeam2"
+    },
+    {
+      "type": "minecraft:single",
+      "resource": "ariente:effects/negarite_laserbeam3"
+    },
+    {
+      "type": "minecraft:single",
+      "resource": "ariente:effects/negarite_laserbeam4"
+    },
+    {
+      "type": "minecraft:single",
+      "resource": "ariente:effects/posirite_laserbeam1"
+    },
+    {
+      "type": "minecraft:single",
+      "resource": "ariente:effects/posirite_laserbeam2"
+    },
+    {
+      "type": "minecraft:single",
+      "resource": "ariente:effects/posirite_laserbeam3"
+    },
+    {
+      "type": "minecraft:single",
+      "resource": "ariente:effects/posirite_laserbeam4"
+    },
+    {
+      "type": "minecraft:single",
+      "resource": "ariente:block/blacktech/blacktech_anim_lines-ctm"
+    },
+    {
+      "type": "minecraft:single",
+      "resource": "ariente:block/blacktech/blacktech_anim_lines-ctm_glow"
+    },
+    {
+      "type": "minecraft:single",
+      "resource": "ariente:block/blacktech/blacktech_blue_blue-ctm"
+    },
+    {
+      "type": "minecraft:single",
+      "resource": "ariente:block/blacktech/blacktech_blue_red-ctm"
+    },
+    {
+      "type": "minecraft:single",
+      "resource": "ariente:block/blacktech/blacktech_blue_var1_anim-ctm"
+    },
+    {
+      "type": "minecraft:single",
+      "resource": "ariente:block/blacktech/blacktech_blue_var1_anim-ctm_glow"
+    },
+    {
+      "type": "minecraft:single",
+      "resource": "ariente:block/blacktech/blacktech_lines-ctm"
+    },
+    {
+      "type": "minecraft:single",
+      "resource": "ariente:block/blacktech/blacktech_lines-ctm_glow"
+    },
+    {
+      "type": "minecraft:single",
+      "resource": "ariente:block/blacktech/blacktech_red_anim_lines-ctm"
+    },
+    {
+      "type": "minecraft:single",
+      "resource": "ariente:block/blacktech/blacktech_red_anim_lines-ctm_glow"
+    },
+    {
+      "type": "minecraft:single",
+      "resource": "ariente:block/blacktech/blacktech_red_lines-ctm"
+    },
+    {
+      "type": "minecraft:single",
+      "resource": "ariente:block/blacktech/blacktech_red_lines-ctm_glow"
+    },
+    {
+      "type": "minecraft:single",
+      "resource": "ariente:block/blacktech/blacktech_red_var1-ctm"
+    },
+    {
+      "type": "minecraft:single",
+      "resource": "ariente:block/blacktech/blacktech_red_var1-ctm_glow"
+    },
+    {
+      "type": "minecraft:single",
+      "resource": "ariente:block/blacktech/blacktech_red_var1_anim-ctm"
+    },
+    {
+      "type": "minecraft:single",
+      "resource": "ariente:block/blacktech/blacktech_red_var1_anim-ctm_glow"
+    },
+    {
+      "type": "minecraft:single",
+      "resource": "ariente:block/blacktech/blacktech_var1-ctm"
+    },
+    {
+      "type": "minecraft:single",
+      "resource": "ariente:block/blacktech/blacktech_var1-ctm_glow"
+    },
+    {
+      "type": "minecraft:single",
+      "resource": "ariente:block/marbletech/marbletech1-ctm"
+    },
+    {
+      "type": "minecraft:single",
+      "resource": "ariente:block/marbletech/marbletech2-ctm"
+    },
+    {
+      "type": "minecraft:single",
+      "resource": "ariente:block/marbletech/marbletech3-ctm"
+    },
+    {
+      "type": "minecraft:single",
+      "resource": "ariente:block/base/machineside_glow"
+    },
+    {
+      "type": "minecraft:single",
+      "resource": "ariente:block/blacktech/blacktech_anim_lines_glow"
+    },
+    {
+      "type": "minecraft:single",
+      "resource": "ariente:block/blacktech/blacktech_blue_var1_anim_glow"
+    },
+    {
+      "type": "minecraft:single",
+      "resource": "ariente:block/blacktech/blacktech_dots2_glow"
+    },
+    {
+      "type": "minecraft:single",
+      "resource": "ariente:block/blacktech/blacktech_dots_glow"
+    },
+    {
+      "type": "minecraft:single",
+      "resource": "ariente:block/blacktech/blacktech_lines_glow"
+    },
+    {
+      "type": "minecraft:single",
+      "resource": "ariente:block/blacktech/blacktech_panel_glow"
+    },
+    {
+      "type": "minecraft:single",
+      "resource": "ariente:block/blacktech/blacktech_red_anim_lines_glow"
+    },
+    {
+      "type": "minecraft:single",
+      "resource": "ariente:block/blacktech/blacktech_red_lines_glow"
+    },
+    {
+      "type": "minecraft:single",
+      "resource": "ariente:block/blacktech/blacktech_red_var1_anim_glow"
+    },
+    {
+      "type": "minecraft:single",
+      "resource": "ariente:block/blacktech/blacktech_red_var1_glow"
+    },
+    {
+      "type": "minecraft:single",
+      "resource": "ariente:block/blacktech/blacktech_var1_glow"
+    },
+    {
+      "type": "minecraft:single",
+      "resource": "ariente:block/machines/alarm_alert_glow"
+    },
+    {
+      "type": "minecraft:single",
+      "resource": "ariente:block/machines/alarm_safe_glow"
+    },
+    {
+      "type": "minecraft:single",
+      "resource": "ariente:block/machines/auto_constructor_on_glow"
+    },
+    {
+      "type": "minecraft:single",
+      "resource": "ariente:block/machines/constructor_glow"
+    },
+    {
+      "type": "minecraft:single",
+      "resource": "ariente:block/machines/elevator_glow"
+    },
+    {
+      "type": "minecraft:single",
+      "resource": "ariente:block/machines/forcefield_glow"
+    },
+    {
+      "type": "minecraft:single",
+      "resource": "ariente:block/machines/lock_glow"
+    },
+    {
+      "type": "minecraft:single",
+      "resource": "ariente:block/machines/lock_locked_glow"
+    },
+    {
+      "type": "minecraft:single",
+      "resource": "ariente:block/machines/negarite_generator_on_glow"
+    },
+    {
+      "type": "minecraft:single",
+      "resource": "ariente:block/machines/posirite_generator_on_glow"
+    },
+    {
+      "type": "minecraft:single",
+      "resource": "ariente:block/machines/power_combiner_glow"
+    },
+    {
+      "type": "minecraft:single",
+      "resource": "ariente:block/machines/signal_receiver_off_glow"
+    },
+    {
+      "type": "minecraft:single",
+      "resource": "ariente:block/machines/signal_receiver_on_glow"
+    },
+    {
+      "type": "minecraft:single",
+      "resource": "ariente:block/machines/signal_transmitter_off_glow"
+    },
+    {
+      "type": "minecraft:single",
+      "resource": "ariente:block/machines/signal_transmitter_on_glow"
+    },
+    {
+      "type": "minecraft:single",
+      "resource": "ariente:block/machines/warper_glow"
+    }
+  ]
+}

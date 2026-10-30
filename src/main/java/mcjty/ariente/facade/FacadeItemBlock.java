@@ -1,5 +1,7 @@
 package mcjty.ariente.facade;
 
+import net.minecraft.core.registries.BuiltInRegistries;
+import mcjty.lib.varia.Tools;
 import mcjty.ariente.Ariente;
 import mcjty.lib.builder.TooltipBuilder;
 import mcjty.lib.tooltips.ITooltipSettings;
@@ -7,7 +9,6 @@ import net.minecraft.core.BlockPos;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.nbt.NbtUtils;
 import net.minecraft.network.chat.Component;
-import net.minecraft.network.chat.TextComponent;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.sounds.SoundSource;
 import net.minecraft.world.item.ItemStack;
@@ -61,13 +62,13 @@ public class FacadeItemBlock extends BlockItem implements ITooltipSettings {
 
     public FacadeItemBlock(FacadeBlock block) {
         super(block, new Properties()
-                .tab(Ariente.setup.getTab()));
+                );
     }
 
     @Override
     public void appendHoverText(ItemStack stack, @Nullable Level worldIn, List<Component> tooltip, TooltipFlag flag) {
         super.appendHoverText(stack, worldIn, tooltip, flag);
-        tooltipBuilder.makeTooltip(getRegistryName(), stack, tooltip, flag);
+        tooltipBuilder.makeTooltip(Tools.getId(this), stack, tooltip, flag);
     }
 
     public static void setMimicBlock(@Nonnull ItemStack item, BlockState mimicBlock) {
@@ -82,7 +83,7 @@ public class FacadeItemBlock extends BlockItem implements ITooltipSettings {
         if (tagCompound == null || !tagCompound.contains("mimic")) {
             return Blocks.COBBLESTONE.defaultBlockState();
         } else {
-            return NbtUtils.readBlockState(tagCompound.getCompound("mimic"));
+            return NbtUtils.readBlockState(BuiltInRegistries.BLOCK.asLookup(), tagCompound.getCompound("mimic"));
         }
     }
 
@@ -119,7 +120,7 @@ public class FacadeItemBlock extends BlockItem implements ITooltipSettings {
             } else {
                 setMimicBlock(itemstack, state);
                 if (world.isClientSide) {
-                    player.displayClientMessage(new TextComponent("Facade is now mimicing " + block.getDescriptionId()), false);
+                    player.displayClientMessage(Component.literal("Facade is now mimicing " + block.getDescriptionId()), false);
                 }
             }
             return InteractionResult.SUCCESS;

@@ -15,7 +15,7 @@ import net.minecraft.world.level.block.Block;
 import net.minecraft.world.level.block.Blocks;
 import net.minecraft.world.level.block.entity.BlockEntity;
 import net.minecraft.world.level.block.state.BlockState;
-import net.minecraft.world.level.material.Material;
+import net.minecraft.world.level.material.MapColor;
 import net.minecraft.world.level.material.FluidState;
 import net.minecraft.world.item.context.BlockPlaceContext;
 import net.minecraft.world.item.Item;
@@ -30,7 +30,7 @@ public class ConnectorBlock extends GenericCableBlock {
     public static final String CONNECTOR = "connector";
 
     public ConnectorBlock() {
-        super(Material.METAL);
+        super(MapColor.METAL);
     }
 
     @Nullable

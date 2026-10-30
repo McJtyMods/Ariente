@@ -1,0 +1,50 @@
+{
+  "parent": "minecraft:block/block",
+  "children": {
+    "frame": {
+      "parent": "ariente:block/machines/negarite_tank_both"
+    },
+    "window": {
+      "elements": [
+        {
+          "faces": {
+            "east": {
+              "texture": "#window"
+            },
+            "north": {
+              "texture": "#window"
+            },
+            "south": {
+              "texture": "#window"
+            },
+            "west": {
+              "texture": "#window"
+            }
+          },
+          "from": [
+            1,
+            0,
+            1
+          ],
+          "to": [
+            15,
+            16,
+            15
+          ]
+        }
+      ],
+      "render_type": "minecraft:translucent",
+      "textures": {
+        "window": "ariente:block/machines/negarite_tank_window"
+      }
+    }
+  },
+  "item_render_order": [
+    "frame",
+    "window"
+  ],
+  "loader": "forge:composite",
+  "textures": {
+    "particle": "ariente:block/marble/blackmarble"
+  }
+}

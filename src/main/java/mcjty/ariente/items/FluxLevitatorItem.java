@@ -1,5 +1,6 @@
 package mcjty.ariente.items;
 
+import mcjty.lib.varia.Tools;
 import mcjty.ariente.entities.levitator.FluxLevitatorEntity;
 import mcjty.ariente.setup.Registration;
 import mcjty.lib.builder.TooltipBuilder;
@@ -34,7 +35,7 @@ public class FluxLevitatorItem extends Item implements ITooltipSettings {
     @Override
     public void appendHoverText(ItemStack stack, @Nullable Level worldIn, List<Component> tooltip, TooltipFlag flag) {
         super.appendHoverText(stack, worldIn, tooltip, flag);
-        tooltipBuilder.makeTooltip(getRegistryName(), stack, tooltip, flag);
+        tooltipBuilder.makeTooltip(Tools.getId(this), stack, tooltip, flag);
     }
 
     @Override

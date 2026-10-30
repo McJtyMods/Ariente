@@ -1,15 +1,13 @@
 package mcjty.ariente.blocks.utility.door;
 
+import com.mojang.math.Axis;
 import com.mojang.blaze3d.vertex.PoseStack;
 import com.mojang.blaze3d.vertex.VertexConsumer;
-import com.mojang.math.Matrix4f;
-import com.mojang.math.Vector3f;
+import org.joml.Matrix4f;
 import mcjty.ariente.Ariente;
 import mcjty.ariente.client.ArienteRenderType;
 import mcjty.ariente.client.ArienteSpriteUploader;
 import mcjty.ariente.setup.Registration;
-import mcjty.lib.client.RenderHelper;
-import net.minecraft.client.renderer.blockentity.BlockEntityRenderDispatcher;
 import net.minecraft.client.renderer.blockentity.BlockEntityRendererProvider;
 import net.minecraft.client.renderer.blockentity.BlockEntityRenderers;
 import net.minecraft.core.Direction;
@@ -18,7 +16,6 @@ import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.client.renderer.MultiBufferSource;
 import net.minecraft.client.renderer.texture.TextureAtlasSprite;
 import net.minecraft.client.renderer.blockentity.BlockEntityRenderer;
-import net.minecraftforge.client.ClientRegistry;
 
 public class DoorMarkerRenderer implements BlockEntityRenderer<DoorMarkerTile> {
 
@@ -41,7 +38,7 @@ public class DoorMarkerRenderer implements BlockEntityRenderer<DoorMarkerTile> {
         Direction frontDirection = Registration.DOOR_MARKER.get().getFrontDirection(state);
         if (Direction.NORTH.equals(frontDirection) || Direction.SOUTH.equals(frontDirection)) {
             matrixStack.translate(0, 0, .5);
-            matrixStack.mulPose(Vector3f.YP.rotationDegrees(90));
+            matrixStack.mulPose(Axis.YP.rotationDegrees(90));
         } else {
             matrixStack.translate(.5, 0, 0);
         }
@@ -74,15 +71,15 @@ public class DoorMarkerRenderer implements BlockEntityRenderer<DoorMarkerTile> {
 
             Matrix4f matrix = matrixStack.last().pose();
 
-            RenderHelper.vt(builder, matrix, -0.1f, o, o, u, v, combinedLightIn, combinedOverlayIn, 255, 255, 255, 255);
-            RenderHelper.vt(builder, matrix, -0.1f, o, p, u+du, v, combinedLightIn, combinedOverlayIn, 255, 255, 255, 255);
-            RenderHelper.vt(builder, matrix, -0.1f, p, p, u+du, v+dv, combinedLightIn, combinedOverlayIn, 255, 255, 255, 255);
-            RenderHelper.vt(builder, matrix, -0.1f, p, o, u, v+dv, combinedLightIn, combinedOverlayIn, 255, 255, 255, 255);
+            vertex(builder, matrixStack, -0.1f, o, o, u, v, combinedLightIn, -1);
+            vertex(builder, matrixStack, -0.1f, o, p, u+du, v, combinedLightIn, -1);
+            vertex(builder, matrixStack, -0.1f, p, p, u+du, v+dv, combinedLightIn, -1);
+            vertex(builder, matrixStack, -0.1f, p, o, u, v+dv, combinedLightIn, -1);
 
-            RenderHelper.vt(builder, matrix, .1f, p, o, u, v, combinedLightIn, combinedOverlayIn, 255, 255, 255, 255);
-            RenderHelper.vt(builder, matrix, .1f, p, p, u+du, v, combinedLightIn, combinedOverlayIn, 255, 255, 255, 255);
-            RenderHelper.vt(builder, matrix, .1f, o, p, u+du, v+dv, combinedLightIn, combinedOverlayIn, 255, 255, 255, 255);
-            RenderHelper.vt(builder, matrix, .1f, o, o, u, v+dv, combinedLightIn, combinedOverlayIn, 255, 255, 255, 255);
+            vertex(builder, matrixStack, .1f, p, o, u, v, combinedLightIn, 1);
+            vertex(builder, matrixStack, .1f, p, p, u+du, v, combinedLightIn, 1);
+            vertex(builder, matrixStack, .1f, o, p, u+du, v+dv, combinedLightIn, 1);
+            vertex(builder, matrixStack, .1f, o, o, u, v+dv, combinedLightIn, 1);
 
 //            for (int yy = 1; yy < 10; yy++) {
 //                if (getWorld().isAirBlock(te.getPos().up(yy))) {
@@ -100,6 +97,11 @@ public class DoorMarkerRenderer implements BlockEntityRenderer<DoorMarkerTile> {
 //                }
 //            }
         }
+    }
+
+    private static void vertex(VertexConsumer builder, PoseStack poses, float x, float y, float z, float u, float v, int light, float normalX) {
+        builder.vertex(poses.last().pose(), x, y, z).color(255, 255, 255, 255).uv(u, v).uv2(light)
+                .normal(poses.last().normal(), normalX, 0, 0).endVertex();
     }
 
     public static int getOpenphase(DoorMarkerTile te) {

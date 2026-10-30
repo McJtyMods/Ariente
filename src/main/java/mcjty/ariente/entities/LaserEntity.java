@@ -1,5 +1,6 @@
 package mcjty.ariente.entities;
 
+import net.minecraft.network.protocol.game.ClientGamePacketListener;
 import com.mojang.datafixers.DataFixer;
 import mcjty.ariente.api.IForceFieldTile;
 import mcjty.ariente.api.IForcefieldImmunity;
@@ -42,7 +43,7 @@ public class LaserEntity extends Projectile implements IForcefieldImmunity {
     private int soundTicker = 0;
 
     @Override
-    public Packet<?> getAddEntityPacket() {
+    public Packet<ClientGamePacketListener> getAddEntityPacket() {
         return NetworkHooks.getEntitySpawningPacket(this);
     }
 
@@ -104,6 +105,7 @@ public class LaserEntity extends Projectile implements IForcefieldImmunity {
     public static LaserEntity create(Level worldIn, LivingEntity shooter, double accelX, double accelY, double accelZ) {
         LaserEntity entity = new LaserEntity(Registration.ENTITY_LASER.get(), worldIn);
         entity.shootingEntity = shooter;
+        entity.setOwner(shooter);
         entity.moveTo(shooter.getX(), shooter.getY(), shooter.getZ(), shooter.getYRot(), shooter.getXRot());
         entity.setPos(entity.getX(), entity.getY(), entity.getZ());
         entity.setDeltaMovement(0, 0, 0);
@@ -124,20 +126,20 @@ public class LaserEntity extends Projectile implements IForcefieldImmunity {
 
         soundTicker--;
         if (soundTicker <= 0) {
-            level.playSound(null, getX(), getY(), getZ(), ModSounds.laser, SoundSource.HOSTILE, 5.0f, 1.0f);
+            level().playSound(null, getX(), getY(), getZ(), ModSounds.laser.get(), SoundSource.HOSTILE, 5.0f, 1.0f);
             soundTicker = 40;
         }
     }
 
     @Override
     public void tick() {
-        if (this.level.isClientSide || (this.shootingEntity == null || this.shootingEntity.isAlive()) && this.level.hasChunkAt(this.blockPosition())) {
+        if (this.level().isClientSide || (this.shootingEntity == null || this.shootingEntity.isAlive()) && this.level().hasChunkAt(this.blockPosition())) {
             super.tick();
 
 
             ++this.ticksInAir;
 //            RayTraceResult raytraceresult = ProjectileHelper.forwardsRaycast(this, true, this.ticksInAir >= 25, this.shootingEntity);
-            HitResult raytraceresult = ProjectileUtil.getHitResult(this, (entity) -> { return entity != this.shootingEntity || this.ticksInAir >= 25; });
+            HitResult raytraceresult = ProjectileUtil.getHitResultOnMoveVector(this, (entity) -> { return entity != this.shootingEntity || this.ticksInAir >= 25; });
 
             if (raytraceresult != null && !net.minecraftforge.event.ForgeEventFactory.onProjectileImpact(this, raytraceresult)) {
                 this.onImpact(raytraceresult);
@@ -151,7 +153,7 @@ public class LaserEntity extends Projectile implements IForcefieldImmunity {
 //            this.posX += motionX;
 //            this.posY += motionY;
 //            this.posZ += motionZ;
-            this.setPosRaw(getX() + motionX, getY() + motionY, getZ() + motionZ);
+            this.setPos(getX() + motionX, getY() + motionY, getZ() + motionZ);
 
             ProjectileUtil.rotateTowardsMovement(this, 0.2F);
             float f = this.getMotionFactor();
@@ -159,7 +161,7 @@ public class LaserEntity extends Projectile implements IForcefieldImmunity {
             if (this.isInWater()) {
                 for (int i = 0; i < 4; ++i) {
                     float f1 = 0.25F;
-                    this.level.addParticle(ParticleTypes.DRIPPING_WATER, this.getX() - motionX * 0.25D, this.getY() - motionY * 0.25D, this.getZ() - motionZ * 0.25D, motionX, motionY, motionZ);
+                    this.level().addParticle(ParticleTypes.DRIPPING_WATER, this.getX() - motionX * 0.25D, this.getY() - motionY * 0.25D, this.getZ() - motionZ * 0.25D, motionX, motionY, motionZ);
                 }
 
                 f = 0.8F;
@@ -188,9 +190,9 @@ public class LaserEntity extends Projectile implements IForcefieldImmunity {
     }
 
     protected void onImpact(HitResult result) {
-        if (!this.level.isClientSide && result instanceof EntityHitResult) {
+        if (!this.level().isClientSide && result instanceof EntityHitResult) {
             if (((EntityHitResult) result).getEntity() != null) {
-                ((EntityHitResult) result).getEntity().hurt(DamageSource.indirectMagic(this, this.shootingEntity), 10.0F);
+                ((EntityHitResult) result).getEntity().hurt(damageSources().indirectMagic(this, this.shootingEntity), 10.0F);
 
 //                this.applyEnchantments(this.shootingEntity, result.entityHit);
             }
@@ -274,7 +276,6 @@ public class LaserEntity extends Projectile implements IForcefieldImmunity {
         }
     }
 
-    @Override
     public float getBrightness() {
         return 1.0F;
     }

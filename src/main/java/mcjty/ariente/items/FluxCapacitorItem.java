@@ -1,5 +1,6 @@
 package mcjty.ariente.items;
 
+import mcjty.lib.varia.Tools;
 import mcjty.ariente.Ariente;
 import mcjty.lib.builder.TooltipBuilder;
 import mcjty.lib.tooltips.ITooltipSettings;
@@ -19,12 +20,12 @@ public class FluxCapacitorItem extends Item implements ITooltipSettings {
     private final TooltipBuilder tooltipBuilder = new TooltipBuilder().info(header());
 
     public FluxCapacitorItem() {
-        super(new Properties().tab(Ariente.setup.getTab()).stacksTo(64));
+        super(new Properties().stacksTo(64));
     }
 
     @Override
     public void appendHoverText(ItemStack stack, @Nullable Level worldIn, List<Component> tooltip, TooltipFlag flag) {
         super.appendHoverText(stack, worldIn, tooltip, flag);
-        tooltipBuilder.makeTooltip(getRegistryName(), stack, tooltip, flag);
+        tooltipBuilder.makeTooltip(Tools.getId(this), stack, tooltip, flag);
     }
 }

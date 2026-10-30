@@ -2,13 +2,22 @@ package mcjty.ariente.datagen;
 
 import net.minecraft.world.level.block.Block;
 import net.minecraft.world.level.storage.loot.LootTable;
-import net.minecraft.data.loot.BlockLoot;
+import net.minecraft.data.loot.BlockLootSubProvider;
+import net.minecraft.world.flag.FeatureFlags;
 
-/**
- * Proxy to MC built in protected builder methods
- */
-public class BlockLootUtility extends BlockLoot {
-    public static LootTable.Builder createSlabItemTable(Block block) {
-        return BlockLoot.createSlabItemTable(block);
+import java.util.Set;
+
+public class BlockLootUtility extends BlockLootSubProvider {
+
+    private BlockLootUtility() {
+        super(Set.of(), FeatureFlags.REGISTRY.allFlags());
+    }
+
+    @Override
+    protected void generate() {
+    }
+
+    public static LootTable.Builder slabTable(Block block) {
+        return new BlockLootUtility().createSlabItemTable(block);
     }
 }

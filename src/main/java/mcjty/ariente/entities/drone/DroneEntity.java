@@ -1,5 +1,6 @@
 package mcjty.ariente.entities.drone;
 
+import net.minecraft.util.RandomSource;
 import mcjty.ariente.Ariente;
 import mcjty.ariente.api.*;
 import mcjty.ariente.compat.arienteworld.ArienteWorldCompat;
@@ -9,7 +10,6 @@ import mcjty.ariente.sounds.ModSounds;
 import net.minecraft.core.BlockPos;
 import net.minecraft.util.Mth;
 import net.minecraft.world.entity.MobSpawnType;
-import net.minecraft.world.entity.ai.behavior.BehaviorUtils;
 import net.minecraft.world.entity.ai.control.MoveControl;
 import net.minecraft.world.entity.FlyingMob;
 import net.minecraft.world.entity.ai.goal.Goal;
@@ -133,18 +133,18 @@ public class DroneEntity extends FlyingMob implements IForcefieldImmunity, IDron
 
     @Override
     protected SoundEvent getAmbientSound() {
-        return ModSounds.droneAmbient;
+        return ModSounds.droneAmbient.get();
     }
 
     @Nullable
     @Override
     protected SoundEvent getHurtSound(DamageSource damageSourceIn) {
-        return ModSounds.droneHurt;
+        return ModSounds.droneHurt.get();
     }
 
     @Override
     protected SoundEvent getDeathSound() {
-        return ModSounds.droneDeath;
+        return ModSounds.droneDeath.get();
     }
 
     @Override
@@ -183,7 +183,7 @@ public class DroneEntity extends FlyingMob implements IForcefieldImmunity, IDron
     public void setTarget(@Nullable LivingEntity entitylivingbaseIn) {
         super.setTarget(entitylivingbaseIn);
         if (entitylivingbaseIn instanceof Player && cityCenter != null) {
-            ICityAISystem aiSystem = ArienteWorldCompat.getCityAISystem(level);
+            ICityAISystem aiSystem = ArienteWorldCompat.getCityAISystem(level());
             ICityAI cityAI = aiSystem.getCityAI(cityCenter);
             cityAI.playerSpotted((Player) entitylivingbaseIn);
             aiSystem.saveSystem();
@@ -232,7 +232,7 @@ public class DroneEntity extends FlyingMob implements IForcefieldImmunity, IDron
          */
         @Override
         public boolean canUse() {
-            return this.drone.getTarget() != null;
+            return this.drone.getTarget() != null && this.drone.getTarget().isAlive();
         }
 
         /**
@@ -259,7 +259,7 @@ public class DroneEntity extends FlyingMob implements IForcefieldImmunity, IDron
             LivingEntity target = this.drone.getTarget();
             double d0 = 64.0D;
 
-            if (target.distanceToSqr(this.drone) < 4096.0D && BehaviorUtils.canSee(this.drone, target)) {
+            if (target.distanceToSqr(this.drone) < 4096.0D && this.drone.getSensing().hasLineOfSight(target)) {
                 Level world = this.drone.getCommandSenderWorld();
                 ++this.attackTimer;
 
@@ -288,7 +288,7 @@ public class DroneEntity extends FlyingMob implements IForcefieldImmunity, IDron
                     double laserX = this.drone.getX() + vec3d.x * 2.0D;
                     double laserY = this.drone.getY() + (this.drone.getBbHeight() / 2.0F) + 0.5D;
                     double laserZ = this.drone.getZ() + vec3d.z * 2.0D;
-                    laser.setPosRaw(laserX, laserY, laserZ); // @todo 1.15 is this right?
+                    laser.setPos(laserX, laserY, laserZ);
 
                     double dx = target.getX() - laser.getX();
                     double dy = target.getY() + target.getEyeHeight() - laser.getY() + 0;
@@ -389,16 +389,16 @@ public class DroneEntity extends FlyingMob implements IForcefieldImmunity, IDron
         @Override
         public void start() {
             if (parentEntity.cityCenter == null) {
-                Random random = this.parentEntity.getRandom();
+                RandomSource random = this.parentEntity.getRandom();
                 double d0 = this.parentEntity.getX() + ((random.nextFloat() * 2.0F - 1.0F) * 32.0F);
                 double d1 = this.parentEntity.getY() + ((random.nextFloat() * 2.0F - 1.0F) * 32.0F);
                 double d2 = this.parentEntity.getZ() + ((random.nextFloat() * 2.0F - 1.0F) * 32.0F);
                 this.parentEntity.getMoveControl().setWantedPosition(d0, d1, d2, 1.0D);
             } else {
                 // City controls movement
-                ICityAISystem aiSystem = ArienteWorldCompat.getCityAISystem(parentEntity.level);
+                ICityAISystem aiSystem = ArienteWorldCompat.getCityAISystem(parentEntity.level());
                 ICityAI cityAI = aiSystem.getCityAI(parentEntity.cityCenter);
-                BlockPos pos = cityAI.requestNewDronePosition(parentEntity.level, parentEntity.getTarget());
+                BlockPos pos = cityAI.requestNewDronePosition(parentEntity.level(), parentEntity.getTarget());
                 if (pos != null) {
                     this.parentEntity.getMoveControl().setWantedPosition(pos.getX(), pos.getY(), pos.getZ(), 2.0D);
                 }

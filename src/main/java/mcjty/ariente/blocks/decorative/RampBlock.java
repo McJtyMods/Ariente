@@ -6,7 +6,7 @@ import mcjty.lib.builder.BlockBuilder;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
 import net.minecraft.world.level.block.state.BlockState;
-import net.minecraft.world.level.material.Material;
+import net.minecraft.world.level.material.MapColor;
 import net.minecraft.world.phys.shapes.CollisionContext;
 import net.minecraft.world.phys.shapes.Shapes;
 import net.minecraft.world.phys.shapes.VoxelShape;
@@ -44,7 +44,7 @@ public class RampBlock extends BaseBlock {
 
     public RampBlock() {
         super(new BlockBuilder()
-                .properties(Properties.of(Material.STONE).strength(2.0f, 4.0f))
+                .properties(Properties.of().mapColor(MapColor.STONE).strength(2.0f, 4.0f).noOcclusion())
                 // @todo 1.18 .harvestLevel(ToolType.PICKAXE, 1)
         );
     }

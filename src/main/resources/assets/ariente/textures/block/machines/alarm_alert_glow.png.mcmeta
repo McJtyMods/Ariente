@@ -1,12 +1,9 @@
 {
-    "animation": {
-      "frametime": 10
-    },
-    "ctm": {
-        "ctm_version": 1,
-        "layer":"CUTOUT",
-        "extra": {
-            "light": 14
-        }
-    }
+  "animation": {
+    "frametime": 10
+  },
+  "ariente": {
+    "light": 14,
+    "layer": "cutout"
+  }
 }

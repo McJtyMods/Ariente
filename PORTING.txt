@@ -1,0 +1,366 @@
+ARIENTE - FORGE 1.20.1 PORT HANDOFF
+Updated: 2026-10-30
+
+STATUS AND PURPOSE
+==================
+This is an INCOMPLETE development port, not a completed gameplay port or a
+release candidate. Both mods build and substantial world generation/rendering
+work is active, but survival progression and several equipment features are
+still missing. Passing builds and focused tests do not establish feature parity.
+
+This file owns Ariente gameplay, machines, equipment, shared HoloGui work,
+resources/recipes, rendering and packaging. Read ../ArienteWorld/PORTING.txt for
+the dimension, cities, population, travel generation, city AI and editing tools.
+Both documents are intended to let a future Codex session resume without chat
+history. The latest armor reports below are OPEN; investigation has not yet
+produced implementation changes for them.
+
+WORKSPACE, HISTORY AND USER REQUIREMENTS
+=======================================
+- Workspace: /data/Projects/McTech20, using MultiWorkspace.
+  Repositories: Ariente/, ArienteWorld/, ModHoloGui/, McJtyLib/, TheOneProbe/.
+  Mods are on local branch 1.20; workspace is on 1.20_tech.
+- Target: Minecraft 1.20.1, Forge 47.1.3, Java 17, Gradle wrapper 7.6.4.
+  Check the current gradletools.gradle rather than upgrading dependencies as a
+  side effect of finishing the port. Preserve standalone and workspace builds.
+- Read /data/Projects/MinecraftMods/AGENTS.md and any applicable local guidance.
+  Match McJty coding conventions, retain client/server separation and reuse
+  McJtyLib and HoloGui. Use included local dependency sources in workspace runs.
+- Ariente branch 1.20 started from origin/1.16:
+    2bd26286842378d3c3283f2da68000722406ca49
+  Original 1.12.2 master reference:
+    7104b811df556a265759a9f1d91b28a28b346efc
+  Despite its name, the 1.16 baseline is an unfinished 1.18.1 migration, with
+  many disabled older implementations. Compare master, not just that baseline.
+  Use git show/git diff for reference; do not switch this dirty checkout to
+  master or edit the 1.16 branch. The original mod itself was unfinished.
+- The user makes NEW WORLDS. Old-chunk migration and compatibility with previous
+  development saves are not required. Fix generation and data directly.
+- Reuse the original textures. Visual references live under
+  /data/Projects/MinecraftMods/ariente_screenshots, especially ariente1.png and
+  ariente_world2.jpg. The historical wiki is supplementary, not authoritative:
+    https://mcjty.eu/docs/mods/ariente/
+- Connected textures/glow are implemented natively. Do not add CTM, copy its
+  implementation, or port unrelated CTM features. See TEXTURES.md for the small
+  replacement format, including vanilla animation preservation.
+- The checkouts contain hundreds of intentionally STAGED port changes. Preserve
+  unrelated changes and existing staging; do not reset/clean them or commit.
+  At this handoff Ariente/ARIENTE_GUIDE.md and todo.txt also have UNSTAGED user
+  changes. Do not accidentally stage or overwrite those while updating code.
+  Stage all task-related changes in each affected repository; no commits.
+- Earlier work prioritized buildability, worldgen and reported bugs. A systematic
+  feature-by-feature comparison with master has NOT been completed. Most gaps
+  below survived from the intermediate migration; some original resources were
+  not recovered. There is no known fundamental blocker to continuing them.
+
+ACTIVE IMPLEMENTATION - DO NOT RE-PORT THESE FROM SCRATCH
+=======================================================
+Foundation and systems
+- Registry/capability/network/tag/recipe/datagen APIs compile for the target.
+  Recipe lookup and recipe-ID propagation were repaired. Original assets remain.
+- McJtyLib-based tile infrastructure and HoloGui integration are active.
+  Multipart support was recovered from McJtyLib history into Ariente's own
+  package; it still needs deeper gameplay validation.
+- Power networks, generators, tanks, storage, constructors, automation nodes,
+  doors, wireless devices and security code are present. Presence does NOT mean
+  all options, progression paths and edge cases have been verified.
+- Persistence checks cover 31 registered block entity types. Fixed generator
+  remaining-fuel saves, Lock settings, node filters/routing colors and parent
+  owner/security saves. Storage Cube, Blueprint Storage and Auto Constructor
+  inventories round-trip. Normal save/reload correctness remains required.
+
+Rendering, synchronization and interactions already repaired
+- Storage Cube front items/counts and ForceField settings synchronize, including
+  initial chunk data. ForceField unload no longer sends unsafe updates while
+  saving. Shield panel bounds refresh when client settings change.
+- Cables derive visible connections from neighbors. Connector housings and
+  machine-contact plates render in cutout, with facade layers preserved.
+  Atlas references refresh after resource reload. Cable beam rendering EXISTS;
+  old notes saying it is wholly unported are stale.
+- Native connected texture quarters and emissive cutout overlays are active.
+  Ramps/slopes render, including upside-down slopes, and do not occlude the
+  neighboring solid faces. Straight/curved Flux Beam outlines match geometry.
+  Flux Beams intentionally have no collision, as in the original mod.
+- Automatic doors use their marker's orientation and synchronize animation,
+  opening, collision and locks. Authored marker orientation is handled by the
+  companion's CityFeature (wide openings and single ship doors).
+- Flat Light and Alarm selection shapes match their distinct models for all
+  six facings. AI cores have an opaque frame and translucent green glass.
+- Tanks have opaque frames, joined stack rims and sorted translucent glass.
+  A single broad animated beam per section faces the camera around Y only.
+  Glass and beams share the native sorted buffer; vertical UVs align across
+  stacks. Existing textures are reused. Inventory models retain both layers.
+- Soldier/drone/sentinel models render. Unnamed drones no longer show type labels.
+  Combat drones use mob line of sight instead of the incompatible Brain helper.
+  Lasers emit buffered beam geometry and move their collision bounds correctly.
+- Levitator and elevator cabins render, passenger positioning no longer recurses,
+  and mounted levitator controls render through their actual entity renderer.
+  This does NOT cover the separate Flux Ship renderer, which is still disabled.
+- Warper/Elevator HoloGui entities are pickable without physically obstructing
+  the player and lowering the camera. Elevator height settings synchronize and
+  invalidate cached beam bounds. Ariente Pearls implement ItemSupplier and use
+  a typed vanilla thrown-item renderer; their previous rendering crash is fixed.
+- Warper return destination/charges and dimension travel have server checks.
+  The companion owns generated entrances and arrival structures.
+- Power suits use the original 64x128 texture and custom geometry through a
+  modern armor client extension. All four pieces follow humanoid poses.
+  Armor MODELS are restored; armor MOVEMENT is not.
+
+Shared HoloGui implementation in ../ModHoloGui
+- Panels render before widgets with depth writes; widgets sit in front of the
+  panel. Images use unlit native shaders. An isolated buffer keeps widget order
+  independent of deferred world buffers, and translucent item icons stay with
+  the panel in Fabulous graphics. Glass/shields behind panels no longer overdraw
+  their face in the checked scenes.
+- GUI item transforms, vertex tinting for unavailable items, transformed border
+  quads and proper depth replace old leaking texture/light/GL-state operations.
+  Default StyledColor.LABEL is dark purple (0xff201850), including Pwr labels.
+- Armor screens have Mod / On / Key labels and boxed activation toggles.
+  Click a module ITEM ICON to install/remove it using inventory items, then the
+  adjacent On box to enable it; Key selects a hotkey group. Equip the armor first
+  or hold the Enhanced Energy Sabre in the main hand. Default configure key: 0.
+- Install/enable/hotkey/fuel mutations synchronize inventory/equipment. Removing
+  a module clears module, working and hotkey keys; stale screens reject unrelated
+  equipment. Server tests pass, but the latest removal-HIGHLIGHT report is open.
+
+IMMEDIATE OPEN REPORTS - NEXT IMPLEMENTATION WORK
+================================================
+1. Alignment: armor activation/hotkey image buttons sit slightly left and below
+   the item icons. User suggests moving them about 1-2 screen pixels right and
+   3-4 up. Adjust in GUI coordinates with matching hit areas, not fixed screen
+   pixels. Check both checkbox and hotkey columns, both groups, at several angles.
+   Start at items/armor/ArmorGui.java:createModuleEntry and HoloGui renderImage /
+   renderItem. Their coordinate mappings currently differ.
+2. Removal highlight: installing highlights the item; removing reportedly leaves
+   it looking installed. Reproduce with a real client and confirm both server
+   and client NBT, returned inventory item, enabled state and border/brightness.
+   HoloStackToggle renders available-but-uninstalled (false) at full brightness,
+   just like installed (true), with only a border distinguishing them. That is
+   a plausible visual cause, NOT a confirmed diagnosis. Do not assume passing
+   server NBT assertions proves that the installed state looks correct.
+3. Powered movement: user charged gear with 64 negarite and 64 posirite but got
+   no flight/speed. CONFIRMED: Flight, Hover, Speed and Step Assist client movement
+   hooks are commented out in ClientForgeEventHandlers.java. Restore actual
+   effects, not just GUI state or working_* flags. See equipment backlog below.
+
+CONFIRMED MISSING PORTS / INCOMPLETE MIGRATIONS
+============================================
+Equipment and effect lifecycle
+- ClientForgeEventHandlers.java: restore Flight/Hover/Speed/Step Assist from
+  master using current APIs. Original intent: Space supplies upward thrust;
+  Flight+Hover holds height; sneak descends while hovering; Speed accelerates
+  forward/back with separate ground/air caps; boots raise step height (legacy
+  value 1.902). Do not silently replace this with unrelated creative-flight
+  behavior. Handle server movement validation, fall behavior and synchronization.
+  Respect other mods' attributes/abilities and remove only Ariente's changes.
+- PowerSuit.java and items/modules/ModuleSupport.java: audit enabled vs installed
+  vs working state, budgets, fuel exhaustion, toggling/removal, unequipping,
+  death/reconnect, attributes, potion effects, fall protection and Scramble.
+  On helmet power failure Scramble is not explicitly cleared; verify/correct
+  stale working flags. Nightvision/regeneration code exists; do not call every
+  module unimplemented just because movement is absent.
+- EnhancedEnergySabreItem.inventoryTick compares a hotbar inventory index with
+  MAINHAND.getIndex() (0), so it updates only the first slot and does not properly
+  establish that this stack is held. Test other slots, offhand, fuel loss and
+  built-in looting/fire enchantment updates without erasing unrelated enchants.
+- ModuleSupport.checkAutofeed extracts holder posirite from negariteStack rather
+  than posiriteStack. Fix the mixed-holder path and check atomic fuel-pair use.
+- Do not misdiagnose PowerSuit's index check as the same sabre bug: vanilla
+  Inventory.tick supplies per-compartment indices, including armor indices.
+  Test the actual worn stack; backpack copies must not supply equipped effects.
+- Each gear piece has its own fuel. Default budget is 100, or 130 with Energy
+  enabled; one dust pair supplies about 30000/usage ticks (40000/usage optimized).
+  Fuel and working-flag code being present does not implement movement itself.
+
+Resources, progression, recipes and JEI
+- BaseOreBlock and datagen/LootTables.java: Ariente resource ore loot is missing.
+  ModCrafting.java has six old furnace conversions commented out; current recipe
+  data has no smelting/blasting recipes. Restore original drops/processing with
+  modern loot/recipe data, mining/tool tags and fortune/silk-touch behavior as
+  appropriate. Dimension ore placement is already active in ArienteWorld.
+- Original master has assets/ariente/loot_tables/entities/{soldier,drone,
+  sentinel_drone}.json, supplying lithium ingots. These files are ABSENT from
+  the current source tree. Port them to data/ariente/loot_tables/entities and
+  audit current entity loot hooks. Soldier's explicit hook is disabled; city-key
+  drops use separate active code. Do not infer resource loot works from AI tests.
+- Ariente-alone progression: oregen/WorldGen.java is inactive and ArienteOreGen
+  is a placeholder. Restore optional OVERWORLD_OREGEN with modern features/biome
+  modifiers, honoring configuration. This is separate from companion ore gen.
+- ForgeEventHandlers.onLootLoad is deliberately NOT subscribed: its old loot
+  injection used incompatible APIs/config timing. Replace with modern global
+  loot modifiers honoring OVERWORLD_DUNGEON_LOOT and blueprint/item/suit weights.
+  The default alternative progression without ArienteWorld currently does not
+  work. Do not re-enable the obsolete handler just to make it run.
+- recipes/BlueprintRecipeRegistry.java: colored NETCABLE/CONNECTOR outputs and
+  ingredients still use commented metadata placeholders. Produce/distinguish
+  modern variants and audit recipe IDs, blueprint matching and obtainable results.
+- compat/jei/{JeiPlugin,JeiConstructorRecipeCategory,JeiConstructorRecipeWrapper}
+  remain disabled placeholders around the old JEI API. Restore Constructor and
+  Auto Constructor categories/catalysts/display against the target JEI API.
+- AutoConstructorTile: an empty output receives the recipe's result count, while
+  an existing output grows by one. Correct batch yield/capacity/ingredient use
+  and validate power failure behavior. This is a known bug, not a missing machine.
+
+Automation, facades and remaining visuals
+- blocks/utility/autofield/{ProducerInfo,ConsumerInfo}: Ore Dictionary modes
+  operate with empty ore-ID arrays and have no working tag replacement. Implement
+  tag-based matching and validate strict NBT/damage/count semantics at both ends,
+  round-robin behavior, throughput and routing. Filter persistence was repaired;
+  do not confuse that with a completed routing/matching audit.
+- AutoFieldRenderer: field outlines render, but renderItemTransfers is not called.
+  Restore transfer item/beam animation with current buffers/atlas/state handling.
+- BlueprintItem: the custom BlueprintRenderer item hook remains disabled.
+  Restore the rotating result preview without recursive item rendering.
+- entities/fluxship/FluxShipRender.java: render method is commented out despite
+  the entity renderer being registered. Port its model/texture rendering and
+  audit FluxShipEntity, FluxShipItem and PacketShipAction workflows. This entity
+  is NOT the large generated floating ship/city structure.
+- SoldierRender's equipment armor layer remains commented out. Wireless
+  transmitter/receiver/button/lock POWER/LOCKED visual hooks still use disabled
+  getActualState code; audit state/model-data updates separately from redstone
+  channel logic and persistent fields.
+- NetCableBlock/ConnectorBlock facade-only removal hooks are incompletely
+  migrated (old removedByPlayer signature is not a current override). Preserve
+  the cable/connector when removing a facade; test survival/creative drops.
+- multipart/MultipartBlock: selected-part TOP/Waila delegation is disabled.
+  Audit modern TOP integration and only relevant current overlay support.
+  Check multi-part placement, selection, individual breaking, drops, GUI
+  targeting, capabilities, save/load and owner/security data.
+- HoloGuiRenderTools.renderToolTip does not actually draw the collected tooltip.
+  HoloGuiModConfigGui is a placeholder for the native Mods configuration screen;
+  the separate in-world configuration interface exists. Migrate the missing
+  interfaces without regressing the now-working panel renderer.
+
+ORIGINAL UNFINISHED BEHAVIOR - NOT ALL OF THIS IS A PORT REGRESSION
+================================================================
+The following also existed in master. Preserve the distinction between porting
+existing behavior and designing a feature that was never finished:
+- Invisibility's helmet install control was disabled (effect/item code exists).
+- Blueprint recipes were absent for several registered modules, including Speed,
+  Hover, Step Assist, Power, Regeneration and Scramble. Audit full obtainability;
+  do not claim all missing recipes were lost during this port.
+- Flux Ship controlling-passenger/control code was experimental/incomplete.
+- ElevatorTile attempts consumePower but ignores a failed result; original code
+  did too. Decide/fix operation gating as completeness work, not a new regression.
+- Cable beams render regardless of actual power; combined-cable beam rendering
+  returns early in master as well. Existing individual cable beams are ported.
+- Arbitrary player-facing key-card programming was not a complete original
+  workflow; authored city/security-card setup is active.
+
+VALIDATION STILL REQUIRED
+========================
+- A full fresh-world survival route: obtain ore/mob resources and blueprints,
+  craft machines and correct cable variants, generate both flux types, automate
+  construction, charge gear, use every supported module and travel to cities.
+- Machine GUI/capability and power-network operation, security/key provisioning,
+  multi-part combinations, matching/routing, real transport and combat play.
+- Multiplayer/dedicated-server behavior, reconnects, equipment changes, chunk
+  boundaries, load/unload and long-running resource/power exhaustion.
+- Ariente with and without ArienteWorld. Historical published fallback dependency
+  coordinates have not resolved into a working standalone build. Preserve the
+  local-source preference; resolve standalone publication/wiring as separate work.
+- Full server datagen and resource coverage, not just compiling providers. Client
+  datagen was run into isolated output for tank/core models; full data generation
+  has not been certified. Inspect generated diffs; preserve deliberate resources.
+- Metadata/version/changelog review before release. Current version strings are
+  historical (Ariente version=1.18-0.0.31-alpha, dependency ariente_version differs;
+  HoloGui fallback also retains an old label). Do not treat these as validated
+  1.20 release coordinates. Check publication before release version changes.
+  Unreleased port repairs do not require player changelog entries.
+
+VERIFICATION ALREADY PERFORMED AND ITS LIMITS
+===========================================
+- Java 17 workspace builds of Ariente, ArienteWorld and ModHoloGui pass, including
+  reobfuscation. workspace:compileJava passed earlier. Client loads both mods.
+- Last dedicated suite: 24 required GameTests passed. They live in the companion's
+  src/gameTest, outside published jars. MachinePersistenceTests covers 31 tile
+  types; MachineInteractionTests covers storage, generator/tank state, hologram
+  clicks, equipment configuration and transport; CombatRegressionTests exercises
+  actual drone firing with/without line of sight and laser movement/damage.
+- Server module tests assert install/enable/hotkey/remove and inventory state,
+  NOT functioning Flight/Speed/Step Assist or the user's removal visual issue.
+- Optional client checks cover connected/glowing textures, animation/reload,
+  ramps/slopes, cable shells/plates/facades, tank glass sorting and billboard
+  seams, panel shapes, AI core layers, suit meshes/UVs/poses and laser rendering.
+- Integrated client checks cover Warper/Elevator standing camera/height updates,
+  armor inventory synchronization, thrown pearl rendering and mounted cart GUIs.
+- Hologram pixel checks inspect armor/sabre icons, on boxes, hotkey digits and cart
+  arrows at five angles, with glass/shield textures drawn behind the panel. They
+  pass before/after resource reload in vanilla Fabulous and Embeddium/Oculus
+  Fancy (0.3.31/1.8.0, no shader-pack compatibility claim). They do not prove
+  correct alignment, removal-state presentation or powered equipment behavior.
+- Latest renderer build/client checks were after the last dedicated-server run.
+  Do not claim every check was rerun after every edit. This document rewrite did
+  not change implementation or rerun builds/tests.
+- Ignored visual artifacts: ../ArienteWorld/build/verification, notably
+  storage-display.png, connector-housing.png, slope-variants.png,
+  tank-billboards-{fancy,fabulous}.png, power-suit-front.png,
+  hologram-world-{fancy,fabulous}.png and hologram-ariente.*-*.png.
+  Artifacts and /tmp scripts/logs are local evidence, not durable dependencies.
+
+SOURCE MAP AND DEVELOPMENT COMMANDS
+===================================
+Java paths below are relative to src/main/java/mcjty/ariente/ unless an
+explicit source root is supplied. Resource/build paths are checkout-relative.
+- Setup/build: build.gradle, gradle.properties, setup/{Registration,ModSetup,
+  ClientSetup}.java; ../gradletools.gradle; ../ModHoloGui/build.gradle.
+- Gear: items/armor/{ArmorGui,PowerSuit,PowerSuitModel}.java,
+  items/modules/ModuleSupport.java, items/EnhancedEnergySabreItem.java,
+  ClientForgeEventHandlers.java, ForgeEventHandlers.java,
+  config/UtilityConfiguration.java.
+- Machines/power: blocks/utility/, blocks/generators/, blocks/defense/, power/,
+  cables/, facade/, multipart/.
+- Data/crafting: recipes/BlueprintRecipeRegistry.java, datagen/{Recipes,LootTables,
+  BlockStates,Items}.java, compat/jei/, ModCrafting.java and oregen/.
+- Shared GUI: ../ModHoloGui/src/main/java/mcjty/hologui/gui/
+  {HoloGuiEntity,HoloGuiEntityRender,HoloGuiRenderTools,HoloGuiRenderType}.java,
+  gui/components/{HoloStackToggle,HoloToggleIcon,HoloIconChoice}.java and
+  config/GuiTextStyle.java. Check both mods when modifying the shared GUI.
+- Native surface effects: client/textures/ and TEXTURES.md.
+  ARIENTE_GUIDE.md is a useful gameplay reference, but some port-status passages
+  predate repairs and are not proof of current functionality. Preserve user edits.
+
+Run commands from /data/Projects/McTech20, using Java 17:
+  ./gradlew :Ariente:build :ArienteWorld:build :ModHoloGui:build
+  ./gradlew :ArienteWorld:runGameTestServer -Pariente_runs
+  ./gradlew :ArienteWorld:runClient -Pariente_runs
+  ./gradlew :workspace:runClient
+  ./gradlew :Ariente:tasks --all
+Do not run ../gradlew from the mod directory and assume workspace settings apply;
+cd to the workspace or use --project-dir .. explicitly. One locally used Java is:
+  /home/jorrit/.local/share/atlauncher/runtimes/minecraft/java-runtime-gamma/linux/java-runtime-gamma
+Check it exists and is Java 17; set JAVA_HOME accordingly. Do not hard-code it into
+build configuration. See the companion handoff for fixture/client-test setup.
+
+FOUR-PHASE COMPLETION PLAN
+==========================
+Phase 1 - Finish equipment and the current reports.
+  Fix alignment and installed/available/removed presentation, restore the four
+  movement modules, and repair gear fuel/working-state/held-slot lifecycle.
+  Exit: real survival-client checks show movement and its removal on toggle,
+  unequip and fuel exhaustion; installation/removal presentation is unambiguous.
+
+Phase 2 - Complete resource and crafting progression.
+  Restore ore/mob loot, smelting, optional Overworld progression, colored recipe
+  variants and Constructor JEI; fix Auto Constructor batch results. Coordinate
+  city loot/spawning/entrance checks with the companion's phase 2.
+  Exit: a fresh survival path obtains the materials and crafts functioning gear
+  and machines without Creative substitutes; original missing recipes are
+  explicitly identified rather than silently reported as complete.
+
+Phase 3 - Finish remaining systems and presentation.
+  Complete tag matching/routing, facade/multipart hooks, missing visual/tooltips,
+  Flux Ship rendering and supported controls, wireless visuals and machine power
+  gating. Coordinate transport/security with restored companion editing tools.
+  Exit: supported systems have working player workflows and targeted regressions;
+  original unfinished designs are either completed deliberately or documented.
+
+Phase 4 - Integrate, validate and prepare release.
+  Perform full survival/multiplayer/long-route tests, full datagen/resource audit,
+  standalone and workspace dependency validation, and release metadata review.
+  Exit: clear evidence of feature coverage and remaining limitations, not merely
+  a successful compilation. Keep both PORTING files and the guide current.
+
+Other local ideas in user-edited todo.txt include flux-network/ship work and
+Patchouli support; the large-cube city rarity/interior/boss ideas belong in the
+companion handoff. Treat new enhancements separately from missing 1.12 parity.

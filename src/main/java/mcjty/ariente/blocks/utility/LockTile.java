@@ -21,6 +21,7 @@ import net.minecraft.world.level.Level;
 import net.minecraft.world.level.block.Block;
 import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.network.Connection;
+import net.minecraft.nbt.CompoundTag;
 import net.minecraft.network.protocol.game.ClientboundBlockEntityDataPacket;
 import net.minecraft.world.level.block.state.StateDefinition;
 import net.minecraft.world.level.block.entity.BlockEntity;
@@ -167,15 +168,51 @@ public class LockTile extends GenericTileEntity implements IGuiTile, IKeyCardSlo
     public void acceptKeyCard(ItemStack stack) {
         Set<String> tags = KeyCardItem.getSecurityTags(stack);
         if (tags.contains(keyId)) {
-            level.playSound(null, worldPosition, ModSounds.buzzOk, SoundSource.BLOCKS, 1.0f, 1.0f);
+            level.playSound(null, worldPosition, ModSounds.buzzOk.get(), SoundSource.BLOCKS, 1.0f, 1.0f);
             toggleLock();
         } else {
-            level.playSound(null, worldPosition, ModSounds.buzzError, SoundSource.BLOCKS, 1.0f, 1.0f);
+            level.playSound(null, worldPosition, ModSounds.buzzError.get(), SoundSource.BLOCKS, 1.0f, 1.0f);
         }
     }
 
     public String getKeyId() {
         return keyId;
+    }
+
+    @Override
+    public void load(CompoundTag tag) {
+        super.load(tag);
+        CompoundTag info = tag.getCompound("Info");
+        locked = info.getBoolean("locked");
+        keyId = info.contains("keyId") ? info.getString("keyId") : null;
+        if (info.contains("horizontal")) {
+            horizontalRange = info.getInt("horizontal");
+        }
+        if (info.contains("vertical")) {
+            verticalRange = info.getInt("vertical");
+        }
+    }
+
+    @Override
+    public void saveAdditional(CompoundTag tag) {
+        super.saveAdditional(tag);
+        CompoundTag info = getOrCreateInfo(tag);
+        info.putBoolean("locked", locked);
+        info.putInt("horizontal", horizontalRange);
+        info.putInt("vertical", verticalRange);
+        if (keyId != null) {
+            info.putString("keyId", keyId);
+        }
+    }
+
+    @Override
+    public void saveClientDataToNBT(CompoundTag tag) {
+        saveAdditional(tag);
+    }
+
+    @Override
+    public void loadClientDataFromNBT(CompoundTag tag) {
+        load(tag);
     }
 
     public void setKeyId(String keyId) {
@@ -272,6 +309,6 @@ public class LockTile extends GenericTileEntity implements IGuiTile, IKeyCardSlo
 
     @Override
     public void syncToClient() {
-
+        markDirtyClient();
     }
 }

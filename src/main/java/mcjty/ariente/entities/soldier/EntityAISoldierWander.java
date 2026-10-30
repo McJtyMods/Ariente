@@ -64,9 +64,9 @@ public class EntityAISoldierWander extends Goal {
         } else if (entity.getCityCenter() == null) {
             return LandRandomPos.getPos(this.entity, 10, 7);
         } else {
-            ICityAISystem aiSystem = ArienteWorldCompat.getCityAISystem(entity.level);
+            ICityAISystem aiSystem = ArienteWorldCompat.getCityAISystem(entity.level());
             ICityAI cityAI = aiSystem.getCityAI(entity.getCityCenter());
-            BlockPos pos = cityAI.requestNewSoldierPosition(entity.level, entity.getTarget());
+            BlockPos pos = cityAI.requestNewSoldierPosition(entity.level(), entity.getTarget());
             if (pos != null) {
                 return new Vec3(pos.getX(), pos.getY(), pos.getZ());
             } else {

@@ -3,7 +3,7 @@ package mcjty.ariente.gui;
 import mcjty.hologui.api.IGuiComponent;
 import mcjty.hologui.api.IGuiComponentRegistry;
 import mcjty.hologui.api.IGuiTile;
-import mcjty.lib.multipart.MultipartTE;
+import mcjty.ariente.multipart.MultipartTE;
 import mcjty.lib.multipart.PartSlot;
 import net.minecraft.core.BlockPos;
 import net.minecraft.world.level.block.entity.BlockEntity;
@@ -27,8 +27,8 @@ public class MultipartGuiTile implements IGuiTile {
             String[] split = StringUtils.split(tag, ":");
             PartSlot slot = PartSlot.byName(split[0]);
             MultipartTE.Part part = ((MultipartTE) tileEntity).getParts().get(slot);
-            if (part != null && part.getTileEntity() instanceof IGuiTile) {
-                return ((IGuiTile) part.getTileEntity()).createGui(tag, registry);
+            if (part != null && part.getBlockEntity() instanceof IGuiTile) {
+                return ((IGuiTile) part.getBlockEntity()).createGui(tag, registry);
             }
         }
         return null;

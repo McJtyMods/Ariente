@@ -1,15 +1,9 @@
 {
-    "animation": {
-      "frametime": 5
-    },
-    "ctm":{
-        "ctm_version": 1,
-        "type": "ctm",
-        "extra": {
-            "connect_inside": true
-        },
-        "textures": [
-            "ariente:blocks/blacktech/blacktech_anim_lines-ctm"
-        ]
-    }
+  "animation": {
+    "frametime": 5
+  },
+  "ariente": {
+    "connected_texture": "ariente:block/blacktech/blacktech_anim_lines-ctm",
+    "glow_texture": "ariente:block/blacktech/blacktech_anim_lines_glow"
+  }
 }

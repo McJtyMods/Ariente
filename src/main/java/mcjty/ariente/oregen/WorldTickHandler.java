@@ -8,11 +8,11 @@ public class WorldTickHandler {
 //    public static TIntObjectHashMap<ArrayDeque<Pair<Integer,Integer>>> chunksToPreGen = new TIntObjectHashMap<>();
 //
 //    @SubscribeEvent
-//    public void tickEnd(TickEvent.WorldTickEvent event) {
+//    public void tickEnd(TickEvent.LevelTickEvent event) {
 //        if (event.side != Side.SERVER) {
 //            return;
 //        }
-//        World world = event.world;
+//        World world = event.level;
 //        int dim = world.provider.getDimension();
 //
 //        if (event.phase == TickEvent.Phase.END) {

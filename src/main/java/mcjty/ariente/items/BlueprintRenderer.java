@@ -1,14 +1,15 @@
 package mcjty.ariente.items;
 
+import com.mojang.math.Axis;
 import com.mojang.blaze3d.vertex.PoseStack;
-import com.mojang.math.Vector3f;
+import org.joml.Vector3f;
 import mcjty.ariente.setup.Registration;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.model.geom.EntityModelSet;
 import net.minecraft.client.renderer.MultiBufferSource;
 import net.minecraft.client.renderer.blockentity.BlockEntityRenderDispatcher;
 import net.minecraft.client.renderer.entity.ItemRenderer;
-import net.minecraft.client.renderer.block.model.ItemTransforms;
+import net.minecraft.world.item.ItemDisplayContext;
 import net.minecraft.client.resources.model.BakedModel;
 import net.minecraft.client.renderer.texture.OverlayTexture;
 import net.minecraft.client.renderer.BlockEntityWithoutLevelRenderer;
@@ -22,7 +23,7 @@ public class BlueprintRenderer extends BlockEntityWithoutLevelRenderer {
     }
 
     @Override
-    public void renderByItem(ItemStack stack, ItemTransforms.TransformType p_239207_2_, PoseStack matrixStack, MultiBufferSource buffer, int combinedLightIn, int combinedOverlayIn) {
+    public void renderByItem(ItemStack stack, ItemDisplayContext p_239207_2_, PoseStack matrixStack, MultiBufferSource buffer, int combinedLightIn, int combinedOverlayIn) {
         matrixStack.pushPose();
 
         // Render our item
@@ -32,7 +33,7 @@ public class BlueprintRenderer extends BlockEntityWithoutLevelRenderer {
         ItemStack itm = new ItemStack(Registration.BLUEPRINT.get());
         BakedModel ibakedmodel = itemRender.getModel(itm, Minecraft.getInstance().level, (LivingEntity)null, 1);
         int lightmapValue = 140;
-        itemRender.render(itm, ItemTransforms.TransformType.GUI, false, matrixStack, buffer, lightmapValue, OverlayTexture.NO_OVERLAY, ibakedmodel);
+        itemRender.render(itm, ItemDisplayContext.GUI, false, matrixStack, buffer, lightmapValue, OverlayTexture.NO_OVERLAY, ibakedmodel);
 
         ItemStack destination = BlueprintItem.getDestination(stack);
         if (!destination.isEmpty()) {
@@ -47,14 +48,14 @@ public class BlueprintRenderer extends BlockEntityWithoutLevelRenderer {
             // Translate to the center of the block and .9 points higher
             matrixStack.translate(0, 0, .5);
             matrixStack.scale(.5f, .5f, .5f);
-            matrixStack.mulPose(Vector3f.XP.rotationDegrees(30));
+            matrixStack.mulPose(Axis.XP.rotationDegrees(30));
             long angle = (System.currentTimeMillis() / 50) % 360;
-            matrixStack.mulPose(Vector3f.YP.rotationDegrees(angle));
+            matrixStack.mulPose(Axis.YP.rotationDegrees(angle));
 
             ItemRenderer itemRender = Minecraft.getInstance().getItemRenderer();
             BakedModel ibakedmodel = itemRender.getModel(stack, Minecraft.getInstance().level, (LivingEntity)null, 1);
             int lightmapValue = 140;
-            itemRender.render(stack, ItemTransforms.TransformType.GUI, false, matrixStack, buffer, lightmapValue, OverlayTexture.NO_OVERLAY, ibakedmodel);
+            itemRender.render(stack, ItemDisplayContext.GUI, false, matrixStack, buffer, lightmapValue, OverlayTexture.NO_OVERLAY, ibakedmodel);
         }
     }
 }

@@ -1,5 +1,7 @@
 package mcjty.ariente.entities.fluxship;
 
+import net.minecraft.world.entity.LivingEntity;
+import net.minecraft.network.protocol.game.ClientGamePacketListener;
 import mcjty.ariente.setup.Registration;
 import mcjty.hologui.api.IHoloGuiEntity;
 import net.minecraft.core.Direction;
@@ -94,7 +96,7 @@ public class FluxShipEntity extends Entity {
 //        } else if (this.isBeingRidden()) {    // @todo
 //            return true;
         } else {
-            if (!this.level.isClientSide) {
+            if (!this.level().isClientSide) {
                 player.startRiding(this);
             }
 
@@ -109,15 +111,15 @@ public class FluxShipEntity extends Entity {
 
     @Nullable
     @Override
-    public Entity getControllingPassenger() {
+    public LivingEntity getControllingPassenger() {
         return null;
     }
 
     @Override
-    public void positionRider(Entity passenger) {
+    protected void positionRider(Entity passenger, MoveFunction moveFunction) {
         if (this.hasPassenger(passenger)) {
             if (!(passenger instanceof IHoloGuiEntity)) {
-                super.positionRider(passenger);
+                super.positionRider(passenger, moveFunction);
             }
         }
     }
@@ -148,7 +150,7 @@ public class FluxShipEntity extends Entity {
     }
 
     @Override
-    public Packet<?> getAddEntityPacket() {
+    public Packet<ClientGamePacketListener> getAddEntityPacket() {
         return NetworkHooks.getEntitySpawningPacket(this);
     }
 

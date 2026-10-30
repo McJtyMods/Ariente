@@ -3,7 +3,7 @@ package mcjty.ariente.gui;
 import mcjty.ariente.Ariente;
 import mcjty.hologui.api.IGuiTile;
 import mcjty.hologui.api.IHoloGuiHandler;
-import mcjty.lib.multipart.MultipartTE;
+import mcjty.ariente.multipart.MultipartTE;
 import mcjty.lib.varia.Logging;
 import net.minecraft.world.level.block.entity.BlockEntity;
 import net.minecraftforge.fml.InterModComms;

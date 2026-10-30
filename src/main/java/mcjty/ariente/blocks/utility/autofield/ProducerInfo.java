@@ -1,6 +1,6 @@
 package mcjty.ariente.blocks.utility.autofield;
 
-import mcjty.lib.multipart.MultipartHelper;
+import mcjty.ariente.multipart.MultipartHelper;
 import mcjty.lib.multipart.PartPos;
 import mcjty.lib.multipart.PartSlot;
 import net.minecraft.world.item.Item;
@@ -18,7 +18,7 @@ public class ProducerInfo {
 
     public ProducerInfo(Level world, Set<PartPos> itemNodes, Set<PartPos> modifierNodes) {
         for (PartPos pair : itemNodes) {
-            BlockEntity te = MultipartHelper.getTileEntity(world, pair.getPos(), pair.getSlot());
+            BlockEntity te = MultipartHelper.getBlockEntity(world, pair.pos(), pair.slot());
             if (te instanceof OutputItemNodeTile) {
                 OutputItemNodeTile outputNode = (OutputItemNodeTile) te;
 
@@ -30,7 +30,7 @@ public class ProducerInfo {
                         // @todo hardcoded round robin modifier
                         boolean roundRobin = modifierNodes.contains(pair);
                         producers.putIfAbsent(pair, new Producer(outputOredict, outputDamage, outputNbt,
-                                outputNode.getOutputStackSize(), roundRobin ? pair.getSlot().getBackSlot() : null));
+                                outputNode.getOutputStackSize(), roundRobin ? pair.slot().getBackSlot() : null));
                         int[] oreIDs;
                         if (outputOredict) {
 // @todo 1.14 oredict
@@ -130,12 +130,12 @@ public class ProducerInfo {
 //                            continue;
 //                        }
                     } else {
-                        if (!stack.sameItemStackIgnoreDurability(item.getStack())) {
+                        if (!ItemStack.isSameItem(stack, item.getStack())) {
                             continue;
                         }
                     }
                     if (matchDamage) {
-                        if (!stack.sameItem(item.getStack())) {
+                        if (!(ItemStack.isSameItem(stack, item.getStack()) && stack.getDamageValue() == item.getStack().getDamageValue())) {
                             continue;
                         }
                     }

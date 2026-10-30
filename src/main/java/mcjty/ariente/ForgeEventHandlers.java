@@ -1,5 +1,6 @@
 package mcjty.ariente;
 
+import net.minecraft.tags.DamageTypeTags;
 import mcjty.ariente.api.ArmorUpgradeType;
 import mcjty.ariente.blocks.utility.ILockable;
 import mcjty.ariente.config.WorldgenConfiguration;
@@ -28,15 +29,16 @@ import net.minecraft.world.level.storage.loot.functions.LootItemFunctionType;
 import net.minecraft.world.level.storage.loot.predicates.LootItemConditions;
 import net.minecraftforge.event.LootTableLoadEvent;
 import net.minecraftforge.event.TickEvent;
-import net.minecraftforge.event.entity.EntityJoinWorldEvent;
+import net.minecraftforge.event.entity.EntityJoinLevelEvent;
 import net.minecraftforge.event.entity.living.LivingDamageEvent;
 import net.minecraftforge.event.entity.living.LivingFallEvent;
-import net.minecraftforge.event.world.BlockEvent;
+import net.minecraftforge.event.level.BlockEvent;
 import net.minecraftforge.eventbus.api.SubscribeEvent;
 
 public class ForgeEventHandlers {
 
-    @SubscribeEvent
+    // TODO: Replace the inactive legacy loot injection with global loot modifiers.
+    // Do not subscribe: server configuration is not loaded during loot-table parsing.
     public void onLootLoad(LootTableLoadEvent event) {
         if (WorldgenConfiguration.doDungeonLoot()) {
             if (event.getName().equals(BuiltInLootTables.ABANDONED_MINESHAFT) ||
@@ -51,6 +53,7 @@ public class ForgeEventHandlers {
                 if (main != null) {
                     if (WorldgenConfiguration.OVERWORLD_LOOT_BLUEPRINTS.get() > 0) {
                         LootItemFunction lootFunction = new LootItemFunction() {
+
                             @Override
                             public ItemStack apply(ItemStack stack, LootContext context) {
                                 ConstructorRecipe recipe = BlueprintRecipeRegistry.getRandomRecipes().getRandom();
@@ -69,6 +72,7 @@ public class ForgeEventHandlers {
                     }
                     if (WorldgenConfiguration.OVERWORLD_LOOT_ITEMS.get() > 0) {
                         LootItemFunction lootFunction = new LootItemFunction() {
+
                             @Override
                             public ItemStack apply(ItemStack stack, LootContext context) {
                                 ConstructorRecipe recipe = BlueprintRecipeRegistry.getRandomRecipes().getRandom();
@@ -115,15 +119,15 @@ public class ForgeEventHandlers {
 //    }
 
     @SubscribeEvent
-    public void onWorldTick(TickEvent.WorldTickEvent event) {
-        if (event.phase == TickEvent.Phase.START && !event.world.isClientSide && event.world.dimension() == Level.OVERWORLD) {
-            PowerSystem.getPowerSystem(event.world).tick();
+    public void onWorldTick(TickEvent.LevelTickEvent event) {
+        if (event.phase == TickEvent.Phase.START && !event.level.isClientSide && event.level.dimension() == Level.OVERWORLD) {
+            PowerSystem.getPowerSystem(event.level).tick();
         }
     }
 
     @SubscribeEvent
     public void onLivingFall(LivingFallEvent event) {
-        ItemStack feetStack = event.getEntityLiving().getItemBySlot(EquipmentSlot.FEET);
+        ItemStack feetStack = event.getEntity().getItemBySlot(EquipmentSlot.FEET);
         if (feetStack.getItem() == Registration.POWERSUIT_FEET.get()) {
             if (ModuleSupport.hasWorkingUpgrade(feetStack, ArmorUpgradeType.FEATHERFALLING)) {
                 event.setCanceled(true);
@@ -141,11 +145,11 @@ public class ForgeEventHandlers {
                 if (ModuleSupport.hasWorkingUpgrade(chestStack, ArmorUpgradeType.FORCEFIELD)) {
                     float damage = event.getAmount();
                     DamageSource source = event.getSource();
-                    if (source.isExplosion()) {
+                    if (source.is(DamageTypeTags.IS_EXPLOSION)) {
                         event.setAmount(damage / 5);
-                    } else if (source.isProjectile()) {
+                    } else if (source.is(DamageTypeTags.IS_PROJECTILE)) {
                         event.setCanceled(true);
-                    } else if (!source.isBypassArmor()) {
+                    } else if (!source.is(DamageTypeTags.BYPASSES_ARMOR)) {
                         event.setAmount(damage / 2);
                     }
                 }
@@ -159,7 +163,7 @@ public class ForgeEventHandlers {
 //    }
 
     private void onBlockBreakNormal(BlockEvent.BreakEvent event) {
-        LevelAccessor world = event.getWorld();
+        LevelAccessor world = event.getLevel();
         BlockPos pos = event.getPos();
         BlockEntity te = world.getBlockEntity(pos);
         if (te instanceof ILockable) {
@@ -170,8 +174,8 @@ public class ForgeEventHandlers {
     }
 
     @SubscribeEvent
-    public void onEntityJoin(EntityJoinWorldEvent event) {
-        Level world = event.getWorld();
+    public void onEntityJoin(EntityJoinLevelEvent event) {
+        Level world = event.getLevel();
         if (world.isClientSide) {
             Entity entity = event.getEntity();
             if (entity instanceof FluxLevitatorEntity) {

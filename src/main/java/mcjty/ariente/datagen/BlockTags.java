@@ -1,22 +1,24 @@
 package mcjty.ariente.datagen;
 
+import java.util.concurrent.CompletableFuture;
+import net.minecraft.core.HolderLookup;
 import mcjty.ariente.Ariente;
 import mcjty.ariente.setup.Registration;
-import net.minecraft.tags.Tag;
+import net.minecraft.tags.TagKey;
 import net.minecraft.world.level.block.Block;
-import net.minecraft.data.tags.BlockTagsProvider;
-import net.minecraft.data.DataGenerator;
+import net.minecraftforge.common.data.BlockTagsProvider;
+import net.minecraft.data.PackOutput;
 import net.minecraftforge.common.Tags;
 import net.minecraftforge.common.data.ExistingFileHelper;
 
 public class BlockTags extends BlockTagsProvider {
 
-    public BlockTags(DataGenerator generator, ExistingFileHelper helper) {
-        super(generator, Ariente.MODID, helper);
+    public BlockTags(PackOutput generator, CompletableFuture<HolderLookup.Provider> lookup, ExistingFileHelper helper) {
+        super(generator, lookup, Ariente.MODID, helper);
     }
 
     @Override
-    protected void addTags() {
+    protected void addTags(HolderLookup.Provider provider) {
         addTag(Tags.Blocks.ORES,
                 Registration.ORE_POSIRITE.get(),
                 Registration.ORE_NEGARITE.get(),
@@ -34,7 +36,7 @@ public class BlockTags extends BlockTagsProvider {
         addTag(Registration.TAG_ORE_PLATINUM, Registration.ORE_PLATINUM.get());
     }
 
-    private void addTag(Tag.Named<Block> tag, Block... items) {
+    private void addTag(TagKey<Block> tag, Block... items) {
         tag(tag)
                 .add(items);
     }

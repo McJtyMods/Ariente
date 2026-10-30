@@ -6,7 +6,7 @@ import mcjty.hologui.api.IGuiComponentRegistry;
 import mcjty.hologui.api.IGuiTile;
 import mcjty.hologui.api.components.IIconChoice;
 import mcjty.hologui.api.components.IPanel;
-import mcjty.lib.multipart.MultipartHelper;
+import mcjty.ariente.multipart.MultipartHelper;
 import mcjty.lib.multipart.PartPos;
 import mcjty.lib.multipart.PartSlot;
 import mcjty.lib.tileentity.GenericTileEntity;
@@ -30,7 +30,7 @@ import net.minecraft.world.phys.BlockHitResult;
 import net.minecraft.world.phys.shapes.Shapes;
 import net.minecraft.world.phys.shapes.VoxelShape;
 import net.minecraftforge.common.util.LazyOptional;
-import net.minecraftforge.items.CapabilityItemHandler;
+import net.minecraftforge.common.capabilities.ForgeCapabilities;
 import net.minecraftforge.items.IItemHandler;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.lang3.tuple.Pair;
@@ -216,8 +216,8 @@ public abstract class AbstractNodeTile extends GenericTileEntity implements IGui
         CompoundTag info = tagCompound.getCompound("Info");
         if (!info.isEmpty()) {
             for (int i = 0; i < filters.length; i++) {
-                if (tagCompound.contains("f" + i)) {
-                    filters[i] = DyeColor.values()[tagCompound.getInt("f" + i)];
+                if (info.contains("f" + i)) {
+                    filters[i] = DyeColor.values()[info.getInt("f" + i)];
                 } else {
                     filters[i] = null;
                 }
@@ -242,6 +242,7 @@ public abstract class AbstractNodeTile extends GenericTileEntity implements IGui
 
     @Override
     public void saveAdditional(CompoundTag tagCompound) {
+        super.saveAdditional(tagCompound);
         writeRestorableToNBT(tagCompound);
     }
 
@@ -309,13 +310,13 @@ public abstract class AbstractNodeTile extends GenericTileEntity implements IGui
 
     @Nonnull
     public LazyOptional<IItemHandler> getConnectedItemHandler(PartPos partPos) {
-        BlockState state = MultipartHelper.getBlockState(level, worldPosition, partPos.getSlot());
+        BlockState state = MultipartHelper.getBlockState(level, worldPosition, partPos.slot());
         if (state != null && state.getBlock() == getBlockState().getBlock()) {
             NodeOrientation orientation = state.getValue(ORIENTATION);
             Direction mainDirection = orientation.getMainDirection();
             BlockEntity otherTe = level.getBlockEntity(worldPosition.relative(mainDirection));
             if (otherTe != null) {
-                return otherTe.getCapability(CapabilityItemHandler.ITEM_HANDLER_CAPABILITY, mainDirection.getOpposite());
+                return otherTe.getCapability(ForgeCapabilities.ITEM_HANDLER, mainDirection.getOpposite());
             }
         }
         return LazyOptional.empty();

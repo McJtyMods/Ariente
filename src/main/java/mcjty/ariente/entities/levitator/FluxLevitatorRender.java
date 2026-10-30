@@ -1,10 +1,9 @@
 package mcjty.ariente.entities.levitator;
 
+import com.mojang.math.Axis;
 import com.mojang.blaze3d.vertex.PoseStack;
-import com.mojang.blaze3d.platform.GlStateManager;
-import com.mojang.math.Quaternion;
-import mcjty.ariente.Ariente;
-import mcjty.hologui.api.IHoloGuiEntity;
+import net.minecraft.client.renderer.texture.OverlayTexture;
+import org.joml.Quaternionf;
 import net.minecraft.client.model.EntityModel;
 import net.minecraft.client.renderer.MultiBufferSource;
 import net.minecraft.client.renderer.entity.EntityRenderer;
@@ -17,7 +16,7 @@ import net.minecraft.world.phys.Vec3;
 public class FluxLevitatorRender extends EntityRenderer<FluxLevitatorEntity> {
 
     private static final ResourceLocation TEXTURE = new ResourceLocation("ariente:textures/entity/flux_levitator.png");
-    private EntityModel model = new FluxLevitatorModel();
+    private final FluxLevitatorModel<FluxLevitatorEntity> model = new FluxLevitatorModel<>();
 
     public FluxLevitatorRender(EntityRendererProvider.Context renderManagerIn) {
         super(renderManagerIn);
@@ -66,10 +65,9 @@ public class FluxLevitatorRender extends EntityRenderer<FluxLevitatorEntity> {
             }
         }
 
-        // @todo 1.15
-//        GlStateManager.translatef((float) x, (float) y + 0.375F, (float) z);
-        matrixStack.mulPose(new Quaternion(180.0F - entityYaw, 0.0F, 1.0F, 0.0F));
-        matrixStack.mulPose(new Quaternion(-pitch, 0.0F, 0.0F, 1.0F));
+        matrixStack.translate(0, .375, 0);
+        matrixStack.mulPose(Axis.YP.rotationDegrees(180.0F - entityYaw));
+        matrixStack.mulPose(Axis.ZP.rotationDegrees(-pitch));
         float f5 = entity.getRollingAmplitude() - partialTicks;
         float f6 = entity.getDamage() - partialTicks;
 
@@ -78,7 +76,7 @@ public class FluxLevitatorRender extends EntityRenderer<FluxLevitatorEntity> {
         }
 
         if (f5 > 0.0F) {
-            matrixStack.mulPose(new Quaternion(Mth.sin(f5) * f5 * f6 / 10.0F * entity.getRollingDirection(), 1.0F, 0.0F, 0.0F));
+            matrixStack.mulPose(Axis.XP.rotationDegrees(Mth.sin(f5) * f5 * f6 / 10.0F * entity.getRollingDirection()));
         }
 
         // @todo 1.15
@@ -92,18 +90,10 @@ public class FluxLevitatorRender extends EntityRenderer<FluxLevitatorEntity> {
 //        GlStateManager.scalef(-1.0F, -1.0F, 1.0F);
 //        this.model.render(entity, 0.0F, 0.0F, -0.1F, 0.0F, 0.0F, 0.0625F);
 
-        IHoloGuiEntity holoGui = entity.getHoloGuiFront();
-        if (holoGui != null) {
-            matrixStack.scale(-1.0F, -1.0F, 1.0F);
-            Ariente.guiHandler.render(holoGui, 1, 0, 0, -90);
-        }
-        holoGui = entity.getHoloGuiBack();
-        if (holoGui != null) {
-            matrixStack.scale(-1.0F, -1.0F, 1.0F);
-            matrixStack.mulPose(new Quaternion(180, 1, 0, 0));
-            Ariente.guiHandler.render(holoGui, 1, 0, 0, -90);
-        }
-
+        matrixStack.pushPose();
+        matrixStack.scale(-1, -1, 1);
+        model.renderToBuffer(matrixStack, buffer.getBuffer(model.renderType(TEXTURE)), packedLightIn, OverlayTexture.NO_OVERLAY, 1, 1, 1, 1);
+        matrixStack.popPose();
 
         matrixStack.popPose();
 

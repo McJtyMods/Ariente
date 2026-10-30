@@ -1,5 +1,6 @@
 package mcjty.ariente.items;
 
+import mcjty.lib.varia.Tools;
 import mcjty.ariente.Ariente;
 import mcjty.ariente.blocks.utility.WarperTile;
 import mcjty.ariente.compat.arienteworld.ArienteWorldCompat;
@@ -12,7 +13,6 @@ import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
 import net.minecraft.core.particles.ParticleTypes;
 import net.minecraft.network.chat.Component;
-import net.minecraft.network.chat.TextComponent;
 import net.minecraft.sounds.SoundEvents;
 import net.minecraft.sounds.SoundSource;
 import net.minecraft.world.InteractionHand;
@@ -43,13 +43,13 @@ public class ArientePearlItem extends Item implements ITooltipSettings {
             .info(header());
 
     public ArientePearlItem() {
-        super(new Properties().stacksTo(16).tab(Ariente.setup.getTab()));
+        super(new Properties().stacksTo(16));
     }
 
     @Override
     public void appendHoverText(ItemStack stack, @Nullable Level worldIn, List<Component> tooltip, TooltipFlag flagIn) {
         super.appendHoverText(stack, worldIn, tooltip, flagIn);
-        tooltipBuilder.makeTooltip(getRegistryName(), stack, tooltip, flagIn);
+        tooltipBuilder.makeTooltip(Tools.getId(this), stack, tooltip, flagIn);
     }
 
     @Override
@@ -71,12 +71,12 @@ public class ArientePearlItem extends Item implements ITooltipSettings {
                     WarperTile warper = (WarperTile) te;
                     int charges = warper.getCharges();
                     if (charges >= UtilityConfiguration.WARPER_MAX_CHARGES.get()) {
-                        player.displayClientMessage(new TextComponent("Already fully charged!"), false);
+                        player.displayClientMessage(Component.literal("Already fully charged!"), false);
                         return InteractionResult.SUCCESS;
                     }
                     warper.setCharges(charges+1);
                     int pct = warper.getChargePercentage();
-                    player.displayClientMessage(new TextComponent("Charged to " + pct + "%"), false);
+                    player.displayClientMessage(Component.literal("Charged to " + pct + "%"), false);
                 }
                 itemstack.shrink(1);
 
@@ -107,7 +107,7 @@ public class ArientePearlItem extends Item implements ITooltipSettings {
 
         if (world.dimension() != Level.OVERWORLD) {
             if (world.isClientSide) {
-                player.displayClientMessage(new TextComponent(ChatFormatting.RED + "Doesn't work in this dimension!"), false);
+                player.displayClientMessage(Component.literal(ChatFormatting.RED + "Doesn't work in this dimension!"), false);
             }
             return new InteractionResultHolder<>(InteractionResult.FAIL, itemstack);
         }
@@ -136,7 +136,7 @@ public class ArientePearlItem extends Item implements ITooltipSettings {
 
                     return new InteractionResultHolder<>(InteractionResult.SUCCESS, itemstack);
                 } else {
-                    player.displayClientMessage(new TextComponent("Can't find any nearby Ariente dungeon!"), false);
+                    player.displayClientMessage(Component.literal("Can't find any nearby Ariente dungeon!"), false);
                 }
             }
 

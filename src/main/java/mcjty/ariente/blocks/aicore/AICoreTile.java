@@ -15,7 +15,7 @@ import net.minecraft.world.level.ChunkPos;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.level.block.Block;
 import net.minecraft.world.level.block.state.BlockState;
-import net.minecraft.world.level.material.Material;
+import net.minecraft.world.level.material.MapColor;
 import net.minecraft.core.BlockPos;
 
 import static mcjty.ariente.compat.ArienteTOPDriver.DRIVER;
@@ -32,12 +32,13 @@ public class AICoreTile extends TickingTileEntity implements IAlarmMode, IAICore
 
     public static BaseBlock createBlock() {
         return new BaseBlock(new BlockBuilder()
-                .properties(Block.Properties.of(Material.METAL)
-                        .strength(20.0f, 800))
+                .properties(Block.Properties.of().mapColor(MapColor.METAL)
+                        .strength(20.0f, 800).noOcclusion())
 //                .flags(REDSTONE_CHECK, RENDER_SOLID, RENDER_CUTOUT)
                 .topDriver(DRIVER)
                 .tileEntitySupplier(AICoreTile::new)
         ) {
+
             @Override
             public RotationType getRotationType() {
                 return RotationType.NONE;
@@ -53,11 +54,10 @@ public class AICoreTile extends TickingTileEntity implements IAlarmMode, IAICore
         }
         tickCounter = 10;
 
-        // @todo check if Ariente World is there!
         if (getCityCenter() != null) {
             ICityAISystem cityAISystem = ArienteWorldCompat.getCityAISystem(level);
             ICityAI cityAI = cityAISystem.getCityAI(cityCenter);
-            if (cityAI.tick(this)) {
+            if (cityAI != null && cityAI.tick(this)) {
                 cityAISystem.saveSystem();
             }
         }
@@ -69,9 +69,12 @@ public class AICoreTile extends TickingTileEntity implements IAlarmMode, IAICore
     }
 
     private ChunkPos getCityCenter() {
+        if (ArienteWorldCompat.getArienteWorld() == null
+                || !level.dimension().equals(ArienteWorldCompat.getArienteWorld().getDimension())) {
+            return null;
+        }
         if (cityCenter == null) {
             cityCenter = new ChunkPos(worldPosition.getX() >> 4, worldPosition.getZ() >> 4);
-            // @todo check if Ariente World is there!
             cityCenter = ArienteWorldCompat.getArienteWorld().getNearestCityCenter(cityCenter);
         }
         return cityCenter;
@@ -84,7 +87,10 @@ public class AICoreTile extends TickingTileEntity implements IAlarmMode, IAICore
             if (getCityCenter() != null) {
                 ICityAISystem cityAISystem = ArienteWorldCompat.getCityAISystem(world);
                 ICityAI cityAI = cityAISystem.getCityAI(cityCenter);
-                cityAI.breakAICore(world, pos);
+                if (cityAI != null) {
+                    cityAI.breakAICore(world, pos);
+                    cityAISystem.saveSystem();
+                }
             }
         }
     }

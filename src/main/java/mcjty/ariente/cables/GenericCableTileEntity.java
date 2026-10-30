@@ -1,5 +1,6 @@
 package mcjty.ariente.cables;
 
+import mcjty.lib.varia.Tools;
 import mcjty.ariente.api.ICityAI;
 import mcjty.ariente.api.ICityEquipment;
 import mcjty.ariente.facade.IFacadeSupport;
@@ -39,7 +40,7 @@ public abstract class GenericCableTileEntity extends GenericTileEntity implement
         }
         Map<String, Object> data = new HashMap<>();
         Block mimic = mimicBlockSupport.getMimicBlock().getBlock();
-        data.put("mimic", mimic.getRegistryName().toString());
+        data.put("mimic", Tools.getId(mimic).toString());
         // @todo 1.14 meta
 //        data.put("meta", mimic.getMetaFromState(mimicBlockSupport.getMimicBlock()));
         return data;
@@ -118,18 +119,32 @@ public abstract class GenericCableTileEntity extends GenericTileEntity implement
     @Override
     public void fillCableId(int id) {
         powerBlobSupport.fillCableId(level, worldPosition, id, getCableColor());
+        markDirtyQuick();
     }
 
     @Override
     public void load(CompoundTag tagCompound) {
         super.load(tagCompound);
         mimicBlockSupport.readFromNBT(tagCompound);
-        powerBlobSupport.setCableId(tagCompound.getInt("cableId"));
+        powerBlobSupport.setCableId(tagCompound.contains("cableId") ? tagCompound.getInt("cableId") : -1);
     }
 
     @Override
     public void saveAdditional(CompoundTag tagCompound) {
         super.saveAdditional(tagCompound);
         mimicBlockSupport.writeToNBT(tagCompound);
+        tagCompound.putInt("cableId", powerBlobSupport.getCableId());
+    }
+
+    @Override
+    public void saveClientDataToNBT(CompoundTag tagCompound) {
+        super.saveClientDataToNBT(tagCompound);
+        mimicBlockSupport.writeToNBT(tagCompound);
+    }
+
+    @Override
+    public void loadClientDataFromNBT(CompoundTag tagCompound) {
+        super.loadClientDataFromNBT(tagCompound);
+        mimicBlockSupport.readFromNBT(tagCompound);
     }
 }

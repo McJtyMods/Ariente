@@ -60,7 +60,7 @@ public class SentinelDroneEntity extends FlyingMob implements IForcefieldImmunit
     // Override this to make it less likely to despawn
     @Override
     public void checkDespawn() {
-        Entity entity = this.level.getNearestPlayer(this, -1.0D);
+        Entity entity = this.level().getNearestPlayer(this, -1.0D);
 
         if (entity != null) {
             double d0 = entity.getX() - this.getX();
@@ -88,7 +88,7 @@ public class SentinelDroneEntity extends FlyingMob implements IForcefieldImmunit
         // This is called by EntityAIFindEntityNearestPlayer when it spots a player.
         // In this case we don't attack but notify the city AI
         if (entitylivingbaseIn instanceof Player && cityCenter != null) {
-            ICityAISystem aiSystem = ArienteWorldCompat.getCityAISystem(level);
+            ICityAISystem aiSystem = ArienteWorldCompat.getCityAISystem(level());
             ICityAI cityAI = aiSystem.getCityAI(cityCenter);
             cityAI.playerSpotted((Player) entitylivingbaseIn);
             aiSystem.saveSystem();
@@ -142,18 +142,18 @@ public class SentinelDroneEntity extends FlyingMob implements IForcefieldImmunit
 
     @Override
     protected SoundEvent getAmbientSound() {
-        return ModSounds.droneAmbient;
+        return ModSounds.droneAmbient.get();
     }
 
     @Nullable
     @Override
     protected SoundEvent getHurtSound(DamageSource damageSourceIn) {
-        return ModSounds.droneHurt;
+        return ModSounds.droneHurt.get();
     }
 
     @Override
     protected SoundEvent getDeathSound() {
-        return ModSounds.sentinelDeath;
+        return ModSounds.sentinelDeath.get();
     }
 
     @Override
@@ -299,9 +299,9 @@ public class SentinelDroneEntity extends FlyingMob implements IForcefieldImmunit
             if (parentEntity.cityCenter == null) {
                 return;
             }
-            ICityAISystem aiSystem = ArienteWorldCompat.getCityAISystem(parentEntity.level);
+            ICityAISystem aiSystem = ArienteWorldCompat.getCityAISystem(parentEntity.level());
             ICityAI cityAI = aiSystem.getCityAI(parentEntity.cityCenter);
-            BlockPos pos = cityAI.requestNewSentinelPosition(parentEntity.level, parentEntity.sentinelId);
+            BlockPos pos = cityAI.requestNewSentinelPosition(parentEntity.level(), parentEntity.sentinelId);
             if (pos != null) {
                 this.parentEntity.getMoveControl().setWantedPosition(pos.getX(), pos.getY(), pos.getZ(), 2.0D);
             }

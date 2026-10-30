@@ -43,7 +43,7 @@ import net.minecraft.world.phys.BlockHitResult;
 import net.minecraftforge.common.capabilities.Capability;
 import net.minecraftforge.common.util.Lazy;
 import net.minecraftforge.common.util.LazyOptional;
-import net.minecraftforge.items.CapabilityItemHandler;
+import net.minecraftforge.common.capabilities.ForgeCapabilities;
 import net.minecraftforge.items.ItemHandlerHelper;
 
 import javax.annotation.Nonnull;
@@ -126,7 +126,7 @@ public class AutoConstructorTile extends TickingTileEntity implements IGuiTile, 
         int needed = ingredient.getCount();
         for (int i = SLOT_INGREDIENTS; i < SLOT_INGREDIENTS + INGREDIENTS; i++) {
             ItemStack stack = items.getStackInSlot(i);
-            if (ItemStack.isSame(ingredient, stack)) {
+            if (ItemStack.isSameItem(ingredient, stack)) {
                 needed -= stack.getCount();
                 if (needed <= 0) {
                     return true;
@@ -162,7 +162,7 @@ public class AutoConstructorTile extends TickingTileEntity implements IGuiTile, 
         int needed = ingredient.getCount();
         for (int i = SLOT_INGREDIENTS; i < SLOT_INGREDIENTS + INGREDIENTS; i++) {
             ItemStack stack = items.getStackInSlot(i);
-            if (ItemStack.isSame(ingredient, stack)) {
+            if (ItemStack.isSameItem(ingredient, stack)) {
                 markDirtyQuick();
                 if (needed <= stack.getCount()) {
                     stack.shrink(needed);
@@ -440,7 +440,7 @@ public class AutoConstructorTile extends TickingTileEntity implements IGuiTile, 
                         ConstructorRecipe recipe = BlueprintRecipeRegistry.findRecipe(destination);
                         if (recipe != null) {
                             for (ItemStack ingredient : recipe.getIngredientList()) {
-                                if (ItemStack.isSame(ingredient, stack)) {
+                                if (ItemStack.isSameItem(ingredient, stack)) {
                                     return true;
                                 }
                             }
@@ -518,7 +518,7 @@ public class AutoConstructorTile extends TickingTileEntity implements IGuiTile, 
     @Nonnull
     @Override
     public <T> LazyOptional<T> getCapability(@Nonnull Capability<T> cap) {
-        if (cap == CapabilityItemHandler.ITEM_HANDLER_CAPABILITY) {
+        if (cap == ForgeCapabilities.ITEM_HANDLER) {
             return automationItemHandler.cast();
         }
         return super.getCapability(cap);

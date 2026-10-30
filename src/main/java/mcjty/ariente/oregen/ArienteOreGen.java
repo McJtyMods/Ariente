@@ -71,7 +71,7 @@ public class ArienteOreGen {} /* @todo 1.14 implements IWorldGenerator {
 
     @SubscribeEvent
     public void handleChunkLoadEvent(ChunkDataEvent.Load event) {
-        int dim = event.getWorld().provider.getDimension();
+        int dim = event.getLevel().provider.getDimension();
 
         boolean regen = false;
         CompoundNBT tag = (CompoundNBT) event.getData().getTag(RETRO_NAME);

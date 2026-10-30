@@ -1,6 +1,8 @@
 package mcjty.ariente.blocks.utility;
 
 import mcjty.ariente.api.AlarmType;
+import mcjty.ariente.blocks.MountedPanelShapes;
+import net.minecraft.world.level.block.state.properties.BlockStateProperties;
 import mcjty.ariente.api.IAlarmTile;
 import mcjty.ariente.setup.Registration;
 import mcjty.ariente.sounds.ModSounds;
@@ -18,7 +20,6 @@ import net.minecraft.world.level.block.state.properties.EnumProperty;
 import net.minecraft.world.level.block.state.StateDefinition;
 import net.minecraft.core.BlockPos;
 import net.minecraft.world.phys.shapes.CollisionContext;
-import net.minecraft.world.phys.shapes.Shapes;
 import net.minecraft.world.phys.shapes.VoxelShape;
 
 import static mcjty.ariente.compat.ArienteTOPDriver.DRIVER;
@@ -27,9 +28,9 @@ import static mcjty.lib.builder.TooltipBuilder.key;
 
 public class AlarmTile extends TickingTileEntity implements IAlarmTile {
 
-    public static final EnumProperty<AlarmType> ALARM = EnumProperty.create("alarm", AlarmType.class, AlarmType.values());
+    private static final MountedPanelShapes SHAPES = new MountedPanelShapes(2, 3);
 
-    private static final VoxelShape BLOCK_AABB = Shapes.box(1.0D/16.0, 1.0D/16.0, 15.0D/16.0, 15.0D/16.0, 15.0D/16.0, 1.0D);
+    public static final EnumProperty<AlarmType> ALARM = EnumProperty.create("alarm", AlarmType.class, AlarmType.values());
 
     private AlarmType alarmType = AlarmType.SAFE;
     private int soundTicker = 0;
@@ -55,7 +56,7 @@ public class AlarmTile extends TickingTileEntity implements IAlarmTile {
             @SuppressWarnings({"NullableProblems", "deprecation"})
             @Override
             public VoxelShape getShape(BlockState state, BlockGetter reader, BlockPos pos, CollisionContext context) {
-                return BLOCK_AABB;
+                return SHAPES.get(state.getValue(BlockStateProperties.FACING));
             }
         };
     }
@@ -69,7 +70,7 @@ public class AlarmTile extends TickingTileEntity implements IAlarmTile {
                 return;
             }
             soundTicker = 60;
-            level.playSound(null, getBlockPos().getX(), getBlockPos().getY(), getBlockPos().getZ(), ModSounds.alarm, SoundSource.BLOCKS, 0.1f, 1.0f);
+            level.playSound(null, getBlockPos().getX(), getBlockPos().getY(), getBlockPos().getZ(), ModSounds.alarm.get(), SoundSource.BLOCKS, 0.1f, 1.0f);
         }
     }
 

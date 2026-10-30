@@ -1,5 +1,6 @@
 package mcjty.ariente.facade;
 
+import mcjty.lib.varia.Tools;
 import net.minecraft.world.level.block.Block;
 import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.resources.ResourceLocation;
@@ -11,7 +12,7 @@ public class FacadeBlockId {
 
     public FacadeBlockId(BlockState mimicBlock) {
         Block block = mimicBlock.getBlock();
-        this.registryName = block.getRegistryName().toString();
+        this.registryName = Tools.getId(block).toString();
 //        this.meta = block.getMetaFromState(mimicBlock);
     }
 

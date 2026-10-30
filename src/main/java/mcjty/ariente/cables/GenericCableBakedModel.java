@@ -1,11 +1,11 @@
 package mcjty.ariente.cables;
 
+import net.minecraft.client.renderer.block.model.ItemTransforms;
 import com.google.common.base.Function;
 import mcjty.ariente.Ariente;
 import mcjty.lib.client.AbstractDynamicBakedModel;
-import net.minecraft.client.renderer.ItemBlockRenderTypes;
 import net.minecraft.client.renderer.block.model.BakedQuad;
-import net.minecraft.client.renderer.block.model.ItemTransforms;
+import net.minecraft.world.item.ItemDisplayContext;
 import net.minecraft.client.resources.model.BakedModel;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.level.block.state.BlockState;
@@ -15,16 +15,18 @@ import net.minecraft.client.renderer.block.model.ItemOverrides;
 import net.minecraft.client.renderer.texture.TextureAtlasSprite;
 import net.minecraft.core.Direction;
 import net.minecraft.world.phys.Vec3;
-import net.minecraftforge.client.MinecraftForgeClient;
-import net.minecraftforge.client.model.data.EmptyModelData;
-import net.minecraftforge.client.model.data.IModelData;
+import net.minecraft.core.BlockPos;
+import net.minecraft.world.level.BlockAndTintGetter;
+import net.minecraftforge.client.model.data.ModelProperty;
+import net.minecraftforge.client.model.data.ModelData;
+import net.minecraftforge.client.ChunkRenderTypeSet;
 
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
-import java.util.Random;
+import net.minecraft.util.RandomSource;
 
 import static mcjty.ariente.cables.CablePatterns.SpriteIdx.*;
 import static mcjty.ariente.cables.ConnectorType.BLOCK;
@@ -33,6 +35,7 @@ import static mcjty.ariente.cables.ConnectorType.CABLE;
 public class GenericCableBakedModel extends AbstractDynamicBakedModel {
 
     private TextureAtlasSprite spriteCable;
+    private static final ModelProperty<BlockState> CONNECTIONS = new ModelProperty<>();
 
     public static class CableTextures {
         private TextureAtlasSprite spriteConnector;
@@ -44,8 +47,8 @@ public class GenericCableBakedModel extends AbstractDynamicBakedModel {
         private TextureAtlasSprite spriteCrossCable;
     }
 
-    private static CableTextures[] cableTextures = null;
-    private static TextureAtlasSprite spriteSide;
+    private CableTextures[] cableTextures = null;
+    private TextureAtlasSprite spriteSide;
 
     static {
         CablePatterns.PATTERNS.put(new CablePatterns.Pattern(false, false, false, false), new CablePatterns.QuadSetting(SPRITE_NONE, 0));
@@ -66,7 +69,7 @@ public class GenericCableBakedModel extends AbstractDynamicBakedModel {
         CablePatterns.PATTERNS.put(new CablePatterns.Pattern(true, true, true, true), new CablePatterns.QuadSetting(SPRITE_CROSS, 0));
     }
 
-    private static void initTextures() {
+    private void initTextures() {
         if (cableTextures == null) {
             CableTextures[] tt = new CableTextures[CableColor.VALUES.length];
             for (CableColor color : CableColor.VALUES) {
@@ -87,7 +90,7 @@ public class GenericCableBakedModel extends AbstractDynamicBakedModel {
         }
     }
 
-    private static TextureAtlasSprite getSpriteNormal(CablePatterns.SpriteIdx idx, int index) {
+    private TextureAtlasSprite getSpriteNormal(CablePatterns.SpriteIdx idx, int index) {
         initTextures();
         CableTextures cableTexture = cableTextures[index];
         switch (idx) {
@@ -130,29 +133,55 @@ public class GenericCableBakedModel extends AbstractDynamicBakedModel {
         quads.add(super.createQuad(v4, v3, v2, v1, sprite, hilight));
     }
 
+    @Override
+    public ModelData getModelData(BlockAndTintGetter level, BlockPos pos, BlockState state, ModelData data) {
+        ModelData.Builder builder = data.derive();
+        if (state.getBlock() instanceof GenericCableBlock cable) {
+            // Structures and older saves may still contain the unconnected default state.
+            builder.with(CONNECTIONS, cable.calculateState(level, pos, state));
+        }
+        if (level.getBlockEntity(pos) instanceof GenericCableTileEntity tile) {
+            builder.with(GenericCableBlock.FACADEID, tile.getMimicBlock());
+        }
+        return builder.build();
+    }
+
+    @Override
+    public ChunkRenderTypeSet getRenderTypes(BlockState state, RandomSource random, ModelData data) {
+        BlockState facade = data.get(GenericCableBlock.FACADEID);
+        if (facade != null) {
+            BakedModel model = Minecraft.getInstance().getBlockRenderer().getBlockModel(facade);
+            return model.getRenderTypes(facade, random, ModelData.EMPTY);
+        }
+        return ChunkRenderTypeSet.of(RenderType.cutout());
+    }
+
     @Nonnull
     @Override
-    public List<BakedQuad> getQuads(@Nullable BlockState state, @Nullable Direction side, @Nonnull Random rand, @Nonnull IModelData extraData) {
+    public List<BakedQuad> getQuads(@Nullable BlockState state, @Nullable Direction side, @Nonnull RandomSource rand, @Nonnull ModelData extraData, @Nullable RenderType layer) {
         if (state == null) {
             return Collections.emptyList();
         }
 
-        BlockState facadeId = extraData.getData(GenericCableBlock.FACADEID);
+        BlockState connections = extraData.get(CONNECTIONS);
+        if (connections != null) {
+            state = connections;
+        }
+        BlockState facadeId = extraData.get(GenericCableBlock.FACADEID);
         if (facadeId != null) {
             BlockState facadeState = facadeId; // @todo 1.18 facadeId.getBlockState();
-            RenderType layer = MinecraftForgeClient.getRenderType();
-            if (layer == null || ItemBlockRenderTypes.canRenderInLayer(facadeState, layer)) { // always render in the null layer or the block-breaking textures don't show up
+            if (layer == null || Minecraft.getInstance().getBlockRenderer().getBlockModel(facadeState).getRenderTypes(facadeState, rand, ModelData.EMPTY).contains(layer)) { // always render in the null layer or the block-breaking textures don't show up
                 BakedModel model = Minecraft.getInstance().getBlockRenderer().getBlockModelShaper().getBlockModel(facadeState);
                 try {
-                    return new ArrayList<>(model.getQuads(state, side, rand, EmptyModelData.INSTANCE));
+                    return new ArrayList<>(model.getQuads(facadeState, side, rand, ModelData.EMPTY, layer));
                 } catch (Exception e) {
                 }
             }
+            return Collections.emptyList();
         }
 
         List<BakedQuad> quads = new ArrayList<>();
 
-        RenderType layer = MinecraftForgeClient.getRenderType();
         if (side == null && (layer == null || layer.equals(RenderType.cutout()))) {
 
             // Called with the blockstate from our block. Here we get the values of the six properties and pass that to

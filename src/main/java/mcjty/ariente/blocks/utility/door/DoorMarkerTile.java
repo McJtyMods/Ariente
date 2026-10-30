@@ -25,7 +25,7 @@ import net.minecraft.world.level.block.Block;
 import net.minecraft.world.level.block.Blocks;
 import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.level.block.state.properties.BlockStateProperties;
-import net.minecraft.world.level.material.Material;
+import net.minecraft.world.level.material.MapColor;
 import net.minecraft.world.level.block.entity.BlockEntity;
 import net.minecraft.core.Direction;
 import net.minecraft.sounds.SoundSource;
@@ -66,7 +66,7 @@ public class DoorMarkerTile extends TickingTileEntity implements IGuiTile, ILock
 
     public static BaseBlock createBlock() {
         return new BaseBlock(new BlockBuilder()
-                .properties(Block.Properties.of(Material.METAL)
+                .properties(Block.Properties.of().mapColor(MapColor.METAL)
                         .dynamicShape())
                 .info(key("message.ariente.shiftmessage"))
                 .infoShift(header())
@@ -130,18 +130,24 @@ public class DoorMarkerTile extends TickingTileEntity implements IGuiTile, ILock
     }
 
     private void setInvisibleBlocks() {
-        BlockPos p = worldPosition.above();
-        for (int i = 0 ; i < UtilityConfiguration.MAX_DOOR_HEIGHT.get() ; i++) {
-            if (level.isEmptyBlock(p)) {
-                Direction facing = getFacing();
-                if (facing == null) {
-                    return;
+        Direction facing = getFacing();
+        if (facing == null) {
+            return;
+        }
+        BlockPos pos = worldPosition.above();
+        for (int i = 0; i < UtilityConfiguration.MAX_DOOR_HEIGHT.get(); i++) {
+            BlockState state = level.getBlockState(pos);
+            if (state.is(Registration.INVISIBLE_DOOR.get())) {
+                if (state.getValue(BlockStateProperties.HORIZONTAL_FACING) != facing) {
+                    level.setBlock(pos, state.setValue(BlockStateProperties.HORIZONTAL_FACING, facing), Block.UPDATE_CLIENTS);
                 }
-                level.setBlock(p, Registration.INVISIBLE_DOOR.get().defaultBlockState().setValue(BlockStateProperties.HORIZONTAL_FACING, facing), 3);
+            } else if (state.isAir()) {
+                level.setBlock(pos, Registration.INVISIBLE_DOOR.get().defaultBlockState()
+                        .setValue(BlockStateProperties.HORIZONTAL_FACING, facing), Block.UPDATE_CLIENTS);
             } else {
                 return;
             }
-            p = p.above();
+            pos = pos.above();
         }
     }
 
@@ -170,7 +176,7 @@ public class DoorMarkerTile extends TickingTileEntity implements IGuiTile, ILock
             return;
         }
         open = o;
-        level.playSound(null, getBlockPos().getX(), getBlockPos().getY(), getBlockPos().getZ(), ModSounds.door, SoundSource.BLOCKS, 0.6f, 1.0f);
+        level.playSound(null, getBlockPos().getX(), getBlockPos().getY(), getBlockPos().getZ(), ModSounds.door.get(), SoundSource.BLOCKS, 0.6f, 1.0f);
         markDirtyClient();
     }
 
@@ -245,6 +251,16 @@ public class DoorMarkerTile extends TickingTileEntity implements IGuiTile, ILock
         info.putInt("icon", iconIndex);
         info.putBoolean("locked", locked);
         super.saveAdditional(tagCompound);
+    }
+
+    @Override
+    public void saveClientDataToNBT(CompoundTag tag) {
+        saveAdditional(tag);
+    }
+
+    @Override
+    public void loadClientDataFromNBT(CompoundTag tag) {
+        load(tag);
     }
 
     // @todo 1.14

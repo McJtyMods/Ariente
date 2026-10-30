@@ -51,7 +51,7 @@ public class ArmorGui {
                 .line("your armor and sabre modules")
                 .line("For every module you can toggle")
                 .line("the module itself to install or")
-                .line("deinstall it.")
+                .line("remove it from your armor.")
                 .nl()
                 .line("Then you can hit the checkbox to")
                 .line("actually enable the module")
@@ -163,6 +163,11 @@ public class ArmorGui {
         panel.add(registry.number(6, 0, 1, 1)
                 .color(registry.color(StyledColor.INFORMATION))
                 .getter((p, h) -> calculateMaxPowerUsage(p, slot)));
+        for (int column : new int[]{1, 5}) {
+            panel.add(registry.text(column, 1, 1, 1).text("Mod").scale(.45f).color(registry.color(StyledColor.INFORMATION)));
+            panel.add(registry.text(column + 1, 1, 1, 1).text("On").scale(.45f).color(registry.color(StyledColor.INFORMATION)));
+            panel.add(registry.text(column + 2, 1, 1, 1).text("Key").scale(.45f).color(registry.color(StyledColor.INFORMATION)));
+        }
         return panel;
     }
 
@@ -188,19 +193,19 @@ public class ArmorGui {
 
     private static int calculatePowerUsage(Player player, EquipmentSlot slot) {
         ItemStack stack = player.getItemBySlot(slot);
-        if (isValidPowerArmorPiece(stack)) {
+        if (isInvalidPowerArmorPiece(stack)) {
             return 0;
         }
         return ModuleSupport.getPowerUsage(stack).getLeft();
     }
 
-    private static boolean isValidPowerArmorPiece(ItemStack stack) {
+    private static boolean isInvalidPowerArmorPiece(ItemStack stack) {
         return stack.isEmpty() || (!(stack.getItem() instanceof PowerSuit) && stack.getItem() != Registration.ENHANCED_ENERGY_SABRE.get());
     }
 
     private static int calculatePowerColor(Player player, EquipmentSlot slot) {
         ItemStack stack = player.getItemBySlot(slot);
-        if (isValidPowerArmorPiece(stack)) {
+        if (isInvalidPowerArmorPiece(stack)) {
             return 0;
         }
         Pair<Integer, Integer> usage = ModuleSupport.getPowerUsage(stack);
@@ -209,7 +214,7 @@ public class ArmorGui {
 
     private static int calculateMaxPowerUsage(Player player, EquipmentSlot slot) {
         ItemStack stack = player.getItemBySlot(slot);
-        if (isValidPowerArmorPiece(stack)) {
+        if (isInvalidPowerArmorPiece(stack)) {
             return 0;
         }
         return ModuleSupport.getPowerUsage(stack).getRight();
@@ -217,7 +222,7 @@ public class ArmorGui {
 
     private static int countArmor(Player player, EquipmentSlot slot, String itemTag) {
         ItemStack stack = player.getItemBySlot(slot);
-        if (isValidPowerArmorPiece(stack)) {
+        if (isInvalidPowerArmorPiece(stack)) {
             return 0;
         }
         CompoundTag compound = stack.getTag();
@@ -229,7 +234,7 @@ public class ArmorGui {
 
     private static void toArmor(Player player, EquipmentSlot slot, String itemTag, Item item, int amount) {
         ItemStack stack = player.getItemBySlot(slot);
-        if (isValidPowerArmorPiece(stack)) {
+        if (isInvalidPowerArmorPiece(stack)) {
             return;
         }
         CompoundTag compound = stack.getOrCreateTag();
@@ -247,16 +252,22 @@ public class ArmorGui {
             }
         }
         compound.putInt(itemTag, number);
+        syncEquipment(player);
     }
 
     private static void createModuleEntry(IGuiComponentRegistry registry, IPanel panel, EquipmentSlot slot, int xx, int yy, ArmorModuleItem module) {
         panel.add(registry.stackToggle(xx, yy-.2, 1, 1)
                 .itemStack(new ItemStack(module))
                 .getter(player -> hasModuleAndCheckPlayerToo(player, slot, module))
+                .tooltipHandler((stack, lines) -> {
+                    lines.add("Click to install or remove");
+                    lines.add("Uses modules from your inventory");
+                })
                 .hitEvent((component, player, entity, x, y) -> toggleModuleInstall(player, slot, module)));
         panel.add(registry.iconToggle(xx + 1, yy-.2, 1, 1)
                 .getter(player -> isModuleActivated(player, slot, module))
-                .icon(registry.image(128 + 64 + 16, 128 + 16)).selected(registry.image(128 + 64, 128 + 16))
+                .background(registry.image(BLUE_EMPTY_BUTTON))
+                .icon(registry.image(BLUE_EMPTY_BUTTON)).selected(registry.image(GREEN_CHECK))
                 .hitEvent((component, player, entity, x, y) -> toggleActivation(player, slot, module)));
         panel.add(registry.iconChoice(xx + 2, yy-.2, 1, 1)
                 .getter(player -> getHotkey(player, slot, module))
@@ -281,6 +292,7 @@ public class ArmorGui {
             index = 0;
         }
         compound.putInt(moduleItem.getType().getHotkeyKey(), index);
+        syncEquipment(player);
     }
 
     private static Integer getHotkey(Player player, EquipmentSlot slot, ArmorModuleItem moduleItem) {
@@ -302,6 +314,9 @@ public class ArmorGui {
     }
 
     private static Boolean hasModuleAndCheckPlayerToo(Player player, EquipmentSlot slot, ArmorModuleItem moduleItem) {
+        if (!isSupportedEquipment(player.getItemBySlot(slot), slot)) {
+            return null;
+        }
         if (hasModule(player, slot, moduleItem)) {
             return true;
         }
@@ -314,7 +329,7 @@ public class ArmorGui {
 
     private static Boolean hasModule(Player player, EquipmentSlot slot, ArmorModuleItem moduleItem) {
         ItemStack stack = player.getItemBySlot(slot);
-        if (stack.isEmpty()) {
+        if (!isSupportedEquipment(stack, slot)) {
             return false;
         }
         if (!stack.hasTag()) {
@@ -332,6 +347,7 @@ public class ArmorGui {
         CompoundTag compound = stack.getTag();
         String key = moduleItem.getType().getModuleKey();
         compound.putBoolean(key, !compound.getBoolean(key));
+        syncEquipment(player);
     }
 
     private static int findModule(Player player, EquipmentSlot slot, ArmorModuleItem moduleItem) {
@@ -345,6 +361,9 @@ public class ArmorGui {
     }
 
     private static void toggleModuleInstall(Player player, EquipmentSlot slot, ArmorModuleItem moduleItem) {
+        if (!isSupportedEquipment(player.getItemBySlot(slot), slot)) {
+            return;
+        }
         if (!hasModule(player, slot, moduleItem)) {
             // Module is not available. Install it if possible
             ItemStack stack = player.getItemBySlot(slot);
@@ -357,9 +376,10 @@ public class ArmorGui {
                 return;
             }
             ItemStack moduleStack = player.getInventory().getItem(i);
-            ItemStack splitted = moduleStack.split(1);
+            moduleStack.shrink(1);
             CompoundTag compound = stack.getOrCreateTag();
             compound.putBoolean(moduleItem.getType().getModuleKey(), false);
+            syncEquipment(player);
             return;
         } else {
             // Remove installed module
@@ -371,6 +391,24 @@ public class ArmorGui {
             CompoundTag compound = stack.getTag();
             String key = moduleItem.getType().getModuleKey();
             compound.remove(key);
+            compound.remove(moduleItem.getType().getWorkingKey());
+            compound.remove(moduleItem.getType().getHotkeyKey());
+            syncEquipment(player);
+        }
+    }
+
+    private static boolean isSupportedEquipment(ItemStack stack, EquipmentSlot slot) {
+        if (stack.getItem() instanceof PowerSuit suit) {
+            return suit.getEquipmentSlot() == slot;
+        }
+        return slot == EquipmentSlot.MAINHAND && stack.is(Registration.ENHANCED_ENERGY_SABRE.get());
+    }
+
+    private static void syncEquipment(Player player) {
+        player.getInventory().setChanged();
+        player.inventoryMenu.broadcastChanges();
+        if (player.containerMenu != player.inventoryMenu) {
+            player.containerMenu.broadcastChanges();
         }
     }
 

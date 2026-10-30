@@ -1,5 +1,7 @@
 package mcjty.ariente.entities.fluxelevator;
 
+import net.minecraft.world.entity.LivingEntity;
+import net.minecraft.network.protocol.game.ClientGamePacketListener;
 import mcjty.ariente.Ariente;
 import mcjty.ariente.gui.ModGuis;
 import mcjty.ariente.setup.Registration;
@@ -108,20 +110,20 @@ public class FluxElevatorEntity extends Entity {
 
     @Nullable
     @Override
-    public Entity getControllingPassenger() {
+    public LivingEntity getControllingPassenger() {
         return null;
     }
 
     @Override
-    public Packet<?> getAddEntityPacket() {
+    public Packet<ClientGamePacketListener> getAddEntityPacket() {
         return NetworkHooks.getEntitySpawningPacket(this);
     }
 
     @Override
-    public void positionRider(Entity passenger) {
+    protected void positionRider(Entity passenger, MoveFunction moveFunction) {
         if (this.hasPassenger(passenger)) {
             if (!(passenger instanceof IHoloGuiEntity)) {
-                super.positionRider(passenger);
+                super.positionRider(passenger, moveFunction);
             }
         }
     }
@@ -129,7 +131,7 @@ public class FluxElevatorEntity extends Entity {
     public IHoloGuiEntity getHoloGui() {
         if (holoGui == null) {
             if (getHoloUUID() != null) {
-                for (Entity entity : level.getEntitiesOfClass(Ariente.guiHandler.getHoloEntityClass(), getBoundingBox().inflate(10))) {
+                for (Entity entity : level().getEntitiesOfClass(Ariente.guiHandler.getHoloEntityClass(), getBoundingBox().inflate(10))) {
                     if (entity instanceof IHoloGuiEntity && getHoloUUID().equals(entity.getUUID())) {
                         holoGui = (IHoloGuiEntity) entity;
                         entity.startRiding(this);
@@ -137,7 +139,7 @@ public class FluxElevatorEntity extends Entity {
                     }
                 }
             }
-            if (holoGui == null && !level.isClientSide ) {
+            if (holoGui == null && !level().isClientSide ) {
                 IHoloGuiEntity holoGui = Ariente.guiHandler.openHoloGuiRelative(this, new Vec3(0, .5, 1), ModGuis.GUI_ELEVATOR);
                 holoGui.setScale(0.75f);
                 holoGui.setCloseStrategy(CloseStrategy.NEVER);
@@ -228,7 +230,7 @@ public class FluxElevatorEntity extends Entity {
 
     @Override
     public boolean hurt(DamageSource source, float amount) {
-        if (!this.level.isClientSide && this.isAlive()) {
+        if (!this.level().isClientSide && this.isAlive()) {
             if (this.isInvulnerableTo(source)) {
                 return false;
             } else {
@@ -266,7 +268,7 @@ public class FluxElevatorEntity extends Entity {
     public void killLevitator(DamageSource source) {
         this.remove(RemovalReason.KILLED);
 
-        if (this.level.getGameRules().getBoolean(GameRules.RULE_DOENTITYDROPS)) {
+        if (this.level().getGameRules().getBoolean(GameRules.RULE_DOENTITYDROPS)) {
             ItemStack itemstack = new ItemStack(Registration.FLUX_LEVITATOR.get(), 1);
 
             if (this.hasCustomName()) {
@@ -278,7 +280,7 @@ public class FluxElevatorEntity extends Entity {
     }
 
     @Override
-    public void animateHurt() {
+    public void animateHurt(float yaw) {
         this.setDamage(this.getDamage() + this.getDamage() * 10.0F);
     }
 
@@ -299,12 +301,12 @@ public class FluxElevatorEntity extends Entity {
         }
 
         if (this.getY() < -64.0D) {
-            this.outOfWorld();
+            this.onBelowWorld();
         }
 
         handlePortal();
 
-        if (this.level.isClientSide) {
+        if (this.level().isClientSide) {
             onUpdateClient();
         } else {
             onUpdateServer();
@@ -330,13 +332,13 @@ public class FluxElevatorEntity extends Entity {
         int floorY = Mth.floor(this.getY());
         int floorZ = Mth.floor(this.getZ());
 
-        Block block = level.getBlockState(new BlockPos(floorX, floorY - 1, floorZ)).getBlock();
+        Block block = level().getBlockState(new BlockPos(floorX, floorY - 1, floorZ)).getBlock();
         if (isValidBeamBlock(block)) {
             --floorY;
         }
 
         BlockPos blockpos = new BlockPos(floorX, floorY, floorZ);
-        BlockState state = this.level.getBlockState(blockpos);
+        BlockState state = this.level().getBlockState(blockpos);
 
         if (isValidBeamBlock(state.getBlock())) {
             this.moveAlongTrack(blockpos, state);
@@ -376,7 +378,7 @@ public class FluxElevatorEntity extends Entity {
 
         Vec3 motion = getDeltaMovement();
         if (motion.x * motion.x + motion.z * motion.z > 0.01D) {
-            List<Entity> list = this.level.getEntities(this, box, entity -> true);//@todo 1.14 EntitySelectors.getTeamCollisionPredicate(this));
+            List<Entity> list = this.level().getEntities(this, box, entity -> true);//@todo 1.14 EntitySelectors.getTeamCollisionPredicate(this));
 
             if (!list.isEmpty()) {
                 for (Entity ent : list) {
@@ -388,7 +390,7 @@ public class FluxElevatorEntity extends Entity {
                 }
             }
         } else {
-            for (Entity entity : this.level.getEntities(this, box)) {
+            for (Entity entity : this.level().getEntities(this, box)) {
                 if (!this.hasPassenger(entity) && entity.isPushable() && entity instanceof FluxElevatorEntity) {
                     entity.push(this);
                 }
@@ -402,8 +404,8 @@ public class FluxElevatorEntity extends Entity {
     }
 
     private void handlePortal() {
-        if (!this.level.isClientSide && this.level instanceof ServerLevel) {
-            MinecraftServer minecraftserver = this.level.getServer();
+        if (!this.level().isClientSide && this.level() instanceof ServerLevel) {
+            MinecraftServer minecraftserver = this.level().getServer();
             int i = this.getPortalWaitTime();
 
             if (this.isInsidePortal) {
@@ -413,7 +415,7 @@ public class FluxElevatorEntity extends Entity {
                         this.timeUntilPortal = this.getDimensionChangingDelay();
                         ServerLevel id;
 
-                        if (this.level.dimension() == Level.NETHER) {
+                        if (this.level().dimension() == Level.NETHER) {
                             id = minecraftserver.getLevel(Level.OVERWORLD);
                         } else {
                             id = minecraftserver.getLevel(Level.NETHER);
@@ -597,15 +599,15 @@ public class FluxElevatorEntity extends Entity {
             motionX += motionX / length * 0.06D;
             motionZ += motionZ / length * 0.06D;
         } else if (dir == RailShape.EAST_WEST) {
-            if (this.level.getBlockState(pos.west()).isRedstoneConductor(level, pos.west())) {
+            if (this.level().getBlockState(pos.west()).isRedstoneConductor(level(), pos.west())) {
                 motionX = 0.02D;
-            } else if (this.level.getBlockState(pos.east()).isRedstoneConductor(level, pos.east())) {
+            } else if (this.level().getBlockState(pos.east()).isRedstoneConductor(level(), pos.east())) {
                 motionX = -0.02D;
             }
         } else if (dir == RailShape.NORTH_SOUTH) {
-            if (this.level.getBlockState(pos.north()).isRedstoneConductor(level, pos.north())) {
+            if (this.level().getBlockState(pos.north()).isRedstoneConductor(level(), pos.north())) {
                 motionZ = 0.02D;
-            } else if (this.level.getBlockState(pos.south()).isRedstoneConductor(level, pos.south())) {
+            } else if (this.level().getBlockState(pos.south()).isRedstoneConductor(level(), pos.south())) {
                 motionZ = -0.02D;
             }
         }
@@ -715,12 +717,12 @@ public class FluxElevatorEntity extends Entity {
         int floorY = Mth.floor(y);
         int floorZ = Mth.floor(z);
 
-        Block block = level.getBlockState(new BlockPos(floorX, floorY - 1, floorZ)).getBlock();
+        Block block = level().getBlockState(new BlockPos(floorX, floorY - 1, floorZ)).getBlock();
         if (isValidBeamBlock(block)) {
             --floorY;
         }
 
-        BlockState state = this.level.getBlockState(new BlockPos(floorX, floorY, floorZ));
+        BlockState state = this.level().getBlockState(new BlockPos(floorX, floorY, floorZ));
 
         if (isValidBeamBlock(state.getBlock())) {
             RailShape dir = getBeamDirection(state);
@@ -748,12 +750,12 @@ public class FluxElevatorEntity extends Entity {
         int floorY = Mth.floor(y);
         int floorZ = Mth.floor(z);
 
-        Block block = level.getBlockState(new BlockPos(floorX, floorY - 1, floorZ)).getBlock();
+        Block block = level().getBlockState(new BlockPos(floorX, floorY - 1, floorZ)).getBlock();
         if (isValidBeamBlock(block)) {
             --floorY;
         }
 
-        BlockState state = this.level.getBlockState(new BlockPos(floorX, floorY, floorZ));
+        BlockState state = this.level().getBlockState(new BlockPos(floorX, floorY, floorZ));
 
         if (isValidBeamBlock(state.getBlock())) {
             RailShape dir = getBeamDirection(state);
@@ -804,7 +806,7 @@ public class FluxElevatorEntity extends Entity {
 
     @Override
     public void push(Entity entityIn) {
-        if (!this.level.isClientSide) {
+        if (!this.level().isClientSide) {
             if (!entityIn.noPhysics && !this.noPhysics) {
                 if (!this.hasPassenger(entityIn)) {
                     double dx = entityIn.getX() - this.getX();
@@ -897,7 +899,7 @@ public class FluxElevatorEntity extends Entity {
 //        } else if (this.isBeingRidden()) {    // @todo
 //            return true;
         } else {
-            if (!this.level.isClientSide) {
+            if (!this.level().isClientSide) {
                 player.startRiding(this);
             }
 
@@ -911,7 +913,7 @@ public class FluxElevatorEntity extends Entity {
         int y = Mth.floor(this.getY());
         int z = Mth.floor(this.getZ());
 
-        Block block = level.getBlockState(new BlockPos(x, y - 1, z)).getBlock();
+        Block block = level().getBlockState(new BlockPos(x, y - 1, z)).getBlock();
         if (isValidBeamBlock(block)) {
             y--;
         }
@@ -920,7 +922,7 @@ public class FluxElevatorEntity extends Entity {
 
     protected double getMaxSpeed() {
         BlockPos pos = this.getCurrentRailPosition();
-        BlockState state = this.level.getBlockState(pos);
+        BlockState state = this.level().getBlockState(pos);
         if (!isValidBeamBlock(state.getBlock())) {
             return getMaximumSpeed();
         }

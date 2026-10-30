@@ -45,7 +45,7 @@ import net.minecraft.world.phys.HitResult;
 import net.minecraft.world.phys.Vec3;
 import net.minecraftforge.common.capabilities.Capability;
 import net.minecraftforge.common.util.LazyOptional;
-import net.minecraftforge.items.CapabilityItemHandler;
+import net.minecraftforge.common.capabilities.ForgeCapabilities;
 import net.minecraftforge.items.IItemHandler;
 import net.minecraftforge.items.IItemHandlerModifiable;
 import net.minecraftforge.items.ItemHandlerHelper;
@@ -152,43 +152,54 @@ public class StorageTile extends GenericTileEntity implements IGuiTile, ICityEqu
         super.load(tagCompound);
         CompoundTag info = tagCompound.getCompound("Info");
         if (!info.isEmpty()) {
-            locked = info.getBoolean("locked");
+            readDisplayData(info);
             if (info.contains("keyId")) {
                 keyId = info.getString("keyId");
             }
-
-            ListTag bufferTagList = info.getList("Items", Tag.TAG_COMPOUND);
-            for (int i = 0; i < STACKS; i++) {
-                CompoundTag CompoundNBT = bufferTagList.getCompound(i);
-                stacks.set(i, ItemStack.of(CompoundNBT));
-            }
             int[] cc = info.getIntArray("Counts");
-            System.arraycopy(cc, 0, counts, 0, cc.length);
-            int[] ct = info.getIntArray("Totals");
-            System.arraycopy(ct, 0, totals, 0, ct.length);
+            System.arraycopy(cc, 0, counts, 0, Math.min(cc.length, counts.length));
         }
     }
 
     @Override
     public void saveAdditional(CompoundTag tagCompound) {
         CompoundTag info = getOrCreateInfo(tagCompound);
-        info.putBoolean("locked", locked);
+        writeDisplayData(info);
         if (keyId != null) {
             info.putString("keyId", keyId);
         }
-        ListTag bufferTagList = new ListTag();
-        for (int i = 0; i < STACKS; i++) {
-            ItemStack stack = stacks.get(i);
-            CompoundTag CompoundNBT = new CompoundTag();
-            if (!stack.isEmpty()) {
-                stack.save(CompoundNBT);
-            }
-            bufferTagList.add(CompoundNBT);
-        }
-        info.put("Items", bufferTagList);
         info.putIntArray("Counts", counts);
-        info.putIntArray("Totals", totals);
         super.saveAdditional(tagCompound);
+    }
+
+    @Override
+    public void saveClientDataToNBT(CompoundTag tagCompound) {
+        writeDisplayData(getOrCreateInfo(tagCompound));
+    }
+
+    @Override
+    public void loadClientDataFromNBT(CompoundTag tagCompound) {
+        readDisplayData(tagCompound.getCompound("Info"));
+    }
+
+    private void writeDisplayData(CompoundTag info) {
+        info.putBoolean("locked", locked);
+        ListTag items = new ListTag();
+        for (ItemStack stack : stacks) {
+            items.add(stack.save(new CompoundTag()));
+        }
+        info.put("Items", items);
+        info.putIntArray("Totals", totals.clone());
+    }
+
+    private void readDisplayData(CompoundTag info) {
+        locked = info.getBoolean("locked");
+        ListTag items = info.getList("Items", Tag.TAG_COMPOUND);
+        int[] syncedTotals = info.getIntArray("Totals");
+        for (int i = 0; i < STACKS; i++) {
+            stacks.set(i, ItemStack.of(items.getCompound(i)));
+            totals[i] = i < syncedTotals.length ? syncedTotals[i] : 0;
+        }
     }
 
     @Override
@@ -229,10 +240,10 @@ public class StorageTile extends GenericTileEntity implements IGuiTile, ICityEqu
     public void acceptKeyCard(ItemStack stack) {
         Set<String> tags = KeyCardItem.getSecurityTags(stack);
         if (tags.contains(keyId)) {
-            level.playSound(null, worldPosition, ModSounds.buzzOk, SoundSource.BLOCKS, 1.0f, 1.0f);
+            level.playSound(null, worldPosition, ModSounds.buzzOk.get(), SoundSource.BLOCKS, 1.0f, 1.0f);
             toggleLock();
         } else {
-            level.playSound(null, worldPosition, ModSounds.buzzError, SoundSource.BLOCKS, 1.0f, 1.0f);
+            level.playSound(null, worldPosition, ModSounds.buzzError.get(), SoundSource.BLOCKS, 1.0f, 1.0f);
         }
     }
 
@@ -704,7 +715,7 @@ public class StorageTile extends GenericTileEntity implements IGuiTile, ICityEqu
     @Nonnull
     @Override
     public <T> LazyOptional<T> getCapability(@Nonnull Capability<T> cap) {
-        if (cap == CapabilityItemHandler.ITEM_HANDLER_CAPABILITY) {
+        if (cap == ForgeCapabilities.ITEM_HANDLER) {
             return itemHandler.cast();
         }
         return super.getCapability(cap);

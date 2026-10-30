@@ -1,6 +1,19 @@
 package mcjty.ariente.setup;
 
+import net.minecraftforge.event.entity.EntityAttributeCreationEvent;
+import net.minecraftforge.event.entity.SpawnPlacementRegisterEvent;
+import net.minecraft.world.entity.SpawnPlacements;
+import net.minecraft.world.entity.monster.Monster;
+import net.minecraft.world.level.levelgen.Heightmap;
+import mcjty.ariente.multipart.MultipartBlock;
+import mcjty.ariente.multipart.MultipartTE;
+import mcjty.ariente.sounds.ModSounds;
+import net.minecraft.core.registries.Registries;
+import net.minecraft.world.item.CreativeModeTab;
+import net.minecraft.world.item.ItemStack;
+import net.minecraft.network.chat.Component;
 import mcjty.ariente.Ariente;
+import mcjty.ariente.blocks.MountedPanelShapes;
 import mcjty.ariente.ModCrafting;
 import mcjty.ariente.api.ArmorUpgradeType;
 import mcjty.ariente.blocks.BaseOreBlock;
@@ -32,12 +45,12 @@ import mcjty.ariente.items.*;
 import mcjty.ariente.items.armor.PowerSuit;
 import mcjty.ariente.items.modules.ArmorModuleItem;
 import mcjty.lib.blocks.BaseBlock;
-import mcjty.lib.blocks.BlockStateItem;
+import mcjty.ariente.items.BlockStateItem;
 import mcjty.lib.blocks.RotationType;
 import mcjty.lib.builder.BlockBuilder;
-import mcjty.lib.multipart.MultipartItemBlock;
+import mcjty.ariente.multipart.MultipartItemBlock;
 import net.minecraft.resources.ResourceLocation;
-import net.minecraft.tags.Tag;
+import net.minecraft.tags.TagKey;
 import net.minecraft.world.entity.EntityType;
 import net.minecraft.world.entity.MobCategory;
 import net.minecraft.world.item.BlockItem;
@@ -47,7 +60,8 @@ import net.minecraft.world.level.block.Block;
 import net.minecraft.world.level.block.SoundType;
 import net.minecraft.world.level.block.entity.BlockEntityType;
 import net.minecraft.world.level.block.state.BlockState;
-import net.minecraft.world.level.material.Material;
+import net.minecraft.world.level.block.state.properties.BlockStateProperties;
+import net.minecraft.world.level.material.MapColor;
 import net.minecraft.world.entity.EquipmentSlot;
 import net.minecraft.world.inventory.MenuType;
 import net.minecraft.tags.BlockTags;
@@ -75,12 +89,23 @@ public class Registration {
 
     public static final DeferredRegister<Block> BLOCKS = DeferredRegister.create(ForgeRegistries.BLOCKS, MODID);
     public static final DeferredRegister<Item> ITEMS = DeferredRegister.create(ForgeRegistries.ITEMS, MODID);
-    public static final DeferredRegister<BlockEntityType<?>> TILES = DeferredRegister.create(ForgeRegistries.BLOCK_ENTITIES, MODID);
-    public static final DeferredRegister<MenuType<?>> CONTAINERS = DeferredRegister.create(ForgeRegistries.CONTAINERS, MODID);
+    public static final DeferredRegister<BlockEntityType<?>> TILES = DeferredRegister.create(ForgeRegistries.BLOCK_ENTITY_TYPES, MODID);
+    public static final DeferredRegister<MenuType<?>> CONTAINERS = DeferredRegister.create(ForgeRegistries.MENU_TYPES, MODID);
     public static final DeferredRegister<SoundEvent> SOUNDS = DeferredRegister.create(ForgeRegistries.SOUND_EVENTS, MODID);
-    public static final DeferredRegister<EntityType<?>> ENTITIES = DeferredRegister.create(ForgeRegistries.ENTITIES, MODID);
+    public static final DeferredRegister<EntityType<?>> ENTITIES = DeferredRegister.create(ForgeRegistries.ENTITY_TYPES, MODID);
+
+    public static final DeferredRegister<CreativeModeTab> TABS = DeferredRegister.create(Registries.CREATIVE_MODE_TAB, MODID);
+    public static final RegistryObject<CreativeModeTab> TAB = TABS.register("ariente", () -> CreativeModeTab.builder()
+            .title(Component.translatable("itemGroup.ariente"))
+            .icon(() -> new ItemStack(Registration.POSIRITE_GENERATOR.get()))
+            .displayItems((parameters, output) -> ITEMS.getEntries().forEach(item -> output.accept(item.get())))
+            .build());
 
     public static void register() {
+        ModSounds.register();
+        FMLJavaModLoadingContext.get().getModEventBus().addListener(Registration::registerAttributes);
+        FMLJavaModLoadingContext.get().getModEventBus().addListener(Registration::registerSpawnPlacements);
+        TABS.register(FMLJavaModLoadingContext.get().getModEventBus());
         BLOCKS.register(FMLJavaModLoadingContext.get().getModEventBus());
         ITEMS.register(FMLJavaModLoadingContext.get().getModEventBus());
         TILES.register(FMLJavaModLoadingContext.get().getModEventBus());
@@ -89,28 +114,42 @@ public class Registration {
         ENTITIES.register(FMLJavaModLoadingContext.get().getModEventBus());
     }
 
-    public static final Tag.Named<Item> TAG_INGOT_SILVER = ItemTags.createOptional(new ResourceLocation("forge", "ingots/silver"));
-    public static final Tag.Named<Item> TAG_INGOT_PLATINUM = ItemTags.createOptional(new ResourceLocation("forge", "ingots/platinum"));
-    public static final Tag.Named<Item> TAG_INGOT_LITHIUM = ItemTags.createOptional(new ResourceLocation("forge", "ingots/lithium"));
-    public static final Tag.Named<Item> TAG_INGOT_MANGANESE = ItemTags.createOptional(new ResourceLocation("forge", "ingots/manganese"));
-    public static final Tag.Named<Item> TAG_DUSTS_SILICON = ItemTags.createOptional(new ResourceLocation("forge", "dusts/silicon"));
-    public static final Tag.Named<Item> TAG_DUSTS_NEGARITE = ItemTags.createOptional(new ResourceLocation("forge", "dusts/negarite"));
-    public static final Tag.Named<Item> TAG_DUSTS_POSIRITE = ItemTags.createOptional(new ResourceLocation("forge", "dusts/posirite"));
-    public static final Tag.Named<Block> TAG_ORE_SILVER = BlockTags.createOptional(new ResourceLocation("forge", "ores/silver"));
-    public static final Tag.Named<Block> TAG_ORE_PLATINUM = BlockTags.createOptional(new ResourceLocation("forge", "ores/platinum"));
-    public static final Tag.Named<Block> TAG_ORE_LITHIUM = BlockTags.createOptional(new ResourceLocation("forge", "ores/lithium"));
-    public static final Tag.Named<Block> TAG_ORE_MANGANESE = BlockTags.createOptional(new ResourceLocation("forge", "ores/manganese"));
-    public static final Tag.Named<Block> TAG_ORE_SILICON = BlockTags.createOptional(new ResourceLocation("forge", "ores/silicon"));
-    public static final Tag.Named<Block> TAG_ORE_NEGARITE = BlockTags.createOptional(new ResourceLocation("forge", "ores/negarite"));
-    public static final Tag.Named<Block> TAG_ORE_POSIRITE = BlockTags.createOptional(new ResourceLocation("forge", "ores/posirite"));
-    public static final Tag.Named<Item> TAG_ORE_SILVER_ITEM = ItemTags.createOptional(new ResourceLocation("forge", "ores/silver"));
-    public static final Tag.Named<Item> TAG_ORE_PLATINUM_ITEM = ItemTags.createOptional(new ResourceLocation("forge", "ores/platinum"));
-    public static final Tag.Named<Item> TAG_ORE_LITHIUM_ITEM = ItemTags.createOptional(new ResourceLocation("forge", "ores/lithium"));
-    public static final Tag.Named<Item> TAG_ORE_MANGANESE_ITEM = ItemTags.createOptional(new ResourceLocation("forge", "ores/manganese"));
-    public static final Tag.Named<Item> TAG_ORE_SILICON_ITEM = ItemTags.createOptional(new ResourceLocation("forge", "ores/silicon"));
-    public static final Tag.Named<Item> TAG_ORE_NEGARITE_ITEM = ItemTags.createOptional(new ResourceLocation("forge", "ores/negarite"));
-    public static final Tag.Named<Item> TAG_ORE_POSIRITE_ITEM = ItemTags.createOptional(new ResourceLocation("forge", "ores/posirite"));
-    public static final Tag.Named<Item> TAG_MARBLE = ItemTags.createOptional(new ResourceLocation("forge", "marble"));
+    private static void registerSpawnPlacements(SpawnPlacementRegisterEvent event) {
+        event.register(ENTITY_SOLDIER.get(), SpawnPlacements.Type.ON_GROUND, Heightmap.Types.MOTION_BLOCKING_NO_LEAVES,
+                Monster::checkMonsterSpawnRules, SpawnPlacementRegisterEvent.Operation.REPLACE);
+        event.register(ENTITY_MASTER_SOLDIER.get(), SpawnPlacements.Type.ON_GROUND, Heightmap.Types.MOTION_BLOCKING_NO_LEAVES,
+                Monster::checkMonsterSpawnRules, SpawnPlacementRegisterEvent.Operation.REPLACE);
+    }
+
+    private static void registerAttributes(EntityAttributeCreationEvent event) {
+        event.put(ENTITY_SOLDIER.get(), SoldierEntity.registerAttributes().build());
+        event.put(ENTITY_MASTER_SOLDIER.get(), MasterSoldierEntity.registerAttributes().build());
+        event.put(ENTITY_DRONE.get(), DroneEntity.registerAttributes().build());
+        event.put(ENTITY_SENTINEL_DRONE.get(), SentinelDroneEntity.registerAttributes().build());
+    }
+
+    public static final TagKey<Item> TAG_INGOT_SILVER = ItemTags.create(new ResourceLocation("forge", "ingots/silver"));
+    public static final TagKey<Item> TAG_INGOT_PLATINUM = ItemTags.create(new ResourceLocation("forge", "ingots/platinum"));
+    public static final TagKey<Item> TAG_INGOT_LITHIUM = ItemTags.create(new ResourceLocation("forge", "ingots/lithium"));
+    public static final TagKey<Item> TAG_INGOT_MANGANESE = ItemTags.create(new ResourceLocation("forge", "ingots/manganese"));
+    public static final TagKey<Item> TAG_DUSTS_SILICON = ItemTags.create(new ResourceLocation("forge", "dusts/silicon"));
+    public static final TagKey<Item> TAG_DUSTS_NEGARITE = ItemTags.create(new ResourceLocation("forge", "dusts/negarite"));
+    public static final TagKey<Item> TAG_DUSTS_POSIRITE = ItemTags.create(new ResourceLocation("forge", "dusts/posirite"));
+    public static final TagKey<Block> TAG_ORE_SILVER = BlockTags.create(new ResourceLocation("forge", "ores/silver"));
+    public static final TagKey<Block> TAG_ORE_PLATINUM = BlockTags.create(new ResourceLocation("forge", "ores/platinum"));
+    public static final TagKey<Block> TAG_ORE_LITHIUM = BlockTags.create(new ResourceLocation("forge", "ores/lithium"));
+    public static final TagKey<Block> TAG_ORE_MANGANESE = BlockTags.create(new ResourceLocation("forge", "ores/manganese"));
+    public static final TagKey<Block> TAG_ORE_SILICON = BlockTags.create(new ResourceLocation("forge", "ores/silicon"));
+    public static final TagKey<Block> TAG_ORE_NEGARITE = BlockTags.create(new ResourceLocation("forge", "ores/negarite"));
+    public static final TagKey<Block> TAG_ORE_POSIRITE = BlockTags.create(new ResourceLocation("forge", "ores/posirite"));
+    public static final TagKey<Item> TAG_ORE_SILVER_ITEM = ItemTags.create(new ResourceLocation("forge", "ores/silver"));
+    public static final TagKey<Item> TAG_ORE_PLATINUM_ITEM = ItemTags.create(new ResourceLocation("forge", "ores/platinum"));
+    public static final TagKey<Item> TAG_ORE_LITHIUM_ITEM = ItemTags.create(new ResourceLocation("forge", "ores/lithium"));
+    public static final TagKey<Item> TAG_ORE_MANGANESE_ITEM = ItemTags.create(new ResourceLocation("forge", "ores/manganese"));
+    public static final TagKey<Item> TAG_ORE_SILICON_ITEM = ItemTags.create(new ResourceLocation("forge", "ores/silicon"));
+    public static final TagKey<Item> TAG_ORE_NEGARITE_ITEM = ItemTags.create(new ResourceLocation("forge", "ores/negarite"));
+    public static final TagKey<Item> TAG_ORE_POSIRITE_ITEM = ItemTags.create(new ResourceLocation("forge", "ores/posirite"));
+    public static final TagKey<Item> TAG_MARBLE = ItemTags.create(new ResourceLocation("forge", "marble"));
 
     public static final AABB FLAT_BLOCK_AABB = new AABB(0.0D, 0.0D, 0.0D, 1.0D, 0.1D, 1.0D);
     public static final AABB BEAM_BLOCK_NS_AABB = new AABB(0.0D, 0.0D, 0.3D, 1.0D, 0.3D, 0.7D);
@@ -122,6 +161,9 @@ public class Registration {
     public static final AABB LIGHT_BLOCK_SOUTH = new AABB(0.125F, 0.125F, 0.875F, 0.875F, 0.8750F, 1.0F);
     public static final AABB LIGHT_BLOCK_WEST = new AABB(0.0F, 0.125F, 0.125F, 0.125F, 0.875F, 0.8750F);
     public static final AABB LIGHT_BLOCK_EAST = new AABB(0.875F, 0.125F, 0.125F, 1.0F, 0.875F, 0.8750F);
+
+    public static final RegistryObject<MultipartBlock> MULTIPART_BLOCK = BLOCKS.register("multipart", MultipartBlock::new);
+    public static final RegistryObject<BlockEntityType<MultipartTE>> TYPE_MULTIPART = TILES.register("multipart", () -> BlockEntityType.Builder.of(MultipartTE::new, MULTIPART_BLOCK.get()).build(null));
 
     public static final RegistryObject<PatternBlock> PATTERN = BLOCKS.register("pattern", PatternBlock::new);
     public static final Map<PatternType, RegistryObject<BlockStateItem>> PATTERN_ITEMS = Arrays.stream(PatternType.values())
@@ -149,10 +191,10 @@ public class Registration {
     public static final RegistryObject<BaseBlock> ORE_NEGARITE = BLOCKS.register("negarite", BaseOreBlock::new);
     public static final RegistryObject<Item> ORE_NEGARITE_ITEM = ITEMS.register("negarite", () -> new BlockItem(ORE_NEGARITE.get(), createStandardProperties()));
 
-    public static final RegistryObject<BaseBlock> FLUX_BEAM = BLOCKS.register("flux_beam", () -> new BaseBeamBlock(new BlockBuilder()));
+    public static final RegistryObject<BaseBlock> FLUX_BEAM = BLOCKS.register("flux_beam", () -> new BaseBeamBlock(new BlockBuilder(), false));
     public static final RegistryObject<Item> FLUX_BEAM_ITEM = ITEMS.register("flux_beam", () -> new BlockItem(FLUX_BEAM.get(), createStandardProperties()));
 
-    public static final RegistryObject<BaseBlock> FLUX_BEND_BEAM = BLOCKS.register("flux_bend_beam", () -> new BaseBeamBlock(new BlockBuilder()));
+    public static final RegistryObject<BaseBlock> FLUX_BEND_BEAM = BLOCKS.register("flux_bend_beam", () -> new BaseBeamBlock(new BlockBuilder(), true));
     public static final RegistryObject<Item> FLUX_BEND_BEAM_ITEM = ITEMS.register("flux_bend_beam", () -> new BlockItem(FLUX_BEND_BEAM.get(), createStandardProperties()));
 
     public static final RegistryObject<BaseBlock> SENSOR_ITEM_NODE = BLOCKS.register("sensor_item_node", SensorItemNodeTile::createBlock);
@@ -176,7 +218,7 @@ public class Registration {
 
     public static final RegistryObject<BaseBlock> FIELD_MARKER = BLOCKS.register("field_marker", FieldMarkerTile::createBlock);
     public static final RegistryObject<Item> FIELD_MARKER_ITEM = ITEMS.register("field_marker", () -> new MultipartItemBlock(FIELD_MARKER.get(), createStandardProperties()));
-    public static final RegistryObject<BlockEntityType<FieldMarkerTile>> FIELD_MARKER_TILE = TILES.register("field_marker", () -> BlockEntityType.Builder.of(FieldMarkerTile::new, ROUND_ROBIN_NODE.get()).build(null));
+    public static final RegistryObject<BlockEntityType<FieldMarkerTile>> FIELD_MARKER_TILE = TILES.register("field_marker", () -> BlockEntityType.Builder.of(FieldMarkerTile::new, FIELD_MARKER.get()).build(null));
 
     public static final RegistryObject<RampBlock> RAMP = BLOCKS.register("ramp", RampBlock::new);
     public static final RegistryObject<Item> RAMP_ITEM = ITEMS.register("ramp", () -> new BlockItem(RAMP.get(), createStandardProperties()));
@@ -184,20 +226,20 @@ public class Registration {
     public static final RegistryObject<SlopeBlock> SLOPE = BLOCKS.register("slope", SlopeBlock::new);
     public static final RegistryObject<Item> SLOPE_ITEM = ITEMS.register("slope", () -> new BlockItem(SLOPE.get(), createStandardProperties()));
 
-    public static final RegistryObject<PaneBlock> GLASS_FENCE = BLOCKS.register("glass_fence", () -> new PaneBlock(Material.GLASS, SoundType.GLASS));
+    public static final RegistryObject<PaneBlock> GLASS_FENCE = BLOCKS.register("glass_fence", () -> new PaneBlock(MapColor.NONE, SoundType.GLASS));
     public static final RegistryObject<Item> GLASS_FENCE_ITEM = ITEMS.register("glass_fence", () -> new BlockItem(GLASS_FENCE.get(), createStandardProperties()));
 
-    public static final RegistryObject<PaneBlock> BLUE_GLASS_FENCE = BLOCKS.register("blue_glass_fence", () -> new PaneBlock(Material.GLASS, SoundType.GLASS));
+    public static final RegistryObject<PaneBlock> BLUE_GLASS_FENCE = BLOCKS.register("blue_glass_fence", () -> new PaneBlock(MapColor.NONE, SoundType.GLASS));
     public static final RegistryObject<Item> BLUE_GLASS_FENCE_ITEM = ITEMS.register("blue_glass_fence", () -> new BlockItem(BLUE_GLASS_FENCE.get(), createStandardProperties()));
 
-    public static final RegistryObject<PaneBlock> MARBLE_FENCE = BLOCKS.register("marble_fence", () -> new PaneBlock(Material.STONE, SoundType.STONE));
+    public static final RegistryObject<PaneBlock> MARBLE_FENCE = BLOCKS.register("marble_fence", () -> new PaneBlock(MapColor.STONE, SoundType.STONE));
     public static final RegistryObject<Item> MARBLE_FENCE_ITEM = ITEMS.register("marble_fence", () -> new BlockItem(MARBLE_FENCE.get(), createStandardProperties()));
 
-    public static final RegistryObject<PaneBlock> TECH_FENCE = BLOCKS.register("tech_fence", () -> new PaneBlock(Material.STONE, SoundType.STONE));
+    public static final RegistryObject<PaneBlock> TECH_FENCE = BLOCKS.register("tech_fence", () -> new PaneBlock(MapColor.STONE, SoundType.STONE));
     public static final RegistryObject<Item> TECH_FENCE_ITEM = ITEMS.register("tech_fence", () -> new BlockItem(TECH_FENCE.get(), createStandardProperties()));
 
     public static final RegistryObject<BaseBlock> REINFORCED_MARBLE = BLOCKS.register("reinforced_marble", () -> new BaseBlock(new BlockBuilder()
-            .properties(Block.Properties.of(Material.STONE).strength(80.0f, 3000.0f))
+            .properties(Block.Properties.of().mapColor(MapColor.STONE).strength(80.0f, 3000.0f))
     ) {
         @Override
         public RotationType getRotationType() {
@@ -207,7 +249,7 @@ public class Registration {
     public static final RegistryObject<Item> REINFORCED_MARBLE_ITEM = ITEMS.register("reinforced_marble", () -> new BlockItem(REINFORCED_MARBLE.get(), createStandardProperties()));
 
     public static final RegistryObject<BaseBlock> FLUX_GLOW = BLOCKS.register("fluxglow", () -> new BaseBlock(new BlockBuilder()
-        .properties(Block.Properties.of(Material.GLASS).lightLevel((light) -> { return 15; }))) {
+        .properties(Block.Properties.of().mapColor(MapColor.NONE).lightLevel((light) -> { return 15; }))) {
         @Override
         public RotationType getRotationType() {
             return RotationType.NONE;
@@ -370,11 +412,11 @@ public class Registration {
     public static final RegistryObject<ArmorModuleItem> MODULE_LOOTING = ITEMS.register("module_looting", () -> new ArmorModuleItem(ArmorUpgradeType.LOOTING));
     public static final RegistryObject<ArmorModuleItem> MODULE_FIRE = ITEMS.register("module_fire", () -> new ArmorModuleItem(ArmorUpgradeType.FIRE));
 
-    public static final RegistryObject<EntityType<MasterSoldierEntity>> ENTITY_MASTER_SOLDIER = ENTITIES.register("master_soldier", () -> EntityType.Builder.of(MasterSoldierEntity::new, MobCategory.MISC)
+    public static final RegistryObject<EntityType<MasterSoldierEntity>> ENTITY_MASTER_SOLDIER = ENTITIES.register("master_soldier", () -> EntityType.Builder.of(MasterSoldierEntity::new, MobCategory.MONSTER)
             .sized(0.7F, 2.7F)
             .setShouldReceiveVelocityUpdates(false)
             .build("master_soldier"));
-    public static final RegistryObject<EntityType<SoldierEntity>> ENTITY_SOLDIER = ENTITIES.register("soldier", () -> EntityType.Builder.of(SoldierEntity::new, MobCategory.MISC)
+    public static final RegistryObject<EntityType<SoldierEntity>> ENTITY_SOLDIER = ENTITIES.register("soldier", () -> EntityType.Builder.of(SoldierEntity::new, MobCategory.MONSTER)
             .sized(0.6F, 1.95F)
             .setShouldReceiveVelocityUpdates(false)
             .build("soldier"));
@@ -471,17 +513,17 @@ public class Registration {
 
 
     public static Item.Properties createStandardProperties() {
-        return new Item.Properties().tab(Ariente.setup.getTab());
+        return new Item.Properties();
     }
 
-    private static final VoxelShape FLAT_LIGHT_AABB = Shapes.box(1.0D/16.0, 1.0D/16.0, 14.0D/16.0, 15.0D/16.0, 15.0D/16.0, 1.0D);
+    private static final MountedPanelShapes FLAT_LIGHT_SHAPES = new MountedPanelShapes(1, 2);
 
     private static BaseBlock createFlatLightBlock() {
         return new BaseBlock(new BlockBuilder()
-                .properties(Block.Properties.of(Material.GLASS).lightLevel((light) -> { return 15; }))) {
+                .properties(Block.Properties.of().mapColor(MapColor.NONE).lightLevel((light) -> { return 15; }))) {
             @Override
             public VoxelShape getShape(BlockState state, BlockGetter reader, BlockPos pos, CollisionContext context) {
-                return FLAT_LIGHT_AABB;
+                return FLAT_LIGHT_SHAPES.get(state.getValue(BlockStateProperties.FACING));
             }
 
         };

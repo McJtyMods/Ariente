@@ -1,8 +1,11 @@
 package mcjty.ariente.blocks.utility;
 
+import com.mojang.blaze3d.vertex.VertexConsumer;
+import net.minecraft.client.renderer.RenderType;
+import com.mojang.math.Axis;
 import com.mojang.blaze3d.vertex.*;
 import com.mojang.blaze3d.platform.GlStateManager;
-import com.mojang.math.Vector3f;
+import org.joml.Vector3f;
 import mcjty.ariente.setup.Registration;
 import mcjty.lib.blocks.BaseBlock;
 import mcjty.lib.client.CustomRenderTypes;
@@ -18,7 +21,7 @@ import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.Font;
 import net.minecraft.client.renderer.*;
 import net.minecraft.client.resources.model.BakedModel;
-import net.minecraft.client.renderer.block.model.ItemTransforms;
+import net.minecraft.world.item.ItemDisplayContext;
 import net.minecraft.client.renderer.texture.OverlayTexture;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.ItemStack;
@@ -69,10 +72,10 @@ public class StorageRenderer implements BlockEntityRenderer<StorageTile> {
         matrixStack.translate(x + 0.5F, y + 0.75F, z + 0.5F);
 
         if (facing == Direction.UP) {
-            matrixStack.mulPose(Vector3f.XP.rotationDegrees(-90.0F));
+            matrixStack.mulPose(Axis.XP.rotationDegrees(-90.0F));
             matrixStack.translate(0.0F, 0.0F, -0.68F);
         } else if (facing == Direction.DOWN) {
-            matrixStack.mulPose(Vector3f.XP.rotationDegrees(90.0F));
+            matrixStack.mulPose(Axis.XP.rotationDegrees(90.0F));
             matrixStack.translate(0.0F, 0.0F, -.184F);
         } else {
             float rotY = 0.0F;
@@ -83,7 +86,7 @@ public class StorageRenderer implements BlockEntityRenderer<StorageTile> {
             } else if (facing == Direction.EAST) {
                 rotY = -90.0F;
             }
-            matrixStack.mulPose(Vector3f.YP.rotationDegrees(-rotY));
+            matrixStack.mulPose(Axis.YP.rotationDegrees(-rotY));
             matrixStack.translate(0.0F, -0.2500F, -0.4375F);
         }
 
@@ -113,12 +116,12 @@ public class StorageRenderer implements BlockEntityRenderer<StorageTile> {
 //        GlStateManager.disableLighting();
 
         for (int i = 0; i < 4; i++) {
-            RenderHelper.fill(matrixStack, buffer, xx[i] - 4, yy[i] - 4, xx[i] + 22, yy[i] - 3, 0xff222222, 0xf000f0);
-            RenderHelper.fill(matrixStack, buffer, xx[i] - 4, yy[i] + 21, xx[i] + 22, yy[i] + 22, 0xff222222, 0xf000f0);
-            RenderHelper.fill(matrixStack, buffer, xx[i] - 4, yy[i] - 4, xx[i] - 3, yy[i] + 22, 0xff222222, 0xf000f0);
-            RenderHelper.fill(matrixStack, buffer, xx[i] + 21, yy[i] - 4, xx[i] + 22, yy[i] + 22, 0xff222222, 0xf000f0);
+            fill(matrixStack, buffer, xx[i] - 4, yy[i] - 4, xx[i] + 22, yy[i] - 3, 0xff222222, 0xf000f0);
+            fill(matrixStack, buffer, xx[i] - 4, yy[i] + 21, xx[i] + 22, yy[i] + 22, 0xff222222, 0xf000f0);
+            fill(matrixStack, buffer, xx[i] - 4, yy[i] - 4, xx[i] - 3, yy[i] + 22, 0xff222222, 0xf000f0);
+            fill(matrixStack, buffer, xx[i] + 21, yy[i] - 4, xx[i] + 22, yy[i] + 22, 0xff222222, 0xf000f0);
             if (index == i) {
-                RenderHelper.fill(matrixStack, buffer, xx[i] - 3, yy[i] - 3, xx[i] + 21, yy[i] + 21, index == i ? 0x55666666 : 0x55000000, 0xf000f0);
+                fill(matrixStack, buffer, xx[i] - 3, yy[i] - 3, xx[i] + 21, yy[i] + 21, index == i ? 0x55666666 : 0x55000000, 0xf000f0);
             }
         }
 
@@ -147,7 +150,7 @@ public class StorageRenderer implements BlockEntityRenderer<StorageTile> {
                 matrixStack.translate(.5, .5, 0);
                 BakedModel ibakedmodel = itemRender.getModel(stack, Minecraft.getInstance().level, null, 1);
                 int lightmapValue = 0xf000f0;
-                itemRender.render(stack, ItemTransforms.TransformType.GUI, false, matrixStack, buffer, lightmapValue, OverlayTexture.NO_OVERLAY, ibakedmodel);
+                itemRender.render(stack, ItemDisplayContext.GUI, false, matrixStack, buffer, lightmapValue, OverlayTexture.NO_OVERLAY, ibakedmodel);
                 matrixStack.popPose();
             }
         }
@@ -182,7 +185,7 @@ public class StorageRenderer implements BlockEntityRenderer<StorageTile> {
                 } else {
                     s1 = String.valueOf(size / 1000000000) + "g";
                 }
-                fontRenderer.drawInBatch(s1, x + 19 - 2 - fontRenderer.width(s1), currenty + 6 + 3, 16777215, false, matrixStack.last().pose(), buffer, false, 0, lightmapValue);
+                fontRenderer.drawInBatch(s1, x + 19 - 2 - fontRenderer.width(s1), currenty + 6 + 3, 16777215, false, matrixStack.last().pose(), buffer, Font.DisplayMode.NORMAL, 0, lightmapValue);
             }
 
             if (itm.getItem().isBarVisible(itm)) {
@@ -235,7 +238,7 @@ public class StorageRenderer implements BlockEntityRenderer<StorageTile> {
                 GlStateManager._enableDepthTest();
 //                GlStateManager.disableDepth();
                 GlStateManager._disableBlend();
-                fr.draw(matrixStack, s, (xPosition + 19 - 2 - fr.width(s)), (yPosition + 6 + 3), 16777215);
+                fr.drawInBatch(s, xPosition + 17 - fr.width(s), yPosition + 9, 16777215, false, matrixStack.last().pose(), Minecraft.getInstance().renderBuffers().bufferSource(), Font.DisplayMode.NORMAL, 0, 0xf000f0);
 //                fr.drawStringWithShadow(s, (float) (xPosition + 19 - 2 - fr.getStringWidth(s)), (float) (yPosition + 6 + 3), 16777215);
                 // @todo 1.18 GlStateManager._enableLighting();
                 GlStateManager._enableDepthTest();
@@ -248,7 +251,6 @@ public class StorageRenderer implements BlockEntityRenderer<StorageTile> {
                 // @todo 1.18 GlStateManager._disableLighting();
                 GlStateManager._enableDepthTest();
 //                GlStateManager.disableDepth();
-                GlStateManager._disableTexture();
                 // @todo 1.18 GlStateManager._disableAlphaTest();
                 GlStateManager._disableBlend();
                 Tesselator tessellator = Tesselator.getInstance();
@@ -260,7 +262,6 @@ public class StorageRenderer implements BlockEntityRenderer<StorageTile> {
                 draw(bufferbuilder, xPosition + 2, yPosition + 13, health, 1, j >> 16 & 255, j >> 8 & 255, j & 255, 255);
                 GlStateManager._enableBlend();
                 // @todo 1.18 GlStateManager._enableAlphaTest();
-                GlStateManager._enableTexture();
                 // @todo 1.18 GlStateManager._enableLighting();
                 GlStateManager._enableDepthTest();
             }
@@ -272,11 +273,9 @@ public class StorageRenderer implements BlockEntityRenderer<StorageTile> {
                 // @todo 1.18 GlStateManager._disableLighting();
                 GlStateManager._enableDepthTest();
 //                GlStateManager.disableDepth();
-                GlStateManager._disableTexture();
                 Tesselator tessellator1 = Tesselator.getInstance();
                 BufferBuilder bufferbuilder1 = tessellator1.getBuilder();
                 draw(bufferbuilder1, xPosition, yPosition + Mth.floor(16.0F * (1.0F - f3)), 16, Mth.ceil(16.0F * f3), 255, 255, 255, 127);
-                GlStateManager._enableTexture();
                 // @todo 1.18 GlStateManager._enableLighting();
                 GlStateManager._enableDepthTest();
             }
@@ -295,4 +294,12 @@ public class StorageRenderer implements BlockEntityRenderer<StorageTile> {
     public static void register() {
         BlockEntityRenderers.register(Registration.STORAGE_TILE.get(), StorageRenderer::new);
     }
+    private static void fill(PoseStack pose, MultiBufferSource buffer, float x0, float y0, float x1, float y1, int color, int light) {
+        VertexConsumer vertices = buffer.getBuffer(RenderType.gui());
+        vertices.vertex(pose.last().pose(), x0, y1, 0).color(color).endVertex();
+        vertices.vertex(pose.last().pose(), x1, y1, 0).color(color).endVertex();
+        vertices.vertex(pose.last().pose(), x1, y0, 0).color(color).endVertex();
+        vertices.vertex(pose.last().pose(), x0, y0, 0).color(color).endVertex();
+    }
+
 }

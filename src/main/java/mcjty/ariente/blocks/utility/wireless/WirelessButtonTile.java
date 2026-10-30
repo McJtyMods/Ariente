@@ -112,7 +112,7 @@ public class WirelessButtonTile extends SignalChannelTileEntity {
         } else {
             BlockEntity te = world.getBlockEntity(pos);
             if (te instanceof WirelessButtonTile) {
-                world.playSound(null, pos, ModSounds.buzzOk, SoundSource.BLOCKS, 1.0f, 1.0f);
+                world.playSound(null, pos, ModSounds.buzzOk.get(), SoundSource.BLOCKS, 1.0f, 1.0f);
                 ((WirelessButtonTile) te).toggleLock();
             }
         }

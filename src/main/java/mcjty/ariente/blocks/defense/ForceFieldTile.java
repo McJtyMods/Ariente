@@ -270,7 +270,7 @@ public class ForceFieldTile extends TickingTileEntity implements IGuiTile, ISoun
                             if (life <= 0) {
                                 panelDestroyTimeout[info.getIndex()] = 100;
                                 panelInfo[info.getIndex()] = null;
-                                level.explode(entity, entity.getX(), entity.getY(), entity.getZ(), 2.0f, false, Explosion.BlockInteraction.DESTROY);
+                                level.explode(entity, entity.getX(), entity.getY(), entity.getZ(), 2.0f, false, Level.ExplosionInteraction.BLOCK);
                             } else {
                                 info.setLife(life);
                                 System.out.println("life = " + life + " (index " + info.getIndex() + ")");
@@ -297,7 +297,7 @@ public class ForceFieldTile extends TickingTileEntity implements IGuiTile, ISoun
                 for (PanelInfo info : getPanelInfo()) {
                     if (info != null && info.getLife() > 0) {
                         if (info.testCollisionEntity(entity, getScaleDouble())) {
-                            entity.hurt(DamageSource.GENERIC, (float) (double) DamageConfiguration.FORCEFIELD_DAMAGE.get());
+                            entity.hurt(entity.damageSources().generic(), (float) (double) DamageConfiguration.FORCEFIELD_DAMAGE.get());
                             ((LivingEntity)entity).knockback(1.0f, worldPosition.getX() - entity.getX(), worldPosition.getZ() - entity.getZ());
                         }
                     }
@@ -325,8 +325,9 @@ public class ForceFieldTile extends TickingTileEntity implements IGuiTile, ISoun
 
     @Override
     public void setRemoved() {
-        disableShield();
-        if (level.isClientSide) {
+        // Removal also runs during chunk unload; sending updates would reload the chunk.
+        Arrays.fill(panelInfo, null);
+        if (level != null && level.isClientSide) {
             ForceFieldRenderer.unregister(worldPosition);
         }
         super.setRemoved();
@@ -454,21 +455,21 @@ public class ForceFieldTile extends TickingTileEntity implements IGuiTile, ISoun
     @Override
     public void load(CompoundTag tagCompound) {
         super.load(tagCompound);
+        CompoundTag info = tagCompound.getCompound("Info");
+        if (info.contains("scale")) {
+            setScale(info.getInt("scale"));
+        }
         for (int i = 0 ; i < panelInfo.length ; i++) {
             panelInfo[i] = null;
         }
         int[] lifeIdx = tagCompound.getIntArray("life");
-        for (int i = 0 ; i < lifeIdx.length ; i++) {
+        for (int i = 0 ; i < Math.min(lifeIdx.length, panelInfo.length) ; i++) {
             if (lifeIdx[i] == 0) {
                 panelInfo[i] = null;
             } else {
                 createPanelInfo(i);
                 panelInfo[i].setLife(lifeIdx[i]);
             }
-        }
-        CompoundTag info = tagCompound.getCompound("Info");
-        if (info.contains("scale")) {
-            scale = info.getInt("scale");
         }
     }
 
@@ -487,6 +488,16 @@ public class ForceFieldTile extends TickingTileEntity implements IGuiTile, ISoun
 
         tagCompound.putIntArray("life", lifeIdx);
         getOrCreateInfo(tagCompound).putInt("scale", scale);
+    }
+
+    @Override
+    public void saveClientDataToNBT(CompoundTag tagCompound) {
+        saveAdditional(tagCompound);
+    }
+
+    @Override
+    public void loadClientDataFromNBT(CompoundTag tagCompound) {
+        load(tagCompound);
     }
 
     @Override

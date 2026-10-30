@@ -26,62 +26,15 @@ public class ClientForgeEventHandlers {
     public static final float STEP_HEIGHT = 1.902f;
 
     @SubscribeEvent
-    public void colorHandlerEventBlock(ColorHandlerEvent.Block event) {
-        // @todo 1.14
-//        ModBlocks.initColorHandlers(event.getBlockColors());
-    }
-
-    @SubscribeEvent
-    public void onModelBake(ModelBakeEvent event) {
-        // @todo 1.14
-//        event.getModelRegistry().putObject(EMPTY_BLUEPRINT_MODEL, new BuiltInModel(ItemCameraTransforms.DEFAULT, ItemOverrideList.NONE));
-    }
-
-    @SubscribeEvent
-    public void onTextureStitchEvent(TextureStitchEvent.Pre event) {
-        // @todo 1.14
-//        event.getMap().registerSprite(FluxShipRender.TEXTURE);
-    }
-
-    @SubscribeEvent
-    public void onDrawBlockHighlight(DrawSelectionEvent event) {
-        if (event.getTarget().getType() == HitResult.Type.BLOCK && event.getTarget() instanceof BlockHitResult) {
-            BlockPos pos = ((BlockHitResult) event.getTarget()).getBlockPos();
-            Player player = Minecraft.getInstance().player;
-            BlockState state = player.getCommandSenderWorld().getBlockState(pos);
-            if (state.getBlock() == Registration.RAMP.get()) {
-                drawSelectionBox(state, player, pos, event.getPartialTicks());
-                event.setCanceled(true);
-            }
+    public void onRenderWorldEvent(RenderLevelStageEvent event) {
+        if (event.getStage() == RenderLevelStageEvent.Stage.AFTER_TRANSLUCENT_BLOCKS) {
+            ForceFieldRenderer.renderForceFields(event.getPoseStack(), event.getPartialTick());
         }
-    }
-
-    private static void drawSelectionBox(BlockState state, Player player, BlockPos pos, float partialTicks) {
-        GlStateManager._enableBlend();
-        GlStateManager._blendFuncSeparate(GlStateManager.SourceFactor.SRC_ALPHA.value, GlStateManager.DestFactor.ONE_MINUS_SRC_ALPHA.value, GlStateManager.SourceFactor.ONE.value, GlStateManager.DestFactor.ZERO.value);
-        // @todo 1.18 GlStateManager._lineWidth(2.0F);
-        GlStateManager._disableTexture();
-        GlStateManager._depthMask(false);
-
-        double d3 = player.xOld + (player.getX() - player.xOld) * partialTicks;
-        double d4 = player.yOld + (player.getY() - player.yOld) * partialTicks;
-        double d5 = player.zOld + (player.getZ() - player.zOld) * partialTicks;
-        // @todo 1.14
-//        ModBlocks.rampBlock.handleAABB(state, aabb -> RenderGlobal.drawSelectionBoundingBox(aabb.offset(pos).grow(0.002D).offset(-d3, -d4, -d5), 0.0F, 0.0F, 0.0F, 0.4F));
-
-        GlStateManager._depthMask(true);
-        GlStateManager._enableTexture();
-        GlStateManager._disableBlend();
-    }
-
-    @SubscribeEvent
-    public void onRenderWorldEvent(RenderLevelLastEvent event) {
-        ForceFieldRenderer.renderForceFields(event.getPartialTick());
     }
 
     @SubscribeEvent
     public void onEntityMount(EntityMountEvent event) {
-        if (event.isMounting() && event.getWorldObj().isClientSide && event.getEntityBeingMounted() instanceof FluxLevitatorEntity) {
+        if (event.isMounting() && event.getLevel().isClientSide && event.getEntityBeingMounted() instanceof FluxLevitatorEntity) {
             FluxLevitatorEntity levitator = (FluxLevitatorEntity) event.getEntityBeingMounted();
             if (event.getEntityMounting() instanceof Player) {
                 FluxLevitatorSounds.playMovingSoundClientInside((Player) event.getEntityMounting(), levitator);
@@ -159,11 +112,11 @@ public class ClientForgeEventHandlers {
         motionX += vec3d.x;
         motionZ += vec3d.z;
         Vec3 v = new Vec3(motionX, motionY, motionZ);
-        double max = (player.isOnGround() || !hasFlight) ?
+        double max = (player.onGround() || !hasFlight) ?
                 powersuitMaxForwardGroundSpeed :
                 powersuitMaxForwardFlySpeed;
 
-        if (player.isOnGround() && !player.isSprinting()) {
+        if (player.onGround() && !player.isSprinting()) {
             max /= 2;
         }
 

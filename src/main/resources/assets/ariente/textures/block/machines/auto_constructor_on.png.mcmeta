@@ -1,5 +1,8 @@
 {
-    "animation": {
-      "frametime": 3
-    }
+  "animation": {
+    "frametime": 3
+  },
+  "ariente": {
+    "glow_texture": "ariente:block/machines/auto_constructor_on_glow"
+  }
 }

@@ -3,10 +3,10 @@
     "lower=false,upper=false": {
       "model": "ariente:block/machines/negarite_tank_both"
     },
-    "lower=true,upper=false": {
+    "lower=false,upper=true": {
       "model": "ariente:block/machines/negarite_tank_bottom"
     },
-    "lower=false,upper=true": {
+    "lower=true,upper=false": {
       "model": "ariente:block/machines/negarite_tank_top"
     },
     "lower=true,upper=true": {

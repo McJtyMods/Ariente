@@ -1,165 +1,166 @@
 {
   "textures": {
-    "all": "ariente:block/marble/blackmarble"
+    "all": "ariente:block/marble/blackmarble",
+    "particle": "#all"
   },
   "elements": [
     {
       "from": [
         0,
+        0.0,
+        0.0
+      ],
+      "to": [
+        16,
+        3.2,
+        3.2
+      ],
+      "faces": {
+        "down": {
+          "texture": "#all"
+        },
+        "up": {
+          "texture": "#all"
+        },
+        "north": {
+          "texture": "#all"
+        },
+        "south": {
+          "texture": "#all"
+        },
+        "west": {
+          "texture": "#all"
+        },
+        "east": {
+          "texture": "#all"
+        }
+      }
+    },
+    {
+      "from": [
         0,
-        0
+        3.2,
+        3.2
       ],
       "to": [
-        0.125,
-        0.125,
-        16
+        16,
+        6.4,
+        6.4
       ],
       "faces": {
         "down": {
-          "texture": "minecraft:all"
+          "texture": "#all"
         },
         "up": {
-          "texture": "minecraft:all"
+          "texture": "#all"
         },
         "north": {
-          "texture": "minecraft:all"
+          "texture": "#all"
         },
         "south": {
-          "texture": "minecraft:all"
+          "texture": "#all"
         },
         "west": {
-          "texture": "minecraft:all"
+          "texture": "#all"
         },
         "east": {
-          "texture": "minecraft:all"
+          "texture": "#all"
         }
       }
     },
     {
       "from": [
-        0.125,
-        0.125,
-        0
+        0,
+        6.4,
+        6.4
       ],
       "to": [
-        0.25,
-        0.25,
-        16
+        16,
+        9.600000000000001,
+        9.600000000000001
       ],
       "faces": {
         "down": {
-          "texture": "minecraft:all"
+          "texture": "#all"
         },
         "up": {
-          "texture": "minecraft:all"
+          "texture": "#all"
         },
         "north": {
-          "texture": "minecraft:all"
+          "texture": "#all"
         },
         "south": {
-          "texture": "minecraft:all"
+          "texture": "#all"
         },
         "west": {
-          "texture": "minecraft:all"
+          "texture": "#all"
         },
         "east": {
-          "texture": "minecraft:all"
+          "texture": "#all"
         }
       }
     },
     {
       "from": [
-        0.25,
-        0.25,
-        0
+        0,
+        9.600000000000001,
+        9.600000000000001
       ],
       "to": [
-        0.375,
-        0.375,
-        16
+        16,
+        12.8,
+        12.8
       ],
       "faces": {
         "down": {
-          "texture": "minecraft:all"
+          "texture": "#all"
         },
         "up": {
-          "texture": "minecraft:all"
+          "texture": "#all"
         },
         "north": {
-          "texture": "minecraft:all"
+          "texture": "#all"
         },
         "south": {
-          "texture": "minecraft:all"
+          "texture": "#all"
         },
         "west": {
-          "texture": "minecraft:all"
+          "texture": "#all"
         },
         "east": {
-          "texture": "minecraft:all"
+          "texture": "#all"
         }
       }
     },
     {
       "from": [
-        0.375,
-        0.375,
-        0
+        0,
+        12.8,
+        12.8
       ],
       "to": [
-        0.5,
-        0.5,
-        16
+        16,
+        16.0,
+        16.0
       ],
       "faces": {
         "down": {
-          "texture": "minecraft:all"
+          "texture": "#all"
         },
         "up": {
-          "texture": "minecraft:all"
+          "texture": "#all"
         },
         "north": {
-          "texture": "minecraft:all"
+          "texture": "#all"
         },
         "south": {
-          "texture": "minecraft:all"
+          "texture": "#all"
         },
         "west": {
-          "texture": "minecraft:all"
+          "texture": "#all"
         },
         "east": {
-          "texture": "minecraft:all"
-        }
-      }
-    },
-    {
-      "from": [
-        0.5,
-        0.5,
-        0
-      ],
-      "to": [
-        0.625,
-        0.625,
-        16
-      ],
-      "faces": {
-        "down": {
-          "texture": "minecraft:all"
-        },
-        "up": {
-          "texture": "minecraft:all"
-        },
-        "north": {
-          "texture": "minecraft:all"
-        },
-        "south": {
-          "texture": "minecraft:all"
-        },
-        "west": {
-          "texture": "minecraft:all"
-        },
-        "east": {
-          "texture": "minecraft:all"
+          "texture": "#all"
         }
       }
     }

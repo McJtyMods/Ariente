@@ -1,5 +1,6 @@
 package mcjty.ariente.blocks.utility.autofield;
 
+import net.minecraft.client.Minecraft;
 import mcjty.lib.McJtyLib;
 import net.minecraft.core.BlockPos;
 import net.minecraft.network.FriendlyByteBuf;
@@ -36,7 +37,7 @@ public class PacketAutoFieldReturnRenderInfo {
     public void handle(Supplier<NetworkEvent.Context> supplier) {
         NetworkEvent.Context ctx = supplier.get();
         ctx.enqueueWork(() -> {
-            BlockEntity te = McJtyLib.proxy.getClientWorld().getBlockEntity(pos);
+            BlockEntity te = Minecraft.getInstance().level.getBlockEntity(pos);
             if (te instanceof AutoFieldTile) {
                 ((AutoFieldTile) te).clientRenderInfoReceived(renderInfo);
             }

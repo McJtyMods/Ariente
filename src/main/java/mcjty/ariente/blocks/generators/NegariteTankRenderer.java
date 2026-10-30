@@ -3,16 +3,19 @@ package mcjty.ariente.blocks.generators;
 import com.mojang.blaze3d.vertex.PoseStack;
 import mcjty.ariente.Ariente;
 import mcjty.ariente.setup.Registration;
+import net.minecraft.client.Minecraft;
 import net.minecraft.client.renderer.MultiBufferSource;
 import net.minecraft.client.renderer.blockentity.BlockEntityRenderer;
 import net.minecraft.client.renderer.blockentity.BlockEntityRendererProvider;
 import net.minecraft.client.renderer.blockentity.BlockEntityRenderers;
 import net.minecraft.resources.ResourceLocation;
+import net.minecraft.world.phys.Vec3;
 
 public class NegariteTankRenderer implements BlockEntityRenderer<NegariteTankTile> {
 
     protected BlockEntityRendererProvider.Context context;
     public static final ResourceLocation NEGARITE_BEAM = new ResourceLocation(Ariente.MODID, "block/machines/negarite_beam");
+    public static final ResourceLocation NEGARITE_WINDOW = new ResourceLocation(Ariente.MODID, "block/machines/negarite_tank_window");
 
     public NegariteTankRenderer(BlockEntityRendererProvider.Context pContext) {
         context = pContext;
@@ -20,10 +23,9 @@ public class NegariteTankRenderer implements BlockEntityRenderer<NegariteTankTil
 
     @Override
     public void render(NegariteTankTile te, float partialTicks, PoseStack matrixStack, MultiBufferSource buffer, int combinedLightIn, int combinedOverlayIn) {
-        if (te.isWorking()) {
-            TankRendererTools.renderBeam(matrixStack, buffer, NEGARITE_BEAM);
-        }
-
+        Vec3 cameraOffset = Minecraft.getInstance().gameRenderer.getMainCamera().getPosition()
+                .subtract(Vec3.atCenterOf(te.getBlockPos()));
+        TankRendererTools.renderTank(matrixStack, buffer, NEGARITE_BEAM, NEGARITE_WINDOW, te.isWorking(), te.getLevel().getGameTime(), cameraOffset, combinedLightIn);
     }
 
     public static void register() {

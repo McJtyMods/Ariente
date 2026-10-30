@@ -1,14 +1,17 @@
 package mcjty.ariente.datagen;
 
+import mcjty.lib.varia.Tools;
+import java.util.concurrent.CompletableFuture;
+import net.minecraft.core.HolderLookup;
 import mcjty.ariente.Ariente;
 import mcjty.ariente.blocks.decorative.DecorativeBlockModule;
 import mcjty.ariente.setup.Registration;
-import net.minecraft.data.tags.BlockTagsProvider;
-import net.minecraft.data.DataGenerator;
+import net.minecraftforge.common.data.BlockTagsProvider;
+import net.minecraft.data.PackOutput;
 import net.minecraft.data.tags.ItemTagsProvider;
 import net.minecraft.data.tags.TagsProvider;
 import net.minecraft.world.item.Item;
-import net.minecraft.tags.Tag;
+import net.minecraft.tags.TagKey;
 import net.minecraftforge.common.Tags;
 import net.minecraftforge.registries.RegistryObject;
 import net.minecraftforge.common.data.ExistingFileHelper;
@@ -17,12 +20,12 @@ import java.util.Collection;
 
 public class ItemTags extends ItemTagsProvider {
 
-    public ItemTags(DataGenerator generator, BlockTagsProvider blockTags, ExistingFileHelper helper) {
-        super(generator, blockTags, Ariente.MODID, helper);
+    public ItemTags(PackOutput generator, CompletableFuture<HolderLookup.Provider> lookup, BlockTagsProvider blockTags, ExistingFileHelper helper) {
+        super(generator, lookup, blockTags.contentsGetter(), Ariente.MODID, helper);
     }
 
     @Override
-    protected void addTags() {
+    protected void addTags(HolderLookup.Provider provider) {
         addTag(Tags.Items.ORES,
                 Registration.ORE_POSIRITE_ITEM.get(),
                 Registration.ORE_NEGARITE_ITEM.get(),
@@ -60,14 +63,14 @@ public class ItemTags extends ItemTagsProvider {
         addTag(Registration.TAG_MARBLE, DecorativeBlockModule.MARBLE_ITEMS.values());
     }
 
-    private void addTag(Tag.Named<Item> tag, Collection<RegistryObject<Item>> items) {
-        TagsProvider.TagAppender<Item> builder = tag(tag);
+    private void addTag(TagKey<Item> tag, Collection<RegistryObject<Item>> items) {
+        var builder = tag(tag);
         for (RegistryObject<Item> item : items) {
             builder.add(item.get());
         }
     }
 
-    private void addTag(Tag.Named<Item> tag, Item... items) {
+    private void addTag(TagKey<Item> tag, Item... items) {
         tag(tag)
                 .add(items);
     }

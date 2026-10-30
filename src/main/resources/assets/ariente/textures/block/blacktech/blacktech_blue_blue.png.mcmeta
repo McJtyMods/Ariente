@@ -1,12 +1,6 @@
 {
-    "ctm":{
-        "ctm_version": 1,
-        "type": "ctm",
-        "extra": {
-            "connect_inside": true
-        },
-        "textures": [
-            "ariente:blocks/blacktech/blacktech_blue_blue-ctm"
-        ]
-    }
+  "ariente": {
+    "connected_texture": "ariente:block/blacktech/blacktech_blue_blue-ctm",
+    "glow_texture": "ariente:block/blacktech/blacktech_lines_glow"
+  }
 }

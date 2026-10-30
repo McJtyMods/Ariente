@@ -1,5 +1,6 @@
 package mcjty.ariente.entities;
 
+import net.minecraft.network.protocol.game.ClientGamePacketListener;
 import mcjty.ariente.setup.Registration;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.particles.ParticleTypes;
@@ -8,13 +9,14 @@ import net.minecraft.util.Mth;
 import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.EntityType;
 import net.minecraft.world.entity.item.ItemEntity;
+import net.minecraft.world.entity.projectile.ItemSupplier;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.sounds.SoundEvents;
 import net.minecraft.world.level.Level;
 import net.minecraftforge.network.NetworkHooks;
 
-public class EntityArientePearl extends Entity {
+public class EntityArientePearl extends Entity implements ItemSupplier {
 
     private double targetX;
     private double targetY;
@@ -26,7 +28,7 @@ public class EntityArientePearl extends Entity {
         super(entityTypeIn, worldIn);
     }
 
-    // @todo 1.18 @Override
+    @Override
     public ItemStack getItem() {
         return new ItemStack(Registration.ARIENTE_PEARL.get());
     }
@@ -44,7 +46,7 @@ public class EntityArientePearl extends Entity {
     }
 
     @Override
-    public Packet<?> getAddEntityPacket() {
+    public Packet<ClientGamePacketListener> getAddEntityPacket() {
         return NetworkHooks.getEntitySpawningPacket(this);
 
     }
@@ -128,7 +130,7 @@ public class EntityArientePearl extends Entity {
         this.setXRot(this.xRotO + (this.getXRot() - this.xRotO) * 0.2F);
         this.setYRot(this.yRotO + (this.getYRot() - this.yRotO) * 0.2F);
 
-        if (!this.level.isClientSide) {
+        if (!this.level().isClientSide) {
             double d0 = this.targetX - this.getX();
             double d1 = this.targetZ - this.getZ();
             float f1 = (float) Math.sqrt(d0 * d0 + d1 * d1);
@@ -155,24 +157,24 @@ public class EntityArientePearl extends Entity {
 
         if (this.isInWater()) {
             for (int i = 0; i < 4; ++i) {
-                this.level.addParticle(ParticleTypes.DRIPPING_WATER, this.getX() - motionX * 0.25D, this.getY() - motionY * 0.25D, this.getZ() - motionZ * 0.25D, motionX, motionY, motionZ);
+                this.level().addParticle(ParticleTypes.DRIPPING_WATER, this.getX() - motionX * 0.25D, this.getY() - motionY * 0.25D, this.getZ() - motionZ * 0.25D, motionX, motionY, motionZ);
             }
         } else {
-            this.level.addParticle(ParticleTypes.PORTAL, this.getX() - motionX * 0.25D + this.random.nextDouble() * 0.6D - 0.3D, this.getY() - motionY * 0.25D - 0.5D, this.getZ() - motionZ * 0.25D + this.random.nextDouble() * 0.6D - 0.3D, motionX, motionY, motionZ);
+            this.level().addParticle(ParticleTypes.PORTAL, this.getX() - motionX * 0.25D + this.random.nextDouble() * 0.6D - 0.3D, this.getY() - motionY * 0.25D - 0.5D, this.getZ() - motionZ * 0.25D + this.random.nextDouble() * 0.6D - 0.3D, motionX, motionY, motionZ);
         }
 
-        if (!this.level.isClientSide) {
+        if (!this.level().isClientSide) {
             this.setPos(this.getX(), this.getY(), this.getZ());
             ++this.despawnTimer;
 
-            if (this.despawnTimer > 80 && !this.level.isClientSide) {
+            if (this.despawnTimer > 80 && !this.level().isClientSide) {
                 this.playSound(SoundEvents.ENDER_EYE_DEATH, 1.0F, 1.0F);
                 this.remove(RemovalReason.DISCARDED);
 
                 if (this.shatterOrDrop) {
-                    this.level.addFreshEntity(new ItemEntity(this.level, this.getX(), this.getY(), this.getZ(), new ItemStack(Registration.ARIENTE_PEARL.get())));
+                    this.level().addFreshEntity(new ItemEntity(this.level(), this.getX(), this.getY(), this.getZ(), new ItemStack(Registration.ARIENTE_PEARL.get())));
                 } else {
-                    this.level.levelEvent(2003, new BlockPos(this.blockPosition()), 0);
+                    this.level().levelEvent(2003, new BlockPos(this.blockPosition()), 0);
                 }
             }
         }
@@ -186,7 +188,6 @@ public class EntityArientePearl extends Entity {
     public void readAdditionalSaveData(CompoundTag compound) {
     }
 
-    @Override
     public float getBrightness() {
         return 1.0F;
     }

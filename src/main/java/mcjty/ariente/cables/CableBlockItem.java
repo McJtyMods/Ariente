@@ -38,10 +38,4 @@ public class CableBlockItem extends BlockItem {
         return super.getOrCreateDescriptionId();
     }
 
-    @Override
-    public void fillItemCategory(CreativeModeTab group, NonNullList<ItemStack> items) {
-        if (Ariente.setup.getTab().equals(group)) {
-            items.add(new ItemStack(this));
-        }
-    }
 }

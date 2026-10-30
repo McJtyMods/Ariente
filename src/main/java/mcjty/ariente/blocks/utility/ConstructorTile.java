@@ -1,5 +1,6 @@
 package mcjty.ariente.blocks.utility;
 
+import mcjty.lib.varia.SafeClientTools;
 import mcjty.ariente.Ariente;
 import mcjty.ariente.api.ICityAI;
 import mcjty.ariente.api.ICityEquipment;
@@ -101,7 +102,7 @@ public class ConstructorTile extends GenericTileEntity implements IGuiTile, ICit
         int needed = ingredient.getCount();
         for (int i = 0; i < player.getInventory().getContainerSize(); i++) {
             ItemStack stack = player.getInventory().getItem(i);
-            if (ItemStack.isSame(ingredient, stack)) {
+            if (ItemStack.isSameItem(ingredient, stack)) {
                 needed -= stack.getCount();
                 if (needed <= 0) {
                     return true;
@@ -119,7 +120,7 @@ public class ConstructorTile extends GenericTileEntity implements IGuiTile, ICit
         int needed = ingredient.getCount();
         for (int i = 0; i < player.getInventory().getContainerSize(); i++) {
             ItemStack stack = player.getInventory().getItem(i);
-            if (ItemStack.isSame(ingredient, stack)) {
+            if (ItemStack.isSameItem(ingredient, stack)) {
                 if (needed <= stack.getCount()) {
                     stack.shrink(needed);
                     return;
@@ -227,7 +228,7 @@ public class ConstructorTile extends GenericTileEntity implements IGuiTile, ICit
                     boolean ok = true;
                     // Check if we have enough
                     for (ItemStack ingredient : recipe.getIngredientList()) {
-                        if (!hasIngredient(McJtyLib.proxy.getClientPlayer(), ingredient)) {
+                        if (!hasIngredient(SafeClientTools.getClientPlayer(), ingredient)) {
                             tooltip.add(ChatFormatting.RED + "Missing: " + ChatFormatting.WHITE + ingredient.getHoverName());
                             ok = false;
                         }
@@ -241,7 +242,7 @@ public class ConstructorTile extends GenericTileEntity implements IGuiTile, ICit
     }
 
     private IImage getCraftableOverlay(IGuiComponentRegistry registry, ItemStack stack) {
-        if (canCraft(McJtyLib.proxy.getClientPlayer(), stack)) {
+        if (canCraft(SafeClientTools.getClientPlayer(), stack)) {
             return null;
         } else {
             return registry.image(Icons.RED_CROSS);
@@ -258,7 +259,7 @@ public class ConstructorTile extends GenericTileEntity implements IGuiTile, ICit
                 ConstructorRecipe recipe = BlueprintRecipeRegistry.findRecipe(destination);
                 if (recipe != null) {
                     for (ItemStack ingredient : recipe.getIngredientList()) {
-                        if (ItemStack.isSame(ingredient, stack)) {
+                        if (ItemStack.isSameItem(ingredient, stack)) {
                             return true;
                         }
                     }

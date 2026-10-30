@@ -1,17 +1,10 @@
 {
-    "animation": {
-      "frametime": 5
-    },
-    "ctm":{
-        "ctm_version": 1,
-        "layer":"CUTOUT",
-        "extra": {
-            "light": 14,
-            "connect_inside": true
-        },
-        "type": "ctm",
-        "textures": [
-            "ariente:blocks/blacktech/blacktech_blue_var1_anim-ctm_glow"
-        ]
-    }
+  "animation": {
+    "frametime": 5
+  },
+  "ariente": {
+    "connected_texture": "ariente:block/blacktech/blacktech_blue_var1_anim-ctm_glow",
+    "light": 14,
+    "layer": "cutout"
+  }
 }

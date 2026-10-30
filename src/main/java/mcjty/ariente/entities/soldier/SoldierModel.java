@@ -1,10 +1,9 @@
 package mcjty.ariente.entities.soldier;
 
 import net.minecraft.client.model.AbstractZombieModel;
-import net.minecraft.client.model.geom.ModelPart;
-
-import java.util.List;
-import java.util.Map;
+import net.minecraft.client.model.HumanoidModel;
+import net.minecraft.client.model.geom.builders.CubeDeformation;
+import net.minecraft.client.model.geom.builders.LayerDefinition;
 
 public class SoldierModel<T extends SoldierEntity> extends AbstractZombieModel<T> {
 
@@ -13,8 +12,8 @@ public class SoldierModel<T extends SoldierEntity> extends AbstractZombieModel<T
     }
 
     protected SoldierModel(float modelSize, float yOffsetIn, int textureWidthIn, int textureHeightIn) {
-        // @todo 1.18 super(modelSize, yOffsetIn, textureWidthIn, textureHeightIn);
-        super(new ModelPart(List.of(), Map.of()));
+        super(LayerDefinition.create(HumanoidModel.createMesh(new CubeDeformation(modelSize), yOffsetIn),
+                textureWidthIn, textureHeightIn).bakeRoot());
     }
 
     @Override

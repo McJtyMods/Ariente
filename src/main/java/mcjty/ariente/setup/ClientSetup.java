@@ -1,5 +1,6 @@
 package mcjty.ariente.setup;
 
+import mcjty.ariente.multipart.MultipartRenderer;
 import mcjty.ariente.Ariente;
 import mcjty.ariente.ClientForgeEventHandlers;
 import mcjty.ariente.bindings.KeyInputHandler;
@@ -30,9 +31,8 @@ import net.minecraft.server.packs.resources.ReloadableResourceManager;
 import net.minecraft.server.packs.resources.ResourceManager;
 import net.minecraft.world.inventory.InventoryMenu;
 import net.minecraftforge.client.event.EntityRenderersEvent;
-import net.minecraftforge.client.event.ModelRegistryEvent;
+import net.minecraftforge.client.event.ModelEvent;
 import net.minecraftforge.client.event.TextureStitchEvent;
-import net.minecraftforge.client.model.ModelLoaderRegistry;
 import net.minecraftforge.common.MinecraftForge;
 import net.minecraftforge.eventbus.api.SubscribeEvent;
 import net.minecraftforge.fml.event.lifecycle.FMLClientSetupEvent;
@@ -58,18 +58,18 @@ public class ClientSetup {
         CableRenderer.register(Registration.NETCABLE_TILE.get());
         CableRenderer.register(Registration.CONNECTOR_TILE.get());
 
-        ItemBlockRenderTypes.setRenderLayer(Registration.NETCABLE.get(), (RenderType) -> true);
         ItemBlockRenderTypes.setRenderLayer(Registration.GLASS_FENCE.get(), RenderType.translucent());
         ItemBlockRenderTypes.setRenderLayer(Registration.BLUE_GLASS_FENCE.get(), RenderType.translucent());
     }
 
-    public static void initModels(ModelRegistryEvent event) {
-        ModelLoaderRegistry.registerLoader(new ResourceLocation(Ariente.MODID, "cableloader"), new CableModelLoader());
+    public static void initModels(ModelEvent.RegisterGeometryLoaders event) {
+        event.register("cableloader", new CableModelLoader());
     }
 
     @SubscribeEvent
     public static void entityRenderers(EntityRenderersEvent.RegisterRenderers event)
     {
+        event.registerBlockEntityRenderer(Registration.TYPE_MULTIPART.get(), MultipartRenderer::new);
         event.registerEntityRenderer(Registration.ENTITY_LASER.get(), new LaserRender.Factory());
         event.registerEntityRenderer(Registration.ENTITY_DRONE.get(), DroneRender.FACTORY);
         event.registerEntityRenderer(Registration.ENTITY_SENTINEL_DRONE.get(), SentinelDroneRender.FACTORY);
@@ -79,19 +79,6 @@ public class ClientSetup {
         event.registerEntityRenderer(Registration.ENTITY_ELEVATOR.get(), new FluxElevatorRender.Factory());
         event.registerEntityRenderer(Registration.ENTITY_FLUX_SHIP.get(), new FluxShipRender.Factory());
         event.registerEntityRenderer(Registration.ENTITY_PEARL.get(), RenderArientePearl.FACTORY);
-    }
-
-    public static void onTextureStitch(TextureStitchEvent.Pre event) {
-        if (!event.getAtlas().location().equals(InventoryMenu.BLOCK_ATLAS)) {
-            return;
-        }
-        event.addSprite(NEGARITE_BEAM);
-        event.addSprite(POSIRITE_BEAM);
-        event.addSprite(ELEVATOR_BEAM);
-        for (int i = 0; i < AutoFieldRenderer.BEAMS.length; i++) {
-            event.addSprite(AutoFieldRenderer.BEAMS[i]);
-        }
-        event.addSprite(WarperRenderer.HALO);
     }
 
     public static void setupSpriteUploader() {

@@ -2,7 +2,7 @@ package mcjty.ariente.blocks.utility;
 
 import com.mojang.blaze3d.vertex.PoseStack;
 import com.mojang.blaze3d.vertex.VertexConsumer;
-import com.mojang.math.Vector3f;
+import net.minecraft.world.phys.Vec3;
 import mcjty.ariente.Ariente;
 import mcjty.ariente.setup.Registration;
 import mcjty.lib.client.CustomRenderTypes;
@@ -15,7 +15,6 @@ import net.minecraft.client.renderer.texture.TextureAtlasSprite;
 import net.minecraft.client.renderer.blockentity.BlockEntityRenderer;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.inventory.InventoryMenu;
-import net.minecraft.world.phys.Vec3;
 
 import java.util.Random;
 
@@ -41,7 +40,7 @@ public class ElevatorRenderer implements BlockEntityRenderer<ElevatorTile> {
         int tey = te.getBlockPos().getY();
         int tez = te.getBlockPos().getZ();
         Vec3 projectedView = Minecraft.getInstance().gameRenderer.getMainCamera().getPosition().add(-tex, -tey, -tez);
-        Vector3f player = new Vector3f((float)projectedView.x, (float)projectedView.y, (float)projectedView.z);
+        Vec3 player = new Vec3((float)projectedView.x, (float)projectedView.y, (float)projectedView.z);
 
         long tt = System.currentTimeMillis() / 100;
 
@@ -59,7 +58,7 @@ public class ElevatorRenderer implements BlockEntityRenderer<ElevatorTile> {
             float xx = randomX[ii];
             float zz = randomZ[ii];
             float yy = - 1.0f + i1 + (randomY[ii] * height) / 8.0f;
-            RenderHelper.drawBeam(matrixStack.last().pose(), builder, sprite, new Vector3f(xx, yy, zz), new Vector3f(xx, yy + 4, zz), player, 0.2f);
+            RenderHelper.drawBeam(matrixStack, builder, sprite, new Vec3(xx, yy, zz), new Vec3(xx, yy + 4, zz), player, 0.2f);
         }
     }
 

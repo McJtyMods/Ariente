@@ -1,12 +1,16 @@
 package mcjty.ariente.blocks.utility.autofield;
 
+import net.minecraft.client.Minecraft;
+import net.minecraft.world.item.ItemDisplayContext;
+import net.minecraft.client.renderer.texture.OverlayTexture;
+import com.mojang.math.Axis;
 import com.mojang.blaze3d.vertex.PoseStack;
 import mcjty.lib.client.RenderHelper;
 import mcjty.lib.multipart.PartSlot;
 import mcjty.lib.spline.CatmullRomSpline;
 import net.minecraft.core.BlockPos;
 import net.minecraft.world.item.ItemStack;
-import com.mojang.math.Quaternion;
+import org.joml.Quaternionf;
 import net.minecraft.world.phys.Vec3;
 
 import java.util.Random;
@@ -63,10 +67,10 @@ public class TransferRender {
         // @todo 1.14 meta transfer.getMeta()
         stack = new ItemStack(transfer.getItem(), 1);
 
-        BlockPos staBlock = path.getSourcePos().getPos().subtract(relative);
-        BlockPos endBlock = path.getDestPos().getPos().subtract(relative);
-        Vec3 sta = new Vec3(staBlock.getX(), staBlock.getY(), staBlock.getZ()).add(getPos(path.getSourcePos().getSlot()));
-        Vec3 end = new Vec3(endBlock.getX(), endBlock.getY(), endBlock.getZ()).add(getPos(path.getDestPos().getSlot()));
+        BlockPos staBlock = path.getSourcePos().pos().subtract(relative);
+        BlockPos endBlock = path.getDestPos().pos().subtract(relative);
+        Vec3 sta = new Vec3(staBlock.getX(), staBlock.getY(), staBlock.getZ()).add(getPos(path.getSourcePos().slot()));
+        Vec3 end = new Vec3(endBlock.getX(), endBlock.getY(), endBlock.getZ()).add(getPos(path.getDestPos().slot()));
         double distance = Math.sqrt(sta.distanceToSqr(end));
         duration = (long) (distance * 600) + 100;
 
@@ -112,9 +116,9 @@ public class TransferRender {
     private void renderStack(PoseStack matrixStack, ItemStack stack, Vec3 pos, double rotation, double size) {
         matrixStack.pushPose();
         matrixStack.translate(pos.x, pos.y, pos.z);
-        matrixStack.mulPose(new Quaternion((float) rotation, 0, 1, 0));
+        matrixStack.mulPose(Axis.YP.rotationDegrees((float) rotation));
         matrixStack.scale((float) size, (float) size, (float) size);
-        RenderHelper.renderStackOnGround(matrixStack, stack, 1.0f);
+        Minecraft.getInstance().getItemRenderer().renderStatic(stack, ItemDisplayContext.GROUND, 0xf000f0, OverlayTexture.NO_OVERLAY, matrixStack, Minecraft.getInstance().renderBuffers().bufferSource(), Minecraft.getInstance().level, 0);
 
         matrixStack.popPose();
     }

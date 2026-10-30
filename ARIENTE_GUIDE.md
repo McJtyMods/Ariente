@@ -1,0 +1,1162 @@
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+# Ariente: gameplay and systems guide
+
+Minecraft **1.20.1 / Forge**, local `1.20` development branch. Reviewed **2026-10-30**.
+
+This is a reference for Ariente and its ArienteWorld companion. It starts from the
+[original wiki](https://mcjty.eu/docs/mods/ariente), but the descriptions, numbers,
+recipes, and limitations below were checked against the current source. The wiki
+describes the original design; this document explains how that design maps to the
+current port.
+
+**Fresh worlds are the target.** This is an unreleased, unfinished port. A feature
+described as implemented has a current code path; that does not imply a complete
+survival playthrough or multiplayer audit. Concrete missing functionality is
+identified alongside the affected feature and collected in [Port gaps](#port-gaps).
+
+## Contents
+
+- [The overall progression](#the-overall-progression)
+- [Controls and holographic interfaces](#controls-and-holographic-interfaces)
+- [Exploring ArienteWorld](#exploring-arienteworld)
+- [The dual power system](#the-dual-power-system)
+- [Blueprints and construction](#blueprints-and-construction)
+- [Storage Cube](#storage-cube)
+- [Automation fields](#automation-fields)
+- [Doors, keys, locks, and wireless signals](#doors-keys-locks-and-wireless-signals)
+- [Forcefield Generator](#forcefield-generator)
+- [Power armor, modules, and sabres](#power-armor-modules-and-sabres)
+- [Transport](#transport)
+- [Building materials and lighting](#building-materials-and-lighting)
+- [Configuration reference](#configuration-reference)
+- [Recipe reference](#recipe-reference)
+- [Troubleshooting](#troubleshooting)
+- [Port gaps](#port-gaps)
+- [Source map](#source-map)
+
+## The overall progression
+
+Ariente combines exploration with technology. Ariente supplies the machines,
+power system, equipment, and construction system. ArienteWorld supplies the alien
+dimension, cities, inhabitants, resources, and most of the intended progression.
+
+The intended route is:
+
+1. Make Ariente Pearls and locate an underground entrance in the Overworld.
+2. Charge its Warper, then enter the Ariente dimension.
+3. Explore, fight, obtain security cards and blueprints, and collect materials.
+4. Use a Constructor beside Blueprint Storage to manufacture technology.
+5. Build a supply of both negarite and posirite flux.
+6. Automate construction and item movement, improve equipment, and tackle larger cities.
+
+**Current progression gap:** ore generation is active, but the Ariente ore blocks
+do not yet have a complete set of resource drops and processing recipes in this
+checkout. Several recipe outputs and equipment hooks also remain unfinished.
+For development, use Creative supplies to test the systems independently rather
+than assuming that every step of this survival route is currently obtainable.
+Playing without ArienteWorld is especially incomplete: the old alternate
+Overworld loot-injection route is disabled.
+
+## Controls and holographic interfaces
+
+Most machines use **HoloGui** rather than a conventional full-screen container.
+
+| Action | Use |
+| --- | --- |
+| Right-click a machine | Open its hologram, where that machine provides one. |
+| Aim at a hologram control and left-click/attack | Press buttons, arrows, and toggles. |
+| Double-click a displayed slot | Perform that panel's slot action: craft, transfer a blueprint, or set/clear a filter. |
+| Hover over controls and items | Read tooltips, recipe requirements, and status. |
+| Help/question-mark control | Open the machine's embedded help, if available. |
+| Single versus double arrows | Usually small versus large adjustments; the increment depends on the machine. |
+
+The hologram is a real world entity. Stand where you can see its front and aim at
+the actual button. Storage Cubes additionally have direct interaction on their
+four front-panel item areas; see [Storage Cube](#storage-cube).
+
+Machines with a redstone-mode control can cycle between ignoring redstone,
+requiring no signal, and requiring a signal. This control enables a machine; it
+does not supply flux. Generators, the Auto Constructor, and Forcefield Generator
+use this mechanism. Check the chosen mode before diagnosing a power problem.
+
+Default equipment bindings are:
+
+| Binding | Default | Purpose |
+| --- | --- | --- |
+| Configure armor | Top-row `0` | Open the armor/Enhanced Energy Sabre configuration hologram. |
+| Module hotkey 1 | Numpad `7` | Toggle modules assigned to group 1. |
+| Module hotkey 2 | Numpad `8` | Toggle modules assigned to group 2. |
+| Module hotkeys 3 and 4 | Unbound | Additional configurable toggle groups. |
+
+Check Minecraft's Controls menu for conflicts or changed bindings. A hotkey can
+toggle several modules across worn armor and the held Enhanced Energy Sabre.
+
+Sources: [key bindings](src/main/java/mcjty/ariente/bindings/KeyBindings.java),
+[armor configuration](src/main/java/mcjty/ariente/items/armor/ArmorGui.java),
+[HoloGui interaction](../ModHoloGui/src/main/java/mcjty/hologui/gui/HoloGuiEntity.java).
+
+## Exploring ArienteWorld
+
+### Pearls and Warpers
+
+An Ariente Pearl has two uses:
+
+- **Use it in the air in the Overworld** to launch a locator toward a nearby
+  underground entrance. The search examines seeded entrance sites within 19
+  chunks in each horizontal direction and checks for an intact Warper. It does
+  not point at an Ariente city. If no entrance is found, it reports that fact.
+- **Right-click a Warper with it** to add one charge, up to the configured limit.
+  The default requirement is **10 pearls**. These are material charges, unrelated
+  to the negarite/posirite cable network.
+
+A successful throw consumes one pearl in Survival. After about 80 ticks of
+flight the locator either drops a pearl or disappears; the current code chooses
+the drop in four of five cases. Bring spare pearls for locating and charging.
+
+The Overworld entrance is a small underground room. By default, a chunk has a
+0.002 chance of being an entrance candidate. These rooms are separate from the
+large cities in the other dimension.
+
+Open the charged Warper's hologram and press **Warp**. Ariente arrival buildings
+contain a return Warper that starts charged. Charge is currently an unlock
+threshold, not a per-trip fuel cost: normal travel does not decrement it.
+
+The return trip first tries the remembered entrance, provided its Warper and
+landing space remain usable. Otherwise it tries a valid Overworld respawn
+position and then world spawn. The Warper is a dimension-travel device, not a
+general menu for selecting arbitrary player-built teleport destinations.
+
+### Terrain, resources, and cities
+
+The dimension has marble terrain, floating terrain, a purple sky, and six biome
+profiles: plains, hills, rough terrain, ocean, forest, and city. Forests contain
+the mod's tree varieties, and the landscape includes custom grass, bushes, and
+flowers. These plants are primarily scenery in the present systems.
+
+The following are **ore placement ranges**, not promises that every block drops
+the corresponding processed material. Heights are inclusive placement-origin
+ranges; veins can extend beyond them.
+
+| Resource | Placement Y range | Attempts per chunk | Main role |
+| --- | --- | --- | --- |
+| Negarite | 6–29 | 5 | Negarite Dust, generator and equipment fuel. |
+| Posirite | 6–29 | 5 | Posirite Dust, generator and equipment fuel. |
+| Lithium | 8–19 | 2 | Advanced electronics and equipment. |
+| Silver | 10–19 | 4 | Common structural ingredient. |
+| Manganese | 20–49 | 3 | Circuits and generator components. |
+| Silicon | 30–59 | 4 | Electronics; the item is displayed as Silicon. |
+| Platinum | 30–79 | 4 | Armor and advanced machines. |
+| Lapis | 10–29 | 4 | Looting-related construction. |
+| Glowstone | 10–29 | 3 | Lighting and night vision. |
+
+White and blue marble deposits use Y=16–69; black marble uses Y=10–39.
+The companion's features generate the nine listed ores instead of providing a
+normal Overworld ore progression. Other mods may add their own features.
+
+There are two different kinds of city layout:
+
+- **Authored complexes** use named plans, equipment, security, and city AI.
+- **Landscape districts** form sprawling streets, buildings, parks, towers, and
+  walls. There are surface districts and covered underground districts. These
+  are the large city landscapes shown in the original screenshots.
+
+The authored complex plans are:
+
+| Plan | Footprint in chunks | Placement |
+| --- | --- | --- |
+| `city0_0` | 1×1 | Surface. |
+| `city0_1` | 1×1 | Surface. |
+| `city1_1` | 2×2 | Surface. |
+| `city1_2` | 2×2 | Surface. |
+| `city2_1` | 3×3 | Surface, with authored lower sections. |
+| `city3_1` | 4×4 | Underground complex. |
+| `city4_1` | 3×3 | Floating ship complex. |
+| `city5_1` | 9×9 | Large surface complex. |
+
+Footprints do not mean every chunk is a solid building. Layouts include empty
+cells, cellars, and different part variants. Complexes use a 16-chunk placement
+grid; landscape districts follow the biome/city layout. Stations and intercity
+transport tunnels are a further network, with station floors near Y=30 and
+beams at Y=32. Landscape district streets are built near Y=65.
+
+### Inhabitants, alerts, and conquering a complex
+
+| Inhabitant | Behavior |
+| --- | --- |
+| Soldier | Armed hostile inhabitant; can report targets to its city. |
+| Master Soldier | Stronger, regenerating soldier: 150 base health, fire and magic immunity. |
+| Drone | Flying combat unit. |
+| Sentinel Drone | Flying observer that detects players and raises city alerts. |
+
+City biomes also have natural soldier/master spawning; other biomes use
+Overworld-style hostile spawn tables. Natural spawning and city AI reinforcement
+waves are distinct mechanisms. Not every naturally spawned soldier belongs to a
+city or can drop that city's security cards.
+
+An alert is raised by **detection or hostile interaction**, not merely standing
+near a building. Sentinels check line of sight and a roughly 50-block detection
+range. Creative and Spectator players are excluded from their detection; an
+operational Scramble upgrade also prevents sentinel detection. Combat units can
+report the players they target, and attacking city defenses can raise alerts.
+
+While alerted, the city can spawn reinforcements and activate its shield
+generators. A peaceful ship normally has **no active enclosing shield**. The
+default alert timeout is `400` city-AI steps of ten game ticks, about **200
+seconds** at 20 TPS. Further sightings refresh the alert. Keep the complex's
+footprint loaded: the current AI waits until its required chunks are loaded.
+
+Destroy **every AI Core** to defeat the authored city's AI. Destroying the last
+valid core produces a card carrying that city's **storage access** key and marks
+the city dead. This stops that city AI; it does not erase surviving mobs or
+disable the biome's unrelated natural spawning.
+
+**Alarm blocks** are city-controlled status panels: Safe, Alert, or Dead. Alert
+mode also produces an alarm sound. They display the AI's state rather than
+acting as independent proximity detectors; simply placing a crafted Alarm does
+not create a new functioning city AI.
+
+City-associated soldiers killed by a player have a default **20%** card-drop
+chance. Within that drop, the code assigns a door/lock key in 40% of cases, a
+forcefield key in 40%, and no security tag in the remaining 20%. A card's city
+description alone does not prove that it grants a particular kind of access.
+
+### Exploration commands
+
+These commands require permission level 2/cheats. `/arworld` is an alias for
+`/arienteworld`.
+
+```text
+/arienteworld findentrance
+/arienteworld findcity
+/arienteworld findcity city3_1
+/arienteworld findcity city4_1
+/arienteworld findcity city5_1
+/arienteworld findcity surface
+/arienteworld findcity underground
+/arienteworld findcity station
+```
+
+`findentrance` searches seeded Overworld entrance sites within about 1,024
+blocks. `findcity` searches authored complexes; `surface` and `underground`
+instead search landscape districts. Search results include coordinates and a
+suggested teleport command. The generic command does not promise the large
+landscape city nearest to you. These commands locate sites without loading all
+searched chunks; the pearl separately checks actual entrance Warpers.
+
+For direct testing:
+
+```text
+/execute in arienteworld:ariente run tp @s 0 160 0
+/execute in minecraft:overworld run tp @s 0 160 0
+```
+
+Sources: [Warper](src/main/java/mcjty/ariente/blocks/utility/WarperTile.java),
+[pearl](src/main/java/mcjty/ariente/items/ArientePearlItem.java),
+[world generation data](../ArienteWorld/src/main/resources/data/arienteworld/worldgen),
+[city AI](../ArienteWorld/src/main/java/mcjty/arienteworld/ai/CityAI.java),
+[soldier drops](src/main/java/mcjty/ariente/entities/soldier/SoldierEntity.java),
+[commands](../ArienteWorld/src/main/java/mcjty/arienteworld/commands/ModCommands.java).
+
+## The dual power system
+
+### Flux is a continuing supply, not an RF battery
+
+Ariente has two independent power components: **negarite flux** and **posirite
+flux**. Machines normally need equal quantities of both. A demand of 100 means
+**100 negarite plus 100 posirite**, not a total of 100 split between them.
+
+The usable supply is limited by the weaker component. For example, 5,000
+negarite and 1,000 posirite can satisfy 1,000 units of paired demand. The excess
+negarite cannot substitute for posirite.
+
+Generators contribute supply to cable networks every tick. Consumers share the
+remaining supply. Network bookkeeping retains only current/recent tick amounts;
+it is not long-term energy storage. Unused production is not a battery, and a
+second connector on the same network does not duplicate that network's power.
+There is no implemented RF/FE conversion or wireless flux-power supply.
+
+Some machines have short-lived internal accumulation. For example, the
+Automation Field saves up operation power but loses it when its paired supply
+drops to zero. The **Flux Capacitor item is a crafting ingredient**, not a
+placeable battery. An **Energy Holder stores fuel dust**, not cable flux.
+
+### Generators and tanks
+
+Build a vertical column of matching tanks directly above its generator:
+
+```text
+Negarite Tank          Posirite Tank
+Negarite Tank          Posirite Tank
+Negarite Generator     Posirite Generator
+```
+
+| Property | Current behavior |
+| --- | --- |
+| Fuel | Negarite Dust or Posirite Dust in the matching generator. |
+| Tank requirement | At least one matching tank immediately above the generator. |
+| Output | **1,000 flux per tick per matching tank** of that generator's power type. |
+| Column rule | Count consecutive matching tanks upward; a gap or wrong block ends the column. |
+| Fuel duration | About **600 ticks / 30 seconds** per dust item while enabled. |
+| Additional tanks | Increase output; the current fuel-duration counter does not scale with tank count. |
+| Fuel loading | Generator hologram arrows transfer 1 or 64 dust between the player and generator; item automation is also exposed. |
+| Redstone | Can disable generation through the generator's mode setting. |
+
+Fuel can still be consumed when no tanks are installed or when consumers do not
+need the output. Do not treat an enabled, fueled generator as demand-controlled.
+The tank blocks are generator extensions, not conventional liquid or battery
+storage. Their animations/status reflect the generator below the column.
+
+### Cables and connectors
+
+| Network type | Purpose |
+| --- | --- |
+| Negarite Cable / Connector | Carries negarite. |
+| Posirite Cable / Connector | Carries posirite. |
+| Combined Cable / Connector | Carries both components in one network. |
+| Data Cable / Connector | A separate cable type; it is not a substitute for flux or the Automation Field. General-purpose data functionality remains incomplete. |
+
+**Use connectors at consuming machines.** An ordinary Net Cable transports the
+network but reports that it cannot supply a receiver directly. A Connector can
+expose the network to an adjacent machine. Direct contact with a generator can
+also expose that generator's supply, but connector-ended wiring is the useful
+general pattern.
+
+```text
+Negarite Generator -- Negarite Cable -- Negarite Connector --+
+                                                          | Machine
+Posirite Generator -- Posirite Cable -- Posirite Connector-+
+```
+
+The two connectors touch different faces of the same machine. Keep cable types
+appropriate to their network. Do not assume that putting differently colored
+cables together converts or merges the power types.
+
+For a compact test, power an Auto Constructor with one generator and one tank
+for each component. Supply its other requirements separately. Adding more tanks
+or parallel generators increases supply; it does not add a permanent reserve.
+
+### Power Combiner
+
+The combiner receives paired power from **separate negarite and posirite
+networks** and sends both components to adjacent **Combined Connectors**. It
+does not use a combined network as its own input. Put a Combined Connector
+against the combiner's output side/network, then run combined cable to a
+Combined Connector touching the consumer.
+
+The hologram sets the input transfer amount, from **0 to 20,000**. The current
+default is **100** input and **98** output. Check **In** and **Out** in the
+panel when tuning it. The implementation looks for adjacent connectors on all
+six faces; it does not reserve one particular facing as a mandatory output port.
+
+The implementation outputs `floor(input × 0.98)` of **each** component. Thus a
+1,000 input consumes 1,000 negarite and 1,000 posirite, and supplies 980 of each
+to the combined side. Multiple adjacent Combined Connectors divide this output;
+they do not each receive the full amount. The older design/history includes
+different claims about loss; **2% is what the current implementation does**.
+
+### Facades
+
+Use a **Facade** item on a normal block to copy its block state. Use that facade
+on a cable or connector to cover it while retaining the network. A facade
+already covering a cable is not replaced by simply applying another one.
+The port retains texture/state copying and generated cable covers. The older
+special breaking behavior that removes a facade while leaving its cable needs
+further validation; do not rely on it as a safe removal tool yet.
+
+Sources: [power accounting](src/main/java/mcjty/ariente/power/PowerSystem.java),
+[receivers](src/main/java/mcjty/ariente/power/PowerReceiverSupport.java),
+[generator](src/main/java/mcjty/ariente/blocks/generators/NegariteGeneratorTile.java),
+[combiner](src/main/java/mcjty/ariente/blocks/generators/PowerCombinerTile.java),
+[cable endpoints](src/main/java/mcjty/ariente/cables/NetCableTileEntity.java),
+[facades](src/main/java/mcjty/ariente/facade/FacadeItemBlock.java).
+
+## Blueprints and construction
+
+### Blueprints
+
+A Blueprint is an item encoding a **destination item stack**, not a freely
+programmable crafting pattern. The Constructor finds the registered recipe for
+that destination. Hovering a populated blueprint displays its result and
+ingredients. A blank blueprint without destination data is not a recipe.
+
+Blueprints are intended exploration rewards. City loot can contain explicit
+blueprints or choose weighted random entries from the blueprint recipe catalog.
+The catalog's rarity weights are relative selection weights, not independent
+drop probabilities: Common=1, Uncommon=0.1, Rare=0.01, Extreme=0.001. A city's
+loot settings separately decide whether and how often to choose a blueprint.
+
+The active Constructor logic uses the hardcoded catalog in
+`BlueprintRecipeRegistry`. The `ariente:constructor` recipe serializer exists,
+but adding arbitrary JSON recipes is not equivalent to adding them to this
+catalog. See the [recipe reference](#recipe-reference).
+
+### Blueprint Storage
+
+Blueprint Storage holds **six blueprint items**. Place it directly against a
+Constructor or Auto Constructor, on any of the six faces. Those machines query
+adjacent storage; there is no general wireless blueprint library.
+
+Its hologram transfers blueprints between the player's inventory and the six
+storage slots. Double-click the appropriate displayed slot to transfer. Installed
+blueprints are recipe references and are **not consumed by crafting**.
+
+For Creative testing, the current creative tab supplies the plain Blueprint
+item, not one populated item per recipe. A populated Storage Cube blueprint can
+be made with this permission-level-2 command in **1.20.1**:
+
+```text
+/give @s ariente:blueprint{destination:'{"item":"ariente:storage"}'} 1
+```
+
+Replace the item ID with another valid catalog destination. The JSON stored in
+`destination` uses `item` and, for multi-item results, `amount`. This is a
+development aid, not a survival blueprint-writing mechanic.
+
+### Constructor: manual crafting
+
+1. Place a Constructor beside at least one Blueprint Storage.
+2. Insert the desired populated blueprint into that storage.
+3. Carry the required ingredients in your player inventory.
+4. Open the Constructor hologram. Its upper area shows relevant ingredients;
+   its lower area shows available blueprints/results.
+5. Hover a result to see missing ingredients. **Double-click its blueprint** to
+   craft. The machine consumes ingredients from your inventory and puts the
+   result into your inventory, dropping it if necessary.
+
+The manual Constructor does **not** require cable power. It does not draw its
+ingredients from arbitrary neighboring chests. Missing ingredients and missing
+adjacent blueprints are separate problems.
+
+### Auto Constructor
+
+The Auto Constructor uses the same neighboring blueprint library, but keeps
+ingredients and products inside the machine:
+
+| Property | Value |
+| --- | --- |
+| Ingredient slots | 18. |
+| Output slots | 6. |
+| Running power | 10 of **each** component per powered tick. |
+| Additional craft cost | 100 of **each** component per successful craft. |
+| Recipe selection | Cycles through slots in adjacent Blueprint Storage blocks. |
+| Timing | Normally checks another slot every 10 powered ticks; empty blueprint slots use a shorter delay. |
+
+Supply ingredients, remove products, attach power connectors, and set its
+redstone mode appropriately. This is a cycling crafter, not a demand-driven
+recursive autocrafting network. It does not automatically manufacture missing
+subcomponents or fetch supplies from all nearby inventories.
+
+**Current limitation:** batch-output recipes need an audit. The empty-output
+path copies the recipe's result stack, while the existing-output path adds one
+item. Do not assume equal batch yields in both cases.
+
+Sources: [blueprint data](src/main/java/mcjty/ariente/items/BlueprintItem.java),
+[catalog](src/main/java/mcjty/ariente/recipes/BlueprintRecipeRegistry.java),
+[manual Constructor](src/main/java/mcjty/ariente/blocks/utility/ConstructorTile.java),
+[Auto Constructor](src/main/java/mcjty/ariente/blocks/utility/AutoConstructorTile.java),
+[Blueprint Storage](src/main/java/mcjty/ariente/blocks/utility/BlueprintStorageTile.java).
+
+## Storage Cube
+
+A Storage Cube holds **four item types**, shown in four areas on its front.
+Each type has **64 stack slots**: for a normally stackable 64-item material that
+is **4,096 items per type**, or 16,384 across all four types. Actual capacity
+depends on that item's stack limit.
+
+| Front-panel action | Result |
+| --- | --- |
+| Right-click an item area while holding an item | Insert the held stack into that type's storage. |
+| Double right-click an established item area | Insert matching items from your inventory. |
+| Left-click an item area | Extract one item. |
+| Sneak-left-click an item area | Extract up to one normal stack. |
+| Interact with a locked cube | Open its access hologram instead of transferring normally. |
+
+The displayed icons and totals are synchronized to clients. Item automation sees
+the grouped inventory through an item-handler capability. A locked cube is an
+access lock, not the drawer-style feature that remembers a filter in an empty
+slot. City Storage Cubes can contain loot and require that city's storage key.
+
+Present a matching Key Card directly to the cube to toggle its lock. The final
+AI Core card supplies storage access; an ordinary door-access card is not the
+same key. The present UI is not a complete player key-programming system.
+
+Source: [Storage Cube](src/main/java/mcjty/ariente/blocks/utility/StorageTile.java).
+
+## Automation fields
+
+### Area and node placement
+
+An **Automation Field** controller moves items between inventories using small
+multipart nodes. It does not move items through a network of item pipes.
+
+Field Markers form a horizontally connected area at the controller's base
+height. Place the controller next to a connected marker, and lay markers under
+every column where nodes should participate. A filled rectangle is a convenient
+layout. An outline alone does not make unmarked interior columns active: the
+controller scans **above marker positions**, not every column inside the drawn
+bounding box.
+
+Set the field height in the controller's hologram; the adjustable range is
+**1–256**. Nodes are discovered from the marker level through that height above
+it. The controller offers outline and item-transfer display toggles. These are
+display settings, not transfer permissions. Item-transfer animation is still
+partly unported, so an invisible animation is not proof that no item moved.
+
+Nodes attach to inventory faces, and several parts can share a block space.
+Their orientation selects which adjacent inventory face/capability they access.
+Keep the supporting field markers connected and the nodes inside the marked
+columns. Hoppers and other automation still need an inventory that exposes a
+compatible item handler on the attached face.
+
+### Node roles
+
+Names are from the **attached inventory's** point of view:
+
+| Node | Role |
+| --- | --- |
+| Output Item Node | Extracts items **out of the source inventory** into the field. |
+| Input Item Node | Inserts items **into the destination inventory** from the field. |
+| Round Robin Node | Modifier on the back slot corresponding to an Output Node; rotates among eligible destinations. |
+| Sensor Item Node | Counts items in its attached inventory and produces a colored boolean condition. |
+| Field Marker | Associates its vertical column with the controller. It is not an item source or destination. |
+
+### A minimal item-transfer example
+
+1. Place two chests within the configured height and lay connected markers under
+   the spaces where their attached nodes will sit. Marking only the chest
+   columns is insufficient if the nodes occupy neighboring block spaces.
+2. Attach an **Output** node to the source chest and an **Input** node to the
+   destination chest.
+3. Open each node's hologram and add the desired item to its filter by
+   double-clicking that item in the displayed player inventory. Removing a
+   displayed filter clears that filter entry. These are filter samples, not
+   supplies for the transfer.
+4. Supply the controller with both power components, using connectors.
+5. Add matching items to the source chest and keep room in the destination.
+
+Both producer and consumer lists are built from their filters. An empty filter
+is **not** an automatic allow-all configuration. The Output Node's stack-size
+setting is adjustable from **1 to 64**; it acts as a minimum batch size, so a
+source holding fewer items can wait rather than transfer a partial batch.
+
+Damage and NBT filter controls exist. The old **Ore Dictionary** option has not
+been converted into modern tag matching and should be left disabled. Strict
+destination matching also needs further audit: current destination indexing is
+primarily by item identity. Do not depend on it to separate otherwise identical
+items with different NBT.
+
+### Sensors and conditions
+
+A Sensor Item Node compares the **total item count** in its attached inventory
+against a number, using `<`, `<=`, `>`, `>=`, `=`, or `<>` (not equal). It does not
+currently provide an item-specific sensor filter. Choose its output dye color.
+
+Other nodes can require up to **two positive** and **two negative** colored
+conditions. Positive conditions must be true; negative conditions must be false.
+If several sensors output the same color, any true sensor makes that color true.
+These colors are field-local logical conditions, unrelated to flux cable colors
+or numbered wireless redstone channels.
+
+For example, a sensor on a destination inventory can output green when its
+count is below a threshold. Requiring green on the source's Output Node makes
+the transfer a refill system. Remember that this counts all items in the sensed
+inventory, not just the transferred material.
+
+### Power and throughput
+
+With default settings:
+
+- The controller can accumulate up to **400 paired units per tick**.
+- Its internal reserve is capped at **3,200 paired units**.
+- Moving a stack of `n` items costs **100 + 2 × (n − 1)** paired units.
+- A single item costs 100; a 64-item batch costs 226.
+- It can make several transfers per tick if enough reserve and valid work exist.
+- If paired network supply falls to zero, the accumulated reserve is discarded.
+
+The existing field supports item transfer and item-count conditions. The help
+text's references to future energy/other transfers are not implemented fluid,
+RF, or generic energy automation.
+
+Sources: [controller](src/main/java/mcjty/ariente/blocks/utility/autofield/AutoFieldTile.java),
+[producer matching](src/main/java/mcjty/ariente/blocks/utility/autofield/ProducerInfo.java),
+[consumer matching](src/main/java/mcjty/ariente/blocks/utility/autofield/ConsumerInfo.java),
+[sensor](src/main/java/mcjty/ariente/blocks/utility/autofield/SensorItemNodeTile.java),
+[node orientation](src/main/java/mcjty/ariente/blocks/utility/autofield/NodeOrientation.java).
+
+## Doors, keys, locks, and wireless signals
+
+### Door Markers
+
+Place Door Markers across the floor of an opening. Each creates invisible door
+blocks upward until it reaches a solid obstruction or the configured maximum:
+**six segments above the marker** by default. The visible panels animate open
+and closed; their collision follows the open/locked state.
+
+An unlocked door opens for nearby **players or soldiers**, including players in
+Creative. The detection box extends three blocks horizontally in each direction,
+two below the marker, and six above it. A locked door stays closed. Door
+proximity is unrelated to the city alert system's player-detection rules.
+
+The marker's facing is the panel's normal, perpendicular to the opening's
+width. Generated wide doors derive that orientation from their authored row of
+markers before rotation/mirroring. Manually placed markers retain their placed
+orientation. Keep an appropriate ceiling above them so the generated door does
+not extend into unwanted open space.
+
+### Key Cards and city security
+
+A Key Card can carry one or more security tags. Different permissions use
+different tags: door/lock access, storage access, and forcefield immunity are
+separate. A printed city description is a label, not the permission itself.
+
+Use a card on a block with a card slot, such as a Lock or Storage Cube. Matching
+tags toggle access; incorrect tags produce a rejection sound. Forcefield
+immunity instead checks for a suitable card **in the player's inventory**.
+There is no complete survival UI here for creating arbitrary personal security
+tags or cloning a city's keys onto blank cards.
+
+### Lock
+
+A Lock controls **Door Markers** within a configurable box around itself. The
+current ranges are horizontal **1–20**, vertical **1–10**. This is not a general
+lock for every inventory or machine in the area. A matching key card toggles
+the Lock and its affected doors. A locked Lock's normal hologram denies access;
+unlock it with a valid card before changing its ranges.
+Its initial horizontal/vertical radii are **5/3** blocks.
+
+City initialization assigns city locks their door-access key and locks them.
+Avoid overlapping lock controllers when experimenting: each writes the nearby
+door state rather than negotiating a combined permission policy.
+
+### Wireless redstone
+
+Numbered wireless channels store a signal value. They are **control signals**,
+not wireless flux power. Use one clear source for a channel: multiple writers
+write the same channel value rather than forming a documented signal-combining
+network.
+
+The channel registry is stored with the Overworld and shared across dimensions;
+there is no distance-based radio range in this implementation. Devices still
+need loaded chunks to update their inputs/outputs. Channels are not chunk loaders.
+
+| Block | Function |
+| --- | --- |
+| Signal Transmitter | Publishes its redstone input on its channel. |
+| Signal Receiver | Outputs the current value of its channel as redstone. |
+| Wireless Button | Click to toggle its channel between 0 and 15; it is a latching switch, not a timed vanilla-button pulse. |
+| Wireless Lock | Locks nearby Door Markers at channel value 0; unlocks them for a positive value. An absent channel value is treated as locked. |
+
+To link devices, hold the relevant wireless block item:
+
+1. **Right-click** an already placed channel device to copy that device's
+   channel into the held item. A channel is allocated if needed.
+2. Place the held device to use that channel.
+3. To change an existing device, **sneak-right-click** it with the item carrying
+   the desired channel. This writes the held channel to the placed device.
+
+The message prints the channel number. This copy/write distinction matters:
+normal right-click reads from the placed device; sneaking writes to it. Use an
+empty/non-linking hand to operate a Wireless Button instead of accidentally
+copying its channel. City-generated devices receive mapped channels during
+initialization.
+
+Sources: [doors](src/main/java/mcjty/ariente/blocks/utility/door/DoorMarkerTile.java),
+[lock](src/main/java/mcjty/ariente/blocks/utility/LockTile.java),
+[cards](src/main/java/mcjty/ariente/items/KeyCardItem.java),
+[channel linking](src/main/java/mcjty/ariente/blocks/utility/wireless/SignalChannelTileEntity.java),
+[wireless lock](src/main/java/mcjty/ariente/blocks/utility/wireless/WirelessLockTile.java).
+
+## Forcefield Generator
+
+The Forcefield Generator builds a spherical, triangular-panel shield around
+itself. Its hologram controls **radius**, displays **field integrity**, and sets
+its redstone mode.
+
+| Setting or behavior | Default/current value |
+| --- | --- |
+| Radius | Starts at 10; GUI range 3–50 blocks. |
+| Idle demand | `radius × 30` of each power component per tick. Radius 10 needs 300 of each. |
+| Panels | 60 independently maintained panels. |
+| Buildup | 100 successful buildup steps per panel. Each step costs another 500 of each component by default. |
+| Finished panel life | 100. |
+| Projectile hit | Intercepted projectiles reduce panel life by 10 in the present implementation. |
+| Destroyed-panel delay | 100 ticks before rebuilding can begin. |
+| Living-entity contact damage | 19 damage before other damage handling, configurable. |
+
+Supply enough flux for **idle plus construction/repair**. A generator able to
+pay idle usage can still rebuild slowly if little supply remains. A brief
+startup/low-power grace period exists; sustained loss of power breaks down the
+shield. Changing radius resets the field and requires rebuilding.
+
+The shield intercepts projectiles and damages entities crossing active panels.
+Destroyed panels create temporary holes, and destruction can cause an explosion.
+It is not an ordinary solid-block wall or an unconditional invulnerability dome.
+
+In generated cities, AI alert state switches shield generators on and off.
+Players carrying the city's forcefield-immunity card avoid the city shield's
+contact damage. City units can also have explicit immunity. The current player
+generator GUI does **not** offer the old wiki's implied general-purpose interface
+for assigning your own immunity key.
+
+Source: [Forcefield Generator](src/main/java/mcjty/ariente/blocks/defense/ForceFieldTile.java).
+
+## Power armor, modules, and sabres
+
+### Configuration and fuel
+
+Wear the power armor piece, or hold the Enhanced Energy Sabre in your main hand,
+and press the configuration binding (default **0**). Select the equipment piece.
+Its panel lets you:
+
+1. Install a module from your inventory by clicking its module icon.
+2. Enable/disable an installed module with its activation control.
+3. Assign a module hotkey group.
+4. Transfer Negarite Dust and Posirite Dust into the piece using the fuel arrows.
+5. Remove installed modules back into your inventory.
+
+Installing and activating are separate. An installed, disabled module should
+not be counted as an active ability. Power is managed **per equipment piece**,
+not as one shared suit battery.
+
+Each active module contributes a usage number. A piece normally supports a
+total of **100**. An enabled Energy module raises this to **130**. Exceeding the
+piece's budget prevents its powered module updates. Modules also need fuel: one
+Negarite Dust plus one Posirite Dust funds approximately `30000 / usage` ticks,
+or `40000 / usage` with Energy enabled, at the default settings.
+
+For example, usage 50 lasts roughly 600 ticks (30 seconds) per dust pair, or
+800 ticks (40 seconds) with Energy. This is not 50 dust items per tick. The
+Energy tooltip advertises a 30% efficiency improvement; the actual defaults
+are a 100→130 budget and 30000→40000 duration numerator.
+
+### Module reference
+
+| Module | Piece | Usage | Effect/status in the current port |
+| --- | --- | --- | --- |
+| Energy | All armor; Enhanced Sabre | Special | Raises budget and fuel duration as above. |
+| Autofeed Power | All armor; Enhanced Sabre | 0 | Draws a fuel pair from player inventory/Energy Holders when local fuel runs out. |
+| Armor | All armor | 20 | Adds 4 armor attribute points on that piece while working. Base armor currently uses leather material values. |
+| Nightvision | Helmet | 20 | Refreshes night vision while powered and enabled. |
+| Scramble | Helmet | 50 | Prevents sentinel detection while its working flag is active. Does not pacify all hostile mobs. |
+| Invisibility | Helmet, planned | 20 | Effect code/item exist, but its configuration entry is disabled; not a normally installable current feature. |
+| Forcefield | Chestplate | 80 | Cancels projectile damage; divides explosion damage by 5 and other armor-respecting damage by 2. Does not cover every bypass-armor damage source. |
+| Regeneration | Chestplate | 40 | Refreshes Regeneration III while powered/enabled. |
+| Flight | Chestplate | 30 | Installable/configurable; movement hook is commented out. Flight is not restored. |
+| Hover | Chestplate | 10 | Installable/configurable; its movement hook is also not restored. |
+| Speed | Leggings | 20 | Installable/configurable; movement hook is commented out. |
+| Featherfalling | Boots | 20 | Cancels fall damage while working. |
+| Step Assist | Boots | 10 | Installable/configurable; client movement hook is commented out. |
+| Power | Enhanced Sabre | 30 | Doubles the weapon's attack-damage modifier while working. |
+| Inhibit | Enhanced Sabre | 30 | Suppresses a Master Soldier's regeneration for 200 ticks and removes beneficial effects from the target. |
+| Looting | Enhanced Sabre | 20 | Applies Looting III while powered/enabled. |
+| Fire | Enhanced Sabre | 30 | Applies Fire Aspect III while powered/enabled. |
+
+Not every module has a blueprint recipe in the present catalog. Registered
+items, configuration entries, working effects, and survival obtainability are
+four different things. In particular, do not use Flight/Speed/Step Assist as
+requirements for a current survival route. Enhanced Sabre fuel/module updates
+still use an old inventory-slot check and need testing outside the first hotbar
+slot. Armor effect lifecycle and multiplayer behavior also need further audit.
+
+### Energy Holder
+
+The Energy Holder stores counts of **both fuel dusts** in one item. Right-click
+it in the **main hand** to open its panel, then use the arrows to move one item
+or a stack in or out.
+
+- **Manual:** only explicit transfers change the contents.
+- **Automatic:** scans player inventory slots over successive ticks and absorbs
+  loose Negarite/Posirite Dust.
+
+Autofeed-equipped gear can draw dust from a holder in your inventory. You do not
+have to hold it for gear to use it. The holder's Automatic setting controls
+collecting loose dust, not whether gear is allowed to draw from it. The present
+autofeed code has a mixed-holder edge case; use one holder containing both dusts
+when testing rather than splitting the two fuels across different holders.
+
+### Energy Sabres
+
+The ordinary Energy Sabre is a melee weapon with a current +12 attack-damage
+modifier and a -2.4 attack-speed modifier. The player's base attributes still
+contribute to displayed totals. It uses durability and is not configured like
+power armor.
+
+The Enhanced Energy Sabre adds the module/fuel system. Keep Inhibit for Master
+Soldiers: they regenerate strongly and are immune to fire and magic, so Fire is
+not a substitute for suppressing their regeneration. Its current superclass
+still supplies durability behavior; do not assume that fuel has replaced every
+durability mechanic. Powered sabre updates also rewrite its enchantment map,
+so ordinary added enchantments are not a verified persistent upgrade route.
+
+Sources: [module types/costs](src/main/java/mcjty/ariente/api/ArmorUpgradeType.java),
+[module fuel](src/main/java/mcjty/ariente/items/modules/ModuleSupport.java),
+[configuration UI](src/main/java/mcjty/ariente/items/armor/ArmorGui.java),
+[suit effects](src/main/java/mcjty/ariente/items/armor/PowerSuit.java),
+[disabled movement hooks](src/main/java/mcjty/ariente/ClientForgeEventHandlers.java),
+[damage handling](src/main/java/mcjty/ariente/ForgeEventHandlers.java),
+[Enhanced Sabre](src/main/java/mcjty/ariente/items/EnhancedEnergySabreItem.java),
+[Energy Holder](src/main/java/mcjty/ariente/items/EnergyHolderItem.java).
+
+## Transport
+
+### Flux Levitator and beams
+
+Flux Beams are the rails for Flux Levitators. Straight and bent beams are
+different blocks. Their thin selection outlines follow their models; they are
+**intentionally non-solid**, including to players. Walking through a beam is
+not evidence that the track is broken.
+
+1. Build a continuous beam route with sufficient space for the vehicle and rider.
+2. Use a **Flux Levitator item directly on a beam** to place the cart.
+3. Right-click the vehicle without sneaking to board it.
+4. Aim at one of its end holograms and click the speed arrows.
+5. Use the red ball/stop control to request speed 0. Sneak to dismount normally.
+
+The small arrows change speed by **5**, large arrows by **10**, with a setting
+range of **-80 to 80**. The two panels face opposite directions and interpret
+their controls accordingly. The number is a control setting, not a promise of
+that many blocks per second. Movement is capped, slows in bends, and depends on
+track continuity. Stop applies braking rather than teleporting the cart to rest.
+
+No generator fuel or cable connection is required by the current cart movement
+code. The beam is not a conventional powered rail. Ascending track is not
+implemented in this beam system; bends are supported, but do not assume arbitrary
+vanilla rail shapes work. City AI can dispatch soldier levitators on generated
+routes.
+
+**Beam orientation:** a straight beam facing north/south runs east–west; one
+facing east/west runs north–south. Default/north bends join west to south;
+east bends join north to west; south bends join north to east; west bends join
+south to east. Placement facing and travel direction are not identical labels.
+
+Cart controls now render as attached HoloGui entities. Boarding, controls at
+both ends, travel through a corner with a rider, and stopping have dedicated
+checks. This is not a complete high-speed route, collision, or multiplayer test.
+
+### Elevator and Level Markers
+
+The **Elevator block** creates a vertical player-lift column. Its default height
+is 9, adjustable through its hologram. Stand in the beam:
+
+- With fewer than two detected floors, **jump rises** and **sneak descends**;
+  otherwise it holds vertical movement.
+- Place **Level Markers** at desired landing heights. It searches upward through
+  its configured height and within two blocks horizontally of the elevator.
+- With multiple marked floors, jump/sneak select the next higher/lower floor;
+  the associated hologram also provides floor selection.
+
+Height can be set from **1 to 256**. Level Marker floor-name editing is still a
+WIP panel; floor detection and numbered floor selection do not depend on naming.
+
+The Elevator attempts to consume **10 of each flux component per tick**.
+Currently the return value of that power request does not gate player lifting,
+so strict power-dependent operation is a remaining port issue. It is not the
+same device as the separate Flux Elevator cabin entity used by transport code.
+Keep the shaft and landings clear.
+
+### Flux Ship and cabin entities
+
+The registered Flux Ship is explicitly marked **work in progress** by its own
+tooltip. Treat it as experimental, not a finished player flight vehicle. The
+floating ship-shaped city is a generated structure, not a pilotable Flux Ship.
+
+Experimental ship bindings are W/S forward/back, A/D turn, arrow Up/Down
+vertical movement, Space start, and Backspace land. They only send ship actions
+while riding a Flux Ship. Registered Flux Elevator cabin/vehicle entities and
+their renderers likewise do not constitute a complete player crafting and
+transport workflow by themselves.
+
+Sources: [levitator item placement](src/main/java/mcjty/ariente/items/FluxLevitatorItem.java),
+[cart movement](src/main/java/mcjty/ariente/entities/levitator/FluxLevitatorEntity.java),
+[cart controls](src/main/java/mcjty/ariente/entities/levitator/FluxLevitatorGui.java),
+[Elevator](src/main/java/mcjty/ariente/blocks/utility/ElevatorTile.java),
+[ship item](src/main/java/mcjty/ariente/items/FluxShipItem.java).
+
+## Building materials and lighting
+
+| Family | Purpose |
+| --- | --- |
+| Marble | Gray, white, blue, black, lime, red, and dark blue variants. |
+| Smooth, brick, pillar, and slab marble | Structural/decorative forms of those colors. |
+| BlackTech and MarbleTech | Technological patterned panels; some use animated or glowing overlays. |
+| Pattern blocks | Dots/lines decorative patterns. |
+| Ramp | Five-step geometry for small stairs. |
+| Slope | Wedge trim with four horizontal orientations, upright or upside down. |
+| Glass/Blue Glass/Marble/Tech Fence | Pane-style connected barriers. |
+| Reinforced Marble | Strong structural block; hardness 80, blast resistance 3,000. |
+| Flux Glow | Light-emitting decorative block, light level 15. |
+| Flat Light | Thin mounted light; lighting block rather than a power generator. |
+| Facade | Copies a block state to cover cables/connectors. |
+
+Marble shaping, dyeing, and many tech-block recipes use ordinary crafting.
+Check the recipe JSON or normal crafting recipe viewer for the exact variant.
+Those recipes coexist with blueprint construction; not every decorative block
+requires a blueprint.
+
+Connected textures, glowing overlays, and animation are handled natively by the
+port. **CTM is not required.** Glow pixels are visual minimum-light overlays;
+they do not automatically mean that a block emits world light, supplies power,
+or performs an active machine function. See [TEXTURES.md](TEXTURES.md) for the
+asset-authoring reference.
+
+## Configuration reference
+
+The configs are registered as Forge **server** and **client** configs. Normally
+this means `ariente-server.toml` and `arienteworld-server.toml` under the world's
+`serverconfig` directory, with client files in the instance's `config`
+directory. Values below are defaults, not guaranteed server settings.
+
+| Mod/category | Key | Default | Meaning |
+| --- | --- | --- | --- |
+| Ariente `utility` | `maxWarperCharges` | 10 | Pearl charge threshold. |
+| Ariente `utility` | `maxDoorHeight` | 6 | Maximum generated segments above a Door Marker. |
+| Ariente `utility` | `powersuitMaxPower` / `powersuitMaxPowerOptimized` | 100 / 130 | Per-piece module budget. |
+| Ariente `utility` | `powersuitTicks` / `powersuitTicksOptimized` | 30000 / 40000 | Fuel-duration numerator, divided by module usage. |
+| Ariente `utility` | `autoFieldPowerPerOperation` | 100 | Base paired transfer cost. |
+| Ariente `utility` | `autoFieldFactorPerCombinedStack` | 2.0 | Additional paired cost per item beyond the first. |
+| Ariente `utility` | `autoFieldAccumulatePerTick` | 400 | Maximum paired input per tick. |
+| Ariente `utility` | `autoFieldMaxAccumulatedPower` | 3200 | Field reserve cap. |
+| Ariente `power` | `forcefieldBuildupPower` | 500 | Paired cost per panel buildup step. |
+| Ariente `damage` | `forcefieldDamage` | 19.0 | Contact damage. |
+| ArienteWorld `worldgen` | `overworldDungeonChance` | 0.002 | Per-chunk entrance candidacy. |
+| ArienteWorld `worldgen` | `cityDungeonChance` | 0.7 | Declared city-chance option; the active `CityTools` plan selection does not currently consult it. |
+| ArienteWorld `loot` | `soldierCitykeyChance` | 0.2 | City soldier key-card drop chance. |
+| ArienteWorld `ai` | `alertTime` | 400 | Ten-tick city-AI timeout steps. |
+
+Generator output/fuel duration, combiner loss/limit, storage capacity, and many
+machine timing constants are currently hardcoded rather than adjustable through
+these configs. Ariente's client utility settings include flight movement values,
+but adjusting them does not restore the disabled armor movement hook. Legacy
+Overworld-loot options also exist without an active loot-injection implementation.
+
+Sources: [Ariente config classes](src/main/java/mcjty/ariente/config),
+[ArienteWorld config classes](../ArienteWorld/src/main/java/mcjty/arienteworld/config).
+
+## Recipe reference
+
+### Ordinary crafting entry points
+
+Patterns are shown as three crafting-grid rows. Tag ingredients accept items
+actually present in the corresponding Forge item tag.
+
+| Output | Grid | Ingredients |
+| --- | --- | --- |
+| Ariente Pearl | `QQQ / QEQ / QQQ` | Q = Nether Quartz; E = an item in `forge:ender_pearls`. |
+| Constructor | `III / IPI / SSS` | I = iron ingot tag; P = platinum ingot tag; S = silver ingot tag. |
+| Enhanced Energy Sabre | `LLL / LSL / LLL` | L = lithium ingot tag; S = ordinary Energy Sabre. |
+
+The Constructor also has a blueprint recipe, separate from its ordinary
+crafting entry point. There is no completed built-in ore-smelting route in this
+checkout; these recipes being registered does not solve material availability.
+
+### Blueprint catalog
+
+The tables below enumerate the current hardcoded catalog. An output is one item
+unless a quantity is shown. The rarity column is the relative blueprint-pool
+weight class, not a crafting success chance. **Flux Capacitor**, **Circuit**, and
+**Advanced Circuit** are components consumed by other recipes, not independent
+machines to place and power.
+
+The final cable/connector entries retain the old metadata-era construction and
+do not name the distinct modern colored item registrations. They are documented
+as unresolved variants, not reliable recipes for obtaining every cable color.
+
+| Result | Rarity | Ingredients |
+| --- | --- | --- |
+| Flux Capacitor | Rare | 2 × Lithium Ingot, Manganese Ingot, 6 × Negarite Dust, 6 × Posirite Dust |
+| Energy Holder | Common | Silicon, 5 × Negarite Dust, 5 × Posirite Dust |
+| Circuit | Common | Silicon, Manganese Ingot, 3 × Negarite Dust, 3 × Posirite Dust |
+| Advanced Circuit | Rare | Circuit, 2 × Lithium Ingot, Manganese Ingot, 6 × Negarite Dust, 6 × Posirite Dust |
+| Autofeed Power Upgrade Module | Common | Circuit, Silver Ingot, Silicon, 3 × Negarite Dust, 3 × Posirite Dust |
+| Nightvision Upgrade Module | Uncommon | Circuit, Silver Ingot, Silicon, 10 × Glowstone Dust |
+| Armor Upgrade Module | Rare | Circuit, Silver Ingot, Silicon, Platinum Ingot, 2 × Diamond |
+| Energy Upgrade Module | Rare | Circuit, Silver Ingot, Silicon, Platinum Ingot, Lithium Ingot, 3 × Negarite Dust, 3 × Posirite Dust |
+| Featherfalling Upgrade Module | Rare | Circuit, Silver Ingot, Silicon, Lithium Ingot, 5 × Feather |
+| Fire Sabre Module | Uncommon | Circuit, Silver Ingot, Silicon, Magma Block, 5 × Flint and Steel |
+| Flight Upgrade Module | Extreme | Advanced Circuit, Silver Ingot, Silicon, Platinum Ingot, Lithium Ingot, 2 × Ender Pearl, Nether Star |
+| Forcefield Upgrade Module | Extreme | Advanced Circuit, Silver Ingot, Silicon, Lithium Ingot, Platinum Ingot, 5 × Negarite Dust, 5 × Posirite Dust, Nether Star |
+| Inhibit Sabre Module | Rare | Advanced Circuit, Silver Ingot, Silicon, 4 × String |
+| Looting Sabre Module | Rare | Circuit, Silver Ingot, Silicon, 10 × Blue Dye |
+| Flux Levitator | Uncommon | Circuit, 10 × Silver Ingot, 2 × Manganese Ingot, Lithium Ingot |
+| Energy Sabre | Common | 10 × Silver Ingot, 3 × Negarite Dust, 3 × Posirite Dust, Platinum Ingot, Lithium Ingot |
+| Enhanced Energy Sabre | Rare | Energy Sabre, Circuit, 3 × Silicon, 5 × Negarite Dust, 5 × Posirite Dust, 3 × Platinum Ingot, 2 × Lithium Ingot |
+| Power Leggings | Rare | 5 × Silver Ingot, 2 × Silicon, Platinum Ingot |
+| Power Helmet | Rare | 4 × Silver Ingot, 2 × Silicon, Platinum Ingot |
+| Power Chestplate | Rare | 7 × Silver Ingot, 2 × Silicon, 2 × Platinum Ingot |
+| Power Boots | Rare | 3 × Silver Ingot, 2 × Silicon, Platinum Ingot |
+| Forcefield Generator | Rare | Advanced Circuit, Flux Capacitor, 5 × Silver Ingot, 5 × Silicon, 3 × Platinum Ingot, 2 × Lithium Ingot, 10 × Posirite Dust, 10 × Negarite Dust, Nether Star |
+| Negarite Flux Generator | Common | Circuit, 5 × Silver Ingot, 5 × Silicon, 2 × Manganese Ingot, 2 × Lithium Ingot, 40 × Negarite Dust |
+| Posirite Flux Generator | Common | Circuit, 5 × Silver Ingot, 5 × Silicon, 2 × Manganese Ingot, 2 × Lithium Ingot, 40 × Posirite Dust |
+| Power Combiner | Common | Circuit, 3 × Silver Ingot, 2 × Silicon, 20 × Negarite Dust, 20 × Posirite Dust |
+| Constructor | Common | Circuit, 2 × Silver Ingot, Platinum Ingot, 4 × Silicon |
+| Auto Constructor | Common | Constructor, 2 × Circuit, Silver Ingot, 2 × Platinum Ingot, 2 × Silicon |
+| Storage Cube | Common | Black Marble, 3 × Silver Ingot, Chest, 4 × Glass Pane |
+| Blueprint Storage | Common | Black Marble, 3 × Silver Ingot, 2 × Silicon, Chest, 4 × Glass Pane |
+| Elevator | Common | Circuit, Black Marble Slab, 3 × Silver Ingot |
+| Negarite Tank | Common | 4 × Silver Ingot, Manganese Ingot, 4 × Glass, 20 × Negarite Dust |
+| Posirite Tank | Common | 4 × Silver Ingot, Manganese Ingot, 4 × Glass, 20 × Posirite Dust |
+| Flux Beam | Common | Black Marble, Silver Ingot, Negarite Dust, Posirite Dust |
+| Flux Bend Beam | Common | Black Marble, Silver Ingot, Negarite Dust, Posirite Dust |
+| Level Marker | Common | Black Marble Slab, Silver Ingot |
+| Door Marker | Common | Black Marble Slab, 3 × Silicon, Silver Ingot |
+| Alarm | Uncommon | Circuit, Black Marble, Silicon, Lithium Ingot, Glowstone Dust, Ender Pearl, Silver Ingot |
+| Lock | Uncommon | Circuit, 2 × Silicon, Lithium Ingot, Silver Ingot |
+| Signal Receiver | Uncommon | Circuit, Black Marble Slab, Silicon, Lithium Ingot, Ender Pearl, Silver Ingot |
+| Signal Transmitter | Uncommon | Circuit, Black Marble Slab, 2 × Silicon, Lithium Ingot, Ender Pearl |
+| Wireless Button | Uncommon | Circuit, Black Marble Slab, 2 × Silicon, Lithium Ingot, Ender Pearl |
+| Wireless Lock | Uncommon | Circuit, Black Marble Slab, 4 × Silicon, 2 × Silver Ingot, Lithium Ingot, Ender Pearl |
+| Slope | Common | Black Marble |
+| 2 × Black Marble Slab | Common | Black Marble |
+| Reinforced Marble | Uncommon | 4 × Black Marble, 4 × Obsidian |
+| Automation Field | Uncommon | Circuit, Flux Capacitor, 3 × Silicon, Ender Pearl, 2 × Silver Ingot |
+| Sensor Item Node | Uncommon | Circuit, 2 × Silicon, 2 × Silver Ingot |
+| Input Item Node | Common | Circuit, 2 × Silicon, 2 × Silver Ingot |
+| Output Item Node | Common | Circuit, 2 × Silicon, 2 × Silver Ingot |
+| Round Robin Node | Uncommon | Circuit, Silicon, 2 × Silver Ingot |
+| Field Marker | Common | Black Marble Slab, Silicon, 2 × Silver Ingot |
+| Flux Glow | Common | Black Marble, 8 × Glowstone Dust |
+| Flat Light | Common | Black Marble Slab, 8 × Glowstone Dust |
+
+#### Unfinished cable and connector variants
+
+| Result | Rarity | Ingredients |
+| --- | --- | --- |
+| 8 × netcable (legacy variant); intended negarite | Common | Silicon, Silver Ingot, 3 × Glass Pane, 2 × Negarite Dust |
+| 8 × netcable (legacy variant); intended posirite | Common | Silicon, Silver Ingot, 3 × Glass Pane, 2 × Posirite Dust |
+| 8 × netcable (legacy variant); intended combined | Common | Silicon, Silver Ingot, 3 × Glass Pane, 2 × Negarite Dust, 2 × Posirite Dust |
+| connector (legacy variant); intended negarite | Common | netcable (legacy variant), Silver Ingot, Silicon |
+| connector (legacy variant); intended posirite | Common | netcable (legacy variant), Silver Ingot, Silicon |
+| connector (legacy variant); intended combined | Common | netcable (legacy variant), Silver Ingot, Silicon |
+
+
+Ordinary decorative recipes live in
+[generated recipe data](src/generated/resources/data/ariente/recipes).
+The blueprint tables are sourced from
+[BlueprintRecipeRegistry.java](src/main/java/mcjty/ariente/recipes/BlueprintRecipeRegistry.java).
+
+## Troubleshooting
+
+| Symptom | Check |
+| --- | --- |
+| Pearl cannot find a dungeon | Use it in the Overworld; move to another area if no intact seeded entrance is within its search radius. `findentrance` searches farther for testing. |
+| Warper says insufficient charge | Add pearls directly to that Warper; cable power does not charge it. |
+| Generator appears fueled but machine does nothing | Matching tanks, redstone mode, both fuel types, output capacity, and connectors at the machine. |
+| A cable touches the machine but it has no supply | Replace the endpoint with a matching Connector; a plain cable is not a supplying endpoint. |
+| More negarite does not help | Posirite may be the limiting component, or vice versa. |
+| Combiner consumes input but the output is inadequate | Check transfer setting, 2% loss, Combined Connectors, and competing consumers. |
+| Shield does not appear around a peaceful ship | City shields activate on alerts. Test in Survival, non-Peaceful difficulty, in a sentinel's visible range, without active Scramble. |
+| Shield has holes or builds slowly | Supply construction/repair power in addition to idle power; projectile damage affects individual panels. |
+| City does not initialize/alert | Load its required footprint; Creative/Spectator proximity alone will not trigger sentinel alerts. |
+| Card has the city's name but access fails | Check its security tags and whether you need door, storage, or shield access. |
+| Constructor shows no recipes | Use populated blueprints in directly adjacent Blueprint Storage. |
+| Constructor result is crossed out | Hover for missing ingredients; manual crafting takes them from the player's inventory. |
+| Auto Constructor stalls | Check both power components, ingredient inventory, output space, neighboring blueprints, and redstone mode. |
+| Automation Field moves nothing | Connected markers under node columns, height, correct source Output/destination Input roles, nonempty filters, full batch availability, conditions, and power. |
+| Item-transfer animation is absent | Watch inventory counts; that visual path is still partly unported. |
+| Armor module is installed but does nothing | Activation, fuel of both kinds, per-piece power budget, and whether the ability's hook is actually ported. |
+| Cart will not start | Board the cart, click an end panel's speed arrows, and confirm continuous beam orientation/clearance. Controls are HoloGui entities, not a full-screen menu. |
+| Elevator cannot find a floor | Marker height must be inside its scan and within two blocks horizontally; clear the lift column. |
+
+## Port gaps
+
+These are current implementation boundaries, not requirements to repair older
+worlds. This documentation task does not change their code.
+
+| Area | What remains incomplete or needs validation |
+| --- | --- |
+| Survival resources | Ariente ore drop/processing data is incomplete; generation alone is not a finished resource progression. |
+| Alternative progression without ArienteWorld | Legacy Overworld loot injection is disabled. |
+| Recipe variants | Metadata-era cable/connector catalog entries do not distinguish the modern colored items. Several registered blocks/modules have no catalog entry. |
+| Crafting integration | Constructor-specific JEI integration is not fully restored; consult blueprints/catalog rather than assuming JEI shows it all. Auto Constructor batch yields differ between empty and existing output slots. |
+| Armor movement | Flight, Hover, Speed, and Step Assist client behavior is disabled. Invisibility's install control is disabled. |
+| Equipment lifecycle | Sabre slot selection, fuel/effect transitions, ordinary enchantment interaction, and armor attributes need gameplay audit. Autofeed has a mixed-holder edge case. |
+| Automation matching | Ore Dictionary matching is not replaced with tags; strict destination NBT/damage matching and filter persistence need audit. |
+| Visual effects | Some cable/automation transfer effects and item-specific rendering remain commented out. |
+| Facades | Placement/state display works; the old special facade-only breaking hooks are not fully migrated. |
+| Security provisioning | City keys work through authored/AI setup; there is no complete player-facing arbitrary key-programming workflow. |
+| Elevator | Attempts power consumption but does not enforce failure as an operation gate. |
+| Flux Ship / cabin workflows | Experimental vehicle code and models exist; complete player operation/progression is not established. |
+| Worldgen controls | The declared `cityDungeonChance` setting is not used by current complex plan selection. |
+| City editing tools | The old editing commands/tools remain archived in ArienteWorld's legacy sources; the active command set is the exploration/search set documented above. |
+| General validation | Current regression checks are focused; full survival progression, combat balance, long transport routes, and multiplayer still require testing. |
+
+For implementation history and build commands, see [PORTING.txt](PORTING.txt) and
+the [ArienteWorld checkpoint](../ArienteWorld/PORTING.txt).
+
+## Source map
+
+Use these as the maintenance reference when updating the guide:
+
+| Topic | Source |
+| --- | --- |
+| Registered blocks/items and creative entries | [Registration](src/main/java/mcjty/ariente/setup/Registration.java). |
+| Names and existing tooltip descriptions | [English translations](src/main/resources/assets/ariente/lang/en_us.json). |
+| Power and cable behavior | [power](src/main/java/mcjty/ariente/power), [cables](src/main/java/mcjty/ariente/cables), [generators](src/main/java/mcjty/ariente/blocks/generators). |
+| Machines, storage, doors, signals, automation | [utility blocks](src/main/java/mcjty/ariente/blocks/utility). |
+| Shield geometry and damage | [defense](src/main/java/mcjty/ariente/blocks/defense). |
+| Equipment and module configuration | [items](src/main/java/mcjty/ariente/items), [upgrade types](src/main/java/mcjty/ariente/api/ArmorUpgradeType.java). |
+| Blueprint recipes and ordinary recipes | [catalog](src/main/java/mcjty/ariente/recipes/BlueprintRecipeRegistry.java), [ordinary JSON](src/generated/resources/data/ariente/recipes), [recipe generator](src/main/java/mcjty/ariente/datagen/Recipes.java). |
+| World terrain/population | [dimension](../ArienteWorld/src/main/java/mcjty/arienteworld/dimension), [worldgen data](../ArienteWorld/src/main/resources/data/arienteworld/worldgen). |
+| Authored cities and loot settings | [city assets](../ArienteWorld/src/main/resources/assets/arienteworld/citydata), [city AI](../ArienteWorld/src/main/java/mcjty/arienteworld/ai/CityAI.java). |
+| Verified regressions | [GameTests](../ArienteWorld/src/gameTest/java/mcjty/arienteworld). |
+
+When source and a historical tooltip/wiki disagree, use the current code as the
+reference and label unfinished behavior explicitly. Update this guide as the
+remaining systems are restored.

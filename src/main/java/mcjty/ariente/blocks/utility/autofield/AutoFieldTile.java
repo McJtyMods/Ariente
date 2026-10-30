@@ -16,8 +16,8 @@ import mcjty.hologui.api.StyledColor;
 import mcjty.lib.blocks.BaseBlock;
 import mcjty.lib.blocks.RotationType;
 import mcjty.lib.builder.BlockBuilder;
-import mcjty.lib.multipart.MultipartHelper;
-import mcjty.lib.multipart.MultipartTE;
+import mcjty.ariente.multipart.MultipartHelper;
+import mcjty.ariente.multipart.MultipartTE;
 import mcjty.lib.multipart.PartPos;
 import mcjty.lib.multipart.PartSlot;
 import mcjty.lib.tileentity.TickingTileEntity;
@@ -183,7 +183,7 @@ public class AutoFieldTile extends TickingTileEntity implements IGuiTile, IPower
                                         PartSlot roundRobinSlot = producer.getRoundRobinSlot();
                                         if (roundRobinSlot != null) {
                                             // @todo more efficient way to get to the round robin index?
-                                            BlockEntity roundRobinModifier = MultipartHelper.getTileEntity(level, sourcePos.getPos(), roundRobinSlot);
+                                            BlockEntity roundRobinModifier = MultipartHelper.getBlockEntity(level, sourcePos.pos(), roundRobinSlot);
                                             if (roundRobinModifier instanceof RoundRobinNodeTile) {
                                                 index = ((RoundRobinNodeTile) roundRobinModifier).fetchIndex();
                                                 index = index % destinations.size();
@@ -318,7 +318,7 @@ public class AutoFieldTile extends TickingTileEntity implements IGuiTile, IPower
     }
 
     private InputItemNodeTile getInputItemNodeAt(PartPos partPos) {
-        BlockEntity te = MultipartHelper.getTileEntity(level, partPos);
+        BlockEntity te = MultipartHelper.getBlockEntity(level, partPos);
         if (te instanceof InputItemNodeTile) {
             return (InputItemNodeTile) te;
         } else {
@@ -327,7 +327,7 @@ public class AutoFieldTile extends TickingTileEntity implements IGuiTile, IPower
     }
 
     private OutputItemNodeTile getOutputItemNodeAt(PartPos partPos) {
-        BlockEntity te = MultipartHelper.getTileEntity(level, partPos);
+        BlockEntity te = MultipartHelper.getBlockEntity(level, partPos);
         if (te instanceof OutputItemNodeTile) {
             return (OutputItemNodeTile) te;
         } else {
@@ -354,7 +354,7 @@ public class AutoFieldTile extends TickingTileEntity implements IGuiTile, IPower
                 for (int y = 0; y <= height; y++) {
                     BlockPos p = mpos.above(y);
                     for (PartSlot slot : PartSlot.VALUES) {
-                        BlockEntity te = MultipartHelper.getTileEntity(level, p, slot);
+                        BlockEntity te = MultipartHelper.getBlockEntity(level, p, slot);
                         if (te instanceof InputItemNodeTile) {
                             inputItemNodes.add(PartPos.create(p, slot));
                         }
@@ -369,7 +369,7 @@ public class AutoFieldTile extends TickingTileEntity implements IGuiTile, IPower
         if (!sensorMeasurements.containsKey(color)) {
             sensorMeasurements.put(color, false);
             for (PartPos sensorPos : getSensorNodes().getOrDefault(color, Collections.emptyList())) {
-                BlockEntity te = MultipartHelper.getTileEntity(level, sensorPos);
+                BlockEntity te = MultipartHelper.getBlockEntity(level, sensorPos);
                 if (te instanceof SensorItemNodeTile) {
                     SensorItemNodeTile sensor = (SensorItemNodeTile) te;
                     // This recursion will work even if we need the same color because
@@ -413,12 +413,12 @@ public class AutoFieldTile extends TickingTileEntity implements IGuiTile, IPower
                 BlockPos p = mpos.above(y);
                 for (NodeOrientation orientation : NodeOrientation.VALUES) {
                     PartSlot slot = orientation.getSlot();
-                    BlockEntity te = MultipartHelper.getTileEntity(level, p, slot);
+                    BlockEntity te = MultipartHelper.getBlockEntity(level, p, slot);
                     if (te instanceof OutputItemNodeTile) {
                         outputItemNodes.add(PartPos.create(p, slot));
                     }
                     PartSlot backSlot = orientation.getBackSlot();
-                    te = MultipartHelper.getTileEntity(level, p, backSlot);
+                    te = MultipartHelper.getBlockEntity(level, p, backSlot);
                     if (te instanceof RoundRobinNodeTile) {
                         outputmodifierNodes.add(PartPos.create(p, slot));  // Use 'slot' even if the round robin modifier is at backSlot
                     }
@@ -434,7 +434,7 @@ public class AutoFieldTile extends TickingTileEntity implements IGuiTile, IPower
                 BlockPos p = mpos.above(y);
                 for (NodeOrientation orientation : NodeOrientation.VALUES) {
                     PartSlot slot = orientation.getSlot();
-                    BlockEntity te = MultipartHelper.getTileEntity(level, p, slot);
+                    BlockEntity te = MultipartHelper.getBlockEntity(level, p, slot);
                     if (te instanceof SensorItemNodeTile) {
                         DyeColor outputColor = ((SensorItemNodeTile) te).getOutputColor();
                         sensorNodes.computeIfAbsent(outputColor, color -> new ArrayList<>());
@@ -474,7 +474,7 @@ public class AutoFieldTile extends TickingTileEntity implements IGuiTile, IPower
     public static void notifyField(Level world, BlockPos pos) {
         BlockPos originalPos = pos;
         while (pos.getY() > 0) {
-            BlockEntity te = MultipartHelper.getTileEntity(world, pos, PartSlot.DOWN);
+            BlockEntity te = MultipartHelper.getBlockEntity(world, pos, PartSlot.DOWN);
             if (te instanceof FieldMarkerTile) {
                 BlockPos fieldPos = ((FieldMarkerTile) te).getAutoFieldTile();
                 if (fieldPos != null) {
@@ -575,7 +575,7 @@ public class AutoFieldTile extends TickingTileEntity implements IGuiTile, IPower
                                 fieldBox = fieldBox.minmax(new AABB(p));
                             }
                             markers.add(p);
-                            BlockEntity markerTE = MultipartHelper.getTileEntity(level, p, PartSlot.DOWN);
+                            BlockEntity markerTE = MultipartHelper.getBlockEntity(level, p, PartSlot.DOWN);
                             if (markerTE instanceof FieldMarkerTile) {
                                 ((FieldMarkerTile) markerTE).setAutoFieldTile(this.worldPosition);
                             }

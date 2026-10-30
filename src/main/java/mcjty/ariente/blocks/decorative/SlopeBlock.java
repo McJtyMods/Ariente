@@ -8,7 +8,7 @@ import net.minecraft.core.Direction;
 import net.minecraft.world.level.LevelAccessor;
 import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.level.block.state.properties.Property;
-import net.minecraft.world.level.material.Material;
+import net.minecraft.world.level.material.MapColor;
 import net.minecraft.world.item.context.BlockPlaceContext;
 import net.minecraft.world.level.block.Rotation;
 import net.minecraft.core.BlockPos;
@@ -21,7 +21,7 @@ public class SlopeBlock extends BaseBlock {
 
     public SlopeBlock() {
         super(new BlockBuilder()
-                .properties(Properties.of(Material.STONE).strength(2.0f, 4.0f))
+                .properties(Properties.of().mapColor(MapColor.STONE).strength(2.0f, 4.0f).noOcclusion())
                 // @todo 1.18 .harvestLevel(ToolType.PICKAXE, 1)
         );
     }
@@ -30,23 +30,6 @@ public class SlopeBlock extends BaseBlock {
     public RotationType getRotationType() {
         return RotationType.NONE;
     }
-
-    // @todo 1.14
-    //    @Override
-//    public boolean isTopSolid(BlockState state) {
-//        return false;
-//    }
-//
-//    @Override
-//    public boolean isOpaqueCube(BlockState state) {
-//        return false;
-//    }
-//
-//    @Override
-//    public boolean isFullCube(BlockState state) {
-//        return false;
-//    }
-
 
     @Override
     public BlockState rotate(BlockState state, LevelAccessor world, BlockPos pos, Rotation rot) {

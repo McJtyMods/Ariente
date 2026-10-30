@@ -30,6 +30,8 @@ import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.level.block.state.StateDefinition;
 import net.minecraft.world.phys.BlockHitResult;
+import net.minecraftforge.common.capabilities.Capability;
+import net.minecraftforge.common.capabilities.ForgeCapabilities;
 import net.minecraftforge.common.util.Lazy;
 import net.minecraftforge.common.util.LazyOptional;
 
@@ -134,7 +136,7 @@ public class PosiriteGeneratorTile extends TickingTileEntity implements IGuiTile
             if (canProceed()) {
                 items.getStackInSlot(SLOT_POSIRITE_INPUT).shrink(1);
                 dustCounter = 600;
-                markDirtyQuick();
+                markDirtyClient();
                 sendPower();
             }
         }
@@ -219,6 +221,16 @@ public class PosiriteGeneratorTile extends TickingTileEntity implements IGuiTile
         //        writeBufferToNBT(tagCompound, inventoryHelper);
         getOrCreateInfo(tagCompound).putInt("dust", dustCounter);
         super.saveAdditional(tagCompound);
+    }
+
+    @Override
+    public void saveClientDataToNBT(CompoundTag tag) {
+        saveAdditional(tag);
+    }
+
+    @Override
+    public void loadClientDataFromNBT(CompoundTag tag) {
+        load(tag);
     }
 
     @Override
@@ -359,6 +371,15 @@ public class PosiriteGeneratorTile extends TickingTileEntity implements IGuiTile
         if (!this.level.isClientSide) {
             PowerSenderSupport.fixNetworks(this.level, pos);
         }
+    }
+
+    @Nonnull
+    @Override
+    public <T> LazyOptional<T> getCapability(@Nonnull Capability<T> cap) {
+        if (cap == ForgeCapabilities.ITEM_HANDLER) {
+            return itemHandler.cast();
+        }
+        return super.getCapability(cap);
     }
 
     private GenericItemHandler createItemHandler() {

@@ -37,7 +37,7 @@ public class ArienteTOPDriver implements TOPDriver {
 
     @Override
     public void addProbeInfo(ProbeMode mode, IProbeInfo probeInfo, Player player, Level world, BlockState blockState, IProbeHitData data) {
-        ResourceLocation id = blockState.getBlock().getRegistryName();
+        ResourceLocation id = Tools.getId(blockState.getBlock());
         if (!drivers.containsKey(id)) {
             Block block = blockState.getBlock();
             if (block == Registration.AICORE.get()) {

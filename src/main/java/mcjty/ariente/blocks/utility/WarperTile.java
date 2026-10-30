@@ -15,6 +15,10 @@ import mcjty.lib.builder.BlockBuilder;
 import mcjty.lib.tileentity.GenericTileEntity;
 import mcjty.lib.varia.TeleportationTools;
 import net.minecraft.core.BlockPos;
+import net.minecraft.server.level.ServerPlayer;
+import net.minecraft.server.level.ServerLevel;
+import net.minecraft.nbt.NbtUtils;
+import net.minecraft.world.level.levelgen.Heightmap;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.resources.ResourceKey;
 import net.minecraft.world.InteractionResult;
@@ -24,7 +28,6 @@ import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.InteractionHand;
 import net.minecraft.world.phys.AABB;
 import net.minecraft.world.phys.BlockHitResult;
-import net.minecraft.world.level.storage.LevelData;
 
 import static mcjty.ariente.compat.ArienteTOPDriver.DRIVER;
 import static mcjty.lib.builder.TooltipBuilder.header;
@@ -112,6 +115,16 @@ public class WarperTile extends GenericTileEntity implements IGuiTile, IWarper {
         super.saveAdditional(tagCompound);
     }
 
+    @Override
+    public void saveClientDataToNBT(CompoundTag tag) {
+        saveAdditional(tag);
+    }
+
+    @Override
+    public void loadClientDataFromNBT(CompoundTag tag) {
+        load(tag);
+    }
+
     public int getChargePercentage() {
         int pct;
         if (UtilityConfiguration.WARPER_MAX_CHARGES.get() <= 0) {
@@ -133,27 +146,42 @@ public class WarperTile extends GenericTileEntity implements IGuiTile, IWarper {
 //        return pass == 1;
 //    }
 
-    private void warp(Player player) {
-        if (level.dimension() == Level.OVERWORLD) {
-            if (!level.isClientSide) {
-                if (Ariente.setup.arienteWorld) {
-                    // @todo for future usage
-                    BlockPos nearest = ArienteWorldCompat.getArienteWorld().getNearestTeleportationSpot(player.blockPosition());
-                    TeleportationTools.teleportToDimension(player, ArienteWorldCompat.getArienteWorld().getDimension(), nearest.getX(), nearest.getY(), nearest.getZ());
+    public void warp(Player player) {
+        if (!(player instanceof ServerPlayer serverPlayer) || player.level() != level || !Ariente.setup.arienteWorld) {
+            return;
+        }
+        if (level.dimension().equals(Level.OVERWORLD)) {
+            BlockPos destination = ArienteWorldCompat.getArienteWorld().getNearestTeleportationSpot(player.blockPosition());
+            // Remember the source entrance so the return trip works without a bed.
+            player.getPersistentData().put("arienteReturn", NbtUtils.writeBlockPos(worldPosition.above()));
+            TeleportationTools.teleportToDimension(player, ArienteWorldCompat.getArienteWorld().getDimension(),
+                    destination.getX() + .5, destination.getY(), destination.getZ() + .5);
+        } else if (level.dimension().equals(ArienteWorldCompat.getArienteWorld().getDimension())) {
+            ServerLevel overworld = serverPlayer.server.getLevel(Level.OVERWORLD);
+            BlockPos destination = null;
+            if (player.getPersistentData().contains("arienteReturn")) {
+                BlockPos source = NbtUtils.readBlockPos(player.getPersistentData().getCompound("arienteReturn"));
+                overworld.getChunkAt(source);
+                if (overworld.getBlockState(source.below()).is(Registration.WARPER.get())
+                        && overworld.isEmptyBlock(source) && overworld.isEmptyBlock(source.above())) {
+                    destination = source;
                 }
             }
-        } else {
-            if (!level.isClientSide) {
-                BlockPos bedLocation = player.getSleepingPos().get();
-                if (bedLocation == null) {
-                    LevelData worldInfo = level.getLevelData();
-                    bedLocation = new BlockPos(worldInfo.getXSpawn(),worldInfo.getYSpawn(), worldInfo.getZSpawn());
+            if (destination == null && serverPlayer.getRespawnDimension().equals(Level.OVERWORLD)
+                    && serverPlayer.getRespawnPosition() != null) {
+                overworld.getChunkAt(serverPlayer.getRespawnPosition());
+                var respawn = ServerPlayer.findRespawnPositionAndUseSpawnBlock(overworld, serverPlayer.getRespawnPosition(),
+                        serverPlayer.getRespawnAngle(), serverPlayer.isRespawnForced(), true);
+                if (respawn.isPresent()) {
+                    destination = BlockPos.containing(respawn.get());
                 }
-                while (!level.isEmptyBlock(bedLocation) && !level.isEmptyBlock(bedLocation.above()) && bedLocation.getY() < level.getMaxBuildHeight()-2) {
-                    bedLocation = bedLocation.above();
-                }
-                TeleportationTools.teleportToDimension(player, Level.OVERWORLD, bedLocation.getX(), bedLocation.getY(), bedLocation.getZ());
             }
+            if (destination == null) {
+                BlockPos spawn = overworld.getSharedSpawnPos();
+                overworld.getChunkAt(spawn);
+                destination = overworld.getHeightmapPos(Heightmap.Types.MOTION_BLOCKING_NO_LEAVES, spawn);
+            }
+            TeleportationTools.teleportToDimension(player, Level.OVERWORLD, destination.getX() + .5, destination.getY(), destination.getZ() + .5);
         }
     }
 

@@ -7,17 +7,12 @@ import mcjty.hologui.api.IGuiComponentRegistry;
 import mcjty.hologui.api.IGuiTile;
 import mcjty.hologui.api.StyledColor;
 import mcjty.lib.blocks.BaseBlock;
-import mcjty.lib.blocks.RotationType;
 import mcjty.lib.builder.BlockBuilder;
 import mcjty.lib.tileentity.GenericTileEntity;
 import net.minecraft.core.BlockPos;
-import net.minecraft.world.level.block.Block;
 import net.minecraft.world.level.block.state.BlockState;
-import net.minecraft.world.level.block.state.StateDefinition;
 import net.minecraft.world.level.block.entity.BlockEntity;
 
-import static mcjty.ariente.blocks.BlockProperties.LOWER;
-import static mcjty.ariente.blocks.BlockProperties.UPPER;
 import static mcjty.ariente.compat.ArienteTOPDriver.DRIVER;
 import static mcjty.lib.builder.TooltipBuilder.header;
 import static mcjty.lib.builder.TooltipBuilder.key;
@@ -29,23 +24,12 @@ public class PosiriteTankTile extends GenericTileEntity implements IGuiTile, IAl
     }
 
     public static BaseBlock createBlock() {
-        return new BaseBlock(new BlockBuilder()
+        return new TankBlock(new BlockBuilder()
                 .info(key("message.ariente.shiftmessage"))
                 .infoShift(header())
                 .topDriver(DRIVER)
                 .tileEntitySupplier(PosiriteTankTile::new)
-        ) {
-            @Override
-            public RotationType getRotationType() {
-                return RotationType.NONE;
-            }
-
-            @Override
-            protected void createBlockStateDefinition(StateDefinition.Builder<Block, BlockState> builder) {
-                super.createBlockStateDefinition(builder);
-                builder.add(UPPER).add(LOWER);
-            }
-        };
+        );
     }
 
 
@@ -67,19 +51,6 @@ public class PosiriteTankTile extends GenericTileEntity implements IGuiTile, IAl
     public boolean isHighAlert() {
         return false;
     }
-
-    // @todo 1.14
-//    @Override
-//    public BlockState getActualState(BlockState state) {
-//        return state.with(UPPER, world.getBlockState(pos.up()).getBlock() == ModBlocks.posiriteTankBlock.get())
-//                .with(LOWER, world.getBlockState(pos.down()).getBlock() == ModBlocks.posiriteTankBlock.get());
-//    }
-
-    // @todo 1.14
-//    @Override
-//    public boolean shouldRenderInPass(int pass) {
-//        return pass == 1;
-//    }
 
     @Override
     public IGuiComponent<?> createGui(String tag, IGuiComponentRegistry registry) {

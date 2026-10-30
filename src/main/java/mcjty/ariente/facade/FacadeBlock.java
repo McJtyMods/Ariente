@@ -1,5 +1,6 @@
 package mcjty.ariente.facade;
 
+import mcjty.lib.varia.Tools;
 import mcjty.ariente.cables.CableColor;
 import mcjty.ariente.cables.GenericCableTileEntity;
 import mcjty.ariente.cables.NetCableBlock;
@@ -13,7 +14,7 @@ import net.minecraft.world.level.block.Blocks;
 import net.minecraft.world.level.block.entity.BlockEntity;
 import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.level.material.FluidState;
-import net.minecraft.world.level.material.Material;
+import net.minecraft.world.level.material.MapColor;
 
 import javax.annotation.Nullable;
 
@@ -22,7 +23,7 @@ public class FacadeBlock extends NetCableBlock {
     public static final String FACADE = "facade";
 
     public FacadeBlock() {
-        super(Material.METAL);
+        super(MapColor.METAL);
         // @todo 1.14
 //        setHardness(0.8f);
     }

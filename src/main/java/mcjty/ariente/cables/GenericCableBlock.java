@@ -1,5 +1,6 @@
 package mcjty.ariente.cables;
 
+import mcjty.lib.varia.Tools;
 import mcjty.ariente.facade.IFacadeSupport;
 import mcjty.ariente.power.PowerSenderSupport;
 import mcjty.ariente.setup.Registration;
@@ -14,12 +15,13 @@ import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.Items;
 import net.minecraft.world.item.context.BlockPlaceContext;
 import net.minecraft.world.level.Level;
+import net.minecraft.world.level.LevelAccessor;
 import net.minecraft.world.level.block.Block;
 import net.minecraft.world.level.block.EntityBlock;
 import net.minecraft.world.level.block.SoundType;
 import net.minecraft.world.level.block.entity.BlockEntity;
 import net.minecraft.world.level.block.state.BlockState;
-import net.minecraft.world.level.material.Material;
+import net.minecraft.world.level.material.MapColor;
 import net.minecraft.world.level.block.state.StateDefinition;
 import net.minecraft.world.level.block.state.properties.EnumProperty;
 import net.minecraft.world.phys.shapes.BooleanOp;
@@ -62,8 +64,8 @@ public abstract class GenericCableBlock extends Block implements WailaInfoProvid
     private static final VoxelShape SHAPE_BLOCK_DOWN = Shapes.box(.2, 0, .2, .8, .1, .8);
 
 
-    public GenericCableBlock(Material material) {
-        super(Properties.of(material)
+    public GenericCableBlock(MapColor material) {
+        super(Properties.of().mapColor(material)
                 .sound(SoundType.METAL)
                 .strength(1.0f)
         );
@@ -317,7 +319,7 @@ public abstract class GenericCableBlock extends Block implements WailaInfoProvid
     @Override
     public void onRemove(BlockState state, Level world, BlockPos pos, BlockState newState, boolean isMoving) {
         super.onRemove(state, world, pos, newState, isMoving);
-        if (!world.isClientSide) {
+        if (!state.is(newState.getBlock()) && !world.isClientSide) {
             PowerSenderSupport.fixNetworks(world, pos);
         }
     }
@@ -400,17 +402,16 @@ public abstract class GenericCableBlock extends Block implements WailaInfoProvid
         Level world = context.getLevel();
         BlockPos pos = context.getClickedPos();
         BlockState state = calculateState(world, pos, defaultBlockState());
-        System.out.println("state = " + state);
         return state;
     }
 
-    // @todo 1.18 @Override
-    public BlockState updateShape(BlockState state, Direction direction, BlockState neighbourState, Level world, BlockPos current, BlockPos offset) {
+    @Override
+    public BlockState updateShape(BlockState state, Direction direction, BlockState neighbourState, LevelAccessor world, BlockPos current, BlockPos offset) {
         return calculateState(world, current, state);
     }
 
     @Nonnull
-    public BlockState calculateState(Level world, BlockPos pos, BlockState state) {
+    public BlockState calculateState(BlockGetter world, BlockPos pos, BlockState state) {
         CableColor color = state.getValue(COLOR);
         ConnectorType north = getConnectorType(color, world, pos, Direction.NORTH);
         ConnectorType south = getConnectorType(color, world, pos, Direction.SOUTH);

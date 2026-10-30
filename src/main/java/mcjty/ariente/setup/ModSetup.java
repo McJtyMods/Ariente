@@ -17,10 +17,6 @@ public class ModSetup extends DefaultModSetup {
 
     public boolean arienteWorld = false;
 
-    public ModSetup() {
-        createTab("ariente", () -> new ItemStack(Registration.POSIRITE_GENERATOR.get()));
-    }
-
     @Override
     public void init(FMLCommonSetupEvent e) {
         super.init(e);

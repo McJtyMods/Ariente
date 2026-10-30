@@ -8,7 +8,6 @@ import mcjty.ariente.bindings.KeyBindings;
 import mcjty.ariente.items.modules.ModuleSupport;
 import mcjty.ariente.setup.Registration;
 import net.minecraft.ChatFormatting;
-// @todo 1.18 import net.minecraft.client.renderer.entity.model.BipedModel;
 import net.minecraft.network.chat.Component;
 import net.minecraft.world.effect.MobEffectInstance;
 import net.minecraft.world.effect.MobEffects;
@@ -22,20 +21,30 @@ import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.entity.ai.attributes.Attributes;
 import net.minecraft.world.item.ArmorItem;
 import net.minecraft.world.item.ArmorMaterials;
-import net.minecraft.network.chat.TextComponent;
 import net.minecraft.world.level.Level;
+import net.minecraftforge.client.extensions.common.IClientItemExtensions;
 import org.apache.commons.lang3.tuple.Pair;
 
 import javax.annotation.Nullable;
 import java.util.List;
 import java.util.UUID;
+import java.util.function.Consumer;
 
 public class PowerSuit extends ArmorItem {
+
+    private final EquipmentSlot slot;
 
     private static final UUID[] ARMOR_EXT_MODIFIERS = new UUID[] {UUID.randomUUID(), UUID.randomUUID(), UUID.randomUUID(), UUID.randomUUID()};
 
     public PowerSuit(EquipmentSlot slot) {
-        super(ArmorMaterials.LEATHER, slot, new Properties().durability(0).tab(Ariente.setup.getTab()));
+        super(ArmorMaterials.LEATHER, switch (slot) {
+            case HEAD -> Type.HELMET;
+            case CHEST -> Type.CHESTPLATE;
+            case LEGS -> Type.LEGGINGS;
+            case FEET -> Type.BOOTS;
+            default -> throw new IllegalArgumentException("Not an armor slot: " + slot);
+        }, new Properties().durability(0));
+        this.slot = slot;
         // @todo 1.14
 //        setRegistryName("powersuit_" + slot.getName());
     }
@@ -64,11 +73,10 @@ public class PowerSuit extends ArmorItem {
         return builder.build();
     }
 
-    // @todo 1.18 @Nullable
-    // @todo 1.18 @Override
-    // @todo 1.18 public BipedModel getArmorModel(LivingEntity entityLiving, ItemStack itemStack, EquipmentSlot armorSlot, BipedModel _default) {
-    // @todo 1.18     return PowerSuitModel.getModel(entityLiving, itemStack);
-    // @todo 1.18 }
+    @Override
+    public void initializeClient(Consumer<IClientItemExtensions> consumer) {
+        consumer.accept(PowerSuitModel.EXTENSIONS);
+    }
 
     @Override
     public void inventoryTick(ItemStack stack, Level world, Entity entity, int itemSlot, boolean isSelected) {
@@ -217,9 +225,9 @@ public class PowerSuit extends ArmorItem {
     @Override
     public void appendHoverText(ItemStack stack, Level world, List<Component> list, TooltipFlag b) {
         super.appendHoverText(stack, world, list, b);
-        list.add(new TextComponent("Power suit part"));
+        list.add(Component.literal("Power suit part"));
         if (KeyBindings.configureArmor != null) {
-            list.add(new TextComponent(ChatFormatting.GRAY + "Configure with: " + ChatFormatting.WHITE + "key " + KeyBindings.configureArmor.getDisplayName()));
+            list.add(Component.literal(ChatFormatting.GRAY + "Configure with: " + ChatFormatting.WHITE + "key " + KeyBindings.configureArmor.getDisplayName()));
         }
         if (stack.hasTag()) {
             CompoundTag compound = stack.getTag();
@@ -228,19 +236,19 @@ public class PowerSuit extends ArmorItem {
                 if (compound.contains(key)) {
                     boolean activated = compound.getBoolean(key);
                     if (activated) {
-                        list.add(new TextComponent("    " + ChatFormatting.GREEN + type.getDescription() + " (on)"));
+                        list.add(Component.literal("    " + ChatFormatting.GREEN + type.getDescription() + " (on)"));
                     } else {
-                        list.add(new TextComponent("    " + ChatFormatting.GRAY + type.getDescription() + " (off)"));
+                        list.add(Component.literal("    " + ChatFormatting.GRAY + type.getDescription() + " (off)"));
                     }
                 }
             }
             Pair<Integer, Integer> usage = ModuleSupport.getPowerUsage(stack);
-            list.add(new TextComponent(ChatFormatting.WHITE + "Power: " + ChatFormatting.YELLOW + usage.getLeft() + " / " + usage.getRight()));
+            list.add(Component.literal(ChatFormatting.WHITE + "Power: " + ChatFormatting.YELLOW + usage.getLeft() + " / " + usage.getRight()));
 
             int negarite = compound.getInt("negarite");
             int posirite = compound.getInt("posirite");
-            list.add(new TextComponent(ChatFormatting.WHITE + "Negarite: " + ChatFormatting.YELLOW + negarite));
-            list.add(new TextComponent(ChatFormatting.WHITE + "Posirite: " + ChatFormatting.YELLOW + posirite));
+            list.add(Component.literal(ChatFormatting.WHITE + "Negarite: " + ChatFormatting.YELLOW + negarite));
+            list.add(Component.literal(ChatFormatting.WHITE + "Posirite: " + ChatFormatting.YELLOW + posirite));
         }
     }
 

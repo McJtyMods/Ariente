@@ -1,5 +1,6 @@
 package mcjty.ariente.sounds;
 
+import net.minecraft.util.RandomSource;
 import mcjty.ariente.entities.levitator.FluxLevitatorEntity;
 import net.minecraft.client.resources.sounds.AbstractTickableSoundInstance;
 import net.minecraft.sounds.SoundSource;
@@ -10,7 +11,7 @@ public class MovingSoundLevitator extends AbstractTickableSoundInstance {
     private float distance = 0.0F;
 
     public MovingSoundLevitator(FluxLevitatorEntity levitatorIn) {
-        super(ModSounds.levitator, SoundSource.NEUTRAL);
+        super(ModSounds.levitator.get(), SoundSource.NEUTRAL, RandomSource.create());
         this.levitator = levitatorIn;
         this.looping = true;
         this.delay = 0;

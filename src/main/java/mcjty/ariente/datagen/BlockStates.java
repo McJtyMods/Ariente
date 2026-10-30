@@ -23,6 +23,7 @@ import net.minecraftforge.common.data.ExistingFileHelper;
 import net.minecraftforge.registries.RegistryObject;
 import net.minecraft.data.DataGenerator;
 import net.minecraftforge.client.model.generators.*;
+import net.minecraftforge.client.model.generators.loaders.CompositeModelBuilder;
 import org.apache.commons.lang3.tuple.Pair;
 
 import java.util.Arrays;
@@ -169,21 +170,21 @@ public class BlockStates extends BaseBlockStateProvider {
         builder.partialState().with(EnumFacingUpDown.FACING, EnumFacingUpDown.NORTH_UP)
                 .modelForState().modelFile(model)
                 .rotationX(180)
+                .rotationY(180)
                 .addModel();
         builder.partialState().with(EnumFacingUpDown.FACING, EnumFacingUpDown.SOUTH_UP)
                 .modelForState().modelFile(model)
                 .rotationX(180)
-                .rotationY(180)
                 .addModel();
         builder.partialState().with(EnumFacingUpDown.FACING, EnumFacingUpDown.WEST_UP)
                 .modelForState().modelFile(model)
                 .rotationX(180)
-                .rotationY(270)
+                .rotationY(90)
                 .addModel();
         builder.partialState().with(EnumFacingUpDown.FACING, EnumFacingUpDown.EAST_UP)
                 .modelForState().modelFile(model)
                 .rotationX(180)
-                .rotationY(90)
+                .rotationY(270)
                 .addModel();
     }
 
@@ -338,51 +339,11 @@ public class BlockStates extends BaseBlockStateProvider {
     }
 
     private void registerTank(BaseBlock block, String prefix) {
-        ResourceLocation windowTxt = modLoc(BLOCK_FOLDER + "/machines/" + prefix + "_tank_window");
-
-        BlockModelBuilder modelTop = models().getBuilder(BLOCK_FOLDER + "/machines/" + prefix + "_tank_top");
-        createFrame(modelTop, "#frame", 1f, true, false);
-        modelTop.element().from(1f, 0f, 1f).to(15f, 16f, 15f)
-                .face(EAST).texture("#window").end()
-                .face(WEST).texture("#window").end()
-                .face(SOUTH).texture("#window").end()
-                .face(NORTH).texture("#window").end()
-                .end()
-                .texture("window", windowTxt)
-                .texture("frame", modLoc(TXT_BLACKMARBLE));
-
-        BlockModelBuilder modelBottom = models().getBuilder(BLOCK_FOLDER + "/machines/" + prefix + "_tank_bottom");
-        createFrame(modelBottom, "#frame", 1f, false, true);
-        modelBottom.element().from(1f, 0f, 1f).to(15f, 16f, 15f)
-                .face(EAST).texture("#window").end()
-                .face(WEST).texture("#window").end()
-                .face(SOUTH).texture("#window").end()
-                .face(NORTH).texture("#window").end()
-                .end()
-                .texture("window", windowTxt)
-                .texture("frame", modLoc(TXT_BLACKMARBLE));
-
-        BlockModelBuilder modelMiddle = models().getBuilder(BLOCK_FOLDER + "/machines/" + prefix + "_tank_middle");
-        createFrame(modelMiddle, "#frame", 1f, false, false);
-        modelMiddle.element().from(1f, 0f, 1f).to(15f, 16f, 15f)
-                .face(EAST).texture("#window").end()
-                .face(WEST).texture("#window").end()
-                .face(SOUTH).texture("#window").end()
-                .face(NORTH).texture("#window").end()
-                .end()
-                .texture("window", windowTxt)
-                .texture("frame", modLoc(TXT_BLACKMARBLE));
-
-        BlockModelBuilder modelBoth = models().getBuilder(BLOCK_FOLDER + "/machines/" + prefix + "_tank_both");
-        createFrame(modelBoth, "#frame", 1f, true, true);
-        modelBoth.element().from(1f, 0f, 1f).to(15f, 16f, 15f)
-                .face(EAST).texture("#window").end()
-                .face(WEST).texture("#window").end()
-                .face(SOUTH).texture("#window").end()
-                .face(NORTH).texture("#window").end()
-                .end()
-                .texture("window", windowTxt)
-                .texture("frame", modLoc(TXT_BLACKMARBLE));
+        BlockModelBuilder modelTop = tankModel(prefix, "top", true, false);
+        BlockModelBuilder modelBottom = tankModel(prefix, "bottom", false, true);
+        BlockModelBuilder modelMiddle = tankModel(prefix, "middle", false, false);
+        BlockModelBuilder modelBoth = tankModel(prefix, "both", true, true);
+        tankItemModel(prefix, modelBoth);
 
         VariantBlockStateBuilder builder = getVariantBuilder(block);
         builder.partialState()
@@ -390,23 +351,55 @@ public class BlockStates extends BaseBlockStateProvider {
                 .modelForState().modelFile(modelBoth).addModel();
         builder.partialState()
                 .with(BlockProperties.LOWER, true).with(BlockProperties.UPPER, false)
-                .modelForState().modelFile(modelBottom).addModel();
+                .modelForState().modelFile(modelTop).addModel();
         builder.partialState()
                 .with(BlockProperties.LOWER, false).with(BlockProperties.UPPER, true)
-                .modelForState().modelFile(modelTop).addModel();
+                .modelForState().modelFile(modelBottom).addModel();
         builder.partialState()
                 .with(BlockProperties.LOWER, true).with(BlockProperties.UPPER, true)
                 .modelForState().modelFile(modelMiddle).addModel();
     }
 
+    private BlockModelBuilder tankModel(String prefix, String variant, boolean top, boolean bottom) {
+        String name = BLOCK_FOLDER + "/machines/" + prefix + "_tank_" + variant;
+        BlockModelBuilder frame = models().getBuilder(name)
+                .parent(models().getExistingFile(mcLoc("block/block")))
+                .texture("particle", modLoc(TXT_BLACKMARBLE))
+                .texture("frame", modLoc(TXT_BLACKMARBLE))
+                .renderType("minecraft:solid");
+        createFrame(frame, "#frame", 1f, top, bottom);
+        return frame;
+    }
+
+    private void tankItemModel(String prefix, BlockModelBuilder frameModel) {
+        String name = BLOCK_FOLDER + "/machines/" + prefix + "_tank_inventory";
+        BlockModelBuilder frame = new BlockModelBuilder(modLoc(name + "_frame"), models().existingFileHelper)
+                .parent(frameModel);
+        BlockModelBuilder window = new BlockModelBuilder(modLoc(name + "_window"), models().existingFileHelper);
+        window.element().from(1, 0, 1).to(15, 16, 15)
+                .face(EAST).texture("#window").end()
+                .face(WEST).texture("#window").end()
+                .face(SOUTH).texture("#window").end()
+                .face(NORTH).texture("#window").end()
+                .end()
+                .texture("window", modLoc(BLOCK_FOLDER + "/machines/" + prefix + "_tank_window"))
+                .renderType("minecraft:translucent");
+
+        models().getBuilder(name)
+                .parent(models().getExistingFile(mcLoc("block/block")))
+                .texture("particle", modLoc(TXT_BLACKMARBLE))
+                .customLoader(CompositeModelBuilder::begin)
+                .child("frame", frame)
+                .child("window", window)
+                .end();
+    }
+
     private void registerRamp() {
         BlockModelBuilder model = models().getBuilder(BLOCK_FOLDER + "/decorative/ramp");
-        float o = 2.0f / 16;
-        innerCube(model, "all", 0, 0, 0, o, o, 16);
-        innerCube(model, "all", o, o, 0, o+o, o+o, 16);
-        innerCube(model, "all", o+o, o+o, 0, o+o+o, o+o+o, 16);
-        innerCube(model, "all", o+o+o, o+o+o, 0, o+o+o+o, o+o+o+o, 16);
-        innerCube(model, "all", o+o+o+o, o+o+o+o, 0, o+o+o+o+o, o+o+o+o+o, 16);
+        float step = 16.0f / 5;
+        for (int i = 0; i < 5; i++) {
+            innerCube(model, "#all", 0, i * step, i * step, 16, (i + 1) * step, (i + 1) * step);
+        }
         model.texture("all", modLoc(TXT_BLACKMARBLE));
         horizontalOrientedBlock(Registration.RAMP.get(), model);
     }
@@ -569,12 +562,20 @@ public class BlockStates extends BaseBlockStateProvider {
     }
 
     private void registerAICore() {
-        BlockModelBuilder frame = models().getBuilder(BLOCK_FOLDER + "/aicore");
+        BlockModelBuilder frame = new BlockModelBuilder(modLoc("block/aicore_frame"), models().existingFileHelper);
         createFrame(frame, "#frame", 2f);
-        innerCube(frame, "#window", 2f, 2f, 2f, 14f, 14f, 14f);
-        frame.texture("window", modLoc(TXT_AICORE_WINDOW))
-                .texture("frame", modLoc(TXT_BLACKMARBLE));
-        simpleBlock(Registration.AICORE.get(), frame);
+        frame.texture("frame", modLoc(TXT_BLACKMARBLE)).renderType("minecraft:solid");
+        BlockModelBuilder window = new BlockModelBuilder(modLoc("block/aicore_glass"), models().existingFileHelper);
+        innerCube(window, "#window", 2, 2, 2, 14, 14, 14);
+        window.texture("window", modLoc(TXT_AICORE_WINDOW)).renderType("minecraft:translucent");
+        BlockModelBuilder core = models().getBuilder(BLOCK_FOLDER + "/aicore")
+                .parent(models().getExistingFile(mcLoc("block/block")))
+                .texture("particle", modLoc(TXT_BLACKMARBLE))
+                .customLoader(CompositeModelBuilder::begin)
+                .child("frame", frame)
+                .child("window", window)
+                .end();
+        simpleBlock(Registration.AICORE.get(), core);
     }
 
     private void registerBaseModels() {

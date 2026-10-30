@@ -1,5 +1,6 @@
 package mcjty.ariente.blocks.utility;
 
+import mcjty.lib.varia.SafeClientTools;
 import mcjty.ariente.Ariente;
 import mcjty.ariente.api.ICityAI;
 import mcjty.ariente.api.ICityEquipment;
@@ -22,7 +23,6 @@ import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.level.block.Block;
 import net.minecraft.world.level.block.state.BlockState;
-import net.minecraft.client.Minecraft;
 import net.minecraft.network.Connection;
 import net.minecraft.world.level.block.entity.BlockEntity;
 import net.minecraft.world.InteractionResult;
@@ -102,7 +102,7 @@ public class ElevatorTile extends TickingTileEntity implements IGuiTile, IPowerR
     @Override
     public void tickClient() {
         List<Integer> floors = findFloors();
-        Player clientPlayer = McJtyLib.proxy.getClientPlayer();
+        Player clientPlayer = SafeClientTools.getClientPlayer();
         if (clientPlayer.getBoundingBox().intersects(getBeamBox())) {
             clientPlayer.hasImpulse = true;
             clientPlayer.fallDistance = 0;
@@ -158,7 +158,7 @@ public class ElevatorTile extends TickingTileEntity implements IGuiTile, IPowerR
 
     private boolean isJumpKeyDown() {
         // Was McJtyLib.proxy.isJumpKeyDown()
-        return Minecraft.getInstance().options.keyJump.isDown();
+        return SafeClientTools.isJumpKeyDown();
     }
 
     private int findLowerFloor(List<Integer> floors, int y) {
@@ -306,12 +306,23 @@ public class ElevatorTile extends TickingTileEntity implements IGuiTile, IPowerR
         if (info.contains("height")) {
             height = info.getInt("height");
         }
+        cachedBox = null;
     }
 
     @Override
     public void saveAdditional(CompoundTag tagCompound) {
         getOrCreateInfo(tagCompound).putInt("height", height);
         super.saveAdditional(tagCompound);
+    }
+
+    @Override
+    public void saveClientDataToNBT(CompoundTag tag) {
+        saveAdditional(tag);
+    }
+
+    @Override
+    public void loadClientDataFromNBT(CompoundTag tag) {
+        load(tag);
     }
 
     @Override

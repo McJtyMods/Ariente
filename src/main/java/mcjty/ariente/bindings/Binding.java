@@ -1,7 +1,9 @@
 package mcjty.ariente.bindings;
 
 import net.minecraft.client.KeyMapping;
-import net.minecraftforge.client.ClientRegistry;
+import net.minecraftforge.client.event.RegisterKeyMappingsEvent;
+import net.minecraftforge.client.settings.KeyConflictContext;
+import com.mojang.blaze3d.platform.InputConstants;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -18,14 +20,18 @@ public class Binding {
     private Binding(String name, int keyCode, Runnable callable) {
         this.name = name;
         this.callable = callable;
-        binding = null; // @todo 1.14 new KeyBinding(name, KeyConflictContext.IN_GAME, keyCode, "key.categories.ariente");
-        ClientRegistry.registerKeyBinding(binding);
+        binding = new KeyMapping(name, KeyConflictContext.IN_GAME, InputConstants.Type.KEYSYM, keyCode, "key.categories.ariente");
     }
 
     public static Binding create(String name, int keyCode, Runnable callable) {
         Binding binding = new Binding(name, keyCode, callable);
         BINDINGS.add(binding);
         return binding;
+    }
+
+    public static void register(RegisterKeyMappingsEvent event) {
+        KeyBindings.init();
+        BINDINGS.forEach(binding -> event.register(binding.binding));
     }
 
     public static void checkBindings() {

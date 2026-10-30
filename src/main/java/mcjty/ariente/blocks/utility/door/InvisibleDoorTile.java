@@ -12,7 +12,7 @@ import net.minecraft.world.level.BlockGetter;
 import net.minecraft.world.level.block.Block;
 import net.minecraft.world.level.block.entity.BlockEntity;
 import net.minecraft.world.level.block.state.BlockState;
-import net.minecraft.world.level.material.Material;
+import net.minecraft.world.level.material.MapColor;
 import net.minecraft.world.level.pathfinder.BlockPathTypes;
 import net.minecraft.world.level.pathfinder.PathComputationType;
 import net.minecraft.world.phys.shapes.CollisionContext;
@@ -30,7 +30,7 @@ public class InvisibleDoorTile extends GenericTileEntity implements ILockable {
 
     public static BaseBlock createBlock() {
         return new BaseBlock(new BlockBuilder()
-                .properties(Block.Properties.of(Material.METAL)
+                .properties(Block.Properties.of().mapColor(MapColor.METAL)
                         .dynamicShape())
                 .tileEntitySupplier(InvisibleDoorTile::new)
         ) {
@@ -62,7 +62,7 @@ public class InvisibleDoorTile extends GenericTileEntity implements ILockable {
 
         if (te instanceof InvisibleDoorTile doorMarker) {
             DoorMarkerTile door = doorMarker.findDoorMarker();
-            return door.isOpen();
+            return door != null && door.isOpen();
         }
 
         return false;

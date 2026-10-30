@@ -1,5 +1,6 @@
 package mcjty.ariente.datagen;
 
+import mcjty.lib.varia.Tools;
 import mcjty.ariente.Ariente;
 import mcjty.ariente.api.MarbleColor;
 import mcjty.ariente.api.MarbleType;
@@ -8,7 +9,7 @@ import mcjty.ariente.blocks.decorative.DecorativeBlockModule;
 import mcjty.ariente.blocks.decorative.PatternType;
 import mcjty.ariente.setup.Registration;
 import mcjty.lib.blocks.BaseBlock;
-import mcjty.lib.blocks.BlockStateItem;
+import mcjty.ariente.items.BlockStateItem;
 import mcjty.lib.datagen.BaseItemModelProvider;
 import net.minecraft.world.level.block.SlabBlock;
 import net.minecraft.data.DataGenerator;
@@ -43,7 +44,7 @@ public class Items extends BaseItemModelProvider {
         parentedItem(Registration.BLUEPRINT_STORAGE_ITEM.get(), "block/machines/blueprint_storage");
         parentedItem(Registration.POWER_COMBINER_ITEM.get(), "block/machines/power_combiner");
 
-        getBuilder(Registration.NETCABLE_POSIRITE.get().getRegistryName().getPath())
+        getBuilder(Tools.getId(Registration.NETCABLE_POSIRITE.get()).getPath())
                 .parent(new ModelFile.UncheckedModelFile(modLoc("block/smallblock")))
                 .texture("all", modLoc("block/cables/posirite/connector"));
 
@@ -98,8 +99,8 @@ public class Items extends BaseItemModelProvider {
         parentedItem(Registration.RAMP_ITEM.get(), "block/decorative/ramp");
         parentedItem(Registration.REINFORCED_MARBLE_ITEM.get(), "block/decorative/reinforced_marble");
         parentedItem(Registration.FLUX_GLOW_ITEM.get(), "block/decorative/flux_glow");
-        parentedItem(Registration.NEGARITE_TANK_ITEM.get(), "block/machines/negarite_tank_both");
-        parentedItem(Registration.POSIRITE_TANK_ITEM.get(), "block/machines/posirite_tank_both");
+        parentedItem(Registration.NEGARITE_TANK_ITEM.get(), "block/machines/negarite_tank_inventory");
+        parentedItem(Registration.POSIRITE_TANK_ITEM.get(), "block/machines/posirite_tank_inventory");
         parentedItem(Registration.NEGARITE_GENERATOR_ITEM.get(), "block/machines/negarite_generator_on");
         parentedItem(Registration.POSIRITE_GENERATOR_ITEM.get(), "block/machines/posirite_generator_on");
         parentedItem(Registration.STORAGE_ITEM.get(), "block/utility/storage");
@@ -163,20 +164,20 @@ public class Items extends BaseItemModelProvider {
     }
 
     private void cableItem(Item item, String type) {
-        getBuilder(item.getRegistryName().getPath())
+        getBuilder(Tools.getId(item).getPath())
                 .parent(new ModelFile.UncheckedModelFile(modLoc("block/smallblock")))
                 .texture("all", modLoc("block/cables/" + type + "/cable_item"));
     }
 
     private void connectorItem(Item item, String type) {
-        getBuilder(item.getRegistryName().getPath())
+        getBuilder(Tools.getId(item).getPath())
                 .parent(new ModelFile.UncheckedModelFile(modLoc("block/mediumblock")))
                 .texture("all", modLoc("block/cables/" + type + "/connector"));
     }
 
     private void fenceItem(Item item, String texture) {
         ModelFile.UncheckedModelFile parent = new ModelFile.UncheckedModelFile(mcLoc(BLOCK_FOLDER + "/fence_inventory"));
-        getBuilder(item.getRegistryName().getPath())
+        getBuilder(Tools.getId(item).getPath())
                 .parent(parent)
                 .texture("texture", modLoc(texture));
     }

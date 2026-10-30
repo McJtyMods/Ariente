@@ -34,7 +34,7 @@ public class ArmorModuleItem extends Item implements ITooltipSettings {
     }
 
     public ArmorModuleItem(ArmorUpgradeType type) {
-        super(new Properties().tab(Ariente.setup.getTab()));
+        super(new Properties());
         this.type = type;
     }
 

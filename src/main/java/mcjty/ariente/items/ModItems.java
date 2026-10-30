@@ -55,10 +55,10 @@ public class ModItems {
 //        moduleLooting.initModel();
 //        moduleFire.initModel();
 //
-//        ModelLoader.setCustomModelResourceLocation(powerSuitBoots, 0, new ModelResourceLocation(powerSuitBoots.getRegistryName(), "inventory"));
-//        ModelLoader.setCustomModelResourceLocation(powerSuitChest, 0, new ModelResourceLocation(powerSuitChest.getRegistryName(), "inventory"));
-//        ModelLoader.setCustomModelResourceLocation(powerSuitHelmet, 0, new ModelResourceLocation(powerSuitHelmet.getRegistryName(), "inventory"));
-//        ModelLoader.setCustomModelResourceLocation(powerSuitLegs, 0, new ModelResourceLocation(powerSuitLegs.getRegistryName(), "inventory"));
+//        ModelLoader.setCustomModelResourceLocation(powerSuitBoots, 0, new ModelResourceLocation(Tools.getId(powerSuitBoots), "inventory"));
+//        ModelLoader.setCustomModelResourceLocation(powerSuitChest, 0, new ModelResourceLocation(Tools.getId(powerSuitChest), "inventory"));
+//        ModelLoader.setCustomModelResourceLocation(powerSuitHelmet, 0, new ModelResourceLocation(Tools.getId(powerSuitHelmet), "inventory"));
+//        ModelLoader.setCustomModelResourceLocation(powerSuitLegs, 0, new ModelResourceLocation(Tools.getId(powerSuitLegs), "inventory"));
 //    }
 
 }

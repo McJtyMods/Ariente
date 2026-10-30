@@ -1,5 +1,6 @@
 package mcjty.ariente.items;
 
+import mcjty.lib.varia.Tools;
 import com.google.common.collect.ImmutableMultimap;
 import com.google.common.collect.Multimap;
 import mcjty.ariente.api.ArmorUpgradeType;
@@ -25,7 +26,6 @@ import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.effect.MobEffect;
 import net.minecraft.world.effect.MobEffectInstance;
-import net.minecraft.network.chat.TextComponent;
 import net.minecraft.world.level.Level;
 import org.apache.commons.lang3.tuple.Pair;
 
@@ -167,7 +167,7 @@ public class EnhancedEnergySabreItem extends EnergySabreItem implements ITooltip
     @Override
     public void appendHoverText(ItemStack stack, @Nullable Level worldIn, List<Component> list, TooltipFlag flag) {
         super.appendHoverText(stack, worldIn, list, flag);
-        tooltipBuilder.makeTooltip(getRegistryName(), stack, list, flag);
+        tooltipBuilder.makeTooltip(Tools.getId(this), stack, list, flag);
     }
 
     @Override

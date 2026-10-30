@@ -1,5 +1,7 @@
 package mcjty.ariente.entities.soldier;
 
+import net.minecraft.tags.DamageTypeTags;
+import net.minecraft.world.damagesource.DamageTypes;
 import mcjty.ariente.api.SoldierBehaviourType;
 import mcjty.ariente.setup.Registration;
 import net.minecraft.nbt.CompoundTag;
@@ -69,10 +71,10 @@ public class MasterSoldierEntity extends SoldierEntity {
         if (rc) {
             return rc;
         }
-        if (source.isFire()) {
+        if (source.is(DamageTypeTags.IS_FIRE)) {
             return true;
         }
-        if (source.isMagic()) {
+        if (source.is(DamageTypes.MAGIC) || source.is(DamageTypes.INDIRECT_MAGIC)) {
             return true;
         }
         return false;

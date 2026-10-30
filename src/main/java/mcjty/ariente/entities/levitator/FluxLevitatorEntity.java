@@ -1,5 +1,7 @@
 package mcjty.ariente.entities.levitator;
 
+import net.minecraft.world.entity.LivingEntity;
+import net.minecraft.network.protocol.game.ClientGamePacketListener;
 import mcjty.ariente.Ariente;
 import mcjty.ariente.api.IFluxLevitatorEntity;
 import mcjty.ariente.gui.ModGuis;
@@ -146,15 +148,15 @@ public class FluxLevitatorEntity extends Entity implements IFluxLevitatorEntity 
 
     @Nullable
     @Override
-    public Entity getControllingPassenger() {
+    public LivingEntity getControllingPassenger() {
         return null;
     }
 
     @Override
-    public void positionRider(Entity passenger) {
+    protected void positionRider(Entity passenger, MoveFunction moveFunction) {
         if (this.hasPassenger(passenger)) {
             if (!(passenger instanceof IHoloGuiEntity)) {
-                super.positionRider(passenger);
+                super.positionRider(passenger, moveFunction);
             }
         }
     }
@@ -162,7 +164,7 @@ public class FluxLevitatorEntity extends Entity implements IFluxLevitatorEntity 
     public IHoloGuiEntity getHoloGuiFront() {
         if (holoGuiFront == null) {
             if (getHoloFrontUUID() != null) {
-                for (Entity entity : level.getEntitiesOfClass(Ariente.guiHandler.getHoloEntityClass(), getBoundingBox().inflate(10))) {
+                for (Entity entity : level().getEntitiesOfClass(Ariente.guiHandler.getHoloEntityClass(), getBoundingBox().inflate(10))) {
                     if (entity instanceof IHoloGuiEntity && getHoloFrontUUID().equals(entity.getUUID())) {
                         holoGuiFront = (IHoloGuiEntity) entity;
                         entity.startRiding(this);
@@ -170,7 +172,7 @@ public class FluxLevitatorEntity extends Entity implements IFluxLevitatorEntity 
                     }
                 }
             }
-            if (holoGuiFront == null && !level.isClientSide ) {
+            if (holoGuiFront == null && !level().isClientSide ) {
                 IHoloGuiEntity holoGui = Ariente.guiHandler.openHoloGuiRelative(this, new Vec3(0, .5, 1), ModGuis.GUI_LEVITATOR);
                 holoGui.setScale(0.75f);
                 holoGui.setCloseStrategy(CloseStrategy.NEVER);
@@ -185,7 +187,7 @@ public class FluxLevitatorEntity extends Entity implements IFluxLevitatorEntity 
     public IHoloGuiEntity getHoloGuiBack() {
         if (holoGuiBack == null) {
             if (getHoloBackUUID() != null) {
-                for (Entity entity : level.getEntitiesOfClass(Ariente.guiHandler.getHoloEntityClass(), getBoundingBox().inflate(10))) {
+                for (Entity entity : level().getEntitiesOfClass(Ariente.guiHandler.getHoloEntityClass(), getBoundingBox().inflate(10))) {
                     if (getHoloBackUUID().equals(entity.getUUID())) {
                         holoGuiBack = (IHoloGuiEntity) entity;
                         entity.startRiding(this);
@@ -193,7 +195,7 @@ public class FluxLevitatorEntity extends Entity implements IFluxLevitatorEntity 
                     }
                 }
             }
-            if (holoGuiBack == null && !level.isClientSide ) {
+            if (holoGuiBack == null && !level().isClientSide ) {
                 IHoloGuiEntity holoGui = Ariente.guiHandler.openHoloGuiRelative(this, new Vec3(0, .5, 1), ModGuis.GUI_LEVITATOR);
                 holoGui.setScale(0.75f);
                 holoGui.setCloseStrategy(CloseStrategy.NEVER);
@@ -296,7 +298,7 @@ public class FluxLevitatorEntity extends Entity implements IFluxLevitatorEntity 
 
     @Override
     public boolean hurt(DamageSource source, float amount) {
-        if (!level.isClientSide && this.isAlive()) {
+        if (!level().isClientSide && this.isAlive()) {
             if (this.isInvulnerableTo(source)) {
                 return false;
             } else {
@@ -341,7 +343,7 @@ public class FluxLevitatorEntity extends Entity implements IFluxLevitatorEntity 
     public void killLevitator(DamageSource source) {
         this.remove(RemovalReason.KILLED);
 
-        if (level.getGameRules().getBoolean(GameRules.RULE_DOENTITYDROPS)) {
+        if (level().getGameRules().getBoolean(GameRules.RULE_DOENTITYDROPS)) {
             ItemStack itemstack = new ItemStack(Registration.FLUX_LEVITATOR.get(), 1);
 
             if (this.hasCustomName()) {
@@ -353,7 +355,7 @@ public class FluxLevitatorEntity extends Entity implements IFluxLevitatorEntity 
     }
 
     @Override
-    public void animateHurt() {
+    public void animateHurt(float yaw) {
         this.setRollingDirection(-this.getRollingDirection());
         this.setRollingAmplitude(10);
         this.setDamage(this.getDamage() + this.getDamage() * 10.0F);
@@ -383,12 +385,12 @@ public class FluxLevitatorEntity extends Entity implements IFluxLevitatorEntity 
         }
 
         if (this.getY() < -64.0D) {
-            this.outOfWorld();
+            this.onBelowWorld();
         }
 
         handlePortal();
 
-        if (level.isClientSide) {
+        if (level().isClientSide) {
             onUpdateClient();
         } else {
             onUpdateServer();
@@ -410,13 +412,13 @@ public class FluxLevitatorEntity extends Entity implements IFluxLevitatorEntity 
         int floorY = Mth.floor(this.getY());
         int floorZ = Mth.floor(this.getZ());
 
-        Block block = level.getBlockState(new BlockPos(floorX, floorY - 1, floorZ)).getBlock();
+        Block block = level().getBlockState(new BlockPos(floorX, floorY - 1, floorZ)).getBlock();
         if (isValidBeamBlock(block)) {
             --floorY;
         }
 
         BlockPos blockpos = new BlockPos(floorX, floorY, floorZ);
-        BlockState state = level.getBlockState(blockpos);
+        BlockState state = level().getBlockState(blockpos);
 
         if (isValidBeamBlock(state.getBlock())) {
             this.moveAlongTrack(blockpos, state);
@@ -465,7 +467,7 @@ public class FluxLevitatorEntity extends Entity implements IFluxLevitatorEntity 
         box = this.getBoundingBox().inflate(0.2D, 0.0D, 0.2D);
 
         if (getDeltaMovement().x * getDeltaMovement().x + getDeltaMovement().z * getDeltaMovement().z > 0.01D) {
-            List<Entity> list = level.getEntities(this, box, entity -> true); // @todo 1.14 EntitySelectors.getTeamCollisionPredicate(this));
+            List<Entity> list = level().getEntities(this, box, entity -> true); // @todo 1.14 EntitySelectors.getTeamCollisionPredicate(this));
 
             if (!list.isEmpty()) {
                 for (Entity ent : list) {
@@ -477,7 +479,7 @@ public class FluxLevitatorEntity extends Entity implements IFluxLevitatorEntity 
                 }
             }
         } else {
-            for (Entity entity : level.getEntities(this, box)) {
+            for (Entity entity : level().getEntities(this, box)) {
                 if (!this.hasPassenger(entity) && entity.isPushable() && entity instanceof FluxLevitatorEntity) {
                     entity.push(this);
                 }
@@ -503,8 +505,8 @@ public class FluxLevitatorEntity extends Entity implements IFluxLevitatorEntity 
     }
 
     private void handlePortal() {
-        if (!level.isClientSide && level instanceof ServerLevel) {
-            MinecraftServer minecraftserver = level.getServer();
+        if (!level().isClientSide && level() instanceof ServerLevel) {
+            MinecraftServer minecraftserver = level().getServer();
             int i = getPortalWaitTime();
 
             if (this.isInsidePortal) {
@@ -514,7 +516,7 @@ public class FluxLevitatorEntity extends Entity implements IFluxLevitatorEntity 
                         this.timeUntilPortal = this.getDimensionChangingDelay();
                         ServerLevel id;
 
-                        if (this.level.dimension() == Level.NETHER) {
+                        if (this.level().dimension() == Level.NETHER) {
                             id = minecraftserver.getLevel(Level.OVERWORLD);
                         } else {
                             id = minecraftserver.getLevel(Level.NETHER);
@@ -572,7 +574,7 @@ public class FluxLevitatorEntity extends Entity implements IFluxLevitatorEntity 
     }
 
     private void moveDerailedLevitator() {
-        double speed = onGround ? this.getMaximumSpeed() : DEFAULT_MAX_SPEED_AIR_LATERAL;
+        double speed = onGround() ? this.getMaximumSpeed() : DEFAULT_MAX_SPEED_AIR_LATERAL;
         double motionX = getDeltaMovement().x;
         double motionY = getDeltaMovement().y;
         double motionZ = getDeltaMovement().z;
@@ -581,7 +583,7 @@ public class FluxLevitatorEntity extends Entity implements IFluxLevitatorEntity 
 
         double moveY = motionY;
 
-        if (this.onGround) {
+        if (this.onGround()) {
             motionX *= 0.5D;
             motionY *= 0.5D;
             motionZ *= 0.5D;
@@ -590,7 +592,7 @@ public class FluxLevitatorEntity extends Entity implements IFluxLevitatorEntity 
         setDeltaMovement(motionX, motionY, motionZ);
         this.move(MoverType.SELF, new Vec3(motionX, moveY, motionZ));
 
-        if (!this.onGround) {
+        if (!this.onGround()) {
             motionX = getDeltaMovement().x;
             motionY = getDeltaMovement().y;
             motionZ = getDeltaMovement().z;
@@ -810,15 +812,15 @@ public class FluxLevitatorEntity extends Entity implements IFluxLevitatorEntity 
             motionX += motionX / length * 0.06D;
             motionZ += motionZ / length * 0.06D;
         } else if (dir == RailShape.EAST_WEST) {
-            if (level.getBlockState(pos.west()).isRedstoneConductor(level, pos.west())) {
+            if (level().getBlockState(pos.west()).isRedstoneConductor(level(), pos.west())) {
                 motionX = 0.02D;
-            } else if (level.getBlockState(pos.east()).isRedstoneConductor(level, pos.east())) {
+            } else if (level().getBlockState(pos.east()).isRedstoneConductor(level(), pos.east())) {
                 motionX = -0.02D;
             }
         } else if (dir == RailShape.NORTH_SOUTH) {
-            if (level.getBlockState(pos.north()).isRedstoneConductor(level, pos.north())) {
+            if (level().getBlockState(pos.north()).isRedstoneConductor(level(), pos.north())) {
                 motionZ = 0.02D;
-            } else if (level.getBlockState(pos.south()).isRedstoneConductor(level, pos.south())) {
+            } else if (level().getBlockState(pos.south()).isRedstoneConductor(level(), pos.south())) {
                 motionZ = -0.02D;
             }
         }
@@ -931,12 +933,12 @@ public class FluxLevitatorEntity extends Entity implements IFluxLevitatorEntity 
         int floorY = Mth.floor(y);
         int floorZ = Mth.floor(z);
 
-        Block block = level.getBlockState(new BlockPos(floorX, floorY - 1, floorZ)).getBlock();
+        Block block = level().getBlockState(new BlockPos(floorX, floorY - 1, floorZ)).getBlock();
         if (isValidBeamBlock(block)) {
             --floorY;
         }
 
-        BlockState state = level.getBlockState(new BlockPos(floorX, floorY, floorZ));
+        BlockState state = level().getBlockState(new BlockPos(floorX, floorY, floorZ));
 
         if (isValidBeamBlock(state.getBlock())) {
             RailShape dir = getBeamDirection(state);
@@ -973,12 +975,12 @@ public class FluxLevitatorEntity extends Entity implements IFluxLevitatorEntity 
         int floorY = Mth.floor(y);
         int floorZ = Mth.floor(z);
 
-        Block block = level.getBlockState(new BlockPos(floorX, floorY - 1, floorZ)).getBlock();
+        Block block = level().getBlockState(new BlockPos(floorX, floorY - 1, floorZ)).getBlock();
         if (isValidBeamBlock(block)) {
             --floorY;
         }
 
-        BlockState state = level.getBlockState(new BlockPos(floorX, floorY, floorZ));
+        BlockState state = level().getBlockState(new BlockPos(floorX, floorY, floorZ));
 
         if (isValidBeamBlock(state.getBlock())) {
             RailShape dir = getBeamDirection(state);
@@ -1073,7 +1075,7 @@ public class FluxLevitatorEntity extends Entity implements IFluxLevitatorEntity 
 
     @Override
     public void push(Entity entityIn) {
-        if (!level.isClientSide) {
+        if (!level().isClientSide) {
             if (!entityIn.noPhysics && !this.noPhysics) {
                 if (!this.hasPassenger(entityIn)) {
                     double dx = entityIn.getX() - this.getX();
@@ -1154,7 +1156,7 @@ public class FluxLevitatorEntity extends Entity implements IFluxLevitatorEntity 
     }
 
     @Override
-    public Packet<?> getAddEntityPacket() {
+    public Packet<ClientGamePacketListener> getAddEntityPacket() {
         return NetworkHooks.getEntitySpawningPacket(this);
     }
 
@@ -1198,7 +1200,7 @@ public class FluxLevitatorEntity extends Entity implements IFluxLevitatorEntity 
 //        } else if (this.isBeingRidden()) {    // @todo
 //            return true;
         } else {
-            if (!level.isClientSide) {
+            if (!level().isClientSide) {
                 player.startRiding(this);
             }
 
@@ -1212,7 +1214,7 @@ public class FluxLevitatorEntity extends Entity implements IFluxLevitatorEntity 
         int y = Mth.floor(this.getY());
         int z = Mth.floor(this.getZ());
 
-        Block block = level.getBlockState(new BlockPos(x, y - 1, z)).getBlock();
+        Block block = level().getBlockState(new BlockPos(x, y - 1, z)).getBlock();
         if (isValidBeamBlock(block)) {
             y--;
         }
@@ -1221,7 +1223,7 @@ public class FluxLevitatorEntity extends Entity implements IFluxLevitatorEntity 
 
     protected double getMaxSpeed() {
         BlockPos pos = this.getCurrentRailPosition();
-        BlockState state = level.getBlockState(pos);
+        BlockState state = level().getBlockState(pos);
         if (!isValidBeamBlock(state.getBlock())) {
             return getMaximumSpeed();
         }
