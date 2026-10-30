@@ -771,6 +771,9 @@ Its panel lets you:
 4. Transfer Negarite Dust and Posirite Dust into the piece using the fuel arrows.
 5. Remove installed modules back into your inventory.
 
+Installed icons are bright with a border. Available inventory modules are dim;
+unavailable modules are darker still. Removing a module dims its icon again.
+
 Installing and activating are separate. An installed, disabled module should
 not be counted as an active ability. Power is managed **per equipment piece**,
 not as one shared suit battery.
@@ -798,11 +801,11 @@ are a 100→130 budget and 30000→40000 duration numerator.
 | Invisibility | Helmet, planned | 20 | Effect code/item exist, but its configuration entry is disabled; not a normally installable current feature. |
 | Forcefield | Chestplate | 80 | Cancels projectile damage; divides explosion damage by 5 and other armor-respecting damage by 2. Does not cover every bypass-armor damage source. |
 | Regeneration | Chestplate | 40 | Refreshes Regeneration III while powered/enabled. |
-| Flight | Chestplate | 30 | Installable/configurable; movement hook is commented out. Flight is not restored. |
-| Hover | Chestplate | 10 | Installable/configurable; its movement hook is also not restored. |
-| Speed | Leggings | 20 | Installable/configurable; movement hook is commented out. |
+| Flight | Chestplate | 30 | Hold Space for upward thrust; no creative flight is granted. |
+| Hover | Chestplate | 10 | With Flight active, holds altitude; sneak descends. |
+| Speed | Leggings | 20 | Accelerates forward/back, with separate ground and flight caps. |
 | Featherfalling | Boots | 20 | Cancels fall damage while working. |
-| Step Assist | Boots | 10 | Installable/configurable; client movement hook is commented out. |
+| Step Assist | Boots | 10 | Raises normal step height to 1.902; preserves other step modifiers. |
 | Power | Enhanced Sabre | 30 | Doubles the weapon's attack-damage modifier while working. |
 | Inhibit | Enhanced Sabre | 30 | Suppresses a Master Soldier's regeneration for 200 ticks and removes beneficial effects from the target. |
 | Looting | Enhanced Sabre | 20 | Applies Looting III while powered/enabled. |
@@ -810,10 +813,10 @@ are a 100→130 budget and 30000→40000 duration numerator.
 
 Not every module has a blueprint recipe in the present catalog. Registered
 items, configuration entries, working effects, and survival obtainability are
-four different things. In particular, do not use Flight/Speed/Step Assist as
-requirements for a current survival route. Enhanced Sabre fuel/module updates
-still use an old inventory-slot check and need testing outside the first hotbar
-slot. Armor effect lifecycle and multiplayer behavior also need further audit.
+four different things. Focused survival-client checks now cover thrust, hover,
+descent, Speed and Step Assist, including loss of movement on hotkey toggle,
+unequip and fuel exhaustion. Enhanced Sabre updates follow the actual main hand
+in any hotbar slot. Full survival progression and multiplayer still need testing.
 
 ### Energy Holder
 
@@ -827,9 +830,9 @@ or a stack in or out.
 
 Autofeed-equipped gear can draw dust from a holder in your inventory. You do not
 have to hold it for gear to use it. The holder's Automatic setting controls
-collecting loose dust, not whether gear is allowed to draw from it. The present
-autofeed code has a mixed-holder edge case; use one holder containing both dusts
-when testing rather than splitting the two fuels across different holders.
+collecting loose dust, not whether gear is allowed to draw from it. A fuel pair
+can come from one holder, split holders, loose dust or mixed stored/inventory
+fuel. If either required component is missing, neither is consumed.
 
 ### Energy Sabres
 
@@ -842,14 +845,14 @@ The Enhanced Energy Sabre adds the module/fuel system. Keep Inhibit for Master
 Soldiers: they regenerate strongly and are immune to fire and magic, so Fire is
 not a substitute for suppressing their regeneration. Its current superclass
 still supplies durability behavior; do not assume that fuel has replaced every
-durability mechanic. Powered sabre updates also rewrite its enchantment map,
-so ordinary added enchantments are not a verified persistent upgrade route.
+durability mechanic. Powered Looting/Fire modules preserve unrelated enchantments
+and restore prior Looting/Fire levels when their boost stops.
 
 Sources: [module types/costs](src/main/java/mcjty/ariente/api/ArmorUpgradeType.java),
 [module fuel](src/main/java/mcjty/ariente/items/modules/ModuleSupport.java),
 [configuration UI](src/main/java/mcjty/ariente/items/armor/ArmorGui.java),
-[suit effects](src/main/java/mcjty/ariente/items/armor/PowerSuit.java),
-[disabled movement hooks](src/main/java/mcjty/ariente/ClientForgeEventHandlers.java),
+[suit effects](src/main/java/mcjty/ariente/items/armor/PowerSuitEffects.java),
+[movement hooks](src/main/java/mcjty/ariente/ClientForgeEventHandlers.java),
 [damage handling](src/main/java/mcjty/ariente/ForgeEventHandlers.java),
 [Enhanced Sabre](src/main/java/mcjty/ariente/items/EnhancedEnergySabreItem.java),
 [Energy Holder](src/main/java/mcjty/ariente/items/EnergyHolderItem.java).
@@ -1117,7 +1120,7 @@ The blueprint tables are sourced from
 ## Port gaps
 
 These are current implementation boundaries, not requirements to repair older
-worlds. This documentation task does not change their code.
+worlds.
 
 | Area | What remains incomplete or needs validation |
 | --- | --- |
@@ -1125,8 +1128,8 @@ worlds. This documentation task does not change their code.
 | Alternative progression without ArienteWorld | Legacy Overworld loot injection is disabled. |
 | Recipe variants | Metadata-era cable/connector catalog entries do not distinguish the modern colored items. Several registered blocks/modules have no catalog entry. |
 | Crafting integration | Constructor-specific JEI integration is not fully restored; consult blueprints/catalog rather than assuming JEI shows it all. Auto Constructor batch yields differ between empty and existing output slots. |
-| Armor movement | Flight, Hover, Speed, and Step Assist client behavior is disabled. Invisibility's install control is disabled. |
-| Equipment lifecycle | Sabre slot selection, fuel/effect transitions, ordinary enchantment interaction, and armor attributes need gameplay audit. Autofeed has a mixed-holder edge case. |
+| Armor movement | Flight, Hover, Speed and Step Assist pass focused survival-client checks. Invisibility's install control remains disabled. |
+| Equipment lifecycle | Focused fuel, equipped-slot, enchantment and effect checks pass. Dedicated multiplayer, reconnect/death and mod interaction play testing remain. |
 | Automation matching | Ore Dictionary matching is not replaced with tags; strict destination NBT/damage matching and filter persistence need audit. |
 | Visual effects | Some cable/automation transfer effects and item-specific rendering remain commented out. |
 | Facades | Placement/state display works; the old special facade-only breaking hooks are not fully migrated. |

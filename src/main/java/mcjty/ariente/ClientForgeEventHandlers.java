@@ -1,29 +1,27 @@
 package mcjty.ariente;
 
-import com.mojang.blaze3d.platform.GlStateManager;
 import mcjty.ariente.blocks.defense.ForceFieldRenderer;
+import mcjty.ariente.api.ArmorUpgradeType;
+import mcjty.ariente.config.UtilityConfiguration;
+import mcjty.ariente.items.modules.ModuleSupport;
 import mcjty.ariente.entities.levitator.FluxLevitatorEntity;
 import mcjty.ariente.network.ArienteMessages;
 import mcjty.ariente.network.PacketHitForcefield;
 import mcjty.ariente.setup.Registration;
 import mcjty.ariente.sounds.FluxLevitatorSounds;
-import net.minecraft.core.BlockPos;
+import net.minecraft.world.entity.EquipmentSlot;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemStack;
-import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.client.Minecraft;
-import net.minecraft.world.phys.BlockHitResult;
-import net.minecraft.world.phys.HitResult;
 import net.minecraft.world.phys.Vec3;
 import net.minecraftforge.client.event.*;
+import net.minecraftforge.event.TickEvent;
 import net.minecraftforge.event.entity.EntityMountEvent;
 import net.minecraftforge.event.entity.player.PlayerInteractEvent;
 import net.minecraftforge.eventbus.api.SubscribeEvent;
 
 public class ClientForgeEventHandlers {
-
-    public static final float STEP_HEIGHT = 1.902f;
 
     @SubscribeEvent
     public void onRenderWorldEvent(RenderLevelStageEvent event) {
@@ -48,85 +46,56 @@ public class ClientForgeEventHandlers {
         ArienteMessages.INSTANCE.sendToServer(new PacketHitForcefield());
     }
 
-    // @todo 1.14
-//    @SubscribeEvent
-//    public void onClientTick(TickEvent.ClientTickEvent event) {
-//        EventPriority phase = event.getPhase();
-//        if (phase == EventPriority.NORMAL) {
-//            EntityPlayerSP player = (EntityPlayerSP) Ariente.proxy.getClientPlayer();
-//            if (player != null && Minecraft.getInstance().currentScreen == null) {
-//                ItemStack chestStack = player.getItemStackFromSlot(EquipmentSlotType.CHEST);
-//                boolean hovering = false;
-//                boolean hasFlight = false;
-//                if (isValidArmorPiece(chestStack, ModItems.powerSuitChest)) {
-//                    hasFlight = ModuleSupport.hasWorkingUpgrade(chestStack, ArmorUpgradeType.FLIGHT);
-//                    if (hasFlight) {
-//                        boolean hasHover = ModuleSupport.hasWorkingUpgrade(chestStack, ArmorUpgradeType.HOVER);
-//                        if (hasHover) {
-//                            player.isAirBorne = true;
-//                            player.motionY = 0;
-//                            hovering = true;
-//                        }
-//
-//                        if (Ariente.proxy.isJumpKeyDown()) {
-//                            player.isAirBorne = true;
-//                            player.motionY = UtilityConfiguration.POWERSUIT_FLYVERTICAL_FACTOR.get();
-//                        } else if (hovering && Ariente.proxy.isSneakKeyDown()) {
-//                            player.isAirBorne = true;
-//                            player.motionY = -UtilityConfiguration.POWERSUIT_FLYVERTICAL_FACTOR.get();
-//                        }
-//                    }
-//                }
-//
-//                ItemStack feetStack = player.getItemStackFromSlot(EquipmentSlotType.FEET);
-//                player.stepHeight = 0.6f;
-//                if (isValidArmorPiece(feetStack, ModItems.powerSuitBoots)) {
-//                    if (ModuleSupport.hasWorkingUpgrade(feetStack, ArmorUpgradeType.STEPASSIST)) {
-//                        player.stepHeight = STEP_HEIGHT;
-//                    }
-//                }
-//
-//                ItemStack legsStack = player.getItemStackFromSlot(EquipmentSlotType.LEGS);
-//                if (isValidArmorPiece(legsStack, ModItems.powerSuitLegs)) {
-//                    if (ModuleSupport.hasWorkingUpgrade(legsStack, ArmorUpgradeType.SPEED)) {
-//                        if (Ariente.proxy.isForwardKeyDown()) {
-//                            handleSpeed(player, 0.5, UtilityConfiguration.POWERSUIT_MAX_FORWARD_GROUND_SPEED.get(), UtilityConfiguration.POWERSUIT_MAX_FORWARD_FLY_SPEED.get(), hasFlight);
-//                        } else if (Ariente.proxy.isBackKeyDown()) {
-//                            handleSpeed(player, -0.5, UtilityConfiguration.POWERSUIT_MAX_BACK_GROUND_SPEED.get(), UtilityConfiguration.POWERSUIT_MAX_BACK_FLY_SPEED.get(), hasFlight);
-//                        }
-//                    }
-//                }
-//            }
-//        }
-//    }
-
-    private boolean isValidArmorPiece(ItemStack chestStack, Item powerSuitChest) {
-        return !chestStack.isEmpty() && chestStack.getItem() == powerSuitChest && chestStack.hasTag();
+    @SubscribeEvent
+    public void onClientTick(TickEvent.ClientTickEvent event) {
+        Minecraft mc = Minecraft.getInstance();
+        if (event.phase != TickEvent.Phase.START || mc.isPaused() || mc.player == null) {
+            return;
+        }
+        Player player = mc.player;
+        if (!player.isAlive() || player.isSpectator() || player.isPassenger() || player.getAbilities().flying
+                || player.isFallFlying() || player.isInWater() || player.isInLava()) {
+            return;
+        }
+        boolean flight = hasUpgrade(player, EquipmentSlot.CHEST, Registration.POWERSUIT_CHEST.get(), ArmorUpgradeType.FLIGHT);
+        if (flight) {
+            boolean hover = hasUpgrade(player, EquipmentSlot.CHEST, Registration.POWERSUIT_CHEST.get(), ArmorUpgradeType.HOVER);
+            boolean jump = mc.screen == null && mc.options.keyJump.isDown();
+            boolean sneak = mc.screen == null && mc.options.keyShift.isDown();
+            if (jump || hover) {
+                double vertical = jump ? UtilityConfiguration.POWERSUIT_FLYVERTICAL_FACTOR.get()
+                        : sneak ? -UtilityConfiguration.POWERSUIT_FLYVERTICAL_FACTOR.get() : 0;
+                player.setDeltaMovement(player.getDeltaMovement().multiply(1, 0, 1).add(0, vertical, 0));
+                player.fallDistance = 0;
+            }
+        }
+        if (mc.screen == null && hasUpgrade(player, EquipmentSlot.LEGS, Registration.POWERSUIT_LEGS.get(), ArmorUpgradeType.SPEED)) {
+            if (mc.options.keyUp.isDown()) {
+                handleSpeed(player, .5, UtilityConfiguration.POWERSUIT_MAX_FORWARD_GROUND_SPEED.get(),
+                        UtilityConfiguration.POWERSUIT_MAX_FORWARD_FLY_SPEED.get(), flight);
+            } else if (mc.options.keyDown.isDown()) {
+                handleSpeed(player, -.5, UtilityConfiguration.POWERSUIT_MAX_BACK_GROUND_SPEED.get(),
+                        UtilityConfiguration.POWERSUIT_MAX_BACK_FLY_SPEED.get(), flight);
+            }
+        }
     }
 
-    private void handleSpeed(Player player, double v2, double powersuitMaxForwardGroundSpeed, double powersuitMaxForwardFlySpeed, boolean hasFlight) {
-        Vec3 vec3d = player.getLookAngle().normalize().scale(v2);
-        double motionX = player.getDeltaMovement().x;
-        double motionY = player.getDeltaMovement().y;
-        double motionZ = player.getDeltaMovement().z;
-        motionX += vec3d.x;
-        motionZ += vec3d.z;
-        Vec3 v = new Vec3(motionX, motionY, motionZ);
-        double max = (player.onGround() || !hasFlight) ?
-                powersuitMaxForwardGroundSpeed :
-                powersuitMaxForwardFlySpeed;
+    private boolean hasUpgrade(Player player, EquipmentSlot slot, Item item, ArmorUpgradeType type) {
+        ItemStack stack = player.getItemBySlot(slot);
+        return stack.is(item) && ModuleSupport.hasWorkingUpgrade(stack, type);
+    }
 
+    private void handleSpeed(Player player, double acceleration, double groundCap, double airCap, boolean flight) {
+        Vec3 motion = player.getDeltaMovement();
+        Vec3 look = player.getLookAngle().scale(acceleration);
+        Vec3 horizontal = new Vec3(motion.x + look.x, 0, motion.z + look.z);
+        double max = player.onGround() || !flight ? groundCap : airCap;
         if (player.onGround() && !player.isSprinting()) {
             max /= 2;
         }
-
-        if (v.lengthSqr() > max * max) {
-            v = v.normalize().scale(max);
-            motionX = v.x;
-//            player.motionY = v.y;
-            motionZ = v.z;
+        if (horizontal.lengthSqr() > max * max) {
+            horizontal = horizontal.normalize().scale(max);
         }
-        player.setDeltaMovement(motionX, motionY, motionZ);
+        player.setDeltaMovement(horizontal.x, motion.y, horizontal.z);
     }
-
 }

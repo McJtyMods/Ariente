@@ -264,12 +264,13 @@ public class ArmorGui {
                     lines.add("Uses modules from your inventory");
                 })
                 .hitEvent((component, player, entity, x, y) -> toggleModuleInstall(player, slot, module)));
-        panel.add(registry.iconToggle(xx + 1, yy-.2, 1, 1)
+        // Move both image columns and their hit boxes together in panel coordinates.
+        panel.add(registry.iconToggle(xx + 1.08, yy-.4, 1, 1)
                 .getter(player -> isModuleActivated(player, slot, module))
                 .background(registry.image(BLUE_EMPTY_BUTTON))
                 .icon(registry.image(BLUE_EMPTY_BUTTON)).selected(registry.image(GREEN_CHECK))
                 .hitEvent((component, player, entity, x, y) -> toggleActivation(player, slot, module)));
-        panel.add(registry.iconChoice(xx + 2, yy-.2, 1, 1)
+        panel.add(registry.iconChoice(xx + 2.08, yy-.4, 1, 1)
                 .getter(player -> getHotkey(player, slot, module))
                 .addImage(registry.image(BLUE_EMPTY_BUTTON))
                 .addImage(registry.image(BLUE_1_BUTTON))
@@ -347,6 +348,7 @@ public class ArmorGui {
         CompoundTag compound = stack.getTag();
         String key = moduleItem.getType().getModuleKey();
         compound.putBoolean(key, !compound.getBoolean(key));
+        compound.putBoolean(moduleItem.getType().getWorkingKey(), false);
         syncEquipment(player);
     }
 

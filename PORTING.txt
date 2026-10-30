@@ -12,8 +12,8 @@ This file owns Ariente gameplay, machines, equipment, shared HoloGui work,
 resources/recipes, rendering and packaging. Read ../ArienteWorld/PORTING.txt for
 the dimension, cities, population, travel generation, city AI and editing tools.
 Both documents are intended to let a future Codex session resume without chat
-history. The latest armor reports below are OPEN; investigation has not yet
-produced implementation changes for them.
+history. Phase 1 equipment implementation and focused validation are recorded
+below; this does not establish full survival progression or multiplayer parity.
 
 WORKSPACE, HISTORY AND USER REQUIREMENTS
 =======================================
@@ -43,11 +43,9 @@ WORKSPACE, HISTORY AND USER REQUIREMENTS
 - Connected textures/glow are implemented natively. Do not add CTM, copy its
   implementation, or port unrelated CTM features. See TEXTURES.md for the small
   replacement format, including vanilla animation preservation.
-- The checkouts contain hundreds of intentionally STAGED port changes. Preserve
-  unrelated changes and existing staging; do not reset/clean them or commit.
-  At this handoff Ariente/ARIENTE_GUIDE.md and todo.txt also have UNSTAGED user
-  changes. Do not accidentally stage or overwrite those while updating code.
-  Stage all task-related changes in each affected repository; no commits.
+- The initial port checkpoint has been committed locally. These three checkouts
+  were clean at the start of this phase-1 task. Preserve unrelated edits and
+  existing staging on future tasks. Stage task changes; do not create commits.
 - Earlier work prioritized buildability, worldgen and reported bugs. A systematic
   feature-by-feature comparison with master has NOT been completed. Most gaps
   below survived from the intermediate migration; some original resources were
@@ -104,7 +102,7 @@ Rendering, synchronization and interactions already repaired
   The companion owns generated entrances and arrival structures.
 - Power suits use the original 64x128 texture and custom geometry through a
   modern armor client extension. All four pieces follow humanoid poses.
-  Armor MODELS are restored; armor MOVEMENT is not.
+  Movement modules are now active too; see phase-1 equipment checks below.
 
 Shared HoloGui implementation in ../ModHoloGui
 - Panels render before widgets with depth writes; widgets sit in front of the
@@ -121,57 +119,70 @@ Shared HoloGui implementation in ../ModHoloGui
   or hold the Enhanced Energy Sabre in the main hand. Default configure key: 0.
 - Install/enable/hotkey/fuel mutations synchronize inventory/equipment. Removing
   a module clears module, working and hotkey keys; stale screens reject unrelated
-  equipment. Server tests pass, but the latest removal-HIGHLIGHT report is open.
+  equipment. Server and integrated-client removal checks now pass, including
+  pixel comparisons.
 
-IMMEDIATE OPEN REPORTS - NEXT IMPLEMENTATION WORK
-================================================
-1. Alignment: armor activation/hotkey image buttons sit slightly left and below
-   the item icons. User suggests moving them about 1-2 screen pixels right and
-   3-4 up. Adjust in GUI coordinates with matching hit areas, not fixed screen
-   pixels. Check both checkbox and hotkey columns, both groups, at several angles.
-   Start at items/armor/ArmorGui.java:createModuleEntry and HoloGui renderImage /
-   renderItem. Their coordinate mappings currently differ.
-2. Removal highlight: installing highlights the item; removing reportedly leaves
-   it looking installed. Reproduce with a real client and confirm both server
-   and client NBT, returned inventory item, enabled state and border/brightness.
-   HoloStackToggle renders available-but-uninstalled (false) at full brightness,
-   just like installed (true), with only a border distinguishing them. That is
-   a plausible visual cause, NOT a confirmed diagnosis. Do not assume passing
-   server NBT assertions proves that the installed state looks correct.
-3. Powered movement: user charged gear with 64 negarite and 64 posirite but got
-   no flight/speed. CONFIRMED: Flight, Hover, Speed and Step Assist client movement
-   hooks are commented out in ClientForgeEventHandlers.java. Restore actual
-   effects, not just GUI state or working_* flags. See equipment backlog below.
+PHASE 1 - EQUIPMENT IMPLEMENTED AND FOCUSED CHECKS PASSED
+=======================================================
+- ArmorGui activation and hotkey columns moved right/up in panel coordinates,
+  with their hit boxes. Both column groups use the same offsets. HoloStackToggle
+  now renders installed modules bright/bordered, available inventory modules at
+  55% brightness and unavailable modules at 25%. Removing a module visibly dims
+  it, clears module/working/hotkey state and returns the inventory item.
+- ClientForgeEventHandlers restores Space thrust, Flight+Hover altitude hold,
+  sneak descent and forward/back Speed with separate configured ground/air caps.
+  Horizontal caps no longer scale vertical velocity. Hover remains active while
+  opening a GUI; thrust/acceleration keys do not. Riding, swimming, elytra and
+  creative flight keep their normal movement. No creative-flight ability is set.
+- Step Assist adds 1.302 through Forge's step-height attribute (normal player
+  height becomes 1.902), using its own stable modifier UUID. Other modifiers are
+  preserved. Armor Improvement also uses stable per-slot UUIDs.
+- Server player ticks reset only the powered Flight wearer's floating timeout
+  and fall distance. The timeout field is exposed by Ariente's access transformer;
+  server-wide flight permission and player abilities are unchanged. Losing Flight
+  restores ordinary falling; working Feather Falling boots still prevent damage.
+- PowerSuit ticks check the actual worn stack by identity, preventing a backpack
+  copy at a coincidentally matching inventory index from consuming fuel or working.
+  All installed modules get consistent working flags; power/budget failure clears
+  Scramble and every other effect. Disabled/removed modules cannot remain working.
+- ModuleSupport autofeed first locates all missing fuel components, then consumes
+  a pair atomically. Split holders, one shared holder, loose dust and mixed local/
+  inventory fuel work without wasting surplus local dust. Each charged pair now
+  lasts exactly max(1, configuredTicks / usage) working ticks. Hotkeys accept only
+  groups 1..4 and installed modules; toggling clears stale working state.
+- PowerSuitEffects tracks suit-owned Night Vision/Invisibility/Regeneration,
+  removing them on disable, power loss, unequip, death and logout. Pre-existing
+  potion effects are left in control; effects that replace the suit's effect are
+  preserved, including a weaker vanilla hidden effect when our effect is removed.
+  Invisibility's original disabled install control remains disabled.
+- Enhanced Sabre works in the actual main hand in any hotbar slot. Backpack and
+  offhand copies stop working. Looting/Fire module boosts preserve unrelated
+  enchantments and restore their recorded original levels on disable, exhaustion,
+  removal or changing hands. Power/Inhibit use the same working-state lifecycle.
+
+Focused evidence and remaining limits
+- Dedicated suite: all 29 required tests passed, including five new
+  EquipmentRegressionTests for identity/exhaustion, atomic fuel, budgets/hotkeys,
+  sabre slots/enchantments and potion ownership. Existing GUI tests cover removal.
+- EquipmentMovementClientChecks (opt in: ariente.equipmentMovementCheck=true)
+  ran in survival with allow-flight=false: actual ascent, 120-tick hover, descent,
+  Flight hotkey off, Speed vs unequipped movement (6.96 vs 4.06 blocks/20 ticks),
+  a 1.5-block step obstacle, preservation of another step modifier, and gravity
+  after fuel exhaustion. This driver edits an isolated arena and exits on success.
+- ArmorClientChecks plus ariente.armorGuiStateCheck=true verify actual server/
+  client install-enable-hotkey-remove inventory/NBT, then exit on success.
+  HologramRenderingChecks compare installed/removed pixels at five angles and
+  check panel/control visibility and glass/shield depth before/after reload.
+  Final GUI checks passed in vanilla Fabulous and Embeddium 0.3.31/Oculus 1.8.0
+  Fancy, without a shader pack.
+- Artifacts: ../ArienteWorld/build/verification/armor-module-{installed,removed}-*.png.
+  Use the companion's isolated client setup; do not run fixtures in player worlds.
+- Still required: dedicated multiplayer/reconnect/death play tests, backward/
+  sprint/air-speed tuning across configurations, prolonged fuel use and interaction
+  with other mods. Focused checks do not certify every equipment combination.
 
 CONFIRMED MISSING PORTS / INCOMPLETE MIGRATIONS
 ============================================
-Equipment and effect lifecycle
-- ClientForgeEventHandlers.java: restore Flight/Hover/Speed/Step Assist from
-  master using current APIs. Original intent: Space supplies upward thrust;
-  Flight+Hover holds height; sneak descends while hovering; Speed accelerates
-  forward/back with separate ground/air caps; boots raise step height (legacy
-  value 1.902). Do not silently replace this with unrelated creative-flight
-  behavior. Handle server movement validation, fall behavior and synchronization.
-  Respect other mods' attributes/abilities and remove only Ariente's changes.
-- PowerSuit.java and items/modules/ModuleSupport.java: audit enabled vs installed
-  vs working state, budgets, fuel exhaustion, toggling/removal, unequipping,
-  death/reconnect, attributes, potion effects, fall protection and Scramble.
-  On helmet power failure Scramble is not explicitly cleared; verify/correct
-  stale working flags. Nightvision/regeneration code exists; do not call every
-  module unimplemented just because movement is absent.
-- EnhancedEnergySabreItem.inventoryTick compares a hotbar inventory index with
-  MAINHAND.getIndex() (0), so it updates only the first slot and does not properly
-  establish that this stack is held. Test other slots, offhand, fuel loss and
-  built-in looting/fire enchantment updates without erasing unrelated enchants.
-- ModuleSupport.checkAutofeed extracts holder posirite from negariteStack rather
-  than posiriteStack. Fix the mixed-holder path and check atomic fuel-pair use.
-- Do not misdiagnose PowerSuit's index check as the same sabre bug: vanilla
-  Inventory.tick supplies per-compartment indices, including armor indices.
-  Test the actual worn stack; backpack copies must not supply equipped effects.
-- Each gear piece has its own fuel. Default budget is 100, or 130 with Energy
-  enabled; one dust pair supplies about 30000/usage ticks (40000/usage optimized).
-  Fuel and working-flag code being present does not implement movement itself.
-
 Resources, progression, recipes and JEI
 - BaseOreBlock and datagen/LootTables.java: Ariente resource ore loot is missing.
   ModCrafting.java has six old furnace conversions commented out; current recipe
@@ -272,13 +283,14 @@ VERIFICATION ALREADY PERFORMED AND ITS LIMITS
 ===========================================
 - Java 17 workspace builds of Ariente, ArienteWorld and ModHoloGui pass, including
   reobfuscation. workspace:compileJava passed earlier. Client loads both mods.
-- Last dedicated suite: 24 required GameTests passed. They live in the companion's
+- Latest dedicated suite: 29 required GameTests passed. They live in the companion's
   src/gameTest, outside published jars. MachinePersistenceTests covers 31 tile
   types; MachineInteractionTests covers storage, generator/tank state, hologram
   clicks, equipment configuration and transport; CombatRegressionTests exercises
   actual drone firing with/without line of sight and laser movement/damage.
-- Server module tests assert install/enable/hotkey/remove and inventory state,
-  NOT functioning Flight/Speed/Step Assist or the user's removal visual issue.
+- Server module tests assert configuration, inventory, fuel and effect lifecycle.
+  The separate opt-in survival-client driver verifies actual movement; the GUI
+  driver and pixel checks verify removal presentation.
 - Optional client checks cover connected/glowing textures, animation/reload,
   ramps/slopes, cable shells/plates/facades, tank glass sorting and billboard
   seams, panel shapes, AI core layers, suit meshes/UVs/poses and laser rendering.
@@ -286,12 +298,12 @@ VERIFICATION ALREADY PERFORMED AND ITS LIMITS
   armor inventory synchronization, thrown pearl rendering and mounted cart GUIs.
 - Hologram pixel checks inspect armor/sabre icons, on boxes, hotkey digits and cart
   arrows at five angles, with glass/shield textures drawn behind the panel. They
-  pass before/after resource reload in vanilla Fabulous and Embeddium/Oculus
-  Fancy (0.3.31/1.8.0, no shader-pack compatibility claim). They do not prove
-  correct alignment, removal-state presentation or powered equipment behavior.
-- Latest renderer build/client checks were after the last dedicated-server run.
-  Do not claim every check was rerun after every edit. This document rewrite did
-  not change implementation or rerun builds/tests.
+  passed before/after resource reload in vanilla Fabulous and Embeddium/Oculus
+  Fancy (0.3.31/1.8.0, no shader-pack compatibility claim). Phase-1 removal pixel
+  comparisons and movement checks are separate checks described above.
+- Phase-1 Java 17 builds/reobfuscation and all 29 dedicated GameTests pass. The
+  movement client and final GUI pixel/removal client were run separately. Earlier
+  portal/cart/worldgen client checks were not repeated for this equipment task.
 - Ignored visual artifacts: ../ArienteWorld/build/verification, notably
   storage-display.png, connector-housing.png, slope-variants.png,
   tank-billboards-{fancy,fabulous}.png, power-suit-front.png,
@@ -334,11 +346,11 @@ build configuration. See the companion handoff for fixture/client-test setup.
 
 FOUR-PHASE COMPLETION PLAN
 ==========================
-Phase 1 - Finish equipment and the current reports.
+Phase 1 - Finish equipment and the current reports (implemented; focused checks pass).
   Fix alignment and installed/available/removed presentation, restore the four
   movement modules, and repair gear fuel/working-state/held-slot lifecycle.
-  Exit: real survival-client checks show movement and its removal on toggle,
-  unequip and fuel exhaustion; installation/removal presentation is unambiguous.
+  Exit achieved in focused survival-client and pixel checks. Continue broader
+  multiplayer/configuration/interaction validation in phase 4.
 
 Phase 2 - Complete resource and crafting progression.
   Restore ore/mob loot, smelting, optional Overworld progression, colored recipe

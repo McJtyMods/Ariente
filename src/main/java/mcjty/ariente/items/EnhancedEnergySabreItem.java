@@ -177,44 +177,39 @@ public class EnhancedEnergySabreItem extends EnergySabreItem implements ITooltip
 
     @Override
     public void inventoryTick(ItemStack stack, Level world, Entity entity, int itemSlot, boolean isSelected) {
-        if (entity instanceof LivingEntity && !world.isClientSide) {
-            if (itemSlot != EquipmentSlot.MAINHAND.getIndex()) {
-                return;
+        if (!world.isClientSide && entity instanceof LivingEntity living) {
+            if (living.isAlive() && living.getMainHandItem() == stack) {
+                ModuleSupport.updateWorkingState(stack, living);
+            } else {
+                ModuleSupport.clearWorkingState(stack);
             }
-            onUpdateSabre(stack, world, (LivingEntity) entity);
+            updateModuleEnchantment(stack, ArmorUpgradeType.LOOTING, Enchantments.MOB_LOOTING);
+            updateModuleEnchantment(stack, ArmorUpgradeType.FIRE, Enchantments.FIRE_ASPECT);
         }
     }
 
-    private void onUpdateSabre(ItemStack stack, Level world, LivingEntity entity) {
-        if (stack.isEmpty() || stack.getItem() != Registration.ENHANCED_ENERGY_SABRE.get() || !stack.hasTag()) {
-            return;
-        }
-
-        CompoundTag compound = stack.getTag();
-
-        if (!ModuleSupport.managePower(stack, entity)) {
-            compound.putBoolean(ArmorUpgradeType.INHIBIT.getWorkingKey(), false);
-            compound.putBoolean(ArmorUpgradeType.POWER.getWorkingKey(), false);
-            int lootingLevel = EnchantmentHelper.getItemEnchantmentLevel(Enchantments.MOB_LOOTING, stack);
-            int fireLevel = EnchantmentHelper.getItemEnchantmentLevel(Enchantments.FIRE_ASPECT, stack);
-            if (lootingLevel > 0 || fireLevel > 0) {
-                EnchantmentHelper.setEnchantments(Collections.emptyMap(), stack);
+    private static void updateModuleEnchantment(ItemStack stack, ArmorUpgradeType type, Enchantment enchantment) {
+        CompoundTag tag = stack.getOrCreateTag();
+        String savedKey = "ariente_original_" + type.getName();
+        Map<Enchantment, Integer> enchantments = EnchantmentHelper.getEnchantments(stack);
+        if (ModuleSupport.hasWorkingUpgrade(stack, type)) {
+            if (!tag.contains(savedKey)) {
+                tag.putInt(savedKey, enchantments.getOrDefault(enchantment, 0));
             }
-            return;
+            enchantments.put(enchantment, Math.max(3, tag.getInt(savedKey)));
+        } else if (tag.contains(savedKey)) {
+            // Restore only the enchantment contributed by this module, preserving other enchants.
+            if (enchantments.getOrDefault(enchantment, 0) == Math.max(3, tag.getInt(savedKey))) {
+                if (tag.getInt(savedKey) > 0) {
+                    enchantments.put(enchantment, tag.getInt(savedKey));
+                } else {
+                    enchantments.remove(enchantment);
+                }
+            }
+            tag.remove(savedKey);
         }
-
-        compound.putBoolean(ArmorUpgradeType.INHIBIT.getWorkingKey(), compound.getBoolean(ArmorUpgradeType.INHIBIT.getModuleKey()));
-        compound.putBoolean(ArmorUpgradeType.POWER.getWorkingKey(), compound.getBoolean(ArmorUpgradeType.POWER.getModuleKey()));
-
-        Map<Enchantment, Integer> ench = new HashMap<>();
-        if (compound.getBoolean(ArmorUpgradeType.LOOTING.getModuleKey())) {
-            ench.put(Enchantments.MOB_LOOTING, 3);
+        if (!enchantments.equals(EnchantmentHelper.getEnchantments(stack))) {
+            EnchantmentHelper.setEnchantments(enchantments, stack);
         }
-        if (compound.getBoolean(ArmorUpgradeType.FIRE.getModuleKey())) {
-            ench.put(Enchantments.FIRE_ASPECT, 3);
-        }
-        EnchantmentHelper.setEnchantments(ench, stack);
     }
-
-
 }

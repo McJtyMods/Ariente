@@ -15,7 +15,11 @@ import org.apache.commons.lang3.tuple.Pair;
 import javax.annotation.Nonnull;
 
 public class ModuleSupport {
+
     public static void receivedHotkey(Player player, int index) {
+        if (player == null || index < 1 || index > 4) {
+            return;
+        }
         handleHotkey(player, index, EquipmentSlot.HEAD, Registration.POWERSUIT_HEAD.get());
         handleHotkey(player, index, EquipmentSlot.LEGS, Registration.POWERSUIT_LEGS.get());
         handleHotkey(player, index, EquipmentSlot.FEET, Registration.POWERSUIT_FEET.get());
@@ -29,10 +33,11 @@ public class ModuleSupport {
             CompoundTag compound = armorStack.getTag();
             for (ArmorUpgradeType type : ArmorUpgradeType.VALUES) {
                 int idx = compound.getInt(type.getHotkeyKey());
-                if (idx == index) {
+                if (compound.contains(type.getModuleKey()) && idx == index) {
                     boolean on = compound.getBoolean(type.getModuleKey());
                     on = !on;
                     compound.putBoolean(type.getModuleKey(), on);
+                    compound.putBoolean(type.getWorkingKey(), false);
                 }
             }
         }
@@ -42,7 +47,7 @@ public class ModuleSupport {
         if (stack.isEmpty() || !stack.hasTag()) {
             return false;
         }
-        return stack.getTag().getBoolean(type.getWorkingKey());
+        return stack.getTag().getBoolean(type.getModuleKey()) && stack.getTag().getBoolean(type.getWorkingKey());
     }
 
     @Nonnull
@@ -69,105 +74,98 @@ public class ModuleSupport {
         return Pair.of(power, maxPower);
     }
 
-    public static boolean managePower(ItemStack stack, LivingEntity entity) {
-        Pair<Integer, Integer> powerUsage = getPowerUsage(stack);
-        if (powerUsage.getLeft() > powerUsage.getRight()) {
-            // Can't work
-            return false;
+    public static void clearWorkingState(ItemStack stack) {
+        if (stack.hasTag()) {
+            for (ArmorUpgradeType type : ArmorUpgradeType.VALUES) {
+                stack.getTag().remove(type.getWorkingKey());
+            }
         }
-        if (powerUsage.getLeft() <= 0) {
-            // No power consumption
-            return true;
-        }
+    }
 
-        CompoundTag compound = stack.getTag();
-
-        int power = compound.getInt("power");
-        if (power <= 0) {
-            // We need a new negarite/posirite injection
-            int negarite = compound.getInt("negarite");
-            int posirite = compound.getInt("posirite");
-            negarite--;
-            posirite--;
-            if (negarite < 0 || posirite < 0) {
-                // Not enough power possible. Check if we can autofeed
-                if (!checkAutofeed(entity, compound)) {
-                    return false;
+    public static boolean updateWorkingState(ItemStack stack, LivingEntity entity) {
+        boolean powered = managePower(stack, entity);
+        CompoundTag tag = stack.getTag();
+        if (tag != null) {
+            for (ArmorUpgradeType type : ArmorUpgradeType.VALUES) {
+                if (tag.contains(type.getModuleKey())) {
+                    tag.putBoolean(type.getWorkingKey(), powered && tag.getBoolean(type.getModuleKey()));
                 } else {
-                    // We autofed and immediatelly consumed it so set values to 0
-                    posirite = 0;
-                    negarite = 0;
+                    tag.remove(type.getWorkingKey());
                 }
             }
-            compound.putInt("negarite", negarite);
-            compound.putInt("posirite", posirite);
-            int max = UtilityConfiguration.POWERSUIT_TICKS.get();
-            if (powerUsage.getRight() > UtilityConfiguration.POWERSUIT_MAXPOWER.get()) {  // If > we have an energy optimizer
-                max = UtilityConfiguration.POWERSUIT_TICKS_OPTIMIZED.get();
+        }
+        return powered;
+    }
+
+    public static boolean managePower(ItemStack stack, LivingEntity entity) {
+        Pair<Integer, Integer> usage = getPowerUsage(stack);
+        if (usage.getLeft() > usage.getRight()) {
+            return false;
+        }
+        if (usage.getLeft() <= 0) {
+            return true;
+        }
+        CompoundTag tag = stack.getOrCreateTag();
+        int power = tag.getInt("power");
+        if (power <= 0) {
+            if (!consumeFuelPair(entity, tag)) {
+                return false;
             }
-            compound.putInt("power", max / powerUsage.getLeft());
+            int ticks = usage.getRight() > UtilityConfiguration.POWERSUIT_MAXPOWER.get()
+                    ? UtilityConfiguration.POWERSUIT_TICKS_OPTIMIZED.get() : UtilityConfiguration.POWERSUIT_TICKS.get();
+            power = Math.max(1, ticks / usage.getLeft());
+        }
+        tag.putInt("power", power - 1);
+        return true;
+    }
+
+    private static boolean consumeFuelPair(LivingEntity entity, CompoundTag tag) {
+        boolean needNegarite = tag.getInt("negarite") <= 0;
+        boolean needPosirite = tag.getInt("posirite") <= 0;
+        int negariteSlot = -1;
+        int posiriteSlot = -1;
+        Player player = entity instanceof Player p ? p : null;
+        if (needNegarite || needPosirite) {
+            if (player == null || !tag.getBoolean(ArmorUpgradeType.AUTOFEED.getModuleKey())) {
+                return false;
+            }
+            for (int i = 0; i < player.getInventory().getContainerSize(); i++) {
+                ItemStack fuel = player.getInventory().getItem(i);
+                if (needNegarite && negariteSlot < 0 && hasFuel(fuel, Registration.DUST_NEGARITE.get(), "negarite")) {
+                    negariteSlot = i;
+                }
+                if (needPosirite && posiriteSlot < 0 && hasFuel(fuel, Registration.DUST_POSIRITE.get(), "posirite")) {
+                    posiriteSlot = i;
+                }
+            }
+            // Locate both missing components before changing either inventory or local fuel.
+            if ((needNegarite && negariteSlot < 0) || (needPosirite && posiriteSlot < 0)) {
+                return false;
+            }
+        }
+        if (needNegarite) {
+            extractFuel(player.getInventory().getItem(negariteSlot), "negarite");
         } else {
-            power--;
-            compound.putInt("power", power);
+            tag.putInt("negarite", tag.getInt("negarite") - 1);
+        }
+        if (needPosirite) {
+            extractFuel(player.getInventory().getItem(posiriteSlot), "posirite");
+        } else {
+            tag.putInt("posirite", tag.getInt("posirite") - 1);
         }
         return true;
     }
 
-    private static boolean checkAutofeed(LivingEntity entity, CompoundTag compound) {
-        if (compound.getBoolean(ArmorUpgradeType.AUTOFEED.getModuleKey())) {
-            if (entity instanceof Player) {
-                // Only auto-feed with player
-                int negariteIndex = -1;
-                int posiriteIndex = -1;
-                Player player = (Player) entity;
-                for (int i = 0; i < player.getInventory().getContainerSize(); i++) {
-                    ItemStack itemStack = player.getInventory().getItem(i);
-                    if (itemStack.getItem() == Registration.ENERGY_HOLDER.get()) {
-                        int negarite = EnergyHolderItem.count(itemStack, "negarite");
-                        if (negarite > 0) {
-                            negariteIndex = i;
-                        }
-                        int posirite = EnergyHolderItem.count(itemStack, "posirite");
-                        if (posirite > 0) {
-                            posiriteIndex = i;
-                        }
-                        if (negariteIndex != -1 && posiriteIndex != -1) {
-                            break;
-                        }
-                    } else if (itemStack.getItem() == Registration.DUST_NEGARITE.get()) {
-                        if (!itemStack.isEmpty()) {
-                            negariteIndex = i;
-                            if (posiriteIndex != -1) {
-                                break;
-                            }
-                        }
-                    } else if (itemStack.getItem() == Registration.DUST_POSIRITE.get()) {
-                        if (!itemStack.isEmpty()) {
-                            posiriteIndex = i;
-                            if (negariteIndex != -1) {
-                                break;
-                            }
-                        }
-                    }
-                }
-                if (negariteIndex != -1 && posiriteIndex != -1) {
-                    ItemStack negariteStack = player.getInventory().getItem(negariteIndex);
-                    if (negariteStack.getItem() == Registration.ENERGY_HOLDER.get()) {
-                        EnergyHolderItem.extractIfPossible(negariteStack, "negarite", 1);
-                    } else {
-                        negariteStack.shrink(1);
-                    }
+    private static boolean hasFuel(ItemStack stack, Item dust, String key) {
+        return !stack.isEmpty() && (stack.is(dust)
+                || (stack.is(Registration.ENERGY_HOLDER.get()) && EnergyHolderItem.count(stack, key) > 0));
+    }
 
-                    ItemStack posiriteStack = player.getInventory().getItem(posiriteIndex);
-                    if (posiriteStack.getItem() == Registration.ENERGY_HOLDER.get()) {
-                        EnergyHolderItem.extractIfPossible(negariteStack, "posirite", 1);
-                    } else {
-                        posiriteStack.shrink(1);
-                    }
-                    return true;
-                }
-            }
+    private static void extractFuel(ItemStack stack, String key) {
+        if (stack.is(Registration.ENERGY_HOLDER.get())) {
+            EnergyHolderItem.extractIfPossible(stack, key, 1);
+        } else {
+            stack.shrink(1);
         }
-        return false;
     }
 }

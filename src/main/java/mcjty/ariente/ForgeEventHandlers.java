@@ -7,12 +7,14 @@ import mcjty.ariente.config.WorldgenConfiguration;
 import mcjty.ariente.entities.levitator.FluxLevitatorEntity;
 import mcjty.ariente.items.BlueprintItem;
 import mcjty.ariente.items.modules.ModuleSupport;
+import mcjty.ariente.items.armor.PowerSuitEffects;
 import mcjty.ariente.power.PowerSystem;
 import mcjty.ariente.recipes.BlueprintRecipeRegistry;
 import mcjty.ariente.recipes.ConstructorRecipe;
 import mcjty.ariente.setup.Registration;
 import mcjty.ariente.sounds.FluxLevitatorSounds;
 import net.minecraft.world.damagesource.DamageSource;
+import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.entity.EquipmentSlot;
@@ -29,6 +31,8 @@ import net.minecraft.world.level.storage.loot.functions.LootItemFunctionType;
 import net.minecraft.world.level.storage.loot.predicates.LootItemConditions;
 import net.minecraftforge.event.LootTableLoadEvent;
 import net.minecraftforge.event.TickEvent;
+import net.minecraftforge.event.entity.player.PlayerEvent;
+import net.minecraftforge.event.entity.living.LivingDeathEvent;
 import net.minecraftforge.event.entity.EntityJoinLevelEvent;
 import net.minecraftforge.event.entity.living.LivingDamageEvent;
 import net.minecraftforge.event.entity.living.LivingFallEvent;
@@ -123,6 +127,29 @@ public class ForgeEventHandlers {
         if (event.phase == TickEvent.Phase.START && !event.level.isClientSide && event.level.dimension() == Level.OVERWORLD) {
             PowerSystem.getPowerSystem(event.level).tick();
         }
+    }
+
+    @SubscribeEvent
+    public void onPlayerTick(TickEvent.PlayerTickEvent event) {
+        if (event.phase == TickEvent.Phase.END && !event.player.level().isClientSide) {
+            PowerSuitEffects.tick(event.player);
+            if (event.player instanceof ServerPlayer player && player.isAlive() && !player.isPassenger()
+                    && player.getItemBySlot(EquipmentSlot.CHEST).is(Registration.POWERSUIT_CHEST.get())
+                    && ModuleSupport.hasWorkingUpgrade(player.getItemBySlot(EquipmentSlot.CHEST), ArmorUpgradeType.FLIGHT)) {
+                player.connection.aboveGroundTickCount = 0;
+                player.fallDistance = 0;
+            }
+        }
+    }
+
+    @SubscribeEvent
+    public void onPlayerLogout(PlayerEvent.PlayerLoggedOutEvent event) {
+        PowerSuitEffects.clear(event.getEntity());
+    }
+
+    @SubscribeEvent
+    public void onLivingDeath(LivingDeathEvent event) {
+        PowerSuitEffects.clear(event.getEntity());
     }
 
     @SubscribeEvent
