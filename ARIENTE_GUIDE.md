@@ -1041,7 +1041,7 @@ directory. Values below are defaults, not guaranteed server settings.
 | Ariente `power` | `forcefieldBuildupPower` | 500 | Paired cost per panel buildup step. |
 | Ariente `damage` | `forcefieldDamage` | 19.0 | Contact damage. |
 | ArienteWorld `worldgen` | `overworldDungeonChance` | 0.002 | Per-chunk entrance candidacy. |
-| ArienteWorld `worldgen` | `cityDungeonChance` | 0.7 | Declared city-chance option; the active `CityTools` plan selection does not currently consult it. |
+| ArienteWorld `worldgen` | `cityDungeonChance` | 0.7 | Seeded chance per complex grid spot; 0 disables complexes and 1 fills all candidates. Choose before creating a world. Districts, routes and arrival portals remain. |
 | ArienteWorld `loot` | `soldierCitykeyChance` | 0.2 | City soldier key-card drop chance. |
 | ArienteWorld `ai` | `alertTime` | 400 | Ten-tick city-AI timeout steps. |
 
@@ -1208,7 +1208,7 @@ worlds.
 | Security provisioning | City keys work through authored/AI setup; there is no complete player-facing arbitrary key-programming workflow. |
 | Elevator | Requires both power components; loss stops the beam and movement. Long/multiplayer lift use remains an integration check. |
 | Flux Ship / cabin workflows | Basic ship flight, rendering, placement and save/load are restored; fuel/progression and advanced ship design remain unfinished. |
-| Worldgen controls | `cityDungeonChance` controls sparse complex plans; full terrain/tree parity and exploration play testing remain. |
+| Worldgen controls | Seeded complex chance, search/API agreement, original soil/rough surfaces, branching blue trees and hill/forest flowers pass focused checks. Quart sampling/native placement differences are documented in ArienteWorld's handoff; exploration play testing remains. |
 | City editing tools | Creative operator sessions, sync, variants and JSON export/reload are restored; authoring sessions are temporary and require explicit saving. |
 | General validation | 48 dedicated tests, full datagen, asset/model audits and focused two-client multiplayer checks pass. Full survival progression, sustained combat/spawn balance, real chunk unload/restart and multiplayer transport/portals remain. |
 

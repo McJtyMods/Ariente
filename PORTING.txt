@@ -483,7 +483,7 @@ VERIFICATION ALREADY PERFORMED AND ITS LIMITS
 ===========================================
 - Java 17 workspace builds of Ariente, ArienteWorld and ModHoloGui pass, including
   reobfuscation. workspace:compileJava passed earlier. Client loads both mods.
-- Latest dedicated suite: 48 required GameTests passed. They live in the companion's
+- Latest dedicated suite: 53 required GameTests passed. They live in the companion's
   src/gameTest, outside published jars. MachinePersistenceTests covers 31 tile
   types; MachineInteractionTests covers storage, generator/tank state, hologram
   clicks, equipment configuration and transport; CombatRegressionTests exercises
@@ -522,6 +522,16 @@ VERIFICATION ALREADY PERFORMED AND ITS LIMITS
   tank-billboards-{fancy,fabulous}.png, power-suit-front.png,
   hologram-world-{fancy,fabulous}.png and hologram-ariente.*-*.png.
   Artifacts and /tmp scripts/logs are local evidence, not durable dependencies.
+
+COMPANION PHASE-1 FOLLOW-UP (2026-10-31)
+=======================================
+ArienteWorld now connects seeded cityDungeonChance to placement/search/API,
+repairs district/station lookup mismatches and restores verified original soil,
+rough-biome, branching-tree and flower-placement details. Its five additional
+WorldControlTests bring the dedicated suite to 53 required passing tests in a
+fresh isolated world. See ../ArienteWorld/PORTING.txt for the parity comparison,
+modern sampling differences and visual-check instructions. Ariente gameplay
+implementation and the phase-4 release gates above are unchanged.
 
 SOURCE MAP AND DEVELOPMENT COMMANDS
 ===================================
