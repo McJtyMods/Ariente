@@ -4,6 +4,9 @@
     - Add boss monster
 - Fix flux network
 - Fix flux ships
-- Patchouli support
 - Extend the search range of the pearl
-- Sun has a weird texture
+- Carve out corridors to nearby dungeons in overworld
+- Test player forcefield
+- Break particles are wrong
+- Item models for some of the blocks are wrong or weird: ramp, the four fences, storage cube (not 3d), flat light
+- Extremely hard to leave the elevator

@@ -1,6 +1,7 @@
 {
   "textures": {
-    "empty": "ariente:block/base/empty_glow"
+    "empty": "ariente:block/base/empty_glow",
+    "particle": "#empty"
   },
   "elements": [
     {

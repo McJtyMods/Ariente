@@ -11,6 +11,7 @@ import mcjty.ariente.setup.Registration;
 import mcjty.lib.blocks.BaseBlock;
 import mcjty.ariente.items.BlockStateItem;
 import mcjty.lib.datagen.BaseItemModelProvider;
+import net.minecraft.core.Direction;
 import net.minecraft.world.level.block.SlabBlock;
 import net.minecraft.data.DataGenerator;
 import net.minecraft.world.item.Item;
@@ -178,10 +179,15 @@ public class Items extends BaseItemModelProvider {
     }
 
     private void fenceItem(Item item, String texture) {
-        ModelFile.UncheckedModelFile parent = new ModelFile.UncheckedModelFile(mcLoc(BLOCK_FOLDER + "/fence_inventory"));
         getBuilder(Tools.getId(item).getPath())
-                .parent(parent)
-                .texture("texture", modLoc(texture));
+                .parent(new ModelFile.UncheckedModelFile(mcLoc(BLOCK_FOLDER + "/block")))
+                .texture("pane", modLoc(texture))
+                .texture("edge", modLoc(texture + "_top"))
+                .texture("particle", "#pane")
+                .renderType("minecraft:cutout")
+                .element().from(0, 0, 7).to(16, 16, 9)
+                .allFaces((direction, face) -> face.texture(direction.getAxis() == Direction.Axis.Z ? "#pane" : "#edge"))
+                .end();
     }
 
     @Override

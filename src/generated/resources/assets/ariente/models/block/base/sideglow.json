@@ -2,7 +2,8 @@
   "parent": "minecraft:block/block",
   "textures": {
     "bottom": "ariente:block/base/machinebottom",
-    "top": "ariente:block/base/machinetop"
+    "top": "ariente:block/base/machinetop",
+    "particle": "#side"
   },
   "elements": [
     {

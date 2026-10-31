@@ -979,8 +979,7 @@ is 9, adjustable through its hologram. Stand in the beam:
 Height can be set from **1 to 256**. Level Marker floor-name editing is still a
 WIP panel; floor detection and numbered floor selection do not depend on naming.
 
-The Elevator requires **10 of each flux component per tick**. Without both
-supplies its lift and beam stop. Its configuration hologram remains available.
+The Elevator works automatically and requires no power supply.
 Keep the shaft and landings clear. This block is separate from the Flux Elevator
 cabin entity used by transport code.
 
@@ -1277,7 +1276,7 @@ worlds.
 | Visual effects | Automation transfers, blueprint previews, facade items, ship hull, soldier armor and hologram tooltips are restored; combined-cable beam rendering remains an original limitation. |
 | Facades | State display, removal without losing the cable/network, and exported facade properties pass focused checks. |
 | Security provisioning | City keys work through authored/AI setup; there is no complete player-facing arbitrary key-programming workflow. |
-| Elevator | Requires both power components; loss stops the beam and movement. Long/multiplayer lift use remains an integration check. |
+| Elevator | Works without power; floor markers select landing heights. Long/multiplayer lift use remains an integration check. |
 | Flux Ship / cabin workflows | Basic ship flight, rendering, placement and save/load are restored; fuel/progression and advanced ship design remain unfinished. |
 | Worldgen controls | Seeded complex chance, search/API agreement, original soil/rough surfaces, branching blue trees and hill/forest flowers pass focused checks. Quart sampling/native placement differences are documented in ArienteWorld's handoff; exploration play testing remains. |
 | City editing tools | Creative operator sessions, sync, variants and JSON export/reload are restored; authoring sessions are temporary and require explicit saving. |

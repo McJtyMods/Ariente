@@ -395,8 +395,9 @@ existing behavior and designing a feature that was never finished:
   do not claim all missing recipes were lost during this port.
 - Flux Ship controlling-passenger/control code was experimental/incomplete.
   Basic flight is now deliberately completed; advanced ship design remains open.
-- ElevatorTile ignored failed power consumption in master too. Phase 3 now
-  enforces supply as deliberate completeness work, not a released regression.
+- ElevatorTile ignored failed power consumption in master too. The temporary
+  port power requirement has been removed: elevators work automatically, without
+  power receivers, consumption, or a power-dependent beam/movement gate.
 - Cable beams render regardless of actual power; combined-cable beam rendering
   returns early in master as well. Existing individual cable beams are ported.
 - Arbitrary player-facing key-card programming was not a complete original
@@ -582,8 +583,8 @@ VERIFICATION ALREADY PERFORMED AND ITS LIMITS
   scripts and exact logs/limits are in ../ArienteWorld/PORTING.txt.
 - SystemRegressionTests covers tag/NBT/damage filters, real inventories, minimum
   batches, round robin, rejected/partial inserts, multipart item placement/picking/
-  breaking/holograms, facade removal, wireless reassignment/visuals, elevator power
-  loss and pilot movement/save/load. EditorRegressionTests covers native states,
+  breaking/holograms, facade removal, wireless reassignment/visuals, automatic elevator
+  operation and pilot movement/save/load. EditorRegressionTests covers native states,
   facade/equipment/spawner settings, metadata and real Brigadier variant/export/
   reload workflows. Test fixtures are isolated from user saves.
 - Opt-in SystemRenderingChecks covers ship/blueprint/facade/armor/tooltip/transfer
@@ -691,3 +692,31 @@ Phase 4 - Integrate, validate and prepare release (automated checkpoint; release
 Other local ideas in user-edited todo.txt include flux-network/ship work and
 Patchouli support; the large-cube city rarity/interior/boss ideas belong in the
 companion handoff. Treat new enhancements separately from missing 1.12 parity.
+
+2026-10-31 - BLOCK PRESENTATION AND ELEVATOR EXITS
+================================================
+- Custom block models now provide particle textures, including slope OBJ and
+  dynamically colored/facaded cables. Ramp, Storage Cube and Flat Light inherit
+  vanilla block item transforms; the four fence items use their actual pane shape.
+  Regenerated models match isolated runData output (655 generated JSON files).
+- Opening an elevator hologram no longer recenters the player. Idle/arriving
+  players align with nearby landings without losing horizontal motion, and jump
+  or crouch only recenters the player when a destination floor exists.
+- Blueprint ingredient layout is fixed in McJtyLib: complete row heights replace
+  blank text padding, icons stay inside their component, and counts follow the
+  tooltip's graphics transform. Use the matching McJtyLib 1.20-8.0.10 build.
+- Java 17 workspace :Ariente:build and :McJtyLib:build passed. Resource audit:
+  1,127 resources, zero errors, including the generated-resource comparison.
+  An isolated client checked particle textures for all 9,467 Ariente block states,
+  all seven reported inventory models, tooltip heights for 0/1/7/8/9/16/17
+  ingredients with/without error counts, and actual player collision across a
+  landing edge without jumping. It also checked arrival settling, unchanged
+  server position when opening the hologram, and jumping at the top floor.
+  Evidence: build/verification/presentation-client/presentation-check.png.
+  The original large-dungeon elevator still needs a manual walk-through.
+- McJtyLib 1.20-8.0.9 is published for Forge 1.20.1 on Modrinth and CurseForge,
+  so its tooltip fix starts a new 1.20-8.0.10 changelog section. Ariente retains
+  its unreleased 1.20-0.0.31-alpha version: Modrinth still lists no 1.20.1 files;
+  today's CurseForge recheck returned HTTP 403, so that service could not be
+  independently reverified during this follow-up. Model port repairs have no
+  player changelog entries; the elevator exit fix is under the current version.

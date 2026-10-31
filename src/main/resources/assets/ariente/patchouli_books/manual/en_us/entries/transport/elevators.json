@@ -7,7 +7,7 @@
     {
       "type": "patchouli:text",
       "title": "Set up a lift",
-      "text": "Place an Elevator with a clear vertical shaft. Supply $(thing)10 of each flux per tick$() and set its height in the hologram.$(br2)Stand in the beam. Without multiple marked floors, Jump rises and Sneak descends. The lift stops when either power supply is lost."
+      "text": "Place an Elevator with a clear vertical shaft. Set its height in the hologram. Elevators work automatically and need no power supply.$(br2)Stand in the beam. Without multiple marked floors, Jump rises and Sneak descends."
     },
     {
       "type": "patchouli:text",

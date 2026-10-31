@@ -34,7 +34,6 @@ import static mcjty.ariente.cables.ConnectorType.CABLE;
 
 public class GenericCableBakedModel extends AbstractDynamicBakedModel {
 
-    private TextureAtlasSprite spriteCable;
     private static final ModelProperty<BlockState> CONNECTIONS = new ModelProperty<>();
 
     public static class CableTextures {
@@ -197,7 +196,7 @@ public class GenericCableBakedModel extends AbstractDynamicBakedModel {
 
             initTextures();
             CableTextures ct = cableTextures[index];
-            spriteCable = ct.spriteNormalCable;
+            TextureAtlasSprite spriteCable = ct.spriteNormalCable;
             GenericCableBlock block = (GenericCableBlock) state.getBlock();
             TextureAtlasSprite spriteConnector = ct.spriteConnector;
             Function<CablePatterns.SpriteIdx, TextureAtlasSprite> getSprite = idx -> getSpriteNormal(idx, index);
@@ -376,7 +375,22 @@ public class GenericCableBakedModel extends AbstractDynamicBakedModel {
 
     @Override
     public TextureAtlasSprite getParticleIcon() {
-        return spriteCable == null ? getTexture(new ResourceLocation("minecraft", "missingno")) : spriteCable;
+        initTextures();
+        return cableTextures[CableColor.NEGARITE.ordinal()].spriteNormalCable;
+    }
+
+    @Override
+    public TextureAtlasSprite getParticleIcon(ModelData data) {
+        BlockState facade = data.get(GenericCableBlock.FACADEID);
+        if (facade != null) {
+            return Minecraft.getInstance().getBlockRenderer().getBlockModel(facade).getParticleIcon();
+        }
+        BlockState state = data.get(CONNECTIONS);
+        if (state != null) {
+            initTextures();
+            return cableTextures[state.getValue(GenericCableBlock.COLOR).ordinal()].spriteNormalCable;
+        }
+        return getParticleIcon();
     }
 
     @Override

@@ -5,9 +5,6 @@ import mcjty.ariente.Ariente;
 import mcjty.ariente.api.ICityAI;
 import mcjty.ariente.api.ICityEquipment;
 import mcjty.ariente.api.IElevator;
-import mcjty.ariente.power.IPowerReceiver;
-import mcjty.ariente.power.IPowerUser;
-import mcjty.ariente.power.PowerReceiverSupport;
 import mcjty.ariente.setup.Registration;
 import mcjty.hologui.api.*;
 import mcjty.hologui.api.components.IPanel;
@@ -40,11 +37,11 @@ import static mcjty.hologui.api.Icons.*;
 import static mcjty.lib.builder.TooltipBuilder.header;
 import static mcjty.lib.builder.TooltipBuilder.key;
 
-public class ElevatorTile extends TickingTileEntity implements IGuiTile, IPowerReceiver, ICityEquipment, IElevator, IPowerUser {
+public class ElevatorTile extends TickingTileEntity implements IGuiTile, ICityEquipment, IElevator {
 
     public static final String TAG_ELEVATOR = "elevator";
 
-    public static final int POWER_USAGE = 10;
+    private static final double FLOOR_TOLERANCE = 0.125;
 
     private AABB cachedBox = null;
 
@@ -54,7 +51,6 @@ public class ElevatorTile extends TickingTileEntity implements IGuiTile, IPowerR
 
     // Client side only
     private int moveToFloor = -1;
-    private boolean powered;
 
     public ElevatorTile(BlockPos pos, BlockState state) {
         super(Registration.ELEVATOR_TILE.get(), pos, state);
@@ -81,41 +77,20 @@ public class ElevatorTile extends TickingTileEntity implements IGuiTile, IPowerR
     }
 
     @Override
-    public long getUsingPower() {
-        return powered ? POWER_USAGE : 0;
-    }
-
-    @Override
     public void tickServer() {
-        boolean available = PowerReceiverSupport.consumePower(level, worldPosition, POWER_USAGE, true);
-        if (powered != available) {
-            powered = available;
-            markDirtyClient();
-        }
-        if (!powered) {
-            removeStaleHoloEntries();
-            return;
-        }
-
         List<Player> players = level.getEntitiesOfClass(Player.class, getBeamBox());
         for (Player player : players) {
-            if (openOrMoveHoloGui(player)) {
-                player.teleportTo(worldPosition.getX() + .5, player.getY(), worldPosition.getZ() + .5);
-            }
+            openOrMoveHoloGui(player);
             player.hasImpulse = true;
             player.fallDistance = 0;
         }
         removeStaleHoloEntries();
     }
 
-    public boolean isPowered() {
-        return powered;
-    }
-
     @Override
     public void tickClient() {
         Player clientPlayer = SafeClientTools.getClientPlayer();
-        if (!powered || clientPlayer == null) {
+        if (clientPlayer == null) {
             moveToFloor = -1;
             return;
         }
@@ -131,19 +106,21 @@ public class ElevatorTile extends TickingTileEntity implements IGuiTile, IPowerR
                     motionY = 0.5;
                 } else {
                     motionY = 0.0;
+                    alignWithFloor(clientPlayer, floors);
                 }
                 Vec3 motion = clientPlayer.getDeltaMovement();
                 clientPlayer.setDeltaMovement(motion.x, motionY, motion.z);
             } else {
                 if (moveToFloor == -1) {
                     if (clientPlayer.isShiftKeyDown()) {
-                        moveToFloor = findLowerFloor(floors, (int) clientPlayer.getY());
-                        clientPlayer.setPos(worldPosition.getX() + .5, clientPlayer.getY(), worldPosition.getZ() + .5);
+                        moveToFloor = findLowerFloor(floors, clientPlayer.getY());
                     } else if (isJumpKeyDown()) {
-                        moveToFloor = findUpperFloor(floors, (int) clientPlayer.getY());
-                        clientPlayer.setPos(worldPosition.getX() + .5, clientPlayer.getY(), worldPosition.getZ() + .5);
+                        moveToFloor = findUpperFloor(floors, clientPlayer.getY());
                     } else {
                         moveToFloor = -1;
+                    }
+                    if (moveToFloor != -1) {
+                        clientPlayer.setPos(worldPosition.getX() + .5, clientPlayer.getY(), worldPosition.getZ() + .5);
                     }
                 }
                 if (moveToFloor >= floors.size()) {
@@ -151,7 +128,11 @@ public class ElevatorTile extends TickingTileEntity implements IGuiTile, IPowerR
                 }
                 if (moveToFloor != -1) {
                     double motionY;
-                    if (clientPlayer.getY() > floors.get(moveToFloor)) {
+                    if (Math.abs(clientPlayer.getY() - floors.get(moveToFloor)) <= FLOOR_TOLERANCE
+                            && alignWithFloor(clientPlayer, List.of(floors.get(moveToFloor)))) {
+                        motionY = 0.0;
+                        moveToFloor = -1;
+                    } else if (clientPlayer.getY() > floors.get(moveToFloor)) {
                         motionY = -Math.min(1.4, clientPlayer.getY() - floors.get(moveToFloor));
                     } else if (clientPlayer.getY() < floors.get(moveToFloor)) {
                         motionY = Math.min(1.0, floors.get(moveToFloor) - clientPlayer.getY());
@@ -162,6 +143,7 @@ public class ElevatorTile extends TickingTileEntity implements IGuiTile, IPowerR
                     Vec3 motion = clientPlayer.getDeltaMovement();
                     clientPlayer.setDeltaMovement(motion.x, motionY, motion.z);
                 } else {
+                    alignWithFloor(clientPlayer, floors);
                     Vec3 motion = clientPlayer.getDeltaMovement();
                     clientPlayer.setDeltaMovement(motion.x, 0, motion.z);
                 }
@@ -171,31 +153,46 @@ public class ElevatorTile extends TickingTileEntity implements IGuiTile, IPowerR
         }
     }
 
+    private boolean alignWithFloor(Player player, List<Integer> floors) {
+        double y = player.getY();
+        double floorY = floors.stream().mapToDouble(Integer::doubleValue)
+                .filter(floor -> Math.abs(floor - y) <= FLOOR_TOLERANCE)
+                .findFirst().orElse(floors.isEmpty() ? Math.rint(y) : Double.NaN);
+        if (!Double.isFinite(floorY) || Math.abs(floorY - y) > FLOOR_TOLERANCE) {
+            return false;
+        }
+        // Keep feet level with the landing instead of hovering just below its edge.
+        if (level.noCollision(player, player.getBoundingBox().move(0, floorY - y, 0))) {
+            player.setPos(player.getX(), floorY, player.getZ());
+            return true;
+        }
+        return false;
+    }
+
     private boolean isJumpKeyDown() {
         // Was McJtyLib.proxy.isJumpKeyDown()
         return SafeClientTools.isJumpKeyDown();
     }
 
-    private int findLowerFloor(List<Integer> floors, int y) {
+    private int findLowerFloor(List<Integer> floors, double y) {
         for (int i = floors.size()-1 ; i >= 0 ; i--) {
-            if (floors.get(i) < y) {
+            if (floors.get(i) < y - FLOOR_TOLERANCE) {
                 return i;
             }
         }
         return -1;
     }
 
-    private int findUpperFloor(List<Integer> floors, int y) {
+    private int findUpperFloor(List<Integer> floors, double y) {
         for (int i = 0 ; i < floors.size() ; i++) {
-            if (floors.get(i) > y) {
+            if (floors.get(i) > y + FLOOR_TOLERANCE) {
                 return i;
             }
         }
         return -1;
     }
 
-    // Return true if the gui was opened now
-    private boolean openOrMoveHoloGui(Player player) {
+    private void openOrMoveHoloGui(Player player) {
         Integer holoID = playerToHoloGui.get(player.getUUID());
         if (holoID == null) {
 //            List<Integer> floors = findFloors();
@@ -207,7 +204,6 @@ public class ElevatorTile extends TickingTileEntity implements IGuiTile, IPowerR
                     holoEntity.setMaxTimeout(5);
                 }
 //            }
-            return true;
         } else {
             Entity entity = level.getEntity(holoID);
             if (entity instanceof IHoloGuiEntity) {
@@ -219,7 +215,6 @@ public class ElevatorTile extends TickingTileEntity implements IGuiTile, IPowerR
                 double y = (newPosY + oldPosY) / 2;
                 h.teleportTo(h.getX(), y, h.getZ());
             }
-            return false;
         }
     }
 
@@ -317,7 +312,6 @@ public class ElevatorTile extends TickingTileEntity implements IGuiTile, IPowerR
     @Override
     public void load(CompoundTag tagCompound) {
         super.load(tagCompound);
-        powered = tagCompound.getBoolean("powered");
         CompoundTag info = tagCompound.getCompound("Info");
         if (info.contains("height")) {
             height = info.getInt("height");
@@ -327,7 +321,6 @@ public class ElevatorTile extends TickingTileEntity implements IGuiTile, IPowerR
 
     @Override
     public void saveAdditional(CompoundTag tagCompound) {
-        tagCompound.putBoolean("powered", powered);
         getOrCreateInfo(tagCompound).putInt("height", height);
         super.saveAdditional(tagCompound);
     }

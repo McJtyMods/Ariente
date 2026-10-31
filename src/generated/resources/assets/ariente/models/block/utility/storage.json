@@ -4,7 +4,8 @@
     "side": "ariente:block/base/machineside",
     "sideIn": "ariente:block/marble/blackmarble",
     "top": "ariente:block/base/machinetop",
-    "bottom": "ariente:block/base/machinebottom"
+    "bottom": "ariente:block/base/machinebottom",
+    "particle": "#side"
   },
   "elements": [
     {
@@ -138,5 +139,6 @@
         }
       }
     }
-  ]
+  ],
+  "parent": "minecraft:block/block"
 }

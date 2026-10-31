@@ -3,7 +3,8 @@
   "textures": {
     "side": "ariente:block/base/machineside",
     "bottom": "ariente:block/base/machinebottom",
-    "top": "ariente:block/base/machinetop"
+    "top": "ariente:block/base/machinetop",
+    "particle": "#front"
   },
   "elements": [
     {

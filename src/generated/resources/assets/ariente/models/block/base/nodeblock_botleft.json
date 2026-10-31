@@ -69,5 +69,8 @@
         }
       }
     }
-  ]
+  ],
+  "textures": {
+    "particle": "#front"
+  }
 }

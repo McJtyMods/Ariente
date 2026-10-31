@@ -2,7 +2,8 @@
   "textures": {
     "bottom": "ariente:block/machines/flux_beam",
     "top": "ariente:block/machines/flux_beam",
-    "side": "ariente:block/machines/flux_beam"
+    "side": "ariente:block/machines/flux_beam",
+    "particle": "#side"
   },
   "elements": [
     {
@@ -151,5 +152,6 @@
         }
       }
     }
-  ]
+  ],
+  "parent": "minecraft:block/block"
 }

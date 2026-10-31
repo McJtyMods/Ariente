@@ -1,6 +1,43 @@
 {
-  "parent": "minecraft:block/fence_inventory",
+  "parent": "minecraft:block/block",
   "textures": {
-    "texture": "ariente:block/decorative/tech_fence"
-  }
+    "edge": "ariente:block/decorative/tech_fence_top",
+    "pane": "ariente:block/decorative/tech_fence",
+    "particle": "#pane"
+  },
+  "elements": [
+    {
+      "faces": {
+        "down": {
+          "texture": "#edge"
+        },
+        "east": {
+          "texture": "#edge"
+        },
+        "north": {
+          "texture": "#pane"
+        },
+        "south": {
+          "texture": "#pane"
+        },
+        "up": {
+          "texture": "#edge"
+        },
+        "west": {
+          "texture": "#edge"
+        }
+      },
+      "from": [
+        0,
+        0,
+        7
+      ],
+      "to": [
+        16,
+        16,
+        9
+      ]
+    }
+  ],
+  "render_type": "minecraft:cutout"
 }

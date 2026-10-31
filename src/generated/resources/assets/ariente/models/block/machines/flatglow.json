@@ -1,7 +1,8 @@
 {
   "textures": {
     "back": "ariente:block/base/machinebottom",
-    "all": "ariente:block/machines/light_on"
+    "all": "ariente:block/machines/light_on",
+    "particle": "#all"
   },
   "elements": [
     {
@@ -72,5 +73,6 @@
         }
       }
     }
-  ]
+  ],
+  "parent": "minecraft:block/block"
 }
