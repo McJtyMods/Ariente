@@ -128,8 +128,8 @@ public class Items extends BaseItemModelProvider {
         itemGenerated(Registration.DUST_POSIRITE.get(), "item/dusts/dust_posirite");
 
         itemGenerated(Registration.ENERGY_HOLDER.get(), "item/tools/energy_holder");
-        itemGenerated(Registration.ENERGY_SABRE.get(), "item/weapons/energy_sabre");
-        itemGenerated(Registration.ENHANCED_ENERGY_SABRE.get(), "item/weapons/enhanced_energy_sabre");
+        itemHandheld(Registration.ENERGY_SABRE.get(), "item/weapons/energy_sabre");
+        itemHandheld(Registration.ENHANCED_ENERGY_SABRE.get(), "item/weapons/enhanced_energy_sabre");
         itemGenerated(Registration.KEY_CARD.get(), "item/tools/key_card");
         getBuilder("facade").parent(new ModelFile.UncheckedModelFile("ariente:item/facade_base"));
         getBuilder("blueprint").parent(new ModelFile.UncheckedModelFile("minecraft:builtin/entity"));

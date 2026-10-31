@@ -24,11 +24,13 @@ import net.minecraft.world.entity.ai.goal.target.HurtByTargetGoal;
 import net.minecraft.world.entity.ai.goal.target.NearestAttackableTargetGoal;
 import net.minecraft.world.entity.monster.Monster;
 import net.minecraft.world.DifficultyInstance;
+import net.minecraft.world.Difficulty;
 import net.minecraft.util.RandomSource;
 import net.minecraft.world.entity.monster.ZombifiedPiglin;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.level.ChunkPos;
 import net.minecraft.world.level.Level;
+import net.minecraft.world.level.LevelReader;
 import net.minecraft.world.level.ServerLevelAccessor;
 import net.minecraft.world.level.block.Blocks;
 import net.minecraft.world.level.block.SoundType;
@@ -48,6 +50,7 @@ public class SoldierEntity extends Monster implements IArmRaisable, IForcefieldI
 
     private static final EntityDataAccessor<Boolean> ARMS_RAISED = SynchedEntityData.defineId(SoldierEntity.class, EntityDataSerializers.BOOLEAN);
     public static final ResourceLocation LOOT = new ResourceLocation(Ariente.MODID, "entities/soldier");
+    private static final int MAX_SPAWN_LIGHT = 11;
 
     // If this entity is controlled by a city then this will be set
     protected ChunkPos cityCenter;
@@ -63,6 +66,19 @@ public class SoldierEntity extends Monster implements IArmRaisable, IForcefieldI
         entity.cityCenter = cityCenter;
         entity.behaviourType = behaviourType;
         return entity;
+    }
+
+    public static boolean checkSoldierSpawnRules(EntityType<? extends SoldierEntity> type, ServerLevelAccessor level,
+                                                 MobSpawnType reason, BlockPos pos, RandomSource random) {
+        return level.getDifficulty() != Difficulty.PEACEFUL
+                && level.getMaxLocalRawBrightness(pos) <= MAX_SPAWN_LIGHT
+                && checkMobSpawnRules(type, level, reason, pos, random);
+    }
+
+    @Override
+    public float getWalkTargetValue(BlockPos pos, LevelReader level) {
+        // PathfinderMob also uses this value to validate spawns. Keep it consistent with the placement rule.
+        return MAX_SPAWN_LIGHT - level.getMaxLocalRawBrightness(pos);
     }
 
     @Override
@@ -134,7 +150,7 @@ public class SoldierEntity extends Monster implements IArmRaisable, IForcefieldI
 //            this.getAttributes().registerAttribute(Attributes.FOLLOW_RANGE).setBaseValue(16.0D);
 
     public static AttributeSupplier.Builder registerAttributes() {
-        AttributeSupplier.Builder attributes = LivingEntity.createLivingAttributes();
+        AttributeSupplier.Builder attributes = Monster.createMonsterAttributes();
         attributes
             .add(Attributes.FOLLOW_RANGE, 35.0D)
             .add(Attributes.MOVEMENT_SPEED, 0.32D)
@@ -146,6 +162,10 @@ public class SoldierEntity extends Monster implements IArmRaisable, IForcefieldI
 
     public SoldierBehaviourType getBehaviourType() {
         return behaviourType;
+    }
+
+    public float getMinimumSabreDamage() {
+        return isMaster() ? 32.0F : 24.0F;
     }
 
     @Override
@@ -239,12 +259,6 @@ public class SoldierEntity extends Monster implements IArmRaisable, IForcefieldI
         return LOOT;
     }
 
-
-    // @todo 1.14
-//    @Override
-//    protected boolean isValidLightLevel() {
-//        return super.isValidLightLevel();
-//    }
 
     @Override
     public int getMaxSpawnClusterSize() {

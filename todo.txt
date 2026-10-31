@@ -10,3 +10,5 @@
 - Break particles are wrong
 - Item models for some of the blocks are wrong or weird: ramp, the four fences, storage cube (not 3d), flat light
 - Extremely hard to leave the elevator
+- Storage cubes in large dungeon should be more embedded in the wall
+- New ranged weapon: lance

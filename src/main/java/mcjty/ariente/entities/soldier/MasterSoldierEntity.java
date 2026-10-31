@@ -7,7 +7,6 @@ import mcjty.ariente.setup.Registration;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.world.effect.MobEffectInstance;
 import net.minecraft.world.effect.MobEffects;
-import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.entity.EntityType;
 import net.minecraft.world.entity.ai.attributes.Attributes;
 import net.minecraft.world.entity.ai.attributes.AttributeSupplier;
@@ -36,7 +35,7 @@ public class MasterSoldierEntity extends SoldierEntity {
     }
 
     public static AttributeSupplier.Builder registerAttributes() {
-        AttributeSupplier.Builder attributes = LivingEntity.createLivingAttributes();
+        AttributeSupplier.Builder attributes = Monster.createMonsterAttributes();
         attributes
             .add(Attributes.FOLLOW_RANGE, 35.0D)
             .add(Attributes.MOVEMENT_SPEED, 0.32D)

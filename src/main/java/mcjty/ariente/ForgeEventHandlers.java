@@ -5,12 +5,15 @@ import net.minecraft.nbt.Tag;
 import mcjty.ariente.api.ArmorUpgradeType;
 import mcjty.ariente.blocks.utility.ILockable;
 import mcjty.ariente.entities.levitator.FluxLevitatorEntity;
+import mcjty.ariente.entities.soldier.SoldierEntity;
+import mcjty.ariente.items.EnergySabreItem;
 import mcjty.ariente.items.modules.ModuleSupport;
 import mcjty.ariente.items.armor.PowerSuitEffects;
 import mcjty.ariente.power.PowerSystem;
 import mcjty.ariente.setup.Registration;
 import mcjty.ariente.sounds.FluxLevitatorSounds;
 import net.minecraft.world.damagesource.DamageSource;
+import net.minecraft.world.damagesource.DamageTypes;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.LivingEntity;
@@ -26,6 +29,7 @@ import net.minecraftforge.event.entity.living.LivingDeathEvent;
 import net.minecraftforge.event.entity.EntityJoinLevelEvent;
 import net.minecraftforge.event.entity.living.LivingDamageEvent;
 import net.minecraftforge.event.entity.living.LivingFallEvent;
+import net.minecraftforge.event.entity.living.LivingHurtEvent;
 import net.minecraftforge.event.level.BlockEvent;
 import net.minecraftforge.eventbus.api.SubscribeEvent;
 
@@ -76,6 +80,16 @@ public class ForgeEventHandlers {
             if (ModuleSupport.hasWorkingUpgrade(feetStack, ArmorUpgradeType.FEATHERFALLING)) {
                 event.setCanceled(true);
             }
+        }
+    }
+
+    @SubscribeEvent
+    public void onSoldierSabreAttack(LivingHurtEvent event) {
+        if (event.getSource().is(DamageTypes.MOB_ATTACK)
+                && event.getSource().getDirectEntity() instanceof SoldierEntity soldier
+                && soldier.getMainHandItem().getItem() instanceof EnergySabreItem) {
+            // Player difficulty scaling has run; armor, enchantments and suit defenses still apply afterwards.
+            event.setAmount(Math.max(event.getAmount(), soldier.getMinimumSabreDamage()));
         }
     }
 

@@ -1,4 +1,5 @@
 1.20-0.0.31-alpha:
+- Sabre-wielding soldiers now kill unarmored players in one hit on every non-Peaceful difficulty; master soldiers hit harder.
 - Fixed elevators pulling players back toward the center and holding them below landing edges when trying to walk out.
 - Pressing the armor configuration key again now returns to equipment selection, or closes the panel when already on that menu, instead of opening overlapping panels.
 - Added a craftable Ariente Tablet with a dedicated technological manual for machines, power, equipment and exploration.

@@ -249,9 +249,19 @@ beams at Y=32. Landscape district streets are built near Y=65.
 | Drone | Flying combat unit. |
 | Sentinel Drone | Flying observer that detects players and raises city alerts. |
 
-City biomes also have natural soldier/master spawning; other biomes use
-Overworld-style hostile spawn tables. Natural spawning and city AI reinforcement
-waves are distinct mechanisms. Authored guards and sentinels appear when the
+On Easy, Normal and Hard, a sabre-wielding soldier can kill an unarmored player
+with one hit. Masters and foot guards in advanced complexes hit harder, but a
+healthy player in full unenchanted netherite can survive one melee hit.
+Combat drones belonging to `city2_1`, `city3_1`, `city4_1` and `city5_1` can kill
+that same player with one laser hit. Protection enchantments still reduce laser
+damage. Bring suitable equipment and use cover before alerting these bases.
+
+City biomes and the interiors of every dungeon type have natural soldier/master
+spawning at light levels of **11 or lower**. Outside those areas, other biomes use
+Overworld-style hostile spawn tables. Natural patrols use normal hostile mob caps
+and spawning distances, independently of alerts and full-dungeon loading.
+Natural spawning and city AI reinforcement waves are distinct mechanisms.
+Authored guards and sentinels appear when the
 complex initializes; mobile soldier reinforcements deploy after an alert. The
 reinforcement quota counts mobile troops belonging to that complex. Guards,
 authored masters, natural spawns and neighboring-city troops do not fill it.
@@ -274,7 +284,7 @@ footprint loaded: the current AI waits until its required chunks are loaded.
 Destroy **every AI Core** to defeat the authored city's AI. Destroying the last
 valid core produces a card carrying that city's **storage access** key and marks
 the city dead. This stops that city AI; it does not erase surviving mobs or
-disable the biome's unrelated natural spawning.
+disable natural spawning in the biome or dungeon.
 City generators stop receiving free fuel when the AI is defeated. They can
 continue running on their remaining dust before they run out; capturing a city
 does not immediately drain every machine's power. Supply fuel yourself to keep
