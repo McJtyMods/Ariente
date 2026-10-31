@@ -31,6 +31,12 @@ public class Recipes extends BaseRecipeProvider {
 
     @Override
     protected void buildRecipes(Consumer<FinishedRecipe> consumer) {
+        build(consumer, ShapedRecipeBuilder.shaped(RecipeCategory.MISC, Registration.TABLET.get())
+                        .define('I', Items.IRON_INGOT)
+                        .define('P', Items.GLASS_PANE)
+                        .unlockedBy("redstone", has(Items.REDSTONE)),
+                "IPI", "IrI", "III");
+
         oreProcessing(consumer, Registration.ORE_LITHIUM.get(), Registration.INGOT_LITHIUM.get(), 1);
         oreProcessing(consumer, Registration.ORE_MANGANESE.get(), Registration.INGOT_MANGANESE.get(), 1);
         oreProcessing(consumer, Registration.ORE_PLATINUM.get(), Registration.INGOT_PLATINUM.get(), 1);

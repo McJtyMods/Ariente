@@ -1,0 +1,24 @@
+{
+  "name": "Cables & Connectors",
+  "icon": "ariente:connector_negarite",
+  "category": "ariente:power",
+  "sortnum": 2,
+  "pages": [
+    {
+      "type": "patchouli:text",
+      "title": "Connect the endpoints",
+      "text": "Use Negarite Cable for Negarite and Posirite Cable for Posirite. Run each network from its matching generator to a $(thing)Connector$() touching a machine.$(br2)A plain cable carries power along the route; the connector supplies the machine. Put the two connectors on different faces of the same machine."
+    },
+    {
+      "type": "patchouli:text",
+      "title": "A first powered machine",
+      "text": "Try an Auto Constructor with one generator and one matching tank for each flux type.$(br2)Run each colored cable to its matching connector at the crafter. Add blueprints and ingredients, and check the redstone mode.$(br2)When you expand, add tanks or generators if the combined demand exceeds either supply."
+    }
+  ],
+  "extra_recipe_mappings": {
+    "ariente:connector_negarite": 0,
+    "ariente:connector_posirite": 0,
+    "ariente:netcable_negarite": 0,
+    "ariente:netcable_posirite": 0
+  }
+}

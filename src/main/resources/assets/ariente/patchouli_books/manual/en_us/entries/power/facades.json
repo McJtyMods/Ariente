@@ -1,0 +1,16 @@
+{
+  "name": "Concealing Cables",
+  "icon": "ariente:facade",
+  "category": "ariente:power",
+  "sortnum": 4,
+  "pages": [
+    {
+      "type": "patchouli:text",
+      "title": "Blend wiring into the base",
+      "text": "Use a Facade on a normal block to copy its appearance, then use it on a cable or connector. The hidden wiring keeps working.$(br2)Break a covered cable once to remove its facade. Break the exposed cable again to remove the wiring.$(br2)Remove an existing cover before applying a different one."
+    }
+  ],
+  "extra_recipe_mappings": {
+    "ariente:facade": 0
+  }
+}

@@ -1,0 +1,21 @@
+{
+  "name": "Automatic Construction",
+  "icon": "ariente:auto_constructor",
+  "category": "ariente:construction",
+  "sortnum": 2,
+  "pages": [
+    {
+      "type": "patchouli:text",
+      "title": "Build repeatedly",
+      "text": "The Auto Constructor uses blueprints in directly adjacent Blueprint Storage. Supply ingredients to the machine itself and collect products from its output slots.$(br2)Connect both flux components and check the redstone mode. It cycles through the library, crafting available recipes when their ingredients and output room are ready."
+    },
+    {
+      "type": "patchouli:text",
+      "title": "Keep it supplied",
+      "text": "Allow $(thing)10 of each flux per tick$(), plus $(thing)100 of each per craft$(). The machine has 18 ingredient slots and six output slots.$(br2)Leave room for the entire recipe batch in an output slot. Supply subcomponents yourself: it will not craft missing parts recursively.$(br2)Use an $(l:ariente:automation/first_field)Automation Field$(/l) to deliver ingredients and carry products away."
+    }
+  ],
+  "extra_recipe_mappings": {
+    "ariente:auto_constructor": 0
+  }
+}

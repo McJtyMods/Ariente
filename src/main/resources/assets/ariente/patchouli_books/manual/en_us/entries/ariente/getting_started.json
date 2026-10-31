@@ -1,0 +1,26 @@
+{
+  "name": "Getting Started",
+  "icon": "ariente:tablet",
+  "category": "ariente:ariente",
+  "sortnum": 0,
+  "pages": [
+    {
+      "type": "patchouli:text",
+      "title": "Your first steps",
+      "text": "Ariente technology grows from $(item)blueprints$(), minerals and two kinds of flux. Start by collecting Silver, Platinum and Silicon, then craft a $(l:ariente:construction/constructor)Constructor$(/l) and $(l:ariente:construction/blueprints)Blueprint Storage$(/l). Find a populated blueprint, gather its ingredients, and make your first machine."
+    },
+    {
+      "type": "patchouli:text",
+      "title": "Choose your adventure",
+      "text": "With ArienteWorld installed, expeditions to alien cities supply blueprints, equipment and resources. Its chapter appears on this tablet.$(br2)With Ariente alone, the default world settings supply Overworld ores and blueprints in dungeon loot. Explore newly generated terrain and search dungeon chests. A modpack may change these defaults."
+    },
+    {
+      "type": "patchouli:crafting",
+      "recipe": "ariente:tablet",
+      "text": "Seven Iron Ingots form the casing; a Glass Pane and Redstone make the display. Use the tablet in either hand to open this manual. It needs no fuel."
+    }
+  ],
+  "extra_recipe_mappings": {
+    "ariente:tablet": 0
+  }
+}

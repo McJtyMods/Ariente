@@ -1,0 +1,21 @@
+{
+  "name": "Forcefield Generators",
+  "icon": "ariente:forcefield",
+  "category": "ariente:security",
+  "sortnum": 3,
+  "pages": [
+    {
+      "type": "patchouli:text",
+      "title": "Build a protective dome",
+      "text": "A Forcefield Generator creates a spherical shield. Set its radius and redstone mode in the hologram, then supply both flux types.$(br2)Larger fields cost more: a radius of 10 needs $(thing)300 of each flux per tick$() just to stay active. Building and repairing panels need extra power."
+    },
+    {
+      "type": "patchouli:text",
+      "title": "Leave power for repairs",
+      "text": "Projectiles damage panels and can leave temporary holes. Changing the radius starts rebuilding.$(br2)Active panels are dangerous to cross without matching immunity. Keep a safe approach while testing.$(br2)Slow repairs can mean too little spare flux. Increase both supplies beyond the field’s idle demand."
+    }
+  ],
+  "extra_recipe_mappings": {
+    "ariente:forcefield": 0
+  }
+}

@@ -1,0 +1,7 @@
+{
+  "name": "Flux Power",
+  "description": "Keep both halves of your power supply flowing. Start with two generators and matching tanks.",
+  "icon": "ariente:negarite_generator",
+  "sortnum": 1,
+  "parent": "ariente:ariente"
+}

@@ -1,0 +1,7 @@
+{
+  "name": "Equipment",
+  "description": "Configure armor, manage fuel, and choose modules for your next expedition.",
+  "icon": "ariente:powersuit_chest",
+  "sortnum": 3,
+  "parent": "ariente:ariente"
+}

@@ -1,0 +1,7 @@
+{
+  "name": "Transport & Building",
+  "description": "Travel by beam or elevator and finish your base with marble, panels and lights.",
+  "icon": "ariente:flux_levitator",
+  "sortnum": 5,
+  "parent": "ariente:ariente"
+}

@@ -36,6 +36,13 @@ Ariente is a high-tech mod based on alien technology
     side="BOTH"
 
 [[dependencies.ariente]]
+    modId="patchouli"
+    mandatory=false
+    versionRange="[1.20.1-81-FORGE,)"
+    ordering="AFTER"
+    side="BOTH"
+
+[[dependencies.ariente]]
     modId="minecraft"
     mandatory=true
     versionRange="[1.20.1,1.20.2)"

@@ -1,0 +1,29 @@
+{
+  "name": "Your First Item Transfer",
+  "icon": "ariente:automation_field",
+  "category": "ariente:automation",
+  "sortnum": 0,
+  "pages": [
+    {
+      "type": "patchouli:text",
+      "title": "Mark the working area",
+      "text": "Place an Automation Field controller. Lay a connected area of Field Markers beside it at the controller’s base height.$(br2)Markers must sit under the columns where the $(thing)nodes$() will be. Fill the area rather than marking only its outline. Set the height in the controller’s hologram to reach the nodes."
+    },
+    {
+      "type": "patchouli:text",
+      "title": "Connect two chests",
+      "text": "$(li)Put an $(item)Output Item Node$() on the source chest.$(li)Put an $(item)Input Item Node$() on the destination chest.$(li)Set matching item filters on both nodes.$(li)Supply the controller with both fluxes.$(br2)An Output Node takes items out of its chest; an Input Node puts items into its chest."
+    },
+    {
+      "type": "patchouli:text",
+      "title": "Start small",
+      "text": "Set the Output Node’s batch size to 1 for your first transfer. Put matching items in the source and leave room in the destination.$(br2)An empty filter does not mean “all items”. Both nodes need a filter.$(br2)Enable the outline display to check coverage. Mark the node columns even when they sit beside, rather than above, the chests."
+    }
+  ],
+  "extra_recipe_mappings": {
+    "ariente:automation_field": 0,
+    "ariente:field_marker": 0,
+    "ariente:output_item_node": 0,
+    "ariente:input_item_node": 0
+  }
+}

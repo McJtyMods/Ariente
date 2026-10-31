@@ -1,0 +1,30 @@
+{
+  "name": "Configuring Your Gear",
+  "icon": "ariente:powersuit_chest",
+  "category": "ariente:equipment",
+  "sortnum": 0,
+  "pages": [
+    {
+      "type": "patchouli:text",
+      "title": "Install, then activate",
+      "text": "Wear your power armor or hold an Enhanced Energy Sabre in your main hand. Press the configuration key, normally $(thing)0$(), and select a piece.$(br2)Click a module icon to install a module from your inventory, then use its activation control to enable it. Use the fuel arrows to add both dust types."
+    },
+    {
+      "type": "patchouli:text",
+      "title": "Respect each piece’s limit",
+      "text": "Each equipment piece has its own fuel and module budget. Active modules normally have to fit within $(thing)100$() usage. An enabled Energy module raises this to $(thing)130$() and improves fuel duration.$(br2)Too many active modules prevent that piece’s abilities from working. Disable an ability or add Energy before heading into danger."
+    },
+    {
+      "type": "patchouli:text",
+      "title": "Set up quick toggles",
+      "text": "Assign modules to a hotkey group in the equipment panel. One group can toggle several modules across your worn armor and held sabre.$(br2)Groups 1 and 2 default to Numpad 7 and 8. Set the other groups in Controls.$(br2)Test fuel, activation and movement before a risky climb or fight."
+    }
+  ],
+  "extra_recipe_mappings": {
+    "ariente:powersuit_head": 0,
+    "ariente:powersuit_chest": 0,
+    "ariente:powersuit_legs": 0,
+    "ariente:powersuit_feet": 0,
+    "ariente:module_energy": 0
+  }
+}

@@ -1,0 +1,35 @@
+{
+  "name": "Armor Modules",
+  "icon": "ariente:module_armor",
+  "category": "ariente:equipment",
+  "sortnum": 2,
+  "pages": [
+    {
+      "type": "patchouli:text",
+      "title": "Survival and scouting",
+      "text": "$(li)$(item)Armor$(): extra protection; usage 20 per piece.$(li)$(item)Nightvision$(): helmet; usage 20.$(li)$(item)Scramble$(): helmet; usage 50. Helps avoid sentinels.$(li)$(item)Regeneration$(): chestplate; usage 40.$(li)$(item)Forcefield$(): chestplate; usage 80. Blocks projectiles and reduces other damage."
+    },
+    {
+      "type": "patchouli:text",
+      "title": "Movement",
+      "text": "$(li)$(item)Flight$(): chestplate; usage 30. Hold Jump for upward thrust.$(li)$(item)Hover$(): chestplate; usage 10. Holds altitude with Flight; sneak to descend.$(li)$(item)Speed$(): leggings; usage 20.$(li)$(item)Featherfalling$(): boots; usage 20. Prevents fall damage while working.$(li)$(item)Step Assist$(): boots; usage 10. Steps over taller obstacles."
+    },
+    {
+      "type": "patchouli:text",
+      "title": "Plan your loadout",
+      "text": "Flight, Hover and Regeneration together use 80 on the chestplate. Adding Forcefield would exceed even an Energy-assisted budget; choose which abilities to run.$(br2)Some modules are found as equipment loot rather than made from blueprints. Check your available patterns before planning an upgrade.$(br2)Keep spare fuel for the return journey."
+    }
+  ],
+  "extra_recipe_mappings": {
+    "ariente:module_armor": 0,
+    "ariente:module_nightvision": 0,
+    "ariente:module_scramble": 0,
+    "ariente:module_regeneration": 0,
+    "ariente:module_forcefield": 0,
+    "ariente:module_flight": 0,
+    "ariente:module_hover": 0,
+    "ariente:module_speed": 0,
+    "ariente:module_featherfalling": 0,
+    "ariente:module_stepassist": 0
+  }
+}

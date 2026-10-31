@@ -55,3 +55,10 @@ pane repair across chunk borders and automatic door state/collision synchronizat
 The optional client TextureModelChecks check connected and inner-corner tiles,
 cutout layering, minimum light, animation frames, item transforms, ramp geometry,
 and the same results after a resource reload. Test sources are excluded from jars.
+
+## Tablet manual artwork
+
+`tools/generate_tablet_textures.py` draws the original 16×16 tablet item and the
+manual's dark interface textures. Run it with Python 3 and Pillow to regenerate
+the PNGs. The 512×256 interface atlas follows Patchouli 1.20's UV layout, including
+normal and hovered navigation controls; crafting uses a separate 128×256 atlas.

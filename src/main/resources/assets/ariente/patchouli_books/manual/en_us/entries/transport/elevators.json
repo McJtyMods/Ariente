@@ -1,0 +1,22 @@
+{
+  "name": "Elevators & Floors",
+  "icon": "ariente:elevator",
+  "category": "ariente:transport",
+  "sortnum": 1,
+  "pages": [
+    {
+      "type": "patchouli:text",
+      "title": "Set up a lift",
+      "text": "Place an Elevator with a clear vertical shaft. Supply $(thing)10 of each flux per tick$() and set its height in the hologram.$(br2)Stand in the beam. Without multiple marked floors, Jump rises and Sneak descends. The lift stops when either power supply is lost."
+    },
+    {
+      "type": "patchouli:text",
+      "title": "Add landing markers",
+      "text": "Place Level Markers at your landing heights, within two blocks horizontally of the elevator. Keep them inside its configured height.$(br2)With multiple detected floors, Jump and Sneak select the next higher or lower floor. The hologram also offers floor selection.$(br2)Keep the shaft and each landing clear."
+    }
+  ],
+  "extra_recipe_mappings": {
+    "ariente:elevator": 0,
+    "ariente:level_marker": 0
+  }
+}

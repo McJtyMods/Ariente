@@ -1,0 +1,24 @@
+{
+  "name": "Wireless Controls",
+  "icon": "ariente:wireless_button",
+  "category": "ariente:security",
+  "sortnum": 1,
+  "pages": [
+    {
+      "type": "patchouli:text",
+      "title": "Link a button and lock",
+      "text": "$(li)Place a Wireless Button.$(li)Hold a Wireless Lock item and right-click the button to copy its channel.$(li)Place the lock near your Door Markers.$(li)Operate the button with an empty hand.$(br2)The button toggles its channel on and off. A Wireless Lock unlocks nearby doors while the channel is on."
+    },
+    {
+      "type": "patchouli:text",
+      "title": "Copy or change a channel",
+      "text": "Right-click a channel device with a wireless item to $(thing)read$() its channel into that item.$(br2)Sneak-right-click a placed device with a linked item to $(thing)write$() the item’s channel into the device.$(br2)A Signal Transmitter sends a redstone input; a Signal Receiver outputs the channel value. Devices need loaded chunks. Use one signal source per channel."
+    }
+  ],
+  "extra_recipe_mappings": {
+    "ariente:wireless_button": 0,
+    "ariente:wireless_lock": 0,
+    "ariente:signal_transmitter": 0,
+    "ariente:signal_receiver": 0
+  }
+}

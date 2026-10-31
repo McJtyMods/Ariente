@@ -1,0 +1,7 @@
+{
+  "name": "Security & Signals",
+  "description": "Build doors, link wireless controls, and understand shields and access cards.",
+  "icon": "ariente:wireless_button",
+  "sortnum": 4,
+  "parent": "ariente:ariente"
+}

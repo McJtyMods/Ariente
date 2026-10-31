@@ -1,0 +1,21 @@
+{
+  "name": "Flux Ship Prototype",
+  "icon": "ariente:flux_ship",
+  "category": "ariente:transport",
+  "sortnum": 3,
+  "pages": [
+    {
+      "type": "patchouli:text",
+      "title": "Creative flight",
+      "text": "The Flux Ship is an experimental vehicle without a survival crafting recipe. If you have one, place it in a clear area with room for its hull and right-click to board.$(br2)W/S move forward and backward; A/D turn. Up/Down or Space/Backspace control height. Release the controls to brake and hover. Sneak dismounts."
+    },
+    {
+      "type": "patchouli:text",
+      "title": "Handling a ship",
+      "text": "Flight follows the ship’s heading. Looking around does not steer.$(br2)Sneak-hit an unattended ship to recover its item. Ships reload parked.$(br2)Check Controls if bindings conflict. Find a clear landing area before dismounting; the prototype has no automatic landing or navigation."
+    }
+  ],
+  "extra_recipe_mappings": {
+    "ariente:flux_ship": 0
+  }
+}

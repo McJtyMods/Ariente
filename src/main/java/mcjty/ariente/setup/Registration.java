@@ -394,6 +394,7 @@ public class Registration {
     public static final RegistryObject<EnhancedEnergySabreItem> ENHANCED_ENERGY_SABRE = ITEMS.register("enhanced_energy_sabre", EnhancedEnergySabreItem::new);
     public static final RegistryObject<KeyCardItem> KEY_CARD = ITEMS.register("key_card", KeyCardItem::new);
     public static final RegistryObject<BlueprintItem> BLUEPRINT = ITEMS.register("blueprint", BlueprintItem::new);
+    public static final RegistryObject<TabletItem> TABLET = ITEMS.register("tablet", TabletItem::new);
     public static final RegistryObject<ArientePearlItem> ARIENTE_PEARL = ITEMS.register("ariente_pearl", ArientePearlItem::new);
     public static final RegistryObject<FluxLevitatorItem> FLUX_LEVITATOR = ITEMS.register("flux_levitator", FluxLevitatorItem::new);
     public static final RegistryObject<FluxShipItem> FLUX_SHIP = ITEMS.register("flux_ship", FluxShipItem::new);

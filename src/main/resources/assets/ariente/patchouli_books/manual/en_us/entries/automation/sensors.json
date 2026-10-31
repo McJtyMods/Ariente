@@ -1,0 +1,21 @@
+{
+  "name": "Refill with Sensors",
+  "icon": "ariente:sensor_item_node",
+  "category": "ariente:automation",
+  "sortnum": 2,
+  "pages": [
+    {
+      "type": "patchouli:text",
+      "title": "Stop when the chest is full",
+      "text": "A Sensor Item Node compares the total number of items in its attached inventory with a chosen number. Select a comparison and an output color.$(br2)For a refill system, make a sensor on the destination turn green when its total is below your target. Require green on the source Output Node."
+    },
+    {
+      "type": "patchouli:text",
+      "title": "Using colored conditions",
+      "text": "Nodes may require positive conditions to be true and negative conditions to be false. If several sensors use one color, any true sensor makes that color true.$(br2)The sensor counts $(thing)all items$() in its inventory. Use a dedicated material chest when you want a simple stock target.$(br2)These colors belong to the field; they do not select a flux type."
+    }
+  ],
+  "extra_recipe_mappings": {
+    "ariente:sensor_item_node": 0
+  }
+}

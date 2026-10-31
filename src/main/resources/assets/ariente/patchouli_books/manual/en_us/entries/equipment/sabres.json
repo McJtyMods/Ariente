@@ -1,0 +1,31 @@
+{
+  "name": "Energy Sabres",
+  "icon": "ariente:enhanced_energy_sabre",
+  "category": "ariente:equipment",
+  "sortnum": 3,
+  "pages": [
+    {
+      "type": "patchouli:text",
+      "title": "Equip for the fight",
+      "text": "The Energy Sabre is a strong melee weapon. The Enhanced Energy Sabre adds fuel and module controls.$(br2)Hold the enhanced sabre in your main hand and use the armor configuration key to install and enable its modules. Supply both dusts just as you would for armor."
+    },
+    {
+      "type": "patchouli:text",
+      "title": "Sabre upgrades",
+      "text": "$(li)$(item)Power$(): stronger attacks; usage 30.$(li)$(item)Inhibit$(): strips beneficial effects and suppresses Master Soldier regeneration; usage 30.$(li)$(item)Looting$(): better drops; usage 20.$(li)$(item)Fire$(): ignites targets; usage 30.$(br2)Check durability as well as fuel."
+    },
+    {
+      "type": "patchouli:crafting",
+      "recipe": "ariente:enhanced_energy_sabre",
+      "text": "An Energy Sabre surrounded by Lithium Ingots can be upgraded at a crafting table. A blueprint is another route to the enhanced weapon."
+    }
+  ],
+  "extra_recipe_mappings": {
+    "ariente:energy_sabre": 0,
+    "ariente:enhanced_energy_sabre": 0,
+    "ariente:module_power": 0,
+    "ariente:module_inhibit": 0,
+    "ariente:module_looting": 0,
+    "ariente:module_fire": 0
+  }
+}

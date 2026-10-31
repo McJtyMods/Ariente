@@ -1,0 +1,28 @@
+{
+  "name": "Ariente Tablet",
+  "landing_text": "Alien technology, at your fingertips.$(br2)Start with $(l:ariente:ariente/getting_started)Getting Started$(/l), then explore power, construction, equipment and transport.$(br2)Select a chapter to browse, or search for the machine you need.",
+  "subtitle": "Field manual",
+  "version": "0",
+  "dont_generate_book": true,
+  "custom_book_item": "ariente:tablet",
+  "use_resource_pack": true,
+  "show_progress": false,
+  "show_toasts": false,
+  "book_texture": "ariente:textures/gui/manual/tablet.png",
+  "filler_texture": "ariente:textures/gui/manual/circuit.png",
+  "crafting_texture": "ariente:textures/gui/manual/crafting.png",
+  "text_color": "CBD8E5",
+  "header_color": "80E5EE",
+  "nameplate_color": "80E5EE",
+  "link_color": "7EE2DB",
+  "link_hover_color": "FFFFFF",
+  "progress_bar_color": "59C7D4",
+  "progress_bar_background": "263449",
+  "open_sound": "minecraft:block.beacon.activate",
+  "flip_sound": "minecraft:ui.button.click",
+  "macros": {
+    "$(item)": "$(#93DEDF)",
+    "$(thing)": "$(#B8ACEB)",
+    "$(li)": "$(br)$(#71dce4)• $()"
+  }
+}

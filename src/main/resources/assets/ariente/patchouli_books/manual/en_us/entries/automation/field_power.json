@@ -1,0 +1,18 @@
+{
+  "name": "Powering a Field",
+  "icon": "ariente:automation_field",
+  "category": "ariente:automation",
+  "sortnum": 3,
+  "pages": [
+    {
+      "type": "patchouli:text",
+      "title": "Budget for transfers",
+      "text": "A field can draw up to $(thing)400 of each flux per tick$() and save a small operating reserve.$(br2)Moving one item costs 100 paired units. A stack of 64 costs 226. Batching is efficient once your supplies are reliable.$(br2)Loss of either flux clears that reserve. Keep both generators running for steady transfers."
+    },
+    {
+      "type": "patchouli:text",
+      "title": "Transfer checklist",
+      "text": "$(li)Connected markers under nodes.$(li)Enough field height.$(li)Output at source; Input at destination.$(li)Matching filters.$(li)Enough items for the batch.$(li)Free destination space.$(li)Conditions satisfied.$(li)Both fluxes supplied.$(br2)Check inventory counts as well as the animation."
+    }
+  ]
+}

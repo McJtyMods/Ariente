@@ -1,0 +1,21 @@
+{
+  "name": "Understanding Key Cards",
+  "icon": "ariente:key_card",
+  "category": "ariente:security",
+  "sortnum": 2,
+  "pages": [
+    {
+      "type": "patchouli:text",
+      "title": "Check the permission",
+      "text": "A city’s name helps identify a card, but it does not tell the whole story. Door access, Storage Cube access and forcefield immunity are separate permissions.$(br2)Use a matching card on a Lock or Storage Cube to toggle it. Keep a forcefield-immunity card in your inventory when crossing the matching city’s shield."
+    },
+    {
+      "type": "patchouli:text",
+      "title": "Keep useful cards",
+      "text": "Soldiers may drop access cards. The last AI Core in an authored complex rewards a storage-access card.$(br2)Keep different cards from the same city until you know what each opens. A rejected card may simply have the wrong permission.$(br2)Blank cards cannot currently be programmed into arbitrary personal keys through a survival control panel."
+    }
+  ],
+  "extra_recipe_mappings": {
+    "ariente:key_card": 0
+  }
+}

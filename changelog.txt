@@ -1,10 +1,8 @@
 1.20-0.0.31-alpha:
+- Added a craftable Ariente Tablet with a dedicated technological manual for machines, power, equipment and exploration.
 - Ported Ariente to Minecraft 1.20.1 for Forge. Requires HoloGui 1.20-0.0.10-beta or newer.
 - Added an ordinary Blueprint Storage crafting recipe so standalone progression can start without another blueprint library.
 - Overworld ore distributions can be customized individually with datapacks, and resource ores now also generate in deepslate.
-
-Upcoming:
-- Fixed a problem on servers
 
 0.0.31-alpha:
 - Speed module no longer changes FOV and also works in flight mode

@@ -1,0 +1,7 @@
+{
+  "name": "Construction & Storage",
+  "description": "Turn recovered blueprints into useful machines, then keep their ingredients organized.",
+  "icon": "ariente:constructor",
+  "sortnum": 0,
+  "parent": "ariente:ariente"
+}

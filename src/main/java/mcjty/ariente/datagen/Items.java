@@ -133,6 +133,7 @@ public class Items extends BaseItemModelProvider {
         getBuilder("facade").parent(new ModelFile.UncheckedModelFile("ariente:item/facade_base"));
         getBuilder("blueprint").parent(new ModelFile.UncheckedModelFile("minecraft:builtin/entity"));
         itemGenerated(Registration.ARIENTE_PEARL.get(), "item/tools/ariente_pearl");
+        itemGenerated(Registration.TABLET.get(), "item/tools/tablet");
         itemGenerated(Registration.FLUX_LEVITATOR.get(), "item/tools/flux_levitator");
         itemGenerated(Registration.FLUX_SHIP.get(), "item/tools/flux_ship");
         itemGenerated(Registration.FLUX_CAPACITOR.get(), "item/tools/flux_capacitor");

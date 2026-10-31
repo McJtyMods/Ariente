@@ -1,0 +1,24 @@
+{
+  "name": "Generators & Tanks",
+  "icon": "ariente:negarite_generator",
+  "category": "ariente:power",
+  "sortnum": 1,
+  "pages": [
+    {
+      "type": "patchouli:text",
+      "title": "Build two columns",
+      "text": "Place a $(item)Negarite Generator$() and a $(item)Posirite Generator$(). Put at least one matching tank directly above each one.$(br2)Feed Negarite Dust to the Negarite Generator and Posirite Dust to the Posirite Generator. Use the hologram arrows to transfer fuel, or supply it with item automation."
+    },
+    {
+      "type": "patchouli:text",
+      "title": "Increase your output",
+      "text": "Each consecutive matching tank adds $(thing)1,000 flux per tick$() of that generator’s type. Stack tanks upward without gaps.$(br2)A dust item normally lasts about 30 seconds while enabled. Fuel burns even when output is unused, so switch idle generators off with their redstone mode.$(br2)Keep the two columns balanced before adding more consumers."
+    }
+  ],
+  "extra_recipe_mappings": {
+    "ariente:negarite_generator": 0,
+    "ariente:posirite_generator": 0,
+    "ariente:negarite_tank": 0,
+    "ariente:posirite_tank": 0
+  }
+}

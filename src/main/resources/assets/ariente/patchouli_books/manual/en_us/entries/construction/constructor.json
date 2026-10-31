@@ -1,0 +1,21 @@
+{
+  "name": "Your First Constructor",
+  "icon": "ariente:constructor",
+  "category": "ariente:construction",
+  "sortnum": 1,
+  "pages": [
+    {
+      "type": "patchouli:crafting",
+      "recipe": "ariente:constructor",
+      "text": "Build this at a crafting table. Place Blueprint Storage directly beside it, and load a populated blueprint."
+    },
+    {
+      "type": "patchouli:text",
+      "title": "Make your first item",
+      "text": "$(li)Carry all required ingredients in your inventory.$(li)Right-click the Constructor.$(li)Hover over a result to check what is missing.$(li)Double-click its blueprint to craft.$(br2)The result goes into your inventory. Leave room so it does not drop at your feet. Manual construction needs no flux supply."
+    }
+  ],
+  "extra_recipe_mappings": {
+    "ariente:constructor": 0
+  }
+}

@@ -1,0 +1,7 @@
+{
+  "name": "Item Automation",
+  "description": "Move items between inventories with fields, nodes and filters.",
+  "icon": "ariente:automation_field",
+  "sortnum": 2,
+  "parent": "ariente:ariente"
+}

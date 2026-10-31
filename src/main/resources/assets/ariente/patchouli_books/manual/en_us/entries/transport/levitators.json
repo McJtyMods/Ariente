@@ -1,0 +1,23 @@
+{
+  "name": "Riding Flux Beams",
+  "icon": "ariente:flux_levitator",
+  "category": "ariente:transport",
+  "sortnum": 0,
+  "pages": [
+    {
+      "type": "patchouli:text",
+      "title": "Lay a route",
+      "text": "Connect straight Flux Beams and Flux Bend Beams into a continuous route, with space for the vehicle and rider. These beams can be walked through.$(br2)Use a Flux Levitator item directly on a beam to place the cart, then right-click it without sneaking to board."
+    },
+    {
+      "type": "patchouli:text",
+      "title": "Drive the cart",
+      "text": "Aim at an end-panel hologram and click its speed arrows. Small arrows change the setting by 5; large arrows by 10. Negative settings reverse travel.$(br2)The red stop control brakes the cart. Sneak to dismount.$(br2)Check beam orientation at corners and slow down before testing a new route. Carts need no generator connection."
+    }
+  ],
+  "extra_recipe_mappings": {
+    "ariente:flux_levitator": 0,
+    "ariente:flux_beam": 0,
+    "ariente:flux_bend_beam": 0
+  }
+}

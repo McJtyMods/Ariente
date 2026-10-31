@@ -54,6 +54,7 @@ dependencies {
     jei()
     top()
     mcjtylib()
+    patchouli()
     if (findProject(':ModHoloGui') != null) {
         implementation(project(':ModHoloGui')) { transitive = false }
     } else {
@@ -62,8 +63,8 @@ dependencies {
 
 }
 
-modpublisher(['the-one-probe', 'ariente-world'], ['mcjtylib', 'hologui'],
-        ['the-one-probe', 'ariente-world'], ['mcjtylib', 'hologui'], [])
+modpublisher(['the-one-probe', 'ariente-world', 'patchouli'], ['mcjtylib', 'hologui'],
+        ['the-one-probe', 'ariente-world', 'patchouli'], ['mcjtylib', 'hologui'], [])
 
 task apiJar(type: Jar) {
     archiveClassifier = 'api'

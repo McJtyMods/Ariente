@@ -1,0 +1,27 @@
+{
+  "name": "Blueprint Library",
+  "icon": "ariente:blueprint_storage",
+  "category": "ariente:construction",
+  "sortnum": 0,
+  "pages": [
+    {
+      "type": "patchouli:text",
+      "title": "Collect the patterns",
+      "text": "A populated Blueprint shows the item it makes and the ingredients it needs. Keep useful patterns from your travels; a blank blueprint teaches no recipe.$(br2)Place $(item)Blueprint Storage$() directly against a Constructor or Auto Constructor. Any face works. Each storage block holds six blueprints."
+    },
+    {
+      "type": "patchouli:crafting",
+      "recipe": "ariente:blueprint_storage",
+      "text": "This starter library uses ordinary crafting. Marble colors may be mixed. You do not need an existing library to make it."
+    },
+    {
+      "type": "patchouli:text",
+      "title": "Load your library",
+      "text": "Open Blueprint Storage and double-click its displayed slots to transfer blueprints between it and your inventory.$(br2)Blueprints stay in the library after crafting. Add more adjacent storage blocks for more patterns.$(br2)If you use JEI, look up a Constructor recipe to see its blueprint, ingredients and full output."
+    }
+  ],
+  "extra_recipe_mappings": {
+    "ariente:blueprint_storage": 0,
+    "ariente:blueprint": 0
+  }
+}

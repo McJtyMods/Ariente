@@ -1,0 +1,18 @@
+{
+  "name": "Workshop Checklist",
+  "icon": "ariente:circuit",
+  "category": "ariente:ariente",
+  "sortnum": 3,
+  "pages": [
+    {
+      "type": "patchouli:text",
+      "title": "A machine will not run",
+      "text": "$(li)Check redstone mode.$(li)Supply both flux types.$(li)Put matching tanks above generators.$(li)Use connectors at machines.$(li)Check ingredients and output space.$(br2)The manual Constructor needs ingredients in your inventory and no cable power."
+    },
+    {
+      "type": "patchouli:text",
+      "title": "Missing recipes or effects",
+      "text": "A Constructor needs a populated blueprint in directly adjacent Blueprint Storage. Hover over a crossed-out result for missing ingredients.$(br2)Equipment needs an installed, enabled module, both dusts, and room in that piece’s power budget.$(br2)For item transfers, check both filters and markers under the nodes."
+    }
+  ]
+}

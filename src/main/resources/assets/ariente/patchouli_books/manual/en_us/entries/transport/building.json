@@ -1,0 +1,25 @@
+{
+  "name": "Building an Alien Base",
+  "icon": "ariente:marble_black",
+  "category": "ariente:transport",
+  "sortnum": 2,
+  "pages": [
+    {
+      "type": "patchouli:text",
+      "title": "Marble and panels",
+      "text": "Shape Marble into smooth blocks, bricks, pillars and slabs. Dye it to suit your base.$(br2)BlackTech and MarbleTech panels add patterns, animations and glowing details. Many use ordinary crafting.$(br2)Try dark marble with blue accents around your machines."
+    },
+    {
+      "type": "patchouli:text",
+      "title": "Finishing touches",
+      "text": "$(li)Slopes and ramps soften edges.$(li)Glass and tech fences divide workspaces.$(li)Reinforced Marble protects important structures.$(li)Flux Glow and Flat Lights illuminate rooms.$(li)Facades hide cables.$(br2)Glowing artwork on a panel does not necessarily light the room. Place actual lights where mobs could spawn."
+    }
+  ],
+  "extra_recipe_mappings": {
+    "ariente:marble_black": 0,
+    "ariente:flux_glow": 0,
+    "ariente:flat_light": 0,
+    "ariente:reinforced_marble": 0,
+    "ariente:slope": 0
+  }
+}

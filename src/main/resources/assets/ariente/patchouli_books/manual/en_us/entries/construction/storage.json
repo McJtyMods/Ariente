@@ -1,0 +1,21 @@
+{
+  "name": "Storage Cubes",
+  "icon": "ariente:storage",
+  "category": "ariente:construction",
+  "sortnum": 3,
+  "pages": [
+    {
+      "type": "patchouli:text",
+      "title": "Four materials per cube",
+      "text": "Each front-panel area holds one item type with room for 64 stacks. For items stacking to 64, that is 4,096 items per area.$(br2)$(li)Right-click with an item to insert the held stack.$(li)Double right-click an established area to deposit matching items from your inventory."
+    },
+    {
+      "type": "patchouli:text",
+      "title": "Taking items out",
+      "text": "$(li)Left-click an item area to take one item.$(li)Sneak-left-click to take up to a stack.$(br2)Automation can also move items through the cube.$(br2)A locked cube opens its access panel instead. Present its matching storage Key Card to toggle the lock. A door card does not automatically grant storage access."
+    }
+  ],
+  "extra_recipe_mappings": {
+    "ariente:storage": 0
+  }
+}

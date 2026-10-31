@@ -1,0 +1,21 @@
+{
+  "name": "Two Kinds of Flux",
+  "icon": "ariente:dust_negarite",
+  "category": "ariente:power",
+  "sortnum": 0,
+  "pages": [
+    {
+      "type": "patchouli:text",
+      "title": "Keep a balanced supply",
+      "text": "Ariente machines usually need $(item)Negarite flux$() and $(item)Posirite flux$() together. A demand of 100 means 100 of $(thing)each$(). If either supply runs short, the machine can stop.$(br2)For example, 5,000 Negarite and 1,000 Posirite provide only 1,000 paired units. Build up the weaker supply first."
+    },
+    {
+      "type": "patchouli:text",
+      "title": "Plan for running power",
+      "text": "Flux is a continuous supply. Unused generation does not build a permanent battery reserve. Machines on a network share the available output.$(br2)Keep fuel flowing while your workshop runs. Ariente machines use their own flux system.$(br2)A Flux Capacitor is a crafting component. An Energy Holder carries fuel dust for equipment."
+    }
+  ],
+  "extra_recipe_mappings": {
+    "ariente:flux_capacitor": 0
+  }
+}
