@@ -1,4 +1,5 @@
 1.20-0.0.31-alpha:
+- Pressing the armor configuration key again now returns to equipment selection, or closes the panel when already on that menu, instead of opening overlapping panels.
 - Added a craftable Ariente Tablet with a dedicated technological manual for machines, power, equipment and exploration.
 - Ported Ariente to Minecraft 1.20.1 for Forge. Requires HoloGui 1.20-0.0.10-beta or newer.
 - Added an ordinary Blueprint Storage crafting recipe so standalone progression can start without another blueprint library.

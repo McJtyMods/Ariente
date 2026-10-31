@@ -11,6 +11,11 @@
     },
     {
       "type": "patchouli:text",
+      "title": "Return or close",
+      "text": "Press the configuration key again from an equipment panel or the help page to return to the equipment selection menu.$(br2)Press it while the selection menu is open to close the panel."
+    },
+    {
+      "type": "patchouli:text",
       "title": "Respect each piece’s limit",
       "text": "Each equipment piece has its own fuel and module budget. Active modules normally have to fit within $(thing)100$() usage. An enabled Energy module raises this to $(thing)130$() and improves fuel duration.$(br2)Too many active modules prevent that piece’s abilities from working. Disable an ability or add Energy before heading into danger."
     },
