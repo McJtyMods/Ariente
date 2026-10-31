@@ -101,6 +101,21 @@ Rendering, synchronization and interactions already repaired
   a typed vanilla thrown-item renderer; their previous rendering crash is fixed.
 - Warper return destination/charges and dimension travel have server checks.
   The companion owns generated entrances and arrival structures.
+  Its phase-2 checkpoint adds an explicit charge check when warp() executes,
+  actual pearl-use/charge persistence, independent per-player returns through a
+  shared arrival, valid-bed and missing-bed/spawn fallbacks. Charge remains a
+  one-time unlock rather than per-trip fuel. The combined dedicated suite now
+  passes 56 required tests; see ../ArienteWorld/PORTING.txt for the newer evidence.
+- ArienteWorld's phase-2 native spawn check found natural soldiers unarmed:
+  SoldierEntity's existing equipment method was never called by the modern base
+  spawn implementation. finalizeSpawn now invokes it for soldiers and masters.
+  Reload keeps saved equipment; city-created troops remain separately armed.
+  The native route also passes actual survival charge/travel, city capture/card/
+  loot, Constructor crafting, sabre attack and return with synchronized inventory.
+  Its three 1,200-tick natural-spawn windows cover normal/hard and resumed normal
+  after peaceful; it is a scripted fixture with supplied inputs, not a balance
+  certification or an unassisted survival playthrough. Exact evidence/limits and
+  the opt-in ExplorationClientChecks flag live in the companion's handoff.
 - Power suits use the original 64x128 texture and custom geometry through a
   modern armor client extension. All four pieces follow humanoid poses.
   Movement modules are now active too; see phase-1 equipment checks below.

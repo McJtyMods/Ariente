@@ -175,6 +175,8 @@ large cities in the other dimension.
 Open the charged Warper's hologram and press **Warp**. Ariente arrival buildings
 contain a return Warper that starts charged. Charge is currently an unlock
 threshold, not a per-trip fuel cost: normal travel does not decrement it.
+The server also checks the charge when Warp is pressed; an already open
+hologram cannot bypass an entrance's current charge requirement.
 
 The return trip first tries the remembered entrance, provided its Warper and
 landing space remain usable. Otherwise it tries a valid Overworld respawn
@@ -266,6 +268,10 @@ Destroy **every AI Core** to defeat the authored city's AI. Destroying the last
 valid core produces a card carrying that city's **storage access** key and marks
 the city dead. This stops that city AI; it does not erase surviving mobs or
 disable the biome's unrelated natural spawning.
+City generators stop receiving free fuel when the AI is defeated. They can
+continue running on their remaining dust before they run out; capturing a city
+does not immediately drain every machine's power. Supply fuel yourself to keep
+using its generators.
 
 **Alarm blocks** are city-controlled status panels: Safe, Alert, or Dead. Alert
 mode also produces an alarm sound. They display the AI's state rather than

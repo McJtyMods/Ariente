@@ -150,6 +150,10 @@ public class WarperTile extends GenericTileEntity implements IGuiTile, IWarper {
         if (!(player instanceof ServerPlayer serverPlayer) || player.level() != level || !Ariente.setup.arienteWorld) {
             return;
         }
+        // A previously opened hologram must not bypass the server's current charge state.
+        if (getChargePercentage() < 100) {
+            return;
+        }
         if (level.dimension().equals(Level.OVERWORLD)) {
             BlockPos destination = ArienteWorldCompat.getArienteWorld().getNearestTeleportationSpot(player.blockPosition());
             // Remember the source entrance so the return trip works without a bed.
