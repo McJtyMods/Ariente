@@ -1,0 +1,79 @@
+// Opt-in, isolated runs for port verification. Normal development runs are unchanged.
+def localMods = [':ModHoloGui': 'hologui', ':McJtyLib': 'mcjtylib', ':TheOneProbe': 'theoneprobe']
+localMods.keySet().findAll { findProject(it) != null }.each { evaluationDependsOn(it) }
+
+minecraft.runs.all {
+    forceExit false
+    jvmArgs '-Xmx2G'
+    mods {
+        ariente {
+            source sourceSets.main
+        }
+        localMods.each { path, modId ->
+            if (findProject(path) != null) {
+                create(modId) {
+                    source project(path).sourceSets.main
+                }
+            }
+        }
+    }
+}
+minecraft.runs.data {
+    // RunConfig.setArgs appends; clear the shared helper's output arguments first.
+    getArgs().clear()
+    args '--mod', 'ariente', '--all', '--output', file('build/verification/datagen').absolutePath,
+            '--existing', file('src/main/resources').absolutePath
+    workingDirectory file('build/verification/datagen-run')
+}
+minecraft.runs.client {
+    workingDirectory file('build/verification/client')
+}
+minecraft.runs.server {
+    workingDirectory file('build/verification/server')
+    args '--nogui'
+}
+
+// Reuse the existing JEI/progression driver while deliberately leaving the companion unloaded.
+if (project.hasProperty('ariente_progression_check')) {
+    sourceSets {
+        verification {
+            java {
+                srcDir '../ArienteWorld/src/gameTest/java'
+                include 'mcjty/arienteworld/client/ProgressionClientChecks.java'
+            }
+            compileClasspath += sourceSets.main.output
+            runtimeClasspath += sourceSets.main.output
+        }
+    }
+    configurations {
+        verificationImplementation.extendsFrom implementation
+        verificationCompileOnly.extendsFrom compileOnly
+        verificationRuntimeOnly.extendsFrom runtimeOnly
+    }
+    minecraft.runs.client {
+        mods.ariente.source(sourceSets.verification)
+        property 'ariente.progressionClientCheck', 'true'
+        property 'ariente.expectCompanion', 'false'
+        args '--quickPlaySingleplayer', 'ProgressionCheck'
+    }
+    tasks.withType(JavaExec).configureEach {
+        if (name == 'runClient') {
+            dependsOn 'verificationClasses'
+        }
+    }
+}
+
+// Forge otherwise discovers built dependency jars as well as the requested sources.
+tasks.withType(JavaExec).configureEach {
+    if (name.startsWith('run')) {
+        doFirst {
+            def localJarDirs = rootProject.allprojects.collect { it.file('build/libs').toPath() }
+            def keep = { File entry -> !localJarDirs.any { entry.toPath().startsWith(it) } }
+            classpath = classpath.filter(keep)
+            if (systemProperties['legacyClassPath']) {
+                systemProperty 'legacyClassPath', systemProperties['legacyClassPath'].toString()
+                        .split(File.pathSeparator).findAll { keep(new File(it)) }.join(File.pathSeparator)
+            }
+        }
+    }
+}

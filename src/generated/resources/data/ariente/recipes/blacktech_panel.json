@@ -1,10 +1,6 @@
 {
   "type": "minecraft:crafting_shaped",
-  "pattern": [
-    "MMM",
-    "Smr",
-    "MMM"
-  ],
+  "category": "misc",
   "key": {
     "M": {
       "item": "ariente:marble_black"
@@ -19,7 +15,13 @@
       "item": "minecraft:redstone"
     }
   },
+  "pattern": [
+    "MMM",
+    "Smr",
+    "MMM"
+  ],
   "result": {
     "item": "ariente:blacktech_panel"
-  }
+  },
+  "show_notification": true
 }

@@ -1,40 +1,41 @@
 package mcjty.ariente.entities.fluxship;
 
 import net.minecraft.network.FriendlyByteBuf;
-import net.minecraft.world.entity.Entity;
-import net.minecraft.world.entity.player.Player;
+import net.minecraft.server.level.ServerPlayer;
 import net.minecraftforge.network.NetworkEvent;
 
 import java.util.function.Supplier;
 
 public class PacketShipAction {
 
-    private FlyAction action;
+    private final int forward;
+    private final int turn;
+    private final int vertical;
 
-    public void toBytes(FriendlyByteBuf buf) {
-        buf.writeInt(action.ordinal());
-    }
-
-    public PacketShipAction() {
+    public PacketShipAction(int forward, int turn, int vertical) {
+        this.forward = forward;
+        this.turn = turn;
+        this.vertical = vertical;
     }
 
     public PacketShipAction(FriendlyByteBuf buf) {
-        action = FlyAction.values()[buf.readInt()];
+        this(buf.readByte(), buf.readByte(), buf.readByte());
     }
 
-    public PacketShipAction(FlyAction action) {
-        this.action = action;
+    public void toBytes(FriendlyByteBuf buf) {
+        buf.writeByte(forward);
+        buf.writeByte(turn);
+        buf.writeByte(vertical);
     }
 
     public void handle(Supplier<NetworkEvent.Context> supplier) {
-        NetworkEvent.Context ctx = supplier.get();
-        ctx.enqueueWork(() -> {
-            Player player = ctx.getSender();
-            Entity ridingEntity = player.getVehicle();
-            if (ridingEntity instanceof FluxShipEntity) {
-                ((FluxShipEntity) ridingEntity).handleAction(action);
+        NetworkEvent.Context context = supplier.get();
+        context.enqueueWork(() -> {
+            ServerPlayer player = context.getSender();
+            if (player != null && player.getVehicle() instanceof FluxShipEntity ship) {
+                ship.handleInput(player, forward, turn, vertical);
             }
         });
-        ctx.setPacketHandled(true);
+        context.setPacketHandled(true);
     }
 }

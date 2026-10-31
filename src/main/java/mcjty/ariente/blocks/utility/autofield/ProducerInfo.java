@@ -3,47 +3,37 @@ package mcjty.ariente.blocks.utility.autofield;
 import mcjty.ariente.multipart.MultipartHelper;
 import mcjty.lib.multipart.PartPos;
 import mcjty.lib.multipart.PartSlot;
-import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemStack;
-import net.minecraft.world.level.block.entity.BlockEntity;
 import net.minecraft.world.level.Level;
 
 import javax.annotation.Nullable;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Comparator;
+import java.util.LinkedHashMap;
+import java.util.List;
+import java.util.Map;
+import java.util.Set;
 
 public class ProducerInfo {
 
-    private Map<PartPos, Producer> producers = new HashMap<>();
-    public static final int[] EMPTY_OREIDS = new int[0];
+    private final Map<PartPos, Producer> producers = new LinkedHashMap<>();
+    public static final Comparator<PartPos> NODE_ORDER = Comparator.comparingLong((PartPos p) -> p.pos().asLong()).thenComparingInt(p -> p.slot().ordinal());
 
     public ProducerInfo(Level world, Set<PartPos> itemNodes, Set<PartPos> modifierNodes) {
-        for (PartPos pair : itemNodes) {
-            BlockEntity te = MultipartHelper.getBlockEntity(world, pair.pos(), pair.slot());
-            if (te instanceof OutputItemNodeTile) {
-                OutputItemNodeTile outputNode = (OutputItemNodeTile) te;
-
-                boolean outputDamage = outputNode.isOutputDamage();
-                boolean outputNbt = outputNode.isOutputNbt();
-                boolean outputOredict = outputNode.isOutputOredict();
-                for (ItemStack stack : outputNode.getOutputFilter()) {
+        itemNodes.stream().sorted(NODE_ORDER).forEach(pos -> {
+            if (MultipartHelper.getBlockEntity(world, pos) instanceof OutputItemNodeTile node) {
+                Producer producer = new Producer(node.isOutputOredict(), node.isOutputDamage(), node.isOutputNbt(),
+                        node.getOutputStackSize(), modifierNodes.contains(pos) ? pos.slot().getBackSlot() : null);
+                for (ItemStack stack : node.getOutputFilter()) {
                     if (!stack.isEmpty()) {
-                        // @todo hardcoded round robin modifier
-                        boolean roundRobin = modifierNodes.contains(pair);
-                        producers.putIfAbsent(pair, new Producer(outputOredict, outputDamage, outputNbt,
-                                outputNode.getOutputStackSize(), roundRobin ? pair.slot().getBackSlot() : null));
-                        int[] oreIDs;
-                        if (outputOredict) {
-// @todo 1.14 oredict
-                            //                            oreIDs = OreDictionary.getOreIDs(stack);
-                            oreIDs = EMPTY_OREIDS;
-                        } else {
-                            oreIDs = EMPTY_OREIDS;
-                        }
-                        producers.get(pair).addItem(new ProvidedItem(stack, oreIDs));
+                        producer.addItem(new ProvidedItem(stack));
                     }
                 }
+                if (!producer.getProvidedItems().isEmpty()) {
+                    producers.put(pos, producer);
+                }
             }
-        }
+        });
     }
 
     public Map<PartPos, Producer> getProducers() {
@@ -51,31 +41,24 @@ public class ProducerInfo {
     }
 
     public static class Producer {
+
         private final boolean matchOredict;
         private final boolean matchDamage;
         private final boolean matchNbt;
         private final PartSlot roundRobinSlot;
         private final int minStackSize;
         private final List<ProvidedItem> providedItems = new ArrayList<>();
-        private final Set<Item> isProvidedItem = new HashSet<>();
-        private final Set<Integer> isProvidedOre = new HashSet<>();
 
         public Producer(boolean matchOredict, boolean matchDamage, boolean matchNbt, int minStackSize, @Nullable PartSlot roundRobinSlot) {
             this.matchOredict = matchOredict;
             this.matchDamage = matchDamage;
             this.matchNbt = matchNbt;
-            this.minStackSize = minStackSize;
+            this.minStackSize = Math.max(1, Math.min(64, minStackSize));
             this.roundRobinSlot = roundRobinSlot;
         }
 
         public void addItem(ProvidedItem item) {
-            this.providedItems.add(item);
-            isProvidedItem.add(item.getStack().getItem());
-            if (matchOredict) {
-                for (int oreID : item.getOreIDs()) {
-                    isProvidedOre.add(oreID);
-                }
-            }
+            providedItems.add(item);
         }
 
         public boolean isMatchOredict() {
@@ -104,46 +87,13 @@ public class ProducerInfo {
         }
 
         public boolean provides(ItemStack stack) {
-            if (isProvidedItem.contains(stack.getItem())) {
-                return true;
-            }
-            if (matchOredict) {
-// @todo 1.14 oredict
-                //                int[] oreIDs = OreDictionary.getOreIDs(stack);
-//                return Arrays.stream(oreIDs).anyMatch(isProvidedOre::contains);
-            }
-            return false;
+            return getProvidedItem(stack) != null;
         }
 
         @Nullable
         public ProvidedItem getProvidedItem(ItemStack stack) {
-            int[] oreIDs = EMPTY_OREIDS;
-            if (matchOredict) {
-// @todo 1.14 oredict
-                //                oreIDs = OreDictionary.getOreIDs(stack);
-            }
-            if (isProvidedItem.contains(stack.getItem()) || Arrays.stream(oreIDs).anyMatch(isProvidedOre::contains)) {
-                for (ProvidedItem item : providedItems) {
-                    if (matchOredict) {
-// @todo 1.14 oredict
-                        //                        if (!OreDictionary.itemMatches(stack, item.getStack(), false)) {
-//                            continue;
-//                        }
-                    } else {
-                        if (!ItemStack.isSameItem(stack, item.getStack())) {
-                            continue;
-                        }
-                    }
-                    if (matchDamage) {
-                        if (!(ItemStack.isSameItem(stack, item.getStack()) && stack.getDamageValue() == item.getStack().getDamageValue())) {
-                            continue;
-                        }
-                    }
-                    if (matchNbt) {
-                        if (!ItemStack.matches(stack, item.getStack())) {
-                            continue;
-                        }
-                    }
+            for (ProvidedItem item : providedItems) {
+                if (ItemFilterMatcher.matches(item.getStack(), stack, matchOredict, matchDamage, matchNbt)) {
                     return item;
                 }
             }
@@ -152,20 +102,15 @@ public class ProducerInfo {
     }
 
     public static class ProvidedItem {
-        private final ItemStack stack;
-        private final int[] oreIDs;
 
-        public ProvidedItem(ItemStack stack, int[] oreIDs) {
-            this.stack = stack;
-            this.oreIDs = oreIDs;
+        private final ItemStack stack;
+
+        public ProvidedItem(ItemStack stack) {
+            this.stack = stack.copy();
         }
 
         public ItemStack getStack() {
             return stack;
-        }
-
-        public int[] getOreIDs() {
-            return oreIDs;
         }
     }
 }

@@ -6,12 +6,10 @@ import mcjty.lib.builder.TooltipBuilder;
 import mcjty.lib.tooltips.ITooltipSettings;
 import net.minecraft.core.BlockPos;
 import net.minecraft.network.chat.Component;
-import net.minecraft.world.InteractionHand;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.TooltipFlag;
 import net.minecraft.world.level.Level;
-import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.item.Item;
 import net.minecraft.world.item.context.UseOnContext;
 import net.minecraft.world.InteractionResult;
@@ -42,22 +40,30 @@ public class FluxShipItem extends Item implements ITooltipSettings {
         Level world = context.getLevel();
         BlockPos pos = context.getClickedPos();
         Player player = context.getPlayer();
-        InteractionHand hand = context.getHand();
-        BlockState state = world.getBlockState(pos);
-
-        ItemStack itemstack = player.getItemInHand(hand);
-
-        if (!world.isClientSide) {
-            FluxShipEntity ship = FluxShipEntity.create(world, pos.getX() + 0.5D, pos.getY() + 0.0625D, pos.getZ() + 0.5D);
-
-            if (itemstack.hasCustomHoverName()) {
-                ship.setCustomName(itemstack.getHoverName());
-            }
-            world.addFreshEntity(ship);
+        if (player == null) {
+            return InteractionResult.FAIL;
         }
-
-        itemstack.shrink(1);
-        return InteractionResult.SUCCESS;
+        BlockPos target = pos.relative(context.getClickedFace());
+        if (!player.mayUseItemAt(target, context.getClickedFace(), context.getItemInHand())) {
+            return InteractionResult.FAIL;
+        }
+        ItemStack stack = context.getItemInHand();
+        FluxShipEntity ship = FluxShipEntity.create(world, target.getX() + .5, target.getY() + .0625, target.getZ() + .5);
+        ship.setYRot(player.getYRot());
+        if (!world.noCollision(ship, ship.getBoundingBox())) {
+            return InteractionResult.FAIL;
+        }
+        if (!world.isClientSide) {
+            if (stack.hasCustomHoverName()) {
+                ship.setCustomName(stack.getHoverName());
+            }
+            if (!world.addFreshEntity(ship)) {
+                return InteractionResult.FAIL;
+            }
+            if (!player.getAbilities().instabuild) {
+                stack.shrink(1);
+            }
+        }
+        return InteractionResult.sidedSuccess(world.isClientSide);
     }
-
 }

@@ -7,6 +7,7 @@ import mcjty.hologui.api.IGuiTile;
 import mcjty.hologui.api.components.IIconChoice;
 import mcjty.hologui.api.components.IPanel;
 import mcjty.ariente.multipart.MultipartHelper;
+import mcjty.ariente.multipart.MultipartTE;
 import mcjty.lib.multipart.PartPos;
 import mcjty.lib.multipart.PartSlot;
 import mcjty.lib.tileentity.GenericTileEntity;
@@ -87,13 +88,23 @@ public abstract class AbstractNodeTile extends GenericTileEntity implements IGui
     @Override
     public void setChanged() {
         // Make sure to mark the MultipartTE as dirty
-        level.getBlockEntity(worldPosition).setChanged();
+        BlockEntity parent = level == null ? null : level.getBlockEntity(worldPosition);
+        if (parent instanceof MultipartTE) {
+            parent.setChanged();
+        } else {
+            super.setChanged();
+        }
     }
 
     @Override
     public void markDirtyQuick() {
         // Make sure to mark the MultipartTE as dirty
-        ((GenericTileEntity)level.getBlockEntity(worldPosition)).markDirtyQuick();
+        BlockEntity parent = level == null ? null : level.getBlockEntity(worldPosition);
+        if (parent instanceof MultipartTE multipart) {
+            multipart.markDirtyQuick();
+        } else {
+            super.markDirtyQuick();
+        }
     }
 
     public DyeColor[] getFilters() {
@@ -314,7 +325,11 @@ public abstract class AbstractNodeTile extends GenericTileEntity implements IGui
         if (state != null && state.getBlock() == getBlockState().getBlock()) {
             NodeOrientation orientation = state.getValue(ORIENTATION);
             Direction mainDirection = orientation.getMainDirection();
-            BlockEntity otherTe = level.getBlockEntity(worldPosition.relative(mainDirection));
+            BlockPos otherPos = worldPosition.relative(mainDirection);
+            if (!level.hasChunkAt(otherPos)) {
+                return LazyOptional.empty();
+            }
+            BlockEntity otherTe = level.getBlockEntity(otherPos);
             if (otherTe != null) {
                 return otherTe.getCapability(ForgeCapabilities.ITEM_HANDLER, mainDirection.getOpposite());
             }

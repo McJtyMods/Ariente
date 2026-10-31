@@ -108,7 +108,7 @@ public class LockTile extends GenericTileEntity implements IGuiTile, IKeyCardSlo
         doLock(false);
         this.horizontalRange = horizontalRange;
         markDirtyQuick();
-        doLock(true);
+        doLock(locked);
     }
 
     public int getVerticalRange(Player player, IHoloGuiEntity holo) {
@@ -119,12 +119,14 @@ public class LockTile extends GenericTileEntity implements IGuiTile, IKeyCardSlo
         doLock(false);
         this.verticalRange = verticalRange;
         markDirtyQuick();
-        doLock(true);
+        doLock(locked);
     }
 
     @Override
     public void onReplaced(Level world, BlockPos pos, BlockState state, BlockState newstate) {
-        doLock(false);
+        if (!state.is(newstate.getBlock())) {
+            doLock(false);
+        }
         super.onReplaced(world, pos, state, newstate);
     }
 
@@ -154,6 +156,12 @@ public class LockTile extends GenericTileEntity implements IGuiTile, IKeyCardSlo
             return;
         }
         this.locked = locked;
+        if (level != null && !level.isClientSide) {
+            BlockState state = level.getBlockState(worldPosition);
+            if (state.hasProperty(BlockProperties.LOCKED)) {
+                level.setBlockAndUpdate(worldPosition, state.setValue(BlockProperties.LOCKED, locked));
+            }
+        }
         doLock(locked);
         markDirtyClient();
     }

@@ -54,6 +54,7 @@ public class ElevatorTile extends TickingTileEntity implements IGuiTile, IPowerR
 
     // Client side only
     private int moveToFloor = -1;
+    private boolean powered;
 
     public ElevatorTile(BlockPos pos, BlockState state) {
         super(Registration.ELEVATOR_TILE.get(), pos, state);
@@ -81,12 +82,20 @@ public class ElevatorTile extends TickingTileEntity implements IGuiTile, IPowerR
 
     @Override
     public long getUsingPower() {
-        return POWER_USAGE;
+        return powered ? POWER_USAGE : 0;
     }
 
     @Override
     public void tickServer() {
-        PowerReceiverSupport.consumePower(level, worldPosition, POWER_USAGE, true);
+        boolean available = PowerReceiverSupport.consumePower(level, worldPosition, POWER_USAGE, true);
+        if (powered != available) {
+            powered = available;
+            markDirtyClient();
+        }
+        if (!powered) {
+            removeStaleHoloEntries();
+            return;
+        }
 
         List<Player> players = level.getEntitiesOfClass(Player.class, getBeamBox());
         for (Player player : players) {
@@ -99,10 +108,18 @@ public class ElevatorTile extends TickingTileEntity implements IGuiTile, IPowerR
         removeStaleHoloEntries();
     }
 
+    public boolean isPowered() {
+        return powered;
+    }
+
     @Override
     public void tickClient() {
-        List<Integer> floors = findFloors();
         Player clientPlayer = SafeClientTools.getClientPlayer();
+        if (!powered || clientPlayer == null) {
+            moveToFloor = -1;
+            return;
+        }
+        List<Integer> floors = findFloors();
         if (clientPlayer.getBoundingBox().intersects(getBeamBox())) {
             clientPlayer.hasImpulse = true;
             clientPlayer.fallDistance = 0;
@@ -121,11 +138,9 @@ public class ElevatorTile extends TickingTileEntity implements IGuiTile, IPowerR
                 if (moveToFloor == -1) {
                     if (clientPlayer.isShiftKeyDown()) {
                         moveToFloor = findLowerFloor(floors, (int) clientPlayer.getY());
-                        System.out.println("DOWN: moveToFloor = " + moveToFloor);
                         clientPlayer.setPos(worldPosition.getX() + .5, clientPlayer.getY(), worldPosition.getZ() + .5);
                     } else if (isJumpKeyDown()) {
                         moveToFloor = findUpperFloor(floors, (int) clientPlayer.getY());
-                        System.out.println("UP: moveToFloor = " + moveToFloor);
                         clientPlayer.setPos(worldPosition.getX() + .5, clientPlayer.getY(), worldPosition.getZ() + .5);
                     } else {
                         moveToFloor = -1;
@@ -302,6 +317,7 @@ public class ElevatorTile extends TickingTileEntity implements IGuiTile, IPowerR
     @Override
     public void load(CompoundTag tagCompound) {
         super.load(tagCompound);
+        powered = tagCompound.getBoolean("powered");
         CompoundTag info = tagCompound.getCompound("Info");
         if (info.contains("height")) {
             height = info.getInt("height");
@@ -311,6 +327,7 @@ public class ElevatorTile extends TickingTileEntity implements IGuiTile, IPowerR
 
     @Override
     public void saveAdditional(CompoundTag tagCompound) {
+        tagCompound.putBoolean("powered", powered);
         getOrCreateInfo(tagCompound).putInt("height", height);
         super.saveAdditional(tagCompound);
     }

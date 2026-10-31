@@ -1,6 +1,10 @@
 package mcjty.ariente.items;
 
 import mcjty.lib.varia.Tools;
+import net.minecraftforge.client.extensions.common.IClientItemExtensions;
+import net.minecraft.client.Minecraft;
+import net.minecraft.client.renderer.BlockEntityWithoutLevelRenderer;
+import java.util.function.Consumer;
 import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
 import com.google.gson.JsonParser;
@@ -41,6 +45,22 @@ public class BlueprintItem extends Item implements ITooltipExtras, ITooltipSetti
                 .stacksTo(1));
         // @todo 1.14
 //        setHasSubtypes(true);
+    }
+
+    @Override
+    public void initializeClient(Consumer<IClientItemExtensions> consumer) {
+        consumer.accept(new IClientItemExtensions() {
+            private BlueprintRenderer renderer;
+
+            @Override
+            public BlockEntityWithoutLevelRenderer getCustomRenderer() {
+                if (renderer == null) {
+                    Minecraft mc = Minecraft.getInstance();
+                    renderer = new BlueprintRenderer(mc.getBlockEntityRenderDispatcher(), mc.getEntityModels());
+                }
+                return renderer;
+            }
+        });
     }
 
     @Override

@@ -78,6 +78,7 @@ public class WirelessLockTile extends SignalChannelTileEntity implements ILockab
 
     @Override
     public void tickServer() {
+        setVisualState(LOCKED, locked);
         if (channel != -1) {
             RedstoneChannels channels = RedstoneChannels.getChannels(getLevel());
             RedstoneChannels.RedstoneChannel ch = channels.getChannel(channel);
@@ -111,6 +112,7 @@ public class WirelessLockTile extends SignalChannelTileEntity implements ILockab
     }
 
     public void setLocked(boolean locked) {
+        setVisualState(LOCKED, locked);
         if (locked == this.locked) {
             return;
         }
@@ -130,6 +132,9 @@ public class WirelessLockTile extends SignalChannelTileEntity implements ILockab
                 for (int dy = -verticalRange ; dy <= verticalRange ; dy++) {
                     for (int dz = -horizontalRange ; dz <= horizontalRange ; dz++) {
                         BlockPos p = worldPosition.offset(dx, dy, dz);
+                        if (!level.hasChunkAt(p)) {
+                            continue;
+                        }
                         BlockEntity te = level.getBlockEntity(p);
                         if (te instanceof DoorMarkerTile) { // @todo generalize!
                             ((DoorMarkerTile) te).setLocked(l);
@@ -148,7 +153,7 @@ public class WirelessLockTile extends SignalChannelTileEntity implements ILockab
         doLock(false);
         this.horizontalRange = horizontalRange;
         markDirtyQuick();
-        doLock(true);
+        doLock(locked);
     }
 
     public int getVerticalRange() {
@@ -159,7 +164,7 @@ public class WirelessLockTile extends SignalChannelTileEntity implements ILockab
         doLock(false);
         this.verticalRange = verticalRange;
         markDirtyQuick();
-        doLock(true);
+        doLock(locked);
     }
 
     // @todo 1.14
@@ -171,7 +176,9 @@ public class WirelessLockTile extends SignalChannelTileEntity implements ILockab
 
     @Override
     public void onReplaced(Level world, BlockPos pos, BlockState state, BlockState newstate) {
-        doLock(false);
+        if (state.getBlock() != newstate.getBlock()) {
+            doLock(false);
+        }
         super.onReplaced(world, pos, state, newstate);
     }
 

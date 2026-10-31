@@ -1,6 +1,8 @@
 package mcjty.ariente.blocks.utility.autofield;
 
 import mcjty.lib.blocks.BaseBlock;
+import mcjty.ariente.setup.Registration;
+import net.minecraft.world.phys.shapes.Shapes;
 import mcjty.lib.blocks.RotationType;
 import mcjty.lib.builder.BlockBuilder;
 import mcjty.lib.multipart.PartSlot;
@@ -38,6 +40,9 @@ public class BaseNodeBlock extends BaseBlock {
 
     @Override
     public VoxelShape getShape(BlockState state, BlockGetter worldIn, BlockPos pos, CollisionContext context) {
+        if (this == Registration.ROUND_ROBIN_NODE.get()) {
+            return Shapes.create(RoundRobinNodeTile.getBoundingBox(state, null, pos));
+        }
         return AbstractNodeTile.getVoxelShape(state, worldIn, pos);
     }
 
@@ -57,7 +62,8 @@ public class BaseNodeBlock extends BaseBlock {
     @Nonnull
     @Override
     public PartSlot getSlotFromState(Level world, BlockPos pos, BlockState newState) {
-        return newState.getValue(AbstractNodeTile.ORIENTATION).getSlot();
+        PartSlot slot = newState.getValue(AbstractNodeTile.ORIENTATION).getSlot();
+        return this == Registration.ROUND_ROBIN_NODE.get() ? slot.getBackSlot() : slot;
     }
 
 }

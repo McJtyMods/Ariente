@@ -4,7 +4,6 @@ import mcjty.ariente.items.armor.PacketConfigureArmor;
 import mcjty.ariente.items.armor.PacketArmorHotkey;
 import org.lwjgl.glfw.GLFW;
 import mcjty.ariente.entities.fluxship.FluxShipEntity;
-import mcjty.ariente.entities.fluxship.FlyAction;
 import mcjty.ariente.entities.fluxship.PacketShipAction;
 import mcjty.ariente.network.ArienteMessages;
 import net.minecraft.client.Minecraft;
@@ -36,20 +35,25 @@ public class KeyBindings {
         armorHotkey2 = Binding.create("key.hotkey2", GLFW.GLFW_KEY_KP_8, () -> toServer(new PacketArmorHotkey(2)));
         armorHotkey3 = Binding.create("key.hotkey3", GLFW.GLFW_KEY_UNKNOWN, () -> toServer(new PacketArmorHotkey(3)));
         armorHotkey4 = Binding.create("key.hotkey4", GLFW.GLFW_KEY_UNKNOWN, () -> toServer(new PacketArmorHotkey(4)));
-        flyForward = Binding.create("key.flyforward", GLFW.GLFW_KEY_W, () -> performFlyAction(FlyAction.FORWARD));
-        flyBackwards = Binding.create("key.flybackwards", GLFW.GLFW_KEY_S, () -> performFlyAction(FlyAction.BACKWARD));
-        turnLeft = Binding.create("key.turnleft", GLFW.GLFW_KEY_A, () -> performFlyAction(FlyAction.TURNLEFT));
-        turnRight = Binding.create("key.turnright", GLFW.GLFW_KEY_D, () -> performFlyAction(FlyAction.TURNRIGHT));
-        flyUp = Binding.create("key.flyup", GLFW.GLFW_KEY_UP, () -> performFlyAction(FlyAction.UP));
-        flyDown = Binding.create("key.flydown", GLFW.GLFW_KEY_DOWN, () -> performFlyAction(FlyAction.DOWN));
-        startFlying = Binding.create("key.startflying", GLFW.GLFW_KEY_SPACE, () -> performFlyAction(FlyAction.START));
-        startLanding = Binding.create("key.startlanding", GLFW.GLFW_KEY_BACKSPACE, () -> performFlyAction(FlyAction.LAND));
+        flyForward = Binding.createHeld("key.flyforward", GLFW.GLFW_KEY_W);
+        flyBackwards = Binding.createHeld("key.flybackwards", GLFW.GLFW_KEY_S);
+        turnLeft = Binding.createHeld("key.turnleft", GLFW.GLFW_KEY_A);
+        turnRight = Binding.createHeld("key.turnright", GLFW.GLFW_KEY_D);
+        flyUp = Binding.createHeld("key.flyup", GLFW.GLFW_KEY_UP);
+        flyDown = Binding.createHeld("key.flydown", GLFW.GLFW_KEY_DOWN);
+        startFlying = Binding.createHeld("key.startflying", GLFW.GLFW_KEY_SPACE);
+        startLanding = Binding.createHeld("key.startlanding", GLFW.GLFW_KEY_BACKSPACE);
     }
 
-    private static void performFlyAction(FlyAction forward) {
-        // First check if we're actually on a ship
-        if (Minecraft.getInstance().player.getVehicle() instanceof FluxShipEntity) {
-            toServer(new PacketShipAction(forward));
+    public static void tickShipControls() {
+        Minecraft mc = Minecraft.getInstance();
+        if (mc.player != null && mc.player.getVehicle() instanceof FluxShipEntity) {
+            boolean active = mc.screen == null;
+            int forward = active ? (flyForward.isDown() ? 1 : 0) - (flyBackwards.isDown() ? 1 : 0) : 0;
+            int turn = active ? (turnRight.isDown() ? 1 : 0) - (turnLeft.isDown() ? 1 : 0) : 0;
+            int vertical = active ? (flyUp.isDown() || startFlying.isDown() ? 1 : 0)
+                    - (flyDown.isDown() || startLanding.isDown() ? 1 : 0) : 0;
+            toServer(new PacketShipAction(forward, turn, vertical));
         }
     }
 

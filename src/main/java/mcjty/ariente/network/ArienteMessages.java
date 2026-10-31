@@ -23,14 +23,16 @@ import javax.annotation.Nonnull;
 
 public class ArienteMessages {
 
+    private static final String PROTOCOL_VERSION = "2";
+
     public static SimpleChannel INSTANCE;
 
     public static void registerMessages(String name) {
         SimpleChannel net = NetworkRegistry.ChannelBuilder
                 .named(new ResourceLocation(Ariente.MODID, name))
-                .networkProtocolVersion(() -> "1.0")
-                .clientAcceptedVersions(s -> true)
-                .serverAcceptedVersions(s -> true)
+                .networkProtocolVersion(() -> PROTOCOL_VERSION)
+                .clientAcceptedVersions(PROTOCOL_VERSION::equals)
+                .serverAcceptedVersions(PROTOCOL_VERSION::equals)
                 .simpleChannel();
 
 

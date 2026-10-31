@@ -275,6 +275,10 @@
     {
       "type": "minecraft:single",
       "resource": "ariente:block/machines/warper_glow"
+    },
+    {
+      "type": "minecraft:single",
+      "resource": "ariente:entity/flux_ship"
     }
   ]
 }

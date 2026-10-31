@@ -2,6 +2,7 @@ package mcjty.ariente.blocks.utility.autofield;
 
 import mcjty.ariente.Ariente;
 import mcjty.ariente.setup.Registration;
+import mcjty.ariente.multipart.MultipartTE;
 import mcjty.lib.multipart.PartSlot;
 import mcjty.lib.tileentity.GenericTileEntity;
 import net.minecraft.nbt.CompoundTag;
@@ -66,13 +67,23 @@ public class RoundRobinNodeTile extends GenericTileEntity {
     @Override
     public void setChanged() {
         // Make sure to mark the MultipartTE as dirty
-        level.getBlockEntity(worldPosition).setChanged();
+        BlockEntity parent = level == null ? null : level.getBlockEntity(worldPosition);
+        if (parent instanceof MultipartTE) {
+            parent.setChanged();
+        } else {
+            super.setChanged();
+        }
     }
 
     @Override
     public void markDirtyQuick() {
         // Make sure to mark the MultipartTE as dirty
-        ((GenericTileEntity)level.getBlockEntity(worldPosition)).markDirtyQuick();
+        BlockEntity parent = level == null ? null : level.getBlockEntity(worldPosition);
+        if (parent instanceof MultipartTE multipart) {
+            multipart.markDirtyQuick();
+        } else {
+            super.markDirtyQuick();
+        }
     }
 
     @Override

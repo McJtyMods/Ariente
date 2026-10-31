@@ -61,15 +61,22 @@ public class FieldMarkerTile extends GenericTileEntity {
     @Override
     public void setChanged() {
         // Make sure to mark the MultipartTE as dirty
-        level.getBlockEntity(worldPosition).setChanged();
+        BlockEntity parent = level == null ? null : level.getBlockEntity(worldPosition);
+        if (parent instanceof MultipartTE) {
+            parent.setChanged();
+        } else {
+            super.setChanged();
+        }
     }
 
     @Override
     public void markDirtyQuick() {
         // Make sure to mark the MultipartTE as dirty
-        BlockEntity te = level.getBlockEntity(worldPosition);
-        if (te instanceof MultipartTE) {
-            ((MultipartTE) te).markDirtyQuick();
+        BlockEntity parent = level == null ? null : level.getBlockEntity(worldPosition);
+        if (parent instanceof MultipartTE multipart) {
+            multipart.markDirtyQuick();
+        } else {
+            super.markDirtyQuick();
         }
     }
 

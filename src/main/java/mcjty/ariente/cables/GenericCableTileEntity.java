@@ -18,6 +18,10 @@ import net.minecraft.network.Connection;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.level.Level;
 import net.minecraftforge.registries.ForgeRegistries;
+import net.minecraft.core.registries.BuiltInRegistries;
+import net.minecraft.nbt.NbtUtils;
+import net.minecraft.nbt.TagParser;
+import com.mojang.brigadier.exceptions.CommandSyntaxException;
 
 import javax.annotation.Nullable;
 import java.util.HashMap;
@@ -41,6 +45,7 @@ public abstract class GenericCableTileEntity extends GenericTileEntity implement
         Map<String, Object> data = new HashMap<>();
         Block mimic = mimicBlockSupport.getMimicBlock().getBlock();
         data.put("mimic", Tools.getId(mimic).toString());
+        data.put("mimicState", NbtUtils.writeBlockState(mimicBlockSupport.getMimicBlock()).toString());
         // @todo 1.14 meta
 //        data.put("meta", mimic.getMetaFromState(mimicBlockSupport.getMimicBlock()));
         return data;
@@ -48,6 +53,14 @@ public abstract class GenericCableTileEntity extends GenericTileEntity implement
 
     @Override
     public void load(Map<String, Object> data) {
+        if (data.get("mimicState") instanceof String encoded) {
+            try {
+                mimicBlockSupport.setMimicBlock(NbtUtils.readBlockState(BuiltInRegistries.BLOCK.asLookup(), TagParser.parseTag(encoded)));
+                return;
+            } catch (CommandSyntaxException exception) {
+                throw new IllegalArgumentException("Invalid facade state in city equipment", exception);
+            }
+        }
         if (data.get("mimic") instanceof String) {
             Block mimic = ForgeRegistries.BLOCKS.getValue(new ResourceLocation((String) data.get("mimic")));
             if (mimic == null) {

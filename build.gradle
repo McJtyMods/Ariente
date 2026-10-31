@@ -30,6 +30,18 @@ archivesBaseName = "ariente"
 java.toolchain.languageVersion = JavaLanguageVersion.of(17)
 
 repos()
+// An explicit staging repository allows standalone checks before dependencies are published.
+if (project.hasProperty('ariente_dependency_repository')) {
+    repositories.maven {
+        url = uri(project.property('ariente_dependency_repository'))
+        content {
+            includeGroup 'com.github.mcjty'
+        }
+    }
+}
+if (project.hasProperty('ariente_runs')) {
+    ext.enable_individual_runs = true
+}
 runs('ariente')
 jars('ariente')
 
@@ -50,6 +62,9 @@ dependencies {
 
 }
 
+modpublisher(['the-one-probe', 'ariente-world'], ['mcjtylib', 'hologui'],
+        ['the-one-probe', 'ariente-world'], ['mcjtylib', 'hologui'], [])
+
 task apiJar(type: Jar) {
     archiveClassifier = 'api'
     from(sourceSets.main.output) {
@@ -64,6 +79,7 @@ artifacts {
 publishing {
     publications {
         mavenJava(MavenPublication) {
+            artifactId = archivesBaseName
             from components.java
             artifact apiJar
         }
@@ -77,7 +93,15 @@ publishing {
     }
 }
 
+tasks.withType(AbstractPublishToMaven).configureEach {
+    dependsOn 'reobfJar'
+}
+
 // Resolve Forge/remapped libraries in this project; load local mod sources directly.
 configurations.implementation.dependencies.withType(ProjectDependency).configureEach { dependency ->
     dependency.transitive = false
+}
+
+if (project.hasProperty('ariente_runs')) {
+    apply from: 'gradle/verification.gradle'
 }

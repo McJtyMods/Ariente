@@ -2,15 +2,14 @@
   "type": "minecraft:block",
   "pools": [
     {
-      "name": "pattern",
-      "rolls": 1,
+      "bonus_rolls": 0.0,
       "entries": [
         {
           "type": "minecraft:item",
           "functions": [
             {
-              "function": "minecraft:copy_state",
               "block": "ariente:pattern",
+              "function": "minecraft:copy_state",
               "properties": [
                 "type"
               ]
@@ -18,7 +17,10 @@
           ],
           "name": "ariente:pattern_lines"
         }
-      ]
+      ],
+      "name": "pattern",
+      "rolls": 1.0
     }
-  ]
+  ],
+  "random_sequence": "ariente:blocks/pattern"
 }

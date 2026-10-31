@@ -1,8 +1,8 @@
 modLoader="javafml"
 loaderVersion="[47,)"
-license="MIT License https://github.com/McJtyMods/Ariente/blob/1.18/LICENCE"
-issueTrackerURL="http://github.com/McJtyMods/Ariente/issues"
-displayURL="http://github.com/McJtyMods/Ariente/"
+license="MIT"
+issueTrackerURL="https://github.com/McJtyMods/Ariente/issues"
+displayURL="https://github.com/McJtyMods/Ariente/"
 #logoFile="examplemod.png" #optional
 #credits="Thanks for this example mod goes to Java" #optional
 authors="McJty"
@@ -13,7 +13,7 @@ version="${file.jarVersion}"
 displayName="Ariente"
 #updateJSONURL="http://myurl.me/" #optional
 description='''
-Ariente is a high-tech mod based on alien technolgoy
+Ariente is a high-tech mod based on alien technology
 '''
 [[dependencies.ariente]]
     modId="forge"
@@ -31,7 +31,7 @@ Ariente is a high-tech mod based on alien technolgoy
 [[dependencies.ariente]]
     modId="hologui"
     mandatory=true
-    versionRange="[1.18-0.0.8,)"
+    versionRange="[1.20-0.0.10-beta,)"
     ordering="AFTER"
     side="BOTH"
 

@@ -2,8 +2,7 @@
   "type": "minecraft:block",
   "pools": [
     {
-      "name": "warper",
-      "rolls": 1,
+      "bonus_rolls": 0.0,
       "entries": [
         {
           "type": "minecraft:item",
@@ -14,39 +13,42 @@
             },
             {
               "function": "minecraft:copy_nbt",
-              "source": "block_entity",
               "ops": [
                 {
+                  "op": "replace",
                   "source": "Info",
-                  "target": "BlockEntityTag.Info",
-                  "op": "replace"
+                  "target": "BlockEntityTag.Info"
                 },
                 {
+                  "op": "replace",
                   "source": "Items",
-                  "target": "BlockEntityTag.McItems",
-                  "op": "replace"
+                  "target": "BlockEntityTag.McItems"
                 },
                 {
+                  "op": "replace",
                   "source": "Energy",
-                  "target": "BlockEntityTag.Energy",
-                  "op": "replace"
+                  "target": "BlockEntityTag.Energy"
                 }
-              ]
+              ],
+              "source": "block_entity"
             },
             {
-              "function": "minecraft:set_contents",
+              "type": "ariente:warper",
               "entries": [
                 {
                   "type": "minecraft:dynamic",
                   "name": "minecraft:contents"
                 }
               ],
-              "type": "ariente:warper"
+              "function": "minecraft:set_contents"
             }
           ],
           "name": "ariente:warper"
         }
-      ]
+      ],
+      "name": "warper",
+      "rolls": 1.0
     }
-  ]
+  ],
+  "random_sequence": "ariente:blocks/warper"
 }

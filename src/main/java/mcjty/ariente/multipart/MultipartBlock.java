@@ -1,12 +1,19 @@
 package mcjty.ariente.multipart;
 
 import net.minecraft.world.level.block.RenderShape;
-import mcjty.lib.multipart.IPartBlock;
+import mcjty.ariente.blocks.utility.ILockable;
+import mcjty.ariente.blocks.utility.autofield.AbstractNodeTile;
+import mcjty.theoneprobe.api.CompoundText;
+import net.minecraft.world.item.BlockItem;
+import net.minecraft.world.level.material.FluidState;
+import net.minecraft.world.level.storage.loot.LootParams;
+import net.minecraft.world.level.storage.loot.parameters.LootContextParams;
+import java.util.Arrays;
+import java.util.Objects;
+import java.util.ArrayList;
+import java.util.List;
 import mcjty.lib.multipart.PartSlot;
-import mcjty.lib.multipart.PartPos;
 
-import mcjty.lib.McJtyLib;
-import mcjty.lib.compat.theoneprobe.McJtyLibTOPDriver;
 import mcjty.lib.compat.theoneprobe.TOPDriver;
 import mcjty.lib.compat.theoneprobe.TOPInfoProvider;
 import mcjty.lib.compat.waila.WailaInfoProvider;
@@ -160,72 +167,88 @@ public class MultipartBlock extends Block implements WailaInfoProvider, TOPInfoP
 
     @Nullable
     public static MultipartTE.Part getHitPart(BlockState blockState, BlockGetter world, BlockPos pos, Vec3 start, Vec3 end) {
-        BlockEntity te = world.getBlockEntity(pos);
-        if (te instanceof MultipartTE multipartTE) {
-            for (Map.Entry<PartSlot, MultipartTE.Part> entry : multipartTE.getParts().entrySet()) {
-                MultipartTE.Part part = entry.getValue();
-                if (!(part.getState().getBlock() instanceof MultipartBlock)) {     // @todo safety
-                    // @todo 1.14
-                    BlockHitResult result = part.getState().getVisualShape(world, pos, CollisionContext.empty()).clip(start, end, pos);
-                    if (result != null) {
-                        return part;
-                    }
-                }
-            }
-            return null;
-        } else {
+        if (!(world.getBlockEntity(pos) instanceof MultipartTE multipart)) {
             return null;
         }
+        MultipartTE.Part closest = null;
+        double distance = Double.MAX_VALUE;
+        // Extend the endpoint slightly: a clone/probe hit is exactly on the surface.
+        Vec3 extendedEnd = end.add(end.subtract(start).normalize().scale(.001));
+        for (MultipartTE.Part part : multipart.getParts().values()) {
+            BlockHitResult hit = part.getState().getShape(world, pos).clip(start, extendedEnd, pos);
+            if (hit != null && start.distanceToSqr(hit.getLocation()) < distance) {
+                closest = part;
+                distance = start.distanceToSqr(hit.getLocation());
+            }
+        }
+        return closest;
+    }
+
+    public static ItemStack getPartStack(MultipartTE.Part part) {
+        ItemStack stack = new ItemStack(part.getState().getBlock());
+        BlockEntity child = part.getBlockEntity();
+        if (child != null && !stack.isEmpty()) {
+            BlockItem.setBlockEntityData(stack, child.getType(), child.saveWithoutMetadata());
+        }
+        return stack;
+    }
+
+    @Override
+    public boolean onDestroyedByPlayer(BlockState state, Level world, BlockPos pos, Player player, boolean willHarvest, FluidState fluid) {
+        if (world.isClientSide || !(world.getBlockEntity(pos) instanceof MultipartTE multipart)) {
+            return false;
+        }
+        Vec3 start = player.getEyePosition();
+        MultipartTE.Part part = getHitPart(state, world, pos, start, start.add(player.getLookAngle().scale(player.getBlockReach() + 1)));
+        if (part == null || part.getBlockEntity() instanceof ILockable lock && lock.isLocked()) {
+            return false;
+        }
+        if (!player.getAbilities().instabuild) {
+            popResource(world, pos, getPartStack(part));
+        }
+        multipart.removePart(part.getState());
+        if (multipart.getParts().isEmpty()) {
+            world.removeBlock(pos, false);
+        }
+        // The selected part and its drop are already handled. Keep the container's loot out of playerDestroy.
+        return false;
+    }
+
+    @Override
+    public List<ItemStack> getDrops(BlockState state, LootParams.Builder builder) {
+        List<ItemStack> drops = new ArrayList<>();
+        if (builder.getOptionalParameter(LootContextParams.BLOCK_ENTITY) instanceof MultipartTE multipart) {
+            multipart.getParts().values().forEach(part -> drops.add(getPartStack(part)));
+        }
+        return drops;
+    }
+
+    @Override
+    public void onRemove(BlockState state, Level level, BlockPos pos, BlockState next, boolean moving) {
+        if (!state.is(next.getBlock()) && level.getBlockEntity(pos) instanceof MultipartTE multipart) {
+            for (MultipartTE.Part part : multipart.getParts().values()) {
+                if (part.getBlockEntity() instanceof GenericTileEntity generic) {
+                    generic.onReplaced(level, pos, part.getState(), next);
+                }
+            }
+        }
+        super.onRemove(state, level, pos, next, moving);
     }
 
     @Override
     public TOPDriver getProbeDriver() {
-        return McJtyLibTOPDriver.DRIVER;
+        return (mode, info, player, level, state, hit) -> {
+            MultipartTE.Part part = getHitPart(state, level, hit.getPos(), player.getEyePosition(), hit.getHitVec());
+            if (part != null) {
+                info.item(new ItemStack(part.getState().getBlock()));
+                info.text(part.getState().getBlock().getName());
+                if (part.getBlockEntity() instanceof AbstractNodeTile node) {
+                    long colors = Arrays.stream(node.getFilters()).filter(Objects::nonNull).count();
+                    info.text(CompoundText.createLabelInfo("Color filters: ", colors));
+                }
+            }
+        };
     }
 
 
-    // @todo 1.14
-//    @Override
-//    @Optional.Method(modid = "theoneprobe")
-//    public void addProbeInfo(ProbeMode mode, IProbeInfo probeInfo, PlayerEntity player, World world, BlockState blockState, IProbeHitData data) {
-//        MultipartTE.Part part = getHitPart(blockState, world, data.getPos(), MultipartHelper.getPlayerEyes(player), data.getHitVec());
-//        if (part != null) {
-//            if (part.getBlockEntity() instanceof GenericTileEntity) {
-//                ((GenericTileEntity) part.getBlockEntity()).addProbeInfo(mode, probeInfo, player, world, blockState, data);
-//            } else if (part.getState().getBlock() instanceof TOPInfoProvider) {
-//                ((TOPInfoProvider) part.getState().getBlock()).addProbeInfo(mode, probeInfo, player, world, blockState, data);
-//            }
-//        }
-//    }
-//
-//    @Override
-//    @Optional.Method(modid = "waila")
-//    public List<String> getWailaBody(ItemStack itemStack, List<String> currenttip, IWailaDataAccessor accessor, IWailaConfigHandler config) {
-//        MultipartTE.Part part = getHitPart(accessor.getBlockState(), accessor.getWorld(), accessor.getPosition(),
-//                MultipartHelper.getPlayerEyes(accessor.getPlayer()), accessor.getRenderingPosition());
-//        if (part != null) {
-//            if (part.getBlockEntity() instanceof GenericTileEntity) {
-//                ((GenericTileEntity) part.getBlockEntity()).addWailaBody(itemStack, currenttip, accessor, config);
-//            } else if (part.getState().getBlock() instanceof WailaInfoProvider) {
-//                return ((WailaInfoProvider) part.getState().getBlock()).getWailaBody(itemStack, currenttip, accessor, config);
-//            }
-//        }
-//        return currenttip;
-//    }
-
-
-    // @todo 1.16
-//    @Override
-//    public BlockState getExtendedState(BlockState state, IBlockReader world, BlockPos pos) {
-//        IExtendedBlockState extendedBlockState = (IExtendedBlockState) state;
-//
-//        TileEntity te = world.getBlockEntity(pos);
-//        if (te instanceof MultipartTE) {
-//            MultipartTE multipartTE = (MultipartTE) te;
-//            return extendedBlockState.withProperty(PARTS, multipartTE.getParts());
-//        }
-//        return extendedBlockState;
-        // @todo 1.14
-//        return state;
-//    }
 }

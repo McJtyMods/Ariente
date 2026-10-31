@@ -1,3 +1,6 @@
+1.20-0.0.31-alpha:
+- Ported Ariente to Minecraft 1.20.1 for Forge. Requires HoloGui 1.20-0.0.10-beta or newer.
+
 Upcoming:
 - Fixed a problem on servers
 

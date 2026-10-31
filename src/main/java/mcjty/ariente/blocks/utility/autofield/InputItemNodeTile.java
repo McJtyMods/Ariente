@@ -96,7 +96,11 @@ public class InputItemNodeTile extends AbstractItemNodeTile {
                     HelpBuilder.create()
                             .line("This node can be used in")
                             .line("an automation field to input")
-                            .line("items"),
+                            .line("items. The ore icon matches")
+                            .line("material tags (for example")
+                            .line("planks or ingots/silver).")
+                            .line("NBT and damage are separate")
+                            .line("filter options."),
                     pair.getLeft() + ":" + TAG_MAIN
             );
         } else {

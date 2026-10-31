@@ -1,13 +1,11 @@
 package mcjty.ariente.multipart;
 
-import net.minecraft.core.registries.BuiltInRegistries;
+import mcjty.ariente.blocks.utility.autofield.AutoFieldTile;
 import mcjty.lib.multipart.IPartBlock;
 import mcjty.lib.multipart.PartSlot;
-import mcjty.lib.multipart.PartPos;
-
 import mcjty.lib.tileentity.GenericTileEntity;
-import mcjty.lib.varia.Tools;
 import net.minecraft.core.BlockPos;
+import net.minecraft.core.registries.BuiltInRegistries;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.nbt.ListTag;
 import net.minecraft.nbt.NbtUtils;
@@ -16,24 +14,21 @@ import net.minecraft.network.Connection;
 import net.minecraft.network.protocol.game.ClientboundBlockEntityDataPacket;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.level.block.Block;
+import net.minecraft.world.level.block.Blocks;
 import net.minecraft.world.level.block.EntityBlock;
 import net.minecraft.world.level.block.entity.BlockEntity;
 import net.minecraft.world.level.block.state.BlockState;
-import net.minecraft.world.level.block.state.properties.Property;
 import net.minecraftforge.client.model.data.ModelData;
 import net.minecraftforge.client.model.data.ModelProperty;
 
-import javax.annotation.Nonnull;
-import javax.annotation.Nullable;
-import java.util.Collection;
-import java.util.HashMap;
+import java.util.EnumMap;
 import java.util.Map;
 
 import static mcjty.ariente.setup.Registration.TYPE_MULTIPART;
 
 public class MultipartTE extends BlockEntity {
 
-    public static final ModelProperty<Map<PartSlot, MultipartTE.Part>> PARTS = new ModelProperty<>();
+    public static final ModelProperty<Map<PartSlot, Part>> PARTS = new ModelProperty<>();
 
     public static class Part {
         private final BlockState state;
@@ -53,81 +48,45 @@ public class MultipartTE extends BlockEntity {
         }
     }
 
-    private Map<PartSlot, Part> parts = new HashMap<>();
-    private int version = 0;    // To update rendering client-side
+    private Map<PartSlot, Part> parts = new EnumMap<>(PartSlot.class);
+    private int version;
 
     public MultipartTE(BlockPos pos, BlockState state) {
         super(TYPE_MULTIPART.get(), pos, state);
     }
 
-    private void dumpParts(String prefix) {
-        if (level.isClientSide) {
-            System.out.println("====== CLIENT(" + prefix + ") " + worldPosition.toString() + " ======");
-        } else {
-            System.out.println("====== SERVER(" + prefix + ") " + worldPosition.toString() + " ======");
+    public void addPart(PartSlot slot, BlockState state, BlockEntity tile) {
+        if (parts.containsKey(slot)) {
+            throw new IllegalArgumentException("Multipart slot already occupied: " + slot);
         }
-        for (Map.Entry<PartSlot, Part> entry : parts.entrySet()) {
-            BlockState state = entry.getValue().state;
-            System.out.println("    SLOT: " + entry.getKey().name() +
-                    "    " + Tools.getId(state).toString());
-            for (Property<?> property : state.getProperties()) {
-                System.out.println("        PROP: " + property + " = " + state.getValue(property));
-            }
-
-        }
-    }
-
-    public void addPart(PartSlot slot, BlockState state, BlockEntity te) {
-        if (te != null && level != null) {
-            te.setLevel(level);
-        }
-        parts.put(slot, new Part(state, te));
-
-        if (te instanceof GenericTileEntity) {
-            ((GenericTileEntity) te).onPartAdded(slot, state, this);
-        }
-
-        if (!level.isClientSide) {
-            version++;
-            markDirtyClient();
-        } else {
-            // @todo may not be needed. It doesn't seem to help anyway
-//            requestModelDataUpdate();
-//            world.markBlockRangeForRenderUpdate(pos, null, null);
-        }
-//        dumpParts("add");
-    }
-
-    public void removePart(BlockState partState) {
-        for (Map.Entry<PartSlot, Part> entry : parts.entrySet()) {
-            if (entry.getValue().getState() == partState) {
-                parts.remove(entry.getKey());
-                if (!level.isClientSide) {
-                    version++;
-                    markDirtyClient();
-                }
-//                dumpParts("remove");
-                return;
+        parts.put(slot, new Part(state, tile));
+        if (tile != null && level != null) {
+            tile.setLevel(level);
+            if (tile instanceof GenericTileEntity generic) {
+                generic.onPartAdded(slot, state, this);
             }
         }
+        version++;
+        markDirtyClient();
     }
 
-    public void dump() {
-        if (level.isClientSide) {
-            System.out.println("CLIENT: " + worldPosition);
-        } else {
-            System.out.println("SERVER: " + worldPosition);
+    public void removePart(BlockState state) {
+        PartSlot slot = parts.entrySet().stream().filter(e -> e.getValue().state == state)
+                .map(Map.Entry::getKey).findFirst().orElse(null);
+        if (slot == null) {
+            return;
         }
-        for (Map.Entry<PartSlot, Part> entry : parts.entrySet()) {
-            System.out.println("    SLOT: " + entry.getKey());
-            Part part = entry.getValue();
-            BlockState state = part.getState();
-            Block block = state.getBlock();
-            Collection<Property<?>> properties = state.getProperties();
-            System.out.println("        block: " + Tools.getId(block).toString());
-            for (Property<?> property : properties) {
-                System.out.println("        property: " + property.getName() + " = " + state.getValue(property).toString());
-            }
+        Part removed = parts.remove(slot);
+        if (removed.tileEntity instanceof GenericTileEntity generic && level != null) {
+            generic.onReplaced(level, worldPosition, state, Blocks.AIR.defaultBlockState());
+        }
+        if (removed.tileEntity != null) {
+            removed.tileEntity.setRemoved();
+        }
+        version++;
+        markDirtyClient();
+        if (level != null) {
+            AutoFieldTile.notifyField(level, worldPosition);
         }
     }
 
@@ -135,180 +94,122 @@ public class MultipartTE extends BlockEntity {
         return parts;
     }
 
-    @Nonnull
     @Override
     public ModelData getModelData() {
-        return ModelData.builder()
-                .with(PARTS, parts)
-                .build();
+        return ModelData.builder().with(PARTS, parts).build();
     }
 
     @Override
-    public void onDataPacket(Connection net, ClientboundBlockEntityDataPacket packet) {
-        int oldVersion = version;
-        load(packet.getTag());
-        if (level.isClientSide && version != oldVersion) {
+    public void onDataPacket(Connection connection, ClientboundBlockEntityDataPacket packet) {
+        if (packet.getTag() != null) {
+            load(packet.getTag());
             requestModelDataUpdate();
-            level.sendBlockUpdated(worldPosition, getBlockState(), getBlockState(), Block.UPDATE_CLIENTS + Block.UPDATE_NEIGHBORS);
+            level.sendBlockUpdated(worldPosition, getBlockState(), getBlockState(), Block.UPDATE_CLIENTS);
         }
     }
 
-    @Nonnull
     @Override
     public CompoundTag getUpdateTag() {
         return saveWithoutMetadata();
     }
 
-    @Nullable
     @Override
     public ClientboundBlockEntityDataPacket getUpdatePacket() {
-        CompoundTag compoundTag = saveWithoutMetadata();
-        return ClientboundBlockEntityDataPacket.create(this, (BlockEntity entity) -> compoundTag);
+        return ClientboundBlockEntityDataPacket.create(this);
     }
-
 
     public void markDirtyClient() {
         setChanged();
         if (level != null) {
+            requestModelDataUpdate();
             BlockState state = level.getBlockState(worldPosition);
-            level.sendBlockUpdated(worldPosition, state, state, 3);
+            level.sendBlockUpdated(worldPosition, state, state, Block.UPDATE_ALL);
         }
-    }
-
-    private boolean partExists(PartSlot slot, BlockState state) {
-        if (parts.containsKey(slot)) {
-            return parts.get(slot).getState().equals(state);
-        }
-        return false;
     }
 
     public void markDirtyQuick() {
-        if (level != null) {
-            level.blockEntityChanged(this.worldPosition);
-        }
+        setChanged();
     }
 
     @Override
-    public void load(@Nonnull CompoundTag compound) {
+    public void load(CompoundTag compound) {
         super.load(compound);
-
-        Map<PartSlot, MultipartTE.Part> newparts = new HashMap<>();
+        Map<PartSlot, Part> loaded = new EnumMap<>(PartSlot.class);
         version = compound.getInt("version");
         ListTag list = compound.getList("parts", Tag.TAG_COMPOUND);
-        for (int i = 0 ; i < list.size() ; i++) {
+        for (int i = 0; i < list.size(); i++) {
             CompoundTag tag = list.getCompound(i);
-
             PartSlot slot = PartSlot.byName(tag.getString("slot"));
-            if (slot != null) {
-                BlockState state = NbtUtils.readBlockState(BuiltInRegistries.BLOCK.asLookup(), tag);
-                if (partExists(slot, state)) {
-                    // Part is already there. Just update it
-                    Part part = this.parts.get(slot);
-                    if (tag.contains("te")) {
-                        CompoundTag tc = tag.getCompound("te");
-                        BlockEntity te = part.tileEntity;
-                        if (te == null) {
-                            if (state.getBlock() instanceof EntityBlock entityBlock) {
-                                te = entityBlock.newBlockEntity(worldPosition, state);
-                            }
-                            if (te != null) {
-                                te.setLevel(level);
-                                te.load(tc);
-                                te.setLevel(level);
-                            }
-                        } else {
-                            te.load(tc);
-                            // @todo 1.17 te.setPosition(worldPosition);
-                        }
-                    }
-                    newparts.put(slot, part);
-                } else {
-                    BlockEntity te = null;
-                    if (tag.contains("te")) {
-                        CompoundTag tc = tag.getCompound("te");
-                        if (state.getBlock() instanceof EntityBlock entityBlock) {
-                            te = entityBlock.newBlockEntity(worldPosition, state);
-                        }
-                        if (te != null) {
-                            te.setLevel(level);
-                            te.load(tc);
-                            te.setLevel(level);
-                        }
-                    }
-                    Part part = new Part(state, te);
-                    newparts.put(slot, part);
+            BlockState state = NbtUtils.readBlockState(BuiltInRegistries.BLOCK.asLookup(), tag);
+            if (slot == null || !(state.getBlock() instanceof IPartBlock) || loaded.containsKey(slot)) {
+                continue;
+            }
+            Part previous = parts.get(slot);
+            BlockEntity tile = previous != null && previous.state == state ? previous.tileEntity : null;
+            if (tile == null && state.getBlock() instanceof EntityBlock block) {
+                tile = block.newBlockEntity(worldPosition, state);
+            }
+            if (tile != null) {
+                if (level != null) {
+                    tile.setLevel(level);
                 }
+                tile.load(tag.getCompound("te"));
             }
+            loaded.put(slot, new Part(state, tile));
         }
-        this.parts = newparts;
-    }
-
-
-    // @todo 1.14
-//    @Override
-//    protected void setWorldCreate(Level worldIn) {
-//        setLevel(worldIn);
-//    }
-
-
-    @Override
-    public void setLevel(@Nonnull Level worldIn) {
-        super.setLevel(worldIn);
         for (Map.Entry<PartSlot, Part> entry : parts.entrySet()) {
-            if (entry.getValue().getBlockEntity() != null) {
-                entry.getValue().getBlockEntity().setLevel(worldIn);
+            Part replacement = loaded.get(entry.getKey());
+            BlockEntity tile = entry.getValue().tileEntity;
+            if (tile != null && (replacement == null || replacement.tileEntity != tile)) {
+                tile.setRemoved();
             }
         }
+        parts = loaded;
     }
 
-    // @todo 1.17
-    // @Override
-    // public void setLevelAndPosition(@Nonnull Level worldIn, @Nonnull BlockPos pos) {
-    //     super.setLevelAndPosition(worldIn, pos);
-    //     for (Map.Entry<PartSlot, Part> entry : parts.entrySet()) {
-    //         if (entry.getValue().getBlockEntity() != null) {
-    //             entry.getValue().getBlockEntity().setLevelAndPosition(worldIn, pos);
-    //         }
-    //     }
-    // }
+    @Override
+    public void setLevel(Level level) {
+        super.setLevel(level);
+        parts.values().forEach(part -> {
+            if (part.tileEntity != null) {
+                part.tileEntity.setLevel(level);
+            }
+        });
+    }
 
     @Override
-    public void saveAdditional(@Nonnull CompoundTag compound) {
+    public void clearRemoved() {
+        super.clearRemoved();
+        parts.values().forEach(part -> {
+            if (part.tileEntity != null) {
+                part.tileEntity.clearRemoved();
+            }
+        });
+    }
+
+    @Override
+    public void setRemoved() {
+        super.setRemoved();
+        parts.values().forEach(part -> {
+            if (part.tileEntity != null) {
+                part.tileEntity.setRemoved();
+            }
+        });
+    }
+
+    @Override
+    public void saveAdditional(CompoundTag compound) {
+        super.saveAdditional(compound);
         ListTag list = new ListTag();
-        for (Map.Entry<PartSlot, Part> entry : parts.entrySet()) {
-            PartSlot slot = entry.getKey();
-            Part part = entry.getValue();
-
-            BlockState state = part.getState();
-            CompoundTag tag = NbtUtils.writeBlockState(state);
-
+        parts.forEach((slot, part) -> {
+            CompoundTag tag = NbtUtils.writeBlockState(part.state);
             tag.putString("slot", slot.name());
-
-            BlockEntity te = part.getBlockEntity();
-            if (te != null) {
-                CompoundTag tc = te.saveWithoutMetadata();
-                tag.put("te", tc);
+            if (part.tileEntity != null) {
+                tag.put("te", part.tileEntity.saveWithoutMetadata());
             }
-
             list.add(tag);
-        }
+        });
         compound.put("parts", list);
         compound.putInt("version", version);
     }
-
-    // @todo 1.14
-//    public boolean testIntersect(BlockState blockState) {
-//        AxisAlignedBB box = blockState.getBoundingBox(world, pos);
-//        for (Map.Entry<PartSlot, Part> entry : getParts().entrySet()) {
-//            // @todo just check on slot?
-//            Part part = entry.getValue();
-//            AxisAlignedBB partBox = part.getState().getBoundingBox(world, pos);
-//            if (box.intersects(partBox)) {
-//                return true;
-//            }
-//        }
-//        return false;
-//    }
-//
-
 }

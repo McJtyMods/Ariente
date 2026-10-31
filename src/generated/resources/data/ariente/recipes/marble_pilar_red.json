@@ -1,16 +1,18 @@
 {
   "type": "minecraft:crafting_shaped",
-  "pattern": [
-    "m",
-    "m"
-  ],
+  "category": "misc",
   "key": {
     "m": {
       "item": "ariente:marble_red"
     }
   },
+  "pattern": [
+    "m",
+    "m"
+  ],
   "result": {
-    "item": "ariente:marble_pilar_red",
-    "count": 2
-  }
+    "count": 2,
+    "item": "ariente:marble_pilar_red"
+  },
+  "show_notification": true
 }

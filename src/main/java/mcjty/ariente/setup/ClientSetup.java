@@ -1,7 +1,7 @@
 package mcjty.ariente.setup;
 
 import mcjty.ariente.multipart.MultipartRenderer;
-import mcjty.ariente.Ariente;
+import mcjty.ariente.items.BlueprintRenderer;
 import mcjty.ariente.ClientForgeEventHandlers;
 import mcjty.ariente.bindings.KeyInputHandler;
 import mcjty.ariente.blocks.generators.NegariteTankRenderer;
@@ -26,13 +26,10 @@ import mcjty.ariente.entities.soldier.SoldierRender;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.renderer.ItemBlockRenderTypes;
 import net.minecraft.client.renderer.RenderType;
-import net.minecraft.resources.ResourceLocation;
 import net.minecraft.server.packs.resources.ReloadableResourceManager;
 import net.minecraft.server.packs.resources.ResourceManager;
-import net.minecraft.world.inventory.InventoryMenu;
 import net.minecraftforge.client.event.EntityRenderersEvent;
 import net.minecraftforge.client.event.ModelEvent;
-import net.minecraftforge.client.event.TextureStitchEvent;
 import net.minecraftforge.common.MinecraftForge;
 import net.minecraftforge.eventbus.api.SubscribeEvent;
 import net.minecraftforge.fml.event.lifecycle.FMLClientSetupEvent;
@@ -60,6 +57,11 @@ public class ClientSetup {
 
         ItemBlockRenderTypes.setRenderLayer(Registration.GLASS_FENCE.get(), RenderType.translucent());
         ItemBlockRenderTypes.setRenderLayer(Registration.BLUE_GLASS_FENCE.get(), RenderType.translucent());
+    }
+
+    public static void additionalModels(ModelEvent.RegisterAdditional event) {
+        event.register(FluxShipRender.MODEL);
+        event.register(BlueprintRenderer.BASE_MODEL);
     }
 
     public static void initModels(ModelEvent.RegisterGeometryLoaders event) {

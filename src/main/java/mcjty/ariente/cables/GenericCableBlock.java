@@ -1,7 +1,9 @@
 package mcjty.ariente.cables;
 
-import mcjty.lib.varia.Tools;
 import mcjty.ariente.facade.IFacadeSupport;
+import mcjty.ariente.facade.FacadeItemBlock;
+import net.minecraft.world.entity.player.Player;
+import net.minecraft.world.level.material.FluidState;
 import mcjty.ariente.power.PowerSenderSupport;
 import mcjty.ariente.setup.Registration;
 import mcjty.lib.compat.theoneprobe.TOPInfoProvider;
@@ -302,6 +304,22 @@ public abstract class GenericCableBlock extends Block implements WailaInfoProvid
 //            }
 //        }
 //    }
+
+    @Override
+    public boolean onDestroyedByPlayer(BlockState state, Level world, BlockPos pos, Player player, boolean willHarvest, FluidState fluid) {
+        if (world.getBlockEntity(pos) instanceof IFacadeSupport facade && facade.getMimicBlock() != null) {
+            if (!world.isClientSide) {
+                ItemStack drop = new ItemStack(Registration.FACADE_ITEM.get());
+                FacadeItemBlock.setMimicBlock(drop, facade.getMimicBlock());
+                facade.setMimicBlock(null);
+                if (!player.getAbilities().instabuild) {
+                    popResource(world, pos, drop);
+                }
+            }
+            return false;
+        }
+        return super.onDestroyedByPlayer(state, world, pos, player, willHarvest, fluid);
+    }
 
     @Override
     public void setPlacedBy(Level world, BlockPos pos, BlockState state, LivingEntity placer, ItemStack stack) {

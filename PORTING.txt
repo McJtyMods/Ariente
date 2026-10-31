@@ -1,19 +1,20 @@
 ARIENTE - FORGE 1.20.1 PORT HANDOFF
-Updated: 2026-10-30
+Updated: 2026-10-31
 
 STATUS AND PURPOSE
 ==================
 This is an INCOMPLETE development port, not a completed gameplay port or a
-release candidate. Both mods build and substantial world generation/rendering
-work is active, but survival progression and several equipment features are
-still missing. Passing builds and focused tests do not establish feature parity.
+release candidate. Phases 1 through 3 have implementation and focused checks.
+Phase 4 now has automated integration/resource/packaging evidence below, but
+a full survival playthrough and sustained balance validation remain release
+gates. Passing checks do not establish complete feature parity.
 
 This file owns Ariente gameplay, machines, equipment, shared HoloGui work,
 resources/recipes, rendering and packaging. Read ../ArienteWorld/PORTING.txt for
 the dimension, cities, population, travel generation, city AI and editing tools.
 Both documents are intended to let a future Codex session resume without chat
-history. Phase 1 equipment implementation and focused validation are recorded
-below; this does not establish full survival progression or multiplayer parity.
+history. Equipment, progression, systems and phase-4 integration checkpoints
+are recorded below, with their remaining gameplay and release limits.
 
 WORKSPACE, HISTORY AND USER REQUIREMENTS
 =======================================
@@ -93,7 +94,7 @@ Rendering, synchronization and interactions already repaired
   Lasers emit buffered beam geometry and move their collision bounds correctly.
 - Levitator and elevator cabins render, passenger positioning no longer recurses,
   and mounted levitator controls render through their actual entity renderer.
-  This does NOT cover the separate Flux Ship renderer, which is still disabled.
+  The separate Flux Ship now has its own phase-3 rendering/control checks below.
 - Warper/Elevator HoloGui entities are pickable without physically obstructing
   the player and lowering the camera. Elevator height settings synchronize and
   invalidate cached beam bounds. Ariente Pearls implement ItemSupplier and use
@@ -238,7 +239,7 @@ Validation and boundaries
   mob lithium tables, configuration-driven native ore placement, and global loot
   modifier/category weights plus every authored city loot reference. Some checks
   share a test method. Runtime config toggles use an in-memory copy to avoid
-  racing NightConfig file autoreload. The dedicated suite now has 36 required tests.
+  racing NightConfig file autoreload. The phase-2 suite had 36 required tests.
 - CityGenerationTests additionally inspects generated storage loot/security and
   destroys all cores in a generated city0_1 to verify its storage-access card.
   City5_1 has zero authored Storage Cubes, as does city0_0; its declared loot list
@@ -264,41 +265,60 @@ Validation and boundaries
   existing entrance/pearl/arrival/return and alert/shield regressions also run in
   the dedicated suite; these focused checks do not certify full progression.
 
-CONFIRMED MISSING PORTS / INCOMPLETE MIGRATIONS
-============================================
+SYSTEMS CHECKPOINT AND REMAINING WORK
+====================================
 Resource/progression ports listed here previously are now implemented; see the
 phase-2 checkpoint above. Original missing recipes and full playthrough limits
 remain explicit.
 
-Automation, facades and remaining visuals
-- blocks/utility/autofield/{ProducerInfo,ConsumerInfo}: Ore Dictionary modes
-  operate with empty ore-ID arrays and have no working tag replacement. Implement
-  tag-based matching and validate strict NBT/damage/count semantics at both ends,
-  round-robin behavior, throughput and routing. Filter persistence was repaired;
-  do not confuse that with a completed routing/matching audit.
-- AutoFieldRenderer: field outlines render, but renderItemTransfers is not called.
-  Restore transfer item/beam animation with current buffers/atlas/state handling.
-- BlueprintItem: the custom BlueprintRenderer item hook remains disabled.
-  Restore the rotating result preview without recursive item rendering.
-- entities/fluxship/FluxShipRender.java: render method is commented out despite
-  the entity renderer being registered. Port its model/texture rendering and
-  audit FluxShipEntity, FluxShipItem and PacketShipAction workflows. This entity
-  is NOT the large generated floating ship/city structure.
-- SoldierRender's equipment armor layer remains commented out. Wireless
-  transmitter/receiver/button/lock POWER/LOCKED visual hooks still use disabled
-  getActualState code; audit state/model-data updates separately from redstone
-  channel logic and persistent fields.
-- NetCableBlock/ConnectorBlock facade-only removal hooks are incompletely
-  migrated (old removedByPlayer signature is not a current override). Preserve
-  the cable/connector when removing a facade; test survival/creative drops.
-- multipart/MultipartBlock: selected-part TOP/Waila delegation is disabled.
-  Audit modern TOP integration and only relevant current overlay support.
-  Check multi-part placement, selection, individual breaking, drops, GUI
-  targeting, capabilities, save/load and owner/security data.
-- HoloGuiRenderTools.renderToolTip does not actually draw the collected tooltip.
-  HoloGuiModConfigGui is a placeholder for the native Mods configuration screen;
-  the separate in-world configuration interface exists. Migrate the missing
-  interfaces without regressing the now-working panel renderer.
+Phase-3 systems checkpoint (2026-10-30)
+- Automation filters now match equivalent material tags at both ends, with
+  independent damage and NBT flags. Broad Forge groups such as forge:ingots do
+  not equate different metals. Vanilla material families and resource-specific
+  Forge tags replace Ore Dictionary equivalence; custom namespaces can supply
+  shared tags. Matching ignores stack count; Output batch size remains 1..64.
+- Routing is deterministic, duplicate destination filters do not bias round
+  robin, and overflow-safe round-robin progress persists. Rejected/partially
+  accepted inserts return leftovers to the source; an impossible return drops
+  leftovers at the source rather than losing them. Charge operation power only
+  for accepted items. Nodes do not force-load connected inventories.
+- Round-robin modifiers use back slots. Multipart placement uses the original
+  hit position, selected breaking keeps other parts, drops retain child NBT,
+  parent dirty callbacks no longer cast to GenericTileEntity, and child loading,
+  capability removal/revival, ownership and nearest-part selection are restored.
+  Selected-part TOP information is active; archived Waila hooks are not a claim
+  of current Jade/Waila support. Node holograms retain their slot through Help.
+- Facade-only breaking keeps the same cable/connector entity and network, drops
+  one configured facade in survival, and omits the drop in creative. Placement
+  preserves creative items; tooltip and item rendering use the actual mimic.
+  City equipment exports preserve the complete facade state via mimicState;
+  legacy mimic/meta assets remain supported.
+- Automation item transfers use the supplied buffers without global light-layer
+  changes, expire old paths correctly, and preserve item NBT in render packets.
+  Outline sprites use the correct atlas. Blueprint previews have a separate
+  non-recursive base model. Soldier equipment uses the native armor layer.
+- Wireless POWER/LOCKED properties now track the server state. Channel changes
+  publish unchanged input/button values; transmitter load republishes input.
+  Lock range changes preserve the lock state; visual state updates do not run
+  removal-only door unlock logic. The original button's unlocked/locked texture
+  convention remains (unlocked visual corresponds to a zero channel value).
+- Elevator motion, beam rendering and automatic panel attachment now require
+  the paired 10-flux supply; active state synchronizes to the client.
+- Flux Ship uses the original OBJ/texture with an atlas entry and correct hull
+  orientation/height. One pilot can hold W/S, A/D, Up/Down (Space/Backspace also
+  rise/descend), release to brake/hover and Shift to dismount. Server simulation
+  accepts only the pilot's bounded inputs, times out missing input and avoids
+  vanilla client vehicle-position packets. Placement checks hull clearance,
+  preserves creative stacks, and a sneaking hit recovers an unattended ship.
+  Saved ships reload parked. This deliberately completes BASIC experimental
+  flight; there is still no fuel/progression recipe, weapons or autopilot.
+- HoloGui item tooltips draw readable text/backgrounds in the panel plane.
+  The Mods configuration button opens native panel/text style selectors.
+- Companion EditorCommands/EditMode restore creative operator editing, part
+  sync, variants, export/reload and administrative city commands. See the
+  companion checkpoint and ARIENTE_GUIDE.md for the explicit authoring workflow.
+- Ship/control and transfer-render packet layouts changed together; Ariente's
+  network protocol is now 2 and requires a matching peer protocol.
 
 ORIGINAL UNFINISHED BEHAVIOR - NOT ALL OF THIS IS A PORT REGRESSION
 ================================================================
@@ -309,12 +329,138 @@ existing behavior and designing a feature that was never finished:
   Hover, Step Assist, Power, Regeneration and Scramble. Audit full obtainability;
   do not claim all missing recipes were lost during this port.
 - Flux Ship controlling-passenger/control code was experimental/incomplete.
-- ElevatorTile attempts consumePower but ignores a failed result; original code
-  did too. Decide/fix operation gating as completeness work, not a new regression.
+  Basic flight is now deliberately completed; advanced ship design remains open.
+- ElevatorTile ignored failed power consumption in master too. Phase 3 now
+  enforces supply as deliberate completeness work, not a released regression.
 - Cable beams render regardless of actual power; combined-cable beam rendering
   returns early in master as well. Existing individual cable beams are ported.
 - Arbitrary player-facing key-card programming was not a complete original
   workflow; authored city/security-card setup is active.
+
+PHASE 4 - AUTOMATED INTEGRATION AND RELEASE PREPARATION (2026-10-31)
+===================================================================
+Implemented and checked
+- Full --all datagen runs through all six providers into isolated output using
+  :Ariente:runData -Pariente_runs. All 650 generated JSON files now reproduce
+  exactly at the JSON-value level. This refresh includes current defaults and
+  the 53 recipe advancements moved from recipes/ariente to recipes/misc; their
+  obsolete duplicate paths were removed. The ramp provider now retains its
+  deliberately added particle texture. No new crafting recipes were invented.
+- tools/audit_resources.py checks JSON/metadata parsing, duplicate resources,
+  Ariente model/texture/sound/OBJ references, pack format, full generated drift
+  (including obsolete output), and optional release-jar contents/version.
+  It passes for 1,065 resources / 753 JSON or metadata files. It checks local
+  references, not every possible external resource pack or mod interaction.
+  Removed seven unreferenced 1.12 blockstate/model templates with broken paths;
+  repaired the facade model texture and set pack_format=15.
+- A real native client checks every registered Ariente item model (146) and
+  every block-state model (9,467), before and after resource reload. Both pass.
+  This proves model availability; the earlier pixel suites own visual fidelity.
+- IntegrationRegressionTests adds three tests: a real paired-generator network
+  crossing six chunk boundaries, supply exhaustion and cable split/rejoin;
+  three complete suit autofeed cycles with stack-NBT reload and separate player
+  effects/logout/death events; and a levitator traveling over 160 blocks across
+  ten chunk boundaries, including passenger reattachment after entity reload.
+  These are accelerated tick loops with loaded chunks, not a wall-clock soak or
+  a real chunk-unload/restart test. Dedicated suite: all 48 required tests pass.
+- Fixed the door fixture's reuse of a shared fake player and retained locked
+  block entity in a saved test world. Each orientation now gets a fresh marker.
+  This was a test-isolation repair, not a player-visible door behavior change.
+- MultiplayerFixture and MultiplayerClientChecks run TWO real clients against
+  an isolated dedicated Forge server bound to loopback, with allow-flight=false.
+  Actual hotkey packets, server/client equipment/effect updates, disconnect/login,
+  saved hotkey restoration and death/respawn without retained gear pass. The
+  observer retains its own night vision while seeing its peer's equipment and
+  post-death removal. These are native graphics runs without shader packs.
+  They do not certify multiplayer flight, portals, machines or combat balance.
+- Java 17 workspace builds/reobfuscation pass for Ariente, ArienteWorld and
+  ModHoloGui. Workspace development runs use local dependency source outputs.
+- The no-companion native client was rerun using the tracked verification
+  configuration: actual JEI catalog/catalysts/layouts/blueprint variants, all
+  seven ores in newly generated Overworld chunks and default dungeon blueprint
+  loot pass. ArienteWorld is asserted absent. Only the existing progression
+  driver is compiled into the verification source set, never the release jar.
+- Standalone Ariente build/reobfuscation passes with published McJtyLib/TOP and
+  the current HoloGui published to an isolated local staging Maven repository.
+  The explicit ariente_dependency_repository property enables that check without
+  changing default repositories or the preference for included local projects.
+  Default PUBLIC standalone resolution remains blocked until the new HoloGui
+  artifact is published: configured public Maven has no matching HoloGui.
+- Maven publications now use lowercase ariente/hologui/arienteworld artifact IDs
+  and explicitly depend on reobfJar, including direct publication task invocation.
+  Ariente's CurseForge/Modrinth configuration now records required HoloGui/McJtyLib
+  and optional TOP/ArienteWorld. Nothing was uploaded to an external service.
+- Ariente version/dependency is now 1.20-0.0.31-alpha; HoloGui and its fallback
+  dependency are 1.20-0.0.10-beta. Minimum HoloGui/Ariente requirements agree in
+  the companion. Port-only changelog headings and Ariente metadata are aligned.
+  This preserves the existing unreleased version numbers and corrects MC labels.
+  Checked CurseForge project/files pages and Modrinth version APIs on 2026-10-31:
+  only 1.12.2 files were published for these projects. Ariente's CurseForge full
+  file table did not render, but its project game versions/latest file and the
+  full Modrinth API agree on the published 1.12 line. Recheck before publishing.
+  Sources: https://www.curseforge.com/minecraft/mc-mods/ariente/files
+           https://www.curseforge.com/minecraft/mc-mods/hologui/files/all
+           https://api.modrinth.com/v2/project/ariente/version
+           https://api.modrinth.com/v2/project/hologui/version
+
+Repeatable commands (Java 17, from the workspace root)
+  ./gradlew :Ariente:runData -Pariente_runs
+  python3 Ariente/tools/audit_resources.py --generated Ariente/build/verification/datagen
+  ./gradlew :Ariente:build :ArienteWorld:build :ModHoloGui:build
+  ./gradlew :ArienteWorld:runGameTestServer -Pariente_runs
+  python3 Ariente/tools/audit_resources.py --generated Ariente/build/verification/datagen --jar Ariente/build/libs/ariente-1.20-0.0.31-alpha.jar
+
+Standalone staging check (no public upload; choose an absolute disposable STAGING
+repository path and substitute it below):
+  ./gradlew :ModHoloGui:publishMavenJavaPublicationToMavenRepository -Pmavendir=STAGING
+  cd Ariente
+  ./gradlew build -Pariente_dependency_repository=STAGING
+Run standalone and workspace builds sequentially: they share class/resource output
+folders but use separate Gradle state. Do not rebuild those folders underneath a
+running test client/server. Source-only verification classes stay out of jars.
+The optional progression client uses -Pariente_runs -Pariente_progression_check
+on :Ariente:runClient. It needs the companion checkout's single existing
+ProgressionClientChecks source, but loads NO ArienteWorld mod. Create a disposable
+singleplayer save named ProgressionCheck under build/verification/client/saves
+first. It checks real JEI, natural Overworld ores and dungeon blueprint loot.
+
+Dedicated client fixture reproduction
+- tools/multiplayer.gradle is an opt-in init script. It uses only the companion's
+  build/phase4-server, build/phase4-observer and build/phase4-pilot directories.
+  Prepare eula.txt in the server directory and server.properties containing:
+    server-ip=127.0.0.1
+    server-port=25596
+    online-mode=false
+    level-name=phase4
+    allow-flight=false
+    difficulty=peaceful
+    view-distance=3
+    simulation-distance=3
+    spawn-protection=0
+  Use a NEW disposable world. The fixture grants operator status and provisions
+  test gear; never enable ariente.multiplayerFixture in a player world.
+- Start :ArienteWorld:runServer -Pariente_runs -I Ariente/tools/multiplayer.gradle.
+  Once ready, start :ArienteWorld:runClient with the same flags plus
+  -Pphase4_observer in a second terminal. After its login, start the client again
+  in a third terminal without that observer flag. Both clients exit on success;
+  stop the test server with its console's stop command. For repeated runs use a
+  fresh fixture world or a new -Pphase4_player_suffix on BOTH client commands.
+- Evidence is logged as MULTIPLAYER PILOT PASSED, MULTIPLAYER OBSERVER PASSED
+  and two FULL MODEL AUDIT PASSED messages. A Gradle success alone is insufficient
+  (Forge can exit zero on a mod-loading failure). Inspect logs for actual checks.
+- Local logs from this session are /tmp/ariente-phase4-{final,observer2,pilot2}.log;
+  they are evidence, not durable prerequisites. No user saves were changed.
+
+Release gates still open
+- A human fresh-world survival playthrough, including acquisition and meaningful
+  use of supported gear, paired power, automation, security and dimension travel.
+- Multiplayer flight/transport/portals/machine workflows, real chunk unload/load,
+  process restart, multi-hour resource exhaustion and mod/shader interactions.
+- Sustained AI/spawn/combat balance and companion release/datagen/metadata review
+  remain in ../ArienteWorld/PORTING.txt. Its historical own version is untouched.
+- Publish matching HoloGui to the actual Maven fallback and verify public-only
+  standalone resolution before distribution. Recheck publication/version metadata
+  then. Current local staging success is not evidence of public availability.
 
 VALIDATION STILL REQUIRED
 ========================
@@ -323,29 +469,38 @@ VALIDATION STILL REQUIRED
   construction, charge gear, use every supported module and travel to cities.
 - Machine GUI/capability and power-network operation, security/key provisioning,
   multi-part combinations, matching/routing, real transport and combat play.
-- Multiplayer/dedicated-server behavior, reconnects, equipment changes, chunk
-  boundaries, load/unload and long-running resource/power exhaustion.
-- Ariente with and without ArienteWorld. Historical published fallback dependency
-  coordinates have not resolved into a working standalone build. Preserve the
-  local-source preference; resolve standalone publication/wiring as separate work.
-- Full server datagen and resource coverage, not just compiling providers. Client
-  datagen was run into isolated output for tank/core models; full data generation
-  has not been certified. Inspect generated diffs; preserve deliberate resources.
-- Metadata/version/changelog review before release. Current version strings are
-  historical (Ariente version=1.18-0.0.31-alpha, dependency ariente_version differs;
-  HoloGui fallback also retains an old label). Do not treat these as validated
-  1.20 release coordinates. Check publication before release version changes.
+- Multiplayer flight, portals, combat and machines beyond the focused gear
+  packet/reconnect/death checks; real load/unload and long-running exhaustion.
+- Public-only standalone resolution after HoloGui publication. Local staging
+  standalone builds now pass; see the phase-4 evidence and its runtime limits.
+- Companion datagen and broader resource-pack/mod interaction coverage. Full
+  Ariente client/server datagen and local resource/model audits now pass.
+- Recheck publication/version/changelog metadata immediately before release.
+  Ariente/HoloGui MC labels are aligned; companion release metadata is separate.
   Unreleased port repairs do not require player changelog entries.
 
 VERIFICATION ALREADY PERFORMED AND ITS LIMITS
 ===========================================
 - Java 17 workspace builds of Ariente, ArienteWorld and ModHoloGui pass, including
   reobfuscation. workspace:compileJava passed earlier. Client loads both mods.
-- Latest dedicated suite: 36 required GameTests passed. They live in the companion's
+- Latest dedicated suite: 48 required GameTests passed. They live in the companion's
   src/gameTest, outside published jars. MachinePersistenceTests covers 31 tile
   types; MachineInteractionTests covers storage, generator/tank state, hologram
   clicks, equipment configuration and transport; CombatRegressionTests exercises
   actual drone firing with/without line of sight and laser movement/damage.
+- SystemRegressionTests covers tag/NBT/damage filters, real inventories, minimum
+  batches, round robin, rejected/partial inserts, multipart item placement/picking/
+  breaking/holograms, facade removal, wireless reassignment/visuals, elevator power
+  loss and pilot movement/save/load. EditorRegressionTests covers native states,
+  facade/equipment/spawner settings, metadata and real Brigadier variant/export/
+  reload workflows. Test fixtures are isolated from user saves.
+- Opt-in SystemRenderingChecks covers ship/blueprint/facade/armor/tooltip/transfer
+  pixels, current atlas sprites, config screen controls and native held-key pilot
+  packets, before/after a resource reload. Run it with
+  -Dariente.systemRenderCheck=true and the optional gameTest client source set.
+  Passed in vanilla Fabulous and Embeddium 0.3.31/Oculus 1.8.0 Fancy (shaders
+  off), before/after resource reload. Generated images are under the companion
+  build/visual-check/screenshots/phase3 directory, outside Git.
 - Server module tests assert configuration, inventory, fuel and effect lifecycle.
   The separate opt-in survival-client driver verifies actual movement; the GUI
   driver and pixel checks verify removal presentation.
@@ -418,14 +573,14 @@ Phase 2 - Complete resource and crafting progression (implemented; focused valid
   Original missing recipes remain explicit; a full survival playthrough is still
   required before release.
 
-Phase 3 - Finish remaining systems and presentation.
+Phase 3 - Finish remaining systems and presentation (implemented; focused validation).
   Complete tag matching/routing, facade/multipart hooks, missing visual/tooltips,
   Flux Ship rendering and supported controls, wireless visuals and machine power
   gating. Coordinate transport/security with restored companion editing tools.
   Exit: supported systems have working player workflows and targeted regressions;
   original unfinished designs are either completed deliberately or documented.
 
-Phase 4 - Integrate, validate and prepare release.
+Phase 4 - Integrate, validate and prepare release (automated checkpoint; release gates open).
   Perform full survival/multiplayer/long-route tests, full datagen/resource audit,
   standalone and workspace dependency validation, and release metadata review.
   Exit: clear evidence of feature coverage and remaining limitations, not merely

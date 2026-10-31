@@ -34,6 +34,9 @@ public class ElevatorRenderer implements BlockEntityRenderer<ElevatorTile> {
 
     @Override
     public void render(ElevatorTile te, float partialTicks, PoseStack matrixStack, MultiBufferSource buffer, int combinedLightIn, int combinedOverlayIn) {
+        if (!te.isPowered()) {
+            return;
+        }
         TextureAtlasSprite sprite = Minecraft.getInstance().getTextureAtlas(InventoryMenu.BLOCK_ATLAS).apply(ELEVATOR_BEAM);
 
         int tex = te.getBlockPos().getX();

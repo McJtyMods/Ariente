@@ -1,0 +1,35 @@
+{
+  "parent": "minecraft:recipes/root",
+  "criteria": {
+    "has_the_recipe": {
+      "conditions": {
+        "recipe": "ariente:marble_slab_lime"
+      },
+      "trigger": "minecraft:recipe_unlocked"
+    },
+    "marble": {
+      "conditions": {
+        "items": [
+          {
+            "items": [
+              "ariente:marble_lime"
+            ]
+          }
+        ]
+      },
+      "trigger": "minecraft:inventory_changed"
+    }
+  },
+  "requirements": [
+    [
+      "marble",
+      "has_the_recipe"
+    ]
+  ],
+  "rewards": {
+    "recipes": [
+      "ariente:marble_slab_lime"
+    ]
+  },
+  "sends_telemetry_event": false
+}

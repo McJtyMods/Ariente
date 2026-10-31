@@ -1,16 +1,15 @@
 package mcjty.ariente.blocks.utility.autofield;
 
 import net.minecraft.client.Minecraft;
+import net.minecraft.client.renderer.MultiBufferSource;
 import net.minecraft.world.item.ItemDisplayContext;
 import net.minecraft.client.renderer.texture.OverlayTexture;
 import com.mojang.math.Axis;
 import com.mojang.blaze3d.vertex.PoseStack;
-import mcjty.lib.client.RenderHelper;
 import mcjty.lib.multipart.PartSlot;
 import mcjty.lib.spline.CatmullRomSpline;
 import net.minecraft.core.BlockPos;
 import net.minecraft.world.item.ItemStack;
-import org.joml.Quaternionf;
 import net.minecraft.world.phys.Vec3;
 
 import java.util.Random;
@@ -65,7 +64,7 @@ public class TransferRender {
     public TransferRender(AutoFieldRenderInfo.TransferPath path, AutoFieldRenderInfo.Transfer transfer, BlockPos relative) {
         startTime = System.currentTimeMillis();
         // @todo 1.14 meta transfer.getMeta()
-        stack = new ItemStack(transfer.getItem(), 1);
+        stack = transfer.getStack().copy();
 
         BlockPos staBlock = path.getSourcePos().pos().subtract(relative);
         BlockPos endBlock = path.getDestPos().pos().subtract(relative);
@@ -100,7 +99,7 @@ public class TransferRender {
         spline.insertPoint(point90.withSize(0.4), 0.8f, 3);
     }
 
-    public boolean render(PoseStack matrixStack) {
+    public boolean render(PoseStack matrixStack, MultiBufferSource buffers) {
         long time = System.currentTimeMillis();
         if (time > startTime+duration) {
             return false;
@@ -108,17 +107,17 @@ public class TransferRender {
         double factor = (time - startTime) / (double) duration;
         spline.calculate((float) factor);
         AnimatedPoint pos = spline.getInterpolated();
-        renderStack(matrixStack, stack, new Vec3(pos.x, pos.y, pos.z), pos.rotation, pos.size);
+        renderStack(matrixStack, stack, new Vec3(pos.x, pos.y, pos.z), pos.rotation, pos.size, buffers);
 
         return true;
     }
 
-    private void renderStack(PoseStack matrixStack, ItemStack stack, Vec3 pos, double rotation, double size) {
+    private void renderStack(PoseStack matrixStack, ItemStack stack, Vec3 pos, double rotation, double size, MultiBufferSource buffers) {
         matrixStack.pushPose();
         matrixStack.translate(pos.x, pos.y, pos.z);
         matrixStack.mulPose(Axis.YP.rotationDegrees((float) rotation));
         matrixStack.scale((float) size, (float) size, (float) size);
-        Minecraft.getInstance().getItemRenderer().renderStatic(stack, ItemDisplayContext.GROUND, 0xf000f0, OverlayTexture.NO_OVERLAY, matrixStack, Minecraft.getInstance().renderBuffers().bufferSource(), Minecraft.getInstance().level, 0);
+        Minecraft.getInstance().getItemRenderer().renderStatic(stack, ItemDisplayContext.GROUND, 0xf000f0, OverlayTexture.NO_OVERLAY, matrixStack, buffers, Minecraft.getInstance().level, 0);
 
         matrixStack.popPose();
     }

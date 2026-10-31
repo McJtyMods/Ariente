@@ -1,15 +1,17 @@
 {
   "type": "minecraft:crafting_shaped",
-  "pattern": [
-    "mmm"
-  ],
+  "category": "misc",
   "key": {
     "m": {
       "item": "ariente:marble_lime"
     }
   },
+  "pattern": [
+    "mmm"
+  ],
   "result": {
-    "item": "ariente:marble_slab_lime",
-    "count": 6
-  }
+    "count": 6,
+    "item": "ariente:marble_slab_lime"
+  },
+  "show_notification": true
 }

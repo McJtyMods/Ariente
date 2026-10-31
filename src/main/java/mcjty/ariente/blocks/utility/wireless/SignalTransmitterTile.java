@@ -29,6 +29,7 @@ import static mcjty.lib.builder.TooltipBuilder.*;
 public class SignalTransmitterTile extends SignalChannelTileEntity {
 
     private int prevIn = -1;
+    private boolean publishPending = true;
 
     private static final VoxelShape BLOCK_AABB = Shapes.box(1.0D/16.0, 1.0D/16.0, 15.0D/16.0, 15.0D/16.0, 15.0D/16.0, 1.0D);
 
@@ -67,20 +68,28 @@ public class SignalTransmitterTile extends SignalChannelTileEntity {
 
     @Override
     public void setChannel(int channel) {
+        prevIn = -1;
         super.setChannel(channel);
         update();
     }
 
+    @Override
+    public void tickServer() {
+        checkRedstone(level, worldPosition);
+    }
+
     public void update() {
-        if (getLevel().isClientSide) {
+        if (level == null || level.isClientSide) {
             return;
         }
 
+        setVisualState(BlockProperties.POWER, powerLevel > 0);
         if (channel == -1) {
             return;
         }
 
-        if (powerLevel != prevIn) {
+        if (publishPending || powerLevel != prevIn) {
+            publishPending = false;
             prevIn = powerLevel;
             markDirtyClient();
             RedstoneChannels channels = RedstoneChannels.getChannels(getLevel());
@@ -100,6 +109,7 @@ public class SignalTransmitterTile extends SignalChannelTileEntity {
     public void load(CompoundTag tagCompound) {
         super.load(tagCompound);
         prevIn = tagCompound.getInt("prevIn");
+        publishPending = true;
     }
 
     @Override

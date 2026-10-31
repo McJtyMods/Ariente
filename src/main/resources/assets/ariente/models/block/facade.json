@@ -1,6 +1,6 @@
 {
   "parent": "block/cube_all",
   "textures": {
-    "all": "ariente:blocks/cables/facade"
+    "all": "ariente:block/cables/facade"
   }
 }

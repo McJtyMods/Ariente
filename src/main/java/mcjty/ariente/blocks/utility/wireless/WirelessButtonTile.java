@@ -71,6 +71,7 @@ public class WirelessButtonTile extends SignalChannelTileEntity {
     @Override
     public void setChannel(int channel) {
         super.setChannel(channel);
+        publish();
     }
 
     @Override
@@ -93,16 +94,29 @@ public class WirelessButtonTile extends SignalChannelTileEntity {
     }
 
     public void setLocked(boolean locked) {
-        if (locked == this.locked) {
+        if (level == null || level.isClientSide) {
             return;
         }
-        if (channel != -1) {
-            this.locked = locked;
-            RedstoneChannels channels = RedstoneChannels.getChannels(getLevel());
-            RedstoneChannels.RedstoneChannel ch = channels.getOrCreateChannel(channel);
-            ch.setValue(locked ? 15 : 0);
-        }
+        this.locked = locked;
+        getChannel(true);
+        publish();
         markDirtyClient();
+    }
+
+    private void publish() {
+        if (level != null && !level.isClientSide) {
+            setVisualState(BlockProperties.POWER, !locked);
+            if (channel != -1) {
+                RedstoneChannels channels = RedstoneChannels.getChannels(level);
+                channels.getOrCreateChannel(channel).setValue(locked ? 15 : 0);
+                channels.save();
+            }
+        }
+    }
+
+    @Override
+    public void tickServer() {
+        setVisualState(BlockProperties.POWER, !locked);
     }
 
     public static boolean onBlockActivatedWithToggle(Level world, BlockPos pos, Player player, InteractionHand hand) {
@@ -112,7 +126,9 @@ public class WirelessButtonTile extends SignalChannelTileEntity {
         } else {
             BlockEntity te = world.getBlockEntity(pos);
             if (te instanceof WirelessButtonTile) {
-                world.playSound(null, pos, ModSounds.buzzOk.get(), SoundSource.BLOCKS, 1.0f, 1.0f);
+                if (!world.isClientSide) {
+                    world.playSound(null, pos, ModSounds.buzzOk.get(), SoundSource.BLOCKS, 1.0f, 1.0f);
+                }
                 ((WirelessButtonTile) te).toggleLock();
             }
         }

@@ -400,7 +400,7 @@ public class BlockStates extends BaseBlockStateProvider {
         for (int i = 0; i < 5; i++) {
             innerCube(model, "#all", 0, i * step, i * step, 16, (i + 1) * step, (i + 1) * step);
         }
-        model.texture("all", modLoc(TXT_BLACKMARBLE));
+        model.texture("all", modLoc(TXT_BLACKMARBLE)).texture("particle", "#all");
         horizontalOrientedBlock(Registration.RAMP.get(), model);
     }
 

@@ -1,0 +1,26 @@
+// Run only against the disposable server described in PORTING.txt.
+gradle.afterProject { p ->
+    if (p.name == 'ArienteWorld') {
+        def observer = p.hasProperty('phase4_observer')
+        def suffix = p.findProperty('phase4_player_suffix') ?: ''
+        p.minecraft.runs {
+            client {
+                mods.arienteworld.source(p.sourceSets.gameTest)
+                workingDirectory p.file(observer ? 'build/phase4-observer' : 'build/phase4-pilot')
+                args '--username', (observer ? 'Phase4Observer' : 'Phase4Pilot') + suffix, '--width', '640', '--height', '480'
+                property 'ariente.multiplayerCheck', 'true'
+                property 'ariente.multiplayerObserver', observer.toString()
+            }
+            server {
+                mods.arienteworld.source(p.sourceSets.gameTest)
+                workingDirectory p.file('build/phase4-server')
+                property 'ariente.multiplayerFixture', 'true'
+                args '--nogui'
+            }
+        }
+        p.tasks.withType(JavaExec).configureEach {
+            if (name == 'runClient' || name == 'runServer') dependsOn p.tasks.named('gameTestClasses')
+            if (name == 'runServer') standardInput = System.in
+        }
+    }
+}

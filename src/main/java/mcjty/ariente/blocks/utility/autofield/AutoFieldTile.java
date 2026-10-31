@@ -27,6 +27,8 @@ import net.minecraft.nbt.CompoundTag;
 import net.minecraft.network.Connection;
 import net.minecraft.network.protocol.game.ClientboundBlockEntityDataPacket;
 import net.minecraft.world.InteractionHand;
+import net.minecraft.world.Containers;
+import net.minecraftforge.items.IItemHandler;
 import net.minecraft.world.InteractionResult;
 import net.minecraft.world.item.DyeColor;
 import net.minecraft.world.item.ItemStack;
@@ -186,15 +188,31 @@ public class AutoFieldTile extends TickingTileEntity implements IGuiTile, IPower
                                             BlockEntity roundRobinModifier = MultipartHelper.getBlockEntity(level, sourcePos.pos(), roundRobinSlot);
                                             if (roundRobinModifier instanceof RoundRobinNodeTile) {
                                                 index = ((RoundRobinNodeTile) roundRobinModifier).fetchIndex();
-                                                index = index % destinations.size();
+                                                index = Math.floorMod(index, destinations.size());
                                             }
                                         }
                                     }
                                     PartPos destPos = destinations.get(index);
-                                    accumulatedPower -= neededPower;
                                     ItemStack extracted = h.extractItem(finalI, minStackSize, false);
-                                    doInsert(sourcePos, destPos, extracted);
-                                    didSomeWork.set(true);
+                                    if (extracted.isEmpty()) {
+                                        continue;
+                                    }
+                                    if (extracted.getCount() < minStackSize) {
+                                        returnToSource(h, finalI, extracted, sourcePos);
+                                        continue;
+                                    }
+                                    ItemStack remainder = doInsert(sourcePos, destPos, extracted.copy());
+                                    int inserted = extracted.getCount() - remainder.getCount();
+                                    if (inserted > 0) {
+                                        ItemStack transferred = extracted.copy();
+                                        transferred.setCount(inserted);
+                                        accumulatedPower -= computeNeededPower(transferred);
+                                        if (renderItems) {
+                                            renderInfo.registerTransfer(sourcePos, destPos, transferred);
+                                        }
+                                        didSomeWork.set(true);
+                                    }
+                                    returnToSource(h, finalI, remainder, sourcePos);
                                 }
                             }
                         }
@@ -234,7 +252,8 @@ public class AutoFieldTile extends TickingTileEntity implements IGuiTile, IPower
     // Call client side to request render info
     public void clientRequestRenderInfo() {
         long time = System.currentTimeMillis();
-        if (clientRenderInfo == null || time > clientRenderInfoAge + 1000) {
+        if (time > clientRenderInfoAge + 1000) {
+            clientRenderInfoAge = time;
             ArienteMessages.INSTANCE.sendToServer(new PacketAutoFieldRequestRenderInfo(worldPosition));
         }
     }
@@ -251,7 +270,7 @@ public class AutoFieldTile extends TickingTileEntity implements IGuiTile, IPower
             double dy = y - player.getY();
             double dz = z - player.getZ();
 
-            if (dx * dx + dy * dy + dz * dz < radius * radius) {
+            if (player.level() == level && dx * dx + dy * dy + dz * dz < radius * radius) {
                 ArienteMessages.INSTANCE.sendTo(info, ((ServerPlayer) player).connection.connection, NetworkDirection.PLAY_TO_CLIENT);
             }
         }
@@ -305,15 +324,19 @@ public class AutoFieldTile extends TickingTileEntity implements IGuiTile, IPower
         return false;
     }
 
-    private void doInsert(PartPos sourcePos, PartPos destPos, ItemStack stack) {
-        InputItemNodeTile itemNode = getInputItemNodeAt(destPos);
-        if (itemNode != null) {
-            itemNode.getConnectedItemHandler(destPos).ifPresent(connectedItemHandler -> {
-                ItemHandlerHelper.insertItem(connectedItemHandler, stack, false);
-                if (renderItems) {
-                    renderInfo.registerTransfer(sourcePos, destPos, stack);
-                }
-            });
+    private ItemStack doInsert(PartPos sourcePos, PartPos destPos, ItemStack stack) {
+        InputItemNodeTile node = getInputItemNodeAt(destPos);
+        return node == null ? stack : node.getConnectedItemHandler(destPos)
+                .map(handler -> ItemHandlerHelper.insertItem(handler, stack, false)).orElse(stack);
+    }
+
+    private void returnToSource(IItemHandler source, int slot, ItemStack stack, PartPos pos) {
+        if (!stack.isEmpty()) {
+            ItemStack remaining = source.insertItem(slot, stack, false);
+            remaining = ItemHandlerHelper.insertItem(source, remaining, false);
+            if (!remaining.isEmpty()) {
+                Containers.dropItemStack(level, pos.pos().getX() + .5, pos.pos().getY() + .5, pos.pos().getZ() + .5, remaining);
+            }
         }
     }
 
@@ -473,7 +496,7 @@ public class AutoFieldTile extends TickingTileEntity implements IGuiTile, IPower
     // field marker is connected to an auto field tile that tile will be notified
     public static void notifyField(Level world, BlockPos pos) {
         BlockPos originalPos = pos;
-        while (pos.getY() > 0) {
+        while (pos.getY() >= world.getMinBuildHeight()) {
             BlockEntity te = MultipartHelper.getBlockEntity(world, pos, PartSlot.DOWN);
             if (te instanceof FieldMarkerTile) {
                 BlockPos fieldPos = ((FieldMarkerTile) te).getAutoFieldTile();
@@ -490,13 +513,13 @@ public class AutoFieldTile extends TickingTileEntity implements IGuiTile, IPower
     }
 
     public void addFieldMarker(BlockPos pos) {
-        markers.add(pos);
+        getMarkers().add(pos);
         invalidateBox();
         markDirtyClient();
     }
 
     public void removeFieldMarker(BlockPos pos) {
-        markers.remove(pos);
+        getMarkers().remove(pos);
         invalidateBox();
         markDirtyClient();
     }
@@ -521,6 +544,7 @@ public class AutoFieldTile extends TickingTileEntity implements IGuiTile, IPower
         outputItemNodes = null;
         outputmodifierNodes = null;
         sensorNodes = null;
+        transferRenders = null;
     }
 
     private void changeHeight(int dy) {
@@ -565,14 +589,14 @@ public class AutoFieldTile extends TickingTileEntity implements IGuiTile, IPower
             for (Direction facing : OrientationTools.HORIZONTAL_DIRECTION_VALUES) {
                 BlockPos p = pos.relative(facing);
                 if (!markers.contains(p)) {
-                    BlockEntity te = level.getBlockEntity(p);
+                    BlockEntity te = level.hasChunkAt(p) ? level.getBlockEntity(p) : null;
                     if (te instanceof MultipartTE) {
                         BlockState state = MultipartHelper.getBlockState(level, p, PartSlot.DOWN);
                         if (state != null && state.getBlock() == Registration.FIELD_MARKER.get()) {
                             if (fieldBox == null) {
-                                fieldBox = new AABB(p, p.offset(0, height, 0));
+                                fieldBox = new AABB(p).expandTowards(0, height, 0);
                             } else {
-                                fieldBox = fieldBox.minmax(new AABB(p));
+                                fieldBox = fieldBox.minmax(new AABB(p).expandTowards(0, height, 0));
                             }
                             markers.add(p);
                             BlockEntity markerTE = MultipartHelper.getBlockEntity(level, p, PartSlot.DOWN);
@@ -595,6 +619,7 @@ public class AutoFieldTile extends TickingTileEntity implements IGuiTile, IPower
     @Override
     public void load(CompoundTag tagCompound) {
         super.load(tagCompound);
+        invalidateBox();
         CompoundTag info = tagCompound.getCompound("Info");
         if (!info.isEmpty()) {
             height = info.getInt("height");

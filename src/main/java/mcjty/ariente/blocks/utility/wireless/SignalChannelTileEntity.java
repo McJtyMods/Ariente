@@ -1,5 +1,7 @@
 package mcjty.ariente.blocks.utility.wireless;
 
+import mcjty.ariente.blocks.BlockProperties;
+import net.minecraft.world.level.block.state.properties.BooleanProperty;
 import mcjty.ariente.api.ICityAI;
 import mcjty.ariente.api.ICityEquipment;
 import mcjty.ariente.api.ISignalChannel;
@@ -69,6 +71,7 @@ public abstract class SignalChannelTileEntity extends TickingTileEntity implemen
     }
 
     protected void setRedstoneState(int newout) {
+        setVisualState(BlockProperties.POWER, newout > 0);
         if (powerOutput == newout) {
             return;
         }
@@ -84,11 +87,14 @@ public abstract class SignalChannelTileEntity extends TickingTileEntity implemen
         return BaseBlock.getFrontDirection(RotationType.ROTATION, state);
     }
 
-    // @todo 1.14
-//    @Override
-//    public BlockState getActualState(BlockState state) {
-//        return state.with(POWER, getPowerOutput() > 0);
-//    }
+    protected void setVisualState(BooleanProperty property, boolean value) {
+        if (level != null && !level.isClientSide) {
+            BlockState state = level.getBlockState(worldPosition);
+            if (state.hasProperty(property) && state.getValue(property) != value) {
+                level.setBlockAndUpdate(worldPosition, state.setValue(property, value));
+            }
+        }
+    }
 
     @Override
     public int getRedstoneOutput(BlockState state, BlockGetter world, BlockPos pos, Direction side) {

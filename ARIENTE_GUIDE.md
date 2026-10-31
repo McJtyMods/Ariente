@@ -277,6 +277,49 @@ chance. Within that drop, the code assigns a door/lock key in 40% of cases, a
 forcefield key in 40%, and no security tag in the remaining 20%. A card's city
 description alone does not prove that it grants a particular kind of access.
 
+### City authoring and administration
+
+These operator commands are intended for a disposable authoring world. Editing
+requires creative mode in the Ariente dimension. Entering edit mode restores the
+selected templates into their world positions; existing blocks inside those
+bounds are replaced. For a station, stand on its grid around Y=30; for a city,
+stand inside its footprint. Landscape plots are restored without rotation so
+their template coordinates remain consistent.
+
+```text
+/arworld editmode
+/arworld syncchunk
+/arworld variantcreate example 2
+/arworld variantset example
+/arworld variantget
+/arworld variantlist
+/arworld variantswitch example 1
+/arworld savecity
+/arworld editmode reload
+/arworld editmode off
+```
+
+Stand inside the part being edited when using `syncchunk` or `variantset`.
+`syncchunk` copies that part's blocks and equipment settings to every other
+occurrence of the same part in the session. Synchronize the intended copy before
+saving if copies differ. Variant counts are 1..16; selection indices start at 0.
+Save or synchronize edits before switching templates. Other operators cannot
+open an overlapping session in the same city/station region.
+
+`savecity` exports a complete asset array to
+`config/ariente/exports/<plan-or-part>.json`. `editmode reload` previews that saved
+export in the edit area. Sessions end on logout or server stop, so save first.
+They use private asset copies; generation changes only after you install the
+export's entries in `config/ariente/userassets.json` and restart. Preserve other
+entries in that file. New templates affect future generation, not existing cities.
+Exports preserve native block states, palette cells, variants, metadata, facade
+states and equipment/spawner settings. They do not save arbitrary inventories or
+runtime security keys.
+
+`/arworld info` reports the current city, `/arworld pacify` clears its alert, and
+`/arworld citycard` gives its storage access card after the full city initializes.
+These are operator tools; arbitrary player key programming remains unfinished.
+
 ### Exploration commands
 
 These commands require permission level 2/cheats. `/arworld` is an alias for
@@ -416,9 +459,10 @@ different claims about loss; **2% is what the current implementation does**.
 Use a **Facade** item on a normal block to copy its block state. Use that facade
 on a cable or connector to cover it while retaining the network. A facade
 already covering a cable is not replaced by simply applying another one.
-The port retains texture/state copying and generated cable covers. The older
-special breaking behavior that removes a facade while leaving its cable needs
-further validation; do not rely on it as a safe removal tool yet.
+Breaking a covered cable removes its facade first and keeps the cable and its
+network. Survival drops the configured facade; creative removes it without a
+drop. Break the exposed cable again to remove it. The facade item and its tooltip
+show the selected block state.
 
 Sources: [power accounting](src/main/java/mcjty/ariente/power/PowerSystem.java),
 [receivers](src/main/java/mcjty/ariente/power/PowerReceiverSupport.java),
@@ -596,11 +640,20 @@ is **not** an automatic allow-all configuration. The Output Node's stack-size
 setting is adjustable from **1 to 64**; it acts as a minimum batch size, so a
 source holding fewer items can wait rather than transfer a partial batch.
 
-Damage and NBT filter controls exist. The old **Ore Dictionary** option has not
-been converted into modern tag matching and should be left disabled. Strict
-destination matching also needs further audit: current destination indexing is
-primarily by item identity. Do not depend on it to separate otherwise identical
-items with different NBT.
+The old **Ore Dictionary** icon now enables **material tag matching** at either
+node. It matches resource-specific Forge tags such as `forge:ingots/silver`,
+vanilla material families such as planks/logs/wool, and shared tags from other
+mods. Broad tags such as `forge:ingots` do not make iron and gold interchangeable.
+With tag matching disabled, filters require the same item. Damage and NBT flags
+are independent at both ends; NBT matching excludes durability because the
+damage flag controls that separately. Filter stack counts do not affect matching.
+
+Round-robin modifiers fit behind Output Nodes and distribute batches among
+matching destinations. Breaking a node selects the visible part and keeps other
+parts in that block; its drop retains configuration. The hologram targets the
+selected node, including when switching to Help. Transfer animations are sampled
+visual hints; inventory counts establish what actually moved. Rejected inserts
+return leftovers to the source.
 
 ### Sensors and conditions
 
@@ -908,23 +961,32 @@ is 9, adjustable through its hologram. Stand in the beam:
 Height can be set from **1 to 256**. Level Marker floor-name editing is still a
 WIP panel; floor detection and numbered floor selection do not depend on naming.
 
-The Elevator attempts to consume **10 of each flux component per tick**.
-Currently the return value of that power request does not gate player lifting,
-so strict power-dependent operation is a remaining port issue. It is not the
-same device as the separate Flux Elevator cabin entity used by transport code.
-Keep the shaft and landings clear.
+The Elevator requires **10 of each flux component per tick**. Without both
+supplies its lift and beam stop. Its configuration hologram remains available.
+Keep the shaft and landings clear. This block is separate from the Flux Elevator
+cabin entity used by transport code.
 
 ### Flux Ship and cabin entities
 
-The registered Flux Ship is explicitly marked **work in progress** by its own
-tooltip. Treat it as experimental, not a finished player flight vehicle. The
-floating ship-shaped city is a generated structure, not a pilotable Flux Ship.
+The **Flux Ship** remains experimental, with basic piloting now supported. Place
+its item on a clear landing area with room for the full hull, then right-click
+it to board. It carries one pilot:
 
-Experimental ship bindings are W/S forward/back, A/D turn, arrow Up/Down
-vertical movement, Space start, and Backspace land. They only send ship actions
-while riding a Flux Ship. Registered Flux Elevator cabin/vehicle entities and
-their renderers likewise do not constitute a complete player crafting and
-transport workflow by themselves.
+| Control | Action |
+| --- | --- |
+| W / S | Fly forward / backward |
+| A / D | Turn left / right |
+| Up / Down | Rise / descend |
+| Space / Backspace | Also rise / descend; these retain the original Start/Land binding names |
+| Release controls | Brake and hover |
+| Shift | Dismount |
+
+Bindings can be changed in Controls. Flight follows the ship's heading; looking
+around does not steer it. A sneaking hit on an unattended ship recovers the item
+in survival, preserving its name. Creative placement keeps the item. Saved ships
+reload parked. The prototype has no fuel system, progression recipe, weapons or
+automatic landing/navigation. The large floating ship-shaped city is a generated
+structure. Flux Elevator cabin entities remain a separate transport workflow.
 
 Sources: [levitator item placement](src/main/java/mcjty/ariente/items/FluxLevitatorItem.java),
 [cart movement](src/main/java/mcjty/ariente/entities/levitator/FluxLevitatorEntity.java),
@@ -1122,7 +1184,7 @@ The blueprint tables are sourced from
 | Constructor result is crossed out | Hover for missing ingredients; manual crafting takes them from the player's inventory. |
 | Auto Constructor stalls | Check both power components, ingredient inventory, output space, neighboring blueprints, and redstone mode. |
 | Automation Field moves nothing | Connected markers under node columns, height, correct source Output/destination Input roles, nonempty filters, full batch availability, conditions, and power. |
-| Item-transfer animation is absent | Watch inventory counts; that visual path is still partly unported. |
+| Item-transfer animation is absent | Enable item rendering in the field hologram and check inventory counts; animation samples recent transfers. |
 | Armor module is installed but does nothing | Activation, fuel of both kinds, per-piece power budget, and whether the ability's hook is actually ported. |
 | Cart will not start | Board the cart, click an end panel's speed arrows, and confirm continuous beam orientation/clearance. Controls are HoloGui entities, not a full-screen menu. |
 | Elevator cannot find a floor | Marker height must be inside its scan and within two blocks horizontally; clear the lift column. |
@@ -1135,20 +1197,20 @@ worlds.
 | Area | What remains incomplete or needs validation |
 | --- | --- |
 | Survival resources | Ore drops, processing and mob lithium loot pass focused checks; a full survival playthrough remains. |
-| Alternative progression without ArienteWorld | Default Overworld ore generation and dungeon blueprints pass a client check without the companion. Published standalone dependency resolution remains separate. |
+| Alternative progression without ArienteWorld | Default Overworld ores and dungeon blueprints pass a client check without the companion. Standalone builds pass with staged HoloGui; public Maven availability is pending. |
 | Recipe variants | Negarite/Posirite/Combined cable and connector recipes work. Data variants and several original modules still have no catalog entry. |
 | Crafting integration | Constructor JEI and full manual/automatic batch yields pass focused checks. Crafting still uses the hardcoded catalog. |
 | Armor movement | Flight, Hover, Speed and Step Assist pass focused survival-client checks. Invisibility's install control remains disabled. |
-| Equipment lifecycle | Focused fuel, equipped-slot, enchantment and effect checks pass. Dedicated multiplayer, reconnect/death and mod interaction play testing remain. |
-| Automation matching | Ore Dictionary matching is not replaced with tags; strict destination NBT/damage matching and filter persistence need audit. |
-| Visual effects | Some cable/automation transfer effects and item-specific rendering remain commented out. |
-| Facades | Placement/state display works; the old special facade-only breaking hooks are not fully migrated. |
+| Equipment lifecycle | Fuel/effect checks and real dedicated-server hotkeys, equipment synchronization, reconnect and death/respawn pass with two clients. Multiplayer flight and mod interactions still need play testing. |
+| Automation matching | Tag/NBT/damage filters, batch routing, round robin and rejected-insert recovery pass focused inventory checks; long multi-chunk networks remain an integration check. |
+| Visual effects | Automation transfers, blueprint previews, facade items, ship hull, soldier armor and hologram tooltips are restored; combined-cable beam rendering remains an original limitation. |
+| Facades | State display, removal without losing the cable/network, and exported facade properties pass focused checks. |
 | Security provisioning | City keys work through authored/AI setup; there is no complete player-facing arbitrary key-programming workflow. |
-| Elevator | Attempts power consumption but does not enforce failure as an operation gate. |
-| Flux Ship / cabin workflows | Experimental vehicle code and models exist; complete player operation/progression is not established. |
-| Worldgen controls | The declared `cityDungeonChance` setting is not used by current complex plan selection. |
-| City editing tools | The old editing commands/tools remain archived in ArienteWorld's legacy sources; the active command set is the exploration/search set documented above. |
-| General validation | Current regression checks are focused; full survival progression, combat balance, long transport routes, and multiplayer still require testing. |
+| Elevator | Requires both power components; loss stops the beam and movement. Long/multiplayer lift use remains an integration check. |
+| Flux Ship / cabin workflows | Basic ship flight, rendering, placement and save/load are restored; fuel/progression and advanced ship design remain unfinished. |
+| Worldgen controls | `cityDungeonChance` controls sparse complex plans; full terrain/tree parity and exploration play testing remain. |
+| City editing tools | Creative operator sessions, sync, variants and JSON export/reload are restored; authoring sessions are temporary and require explicit saving. |
+| General validation | 48 dedicated tests, full datagen, asset/model audits and focused two-client multiplayer checks pass. Full survival progression, sustained combat/spawn balance, real chunk unload/restart and multiplayer transport/portals remain. |
 
 For implementation history and build commands, see [PORTING.txt](PORTING.txt) and
 the [ArienteWorld checkpoint](../ArienteWorld/PORTING.txt).

@@ -1,0 +1,35 @@
+{
+  "parent": "minecraft:recipes/root",
+  "criteria": {
+    "has_the_recipe": {
+      "conditions": {
+        "recipe": "ariente:marble_pilar_black"
+      },
+      "trigger": "minecraft:recipe_unlocked"
+    },
+    "marble": {
+      "conditions": {
+        "items": [
+          {
+            "items": [
+              "ariente:marble_black"
+            ]
+          }
+        ]
+      },
+      "trigger": "minecraft:inventory_changed"
+    }
+  },
+  "requirements": [
+    [
+      "marble",
+      "has_the_recipe"
+    ]
+  ],
+  "rewards": {
+    "recipes": [
+      "ariente:marble_pilar_black"
+    ]
+  },
+  "sends_telemetry_event": false
+}

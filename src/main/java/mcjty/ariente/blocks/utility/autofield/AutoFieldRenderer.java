@@ -4,8 +4,9 @@ import com.mojang.blaze3d.vertex.PoseStack;
 import com.mojang.blaze3d.vertex.VertexConsumer;
 import net.minecraft.world.phys.Vec3;
 import mcjty.ariente.Ariente;
+import mcjty.ariente.client.ArienteSpriteUploader;
+import net.minecraft.client.renderer.RenderType;
 import mcjty.ariente.setup.Registration;
-import mcjty.lib.client.CustomRenderTypes;
 import mcjty.lib.client.RenderHelper;
 import mcjty.lib.client.RenderSettings;
 import net.minecraft.client.Minecraft;
@@ -14,7 +15,6 @@ import net.minecraft.client.renderer.blockentity.BlockEntityRendererProvider;
 import net.minecraft.client.renderer.blockentity.BlockEntityRenderers;
 import net.minecraft.client.renderer.texture.TextureAtlasSprite;
 import net.minecraft.client.renderer.blockentity.BlockEntityRenderer;
-import net.minecraft.world.inventory.InventoryMenu;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.phys.AABB;
 import org.joml.Matrix4f;
@@ -25,9 +25,9 @@ public class AutoFieldRenderer implements BlockEntityRenderer<AutoFieldTile> {
 
     public static final ResourceLocation BEAMS[] = new ResourceLocation[3];
     static {
-        BEAMS[0] = new ResourceLocation(Ariente.MODID, "effects/autobeam1");
-        BEAMS[1] = new ResourceLocation(Ariente.MODID, "effects/autobeam2");
-        BEAMS[2] = new ResourceLocation(Ariente.MODID, "effects/autobeam3");
+        BEAMS[0] = new ResourceLocation(Ariente.MODID, "autobeam1");
+        BEAMS[1] = new ResourceLocation(Ariente.MODID, "autobeam2");
+        BEAMS[2] = new ResourceLocation(Ariente.MODID, "autobeam3");
     }
 
     private Random random = new Random();
@@ -47,15 +47,14 @@ public class AutoFieldRenderer implements BlockEntityRenderer<AutoFieldTile> {
             renderBeamBox(te, matrixStack, box, buffer);
         }
         if (te.isRenderItems()) {
-            // @todo 1.15
-//            renderItemTransfers(matrixStack, te, x, y, z);
+            renderItemTransfers(matrixStack, te, buffer);
         }
     }
 
     private void renderBeamBox(AutoFieldTile te, PoseStack matrixStack, AABB box, MultiBufferSource buffer) {
         Minecraft mc = Minecraft.getInstance();
 
-        TextureAtlasSprite sprite = mc.getTextureAtlas(InventoryMenu.BLOCK_ATLAS).apply(BEAMS[random.nextInt(3)]);
+        TextureAtlasSprite sprite = ArienteSpriteUploader.INSTANCE.getSprite(BEAMS[(int) (te.getLevel().getGameTime() % 3)]);
 
         int tex = te.getBlockPos().getX();
         int tey = te.getBlockPos().getY();
@@ -63,7 +62,7 @@ public class AutoFieldRenderer implements BlockEntityRenderer<AutoFieldTile> {
         Vec3 projectedView = mc.gameRenderer.getMainCamera().getPosition().add(-tex, -tey, -tez);
         Vec3 player = new Vec3((float)projectedView.x, (float)projectedView.y, (float)projectedView.z);
 
-        VertexConsumer builder = buffer.getBuffer(CustomRenderTypes.TRANSLUCENT_ADD);
+        VertexConsumer builder = buffer.getBuffer(RenderType.entityTranslucent(ArienteSpriteUploader.ARIENTE_ATLAS));
 
         float mx = (float) box.minX - tex;
         float my = (float) box.minY - tey;
@@ -97,14 +96,8 @@ public class AutoFieldRenderer implements BlockEntityRenderer<AutoFieldTile> {
         RenderHelper.drawBeam(matrixStack, builder, sprite, new Vec3(mx, my, pz), new Vec3(mx, py, pz), player, settings);
     }
 
-    private void renderItemTransfers(PoseStack matrixStack, AutoFieldTile te, double x, double y, double z) {
+    private void renderItemTransfers(PoseStack matrixStack, AutoFieldTile te, MultiBufferSource buffers) {
         te.clientRequestRenderInfo();
-
-        matrixStack.pushPose();
-        matrixStack.translate(x, y, z);
-        // @todo 1.18 net.minecraft.client.renderer.RenderHelper.turnBackOn();
-        Minecraft.getInstance().gameRenderer.lightTexture().turnOffLightLayer();
-        // @todo 1.18 RenderSystem.enableAlphaTest();
 
         TransferRender[] transferRenders = te.getTransferRenders();
         for (int i = 0 ; i < transferRenders.length ; i++) {
@@ -123,15 +116,11 @@ public class AutoFieldRenderer implements BlockEntityRenderer<AutoFieldTile> {
                     }
                 }
             } else {
-                if (!render.render(matrixStack)) {
+                if (!render.render(matrixStack, buffers)) {
                     transferRenders[i] = null;
                 }
             }
         }
-        Minecraft.getInstance().gameRenderer.lightTexture().turnOnLightLayer();
-        // @todo 1.18 RenderSystem.disableAlphaTest();
-
-        matrixStack.popPose();
     }
 
     @Override

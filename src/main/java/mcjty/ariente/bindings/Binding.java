@@ -29,6 +29,14 @@ public class Binding {
         return binding;
     }
 
+    public static Binding createHeld(String name, int keyCode) {
+        return create(name, keyCode, null);
+    }
+
+    public boolean isDown() {
+        return binding.isDown();
+    }
+
     public static void register(RegisterKeyMappingsEvent event) {
         KeyBindings.init();
         BINDINGS.forEach(binding -> event.register(binding.binding));
@@ -36,7 +44,7 @@ public class Binding {
 
     public static void checkBindings() {
         for (Binding binding : BINDINGS) {
-            if (binding.binding.consumeClick()) {
+            if (binding.binding.consumeClick() && binding.callable != null) {
                 binding.callable.run();
             }
         }

@@ -71,7 +71,6 @@ import net.minecraft.sounds.SoundEvent;
 import net.minecraft.world.phys.AABB;
 import net.minecraft.core.BlockPos;
 import net.minecraft.world.phys.shapes.CollisionContext;
-import net.minecraft.world.phys.shapes.Shapes;
 import net.minecraft.world.phys.shapes.VoxelShape;
 import net.minecraftforge.registries.RegistryObject;
 import net.minecraftforge.fml.javafmlmod.FMLJavaModLoadingContext;
@@ -449,7 +448,7 @@ public class Registration {
             .setShouldReceiveVelocityUpdates(false)
             .build("ariente_ariente_pearl"));
     public static final RegistryObject<EntityType<FluxShipEntity>> ENTITY_FLUX_SHIP = ENTITIES.register("ariente_flux_ship", () -> EntityType.Builder.of(FluxShipEntity::new, MobCategory.MISC)
-            .sized(2.50F, 1.5F)
+            .sized(5.30F, 1.8F)
             .setShouldReceiveVelocityUpdates(false)
             .build("ariente_flux_ship"));
     public static final RegistryObject<EntityType<FluxLevitatorEntity>> ENTITY_FLUX_LEVITATOR = ENTITIES.register("ariente_flux_levitator", () -> EntityType.Builder.of(FluxLevitatorEntity::new, MobCategory.MISC)

@@ -1,18 +1,12 @@
 package mcjty.ariente.cables;
 
-import mcjty.ariente.facade.FacadeItemBlock;
-import mcjty.ariente.setup.Registration;
 import mcjty.lib.compat.theoneprobe.TOPDriver;
 import net.minecraft.core.BlockPos;
-import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.context.BlockPlaceContext;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.level.block.Block;
-import net.minecraft.world.level.block.Blocks;
-import net.minecraft.world.level.block.entity.BlockEntity;
 import net.minecraft.world.level.block.state.BlockState;
-import net.minecraft.world.level.material.FluidState;
 import net.minecraft.world.level.material.MapColor;
 import net.minecraft.core.Direction;
 import net.minecraft.world.level.BlockGetter;
@@ -37,43 +31,7 @@ public class NetCableBlock extends GenericCableBlock {
         return null;
     }
 
-    @Override
-    public void playerDestroy(Level worldIn, Player player, BlockPos pos, BlockState state, @Nullable BlockEntity te, ItemStack stack) {
-        if (te instanceof NetCableTileEntity) {
-            // If we are in mimic mode then the drop will be the facade as the connector will remain there
-            NetCableTileEntity cableTileEntity = (NetCableTileEntity) te;
-            if (cableTileEntity.getMimicBlock() != null) {
-                ItemStack item = new ItemStack(Registration.FACADE.get());
-                FacadeItemBlock.setMimicBlock(item, cableTileEntity.getMimicBlock());
-                cableTileEntity.setMimicBlock(null);
-                popResource(worldIn, pos, item);
-                return;
-            }
-        }
-        super.playerDestroy(worldIn, player, pos, state, te, stack);
-    }
-
-    //@todo 1.18 @Override
-    public boolean removedByPlayer(BlockState state, Level world, BlockPos pos, Player player, boolean willHarvest, FluidState fluid) {
-        BlockEntity te = world.getBlockEntity(pos);
-        if (te instanceof NetCableTileEntity cableTileEntity) {
-            if (cableTileEntity.getMimicBlock() == null) {
-                this.playerWillDestroy(world, pos, state, player);
-                return world.setBlock(pos, Blocks.AIR.defaultBlockState(), world.isClientSide ? 11 : 3);
-            } else {
-                // We are in mimic mode. Don't remove the connector
-                this.playerWillDestroy(world, pos, state, player);
-                if (player.getAbilities().instabuild) {
-                    cableTileEntity.setMimicBlock(null);
-                }
-            }
-        } else {
-            //@todo 1.18 return super.removedByPlayer(state, world, pos, player, willHarvest, fluid);
-        }
-        return true;
-    }
-
-    // @todo 1.14
+// @todo 1.14
 //    @Override
 //    public BlockState getExtendedState(BlockState state, IBlockReader world, BlockPos pos) {
 //        IExtendedBlockState extendedBlockState = (IExtendedBlockState) super.getExtendedState(state, world, pos);

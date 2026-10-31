@@ -1,8 +1,9 @@
 package mcjty.ariente.entities.soldier;
 
 import com.mojang.blaze3d.vertex.PoseStack;
-import com.mojang.blaze3d.platform.GlStateManager;
 import mcjty.ariente.Ariente;
+import net.minecraft.client.model.geom.ModelLayers;
+import net.minecraft.client.renderer.entity.layers.HumanoidArmorLayer;
 import net.minecraft.client.renderer.entity.HumanoidMobRenderer;
 import net.minecraft.client.renderer.entity.EntityRenderer;
 import net.minecraft.client.renderer.entity.EntityRendererProvider.Context;
@@ -21,16 +22,8 @@ public class SoldierRender extends HumanoidMobRenderer<SoldierEntity, HumanoidMo
 
     public SoldierRender(Context rendermanagerIn, float scale) {
         super(rendermanagerIn, new SoldierModel<>(scale-1.0f, false), 0.5F * scale);
-// @todo 1.14
-        //        BipedArmorLayer layerbipedarmor = new BipedArmorLayer(this) {
-//
-//            @Override
-//            protected void initArmor() {
-//                this.modelLeggings = new SoldierModel(0.5F * scale, true);
-//                this.modelArmor = new SoldierModel(1.0F * scale, true);
-//            }
-//        };
-//        this.addLayer(layerbipedarmor);
+        addLayer(new HumanoidArmorLayer<>(this, new HumanoidModel<>(rendermanagerIn.bakeLayer(ModelLayers.PLAYER_INNER_ARMOR)),
+                new HumanoidModel<>(rendermanagerIn.bakeLayer(ModelLayers.PLAYER_OUTER_ARMOR)), rendermanagerIn.getModelManager()));
     }
 
     @Override

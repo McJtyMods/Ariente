@@ -1,15 +1,17 @@
 package mcjty.ariente.facade;
 
 import net.minecraft.core.registries.BuiltInRegistries;
+import net.minecraft.client.Minecraft;
+import net.minecraft.client.renderer.BlockEntityWithoutLevelRenderer;
+import net.minecraftforge.client.extensions.common.IClientItemExtensions;
+import java.util.function.Consumer;
 import mcjty.lib.varia.Tools;
-import mcjty.ariente.Ariente;
 import mcjty.lib.builder.TooltipBuilder;
 import mcjty.lib.tooltips.ITooltipSettings;
 import net.minecraft.core.BlockPos;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.nbt.NbtUtils;
 import net.minecraft.network.chat.Component;
-import net.minecraft.resources.ResourceLocation;
 import net.minecraft.sounds.SoundSource;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.level.block.Block;
@@ -25,7 +27,6 @@ import net.minecraft.world.level.block.entity.BlockEntity;
 import net.minecraft.world.InteractionResult;
 import net.minecraft.world.InteractionHand;
 import net.minecraft.world.level.Level;
-import net.minecraftforge.registries.ForgeRegistries;
 
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
@@ -41,28 +42,32 @@ public class FacadeItemBlock extends BlockItem implements ITooltipSettings {
                     parameter("info", FacadeItemBlock::isMimicing, FacadeItemBlock::getMimicingString));
 
     private static boolean isMimicing(ItemStack stack) {
-        CompoundTag tag = stack.getTag();
-        return tag != null && tag.contains("regName");
+        return stack.hasTag() && stack.getTag().contains("mimic");
     }
 
     private static String getMimicingString(ItemStack stack) {
-        CompoundTag tag = stack.getTag();
-        if (tag != null) {
-            String regName = tag.getString("regName");
-            Block value = ForgeRegistries.BLOCKS.getValue(new ResourceLocation(regName));
-            if (value != null) {
-                ItemStack s = new ItemStack(value, 1);
-                if (s.getItem() != null) {
-                    return s.getHoverName().getString();
-                }
-            }
-        }
-        return "<unset>";
+        return isMimicing(stack) ? getMimicBlock(stack).getBlock().getName().getString() : "<unset>";
     }
 
     public FacadeItemBlock(FacadeBlock block) {
         super(block, new Properties()
                 );
+    }
+
+    @Override
+    public void initializeClient(Consumer<IClientItemExtensions> consumer) {
+        consumer.accept(new IClientItemExtensions() {
+            private FacadeRenderer renderer;
+
+            @Override
+            public BlockEntityWithoutLevelRenderer getCustomRenderer() {
+                if (renderer == null) {
+                    Minecraft mc = Minecraft.getInstance();
+                    renderer = new FacadeRenderer(mc.getBlockEntityRenderDispatcher(), mc.getEntityModels());
+                }
+                return renderer;
+            }
+        });
     }
 
     @Override
@@ -72,7 +77,7 @@ public class FacadeItemBlock extends BlockItem implements ITooltipSettings {
     }
 
     public static void setMimicBlock(@Nonnull ItemStack item, BlockState mimicBlock) {
-        CompoundTag tagCompound = new CompoundTag();
+        CompoundTag tagCompound = item.getOrCreateTag();
         CompoundTag nbt = NbtUtils.writeBlockState(mimicBlock);
         tagCompound.put("mimic", nbt);
         item.setTag(tagCompound);
@@ -101,7 +106,10 @@ public class FacadeItemBlock extends BlockItem implements ITooltipSettings {
         BlockState state = world.getBlockState(pos);
         Block block = state.getBlock();
 
-        ItemStack itemstack = player.getItemInHand(hand);
+        if (player == null || !player.mayUseItemAt(pos, context.getClickedFace(), context.getItemInHand())) {
+            return InteractionResult.FAIL;
+        }
+        ItemStack itemstack = context.getItemInHand();
 
         if (!itemstack.isEmpty()) {
 
@@ -109,18 +117,23 @@ public class FacadeItemBlock extends BlockItem implements ITooltipSettings {
             if (te instanceof IFacadeSupport) {
                 IFacadeSupport facadeSupport = (IFacadeSupport) te;
                 if (facadeSupport.getMimicBlock() == null) {
-                    facadeSupport.setMimicBlock(getMimicBlock(itemstack));
+                    if (!world.isClientSide) {
+                        facadeSupport.setMimicBlock(getMimicBlock(itemstack));
+                    }
                     SoundType soundtype = world.getBlockState(pos).getBlock().getSoundType(world.getBlockState(pos), world, pos, player);
                     world.playSound(player, pos, soundtype.getPlaceSound(), SoundSource.BLOCKS, (soundtype.getVolume() + 1.0F) / 2.0F, soundtype.getPitch() * 0.8F);
-                    int amount = -1;
-                    itemstack.grow(amount);
+                    if (!world.isClientSide && !player.getAbilities().instabuild) {
+                        itemstack.shrink(1);
+                    }
                 } else {
                     return InteractionResult.FAIL;
                 }
             } else {
-                setMimicBlock(itemstack, state);
+                if (!world.isClientSide) {
+                    setMimicBlock(itemstack, state);
+                }
                 if (world.isClientSide) {
-                    player.displayClientMessage(Component.literal("Facade is now mimicing " + block.getDescriptionId()), false);
+                    player.displayClientMessage(Component.literal("Facade is now mimicking ").append(block.getName()), false);
                 }
             }
             return InteractionResult.SUCCESS;

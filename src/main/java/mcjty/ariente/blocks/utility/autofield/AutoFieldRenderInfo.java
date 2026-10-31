@@ -3,7 +3,6 @@ package mcjty.ariente.blocks.utility.autofield;
 import mcjty.lib.multipart.PartPos;
 import mcjty.lib.multipart.PartSlot;
 import net.minecraft.core.BlockPos;
-import net.minecraft.world.item.Item;
 import net.minecraft.network.FriendlyByteBuf;
 import net.minecraft.world.item.ItemStack;
 
@@ -23,7 +22,7 @@ public class AutoFieldRenderInfo {
             return;
         }
         long time = System.currentTimeMillis();
-        Transfer transfer = new Transfer(stack.getItem(), 0 /* @todo 1.14 stack.getMetadata()*/, time);
+        Transfer transfer = new Transfer(stack.copyWithCount(1), time);
         TransferPath path = new TransferPath(sourcePos, destPos);
         transfers.computeIfAbsent(path, p -> new TreeSet<>());
         Set<Transfer> treeSet = this.transfers.get(path);
@@ -64,33 +63,9 @@ public class AutoFieldRenderInfo {
 
     public void cleanOldTransfers() {
         long time = System.currentTimeMillis();
-        for (TransferPath path : transfers.keySet()) {
-            Iterable<Transfer> treeSet = this.transfers.get(path);
-
-            TreeSet<Transfer> newTreeSet = new TreeSet<>();
-            for (Transfer tr : treeSet) {
-                if (tr.time < time-3000) {
-                    // All movements after this one will be too old
-                    break;
-                }
-                newTreeSet.add(tr);
-            }
-
-            this.transfers.put(path, newTreeSet);
-        }
+        transfers.values().forEach(values -> values.removeIf(transfer -> transfer.time < time - 3000));
+        transfers.values().removeIf(Set::isEmpty);
     }
-
-//    private void cleanupTransfers(long time) {
-//        List<Transfer> toRemove = transfers.entrySet().stream()
-//                .sorted(Comparator.comparingLong(Map.Entry::getValue))
-//                .filter(e -> e.getValue() < time - 5000)
-//                .map(Map.Entry::getKey)
-//                .collect(Collectors.toList());
-//        for (Transfer transfer : toRemove) {
-//            transfers.remove(transfer);
-//        }
-//        System.out.println("transfers.size() = " + transfers.size());
-//    }
 
     public void toBytes(FriendlyByteBuf buf) {
         buf.writeInt(transfers.size());
@@ -103,9 +78,7 @@ public class AutoFieldRenderInfo {
             Set<Transfer> values = entry.getValue();
             buf.writeInt(values.size());
             for (Transfer transfer : entry.getValue()) {
-                int id = Item.getId(transfer.item);
-                buf.writeInt(id);
-                buf.writeInt(transfer.meta);
+                buf.writeItem(transfer.stack);
             }
         }
     }
@@ -122,11 +95,7 @@ public class AutoFieldRenderInfo {
             TreeSet<Transfer> values = new TreeSet<>();
             int s = buf.readInt();
             for (int j = 0 ; j < s ; j++) {
-                int id = buf.readInt();
-                Item item = Item.byId(id);
-                int meta = buf.readInt();
-                // On the client the time doesn't matter so we put 0 there
-                values.add(new Transfer(item, meta, 0));
+                values.add(new Transfer(buf.readItem(), j));
             }
             transfers.put(path, values);
         }
@@ -167,13 +136,11 @@ public class AutoFieldRenderInfo {
     }
 
     public static class Transfer implements Comparable<Transfer> {
-        @Nonnull private final Item item;
-        private final int meta;
+        @Nonnull private final ItemStack stack;
         private final long time;
 
-        public Transfer(@Nonnull Item item, int meta, long time) {
-            this.item = item;
-            this.meta = meta;
+        public Transfer(@Nonnull ItemStack stack, long time) {
+            this.stack = stack;
             this.time = time;
         }
 
@@ -183,12 +150,8 @@ public class AutoFieldRenderInfo {
         }
 
         @Nonnull
-        public Item getItem() {
-            return item;
-        }
-
-        public int getMeta() {
-            return meta;
+        public ItemStack getStack() {
+            return stack;
         }
 
         public long getTime() {
@@ -200,14 +163,12 @@ public class AutoFieldRenderInfo {
             if (this == o) return true;
             if (o == null || getClass() != o.getClass()) return false;
             Transfer transfer = (Transfer) o;
-            return meta == transfer.meta &&
-                    time == transfer.time &&
-                    Objects.equals(item, transfer.item);
+            return time == transfer.time && ItemStack.matches(stack, transfer.stack);
         }
 
         @Override
         public int hashCode() {
-            return Objects.hash(item, meta, time);
+            return Objects.hash(stack.getItem(), stack.getTag(), time);
         }
     }
 

@@ -1,0 +1,5 @@
+{
+  "loader": "forge:obj",
+  "model": "ariente:models/entity/flux_ship.obj",
+  "flip_v": true
+}
