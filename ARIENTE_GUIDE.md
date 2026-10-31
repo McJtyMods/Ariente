@@ -58,7 +58,7 @@
 
 # Ariente: gameplay and systems guide
 
-Minecraft **1.20.1 / Forge**, local `1.20` development branch. Reviewed **2026-10-30**.
+Minecraft **1.20.1 / Forge**, local `1.20` development branch. Reviewed **2026-10-31**.
 
 This is a reference for Ariente and its ArienteWorld companion. It starts from the
 [original wiki](https://mcjty.eu/docs/mods/ariente), but the descriptions, numbers,
@@ -182,6 +182,7 @@ The return trip first tries the remembered entrance, provided its Warper and
 landing space remain usable. Otherwise it tries a valid Overworld respawn
 position and then world spawn. The Warper is a dimension-travel device, not a
 general menu for selecting arbitrary player-built teleport destinations.
+The remembered entrance survives reconnects, server restarts and death/respawn.
 
 ### Terrain, resources, and cities
 
@@ -260,8 +261,9 @@ report the players they target, and attacking city defenses can raise alerts.
 
 While alerted, the city can spawn reinforcements and activate its shield
 generators. A peaceful ship normally has **no active enclosing shield**. The
-default alert timeout is `400` city-AI steps of ten game ticks, about **200
-seconds** at 20 TPS. Further sightings refresh the alert. Keep the complex's
+default alert timeout is `400` city-AI steps. The original core counter advances
+every 11 game ticks, giving about **220 seconds** at 20 TPS. Further sightings
+refresh the alert. Keep the complex's
 footprint loaded: the current AI waits until its required chunks are loaded.
 
 Destroy **every AI Core** to defeat the authored city's AI. Destroying the last
@@ -1049,7 +1051,7 @@ directory. Values below are defaults, not guaranteed server settings.
 | ArienteWorld `worldgen` | `overworldDungeonChance` | 0.002 | Per-chunk entrance candidacy. |
 | ArienteWorld `worldgen` | `cityDungeonChance` | 0.7 | Seeded chance per complex grid spot; 0 disables complexes and 1 fills all candidates. Choose before creating a world. Districts, routes and arrival portals remain. |
 | ArienteWorld `loot` | `soldierCitykeyChance` | 0.2 | City soldier key-card drop chance. |
-| ArienteWorld `ai` | `alertTime` | 400 | Ten-tick city-AI timeout steps. |
+| ArienteWorld `ai` | `alertTime` | 400 | City-AI steps; the current core cadence is 11 game ticks. |
 
 Generator output/fuel duration, combiner loss/limit, storage capacity, and many
 machine timing constants are currently hardcoded rather than adjustable through

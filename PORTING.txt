@@ -469,10 +469,13 @@ Dedicated client fixture reproduction
 Release gates still open
 - A human fresh-world survival playthrough, including acquisition and meaningful
   use of supported gear, paired power, automation, security and dimension travel.
-- Multiplayer flight/transport/portals/machine workflows, real chunk unload/load,
-  process restart, multi-hour resource exhaustion and mod/shader interactions.
-- Sustained AI/spawn/combat balance and companion release/datagen/metadata review
-  remain in ../ArienteWorld/PORTING.txt. Its historical own version is untouched.
+- Broader multiplayer flight/transport/machine workflows, multi-hour resource
+  exhaustion and mod/shader interactions. The companion's later phase-4 checkpoint
+  adds real portal/reconnect/death travel, city chunk unload/load, process restart
+  and timed native AI/spawn observations; its controlled-fixture limits remain.
+- Human AI/spawn/combat balance validation remains necessary. Companion server
+  datagen/resource/jar audits and release metadata are now prepared; its version
+  is 1.20-0.0.31-alpha. See ../ArienteWorld/PORTING.txt for the full evidence.
 - Publish matching HoloGui to the actual Maven fallback and verify public-only
   standalone resolution before distribution. Recheck publication/version metadata
   then. Current local staging success is not evidence of public availability.
@@ -485,11 +488,14 @@ VALIDATION STILL REQUIRED
 - Machine GUI/capability and power-network operation, security/key provisioning,
   multi-part combinations, matching/routing, real transport and combat play.
 - Multiplayer flight, portals, combat and machines beyond the focused gear
-  packet/reconnect/death checks; real load/unload and long-running exhaustion.
+  and companion portal/reconnect/death checks; broader transport/combat and
+  multi-hour exhaustion still need play testing. Real city unload/restart now
+  has a dedicated native fixture, documented in the companion's phase 4.
 - Public-only standalone resolution after HoloGui publication. Local staging
   standalone builds now pass; see the phase-4 evidence and its runtime limits.
-- Companion datagen and broader resource-pack/mod interaction coverage. Full
-  Ariente client/server datagen and local resource/model audits now pass.
+- Broader resource-pack/mod interaction coverage. Full Ariente client/server
+  datagen and local audits pass; companion block-loot/tag datagen, authored-world
+  codec checks and both mods' model/reload/resource/jar audits now pass as well.
 - Recheck publication/version/changelog metadata immediately before release.
   Ariente/HoloGui MC labels are aligned; companion release metadata is separate.
   Unreleased port repairs do not require player changelog entries.
@@ -498,11 +504,31 @@ VERIFICATION ALREADY PERFORMED AND ITS LIMITS
 ===========================================
 - Java 17 workspace builds of Ariente, ArienteWorld and ModHoloGui pass, including
   reobfuscation. workspace:compileJava passed earlier. Client loads both mods.
-- Latest dedicated suite: 53 required GameTests passed. They live in the companion's
+- Latest dedicated suite: 58 required GameTests passed. They live in the companion's
   src/gameTest, outside published jars. MachinePersistenceTests covers 31 tile
   types; MachineInteractionTests covers storage, generator/tank state, hologram
   clicks, equipment configuration and transport; CombatRegressionTests exercises
   actual drone firing with/without line of sight and laser movement/damage.
+- Companion phase 4 repairs the entrance return on player death/respawn: the
+  PlayerEvent.Clone handler copies that compound to the replacement player.
+  Its regression checks retention and independent NBT ownership; two real clients
+  also exercise shared arrival, reconnect, death and return to separate entrances
+  with per-player inventories/effects. Keep-inventory is enabled only in that
+  disposable fixture; entrance retention itself does not depend on that setting.
+- WorldDataTests additionally round-trips all 61 companion world-data registry
+  entries and the custom generator. Workspace and isolated-staging standalone
+  companion builds pass with the unpublished 1.20 version metadata aligned.
+- The companion's native city fixture passes partial FULL-footprint suspension,
+  actual full chunk/entity unload/reload and a 12,000-tick (ten-minute) AI run:
+  peak 20 soldiers / 4 drones and 20 refills of EACH generator fuel. A second
+  server process verifies exact pre-tick SavedData, loot/security/guard identity
+  and sentinel population; the real client journeys repeat after restart.
+  A separate native check observes three 3,600-tick spawn windows: 12 / 19 / 25
+  natural soldiers, one master, peak monster count 12, peaceful cleanup and resumed
+  spawning, then completes the city-loot/Constructor/sabre/return route. Stationary
+  persistent mobs isolate AI counts; spawn balance, multi-hour/free-roaming play
+  and human survival certification remain release gates. Tracked reproduction
+  scripts and exact logs/limits are in ../ArienteWorld/PORTING.txt.
 - SystemRegressionTests covers tag/NBT/damage filters, real inventories, minimum
   batches, round robin, rejected/partial inserts, multipart item placement/picking/
   breaking/holograms, facade removal, wireless reassignment/visuals, elevator power

@@ -1,6 +1,7 @@
 package mcjty.ariente;
 
 import net.minecraft.tags.DamageTypeTags;
+import net.minecraft.nbt.Tag;
 import mcjty.ariente.api.ArmorUpgradeType;
 import mcjty.ariente.blocks.utility.ILockable;
 import mcjty.ariente.entities.levitator.FluxLevitatorEntity;
@@ -53,6 +54,14 @@ public class ForgeEventHandlers {
     @SubscribeEvent
     public void onPlayerLogout(PlayerEvent.PlayerLoggedOutEvent event) {
         PowerSuitEffects.clear(event.getEntity());
+    }
+
+    @SubscribeEvent
+    public void onPlayerClone(PlayerEvent.Clone event) {
+        var original = event.getOriginal().getPersistentData();
+        if (original.contains("arienteReturn", Tag.TAG_COMPOUND)) {
+            event.getEntity().getPersistentData().put("arienteReturn", original.getCompound("arienteReturn").copy());
+        }
     }
 
     @SubscribeEvent

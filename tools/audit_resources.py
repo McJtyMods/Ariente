@@ -105,6 +105,9 @@ def main():
             for name in ('mcjty/ariente/Ariente.class', 'META-INF/mods.toml', 'META-INF/accesstransformer.cfg'):
                 if name not in names:
                     errors.append(f'Missing jar entry: {name}')
+            equipment_code = jar.read('mcjty/ariente/ForgeEventHandlers.class')
+            if b'getItemBySlot' in equipment_code or b'm_6844_' not in equipment_code:
+                errors.append('Release jar must contain reobfuscated 1.20.1 bytecode; run build/reobfJar after development runs')
             version = next(line.split('=', 1)[1] for line in (ROOT / 'gradle.properties').read_text().splitlines()
                            if line.startswith('version='))
             if f'Implementation-Version: {version}\r\n' not in jar.read('META-INF/MANIFEST.MF').decode():
