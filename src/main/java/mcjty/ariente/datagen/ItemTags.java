@@ -57,8 +57,8 @@ public class ItemTags extends ItemTagsProvider {
                 Registration.DUST_POSIRITE.get(),
                 Registration.DUST_SILICON.get());
         addTag(Registration.TAG_DUSTS_NEGARITE, Registration.DUST_NEGARITE.get());
-        addTag(Registration.TAG_DUSTS_POSIRITE, Registration.DUST_NEGARITE.get());
-        addTag(Registration.TAG_DUSTS_SILICON, Registration.DUST_NEGARITE.get());
+        addTag(Registration.TAG_DUSTS_POSIRITE, Registration.DUST_POSIRITE.get());
+        addTag(Registration.TAG_DUSTS_SILICON, Registration.DUST_SILICON.get());
 
         addTag(Registration.TAG_MARBLE, DecorativeBlockModule.MARBLE_ITEMS.values());
     }

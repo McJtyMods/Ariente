@@ -149,6 +149,11 @@ public class SoldierEntity extends Monster implements IArmRaisable, IForcefieldI
     }
 
     @Override
+    public boolean isReinforcementFor(ChunkPos city) {
+        return behaviourType == SoldierBehaviourType.SOLDIER_REINFORCEMENT && city.equals(cityCenter);
+    }
+
+    @Override
     public void setArmsRaised(boolean armsRaised) {
         this.getEntityData().set(ARMS_RAISED, Boolean.valueOf(armsRaised));
     }

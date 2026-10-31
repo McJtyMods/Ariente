@@ -211,7 +211,8 @@ Silicon, with Fortune and Silk Touch support.
 White and blue marble deposits use Y=16–69; black marble uses Y=10–39.
 The companion generates the nine listed resources in its dimension. Ariente's
 optional Overworld feature generates its seven resource ores plus white marble,
-using the original ranges. It defaults on only when ArienteWorld is absent.
+using the separate [Overworld distributions](#overworld-ore-datapacks) below. It
+defaults on only when ArienteWorld is absent.
 
 There are two different kinds of city layout:
 
@@ -250,7 +251,11 @@ beams at Y=32. Landscape district streets are built near Y=65.
 
 City biomes also have natural soldier/master spawning; other biomes use
 Overworld-style hostile spawn tables. Natural spawning and city AI reinforcement
-waves are distinct mechanisms. Not every naturally spawned soldier belongs to a
+waves are distinct mechanisms. Authored guards and sentinels appear when the
+complex initializes; mobile soldier reinforcements deploy after an alert. The
+reinforcement quota counts mobile troops belonging to that complex. Guards,
+authored masters, natural spawns and neighboring-city troops do not fill it.
+Not every naturally spawned soldier belongs to a
 city or can drop that city's security cards.
 
 An alert is raised by **detection or hostile interaction**, not merely standing
@@ -500,6 +505,11 @@ but adding arbitrary JSON recipes is not equivalent to adding them to this
 catalog. See the [recipe reference](#recipe-reference).
 
 ### Blueprint Storage
+
+Blueprint Storage has an ordinary crafting recipe, so the first library does not
+require a Constructor or another blueprint library. Use two Silver Ingots, two
+Silicon, a Chest, a Glass Pane and three ordinary Marble blocks (colors may mix).
+The existing Constructor recipe remains available too.
 
 Blueprint Storage holds **six blueprint items**. Place it directly against a
 Constructor or Auto Constructor, on any of the six faces. Those machines query
@@ -1048,6 +1058,8 @@ directory. Values below are defaults, not guaranteed server settings.
 | Ariente `utility` | `autoFieldMaxAccumulatedPower` | 3200 | Field reserve cap. |
 | Ariente `power` | `forcefieldBuildupPower` | 500 | Paired cost per panel buildup step. |
 | Ariente `damage` | `forcefieldDamage` | 19.0 | Contact damage. |
+| Ariente `worldgen` | `overworldOregen` | DEFAULT | Enables optional Overworld marble and seven resource ores. |
+| Ariente `worldgen` | `overworldDungeonLoot` | DEFAULT | Enables optional dungeon blueprints/equipment. |
 | ArienteWorld `worldgen` | `overworldDungeonChance` | 0.002 | Per-chunk entrance candidacy. |
 | ArienteWorld `worldgen` | `cityDungeonChance` | 0.7 | Seeded chance per complex grid spot; 0 disables complexes and 1 fills all candidates. Choose before creating a world. Districts, routes and arrival portals remain. |
 | ArienteWorld `loot` | `soldierCitykeyChance` | 0.2 | City soldier key-card drop chance. |
@@ -1066,6 +1078,56 @@ of a blueprint addition per supported chest; recipe rarity then selects its type
 Sources: [Ariente config classes](src/main/java/mcjty/ariente/config),
 [ArienteWorld config classes](../ArienteWorld/src/main/java/mcjty/arienteworld/config).
 
+### Overworld ore datapacks
+
+`overworldOregen` controls whether the features actually place blocks. `DEFAULT`
+enables them without ArienteWorld, `YES` enables them even with the companion,
+and `NO` disables them. The server config is checked at placement time, after
+worldgen JSON is decoded; no config value is captured during registry setup.
+For new worlds, put server defaults in `defaultconfigs/ariente-server.toml`.
+Changes affect newly generated terrain; existing chunks are not regenerated.
+
+Each ore has its own configured and placed feature, with the same ID in both
+registries:
+
+| Feature ID | Size | Attempts/chunk | Uniform Y range |
+| --- | --- | --- | --- |
+| `ariente:overworld_marble` | 15 | 2 | 16–69 |
+| `ariente:overworld_lithium` | 3 | 2 | -48–19 |
+| `ariente:overworld_manganese` | 5 | 3 | -16–49 |
+| `ariente:overworld_platinum` | 5 | 4 | -16–79 |
+| `ariente:overworld_silicon` | 5 | 4 | -16–59 |
+| `ariente:overworld_silver` | 6 | 4 | -32–19 |
+| `ariente:overworld_negarite` | 6 | 5 | -48–29 |
+| `ariente:overworld_posirite` | 6 | 5 | -48–29 |
+
+Size and attempt counts are generation parameters, not guaranteed block yields.
+The seven resource ores replace both stone and deepslate; the original ore
+blocks/textures are used in both. These defaults extend the original Overworld
+ranges into modern deep terrain; ArienteWorld's own ore distributions are separate.
+
+To customize, make a Minecraft 1.20.1 datapack (`pack_format: 15`) and copy the
+files you want to change from
+[data/ariente/worldgen](src/main/resources/data/ariente/worldgen) into the same
+paths in your pack. For example:
+
+- `data/ariente/worldgen/configured_feature/overworld_negarite.json`: change
+  `config.size`, `config.targets` (replacement predicates and output states), or
+  `discard_chance_on_air_exposure`. Keep `type: "ariente:overworld_ores"` to retain
+  the late config and Overworld-only checks. The config uses vanilla ore fields.
+- `data/ariente/worldgen/placed_feature/overworld_negarite.json`: change the count,
+  height provider, or other vanilla placement modifiers. Its `feature` points to
+  `ariente:overworld_negarite`.
+
+The Forge biome modifier
+`data/ariente/forge/biome_modifier/overworld_ores.json` adds all eight individual
+placed features to Overworld biomes at `underground_ores`. Override it to change
+biome selection or remove a distribution. The aggregate configured/placed key
+`ariente:overworld_ores` remains registered for explicit placement, but is not
+added by the default modifier. Adding the aggregate alongside its children will
+duplicate generation. Install the pack before generating the terrain you want
+to customize; restart after changing worldgen data.
+
 ## Recipe reference
 
 ### Ordinary crafting entry points
@@ -1077,6 +1139,7 @@ actually present in the corresponding Forge item tag.
 | --- | --- | --- |
 | Ariente Pearl | `QQQ / QEQ / QQQ` | Q = Nether Quartz; E = an item in `forge:ender_pearls`. |
 | Constructor | `III / IPI / SSS` | I = iron ingot tag; P = platinum ingot tag; S = silver ingot tag. |
+| Blueprint Storage | `SGS / QCQ / MMM` | S = silver ingot tag; G = Glass Pane; Q = silicon dust tag; C = Chest; M = ordinary marble tag, mixed colors accepted. |
 | Enhanced Energy Sabre | `LLL / LSL / LLL` | L = lithium ingot tag; S = ordinary Energy Sabre. |
 
 The Constructor also has a blueprint recipe, separate from its ordinary
@@ -1205,7 +1268,7 @@ worlds.
 | Area | What remains incomplete or needs validation |
 | --- | --- |
 | Survival resources | Ore drops, processing and mob lithium loot pass focused checks; a full survival playthrough remains. |
-| Alternative progression without ArienteWorld | Default Overworld ores and dungeon blueprints pass a client check without the companion. Standalone builds pass with staged HoloGui; public Maven availability is pending. |
+| Alternative progression without ArienteWorld | Deep/stone Overworld ores, default dungeon blueprints and the crafting bootstrap pass a client check without the companion. Standalone builds pass with staged HoloGui; public Maven availability is pending. |
 | Recipe variants | Negarite/Posirite/Combined cable and connector recipes work. Data variants and several original modules still have no catalog entry. |
 | Crafting integration | Constructor JEI and full manual/automatic batch yields pass focused checks. Crafting still uses the hardcoded catalog. |
 | Armor movement | Flight, Hover, Speed and Step Assist pass focused survival-client checks. Invisibility's install control remains disabled. |

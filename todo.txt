@@ -5,3 +5,5 @@
 - Fix flux network
 - Fix flux ships
 - Patchouli support
+- Extend the search range of the pearl
+- Sun has a weird texture

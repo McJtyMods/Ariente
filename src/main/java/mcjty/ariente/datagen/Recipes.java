@@ -47,6 +47,14 @@ public class Recipes extends BaseRecipeProvider {
                         .define('s', Registration.TAG_INGOT_PLATINUM)
                         .unlockedBy("silver", has(Registration.INGOT_SILVER.get())),
                 "iii", "isi", "lll");
+        build(consumer, ShapedRecipeBuilder.shaped(RecipeCategory.MISC, Registration.BLUEPRINT_STORAGE.get())
+                        .define('s', Registration.TAG_INGOT_SILVER)
+                        .define('g', Items.GLASS_PANE)
+                        .define('Q', Registration.TAG_DUSTS_SILICON)
+                        .define('C', Items.CHEST)
+                        .define('m', Registration.TAG_MARBLE)
+                        .unlockedBy("silver", has(Registration.INGOT_SILVER.get())),
+                "sgs", "QCQ", "mmm");
         build(consumer, ShapedRecipeBuilder.shaped(RecipeCategory.MISC, Registration.ENHANCED_ENERGY_SABRE.get())
                         .define('x', Registration.TAG_INGOT_LITHIUM)
                         .define('M', Registration.ENERGY_SABRE.get())

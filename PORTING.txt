@@ -16,6 +16,56 @@ Both documents are intended to let a future Codex session resume without chat
 history. Equipment, progression, systems and phase-4 integration checkpoints
 are recorded below, with their remaining gameplay and release limits.
 
+STANDALONE PROGRESSION AND REPORTED REGRESSIONS (2026-10-31)
+==========================================================
+- Blueprint Storage now has an ordinary shaped crafting recipe: sgs/QCQ/mmm,
+  where s=silver ingot tag, g=glass pane, Q=silicon dust tag, C=chest and
+  m=ordinary marble tag (mixed colors allowed). This removes the initial
+  Constructor/Blueprint Storage dependency cycle. The Constructor catalog recipe
+  remains available. Silicon and posirite item tags now contain the correct
+  substances; both previously referenced negarite dust.
+- Optional Overworld generation uses eight individual configured/placed feature
+  pairs: ariente:overworld_{marble,lithium,manganese,platinum,silicon,silver,
+  negarite,posirite}. Distributions and replacement targets are datapack data.
+  ArienteOreGen uses vanilla OreConfiguration and checks the SERVER config and
+  Overworld dimension only when placing, after datapack decoding. DEFAULT/YES/NO
+  behavior is retained. Attempts match the previous distribution; fixed sizes
+  approximate its former variable sizes and seven ores now extend below Y=0,
+  targeting stone and deepslate. Original ore blocks/textures are reused.
+  The configured/placed aggregate key ariente:overworld_ores remains available
+  via OverworldOreGroup; the default biome modifier adds only the eight children.
+  Do not also add the aggregate to that modifier (duplicate generation).
+  ARIENTE_GUIDE.md documents exact defaults, paths and pack customization.
+- ISoldier.isReinforcementFor(city) and an appended SOLDIER_REINFORCEMENT role
+  let ArienteWorld count its own mobile troops without counting fixed guards,
+  authored masters, natural spawns or foreign troops. Existing behavior ordinals
+  0/1 retain their meanings. Normal guard/AI movement and entity NBT remain.
+- ArienteWorld restores original SRC_ALPHA/ONE sun/moon blending and uses the
+  vanilla POSITION_TEX shader/format, with shader color and blend state restored
+  afterward. Original celestial PNGs are unchanged. Its opt-in sky fixture checks
+  actual images before/after resource reload; see the companion handoff.
+- Fresh dedicated suite: all 60 required GameTests pass, including the ordinary
+  storage recipe, per-ore DEFAULT/YES/NO placement, custom datapack output/target
+  below zero with config changed AFTER decode, and an alerted ship with more
+  guards than its wave maximum plus a neighboring city's mobile soldier.
+- Datagen: six providers succeed; all 652 generated JSON files match checked-in
+  output. Resource audit: 1083 resources / 771 JSON+metadata, zero errors.
+- Native client WITHOUT ArienteWorld: DEFAULT produces all seven ores in eight
+  fresh natural chunks (each also found below Y=0), default dungeon blueprints,
+  both ordinary bootstrap recipes and a real Constructor craft from a dungeon
+  blueprint; the blueprint is retained. Ingredients are supplied by the fixture,
+  so this is a progression-connectivity check, not a complete mining playthrough.
+  Constructor JEI catalog/catalysts/layouts/subtypes/real screen also pass.
+  Reproduce with :Ariente:runClient -Pariente_runs -Pariente_progression_check
+  using a new disposable ProgressionCheck save; do not reuse generated ore chunks.
+- Native sun/moon screenshots pass before/after resource reload with both vanilla
+  rendering and Embeddium 0.3.31 / Oculus 1.8.0 (shaders OFF). Original textures
+  blend into the sky; all eight captures have zero near-black pixels and visible
+  celestial highlights. Companion build/verification/sky-images contains them.
+- Final Java 17 workspace builds of Ariente, ArienteWorld and ModHoloGui pass
+  after all native clients stop. Both resource/release-jar audits pass, including
+  reobfuscated bytecode, packaged resource freshness and test-source exclusion.
+
 WORKSPACE, HISTORY AND USER REQUIREMENTS
 =======================================
 - Workspace: /data/Projects/McTech20, using MultiWorkspace.
@@ -356,15 +406,16 @@ PHASE 4 - AUTOMATED INTEGRATION AND RELEASE PREPARATION (2026-10-31)
 ===================================================================
 Implemented and checked
 - Full --all datagen runs through all six providers into isolated output using
-  :Ariente:runData -Pariente_runs. All 650 generated JSON files now reproduce
-  exactly at the JSON-value level. This refresh includes current defaults and
+  :Ariente:runData -Pariente_runs. The phase-4 checkpoint reproduced all 650
+  generated JSON files at the JSON-value level (652 in the follow-up above). This refresh includes current defaults and
   the 53 recipe advancements moved from recipes/ariente to recipes/misc; their
   obsolete duplicate paths were removed. The ramp provider now retains its
   deliberately added particle texture. No new crafting recipes were invented.
 - tools/audit_resources.py checks JSON/metadata parsing, duplicate resources,
   Ariente model/texture/sound/OBJ references, pack format, full generated drift
   (including obsolete output), and optional release-jar contents/version.
-  It passes for 1,065 resources / 753 JSON or metadata files. It checks local
+  That checkpoint passed for 1,065 resources / 753 JSON or metadata files; current
+  counts are in the follow-up above. It checks local
   references, not every possible external resource pack or mod interaction.
   Removed seven unreferenced 1.12 blockstate/model templates with broken paths;
   repaired the facade model texture and set pack_format=15.
@@ -504,7 +555,7 @@ VERIFICATION ALREADY PERFORMED AND ITS LIMITS
 ===========================================
 - Java 17 workspace builds of Ariente, ArienteWorld and ModHoloGui pass, including
   reobfuscation. workspace:compileJava passed earlier. Client loads both mods.
-- Latest dedicated suite: 58 required GameTests passed. They live in the companion's
+- Latest dedicated suite: 60 required GameTests passed. They live in the companion's
   src/gameTest, outside published jars. MachinePersistenceTests covers 31 tile
   types; MachineInteractionTests covers storage, generator/tank state, hologram
   clicks, equipment configuration and transport; CombatRegressionTests exercises
