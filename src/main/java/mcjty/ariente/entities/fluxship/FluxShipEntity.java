@@ -82,7 +82,7 @@ public class FluxShipEntity extends Entity {
 
     @Override
     public double getPassengersRidingOffset() {
-        return 1.0;
+        return 0.4;
     }
 
     @Override

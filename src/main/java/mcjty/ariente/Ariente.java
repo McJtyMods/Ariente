@@ -8,6 +8,7 @@ import mcjty.ariente.blocks.decorative.DecorativeBlockModule;
 import mcjty.ariente.config.Config;
 import mcjty.ariente.recipes.BlueprintRecipeRegistry;
 import mcjty.ariente.setup.ClientSetup;
+import mcjty.ariente.client.ArienteRenderType;
 import mcjty.ariente.setup.ModSetup;
 import mcjty.ariente.setup.Registration;
 import mcjty.hologui.api.IHoloGuiHandler;
@@ -53,6 +54,7 @@ public class Ariente implements IArienteMod {
             FMLJavaModLoadingContext.get().getModEventBus().addListener(ClientSetup::init);
             FMLJavaModLoadingContext.get().getModEventBus().addListener(ClientSetup::initModels);
             FMLJavaModLoadingContext.get().getModEventBus().addListener(ClientSetup::additionalModels);
+            FMLJavaModLoadingContext.get().getModEventBus().addListener(ArienteRenderType::registerShaders);
             FMLJavaModLoadingContext.get().getModEventBus().addListener(ClientSetup::entityRenderers);
             FMLJavaModLoadingContext.get().getModEventBus().addListener(Binding::register);
             FMLJavaModLoadingContext.get().getModEventBus().addListener(EventPriority.NORMAL, false, RegisterColorHandlersEvent.Block.class, event -> ClientSetup.setupSpriteUploader());

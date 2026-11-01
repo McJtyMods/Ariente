@@ -24,6 +24,7 @@ import net.minecraft.world.phys.shapes.VoxelShape;
 import net.minecraft.world.phys.shapes.Shapes;
 
 import javax.annotation.Nonnull;
+import java.util.Objects;
 
 public class FieldMarkerTile extends GenericTileEntity {
 
@@ -81,8 +82,10 @@ public class FieldMarkerTile extends GenericTileEntity {
     }
 
     public void setAutoFieldTile(BlockPos autoFieldTile) {
-        this.autoFieldTile = autoFieldTile;
-        markDirtyQuick();
+        if (!Objects.equals(this.autoFieldTile, autoFieldTile)) {
+            this.autoFieldTile = autoFieldTile;
+            markDirtyQuick();
+        }
     }
 
     @Override
@@ -100,7 +103,7 @@ public class FieldMarkerTile extends GenericTileEntity {
             if (te instanceof FieldMarkerTile) {
                 BlockPos tile = ((FieldMarkerTile) te).getAutoFieldTile();
                 if (tile != null) {
-                    BlockEntity tileEntity = world.getBlockEntity(tile);
+                    BlockEntity tileEntity = world.hasChunkAt(tile) ? world.getBlockEntity(tile) : null;
                     if (tileEntity instanceof AutoFieldTile) {
                         auto = (AutoFieldTile) tileEntity;
                         break;
@@ -118,7 +121,7 @@ public class FieldMarkerTile extends GenericTileEntity {
     @Override
     public void onReplaced(Level world, BlockPos pos, BlockState state, BlockState newstate) {
         if (autoFieldTile != null) {
-            BlockEntity tileEntity = world.getBlockEntity(autoFieldTile);
+            BlockEntity tileEntity = world.hasChunkAt(autoFieldTile) ? world.getBlockEntity(autoFieldTile) : null;
             if (tileEntity instanceof AutoFieldTile) {
                 ((AutoFieldTile)tileEntity).removeFieldMarker(pos);
             }
@@ -126,6 +129,10 @@ public class FieldMarkerTile extends GenericTileEntity {
     }
 
     public BlockPos getAutoFieldTile() {
+        if (autoFieldTile != null && level != null && !level.isClientSide && level.hasChunkAt(autoFieldTile)
+                && !(level.getBlockEntity(autoFieldTile) instanceof AutoFieldTile)) {
+            setAutoFieldTile(null);
+        }
         return autoFieldTile;
     }
 
@@ -133,9 +140,7 @@ public class FieldMarkerTile extends GenericTileEntity {
     public void load(CompoundTag tagCompound) {
         super.load(tagCompound);
         CompoundTag info = tagCompound.getCompound("Info");
-        if (info.contains("autofield")) {
-            autoFieldTile = BlockPosTools.read(info, "autofield");
-        }
+        autoFieldTile = info.contains("autofield") ? BlockPosTools.read(info, "autofield") : null;
     }
 
     @Override

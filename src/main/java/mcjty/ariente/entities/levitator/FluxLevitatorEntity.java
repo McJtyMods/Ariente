@@ -431,7 +431,7 @@ public class FluxLevitatorEntity extends Entity implements IFluxLevitatorEntity 
         double dx = this.xo - this.getX();
         double dz = this.zo - this.getZ();
 
-        if (dx * dx + dz * dz > 0.001D) {
+        if (dx * dx + dz * dz > 1.0E-8D) {
             this.setYRot((float) (Mth.atan2(dz, dx) * 180.0D / Math.PI));
             if (isInReverse) {
                 setYRot(getYRot()+180);
@@ -778,7 +778,7 @@ public class FluxLevitatorEntity extends Entity implements IFluxLevitatorEntity 
         double dz = Math.cos((yaw * 0.017453292F));
         double dist = motionX * motionX + motionZ * motionZ;
 
-        if (dist < 0.01D) {
+        if (dist < 1.0E-8D) {
             // On a straight track we kickstart some motion
             if (dx > 0) {
                 motionX = Math.abs(motionX) + dx * 0.1D;
@@ -1228,7 +1228,22 @@ public class FluxLevitatorEntity extends Entity implements IFluxLevitatorEntity 
             return getMaximumSpeed();
         }
 
-        float railMaxSpeed = 5; // @todo ((BlockRailBase) state.getBlock()).getRailMaxSpeed(world, this, pos);
+        float railMaxSpeed = MAX_CART_SPEED_ON_RAIL;
+        if (state.is(Registration.FLUX_BEND_BEAM.get())) {
+            railMaxSpeed = .4f;
+        } else {
+            RailShape shape = getBeamDirection(state);
+            Direction ahead = shape == RailShape.EAST_WEST
+                    ? (getDeltaMovement().x < 0 ? Direction.WEST : Direction.EAST)
+                    : (getDeltaMovement().z < 0 ? Direction.NORTH : Direction.SOUTH);
+            // Slow down before the curve so a fast cart cannot skip its one-block turn.
+            for (int distance = 1; distance <= 2; distance++) {
+                if (level().getBlockState(pos.relative(ahead, distance)).is(Registration.FLUX_BEND_BEAM.get())) {
+                    railMaxSpeed = .4f;
+                    break;
+                }
+            }
+        }
         return Math.min(railMaxSpeed, MAX_CART_SPEED_ON_RAIL);
     }
 

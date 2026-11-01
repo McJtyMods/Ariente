@@ -33,6 +33,7 @@ import net.minecraft.world.InteractionResult;
 import net.minecraft.world.item.DyeColor;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.level.Level;
+import net.minecraft.world.level.ChunkPos;
 import net.minecraft.world.level.block.Block;
 import net.minecraft.world.level.block.entity.BlockEntity;
 import net.minecraft.world.level.block.state.BlockState;
@@ -43,6 +44,9 @@ import net.minecraft.world.phys.AABB;
 import net.minecraft.world.phys.BlockHitResult;
 import net.minecraftforge.network.NetworkDirection;
 import net.minecraftforge.items.ItemHandlerHelper;
+import net.minecraftforge.common.MinecraftForge;
+import net.minecraftforge.event.level.ChunkEvent;
+import net.minecraftforge.eventbus.api.SubscribeEvent;
 
 import java.util.*;
 import java.util.concurrent.atomic.AtomicBoolean;
@@ -59,6 +63,10 @@ public class AutoFieldTile extends TickingTileEntity implements IGuiTile, IPower
     private AABB fieldBox = null;
     private AABB renderBox = null;
     private Set<BlockPos> markers = null;
+    private final Set<BlockPos> linkedMarkers = new HashSet<>();
+    private volatile Set<Long> watchedChunks = Set.of();
+    private final AtomicBoolean refreshField = new AtomicBoolean();
+    private boolean listeningForChunks;
     private Set<PartPos> inputItemNodes = null;
     private Set<PartPos> outputItemNodes = null;
     private Set<PartPos> outputmodifierNodes = null;
@@ -111,6 +119,10 @@ public class AutoFieldTile extends TickingTileEntity implements IGuiTile, IPower
 
     @Override
     public void tickServer() {
+        if (refreshField.getAndSet(false)) {
+            invalidateBox();
+            markDirtyClient();
+        }
         findConsumers();
         findProducers();
 
@@ -469,16 +481,62 @@ public class AutoFieldTile extends TickingTileEntity implements IGuiTile, IPower
     }
 
     @Override
-    public void setRemoved() {
-        super.setRemoved();
-        if (markers != null) {
-            for (BlockPos marker : markers) {
-                BlockEntity tileEntity = level.getBlockEntity(marker);
-                if (tileEntity instanceof FieldMarkerTile) {
-                    ((FieldMarkerTile) tileEntity).setAutoFieldTile(null);
-                }
-            }
+    public void onLoad() {
+        super.onLoad();
+        invalidateBox();
+        if (!level.isClientSide && !listeningForChunks) {
+            MinecraftForge.EVENT_BUS.register(this);
+            listeningForChunks = true;
         }
+    }
+
+    @SubscribeEvent
+    public void onFieldChunkChanged(ChunkEvent event) {
+        if ((event instanceof ChunkEvent.Load || event instanceof ChunkEvent.Unload)
+                && event.getLevel() == level && watchedChunks.contains(event.getChunk().getPos().toLong())) {
+            // Chunk load events can arrive before FULL status. Rebuild on the next controller tick.
+            refreshField.set(true);
+        }
+    }
+
+    private void stopListeningForChunks() {
+        if (listeningForChunks) {
+            MinecraftForge.EVENT_BUS.unregister(this);
+            listeningForChunks = false;
+        }
+    }
+
+    @Override
+    public void onChunkUnloaded() {
+        stopListeningForChunks();
+        super.onChunkUnloaded();
+    }
+
+    @Override
+    public void setRemoved() {
+        stopListeningForChunks();
+        super.setRemoved();
+    }
+
+    @Override
+    public void onReplaced(Level world, BlockPos pos, BlockState state, BlockState newstate) {
+        if (state.is(newstate.getBlock())) {
+            return;
+        }
+        getMarkers();
+        linkedMarkers.forEach(this::clearMarkerLink);
+        linkedMarkers.clear();
+    }
+
+    private boolean clearMarkerLink(BlockPos pos) {
+        if (!level.hasChunkAt(pos)) {
+            return false;
+        }
+        if (MultipartHelper.getBlockEntity(level, pos, PartSlot.DOWN) instanceof FieldMarkerTile marker
+                && worldPosition.equals(marker.getAutoFieldTile())) {
+            marker.setAutoFieldTile(null);
+        }
+        return true;
     }
 
     // Call this if a node in the field is updated/changed/added/removed
@@ -501,7 +559,7 @@ public class AutoFieldTile extends TickingTileEntity implements IGuiTile, IPower
             if (te instanceof FieldMarkerTile) {
                 BlockPos fieldPos = ((FieldMarkerTile) te).getAutoFieldTile();
                 if (fieldPos != null) {
-                    BlockEntity tileEntity = world.getBlockEntity(fieldPos);
+                    BlockEntity tileEntity = world.hasChunkAt(fieldPos) ? world.getBlockEntity(fieldPos) : null;
                     if (tileEntity instanceof AutoFieldTile) {
                         ((AutoFieldTile) tileEntity).notifyNode(originalPos);
                     }
@@ -582,12 +640,14 @@ public class AutoFieldTile extends TickingTileEntity implements IGuiTile, IPower
     private void calculateMarkers() {
         fieldBox = null;
         markers = new HashSet<>();
+        Set<Long> chunks = new HashSet<>();
         Queue<BlockPos> todo = new ArrayDeque<>();
         todo.add(getBlockPos());
         while (!todo.isEmpty()) {
             BlockPos pos = todo.poll();
             for (Direction facing : OrientationTools.HORIZONTAL_DIRECTION_VALUES) {
                 BlockPos p = pos.relative(facing);
+                chunks.add(ChunkPos.asLong(p.getX() >> 4, p.getZ() >> 4));
                 if (!markers.contains(p)) {
                     BlockEntity te = level.hasChunkAt(p) ? level.getBlockEntity(p) : null;
                     if (te instanceof MultipartTE) {
@@ -609,6 +669,11 @@ public class AutoFieldTile extends TickingTileEntity implements IGuiTile, IPower
                 }
             }
         }
+
+        linkedMarkers.removeIf(pos -> !markers.contains(pos) && clearMarkerLink(pos));
+        linkedMarkers.addAll(markers);
+        linkedMarkers.forEach(pos -> chunks.add(ChunkPos.asLong(pos.getX() >> 4, pos.getZ() >> 4)));
+        watchedChunks = Set.copyOf(chunks);
 
         renderBox = new AABB(getBlockPos());
         if (fieldBox != null) {

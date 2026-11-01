@@ -1,12 +1,58 @@
 {
-  "textures": {
-    "bottom": "ariente:block/machines/flux_beam",
-    "top": "ariente:block/machines/flux_beam",
-    "side": "ariente:block/machines/flux_beam",
-    "particle": "#side"
-  },
+  "parent": "minecraft:block/block",
   "elements": [
     {
+      "faces": {
+        "down": {
+          "cullface": "down",
+          "texture": "#bottom",
+          "uv": [
+            0.0,
+            0.0,
+            16.0,
+            16.0
+          ]
+        },
+        "east": {
+          "texture": "#side",
+          "uv": [
+            0.0,
+            11.0,
+            16.0,
+            16.0
+          ]
+        },
+        "north": {
+          "texture": "#side",
+          "uv": [
+            0.0,
+            11.0,
+            16.0,
+            16.0
+          ]
+        },
+        "south": {
+          "texture": "#side",
+          "uv": [
+            0.0,
+            11.0,
+            16.0,
+            16.0
+          ]
+        },
+        "up": {
+          "texture": "#top"
+        },
+        "west": {
+          "texture": "#side",
+          "uv": [
+            0.0,
+            11.0,
+            16.0,
+            16.0
+          ]
+        }
+      },
       "from": [
         0,
         0,
@@ -16,23 +62,25 @@
         11,
         3,
         11
-      ],
+      ]
+    },
+    {
       "faces": {
         "down": {
+          "cullface": "down",
           "texture": "#bottom",
           "uv": [
             0.0,
             0.0,
             16.0,
             16.0
-          ],
-          "cullface": "down"
+          ]
         },
-        "up": {
-          "texture": "#top",
+        "east": {
+          "texture": "#side",
           "uv": [
             0.0,
-            0.0,
+            11.0,
             16.0,
             16.0
           ]
@@ -44,8 +92,7 @@
             11.0,
             16.0,
             16.0
-          ],
-          "cullface": "north"
+          ]
         },
         "south": {
           "texture": "#side",
@@ -54,8 +101,10 @@
             11.0,
             16.0,
             16.0
-          ],
-          "cullface": "south"
+          ]
+        },
+        "up": {
+          "texture": "#top"
         },
         "west": {
           "texture": "#side",
@@ -64,22 +113,9 @@
             11.0,
             16.0,
             16.0
-          ],
-          "cullface": "west"
-        },
-        "east": {
-          "texture": "#side",
-          "uv": [
-            0.0,
-            11.0,
-            16.0,
-            16.0
-          ],
-          "cullface": "east"
+          ]
         }
-      }
-    },
-    {
+      },
       "from": [
         5,
         0,
@@ -89,69 +125,13 @@
         11,
         3,
         16
-      ],
-      "faces": {
-        "down": {
-          "texture": "#bottom",
-          "uv": [
-            0.0,
-            0.0,
-            16.0,
-            16.0
-          ],
-          "cullface": "down"
-        },
-        "up": {
-          "texture": "#top",
-          "uv": [
-            0.0,
-            0.0,
-            16.0,
-            16.0
-          ]
-        },
-        "north": {
-          "texture": "#side",
-          "uv": [
-            0.0,
-            11.0,
-            16.0,
-            16.0
-          ],
-          "cullface": "north"
-        },
-        "south": {
-          "texture": "#side",
-          "uv": [
-            0.0,
-            11.0,
-            16.0,
-            16.0
-          ],
-          "cullface": "south"
-        },
-        "west": {
-          "texture": "#side",
-          "uv": [
-            0.0,
-            11.0,
-            16.0,
-            16.0
-          ],
-          "cullface": "west"
-        },
-        "east": {
-          "texture": "#side",
-          "uv": [
-            0.0,
-            11.0,
-            16.0,
-            16.0
-          ],
-          "cullface": "east"
-        }
-      }
+      ]
     }
   ],
-  "parent": "minecraft:block/block"
+  "textures": {
+    "bottom": "ariente:block/machines/flux_beam",
+    "particle": "#side",
+    "side": "ariente:block/machines/flux_beam",
+    "top": "ariente:block/machines/flux_bend_beam"
+  }
 }

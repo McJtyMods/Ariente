@@ -2,12 +2,11 @@ package mcjty.ariente.blocks.utility;
 
 import com.mojang.blaze3d.vertex.PoseStack;
 import com.mojang.blaze3d.vertex.VertexConsumer;
-import org.joml.Matrix4f;
 import net.minecraft.world.phys.Vec3;
 import mcjty.ariente.Ariente;
 import mcjty.ariente.setup.Registration;
-import mcjty.lib.client.CustomRenderTypes;
-import mcjty.lib.client.RenderHelper;
+import mcjty.ariente.client.ArienteRenderType;
+import mcjty.ariente.client.BeamRenderTools;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.renderer.MultiBufferSource;
 import net.minecraft.client.renderer.blockentity.BlockEntityRenderer;
@@ -51,8 +50,7 @@ public class WarperRenderer implements BlockEntityRenderer<WarperTile> {
 
         float height = 2;
 
-        Matrix4f matrix = matrixStack.last().pose();
-        VertexConsumer builder = buffer.getBuffer(CustomRenderTypes.TRANSLUCENT_ADD);
+        VertexConsumer builder = buffer.getBuffer(ArienteRenderType.BEAM);
         TextureAtlasSprite sprite = mc.getTextureAtlas(InventoryMenu.BLOCK_ATLAS).apply(beamIcon);
 
         for (int i = 0; i < 10; i++) {
@@ -65,7 +63,7 @@ public class WarperRenderer implements BlockEntityRenderer<WarperTile> {
             float xx = randomX[ii];
             float zz = randomZ[ii];
             float yy = - 1.0f + i1 + (randomY[ii] * height) / 8.0f;
-            RenderHelper.drawBeam(matrixStack, builder, sprite, new Vec3(xx, yy, zz), new Vec3(xx, yy + 4, zz), player, 0.2f);
+            BeamRenderTools.drawBeam(matrixStack, builder, sprite, new Vec3(xx, yy, zz), new Vec3(xx, yy + 4, zz), player, 0.2f);
         }
     }
 

@@ -25,6 +25,7 @@ public class DataGenerators {
                 List.of(new LootTableProvider.SubProviderEntry(LootTables::new, LootContextParamSets.BLOCK))));
         generator.addProvider(event.includeServer(), blockTags);
         generator.addProvider(event.includeServer(), new ItemTags(output, event.getLookupProvider(), blockTags, event.getExistingFileHelper()));
+        generator.addProvider(event.includeClient(), new FluxBeamTextures(output, event.getExistingFileHelper()));
         generator.addProvider(event.includeClient(), new BlockStates(generator, event.getExistingFileHelper()));
         generator.addProvider(event.includeClient(), new Items(generator, event.getExistingFileHelper()));
     }
