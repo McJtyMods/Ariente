@@ -24,6 +24,7 @@ public class ForceFieldRenderer {
     public static final ResourceLocation FORCEFIELD = new ResourceLocation(Ariente.MODID, "textures/effects/forcefield.png");
     private static final ResourceLocation FORCEFIELD_HIT = new ResourceLocation(Ariente.MODID, "textures/effects/forcefield_hit.png");
     private static final float FIELD_ALPHA = 0.3f;
+    private static final float PERSONAL_RECOVERY_FADE_TICKS = 3;
     private static final Set<BlockPos> forceFields = new HashSet<>();    // A set of force fields that are in render range
     private static Random random = new Random();
 
@@ -112,10 +113,13 @@ public class ForceFieldRenderer {
                 Vec3 pos = entity.getPosition(partialTicks);
                 boolean firstPerson = entity == minecraft.getCameraEntity() && minecraft.options.getCameraType().isFirstPerson();
                 double time = world.getGameTime() + partialTicks;
-                boolean coolingDown = PersonalForcefield.getCooldownUntil(entity) > time;
+                float remaining = (float) (PersonalForcefield.getCooldownUntil(entity) - time);
+                boolean coolingDown = remaining > 0;
+                float recoveryFade = Mth.clamp(remaining / PERSONAL_RECOVERY_FADE_TICKS, 0, 1);
                 float flash = coolingDown ? Mth.clamp(1 - (float) (time - PersonalForcefield.getLastHit(entity)) / 8, 0, 1) : 0;
-                float red = coolingDown ? 0.75f + flash * 0.25f : 0;
-                float alpha = firstPerson ? 0.09f + flash * 0.08f : 0.2f + flash * 0.35f;
+                float red = (firstPerson ? 0.75f + flash * 0.25f : 1) * recoveryFade;
+                float alpha = firstPerson ? 0.09f + flash * 0.08f * recoveryFade
+                        : 0.2f + (0.25f + flash * 0.3f) * recoveryFade;
                 // This shader discards vertex alpha below 0.1; its color modulator is applied after that cutoff.
                 RenderSystem.setShaderColor(1, 1, 1, alpha);
                 builder.begin(VertexFormat.Mode.TRIANGLES, DefaultVertexFormat.POSITION_TEX_COLOR);

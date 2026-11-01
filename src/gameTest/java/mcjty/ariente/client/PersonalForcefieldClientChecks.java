@@ -12,10 +12,14 @@ import net.minecraft.client.Screenshot;
 import net.minecraft.core.BlockPos;
 import net.minecraft.util.FastColor.ABGR32;
 import net.minecraft.world.entity.EquipmentSlot;
+import net.minecraft.world.entity.EntityType;
+import net.minecraft.world.entity.monster.Skeleton;
 import net.minecraft.world.item.ItemStack;
+import net.minecraft.world.item.Items;
 import net.minecraft.world.level.GameRules;
 import net.minecraft.world.level.GameType;
 import net.minecraft.world.level.block.Blocks;
+import net.minecraft.world.phys.AABB;
 import net.minecraftforge.api.distmarker.Dist;
 import net.minecraftforge.client.event.RenderGuiEvent;
 import net.minecraftforge.event.TickEvent;
@@ -34,8 +38,16 @@ public class PersonalForcefieldClientChecks {
     private static int ticks;
     private static boolean firstFlash;
     private static boolean thirdFlash;
+    private static boolean frontFlash;
+    private static int thirdHitAt = -1;
+    private static int frontHitAt = -1;
+    private static int thirdFadeAt = -1;
+    private static int frontFadeAt = -1;
     private static String capture;
     private static int[] baseline;
+    private static Skeleton skeleton;
+    private static double fadeStart;
+    private static double fadeMiddle;
 
     @SubscribeEvent
     public static void tick(TickEvent.ClientTickEvent event) {
@@ -58,6 +70,7 @@ public class PersonalForcefieldClientChecks {
                 level.getGameRules().getRule(GameRules.RULE_DAYLIGHT).set(false, server);
                 level.getGameRules().getRule(GameRules.RULE_DOMOBSPAWNING).set(false, server);
                 level.setDayTime(6000);
+                level.getEntitiesOfClass(Skeleton.class, new AABB(-10, 200, -10, 10, 208, 10)).forEach(Skeleton::discard);
                 for (BlockPos pos : BlockPos.betweenClosed(-10, 200, -10, 10, 207, 10)) {
                     var block = pos.getY() == 200 ? Blocks.WHITE_CONCRETE : Blocks.AIR;
                     if (pos.getZ() == -5 && pos.getY() <= 205) {
@@ -74,6 +87,14 @@ public class PersonalForcefieldClientChecks {
                 chest.getOrCreateTag().putInt("posirite", 64);
                 player.setItemSlot(EquipmentSlot.CHEST, chest);
                 player.teleportTo(level, .5, 201, .5, 180, 0);
+                if (Boolean.getBoolean("ariente.forcefieldArrowCheck")) {
+                    skeleton = EntityType.SKELETON.create(level);
+                    skeleton.setNoAi(true);
+                    skeleton.setItemSlot(EquipmentSlot.MAINHAND, new ItemStack(Items.BOW));
+                    skeleton.setItemSlot(EquipmentSlot.HEAD, new ItemStack(Items.IRON_HELMET));
+                    skeleton.setPos(.5, 201, -2);
+                    level.addFreshEntity(skeleton);
+                }
                 ready = true;
             });
             return;
@@ -95,13 +116,17 @@ public class PersonalForcefieldClientChecks {
         } else if (ticks == 60) {
             require(PersonalForcefield.isActive(mc.player), "Working state must reach the client");
             capture = "first-person-ready";
-        } else if (ticks == 80 || ticks == 200) {
+        } else if (ticks == 80 || ticks == 200 || ticks == 320) {
             server.execute(() -> {
                 var player = server.getPlayerList().getPlayer(uuid);
-                LaserEntity laser = LaserEntity.create(player.level(), player, 1, 0, 0);
                 player.invulnerableTime = 0;
-                player.hurt(player.damageSources().indirectMagic(laser, player), 24);
-                require(player.getHealth() == 20, "The server must block a fresh laser completely");
+                if (skeleton != null) {
+                    skeleton.performRangedAttack(player, 1);
+                } else {
+                    LaserEntity laser = LaserEntity.create(player.level(), player, 1, 0, 0);
+                    player.hurt(player.damageSources().indirectMagic(laser, player), 24);
+                    require(player.getHealth() == 20, "The server must block a fresh laser completely");
+                }
             });
         } else if (ticks == 140) {
             require(firstFlash && !PersonalForcefield.isCoolingDown(mc.player), "The client must see the hit and cooldown expiry");
@@ -112,15 +137,49 @@ public class PersonalForcefieldClientChecks {
             capture = "third-person-ready";
         } else if (ticks == 260) {
             require(thirdFlash && !PersonalForcefield.isCoolingDown(mc.player), "Third-person hit state must also recover");
-            Ariente.setup.getLogger().info("PERSONAL FORCEFIELD CLIENT CHECK PASSED: first/third person, laser block, hit packet and cooldown expiry");
+            mc.options.setCameraType(CameraType.THIRD_PERSON_FRONT);
+        } else if (ticks == 295) {
+            capture = "third-person-front-ready";
+        } else if (ticks == 380) {
+            require(frontFlash && !PersonalForcefield.isCoolingDown(mc.player), "Front-facing third-person hits must also recover");
+            Ariente.setup.getLogger().info("PERSONAL FORCEFIELD CLIENT CHECK PASSED: first person, front/back third person, {} block, visible cooldown tint and expiry",
+                    skeleton == null ? "laser" : "skeleton arrow");
             mc.stop();
         }
         if (ticks > 80 && ticks < 120 && !firstFlash && PersonalForcefield.isCoolingDown(mc.player)) {
             firstFlash = true;
+            Ariente.setup.getLogger().info("PERSONAL FIELD FIRST HIT: clientTime={}, cooldownUntil={}, hitTime={}",
+                    mc.level.getGameTime(), PersonalForcefield.getCooldownUntil(mc.player), PersonalForcefield.getLastHit(mc.player));
             capture = "first-person-hit";
         } else if (ticks > 200 && ticks < 240 && !thirdFlash && PersonalForcefield.isCoolingDown(mc.player)) {
             thirdFlash = true;
+            thirdHitAt = ticks;
+            thirdFadeAt = ticks + (int) (PersonalForcefield.getCooldownUntil(mc.player) - mc.level.getGameTime()) - 3;
+            Ariente.setup.getLogger().info("PERSONAL FIELD THIRD HIT: clientTime={}, cooldownUntil={}, hitTime={}",
+                    mc.level.getGameTime(), PersonalForcefield.getCooldownUntil(mc.player), PersonalForcefield.getLastHit(mc.player));
             capture = "third-person-hit";
+        } else if (ticks > 320 && ticks < 360 && !frontFlash && PersonalForcefield.isCoolingDown(mc.player)) {
+            frontFlash = true;
+            frontHitAt = ticks;
+            frontFadeAt = ticks + (int) (PersonalForcefield.getCooldownUntil(mc.player) - mc.level.getGameTime()) - 3;
+            capture = "third-person-front-hit";
+        }
+        if (thirdHitAt >= 0 && ticks == thirdHitAt + 6) {
+            capture = "third-person-midcooldown";
+        } else if (thirdFadeAt >= 0 && ticks == thirdFadeAt) {
+            capture = "third-person-fade-start";
+        } else if (thirdFadeAt >= 0 && ticks == thirdFadeAt + 1) {
+            capture = "third-person-fade-middle";
+        } else if (thirdFadeAt >= 0 && ticks == thirdFadeAt + 2) {
+            capture = "third-person-fade-end";
+        } else if (frontHitAt >= 0 && ticks == frontHitAt + 6) {
+            capture = "third-person-front-midcooldown";
+        } else if (frontFadeAt >= 0 && ticks == frontFadeAt) {
+            capture = "third-person-front-fade-start";
+        } else if (frontFadeAt >= 0 && ticks == frontFadeAt + 1) {
+            capture = "third-person-front-fade-middle";
+        } else if (frontFadeAt >= 0 && ticks == frontFadeAt + 2) {
+            capture = "third-person-front-fade-end";
         }
     }
 
@@ -134,6 +193,39 @@ public class PersonalForcefieldClientChecks {
         try (var screenshot = Screenshot.takeScreenshot(mc.getMainRenderTarget())) {
             Files.createDirectories(directory);
             screenshot.writeToFile(directory.resolve(capture + ".png"));
+            if (capture.startsWith("third-person") && !capture.endsWith("ready")) {
+                int redPixels = 0;
+                int samples = 0;
+                double redExcess = 0;
+                for (int y = 180; y < screenshot.getHeight() - 140; y++) {
+                    for (int x = screenshot.getWidth() / 2 - 220; x < screenshot.getWidth() / 2 + 220; x++) {
+                        if (Math.abs(x - screenshot.getWidth() / 2) < 100) {
+                            continue;
+                        }
+                        int pixel = screenshot.getPixelRGBA(x, y);
+                        redExcess += Math.max(0, ABGR32.red(pixel) - ABGR32.green(pixel));
+                        samples++;
+                        if (ABGR32.red(pixel) > 80 && ABGR32.red(pixel) > ABGR32.green(pixel) * 1.5f) {
+                            redPixels++;
+                        }
+                    }
+                }
+                double tint = redExcess / samples;
+                if (capture.endsWith("fade-start")) {
+                    fadeStart = tint;
+                } else if (capture.endsWith("fade-middle")) {
+                    fadeMiddle = tint;
+                    require(tint > 0 && tint < fadeStart, "The red tint must start fading before cooldown ends: " + fadeStart + " -> " + tint);
+                } else if (capture.endsWith("fade-end")) {
+                    require(tint < fadeMiddle, "The red tint must continue fading before cooldown ends: " + fadeMiddle + " -> " + tint);
+                } else {
+                    require(redPixels > 200, "The third-person shield surface must stay visibly red: " + capture + "; red pixels=" + redPixels);
+                    if (capture.endsWith("midcooldown")) {
+                        require((double) redPixels / samples > 0.1, "The cooldown tint must remain prominent: " + capture + "; red fraction=" + (double) redPixels / samples);
+                    }
+                }
+                Ariente.setup.getLogger().info("PERSONAL FIELD CAPTURE {}: redFraction={}, tint={}", capture, (double) redPixels / samples, tint);
+            }
             if (capture.equals("first-person-disabled")) {
                 baseline = new int[screenshot.getWidth() * screenshot.getHeight()];
                 for (int y = 0; y < screenshot.getHeight(); y++) {

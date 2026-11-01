@@ -894,7 +894,9 @@ are a 100→130 budget and 30000→40000 duration numerator.
 
 The personal forcefield is faintly visible from inside in first person. Absorbing
 a ranged or magic hit or an explosion flashes the field red, then leaves a dimmer
-red tint until it recovers. Recharge time follows the damage actually absorbed:
+red tint until it recovers. Third-person hit effects stay brighter throughout
+cooldown. The tint and extra brightness fade back to normal during the last
+three ticks (0.15 seconds). Recharge time follows the damage actually absorbed:
 at least 10 ticks (half a second), or about 40 ticks (two seconds) for a fully
 blocked 24-damage advanced city drone laser. Each subsequent ranged/explosion hit
 resets the timer using the amount that the weakened field absorbs. Both kinds
@@ -1328,7 +1330,7 @@ worlds.
 | Recipe variants | Negarite/Posirite/Combined cable and connector recipes work. Data variants and several original modules still have no catalog entry. |
 | Crafting integration | Constructor JEI and full manual/automatic batch yields pass focused checks. Crafting still uses the hardcoded catalog. |
 | Armor movement | Flight, Hover, Speed and Step Assist pass focused survival-client checks. Invisibility's install control remains disabled. |
-| Personal forcefield | Five dedicated regression tests cover protection, cooldowns and retaliation. A live client check covers first/third-person rendering and hit synchronization; flashes with multiple remote players remain a play-test item. |
+| Personal forcefield | Five dedicated regression tests cover protection, cooldowns and retaliation. Live client checks cover lasers and real skeleton arrows, front/back third-person views, visible cooldown tint and its fade, including with Embeddium/Oculus; flashes with multiple remote players remain a play-test item. |
 | Equipment lifecycle | Fuel/effect checks and real dedicated-server hotkeys, equipment synchronization, reconnect and death/respawn pass with two clients. Multiplayer flight and mod interactions still need play testing. |
 | Automation matching | Tag/NBT/damage filters, batch routing, round robin and rejected-insert recovery pass focused inventory checks; long multi-chunk networks remain an integration check. |
 | Visual effects | Automation transfers, blueprint previews, facade items, ship hull, soldier armor and hologram tooltips are restored; combined-cable beam rendering remains an original limitation. |

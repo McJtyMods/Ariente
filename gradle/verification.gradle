@@ -59,6 +59,9 @@ if (project.hasProperty('ariente_forcefield_check')) {
         workingDirectory project.file('build/verification/forcefield-client')
         mods.ariente.source(sourceSets.gameTest)
         property 'ariente.forcefieldClientCheck', 'true'
+        if (project.hasProperty('ariente_forcefield_arrows')) {
+            property 'ariente.forcefieldArrowCheck', 'true'
+        }
         args '--quickPlaySingleplayer', 'ForcefieldCheck', '--width', '1280', '--height', '720'
     }
     tasks.withType(JavaExec).configureEach {
