@@ -7,7 +7,7 @@
     {
       "type": "patchouli:text",
       "title": "Link a button and lock",
-      "text": "$(li)Place a Wireless Button.$(li)Hold a Wireless Lock item and right-click the button to copy its channel.$(li)Place the lock near your Door Markers.$(li)Operate the button with an empty hand.$(br2)The button toggles its channel on and off. A Wireless Lock unlocks nearby doors while the channel is on."
+      "text": "$(li)Place a Wireless Button.$(li)Hold a Wireless Lock item and right-click the button to copy its channel.$(li)Place the lock near your Door Markers.$(li)Operate the button with an empty hand.$(br2)The button toggles its channel. The Wireless Lock unlocks nearby doors while the channel is on. Its hologram arrows adjust the horizontal and vertical control ranges. Keep both devices in loaded chunks."
     },
     {
       "type": "patchouli:text",

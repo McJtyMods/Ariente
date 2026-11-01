@@ -1,4 +1,8 @@
 {
+  "block.ariente.display_base": "Holographic Display Base",
+  "item.ariente.display_module_power": "Holographic Power Module",
+  "item.ariente.display_module_storage": "Holographic Storage Module",
+  "item.ariente.display_module_text": "Holographic Text Module",
   "item.ariente.tablet": "Ariente Tablet",
   "item.ariente.tablet.tooltip": "Field manual for Ariente technology and exploration",
   "item.ariente.ingot_platinum": "Platinum Ingot",

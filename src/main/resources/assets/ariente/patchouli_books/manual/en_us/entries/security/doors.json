@@ -7,12 +7,12 @@
     {
       "type": "patchouli:text",
       "title": "Build an automatic door",
-      "text": "Place Door Markers across the floor of an opening. Put a ceiling above them to stop the panels at the intended height. A marker normally fills up to six blocks above itself.$(br2)Unlocked doors open for nearby players and soldiers. The marker’s facing is perpendicular to the width of the opening."
+      "text": "Place Door Markers across the floor of an opening. Put a ceiling above them to stop panels at the intended height; a marker normally fills up to six blocks above itself. Its facing is perpendicular to the opening’s width.$(br2)Unlocked doors open for nearby players and soldiers. The hologram’s icon buttons choose the symbol displayed on the door panels. Nearby Locks control access."
     },
     {
       "type": "patchouli:text",
       "title": "Control nearby doors",
-      "text": "A Lock controls Door Markers within its configured horizontal and vertical range. A matching Key Card toggles the lock and its doors.$(br2)Unlock the controller before adjusting it. Keep control areas separate so two Locks do not compete over one door.$(br2)For a player-built switch-controlled entrance, use a Wireless Lock and Wireless Button."
+      "text": "A Lock controls Door Markers within its configured horizontal and vertical range. A matching Key Card toggles the lock and its doors.$(br2)Unlock the controller before adjusting its range sliders. Keep control areas separate so two Locks do not compete over one door.$(br2)For a player-built switch-controlled entrance, use a Wireless Lock and Wireless Button."
     }
   ],
   "extra_recipe_mappings": {

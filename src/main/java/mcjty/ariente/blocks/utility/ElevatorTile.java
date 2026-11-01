@@ -1,5 +1,6 @@
 package mcjty.ariente.blocks.utility;
 
+import mcjty.ariente.gui.GuiHelp;
 import mcjty.lib.varia.SafeClientTools;
 import mcjty.ariente.Ariente;
 import mcjty.ariente.api.ICityAI;
@@ -345,8 +346,12 @@ public class ElevatorTile extends TickingTileEntity implements IGuiTile, ICityEq
 
     @Override
     public IGuiComponent<?> createGui(String tag, IGuiComponentRegistry registry) {
-        if (TAG_ELEVATOR.equals(tag)) {
-            IPanel panel = registry.panel(0, 0, 8, 8);
+        if (TAG_HELP.equals(tag)) {
+            return GuiHelp.ELEVATOR.createHelpGui(registry);
+        } else if ((TAG_ELEVATOR + "_help").equals(tag)) {
+            return GuiHelp.ELEVATOR.createHelpGui(registry, TAG_ELEVATOR);
+        } else if (TAG_ELEVATOR.equals(tag)) {
+            IPanel panel = GuiHelp.ELEVATOR.createPanel(registry, entity -> entity.switchTag(TAG_ELEVATOR + "_help"));
             List<Integer> floors = findFloors();
 
             if (!floors.isEmpty()) {
@@ -376,18 +381,9 @@ public class ElevatorTile extends TickingTileEntity implements IGuiTile, ICityEq
 
             return panel;
         } else {
-            return registry.panel(0, 0, 8, 8)
-                    .add(registry.text(0, 2, 1, 1).text("Height").color(registry.color(StyledColor.LABEL)))
-                    .add(registry.number(3, 4, 1, 1).color(registry.color(StyledColor.INFORMATION)).getter((p,h) -> getHeight()))
-
-                    .add(registry.iconButton(1, 4, 1, 1).icon(registry.image(GRAY_DOUBLE_ARROW_LEFT)).hover(registry.image(WHITE_DOUBLE_ARROW_LEFT))
-                            .hitEvent((component, player, entity1, x, y) -> changeHeight(-8)))
-                    .add(registry.iconButton(2, 4, 1, 1).icon(registry.image(GRAY_ARROW_LEFT)).hover(registry.image(WHITE_ARROW_LEFT))
-                            .hitEvent((component, player, entity1, x, y) -> changeHeight(-1)))
-                    .add(registry.iconButton(5, 4, 1, 1).icon(registry.image(GRAY_ARROW_RIGHT)).hover(registry.image(WHITE_ARROW_RIGHT))
-                            .hitEvent((component, player, entity1, x, y) -> changeHeight(1)))
-                    .add(registry.iconButton(6, 4, 1, 1).icon(registry.image(GRAY_DOUBLE_ARROW_RIGHT)).hover(registry.image(WHITE_DOUBLE_ARROW_RIGHT))
-                            .hitEvent((component, player, entity1, x, y) -> changeHeight(8)))
+            return GuiHelp.ELEVATOR.createPanel(registry)
+                    .add(registry.integerSlider(.3, 3, 7.2, 1).name("elevator_height").label("Height").range(1, 256)
+                            .getter((p, e) -> getHeight()).changed((p, e, value) -> changeHeight(value - getHeight())))
                     ;
         }
     }

@@ -74,6 +74,25 @@ public class BlueprintRecipeRegistry {
         }
         initialized = true;
 
+        recipes.add(new ConstructorRecipe(new ItemStack(Registration.DISPLAY_BASE.get()), COMMON,
+                new ItemStack(Registration.INGOT_SILVER.get(), 4),
+                new ItemStack(Registration.CIRCUIT.get(), 2),
+                new ItemStack(Items.GLASS, 2),
+                new ItemStack(Items.GLOWSTONE_DUST, 2)));
+        recipes.add(new ConstructorRecipe(new ItemStack(Registration.DISPLAY_POWER.get()), COMMON,
+                new ItemStack(Registration.CIRCUIT.get(), 1),
+                new ItemStack(Registration.INGOT_MANGANESE.get(), 2),
+                new ItemStack(Registration.DUST_NEGARITE.get(), 2),
+                new ItemStack(Registration.DUST_POSIRITE.get(), 2)));
+        recipes.add(new ConstructorRecipe(new ItemStack(Registration.DISPLAY_STORAGE.get()), COMMON,
+                new ItemStack(Registration.CIRCUIT.get(), 1),
+                new ItemStack(Registration.INGOT_SILVER.get(), 2),
+                new ItemStack(Items.CHEST, 1)));
+        recipes.add(new ConstructorRecipe(new ItemStack(Registration.DISPLAY_TEXT.get()), COMMON,
+                new ItemStack(Registration.CIRCUIT.get(), 1),
+                new ItemStack(Registration.DUST_SILICON.get(), 2),
+                new ItemStack(Items.GLOWSTONE_DUST, 1)));
+
         recipes.add(new ConstructorRecipe(new ItemStack(Registration.FLUX_CAPACITOR.get()), RARE,
                 new ItemStack(Registration.INGOT_LITHIUM.get(), 2),
                 new ItemStack(Registration.INGOT_MANGANESE.get(), 1),

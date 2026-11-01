@@ -1,5 +1,9 @@
 package mcjty.ariente.setup;
 
+import mcjty.ariente.display.client.DisplayClientEvents;
+import mcjty.ariente.display.client.DisplayModuleRenderers;
+import mcjty.ariente.display.client.DisplayRenderer;
+
 import mcjty.ariente.multipart.MultipartRenderer;
 import mcjty.ariente.items.BlueprintRenderer;
 import mcjty.ariente.ClientForgeEventHandlers;
@@ -38,6 +42,8 @@ public class ClientSetup {
 
     public static void init(FMLClientSetupEvent event) {
         MinecraftForge.EVENT_BUS.register(new ClientForgeEventHandlers());
+        MinecraftForge.EVENT_BUS.register(new DisplayClientEvents());
+        DisplayModuleRenderers.init();
         MinecraftForge.EVENT_BUS.register(new KeyInputHandler());
 
         NegariteTankRenderer.register();
@@ -67,6 +73,7 @@ public class ClientSetup {
     @SubscribeEvent
     public static void entityRenderers(EntityRenderersEvent.RegisterRenderers event)
     {
+        event.registerBlockEntityRenderer(Registration.DISPLAY_BASE_TILE.get(), DisplayRenderer::new);
         event.registerBlockEntityRenderer(Registration.TYPE_MULTIPART.get(), MultipartRenderer::new);
         event.registerEntityRenderer(Registration.ENTITY_LASER.get(), new LaserRender.Factory());
         event.registerEntityRenderer(Registration.ENTITY_DRONE.get(), DroneRender.FACTORY);

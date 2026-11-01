@@ -88,6 +88,10 @@ public class Items extends BaseItemModelProvider {
         fenceItem(Registration.MARBLE_FENCE_ITEM.get(), "block/decorative/marble_fence");
         fenceItem(Registration.TECH_FENCE_ITEM.get(), "block/decorative/tech_fence");
 
+        parentedItem(Registration.DISPLAY_BASE_ITEM.get(), "block/utility/display_base");
+        itemGenerated(Registration.DISPLAY_POWER.get(), "item/displaymodules/module_power");
+        itemGenerated(Registration.DISPLAY_STORAGE.get(), "item/displaymodules/module_storage");
+        itemGenerated(Registration.DISPLAY_TEXT.get(), "item/displaymodules/module_text");
         parentedItem(Registration.DOOR_MARKER_ITEM.get(), "block/utility/door_marker");
         parentedItem(Registration.LEVEL_MARKER_ITEM.get(), "block/utility/level_marker");
         parentedItem(Registration.FIELD_MARKER_ITEM.get(), "block/utility/field_marker");

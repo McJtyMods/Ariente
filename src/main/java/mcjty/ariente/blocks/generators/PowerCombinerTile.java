@@ -3,8 +3,7 @@ package mcjty.ariente.blocks.generators;
 import mcjty.ariente.Ariente;
 import mcjty.ariente.cables.CableColor;
 import mcjty.ariente.cables.ConnectorTileEntity;
-import mcjty.ariente.gui.HelpBuilder;
-import mcjty.ariente.gui.HoloGuiTools;
+import mcjty.ariente.gui.GuiHelp;
 import mcjty.ariente.power.*;
 import mcjty.ariente.setup.Registration;
 import mcjty.hologui.api.IGuiComponent;
@@ -144,38 +143,22 @@ public class PowerCombinerTile extends TickingTileEntity implements IPowerReceiv
     @Override
     public IGuiComponent<?> createGui(String tag, IGuiComponentRegistry registry) {
         if (TAG_HELP.equals(tag)) {
-            return HoloGuiTools.createHelpGui(registry,
-                    HelpBuilder.create()
-                            .line("This block can combine negarite")
-                            .line("and posirite power and send it")
-                            .line("out through a combined cable")
-                            .line("Note that there is a small loss")
-                            .line("associated with this operation")
-                            .nl()
-                            .line("Use the controls to change the")
-                            .line("maximum transfer rate")
-            );
+            return GuiHelp.COMBINER.createHelpGui(registry);
         } else {
             return createMainGui(registry);
         }
     }
 
     private IGuiComponent<?> createMainGui(IGuiComponentRegistry registry) {
-        return HoloGuiTools.createPanelWithHelp(registry)
+        return GuiHelp.COMBINER.createPanel(registry)
                 .add(registry.text(0, 1, 1, 1).text("Transfer").color(registry.color(StyledColor.LABEL)))
                 .add(registry.text(0, 2.7, 1, 1).text("In").color(registry.color(StyledColor.LABEL)).scale(.7f))
                 .add(registry.number(2, 2.5, 1, 1).color(registry.color(StyledColor.INFORMATION)).getter((p,h) -> getPowerTransfer()))
                 .add(registry.text(0, 3.7, 1, 1).text("Out").color(registry.color(StyledColor.LABEL)).scale(.7f))
                 .add(registry.number(2, 3.5, 1, 1).color(registry.color(StyledColor.INFORMATION)).getter((p,h) -> getPowerToTransfer()))
 
-                .add(registry.iconButton(1, 6, 1, 1).icon(registry.image(GRAY_DOUBLE_ARROW_LEFT)).hover(registry.image(WHITE_DOUBLE_ARROW_LEFT))
-                        .hitEvent((component, player, entity1, x, y) -> changeTransfer(-50)))
-                .add(registry.iconButton(2, 6, 1, 1).icon(registry.image(GRAY_ARROW_LEFT)).hover(registry.image(WHITE_ARROW_LEFT))
-                        .hitEvent((component, player, entity1, x, y) -> changeTransfer(-1)))
-                .add(registry.iconButton(5, 6, 1, 1).icon(registry.image(GRAY_ARROW_RIGHT)).hover(registry.image(WHITE_ARROW_RIGHT))
-                        .hitEvent((component, player, entity1, x, y) -> changeTransfer(1)))
-                .add(registry.iconButton(6, 6, 1, 1).icon(registry.image(GRAY_DOUBLE_ARROW_RIGHT)).hover(registry.image(WHITE_DOUBLE_ARROW_RIGHT))
-                        .hitEvent((component, player, entity1, x, y) -> changeTransfer(50)))
+                .add(registry.integerSlider(.3, 5.7, 7.2, 1).name("transfer_rate").label("Transfer / tick").range(0, 20000)
+                        .getter((p, e) -> powerTransfer).changed((p, e, value) -> changeTransfer(value - powerTransfer)))
                 ;
     }
 

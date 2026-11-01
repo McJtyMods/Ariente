@@ -12,7 +12,7 @@
     {
       "type": "patchouli:text",
       "title": "Drive the cart",
-      "text": "Aim at an end-panel hologram and click its speed arrows. Small arrows change the setting by 5; large arrows by 10. Negative settings reverse travel.$(br2)The red stop control brakes the cart. Sneak to dismount.$(br2)Check beam orientation at corners and slow down before testing a new route. Carts need no generator connection."
+      "text": "Aim at an end-panel hologram and click or drag its speed slider. The outer arrows change the setting by one. Negative settings reverse travel.$(br2)The red stop control brakes the cart. Sneak to dismount.$(br2)Check beam orientation at corners and slow down before testing a new route. Carts need no generator connection."
     }
   ],
   "extra_recipe_mappings": {

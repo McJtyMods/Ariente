@@ -1,0 +1,17 @@
+{
+  "type": "minecraft:block",
+  "pools": [
+    {
+      "bonus_rolls": 0.0,
+      "entries": [
+        {
+          "type": "minecraft:item",
+          "name": "ariente:display_base"
+        }
+      ],
+      "name": "display_base",
+      "rolls": 1.0
+    }
+  ],
+  "random_sequence": "ariente:blocks/display_base"
+}

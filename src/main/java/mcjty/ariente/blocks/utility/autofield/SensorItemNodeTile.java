@@ -1,7 +1,6 @@
 package mcjty.ariente.blocks.utility.autofield;
 
-import mcjty.ariente.gui.HelpBuilder;
-import mcjty.ariente.gui.HoloGuiTools;
+import mcjty.ariente.gui.GuiHelp;
 import mcjty.ariente.setup.Registration;
 import mcjty.hologui.api.IGuiComponent;
 import mcjty.hologui.api.IGuiComponentRegistry;
@@ -103,11 +102,7 @@ public class SensorItemNodeTile extends AbstractNodeTile {
         final Pair<String, String> pair = getSlotTag(tag);
 
         if (TAG_HELP.equals(pair.getRight())) {
-            return HoloGuiTools.createHelpGui(registry,
-                    HelpBuilder.create()
-                            .line("This node can be used in")
-                            .line("an automation field to detect")
-                            .line("items"),
+            return GuiHelp.SENSOR.createHelpGui(registry,
                     pair.getLeft() + ":" + TAG_MAIN
             );
         } else {
@@ -141,29 +136,22 @@ public class SensorItemNodeTile extends AbstractNodeTile {
                 .hitEvent(changeColor(outputColor, 0));
         addColors(registry, outColor, false);
 
-        ITextChoice operatorChoice = registry.textChoice(0, 3.5, 1.3, 1)
+        ITextChoice operatorChoice = registry.textChoice(0, 2.4, 7.2, .8).scale(.55f)
                 .getter(player -> operator)
                 .hitEvent((component, player, entity, x, y) -> changeOperator());
         for (String op : operators) {
             operatorChoice.addText(op);
         }
 
-        IPanel panel = HoloGuiTools.createPanelWithHelp(registry, entity -> entity.switchTag(pair.getLeft() + ":" + TAG_HELP))
+        IPanel panel = GuiHelp.SENSOR.createPanel(registry, entity -> entity.switchTag(pair.getLeft() + ":" + TAG_HELP))
                 .add(registry.text(3.3, -.6, 1, 1).text("Sensor").color(registry.color(StyledColor.LABEL)))
                 .add(registry.text(0, 7, 1, 1).text("Output").color(registry.color(StyledColor.LABEL)))
                 .add(outColor)
                 .add(operatorChoice)
 
-                .add(registry.number(4, 3.4, 1, 1).color(registry.color(StyledColor.INFORMATION)).getter((p, h) -> amount))
-
-                .add(registry.iconButton(2, 3.3, 1, 1).icon(registry.image(GRAY_DOUBLE_ARROW_LEFT)).hover(registry.image(WHITE_DOUBLE_ARROW_LEFT))
-                        .hitEvent((component, player, entity1, x, y) -> changeAmount(-8)))
-                .add(registry.iconButton(3, 3.3, 1, 1).icon(registry.image(GRAY_ARROW_LEFT)).hover(registry.image(WHITE_ARROW_LEFT))
-                        .hitEvent((component, player, entity1, x, y) -> changeAmount(-1)))
-                .add(registry.iconButton(6.6, 3.3, 1, 1).icon(registry.image(GRAY_ARROW_RIGHT)).hover(registry.image(WHITE_ARROW_RIGHT))
-                        .hitEvent((component, player, entity1, x, y) -> changeAmount(1)))
-                .add(registry.iconButton(7.6, 3.3, 1, 1).icon(registry.image(GRAY_DOUBLE_ARROW_RIGHT)).hover(registry.image(WHITE_DOUBLE_ARROW_RIGHT))
-                        .hitEvent((component, player, entity1, x, y) -> changeAmount(8)))
+                .add(registry.integerSlider(0, 3.6, 7.2, 1).name("sensor_amount").label("Item threshold")
+                        .range(1, Integer.MAX_VALUE).logarithmic(true).getter((p, e) -> amount)
+                        .changed((p, e, value) -> changeAmount(value - amount)))
                 ;
 
         addFilterChoice(registry, panel, 0, false);

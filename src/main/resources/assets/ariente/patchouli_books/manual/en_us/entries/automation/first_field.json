@@ -7,7 +7,7 @@
     {
       "type": "patchouli:text",
       "title": "Mark the working area",
-      "text": "Place an Automation Field controller. Lay a connected area of Field Markers beside it at the controller’s base height.$(br2)Markers must sit under the columns where the $(thing)nodes$() will be. Fill the area rather than marking only its outline. Set the height in the controller’s hologram to reach the nodes."
+      "text": "Place an Automation Field controller. Lay a connected area of Field Markers beside it at the controller’s base height.$(br2)Markers must sit under the columns where the $(thing)nodes$() will be. Fill the area rather than marking only its outline. Set the height in the controller’s hologram to reach the nodes, and enable the outline display to check coverage."
     },
     {
       "type": "patchouli:text",

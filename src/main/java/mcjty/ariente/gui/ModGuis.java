@@ -1,6 +1,7 @@
 package mcjty.ariente.gui;
 
 import mcjty.ariente.Ariente;
+import mcjty.ariente.display.ModuleSettings;
 import mcjty.ariente.entities.fluxelevator.FluxElevatorGui;
 import mcjty.ariente.entities.levitator.FluxLevitatorGui;
 import mcjty.ariente.items.EnergyHolderItem;
@@ -16,11 +17,13 @@ public class ModGuis {
     public static final String GUI_ARMOR_SABRE = "ariente.armor_sabre";
     public static final String GUI_ARMOR_HELP = "ariente.armor_help";
     public static final String GUI_LEVITATOR = "ariente.levitator";
+    public static final String GUI_LEVITATOR_HELP = "ariente.levitator_help";
     public static final String GUI_ELEVATOR = "ariente.elevator";
     public static final String GUI_ENERGY_HOLDER = "ariente.energy_holder";
     public static final String GUI_ENERGY_HOLDER_HOLD = "ariente.energy_holder_help";
 
     public static void init() {
+        ModuleSettings.register();
         Ariente.guiHandler.getGuiRegistry().registerGui(GUI_ARMOR, ArmorGui::create);
         Ariente.guiHandler.getGuiRegistry().registerGui(GUI_ARMOR_HELMET, ArmorGui::createHelmetGui);
         Ariente.guiHandler.getGuiRegistry().registerGui(GUI_ARMOR_CHEST, ArmorGui::createChestGui);
@@ -28,7 +31,11 @@ public class ModGuis {
         Ariente.guiHandler.getGuiRegistry().registerGui(GUI_ARMOR_BOOTS, ArmorGui::createBootsGui);
         Ariente.guiHandler.getGuiRegistry().registerGui(GUI_ARMOR_SABRE, ArmorGui::createSabreGui);
         Ariente.guiHandler.getGuiRegistry().registerGui(GUI_ARMOR_HELP, ArmorGui::createHelpGui);
+        for (String gui : new String[]{GUI_ARMOR_HELMET, GUI_ARMOR_CHEST, GUI_ARMOR_LEGS, GUI_ARMOR_BOOTS, GUI_ARMOR_SABRE}) {
+            Ariente.guiHandler.getGuiRegistry().registerGui(gui + "_help", player -> ArmorGui.createHelpGui(player, gui));
+        }
         Ariente.guiHandler.getGuiRegistry().registerGui(GUI_LEVITATOR, FluxLevitatorGui::createGui);
+        Ariente.guiHandler.getGuiRegistry().registerGui(GUI_LEVITATOR_HELP, FluxLevitatorGui::createHelpGui);
         Ariente.guiHandler.getGuiRegistry().registerGui(GUI_ELEVATOR, FluxElevatorGui::createGui);
         Ariente.guiHandler.getGuiRegistry().registerGui(GUI_ENERGY_HOLDER, EnergyHolderItem::createGui);
         Ariente.guiHandler.getGuiRegistry().registerGui(GUI_ENERGY_HOLDER_HOLD, EnergyHolderItem::createHelpGui);

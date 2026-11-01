@@ -129,3 +129,18 @@ tasks.withType(JavaExec).configureEach {
         }
     }
 }
+
+// Isolated holographic display, keyboard input, preview and packet verification.
+if (project.hasProperty('ariente_display_check')) {
+    minecraft.runs.client {
+        workingDirectory project.file('build/verification/display-client')
+        mods.ariente.source(sourceSets.gameTest)
+        property 'ariente.displayClientCheck', 'true'
+        args '--quickPlaySingleplayer', 'DisplayCheck', '--width', '1280', '--height', '800'
+    }
+    tasks.withType(JavaExec).configureEach {
+        if (name == 'runClient') {
+            dependsOn 'gameTestClasses'
+        }
+    }
+}

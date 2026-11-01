@@ -1,7 +1,7 @@
 package mcjty.ariente.items.armor;
 
 import mcjty.ariente.Ariente;
-import mcjty.ariente.gui.HelpBuilder;
+import mcjty.ariente.gui.GuiHelp;
 import mcjty.ariente.gui.HoloGuiTools;
 import mcjty.ariente.gui.ModGuis;
 import mcjty.ariente.items.modules.ArmorModuleItem;
@@ -25,7 +25,7 @@ public class ArmorGui {
 
     public static IGuiComponent<?> create(Player player) {
         IGuiComponentRegistry registry = Ariente.guiHandler.getComponentRegistry();
-        IPanel panel = HoloGuiTools.createPanelWithHelp(registry, entity -> entity.switchGui(ModGuis.GUI_ARMOR_HELP))
+        IPanel panel = GuiHelp.EQUIPMENT.createPanel(registry, entity -> entity.switchGui(ModGuis.GUI_ARMOR_HELP))
                 .add(registry.text(0, 1, 1, 1).text("Configure gear").color(registry.color(StyledColor.LABEL)));
 
         double x = 0.5;
@@ -46,20 +46,13 @@ public class ArmorGui {
     }
 
     public static IGuiComponent<?> createHelpGui(Player player) {
+        return createHelpGui(player, ModGuis.GUI_ARMOR);
+    }
+
+    public static IGuiComponent<?> createHelpGui(Player player, String guiBack) {
         IGuiComponentRegistry registry = Ariente.guiHandler.getComponentRegistry();
-        return HoloGuiTools.createHelpGui(registry, HelpBuilder.create()
-                .line("With this GUI you can configure")
-                .line("your armor and weapon modules")
-                .line("For every module you can toggle")
-                .line("the module itself to install or")
-                .line("remove it from your equipment.")
-                .nl()
-                .line("Then you can hit the checkbox to")
-                .line("actually enable the module")
-                .nl()
-                .line("Using the last button you can set")
-                .line("a hotkey (1 to 4 defined hotkeys)"),
-                entity -> entity.switchGui(ModGuis.GUI_ARMOR)
+        return GuiHelp.EQUIPMENT.createHelpGui(registry,
+                entity -> entity.switchGui(guiBack)
         );
     }
 
@@ -151,7 +144,14 @@ public class ArmorGui {
     }
 
     private static IPanel createPieceGui(IGuiComponentRegistry registry, EquipmentSlot slot) {
-        IPanel panel = registry.panel(0, 0, 8, 8);
+        String gui = switch (slot) {
+            case HEAD -> ModGuis.GUI_ARMOR_HELMET;
+            case CHEST -> ModGuis.GUI_ARMOR_CHEST;
+            case LEGS -> ModGuis.GUI_ARMOR_LEGS;
+            case FEET -> ModGuis.GUI_ARMOR_BOOTS;
+            default -> ModGuis.GUI_ARMOR_SABRE;
+        };
+        IPanel panel = GuiHelp.EQUIPMENT.createPanel(registry, entity -> entity.switchGui(gui + "_help"));
         panel.add(registry.text(0, 0, 1, 1).text("Pwr").color(registry.color(StyledColor.LABEL)));
         panel.add(registry.number(3, 0, 1, 1)
                 .color(registry.color(StyledColor.INFORMATION))

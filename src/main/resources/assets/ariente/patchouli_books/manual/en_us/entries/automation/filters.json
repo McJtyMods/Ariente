@@ -7,12 +7,12 @@
     {
       "type": "patchouli:text",
       "title": "Choose what can move",
-      "text": "Open a node’s hologram and double-click an item in the displayed player inventory to set a filter sample. Clear a displayed sample to remove it.$(br2)Material matching allows equivalent materials, such as Silver Ingots from different mods. Damage and item-data matching can be adjusted separately. Check both ends of the transfer."
+      "text": "In an Automation Field, an Output Item Node takes items out of its attached inventory; an Input Item Node inserts them. Both need filters: an empty filter accepts nothing.$(br2)Double-click player-inventory items to set samples; double-click samples to clear them. The $(thing)ore icon$() matches material tags, such as planks or ingots/silver, allowing equivalent materials from different mods. $(thing)NBT$() (item data) and damage matching are separate options. Check both ends."
     },
     {
       "type": "patchouli:text",
       "title": "Send useful batches",
-      "text": "The Output Node’s stack setting is the $(thing)minimum batch$(), from 1 to 64. A setting of 64 waits until a whole stack is available.$(br2)Large batches use less flux per item. Add a Round Robin Node behind an Output Node to rotate batches among eligible destinations.$(br2)If transfers stall, check batch availability, destination space and both filters."
+      "text": "The Output Node’s stack setting is the $(thing)minimum batch$(), from 1 to 64. A setting of 64 waits for a whole stack. Large batches use less flux per item.$(br2)Add a Round Robin Node behind an Output Node to rotate batches among eligible destinations. Colored conditions can require sensor signals before transferring.$(br2)If transfers stall, check batch availability, destination space, both filters and required conditions."
     }
   ],
   "extra_recipe_mappings": {

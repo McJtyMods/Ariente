@@ -1,6 +1,10 @@
 package mcjty.ariente.network;
 
 import mcjty.ariente.Ariente;
+import mcjty.ariente.display.PacketDisplayAction;
+import mcjty.ariente.display.PacketDisplayData;
+import mcjty.ariente.display.PacketDisplayGesture;
+import mcjty.ariente.display.PacketDisplayGestureResult;
 import mcjty.ariente.bindings.PacketFullHealth;
 import mcjty.ariente.blocks.defense.PacketDamageForcefield;
 import mcjty.ariente.blocks.utility.PacketClickStorage;
@@ -25,7 +29,7 @@ import java.util.Optional;
 
 public class ArienteMessages {
 
-    private static final String PROTOCOL_VERSION = "3";
+    private static final String PROTOCOL_VERSION = "7";
 
     public static SimpleChannel INSTANCE;
 
@@ -40,6 +44,14 @@ public class ArienteMessages {
 
         INSTANCE = net;
 
+        net.registerMessage(id(), PacketDisplayAction.class, PacketDisplayAction::toBytes, PacketDisplayAction::new,
+                PacketDisplayAction::handle, Optional.of(NetworkDirection.PLAY_TO_SERVER));
+
+        net.registerMessage(id(), PacketDisplayGesture.class, PacketDisplayGesture::toBytes, PacketDisplayGesture::new,
+                PacketDisplayGesture::handle, Optional.of(NetworkDirection.PLAY_TO_SERVER));
+        net.registerMessage(id(), PacketDisplayGestureResult.class, PacketDisplayGestureResult::toBytes, PacketDisplayGestureResult::new,
+                PacketDisplayGestureResult::handle, Optional.of(NetworkDirection.PLAY_TO_CLIENT));
+
         // Server side
         net.registerMessage(id(), PacketClickStorage.class, PacketClickStorage::toBytes, PacketClickStorage::new, PacketClickStorage::handle);
         net.registerMessage(id(), PacketHitForcefield.class, PacketHitForcefield::toBytes, PacketHitForcefield::new, PacketHitForcefield::handle);
@@ -50,6 +62,8 @@ public class ArienteMessages {
         net.registerMessage(id(), PacketAutoFieldRequestRenderInfo.class, PacketAutoFieldRequestRenderInfo::toBytes, PacketAutoFieldRequestRenderInfo::new, PacketAutoFieldRequestRenderInfo::handle);
 
         // Client side
+        net.registerMessage(id(), PacketDisplayData.class, PacketDisplayData::toBytes, PacketDisplayData::new,
+                PacketDisplayData::handle, Optional.of(NetworkDirection.PLAY_TO_CLIENT));
         net.registerMessage(id(), PacketDamageForcefield.class, PacketDamageForcefield::toBytes, PacketDamageForcefield::new, PacketDamageForcefield::handle);
         net.registerMessage(id(), PacketAutoFieldReturnRenderInfo.class, PacketAutoFieldReturnRenderInfo::toBytes, PacketAutoFieldReturnRenderInfo::new, PacketAutoFieldReturnRenderInfo::handle);
         net.registerMessage(id(), PacketPersonalForcefield.class, PacketPersonalForcefield::toBytes, PacketPersonalForcefield::new,

@@ -7,7 +7,7 @@
     {
       "type": "patchouli:text",
       "title": "Collect the patterns",
-      "text": "A populated Blueprint shows the item it makes and the ingredients it needs. Keep useful patterns from your travels; a blank blueprint teaches no recipe.$(br2)Place $(item)Blueprint Storage$() directly against a Constructor or Auto Constructor. Any face works. Each storage block holds six blueprints."
+      "text": "Blueprint Storage holds six blueprints for a directly adjacent Constructor or Auto Constructor; any face works. A populated blueprint shows its result and ingredients. Blank blueprints teach no recipe.$(br2)The upper slots show your blueprints; the lower slots show stored patterns. Double-click a slot to transfer, or select one and use the up/down arrows. Patterns stay in storage after crafting. Keep useful blueprints from your travels."
     },
     {
       "type": "patchouli:crafting",

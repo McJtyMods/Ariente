@@ -12,7 +12,7 @@
     {
       "type": "patchouli:text",
       "title": "Add landing markers",
-      "text": "Place Level Markers at your landing heights, within two blocks horizontally of the elevator. Keep them inside its configured height.$(br2)With multiple detected floors, Jump and Sneak select the next higher or lower floor. The hologram also offers floor selection.$(br2)Keep the shaft and each landing clear."
+      "text": "Place Level Markers at your landing heights, within two blocks horizontally of the elevator and inside its configured height. Floor naming is not available.$(br2)With multiple detected floors, Jump and Sneak select the next higher or lower floor. The beam hologram also offers clickable floor buttons.$(br2)Keep the shaft and each landing clear."
     }
   ],
   "extra_recipe_mappings": {

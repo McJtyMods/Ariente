@@ -1,6 +1,7 @@
 package mcjty.ariente.blocks.utility.wireless;
 
 import mcjty.ariente.Ariente;
+import mcjty.ariente.gui.GuiHelp;
 import mcjty.ariente.blocks.utility.ILockable;
 import mcjty.ariente.blocks.utility.door.DoorMarkerTile;
 import mcjty.ariente.setup.Registration;
@@ -249,7 +250,10 @@ public class WirelessLockTile extends SignalChannelTileEntity implements ILockab
         if (isLocked()) {
             return Ariente.guiHandler.createNoAccessPanel();
         }
-        return registry.panel(0, 0, 8, 8)
+        if (TAG_HELP.equals(tag)) {
+            return GuiHelp.WIRELESS_LOCK.createHelpGui(registry);
+        }
+        return GuiHelp.WIRELESS_LOCK.createPanel(registry)
                 .add(registry.text(0, 1, 1, 1).text("Horizontal").color(registry.color(StyledColor.LABEL)))
                 .add(registry.number(3, 2, 1, 1).color(registry.color(StyledColor.INFORMATION)).getter((p,h) -> getHorizontalRange()))
 

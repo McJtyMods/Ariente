@@ -1,7 +1,12 @@
 package mcjty.ariente.gui;
 
+import mcjty.ariente.items.TabletItem;
 import mcjty.hologui.api.*;
 import mcjty.hologui.api.components.IPanel;
+import mcjty.lib.compat.patchouli.PatchouliCompatibility;
+import mcjty.lib.setup.ModSetup;
+import net.minecraft.resources.ResourceLocation;
+import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.entity.player.Inventory;
 import net.minecraft.world.item.Item;
@@ -27,16 +32,22 @@ public class HoloGuiTools {
         return cnt;
     }
 
-    public static IPanel createPanelWithHelp(IGuiComponentRegistry registry) {
-        return createPanelWithHelp(registry, entity -> entity.switchTag(TAG_HELP));
+    public static IPanel createPanelWithHelp(IGuiComponentRegistry registry, ResourceLocation entry) {
+        return createPanelWithHelp(registry, entry, entity -> entity.switchTag(TAG_HELP));
     }
 
-    public static IPanel createPanelWithHelp(IGuiComponentRegistry registry, Consumer<IHoloGuiEntity> switchHelp) {
+    public static IPanel createPanelWithHelp(IGuiComponentRegistry registry, ResourceLocation entry, Consumer<IHoloGuiEntity> switchHelp) {
         return registry.panel(0, 0, 8, 8)
                 .add(registry.iconButton(8.2, -0.8, 1, 1)
                         .icon(registry.image(Icons.FADED_QUESTION_MARK))
                         .hover(registry.image(Icons.QUESTION_MARK))
-                        .hitEvent((component, p, entity, x1, y1) -> switchHelp.accept(entity)))
+                        .hitEvent((component, player, entity, x1, y1) -> {
+                            if (ModSetup.patchouli && player instanceof ServerPlayer serverPlayer) {
+                                PatchouliCompatibility.openBookEntry(serverPlayer, TabletItem.MANUAL, entry, 0);
+                            } else {
+                                switchHelp.accept(entity);
+                            }
+                        }))
                 ;
     }
 

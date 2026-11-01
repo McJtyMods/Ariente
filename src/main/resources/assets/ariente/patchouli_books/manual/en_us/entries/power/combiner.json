@@ -12,7 +12,7 @@
     {
       "type": "patchouli:text",
       "title": "Set the transfer rate",
-      "text": "Use the combiner’s hologram to adjust its input transfer amount. Its default input is 100 of each, giving 98 of each at the output.$(br2)Combination loses $(thing)2%$(): an input of 1,000 delivers 980 of each. Check the displayed In and Out figures.$(br2)Multiple output connectors share that output. Raise the setting when your consumers need more."
+      "text": "Use the combiner’s hologram slider and arrows to set its maximum input transfer per tick. Its default input is 100 of each, giving 98 of each at the output.$(br2)Combination loses $(thing)2%$(): an input of 1,000 delivers 980 of each. Check the displayed In and Out figures.$(br2)Multiple output connectors share that output. Raise the setting when your consumers need more."
     }
   ],
   "extra_recipe_mappings": {

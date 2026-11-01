@@ -7,7 +7,7 @@
     {
       "type": "patchouli:text",
       "title": "Install, then activate",
-      "text": "Wear your power armor or hold an Enhanced Energy Sabre or Energy Lance in your main hand. Press the configuration key, normally $(thing)0$(), and select a piece.$(br2)Click a module icon to install a module from your inventory, then use its activation control to enable it. Use the fuel arrows to add both dust types."
+      "text": "Wear power armor or hold an Enhanced Energy Sabre or Energy Lance in your main hand. Press the configuration key, normally $(thing)0$(), and select a piece.$(br2)Click its module icon to install from your inventory or remove it. The checkbox enables the installed module; the last control assigns hotkey group $(thing)1–4$(). Use fuel arrows to add both dust types. Keep active usage within the piece’s limit: normally 100, or 130 with Energy enabled."
     },
     {
       "type": "patchouli:text",

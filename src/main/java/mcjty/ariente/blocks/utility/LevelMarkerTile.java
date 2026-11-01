@@ -1,6 +1,7 @@
 package mcjty.ariente.blocks.utility;
 
 import mcjty.ariente.Ariente;
+import mcjty.ariente.gui.GuiHelp;
 import mcjty.ariente.setup.Registration;
 import mcjty.hologui.api.IGuiComponent;
 import mcjty.hologui.api.IGuiComponentRegistry;
@@ -31,8 +32,11 @@ public class LevelMarkerTile extends GenericTileEntity implements IGuiTile {
 
     @Override
     public IGuiComponent<?> createGui(String tag, IGuiComponentRegistry registry) {
+        if (TAG_HELP.equals(tag)) {
+            return GuiHelp.LEVEL_MARKER.createHelpGui(registry);
+        }
         // @todo implement this
-        return registry.panel(0, 0, 8, 8)
+        return GuiHelp.LEVEL_MARKER.createPanel(registry)
                 .add(registry.text(0, 2, 1, 1).text("Floor name (WIP)").color(registry.color(StyledColor.LABEL)));
     }
 

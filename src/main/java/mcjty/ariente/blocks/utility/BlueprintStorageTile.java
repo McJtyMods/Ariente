@@ -1,6 +1,7 @@
 package mcjty.ariente.blocks.utility;
 
 import mcjty.ariente.Ariente;
+import mcjty.ariente.gui.GuiHelp;
 import mcjty.ariente.api.ICityAI;
 import mcjty.ariente.api.ICityEquipment;
 import mcjty.ariente.items.BlueprintItem;
@@ -100,11 +101,14 @@ public class BlueprintStorageTile extends GenericTileEntity implements IGuiTile,
 
     @Override
     public IGuiComponent<?> createGui(String tag, IGuiComponentRegistry registry) {
+        if (TAG_HELP.equals(tag)) {
+            return GuiHelp.BLUEPRINT_STORAGE.createHelpGui(registry);
+        }
         return createBlueprintGui(registry);
     }
 
     private IGuiComponent<?> createBlueprintGui(IGuiComponentRegistry registry) {
-        return registry.panel(0, 0, 8, 8)
+        return GuiHelp.BLUEPRINT_STORAGE.createPanel(registry)
                 .add(registry.text(0, 0, 8, 1).text("Blueprints").color(registry.color(StyledColor.LABEL)))
 
                 .add(registry.icon(0, 2, 1, 1).icon(registry.image(WHITE_PLAYER)))

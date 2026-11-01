@@ -15,21 +15,11 @@ public class FluxElevatorGui {
     public static IGuiComponent<?> createGui(Player player) {
         IGuiComponentRegistry registry = Ariente.guiHandler.getComponentRegistry();
         return registry.panel(0, 0, 8, 8)
-
-                .add(registry.iconButton(2, 2, 1, 1).icon(registry.image(GRAY_DOUBLE_ARROW_LEFT)).hover(registry.image(WHITE_DOUBLE_ARROW_LEFT))
-                        .hitEvent((component, p, holo, x, y) -> changeSpeed(holo, -10)))
-                .add(registry.iconButton(3, 2, 1, 1).icon(registry.image(GRAY_ARROW_LEFT)).hover(registry.image(WHITE_ARROW_LEFT))
-                        .hitEvent((component, p, holo, x, y) -> changeSpeed(holo, -5)))
+                .add(registry.text(.3, .6, 8, 1).text("ELEVATOR SPEED").scale(.6f).color(registry.color(StyledColor.LABEL)))
                 .add(registry.iconButton(4, 2, 1, 1).icon(registry.image(FADED_RED_BALL)).hover(registry.image(RED_BALL))
-                        .hitEvent((component, p, holo, x, y) -> changeSpeed(holo, 0)))
-                .add(registry.iconButton(5, 2, 1, 1).icon(registry.image(GRAY_ARROW_RIGHT)).hover(registry.image(WHITE_ARROW_RIGHT))
-                        .hitEvent((component, p, holo, x, y) -> changeSpeed(holo, 5)))
-                .add(registry.iconButton(6, 2, 1, 1).icon(registry.image(GRAY_DOUBLE_ARROW_RIGHT)).hover(registry.image(WHITE_DOUBLE_ARROW_RIGHT))
-                        .hitEvent((component, p, holo, x, y) -> changeSpeed(holo, 10)))
-
-                .add(registry.text(1, 4, 4, 1).text("Speed:").color(registry.color(StyledColor.LABEL)))
-                .add(registry.number(5, 4, 1, 1).color(registry.color(StyledColor.INFORMATION)).getter((p,holo) -> getSpeed(holo)))
-                ;
+                        .hitEvent((c, p, e, x, y) -> setSpeed(e, 0)))
+                .add(registry.integerSlider(.3, 4, 7.2, 1).name("transport_speed").label("Speed").range(-80, 80)
+                        .getter((p, e) -> getSpeed(e)).changed((p, e, value) -> setSpeed(e, value)));
     }
 
     private static int getSpeed(IHoloGuiEntity holo) {
@@ -42,15 +32,10 @@ public class FluxElevatorGui {
         }
     }
 
-    private static void changeSpeed(IHoloGuiEntity holo, int amount) {
+    private static void setSpeed(IHoloGuiEntity holo, int value) {
         Entity ridingEntity = holo.getEntity().getVehicle();
-        if (ridingEntity instanceof FluxElevatorEntity) {
-            FluxElevatorEntity levitator = (FluxElevatorEntity) ridingEntity;
-            if (amount != 0) {
-                levitator.changeSpeed(levitator.getSpeed() + amount);
-            } else {
-                levitator.changeSpeed(0);
-            }
+        if (ridingEntity instanceof FluxElevatorEntity transport) {
+            transport.changeSpeed(value);
         }
     }
 }

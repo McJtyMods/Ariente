@@ -3,8 +3,7 @@ package mcjty.ariente.blocks.utility;
 import mcjty.ariente.Ariente;
 import mcjty.ariente.api.ICityAI;
 import mcjty.ariente.api.ICityEquipment;
-import mcjty.ariente.gui.HelpBuilder;
-import mcjty.ariente.gui.HoloGuiTools;
+import mcjty.ariente.gui.GuiHelp;
 import mcjty.ariente.items.BlueprintItem;
 import mcjty.ariente.power.IPowerReceiver;
 import mcjty.ariente.power.IPowerUser;
@@ -270,27 +269,16 @@ public class AutoConstructorTile extends TickingTileEntity implements IGuiTile, 
         if (TAG_INGREDIENTS.equals(tag)) {
             return createIngredientsGui(registry);
         } else if (TAG_HELP.equals(tag)) {
-            return HoloGuiTools.createHelpGui(registry,
-                    HelpBuilder.create()
-                            .line("The auto constructor can be")
-                            .line("used to automatically craft items")
-                            .line("with blueprints from adjacent")
-                            .line("blueprint storages.")
-                            .nl()
-                            .line("Use the 'ingredients' page to")
-                            .line("transfer ingredients between the")
-                            .line("player and this machine.")
-                            .line("Automation is also possible")
-                            .nl()
-                            .line("Output appears in the slots below")
-                            .line("the main page"));
+            return GuiHelp.AUTO_CONSTRUCTOR.createHelpGui(registry);
+        } else if ((TAG_INGREDIENTS + "_help").equals(tag)) {
+            return GuiHelp.AUTO_CONSTRUCTOR.createHelpGui(registry, TAG_INGREDIENTS);
         } else {
             return createMainMenuGui(registry);
         }
     }
 
     private IGuiComponent<?> createMainMenuGui(IGuiComponentRegistry registry) {
-        return HoloGuiTools.createPanelWithHelp(registry)
+        return GuiHelp.AUTO_CONSTRUCTOR.createPanel(registry)
                 .add(registry.text(0, 0.5, 1, 1).text("Main menu").color(registry.color(StyledColor.LABEL)))
                 .add(registry.stackIcon(0.5, 2.5, 1, 1).itemStack(new ItemStack(Items.IRON_INGOT)))
                 .add(registry.button(2, 2, 5, 1)
@@ -317,7 +305,7 @@ public class AutoConstructorTile extends TickingTileEntity implements IGuiTile, 
     }
 
     private IGuiComponent<?> createIngredientsGui(IGuiComponentRegistry registry) {
-        return registry.panel(0, 0, 8, 8)
+        return GuiHelp.AUTO_CONSTRUCTOR.createPanel(registry, entity -> entity.switchTag(TAG_INGREDIENTS + "_help"))
 
                 .add(registry.text(0, 0, 8, 1).text("Ingredients").color(registry.color(StyledColor.LABEL)))
 

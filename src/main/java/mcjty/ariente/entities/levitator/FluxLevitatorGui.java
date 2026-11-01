@@ -1,5 +1,7 @@
 package mcjty.ariente.entities.levitator;
 
+import mcjty.ariente.gui.GuiHelp;
+import mcjty.ariente.gui.ModGuis;
 import mcjty.ariente.Ariente;
 import mcjty.hologui.api.IGuiComponent;
 import mcjty.hologui.api.IGuiComponentRegistry;
@@ -14,22 +16,17 @@ public class FluxLevitatorGui {
 
     public static IGuiComponent<?> createGui(Player player) {
         IGuiComponentRegistry registry = Ariente.guiHandler.getComponentRegistry();
-        return registry.panel(0, 0, 8, 8)
-
-                .add(registry.iconButton(2, 2, 1, 1).icon(registry.image(GRAY_DOUBLE_ARROW_LEFT)).hover(registry.image(WHITE_DOUBLE_ARROW_LEFT))
-                        .hitEvent((component, p, holo, x, y) -> changeSpeed(holo, -10)))
-                .add(registry.iconButton(3, 2, 1, 1).icon(registry.image(GRAY_ARROW_LEFT)).hover(registry.image(WHITE_ARROW_LEFT))
-                        .hitEvent((component, p, holo, x, y) -> changeSpeed(holo, -5)))
+        return GuiHelp.LEVITATOR.createPanel(registry, entity -> entity.switchGui(ModGuis.GUI_LEVITATOR_HELP))
+                .add(registry.text(.3, .6, 8, 1).text("LEVITATOR SPEED").scale(.6f).color(registry.color(StyledColor.LABEL)))
                 .add(registry.iconButton(4, 2, 1, 1).icon(registry.image(FADED_RED_BALL)).hover(registry.image(RED_BALL))
-                        .hitEvent((component, p, holo, x, y) -> changeSpeed(holo, 0)))
-                .add(registry.iconButton(5, 2, 1, 1).icon(registry.image(GRAY_ARROW_RIGHT)).hover(registry.image(WHITE_ARROW_RIGHT))
-                        .hitEvent((component, p, holo, x, y) -> changeSpeed(holo, 5)))
-                .add(registry.iconButton(6, 2, 1, 1).icon(registry.image(GRAY_DOUBLE_ARROW_RIGHT)).hover(registry.image(WHITE_DOUBLE_ARROW_RIGHT))
-                        .hitEvent((component, p, holo, x, y) -> changeSpeed(holo, 10)))
+                        .hitEvent((c, p, e, x, y) -> setSpeed(e, 0)))
+                .add(registry.integerSlider(.3, 4, 7.2, 1).name("transport_speed").label("Speed").range(-80, 80)
+                        .getter((p, e) -> getSpeed(e)).changed((p, e, value) -> setSpeed(e, value)));
+    }
 
-                .add(registry.text(1, 4, 4, 1).text("Speed:").color(registry.color(StyledColor.LABEL)))
-                .add(registry.number(5, 4, 1, 1).color(registry.color(StyledColor.INFORMATION)).getter((p,holo) -> getSpeed(holo)))
-                ;
+    public static IGuiComponent<?> createHelpGui(Player player) {
+        return GuiHelp.LEVITATOR.createHelpGui(Ariente.guiHandler.getComponentRegistry(),
+                entity -> entity.switchGui(ModGuis.GUI_LEVITATOR));
     }
 
     private static int getSpeed(IHoloGuiEntity holo) {
@@ -43,19 +40,11 @@ public class FluxLevitatorGui {
         }
     }
 
-    private static void changeSpeed(IHoloGuiEntity holo, int amount) {
+    private static void setSpeed(IHoloGuiEntity holo, int value) {
         Entity ridingEntity = holo.getEntity().getVehicle();
-        if (ridingEntity instanceof FluxLevitatorEntity) {
-            FluxLevitatorEntity levitator = (FluxLevitatorEntity) ridingEntity;
-            if (amount != 0) {
-                boolean front = holo.getEntity().getUUID().equals(levitator.getHoloFrontUUID());
-                if (!front) {
-                    amount = -amount;
-                }
-                levitator.changeSpeed(levitator.getSpeed() + amount);
-            } else {
-                levitator.changeSpeed(0);
-            }
+        if (ridingEntity instanceof FluxLevitatorEntity transport) {
+            boolean front = holo.getEntity().getUUID().equals(transport.getHoloFrontUUID());
+            transport.changeSpeed(front ? value : -value);
         }
     }
 }

@@ -4,8 +4,7 @@ import mcjty.lib.varia.SafeClientTools;
 import mcjty.ariente.Ariente;
 import mcjty.ariente.api.ICityAI;
 import mcjty.ariente.api.ICityEquipment;
-import mcjty.ariente.gui.HelpBuilder;
-import mcjty.ariente.gui.HoloGuiTools;
+import mcjty.ariente.gui.GuiHelp;
 import mcjty.ariente.items.BlueprintItem;
 import mcjty.ariente.recipes.BlueprintRecipeRegistry;
 import mcjty.ariente.recipes.ConstructorRecipe;
@@ -148,24 +147,14 @@ public class ConstructorTile extends GenericTileEntity implements IGuiTile, ICit
     @Override
     public IGuiComponent<?> createGui(String tag, IGuiComponentRegistry registry) {
         if (TAG_HELP.equals(tag)) {
-            return HoloGuiTools.createHelpGui(registry,
-                    HelpBuilder.create()
-                            .line("With this block you can craft")
-                            .line("items from blueprints that are in")
-                            .line("adjacent blueprint storages")
-                            .nl()
-                            .line("Top grid: player.getInventory()")
-                            .line("Bottom grid: available blueprints")
-                            .nl()
-                            .line("Double click on blueprint to craft)", 0xffffff00)
-            );
+            return GuiHelp.CONSTRUCTOR.createHelpGui(registry);
         } else {
             return createMainGui(registry);
         }
     }
 
     private IGuiComponent<?> createMainGui(IGuiComponentRegistry registry) {
-        return HoloGuiTools.createPanelWithHelp(registry)
+        return GuiHelp.CONSTRUCTOR.createPanel(registry)
                 .add(registry.text(0, -.2, 8, 1).text("Ingredients").color(registry.color(StyledColor.LABEL)))
 
                 .add(registry.icon(0, 1.5, 1, 1).icon(registry.image(WHITE_PLAYER)))

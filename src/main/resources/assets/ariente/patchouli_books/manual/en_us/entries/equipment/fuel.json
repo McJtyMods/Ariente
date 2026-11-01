@@ -12,7 +12,7 @@
     {
       "type": "patchouli:text",
       "title": "Energy Holder",
-      "text": "Use an Energy Holder in your main hand to open its panel. The arrows move dust in or out.$(br2)Manual mode leaves collection to you. Automatic mode gathers loose fuel dust from your inventory over time.$(br2)Autofeed-equipped gear can use stored dust while the holder stays in your inventory, in either collection mode."
+      "text": "An Energy Holder stores $(item)Negarite and Posirite Dust$(). Use it in your main hand to open its panel. The arrows move dust in or out.$(br2)Manual mode leaves collection to you. Automatic mode gathers loose fuel dust from your inventory over time.$(br2)Gear with enabled Autofeed can use stored dust while the holder stays in your inventory, in either collection mode."
     }
   ],
   "extra_recipe_mappings": {

@@ -12,7 +12,7 @@
     {
       "type": "patchouli:text",
       "title": "Leave power for repairs",
-      "text": "Projectiles damage panels and can leave temporary holes. Changing the radius starts rebuilding.$(br2)Active panels are dangerous to cross without matching immunity. Keep a safe approach while testing.$(br2)Slow repairs can mean too little spare flux. Increase both supplies beyond the field’s idle demand."
+      "text": "Projectiles damage panels and can leave temporary holes. $(thing)Field Integrity$() shows the remaining shield strength as a percentage. Changing the radius starts rebuilding.$(br2)Active panels are dangerous to cross without matching immunity. Keep a safe approach while testing.$(br2)Slow repairs can mean too little spare flux. Increase both supplies beyond the field’s idle demand."
     }
   ],
   "extra_recipe_mappings": {

@@ -122,8 +122,10 @@ Most machines use **HoloGui** rather than a conventional full-screen container.
 | Aim at a hologram control and left-click/attack | Press buttons, arrows, and toggles. |
 | Double-click a displayed slot | Perform that panel's slot action: craft, transfer a blueprint, or set/clear a filter. |
 | Hover over controls and items | Read tooltips, recipe requirements, and status. |
-| Help/question-mark control | Open the machine's embedded help, if available. |
-| Single versus double arrows | Usually small versus large adjustments; the increment depends on the machine. |
+| Help/question-mark control | Open the relevant Tablet manual entry when Patchouli is installed; otherwise show help in the hologram. Use its back arrow to return. |
+| Numeric settings | Click a slider track, or hold left-click and aim along it to drag. Its `<` and `>` buttons change the value by exactly one. |
+| Looping-arrow button | The whole button cycles the displayed choice; icon choices carry the same marker. |
+| Single versus double fuel arrows | Transfer small versus large batches; these are inventory actions rather than numeric settings. |
 
 The hologram is a real world entity. Stand where you can see its front and aim at
 the actual button. Storage Cubes additionally have direct interaction on their
@@ -711,9 +713,8 @@ With default settings:
 - It can make several transfers per tick if enough reserve and valid work exist.
 - If paired network supply falls to zero, the accumulated reserve is discarded.
 
-The existing field supports item transfer and item-count conditions. The help
-text's references to future energy/other transfers are not implemented fluid,
-RF, or generic energy automation.
+The existing field supports item transfer and item-count conditions. It does not
+provide fluid, RF, or generic energy automation.
 
 Sources: [controller](src/main/java/mcjty/ariente/blocks/utility/autofield/AutoFieldTile.java),
 [producer matching](src/main/java/mcjty/ariente/blocks/utility/autofield/ProducerInfo.java),
@@ -803,6 +804,69 @@ Sources: [doors](src/main/java/mcjty/ariente/blocks/utility/door/DoorMarkerTile.
 [cards](src/main/java/mcjty/ariente/items/KeyCardItem.java),
 [channel linking](src/main/java/mcjty/ariente/blocks/utility/wireless/SignalChannelTileEntity.java),
 [wireless lock](src/main/java/mcjty/ariente/blocks/utility/wireless/WirelessLockTile.java).
+
+## Holographic displays
+
+Craft a **Holographic Display Base** and its blueprint in a Constructor. Place
+bases side by side at the same level and facing the same direction: they share
+one vertical display, beginning directly above the thin plate in its block space.
+Right-click any base to set the common height (1–10 blocks) and appearance.
+The surface button cycles **Invisible**, **Transparent** and **Solid**. **Color...**
+opens a color picker; choosing a shade or pressing its upper-right **x** returns to
+base settings. The initial color is the same pale gray as the original transparent
+surface. Transparent mode adds a **Transparency** slider from **0%** (opaque) to
+**100%** (fully clear, including scan lines); the default is 87%. Color and
+transparency choices are remembered when switching modes.
+
+**Border** is a separate on/off cycle, enabled by default. It keeps the illuminated
+frame even with an invisible background; disable it for floating modules without
+a frame. All appearance settings apply across the joined display. Existing saved
+presets retain their color and visible frame when converted to these controls.
+Displays currently need no power. Height and transparency use the shared sliders
+with precise arrow controls. Shrinking a display is refused if it would cut off
+an installed module; recover those modules first.
+
+Each display module has a Constructor recipe and corresponding blueprint:
+
+- **Power:** sneak-right-click an Ariente generator, tank, cable or powered machine
+  to link it. Choose network flux, consumption per tick, generation per tick and
+  fuel remaining, with numbers, a supply meter or a 32-second history. Ariente's
+  tanks are generation chambers; the display reports actual network flux rather
+  than a fictional energy buffer. Unsupported metrics appear as `n/a`.
+- **Storage:** sneak-right-click an inventory to link the clicked side. Choose a
+  list of the most stored items or an item grid, the number shown, columns and
+  page. Matching items and tags are combined into stack totals. Lists show up to
+  16 types; grids page through all types with up to 64 entries per page, subject
+  to the display's height.
+- **Text:** right-click to configure text, size and color. Left-click the text
+  area to type multiple lines with normal selection, navigation, deletion and
+  clipboard controls. Escape or clicking outside the editor commits the edit and
+  returns control to the hologram. **Color...** opens a hue/shade picker; choosing
+  a shade or pressing its upper-right **x** returns to text settings.
+
+Right-click a held module to configure it before installation. Sneak-right-click
+in the air clears its link. Aim at the front of a display: the module's rectangle
+snaps to a small grid and turns green when it fits or red when it overlaps or
+extends beyond the available surface. Right-click to install. The base under its
+top-left corner owns it, including modules spanning several bases. Sneak-right-
+click an installed module to recover its configured item. Press and release
+right-click without dragging to open an installed module's settings, even with
+empty hands. Hold right-click and aim to drag it, including across joins between
+bases on the same screen. Its outline turns green where it fits and red where it
+overlaps or leaves the surface. Release to place it; an illegal drop snaps back to
+its previous position. Dragging never opens settings on release, even after
+moving back to the starting position. Edits apply in place. If the new footprint
+overlaps another module or extends beyond the display, the edited module is returned to the player (or dropped nearby when inventory is
+full) with its updated settings. Breaking a base also
+returns modules that lose their supporting surface. Background visibility does
+not affect modules; invisible surfaces can still be targeted.
+
+Readings refresh once per second near players. Inventory snapshots are shared
+between modules. Only changed module readings are synchronized to players tracking
+the base; text and configuration are sent separately when the layout changes.
+Unloaded targets are never force-loaded and show an offline status. Current
+modules are read-only; the dispatch API already distinguishes left and right
+screen clicks for future interactive modules.
 
 ## Forcefield Generator
 
@@ -998,11 +1062,10 @@ not evidence that the track is broken.
 1. Build a continuous beam route with sufficient space for the vehicle and rider.
 2. Use a **Flux Levitator item directly on a beam** to place the cart.
 3. Right-click the vehicle without sneaking to board it.
-4. Aim at one of its end holograms and click the speed arrows.
+4. Aim at an end hologram and click or drag the speed slider.
 5. Use the red ball/stop control to request speed 0. Sneak to dismount normally.
 
-The small arrows change speed by **5**, large arrows by **10**, with a setting
-range of **-80 to 80**. The two panels face opposite directions and interpret
+The speed slider has a range of **-80 to 80**. Its outer arrows adjust by **1**. The two panels face opposite directions and interpret
 their controls accordingly. The number is a control setting, not a promise of
 that many blocks per second. Movement is capped, slows in bends, and depends on
 track continuity. Stop applies braking rather than teleporting the cart to rest.
@@ -1217,6 +1280,10 @@ including matching connector ingredients. Data variants have no catalog recipe.
 
 | Result | Rarity | Ingredients |
 | --- | --- | --- |
+| Holographic Display Base | Common | 4 × Silver Ingot, 2 × Circuit, 2 × Glass, 2 × Glowstone Dust |
+| Holographic Power Module | Common | Circuit, 2 × Manganese Ingot, 2 × Negarite Dust, 2 × Posirite Dust |
+| Holographic Storage Module | Common | Circuit, 2 × Silver Ingot, Chest |
+| Holographic Text Module | Common | Circuit, 2 × Silicon, Glowstone Dust |
 | Flux Capacitor | Rare | 2 × Lithium Ingot, Manganese Ingot, 6 × Negarite Dust, 6 × Posirite Dust |
 | Energy Holder | Common | Silicon, 5 × Negarite Dust, 5 × Posirite Dust |
 | Circuit | Common | Silicon, Manganese Ingot, 3 × Negarite Dust, 3 × Posirite Dust |
@@ -1315,7 +1382,7 @@ The blueprint tables are sourced from
 | Automation Field moves nothing | Connected markers under node columns, height, correct source Output/destination Input roles, nonempty filters, full batch availability, conditions, and power. |
 | Item-transfer animation is absent | Enable item rendering in the field hologram and check inventory counts; animation samples recent transfers. |
 | Armor module is installed but does nothing | Activation, fuel of both kinds, per-piece power budget, and whether the ability's hook is actually ported. |
-| Cart will not start | Board the cart, click an end panel's speed arrows, and confirm continuous beam orientation/clearance. Controls are HoloGui entities, not a full-screen menu. |
+| Cart will not start | Board the cart, use an end panel's speed slider, and confirm continuous beam orientation/clearance. Controls are HoloGui entities, not a full-screen menu. |
 | Elevator cannot find a floor | Marker height must be inside its scan and within two blocks horizontally; clear the lift column. |
 
 ## Port gaps
@@ -1355,6 +1422,7 @@ Use these as the maintenance reference when updating the guide:
 | Names and existing tooltip descriptions | [English translations](src/main/resources/assets/ariente/lang/en_us.json). |
 | Power and cable behavior | [power](src/main/java/mcjty/ariente/power), [cables](src/main/java/mcjty/ariente/cables), [generators](src/main/java/mcjty/ariente/blocks/generators). |
 | Machines, storage, doors, signals, automation | [utility blocks](src/main/java/mcjty/ariente/blocks/utility). |
+| Holographic displays and extensible module types | [display](src/main/java/mcjty/ariente/display), [client rendering](src/main/java/mcjty/ariente/display/client). |
 | Shield geometry and damage | [defense](src/main/java/mcjty/ariente/blocks/defense). |
 | Equipment and module configuration | [items](src/main/java/mcjty/ariente/items), [upgrade types](src/main/java/mcjty/ariente/api/ArmorUpgradeType.java). |
 | Blueprint recipes and ordinary recipes | [catalog](src/main/java/mcjty/ariente/recipes/BlueprintRecipeRegistry.java), [ordinary JSON](src/generated/resources/data/ariente/recipes), [recipe generator](src/main/java/mcjty/ariente/datagen/Recipes.java). |

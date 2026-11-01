@@ -2,7 +2,7 @@ package mcjty.ariente.items;
 
 import mcjty.lib.varia.Tools;
 import mcjty.ariente.Ariente;
-import mcjty.ariente.gui.HelpBuilder;
+import mcjty.ariente.gui.GuiHelp;
 import mcjty.ariente.gui.HoloGuiTools;
 import mcjty.ariente.gui.ModGuis;
 import mcjty.ariente.setup.Registration;
@@ -97,13 +97,13 @@ public class EnergyHolderItem extends Item implements ITooltipSettings {
 
     public static IGuiComponent<?> createGui(Player pl) {
         IGuiComponentRegistry registry = Ariente.guiHandler.getComponentRegistry();
-        IPanel panel = HoloGuiTools.createPanelWithHelp(registry, entity -> entity.switchGui(ModGuis.GUI_ENERGY_HOLDER_HOLD))
+        IPanel panel = GuiHelp.ENERGY_HOLDER.createPanel(registry, entity -> entity.switchGui(ModGuis.GUI_ENERGY_HOLDER_HOLD))
                 .add(registry.text(0, 1, 1, 1).text("Energy Holder").color(registry.color(StyledColor.LABEL)));
 
         addDustControl(registry, panel, 2.3, Registration.DUST_NEGARITE.get(), "negarite");
         addDustControl(registry, panel, 4.7, Registration.DUST_POSIRITE.get(), "posirite");
 
-        panel.add(registry.textChoice(0, 7, 2, 1).addText("Manual").addText("Automatic")
+        panel.add(registry.textChoice(0, 7, 7.2, .9).scale(.55f).addText("Manual").addText("Automatic")
                 .getter(EnergyHolderItem::getAutomatic)
                 .hitEvent((component, player, entity, x, y) -> changeAutomatic(player)));
 
@@ -248,11 +248,7 @@ public class EnergyHolderItem extends Item implements ITooltipSettings {
 
     public static IGuiComponent<?> createHelpGui(Player player) {
         IGuiComponentRegistry registry = Ariente.guiHandler.getComponentRegistry();
-        return HoloGuiTools.createHelpGui(registry, HelpBuilder.create()
-                        .line("The Energy Holder can store")
-                        .line("negarite and posirite dust.")
-                        .line("The Power Armor can automatically")
-                        .line("extract from this item."),
+        return GuiHelp.ENERGY_HOLDER.createHelpGui(registry,
                 entity -> entity.switchGui(ModGuis.GUI_ENERGY_HOLDER)
         );
     }

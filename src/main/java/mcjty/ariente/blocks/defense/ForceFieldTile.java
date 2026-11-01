@@ -1,6 +1,7 @@
 package mcjty.ariente.blocks.defense;
 
 import mcjty.ariente.Ariente;
+import mcjty.ariente.gui.GuiHelp;
 import mcjty.ariente.api.*;
 import mcjty.ariente.compat.arienteworld.ArienteWorldCompat;
 import mcjty.ariente.config.Config;
@@ -495,18 +496,12 @@ public class ForceFieldTile extends TickingTileEntity implements IGuiTile, ISoun
 
     @Override
     public IGuiComponent<?> createGui(String tag, IGuiComponentRegistry registry) {
-        return registry.panel(0, 0, 8, 8)
-                .add(registry.text(0, 1, 1, 1).text("Radius").color(registry.color(StyledColor.LABEL)))
-                .add(registry.number(3, 2, 1, 1).color(registry.color(StyledColor.INFORMATION)).getter((p, h) -> getScale()))
-
-                .add(registry.iconButton(1, 2, 1, 1).icon(registry.image(GRAY_DOUBLE_ARROW_LEFT)).hover(registry.image(WHITE_DOUBLE_ARROW_LEFT))
-                        .hitEvent((component, player, entity1, x, y) -> changeScale(-8)))
-                .add(registry.iconButton(2, 2, 1, 1).icon(registry.image(GRAY_ARROW_LEFT)).hover(registry.image(WHITE_ARROW_LEFT))
-                        .hitEvent((component, player, entity1, x, y) -> changeScale(-1)))
-                .add(registry.iconButton(5, 2, 1, 1).icon(registry.image(GRAY_ARROW_RIGHT)).hover(registry.image(WHITE_ARROW_RIGHT))
-                        .hitEvent((component, player, entity1, x, y) -> changeScale(1)))
-                .add(registry.iconButton(6, 2, 1, 1).icon(registry.image(GRAY_DOUBLE_ARROW_RIGHT)).hover(registry.image(WHITE_DOUBLE_ARROW_RIGHT))
-                        .hitEvent((component, player, entity1, x, y) -> changeScale(8)))
+        if (TAG_HELP.equals(tag)) {
+            return GuiHelp.SHIELD.createHelpGui(registry);
+        }
+        return GuiHelp.SHIELD.createPanel(registry)
+                .add(registry.integerSlider(.3, 2, 7.2, 1).name("shield_radius").label("Radius").range(3, 50)
+                        .getter((p, e) -> getScale()).changed((p, e, value) -> changeScale(value - getScale())))
 
                 .add(registry.text(0, 4, 1, 1).text("Field Integrity").color(registry.color(StyledColor.LABEL)))
                 .add(registry.text(1, 5, 1, 1).text(() -> getFieldIntegrity() + "%").color(registry.color(StyledColor.INFORMATION)))

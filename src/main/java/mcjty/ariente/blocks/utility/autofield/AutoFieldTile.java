@@ -2,8 +2,7 @@ package mcjty.ariente.blocks.utility.autofield;
 
 import mcjty.ariente.Ariente;
 import mcjty.ariente.config.UtilityConfiguration;
-import mcjty.ariente.gui.HelpBuilder;
-import mcjty.ariente.gui.HoloGuiTools;
+import mcjty.ariente.gui.GuiHelp;
 import mcjty.ariente.network.ArienteMessages;
 import mcjty.ariente.power.IPowerReceiver;
 import mcjty.ariente.power.IPowerUser;
@@ -729,33 +728,16 @@ public class AutoFieldTile extends TickingTileEntity implements IGuiTile, IPower
     @Override
     public IGuiComponent<?> createGui(String tag, IGuiComponentRegistry registry) {
         if (TAG_HELP.equals(tag)) {
-            return HoloGuiTools.createHelpGui(registry,
-                    HelpBuilder.create()
-                            .line("This block sets up an automation")
-                            .line("field. Setup adjacent field")
-                            .line("markers in a rectangle to mark where")
-                            .line("the field is active. Use nodes in")
-                            .line("the field to transfer items,")
-                            .line("energy, ...")
-            );
+            return GuiHelp.FIELD.createHelpGui(registry);
         } else {
             return createMainGui(registry);
         }
     }
 
     private IGuiComponent<?> createMainGui(IGuiComponentRegistry registry) {
-        return HoloGuiTools.createPanelWithHelp(registry)
-                .add(registry.text(0, 2, 1, 1).text("Height").color(registry.color(StyledColor.LABEL)))
-                .add(registry.number(3, 4, 1, 1).color(registry.color(StyledColor.INFORMATION)).getter((p, h) -> getHeight()))
-
-                .add(registry.iconButton(1, 4, 1, 1).icon(registry.image(GRAY_DOUBLE_ARROW_LEFT)).hover(registry.image(WHITE_DOUBLE_ARROW_LEFT))
-                        .hitEvent((component, player, entity1, x, y) -> changeHeight(-8)))
-                .add(registry.iconButton(2, 4, 1, 1).icon(registry.image(GRAY_ARROW_LEFT)).hover(registry.image(WHITE_ARROW_LEFT))
-                        .hitEvent((component, player, entity1, x, y) -> changeHeight(-1)))
-                .add(registry.iconButton(5, 4, 1, 1).icon(registry.image(GRAY_ARROW_RIGHT)).hover(registry.image(WHITE_ARROW_RIGHT))
-                        .hitEvent((component, player, entity1, x, y) -> changeHeight(1)))
-                .add(registry.iconButton(6, 4, 1, 1).icon(registry.image(GRAY_DOUBLE_ARROW_RIGHT)).hover(registry.image(WHITE_DOUBLE_ARROW_RIGHT))
-                        .hitEvent((component, player, entity1, x, y) -> changeHeight(8)))
+        return GuiHelp.FIELD.createPanel(registry)
+                .add(registry.integerSlider(.3, 3, 7.2, 1).name("field_height").label("Height").range(1, 256)
+                        .getter((p, e) -> getHeight()).changed((p, e, value) -> changeHeight(value - getHeight())))
 
                 .add(registry.iconToggle(1, 6, 1, 1)
                         .icon(registry.image(ITEMFLOW_OFF))

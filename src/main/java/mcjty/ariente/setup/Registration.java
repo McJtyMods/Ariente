@@ -1,5 +1,11 @@
 package mcjty.ariente.setup;
 
+import mcjty.ariente.display.DisplayBaseTile;
+import mcjty.ariente.display.DisplayModuleItem;
+import mcjty.ariente.display.PowerDisplayModule;
+import mcjty.ariente.display.StorageDisplayModule;
+import mcjty.ariente.display.TextDisplayModule;
+
 import net.minecraftforge.event.entity.EntityAttributeCreationEvent;
 import net.minecraftforge.event.entity.SpawnPlacementRegisterEvent;
 import net.minecraft.world.entity.SpawnPlacements;
@@ -285,6 +291,13 @@ public class Registration {
     public static final RegistryObject<BaseBlock> POSIRITE_TANK = BLOCKS.register("posirite_tank", PosiriteTankTile::createBlock);
     public static final RegistryObject<Item> POSIRITE_TANK_ITEM = ITEMS.register("posirite_tank", () -> new BlockItem(POSIRITE_TANK.get(), createStandardProperties()));
     public static final RegistryObject<BlockEntityType<PosiriteTankTile>> POSIRITE_TANK_TILE = TILES.register("posirite_tank", () -> BlockEntityType.Builder.of(PosiriteTankTile::new, POSIRITE_TANK.get()).build(null));
+
+    public static final RegistryObject<BaseBlock> DISPLAY_BASE = BLOCKS.register("display_base", DisplayBaseTile::createBlock);
+    public static final RegistryObject<Item> DISPLAY_BASE_ITEM = ITEMS.register("display_base", () -> new BlockItem(DISPLAY_BASE.get(), createStandardProperties()));
+    public static final RegistryObject<BlockEntityType<DisplayBaseTile>> DISPLAY_BASE_TILE = TILES.register("display_base", () -> BlockEntityType.Builder.of(DisplayBaseTile::new, DISPLAY_BASE.get()).build(null));
+    public static final RegistryObject<DisplayModuleItem> DISPLAY_POWER = ITEMS.register("display_module_power", () -> new DisplayModuleItem(new PowerDisplayModule()));
+    public static final RegistryObject<DisplayModuleItem> DISPLAY_STORAGE = ITEMS.register("display_module_storage", () -> new DisplayModuleItem(new StorageDisplayModule()));
+    public static final RegistryObject<DisplayModuleItem> DISPLAY_TEXT = ITEMS.register("display_module_text", () -> new DisplayModuleItem(new TextDisplayModule()));
 
     public static final RegistryObject<BaseBlock> DOOR_MARKER = BLOCKS.register("door_marker", DoorMarkerTile::createBlock);
     public static final RegistryObject<Item> DOOR_MARKER_ITEM = ITEMS.register("door_marker", () -> new BlockItem(DOOR_MARKER.get(), createStandardProperties()));

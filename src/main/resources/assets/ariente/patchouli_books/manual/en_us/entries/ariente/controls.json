@@ -7,7 +7,7 @@
     {
       "type": "patchouli:text",
       "title": "Working the hologram",
-      "text": "$(li)Right-click a machine to open its hologram.$(li)Aim at a button and $(thing)left-click$() to press it.$(li)$(thing)Double-click$() item slots to craft, transfer blueprints or set filters.$(li)Hover for tooltips.$(br2)Face the hologram so you can aim at its controls. The question-mark button offers help."
+      "text": "$(li)Right-click a machine to open its hologram.$(li)Aim at a button and $(thing)left-click$() to press it.$(li)$(thing)Double-click$() item slots to craft, transfer blueprints or set filters.$(li)Hover for tooltips.$(br2)Face the hologram so you can aim at its controls. The top-right question mark opens the relevant Tablet manual entry when Patchouli is installed. Without it, help appears in the hologram; use the back arrow to return."
     },
     {
       "type": "patchouli:text",

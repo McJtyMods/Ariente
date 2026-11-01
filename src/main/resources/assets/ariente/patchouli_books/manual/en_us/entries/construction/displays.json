@@ -1,0 +1,44 @@
+{
+  "name": "Holographic Displays",
+  "icon": "ariente:display_base",
+  "category": "ariente:construction",
+  "sortnum": 4,
+  "pages": [
+    {
+      "type": "patchouli:text",
+      "title": "A modular display",
+      "text": "Place display bases side by side at the same level and facing. They share a surface rising from their thin plates. Right-click a base to set a height of 1\u201310 blocks. Displays need no power.$(br2)The base and all three modules have Constructor blueprints.$(br2)Click or drag a slider; its outer arrows adjust by one."
+    },
+    {
+      "type": "patchouli:text",
+      "title": "Surface settings",
+      "text": "Cycle the surface between Invisible, Transparent and Solid. Color... opens a picker; selecting a shade or pressing its x returns to settings. The default color is pale gray.$(br2)Transparent mode shows a 0\u2013100% transparency slider: 0% is opaque and 100% fully clear. Color and transparency are remembered between modes.$(br2)Border is independent and on by default, even for an invisible background. All settings apply to joined bases; older saved presets retain their appearance."
+    },
+    {
+      "type": "patchouli:text",
+      "title": "Installing modules",
+      "text": "Right-click a held module to configure it. Sneak-right-click a suitable machine or inventory to link; do this in the air to clear the link.$(br2)Aim at the front of the display. A green rectangle fits; red means overlap or insufficient room. Right-click to install. Sneak-right-click an installed module to recover its configured item.$(br2)Press and release right-click without dragging to edit an installed module. If an edit makes it too large, it is returned with its new settings; a full inventory drops it nearby."
+    },
+    {
+      "type": "patchouli:text",
+      "title": "Moving modules",
+      "text": "Hold right-click on an installed module and aim to drag it. You can move across joins between bases on the same screen. The outline is green when it fits and red when it overlaps or leaves the surface.$(br2)Release to place it. An illegal drop snaps back to its original position. Dragging never opens settings on release, even after returning to the starting point. Settings and machine links stay with the module."
+    },
+    {
+      "type": "patchouli:text",
+      "title": "Power and storage",
+      "text": "Power modules show network flux, generation, consumption and fuel, with a meter or recent history. Tanks report their generator's network.$(br2)Storage modules combine matching items into counts. Choose a list of the most stored items or a configurable paged grid. Readings refresh once per second; unloaded targets stay unloaded."
+    },
+    {
+      "type": "patchouli:text",
+      "title": "Text and color",
+      "text": "Left-click the text area to type. Use normal arrow, Home/End, Backspace/Delete, selection and clipboard controls. Escape or clicking outside commits the edit and releases typing.$(br2)Adjust text size, or choose Color... to open a hue/shade picker. Selecting a shade or pressing its top-right x returns to settings."
+    }
+  ],
+  "extra_recipe_mappings": {
+    "ariente:display_base": 0,
+    "ariente:display_module_power": 4,
+    "ariente:display_module_storage": 4,
+    "ariente:display_module_text": 5
+  }
+}

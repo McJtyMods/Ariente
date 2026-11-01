@@ -5,6 +5,7 @@ import mcjty.ariente.api.IAlarmMode;
 import mcjty.ariente.api.IGenerator;
 import mcjty.ariente.blocks.BlockProperties;
 import mcjty.ariente.cables.CableColor;
+import mcjty.ariente.gui.GuiHelp;
 import mcjty.ariente.gui.HoloGuiTools;
 import mcjty.ariente.power.*;
 import mcjty.ariente.setup.Registration;
@@ -197,6 +198,10 @@ public class NegariteGeneratorTile extends TickingTileEntity implements IGuiTile
         }
     }
 
+    public int getFuelTicks() {
+        return dustCounter;
+    }
+
     public boolean isWorking() {
         return dustCounter > 0 && isMachineEnabled();
     }
@@ -245,7 +250,10 @@ public class NegariteGeneratorTile extends TickingTileEntity implements IGuiTile
 
     @Override
     public IGuiComponent<?> createGui(String tag, IGuiComponentRegistry registry) {
-        return registry.panel(0, 0, 8, 8)
+        if (TAG_HELP.equals(tag)) {
+            return GuiHelp.GENERATORS.createHelpGui(registry);
+        }
+        return GuiHelp.GENERATORS.createPanel(registry)
                 .add(registry.text(0, 0, 8, 1).text("Negarite").color(registry.color(StyledColor.LABEL)))
                 .add(registry.stackIcon(0, 3, 1, 1).itemStack(new ItemStack(Registration.DUST_NEGARITE.get())))
 

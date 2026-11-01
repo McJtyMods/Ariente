@@ -7,7 +7,7 @@
     {
       "type": "patchouli:text",
       "title": "Build two columns",
-      "text": "Place a $(item)Negarite Generator$() and a $(item)Posirite Generator$(). Put at least one matching tank directly above each one.$(br2)Feed Negarite Dust to the Negarite Generator and Posirite Dust to the Posirite Generator. Use the hologram arrows to transfer fuel, or supply it with item automation."
+      "text": "Place a $(item)Negarite Generator$() and a $(item)Posirite Generator$(). Put at least one matching tank directly above each one.$(br2)Feed Negarite Dust to the Negarite Generator and Posirite Dust to the Posirite Generator. Hologram arrows move fuel between your inventory and the generator: single arrows move one dust, double arrows up to 64. Item automation can supply fuel too."
     },
     {
       "type": "patchouli:text",

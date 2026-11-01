@@ -1,7 +1,6 @@
 package mcjty.ariente.blocks.utility.autofield;
 
-import mcjty.ariente.gui.HelpBuilder;
-import mcjty.ariente.gui.HoloGuiTools;
+import mcjty.ariente.gui.GuiHelp;
 import mcjty.ariente.setup.Registration;
 import mcjty.hologui.api.IGuiComponent;
 import mcjty.hologui.api.IGuiComponentRegistry;
@@ -86,15 +85,7 @@ public class InputItemNodeTile extends AbstractItemNodeTile {
         final Pair<String, String> pair = getSlotTag(tag);
 
         if (TAG_HELP.equals(pair.getRight())) {
-            return HoloGuiTools.createHelpGui(registry,
-                    HelpBuilder.create()
-                            .line("This node can be used in")
-                            .line("an automation field to input")
-                            .line("items. The ore icon matches")
-                            .line("material tags (for example")
-                            .line("planks or ingots/silver).")
-                            .line("NBT and damage are separate")
-                            .line("filter options."),
+            return GuiHelp.INPUT_NODE.createHelpGui(registry,
                     pair.getLeft() + ":" + TAG_MAIN
             );
         } else {
@@ -103,7 +94,7 @@ public class InputItemNodeTile extends AbstractItemNodeTile {
     }
 
     private IGuiComponent<?> createInputGui(final Pair<String, String> pair, IGuiComponentRegistry registry) {
-        IPanel panel = HoloGuiTools.createPanelWithHelp(registry, entity -> entity.switchTag(pair.getLeft() + ":" + TAG_HELP))
+        IPanel panel = GuiHelp.INPUT_NODE.createPanel(registry, entity -> entity.switchTag(pair.getLeft() + ":" + TAG_HELP))
                 .add(registry.text(3.3, -.6, 1, 1).text("Input").color(registry.color(StyledColor.LABEL)))
 
                 .add(registry.iconToggle(0.5, 0.4, 1, 1)

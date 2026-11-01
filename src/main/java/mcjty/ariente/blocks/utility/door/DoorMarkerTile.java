@@ -1,6 +1,7 @@
 package mcjty.ariente.blocks.utility.door;
 
 import mcjty.ariente.Ariente;
+import mcjty.ariente.gui.GuiHelp;
 import mcjty.ariente.blocks.utility.ILockable;
 import mcjty.ariente.config.UtilityConfiguration;
 import mcjty.ariente.entities.soldier.SoldierEntity;
@@ -281,7 +282,10 @@ public class DoorMarkerTile extends TickingTileEntity implements IGuiTile, ILock
         if (isLocked()) {
             return Ariente.guiHandler.createNoAccessPanel();
         }
-        return registry.panel(0, 0, 8, 8)
+        if (TAG_HELP.equals(tag)) {
+            return GuiHelp.DOOR.createHelpGui(registry);
+        }
+        return GuiHelp.DOOR.createPanel(registry)
                 .add(registry.iconToggle(1, 1, 1, 1).getter((player) -> isIconSelected(0)).icon(registry.image(4*16, 12*16)).selected(registry.image(64+4*16, 12*16)).hitEvent((component, player, entity1, x, y) -> setIconIndex(0)))
                 .add(registry.iconToggle(3, 1, 1, 1).getter((player) -> isIconSelected(1)).icon(registry.image(5*16, 12*16)).selected(registry.image(64+5*16, 12*16)).hitEvent((component, player, entity1, x, y) -> setIconIndex(1)))
                 .add(registry.iconToggle(5, 1, 1, 1).getter((player) -> isIconSelected(2)).icon(registry.image(6*16, 12*16)).selected(registry.image(64+6*16, 12*16)).hitEvent((component, player, entity1, x, y) -> setIconIndex(2)))

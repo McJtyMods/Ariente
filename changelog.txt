@@ -1,4 +1,10 @@
 1.20-0.0.31-alpha:
+- Holographic displays now have separate background type, color picker, transparency percentage and border controls. Joined bases share all settings, and existing display presets are preserved.
+- Hold right-click to drag installed holographic modules, with green/red placement previews and snapback for invalid drops. Release without dragging to configure.
+- GUI question marks now open the relevant Tablet manual entry when Patchouli is installed, with expanded built-in help when it is absent. Added help to more machine, transport and equipment panels.
+- Installed holographic modules can now be configured directly. Modules that outgrow their available space are returned with their edited settings.
+- Holographic cycle choices now use recognizable looping-arrow buttons. Numeric settings use sliders with precise arrow controls, including display and elevator heights, lock ranges, shield radius, transport speeds and machine settings.
+- Added modular holographic displays: join display bases, choose a surface and height, and install configurable power, storage and colored text modules. All four components have Constructor blueprints.
 - Personal forcefields are faintly visible in first person, block lasers and magic, and flash red when ranged hits or explosions trigger a damage-based cooldown. While recharging they absorb 50% of ranged damage and 40% of explosion damage. Melee hits still deal half damage and now reflect the other half as Thorns damage.
 - Module tooltips now list the armor pieces and weapons that accept each module and explain its effect.
 - Added the two-handed Energy Lance: a longer sabre-style weapon that fires lasers for 30% more damage than an ordinary sabre. Keep your off hand empty to fire; configure sabre-compatible upgrade modules with the armor configuration key, and craft it with its Constructor blueprint.

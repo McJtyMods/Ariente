@@ -1,6 +1,7 @@
 package mcjty.ariente.blocks.utility;
 
 import mcjty.ariente.Ariente;
+import mcjty.ariente.gui.GuiHelp;
 import mcjty.ariente.api.ICityAI;
 import mcjty.ariente.api.ICityEquipment;
 import mcjty.ariente.blocks.BlockProperties;
@@ -276,30 +277,14 @@ public class LockTile extends GenericTileEntity implements IGuiTile, IKeyCardSlo
         if (isLocked()) {
             return Ariente.guiHandler.createNoAccessPanel();
         }
-        return registry.panel(0, 0, 8, 8)
-                .add(registry.text(0, 1, 1, 1).text("Horizontal").color(registry.color(StyledColor.LABEL)))
-                .add(registry.number(3, 2, 1, 1).color(registry.color(StyledColor.INFORMATION)).getter(this::getHorizontalRange))
-
-                .add(registry.iconButton(1, 2, 1, 1).icon(registry.image(GRAY_DOUBLE_ARROW_LEFT)).hover(registry.image(WHITE_DOUBLE_ARROW_LEFT))
-                        .hitEvent((component, player, entity1, x, y) -> changeHorizontalRange(-8)))
-                .add(registry.iconButton(2, 2, 1, 1).icon(registry.image(GRAY_ARROW_LEFT)).hover(registry.image(WHITE_ARROW_LEFT))
-                        .hitEvent((component, player, entity1, x, y) -> changeHorizontalRange(-1)))
-                .add(registry.iconButton(5, 2, 1, 1).icon(registry.image(GRAY_ARROW_RIGHT)).hover(registry.image(WHITE_ARROW_RIGHT))
-                        .hitEvent((component, player, entity1, x, y) -> changeHorizontalRange(1)))
-                .add(registry.iconButton(6, 2, 1, 1).icon(registry.image(GRAY_DOUBLE_ARROW_RIGHT)).hover(registry.image(WHITE_DOUBLE_ARROW_RIGHT))
-                        .hitEvent((component, player, entity1, x, y) -> changeHorizontalRange(8)))
-
-                .add(registry.text(0, 4, 1, 1).text("Vertical").color(registry.color(StyledColor.LABEL)))
-                .add(registry.number(3, 5, 1, 1).color(registry.color(StyledColor.INFORMATION)).getter(this::getVerticalRange))
-
-                .add(registry.iconButton(1, 5, 1, 1).icon(registry.image(GRAY_DOUBLE_ARROW_LEFT)).hover(registry.image(WHITE_DOUBLE_ARROW_LEFT))
-                        .hitEvent((component, player, entity1, x, y) -> changeVerticalRange(-8)))
-                .add(registry.iconButton(2, 5, 1, 1).icon(registry.image(GRAY_ARROW_LEFT)).hover(registry.image(WHITE_ARROW_LEFT))
-                        .hitEvent((component, player, entity1, x, y) -> changeVerticalRange(-1)))
-                .add(registry.iconButton(5, 5, 1, 1).icon(registry.image(GRAY_ARROW_RIGHT)).hover(registry.image(WHITE_ARROW_RIGHT))
-                        .hitEvent((component, player, entity1, x, y) -> changeVerticalRange(1)))
-                .add(registry.iconButton(6, 5, 1, 1).icon(registry.image(GRAY_DOUBLE_ARROW_RIGHT)).hover(registry.image(WHITE_DOUBLE_ARROW_RIGHT))
-                        .hitEvent((component, player, entity1, x, y) -> changeVerticalRange(8)))
+        if (TAG_HELP.equals(tag)) {
+            return GuiHelp.LOCK.createHelpGui(registry);
+        }
+        return GuiHelp.LOCK.createPanel(registry)
+                .add(registry.integerSlider(.3, 2, 7.2, 1).name("lock_horizontal").label("Horizontal range").range(1, 20)
+                        .getter(this::getHorizontalRange).changed((p, e, value) -> changeHorizontalRange(value - horizontalRange)))
+                .add(registry.integerSlider(.3, 5, 7.2, 1).name("lock_vertical").label("Vertical range").range(1, 10)
+                        .getter(this::getVerticalRange).changed((p, e, value) -> changeVerticalRange(value - verticalRange)))
                 ;
     }
 
