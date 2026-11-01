@@ -38,10 +38,6 @@ public class Ariente implements IArienteMod {
         instance = this;
         setupModules();
 
-        // This has to be done VERY early
-        // @todo 1.14
-//        FluidRegistry.enableUniversalBucket();
-
         ModLoadingContext.get().registerConfig(ModConfig.Type.CLIENT, Config.CLIENT_CONFIG);
         ModLoadingContext.get().registerConfig(ModConfig.Type.SERVER, Config.SERVER_CONFIG);
 

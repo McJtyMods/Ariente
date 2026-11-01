@@ -13,14 +13,10 @@ import net.minecraft.world.level.block.Block;
 import net.minecraft.world.level.block.entity.BlockEntity;
 import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.level.material.MapColor;
-import net.minecraft.world.level.pathfinder.BlockPathTypes;
 import net.minecraft.world.level.pathfinder.PathComputationType;
 import net.minecraft.world.phys.shapes.CollisionContext;
 import net.minecraft.world.phys.shapes.Shapes;
 import net.minecraft.world.phys.shapes.VoxelShape;
-
-import javax.annotation.Nonnull;
-import javax.annotation.Nullable;
 
 public class InvisibleDoorTile extends GenericTileEntity implements ILockable {
 
@@ -83,11 +79,6 @@ public class InvisibleDoorTile extends GenericTileEntity implements ILockable {
     public boolean isLocked() {
         // An invisible door block can never be broken
         return true;
-//        DoorMarkerTile tile = findDoorMarker();
-//        if (tile.isLocked()) {
-//            return true;
-//        }
-//        return false;
     }
 
     public DoorMarkerTile findDoorMarker() {
@@ -105,10 +96,4 @@ public class InvisibleDoorTile extends GenericTileEntity implements ILockable {
         return doorMarkerTile;
     }
 
-// @todo 1.14
-//    @Override
-//    public boolean shouldRenderInPass(int pass) {
-//        // @todo Should be pass 0 but it flickers then if an entity comes into view
-//        return pass == 0;
-//    }
 }

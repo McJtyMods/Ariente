@@ -22,15 +22,12 @@ public class MasterSoldierEntity extends SoldierEntity {
     public MasterSoldierEntity(EntityType<? extends Monster> type, Level worldIn) {
         super(type, worldIn);
         // @todo 1.14 move to type
-        //isImmuneToFire = true;
     }
 
     public static MasterSoldierEntity create(Level world, ChunkPos cityCenter, SoldierBehaviourType behaviourType) {
         MasterSoldierEntity entity = new MasterSoldierEntity(Registration.ENTITY_MASTER_SOLDIER.get(), world);
         entity.cityCenter = cityCenter;
         entity.behaviourType = behaviourType;
-        // @todo 1.14 move to type
-//        isImmuneToFire = true;
         return entity;
     }
 

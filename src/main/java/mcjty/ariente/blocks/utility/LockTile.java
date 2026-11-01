@@ -58,7 +58,6 @@ public class LockTile extends GenericTileEntity implements IGuiTile, IKeyCardSlo
 
     public static BaseBlock createBlock() {
         return new BaseBlock(new BlockBuilder()
-//                .flags(REDSTONE_CHECK, RENDER_SOLID, RENDER_CUTOUT)
                 .info(key("message.ariente.shiftmessage"))
                 .infoShift(header())
                 .topDriver(DRIVER)
@@ -82,8 +81,6 @@ public class LockTile extends GenericTileEntity implements IGuiTile, IKeyCardSlo
         Ariente.guiHandler.openHoloGui(level, worldPosition, player);
         return InteractionResult.SUCCESS;
     }
-
-
 
     @Override
     public void onDataPacket(Connection net, ClientboundBlockEntityDataPacket packet) {
@@ -228,12 +225,6 @@ public class LockTile extends GenericTileEntity implements IGuiTile, IKeyCardSlo
         setChanged();
     }
 
-    // @todo 1.14
-//    @Override
-//    public BlockState getActualState(BlockState state) {
-//        return state.with(LOCKED, isLocked());
-//    }
-
     @Override
     public Map<String, Object> save() {
         Map<String, Object> data = new HashMap<>();
@@ -270,7 +261,6 @@ public class LockTile extends GenericTileEntity implements IGuiTile, IKeyCardSlo
         setHorizontalRange(h);
     }
 
-
     private void changeVerticalRange(int dy) {
         int h = verticalRange + dy;
         if (h < 1) {
@@ -280,7 +270,6 @@ public class LockTile extends GenericTileEntity implements IGuiTile, IKeyCardSlo
         }
         setVerticalRange(h);
     }
-
 
     @Override
     public IGuiComponent<?> createGui(String tag, IGuiComponentRegistry registry) {
@@ -299,7 +288,6 @@ public class LockTile extends GenericTileEntity implements IGuiTile, IKeyCardSlo
                         .hitEvent((component, player, entity1, x, y) -> changeHorizontalRange(1)))
                 .add(registry.iconButton(6, 2, 1, 1).icon(registry.image(GRAY_DOUBLE_ARROW_RIGHT)).hover(registry.image(WHITE_DOUBLE_ARROW_RIGHT))
                         .hitEvent((component, player, entity1, x, y) -> changeHorizontalRange(8)))
-
 
                 .add(registry.text(0, 4, 1, 1).text("Vertical").color(registry.color(StyledColor.LABEL)))
                 .add(registry.number(3, 5, 1, 1).color(registry.color(StyledColor.INFORMATION)).getter(this::getVerticalRange))

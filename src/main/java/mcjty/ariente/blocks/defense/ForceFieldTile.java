@@ -33,12 +33,10 @@ import net.minecraft.world.level.Level;
 import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.LivingEntity;
-import net.minecraft.world.damagesource.DamageSource;
 import net.minecraft.world.InteractionHand;
 import net.minecraft.world.phys.AABB;
 import net.minecraft.world.phys.BlockHitResult;
 import net.minecraft.world.phys.Vec3;
-import net.minecraft.world.level.Explosion;
 import net.minecraftforge.network.PacketDistributor;
 
 import javax.annotation.Nullable;
@@ -74,7 +72,6 @@ public class ForceFieldTile extends TickingTileEntity implements IGuiTile, ISoun
 
     public static BaseBlock createBlock() {
         return new BaseBlock(new BlockBuilder()
-//                .flags(REDSTONE_CHECK, RENDER_SOLID, RENDER_CUTOUT)
                 .info(key("message.ariente.shiftmessage"))
                 .infoShift(header())
                 .topDriver(DRIVER)
@@ -147,8 +144,6 @@ public class ForceFieldTile extends TickingTileEntity implements IGuiTile, ISoun
         disableShield();
         markDirtyClient();
     }
-
-
 
     public PanelInfo[] getPanelInfo() {
         return panelInfo;
@@ -263,7 +258,6 @@ public class ForceFieldTile extends TickingTileEntity implements IGuiTile, ISoun
                     if (info != null && info.getLife() > 0) {
                         Vec3 intersection = info.testCollisionSegment(p1, p2, getScaleDouble());
                         if (intersection != null) {
-//                            world.newExplosion(entity, entity.getPosX(), entity.getPosY(), entity.getPosZ(), 2.0f, false, false);
                             entity.remove(Entity.RemovalReason.DISCARDED);
                             int life = info.getLife();
                             life -= 10; // @todo make dependant on arrow
@@ -321,7 +315,6 @@ public class ForceFieldTile extends TickingTileEntity implements IGuiTile, ISoun
         }
         return null;
     }
-
 
     @Override
     public void setRemoved() {
@@ -518,7 +511,6 @@ public class ForceFieldTile extends TickingTileEntity implements IGuiTile, ISoun
                 .add(registry.text(0, 4, 1, 1).text("Field Integrity").color(registry.color(StyledColor.LABEL)))
                 .add(registry.text(1, 5, 1, 1).text(() -> getFieldIntegrity() + "%").color(registry.color(StyledColor.INFORMATION)))
 
-
                 .add(registry.iconChoice(7, 6, 1, 1)
                         .getter((player) -> getRSModeInt())
                         .addImage(registry.image(REDSTONE_DUST))
@@ -536,7 +528,6 @@ public class ForceFieldTile extends TickingTileEntity implements IGuiTile, ISoun
         setRSMode(RedstoneMode.values()[current]);
         markDirtyClient();
     }
-
 
     @Override
     public void syncToClient() {

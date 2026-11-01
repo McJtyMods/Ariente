@@ -58,12 +58,6 @@ public class RoundRobinNodeTile extends GenericTileEntity {
         super(Registration.ROUND_ROBIN_TILE.get(), pos, state);
     }
 
-    // @todo 1.14
-//    @Override
-//    public Block getBlockType() {
-//        return ModBlocks.roundRobinNode;
-//    }
-
     @Override
     public void setChanged() {
         // Make sure to mark the MultipartTE as dirty

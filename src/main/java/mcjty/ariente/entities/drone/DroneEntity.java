@@ -32,7 +32,6 @@ import net.minecraft.world.Difficulty;
 import net.minecraft.world.level.BlockGetter;
 
 import javax.annotation.Nullable;
-import java.util.Random;
 
 import net.minecraft.world.entity.EntityType;
 import net.minecraft.world.entity.LivingEntity;
@@ -48,8 +47,6 @@ public class DroneEntity extends FlyingMob implements IForcefieldImmunity, IDron
 
     public DroneEntity(EntityType<? extends FlyingMob> type, Level worldIn) {
         super(type, worldIn);
-        // @todo 1.14
-//        this.isImmuneToFire = false;
         this.xpReward = 5;
         this.moveControl = new DroneMoveHelper(this);
     }
@@ -75,8 +72,6 @@ public class DroneEntity extends FlyingMob implements IForcefieldImmunity, IDron
         }));
     }
 
-    // @todo 1.14
-//    @SideOnly(Side.CLIENT)
     public boolean isAttacking() {
         return this.entityData.get(ATTACKING).booleanValue();
     }
@@ -100,19 +95,6 @@ public class DroneEntity extends FlyingMob implements IForcefieldImmunity, IDron
         if (!this.getCommandSenderWorld().isClientSide && this.getCommandSenderWorld().getDifficulty() == Difficulty.PEACEFUL) {
             this.remove(RemovalReason.DISCARDED);
         }
-    }
-
-    /**
-     * Called when the entity is attacked.
-     */
-    @Override
-    public boolean hurt(DamageSource source, float amount) {
-// @todo 1.14
-        //        if (this.isEntityInvulnerable(source)) {
-//            return false;
-//        } else {
-            return super.hurt(source, amount);
-//        }
     }
 
     @Override
@@ -217,12 +199,6 @@ public class DroneEntity extends FlyingMob implements IForcefieldImmunity, IDron
         }
     }
 
-    // @todo 1.14
-//    @Override
-//    public float getEyeHeight() {
-//        return 0.8F;
-//    }
-
     static class AILaserAttack extends Goal {
         private final DroneEntity drone;
         public int attackTimer;
@@ -268,7 +244,6 @@ public class DroneEntity extends FlyingMob implements IForcefieldImmunity, IDron
                 ++this.attackTimer;
 
                 if (this.attackTimer == 10) {
-//                    world.playEvent(null, 1015, new BlockPos(this.parentEntity), 0);
                 }
 
                 if (this.attackTimer == 20) {
@@ -295,8 +270,6 @@ public class DroneEntity extends FlyingMob implements IForcefieldImmunity, IDron
 
         public AILookAround(DroneEntity drone) {
             this.parentEntity = drone;
-            // @todo 1.14
-//            this.setMutexFlags(2);
         }
 
         /**
@@ -334,8 +307,6 @@ public class DroneEntity extends FlyingMob implements IForcefieldImmunity, IDron
 
         public AIDroneFly(DroneEntity drone) {
             this.parentEntity = drone;
-            // @todo 1.14
-//            this.setMutexFlags(1);
         }
 
         /**
@@ -435,10 +406,6 @@ public class DroneEntity extends FlyingMob implements IForcefieldImmunity, IDron
             for (int i = 1; i < p_179926_7_; ++i) {
                 axisalignedbb = axisalignedbb.move(d0, d1, d2);
 
-                // @todo 1.14
-//                if (!this.parentEntity.getEntityWorld().getCollisionBoxes(this.parentEntity, axisalignedbb).isEmpty()) {
-//                    return false;
-//                }
             }
 
             return true;

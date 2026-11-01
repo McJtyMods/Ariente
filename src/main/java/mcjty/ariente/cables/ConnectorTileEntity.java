@@ -1,10 +1,8 @@
 package mcjty.ariente.cables;
 
 import mcjty.ariente.setup.Registration;
-import mcjty.lib.varia.OrientationTools;
 import net.minecraft.core.BlockPos;
 import net.minecraft.nbt.CompoundTag;
-import net.minecraft.world.level.block.Block;
 import net.minecraft.core.Direction;
 import net.minecraft.world.level.block.state.BlockState;
 
@@ -12,7 +10,6 @@ public class ConnectorTileEntity extends GenericCableTileEntity {
 
     private int inputFromSide[] = new int[] { 0, 0, 0, 0, 0, 0 };
     private int powerOut[] = new int[] { 0, 0, 0, 0, 0, 0 };
-    private Block[] cachedNeighbours = new Block[OrientationTools.DIRECTION_VALUES.length];
 
     public ConnectorTileEntity(BlockPos pos, BlockState state) {
         super(Registration.CONNECTOR_TILE.get(), pos, state);

@@ -43,8 +43,6 @@ public class BlueprintItem extends Item implements ITooltipExtras, ITooltipSetti
         super(new Properties()
                 // @todo 1.18 .setISTER(BlueprintRenderer::createRenderer)
                 .stacksTo(1));
-        // @todo 1.14
-//        setHasSubtypes(true);
     }
 
     @Override
@@ -82,16 +80,6 @@ public class BlueprintItem extends Item implements ITooltipExtras, ITooltipSetti
 
     public static final ResourceLocation EMPTY_BLUEPRINT_MODEL = new ResourceLocation(Ariente.MODID, "empty_blueprint");
 
-    // @todo 1.14
-//    @Override
-//    public void getSubItems(CreativeTabs tab, NonNullList<ItemStack> items) {
-//        if (isInCreativeTab(tab)) {
-//            for (ConstructorRecipe recipe : BlueprintRecipeRegistry.getRecipes()) {
-//                items.add(makeBluePrint(recipe.getDestination()));
-//            }
-//        }
-//    }
-
     public static ItemStack makeBluePrint(ItemStack destination) {
         ItemStack dest = new ItemStack(Registration.BLUEPRINT.get());
         CompoundTag nbt = new CompoundTag();
@@ -117,23 +105,4 @@ public class BlueprintItem extends Item implements ITooltipExtras, ITooltipSetti
         }
     }
 
-
-    // @todo 1.14
-//    @SideOnly(Side.CLIENT)
-//    @Override
-//    public void initModel() {
-//        ModelLoader.setCustomMeshDefinition(this, new ItemMeshDefinition() {
-//            @Override
-//            public ModelResourceLocation getModelLocation(ItemStack stack) {
-//                ItemStack destination = getDestination(stack);
-//                if (destination.isEmpty()) {
-//                    return new ModelResourceLocation(getRegistryName(), "inventory");
-//                } else {
-//                    return EMPTY_BLUEPRINT_MODEL;
-//                }
-//            }
-//        });
-//
-//        setTileEntityItemStackRenderer(new BlueprintRenderer());
-//    }
 }

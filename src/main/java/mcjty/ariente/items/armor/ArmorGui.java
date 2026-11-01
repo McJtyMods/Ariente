@@ -74,7 +74,6 @@ public class ArmorGui {
         createModuleEntry(registry, panel, slot, 1, 3, Registration.MODULE_ARMOR.get());
         createModuleEntry(registry, panel, slot, 5, 3, Registration.MODULE_NIGHTVISION.get());
         createModuleEntry(registry, panel, slot, 1, 4, Registration.MODULE_SCRAMBLE.get());
-//        createModuleEntry(panel, slot, 5, 4, ModItems.moduleInvisibility.get());
 
         addPowerGui(registry, slot, panel);
 
@@ -116,7 +115,6 @@ public class ArmorGui {
         return panel;
     }
 
-
     public static IGuiComponent<?> createBootsGui(Player player) {
         IGuiComponentRegistry registry = Ariente.guiHandler.getComponentRegistry();
         EquipmentSlot slot = EquipmentSlot.FEET;
@@ -151,7 +149,6 @@ public class ArmorGui {
 
         return panel;
     }
-
 
     private static IPanel createPieceGui(IGuiComponentRegistry registry, EquipmentSlot slot) {
         IPanel panel = registry.panel(0, 0, 8, 8);

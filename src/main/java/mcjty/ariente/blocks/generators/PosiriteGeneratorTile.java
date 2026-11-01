@@ -11,7 +11,6 @@ import mcjty.hologui.api.*;
 import mcjty.lib.blocks.BaseBlock;
 import mcjty.lib.blocks.RotationType;
 import mcjty.lib.builder.BlockBuilder;
-import mcjty.lib.container.AutomationFilterItemHander;
 import mcjty.lib.container.ContainerFactory;
 import mcjty.lib.container.GenericItemHandler;
 import mcjty.lib.tileentity.TickingTileEntity;
@@ -49,12 +48,10 @@ public class PosiriteGeneratorTile extends TickingTileEntity implements IGuiTile
 
     public static final int SLOT_POSIRITE_INPUT = 0;
     public static final Lazy<ContainerFactory> CONTAINER_FACTORY = Lazy.of(() -> new ContainerFactory(1));//@todo 1.14new ResourceLocation(Ariente.MODID, "gui/posirite_generator.gui"));
-//    private InventoryHelper inventoryHelper = new InventoryHelper(this, CONTAINER_FACTORY, 1);
     private final PowerSenderSupport powerBlobSupport = new PowerSenderSupport();
 
     private final GenericItemHandler items = createItemHandler();
     private final LazyOptional<GenericItemHandler> itemHandler = LazyOptional.of(() -> items);
-    private final LazyOptional<AutomationFilterItemHander> automationItemHandler = LazyOptional.of(() -> new AutomationFilterItemHander(items));
 
     // @todo, temporary: base on tanks later!
     private int dustCounter;        // Number of ticks before the current dust depletes
@@ -65,7 +62,6 @@ public class PosiriteGeneratorTile extends TickingTileEntity implements IGuiTile
 
     public static BaseBlock createBlock() {
         return new BaseBlock(new BlockBuilder()
-//                .flags(REDSTONE_CHECK, RENDER_SOLID, RENDER_CUTOUT)
                 .info(key("message.ariente.shiftmessage"))
                 .infoShift(header())
                 .topDriver(DRIVER)
@@ -89,7 +85,6 @@ public class PosiriteGeneratorTile extends TickingTileEntity implements IGuiTile
         Ariente.guiHandler.openHoloGui(level, worldPosition, player);
         return InteractionResult.SUCCESS;
     }
-
 
     @Override
     public boolean isHighAlert() {
@@ -194,12 +189,6 @@ public class PosiriteGeneratorTile extends TickingTileEntity implements IGuiTile
         }
     }
 
-// @todo 1.14
-//    @Override
-//    public BlockState getActualState(BlockState state) {
-//        return state.with(WORKING, isWorking());
-//    }
-
     public boolean isWorking() {
         return dustCounter > 0 && isMachineEnabled();
     }
@@ -208,7 +197,6 @@ public class PosiriteGeneratorTile extends TickingTileEntity implements IGuiTile
     public void load(CompoundTag tagCompound) {
         super.load(tagCompound);
         powerBlobSupport.setCableId(tagCompound.getInt("cableId"));
-        //        readBufferFromNBT(tagCompound, inventoryHelper);
         CompoundTag info = tagCompound.getCompound("Info");
         if (info.contains("dust")) {
             dustCounter = info.getInt("dust");
@@ -218,7 +206,6 @@ public class PosiriteGeneratorTile extends TickingTileEntity implements IGuiTile
     @Override
     public void saveAdditional(CompoundTag tagCompound) {
         tagCompound.putInt("cableId", powerBlobSupport.getCableId());
-        //        writeBufferToNBT(tagCompound, inventoryHelper);
         getOrCreateInfo(tagCompound).putInt("dust", dustCounter);
         super.saveAdditional(tagCompound);
     }
@@ -247,7 +234,6 @@ public class PosiriteGeneratorTile extends TickingTileEntity implements IGuiTile
     public CableColor getCableColor() {
         return CableColor.POSIRITE;
     }
-
 
     @Override
     public IGuiComponent<?> createGui(String tag, IGuiComponentRegistry registry) {
@@ -335,7 +321,6 @@ public class PosiriteGeneratorTile extends TickingTileEntity implements IGuiTile
             items.setStackInSlot(SLOT_POSIRITE_INPUT, toTransfer);
             markDirtyClient();
         }
-
     }
 
     @Override

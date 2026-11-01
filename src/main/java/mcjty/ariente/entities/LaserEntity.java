@@ -2,7 +2,6 @@ package mcjty.ariente.entities;
 
 import net.minecraft.network.protocol.game.ClientGamePacketListener;
 import net.minecraft.network.FriendlyByteBuf;
-import com.mojang.datafixers.DataFixer;
 import mcjty.ariente.api.IForceFieldTile;
 import mcjty.ariente.api.IForcefieldImmunity;
 import mcjty.ariente.setup.Registration;
@@ -11,7 +10,6 @@ import mcjty.ariente.api.ArmorUpgradeType;
 import mcjty.ariente.items.modules.ModuleSupport;
 import mcjty.ariente.items.modules.WeaponModuleSupport;
 import mcjty.ariente.items.LanceAim;
-import net.minecraft.core.particles.ParticleType;
 import net.minecraft.core.particles.ParticleTypes;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.nbt.ListTag;
@@ -38,7 +36,6 @@ import net.minecraft.world.phys.AABB;
 import net.minecraftforge.network.NetworkHooks;
 import net.minecraftforge.entity.IEntityAdditionalSpawnData;
 
-
 public class LaserEntity extends Projectile implements IForcefieldImmunity, IEntityAdditionalSpawnData {
 
     private static final EntityDataAccessor<Float> SPAWN_YAW = SynchedEntityData.<Float>defineId(LaserEntity.class, EntityDataSerializers.FLOAT);
@@ -64,11 +61,8 @@ public class LaserEntity extends Projectile implements IForcefieldImmunity, IEnt
         return NetworkHooks.getEntitySpawningPacket(this);
     }
 
-
     public LaserEntity(EntityType<? extends LaserEntity> type, Level worldIn) {
         super(type, worldIn);
-        // @todo 1.14
-//        this.setSize(1.0F, 1.0F);
     }
 
     @Override
@@ -244,9 +238,7 @@ public class LaserEntity extends Projectile implements IForcefieldImmunity, IEnt
         if (this.level().isClientSide || (this.shootingEntity == null || this.shootingEntity.isAlive()) && this.level().hasChunkAt(this.blockPosition())) {
             super.tick();
 
-
             ++this.ticksInAir;
-//            RayTraceResult raytraceresult = ProjectileHelper.forwardsRaycast(this, true, this.ticksInAir >= 25, this.shootingEntity);
             HitResult raytraceresult = ProjectileUtil.getHitResultOnMoveVector(this,
                     entity -> lanceShot ? canHitEntity(entity) : entity != this.shootingEntity || this.ticksInAir >= 25);
 
@@ -259,9 +251,6 @@ public class LaserEntity extends Projectile implements IForcefieldImmunity, IEnt
             double motionZ = this.getDeltaMovement().z;
 
             // @todo 1.15 is this right? setRawPosition
-//            this.posX += motionX;
-//            this.posY += motionY;
-//            this.posZ += motionZ;
             this.setPos(getX() + motionX, getY() + motionY, getZ() + motionZ);
 
             ProjectileUtil.rotateTowardsMovement(this, 0.2F);
@@ -284,15 +273,10 @@ public class LaserEntity extends Projectile implements IForcefieldImmunity, IEnt
             motionY *= f;
             motionZ *= f;
             setDeltaMovement(motionX, motionY, motionZ);
-//            this.world.spawnParticle(this.getParticleType(), this.getPosX(), this.getPosY() + 0.5D, this.getPosZ(), 0.0D, 0.0D, 0.0D);
             this.setPos(this.getX(), this.getY(), this.getZ());
         } else {
             this.remove(RemovalReason.DISCARDED);
         }
-    }
-
-    protected ParticleType getParticleType() {
-        return ParticleTypes.SMOKE;
     }
 
     protected float getMotionFactor() {
@@ -318,9 +302,6 @@ public class LaserEntity extends Projectile implements IForcefieldImmunity, IEnt
         } else if (!level().isClientSide && lanceShot && result.getType() == HitResult.Type.BLOCK) {
             discard();
         }
-    }
-
-    public static void registerFixesFireball(DataFixer fixer, String name) {
     }
 
     @Override
@@ -410,9 +391,4 @@ public class LaserEntity extends Projectile implements IForcefieldImmunity, IEnt
         return 1.0F;
     }
 
-// @todo 1.15
-//    @Override
-//    public int getBrightnessForRender() {
-//        return 15728880;
-//    }
 }

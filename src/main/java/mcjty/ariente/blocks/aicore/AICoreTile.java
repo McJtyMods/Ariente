@@ -34,7 +34,6 @@ public class AICoreTile extends TickingTileEntity implements IAlarmMode, IAICore
         return new BaseBlock(new BlockBuilder()
                 .properties(Block.Properties.of().mapColor(MapColor.METAL)
                         .strength(20.0f, 800).noOcclusion())
-//                .flags(REDSTONE_CHECK, RENDER_SOLID, RENDER_CUTOUT)
                 .topDriver(DRIVER)
                 .tileEntitySupplier(AICoreTile::new)
         ) {

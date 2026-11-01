@@ -73,14 +73,11 @@ public class BlueprintStorageTile extends GenericTileEntity implements IGuiTile,
         return InteractionResult.SUCCESS;
     }
 
-
     // @todo 1.14 loot
     public void readRestorableFromNBT(CompoundTag tagCompound) {
-//        readBufferFromNBT(tagCompound, inventoryHelper);
     }
 
     public void writeRestorableToNBT(CompoundTag tagCompound) {
-//        writeBufferToNBT(tagCompound, inventoryHelper);
     }
 
     public GenericItemHandler getItems() {
@@ -95,12 +92,10 @@ public class BlueprintStorageTile extends GenericTileEntity implements IGuiTile,
 
     @Override
     public void load(Map<String, Object> data) {
-
     }
 
     @Override
     public void setup(ICityAI cityAI, Level world, boolean firstTime) {
-
     }
 
     @Override

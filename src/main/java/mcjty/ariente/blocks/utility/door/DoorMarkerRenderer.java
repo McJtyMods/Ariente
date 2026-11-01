@@ -81,21 +81,6 @@ public class DoorMarkerRenderer implements BlockEntityRenderer<DoorMarkerTile> {
             vertex(builder, matrixStack, .1f, o, p, u+du, v+dv, combinedLightIn, 1);
             vertex(builder, matrixStack, .1f, o, o, u, v+dv, combinedLightIn, 1);
 
-//            for (int yy = 1; yy < 10; yy++) {
-//                if (getWorld().isAirBlock(te.getPos().up(yy))) {
-//                    buffer.pos(-.1, yy + o, o).tex(u, v).endVertex();
-//                    buffer.pos(-.1, yy + o, p).tex(u+duv, v).endVertex();
-//                    buffer.pos(-.1, yy + p, p).tex(u+duv, v+duv).endVertex();
-//                    buffer.pos(-.1, yy + p, o).tex(u, v+duv).endVertex();
-//
-//                    buffer.pos(.1, yy + p, o).tex(u, v).endVertex();
-//                    buffer.pos(.1, yy + p, p).tex(u+duv, v).endVertex();
-//                    buffer.pos(.1, yy + o, p).tex(u+duv, v+duv).endVertex();
-//                    buffer.pos(.1, yy + o, o).tex(u, v+duv).endVertex();
-//                } else {
-//                    break;
-//                }
-//            }
         }
     }
 

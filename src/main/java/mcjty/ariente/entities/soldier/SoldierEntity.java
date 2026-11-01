@@ -58,7 +58,6 @@ public class SoldierEntity extends Monster implements IArmRaisable, IForcefieldI
     protected ChunkPos cityCenter;
     protected SoldierBehaviourType behaviourType = SoldierBehaviourType.SOLDIER_FIGHTER;
 
-
     public SoldierEntity(EntityType<? extends Monster> type, Level worldIn) {
         super(type, worldIn);
     }
@@ -146,10 +145,7 @@ public class SoldierEntity extends Monster implements IArmRaisable, IForcefieldI
     protected void defineSynchedData() {
         super.defineSynchedData();
         this.getEntityData().define(ARMS_RAISED, Boolean.valueOf(false));
-//        LootTable lootTableFromLocation = worldObj.getLootTableManager().getLootTableFromLocation(LOOT);
-//        System.out.println("lootTableFromLocation = " + lootTableFromLocation);
     }
-//            this.getAttributes().registerAttribute(Attributes.FOLLOW_RANGE).setBaseValue(16.0D);
 
     public static AttributeSupplier.Builder registerAttributes() {
         AttributeSupplier.Builder attributes = Monster.createMonsterAttributes();
@@ -250,7 +246,6 @@ public class SoldierEntity extends Monster implements IArmRaisable, IForcefieldI
         this.targetSelector.addGoal(2, new NearestAttackableTargetGoal<>(this, Player.class, true));
     }
 
-
     @Override
     public void addAdditionalSaveData(CompoundTag compound) {
         super.addAdditionalSaveData(compound);
@@ -274,7 +269,6 @@ public class SoldierEntity extends Monster implements IArmRaisable, IForcefieldI
     protected ResourceLocation getDefaultLootTable() {
         return LOOT;
     }
-
 
     @Override
     public int getMaxSpawnClusterSize() {

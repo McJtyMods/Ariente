@@ -26,14 +26,11 @@ public class MimicBlockSupport {
         this.mimicBlock = mimicBlock;
     }
 
-
     public void readFromNBT(CompoundTag tagCompound) {
         if (tagCompound.contains("mimicState")) {
             mimicBlock = NbtUtils.readBlockState(BuiltInRegistries.BLOCK.asLookup(), tagCompound.getCompound("mimicState"));
         } else if (tagCompound.contains("regName")) {
             String regName = tagCompound.getString("regName");
-            // @todo 1.14 meta
-//            int meta = tagCompound.getInt("meta");
             Block value = ForgeRegistries.BLOCKS.getValue(new ResourceLocation(regName));
             if (value == null) {
                 mimicBlock = Blocks.COBBLESTONE.defaultBlockState();
@@ -50,8 +47,6 @@ public class MimicBlockSupport {
         if (mimicBlock != null) {
             tagCompound.put("mimicState", NbtUtils.writeBlockState(mimicBlock));
             tagCompound.putString("regName", Tools.getId(mimicBlock.getBlock()).toString());
-            // @todo 1.14 meta
-//            tagCompound.putInt("meta", mimicBlock.getBlock().getMetaFromState(mimicBlock));
         }
     }
 }

@@ -33,7 +33,6 @@ public class SignalReceiverTile extends SignalChannelTileEntity {
 
     public static BaseBlock createBlock() {
         return new BaseBlock(new BlockBuilder()
-//                .flags(REDSTONE_CHECK, RENDER_SOLID, RENDER_CUTOUT)
                 .info(key("message.ariente.shiftmessage"))
                 .infoShift(header(), parameter("channel", NBTTools.intGetter("channel", -1)))
                 .topDriver(DRIVER)

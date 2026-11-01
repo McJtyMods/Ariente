@@ -1,6 +1,5 @@
 package mcjty.ariente.datagen;
 
-import mcjty.lib.varia.Tools;
 import java.util.concurrent.CompletableFuture;
 import net.minecraft.core.HolderLookup;
 import mcjty.ariente.Ariente;
@@ -9,7 +8,6 @@ import mcjty.ariente.setup.Registration;
 import net.minecraftforge.common.data.BlockTagsProvider;
 import net.minecraft.data.PackOutput;
 import net.minecraft.data.tags.ItemTagsProvider;
-import net.minecraft.data.tags.TagsProvider;
 import net.minecraft.world.item.Item;
 import net.minecraft.tags.TagKey;
 import net.minecraftforge.common.Tags;

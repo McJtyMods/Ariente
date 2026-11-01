@@ -257,14 +257,6 @@ public abstract class AbstractNodeTile extends GenericTileEntity implements IGui
         writeRestorableToNBT(tagCompound);
     }
 
-    // @todo 1.14
-//    @SideOnly(Side.CLIENT)
-//    @Override
-//    @Optional.Method(modid = "waila")
-//    public void addWailaBody(ItemStack itemStack, List<String> currenttip, IWailaDataAccessor accessor, IWailaConfigHandler config) {
-//        super.addWailaBody(itemStack, currenttip, accessor, config);
-//    }
-
     protected Pair<String, String> getSlotTag(String tag) {
         String[] split = StringUtils.split(tag, ":");
         final String slot = split[0];
@@ -274,7 +266,6 @@ public abstract class AbstractNodeTile extends GenericTileEntity implements IGui
 
     @Override
     public void syncToClient() {
-//        markDirtyClient();
     }
 
     protected IIconChoice addColors(IGuiComponentRegistry registry, IIconChoice iconChoice, boolean negative) {

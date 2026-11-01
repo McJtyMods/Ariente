@@ -48,8 +48,6 @@ public class PowerSuit extends ArmorItem {
             default -> throw new IllegalArgumentException("Not an armor slot: " + slot);
         }, new Properties().durability(0));
         this.slot = slot;
-        // @todo 1.14
-//        setRegistryName("powersuit_" + slot.getName());
     }
 
     @Nullable

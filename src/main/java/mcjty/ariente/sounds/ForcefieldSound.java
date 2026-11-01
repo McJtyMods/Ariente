@@ -40,12 +40,6 @@ public class ForcefieldSound extends AbstractTickableSoundInstance {
             stop();
             return;
         }
-//        if (ticksRemaining != -1) {
-//            ticksRemaining--;
-//            if (ticksRemaining <= 0) {
-//                donePlaying = true;
-//            }
-//        }
     }
 
     protected boolean isSoundType(SoundEvent event){

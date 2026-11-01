@@ -1,7 +1,6 @@
 package mcjty.ariente.items;
 
 import mcjty.lib.varia.Tools;
-import mcjty.ariente.Ariente;
 import mcjty.lib.builder.TooltipBuilder;
 import mcjty.lib.tooltips.ITooltipSettings;
 import net.minecraft.network.chat.Component;

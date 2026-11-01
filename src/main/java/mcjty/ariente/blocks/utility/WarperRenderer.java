@@ -32,11 +32,6 @@ public class WarperRenderer implements BlockEntityRenderer<WarperTile> {
 
     @Override
     public void render(WarperTile te, float partialTicks, PoseStack matrixStack, MultiBufferSource buffer, int combinedLightIn, int combinedOverlayIn) {
-        // if (!te.isWorking()) {
-            // // Skip rendering beams if it is not working
-            // return;
-        // }
-
         ResourceLocation beamIcon = HALO;
 
         Minecraft mc = Minecraft.getInstance();

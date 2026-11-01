@@ -116,7 +116,6 @@ public class AutoFieldTile extends TickingTileEntity implements IGuiTile, IPower
         return InteractionResult.SUCCESS;
     }
 
-
     @Override
     public void tickServer() {
         if (refreshField.getAndSet(false)) {
@@ -315,7 +314,6 @@ public class AutoFieldTile extends TickingTileEntity implements IGuiTile, IPower
         }
         return transferRenders;
     }
-
 
     public boolean isRenderOutline() {
         return renderOutline;
@@ -713,13 +711,6 @@ public class AutoFieldTile extends TickingTileEntity implements IGuiTile, IPower
         return getRenderBox();
     }
 
-    // @todo 1.14
-//    @Override
-//    public boolean shouldRenderInPass(int pass) {
-//        return pass == 1;
-//    }
-
-
     @Override
     public void onDataPacket(Connection net, ClientboundBlockEntityDataPacket packet) {
         int oldheight = height;
@@ -734,7 +725,6 @@ public class AutoFieldTile extends TickingTileEntity implements IGuiTile, IPower
             }
         }
     }
-
 
     @Override
     public IGuiComponent<?> createGui(String tag, IGuiComponentRegistry registry) {
@@ -793,6 +783,5 @@ public class AutoFieldTile extends TickingTileEntity implements IGuiTile, IPower
 
     @Override
     public void syncToClient() {
-
     }
 }

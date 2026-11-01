@@ -38,9 +38,6 @@ public class SentinelDroneEntity extends FlyingMob implements IForcefieldImmunit
     public SentinelDroneEntity(EntityType<? extends FlyingMob> type, Level worldIn) {
         super(type, worldIn);
 
-// @todo 1.14
-//        this.isImmuneToFire = false;
-
         this.xpReward = 5;
         this.moveControl = new SentinelDroneMoveHelper(this);
     }
@@ -81,10 +78,8 @@ public class SentinelDroneEntity extends FlyingMob implements IForcefieldImmunit
         }
     }
 
-
     @Override
     public void setTarget(@Nullable LivingEntity entitylivingbaseIn) {
-//        super.setAttackTarget(entitylivingbaseIn);
         // This is called by EntityAIFindEntityNearestPlayer when it spots a player.
         // In this case we don't attack but notify the city AI
         if (entitylivingbaseIn instanceof Player && cityCenter != null) {
@@ -211,19 +206,11 @@ public class SentinelDroneEntity extends FlyingMob implements IForcefieldImmunit
         }
     }
 
-    // @todo 1.14
-//    @Override
-//    public float getEyeHeight() {
-//        return 0.8F;
-//    }
-
     static class AILookAround extends Goal {
         private final SentinelDroneEntity parentEntity;
 
         public AILookAround(SentinelDroneEntity drone) {
             this.parentEntity = drone;
-            // @todo 1.14
-//            this.setMutexFlags(2);
         }
 
         /**
@@ -261,8 +248,6 @@ public class SentinelDroneEntity extends FlyingMob implements IForcefieldImmunit
 
         public AICircleCity(SentinelDroneEntity drone) {
             this.parentEntity = drone;
-            // @todo 1.14
-//            this.setMutexFlags(1);
         }
 
         /**
@@ -351,10 +336,6 @@ public class SentinelDroneEntity extends FlyingMob implements IForcefieldImmunit
             for (int i = 1; i < p_179926_7_; ++i) {
                 axisalignedbb = axisalignedbb.move(d0, d1, d2);
 
-                // @todo 1.14
-//                if (!this.parentEntity.getEntityWorld().getCollisionBoxes(this.parentEntity, axisalignedbb).isEmpty()) {
-//                    return false;
-//                }
             }
 
             return true;

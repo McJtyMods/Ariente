@@ -147,11 +147,6 @@ public class ForgeEventHandlers {
         }
     }
 
-//    @SubscribeEvent
-//    public void onLivingEquipmentChange(LivingEquipmentChangeEvent event) {
-//        PowerSuitFeatureCache.checkCacheClean(event.getEntity().getEntityId(), event.getSlot(), event.getFrom(), event.getTo());
-//    }
-
     private void onBlockBreakNormal(BlockEvent.BreakEvent event) {
         LevelAccessor world = event.getLevel();
         BlockPos pos = event.getPos();

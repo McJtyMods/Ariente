@@ -2,7 +2,6 @@ package mcjty.ariente.cables;
 
 import mcjty.lib.compat.theoneprobe.TOPDriver;
 import net.minecraft.core.BlockPos;
-import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.context.BlockPlaceContext;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.level.block.Block;
@@ -31,52 +30,10 @@ public class NetCableBlock extends GenericCableBlock {
         return null;
     }
 
-// @todo 1.14
-//    @Override
-//    public BlockState getExtendedState(BlockState state, IBlockReader world, BlockPos pos) {
-//        IExtendedBlockState extendedBlockState = (IExtendedBlockState) super.getExtendedState(state, world, pos);
-//        BlockState mimicBlock = getMimicBlock(world, pos);
-//        if (mimicBlock != null) {
-//            return extendedBlockState.with(FACADEID, new FacadeBlockId(mimicBlock));
-//        } else {
-//            return extendedBlockState;
-//        }
-//    }
-
-
-    // @todo 1.14
-//    @Override
-//    public void getSubBlocks(CreativeTabs tab, NonNullList<ItemStack> items) {
-//        for (CableColor value : CableColor.VALUES) {
-//            items.add(updateColorInStack(new ItemStack(this, 1, value.ordinal()), value));
-//        }
-//    }
-
-    // @todo 1.14
-//    @Override
-//    @SideOnly(Side.CLIENT)
-//    public boolean shouldSideBeRendered(BlockState blockState, IBlockAccess blockAccess, BlockPos pos, Direction side) {
-//        BlockState mimicBlock = getMimicBlock(blockAccess, pos);
-//        if (mimicBlock == null) {
-//            return false;
-//        } else {
-//            return mimicBlock.shouldSideBeRendered(blockAccess, pos, side);
-//        }
-//    }
-//
-//
-//    @Override
-//    @SideOnly(Side.CLIENT)
-//    public boolean canRenderInLayer(BlockState state, BlockRenderLayer layer) {
-//        return true; // delegated to GenericCableBakedModel#getQuads
-//    }
-
-
     @Nullable
     @Override
     public BlockState getStateForPlacement(BlockPlaceContext context) {
         return getPlacementState(context);
-
     }
 
     public BlockState getPlacementState(BlockPlaceContext context) {
@@ -86,7 +43,6 @@ public class NetCableBlock extends GenericCableBlock {
         BlockState state = world.getBlockState(pos);
         // @todo 1.14
         world.sendBlockUpdated(pos, state, state, Block.UPDATE_ALL);
-//        world.markBlockRangeForRenderUpdate(pos.add(-1, -1, -1), pos.add(1, 1, 1));
         return super.getStateForPlacement(context);
     }
 

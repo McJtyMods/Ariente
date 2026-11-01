@@ -42,7 +42,6 @@ public class WirelessButtonTile extends SignalChannelTileEntity {
 
     public static BaseBlock createBlock() {
         return new BaseBlock(new BlockBuilder()
-//                .flags(REDSTONE_CHECK, RENDER_SOLID, RENDER_CUTOUT)
                 .info(key("message.ariente.shiftmessage"))
                 .infoShift(header(), parameter("channel", NBTTools.intGetter("channel", -1)))
                 .topDriver(DRIVER)
@@ -66,7 +65,6 @@ public class WirelessButtonTile extends SignalChannelTileEntity {
         onBlockActivatedWithToggle(level, worldPosition, player, hand);
         return InteractionResult.SUCCESS;
     }
-
 
     @Override
     public void setChannel(int channel) {
@@ -140,13 +138,6 @@ public class WirelessButtonTile extends SignalChannelTileEntity {
             setLocked(!locked);
         }
     }
-
-
-    // @todo 1.14
-//    @Override
-//    public BlockState getActualState(BlockState state) {
-//        return state.with(POWER, !locked);
-//    }
 
     @Override
     public void load(CompoundTag tagCompound) {

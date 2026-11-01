@@ -7,7 +7,6 @@ import mcjty.ariente.setup.Registration;
 import mcjty.lib.compat.theoneprobe.TOPDriver;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
-import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.level.BlockGetter;
 import net.minecraft.world.level.block.Block;
 import net.minecraft.world.level.block.entity.BlockEntity;
@@ -56,74 +55,10 @@ public class ConnectorBlock extends GenericCableBlock {
         return Items.AIR;
     }
 
-
-    // @todo 1.14
-//    @Override
-//    public void getSubBlocks(CreativeTabs tab, NonNullList<ItemStack> items) {
-//        for (CableColor value : CableColor.VALUES) {
-//            items.add(updateColorInStack(new ItemStack(this, 1, value.ordinal()), value));
-//        }
-//    }
-
-//    @Override
-//    public boolean onBlockActivated(World world, BlockPos pos, BlockState state, PlayerEntity player, Hand hand, Direction side, float hitX, float hitY, float hitZ) {
-//        if (!world.isRemote) {
-//            player.openGui(XNet.instance, GuiProxy.GUI_CONNECTOR, world, pos.getX(), pos.getY(), pos.getZ());
-//        }
-//        return true;
-//    }
-//
-
-
-// @todo 1.14
-//    @Override
-//    @Optional.Method(modid = "theoneprobe")
-//    public void addProbeInfo(ProbeMode mode, IProbeInfo probeInfo, PlayerEntity player, World world, BlockState blockState, IProbeHitData data) {
-//        super.addProbeInfo(mode, probeInfo, player, world, blockState, data);
-//    }
-//
-//
-//    @Override
-//    public BlockState getExtendedState(BlockState state, IBlockAccess world, BlockPos pos) {
-//        IExtendedBlockState extendedBlockState = (IExtendedBlockState) super.getExtendedState(state, world, pos);
-//        BlockState mimicBlock = getMimicBlock(world, pos);
-//        if (mimicBlock != null) {
-//            return extendedBlockState.with(FACADEID, new FacadeBlockId(mimicBlock));
-//        } else {
-//            return extendedBlockState;
-//        }
-//    }
-
-// @todo 1.14
-//    @Override
-//    public void initModel() {
-//        super.initModel();
-//        // To make sure that our ISBM model is chosen for all states we use this custom state mapper:
-//        McJtyLib.proxy.initStateMapper(this, GenericCableBakedModel.modelConnector);
-//        CableRenderer.register(ConnectorTileEntity.class);
-//    }
-
-
     @Override
     public void neighborChanged(BlockState state, Level world, BlockPos pos, Block blockIn, BlockPos fromPos, boolean isMoving) {
         checkRedstone(world, pos);
     }
-
-//    @Override
-//    public void onNeighborChange(IBlockAccess blockAccess, BlockPos pos, BlockPos neighbor) {
-//        if (blockAccess instanceof World) {
-//            World world = (World) blockAccess;
-//            if (!world.isRemote) {
-//                TileEntity te = world.getTileEntity(pos);
-//                if (te instanceof ConnectorTileEntity) {
-//                    ConnectorTileEntity connector = (ConnectorTileEntity) te;
-//                    connector.possiblyMarkNetworkDirty(neighbor);
-//                }
-//            }
-//        }
-//    }
-//
-
 
     // @todo 1.18 @Override
     public boolean shouldCheckWeakPower(BlockState state, BlockGetter world, BlockPos pos, Direction side) {
@@ -166,9 +101,6 @@ public class ConnectorBlock extends GenericCableBlock {
     @Nullable
     @Override
     public BlockState getStateForPlacement(BlockPlaceContext context) {
-        // When our block is placed down we force a re-render of adjacent blocks to make sure their ISBM model is updated
-// @todo 1.14
-//        world.markBlockRangeForRenderUpdate(pos.add(-1, -1, -1), pos.add(1, 1, 1));
         return super.getStateForPlacement(context);
     }
 
@@ -220,36 +152,4 @@ public class ConnectorBlock extends GenericCableBlock {
         return false;
     }
 
-    // @todo 1.14
-//    @Override
-//    @SideOnly(Side.CLIENT)
-//    public boolean shouldSideBeRendered(BlockState blockState, IBlockAccess blockAccess, BlockPos pos, Direction side) {
-//        BlockState mimicBlock = getMimicBlock(blockAccess, pos);
-//        if (mimicBlock == null) {
-//            return false;
-//        } else {
-//            return mimicBlock.shouldSideBeRendered(blockAccess, pos, side);
-//        }
-//    }
-
-    // @todo 1.14
-//    @Override
-//    @SideOnly(Side.CLIENT)
-//    public boolean canRenderInLayer(BlockState state, BlockRenderLayer layer) {
-//        return true; // delegated to GenericCableBakedModel#getQuads
-//    }
-
-    // @todo 1.14
-//    @Override
-//    public void getDrops(NonNullList<ItemStack> drops, IBlockReader blockAccess, BlockPos pos, BlockState state, int fortune) {
-//        super.getDrops(drops, blockAccess, pos, state, fortune);
-//        if (blockAccess instanceof World) {
-//            World world = (World) blockAccess;
-//            for (ItemStack drop : drops) {
-//                if (!drop.hasTagCompound()) {
-//                    drop.setTagCompound(new CompoundNBT());
-//                }
-//            }
-//        }
-//    }
 }

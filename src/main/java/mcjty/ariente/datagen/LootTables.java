@@ -12,7 +12,6 @@ import mcjty.lib.blocks.BaseBlock;
 import mcjty.lib.datagen.BaseLootTableProvider;
 import net.minecraft.world.level.block.Block;
 import net.minecraft.world.level.block.SlabBlock;
-import net.minecraft.data.PackOutput;
 import net.minecraftforge.registries.RegistryObject;
 
 public class LootTables extends BaseLootTableProvider implements LootTableSubProvider {
@@ -86,7 +85,6 @@ public class LootTables extends BaseLootTableProvider implements LootTableSubPro
         }
 
         addBlockStateTable(Registration.PATTERN.get(), PatternBlock.TYPE);
-
     }
 
     protected void addSimpleSlab(Block block) {

@@ -9,9 +9,6 @@ import net.minecraft.client.renderer.blockentity.BlockEntityRenderers;
 import net.minecraft.core.Direction;
 import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.client.renderer.MultiBufferSource;
-import org.joml.Vector3f;
-import net.minecraft.client.renderer.blockentity.BlockEntityRenderDispatcher;
-
 
 public class InvisibleDoorRenderer implements BlockEntityRenderer<InvisibleDoorTile> {
 

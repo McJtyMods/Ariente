@@ -28,8 +28,6 @@ public class EntityAISoldierWander extends Goal {
         this.entity = creatureIn;
         this.speed = speedIn;
         this.executionChance = chance;
-        // @todo 1.14
-//        this.setMutexBits(1);
     }
 
     @Override

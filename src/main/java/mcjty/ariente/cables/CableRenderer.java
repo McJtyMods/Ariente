@@ -2,7 +2,6 @@ package mcjty.ariente.cables;
 
 import com.mojang.blaze3d.vertex.PoseStack;
 import com.mojang.blaze3d.vertex.VertexConsumer;
-import org.joml.Matrix4f;
 import net.minecraft.world.phys.Vec3;
 import mcjty.ariente.Ariente;
 import mcjty.ariente.client.ArienteRenderType;
@@ -17,7 +16,6 @@ import net.minecraft.world.level.block.Block;
 import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.renderer.texture.TextureAtlasSprite;
-import net.minecraft.client.renderer.blockentity.BlockEntityRenderDispatcher;
 import net.minecraft.world.level.block.entity.BlockEntityType;
 
 import java.util.ArrayList;
@@ -59,7 +57,6 @@ public class CableRenderer implements BlockEntityRenderer<GenericCableTileEntity
         data_laserbeams[2] = DATA_LASERBEAM_3;
         data_laserbeams[3] = DATA_LASERBEAM_4;
     }
-
 
     private static class RenderInfo {
         public final Vec3 player;

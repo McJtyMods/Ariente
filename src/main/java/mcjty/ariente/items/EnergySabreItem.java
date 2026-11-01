@@ -2,15 +2,12 @@ package mcjty.ariente.items;
 
 import com.google.common.collect.ImmutableMultimap;
 import com.google.common.collect.Multimap;
-import mcjty.ariente.Ariente;
-import mcjty.ariente.setup.Registration;
 import net.minecraft.world.entity.EquipmentSlot;
 import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.entity.ai.attributes.Attributes;
 import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.Tiers;
-import net.minecraft.world.level.block.Block;
 import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.tags.BlockTags;
 import net.minecraft.world.entity.ai.attributes.Attribute;
@@ -59,12 +56,6 @@ public class EnergySabreItem extends Item {
         return false;
     }
 
-//   @todo 1.14
-//    @Override
-//    public boolean isFull3D() {
-//        return true;
-//    }
-
     @Override
     public int getEnchantmentValue() {
         return this.tier.getEnchantmentValue();
@@ -72,16 +63,6 @@ public class EnergySabreItem extends Item {
 
     public String getToolMaterialName() {
         return this.tier.toString();
-    }
-
-    @Override
-    public boolean isValidRepairItem(ItemStack toRepair, ItemStack repair) {
-        ItemStack mat = new ItemStack(Registration.INGOT_LITHIUM.get());
-        // @todo 1.14 oredict
-//        if (!mat.isEmpty() && net.minecraftforge.oredict.OreDictionary.itemMatches(mat, repair, false)) {
-//            return true;
-//        }
-        return super.isValidRepairItem(toRepair, repair);
     }
 
     @Override

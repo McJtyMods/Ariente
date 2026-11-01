@@ -61,9 +61,6 @@ import static mcjty.lib.builder.TooltipBuilder.header;
 import static mcjty.lib.builder.TooltipBuilder.key;
 
 public class StorageTile extends GenericTileEntity implements IGuiTile, ICityEquipment, IKeyCardSlot, ILockable, IStorageTile {
-
-//    public static final PropertyBool LOCKED = PropertyBool.create("locked");
-
     private boolean locked = false;
     private String keyId;
 
@@ -93,7 +90,6 @@ public class StorageTile extends GenericTileEntity implements IGuiTile, ICityEqu
             @Override
             protected void createBlockStateDefinition(StateDefinition.Builder<Block, BlockState> builder) {
                 super.createBlockStateDefinition(builder);
-//                builder.add(LOCKED);
             }
 
             @Override
@@ -126,7 +122,6 @@ public class StorageTile extends GenericTileEntity implements IGuiTile, ICityEqu
         }
     }
 
-
     @Nullable
     @Override
     public Map<String, Object> save() {
@@ -135,7 +130,6 @@ public class StorageTile extends GenericTileEntity implements IGuiTile, ICityEqu
 
     @Override
     public void load(Map<String, Object> data) {
-
     }
 
     @Override
@@ -230,12 +224,6 @@ public class StorageTile extends GenericTileEntity implements IGuiTile, ICityEqu
         setChanged();
     }
 
-//    @Override
-//    public BlockState getActualState(BlockState state) {
-//        return state.with(LOCKED, isLocked());
-//    }
-//
-
     @Override
     public void acceptKeyCard(ItemStack stack) {
         Set<String> tags = KeyCardItem.getSecurityTags(stack);
@@ -263,17 +251,6 @@ public class StorageTile extends GenericTileEntity implements IGuiTile, ICityEqu
         counts[type * STACKS_PER_TYPE] = stack.getCount();
         totals[type] = stack.getCount();
     }
-
-    // @todo 1.14
-//    @SideOnly(Side.CLIENT)
-//    @Override
-//    @Optional.Method(modid = "waila")
-//    public void addWailaBody(ItemStack itemStack, List<String> currenttip, IWailaDataAccessor accessor, IWailaConfigHandler config) {
-//        super.addWailaBody(itemStack, currenttip, accessor, config);
-////        if (isWorking()) {
-////            currenttip.add(TextFormatting.GREEN + "Producing " + getRfPerTick() + " RF/t");
-////        }
-//    }
 
     public static int getSlot(BlockHitResult mouseOver, Level world) {
         return getSlot(world, mouseOver.getBlockPos(), mouseOver.getDirection(), mouseOver.getLocation());
@@ -356,12 +333,6 @@ public class StorageTile extends GenericTileEntity implements IGuiTile, ICityEqu
     }
 
     private void updateTotals(int type) {
-
-//        totals[type] = 0;
-//        for (int i = type * STACKS_PER_TYPE; i < (type+1) * STACKS_PER_TYPE; i++) {
-//            totals[type] += counts[i];
-//        }
-
         if (totals[type] == 0) {
             // @todo lock
             stacks.set(type, ItemStack.EMPTY);
@@ -457,7 +428,6 @@ public class StorageTile extends GenericTileEntity implements IGuiTile, ICityEqu
         return stack;
     }
 
-
     private static int calculateHitIndex(double sx, double sy, double sz, Direction k) {
         int index = -1;
         switch (k) {
@@ -508,7 +478,6 @@ public class StorageTile extends GenericTileEntity implements IGuiTile, ICityEqu
 
     @Override
     public void syncToClient() {
-
     }
 
     @Override
@@ -642,7 +611,6 @@ public class StorageTile extends GenericTileEntity implements IGuiTile, ICityEqu
                 return stack;
             }
         }
-
 
         @Nonnull
         @Override

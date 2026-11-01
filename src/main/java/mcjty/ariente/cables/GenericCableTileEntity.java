@@ -46,8 +46,6 @@ public abstract class GenericCableTileEntity extends GenericTileEntity implement
         Block mimic = mimicBlockSupport.getMimicBlock().getBlock();
         data.put("mimic", Tools.getId(mimic).toString());
         data.put("mimicState", NbtUtils.writeBlockState(mimicBlockSupport.getMimicBlock()).toString());
-        // @todo 1.14 meta
-//        data.put("meta", mimic.getMetaFromState(mimicBlockSupport.getMimicBlock()));
         return data;
     }
 
@@ -66,8 +64,6 @@ public abstract class GenericCableTileEntity extends GenericTileEntity implement
             if (mimic == null) {
                 System.out.println("Something went wrong loading mimic state for: '" + data.get("mimic") + "'!");
             } else {
-//                int meta = (Integer) data.get("meta");
-                // @todo 1.14 meta
                 mimicBlockSupport.setMimicBlock(mimic.defaultBlockState());
             }
         }
@@ -99,12 +95,6 @@ public abstract class GenericCableTileEntity extends GenericTileEntity implement
         }
         return CableColor.COMBINED;
     }
-
-    // @todo 1.14
-//    @Override
-//    public boolean shouldRenderInPass(int pass) {
-//        return pass == 1;
-//    }
 
     @Override
     public BlockState getMimicBlock() {

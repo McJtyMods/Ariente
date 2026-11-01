@@ -42,13 +42,11 @@ public class EntityArientePearl extends Entity implements ItemSupplier {
 
     @Override
     protected void defineSynchedData() {
-
     }
 
     @Override
     public Packet<ClientGamePacketListener> getAddEntityPacket() {
         return NetworkHooks.getEntitySpawningPacket(this);
-
     }
 
     @Override
@@ -191,13 +189,6 @@ public class EntityArientePearl extends Entity implements ItemSupplier {
     public float getBrightness() {
         return 1.0F;
     }
-
-    // @todo 1.14
-//    @Override
-//    @SideOnly(Side.CLIENT)
-//    public int getBrightnessForRender() {
-//        return 15728880;
-//    }
 
     @Override
     public boolean isAttackable() {

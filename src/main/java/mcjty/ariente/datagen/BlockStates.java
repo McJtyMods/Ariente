@@ -330,13 +330,6 @@ public class BlockStates extends BaseBlockStateProvider {
                 .texture("top", topTxt)
                 .texture("bottom", botTxt);
 
-
-//        model.element()
-//                .from(0, 0, 2).to(16, 16, 2)
-//                .face(NORTH).texture("#front").end()
-//                .end()
-//                .texture("front", modLoc(TXT_STORAGE_WINDOW));
-
         orientedBlock(Registration.STORAGE.get(), model);
     }
 
@@ -737,12 +730,6 @@ public class BlockStates extends BaseBlockStateProvider {
                 .partialState().with(SlabBlock.TYPE, SlabType.DOUBLE).addModels(new ConfiguredModel(doubleslab));
     }
 
-    private BlockModelBuilder fullGlowModel(String modelName, String texture, String glowTexture) {
-        return models().getBuilder(modelName)
-                .parent(fullglow)
-                .texture("all", modLoc(texture));
-    }
-
     private void registerHorizontalParentedBlock(Block block, BlockModelBuilder parent, String modelName, String textureName) {
         BlockModelBuilder model = models().getBuilder(BLOCK_FOLDER + "/" + modelName)
                 .parent(parent)
@@ -756,7 +743,6 @@ public class BlockStates extends BaseBlockStateProvider {
                 .texture("front", modLoc(textureName));
         orientedBlock(block, model);
     }
-
 
     private Map<String, BlockModelBuilder> getPartModelMap(Function<Pair<String,BlockModelBuilder>, BlockModelBuilder> transformer) {
         Map<String, BlockModelBuilder> modelMap = new HashMap<>();

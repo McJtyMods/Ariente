@@ -11,7 +11,6 @@ import net.minecraft.core.registries.Registries;
 import net.minecraft.world.item.CreativeModeTab;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.network.chat.Component;
-import mcjty.ariente.Ariente;
 import mcjty.ariente.recipes.BlueprintRecipeRegistry;
 import mcjty.ariente.oregen.WorldGen;
 import mcjty.ariente.blocks.MountedPanelShapes;
@@ -362,8 +361,6 @@ public class Registration {
 
     public static final RegistryObject<Item> FLAT_LIGHT_ITEM = ITEMS.register("flatlight", () -> new BlockItem(FLAT_LIGHT.get(), createStandardProperties()));
 
-
-
     public static final RegistryObject<NetCableBlock> NETCABLE = BLOCKS.register("netcable", NetCableBlock::new);
     public static final RegistryObject<ConnectorBlock> CONNECTOR = BLOCKS.register("connector", ConnectorBlock::new);
 
@@ -380,7 +377,6 @@ public class Registration {
     public static final RegistryObject<BlockEntityType<ConnectorTileEntity>> CONNECTOR_TILE = TILES.register("connector", () -> BlockEntityType.Builder.of(ConnectorTileEntity::new, CONNECTOR.get()).build(null));
     public static final RegistryObject<FacadeBlock> FACADE = BLOCKS.register("facade", FacadeBlock::new);
     public static final RegistryObject<Item> FACADE_ITEM = ITEMS.register("facade", () -> new FacadeItemBlock(FACADE.get()));
-
 
     public static final RegistryObject<Item> INGOT_PLATINUM = ITEMS.register("ingot_platinum", () -> new Item(createStandardProperties()));
     public static final RegistryObject<Item> INGOT_LITHIUM = ITEMS.register("ingot_lithium", () -> new Item(createStandardProperties()));
@@ -463,69 +459,6 @@ public class Registration {
             .setShouldReceiveVelocityUpdates(true)
             .build("ariente_laser"));
 
-
-//    public static AxisAlignedBB getFlatBox(BlockState state) {
-//        Direction facing = state.get(BaseBlock.FACING);
-//        switch (facing) {
-//            case UP:
-//                return LIGHT_BLOCK_DOWN;
-//            case DOWN:
-//                return LIGHT_BLOCK_UP;
-//            case SOUTH:
-//                return LIGHT_BLOCK_NORTH;
-//            case NORTH:
-//                return LIGHT_BLOCK_SOUTH;
-//            case EAST:
-//                return LIGHT_BLOCK_WEST;
-//            case WEST:
-//                return LIGHT_BLOCK_EAST;
-//        }
-//        return Block.FULL_BLOCK_AABB;
-//    }
-
-//    public static AxisAlignedBB getBeamBox(BlockState state) {
-//        Direction facing = state.getValue(BaseBlock.FACING_HORIZ);
-//        switch (facing) {
-//            case SOUTH:
-//                return BEAM_BLOCK_NS_AABB;
-//            case NORTH:
-//                return BEAM_BLOCK_NS_AABB;
-//            case EAST:
-//                return BEAM_BLOCK_EW_AABB;
-//            case WEST:
-//                return BEAM_BLOCK_EW_AABB;
-//        }
-//        return Block.FULL_BLOCK_AABB;
-//    }
-
-
-    public static void initOreDict() {
-        // @todo 1.14
-//        OreDictionary.registerOre("blockMarble", marble);
-//        OreDictionary.registerOre("oreSilver", silverore);
-//        OreDictionary.registerOre("orePlatinum", platinumore);
-//        OreDictionary.registerOre("oreSilicon", siliconore);
-//        OreDictionary.registerOre("oreManganese", manganeseore);
-//        OreDictionary.registerOre("oreLithium", lithiumore);
-//        OreDictionary.registerOre("oreNegarite", negarite);
-//        OreDictionary.registerOre("orePosirite", posirite);
-    }
-
-//    @SideOnly(Side.CLIENT)
-//    public static void initItemModels() {
-//        facadeBlock.initItemModel();
-//        netCableBlock.initItemModel();
-//        connectorBlock.initItemModel();
-//    }
-//
-//    @SideOnly(Side.CLIENT)
-//    public static void initColorHandlers(BlockColors blockColors) {
-//        facadeBlock.initColorHandler(blockColors);
-//        connectorBlock.initColorHandler(blockColors);
-//        netCableBlock.initColorHandler(blockColors);
-//    }
-
-
     public static Item.Properties createStandardProperties() {
         return new Item.Properties();
     }
@@ -543,9 +476,4 @@ public class Registration {
         };
     }
 
-    // @todo 1.14
-    public static void registerItems() {
-        initOreDict();
-        ModItems.initOreDict();
-    }
 }

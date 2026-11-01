@@ -33,12 +33,6 @@ public class InputItemNodeTile extends AbstractItemNodeTile {
                 .tileEntitySupplier(InputItemNodeTile::new));
     }
 
-// @todo 1.14
-//    @Override
-//    public Block getBlockType() {
-//        return ModBlocks.inputItemNode;
-//    }
-
     @Override
     public void readRestorableFromNBT(CompoundTag tagCompound) {
         super.readRestorableFromNBT(tagCompound);

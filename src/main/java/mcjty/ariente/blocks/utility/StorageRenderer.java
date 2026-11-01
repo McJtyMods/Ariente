@@ -4,17 +4,13 @@ import com.mojang.blaze3d.vertex.VertexConsumer;
 import net.minecraft.client.renderer.RenderType;
 import com.mojang.math.Axis;
 import com.mojang.blaze3d.vertex.*;
-import com.mojang.blaze3d.platform.GlStateManager;
-import org.joml.Vector3f;
 import mcjty.ariente.setup.Registration;
 import mcjty.lib.blocks.BaseBlock;
 import mcjty.lib.client.CustomRenderTypes;
-import mcjty.lib.client.RenderHelper;
 import net.minecraft.client.renderer.blockentity.BlockEntityRenderer;
 import net.minecraft.client.renderer.blockentity.BlockEntityRendererProvider;
 import net.minecraft.client.renderer.blockentity.BlockEntityRenderers;
 import net.minecraft.client.renderer.entity.ItemRenderer;
-import net.minecraft.util.Mth;
 import net.minecraft.world.level.block.Block;
 import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.client.Minecraft;
@@ -23,13 +19,10 @@ import net.minecraft.client.renderer.*;
 import net.minecraft.client.resources.model.BakedModel;
 import net.minecraft.world.item.ItemDisplayContext;
 import net.minecraft.client.renderer.texture.OverlayTexture;
-import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.core.Direction;
 import net.minecraft.world.phys.BlockHitResult;
 import net.minecraft.world.phys.HitResult;
-
-import javax.annotation.Nullable;
 
 public class StorageRenderer implements BlockEntityRenderer<StorageTile> {
 
@@ -56,9 +49,6 @@ public class StorageRenderer implements BlockEntityRenderer<StorageTile> {
         if (!(block instanceof BaseBlock)) {
             return;
         }
-
-        // @todo 1.15
-//        Minecraft.getInstance().gameRenderer.getLightTexture().disableLightmap();
 
         BaseBlock gb = (BaseBlock) block;
 
@@ -92,16 +82,10 @@ public class StorageRenderer implements BlockEntityRenderer<StorageTile> {
 
         matrixStack.translate(0.0F, 0.0F, 0.9F+.1);
 
-        // @todo 1.15
-//        GlStateManager.depthMask(true);
-//        GlStateManager.enableDepthTest();
-
         renderSlotHilight(matrixStack, buffer, index);
         renderSlots(matrixStack, buffer, te);
 
         matrixStack.popPose();
-        // @todo 1.15
-//        Minecraft.getInstance().gameRenderer.getLightTexture().enableLightmap();
     }
 
     private void renderSlotHilight(PoseStack matrixStack, MultiBufferSource buffer, int index) {
@@ -111,9 +95,6 @@ public class StorageRenderer implements BlockEntityRenderer<StorageTile> {
         float f3 = 0.0075F;
         matrixStack.translate(-0.5F, 0.5F, -0.155F);
         matrixStack.scale(f3 * factor, -f3 * factor, f3);
-
-        // @todo 1.15
-//        GlStateManager.disableLighting();
 
         for (int i = 0; i < 4; i++) {
             fill(matrixStack, buffer, xx[i] - 4, yy[i] - 4, xx[i] + 22, yy[i] - 3, 0xff222222, 0xf000f0);
@@ -129,9 +110,6 @@ public class StorageRenderer implements BlockEntityRenderer<StorageTile> {
     }
 
     private void renderSlots(PoseStack matrixStack, MultiBufferSource buffer, StorageTile te) {
-        // @todo 1.15
-//        RenderHelper.enableGUIStandardItemLighting();
-
         float factor = 2.0f;
         float f3 = 0.0075F;
         matrixStack.translate(-0.5F, 0.5F, -0.15F);
@@ -142,8 +120,6 @@ public class StorageRenderer implements BlockEntityRenderer<StorageTile> {
         for (int i = 0; i < StorageTile.STACKS; i++) {
             ItemStack stack = te.getTotalStack(i);
             if (!stack.isEmpty()) {
-//                itemRender.renderItemAndEffectIntoGUI(stack, xx[i], yy[i]);
-
                 matrixStack.pushPose();
                 matrixStack.translate(xx[i], yy[i], 0);
                 matrixStack.scale(16, 16, 16);
@@ -157,18 +133,12 @@ public class StorageRenderer implements BlockEntityRenderer<StorageTile> {
 
         matrixStack.translate(0F, 0F, 500F);
         matrixStack.scale(.5f, .5f, .5f);
-        // @todo 1.15
-//        GlStateManager.depthMask(true);
-//        GlStateManager.enableDepthTest();
         for (int i = 0; i < StorageTile.STACKS; i++) {
             ItemStack stack = te.getTotalStack(i);
             if (!stack.isEmpty()) {
-//                renderItemOverlayIntoGUI(matrixStack, Minecraft.getInstance().fontRenderer, stack, xx[i] * 2 + 15, yy[i] * 2 + 16, getSize(stack.getCount()));
                 renderSlotOverlay(matrixStack, buffer, Minecraft.getInstance().font, yy[i] * 2 + 16, stack, xx[i] * 2 + 15, 0xf000f0);
             }
         }
-
-//        RenderHelper.enableStandardItemLighting();
     }
 
     private int renderSlotOverlay(PoseStack matrixStack, MultiBufferSource buffer, Font fontRenderer, int currenty, ItemStack itm, int x, int lightmapValue) {
@@ -215,85 +185,10 @@ public class StorageRenderer implements BlockEntityRenderer<StorageTile> {
         builder.vertex((x + width), y, offset).color(r, g, b, 255).uv2(0xf000f0).endVertex();
     }
 
-
-    private static String getSize(int size) {
-        if (size <= 1) {
-            return "";
-        } else if (size < 10000) {
-            return String.valueOf(size);
-        } else if (size < 1000000) {
-            return String.valueOf(size / 1000) + "k";
-        } else if (size < 1000000000) {
-            return String.valueOf(size / 1000000) + "m";
-        } else {
-            return String.valueOf(size / 1000000000) + "g";
-        }
-    }
-
-    private static void renderItemOverlayIntoGUI(PoseStack matrixStack, Font fr, ItemStack stack, int xPosition, int yPosition, @Nullable String text) {
-        if (!stack.isEmpty()) {
-            if (stack.getCount() != 1 || text != null) {
-                String s = text == null ? String.valueOf(stack.getCount()) : text;
-                // @todo 1.18 GlStateManager._disableLighting();
-                GlStateManager._enableDepthTest();
-//                GlStateManager.disableDepth();
-                GlStateManager._disableBlend();
-                fr.drawInBatch(s, xPosition + 17 - fr.width(s), yPosition + 9, 16777215, false, matrixStack.last().pose(), Minecraft.getInstance().renderBuffers().bufferSource(), Font.DisplayMode.NORMAL, 0, 0xf000f0);
-//                fr.drawStringWithShadow(s, (float) (xPosition + 19 - 2 - fr.getStringWidth(s)), (float) (yPosition + 6 + 3), 16777215);
-                // @todo 1.18 GlStateManager._enableLighting();
-                GlStateManager._enableDepthTest();
-                // Fixes opaque cooldown overlay a bit lower
-                // TODO: check if enabled blending still screws things up down the line.
-                GlStateManager._enableBlend();
-            }
-
-            if (stack.getItem().isBarVisible(stack)) {
-                // @todo 1.18 GlStateManager._disableLighting();
-                GlStateManager._enableDepthTest();
-//                GlStateManager.disableDepth();
-                // @todo 1.18 GlStateManager._disableAlphaTest();
-                GlStateManager._disableBlend();
-                Tesselator tessellator = Tesselator.getInstance();
-                BufferBuilder bufferbuilder = tessellator.getBuilder();
-                int health = stack.getItem().getBarWidth(stack);
-                int rgbfordisplay = stack.getItem().getBarColor(stack);
-                int j = rgbfordisplay;
-                draw(bufferbuilder, xPosition + 2, yPosition + 13, 13, 2, 0, 0, 0, 255);
-                draw(bufferbuilder, xPosition + 2, yPosition + 13, health, 1, j >> 16 & 255, j >> 8 & 255, j & 255, 255);
-                GlStateManager._enableBlend();
-                // @todo 1.18 GlStateManager._enableAlphaTest();
-                // @todo 1.18 GlStateManager._enableLighting();
-                GlStateManager._enableDepthTest();
-            }
-
-            Player entityplayersp = Minecraft.getInstance().player;
-            float f3 = entityplayersp == null ? 0.0F : entityplayersp.getCooldowns().getCooldownPercent(stack.getItem(), Minecraft.getInstance().getFrameTime());
-
-            if (f3 > 0.0F) {
-                // @todo 1.18 GlStateManager._disableLighting();
-                GlStateManager._enableDepthTest();
-//                GlStateManager.disableDepth();
-                Tesselator tessellator1 = Tesselator.getInstance();
-                BufferBuilder bufferbuilder1 = tessellator1.getBuilder();
-                draw(bufferbuilder1, xPosition, yPosition + Mth.floor(16.0F * (1.0F - f3)), 16, Mth.ceil(16.0F * f3), 255, 255, 255, 127);
-                // @todo 1.18 GlStateManager._enableLighting();
-                GlStateManager._enableDepthTest();
-            }
-        }
-    }
-
-    private static void draw(BufferBuilder renderer, int x, int y, int width, int height, int red, int green, int blue, int alpha) {
-        renderer.begin(VertexFormat.Mode.QUADS, DefaultVertexFormat.POSITION_COLOR);
-        renderer.vertex((x + 0), (y + 0), 0.0D).color(red, green, blue, alpha).endVertex();
-        renderer.vertex((x + 0), (y + height), 0.0D).color(red, green, blue, alpha).endVertex();
-        renderer.vertex((x + width), (y + height), 0.0D).color(red, green, blue, alpha).endVertex();
-        renderer.vertex((x + width), (y + 0), 0.0D).color(red, green, blue, alpha).endVertex();
-        Tesselator.getInstance().end();
-    }
-
     public static void register() {
         BlockEntityRenderers.register(Registration.STORAGE_TILE.get(), StorageRenderer::new);
     }
+
     private static void fill(PoseStack pose, MultiBufferSource buffer, float x0, float y0, float x1, float y1, int color, int light) {
         VertexConsumer vertices = buffer.getBuffer(RenderType.gui());
         vertices.vertex(pose.last().pose(), x0, y1, 0).color(color).endVertex();

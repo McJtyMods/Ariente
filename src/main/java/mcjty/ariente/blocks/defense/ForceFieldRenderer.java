@@ -11,7 +11,6 @@ import net.minecraft.client.renderer.GameRenderer;
 import org.joml.Matrix4f;
 import net.minecraft.core.BlockPos;
 import net.minecraft.resources.ResourceLocation;
-import net.minecraft.world.level.block.entity.BlockEntity;
 import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.util.Mth;
 import net.minecraft.world.phys.Vec3;
@@ -216,7 +215,6 @@ public class ForceFieldRenderer {
                     builder.vertex(matrix, (float) (x + v0.x), (float) (y + v0.y), (float) (z + v0.z)).uv(0, 1).color(1, 1, 1, a).endVertex();
                     t.end();
 
-
                     long ticks = System.currentTimeMillis();
                     long prevTicks = damage.prevticks;
                     if (prevTicks == -1) {
@@ -290,7 +288,5 @@ public class ForceFieldRenderer {
         builder.vertex(matrix, (float) (x + v1.x), (float) (y + v1.y), (float) (z + v1.z)).uv(1, 0).color(r, g, b, a).endVertex();
         builder.vertex(matrix, (float) (x + v0.x), (float) (y + v0.y), (float) (z + v0.z)).uv(0, 0).color(r, g, b, a).endVertex();
     }
-
-
 
 }

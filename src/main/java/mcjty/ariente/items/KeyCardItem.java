@@ -1,7 +1,6 @@
 package mcjty.ariente.items;
 
 import mcjty.lib.varia.Tools;
-import mcjty.ariente.Ariente;
 import mcjty.ariente.security.IKeyCardSlot;
 import mcjty.ariente.setup.Registration;
 import mcjty.lib.builder.TooltipBuilder;
@@ -59,7 +58,6 @@ public class KeyCardItem extends Item implements ITooltipSettings {
         super.appendHoverText(stack, worldIn, tooltip, flag);
         tooltipBuilder.makeTooltip(Tools.getId(this), stack, tooltip, flag);
     }
-
 
     @Override
     public InteractionResult onItemUseFirst(ItemStack stack, UseOnContext context) {

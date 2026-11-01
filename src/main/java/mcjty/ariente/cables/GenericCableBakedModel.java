@@ -5,7 +5,6 @@ import com.google.common.base.Function;
 import mcjty.ariente.Ariente;
 import mcjty.lib.client.AbstractDynamicBakedModel;
 import net.minecraft.client.renderer.block.model.BakedQuad;
-import net.minecraft.world.item.ItemDisplayContext;
 import net.minecraft.client.resources.model.BakedModel;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.level.block.state.BlockState;
@@ -356,7 +355,6 @@ public class GenericCableBakedModel extends AbstractDynamicBakedModel {
 
         return quads;
     }
-
 
     @Override
     public boolean useAmbientOcclusion() {

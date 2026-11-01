@@ -30,12 +30,6 @@ public class OutputItemNodeTile extends AbstractItemNodeTile {
         super(Registration.OUTPUT_ITEM_TILE.get(), pos, state);
     }
 
-// @todo 1.14
-//    @Override
-//    public Block getBlockType() {
-//        return ModBlocks.outputItemNode.get();
-//    }
-
     @Override
     public void readRestorableFromNBT(CompoundTag tagCompound) {
         super.readRestorableFromNBT(tagCompound);

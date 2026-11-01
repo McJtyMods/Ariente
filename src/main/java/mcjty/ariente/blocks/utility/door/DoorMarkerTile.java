@@ -17,7 +17,6 @@ import net.minecraft.core.BlockPos;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.world.InteractionHand;
 import net.minecraft.world.InteractionResult;
-import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.level.BlockGetter;
@@ -263,13 +262,6 @@ public class DoorMarkerTile extends TickingTileEntity implements IGuiTile, ILock
         load(tag);
     }
 
-    // @todo 1.14
-//    @Override
-//    public boolean shouldRenderInPass(int pass) {
-//        return pass == 0;
-//    }
-
-
     @Override
     public void onReplaced(Level world, BlockPos pos, BlockState state, BlockState newstate) {
         super.onReplaced(world, pos, state, newstate);
@@ -323,6 +315,5 @@ public class DoorMarkerTile extends TickingTileEntity implements IGuiTile, ILock
 
     @Override
     public void syncToClient() {
-
     }
 }

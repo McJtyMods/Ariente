@@ -50,7 +50,6 @@ public class WirelessLockTile extends SignalChannelTileEntity implements ILockab
 
     public static BaseBlock createBlock() {
         return new BaseBlock(new BlockBuilder()
-//                .flags(REDSTONE_CHECK, RENDER_SOLID, RENDER_CUTOUT)
                 .info(key("message.ariente.shiftmessage"))
                 .infoShift(header(), parameter("channel", NBTTools.intGetter("channel", -1)))
                 .topDriver(DRIVER)
@@ -74,7 +73,6 @@ public class WirelessLockTile extends SignalChannelTileEntity implements ILockab
         Ariente.guiHandler.openHoloGui(level, worldPosition, player);
         return InteractionResult.SUCCESS;
     }
-
 
     @Override
     public void tickServer() {
@@ -105,7 +103,6 @@ public class WirelessLockTile extends SignalChannelTileEntity implements ILockab
         }
     }
 
-
     @Override
     public boolean isLocked() {
         return locked;
@@ -120,7 +117,6 @@ public class WirelessLockTile extends SignalChannelTileEntity implements ILockab
         doLock(locked);
         markDirtyClient();
     }
-
 
     private void doLock(boolean l) {
         if (level == null) {
@@ -166,13 +162,6 @@ public class WirelessLockTile extends SignalChannelTileEntity implements ILockab
         markDirtyQuick();
         doLock(locked);
     }
-
-    // @todo 1.14
-//    @Override
-//    public BlockState getActualState(BlockState state) {
-//        return state.with(LOCKED, locked);
-//    }
-
 
     @Override
     public void onReplaced(Level world, BlockPos pos, BlockState state, BlockState newstate) {
@@ -245,7 +234,6 @@ public class WirelessLockTile extends SignalChannelTileEntity implements ILockab
         setHorizontalRange(h);
     }
 
-
     private void changeVerticalRange(int dy) {
         int h = verticalRange + dy;
         if (h < 1) {
@@ -274,7 +262,6 @@ public class WirelessLockTile extends SignalChannelTileEntity implements ILockab
                 .add(registry.iconButton(6, 2, 1, 1).icon(registry.image(GRAY_DOUBLE_ARROW_RIGHT)).hover(registry.image(WHITE_DOUBLE_ARROW_RIGHT))
                         .hitEvent((component, player, e, x, y) -> changeHorizontalRange(8)))
 
-
                 .add(registry.text(0, 4, 1, 1).text("Vertical").color(registry.color(StyledColor.LABEL)))
                 .add(registry.number(3, 5, 1, 1).color(registry.color(StyledColor.INFORMATION)).getter((p,h) -> getVerticalRange()))
 
@@ -291,7 +278,6 @@ public class WirelessLockTile extends SignalChannelTileEntity implements ILockab
 
     @Override
     public void syncToClient() {
-
     }
 
 }

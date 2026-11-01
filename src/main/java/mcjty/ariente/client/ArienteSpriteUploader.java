@@ -6,10 +6,6 @@ import net.minecraft.client.renderer.texture.TextureAtlasSprite;
 import net.minecraft.client.renderer.texture.TextureManager;
 import net.minecraft.resources.ResourceLocation;
 
-
-import static mcjty.ariente.blocks.utility.door.DoorMarkerRenderer.DOOR_MARKER_TEXTURE;
-import static mcjty.ariente.cables.CableRenderer.*;
-
 public class ArienteSpriteUploader extends TextureAtlasHolder {
 
     public static ArienteSpriteUploader INSTANCE;

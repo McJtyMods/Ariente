@@ -36,7 +36,6 @@ import static mcjty.lib.builder.TooltipBuilder.key;
 public class WarperTile extends GenericTileEntity implements IGuiTile, IWarper {
 
     private AABB renderBox = null;
-    private AABB detectionBox = null;
 
     private int charges = 0;
 
@@ -47,7 +46,6 @@ public class WarperTile extends GenericTileEntity implements IGuiTile, IWarper {
     public static BaseBlock createBlock() {
         return new BaseBlock(new BlockBuilder()
                 .properties(BlockBuilder.STANDARD_IRON.lightLevel((light) -> { return 8; }))
-//                .flags(REDSTONE_CHECK, RENDER_SOLID, RENDER_CUTOUT)
                 .info(key("message.ariente.shiftmessage"))
                 .infoShift(header())
                 .topDriver(DRIVER)
@@ -82,13 +80,6 @@ public class WarperTile extends GenericTileEntity implements IGuiTile, IWarper {
             renderBox = new AABB(getBlockPos()).minmax(new AABB(new BlockPos(worldPosition.getX(), worldPosition.getY() + 10, worldPosition.getZ())));
         }
         return renderBox;
-    }
-
-    private AABB getDetectionBox() {
-        if (detectionBox == null) {
-            detectionBox = new AABB(worldPosition.getX()-3, worldPosition.getY()-2, worldPosition.getZ()-3, worldPosition.getX()+4, worldPosition.getY()+6, worldPosition.getZ()+4);
-        }
-        return detectionBox;
     }
 
     public int getCharges() {
@@ -139,12 +130,6 @@ public class WarperTile extends GenericTileEntity implements IGuiTile, IWarper {
     public AABB getRenderBoundingBox() {
         return getBeamBox();
     }
-
-    // @todo 1.15
-//    @Override
-//    public boolean shouldRenderInPass(int pass) {
-//        return pass == 1;
-//    }
 
     public void warp(Player player) {
         if (!(player instanceof ServerPlayer serverPlayer) || player.level() != level || !Ariente.setup.arienteWorld) {
@@ -207,6 +192,5 @@ public class WarperTile extends GenericTileEntity implements IGuiTile, IWarper {
 
     @Override
     public void syncToClient() {
-
     }
 }

@@ -50,22 +50,6 @@ public abstract class SignalChannelTileEntity extends TickingTileEntity implemen
                         || ((BlockItem)item).getBlock() == Registration.WIRELESS_BUTTON.get()));
     }
 
-//    @Override
-//    public void onDataPacket(NetworkManager net, SPacketUpdateTileEntity packet) {
-//        boolean powered = getPowerOutput() > 0;
-//
-//        super.onDataPacket(net, packet);
-//
-//        if (world.isRemote) {
-//            // If needed send a render update.
-//            boolean newPowered = getPowerOutput() > 0;
-//            if (newPowered != powered) {
-//                world.markBlockRangeForRenderUpdate(pos, pos);
-//            }
-//        }
-//    }
-
-
     public int getPowerOutput() {
         return powerOutput;
     }
@@ -236,6 +220,5 @@ public abstract class SignalChannelTileEntity extends TickingTileEntity implemen
 
     @Override
     public void setup(ICityAI cityAI, Level world, boolean firstTime) {
-
     }
 }

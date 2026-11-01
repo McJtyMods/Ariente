@@ -3,15 +3,12 @@ package mcjty.ariente.entities.levitator;
 import com.mojang.math.Axis;
 import com.mojang.blaze3d.vertex.PoseStack;
 import net.minecraft.client.renderer.texture.OverlayTexture;
-import org.joml.Quaternionf;
-import net.minecraft.client.model.EntityModel;
 import net.minecraft.client.renderer.MultiBufferSource;
 import net.minecraft.client.renderer.entity.EntityRenderer;
 import net.minecraft.client.renderer.entity.EntityRendererProvider;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.util.Mth;
 import net.minecraft.world.phys.Vec3;
-
 
 public class FluxLevitatorRender extends EntityRenderer<FluxLevitatorEntity> {
 
@@ -26,19 +23,12 @@ public class FluxLevitatorRender extends EntityRenderer<FluxLevitatorEntity> {
     @Override
     public void render(FluxLevitatorEntity entity, float entityYaw, float partialTicks, PoseStack matrixStack, MultiBufferSource buffer, int packedLightIn) {
         matrixStack.pushPose();
-//        long i = entity.getEntityId() * 493286711L;
-//        i = i * i * 4392167121L + i * 98761L;
-//        float fx = (((i >> 16 & 7L) + 0.5F) / 8.0F - 0.5F) * 0.004F;
-//        float fy = (((i >> 20 & 7L) + 0.5F) / 8.0F - 0.5F) * 0.004F;
-//        float fz = (((i >> 24 & 7L) + 0.5F) / 8.0F - 0.5F) * 0.004F;
-//        GlStateManager.translate(fx, fy, fz);
 
         double interX = entity.xOld + (entity.getX() - entity.xOld) * partialTicks;
         double interY = entity.yOld + (entity.getY() - entity.yOld) * partialTicks;
         double interZ = entity.zOld + (entity.getZ() - entity.zOld) * partialTicks;
         Vec3 vec3d = entity.getPos(interX, interY, interZ);
         float pitch = entity.xRotO + (entity.getXRot() - entity.xRotO) * partialTicks;
-
 
         if (vec3d != null) {
             Vec3 vec3d1 = entity.getPosOffset(interX, interY, interZ, 0.3D);
@@ -52,10 +42,6 @@ public class FluxLevitatorRender extends EntityRenderer<FluxLevitatorEntity> {
                 vec3d2 = vec3d;
             }
 
-            // @todo 1.15
-//            x += vec3d.x - interX;
-//            y += (vec3d1.y + vec3d2.y) / 2.0D - interY;
-//            z += vec3d.z - interZ;
             Vec3 vec3d3 = vec3d2.add(-vec3d1.x, -vec3d1.y, -vec3d1.z);
 
             if (vec3d3.length() != 0.0D) {
@@ -79,31 +65,12 @@ public class FluxLevitatorRender extends EntityRenderer<FluxLevitatorEntity> {
             matrixStack.mulPose(Axis.XP.rotationDegrees(Mth.sin(f5) * f5 * f6 / 10.0F * entity.getRollingDirection()));
         }
 
-        // @todo 1.15
-//        this.bindEntityTexture(entity);
-//
-//        if (this.renderOutlines) {
-//            GlStateManager.enableColorMaterial();
-//            GlStateManager.setupSolidRenderingTextureCombine(this.getTeamColor(entity));
-//        }
-//
-//        GlStateManager.scalef(-1.0F, -1.0F, 1.0F);
-//        this.model.render(entity, 0.0F, 0.0F, -0.1F, 0.0F, 0.0F, 0.0625F);
-
         matrixStack.pushPose();
         matrixStack.scale(-1, -1, 1);
         model.renderToBuffer(matrixStack, buffer.getBuffer(model.renderType(TEXTURE)), packedLightIn, OverlayTexture.NO_OVERLAY, 1, 1, 1, 1);
         matrixStack.popPose();
 
         matrixStack.popPose();
-
-        // @todo 1.15
-//        if (this.renderOutlines) {
-//            GlStateManager.tearDownSolidRenderingTextureCombine();
-//            GlStateManager.disableColorMaterial();
-//        }
-//
-//        super.doRender(entity, x, y, z, entityYaw, partialTicks);
     }
 
     @Override
@@ -117,6 +84,5 @@ public class FluxLevitatorRender extends EntityRenderer<FluxLevitatorEntity> {
         public EntityRenderer<FluxLevitatorEntity> create(EntityRendererProvider.Context manager) {
             return new FluxLevitatorRender(manager);
         }
-
     }
 }

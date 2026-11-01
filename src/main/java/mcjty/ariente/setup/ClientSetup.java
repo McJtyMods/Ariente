@@ -34,10 +34,6 @@ import net.minecraftforge.common.MinecraftForge;
 import net.minecraftforge.eventbus.api.SubscribeEvent;
 import net.minecraftforge.fml.event.lifecycle.FMLClientSetupEvent;
 
-import static mcjty.ariente.blocks.generators.NegariteTankRenderer.NEGARITE_BEAM;
-import static mcjty.ariente.blocks.generators.PosiriteTankRenderer.POSIRITE_BEAM;
-import static mcjty.ariente.blocks.utility.ElevatorRenderer.ELEVATOR_BEAM;
-
 public class ClientSetup {
 
     public static void init(FMLClientSetupEvent event) {

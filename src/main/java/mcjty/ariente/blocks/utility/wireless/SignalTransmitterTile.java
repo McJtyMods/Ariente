@@ -1,6 +1,5 @@
 package mcjty.ariente.blocks.utility.wireless;
 
-
 import mcjty.ariente.blocks.BlockProperties;
 import mcjty.ariente.setup.Registration;
 import mcjty.lib.blocks.BaseBlock;
@@ -39,7 +38,6 @@ public class SignalTransmitterTile extends SignalChannelTileEntity {
 
     public static BaseBlock createBlock() {
         return new BaseBlock(new BlockBuilder()
-//                .flags(REDSTONE_CHECK, RENDER_SOLID, RENDER_CUTOUT)
                 .info(key("message.ariente.shiftmessage"))
                 .infoShift(header(), parameter("channel", NBTTools.intGetter("channel", -1)))
                 .topDriver(DRIVER)
@@ -63,8 +61,6 @@ public class SignalTransmitterTile extends SignalChannelTileEntity {
         SignalChannelTileEntity.onBlockActivatedInt(level, worldPosition, player, hand);
         return InteractionResult.SUCCESS;
     }
-
-
 
     @Override
     public void setChannel(int channel) {
@@ -98,12 +94,6 @@ public class SignalTransmitterTile extends SignalChannelTileEntity {
             channels.save();
         }
     }
-
-    // @todo 1.14
-//    @Override
-//    public BlockState getActualState(BlockState state) {
-//        return state.with(POWER, powerLevel > 0);
-//    }
 
     @Override
     public void load(CompoundTag tagCompound) {

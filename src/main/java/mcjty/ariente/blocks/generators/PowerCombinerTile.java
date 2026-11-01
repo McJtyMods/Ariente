@@ -47,12 +47,6 @@ public class PowerCombinerTile extends TickingTileEntity implements IPowerReceiv
                 .topDriver(DRIVER)
                 .tileEntitySupplier(PowerCombinerTile::new)
             );
-        //        powerCombinerBlock = builderFactory.<PowerCombinerTile> builder("power_combiner")
-//                .tileEntityClass(PowerCombinerTile.class)
-//                .rotationType(BaseBlock.RotationType.ROTATION)
-//                .flags(RENDER_SOLID, RENDER_CUTOUT)
-//                .activateAction((world, pos, player, hand, side, hitX, hitY, hitZ) -> Ariente.guiHandler.openHoloGui(world, pos, player))
-//                .build();
     }
 
     @Override
@@ -108,7 +102,6 @@ public class PowerCombinerTile extends TickingTileEntity implements IPowerReceiv
         }
     }
 
-
     public int getPowerTransfer() {
         return powerTransfer;
     }
@@ -127,7 +120,6 @@ public class PowerCombinerTile extends TickingTileEntity implements IPowerReceiv
         }
         markDirtyClient();
     }
-
 
     @Override
     public void load(CompoundTag tagCompound) {
@@ -189,6 +181,5 @@ public class PowerCombinerTile extends TickingTileEntity implements IPowerReceiv
 
     @Override
     public void syncToClient() {
-
     }
 }

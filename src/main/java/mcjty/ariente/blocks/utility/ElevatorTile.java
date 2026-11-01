@@ -8,7 +8,6 @@ import mcjty.ariente.api.IElevator;
 import mcjty.ariente.setup.Registration;
 import mcjty.hologui.api.*;
 import mcjty.hologui.api.components.IPanel;
-import mcjty.lib.McJtyLib;
 import mcjty.lib.blocks.BaseBlock;
 import mcjty.lib.blocks.RotationType;
 import mcjty.lib.builder.BlockBuilder;
@@ -195,15 +194,12 @@ public class ElevatorTile extends TickingTileEntity implements IGuiTile, ICityEq
     private void openOrMoveHoloGui(Player player) {
         Integer holoID = playerToHoloGui.get(player.getUUID());
         if (holoID == null) {
-//            List<Integer> floors = findFloors();
-//            if (!floors.isEmpty()) {
-                IHoloGuiEntity holoEntity = Ariente.guiHandler.openHoloGuiEntity(level, worldPosition, player, TAG_ELEVATOR, 2.0);
-                if (holoEntity != null) {
-                    playerToHoloGui.put(player.getUUID(), holoEntity.getEntity().getId());
-                    holoEntity.setTimeout(5);
-                    holoEntity.setMaxTimeout(5);
-                }
-//            }
+            IHoloGuiEntity holoEntity = Ariente.guiHandler.openHoloGuiEntity(level, worldPosition, player, TAG_ELEVATOR, 2.0);
+            if (holoEntity != null) {
+                playerToHoloGui.put(player.getUUID(), holoEntity.getEntity().getId());
+                holoEntity.setTimeout(5);
+                holoEntity.setMaxTimeout(5);
+            }
         } else {
             Entity entity = level.getEntity(holoID);
             if (entity instanceof IHoloGuiEntity) {
@@ -340,20 +336,12 @@ public class ElevatorTile extends TickingTileEntity implements IGuiTile, ICityEq
         return getBeamBox();
     }
 
-
-    // @todo 1.14
-//    @Override
-//    public boolean shouldRenderInPass(int pass) {
-//        return pass == 1;
-//    }
-
     private AABB getBeamBox() {
         if (cachedBox == null) {
             cachedBox = new AABB(getBlockPos()).minmax(new AABB(new BlockPos(worldPosition.getX(), worldPosition.getY() + height + 2, worldPosition.getZ())));
         }
         return cachedBox;
     }
-
 
     @Override
     public IGuiComponent<?> createGui(String tag, IGuiComponentRegistry registry) {
@@ -406,6 +394,5 @@ public class ElevatorTile extends TickingTileEntity implements IGuiTile, ICityEq
 
     @Override
     public void syncToClient() {
-
     }
 }

@@ -1,7 +1,6 @@
 package mcjty.ariente.items;
 
 import mcjty.lib.varia.Tools;
-import mcjty.ariente.Ariente;
 import mcjty.ariente.blocks.utility.WarperTile;
 import mcjty.ariente.compat.arienteworld.ArienteWorldCompat;
 import mcjty.ariente.config.UtilityConfiguration;

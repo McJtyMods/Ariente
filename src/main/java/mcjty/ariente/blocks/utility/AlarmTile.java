@@ -41,7 +41,6 @@ public class AlarmTile extends TickingTileEntity implements IAlarmTile {
 
     public static BaseBlock createBlock() {
         return new BaseBlock(new BlockBuilder()
-//                .flags(REDSTONE_CHECK, RENDER_SOLID, RENDER_CUTOUT)
                 .info(key("message.ariente.shiftmessage"))
                 .infoShift(header())
                 .topDriver(DRIVER)
@@ -60,7 +59,6 @@ public class AlarmTile extends TickingTileEntity implements IAlarmTile {
             }
         };
     }
-
 
     @Override
     public void tickServer() {
@@ -98,12 +96,6 @@ public class AlarmTile extends TickingTileEntity implements IAlarmTile {
             }
         }
     }
-
-    // @todo 1.14
-//    @Override
-//    public BlockState getActualState(BlockState state) {
-//        return state.with(ALARM, alarmType);
-//    }
 
     @Override
     public void load(CompoundTag tagCompound) {

@@ -13,7 +13,6 @@ import mcjty.ariente.recipes.ConstructorCrafting;
 import net.minecraftforge.items.wrapper.InvWrapper;
 import mcjty.ariente.setup.Registration;
 import mcjty.hologui.api.*;
-import mcjty.lib.McJtyLib;
 import mcjty.lib.blocks.BaseBlock;
 import mcjty.lib.blocks.RotationType;
 import mcjty.lib.builder.BlockBuilder;
@@ -74,7 +73,6 @@ public class ConstructorTile extends GenericTileEntity implements IGuiTile, ICit
         return InteractionResult.SUCCESS;
     }
 
-
     @Override
     public void setRemoved() {
         super.setRemoved();
@@ -89,12 +87,10 @@ public class ConstructorTile extends GenericTileEntity implements IGuiTile, ICit
 
     @Override
     public void load(Map<String, Object> data) {
-
     }
 
     @Override
     public void setup(ICityAI cityAI, Level world, boolean firstTime) {
-
     }
 
     private boolean hasIngredient(Player player, ItemStack ingredient) {
@@ -148,7 +144,6 @@ public class ConstructorTile extends GenericTileEntity implements IGuiTile, ICit
             player.containerMenu.broadcastChanges();
         }
     }
-
 
     @Override
     public IGuiComponent<?> createGui(String tag, IGuiComponentRegistry registry) {
@@ -249,7 +244,6 @@ public class ConstructorTile extends GenericTileEntity implements IGuiTile, ICit
         }
         return blueprintItemHandler;
     }
-
 
     @Override
     public void syncToClient() {

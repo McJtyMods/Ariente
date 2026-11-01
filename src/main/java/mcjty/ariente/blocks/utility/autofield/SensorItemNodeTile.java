@@ -76,12 +76,6 @@ public class SensorItemNodeTile extends AbstractNodeTile {
         }).orElse(false);
     }
 
-    // @todo 1.14
-//    @Override
-//    public Block getBlockType() {
-//        return ModBlocks.sensorItemNode;
-//    }
-
     @Override
     public void readRestorableFromNBT(CompoundTag tagCompound) {
         super.readRestorableFromNBT(tagCompound);

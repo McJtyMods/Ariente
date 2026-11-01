@@ -10,7 +10,6 @@ import net.minecraft.core.BlockPos;
 import net.minecraft.world.level.BlockGetter;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.level.block.Block;
-import net.minecraft.world.level.block.entity.BlockEntity;
 import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.item.context.BlockPlaceContext;
 import net.minecraft.world.level.block.state.StateDefinition;
@@ -50,13 +49,9 @@ public class BaseNodeBlock extends BaseBlock {
     @Override
     public BlockState getStateForPlacement(BlockPlaceContext context) {
         BlockPos pos = context.getClickedPos();
-        BlockEntity te = context.getLevel().getBlockEntity(pos);
-//        if (te instanceof MultipartTE) {
-            Vec3 hit = context.getClickLocation();
+        Vec3 hit = context.getClickLocation();
         return AbstractNodeTile.getStateForPlacement(this, context.getClickedFace(),
                 hit.x - pos.getX(), hit.y - pos.getY(), hit.z - pos.getZ());
-//        }
-//        return super.getStateForPlacement(context);
     }
 
     @Nonnull

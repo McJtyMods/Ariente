@@ -16,13 +16,10 @@ import net.minecraft.client.renderer.blockentity.BlockEntityRenderer;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.inventory.InventoryMenu;
 
-import java.util.Random;
-
 public class ElevatorRenderer implements BlockEntityRenderer<ElevatorTile> {
 
     protected BlockEntityRendererProvider.Context context;
     public static final ResourceLocation ELEVATOR_BEAM = new ResourceLocation(Ariente.MODID, "block/machines/elevator_beam");
-    private Random random = new Random();
 
     public ElevatorRenderer(BlockEntityRendererProvider.Context pContext) {
         context = pContext;

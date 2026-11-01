@@ -23,9 +23,6 @@ public class SentinelDroneRender extends MobRenderer<SentinelDroneEntity, DroneM
         return mobTexture;
     }
 
-//    public static final SentinelDroneRender.Factory FACTORY = new SentinelDroneRender.Factory();
-
-
     @Override
     protected void scale(SentinelDroneEntity entitylivingbaseIn, PoseStack matrixStackIn, float partialTickTime) {
         matrixStackIn.scale(1F, 1F, 1F);
@@ -40,7 +37,6 @@ public class SentinelDroneRender extends MobRenderer<SentinelDroneEntity, DroneM
         public EntityRenderer<SentinelDroneEntity> create(Context manager) {
             return new SentinelDroneRender(manager);
         }
-
     }
 
 }

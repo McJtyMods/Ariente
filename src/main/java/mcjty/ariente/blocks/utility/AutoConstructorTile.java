@@ -68,7 +68,6 @@ public class AutoConstructorTile extends TickingTileEntity implements IGuiTile, 
     public static final int SLOT_INGREDIENTS = 0;
     public static final int SLOT_OUTPUT = SLOT_INGREDIENTS + INGREDIENTS;
     public static final Lazy<ContainerFactory> CONTAINER_FACTORY = Lazy.of(() -> new ContainerFactory(INGREDIENTS + OUTPUT)); // @todo 1.14 new ResourceLocation(Ariente.MODID, "gui/constructor.gui"));
-//    private InventoryHelper inventoryHelper = new InventoryHelper(this, CONTAINER_FACTORY, INGREDIENTS + OUTPUT);
 
     private final GenericItemHandler items = createItemHandler();
     private final LazyOptional<GenericItemHandler> itemHandler = LazyOptional.of(() -> items);
@@ -208,12 +207,6 @@ public class AutoConstructorTile extends TickingTileEntity implements IGuiTile, 
         }
     }
 
-    // @todo 1.14
-//    @Override
-//    public BlockState getActualState(BlockState state) {
-//        return state.with(WORKING, isWorking());
-//    }
-
     public boolean isWorking() {
         return usingPower > 0 && isMachineEnabled();
     }
@@ -237,7 +230,6 @@ public class AutoConstructorTile extends TickingTileEntity implements IGuiTile, 
         return index >= SLOT_OUTPUT;
     }
 
-
     @Override
     public void load(CompoundTag tagCompound) {
         super.load(tagCompound);
@@ -254,11 +246,9 @@ public class AutoConstructorTile extends TickingTileEntity implements IGuiTile, 
     }
 
     public void readRestorableFromNBT(CompoundTag tagCompound) {
-//        readBufferFromNBT(tagCompound, inventoryHelper);
     }
 
     public void writeRestorableToNBT(CompoundTag tagCompound) {
-//        writeBufferToNBT(tagCompound, inventoryHelper);
     }
 
     @Nullable
@@ -269,12 +259,10 @@ public class AutoConstructorTile extends TickingTileEntity implements IGuiTile, 
 
     @Override
     public void load(Map<String, Object> data) {
-
     }
 
     @Override
     public void setup(ICityAI cityAI, Level world, boolean firstTime) {
-
     }
 
     @Override
@@ -308,7 +296,6 @@ public class AutoConstructorTile extends TickingTileEntity implements IGuiTile, 
                 .add(registry.button(2, 2, 5, 1)
                         .text("Ingredients")
                         .hitEvent((component, p, entity, x1, y1) -> entity.switchTag(TAG_INGREDIENTS)))
-
 
                 .add(registry.iconChoice(7, 0, 1, 1)
                         .getter((player) -> getRSModeInt())
@@ -385,7 +372,6 @@ public class AutoConstructorTile extends TickingTileEntity implements IGuiTile, 
         }
         return false;
     }
-
 
     private void transferToPlayer(Player player, IHoloGuiEntity entity, String compName) {
         entity.findComponent(compName).ifPresent(component -> {
