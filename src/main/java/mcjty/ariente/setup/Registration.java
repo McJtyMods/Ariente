@@ -454,6 +454,7 @@ public class Registration {
             .build("ariente_flux_ship"));
     public static final RegistryObject<EntityType<FluxLevitatorEntity>> ENTITY_FLUX_LEVITATOR = ENTITIES.register("ariente_flux_levitator", () -> EntityType.Builder.of(FluxLevitatorEntity::new, MobCategory.MISC)
             .sized(1.30F, 0.9F)
+            .updateInterval(1)
             .setShouldReceiveVelocityUpdates(false)
             .build("ariente_flux_levitator"));
     public static final RegistryObject<EntityType<LaserEntity>> ENTITY_LASER = ENTITIES.register("ariente_laser", () -> EntityType.Builder.of(LaserEntity::new, MobCategory.MISC)

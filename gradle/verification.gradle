@@ -71,6 +71,20 @@ if (project.hasProperty('ariente_forcefield_check')) {
     }
 }
 
+if (project.hasProperty('ariente_flux_check')) {
+    minecraft.runs.client {
+        workingDirectory project.file('build/verification/flux-client')
+        mods.ariente.source(sourceSets.gameTest)
+        property 'ariente.fluxClientCheck', 'true'
+        args '--quickPlaySingleplayer', 'FluxCheck', '--width', '1000', '--height', '700'
+    }
+    tasks.withType(JavaExec).configureEach {
+        if (name == 'runClient') {
+            dependsOn 'gameTestClasses'
+        }
+    }
+}
+
 // Reuse the existing JEI/progression driver while deliberately leaving the companion unloaded.
 if (project.hasProperty('ariente_progression_check')) {
     sourceSets {

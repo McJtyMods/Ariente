@@ -155,7 +155,10 @@ public class FluxLevitatorEntity extends Entity implements IFluxLevitatorEntity 
     @Override
     protected void positionRider(Entity passenger, MoveFunction moveFunction) {
         if (this.hasPassenger(passenger)) {
-            if (!(passenger instanceof IHoloGuiEntity)) {
+            if (passenger instanceof IHoloGuiEntity holo) {
+                int offset = passenger.getUUID().equals(getHoloFrontUUID()) ? 1 : -1;
+                updateHoloGui(holo, offset, moveFunction);
+            } else {
                 super.positionRider(passenger, moveFunction);
             }
         }
@@ -215,24 +218,6 @@ public class FluxLevitatorEntity extends Entity implements IFluxLevitatorEntity 
         entity.yo = y;
         entity.zo = z;
         return entity;
-    }
-
-    @Override
-    public void move(MoverType typeIn, Vec3 pos) {
-        super.move(typeIn, pos);
-        updateHoloGui();        // @todo check if needed
-    }
-
-    @Override
-    public void moveTo(double x, double y, double z, float yaw, float pitch) {
-        super.moveTo(x, y, z, yaw, pitch);
-        updateHoloGui();        // @todo check if needed
-    }
-
-    @Override
-    public void absMoveTo(double x, double y, double z, float yaw, float pitch) {
-        super.absMoveTo(x, y, z, yaw, pitch);
-        updateHoloGui();        // @todo check if needed
     }
 
     public void setHoloFrontUUID(UUID holoFront) {
@@ -396,7 +381,8 @@ public class FluxLevitatorEntity extends Entity implements IFluxLevitatorEntity 
             onUpdateServer();
         }
 
-        updateHoloGui();
+        getHoloGuiFront();
+        getHoloGuiBack();
     }
 
     private void onUpdateServer() {
@@ -543,30 +529,26 @@ public class FluxLevitatorEntity extends Entity implements IFluxLevitatorEntity 
         }
     }
 
-    public void updateHoloGui() {
-        if (getHoloGuiFront() != null) {
-            updateHoloGui(this.holoGuiFront, 1);
-        }
-        if (getHoloGuiBack() != null) {
-            updateHoloGui(this.holoGuiBack, -1);
-        }
-    }
-
-    // Client side only
-    private void updateHoloGui(IHoloGuiEntity holo, int offset) {
+    private void updateHoloGui(IHoloGuiEntity holo, int offset, MoveFunction moveFunction) {
         Pair<Float, Float> pair = calculateYawPitch();
         float yaw = pair.getLeft() + offset * 90;
         float pitch = pair.getRight();
-
-        Vec3 vec3d = getPosOffset(getX(), getY(), getZ(), offset);
-        if (vec3d != null) {
-            double x = vec3d.x;
-            double y = vec3d.y + .38;
-            double z = vec3d.z;
-
-            holo.getEntity().moveTo(x, y, z, yaw, pitch);
-            holo.getEntity().teleportTo(x, y, z);
+        Entity panel = holo.getEntity();
+        float turn = Mth.wrapDegrees(yaw - panel.getYRot());
+        // Beam shapes can reverse their tangent at a bend. Keep each panel on the same end.
+        if (turn > 90) {
+            turn -= 180;
+        } else if (turn < -90) {
+            turn += 180;
         }
+        yaw = panel.getYRot() + turn;
+        Vec3 direction = Vec3.directionFromRotation(0, yaw);
+
+        // Passenger ticks save the previous position before reaching this callback.
+        // Preserve it so the panel interpolates at the same time as the rider's camera.
+        panel.setYRot(yaw);
+        panel.setXRot(pitch);
+        moveFunction.accept(panel, getX() + direction.x, getY() + .38, getZ() + direction.z);
     }
 
     private double getMaximumSpeed() {
@@ -1149,10 +1131,8 @@ public class FluxLevitatorEntity extends Entity implements IFluxLevitatorEntity 
         this.levitatorZ = z;
         this.levitatorYaw = yaw;
         this.levitatorPitch = pitch;
-        this.turnProgress = posRotationIncrements + 2;
+        this.turnProgress = Math.max(1, posRotationIncrements);
         this.setDeltaMovement(velocityX, velocityY, velocityZ);
-
-        updateHoloGui();
     }
 
     @Override
