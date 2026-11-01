@@ -7,7 +7,7 @@
     {
       "type": "patchouli:text",
       "title": "Install, then activate",
-      "text": "Wear power armor or hold an Enhanced Energy Sabre or Energy Lance in your main hand. Press the configuration key, normally $(thing)0$(), and select a piece.$(br2)Click its module icon to install from your inventory or remove it. The checkbox enables the installed module; the last control assigns hotkey group $(thing)1–4$(). Use fuel arrows to add both dust types. Keep active usage within the piece’s limit: normally 100, or 130 with Energy enabled."
+      "text": "Wear power armor or hold an Enhanced Energy Sabre or Energy Lance. Press the configuration key, normally $(thing)0$(), and select a piece.$(br2)Click a module icon to install or remove it. The checkbox enables it; the last control assigns hotkey group $(thing)1–4$(). Carry an Energy Holder and refill it through its own panel or Automatic collection. The equipment panel shows its charge at the bottom. Keep usage within this piece’s limit, normally 100 or 130 with Energy enabled."
     },
     {
       "type": "patchouli:text",
@@ -17,7 +17,7 @@
     {
       "type": "patchouli:text",
       "title": "Respect each piece’s limit",
-      "text": "Each equipment piece has its own fuel and module budget. Active modules normally have to fit within $(thing)100$() usage. An enabled Energy module raises this to $(thing)130$() and improves fuel duration.$(br2)Too many active modules prevent that piece’s abilities from working. Disable an ability or add Energy before heading into danger."
+      "text": "The Energy Holder supplies one shared fuel pool, while each piece keeps its own module budget. Active modules normally have to fit within $(thing)100$() usage. An enabled Energy module raises this to $(thing)130$() and reduces that piece’s draw on the holder.$(br2)Overloaded pieces stop their powered abilities. Other equipment can keep working. Disable an ability or add Energy before heading into danger."
     },
     {
       "type": "patchouli:text",

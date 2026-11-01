@@ -6,17 +6,16 @@
   "pages": [
     {
       "type": "patchouli:text",
-      "title": "Carry both dusts",
-      "text": "Equipment burns Negarite and Posirite Dust together. Heavier module use burns fuel faster.$(br2)Install and enable $(item)Autofeed Power$() to replenish a piece from dust in your inventory or an Energy Holder. Keep both types available. Each piece still needs its own working module setup."
+      "title": "One shared power supply",
+      "text": "Carry an $(item)Energy Holder$() to power modules on worn armor and your held Enhanced Energy Sabre or Energy Lance. It burns one Negarite and one Posirite Dust together; heavier use drains the shared charge faster.$(br2)Equipment panels show the shared charge at the bottom. Refill through the holder’s own panel or use Automatic collection. Removing equipment leaves fuel and charge in the holder; removing the holder stops powered modules. Spare equipment uses nothing. Module limits and Energy Efficiency still apply separately to each piece."
     },
     {
       "type": "patchouli:text",
-      "title": "Energy Holder",
-      "text": "An Energy Holder stores $(item)Negarite and Posirite Dust$(). Use it in your main hand to open its panel. The arrows move dust in or out.$(br2)Manual mode leaves collection to you. Automatic mode gathers loose fuel dust from your inventory over time.$(br2)Gear with enabled Autofeed can use stored dust while the holder stays in your inventory, in either collection mode."
+      "title": "Managing the holder",
+      "text": "Use a held holder to open its panel. Arrows move stored dust in or out; $(thing)Current pair$() shows charge left from the pair already burning.$(br2)Automatic mode gathers loose dust from your inventory over time. Manual mode leaves collection to you. Both supply equipped gear automatically.$(br2)A main-hand holder takes priority, then an off-hand holder, otherwise the first inventory holder. Only that holder collects and supplies fuel; separate holders never combine partial pairs. Keep the lance’s off hand empty."
     }
   ],
   "extra_recipe_mappings": {
-    "ariente:energy_holder": 0,
-    "ariente:module_autofeed": 0
+    "ariente:energy_holder": 0
   }
 }

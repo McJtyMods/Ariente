@@ -113,6 +113,7 @@ public class ModuleSettings {
 
     public void addColorButton(IGuiComponentRegistry r, IPanel panel, double y) {
         panel.add(r.button(.3, y, 4, .8).text("Color...").scale(.6f)
+                .swatch(() -> number("Color", 0xb8f4ff))
                 .hitEvent((c, p, e, x, cy) -> switchPage(e, true)));
     }
 

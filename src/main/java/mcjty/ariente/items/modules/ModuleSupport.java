@@ -112,67 +112,24 @@ public class ModuleSupport {
         if (usage.getLeft() <= 0) {
             return true;
         }
+        int ticks = usage.getRight() > UtilityConfiguration.POWERSUIT_MAXPOWER.get()
+                ? UtilityConfiguration.POWERSUIT_TICKS_OPTIMIZED.get() : UtilityConfiguration.POWERSUIT_TICKS.get();
+        if (entity instanceof Player player) {
+            return EnergyHolderItem.consumePower(player, usage.getLeft(), ticks);
+        }
+        // City soldiers receive fuel from their AI rather than a player's inventory.
         CompoundTag tag = stack.getOrCreateTag();
         int power = tag.getInt("power");
         if (power <= 0) {
-            if (!consumeFuelPair(entity, tag)) {
+            if (tag.getInt("negarite") <= 0 || tag.getInt("posirite") <= 0) {
                 return false;
             }
-            int ticks = usage.getRight() > UtilityConfiguration.POWERSUIT_MAXPOWER.get()
-                    ? UtilityConfiguration.POWERSUIT_TICKS_OPTIMIZED.get() : UtilityConfiguration.POWERSUIT_TICKS.get();
+            tag.putInt("negarite", tag.getInt("negarite") - 1);
+            tag.putInt("posirite", tag.getInt("posirite") - 1);
             power = Math.max(1, ticks / usage.getLeft());
         }
         tag.putInt("power", power - 1);
         return true;
     }
 
-    private static boolean consumeFuelPair(LivingEntity entity, CompoundTag tag) {
-        boolean needNegarite = tag.getInt("negarite") <= 0;
-        boolean needPosirite = tag.getInt("posirite") <= 0;
-        int negariteSlot = -1;
-        int posiriteSlot = -1;
-        Player player = entity instanceof Player p ? p : null;
-        if (needNegarite || needPosirite) {
-            if (player == null || !tag.getBoolean(ArmorUpgradeType.AUTOFEED.getModuleKey())) {
-                return false;
-            }
-            for (int i = 0; i < player.getInventory().getContainerSize(); i++) {
-                ItemStack fuel = player.getInventory().getItem(i);
-                if (needNegarite && negariteSlot < 0 && hasFuel(fuel, Registration.DUST_NEGARITE.get(), "negarite")) {
-                    negariteSlot = i;
-                }
-                if (needPosirite && posiriteSlot < 0 && hasFuel(fuel, Registration.DUST_POSIRITE.get(), "posirite")) {
-                    posiriteSlot = i;
-                }
-            }
-            // Locate both missing components before changing either inventory or local fuel.
-            if ((needNegarite && negariteSlot < 0) || (needPosirite && posiriteSlot < 0)) {
-                return false;
-            }
-        }
-        if (needNegarite) {
-            extractFuel(player.getInventory().getItem(negariteSlot), "negarite");
-        } else {
-            tag.putInt("negarite", tag.getInt("negarite") - 1);
-        }
-        if (needPosirite) {
-            extractFuel(player.getInventory().getItem(posiriteSlot), "posirite");
-        } else {
-            tag.putInt("posirite", tag.getInt("posirite") - 1);
-        }
-        return true;
-    }
-
-    private static boolean hasFuel(ItemStack stack, Item dust, String key) {
-        return !stack.isEmpty() && (stack.is(dust)
-                || (stack.is(Registration.ENERGY_HOLDER.get()) && EnergyHolderItem.count(stack, key) > 0));
-    }
-
-    private static void extractFuel(ItemStack stack, String key) {
-        if (stack.is(Registration.ENERGY_HOLDER.get())) {
-            EnergyHolderItem.extractIfPossible(stack, key, 1);
-        } else {
-            stack.shrink(1);
-        }
-    }
 }

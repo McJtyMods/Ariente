@@ -162,7 +162,6 @@ public class Items extends BaseItemModelProvider {
         itemGenerated(Registration.MODULE_NIGHTVISION.get(), "item/modules/module_nightvision");
         itemGenerated(Registration.MODULE_REGENERATION.get(), "item/modules/module_regeneration");
         itemGenerated(Registration.MODULE_SCRAMBLE.get(), "item/modules/module_scramble");
-        itemGenerated(Registration.MODULE_AUTOFEED.get(), "item/modules/module_autofeed");
         itemGenerated(Registration.MODULE_SPEED.get(), "item/modules/module_speed");
         itemGenerated(Registration.MODULE_STEPASSIST.get(), "item/modules/module_stepassist");
         itemGenerated(Registration.MODULE_INHIBIT.get(), "item/modules/module_inhibit");

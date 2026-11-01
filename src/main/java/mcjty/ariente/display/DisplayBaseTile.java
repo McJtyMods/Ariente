@@ -327,6 +327,7 @@ public class DisplayBaseTile extends TickingTileEntity implements IGuiTile {
         }
         panel.add(choice);
         panel.add(registry.button(.3, 4.15, 3.4, .85).name("surface_color").text("Color...").scale(.5f)
+                .swatch(() -> appearance.color())
                 .hitEvent((c, p, e, x, y) -> e.switchTag("surface-color")));
         panel.add(registry.textChoice(4.1, 4.15, 3.4, .85).name("surface_border").scale(.45f)
                 .addText("Border: Off").addText("Border: On").getter(p -> appearance.border() ? 1 : 0)

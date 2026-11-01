@@ -83,8 +83,10 @@ public class PersonalForcefieldClientChecks {
                 player.setHealth(20);
                 ItemStack chest = new ItemStack(Registration.POWERSUIT_CHEST.get());
                 chest.getOrCreateTag().putBoolean(ArmorUpgradeType.FORCEFIELD.getModuleKey(), false);
-                chest.getOrCreateTag().putInt("negarite", 64);
-                chest.getOrCreateTag().putInt("posirite", 64);
+                ItemStack holder = new ItemStack(Registration.ENERGY_HOLDER.get());
+                holder.getOrCreateTag().putInt("negarite", 64);
+                holder.getOrCreateTag().putInt("posirite", 64);
+                player.getInventory().setItem(9, holder);
                 player.setItemSlot(EquipmentSlot.CHEST, chest);
                 player.teleportTo(level, .5, 201, .5, 180, 0);
                 if (Boolean.getBoolean("ariente.forcefieldArrowCheck")) {

@@ -1,5 +1,6 @@
 1.20-0.0.31-alpha:
-- Holographic displays now have separate background type, color picker, transparency percentage and border controls. Joined bases share all settings, and existing display presets are preserved.
+- Power armor, Enhanced Energy Sabres and Energy Lances now share a carried Energy Holder for module fuel and charge. Refill through the holder’s own panel or let it collect loose dust automatically. Equipment panels show shared fuel and charge at the bottom. Removed the redundant Autofeed module.
+- Holographic displays now have separate background type, color picker with a color preview button, transparency percentage and border controls. Joined bases share all settings, and existing display presets are preserved.
 - Hold right-click to drag installed holographic modules, with green/red placement previews and snapback for invalid drops. Release without dragging to configure.
 - GUI question marks now open the relevant Tablet manual entry when Patchouli is installed, with expanded built-in help when it is absent. Added help to more machine, transport and equipment panels.
 - Installed holographic modules can now be configured directly. Modules that outgrow their available space are returned with their edited settings.

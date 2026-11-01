@@ -2,8 +2,8 @@ package mcjty.ariente.items.armor;
 
 import mcjty.ariente.Ariente;
 import mcjty.ariente.gui.GuiHelp;
-import mcjty.ariente.gui.HoloGuiTools;
 import mcjty.ariente.gui.ModGuis;
+import mcjty.ariente.items.EnergyHolderItem;
 import mcjty.ariente.items.modules.ArmorModuleItem;
 import mcjty.ariente.items.modules.ModuleSupport;
 import mcjty.ariente.setup.Registration;
@@ -63,12 +63,11 @@ public class ArmorGui {
         IPanel panel = createPieceGui(registry, slot);
 
         createModuleEntry(registry, panel, slot, 1, 2, Registration.MODULE_ENERGY.get());
-        createModuleEntry(registry, panel, slot, 5, 2, Registration.MODULE_AUTOFEED.get());
         createModuleEntry(registry, panel, slot, 1, 3, Registration.MODULE_ARMOR.get());
         createModuleEntry(registry, panel, slot, 5, 3, Registration.MODULE_NIGHTVISION.get());
         createModuleEntry(registry, panel, slot, 1, 4, Registration.MODULE_SCRAMBLE.get());
 
-        addPowerGui(registry, slot, panel);
+        addFuelStatus(registry, player, panel);
 
         return panel;
     }
@@ -80,14 +79,13 @@ public class ArmorGui {
         IPanel panel = createPieceGui(registry, slot);
 
         createModuleEntry(registry, panel, slot, 1, 2, Registration.MODULE_ENERGY.get());
-        createModuleEntry(registry, panel, slot, 5, 2, Registration.MODULE_AUTOFEED.get());
         createModuleEntry(registry, panel, slot, 1, 3, Registration.MODULE_ARMOR.get());
         createModuleEntry(registry, panel, slot, 5, 3, Registration.MODULE_FORCEFIELD.get());
         createModuleEntry(registry, panel, slot, 1, 4, Registration.MODULE_REGENERATION.get());
         createModuleEntry(registry, panel, slot, 5, 4, Registration.MODULE_FLIGHT.get());
         createModuleEntry(registry, panel, slot, 1, 5, Registration.MODULE_HOVER.get());
 
-        addPowerGui(registry, slot, panel);
+        addFuelStatus(registry, player, panel);
 
         return panel;
     }
@@ -99,11 +97,10 @@ public class ArmorGui {
         IPanel panel = createPieceGui(registry, slot);
 
         createModuleEntry(registry, panel, slot, 1, 2, Registration.MODULE_ENERGY.get());
-        createModuleEntry(registry, panel, slot, 5, 2, Registration.MODULE_AUTOFEED.get());
         createModuleEntry(registry, panel, slot, 1, 3, Registration.MODULE_ARMOR.get());
         createModuleEntry(registry, panel, slot, 5, 3, Registration.MODULE_SPEED.get());
 
-        addPowerGui(registry, slot, panel);
+        addFuelStatus(registry, player, panel);
 
         return panel;
     }
@@ -115,12 +112,11 @@ public class ArmorGui {
         IPanel panel = createPieceGui(registry, slot);
 
         createModuleEntry(registry, panel, slot, 1, 2, Registration.MODULE_ENERGY.get());
-        createModuleEntry(registry, panel, slot, 5, 2, Registration.MODULE_AUTOFEED.get());
         createModuleEntry(registry, panel, slot, 1, 3, Registration.MODULE_ARMOR.get());
         createModuleEntry(registry, panel, slot, 5, 3, Registration.MODULE_FEATHERFALLING.get());
         createModuleEntry(registry, panel, slot, 1, 4, Registration.MODULE_STEPASSIST.get());
 
-        addPowerGui(registry, slot, panel);
+        addFuelStatus(registry, player, panel);
 
         return panel;
     }
@@ -132,13 +128,12 @@ public class ArmorGui {
         IPanel panel = createPieceGui(registry, slot);
 
         createModuleEntry(registry, panel, slot, 1, 2, Registration.MODULE_ENERGY.get());
-        createModuleEntry(registry, panel, slot, 5, 2, Registration.MODULE_AUTOFEED.get());
         createModuleEntry(registry, panel, slot, 1, 3, Registration.MODULE_POWER.get());
         createModuleEntry(registry, panel, slot, 5, 3, Registration.MODULE_INHIBIT.get());
         createModuleEntry(registry, panel, slot, 1, 4, Registration.MODULE_LOOTING.get());
         createModuleEntry(registry, panel, slot, 5, 4, Registration.MODULE_FIRE.get());
 
-        addPowerGui(registry, slot, panel);
+        addFuelStatus(registry, player, panel);
 
         return panel;
     }
@@ -169,24 +164,13 @@ public class ArmorGui {
         return panel;
     }
 
-    private static void addPowerGui(IGuiComponentRegistry registry, EquipmentSlot slot, IPanel panel) {
-        panel
-                .add(registry.stackIcon(0, 6, 1, 1).itemStack(new ItemStack(Registration.DUST_NEGARITE.get())))
-                .add(registry.number(1, 6, 1, 1).color(registry.color(StyledColor.INFORMATION)).getter((p, h) -> HoloGuiTools.countItem(p, Registration.DUST_NEGARITE.get())))
-                .add(registry.iconButton(3, 6, 1, 1).icon(registry.image(GRAY_ARROW_RIGHT)).hover(registry.image(WHITE_ARROW_RIGHT))
-                        .hitEvent((component, p, entity1, x, y) -> toArmor(p, slot, "negarite", Registration.DUST_NEGARITE.get(), 1)))
-                .add(registry.iconButton(4, 6, 1, 1).icon(registry.image(GRAY_DOUBLE_ARROW_RIGHT)).hover(registry.image(WHITE_DOUBLE_ARROW_RIGHT))
-                        .hitEvent((component, p, entity1, x, y) -> toArmor(p, slot, "negarite", Registration.DUST_NEGARITE.get(), 64)))
-                .add(registry.number(5, 6, 1, 1).color(registry.color(StyledColor.INFORMATION)).getter((p, h) -> countArmor(p, slot, "negarite")))
-
-                .add(registry.stackIcon(0, 7, 1, 1).itemStack(new ItemStack(Registration.DUST_POSIRITE.get())))
-                .add(registry.number(1, 7, 1, 1).color(registry.color(StyledColor.INFORMATION)).getter((p, h) -> HoloGuiTools.countItem(p, Registration.DUST_POSIRITE.get())))
-                .add(registry.iconButton(3, 7, 1, 1).icon(registry.image(GRAY_ARROW_RIGHT)).hover(registry.image(WHITE_ARROW_RIGHT))
-                        .hitEvent((component, p, entity1, x, y) -> toArmor(p, slot, "posirite", Registration.DUST_POSIRITE.get(), 1)))
-                .add(registry.iconButton(4, 7, 1, 1).icon(registry.image(GRAY_DOUBLE_ARROW_RIGHT)).hover(registry.image(WHITE_DOUBLE_ARROW_RIGHT))
-                        .hitEvent((component, p, entity1, x, y) -> toArmor(p, slot, "posirite", Registration.DUST_POSIRITE.get(), 64)))
-                .add(registry.number(5, 7, 1, 1).color(registry.color(StyledColor.INFORMATION)).getter((p, h) -> countArmor(p, slot, "posirite")))
-        ;
+    private static void addFuelStatus(IGuiComponentRegistry registry, Player player, IPanel panel) {
+        panel.add(registry.text(.5, 6, 7, 1)
+                        .text(() -> EnergyHolderItem.findActiveHolder(player).isEmpty() ? "No Energy Holder" : "Shared fuel")
+                        .scale(.6f).color(registry.color(StyledColor.LABEL)))
+                .add(registry.text(.5, 6.7, 7, 1)
+                        .text(() -> "Charge: " + EnergyHolderItem.getChargePercentage(EnergyHolderItem.findActiveHolder(player)) + "%")
+                        .scale(.5f).color(registry.color(StyledColor.INFORMATION)));
     }
 
     private static int calculatePowerUsage(Player player, EquipmentSlot slot) {
@@ -216,41 +200,6 @@ public class ArmorGui {
             return 0;
         }
         return ModuleSupport.getPowerUsage(stack).getRight();
-    }
-
-    private static int countArmor(Player player, EquipmentSlot slot, String itemTag) {
-        ItemStack stack = player.getItemBySlot(slot);
-        if (isInvalidPowerArmorPiece(stack)) {
-            return 0;
-        }
-        CompoundTag compound = stack.getTag();
-        if (compound == null) {
-            return 0;
-        }
-        return compound.getInt(itemTag);
-    }
-
-    private static void toArmor(Player player, EquipmentSlot slot, String itemTag, Item item, int amount) {
-        ItemStack stack = player.getItemBySlot(slot);
-        if (isInvalidPowerArmorPiece(stack)) {
-            return;
-        }
-        CompoundTag compound = stack.getOrCreateTag();
-        int number = compound.getInt(itemTag);
-        for (int i = 0; i < player.getInventory().getContainerSize(); i++) {
-            ItemStack itemStack = player.getInventory().getItem(i);
-            if (itemStack.getItem() == item) {
-                int n = Math.min(amount, itemStack.getCount());
-                itemStack.shrink(n);
-                number += n;
-                amount -= n;
-                if (amount <= 0) {
-                    break;
-                }
-            }
-        }
-        compound.putInt(itemTag, number);
-        syncEquipment(player);
     }
 
     private static void createModuleEntry(IGuiComponentRegistry registry, IPanel panel, EquipmentSlot slot, int xx, int yy, ArmorModuleItem module) {

@@ -4,7 +4,6 @@ import mcjty.ariente.api.ArmorUpgradeType;
 import mcjty.ariente.bindings.KeyBindings;
 import mcjty.ariente.entities.soldier.MasterSoldierEntity;
 import mcjty.lib.builder.TooltipBuilder;
-import mcjty.lib.varia.NBTTools;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.world.effect.MobEffect;
 import net.minecraft.world.entity.Entity;
@@ -34,8 +33,7 @@ public class WeaponModuleSupport {
                             var usage = ModuleSupport.getPowerUsage(stack);
                             return usage.getLeft() + " / " + usage.getRight();
                         }),
-                        parameter("negarite", stack -> Integer.toString(NBTTools.getInt(stack, "negarite", 0))),
-                        parameter("posirite", stack -> Integer.toString(NBTTools.getInt(stack, "posirite", 0))));
+                        key("message.ariente.equipment.shared_power"));
     }
 
     public static void inventoryTick(ItemStack stack, Level level, Entity entity, boolean usable) {

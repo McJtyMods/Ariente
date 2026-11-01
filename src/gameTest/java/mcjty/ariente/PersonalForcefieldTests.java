@@ -135,8 +135,10 @@ public class PersonalForcefieldTests {
         Player player = helper.makeMockSurvivalPlayer();
         ItemStack chest = new ItemStack(Registration.POWERSUIT_CHEST.get());
         chest.getOrCreateTag().putBoolean(ArmorUpgradeType.FORCEFIELD.getModuleKey(), true);
-        chest.getOrCreateTag().putInt("negarite", 64);
-        chest.getOrCreateTag().putInt("posirite", 64);
+        ItemStack holder = new ItemStack(Registration.ENERGY_HOLDER.get());
+        holder.getOrCreateTag().putInt("negarite", 64);
+        holder.getOrCreateTag().putInt("posirite", 64);
+        player.getInventory().setItem(9, holder);
         player.setItemSlot(EquipmentSlot.CHEST, chest);
         ModuleSupport.updateWorkingState(chest, player);
         return player;

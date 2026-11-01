@@ -54,10 +54,10 @@ public class UtilityConfiguration {
                 .comment("The maximum supported power of a power armor suit piece with the energy module installed")
                 .defineInRange("powersuitMaxPowerOptimized", 130, 1, 100000);
         POWERSUIT_TICKS = SERVER_BUILDER
-                .comment("Given a power consumption of 1, this represents the amount of ticks a single negarite/posirite item will last for a powersuit armor piece")
+                .comment("Given a power consumption of 1, this represents the ticks supplied by one negarite/posirite fuel pair from the shared Energy Holder")
                 .defineInRange("powersuitTicks", 30000, 1, 10000000);
         POWERSUIT_TICKS_OPTIMIZED = SERVER_BUILDER
-                .comment("Given a power consumption of 1, this represents the amount of ticks a single negarite/posirite item will last for a powersuit armor piece (with energy module installed)")
+                .comment("Given a power consumption of 1, this represents the ticks supplied by one negarite/posirite fuel pair from the shared Energy Holder (with energy module installed)")
                 .defineInRange("powersuitTicksOptimized", 40000, 1, 10000000);
         AUTOFIELD_POWER_PER_OPERATION = SERVER_BUILDER
                 .comment("The automation field will gather power in an internal capacitor to be able to do a single operation. This represents the amount of accumulated power needed for this operation")

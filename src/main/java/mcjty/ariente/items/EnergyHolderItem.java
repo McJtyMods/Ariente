@@ -1,7 +1,7 @@
 package mcjty.ariente.items;
 
-import mcjty.lib.varia.Tools;
 import mcjty.ariente.Ariente;
+import mcjty.ariente.config.UtilityConfiguration;
 import mcjty.ariente.gui.GuiHelp;
 import mcjty.ariente.gui.HoloGuiTools;
 import mcjty.ariente.gui.ModGuis;
@@ -12,16 +12,16 @@ import mcjty.hologui.api.StyledColor;
 import mcjty.hologui.api.components.IPanel;
 import mcjty.lib.builder.TooltipBuilder;
 import mcjty.lib.tooltips.ITooltipSettings;
-import net.minecraft.world.InteractionResultHolder;
-import net.minecraft.world.item.Item;
-import net.minecraft.world.item.TooltipFlag;
+import mcjty.lib.varia.Tools;
 import net.minecraft.nbt.CompoundTag;
+import net.minecraft.network.chat.Component;
 import net.minecraft.world.InteractionHand;
-import net.minecraft.world.InteractionResult;
+import net.minecraft.world.InteractionResultHolder;
 import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.player.Player;
+import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemStack;
-import net.minecraft.network.chat.Component;
+import net.minecraft.world.item.TooltipFlag;
 import net.minecraft.world.level.Level;
 
 import javax.annotation.Nullable;
@@ -40,7 +40,8 @@ public class EnergyHolderItem extends Item implements ITooltipSettings {
             .info(header(),
                     parameter("negarite", stack -> Integer.toString(count(stack, "negarite"))),
                     parameter("posirite", stack -> Integer.toString(count(stack, "posirite"))),
-                    parameter("mode", stack -> (getAutomatic(stack) == MODE_MANUAL ? "Manual" : "Automatic")));
+                    parameter("charge", stack -> getChargePercentage(stack) + "%"),
+                    parameter("mode", stack -> getAutomatic(stack) == MODE_MANUAL ? "Manual" : "Automatic"));
 
     public EnergyHolderItem() {
         super(new Properties().stacksTo(1));
@@ -48,12 +49,8 @@ public class EnergyHolderItem extends Item implements ITooltipSettings {
 
     @Override
     public boolean shouldCauseReequipAnimation(ItemStack oldStack, ItemStack newStack, boolean slotChanged) {
-        if (oldStack.isEmpty() != newStack.isEmpty()) {
-            return true;
-        }
         return oldStack.getItem() != newStack.getItem();
     }
-
 
     @Override
     public void appendHoverText(ItemStack stack, @Nullable Level worldIn, List<Component> tooltip, TooltipFlag flag) {
@@ -61,198 +58,207 @@ public class EnergyHolderItem extends Item implements ITooltipSettings {
         tooltipBuilder.makeTooltip(Tools.getId(this), stack, tooltip, flag);
     }
 
+    /** A held holder takes priority; otherwise the first holder in the inventory supplies the pool. */
+    public static ItemStack findActiveHolder(Player player) {
+        if (player.getMainHandItem().is(Registration.ENERGY_HOLDER.get())) {
+            return player.getMainHandItem();
+        }
+        if (player.getOffhandItem().is(Registration.ENERGY_HOLDER.get())) {
+            return player.getOffhandItem();
+        }
+        for (ItemStack stack : player.getInventory().items) {
+            if (stack.is(Registration.ENERGY_HOLDER.get())) {
+                return stack;
+            }
+        }
+        return ItemStack.EMPTY;
+    }
+
+    public static boolean consumePower(Player player, int usage, int ticksPerPair) {
+        ItemStack holder = findActiveHolder(player);
+        if (player.level().isClientSide || holder.isEmpty()) {
+            return false;
+        }
+        // Both efficiency rates divide this capacity exactly, so mixed equipment shares every last tick.
+        long capacity = powerCapacity();
+        long cost = Math.min(capacity, Math.max(1L, usage * (capacity / ticksPerPair)));
+        CompoundTag tag = holder.getOrCreateTag();
+        long storedCapacity = tag.getLong("chargeCapacity");
+        long charge = Math.max(0, Math.min(tag.getLong("charge"), storedCapacity));
+        if (storedCapacity > 0 && storedCapacity != capacity) {
+            charge = Math.round((double) charge / storedCapacity * capacity);
+        }
+        if (charge < cost) {
+            // A partial pair never consumes the available component or the remaining charge.
+            if (count(holder, "negarite") <= 0 || count(holder, "posirite") <= 0) {
+                return false;
+            }
+            tag.putInt("negarite", count(holder, "negarite") - 1);
+            tag.putInt("posirite", count(holder, "posirite") - 1);
+            charge += capacity;
+        }
+        tag.putLong("charge", charge - cost);
+        tag.putLong("chargeCapacity", capacity);
+        player.getInventory().setChanged();
+        return true;
+    }
+
+    private static long powerCapacity() {
+        long normal = UtilityConfiguration.POWERSUIT_TICKS.get();
+        long optimized = UtilityConfiguration.POWERSUIT_TICKS_OPTIMIZED.get();
+        long a = normal;
+        long b = optimized;
+        while (b != 0) {
+            long remainder = a % b;
+            a = b;
+            b = remainder;
+        }
+        return normal / a * optimized;
+    }
+
+    public static int getChargePercentage(ItemStack holder) {
+        CompoundTag tag = holder.getTag();
+        if (tag == null || tag.getLong("chargeCapacity") <= 0) {
+            return 0;
+        }
+        long capacity = tag.getLong("chargeCapacity");
+        long charge = Math.max(0, Math.min(capacity, tag.getLong("charge")));
+        return (int) ((charge * 100 + capacity - 1) / capacity);
+    }
+
     @Override
-    public void inventoryTick(ItemStack stack, Level worldIn, Entity entity, int itemSlot, boolean isSelected) {
-        if (!(entity instanceof Player)) {
+    public void inventoryTick(ItemStack stack, Level level, Entity entity, int itemSlot, boolean selected) {
+        if (level.isClientSide || !(entity instanceof Player player)
+                || getAutomatic(stack) != MODE_AUTOMATIC || findActiveHolder(player) != stack) {
             return;
         }
         CompoundTag tag = stack.getOrCreateTag();
-        if (getAutomatic(stack) == MODE_MANUAL) {
-            return;
-        }
-
-        int index = tag.getInt("index");
-        Player player = (Player) entity;
-        if (index >= player.getInventory().getContainerSize()) {
-            index = 0;
-        }
-        tag.putInt("index", index+1);
-        ItemStack playerStack = player.getInventory().getItem(index);
-        if (playerStack.getItem() == Registration.DUST_NEGARITE.get()) {
-            tag.putInt("negarite", tag.getInt("negarite") + playerStack.getCount());
-            player.getInventory().setItem(index, ItemStack.EMPTY);
-        } else if (playerStack.getItem() == Registration.DUST_POSIRITE.get()) {
-            tag.putInt("posirite", tag.getInt("posirite") + playerStack.getCount());
-            player.getInventory().setItem(index, ItemStack.EMPTY);
+        int index = Math.floorMod(tag.getInt("index"), player.getInventory().getContainerSize());
+        tag.putInt("index", index + 1);
+        ItemStack fuel = player.getInventory().getItem(index);
+        if (fuel.is(Registration.DUST_NEGARITE.get()) || fuel.is(Registration.DUST_POSIRITE.get())) {
+            addFuel(player, fuel.getItem(), fuel.getCount());
         }
     }
 
     @Override
-    public InteractionResultHolder<ItemStack> use(Level worldIn, Player player, InteractionHand handIn) {
-        if (!worldIn.isClientSide) {
+    public InteractionResultHolder<ItemStack> use(Level level, Player player, InteractionHand hand) {
+        if (!level.isClientSide) {
             Ariente.guiHandler.openHoloGui(player, ModGuis.GUI_ENERGY_HOLDER, 1f);
         }
-        return new InteractionResultHolder<>(InteractionResult.SUCCESS, player.getItemInHand(handIn));
+        return InteractionResultHolder.sidedSuccess(player.getItemInHand(hand), level.isClientSide);
     }
 
-    public static IGuiComponent<?> createGui(Player pl) {
+    public static IGuiComponent<?> createGui(Player player) {
         IGuiComponentRegistry registry = Ariente.guiHandler.getComponentRegistry();
         IPanel panel = GuiHelp.ENERGY_HOLDER.createPanel(registry, entity -> entity.switchGui(ModGuis.GUI_ENERGY_HOLDER_HOLD))
-                .add(registry.text(0, 1, 1, 1).text("Energy Holder").color(registry.color(StyledColor.LABEL)));
+                .add(registry.text(0, .3, 8, 1).text("Shared equipment fuel").scale(.7f).color(registry.color(StyledColor.LABEL)))
+                .add(registry.text(0, 1.1, 8, 1).text(() -> "Current pair: " + getChargePercentage(findActiveHolder(player)) + "%")
+                        .scale(.55f).color(registry.color(StyledColor.INFORMATION)));
 
         addDustControl(registry, panel, 2.3, Registration.DUST_NEGARITE.get(), "negarite");
         addDustControl(registry, panel, 4.7, Registration.DUST_POSIRITE.get(), "posirite");
-
         panel.add(registry.textChoice(0, 7, 7.2, .9).scale(.55f).addText("Manual").addText("Automatic")
-                .getter(EnergyHolderItem::getAutomatic)
-                .hitEvent((component, player, entity, x, y) -> changeAutomatic(player)));
-
+                .getter(p -> getAutomatic(findActiveHolder(p)))
+                .hitEvent((component, p, entity, x, y) -> changeAutomatic(p)));
         return panel;
     }
 
-    private static void addDustControl(IGuiComponentRegistry registry, IPanel panel, double yy, Item negariteDust, String negarite) {
-        panel
-                .add(registry.stackIcon(0, yy, 1, 1).itemStack(new ItemStack(negariteDust)))
-
-                .add(registry.icon(1, yy, 1, 1).icon(registry.image(WHITE_PLAYER)))
-                .add(registry.number(2, yy, 1, 1).color(registry.color(StyledColor.INFORMATION)).getter((p, h) -> HoloGuiTools.countItem(p, negariteDust)))
-
-                .add(registry.iconButton(2, yy + 1, 1, 1).icon(registry.image(GRAY_DOUBLE_ARROW_LEFT)).hover(registry.image(WHITE_DOUBLE_ARROW_LEFT))
-                        .hitEvent((component, player, e, x, y) -> toPlayer(player, 64, negarite, negariteDust)))
-                .add(registry.iconButton(3, yy + 1, 1, 1).icon(registry.image(GRAY_ARROW_LEFT)).hover(registry.image(WHITE_ARROW_LEFT))
-                        .hitEvent((component, player, e, x, y) -> toPlayer(player, 1, negarite, negariteDust)))
-                .add(registry.iconButton(5, yy + 1, 1, 1).icon(registry.image(GRAY_ARROW_RIGHT)).hover(registry.image(WHITE_ARROW_RIGHT))
-                        .hitEvent((component, player, e, x, y) -> toItem(player, 1, negarite, negariteDust)))
-                .add(registry.iconButton(6, yy + 1, 1, 1).icon(registry.image(GRAY_DOUBLE_ARROW_RIGHT)).hover(registry.image(WHITE_DOUBLE_ARROW_RIGHT))
-                        .hitEvent((component, player, e, x, y) -> toItem(player, 64, negarite, negariteDust)))
-
-                .add(registry.stackIcon(5, yy, 1, 1).itemStack(new ItemStack(Registration.ENERGY_HOLDER.get())))
-                .add(registry.number(6, yy, 1, 1).color(registry.color(StyledColor.INFORMATION)).getter((player, holo) -> count(player, negarite)));
-    }
-
-    private static int getAutomatic(Player player) {
-        CompoundTag tag = getCompound(player);
-        if (tag == null) {
-            return MODE_MANUAL;
-        }
-        return tag.getInt("mode");
+    private static void addDustControl(IGuiComponentRegistry registry, IPanel panel, double y, Item dust, String key) {
+        panel.add(registry.stackIcon(0, y, 1, 1).itemStack(new ItemStack(dust)))
+                .add(registry.icon(1, y, 1, 1).icon(registry.image(WHITE_PLAYER)))
+                .add(registry.number(2, y, 1, 1).color(registry.color(StyledColor.INFORMATION))
+                        .getter((p, h) -> HoloGuiTools.countItem(p, dust)))
+                .add(registry.iconButton(2, y + 1, 1, 1).icon(registry.image(GRAY_DOUBLE_ARROW_LEFT)).hover(registry.image(WHITE_DOUBLE_ARROW_LEFT))
+                        .hitEvent((c, p, e, x, yy) -> removeFuel(p, dust, 64)))
+                .add(registry.iconButton(3, y + 1, 1, 1).icon(registry.image(GRAY_ARROW_LEFT)).hover(registry.image(WHITE_ARROW_LEFT))
+                        .hitEvent((c, p, e, x, yy) -> removeFuel(p, dust, 1)))
+                .add(registry.iconButton(5, y + 1, 1, 1).icon(registry.image(GRAY_ARROW_RIGHT)).hover(registry.image(WHITE_ARROW_RIGHT))
+                        .hitEvent((c, p, e, x, yy) -> addFuel(p, dust, 1)))
+                .add(registry.iconButton(6, y + 1, 1, 1).icon(registry.image(GRAY_DOUBLE_ARROW_RIGHT)).hover(registry.image(WHITE_DOUBLE_ARROW_RIGHT))
+                        .hitEvent((c, p, e, x, yy) -> addFuel(p, dust, 64)))
+                .add(registry.stackIcon(5, y, 1, 1).itemStack(new ItemStack(Registration.ENERGY_HOLDER.get())))
+                .add(registry.number(6, y, 1, 1).color(registry.color(StyledColor.INFORMATION)).getter((p, h) -> count(p, key)));
     }
 
     private static int getAutomatic(ItemStack stack) {
-        CompoundTag tag = stack.getTag();
-        if (tag == null) {
-            return MODE_MANUAL;
-        }
-        return tag.getInt("mode");
+        return stack.hasTag() ? stack.getTag().getInt("mode") : MODE_MANUAL;
     }
 
     private static void changeAutomatic(Player player) {
-        CompoundTag tag = getCompound(player);
-        if (tag == null) {
-            return;
-        }
-        int mode = tag.getInt("mode");
-        mode = mode == 0 ? 1 : 0;
-        tag.putInt("mode", mode);
-    }
-
-    private static void toPlayer(Player player, int amount, String tagname, Item item) {
-        CompoundTag tag = getCompound(player);
-        if (tag == null) {
-            return;
-        }
-        int total = tag.getInt(tagname);
-        int actuallyExtracted = Math.min(total, amount);
-        if (actuallyExtracted <= 0) {
-            return;
-        }
-        total -= actuallyExtracted;
-
-        if (player.getInventory().add(new ItemStack(item, actuallyExtracted))) {
-            tag.putInt(tagname, total);
+        ItemStack holder = findActiveHolder(player);
+        if (!holder.isEmpty()) {
+            holder.getOrCreateTag().putInt("mode", getAutomatic(holder) == MODE_MANUAL ? MODE_AUTOMATIC : MODE_MANUAL);
+            syncInventory(player);
         }
     }
 
-    private static void toItem(Player player, int amount, String tagname, Item item) {
-        CompoundTag tag = getCompound(player);
-        if (tag == null) {
+    public static void removeFuel(Player player, Item dust, int amount) {
+        ItemStack holder = findActiveHolder(player);
+        if (player.level().isClientSide || holder.isEmpty() || amount <= 0) {
             return;
         }
-        int total = tag.getInt(tagname);
-        ItemStack toTransfer = ItemStack.EMPTY;
+        String key = fuelKey(dust);
+        int stored = count(holder, key);
+        int requested = Math.min(stored, Math.min(amount, dust.getMaxStackSize()));
+        ItemStack extracted = new ItemStack(dust, requested);
+        player.getInventory().add(extracted);
+        holder.getOrCreateTag().putInt(key, stored - (requested - extracted.getCount()));
+        syncInventory(player);
+    }
 
-        for (int i = 0 ; i < player.getInventory().getContainerSize() ; i++) {
+    public static void addFuel(Player player, Item dust, int amount) {
+        ItemStack holder = findActiveHolder(player);
+        if (player.level().isClientSide || holder.isEmpty() || amount <= 0) {
+            return;
+        }
+        String key = fuelKey(dust);
+        int stored = count(holder, key);
+        int remaining = Math.min(amount, Integer.MAX_VALUE - stored);
+        for (int i = 0; i < player.getInventory().getContainerSize(); i++) {
             ItemStack stack = player.getInventory().getItem(i);
-            if (stack.getItem() == item) {
-                ItemStack splitted = stack.split(amount);
-                if ((!splitted.isEmpty())) {
-                    if (toTransfer.isEmpty()) {
-                        toTransfer = splitted;
-                    } else {
-                        toTransfer.grow(amount);
-                    }
-                    amount -= splitted.getCount();
-                    if (amount <= 0) {
-                        break;
-                    }
+            if (stack.is(dust)) {
+                int moved = Math.min(remaining, stack.getCount());
+                stack.shrink(moved);
+                stored += moved;
+                remaining -= moved;
+                if (remaining == 0) {
+                    break;
                 }
             }
         }
-
-        if (!toTransfer.isEmpty()) {
-            if (total != 0) {
-                toTransfer.grow(total);
-            }
-            tag.putInt(tagname, toTransfer.getCount());
-        }
+        holder.getOrCreateTag().putInt(key, stored);
+        syncInventory(player);
     }
 
-    private static CompoundTag getCompound(Player player) {
-        ItemStack heldItem = player.getItemInHand(InteractionHand.MAIN_HAND);
-        if (heldItem.getItem() != Registration.ENERGY_HOLDER.get()) {
-            return null;
+    private static String fuelKey(Item dust) {
+        if (dust == Registration.DUST_NEGARITE.get()) {
+            return "negarite";
         }
-        return heldItem.getOrCreateTag();
+        if (dust == Registration.DUST_POSIRITE.get()) {
+            return "posirite";
+        }
+        throw new IllegalArgumentException("Not an equipment fuel: " + dust);
     }
 
-    private static int count(Player player, String tagname) {
-        CompoundTag tag = getCompound(player);
-        if (tag == null) {
-            return 0;
-        }
-        return tag.getInt(tagname);
+    public static int count(Player player, String key) {
+        return count(findActiveHolder(player), key);
     }
 
-    public static int count(ItemStack stack, String tagname) {
-        CompoundTag tag = stack.getTag();
-        if (tag == null) {
-            return 0;
-        }
-        return tag.getInt(tagname);
+    public static int count(ItemStack stack, String key) {
+        return stack.hasTag() ? Math.max(0, stack.getTag().getInt(key)) : 0;
     }
 
-    public static int extractIfPossible(ItemStack stack, String tagname, int amount) {
-        CompoundTag tag = stack.getTag();
-        if (tag == null) {
-            return 0;
+    private static void syncInventory(Player player) {
+        player.getInventory().setChanged();
+        player.inventoryMenu.broadcastChanges();
+        if (player.containerMenu != player.inventoryMenu) {
+            player.containerMenu.broadcastChanges();
         }
-        int count = tag.getInt(tagname);
-        if (count <= 0) {
-            return 0;
-        }
-        int amountToExtract = Math.min(amount, count);
-        count -= amountToExtract;
-        tag.putInt(tagname, count);
-        return amountToExtract;
     }
 
     public static IGuiComponent<?> createHelpGui(Player player) {
-        IGuiComponentRegistry registry = Ariente.guiHandler.getComponentRegistry();
-        return GuiHelp.ENERGY_HOLDER.createHelpGui(registry,
-                entity -> entity.switchGui(ModGuis.GUI_ENERGY_HOLDER)
-        );
+        return GuiHelp.ENERGY_HOLDER.createHelpGui(Ariente.guiHandler.getComponentRegistry(),
+                entity -> entity.switchGui(ModGuis.GUI_ENERGY_HOLDER));
     }
-
-
-
 }

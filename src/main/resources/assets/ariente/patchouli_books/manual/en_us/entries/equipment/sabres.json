@@ -7,7 +7,7 @@
     {
       "type": "patchouli:text",
       "title": "Equip for the fight",
-      "text": "The Energy Sabre is a strong melee weapon. The Enhanced Energy Sabre adds fuel and module controls.$(br2)Hold the enhanced sabre in your main hand and use the armor configuration key to install and enable its modules. Supply both dusts just as you would for armor."
+      "text": "The Energy Sabre is a strong melee weapon. The Enhanced Energy Sabre adds module controls.$(br2)Hold the enhanced sabre in your main hand and use the armor configuration key to install and enable modules. Their power comes from the same carried $(l:ariente:equipment/fuel)Energy Holder$(/l) as your armor. Refill through the holder’s own panel or enable its Automatic collection mode."
     },
     {
       "type": "patchouli:text",
@@ -22,7 +22,7 @@
     {
       "type": "patchouli:text",
       "title": "Ranged upgrades",
-      "text": "The Energy Lance supports the same six weapon modules as the Enhanced Energy Sabre. Hold it in your main hand, leave the off hand empty, and press $(thing)0$() to configure it.$(br2)Power, Inhibit, Looting and Fire affect its lasers. Energy Efficiency and Autofeed manage the module budget and fuel.$(br2)See the Energy Lance entry for firing and blueprint details."
+      "text": "The Energy Lance supports the same five weapon modules as the Enhanced Energy Sabre. Hold it in your main hand, leave the off hand empty, and press $(thing)0$() to configure it.$(br2)Power, Inhibit, Looting and Fire affect its lasers. Energy Efficiency raises its module budget and reduces its draw on the shared Energy Holder.$(br2)See the Energy Lance entry for firing and blueprint details."
     }
   ],
   "extra_recipe_mappings": {

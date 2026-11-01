@@ -122,6 +122,7 @@ public class PowerSuit extends ArmorItem {
     public void appendHoverText(ItemStack stack, Level world, List<Component> list, TooltipFlag b) {
         super.appendHoverText(stack, world, list, b);
         list.add(Component.literal("Power suit part"));
+        list.add(Component.translatable("message.ariente.equipment.shared_power"));
         if (KeyBindings.configureArmor != null) {
             list.add(Component.literal(ChatFormatting.GRAY + "Configure with: " + ChatFormatting.WHITE + "key " + KeyBindings.configureArmor.getDisplayName()));
         }
@@ -140,11 +141,6 @@ public class PowerSuit extends ArmorItem {
             }
             Pair<Integer, Integer> usage = ModuleSupport.getPowerUsage(stack);
             list.add(Component.literal(ChatFormatting.WHITE + "Power: " + ChatFormatting.YELLOW + usage.getLeft() + " / " + usage.getRight()));
-
-            int negarite = compound.getInt("negarite");
-            int posirite = compound.getInt("posirite");
-            list.add(Component.literal(ChatFormatting.WHITE + "Negarite: " + ChatFormatting.YELLOW + negarite));
-            list.add(Component.literal(ChatFormatting.WHITE + "Posirite: " + ChatFormatting.YELLOW + posirite));
         }
     }
 

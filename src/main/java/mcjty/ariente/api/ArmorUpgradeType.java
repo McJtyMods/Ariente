@@ -22,7 +22,6 @@ public enum ArmorUpgradeType {
     REGENERATION("regeneration", "Regeneration upgrade", 40, CHEST),
     SPEED("speed", "Speed upgrade", 20, LEGS),
     SCRAMBLE("scramble", "Scramble upgrade", 50, HEAD),
-    AUTOFEED("autofeed", "Autofeed power upgrade", 0, HEAD, CHEST, LEGS, FEET, MAINHAND),
     STEPASSIST("stepassist", "Step Assist power upgrade", 10, FEET),
     INHIBIT("inhibit", "Inhibit weapon upgrade", 30, MAINHAND),
     POWER("power", "Power weapon upgrade", 30, MAINHAND),

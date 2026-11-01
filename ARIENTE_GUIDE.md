@@ -812,11 +812,12 @@ bases side by side at the same level and facing the same direction: they share
 one vertical display, beginning directly above the thin plate in its block space.
 Right-click any base to set the common height (1–10 blocks) and appearance.
 The surface button cycles **Invisible**, **Transparent** and **Solid**. **Color...**
-opens a color picker; choosing a shade or pressing its upper-right **x** returns to
-base settings. The initial color is the same pale gray as the original transparent
-surface. Transparent mode adds a **Transparency** slider from **0%** (opaque) to
-**100%** (fully clear, including scan lines); the default is 87%. Color and
-transparency choices are remembered when switching modes.
+shows the selected color and opens a color picker; choosing a shade or pressing
+its upper-right **x** returns to base settings. The initial color is the same pale
+gray as the original transparent surface. Transparent mode adds a
+**Transparency** slider from **0%** (opaque) to **100%** (fully clear, including scan
+lines); the default is 87%. Color and transparency choices are remembered when
+switching modes.
 
 **Border** is a separate on/off cycle, enabled by default. It keeps the illuminated
 frame even with an invisible background; disable it for floating modules without
@@ -913,25 +914,31 @@ Its panel lets you:
 1. Install a module from your inventory by clicking its module icon.
 2. Enable/disable an installed module with its activation control.
 3. Assign a module hotkey group.
-4. Transfer Negarite Dust and Posirite Dust into the piece using the fuel arrows.
+4. Check the shared Energy Holder charge at the bottom of the panel.
 5. Remove installed modules back into your inventory.
 
 Installed icons are bright with a border. Available inventory modules are dim;
 unavailable modules are darker still. Removing a module dims its icon again.
 
 Installing and activating are separate. An installed, disabled module should
-not be counted as an active ability. Power is managed **per equipment piece**,
-not as one shared suit battery.
+not be counted as an active ability. Fuel and the current pair’s charge live in
+one carried **Energy Holder**, shared by worn armor and the held modular weapon.
+Module budgets remain **per equipment piece**.
 
 Each active module contributes a usage number. A piece normally supports a
 total of **100**. An enabled Energy module raises this to **130**. Exceeding the
-piece's budget prevents its powered module updates. Modules also need fuel: one
-Negarite Dust plus one Posirite Dust funds approximately `30000 / usage` ticks,
+piece's budget prevents its powered module updates. Modules also need the shared
+holder: one Negarite Dust plus one Posirite Dust funds approximately
+`30000 / usage` ticks for a single active piece,
 or `40000 / usage` with Energy enabled, at the default settings.
 
-For example, usage 50 lasts roughly 600 ticks (30 seconds) per dust pair, or
-800 ticks (40 seconds) with Energy. This is not 50 dust items per tick. The
-Energy tooltip advertises a 30% efficiency improvement; the actual defaults
+Each active piece draws its fraction of a fuel pair every tick. Their draws add up;
+unused equipment consumes nothing and keeps no personal fuel reserve. Removing the
+holder stops powered modules even if its current pair still has charge.
+
+For example, total usage 50 lasts roughly 600 ticks (30 seconds) per dust pair, or
+800 ticks (40 seconds) when all participating pieces have Energy enabled. This
+is not 50 dust items per tick. The Energy tooltip advertises a 30% efficiency improvement; the actual defaults
 are a 100→130 budget and 30000→40000 duration numerator.
 
 ### Module reference
@@ -939,7 +946,6 @@ are a 100→130 budget and 30000→40000 duration numerator.
 | Module | Piece | Usage | Effect/status in the current port |
 | --- | --- | --- | --- |
 | Energy | All armor; Enhanced Sabre and Lance | Special | Raises budget and fuel duration as above. |
-| Autofeed Power | All armor; Enhanced Sabre and Lance | 0 | Draws a fuel pair from player inventory/Energy Holders when local fuel runs out. |
 | Armor | All armor | 20 | Adds 4 armor attribute points on that piece while working. Base armor currently uses leather material values. |
 | Nightvision | Helmet | 20 | Refreshes night vision while powered and enabled. |
 | Scramble | Helmet | 50 | Prevents sentinel detection while its working flag is active. Does not pacify all hostile mobs. |
@@ -978,19 +984,28 @@ in any hotbar slot. Full survival progression and multiplayer still need testing
 
 ### Energy Holder
 
-The Energy Holder stores counts of **both fuel dusts** in one item. Right-click
-it in the **main hand** to open its panel, then use the arrows to move one item
-or a stack in or out.
+The Energy Holder stores **both fuel dusts** and the remaining charge from the
+currently burning pair. Carry it to power worn armor and your main-hand Enhanced
+Energy Sabre or Energy Lance. No chestplate or Autofeed module is required.
+Equipment panels show the holder’s charge at the bottom. Refill through the
+holder’s own panel or enable Automatic collection.
 
-- **Manual:** only explicit transfers change the contents.
-- **Automatic:** scans player inventory slots over successive ticks and absorbs
-  loose Negarite/Posirite Dust.
+Right-click a held holder to open its panel. The arrows move one dust or a stack
+in or out; the charge percentage shows what remains of the current pair.
 
-Autofeed-equipped gear can draw dust from a holder in your inventory. You do not
-have to hold it for gear to use it. The holder's Automatic setting controls
-collecting loose dust, not whether gear is allowed to draw from it. A fuel pair
-can come from one holder, split holders, loose dust or mixed stored/inventory
-fuel. If either required component is missing, neither is consumed.
+- **Manual:** fuel enters through the GUI arrows.
+- **Automatic:** scans inventory slots over successive ticks and collects loose
+  Negarite/Posirite Dust. Both modes supply equipment automatically.
+
+A main-hand holder takes priority, then an off-hand holder, otherwise the first
+holder in the main inventory. Only the active holder collects and supplies fuel.
+Separate holders never combine partial pairs. Starting another pair requires
+both dusts; a failed refill consumes neither component nor the remaining charge.
+The lance still needs an empty off hand; carry its holder in a normal inventory
+slot.
+
+Swapping equipment leaves fuel in the holder. Its charge survives saving and
+item transfers. There is no player-stored reserve or fuel redistribution.
 
 ### Energy Sabres
 
@@ -1022,8 +1037,8 @@ An Inhibit laser still suppresses Master Soldier regeneration and removes
 beneficial effects despite their magic resistance.
 
 Press the armor configuration key (normally `0`) while holding the lance and
-select its weapon panel. Install, remove and enable Energy Efficiency, Autofeed,
-Power, Inhibit, Looting and Fire modules, assign hotkey groups and load both dusts.
+select its weapon panel. Install, remove and enable Energy Efficiency, Power,
+Inhibit, Looting and Fire modules, assign hotkey groups and check the shared charge.
 Power doubles the weapon damage bonus, producing 32.5 raw laser damage for an
 unmodified player. Fire and Looting supply level III effects to laser hits;
 Inhibit strips beneficial effects and suppresses Master Soldier regeneration
@@ -1288,7 +1303,6 @@ including matching connector ingredients. Data variants have no catalog recipe.
 | Energy Holder | Common | Silicon, 5 × Negarite Dust, 5 × Posirite Dust |
 | Circuit | Common | Silicon, Manganese Ingot, 3 × Negarite Dust, 3 × Posirite Dust |
 | Advanced Circuit | Rare | Circuit, 2 × Lithium Ingot, Manganese Ingot, 6 × Negarite Dust, 6 × Posirite Dust |
-| Autofeed Power Upgrade Module | Common | Circuit, Silver Ingot, Silicon, 3 × Negarite Dust, 3 × Posirite Dust |
 | Nightvision Upgrade Module | Uncommon | Circuit, Silver Ingot, Silicon, 10 × Glowstone Dust |
 | Armor Upgrade Module | Rare | Circuit, Silver Ingot, Silicon, Platinum Ingot, 2 × Diamond |
 | Energy Upgrade Module | Rare | Circuit, Silver Ingot, Silicon, Platinum Ingot, Lithium Ingot, 3 × Negarite Dust, 3 × Posirite Dust |
@@ -1381,7 +1395,7 @@ The blueprint tables are sourced from
 | Auto Constructor stalls | Check both power components, ingredient inventory, output space, neighboring blueprints, and redstone mode. |
 | Automation Field moves nothing | Connected markers under node columns, height, correct source Output/destination Input roles, nonempty filters, full batch availability, conditions, and power. |
 | Item-transfer animation is absent | Enable item rendering in the field hologram and check inventory counts; animation samples recent transfers. |
-| Armor module is installed but does nothing | Activation, fuel of both kinds, per-piece power budget, and whether the ability's hook is actually ported. |
+| Armor module is installed but does nothing | Activation, a carried Energy Holder with both fuel types or remaining charge, the per-piece module budget, and the ability's current implementation. |
 | Cart will not start | Board the cart, use an end panel's speed slider, and confirm continuous beam orientation/clearance. Controls are HoloGui entities, not a full-screen menu. |
 | Elevator cannot find a floor | Marker height must be inside its scan and within two blocks horizontally; clear the lift column. |
 

@@ -117,13 +117,6 @@ public class BlueprintRecipeRegistry {
                 new ItemStack(Registration.DUST_NEGARITE.get(), 6),
                 new ItemStack(Registration.DUST_POSIRITE.get(), 6)
         ));
-        recipes.add(new ConstructorRecipe(new ItemStack(Registration.MODULE_AUTOFEED.get()), COMMON,
-                new ItemStack(Registration.CIRCUIT.get(), 1),
-                new ItemStack(Registration.INGOT_SILVER.get(), 1),
-                new ItemStack(Registration.DUST_SILICON.get(), 1),
-                new ItemStack(Registration.DUST_NEGARITE.get(), 3),
-                new ItemStack(Registration.DUST_POSIRITE.get(), 3)
-        ));
         recipes.add(new ConstructorRecipe(new ItemStack(Registration.MODULE_NIGHTVISION.get()), UNCOMMON,
                 new ItemStack(Registration.CIRCUIT.get(), 1),
                 new ItemStack(Registration.INGOT_SILVER.get(), 1),
