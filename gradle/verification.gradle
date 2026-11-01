@@ -33,6 +33,41 @@ minecraft.runs.server {
     args '--nogui'
 }
 
+sourceSets {
+    gameTest {
+        compileClasspath += sourceSets.main.output
+        runtimeClasspath += sourceSets.main.output
+    }
+}
+configurations {
+    gameTestImplementation.extendsFrom implementation
+    gameTestCompileOnly.extendsFrom compileOnly
+    gameTestRuntimeOnly.extendsFrom runtimeOnly
+}
+minecraft.runs {
+    gameTestServer {
+        workingDirectory project.file('build/verification/forcefield-server')
+        property 'forge.enabledGameTestNamespaces', 'ariente'
+        property 'mixin.env.remapRefMap', 'true'
+        property 'mixin.env.refMapRemappingFile', "${projectDir}/build/createSrgToMcp/output.srg"
+        mods.ariente.source(sourceSets.gameTest)
+    }
+}
+
+if (project.hasProperty('ariente_forcefield_check')) {
+    minecraft.runs.client {
+        workingDirectory project.file('build/verification/forcefield-client')
+        mods.ariente.source(sourceSets.gameTest)
+        property 'ariente.forcefieldClientCheck', 'true'
+        args '--quickPlaySingleplayer', 'ForcefieldCheck', '--width', '1280', '--height', '720'
+    }
+    tasks.withType(JavaExec).configureEach {
+        if (name == 'runClient') {
+            dependsOn 'gameTestClasses'
+        }
+    }
+}
+
 // Reuse the existing JEI/progression driver while deliberately leaving the companion unloaded.
 if (project.hasProperty('ariente_progression_check')) {
     sourceSets {

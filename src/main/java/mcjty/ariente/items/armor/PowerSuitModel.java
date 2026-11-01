@@ -3,7 +3,6 @@ package mcjty.ariente.items.armor;
 import mcjty.ariente.api.ArmorUpgradeType;
 import mcjty.ariente.blocks.defense.ForceFieldRenderer;
 import mcjty.ariente.items.modules.ModuleSupport;
-import net.minecraft.client.Minecraft;
 import net.minecraft.client.model.HumanoidModel;
 import net.minecraft.client.model.geom.ModelPart;
 import net.minecraft.client.model.geom.PartPose;
@@ -14,7 +13,6 @@ import net.minecraft.client.model.geom.builders.MeshDefinition;
 import net.minecraft.client.model.geom.builders.PartDefinition;
 import net.minecraft.world.entity.EquipmentSlot;
 import net.minecraft.world.entity.LivingEntity;
-import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.ItemStack;
 import net.minecraftforge.client.extensions.common.IClientItemExtensions;
 
@@ -35,7 +33,7 @@ public class PowerSuitModel extends HumanoidModel<LivingEntity> {
                 return original;
             }
             if (slot == EquipmentSlot.CHEST && ModuleSupport.hasWorkingUpgrade(stack, ArmorUpgradeType.FORCEFIELD)) {
-                ForceFieldRenderer.personalForcefields.put(entity.getPosition(Minecraft.getInstance().getFrameTime()), entity instanceof Player);
+                ForceFieldRenderer.personalForcefields.add(entity);
             }
             return MODELS.computeIfAbsent(slot, piece -> new PowerSuitModel(createLayer(piece).bakeRoot()));
         }

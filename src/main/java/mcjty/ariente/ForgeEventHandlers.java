@@ -1,6 +1,5 @@
 package mcjty.ariente;
 
-import net.minecraft.tags.DamageTypeTags;
 import net.minecraft.nbt.Tag;
 import mcjty.ariente.api.ArmorUpgradeType;
 import mcjty.ariente.blocks.utility.ILockable;
@@ -10,11 +9,13 @@ import mcjty.ariente.entities.LaserEntity;
 import mcjty.ariente.items.EnergyLanceItem;
 import mcjty.ariente.items.EnergySabreItem;
 import mcjty.ariente.items.modules.ModuleSupport;
+import mcjty.ariente.items.armor.PacketPersonalForcefield;
 import mcjty.ariente.items.armor.PowerSuitEffects;
+import mcjty.ariente.items.armor.PersonalForcefield;
+import mcjty.ariente.network.ArienteMessages;
 import mcjty.ariente.power.PowerSystem;
 import mcjty.ariente.setup.Registration;
 import mcjty.ariente.sounds.FluxLevitatorSounds;
-import net.minecraft.world.damagesource.DamageSource;
 import net.minecraft.world.damagesource.DamageTypes;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.world.entity.Entity;
@@ -35,6 +36,8 @@ import net.minecraftforge.event.entity.living.LivingHurtEvent;
 import net.minecraftforge.event.entity.living.LootingLevelEvent;
 import net.minecraftforge.event.level.BlockEvent;
 import net.minecraftforge.eventbus.api.SubscribeEvent;
+import net.minecraftforge.eventbus.api.EventPriority;
+import net.minecraftforge.network.PacketDistributor;
 
 public class ForgeEventHandlers {
 
@@ -111,25 +114,36 @@ public class ForgeEventHandlers {
         }
     }
 
-    @SubscribeEvent
+    @SubscribeEvent(priority = EventPriority.LOWEST)
     public void onDamage(LivingDamageEvent event) {
-        Entity entity = event.getEntity();
-        Level world = entity.getCommandSenderWorld();
-        if (!world.isClientSide && entity instanceof LivingEntity) {
-            ItemStack chestStack = ((LivingEntity) entity).getItemBySlot(EquipmentSlot.CHEST);
-            if (chestStack.getItem() == Registration.POWERSUIT_CHEST.get()) {
-                if (ModuleSupport.hasWorkingUpgrade(chestStack, ArmorUpgradeType.FORCEFIELD)) {
-                    float damage = event.getAmount();
-                    DamageSource source = event.getSource();
-                    if (source.is(DamageTypeTags.IS_EXPLOSION)) {
-                        event.setAmount(damage / 5);
-                    } else if (source.is(DamageTypeTags.IS_PROJECTILE)) {
-                        event.setCanceled(true);
-                    } else if (!source.is(DamageTypeTags.BYPASSES_ARMOR)) {
-                        event.setAmount(damage / 2);
-                    }
-                }
-            }
+        PersonalForcefield.absorb(event);
+    }
+
+    @SubscribeEvent
+    public void onStartTracking(PlayerEvent.StartTracking event) {
+        if (event.getEntity() instanceof ServerPlayer player && event.getTarget() instanceof LivingEntity entity
+                && PersonalForcefield.isCoolingDown(entity)) {
+            ArienteMessages.INSTANCE.send(PacketDistributor.PLAYER.with(() -> player),
+                    new PacketPersonalForcefield(entity.getId(), PersonalForcefield.getCooldownUntil(entity),
+                            PersonalForcefield.getLastHit(entity)));
+        }
+    }
+
+    @SubscribeEvent
+    public void onPlayerLogin(PlayerEvent.PlayerLoggedInEvent event) {
+        syncPersonalField(event.getEntity());
+    }
+
+    @SubscribeEvent
+    public void onPlayerChangedDimension(PlayerEvent.PlayerChangedDimensionEvent event) {
+        syncPersonalField(event.getEntity());
+    }
+
+    private void syncPersonalField(LivingEntity entity) {
+        if (entity instanceof ServerPlayer player && PersonalForcefield.isCoolingDown(entity)) {
+            ArienteMessages.INSTANCE.send(PacketDistributor.PLAYER.with(() -> player),
+                    new PacketPersonalForcefield(entity.getId(), PersonalForcefield.getCooldownUntil(entity),
+                            PersonalForcefield.getLastHit(entity)));
         }
     }
 

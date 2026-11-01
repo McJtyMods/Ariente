@@ -9,6 +9,7 @@ import mcjty.ariente.blocks.utility.autofield.PacketAutoFieldReturnRenderInfo;
 import mcjty.ariente.entities.fluxship.PacketShipAction;
 import mcjty.ariente.items.armor.PacketArmorHotkey;
 import mcjty.ariente.items.armor.PacketConfigureArmor;
+import mcjty.ariente.items.armor.PacketPersonalForcefield;
 import mcjty.lib.network.PacketSendClientCommand;
 import mcjty.lib.network.PacketSendServerCommand;
 import mcjty.lib.typed.TypedMap;
@@ -20,10 +21,11 @@ import net.minecraftforge.network.NetworkRegistry;
 import net.minecraftforge.network.simple.SimpleChannel;
 
 import javax.annotation.Nonnull;
+import java.util.Optional;
 
 public class ArienteMessages {
 
-    private static final String PROTOCOL_VERSION = "2";
+    private static final String PROTOCOL_VERSION = "3";
 
     public static SimpleChannel INSTANCE;
 
@@ -50,6 +52,8 @@ public class ArienteMessages {
         // Client side
         net.registerMessage(id(), PacketDamageForcefield.class, PacketDamageForcefield::toBytes, PacketDamageForcefield::new, PacketDamageForcefield::handle);
         net.registerMessage(id(), PacketAutoFieldReturnRenderInfo.class, PacketAutoFieldReturnRenderInfo::toBytes, PacketAutoFieldReturnRenderInfo::new, PacketAutoFieldReturnRenderInfo::handle);
+        net.registerMessage(id(), PacketPersonalForcefield.class, PacketPersonalForcefield::toBytes, PacketPersonalForcefield::new,
+                PacketPersonalForcefield::handle, Optional.of(NetworkDirection.PLAY_TO_CLIENT));
     }
 
     private static int packetId = 0;

@@ -7,7 +7,7 @@
     {
       "type": "patchouli:text",
       "title": "Survival and scouting",
-      "text": "$(li)$(item)Armor$(): extra protection; usage 20 per piece.$(li)$(item)Nightvision$(): helmet; usage 20.$(li)$(item)Scramble$(): helmet; usage 50. Helps avoid sentinels.$(li)$(item)Regeneration$(): chestplate; usage 40.$(li)$(item)Forcefield$(): chestplate; usage 80. Blocks projectiles and reduces other damage."
+      "text": "$(li)$(item)Armor$(): extra protection; usage 20 per piece.$(li)$(item)Nightvision$(): helmet; usage 20.$(li)$(item)Scramble$(): helmet; usage 50. Helps avoid sentinels.$(li)$(item)Regeneration$(): chestplate; usage 40.$(li)$(item)Forcefield$(): chestplate; usage 80. Blocks projectiles and magic; see its recharge page."
     },
     {
       "type": "patchouli:text",
@@ -18,6 +18,16 @@
       "type": "patchouli:text",
       "title": "Plan your loadout",
       "text": "Flight, Hover and Regeneration together use 80 on the chestplate. Adding Forcefield would exceed even an Energy-assisted budget; choose which abilities to run.$(br2)Some modules are found as equipment loot rather than made from blueprints. Check your available patterns before planning an upgrade.$(br2)Keep spare fuel for the return journey."
+    },
+    {
+      "type": "patchouli:text",
+      "title": "Forcefield recharge",
+      "text": "A ready field blocks projectiles and magic, including lasers, and absorbs 80% of explosions.$(br2)Each hit flashes red and starts a shared recharge timer: at least half a second, or about two seconds for a fully blocked advanced drone laser. Further hits reset it based on damage absorbed.$(br2)During recharge, protection drops to 50% for ranged/magic hits and 40% for explosions. The bubble stays faint in first person."
+    },
+    {
+      "type": "patchouli:text",
+      "title": "Melee retaliation",
+      "text": "The field always halves melee damage and reflects half the incoming melee damage back as Thorns damage. The attacker's defenses can reduce it.$(br2)Projectiles, magic and explosions never trigger retaliation. Reflected Thorns cannot bounce between shields.$(br2)Other armor-bypassing damage, such as falling or drowning, is not blocked by the field."
     }
   ],
   "extra_recipe_mappings": {

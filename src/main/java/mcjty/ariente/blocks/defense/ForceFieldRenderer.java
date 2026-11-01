@@ -3,6 +3,7 @@ package mcjty.ariente.blocks.defense;
 import com.mojang.blaze3d.systems.RenderSystem;
 import com.mojang.blaze3d.vertex.*;
 import mcjty.ariente.Ariente;
+import mcjty.ariente.items.armor.PersonalForcefield;
 import mcjty.ariente.varia.Triangle;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.multiplayer.ClientLevel;
@@ -11,6 +12,8 @@ import org.joml.Matrix4f;
 import net.minecraft.core.BlockPos;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.level.block.entity.BlockEntity;
+import net.minecraft.world.entity.LivingEntity;
+import net.minecraft.util.Mth;
 import net.minecraft.world.phys.Vec3;
 import org.apache.commons.lang3.tuple.Pair;
 
@@ -24,7 +27,14 @@ public class ForceFieldRenderer {
     private static final Set<BlockPos> forceFields = new HashSet<>();    // A set of force fields that are in render range
     private static Random random = new Random();
 
-    public static Map<Vec3, Boolean> personalForcefields = new HashMap<>();
+    public static final Set<LivingEntity> personalForcefields = new HashSet<>();
+
+    public static void updatePersonalField(int entityId, long cooldownUntil, long lastHit) {
+        ClientLevel level = Minecraft.getInstance().level;
+        if (level != null && level.getEntity(entityId) instanceof LivingEntity entity) {
+            PersonalForcefield.updateState(entity, cooldownUntil, lastHit);
+        }
+    }
 
     private static class DamageInfo {
         float damage;
@@ -90,14 +100,32 @@ public class ForceFieldRenderer {
             Tesselator tessellator = Tesselator.getInstance();
             BufferBuilder builder = tessellator.getBuilder();
             RenderSystem.setShaderTexture(0, FORCEFIELD);
-            builder.begin(VertexFormat.Mode.TRIANGLES, DefaultVertexFormat.POSITION_TEX_COLOR);
-            for (Vec3 pos : personalForcefields.keySet()) {
+            // The local player's armor model is not rendered in first person.
+            if (minecraft.options.getCameraType().isFirstPerson() && minecraft.getCameraEntity() instanceof LivingEntity viewer
+                    && PersonalForcefield.isActive(viewer)) {
+                personalForcefields.add(viewer);
+            }
+            for (LivingEntity entity : personalForcefields) {
+                if (entity.level() != world || !PersonalForcefield.isActive(entity)) {
+                    continue;
+                }
+                Vec3 pos = entity.getPosition(partialTicks);
+                boolean firstPerson = entity == minecraft.getCameraEntity() && minecraft.options.getCameraType().isFirstPerson();
+                double time = world.getGameTime() + partialTicks;
+                boolean coolingDown = PersonalForcefield.getCooldownUntil(entity) > time;
+                float flash = coolingDown ? Mth.clamp(1 - (float) (time - PersonalForcefield.getLastHit(entity)) / 8, 0, 1) : 0;
+                float red = coolingDown ? 0.75f + flash * 0.25f : 0;
+                float alpha = firstPerson ? 0.09f + flash * 0.08f : 0.2f + flash * 0.35f;
+                // This shader discards vertex alpha below 0.1; its color modulator is applied after that cutoff.
+                RenderSystem.setShaderColor(1, 1, 1, alpha);
+                builder.begin(VertexFormat.Mode.TRIANGLES, DefaultVertexFormat.POSITION_TEX_COLOR);
                 for (int i = 0; i < PentakisDodecahedron.MAX_TRIANGLES; i++) {
                     doRender(matrix, new PanelInfo(i, pos.x, pos.y, pos.z), pos.x - camera.x,
-                            pos.y + 1 - camera.y, pos.z - camera.z, 1.2, 1, 1, 1, 0.2f);
+                            pos.y + 1 - camera.y, pos.z - camera.z, 1.2, 1, 1 - red * 0.95f, 1 - red * 0.95f, 1);
                 }
+                tessellator.end();
             }
-            tessellator.end();
+            RenderSystem.setShaderColor(1, 1, 1, 1);
             personalForcefields.clear();
 
             Iterator<BlockPos> iterator = forceFields.iterator();

@@ -1,4 +1,5 @@
 1.20-0.0.31-alpha:
+- Personal forcefields are faintly visible in first person, block lasers and magic, and flash red when ranged hits or explosions trigger a damage-based cooldown. While recharging they absorb 50% of ranged damage and 40% of explosion damage. Melee hits still deal half damage and now reflect the other half as Thorns damage.
 - Module tooltips now list the armor pieces and weapons that accept each module and explain its effect.
 - Added the two-handed Energy Lance: a longer sabre-style weapon that fires lasers for 30% more damage than an ordinary sabre. Keep your off hand empty to fire; configure sabre-compatible upgrade modules with the armor configuration key, and craft it with its Constructor blueprint.
 - Sabre-wielding soldiers now kill unarmored players in one hit on every non-Peaceful difficulty; master soldiers hit harder.

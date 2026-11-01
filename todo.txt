@@ -6,7 +6,7 @@
 - Fix flux ships
 - Extend the search range of the pearl
 - Carve out corridors to nearby dungeons in overworld
-- Test player forcefield
+- Check personal forcefield flashes and cooldowns with multiple remote players
 - Break particles are wrong
 - Item models for some of the blocks are wrong or weird: ramp, the four fences, storage cube (not 3d), flat light
 - Storage cubes in large dungeon should be more embedded in the wall

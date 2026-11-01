@@ -880,7 +880,7 @@ are a 100→130 budget and 30000→40000 duration numerator.
 | Nightvision | Helmet | 20 | Refreshes night vision while powered and enabled. |
 | Scramble | Helmet | 50 | Prevents sentinel detection while its working flag is active. Does not pacify all hostile mobs. |
 | Invisibility | Helmet, planned | 20 | Effect code/item exist, but its configuration entry is disabled; not a normally installable current feature. |
-| Forcefield | Chestplate | 80 | Cancels projectile damage; divides explosion damage by 5 and other armor-respecting damage by 2. Does not cover every bypass-armor damage source. |
+| Forcefield | Chestplate | 80 | Blocks projectiles and magic, including drone/lance lasers; absorbs 80% of explosions. Ranged/explosion hits start a shared cooldown with 50% ranged and 40% explosion protection. Halves melee damage and reflects half as Thorns damage. |
 | Regeneration | Chestplate | 40 | Refreshes Regeneration III while powered/enabled. |
 | Flight | Chestplate | 30 | Hold Space for upward thrust; no creative flight is granted. |
 | Hover | Chestplate | 10 | With Flight active, holds altitude; sneak descends. |
@@ -891,6 +891,17 @@ are a 100→130 budget and 30000→40000 duration numerator.
 | Inhibit | Enhanced Sabre and Lance | 30 | Suppresses a Master Soldier's regeneration for 200 ticks and removes beneficial effects from the target. |
 | Looting | Enhanced Sabre and Lance | 20 | Applies Looting III while powered/enabled. |
 | Fire | Enhanced Sabre and Lance | 30 | Applies Fire Aspect III while powered/enabled. |
+
+The personal forcefield is faintly visible from inside in first person. Absorbing
+a ranged or magic hit or an explosion flashes the field red, then leaves a dimmer
+red tint until it recovers. Recharge time follows the damage actually absorbed:
+at least 10 ticks (half a second), or about 40 ticks (two seconds) for a fully
+blocked 24-damage advanced city drone laser. Each subsequent ranged/explosion hit
+resets the timer using the amount that the weakened field absorbs. Both kinds
+of damage share the same cooldown; melee protection remains 50% throughout.
+Melee retaliation uses the Thorns damage type, so the attacker's own defenses
+can reduce the reflected damage. Reflected Thorns hits never retaliate again.
+Other armor-bypassing damage, such as falling and drowning, remains unprotected.
 
 Not every module has a blueprint recipe in the present catalog. Registered
 items, configuration entries, working effects, and survival obtainability are
@@ -1317,6 +1328,7 @@ worlds.
 | Recipe variants | Negarite/Posirite/Combined cable and connector recipes work. Data variants and several original modules still have no catalog entry. |
 | Crafting integration | Constructor JEI and full manual/automatic batch yields pass focused checks. Crafting still uses the hardcoded catalog. |
 | Armor movement | Flight, Hover, Speed and Step Assist pass focused survival-client checks. Invisibility's install control remains disabled. |
+| Personal forcefield | Five dedicated regression tests cover protection, cooldowns and retaliation. A live client check covers first/third-person rendering and hit synchronization; flashes with multiple remote players remain a play-test item. |
 | Equipment lifecycle | Fuel/effect checks and real dedicated-server hotkeys, equipment synchronization, reconnect and death/respawn pass with two clients. Multiplayer flight and mod interactions still need play testing. |
 | Automation matching | Tag/NBT/damage filters, batch routing, round robin and rejected-insert recovery pass focused inventory checks; long multi-chunk networks remain an integration check. |
 | Visual effects | Automation transfers, blueprint previews, facade items, ship hull, soldier armor and hologram tooltips are restored; combined-cable beam rendering remains an original limitation. |
@@ -1346,7 +1358,7 @@ Use these as the maintenance reference when updating the guide:
 | Blueprint recipes and ordinary recipes | [catalog](src/main/java/mcjty/ariente/recipes/BlueprintRecipeRegistry.java), [ordinary JSON](src/generated/resources/data/ariente/recipes), [recipe generator](src/main/java/mcjty/ariente/datagen/Recipes.java). |
 | World terrain/population | [dimension](../ArienteWorld/src/main/java/mcjty/arienteworld/dimension), [worldgen data](../ArienteWorld/src/main/resources/data/arienteworld/worldgen). |
 | Authored cities and loot settings | [city assets](../ArienteWorld/src/main/resources/assets/arienteworld/citydata), [city AI](../ArienteWorld/src/main/java/mcjty/arienteworld/ai/CityAI.java). |
-| Verified regressions | [GameTests](../ArienteWorld/src/gameTest/java/mcjty/arienteworld). |
+| Verified regressions | [Personal forcefield tests](src/gameTest/java/mcjty/ariente), [companion GameTests](../ArienteWorld/src/gameTest/java/mcjty/arienteworld). |
 
 When source and a historical tooltip/wiki disagree, use the current code as the
 reference and label unfinished behavior explicitly. Update this guide as the

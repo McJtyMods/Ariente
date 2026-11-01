@@ -218,7 +218,7 @@
   "message.ariente.armormodule.effect.armor": "add four armor points to that piece",
   "message.ariente.armormodule.effect.featherfalling": "prevent fall damage",
   "message.ariente.armormodule.effect.flight": "fly while holding jump; sneak to descend",
-  "message.ariente.armormodule.effect.forcefield": "block projectile damage and reduce other incoming damage",
+  "message.ariente.armormodule.effect.forcefield": "block projectiles and magic, reduce explosion and melee damage, and reflect half of melee damage; ranged hits briefly weaken the shield",
   "message.ariente.armormodule.effect.invisibility": "become invisible (this module is currently unavailable)",
   "message.ariente.armormodule.effect.nightvision": "see clearly in the dark",
   "message.ariente.armormodule.effect.regeneration": "restore health over time",
