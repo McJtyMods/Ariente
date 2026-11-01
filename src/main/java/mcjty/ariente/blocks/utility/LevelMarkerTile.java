@@ -56,6 +56,11 @@ public class LevelMarkerTile extends GenericTileEntity implements IGuiTile {
             public VoxelShape getShape(BlockState state, BlockGetter reader, BlockPos pos, CollisionContext context) {
                 return BLOCK_AABB;
             }
+
+            @Override
+            public VoxelShape getCollisionShape(BlockState state, BlockGetter reader, BlockPos pos, CollisionContext context) {
+                return Shapes.empty();
+            }
         };
     }
 

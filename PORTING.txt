@@ -720,3 +720,22 @@ companion handoff. Treat new enhancements separately from missing 1.12 parity.
   today's CurseForge recheck returned HTTP 403, so that service could not be
   independently reverified during this follow-up. Model port repairs have no
   player changelog entries; the elevator exit fix is under the current version.
+
+2026-11-01 - LEVEL MARKERS TRAPPING ELEVATOR PASSENGERS
+=====================================================
+- The reported save had the player at (469.30000001192093, 76,
+  -37.69999998807907), OnGround=false, with four level markers immediately
+  surrounding the shaft at foot height. Their one-pixel collision prevented
+  walking out because hovering players cannot step up onto those markers.
+- Restored empty movement collision while retaining the thin selection shape
+  and configuration interaction. The 1.12 registration explicitly used
+  NO_COLLISION; this was lost in the port. Existing worlds need no regeneration.
+  This port repair has no additional player changelog entry or version bump.
+- ElevatorTests recreates the four-marker arrangement with the saved corner
+  offset and a centered player, tests all four exits without ground support,
+  checks selection/collision shapes, and checks landing on the underlying floor.
+  It failed before the fix; all six required Ariente GameTests pass afterward.
+- An isolated client used actual Space input to reach the upper landing, then
+  walked more than 1.5 blocks through each of the four markers without jumping.
+  Evidence: build/verification/elevator-client/elevator-exit-check.png.
+  Java 17 workspace :Ariente:build also passed.
