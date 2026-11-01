@@ -7,17 +7,16 @@ import mcjty.ariente.Ariente;
 import mcjty.ariente.client.ArienteSpriteUploader;
 import net.minecraft.client.renderer.RenderType;
 import mcjty.ariente.setup.Registration;
-import mcjty.lib.client.RenderHelper;
 import mcjty.lib.client.RenderSettings;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.renderer.MultiBufferSource;
 import net.minecraft.client.renderer.blockentity.BlockEntityRendererProvider;
 import net.minecraft.client.renderer.blockentity.BlockEntityRenderers;
 import net.minecraft.client.renderer.texture.TextureAtlasSprite;
+import net.minecraft.client.renderer.texture.OverlayTexture;
 import net.minecraft.client.renderer.blockentity.BlockEntityRenderer;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.phys.AABB;
-import org.joml.Matrix4f;
 
 import java.util.Random;
 
@@ -71,7 +70,6 @@ public class AutoFieldRenderer implements BlockEntityRenderer<AutoFieldTile> {
         float py = (float) box.maxY - tey;
         float pz = (float) box.maxZ - tez;
 
-        Matrix4f matrix = matrixStack.last().pose();
         // @todo move to a static final once experimentation is done
         RenderSettings settings = RenderSettings.builder()
                 .width(0.1f)
@@ -80,20 +78,46 @@ public class AutoFieldRenderer implements BlockEntityRenderer<AutoFieldTile> {
                 .brightness(100)
                 .build();
 
-        RenderHelper.drawBeam(matrixStack, builder, sprite, new Vec3(mx, my, mz), new Vec3(px, my, mz), player, settings);
-        RenderHelper.drawBeam(matrixStack, builder, sprite, new Vec3(mx, my, mz), new Vec3(mx, py, mz), player, settings);
-        RenderHelper.drawBeam(matrixStack, builder, sprite, new Vec3(mx, my, mz), new Vec3(mx, my, pz), player, settings);
+        drawBeam(matrixStack, builder, sprite, new Vec3(mx, my, mz), new Vec3(px, my, mz), player, settings);
+        drawBeam(matrixStack, builder, sprite, new Vec3(mx, my, mz), new Vec3(mx, py, mz), player, settings);
+        drawBeam(matrixStack, builder, sprite, new Vec3(mx, my, mz), new Vec3(mx, my, pz), player, settings);
 
-        RenderHelper.drawBeam(matrixStack, builder, sprite, new Vec3(px, py, pz), new Vec3(mx, py, pz), player, settings);
-        RenderHelper.drawBeam(matrixStack, builder, sprite, new Vec3(px, py, pz), new Vec3(px, my, pz), player, settings);
-        RenderHelper.drawBeam(matrixStack, builder, sprite, new Vec3(px, py, pz), new Vec3(px, py, mz), player, settings);
+        drawBeam(matrixStack, builder, sprite, new Vec3(px, py, pz), new Vec3(mx, py, pz), player, settings);
+        drawBeam(matrixStack, builder, sprite, new Vec3(px, py, pz), new Vec3(px, my, pz), player, settings);
+        drawBeam(matrixStack, builder, sprite, new Vec3(px, py, pz), new Vec3(px, py, mz), player, settings);
 
-        RenderHelper.drawBeam(matrixStack, builder, sprite, new Vec3(px, my, mz), new Vec3(px, py, mz), player, settings);
-        RenderHelper.drawBeam(matrixStack, builder, sprite, new Vec3(px, my, mz), new Vec3(px, my, pz), player, settings);
-        RenderHelper.drawBeam(matrixStack, builder, sprite, new Vec3(mx, py, mz), new Vec3(px, py, mz), player, settings);
-        RenderHelper.drawBeam(matrixStack, builder, sprite, new Vec3(mx, py, mz), new Vec3(mx, py, pz), player, settings);
-        RenderHelper.drawBeam(matrixStack, builder, sprite, new Vec3(mx, my, pz), new Vec3(px, my, pz), player, settings);
-        RenderHelper.drawBeam(matrixStack, builder, sprite, new Vec3(mx, my, pz), new Vec3(mx, py, pz), player, settings);
+        drawBeam(matrixStack, builder, sprite, new Vec3(px, my, mz), new Vec3(px, py, mz), player, settings);
+        drawBeam(matrixStack, builder, sprite, new Vec3(px, my, mz), new Vec3(px, my, pz), player, settings);
+        drawBeam(matrixStack, builder, sprite, new Vec3(mx, py, mz), new Vec3(px, py, mz), player, settings);
+        drawBeam(matrixStack, builder, sprite, new Vec3(mx, py, mz), new Vec3(mx, py, pz), player, settings);
+        drawBeam(matrixStack, builder, sprite, new Vec3(mx, my, pz), new Vec3(px, my, pz), player, settings);
+        drawBeam(matrixStack, builder, sprite, new Vec3(mx, my, pz), new Vec3(mx, py, pz), player, settings);
+    }
+
+    private static void drawBeam(PoseStack stack, VertexConsumer vertices, TextureAtlasSprite sprite,
+                                 Vec3 start, Vec3 end, Vec3 camera, RenderSettings settings) {
+        Vec3 half = start.subtract(camera).cross(end.subtract(start)).normalize().scale(settings.width());
+        Vec3 first = start.add(half);
+        Vec3 second = end.add(half);
+        Vec3 third = end.subtract(half);
+        Vec3 fourth = start.subtract(half);
+        Vec3 normal = second.subtract(first).cross(third.subtract(first)).normalize();
+        vertex(stack, vertices, first, normal, sprite.getU0(), sprite.getV0(), settings);
+        vertex(stack, vertices, second, normal, sprite.getU1(), sprite.getV0(), settings);
+        vertex(stack, vertices, third, normal, sprite.getU1(), sprite.getV1(), settings);
+        vertex(stack, vertices, fourth, normal, sprite.getU0(), sprite.getV1(), settings);
+    }
+
+    private static void vertex(PoseStack stack, VertexConsumer vertices, Vec3 pos, Vec3 normal,
+                               float u, float v, RenderSettings settings) {
+        // entityTranslucent uses NEW_ENTITY, including overlay UVs before the lightmap.
+        vertices.vertex(stack.last().pose(), (float) pos.x, (float) pos.y, (float) pos.z)
+                .color(settings.r(), settings.g(), settings.b(), settings.a())
+                .uv(u, v)
+                .overlayCoords(OverlayTexture.NO_OVERLAY)
+                .uv2(settings.brightness())
+                .normal(stack.last().normal(), (float) normal.x, (float) normal.y, (float) normal.z)
+                .endVertex();
     }
 
     private void renderItemTransfers(PoseStack matrixStack, AutoFieldTile te, MultiBufferSource buffers) {

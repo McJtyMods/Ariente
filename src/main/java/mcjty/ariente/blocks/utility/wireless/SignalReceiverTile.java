@@ -6,6 +6,7 @@ import mcjty.lib.blocks.BaseBlock;
 import mcjty.lib.builder.BlockBuilder;
 import mcjty.lib.varia.NBTTools;
 import net.minecraft.core.BlockPos;
+import net.minecraft.core.Direction;
 import net.minecraft.world.InteractionResult;
 import net.minecraft.world.level.BlockGetter;
 import net.minecraft.world.level.block.Block;
@@ -47,6 +48,24 @@ public class SignalReceiverTile extends SignalChannelTileEntity {
             @Override
             public VoxelShape getShape(BlockState state, BlockGetter reader, BlockPos pos, CollisionContext context) {
                 return BLOCK_AABB;
+            }
+
+            @Override
+            public boolean isSignalSource(BlockState state) {
+                return true;
+            }
+
+            @Override
+            public int getSignal(BlockState state, BlockGetter world, BlockPos pos, Direction side) {
+                if (world.getBlockEntity(pos) instanceof SignalReceiverTile receiver) {
+                    return receiver.getRedstoneOutput(state, world, pos, side);
+                }
+                return 0;
+            }
+
+            @Override
+            public int getDirectSignal(BlockState state, BlockGetter world, BlockPos pos, Direction side) {
+                return getSignal(state, world, pos, side);
             }
         };
     }
