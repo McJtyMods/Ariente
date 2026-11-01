@@ -4,6 +4,7 @@ import mcjty.ariente.Ariente;
 import mcjty.ariente.api.*;
 import mcjty.ariente.compat.arienteworld.ArienteWorldCompat;
 import mcjty.ariente.items.KeyCardItem;
+import mcjty.ariente.items.EnergyLanceItem;
 import mcjty.ariente.items.armor.PowerSuit;
 import mcjty.ariente.setup.Registration;
 import mcjty.ariente.sounds.ModSounds;
@@ -23,6 +24,7 @@ import net.minecraft.world.entity.ai.goal.RandomSwimmingGoal;
 import net.minecraft.world.entity.ai.goal.target.HurtByTargetGoal;
 import net.minecraft.world.entity.ai.goal.target.NearestAttackableTargetGoal;
 import net.minecraft.world.entity.monster.Monster;
+import net.minecraft.world.entity.monster.RangedAttackMob;
 import net.minecraft.world.DifficultyInstance;
 import net.minecraft.world.Difficulty;
 import net.minecraft.util.RandomSource;
@@ -46,7 +48,7 @@ import net.minecraft.core.BlockPos;
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 
-public class SoldierEntity extends Monster implements IArmRaisable, IForcefieldImmunity, ISoldier {
+public class SoldierEntity extends Monster implements IArmRaisable, IForcefieldImmunity, ISoldier, RangedAttackMob {
 
     private static final EntityDataAccessor<Boolean> ARMS_RAISED = SynchedEntityData.defineId(SoldierEntity.class, EntityDataSerializers.BOOLEAN);
     public static final ResourceLocation LOOT = new ResourceLocation(Ariente.MODID, "entities/soldier");
@@ -219,12 +221,26 @@ public class SoldierEntity extends Monster implements IArmRaisable, IForcefieldI
     @Override
     protected void populateDefaultEquipmentSlots(RandomSource random, DifficultyInstance difficulty) {
         super.populateDefaultEquipmentSlots(random, difficulty);
-        setItemSlot(EquipmentSlot.MAINHAND, new ItemStack(Registration.ENERGY_SABRE.get()));
+        equipDefaultWeapon(random);
+    }
+
+    public void equipDefaultWeapon(RandomSource random) {
+        setItemSlot(EquipmentSlot.MAINHAND, new ItemStack(random.nextInt(5) == 0
+                ? Registration.ENERGY_LANCE.get() : Registration.ENERGY_SABRE.get()));
+        setItemSlot(EquipmentSlot.OFFHAND, ItemStack.EMPTY);
+    }
+
+    @Override
+    public void performRangedAttack(LivingEntity target, float distanceFactor) {
+        if (getSensing().hasLineOfSight(target) && distanceToSqr(target) <= EnergyLanceItem.RANGE * EnergyLanceItem.RANGE) {
+            EnergyLanceItem.fire(this, target.getEyePosition().subtract(getEyePosition()));
+        }
     }
 
     @Override
     protected void registerGoals() {
         this.goalSelector.addGoal(0, new RandomSwimmingGoal(this, 0.8D, 4));
+        this.goalSelector.addGoal(1, new SoldierLanceAttackGoal(this));
         this.goalSelector.addGoal(2, new EntityAISoldierAttack(this, this, 1.0D, false));
         this.goalSelector.addGoal(5, new MoveTowardsRestrictionGoal(this, 1.0D));
         this.goalSelector.addGoal(7, new EntityAISoldierWander(this, 1.0D));

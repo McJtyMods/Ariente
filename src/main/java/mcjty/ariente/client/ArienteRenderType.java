@@ -31,4 +31,14 @@ public class ArienteRenderType extends RenderType {
                     .setTransparencyState(TRANSLUCENT_TRANSPARENCY)
                     .setTextureState(ARIENTE_TEXTURE_STATE)
                     .createCompositeState(true));
+
+    // Entity geometry must not inherit the terrain shader's ChunkOffset uniform.
+    public static final RenderType ARIENTE_ADDITIVE = create("ariente_additive", DefaultVertexFormat.NEW_ENTITY, VertexFormat.Mode.QUADS, 256, false, false,
+            CompositeState.builder()
+                    .setShaderState(RENDERTYPE_EYES_SHADER)
+                    .setCullState(NO_CULL)
+                    .setTransparencyState(ADDITIVE_TRANSPARENCY)
+                    .setWriteMaskState(COLOR_WRITE)
+                    .setTextureState(ARIENTE_TEXTURE_STATE)
+                    .createCompositeState(false));
 }

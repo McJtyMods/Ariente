@@ -3,6 +3,8 @@ package mcjty.ariente.items.modules;
 import mcjty.ariente.api.ArmorUpgradeType;
 import mcjty.ariente.config.UtilityConfiguration;
 import mcjty.ariente.items.EnergyHolderItem;
+import mcjty.ariente.items.EnergyLanceItem;
+import mcjty.ariente.items.EnhancedEnergySabreItem;
 import mcjty.ariente.setup.Registration;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.world.entity.EquipmentSlot;
@@ -25,6 +27,11 @@ public class ModuleSupport {
         handleHotkey(player, index, EquipmentSlot.FEET, Registration.POWERSUIT_FEET.get());
         handleHotkey(player, index, EquipmentSlot.CHEST, Registration.POWERSUIT_CHEST.get());
         handleHotkey(player, index, EquipmentSlot.MAINHAND, Registration.ENHANCED_ENERGY_SABRE.get());
+        handleHotkey(player, index, EquipmentSlot.MAINHAND, Registration.ENERGY_LANCE.get());
+    }
+
+    public static boolean isModularWeapon(ItemStack stack) {
+        return stack.getItem() instanceof EnhancedEnergySabreItem || stack.getItem() instanceof EnergyLanceItem;
     }
 
     private static void handleHotkey(Player player, int index, EquipmentSlot slot, Item armorItem) {

@@ -26,7 +26,7 @@ public class ArmorGui {
     public static IGuiComponent<?> create(Player player) {
         IGuiComponentRegistry registry = Ariente.guiHandler.getComponentRegistry();
         IPanel panel = HoloGuiTools.createPanelWithHelp(registry, entity -> entity.switchGui(ModGuis.GUI_ARMOR_HELP))
-                .add(registry.text(0, 1, 1, 1).text("Configure armor").color(registry.color(StyledColor.LABEL)));
+                .add(registry.text(0, 1, 1, 1).text("Configure gear").color(registry.color(StyledColor.LABEL)));
 
         double x = 0.5;
         double y = 2.5;
@@ -35,10 +35,11 @@ public class ArmorGui {
         y = createMenuEntry(registry, player, panel, x, y, EquipmentSlot.LEGS, Registration.POWERSUIT_LEGS.get());
         y = createMenuEntry(registry, player, panel, x, y, EquipmentSlot.FEET, Registration.POWERSUIT_FEET.get());
         y = createMenuEntry(registry, player, panel, x, y, EquipmentSlot.MAINHAND, Registration.ENHANCED_ENERGY_SABRE.get());
+        y = createMenuEntry(registry, player, panel, x, y, EquipmentSlot.MAINHAND, Registration.ENERGY_LANCE.get());
 
         if (y <= 2.6) {
             // No armor
-            panel.add(registry.text(0, 3, 1, 1).text("No power armor!").color(registry.color(StyledColor.ERROR)));
+            panel.add(registry.text(0, 3, 1, 1).text("No modular gear!").color(registry.color(StyledColor.ERROR)));
         }
 
         return panel;
@@ -48,10 +49,10 @@ public class ArmorGui {
         IGuiComponentRegistry registry = Ariente.guiHandler.getComponentRegistry();
         return HoloGuiTools.createHelpGui(registry, HelpBuilder.create()
                 .line("With this GUI you can configure")
-                .line("your armor and sabre modules")
+                .line("your armor and weapon modules")
                 .line("For every module you can toggle")
                 .line("the module itself to install or")
-                .line("remove it from your armor.")
+                .line("remove it from your equipment.")
                 .nl()
                 .line("Then you can hit the checkbox to")
                 .line("actually enable the module")
@@ -200,7 +201,7 @@ public class ArmorGui {
     }
 
     private static boolean isInvalidPowerArmorPiece(ItemStack stack) {
-        return stack.isEmpty() || (!(stack.getItem() instanceof PowerSuit) && stack.getItem() != Registration.ENHANCED_ENERGY_SABRE.get());
+        return stack.isEmpty() || (!(stack.getItem() instanceof PowerSuit) && !ModuleSupport.isModularWeapon(stack));
     }
 
     private static int calculatePowerColor(Player player, EquipmentSlot slot) {
@@ -330,7 +331,7 @@ public class ArmorGui {
 
     private static Boolean hasModule(Player player, EquipmentSlot slot, ArmorModuleItem moduleItem) {
         ItemStack stack = player.getItemBySlot(slot);
-        if (!isSupportedEquipment(stack, slot)) {
+        if (!isSupportedEquipment(stack, slot) || !moduleItem.getType().supportsSlot(slot)) {
             return false;
         }
         if (!stack.hasTag()) {
@@ -363,7 +364,7 @@ public class ArmorGui {
     }
 
     private static void toggleModuleInstall(Player player, EquipmentSlot slot, ArmorModuleItem moduleItem) {
-        if (!isSupportedEquipment(player.getItemBySlot(slot), slot)) {
+        if (!isSupportedEquipment(player.getItemBySlot(slot), slot) || !moduleItem.getType().supportsSlot(slot)) {
             return;
         }
         if (!hasModule(player, slot, moduleItem)) {
@@ -403,7 +404,7 @@ public class ArmorGui {
         if (stack.getItem() instanceof PowerSuit suit) {
             return suit.getEquipmentSlot() == slot;
         }
-        return slot == EquipmentSlot.MAINHAND && stack.is(Registration.ENHANCED_ENERGY_SABRE.get());
+        return slot == EquipmentSlot.MAINHAND && ModuleSupport.isModularWeapon(stack);
     }
 
     private static void syncEquipment(Player player) {

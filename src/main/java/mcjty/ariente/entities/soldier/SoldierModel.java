@@ -1,5 +1,6 @@
 package mcjty.ariente.entities.soldier;
 
+import mcjty.ariente.items.EnergyLanceItem;
 import net.minecraft.client.model.AnimationUtils;
 import net.minecraft.client.model.HumanoidModel;
 import net.minecraft.client.model.geom.builders.CubeDeformation;
@@ -23,7 +24,10 @@ public class SoldierModel<T extends SoldierEntity> extends HumanoidModel<T> {
         rightArmPose = (rightHanded ? entity.getMainHandItem() : entity.getOffhandItem()).isEmpty() ? ArmPose.EMPTY : ArmPose.ITEM;
         leftArmPose = (rightHanded ? entity.getOffhandItem() : entity.getMainHandItem()).isEmpty() ? ArmPose.EMPTY : ArmPose.ITEM;
         super.setupAnim(entity, limbSwing, limbSwingAmount, ageInTicks, headYaw, headPitch);
-        if (entity.isAggressive()) {
+        if (EnergyLanceItem.canFire(entity)) {
+            // Keep the supporting hand on the shaft while walking, idling and aiming.
+            AnimationUtils.animateCrossbowHold(rightArm, leftArm, head, rightHanded);
+        } else if (entity.isAggressive()) {
             AnimationUtils.swingWeaponDown(rightArm, leftArm, entity, attackTime, ageInTicks);
         }
     }

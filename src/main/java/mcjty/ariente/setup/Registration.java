@@ -390,6 +390,7 @@ public class Registration {
     public static final RegistryObject<Item> DUST_NEGARITE = ITEMS.register("dust_negarite", () -> new Item(createStandardProperties()));
     public static final RegistryObject<Item> DUST_POSIRITE = ITEMS.register("dust_posirite", () -> new Item(createStandardProperties()));
     public static final RegistryObject<EnergySabreItem> ENERGY_SABRE = ITEMS.register("energy_sabre", EnergySabreItem::new);
+    public static final RegistryObject<EnergyLanceItem> ENERGY_LANCE = ITEMS.register("energy_lance", EnergyLanceItem::new);
     public static final RegistryObject<EnhancedEnergySabreItem> ENHANCED_ENERGY_SABRE = ITEMS.register("enhanced_energy_sabre", EnhancedEnergySabreItem::new);
     public static final RegistryObject<KeyCardItem> KEY_CARD = ITEMS.register("key_card", KeyCardItem::new);
     public static final RegistryObject<BlueprintItem> BLUEPRINT = ITEMS.register("blueprint", BlueprintItem::new);
@@ -457,7 +458,8 @@ public class Registration {
             .build("ariente_flux_levitator"));
     public static final RegistryObject<EntityType<LaserEntity>> ENTITY_LASER = ENTITIES.register("ariente_laser", () -> EntityType.Builder.of(LaserEntity::new, MobCategory.MISC)
             .sized(1, 1)
-            .setShouldReceiveVelocityUpdates(false)
+            .updateInterval(1)
+            .setShouldReceiveVelocityUpdates(true)
             .build("ariente_laser"));
 
 

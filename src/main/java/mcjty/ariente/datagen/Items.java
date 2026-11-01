@@ -129,6 +129,7 @@ public class Items extends BaseItemModelProvider {
 
         itemGenerated(Registration.ENERGY_HOLDER.get(), "item/tools/energy_holder");
         itemHandheld(Registration.ENERGY_SABRE.get(), "item/weapons/energy_sabre");
+        parentedItem(Registration.ENERGY_LANCE.get(), "item/weapons/energy_lance");
         itemHandheld(Registration.ENHANCED_ENERGY_SABRE.get(), "item/weapons/enhanced_energy_sabre");
         itemGenerated(Registration.KEY_CARD.get(), "item/tools/key_card");
         getBuilder("facade").parent(new ModelFile.UncheckedModelFile("ariente:item/facade_base"));

@@ -7,7 +7,7 @@
     {
       "type": "patchouli:text",
       "title": "Install, then activate",
-      "text": "Wear your power armor or hold an Enhanced Energy Sabre in your main hand. Press the configuration key, normally $(thing)0$(), and select a piece.$(br2)Click a module icon to install a module from your inventory, then use its activation control to enable it. Use the fuel arrows to add both dust types."
+      "text": "Wear your power armor or hold an Enhanced Energy Sabre or Energy Lance in your main hand. Press the configuration key, normally $(thing)0$(), and select a piece.$(br2)Click a module icon to install a module from your inventory, then use its activation control to enable it. Use the fuel arrows to add both dust types."
     },
     {
       "type": "patchouli:text",
@@ -22,7 +22,7 @@
     {
       "type": "patchouli:text",
       "title": "Set up quick toggles",
-      "text": "Assign modules to a hotkey group in the equipment panel. One group can toggle several modules across your worn armor and held sabre.$(br2)Groups 1 and 2 default to Numpad 7 and 8. Set the other groups in Controls.$(br2)Test fuel, activation and movement before a risky climb or fight."
+      "text": "Assign modules to a hotkey group in the equipment panel. One group can toggle several modules across your worn armor and held weapon.$(br2)Groups 1 and 2 default to Numpad 7 and 8. Set the other groups in Controls.$(br2)Test fuel, activation and movement before a risky climb or fight."
     }
   ],
   "extra_recipe_mappings": {

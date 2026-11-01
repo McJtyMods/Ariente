@@ -1,5 +1,6 @@
 package mcjty.ariente.entities.soldier;
 
+import mcjty.ariente.items.EnergyLanceItem;
 import net.minecraft.world.entity.PathfinderMob;
 import net.minecraft.world.entity.ai.goal.MeleeAttackGoal;
 
@@ -10,6 +11,16 @@ public class EntityAISoldierAttack extends MeleeAttackGoal {
     public EntityAISoldierAttack(PathfinderMob zombieIn, IArmRaisable raisable, double speedIn, boolean longMemoryIn) {
         super(zombieIn, speedIn, longMemoryIn);
         this.raisable = raisable;
+    }
+
+    @Override
+    public boolean canUse() {
+        return !(mob.getMainHandItem().getItem() instanceof EnergyLanceItem) && super.canUse();
+    }
+
+    @Override
+    public boolean canContinueToUse() {
+        return !(mob.getMainHandItem().getItem() instanceof EnergyLanceItem) && super.canContinueToUse();
     }
 
     /**

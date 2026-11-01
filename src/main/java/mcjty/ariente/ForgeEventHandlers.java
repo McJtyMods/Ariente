@@ -6,6 +6,8 @@ import mcjty.ariente.api.ArmorUpgradeType;
 import mcjty.ariente.blocks.utility.ILockable;
 import mcjty.ariente.entities.levitator.FluxLevitatorEntity;
 import mcjty.ariente.entities.soldier.SoldierEntity;
+import mcjty.ariente.entities.LaserEntity;
+import mcjty.ariente.items.EnergyLanceItem;
 import mcjty.ariente.items.EnergySabreItem;
 import mcjty.ariente.items.modules.ModuleSupport;
 import mcjty.ariente.items.armor.PowerSuitEffects;
@@ -30,6 +32,7 @@ import net.minecraftforge.event.entity.EntityJoinLevelEvent;
 import net.minecraftforge.event.entity.living.LivingDamageEvent;
 import net.minecraftforge.event.entity.living.LivingFallEvent;
 import net.minecraftforge.event.entity.living.LivingHurtEvent;
+import net.minecraftforge.event.entity.living.LootingLevelEvent;
 import net.minecraftforge.event.level.BlockEvent;
 import net.minecraftforge.eventbus.api.SubscribeEvent;
 
@@ -90,6 +93,21 @@ public class ForgeEventHandlers {
                 && soldier.getMainHandItem().getItem() instanceof EnergySabreItem) {
             // Player difficulty scaling has run; armor, enchantments and suit defenses still apply afterwards.
             event.setAmount(Math.max(event.getAmount(), soldier.getMinimumSabreDamage()));
+        }
+    }
+
+    @SubscribeEvent
+    public void onSoldierLanceAttack(LivingHurtEvent event) {
+        if (event.getSource().getDirectEntity() instanceof LaserEntity laser && laser.isLanceShot()
+                && event.getSource().getEntity() instanceof SoldierEntity soldier) {
+            event.setAmount(Math.max(event.getAmount(), soldier.getMinimumSabreDamage() * EnergyLanceItem.DAMAGE_MULTIPLIER));
+        }
+    }
+
+    @SubscribeEvent
+    public void onLanceLooting(LootingLevelEvent event) {
+        if (event.getDamageSource() != null && event.getDamageSource().getDirectEntity() instanceof LaserEntity laser && laser.isLanceShot()) {
+            event.setLootingLevel(Math.max(event.getLootingLevel(), laser.getLootingLevel()));
         }
     }
 

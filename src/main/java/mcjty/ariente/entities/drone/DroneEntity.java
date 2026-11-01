@@ -272,35 +272,12 @@ public class DroneEntity extends FlyingMob implements IForcefieldImmunity, IDron
                 }
 
                 if (this.attackTimer == 20) {
-                    double d1 = 4.0D;
-                    Vec3 vec3d = this.drone.getViewVector(1.0F);
-
-//                    world.playSound(null, target.getPosX() - vec3d.x * 8.0d, target.getPosY() - vec3d.y * 8.0d, target.getPosZ() - vec3d.z * 8.0d, ModSounds.droneShoot, SoundCategory.HOSTILE, 5.0f, 1.0f);
-
-                    double d2 = target.getX() - (this.drone.getX() + vec3d.x * 4.0D);
-                    double d3 = target.getBoundingBox().minY + ((target.getBbHeight()+2) / 2.0F) - (0.5D + this.drone.getY() + (this.drone.getBbHeight() / 2.0F));
-                    double d4 = target.getZ() - (this.drone.getZ() + vec3d.z * 4.0D);
-//                    world.playEvent(null, 1016, new BlockPos(this.parentEntity), 0);
-//                    for (int i = 0; i < world.playerEntities.size(); ++i) {
-//                        world.playSound(world.playerEntities.get(i), d2, d3, d4, ModSounds.droneShoot, SoundCategory.HOSTILE, 1.0f, 1.0f);
-//                        world.playSound(world.playerEntities.get(i), target.getPosX(), target.getPosY(), target.getPosZ(), ModSounds.droneShoot, SoundCategory.HOSTILE, 1.0f, 1.0f);
-//                    }
-
-//                    world.playEvent((PlayerEntity)null, 1016, new BlockPos(this.drone), 0);
-
-                    LaserEntity laser = LaserEntity.create(world, this.drone, d2, d3, d4);
-                    double laserX = this.drone.getX() + vec3d.x * 2.0D;
-                    double laserY = this.drone.getY() + (this.drone.getBbHeight() / 2.0F) + 0.5D;
-                    double laserZ = this.drone.getZ() + vec3d.z * 2.0D;
-                    laser.setPos(laserX, laserY, laserZ);
-
-                    double dx = target.getX() - laser.getX();
-                    double dy = target.getY() + target.getEyeHeight() - laser.getY() + 0;
-                    double dz = target.getZ() - laser.getZ();
-                    double dpitch = Mth.sqrt((float) (dx * dx + dz * dz));
-//                    float f = (float)(Mth.atan2(d2, d0) * (180D / Math.PI)) - 90.0F;
-                    float f1 = (float)(-(Mth.atan2(dy, dpitch) * (180D / Math.PI)));
-                    laser.setSpawnYawPitch(laser.getSpawnYaw(), f1);
+                    Vec3 center = drone.position().add(0, drone.getBbHeight() / 2.0D + 0.5D, 0);
+                    Vec3 toTarget = target.getEyePosition().subtract(center);
+                    Vec3 muzzle = center.add(toTarget.normalize().scale(Math.min(1.25D, toTarget.length() / 2.0D)));
+                    Vec3 aim = target.getEyePosition().subtract(muzzle);
+                    LaserEntity laser = LaserEntity.create(world, drone, aim.x, aim.y, aim.z);
+                    laser.setPos(muzzle);
 
                     world.addFreshEntity(laser);
                     this.attackTimer = -40;

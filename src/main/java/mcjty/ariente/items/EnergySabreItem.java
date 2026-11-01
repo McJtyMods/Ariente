@@ -20,13 +20,15 @@ import net.minecraft.world.level.Level;
 
 public class EnergySabreItem extends Item {
 
+    public static final float BASE_DAMAGE = 12.0F;
+
     protected final float attackDamage;
     private final Tiers tier;
 
     public EnergySabreItem() {
         super(new Properties().stacksTo(1).durability(Tiers.DIAMOND.getUses()));
         this.tier = Tiers.DIAMOND;
-        this.attackDamage = 12.0F;
+        this.attackDamage = BASE_DAMAGE;
     }
 
     public float getAttackDamage() {

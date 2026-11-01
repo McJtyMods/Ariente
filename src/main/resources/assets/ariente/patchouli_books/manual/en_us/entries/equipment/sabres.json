@@ -18,6 +18,11 @@
       "type": "patchouli:crafting",
       "recipe": "ariente:enhanced_energy_sabre",
       "text": "An Energy Sabre surrounded by Lithium Ingots can be upgraded at a crafting table. A blueprint is another route to the enhanced weapon."
+    },
+    {
+      "type": "patchouli:text",
+      "title": "Ranged upgrades",
+      "text": "The Energy Lance supports the same six weapon modules as the Enhanced Energy Sabre. Hold it in your main hand, leave the off hand empty, and press $(thing)0$() to configure it.$(br2)Power, Inhibit, Looting and Fire affect its lasers. Energy Efficiency and Autofeed manage the module budget and fuel.$(br2)See the Energy Lance entry for firing and blueprint details."
     }
   ],
   "extra_recipe_mappings": {

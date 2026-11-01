@@ -1,4 +1,6 @@
 1.20-0.0.31-alpha:
+- Module tooltips now list the armor pieces and weapons that accept each module and explain its effect.
+- Added the two-handed Energy Lance: a longer sabre-style weapon that fires lasers for 30% more damage than an ordinary sabre. Keep your off hand empty to fire; configure sabre-compatible upgrade modules with the armor configuration key, and craft it with its Constructor blueprint.
 - Sabre-wielding soldiers now kill unarmored players in one hit on every non-Peaceful difficulty; master soldiers hit harder.
 - Fixed elevators pulling players back toward the center and holding them below landing edges when trying to walk out.
 - Pressing the armor configuration key again now returns to equipment selection, or closes the panel when already on that menu, instead of opening overlapping panels.

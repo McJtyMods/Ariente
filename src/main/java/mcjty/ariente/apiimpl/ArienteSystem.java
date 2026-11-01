@@ -132,6 +132,7 @@ public class ArienteSystem implements IArienteSystem {
                 break;
         }
         entity.moveTo(entity.getX(), entity.getY(), entity.getZ(), yaw, 0);
+        entity.equipDefaultWeapon(world.getRandom());
         world.addFreshEntity(entity);
         return entity;
     }

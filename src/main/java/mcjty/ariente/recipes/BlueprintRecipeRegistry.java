@@ -190,6 +190,15 @@ public class BlueprintRecipeRegistry {
                 new ItemStack(Registration.INGOT_PLATINUM.get(), 1),
                 new ItemStack(Registration.INGOT_LITHIUM.get(), 1)
         ));
+        recipes.add(new ConstructorRecipe(new ItemStack(Registration.ENERGY_LANCE.get()), RARE,
+                new ItemStack(Registration.ENERGY_SABRE.get()),
+                new ItemStack(Registration.ADVANCED_CIRCUIT.get()),
+                new ItemStack(Registration.INGOT_SILVER.get(), 10),
+                new ItemStack(Registration.DUST_NEGARITE.get(), 5),
+                new ItemStack(Registration.DUST_POSIRITE.get(), 5),
+                new ItemStack(Registration.INGOT_PLATINUM.get(), 2),
+                new ItemStack(Registration.INGOT_LITHIUM.get(), 2)
+        ));
         recipes.add(new ConstructorRecipe(new ItemStack(Registration.ENHANCED_ENERGY_SABRE.get()), RARE,
                 new ItemStack(Registration.ENERGY_SABRE.get(), 1),
                 new ItemStack(Registration.CIRCUIT.get(), 1),

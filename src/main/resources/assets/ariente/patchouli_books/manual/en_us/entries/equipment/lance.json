@@ -1,0 +1,23 @@
+{
+  "name": "Energy Lance",
+  "icon": "ariente:energy_lance",
+  "category": "ariente:equipment",
+  "sortnum": 4,
+  "pages": [
+    {
+      "type": "patchouli:text",
+      "title": "Two-handed firepower",
+      "text": "The Energy Lance is a longer relative of the Energy Sabre. Right-click to fire a laser like those used by Combat Drones.$(br2)Keep your off hand completely empty. A shield, torch or any other item prevents firing.$(br2)A laser deals 30% more raw damage than a fully charged ordinary sabre hit. It fires once per second and uses one durability per shot, without ammunition. Upgrade modules use the same fuel system as an Enhanced Energy Sabre."
+    },
+    {
+      "type": "patchouli:text",
+      "title": "Configure with 0",
+      "text": "Hold the lance in your main hand and press the armor configuration key, normally $(thing)0$(). Select the lance to install, remove and toggle modules, assign hotkey groups and load both fuel dusts.$(br2)Supports $(item)Energy Efficiency$(), $(item)Autofeed$(), $(item)Power$(), $(item)Inhibit$(), $(item)Looting$() and $(item)Fire$().$(br2)Power boosts laser damage; Inhibit removes beneficial effects and suppresses Master Soldier regeneration. Looting and Fire apply to laser hits. An occupied off hand also stops the modules."
+    },
+    {
+      "type": "patchouli:text",
+      "title": "Obtain a lance",
+      "text": "Use the matching Energy Lance blueprint in a Constructor or Auto Constructor. The blueprint is reusable.$(br2)Materials: Energy Sabre, Advanced Circuit, 10 Silver Ingots, 5 Negarite Dust, 5 Posirite Dust, 2 Platinum Ingots and 2 Lithium Ingots.$(br2)With ArienteWorld installed, lances and their blueprints are rare Storage Cube loot. Some soldiers and guards carry them: use cover against their ranged fire."
+    }
+  ]
+}

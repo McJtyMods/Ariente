@@ -842,7 +842,7 @@ Source: [Forcefield Generator](src/main/java/mcjty/ariente/blocks/defense/ForceF
 
 ### Configuration and fuel
 
-Wear the power armor piece, or hold the Enhanced Energy Sabre in your main hand,
+Wear the power armor piece, or hold the Enhanced Energy Sabre or Energy Lance in your main hand,
 and press the configuration binding (default **0**). Select the equipment piece.
 Its panel lets you:
 
@@ -874,8 +874,8 @@ are a 100→130 budget and 30000→40000 duration numerator.
 
 | Module | Piece | Usage | Effect/status in the current port |
 | --- | --- | --- | --- |
-| Energy | All armor; Enhanced Sabre | Special | Raises budget and fuel duration as above. |
-| Autofeed Power | All armor; Enhanced Sabre | 0 | Draws a fuel pair from player inventory/Energy Holders when local fuel runs out. |
+| Energy | All armor; Enhanced Sabre and Lance | Special | Raises budget and fuel duration as above. |
+| Autofeed Power | All armor; Enhanced Sabre and Lance | 0 | Draws a fuel pair from player inventory/Energy Holders when local fuel runs out. |
 | Armor | All armor | 20 | Adds 4 armor attribute points on that piece while working. Base armor currently uses leather material values. |
 | Nightvision | Helmet | 20 | Refreshes night vision while powered and enabled. |
 | Scramble | Helmet | 50 | Prevents sentinel detection while its working flag is active. Does not pacify all hostile mobs. |
@@ -887,10 +887,10 @@ are a 100→130 budget and 30000→40000 duration numerator.
 | Speed | Leggings | 20 | Accelerates forward/back, with separate ground and flight caps. |
 | Featherfalling | Boots | 20 | Cancels fall damage while working. |
 | Step Assist | Boots | 10 | Raises normal step height to 1.902; preserves other step modifiers. |
-| Power | Enhanced Sabre | 30 | Doubles the weapon's attack-damage modifier while working. |
-| Inhibit | Enhanced Sabre | 30 | Suppresses a Master Soldier's regeneration for 200 ticks and removes beneficial effects from the target. |
-| Looting | Enhanced Sabre | 20 | Applies Looting III while powered/enabled. |
-| Fire | Enhanced Sabre | 30 | Applies Fire Aspect III while powered/enabled. |
+| Power | Enhanced Sabre and Lance | 30 | Doubles the weapon's attack-damage modifier while working. |
+| Inhibit | Enhanced Sabre and Lance | 30 | Suppresses a Master Soldier's regeneration for 200 ticks and removes beneficial effects from the target. |
+| Looting | Enhanced Sabre and Lance | 20 | Applies Looting III while powered/enabled. |
+| Fire | Enhanced Sabre and Lance | 30 | Applies Fire Aspect III while powered/enabled. |
 
 Not every module has a blueprint recipe in the present catalog. Registered
 items, configuration entries, working effects, and survival obtainability are
@@ -929,6 +929,40 @@ still supplies durability behavior; do not assume that fuel has replaced every
 durability mechanic. Powered Looting/Fire modules preserve unrelated enchantments
 and restore prior Looting/Fire levels when their boost stops.
 
+### Energy Lance
+
+The Energy Lance is a longer, two-handed relative of the sabre. Hold it in the
+main hand with the off hand completely empty and right-click to fire a drone-style
+laser. Shields, torches and any other off-hand item prevent firing. It fires once
+per second and uses one durability per shot, without ammunition. Its upgrade
+modules use the same fuel system as an Enhanced Energy Sabre.
+
+Each laser deals 30% more raw damage than a fully charged ordinary Energy Sabre
+hit (16.9 damage for an unmodified player, including the player's base damage).
+It uses the drone laser's magic damage type; Master Soldiers resist magic.
+Lasers stop at solid blocks. The lance does not give a sabre's melee bonus.
+An Inhibit laser still suppresses Master Soldier regeneration and removes
+beneficial effects despite their magic resistance.
+
+Press the armor configuration key (normally `0`) while holding the lance and
+select its weapon panel. Install, remove and enable Energy Efficiency, Autofeed,
+Power, Inhibit, Looting and Fire modules, assign hotkey groups and load both dusts.
+Power doubles the weapon damage bonus, producing 32.5 raw laser damage for an
+unmodified player. Fire and Looting supply level III effects to laser hits;
+Inhibit strips beneficial effects and suppresses Master Soldier regeneration
+for 200 ticks. Shots retain these upgrades while in flight and across saves.
+An occupied off hand stops module operation without consuming module fuel.
+
+The matching reusable blueprint unlocks its Constructor and Auto Constructor
+recipe. With ArienteWorld, both the weapon and its blueprint are rare storage-cube
+loot in plans that already contain loot. Their weights are 0.005 and 0.01
+respectively; these are relative weights, not per-cube percentages. One in five
+new soldiers, guards and reinforcements carries a lance and uses ranged combat
+within 24 blocks, holding the shaft with both hands. Lance and drone beams face
+the camera, follow their projectile trajectory and remain visible head-on.
+Soldier laser damage uses
+their sabre damage floor and any city-plan strength, multiplied by 1.3.
+
 Sources: [module types/costs](src/main/java/mcjty/ariente/api/ArmorUpgradeType.java),
 [module fuel](src/main/java/mcjty/ariente/items/modules/ModuleSupport.java),
 [configuration UI](src/main/java/mcjty/ariente/items/armor/ArmorGui.java),
@@ -936,6 +970,7 @@ Sources: [module types/costs](src/main/java/mcjty/ariente/api/ArmorUpgradeType.j
 [movement hooks](src/main/java/mcjty/ariente/ClientForgeEventHandlers.java),
 [damage handling](src/main/java/mcjty/ariente/ForgeEventHandlers.java),
 [Enhanced Sabre](src/main/java/mcjty/ariente/items/EnhancedEnergySabreItem.java),
+[Energy Lance](src/main/java/mcjty/ariente/items/EnergyLanceItem.java),
 [Energy Holder](src/main/java/mcjty/ariente/items/EnergyHolderItem.java).
 
 ## Transport
@@ -1185,6 +1220,7 @@ including matching connector ingredients. Data variants have no catalog recipe.
 | Looting Sabre Module | Rare | Circuit, Silver Ingot, Silicon, 10 × Blue Dye |
 | Flux Levitator | Uncommon | Circuit, 10 × Silver Ingot, 2 × Manganese Ingot, Lithium Ingot |
 | Energy Sabre | Common | 10 × Silver Ingot, 3 × Negarite Dust, 3 × Posirite Dust, Platinum Ingot, Lithium Ingot |
+| Energy Lance | Rare | Energy Sabre, Advanced Circuit, 10 × Silver Ingot, 5 × Negarite Dust, 5 × Posirite Dust, 2 × Platinum Ingot, 2 × Lithium Ingot |
 | Enhanced Energy Sabre | Rare | Energy Sabre, Circuit, 3 × Silicon, 5 × Negarite Dust, 5 × Posirite Dust, 3 × Platinum Ingot, 2 × Lithium Ingot |
 | Power Leggings | Rare | 5 × Silver Ingot, 2 × Silicon, Platinum Ingot |
 | Power Helmet | Rare | 4 × Silver Ingot, 2 × Silicon, Platinum Ingot |

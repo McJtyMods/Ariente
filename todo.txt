@@ -9,6 +9,7 @@
 - Test player forcefield
 - Break particles are wrong
 - Item models for some of the blocks are wrong or weird: ramp, the four fences, storage cube (not 3d), flat light
-- Extremely hard to leave the elevator
 - Storage cubes in large dungeon should be more embedded in the wall
-- New ranged weapon: lance
+- Vanilla mobs shouldn't spawn in the ariente world dimension
+- Laser isn't rotated correctly and doesn't use ADD
+- Use codex to make a test world with all machines and automation in one place
