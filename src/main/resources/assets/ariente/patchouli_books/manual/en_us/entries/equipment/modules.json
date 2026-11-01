@@ -7,17 +7,17 @@
     {
       "type": "patchouli:text",
       "title": "Survival and scouting",
-      "text": "$(li)$(item)Armor$(): extra protection; usage 20 per piece.$(li)$(item)Nightvision$(): helmet; usage 20.$(li)$(item)Scramble$(): helmet; usage 50. Helps avoid sentinels.$(li)$(item)Regeneration$(): chestplate; usage 40.$(li)$(item)Forcefield$(): chestplate; usage 80. Blocks projectiles and magic; see its recharge page."
+      "text": "$(li)$(item)Armor$(): any armor piece; usage 20. Adds four armor points while working.$(li)$(item)Nightvision$(): helmet; usage 20. See in the dark.$(li)$(item)Scramble$(): helmet; usage 50. Avoids Sentinel detection; does not pacify other enemies.$(li)$(item)Regeneration$(): chestplate; usage 40. Grants Regeneration III.$(li)$(item)Forcefield$(): chestplate; usage 80. See the recharge and retaliation pages."
     },
     {
       "type": "patchouli:text",
       "title": "Movement",
-      "text": "$(li)$(item)Flight$(): chestplate; usage 30. Hold Jump for upward thrust.$(li)$(item)Hover$(): chestplate; usage 10. Holds altitude with Flight; sneak to descend.$(li)$(item)Speed$(): leggings; usage 20.$(li)$(item)Featherfalling$(): boots; usage 20. Prevents fall damage while working.$(li)$(item)Step Assist$(): boots; usage 10. Steps over taller obstacles."
+      "text": "$(li)$(item)Flight$(): chestplate; usage 30. Hold Jump for upward thrust; sneak to descend.$(li)$(item)Hover$(): chestplate; usage 10. Holds altitude while Flight is working.$(li)$(item)Speed$(): leggings; usage 20. Faster forward/backward movement on the ground and in flight, without changing FOV.$(li)$(item)Featherfalling$(): boots; usage 20. Prevents fall damage while working.$(li)$(item)Step Assist$(): boots; usage 10. Steps over obstacles almost two blocks tall."
     },
     {
       "type": "patchouli:text",
       "title": "Plan your loadout",
-      "text": "Flight, Hover and Regeneration together use 80 on the chestplate. Adding Forcefield would exceed even an Energy-assisted budget; choose which abilities to run.$(br2)Some modules are found as equipment loot rather than made from blueprints. Check your available patterns before planning an upgrade.$(br2)Keep spare fuel for the return journey."
+      "text": "Flight, Hover and Regeneration together use 80 on the chestplate. Adding Forcefield would exceed even an Energy-assisted budget; choose which abilities to run.$(br2)Each piece needs its own Energy module to raise its budget. All powered gear draws fuel from a carried $(l:ariente:equipment/fuel)Energy Holder$(/l).$(br2)Some modules come from equipment loot rather than blueprints. Invisibility is currently unavailable in the configuration panel.$(br2)Fuel exhaustion, disabling or removing a module stops its ability. Check fuel before a climb or fight."
     },
     {
       "type": "patchouli:text",

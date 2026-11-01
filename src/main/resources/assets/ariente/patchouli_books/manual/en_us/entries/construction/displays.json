@@ -7,17 +7,17 @@
     {
       "type": "patchouli:text",
       "title": "A modular display",
-      "text": "Place display bases side by side at the same level and facing. They share a surface rising from their thin plates. Right-click a base to set a height of 1\u201310 blocks. Displays need no power.$(br2)The base and all three modules have Constructor blueprints.$(br2)Click or drag a slider; its outer arrows adjust by one."
+      "text": "Make a Holographic Display Base with its reusable blueprint in a Constructor or Auto Constructor. Place bases side by side at the same level and facing to share a vertical surface.$(br2)Right-click any base to set a common height of 1–10 blocks. Displays need no power or cables.$(br2)Power, Storage and Text modules also have Constructor blueprints. Click or drag a slider; its outer arrows adjust by one."
     },
     {
       "type": "patchouli:text",
       "title": "Surface settings",
-      "text": "Cycle the surface between Invisible, Transparent and Solid. Color... opens a picker; selecting a shade or pressing its x returns to settings. The default color is pale gray.$(br2)Transparent mode shows a 0\u2013100% transparency slider: 0% is opaque and 100% fully clear. Color and transparency are remembered between modes.$(br2)Border is independent and on by default, even for an invisible background. All settings apply to joined bases; older saved presets retain their appearance."
+      "text": "Cycle the surface between Invisible, Transparent and Solid. $(thing)Color...$() shows a color preview and opens a hue/shade picker. Choose a shade or press its x to return.$(br2)Transparent mode adds a 0–100% transparency slider: 0% is opaque and 100% fully clear. The default is 87%. Color and transparency are remembered between modes.$(br2)Border is independent and on by default, even on invisible backgrounds. All settings apply to joined bases; older saved presets retain their appearance."
     },
     {
       "type": "patchouli:text",
       "title": "Installing modules",
-      "text": "Right-click a held module to configure it. Sneak-right-click a suitable machine or inventory to link; do this in the air to clear the link.$(br2)Aim at the front of the display. A green rectangle fits; red means overlap or insufficient room. Right-click to install. Sneak-right-click an installed module to recover its configured item.$(br2)Press and release right-click without dragging to edit an installed module. If an edit makes it too large, it is returned with its new settings; a full inventory drops it nearby."
+      "text": "Right-click a held module to configure it. Sneak-right-click a suitable machine or inventory to link; do this in the air to clear the link.$(br2)Aim at the front of the display. A green rectangle fits; red means overlap or insufficient room. Right-click to install.$(br2)Press and release right-click on an installed module without dragging to edit it, even with empty hands. Sneak-right-click it to recover its configured item. Links and settings stay with recovered modules."
     },
     {
       "type": "patchouli:text",
@@ -26,19 +26,29 @@
     },
     {
       "type": "patchouli:text",
-      "title": "Power and storage",
-      "text": "Power modules show network flux, generation, consumption and fuel, with a meter or recent history. Tanks report their generator's network.$(br2)Storage modules combine matching items into counts. Choose a list of the most stored items or a configurable paged grid. Readings refresh once per second; unloaded targets stay unloaded."
+      "title": "Power readings",
+      "text": "Sneak-right-click an Ariente generator, tank, cable or powered machine with a Power module to link it.$(br2)Choose Numbers, Meter or History, and toggle network flux, consumption per tick, generation per tick and fuel remaining. History covers the last 32 seconds of consumption and output.$(br2)Tanks report their generator’s network. Flux is a continuing supply, not a stored battery charge. Unsupported readings show $(thing)n/a$()."
+    },
+    {
+      "type": "patchouli:text",
+      "title": "Storage counts",
+      "text": "Sneak-right-click an inventory with a Storage module. The clicked side determines which inventory access it reads.$(br2)$(thing)Most stored$() lists up to 16 item types. $(thing)Item grid$() offers 1–64 entries per page, 1–8 columns and a page selector. Larger layouts need more surface space.$(br2)Matching items and tags combine into totals. Readings refresh once per second near players. Unloaded targets stay unloaded and show an offline status; check the link and target if readings stop."
     },
     {
       "type": "patchouli:text",
       "title": "Text and color",
       "text": "Left-click the text area to type. Use normal arrow, Home/End, Backspace/Delete, selection and clipboard controls. Escape or clicking outside commits the edit and releases typing.$(br2)Adjust text size, or choose Color... to open a hue/shade picker. Selecting a shade or pressing its top-right x returns to settings."
+    },
+    {
+      "type": "patchouli:text",
+      "title": "Changing the layout",
+      "text": "If an edit makes a module overlap another or outgrow the surface, it is returned with the new settings. A full inventory drops it nearby.$(br2)Shrinking the display is refused if installed modules would be cut off. Move or recover those modules first. Breaking a base returns modules that lose their supporting surface.$(br2)Invisible backgrounds still accept modules and clicks. Power and Storage modules only report readings; they do not transfer items or control machines."
     }
   ],
   "extra_recipe_mappings": {
     "ariente:display_base": 0,
     "ariente:display_module_power": 4,
-    "ariente:display_module_storage": 4,
-    "ariente:display_module_text": 5
+    "ariente:display_module_storage": 5,
+    "ariente:display_module_text": 6
   }
 }

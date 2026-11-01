@@ -140,13 +140,15 @@ Default equipment bindings are:
 
 | Binding | Default | Purpose |
 | --- | --- | --- |
-| Configure armor | Top-row `0` | Open the armor/Enhanced Energy Sabre configuration hologram. |
+| Configure armor | Top-row `0` | Open configuration for worn power armor or the held Enhanced Energy Sabre / Energy Lance. |
 | Module hotkey 1 | Numpad `7` | Toggle modules assigned to group 1. |
 | Module hotkey 2 | Numpad `8` | Toggle modules assigned to group 2. |
 | Module hotkeys 3 and 4 | Unbound | Additional configurable toggle groups. |
 
 Check Minecraft's Controls menu for conflicts or changed bindings. A hotkey can
-toggle several modules across worn armor and the held Enhanced Energy Sabre.
+toggle several modules across worn armor and the held Enhanced Energy Sabre or
+Energy Lance. From a piece's panel or its help page, the configuration key returns
+to equipment selection; pressing it on that menu closes the hologram.
 
 Sources: [key bindings](src/main/java/mcjty/ariente/bindings/KeyBindings.java),
 [armor configuration](src/main/java/mcjty/ariente/items/armor/ArmorGui.java),
@@ -807,7 +809,8 @@ Sources: [doors](src/main/java/mcjty/ariente/blocks/utility/door/DoorMarkerTile.
 
 ## Holographic displays
 
-Craft a **Holographic Display Base** and its blueprint in a Constructor. Place
+Use the reusable **Holographic Display Base** blueprint in a Constructor or Auto
+Constructor to make a base. Place
 bases side by side at the same level and facing the same direction: they share
 one vertical display, beginning directly above the thin plate in its block space.
 Right-click any base to set the common height (1–10 blocks) and appearance.
@@ -845,6 +848,12 @@ Each display module has a Constructor recipe and corresponding blueprint:
   returns control to the hologram. **Color...** opens a hue/shade picker; choosing
   a shade or pressing its upper-right **x** returns to text settings.
 
+For a first display, place two bases facing the same way and set their height to
+two blocks. Link a Power module to a nearby generator, choose its readings, and
+install it where the preview is green. Add a Text module for a label. Briefly
+right-click an installed module to edit it, or hold and aim to move it. Keep its
+footprint within the surface and clear of the other modules.
+
 Right-click a held module to configure it before installation. Sneak-right-click
 in the air clears its link. Aim at the front of a display: the module's rectangle
 snaps to a small grid and turns green when it fits or red when it overlaps or
@@ -857,8 +866,9 @@ bases on the same screen. Its outline turns green where it fits and red where it
 overlaps or leaves the surface. Release to place it; an illegal drop snaps back to
 its previous position. Dragging never opens settings on release, even after
 moving back to the starting position. Edits apply in place. If the new footprint
-overlaps another module or extends beyond the display, the edited module is returned to the player (or dropped nearby when inventory is
-full) with its updated settings. Breaking a base also
+overlaps another module or extends beyond the display, the edited module is
+returned to the player (or dropped nearby when inventory is full) with its updated
+settings. Breaking a base also
 returns modules that lose their supporting surface. Background visibility does
 not affect modules; invisible surfaces can still be targeted.
 
@@ -917,7 +927,14 @@ Its panel lets you:
 4. Check the shared Energy Holder charge at the bottom of the panel.
 5. Remove installed modules back into your inventory.
 
-Installed icons are bright with a border. Available inventory modules are dim;
+The columns are labeled **Mod**, **On** and **Key**. Module tooltips give a short
+effect, compatible equipment and usage. The **Ariente Tablet → Equipment** entries
+contain the full mechanics; the tables and explanations below provide the same
+reference here. A panel's question mark opens the relevant Tablet entry when
+Patchouli is available, or built-in help otherwise.
+
+Modules fill two aligned columns from the top. Installed icons are bright.
+Available inventory modules are dim;
 unavailable modules are darker still. Removing a module dims its icon again.
 
 Installing and activating are separate. An installed, disabled module should
@@ -938,8 +955,9 @@ holder stops powered modules even if its current pair still has charge.
 
 For example, total usage 50 lasts roughly 600 ticks (30 seconds) per dust pair, or
 800 ticks (40 seconds) when all participating pieces have Energy enabled. This
-is not 50 dust items per tick. The Energy tooltip advertises a 30% efficiency improvement; the actual defaults
-are a 100→130 budget and 30000→40000 duration numerator.
+is not 50 dust items per tick. Energy's default benefit is a **100→130** budget
+and **30000→40000** fuel-duration numerator on the piece carrying it: 30% more
+module capacity and about one-third longer fuel duration at the same usage.
 
 ### Module reference
 
@@ -1026,8 +1044,9 @@ and restore prior Looting/Fire levels when their boost stops.
 The Energy Lance is a longer, two-handed relative of the sabre. Hold it in the
 main hand with the off hand completely empty and right-click to fire a drone-style
 laser. Shields, torches and any other off-hand item prevent firing. It fires once
-per second and uses one durability per shot, without ammunition. Its upgrade
-modules use the same fuel system as an Enhanced Energy Sabre.
+per second, needs no ammunition and has **no durability**. Basic firing needs no
+fuel; enabled upgrade modules use the same shared Energy Holder as power armor
+and an Enhanced Energy Sabre.
 
 Each laser deals 30% more raw damage than a fully charged ordinary Energy Sabre
 hit (16.9 damage for an unmodified player, including the player's base damage).
@@ -1396,6 +1415,9 @@ The blueprint tables are sourced from
 | Automation Field moves nothing | Connected markers under node columns, height, correct source Output/destination Input roles, nonempty filters, full batch availability, conditions, and power. |
 | Item-transfer animation is absent | Enable item rendering in the field hologram and check inventory counts; animation samples recent transfers. |
 | Armor module is installed but does nothing | Activation, a carried Energy Holder with both fuel types or remaining charge, the per-piece module budget, and the ability's current implementation. |
+| Energy Lance will not fire | Hold it in the main hand, leave the off hand completely empty, and wait for the one-second cooldown. Durability, ammunition and fuel do not limit basic shots. |
+| Display module preview is red | Check the common display height, module size, overlap and front-facing placement. Enlarge the surface or reduce the module footprint. |
+| Display readings are offline or `n/a` | Check the module's link, the clicked inventory side and whether the target is loaded. Unsupported power readings show `n/a`; displays do not load chunks. |
 | Cart will not start | Board the cart, use an end panel's speed slider, and confirm continuous beam orientation/clearance. Controls are HoloGui entities, not a full-screen menu. |
 | Elevator cannot find a floor | Marker height must be inside its scan and within two blocks horizontally; clear the lift column. |
 

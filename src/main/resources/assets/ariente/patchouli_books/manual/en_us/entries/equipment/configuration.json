@@ -7,17 +7,22 @@
     {
       "type": "patchouli:text",
       "title": "Install, then activate",
-      "text": "Wear power armor or hold an Enhanced Energy Sabre or Energy Lance. Press the configuration key, normally $(thing)0$(), and select a piece.$(br2)Click a module icon to install or remove it. The checkbox enables it; the last control assigns hotkey group $(thing)1–4$(). Carry an Energy Holder and refill it through its own panel or Automatic collection. The equipment panel shows its charge at the bottom. Keep usage within this piece’s limit, normally 100 or 130 with Energy enabled."
+      "text": "Wear power armor or hold an Enhanced Energy Sabre or Energy Lance in your main hand. Press the configuration key, normally $(thing)0$(), and select a piece.$(br2)Each row has $(thing)Mod$(), $(thing)On$() and $(thing)Key$() controls. Click the module icon to install from your inventory or remove it. The checkbox enables it; the last control assigns hotkey group $(thing)1–4$(). Installing alone does not activate a module."
     },
     {
       "type": "patchouli:text",
       "title": "Return or close",
-      "text": "Press the configuration key again from an equipment panel or the help page to return to the equipment selection menu.$(br2)Press it while the selection menu is open to close the panel."
+      "text": "Press the configuration key again from an equipment panel or the help page to return to equipment selection. Press it on the selection menu to close the panel.$(br2)Module tooltips give a short effect, compatible equipment and usage. Use this Tablet for details: $(l:ariente:equipment/modules)Armor Modules$(/l), $(l:ariente:equipment/sabres)Energy Sabres$(/l), $(l:ariente:equipment/lance)Energy Lance$(/l) and $(l:ariente:equipment/fuel)Fuel on the Move$(/l).$(br2)The panel’s question mark opens this entry when Patchouli is available; otherwise it shows built-in help."
     },
     {
       "type": "patchouli:text",
       "title": "Respect each piece’s limit",
       "text": "The Energy Holder supplies one shared fuel pool, while each piece keeps its own module budget. Active modules normally have to fit within $(thing)100$() usage. An enabled Energy module raises this to $(thing)130$() and reduces that piece’s draw on the holder.$(br2)Overloaded pieces stop their powered abilities. Other equipment can keep working. Disable an ability or add Energy before heading into danger."
+    },
+    {
+      "type": "patchouli:text",
+      "title": "Efficiency and fuel",
+      "text": "Carry a fueled $(l:ariente:equipment/fuel)Energy Holder$(/l). Its charge appears at the bottom of every equipment panel. Fuel stays in the holder when you swap gear; the old Autofeed module is no longer needed.$(br2)Each active piece draws from the same charge. At default settings, usage 50 on one piece burns a dust pair in about 30 seconds, or 40 seconds with Energy enabled. Energy improves only the piece carrying it; other pieces keep their own budgets and fuel rates."
     },
     {
       "type": "patchouli:text",

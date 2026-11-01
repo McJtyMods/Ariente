@@ -12,7 +12,7 @@
     {
       "type": "patchouli:text",
       "title": "Sabre upgrades",
-      "text": "$(li)$(item)Power$(): stronger attacks; usage 30.$(li)$(item)Inhibit$(): strips beneficial effects and suppresses Master Soldier regeneration; usage 30.$(li)$(item)Looting$(): better drops; usage 20.$(li)$(item)Fire$(): ignites targets; usage 30.$(br2)Check durability as well as fuel."
+      "text": "$(li)$(item)Power$(): doubles the weapon’s damage bonus; usage 30.$(li)$(item)Inhibit$(): strips beneficial effects and suppresses Master Soldier regeneration for 10 seconds; usage 30.$(li)$(item)Looting$(): grants Looting III; usage 20.$(li)$(item)Fire$(): grants Fire Aspect III; usage 30.$(br2)Energy Efficiency also fits: it raises this weapon’s module budget and reduces its fuel draw.$(br2)Sabres still use durability. Check it as well as the shared holder’s fuel."
     },
     {
       "type": "patchouli:crafting",

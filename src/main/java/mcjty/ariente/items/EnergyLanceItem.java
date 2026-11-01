@@ -19,7 +19,6 @@ import net.minecraft.world.entity.ai.attributes.Attributes;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemStack;
-import net.minecraft.world.item.Tiers;
 import net.minecraft.world.item.TooltipFlag;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.phys.Vec3;
@@ -38,7 +37,7 @@ public class EnergyLanceItem extends Item implements ITooltipSettings {
     private final TooltipBuilder tooltipBuilder = WeaponModuleSupport.createTooltipBuilder();
 
     public EnergyLanceItem() {
-        super(new Properties().stacksTo(1).durability(Tiers.DIAMOND.getUses()));
+        super(new Properties().stacksTo(1));
     }
 
     public static boolean canFire(LivingEntity shooter) {
@@ -74,7 +73,6 @@ public class EnergyLanceItem extends Item implements ITooltipSettings {
         }
         if (!level.isClientSide && fire(player, player.getLookAngle())) {
             player.getCooldowns().addCooldown(this, SHOT_INTERVAL);
-            stack.hurtAndBreak(1, player, living -> living.broadcastBreakEvent(hand));
             player.awardStat(Stats.ITEM_USED.get(this));
         }
         // Keep the muzzle steady when firing instead of playing the melee swing animation.

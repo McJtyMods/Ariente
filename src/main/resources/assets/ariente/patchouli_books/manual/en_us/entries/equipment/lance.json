@@ -7,7 +7,7 @@
     {
       "type": "patchouli:text",
       "title": "Two-handed firepower",
-      "text": "The Energy Lance is a longer relative of the Energy Sabre. Right-click to fire a laser like those used by Combat Drones.$(br2)Keep your off hand completely empty. A shield, torch or any other item prevents firing.$(br2)A laser deals 30% more raw damage than a fully charged ordinary sabre hit. It fires once per second and uses one durability per shot, without ammunition. Upgrade modules use the same fuel system as an Enhanced Energy Sabre."
+      "text": "The Energy Lance is a longer relative of the Energy Sabre. Right-click to fire a laser like those used by Combat Drones.$(br2)Keep your off hand completely empty. A shield, torch or any other item prevents firing.$(br2)A laser deals 30% more raw damage than a fully charged ordinary sabre hit. It fires once per second, needs no ammunition and has no durability. Basic firing needs no fuel; enabled upgrade modules draw power from a carried Energy Holder."
     },
     {
       "type": "patchouli:text",

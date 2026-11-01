@@ -57,84 +57,44 @@ public class ArmorGui {
     }
 
     public static IGuiComponent<?> createHelmetGui(Player player) {
-        IGuiComponentRegistry registry = Ariente.guiHandler.getComponentRegistry();
-        EquipmentSlot slot = EquipmentSlot.HEAD;
-
-        IPanel panel = createPieceGui(registry, slot);
-
-        createModuleEntry(registry, panel, slot, 1, 2, Registration.MODULE_ENERGY.get());
-        createModuleEntry(registry, panel, slot, 1, 3, Registration.MODULE_ARMOR.get());
-        createModuleEntry(registry, panel, slot, 5, 3, Registration.MODULE_NIGHTVISION.get());
-        createModuleEntry(registry, panel, slot, 1, 4, Registration.MODULE_SCRAMBLE.get());
-
-        addFuelStatus(registry, player, panel);
-
-        return panel;
+        return createEquipmentGui(player, EquipmentSlot.HEAD,
+                Registration.MODULE_ENERGY.get(), Registration.MODULE_ARMOR.get(),
+                Registration.MODULE_NIGHTVISION.get(), Registration.MODULE_SCRAMBLE.get());
     }
 
     public static IGuiComponent<?> createChestGui(Player player) {
-        IGuiComponentRegistry registry = Ariente.guiHandler.getComponentRegistry();
-        EquipmentSlot slot = EquipmentSlot.CHEST;
-
-        IPanel panel = createPieceGui(registry, slot);
-
-        createModuleEntry(registry, panel, slot, 1, 2, Registration.MODULE_ENERGY.get());
-        createModuleEntry(registry, panel, slot, 1, 3, Registration.MODULE_ARMOR.get());
-        createModuleEntry(registry, panel, slot, 5, 3, Registration.MODULE_FORCEFIELD.get());
-        createModuleEntry(registry, panel, slot, 1, 4, Registration.MODULE_REGENERATION.get());
-        createModuleEntry(registry, panel, slot, 5, 4, Registration.MODULE_FLIGHT.get());
-        createModuleEntry(registry, panel, slot, 1, 5, Registration.MODULE_HOVER.get());
-
-        addFuelStatus(registry, player, panel);
-
-        return panel;
+        return createEquipmentGui(player, EquipmentSlot.CHEST,
+                Registration.MODULE_ENERGY.get(), Registration.MODULE_ARMOR.get(),
+                Registration.MODULE_FORCEFIELD.get(), Registration.MODULE_REGENERATION.get(),
+                Registration.MODULE_FLIGHT.get(), Registration.MODULE_HOVER.get());
     }
 
     public static IGuiComponent<?> createLegsGui(Player player) {
-        IGuiComponentRegistry registry = Ariente.guiHandler.getComponentRegistry();
-        EquipmentSlot slot = EquipmentSlot.LEGS;
-
-        IPanel panel = createPieceGui(registry, slot);
-
-        createModuleEntry(registry, panel, slot, 1, 2, Registration.MODULE_ENERGY.get());
-        createModuleEntry(registry, panel, slot, 1, 3, Registration.MODULE_ARMOR.get());
-        createModuleEntry(registry, panel, slot, 5, 3, Registration.MODULE_SPEED.get());
-
-        addFuelStatus(registry, player, panel);
-
-        return panel;
+        return createEquipmentGui(player, EquipmentSlot.LEGS,
+                Registration.MODULE_ENERGY.get(), Registration.MODULE_ARMOR.get(),
+                Registration.MODULE_SPEED.get());
     }
 
     public static IGuiComponent<?> createBootsGui(Player player) {
-        IGuiComponentRegistry registry = Ariente.guiHandler.getComponentRegistry();
-        EquipmentSlot slot = EquipmentSlot.FEET;
-
-        IPanel panel = createPieceGui(registry, slot);
-
-        createModuleEntry(registry, panel, slot, 1, 2, Registration.MODULE_ENERGY.get());
-        createModuleEntry(registry, panel, slot, 1, 3, Registration.MODULE_ARMOR.get());
-        createModuleEntry(registry, panel, slot, 5, 3, Registration.MODULE_FEATHERFALLING.get());
-        createModuleEntry(registry, panel, slot, 1, 4, Registration.MODULE_STEPASSIST.get());
-
-        addFuelStatus(registry, player, panel);
-
-        return panel;
+        return createEquipmentGui(player, EquipmentSlot.FEET,
+                Registration.MODULE_ENERGY.get(), Registration.MODULE_ARMOR.get(),
+                Registration.MODULE_FEATHERFALLING.get(), Registration.MODULE_STEPASSIST.get());
     }
 
     public static IGuiComponent<?> createSabreGui(Player player) {
+        return createEquipmentGui(player, EquipmentSlot.MAINHAND,
+                Registration.MODULE_ENERGY.get(), Registration.MODULE_POWER.get(),
+                Registration.MODULE_INHIBIT.get(), Registration.MODULE_LOOTING.get(),
+                Registration.MODULE_FIRE.get());
+    }
+
+    private static IGuiComponent<?> createEquipmentGui(Player player, EquipmentSlot slot, ArmorModuleItem... modules) {
         IGuiComponentRegistry registry = Ariente.guiHandler.getComponentRegistry();
-        EquipmentSlot slot = EquipmentSlot.MAINHAND;
-
         IPanel panel = createPieceGui(registry, slot);
-
-        createModuleEntry(registry, panel, slot, 1, 2, Registration.MODULE_ENERGY.get());
-        createModuleEntry(registry, panel, slot, 1, 3, Registration.MODULE_POWER.get());
-        createModuleEntry(registry, panel, slot, 5, 3, Registration.MODULE_INHIBIT.get());
-        createModuleEntry(registry, panel, slot, 1, 4, Registration.MODULE_LOOTING.get());
-        createModuleEntry(registry, panel, slot, 5, 4, Registration.MODULE_FIRE.get());
-
+        for (int i = 0; i < modules.length; i++) {
+            createModuleEntry(registry, panel, slot, 1 + 4 * (i % 2), 2.4 + 1.2 * (i / 2), modules[i]);
+        }
         addFuelStatus(registry, player, panel);
-
         return panel;
     }
 
@@ -157,18 +117,18 @@ public class ArmorGui {
                 .color(registry.color(StyledColor.INFORMATION))
                 .getter((p, h) -> calculateMaxPowerUsage(p, slot)));
         for (int column : new int[]{1, 5}) {
-            panel.add(registry.text(column, 1, 1, 1).text("Mod").scale(.45f).color(registry.color(StyledColor.INFORMATION)));
-            panel.add(registry.text(column + 1, 1, 1, 1).text("On").scale(.45f).color(registry.color(StyledColor.INFORMATION)));
-            panel.add(registry.text(column + 2, 1, 1, 1).text("Key").scale(.45f).color(registry.color(StyledColor.INFORMATION)));
+            panel.add(registry.text(column, 1.35, 1, 1).text("Mod").scale(.45f).color(registry.color(StyledColor.INFORMATION)));
+            panel.add(registry.text(column + 1, 1.35, 1, 1).text("On").scale(.45f).color(registry.color(StyledColor.INFORMATION)));
+            panel.add(registry.text(column + 2, 1.35, 1, 1).text("Key").scale(.45f).color(registry.color(StyledColor.INFORMATION)));
         }
         return panel;
     }
 
     private static void addFuelStatus(IGuiComponentRegistry registry, Player player, IPanel panel) {
-        panel.add(registry.text(.5, 6, 7, 1)
+        panel.add(registry.text(.5, 6.5, 7, 1)
                         .text(() -> EnergyHolderItem.findActiveHolder(player).isEmpty() ? "No Energy Holder" : "Shared fuel")
                         .scale(.6f).color(registry.color(StyledColor.LABEL)))
-                .add(registry.text(.5, 6.7, 7, 1)
+                .add(registry.text(.5, 7.2, 7, 1)
                         .text(() -> "Charge: " + EnergyHolderItem.getChargePercentage(EnergyHolderItem.findActiveHolder(player)) + "%")
                         .scale(.5f).color(registry.color(StyledColor.INFORMATION)));
     }
@@ -202,7 +162,7 @@ public class ArmorGui {
         return ModuleSupport.getPowerUsage(stack).getRight();
     }
 
-    private static void createModuleEntry(IGuiComponentRegistry registry, IPanel panel, EquipmentSlot slot, int xx, int yy, ArmorModuleItem module) {
+    private static void createModuleEntry(IGuiComponentRegistry registry, IPanel panel, EquipmentSlot slot, double xx, double yy, ArmorModuleItem module) {
         panel.add(registry.stackToggle(xx, yy-.2, 1, 1)
                 .itemStack(new ItemStack(module))
                 .getter(player -> hasModuleAndCheckPlayerToo(player, slot, module))

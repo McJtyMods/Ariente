@@ -4,7 +4,6 @@ import mcjty.ariente.Ariente;
 import mcjty.ariente.api.ArmorUpgradeType;
 import mcjty.lib.builder.TooltipBuilder;
 import mcjty.lib.tooltips.ITooltipSettings;
-import mcjty.ariente.setup.Registration;
 import net.minecraft.ChatFormatting;
 import net.minecraft.network.chat.MutableComponent;
 import net.minecraft.network.chat.Component;
@@ -25,15 +24,14 @@ public class ArmorModuleItem extends Item implements ITooltipSettings {
     private final ArmorUpgradeType type;
 
     private final TooltipBuilder tooltipBuilder = new TooltipBuilder()
-            .info(gold(this::is30MoreEfficient),
-                    parameter("info", stack -> !is30MoreEfficient(stack), this::getPowerUsageString));
-
+            .info(gold(this::isEfficiencyModule),
+                    parameter("info", stack -> !isEfficiencyModule(stack), this::getPowerUsageString));
 
     private String getPowerUsageString(ItemStack stack) {
         return Integer.toString(type.getPowerUsage());
     }
 
-    private boolean is30MoreEfficient(ItemStack stack) {
+    private boolean isEfficiencyModule(ItemStack stack) {
         return type.getPowerUsage() == -1;
     }
 
@@ -45,35 +43,21 @@ public class ArmorModuleItem extends Item implements ITooltipSettings {
     @Override
     public void appendHoverText(ItemStack stack, @Nullable Level worldIn, List<Component> tooltip, TooltipFlag flag) {
         super.appendHoverText(stack, worldIn, tooltip, flag);
+        tooltip.add(Component.translatable("message.ariente.armormodule.effect." + type.getName()).withStyle(ChatFormatting.GRAY));
         tooltip.add(getInstallationDescription().withStyle(ChatFormatting.GRAY));
         tooltipBuilder.makeTooltip(new ResourceLocation(Ariente.MODID, "armormodule"), stack, tooltip, flag);
+        tooltip.add(Component.translatable("message.ariente.armormodule.manual").withStyle(ChatFormatting.DARK_GRAY));
     }
 
     public MutableComponent getInstallationDescription() {
-        MutableComponent equipment = Component.empty();
-        for (EquipmentSlot slot : new EquipmentSlot[]{EquipmentSlot.HEAD, EquipmentSlot.CHEST, EquipmentSlot.LEGS, EquipmentSlot.FEET, EquipmentSlot.MAINHAND}) {
-            if (!type.supportsSlot(slot)) {
-                continue;
-            }
-            if (!equipment.getSiblings().isEmpty()) {
-                equipment.append(", ");
-            }
-            if (slot == EquipmentSlot.MAINHAND) {
-                equipment.append(Registration.ENHANCED_ENERGY_SABRE.get().getDescription())
-                        .append(", ").append(Registration.ENERGY_LANCE.get().getDescription());
-            } else {
-                Item item = switch (slot) {
-                    case HEAD -> Registration.POWERSUIT_HEAD.get();
-                    case CHEST -> Registration.POWERSUIT_CHEST.get();
-                    case LEGS -> Registration.POWERSUIT_LEGS.get();
-                    case FEET -> Registration.POWERSUIT_FEET.get();
-                    default -> throw new IllegalArgumentException("Not an armor slot: " + slot);
-                };
-                equipment.append(item.getDescription());
-            }
-        }
-        return Component.translatable("message.ariente.armormodule.header", equipment,
-                Component.translatable("message.ariente.armormodule.effect." + type.getName()));
+        String equipment = switch (type) {
+            case ENERGY -> "armor_weapons";
+            case ARMOR -> "armor";
+            default -> type.supportsSlot(EquipmentSlot.MAINHAND) ? "weapons"
+                    : type.getEquipmentSlots().iterator().next().getName();
+        };
+        return Component.translatable("message.ariente.armormodule.header",
+                Component.translatable("message.ariente.armormodule.equipment." + equipment));
     }
 
     public ArmorUpgradeType getType() {
