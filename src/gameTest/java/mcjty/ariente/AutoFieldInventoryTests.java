@@ -4,8 +4,10 @@ import mcjty.ariente.blocks.utility.AutoConstructorTile;
 import mcjty.ariente.blocks.utility.BlueprintStorageTile;
 import mcjty.ariente.blocks.utility.autofield.AbstractItemNodeTile;
 import mcjty.ariente.blocks.utility.autofield.AutoFieldTile;
+import mcjty.ariente.blocks.utility.autofield.ConsumerInfo;
 import mcjty.ariente.blocks.utility.autofield.FieldMarkerTile;
 import mcjty.ariente.blocks.utility.autofield.InputItemNodeTile;
+import mcjty.ariente.blocks.utility.autofield.ItemFilterCategory;
 import mcjty.ariente.blocks.utility.autofield.OutputItemNodeTile;
 import mcjty.ariente.blocks.utility.autofield.SensorItemNodeTile;
 import mcjty.ariente.items.BlueprintItem;
@@ -36,8 +38,10 @@ import net.minecraftforge.gametest.PrefixGameTestTemplate;
 import net.minecraftforge.items.IItemHandler;
 import net.minecraftforge.items.IItemHandlerModifiable;
 import net.minecraftforge.items.ItemHandlerHelper;
+import net.minecraftforge.registries.ForgeRegistries;
 
 import java.util.List;
+import java.util.Set;
 
 import static mcjty.ariente.blocks.utility.autofield.AbstractNodeTile.ORIENTATION;
 import static mcjty.ariente.blocks.utility.autofield.NodeOrientation.UP_NE;
@@ -231,6 +235,60 @@ public class AutoFieldInventoryTests {
                 }
             }
         }
+        helper.succeed();
+    }
+
+    @GameTest(template = "empty")
+    public static void processingCategoriesPartitionItemsAndRetainSampleExclusions(GameTestHelper helper) {
+        ServerLevel level = helper.getLevel();
+        helper.assertTrue(ItemFilterCategory.SMELTABLE.matches(level, new ItemStack(Items.RAW_IRON))
+                        && ItemFilterCategory.SMELTABLE.matches(level, new ItemStack(Items.CHICKEN))
+                        && ItemFilterCategory.SMELTABLE.matches(level, new ItemStack(Items.OAK_LOG)),
+                "Furnace recipes must include raw metals, food and charcoal inputs");
+        helper.assertTrue(ItemFilterCategory.WOOD.matches(level, new ItemStack(Items.OAK_PLANKS))
+                        && ItemFilterCategory.WOOD.matches(level, new ItemStack(Items.CRIMSON_STEM))
+                        && ItemFilterCategory.INGOTS.matches(level, new ItemStack(Registration.INGOT_MANGANESE.get()))
+                        && ItemFilterCategory.OTHER.matches(level, new ItemStack(Items.DIAMOND)),
+                "Material groups must include non-smeltable wood, modded ingots and miscellaneous items");
+        for (var item : ForgeRegistries.ITEMS) {
+            ItemStack stack = new ItemStack(item);
+            if (!stack.isEmpty()) {
+                int destinations = 0;
+                for (ItemFilterCategory category : ItemFilterCategory.values()) {
+                    if (category != ItemFilterCategory.ALL && category.matches(level, stack)) {
+                        destinations++;
+                    }
+                }
+                helper.assertTrue(destinations == 1, "Each item must have exactly one processing destination: " + item);
+            }
+        }
+
+        BlockPos pos = helper.absolutePos(new BlockPos(1, 2, 1));
+        InputItemNodeTile input = new InputItemNodeTile(pos, Registration.INPUT_ITEM_NODE.get().defaultBlockState().setValue(ORIENTATION, UP_NE));
+        addPart(level, pos, UP_NE.getSlot(), input);
+        Set<PartPos> nodes = Set.of(PartPos.create(pos, UP_NE.getSlot()));
+        CompoundTag tag = input.saveWithoutMetadata();
+        tag.getCompound("Info").putBoolean("inBlacklist", true);
+        input.load(tag);
+        input.getInputFilter().set(0, new ItemStack(Registration.DUST_NEGARITE.get()));
+        input.getInputFilter().set(1, new ItemStack(Registration.DUST_POSIRITE.get()));
+        input.setInputCategory(ItemFilterCategory.OTHER);
+        input.load(input.saveWithoutMetadata());
+        ConsumerInfo consumers = new ConsumerInfo(level, nodes);
+        helper.assertTrue(input.getInputCategory() == ItemFilterCategory.OTHER
+                        && consumers.getWantedStream(new ItemStack(Items.DIAMOND)).count() == 1
+                        && consumers.getWantedStream(new ItemStack(Items.RAW_IRON)).count() == 0
+                        && consumers.getWantedStream(new ItemStack(Registration.DUST_NEGARITE.get())).count() == 0
+                        && consumers.getWantedStream(new ItemStack(Registration.DUST_POSIRITE.get())).count() == 0,
+                "Saved categories and sample blacklists must prevent smeltables and fuel from entering other storage");
+        tag = input.saveWithoutMetadata();
+        tag.getCompound("Info").putBoolean("inBlacklist", false);
+        input.load(tag);
+        helper.assertTrue(new ConsumerInfo(level, nodes).getWantedStream(new ItemStack(Items.DIAMOND)).count() == 0,
+                "A category must not bypass an empty or nonmatching whitelist");
+        tag.getCompound("Info").remove("inCategory");
+        input.load(tag);
+        helper.assertTrue(input.getInputCategory() == ItemFilterCategory.ALL, "Existing saves must retain unrestricted categories");
         helper.succeed();
     }
 

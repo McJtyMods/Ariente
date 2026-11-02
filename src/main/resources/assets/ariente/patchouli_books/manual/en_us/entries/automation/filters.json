@@ -16,6 +16,11 @@
     },
     {
       "type": "patchouli:text",
+      "title": "Processing categories",
+      "text": "Input Nodes also offer a $(thing)Category$(): All items, Smeltable, Wood, Ingots or Other. It is an additional condition on the sample filter. Use an empty blacklist to accept the entire category, or add exclusions such as generator fuel.$(br2)Smeltable checks current furnace recipes, including datapacks. Wood, Ingots and Other exclude smeltables, so a full smelter leaves its backlog in the source. Smeltable logs become charcoal; non-smeltable planks go to Wood. Ingots uses Forge ingot tags; Other accepts the remaining items."
+    },
+    {
+      "type": "patchouli:text",
       "title": "Colored conditions",
       "text": "The row below the title controls when the node can work.$(br2)Both $(thing)Positive$() selectors require their chosen sensor colors to be on. Both $(thing)Negative$() selectors require their colors to be off. Every selected condition must hold.$(br2)A gray X leaves a condition unused. See $(l:ariente:automation/sensors)Refill with Sensors$(/l) for signal setup."
     },

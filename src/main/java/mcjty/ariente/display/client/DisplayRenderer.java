@@ -2,6 +2,7 @@ package mcjty.ariente.display.client;
 
 import com.mojang.blaze3d.vertex.PoseStack;
 import com.mojang.math.Axis;
+import mcjty.ariente.client.WorldHolograms;
 import mcjty.ariente.display.DisplayAppearance;
 import mcjty.ariente.display.DisplayBackground;
 import mcjty.ariente.display.DisplayBaseTile;
@@ -14,6 +15,9 @@ import net.minecraft.client.renderer.blockentity.BlockEntityRenderer;
 import net.minecraft.client.renderer.blockentity.BlockEntityRendererProvider;
 import net.minecraft.core.Direction;
 import net.minecraft.world.item.ItemStack;
+import net.minecraft.world.phys.Vec3;
+
+import java.util.List;
 
 public class DisplayRenderer implements BlockEntityRenderer<DisplayBaseTile> {
 
@@ -30,42 +34,55 @@ public class DisplayRenderer implements BlockEntityRenderer<DisplayBaseTile> {
 
     @Override
     public void render(DisplayBaseTile tile, float partialTick, PoseStack poses, MultiBufferSource buffer, int light, int overlay) {
+        List<DisplayBaseTile> row = DisplayGeometry.row(tile);
+        DisplayBaseTile first = row.get(0);
+        if (!WorldHolograms.begin(first)) {
+            return;
+        }
+        PoseStack snapshot = WorldHolograms.copy(poses);
+        snapshot.translate(first.getBlockPos().getX() - tile.getBlockPos().getX(), 0,
+                first.getBlockPos().getZ() - tile.getBlockPos().getZ());
+        Vec3 center = Vec3.atCenterOf(first.getBlockPos()).add(Vec3.atLowerCornerOf(DisplayGeometry.facing(first)
+                .getCounterClockWise().getNormal()).scale((row.size() - 1) / 2.0)).add(0, (first.getHeight() - 1) / 2.0, 0);
+        WorldHolograms.add(center, buffers -> renderRow(first, row, snapshot, buffers));
+    }
+
+    private static void renderRow(DisplayBaseTile tile, List<DisplayBaseTile> row, PoseStack poses, MultiBufferSource.BufferSource buffer) {
         poses.pushPose();
         transform(poses, tile);
         DisplayCanvas c = new DisplayCanvas(poses, buffer);
         int height = tile.getHeight() * 64 - 4;
-        boolean left = DisplayGeometry.neighbor(tile, -1) == null;
-        boolean right = DisplayGeometry.neighbor(tile, 1) == null;
+        int width = row.size() * 64;
         DisplayAppearance appearance = tile.appearance();
-        c.fill(0, 0, 64, height, appearance.surfaceColor());
+        // One joined surface, flushed before every module, including modules spanning bases.
+        c.fill(0, 0, width, height, appearance.surfaceColor());
+        buffer.endBatch();
         poses.translate(0, 0, .02);
         // A continuous surface with restrained scan lines and optional illuminated perimeter rails.
         if (appearance.type() == DisplayBackground.TRANSPARENT && appearance.alpha() > 0) {
             for (int y = 4; y < height; y += 4) {
-                c.fill(0, y, 64, .25f, appearance.scanLineColor());
+                c.fill(0, y, width, .25f, appearance.scanLineColor());
             }
         }
         if (appearance.border()) {
-            c.fill(0, 0, 64, .7f, 0xb077edff);
-            c.fill(0, height - .7f, 64, .7f, 0xb077edff);
-            if (left) {
-                c.fill(0, 0, .7f, height, 0xb077edff);
-                c.fill(0, 0, 6, 1.5f, 0xffc0fbff);
-                c.fill(0, height - 1.5f, 6, 1.5f, 0xffc0fbff);
-            }
-            if (right) {
-                c.fill(63.3f, 0, .7f, height, 0xb077edff);
-                c.fill(58, 0, 6, 1.5f, 0xffc0fbff);
-                c.fill(58, height - 1.5f, 6, 1.5f, 0xffc0fbff);
-            }
+            c.border(0, 0, width, height, 0xb077edff);
+            c.fill(0, 0, 6, 1.5f, 0xffc0fbff);
+            c.fill(0, height - 1.5f, 6, 1.5f, 0xffc0fbff);
+            c.fill(width - 6, 0, 6, 1.5f, 0xffc0fbff);
+            c.fill(width - 6, height - 1.5f, 6, 1.5f, 0xffc0fbff);
         }
+        buffer.endBatch();
         poses.translate(0, 0, .1);
-        for (InstalledModule module : tile.modules()) {
-            if (!DisplayModuleDrag.hides(module.id()) && DisplayGeometry.fits(tile, module.x(), module.y(), module.size())) {
-                poses.pushPose();
-                poses.translate(module.x(), module.y(), 0);
-                DisplayModuleRenderers.render(c, module);
-                poses.popPose();
+        for (int column = 0; column < row.size(); column++) {
+            DisplayBaseTile owner = row.get(column);
+            for (InstalledModule module : owner.modules()) {
+                if (!DisplayModuleDrag.hides(module.id()) && DisplayGeometry.fits(owner, module.x(), module.y(), module.size())) {
+                    poses.pushPose();
+                    poses.translate(column * 64 + module.x(), module.y(), 0);
+                    DisplayModuleRenderers.render(c, module);
+                    buffer.endBatch();
+                    poses.popPose();
+                }
             }
         }
         poses.popPose();

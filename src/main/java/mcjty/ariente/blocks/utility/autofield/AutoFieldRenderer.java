@@ -4,8 +4,9 @@ import com.mojang.blaze3d.vertex.PoseStack;
 import com.mojang.blaze3d.vertex.VertexConsumer;
 import net.minecraft.world.phys.Vec3;
 import mcjty.ariente.Ariente;
+import mcjty.ariente.client.ArienteRenderType;
+import mcjty.ariente.client.WorldHolograms;
 import mcjty.ariente.client.ArienteSpriteUploader;
-import net.minecraft.client.renderer.RenderType;
 import mcjty.ariente.setup.Registration;
 import mcjty.lib.client.RenderSettings;
 import net.minecraft.client.Minecraft;
@@ -42,15 +43,19 @@ public class AutoFieldRenderer implements BlockEntityRenderer<AutoFieldTile> {
         if (box == null) {
             return;
         }
-        if (te.isRenderOutline()) {
-            renderBeamBox(te, matrixStack, box, buffer);
+        if (te.isRenderOutline() && WorldHolograms.begin(te)) {
+            renderBeamBox(te, WorldHolograms.copy(matrixStack), box, buffer, true);
         }
         if (te.isRenderItems()) {
             renderItemTransfers(matrixStack, te, buffer);
         }
     }
 
-    private void renderBeamBox(AutoFieldTile te, PoseStack matrixStack, AABB box, MultiBufferSource buffer) {
+    public static void renderOutline(AutoFieldTile tile, PoseStack poses, MultiBufferSource buffer) {
+        renderBeamBox(tile, poses, tile.getFieldBox(), buffer, false);
+    }
+
+    private static void renderBeamBox(AutoFieldTile te, PoseStack matrixStack, AABB box, MultiBufferSource buffer, boolean deferred) {
         Minecraft mc = Minecraft.getInstance();
 
         TextureAtlasSprite sprite = ArienteSpriteUploader.INSTANCE.getSprite(BEAMS[(int) (te.getLevel().getGameTime() % 3)]);
@@ -60,8 +65,6 @@ public class AutoFieldRenderer implements BlockEntityRenderer<AutoFieldTile> {
         int tez = te.getBlockPos().getZ();
         Vec3 projectedView = mc.gameRenderer.getMainCamera().getPosition().add(-tex, -tey, -tez);
         Vec3 player = new Vec3((float)projectedView.x, (float)projectedView.y, (float)projectedView.z);
-
-        VertexConsumer builder = buffer.getBuffer(RenderType.entityTranslucent(ArienteSpriteUploader.ARIENTE_ATLAS));
 
         float mx = (float) box.minX - tex;
         float my = (float) box.minY - tey;
@@ -73,25 +76,36 @@ public class AutoFieldRenderer implements BlockEntityRenderer<AutoFieldTile> {
         // @todo move to a static final once experimentation is done
         RenderSettings settings = RenderSettings.builder()
                 .width(0.1f)
-                .color(255, 255, 255)
+                .color(128, 128, 128)
                 .alpha(128)
                 .brightness(100)
                 .build();
 
-        drawBeam(matrixStack, builder, sprite, new Vec3(mx, my, mz), new Vec3(px, my, mz), player, settings);
-        drawBeam(matrixStack, builder, sprite, new Vec3(mx, my, mz), new Vec3(mx, py, mz), player, settings);
-        drawBeam(matrixStack, builder, sprite, new Vec3(mx, my, mz), new Vec3(mx, my, pz), player, settings);
+        emitBeam(te, matrixStack, buffer, deferred, sprite, new Vec3(mx, my, mz), new Vec3(px, my, mz), player, settings);
+        emitBeam(te, matrixStack, buffer, deferred, sprite, new Vec3(mx, my, mz), new Vec3(mx, py, mz), player, settings);
+        emitBeam(te, matrixStack, buffer, deferred, sprite, new Vec3(mx, my, mz), new Vec3(mx, my, pz), player, settings);
 
-        drawBeam(matrixStack, builder, sprite, new Vec3(px, py, pz), new Vec3(mx, py, pz), player, settings);
-        drawBeam(matrixStack, builder, sprite, new Vec3(px, py, pz), new Vec3(px, my, pz), player, settings);
-        drawBeam(matrixStack, builder, sprite, new Vec3(px, py, pz), new Vec3(px, py, mz), player, settings);
+        emitBeam(te, matrixStack, buffer, deferred, sprite, new Vec3(px, py, pz), new Vec3(mx, py, pz), player, settings);
+        emitBeam(te, matrixStack, buffer, deferred, sprite, new Vec3(px, py, pz), new Vec3(px, my, pz), player, settings);
+        emitBeam(te, matrixStack, buffer, deferred, sprite, new Vec3(px, py, pz), new Vec3(px, py, mz), player, settings);
 
-        drawBeam(matrixStack, builder, sprite, new Vec3(px, my, mz), new Vec3(px, py, mz), player, settings);
-        drawBeam(matrixStack, builder, sprite, new Vec3(px, my, mz), new Vec3(px, my, pz), player, settings);
-        drawBeam(matrixStack, builder, sprite, new Vec3(mx, py, mz), new Vec3(px, py, mz), player, settings);
-        drawBeam(matrixStack, builder, sprite, new Vec3(mx, py, mz), new Vec3(mx, py, pz), player, settings);
-        drawBeam(matrixStack, builder, sprite, new Vec3(mx, my, pz), new Vec3(px, my, pz), player, settings);
-        drawBeam(matrixStack, builder, sprite, new Vec3(mx, my, pz), new Vec3(mx, py, pz), player, settings);
+        emitBeam(te, matrixStack, buffer, deferred, sprite, new Vec3(px, my, mz), new Vec3(px, py, mz), player, settings);
+        emitBeam(te, matrixStack, buffer, deferred, sprite, new Vec3(px, my, mz), new Vec3(px, my, pz), player, settings);
+        emitBeam(te, matrixStack, buffer, deferred, sprite, new Vec3(mx, py, mz), new Vec3(px, py, mz), player, settings);
+        emitBeam(te, matrixStack, buffer, deferred, sprite, new Vec3(mx, py, mz), new Vec3(mx, py, pz), player, settings);
+        emitBeam(te, matrixStack, buffer, deferred, sprite, new Vec3(mx, my, pz), new Vec3(px, my, pz), player, settings);
+        emitBeam(te, matrixStack, buffer, deferred, sprite, new Vec3(mx, my, pz), new Vec3(mx, py, pz), player, settings);
+    }
+
+    private static void emitBeam(AutoFieldTile tile, PoseStack poses, MultiBufferSource buffer, boolean deferred,
+                                 TextureAtlasSprite sprite, Vec3 start, Vec3 end, Vec3 camera, RenderSettings settings) {
+        if (deferred) {
+            Vec3 center = Vec3.atLowerCornerOf(tile.getBlockPos()).add(start.add(end).scale(.5));
+            WorldHolograms.add(center, buffers -> drawBeam(poses, buffers.getBuffer(ArienteRenderType.FIELD_OUTLINE), sprite,
+                    start, end, camera, settings));
+        } else {
+            drawBeam(poses, buffer.getBuffer(ArienteRenderType.FIELD_OUTLINE), sprite, start, end, camera, settings);
+        }
     }
 
     private static void drawBeam(PoseStack stack, VertexConsumer vertices, TextureAtlasSprite sprite,
@@ -110,7 +124,7 @@ public class AutoFieldRenderer implements BlockEntityRenderer<AutoFieldTile> {
 
     private static void vertex(PoseStack stack, VertexConsumer vertices, Vec3 pos, Vec3 normal,
                                float u, float v, RenderSettings settings) {
-        // entityTranslucent uses NEW_ENTITY, including overlay UVs before the lightmap.
+        // The outline retains the complete NEW_ENTITY layout for renderer compatibility.
         vertices.vertex(stack.last().pose(), (float) pos.x, (float) pos.y, (float) pos.z)
                 .color(settings.r(), settings.g(), settings.b(), settings.a())
                 .uv(u, v)

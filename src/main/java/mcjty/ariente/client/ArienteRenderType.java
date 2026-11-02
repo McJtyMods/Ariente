@@ -19,6 +19,7 @@ public class ArienteRenderType extends RenderType {
 
     private static ShaderInstance beamShader;
     private static ShaderInstance displayItemShader;
+    private static ShaderInstance fieldMarkerShader;
     private static final Map<RenderType, RenderType> DISPLAY_ITEMS = new IdentityHashMap<>();
 
     public static void registerShaders(RegisterShadersEvent event) {
@@ -27,6 +28,8 @@ public class ArienteRenderType extends RenderType {
                     DefaultVertexFormat.NEW_ENTITY), shader -> beamShader = shader);
             event.registerShader(new ShaderInstance(event.getResourceProvider(), new ResourceLocation("ariente", "display_item"),
                     DefaultVertexFormat.NEW_ENTITY), shader -> displayItemShader = shader);
+            event.registerShader(new ShaderInstance(event.getResourceProvider(), new ResourceLocation("ariente", "field_marker"),
+                    DefaultVertexFormat.NEW_ENTITY), shader -> fieldMarkerShader = shader);
         } catch (IOException exception) {
             throw new UncheckedIOException("Could not load the Ariente shaders", exception);
         }
@@ -55,6 +58,23 @@ public class ArienteRenderType extends RenderType {
     public static final TextureStateShard ARIENTE_TEXTURE_STATE = new TextureStateShard(ArienteSpriteUploader.ARIENTE_ATLAS, false, false);
 
     public static final RenderType TANK_CONTENTS = Sheets.translucentCullBlockSheet();
+
+    public static final RenderType FIELD_MARKER = create("ariente_field_marker", DefaultVertexFormat.NEW_ENTITY,
+            VertexFormat.Mode.QUADS, 4096, false, false, CompositeState.builder()
+                    .setShaderState(new ShaderStateShard(() -> fieldMarkerShader))
+                    .setTextureState(new TextureStateShard(TextureAtlas.LOCATION_BLOCKS, false, false))
+                    .setLightmapState(LIGHTMAP)
+                    .setOverlayState(OVERLAY)
+                    .createCompositeState(false));
+
+    public static final RenderType FIELD_OUTLINE = create("ariente_field_outline", DefaultVertexFormat.NEW_ENTITY,
+            VertexFormat.Mode.QUADS, 4096, false, false, CompositeState.builder()
+                    .setShaderState(new ShaderStateShard(() -> beamShader))
+                    .setTextureState(ARIENTE_TEXTURE_STATE)
+                    .setTransparencyState(ADDITIVE_TRANSPARENCY)
+                    .setWriteMaskState(COLOR_WRITE)
+                    .setCullState(NO_CULL)
+                    .createCompositeState(false));
 
     public static final RenderType BEAM = create("ariente_beam", DefaultVertexFormat.NEW_ENTITY, VertexFormat.Mode.QUADS, 4096, false, true,
             CompositeState.builder()

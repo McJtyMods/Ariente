@@ -1,6 +1,7 @@
 package mcjty.ariente.display.client;
 
 import com.mojang.blaze3d.vertex.PoseStack;
+import mcjty.ariente.client.WorldHolograms;
 import mcjty.ariente.display.DisplayBaseTile;
 import mcjty.ariente.display.DisplayGeometry;
 import mcjty.ariente.display.DisplayModuleItem;
@@ -18,6 +19,8 @@ import net.minecraftforge.eventbus.api.SubscribeEvent;
 import net.minecraftforge.event.TickEvent;
 
 public class DisplayClientEvents {
+
+    private PoseStack worldPoses;
 
     public static DisplayGeometry.Hit pick(Player player) {
         DisplayGeometry.Hit nearest = null;
@@ -81,22 +84,28 @@ public class DisplayClientEvents {
 
     @SubscribeEvent
     public void render(RenderLevelStageEvent event) {
-        if (event.getStage() != RenderLevelStageEvent.Stage.AFTER_BLOCK_ENTITIES) {
+        if (event.getStage() == RenderLevelStageEvent.Stage.AFTER_BLOCK_ENTITIES) {
+            // AFTER_LEVEL supplies the projection pose in Forge 1.20.1; retain the world camera pose.
+            worldPoses = WorldHolograms.copy(event.getPoseStack());
             return;
         }
+        if (event.getStage() != RenderLevelStageEvent.Stage.AFTER_LEVEL) {
+            return;
+        }
+        WorldHolograms.renderWorld();
         Minecraft mc = Minecraft.getInstance();
         if (mc.player == null || mc.screen != null) {
             return;
         }
         if (DisplayModuleDrag.active()) {
-            DisplayModuleDrag.render(event.getPoseStack(), mc.renderBuffers().bufferSource(), event.getCamera().getPosition());
+            DisplayModuleDrag.render(worldPoses, mc.renderBuffers().bufferSource(), event.getCamera().getPosition());
             return;
         }
         DisplayGeometry.Hit hit = pick(mc.player);
         if (hit == null) {
             return;
         }
-        drawPreview(mc, hit, event.getPoseStack(), event.getCamera().getPosition());
+        drawPreview(mc, hit, worldPoses, event.getCamera().getPosition());
     }
 
     private static void drawPreview(Minecraft mc, DisplayGeometry.Hit hit, PoseStack poses, Vec3 camera) {

@@ -23,6 +23,7 @@ public class InputItemNodeTile extends AbstractItemNodeTile {
     private boolean inputDamage = false;
     private boolean inputNbt = false;
     private boolean inputBlacklist = false;
+    private ItemFilterCategory inputCategory = ItemFilterCategory.ALL;
 
     public InputItemNodeTile(BlockPos pos, BlockState state) {
         super(Registration.INPUT_ITEM_TILE.get(), pos, state);
@@ -38,6 +39,7 @@ public class InputItemNodeTile extends AbstractItemNodeTile {
         super.load(tagCompound);
         inputFilter.clear();
         CompoundTag info = tagCompound.getCompound("Info");
+        inputCategory = ItemFilterCategory.fromId(info.getString("inCategory"));
         ContainerHelper.loadAllItems(info.getCompound("input"), inputFilter);
         if (!info.isEmpty()) {
             inputDamage = info.getBoolean("inDamage");
@@ -57,6 +59,7 @@ public class InputItemNodeTile extends AbstractItemNodeTile {
         // Keep the legacy key so existing tag filters retain their settings.
         info.putBoolean("inOre", inputTags);
         info.putBoolean("inBlacklist", inputBlacklist);
+        info.putString("inCategory", inputCategory.id());
     }
 
     public ItemStackList getInputFilter() {
@@ -65,6 +68,15 @@ public class InputItemNodeTile extends AbstractItemNodeTile {
 
     public boolean isInputTags() {
         return inputTags;
+    }
+
+    public ItemFilterCategory getInputCategory() {
+        return inputCategory;
+    }
+
+    public void setInputCategory(ItemFilterCategory category) {
+        inputCategory = category;
+        notifyField();
     }
 
     public boolean isInputBlacklist() {
@@ -119,6 +131,14 @@ public class InputItemNodeTile extends AbstractItemNodeTile {
         addFilterOption(registry, panel, "filter_nbt", 2.15, "NBT: Off", "NBT: On", this::isInputNbt, this::toggleInputNBT);
         addFilterOption(registry, panel, "filter_damage", 2.85, "Damage: Off", "Damage: On", this::isInputDamage, this::toggleInputDamage);
         addFilterOption(registry, panel, "filter_tags", 3.55, "Tags: Off", "Tags: On", this::isInputTags, this::toggleInputTags);
+        var categoryChoice = registry.textChoice(2.8, 3.55, 6.1, .6).name("filter_category").scale(.32f)
+                .getter(player -> inputCategory.ordinal())
+                .hitEvent((component, player, entity, x, y) -> setInputCategory(
+                        ItemFilterCategory.values()[(inputCategory.ordinal() + 1) % ItemFilterCategory.values().length]));
+        for (ItemFilterCategory category : ItemFilterCategory.values()) {
+            categoryChoice.addText("Category: " + category.title());
+        }
+        panel.add(categoryChoice);
         return panel;
     }
 

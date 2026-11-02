@@ -7,11 +7,11 @@ import net.minecraft.client.renderer.RenderType;
 public class DisplayRenderType extends RenderType {
 
     public static final RenderType SURFACE = create("ariente_display", DefaultVertexFormat.POSITION_COLOR,
-            VertexFormat.Mode.QUADS, 4096, false, true, CompositeState.builder()
+            VertexFormat.Mode.QUADS, 4096, false, false, CompositeState.builder()
                     .setShaderState(POSITION_COLOR_SHADER)
                     .setTransparencyState(TRANSLUCENT_TRANSPARENCY)
                     .setCullState(NO_CULL)
-                    .setWriteMaskState(COLOR_DEPTH_WRITE)
+                    .setWriteMaskState(COLOR_WRITE)
                     .createCompositeState(false));
 
     private DisplayRenderType(String name, VertexFormat format, VertexFormat.Mode mode, int size,
