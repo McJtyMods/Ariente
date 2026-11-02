@@ -76,8 +76,8 @@ public class SensorItemNodeTile extends AbstractNodeTile {
     }
 
     @Override
-    public void readRestorableFromNBT(CompoundTag tagCompound) {
-        super.readRestorableFromNBT(tagCompound);
+    public void load(CompoundTag tagCompound) {
+        super.load(tagCompound);
         CompoundTag info = tagCompound.getCompound("Info");
         if (!info.isEmpty()) {
             if (info.contains("outColor")) {
@@ -89,8 +89,8 @@ public class SensorItemNodeTile extends AbstractNodeTile {
     }
 
     @Override
-    public void writeRestorableToNBT(CompoundTag tagCompound) {
-        super.writeRestorableToNBT(tagCompound);
+    public void saveAdditional(CompoundTag tagCompound) {
+        super.saveAdditional(tagCompound);
         CompoundTag info = getOrCreateInfo(tagCompound);
         info.putInt("outColor", outputColor[0].ordinal());
         info.putInt("op", operator);

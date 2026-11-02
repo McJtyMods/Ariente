@@ -33,11 +33,12 @@ public class InputItemNodeTile extends AbstractItemNodeTile {
     }
 
     @Override
-    public void readRestorableFromNBT(CompoundTag tagCompound) {
-        super.readRestorableFromNBT(tagCompound);
+    public void load(CompoundTag tagCompound) {
+        super.load(tagCompound);
         inputFilter.clear();
-        ContainerHelper.loadAllItems(tagCompound.getCompound("input"), inputFilter);
         CompoundTag info = tagCompound.getCompound("Info");
+        // Older saves stored the item filter outside the data copied by loot tables.
+        ContainerHelper.loadAllItems(info.contains("input") ? info.getCompound("input") : tagCompound.getCompound("input"), inputFilter);
         if (!info.isEmpty()) {
             inputDamage = info.getBoolean("inDamage");
             inputNbt = info.getBoolean("inNBT");
@@ -46,10 +47,10 @@ public class InputItemNodeTile extends AbstractItemNodeTile {
     }
 
     @Override
-    public void writeRestorableToNBT(CompoundTag tagCompound) {
-        super.writeRestorableToNBT(tagCompound);
-        tagCompound.put("input", ContainerHelper.saveAllItems(new CompoundTag(), inputFilter));
+    public void saveAdditional(CompoundTag tagCompound) {
+        super.saveAdditional(tagCompound);
         CompoundTag info = getOrCreateInfo(tagCompound);
+        info.put("input", ContainerHelper.saveAllItems(new CompoundTag(), inputFilter));
         info.putBoolean("inDamage", inputDamage);
         info.putBoolean("inNBT", inputNbt);
         info.putBoolean("inOre", inputOredict);

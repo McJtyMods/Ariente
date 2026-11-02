@@ -143,17 +143,6 @@ public class WirelessButtonTile extends SignalChannelTileEntity {
     public void load(CompoundTag tagCompound) {
         super.load(tagCompound);
         prevIn = tagCompound.getInt("prevIn");
-    }
-
-    @Override
-    public void saveAdditional(CompoundTag tagCompound) {
-        super.saveAdditional(tagCompound);
-        tagCompound.putInt("prevIn", prevIn);
-    }
-
-    @Override
-    public void readRestorableFromNBT(CompoundTag tagCompound) {
-        super.readRestorableFromNBT(tagCompound);
         CompoundTag info = tagCompound.getCompound("Info");
         if (info.contains("locked")) {
             locked = info.getBoolean("locked");
@@ -161,8 +150,9 @@ public class WirelessButtonTile extends SignalChannelTileEntity {
     }
 
     @Override
-    public void writeRestorableToNBT(CompoundTag tagCompound) {
-        super.writeRestorableToNBT(tagCompound);
+    public void saveAdditional(CompoundTag tagCompound) {
+        super.saveAdditional(tagCompound);
+        tagCompound.putInt("prevIn", prevIn);
         getOrCreateInfo(tagCompound).putBoolean("locked", locked);
     }
 

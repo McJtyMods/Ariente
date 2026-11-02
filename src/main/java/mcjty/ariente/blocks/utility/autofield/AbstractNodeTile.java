@@ -223,7 +223,9 @@ public abstract class AbstractNodeTile extends GenericTileEntity implements IGui
         return facing;
     }
 
-    public void readRestorableFromNBT(CompoundTag tagCompound) {
+    @Override
+    public void load(CompoundTag tagCompound) {
+        super.load(tagCompound);
         CompoundTag info = tagCompound.getCompound("Info");
         if (!info.isEmpty()) {
             for (int i = 0; i < filters.length; i++) {
@@ -236,25 +238,15 @@ public abstract class AbstractNodeTile extends GenericTileEntity implements IGui
         }
     }
 
-    public void writeRestorableToNBT(CompoundTag tagCompound) {
+    @Override
+    public void saveAdditional(CompoundTag tagCompound) {
+        super.saveAdditional(tagCompound);
         CompoundTag info = getOrCreateInfo(tagCompound);
         for (int i = 0 ; i < filters.length ; i++) {
             if (filters[i] != null) {
                 info.putInt("f" + i, filters[i].ordinal());
             }
         }
-    }
-
-    @Override
-    public void load(CompoundTag tagCompound) {
-        super.load(tagCompound);
-        readRestorableFromNBT(tagCompound);
-    }
-
-    @Override
-    public void saveAdditional(CompoundTag tagCompound) {
-        super.saveAdditional(tagCompound);
-        writeRestorableToNBT(tagCompound);
     }
 
     protected Pair<String, String> getSlotTag(String tag) {

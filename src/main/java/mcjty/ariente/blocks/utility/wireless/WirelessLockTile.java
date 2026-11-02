@@ -195,17 +195,6 @@ public class WirelessLockTile extends SignalChannelTileEntity implements ILockab
     public void load(CompoundTag tagCompound) {
         super.load(tagCompound);
         locked = tagCompound.getBoolean("locked");
-    }
-
-    @Override
-    public void saveAdditional(CompoundTag tagCompound) {
-        tagCompound.putBoolean("locked", locked);
-        super.saveAdditional(tagCompound);
-    }
-
-    @Override
-    public void readRestorableFromNBT(CompoundTag tagCompound) {
-        super.readRestorableFromNBT(tagCompound);
         CompoundTag info = tagCompound.getCompound("Info");
         if (!info.isEmpty()) {
             if (info.contains("vertical")) {
@@ -218,8 +207,9 @@ public class WirelessLockTile extends SignalChannelTileEntity implements ILockab
     }
 
     @Override
-    public void writeRestorableToNBT(CompoundTag tagCompound) {
-        super.writeRestorableToNBT(tagCompound);
+    public void saveAdditional(CompoundTag tagCompound) {
+        tagCompound.putBoolean("locked", locked);
+        super.saveAdditional(tagCompound);
         CompoundTag info = getOrCreateInfo(tagCompound);
         info.putInt("vertical", verticalRange);
         info.putInt("horizontal", horizontalRange);

@@ -18,7 +18,6 @@ import mcjty.lib.tileentity.Cap;
 import mcjty.lib.tileentity.CapType;
 import mcjty.lib.tileentity.GenericTileEntity;
 import net.minecraft.core.BlockPos;
-import net.minecraft.nbt.CompoundTag;
 import net.minecraft.world.InteractionHand;
 import net.minecraft.world.InteractionResult;
 import net.minecraft.world.entity.player.Player;
@@ -71,13 +70,6 @@ public class BlueprintStorageTile extends GenericTileEntity implements IGuiTile,
     public InteractionResult onBlockActivated(BlockState state, Player player, InteractionHand hand, BlockHitResult result) {
         Ariente.guiHandler.openHoloGui(level, worldPosition, player);
         return InteractionResult.SUCCESS;
-    }
-
-    // @todo 1.14 loot
-    public void readRestorableFromNBT(CompoundTag tagCompound) {
-    }
-
-    public void writeRestorableToNBT(CompoundTag tagCompound) {
     }
 
     public GenericItemHandler getItems() {

@@ -30,11 +30,12 @@ public class OutputItemNodeTile extends AbstractItemNodeTile {
     }
 
     @Override
-    public void readRestorableFromNBT(CompoundTag tagCompound) {
-        super.readRestorableFromNBT(tagCompound);
+    public void load(CompoundTag tagCompound) {
+        super.load(tagCompound);
         outputFilter.clear();
-        ContainerHelper.loadAllItems(tagCompound.getCompound("output"), outputFilter);
         CompoundTag info = tagCompound.getCompound("Info");
+        // Older saves stored the item filter outside the data copied by loot tables.
+        ContainerHelper.loadAllItems(info.contains("output") ? info.getCompound("output") : tagCompound.getCompound("output"), outputFilter);
         if (!info.isEmpty()) {
             outputDamage = info.getBoolean("outDamage");
             outputNbt = info.getBoolean("outNBT");
@@ -44,10 +45,10 @@ public class OutputItemNodeTile extends AbstractItemNodeTile {
     }
 
     @Override
-    public void writeRestorableToNBT(CompoundTag tagCompound) {
-        super.writeRestorableToNBT(tagCompound);
-        tagCompound.put("output", ContainerHelper.saveAllItems(new CompoundTag(), outputFilter));
+    public void saveAdditional(CompoundTag tagCompound) {
+        super.saveAdditional(tagCompound);
         CompoundTag info = getOrCreateInfo(tagCompound);
+        info.put("output", ContainerHelper.saveAllItems(new CompoundTag(), outputFilter));
         info.putBoolean("outDamage", outputDamage);
         info.putBoolean("outNBT", outputNbt);
         info.putBoolean("outOre", outputOredict);

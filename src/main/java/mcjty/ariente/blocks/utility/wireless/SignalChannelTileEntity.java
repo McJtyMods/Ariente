@@ -107,10 +107,6 @@ public abstract class SignalChannelTileEntity extends TickingTileEntity implemen
     @Override
     public void load(CompoundTag tagCompound) {
         super.load(tagCompound);
-        readRestorableFromNBT(tagCompound);
-    }
-
-    public void readRestorableFromNBT(CompoundTag tagCompound) {
         CompoundTag info = tagCompound.getCompound("Info");
         if (!info.isEmpty()) {
             channel = info.getInt("channel");
@@ -120,14 +116,10 @@ public abstract class SignalChannelTileEntity extends TickingTileEntity implemen
 
     @Override
     public void saveAdditional(CompoundTag tagCompound) {
-        writeRestorableToNBT(tagCompound);
-        super.saveAdditional(tagCompound);
-    }
-
-    public void writeRestorableToNBT(CompoundTag tagCompound) {
         CompoundTag info = getOrCreateInfo(tagCompound);
         info.putInt("channel", channel);
         info.putInt("desired", desiredChannel);
+        super.saveAdditional(tagCompound);
     }
 
     public static boolean onBlockActivatedInt(Level world, BlockPos pos, Player player, InteractionHand hand) {

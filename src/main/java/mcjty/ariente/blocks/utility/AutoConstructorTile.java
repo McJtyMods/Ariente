@@ -232,7 +232,6 @@ public class AutoConstructorTile extends TickingTileEntity implements IGuiTile, 
     @Override
     public void load(CompoundTag tagCompound) {
         super.load(tagCompound);
-        readRestorableFromNBT(tagCompound);
         craftIndex = tagCompound.getInt("craftIndex");
         busyCounter = tagCompound.getInt("busy");
     }
@@ -242,12 +241,6 @@ public class AutoConstructorTile extends TickingTileEntity implements IGuiTile, 
         tagCompound.putInt("craftIndex", craftIndex);
         tagCompound.putInt("busy", busyCounter);
         super.saveAdditional(tagCompound);
-    }
-
-    public void readRestorableFromNBT(CompoundTag tagCompound) {
-    }
-
-    public void writeRestorableToNBT(CompoundTag tagCompound) {
     }
 
     @Nullable
