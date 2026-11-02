@@ -57,7 +57,15 @@ public class ArienteRenderType extends RenderType {
 
     public static final TextureStateShard ARIENTE_TEXTURE_STATE = new TextureStateShard(ArienteSpriteUploader.ARIENTE_ATLAS, false, false);
 
-    public static final RenderType TANK_CONTENTS = Sheets.translucentCullBlockSheet();
+    // Use the lightmap without item/entity directional lighting for the glass and emissive beam.
+    public static final RenderType TANK_CONTENTS = create("ariente_tank_contents", DefaultVertexFormat.NEW_ENTITY,
+            VertexFormat.Mode.QUADS, 4096, false, true, CompositeState.builder()
+                    .setShaderState(new ShaderStateShard(() -> fieldMarkerShader))
+                    .setTextureState(new TextureStateShard(TextureAtlas.LOCATION_BLOCKS, false, false))
+                    .setLightmapState(LIGHTMAP)
+                    .setOverlayState(OVERLAY)
+                    .setTransparencyState(TRANSLUCENT_TRANSPARENCY)
+                    .createCompositeState(false));
 
     public static final RenderType FIELD_MARKER = create("ariente_field_marker", DefaultVertexFormat.NEW_ENTITY,
             VertexFormat.Mode.QUADS, 4096, false, false, CompositeState.builder()

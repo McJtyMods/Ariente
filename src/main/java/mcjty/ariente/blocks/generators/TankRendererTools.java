@@ -1,7 +1,9 @@
 package mcjty.ariente.blocks.generators;
 
+import com.mojang.blaze3d.vertex.BufferBuilder;
 import com.mojang.blaze3d.vertex.PoseStack;
 import com.mojang.blaze3d.vertex.VertexConsumer;
+import mcjty.ariente.Ariente;
 import mcjty.ariente.client.ArienteRenderType;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.renderer.LightTexture;
@@ -11,8 +13,27 @@ import net.minecraft.client.renderer.texture.OverlayTexture;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.inventory.InventoryMenu;
 import net.minecraft.world.phys.Vec3;
+import net.minecraftforge.api.distmarker.Dist;
+import net.minecraftforge.client.event.RenderLevelStageEvent;
+import net.minecraftforge.eventbus.api.SubscribeEvent;
+import net.minecraftforge.fml.common.Mod;
 
+@Mod.EventBusSubscriber(modid = Ariente.MODID, value = Dist.CLIENT)
 public class TankRendererTools {
+
+    // Keep every tank's glass and beam in one sorted batch, independently of other entity renderers.
+    private static final MultiBufferSource.BufferSource WORLD_TANKS = MultiBufferSource.immediate(new BufferBuilder(4096));
+
+    public static void renderWorldTank(PoseStack stack, ResourceLocation beam, ResourceLocation window, boolean working, long gameTime, Vec3 cameraOffset, int light) {
+        renderTank(stack, WORLD_TANKS, beam, window, working, gameTime, cameraOffset, light);
+    }
+
+    @SubscribeEvent
+    public static void renderStage(RenderLevelStageEvent event) {
+        if (event.getStage() == RenderLevelStageEvent.Stage.AFTER_BLOCK_ENTITIES) {
+            WORLD_TANKS.endBatch();
+        }
+    }
 
     private static void vertex(VertexConsumer renderer, PoseStack stack, TextureAtlasSprite sprite, float x, float y, float z, float u, float v, int light, Vec3 normal) {
         renderer.vertex(stack.last().pose(), x, y, z)
@@ -25,8 +46,7 @@ public class TankRendererTools {
     }
 
     public static void renderTank(PoseStack stack, MultiBufferSource buffer, ResourceLocation beam, ResourceLocation window, boolean working, long gameTime, Vec3 cameraOffset, int light) {
-        // This is a vanilla fixed buffer: all visible tanks share one depth-sorted batch.
-        // Glass must not be drawn separately by the chunk renderer over the beam.
+        // Glass and beams must be sorted together rather than drawing chunk glass over the beam.
         VertexConsumer builder = buffer.getBuffer(ArienteRenderType.TANK_CONTENTS);
         TextureAtlasSprite glass = Minecraft.getInstance().getTextureAtlas(InventoryMenu.BLOCK_ATLAS).apply(window);
         glassFace(builder, stack, glass, .0625f, .0625f, .9375f, .0625f, light, new Vec3(0, 0, -1));
@@ -51,7 +71,7 @@ public class TankRendererTools {
         // Sample one animated horizontal strip. Adjacent sections have identical
         // edge UVs, so a column has no horizontal seams or repeated vertical tiles.
         float v = ((gameTime / 2) % 10 + .5f) / 10;
-        // Upward normals keep the beam fully lit in the shared entity shader.
+        // The lightmap-only tank shader keeps the beam fullbright regardless of item lighting.
         Vec3 glowNormal = new Vec3(0, 1, 0);
         vertex(builder, stack, sprite, .5f - dx, 1, .5f - dz, 0, v, LightTexture.FULL_BRIGHT, glowNormal);
         vertex(builder, stack, sprite, .5f + dx, 1, .5f + dz, 1, v, LightTexture.FULL_BRIGHT, glowNormal);

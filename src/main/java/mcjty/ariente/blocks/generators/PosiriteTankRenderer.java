@@ -25,7 +25,7 @@ public class PosiriteTankRenderer implements BlockEntityRenderer<PosiriteTankTil
     public void render(PosiriteTankTile te, float partialTicks, PoseStack matrixStack, MultiBufferSource buffer, int combinedLightIn, int combinedOverlayIn) {
         Vec3 cameraOffset = Minecraft.getInstance().gameRenderer.getMainCamera().getPosition()
                 .subtract(Vec3.atCenterOf(te.getBlockPos()));
-        TankRendererTools.renderTank(matrixStack, buffer, POSIRITE_BEAM, POSIRITE_WINDOW, te.isWorking(), te.getLevel().getGameTime(), cameraOffset, combinedLightIn);
+        TankRendererTools.renderWorldTank(matrixStack, POSIRITE_BEAM, POSIRITE_WINDOW, te.isWorking(), te.getLevel().getGameTime(), cameraOffset, combinedLightIn);
     }
 
     public static void register() {

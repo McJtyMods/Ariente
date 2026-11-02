@@ -25,7 +25,7 @@ public class NegariteTankRenderer implements BlockEntityRenderer<NegariteTankTil
     public void render(NegariteTankTile te, float partialTicks, PoseStack matrixStack, MultiBufferSource buffer, int combinedLightIn, int combinedOverlayIn) {
         Vec3 cameraOffset = Minecraft.getInstance().gameRenderer.getMainCamera().getPosition()
                 .subtract(Vec3.atCenterOf(te.getBlockPos()));
-        TankRendererTools.renderTank(matrixStack, buffer, NEGARITE_BEAM, NEGARITE_WINDOW, te.isWorking(), te.getLevel().getGameTime(), cameraOffset, combinedLightIn);
+        TankRendererTools.renderWorldTank(matrixStack, NEGARITE_BEAM, NEGARITE_WINDOW, te.isWorking(), te.getLevel().getGameTime(), cameraOffset, combinedLightIn);
     }
 
     public static void register() {
