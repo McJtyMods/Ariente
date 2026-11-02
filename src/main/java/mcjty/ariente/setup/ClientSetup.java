@@ -2,6 +2,7 @@ package mcjty.ariente.setup;
 
 import mcjty.ariente.display.client.DisplayClientEvents;
 import mcjty.ariente.display.client.DisplayModuleRenderers;
+import mcjty.ariente.blocks.storagecube.client.StorageCubeRenderer;
 import mcjty.ariente.display.client.DisplayRenderer;
 
 import mcjty.ariente.multipart.MultipartRenderer;
@@ -76,6 +77,7 @@ public class ClientSetup {
     public static void entityRenderers(EntityRenderersEvent.RegisterRenderers event)
     {
         event.registerBlockEntityRenderer(Registration.DISPLAY_BASE_TILE.get(), DisplayRenderer::new);
+        event.registerBlockEntityRenderer(Registration.HOLO_STORAGE_TILE.get(), StorageCubeRenderer::new);
         event.registerBlockEntityRenderer(Registration.TYPE_MULTIPART.get(), MultipartRenderer::new);
         event.registerEntityRenderer(Registration.ENTITY_LASER.get(), new LaserRender.Factory());
         event.registerEntityRenderer(Registration.ENTITY_DRONE.get(), DroneRender.FACTORY);

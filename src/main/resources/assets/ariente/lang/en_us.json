@@ -1,4 +1,7 @@
 {
+  "block.ariente.holo_storage_1": "Holo Storage Cube I (30 stacks)",
+  "block.ariente.holo_storage_2": "Holo Storage Cube II (60 stacks)",
+  "block.ariente.holo_storage_3": "Holo Storage Cube III (120 stacks)",
   "block.ariente.display_base": "Holographic Display Base",
   "item.ariente.display_module_power": "Holographic Power Module",
   "item.ariente.display_module_storage": "Holographic Storage Module",

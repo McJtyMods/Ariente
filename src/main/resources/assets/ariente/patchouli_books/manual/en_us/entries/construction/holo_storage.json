@@ -1,0 +1,41 @@
+{
+  "name": "Holo Storage Cubes",
+  "icon": "ariente:holo_storage_1",
+  "category": "ariente:construction",
+  "sortnum": 4,
+  "pages": [
+    {
+      "type": "patchouli:spotlight",
+      "item": "ariente:holo_storage_1",
+      "title": "Flexible glass storage",
+      "text": "Three tiers hold $(thing)30, 60 or 120 ordinary stacks$(). Any mix of items is allowed, with normal stack limits. All six faces support item insertion and extraction.$(br2)The glass cube displays up to eight different floating items at a time. More plentiful items appear more often; previews fade and refresh about every five seconds."
+    },
+    {
+      "type": "patchouli:text",
+      "title": "The inventory panel",
+      "text": "Right-click the cube to open its hologram. The upper grid shows stored stacks, with your main inventory and separated hotbar below.$(br2)Point at the left or right vertical bar to scroll the storage columns automatically. Keep pointing to continue scrolling. Slot numbers stay fixed while browsing."
+    },
+    {
+      "type": "patchouli:text",
+      "title": "Moving items",
+      "text": "$(li)Hold left-click on a stack, aim at the destination and release.$(li)Or click a source, then click the destination.$(li)Sneak-click transfers immediately to the other inventory.$(br2)Click the selected source again to cancel. Right-click the panel or use X to close. The ? button opens this manual entry. Items stay safely in their source until a move completes."
+    },
+    {
+      "type": "patchouli:spotlight",
+      "item": "ariente:holo_storage_2",
+      "title": "Tier II: 60 stacks",
+      "text": "Each tier has its own populated Constructor blueprint; JEI lists the complete materials. Keep the blueprint in adjacent Blueprint Storage.$(br2)Tier II needs 4 Advanced Circuits, 24 Silicon, 24 Silver, 12 Platinum, 8 Lithium, 4 Ender Pearls, 2 Flux Capacitors and 8 Glass."
+    },
+    {
+      "type": "patchouli:spotlight",
+      "item": "ariente:holo_storage_3",
+      "title": "Tier III: 120 stacks",
+      "text": "The largest cube is deliberately expensive: 12 Advanced Circuits, 64 Silicon, 64 Silver, 32 Platinum, 24 Lithium, 16 Ender Pearls, 8 Flux Capacitors and 16 Glass.$(br2)Breaking any tier preserves its stored items in the dropped cube. No flux is needed to store or transfer items."
+    }
+  ],
+  "extra_recipe_mappings": {
+    "ariente:holo_storage_1": 0,
+    "ariente:holo_storage_2": 3,
+    "ariente:holo_storage_3": 4
+  }
+}

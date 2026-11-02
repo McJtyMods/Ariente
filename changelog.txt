@@ -1,4 +1,5 @@
 1.20-0.0.31-alpha:
+- Added Holo Storage Cubes with 30, 60 and 120 stack slots, floating item previews, a holographic inventory with hover scrolling and drag or sneak-click transfers, all-sided automation, and increasingly expensive Constructor blueprints.
 - Added a 3x3 Storage Cube for nine item types, with the same capacity per type, controls, locking and automation as the original four-type cube. Includes a Constructor blueprint and manual documentation.
 - Added the Smelter: furnace recipes at a configurable speed (10 times by default) using Ariente flux, two directly accessible front slots with hover highlights, an animated working indicator, sided automation, and a Constructor blueprint. Documented in the guide and Tablet.
 - Power armor, Enhanced Energy Sabres and Energy Lances now share a carried Energy Holder for module fuel and charge. Refill through the holder’s own panel or let it collect loose dust automatically. Equipment panels use aligned module columns and show shared fuel and charge at the bottom. Removed the redundant Autofeed module.

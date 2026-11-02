@@ -2,6 +2,9 @@
   "values": [
     "ariente:display_base",
     "ariente:smelter",
+    "ariente:holo_storage_1",
+    "ariente:holo_storage_2",
+    "ariente:holo_storage_3",
     "ariente:lithiumore",
     "ariente:manganeseore",
     "ariente:platinumore",

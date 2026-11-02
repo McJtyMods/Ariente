@@ -6,9 +6,9 @@
 - Extend the search range of the pearl
 - Carve out corridors to nearby dungeons in overworld
 - Break particles are wrong
-- Item models for some of the blocks are wrong or weird: ramp, the four fences, storage cube (not 3d), flat light
 - Use codex to make a test world with all machines and automation in one place
 - Holo screen system, cameras?
 - Teleportation?
-- Tooltips for power armor are too verbose
 - Fix automation
+- Use new displays in dungeons and tutorial level
+- Better layout for top-right of all hologui's

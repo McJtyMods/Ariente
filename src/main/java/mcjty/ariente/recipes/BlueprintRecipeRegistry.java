@@ -295,6 +295,35 @@ public class BlueprintRecipeRegistry {
                 new ItemStack(Blocks.CHEST, 2),
                 new ItemStack(Blocks.GLASS_PANE, 9)
         ));
+        recipes.add(new ConstructorRecipe(new ItemStack(Registration.HOLO_STORAGE_1.get()), COMMON,
+                new ItemStack(Registration.CIRCUIT.get(), 2),
+                new ItemStack(Registration.DUST_SILICON.get(), 8),
+                new ItemStack(Registration.INGOT_SILVER.get(), 8),
+                new ItemStack(Registration.INGOT_LITHIUM.get(), 2),
+                new ItemStack(Items.ENDER_PEARL, 1),
+                new ItemStack(Blocks.GLASS, 6),
+                new ItemStack(DecorativeBlockModule.MARBLE.get(MarbleColor.BLACK).get(), 1)
+        ));
+        recipes.add(new ConstructorRecipe(new ItemStack(Registration.HOLO_STORAGE_2.get()), UNCOMMON,
+                new ItemStack(Registration.ADVANCED_CIRCUIT.get(), 4),
+                new ItemStack(Registration.DUST_SILICON.get(), 24),
+                new ItemStack(Registration.INGOT_SILVER.get(), 24),
+                new ItemStack(Registration.INGOT_PLATINUM.get(), 12),
+                new ItemStack(Registration.INGOT_LITHIUM.get(), 8),
+                new ItemStack(Items.ENDER_PEARL, 4),
+                new ItemStack(Registration.FLUX_CAPACITOR.get(), 2),
+                new ItemStack(Blocks.GLASS, 8)
+        ));
+        recipes.add(new ConstructorRecipe(new ItemStack(Registration.HOLO_STORAGE_3.get()), RARE,
+                new ItemStack(Registration.ADVANCED_CIRCUIT.get(), 12),
+                new ItemStack(Registration.DUST_SILICON.get(), 64),
+                new ItemStack(Registration.INGOT_SILVER.get(), 64),
+                new ItemStack(Registration.INGOT_PLATINUM.get(), 32),
+                new ItemStack(Registration.INGOT_LITHIUM.get(), 24),
+                new ItemStack(Items.ENDER_PEARL, 16),
+                new ItemStack(Registration.FLUX_CAPACITOR.get(), 8),
+                new ItemStack(Blocks.GLASS, 16)
+        ));
         recipes.add(new ConstructorRecipe(new ItemStack(Registration.BLUEPRINT_STORAGE.get()), COMMON,
                 new ItemStack(DecorativeBlockModule.MARBLE.get(MarbleColor.BLACK).get(), 1),
                 new ItemStack(Registration.INGOT_SILVER.get(), 3),

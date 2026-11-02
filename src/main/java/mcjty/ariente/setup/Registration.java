@@ -1,6 +1,7 @@
 package mcjty.ariente.setup;
 
 import mcjty.ariente.display.DisplayBaseTile;
+import mcjty.ariente.blocks.storagecube.StorageCubeTile;
 import mcjty.ariente.display.DisplayModuleItem;
 import mcjty.ariente.display.PowerDisplayModule;
 import mcjty.ariente.display.StorageDisplayModule;
@@ -332,6 +333,14 @@ public class Registration {
     public static final RegistryObject<BaseBlock> STORAGE_3X3 = BLOCKS.register("storage_3x3", StorageTile::createBlock);
     public static final RegistryObject<Item> STORAGE_3X3_ITEM = ITEMS.register("storage_3x3", () -> new BlockItem(STORAGE_3X3.get(), createStandardProperties()));
     public static final RegistryObject<BlockEntityType<StorageTile>> STORAGE_TILE = TILES.register("storage", () -> BlockEntityType.Builder.of(StorageTile::new, STORAGE.get(), STORAGE_3X3.get()).build(null));
+
+    public static final RegistryObject<BaseBlock> HOLO_STORAGE_1 = BLOCKS.register("holo_storage_1", StorageCubeTile::createBlock);
+    public static final RegistryObject<Item> HOLO_STORAGE_1_ITEM = ITEMS.register("holo_storage_1", () -> new BlockItem(HOLO_STORAGE_1.get(), createStandardProperties()));
+    public static final RegistryObject<BaseBlock> HOLO_STORAGE_2 = BLOCKS.register("holo_storage_2", StorageCubeTile::createBlock);
+    public static final RegistryObject<Item> HOLO_STORAGE_2_ITEM = ITEMS.register("holo_storage_2", () -> new BlockItem(HOLO_STORAGE_2.get(), createStandardProperties()));
+    public static final RegistryObject<BaseBlock> HOLO_STORAGE_3 = BLOCKS.register("holo_storage_3", StorageCubeTile::createBlock);
+    public static final RegistryObject<Item> HOLO_STORAGE_3_ITEM = ITEMS.register("holo_storage_3", () -> new BlockItem(HOLO_STORAGE_3.get(), createStandardProperties()));
+    public static final RegistryObject<BlockEntityType<StorageCubeTile>> HOLO_STORAGE_TILE = TILES.register("holo_storage", () -> BlockEntityType.Builder.of(StorageCubeTile::new, HOLO_STORAGE_1.get(), HOLO_STORAGE_2.get(), HOLO_STORAGE_3.get()).build(null));
 
     public static final RegistryObject<BaseBlock> SMELTER = BLOCKS.register("smelter", SmelterTile::createBlock);
     public static final RegistryObject<Item> SMELTER_ITEM = ITEMS.register("smelter", () -> new BlockItem(SMELTER.get(), createStandardProperties()));

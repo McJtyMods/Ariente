@@ -21,6 +21,8 @@ public class BlockTags extends BlockTagsProvider {
     protected void addTags(HolderLookup.Provider provider) {
         addTag(net.minecraft.tags.BlockTags.MINEABLE_WITH_PICKAXE, Registration.DISPLAY_BASE.get());
         addTag(net.minecraft.tags.BlockTags.MINEABLE_WITH_PICKAXE, Registration.SMELTER.get());
+        addTag(net.minecraft.tags.BlockTags.MINEABLE_WITH_PICKAXE,
+                Registration.HOLO_STORAGE_1.get(), Registration.HOLO_STORAGE_2.get(), Registration.HOLO_STORAGE_3.get());
         Block[] ores = {Registration.ORE_LITHIUM.get(), Registration.ORE_MANGANESE.get(), Registration.ORE_PLATINUM.get(),
                 Registration.ORE_SILVER.get(), Registration.ORE_SILICON.get(), Registration.ORE_NEGARITE.get(), Registration.ORE_POSIRITE.get()};
         addTag(net.minecraft.tags.BlockTags.MINEABLE_WITH_PICKAXE, ores);

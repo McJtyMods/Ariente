@@ -616,6 +616,9 @@ public class BlockStates extends BaseBlockStateProvider {
                 .child("window", window)
                 .end();
         simpleBlock(Registration.AICORE.get(), core);
+        simpleBlock(Registration.HOLO_STORAGE_1.get(), core);
+        simpleBlock(Registration.HOLO_STORAGE_2.get(), core);
+        simpleBlock(Registration.HOLO_STORAGE_3.get(), core);
     }
 
     private void registerBaseModels() {

@@ -130,6 +130,21 @@ tasks.withType(JavaExec).configureEach {
     }
 }
 
+// Isolated storage inventory gestures, hover scrolling and rendering verification.
+if (project.hasProperty('ariente_holo_storage_check')) {
+    minecraft.runs.client {
+        workingDirectory project.file('build/verification/holo-storage-client')
+        mods.ariente.source(sourceSets.gameTest)
+        property 'ariente.holoStorageClientCheck', 'true'
+        args '--quickPlaySingleplayer', 'HoloStorageCheck', '--width', '1280', '--height', '800'
+    }
+    tasks.withType(JavaExec).configureEach {
+        if (name == 'runClient') {
+            dependsOn 'gameTestClasses'
+        }
+    }
+}
+
 // Isolated holographic display, keyboard input, preview and packet verification.
 if (project.hasProperty('ariente_display_check')) {
     minecraft.runs.client {

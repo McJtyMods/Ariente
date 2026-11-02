@@ -79,6 +79,7 @@ identified alongside the affected feature and collected in [Port gaps](#port-gap
 - [The dual power system](#the-dual-power-system)
 - [Blueprints and construction](#blueprints-and-construction)
 - [Storage Cube](#storage-cube)
+- [Holo Storage Cubes](#holo-storage-cubes)
 - [Smelter](#smelter)
 - [Automation fields](#automation-fields)
 - [Doors, keys, locks, and wireless signals](#doors-keys-locks-and-wireless-signals)
@@ -655,6 +656,43 @@ AI Core card supplies storage access; an ordinary door-access card is not the
 same key. The present UI is not a complete player key-programming system.
 
 Source: [Storage Cube](src/main/java/mcjty/ariente/blocks/utility/StorageTile.java).
+
+## Holo Storage Cubes
+
+Holo Storage Cubes are glass devices with **30, 60 or 120 ordinary stack slots**.
+They accept any mixture of items, respecting each item's normal stack limit.
+All six faces allow insertion and extraction through the item handler capability.
+They need no flux, and breaking a cube preserves its inventory in the dropped item.
+
+Right-click to open the holographic inventory. The upper grid shows a window of
+nine columns by three rows from storage. The lower grid shows the player's main
+inventory in three rows of nine, followed by the hotbar. Point at either vertical
+side bar beside storage to scroll left or right one column at a time; no click is
+needed, and scrolling continues while pointing at the bar.
+
+- Hold left-click on a stack, aim at another slot and release to move it.
+- Alternatively, click a source and then click its destination.
+- Sneak-click a stack to transfer it immediately to the other inventory.
+- Matching stacks merge up to their stack limit; full stacks can swap with different items.
+- Click the selected source again to cancel. Right-click the panel or click **X** to close.
+- Click **?** at the top-right to open the Holo Storage Cubes manual entry.
+
+Items remain in their source until a transfer completes. A changed source or
+destination cancels the move safely; this also protects transfers while automation
+or another player is using the cube. Leaving or closing a panel during a drag
+cannot strand an item on a cursor.
+
+Up to eight different item representations drift slowly inside the glass. Each
+lasts about five seconds, fading at both ends. Item counts weight their chance of
+appearing. Animation and scrolling run locally. Nearby clients receive at most
+sixteen weighted candidates, refreshed when contents change and every five seconds
+for inventories with more item types. Actual inventory changes go only to active
+panel viewers, as changed slots at most four times per second while idle.
+
+All tiers have Constructor blueprints, with common, uncommon and rare blueprint
+rarities respectively. Higher tiers use substantially more advanced materials.
+Each is built from raw materials, so crafting never consumes a filled lower-tier
+cube. See the recipe table below or JEI.
 
 ## Automation fields
 
@@ -1390,6 +1428,9 @@ including matching connector ingredients. Data variants have no catalog recipe.
 | Auto Constructor | Common | Constructor, 2 × Circuit, Silver Ingot, 2 × Platinum Ingot, 2 × Silicon |
 | Storage Cube | Common | Black Marble, 3 × Silver Ingot, Chest, 4 × Glass Pane |
 | Storage Cube (3x3) | Common | Black Marble, 6 × Silver Ingot, Circuit, 2 × Chest, 9 × Glass Pane |
+| Holo Storage Cube I (30 stacks) | Common | 2 × Circuit, 8 × Silicon, 8 × Silver Ingot, 2 × Lithium Ingot, Ender Pearl, 6 × Glass, Black Marble |
+| Holo Storage Cube II (60 stacks) | Uncommon | 4 × Advanced Circuit, 24 × Silicon, 24 × Silver Ingot, 12 × Platinum Ingot, 8 × Lithium Ingot, 4 × Ender Pearl, 2 × Flux Capacitor, 8 × Glass |
+| Holo Storage Cube III (120 stacks) | Rare | 12 × Advanced Circuit, 64 × Silicon, 64 × Silver Ingot, 32 × Platinum Ingot, 24 × Lithium Ingot, 16 × Ender Pearl, 8 × Flux Capacitor, 16 × Glass |
 | Smelter | Common | Black Marble, 3 × Silver Ingot, Circuit, 2 × Silicon, Furnace |
 | Blueprint Storage | Common | Black Marble, 3 × Silver Ingot, 2 × Silicon, Chest, 4 × Glass Pane |
 | Elevator | Common | Circuit, Black Marble Slab, 3 × Silver Ingot |

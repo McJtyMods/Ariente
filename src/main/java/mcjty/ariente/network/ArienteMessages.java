@@ -1,6 +1,8 @@
 package mcjty.ariente.network;
 
 import mcjty.ariente.Ariente;
+import mcjty.ariente.blocks.storagecube.PacketStorageCubeAction;
+import mcjty.ariente.blocks.storagecube.PacketStorageCubeData;
 import mcjty.ariente.display.PacketDisplayAction;
 import mcjty.ariente.display.PacketDisplayData;
 import mcjty.ariente.display.PacketDisplayGesture;
@@ -29,7 +31,7 @@ import java.util.Optional;
 
 public class ArienteMessages {
 
-    private static final String PROTOCOL_VERSION = "7";
+    private static final String PROTOCOL_VERSION = "8";
 
     public static SimpleChannel INSTANCE;
 
@@ -43,6 +45,11 @@ public class ArienteMessages {
 
 
         INSTANCE = net;
+
+        net.registerMessage(id(), PacketStorageCubeAction.class, PacketStorageCubeAction::toBytes, PacketStorageCubeAction::new,
+                PacketStorageCubeAction::handle, Optional.of(NetworkDirection.PLAY_TO_SERVER));
+        net.registerMessage(id(), PacketStorageCubeData.class, PacketStorageCubeData::toBytes, PacketStorageCubeData::new,
+                PacketStorageCubeData::handle, Optional.of(NetworkDirection.PLAY_TO_CLIENT));
 
         net.registerMessage(id(), PacketDisplayAction.class, PacketDisplayAction::toBytes, PacketDisplayAction::new,
                 PacketDisplayAction::handle, Optional.of(NetworkDirection.PLAY_TO_SERVER));
