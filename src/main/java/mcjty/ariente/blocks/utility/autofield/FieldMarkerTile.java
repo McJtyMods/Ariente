@@ -91,14 +91,22 @@ public class FieldMarkerTile extends GenericTileEntity {
     @Override
     public void onPartAdded(PartSlot slot, BlockState state, BlockEntity multipartTile) {
         this.level = multipartTile.getLevel();
-        // @todo 1.18 this.worldPosition = multipartTile.getBlockPos();
+        connectToField(level, worldPosition);
     }
 
     @Override
     public void onBlockPlacedBy(Level world, BlockPos pos, BlockState state, LivingEntity placer, ItemStack stack) {
+        connectToField(world, pos);
+    }
+
+    private void connectToField(Level world, BlockPos pos) {
         AutoFieldTile auto = null;
         for (Direction facing : OrientationTools.HORIZONTAL_DIRECTION_VALUES) {
             BlockPos p = pos.relative(facing);
+            if (world.hasChunkAt(p) && world.getBlockEntity(p) instanceof AutoFieldTile field) {
+                auto = field;
+                break;
+            }
             BlockEntity te = MultipartHelper.getBlockEntity(world, p, PartSlot.DOWN);
             if (te instanceof FieldMarkerTile) {
                 BlockPos tile = ((FieldMarkerTile) te).getAutoFieldTile();

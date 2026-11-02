@@ -58,10 +58,13 @@ import static mcjty.lib.builder.TooltipBuilder.key;
 
 public class AutoFieldTile extends TickingTileEntity implements IGuiTile, IPowerReceiver, IPowerUser {
 
+    private static final Set<AutoFieldTile> LOADED_FIELDS = Collections.synchronizedSet(Collections.newSetFromMap(new WeakHashMap<>()));
+
     private int height = 1;
     private AABB fieldBox = null;
     private AABB renderBox = null;
     private Set<BlockPos> markers = null;
+    private Set<BlockPos> fieldColumns = null;
     private final Set<BlockPos> linkedMarkers = new HashSet<>();
     private volatile Set<Long> watchedChunks = Set.of();
     private final AtomicBoolean refreshField = new AtomicBoolean();
@@ -381,7 +384,7 @@ public class AutoFieldTile extends TickingTileEntity implements IGuiTile, IPower
     private Set<PartPos> getInputItemNodes() {
         if (inputItemNodes == null) {
             inputItemNodes = new HashSet<>();
-            for (BlockPos mpos : getMarkers()) {
+            for (BlockPos mpos : getFieldColumns()) {
                 for (int y = 0; y <= height; y++) {
                     BlockPos p = mpos.above(y);
                     for (PartSlot slot : PartSlot.VALUES) {
@@ -439,7 +442,7 @@ public class AutoFieldTile extends TickingTileEntity implements IGuiTile, IPower
     private void findOutputNodes() {
         outputItemNodes = new HashSet<>();
         outputmodifierNodes = new HashSet<>();
-        for (BlockPos mpos : getMarkers()) {
+        for (BlockPos mpos : getFieldColumns()) {
             for (int y = 0; y <= height; y++) {
                 BlockPos p = mpos.above(y);
                 for (NodeOrientation orientation : NodeOrientation.VALUES) {
@@ -460,7 +463,7 @@ public class AutoFieldTile extends TickingTileEntity implements IGuiTile, IPower
 
     private void findSensorNodes() {
         sensorNodes = new HashMap<>();
-        for (BlockPos mpos : getMarkers()) {
+        for (BlockPos mpos : getFieldColumns()) {
             for (int y = 0; y <= height; y++) {
                 BlockPos p = mpos.above(y);
                 for (NodeOrientation orientation : NodeOrientation.VALUES) {
@@ -480,6 +483,7 @@ public class AutoFieldTile extends TickingTileEntity implements IGuiTile, IPower
     public void onLoad() {
         super.onLoad();
         invalidateBox();
+        LOADED_FIELDS.add(this);
         if (!level.isClientSide && !listeningForChunks) {
             MinecraftForge.EVENT_BUS.register(this);
             listeningForChunks = true;
@@ -496,6 +500,7 @@ public class AutoFieldTile extends TickingTileEntity implements IGuiTile, IPower
     }
 
     private void stopListeningForChunks() {
+        LOADED_FIELDS.remove(this);
         if (listeningForChunks) {
             MinecraftForge.EVENT_BUS.unregister(this);
             listeningForChunks = false;
@@ -546,34 +551,27 @@ public class AutoFieldTile extends TickingTileEntity implements IGuiTile, IPower
         sensorNodes = null;
     }
 
-    // Call this to check if there is a field marker below us and if that
-    // field marker is connected to an auto field tile that tile will be notified
+    // Interior nodes need no marker below them, so notify loaded controllers covering this position.
     public static void notifyField(Level world, BlockPos pos) {
-        BlockPos originalPos = pos;
-        while (pos.getY() >= world.getMinBuildHeight()) {
-            BlockEntity te = MultipartHelper.getBlockEntity(world, pos, PartSlot.DOWN);
-            if (te instanceof FieldMarkerTile) {
-                BlockPos fieldPos = ((FieldMarkerTile) te).getAutoFieldTile();
-                if (fieldPos != null) {
-                    BlockEntity tileEntity = world.hasChunkAt(fieldPos) ? world.getBlockEntity(fieldPos) : null;
-                    if (tileEntity instanceof AutoFieldTile) {
-                        ((AutoFieldTile) tileEntity).notifyNode(originalPos);
-                    }
-                }
-                return;
+        List<AutoFieldTile> fields;
+        synchronized (LOADED_FIELDS) {
+            fields = List.copyOf(LOADED_FIELDS);
+        }
+        for (AutoFieldTile field : fields) {
+            if (field.level == world && !field.isRemoved() && pos.getY() >= field.worldPosition.getY()
+                    && pos.getY() <= field.worldPosition.getY() + field.height
+                    && field.getFieldColumns().contains(new BlockPos(pos.getX(), field.worldPosition.getY(), pos.getZ()))) {
+                field.notifyNode(pos);
             }
-            pos = pos.below();
         }
     }
 
     public void addFieldMarker(BlockPos pos) {
-        getMarkers().add(pos);
         invalidateBox();
         markDirtyClient();
     }
 
     public void removeFieldMarker(BlockPos pos) {
-        getMarkers().remove(pos);
         invalidateBox();
         markDirtyClient();
     }
@@ -592,6 +590,7 @@ public class AutoFieldTile extends TickingTileEntity implements IGuiTile, IPower
         fieldBox = null;
         renderBox = null;
         markers = null;
+        fieldColumns = null;
         consumerInfo = null;
         producerInfo = null;
         inputItemNodes = null;
@@ -633,7 +632,15 @@ public class AutoFieldTile extends TickingTileEntity implements IGuiTile, IPower
         return markers;
     }
 
+    private Set<BlockPos> getFieldColumns() {
+        if (fieldColumns == null) {
+            calculateMarkers();
+        }
+        return fieldColumns;
+    }
+
     private void calculateMarkers() {
+        LOADED_FIELDS.add(this);
         fieldBox = null;
         markers = new HashSet<>();
         Set<Long> chunks = new HashSet<>();
@@ -669,11 +676,51 @@ public class AutoFieldTile extends TickingTileEntity implements IGuiTile, IPower
         linkedMarkers.removeIf(pos -> !markers.contains(pos) && clearMarkerLink(pos));
         linkedMarkers.addAll(markers);
         linkedMarkers.forEach(pos -> chunks.add(ChunkPos.asLong(pos.getX() >> 4, pos.getZ() >> 4)));
+        calculateFieldColumns();
+        fieldColumns.forEach(pos -> chunks.add(ChunkPos.asLong(pos.getX() >> 4, pos.getZ() >> 4)));
         watchedChunks = Set.copyOf(chunks);
 
         renderBox = new AABB(getBlockPos());
         if (fieldBox != null) {
             renderBox = renderBox.minmax(fieldBox);
+        }
+    }
+
+    private void calculateFieldColumns() {
+        fieldColumns = new HashSet<>(markers);
+        if (fieldBox == null) {
+            return;
+        }
+        int minX = (int) fieldBox.minX - 1;
+        int maxX = (int) fieldBox.maxX;
+        int minZ = (int) fieldBox.minZ - 1;
+        int maxZ = (int) fieldBox.maxZ;
+        int y = worldPosition.getY();
+
+        // Flood the outside of the marker outline. Only markers and the controller form the border;
+        // machines, nodes and other blocks inside the field must not affect its shape.
+        Set<BlockPos> outside = new HashSet<>();
+        Queue<BlockPos> todo = new ArrayDeque<>();
+        BlockPos start = new BlockPos(minX, y, minZ);
+        outside.add(start);
+        todo.add(start);
+        while (!todo.isEmpty()) {
+            BlockPos pos = todo.poll();
+            for (Direction direction : OrientationTools.HORIZONTAL_DIRECTION_VALUES) {
+                BlockPos next = pos.relative(direction);
+                if (next.getX() >= minX && next.getX() <= maxX && next.getZ() >= minZ && next.getZ() <= maxZ
+                        && !next.equals(worldPosition) && !markers.contains(next) && outside.add(next)) {
+                    todo.add(next);
+                }
+            }
+        }
+        for (int x = minX + 1; x < maxX; x++) {
+            for (int z = minZ + 1; z < maxZ; z++) {
+                BlockPos pos = new BlockPos(x, y, z);
+                if (!outside.contains(pos) && !pos.equals(worldPosition)) {
+                    fieldColumns.add(pos);
+                }
+            }
         }
     }
 

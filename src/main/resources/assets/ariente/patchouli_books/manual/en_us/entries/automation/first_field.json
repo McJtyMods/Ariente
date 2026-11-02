@@ -7,7 +7,7 @@
     {
       "type": "patchouli:text",
       "title": "Mark the working area",
-      "text": "Place an Automation Field controller. Lay a connected area of Field Markers beside it at the controller’s base height.$(br2)Markers must sit under the columns where the $(thing)nodes$() will be. Fill the area rather than marking only its outline. Set the height in the controller’s hologram to reach the nodes, and enable the outline display to check coverage."
+      "text": "Place an Automation Field controller. Build a connected, closed border of Field Markers at the controller’s base height, touching the controller. The controller can be part of the border.$(br2)The field covers the markers and their enclosed interior, including the bottom layer. Leave the inside free for nodes and machines. Set the height in the controller’s hologram to reach the upper nodes."
     },
     {
       "type": "patchouli:text",
@@ -17,7 +17,7 @@
     {
       "type": "patchouli:text",
       "title": "Start small",
-      "text": "Set the Output Node’s batch size to 1 for your first transfer. Put matching items in the source and leave room in the destination.$(br2)The default Whitelist mode needs samples on both nodes. An empty whitelist allows nothing; an empty blacklist allows everything.$(br2)Enable the outline display to check coverage. Mark the node columns even when they sit beside, rather than above, the chests."
+      "text": "Set the Output Node’s batch size to 1 for your first transfer. Put matching items in the source and leave room in the destination.$(br2)The default Whitelist mode needs samples on both nodes. An empty whitelist allows nothing; an empty blacklist allows everything.$(br2)Keep the nodes themselves inside the border, even when mounted beside their inventories. A gap in the border leaves the interior uncovered. Enable the outline display to check the field’s overall bounds."
     }
   ],
   "extra_recipe_mappings": {

@@ -12,7 +12,7 @@
     {
       "type": "patchouli:text",
       "title": "Missing recipes or effects",
-      "text": "A Constructor needs a populated blueprint in directly adjacent Blueprint Storage. Hover over a crossed-out result for missing ingredients.$(br2)Equipment needs an installed, enabled module, both dusts, and room in that piece’s power budget.$(br2)For item transfers, check both filters and markers under the nodes."
+      "text": "A Constructor needs a populated blueprint in directly adjacent Blueprint Storage. Hover over a crossed-out result for missing ingredients.$(br2)Equipment needs an installed, enabled module, both dusts, and room in that piece’s power budget.$(br2)For item transfers, check both filters, a closed marker border connected to the controller, and nodes within the field’s height."
     }
   ]
 }

@@ -1,4 +1,5 @@
 1.20-0.0.31-alpha:
+- Automation Fields now cover the interior of a closed Field Marker border, including the bottom layer, leaving room there for nodes and machines. Existing filled marker layouts still work.
 - Creative-mode clicks on Smelter and 2x2/3x3 Storage Cube item slots now extract items without breaking the block. Empty slots and held clicks remain protected; a fresh click on the casing still breaks it normally.
 - Blueprint Storage, the Constructor and Auto Constructor ingredient panels now show your whole inventory. Unusable items are dimmed and cannot be selected or transferred; hover tooltips still identify them.
 - Input Item Nodes can select recipe-aware Smeltable, Wood, Ingots and Other categories in addition to their sample filters. Storage categories exclude smeltable items so a full smelter cannot send unprocessed items to storage.
