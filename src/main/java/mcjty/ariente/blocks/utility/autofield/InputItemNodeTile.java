@@ -37,8 +37,7 @@ public class InputItemNodeTile extends AbstractItemNodeTile {
         super.load(tagCompound);
         inputFilter.clear();
         CompoundTag info = tagCompound.getCompound("Info");
-        // Older saves stored the item filter outside the data copied by loot tables.
-        ContainerHelper.loadAllItems(info.contains("input") ? info.getCompound("input") : tagCompound.getCompound("input"), inputFilter);
+        ContainerHelper.loadAllItems(info.getCompound("input"), inputFilter);
         if (!info.isEmpty()) {
             inputDamage = info.getBoolean("inDamage");
             inputNbt = info.getBoolean("inNBT");

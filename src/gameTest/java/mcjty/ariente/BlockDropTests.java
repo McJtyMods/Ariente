@@ -91,7 +91,7 @@ public class BlockDropTests {
     }
 
     @GameTest(template = "empty")
-    public static void legacyNodeFiltersMigrateIntoLootData(GameTestHelper helper) throws Exception {
+    public static void lootAndPlacementPreserveNodeFilters(GameTestHelper helper) throws Exception {
         for (boolean input : new boolean[]{true, false}) {
             Block block = input ? Registration.INPUT_ITEM_NODE.get() : Registration.OUTPUT_ITEM_NODE.get();
             String key = input ? "input" : "output";
@@ -99,14 +99,13 @@ public class BlockDropTests {
             CompoundTag expected = TagParser.parseTag(input
                     ? "{f0:2,f3:9,inDamage:1b,inNBT:1b,inOre:1b}"
                     : "{f0:2,f3:9,outDamage:1b,outNBT:1b,outOre:1b,outSS:23}");
-            CompoundTag legacy = new CompoundTag();
-            legacy.put(key, filter.copy());
-            legacy.put("Info", expected.copy());
-            BlockEntity source = source(helper, block);
-            source.load(legacy);
-            ItemStack drop = loot(helper, source);
             expected.put(key, filter);
-            assertContains(helper, expected, BlockItem.getBlockEntityData(drop).getCompound("Info"), "Migrated node loot");
+            CompoundTag data = new CompoundTag();
+            data.put("Info", expected.copy());
+            BlockEntity source = source(helper, block);
+            source.load(data);
+            ItemStack drop = loot(helper, source);
+            assertContains(helper, expected, BlockItem.getBlockEntityData(drop).getCompound("Info"), "Node loot");
             BlockEntity restored = place(helper, drop, block);
             assertContains(helper, expected, restored.saveWithoutMetadata().getCompound("Info"), "Replaced node");
             ItemStack restoredFilter = input ? ((InputItemNodeTile) restored).getInputFilter().get(0)

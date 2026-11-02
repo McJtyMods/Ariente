@@ -34,8 +34,7 @@ public class OutputItemNodeTile extends AbstractItemNodeTile {
         super.load(tagCompound);
         outputFilter.clear();
         CompoundTag info = tagCompound.getCompound("Info");
-        // Older saves stored the item filter outside the data copied by loot tables.
-        ContainerHelper.loadAllItems(info.contains("output") ? info.getCompound("output") : tagCompound.getCompound("output"), outputFilter);
+        ContainerHelper.loadAllItems(info.getCompound("output"), outputFilter);
         if (!info.isEmpty()) {
             outputDamage = info.getBoolean("outDamage");
             outputNbt = info.getBoolean("outNBT");
