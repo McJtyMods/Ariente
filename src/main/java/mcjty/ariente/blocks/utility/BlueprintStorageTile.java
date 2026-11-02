@@ -19,6 +19,8 @@ import mcjty.lib.tileentity.Cap;
 import mcjty.lib.tileentity.CapType;
 import mcjty.lib.tileentity.GenericTileEntity;
 import net.minecraft.core.BlockPos;
+import net.minecraft.nbt.CompoundTag;
+import net.minecraft.nbt.Tag;
 import net.minecraft.world.InteractionHand;
 import net.minecraft.world.InteractionResult;
 import net.minecraft.world.entity.player.Player;
@@ -114,7 +116,7 @@ public class BlueprintStorageTile extends GenericTileEntity implements IGuiTile,
                 .add(registry.iconButton(3, 2.8, 1, 1).icon(registry.image(GRAY_ARROW_DOWN)).hover(registry.image(WHITE_ARROW_DOWN))
                         .hitEvent((component, player, entity, x, y) -> transferToPlayer(player, entity)))
 
-                .add(new PlayerInventoryPanel("Double-click to store blueprints")
+                .add(new PlayerInventoryPanel("Double-click bright blueprints")
                         .name("playerslots")
                         .doubleClickEvent((component, player, entity, x, y, stack, index) -> transferToMachine(player, entity))
                         .filter((stack, index) -> stack.getItem() instanceof BlueprintItem))
@@ -146,7 +148,7 @@ public class BlueprintStorageTile extends GenericTileEntity implements IGuiTile,
                 int selected = ((IPlayerSlots) component).getSelected();
                 if (selected != -1) {
                     ItemStack extracted = player.getInventory().getItem(selected);
-                    if (!extracted.isEmpty()) {
+                    if (extracted.getItem() instanceof BlueprintItem) {
                         ItemStack notInserted = ItemHandlerHelper.insertItem(items, extracted, false);
                         player.getInventory().setItem(selected, notInserted);
                         if (notInserted.isEmpty()) {
@@ -160,11 +162,30 @@ public class BlueprintStorageTile extends GenericTileEntity implements IGuiTile,
     }
 
     @Override
+    public void saveClientDataToNBT(CompoundTag tag) {
+        tag.put("Items", items.serializeNBT());
+    }
+
+    @Override
+    public void loadClientDataFromNBT(CompoundTag tag) {
+        items.deserializeNBT(tag.getList("Items", Tag.TAG_COMPOUND));
+    }
+
+    @Override
     public void syncToClient() {
     }
 
     private GenericItemHandler createItemHandler() {
         return new GenericItemHandler(BlueprintStorageTile.this, CONTAINER_FACTORY.get()) {
+
+            @Override
+            protected void onUpdate(int index, ItemStack stack) {
+                super.onUpdate(index, stack);
+                if (level != null && !level.isClientSide) {
+                    markDirtyClient();
+                }
+            }
+
             @Override
             public boolean isItemValid(int slot, @Nonnull ItemStack stack) {
                 return stack.getItem() == Registration.BLUEPRINT.get();

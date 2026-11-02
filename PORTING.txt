@@ -16,13 +16,65 @@ Both documents are intended to let a future Codex session resume without chat
 history. Equipment, progression, systems and phase-4 integration checkpoints
 are recorded below, with their remaining gameplay and release limits.
 
+BLUEPRINT TOOLTIP AND CREATIVE SLOT CLICKS (2026-11-02)
+=====================================================
+- Constructor missing-ingredient tooltips resolve item-name Components to text;
+  they no longer concatenate Component translation/debug representations.
+- Creative attacks on Smelter input/output slots and either grouped Storage
+  Cube (2x2/3x3) now use the extraction message instead of Minecraft's block
+  destruction path. A consumed attack stays consumed until release, including
+  empty slots and drifting off-slot. Fresh casing clicks still break machines.
+- BlockInventoryInteraction shares the existing slot geometry and validates the
+  server player's reach, line of sight and requested slot before extraction.
+  The existing PacketClickStorage payload/registration is reused for Smelters,
+  preserving message IDs; survival storage clicks also use these checks.
+- Java 17 workspace build and 13 focused GameTests passed (Smelter, Storage,
+  player grids and slot transfers). BlockInventoryClientChecks passed with real
+  Minecraft attack-key input: single extraction, Smelter output, held/drifting
+  attacks, empty slots, fresh casing clicks and ordinary creative breaking.
+  Run with :Ariente:runClient -Pariente_runs -Pariente_block_inventory_check
+  using an existing isolated InventoryCheck fixture world. Result file:
+  build/verification/block-inventory-client/block-inventory-check.txt.
+- The construction inventory client check also captures constructor-tooltip.png
+  for visual verification of translated missing-ingredient names.
+- Kept 1.20-0.0.31-alpha: Modrinth publication recheck found no Forge 1.20.1
+  version, while CurseForge file-list retrieval still returns HTTP 403. Creative
+  slot protection is recorded as player-visible behavior; the tooltip port
+  repair needs no additional changelog entry.
+
+FULL INVENTORIES AND DISABLED ITEMS (2026-11-02)
+===============================================
+- Blueprint Storage, Constructor and Auto Constructor Ingredients retain all 36
+  carried slots and show unrelated items dimmed, including their stack counts.
+  Only eligible nonempty slots select/highlight/click; disabled items keep hover
+  tooltips without click sounds. Transfer arrows revalidate eligibility on the
+  server, including selections invalidated by inventory or blueprint changes.
+- Blueprint Storage now includes its items in client chunk/update packets and
+  sends updates on real slot changes, including automation. Constructor recipe
+  and ingredient eligibility therefore follows the actual adjacent library.
+  Auto Constructor ingredient/output items use the same synchronization hooks.
+  Inventory/save format and capability IDs are unchanged.
+- Workspace Java 17 build and 11 focused PlayerInventoryPanel/HoloStorage
+  GameTests passed, including disabled selections, tooltips, rejected transfers
+  and packet insertion/removal. Real-client checks passed through populated,
+  cleared and restored server inventories without manually seeding client data.
+- Reproduce client checks with :Ariente:runClient -Pariente_runs
+  -Pariente_construction_inventory_check. The isolated InventoryCheck fixture
+  world must already exist (a copy of the existing inventory verification world
+  was used). Client capture/result files are under
+  build/verification/construction-inventory-client/. Front and 35-degree views
+  show all three affected panels at each blueprint transition.
+- Publication rechecked: Modrinth still lists no Forge 1.20.1 release; direct
+  CurseForge file-list retrieval remains HTTP 403. Kept 1.20-0.0.31-alpha with
+  the new player-visible inventory behavior under its existing changelog heading.
+
 PLAYER INVENTORY LAYOUTS (2026-11-02)
 ====================================
 - Input/Output Item Nodes, Blueprint Storage, the manual Constructor and the
   Auto Constructor Ingredients page now use the Holo Storage inventory layout:
   three nine-slot rows, a separated hotbar, a divider and small action hints.
-  Filtered blueprint/ingredient views keep actual inventory positions and leave
-  unrelated slots blank. Existing double-click, selection and arrow actions stay.
+  Blueprint/ingredient views keep actual inventory positions and now dim
+  unrelated items (see the full-inventory follow-up above). Existing double-click, selection and arrow actions stay.
 - InventoryLayout shares hit coordinates with Holo Storage; InventoryRenderer
   shares bordered slots, aligned full-bright icons and lower-right stack counts.
   PlayerInventoryPanel uses HoloGui's existing selection and tooltip handling.
@@ -33,8 +85,9 @@ PLAYER INVENTORY LAYOUTS (2026-11-02)
   indices, hotbar-gap/outside hits, filtered positions, both node filter samples,
   blueprint transfers and Auto Constructor ingredient transfers.
 - Rendering captures for all five panels, front and 35-degree views, are under
-  build/verification/inventory-client/. Populated client fixtures check layout
-  independently of existing machine inventory synchronization. The temporary
+  build/verification/inventory-client/. These original populated client fixtures
+  checked layout independently of machine synchronization; the follow-up above
+  now verifies real server updates. The temporary
   preview driver/init script are /tmp/ariente-inventory-client-src and
   /tmp/ariente-inventory-client.gradle; focused server checks use
   /tmp/ariente-inventory-tests.gradle. These paths are local verification aids.

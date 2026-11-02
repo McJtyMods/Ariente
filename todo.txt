@@ -12,3 +12,4 @@
 - Fix automation
 - Use new displays in dungeons and tutorial level
 - Better layout for top-right of all hologui's
+- Automation field: Only require the ring of field markers and not the entire surface

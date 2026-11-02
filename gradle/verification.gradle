@@ -174,3 +174,33 @@ if (project.hasProperty('ariente_display_check')) {
         }
     }
 }
+
+// Full carried inventories, disabled items and blueprint-driven client eligibility.
+if (project.hasProperty('ariente_construction_inventory_check')) {
+    minecraft.runs.client {
+        workingDirectory project.file('build/verification/construction-inventory-client')
+        mods.ariente.source(sourceSets.gameTest)
+        property 'ariente.constructionInventoryCheck', 'true'
+        args '--quickPlaySingleplayer', 'InventoryCheck', '--width', '1280', '--height', '800'
+    }
+    tasks.withType(JavaExec).configureEach {
+        if (name == 'runClient') {
+            dependsOn 'gameTestClasses'
+        }
+    }
+}
+
+// Actual creative attack-key routing over physical machine inventory slots.
+if (project.hasProperty('ariente_block_inventory_check')) {
+    minecraft.runs.client {
+        workingDirectory project.file('build/verification/block-inventory-client')
+        mods.ariente.source(sourceSets.gameTest)
+        property 'ariente.blockInventoryCheck', 'true'
+        args '--quickPlaySingleplayer', 'InventoryCheck', '--width', '1280', '--height', '800'
+    }
+    tasks.withType(JavaExec).configureEach {
+        if (name == 'runClient') {
+            dependsOn 'gameTestClasses'
+        }
+    }
+}

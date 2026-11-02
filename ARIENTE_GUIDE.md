@@ -541,8 +541,10 @@ adjacent storage; there is no general wireless blueprint library.
 
 Its hologram transfers blueprints between the player's inventory and the six
 storage slots. Stored blueprints appear above your inventory, which uses three
-nine-slot rows and a separated hotbar. Only blueprints are shown, in their actual
-inventory positions. Double-click the appropriate displayed slot to transfer.
+nine-slot rows and a separated hotbar. Your whole inventory stays visible in its
+actual positions. Blueprints are bright; other items are dimmed and cannot be
+selected or transferred. Hover still identifies them. Double-click a blueprint
+to transfer it.
 Installed blueprints are recipe references and are **not consumed by crafting**.
 
 The creative tab and JEI include one populated Blueprint per catalog recipe.
@@ -563,8 +565,8 @@ development aid, not a survival blueprint-writing mechanic.
 2. Insert the desired populated blueprint into that storage.
 3. Carry the required ingredients in your player inventory.
 4. Open the Constructor hologram. Its upper area shows available blueprints/results;
-   its lower area shows relevant ingredients in their inventory positions, with
-   a separated hotbar.
+   its lower area shows your whole inventory, with a separated hotbar. Needed
+   ingredients are bright; other items are dimmed and cannot be selected.
 5. Hover a result to see missing ingredients. **Double-click its blueprint** to
    craft. The machine consumes ingredients from your inventory and puts the
    result into your inventory, dropping it if necessary.
@@ -587,9 +589,11 @@ ingredients and products inside the machine:
 | Recipe selection | Cycles through slots in adjacent Blueprint Storage blocks. |
 | Timing | Normally checks another slot every 10 powered ticks; empty blueprint slots use a shorter delay. |
 
-The Ingredients page shows machine slots above your inventory. Relevant carried
-ingredients retain their positions in three nine-slot rows and a separated
-hotbar. Double-click a stack to transfer it, or select it and use the arrows.
+The Ingredients page shows machine slots above your whole inventory, in three
+nine-slot rows and a separated hotbar. Ingredients used by adjacent blueprints
+are bright; other items are dimmed and cannot be selected or transferred. Hover
+still identifies dimmed items. Double-click a bright stack to transfer it, or
+select it and use the arrows.
 
 Supply ingredients, remove products, attach power connectors, and set its
 redstone mode appropriately. This is a cycling crafter, not a demand-driven
@@ -634,6 +638,11 @@ Craft it with a **common Smelter blueprint** in a Constructor or Auto Constructo
 Black Marble, 3 Silver Ingots, Circuit, 2 Silicon, and a Furnace. The populated
 blueprint works through adjacent Blueprint Storage like other machine patterns.
 
+In Creative mode, left-clicking either front slot extracts items without breaking
+the Smelter, even when the slot is empty. Holding that click and moving off the
+slot stays protected until you release it. Start a fresh click on the casing to
+break the block normally.
+
 Source: [Smelter](src/main/java/mcjty/ariente/blocks/utility/SmelterTile.java).
 
 ## Storage Cube
@@ -669,6 +678,11 @@ slot. City Storage Cubes can contain loot and require that city's storage key.
 Present a matching Key Card directly to the cube to toggle its lock. The final
 AI Core card supplies storage access; an ordinary door-access card is not the
 same key. The present UI is not a complete player key-programming system.
+
+In Creative mode, slot clicks on both the 2x2 and 3x3 cubes extract items without
+breaking the block, including empty slots. A held slot click stays protected if
+you drift onto the casing. Release it and start a fresh casing click to break
+the cube normally.
 
 Source: [Storage Cube](src/main/java/mcjty/ariente/blocks/utility/StorageTile.java).
 

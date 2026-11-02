@@ -12,6 +12,7 @@ import mcjty.ariente.setup.Registration;
 import mcjty.hologui.api.IGuiComponent;
 import mcjty.hologui.api.components.IPlayerSlots;
 import mcjty.hologui.gui.HoloGuiEntity;
+import mcjty.lib.tileentity.GenericTileEntity;
 import net.minecraft.core.BlockPos;
 import net.minecraft.gametest.framework.GameTest;
 import net.minecraft.gametest.framework.GameTestHelper;
@@ -22,6 +23,7 @@ import net.minecraft.world.item.Items;
 import net.minecraftforge.common.capabilities.ForgeCapabilities;
 import net.minecraftforge.gametest.GameTestHolder;
 import net.minecraftforge.gametest.PrefixGameTestTemplate;
+import net.minecraftforge.items.IItemHandlerModifiable;
 
 import static mcjty.ariente.blocks.utility.autofield.AbstractNodeTile.ORIENTATION;
 import static mcjty.ariente.blocks.utility.autofield.NodeOrientation.UP_NE;
@@ -36,7 +38,7 @@ public class PlayerInventoryPanelTests {
     @GameTest(template = "empty")
     public static void everyInventorySlotAndHotbarGapUseTheDisplayedPositions(GameTestHelper helper) {
         Player player = helper.makeMockPlayer();
-        PlayerInventoryPanel panel = new PlayerInventoryPanel("");
+        InspectableInventoryPanel panel = new InspectableInventoryPanel();
         for (int slot = 0; slot < 36; slot++) {
             player.getInventory().setItem(slot, new ItemStack(Items.IRON_INGOT, slot + 1));
             panel.hit(player, null, slotX(slot), slotY(slot));
@@ -51,7 +53,11 @@ public class PlayerInventoryPanelTests {
         panel.hit(player, null, slotX(35), slotY(35));
         helper.assertTrue(panel.getSelected() == 35, "Filtering preserves the last row's real index");
         panel.hit(player, null, slotX(9), slotY(9));
-        helper.assertTrue(panel.getSelected() == -1, "Filtered items cannot be selected");
+        helper.assertTrue(panel.getSelected() == -1, "Unavailable items cannot be selected");
+        panel.hitClient(player, null, slotX(9), slotY(9));
+        helper.assertTrue(panel.getSelected() == -1, "Unavailable items do not trigger client selection or click feedback");
+        helper.assertTrue(panel.hoveredStack(player, slotX(9), slotY(9)).is(Items.IRON_INGOT),
+                "Unavailable items retain their hover tooltip");
         helper.succeed();
     }
 
@@ -107,6 +113,10 @@ public class PlayerInventoryPanelTests {
         player.getInventory().setItem(8, BlueprintItem.makeBluePrint(new ItemStack(Registration.DISPLAY_BASE.get())));
         HoloGuiEntity holo = panel(helper, pos, TAG_MAIN);
         var root = holo.getGui(player);
+        player.getInventory().setItem(9, new ItemStack(Items.DIRT, 12));
+        doubleClick(root, player, holo, slotX(9), slotY(9));
+        helper.assertTrue(player.getInventory().getItem(9).getCount() == 12 && storage.getItems().getStackInSlot(0).isEmpty(),
+                "Double-clicking an unavailable stack never transfers it");
         doubleClick(root, player, holo, slotX(8), slotY(8));
         helper.assertTrue(player.getInventory().getItem(8).isEmpty() && !storage.getItems().getStackInSlot(0).isEmpty(),
                 "Blueprints transfer from the separated hotbar to the upper machine slots");
@@ -123,10 +133,13 @@ public class PlayerInventoryPanelTests {
             root = holo.getGui(player);
             IPlayerSlots inventory = (IPlayerSlots) root.findChild("playerslots").orElseThrow();
             root.hit(player, holo, slotX(9), slotY(9));
-            helper.assertTrue(inventory.getSelected() == -1, "Construction inventories hide unrelated carried items");
+            helper.assertTrue(inventory.getSelected() == -1, "Construction inventories disable unrelated carried items");
             root.hit(player, holo, slotX(35), slotY(35));
             helper.assertTrue(inventory.getSelected() == 35, "Both Constructor inventories retain ingredient positions");
             if (automatic) {
+                inventory.setSelection(9);
+                root.hit(player, holo, .5, 1.7);
+                helper.assertTrue(player.getInventory().getItem(9).is(Items.DIRT), "Arrow actions recheck unavailable selections");
                 root.hit(player, holo, slotX(35), slotY(35));
                 AutoConstructorTile machine = (AutoConstructorTile) helper.getLevel().getBlockEntity(machinePos);
                 helper.assertTrue(player.getInventory().getItem(35).isEmpty() && machine.getCapability(ForgeCapabilities.ITEM_HANDLER).orElseThrow(IllegalStateException::new).getStackInSlot(0).getCount() == 4,
@@ -137,6 +150,40 @@ public class PlayerInventoryPanelTests {
             }
         }
         helper.succeed();
+    }
+
+    @GameTest(template = "empty")
+    public static void blueprintAndIngredientPacketsIncludeUpdatesAndClearedSlots(GameTestHelper helper) {
+        BlockPos pos = helper.absolutePos(new BlockPos(1, 2, 1));
+        for (boolean blueprints : new boolean[] {true, false}) {
+            var state = (blueprints ? Registration.BLUEPRINT_STORAGE.get() : Registration.AUTO_CONSTRUCTOR.get()).defaultBlockState();
+            helper.getLevel().setBlockAndUpdate(pos, state);
+            var serverTile = (GenericTileEntity) helper.getLevel().getBlockEntity(pos);
+            var clientTile = (GenericTileEntity) serverTile.getType().create(pos, state);
+            var serverItems = (IItemHandlerModifiable) serverTile.getCapability(ForgeCapabilities.ITEM_HANDLER)
+                    .orElseThrow(IllegalStateException::new);
+            var clientItems = clientTile.getCapability(ForgeCapabilities.ITEM_HANDLER).orElseThrow(IllegalStateException::new);
+            ItemStack stack = blueprints ? BlueprintItem.makeBluePrint(new ItemStack(Registration.DISPLAY_BASE.get()))
+                    : new ItemStack(Registration.INGOT_SILVER.get(), 32);
+            serverItems.setStackInSlot(0, stack);
+            clientTile.loadClientDataFromNBT(serverTile.getUpdateTag());
+            helper.assertTrue(ItemStack.matches(clientItems.getStackInSlot(0), stack), "Initial chunk data includes machine items");
+            serverItems.setStackInSlot(0, ItemStack.EMPTY);
+            clientTile.loadClientDataFromNBT(serverTile.getUpdatePacket().getTag());
+            helper.assertTrue(clientItems.getStackInSlot(0).isEmpty(), "Later packets clear removed items from the client");
+        }
+        helper.succeed();
+    }
+
+    private static class InspectableInventoryPanel extends PlayerInventoryPanel {
+
+        private InspectableInventoryPanel() {
+            super("");
+        }
+
+        private ItemStack hoveredStack(Player player, double x, double y) {
+            return getSelectedStack(player, x, y);
+        }
     }
 
     private static HoloGuiEntity panel(GameTestHelper helper, BlockPos pos, String tag) {

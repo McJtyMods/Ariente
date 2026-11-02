@@ -29,6 +29,7 @@ import mcjty.lib.varia.RedstoneMode;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
 import net.minecraft.nbt.CompoundTag;
+import net.minecraft.nbt.Tag;
 import net.minecraft.world.InteractionHand;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.ItemStack;
@@ -315,7 +316,7 @@ public class AutoConstructorTile extends TickingTileEntity implements IGuiTile, 
                 .add(registry.iconButton(0, 2.4, 1, 1).icon(registry.image(GRAY_ARROW_DOWN)).hover(registry.image(WHITE_ARROW_DOWN))
                         .hitEvent((component, player, entity, x, y) -> transferToPlayer(player, entity, "slots")))
 
-                .add(new PlayerInventoryPanel("Double-click to store ingredients")
+                .add(new PlayerInventoryPanel("Double-click bright ingredients")
                         .name("playerslots")
                         .doubleClickEvent((component, player, entity, x, y, stack, index) -> transferToMachine(player, entity))
                         .filter((stack, index) -> isIngredient(stack)))
@@ -378,7 +379,7 @@ public class AutoConstructorTile extends TickingTileEntity implements IGuiTile, 
                 int selected = ((IPlayerSlots) component).getSelected();
                 if (selected != -1) {
                     ItemStack extracted = player.getInventory().getItem(selected);
-                    if (!extracted.isEmpty()) {
+                    if (!extracted.isEmpty() && isIngredient(extracted)) {
                         ItemStack notInserted = ItemHandlerHelper.insertItem(items, extracted, false);
                         player.getInventory().setItem(selected, notInserted);
                         if (notInserted.isEmpty()) {
@@ -401,12 +402,31 @@ public class AutoConstructorTile extends TickingTileEntity implements IGuiTile, 
     }
 
     @Override
+    public void saveClientDataToNBT(CompoundTag tag) {
+        tag.put("Items", items.serializeNBT());
+    }
+
+    @Override
+    public void loadClientDataFromNBT(CompoundTag tag) {
+        items.deserializeNBT(tag.getList("Items", Tag.TAG_COMPOUND));
+    }
+
+    @Override
     public void syncToClient() {
         markDirtyClient();
     }
 
     private GenericItemHandler createItemHandler() {
         return new GenericItemHandler(AutoConstructorTile.this, CONTAINER_FACTORY.get()) {
+
+            @Override
+            protected void onUpdate(int index, ItemStack stack) {
+                super.onUpdate(index, stack);
+                if (level != null && !level.isClientSide) {
+                    markDirtyClient();
+                }
+            }
+
             @Override
             public boolean isItemValid(int slot, @Nonnull ItemStack stack) {
                 return slot < SLOT_OUTPUT && stack.getItem() != Registration.BLUEPRINT.get();

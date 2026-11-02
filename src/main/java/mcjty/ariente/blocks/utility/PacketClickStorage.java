@@ -3,7 +3,6 @@ package mcjty.ariente.blocks.utility;
 import net.minecraft.core.BlockPos;
 import net.minecraft.network.FriendlyByteBuf;
 import net.minecraft.world.entity.player.Player;
-import net.minecraft.world.level.block.entity.BlockEntity;
 import net.minecraftforge.network.NetworkEvent;
 
 import java.util.function.Supplier;
@@ -36,11 +35,9 @@ public class PacketClickStorage {
     public void handle(Supplier<NetworkEvent.Context> supplier) {
         NetworkEvent.Context ctx = supplier.get();
         ctx.enqueueWork(() -> {
-            Player playerEntity = ctx.getSender();
-            BlockEntity te = playerEntity.getCommandSenderWorld().getBlockEntity(pos);
-            if (te instanceof StorageTile) {
-                StorageTile storageTile = (StorageTile) te;
-                storageTile.giveToPlayer(index, playerEntity);
+            Player player = ctx.getSender();
+            if (player != null) {
+                BlockInventoryInteraction.extract(player, pos, index);
             }
         });
         ctx.setPacketHandled(true);

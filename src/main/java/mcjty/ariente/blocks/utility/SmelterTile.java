@@ -161,7 +161,7 @@ public class SmelterTile extends TickingTileEntity implements IPowerReceiver, IP
         return InteractionResult.sidedSuccess(level.isClientSide);
     }
 
-    private void giveToPlayer(int slot, Player player) {
+    public void giveToPlayer(int slot, Player player) {
         if (slot != SLOT_INPUT && slot != SLOT_OUTPUT) {
             return;
         }

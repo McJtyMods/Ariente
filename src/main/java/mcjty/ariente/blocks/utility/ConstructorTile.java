@@ -165,7 +165,7 @@ public class ConstructorTile extends GenericTileEntity implements IGuiTile, ICit
                         .tooltipHandler(this::tooltipHandler)
                         .itemHandler(getItemHandler()))
 
-                .add(new PlayerInventoryPanel("Relevant ingredients")
+                .add(new PlayerInventoryPanel("Bright: needed ingredients")
                         .name("playerslots")
                         .filter((stack, index) -> isIngredient(stack)))
                 ;
@@ -181,7 +181,7 @@ public class ConstructorTile extends GenericTileEntity implements IGuiTile, ICit
                     // Check if we have enough
                     for (ItemStack ingredient : recipe.getIngredientList()) {
                         if (!hasIngredient(SafeClientTools.getClientPlayer(), ingredient)) {
-                            tooltip.add(ChatFormatting.RED + "Missing: " + ChatFormatting.WHITE + ingredient.getHoverName());
+                            tooltip.add(ChatFormatting.RED + "Missing: " + ChatFormatting.WHITE + ingredient.getHoverName().getString());
                             ok = false;
                         }
                     }

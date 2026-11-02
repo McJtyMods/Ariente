@@ -1,6 +1,7 @@
 package mcjty.ariente.gui.client;
 
 import com.mojang.blaze3d.vertex.PoseStack;
+import com.mojang.blaze3d.vertex.VertexConsumer;
 import mcjty.hologui.gui.HoloGuiRenderTools;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.renderer.LightTexture;
@@ -8,6 +9,7 @@ import net.minecraft.client.renderer.MultiBufferSource;
 import net.minecraft.client.renderer.texture.OverlayTexture;
 import net.minecraft.world.item.ItemDisplayContext;
 import net.minecraft.world.item.ItemStack;
+import net.minecraftforge.client.model.pipeline.VertexConsumerWrapper;
 
 import static mcjty.ariente.gui.InventoryLayout.*;
 
@@ -19,27 +21,47 @@ public class InventoryRenderer {
     }
 
     public static void cell(PoseStack poses, MultiBufferSource buffer, double x, double y, ItemStack stack, int amount, boolean highlight) {
-        HoloGuiRenderTools.renderBorder(poses, buffer, x, y, CELL, CELL, highlight ? 190 : 75, 160, 200, 170);
+        cell(poses, buffer, x, y, stack, amount, highlight, true);
+    }
+
+    public static void cell(PoseStack poses, MultiBufferSource buffer, double x, double y, ItemStack stack, int amount, boolean highlight, boolean enabled) {
+        HoloGuiRenderTools.renderBorder(poses, buffer, x, y, CELL, CELL,
+                enabled ? (highlight ? 190 : 75) : 45, enabled ? 160 : 80, enabled ? 200 : 100, 170);
         if (amount > 0) {
-            item(poses, buffer, x, y, stack);
+            item(poses, buffer, x, y, stack, enabled ? 1 : .35f);
             if (amount > 1) {
-                count(poses, buffer, x, y, amount);
+                count(poses, buffer, x, y, amount, enabled ? 0xffffffff : 0xff777777);
             }
         }
     }
 
     public static void item(PoseStack poses, MultiBufferSource buffer, double x, double y, ItemStack stack) {
+        item(poses, buffer, x, y, stack, 1);
+    }
+
+    private static void item(PoseStack poses, MultiBufferSource buffer, double x, double y, ItemStack stack, float brightness) {
         // Keep icons aligned to the borders even in the lower inventory rows.
         poses.pushPose();
         poses.translate((x + .36) * .1 - .42, .42 - (y + .34) * .1, .004);
         poses.scale(.063f, .063f, .000063f);
+        MultiBufferSource itemBuffer = brightness == 1 ? buffer : type -> new VertexConsumerWrapper(buffer.getBuffer(type)) {
+
+            @Override
+            public VertexConsumer color(int r, int g, int b, int a) {
+                return super.color((int) (r * brightness), (int) (g * brightness), (int) (b * brightness), a);
+            }
+        };
         var renderer = Minecraft.getInstance().getItemRenderer();
-        renderer.render(stack, ItemDisplayContext.GUI, false, poses, buffer, LightTexture.FULL_BRIGHT,
+        renderer.render(stack, ItemDisplayContext.GUI, false, poses, itemBuffer, LightTexture.FULL_BRIGHT,
                 OverlayTexture.NO_OVERLAY, renderer.getModel(stack, null, null, 1));
         poses.popPose();
     }
 
     public static void count(PoseStack poses, MultiBufferSource buffer, double x, double y, int amount) {
+        count(poses, buffer, x, y, amount, 0xffffffff);
+    }
+
+    private static void count(PoseStack poses, MultiBufferSource buffer, double x, double y, int amount, int color) {
         String label = Integer.toString(amount);
         var font = Minecraft.getInstance().font;
         // Account for renderText's .2-unit inset when aligning inside the slot.
@@ -47,7 +69,7 @@ public class InventoryRenderer {
         double labelY = y + CELL - .05 - font.lineHeight * .03 - .2;
         poses.pushPose();
         poses.translate(0, 0, .01);
-        HoloGuiRenderTools.renderText(poses, buffer, labelX, labelY, label, 0xffffffff, .3f);
+        HoloGuiRenderTools.renderText(poses, buffer, labelX, labelY, label, color, .3f);
         poses.popPose();
     }
 }
