@@ -5,7 +5,6 @@ import mcjty.ariente.gui.PlayerInventoryPanel;
 import mcjty.ariente.setup.Registration;
 import mcjty.hologui.api.IGuiComponent;
 import mcjty.hologui.api.IGuiComponentRegistry;
-import mcjty.hologui.api.Icons;
 import mcjty.hologui.api.StyledColor;
 import mcjty.hologui.api.components.IPanel;
 import mcjty.lib.varia.ItemStackList;
@@ -15,15 +14,14 @@ import net.minecraft.world.ContainerHelper;
 import net.minecraft.world.level.block.state.BlockState;
 import org.apache.commons.lang3.tuple.Pair;
 
-import static mcjty.hologui.api.Icons.*;
-
 public class OutputItemNodeTile extends AbstractItemNodeTile {
 
     private ItemStackList outputFilter = ItemStackList.create(FILTER_AMOUNT);
 
-    private boolean outputOredict = false;
+    private boolean outputTags = false;
     private boolean outputDamage = false;
     private boolean outputNbt = false;
+    private boolean outputBlacklist = false;
     private int outputStackSize = 1;
 
     public OutputItemNodeTile(BlockPos pos, BlockState state) {
@@ -39,7 +37,8 @@ public class OutputItemNodeTile extends AbstractItemNodeTile {
         if (!info.isEmpty()) {
             outputDamage = info.getBoolean("outDamage");
             outputNbt = info.getBoolean("outNBT");
-            outputOredict = info.getBoolean("outOre");
+            outputTags = info.getBoolean("outOre");
+            outputBlacklist = info.getBoolean("outBlacklist");
             outputStackSize = info.getInt("outSS");
         }
     }
@@ -51,7 +50,9 @@ public class OutputItemNodeTile extends AbstractItemNodeTile {
         info.put("output", ContainerHelper.saveAllItems(new CompoundTag(), outputFilter));
         info.putBoolean("outDamage", outputDamage);
         info.putBoolean("outNBT", outputNbt);
-        info.putBoolean("outOre", outputOredict);
+        // Keep the legacy key so existing tag filters retain their settings.
+        info.putBoolean("outOre", outputTags);
+        info.putBoolean("outBlacklist", outputBlacklist);
         info.putInt("outSS", outputStackSize);
     }
 
@@ -59,8 +60,12 @@ public class OutputItemNodeTile extends AbstractItemNodeTile {
         return outputFilter;
     }
 
-    public boolean isOutputOredict() {
-        return outputOredict;
+    public boolean isOutputTags() {
+        return outputTags;
+    }
+
+    public boolean isOutputBlacklist() {
+        return outputBlacklist;
     }
 
     public boolean isOutputDamage() {
@@ -113,36 +118,20 @@ public class OutputItemNodeTile extends AbstractItemNodeTile {
 
     private IGuiComponent<?> createOutputGui(final Pair<String, String> pair, IGuiComponentRegistry registry) {
         IPanel panel = GuiHelp.OUTPUT_NODE.createPanel(registry, entity -> entity.switchTag(pair.getLeft() + ":" + TAG_HELP))
-                .add(registry.text(3.3, -.6, 1, 1).text("Output").color(registry.color(StyledColor.LABEL)))
+                .add(registry.text(.25, -.6, 3, 1).text("Output").color(registry.color(StyledColor.LABEL)))
 
-                .add(registry.iconToggle(0.5, 0.4, 1, 1)
-                        .getter(player -> outputNbt)
-                        .hitEvent((component, player, entity, x, y) -> toggleOutputNBT())
-                        .icon(registry.image(Icons.NBT_OFF))
-                        .selected(registry.image(Icons.NBT_ON)))
-                .add(registry.iconToggle(0.5, 1.4, 1, 1)
-                        .getter(player -> outputDamage)
-                        .hitEvent((component, player, entity, x, y) -> toggleOutputDamage())
-                        .icon(registry.image(Icons.DAM_OFF))
-                        .selected(registry.image(Icons.DAM_ON)))
-                .add(registry.iconToggle(0.5, 2.4, 1, 1)
-                        .getter(player -> outputOredict)
-                        .hitEvent((component, player, entity, x, y) -> toggleOutputOre())
-                        .icon(registry.image(Icons.ORE_OFF))
-                        .selected(registry.image(Icons.ORE_ON)))
+                .add(registry.text(4.2, 3.65, 2.6, .5).text(() -> "Batch: " + outputStackSize).scale(.35f)
+                        .color(registry.color(StyledColor.INFORMATION)))
+                .add(registry.button(2.8, 3.65, .6, .5).text("-8").scale(.35f)
+                        .hitEvent((component, player, entity, x, y) -> changeOutputStackSize(-8)))
+                .add(registry.button(3.5, 3.65, .6, .5).text("-1").scale(.35f)
+                        .hitEvent((component, player, entity, x, y) -> changeOutputStackSize(-1)))
+                .add(registry.button(7.5, 3.65, .6, .5).text("+1").scale(.35f)
+                        .hitEvent((component, player, entity, x, y) -> changeOutputStackSize(1)))
+                .add(registry.button(8.2, 3.65, .6, .5).text("+8").scale(.35f)
+                        .hitEvent((component, player, entity, x, y) -> changeOutputStackSize(8)))
 
-                .add(registry.number(5, 3.05, 1, 1).color(registry.color(StyledColor.INFORMATION)).getter((p, h) -> getOutputStackSize()))
-
-                .add(registry.iconButton(3, 3.05, 1, 1).icon(registry.image(GRAY_DOUBLE_ARROW_LEFT)).hover(registry.image(WHITE_DOUBLE_ARROW_LEFT))
-                        .hitEvent((component, player, entity1, x, y) -> changeOutputStackSize(-8)))
-                .add(registry.iconButton(4, 3.05, 1, 1).icon(registry.image(GRAY_ARROW_LEFT)).hover(registry.image(WHITE_ARROW_LEFT))
-                        .hitEvent((component, player, entity1, x, y) -> changeOutputStackSize(-1)))
-                .add(registry.iconButton(6.6, 3.05, 1, 1).icon(registry.image(GRAY_ARROW_RIGHT)).hover(registry.image(WHITE_ARROW_RIGHT))
-                        .hitEvent((component, player, entity1, x, y) -> changeOutputStackSize(1)))
-                .add(registry.iconButton(7.6, 3.05, 1, 1).icon(registry.image(GRAY_DOUBLE_ARROW_RIGHT)).hover(registry.image(WHITE_DOUBLE_ARROW_RIGHT))
-                        .hitEvent((component, player, entity1, x, y) -> changeOutputStackSize(8)))
-
-                .add(registry.slots(2.5, 1, 6, 2)
+                .add(registry.slots(2.8, 1.55, 6, 2)
                         .name("slots")
                         .fullBright()
                         .doubleClickEvent((component, player, entity, x, y, stack, index) -> removeFromFilter(player, entity, getOutputHandler()))
@@ -152,11 +141,17 @@ public class OutputItemNodeTile extends AbstractItemNodeTile {
                         .name("playerSlots")
                         .doubleClickEvent((component, player, entity, x, y, stack, index) -> addToFilter(player, entity, getOutputHandler())));
 
-        addFilterChoice(registry, panel, 0, false);
-        addFilterChoice(registry, panel, 1, false);
-        addFilterChoice(registry, panel, 2, true);
-        addFilterChoice(registry, panel, 3, true);
+        addFilterConditions(registry, panel);
+        addFilterOption(registry, panel, "filter_mode", 1.45, "Whitelist", "Blacklist", this::isOutputBlacklist, this::toggleOutputBlacklist);
+        addFilterOption(registry, panel, "filter_nbt", 2.15, "NBT: Off", "NBT: On", this::isOutputNbt, this::toggleOutputNBT);
+        addFilterOption(registry, panel, "filter_damage", 2.85, "Damage: Off", "Damage: On", this::isOutputDamage, this::toggleOutputDamage);
+        addFilterOption(registry, panel, "filter_tags", 3.55, "Tags: Off", "Tags: On", this::isOutputTags, this::toggleOutputTags);
         return panel;
+    }
+
+    private void toggleOutputBlacklist() {
+        outputBlacklist = !outputBlacklist;
+        notifyField();
     }
 
     private void toggleOutputNBT() {
@@ -169,8 +164,8 @@ public class OutputItemNodeTile extends AbstractItemNodeTile {
         notifyField();
     }
 
-    private void toggleOutputOre() {
-        outputOredict = !outputOredict;
+    private void toggleOutputTags() {
+        outputTags = !outputTags;
         notifyField();
     }
 }

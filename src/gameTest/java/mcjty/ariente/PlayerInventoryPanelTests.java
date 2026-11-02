@@ -15,6 +15,7 @@ import mcjty.hologui.gui.HoloGuiEntity;
 import net.minecraft.core.BlockPos;
 import net.minecraft.gametest.framework.GameTest;
 import net.minecraft.gametest.framework.GameTestHelper;
+import net.minecraft.nbt.CompoundTag;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.Items;
@@ -75,6 +76,23 @@ public class PlayerInventoryPanelTests {
                         "Both nodes copy the selected inventory sample");
                 helper.assertTrue(player.getInventory().getItem(slot).getCount() == 12, "Filters do not consume carried items");
             }
+            for (String name : new String[] {"filter_mode", "filter_nbt", "filter_damage", "filter_tags"}) {
+                IGuiComponent<?> option = root.findChild(name).orElseThrow();
+                root.hit(player, holo, option.getX() + option.getW() / 2, option.getY() + option.getH() / 2);
+            }
+            CompoundTag saved = node.saveWithoutMetadata();
+            AbstractItemNodeTile restored = input ? new InputItemNodeTile(pos, state) : new OutputItemNodeTile(pos, state);
+            restored.load(saved);
+            helper.assertTrue(input
+                            ? ((InputItemNodeTile) restored).isInputBlacklist() && ((InputItemNodeTile) restored).isInputNbt()
+                                    && ((InputItemNodeTile) restored).isInputDamage() && ((InputItemNodeTile) restored).isInputTags()
+                            : ((OutputItemNodeTile) restored).isOutputBlacklist() && ((OutputItemNodeTile) restored).isOutputNbt()
+                                    && ((OutputItemNodeTile) restored).isOutputDamage() && ((OutputItemNodeTile) restored).isOutputTags(),
+                    "The four options must be clickable and survive a save/reload");
+            saved.getCompound("Info").remove(input ? "inBlacklist" : "outBlacklist");
+            restored.load(saved);
+            helper.assertTrue(input ? !((InputItemNodeTile) restored).isInputBlacklist() : !((OutputItemNodeTile) restored).isOutputBlacklist(),
+                    "Older nodes default to whitelist mode");
             helper.getLevel().removeBlock(pos, false);
         }
         helper.succeed();

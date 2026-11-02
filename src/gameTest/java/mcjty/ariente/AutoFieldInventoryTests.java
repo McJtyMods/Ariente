@@ -2,6 +2,7 @@ package mcjty.ariente;
 
 import mcjty.ariente.blocks.utility.AutoConstructorTile;
 import mcjty.ariente.blocks.utility.BlueprintStorageTile;
+import mcjty.ariente.blocks.utility.autofield.AbstractItemNodeTile;
 import mcjty.ariente.blocks.utility.autofield.AutoFieldTile;
 import mcjty.ariente.blocks.utility.autofield.FieldMarkerTile;
 import mcjty.ariente.blocks.utility.autofield.InputItemNodeTile;
@@ -13,6 +14,8 @@ import mcjty.ariente.power.IPowerBlob;
 import mcjty.ariente.power.PowerSystem;
 import mcjty.ariente.power.PowerType;
 import mcjty.ariente.setup.Registration;
+import mcjty.hologui.api.IGuiComponent;
+import mcjty.hologui.gui.HoloGuiEntity;
 import mcjty.lib.multipart.PartPos;
 import mcjty.lib.multipart.PartSlot;
 import net.minecraft.core.BlockPos;
@@ -21,6 +24,7 @@ import net.minecraft.gametest.framework.GameTest;
 import net.minecraft.gametest.framework.GameTestHelper;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.server.level.ServerLevel;
+import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.Items;
 import net.minecraft.world.level.block.Block;
@@ -38,6 +42,8 @@ import java.util.List;
 import static mcjty.ariente.blocks.utility.autofield.AbstractNodeTile.ORIENTATION;
 import static mcjty.ariente.blocks.utility.autofield.NodeOrientation.UP_NE;
 import static mcjty.ariente.blocks.utility.autofield.NodeOrientation.UP_NW;
+import static mcjty.hologui.api.IGuiTile.TAG_MAIN;
+import static mcjty.hologui.setup.Registration.HOLOGUI_ENTITY_TYPE;
 
 @GameTestHolder(Ariente.MODID)
 @PrefixGameTestTemplate(false)
@@ -162,6 +168,82 @@ public class AutoFieldInventoryTests {
                 "The field must also extract blueprints and return them to Ariente storage");
         helper.assertTrue(!sensor.sense(sensorPos), "The sensor must detect that blueprint storage is empty again");
         helper.succeed();
+    }
+
+    @GameTest(template = "empty")
+    public static void whitelistAndBlacklistModesFilterBothEndsIncludingEmptyLists(GameTestHelper helper) {
+        ServerLevel level = helper.getLevel();
+        BlockPos pos = helper.absolutePos(BlockPos.ZERO).above(2);
+        level.setBlockAndUpdate(pos, Registration.AUTOMATION_FIELD.get().defaultBlockState());
+        AutoFieldTile field = (AutoFieldTile) level.getBlockEntity(pos);
+        BlockPos sourcePos = pos.east().above(2);
+        BlockPos destinationPos = pos.east(3).above(2);
+        level.setBlockAndUpdate(sourcePos, Registration.STORAGE.get().defaultBlockState());
+        level.setBlockAndUpdate(destinationPos, Registration.STORAGE.get().defaultBlockState());
+        for (int x = 1; x <= 3; x++) {
+            BlockPos markerPos = pos.east(x);
+            addPart(level, markerPos, PartSlot.DOWN, new FieldMarkerTile(markerPos, Registration.FIELD_MARKER.get().defaultBlockState()));
+        }
+        OutputItemNodeTile output = new OutputItemNodeTile(sourcePos.below(), Registration.OUTPUT_ITEM_NODE.get().defaultBlockState().setValue(ORIENTATION, UP_NE));
+        InputItemNodeTile input = new InputItemNodeTile(destinationPos.below(), Registration.INPUT_ITEM_NODE.get().defaultBlockState().setValue(ORIENTATION, UP_NE));
+        addPart(level, output.getBlockPos(), UP_NE.getSlot(), output);
+        addPart(level, input.getBlockPos(), UP_NE.getSlot(), input);
+        IItemHandlerModifiable source = (IItemHandlerModifiable) handler(level.getBlockEntity(sourcePos), Direction.DOWN);
+        IItemHandlerModifiable destination = (IItemHandlerModifiable) handler(level.getBlockEntity(destinationPos), Direction.DOWN);
+        Player player = helper.makeMockPlayer();
+        List<ItemStack> items = List.of(new ItemStack(Items.IRON_INGOT), new ItemStack(Items.GOLD_INGOT), new ItemStack(Items.DIAMOND));
+
+        for (boolean emptyOutput : new boolean[] {false, true}) {
+            for (boolean emptyInput : new boolean[] {false, true}) {
+                output.getOutputFilter().clear();
+                input.getInputFilter().clear();
+                if (!emptyOutput) {
+                    output.getOutputFilter().set(0, items.get(0).copy());
+                    output.getOutputFilter().set(1, items.get(1).copy());
+                }
+                if (!emptyInput) {
+                    input.getInputFilter().set(0, items.get(0).copy());
+                    input.getInputFilter().set(1, items.get(2).copy());
+                }
+                AutoFieldTile.notifyField(level, output.getBlockPos());
+                for (boolean outputBlacklist : new boolean[] {false, true}) {
+                    for (boolean inputBlacklist : new boolean[] {false, true}) {
+                        setFilterMode(level, player, output, outputBlacklist);
+                        setFilterMode(level, player, input, inputBlacklist);
+                        for (int slot = 0; slot < source.getSlots(); slot++) {
+                            source.setStackInSlot(slot, ItemStack.EMPTY);
+                        }
+                        for (int slot = 0; slot < destination.getSlots(); slot++) {
+                            destination.setStackInSlot(slot, ItemStack.EMPTY);
+                        }
+                        items.forEach(item -> ItemHandlerHelper.insertItem(source, item.copy(), false));
+                        supplyPower(level, pos);
+                        field.tickServer();
+                        for (int i = 0; i < items.size(); i++) {
+                            boolean provided = outputBlacklist != (!emptyOutput && i != 2);
+                            boolean wanted = inputBlacklist != (!emptyInput && i != 1);
+                            int expected = provided && wanted ? 1 : 0;
+                            helper.assertTrue(count(destination, items.get(i)) == expected && count(source, items.get(i)) == 1 - expected,
+                                    "Both node modes must filter all samples, preserve excluded items and handle empty lists: "
+                                            + outputBlacklist + "/" + inputBlacklist + "/" + emptyOutput + "/" + emptyInput + "/" + i);
+                        }
+                    }
+                }
+            }
+        }
+        helper.succeed();
+    }
+
+    private static void setFilterMode(ServerLevel level, Player player, AbstractItemNodeTile node, boolean blacklist) {
+        boolean current = node instanceof InputItemNodeTile input ? input.isInputBlacklist() : ((OutputItemNodeTile) node).isOutputBlacklist();
+        if (current != blacklist) {
+            HoloGuiEntity holo = new HoloGuiEntity(HOLOGUI_ENTITY_TYPE.get(), level);
+            holo.setGuiTile(node.getBlockPos());
+            holo.setTag(UP_NE.getSlot().name() + ":" + TAG_MAIN);
+            var root = holo.getGui(player);
+            IGuiComponent<?> option = root.findChild("filter_mode").orElseThrow();
+            root.hit(player, holo, option.getX() + option.getW() / 2, option.getY() + option.getH() / 2);
+        }
     }
 
     private static ItemStack blueprint() {

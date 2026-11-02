@@ -1,4 +1,5 @@
 1.20-0.0.31-alpha:
+- Item Node filters now support whitelist and blacklist modes, with clearly labeled Positive and Negative sensor conditions and NBT, Damage and Tags options.
 - Item filters, the Constructor, Auto Constructor ingredients and Blueprint Storage now use the Holo Storage player inventory layout, with bordered slots, aligned stack counts and a separated hotbar.
 - Reopening a block now moves your existing hologram in front of you, keeping its pin state. Different players retain separate panels.
 - Storage holograms now have A-Z and largest-stack-first sorting, a more clearly separated player inventory, and faster scrolling by clicking or holding the side arrows.

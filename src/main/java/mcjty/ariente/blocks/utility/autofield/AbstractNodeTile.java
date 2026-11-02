@@ -282,7 +282,11 @@ public abstract class AbstractNodeTile extends GenericTileEntity implements IGui
     }
 
     protected void addFilterChoice(IGuiComponentRegistry registry, IPanel panel, int i, boolean negative) {
-        IIconChoice iconChoice = registry.iconChoice(i * 0.9 - .5, -.7, 1, 1);
+        addFilterChoice(registry, panel, i, negative, i * 0.9 - .5, -.7, 1);
+    }
+
+    protected void addFilterChoice(IGuiComponentRegistry registry, IPanel panel, int i, boolean negative, double x, double y, double size) {
+        IIconChoice iconChoice = registry.iconChoice(x, y, size, size).name("condition_" + i);
         panel.add(addColors(registry, iconChoice, negative)
                 .getter(player -> filters[i] == null ? 0 : filters[i].ordinal() + 1)
                 .hitEvent(changeColor(filters, i))

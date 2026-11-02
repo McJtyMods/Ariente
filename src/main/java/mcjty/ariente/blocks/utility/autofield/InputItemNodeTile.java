@@ -5,7 +5,6 @@ import mcjty.ariente.gui.PlayerInventoryPanel;
 import mcjty.ariente.setup.Registration;
 import mcjty.hologui.api.IGuiComponent;
 import mcjty.hologui.api.IGuiComponentRegistry;
-import mcjty.hologui.api.Icons;
 import mcjty.hologui.api.StyledColor;
 import mcjty.hologui.api.components.IPanel;
 import mcjty.lib.builder.BlockBuilder;
@@ -20,9 +19,10 @@ public class InputItemNodeTile extends AbstractItemNodeTile {
 
     private ItemStackList inputFilter = ItemStackList.create(FILTER_AMOUNT);
 
-    private boolean inputOredict = false;
+    private boolean inputTags = false;
     private boolean inputDamage = false;
     private boolean inputNbt = false;
+    private boolean inputBlacklist = false;
 
     public InputItemNodeTile(BlockPos pos, BlockState state) {
         super(Registration.INPUT_ITEM_TILE.get(), pos, state);
@@ -42,7 +42,8 @@ public class InputItemNodeTile extends AbstractItemNodeTile {
         if (!info.isEmpty()) {
             inputDamage = info.getBoolean("inDamage");
             inputNbt = info.getBoolean("inNBT");
-            inputOredict = info.getBoolean("inOre");
+            inputTags = info.getBoolean("inOre");
+            inputBlacklist = info.getBoolean("inBlacklist");
         }
     }
 
@@ -53,15 +54,21 @@ public class InputItemNodeTile extends AbstractItemNodeTile {
         info.put("input", ContainerHelper.saveAllItems(new CompoundTag(), inputFilter));
         info.putBoolean("inDamage", inputDamage);
         info.putBoolean("inNBT", inputNbt);
-        info.putBoolean("inOre", inputOredict);
+        // Keep the legacy key so existing tag filters retain their settings.
+        info.putBoolean("inOre", inputTags);
+        info.putBoolean("inBlacklist", inputBlacklist);
     }
 
     public ItemStackList getInputFilter() {
         return inputFilter;
     }
 
-    public boolean isInputOredict() {
-        return inputOredict;
+    public boolean isInputTags() {
+        return inputTags;
+    }
+
+    public boolean isInputBlacklist() {
+        return inputBlacklist;
     }
 
     public boolean isInputDamage() {
@@ -96,25 +103,9 @@ public class InputItemNodeTile extends AbstractItemNodeTile {
 
     private IGuiComponent<?> createInputGui(final Pair<String, String> pair, IGuiComponentRegistry registry) {
         IPanel panel = GuiHelp.INPUT_NODE.createPanel(registry, entity -> entity.switchTag(pair.getLeft() + ":" + TAG_HELP))
-                .add(registry.text(3.3, -.6, 1, 1).text("Input").color(registry.color(StyledColor.LABEL)))
+                .add(registry.text(.25, -.6, 3, 1).text("Input").color(registry.color(StyledColor.LABEL)))
 
-                .add(registry.iconToggle(0.5, 0.4, 1, 1)
-                        .getter(player -> inputNbt)
-                        .icon(registry.image(Icons.NBT_OFF))
-                        .selected(registry.image(Icons.NBT_ON))
-                        .hitEvent((component, player, entity, x, y) -> toggleInputNBT()))
-                .add(registry.iconToggle(0.5, 1.4, 1, 1)
-                        .getter(player -> inputDamage)
-                        .icon(registry.image(Icons.DAM_OFF))
-                        .selected(registry.image(Icons.DAM_ON))
-                        .hitEvent((component, player, entity, x, y) -> toggleInputDamage()))
-                .add(registry.iconToggle(0.5, 2.4, 1, 1)
-                        .getter(player -> inputOredict)
-                        .icon(registry.image(Icons.ORE_OFF))
-                        .selected(registry.image(Icons.ORE_ON))
-                        .hitEvent((component, player, entity, x, y) -> toggleInputOre()))
-
-                .add(registry.slots(2.5, 1, 6, 2)
+                .add(registry.slots(2.8, 1.55, 6, 2)
                         .name("slots")
                         .fullBright()
                         .doubleClickEvent((component, player, entity, x, y, stack, index) -> removeFromFilter(player, entity, getInputHandler()))
@@ -123,11 +114,17 @@ public class InputItemNodeTile extends AbstractItemNodeTile {
                 .add(new PlayerInventoryPanel("Double-click to add a filter")
                         .name("playerSlots")
                         .doubleClickEvent((component, player, entity, x, y, stack, index) -> addToFilter(player, entity, getInputHandler())));
-        addFilterChoice(registry, panel, 0, false);
-        addFilterChoice(registry, panel, 1, false);
-        addFilterChoice(registry, panel, 2, true);
-        addFilterChoice(registry, panel, 3, true);
+        addFilterConditions(registry, panel);
+        addFilterOption(registry, panel, "filter_mode", 1.45, "Whitelist", "Blacklist", this::isInputBlacklist, this::toggleInputBlacklist);
+        addFilterOption(registry, panel, "filter_nbt", 2.15, "NBT: Off", "NBT: On", this::isInputNbt, this::toggleInputNBT);
+        addFilterOption(registry, panel, "filter_damage", 2.85, "Damage: Off", "Damage: On", this::isInputDamage, this::toggleInputDamage);
+        addFilterOption(registry, panel, "filter_tags", 3.55, "Tags: Off", "Tags: On", this::isInputTags, this::toggleInputTags);
         return panel;
+    }
+
+    private void toggleInputBlacklist() {
+        inputBlacklist = !inputBlacklist;
+        notifyField();
     }
 
     private void toggleInputNBT() {
@@ -140,8 +137,8 @@ public class InputItemNodeTile extends AbstractItemNodeTile {
         notifyField();
     }
 
-    private void toggleInputOre() {
-        inputOredict = !inputOredict;
+    private void toggleInputTags() {
+        inputTags = !inputTags;
         notifyField();
     }
 }

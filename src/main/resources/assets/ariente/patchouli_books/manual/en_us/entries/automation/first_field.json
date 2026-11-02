@@ -17,7 +17,7 @@
     {
       "type": "patchouli:text",
       "title": "Start small",
-      "text": "Set the Output Node’s batch size to 1 for your first transfer. Put matching items in the source and leave room in the destination.$(br2)An empty filter does not mean “all items”. Both nodes need a filter.$(br2)Enable the outline display to check coverage. Mark the node columns even when they sit beside, rather than above, the chests."
+      "text": "Set the Output Node’s batch size to 1 for your first transfer. Put matching items in the source and leave room in the destination.$(br2)The default Whitelist mode needs samples on both nodes. An empty whitelist allows nothing; an empty blacklist allows everything.$(br2)Enable the outline display to check coverage. Mark the node columns even when they sit beside, rather than above, the chests."
     }
   ],
   "extra_recipe_mappings": {

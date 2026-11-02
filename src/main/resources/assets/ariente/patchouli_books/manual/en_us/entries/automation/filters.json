@@ -7,12 +7,22 @@
     {
       "type": "patchouli:text",
       "title": "Choose what can move",
-      "text": "In an Automation Field, an Output Item Node takes items out of its attached inventory; an Input Item Node inserts them. Both need filters: an empty filter accepts nothing.$(br2)Double-click player-inventory items to set samples; double-click samples to clear them. The $(thing)ore icon$() matches material tags, such as planks or ingots/silver, allowing equivalent materials from different mods. $(thing)NBT$() (item data) and damage matching are separate options. Check both ends."
+      "text": "An Output Item Node takes items out of its attached inventory; an Input Item Node inserts them.$(br2)Choose $(thing)Whitelist$() to allow matching samples, or $(thing)Blacklist$() to exclude them. An empty whitelist allows nothing; an empty blacklist allows everything.$(br2)Double-click player-inventory items to copy samples; double-click samples to clear them. Check both ends."
+    },
+    {
+      "type": "patchouli:text",
+      "title": "Matching options",
+      "text": "$(thing)Tags$() allows equivalent materials through shared tags, such as planks or ingots/silver.$(br2)$(thing)NBT$() requires matching item data, such as enchantments or custom names. $(thing)Damage$() separately requires matching durability.$(br2)These options apply in both list modes. A blacklist rejects an item if it matches any sample with the selected options."
+    },
+    {
+      "type": "patchouli:text",
+      "title": "Colored conditions",
+      "text": "The row below the title controls when the node can work.$(br2)Both $(thing)Positive$() selectors require their chosen sensor colors to be on. Both $(thing)Negative$() selectors require their colors to be off. Every selected condition must hold.$(br2)A gray X leaves a condition unused. See $(l:ariente:automation/sensors)Refill with Sensors$(/l) for signal setup."
     },
     {
       "type": "patchouli:text",
       "title": "Send useful batches",
-      "text": "The Output Node’s stack setting is the $(thing)minimum batch$(), from 1 to 64. A setting of 64 waits for a whole stack. Large batches use less flux per item.$(br2)Add a Round Robin Node behind an Output Node to rotate batches among eligible destinations. Colored conditions can require sensor signals before transferring.$(br2)If transfers stall, check batch availability, destination space, both filters and required conditions."
+      "text": "The Output Node’s $(thing)Batch$() setting is the minimum transfer size, from 1 to 64. A setting of 64 waits for a whole stack. Large batches use less flux per item.$(br2)Add a Round Robin Node behind an Output Node to rotate batches among eligible destinations.$(br2)If transfers stall, check batch availability, destination space, both filters and required conditions."
     }
   ],
   "extra_recipe_mappings": {

@@ -17,21 +17,21 @@ public class ConsumerInfo {
     public ConsumerInfo(Level world, Set<PartPos> itemNodes) {
         itemNodes.stream().sorted(ProducerInfo.NODE_ORDER).forEach(pos -> {
             if (MultipartHelper.getBlockEntity(world, pos) instanceof InputItemNodeTile node) {
-                for (ItemStack stack : node.getInputFilter()) {
-                    if (!stack.isEmpty()) {
-                        wantedItems.add(new WantedItem(pos, stack.copy(), node.isInputOredict(), node.isInputDamage(), node.isInputNbt()));
-                    }
-                }
+                List<ItemStack> samples = node.getInputFilter().stream().filter(stack -> !stack.isEmpty()).map(ItemStack::copy).toList();
+                wantedItems.add(new WantedItem(pos, samples, node.isInputTags(), node.isInputDamage(), node.isInputNbt(), node.isInputBlacklist()));
             }
         });
     }
 
     public Stream<PartPos> getWantedStream(ItemStack stack) {
-        return wantedItems.stream().filter(item -> ItemFilterMatcher.matches(item.stack(), stack,
-                        item.tags(), item.damage(), item.nbt()))
-                .map(WantedItem::pos).distinct();
+        if (stack.isEmpty()) {
+            return Stream.empty();
+        }
+        return wantedItems.stream().filter(item -> item.blacklist() != item.samples().stream().anyMatch(sample ->
+                        ItemFilterMatcher.matches(sample, stack, item.tags(), item.damage(), item.nbt())))
+                .map(WantedItem::pos);
     }
 
-    private record WantedItem(PartPos pos, ItemStack stack, boolean tags, boolean damage, boolean nbt) {
+    private record WantedItem(PartPos pos, List<ItemStack> samples, boolean tags, boolean damage, boolean nbt, boolean blacklist) {
     }
 }

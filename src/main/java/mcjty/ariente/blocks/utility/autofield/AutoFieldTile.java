@@ -183,8 +183,7 @@ public class AutoFieldTile extends TickingTileEntity implements IGuiTile, IPower
                     if (stack.getCount() >= minStackSize) {
                         long neededPower = computeNeededPower(stack);
                         if (neededPower <= accumulatedPower) {
-                            ProducerInfo.ProvidedItem providedItem = producer.getProvidedItem(stack);
-                            if (providedItem != null) {
+                            if (producer.provides(stack)) {
                                 int finalI = i;
                                 List<PartPos> destinations = consumerInfo.getWantedStream(stack)
                                         .filter(destPos -> canInsert(destPos, stack)).collect(Collectors.toList());

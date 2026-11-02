@@ -22,14 +22,14 @@ public class ProducerInfo {
     public ProducerInfo(Level world, Set<PartPos> itemNodes, Set<PartPos> modifierNodes) {
         itemNodes.stream().sorted(NODE_ORDER).forEach(pos -> {
             if (MultipartHelper.getBlockEntity(world, pos) instanceof OutputItemNodeTile node) {
-                Producer producer = new Producer(node.isOutputOredict(), node.isOutputDamage(), node.isOutputNbt(),
+                Producer producer = new Producer(node.isOutputTags(), node.isOutputDamage(), node.isOutputNbt(), node.isOutputBlacklist(),
                         node.getOutputStackSize(), modifierNodes.contains(pos) ? pos.slot().getBackSlot() : null);
                 for (ItemStack stack : node.getOutputFilter()) {
                     if (!stack.isEmpty()) {
                         producer.addItem(new ProvidedItem(stack));
                     }
                 }
-                if (!producer.getProvidedItems().isEmpty()) {
+                if (node.isOutputBlacklist() || !producer.getProvidedItems().isEmpty()) {
                     producers.put(pos, producer);
                 }
             }
@@ -42,17 +42,19 @@ public class ProducerInfo {
 
     public static class Producer {
 
-        private final boolean matchOredict;
+        private final boolean matchTags;
         private final boolean matchDamage;
         private final boolean matchNbt;
+        private final boolean blacklist;
         private final PartSlot roundRobinSlot;
         private final int minStackSize;
         private final List<ProvidedItem> providedItems = new ArrayList<>();
 
-        public Producer(boolean matchOredict, boolean matchDamage, boolean matchNbt, int minStackSize, @Nullable PartSlot roundRobinSlot) {
-            this.matchOredict = matchOredict;
+        public Producer(boolean matchTags, boolean matchDamage, boolean matchNbt, boolean blacklist, int minStackSize, @Nullable PartSlot roundRobinSlot) {
+            this.matchTags = matchTags;
             this.matchDamage = matchDamage;
             this.matchNbt = matchNbt;
+            this.blacklist = blacklist;
             this.minStackSize = Math.max(1, Math.min(64, minStackSize));
             this.roundRobinSlot = roundRobinSlot;
         }
@@ -61,8 +63,8 @@ public class ProducerInfo {
             providedItems.add(item);
         }
 
-        public boolean isMatchOredict() {
-            return matchOredict;
+        public boolean isMatchTags() {
+            return matchTags;
         }
 
         public boolean isMatchDamage() {
@@ -87,13 +89,13 @@ public class ProducerInfo {
         }
 
         public boolean provides(ItemStack stack) {
-            return getProvidedItem(stack) != null;
+            return !stack.isEmpty() && blacklist != (getProvidedItem(stack) != null);
         }
 
         @Nullable
         public ProvidedItem getProvidedItem(ItemStack stack) {
             for (ProvidedItem item : providedItems) {
-                if (ItemFilterMatcher.matches(item.getStack(), stack, matchOredict, matchDamage, matchNbt)) {
+                if (ItemFilterMatcher.matches(item.getStack(), stack, matchTags, matchDamage, matchNbt)) {
                     return item;
                 }
             }
