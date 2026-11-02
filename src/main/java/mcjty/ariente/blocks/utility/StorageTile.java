@@ -41,7 +41,6 @@ import net.minecraft.nbt.ListTag;
 import net.minecraft.network.Connection;
 import net.minecraft.network.protocol.game.ClientboundBlockEntityDataPacket;
 import net.minecraft.world.level.block.state.StateDefinition;
-import net.minecraft.world.level.block.entity.BlockEntity;
 import net.minecraft.world.phys.BlockHitResult;
 import net.minecraft.world.phys.HitResult;
 import net.minecraft.world.phys.Vec3;
@@ -66,15 +65,28 @@ public class StorageTile extends GenericTileEntity implements IGuiTile, ICityEqu
     public static final int STACKS_PER_TYPE = 64;
     public static final int STACKS = 4;
 
-    private final ItemStackList stacks = ItemStackList.create(4);
-    private int[] counts = new int[STACKS * STACKS_PER_TYPE];
-    private int[] totals = new int[STACKS];
+    private final int gridSize;
+    private final ItemStackList stacks;
+    private final int[] counts;
+    private final int[] totals;
 
     @Cap(type = CapType.ITEMS)
     private final IItemHandler invHandler = new StorageItemHandler();
 
     public StorageTile(BlockPos pos, BlockState state) {
         super(Registration.STORAGE_TILE.get(), pos, state);
+        gridSize = state.is(Registration.STORAGE_3X3.get()) ? 3 : 2;
+        stacks = ItemStackList.create(getTypeCount());
+        counts = new int[getTypeCount() * STACKS_PER_TYPE];
+        totals = new int[getTypeCount()];
+    }
+
+    public int getGridSize() {
+        return gridSize;
+    }
+
+    public int getTypeCount() {
+        return gridSize * gridSize;
     }
 
     public static BaseBlock createBlock() {
@@ -192,7 +204,7 @@ public class StorageTile extends GenericTileEntity implements IGuiTile, ICityEqu
         locked = info.getBoolean("locked");
         ListTag items = info.getList("Items", Tag.TAG_COMPOUND);
         int[] syncedTotals = info.getIntArray("Totals");
-        for (int i = 0; i < STACKS; i++) {
+        for (int i = 0; i < getTypeCount(); i++) {
             stacks.set(i, ItemStack.of(items.getCompound(i)));
             totals[i] = i < syncedTotals.length ? syncedTotals[i] : 0;
         }
@@ -262,18 +274,25 @@ public class StorageTile extends GenericTileEntity implements IGuiTile, ICityEqu
         int x = pos.getX();
         int y = pos.getY();
         int z = pos.getZ();
-        Direction k = Registration.STORAGE.get().getFrontDirection(world.getBlockState(pos));
+        if (!(world.getBlockEntity(pos) instanceof StorageTile storage)) {
+            return -1;
+        }
+        BaseBlock block = (BaseBlock) storage.getBlockState().getBlock();
+        Direction k = block.getFrontDirection(storage.getBlockState());
         if (sideHit == k) {
             float sx = (float) (hitVec.x - x);
             float sy = (float) (hitVec.y - y);
             float sz = (float) (hitVec.z - z);
-            return calculateHitIndex(sx, sy, sz, k);
+            return storage.calculateSlot(sx, sy, sz, k);
         } else {
             return -1;
         }
     }
 
     public void giveToPlayer(int type, Player player) {
+        if (type < 0 || type >= getTypeCount()) {
+            return;
+        }
         if (locked) {
             Ariente.guiHandler.openHoloGui(level, worldPosition, player);
             return;
@@ -358,39 +377,39 @@ public class StorageTile extends GenericTileEntity implements IGuiTile, ICityEqu
     private static long doubleClickTime = -1;
 
     public static boolean onActivate(Level world, BlockPos pos, Player player, Direction side, double sx, double sy, double sz) {
-        Direction k = Registration.STORAGE.get().getFrontDirection(world.getBlockState(pos));
+        if (!(world.getBlockEntity(pos) instanceof StorageTile te)) {
+            return true;
+        }
+        BaseBlock block = (BaseBlock) te.getBlockState().getBlock();
+        Direction k = block.getFrontDirection(te.getBlockState());
         if (side == k) {
-            BlockEntity tileEntity = world.getBlockEntity(pos);
             if (!world.isClientSide) {
-                if (tileEntity instanceof StorageTile) {
-                    StorageTile te = (StorageTile) tileEntity;
-                    if (te.isLocked()) {
-                        Ariente.guiHandler.openHoloGui(world, pos, player);
-                        return true;
-                    }
-
-                    int type = calculateHitIndex(sx, sy, sz, k);
-
-                    if (type == -1) {
-                        Ariente.guiHandler.openHoloGui(world, pos, player);
-                        return true;
-                    }
-
-                    ItemStack heldItem = player.getMainHandItem();
-                    long time = System.currentTimeMillis();
-                    if (doubleClickTime != -1 && (time < (doubleClickTime + 250)) && !te.stacks.get(type).isEmpty()) {
-                        // Doubleclick
-                        placeAll(player, te, type, te.stacks.get(type));
-                        doubleClickTime = -1;
-                    } else {
-                        doubleClickTime = time;
-                        if (!heldItem.isEmpty()) {
-                            placeHeld(player, te, type, heldItem);
-                        }
-                    }
-                    te.markDirtyClient();
-                    player.containerMenu.broadcastChanges();
+                if (te.isLocked()) {
+                    Ariente.guiHandler.openHoloGui(world, pos, player);
+                    return true;
                 }
+
+                int type = te.calculateSlot(sx, sy, sz, k);
+
+                if (type == -1) {
+                    Ariente.guiHandler.openHoloGui(world, pos, player);
+                    return true;
+                }
+
+                ItemStack heldItem = player.getMainHandItem();
+                long time = System.currentTimeMillis();
+                if (doubleClickTime != -1 && (time < (doubleClickTime + 250)) && !te.stacks.get(type).isEmpty()) {
+                    // Doubleclick
+                    placeAll(player, te, type, te.stacks.get(type));
+                    doubleClickTime = -1;
+                } else {
+                    doubleClickTime = time;
+                    if (!heldItem.isEmpty()) {
+                        placeHeld(player, te, type, heldItem);
+                    }
+                }
+                te.markDirtyClient();
+                player.containerMenu.broadcastChanges();
             }
         }
         return true;
@@ -473,6 +492,30 @@ public class StorageTile extends GenericTileEntity implements IGuiTile, ICityEqu
         return index;
     }
 
+    private int calculateSlot(double sx, double sy, double sz, Direction front) {
+        if (gridSize == 2) {
+            return calculateHitIndex(sx, sy, sz, front);
+        }
+        double horizontal = switch (front) {
+            case NORTH -> 1 - sx;
+            case EAST -> 1 - sz;
+            case WEST -> sz;
+            default -> sx;
+        };
+        double vertical = switch (front) {
+            case DOWN -> sz;
+            case UP -> 1 - sz;
+            default -> sy;
+        };
+        if (vertical < .13) {
+            return -1;
+        }
+        // The nine rendered cells span x=.11..87 and y=.16..92, at .25 intervals.
+        int column = Math.max(0, Math.min(2, (int) Math.floor((horizontal - .11) / .25)));
+        int row = Math.max(0, Math.min(2, (int) Math.floor((.92 - vertical) / .25)));
+        return row * gridSize + column;
+    }
+
     @Override
     public IGuiComponent<?> createGui(String tag, IGuiComponentRegistry registry) {
         return Ariente.guiHandler.createNoAccessPanel();
@@ -505,9 +548,10 @@ public class StorageTile extends GenericTileEntity implements IGuiTile, ICityEqu
     }
 
     private class StorageItemHandler implements IItemHandlerModifiable {
+
         @Override
         public int getSlots() {
-            return STACKS * STACKS_PER_TYPE;
+            return getTypeCount() * STACKS_PER_TYPE;
         }
 
         @Nonnull

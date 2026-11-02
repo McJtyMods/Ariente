@@ -49,6 +49,7 @@ public class BlockDropTests {
                 new SavedBlock(Registration.ELEVATOR.get(), "{height:3}"),
                 new SavedBlock(Registration.LOCK.get(), "{locked:1b,keyId:'drop-test',vertical:7,horizontal:9}"),
                 new SavedBlock(Registration.STORAGE.get(), "{locked:1b,keyId:'storage-test'}"),
+                new SavedBlock(Registration.STORAGE_3X3.get(), "{locked:1b,keyId:'storage-3x3-test'}"),
                 new SavedBlock(Registration.SMELTER.get(), "{smeltProgress:96,smeltRecipe:'minecraft:iron_ingot_from_smelting_raw_iron'}"),
                 new SavedBlock(Registration.WARPER.get(), "{charges:17}"),
                 new SavedBlock(Registration.SIGNAL_TRANSMITTER.get(), "{channel:41,desired:42}"),
@@ -73,10 +74,10 @@ public class BlockDropTests {
 
     @GameTest(template = "empty")
     public static void lootAndPlacementPreserveInventoryContents(GameTestHelper helper) {
-        List<Block> blocks = List.of(Registration.STORAGE.get(), Registration.NEGARITE_GENERATOR.get(),
+        List<Block> blocks = List.of(Registration.STORAGE.get(), Registration.STORAGE_3X3.get(), Registration.NEGARITE_GENERATOR.get(),
                 Registration.POSIRITE_GENERATOR.get(), Registration.AUTO_CONSTRUCTOR.get(), Registration.BLUEPRINT_STORAGE.get(), Registration.SMELTER.get());
         ItemStack blueprint = BlueprintItem.makeBluePrint(new ItemStack(Registration.FIELD_MARKER.get()));
-        List<ItemStack> contents = List.of(new ItemStack(Items.IRON_INGOT, 64), new ItemStack(Registration.DUST_NEGARITE.get(), 7),
+        List<ItemStack> contents = List.of(new ItemStack(Items.IRON_INGOT, 64), new ItemStack(Items.DIAMOND, 37), new ItemStack(Registration.DUST_NEGARITE.get(), 7),
                 new ItemStack(Registration.DUST_POSIRITE.get(), 9), new ItemStack(Items.GOLD_INGOT, 13), blueprint, new ItemStack(Items.RAW_IRON, 17));
         for (int i = 0; i < blocks.size(); i++) {
             BlockEntity source = source(helper, blocks.get(i));

@@ -329,7 +329,9 @@ public class Registration {
 
     public static final RegistryObject<BaseBlock> STORAGE = BLOCKS.register("storage", StorageTile::createBlock);
     public static final RegistryObject<Item> STORAGE_ITEM = ITEMS.register("storage", () -> new BlockItem(STORAGE.get(), createStandardProperties()));
-    public static final RegistryObject<BlockEntityType<StorageTile>> STORAGE_TILE = TILES.register("storage", () -> BlockEntityType.Builder.of(StorageTile::new, STORAGE.get()).build(null));
+    public static final RegistryObject<BaseBlock> STORAGE_3X3 = BLOCKS.register("storage_3x3", StorageTile::createBlock);
+    public static final RegistryObject<Item> STORAGE_3X3_ITEM = ITEMS.register("storage_3x3", () -> new BlockItem(STORAGE_3X3.get(), createStandardProperties()));
+    public static final RegistryObject<BlockEntityType<StorageTile>> STORAGE_TILE = TILES.register("storage", () -> BlockEntityType.Builder.of(StorageTile::new, STORAGE.get(), STORAGE_3X3.get()).build(null));
 
     public static final RegistryObject<BaseBlock> SMELTER = BLOCKS.register("smelter", SmelterTile::createBlock);
     public static final RegistryObject<Item> SMELTER_ITEM = ITEMS.register("smelter", () -> new BlockItem(SMELTER.get(), createStandardProperties()));

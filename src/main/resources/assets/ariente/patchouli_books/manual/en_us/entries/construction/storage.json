@@ -10,12 +10,24 @@
       "text": "Each front-panel area holds one item type with room for 64 stacks. For items stacking to 64, that is 4,096 items per area.$(br2)$(li)Right-click with an item to insert the held stack.$(li)Double right-click an established area to deposit matching items from your inventory."
     },
     {
+      "type": "patchouli:spotlight",
+      "item": "ariente:storage_3x3",
+      "title": "Nine materials per cube",
+      "text": "The $(thing)Storage Cube (3x3)$() has nine front-panel areas. Each still holds 64 stacks: up to 4,096 items per area and 36,864 per cube for items stacking to 64.$(br2)It uses the same insertion, extraction, locking and automation controls as the original four-area cube. Both variants remain available."
+    },
+    {
       "type": "patchouli:text",
       "title": "Taking items out",
       "text": "$(li)Left-click an item area to take one item.$(li)Sneak-left-click to take up to a stack.$(br2)Automation can also move items through the cube.$(br2)A locked cube opens its access panel instead. Present its matching storage Key Card to toggle the lock. A door card does not automatically grant storage access."
+    },
+    {
+      "type": "patchouli:text",
+      "title": "Build the 3x3 cube",
+      "text": "Put a populated $(thing)Storage Cube (3x3)$() blueprint in Blueprint Storage beside a Constructor or Auto Constructor. Crafting keeps the blueprint.$(br2)Ingredients:$(li)1 Black Marble$(li)6 Silver Ingots$(li)1 Circuit$(li)2 Chests$(li)9 Glass Panes$(br2)JEI shows the Constructor recipe and its blueprint."
     }
   ],
   "extra_recipe_mappings": {
-    "ariente:storage": 0
+    "ariente:storage": 0,
+    "ariente:storage_3x3": 1
   }
 }

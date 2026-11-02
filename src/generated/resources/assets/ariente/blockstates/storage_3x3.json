@@ -1,0 +1,27 @@
+{
+  "variants": {
+    "facing=down": {
+      "model": "ariente:block/utility/storage_3x3",
+      "x": 90
+    },
+    "facing=east": {
+      "model": "ariente:block/utility/storage_3x3",
+      "y": 90
+    },
+    "facing=north": {
+      "model": "ariente:block/utility/storage_3x3"
+    },
+    "facing=south": {
+      "model": "ariente:block/utility/storage_3x3",
+      "y": 180
+    },
+    "facing=up": {
+      "model": "ariente:block/utility/storage_3x3",
+      "x": -90
+    },
+    "facing=west": {
+      "model": "ariente:block/utility/storage_3x3",
+      "y": 270
+    }
+  }
+}

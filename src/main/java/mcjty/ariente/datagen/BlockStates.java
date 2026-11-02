@@ -294,6 +294,7 @@ public class BlockStates extends BaseBlockStateProvider {
 
     private void registerStorage() {
         orientedBlock(Registration.STORAGE.get(), storageModel("storage"));
+        orientedBlock(Registration.STORAGE_3X3.get(), storageModel("storage_3x3"));
     }
 
     private BlockModelBuilder storageModel(String name) {

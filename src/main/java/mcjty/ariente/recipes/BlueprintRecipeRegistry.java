@@ -288,6 +288,13 @@ public class BlueprintRecipeRegistry {
                 new ItemStack(Blocks.CHEST, 1),
                 new ItemStack(Blocks.GLASS_PANE, 4)
         ));
+        recipes.add(new ConstructorRecipe(new ItemStack(Registration.STORAGE_3X3.get()), COMMON,
+                new ItemStack(DecorativeBlockModule.MARBLE.get(MarbleColor.BLACK).get(), 1),
+                new ItemStack(Registration.INGOT_SILVER.get(), 6),
+                new ItemStack(Registration.CIRCUIT.get(), 1),
+                new ItemStack(Blocks.CHEST, 2),
+                new ItemStack(Blocks.GLASS_PANE, 9)
+        ));
         recipes.add(new ConstructorRecipe(new ItemStack(Registration.BLUEPRINT_STORAGE.get()), COMMON,
                 new ItemStack(DecorativeBlockModule.MARBLE.get(MarbleColor.BLACK).get(), 1),
                 new ItemStack(Registration.INGOT_SILVER.get(), 3),

@@ -54,7 +54,7 @@ public class ArienteTOPDriver implements TOPDriver {
                 drivers.put(id, new LockDriver());
             } else if (block == Registration.ALARM.get()) {
                 drivers.put(id, new AlarmDriver());
-            } else if (block == Registration.STORAGE.get()) {
+            } else if (block == Registration.STORAGE.get() || block == Registration.STORAGE_3X3.get()) {
                 drivers.put(id, new StorageDriver());
             } else if (block == Registration.WARPER.get()) {
                 drivers.put(id, new WarperDriver());

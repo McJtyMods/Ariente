@@ -109,6 +109,7 @@ public class Items extends BaseItemModelProvider {
         parentedItem(Registration.NEGARITE_GENERATOR_ITEM.get(), "block/machines/negarite_generator_on");
         parentedItem(Registration.POSIRITE_GENERATOR_ITEM.get(), "block/machines/posirite_generator_on");
         parentedItem(Registration.STORAGE_ITEM.get(), "block/utility/storage");
+        parentedItem(Registration.STORAGE_3X3_ITEM.get(), "block/utility/storage_3x3");
         parentedItem(Registration.SMELTER_ITEM.get(), "block/utility/smelter");
         parentedItem(Registration.ELEVATOR_ITEM.get(), "block/utility/elevator");
         parentedItem(Registration.FORCEFIELD_ITEM.get(), "block/machines/forcefield");

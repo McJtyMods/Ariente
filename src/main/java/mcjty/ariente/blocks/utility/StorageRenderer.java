@@ -27,8 +27,6 @@ import net.minecraft.world.phys.HitResult;
 
 public class StorageRenderer implements BlockEntityRenderer<StorageTile> {
 
-    private static int xx[] = new int[]{11, 36, 11, 36};
-    private static int yy[] = new int[]{9, 9, 34, 34};
     protected BlockEntityRendererProvider.Context context;
 
     public StorageRenderer(BlockEntityRendererProvider.Context pContext) {
@@ -83,27 +81,37 @@ public class StorageRenderer implements BlockEntityRenderer<StorageTile> {
 
         matrixStack.translate(0.0F, 0.0F, 0.9F+.1);
 
-        renderSlotHilight(matrixStack, buffer, index);
+        renderSlotHilight(matrixStack, buffer, te, index);
         renderSlots(matrixStack, buffer, te);
 
         matrixStack.popPose();
     }
 
-    private void renderSlotHilight(PoseStack matrixStack, MultiBufferSource buffer, int index) {
+    private static int slotX(StorageTile te, int slot) {
+        return 11 + (te.getGridSize() - 2) * 4 + slot % te.getGridSize() * 25;
+    }
+
+    private static int slotY(StorageTile te, int slot) {
+        return 9 + (te.getGridSize() - 2) * 3 + slot / te.getGridSize() * 25;
+    }
+
+    private void renderSlotHilight(PoseStack matrixStack, MultiBufferSource buffer, StorageTile te, int index) {
         matrixStack.pushPose();
 
-        float factor = 2.0f;
+        float factor = 4.0f / te.getGridSize();
         float f3 = 0.0075F;
         matrixStack.translate(-0.5F, 0.5F, -0.155F);
         matrixStack.scale(f3 * factor, -f3 * factor, f3);
 
-        for (int i = 0; i < 4; i++) {
-            fill(matrixStack, buffer, xx[i] - 4, yy[i] - 4, xx[i] + 22, yy[i] - 3, 0xff222222, 0xf000f0);
-            fill(matrixStack, buffer, xx[i] - 4, yy[i] + 21, xx[i] + 22, yy[i] + 22, 0xff222222, 0xf000f0);
-            fill(matrixStack, buffer, xx[i] - 4, yy[i] - 4, xx[i] - 3, yy[i] + 22, 0xff222222, 0xf000f0);
-            fill(matrixStack, buffer, xx[i] + 21, yy[i] - 4, xx[i] + 22, yy[i] + 22, 0xff222222, 0xf000f0);
+        for (int i = 0; i < te.getTypeCount(); i++) {
+            int x = slotX(te, i);
+            int y = slotY(te, i);
+            fill(matrixStack, buffer, x - 4, y - 4, x + 22, y - 3, 0xff222222, 0xf000f0);
+            fill(matrixStack, buffer, x - 4, y + 21, x + 22, y + 22, 0xff222222, 0xf000f0);
+            fill(matrixStack, buffer, x - 4, y - 4, x - 3, y + 22, 0xff222222, 0xf000f0);
+            fill(matrixStack, buffer, x + 21, y - 4, x + 22, y + 22, 0xff222222, 0xf000f0);
             if (index == i) {
-                fill(matrixStack, buffer, xx[i] - 3, yy[i] - 3, xx[i] + 21, yy[i] + 21, index == i ? 0x55666666 : 0x55000000, 0xf000f0);
+                fill(matrixStack, buffer, x - 3, y - 3, x + 21, y + 21, 0x55666666, 0xf000f0);
             }
         }
 
@@ -111,7 +119,7 @@ public class StorageRenderer implements BlockEntityRenderer<StorageTile> {
     }
 
     private void renderSlots(PoseStack matrixStack, MultiBufferSource buffer, StorageTile te) {
-        float factor = 2.0f;
+        float factor = 4.0f / te.getGridSize();
         float f3 = 0.0075F;
         matrixStack.translate(-0.5F, 0.5F, -0.15F);
         matrixStack.scale(f3 * factor, -f3 * factor, 0.0001f);
@@ -119,11 +127,11 @@ public class StorageRenderer implements BlockEntityRenderer<StorageTile> {
         ItemRenderer itemRender = Minecraft.getInstance().getItemRenderer();
         MultiBufferSource itemBuffer = type -> buffer.getBuffer(ArienteRenderType.displayItem(type));
 
-        for (int i = 0; i < StorageTile.STACKS; i++) {
+        for (int i = 0; i < te.getTypeCount(); i++) {
             ItemStack stack = te.getTotalStack(i);
             if (!stack.isEmpty()) {
                 matrixStack.pushPose();
-                matrixStack.translate(xx[i] + 8, yy[i] + 8, 0);
+                matrixStack.translate(slotX(te, i) + 8, slotY(te, i) + 8, 0);
                 matrixStack.scale(16, -16, 16);
                 BakedModel ibakedmodel = itemRender.getModel(stack, Minecraft.getInstance().level, null, 1);
                 int lightmapValue = 0xf000f0;
@@ -134,10 +142,10 @@ public class StorageRenderer implements BlockEntityRenderer<StorageTile> {
 
         matrixStack.translate(0F, 0F, 500F);
         matrixStack.scale(.5f, .5f, .5f);
-        for (int i = 0; i < StorageTile.STACKS; i++) {
+        for (int i = 0; i < te.getTypeCount(); i++) {
             ItemStack stack = te.getTotalStack(i);
             if (!stack.isEmpty()) {
-                renderSlotOverlay(matrixStack, buffer, Minecraft.getInstance().font, yy[i] * 2 + 16, stack, xx[i] * 2 + 15, 0xf000f0);
+                renderSlotOverlay(matrixStack, buffer, Minecraft.getInstance().font, slotY(te, i) * 2 + 16, stack, slotX(te, i) * 2 + 15, 0xf000f0);
             }
         }
     }

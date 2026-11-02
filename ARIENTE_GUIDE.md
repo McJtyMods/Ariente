@@ -130,7 +130,7 @@ Most machines use **HoloGui** rather than a conventional full-screen container.
 
 The hologram is a real world entity. Stand where you can see its front and aim at
 the actual button. Storage Cubes additionally have direct interaction on their
-four front-panel item areas; see [Storage Cube](#storage-cube).
+four or nine front-panel item areas; see [Storage Cube](#storage-cube).
 
 Machines with a redstone-mode control can cycle between ignoring redstone,
 requiring no signal, and requiring a signal. This control enables a machine; it
@@ -626,6 +626,16 @@ A Storage Cube holds **four item types**, shown in four areas on its front.
 Each type has **64 stack slots**: for a normally stackable 64-item material that
 is **4,096 items per type**, or 16,384 across all four types. Actual capacity
 depends on that item's stack limit.
+
+The **Storage Cube (3x3)** holds **nine item types** in a 3x3 front-panel grid.
+It keeps the same 64-stack capacity per type, up to **36,864 items** across all
+nine areas for items stacking to 64. The original four-type cube remains available.
+Both variants use the same controls, locking, item automation and six-way rotation.
+
+Craft the 3x3 cube with its own populated blueprint in adjacent Blueprint Storage
+using a Constructor or Auto Constructor. It needs **1 Black Marble, 6 Silver
+Ingots, 1 Circuit, 2 Chests and 9 Glass Panes**. The blueprint stays in storage;
+JEI shows the recipe and blueprint.
 
 | Front-panel action | Result |
 | --- | --- |
@@ -1379,6 +1389,7 @@ including matching connector ingredients. Data variants have no catalog recipe.
 | Constructor | Common | Circuit, 2 × Silver Ingot, Platinum Ingot, 4 × Silicon |
 | Auto Constructor | Common | Constructor, 2 × Circuit, Silver Ingot, 2 × Platinum Ingot, 2 × Silicon |
 | Storage Cube | Common | Black Marble, 3 × Silver Ingot, Chest, 4 × Glass Pane |
+| Storage Cube (3x3) | Common | Black Marble, 6 × Silver Ingot, Circuit, 2 × Chest, 9 × Glass Pane |
 | Smelter | Common | Black Marble, 3 × Silver Ingot, Circuit, 2 × Silicon, Furnace |
 | Blueprint Storage | Common | Black Marble, 3 × Silver Ingot, 2 × Silicon, Chest, 4 × Glass Pane |
 | Elevator | Common | Circuit, Black Marble Slab, 3 × Silver Ingot |
