@@ -18,9 +18,10 @@ import mcjty.hologui.api.components.ISlots;
 import mcjty.lib.blocks.BaseBlock;
 import mcjty.lib.blocks.RotationType;
 import mcjty.lib.builder.BlockBuilder;
-import mcjty.lib.container.AutomationFilterItemHander;
 import mcjty.lib.container.ContainerFactory;
 import mcjty.lib.container.GenericItemHandler;
+import mcjty.lib.tileentity.Cap;
+import mcjty.lib.tileentity.CapType;
 import mcjty.lib.tileentity.TickingTileEntity;
 import mcjty.lib.varia.OrientationTools;
 import mcjty.lib.varia.RedstoneMode;
@@ -40,10 +41,7 @@ import net.minecraft.world.level.block.state.StateDefinition;
 import net.minecraft.world.level.block.entity.BlockEntity;
 import net.minecraft.world.InteractionResult;
 import net.minecraft.world.phys.BlockHitResult;
-import net.minecraftforge.common.capabilities.Capability;
 import net.minecraftforge.common.util.Lazy;
-import net.minecraftforge.common.util.LazyOptional;
-import net.minecraftforge.common.capabilities.ForgeCapabilities;
 import net.minecraftforge.items.ItemHandlerHelper;
 
 import javax.annotation.Nonnull;
@@ -59,6 +57,7 @@ import static mcjty.ariente.compat.ArienteTOPDriver.DRIVER;
 import static mcjty.hologui.api.Icons.*;
 import static mcjty.lib.builder.TooltipBuilder.header;
 import static mcjty.lib.builder.TooltipBuilder.key;
+import static mcjty.lib.container.SlotDefinition.generic;
 
 public class AutoConstructorTile extends TickingTileEntity implements IGuiTile, IPowerReceiver, ICityEquipment, IPowerUser {
 
@@ -66,11 +65,12 @@ public class AutoConstructorTile extends TickingTileEntity implements IGuiTile, 
     public static final int OUTPUT = 6;
     public static final int SLOT_INGREDIENTS = 0;
     public static final int SLOT_OUTPUT = SLOT_INGREDIENTS + INGREDIENTS;
-    public static final Lazy<ContainerFactory> CONTAINER_FACTORY = Lazy.of(() -> new ContainerFactory(INGREDIENTS + OUTPUT)); // @todo 1.14 new ResourceLocation(Ariente.MODID, "gui/constructor.gui"));
+    public static final Lazy<ContainerFactory> CONTAINER_FACTORY = Lazy.of(() -> new ContainerFactory(INGREDIENTS + OUTPUT)
+            .box(generic().in(), SLOT_INGREDIENTS, 0, 0, 6, 3)
+            .box(generic().out(), SLOT_OUTPUT, 0, 0, OUTPUT, 1));
 
+    @Cap(type = CapType.ITEMS_AUTOMATION)
     private final GenericItemHandler items = createItemHandler();
-    private final LazyOptional<GenericItemHandler> itemHandler = LazyOptional.of(() -> items);
-    private final LazyOptional<AutomationFilterItemHander> automationItemHandler = LazyOptional.of(() -> new AutomationFilterItemHander(items));
 
     public static String TAG_INGREDIENTS = "ingredients";
 
@@ -421,14 +421,5 @@ public class AutoConstructorTile extends TickingTileEntity implements IGuiTile, 
                 return slot < SLOT_OUTPUT && stack.getItem() != Registration.BLUEPRINT.get();
             }
         };
-    }
-
-    @Nonnull
-    @Override
-    public <T> LazyOptional<T> getCapability(@Nonnull Capability<T> cap) {
-        if (cap == ForgeCapabilities.ITEM_HANDLER) {
-            return automationItemHandler.cast();
-        }
-        return super.getCapability(cap);
     }
 }

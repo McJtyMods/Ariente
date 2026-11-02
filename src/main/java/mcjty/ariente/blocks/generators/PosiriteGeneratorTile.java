@@ -14,6 +14,8 @@ import mcjty.lib.blocks.RotationType;
 import mcjty.lib.builder.BlockBuilder;
 import mcjty.lib.container.ContainerFactory;
 import mcjty.lib.container.GenericItemHandler;
+import mcjty.lib.tileentity.Cap;
+import mcjty.lib.tileentity.CapType;
 import mcjty.lib.tileentity.TickingTileEntity;
 import mcjty.lib.varia.RedstoneMode;
 import net.minecraft.core.BlockPos;
@@ -30,10 +32,7 @@ import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.level.block.state.StateDefinition;
 import net.minecraft.world.phys.BlockHitResult;
-import net.minecraftforge.common.capabilities.Capability;
-import net.minecraftforge.common.capabilities.ForgeCapabilities;
 import net.minecraftforge.common.util.Lazy;
-import net.minecraftforge.common.util.LazyOptional;
 
 import javax.annotation.Nonnull;
 
@@ -51,8 +50,8 @@ public class PosiriteGeneratorTile extends TickingTileEntity implements IGuiTile
     public static final Lazy<ContainerFactory> CONTAINER_FACTORY = Lazy.of(() -> new ContainerFactory(1));//@todo 1.14new ResourceLocation(Ariente.MODID, "gui/posirite_generator.gui"));
     private final PowerSenderSupport powerBlobSupport = new PowerSenderSupport();
 
+    @Cap(type = CapType.ITEMS)
     private final GenericItemHandler items = createItemHandler();
-    private final LazyOptional<GenericItemHandler> itemHandler = LazyOptional.of(() -> items);
 
     // @todo, temporary: base on tanks later!
     private int dustCounter;        // Number of ticks before the current dust depletes
@@ -364,15 +363,6 @@ public class PosiriteGeneratorTile extends TickingTileEntity implements IGuiTile
         if (!this.level.isClientSide) {
             PowerSenderSupport.fixNetworks(this.level, pos);
         }
-    }
-
-    @Nonnull
-    @Override
-    public <T> LazyOptional<T> getCapability(@Nonnull Capability<T> cap) {
-        if (cap == ForgeCapabilities.ITEM_HANDLER) {
-            return itemHandler.cast();
-        }
-        return super.getCapability(cap);
     }
 
     private GenericItemHandler createItemHandler() {

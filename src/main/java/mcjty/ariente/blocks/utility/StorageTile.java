@@ -18,6 +18,8 @@ import mcjty.hologui.api.IGuiTile;
 import mcjty.lib.blocks.BaseBlock;
 import mcjty.lib.blocks.RotationType;
 import mcjty.lib.builder.BlockBuilder;
+import mcjty.lib.tileentity.Cap;
+import mcjty.lib.tileentity.CapType;
 import mcjty.lib.tileentity.GenericTileEntity;
 import mcjty.lib.varia.ItemStackList;
 import net.minecraft.core.BlockPos;
@@ -43,9 +45,6 @@ import net.minecraft.world.level.block.entity.BlockEntity;
 import net.minecraft.world.phys.BlockHitResult;
 import net.minecraft.world.phys.HitResult;
 import net.minecraft.world.phys.Vec3;
-import net.minecraftforge.common.capabilities.Capability;
-import net.minecraftforge.common.util.LazyOptional;
-import net.minecraftforge.common.capabilities.ForgeCapabilities;
 import net.minecraftforge.items.IItemHandler;
 import net.minecraftforge.items.IItemHandlerModifiable;
 import net.minecraftforge.items.ItemHandlerHelper;
@@ -70,6 +69,9 @@ public class StorageTile extends GenericTileEntity implements IGuiTile, ICityEqu
     private final ItemStackList stacks = ItemStackList.create(4);
     private int[] counts = new int[STACKS * STACKS_PER_TYPE];
     private int[] totals = new int[STACKS];
+
+    @Cap(type = CapType.ITEMS)
+    private final IItemHandler invHandler = new StorageItemHandler();
 
     public StorageTile(BlockPos pos, BlockState state) {
         super(Registration.STORAGE_TILE.get(), pos, state);
@@ -398,7 +400,7 @@ public class StorageTile extends GenericTileEntity implements IGuiTile, ICityEqu
         for (int i = 0; i < player.getInventory().getContainerSize(); i++) {
             ItemStack stack = player.getInventory().getItem(i);
             if (ItemHandlerHelper.canItemStacksStack(stack, heldItem)) {
-                ItemStack remaining = insertItem(te.getInvHandler(), stack, type);
+                ItemStack remaining = insertItem(te.invHandler, stack, type);
                 player.getInventory().setItem(i, remaining);
                 if (!remaining.isEmpty()) {
                     break;  // Storage is full
@@ -408,7 +410,7 @@ public class StorageTile extends GenericTileEntity implements IGuiTile, ICityEqu
     }
 
     private static void placeHeld(Player player, StorageTile te, int type, ItemStack heldItem) {
-        ItemStack remaining = insertItem(te.getInvHandler(), heldItem, type);
+        ItemStack remaining = insertItem(te.invHandler, heldItem, type);
         player.setItemInHand(InteractionHand.MAIN_HAND, remaining);
     }
 
@@ -668,24 +670,5 @@ public class StorageTile extends GenericTileEntity implements IGuiTile, ICityEqu
             updateTotals(type);
             markDirtyClient();  // @todo is this really required?
         }
-    }
-
-    private IItemHandler invHandler;
-    private LazyOptional<IItemHandler> itemHandler = LazyOptional.of(this::getInvHandler);
-
-    private IItemHandler getInvHandler() {
-        if (invHandler == null) {
-            invHandler = new StorageItemHandler();
-        }
-        return invHandler;
-    }
-
-    @Nonnull
-    @Override
-    public <T> LazyOptional<T> getCapability(@Nonnull Capability<T> cap) {
-        if (cap == ForgeCapabilities.ITEM_HANDLER) {
-            return itemHandler.cast();
-        }
-        return super.getCapability(cap);
     }
 }
