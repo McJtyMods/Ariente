@@ -4,6 +4,7 @@ import com.mojang.blaze3d.vertex.VertexConsumer;
 import net.minecraft.client.renderer.RenderType;
 import com.mojang.math.Axis;
 import com.mojang.blaze3d.vertex.*;
+import mcjty.ariente.client.ArienteRenderType;
 import mcjty.ariente.setup.Registration;
 import mcjty.lib.blocks.BaseBlock;
 import mcjty.lib.client.CustomRenderTypes;
@@ -116,17 +117,17 @@ public class StorageRenderer implements BlockEntityRenderer<StorageTile> {
         matrixStack.scale(f3 * factor, -f3 * factor, 0.0001f);
 
         ItemRenderer itemRender = Minecraft.getInstance().getItemRenderer();
+        MultiBufferSource itemBuffer = type -> buffer.getBuffer(ArienteRenderType.displayItem(type));
 
         for (int i = 0; i < StorageTile.STACKS; i++) {
             ItemStack stack = te.getTotalStack(i);
             if (!stack.isEmpty()) {
                 matrixStack.pushPose();
-                matrixStack.translate(xx[i], yy[i], 0);
-                matrixStack.scale(16, 16, 16);
-                matrixStack.translate(.5, .5, 0);
+                matrixStack.translate(xx[i] + 8, yy[i] + 8, 0);
+                matrixStack.scale(16, -16, 16);
                 BakedModel ibakedmodel = itemRender.getModel(stack, Minecraft.getInstance().level, null, 1);
                 int lightmapValue = 0xf000f0;
-                itemRender.render(stack, ItemDisplayContext.GUI, false, matrixStack, buffer, lightmapValue, OverlayTexture.NO_OVERLAY, ibakedmodel);
+                itemRender.render(stack, ItemDisplayContext.GUI, false, matrixStack, itemBuffer, lightmapValue, OverlayTexture.NO_OVERLAY, ibakedmodel);
                 matrixStack.popPose();
             }
         }

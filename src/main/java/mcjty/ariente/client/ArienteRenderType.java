@@ -1,5 +1,6 @@
 package mcjty.ariente.client;
 
+import com.mojang.blaze3d.systems.RenderSystem;
 import com.mojang.blaze3d.vertex.DefaultVertexFormat;
 import com.mojang.blaze3d.vertex.VertexFormat;
 import net.minecraft.client.renderer.RenderType;
@@ -11,18 +12,39 @@ import net.minecraftforge.client.event.RegisterShadersEvent;
 
 import java.io.IOException;
 import java.io.UncheckedIOException;
+import java.util.IdentityHashMap;
+import java.util.Map;
 
 public class ArienteRenderType extends RenderType {
 
     private static ShaderInstance beamShader;
+    private static ShaderInstance displayItemShader;
+    private static final Map<RenderType, RenderType> DISPLAY_ITEMS = new IdentityHashMap<>();
 
     public static void registerShaders(RegisterShadersEvent event) {
         try {
             event.registerShader(new ShaderInstance(event.getResourceProvider(), new ResourceLocation("ariente", "beam"),
                     DefaultVertexFormat.NEW_ENTITY), shader -> beamShader = shader);
+            event.registerShader(new ShaderInstance(event.getResourceProvider(), new ResourceLocation("ariente", "display_item"),
+                    DefaultVertexFormat.NEW_ENTITY), shader -> displayItemShader = shader);
         } catch (IOException exception) {
-            throw new UncheckedIOException("Could not load the Ariente beam shader", exception);
+            throw new UncheckedIOException("Could not load the Ariente shaders", exception);
         }
+    }
+
+    public static RenderType displayItem(RenderType type) {
+        // Glint and other passes with different vertex formats keep their own shaders.
+        if (type.format() != DefaultVertexFormat.NEW_ENTITY) {
+            return type;
+        }
+        // Keep translucent icons on the display's framebuffer in Fabulous mode.
+        RenderType itemType = type == Sheets.translucentItemSheet() ? Sheets.translucentCullBlockSheet() : type;
+        return DISPLAY_ITEMS.computeIfAbsent(itemType, original -> new ArienteRenderType("ariente_display_item",
+                original.format(), original.mode(), original.bufferSize(), original.affectsCrumbling(), true,
+                () -> {
+                    original.setupRenderState();
+                    RenderSystem.setShader(() -> displayItemShader);
+                }, original::clearRenderState));
     }
 
     // Dummy

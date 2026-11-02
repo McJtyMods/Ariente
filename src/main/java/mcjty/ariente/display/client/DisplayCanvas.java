@@ -2,6 +2,7 @@ package mcjty.ariente.display.client;
 
 import com.mojang.blaze3d.vertex.PoseStack;
 import com.mojang.blaze3d.vertex.VertexConsumer;
+import mcjty.ariente.client.ArienteRenderType;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.Font;
 import net.minecraft.client.renderer.LightTexture;
@@ -52,7 +53,8 @@ public record DisplayCanvas(PoseStack poses, MultiBufferSource buffer) {
         poses.translate(x + 8, y + 8, .18);
         poses.scale(16, -16, .01f);
         Minecraft.getInstance().getItemRenderer().renderStatic(stack, ItemDisplayContext.GUI,
-                LightTexture.FULL_BRIGHT, OverlayTexture.NO_OVERLAY, poses, buffer, null, 0);
+                LightTexture.FULL_BRIGHT, OverlayTexture.NO_OVERLAY, poses,
+                type -> buffer.getBuffer(ArienteRenderType.displayItem(type)), Minecraft.getInstance().level, 0);
         poses.popPose();
     }
 }

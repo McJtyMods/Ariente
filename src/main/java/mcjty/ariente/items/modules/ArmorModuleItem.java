@@ -46,7 +46,6 @@ public class ArmorModuleItem extends Item implements ITooltipSettings {
         tooltip.add(Component.translatable("message.ariente.armormodule.effect." + type.getName()).withStyle(ChatFormatting.GRAY));
         tooltip.add(getInstallationDescription().withStyle(ChatFormatting.GRAY));
         tooltipBuilder.makeTooltip(new ResourceLocation(Ariente.MODID, "armormodule"), stack, tooltip, flag);
-        tooltip.add(Component.translatable("message.ariente.armormodule.manual").withStyle(ChatFormatting.DARK_GRAY));
     }
 
     public MutableComponent getInstallationDescription() {

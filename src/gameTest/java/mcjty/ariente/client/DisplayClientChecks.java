@@ -2,6 +2,7 @@ package mcjty.ariente.client;
 
 import mcjty.ariente.Ariente;
 import mcjty.ariente.blocks.generators.NegariteGeneratorTile;
+import mcjty.ariente.blocks.utility.StorageTile;
 import mcjty.ariente.display.DisplayBaseTile;
 import mcjty.ariente.display.DisplayAppearance;
 import mcjty.ariente.display.DisplayBackground;
@@ -16,6 +17,7 @@ import mcjty.ariente.setup.Registration;
 import mcjty.hologui.gui.HoloGuiEntity;
 import mcjty.hologui.gui.TextEntryScreen;
 import net.minecraft.client.CameraType;
+import net.minecraft.client.GraphicsStatus;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.Screenshot;
 import net.minecraft.core.BlockPos;
@@ -31,12 +33,14 @@ import net.minecraft.world.level.GameType;
 import net.minecraft.world.level.block.Blocks;
 import net.minecraft.world.level.block.entity.ChestBlockEntity;
 import net.minecraft.world.level.block.state.properties.BlockStateProperties;
+import net.minecraft.world.item.enchantment.Enchantments;
 import net.minecraft.world.phys.AABB;
 import net.minecraft.world.phys.Vec3;
 import net.minecraftforge.api.distmarker.Dist;
 import net.minecraftforge.client.event.InputEvent;
 import net.minecraftforge.client.event.RenderGuiEvent;
 import net.minecraftforge.common.MinecraftForge;
+import net.minecraftforge.common.capabilities.ForgeCapabilities;
 import net.minecraftforge.event.TickEvent;
 import net.minecraftforge.eventbus.api.SubscribeEvent;
 import net.minecraftforge.fml.common.Mod;
@@ -58,6 +62,7 @@ public class DisplayClientChecks {
     private static UUID installedId;
     private static UUID draggedId;
     private static int surfaceColor;
+    private static GraphicsStatus graphics;
 
     @SubscribeEvent
     public static void tick(TickEvent.ClientTickEvent event) {
@@ -69,6 +74,7 @@ public class DisplayClientChecks {
         require(failure == null, "Fixture failed: " + failure);
         if (!started) {
             started = true;
+            graphics = mc.options.graphicsMode().get();
             mc.options.pauseOnLostFocus = false;
             mc.options.setCameraType(CameraType.FIRST_PERSON);
             mc.options.hideGui = false;
@@ -96,9 +102,22 @@ public class DisplayClientChecks {
                     ChestBlockEntity chest = (ChestBlockEntity) level.getBlockEntity(chestPos);
                     chest.setItem(0, new ItemStack(Items.IRON_INGOT, 64));
                     chest.setItem(1, new ItemStack(Items.IRON_INGOT, 64));
-                    chest.setItem(2, new ItemStack(Items.DIAMOND, 32));
+                    chest.setItem(2, new ItemStack(Items.BIRCH_STAIRS, 32));
                     chest.setItem(3, new ItemStack(Items.GOLD_INGOT, 48));
-                    chest.setItem(4, new ItemStack(Items.REDSTONE, 64));
+                    chest.setItem(4, new ItemStack(Items.OAK_SLAB, 64));
+                    BlockPos cubePos = new BlockPos(4, 201, 0);
+                    level.setBlockAndUpdate(cubePos, Registration.STORAGE.get().defaultBlockState()
+                            .setValue(BlockStateProperties.FACING, Direction.NORTH));
+                    StorageTile cube = (StorageTile) level.getBlockEntity(cubePos);
+                    var inventory = cube.getCapability(ForgeCapabilities.ITEM_HANDLER).resolve().orElseThrow();
+                    ItemStack sword = new ItemStack(Items.DIAMOND_SWORD);
+                    sword.enchant(Enchantments.SHARPNESS, 1);
+                    ItemStack[] icons = {new ItemStack(Items.BIRCH_STAIRS, 64), new ItemStack(Items.OAK_SLAB, 64),
+                            new ItemStack(Items.GLASS, 64), sword};
+                    for (int slot = 0; slot < icons.length; slot++) {
+                        require(inventory.insertItem(slot * StorageTile.STACKS_PER_TYPE, icons[slot], false).isEmpty(),
+                                "The rendering fixture must populate all four storage slots");
+                    }
                     BlockPos generatorPos = new BlockPos(-3, 200, 1);
                     level.setBlockAndUpdate(generatorPos, Registration.NEGARITE_GENERATOR.get().defaultBlockState());
                     level.setBlockAndUpdate(generatorPos.above(), Registration.NEGARITE_TANK.get().defaultBlockState());
@@ -175,6 +194,10 @@ public class DisplayClientChecks {
         ticks++;
         if (ticks == 50) {
             capture = "display-surface";
+        } else if (ticks == 51) {
+            aim(mc, new Vec3(3.5, 201.5, .5));
+        } else if (ticks == 53) {
+            capture = "display-storage-icons";
         } else if (ticks == 55) {
             mc.getSingleplayerServer().execute(() -> {
                 var chest = (ChestBlockEntity) mc.getSingleplayerServer().overworld().getBlockEntity(new BlockPos(6, 200, 1));
@@ -182,8 +205,17 @@ public class DisplayClientChecks {
                     chest.setItem(slot, new ItemStack(Items.GOLD_INGOT, 64));
                 }
             });
+        } else if (ticks == 56) {
+            mc.options.graphicsMode().set(GraphicsStatus.FABULOUS);
+            mc.levelRenderer.allChanged();
+            aim(mc, new Vec3(4.5, 201.5, .5));
+        } else if (ticks == 59) {
+            capture = "display-storage-icons-fabulous";
         } else if (ticks == 60) {
             give(mc, "READY");
+        } else if (ticks == 61) {
+            mc.options.graphicsMode().set(graphics);
+            mc.levelRenderer.allChanged();
         } else if (ticks == 80) {
             aim(mc, new Vec3(3.8, 200.54, .5));
         } else if (ticks == 85) {

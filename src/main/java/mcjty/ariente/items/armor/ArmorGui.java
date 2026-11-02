@@ -166,10 +166,7 @@ public class ArmorGui {
         panel.add(registry.stackToggle(xx, yy-.2, 1, 1)
                 .itemStack(new ItemStack(module))
                 .getter(player -> hasModuleAndCheckPlayerToo(player, slot, module))
-                .tooltipHandler((stack, lines) -> {
-                    lines.add("Click to install or remove");
-                    lines.add("Uses modules from your inventory");
-                })
+                .tooltipHandler((stack, lines) -> lines.add("Click to install or remove"))
                 .hitEvent((component, player, entity, x, y) -> toggleModuleInstall(player, slot, module)));
         // Move both image columns and their hit boxes together in panel coordinates.
         panel.add(registry.iconToggle(xx + 1.08, yy-.4, 1, 1)

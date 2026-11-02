@@ -240,7 +240,6 @@
   "message.ariente.armormodule.effect.hover": "Holds altitude while Flight is active",
   "message.ariente.armormodule.gold": "Uses no power",
   "message.ariente.armormodule.info": "Power: ",
-  "message.ariente.armormodule.manual": "Details: Ariente Tablet > Equipment",
 
   "message.ariente.blueprint.header": "This item can be used as a recipe holder for other items. It's used by the Constructor and Auto Constructor",
   "message.ariente.blueprint.info": "Result: ",
