@@ -115,6 +115,7 @@
   "block.ariente.signal_receiver": "Signal Receiver",
   "block.ariente.signal_transmitter": "Signal Transmitter",
   "block.ariente.storage": "Storage Cube",
+  "block.ariente.smelter": "Smelter",
   "block.ariente.elevator": "Elevator",
   "block.ariente.forcefield": "Forcefield Generator",
   "block.ariente.level_marker": "Level Marker",
@@ -256,6 +257,7 @@
 
   "message.ariente.forcefield.header": "Forcefield generator",
   "message.ariente.storage.header": "Can store large amounts of 4 different item types",
+  "message.ariente.smelter.header": "Smelts furnace recipes using Ariente flux at a configurable speed (10x by default). Left slot: input. Right slot: output. No GUI.",
   "message.ariente.power_combiner.header": "This machine combines negarite and posirite flux and feeds it into a combined cable",
   "message.ariente.negarite_tank.header": "Place one or more tanks on top of a Negarite Flux Generator",
   "message.ariente.posirite_tank.header": "Place one or more tanks on top of a Posirite Flux Generator",

@@ -120,6 +120,7 @@ public class BlockStates extends BaseBlockStateProvider {
         registerNodes();
         registerRamp();
         registerStorage();
+        registerSmelter();
         registerElevator();
         registerForcefield();
         registerWarper();
@@ -292,7 +293,11 @@ public class BlockStates extends BaseBlockStateProvider {
     }
 
     private void registerStorage() {
-        BlockModelBuilder model = models().withExistingParent(BLOCK_FOLDER + "/utility/storage", mcLoc("block/block"))
+        orientedBlock(Registration.STORAGE.get(), storageModel("storage"));
+    }
+
+    private BlockModelBuilder storageModel(String name) {
+        BlockModelBuilder model = models().withExistingParent(BLOCK_FOLDER + "/utility/" + name, mcLoc("block/block"))
                 .texture("particle", "#side");
         ResourceLocation sideTxt = modLoc(TXT_MACHINESIDE);
         ResourceLocation topTxt = modLoc(TXT_MACHINETOP);
@@ -330,7 +335,41 @@ public class BlockStates extends BaseBlockStateProvider {
                 .texture("top", topTxt)
                 .texture("bottom", botTxt);
 
-        orientedBlock(Registration.STORAGE.get(), model);
+        return model;
+    }
+
+    private void registerSmelter() {
+        BlockModelBuilder idle = smelterModel("smelter");
+        BlockModelBuilder working = smelterModel("smelter_working")
+                .texture("workingGlow", modLoc("block/machines/smelter_front_working_glow"));
+        working.element().from(1, 1, 1.99f).to(15, 15, 1.99f)
+                .face(NORTH).texture("#workingGlow").end();
+        VariantBlockStateBuilder builder = getVariantBuilder(Registration.SMELTER.get());
+        for (Direction direction : OrientationTools.HORIZONTAL_DIRECTION_VALUES) {
+            applyHorizRotation(builder.partialState().with(BlockStateProperties.HORIZONTAL_FACING, direction).with(BlockProperties.WORKING, false)
+                    .modelForState().modelFile(idle), direction);
+            applyHorizRotation(builder.partialState().with(BlockStateProperties.HORIZONTAL_FACING, direction).with(BlockProperties.WORKING, true)
+                    .modelForState().modelFile(working), direction);
+        }
+    }
+
+    private BlockModelBuilder smelterModel(String name) {
+        BlockModelBuilder model = storageModel(name)
+                .texture("output", modLoc("block/base/machineside_output"))
+                .texture("sideIn", modLoc("block/machines/smelter_front"));
+        model.element(0).face(SOUTH).texture("#output").end();
+        for (float x : new float[]{1.5f, 10}) {
+            smelterSlotEdge(model, x, 5.75f, x + 4.5f, 6);
+            smelterSlotEdge(model, x, 10, x + 4.5f, 10.25f);
+            smelterSlotEdge(model, x, 6, x + .25f, 10);
+            smelterSlotEdge(model, x + 4.25f, 6, x + 4.5f, 10);
+        }
+        return model;
+    }
+
+    private void smelterSlotEdge(BlockModelBuilder model, float x1, float y1, float x2, float y2) {
+        model.element().from(x1, y1, 1.97f).to(x2, y2, 1.97f)
+                .face(NORTH).uvs(0, 0, 16, 16).texture("#side").end();
     }
 
     private void registerTank(BaseBlock block, String prefix) {

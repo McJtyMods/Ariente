@@ -12,6 +12,7 @@ import mcjty.ariente.blocks.generators.NegariteTankRenderer;
 import mcjty.ariente.blocks.generators.PosiriteTankRenderer;
 import mcjty.ariente.blocks.utility.ElevatorRenderer;
 import mcjty.ariente.blocks.utility.StorageRenderer;
+import mcjty.ariente.blocks.utility.SmelterRenderer;
 import mcjty.ariente.blocks.utility.WarperRenderer;
 import mcjty.ariente.blocks.utility.autofield.AutoFieldRenderer;
 import mcjty.ariente.blocks.utility.door.DoorMarkerRenderer;
@@ -50,6 +51,7 @@ public class ClientSetup {
         PosiriteTankRenderer.register();
         ElevatorRenderer.register();
         StorageRenderer.register();
+        SmelterRenderer.register();
         DoorMarkerRenderer.register();
         InvisibleDoorRenderer.register();
         AutoFieldRenderer.register();

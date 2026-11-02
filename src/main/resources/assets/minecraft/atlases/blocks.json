@@ -170,6 +170,10 @@
     },
     {
       "type": "minecraft:single",
+      "resource": "ariente:block/base/machineside_output_glow"
+    },
+    {
+      "type": "minecraft:single",
       "resource": "ariente:block/blacktech/blacktech_anim_lines_glow"
     },
     {
@@ -223,6 +227,10 @@
     {
       "type": "minecraft:single",
       "resource": "ariente:block/machines/auto_constructor_on_glow"
+    },
+    {
+      "type": "minecraft:single",
+      "resource": "ariente:block/machines/smelter_front_working_glow"
     },
     {
       "type": "minecraft:single",

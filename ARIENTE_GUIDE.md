@@ -79,6 +79,7 @@ identified alongside the affected feature and collected in [Port gaps](#port-gap
 - [The dual power system](#the-dual-power-system)
 - [Blueprints and construction](#blueprints-and-construction)
 - [Storage Cube](#storage-cube)
+- [Smelter](#smelter)
 - [Automation fields](#automation-fields)
 - [Doors, keys, locks, and wireless signals](#doors-keys-locks-and-wireless-signals)
 - [Forcefield Generator](#forcefield-generator)
@@ -588,6 +589,36 @@ Sources: [blueprint data](src/main/java/mcjty/ariente/items/BlueprintItem.java),
 [manual Constructor](src/main/java/mcjty/ariente/blocks/utility/ConstructorTile.java),
 [Auto Constructor](src/main/java/mcjty/ariente/blocks/utility/AutoConstructorTile.java),
 [Blueprint Storage](src/main/java/mcjty/ariente/blocks/utility/BlueprintStorageTile.java).
+
+## Smelter
+
+The **Smelter** runs furnace smelting recipes using Ariente power. Its recessed
+black marble front shows **input slot / yellow lightning / output slot**. Each
+slot holds one normal stack. It has no GUI and needs no furnace fuel.
+The front has an animated glow while the machine is actively smelting.
+
+- Right-click the left slot with a smeltable item to insert the held stack.
+- Left-click either slot to retrieve one item; sneak-left-click retrieves up to
+  a stack. Empty-hand right-click also retrieves items.
+- Automation inserts through the **top, left, right, and front** faces and
+  extracts through the **bottom and back**. Front/back follow the block's facing.
+  Input faces reject extraction; output faces reject insertion.
+
+Supply both Negarite and Posirite flux, either separately or through a combined
+connector. Smelting defaults to **10 times the speed of a Vanilla furnace**: a
+standard 200-tick recipe takes **20 powered ticks (1 second)**. By default,
+each active tick consumes **20 of each flux**, or 400 of each for a standard
+recipe. Set `power.smelterSpeed` and `power.smelterPowerPerTick` in the server
+config to adjust the speed multiplier and per-tick cost independently.
+No power is consumed while idle or when the output is blocked. Progress pauses
+when power or output space is unavailable, and survives saving and reloading.
+Changing to a different recipe resets progress.
+
+Craft it with a **common Smelter blueprint** in a Constructor or Auto Constructor:
+Black Marble, 3 Silver Ingots, Circuit, 2 Silicon, and a Furnace. The populated
+blueprint works through adjacent Blueprint Storage like other machine patterns.
+
+Source: [Smelter](src/main/java/mcjty/ariente/blocks/utility/SmelterTile.java).
 
 ## Storage Cube
 
@@ -1211,6 +1242,8 @@ directory. Values below are defaults, not guaranteed server settings.
 | Ariente `utility` | `autoFieldAccumulatePerTick` | 400 | Maximum paired input per tick. |
 | Ariente `utility` | `autoFieldMaxAccumulatedPower` | 3200 | Field reserve cap. |
 | Ariente `power` | `forcefieldBuildupPower` | 500 | Paired cost per panel buildup step. |
+| Ariente `power` | `smelterPowerPerTick` | 20 | Cost of each flux per active smelting tick. |
+| Ariente `power` | `smelterSpeed` | 10 | Furnace recipe ticks processed per active smelting tick (1–200). |
 | Ariente `damage` | `forcefieldDamage` | 19.0 | Contact damage. |
 | Ariente `worldgen` | `overworldOregen` | DEFAULT | Enables optional Overworld marble and seven resource ores. |
 | Ariente `worldgen` | `overworldDungeonLoot` | DEFAULT | Enables optional dungeon blueprints/equipment. |
@@ -1346,6 +1379,7 @@ including matching connector ingredients. Data variants have no catalog recipe.
 | Constructor | Common | Circuit, 2 × Silver Ingot, Platinum Ingot, 4 × Silicon |
 | Auto Constructor | Common | Constructor, 2 × Circuit, Silver Ingot, 2 × Platinum Ingot, 2 × Silicon |
 | Storage Cube | Common | Black Marble, 3 × Silver Ingot, Chest, 4 × Glass Pane |
+| Smelter | Common | Black Marble, 3 × Silver Ingot, Circuit, 2 × Silicon, Furnace |
 | Blueprint Storage | Common | Black Marble, 3 × Silver Ingot, 2 × Silicon, Chest, 4 × Glass Pane |
 | Elevator | Common | Circuit, Black Marble Slab, 3 × Silver Ingot |
 | Negarite Tank | Common | 4 × Silver Ingot, Manganese Ingot, 4 × Glass, 20 × Negarite Dust |
@@ -1412,6 +1446,7 @@ The blueprint tables are sourced from
 | Constructor shows no recipes | Use populated blueprints in directly adjacent Blueprint Storage. |
 | Constructor result is crossed out | Hover for missing ingredients; manual crafting takes them from the player's inventory. |
 | Auto Constructor stalls | Check both power components, ingredient inventory, output space, neighboring blueprints, and redstone mode. |
+| Smelter stalls | Check for a furnace recipe, both flux components, and room for the complete result in the right slot. Insert through top/sides/front; extract through bottom/back. |
 | Automation Field moves nothing | Connected markers under node columns, height, correct source Output/destination Input roles, nonempty filters, full batch availability, conditions, and power. |
 | Item-transfer animation is absent | Enable item rendering in the field hologram and check inventory counts; animation samples recent transfers. |
 | Armor module is installed but does nothing | Activation, a carried Energy Holder with both fuel types or remaining charge, the per-piece module budget, and the ability's current implementation. |

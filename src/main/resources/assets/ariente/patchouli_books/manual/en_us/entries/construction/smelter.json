@@ -1,0 +1,37 @@
+{
+  "name": "Smelter",
+  "icon": "ariente:smelter",
+  "category": "ariente:construction",
+  "sortnum": 5,
+  "pages": [
+    {
+      "type": "patchouli:spotlight",
+      "item": "ariente:smelter",
+      "title": "Powered smelting",
+      "text": "The Smelter runs ordinary furnace recipes at $(bold)10 times the speed$() by default: a normal recipe takes 20 powered ticks (1 second). Speed is configurable.$(br2)Its marble front shows $(bold)input / lightning / output$(). Each slot holds one stack. No fuel slot or GUI is needed."
+    },
+    {
+      "type": "patchouli:text",
+      "title": "Supply both fluxes",
+      "text": "Connect Negarite and Posirite flux through cables or combined connectors.$(br2)The Smelter uses $(thing)20 of each flux per active tick$() by default: 400 of each for a normal recipe. Power cost is configurable.$(br2)Progress pauses without power or output space. Idle and blocked machines use no flux. A different recipe resets progress."
+    },
+    {
+      "type": "patchouli:text",
+      "title": "The two front slots",
+      "text": "$(li)Right-click the left slot with a smeltable item to insert it.$(li)Left-click either slot to take one item.$(li)Sneak-left-click to take up to a stack.$(li)An empty-hand right-click also takes items.$(br2)The right slot holds the smelting result. Retrieve ingredients from the left slot if you want to change recipes."
+    },
+    {
+      "type": "patchouli:text",
+      "title": "Item automation",
+      "text": "$(li)Input: top, left, right and front.$(li)Output: bottom and back.$(br2)These faces follow the machine's orientation. Input faces only accept items with a furnace recipe. Output faces only allow extraction.$(br2)Use an $(l:ariente:automation/first_field)Automation Field$(/l) or another item transport system to deliver ingredients and collect products."
+    },
+    {
+      "type": "patchouli:text",
+      "title": "Build with a blueprint",
+      "text": "Put a populated Smelter blueprint in Blueprint Storage next to a Constructor or Auto Constructor. The blueprint stays in the library.$(br2)Ingredients:$(li)1 Black Marble$(li)3 Silver Ingots$(li)1 Circuit$(li)2 Silicon$(li)1 Furnace$(br2)JEI shows the Constructor recipe and matching blueprint."
+    }
+  ],
+  "extra_recipe_mappings": {
+    "ariente:smelter": 0
+  }
+}
