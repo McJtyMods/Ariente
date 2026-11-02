@@ -37,18 +37,15 @@ public class HoloGuiTools {
     }
 
     public static IPanel createPanelWithHelp(IGuiComponentRegistry registry, ResourceLocation entry, Consumer<IHoloGuiEntity> switchHelp) {
-        return registry.panel(0, 0, 8, 8)
-                .add(registry.iconButton(8.2, -0.8, 1, 1)
-                        .icon(registry.image(Icons.FADED_QUESTION_MARK))
-                        .hover(registry.image(Icons.QUESTION_MARK))
-                        .hitEvent((component, player, entity, x1, y1) -> {
-                            if (ModSetup.patchouli && player instanceof ServerPlayer serverPlayer) {
-                                PatchouliCompatibility.openBookEntry(serverPlayer, TabletItem.MANUAL, entry, 0);
-                            } else {
-                                switchHelp.accept(entity);
-                            }
-                        }))
-                ;
+        IPanel panel = registry.panel(0, 0, 8, 8);
+        if (ModSetup.patchouli && entry != null) {
+            panel.help((component, player, entity, x, y) -> {
+                if (player instanceof ServerPlayer serverPlayer) {
+                    PatchouliCompatibility.openBookEntry(serverPlayer, TabletItem.MANUAL, entry, 0);
+                }
+            });
+        }
+        return panel;
     }
 
     public static IGuiComponent<?> createHelpGui(IGuiComponentRegistry registry, HelpBuilder helpBuilder) {

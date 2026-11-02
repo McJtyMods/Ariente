@@ -1,6 +1,7 @@
 package mcjty.ariente.display;
 
 import mcjty.ariente.Ariente;
+import mcjty.ariente.gui.HoloGuiTools;
 import mcjty.hologui.api.IGuiComponent;
 import mcjty.hologui.api.IGuiComponentRegistry;
 import mcjty.hologui.api.IHoloGuiEntity;
@@ -9,6 +10,7 @@ import net.minecraft.nbt.CompoundTag;
 import net.minecraft.world.InteractionHand;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.ItemStack;
+import net.minecraft.resources.ResourceLocation;
 
 import java.util.Locale;
 import java.util.UUID;
@@ -159,10 +161,11 @@ public class ModuleSettings {
     }
 
     private static IGuiComponent<?> createPanel(IGuiComponentRegistry r, ModuleSettings settings, boolean color) {
-        IPanel panel = r.panel(0, 0, 8, 8);
+        IPanel panel = HoloGuiTools.createPanelWithHelp(r, new ResourceLocation(Ariente.MODID, "construction/displays"));
         panel.add(r.text(.3, 0, 8, 1).text(color ? "TEXT COLOR" : settings.item.type().title()).scale(.65f).color(0x76eaff));
         if (color) {
-            panel.add(r.button(7.2, -.2, .8, .8).name("color_close").text("x").hitEvent((c, p, e, x, y) -> settings.switchPage(e, false)));
+            panel.add(r.button(6.4, .1, 1.6, .65).name("color_close").text("Back").scale(.4f)
+                    .hitEvent((c, p, e, x, y) -> settings.switchPage(e, false)));
             panel.add(r.colorPicker(.4, 1, 6.8, 5.4).name("color_picker").color(() -> settings.number("Color", 0xb8f4ff))
                     .selected((p, e, rgb) -> {
                         settings.setNumber(p, e, "Color", rgb);

@@ -7,7 +7,12 @@
     {
       "type": "patchouli:text",
       "title": "Working the hologram",
-      "text": "$(li)Right-click a machine to open its hologram.$(li)Aim at a button and $(thing)left-click$() to press it.$(li)$(thing)Double-click$() item slots to craft, transfer blueprints or set filters.$(li)Hover for tooltips.$(br2)Face the hologram so you can aim at its controls. The top-right question mark opens the relevant Tablet manual entry when Patchouli is installed. Without it, help appears in the hologram; use the back arrow to return."
+      "text": "$(li)Right-click a machine to open its hologram.$(li)Aim at a button and $(thing)left-click$() to press it.$(li)$(thing)Double-click$() item slots to craft, transfer blueprints or set filters.$(li)Hover for tooltips.$(br2)Face the hologram so you can aim at its controls."
+    },
+    {
+      "type": "patchouli:text",
+      "title": "Window controls",
+      "text": "The small bordered controls sit along the top-right edge.$(br2)$(thing)X$() closes the panel. $(thing)?$() opens its Tablet entry when available.$(br2)The $(thing)pushpin$() keeps a block panel open when you look away. A green upright pin means pinned. Click again to restore the normal timeout; X still closes it. Pins survive chunk reloads during play, but clear when the world is reopened.$(br2)Mounted panels omit X and pin; equipment panels omit pin."
     },
     {
       "type": "patchouli:text",

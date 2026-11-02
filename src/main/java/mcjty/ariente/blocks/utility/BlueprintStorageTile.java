@@ -2,6 +2,7 @@ package mcjty.ariente.blocks.utility;
 
 import mcjty.ariente.Ariente;
 import mcjty.ariente.gui.GuiHelp;
+import mcjty.ariente.gui.PlayerInventoryPanel;
 import mcjty.ariente.api.ICityAI;
 import mcjty.ariente.api.ICityEquipment;
 import mcjty.ariente.items.BlueprintItem;
@@ -102,22 +103,21 @@ public class BlueprintStorageTile extends GenericTileEntity implements IGuiTile,
         return GuiHelp.BLUEPRINT_STORAGE.createPanel(registry)
                 .add(registry.text(0, 0, 8, 1).text("Blueprints").color(registry.color(StyledColor.LABEL)))
 
-                .add(registry.icon(0, 2, 1, 1).icon(registry.image(WHITE_PLAYER)))
-                .add(registry.playerSlots(1.5, 1.5, 6, 2)
-                        .name("playerslots")
-                        .doubleClickEvent((component, player, entity, x, y, stack, index) -> transferToMachine(player, entity))
-                        .filter((stack, index) -> stack.getItem() instanceof BlueprintItem))
-
-                .add(registry.iconButton(2, 3.5, 1, 1).icon(registry.image(GRAY_ARROW_DOWN)).hover(registry.image(WHITE_ARROW_DOWN))
-                        .hitEvent((component, player, entity, x, y) -> transferToMachine(player, entity)))
-                .add(registry.iconButton(3, 3.5, 1, 1).icon(registry.image(GRAY_ARROW_UP)).hover(registry.image(WHITE_ARROW_UP))
-                        .hitEvent((component, player, entity, x, y) -> transferToPlayer(player, entity)))
-
-                .add(registry.stackIcon(0, 4.5, 1, 1).itemStack(new ItemStack(Registration.CONSTRUCTOR.get())))
-                .add(registry.slots(1.5, 4.5, 6, 1)
+                .add(registry.stackIcon(0, 1.2, 1, 1).itemStack(new ItemStack(Registration.CONSTRUCTOR.get())))
+                .add(registry.slots(1.5, 1.2, 6, 1)
                         .name("slots")
                         .doubleClickEvent((component, player, entity, x, y, stack, index) -> transferToPlayer(player, entity))
                         .itemHandler(items))
+
+                .add(registry.iconButton(2, 2.8, 1, 1).icon(registry.image(GRAY_ARROW_UP)).hover(registry.image(WHITE_ARROW_UP))
+                        .hitEvent((component, player, entity, x, y) -> transferToMachine(player, entity)))
+                .add(registry.iconButton(3, 2.8, 1, 1).icon(registry.image(GRAY_ARROW_DOWN)).hover(registry.image(WHITE_ARROW_DOWN))
+                        .hitEvent((component, player, entity, x, y) -> transferToPlayer(player, entity)))
+
+                .add(new PlayerInventoryPanel("Double-click to store blueprints")
+                        .name("playerslots")
+                        .doubleClickEvent((component, player, entity, x, y, stack, index) -> transferToMachine(player, entity))
+                        .filter((stack, index) -> stack.getItem() instanceof BlueprintItem))
                 ;
     }
 

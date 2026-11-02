@@ -2,6 +2,7 @@ package mcjty.ariente;
 
 import mcjty.ariente.blocks.storagecube.StorageCubeTile;
 import mcjty.ariente.blocks.storagecube.StorageCubeTransfer;
+import mcjty.ariente.blocks.storagecube.StorageCubeSort;
 import mcjty.ariente.recipes.BlueprintRecipeRegistry;
 import mcjty.ariente.setup.Registration;
 import net.minecraft.core.BlockPos;
@@ -10,10 +11,12 @@ import net.minecraft.gametest.framework.GameTest;
 import net.minecraft.gametest.framework.GameTestHelper;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.nbt.Tag;
+import net.minecraft.network.chat.Component;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.BlockItem;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.Items;
+import net.minecraft.world.item.enchantment.Enchantments;
 import net.minecraft.world.level.block.Block;
 import net.minecraft.world.level.block.Blocks;
 import net.minecraftforge.common.capabilities.ForgeCapabilities;
@@ -184,6 +187,56 @@ public class HoloStorageTests {
             helper.assertTrue(cost > previousCost * 2, "Higher tiers cost substantially more materials");
             helper.assertTrue(recipe.getIngredientList().size() <= 9, "Recipes fit the nine-ingredient JEI display");
             previousCost = cost;
+        }
+        helper.succeed();
+    }
+
+    @GameTest(template = "empty")
+    public static void sortsKeepCountsNamesAndItemDataAcrossAllTiers(GameTestHelper helper) {
+        for (Block block : variants()) {
+            StorageCubeTile tile = place(helper, block);
+            var items = tile.getItems();
+            ItemStack diamond = new ItemStack(Items.DIAMOND, 5).setHoverName(Component.literal("Zulu"));
+            diamond.getOrCreateTag().putString("Variant", "keep this data");
+            ItemStack sword = new ItemStack(Items.DIAMOND_SWORD).setHoverName(Component.literal("alpha"));
+            sword.enchant(Enchantments.SHARPNESS, 2);
+            ItemStack iron = new ItemStack(Items.IRON_INGOT, 32).setHoverName(Component.literal("Beta"));
+            ItemStack taggedIron = new ItemStack(Items.IRON_INGOT, 12).setHoverName(Component.literal("Beta"));
+            taggedIron.getOrCreateTag().putString("Batch", "distinct");
+            List<ItemStack> original = List.of(diamond.copy(), sword.copy(), iron.copy(), taggedIron.copy());
+            items.setStackInSlot(items.getSlots() - 1, sword);
+            items.setStackInSlot(0, diamond);
+            items.setStackInSlot(3, iron);
+            items.setStackInSlot(5, taggedIron);
+
+            StorageCubeSort.apply(items, false);
+            helper.assertTrue(ItemStack.matches(items.getStackInSlot(0), sword)
+                            && ItemStack.matches(items.getStackInSlot(1), iron)
+                            && ItemStack.matches(items.getStackInSlot(2), taggedIron)
+                            && ItemStack.matches(items.getStackInSlot(3), diamond),
+                    "A-Z uses case-insensitive visible names, then largest stacks for matching names");
+            StorageCubeSort.apply(items, true);
+            int[] counts = {32, 12, 5, 1};
+            for (int slot = 0; slot < items.getSlots(); slot++) {
+                ItemStack stack = items.getStackInSlot(slot);
+                helper.assertTrue(slot < 4 ? stack.getCount() == counts[slot] : stack.isEmpty(),
+                        "Count sort puts large stacks first and every empty slot at the end");
+            }
+            for (ItemStack expected : original) {
+                int matches = 0;
+                for (int slot = 0; slot < items.getSlots(); slot++) {
+                    if (ItemStack.matches(expected, items.getStackInSlot(slot))) {
+                        matches++;
+                    }
+                }
+                helper.assertTrue(matches == 1, "Sorting preserves each complete stack, including names, tags and enchantments");
+            }
+            CompoundTag saved = tile.saveWithoutMetadata();
+            StorageCubeTile restored = new StorageCubeTile(tile.getBlockPos(), tile.getBlockState());
+            restored.load(saved);
+            helper.assertTrue(ItemStack.matches(restored.getItems().getStackInSlot(0), iron)
+                            && ItemStack.matches(restored.getItems().getStackInSlot(3), sword),
+                    "Sorting changes the saved storage inventory");
         }
         helper.succeed();
     }

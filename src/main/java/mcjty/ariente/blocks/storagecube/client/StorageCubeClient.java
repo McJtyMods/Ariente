@@ -7,16 +7,14 @@ import mcjty.ariente.blocks.storagecube.PacketStorageCubeAction;
 import mcjty.ariente.blocks.storagecube.PacketStorageCubeData;
 import mcjty.ariente.blocks.storagecube.StorageCubePanel;
 import mcjty.ariente.blocks.storagecube.StorageCubeTile;
+import mcjty.ariente.gui.client.InventoryRenderer;
 import mcjty.ariente.network.ArienteMessages;
 import mcjty.hologui.api.IGuiComponent;
 import mcjty.hologui.api.IHoloGuiEntity;
 import mcjty.hologui.gui.HoloGuiEntity;
 import mcjty.hologui.gui.HoloGuiRenderTools;
 import net.minecraft.client.Minecraft;
-import net.minecraft.client.renderer.LightTexture;
 import net.minecraft.client.renderer.MultiBufferSource;
-import net.minecraft.client.renderer.texture.OverlayTexture;
-import net.minecraft.world.item.ItemDisplayContext;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.phys.EntityHitResult;
 import net.minecraftforge.api.distmarker.Dist;
@@ -27,18 +25,28 @@ import net.minecraftforge.eventbus.api.SubscribeEvent;
 import net.minecraftforge.fml.common.Mod;
 
 import java.util.Arrays;
+import java.util.HashMap;
+import java.util.Iterator;
+import java.util.Map;
 
 import static mcjty.ariente.blocks.storagecube.PacketStorageCubeAction.Action.*;
+import static mcjty.ariente.gui.InventoryLayout.*;
+import static mcjty.ariente.gui.client.InventoryRenderer.count;
+import static mcjty.ariente.gui.client.InventoryRenderer.item;
 import static mcjty.hologui.api.IGuiTile.TAG_HELP;
 
 @Mod.EventBusSubscriber(modid = Ariente.MODID, value = Dist.CLIENT)
 public class StorageCubeClient {
 
-    private static final double CELL = .8;
-    private static final double GRID_X = .4;
     private static final double STORAGE_Y = .7;
-    private static final double PLAYER_Y = 4.45;
-    private static final double HOTBAR_Y = PLAYER_Y + 3 * CELL + .3;
+    private static final double SORT_Y = -.2;
+    private static final double SORT_HEIGHT = .55;
+    private static final double SORT_NAME_X = 2.6;
+    private static final double SORT_NAME_WIDTH = 1;
+    private static final double SORT_COUNT_X = 3.72;
+    private static final double SORT_COUNT_WIDTH = 1.25;
+    private static final Map<Integer, State> VIEWS = new HashMap<>();
+    // Gestures belong to one active panel; snapshots remain available for every visible panel.
     private static State state;
 
     private static boolean pointsAt(HoloGuiEntity holo) {
@@ -46,20 +54,42 @@ public class StorageCubeClient {
         return mc.hitResult instanceof EntityHitResult hit && hit.getEntity() == holo;
     }
 
-    private static State open(StorageCubeTile tile, HoloGuiEntity holo) {
-        if (state == null || state.tile != tile || state.holo != holo) {
-            close();
-            state = new State(tile, holo);
+    private static State view(StorageCubeTile tile, HoloGuiEntity holo) {
+        Minecraft mc = Minecraft.getInstance();
+        if (mc.player == null || !mc.player.isAlive() || mc.player.isSpectator()
+                || mc.level != tile.getLevel() || !holo.isAlive() || tile.isRemoved()
+                || mc.player.distanceToSqr(holo) > 64 || mc.player.distanceToSqr(tile.getBlockPos().getCenter()) > 64) {
+            return null;
+        }
+        State view = VIEWS.get(holo.getId());
+        if (view == null || view.tile != tile || view.holo != holo) {
+            if (view != null) {
+                unsubscribe(view);
+            }
+            view = new State(tile, holo);
+            VIEWS.put(holo.getId(), view);
             send(new PacketStorageCubeAction(tile.getBlockPos(), holo.getId(), SUBSCRIBE));
         }
-        return state;
+        return view;
     }
 
-    private static void close() {
-        if (state != null && Minecraft.getInstance().getConnection() != null) {
-            send(new PacketStorageCubeAction(state.tile.getBlockPos(), state.holo.getId(), CLOSE));
+    private static void deactivate() {
+        if (state != null) {
+            state.selected = -1;
+            state.pressed = false;
+            state.fastScrollDirection = 0;
         }
         state = null;
+    }
+
+    private static void unsubscribe(State view) {
+        Minecraft mc = Minecraft.getInstance();
+        if (mc.getConnection() != null && mc.level == view.tile.getLevel()) {
+            send(new PacketStorageCubeAction(view.tile.getBlockPos(), view.holo.getId(), CLOSE));
+        }
+        if (state == view) {
+            deactivate();
+        }
     }
 
     private static void send(PacketStorageCubeAction packet) {
@@ -67,22 +97,23 @@ public class StorageCubeClient {
     }
 
     public static void receive(PacketStorageCubeData packet) {
-        if (state == null || state.holo.getId() != packet.entityId() || !state.tile.getBlockPos().equals(packet.pos())
-                || state.size != packet.size()) {
+        State view = VIEWS.get(packet.entityId());
+        if (view == null || !view.tile.getBlockPos().equals(packet.pos()) || view.size != packet.size()
+                || view.tile.getLevel() != Minecraft.getInstance().level) {
             return;
         }
         for (PacketStorageCubeData.Entry entry : packet.changes()) {
-            if (entry.slot() >= 0 && entry.slot() < state.stacks.length) {
-                state.stacks[entry.slot()] = entry.stack();
+            if (entry.slot() >= 0 && entry.slot() < view.stacks.length) {
+                view.stacks[entry.slot()] = entry.stack();
             }
         }
-        state.loaded = true;
-        state.revision = packet.revision();
+        view.loaded = true;
+        view.revision = packet.revision();
         if (packet.reply()) {
-            state.pending = false;
-            state.selected = -1;
-        } else if (state.selected >= 0 && !ItemStack.matches(state.selection, state.stacks[state.selected])) {
-            state.selected = -1;
+            view.pending = false;
+            view.selected = -1;
+        } else if (view.selected >= 0 && !ItemStack.matches(view.selection, view.stacks[view.selected])) {
+            view.selected = -1;
         }
     }
 
@@ -104,10 +135,14 @@ public class StorageCubeClient {
             if (event.isUseItem() || TAG_HELP.equals(holo.getTag())
                     || hovered != null && !(hovered instanceof StorageCubePanel)) {
                 // Let HoloGui handle its usual right-click close and standard help controls.
-                close();
+                deactivate();
                 return;
             }
-            open((StorageCubeTile) mc.level.getBlockEntity(holo.getGuiTile()), holo);
+            State view = view((StorageCubeTile) mc.level.getBlockEntity(holo.getGuiTile()), holo);
+            if (view != state) {
+                deactivate();
+                state = view;
+            }
         }
         if (!event.isAttack()) {
             return;
@@ -121,12 +156,24 @@ public class StorageCubeClient {
             return;
         }
         state.pressed = true;
+        state.pressOrigin = -1;
         double x = state.holo.getCursorX();
         double y = state.holo.getCursorY();
-        if (targeted && x >= 7.35 && y < .2 && y >= -.55) {
-            send(new PacketStorageCubeAction(state.tile.getBlockPos(), state.holo.getId(), DISMISS));
-            state.holo.discard();
-            close();
+        PacketStorageCubeAction.Action sort = targeted ? sortAt(x, y) : null;
+        if (sort != null) {
+            state.selected = -1;
+            state.column = 0;
+            send(new PacketStorageCubeAction(state.tile.getBlockPos(), state.holo.getId(), sort,
+                    -1, -1, 0, state.revision));
+            state.pending = true;
+            state.pendingTicks = 0;
+            return;
+        }
+        int direction = targeted ? scrollDirection(x, y) : 0;
+        if (direction != 0) {
+            state.selected = -1;
+            state.fastScrollDirection = direction;
+            scroll(direction, 3);
             return;
         }
         int slot = targeted ? slotAt(state, x, y) : -1;
@@ -158,6 +205,29 @@ public class StorageCubeClient {
         state.pendingTicks = 0;
     }
 
+    private static PacketStorageCubeAction.Action sortAt(double x, double y) {
+        if (y < SORT_Y || y >= SORT_Y + SORT_HEIGHT) {
+            return null;
+        }
+        if (x >= SORT_NAME_X && x < SORT_NAME_X + SORT_NAME_WIDTH) {
+            return SORT_NAME;
+        }
+        if (x >= SORT_COUNT_X && x < SORT_COUNT_X + SORT_COUNT_WIDTH) {
+            return SORT_COUNT;
+        }
+        return null;
+    }
+
+    private static int scrollDirection(double x, double y) {
+        return y >= STORAGE_Y && y < STORAGE_Y + 3 * CELL
+                ? x >= -.2 && x < GRID_X ? -1 : x >= GRID_X + 9 * CELL && x <= 8.2 ? 1 : 0 : 0;
+    }
+
+    private static void scroll(int direction, int columns) {
+        state.column = Math.max(0, Math.min(state.maxColumn(), state.column + direction * columns));
+        state.scrollTicks = 0;
+    }
+
     @SubscribeEvent
     public static void blockAttack(PlayerInteractEvent.LeftClickBlock event) {
         if (event.getLevel().isClientSide && state != null && state.pressed) {
@@ -167,39 +237,44 @@ public class StorageCubeClient {
 
     @SubscribeEvent
     public static void tick(TickEvent.ClientTickEvent event) {
-        if (event.phase != TickEvent.Phase.END || state == null) {
+        if (event.phase != TickEvent.Phase.END) {
             return;
         }
         Minecraft mc = Minecraft.getInstance();
-        if (mc.player == null || mc.level != state.tile.getLevel() || !state.holo.isAlive() || state.tile.isRemoved()
-                || mc.player.distanceToSqr(state.holo) > 64 || !mc.player.isAlive() || TAG_HELP.equals(state.holo.getTag())) {
-            close();
+        for (Iterator<State> iterator = VIEWS.values().iterator(); iterator.hasNext();) {
+            State view = iterator.next();
+            if (mc.player == null || mc.level != view.tile.getLevel() || !view.holo.isAlive() || view.tile.isRemoved()
+                    || mc.player.distanceToSqr(view.holo) > 64 || mc.player.distanceToSqr(view.tile.getBlockPos().getCenter()) > 64
+                    || !mc.player.isAlive() || mc.player.isSpectator() || TAG_HELP.equals(view.holo.getTag()) || !view.holo.getGuiId().isEmpty()
+                    || view.pending && ++view.pendingTicks > 60) {
+                unsubscribe(view);
+                iterator.remove();
+            } else if (++view.ticks % 20 == 0) {
+                send(new PacketStorageCubeAction(view.tile.getBlockPos(), view.holo.getId(), SUBSCRIBE));
+            }
+        }
+        if (state == null) {
             return;
         }
         if (mc.screen != null) {
             state.selected = -1;
             state.pressed = false;
-            return;
-        }
-        if (++state.ticks % 20 == 0) {
-            send(new PacketStorageCubeAction(state.tile.getBlockPos(), state.holo.getId(), SUBSCRIBE));
-        }
-        if (state.pending && ++state.pendingTicks > 60) {
-            close();
+            state.fastScrollDirection = 0;
             return;
         }
         boolean targeted = pointsAt(state.holo);
         double x = state.holo.getCursorX();
         double y = state.holo.getCursorY();
-        int direction = targeted && y >= STORAGE_Y && y < STORAGE_Y + 3 * CELL
-                ? x >= -.2 && x < GRID_X ? -1 : x >= GRID_X + 9 * CELL && x <= 8.2 ? 1 : 0 : 0;
+        int direction = targeted ? scrollDirection(x, y) : 0;
         if (direction != state.scrollDirection) {
             state.scrollDirection = direction;
             state.scrollTicks = 0;
         }
-        if (direction != 0 && ++state.scrollTicks >= 8) {
-            state.column = Math.max(0, Math.min(state.maxColumn(), state.column + direction));
-            state.scrollTicks = 0;
+        if (state.fastScrollDirection != direction || !state.pressed || !mc.options.keyAttack.isDown()) {
+            state.fastScrollDirection = 0;
+        }
+        if (direction != 0 && ++state.scrollTicks >= (state.fastScrollDirection != 0 ? 2 : 8)) {
+            scroll(direction, 1);
         }
         if (state.pressed && !mc.options.keyAttack.isDown()) {
             state.pressed = false;
@@ -222,28 +297,21 @@ public class StorageCubeClient {
             int slot = (column + view.column) * 3 + row;
             return slot < view.size ? slot : -1;
         }
-        row = (int) Math.floor((y - PLAYER_Y) / CELL);
-        if (row >= 0 && row < 3) {
-            return view.size + 9 + row * 9 + column;
-        }
-        if (y >= HOTBAR_Y && y < HOTBAR_Y + CELL) {
-            return view.size + column;
-        }
-        return -1;
+        int playerSlot = playerSlotAt(x, y);
+        return playerSlot < 0 ? -1 : view.size + playerSlot;
     }
 
     public static void render(StorageCubeTile tile, PoseStack poses, MultiBufferSource buffer, IHoloGuiEntity entity, double x, double y) {
         if (!(entity instanceof HoloGuiEntity holo)) {
             return;
         }
-        if (pointsAt(holo)) {
-            open(tile, holo);
-        }
-        State view = state != null && state.holo == holo ? state : null;
-        text(poses, buffer, .4, -.3, "Holo Storage  " + tile.getItems().getSlots() + " stacks", .46f, 0xffb8f4ff);
-        text(poses, buffer, 7.4, -.3, "X", .5f, 0xfff6c797);
+        State view = view(tile, holo);
+        text(poses, buffer, .4, -.3, "Storage", .46f, 0xffb8f4ff);
+        sortButton(poses, buffer, SORT_NAME_X, SORT_NAME_WIDTH, "A-Z", sortAt(x, y) == SORT_NAME, view);
+        sortButton(poses, buffer, SORT_COUNT_X, SORT_COUNT_WIDTH, "Count", sortAt(x, y) == SORT_COUNT, view);
+        text(poses, buffer, 5.15, -.2, tile.getItems().getSlots() + " stacks", .3f, 0xff9acde0);
         if (view == null || !view.loaded) {
-            text(poses, buffer, 1, 2, "Look at the panel to load inventory", .35f, 0xffdddddd);
+            text(poses, buffer, 1, 2, "Loading inventory - stay near the cube", .35f, 0xffdddddd);
             return;
         }
         int hover = slotAt(view, x, y);
@@ -265,16 +333,17 @@ public class StorageCubeClient {
                 view.scrollDirection == 1 ? 0x996acfff : 0x44477caa);
         poses.pushPose();
         poses.translate(0, 0, .003);
-        int leftColor = view.column > 0 ? 0xb8e9ff : 0x486078;
-        int rightColor = view.column < view.maxColumn() ? 0xb8e9ff : 0x486078;
+        int leftColor = view.column > 0 ? view.fastScrollDirection == -1 ? 0x8fffe1 : 0xb8e9ff : 0x486078;
+        int rightColor = view.column < view.maxColumn() ? view.fastScrollDirection == 1 ? 0x8fffe1 : 0xb8e9ff : 0x486078;
         HoloGuiRenderTools.renderLine(poses, buffer, .18, 1.55, 0, 1.85, .04, leftColor);
         HoloGuiRenderTools.renderLine(poses, buffer, 0, 1.85, .18, 2.15, .04, leftColor);
         HoloGuiRenderTools.renderLine(poses, buffer, 7.82, 1.55, 8, 1.85, .04, rightColor);
         HoloGuiRenderTools.renderLine(poses, buffer, 8, 1.85, 7.82, 2.15, .04, rightColor);
         poses.popPose();
         text(poses, buffer, .45, 3.25, "Columns " + (view.column + 1) + "-" + (view.column + 9)
-                + " / " + ((view.size + 2) / 3) + "    Hover arrows to scroll", .3f, 0xff9acde0);
-        text(poses, buffer, .4, 3.85, "Inventory    Drag or sneak-click to move", .3f, 0xffb8f4ff);
+                + " / " + ((view.size + 2) / 3), .3f, 0xff9acde0);
+        text(poses, buffer, 3.7, 3.25, "Hover: scroll  Click/hold: faster", .26f, 0xff9acde0);
+        InventoryRenderer.header(poses, buffer, "Drag or sneak-click to move");
         if (view.selected >= 0 && pointsAt(holo)) {
             poses.pushPose();
             poses.translate(0, 0, .015);
@@ -284,53 +353,41 @@ public class StorageCubeClient {
         }
     }
 
+    private static void sortButton(PoseStack poses, MultiBufferSource buffer, double x, double width, String label,
+                                   boolean hover, State view) {
+        boolean enabled = view != null && view.loaded && !view.pending;
+        HoloGuiRenderTools.renderControl(poses, buffer, x, SORT_Y, width, SORT_HEIGHT, enabled && hover);
+        HoloGuiRenderTools.renderControlText(poses, buffer, x + .08, SORT_Y, width - .16, SORT_HEIGHT,
+                label, enabled ? hover ? 0xe2fbff : 0x9edce9 : 0x486078, .32f);
+    }
+
     private static void cell(PoseStack poses, MultiBufferSource buffer, State view, int slot, double x, double y, boolean hover) {
-        HoloGuiRenderTools.renderBorder(poses, buffer, x, y, CELL, CELL, hover ? 190 : 75, 160, 200, 170);
         ItemStack stack = view.stacks[slot];
         int count = stack.getCount() - (view.selected == slot ? view.amount : 0);
-        if (count > 0) {
-            item(poses, buffer, x, y, stack);
-            if (count > 1) {
-                count(poses, buffer, x, y, count);
-            }
-        }
+        InventoryRenderer.cell(poses, buffer, x, y, stack, count, hover);
     }
 
     private static void text(PoseStack poses, MultiBufferSource buffer, double x, double y, String text, float scale, int color) {
         HoloGuiRenderTools.renderText(poses, buffer, x, y, text, color, scale);
     }
 
-    private static void item(PoseStack poses, MultiBufferSource buffer, double x, double y, ItemStack stack) {
-        // Use the same coordinates as the slot border. The legacy item helper's different
-        // X/Y scales accumulated a downward offset in the lower inventory rows.
-        poses.pushPose();
-        poses.translate((x + .36) * .1 - .42, .42 - (y + .34) * .1, .004);
-        poses.scale(.063f, .063f, .000063f);
-        var renderer = Minecraft.getInstance().getItemRenderer();
-        renderer.render(stack, ItemDisplayContext.GUI, false, poses, buffer, LightTexture.FULL_BRIGHT,
-                OverlayTexture.NO_OVERLAY, renderer.getModel(stack, null, null, 1));
-        poses.popPose();
-    }
-
-    private static void count(PoseStack poses, MultiBufferSource buffer, double x, double y, int amount) {
-        String label = Integer.toString(amount);
-        var font = Minecraft.getInstance().font;
-        // renderText has a .2-unit inset relative to the slot borders. Include it when
-        // aligning the count inside the lower-right corner, slightly over the icon.
-        double labelX = x + CELL - .06 - font.width(label) * .03 - .2;
-        double labelY = y + CELL - .05 - font.lineHeight * .03 - .2;
-        poses.pushPose();
-        poses.translate(0, 0, .01);
-        text(poses, buffer, labelX, labelY, label, .3f, 0xffffffff);
-        poses.popPose();
-    }
-
-    public static void tooltip(StorageCubeTile tile, PoseStack poses, MultiBufferSource buffer, double x, double y) {
-        if (state == null || state.tile != tile || state.selected >= 0) {
+    public static void tooltip(StorageCubeTile tile, IHoloGuiEntity holo, PoseStack poses, MultiBufferSource buffer, double x, double y) {
+        State view = VIEWS.get(holo.getEntity().getId());
+        if (view == null || view.tile != tile || view.selected >= 0) {
             return;
         }
-        int slot = slotAt(state, x, y);
-        if (slot < 0 || state.stacks[slot].isEmpty()) {
+        PacketStorageCubeAction.Action sort = sortAt(x, y);
+        if (sort != null) {
+            poses.pushPose();
+            poses.translate(0, 0, .015);
+            HoloGuiRenderTools.renderControl(poses, buffer, 2.5, .45, 4.4, .5, false);
+            HoloGuiRenderTools.renderControlText(poses, buffer, 2.6, .45, 4.2, .5,
+                    sort == SORT_NAME ? "Sort storage: A-Z" : "Sort storage: largest stacks first", 0xb8f4ff, .28f);
+            poses.popPose();
+            return;
+        }
+        int slot = slotAt(view, x, y);
+        if (slot < 0 || view.stacks[slot].isEmpty()) {
             return;
         }
         poses.pushPose();
@@ -338,7 +395,7 @@ public class StorageCubeClient {
         poses.mulPose(Axis.YP.rotationDegrees(180));
         poses.mulPose(Axis.ZP.rotationDegrees(180));
         poses.translate(0, 0, -25);
-        HoloGuiRenderTools.renderToolTip(poses, buffer, state.stacks[slot], (int) (x * 30 - 120),
+        HoloGuiRenderTools.renderToolTip(poses, buffer, view.stacks[slot], (int) (x * 30 - 120),
                 (int) (y * 30 - 95), (stack, lines) -> {});
         poses.popPose();
     }
@@ -355,6 +412,7 @@ public class StorageCubeClient {
         private int ticks;
         private int scrollDirection;
         private int scrollTicks;
+        private int fastScrollDirection;
         private int selected = -1;
         private ItemStack selection = ItemStack.EMPTY;
         private int amount;

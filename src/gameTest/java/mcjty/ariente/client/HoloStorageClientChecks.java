@@ -1,15 +1,25 @@
 package mcjty.ariente.client;
 
+import com.mojang.blaze3d.pipeline.TextureTarget;
+import com.mojang.blaze3d.systems.RenderSystem;
+import com.mojang.blaze3d.vertex.BufferBuilder;
+import com.mojang.blaze3d.vertex.PoseStack;
+import com.mojang.math.Axis;
 import mcjty.ariente.Ariente;
 import mcjty.ariente.blocks.storagecube.StorageCubeTile;
+import mcjty.ariente.gui.ModGuis;
 import mcjty.ariente.setup.Registration;
 import mcjty.hologui.gui.HoloGuiEntity;
 import net.minecraft.client.CameraType;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.Screenshot;
+import net.minecraft.client.renderer.LightTexture;
+import net.minecraft.client.renderer.MultiBufferSource;
 import net.minecraft.core.BlockPos;
 import net.minecraft.resources.ResourceLocation;
+import net.minecraft.network.chat.Component;
 import net.minecraft.world.InteractionHand;
+import net.minecraft.world.entity.EntityType;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.Items;
 import net.minecraft.world.level.GameRules;
@@ -25,9 +35,12 @@ import net.minecraftforge.event.TickEvent;
 import net.minecraftforge.eventbus.api.SubscribeEvent;
 import net.minecraftforge.fml.common.Mod;
 import vazkii.patchouli.client.book.gui.GuiBookEntry;
+import org.joml.Matrix4f;
 
 import java.nio.file.Files;
 import java.util.UUID;
+
+import static mcjty.hologui.setup.Registration.HOLOGUI_ENTITY_TYPE;
 
 /** Real input gestures, hover scrolling and rendering, in an opt-in isolated client world. */
 @Mod.EventBusSubscriber(modid = Ariente.MODID, value = Dist.CLIENT)
@@ -39,6 +52,7 @@ public class HoloStorageClientChecks {
     private static volatile Throwable failure;
     private static int ticks;
     private static String capture;
+    private static ItemStack[] inventoryBeforeSort;
 
     @SubscribeEvent
     public static void tick(TickEvent.ClientTickEvent event) {
@@ -125,7 +139,7 @@ public class HoloStorageClientChecks {
                 require(tile.getItems().getStackInSlot(0).isEmpty() && player.getInventory().getItem(0).getCount() == 64,
                         "Sneak-click must extract into player inventory");
             });
-            aimGui(mc, .8, 4.85);
+            aimGui(mc, .8, 5.45);
         } else if (ticks == 140) {
             press(mc);
         } else if (ticks == 150) {
@@ -155,7 +169,7 @@ public class HoloStorageClientChecks {
         } else if (ticks == 525) {
             mc.options.keyShift.setDown(true);
         } else if (ticks == 528) {
-            aimGui(mc, 7.2, 7.55);
+            aimGui(mc, 7.2, 8.15);
         } else if (ticks == 530) {
             press(mc);
         } else if (ticks == 532) {
@@ -181,26 +195,162 @@ public class HoloStorageClientChecks {
             server(mc, () -> Ariente.guiHandler.openHoloGui(mc.getSingleplayerServer().overworld(), POS,
                     mc.getSingleplayerServer().getPlayerList().getPlayer(mc.player.getUUID())));
         } else if (ticks == 600) {
-            aimGui(mc, 8.65, -.3);
+            aimControl(mc, "pin");
         } else if (ticks == 610) {
-            InputEvent.InteractionKeyMappingTriggered input = new InputEvent.InteractionKeyMappingTriggered(0,
-                    mc.options.keyAttack, InteractionHand.MAIN_HAND);
-            MinecraftForge.EVENT_BUS.post(input);
-            require(!input.isCanceled(), "The standard question-mark button must receive its normal click");
-            mc.gameMode.attack(mc.player, gui(mc));
-        } else if (ticks == 635) {
+            pressControl(mc);
+        } else if (ticks == 630) {
+            require(gui(mc).isPinned(), "Clicking the pin must synchronize its selected state from the server");
+            mc.player.setYRot(mc.player.getYRot() + 180);
+        } else if (ticks == 740) {
+            require(gui(mc).isPinned(), "A pinned storage panel must remain after looking away beyond the normal timeout");
+            aimGui(mc, 4, 4);
+        } else if (ticks == 750) {
+            capture = "holo-storage-pinned";
+        } else if (ticks == 760) {
+            aimControl(mc, "pin");
+        } else if (ticks == 770) {
+            pressControl(mc);
+        } else if (ticks == 790) {
+            require(!gui(mc).isPinned(), "Clicking the selected pin must unpin on both sides");
+            mc.player.setYRot(mc.player.getYRot() + 180);
+        } else if (ticks == 900) {
+            require(mc.level.getEntitiesOfClass(HoloGuiEntity.class, mc.player.getBoundingBox().inflate(5)).isEmpty(),
+                    "An unpinned panel must close normally when looking away");
+            server(mc, () -> Ariente.guiHandler.openHoloGui(mc.getSingleplayerServer().overworld(), POS,
+                    mc.getSingleplayerServer().getPlayerList().getPlayer(mc.player.getUUID())));
+        } else if (ticks == 920) {
+            aimControl(mc, "pin");
+        } else if (ticks == 930) {
+            pressControl(mc);
+        } else if (ticks == 950) {
+            require(gui(mc).isPinned(), "The second panel must be pinned before testing X");
+            aimControl(mc, "close");
+        } else if (ticks == 960) {
+            pressControl(mc);
+        } else if (ticks == 980) {
+            require(mc.level.getEntitiesOfClass(HoloGuiEntity.class, mc.player.getBoundingBox().inflate(5)).isEmpty(),
+                    "The standard X must close even a pinned storage panel");
+            server(mc, () -> Ariente.guiHandler.openHoloGui(mc.getSingleplayerServer().overworld(), POS,
+                    mc.getSingleplayerServer().getPlayerList().getPlayer(mc.player.getUUID())));
+        } else if (ticks == 1000) {
+            aimControl(mc, "help");
+        } else if (ticks == 1010) {
+            pressControl(mc);
+        } else if (ticks == 1035) {
             require(mc.screen instanceof GuiBookEntry book
                     && book.getEntry().getId().equals(new ResourceLocation(Ariente.MODID, "construction/holo_storage")),
                     "The question mark must open the correct Patchouli entry");
+            mc.setScreen(null);
+        } else if (ticks == 1040) {
+            UUID playerId = mc.player.getUUID();
+            server(mc, () -> {
+                var level = mc.getSingleplayerServer().overworld();
+                var player = mc.getSingleplayerServer().getPlayerList().getPlayer(playerId);
+                level.getEntitiesOfClass(HoloGuiEntity.class, player.getBoundingBox().inflate(5)).forEach(HoloGuiEntity::discard);
+                StorageCubeTile tile = serverTile(mc);
+                for (int slot = 0; slot < tile.getItems().getSlots(); slot++) {
+                    tile.getItems().setStackInSlot(slot, ItemStack.EMPTY);
+                }
+                tile.getItems().setStackInSlot(6, new ItemStack(Items.DIAMOND, 64).setHoverName(Component.literal("Zulu")));
+                tile.getItems().setStackInSlot(45, new ItemStack(Items.IRON_INGOT, 16).setHoverName(Component.literal("Alpha")));
+                tile.getItems().setStackInSlot(80, new ItemStack(Items.OAK_LOG, 32).setHoverName(Component.literal("beta")));
+                tile.getItems().setStackInSlot(119, new ItemStack(Items.EMERALD, 2).setHoverName(Component.literal("alpha")));
+                inventoryBeforeSort = new ItemStack[36];
+                for (int slot = 0; slot < 36; slot++) {
+                    inventoryBeforeSort[slot] = player.getInventory().getItem(slot).copy();
+                }
+                var holo = Ariente.guiHandler.openHoloGuiEntity(level, POS, player, "default", 1);
+                holo.setPinned(true);
+            });
+        } else if (ticks == 1060) {
+            aimGui(mc, 3.1, -.1);
+        } else if (ticks == 1070) {
+            press(mc);
+        } else if (ticks == 1072) {
+            mc.options.keyAttack.setDown(false);
+        } else if (ticks == 1090) {
+            server(mc, () -> require(serverTile(mc).getItems().getStackInSlot(0).is(Items.EMERALD)
+                            && serverTile(mc).getItems().getStackInSlot(3).is(Items.DIAMOND),
+                    "The A-Z button must reorder real storage contents by item name"));
+            aimGui(mc, 4.3, -.1);
+        } else if (ticks == 1100) {
+            press(mc);
+        } else if (ticks == 1102) {
+            mc.options.keyAttack.setDown(false);
+        } else if (ticks == 1120) {
+            server(mc, () -> {
+                StorageCubeTile tile = serverTile(mc);
+                require(tile.getItems().getStackInSlot(0).is(Items.DIAMOND)
+                                && tile.getItems().getStackInSlot(1).is(Items.OAK_LOG)
+                                && tile.getItems().getStackInSlot(2).is(Items.IRON_INGOT)
+                                && tile.getItems().getStackInSlot(3).is(Items.EMERALD),
+                        "Count sorting puts the largest stacks first");
+                var player = mc.getSingleplayerServer().getPlayerList().getPlayer(mc.player.getUUID());
+                for (int slot = 0; slot < 36; slot++) {
+                    require(ItemStack.matches(inventoryBeforeSort[slot], player.getInventory().getItem(slot)),
+                            "Sort controls must not rearrange the player inventory");
+                }
+            });
+            aimGui(mc, 4, 4);
+        } else if (ticks == 1125) {
+            capture = "storage-sorted-count";
+        } else if (ticks == 1130) {
+            server(mc, () -> {
+                StorageCubeTile tile = serverTile(mc);
+                for (int slot = 0; slot < tile.getItems().getSlots(); slot++) {
+                    ItemStack stack = new ItemStack(Items.COBBLESTONE);
+                    stack.getOrCreateTag().putInt("ScrollSlot", slot);
+                    tile.getItems().setStackInSlot(slot, stack);
+                }
+            });
+        } else if (ticks == 1140) {
+            aimGui(mc, 7.9, 1.5);
+        } else if (ticks == 1145) {
+            press(mc);
+        } else if (ticks == 1155) {
+            capture = "storage-fast-scroll";
+        } else if (ticks == 1165) {
+            mc.options.keyAttack.setDown(false);
+            aimGui(mc, 4, 4);
+        } else if (ticks == 1170) {
+            mc.options.keyShift.setDown(true);
+        } else if (ticks == 1172) {
+            aimGui(mc, .8, 1.1);
+        } else if (ticks == 1175) {
+            press(mc);
+        } else if (ticks == 1177) {
+            mc.options.keyAttack.setDown(false);
+            mc.options.keyShift.setDown(false);
+        } else if (ticks == 1195) {
+            server(mc, () -> {
+                var items = serverTile(mc).getItems();
+                int emptySlot = -1;
+                for (int slot = 0; slot < items.getSlots(); slot++) {
+                    if (items.getStackInSlot(slot).isEmpty()) {
+                        require(emptySlot < 0, "Fast scrolling must not transfer or lose extra stacks");
+                        emptySlot = slot;
+                    }
+                }
+                require(emptySlot >= 30, "Click-and-hold must reach columns much faster than hover scrolling; transferred slot=" + emptySlot);
+            });
+        } else if (ticks == 1205) {
             require(failure == null, "Client checks failed: " + failure);
             try {
                 Files.writeString(mc.gameDirectory.toPath().resolve("holo-storage-check.txt"),
-                        "PASS: rendering, drag, sneak transfer, scrolling, separated hotbar, right-click close, Patchouli help\n");
+                        "PASS: rendering, drag, sneak transfer, hover/click/hold scrolling, lowered inventory and hotbar, A-Z/count sorting, right-click close, pin/unpin synchronization and timeout, pinned X close, Patchouli help\n");
             } catch (Exception error) {
                 throw new IllegalStateException(error);
             }
             mc.stop();
         }
+    }
+
+    private static void pressControl(Minecraft mc) {
+        InputEvent.InteractionKeyMappingTriggered input = new InputEvent.InteractionKeyMappingTriggered(0,
+                mc.options.keyAttack, InteractionHand.MAIN_HAND);
+        MinecraftForge.EVENT_BUS.post(input);
+        require(!input.isCanceled(), "Standard window controls must receive normal clicks, without inventory gestures");
+        mc.gameMode.attack(mc.player, gui(mc));
     }
 
     private static StorageCubeTile serverTile(Minecraft mc) {
@@ -223,6 +373,11 @@ public class HoloStorageClientChecks {
                 mc.options.keyAttack, InteractionHand.MAIN_HAND);
         MinecraftForge.EVENT_BUS.post(event);
         require(event.isCanceled() && !event.shouldSwingHand(), "Storage panels must consume inventory clicks");
+    }
+
+    private static void aimControl(Minecraft mc, String name) {
+        var control = gui(mc).getGui(mc.player).findChild("hologui." + name).orElseThrow();
+        aimGui(mc, control.getX() + control.getW() / 2, control.getY() + control.getH() / 2);
     }
 
     private static void aimGui(Minecraft mc, double x, double y) {
@@ -255,7 +410,59 @@ public class HoloStorageClientChecks {
         } catch (Exception error) {
             throw new IllegalStateException(error);
         }
+        if ("holo-storage-panel".equals(capture)) {
+            captureWindow(mc, ModGuis.GUI_ARMOR, false);
+            captureWindow(mc, ModGuis.GUI_LEVITATOR, true);
+        }
         capture = null;
+    }
+
+    private static void captureWindow(Minecraft mc, String guiId, boolean mounted) {
+        HoloGuiEntity holo = new HoloGuiEntity(HOLOGUI_ENTITY_TYPE.get(), mc.level);
+        holo.setGuiId(guiId);
+        holo.setYRot(180);
+        holo.yRotO = 180;
+        if (mounted) {
+            holo.setScale(.75f);
+            holo.startRiding(EntityType.PIG.create(mc.level), true);
+        }
+        require(holo.getGui(mc.player).findChild("hologui.pin").isEmpty(), "Equipment and mounted panels omit pin");
+        require(holo.getGui(mc.player).findChild("hologui.close").isPresent() != mounted,
+                "Only unmounted panels expose X");
+        var target = new TextureTarget(768, 768, true, Minecraft.ON_OSX);
+        var oldProjection = new Matrix4f(RenderSystem.getProjectionMatrix());
+        var oldSorting = RenderSystem.getVertexSorting();
+        var modelView = RenderSystem.getModelViewStack();
+        modelView.pushPose();
+        modelView.setIdentity();
+        RenderSystem.applyModelViewMatrix();
+        try {
+            RenderSystem.setProjectionMatrix(new Matrix4f().ortho(-.6f, .6f, -.6f, .6f, .1f, 10), oldSorting);
+            for (int angle : new int[]{0, 35}) {
+                target.setClearColor(.025f, .05f, .09f, 1);
+                RenderSystem.depthMask(true);
+                target.clear(Minecraft.ON_OSX);
+                target.bindWrite(true);
+                PoseStack poses = new PoseStack();
+                poses.translate(0, 0, -2);
+                poses.mulPose(Axis.YP.rotationDegrees(angle));
+                poses.translate(0, -.5, 0);
+                var buffers = MultiBufferSource.immediate(new BufferBuilder(4096));
+                mc.getEntityRenderDispatcher().getRenderer(holo).render(holo, 0, 0, poses, buffers, LightTexture.FULL_BRIGHT);
+                buffers.endBatch();
+                try (var screenshot = Screenshot.takeScreenshot(target)) {
+                    screenshot.writeToFile(mc.gameDirectory.toPath().resolve("window-" + guiId + "-" + angle + ".png"));
+                }
+            }
+        } catch (Exception error) {
+            throw new IllegalStateException(error);
+        } finally {
+            target.destroyBuffers();
+            RenderSystem.setProjectionMatrix(oldProjection, oldSorting);
+            modelView.popPose();
+            RenderSystem.applyModelViewMatrix();
+            mc.getMainRenderTarget().bindWrite(true);
+        }
     }
 
     private static void require(boolean condition, String message) {

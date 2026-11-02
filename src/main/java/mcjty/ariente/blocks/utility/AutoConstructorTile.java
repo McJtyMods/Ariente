@@ -4,6 +4,7 @@ import mcjty.ariente.Ariente;
 import mcjty.ariente.api.ICityAI;
 import mcjty.ariente.api.ICityEquipment;
 import mcjty.ariente.gui.GuiHelp;
+import mcjty.ariente.gui.PlayerInventoryPanel;
 import mcjty.ariente.items.BlueprintItem;
 import mcjty.ariente.power.IPowerReceiver;
 import mcjty.ariente.power.IPowerUser;
@@ -302,25 +303,22 @@ public class AutoConstructorTile extends TickingTileEntity implements IGuiTile, 
 
                 .add(registry.text(0, 0, 8, 1).text("Ingredients").color(registry.color(StyledColor.LABEL)))
 
-                .add(registry.icon(0, 1.5, 1, 1).icon(registry.image(WHITE_PLAYER)))
-                .add(registry.playerSlots(1.5, 1, 6, 3)
-                        .name("playerslots")
-                        .withAmount()
-                        .doubleClickEvent((component, player, entity, x, y, stack, index) -> transferToMachine(player, entity))
-                        .filter((stack, index) -> isIngredient(stack)))
-
-                .add(registry.iconButton(2, 4.2, 1, 1).icon(registry.image(GRAY_ARROW_DOWN)).hover(registry.image(WHITE_ARROW_DOWN))
-                        .hitEvent((component, player, entity, x, y) -> transferToMachine(player, entity)))
-                .add(registry.iconButton(3, 4.2, 1, 1).icon(registry.image(GRAY_ARROW_UP)).hover(registry.image(WHITE_ARROW_UP))
-                        .hitEvent((component, player, entity, x, y) -> transferToPlayer(player, entity, "slots")))
-
-                .add(registry.stackIcon(0, 5.5, 1, 1).itemStack(new ItemStack(Registration.CONSTRUCTOR.get())))
-                .add(registry.slots(1.5, 5.5, 6, 3)
+                .add(registry.slots(1.5, 1, 6, 3)
                         .name("slots")
                         .withAmount()
                         .doubleClickEvent((component, player, entity, x, y, stack, index) -> transferToPlayer(player, entity, "slots"))
                         .filter((stack, index) -> isIngredientSlot(index))
                         .itemHandler(items))
+
+                .add(registry.iconButton(0, 1.2, 1, 1).icon(registry.image(GRAY_ARROW_UP)).hover(registry.image(WHITE_ARROW_UP))
+                        .hitEvent((component, player, entity, x, y) -> transferToMachine(player, entity)))
+                .add(registry.iconButton(0, 2.4, 1, 1).icon(registry.image(GRAY_ARROW_DOWN)).hover(registry.image(WHITE_ARROW_DOWN))
+                        .hitEvent((component, player, entity, x, y) -> transferToPlayer(player, entity, "slots")))
+
+                .add(new PlayerInventoryPanel("Double-click to store ingredients")
+                        .name("playerslots")
+                        .doubleClickEvent((component, player, entity, x, y, stack, index) -> transferToMachine(player, entity))
+                        .filter((stack, index) -> isIngredient(stack)))
                 ;
     }
 

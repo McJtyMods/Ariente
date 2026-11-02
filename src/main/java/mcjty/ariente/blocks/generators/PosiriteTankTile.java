@@ -69,8 +69,7 @@ public class PosiriteTankTile extends GenericTileEntity implements IGuiTile, IAl
             .add(registry.text(0, 4, 1, 1).text("4").color(0x00ff00))
             .add(registry.text(0, 5, 1, 1).text("5").color(0x00ff00))
             .add(registry.text(0, 6, 1, 1).text("6").color(0x00ff00))
-            .add(registry.text(0, 7, 1, 1).text("7").color(0x00ff00))
-            .add(registry.text(7, 7, 1, 1).text("X").color(0xff0000));
+            .add(registry.text(0, 7, 1, 1).text("7").color(0x00ff00));
     }
 
     @Override

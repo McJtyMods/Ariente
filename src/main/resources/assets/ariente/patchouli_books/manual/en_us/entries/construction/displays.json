@@ -37,7 +37,7 @@
     {
       "type": "patchouli:text",
       "title": "Text and color",
-      "text": "Left-click the text area to type. Use normal arrow, Home/End, Backspace/Delete, selection and clipboard controls. Escape or clicking outside commits the edit and releases typing.$(br2)Adjust text size, or choose Color... to open a hue/shade picker. Selecting a shade or pressing its top-right x returns to settings."
+      "text": "Left-click the text area to type. Use normal arrow, Home/End, Backspace/Delete, selection and clipboard controls. Escape or clicking outside commits the edit and releases typing.$(br2)Adjust text size, or choose Color... to open a hue/shade picker. Selecting a shade or pressing Back returns to settings. The window’s X closes the whole panel."
     },
     {
       "type": "patchouli:text",

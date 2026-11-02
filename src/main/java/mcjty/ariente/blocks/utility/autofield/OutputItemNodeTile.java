@@ -1,6 +1,7 @@
 package mcjty.ariente.blocks.utility.autofield;
 
 import mcjty.ariente.gui.GuiHelp;
+import mcjty.ariente.gui.PlayerInventoryPanel;
 import mcjty.ariente.setup.Registration;
 import mcjty.hologui.api.IGuiComponent;
 import mcjty.hologui.api.IGuiComponentRegistry;
@@ -130,24 +131,24 @@ public class OutputItemNodeTile extends AbstractItemNodeTile {
                         .icon(registry.image(Icons.ORE_OFF))
                         .selected(registry.image(Icons.ORE_ON)))
 
-                .add(registry.number(5, 3.4, 1, 1).color(registry.color(StyledColor.INFORMATION)).getter((p, h) -> getOutputStackSize()))
+                .add(registry.number(5, 3.05, 1, 1).color(registry.color(StyledColor.INFORMATION)).getter((p, h) -> getOutputStackSize()))
 
-                .add(registry.iconButton(3, 3.3, 1, 1).icon(registry.image(GRAY_DOUBLE_ARROW_LEFT)).hover(registry.image(WHITE_DOUBLE_ARROW_LEFT))
+                .add(registry.iconButton(3, 3.05, 1, 1).icon(registry.image(GRAY_DOUBLE_ARROW_LEFT)).hover(registry.image(WHITE_DOUBLE_ARROW_LEFT))
                         .hitEvent((component, player, entity1, x, y) -> changeOutputStackSize(-8)))
-                .add(registry.iconButton(4, 3.3, 1, 1).icon(registry.image(GRAY_ARROW_LEFT)).hover(registry.image(WHITE_ARROW_LEFT))
+                .add(registry.iconButton(4, 3.05, 1, 1).icon(registry.image(GRAY_ARROW_LEFT)).hover(registry.image(WHITE_ARROW_LEFT))
                         .hitEvent((component, player, entity1, x, y) -> changeOutputStackSize(-1)))
-                .add(registry.iconButton(6.6, 3.3, 1, 1).icon(registry.image(GRAY_ARROW_RIGHT)).hover(registry.image(WHITE_ARROW_RIGHT))
+                .add(registry.iconButton(6.6, 3.05, 1, 1).icon(registry.image(GRAY_ARROW_RIGHT)).hover(registry.image(WHITE_ARROW_RIGHT))
                         .hitEvent((component, player, entity1, x, y) -> changeOutputStackSize(1)))
-                .add(registry.iconButton(7.6, 3.3, 1, 1).icon(registry.image(GRAY_DOUBLE_ARROW_RIGHT)).hover(registry.image(WHITE_DOUBLE_ARROW_RIGHT))
+                .add(registry.iconButton(7.6, 3.05, 1, 1).icon(registry.image(GRAY_DOUBLE_ARROW_RIGHT)).hover(registry.image(WHITE_DOUBLE_ARROW_RIGHT))
                         .hitEvent((component, player, entity1, x, y) -> changeOutputStackSize(8)))
 
-                .add(registry.slots(2.5, 1.2, 6, 2)
+                .add(registry.slots(2.5, 1, 6, 2)
                         .name("slots")
                         .fullBright()
                         .doubleClickEvent((component, player, entity, x, y, stack, index) -> removeFromFilter(player, entity, getOutputHandler()))
                         .itemHandler(getOutputHandler()))
 
-                .add(registry.playerInventory(4.7)
+                .add(new PlayerInventoryPanel("Double-click to add a filter")
                         .name("playerSlots")
                         .doubleClickEvent((component, player, entity, x, y, stack, index) -> addToFilter(player, entity, getOutputHandler())));
 

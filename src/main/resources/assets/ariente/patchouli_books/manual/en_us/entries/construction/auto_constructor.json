@@ -7,7 +7,7 @@
     {
       "type": "patchouli:text",
       "title": "Build repeatedly",
-      "text": "The Auto Constructor automatically crafts from blueprints in directly adjacent Blueprint Storage. Open $(thing)Ingredients$() to transfer ingredients between your inventory and the machine. Products appear in the output slots below the main menu.$(br2)Item automation can supply ingredients and collect products too. Connect both flux components and check the redstone mode. The machine cycles through the library, crafting available recipes when ingredients and output room are ready."
+      "text": "The Auto Constructor automatically crafts from blueprints in directly adjacent Blueprint Storage. Open $(thing)Ingredients$() to transfer ingredients between your inventory and the machine. Machine slots appear above your inventory; relevant carried ingredients keep their positions, with a separated hotbar. Products appear in the output slots below the main menu.$(br2)Item automation can supply ingredients and collect products too. Connect both flux components and check the redstone mode. The machine cycles through the library, crafting available recipes when ingredients and output room are ready."
     },
     {
       "type": "patchouli:text",

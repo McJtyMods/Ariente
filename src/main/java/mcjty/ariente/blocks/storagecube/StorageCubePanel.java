@@ -13,7 +13,8 @@ public class StorageCubePanel extends AbstractHoloComponent<StorageCubePanel> {
     private final StorageCubeTile tile;
 
     public StorageCubePanel(StorageCubeTile tile) {
-        super(0, 0, 8, 8);
+        // Include the header controls, scroll bars and lowered hotbar in hover/tooltip targeting.
+        super(-.2, -.5, 8.4, 9.2);
         this.tile = tile;
     }
 
@@ -24,6 +25,6 @@ public class StorageCubePanel extends AbstractHoloComponent<StorageCubePanel> {
 
     @Override
     public void renderTooltip(PoseStack poses, MultiBufferSource buffer, Player player, IHoloGuiEntity holo, double x, double y) {
-        StorageCubeClient.tooltip(tile, poses, buffer, x, y);
+        StorageCubeClient.tooltip(tile, holo, poses, buffer, x, y);
     }
 }

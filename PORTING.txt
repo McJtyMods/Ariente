@@ -1,5 +1,5 @@
 ARIENTE - FORGE 1.20.1 PORT HANDOFF
-Updated: 2026-10-31
+Updated: 2026-11-02
 
 STATUS AND PURPOSE
 ==================
@@ -15,6 +15,83 @@ the dimension, cities, population, travel generation, city AI and editing tools.
 Both documents are intended to let a future Codex session resume without chat
 history. Equipment, progression, systems and phase-4 integration checkpoints
 are recorded below, with their remaining gameplay and release limits.
+
+PLAYER INVENTORY LAYOUTS (2026-11-02)
+====================================
+- Input/Output Item Nodes, Blueprint Storage, the manual Constructor and the
+  Auto Constructor Ingredients page now use the Holo Storage inventory layout:
+  three nine-slot rows, a separated hotbar, a divider and small action hints.
+  Filtered blueprint/ingredient views keep actual inventory positions and leave
+  unrelated slots blank. Existing double-click, selection and arrow actions stay.
+- InventoryLayout shares hit coordinates with Holo Storage; InventoryRenderer
+  shares bordered slots, aligned full-bright icons and lower-right stack counts.
+  PlayerInventoryPanel uses HoloGui's existing selection and tooltip handling.
+  Machine/crafting slots sit above the player grid; arrow directions and the
+  guide, Tablet pages and built-in help reflect that ordering.
+- Verification: :Ariente:build passed with Java 17. PlayerInventoryPanelTests
+  and HoloStorageTests passed together (10 GameTests), covering all 36 carried
+  indices, hotbar-gap/outside hits, filtered positions, both node filter samples,
+  blueprint transfers and Auto Constructor ingredient transfers.
+- Rendering captures for all five panels, front and 35-degree views, are under
+  build/verification/inventory-client/. Populated client fixtures check layout
+  independently of existing machine inventory synchronization. The temporary
+  preview driver/init script are /tmp/ariente-inventory-client-src and
+  /tmp/ariente-inventory-client.gradle; focused server checks use
+  /tmp/ariente-inventory-tests.gradle. These paths are local verification aids.
+- Kept 1.20-0.0.31-alpha: the Modrinth version API still lists only Forge 1.12.2
+  files. CurseForge's indexed project page lists the same 1.12.2 release; direct
+  file-list retrieval returned HTTP 403, so full CurseForge verification remains
+  unavailable. Sources: https://api.modrinth.com/v2/project/JZNKzzmT/version
+  and https://www.curseforge.com/minecraft/mc-mods/ariente .
+
+HOLOGRAM WINDOW CONTROLS (2026-11-02)
+===================================
+- HoloGuiEntity wraps every root panel with shared close/manual/pin controls,
+  including secondary pages and panels without a manual. Mounted panels omit
+  close/pin; only block-associated panels can pin. Equipment has close but no pin.
+- Pinning is synchronized, bypasses automatic timeout, survives page and chunk
+  changes, and unpinning restarts the full timeout. A server-session UUID allows
+  chunk reloads to retain pins while reopening a world clears them. Destroying
+  the block still removes its panel. Looking backward no longer resets timeout.
+- Ariente supplies optional Patchouli actions through IPanel.help. Without
+  Patchouli the question mark is omitted. Color pickers use Back to return to
+  settings; the shared X always closes the complete panel. Display/module panels
+  also link to their existing manual entry.
+- Window control dimensions and glyph strokes are now 30% smaller. Storage's
+  header has A-Z/count sort buttons; the player grid, label and hotbar sit lower
+  behind a separator. Its component bounds include the header and lowered hotbar.
+  Click scrolling jumps three columns; holding repeats every two ticks, compared
+  with eight ticks for hovering. Sorting changes real server slots, preserves
+  complete stacks and validates the viewer/revision and current storage snapshot.
+- Block panels now track their opener's UUID, including through entity saves.
+  Reopening uses the same unmounted entity for that player/block, applies the
+  requested page and new position/facing, refreshes timeout/detection bounds,
+  and leaves the pin untouched. Other owners' panels are neither moved nor closed.
+- Storage snapshots are independent per panel on the client and per player/panel
+  on the server. Rendering a nearby panel starts its subscription without aiming
+  at it; selecting another panel only cancels gestures, not cached inventory data.
+  Closing one subscription cannot evict another. Player inventory deltas remain
+  specific to the viewing player. The scrolling hint is offset right for double-
+  digit column ranges.
+- HoloStoragePanelTests captures encoded server updates for two distinct players,
+  two panels and independent subscription closure. StoragePanelsClientChecks uses
+  one real client and a simulated second opener: both panels must render updated
+  stored items and local player items in pixel captures, then keep updating after
+  one closes. It also checks pinned entity reuse/reposition. Run with
+  -Pariente_runs -Pariente_storage_panels_check :Ariente:runClient using the
+  disposable HoloStorageCheck save under build/verification/storage-panels-client.
+  This fixture does not claim a two-real-client dedicated-server test.
+- HoloWindowTests covers timeout, page transitions, session markers, close,
+  mounted/equipment exceptions, manual availability and adjacent hit targets.
+  HoloStorageTests and HolographicDisplayTests are the related server regressions.
+  HoloStorageClientChecks additionally exercises native pin/unpin/X/help input,
+  synchronization, timeout and storage gestures, and captures armor/mounted
+  layouts at front and oblique angles. Use -Pariente_runs
+  -Pariente_holo_storage_check :Ariente:runClient with its isolated HoloStorageCheck
+  fixture; normal workspace saves are not used.
+- Publication rechecked on CurseForge project/file pages and Modrinth version
+  APIs on 2026-11-02: Ariente and HoloGui still publish only 1.12.2 files.
+  These entries therefore remain under their current unreleased 1.20 versions.
 
 STANDALONE PROGRESSION AND REPORTED REGRESSIONS (2026-10-31)
 ==========================================================

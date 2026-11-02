@@ -51,7 +51,7 @@ public class StorageCubeTile extends TickingTileEntity implements IGuiTile {
 
     private final GenericItemHandler items;
     private LazyOptional<IItemHandler> itemCapability;
-    private final Map<UUID, Viewer> viewers = new HashMap<>();
+    private final Map<ViewerKey, Viewer> viewers = new HashMap<>();
     private List<Preview> preview = List.of();
     private boolean previewDirty = true;
     private int paletteSize;
@@ -153,24 +153,25 @@ public class StorageCubeTile extends TickingTileEntity implements IGuiTile {
         if (!canUse(player, entityId)) {
             return;
         }
-        Viewer viewer = viewers.get(player.getUUID());
-        if (viewer == null || viewer.entityId != entityId) {
+        ViewerKey key = new ViewerKey(player.getUUID(), entityId);
+        Viewer viewer = viewers.get(key);
+        if (viewer == null) {
             viewer = new Viewer(entityId);
-            viewers.put(player.getUUID(), viewer);
+            viewers.put(key, viewer);
         }
         viewer.deadline = level.getGameTime() + 60;
         sendChanges(player, viewer, false);
     }
 
     public void refresh(ServerPlayer player, int entityId) {
-        Viewer viewer = viewers.get(player.getUUID());
+        Viewer viewer = viewers.get(new ViewerKey(player.getUUID(), entityId));
         if (viewer != null && viewer.entityId == entityId) {
             sendChanges(player, viewer, true);
         }
     }
 
     public void transfer(ServerPlayer player, int entityId, long revision, int source, int destination, int amount, boolean quick) {
-        Viewer viewer = viewers.get(player.getUUID());
+        Viewer viewer = viewers.get(new ViewerKey(player.getUUID(), entityId));
         if (viewer == null || viewer.entityId != entityId || viewer.revision != revision
                 || source < 0 || source >= viewer.snapshot.length
                 || !quick && (destination < 0 || destination >= viewer.snapshot.length)) {
@@ -184,10 +185,22 @@ public class StorageCubeTile extends TickingTileEntity implements IGuiTile {
     }
 
     public void unsubscribe(ServerPlayer player, int entityId) {
-        Viewer viewer = viewers.get(player.getUUID());
-        if (viewer != null && viewer.entityId == entityId) {
-            viewers.remove(player.getUUID());
+        viewers.remove(new ViewerKey(player.getUUID(), entityId));
+    }
+
+    public void sort(ServerPlayer player, int entityId, long revision, boolean byCount) {
+        Viewer viewer = viewers.get(new ViewerKey(player.getUUID(), entityId));
+        if (!canUse(player, entityId) || viewer == null || viewer.entityId != entityId || viewer.revision != revision) {
+            return;
         }
+        for (int slot = 0; slot < items.getSlots(); slot++) {
+            if (viewer.snapshot[slot] == null || !ItemStack.matches(items.getStackInSlot(slot), viewer.snapshot[slot])) {
+                // Automation or another viewer changed the inventory since this sort was requested.
+                return;
+            }
+        }
+        StorageCubeSort.apply(items, byCount);
+        viewer.deadline = level.getGameTime() + 60;
     }
 
     private void sendChanges(ServerPlayer player, Viewer viewer, boolean force) {
@@ -213,7 +226,7 @@ public class StorageCubeTile extends TickingTileEntity implements IGuiTile {
         long now = level.getGameTime();
         if (now % 5 == 0 && !viewers.isEmpty()) {
             viewers.entrySet().removeIf(entry -> {
-                ServerPlayer player = level.getServer().getPlayerList().getPlayer(entry.getKey());
+                ServerPlayer player = level.getServer().getPlayerList().getPlayer(entry.getKey().player());
                 Viewer viewer = entry.getValue();
                 if (player == null || now > viewer.deadline || !canUse(player, viewer.entityId)) {
                     return true;
@@ -305,6 +318,9 @@ public class StorageCubeTile extends TickingTileEntity implements IGuiTile {
     }
 
     public record Preview(ItemStack stack, int weight) {
+    }
+
+    private record ViewerKey(UUID player, int entityId) {
     }
 
     private class Viewer {

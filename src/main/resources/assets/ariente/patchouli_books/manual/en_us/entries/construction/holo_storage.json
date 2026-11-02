@@ -13,7 +13,7 @@
     {
       "type": "patchouli:text",
       "title": "The inventory panel",
-      "text": "Right-click the cube to open its hologram. The upper grid shows stored stacks, with your main inventory and separated hotbar below.$(br2)Point at the left or right vertical bar to scroll the storage columns automatically. Keep pointing to continue scrolling. Slot numbers stay fixed while browsing."
+      "text": "Right-click the cube to open its Storage panel. Stored stacks are above a separator; your main inventory and hotbar are below.$(br2)Hover over a side arrow to scroll the storage columns. Click to jump three columns, or hold left-click to scroll faster.$(br2)Beside Storage, $(thing)A-Z$() sorts item names and $(thing)Count$() sorts largest stacks first. Empty slots move to the end. Stacks keep their item data; your inventory is unchanged."
     },
     {
       "type": "patchouli:text",

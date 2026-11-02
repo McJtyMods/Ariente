@@ -145,6 +145,21 @@ if (project.hasProperty('ariente_holo_storage_check')) {
     }
 }
 
+// Isolated concurrent storage panels, rendered deltas and per-player reuse verification.
+if (project.hasProperty('ariente_storage_panels_check')) {
+    minecraft.runs.client {
+        workingDirectory project.file('build/verification/storage-panels-client')
+        mods.ariente.source(sourceSets.gameTest)
+        property 'ariente.storagePanelsCheck', 'true'
+        args '--quickPlaySingleplayer', 'HoloStorageCheck', '--width', '1280', '--height', '800'
+    }
+    tasks.withType(JavaExec).configureEach {
+        if (name == 'runClient') {
+            dependsOn 'gameTestClasses'
+        }
+    }
+}
+
 // Isolated holographic display, keyboard input, preview and packet verification.
 if (project.hasProperty('ariente_display_check')) {
     minecraft.runs.client {

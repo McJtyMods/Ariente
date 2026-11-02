@@ -7,7 +7,7 @@
     {
       "type": "patchouli:text",
       "title": "Collect the patterns",
-      "text": "Blueprint Storage holds six blueprints for a directly adjacent Constructor or Auto Constructor; any face works. A populated blueprint shows its result and ingredients. Blank blueprints teach no recipe.$(br2)The upper slots show your blueprints; the lower slots show stored patterns. Double-click a slot to transfer, or select one and use the up/down arrows. Patterns stay in storage after crafting. Keep useful blueprints from your travels."
+      "text": "Blueprint Storage holds six blueprints for a directly adjacent Constructor or Auto Constructor; any face works. A populated blueprint shows its result and ingredients. Blank blueprints teach no recipe.$(br2)The upper slots show stored patterns. The lower grid shows your blueprints in their inventory positions, with a separated hotbar. Double-click a slot to transfer, or select one and use the up/down arrows. Patterns stay in storage after crafting. Keep useful blueprints from your travels."
     },
     {
       "type": "patchouli:crafting",

@@ -5,6 +5,7 @@ import mcjty.ariente.Ariente;
 import mcjty.ariente.api.ICityAI;
 import mcjty.ariente.api.ICityEquipment;
 import mcjty.ariente.gui.GuiHelp;
+import mcjty.ariente.gui.PlayerInventoryPanel;
 import mcjty.ariente.items.BlueprintItem;
 import mcjty.ariente.recipes.BlueprintRecipeRegistry;
 import mcjty.ariente.recipes.ConstructorRecipe;
@@ -33,7 +34,6 @@ import java.util.List;
 import java.util.Map;
 
 import static mcjty.ariente.compat.ArienteTOPDriver.DRIVER;
-import static mcjty.hologui.api.Icons.WHITE_PLAYER;
 import static mcjty.lib.builder.TooltipBuilder.header;
 import static mcjty.lib.builder.TooltipBuilder.key;
 
@@ -155,24 +155,19 @@ public class ConstructorTile extends GenericTileEntity implements IGuiTile, ICit
 
     private IGuiComponent<?> createMainGui(IGuiComponentRegistry registry) {
         return GuiHelp.CONSTRUCTOR.createPanel(registry)
-                .add(registry.text(0, -.2, 8, 1).text("Ingredients").color(registry.color(StyledColor.LABEL)))
+                .add(registry.text(0, -.2, 8, 1).text("Craft").color(registry.color(StyledColor.LABEL)))
 
-                .add(registry.icon(0, 1.5, 1, 1).icon(registry.image(WHITE_PLAYER)))
-                .add(registry.playerSlots(1.5, 1.0, 6, 3)
-                        .name("playerslots")
-                        .withAmount()
-                        .fullBright()
-                        .filter((stack, index) -> isIngredient(stack)))
-
-                .add(registry.text(0, 4.5, 8, 1).text("Craft").color(registry.color(StyledColor.LABEL)))
-
-                .add(registry.stackIcon(0, 5.5, 1, 1).itemStack(new ItemStack(Registration.CONSTRUCTOR.get())))
-                .add(registry.slots(1.5, 5.5, 6, 3)
+                .add(registry.stackIcon(0, 2, 1, 1).itemStack(new ItemStack(Registration.CONSTRUCTOR.get())))
+                .add(registry.slots(1.5, 1, 6, 3)
                         .name("outputslots")
                         .doubleClickEvent((component, player, entity, x, y, stack, index) -> attemptCraft(player, stack))
                         .overlay((stack, integer) -> getCraftableOverlay(registry, stack))
                         .tooltipHandler(this::tooltipHandler)
                         .itemHandler(getItemHandler()))
+
+                .add(new PlayerInventoryPanel("Relevant ingredients")
+                        .name("playerslots")
+                        .filter((stack, index) -> isIngredient(stack)))
                 ;
     }
 

@@ -1,7 +1,7 @@
 package mcjty.ariente.blocks.utility.autofield;
 
 import mcjty.hologui.api.IHoloGuiEntity;
-import mcjty.hologui.api.components.IPlayerInventory;
+import mcjty.hologui.api.components.IPlayerSlots;
 import mcjty.hologui.api.components.ISlots;
 import net.minecraft.core.BlockPos;
 import net.minecraft.world.entity.player.Player;
@@ -20,8 +20,8 @@ public abstract class AbstractItemNodeTile extends AbstractNodeTile {
 
     protected void addToFilter(Player player, IHoloGuiEntity entity, SimpleItemHandler filter) {
         entity.findComponent("playerSlots").ifPresent(component -> {
-            if (component instanceof IPlayerInventory) {
-                int selected = ((IPlayerInventory) component).getSelected();
+            if (component instanceof IPlayerSlots) {
+                int selected = ((IPlayerSlots) component).getSelected();
                 if (selected != -1) {
                     ItemStack extracted = player.getInventory().getItem(selected);
                     if (!extracted.isEmpty()) {

@@ -120,11 +120,13 @@ Most machines use **HoloGui** rather than a conventional full-screen container.
 
 | Action | Use |
 | --- | --- |
-| Right-click a machine | Open its hologram, where that machine provides one. |
+| Right-click a machine | Open its hologram, or move your already open panel in front of you while keeping its pin state. |
 | Aim at a hologram control and left-click/attack | Press buttons, arrows, and toggles. |
 | Double-click a displayed slot | Perform that panel's slot action: craft, transfer a blueprint, or set/clear a filter. |
 | Hover over controls and items | Read tooltips, recipe requirements, and status. |
-| Help/question-mark control | Open the relevant Tablet manual entry when Patchouli is installed; otherwise show help in the hologram. Use its back arrow to return. |
+| X control at the top right | Close the panel, including a pinned panel. Mounted vehicle panels have no close control. |
+| Question mark, left of X | Open the relevant Tablet manual entry. Shown only when Patchouli and an entry for the panel are available. |
+| Pushpin, left of the question mark (or X) | Toggle pinning for a block's panel. A green, upright pin keeps it open when you look away; unpinning restarts the normal timeout. Equipment and mounted vehicle panels have no pin. |
 | Numeric settings | Click a slider track, or hold left-click and aim along it to drag. Its `<` and `>` buttons change the value by exactly one. |
 | Looping-arrow button | The whole button cycles the displayed choice; icon choices carry the same marker. |
 | Single versus double fuel arrows | Transfer small versus large batches; these are inventory actions rather than numeric settings. |
@@ -132,6 +134,12 @@ Most machines use **HoloGui** rather than a conventional full-screen container.
 The hologram is a real world entity. Stand where you can see its front and aim at
 the actual button. Storage Cubes additionally have direct interaction on their
 four or nine front-panel item areas; see [Storage Cube](#storage-cube).
+
+The small rectangular window controls sit against the top-right border. Pinned
+panels keep their state while switching pages, and can still be closed with X
+or right-click. Pinning survives chunk reloads during the current session, and
+clears when the world is reopened. Removing the associated block also removes
+its panel.
 
 Machines with a redstone-mode control can cycle between ignoring redstone,
 requiring no signal, and requiring a signal. This control enables a machine; it
@@ -532,8 +540,10 @@ Constructor or Auto Constructor, on any of the six faces. Those machines query
 adjacent storage; there is no general wireless blueprint library.
 
 Its hologram transfers blueprints between the player's inventory and the six
-storage slots. Double-click the appropriate displayed slot to transfer. Installed
-blueprints are recipe references and are **not consumed by crafting**.
+storage slots. Stored blueprints appear above your inventory, which uses three
+nine-slot rows and a separated hotbar. Only blueprints are shown, in their actual
+inventory positions. Double-click the appropriate displayed slot to transfer.
+Installed blueprints are recipe references and are **not consumed by crafting**.
 
 The creative tab and JEI include one populated Blueprint per catalog recipe.
 JEI shows the required blueprint alongside the ingredients and full output. A populated Storage Cube blueprint can
@@ -552,8 +562,9 @@ development aid, not a survival blueprint-writing mechanic.
 1. Place a Constructor beside at least one Blueprint Storage.
 2. Insert the desired populated blueprint into that storage.
 3. Carry the required ingredients in your player inventory.
-4. Open the Constructor hologram. Its upper area shows relevant ingredients;
-   its lower area shows available blueprints/results.
+4. Open the Constructor hologram. Its upper area shows available blueprints/results;
+   its lower area shows relevant ingredients in their inventory positions, with
+   a separated hotbar.
 5. Hover a result to see missing ingredients. **Double-click its blueprint** to
    craft. The machine consumes ingredients from your inventory and puts the
    result into your inventory, dropping it if necessary.
@@ -575,6 +586,10 @@ ingredients and products inside the machine:
 | Additional craft cost | 100 of **each** component per successful craft. |
 | Recipe selection | Cycles through slots in adjacent Blueprint Storage blocks. |
 | Timing | Normally checks another slot every 10 powered ticks; empty blueprint slots use a shorter delay. |
+
+The Ingredients page shows machine slots above your inventory. Relevant carried
+ingredients retain their positions in three nine-slot rows and a separated
+hotbar. Double-click a stack to transfer it, or select it and use the arrows.
 
 Supply ingredients, remove products, attach power connectors, and set its
 redstone mode appropriately. This is a cycling crafter, not a demand-driven
@@ -666,9 +681,20 @@ They need no flux, and breaking a cube preserves its inventory in the dropped it
 
 Right-click to open the holographic inventory. The upper grid shows a window of
 nine columns by three rows from storage. The lower grid shows the player's main
-inventory in three rows of nine, followed by the hotbar. Point at either vertical
+inventory in three rows of nine, followed by the hotbar, with a separator between
+the storage and player sections. Point at either vertical
 side bar beside storage to scroll left or right one column at a time; no click is
-needed, and scrolling continues while pointing at the bar.
+needed, and scrolling continues while pointing at the bar. Click an arrow to jump
+three columns, or hold it for faster scrolling.
+
+Beside the **Storage** title, **A-Z** sorts the stored stacks by item name and
+**Count** sorts them from largest to smallest, using item names to break ties.
+Empty slots move to the end. Sorting preserves each stack and its item data,
+leaves your inventory unchanged, and returns the view to the first column.
+
+Each player has their own panel for a block. Right-click the block again to
+reposition your existing panel; its pin remains as you set it. Multiple visible
+storage panels continue updating independently, even when another panel closes.
 
 - Hold left-click on a stack, aim at another slot and release to move it.
 - Alternatively, click a source and then click its destination.
@@ -740,7 +766,8 @@ Names are from the **attached inventory's** point of view:
 2. Attach an **Output** node to the source chest and an **Input** node to the
    destination chest.
 3. Open each node's hologram and add the desired item to its filter by
-   double-clicking that item in the displayed player inventory. Removing a
+   double-clicking that item in the lower player inventory. This uses three
+   nine-slot rows and a separated hotbar, matching Holo Storage. Removing a
    displayed filter clears that filter entry. These are filter samples, not
    supplies for the transfer.
 4. Supply the controller with both power components, using connectors.
@@ -1010,7 +1037,7 @@ The columns are labeled **Mod**, **On** and **Key**. Module tooltips give a shor
 effect, compatible equipment and usage. The **Ariente Tablet → Equipment** entries
 contain the full mechanics; the tables and explanations below provide the same
 reference here. A panel's question mark opens the relevant Tablet entry when
-Patchouli is available, or built-in help otherwise.
+Patchouli is available.
 
 Modules fill two aligned columns from the top. Installed icons are bright.
 Available inventory modules are dim;

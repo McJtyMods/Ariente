@@ -1,6 +1,7 @@
 package mcjty.ariente.blocks.utility.autofield;
 
 import mcjty.ariente.gui.GuiHelp;
+import mcjty.ariente.gui.PlayerInventoryPanel;
 import mcjty.ariente.setup.Registration;
 import mcjty.hologui.api.IGuiComponent;
 import mcjty.hologui.api.IGuiComponentRegistry;
@@ -113,13 +114,13 @@ public class InputItemNodeTile extends AbstractItemNodeTile {
                         .selected(registry.image(Icons.ORE_ON))
                         .hitEvent((component, player, entity, x, y) -> toggleInputOre()))
 
-                .add(registry.slots(2.5, 1.2, 6, 2)
+                .add(registry.slots(2.5, 1, 6, 2)
                         .name("slots")
                         .fullBright()
                         .doubleClickEvent((component, player, entity, x, y, stack, index) -> removeFromFilter(player, entity, getInputHandler()))
                         .itemHandler(getInputHandler()))
 
-                .add(registry.playerInventory(4.7)
+                .add(new PlayerInventoryPanel("Double-click to add a filter")
                         .name("playerSlots")
                         .doubleClickEvent((component, player, entity, x, y, stack, index) -> addToFilter(player, entity, getInputHandler())));
         addFilterChoice(registry, panel, 0, false);

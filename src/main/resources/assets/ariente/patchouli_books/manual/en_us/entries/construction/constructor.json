@@ -12,7 +12,7 @@
     {
       "type": "patchouli:text",
       "title": "Make your first item",
-      "text": "$(li)Carry the required ingredients in your inventory.$(li)Right-click the Constructor.$(li)The top grid shows your inventory; the bottom grid shows blueprints from adjacent Blueprint Storage.$(li)Hover over a result to check what is missing.$(li)Double-click its blueprint to craft.$(br2)The result goes into your inventory. Leave room so it does not drop at your feet. Manual construction needs no flux supply."
+      "text": "$(li)Carry the required ingredients in your inventory.$(li)Right-click the Constructor.$(li)The top grid shows blueprints from adjacent Blueprint Storage. The lower grid shows relevant ingredients in their inventory positions, with a separated hotbar.$(li)Hover over a result to check what is missing.$(li)Double-click its blueprint to craft.$(br2)The result goes into your inventory. Leave room so it does not drop at your feet. Manual construction needs no flux supply."
     }
   ],
   "extra_recipe_mappings": {

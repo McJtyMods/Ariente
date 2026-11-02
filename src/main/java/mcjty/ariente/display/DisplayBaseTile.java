@@ -1,6 +1,7 @@
 package mcjty.ariente.display;
 
 import mcjty.ariente.Ariente;
+import mcjty.ariente.gui.HoloGuiTools;
 import mcjty.ariente.network.ArienteMessages;
 import mcjty.ariente.setup.Registration;
 import mcjty.hologui.api.IGuiComponent;
@@ -16,6 +17,7 @@ import net.minecraft.nbt.CompoundTag;
 import net.minecraft.nbt.ListTag;
 import net.minecraft.nbt.Tag;
 import net.minecraft.network.chat.Component;
+import net.minecraft.resources.ResourceLocation;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraftforge.network.PacketDistributor;
 import net.minecraft.util.Mth;
@@ -304,10 +306,10 @@ public class DisplayBaseTile extends TickingTileEntity implements IGuiTile {
         if (ModuleSettings.isInstalledTag(tag)) {
             return ModuleSettings.createInstalled(this, tag, registry);
         }
-        IPanel panel = registry.panel(0, 0, 8, 8);
+        IPanel panel = HoloGuiTools.createPanelWithHelp(registry, new ResourceLocation(Ariente.MODID, "construction/displays"));
         if ("surface-color".equals(tag)) {
             panel.add(registry.text(.3, 0, 8, 1).text("SURFACE COLOR").scale(.65f).color(0x76eaff));
-            panel.add(registry.button(7.2, -.2, .8, .8).name("color_close").text("x")
+            panel.add(registry.button(6.4, .1, 1.6, .65).name("color_close").text("Back").scale(.4f)
                     .hitEvent((c, p, e, x, y) -> e.switchTag("default")));
             panel.add(registry.colorPicker(.4, 1, 6.8, 5.4).name("color_picker").color(() -> appearance.color())
                     .selected((p, e, rgb) -> {

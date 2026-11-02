@@ -1,11 +1,15 @@
 1.20-0.0.31-alpha:
+- Item filters, the Constructor, Auto Constructor ingredients and Blueprint Storage now use the Holo Storage player inventory layout, with bordered slots, aligned stack counts and a separated hotbar.
+- Reopening a block now moves your existing hologram in front of you, keeping its pin state. Different players retain separate panels.
+- Storage holograms now have A-Z and largest-stack-first sorting, a more clearly separated player inventory, and faster scrolling by clicking or holding the side arrows.
+- Standardized hologram window controls with compact, bordered close, manual and toggle-pin icons. Pin block panels to keep them open when looking away for the current session. Mounted panels omit close/pin, equipment panels omit pin, and manual buttons appear only with Patchouli and a matching entry.
 - Added Holo Storage Cubes with 30, 60 and 120 stack slots, floating item previews, a holographic inventory with hover scrolling and drag or sneak-click transfers, all-sided automation, and increasingly expensive Constructor blueprints.
 - Added a 3x3 Storage Cube for nine item types, with the same capacity per type, controls, locking and automation as the original four-type cube. Includes a Constructor blueprint and manual documentation.
 - Added the Smelter: furnace recipes at a configurable speed (10 times by default) using Ariente flux, two directly accessible front slots with hover highlights, an animated working indicator, sided automation, and a Constructor blueprint. Documented in the guide and Tablet.
 - Power armor, Enhanced Energy Sabres and Energy Lances now share a carried Energy Holder for module fuel and charge. Refill through the holder’s own panel or let it collect loose dust automatically. Equipment panels use aligned module columns and show shared fuel and charge at the bottom. Removed the redundant Autofeed module.
 - Holographic displays now have separate background type, color picker with a color preview button, transparency percentage and border controls. Joined bases share all settings, and existing display presets are preserved.
 - Hold right-click to drag installed holographic modules, with green/red placement previews and snapback for invalid drops. Release without dragging to configure.
-- GUI question marks now open the relevant Tablet manual entry when Patchouli is installed, with expanded built-in help when it is absent. Added help to more machine, transport and equipment panels.
+- GUI question marks now open the relevant Tablet manual entry when Patchouli is installed. Added help to more machine, transport and equipment panels.
 - Installed holographic modules can now be configured directly. Modules that outgrow their available space are returned with their edited settings.
 - Holographic cycle choices now use recognizable looping-arrow buttons. Numeric settings use sliders with precise arrow controls, including display and elevator heights, lock ranges, shield radius, transport speeds and machine settings.
 - Added modular holographic displays: join display bases, choose a surface and height, and install configurable power, storage and colored text modules. Storage modules show bright item previews. All four components have Constructor blueprints.

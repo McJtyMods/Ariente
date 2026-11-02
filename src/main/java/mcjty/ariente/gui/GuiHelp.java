@@ -9,14 +9,14 @@ import net.minecraft.resources.ResourceLocation;
 
 import java.util.function.Consumer;
 
-/** Manual destinations and the compact help available without Patchouli. */
+/** Manual destinations and legacy built-in help pages. */
 public enum GuiHelp {
     CONSTRUCTOR("construction/constructor",
             "Craft using blueprints in",
             "adjacent Blueprint Storage.",
             "",
-            "Top grid: your inventory.",
-            "Bottom grid: available blueprints.",
+            "Top grid: available blueprints.",
+            "Bottom grid: your ingredients.",
             "Hover to see missing ingredients.",
             "Double-click a blueprint to craft.",
             "No flux supply is needed."),
@@ -35,7 +35,8 @@ public enum GuiHelp {
             "Lower grid: your inventory.",
             "The separated bottom row is your",
             "hotbar. Hover either side bar to",
-            "scroll the storage columns.",
+            "scroll; click/hold to scroll faster.",
+            "A-Z sorts names; Count sorts size.",
             "",
             "Drag stacks or click source/target.",
             "Sneak-click to transfer a stack.",
@@ -45,8 +46,8 @@ public enum GuiHelp {
             "Stores six blueprints for adjacent",
             "Constructors and Auto Constructors.",
             "",
-            "Top slots: your blueprints.",
-            "Bottom slots: stored blueprints.",
+            "Top slots: stored blueprints.",
+            "Bottom grid: your blueprints.",
             "Double-click to transfer, or select",
             "a slot and use the up/down arrows.",
             "Blueprints are kept when crafting."),
