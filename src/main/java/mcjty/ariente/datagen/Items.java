@@ -110,9 +110,9 @@ public class Items extends BaseItemModelProvider {
         parentedItem(Registration.POSIRITE_GENERATOR_ITEM.get(), "block/machines/posirite_generator_on");
         parentedItem(Registration.STORAGE_ITEM.get(), "block/utility/storage");
         parentedItem(Registration.STORAGE_3X3_ITEM.get(), "block/utility/storage_3x3");
-        parentedItem(Registration.HOLO_STORAGE_1_ITEM.get(), "block/aicore");
-        parentedItem(Registration.HOLO_STORAGE_2_ITEM.get(), "block/aicore");
-        parentedItem(Registration.HOLO_STORAGE_3_ITEM.get(), "block/aicore");
+        parentedItem(Registration.HOLO_STORAGE_1_ITEM.get(), "block/holo_storage_1");
+        parentedItem(Registration.HOLO_STORAGE_2_ITEM.get(), "block/holo_storage_2");
+        parentedItem(Registration.HOLO_STORAGE_3_ITEM.get(), "block/holo_storage_3");
         parentedItem(Registration.SMELTER_ITEM.get(), "block/utility/smelter");
         parentedItem(Registration.ELEVATOR_ITEM.get(), "block/utility/elevator");
         parentedItem(Registration.FORCEFIELD_ITEM.get(), "block/machines/forcefield");

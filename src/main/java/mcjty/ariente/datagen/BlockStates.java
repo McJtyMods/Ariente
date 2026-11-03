@@ -605,20 +605,55 @@ public class BlockStates extends BaseBlockStateProvider {
         BlockModelBuilder frame = new BlockModelBuilder(modLoc("block/aicore_frame"), models().existingFileHelper);
         createFrame(frame, "#frame", 2f);
         frame.texture("frame", modLoc(TXT_BLACKMARBLE)).renderType("minecraft:solid");
-        BlockModelBuilder window = new BlockModelBuilder(modLoc("block/aicore_glass"), models().existingFileHelper);
+        simpleBlock(Registration.AICORE.get(), coreModel("aicore", frame));
+        registerHoloStorage(Registration.HOLO_STORAGE_1.get(), 1);
+        registerHoloStorage(Registration.HOLO_STORAGE_2.get(), 2);
+        registerHoloStorage(Registration.HOLO_STORAGE_3.get(), 3);
+    }
+
+    private void registerHoloStorage(BaseBlock block, int tier) {
+        String name = "holo_storage_" + tier;
+        BlockModelBuilder frame = new BlockModelBuilder(modLoc("block/" + name + "_frame"), models().existingFileHelper);
+        for (float x : new float[]{0, 14}) {
+            for (float z : new float[]{0, 14}) {
+                storageFrameBar(frame, x, 0, z, x + 2, 16, z + 2);
+            }
+        }
+        for (float y : new float[]{0, 14}) {
+            for (float side : new float[]{0, 14}) {
+                storageFrameBar(frame, 2, y, side, 14, y + 2, side + 2);
+                storageFrameBar(frame, side, y, 2, side + 2, y + 2, 14);
+            }
+        }
+        frame.texture("frame", modLoc("block/machines/storage_tier" + tier))
+                .texture("inner", modLoc(TXT_BLACKMARBLE))
+                .renderType("minecraft:solid");
+        simpleBlock(block, coreModel(name, frame));
+    }
+
+    private void storageFrameBar(BlockModelBuilder frame, float fx, float fy, float fz, float tx, float ty, float tz) {
+        // Only faces on the block's outer boundary carry the tier band.
+        frame.element().from(fx, fy, fz).to(tx, ty, tz)
+                .face(DOWN).texture(fy == 0 ? "#frame" : "#inner").end()
+                .face(UP).texture(ty == 16 ? "#frame" : "#inner").end()
+                .face(NORTH).texture(fz == 0 ? "#frame" : "#inner").end()
+                .face(SOUTH).texture(tz == 16 ? "#frame" : "#inner").end()
+                .face(WEST).texture(fx == 0 ? "#frame" : "#inner").end()
+                .face(EAST).texture(tx == 16 ? "#frame" : "#inner").end()
+                .end();
+    }
+
+    private BlockModelBuilder coreModel(String name, BlockModelBuilder frame) {
+        BlockModelBuilder window = new BlockModelBuilder(modLoc("block/" + name + "_glass"), models().existingFileHelper);
         innerCube(window, "#window", 2, 2, 2, 14, 14, 14);
         window.texture("window", modLoc(TXT_AICORE_WINDOW)).renderType("minecraft:translucent");
-        BlockModelBuilder core = models().getBuilder(BLOCK_FOLDER + "/aicore")
+        return models().getBuilder(BLOCK_FOLDER + "/" + name)
                 .parent(models().getExistingFile(mcLoc("block/block")))
                 .texture("particle", modLoc(TXT_BLACKMARBLE))
                 .customLoader(CompositeModelBuilder::begin)
                 .child("frame", frame)
                 .child("window", window)
                 .end();
-        simpleBlock(Registration.AICORE.get(), core);
-        simpleBlock(Registration.HOLO_STORAGE_1.get(), core);
-        simpleBlock(Registration.HOLO_STORAGE_2.get(), core);
-        simpleBlock(Registration.HOLO_STORAGE_3.get(), core);
     }
 
     private void registerBaseModels() {

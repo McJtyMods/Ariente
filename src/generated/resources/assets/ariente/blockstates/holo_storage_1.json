@@ -1,7 +1,7 @@
 {
   "variants": {
     "": {
-      "model": "ariente:block/aicore"
+      "model": "ariente:block/holo_storage_1"
     }
   }
 }
