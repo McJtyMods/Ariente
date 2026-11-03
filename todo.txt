@@ -9,5 +9,4 @@
 - Use codex to make a test world with all machines and automation in one place
 - Holo screen system, cameras?
 - Teleportation?
-- Fix automation
 - Use new displays in dungeons and tutorial level

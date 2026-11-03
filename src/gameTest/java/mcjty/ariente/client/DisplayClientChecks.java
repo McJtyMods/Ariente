@@ -172,6 +172,9 @@ public class DisplayClientChecks {
                             link.putString("Block", "minecraft:chest");
                             DisplayModuleItem.config(storage).put("Link", link);
                             modules.add(module(storage, 0, 68));
+                        } else if (column == 3) {
+                            ItemStack alien = new ItemStack(Registration.DISPLAY_ALIEN_TEXT.get());
+                            modules.add(module(alien, 4, 8));
                         }
                         data.put("Modules", modules);
                         base.load(data);
@@ -192,7 +195,13 @@ public class DisplayClientChecks {
             return;
         }
         ticks++;
-        if (ticks == 50) {
+        if (ticks == 40) {
+            aim(mc, new Vec3(.5, 202.5, .5));
+        } else if (ticks == 45) {
+            capture = "display-alien-glyphs";
+        } else if (ticks == 48) {
+            aim(mc, new Vec3(2, 201.62, .5));
+        } else if (ticks == 50) {
             capture = "display-surface";
         } else if (ticks == 51) {
             aim(mc, new Vec3(3.5, 201.5, .5));

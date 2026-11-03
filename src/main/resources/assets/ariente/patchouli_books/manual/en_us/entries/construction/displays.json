@@ -41,6 +41,11 @@
     },
     {
       "type": "patchouli:text",
+      "title": "Alien text",
+      "text": "Alien Text Modules use sixteen unreadable glyphs. They have no crafting recipe or Constructor blueprint. With ArienteWorld installed, salvage them from displays in city buildings and in floating, huge cube and underground dungeons: sneak-right-click the installed module or break its base.$(br2)Recovered modules work on your own displays and keep their symbols and color. Configure text size and color as usual. Use 0–9 and A–F to select the sixteen symbols; other letters also become alien glyphs. Spaces and line breaks stay blank. These displays are decorative."
+    },
+    {
+      "type": "patchouli:text",
       "title": "Changing the layout",
       "text": "If an edit makes a module overlap another or outgrow the surface, it is returned with the new settings. A full inventory drops it nearby.$(br2)Shrinking the display is refused if installed modules would be cut off. Move or recover those modules first. Breaking a base returns modules that lose their supporting surface.$(br2)Invisible backgrounds still accept modules and clicks. Power and Storage modules only report readings; they do not transfer items or control machines."
     }
@@ -49,6 +54,7 @@
     "ariente:display_base": 0,
     "ariente:display_module_power": 4,
     "ariente:display_module_storage": 5,
-    "ariente:display_module_text": 6
+    "ariente:display_module_text": 6,
+    "ariente:display_module_alien_text": 7
   }
 }

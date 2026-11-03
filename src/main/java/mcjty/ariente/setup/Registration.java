@@ -1,5 +1,6 @@
 package mcjty.ariente.setup;
 
+import mcjty.ariente.display.AlienTextDisplayModule;
 import mcjty.ariente.display.DisplayBaseTile;
 import mcjty.ariente.blocks.storagecube.StorageCubeTile;
 import mcjty.ariente.display.DisplayModuleItem;
@@ -299,6 +300,7 @@ public class Registration {
     public static final RegistryObject<DisplayModuleItem> DISPLAY_POWER = ITEMS.register("display_module_power", () -> new DisplayModuleItem(new PowerDisplayModule()));
     public static final RegistryObject<DisplayModuleItem> DISPLAY_STORAGE = ITEMS.register("display_module_storage", () -> new DisplayModuleItem(new StorageDisplayModule()));
     public static final RegistryObject<DisplayModuleItem> DISPLAY_TEXT = ITEMS.register("display_module_text", () -> new DisplayModuleItem(new TextDisplayModule()));
+    public static final RegistryObject<DisplayModuleItem> DISPLAY_ALIEN_TEXT = ITEMS.register("display_module_alien_text", () -> new DisplayModuleItem(new AlienTextDisplayModule()));
 
     public static final RegistryObject<BaseBlock> DOOR_MARKER = BLOCKS.register("door_marker", DoorMarkerTile::createBlock);
     public static final RegistryObject<Item> DOOR_MARKER_ITEM = ITEMS.register("door_marker", () -> new BlockItem(DOOR_MARKER.get(), createStandardProperties()));

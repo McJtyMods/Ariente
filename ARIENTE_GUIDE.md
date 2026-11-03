@@ -950,7 +950,7 @@ Displays currently need no power. Height and transparency use the shared sliders
 with precise arrow controls. Shrinking a display is refused if it would cut off
 an installed module; recover those modules first.
 
-Each display module has a Constructor recipe and corresponding blueprint:
+Power, Storage and Text display modules have Constructor recipes and corresponding blueprints:
 
 - **Power:** sneak-right-click an Ariente generator, tank, cable or powered machine
   to link it. Choose network flux, consumption per tick, generation per tick and
@@ -967,6 +967,15 @@ Each display module has a Constructor recipe and corresponding blueprint:
   clipboard controls. Escape or clicking outside the editor commits the edit and
   returns control to the hologram. **Color...** opens a hue/shade picker; choosing
   a shade or pressing its upper-right **x** returns to text settings.
+
+**Alien Text Modules** are decorative salvage with sixteen unreadable glyphs.
+They have no crafting recipe or blueprint. Find them in ArienteWorld's city
+buildings, floating dungeons, huge cube control desks and underground console
+banks in newly generated ruins. Recover an installed module by sneak-right-clicking
+it, or break its base to drop it. Symbols
+and color stay with the item. Configure size and color as for ordinary text;
+`0–9` and `A–F` select the sixteen glyphs, and other letters become alien symbols.
+Spaces and line breaks remain blank.
 
 For a first display, place two bases facing the same way and set their height to
 two blocks. Link a Power module to a nearby generator, choose its readings, and

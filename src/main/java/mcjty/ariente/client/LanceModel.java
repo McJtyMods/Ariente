@@ -75,12 +75,7 @@ public class LanceModel extends BakedModelWrapper<BakedModel> {
         float yaw = Mth.rotLerp(partialTick, holder.yRotO, holder.getYRot());
         LanceAim aim = LanceAim.calculate(holder, eye, forward, yaw);
         Vec3 direction = aim.direction();
-        Vec3 right = new Vec3(-Mth.cos(yaw * Mth.DEG_TO_RAD), 0, -Mth.sin(yaw * Mth.DEG_TO_RAD));
-        right = right.subtract(direction.scale(right.dot(direction)));
-        if (right.lengthSqr() < 1.0E-7D) {
-            right = new Vec3(0, 1, 0).cross(direction);
-        }
-        right = right.normalize();
+        Vec3 right = LanceAim.rightVector(direction, yaw);
         Vec3 normal = right.cross(direction);
         Matrix4f orientation = new Matrix4f()
                 .m00((float) right.x).m01((float) right.y).m02((float) right.z)

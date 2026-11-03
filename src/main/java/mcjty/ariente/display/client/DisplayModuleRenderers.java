@@ -1,5 +1,6 @@
 package mcjty.ariente.display.client;
 
+import mcjty.ariente.display.AlienTextDisplayModule;
 import mcjty.ariente.display.DisplayModuleItem;
 import mcjty.ariente.display.DisplayModuleType;
 import mcjty.ariente.display.InstalledModule;
@@ -36,6 +37,7 @@ public class DisplayModuleRenderers {
         register(Registration.DISPLAY_POWER.get().type(), DisplayModuleRenderers::power);
         register(Registration.DISPLAY_STORAGE.get().type(), DisplayModuleRenderers::storage);
         register(Registration.DISPLAY_TEXT.get().type(), DisplayModuleRenderers::text);
+        register(Registration.DISPLAY_ALIEN_TEXT.get().type(), DisplayModuleRenderers::alienText);
     }
 
     public static void render(DisplayCanvas canvas, InstalledModule module) {
@@ -166,6 +168,25 @@ public class DisplayModuleRenderers {
         List<String> lines = TEXT_LINES.computeIfAbsent(module, key -> TextDisplayModule.lines(key.stack()));
         for (int line = 0; line < lines.size(); line++) {
             c.text(lines.get(line), 6, 6 + line * 10 * scale, color, scale, module.size().width() - 12);
+        }
+    }
+
+    private static void alienText(DisplayCanvas c, InstalledModule module) {
+        CompoundTag config = DisplayModuleItem.config(module.stack());
+        int color = config.contains("Color") ? config.getInt("Color") : 0xb8f4ff;
+        int scale = TextDisplayModule.scale(module.stack());
+        List<String> lines = TEXT_LINES.computeIfAbsent(module, key -> AlienTextDisplayModule.lines(key.stack()));
+        for (int line = 0; line < lines.size(); line++) {
+            String symbols = lines.get(line);
+            for (int column = 0; column < symbols.length(); column++) {
+                char symbol = symbols.charAt(column);
+                if (symbol != ' ') {
+                    c.alienGlyph(AlienTextDisplayModule.glyphIndex(symbol),
+                            6 + column * AlienTextDisplayModule.GLYPH_ADVANCE * scale,
+                            6 + line * AlienTextDisplayModule.LINE_HEIGHT * scale,
+                            AlienTextDisplayModule.GLYPH_SIZE * scale, color);
+                }
+            }
         }
     }
 

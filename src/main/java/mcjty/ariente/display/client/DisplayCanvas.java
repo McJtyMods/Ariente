@@ -48,6 +48,20 @@ public record DisplayCanvas(PoseStack poses, MultiBufferSource buffer) {
         poses.popPose();
     }
 
+    public void alienGlyph(int glyph, float x, float y, float size, int rgb) {
+        VertexConsumer vertices = buffer.getBuffer(DisplayRenderType.ALIEN_FONT);
+        Matrix4f pose = poses.last().pose();
+        float u = (glyph & 3) / 4f;
+        float v = (glyph >> 2 & 3) / 4f;
+        int r = rgb >> 16 & 255;
+        int g = rgb >> 8 & 255;
+        int b = rgb & 255;
+        vertices.vertex(pose, x, y + size, .06f).uv(u, v + .25f).color(r, g, b, 255).endVertex();
+        vertices.vertex(pose, x + size, y + size, .06f).uv(u + .25f, v + .25f).color(r, g, b, 255).endVertex();
+        vertices.vertex(pose, x + size, y, .06f).uv(u + .25f, v).color(r, g, b, 255).endVertex();
+        vertices.vertex(pose, x, y, .06f).uv(u, v).color(r, g, b, 255).endVertex();
+    }
+
     public void item(ItemStack stack, float x, float y) {
         poses.pushPose();
         poses.translate(x + 8, y + 8, .18);

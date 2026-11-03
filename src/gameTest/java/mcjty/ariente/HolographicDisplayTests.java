@@ -595,6 +595,8 @@ public class HolographicDisplayTests {
             helper.assertTrue(BlueprintRecipeRegistry.findRecipe(output) != null, "Each display component needs a Constructor recipe");
             helper.assertTrue(ItemStack.isSameItem(BlueprintItem.getDestination(BlueprintItem.makeBluePrint(output)), output), "Each component has a usable blueprint item");
         }
+        helper.assertTrue(BlueprintRecipeRegistry.findRecipe(new ItemStack(Registration.DISPLAY_ALIEN_TEXT.get())) == null,
+                "Salvaged alien modules must stay outside the craftable display components");
         helper.succeed();
     }
 }
