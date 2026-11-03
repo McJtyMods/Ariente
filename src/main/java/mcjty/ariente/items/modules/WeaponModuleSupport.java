@@ -2,7 +2,7 @@ package mcjty.ariente.items.modules;
 
 import mcjty.ariente.api.ArmorUpgradeType;
 import mcjty.ariente.bindings.KeyBindings;
-import mcjty.ariente.entities.soldier.MasterSoldierEntity;
+import mcjty.ariente.api.IInhibitable;
 import mcjty.lib.builder.TooltipBuilder;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.world.effect.MobEffect;
@@ -52,8 +52,8 @@ public class WeaponModuleSupport {
         if (target.level().isClientSide) {
             return;
         }
-        if (target instanceof MasterSoldierEntity master) {
-            master.setNoregenCounter(200);
+        if (target instanceof IInhibitable inhibitable) {
+            inhibitable.inhibitRegeneration(200);
         }
         for (MobEffect effect : target.getActiveEffectsMap().keySet().toArray(MobEffect[]::new)) {
             if (effect.isBeneficial()) {

@@ -4,7 +4,7 @@ import mcjty.ariente.Ariente;
 import mcjty.ariente.gui.GuiHelp;
 import mcjty.ariente.blocks.utility.ILockable;
 import mcjty.ariente.config.UtilityConfiguration;
-import mcjty.ariente.entities.soldier.SoldierEntity;
+import mcjty.ariente.api.ISoldier;
 import mcjty.ariente.setup.Registration;
 import mcjty.ariente.sounds.ModSounds;
 import mcjty.hologui.api.IGuiComponent;
@@ -107,7 +107,7 @@ public class DoorMarkerTile extends TickingTileEntity implements IGuiTile, ILock
         setInvisibleBlocks();
         if (!locked) {
             List<LivingEntity> entities = level.getEntitiesOfClass(LivingEntity.class, getDetectionBox(),
-                    entity -> entity instanceof Player || entity instanceof SoldierEntity);
+                    entity -> entity instanceof Player || entity instanceof ISoldier);
             boolean o = !entities.isEmpty();
             setOpen(o);
         }

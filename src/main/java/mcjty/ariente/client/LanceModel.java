@@ -3,7 +3,7 @@ package mcjty.ariente.client;
 import com.mojang.blaze3d.systems.RenderSystem;
 import com.mojang.blaze3d.vertex.PoseStack;
 import mcjty.ariente.Ariente;
-import mcjty.ariente.entities.soldier.SoldierEntity;
+import net.minecraft.world.entity.Mob;
 import mcjty.ariente.items.EnergyLanceItem;
 import mcjty.ariente.items.LanceAim;
 import net.minecraft.client.Minecraft;
@@ -69,8 +69,8 @@ public class LanceModel extends BakedModelWrapper<BakedModel> {
         float partialTick = WorldFrame.partialTick;
         Vec3 eye = holder.getEyePosition(partialTick);
         Vec3 forward = holder.getViewVector(partialTick);
-        if (holder instanceof SoldierEntity soldier && soldier.getTarget() != null) {
-            forward = soldier.getTarget().getEyePosition(partialTick).subtract(eye);
+        if (holder instanceof Mob mob && mob.getTarget() != null) {
+            forward = mob.getTarget().getEyePosition(partialTick).subtract(eye);
         }
         float yaw = Mth.rotLerp(partialTick, holder.yRotO, holder.getYRot());
         LanceAim aim = LanceAim.calculate(holder, eye, forward, yaw);

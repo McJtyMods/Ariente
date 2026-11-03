@@ -1,7 +1,7 @@
 package mcjty.ariente.items;
 
 import mcjty.ariente.entities.LaserEntity;
-import mcjty.ariente.entities.soldier.SoldierEntity;
+import mcjty.ariente.api.ISoldier;
 import mcjty.ariente.api.ArmorUpgradeType;
 import mcjty.ariente.items.modules.ModuleSupport;
 import mcjty.ariente.items.modules.WeaponModuleSupport;
@@ -48,7 +48,7 @@ public class EnergyLanceItem extends Item implements ITooltipSettings {
         // The lance has no melee modifier. Include the sabre's modifier and the wielder's base damage.
         float factor = ModuleSupport.hasWorkingUpgrade(shooter.getMainHandItem(), ArmorUpgradeType.POWER) ? 2 : 1;
         float sabreDamage = (float) shooter.getAttributeValue(Attributes.ATTACK_DAMAGE) + EnergySabreItem.BASE_DAMAGE * factor;
-        if (shooter instanceof SoldierEntity soldier) {
+        if (shooter instanceof ISoldier soldier) {
             sabreDamage = Math.max(sabreDamage, soldier.getMinimumSabreDamage() * factor);
         }
         return sabreDamage * DAMAGE_MULTIPLIER;

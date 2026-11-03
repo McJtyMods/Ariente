@@ -28,7 +28,6 @@
 - Personal forcefields are faintly visible in first person, block lasers and magic, and flash red when ranged hits or explosions trigger a damage-based cooldown. While recharging they absorb 50% of ranged damage and 40% of explosion damage. Melee hits still deal half damage and now reflect the other half as Thorns damage.
 - Module tooltips now give a compact effect, compatibility and power usage summary. Updated the guide and Tablet for shared equipment fuel and holographic displays.
 - Added the two-handed Energy Lance: a longer sabre-style weapon that fires lasers for 30% more damage than an ordinary sabre, without durability or ammunition. Keep your off hand empty to fire; configure sabre-compatible upgrade modules with the armor configuration key, and craft it with its Constructor blueprint.
-- Sabre-wielding soldiers now kill unarmored players in one hit on every non-Peaceful difficulty; master soldiers hit harder.
 - Fixed elevators pulling players back toward the center and holding them below landing edges when trying to walk out.
 - Pressing the armor configuration key again now returns to equipment selection, or closes the panel when already on that menu, instead of opening overlapping panels.
 - Added a craftable Ariente Tablet with a dedicated technological manual for machines, power, equipment and exploration.

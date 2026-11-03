@@ -8,10 +8,6 @@ import mcjty.ariente.display.PowerDisplayModule;
 import mcjty.ariente.display.StorageDisplayModule;
 import mcjty.ariente.display.TextDisplayModule;
 
-import net.minecraftforge.event.entity.EntityAttributeCreationEvent;
-import net.minecraftforge.event.entity.SpawnPlacementRegisterEvent;
-import net.minecraft.world.entity.SpawnPlacements;
-import net.minecraft.world.level.levelgen.Heightmap;
 import mcjty.ariente.multipart.MultipartBlock;
 import mcjty.ariente.multipart.MultipartTE;
 import mcjty.ariente.sounds.ModSounds;
@@ -39,13 +35,9 @@ import mcjty.ariente.blocks.utility.wireless.WirelessLockTile;
 import mcjty.ariente.cables.*;
 import mcjty.ariente.entities.EntityArientePearl;
 import mcjty.ariente.entities.LaserEntity;
-import mcjty.ariente.entities.drone.DroneEntity;
-import mcjty.ariente.entities.drone.SentinelDroneEntity;
 import mcjty.ariente.entities.fluxelevator.FluxElevatorEntity;
 import mcjty.ariente.entities.fluxship.FluxShipEntity;
 import mcjty.ariente.entities.levitator.FluxLevitatorEntity;
-import mcjty.ariente.entities.soldier.MasterSoldierEntity;
-import mcjty.ariente.entities.soldier.SoldierEntity;
 import mcjty.ariente.facade.FacadeBlock;
 import mcjty.ariente.facade.FacadeItemBlock;
 import mcjty.ariente.items.*;
@@ -120,8 +112,6 @@ public class Registration {
         LOOT_MODIFIERS.register(FMLJavaModLoadingContext.get().getModEventBus());
         WorldGen.register();
         ModSounds.register();
-        FMLJavaModLoadingContext.get().getModEventBus().addListener(Registration::registerAttributes);
-        FMLJavaModLoadingContext.get().getModEventBus().addListener(Registration::registerSpawnPlacements);
         TABS.register(FMLJavaModLoadingContext.get().getModEventBus());
         BLOCKS.register(FMLJavaModLoadingContext.get().getModEventBus());
         ITEMS.register(FMLJavaModLoadingContext.get().getModEventBus());
@@ -129,20 +119,6 @@ public class Registration {
         CONTAINERS.register(FMLJavaModLoadingContext.get().getModEventBus());
         SOUNDS.register(FMLJavaModLoadingContext.get().getModEventBus());
         ENTITIES.register(FMLJavaModLoadingContext.get().getModEventBus());
-    }
-
-    private static void registerSpawnPlacements(SpawnPlacementRegisterEvent event) {
-        event.register(ENTITY_SOLDIER.get(), SpawnPlacements.Type.ON_GROUND, Heightmap.Types.MOTION_BLOCKING_NO_LEAVES,
-                SoldierEntity::checkSoldierSpawnRules, SpawnPlacementRegisterEvent.Operation.REPLACE);
-        event.register(ENTITY_MASTER_SOLDIER.get(), SpawnPlacements.Type.ON_GROUND, Heightmap.Types.MOTION_BLOCKING_NO_LEAVES,
-                SoldierEntity::checkSoldierSpawnRules, SpawnPlacementRegisterEvent.Operation.REPLACE);
-    }
-
-    private static void registerAttributes(EntityAttributeCreationEvent event) {
-        event.put(ENTITY_SOLDIER.get(), SoldierEntity.registerAttributes().build());
-        event.put(ENTITY_MASTER_SOLDIER.get(), MasterSoldierEntity.registerAttributes().build());
-        event.put(ENTITY_DRONE.get(), DroneEntity.registerAttributes().build());
-        event.put(ENTITY_SENTINEL_DRONE.get(), SentinelDroneEntity.registerAttributes().build());
     }
 
     public static final TagKey<Item> TAG_INGOT_SILVER = ItemTags.create(new ResourceLocation("forge", "ingots/silver"));
@@ -452,22 +428,6 @@ public class Registration {
     public static final RegistryObject<ArmorModuleItem> MODULE_LOOTING = ITEMS.register("module_looting", () -> new ArmorModuleItem(ArmorUpgradeType.LOOTING));
     public static final RegistryObject<ArmorModuleItem> MODULE_FIRE = ITEMS.register("module_fire", () -> new ArmorModuleItem(ArmorUpgradeType.FIRE));
 
-    public static final RegistryObject<EntityType<MasterSoldierEntity>> ENTITY_MASTER_SOLDIER = ENTITIES.register("master_soldier", () -> EntityType.Builder.of(MasterSoldierEntity::new, MobCategory.MONSTER)
-            .sized(0.7F, 2.7F)
-            .setShouldReceiveVelocityUpdates(false)
-            .build("master_soldier"));
-    public static final RegistryObject<EntityType<SoldierEntity>> ENTITY_SOLDIER = ENTITIES.register("soldier", () -> EntityType.Builder.of(SoldierEntity::new, MobCategory.MONSTER)
-            .sized(0.6F, 1.95F)
-            .setShouldReceiveVelocityUpdates(false)
-            .build("soldier"));
-    public static final RegistryObject<EntityType<SentinelDroneEntity>> ENTITY_SENTINEL_DRONE = ENTITIES.register("ariente_sentinel_drone", () -> EntityType.Builder.of(SentinelDroneEntity::new, MobCategory.MISC)
-            .sized(1.3F, 1.3F)
-            .setShouldReceiveVelocityUpdates(false)
-            .build("ariente_sentinel_drone"));
-    public static final RegistryObject<EntityType<DroneEntity>> ENTITY_DRONE = ENTITIES.register("ariente_drone", () -> EntityType.Builder.of(DroneEntity::new, MobCategory.MISC)
-            .sized(2.0F, 2.0F)
-            .setShouldReceiveVelocityUpdates(false)
-            .build("ariente_drone"));
     public static final RegistryObject<EntityType<FluxElevatorEntity>> ENTITY_ELEVATOR = ENTITIES.register("ariente_flux_elevator", () -> EntityType.Builder.of(FluxElevatorEntity::new, MobCategory.MISC)
             .sized(1.30F, 0.9F)
             .setShouldReceiveVelocityUpdates(false)

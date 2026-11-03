@@ -15,7 +15,5 @@ public interface IArienteWorld {
 
     BlockPos getNearestDungeon(Level world, BlockPos pos);
 
-    double getSoldierCityKeyChance();
-
     ICityAISystem getCityAISystem(Level world);
 }
