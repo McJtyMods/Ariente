@@ -7,12 +7,12 @@
     {
       "type": "patchouli:text",
       "title": "Stop when the chest is full",
-      "text": "A Sensor Item Node compares the total number of items in its attached inventory with a chosen number. Select a comparison and an output color.$(br2)For a refill system, make a sensor on the destination turn green when its total is below your target. Require green on the source Output Node."
+      "text": "A Sensor Item Node compares the total number of items in its attached inventory with a chosen number. Select a comparison and an output color.$(br2)Use the slider or its single arrows for the threshold. The outer double arrows decrease or increase it by 10.$(br2)For a refill system, make a sensor on the destination turn green when its total is below your target. Require green on the source Output Node."
     },
     {
       "type": "patchouli:text",
       "title": "Using colored conditions",
-      "text": "Nodes may require positive conditions to be true and negative conditions to be false. If several sensors use one color, any true sensor makes that color true.$(br2)The sensor counts $(thing)all items$() in its inventory. Use a dedicated material chest when you want a simple stock target.$(br2)These colors belong to the field; they do not select a flux type."
+      "text": "The labeled row has two $(thing)Positive$() and two $(thing)Negative$() selectors. A sensor only contributes its output when every selected positive color is on and every selected negative color is off. A gray X leaves a condition unused. If several sensors use one output color, any true sensor makes that color true.$(br2)The sensor counts $(thing)all items$() in its inventory. Use a dedicated material chest for a simple stock target. These colors belong to the field; they do not select a flux type."
     }
   ],
   "extra_recipe_mappings": {

@@ -47,8 +47,9 @@ public abstract class AbstractNodeTile extends GenericTileEntity implements IGui
 
     protected DyeColor[] filters = new DyeColor[] { null, null, null, null };
 
-    private static final float T = 0.2f;
-    private static final float A = 0.14F;
+    // The node models are two pixels thick, inset two pixels within each quadrant.
+    private static final float T = 2 / 16.0f;
+    private static final float A = 2 / 16.0f;
 
     private static final VoxelShape AABB_DOWN_NW = Shapes.box(0.0+A, 0, 0.0+A,      0.5-A, T, 0.5-A);
     private static final VoxelShape AABB_DOWN_NE = Shapes.box(0.5+A, 0, 0.0+A,      1.0-A, T, 0.5-A);
@@ -281,8 +282,13 @@ public abstract class AbstractNodeTile extends GenericTileEntity implements IGui
                 .addImage(registry.image(negative ? NOT_COLOR_BLACK : COLOR_BLACK));
     }
 
-    protected void addFilterChoice(IGuiComponentRegistry registry, IPanel panel, int i, boolean negative) {
-        addFilterChoice(registry, panel, i, negative, i * 0.9 - .5, -.7, 1);
+    protected void addFilterConditions(IGuiComponentRegistry registry, IPanel panel) {
+        panel.add(registry.text(.25, .5, 1.7, .6).text("Positive").scale(.38f).color(registry.color(0x76eaff)))
+                .add(registry.text(4.1, .5, 1.7, .6).text("Negative").scale(.38f).color(registry.color(0x76eaff)));
+        addFilterChoice(registry, panel, 0, false, 2, .5, .65);
+        addFilterChoice(registry, panel, 1, false, 2.85, .5, .65);
+        addFilterChoice(registry, panel, 2, true, 6, .5, .65);
+        addFilterChoice(registry, panel, 3, true, 6.85, .5, .65);
     }
 
     protected void addFilterChoice(IGuiComponentRegistry registry, IPanel panel, int i, boolean negative, double x, double y, double size) {

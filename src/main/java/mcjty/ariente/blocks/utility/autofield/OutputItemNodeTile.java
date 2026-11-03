@@ -2,6 +2,7 @@ package mcjty.ariente.blocks.utility.autofield;
 
 import mcjty.ariente.gui.GuiHelp;
 import mcjty.ariente.gui.PlayerInventoryPanel;
+import mcjty.ariente.gui.StepButton;
 import mcjty.ariente.setup.Registration;
 import mcjty.hologui.api.IGuiComponent;
 import mcjty.hologui.api.IGuiComponentRegistry;
@@ -122,14 +123,10 @@ public class OutputItemNodeTile extends AbstractItemNodeTile {
 
                 .add(registry.text(4.2, 3.65, 2.6, .5).text(() -> "Batch: " + outputStackSize).scale(.35f)
                         .color(registry.color(StyledColor.INFORMATION)))
-                .add(registry.button(2.8, 3.65, .6, .5).text("-8").scale(.35f)
-                        .hitEvent((component, player, entity, x, y) -> changeOutputStackSize(-8)))
-                .add(registry.button(3.5, 3.65, .6, .5).text("-1").scale(.35f)
-                        .hitEvent((component, player, entity, x, y) -> changeOutputStackSize(-1)))
-                .add(registry.button(7.5, 3.65, .6, .5).text("+1").scale(.35f)
-                        .hitEvent((component, player, entity, x, y) -> changeOutputStackSize(1)))
-                .add(registry.button(8.2, 3.65, .6, .5).text("+8").scale(.35f)
-                        .hitEvent((component, player, entity, x, y) -> changeOutputStackSize(8)))
+                .add(new StepButton(2.8, 3.65, .6, .5, -8, this::changeOutputStackSize).name("batch_decrease_8"))
+                .add(new StepButton(3.5, 3.65, .6, .5, -1, this::changeOutputStackSize).name("batch_decrease_1"))
+                .add(new StepButton(7.5, 3.65, .6, .5, 1, this::changeOutputStackSize).name("batch_increase_1"))
+                .add(new StepButton(8.2, 3.65, .6, .5, 8, this::changeOutputStackSize).name("batch_increase_8"))
 
                 .add(registry.slots(2.8, 1.55, 6, 2)
                         .name("slots")

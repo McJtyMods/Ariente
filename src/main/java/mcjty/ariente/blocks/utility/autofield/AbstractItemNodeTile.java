@@ -22,15 +22,6 @@ public abstract class AbstractItemNodeTile extends AbstractNodeTile {
         super(type, pos, state);
     }
 
-    protected void addFilterConditions(IGuiComponentRegistry registry, IPanel panel) {
-        panel.add(registry.text(.25, .5, 1.7, .6).text("Positive").scale(.38f).color(registry.color(0x76eaff)))
-                .add(registry.text(4.1, .5, 1.7, .6).text("Negative").scale(.38f).color(registry.color(0x76eaff)));
-        addFilterChoice(registry, panel, 0, false, 2, .5, .65);
-        addFilterChoice(registry, panel, 1, false, 2.85, .5, .65);
-        addFilterChoice(registry, panel, 2, true, 6, .5, .65);
-        addFilterChoice(registry, panel, 3, true, 6.85, .5, .65);
-    }
-
     protected void addFilterOption(IGuiComponentRegistry registry, IPanel panel, String name, double y,
                                    String off, String on, BooleanSupplier enabled, Runnable toggle) {
         panel.add(registry.textChoice(.25, y, 2.3, .6).name(name).scale(.35f)

@@ -1,6 +1,7 @@
 package mcjty.ariente.blocks.utility.autofield;
 
 import mcjty.ariente.gui.GuiHelp;
+import mcjty.ariente.gui.StepButton;
 import mcjty.ariente.setup.Registration;
 import mcjty.hologui.api.IGuiComponent;
 import mcjty.hologui.api.IGuiComponentRegistry;
@@ -15,8 +16,6 @@ import net.minecraft.world.item.DyeColor;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.world.level.block.state.BlockState;
 import org.apache.commons.lang3.tuple.Pair;
-
-import static mcjty.hologui.api.Icons.*;
 
 public class SensorItemNodeTile extends AbstractNodeTile {
 
@@ -119,10 +118,7 @@ public class SensorItemNodeTile extends AbstractNodeTile {
     }
 
     private void changeAmount(int d) {
-        amount += d;
-        if (amount < 1) {
-            amount = 1;
-        }
+        amount = (int) Math.max(1L, Math.min(Integer.MAX_VALUE, (long) amount + d));
         notifyField();
     }
 
@@ -144,20 +140,19 @@ public class SensorItemNodeTile extends AbstractNodeTile {
         }
 
         IPanel panel = GuiHelp.SENSOR.createPanel(registry, entity -> entity.switchTag(pair.getLeft() + ":" + TAG_HELP))
-                .add(registry.text(3.3, -.6, 1, 1).text("Sensor").color(registry.color(StyledColor.LABEL)))
+                .add(registry.text(.25, -.6, 3, 1).text("Sensor").color(registry.color(StyledColor.LABEL)))
                 .add(registry.text(0, 7, 1, 1).text("Output").color(registry.color(StyledColor.LABEL)))
                 .add(outColor)
                 .add(operatorChoice)
 
-                .add(registry.integerSlider(0, 3.6, 7.2, 1).name("sensor_amount").label("Item threshold")
+                .add(new StepButton(0, 4, .6, .6, -10, this::changeAmount).name("sensor_decrease_10"))
+                .add(registry.integerSlider(.8, 3.6, 7.2, 1).name("sensor_amount").label("Item threshold")
                         .range(1, Integer.MAX_VALUE).logarithmic(true).getter((p, e) -> amount)
                         .changed((p, e, value) -> changeAmount(value - amount)))
+                .add(new StepButton(8.2, 4, .6, .6, 10, this::changeAmount).name("sensor_increase_10"))
                 ;
 
-        addFilterChoice(registry, panel, 0, false);
-        addFilterChoice(registry, panel, 1, false);
-        addFilterChoice(registry, panel, 2, true);
-        addFilterChoice(registry, panel, 3, true);
+        addFilterConditions(registry, panel);
 
         return panel;
     }
