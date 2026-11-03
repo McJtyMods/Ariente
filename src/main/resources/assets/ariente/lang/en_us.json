@@ -80,6 +80,7 @@
   "block.ariente.reinforced_marble": "Reinforced Marble",
   "block.ariente.flux_beam": "Flux Beam",
   "block.ariente.flux_bend_beam": "Flux Bend Beam",
+  "block.ariente.flux_slope_beam": "Flux Slope Beam",
 
   "block.ariente.blacktech_dots": "Tech Block Dots",
   "block.ariente.blacktech_lines": "Tech Block Lines",

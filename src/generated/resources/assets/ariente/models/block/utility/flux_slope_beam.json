@@ -1,0 +1,86 @@
+{
+  "parent": "minecraft:block/block",
+  "elements": [
+    {
+      "faces": {
+        "down": {
+          "texture": "#all",
+          "uv": [
+            0.0,
+            0.0,
+            16.0,
+            16.0
+          ]
+        },
+        "east": {
+          "texture": "#all",
+          "uv": [
+            0.0,
+            11.0,
+            16.0,
+            16.0
+          ]
+        },
+        "north": {
+          "texture": "#all",
+          "uv": [
+            0.0,
+            11.0,
+            16.0,
+            16.0
+          ]
+        },
+        "south": {
+          "texture": "#all",
+          "uv": [
+            0.0,
+            11.0,
+            16.0,
+            16.0
+          ]
+        },
+        "up": {
+          "texture": "#all",
+          "uv": [
+            0.0,
+            0.0,
+            16.0,
+            16.0
+          ]
+        },
+        "west": {
+          "texture": "#all",
+          "uv": [
+            0.0,
+            11.0,
+            16.0,
+            16.0
+          ]
+        }
+      },
+      "from": [
+        -3.3137083,
+        8,
+        5
+      ],
+      "rotation": {
+        "angle": 45.0,
+        "axis": "z",
+        "origin": [
+          8,
+          8,
+          8
+        ]
+      },
+      "to": [
+        19.31371,
+        11,
+        11
+      ]
+    }
+  ],
+  "textures": {
+    "all": "ariente:block/machines/flux_beam",
+    "particle": "#all"
+  }
+}

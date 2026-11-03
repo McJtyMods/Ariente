@@ -46,7 +46,7 @@ public class FluxLevitatorItem extends Item implements ITooltipSettings {
         InteractionHand hand = context.getHand();
         BlockState state = world.getBlockState(pos);
 
-        if (state.getBlock() != Registration.FLUX_BEAM.get() && state.getBlock() != Registration.FLUX_BEND_BEAM.get()) {
+        if (!FluxLevitatorEntity.isValidBeamBlock(state.getBlock())) {
             return InteractionResult.FAIL;
         } else {
             ItemStack itemstack = player.getItemInHand(hand);

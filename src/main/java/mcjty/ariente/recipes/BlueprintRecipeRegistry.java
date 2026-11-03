@@ -367,6 +367,12 @@ public class BlueprintRecipeRegistry {
                 new ItemStack(Registration.DUST_NEGARITE.get(), 1),
                 new ItemStack(Registration.DUST_POSIRITE.get(), 1)
         ));
+        recipes.add(new ConstructorRecipe(new ItemStack(Registration.FLUX_SLOPE_BEAM.get()), COMMON,
+                new ItemStack(DecorativeBlockModule.MARBLE.get(MarbleColor.BLACK).get(), 1),
+                new ItemStack(Registration.INGOT_SILVER.get(), 1),
+                new ItemStack(Registration.DUST_NEGARITE.get(), 1),
+                new ItemStack(Registration.DUST_POSIRITE.get(), 1)
+        ));
         recipes.add(new ConstructorRecipe(new ItemStack(Registration.LEVEL_MARKER.get()), COMMON,
                 new ItemStack(DecorativeBlockModule.MARBLE_SLAB.get(MarbleColor.BLACK).get(), 1),
                 new ItemStack(Registration.INGOT_SILVER.get(), 1)

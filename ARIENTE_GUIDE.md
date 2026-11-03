@@ -1217,7 +1217,7 @@ Sources: [module types/costs](src/main/java/mcjty/ariente/api/ArmorUpgradeType.j
 
 ### Flux Levitator and beams
 
-Flux Beams are the rails for Flux Levitators. Straight and bent beams are
+Flux Beams are the rails for Flux Levitators. Straight, bent and sloped beams are
 different blocks. Their thin selection outlines follow their models; they are
 **intentionally non-solid**, including to players. Walking through a beam is
 not evidence that the track is broken.
@@ -1231,13 +1231,16 @@ not evidence that the track is broken.
 The speed slider has a range of **-80 to 80**. Its outer arrows adjust by **1**. The two panels face opposite directions and interpret
 their controls accordingly. The number is a control setting, not a promise of
 that many blocks per second. Movement is capped, slows in bends, and depends on
-track continuity. Stop applies braking rather than teleporting the cart to rest.
+track continuity. Slopes also limit travel speed automatically. Stop applies braking rather than teleporting the cart to rest.
 
 No generator fuel or cable connection is required by the current cart movement
-code. The beam is not a conventional powered rail. Ascending track is not
-implemented in this beam system; bends are supported, but do not assume arbitrary
-vanilla rail shapes work. City AI can dispatch soldier levitators on generated
-routes.
+code. The beam is not a conventional powered rail. Flux Slope Beams rise one block
+and can be chained for longer climbs. Their higher end points away from you when
+placed: connect it to a beam one block higher. The cabin, its passenger seat and
+both control panels follow the incline. Leave room above and beside the tilted
+cabin, including at the top and bottom of each climb. Slopes have a common
+Constructor blueprint with the same ingredients as straight beams. City AI can
+dispatch soldier levitators on generated routes.
 
 **Beam orientation:** a straight beam facing north/south runs east–west; one
 facing east/west runs north–south. Default/north bends join west to south;
@@ -1245,8 +1248,10 @@ east bends join north to west; south bends join north to east; west bends join
 south to east. Placement facing and travel direction are not identical labels.
 
 Cart controls now render as attached HoloGui entities. Boarding, controls at
-both ends, travel through a corner with a rider, and stopping have dedicated
-checks. This is not a complete high-speed route, collision, or multiplayer test.
+both ends, bends, all four slope directions, stopping and reloading on slopes
+have dedicated checks. The tutorial authoring tool also drives its full city
+circuit with a rider in both directions at slow and maximum settings. Arbitrary
+route layouts and multiplayer still need in-game checks.
 
 ### Elevator and Level Markers
 

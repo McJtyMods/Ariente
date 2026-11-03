@@ -1,4 +1,5 @@
 1.20-0.0.31-alpha:
+- Added Flux Slope Beams for one-block inclines. Levitators, passengers and both control panels follow climbs and descents, with automatic speed limiting around slopes.
 - Flux Levitators now use your forward/back movement keys (W/S by default) to accelerate in the direction you face or brake gradually. Release the keys to keep your speed; the hologram's red button still stops instantly.
 - Fixed Flux Levitators failing to restart when stopped on a Flux Bend Beam.
 - Fixed distant Flux Levitators being audible through cities and underground, with smoother sound when starting and stopping. Interior cart sound no longer plays for other players' carts.

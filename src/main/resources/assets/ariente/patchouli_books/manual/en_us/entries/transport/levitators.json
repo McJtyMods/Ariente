@@ -7,7 +7,7 @@
     {
       "type": "patchouli:text",
       "title": "Lay a route",
-      "text": "Connect straight Flux Beams and Flux Bend Beams into a continuous route, with space for the vehicle and rider. These beams can be walked through.$(br2)Use a Flux Levitator item directly on a beam to place the cart, then right-click it without sneaking to board."
+      "text": "Connect straight Flux Beams, Flux Bend Beams and Flux Slope Beams into a continuous route, with space for the vehicle and rider. These beams can be walked through.$(br2)Slopes rise one block. Their higher end points away from you when placed; put the next beam one block higher. Chain slopes for longer climbs, and leave room above and beside the tilted cabin.$(br2)Use a Flux Levitator item directly on any beam to place the cart, then right-click it without sneaking to board."
     },
     {
       "type": "patchouli:text",
@@ -18,6 +18,7 @@
   "extra_recipe_mappings": {
     "ariente:flux_levitator": 0,
     "ariente:flux_beam": 0,
-    "ariente:flux_bend_beam": 0
+    "ariente:flux_bend_beam": 0,
+    "ariente:flux_slope_beam": 0
   }
 }

@@ -161,7 +161,13 @@ public class FluxLevitatorEntity extends Entity implements IFluxLevitatorEntity 
                 int offset = passenger.getUUID().equals(getHoloFrontUUID()) ? 1 : -1;
                 updateHoloGui(holo, offset, moveFunction);
             } else {
-                super.positionRider(passenger, moveFunction);
+                Pair<Float, Float> rotation = calculateYawPitch();
+                // Riders stay upright. Rotate their body center with the cabin so
+                // their head clears the end walls.
+                double bodyCenter = passenger.getEyeHeight() * .5;
+                Vec3 seat = rotateCabinOffset(0, getPassengersRidingOffset() + passenger.getMyRidingOffset() + bodyCenter,
+                        rotation.getLeft() + 90, rotation.getRight()).add(0, -bodyCenter, 0);
+                moveFunction.accept(passenger, getX() + seat.x, getY() + seat.y, getZ() + seat.z);
             }
         }
     }
@@ -463,8 +469,9 @@ public class FluxLevitatorEntity extends Entity implements IFluxLevitatorEntity 
         // @todo 1.16 handleWaterMovement();
     }
 
-    private boolean isValidBeamBlock(Block block) {
-        return block == Registration.FLUX_BEAM.get() || block == Registration.FLUX_BEND_BEAM.get();
+    public static boolean isValidBeamBlock(Block block) {
+        return block == Registration.FLUX_BEAM.get() || block == Registration.FLUX_BEND_BEAM.get()
+                || block == Registration.FLUX_SLOPE_BEAM.get();
     }
 
     private void handleEntityCollision() {
@@ -565,13 +572,26 @@ public class FluxLevitatorEntity extends Entity implements IFluxLevitatorEntity 
             turn += 180;
         }
         yaw = previousYaw + turn;
-        Vec3 direction = Vec3.directionFromRotation(0, yaw);
+        // Reversing the yaw also reverses which end of an incline points upward.
+        if (Vec3.directionFromRotation(0, yaw).dot(Vec3.directionFromRotation(0, pair.getLeft() + 90)) < 0) {
+            pitch = -pitch;
+        }
+        Vec3 position = rotateCabinOffset(1, .38, yaw, pitch);
 
         // Passenger ticks save the previous position before reaching this callback.
         // Preserve it so the panel interpolates at the same time as the rider's camera.
         panel.setYRot(yaw);
         panel.setXRot(pitch);
-        moveFunction.accept(panel, getX() + direction.x, getY() + .38, getZ() + direction.z);
+        moveFunction.accept(panel, getX() + position.x, getY() + position.y, getZ() + position.z);
+    }
+
+    private static Vec3 rotateCabinOffset(double along, double height, float yaw, float pitch) {
+        // Match the renderer's pivot above the beam; passengers remain inside the tilted cabin.
+        double angle = pitch * Mth.DEG_TO_RAD;
+        double horizontal = along * Math.cos(angle) + (height - .375) * Math.sin(angle);
+        double vertical = -along * Math.sin(angle) + (height - .375) * Math.cos(angle);
+        Vec3 direction = Vec3.directionFromRotation(0, yaw);
+        return new Vec3(direction.x * horizontal, .375 + vertical, direction.z * horizontal);
     }
 
     private double getMaximumSpeed() {
@@ -620,6 +640,12 @@ public class FluxLevitatorEntity extends Entity implements IFluxLevitatorEntity 
         boolean unpowered = speed == 0;
 
         RailShape dir = getBeamDirection(state);
+
+        if (dir.isAscending()) {
+            // Move above the high endpoint before projecting back onto the incline.
+            // This also clears the support block under the next, higher beam.
+            setPos(getX(), pos.getY() + 1, getZ());
+        }
 
         double motionX = getDeltaMovement().x;
         double motionY = getDeltaMovement().y;
@@ -724,7 +750,7 @@ public class FluxLevitatorEntity extends Entity implements IFluxLevitatorEntity 
     }
 
     private void handleLivingMotion(int speed, RailShape dir) {
-        boolean straight = dir == RailShape.NORTH_SOUTH || dir == RailShape.EAST_WEST;
+        boolean straight = dir == RailShape.NORTH_SOUTH || dir == RailShape.EAST_WEST || dir.isAscending();
         double maxMotion = Math.abs(speed / (straight ? 25.0 : 200.0));
         double motion = getDeltaMovement().horizontalDistance();
         if (motion < .0001) {
@@ -798,7 +824,15 @@ public class FluxLevitatorEntity extends Entity implements IFluxLevitatorEntity 
 
     public static RailShape getBeamDirection(BlockState state) {
         Direction facing = state.getValue(BlockStateProperties.HORIZONTAL_FACING);
-        if (state.getBlock() == Registration.FLUX_BEAM.get()) {
+        if (state.is(Registration.FLUX_SLOPE_BEAM.get())) {
+            return switch (facing) {
+                case NORTH -> RailShape.ASCENDING_NORTH;
+                case SOUTH -> RailShape.ASCENDING_SOUTH;
+                case WEST -> RailShape.ASCENDING_WEST;
+                case EAST -> RailShape.ASCENDING_EAST;
+                default -> throw new IllegalArgumentException("Flux slopes must face horizontally");
+            };
+        } else if (state.getBlock() == Registration.FLUX_BEAM.get()) {
             if (facing == Direction.NORTH || facing == Direction.SOUTH) {
                 return RailShape.EAST_WEST;
             } else {
@@ -870,7 +904,7 @@ public class FluxLevitatorEntity extends Entity implements IFluxLevitatorEntity 
             if (newpos.lengthSqr() != 0.0D) {
                 newpos = newpos.normalize();
                 yaw = (float) (Math.atan2(newpos.z, newpos.x) * 180.0D / Math.PI);
-                pitch = (float) (Math.atan(newpos.y) * 73.0D);
+                pitch = (float) (Math.atan2(newpos.y, newpos.horizontalDistance()) * Mth.RAD_TO_DEG);
             }
         }
         return Pair.of(yaw, pitch);
@@ -1170,16 +1204,18 @@ public class FluxLevitatorEntity extends Entity implements IFluxLevitatorEntity 
         }
 
         float railMaxSpeed = MAX_CART_SPEED_ON_RAIL;
-        if (state.is(Registration.FLUX_BEND_BEAM.get())) {
+        if (state.is(Registration.FLUX_BEND_BEAM.get()) || getBeamDirection(state).isAscending()) {
             railMaxSpeed = .4f;
         } else {
-            RailShape shape = getBeamDirection(state);
-            Direction ahead = shape == RailShape.EAST_WEST
+            Direction ahead = Math.abs(forwardDirection.x) > Math.abs(forwardDirection.z)
                     ? (getDeltaMovement().x < 0 ? Direction.WEST : Direction.EAST)
                     : (getDeltaMovement().z < 0 ? Direction.NORTH : Direction.SOUTH);
-            // Slow down before the curve so a fast cart cannot skip its one-block turn.
+            // Slow before bends and height changes so fast carts cannot skip a beam.
             for (int distance = 1; distance <= 2; distance++) {
-                if (level().getBlockState(pos.relative(ahead, distance)).is(Registration.FLUX_BEND_BEAM.get())) {
+                BlockState next = level().getBlockState(pos.relative(ahead, distance));
+                BlockState below = level().getBlockState(pos.relative(ahead, distance).below());
+                if (next.is(Registration.FLUX_BEND_BEAM.get()) || next.is(Registration.FLUX_SLOPE_BEAM.get())
+                        || below.is(Registration.FLUX_SLOPE_BEAM.get())) {
                     railMaxSpeed = .4f;
                     break;
                 }

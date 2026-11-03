@@ -98,6 +98,7 @@ public class Items extends BaseItemModelProvider {
         parentedItem(Registration.FIELD_MARKER_ITEM.get(), "block/utility/field_marker");
         parentedItem(Registration.FLUX_BEAM_ITEM.get(), "block/utility/flux_beam");
         parentedItem(Registration.FLUX_BEND_BEAM_ITEM.get(), "block/utility/flux_bend_beam");
+        parentedItem(Registration.FLUX_SLOPE_BEAM_ITEM.get(), "block/utility/flux_slope_beam");
         parentedItem(Registration.SENSOR_ITEM_NODE_ITEM.get(), "block/utility/sensor_item_node_tl");
         parentedItem(Registration.INPUT_ITEM_NODE_ITEM.get(), "block/utility/input_item_node_tl");
         parentedItem(Registration.OUTPUT_ITEM_NODE_ITEM.get(), "block/utility/output_item_node_tl");

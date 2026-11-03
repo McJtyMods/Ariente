@@ -1,0 +1,19 @@
+{
+  "variants": {
+    "facing=east": {
+      "model": "ariente:block/utility/flux_slope_beam"
+    },
+    "facing=north": {
+      "model": "ariente:block/utility/flux_slope_beam",
+      "y": 270
+    },
+    "facing=south": {
+      "model": "ariente:block/utility/flux_slope_beam",
+      "y": 90
+    },
+    "facing=west": {
+      "model": "ariente:block/utility/flux_slope_beam",
+      "y": 180
+    }
+  }
+}

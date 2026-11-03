@@ -47,7 +47,7 @@ public class FluxLevitatorRender extends EntityRenderer<FluxLevitatorEntity> {
             if (vec3d3.length() != 0.0D) {
                 vec3d3 = vec3d3.normalize();
                 entityYaw = (float) (Math.atan2(vec3d3.z, vec3d3.x) * 180.0D / Math.PI);
-                pitch = (float) (Math.atan(vec3d3.y) * 73.0D);
+                pitch = (float) (Math.atan2(vec3d3.y, vec3d3.horizontalDistance()) * Mth.RAD_TO_DEG);
             }
         }
 

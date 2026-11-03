@@ -59,6 +59,7 @@ public class LootTables extends BaseLootTableProvider implements LootTableSubPro
         addSimpleTable(Registration.CONSTRUCTOR.get());
         addStandardTable(Registration.ELEVATOR.get(), Registration.ELEVATOR_TILE.get());
         addSimpleTable(Registration.LEVEL_MARKER.get());
+        addSimpleTable(Registration.FLUX_SLOPE_BEAM.get());
         addStandardTable(Registration.LOCK.get(), Registration.LOCK_TILE.get());
         addStandardTable(Registration.STORAGE.get(), Registration.STORAGE_TILE.get());
         addStandardTable(Registration.STORAGE_3X3.get(), Registration.STORAGE_TILE.get());

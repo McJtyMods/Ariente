@@ -462,6 +462,23 @@ public class BlockStates extends BaseBlockStateProvider {
                 .texture("side", modLoc(TXT_FLUXBEAM));
         horizontalOrientedBlock(Registration.FLUX_BEAM.get(), beamModel);
 
+        BlockModelBuilder slopeModel = models().withExistingParent(BLOCK_FOLDER + "/utility/flux_slope_beam", mcLoc("block/block"))
+                .texture("all", modLoc(TXT_FLUXBEAM)).texture("particle", "#all");
+        // Consecutive diagonal prisms join without gaps.
+        float halfLength = (float) (8 * Math.sqrt(2));
+        slopeModel.element().from(8 - halfLength, 8, 5).to(8 + halfLength, 11, 11)
+                .rotation().origin(8, 8, 8).axis(Direction.Axis.Z).angle(45).end()
+                .allFaces((direction, face) -> face.texture("#all").uvs(0,
+                        direction.getAxis() == Direction.Axis.Y ? 0 : 11, 16, 16)).end();
+        getVariantBuilder(Registration.FLUX_SLOPE_BEAM.get()).forAllStates(state -> ConfiguredModel.builder()
+                .modelFile(slopeModel).rotationY(switch (state.getValue(BlockStateProperties.HORIZONTAL_FACING)) {
+                    case EAST -> 0;
+                    case SOUTH -> 90;
+                    case WEST -> 180;
+                    case NORTH -> 270;
+                    default -> throw new IllegalArgumentException("Flux slopes must face horizontally");
+                }).build());
+
         BlockModelBuilder bendModel = models().withExistingParent(BLOCK_FOLDER + "/utility/flux_bend_beam", mcLoc("block/block"))
                 .texture("particle", "#side");
         bendModel.element().from(0, 0, 5).to(11, 3, 11)

@@ -20,6 +20,102 @@ import net.minecraftforge.gametest.PrefixGameTestTemplate;
 public class FluxLevitatorTests {
 
     @GameTest(template = "empty")
+    public static void slopesCarryRidersBothWaysInEveryDirection(GameTestHelper helper) {
+        for (Direction uphill : Direction.Plane.HORIZONTAL) {
+            BlockPos bottom = new BlockPos(166000 + uphill.get2DDataValue() * 100, 200, 166000);
+            for (int distance = -8; distance <= 20; distance++) {
+                int height = Math.max(0, Math.min(12, distance));
+                BlockPos rail = bottom.relative(uphill, distance).above(height);
+                for (BlockPos pos : BlockPos.betweenClosed(rail.offset(-2, 0, -2), rail.offset(2, 5, 2))) {
+                    helper.getLevel().setBlock(pos, Blocks.AIR.defaultBlockState(), 2);
+                }
+                helper.getLevel().setBlock(rail.below(), Blocks.STONE.defaultBlockState(), 2);
+            }
+            for (int distance = -8; distance <= 20; distance++) {
+                int height = Math.max(0, Math.min(12, distance));
+                boolean slope = distance >= 0 && distance < 12;
+                helper.getLevel().setBlock(bottom.relative(uphill, distance).above(height),
+                        (slope ? Registration.FLUX_SLOPE_BEAM : Registration.FLUX_BEAM).get().defaultBlockState()
+                                .setValue(BlockStateProperties.HORIZONTAL_FACING, slope ? uphill
+                                        : uphill.getAxis() == Direction.Axis.X ? Direction.NORTH : Direction.EAST), 2);
+            }
+            for (int speed : new int[]{1, 5, 40, 80, -1, -5, -40, -80}) {
+                BlockPos startRail = bottom.relative(uphill, speed > 0 ? -5 : 17).above(speed > 0 ? 0 : 12);
+                Vec3 start = Vec3.atBottomCenterOf(startRail).add(0, .0625, 0);
+                FluxLevitatorEntity cart = FluxLevitatorEntity.create(helper.getLevel(), start.x, start.y, start.z);
+                CompoundTag saved = cart.saveWithoutId(new CompoundTag());
+                saved.putDouble("forwardDirectionX", uphill.getStepX());
+                saved.putDouble("forwardDirectionZ", uphill.getStepZ());
+                cart.load(saved);
+                helper.getLevel().addFreshEntity(cart);
+                Player rider = helper.makeMockPlayer();
+                rider.startRiding(cart, true);
+                cart.changeSpeed(speed);
+                boolean crossedSlope = false;
+                boolean stopped = false;
+                try {
+                    for (int tick = 0; tick < 1500; tick++) {
+                        Vec3 previous = cart.position();
+                        cart.tick();
+                        cart.positionRider(rider);
+                        cart.positionRider(cart.getHoloGuiFront().getEntity());
+                        cart.positionRider(cart.getHoloGuiBack().getEntity());
+                        Vec3 track = cart.getPos(cart.getX(), cart.getY(), cart.getZ());
+                        helper.assertTrue(track != null && Math.abs(track.y - cart.getY()) < .00001,
+                                "Cart left slope " + uphill + " at speed " + speed + ": " + cart.position());
+                        helper.assertTrue(cart.getSpeed() == speed, "Slopes must retain the speed setting");
+                        helper.assertTrue(Math.abs(cart.getY() - previous.y) <= .401,
+                                "Slope entry/exit must not jump vertically");
+                        helper.assertTrue(rider.getVehicle() == cart && rider.distanceToSqr(cart) < 1,
+                                "Rider must remain inside the cabin on slopes");
+                        Entity front = cart.getHoloGuiFront().getEntity();
+                        Entity back = cart.getHoloGuiBack().getEntity();
+                        helper.assertTrue(Math.abs(front.distanceTo(back) - 2) < .001
+                                        && front.getLookAngle().dot(back.getLookAngle()) < -.999,
+                                "Both control panels must follow opposite ends of the incline");
+                        double progress = cart.position().subtract(Vec3.atCenterOf(bottom))
+                                .dot(new Vec3(uphill.getStepX(), 0, uphill.getStepZ()));
+                        if (progress > 2 && progress < 9) {
+                            crossedSlope = true;
+                            Vec3 head = rider.getEyePosition().subtract(cart.position().add(0, .375, 0));
+                            Vec3 incline = new Vec3(uphill.getStepX(), 1, uphill.getStepZ()).normalize();
+                            Vec3 cabinUp = new Vec3(-uphill.getStepX(), 1, -uphill.getStepZ()).normalize();
+                            helper.assertTrue(Math.abs(head.dot(incline)) < .95 && head.dot(cabinUp) < 1.1
+                                            && head.dot(cabinUp) > .3,
+                                    "Rider's head must fit below the roof and between the tilted end walls");
+                            helper.assertTrue(Math.abs(front.getY() - back.getY()) > 1.3,
+                                    "Control panels must tilt with the cabin");
+                            if (!stopped) {
+                                cart.changeSpeed(0);
+                                cart.setDeltaMovement(Vec3.ZERO);
+                                cart.tick();
+                                Vec3 parked = cart.position();
+                                cart.tick();
+                                helper.assertTrue(cart.position().distanceToSqr(parked) < .000001,
+                                        "A stopped cart must hold its position on a slope");
+                                // Reload while parked on the incline, then resume in the same direction.
+                                cart.load(cart.saveWithoutId(new CompoundTag()));
+                                cart.changeSpeed(speed);
+                                stopped = true;
+                            }
+                        }
+                        if (speed > 0 ? progress > 14 : progress < -3) {
+                            break;
+                        }
+                    }
+                    double height = cart.getY() - bottom.getY();
+                    helper.assertTrue(crossedSlope && (speed > 0 ? height > 12 : height < 1),
+                            "Cart must finish the climb/descent: " + uphill + ", " + speed + ", " + cart.position());
+                } finally {
+                    rider.stopRiding();
+                    discardCart(cart);
+                }
+            }
+        }
+        helper.succeed();
+    }
+
+    @GameTest(template = "empty")
     public static void panelsOccupyOppositeEndsAndRecoverFromOverlapOrRemoval(GameTestHelper helper) {
         FluxLevitatorEntity cart = cart(helper, 160000);
         try {

@@ -214,6 +214,9 @@ public class Registration {
     public static final RegistryObject<BaseBlock> FLUX_BEND_BEAM = BLOCKS.register("flux_bend_beam", () -> new BaseBeamBlock(new BlockBuilder(), true));
     public static final RegistryObject<Item> FLUX_BEND_BEAM_ITEM = ITEMS.register("flux_bend_beam", () -> new BlockItem(FLUX_BEND_BEAM.get(), createStandardProperties()));
 
+    public static final RegistryObject<BaseBlock> FLUX_SLOPE_BEAM = BLOCKS.register("flux_slope_beam", FluxSlopeBeamBlock::new);
+    public static final RegistryObject<Item> FLUX_SLOPE_BEAM_ITEM = ITEMS.register("flux_slope_beam", () -> new BlockItem(FLUX_SLOPE_BEAM.get(), createStandardProperties()));
+
     public static final RegistryObject<BaseBlock> SENSOR_ITEM_NODE = BLOCKS.register("sensor_item_node", SensorItemNodeTile::createBlock);
     public static final RegistryObject<Item> SENSOR_ITEM_NODE_ITEM = ITEMS.register("sensor_item_node", () -> new MultipartItemBlock(SENSOR_ITEM_NODE.get(), createStandardProperties()));
     public static final RegistryObject<BlockEntityType<SensorItemNodeTile>> SENSOR_ITEM_TILE = TILES.register("sensor_item_node", () -> BlockEntityType.Builder.of(SensorItemNodeTile::new, SENSOR_ITEM_NODE.get()).build(null));
