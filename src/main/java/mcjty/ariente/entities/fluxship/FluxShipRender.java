@@ -24,7 +24,10 @@ public class FluxShipRender extends EntityRenderer<FluxShipEntity> {
     public void render(FluxShipEntity ship, float yaw, float partialTick, PoseStack pose, MultiBufferSource buffers, int light) {
         pose.pushPose();
         pose.translate(0, .5, 0);
-        pose.mulPose(Axis.YP.rotationDegrees(-yaw - 90));
+        pose.mulPose(Axis.YP.rotationDegrees(-ship.getFlightYaw(partialTick)));
+        pose.mulPose(Axis.XP.rotationDegrees(ship.getFlightPitch(partialTick)));
+        pose.mulPose(Axis.ZP.rotationDegrees(ship.getBank(partialTick)));
+        pose.mulPose(Axis.YP.rotationDegrees(-90));
         Minecraft mc = Minecraft.getInstance();
         mc.getBlockRenderer().getModelRenderer().renderModel(pose.last(), buffers.getBuffer(RenderType.entityCutoutNoCull(InventoryMenu.BLOCK_ATLAS)),
                 null, mc.getModelManager().getModel(MODEL), 1, 1, 1, light, OverlayTexture.NO_OVERLAY);

@@ -12,7 +12,12 @@
     {
       "type": "patchouli:text",
       "title": "Handling a ship",
-      "text": "Flight follows the ship’s heading. Looking around does not steer.$(br2)Sneak-hit an unattended ship to recover its item. Ships reload parked.$(br2)Check Controls if bindings conflict. Find a clear landing area before dismounting; the prototype has no automatic landing or navigation."
+      "text": "The transparent cockpit hologram shows speed in km/h, altitude as world Y, and your current controls while leaving the view ahead visible.$(br2)Acceleration and turning build gradually. The ship banks in moving turns and pitches when climbing or descending. Release controls to brake into a level hover.$(br2)Flight follows the ship’s heading. Looking around does not steer."
+    },
+    {
+      "type": "patchouli:text",
+      "title": "Cockpit view",
+      "text": "First-person camera tilt follows the hull. Reduce or disable it using utility.fluxShipCameraTilt (0 to 1) in ariente-client.toml.$(br2)The third-person camera stays upright and can look around. Your pilot model stays seated facing forward and tilts with the hull.$(br2)Sneak-hit an unattended ship to recover its item. Ships reload parked. Find a clear landing area before dismounting; there is no automatic landing or navigation."
     }
   ],
   "extra_recipe_mappings": {

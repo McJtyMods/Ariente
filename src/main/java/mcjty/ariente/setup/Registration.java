@@ -37,6 +37,7 @@ import mcjty.ariente.entities.EntityArientePearl;
 import mcjty.ariente.entities.LaserEntity;
 import mcjty.ariente.entities.fluxelevator.FluxElevatorEntity;
 import mcjty.ariente.entities.fluxship.FluxShipEntity;
+import mcjty.hologui.gui.HoloGuiEntity;
 import mcjty.ariente.entities.levitator.FluxLevitatorEntity;
 import mcjty.ariente.facade.FacadeBlock;
 import mcjty.ariente.facade.FacadeItemBlock;
@@ -438,8 +439,14 @@ public class Registration {
             .build("ariente_ariente_pearl"));
     public static final RegistryObject<EntityType<FluxShipEntity>> ENTITY_FLUX_SHIP = ENTITIES.register("ariente_flux_ship", () -> EntityType.Builder.of(FluxShipEntity::new, MobCategory.MISC)
             .sized(5.30F, 1.8F)
+            .updateInterval(1)
             .setShouldReceiveVelocityUpdates(false)
             .build("ariente_flux_ship"));
+    public static final RegistryObject<EntityType<HoloGuiEntity>> ENTITY_SHIP_PANEL = ENTITIES.register("flux_ship_panel", () -> EntityType.Builder.<HoloGuiEntity>of(HoloGuiEntity::new, MobCategory.MISC)
+            .sized(1, 1)
+            .updateInterval(1)
+            .setShouldReceiveVelocityUpdates(false)
+            .build("flux_ship_panel"));
     public static final RegistryObject<EntityType<FluxLevitatorEntity>> ENTITY_FLUX_LEVITATOR = ENTITIES.register("ariente_flux_levitator", () -> EntityType.Builder.of(FluxLevitatorEntity::new, MobCategory.MISC)
             .sized(1.30F, 0.9F)
             .updateInterval(1)

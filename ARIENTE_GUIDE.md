@@ -1274,7 +1274,7 @@ cabin entity used by transport code.
 
 ### Flux Ship and cabin entities
 
-The **Flux Ship** remains experimental, with basic piloting now supported. Place
+The **Flux Ship** remains experimental, with piloting and cockpit instruments. Place
 its item on a clear landing area with room for the full hull, then right-click
 it to board. It carries one pilot:
 
@@ -1288,7 +1288,18 @@ it to board. It carries one pilot:
 | Shift | Dismount |
 
 Bindings can be changed in Controls. Flight follows the ship's heading; looking
-around does not steer it. A sneaking hit on an unattended ship recovers the item
+around does not steer it. The mounted hologram shows actual travel speed in km/h,
+altitude as world Y, and your current key bindings. Its transparent pane and bright
+text leave the view ahead visible. Acceleration and turning build
+up gradually, with some momentum through turns. The hull banks into moving turns
+and pitches with climbs and descents, then levels as it brakes into a hover.
+Reversing uphill raises the tail. Your view follows turns while preserving free
+look. First-person camera bank and pitch follow the ship; reduce or disable them
+with `utility.fluxShipCameraTilt` (0–1) in `ariente-client.toml`. Third-person views
+stay upright; the pilot model sits facing forward in the chair and tilts with the hull
+while the camera can look around independently.
+
+A sneaking hit on an unattended ship recovers the item
 in survival, preserving its name. Creative placement keeps the item. Saved ships
 reload parked. The prototype has no fuel system, progression recipe, weapons or
 automatic landing/navigation. The large floating ship-shaped city is a generated

@@ -188,6 +188,8 @@
   "entity.ariente_flux_levitator": "Flux Levitator",
   "entity.ariente_flux_elevator": "Flux Elevator",
   "entity.ariente_flux_ship": "Flux Ship",
+  "entity.ariente.ariente_flux_ship": "Flux Ship",
+  "entity.ariente.flux_ship_panel": "Flux Ship Instruments",
   "entity.ariente_pearl": "Warp Locator",
 
   "itemGroup.ariente": "Ariente",

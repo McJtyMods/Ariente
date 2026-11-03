@@ -50,7 +50,7 @@ public class KeyBindings {
     public static void tickShipControls() {
         Minecraft mc = Minecraft.getInstance();
         if (mc.player != null && mc.player.getVehicle() instanceof FluxShipEntity) {
-            boolean active = mc.screen == null;
+            boolean active = mc.screen == null && !mc.isPaused();
             int forward = active ? (flyForward.isDown() ? 1 : 0) - (flyBackwards.isDown() ? 1 : 0) : 0;
             int turn = active ? (turnRight.isDown() ? 1 : 0) - (turnLeft.isDown() ? 1 : 0) : 0;
             int vertical = active ? (flyUp.isDown() || startFlying.isDown() ? 1 : 0)

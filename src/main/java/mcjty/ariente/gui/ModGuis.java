@@ -3,6 +3,7 @@ package mcjty.ariente.gui;
 import mcjty.ariente.Ariente;
 import mcjty.ariente.display.ModuleSettings;
 import mcjty.ariente.entities.fluxelevator.FluxElevatorGui;
+import mcjty.ariente.entities.fluxship.FluxShipGui;
 import mcjty.ariente.entities.levitator.FluxLevitatorGui;
 import mcjty.ariente.items.EnergyHolderItem;
 import mcjty.ariente.items.armor.ArmorGui;
@@ -19,6 +20,7 @@ public class ModGuis {
     public static final String GUI_LEVITATOR = "ariente.levitator";
     public static final String GUI_LEVITATOR_HELP = "ariente.levitator_help";
     public static final String GUI_ELEVATOR = "ariente.elevator";
+    public static final String GUI_FLUX_SHIP = "ariente.flux_ship";
     public static final String GUI_ENERGY_HOLDER = "ariente.energy_holder";
     public static final String GUI_ENERGY_HOLDER_HOLD = "ariente.energy_holder_help";
 
@@ -37,6 +39,7 @@ public class ModGuis {
         Ariente.guiHandler.getGuiRegistry().registerGui(GUI_LEVITATOR, FluxLevitatorGui::createGui);
         Ariente.guiHandler.getGuiRegistry().registerGui(GUI_LEVITATOR_HELP, FluxLevitatorGui::createHelpGui);
         Ariente.guiHandler.getGuiRegistry().registerGui(GUI_ELEVATOR, FluxElevatorGui::createGui);
+        Ariente.guiHandler.getGuiRegistry().registerGui(GUI_FLUX_SHIP, FluxShipGui::createGui);
         Ariente.guiHandler.getGuiRegistry().registerGui(GUI_ENERGY_HOLDER, EnergyHolderItem::createGui);
         Ariente.guiHandler.getGuiRegistry().registerGui(GUI_ENERGY_HOLDER_HOLD, EnergyHolderItem::createHelpGui);
     }

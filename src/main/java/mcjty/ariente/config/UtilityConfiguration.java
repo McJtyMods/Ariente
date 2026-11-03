@@ -16,6 +16,7 @@ public class UtilityConfiguration {
     public static ForgeConfigSpec.DoubleValue POWERSUIT_MAX_FORWARD_FLY_SPEED;
     public static ForgeConfigSpec.DoubleValue POWERSUIT_MAX_BACK_GROUND_SPEED;
     public static ForgeConfigSpec.DoubleValue POWERSUIT_MAX_BACK_FLY_SPEED;
+    public static ForgeConfigSpec.DoubleValue FLUX_SHIP_CAMERA_TILT;
 
     public static ForgeConfigSpec.IntValue WARPER_MAX_CHARGES;
 
@@ -27,6 +28,10 @@ public class UtilityConfiguration {
     public static void init(ForgeConfigSpec.Builder SERVER_BUILDER, ForgeConfigSpec.Builder CLIENT_BUILDER) {
         CLIENT_BUILDER.comment("Utility settings").push(CATEGORY_UTILITY);
         SERVER_BUILDER.comment("Utility settings").push(CATEGORY_UTILITY);
+
+        FLUX_SHIP_CAMERA_TILT = CLIENT_BUILDER
+                .comment("First-person Flux Ship camera tilt strength: 0 disables bank/pitch, 1 follows the ship fully")
+                .defineInRange("fluxShipCameraTilt", 1.0, 0.0, 1.0);
 
         POWERSUIT_FLYVERTICAL_FACTOR = CLIENT_BUILDER
                 .comment("Amount to go up/down with space/shift while flying")

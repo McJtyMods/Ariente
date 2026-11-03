@@ -54,6 +54,10 @@ public class Binding {
         return binding.saveString();
     }
 
+    public String getKeyName() {
+        return binding.getTranslatedKeyMessage().getString();
+    }
+
     @Override
     public boolean equals(Object o) {
         if (this == o) return true;

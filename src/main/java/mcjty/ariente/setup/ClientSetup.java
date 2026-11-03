@@ -25,6 +25,7 @@ import mcjty.ariente.entities.LaserRender;
 import mcjty.ariente.entities.RenderArientePearl;
 import mcjty.ariente.entities.fluxelevator.FluxElevatorRender;
 import mcjty.ariente.entities.fluxship.FluxShipRender;
+import mcjty.ariente.entities.fluxship.FluxShipPanelRender;
 import mcjty.ariente.entities.levitator.FluxLevitatorRender;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.renderer.ItemBlockRenderTypes;
@@ -80,6 +81,7 @@ public class ClientSetup {
         event.registerEntityRenderer(Registration.ENTITY_FLUX_LEVITATOR.get(), new FluxLevitatorRender.Factory());
         event.registerEntityRenderer(Registration.ENTITY_ELEVATOR.get(), new FluxElevatorRender.Factory());
         event.registerEntityRenderer(Registration.ENTITY_FLUX_SHIP.get(), new FluxShipRender.Factory());
+        event.registerEntityRenderer(Registration.ENTITY_SHIP_PANEL.get(), FluxShipPanelRender::new);
         event.registerEntityRenderer(Registration.ENTITY_PEARL.get(), RenderArientePearl.FACTORY);
     }
 
