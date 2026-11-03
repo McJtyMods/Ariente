@@ -12,7 +12,7 @@
     {
       "type": "patchouli:text",
       "title": "Drive the cart",
-      "text": "Aim at an end-panel hologram and click or drag its speed slider. The outer arrows change the setting by one. Negative settings reverse travel.$(br2)The red stop control brakes the cart. Sneak to dismount.$(br2)Check beam orientation at corners and slow down before testing a new route. Carts need no generator connection."
+      "text": "Hold $(k:key.forward) to accelerate along the track in the direction you face. Facing the other way first slows the cart through zero, then reverses it. Hold $(k:key.back) to brake gradually to a stop. Release the keys to keep your speed.$(br2)Both end panels also set speed; the red control stops instantly. Sneak to dismount.$(br2)Carts can start from rest on bends. Slow down before testing a new route. No generator connection is needed."
     }
   ],
   "extra_recipe_mappings": {

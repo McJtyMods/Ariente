@@ -13,6 +13,7 @@ import mcjty.ariente.blocks.utility.PacketClickStorage;
 import mcjty.ariente.blocks.utility.autofield.PacketAutoFieldRequestRenderInfo;
 import mcjty.ariente.blocks.utility.autofield.PacketAutoFieldReturnRenderInfo;
 import mcjty.ariente.entities.fluxship.PacketShipAction;
+import mcjty.ariente.entities.levitator.PacketLevitatorInput;
 import mcjty.ariente.items.armor.PacketArmorHotkey;
 import mcjty.ariente.items.armor.PacketConfigureArmor;
 import mcjty.ariente.items.armor.PacketPersonalForcefield;
@@ -31,7 +32,7 @@ import java.util.Optional;
 
 public class ArienteMessages {
 
-    private static final String PROTOCOL_VERSION = "8";
+    private static final String PROTOCOL_VERSION = "9";
 
     public static SimpleChannel INSTANCE;
 
@@ -75,9 +76,12 @@ public class ArienteMessages {
         net.registerMessage(id(), PacketAutoFieldReturnRenderInfo.class, PacketAutoFieldReturnRenderInfo::toBytes, PacketAutoFieldReturnRenderInfo::new, PacketAutoFieldReturnRenderInfo::handle);
         net.registerMessage(id(), PacketPersonalForcefield.class, PacketPersonalForcefield::toBytes, PacketPersonalForcefield::new,
                 PacketPersonalForcefield::handle, Optional.of(NetworkDirection.PLAY_TO_CLIENT));
+        net.registerMessage(id(), PacketLevitatorInput.class, PacketLevitatorInput::toBytes, PacketLevitatorInput::new,
+                PacketLevitatorInput::handle, Optional.of(NetworkDirection.PLAY_TO_SERVER));
     }
 
     private static int packetId = 0;
+
     private static int id() {
         return packetId++;
     }

@@ -11,6 +11,7 @@ public class KeyInputHandler {
     public void onClientTick(TickEvent.ClientTickEvent event) {
         if (event.phase == TickEvent.Phase.END) {
             KeyBindings.tickShipControls();
+            KeyBindings.tickLevitatorControls();
         }
     }
 

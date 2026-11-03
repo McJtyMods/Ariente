@@ -11,6 +11,7 @@ import net.minecraft.client.Screenshot;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
 import net.minecraft.util.Mth;
+import net.minecraft.world.entity.Entity;
 import net.minecraft.world.level.GameRules;
 import net.minecraft.world.level.GameType;
 import net.minecraft.world.level.block.Blocks;
@@ -93,12 +94,19 @@ public class FluxCartClientChecks {
         if (!ready) {
             return;
         }
-        require(++totalTicks < 1200, "Client check timed out waiting for the mounted cart");
+        require(++totalTicks < 1600, "Client check timed out waiting for the mounted cart");
         if (!(mc.player.getVehicle() instanceof FluxLevitatorEntity cart) || !cart.getUUID().equals(cartId)) {
             return;
         }
         ticks++;
-        if (ticks == 40) {
+        if (ticks == 20) {
+            checkOppositePanels(cart);
+            FluxCartModelAndSoundChecks.verify(cart, mc);
+            if (Boolean.getBoolean("ariente.fluxKeyboardOnly")) {
+                createCornerCourse(mc);
+                ticks = 779;
+            }
+        } else if (ticks == 40) {
             changeSpeed(20);
         } else if (ticks == 130) {
             changeSpeed(0);
@@ -144,7 +152,20 @@ public class FluxCartClientChecks {
         } else if (ticks == 740) {
             require(courseSides == 15 && cornerSamples > 500, "The mounted cart must traverse all four sides and bends");
             Ariente.setup.getLogger().info("FLUX CART CORNER CHECK PASSED: {} panel samples", cornerSamples);
-            mc.stop();
+            changeSpeed(0);
+            mc.options.setCameraType(CameraType.THIRD_PERSON_BACK);
+            mc.player.setYRot(-45);
+            mc.player.setXRot(25);
+        } else if (ticks == 760) {
+            try (var screenshot = Screenshot.takeScreenshot(mc.getMainRenderTarget())) {
+                screenshot.writeToFile(mc.gameDirectory.toPath().resolve("flux-cart-exterior.png"));
+            } catch (Exception error) {
+                throw new IllegalStateException(error);
+            }
+        } else if (ticks >= 780) {
+            if (FluxCartKeyboardChecks.tick(ticks - 780, cart, mc)) {
+                mc.stop();
+            }
         }
         if ((ticks > 80 && ticks < 125) || (ticks > 205 && ticks < 280) || (ticks > 320 && ticks < 345)) {
             checkPanel(cart.getHoloGuiFront(), mc);
@@ -206,13 +227,18 @@ public class FluxCartClientChecks {
                 level.setBlock(new BlockPos(24, 200, 16), bend.setValue(BlockStateProperties.HORIZONTAL_FACING, Direction.EAST), 2);
                 level.setBlock(new BlockPos(8, 200, 16), bend.setValue(BlockStateProperties.HORIZONTAL_FACING, Direction.SOUTH), 2);
                 var player = server.getPlayerList().getPlayer(uuid);
+                Entity previousVehicle = player.getVehicle();
                 player.stopRiding();
+                if (previousVehicle instanceof FluxLevitatorEntity previousCart) {
+                    previousCart.getPassengers().forEach(Entity::discard);
+                    previousCart.discard();
+                }
                 player.teleportTo(level, 10.5, 200.0625, .5, -90, 36);
                 var cart = FluxLevitatorEntity.create(level, 10.5, 200.0625, .5);
                 cartId = cart.getUUID();
                 level.addFreshEntity(cart);
                 player.startRiding(cart, true);
-                cart.changeSpeed(20);
+                cart.changeSpeed(Boolean.getBoolean("ariente.fluxKeyboardOnly") ? 0 : 20);
             } catch (Throwable error) {
                 failure = error;
             }
@@ -220,6 +246,7 @@ public class FluxCartClientChecks {
     }
 
     private static void checkCornerPanel(IHoloGuiEntity holo, FluxLevitatorEntity cart) {
+        checkOppositePanels(cart);
         require(holo != null, "Both panels must stay mounted through bends");
         var panel = holo.getEntity();
         require(panel.getVehicle() == cart && panel.position().distanceTo(cart.position()) < 2,
@@ -227,6 +254,16 @@ public class FluxCartClientChecks {
         require(Math.abs(Mth.wrapDegrees(panel.getYRot() - panel.yRotO)) <= 91,
                 "Panel rotation must take the short route around each bend: " + panel.yRotO + " -> " + panel.getYRot());
         cornerSamples++;
+    }
+
+    private static void checkOppositePanels(FluxLevitatorEntity cart) {
+        var front = cart.getHoloGuiFront();
+        var back = cart.getHoloGuiBack();
+        require(front != null && back != null, "Both cart panels must be present");
+        require(Math.abs(front.getEntity().position().distanceTo(back.getEntity().position()) - 2) < .0001,
+                "Cart panels must occupy opposite ends instead of overlapping");
+        require(front.getEntity().getLookAngle().dot(back.getEntity().getLookAngle()) < -.999,
+                "Cart panels must face opposite directions through every bend");
     }
 
     private static void aimAtStopButton(FluxLevitatorEntity cart, Minecraft mc) {

@@ -5,6 +5,8 @@ import mcjty.ariente.items.armor.PacketArmorHotkey;
 import org.lwjgl.glfw.GLFW;
 import mcjty.ariente.entities.fluxship.FluxShipEntity;
 import mcjty.ariente.entities.fluxship.PacketShipAction;
+import mcjty.ariente.entities.levitator.FluxLevitatorEntity;
+import mcjty.ariente.entities.levitator.PacketLevitatorInput;
 import mcjty.ariente.network.ArienteMessages;
 import net.minecraft.client.Minecraft;
 
@@ -54,6 +56,15 @@ public class KeyBindings {
             int vertical = active ? (flyUp.isDown() || startFlying.isDown() ? 1 : 0)
                     - (flyDown.isDown() || startLanding.isDown() ? 1 : 0) : 0;
             toServer(new PacketShipAction(forward, turn, vertical));
+        }
+    }
+
+    public static void tickLevitatorControls() {
+        Minecraft mc = Minecraft.getInstance();
+        if (mc.player != null && mc.player.getVehicle() instanceof FluxLevitatorEntity) {
+            boolean active = mc.screen == null && !mc.isPaused();
+            int input = active ? (mc.options.keyUp.isDown() ? 1 : 0) - (mc.options.keyDown.isDown() ? 1 : 0) : 0;
+            toServer(new PacketLevitatorInput(input));
         }
     }
 

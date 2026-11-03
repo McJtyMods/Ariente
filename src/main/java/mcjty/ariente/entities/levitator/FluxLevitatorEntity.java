@@ -91,6 +91,10 @@ public class FluxLevitatorEntity extends Entity implements IFluxLevitatorEntity 
 
     private IHoloGuiEntity holoGuiFront;
     private IHoloGuiEntity holoGuiBack;
+    private Player inputPlayer;
+    private int speedInput;
+    private int inputTimeout;
+    private Vec3 forwardDirection = Vec3.ZERO;
 
     private BlockPos desiredDestination = null;
 
@@ -111,6 +115,32 @@ public class FluxLevitatorEntity extends Entity implements IFluxLevitatorEntity 
             speed = 80;
         }
         this.entityData.set(SPEED, speed);
+    }
+
+    public void handleInput(Player player, int input) {
+        if (player.getVehicle() == this && input >= -1 && input <= 1
+                && getPassengers().stream().filter(Player.class::isInstance).findFirst().orElse(null) == player) {
+            inputPlayer = player;
+            speedInput = input;
+            inputTimeout = 5;
+        }
+    }
+
+    private void updateSpeedInput() {
+        if (inputTimeout > 0 && inputPlayer != null && inputPlayer.isAlive() && inputPlayer.getVehicle() == this) {
+            inputTimeout--;
+            int speed = getSpeed();
+            if (speedInput > 0) {
+                Vec3 look = Vec3.directionFromRotation(0, inputPlayer.getYRot());
+                double alignment = look.dot(forwardDirection);
+                int direction = Math.abs(alignment) < .1 ? (speed < 0 ? -1 : 1) : alignment < 0 ? -1 : 1;
+                changeSpeed(speed + direction);
+            } else if (speedInput < 0) {
+                changeSpeed(speed > 0 ? speed - 1 : speed < 0 ? speed + 1 : 0);
+            }
+        } else {
+            inputPlayer = null;
+        }
     }
 
     @Override
@@ -137,6 +167,9 @@ public class FluxLevitatorEntity extends Entity implements IFluxLevitatorEntity 
     }
 
     public IHoloGuiEntity getHoloGuiFront() {
+        if (holoGuiFront != null && !holoGuiFront.getEntity().isAlive()) {
+            holoGuiFront = null;
+        }
         if (holoGuiFront == null) {
             if (getHoloFrontUUID() != null) {
                 for (Entity entity : level().getEntitiesOfClass(Ariente.guiHandler.getHoloEntityClass(), getBoundingBox().inflate(10))) {
@@ -148,18 +181,16 @@ public class FluxLevitatorEntity extends Entity implements IFluxLevitatorEntity 
                 }
             }
             if (holoGuiFront == null && !level().isClientSide ) {
-                IHoloGuiEntity holoGui = Ariente.guiHandler.openHoloGuiRelative(this, new Vec3(0, .5, 1), ModGuis.GUI_LEVITATOR);
-                holoGui.setScale(0.75f);
-                holoGui.setCloseStrategy(CloseStrategy.NEVER);
-                holoGui.getEntity().startRiding(this);
-                this.holoGuiFront = holoGui;
-                setHoloFrontUUID(holoGui.getEntity().getUUID());
+                holoGuiFront = createHoloGui(1);
             }
         }
         return holoGuiFront;
     }
 
     public IHoloGuiEntity getHoloGuiBack() {
+        if (holoGuiBack != null && !holoGuiBack.getEntity().isAlive()) {
+            holoGuiBack = null;
+        }
         if (holoGuiBack == null) {
             if (getHoloBackUUID() != null) {
                 for (Entity entity : level().getEntitiesOfClass(Ariente.guiHandler.getHoloEntityClass(), getBoundingBox().inflate(10))) {
@@ -171,15 +202,31 @@ public class FluxLevitatorEntity extends Entity implements IFluxLevitatorEntity 
                 }
             }
             if (holoGuiBack == null && !level().isClientSide ) {
-                IHoloGuiEntity holoGui = Ariente.guiHandler.openHoloGuiRelative(this, new Vec3(0, .5, 1), ModGuis.GUI_LEVITATOR);
-                holoGui.setScale(0.75f);
-                holoGui.setCloseStrategy(CloseStrategy.NEVER);
-                holoGui.getEntity().startRiding(this);
-                this.holoGuiBack = holoGui;
-                setHoloBackUUID(holoGui.getEntity().getUUID());
+                holoGuiBack = createHoloGui(-1);
             }
         }
         return holoGuiBack;
+    }
+
+    private IHoloGuiEntity createHoloGui(int offset) {
+        IHoloGuiEntity holo = Ariente.guiHandler.openHoloGuiRelative(this, new Vec3(0, .38, offset), ModGuis.GUI_LEVITATOR);
+        holo.setScale(0.75f);
+        holo.setCloseStrategy(CloseStrategy.NEVER);
+        Entity panel = holo.getEntity();
+        if (offset > 0) {
+            setHoloFrontUUID(panel.getUUID());
+        } else {
+            setHoloBackUUID(panel.getUUID());
+        }
+        panel.setYRot(calculateYawPitch().getLeft() + offset * 90);
+        updateHoloGui(holo, offset, Entity::setPos);
+        panel.xOld = panel.xo = panel.getX();
+        panel.yOld = panel.yo = panel.getY();
+        panel.zOld = panel.zo = panel.getZ();
+        panel.yRotO = panel.getYRot();
+        panel.xRotO = panel.getXRot();
+        panel.startRiding(this);
+        return holo;
     }
 
     public static FluxLevitatorEntity create(Level worldIn, double x, double y, double z) {
@@ -375,6 +422,11 @@ public class FluxLevitatorEntity extends Entity implements IFluxLevitatorEntity 
         BlockState state = level().getBlockState(blockpos);
 
         if (isValidBeamBlock(state.getBlock())) {
+            updateForwardDirection(getBeamDirection(state));
+        }
+        updateSpeedInput();
+
+        if (isValidBeamBlock(state.getBlock())) {
             this.moveAlongTrack(blockpos, state);
         } else {
             this.moveDerailedLevitator();
@@ -501,14 +553,18 @@ public class FluxLevitatorEntity extends Entity implements IFluxLevitatorEntity 
         float yaw = pair.getLeft() + offset * 90;
         float pitch = pair.getRight();
         Entity panel = holo.getEntity();
-        float turn = Mth.wrapDegrees(yaw - panel.getYRot());
+        // Use the front panel as the common reference so a saved overlapping back
+        // panel is repaired, and both panels follow opposite ends through bends.
+        float previousYaw = offset < 0 && holoGuiFront != null && holoGuiFront.getEntity().isAlive()
+                ? holoGuiFront.getEntity().getYRot() + 180 : panel.getYRot();
+        float turn = Mth.wrapDegrees(yaw - previousYaw);
         // Beam shapes can reverse their tangent at a bend. Keep each panel on the same end.
         if (turn > 90) {
             turn -= 180;
         } else if (turn < -90) {
             turn += 180;
         }
-        yaw = panel.getYRot() + turn;
+        yaw = previousYaw + turn;
         Vec3 direction = Vec3.directionFromRotation(0, yaw);
 
         // Passenger ticks save the previous position before reaching this callback.
@@ -591,6 +647,9 @@ public class FluxLevitatorEntity extends Entity implements IFluxLevitatorEntity 
 
         if (speed != 0) {
             handleLivingMotion(speed, dir);
+            motionX = getDeltaMovement().x;
+            motionY = getDeltaMovement().y;
+            motionZ = getDeltaMovement().z;
         }
 
         if (unpowered) {
@@ -665,66 +724,30 @@ public class FluxLevitatorEntity extends Entity implements IFluxLevitatorEntity 
     }
 
     private void handleLivingMotion(int speed, RailShape dir) {
-
-        double maxMotion;
-
-        double motionX = this.getDeltaMovement().x;
-        double motionY = this.getDeltaMovement().y;
-        double motionZ = this.getDeltaMovement().z;
-
-        float yaw;
-        if (dir == RailShape.NORTH_SOUTH) {
-            if (speed > 0) {
-                yaw = -360;
-            } else {
-                yaw = -180;
-            }
-        } else if (dir == RailShape.EAST_WEST) {
-            if (speed > 0) {
-                yaw = -90;
-            } else {
-                yaw = -270;
-            }
-        } else {
-            // Slow down in bends
-            double dist = Math.sqrt(motionX * motionX + motionZ * motionZ) ;
-            maxMotion = Math.abs(speed / 200.0f);
-            if (dist > maxMotion) {
-                motionX /= dist / maxMotion;
-                motionZ /= dist / maxMotion;
-            }
-            setDeltaMovement(motionX, motionY, motionZ);
-
-            return;
+        boolean straight = dir == RailShape.NORTH_SOUTH || dir == RailShape.EAST_WEST;
+        double maxMotion = Math.abs(speed / (straight ? 25.0 : 200.0));
+        double motion = getDeltaMovement().horizontalDistance();
+        if (motion < .0001) {
+            // A stopped cart needs a starting impulse on bends as well as straight beams.
+            motion = .1;
         }
+        motion = Math.min(motion, maxMotion) * Math.signum(speed);
+        setDeltaMovement(forwardDirection.x * motion, getDeltaMovement().y, forwardDirection.z * motion);
+    }
 
-        maxMotion = Math.abs(speed / 25.0f);
-
-        double dx = -Math.sin((yaw * 0.017453292F));
-        double dz = Math.cos((yaw * 0.017453292F));
-        double dist = motionX * motionX + motionZ * motionZ;
-
-        if (dist < 1.0E-8D) {
-            // On a straight track we kickstart some motion
-            if (dx > 0) {
-                motionX = Math.abs(motionX) + dx * 0.1D;
-            } else {
-                motionX = -Math.abs(motionX) + dx * 0.1D;
-            }
-            if (dz > 0) {
-                motionZ = Math.abs(motionZ) + dz * 0.1D;
-            } else {
-                motionZ = -Math.abs(motionZ) + dz * 0.1D;
-            }
+    private void updateForwardDirection(RailShape shape) {
+        int[][] ends = MATRIX[shape.ordinal()];
+        Vec3 tangent = new Vec3(ends[1][0] - ends[0][0], 0, ends[1][2] - ends[0][2]).normalize();
+        Vec3 reference = forwardDirection;
+        if (reference.lengthSqr() == 0 && getSpeed() != 0) {
+            // Older saves have no remembered direction; preserve their existing motion.
+            reference = getDeltaMovement().scale(Math.signum(getSpeed()));
         }
-
-        // Restrict speed
-        dist = Math.sqrt(motionX * motionX + motionZ * motionZ) ;
-        if (dist > maxMotion) {
-            motionX /= dist / maxMotion;
-            motionZ /= dist / maxMotion;
+        if (tangent.dot(reference) < 0) {
+            tangent = tangent.scale(-1);
         }
-        setDeltaMovement(motionX, motionY, motionZ);
+        // Keep positive speed on the same route through bends and after a stop/reload.
+        forwardDirection = tangent;
     }
 
     private void handlePoweredMotion(BlockPos pos, RailShape dir) {
@@ -734,7 +757,8 @@ public class FluxLevitatorEntity extends Entity implements IFluxLevitatorEntity 
 
         double length = Math.sqrt(motionX * motionX + motionZ * motionZ);
 
-        if (length > 0.01D) {
+        // Even the lowest bend speed must receive motor acceleration as W raises the setting.
+        if (length > 0.0001D) {
             motionX += motionX / length * 0.06D;
             motionZ += motionZ / length * 0.06D;
         } else if (dir == RailShape.EAST_WEST) {
@@ -962,6 +986,8 @@ public class FluxLevitatorEntity extends Entity implements IFluxLevitatorEntity 
 
     @Override
     protected void readAdditionalSaveData(CompoundTag compound) {
+        forwardDirection = new Vec3(compound.getDouble("forwardDirectionX"), 0,
+                compound.getDouble("forwardDirectionZ")).normalize();
         if (compound.hasUUID("holoFront")) {
             setHoloFrontUUID(compound.getUUID("holoFront"));
         }
@@ -978,6 +1004,8 @@ public class FluxLevitatorEntity extends Entity implements IFluxLevitatorEntity 
 
     @Override
     protected void addAdditionalSaveData(CompoundTag compound) {
+        compound.putDouble("forwardDirectionX", forwardDirection.x);
+        compound.putDouble("forwardDirectionZ", forwardDirection.z);
         if (getHoloFrontUUID() != null) {
             compound.putUUID("holoFront", getHoloFrontUUID());
         }

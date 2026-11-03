@@ -11,6 +11,9 @@ public class FluxLevitatorSounds {
     }
 
     public static void playMovingSoundClientInside(Player player, FluxLevitatorEntity entity) {
-        Minecraft.getInstance().getSoundManager().play(new MovingSoundLevitatorRiding(player, entity));
+        Minecraft mc = Minecraft.getInstance();
+        if (player == mc.player) {
+            mc.getSoundManager().play(new MovingSoundLevitatorRiding(player, entity));
+        }
     }
 }
