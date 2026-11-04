@@ -34,8 +34,11 @@ public class FluxShipEntity extends Entity {
     private static final EntityDataAccessor<Float> PITCH = SynchedEntityData.defineId(FluxShipEntity.class, EntityDataSerializers.FLOAT);
     private static final EntityDataAccessor<Float> YAW = SynchedEntityData.defineId(FluxShipEntity.class, EntityDataSerializers.FLOAT);
     private static final EntityDataAccessor<Float> SPEED = SynchedEntityData.defineId(FluxShipEntity.class, EntityDataSerializers.FLOAT);
-    private static final double MAX_SPEED = .65;
+    private static final double MAX_SPEED = 5.2;
     private static final double MAX_VERTICAL_SPEED = .35;
+    private static final double UNPILOTED_DESCENT_SPEED = .05;
+    private static final double HORIZONTAL_RESPONSE = .06;
+    private static final double VERTICAL_RESPONSE = .08;
     private static final float MAX_TURN_SPEED = 3;
     private static final float MAX_BANK = 22;
     private static final float MAX_PITCH = 25;
@@ -49,6 +52,8 @@ public class FluxShipEntity extends Entity {
     private float turnSpeed;
     private float bank;
     private float previousBank;
+    private float exhaustStrength;
+    private float previousExhaustStrength;
     private float yawChange;
     private int lastPilotTurnTick = -1;
 
@@ -110,6 +115,10 @@ public class FluxShipEntity extends Entity {
 
     public float getBank(float partialTick) {
         return Mth.lerp(partialTick, previousBank, bank);
+    }
+
+    public float getExhaustStrength(float partialTick) {
+        return Mth.lerp(partialTick, previousExhaustStrength, exhaustStrength);
     }
 
     public float getFlightPitch(float partialTick) {
@@ -242,6 +251,7 @@ public class FluxShipEntity extends Entity {
     public void tick() {
         super.tick();
         previousBank = bank;
+        previousExhaustStrength = exhaustStrength;
         float oldYaw = getYRot();
         if (level().isClientSide) {
             if (lerpSteps > 0) {
@@ -252,10 +262,15 @@ public class FluxShipEntity extends Entity {
             setXRot(Mth.lerp(.35f, getXRot(), entityData.get(PITCH)));
             setYRot(Mth.rotLerp(.35f, getYRot(), entityData.get(YAW)));
             yawChange = Mth.wrapDegrees(getYRot() - oldYaw);
+            exhaustStrength = Mth.lerp(.2f, exhaustStrength, Mth.clamp(getSpeed() / (float) (MAX_SPEED * 20), 0, 1));
+            if (exhaustStrength < .0001f) {
+                exhaustStrength = 0;
+            }
             return;
         }
         ensureHoloGui();
-        if (getControllingPassenger() == null || inputTimeout-- <= 0) {
+        LivingEntity pilot = getControllingPassenger();
+        if (pilot == null || inputTimeout-- <= 0) {
             forward = turn = vertical = 0;
         }
         turnSpeed = Mth.lerp(.15f, turnSpeed, turn * MAX_TURN_SPEED);
@@ -265,12 +280,12 @@ public class FluxShipEntity extends Entity {
         setYRot(getYRot() + turnSpeed);
         entityData.set(YAW, getYRot());
         Vec3 heading = Vec3.directionFromRotation(0, getYRot());
-        Vec3 target = heading.scale(forward * MAX_SPEED).add(0, vertical * MAX_VERTICAL_SPEED, 0);
+        double targetVerticalSpeed = pilot == null ? -UNPILOTED_DESCENT_SPEED : vertical * MAX_VERTICAL_SPEED;
+        Vec3 target = heading.scale(forward * MAX_SPEED).add(0, targetVerticalSpeed, 0);
         Vec3 velocity = getDeltaMovement();
-        // Retain momentum through turns; releasing the controls engages hover braking.
-        double horizontalResponse = forward == 0 ? .16 : .08;
-        velocity = new Vec3(Mth.lerp(horizontalResponse, velocity.x, target.x),
-                Mth.lerp(.12, velocity.y, target.y), Mth.lerp(horizontalResponse, velocity.z, target.z));
+        // Ease acceleration, braking, reversals and unattended descent through the same momentum.
+        velocity = new Vec3(Mth.lerp(HORIZONTAL_RESPONSE, velocity.x, target.x),
+                Mth.lerp(VERTICAL_RESPONSE, velocity.y, target.y), Mth.lerp(HORIZONTAL_RESPONSE, velocity.z, target.z));
         setDeltaMovement(velocity.lengthSqr() < .000001 ? Vec3.ZERO : velocity);
         Vec3 before = position();
         move(MoverType.SELF, getDeltaMovement());
@@ -284,7 +299,8 @@ public class FluxShipEntity extends Entity {
             bank = 0;
         }
         entityData.set(BANK, bank);
-        float targetPitch = (float) (-Mth.atan2(travel.y, Math.max(.25, travel.horizontalDistance())) * Mth.RAD_TO_DEG);
+        float targetPitch = pilot == null ? 0
+                : (float) (-Mth.atan2(travel.y, Math.max(.25, travel.horizontalDistance())) * Mth.RAD_TO_DEG);
         // In reverse, the tail leads the climb and the nose points down.
         if (forwardSpeed < -.05) {
             targetPitch = -targetPitch;
@@ -293,8 +309,8 @@ public class FluxShipEntity extends Entity {
         setXRot(Math.abs(pitch) < .001f ? 0 : pitch);
         entityData.set(PITCH, getXRot());
         fallDistance = 0;
-        if (getControllingPassenger() != null) {
-            getControllingPassenger().fallDistance = 0;
+        if (pilot != null) {
+            pilot.fallDistance = 0;
         }
     }
 
@@ -308,10 +324,11 @@ public class FluxShipEntity extends Entity {
 
     @Override
     protected void readAdditionalSaveData(CompoundTag tag) {
-        // Controls are transient. A loaded, unattended ship must remain parked.
+        // Clear transient controls; an unattended ship resumes its gentle descent on the next tick.
         setDeltaMovement(Vec3.ZERO);
         forward = turn = vertical = inputTimeout = lerpSteps = 0;
         turnSpeed = bank = previousBank = yawChange = 0;
+        exhaustStrength = previousExhaustStrength = 0;
         lastPilotTurnTick = -1;
         entityData.set(BANK, 0f);
         entityData.set(PITCH, 0f);
@@ -332,6 +349,7 @@ public class FluxShipEntity extends Entity {
 
     @Override
     public AABB getBoundingBoxForCulling() {
-        return getBoundingBox().inflate(2);
+        // Keep the rear exhaust visible when the hull itself is just outside the view.
+        return getBoundingBox().inflate(12);
     }
 }

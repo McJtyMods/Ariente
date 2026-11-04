@@ -1,5 +1,7 @@
 1.20-0.0.31-alpha:
-- Flux Ships now have a transparent mounted cockpit hologram with speed, altitude and current controls. Flight accelerates and turns smoothly, with banking, climb/descent pitch and adjustable first-person camera tilt. In third person, the pilot sits facing forward and tilts with the hull while the camera can look around.
+- Flux Ships now have a flight engine hum based on the Flux Levitator sound, with smooth volume changes and a gentle pitch rise as speed increases. Pilots hear a cockpit loop; nearby observers hear positional sound.
+- Flux Ships have flowing yellow negarite and cyan posirite exhaust strands from the rear engine bay. The glow grows with flight speed and is visible in third person and on other ships.
+- Flux Ships now have a transparent mounted cockpit hologram with speed, altitude and current controls. Flight reaches about 374 km/h, with smooth acceleration, braking and reversals, banking, climb/descent pitch and adjustable first-person camera tilt. Unattended ships gently sink to the ground. In third person, the pilot sits facing forward and tilts with the hull while the camera can look around.
 - Added Flux Slope Beams for one-block inclines. Levitators, passengers and both control panels follow climbs and descents, with automatic speed limiting around slopes.
 - Flux Levitators now use your forward/back movement keys (W/S by default) to accelerate in the direction you face or brake gradually. Release the keys to keep your speed; the hologram's red button still stops instantly.
 - Fixed Flux Levitators failing to restart when stopped on a Flux Bend Beam.

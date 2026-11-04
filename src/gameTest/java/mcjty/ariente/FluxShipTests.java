@@ -71,7 +71,7 @@ public class FluxShipTests {
         try {
             fly(ship, pilot, 1, 0, 0, 50);
             double speed = ship.getSpeed();
-            helper.assertTrue(speed > 12 && speed <= 13.01 && Math.abs(ship.getBank(1)) < .01,
+            helper.assertTrue(speed > 96 && speed <= 104.01 && Math.abs(ship.getBank(1)) < .01,
                     "Straight flight must accelerate to a bounded cruise without banking");
             ship.handleInput(pilot, 1, 1, 0);
             float yaw = ship.getYRot();
@@ -79,14 +79,14 @@ public class FluxShipTests {
             helper.assertTrue(ship.getYRot() - yaw > 0 && ship.getYRot() - yaw < 1,
                     "Turning must build up gradually");
             fly(ship, pilot, 1, 1, 1, 50);
-            helper.assertTrue(ship.getBank(1) > 10 && ship.getBank(1) <= 22 && ship.getXRot() < -10,
+            helper.assertTrue(ship.getBank(1) > 10 && ship.getBank(1) <= 22 && ship.getXRot() < -2,
                     "Forward right turns must bank right and climbs must raise the nose");
             fly(ship, pilot, 1, -1, -1, 65);
-            helper.assertTrue(ship.getBank(1) < -10 && ship.getXRot() > 10,
+            helper.assertTrue(ship.getBank(1) < -10 && ship.getXRot() > 2,
                     "Left turns and descents must tilt in the opposite direction");
             fly(ship, pilot, -1, 0, 1, 90);
-            helper.assertTrue(ship.getXRot() > 10, "Reversing uphill must raise the tail");
-            fly(ship, pilot, 0, 0, 0, 120);
+            helper.assertTrue(ship.getXRot() > 2, "Reversing uphill must raise the tail");
+            fly(ship, pilot, 0, 0, 0, 160);
             helper.assertTrue(ship.getSpeed() == 0 && Math.abs(ship.getBank(1)) < .01 && Math.abs(ship.getXRot()) < .01,
                     "Hover braking must stop and level the ship");
             fly(ship, pilot, 0, 1, 0, 50);
@@ -151,16 +151,107 @@ public class FluxShipTests {
             for (int i = 0; i < 150; i++) {
                 ship.tick();
             }
-            helper.assertTrue(ship.getSpeed() == 0 && Math.abs(ship.getXRot()) < .01,
-                    "Dismounting must leave a parked, level ship");
+            helper.assertTrue(Math.abs(ship.getSpeed() - 1) < .01 && Math.abs(ship.getXRot()) < .01
+                            && ship.getDeltaMovement().horizontalDistance() < .001 && ship.getDeltaMovement().y < 0,
+                    "Dismounting must leave a level ship gently sinking without horizontal drift");
             pilot.startRiding(ship);
-            fly(ship, pilot, 1, 1, 1, 5);
+            fly(ship, pilot, 1, 1, 1, 10);
             helper.assertTrue(ship.getSpeed() > 0 && ship.getXRot() != 0,
                     "The reload check must start with an active ship");
             ship.load(ship.saveWithoutId(new CompoundTag()));
             helper.assertTrue(ship.getDeltaMovement().equals(Vec3.ZERO) && ship.getXRot() == 0
                             && ship.getBank(1) == 0 && ship.getSpeed() == 0,
                     "Reload must clear all transient flight state");
+        } finally {
+            pilot.stopRiding();
+            ship.discard();
+        }
+        helper.succeed();
+    }
+
+    @GameTest(template = "empty")
+    public static void brakingAndReversingPreserveMomentum(GameTestHelper helper) {
+        FluxShipEntity ship = ship(helper, 182000);
+        Player pilot = helper.makeMockPlayer();
+        pilot.startRiding(ship);
+        try {
+            fly(ship, pilot, 1, 0, 1, 80);
+            helper.assertTrue(ship.getDeltaMovement().z > 5.12 && ship.getDeltaMovement().z <= 5.2,
+                    "The ship must cruise above 101.92 blocks per second, 30% faster than a 78.4-block/s elytra dive");
+            Vec3 previous = ship.getDeltaMovement();
+            for (int i = 0; i < 15; i++) {
+                fly(ship, pilot, 0, 0, 0, 1);
+                Vec3 current = ship.getDeltaMovement();
+                helper.assertTrue(current.z < previous.z && current.z >= previous.z * .9399
+                                && current.y < previous.y && current.y >= previous.y * .9199,
+                        "Releasing controls must coast down gradually on both axes");
+                previous = current;
+            }
+            fly(ship, pilot, 1, 0, 1, 80);
+            fly(ship, pilot, -1, 0, -1, 1);
+            helper.assertTrue(ship.getDeltaMovement().z > 0 && ship.getDeltaMovement().y > 0,
+                    "Reversing the controls must not instantly reverse travel");
+            previous = ship.getDeltaMovement();
+            for (int i = 0; i < 80; i++) {
+                fly(ship, pilot, -1, 0, -1, 1);
+                Vec3 current = ship.getDeltaMovement();
+                helper.assertTrue(current.z < previous.z && previous.z - current.z <= .6241
+                                && current.y < previous.y && previous.y - current.y <= .0561,
+                        "Reversals must ease continuously through zero speed");
+                previous = current;
+            }
+            helper.assertTrue(previous.z < -5.12 && previous.y < -.34,
+                    "Reversed flight must eventually reach its horizontal and vertical cruise speeds");
+            fly(ship, pilot, 0, 0, 0, 160);
+            helper.assertTrue(ship.getSpeed() == 0, "Coasting must eventually settle into a stationary hover");
+        } finally {
+            pilot.stopRiding();
+            ship.discard();
+        }
+        helper.succeed();
+    }
+
+    @GameTest(template = "empty")
+    public static void unattendedDescentSurvivesReloadAndStopsOnTheGround(GameTestHelper helper) {
+        FluxShipEntity ship = ship(helper, 182200);
+        Player pilot = helper.makeMockPlayer();
+        pilot.startRiding(ship);
+        try {
+            fly(ship, pilot, 1, 0, 1, 50);
+            Vec3 velocity = ship.getDeltaMovement();
+            pilot.stopRiding();
+            ship.tick();
+            helper.assertTrue(ship.getDeltaMovement().z > velocity.z * .93
+                            && ship.getDeltaMovement().y > velocity.y * .9,
+                    "Losing the pilot must preserve momentum while easing toward a gentle descent");
+            for (int i = 0; i < 150; i++) {
+                ship.tick();
+            }
+            helper.assertTrue(Math.abs(ship.getDeltaMovement().y + .05) < .0001
+                            && ship.getDeltaMovement().horizontalDistance() < .001,
+                    "An unattended ship must settle to a descent of one block per second");
+            pilot.startRiding(ship);
+            fly(ship, pilot, 0, 0, 0, 130);
+            helper.assertTrue(ship.getSpeed() == 0, "Boarding must smoothly arrest the unattended descent");
+            pilot.stopRiding();
+            ship.load(ship.saveWithoutId(new CompoundTag()));
+            double altitude = ship.getY();
+            ship.tick();
+            helper.assertTrue(ship.getY() < altitude && ship.getDeltaMovement().y > -.01,
+                    "A reloaded ship must ease back into descent even with only its panel aboard");
+            ship.setPos(182200.5, 220, 181000.5);
+            BlockPos floor = BlockPos.containing(ship.position()).below();
+            for (BlockPos pos : BlockPos.betweenClosed(floor.offset(-3, 0, -3), floor.offset(3, 0, 3))) {
+                helper.getLevel().setBlock(pos, Blocks.STONE.defaultBlockState(), 2);
+            }
+            for (int i = 0; i < 100; i++) {
+                ship.tick();
+            }
+            helper.assertTrue(ship.onGround() && ship.getY() == 220 && ship.getSpeed() == 0,
+                    "An unattended ship must rest on solid ground without falling through or bouncing");
+            pilot.startRiding(ship);
+            fly(ship, pilot, 0, 0, 1, 30);
+            helper.assertTrue(ship.getY() > 225, "A landed ship must still take off when the pilot returns");
         } finally {
             pilot.stopRiding();
             ship.discard();

@@ -7,6 +7,7 @@ import mcjty.ariente.entities.fluxship.FluxShipClient;
 import mcjty.ariente.entities.fluxship.FluxShipEntity;
 import mcjty.hologui.gui.HoloGuiEntity;
 import net.minecraft.client.CameraType;
+import net.minecraft.client.GraphicsStatus;
 import net.minecraft.client.KeyMapping;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.Screenshot;
@@ -79,8 +80,10 @@ public class FluxShipClientChecks {
             Vector3f up = new Matrix4f(pilotBasePose).invert().mul(event.getPoseStack().last().pose())
                     .transformDirection(new Vector3f(0, 1, 0));
             Vec3 cabinUp = ship.rotateCabinOffset(new Vec3(0, 1, 0), event.getPartialTick());
-            require(new Vec3(up.x, up.y, up.z).distanceTo(cabinUp) < .0001,
-                    "The pilot model must bank and pitch with the cabin");
+            // Cabin offsets use Minecraft's lookup-table trig; render rotations use quaternion trig.
+            require(new Vec3(up.x, up.y, up.z).distanceTo(cabinUp) < .0005,
+                    "The pilot model must bank and pitch with the cabin: actual=" + up + ", expected=" + cabinUp
+                            + ", tick=" + ticks + ", partialTick=" + event.getPartialTick());
         }
     }
 
@@ -128,6 +131,8 @@ public class FluxShipClientChecks {
             mc.options.pauseOnLostFocus = false;
             mc.options.fov().set(70);
             mc.options.setCameraType(CameraType.FIRST_PERSON);
+            mc.options.graphicsMode().set(Boolean.getBoolean("ariente.shipExhaustFabulous") ? GraphicsStatus.FABULOUS : GraphicsStatus.FANCY);
+            mc.levelRenderer.allChanged();
             mc.setScreen(null);
             mc.mouseHandler.releaseMouse();
             UUID playerId = mc.player.getUUID();
@@ -137,7 +142,7 @@ public class FluxShipClientChecks {
                     var level = server.overworld();
                     level.getGameRules().getRule(GameRules.RULE_DOMOBSPAWNING).set(false, server);
                     level.getGameRules().getRule(GameRules.RULE_DAYLIGHT).set(false, server);
-                    level.setDayTime(6000);
+                    level.setDayTime(Boolean.getBoolean("ariente.shipExhaustNight") ? 18000 : 6000);
                     level.setWeatherParameters(6000, 0, false, false);
                     boolean tutorial = Boolean.getBoolean("ariente.shipTutorialCheck");
                     if (tutorial) {
@@ -172,7 +177,7 @@ public class FluxShipClientChecks {
         }
         require(++totalTicks < 700, "Timed out waiting for the ship");
         if (!(mc.player.getVehicle() instanceof FluxShipEntity ship) || !ship.getUUID().equals(shipId)) {
-            if (ticks >= 275) {
+            if (ticks >= 345) {
                 require(Math.abs(observedRoll) < .01, "Dismounting must restore an upright camera");
                 Ariente.setup.getLogger().info("FLUX SHIP CLIENT CHECKS PASSED: keyboard packets, telemetry, bank/pitch, free look, camera settings, seated pilot and dismount; {} cockpit samples, yaw drift={}, projection drift={}, pilot renders={}",
                         cockpitSamples, maxCockpitYawDrift, maxCockpitProjectionDrift, pilotRenderSamples);
@@ -194,6 +199,8 @@ public class FluxShipClientChecks {
             }
         }
         if (ticks == 25) {
+            FluxShipLightingChecks.run(ship);
+            FluxShipSoundChecks.begin(ship);
             require(ship.getHoloGui() instanceof HoloGuiEntity panel && panel.getVehicle() == ship
                             && panel.getGui(mc.player).findChild("ship_speed").isPresent()
                             && panel.getGui(mc.player).findChild("ship_altitude").isPresent(),
@@ -205,10 +212,14 @@ public class FluxShipClientChecks {
         } else if (ticks == 30) {
             key(GLFW.GLFW_KEY_W, true);
         } else if (ticks == 80) {
-            require(ship.getSpeed() > 11, "Forward key packets must accelerate the server ship");
+            FluxShipSoundChecks.cruise(ship);
+            require(ship.getSpeed() > 95 && ship.getSpeed() < 104.1,
+                    "Forward key packets must accelerate the server ship toward 104 blocks per second");
             turnLookOffset = Mth.wrapDegrees(mc.player.getYRot() - ship.getYRot());
             key(GLFW.GLFW_KEY_D, true);
         } else if (ticks == 115) {
+            FluxShipSoundChecks.recovered(ship);
+            FluxShipExhaustChecks.hiddenFromPilot(ship);
             require(cockpitSamples >= 100 && maxCockpitYawDrift < .02,
                     "The pilot and hull must interpolate together throughout each turning frame; drift=" + maxCockpitYawDrift);
             require(ship.getBank(1) > 8 && observedRoll > 8, "A moving right turn must bank the hull and first-person camera");
@@ -222,6 +233,7 @@ public class FluxShipClientChecks {
             mc.player.setXRot(25);
         } else if (ticks == 125) {
             require(Math.abs(observedRoll) < .01, "Third-person cameras must remain upright");
+            FluxShipExhaustChecks.flying(ship);
             screenshot(mc, "ship-banked-exterior");
         } else if (ticks == 130) {
             mc.options.setCameraType(CameraType.FIRST_PERSON);
@@ -232,7 +244,7 @@ public class FluxShipClientChecks {
         } else if (ticks == 165) {
             require(cockpitSamples >= 200 && maxCockpitProjectionDrift < .003,
                     "The dashboard must stay steady in view during combined turns and climbs; projection drift=" + maxCockpitProjectionDrift);
-            require(ship.getXRot() < -10 && ship.getY() > startingAltitude + 5,
+            require(ship.getXRot() < -2 && ship.getY() > startingAltitude + 5,
                     "Rise key packets must climb and pitch the ship up");
             screenshot(mc, "ship-climbing-cockpit");
         } else if (ticks == 166) {
@@ -249,16 +261,21 @@ public class FluxShipClientChecks {
             key(GLFW.GLFW_KEY_W, false);
             key(GLFW.GLFW_KEY_D, false);
             key(GLFW.GLFW_KEY_UP, false);
-        } else if (ticks == 265) {
+        } else if (ticks == 230) {
+            FluxShipSoundChecks.braking(ship);
+            FluxShipExhaustChecks.braking(ship);
+        } else if (ticks == 335) {
+            FluxShipSoundChecks.stopped(ship);
+            FluxShipExhaustChecks.stopped(ship);
             require(ship.getSpeed() == 0 && Math.abs(ship.getBank(1)) < .1
                             && Math.abs(ship.getXRot()) < .1 && Math.abs(observedRoll) < .1,
                     "Releasing keys must brake, hover and level both ship and camera: speed=" + ship.getSpeed()
                             + ", bank=" + ship.getBank(1) + ", pitch=" + ship.getXRot() + ", roll=" + observedRoll);
             screenshot(mc, "ship-hovering-cockpit");
-        } else if (ticks == 275) {
+        } else if (ticks == 345) {
             key(GLFW.GLFW_KEY_LEFT_SHIFT, true);
         }
-        if (ticks > 275) {
+        if (ticks > 345) {
             key(GLFW.GLFW_KEY_LEFT_SHIFT, false);
         }
     }

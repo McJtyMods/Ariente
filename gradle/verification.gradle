@@ -91,6 +91,12 @@ if (project.hasProperty('ariente_ship_check')) {
         workingDirectory project.file('build/verification/ship-client')
         mods.ariente.source(sourceSets.gameTest)
         property 'ariente.shipClientCheck', 'true'
+        if (project.hasProperty('ariente_ship_fabulous')) {
+            property 'ariente.shipExhaustFabulous', 'true'
+        }
+        if (project.hasProperty('ariente_ship_night')) {
+            property 'ariente.shipExhaustNight', 'true'
+        }
         args '--quickPlaySingleplayer', 'ShipCheck', '--width', '1280', '--height', '800'
     }
     tasks.withType(JavaExec).configureEach {

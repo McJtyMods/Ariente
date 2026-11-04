@@ -2,7 +2,7 @@
     - Fill contents with more rooms and corridors
     - Add boss monster
 - Fix flux network and sounds
-- Fix flux ships
+- Fix flux ships: power system (charger)
 - More mobs
 - Extend the search range of the pearl
 - Carve out corridors to nearby dungeons in overworld
@@ -10,5 +10,4 @@
 - Use codex to make a test world with all machines and automation in one place
 - Holo screen system, cameras?
 - Teleportation?
-- Use new displays in dungeons and tutorial level
 - Display modules for RF and fluids

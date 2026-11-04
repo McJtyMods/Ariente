@@ -2,9 +2,9 @@ package mcjty.ariente.entities.fluxship;
 
 import com.mojang.blaze3d.vertex.PoseStack;
 import com.mojang.math.Axis;
+import mcjty.ariente.client.ArienteRenderType;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.renderer.MultiBufferSource;
-import net.minecraft.client.renderer.RenderType;
 import net.minecraft.client.renderer.entity.EntityRenderer;
 import net.minecraft.client.renderer.entity.EntityRendererProvider;
 import net.minecraft.client.renderer.texture.OverlayTexture;
@@ -27,10 +27,13 @@ public class FluxShipRender extends EntityRenderer<FluxShipEntity> {
         pose.mulPose(Axis.YP.rotationDegrees(-ship.getFlightYaw(partialTick)));
         pose.mulPose(Axis.XP.rotationDegrees(ship.getFlightPitch(partialTick)));
         pose.mulPose(Axis.ZP.rotationDegrees(ship.getBank(partialTick)));
+        pose.pushPose();
         pose.mulPose(Axis.YP.rotationDegrees(-90));
         Minecraft mc = Minecraft.getInstance();
-        mc.getBlockRenderer().getModelRenderer().renderModel(pose.last(), buffers.getBuffer(RenderType.entityCutoutNoCull(InventoryMenu.BLOCK_ATLAS)),
+        mc.getBlockRenderer().getModelRenderer().renderModel(pose.last(), buffers.getBuffer(ArienteRenderType.SHIP_HULL),
                 null, mc.getModelManager().getModel(MODEL), 1, 1, 1, light, OverlayTexture.NO_OVERLAY);
+        pose.popPose();
+        FluxShipExhaustRender.render(ship, partialTick, pose);
         pose.popPose();
         super.render(ship, yaw, partialTick, pose, buffers, light);
     }

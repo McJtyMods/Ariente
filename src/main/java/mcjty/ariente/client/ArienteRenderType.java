@@ -1,14 +1,19 @@
 package mcjty.ariente.client;
 
+import com.mojang.blaze3d.platform.Lighting;
 import com.mojang.blaze3d.systems.RenderSystem;
 import com.mojang.blaze3d.vertex.DefaultVertexFormat;
 import com.mojang.blaze3d.vertex.VertexFormat;
+import net.minecraft.client.Minecraft;
 import net.minecraft.client.renderer.RenderType;
 import net.minecraft.client.renderer.Sheets;
 import net.minecraft.client.renderer.ShaderInstance;
 import net.minecraft.client.renderer.texture.TextureAtlas;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraftforge.client.event.RegisterShadersEvent;
+import org.joml.Matrix3f;
+import org.joml.Matrix4f;
+import org.joml.Vector3f;
 
 import java.io.IOException;
 import java.io.UncheckedIOException;
@@ -21,6 +26,8 @@ public class ArienteRenderType extends RenderType {
     private static ShaderInstance displayItemShader;
     private static ShaderInstance fieldMarkerShader;
     private static final Map<RenderType, RenderType> DISPLAY_ITEMS = new IdentityHashMap<>();
+    private static Vector3f previousShipLight0;
+    private static Vector3f previousShipLight1;
 
     public static void registerShaders(RegisterShadersEvent event) {
         try {
@@ -57,6 +64,45 @@ public class ArienteRenderType extends RenderType {
 
     public static final TextureStateShard ARIENTE_TEXTURE_STATE = new TextureStateShard(ArienteSpriteUploader.ARIENTE_ATLAS, false, false);
 
+    private static void setupShipLighting() {
+        ShaderInstance shader = RenderSystem.getShader();
+        if (shader == null || shader.LIGHT0_DIRECTION == null || shader.LIGHT1_DIRECTION == null) {
+            return;
+        }
+        // Read the current global directions through the shader so they can be restored exactly.
+        RenderSystem.setupShaderLights(shader);
+        var light0 = shader.LIGHT0_DIRECTION.getFloatBuffer();
+        var light1 = shader.LIGHT1_DIRECTION.getFloatBuffer();
+        previousShipLight0 = new Vector3f(light0.get(0), light0.get(1), light0.get(2));
+        previousShipLight1 = new Vector3f(light1.get(0), light1.get(1), light1.get(2));
+        // Use only the camera rotation, never the hull's yaw, banking or translation.
+        Matrix4f view = new Matrix4f().set(new Matrix3f(RenderSystem.getInverseViewRotationMatrix()).invert());
+        if (Minecraft.getInstance().level.effects().constantAmbientLight()) {
+            Lighting.setupNetherLevel(view);
+        } else {
+            Lighting.setupLevel(view);
+        }
+    }
+
+    private static void clearShipLighting() {
+        if (previousShipLight0 != null) {
+            RenderSystem.setShaderLights(previousShipLight0, previousShipLight1);
+            previousShipLight0 = previousShipLight1 = null;
+        }
+    }
+
+    // The hull is drawn later than its vertices are collected. Nearby GUIs must not choose its lighting.
+    public static final RenderType SHIP_HULL = create("ariente_ship_hull", DefaultVertexFormat.NEW_ENTITY,
+            VertexFormat.Mode.QUADS, 4096, true, false, CompositeState.builder()
+                    .setShaderState(RENDERTYPE_ENTITY_CUTOUT_NO_CULL_SHADER)
+                    .setTextureState(new TextureStateShard(TextureAtlas.LOCATION_BLOCKS, false, false))
+                    .setLightmapState(LIGHTMAP)
+                    .setOverlayState(OVERLAY)
+                    .setCullState(NO_CULL)
+                    .setLayeringState(new LayeringStateShard("ship_world_lighting", ArienteRenderType::setupShipLighting,
+                            ArienteRenderType::clearShipLighting))
+                    .createCompositeState(true));
+
     // Use the lightmap without item/entity directional lighting for the glass and emissive beam.
     public static final RenderType TANK_CONTENTS = create("ariente_tank_contents", DefaultVertexFormat.NEW_ENTITY,
             VertexFormat.Mode.QUADS, 4096, false, true, CompositeState.builder()
@@ -91,6 +137,18 @@ public class ArienteRenderType extends RenderType {
                     .setTransparencyState(ADDITIVE_TRANSPARENCY)
                     .setWriteMaskState(COLOR_DEPTH_WRITE)
                     .setCullState(NO_CULL)
+                    .createCompositeState(false));
+
+    // Add the glow after particles, including their Fabulous target, without occluding other strands.
+    public static final RenderType SHIP_EXHAUST = create("ariente_ship_exhaust", DefaultVertexFormat.NEW_ENTITY,
+            VertexFormat.Mode.QUADS, 32768, false, false, CompositeState.builder()
+                    .setShaderState(new ShaderStateShard(() -> beamShader))
+                    .setTextureState(new TextureStateShard(TextureAtlas.LOCATION_BLOCKS, false, false))
+                    .setTransparencyState(ADDITIVE_TRANSPARENCY)
+                    .setDepthTestState(LEQUAL_DEPTH_TEST)
+                    .setWriteMaskState(COLOR_WRITE)
+                    .setCullState(NO_CULL)
+                    .setOutputState(PARTICLES_TARGET)
                     .createCompositeState(false));
 
     public static final RenderType ARIENTE_SOLID = create("ariente_solid", DefaultVertexFormat.BLOCK, VertexFormat.Mode.QUADS, 2097152, true, false,

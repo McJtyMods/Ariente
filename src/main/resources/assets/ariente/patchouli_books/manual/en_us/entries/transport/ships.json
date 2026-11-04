@@ -12,12 +12,17 @@
     {
       "type": "patchouli:text",
       "title": "Handling a ship",
-      "text": "The transparent cockpit hologram shows speed in km/h, altitude as world Y, and your current controls while leaving the view ahead visible.$(br2)Acceleration and turning build gradually. The ship banks in moving turns and pitches when climbing or descending. Release controls to brake into a level hover.$(br2)Flight follows the ship’s heading. Looking around does not steer."
+      "text": "The transparent cockpit hologram shows speed in km/h, altitude as world Y, and your current controls while leaving the view ahead visible.$(br2)Top speed is about 374 km/h. Acceleration, braking and reversals build gradually. The ship banks in moving turns and pitches when climbing or descending. Release controls to coast smoothly into a level hover.$(br2)Flight follows the ship’s heading. Looking around does not steer."
+    },
+    {
+      "type": "patchouli:text",
+      "title": "Power exhaust",
+      "text": "Yellow negarite and cyan posirite power flows from the rear engine bay in curling strands. The exhaust grows longer and brighter as the ship gains speed, then fades as it slows.$(br2)The engine hum also grows with speed, with a gently rising pitch. It fades to silence when the ship stops.$(br2)Switch to third person to see your ship's exhaust. You can also see it on other ships while watching them fly."
     },
     {
       "type": "patchouli:text",
       "title": "Cockpit view",
-      "text": "First-person camera tilt follows the hull. Reduce or disable it using utility.fluxShipCameraTilt (0 to 1) in ariente-client.toml.$(br2)The third-person camera stays upright and can look around. Your pilot model stays seated facing forward and tilts with the hull.$(br2)Sneak-hit an unattended ship to recover its item. Ships reload parked. Find a clear landing area before dismounting; there is no automatic landing or navigation."
+      "text": "First-person camera tilt follows the hull. Reduce or disable it using utility.fluxShipCameraTilt (0 to 1) in ariente-client.toml.$(br2)The third-person camera stays upright and can look around. Your pilot model stays seated facing forward and tilts with the hull.$(br2)Without a pilot, the ship coasts to a stop horizontally and gently sinks at up to one block per second until it rests on the ground. This also happens after reloading. It cannot navigate around obstacles.$(br2)Sneak-hit an unattended ship to recover its item."
     }
   ],
   "extra_recipe_mappings": {
