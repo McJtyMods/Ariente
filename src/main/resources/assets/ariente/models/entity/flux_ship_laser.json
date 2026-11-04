@@ -1,0 +1,38 @@
+{
+  "ambientocclusion": false,
+  "textures": {
+    "casing": "ariente:block/blacktech/blacktech_var1",
+    "barrel": "minecraft:block/iron_block",
+    "lens": "ariente:block/machines/negarite_beam"
+  },
+  "elements": [
+    {
+      "from": [-3, -2, 0], "to": [3, 2, 4],
+      "faces": {
+        "down": {"texture": "#casing", "uv": [0, 0, 16, 16]}, "up": {"texture": "#casing", "uv": [0, 0, 16, 16]},
+        "north": {"texture": "#casing", "uv": [0, 0, 16, 16]}, "south": {"texture": "#casing", "uv": [0, 0, 16, 16]},
+        "west": {"texture": "#casing", "uv": [0, 0, 16, 16]}, "east": {"texture": "#casing", "uv": [0, 0, 16, 16]}
+      }
+    },
+    {
+      "from": [-1.1, -1.1, 4], "to": [1.1, 1.1, 12],
+      "faces": {
+        "down": {"texture": "#barrel", "uv": [0, 0, 16, 16]}, "up": {"texture": "#barrel", "uv": [0, 0, 16, 16]},
+        "north": {"texture": "#barrel", "uv": [0, 0, 16, 16]}, "south": {"texture": "#barrel", "uv": [0, 0, 16, 16]},
+        "west": {"texture": "#barrel", "uv": [0, 0, 16, 16]}, "east": {"texture": "#barrel", "uv": [0, 0, 16, 16]}
+      }
+    },
+    {
+      "from": [-2, -2, 9], "to": [2, 2, 11],
+      "faces": {
+        "down": {"texture": "#casing", "uv": [0, 0, 16, 16]}, "up": {"texture": "#casing", "uv": [0, 0, 16, 16]},
+        "north": {"texture": "#casing", "uv": [0, 0, 16, 16]}, "south": {"texture": "#casing", "uv": [0, 0, 16, 16]},
+        "west": {"texture": "#casing", "uv": [0, 0, 16, 16]}, "east": {"texture": "#casing", "uv": [0, 0, 16, 16]}
+      }
+    },
+    {
+      "from": [-1, -1, 12], "to": [1, 1, 12.05],
+      "faces": {"south": {"texture": "#lens", "uv": [0, 0, 16, 16]}}
+    }
+  ]
+}

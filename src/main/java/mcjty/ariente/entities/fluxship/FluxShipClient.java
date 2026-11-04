@@ -43,22 +43,26 @@ public class FluxShipClient {
     }
 
     public static String movementKeys() {
-        return KeyBindings.flyForward.getKeyName() + " / " + KeyBindings.flyBackwards.getKeyName() + "  Forward / reverse";
+        return KeyBindings.flyForward.getKeyName() + "/" + KeyBindings.flyBackwards.getKeyName() + " Move";
     }
 
     public static String turnKeys() {
-        return KeyBindings.turnLeft.getKeyName() + " / " + KeyBindings.turnRight.getKeyName() + "  Turn left / right";
+        return KeyBindings.turnLeft.getKeyName() + "/" + KeyBindings.turnRight.getKeyName() + " Turn";
     }
 
     public static String heightKeys() {
-        return KeyBindings.flyUp.getKeyName() + " / " + KeyBindings.flyDown.getKeyName() + "  Up / down";
+        return KeyBindings.flyUp.getKeyName() + "/" + KeyBindings.flyDown.getKeyName();
     }
 
     public static String alternateHeightKeys() {
-        return KeyBindings.startFlying.getKeyName() + " / " + KeyBindings.startLanding.getKeyName() + "  Rise / descend";
+        return KeyBindings.startFlying.getKeyName() + "/" + KeyBindings.startLanding.getKeyName();
     }
 
     public static String dismountKey() {
         return Minecraft.getInstance().options.keyShift.getTranslatedKeyMessage().getString() + "  Dismount";
+    }
+
+    public static String firingKey() {
+        return KeyBindings.fireShipLaser.getKeyName() + " Hold fire | Aim with hull";
     }
 }

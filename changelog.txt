@@ -1,4 +1,5 @@
 1.20-0.0.31-alpha:
+- Flux Ships now have a front-mounted rapid-fire laser with Energy Lance damage. Hold V (rebindable) to fire and aim with the hull, using the new cockpit crosshair and compact flight instruments.
 - Added Fluid and Forge Energy display modules with Constructor blueprints, configurable numbers, meters and histories, fluid tank selection and units, and FE capacity, percentage and net buffer change readings.
 - Flux Ships now have a flight engine hum based on the Flux Levitator sound, with smooth volume changes and a gentle pitch rise as speed increases. Pilots hear a cockpit loop; nearby observers hear positional sound.
 - Flux Ships have flowing yellow negarite and cyan posirite exhaust strands from the rear engine bay. The glow grows with flight speed and is visible in third person and on other ships.

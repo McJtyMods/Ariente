@@ -33,6 +33,7 @@ public class FluxShipRender extends EntityRenderer<FluxShipEntity> {
         mc.getBlockRenderer().getModelRenderer().renderModel(pose.last(), buffers.getBuffer(ArienteRenderType.SHIP_HULL),
                 null, mc.getModelManager().getModel(MODEL), 1, 1, 1, light, OverlayTexture.NO_OVERLAY);
         pose.popPose();
+        FluxShipWeaponRender.render(pose, buffers, light);
         FluxShipExhaustRender.render(ship, partialTick, pose);
         pose.popPose();
         super.render(ship, yaw, partialTick, pose, buffers, light);

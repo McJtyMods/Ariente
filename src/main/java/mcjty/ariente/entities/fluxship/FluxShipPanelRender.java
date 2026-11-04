@@ -38,14 +38,14 @@ public class FluxShipPanelRender extends EntityRenderer<HoloGuiEntity> {
             pose.mulPose(Axis.XP.rotationDegrees(ship.getFlightPitch(partialTick)));
             pose.mulPose(Axis.ZP.rotationDegrees(ship.getBank(partialTick)));
             pose.mulPose(Axis.YP.rotationDegrees(180));
-            renderInstruments(panel, pose);
+            renderInstruments(panel, ship, partialTick, pose);
         } else {
             HoloGuiEntityRender.doActualRender(panel, pose, buffers);
         }
         pose.popPose();
     }
 
-    private static void renderInstruments(HoloGuiEntity panel, PoseStack pose) {
+    private static void renderInstruments(HoloGuiEntity panel, FluxShipEntity ship, float partialTick, PoseStack pose) {
         Minecraft mc = Minecraft.getInstance();
         MultiBufferSource buffers = type -> GUI_BUFFERS.getBuffer(HoloGuiRenderTools.guiRenderType(type));
         pose.translate(0, .5, 0);
@@ -58,6 +58,15 @@ public class FluxShipPanelRender extends EntityRenderer<HoloGuiEntity> {
         canvas.fill(-.5f, .5f - edge, 1, edge, 0x9095e8ff);
         canvas.fill(-.5f, -.5f, edge, 1, 0x9095e8ff);
         canvas.fill(.5f - edge, -.5f, edge, 1, 0x9095e8ff);
+        Vec3 sightOffset = FluxShipLaser.sightOnPanel(ship, partialTick).subtract(FluxShipLaser.panelCenter(ship, partialTick));
+        float sightX = (float) (sightOffset.dot(ship.rotateCabinOffset(new Vec3(-1, 0, 0), partialTick)) / scale);
+        float sightY = (float) (sightOffset.dot(ship.rotateCabinOffset(new Vec3(0, 1, 0), partialTick)) / scale);
+        pose.pushPose();
+        pose.translate(0, 0, .006);
+        crosshair(canvas, sightX, sightY, .008f, 0xf0081820);
+        pose.translate(0, 0, .001);
+        crosshair(canvas, sightX, sightY, .003f, 0xffb8f4ff);
+        pose.popPose();
         GUI_BUFFERS.endBatch();
         IGuiComponent<?> gui = panel.getGui(mc.player);
         if (gui != null) {
@@ -77,6 +86,14 @@ public class FluxShipPanelRender extends EntityRenderer<HoloGuiEntity> {
             gui.render(pose, buffers, mc.player, panel, -1, -1);
             GUI_BUFFERS.endBatch();
         }
+    }
+
+    private static void crosshair(DisplayCanvas canvas, float x, float y, float thickness, int color) {
+        canvas.fill(x - .055f, y - thickness / 2, .035f, thickness, color);
+        canvas.fill(x + .02f, y - thickness / 2, .035f, thickness, color);
+        canvas.fill(x - thickness / 2, y - .055f, thickness, .035f, color);
+        canvas.fill(x - thickness / 2, y + .02f, thickness, .035f, color);
+        canvas.fill(x - thickness / 2, y - thickness / 2, thickness, thickness, color);
     }
 
     @Override

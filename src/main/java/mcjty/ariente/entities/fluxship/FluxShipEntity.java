@@ -47,6 +47,9 @@ public class FluxShipEntity extends Entity {
     private int turn;
     private int vertical;
     private int inputTimeout;
+    private Player inputPilot;
+    private boolean firing;
+    private int laserCooldown;
     private int lerpSteps;
     private Vec3 lerpTarget = Vec3.ZERO;
     private float turnSpeed;
@@ -70,11 +73,17 @@ public class FluxShipEntity extends Entity {
     }
 
     public void handleInput(Player player, int forward, int turn, int vertical) {
+        handleInput(player, forward, turn, vertical, false);
+    }
+
+    public void handleInput(Player player, int forward, int turn, int vertical, boolean firing) {
         if (getControllingPassenger() == player && forward >= -1 && forward <= 1
                 && turn >= -1 && turn <= 1 && vertical >= -1 && vertical <= 1) {
             this.forward = forward;
             this.turn = turn;
             this.vertical = vertical;
+            this.firing = firing;
+            inputPilot = player;
             inputTimeout = 5;
         }
     }
@@ -140,7 +149,7 @@ public class FluxShipEntity extends Entity {
     }
 
     public Vec3 getPanelPosition(float partialTick) {
-        return getPosition(partialTick).add(0, .5, 0).add(rotateCabinOffset(new Vec3(0, .3, 1.5), partialTick));
+        return FluxShipLaser.panelCenter(this, partialTick).subtract(rotateCabinOffset(new Vec3(0, .5, 0), partialTick));
     }
 
     @Override
@@ -270,8 +279,10 @@ public class FluxShipEntity extends Entity {
         }
         ensureHoloGui();
         LivingEntity pilot = getControllingPassenger();
-        if (pilot == null || inputTimeout-- <= 0) {
+        if (pilot == null || !pilot.isAlive() || pilot != inputPilot || inputTimeout-- <= 0) {
             forward = turn = vertical = 0;
+            firing = false;
+            inputPilot = null;
         }
         turnSpeed = Mth.lerp(.15f, turnSpeed, turn * MAX_TURN_SPEED);
         if (Math.abs(turnSpeed) < .001f) {
@@ -308,6 +319,12 @@ public class FluxShipEntity extends Entity {
         float pitch = Mth.lerp(.15f, getXRot(), Mth.clamp(targetPitch, -MAX_PITCH, MAX_PITCH));
         setXRot(Math.abs(pitch) < .001f ? 0 : pitch);
         entityData.set(PITCH, getXRot());
+        if (laserCooldown > 0) {
+            laserCooldown--;
+        }
+        if (firing && pilot instanceof Player player && FluxShipLaser.fire(this, player, laserCooldown)) {
+            laserCooldown = FluxShipLaser.SHOT_INTERVAL;
+        }
         fallDistance = 0;
         if (pilot != null) {
             pilot.fallDistance = 0;
@@ -327,6 +344,9 @@ public class FluxShipEntity extends Entity {
         // Clear transient controls; an unattended ship resumes its gentle descent on the next tick.
         setDeltaMovement(Vec3.ZERO);
         forward = turn = vertical = inputTimeout = lerpSteps = 0;
+        inputPilot = null;
+        firing = false;
+        laserCooldown = 0;
         turnSpeed = bank = previousBank = yawChange = 0;
         exhaustStrength = previousExhaustStrength = 0;
         lastPilotTurnTick = -1;

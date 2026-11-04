@@ -15,23 +15,22 @@ public class FluxShipGui {
     public static IGuiComponent<?> createGui(Player player) {
         IGuiComponentRegistry registry = Ariente.guiHandler.getComponentRegistry();
         return registry.panel(0, 0, 8, 8)
-                .add(registry.text(.3, .4, 7.4, 1).text("FLUX SHIP").scale(.7f).color(LABEL_COLOR))
-                .add(registry.text(.3, 1.6, 4.3, 1).text("Speed km/h").scale(.6f).color(LABEL_COLOR))
-                .add(registry.number(5, 1.6, 2.4, 1).name("ship_speed")
+                .add(registry.text(.3, .2, 7.4, .6).text("FLUX SHIP").scale(.5f).color(LABEL_COLOR))
+                .add(registry.text(.3, 1.0, 3.2, .6).text("Speed km/h").scale(.35f).color(LABEL_COLOR))
+                .add(registry.number(.3, 1.6, 3.2, .8).name("ship_speed")
                         .color(VALUE_COLOR)
                         .getter((p, holo) -> holo.getEntity().getVehicle() instanceof FluxShipEntity ship
                                 ? Math.round(ship.getSpeed() * 3.6f) : 0))
-                .add(registry.text(.3, 2.6, 4.3, 1).text("Altitude (Y)").scale(.6f).color(LABEL_COLOR))
-                .add(registry.number(5, 2.6, 2.4, 1).name("ship_altitude")
+                .add(registry.text(4.8, 1.0, 2.9, .6).text("Altitude (Y)").scale(.35f).color(LABEL_COLOR))
+                .add(registry.number(4.8, 1.6, 2.9, .8).name("ship_altitude")
                         .color(VALUE_COLOR)
                         .getter((p, holo) -> holo.getEntity().getVehicle() instanceof FluxShipEntity ship
                                 ? Mth.floor(ship.getY()) : 0))
-                .add(registry.text(.3, 4, 7.4, 1).text("FLIGHT CONTROLS").scale(.5f).color(LABEL_COLOR))
-                .add(registry.text(.3, 4.7, 7.4, 1).text(FluxShipClient::movementKeys).scale(.4f).color(LABEL_COLOR))
-                .add(registry.text(.3, 5.3, 7.4, 1).text(FluxShipClient::turnKeys).scale(.4f).color(LABEL_COLOR))
-                .add(registry.text(.3, 5.9, 7.4, 1).text(FluxShipClient::heightKeys).scale(.4f).color(LABEL_COLOR))
-                .add(registry.text(.3, 6.5, 7.4, 1).text(FluxShipClient::alternateHeightKeys).scale(.4f).color(LABEL_COLOR))
-                .add(registry.text(.3, 7.1, 7.4, 1).text(FluxShipClient::dismountKey).scale(.4f).color(LABEL_COLOR))
-                .add(registry.text(.3, 7.7, 7.4, 1).text("Release controls to hover").scale(.4f).color(LABEL_COLOR));
+                .add(registry.text(.3, 2.7, 7.4, .6).name("ship_fire").text(FluxShipClient::firingKey).scale(.35f).color(LABEL_COLOR))
+                .add(registry.text(.3, 5.9, 7.4, .6).text(() -> FluxShipClient.movementKeys() + "   " + FluxShipClient.turnKeys()).scale(.3f).color(LABEL_COLOR))
+                .add(registry.text(.3, 6.6, 7.4, .6).text(() -> FluxShipClient.heightKeys() + " or "
+                        + FluxShipClient.alternateHeightKeys() + " Rise/descend").scale(.26f).color(LABEL_COLOR))
+                .add(registry.text(.3, 7.3, 7.4, .6).text(() -> FluxShipClient.dismountKey()
+                        + " | Release controls to hover").scale(.25f).color(LABEL_COLOR));
     }
 }

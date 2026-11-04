@@ -1,5 +1,12 @@
 package mcjty.ariente.entities;
 
+import mcjty.ariente.Ariente;
+import mcjty.ariente.entities.fluxship.FluxShipLaser;
+import mcjty.hologui.api.IHoloGuiEntity;
+import net.minecraft.core.registries.Registries;
+import net.minecraft.resources.ResourceKey;
+import net.minecraft.resources.ResourceLocation;
+import net.minecraft.world.damagesource.DamageType;
 import net.minecraft.network.protocol.game.ClientGamePacketListener;
 import net.minecraft.network.FriendlyByteBuf;
 import mcjty.ariente.api.IForceFieldTile;
@@ -35,20 +42,26 @@ import net.minecraft.world.phys.Vec3;
 import net.minecraft.world.phys.AABB;
 import net.minecraftforge.network.NetworkHooks;
 import net.minecraftforge.entity.IEntityAdditionalSpawnData;
+import org.joml.Vector3f;
 
 public class LaserEntity extends Projectile implements IForcefieldImmunity, IEntityAdditionalSpawnData {
+
+    public static final ResourceKey<DamageType> SHIP_DAMAGE = ResourceKey.create(Registries.DAMAGE_TYPE,
+            new ResourceLocation(Ariente.MODID, "ship_laser"));
 
     private static final EntityDataAccessor<Float> SPAWN_YAW = SynchedEntityData.<Float>defineId(LaserEntity.class, EntityDataSerializers.FLOAT);
     private static final EntityDataAccessor<Float> SPAWN_PITCH = SynchedEntityData.<Float>defineId(LaserEntity.class, EntityDataSerializers.FLOAT);
     private static final EntityDataAccessor<Float> ACCELERATION_X = SynchedEntityData.defineId(LaserEntity.class, EntityDataSerializers.FLOAT);
     private static final EntityDataAccessor<Float> ACCELERATION_Y = SynchedEntityData.defineId(LaserEntity.class, EntityDataSerializers.FLOAT);
     private static final EntityDataAccessor<Float> ACCELERATION_Z = SynchedEntityData.defineId(LaserEntity.class, EntityDataSerializers.FLOAT);
+    private static final EntityDataAccessor<Vector3f> SHIP_VELOCITY = SynchedEntityData.defineId(LaserEntity.class, EntityDataSerializers.VECTOR3);
 
     private LivingEntity shootingEntity;
     private int ticksAlive;
     private int ticksInAir;
     private float damage = 10.0F;
     private boolean lanceShot;
+    private boolean shipShot;
     private boolean inhibit;
     private int fireAspect;
     private int looting;
@@ -79,11 +92,21 @@ public class LaserEntity extends Projectile implements IForcefieldImmunity, IEnt
         buffer.writeDouble(start.x);
         buffer.writeDouble(start.y);
         buffer.writeDouble(start.z);
+        buffer.writeBoolean(shipShot);
+        Vec3 velocity = getDeltaMovement();
+        buffer.writeDouble(velocity.x);
+        buffer.writeDouble(velocity.y);
+        buffer.writeDouble(velocity.z);
     }
 
     @Override
     public void readSpawnData(FriendlyByteBuf buffer) {
         launchPosition = new Vec3(buffer.readDouble(), buffer.readDouble(), buffer.readDouble());
+        shipShot = buffer.readBoolean();
+        // Vanilla spawn packets clamp velocity to 3.9 blocks/tick; the cannon must outrun the ship.
+        Vec3 velocity = new Vec3(buffer.readDouble(), buffer.readDouble(), buffer.readDouble());
+        entityData.set(SHIP_VELOCITY, velocity.toVector3f());
+        setDeltaMovement(velocity);
     }
 
     public double getBeamLength(Vec3 head) {
@@ -98,6 +121,35 @@ public class LaserEntity extends Projectile implements IForcefieldImmunity, IEnt
         entityData.define(ACCELERATION_X, 0.0F);
         entityData.define(ACCELERATION_Y, 0.0F);
         entityData.define(ACCELERATION_Z, 0.0F);
+        entityData.define(SHIP_VELOCITY, new Vector3f());
+    }
+
+    @Override
+    public void setDeltaMovement(Vec3 velocity) {
+        super.setDeltaMovement(velocity);
+        if (shipShot && !level().isClientSide) {
+            entityData.set(SHIP_VELOCITY, velocity.toVector3f());
+        }
+    }
+
+    @Override
+    public void lerpMotion(double x, double y, double z) {
+        // Pairing and later velocity packets also clamp each component. Use the full synced vector.
+        if (shipShot) {
+            Vector3f velocity = entityData.get(SHIP_VELOCITY);
+            super.lerpMotion(velocity.x, velocity.y, velocity.z);
+        } else {
+            super.lerpMotion(x, y, z);
+        }
+    }
+
+    @Override
+    public void onSyncedDataUpdated(EntityDataAccessor<?> key) {
+        super.onSyncedDataUpdated(key);
+        if (key.equals(SHIP_VELOCITY) && shipShot && level().isClientSide) {
+            Vector3f velocity = entityData.get(SHIP_VELOCITY);
+            setDeltaMovement(velocity.x, velocity.y, velocity.z);
+        }
     }
 
     @Override
@@ -209,6 +261,23 @@ public class LaserEntity extends Projectile implements IForcefieldImmunity, IEnt
         return lanceShot;
     }
 
+    public static LaserEntity createShipShot(Level level, LivingEntity pilot, Vec3 muzzle, Vec3 direction, float damage) {
+        LaserEntity entity = new LaserEntity(Registration.ENTITY_LASER.get(), level);
+        entity.shootingEntity = pilot;
+        entity.setOwner(pilot);
+        entity.shipShot = true;
+        entity.damage = damage;
+        entity.setPos(muzzle);
+        entity.setDeltaMovement(direction.normalize().scale(FluxShipLaser.SHOT_SPEED));
+        entity.setAcceleration(Vec3.ZERO);
+        entity.setLaunchRotation();
+        return entity;
+    }
+
+    public boolean isShipShot() {
+        return shipShot;
+    }
+
     public int getLootingLevel() {
         return looting;
     }
@@ -226,8 +295,8 @@ public class LaserEntity extends Projectile implements IForcefieldImmunity, IEnt
 
     @Override
     public void tick() {
-        if (!level().isClientSide && lanceShot) {
-            if (++ticksAlive > 100) {
+        if (!level().isClientSide && (lanceShot || shipShot)) {
+            if (++ticksAlive > (shipShot ? FluxShipLaser.SHOT_LIFETIME : 100)) {
                 discard();
                 return;
             }
@@ -240,7 +309,8 @@ public class LaserEntity extends Projectile implements IForcefieldImmunity, IEnt
 
             ++this.ticksInAir;
             HitResult raytraceresult = ProjectileUtil.getHitResultOnMoveVector(this,
-                    entity -> lanceShot ? canHitEntity(entity) : entity != this.shootingEntity || this.ticksInAir >= 25);
+                    entity -> shipShot ? canHitEntity(entity) && !(entity instanceof LaserEntity) && !(entity instanceof IHoloGuiEntity)
+                            : lanceShot ? canHitEntity(entity) : entity != this.shootingEntity || this.ticksInAir >= 25);
 
             if (raytraceresult != null && !net.minecraftforge.event.ForgeEventFactory.onProjectileImpact(this, raytraceresult)) {
                 this.onImpact(raytraceresult);
@@ -280,7 +350,7 @@ public class LaserEntity extends Projectile implements IForcefieldImmunity, IEnt
     }
 
     protected float getMotionFactor() {
-        return 0.95F;
+        return shipShot ? 1 : 0.95F;
     }
 
     protected void onImpact(HitResult result) {
@@ -291,7 +361,9 @@ public class LaserEntity extends Projectile implements IForcefieldImmunity, IEnt
                 // Ignite before damage so a killing shot can also produce cooked drops.
                 target.setSecondsOnFire(fireAspect * 4);
             }
-            boolean damaged = target.hurt(damageSources().indirectMagic(this, shootingEntity), damage);
+            DamageSource source = shipShot ? new DamageSource(level().registryAccess().registryOrThrow(Registries.DAMAGE_TYPE)
+                    .getHolderOrThrow(SHIP_DAMAGE), this, shootingEntity) : damageSources().indirectMagic(this, shootingEntity);
+            boolean damaged = target.hurt(source, damage);
             if (!damaged && lanceShot && fireAspect > 0) {
                 target.setRemainingFireTicks(previousFireTicks);
             }
@@ -299,7 +371,7 @@ public class LaserEntity extends Projectile implements IForcefieldImmunity, IEnt
                 WeaponModuleSupport.inhibit(living);
             }
             this.remove(RemovalReason.DISCARDED);
-        } else if (!level().isClientSide && lanceShot && result.getType() == HitResult.Type.BLOCK) {
+        } else if (!level().isClientSide && (lanceShot || shipShot) && result.getType() == HitResult.Type.BLOCK) {
             discard();
         }
     }
@@ -315,6 +387,7 @@ public class LaserEntity extends Projectile implements IForcefieldImmunity, IEnt
         compound.putFloat("spawnPitch", getSpawnPitch());
         compound.putFloat("damage", damage);
         compound.putBoolean("lanceShot", lanceShot);
+        compound.putBoolean("shipShot", shipShot);
         compound.putBoolean("lanceInhibit", inhibit);
         compound.putInt("lanceFire", fireAspect);
         compound.putInt("lanceLooting", looting);
@@ -325,6 +398,7 @@ public class LaserEntity extends Projectile implements IForcefieldImmunity, IEnt
         super.readAdditionalSaveData(compound);
         damage = compound.contains("damage") ? compound.getFloat("damage") : 10.0F;
         lanceShot = compound.getBoolean("lanceShot");
+        shipShot = compound.getBoolean("shipShot");
         inhibit = compound.getBoolean("lanceInhibit");
         fireAspect = compound.getInt("lanceFire");
         looting = compound.getInt("lanceLooting");

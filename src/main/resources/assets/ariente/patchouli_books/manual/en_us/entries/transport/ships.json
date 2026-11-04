@@ -16,6 +16,11 @@
     },
     {
       "type": "patchouli:text",
+      "title": "Forward laser",
+      "text": "Hold V to fire the front cannon, up to five shots per second. Change Fire ship laser in Controls to rebind it. Each shot deals the damage of an unupgraded Energy Lance, without ammunition.$(br2)Aim by turning and pitching the whole ship. Looking around does not steer the cannon. The center crosshair on the cockpit hologram points along the cannon's line of fire, accounting for its position below your eyes."
+    },
+    {
+      "type": "patchouli:text",
       "title": "Power exhaust",
       "text": "Yellow negarite and cyan posirite power flows from the rear engine bay in curling strands. The exhaust grows longer and brighter as the ship gains speed, then fades as it slows.$(br2)The engine hum also grows with speed, with a gently rising pitch. It fades to silence when the ship stops.$(br2)Switch to third person to see your ship's exhaust. You can also see it on other ships while watching them fly."
     },

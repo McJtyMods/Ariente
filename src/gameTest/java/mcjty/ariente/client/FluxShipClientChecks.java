@@ -5,6 +5,7 @@ import mcjty.ariente.Ariente;
 import mcjty.ariente.config.UtilityConfiguration;
 import mcjty.ariente.entities.fluxship.FluxShipClient;
 import mcjty.ariente.entities.fluxship.FluxShipEntity;
+import mcjty.ariente.entities.fluxship.FluxShipLaser;
 import mcjty.hologui.gui.HoloGuiEntity;
 import net.minecraft.client.CameraType;
 import net.minecraft.client.GraphicsStatus;
@@ -186,6 +187,7 @@ public class FluxShipClientChecks {
             return;
         }
         ticks++;
+        FluxShipWeaponChecks.observeSpawns();
         if (ticks >= 95 && ticks < 115 || ticks >= 145 && ticks < 165) {
             float start = Mth.wrapDegrees(mc.player.getViewYRot(0) - ship.yRotO);
             Vector3f initialProjection = cockpitProjection(mc, ship, 0);
@@ -201,6 +203,7 @@ public class FluxShipClientChecks {
         if (ticks == 25) {
             FluxShipLightingChecks.run(ship);
             FluxShipSoundChecks.begin(ship);
+            FluxShipWeaponChecks.begin(ship);
             require(ship.getHoloGui() instanceof HoloGuiEntity panel && panel.getVehicle() == ship
                             && panel.getGui(mc.player).findChild("ship_speed").isPresent()
                             && panel.getGui(mc.player).findChild("ship_altitude").isPresent(),
@@ -211,6 +214,14 @@ public class FluxShipClientChecks {
             screenshot(mc, "ship-cockpit");
         } else if (ticks == 30) {
             key(GLFW.GLFW_KEY_W, true);
+        } else if (ticks == 40) {
+            key(GLFW.GLFW_KEY_V, true);
+        } else if (ticks == 60) {
+            screenshot(mc, "ship-firing-cockpit");
+        } else if (ticks == 70) {
+            key(GLFW.GLFW_KEY_V, false);
+        } else if (ticks == 79) {
+            FluxShipWeaponChecks.released(ship);
         } else if (ticks == 80) {
             FluxShipSoundChecks.cruise(ship);
             require(ship.getSpeed() > 95 && ship.getSpeed() < 104.1,
@@ -228,6 +239,8 @@ public class FluxShipClientChecks {
             checkCameraOptions(mc, ship);
             screenshot(mc, "ship-banked-cockpit");
         } else if (ticks == 120) {
+            FluxShipWeaponChecks.beforeFreeLook();
+            key(GLFW.GLFW_KEY_V, true);
             mc.options.setCameraType(CameraType.THIRD_PERSON_BACK);
             mc.player.setYRot(ship.getYRot() + 70);
             mc.player.setXRot(25);
@@ -236,6 +249,7 @@ public class FluxShipClientChecks {
             FluxShipExhaustChecks.flying(ship);
             screenshot(mc, "ship-banked-exterior");
         } else if (ticks == 130) {
+            key(GLFW.GLFW_KEY_V, false);
             mc.options.setCameraType(CameraType.FIRST_PERSON);
             mc.player.setYRot(ship.getYRot());
             mc.player.setXRot(5);
@@ -265,6 +279,7 @@ public class FluxShipClientChecks {
             FluxShipSoundChecks.braking(ship);
             FluxShipExhaustChecks.braking(ship);
         } else if (ticks == 335) {
+            FluxShipWeaponChecks.complete(ship);
             FluxShipSoundChecks.stopped(ship);
             FluxShipExhaustChecks.stopped(ship);
             require(ship.getSpeed() == 0 && Math.abs(ship.getBank(1)) < .1
@@ -298,8 +313,7 @@ public class FluxShipClientChecks {
     }
 
     private static Vector3f cockpitProjection(Minecraft mc, FluxShipEntity ship, float partialTick) {
-        Vec3 center = ship.getPosition(partialTick).add(0, .5, 0)
-                .add(ship.rotateCabinOffset(new Vec3(0, .8, 1.5), partialTick));
+        Vec3 center = FluxShipLaser.panelCenter(ship, partialTick);
         Vec3 relative = center.subtract(mc.player.getEyePosition(partialTick));
         var angles = new ViewportEvent.ComputeCameraAngles(mc.gameRenderer, mc.gameRenderer.getMainCamera(), partialTick,
                 mc.player.getViewYRot(partialTick), mc.player.getViewXRot(partialTick), 0);
