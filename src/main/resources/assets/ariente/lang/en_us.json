@@ -2,6 +2,8 @@
   "block.ariente.charger": "Flux Ship Charger",
   "message.ariente.charger.header": "Charges a stationary Flux Ship above it using both flux types",
   "message.ariente.ship_charge": "Ship charge: %s%%",
+  "message.ariente.flux_ship.no_power": "No power",
+  "command.ariente.equip.success": "Ariente loadout equipped: upgraded power armor (forcefield off), Enhanced Energy Sabre, Energy Lance, fueled Energy Holder and fully charged Flux Ship.",
   "block.ariente.holo_storage_1": "Holo Storage Cube I (30 stacks)",
   "block.ariente.holo_storage_2": "Holo Storage Cube II (60 stacks)",
   "block.ariente.holo_storage_3": "Holo Storage Cube III (120 stacks)",

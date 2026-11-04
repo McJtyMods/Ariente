@@ -32,7 +32,7 @@
     {
       "type": "patchouli:text",
       "title": "Charging and endurance",
-      "text": "The charge bar at the bottom of the cockpit shows stored power. A full battery lasts about 20 minutes at full speed; hovering and gently descending use much less.$(br2)Center the ship just above a Flux Ship Charger and stop to recharge. Connect both negarite and posirite power, separately or through a combined cable. A full charge takes about one minute with enough power.$(br2)An empty battery eases the ship into a slow descent. Picking up and replacing a ship preserves its remaining charge."
+      "text": "Crafted ships and ships from the creative inventory start empty. The cockpit shows No power until charged.$(br2)Center the ship just above a Flux Ship Charger and stop to recharge. Connect both negarite and posirite power, separately or through a combined cable. A full charge takes about one minute.$(br2)The cockpit charge bar shows stored power. A full battery lasts about 20 minutes at full speed; hovering and descent use much less. Empty ships gently descend. Picking up and replacing a ship preserves its charge."
     },
     {
       "type": "patchouli:spotlight",

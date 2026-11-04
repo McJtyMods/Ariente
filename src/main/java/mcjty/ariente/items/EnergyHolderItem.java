@@ -103,7 +103,7 @@ public class EnergyHolderItem extends Item implements ITooltipSettings {
         return true;
     }
 
-    private static long powerCapacity() {
+    public static long powerCapacity() {
         long normal = UtilityConfiguration.POWERSUIT_TICKS.get();
         long optimized = UtilityConfiguration.POWERSUIT_TICKS_OPTIMIZED.get();
         long a = normal;

@@ -1044,6 +1044,18 @@ Source: [Forcefield Generator](src/main/java/mcjty/ariente/blocks/defense/ForceF
 
 ## Power armor, modules, and sabres
 
+### Operator loadout
+
+Run `/ariente equip` as a player with permission level 2 (operator/cheats) to
+equip a full power suit and an Enhanced Energy Sabre. The hotbar also receives
+an Energy Lance, an Energy Holder with one million fuel pairs and a full current
+charge, and a fully charged Flux Ship. The off hand is cleared for lance use.
+Replaced items return to the inventory or drop nearby when there is no room.
+
+Every armor piece has active Energy Efficiency and Armor Improvement modules.
+The boots also have Feather Falling; the chest has active Regeneration and an
+installed, **disabled** Forcefield. Configure modules with the usual armor key.
+
 ### Configuration and fuel
 
 Wear the power armor piece, or hold the Enhanced Energy Sabre or Energy Lance in your main hand,
@@ -1300,10 +1312,14 @@ stay upright; the pilot model sits facing forward in the chair and tilts with th
 while the camera can look around independently.
 
 A sneaking hit on an unattended ship recovers the item
-in survival, preserving its name. Creative placement keeps the item. Saved ships
-reload parked. The prototype has no fuel system, progression recipe, weapons or
-automatic landing/navigation. The large floating ship-shaped city is a generated
-structure. Flux Elevator cabin entities remain a separate transport workflow.
+in survival, preserving its name and battery charge. Creative placement keeps the
+item. Newly crafted ships and ships from the creative inventory start at **0%**;
+their cockpit hologram says **No power**. Center a ship over a powered Flux Ship
+Charger to recharge it using both flux types. Empty ships gently descend.
+`/ariente equip` supplies an explicitly charged ship for operators.
+The prototype has no automatic landing/navigation. The large floating ship-shaped
+city is a generated structure. Flux Elevator cabin entities remain a separate
+transport workflow.
 
 Sources: [levitator item placement](src/main/java/mcjty/ariente/items/FluxLevitatorItem.java),
 [cart movement](src/main/java/mcjty/ariente/entities/levitator/FluxLevitatorEntity.java),
@@ -1593,7 +1609,7 @@ worlds.
 | Facades | State display, removal without losing the cable/network, and exported facade properties pass focused checks. |
 | Security provisioning | City keys work through authored/AI setup; there is no complete player-facing arbitrary key-programming workflow. |
 | Elevator | Works without power; floor markers select landing heights. Long/multiplayer lift use remains an integration check. |
-| Flux Ship / cabin workflows | Basic ship flight, rendering, placement and save/load are restored; fuel/progression and advanced ship design remain unfinished. |
+| Flux Ship / cabin workflows | Ship flight, charging, rendering, placement and save/load are restored; progression and advanced ship design remain unfinished. |
 | Worldgen controls | Seeded complex chance, search/API agreement, original soil/rough surfaces, branching blue trees and hill/forest flowers pass focused checks. Quart sampling/native placement differences are documented in ArienteWorld's handoff; exploration play testing remains. |
 | City editing tools | Creative operator sessions, sync, variants and JSON export/reload are restored; authoring sessions are temporary and require explicit saving. |
 | General validation | 48 dedicated tests, full datagen, asset/model audits and focused two-client multiplayer checks pass. Full survival progression, sustained combat/spawn balance, real chunk unload/restart and multiplayer transport/portals remain. |

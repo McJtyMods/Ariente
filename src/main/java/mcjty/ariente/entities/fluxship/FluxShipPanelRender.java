@@ -13,6 +13,7 @@ import net.minecraft.client.Minecraft;
 import net.minecraft.client.renderer.MultiBufferSource;
 import net.minecraft.client.renderer.entity.EntityRenderer;
 import net.minecraft.client.renderer.entity.EntityRendererProvider;
+import net.minecraft.network.chat.Component;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.phys.Vec3;
 import net.minecraftforge.client.model.pipeline.VertexConsumerWrapper;
@@ -106,7 +107,8 @@ public class FluxShipPanelRender extends EntityRenderer<HoloGuiEntity> {
         canvas.poses().pushPose();
         canvas.poses().translate(-.46f, -.405f, .001f);
         canvas.poses().scale(.0035f, -.0035f, .0035f);
-        canvas.text("CHARGE " + Math.round(charge * 100) + "%" + (charge == 0 ? " - LAND TO RECHARGE" : ""),
+        canvas.text(charge == 0 ? Component.translatable("message.ariente.flux_ship.no_power").getString() + " - LAND TO RECHARGE"
+                        : "CHARGE " + Math.round(charge * 100) + "%",
                 0, 0, color, 1, 260);
         canvas.poses().popPose();
     }

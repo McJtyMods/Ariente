@@ -4,6 +4,7 @@ import mcjty.ariente.blocks.utility.ChargerTile;
 import mcjty.ariente.entities.fluxship.FluxShipEnergy;
 import mcjty.ariente.entities.fluxship.FluxShipEntity;
 import mcjty.ariente.items.BlueprintItem;
+import mcjty.ariente.items.FluxShipItem;
 import mcjty.ariente.power.IPowerBlob;
 import mcjty.ariente.power.PowerSystem;
 import mcjty.ariente.power.PowerType;
@@ -31,6 +32,37 @@ import static mcjty.ariente.blocks.BlockProperties.WORKING;
 @GameTestHolder(Ariente.MODID)
 @PrefixGameTestTemplate(false)
 public class FluxShipChargingTests {
+
+    @GameTest(template = "empty")
+    public static void freshCreativeAndCraftedItemsDeployWithoutPower(GameTestHelper helper) {
+        BlockPos origin = helper.absolutePos(new BlockPos(1, 0, 1));
+        BlockPos floor = new BlockPos(origin.getX(), 239, origin.getZ());
+        helper.getLevel().setBlockAndUpdate(floor, Blocks.STONE.defaultBlockState());
+        Player player = helper.makeMockSurvivalPlayer();
+        for (boolean creative : new boolean[]{false, true}) {
+            player.getAbilities().instabuild = creative;
+            ItemStack stack = new ItemStack(Registration.FLUX_SHIP.get());
+            // Unrelated item tags must not cause a fresh ship to inherit the entity's charged default.
+            stack.setHoverName(Component.literal("Fresh ship"));
+            helper.assertTrue(FluxShipItem.getCharge(stack) == 0, "Fresh ships must report an empty battery");
+            player.setItemInHand(InteractionHand.MAIN_HAND, stack);
+            UseOnContext context = new UseOnContext(player, InteractionHand.MAIN_HAND,
+                    new BlockHitResult(Vec3.atCenterOf(floor).add(0, .5, 0), Direction.UP, floor, false));
+            try {
+                helper.assertTrue(stack.useOn(context).consumesAction(), "A fresh empty ship must still deploy");
+                var ships = helper.getLevel().getEntitiesOfClass(FluxShipEntity.class, new AABB(floor).inflate(5));
+                helper.assertTrue(ships.size() == 1 && ships.get(0).getCharge() == 0
+                                && FluxShipItem.getCharge(ships.get(0).asItem()) == 0,
+                        "New survival and creative ships must deploy and recover with no power");
+                helper.assertTrue(creative ? !stack.isEmpty() : stack.isEmpty(),
+                        "Creative placement retains the item; survival placement consumes it");
+            } finally {
+                helper.getLevel().getEntitiesOfClass(FluxShipEntity.class, new AABB(floor).inflate(5)).forEach(FluxShipEntity::discard);
+            }
+        }
+        helper.getLevel().removeBlock(floor, false);
+        helper.succeed();
+    }
 
     @GameTest(template = "empty")
     public static void aFullChargeFliesTwentyMinutesAndPowerLossEasesIntoDescent(GameTestHelper helper) {

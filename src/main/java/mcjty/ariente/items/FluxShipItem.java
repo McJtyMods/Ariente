@@ -7,6 +7,7 @@ import mcjty.lib.builder.TooltipBuilder;
 import mcjty.lib.tooltips.ITooltipSettings;
 import net.minecraft.core.BlockPos;
 import net.minecraft.network.chat.Component;
+import net.minecraft.util.Mth;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.TooltipFlag;
@@ -34,9 +35,12 @@ public class FluxShipItem extends Item implements ITooltipSettings {
     public void appendHoverText(ItemStack stack, @Nullable Level worldIn, List<Component> tooltip, TooltipFlag flag) {
         super.appendHoverText(stack, worldIn, tooltip, flag);
         tooltipBuilder.makeTooltip(Tools.getId(this), stack, tooltip, flag);
-        int charge = stack.hasTag() && stack.getTag().contains(FluxShipEnergy.CHARGE_TAG)
-                ? stack.getTag().getInt(FluxShipEnergy.CHARGE_TAG) : FluxShipEnergy.CAPACITY;
+        int charge = getCharge(stack);
         tooltip.add(Component.translatable("message.ariente.ship_charge", Math.round(100f * charge / FluxShipEnergy.CAPACITY)));
+    }
+
+    public static int getCharge(ItemStack stack) {
+        return stack.hasTag() ? Mth.clamp(stack.getTag().getInt(FluxShipEnergy.CHARGE_TAG), 0, FluxShipEnergy.CAPACITY) : 0;
     }
 
     @Override
@@ -55,9 +59,7 @@ public class FluxShipItem extends Item implements ITooltipSettings {
         ItemStack stack = context.getItemInHand();
         FluxShipEntity ship = FluxShipEntity.create(world, target.getX() + .5, target.getY() + .0625, target.getZ() + .5);
         ship.setYRot(player.getYRot());
-        if (stack.hasTag() && stack.getTag().contains(FluxShipEnergy.CHARGE_TAG)) {
-            ship.setCharge(stack.getTag().getInt(FluxShipEnergy.CHARGE_TAG));
-        }
+        ship.setCharge(getCharge(stack));
         if (!world.noCollision(ship, ship.getBoundingBox())) {
             player.displayClientMessage(Component.translatable("message.ariente.flux_ship.no_space"), true);
             return InteractionResult.FAIL;
