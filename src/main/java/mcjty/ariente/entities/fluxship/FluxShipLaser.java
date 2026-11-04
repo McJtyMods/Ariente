@@ -1,5 +1,6 @@
 package mcjty.ariente.entities.fluxship;
 
+import mcjty.ariente.api.IFluxShipPilot;
 import mcjty.ariente.entities.LaserEntity;
 import mcjty.ariente.items.EnergyLanceItem;
 import mcjty.ariente.items.EnergySabreItem;
@@ -17,12 +18,13 @@ public class FluxShipLaser {
 
     public static final int SHOT_INTERVAL = 4;
     public static final int SHOT_LIFETIME = 16;
-    public static final double SHOT_SPEED = 8;
+    public static final double SHOT_SPEED = 9.6;
     public static final double RANGE = SHOT_LIFETIME * SHOT_SPEED;
     public static final Vec3 MOUNT = new Vec3(0, .12, 2.35);
     public static final Vec3 MUZZLE = new Vec3(0, .12, 3.12);
     // An unupgraded player lance: the sabre's damage plus the player's base attack, multiplied by 1.3.
     public static final float DAMAGE = (EnergySabreItem.BASE_DAMAGE + 1) * EnergyLanceItem.DAMAGE_MULTIPLIER;
+    public static final float SCOUT_DAMAGE = 8.0F;
     private static final double PANEL_DISTANCE = 1.5;
 
     public static Vec3 direction(FluxShipEntity ship, float partialTick) {
@@ -48,7 +50,11 @@ public class FluxShipLaser {
             return false;
         }
         return ship.level().addFreshEntity(LaserEntity.createShipShot(ship.level(), pilot,
-                muzzle(ship, 1), direction(ship, 1), DAMAGE));
+                muzzle(ship, 1), direction(ship, 1), getShotDamage(pilot)));
+    }
+
+    public static float getShotDamage(LivingEntity pilot) {
+        return pilot instanceof IFluxShipPilot ? SCOUT_DAMAGE : DAMAGE;
     }
 
     private static double eyeHeight(FluxShipEntity ship) {

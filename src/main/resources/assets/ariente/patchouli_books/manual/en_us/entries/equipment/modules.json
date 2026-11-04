@@ -7,7 +7,7 @@
     {
       "type": "patchouli:text",
       "title": "Survival and scouting",
-      "text": "$(li)$(item)Armor$(): any armor piece; usage 20. Adds four armor points while working.$(li)$(item)Nightvision$(): helmet; usage 20. See in the dark.$(li)$(item)Scramble$(): helmet; usage 50. Avoids Sentinel detection; does not pacify other enemies.$(li)$(item)Regeneration$(): chestplate; usage 40. Grants Regeneration III.$(li)$(item)Forcefield$(): chestplate; usage 80. See the recharge and retaliation pages."
+      "text": "$(li)$(item)Armor$(): any armor piece; usage 20. Adds armor, toughness and energy protection while working; see Powered protection.$(li)$(item)Nightvision$(): helmet; usage 20. See in the dark.$(li)$(item)Scramble$(): helmet; usage 50. Avoids Sentinel detection; does not pacify other enemies.$(li)$(item)Regeneration$(): chestplate; usage 40. Grants Regeneration III.$(li)$(item)Forcefield$(): chestplate; usage 60. See the recharge and retaliation pages."
     },
     {
       "type": "patchouli:text",
@@ -17,17 +17,22 @@
     {
       "type": "patchouli:text",
       "title": "Plan your loadout",
-      "text": "Flight, Hover and Regeneration together use 80 on the chestplate. Adding Forcefield would exceed even an Energy-assisted budget; choose which abilities to run.$(br2)Each piece needs its own Energy module to raise its budget. All powered gear draws fuel from a carried $(l:ariente:equipment/fuel)Energy Holder$(/l).$(br2)Some modules come from equipment loot rather than blueprints. Invisibility is currently unavailable in the configuration panel.$(br2)Fuel exhaustion, disabling or removing a module stops its ability. Check fuel before a climb or fight."
+      "text": "Armor, Regeneration and Forcefield together use 120 on the chestplate and work together with Energy Efficiency. Armor, Flight, Hover and Forcefield also use 120. Running every chest ability still exceeds the budget; choose a combat or flight loadout.$(br2)Each piece needs its own Energy module to raise its budget. All powered gear draws fuel from a carried $(l:ariente:equipment/fuel)Energy Holder$(/l).$(br2)Some modules come from equipment loot rather than blueprints. Invisibility is currently unavailable in the configuration panel.$(br2)Fuel exhaustion, disabling or removing a module stops its ability. Check fuel before a climb or fight."
     },
     {
       "type": "patchouli:text",
       "title": "Forcefield recharge",
-      "text": "A ready field blocks projectiles and magic, including lasers, and absorbs 80% of explosions.$(br2)Each hit flashes red and starts a shared recharge timer: at least half a second, or about two seconds for a fully blocked advanced drone laser. Further hits reset it based on damage absorbed.$(br2)During recharge, protection drops to 50% for ranged/magic hits and 40% for explosions. The bubble stays faint in first person."
+      "text": "A ready field blocks projectiles and magic, including lasers, and absorbs 80% of explosions.$(br2)Each hit flashes red and starts a shared recharge timer: at least half a second, or about two seconds for an advanced drone laser without Armor Upgrades. Armor Upgrades reduce damage before the field and shorten its recharge. Further hits reset it based on damage absorbed.$(br2)During recharge, protection drops to 50% for ranged/magic hits and 40% for explosions. The bubble stays faint in first person."
     },
     {
       "type": "patchouli:text",
       "title": "Melee retaliation",
       "text": "The field always halves melee damage and reflects half the incoming melee damage back as Thorns damage. The attacker's defenses can reduce it.$(br2)Projectiles, magic and explosions never trigger retaliation. Reflected Thorns cannot bounce between shields.$(br2)Other armor-bypassing damage, such as falling or drowning, is not blocked by the field."
+    },
+    {
+      "type": "patchouli:text",
+      "title": "Powered protection",
+      "text": "Each working Armor Upgrade adds 6 armor and 4 toughness. Four upgraded pieces reach 30 effective armor and 16 toughness, giving much better protection against heavy melee hits.$(br2)Each piece also absorbs 20% of armor-piercing projectiles and magic, including lasers: 80% with all four pieces. Forcefield protection applies afterwards.$(br2)This protection needs fuel and an enabled module within the piece's power budget. Ordinary arrows use normal armor protection. Falling, drowning and the void receive no energy protection."
     }
   ],
   "extra_recipe_mappings": {

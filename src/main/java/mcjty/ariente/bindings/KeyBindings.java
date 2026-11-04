@@ -25,7 +25,6 @@ public class KeyBindings {
     public static Binding turnRight;
     public static Binding flyUp;
     public static Binding flyDown;
-    public static Binding startFlying;
     public static Binding startLanding;
     public static Binding fireShipLaser;
     public static Binding shipFreeLook;
@@ -46,9 +45,8 @@ public class KeyBindings {
         turnRight = Binding.createHeld("key.turnright", GLFW.GLFW_KEY_D);
         flyUp = Binding.createHeld("key.flyup", GLFW.GLFW_KEY_UP);
         flyDown = Binding.createHeld("key.flydown", GLFW.GLFW_KEY_DOWN);
-        startFlying = Binding.createHeld("key.startflying", GLFW.GLFW_KEY_SPACE);
         startLanding = Binding.createHeld("key.startlanding", GLFW.GLFW_KEY_BACKSPACE);
-        fireShipLaser = Binding.createHeld("key.ariente.ship_fire", GLFW.GLFW_KEY_V);
+        fireShipLaser = Binding.createHeld("key.ariente.ship_fire", GLFW.GLFW_KEY_SPACE);
         shipFreeLook = Binding.createHeld("key.ariente.ship_free_look", GLFW.GLFW_KEY_LEFT_ALT);
     }
 
@@ -58,7 +56,7 @@ public class KeyBindings {
             boolean active = mc.screen == null && !mc.isPaused();
             int forward = active ? (flyForward.isDown() ? 1 : 0) - (flyBackwards.isDown() ? 1 : 0) : 0;
             int turn = active ? (turnRight.isDown() ? 1 : 0) - (turnLeft.isDown() ? 1 : 0) : 0;
-            int vertical = active ? (flyUp.isDown() || startFlying.isDown() ? 1 : 0)
+            int vertical = active ? (flyUp.isDown() ? 1 : 0)
                     - (flyDown.isDown() || startLanding.isDown() ? 1 : 0) : 0;
             FluxShipMouseControls.Aim aim = FluxShipMouseControls.sample(ship, active, turn);
             toServer(new PacketShipAction(forward, turn, vertical, active && fireShipLaser.isDown(),

@@ -237,7 +237,7 @@
   "message.ariente.armormodule.equipment.legs": "Power Leggings",
   "message.ariente.armormodule.equipment.feet": "Power Boots",
   "message.ariente.armormodule.effect.energy": "Higher power budget; longer-lasting fuel",
-  "message.ariente.armormodule.effect.armor": "Improves protection",
+  "message.ariente.armormodule.effect.armor": "+6 armor, +4 toughness; +20% energy protection",
   "message.ariente.armormodule.effect.featherfalling": "Prevents fall damage",
   "message.ariente.armormodule.effect.flight": "Enables powered flight",
   "message.ariente.armormodule.effect.forcefield": "Protective field with melee retaliation",

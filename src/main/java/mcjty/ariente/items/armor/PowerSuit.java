@@ -8,6 +8,9 @@ import mcjty.ariente.bindings.KeyBindings;
 import mcjty.ariente.items.modules.ModuleSupport;
 import net.minecraft.ChatFormatting;
 import net.minecraft.network.chat.Component;
+import net.minecraft.tags.DamageTypeTags;
+import net.minecraft.world.damagesource.DamageSource;
+import net.minecraft.world.damagesource.DamageTypes;
 import net.minecraft.world.entity.EquipmentSlot;
 import net.minecraft.world.entity.ai.attributes.Attribute;
 import net.minecraft.world.entity.ai.attributes.AttributeModifier;
@@ -16,11 +19,13 @@ import net.minecraft.nbt.CompoundTag;
 import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.entity.ai.attributes.Attributes;
+import net.minecraft.world.entity.projectile.Projectile;
 import net.minecraft.world.item.ArmorItem;
 import net.minecraft.world.item.ArmorMaterials;
 import net.minecraft.world.level.Level;
 import net.minecraftforge.client.extensions.common.IClientItemExtensions;
 import net.minecraftforge.common.ForgeMod;
+import net.minecraftforge.event.entity.living.LivingDamageEvent;
 import org.apache.commons.lang3.tuple.Pair;
 
 import javax.annotation.Nullable;
@@ -64,18 +69,44 @@ public class PowerSuit extends ArmorItem {
             return multimap;
         }
 
-        double extra = ModuleSupport.hasWorkingUpgrade(stack, ArmorUpgradeType.ARMOR) ? 4 : 0;
+        boolean upgraded = ModuleSupport.hasWorkingUpgrade(stack, ArmorUpgradeType.ARMOR);
         ImmutableMultimap.Builder<Attribute, AttributeModifier> builder = new ImmutableMultimap.Builder<Attribute, AttributeModifier>();
 
         builder.putAll(multimap)
             .put(Attributes.ARMOR, new AttributeModifier(ARMOR_EXT_MODIFIERS[slot.getIndex()],
-                    "Armor extra modifier", extra, AttributeModifier.Operation.ADDITION));
+                    "Armor extra modifier", upgraded ? 6 : 0, AttributeModifier.Operation.ADDITION))
+            .put(Attributes.ARMOR_TOUGHNESS, new AttributeModifier(ARMOR_EXT_MODIFIERS[slot.getIndex()],
+                    "Armor toughness modifier", upgraded ? 4 : 0, AttributeModifier.Operation.ADDITION));
 
         if (slot == EquipmentSlot.FEET && ModuleSupport.hasWorkingUpgrade(stack, ArmorUpgradeType.STEPASSIST)) {
             builder.put(ForgeMod.STEP_HEIGHT_ADDITION.get(), new AttributeModifier(STEP_MODIFIER,
                     "Ariente step assist", 1.302, AttributeModifier.Operation.ADDITION));
         }
         return builder.build();
+    }
+
+    public static void absorbEnergyDamage(LivingDamageEvent event) {
+        LivingEntity entity = event.getEntity();
+        DamageSource source = event.getSource();
+        if (entity.level().isClientSide || event.getAmount() <= 0 || !source.is(DamageTypeTags.BYPASSES_ARMOR)
+                || !(source.is(DamageTypes.MAGIC) || source.is(DamageTypes.INDIRECT_MAGIC)
+                || source.is(DamageTypeTags.IS_PROJECTILE) || source.getDirectEntity() instanceof Projectile)) {
+            return;
+        }
+        int upgrades = 0;
+        for (EquipmentSlot slot : EquipmentSlot.values()) {
+            if (slot.getType() == EquipmentSlot.Type.ARMOR) {
+                ItemStack stack = entity.getItemBySlot(slot);
+                if (stack.getItem() instanceof PowerSuit suit && suit.slot == slot
+                        && ModuleSupport.hasWorkingUpgrade(stack, ArmorUpgradeType.ARMOR)) {
+                    upgrades++;
+                }
+            }
+        }
+        // Each working piece absorbs 20%; a full suit leaves 20% for the forcefield to handle.
+        if (upgrades > 0) {
+            event.setAmount(event.getAmount() * (5 - upgrades) / 5.0f);
+        }
     }
 
     @Override

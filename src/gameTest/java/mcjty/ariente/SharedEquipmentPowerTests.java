@@ -125,7 +125,7 @@ public class SharedEquipmentPowerTests {
         ItemStack holder = holder(3, 3);
         player.getInventory().setItem(9, holder);
         ItemStack chest = gear(Registration.POWERSUIT_CHEST.get(), ArmorUpgradeType.FLIGHT,
-                ArmorUpgradeType.FORCEFIELD, ArmorUpgradeType.HOVER);
+                ArmorUpgradeType.FORCEFIELD, ArmorUpgradeType.HOVER, ArmorUpgradeType.ARMOR);
         player.setItemSlot(EquipmentSlot.CHEST, chest);
         tick(chest, player);
         helper.assertTrue(!ModuleSupport.hasWorkingUpgrade(chest, ArmorUpgradeType.FLIGHT)
@@ -138,6 +138,7 @@ public class SharedEquipmentPowerTests {
         long optimizedCost = before - holder.getTag().getLong("charge");
         chest.getTag().putBoolean(ArmorUpgradeType.FORCEFIELD.getModuleKey(), false);
         chest.getTag().putBoolean(ArmorUpgradeType.HOVER.getModuleKey(), false);
+        chest.getTag().putBoolean(ArmorUpgradeType.ARMOR.getModuleKey(), false);
         chest.getTag().putBoolean(ArmorUpgradeType.ENERGY.getModuleKey(), false);
         before = holder.getTag().getLong("charge");
         tick(chest, player);

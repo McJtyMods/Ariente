@@ -30,10 +30,11 @@ public class FluxShipRender extends EntityRenderer<FluxShipEntity> {
         pose.pushPose();
         pose.mulPose(Axis.YP.rotationDegrees(-90));
         Minecraft mc = Minecraft.getInstance();
+        int overlay = OverlayTexture.pack(OverlayTexture.u(0), OverlayTexture.v(ship.getHurtTime() > 0));
         mc.getBlockRenderer().getModelRenderer().renderModel(pose.last(), buffers.getBuffer(ArienteRenderType.SHIP_HULL),
-                null, mc.getModelManager().getModel(MODEL), 1, 1, 1, light, OverlayTexture.NO_OVERLAY);
+                null, mc.getModelManager().getModel(MODEL), 1, 1, 1, light, overlay);
         pose.popPose();
-        FluxShipWeaponRender.render(pose, buffers, light);
+        FluxShipWeaponRender.render(pose, buffers, light, overlay);
         FluxShipExhaustRender.render(ship, partialTick, pose);
         pose.popPose();
         super.render(ship, yaw, partialTick, pose, buffers, light);

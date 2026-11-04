@@ -2,7 +2,9 @@ package mcjty.ariente.client;
 
 import com.mojang.blaze3d.platform.InputConstants;
 import mcjty.ariente.Ariente;
+import mcjty.ariente.bindings.KeyBindings;
 import mcjty.ariente.config.UtilityConfiguration;
+import mcjty.ariente.entities.LaserEntity;
 import mcjty.ariente.entities.fluxship.FluxShipClient;
 import mcjty.ariente.entities.fluxship.FluxShipEntity;
 import mcjty.ariente.entities.fluxship.FluxShipLaser;
@@ -13,8 +15,10 @@ import net.minecraft.client.KeyMapping;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.Screenshot;
 import net.minecraft.core.BlockPos;
+import net.minecraft.core.registries.Registries;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.util.Mth;
+import net.minecraft.world.damagesource.DamageSource;
 import net.minecraft.world.entity.Entity;
 import net.minecraft.world.level.GameRules;
 import net.minecraft.world.level.GameType;
@@ -209,6 +213,8 @@ public class FluxShipClientChecks {
             FluxShipLightingChecks.run(ship);
             FluxShipSoundChecks.begin(ship);
             FluxShipWeaponChecks.begin(ship);
+            require(KeyBindings.fireShipLaser.getDisplayName().equals("key.keyboard.space"),
+                    "The default ship firing key must be Space");
             require(ship.getHoloGui() instanceof HoloGuiEntity panel && panel.getVehicle() == ship
                             && panel.getGui(mc.player).findChild("ship_speed").isPresent()
                             && panel.getGui(mc.player).findChild("ship_altitude").isPresent(),
@@ -220,13 +226,15 @@ public class FluxShipClientChecks {
         } else if (ticks == 30) {
             key(GLFW.GLFW_KEY_W, true);
         } else if (ticks == 40) {
-            key(GLFW.GLFW_KEY_V, true);
+            key(GLFW.GLFW_KEY_SPACE, true);
         } else if (ticks == 60) {
             screenshot(mc, "ship-firing-cockpit");
         } else if (ticks == 70) {
-            key(GLFW.GLFW_KEY_V, false);
+            key(GLFW.GLFW_KEY_SPACE, false);
         } else if (ticks == 79) {
             FluxShipWeaponChecks.released(ship);
+            require(Math.abs(ship.getDeltaMovement().y) < .001,
+                    "Holding Space must fire without adding vertical thrust");
         } else if (ticks == 80) {
             FluxShipSoundChecks.cruise(ship);
             require(ship.getSpeed() > 95 && ship.getSpeed() < 104.1,
@@ -245,21 +253,25 @@ public class FluxShipClientChecks {
             screenshot(mc, "ship-banked-cockpit");
         } else if (ticks == 120) {
             FluxShipWeaponChecks.beforeFreeLook();
-            key(GLFW.GLFW_KEY_V, true);
+            key(GLFW.GLFW_KEY_SPACE, true);
             mc.options.setCameraType(CameraType.THIRD_PERSON_BACK);
             mc.player.setYRot(ship.getYRot() + 70);
             mc.player.setXRot(25);
+            hitShip(mc);
         } else if (ticks == 125) {
             require(Math.abs(observedRoll) < .01, "Third-person cameras must remain upright");
             FluxShipExhaustChecks.flying(ship);
+            require(ship.getHurtTime() > 0, "A real server hit must synchronize the ship's red flash to its client");
             screenshot(mc, "ship-banked-exterior");
         } else if (ticks == 130) {
-            key(GLFW.GLFW_KEY_V, false);
+            key(GLFW.GLFW_KEY_SPACE, false);
             mc.options.setCameraType(CameraType.FIRST_PERSON);
             mc.player.setYRot(ship.getYRot());
             mc.player.setXRot(5);
             startingAltitude = ship.getY();
             key(GLFW.GLFW_KEY_UP, true);
+        } else if (ticks == 135) {
+            require(ship.getHurtTime() == 0, "The ship hit flash must expire on the client after half a second");
         } else if (ticks == 165) {
             require(cockpitSamples >= 200 && maxCockpitProjectionDrift < .003,
                     "The dashboard must stay steady in view during combined turns and climbs; projection drift=" + maxCockpitProjectionDrift);
@@ -298,6 +310,27 @@ public class FluxShipClientChecks {
         if (ticks > 345) {
             key(GLFW.GLFW_KEY_LEFT_SHIFT, false);
         }
+    }
+
+    private static void hitShip(Minecraft mc) {
+        mc.getSingleplayerServer().execute(() -> {
+            try {
+                ServerLevel level = mc.getSingleplayerServer().overworld();
+                FluxShipEntity ship = (FluxShipEntity) level.getEntity(shipId);
+                var pilot = mc.getSingleplayerServer().getPlayerList().getPlayer(mc.player.getUUID());
+                boolean invulnerable = pilot.getAbilities().invulnerable;
+                try {
+                    pilot.getAbilities().invulnerable = false;
+                    DamageSource source = new DamageSource(level.registryAccess().registryOrThrow(Registries.DAMAGE_TYPE)
+                            .getHolderOrThrow(LaserEntity.SHIP_DAMAGE));
+                    require(ship.hurt(source, .5f), "The visual fixture must forward a real hit to the pilot");
+                } finally {
+                    pilot.getAbilities().invulnerable = invulnerable;
+                }
+            } catch (Throwable error) {
+                failure = error;
+            }
+        });
     }
 
     private static void checkTutorialSpawners(ServerLevel level) {

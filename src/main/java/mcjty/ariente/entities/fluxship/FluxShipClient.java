@@ -60,14 +60,10 @@ public class FluxShipClient {
         return KeyBindings.flyUp.getKeyName() + "/" + KeyBindings.flyDown.getKeyName();
     }
 
-    public static String alternateHeightKeys() {
-        return KeyBindings.startFlying.getKeyName() + "/" + KeyBindings.startLanding.getKeyName();
-    }
-
     public static String flightHint() {
         return UtilityConfiguration.FLUX_SHIP_MOUSE_CONTROL.get()
                 ? "Mouse Pitch | " + KeyBindings.shipFreeLook.getKeyName() + " Look around"
-                : heightKeys() + " or " + alternateHeightKeys() + " Rise/descend";
+                : heightKeys() + " Rise/descend";
     }
 
     public static String dismountKey() {

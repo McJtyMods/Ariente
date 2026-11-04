@@ -1,6 +1,7 @@
 package mcjty.ariente;
 
 import io.netty.buffer.Unpooled;
+import mcjty.ariente.api.IFluxShipPilot;
 import mcjty.ariente.entities.LaserEntity;
 import mcjty.ariente.entities.fluxship.FluxShipEntity;
 import mcjty.ariente.entities.fluxship.FluxShipLaser;
@@ -8,11 +9,13 @@ import mcjty.ariente.entities.fluxship.PacketShipAction;
 import mcjty.ariente.items.EnergyLanceItem;
 import mcjty.ariente.setup.Registration;
 import net.minecraft.core.BlockPos;
+import net.minecraft.core.registries.Registries;
 import net.minecraft.gametest.framework.GameTest;
 import net.minecraft.gametest.framework.GameTestHelper;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.network.FriendlyByteBuf;
 import net.minecraft.world.InteractionHand;
+import net.minecraft.world.damagesource.DamageSource;
 import net.minecraft.world.entity.EntityType;
 import net.minecraft.world.entity.EquipmentSlot;
 import net.minecraft.world.entity.ai.attributes.Attributes;
@@ -33,6 +36,77 @@ import java.util.Map;
 @GameTestHolder(Ariente.MODID)
 @PrefixGameTestTemplate(false)
 public class FluxShipLaserTests {
+
+    @GameTest(template = "empty")
+    public static void forwardedHitsFlashTheHullWithoutDamagingItAndRejectedHitsDoNotRefresh(GameTestHelper helper) {
+        FluxShipEntity ship = ship(helper);
+        ScoutPilot pilot = new ScoutPilot(helper);
+        pilot.startRiding(ship);
+        DamageSource source = new DamageSource(helper.getLevel().registryAccess().registryOrThrow(Registries.DAMAGE_TYPE)
+                .getHolderOrThrow(LaserEntity.SHIP_DAMAGE));
+        try {
+            float health = pilot.getHealth();
+            helper.assertTrue(ship.hurt(source, 8) && pilot.getHealth() == health - 4
+                            && ship.isAlive() && ship.getHurtTime() == 10,
+                    "A real hull hit must flash for half a second while forwarding half damage to the pilot");
+            for (int tick = 0; tick < 4; tick++) {
+                ship.tick();
+            }
+            pilot.setInvulnerable(true);
+            helper.assertTrue(!ship.hurt(source, 8) && ship.getHurtTime() == 6,
+                    "Rejected pilot damage must not refresh the ship's hit flash");
+            pilot.setInvulnerable(false);
+            helper.assertTrue(ship.hurt(source, 8) && ship.getHurtTime() == 10,
+                    "Another accepted rapid hit must refresh the flash");
+            for (int tick = 0; tick < 10; tick++) {
+                ship.tick();
+            }
+            helper.assertTrue(ship.getHurtTime() == 0, "The hull must return to its normal appearance after ten ticks");
+            ship.handleEntityEvent((byte) 2);
+            helper.assertTrue(ship.getHurtTime() == 10, "The client hurt event must start the same hit flash");
+            ship.load(ship.saveWithoutId(new CompoundTag()));
+            pilot.stopRiding();
+            helper.assertTrue(ship.getHurtTime() == 0 && !ship.hurt(source, 8),
+                    "The flash must not persist through reload or turn an abandoned hull into a damageable entity");
+        } finally {
+            pilot.stopRiding();
+            pilot.discard();
+            cleanup(helper, ship);
+        }
+        helper.succeed();
+    }
+
+    @GameTest(template = "empty")
+    public static void scoutsKeepRapidFireAcrossRepeatedBurstsWithReducedPerShotDamage(GameTestHelper helper) {
+        FluxShipEntity ship = ship(helper);
+        ScoutPilot pilot = new ScoutPilot(helper);
+        pilot.startRiding(ship);
+        try {
+            for (int burst = 0; burst < 3; burst++) {
+                pilot.firing = true;
+                for (int tick = 0; tick < 20; tick++) {
+                    ship.tick();
+                }
+                helper.assertTrue(shots(helper, ship).size() == (burst + 1) * 5,
+                        "Scouts must retain five shots per second across all three firing bursts: " + shots(helper, ship).size());
+                pilot.firing = false;
+                for (int tick = 0; tick < 20; tick++) {
+                    ship.tick();
+                }
+                helper.assertTrue(shots(helper, ship).size() == (burst + 1) * 5,
+                        "Scout fire must still follow the pilot's attack-run trigger");
+            }
+            for (LaserEntity shot : shots(helper, ship)) {
+                helper.assertTrue(Math.abs(shot.saveWithoutId(new CompoundTag()).getFloat("damage") - 8) < .001,
+                        "Every actual scout projectile must carry the reduced damage");
+            }
+        } finally {
+            pilot.stopRiding();
+            pilot.discard();
+            cleanup(helper, ship);
+        }
+        helper.succeed();
+    }
 
     @GameTest(template = "empty")
     public static void rapidFireIsLimitedAndOnlyAcceptsTheCurrentPilotsHeldInput(GameTestHelper helper) {
@@ -104,7 +178,7 @@ public class FluxShipLaserTests {
             for (int i = 0; i < 5; i++) {
                 laser.tick();
             }
-            helper.assertTrue(laser.position().distanceTo(start) > 39.9 && laser.getDeltaMovement().length() > 7.99,
+            helper.assertTrue(laser.position().distanceTo(start) > 47.9 && laser.getDeltaMovement().length() > 9.59,
                     "The projectile must keep outrunning the ship without losing speed");
             laser.writeSpawnData(data);
             LaserEntity clientCopy = new LaserEntity(Registration.ENTITY_LASER.get(), helper.getLevel());
@@ -228,5 +302,24 @@ public class FluxShipLaserTests {
     private static void cleanup(GameTestHelper helper, FluxShipEntity ship) {
         shots(helper, ship).forEach(LaserEntity::discard);
         ship.discard();
+    }
+
+    private static class ScoutPilot extends Zombie implements IFluxShipPilot {
+
+        private boolean firing;
+
+        private ScoutPilot(GameTestHelper helper) {
+            super(EntityType.ZOMBIE, helper.getLevel());
+        }
+
+        @Override
+        public void controlShip(FluxShipEntity ship) {
+            ship.flyTowards(this, new Vec3(0, 0, 1), 0);
+        }
+
+        @Override
+        public boolean shouldFireShipLaser(FluxShipEntity ship) {
+            return firing;
+        }
     }
 }

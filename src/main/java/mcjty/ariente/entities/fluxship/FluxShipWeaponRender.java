@@ -5,7 +5,6 @@ import mcjty.ariente.Ariente;
 import mcjty.ariente.client.ArienteRenderType;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.renderer.MultiBufferSource;
-import net.minecraft.client.renderer.texture.OverlayTexture;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraftforge.api.distmarker.Dist;
 import net.minecraftforge.client.event.ModelEvent;
@@ -22,12 +21,12 @@ public class FluxShipWeaponRender {
         event.register(MODEL);
     }
 
-    public static void render(PoseStack pose, MultiBufferSource buffers, int light) {
+    public static void render(PoseStack pose, MultiBufferSource buffers, int light, int overlay) {
         Minecraft mc = Minecraft.getInstance();
         pose.pushPose();
         pose.translate(FluxShipLaser.MOUNT.x, FluxShipLaser.MOUNT.y, FluxShipLaser.MOUNT.z);
         mc.getBlockRenderer().getModelRenderer().renderModel(pose.last(), buffers.getBuffer(ArienteRenderType.SHIP_HULL),
-                null, mc.getModelManager().getModel(MODEL), 1, 1, 1, light, OverlayTexture.NO_OVERLAY);
+                null, mc.getModelManager().getModel(MODEL), 1, 1, 1, light, overlay);
         pose.popPose();
     }
 }

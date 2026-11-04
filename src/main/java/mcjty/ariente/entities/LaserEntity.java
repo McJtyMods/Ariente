@@ -251,8 +251,8 @@ public class LaserEntity extends Projectile implements IForcefieldImmunity, IEnt
         entity.fireAspect = EnchantmentHelper.getItemEnchantmentLevel(Enchantments.FIRE_ASPECT, weapon);
         entity.looting = EnchantmentHelper.getItemEnchantmentLevel(Enchantments.MOB_LOOTING, weapon);
         entity.setPos(shot.muzzle());
-        entity.setDeltaMovement(aim.scale(1.5D));
-        entity.setAcceleration(aim.scale(0.1D));
+        entity.setDeltaMovement(aim.scale(1.8D));
+        entity.setAcceleration(aim.scale(0.12D));
         entity.setLaunchRotation();
         return entity;
     }

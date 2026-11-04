@@ -9,6 +9,7 @@ import mcjty.ariente.items.modules.ModuleSupport;
 import mcjty.ariente.items.armor.PacketPersonalForcefield;
 import mcjty.ariente.items.armor.PowerSuitEffects;
 import mcjty.ariente.items.armor.PersonalForcefield;
+import mcjty.ariente.items.armor.PowerSuit;
 import mcjty.ariente.network.ArienteMessages;
 import mcjty.ariente.power.PowerSystem;
 import mcjty.ariente.setup.Registration;
@@ -93,6 +94,7 @@ public class ForgeEventHandlers {
 
     @SubscribeEvent(priority = EventPriority.LOWEST)
     public void onDamage(LivingDamageEvent event) {
+        PowerSuit.absorbEnergyDamage(event);
         PersonalForcefield.absorb(event);
     }
 

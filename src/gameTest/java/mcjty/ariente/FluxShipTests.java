@@ -151,9 +151,9 @@ public class FluxShipTests {
             for (int i = 0; i < 150; i++) {
                 ship.tick();
             }
-            helper.assertTrue(Math.abs(ship.getSpeed() - 1) < .01 && Math.abs(ship.getXRot()) < .01
+            helper.assertTrue(Math.abs(ship.getSpeed() - 4) < .01 && Math.abs(ship.getXRot()) < .01
                             && ship.getDeltaMovement().horizontalDistance() < .001 && ship.getDeltaMovement().y < 0,
-                    "Dismounting must leave a level ship gently sinking without horizontal drift");
+                    "Dismounting must leave a level ship descending at four blocks per second without horizontal drift");
             pilot.startRiding(ship);
             fly(ship, pilot, 1, 1, 1, 10);
             helper.assertTrue(ship.getSpeed() > 0 && ship.getXRot() != 0,
@@ -222,14 +222,14 @@ public class FluxShipTests {
             pilot.stopRiding();
             ship.tick();
             helper.assertTrue(ship.getDeltaMovement().z > velocity.z * .93
-                            && ship.getDeltaMovement().y > velocity.y * .9,
-                    "Losing the pilot must preserve momentum while easing toward a gentle descent");
+                            && ship.getDeltaMovement().y > velocity.y * .85,
+                    "Losing the pilot must preserve momentum while easing toward descent");
             for (int i = 0; i < 150; i++) {
                 ship.tick();
             }
-            helper.assertTrue(Math.abs(ship.getDeltaMovement().y + .05) < .0001
+            helper.assertTrue(Math.abs(ship.getDeltaMovement().y + .2) < .0001
                             && ship.getDeltaMovement().horizontalDistance() < .001,
-                    "An unattended ship must settle to a descent of one block per second");
+                    "An unattended ship must settle to a descent of four blocks per second");
             pilot.startRiding(ship);
             fly(ship, pilot, 0, 0, 0, 130);
             helper.assertTrue(ship.getSpeed() == 0, "Boarding must smoothly arrest the unattended descent");
@@ -237,7 +237,7 @@ public class FluxShipTests {
             ship.load(ship.saveWithoutId(new CompoundTag()));
             double altitude = ship.getY();
             ship.tick();
-            helper.assertTrue(ship.getY() < altitude && ship.getDeltaMovement().y > -.01,
+            helper.assertTrue(ship.getY() < altitude && ship.getDeltaMovement().y > -.02,
                     "A reloaded ship must ease back into descent even with only its panel aboard");
             ship.setPos(182200.5, 220, 181000.5);
             BlockPos floor = BlockPos.containing(ship.position()).below();

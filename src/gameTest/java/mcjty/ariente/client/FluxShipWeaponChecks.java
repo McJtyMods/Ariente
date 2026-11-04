@@ -77,7 +77,7 @@ public class FluxShipWeaponChecks {
     }
 
     public static void released(FluxShipEntity ship) {
-        require(SHOTS.size() >= 5 && SHOTS.size() <= 10, "Holding V must rapidly fire through the real input path: " + SHOTS.size());
+        require(SHOTS.size() >= 5 && SHOTS.size() <= 10, "Holding Space must rapidly fire through the real input path: " + SHOTS.size());
         require(CLIENT_SHOTS.get() >= 3 && SOUNDS.get() >= 1,
                 "The pilot must receive laser visuals and the existing laser sound: spawns=" + CLIENT_SHOTS + ", sounds=" + SOUNDS);
         releasedCount = SHOTS.size();
@@ -85,7 +85,7 @@ public class FluxShipWeaponChecks {
     }
 
     public static void beforeFreeLook() {
-        require(SHOTS.size() == releasedCount, "Releasing V must stop server firing");
+        require(SHOTS.size() == releasedCount, "Releasing Space must stop server firing");
     }
 
     public static void complete(FluxShipEntity ship) {

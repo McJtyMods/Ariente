@@ -1,4 +1,6 @@
 1.20-0.0.31-alpha:
+- Energy Lance and ship lasers travel 20% faster. Ships flash red when hull hits reach their pilots, and abandoned ships descend four times faster. The ship cannon now defaults to Space, which no longer adds upward thrust.
+- Strengthened powered Armor Upgrades with armor toughness and laser protection. Enemy scout cannons retain their rapid bursts with lower damage per shot, and Forcefield now works alongside Armor and Regeneration with Energy Efficiency.
 - Added the operator-only /ariente equip command for upgraded power armor, an Enhanced Energy Sabre, Energy Lance, a heavily fueled Energy Holder and a fully charged Flux Ship. The armor's forcefield starts disabled.
 - Newly crafted and creative-inventory Flux Ships start empty and show "No power" in the cockpit. Recovered ships retain their charge.
 - Flux Ship tooltips now explain deployment and charging, with clear feedback when deployment is blocked.
@@ -6,7 +8,7 @@
 - Flux Ship exhaust is longer and brighter, with clearer distant strands. Enemy ships bank more steeply and pass half of incoming laser damage to their pilots while their hulls remain indestructible.
 - Flux Ships now steer toward mouse look, including climbs and dives, with A/D turning assistance and Left Alt free look. W/S retain smooth movement and braking. Mouse steering can be disabled in the client configuration.
 - Flux Ships can now carry soldier pilots, with smooth climbing and diving turns, stable flybys and a seated model that follows the hull. Defeating an enemy pilot disables its ship.
-- Flux Ships now have a front-mounted rapid-fire laser with Energy Lance damage. Hold V (rebindable) to fire and aim with the hull, using the new cockpit crosshair and compact flight instruments.
+- Flux Ships now have a front-mounted rapid-fire laser with Energy Lance damage. Hold Space (rebindable) to fire and aim with the hull, using the new cockpit crosshair and compact flight instruments.
 - Added Fluid and Forge Energy display modules with Constructor blueprints, configurable numbers, meters and histories, fluid tank selection and units, and FE capacity, percentage and net buffer change readings.
 - Flux Ships now have a flight engine hum based on the Flux Levitator sound, with smooth volume changes and a gentle pitch rise as speed increases. Pilots hear a cockpit loop; nearby observers hear positional sound.
 - Flux Ships have flowing yellow negarite and cyan posirite exhaust strands from the rear engine bay. The glow grows with flight speed and is visible in third person and on other ships.

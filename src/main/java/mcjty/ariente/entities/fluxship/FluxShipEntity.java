@@ -42,7 +42,8 @@ public class FluxShipEntity extends Entity {
     private static final EntityDataAccessor<Integer> CHARGE = SynchedEntityData.defineId(FluxShipEntity.class, EntityDataSerializers.INT);
     private static final double MAX_SPEED = 5.2;
     private static final double MAX_VERTICAL_SPEED = .35;
-    private static final double UNPILOTED_DESCENT_SPEED = .05;
+    private static final double UNPILOTED_DESCENT_SPEED = .2;
+    private static final double UNPOWERED_DESCENT_SPEED = .05;
     private static final double HORIZONTAL_RESPONSE = .06;
     private static final double VERTICAL_RESPONSE = .08;
     private static final float MAX_TURN_SPEED = 3;
@@ -58,6 +59,7 @@ public class FluxShipEntity extends Entity {
     private double flightSpeed;
     private boolean firing;
     private int laserCooldown;
+    private int hurtTime;
     private int lerpSteps;
     private Vec3 lerpTarget = Vec3.ZERO;
     private float turnSpeed;
@@ -286,7 +288,12 @@ public class FluxShipEntity extends Entity {
         if (pilot instanceof IFluxShipPilot || pilot != null && source.is(LaserEntity.SHIP_DAMAGE)) {
             // Return fire reaches NPC pilots; cannon hits also reach players inside their own ships.
             boolean laser = source.getDirectEntity() instanceof LaserEntity || source.is(LaserEntity.SHIP_DAMAGE);
-            return pilot.hurt(source, pilot instanceof IFluxShipPilot && laser ? amount * .5f : amount);
+            boolean damaged = pilot.hurt(source, pilot instanceof IFluxShipPilot && laser ? amount * .5f : amount);
+            if (damaged && !level().isClientSide) {
+                hurtTime = 10;
+                level().broadcastEntityEvent(this, (byte) 2);
+            }
+            return damaged;
         }
         if (source.getEntity() instanceof Player player && player.isShiftKeyDown() && getControllingPassenger() == null) {
             if (!level().isClientSide) {
@@ -298,6 +305,19 @@ public class FluxShipEntity extends Entity {
             return true;
         }
         return false;
+    }
+
+    public int getHurtTime() {
+        return hurtTime;
+    }
+
+    @Override
+    public void handleEntityEvent(byte event) {
+        if (event == 2) {
+            hurtTime = 10;
+        } else {
+            super.handleEntityEvent(event);
+        }
     }
 
     @Override
@@ -328,6 +348,9 @@ public class FluxShipEntity extends Entity {
     @Override
     public void tick() {
         super.tick();
+        if (hurtTime > 0) {
+            hurtTime--;
+        }
         previousBank = bank;
         previousExhaustStrength = exhaustStrength;
         float oldYaw = getYRot();
@@ -401,7 +424,8 @@ public class FluxShipEntity extends Entity {
         setYRot(getYRot() + turnSpeed);
         entityData.set(YAW, getYRot());
         Vec3 heading = Vec3.directionFromRotation(0, getYRot());
-        double targetVerticalSpeed = !livePilot || !powered ? -UNPILOTED_DESCENT_SPEED : vertical * MAX_VERTICAL_SPEED;
+        double targetVerticalSpeed = !livePilot ? -UNPILOTED_DESCENT_SPEED
+                : !powered ? -UNPOWERED_DESCENT_SPEED : vertical * MAX_VERTICAL_SPEED;
         Vec3 target = heading.scale(forward * MAX_SPEED).add(0, targetVerticalSpeed, 0);
         if (autopilot) {
             Vec3 nose = Vec3.directionFromRotation(getXRot(), getYRot());
@@ -414,8 +438,8 @@ public class FluxShipEntity extends Entity {
             }
         }
         if (!powered) {
-            // Losing power uses the same gentle braking/descent as an abandoned ship.
-            target = new Vec3(0, -UNPILOTED_DESCENT_SPEED, 0);
+            // A living pilot retains the slower emergency descent after losing power.
+            target = new Vec3(0, targetVerticalSpeed, 0);
         }
         Vec3 velocity = getDeltaMovement();
         // Ease acceleration, braking, reversals and unattended descent through the same momentum.
@@ -485,6 +509,7 @@ public class FluxShipEntity extends Entity {
         flightSpeed = 0;
         firing = false;
         laserCooldown = 0;
+        hurtTime = 0;
         turnSpeed = bank = previousBank = yawChange = 0;
         exhaustStrength = previousExhaustStrength = 0;
         lastPilotTurnTick = -1;

@@ -268,7 +268,9 @@ with one hit. Masters and foot guards in advanced complexes hit harder, but a
 healthy player in full unenchanted netherite can survive one melee hit.
 Combat drones belonging to `city2_1`, `city3_1`, `city4_1` and `city5_1` can kill
 that same player with one laser hit. Protection enchantments still reduce laser
-damage. Bring suitable equipment and use cover before alerting these bases.
+damage. Powered Armor Upgrades provide dedicated laser protection, allowing a
+full upgraded suit to survive individual hits without enchantments or a
+forcefield. Bring suitable equipment and use cover before alerting these bases.
 
 City biomes and the interiors of every dungeon type have natural soldier/master
 spawning at light levels of **11 or lower**. Outside those areas, other biomes use
@@ -1055,6 +1057,8 @@ Replaced items return to the inventory or drop nearby when there is no room.
 Every armor piece has active Energy Efficiency and Armor Improvement modules.
 The boots also have Feather Falling; the chest has active Regeneration and an
 installed, **disabled** Forcefield. Configure modules with the usual armor key.
+Enabling that Forcefield alongside Armor and Regeneration uses **120/130** power
+with Energy Efficiency, so all three abilities can operate together.
 
 ### Configuration and fuel
 
@@ -1105,11 +1109,11 @@ module capacity and about one-third longer fuel duration at the same usage.
 | Module | Piece | Usage | Effect/status in the current port |
 | --- | --- | --- | --- |
 | Energy | All armor; Enhanced Sabre and Lance | Special | Raises budget and fuel duration as above. |
-| Armor | All armor | 20 | Adds 4 armor attribute points on that piece while working. Base armor currently uses leather material values. |
+| Armor | All armor | 20 | Adds 6 armor and 4 toughness while working, plus 20% protection against armor-piercing projectiles and magic per piece (80% with all four). |
 | Nightvision | Helmet | 20 | Refreshes night vision while powered and enabled. |
 | Scramble | Helmet | 50 | Prevents sentinel detection while its working flag is active. Does not pacify all hostile mobs. |
 | Invisibility | Helmet, planned | 20 | Effect code/item exist, but its configuration entry is disabled; not a normally installable current feature. |
-| Forcefield | Chestplate | 80 | Blocks projectiles and magic, including drone/lance lasers; absorbs 80% of explosions. Ranged/explosion hits start a shared cooldown with 50% ranged and 40% explosion protection. Halves melee damage and reflects half as Thorns damage. |
+| Forcefield | Chestplate | 60 | Blocks projectiles and magic, including drone/lance lasers; absorbs 80% of explosions. Ranged/explosion hits start a shared cooldown with 50% ranged and 40% explosion protection. Halves melee damage and reflects half as Thorns damage. |
 | Regeneration | Chestplate | 40 | Refreshes Regeneration III while powered/enabled. |
 | Flight | Chestplate | 30 | Hold Space for upward thrust; no creative flight is granted. |
 | Hover | Chestplate | 10 | With Flight active, holds altitude; sneak descends. |
@@ -1121,13 +1125,35 @@ module capacity and about one-third longer fuel duration at the same usage.
 | Looting | Enhanced Sabre and Lance | 20 | Applies Looting III while powered/enabled. |
 | Fire | Enhanced Sabre and Lance | 30 | Applies Fire Aspect III while powered/enabled. |
 
+An unupgraded suit uses leather's base armor values. With all four Armor Upgrades
+working, the suit reaches **30 effective armor and 16 toughness**. Each working
+piece also absorbs **20% of armor-piercing projectile and magic damage**, including
+ship, lance and drone lasers; all four pieces absorb **80%**. This protection
+applies before the forcefield. Ordinary arrows use physical armor protection;
+falling, drowning and the void receive no energy protection. Losing fuel or
+disabling a module removes its powered protection.
+
+Against an unenchanted, fully upgraded suit with its forcefield off, normal
+soldier melee deals about **2.4 hearts** and master/advanced guard melee about
+**3.2 hearts**. Normal soldier lances deal about **3.12 hearts on Normal** or
+**4.68 on Hard**; master lances remain dangerous at **6.24 hearts on Hard**.
+
+Scout cannons deal **8 base damage** per shot, retain their five-shot-per-second
+cadence and repeated attack runs, and still bypass ordinary damage immunity.
+Four working Armor Upgrades reduce each scout hit to **0.8 hearts on Normal** or
+**1.2 on Hard**. With every shot landing and no healing, that is thirteen hits
+on Normal (2.4 seconds from the first hit) or nine on Hard (1.6 seconds).
+Player-piloted ship cannons retain their unupgraded Energy Lance damage.
+
 The personal forcefield is faintly visible from inside in first person. Absorbing
 a ranged or magic hit or an explosion flashes the field red, then leaves a dimmer
 red tint until it recovers. Third-person hit effects stay brighter throughout
 cooldown. The tint and extra brightness fade back to normal during the last
 three ticks (0.15 seconds). Recharge time follows the damage actually absorbed:
 at least 10 ticks (half a second), or about 40 ticks (two seconds) for a fully
-blocked 24-damage advanced city drone laser. Each subsequent ranged/explosion hit
+blocked 24-damage advanced city drone laser without Armor Upgrades. With all four
+Armor Upgrades working, only 4.8 damage reaches the field, so the same laser uses
+the minimum 10-tick recharge. Each subsequent ranged/explosion hit
 resets the timer using the amount that the weakened field absorbs. Both kinds
 of damage share the same cooldown; melee protection remains 50% throughout.
 Melee retaliation uses the Thorns damage type, so the attacker's own defenses
@@ -1295,12 +1321,15 @@ it to board. It carries one pilot:
 | W / S | Fly forward / backward |
 | A / D | Turn left / right |
 | Up / Down | Rise / descend |
-| Space / Backspace | Also rise / descend; these retain the original Start/Land binding names |
+| Space | Hold to fire the front laser cannon |
+| Backspace | Alternate descend control |
 | Release controls | Brake and hover |
 | Shift | Dismount |
 
-Bindings can be changed in Controls. Flight follows the ship's heading; looking
-around does not steer it. The mounted hologram shows actual travel speed in km/h,
+Bindings can be changed in Controls. Existing saved fire bindings may retain V;
+reset Fire ship laser or bind it to Space to use the new default. Space no longer
+adds upward thrust. Mouse look steers the hull; hold Left Alt to look around
+without steering it. The mounted hologram shows actual travel speed in km/h,
 altitude as world Y, and your current key bindings. Its transparent pane and bright
 text leave the view ahead visible. Acceleration and turning build
 up gradually, with some momentum through turns. The hull banks into moving turns
@@ -1317,6 +1346,13 @@ item. Newly crafted ships and ships from the creative inventory start at **0%**;
 their cockpit hologram says **No power**. Center a ship over a powered Flux Ship
 Charger to recharge it using both flux types. Empty ships gently descend.
 `/ariente equip` supplies an explicitly charged ship for operators.
+Lance and ship lasers travel 20% faster. Ship cannon projectiles move at
+**9.6 blocks per tick**; lance shots start at **1.8 blocks per tick**, with their
+acceleration increased by the same percentage. Successful hull hits flash the
+ship and its cannon red for half a second while the pilot receives the damage.
+An abandoned ship, or one whose pilot has been defeated, descends at about
+**four blocks per second** after slowing its previous motion. A living pilot
+whose ship runs out of power retains the slower emergency descent.
 The prototype has no automatic landing/navigation. The large floating ship-shaped
 city is a generated structure. Flux Elevator cabin entities remain a separate
 transport workflow.

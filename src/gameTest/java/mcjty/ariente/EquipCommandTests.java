@@ -87,6 +87,21 @@ public class EquipCommandTests {
     }
 
     @GameTest(template = "empty")
+    public static void forcefieldCanBeEnabledAlongsideTheLoadoutsArmorAndRegeneration(GameTestHelper helper) {
+        ServerPlayer player = player(helper);
+        var commands = helper.getLevel().getServer().getCommands();
+        commands.performPrefixedCommand(player.createCommandSourceStack().withPermission(2), "ariente equip");
+        ItemStack chest = player.getItemBySlot(EquipmentSlot.CHEST);
+        chest.getOrCreateTag().putBoolean(ArmorUpgradeType.FORCEFIELD.getModuleKey(), true);
+        chest.getItem().inventoryTick(chest, player.level(), player, 0, false);
+        helper.assertTrue(ModuleSupport.hasWorkingUpgrade(chest, ArmorUpgradeType.ARMOR)
+                        && ModuleSupport.hasWorkingUpgrade(chest, ArmorUpgradeType.REGENERATION)
+                        && ModuleSupport.hasWorkingUpgrade(chest, ArmorUpgradeType.FORCEFIELD),
+                "Enabling the loadout's forcefield must leave armor, regeneration and shielding powered together");
+        helper.succeed();
+    }
+
+    @GameTest(template = "empty")
     public static void replacingAFullInventoryPreservesDisplacedEquipment(GameTestHelper helper) {
         ServerPlayer player = player(helper);
         player.getInventory().selected = 4;
