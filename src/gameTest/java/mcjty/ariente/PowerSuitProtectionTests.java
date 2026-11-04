@@ -8,9 +8,11 @@ import mcjty.ariente.setup.Registration;
 import net.minecraft.core.registries.Registries;
 import net.minecraft.gametest.framework.GameTest;
 import net.minecraft.gametest.framework.GameTestHelper;
+import net.minecraft.nbt.CompoundTag;
 import net.minecraft.world.damagesource.DamageSource;
 import net.minecraft.world.entity.EquipmentSlot;
 import net.minecraft.world.entity.ai.attributes.Attributes;
+import net.minecraft.world.entity.monster.Zombie;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.entity.projectile.Arrow;
 import net.minecraft.world.item.Item;
@@ -24,6 +26,57 @@ import java.util.List;
 @GameTestHolder(Ariente.MODID)
 @PrefixGameTestTemplate(false)
 public class PowerSuitProtectionTests {
+
+    @GameTest(template = "empty")
+    public static void powerSuitHasNoDurabilityIncludingPreviouslyDamagedPieces(GameTestHelper helper) {
+        Player player = fullSuit(helper);
+        for (ItemStack stack : player.getArmorSlots()) {
+            helper.assertTrue(!stack.isDamageableItem() && stack.getMaxDamage() == 0,
+                    "Every power suit piece must have no durability regardless of its base armor material");
+            stack.getOrCreateTag().putInt("Damage", 1000);
+            ItemStack restored = ItemStack.of(stack.save(new CompoundTag()));
+            helper.assertTrue(!restored.isDamageableItem() && !restored.isDamaged()
+                            && !restored.getItem().isBarVisible(restored),
+                    "Previously saved armor damage must not restore durability or show a damage bar");
+            restored.hurtAndBreak(1000, player, entity -> helper.fail("Power armor must never trigger a break event"));
+            helper.assertTrue(restored.getCount() == 1
+                            && restored.getTag().getBoolean(ArmorUpgradeType.ARMOR.getModuleKey()),
+                    "Old damage must not break a restored suit or lose its installed modules");
+        }
+        ItemStack leather = new ItemStack(Items.LEATHER_HELMET);
+        leather.hurtAndBreak(1000, player, entity -> {});
+        helper.assertTrue(leather.isEmpty(), "Ordinary leather armor must still wear out normally");
+        player.discard();
+        helper.succeed();
+    }
+
+    @GameTest(template = "empty")
+    public static void repeatedMeleeHitsCannotWearOutPoweredOrUnpoweredArmor(GameTestHelper helper) {
+        Player player = fullSuit(helper);
+        Zombie attacker = new Zombie(helper.getLevel());
+        DamageSource melee = player.damageSources().mobAttack(attacker);
+        for (boolean powered : new boolean[]{true, false}) {
+            if (!powered) {
+                player.getInventory().setItem(9, ItemStack.EMPTY);
+                for (ItemStack stack : player.getArmorSlots()) {
+                    ModuleSupport.updateWorkingState(stack, player);
+                }
+            }
+            for (int hit = 0; hit < 128; hit++) {
+                helper.assertTrue(damage(player, melee) > 0, "Melee hits must reach the player during the regression check");
+                for (EquipmentSlot slot : EquipmentSlot.values()) {
+                    if (slot.getType() == EquipmentSlot.Type.ARMOR) {
+                        ItemStack stack = player.getItemBySlot(slot);
+                        helper.assertTrue(!stack.isEmpty() && stack.getDamageValue() == 0,
+                                "Repeated melee combat must not damage or break power armor, with or without fuel: " + slot);
+                    }
+                }
+            }
+        }
+        player.discard();
+        attacker.discard();
+        helper.succeed();
+    }
 
     @GameTest(template = "empty")
     public static void energyProtectionScalesWithPoweredPiecesAndStopsWhenFuelIsRemoved(GameTestHelper helper) {

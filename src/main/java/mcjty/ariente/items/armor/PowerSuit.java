@@ -51,8 +51,19 @@ public class PowerSuit extends ArmorItem {
             case LEGS -> Type.LEGGINGS;
             case FEET -> Type.BOOTS;
             default -> throw new IllegalArgumentException("Not an armor slot: " + slot);
-        }, new Properties().durability(0));
+        }, new Properties().stacksTo(1));
         this.slot = slot;
+    }
+
+    @Override
+    public boolean canBeDepleted() {
+        // ArmorItem replaces zero durability with the material's default, so disable wear explicitly.
+        return false;
+    }
+
+    @Override
+    public int getMaxDamage(ItemStack stack) {
+        return 0;
     }
 
     @Nullable

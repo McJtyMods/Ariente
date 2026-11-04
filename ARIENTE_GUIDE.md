@@ -1054,6 +1054,9 @@ Source: [Forcefield Generator](src/main/java/mcjty/ariente/blocks/defense/ForceF
 
 ## Power armor, modules, and sabres
 
+Power armor has no durability and cannot wear out in combat, even with an empty
+Energy Holder. Fuel powers its upgrade modules.
+
 ### Operator loadout
 
 Run `/ariente equip` as a player with permission level 2 (operator/cheats) to
