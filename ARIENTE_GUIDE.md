@@ -272,6 +272,14 @@ damage. Powered Armor Upgrades provide dedicated laser protection, allowing a
 full upgraded suit to survive individual hits without enchantments or a
 forcefield. Bring suitable equipment and use cover before alerting these bases.
 
+Scout patrols require at least one surviving AI core at their launch base and
+at newly selected destinations. Destroying a base's last core blocks new
+launches and stops other patrols choosing it as a destination. Patrols already
+en route keep their assigned flight, including across save/reload, and retire
+after arriving at the captured base. Nearby observers see them leave before
+they disappear. Local survey loops remain available from operational bases;
+launch timing and the two-scout traffic limit are unchanged.
+
 City biomes and the interiors of every dungeon type have natural soldier/master
 spawning at light levels of **11 or lower**. Outside those areas, other biomes use
 Overworld-style hostile spawn tables. Natural patrols use normal hostile mob caps
