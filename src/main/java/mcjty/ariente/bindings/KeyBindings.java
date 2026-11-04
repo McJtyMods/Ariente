@@ -4,6 +4,7 @@ import mcjty.ariente.items.armor.PacketConfigureArmor;
 import mcjty.ariente.items.armor.PacketArmorHotkey;
 import org.lwjgl.glfw.GLFW;
 import mcjty.ariente.entities.fluxship.FluxShipEntity;
+import mcjty.ariente.entities.fluxship.FluxShipMouseControls;
 import mcjty.ariente.entities.fluxship.PacketShipAction;
 import mcjty.ariente.entities.levitator.FluxLevitatorEntity;
 import mcjty.ariente.entities.levitator.PacketLevitatorInput;
@@ -27,6 +28,7 @@ public class KeyBindings {
     public static Binding startFlying;
     public static Binding startLanding;
     public static Binding fireShipLaser;
+    public static Binding shipFreeLook;
 
     public static void init() {
 
@@ -47,17 +49,22 @@ public class KeyBindings {
         startFlying = Binding.createHeld("key.startflying", GLFW.GLFW_KEY_SPACE);
         startLanding = Binding.createHeld("key.startlanding", GLFW.GLFW_KEY_BACKSPACE);
         fireShipLaser = Binding.createHeld("key.ariente.ship_fire", GLFW.GLFW_KEY_V);
+        shipFreeLook = Binding.createHeld("key.ariente.ship_free_look", GLFW.GLFW_KEY_LEFT_ALT);
     }
 
     public static void tickShipControls() {
         Minecraft mc = Minecraft.getInstance();
-        if (mc.player != null && mc.player.getVehicle() instanceof FluxShipEntity) {
+        if (mc.player != null && mc.player.getVehicle() instanceof FluxShipEntity ship) {
             boolean active = mc.screen == null && !mc.isPaused();
             int forward = active ? (flyForward.isDown() ? 1 : 0) - (flyBackwards.isDown() ? 1 : 0) : 0;
             int turn = active ? (turnRight.isDown() ? 1 : 0) - (turnLeft.isDown() ? 1 : 0) : 0;
             int vertical = active ? (flyUp.isDown() || startFlying.isDown() ? 1 : 0)
                     - (flyDown.isDown() || startLanding.isDown() ? 1 : 0) : 0;
-            toServer(new PacketShipAction(forward, turn, vertical, active && fireShipLaser.isDown()));
+            FluxShipMouseControls.Aim aim = FluxShipMouseControls.sample(ship, active, turn);
+            toServer(new PacketShipAction(forward, turn, vertical, active && fireShipLaser.isDown(),
+                    aim.flight(), aim.steering(), aim.yaw(), aim.pitch()));
+        } else {
+            FluxShipMouseControls.reset();
         }
     }
 

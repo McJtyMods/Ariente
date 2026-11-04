@@ -130,6 +130,7 @@ public class FluxShipClientChecks {
         if (!started) {
             started = true;
             mc.options.pauseOnLostFocus = false;
+            UtilityConfiguration.FLUX_SHIP_MOUSE_CONTROL.set(Boolean.getBoolean("ariente.shipMouseCheck"));
             mc.options.fov().set(70);
             mc.options.setCameraType(CameraType.FIRST_PERSON);
             mc.options.graphicsMode().set(Boolean.getBoolean("ariente.shipExhaustFabulous") ? GraphicsStatus.FABULOUS : GraphicsStatus.FANCY);
@@ -187,6 +188,10 @@ public class FluxShipClientChecks {
             return;
         }
         ticks++;
+        if (Boolean.getBoolean("ariente.shipMouseCheck")) {
+            FluxShipMouseChecks.tick(mc, ship, ticks);
+            return;
+        }
         FluxShipWeaponChecks.observeSpawns();
         if (ticks >= 95 && ticks < 115 || ticks >= 145 && ticks < 165) {
             float start = Mth.wrapDegrees(mc.player.getViewYRot(0) - ship.yRotO);

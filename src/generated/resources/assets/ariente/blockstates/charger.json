@@ -1,0 +1,10 @@
+{
+  "variants": {
+    "working=false": {
+      "model": "ariente:block/utility/charger"
+    },
+    "working=true": {
+      "model": "ariente:block/utility/charger_powered"
+    }
+  }
+}

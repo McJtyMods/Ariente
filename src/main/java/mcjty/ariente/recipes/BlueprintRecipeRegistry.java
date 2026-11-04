@@ -346,6 +346,14 @@ public class BlueprintRecipeRegistry {
                 new ItemStack(Registration.DUST_SILICON.get(), 2),
                 new ItemStack(Blocks.FURNACE, 1)
         ));
+        recipes.add(new ConstructorRecipe(new ItemStack(Registration.CHARGER.get()), COMMON,
+                new ItemStack(DecorativeBlockModule.MARBLE.get(MarbleColor.BLACK).get(), 1),
+                new ItemStack(Registration.INGOT_SILVER.get(), 6),
+                new ItemStack(Registration.CIRCUIT.get(), 2),
+                new ItemStack(Registration.FLUX_CAPACITOR.get(), 2),
+                new ItemStack(Registration.DUST_NEGARITE.get(), 8),
+                new ItemStack(Registration.DUST_POSIRITE.get(), 8)
+        ));
         recipes.add(new ConstructorRecipe(new ItemStack(Registration.ELEVATOR.get()), COMMON,
                 new ItemStack(Registration.CIRCUIT.get(), 1),
                 new ItemStack(DecorativeBlockModule.MARBLE_SLAB.get(MarbleColor.BLACK).get(), 1),

@@ -29,6 +29,11 @@ public class FluxShipClient {
         }
         float heading = ship.getFlightYaw(partialTick);
         float relativeYaw = Mth.wrapDegrees(event.getYaw() - heading);
+        if (UtilityConfiguration.FLUX_SHIP_MOUSE_CONTROL.get()) {
+            // Mouse look is the world-space flight aim. Do not add the hull pitch to it a second time.
+            event.setRoll(event.getRoll() + ship.getBank(partialTick) * strength * Mth.cos(relativeYaw * Mth.DEG_TO_RAD));
+            return;
+        }
         // Compose the cabin and free-look rotations exactly. Adding Euler angles
         // separately causes the cockpit to wander when pitching and banking together.
         Quaternionf rotation = new Quaternionf().rotationY(-heading * Mth.DEG_TO_RAD)
@@ -47,7 +52,8 @@ public class FluxShipClient {
     }
 
     public static String turnKeys() {
-        return KeyBindings.turnLeft.getKeyName() + "/" + KeyBindings.turnRight.getKeyName() + " Turn";
+        return (UtilityConfiguration.FLUX_SHIP_MOUSE_CONTROL.get() ? "Mouse / " : "")
+                + KeyBindings.turnLeft.getKeyName() + "/" + KeyBindings.turnRight.getKeyName() + " Turn";
     }
 
     public static String heightKeys() {
@@ -56,6 +62,12 @@ public class FluxShipClient {
 
     public static String alternateHeightKeys() {
         return KeyBindings.startFlying.getKeyName() + "/" + KeyBindings.startLanding.getKeyName();
+    }
+
+    public static String flightHint() {
+        return UtilityConfiguration.FLUX_SHIP_MOUSE_CONTROL.get()
+                ? "Mouse Pitch | " + KeyBindings.shipFreeLook.getKeyName() + " Look around"
+                : heightKeys() + " or " + alternateHeightKeys() + " Rise/descend";
     }
 
     public static String dismountKey() {

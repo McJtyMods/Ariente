@@ -6,7 +6,6 @@ import mcjty.ariente.items.EnergySabreItem;
 import mcjty.hologui.api.IHoloGuiEntity;
 import net.minecraft.util.Mth;
 import net.minecraft.world.entity.LivingEntity;
-import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.entity.projectile.ProjectileUtil;
 import net.minecraft.world.level.ClipContext;
 import net.minecraft.world.phys.EntityHitResult;
@@ -44,7 +43,7 @@ public class FluxShipLaser {
                 : obstruction.getLocation().subtract(direction(ship, partialTick).scale(.01));
     }
 
-    public static boolean fire(FluxShipEntity ship, Player pilot, int cooldown) {
+    public static boolean fire(FluxShipEntity ship, LivingEntity pilot, int cooldown) {
         if (ship.level().isClientSide || cooldown > 0 || ship.getControllingPassenger() != pilot || !pilot.isAlive()) {
             return false;
         }

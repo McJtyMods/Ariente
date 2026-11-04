@@ -1,4 +1,9 @@
 1.20-0.0.31-alpha:
+- Flux Ship tooltips now explain deployment and charging, with clear feedback when deployment is blocked.
+- Added Flux Ship batteries and a Charger with a rotating, glowing top powered by both flux types. Charging takes about one minute; full-speed endurance is about twenty minutes, with much lower hovering and descent costs. The cockpit now shows charge, and empty ships gently descend.
+- Flux Ship exhaust is longer and brighter, with clearer distant strands. Enemy ships bank more steeply and pass half of incoming laser damage to their pilots while their hulls remain indestructible.
+- Flux Ships now steer toward mouse look, including climbs and dives, with A/D turning assistance and Left Alt free look. W/S retain smooth movement and braking. Mouse steering can be disabled in the client configuration.
+- Flux Ships can now carry soldier pilots, with smooth climbing and diving turns, stable flybys and a seated model that follows the hull. Defeating an enemy pilot disables its ship.
 - Flux Ships now have a front-mounted rapid-fire laser with Energy Lance damage. Hold V (rebindable) to fire and aim with the hull, using the new cockpit crosshair and compact flight instruments.
 - Added Fluid and Forge Energy display modules with Constructor blueprints, configurable numbers, meters and histories, fluid tank selection and units, and FE capacity, percentage and net buffer change readings.
 - Flux Ships now have a flight engine hum based on the Flux Levitator sound, with smooth volume changes and a gentle pitch rise as speed increases. Pilots hear a cockpit loop; nearby observers hear positional sound.

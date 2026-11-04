@@ -63,6 +63,7 @@ public class FluxShipPanelRender extends EntityRenderer<HoloGuiEntity> {
         float sightY = (float) (sightOffset.dot(ship.rotateCabinOffset(new Vec3(0, 1, 0), partialTick)) / scale);
         pose.pushPose();
         pose.translate(0, 0, .006);
+        battery(canvas, ship);
         crosshair(canvas, sightX, sightY, .008f, 0xf0081820);
         pose.translate(0, 0, .001);
         crosshair(canvas, sightX, sightY, .003f, 0xffb8f4ff);
@@ -94,6 +95,20 @@ public class FluxShipPanelRender extends EntityRenderer<HoloGuiEntity> {
         canvas.fill(x - thickness / 2, y - .055f, thickness, .035f, color);
         canvas.fill(x - thickness / 2, y + .02f, thickness, .035f, color);
         canvas.fill(x - thickness / 2, y - thickness / 2, thickness, thickness, color);
+    }
+
+    private static void battery(DisplayCanvas canvas, FluxShipEntity ship) {
+        float charge = ship.getChargeRatio();
+        int color = charge <= .1f ? 0xffff6050 : charge <= .25f ? 0xffffcf60 : 0xff70edff;
+        canvas.fill(-.465f, -.475f, .93f, .035f, 0xd0081820);
+        canvas.fill(-.46f, -.47f, .92f * charge, .025f, color);
+        // Text uses font pixel coordinates, while this canvas is in cockpit coordinates with Y upwards.
+        canvas.poses().pushPose();
+        canvas.poses().translate(-.46f, -.405f, .001f);
+        canvas.poses().scale(.0035f, -.0035f, .0035f);
+        canvas.text("CHARGE " + Math.round(charge * 100) + "%" + (charge == 0 ? " - LAND TO RECHARGE" : ""),
+                0, 0, color, 1, 260);
+        canvas.poses().popPose();
     }
 
     @Override

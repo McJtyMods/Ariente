@@ -118,6 +118,7 @@ public class Items extends BaseItemModelProvider {
         parentedItem(Registration.HOLO_STORAGE_2_ITEM.get(), "block/holo_storage_2");
         parentedItem(Registration.HOLO_STORAGE_3_ITEM.get(), "block/holo_storage_3");
         parentedItem(Registration.SMELTER_ITEM.get(), "block/utility/smelter");
+        parentedItem(Registration.CHARGER_ITEM.get(), "block/utility/charger_powered");
         parentedItem(Registration.ELEVATOR_ITEM.get(), "block/utility/elevator");
         parentedItem(Registration.FORCEFIELD_ITEM.get(), "block/machines/forcefield");
         parentedItem(Registration.WARPER_ITEM.get(), "block/utility/warper");

@@ -27,10 +27,9 @@ public class FluxShipGui {
                         .getter((p, holo) -> holo.getEntity().getVehicle() instanceof FluxShipEntity ship
                                 ? Mth.floor(ship.getY()) : 0))
                 .add(registry.text(.3, 2.7, 7.4, .6).name("ship_fire").text(FluxShipClient::firingKey).scale(.35f).color(LABEL_COLOR))
-                .add(registry.text(.3, 5.9, 7.4, .6).text(() -> FluxShipClient.movementKeys() + "   " + FluxShipClient.turnKeys()).scale(.3f).color(LABEL_COLOR))
-                .add(registry.text(.3, 6.6, 7.4, .6).text(() -> FluxShipClient.heightKeys() + " or "
-                        + FluxShipClient.alternateHeightKeys() + " Rise/descend").scale(.26f).color(LABEL_COLOR))
-                .add(registry.text(.3, 7.3, 7.4, .6).text(() -> FluxShipClient.dismountKey()
+                .add(registry.text(.3, 5.7, 7.4, .5).text(() -> FluxShipClient.movementKeys() + "   " + FluxShipClient.turnKeys()).scale(.3f).color(LABEL_COLOR))
+                .add(registry.text(.3, 6.25, 7.4, .5).text(FluxShipClient::flightHint).scale(.26f).color(LABEL_COLOR))
+                .add(registry.text(.3, 6.8, 7.4, .5).text(() -> FluxShipClient.dismountKey()
                         + " | Release controls to hover").scale(.25f).color(LABEL_COLOR));
     }
 }

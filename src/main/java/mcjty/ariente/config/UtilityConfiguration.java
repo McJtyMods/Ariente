@@ -17,6 +17,7 @@ public class UtilityConfiguration {
     public static ForgeConfigSpec.DoubleValue POWERSUIT_MAX_BACK_GROUND_SPEED;
     public static ForgeConfigSpec.DoubleValue POWERSUIT_MAX_BACK_FLY_SPEED;
     public static ForgeConfigSpec.DoubleValue FLUX_SHIP_CAMERA_TILT;
+    public static ForgeConfigSpec.BooleanValue FLUX_SHIP_MOUSE_CONTROL;
 
     public static ForgeConfigSpec.IntValue WARPER_MAX_CHARGES;
 
@@ -32,6 +33,10 @@ public class UtilityConfiguration {
         FLUX_SHIP_CAMERA_TILT = CLIENT_BUILDER
                 .comment("First-person Flux Ship camera tilt strength: 0 disables bank/pitch, 1 follows the ship fully")
                 .defineInRange("fluxShipCameraTilt", 1.0, 0.0, 1.0);
+        FLUX_SHIP_MOUSE_CONTROL = CLIENT_BUILDER
+                .comment("Steer Flux Ships toward mouse look. A/D also turn; hold the ship free-look key to look around.",
+                        "Disable to use keyboard flight with independent mouse look.")
+                .define("fluxShipMouseControl", true);
 
         POWERSUIT_FLYVERTICAL_FACTOR = CLIENT_BUILDER
                 .comment("Amount to go up/down with space/shift while flying")

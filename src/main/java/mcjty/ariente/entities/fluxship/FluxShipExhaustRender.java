@@ -63,7 +63,7 @@ public class FluxShipExhaustRender {
             TextureAtlasSprite sprite = engine == 0 ? negarite : posirite;
             for (int strand = 0; strand < STRANDS; strand++) {
                 double phase = seed + strand * Math.PI * 2 / STRANDS + engine * .7;
-                double length = (.4 + 7.6 * strength) * (.87 + .13 * Math.sin(strand * 2.4 + engine));
+                double length = (1 + 19 * strength) * (.87 + .13 * Math.sin(strand * 2.4 + engine));
                 // Like the tanks, stretch a horizontal strip of the power texture along the beam.
                 float v = sprite.getV((float) ((time * .025 + strand * .19 + engine * .37) % 1) * 16);
                 renderStrand(pose, vertices, sprite, v, nozzle, length, phase, time, strength, camera, cameraUp);
@@ -101,11 +101,13 @@ public class FluxShipExhaustRender {
             if (side.dot(previousSide) < 0) {
                 side = side.scale(-1);
             }
-            double width = (.02 + .03 * strength) * (1 - progress)
+            // Keep the fine ribbons about a pixel wide on distant patrols, without changing their brightness.
+            double distanceWidth = Math.min(.18, camera.distanceTo(center) * .0012);
+            double width = Math.max(.035 + .055 * strength, distanceWidth) * (1 - progress)
                     * (1 + .12 * Math.sin(progress * 11 - time * .12 + phase));
             Vec3 left = center.add(side.scale(width));
             Vec3 right = center.subtract(side.scale(width));
-            float glow = (float) (.38 * strength * Math.pow(1 - progress, 1.1)
+            float glow = (float) (.8 * strength * Math.pow(1 - progress, .8)
                     * (.88 + .12 * Math.cos(time * .15 + phase - progress * 5)));
             if (segment > 0) {
                 vertex(pose, vertices, previousLeft, sprite.getU0(), v, previousGlow);

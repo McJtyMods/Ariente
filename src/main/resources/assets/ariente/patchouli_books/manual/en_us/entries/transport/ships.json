@@ -1,23 +1,23 @@
 {
-  "name": "Flux Ship Prototype",
+  "name": "Flux Ship",
   "icon": "ariente:flux_ship",
   "category": "ariente:transport",
   "sortnum": 3,
   "pages": [
     {
       "type": "patchouli:text",
-      "title": "Creative flight",
-      "text": "The Flux Ship is an experimental vehicle without a survival crafting recipe. If you have one, place it in a clear area with room for its hull and right-click to board.$(br2)W/S move forward and backward; A/D turn. Up/Down or Space/Backspace control height. Release the controls to brake and hover. Sneak dismounts."
+      "title": "Flight controls",
+      "text": "The Flux Ship is a powered flying vehicle. Place it in a clear area and right-click to board.$(br2)W/S move forward and backward. Mouse look steers the hull left/right and pitches it up/down; A/D also turn. Hold Left Alt to look around without steering. Up/Down or Space/Backspace add vertical thrust. Release W/S to brake smoothly and hover. Sneak dismounts."
     },
     {
       "type": "patchouli:text",
       "title": "Handling a ship",
-      "text": "The transparent cockpit hologram shows speed in km/h, altitude as world Y, and your current controls while leaving the view ahead visible.$(br2)Top speed is about 374 km/h. Acceleration, braking and reversals build gradually. The ship banks in moving turns and pitches when climbing or descending. Release controls to coast smoothly into a level hover.$(br2)Flight follows the ship’s heading. Looking around does not steer."
+      "text": "The cockpit hologram shows speed in km/h, altitude as world Y, and your current controls.$(br2)Top speed is about 374 km/h. Acceleration, braking, turns and pitch changes build gradually. Flight follows the nose, so look up to climb and down to dive while holding W.$(br2)Disable utility.fluxShipMouseControl in ariente-client.toml for keyboard flight with independent mouse look. The free-look and weapon keys can be rebound in Controls."
     },
     {
       "type": "patchouli:text",
       "title": "Forward laser",
-      "text": "Hold V to fire the front cannon, up to five shots per second. Change Fire ship laser in Controls to rebind it. Each shot deals the damage of an unupgraded Energy Lance, without ammunition.$(br2)Aim by turning and pitching the whole ship. Looking around does not steer the cannon. The center crosshair on the cockpit hologram points along the cannon's line of fire, accounting for its position below your eyes."
+      "text": "Hold V to fire the front cannon, up to five shots per second. Change Fire ship laser in Controls to rebind it. Each shot deals the damage of an unupgraded Energy Lance, without ammunition.$(br2)Aim by turning and pitching the whole ship with the mouse. The hull takes time to turn: the hologram crosshair shows the actual cannon line, accounting for its position below your eyes. Holding the free-look key lets you look around while the cannon keeps its heading."
     },
     {
       "type": "patchouli:text",
@@ -27,10 +27,22 @@
     {
       "type": "patchouli:text",
       "title": "Cockpit view",
-      "text": "First-person camera tilt follows the hull. Reduce or disable it using utility.fluxShipCameraTilt (0 to 1) in ariente-client.toml.$(br2)The third-person camera stays upright and can look around. Your pilot model stays seated facing forward and tilts with the hull.$(br2)Without a pilot, the ship coasts to a stop horizontally and gently sinks at up to one block per second until it rests on the ground. This also happens after reloading. It cannot navigate around obstacles.$(br2)Sneak-hit an unattended ship to recover its item."
+      "text": "First-person banking can be reduced with utility.fluxShipCameraTilt (0 to 1) in ariente-client.toml.$(br2)The third-person camera stays upright. Mouse steering works there too; hold the free-look key to inspect the ship. The pilot model stays seated and tilts with the hull.$(br2)An unattended ship coasts and slowly sinks to the ground, including after reloads. It cannot avoid obstacles. Sneak-hit it to recover its item."
+    },
+    {
+      "type": "patchouli:text",
+      "title": "Charging and endurance",
+      "text": "The charge bar at the bottom of the cockpit shows stored power. A full battery lasts about 20 minutes at full speed; hovering and gently descending use much less.$(br2)Center the ship just above a Flux Ship Charger and stop to recharge. Connect both negarite and posirite power, separately or through a combined cable. A full charge takes about one minute with enough power.$(br2)An empty battery eases the ship into a slow descent. Picking up and replacing a ship preserves its remaining charge."
+    },
+    {
+      "type": "patchouli:spotlight",
+      "item": "ariente:charger",
+      "title": "Flux Ship Charger",
+      "text": "Build the Charger in the Constructor using its common blueprint. Its animated top glows while both power types are available. A black field means power is missing.$(br2)The charger only supplies a stationary ship centered directly above it; ships flying past or higher overhead do not recharge."
     }
   ],
   "extra_recipe_mappings": {
-    "ariente:flux_ship": 0
+    "ariente:flux_ship": 0,
+    "ariente:charger": 6
   }
 }

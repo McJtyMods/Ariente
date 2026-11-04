@@ -1,0 +1,8 @@
+{
+  "parent": "minecraft:block/cube_bottom_top",
+  "textures": {
+    "bottom": "ariente:block/base/machinebottom",
+    "side": "ariente:block/base/machineside",
+    "top": "ariente:block/machines/charger_off"
+  }
+}

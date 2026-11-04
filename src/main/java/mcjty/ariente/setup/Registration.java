@@ -332,6 +332,10 @@ public class Registration {
     public static final RegistryObject<Item> SMELTER_ITEM = ITEMS.register("smelter", () -> new BlockItem(SMELTER.get(), createStandardProperties()));
     public static final RegistryObject<BlockEntityType<SmelterTile>> SMELTER_TILE = TILES.register("smelter", () -> BlockEntityType.Builder.of(SmelterTile::new, SMELTER.get()).build(null));
 
+    public static final RegistryObject<BaseBlock> CHARGER = BLOCKS.register("charger", ChargerTile::createBlock);
+    public static final RegistryObject<Item> CHARGER_ITEM = ITEMS.register("charger", () -> new BlockItem(CHARGER.get(), createStandardProperties()));
+    public static final RegistryObject<BlockEntityType<ChargerTile>> CHARGER_TILE = TILES.register("charger", () -> BlockEntityType.Builder.of(ChargerTile::new, CHARGER.get()).build(null));
+
     public static final RegistryObject<BaseBlock> ELEVATOR = BLOCKS.register("elevator", ElevatorTile::createBlock);
     public static final RegistryObject<Item> ELEVATOR_ITEM = ITEMS.register("elevator", () -> new BlockItem(ELEVATOR.get(), createStandardProperties()));
     public static final RegistryObject<BlockEntityType<ElevatorTile>> ELEVATOR_TILE = TILES.register("elevator", () -> BlockEntityType.Builder.of(ElevatorTile::new, ELEVATOR.get()).build(null));
@@ -443,6 +447,7 @@ public class Registration {
             .build("ariente_ariente_pearl"));
     public static final RegistryObject<EntityType<FluxShipEntity>> ENTITY_FLUX_SHIP = ENTITIES.register("ariente_flux_ship", () -> EntityType.Builder.of(FluxShipEntity::new, MobCategory.MISC)
             .sized(5.30F, 1.8F)
+            .clientTrackingRange(16)
             .updateInterval(1)
             .setShouldReceiveVelocityUpdates(false)
             .build("ariente_flux_ship"));

@@ -1,4 +1,7 @@
 {
+  "block.ariente.charger": "Flux Ship Charger",
+  "message.ariente.charger.header": "Charges a stationary Flux Ship above it using both flux types",
+  "message.ariente.ship_charge": "Ship charge: %s%%",
   "block.ariente.holo_storage_1": "Holo Storage Cube I (30 stacks)",
   "block.ariente.holo_storage_2": "Holo Storage Cube II (60 stacks)",
   "block.ariente.holo_storage_3": "Holo Storage Cube III (120 stacks)",
@@ -32,6 +35,7 @@
   "item.ariente.flux_levitator": "Flux Levitator",
   "item.ariente.flux_ship": "Flux Ship",
   "key.ariente.ship_fire": "Fire ship laser (hold)",
+  "key.ariente.ship_free_look": "Look around in ship (hold)",
   "item.ariente.flux_capacitor": "Flux Capacitor",
   "item.ariente.circuit": "Circuit",
   "item.ariente.advanced_circuit": "Advanced Circuit",
@@ -254,8 +258,11 @@
 
   "message.ariente.flux_levitator.header": "Flux Levitator",
 
-  "message.ariente.flux_ship.header": "Flux Ship",
-  "message.ariente.flux_ship.warning": "Work in progress! This does not work yet",
+  "message.ariente.flux_ship.header": "Powered spacecraft with a forward laser",
+  "message.ariente.flux_ship.placement": "Use on clear ground to deploy; right-click the ship to board",
+  "message.ariente.flux_ship.charging": "Recharge on a powered Flux Ship Charger",
+  "message.ariente.flux_ship.no_space": "Not enough room to deploy the Flux Ship here",
+  "message.ariente.flux_ship.placement_failed": "Unable to deploy the Flux Ship here",
 
   "message.ariente.key_card.header": "Security card. This card can give you access to unlock storages or press certain locked buttons",
   "message.ariente.key_card.gold": "This card is empty",

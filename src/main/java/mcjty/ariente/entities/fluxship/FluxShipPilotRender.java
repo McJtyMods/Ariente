@@ -3,10 +3,12 @@ package mcjty.ariente.entities.fluxship;
 import com.mojang.blaze3d.vertex.PoseStack;
 import com.mojang.math.Axis;
 import mcjty.ariente.Ariente;
+import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.phys.Vec3;
 import net.minecraftforge.api.distmarker.Dist;
 import net.minecraftforge.client.event.RenderPlayerEvent;
+import net.minecraftforge.client.event.RenderLivingEvent;
 import net.minecraftforge.eventbus.api.EventPriority;
 import net.minecraftforge.eventbus.api.SubscribeEvent;
 import net.minecraftforge.fml.common.Mod;
@@ -20,18 +22,26 @@ import java.util.Map;
 @Mod.EventBusSubscriber(modid = Ariente.MODID, value = Dist.CLIENT)
 public class FluxShipPilotRender {
 
-    private static final Map<Player, PilotPose> ACTIVE = new IdentityHashMap<>();
+    private static final Map<LivingEntity, PilotPose> ACTIVE = new IdentityHashMap<>();
 
     @SubscribeEvent(priority = EventPriority.LOWEST)
     public static void beforePlayer(RenderPlayerEvent.Pre event) {
-        Player player = event.getEntity();
+        beforePilot(event.getEntity(), event.getPartialTick(), event.getPoseStack());
+    }
+
+    @SubscribeEvent(priority = EventPriority.LOWEST)
+    public static void beforeLiving(RenderLivingEvent.Pre<?, ?> event) {
+        if (!(event.getEntity() instanceof Player)) {
+            beforePilot(event.getEntity(), event.getPartialTick(), event.getPoseStack());
+        }
+    }
+
+    private static void beforePilot(LivingEntity player, float partialTick, PoseStack pose) {
         if (!(player.getVehicle() instanceof FluxShipEntity ship)) {
             return;
         }
-        PoseStack pose = event.getPoseStack();
         ACTIVE.put(player, new PilotPose(player.yBodyRot, player.yBodyRotO, player.yHeadRot, player.yHeadRotO,
                 player.getXRot(), player.xRotO, new Matrix4f(pose.last().pose()), new Matrix3f(pose.last().normal())));
-        float partialTick = event.getPartialTick();
         float heading = ship.getFlightYaw(partialTick);
         double seatHeight = ship.getPassengersRidingOffset() + player.getMyRidingOffset();
         Vec3 seat = ship.getPosition(partialTick).add(0, .5, 0)
@@ -50,7 +60,17 @@ public class FluxShipPilotRender {
 
     @SubscribeEvent(priority = EventPriority.HIGHEST)
     public static void afterPlayer(RenderPlayerEvent.Post event) {
-        Player player = event.getEntity();
+        afterPilot(event.getEntity(), event.getPoseStack());
+    }
+
+    @SubscribeEvent(priority = EventPriority.HIGHEST)
+    public static void afterLiving(RenderLivingEvent.Post<?, ?> event) {
+        if (!(event.getEntity() instanceof Player)) {
+            afterPilot(event.getEntity(), event.getPoseStack());
+        }
+    }
+
+    private static void afterPilot(LivingEntity player, PoseStack pose) {
         PilotPose original = ACTIVE.remove(player);
         if (original != null) {
             player.yBodyRot = original.body();
@@ -59,8 +79,8 @@ public class FluxShipPilotRender {
             player.yHeadRotO = original.previousHead();
             player.setXRot(original.pitch());
             player.xRotO = original.previousPitch();
-            event.getPoseStack().last().pose().set(original.pose());
-            event.getPoseStack().last().normal().set(original.normal());
+            pose.last().pose().set(original.pose());
+            pose.last().normal().set(original.normal());
         }
     }
 

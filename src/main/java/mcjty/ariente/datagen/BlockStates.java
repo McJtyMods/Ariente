@@ -124,6 +124,7 @@ public class BlockStates extends BaseBlockStateProvider {
         registerElevator();
         registerForcefield();
         registerWarper();
+        registerCharger();
         registerLock();
         registerWirelessButton();
         registerWirelessLock();
@@ -276,6 +277,16 @@ public class BlockStates extends BaseBlockStateProvider {
     private void registerWarper() {
         BlockModelBuilder model = createdParentedModel("/utility/warper", topglow, TXT_MACHINESIDE, "bottom", TXT_MACHINEBOTTOM, "top", TXT_WARPER);
         simpleBlock(Registration.WARPER.get(), model);
+    }
+
+    private void registerCharger() {
+        BlockModelBuilder idle = models().cubeBottomTop("block/utility/charger", modLoc(TXT_MACHINESIDE),
+                modLoc(TXT_MACHINEBOTTOM), modLoc("block/machines/charger_off"));
+        BlockModelBuilder powered = models().cubeBottomTop("block/utility/charger_powered", modLoc(TXT_MACHINESIDE),
+                modLoc(TXT_MACHINEBOTTOM), modLoc("block/machines/charger_active"));
+        getVariantBuilder(Registration.CHARGER.get())
+                .partialState().with(BlockProperties.WORKING, false).modelForState().modelFile(idle).addModel()
+                .partialState().with(BlockProperties.WORKING, true).modelForState().modelFile(powered).addModel();
     }
 
     private void registerElevator() {

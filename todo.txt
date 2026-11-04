@@ -2,7 +2,11 @@
     - Fill contents with more rooms and corridors
     - Add boss monster
 - Fix flux network and sounds
-- Fix flux ships: power system (charger)
+- Fix flux ships:
+    - Power system (charger)
+    - Damage to ship should go 50% to pilot. Ship cannot be destroyed
+    - A ship floats down after the pilot dies
+    - Remove 'work in progress'
 - More mobs
 - Extend the search range of the pearl
 - Carve out corridors to nearby dungeons in overworld
@@ -10,4 +14,7 @@
 - Use codex to make a test world with all machines and automation in one place
 - Holo screen system, cameras?
 - Teleportation?
-- Display modules for RF and fluids
+- Metal ore doubling
+- Lance makes two sounds on one shooting. Only when the beam travels far
+- More plants, trees, structures and features in the Ariente world
+- For the power armor, what is the charge counter counting? It goes down and then starts again?
