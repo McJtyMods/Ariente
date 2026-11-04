@@ -38,6 +38,7 @@ public class DisplayModuleRenderers {
         register(Registration.DISPLAY_STORAGE.get().type(), DisplayModuleRenderers::storage);
         register(Registration.DISPLAY_TEXT.get().type(), DisplayModuleRenderers::text);
         register(Registration.DISPLAY_ALIEN_TEXT.get().type(), DisplayModuleRenderers::alienText);
+        ResourceDisplayRenderers.init();
     }
 
     public static void render(DisplayCanvas canvas, InstalledModule module) {
@@ -47,7 +48,7 @@ public class DisplayModuleRenderers {
         }
     }
 
-    private static void panel(DisplayCanvas c, InstalledModule module, String title) {
+    static void panel(DisplayCanvas c, InstalledModule module, String title) {
         int w = module.size().width();
         int h = module.size().height();
         c.poses().pushPose();

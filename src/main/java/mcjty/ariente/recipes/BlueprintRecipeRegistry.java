@@ -84,6 +84,14 @@ public class BlueprintRecipeRegistry {
                 new ItemStack(Registration.INGOT_MANGANESE.get(), 2),
                 new ItemStack(Registration.DUST_NEGARITE.get(), 2),
                 new ItemStack(Registration.DUST_POSIRITE.get(), 2)));
+        recipes.add(new ConstructorRecipe(new ItemStack(Registration.DISPLAY_FLUIDS.get()), COMMON,
+                new ItemStack(Registration.CIRCUIT.get(), 1),
+                new ItemStack(Registration.INGOT_SILVER.get(), 2),
+                new ItemStack(Items.BUCKET, 1)));
+        recipes.add(new ConstructorRecipe(new ItemStack(Registration.DISPLAY_FE.get()), COMMON,
+                new ItemStack(Registration.CIRCUIT.get(), 1),
+                new ItemStack(Registration.INGOT_MANGANESE.get(), 2),
+                new ItemStack(Items.REDSTONE, 4)));
         recipes.add(new ConstructorRecipe(new ItemStack(Registration.DISPLAY_STORAGE.get()), COMMON,
                 new ItemStack(Registration.CIRCUIT.get(), 1),
                 new ItemStack(Registration.INGOT_SILVER.get(), 2),

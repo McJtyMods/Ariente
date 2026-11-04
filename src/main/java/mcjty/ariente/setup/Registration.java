@@ -4,6 +4,8 @@ import mcjty.ariente.display.AlienTextDisplayModule;
 import mcjty.ariente.display.DisplayBaseTile;
 import mcjty.ariente.blocks.storagecube.StorageCubeTile;
 import mcjty.ariente.display.DisplayModuleItem;
+import mcjty.ariente.display.FluidDisplayModule;
+import mcjty.ariente.display.ForgeEnergyDisplayModule;
 import mcjty.ariente.display.PowerDisplayModule;
 import mcjty.ariente.display.StorageDisplayModule;
 import mcjty.ariente.display.TextDisplayModule;
@@ -278,6 +280,8 @@ public class Registration {
     public static final RegistryObject<Item> DISPLAY_BASE_ITEM = ITEMS.register("display_base", () -> new BlockItem(DISPLAY_BASE.get(), createStandardProperties()));
     public static final RegistryObject<BlockEntityType<DisplayBaseTile>> DISPLAY_BASE_TILE = TILES.register("display_base", () -> BlockEntityType.Builder.of(DisplayBaseTile::new, DISPLAY_BASE.get()).build(null));
     public static final RegistryObject<DisplayModuleItem> DISPLAY_POWER = ITEMS.register("display_module_power", () -> new DisplayModuleItem(new PowerDisplayModule()));
+    public static final RegistryObject<DisplayModuleItem> DISPLAY_FLUIDS = ITEMS.register("display_module_fluids", () -> new DisplayModuleItem(new FluidDisplayModule()));
+    public static final RegistryObject<DisplayModuleItem> DISPLAY_FE = ITEMS.register("display_module_fe", () -> new DisplayModuleItem(new ForgeEnergyDisplayModule()));
     public static final RegistryObject<DisplayModuleItem> DISPLAY_STORAGE = ITEMS.register("display_module_storage", () -> new DisplayModuleItem(new StorageDisplayModule()));
     public static final RegistryObject<DisplayModuleItem> DISPLAY_TEXT = ITEMS.register("display_module_text", () -> new DisplayModuleItem(new TextDisplayModule()));
     public static final RegistryObject<DisplayModuleItem> DISPLAY_ALIEN_TEXT = ITEMS.register("display_module_alien_text", () -> new DisplayModuleItem(new AlienTextDisplayModule()));

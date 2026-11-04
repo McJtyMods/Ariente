@@ -7,7 +7,7 @@
     {
       "type": "patchouli:text",
       "title": "A modular display",
-      "text": "Make a Holographic Display Base with its reusable blueprint in a Constructor or Auto Constructor. Place bases side by side at the same level and facing to share a vertical surface.$(br2)Right-click any base to set a common height of 1–10 blocks. Displays need no power or cables.$(br2)Power, Storage and Text modules also have Constructor blueprints. Click or drag a slider; its outer arrows adjust by one."
+      "text": "Make a Holographic Display Base with its reusable blueprint in a Constructor or Auto Constructor. Place bases side by side at the same level and facing to share a vertical surface.$(br2)Right-click any base to set a common height of 1–10 blocks. Displays need no power or cables.$(br2)Power, Storage, Fluid, Forge Energy and Text modules also have Constructor blueprints. Click or drag a slider; its outer arrows adjust by one."
     },
     {
       "type": "patchouli:text",
@@ -36,6 +36,16 @@
     },
     {
       "type": "patchouli:text",
+      "title": "Fluid reservoirs",
+      "text": "Sneak-right-click a tank or machine with a Fluid module. It reads Forge fluid storage exposed on the clicked side, with an unsided fallback. This includes internal machine reservoirs.$(br2)Choose Numbers, Meter or History. Select the first tank (numbered from 1) and show 1–8 consecutive tanks. Empty tanks retain their capacity; a missing tank shows a status.$(br2)Choose millibuckets or buckets, toggle capacity and pick a meter/graph color. Each tank keeps up to 32 observed readings of its contents; changing fluid types starts a new history."
+    },
+    {
+      "type": "patchouli:text",
+      "title": "Forge Energy",
+      "text": "Sneak-right-click an FE battery, generator or machine with a Forge Energy module. The clicked side is read first, with an unsided fallback. This module reads Forge Energy storage; use the Power module for Ariente flux.$(br2)Choose Numbers, Meter or History and a meter/graph color. Toggle capacity, percentage and net buffer change per tick; choose abbreviated or exact FE values.$(br2)Net change is the stored-energy difference divided by elapsed game ticks. It combines input and output, so a balanced machine reads zero. The first reading is n/a; history keeps up to 32 observed readings."
+    },
+    {
+      "type": "patchouli:text",
       "title": "Text and color",
       "text": "Left-click the text area to type. Use normal arrow, Home/End, Backspace/Delete, selection and clipboard controls. Escape or clicking outside commits the edit and releases typing.$(br2)Adjust text size, or choose Color... to open a hue/shade picker. Selecting a shade or pressing Back returns to settings. The window’s X closes the whole panel."
     },
@@ -47,14 +57,16 @@
     {
       "type": "patchouli:text",
       "title": "Changing the layout",
-      "text": "If an edit makes a module overlap another or outgrow the surface, it is returned with the new settings. A full inventory drops it nearby.$(br2)Shrinking the display is refused if installed modules would be cut off. Move or recover those modules first. Breaking a base returns modules that lose their supporting surface.$(br2)Invisible backgrounds still accept modules and clicks. Power and Storage modules only report readings; they do not transfer items or control machines."
+      "text": "If an edit makes a module overlap another or outgrow the surface, it is returned with the new settings. A full inventory drops it nearby.$(br2)Shrinking the display is refused if installed modules would be cut off. Move or recover those modules first. Breaking a base returns modules that lose their supporting surface.$(br2)Invisible backgrounds still accept modules and clicks. Power, Storage, Fluid and Forge Energy modules only report readings; they do not transfer resources or control machines."
     }
   ],
   "extra_recipe_mappings": {
     "ariente:display_base": 0,
     "ariente:display_module_power": 4,
     "ariente:display_module_storage": 5,
-    "ariente:display_module_text": 6,
-    "ariente:display_module_alien_text": 7
+    "ariente:display_module_text": 8,
+    "ariente:display_module_alien_text": 9,
+    "ariente:display_module_fluids": 6,
+    "ariente:display_module_fe": 7
   }
 }

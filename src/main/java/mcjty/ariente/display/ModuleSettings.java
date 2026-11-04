@@ -162,7 +162,7 @@ public class ModuleSettings {
 
     private static IGuiComponent<?> createPanel(IGuiComponentRegistry r, ModuleSettings settings, boolean color) {
         IPanel panel = HoloGuiTools.createPanelWithHelp(r, new ResourceLocation(Ariente.MODID, "construction/displays"));
-        panel.add(r.text(.3, 0, 8, 1).text(color ? "TEXT COLOR" : settings.item.type().title()).scale(.65f).color(0x76eaff));
+        panel.add(r.text(.3, 0, 8, 1).text(color ? "MODULE COLOR" : settings.item.type().title()).scale(.65f).color(0x76eaff));
         if (color) {
             panel.add(r.button(6.4, .1, 1.6, .65).name("color_close").text("Back").scale(.4f)
                     .hitEvent((c, p, e, x, y) -> settings.switchPage(e, false)));

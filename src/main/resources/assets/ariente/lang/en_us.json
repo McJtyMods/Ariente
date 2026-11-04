@@ -4,6 +4,8 @@
   "block.ariente.holo_storage_3": "Holo Storage Cube III (120 stacks)",
   "block.ariente.display_base": "Holographic Display Base",
   "item.ariente.display_module_power": "Holographic Power Module",
+  "item.ariente.display_module_fluids": "Holographic Fluid Module",
+  "item.ariente.display_module_fe": "Holographic Forge Energy Module",
   "item.ariente.display_module_storage": "Holographic Storage Module",
   "item.ariente.display_module_text": "Holographic Text Module",
   "item.ariente.display_module_alien_text": "Alien Text Module",
