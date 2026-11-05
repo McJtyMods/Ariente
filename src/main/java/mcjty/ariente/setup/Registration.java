@@ -128,6 +128,10 @@ public class Registration {
     public static final TagKey<Item> TAG_INGOT_PLATINUM = ItemTags.create(new ResourceLocation("forge", "ingots/platinum"));
     public static final TagKey<Item> TAG_INGOT_LITHIUM = ItemTags.create(new ResourceLocation("forge", "ingots/lithium"));
     public static final TagKey<Item> TAG_INGOT_MANGANESE = ItemTags.create(new ResourceLocation("forge", "ingots/manganese"));
+    public static final TagKey<Item> TAG_RAW_SILVER = ItemTags.create(new ResourceLocation("forge", "raw_materials/silver"));
+    public static final TagKey<Item> TAG_RAW_PLATINUM = ItemTags.create(new ResourceLocation("forge", "raw_materials/platinum"));
+    public static final TagKey<Item> TAG_RAW_LITHIUM = ItemTags.create(new ResourceLocation("forge", "raw_materials/lithium"));
+    public static final TagKey<Item> TAG_RAW_MANGANESE = ItemTags.create(new ResourceLocation("forge", "raw_materials/manganese"));
     public static final TagKey<Item> TAG_DUSTS_SILICON = ItemTags.create(new ResourceLocation("forge", "dusts/silicon"));
     public static final TagKey<Item> TAG_DUSTS_NEGARITE = ItemTags.create(new ResourceLocation("forge", "dusts/negarite"));
     public static final TagKey<Item> TAG_DUSTS_POSIRITE = ItemTags.create(new ResourceLocation("forge", "dusts/posirite"));
@@ -400,6 +404,10 @@ public class Registration {
     public static final RegistryObject<Item> INGOT_LITHIUM = ITEMS.register("ingot_lithium", () -> new Item(createStandardProperties()));
     public static final RegistryObject<Item> INGOT_MANGANESE = ITEMS.register("ingot_manganese", () -> new Item(createStandardProperties()));
     public static final RegistryObject<Item> INGOT_SILVER = ITEMS.register("ingot_silver", () -> new Item(createStandardProperties()));
+    public static final RegistryObject<Item> RAW_PLATINUM = ITEMS.register("raw_platinum", () -> new Item(createStandardProperties()));
+    public static final RegistryObject<Item> RAW_LITHIUM = ITEMS.register("raw_lithium", () -> new Item(createStandardProperties()));
+    public static final RegistryObject<Item> RAW_MANGANESE = ITEMS.register("raw_manganese", () -> new Item(createStandardProperties()));
+    public static final RegistryObject<Item> RAW_SILVER = ITEMS.register("raw_silver", () -> new Item(createStandardProperties()));
     public static final RegistryObject<Item> DUST_SILICON = ITEMS.register("silicon", () -> new Item(createStandardProperties()));
     public static final RegistryObject<Item> DUST_NEGARITE = ITEMS.register("dust_negarite", () -> new Item(createStandardProperties()));
     public static final RegistryObject<Item> DUST_POSIRITE = ITEMS.register("dust_posirite", () -> new Item(createStandardProperties()));

@@ -207,8 +207,10 @@ flowers. These plants are primarily scenery in the present systems.
 
 The following are **ore placement ranges**. Heights are inclusive placement-origin
 ranges; veins can extend beyond them. Ariente resource ores require a stone-tier
-pickaxe. Metal and fuel ores drop themselves for processing; Silicon Ore drops
-Silicon, with Fortune and Silk Touch support.
+pickaxe. Lithium, Manganese, Platinum and Silver ores drop raw metal, with
+Fortune increasing the drops and Silk Touch preserving the ore block. Negarite
+and Posirite ores drop themselves for processing. Silicon Ore drops Silicon,
+with Fortune and Silk Touch support.
 
 | Resource | Placement Y range | Attempts per chunk | Main role |
 | --- | --- | --- | --- |
@@ -1507,9 +1509,13 @@ actually present in the corresponding Forge item tag.
 | Enhanced Energy Sabre | `LLL / LSL / LLL` | L = lithium ingot tag; S = ordinary Energy Sabre. |
 
 The Constructor also has a blueprint recipe, separate from its ordinary
-crafting entry point. Lithium, Manganese, Platinum and Silver ores smelt into one
-ingot each. Negarite and Posirite ores smelt into four dust each. Smelting takes
-200 ticks; blasting takes 100 ticks with the same yields and zero experience.
+crafting entry point. Raw Lithium, Raw Manganese, Raw Platinum and Raw Silver
+smelt into one ingot each; their ore blocks still smelt into one ingot as well.
+Both raw-metal and metal-ore recipes accept the corresponding material-specific
+Forge item tags (`forge:raw_materials/<metal>` and `forge:ores/<metal>`).
+Negarite and Posirite ores smelt into four dust each. Smelting takes 200 ticks;
+blasting takes 100 ticks with the same yields and zero experience. The Smelter
+uses the same furnace recipes and yields.
 
 ### Blueprint catalog
 

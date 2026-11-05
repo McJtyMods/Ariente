@@ -12,11 +12,15 @@ The raw material direction comes from the design discussion. Refining machines,
 progression, and example yields below remain proposals; they do not describe
 implemented features or settled balance values.
 
+The initial raw-metal step is implemented for silver, platinum, lithium, and
+manganese. Raw storage blocks and all increased-recovery/refining systems remain
+future work.
+
 ## Current behavior
 
 | Resources | Mining and processing in the current checkout |
 | --- | --- |
-| Silver, platinum, lithium, manganese | Ores drop their blocks. Each block smelts or blasts into one ingot. |
+| Silver, platinum, lithium, manganese | Ores drop one raw metal, increased by Fortune; Silk Touch keeps the block. Each raw item or ore block smelts or blasts into one ingot using material-specific Forge input tags. |
 | Negarite and posirite | Ores drop their blocks. Each block smelts or blasts into four corresponding fuel dusts. |
 | Silicon | Ore drops Silicon directly, with Fortune and Silk Touch support. Its internal item ID is `dust_silicon`. |
 
@@ -214,9 +218,9 @@ make unrelated recipes and recycling paths part of ore doubling.
 
 ## Implementation sequence and open decisions
 
-1. Add raw items for the four metals, update ore loot for Fortune and Silk
-   Touch, add shared tags and normal smelting/blasting recipes, and retain the
-   existing ore-block recipes. Decide whether raw storage blocks belong here.
+1. Implemented: raw items for the four metals, ore loot with Fortune and Silk
+   Touch, shared tags and normal smelting/blasting recipes, and retained ore-block
+   recipes. Raw storage blocks are deferred.
 2. Establish a small flux refining installation with JSON recipes, deterministic
    yields, ordinary ingot outputs, JEI support, and item automation.
 3. Verify representative raw materials from other mods, then add optional dust

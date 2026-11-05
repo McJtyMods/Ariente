@@ -28,6 +28,10 @@ public class BlockTags extends BlockTagsProvider {
                 Registration.ORE_SILVER.get(), Registration.ORE_SILICON.get(), Registration.ORE_NEGARITE.get(), Registration.ORE_POSIRITE.get()};
         addTag(net.minecraft.tags.BlockTags.MINEABLE_WITH_PICKAXE, ores);
         addTag(net.minecraft.tags.BlockTags.NEEDS_STONE_TOOL, ores);
+        addTag(Tags.Blocks.ORE_RATES_SINGULAR, Registration.ORE_LITHIUM.get(), Registration.ORE_MANGANESE.get(),
+                Registration.ORE_PLATINUM.get(), Registration.ORE_SILVER.get(), Registration.ORE_SILICON.get());
+        addTag(Tags.Blocks.ORE_RATES_DENSE, Registration.ORE_NEGARITE.get(), Registration.ORE_POSIRITE.get());
+        addTag(Tags.Blocks.ORES_IN_GROUND_STONE, ores);
 
         addTag(Tags.Blocks.ORES,
                 Registration.ORE_POSIRITE.get(),

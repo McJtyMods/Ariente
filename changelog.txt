@@ -1,4 +1,5 @@
 1.20-0.0.31-alpha:
+- Lithium, Manganese, Platinum and Silver ores now drop raw metals with Fortune and Silk Touch support. Smelt or blast raw metals into ingots; ore blocks remain smeltable. Added shared Forge raw-material and ore-category tags.
 - Energy Lance and ship lasers travel 20% faster. Ships flash red when hull hits reach their pilots, and abandoned ships descend four times faster. The ship cannon now defaults to Space, which no longer adds upward thrust.
 - Strengthened powered Armor Upgrades with armor toughness and laser protection. Enemy scout cannons retain their rapid bursts with lower damage per shot, and Forcefield now works alongside Armor and Regeneration with Energy Efficiency.
 - Added the operator-only /ariente equip command for upgraded power armor, an Enhanced Energy Sabre, Energy Lance, a heavily fueled Energy Holder and a fully charged Flux Ship. The armor's forcefield starts disabled.

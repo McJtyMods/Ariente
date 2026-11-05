@@ -20,6 +20,8 @@ import net.minecraft.world.level.ItemLike;
 import net.minecraft.data.recipes.ShapelessRecipeBuilder;
 import net.minecraft.world.item.Items;
 import net.minecraft.resources.ResourceLocation;
+import net.minecraft.tags.TagKey;
+import net.minecraft.world.item.Item;
 
 import java.util.function.Consumer;
 
@@ -37,10 +39,14 @@ public class Recipes extends BaseRecipeProvider {
                         .unlockedBy("redstone", has(Items.REDSTONE)),
                 "IPI", "IrI", "III");
 
-        oreProcessing(consumer, Registration.ORE_LITHIUM.get(), Registration.INGOT_LITHIUM.get(), 1);
-        oreProcessing(consumer, Registration.ORE_MANGANESE.get(), Registration.INGOT_MANGANESE.get(), 1);
-        oreProcessing(consumer, Registration.ORE_PLATINUM.get(), Registration.INGOT_PLATINUM.get(), 1);
-        oreProcessing(consumer, Registration.ORE_SILVER.get(), Registration.INGOT_SILVER.get(), 1);
+        metalProcessing(consumer, Registration.TAG_ORE_LITHIUM_ITEM, Registration.INGOT_LITHIUM.get(), "");
+        metalProcessing(consumer, Registration.TAG_ORE_MANGANESE_ITEM, Registration.INGOT_MANGANESE.get(), "");
+        metalProcessing(consumer, Registration.TAG_ORE_PLATINUM_ITEM, Registration.INGOT_PLATINUM.get(), "");
+        metalProcessing(consumer, Registration.TAG_ORE_SILVER_ITEM, Registration.INGOT_SILVER.get(), "");
+        metalProcessing(consumer, Registration.TAG_RAW_LITHIUM, Registration.INGOT_LITHIUM.get(), "_raw_lithium");
+        metalProcessing(consumer, Registration.TAG_RAW_MANGANESE, Registration.INGOT_MANGANESE.get(), "_raw_manganese");
+        metalProcessing(consumer, Registration.TAG_RAW_PLATINUM, Registration.INGOT_PLATINUM.get(), "_raw_platinum");
+        metalProcessing(consumer, Registration.TAG_RAW_SILVER, Registration.INGOT_SILVER.get(), "_raw_silver");
         oreProcessing(consumer, Registration.ORE_NEGARITE.get(), Registration.DUST_NEGARITE.get(), 4);
         oreProcessing(consumer, Registration.ORE_POSIRITE.get(), Registration.DUST_POSIRITE.get(), 4);
 
@@ -170,6 +176,16 @@ public class Recipes extends BaseRecipeProvider {
                         .define('M', DecorativeBlockModule.MARBLE_ITEMS.get(MarbleColor.BLACK).get())
                         .define('m', DecorativeBlockModule.MARBLE_ITEMS.get(MarbleColor.GRAY).get()),
                 "mMm", "MmM", "mMm");
+    }
+
+    private void metalProcessing(Consumer<FinishedRecipe> consumer, TagKey<Item> material, ItemLike result, String suffix) {
+        String name = ForgeRegistries.ITEMS.getKey(result.asItem()).getPath();
+        SimpleCookingRecipeBuilder.smelting(Ingredient.of(material), RecipeCategory.MISC, result, 0, 200)
+                .unlockedBy("has_material", has(material)).save(consumer,
+                        new ResourceLocation(Ariente.MODID, name + "_from_smelting" + suffix));
+        SimpleCookingRecipeBuilder.blasting(Ingredient.of(material), RecipeCategory.MISC, result, 0, 100)
+                .unlockedBy("has_material", has(material)).save(consumer,
+                        new ResourceLocation(Ariente.MODID, name + "_from_blasting" + suffix));
     }
 
     private void oreProcessing(Consumer<FinishedRecipe> consumer, ItemLike ore, ItemLike result, int count) {

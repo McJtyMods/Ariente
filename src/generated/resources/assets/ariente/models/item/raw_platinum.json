@@ -1,0 +1,6 @@
+{
+  "parent": "minecraft:item/generated",
+  "textures": {
+    "layer0": "ariente:item/ingots/raw_platinum"
+  }
+}

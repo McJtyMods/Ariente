@@ -4,7 +4,7 @@
   "cookingtime": 200,
   "experience": 0.0,
   "ingredient": {
-    "item": "ariente:manganeseore"
+    "tag": "forge:ores/manganese"
   },
   "result": "ariente:ingot_manganese"
 }

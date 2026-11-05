@@ -137,6 +137,11 @@ public class Items extends BaseItemModelProvider {
         itemGenerated(Registration.INGOT_SILVER.get(), "item/ingots/ingot_silver");
         itemGenerated(Registration.INGOT_PLATINUM.get(), "item/ingots/ingot_platinum");
 
+        itemGenerated(Registration.RAW_LITHIUM.get(), "item/ingots/raw_lithium");
+        itemGenerated(Registration.RAW_MANGANESE.get(), "item/ingots/raw_manganese");
+        itemGenerated(Registration.RAW_SILVER.get(), "item/ingots/raw_silver");
+        itemGenerated(Registration.RAW_PLATINUM.get(), "item/ingots/raw_platinum");
+
         itemGenerated(Registration.DUST_SILICON.get(), "item/dusts/silicon");
         itemGenerated(Registration.DUST_NEGARITE.get(), "item/dusts/dust_negarite");
         itemGenerated(Registration.DUST_POSIRITE.get(), "item/dusts/dust_posirite");

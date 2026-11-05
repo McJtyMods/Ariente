@@ -39,6 +39,16 @@ public class ItemTags extends ItemTagsProvider {
         addTag(Registration.TAG_ORE_LITHIUM_ITEM, Registration.ORE_LITHIUM_ITEM.get());
         addTag(Registration.TAG_ORE_MANGANESE_ITEM, Registration.ORE_MANGANESE_ITEM.get());
         addTag(Registration.TAG_ORE_PLATINUM_ITEM, Registration.ORE_PLATINUM_ITEM.get());
+        copy(Tags.Blocks.ORE_RATES_SINGULAR, Tags.Items.ORE_RATES_SINGULAR);
+        copy(Tags.Blocks.ORE_RATES_DENSE, Tags.Items.ORE_RATES_DENSE);
+        copy(Tags.Blocks.ORES_IN_GROUND_STONE, Tags.Items.ORES_IN_GROUND_STONE);
+
+        tag(Tags.Items.RAW_MATERIALS).addTags(Registration.TAG_RAW_LITHIUM, Registration.TAG_RAW_SILVER,
+                Registration.TAG_RAW_PLATINUM, Registration.TAG_RAW_MANGANESE);
+        addTag(Registration.TAG_RAW_LITHIUM, Registration.RAW_LITHIUM.get());
+        addTag(Registration.TAG_RAW_SILVER, Registration.RAW_SILVER.get());
+        addTag(Registration.TAG_RAW_PLATINUM, Registration.RAW_PLATINUM.get());
+        addTag(Registration.TAG_RAW_MANGANESE, Registration.RAW_MANGANESE.get());
 
         addTag(Tags.Items.INGOTS,
                 Registration.INGOT_LITHIUM.get(),

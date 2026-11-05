@@ -1,13 +1,11 @@
 {
   "parent": "minecraft:recipes/root",
   "criteria": {
-    "has_ore": {
+    "has_material": {
       "conditions": {
         "items": [
           {
-            "items": [
-              "ariente:lithiumore"
-            ]
+            "tag": "forge:ores/lithium"
           }
         ]
       },
@@ -22,7 +20,7 @@
   },
   "requirements": [
     [
-      "has_ore",
+      "has_material",
       "has_the_recipe"
     ]
   ],

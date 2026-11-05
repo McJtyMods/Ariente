@@ -7,7 +7,12 @@
     {
       "type": "patchouli:text",
       "title": "Stock your workshop",
-      "text": "Bring a stone pickaxe or better for Ariente ores.$(br2)Smelt or blast Silver, Platinum, Lithium and Manganese ores into ingots. Negarite and Posirite ores each yield $(thing)four dust$() when smelted or blasted. Silicon Ore drops Silicon directly; Fortune helps, while Silk Touch keeps the ore."
+      "text": "Bring a stone pickaxe or better for Ariente ores.$(br2)Silver, Platinum, Lithium and Manganese ores drop $(thing)raw metal$(). Fortune increases the drops; Silk Touch keeps the ore block. Smelt or blast each raw metal or ore block into $(thing)one ingot$()."
+    },
+    {
+      "type": "patchouli:text",
+      "title": "Fuel and silicon",
+      "text": "Negarite and Posirite ores drop their blocks. Each yields $(thing)four dust$() when smelted or blasted.$(br2)Silicon Ore drops Silicon directly; Fortune helps, while Silk Touch keeps the ore.$(br2)The Smelter also accepts raw metals and ore blocks, with the same yields as a furnace."
     },
     {
       "type": "patchouli:text",
@@ -16,12 +21,16 @@
     }
   ],
   "extra_recipe_mappings": {
+    "ariente:raw_silver": 0,
+    "ariente:raw_platinum": 0,
+    "ariente:raw_lithium": 0,
+    "ariente:raw_manganese": 0,
     "ariente:ingot_silver": 0,
     "ariente:ingot_platinum": 0,
     "ariente:ingot_lithium": 0,
     "ariente:ingot_manganese": 0,
-    "ariente:silicon": 0,
-    "ariente:dust_negarite": 0,
-    "ariente:dust_posirite": 0
+    "ariente:silicon": 1,
+    "ariente:dust_negarite": 1,
+    "ariente:dust_posirite": 1
   }
 }
