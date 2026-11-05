@@ -37,6 +37,14 @@ public class BlueprintRecipeRegistry {
             ConstructorRecipeSerializer::new);
 
     public static final ResourceLocation RECIPE_CONSTRUCTOR = new ResourceLocation(MODID, "constructor");
+    public static final RegistryObject<RecipeSerializer<PurifyingRecipe>> PURIFYING_SERIALIZER = RECIPE_SERIALIZERS.register("purifying", PurifyingRecipe.Serializer::new);
+    public static final RegistryObject<RecipeType<PurifyingRecipe>> PURIFYING = RECIPE_TYPES.register("purifying", () -> new RecipeType<PurifyingRecipe>() {
+
+        @Override
+        public String toString() {
+            return MODID + ":purifying";
+        }
+    });
     public static final RegistryObject<RecipeType<ConstructorRecipe>> CONSTRUCTOR = RECIPE_TYPES.register("constructor",
             () -> new RecipeType<ConstructorRecipe>() {
 
@@ -338,6 +346,29 @@ public class BlueprintRecipeRegistry {
                 new ItemStack(Registration.DUST_SILICON.get(), 2),
                 new ItemStack(Blocks.CHEST, 1),
                 new ItemStack(Blocks.GLASS_PANE, 4)
+        ));
+        recipes.add(new ConstructorRecipe(new ItemStack(Registration.PURIFIER_START.get()), COMMON,
+                new ItemStack(DecorativeBlockModule.MARBLE.get(MarbleColor.BLACK).get()),
+                new ItemStack(Registration.INGOT_SILVER.get(), 4),
+                new ItemStack(Registration.CIRCUIT.get(), 2),
+                new ItemStack(Registration.DUST_SILICON.get(), 2),
+                new ItemStack(Blocks.CHEST)
+        ));
+        recipes.add(new ConstructorRecipe(new ItemStack(Registration.PURIFIER_FINISH.get()), COMMON,
+                new ItemStack(DecorativeBlockModule.MARBLE.get(MarbleColor.BLACK).get()),
+                new ItemStack(Registration.INGOT_SILVER.get(), 4),
+                new ItemStack(Registration.CIRCUIT.get()),
+                new ItemStack(Blocks.CHEST)
+        ));
+        recipes.add(new ConstructorRecipe(new ItemStack(Registration.PURIFIER_TUBE.get()), UNCOMMON,
+                new ItemStack(Registration.ADVANCED_CIRCUIT.get(), 2),
+                new ItemStack(Registration.FLUX_CAPACITOR.get(), 2),
+                new ItemStack(Registration.INGOT_PLATINUM.get(), 4),
+                new ItemStack(Registration.INGOT_LITHIUM.get(), 4),
+                new ItemStack(Registration.INGOT_MANGANESE.get(), 4),
+                new ItemStack(Blocks.GLASS, 8),
+                new ItemStack(Registration.DUST_NEGARITE.get(), 8),
+                new ItemStack(Registration.DUST_POSIRITE.get(), 8)
         ));
         recipes.add(new ConstructorRecipe(new ItemStack(Registration.SMELTER.get()), COMMON,
                 new ItemStack(DecorativeBlockModule.MARBLE.get(MarbleColor.BLACK).get(), 1),

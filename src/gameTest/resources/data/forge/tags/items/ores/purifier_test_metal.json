@@ -1,0 +1,7 @@
+{
+  "values": [
+    "purifier_test:ore",
+    "purifier_test:override_ore",
+    "purifier_test:ambiguous_ore"
+  ]
+}

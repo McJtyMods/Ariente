@@ -4,6 +4,9 @@ import mcjty.ariente.Ariente;
 import mcjty.ariente.items.BlueprintItem;
 import mcjty.ariente.recipes.BlueprintRecipeRegistry;
 import mcjty.ariente.recipes.ConstructorRecipe;
+import mcjty.ariente.recipes.PurifyingRecipe;
+import mcjty.ariente.recipes.PurifierRecipes;
+import net.minecraft.client.Minecraft;
 import mcjty.ariente.setup.Registration;
 import mezz.jei.api.IModPlugin;
 import mezz.jei.api.recipe.RecipeType;
@@ -18,6 +21,7 @@ import net.minecraft.world.item.ItemStack;
 public class JeiPlugin implements IModPlugin {
 
     public static final RecipeType<ConstructorRecipe> CONSTRUCTOR = RecipeType.create(Ariente.MODID, "constructor", ConstructorRecipe.class);
+    public static final RecipeType<PurifyingRecipe> PURIFYING = RecipeType.create(Ariente.MODID, "purifying", PurifyingRecipe.class);
 
     @Override
     public ResourceLocation getPluginUid() {
@@ -35,16 +39,23 @@ public class JeiPlugin implements IModPlugin {
     @Override
     public void registerCategories(IRecipeCategoryRegistration registration) {
         registration.addRecipeCategories(new JeiConstructorRecipeCategory(registration.getJeiHelpers().getGuiHelper()));
+        registration.addRecipeCategories(new JeiPurifyingRecipeCategory(registration.getJeiHelpers().getGuiHelper()));
     }
 
     @Override
     public void registerRecipes(IRecipeRegistration registration) {
         registration.addRecipes(CONSTRUCTOR, BlueprintRecipeRegistry.getRecipes());
+        if (Minecraft.getInstance().level != null) {
+            registration.addRecipes(PURIFYING, PurifierRecipes.getRecipes(Minecraft.getInstance().level));
+        }
     }
 
     @Override
     public void registerRecipeCatalysts(IRecipeCatalystRegistration registration) {
         registration.addRecipeCatalyst(new ItemStack(Registration.CONSTRUCTOR.get()), CONSTRUCTOR);
         registration.addRecipeCatalyst(new ItemStack(Registration.AUTO_CONSTRUCTOR.get()), CONSTRUCTOR);
+        registration.addRecipeCatalyst(new ItemStack(Registration.PURIFIER_START.get()), PURIFYING);
+        registration.addRecipeCatalyst(new ItemStack(Registration.PURIFIER_FINISH.get()), PURIFYING);
+        registration.addRecipeCatalyst(new ItemStack(Registration.PURIFIER_TUBE.get()), PURIFYING);
     }
 }

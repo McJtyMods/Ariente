@@ -2,6 +2,9 @@
   "values": [
     "ariente:display_base",
     "ariente:smelter",
+    "ariente:purifier_start",
+    "ariente:purifier_finish",
+    "ariente:purifier_tube",
     "ariente:charger",
     "ariente:holo_storage_1",
     "ariente:holo_storage_2",

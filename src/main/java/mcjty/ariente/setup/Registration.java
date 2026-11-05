@@ -1,5 +1,9 @@
 package mcjty.ariente.setup;
 
+import mcjty.ariente.blocks.purifier.PurifierTile;
+import mcjty.ariente.blocks.purifier.PurifierTubeBlock;
+import mcjty.ariente.blocks.purifier.PurifierTubeTile;
+
 import mcjty.ariente.display.AlienTextDisplayModule;
 import mcjty.ariente.display.DisplayBaseTile;
 import mcjty.ariente.blocks.storagecube.StorageCubeTile;
@@ -14,6 +18,8 @@ import mcjty.ariente.multipart.MultipartBlock;
 import mcjty.ariente.multipart.MultipartTE;
 import mcjty.ariente.sounds.ModSounds;
 import net.minecraft.core.registries.Registries;
+import net.minecraft.core.particles.ParticleType;
+import net.minecraft.core.particles.SimpleParticleType;
 import net.minecraft.world.item.CreativeModeTab;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.network.chat.Component;
@@ -100,6 +106,9 @@ public class Registration {
     public static final DeferredRegister<MenuType<?>> CONTAINERS = DeferredRegister.create(ForgeRegistries.MENU_TYPES, MODID);
     public static final DeferredRegister<SoundEvent> SOUNDS = DeferredRegister.create(ForgeRegistries.SOUND_EVENTS, MODID);
     public static final DeferredRegister<EntityType<?>> ENTITIES = DeferredRegister.create(ForgeRegistries.ENTITY_TYPES, MODID);
+    public static final DeferredRegister<ParticleType<?>> PARTICLES = DeferredRegister.create(ForgeRegistries.PARTICLE_TYPES, MODID);
+    public static final RegistryObject<SimpleParticleType> PURIFIER_RING_X = PARTICLES.register("purifier_ring_x", () -> new SimpleParticleType(false));
+    public static final RegistryObject<SimpleParticleType> PURIFIER_RING_Z = PARTICLES.register("purifier_ring_z", () -> new SimpleParticleType(false));
 
     public static final DeferredRegister<CreativeModeTab> TABS = DeferredRegister.create(Registries.CREATIVE_MODE_TAB, MODID);
     public static final RegistryObject<CreativeModeTab> TAB = TABS.register("ariente", () -> CreativeModeTab.builder()
@@ -122,6 +131,7 @@ public class Registration {
         CONTAINERS.register(FMLJavaModLoadingContext.get().getModEventBus());
         SOUNDS.register(FMLJavaModLoadingContext.get().getModEventBus());
         ENTITIES.register(FMLJavaModLoadingContext.get().getModEventBus());
+        PARTICLES.register(FMLJavaModLoadingContext.get().getModEventBus());
     }
 
     public static final TagKey<Item> TAG_INGOT_SILVER = ItemTags.create(new ResourceLocation("forge", "ingots/silver"));
@@ -335,6 +345,15 @@ public class Registration {
     public static final RegistryObject<BaseBlock> SMELTER = BLOCKS.register("smelter", SmelterTile::createBlock);
     public static final RegistryObject<Item> SMELTER_ITEM = ITEMS.register("smelter", () -> new BlockItem(SMELTER.get(), createStandardProperties()));
     public static final RegistryObject<BlockEntityType<SmelterTile>> SMELTER_TILE = TILES.register("smelter", () -> BlockEntityType.Builder.of(SmelterTile::new, SMELTER.get()).build(null));
+
+    public static final RegistryObject<BaseBlock> PURIFIER_START = BLOCKS.register("purifier_start", PurifierTile::createBlock);
+    public static final RegistryObject<Item> PURIFIER_START_ITEM = ITEMS.register("purifier_start", () -> new BlockItem(PURIFIER_START.get(), createStandardProperties()));
+    public static final RegistryObject<BaseBlock> PURIFIER_FINISH = BLOCKS.register("purifier_finish", PurifierTile::createBlock);
+    public static final RegistryObject<Item> PURIFIER_FINISH_ITEM = ITEMS.register("purifier_finish", () -> new BlockItem(PURIFIER_FINISH.get(), createStandardProperties()));
+    public static final RegistryObject<BlockEntityType<PurifierTile>> PURIFIER_TILE = TILES.register("purifier", () -> BlockEntityType.Builder.of(PurifierTile::new, PURIFIER_START.get(), PURIFIER_FINISH.get()).build(null));
+    public static final RegistryObject<PurifierTubeBlock> PURIFIER_TUBE = BLOCKS.register("purifier_tube", PurifierTubeBlock::new);
+    public static final RegistryObject<Item> PURIFIER_TUBE_ITEM = ITEMS.register("purifier_tube", () -> new BlockItem(PURIFIER_TUBE.get(), createStandardProperties()));
+    public static final RegistryObject<BlockEntityType<PurifierTubeTile>> PURIFIER_TUBE_TILE = TILES.register("purifier_tube", () -> BlockEntityType.Builder.of(PurifierTubeTile::new, PURIFIER_TUBE.get()).build(null));
 
     public static final RegistryObject<BaseBlock> CHARGER = BLOCKS.register("charger", ChargerTile::createBlock);
     public static final RegistryObject<Item> CHARGER_ITEM = ITEMS.register("charger", () -> new BlockItem(CHARGER.get(), createStandardProperties()));

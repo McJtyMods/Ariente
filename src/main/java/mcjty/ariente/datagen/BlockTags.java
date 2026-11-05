@@ -21,6 +21,7 @@ public class BlockTags extends BlockTagsProvider {
     protected void addTags(HolderLookup.Provider provider) {
         addTag(net.minecraft.tags.BlockTags.MINEABLE_WITH_PICKAXE, Registration.DISPLAY_BASE.get());
         addTag(net.minecraft.tags.BlockTags.MINEABLE_WITH_PICKAXE, Registration.SMELTER.get());
+        addTag(net.minecraft.tags.BlockTags.MINEABLE_WITH_PICKAXE, Registration.PURIFIER_START.get(), Registration.PURIFIER_FINISH.get(), Registration.PURIFIER_TUBE.get());
         addTag(net.minecraft.tags.BlockTags.MINEABLE_WITH_PICKAXE, Registration.CHARGER.get());
         addTag(net.minecraft.tags.BlockTags.MINEABLE_WITH_PICKAXE,
                 Registration.HOLO_STORAGE_1.get(), Registration.HOLO_STORAGE_2.get(), Registration.HOLO_STORAGE_3.get());

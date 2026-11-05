@@ -1,245 +1,188 @@
 # Ariente ore processing design
 
-Design proposal, 2026-11-04. Current implementation references target Minecraft
-1.20.1 / Forge on branch `1.20`.
+Implemented direction for Minecraft 1.20.1 / Forge, branch `1.20`.
+The November 2026 purifier design supersedes the earlier proposal to refine raw
+metals directly. Increased recovery happens when an **ore block becomes raw
+metal**. Smelting remains one raw metal into one ingot.
 
-The proposed direction is to give Ariente's metals vanilla-style raw item drops,
-then offer a distinct flux refining process that recovers more metal from those
-items. Raw metals and ordinary ingots provide the connection to other mods.
-Ariente would need no new metal dusts for its core processing system.
+## Material progression
 
-The raw material direction comes from the design discussion. Refining machines,
-progression, and example yields below remain proposals; they do not describe
-implemented features or settled balance values.
+| Resource | Mining | Ordinary processing | Purifier |
+| --- | --- | --- | --- |
+| Lithium, manganese, platinum, silver | One raw metal; Fortune increases drops; Silk Touch preserves the ore block | One raw metal or ore block smelts/blasts into one ingot | Ore blocks yield two to five raw metals by default |
+| Vanilla and modded ores with raw-material forms | Existing mining behavior | Existing smelting behavior | Automatically discovered from matching ore/raw-material tags; includes deepslate variants |
+| Negarite and posirite | Ore blocks | Four corresponding fuel dusts per ore block | Unsupported; fuel behavior is unchanged |
+| Silicon | Silicon directly, with Fortune and Silk Touch support | Existing behavior unchanged; item ID `ariente:silicon` | Unsupported |
 
-The initial raw-metal step is implemented for silver, platinum, lithium, and
-manganese. Raw storage blocks and all increased-recovery/refining systems remain
-future work.
+Ariente's four metals use the iron/gold-style vanilla Fortune rule. Fortune III
+averages 2.2 raw items per ore, with a maximum of four. A one-tube purifier's
+fixed yield of two is therefore an early processing option; longer lines offer
+better recovery than Fortune on average. Five raw exceeds Fortune III's best
+result. Silk Touch and Fortune are alternative mining routes, so Fortune does
+not multiply the purifier's recovery.
 
-## Current behavior
+No new metal dusts or intermediate inventory materials are needed. Raw storage
+blocks are deferred. Ore-block furnace recipes remain available.
 
-| Resources | Mining and processing in the current checkout |
-| --- | --- |
-| Silver, platinum, lithium, manganese | Ores drop one raw metal, increased by Fortune; Silk Touch keeps the block. Each raw item or ore block smelts or blasts into one ingot using material-specific Forge input tags. |
-| Negarite and posirite | Ores drop their blocks. Each block smelts or blasts into four corresponding fuel dusts. |
-| Silicon | Ore drops Silicon directly, with Fortune and Silk Touch support. Its internal item ID is `dust_silicon`. |
+## Purifier installation
 
-The existing Smelter executes furnace recipes using both flux components and
-preserves their output quantities. Adding normal furnace recipes for raw metals
-would therefore also make those inputs available to the Smelter. Increased
-recovery would belong to a separate refining recipe type.
+Build a **Purifier Start - tubes - Purifier Finish** line on one horizontal
+axis. Both north/south and east/west lines work in either direction. At least
+one tube is required; the default maximum is four. Each endpoint connects to
+exactly one tube, and perpendicular tubes do not connect to each other.
+Branches, bends, vertical lines, missing parts and overlong lines cannot run.
+Tubes align with a neighboring endpoint or tube when placed against it.
 
-Current sources:
-[ore drops](src/main/java/mcjty/ariente/datagen/LootTables.java),
-[ore processing recipes](src/main/java/mcjty/ariente/datagen/Recipes.java),
-[Smelter](src/main/java/mcjty/ariente/blocks/utility/SmelterTile.java), and
-[existing gameplay guide](ARIENTE_GUIDE.md).
+- **Start:** one input stack, accepting supported ore blocks. All faces expose
+  the inventory to automation. Supply both flux components here.
+- **Finish:** one output stack, extractable by automation on every face.
+  Automation cannot insert items here.
+- **Tube:** a transparent octagonal glass shell, with a rotating particle band
+  while active. Tube count determines recovery, processing time and flux cost.
 
-## Raw metal progression
+Right-click either endpoint for a HoloGUI panel with its single machine slot
+above the player's full inventory. Double-click valid player stacks to insert
+at the Start; double-click the machine slot to collect items. Arrow buttons
+also transfer stacks. Invalid input items remain visible but dimmed.
 
-Silver, platinum, lithium, and manganese would follow the familiar vanilla
-pattern:
+One ore is processed at a time. The ore visibly floats along the tubes and
+cross-fades into the resulting raw metals across the whole journey. A short
+line therefore transforms it faster. A rotating ring of red particles appears
+around every active tube, perpendicular to the direction of travel. Paused
+machines stop advancing the animation and emitting particles.
 
-- Mining an ore normally yields raw metal. Fortune increases the drop.
-- Silk Touch preserves the ore block.
-- One raw metal smelts or blasts into one ingot. The existing Smelter follows
-  the same furnace recipe.
-- Flux refining offers improved recovery from raw metal.
-- Optional raw storage blocks compress nine raw items and unpack into nine.
+## Default balance
 
-Keep the existing ore-block smelting recipes so stored ores and Silk Touch
-blocks remain usable. Define any bonus refining recipes for ore blocks
-separately from raw-item recipes.
+| Tubes | Raw per ore | Time | Each flux per active tick | Each flux per ore |
+| --- | --- | --- | --- | --- |
+| 1 | 2 | 8 seconds | 400 | 64,000 |
+| 2 | 3 | 16 seconds | 800 | 256,000 |
+| 3 | 4 | 24 seconds | 1,200 | 576,000 |
+| 4 | 5 | 32 seconds | 1,600 | 1,024,000 |
 
-Silicon already behaves like a directly mined resource and can retain that
-role. Negarite and posirite need a separate decision because their dusts are
-fuels. Changing their drops or recovery also changes the cost of supplying the
-entire power system. The initial raw-metal change can cover the four metals
-without changing those resources.
+Each tube adds 160 powered ticks and 400 of each flux per tick. Time and active
+power both grow with length, so total flux per ore grows quadratically.
+The existing power helper consumes equal amounts of negarite and posirite;
+combined connectors are supported. No flux is consumed while idle or blocked.
 
-Vanilla's raw metals were introduced to support Fortune on smeltable ores while
-retaining smelting for Silk Touch blocks. See
-[Mojang's explanation](https://www.minecraft.net/en-us/article/minecraft-snapshot-21w14a).
+Each generator tank supplies 1,000 of its flux per tick. Four tubes require
+two tanks of each type for continuous full-speed operation. Smaller supplies
+can advance intermittently using retained network flux without reducing yield.
+A Smelter now consumes 200 of each flux per active tick (4,000 per ordinary
+ingot at 10x speed). Two tanks per generator cover a four-tube line plus one
+Smelter, even after a Power Combiner's 2% loss with its transfer rate set to 2,000.
 
-## Compatibility and material selection
+The forcefield remains at `radius × 30` of each flux per tick (300 at radius 10),
+plus 500 per panel buildup step. Its 60 panels each need 100 buildup steps,
+for 3,000,000 of each flux to build a complete shield, excluding idle demand.
+These construction/repair costs already make it a substantial consumer.
 
-Use material-specific item tags for recipe inputs. For this Forge 1.20.1 target,
-silver provides the following example:
+Existing world configs retain explicit values; set `purifierPowerPerTube = 400`
+and `smelterPowerPerTick = 200` to apply this balance to an existing test world.
 
-| Material form | Shared item tag | Proposed use |
+Server configuration under `power`:
+
+| Setting | Default | Meaning |
 | --- | --- | --- |
-| Raw silver | `forge:raw_materials/silver` | Main input to refining and normal smelting. |
-| Silver ingots | `forge:ingots/silver` | Finished material accepted in construction recipes. |
-| Silver dust | `forge:dusts/silver` | Optional integration with an installed mod's dust. |
-| Silver ore blocks | `forge:ores/silver` | Separately balanced recipes for ore blocks. |
+| `purifierTicksPerTube` | 160 | Powered traversal ticks per tube |
+| `purifierPowerPerTube` | 400 | Each flux per active tick per tube |
+| `purifierMaxTubes` | 4 | Maximum supported straight-line length |
+| `purifierBaseYield` | 2 | Raw output with one tube |
+| `purifierExtraYieldPerTube` | 1 | Additional raw output per extra tube |
+| `purifierPreferredOutputMods` | `["minecraft", "ariente"]` | Preferred raw-material provider namespaces, in priority order |
 
-Ariente's refinery could accept any raw silver in the shared tag. Another mod
-could process Ariente's raw silver when it has a suitable recipe accepting that
-tag. A player chooses a processing route at the raw stage:
+Final recovery is capped at 64 raw items. Client configuration under `purifier`
+controls `ringPeriod` (20 ticks per revolution), `ringParticles` (six particles
+per tube every two client ticks; zero disables them), `ringStreams` (two moving
+heads) and `ringTrailTicks` (12 ticks). Sparks themselves orbit the tube, with
+bright heads and fading trails, and neighboring rings have staggered phases.
 
-| Route | Example yield per raw item |
-| --- | --- |
-| Furnace, blast furnace, or existing Ariente Smelter | One ingot. |
-| Proposed Ariente flux refinery | Two ingots. |
-| Another mod's processing chain | That mod's configured recipe and yield. |
+## Work, interruptions and inventory safety
 
-Tags establish material equivalence; they do not create missing recipes or
-choose an output item. A mod that has no lithium processing recipe will still
-need an integration recipe. Broad tags such as `forge:raw_materials` are useful
-for categories, but cannot identify the metal to produce. See the
-[Forge tag conventions](https://docs.minecraftforge.net/en/1.20.1/resources/server/tags/).
+The ore remains in the Start's input until processing finishes and the entire
+output fits in the Finish. Input consumption and output insertion happen
+together on the server. The moving item is a visual representation, not a
+second inventory item.
 
-Ariente already tags its ores, ingots, and existing dusts in
-[ItemTags](src/main/java/mcjty/ariente/datagen/ItemTags.java). Its automation
-[material matcher](src/main/java/mcjty/ariente/blocks/utility/autofield/ItemFilterMatcher.java)
-already recognizes material-specific `forge:raw_materials/...` tags when tag
-matching is enabled.
+Missing power, an invalid line, or blocked/incompatible output pauses work
+without consuming flux. Restoring the same line resumes it. Changing the input
+material, tube count or travel direction restarts processing. Progress and the
+input inventory survive saving/loading and are retained by the Start's block
+loot. Finish block loot preserves its output inventory.
 
-Refining recipes should have concrete output stacks and a predictable way to
-select the preferred item for each metal. Vanilla ingots cover iron, gold, and
-copper. Ariente's existing ingots provide standalone outputs for its own metals;
-pack makers should be able to substitute another provider through recipe
-overrides or a supported unification integration. Avoid choosing an arbitrary
-first item from a tag.
+Every part of the line must be loaded. Detection never loads missing chunks.
+Tubes hold visual snapshots only; the Start owns processing. Removing an
+endpoint or losing controller updates stops stale tube animations.
 
-Use JSON recipes and expose them through JEI. This gives pack makers control
-over ingredients, yields, and outputs. Almost Unified selects preferred material
-items and rewrites supported JSON recipes; a custom Ariente recipe format would
-need its compatibility checked rather than assumed. See its
-[overview](https://github.com/AlmostReliable/almostunified/wiki) and
-[limitations](https://github.com/AlmostReliable/almostunified/wiki/Limitations).
+## Recipes and compatibility
 
-Raw items can also overlap between mods. The straightforward standalone design
-is to register Ariente's four raw metals and tag them correctly. A pack that
-wants one visible raw item per metal can override ore loot to drop its preferred
-provider. Recipe unification alone does not establish a common ore drop.
+The purifier automatically discovers matching `forge:ores/<material>` and
+`forge:raw_materials/<material>` tags. Ore tags may be attached to items or
+blocks; inputs must be block items. This handles vanilla iron, gold and copper,
+deepslate variants, Ariente's four metals and properly tagged ores from any
+installed mod without individual recipe definitions. An ore needs neither
+power nor a completed line to be inserted.
 
-## Dusts without new Ariente metal dusts
+When multiple raw items share a material tag, providers in
+`power.purifierPreferredOutputMods` take priority. The default prefers Minecraft,
+then Ariente; remaining providers are ordered by full registry ID. Selection is
+therefore deterministic on the server and client. Tag reloads invalidate the
+discovery cache, and preference changes rebuild it. Ores whose tags identify
+multiple different raw materials require an explicit recipe to resolve them.
 
-The core route would be raw metal to ingots, with intermediate processing kept
-inside the refining installation. This works with Ariente alone and introduces
-no metal dust variants.
+The machine applies its configured raw count per ore, rather than multiplying
+the ordinary mining drops. Copper therefore uses the same default two-to-five
+count despite its higher normal mining yield. Raw materials and ingots cannot
+be processed again. Ores without corresponding raw-material tags, including
+diamond, coal, redstone, silicon and Ariente's fuel ores, remain unsupported.
 
-An optional integration could export an existing mod's clean metal dust instead
-of ingots. For example, one raw silver could yield two selected silver dusts,
-each smeltable into one ingot. That output is useful for factories that mix
-dusts for alloys or already have a smelting line. Enable it only when a suitable
-dust and finishing recipe exist, with an explicit preferred provider if several
-are present. Ariente would still need no fallback metal dust.
+Optional `ariente:purifying` JSON recipes override automatic conversions. A
+recipe has an ore ingredient and one concrete raw-metal output unit, for example:
 
-Clean dust represents recovered metal and should receive normal finishing
-yield. Sending it into Ariente's process must not apply the raw-metal recovery
-bonus again. Likewise, the process must consume raw material and produce a
-different form; accepting raw metal and returning more of the same raw metal
-would allow repeated multiplication.
+```json
+{
+  "type": "ariente:purifying",
+  "ingredient": { "tag": "forge:ores/silver" },
+  "result": { "item": "ariente:raw_silver" }
+}
+```
 
-If a later design requires dusts even in standalone play, always registering
-fallback dust items and selecting which ones recipes produce is a separate
-option. It avoids producing duplicates, but still adds registry entries. Item
-registration happens before datapack tags are available, so registering items
-conditionally based on a loaded material tag is unsuitable for this purpose.
+Explicit recipes take precedence over automatic discovery and can supply
+missing integrations or select a particular output item. JEI combines these
+overrides with automatically discovered conversions, excluding overridden
+inputs from the automatic entries so its outputs match the machine.
 
-## Flux refining chamber
+The existing `forge:ores/<metal>`, `forge:raw_materials/<metal>` and
+`forge:ingots/<metal>` item tags establish material equivalence. Ordinary metal
+smelting/blasting accepts the ore and raw-material tags. JEI has a purifying
+category showing the input, recovery, duration and flux cost for each length.
+The existing Smelter still executes ordinary furnace recipes at their normal
+yields; it does not apply increased recovery to unrelated furnace inputs.
 
-The preferred concept is a visible chamber that suspends raw material between
-emitters and condenses recovered metal into ordinary ingots. Its internal
-separation and condensation stages need no inventory items.
+## Blueprints
 
-In the proposed fiction, negarite flux loosens the mineral structure while
-posirite flux confines the useful metal. The player sees impurities separate
-from the suspended material and metal collect at the output. This gives both
-flux components a visible role in the process.
+All three blocks are built through the existing Constructor/Auto Constructor
+blueprint system and its normal blueprint pools.
 
-The installation could offer several choices:
+| Block | Blueprint rarity | Ingredients |
+| --- | --- | --- |
+| Start | Common | Black Marble, 4 Silver Ingots, 2 Circuits, 2 Silicon, Chest |
+| Finish | Common | Black Marble, 4 Silver Ingots, Circuit, Chest |
+| Tube | Uncommon | 2 Advanced Circuits, 2 Flux Capacitors, 4 Platinum Ingots, 4 Lithium Ingots, 4 Manganese Ingots, 8 Glass, 8 Negarite Dust, 8 Posirite Dust |
 
-- **Field arrangement:** focusing components around the chamber improve
-  recovery, processing capacity, or speed.
-- **Operating mode:** rapid extraction favors throughput; thorough extraction
-  favors yield and uses more time or flux per batch.
-- **Exploration progression:** recovered blueprints unlock chamber components
-  or more efficient processing techniques.
+Each extra tube therefore represents a substantial construction investment.
+No Nether Stars are required.
 
-The basic target could be deterministic doubling. Later components could
-improve throughput or flux efficiency, keeping progression useful without
-requiring ever larger material multipliers.
+## Validation and later work
 
-Configure the installation once, then let it automate. Holograms should show
-the current recipe, batch yield, processing time, and missing flux or output
-space. The visible field should explain its operating state. A small initial
-installation can establish the mechanic before adding larger structures.
+Server checks cover all horizontal directions and default lengths, exact
+recovery/time/power, invalid connections, changed lengths, interrupted work,
+saving/loading, partial/full inventories, automation, and blueprints. An opt-in
+client fixture exercises real powered one/four-tube lines and captures their
+ore-to-raw transition, particle rings and endpoint panels.
 
-Ariente's current power helper consumes equal amounts of negarite and posirite
-and limits usable supply by the weaker component. The first chamber can use
-that existing behavior. Independent flux ratios or alternating single-component
-phases would require additional power-handling support; those are optional
-extensions. See
-[PowerReceiverSupport](src/main/java/mcjty/ariente/power/PowerReceiverSupport.java).
-
-## Other processing concepts
-
-**Crystal growth** would feed raw material into a suspended metallic crystal.
-The crystal grows visibly and is harvested into ingots. Batch size, field
-strength, or focusing components could affect recovery. The crystal can remain
-internal to the installation, avoiding a separate item for every metal.
-
-**Residual recovery** would produce the main ingot output first, then recover
-additional metal from material retained inside the installation. A second
-component or stage could perform that recovery. Retained material must preserve
-its metal identity and quantity through saving, extraction, and interruption.
-This creates a processing chain without adding a waste item for every metal.
-
-Both concepts can share the same raw inputs and ordinary outputs. They could
-replace the chamber's visual mechanism or extend it later. The initial design
-does not need all three systems.
-
-## Yield and balance
-
-Define doubling relative to one raw item. For a metal whose ordinary smelting
-recipe gives one ingot, doubling means two ingots from that raw item.
-
-Fortune increases the raw material obtained before refining, so its benefit
-stacks with increased recovery. That makes metals more plentiful even before
-considering later upgrades. Tune ore availability, refining time, flux cost,
-and recovery together. Exact values remain open.
-
-Ore blocks need explicit rates. An ore block is not universally equivalent to
-one raw item: vanilla copper normally drops multiple raw pieces. Decide how
-Silk Touch processing should compare with normal and Fortune mining rather
-than deriving every ore-block rate from its furnace output.
-
-If raw storage blocks are processed directly, their yield and material cost
-must equal nine raw items. Compression must not introduce an extra recovery
-bonus, and breaking the storage block must not grant Fortune drops.
-
-Restrict increased recovery to supported raw materials and deliberately defined
-ore recipes. Keep normal smelting for clean dusts, ingots, equipment recycling,
-and other furnace inputs. A blanket multiplier over every smelting recipe would
-make unrelated recipes and recycling paths part of ore doubling.
-
-## Implementation sequence and open decisions
-
-1. Implemented: raw items for the four metals, ore loot with Fortune and Silk
-   Touch, shared tags and normal smelting/blasting recipes, and retained ore-block
-   recipes. Raw storage blocks are deferred.
-2. Establish a small flux refining installation with JSON recipes, deterministic
-   yields, ordinary ingot outputs, JEI support, and item automation.
-3. Verify representative raw materials from other mods, then add optional dust
-   export and support for preferred output providers where useful.
-4. Expand field components, operating modes, and blueprint progression after
-   the basic recovery and flux economy are balanced.
-
-The main choices still to settle are:
-
-- Whether negarite and posirite also gain raw forms, and how that affects fuel.
-- Whether the first refinery processes only Ariente's metals or also vanilla
-  metals and a selected set of other materials.
-- Whether doubling is the initial recovery rate or an exploration unlock.
-- Whether the first installation is one machine or several placed components.
-- How ore-block recovery compares with raw processing and Fortune mining.
-- Whether dust export is worthwhile for the first implementation.
-
-Future validation should cover Fortune and Silk Touch drops, raw storage
-round trips, normal furnace and Smelter outputs, blocked outputs and interrupted
-refining, persistence of internal material, and interoperability with selected
-mods. A survival playthrough should establish the actual cost and timing of
-unlocking improved recovery.
+A survival playthrough is still needed to tune blueprint availability, tube
+costs and flux consumption. Copper's normal two-to-five raw drops differ from
+Ariente's baseline and need consideration when tuning the shared recovery.
+Additional upgrades, catalysts, branching, raw storage blocks, dust export and
+unification integrations are outside this initial implementation.

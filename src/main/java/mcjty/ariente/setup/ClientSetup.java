@@ -1,5 +1,8 @@
 package mcjty.ariente.setup;
 
+import mcjty.ariente.blocks.purifier.client.PurifierTubeRenderer;
+import mcjty.ariente.blocks.purifier.client.PurifierRingParticle;
+
 import mcjty.ariente.display.client.DisplayClientEvents;
 import mcjty.ariente.display.client.DisplayModuleRenderers;
 import mcjty.ariente.blocks.storagecube.client.StorageCubeRenderer;
@@ -28,17 +31,24 @@ import mcjty.ariente.entities.fluxship.FluxShipRender;
 import mcjty.ariente.entities.fluxship.FluxShipPanelRender;
 import mcjty.ariente.entities.levitator.FluxLevitatorRender;
 import net.minecraft.client.Minecraft;
+import net.minecraft.core.Direction;
 import net.minecraft.client.renderer.ItemBlockRenderTypes;
 import net.minecraft.client.renderer.RenderType;
 import net.minecraft.server.packs.resources.ReloadableResourceManager;
 import net.minecraft.server.packs.resources.ResourceManager;
 import net.minecraftforge.client.event.EntityRenderersEvent;
 import net.minecraftforge.client.event.ModelEvent;
+import net.minecraftforge.client.event.RegisterParticleProvidersEvent;
 import net.minecraftforge.common.MinecraftForge;
 import net.minecraftforge.eventbus.api.SubscribeEvent;
 import net.minecraftforge.fml.event.lifecycle.FMLClientSetupEvent;
 
 public class ClientSetup {
+
+    public static void particleProviders(RegisterParticleProvidersEvent event) {
+        event.registerSpriteSet(Registration.PURIFIER_RING_X.get(), sprites -> new PurifierRingParticle.Provider(sprites, Direction.Axis.X));
+        event.registerSpriteSet(Registration.PURIFIER_RING_Z.get(), sprites -> new PurifierRingParticle.Provider(sprites, Direction.Axis.Z));
+    }
 
     public static void init(FMLClientSetupEvent event) {
         MinecraftForge.EVENT_BUS.register(new ClientForgeEventHandlers());
@@ -75,6 +85,7 @@ public class ClientSetup {
     public static void entityRenderers(EntityRenderersEvent.RegisterRenderers event)
     {
         event.registerBlockEntityRenderer(Registration.DISPLAY_BASE_TILE.get(), DisplayRenderer::new);
+        event.registerBlockEntityRenderer(Registration.PURIFIER_TUBE_TILE.get(), PurifierTubeRenderer::new);
         event.registerBlockEntityRenderer(Registration.HOLO_STORAGE_TILE.get(), StorageCubeRenderer::new);
         event.registerBlockEntityRenderer(Registration.TYPE_MULTIPART.get(), MultipartRenderer::new);
         event.registerEntityRenderer(Registration.ENTITY_LASER.get(), new LaserRender.Factory());

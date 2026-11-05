@@ -54,6 +54,23 @@ minecraft.runs {
     }
 }
 
+if (project.hasProperty('ariente_purifier_check')) {
+    minecraft.runs.gameTestServer {
+        workingDirectory project.file('build/verification/purifier-server')
+    }
+    minecraft.runs.client {
+        workingDirectory project.file('build/verification/purifier-client')
+        mods.ariente.source(sourceSets.gameTest)
+        property 'ariente.purifierClientCheck', 'true'
+        args '--quickPlaySingleplayer', 'PurifierCheck', '--width', '1280', '--height', '800'
+    }
+    tasks.withType(JavaExec).configureEach {
+        if (name == 'runClient') {
+            dependsOn 'gameTestClasses'
+        }
+    }
+}
+
 if (project.hasProperty('ariente_forcefield_check')) {
     minecraft.runs.client {
         workingDirectory project.file('build/verification/forcefield-client')

@@ -13,7 +13,7 @@
     {
       "type": "patchouli:text",
       "title": "Supply both fluxes",
-      "text": "Connect Negarite and Posirite flux through cables or combined connectors.$(br2)The Smelter uses $(thing)20 of each flux per active tick$() by default: 400 of each for a normal recipe. Power cost is configurable.$(br2)Progress pauses without power or output space. Idle and blocked machines use no flux. A different recipe resets progress."
+      "text": "Connect Negarite and Posirite flux through cables or combined connectors.$(br2)The Smelter uses $(thing)200 of each flux per active tick$() by default: 4,000 of each for a normal recipe. Power cost is configurable.$(br2)Progress pauses without power or output space. Idle and blocked machines use no flux. A different recipe resets progress."
     },
     {
       "type": "patchouli:text",

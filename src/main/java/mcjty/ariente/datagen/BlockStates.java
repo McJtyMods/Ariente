@@ -121,6 +121,7 @@ public class BlockStates extends BaseBlockStateProvider {
         registerRamp();
         registerStorage();
         registerSmelter();
+        registerPurifier();
         registerElevator();
         registerForcefield();
         registerWarper();
@@ -363,6 +364,40 @@ public class BlockStates extends BaseBlockStateProvider {
             applyHorizRotation(builder.partialState().with(BlockStateProperties.HORIZONTAL_FACING, direction).with(BlockProperties.WORKING, true)
                     .modelForState().modelFile(working), direction);
         }
+    }
+
+    private void registerPurifier() {
+        simpleBlock(Registration.PURIFIER_START.get(), models().cubeBottomTop("block/utility/purifier_start",
+                modLoc(TXT_MACHINESIDE), modLoc(TXT_MACHINEBOTTOM), modLoc("block/machines/purifier_start_top")));
+        simpleBlock(Registration.PURIFIER_FINISH.get(), models().cubeBottomTop("block/utility/purifier_finish",
+                modLoc(TXT_MACHINESIDE), modLoc(TXT_MACHINEBOTTOM), modLoc("block/machines/purifier_finish_top")));
+        BlockModelBuilder tube = models().getBuilder("block/utility/purifier_tube")
+                .parent(models().getExistingFile(mcLoc("block/block")))
+                .texture("glass", mcLoc("block/glass"))
+                .texture("particle", mcLoc("block/glass"))
+                .renderType("minecraft:translucent");
+        // Eight glass facets form a hollow tube; the rotating field band is entirely particles.
+        for (int rotation : new int[]{0, 45}) {
+            for (Direction face : new Direction[]{UP, DOWN, EAST, WEST}) {
+                float low = 5.928932f;
+                float high = 10.071068f;
+                var pane = tube.element();
+                switch (face) {
+                    case UP -> pane.from(low, 13, 0).to(high, 13, 16);
+                    case DOWN -> pane.from(low, 3, 0).to(high, 3, 16);
+                    case EAST -> pane.from(13, low, 0).to(13, high, 16);
+                    case WEST -> pane.from(3, low, 0).to(3, high, 16);
+                    default -> throw new IllegalStateException();
+                }
+                pane.rotation().origin(8, 8, 8).axis(Direction.Axis.Z).angle(rotation).end();
+                pane.face(face).uvs(0, 0, 16, 16).texture("#glass").end();
+                pane.face(face.getOpposite()).uvs(0, 0, 16, 16).texture("#glass").end();
+            }
+        }
+        getVariantBuilder(Registration.PURIFIER_TUBE.get()).partialState().with(BlockStateProperties.HORIZONTAL_AXIS, Direction.Axis.Z)
+                .modelForState().modelFile(tube).addModel()
+                .partialState().with(BlockStateProperties.HORIZONTAL_AXIS, Direction.Axis.X)
+                .modelForState().modelFile(tube).rotationY(90).addModel();
     }
 
     private BlockModelBuilder smelterModel(String name) {

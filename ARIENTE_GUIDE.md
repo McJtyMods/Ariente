@@ -80,6 +80,7 @@ identified alongside the affected feature and collected in [Port gaps](#port-gap
 - [Blueprints and construction](#blueprints-and-construction)
 - [Storage Cube](#storage-cube)
 - [Holo Storage Cubes](#holo-storage-cubes)
+- [Ore Purifier](#ore-purifier)
 - [Smelter](#smelter)
 - [Automation fields](#automation-fields)
 - [Doors, keys, locks, and wireless signals](#doors-keys-locks-and-wireless-signals)
@@ -622,6 +623,76 @@ Sources: [blueprint data](src/main/java/mcjty/ariente/items/BlueprintItem.java),
 [Auto Constructor](src/main/java/mcjty/ariente/blocks/utility/AutoConstructorTile.java),
 [Blueprint Storage](src/main/java/mcjty/ariente/blocks/utility/BlueprintStorageTile.java).
 
+## Ore Purifier
+
+Collect **metal ore blocks with Silk Touch**, then build a
+**Purifier Start - tubes - Purifier Finish** line. Vanilla iron, gold and copper,
+their deepslate variants, and modded ores are detected automatically when their
+material tags identify a matching raw material. Keep the line straight
+and horizontal, with one to four tubes between the endpoints. Each endpoint
+connects to exactly one tube, in any horizontal direction. Tubes align with an
+adjacent endpoint or tube when placed against it; they do not form bends.
+
+| Tubes | Raw metals per ore | Time per ore | Each flux per active tick | Each flux per ore |
+| --- | --- | --- | --- | --- |
+| 1 | 2 | 8 seconds | 400 | 64,000 |
+| 2 | 3 | 16 seconds | 800 | 256,000 |
+| 3 | 4 | 24 seconds | 1,200 | 576,000 |
+| 4 | 5 | 32 seconds | 1,600 | 1,024,000 |
+
+These are defaults. Supply **both fluxes at the Start**. Every extra tube adds
+160 powered ticks and 400 of each flux per active tick. An ore floats through
+the transparent tubes, gradually fading into raw metal. Each working tube has
+its own red particle streams orbiting with bright heads and fading trails.
+Smelt or blast the resulting raw metals into ingots normally; there is no dust
+intermediate.
+
+One tank on each generator supplies 1,000 of each flux per tick. A four-tube
+line needs **two tanks of each type for full speed**. With fewer tanks, the line
+can use retained flux to advance more slowly, keeping its full raw-metal yield.
+Two tanks of each type can sustain a full-speed four-tube line and one Smelter.
+If using a Power Combiner, set its transfer rate to 2,000; after its 2% loss,
+1,960 of each flux reaches the combined network against 1,800 consumed.
+
+Right-click either endpoint for its hologram: a **single stack above your full
+inventory**. Double-click a bright ore stack to insert at the Start, and
+double-click the upper slot to retrieve its contents. Arrow buttons also
+transfer items. Automation can insert at the Start and extract at the Finish
+on every face; the Finish rejects insertion. Raw metals and fuel ores are not
+purifier inputs. The purifier matches `forge:ores/<material>` item or block
+tags to `forge:raw_materials/<material>` item tags. Insertion needs neither
+power nor a completed line; both are only required for processing. Ores without
+raw-material forms, such as diamond, coal and redstone, are not supported.
+
+When several mods provide the same raw metal, `power.purifierPreferredOutputMods`
+selects providers in priority order (default: `minecraft`, then `ariente`).
+Other providers are sorted by registry ID for consistent results. Pack makers
+can use `ariente:purifying` JSON recipes to override automatic conversions.
+JEI shows the same effective conversions as the machine. The configured two-to-five
+recovery is a fixed raw count per ore, including copper; it does not multiply
+the ore's ordinary mining drops.
+
+The Start keeps the ore until its complete raw-metal output can be delivered.
+Missing flux, a broken line, or insufficient/incompatible output space pauses
+processing without consuming flux or losing the ore. Progress survives saving
+and loading. Changing the ore type, tube count or line direction restarts work.
+All parts must be loaded; the purifier does not load chunks itself.
+
+All three blocks have Constructor blueprints. Start and Finish use common
+blueprints; each Tube uses an uncommon blueprint and costs **2 Advanced Circuits,
+2 Flux Capacitors, 4 Platinum Ingots, 4 Lithium Ingots, 4 Manganese Ingots,
+8 Glass, 8 Negarite Dust and 8 Posirite Dust**. No Nether Star is required.
+JEI shows the blueprints and ore-purifying recipes, including yields and costs
+for each available length.
+
+Configure `power.purifierTicksPerTube`, `purifierPowerPerTube`,
+`purifierMaxTubes`, `purifierBaseYield`, and `purifierExtraYieldPerTube` in the
+server config. Client settings `purifier.ringPeriod`, `ringParticles`,
+`ringStreams` and `ringTrailTicks` control orbit speed, density, stream count
+and trail lifetime. Recovery is capped at one normal stack.
+
+Source: [Purifier](src/main/java/mcjty/ariente/blocks/purifier/PurifierTile.java).
+
 ## Smelter
 
 The **Smelter** runs furnace smelting recipes using Ariente power. Its recessed
@@ -639,7 +710,7 @@ The front has an animated glow while the machine is actively smelting.
 Supply both Negarite and Posirite flux, either separately or through a combined
 connector. Smelting defaults to **10 times the speed of a Vanilla furnace**: a
 standard 200-tick recipe takes **20 powered ticks (1 second)**. By default,
-each active tick consumes **20 of each flux**, or 400 of each for a standard
+each active tick consumes **200 of each flux**, or 4,000 of each for a standard
 recipe. Set `power.smelterSpeed` and `power.smelterPowerPerTick` in the server
 config to adjust the speed multiplier and per-tick cost independently.
 No power is consumed while idle or when the output is blocked. Progress pauses
@@ -1426,7 +1497,7 @@ directory. Values below are defaults, not guaranteed server settings.
 | Ariente `utility` | `autoFieldAccumulatePerTick` | 400 | Maximum paired input per tick. |
 | Ariente `utility` | `autoFieldMaxAccumulatedPower` | 3200 | Field reserve cap. |
 | Ariente `power` | `forcefieldBuildupPower` | 500 | Paired cost per panel buildup step. |
-| Ariente `power` | `smelterPowerPerTick` | 20 | Cost of each flux per active smelting tick. |
+| Ariente `power` | `smelterPowerPerTick` | 200 | Cost of each flux per active smelting tick. |
 | Ariente `power` | `smelterSpeed` | 10 | Furnace recipe ticks processed per active smelting tick (1–200). |
 | Ariente `damage` | `forcefieldDamage` | 19.0 | Contact damage. |
 | Ariente `worldgen` | `overworldOregen` | DEFAULT | Enables optional Overworld marble and seven resource ores. |
@@ -1572,6 +1643,9 @@ including matching connector ingredients. Data variants have no catalog recipe.
 | Holo Storage Cube II (60 stacks) | Uncommon | 4 × Advanced Circuit, 24 × Silicon, 24 × Silver Ingot, 12 × Platinum Ingot, 8 × Lithium Ingot, 4 × Ender Pearl, 2 × Flux Capacitor, 8 × Glass |
 | Holo Storage Cube III (120 stacks) | Rare | 12 × Advanced Circuit, 64 × Silicon, 64 × Silver Ingot, 32 × Platinum Ingot, 24 × Lithium Ingot, 16 × Ender Pearl, 8 × Flux Capacitor, 16 × Glass |
 | Smelter | Common | Black Marble, 3 × Silver Ingot, Circuit, 2 × Silicon, Furnace |
+| Purifier Start | Common | Black Marble, 4 × Silver Ingot, 2 × Circuit, 2 × Silicon, Chest |
+| Purifier Finish | Common | Black Marble, 4 × Silver Ingot, Circuit, Chest |
+| Purifier Tube | Uncommon | 2 × Advanced Circuit, 2 × Flux Capacitor, 4 × Platinum Ingot, 4 × Lithium Ingot, 4 × Manganese Ingot, 8 × Glass, 8 × Negarite Dust, 8 × Posirite Dust |
 | Blueprint Storage | Common | Black Marble, 3 × Silver Ingot, 2 × Silicon, Chest, 4 × Glass Pane |
 | Elevator | Common | Circuit, Black Marble Slab, 3 × Silver Ingot |
 | Negarite Tank | Common | 4 × Silver Ingot, Manganese Ingot, 4 × Glass, 20 × Negarite Dust |

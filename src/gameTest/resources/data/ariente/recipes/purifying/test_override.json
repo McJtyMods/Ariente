@@ -1,0 +1,9 @@
+{
+  "type": "ariente:purifying",
+  "ingredient": {
+    "item": "purifier_test:override_ore"
+  },
+  "result": {
+    "item": "purifier_test:raw_metal"
+  }
+}

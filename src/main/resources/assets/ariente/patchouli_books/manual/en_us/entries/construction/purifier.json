@@ -1,0 +1,50 @@
+{
+  "name": "Ore Purifier",
+  "icon": "ariente:purifier_tube",
+  "category": "ariente:construction",
+  "sortnum": 6,
+  "pages": [
+    {
+      "type": "patchouli:spotlight",
+      "item": "ariente:purifier_start",
+      "title": "Preserve your ores",
+      "text": "Collect $(thing)metal ore blocks$() with Silk Touch. Vanilla ores, deepslate variants and modded ores are detected through matching ore and raw-material tags.$(br2)Place a Purifier Start, one to four tubes, and a Purifier Finish in a $(bold)straight horizontal line$(). Each endpoint connects to exactly one tube."
+    },
+    {
+      "type": "patchouli:text",
+      "title": "Recovery and time",
+      "text": "Default recovery per ore:$(li)1 tube: 2 raw, 8 seconds.$(li)2 tubes: 3 raw, 16 seconds.$(li)3 tubes: 4 raw, 24 seconds.$(li)4 tubes: 5 raw, 32 seconds.$(br2)An ore floats along the glass tube and gradually becomes raw metal. Red sparks race around each working tube, leaving fading trails. Smelt the raw metals into ingots normally."
+    },
+    {
+      "type": "patchouli:text",
+      "title": "Supply both fluxes",
+      "text": "Connect both fluxes to the $(thing)Start$(). The default cost is $(bold)400 of each flux per tube per active tick$(): 400, 800, 1,200 or 1,600.$(br2)No flux is consumed while idle or blocked. Missing power, a broken line or insufficient output space pauses work. The ore remains in the Start until the full output can be delivered. Changing the line length restarts processing."
+    },
+    {
+      "type": "patchouli:text",
+      "title": "Generator sizing",
+      "text": "Each generator tank supplies $(thing)1,000 flux per tick$(). Four tubes need $(bold)two tanks of each type$() for full speed.$(br2)One tank of each type processes more slowly, keeping the full yield.$(br2)Two tanks per generator can sustain four tubes and one Smelter. If using a Power Combiner, set its transfer rate to $(thing)2,000$()."
+    },
+    {
+      "type": "patchouli:text",
+      "title": "Insert and collect",
+      "text": "Right-click either endpoint for its hologram: one machine slot above your inventory.$(br2)Double-click bright ore stacks to insert; double-click the upper slot to retrieve items, or use the arrows. Insertion needs no power or completed line.$(br2)Automation inserts at Start and extracts at Finish on any face. Only ores with raw-material forms are supported; raw metals cannot be purified again."
+    },
+    {
+      "type": "patchouli:text",
+      "title": "Endpoint blueprints",
+      "text": "Craft all three blocks with blueprints in a Constructor or Auto Constructor.$(br2)$(thing)Start$() (common): Black Marble, 4 Silver Ingots, 2 Circuits, 2 Silicon, Chest.$(br2)$(thing)Finish$() (common): Black Marble, 4 Silver Ingots, Circuit, Chest."
+    },
+    {
+      "type": "patchouli:spotlight",
+      "item": "ariente:purifier_tube",
+      "title": "Field-ring blueprint",
+      "text": "Each tube produces a rotating band of red particles while operating.$(br2)$(thing)Tube$() (uncommon): 2 Advanced Circuits, 2 Flux Capacitors, 4 Platinum Ingots, 4 Lithium Ingots, 4 Manganese Ingots, 8 Glass, 8 Negarite Dust, 8 Posirite Dust.$(br2)No Nether Star is required. Timing, recovery, maximum length and flux costs are configurable. JEI shows the ore recipes and yields."
+    }
+  ],
+  "extra_recipe_mappings": {
+    "ariente:purifier_start": 0,
+    "ariente:purifier_finish": 0,
+    "ariente:purifier_tube": 1
+  }
+}

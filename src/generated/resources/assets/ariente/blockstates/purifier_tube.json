@@ -1,0 +1,11 @@
+{
+  "variants": {
+    "axis=x": {
+      "model": "ariente:block/utility/purifier_tube",
+      "y": 90
+    },
+    "axis=z": {
+      "model": "ariente:block/utility/purifier_tube"
+    }
+  }
+}

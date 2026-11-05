@@ -67,6 +67,9 @@ public class LootTables extends BaseLootTableProvider implements LootTableSubPro
         addStandardTable(Registration.HOLO_STORAGE_2.get(), Registration.HOLO_STORAGE_TILE.get());
         addStandardTable(Registration.HOLO_STORAGE_3.get(), Registration.HOLO_STORAGE_TILE.get());
         addStandardTable(Registration.SMELTER.get(), Registration.SMELTER_TILE.get());
+        addStandardTable(Registration.PURIFIER_START.get(), Registration.PURIFIER_TILE.get());
+        addStandardTable(Registration.PURIFIER_FINISH.get(), Registration.PURIFIER_TILE.get());
+        addSimpleTable(Registration.PURIFIER_TUBE.get());
         addStandardTable(Registration.CHARGER.get(), Registration.CHARGER_TILE.get());
         addStandardTable(Registration.WARPER.get(), Registration.WARPER_TILE.get());
 

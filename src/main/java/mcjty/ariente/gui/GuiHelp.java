@@ -11,6 +11,17 @@ import java.util.function.Consumer;
 
 /** Manual destinations and legacy built-in help pages. */
 public enum GuiHelp {
+    PURIFIER("construction/purifier",
+            "Start - 1 to 4 tubes - Finish.",
+            "Keep the whole line horizontal",
+            "and straight. Endpoints connect",
+            "to one tube each.",
+            "Supply both fluxes at the Start.",
+            "Each tube adds time and power.",
+            "Default recovery: 2 to 5 raw.",
+            "Double-click or use the arrows",
+            "to transfer items. Automation",
+            "inserts at Start, extracts at Finish."),
     CONSTRUCTOR("construction/constructor",
             "Craft using blueprints in",
             "adjacent Blueprint Storage.",
