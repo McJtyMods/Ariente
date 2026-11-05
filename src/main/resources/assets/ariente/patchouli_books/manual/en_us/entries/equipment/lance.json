@@ -12,7 +12,7 @@
     {
       "type": "patchouli:text",
       "title": "Configure with 0",
-      "text": "Hold the lance in your main hand and press the armor configuration key, normally $(thing)0$(). Install, remove and toggle modules, assign hotkeys and check the shared charge at the bottom. Refill through the Energy Holder’s own panel or Automatic collection.$(br2)Supports $(item)Energy Efficiency$(), $(item)Power$(), $(item)Inhibit$(), $(item)Looting$() and $(item)Fire$(). Power boosts laser damage; Inhibit strips beneficial effects and suppresses Master Soldier regeneration. Looting and Fire apply to laser hits.$(br2)Carry a fueled holder. An occupied off hand stops the modules."
+      "text": "Hold the lance in your main hand and press the armor configuration key, normally $(thing)0$(). Install, remove and toggle modules, assign hotkeys and check the holder’s total stored power at the bottom. Refill through the Energy Holder’s own panel or Automatic collection.$(br2)Supports $(item)Energy Efficiency$(), $(item)Power$(), $(item)Inhibit$(), $(item)Looting$() and $(item)Fire$(). Power boosts laser damage; Inhibit strips beneficial effects and suppresses Master Soldier regeneration. Looting and Fire apply to laser hits.$(br2)Carry a fueled holder. An occupied off hand stops the modules."
     },
     {
       "type": "patchouli:text",

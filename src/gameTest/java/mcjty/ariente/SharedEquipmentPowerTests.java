@@ -205,6 +205,66 @@ public class SharedEquipmentPowerTests {
         helper.succeed();
     }
 
+    @GameTest(template = "empty")
+    public static void storedPowerIncludesOnlyUsablePairsAndTheRemainingCharge(GameTestHelper helper) {
+        ItemStack holder = holder(5, 3);
+        helper.assertTrue(EnergyHolderItem.getStoredPower(holder) == 3_000,
+                "Only the three matching dust pairs supply power before a pair starts burning");
+        holder.getTag().putLong("chargeCapacity", 4_000);
+        holder.getTag().putLong("charge", 1_000);
+        CompoundTag before = holder.getTag().copy();
+        helper.assertTrue(EnergyHolderItem.getStoredPower(holder) == 3_250
+                        && EnergyHolderItem.formatStoredPower(holder).equals("3,250") && holder.getTag().equals(before),
+                "Stored power includes the current pair, uses readable grouping and leaves saved fuel unchanged");
+        holder.getTag().putInt("negarite", 0);
+        helper.assertTrue(EnergyHolderItem.getStoredPower(holder) == 250,
+                "The remaining charge is usable even when the reserve has no complete pairs");
+        helper.assertTrue(EnergyHolderItem.getStoredPower(ItemStack.EMPTY) == 0
+                        && EnergyHolderItem.getStoredPower(new ItemStack(Registration.ENERGY_HOLDER.get())) == 0,
+                "Missing and newly crafted holders show no stored power");
+        helper.succeed();
+    }
+
+    @GameTest(template = "empty")
+    public static void storedPowerKeepsCountingDownWhenAnotherFuelPairStarts(GameTestHelper helper) {
+        Player player = helper.makeMockSurvivalPlayer();
+        ItemStack holder = holder(3, 3);
+        player.getInventory().setItem(9, holder);
+        int ticksPerPair = UtilityConfiguration.POWERSUIT_TICKS.get();
+        long previous = EnergyHolderItem.getStoredPower(holder);
+        for (int tick = 0; tick <= ticksPerPair / 50; tick++) {
+            helper.assertTrue(EnergyHolderItem.consumePower(player, 50, ticksPerPair), "The stored pairs must supply equipment");
+            long current = EnergyHolderItem.getStoredPower(holder);
+            helper.assertTrue(current <= previous, "Starting another fuel pair must never increase displayed stored power");
+            previous = current;
+        }
+        helper.assertTrue(EnergyHolderItem.count(holder, "negarite") == 1 && previous < 2_000,
+                "The displayed total must include both the reserve and the second pair now burning");
+        ItemStack restored = ItemStack.of(holder.save(new CompoundTag()));
+        helper.assertTrue(EnergyHolderItem.getStoredPower(restored) == previous,
+                "The total must survive saving and loading an Energy Holder");
+        helper.succeed();
+    }
+
+    @GameTest(template = "empty")
+    public static void storedPowerSupportsLargeReservesAndDifferentSavedCapacities(GameTestHelper helper) {
+        ItemStack holder = holder(Integer.MAX_VALUE, Integer.MAX_VALUE);
+        holder.getTag().putLong("chargeCapacity", 120_000);
+        holder.getTag().putLong("charge", 60_000);
+        long expected = (long) Integer.MAX_VALUE * 1_000 + 500;
+        helper.assertTrue(EnergyHolderItem.getStoredPower(holder) == expected,
+                "Large reserves must not overflow a 32-bit counter");
+        holder.getTag().putLong("chargeCapacity", 240_000);
+        holder.getTag().putLong("charge", 120_000);
+        helper.assertTrue(EnergyHolderItem.getStoredPower(holder) == expected,
+                "The same fuel and charge fraction must show the same total across capacity settings");
+        holder.getTag().putLong("charge", -1);
+        helper.assertTrue(EnergyHolderItem.getStoredPower(holder) == expected - 500, "Negative charge contributes no power");
+        holder.getTag().putLong("charge", 300_000);
+        helper.assertTrue(EnergyHolderItem.getStoredPower(holder) == expected + 500, "Current charge cannot exceed one full pair");
+        helper.succeed();
+    }
+
     private static ItemStack holder(int negarite, int posirite) {
         ItemStack stack = new ItemStack(Registration.ENERGY_HOLDER.get());
         stack.getOrCreateTag().putInt("negarite", negarite);

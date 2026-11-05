@@ -1185,11 +1185,16 @@ in any hotbar slot. Full survival progression and multiplayer still need testing
 The Energy Holder stores **both fuel dusts** and the remaining charge from the
 currently burning pair. Carry it to power worn armor and your main-hand Enhanced
 Energy Sabre or Energy Lance. No chestplate or Autofeed module is required.
-Equipment panels show the holder’s charge at the bottom. Refill through the
+Equipment panels show the holder’s total stored power at the bottom. Refill through the
 holder’s own panel or enable Automatic collection.
 
 Right-click a held holder to open its panel. The arrows move one dust or a stack
-in or out; the charge percentage shows what remains of the current pair.
+in or out. The panel, equipment panels and item tooltip show the same **Stored
+power** total: **1,000 power per usable Negarite/Posirite pair**, plus the energy
+remaining from the current pair. Twelve stored pairs and half a current pair
+show **12,500**. The total keeps counting down across fuel-pair changes. Surplus
+dust without its matching type does not add usable power. Energy Efficiency
+makes the same stored power last longer.
 
 - **Manual:** fuel enters through the GUI arrows.
 - **Automatic:** scans inventory slots over successive ticks and collects loose
@@ -1237,7 +1242,7 @@ beneficial effects despite their magic resistance.
 
 Press the armor configuration key (normally `0`) while holding the lance and
 select its weapon panel. Install, remove and enable Energy Efficiency, Power,
-Inhibit, Looting and Fire modules, assign hotkey groups and check the shared charge.
+Inhibit, Looting and Fire modules, assign hotkey groups and check the shared stored power.
 Power doubles the weapon damage bonus, producing 32.5 raw laser damage for an
 unmodified player. Fire and Looting supply level III effects to laser hits;
 Inhibit strips beneficial effects and suppresses Master Soldier regeneration

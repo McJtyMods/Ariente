@@ -9,6 +9,5 @@
 - Holo screen system, cameras?
 - Teleportation?
 - Metal ore doubling
-- Lance makes two sounds on one shooting. Only when the beam travels far
 - More plants, trees, structures and features in the Ariente world
 - For the power armor, what is the charge counter counting? It goes down and then starts again?

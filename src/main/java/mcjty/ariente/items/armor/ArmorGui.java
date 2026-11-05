@@ -129,8 +129,8 @@ public class ArmorGui {
                         .text(() -> EnergyHolderItem.findActiveHolder(player).isEmpty() ? "No Energy Holder" : "Shared fuel")
                         .scale(.6f).color(registry.color(StyledColor.LABEL)))
                 .add(registry.text(.5, 7.2, 7, 1)
-                        .text(() -> "Charge: " + EnergyHolderItem.getChargePercentage(EnergyHolderItem.findActiveHolder(player)) + "%")
-                        .scale(.5f).color(registry.color(StyledColor.INFORMATION)));
+                        .text(() -> "Stored power: " + EnergyHolderItem.formatStoredPower(EnergyHolderItem.findActiveHolder(player)))
+                        .scale(.45f).color(registry.color(StyledColor.INFORMATION)));
     }
 
     private static int calculatePowerUsage(Player player, EquipmentSlot slot) {

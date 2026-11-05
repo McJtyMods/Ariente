@@ -223,7 +223,7 @@
   "message.ariente.energy_holder.header": "Shared power supply for equipped armor and weapons",
   "message.ariente.energy_holder.negarite": "Negarite: ",
   "message.ariente.energy_holder.posirite": "Posirite: ",
-  "message.ariente.energy_holder.charge": "Current fuel pair: ",
+  "message.ariente.energy_holder.power": "Stored power: ",
   "message.ariente.equipment.shared_power": "Powered by a carried Energy Holder",
   "message.ariente.energy_holder.mode": "Mode: ",
 

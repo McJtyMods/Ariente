@@ -26,6 +26,7 @@ import net.minecraft.world.level.Level;
 
 import javax.annotation.Nullable;
 import java.util.List;
+import java.util.Locale;
 
 import static mcjty.hologui.api.Icons.*;
 import static mcjty.lib.builder.TooltipBuilder.header;
@@ -35,12 +36,13 @@ public class EnergyHolderItem extends Item implements ITooltipSettings {
 
     public static final int MODE_MANUAL = 0;
     public static final int MODE_AUTOMATIC = 1;
+    public static final long POWER_PER_FUEL_PAIR = 1_000;
 
     private final TooltipBuilder tooltipBuilder = new TooltipBuilder()
             .info(header(),
                     parameter("negarite", stack -> Integer.toString(count(stack, "negarite"))),
                     parameter("posirite", stack -> Integer.toString(count(stack, "posirite"))),
-                    parameter("charge", stack -> getChargePercentage(stack) + "%"),
+                    parameter("power", EnergyHolderItem::formatStoredPower),
                     parameter("mode", stack -> getAutomatic(stack) == MODE_MANUAL ? "Manual" : "Automatic"));
 
     public EnergyHolderItem() {
@@ -126,6 +128,23 @@ public class EnergyHolderItem extends Item implements ITooltipSettings {
         return (int) ((charge * 100 + capacity - 1) / capacity);
     }
 
+    /** Counts usable fuel pairs and the remaining charge using a fixed display unit. */
+    public static long getStoredPower(ItemStack holder) {
+        long pairs = Math.min(count(holder, "negarite"), count(holder, "posirite"));
+        long power = pairs * POWER_PER_FUEL_PAIR;
+        CompoundTag tag = holder.getTag();
+        if (tag == null || tag.getLong("chargeCapacity") <= 0) {
+            return power;
+        }
+        long capacity = tag.getLong("chargeCapacity");
+        long charge = Math.max(0, Math.min(capacity, tag.getLong("charge")));
+        return power + charge * POWER_PER_FUEL_PAIR / capacity;
+    }
+
+    public static String formatStoredPower(ItemStack holder) {
+        return String.format(Locale.ROOT, "%,d", getStoredPower(holder));
+    }
+
     @Override
     public void inventoryTick(ItemStack stack, Level level, Entity entity, int itemSlot, boolean selected) {
         if (level.isClientSide || !(entity instanceof Player player)
@@ -153,8 +172,8 @@ public class EnergyHolderItem extends Item implements ITooltipSettings {
         IGuiComponentRegistry registry = Ariente.guiHandler.getComponentRegistry();
         IPanel panel = GuiHelp.ENERGY_HOLDER.createPanel(registry, entity -> entity.switchGui(ModGuis.GUI_ENERGY_HOLDER_HOLD))
                 .add(registry.text(0, .3, 8, 1).text("Shared equipment fuel").scale(.7f).color(registry.color(StyledColor.LABEL)))
-                .add(registry.text(0, 1.1, 8, 1).text(() -> "Current pair: " + getChargePercentage(findActiveHolder(player)) + "%")
-                        .scale(.55f).color(registry.color(StyledColor.INFORMATION)));
+                .add(registry.text(0, 1.1, 8, 1).text(() -> "Stored power: " + formatStoredPower(findActiveHolder(player)))
+                        .scale(.45f).color(registry.color(StyledColor.INFORMATION)));
 
         addDustControl(registry, panel, 2.3, Registration.DUST_NEGARITE.get(), "negarite");
         addDustControl(registry, panel, 4.7, Registration.DUST_POSIRITE.get(), "posirite");

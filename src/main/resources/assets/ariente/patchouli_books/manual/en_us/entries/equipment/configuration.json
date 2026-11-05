@@ -22,7 +22,7 @@
     {
       "type": "patchouli:text",
       "title": "Efficiency and fuel",
-      "text": "Carry a fueled $(l:ariente:equipment/fuel)Energy Holder$(/l). Its charge appears at the bottom of every equipment panel. Fuel stays in the holder when you swap gear; the old Autofeed module is no longer needed.$(br2)Each active piece draws from the same charge. At default settings, usage 50 on one piece burns a dust pair in about 30 seconds, or 40 seconds with Energy enabled. Energy improves only the piece carrying it; other pieces keep their own budgets and fuel rates."
+      "text": "Carry a fueled $(l:ariente:equipment/fuel)Energy Holder$(/l). Its total stored power appears at the bottom of every equipment panel. Fuel stays in the holder when you swap gear; the old Autofeed module is no longer needed.$(br2)Each active piece draws from the same supply. At default settings, usage 50 on one piece burns a dust pair in about 30 seconds, or 40 seconds with Energy enabled. Energy improves only the piece carrying it; other pieces keep their own budgets and fuel rates."
     },
     {
       "type": "patchouli:text",

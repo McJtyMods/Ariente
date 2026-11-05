@@ -7,12 +7,17 @@
     {
       "type": "patchouli:text",
       "title": "One shared power supply",
-      "text": "Carry an $(item)Energy Holder$() to power modules on worn armor and your held Enhanced Energy Sabre or Energy Lance. It burns one Negarite and one Posirite Dust together; heavier use drains the shared charge faster.$(br2)Equipment panels show the shared charge at the bottom. Refill through the holder’s own panel or use Automatic collection. Removing equipment leaves fuel and charge in the holder; removing the holder stops powered modules. Spare equipment uses nothing. Module limits and Energy Efficiency still apply separately to each piece."
+      "text": "Carry an $(item)Energy Holder$() to power modules on worn armor and your held Enhanced Energy Sabre or Energy Lance. It burns one Negarite and one Posirite Dust together; heavier use drains the shared power faster.$(br2)Equipment panels show the holder’s total stored power at the bottom. Refill through the holder’s own panel or use Automatic collection. Removing equipment leaves fuel and charge in the holder; removing the holder stops powered modules. Spare equipment uses nothing. Module limits and Energy Efficiency still apply separately to each piece."
+    },
+    {
+      "type": "patchouli:text",
+      "title": "Stored power",
+      "text": "$(thing)Stored power$() includes all usable fuel pairs in the active holder and the energy left from the pair already burning. One Negarite Dust plus one Posirite Dust supplies $(thing)1,000 power$().$(br2)For example, 12 stored pairs plus half a burning pair gives $(thing)12,500$(). The total counts down as equipment runs; starting another pair does not refill the displayed number.$(br2)Surplus dust without its matching type cannot supply power yet. Add the missing dust to make it usable. Energy Efficiency makes the same power last longer."
     },
     {
       "type": "patchouli:text",
       "title": "Managing the holder",
-      "text": "Use a held holder to open its panel. Arrows move stored dust in or out; $(thing)Current pair$() shows charge left from the pair already burning.$(br2)Automatic mode gathers loose dust from your inventory over time. Manual mode leaves collection to you. Both supply equipped gear automatically.$(br2)A main-hand holder takes priority, then an off-hand holder, otherwise the first inventory holder. Only that holder collects and supplies fuel; separate holders never combine partial pairs. Keep the lance’s off hand empty."
+      "text": "Use a held holder to open its panel. Arrows move stored dust in or out; the dust counts show your reserves of each type.$(br2)Automatic mode gathers loose dust from your inventory over time. Manual mode leaves collection to you. Both supply equipped gear automatically.$(br2)A main-hand holder takes priority, then an off-hand holder, otherwise the first inventory holder. Only that holder collects and supplies fuel; separate holders never combine partial pairs. Keep the lance’s off hand empty."
     }
   ],
   "extra_recipe_mappings": {
