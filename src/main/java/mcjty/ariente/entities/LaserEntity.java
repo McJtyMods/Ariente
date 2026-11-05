@@ -67,7 +67,7 @@ public class LaserEntity extends Projectile implements IForcefieldImmunity, IEnt
     private int looting;
     private Vec3 launchPosition;
 
-    private int soundTicker = 0;
+    private boolean soundPlayed;
 
     @Override
     public Packet<ClientGamePacketListener> getAddEntityPacket() {
@@ -286,10 +286,9 @@ public class LaserEntity extends Projectile implements IForcefieldImmunity, IEnt
     public void baseTick() {
         super.baseTick();
 
-        soundTicker--;
-        if (soundTicker <= 0) {
+        if (!level().isClientSide && !soundPlayed) {
+            soundPlayed = true;
             level().playSound(null, getX(), getY(), getZ(), ModSounds.laser.get(), SoundSource.HOSTILE, 5.0f, 1.0f);
-            soundTicker = 40;
         }
     }
 
