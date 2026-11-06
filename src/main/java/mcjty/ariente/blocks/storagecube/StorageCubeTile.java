@@ -70,11 +70,22 @@ public class StorageCubeTile extends TickingTileEntity implements IGuiTile, ICit
     private int paletteSize;
     private boolean locked;
     private String keyId;
+    private ResourceLocation lootTable;
+    private boolean lootGenerated;
 
     public StorageCubeTile(BlockPos pos, BlockState state) {
         super(Registration.HOLO_STORAGE_TILE.get(), pos, state);
         int size = state.is(Registration.HOLO_STORAGE_3.get()) ? 120 : state.is(Registration.HOLO_STORAGE_2.get()) ? 60 : 30;
         items = new GenericItemHandler(this, new ContainerFactory(size).box(generic().in().out(), 0, 0, 0, size, 1)) {
+
+            @Override
+            public ItemStack extractItem(int slot, int amount, boolean simulate) {
+                // Authored trophy loot requires its storage key, including when extracted by automation.
+                if (locked && lootTable != null) {
+                    return ItemStack.EMPTY;
+                }
+                return super.extractItem(slot, amount, simulate);
+            }
 
             @Override
             protected void onUpdate(int index, ItemStack stack) {
@@ -99,6 +110,24 @@ public class StorageCubeTile extends TickingTileEntity implements IGuiTile, ICit
 
     public GenericItemHandler getItems() {
         return items;
+    }
+
+    public ResourceLocation getLootTable() {
+        return lootTable;
+    }
+
+    public void setLootTable(ResourceLocation lootTable) {
+        this.lootTable = lootTable;
+        setChanged();
+    }
+
+    public boolean hasGeneratedLoot() {
+        return lootGenerated;
+    }
+
+    public void markLootGenerated() {
+        lootGenerated = true;
+        setChanged();
     }
 
     @Override
@@ -184,6 +213,8 @@ public class StorageCubeTile extends TickingTileEntity implements IGuiTile, ICit
         CompoundTag info = tag.getCompound("Info");
         locked = info.getBoolean("locked");
         keyId = info.contains("keyId") ? info.getString("keyId") : null;
+        lootTable = info.contains("lootTable") ? ResourceLocation.tryParse(info.getString("lootTable")) : null;
+        lootGenerated = info.getBoolean("lootGenerated");
     }
 
     @Override
@@ -193,6 +224,10 @@ public class StorageCubeTile extends TickingTileEntity implements IGuiTile, ICit
         info.putBoolean("locked", locked);
         if (keyId != null) {
             info.putString("keyId", keyId);
+        }
+        if (lootTable != null) {
+            info.putString("lootTable", lootTable.toString());
+            info.putBoolean("lootGenerated", lootGenerated);
         }
     }
 
