@@ -33,7 +33,7 @@ public class PowerCombinerTile extends TickingTileEntity implements IPowerReceiv
 
     private long usingPower = 0;
 
-    private int powerTransfer = 100;
+    private int powerTransfer = 1000;
 
     public PowerCombinerTile(BlockPos pos, BlockState state) {
         super(Registration.POWER_COMBINER_TILE.get(), pos, state);
@@ -57,19 +57,20 @@ public class PowerCombinerTile extends TickingTileEntity implements IPowerReceiv
     @Override
     public void tickServer() {
         usingPower = 0;
-        if (PowerReceiverSupport.consumePower(level, worldPosition, powerTransfer, false)) {
-            usingPower += powerTransfer;
-            sendPower();
+        int transfer = (int) Math.min(powerTransfer, PowerReceiverSupport.getPowerAvailable(level, worldPosition, false));
+        if (transfer > 0 && PowerReceiverSupport.consumePower(level, worldPosition, transfer, false)) {
+            usingPower = transfer;
+            sendPower(transfer);
         }
     }
 
-    private int getPowerToTransfer() {
-        return (int) (powerTransfer * .98); // @todo configurable cost
+    private int getPowerToTransfer(int transfer) {
+        return (int) (transfer * .98); // @todo configurable cost
     }
 
-    private void sendPower() {
+    private void sendPower(int transfer) {
 
-        int power = getPowerToTransfer();
+        int power = getPowerToTransfer(transfer);
 
         PowerSystem powerSystem = PowerSystem.getPowerSystem(level);
         int cnt = 0;
@@ -136,6 +137,16 @@ public class PowerCombinerTile extends TickingTileEntity implements IPowerReceiv
     }
 
     @Override
+    public void saveClientDataToNBT(CompoundTag tag) {
+        saveAdditional(tag);
+    }
+
+    @Override
+    public void loadClientDataFromNBT(CompoundTag tag) {
+        load(tag);
+    }
+
+    @Override
     public long getUsingPower() {
         return usingPower;
     }
@@ -151,13 +162,13 @@ public class PowerCombinerTile extends TickingTileEntity implements IPowerReceiv
 
     private IGuiComponent<?> createMainGui(IGuiComponentRegistry registry) {
         return GuiHelp.COMBINER.createPanel(registry)
-                .add(registry.text(0, 1, 1, 1).text("Transfer").color(registry.color(StyledColor.LABEL)))
+                .add(registry.text(0, 1, 8, 1).text("Transfer limit").color(registry.color(StyledColor.LABEL)))
                 .add(registry.text(0, 2.7, 1, 1).text("In").color(registry.color(StyledColor.LABEL)).scale(.7f))
                 .add(registry.number(2, 2.5, 1, 1).color(registry.color(StyledColor.INFORMATION)).getter((p,h) -> getPowerTransfer()))
                 .add(registry.text(0, 3.7, 1, 1).text("Out").color(registry.color(StyledColor.LABEL)).scale(.7f))
-                .add(registry.number(2, 3.5, 1, 1).color(registry.color(StyledColor.INFORMATION)).getter((p,h) -> getPowerToTransfer()))
+                .add(registry.number(2, 3.5, 1, 1).color(registry.color(StyledColor.INFORMATION)).getter((p,h) -> getPowerToTransfer(powerTransfer)))
 
-                .add(registry.integerSlider(.3, 5.7, 7.2, 1).name("transfer_rate").label("Transfer / tick").range(0, 20000)
+                .add(registry.integerSlider(.3, 5.7, 7.2, 1).name("transfer_rate").label("Limit / tick").range(0, 20000)
                         .getter((p, e) -> powerTransfer).changed((p, e, value) -> changeTransfer(value - powerTransfer)))
                 ;
     }

@@ -14,12 +14,19 @@ import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.level.block.state.StateDefinition;
 import net.minecraft.world.level.block.state.properties.BlockStateProperties;
 import net.minecraft.world.phys.shapes.CollisionContext;
+import net.minecraft.world.phys.shapes.Shapes;
 import net.minecraft.world.phys.shapes.VoxelShape;
 
 public class PurifierTubeBlock extends BaseBlock {
 
-    private static final VoxelShape NORTH_SOUTH = Block.box(2, 2, 0, 14, 14, 16);
-    private static final VoxelShape EAST_WEST = Block.box(0, 2, 2, 16, 14, 14);
+    private static final VoxelShape NORTH_SOUTH = Shapes.or(
+            Block.box(6, 3, 0, 10, 13, 16),
+            Block.box(4, 4, 0, 12, 12, 16),
+            Block.box(3, 6, 0, 13, 10, 16));
+    private static final VoxelShape EAST_WEST = Shapes.or(
+            Block.box(0, 3, 6, 16, 13, 10),
+            Block.box(0, 4, 4, 16, 12, 12),
+            Block.box(0, 6, 3, 16, 10, 13));
 
     public PurifierTubeBlock() {
         super(new BlockBuilder().properties(Properties.of().strength(3).noOcclusion()).tileEntitySupplier(PurifierTubeTile::new));

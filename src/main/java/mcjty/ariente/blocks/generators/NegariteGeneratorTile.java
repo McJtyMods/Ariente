@@ -44,7 +44,7 @@ import static mcjty.lib.builder.TooltipBuilder.key;
 
 public class NegariteGeneratorTile extends TickingTileEntity implements IGuiTile, IPowerBlob, IAlarmMode, IPowerSender, IGenerator {
 
-    public static final int POWERGEN = 1000;        // @todo configurable and based on tanks!
+    public static final int POWERGEN = 1000;        // @todo configurable
 
     public static final Lazy<ContainerFactory> CONTAINER_FACTORY = Lazy.of(() -> new ContainerFactory(1)); // @todo 1.14new ResourceLocation(Ariente.MODID, "gui/negarite_generator.gui"));
     public static final int SLOT_NEGARITE_INPUT = 0;
@@ -144,16 +144,21 @@ public class NegariteGeneratorTile extends TickingTileEntity implements IGuiTile
     }
 
     private void sendPower() {
+        int power = getPowerGeneration();
+        if (power > 0) {
+            PowerSystem powerSystem = PowerSystem.getPowerSystem(level);
+            powerSystem.addPower(powerBlobSupport.getCableId(), power, PowerType.NEGARITE);
+        }
+    }
+
+    public int getPowerGeneration() {
         int cnt = 0;
         BlockPos p = worldPosition.above();
         while (level.getBlockEntity(p) instanceof NegariteTankTile) {
             cnt++;
             p = p.above();
         }
-        if (cnt > 0) {
-            PowerSystem powerSystem = PowerSystem.getPowerSystem(level);
-            powerSystem.addPower(powerBlobSupport.getCableId(), POWERGEN * cnt, PowerType.NEGARITE);
-        }
+        return POWERGEN * cnt;
     }
 
     @Override

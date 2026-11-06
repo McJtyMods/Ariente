@@ -100,7 +100,7 @@ public class ArienteTOPDriver implements TOPDriver {
             super.addProbeInfo(mode, probeInfo, player, world, blockState, data);
             Tools.safeConsume(world.getBlockEntity(data.getPos()), (NegariteGeneratorTile te) -> {
                 if (te.isWorking()) {
-                    probeInfo.text(CompoundText.createLabelInfo("Generating: ",NegariteGeneratorTile.POWERGEN + " flux"));
+                    probeInfo.text(CompoundText.createLabelInfo("Generating: ", te.getPowerGeneration() + " flux"));
                 }
             }, "Bad tile entity!");
         }
@@ -112,7 +112,7 @@ public class ArienteTOPDriver implements TOPDriver {
             super.addProbeInfo(mode, probeInfo, player, world, blockState, data);
             Tools.safeConsume(world.getBlockEntity(data.getPos()), (PosiriteGeneratorTile te) -> {
                 if (te.isWorking()) {
-                    probeInfo.text(CompoundText.createLabelInfo("Generating: ", PosiriteGeneratorTile.POWERGEN + " flux"));
+                    probeInfo.text(CompoundText.createLabelInfo("Generating: ", te.getPowerGeneration() + " flux"));
                 }
             }, "Bad tile entity!");
         }

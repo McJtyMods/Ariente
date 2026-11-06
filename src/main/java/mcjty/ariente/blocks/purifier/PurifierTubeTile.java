@@ -13,6 +13,8 @@ import net.minecraft.world.level.block.state.BlockState;
 /** A tube only holds a visual snapshot. Its start block owns all processing and items. */
 public class PurifierTubeTile extends TickingTileEntity {
 
+    public static final double RING_RADIUS = .4;
+
     private BlockPos controller = BlockPos.ZERO;
     private Direction direction = Direction.NORTH;
     private int index;
@@ -84,7 +86,7 @@ public class PurifierTubeTile extends TickingTileEntity {
             // The provider interprets the speed arguments as phase, radius and angular velocity.
             // Older particles orbit more slowly than the emission head, leaving a moving trail.
             level.addParticle(type, worldPosition.getX() + .5, worldPosition.getY() + .5, worldPosition.getZ() + .5,
-                    angle, .36, angularSpeed * .55);
+                    angle, RING_RADIUS, angularSpeed * .55);
         }
     }
 

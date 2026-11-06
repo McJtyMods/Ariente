@@ -24,7 +24,9 @@ import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.Items;
 import net.minecraft.world.level.block.Block;
 import net.minecraft.world.level.block.Blocks;
+import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.level.block.state.properties.BlockStateProperties;
+import net.minecraft.world.phys.Vec3;
 import net.minecraftforge.common.capabilities.ForgeCapabilities;
 import net.minecraftforge.gametest.GameTestHolder;
 import net.minecraftforge.gametest.PrefixGameTestTemplate;
@@ -38,6 +40,32 @@ import java.util.List;
 public class PurifierTests {
 
     private static final int TEST_POWER = 10000000;
+
+    @GameTest(template = "empty", batch = "purifier")
+    public static void tubeSelectionFollowsGlassProfileOnBothAxes(GameTestHelper helper) {
+        BlockPos pos = helper.absolutePos(new BlockPos(1, 2, 1));
+        Vec3 origin = Vec3.atLowerCornerOf(pos);
+        for (Direction.Axis axis : new Direction.Axis[]{Direction.Axis.X, Direction.Axis.Z}) {
+            BlockState state = Registration.PURIFIER_TUBE.get().defaultBlockState()
+                    .setValue(BlockStateProperties.HORIZONTAL_AXIS, axis);
+            var shape = state.getShape(helper.getLevel(), pos);
+            var bounds = shape.bounds();
+            helper.assertTrue(bounds.minY == 3.0 / 16 && bounds.maxY == 13.0 / 16,
+                    "The selection fits the glass tube's height");
+            helper.assertTrue(axis == Direction.Axis.X
+                            ? bounds.minX == 0 && bounds.maxX == 1 && bounds.minZ == 3.0 / 16 && bounds.maxZ == 13.0 / 16
+                            : bounds.minZ == 0 && bounds.maxZ == 1 && bounds.minX == 3.0 / 16 && bounds.maxX == 13.0 / 16,
+                    "The outline follows the tube's axis and glass width");
+            Vec3 cornerStart = origin.add(axis == Direction.Axis.X ? -1 : .22, .22, axis == Direction.Axis.Z ? -1 : .22);
+            Vec3 cornerEnd = origin.add(axis == Direction.Axis.X ? 2 : .22, .22, axis == Direction.Axis.Z ? 2 : .22);
+            helper.assertTrue(shape.clip(cornerStart, cornerEnd, pos) == null,
+                    "Empty space outside the octagonal glass corners must not select the tube");
+            var hit = shape.clip(origin.add(.5, -1, .5), origin.add(.5, 2, .5), pos);
+            helper.assertTrue(hit != null && Math.abs(hit.getLocation().y - pos.getY() - 3.0 / 16) < .00001,
+                    "Aiming at the glass facet still selects the visible surface");
+        }
+        helper.succeed();
+    }
 
     @GameTest(template = "purifier", batch = "purifier")
     public static void allHorizontalDirectionsAndTubeCountsGiveExactYieldsTimeAndPower(GameTestHelper helper) {

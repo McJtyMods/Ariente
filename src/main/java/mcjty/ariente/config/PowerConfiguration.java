@@ -62,7 +62,7 @@ public class PowerConfiguration {
         PURIFIER_RING_STREAMS = CLIENT_BUILDER.comment("Moving particle streams around each tube, each with a fading trail")
                 .defineInRange("ringStreams", 2, 1, 8);
         PURIFIER_RING_TRAIL_TICKS = CLIENT_BUILDER.comment("Lifetime of orbiting purifier particles in client ticks")
-                .defineInRange("ringTrailTicks", 12, 1, 100);
+                .defineInRange("ringTrailTicks", 17, 1, 100);
         CLIENT_BUILDER.pop();
     }
 }

@@ -5,6 +5,7 @@ import mcjty.ariente.PurifierTestContent;
 import mcjty.ariente.blocks.generators.NegariteGeneratorTile;
 import mcjty.ariente.blocks.generators.PosiriteGeneratorTile;
 import mcjty.ariente.blocks.purifier.PurifierTile;
+import mcjty.ariente.blocks.purifier.client.PurifierRingParticle;
 import mcjty.ariente.power.PowerSenderSupport;
 import mcjty.ariente.setup.Registration;
 import mcjty.hologui.gui.HoloGuiEntity;
@@ -14,6 +15,7 @@ import mezz.jei.api.runtime.IJeiRuntime;
 import net.minecraft.client.CameraType;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.Screenshot;
+import net.minecraft.client.renderer.LightTexture;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
 import net.minecraft.core.particles.SimpleParticleType;
@@ -25,6 +27,7 @@ import net.minecraft.world.level.GameType;
 import net.minecraft.world.level.block.Blocks;
 import net.minecraft.world.level.block.state.properties.BlockStateProperties;
 import net.minecraft.world.phys.AABB;
+import net.minecraft.world.phys.BlockHitResult;
 import net.minecraft.world.phys.Vec3;
 import net.minecraftforge.api.distmarker.Dist;
 import net.minecraftforge.client.event.RenderGuiEvent;
@@ -37,6 +40,7 @@ import org.lwjgl.opengl.GL11;
 import java.nio.file.Files;
 
 import static mcjty.ariente.compat.jei.JeiPlugin.PURIFYING;
+import static mcjty.ariente.blocks.purifier.PurifierTubeTile.RING_RADIUS;
 
 /** Opt-in, isolated visual check of both tube lengths, cross-fading and endpoint panels. */
 @Mod.EventBusSubscriber(modid = Ariente.MODID, value = Dist.CLIENT)
@@ -113,7 +117,7 @@ public class PurifierClientChecks implements IModPlugin {
                     player.setGameMode(GameType.CREATIVE);
                     player.getAbilities().flying = true;
                     player.onUpdateAbilities();
-                    player.teleportTo(level, 3, 202, -6, 0, 18);
+                    player.teleportTo(level, 3, 201, -3, 0, 18);
                     player.getInventory().clearContent();
                     player.getInventory().setItem(0, new ItemStack(Items.IRON_ORE, 32));
                     player.getInventory().setItem(9, new ItemStack(Items.DEEPSLATE_COPPER_ORE, 16));
@@ -137,15 +141,17 @@ public class PurifierClientChecks implements IModPlugin {
             require(runtime.getRecipeManager().createRecipeLookup(PURIFYING).get()
                     .anyMatch(recipe -> recipe.ingredient().test(new ItemStack(ForgeRegistries.ITEMS.getValue(PurifierTestContent.ORE)))),
                     "JEI must display automatically discovered third-party ores");
-            aim(mc, new Vec3(2.5, 200.5, 1.5));
+            aim(mc, new Vec3(2.5, 200.5, .5));
         } else if (ticks == 60) {
+            require(mc.hitResult instanceof BlockHitResult hit && mc.level.getBlockState(hit.getBlockPos()).is(Registration.PURIFIER_TUBE.get()),
+                    "Aiming at the glass must select the tube's fitted outline");
             checkOrbit(mc, Registration.PURIFIER_RING_X.get(), Direction.Axis.X);
             checkOrbit(mc, Registration.PURIFIER_RING_Z.get(), Direction.Axis.Z);
             capture = "purifier-ore";
         } else if (ticks == 300) {
             capture = "purifier-transition";
         } else if (ticks == 600) {
-            var particle = mc.particleEngine.createParticle(Registration.PURIFIER_RING_X.get(), 1.5, 200.5, 3.5, 0, .36, .2);
+            var particle = mc.particleEngine.createParticle(Registration.PURIFIER_RING_X.get(), 1.5, 200.5, 3.5, 0, RING_RADIUS, .2);
             require(particle != null, "The ring provider must be registered");
             particle.tick();
             require(!particle.isAlive(), "Particles stop when their tube is no longer processing");
@@ -193,8 +199,10 @@ public class PurifierClientChecks implements IModPlugin {
     }
 
     private static void checkOrbit(Minecraft mc, SimpleParticleType type, Direction.Axis axis) {
-        var particle = mc.particleEngine.createParticle(type, 1.5, 200.5, .5, 0, .36, .2);
+        var particle = mc.particleEngine.createParticle(type, 1.5, 200.5, .5, 0, RING_RADIUS, .2);
         require(particle != null, "The orbit provider must be registered");
+        require(particle instanceof PurifierRingParticle ring && ring.getLightColor(0) == LightTexture.FULL_BRIGHT,
+                "Sparks stay fully bright independently of world lighting");
         Vec3 center = new Vec3(1.5, 200.5, .5);
         Vec3 previous = particle.getBoundingBox().getCenter();
         for (int tick = 0; tick < 8; tick++) {
@@ -205,7 +213,7 @@ public class PurifierClientChecks implements IModPlugin {
             double across = axis == Direction.Axis.X ? position.z - center.z : position.x - center.x;
             double along = axis == Direction.Axis.X ? position.x - center.x : position.z - center.z;
             require(particle.isAlive() && position.distanceTo(previous) > .01, "Existing sparks must move every tick");
-            require(Math.abs(along) < .0001 && Math.abs(across * across + y * y - .36 * .36) < .0001,
+            require(Math.abs(along) < .0001 && Math.abs(across * across + y * y - RING_RADIUS * RING_RADIUS) < .0001,
                     "Sparks must stay on the ring perpendicular to the tube");
             previous = position;
         }

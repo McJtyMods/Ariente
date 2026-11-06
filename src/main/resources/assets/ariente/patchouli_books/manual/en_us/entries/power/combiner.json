@@ -12,7 +12,7 @@
     {
       "type": "patchouli:text",
       "title": "Set the transfer rate",
-      "text": "Use the combiner’s hologram slider and arrows to set its maximum input transfer per tick. Its default input is 100 of each, giving 98 of each at the output.$(br2)Combination loses $(thing)2%$(): an input of 1,000 delivers 980 of each. Check the displayed In and Out figures.$(br2)Multiple output connectors share that output. Raise the setting when your consumers need more."
+      "text": "Use the combiner’s hologram slider and arrows to set its maximum input transfer per tick. The default limit is 1,000 of each, giving up to 980 of each at the output.$(br2)When either supply is below the limit, the combiner transfers the available matching pair. A high limit does not stop a smaller supply.$(br2)Combination loses $(thing)2%$(). In and Out show the configured limits; actual transfer depends on supply. Multiple output connectors share that output."
     }
   ],
   "extra_recipe_mappings": {

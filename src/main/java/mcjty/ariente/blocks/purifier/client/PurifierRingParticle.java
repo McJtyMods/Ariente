@@ -8,12 +8,15 @@ import net.minecraft.client.particle.ParticleProvider;
 import net.minecraft.client.particle.ParticleRenderType;
 import net.minecraft.client.particle.SpriteSet;
 import net.minecraft.client.particle.TextureSheetParticle;
+import net.minecraft.client.renderer.LightTexture;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
 import net.minecraft.core.particles.SimpleParticleType;
 
 /** A red spark follows a circular path, rather than drifting away from its emission point. */
 public class PurifierRingParticle extends TextureSheetParticle {
+
+    private static final float SIZE_SCALE = 1.3f;
 
     private final double centerX;
     private final double centerY;
@@ -37,7 +40,7 @@ public class PurifierRingParticle extends TextureSheetParticle {
         this.axis = axis;
         lifetime = PowerConfiguration.PURIFIER_RING_TRAIL_TICKS.get();
         hasPhysics = false;
-        quadSize = .045f;
+        quadSize = .045f * SIZE_SCALE;
         setColor(1, .25f, .025f);
         pickSprite(sprites);
         updateOrbit();
@@ -60,7 +63,7 @@ public class PurifierRingParticle extends TextureSheetParticle {
         float remaining = 1 - (float) age / lifetime;
         alpha = remaining * remaining;
         gCol = .025f + .225f * remaining;
-        quadSize = .025f + .02f * remaining;
+        quadSize = (.025f + .02f * remaining) * SIZE_SCALE;
     }
 
     private void updateOrbit() {
@@ -71,7 +74,7 @@ public class PurifierRingParticle extends TextureSheetParticle {
 
     @Override
     public int getLightColor(float partialTick) {
-        return 0xf000f0;
+        return LightTexture.FULL_BRIGHT;
     }
 
     @Override
