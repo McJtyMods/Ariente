@@ -1,0 +1,19 @@
+{
+  "variants": {
+    "facing=east": {
+      "model": "ariente:block/machines/recycler",
+      "y": 90
+    },
+    "facing=north": {
+      "model": "ariente:block/machines/recycler"
+    },
+    "facing=south": {
+      "model": "ariente:block/machines/recycler",
+      "y": 180
+    },
+    "facing=west": {
+      "model": "ariente:block/machines/recycler",
+      "y": 270
+    }
+  }
+}

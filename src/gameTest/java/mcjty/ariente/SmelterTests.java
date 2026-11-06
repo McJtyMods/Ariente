@@ -66,9 +66,7 @@ public class SmelterTests {
 
     @GameTest(template = "empty")
     public static void furnaceRecipeUsesConfiguredSpeedAndPower(GameTestHelper helper) {
-        int previousSpeed = PowerConfiguration.SMELTER_SPEED.get();
-        int previousCost = PowerConfiguration.SMELTER_POWER_PER_TICK.get();
-        try {
+        try (var config = new ServerConfigScope()) {
             PowerConfiguration.SMELTER_SPEED.set(10);
             PowerConfiguration.SMELTER_POWER_PER_TICK.set(20);
             SmelterTile tile = place(helper);
@@ -108,9 +106,6 @@ public class SmelterTests {
                     && power.getTotalPower(networks[1], PowerType.POSIRITE) == 8800, "Per-tick power cost stays independent of speed");
             tile.tickServer();
             helper.assertTrue(!tile.getBlockState().getValue(WORKING), "Empty input must disable the working glow");
-        } finally {
-            PowerConfiguration.SMELTER_SPEED.set(previousSpeed);
-            PowerConfiguration.SMELTER_POWER_PER_TICK.set(previousCost);
         }
         helper.succeed();
     }

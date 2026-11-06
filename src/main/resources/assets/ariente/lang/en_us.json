@@ -138,6 +138,7 @@
 
   "block.ariente.constructor": "Constructor",
   "block.ariente.auto_constructor": "Auto Constructor",
+  "block.ariente.recycler": "Recycler",
   "block.ariente.blueprint_storage": "Blueprint Storage",
   "block.ariente.facade": "Facade",
   "block.ariente.connector": "Connector",
@@ -328,6 +329,11 @@
   "message.ariente.door_marker.header": "Mark doorways",
   "message.ariente.constructor.header": "Constructor",
   "message.ariente.auto_constructor.header": "Auto Constructor",
+  "message.ariente.recycler.header": "Recovers about 75% of Constructor ingredients without a blueprint",
+  "message.ariente.recycler.input": "Input",
+  "message.ariente.recycler.output": "Recovered components",
+  "message.ariente.recycler.progress": "Recycling: %s%% (2 seconds)",
+  "message.ariente.recycler.insert_hint": "Double-click bright items to recycle",
   "message.ariente.blueprint_storage.header": "Blueprint Storage",
   "message.ariente.automation_field.header": "Automation Field",
 

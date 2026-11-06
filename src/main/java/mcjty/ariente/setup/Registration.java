@@ -320,6 +320,10 @@ public class Registration {
     public static final RegistryObject<Item> AUTO_CONSTRUCTOR_ITEM = ITEMS.register("auto_constructor", () -> new BlockItem(AUTO_CONSTRUCTOR.get(), createStandardProperties()));
     public static final RegistryObject<BlockEntityType<AutoConstructorTile>> AUTO_CONSTRUCTOR_TILE = TILES.register("auto_constructor", () -> BlockEntityType.Builder.of(AutoConstructorTile::new, AUTO_CONSTRUCTOR.get()).build(null));
 
+    public static final RegistryObject<BaseBlock> RECYCLER = BLOCKS.register("recycler", RecyclerTile::createBlock);
+    public static final RegistryObject<Item> RECYCLER_ITEM = ITEMS.register("recycler", () -> new BlockItem(RECYCLER.get(), createStandardProperties()));
+    public static final RegistryObject<BlockEntityType<RecyclerTile>> RECYCLER_TILE = TILES.register("recycler", () -> BlockEntityType.Builder.of(RecyclerTile::new, RECYCLER.get()).build(null));
+
     public static final RegistryObject<BaseBlock> BLUEPRINT_STORAGE = BLOCKS.register("blueprint_storage", BlueprintStorageTile::createBlock);
     public static final RegistryObject<Item> BLUEPRINT_STORAGE_ITEM = ITEMS.register("blueprint_storage", () -> new BlockItem(BLUEPRINT_STORAGE.get(), createStandardProperties()));
     public static final RegistryObject<BlockEntityType<BlueprintStorageTile>> BLUEPRINT_STORAGE_TILE = TILES.register("blueprint_storage", () -> BlockEntityType.Builder.of(BlueprintStorageTile::new, BLUEPRINT_STORAGE.get()).build(null));

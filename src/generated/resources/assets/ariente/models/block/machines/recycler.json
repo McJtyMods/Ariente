@@ -1,0 +1,12 @@
+{
+  "parent": "minecraft:block/cube",
+  "textures": {
+    "down": "ariente:block/base/machinebottom",
+    "east": "ariente:block/base/machineside",
+    "north": "ariente:block/machines/recycler",
+    "particle": "ariente:block/machines/recycler",
+    "south": "ariente:block/base/machineside_output",
+    "up": "ariente:block/base/machinetop",
+    "west": "ariente:block/base/machineside"
+  }
+}

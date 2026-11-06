@@ -55,6 +55,7 @@ public class LootTables extends BaseLootTableProvider implements LootTableSubPro
         addStandardTable(Registration.WIRELESS_LOCK.get(), Registration.WIRELESS_LOCK_TILE.get());
         addSimpleTable(Registration.ALARM.get());
         addStandardTable(Registration.AUTO_CONSTRUCTOR.get(), Registration.AUTO_CONSTRUCTOR_TILE.get());
+        addStandardTable(Registration.RECYCLER.get(), Registration.RECYCLER_TILE.get());
         addStandardTable(Registration.BLUEPRINT_STORAGE.get(), Registration.BLUEPRINT_STORAGE_TILE.get());
         addSimpleTable(Registration.CONSTRUCTOR.get());
         addStandardTable(Registration.ELEVATOR.get(), Registration.ELEVATOR_TILE.get());

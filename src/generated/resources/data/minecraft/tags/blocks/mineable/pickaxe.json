@@ -2,6 +2,7 @@
   "values": [
     "ariente:display_base",
     "ariente:smelter",
+    "ariente:recycler",
     "ariente:purifier_start",
     "ariente:purifier_finish",
     "ariente:purifier_tube",

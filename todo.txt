@@ -15,3 +15,4 @@
 - 'block.ariente.pattern' localization is missing
 - Single platform with AI Core on?
 - Energy holder gui with big numbers overflow gui
+- Increase speed of purifier

@@ -121,6 +121,7 @@ public class BlockStates extends BaseBlockStateProvider {
         registerRamp();
         registerStorage();
         registerSmelter();
+        registerRecycler();
         registerPurifier();
         registerElevator();
         registerForcefield();
@@ -364,6 +365,14 @@ public class BlockStates extends BaseBlockStateProvider {
             applyHorizRotation(builder.partialState().with(BlockStateProperties.HORIZONTAL_FACING, direction).with(BlockProperties.WORKING, true)
                     .modelForState().modelFile(working), direction);
         }
+    }
+
+    private void registerRecycler() {
+        BlockModelBuilder model = models().cube("block/machines/recycler",
+                modLoc(TXT_MACHINEBOTTOM), modLoc(TXT_MACHINETOP), modLoc("block/machines/recycler"),
+                modLoc("block/base/machineside_output"), modLoc(TXT_MACHINESIDE), modLoc(TXT_MACHINESIDE))
+                .texture("particle", modLoc("block/machines/recycler"));
+        horizontalBlock(Registration.RECYCLER.get(), model);
     }
 
     private void registerPurifier() {

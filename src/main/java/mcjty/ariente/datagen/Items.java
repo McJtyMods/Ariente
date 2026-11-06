@@ -41,6 +41,7 @@ public class Items extends BaseItemModelProvider {
         parentedItem(Registration.FLAT_LIGHT_ITEM.get(), "block/machines/flatglow");
         parentedItem(Registration.AUTO_CONSTRUCTOR_ITEM.get(), "block/machines/auto_constructor_on");
         parentedItem(Registration.CONSTRUCTOR_ITEM.get(), "block/machines/constructor");
+        parentedItem(Registration.RECYCLER_ITEM.get(), "block/machines/recycler");
         parentedItem(Registration.AUTOMATION_FIELD_ITEM.get(), "block/machines/automation_field");
         parentedItem(Registration.BLUEPRINT_STORAGE_ITEM.get(), "block/machines/blueprint_storage");
         parentedItem(Registration.POWER_COMBINER_ITEM.get(), "block/machines/power_combiner");

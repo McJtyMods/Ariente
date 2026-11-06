@@ -96,8 +96,7 @@ public class PurifierTests {
 
     @GameTest(template = "purifier", batch = "purifier")
     public static void fourTubesNeedTwoTanksOfEachTypeForFullSpeedButOneTankCanMakeProgress(GameTestHelper helper) {
-        int previousCost = PowerConfiguration.PURIFIER_POWER_PER_TUBE.get();
-        try {
+        try (var config = new ServerConfigScope()) {
             PowerConfiguration.PURIFIER_POWER_PER_TUBE.set(400);
             for (int tanks = 1; tanks <= 2; tanks++) {
                 Fixture fixture = place(helper, Direction.EAST, 4);
@@ -136,8 +135,6 @@ public class PurifierTests {
                         "Two tanks sustain full speed; one tank eventually completes without losing yield");
                 clear(helper);
             }
-        } finally {
-            PowerConfiguration.PURIFIER_POWER_PER_TUBE.set(previousCost);
         }
         helper.succeed();
     }
@@ -251,10 +248,7 @@ public class PurifierTests {
 
     @GameTest(template = "purifier", batch = "purifier")
     public static void configuredRecoveryAndMachineLootPreserveWorkWithoutExtraItems(GameTestHelper helper) {
-        int previousTicks = PowerConfiguration.PURIFIER_TICKS_PER_TUBE.get();
-        int previousYield = PowerConfiguration.PURIFIER_BASE_YIELD.get();
-        int previousExtra = PowerConfiguration.PURIFIER_EXTRA_YIELD.get();
-        try {
+        try (var config = new ServerConfigScope()) {
             PowerConfiguration.PURIFIER_TICKS_PER_TUBE.set(4);
             PowerConfiguration.PURIFIER_BASE_YIELD.set(3);
             PowerConfiguration.PURIFIER_EXTRA_YIELD.set(2);
@@ -276,10 +270,6 @@ public class PurifierTests {
                 helper.assertTrue(recipe != null && recipe.getIngredientList().stream().noneMatch(stack -> stack.is(Items.NETHER_STAR)),
                         "All three blocks have blueprints without Nether Stars");
             }
-        } finally {
-            PowerConfiguration.PURIFIER_TICKS_PER_TUBE.set(previousTicks);
-            PowerConfiguration.PURIFIER_BASE_YIELD.set(previousYield);
-            PowerConfiguration.PURIFIER_EXTRA_YIELD.set(previousExtra);
         }
         helper.succeed();
     }
@@ -333,8 +323,7 @@ public class PurifierTests {
 
     @GameTest(template = "purifier", batch = "purifier")
     public static void outputPreferencesAndJsonOverridesAreDeterministicAndMatchJei(GameTestHelper helper) {
-        List<? extends String> previous = PowerConfiguration.PURIFIER_PREFERRED_OUTPUT_MODS.get();
-        try {
+        try (var config = new ServerConfigScope()) {
             PowerConfiguration.PURIFIER_PREFERRED_OUTPUT_MODS.set(List.of("purifier_test", "minecraft", "ariente"));
             ItemStack ore = new ItemStack(testItem(PurifierTestContent.ORE));
             helper.assertTrue(PurifierRecipes.find(helper.getLevel(), ore).result().is(testItem(PurifierTestContent.RAW)), "Configured providers take priority");
@@ -348,8 +337,6 @@ public class PurifierTests {
             helper.assertTrue(shown.size() == 1 && shown.get(0).result().is(testItem(PurifierTestContent.RAW)), "JEI has exactly the effective overridden conversion");
             helper.assertTrue(PurifierRecipes.find(helper.getLevel(), new ItemStack(testItem(PurifierTestContent.AMBIGUOUS_ORE))) == null,
                     "An ore tagged as two different metals requires an explicit recipe");
-        } finally {
-            PowerConfiguration.PURIFIER_PREFERRED_OUTPUT_MODS.set(previous);
         }
         helper.succeed();
     }

@@ -47,7 +47,9 @@ public class BlockInventoryInteractionTests {
             double height = tile instanceof SmelterTile ? .5 : .8;
             aim(player, pos, .77, height);
             BlockHitResult hit = (BlockHitResult) player.pick(player.getBlockReach(), 1, false);
-            helper.assertTrue(BlockInventoryInteraction.getSlot(helper.getLevel(), hit) == 0, "Front slot targeting matches " + block);
+            helper.assertTrue(BlockInventoryInteraction.getSlot(helper.getLevel(), hit) == 0,
+                    "Front slot targeting matches " + block + " at " + pos + "; hit " + hit.getBlockPos()
+                            + " on " + hit.getDirection() + " at " + hit.getLocation());
             helper.assertTrue(!BlockInventoryInteraction.extract(player, pos, 99), "Invalid slot requests are rejected");
             helper.assertTrue(BlockInventoryInteraction.extract(player, pos, 0), "Creative players can extract from " + block);
             helper.assertTrue(items.getStackInSlot(0).getCount() == 4 && helper.getLevel().getBlockState(pos).is(block),
@@ -72,6 +74,7 @@ public class BlockInventoryInteractionTests {
     private static void aim(ServerPlayer player, BlockPos pos, double x, double y) {
         player.setPos(pos.getX() + x, pos.getY() + y - player.getEyeHeight(), pos.getZ() - 2);
         player.setYRot(0);
+        player.setYHeadRot(0);
         player.setXRot(0);
     }
 }
