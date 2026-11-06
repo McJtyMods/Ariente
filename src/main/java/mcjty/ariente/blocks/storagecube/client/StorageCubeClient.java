@@ -57,7 +57,7 @@ public class StorageCubeClient {
     private static State view(StorageCubeTile tile, HoloGuiEntity holo) {
         Minecraft mc = Minecraft.getInstance();
         if (mc.player == null || !mc.player.isAlive() || mc.player.isSpectator()
-                || mc.level != tile.getLevel() || !holo.isAlive() || tile.isRemoved()
+                || mc.level != tile.getLevel() || !holo.isAlive() || tile.isRemoved() || tile.isLocked()
                 || mc.player.distanceToSqr(holo) > 64 || mc.player.distanceToSqr(tile.getBlockPos().getCenter()) > 64) {
             return null;
         }

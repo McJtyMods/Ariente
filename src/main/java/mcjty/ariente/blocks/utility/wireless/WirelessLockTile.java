@@ -1,9 +1,10 @@
 package mcjty.ariente.blocks.utility.wireless;
 
 import mcjty.ariente.Ariente;
+import mcjty.ariente.gui.CompactNumber;
 import mcjty.ariente.gui.GuiHelp;
 import mcjty.ariente.blocks.utility.ILockable;
-import mcjty.ariente.blocks.utility.door.DoorMarkerTile;
+import mcjty.ariente.blocks.utility.ILockTarget;
 import mcjty.ariente.setup.Registration;
 import mcjty.hologui.api.IGuiComponent;
 import mcjty.hologui.api.IGuiComponentRegistry;
@@ -133,8 +134,8 @@ public class WirelessLockTile extends SignalChannelTileEntity implements ILockab
                             continue;
                         }
                         BlockEntity te = level.getBlockEntity(p);
-                        if (te instanceof DoorMarkerTile) { // @todo generalize!
-                            ((DoorMarkerTile) te).setLocked(l);
+                        if (te instanceof ILockTarget target) {
+                            target.setLocked(l);
                         }
                     }
                 }
@@ -245,7 +246,7 @@ public class WirelessLockTile extends SignalChannelTileEntity implements ILockab
         }
         return GuiHelp.WIRELESS_LOCK.createPanel(registry)
                 .add(registry.text(0, 1, 1, 1).text("Horizontal").color(registry.color(StyledColor.LABEL)))
-                .add(registry.number(3, 2, 1, 1).color(registry.color(StyledColor.INFORMATION)).getter((p,h) -> getHorizontalRange()))
+                .add(new CompactNumber(3, 2, 1, 1).color(registry.color(StyledColor.INFORMATION)).getter((p,h) -> getHorizontalRange()))
 
                 .add(registry.iconButton(1, 2, 1, 1).icon(registry.image(GRAY_DOUBLE_ARROW_LEFT)).hover(registry.image(WHITE_DOUBLE_ARROW_LEFT))
                         .hitEvent((component, player, e, x, y) -> changeHorizontalRange(-8)))
@@ -257,7 +258,7 @@ public class WirelessLockTile extends SignalChannelTileEntity implements ILockab
                         .hitEvent((component, player, e, x, y) -> changeHorizontalRange(8)))
 
                 .add(registry.text(0, 4, 1, 1).text("Vertical").color(registry.color(StyledColor.LABEL)))
-                .add(registry.number(3, 5, 1, 1).color(registry.color(StyledColor.INFORMATION)).getter((p,h) -> getVerticalRange()))
+                .add(new CompactNumber(3, 5, 1, 1).color(registry.color(StyledColor.INFORMATION)).getter((p,h) -> getVerticalRange()))
 
                 .add(registry.iconButton(1, 5, 1, 1).icon(registry.image(GRAY_DOUBLE_ARROW_LEFT)).hover(registry.image(WHITE_DOUBLE_ARROW_LEFT))
                         .hitEvent((component, player, e, x, y) -> changeVerticalRange(-8)))

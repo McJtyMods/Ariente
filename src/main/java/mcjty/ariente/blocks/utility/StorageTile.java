@@ -58,7 +58,7 @@ import static mcjty.ariente.compat.ArienteTOPDriver.DRIVER;
 import static mcjty.lib.builder.TooltipBuilder.header;
 import static mcjty.lib.builder.TooltipBuilder.key;
 
-public class StorageTile extends GenericTileEntity implements IGuiTile, ICityEquipment, IKeyCardSlot, ILockable, IStorageTile {
+public class StorageTile extends GenericTileEntity implements IGuiTile, ICityEquipment, IKeyCardSlot, ILockTarget, IStorageTile {
     private boolean locked = false;
     private String keyId;
 
@@ -215,6 +215,7 @@ public class StorageTile extends GenericTileEntity implements IGuiTile, ICityEqu
         return locked;
     }
 
+    @Override
     public void setLocked(boolean locked) {
         if (locked == this.locked) {
             return;

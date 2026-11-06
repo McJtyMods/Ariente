@@ -1,6 +1,8 @@
 package mcjty.ariente.items.armor;
 
 import mcjty.ariente.Ariente;
+import mcjty.ariente.gui.CompactNumber;
+import mcjty.ariente.gui.NumberFormatting;
 import mcjty.ariente.gui.GuiHelp;
 import mcjty.ariente.gui.ModGuis;
 import mcjty.ariente.items.EnergyHolderItem;
@@ -108,12 +110,12 @@ public class ArmorGui {
         };
         IPanel panel = GuiHelp.EQUIPMENT.createPanel(registry, entity -> entity.switchGui(gui + "_help"));
         panel.add(registry.text(0, 0, 1, 1).text("Pwr").color(registry.color(StyledColor.LABEL)));
-        panel.add(registry.number(3, 0, 1, 1)
+        panel.add(new CompactNumber(3, 0, 2, 1)
                 .color(registry.color(StyledColor.INFORMATION))
                 .getter((p, h) -> calculatePowerUsage(p, slot))
                 .colorGetter(p -> calculatePowerColor(p, slot)));
         panel.add(registry.text(5, 0, 1, 1).text("/").color(registry.color(StyledColor.LABEL)));
-        panel.add(registry.number(6, 0, 1, 1)
+        panel.add(new CompactNumber(6, 0, 2, 1)
                 .color(registry.color(StyledColor.INFORMATION))
                 .getter((p, h) -> calculateMaxPowerUsage(p, slot)));
         for (int column : new int[]{1, 5}) {
@@ -129,7 +131,7 @@ public class ArmorGui {
                         .text(() -> EnergyHolderItem.findActiveHolder(player).isEmpty() ? "No Energy Holder" : "Shared fuel")
                         .scale(.6f).color(registry.color(StyledColor.LABEL)))
                 .add(registry.text(.5, 7.2, 7, 1)
-                        .text(() -> "Stored power: " + EnergyHolderItem.formatStoredPower(EnergyHolderItem.findActiveHolder(player)))
+                        .text(() -> "Stored power: " + NumberFormatting.compact(EnergyHolderItem.getStoredPower(EnergyHolderItem.findActiveHolder(player))))
                         .scale(.45f).color(registry.color(StyledColor.INFORMATION)));
     }
 

@@ -1,6 +1,7 @@
 package mcjty.ariente.blocks.generators;
 
 import mcjty.ariente.Ariente;
+import mcjty.ariente.gui.CompactNumber;
 import mcjty.ariente.cables.CableColor;
 import mcjty.ariente.cables.ConnectorTileEntity;
 import mcjty.ariente.gui.GuiHelp;
@@ -164,9 +165,9 @@ public class PowerCombinerTile extends TickingTileEntity implements IPowerReceiv
         return GuiHelp.COMBINER.createPanel(registry)
                 .add(registry.text(0, 1, 8, 1).text("Transfer limit").color(registry.color(StyledColor.LABEL)))
                 .add(registry.text(0, 2.7, 1, 1).text("In").color(registry.color(StyledColor.LABEL)).scale(.7f))
-                .add(registry.number(2, 2.5, 1, 1).color(registry.color(StyledColor.INFORMATION)).getter((p,h) -> getPowerTransfer()))
+                .add(new CompactNumber(2, 2.5, 5, 1).color(registry.color(StyledColor.INFORMATION)).getter((p,h) -> getPowerTransfer()))
                 .add(registry.text(0, 3.7, 1, 1).text("Out").color(registry.color(StyledColor.LABEL)).scale(.7f))
-                .add(registry.number(2, 3.5, 1, 1).color(registry.color(StyledColor.INFORMATION)).getter((p,h) -> getPowerToTransfer(powerTransfer)))
+                .add(new CompactNumber(2, 3.5, 5, 1).color(registry.color(StyledColor.INFORMATION)).getter((p,h) -> getPowerToTransfer(powerTransfer)))
 
                 .add(registry.integerSlider(.3, 5.7, 7.2, 1).name("transfer_rate").label("Limit / tick").range(0, 20000)
                         .getter((p, e) -> powerTransfer).changed((p, e, value) -> changeTransfer(value - powerTransfer)))

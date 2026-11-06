@@ -1,4 +1,10 @@
 {
+  "block.ariente.pattern": "Patterned Marble",
+  "block.ariente.multipart": "Ariente Panel",
+  "entity.ariente.ariente_flux_elevator": "Flux Elevator",
+  "entity.ariente.ariente_ariente_pearl": "Ariente Pearl",
+  "entity.ariente.ariente_flux_levitator": "Flux Levitator",
+  "entity.ariente.ariente_laser": "Ariente Laser",
   "block.ariente.purifier_start": "Purifier Start",
   "block.ariente.purifier_finish": "Purifier Finish",
   "block.ariente.purifier_tube": "Purifier Tube",

@@ -8,7 +8,7 @@
       "type": "patchouli:spotlight",
       "item": "ariente:holo_storage_1",
       "title": "Flexible glass storage",
-      "text": "Three tiers hold $(thing)30, 60 or 120 ordinary stacks$(). Any mix of items is allowed, with normal stack limits. All six faces support item insertion and extraction.$(br2)The glass cube displays up to eight different floating items at a time. More plentiful items appear more often; previews fade and refresh about every five seconds."
+      "text": "Three tiers hold $(thing)30, 60 or 120 ordinary stacks$(). Any mix of items is allowed, with normal stack limits. All six faces support item insertion and extraction, including while locked.$(br2)The glass cube displays up to eight different floating items at a time. More plentiful items appear more often; previews fade and refresh about every five seconds."
     },
     {
       "type": "patchouli:text",
@@ -31,6 +31,11 @@
       "item": "ariente:holo_storage_3",
       "title": "Tier III: 120 stacks",
       "text": "The largest cube is deliberately expensive: 12 Advanced Circuits, 64 Silicon, 64 Silver, 32 Platinum, 24 Lithium, 16 Ender Pearls, 8 Flux Capacitors and 16 Glass.$(br2)Breaking any tier preserves its stored items in the dropped cube. No flux is needed to store or transfer items."
+    },
+    {
+      "type": "patchouli:text",
+      "title": "Locks and city access",
+      "text": "Nearby Locks and Wireless Locks can lock all three tiers, just like ordinary Storage Cubes. Locking closes open panels and blocks player transfers and breaking; item automation continues.$(br2)Cubes placed in dungeon templates receive loot and the city’s storage lock when its AI initializes. Use that city’s storage-access Key Card to toggle the lock, as with its 2×2 Storage Cubes. The final AI Core drops the storage-access reward."
     }
   ],
   "extra_recipe_mappings": {

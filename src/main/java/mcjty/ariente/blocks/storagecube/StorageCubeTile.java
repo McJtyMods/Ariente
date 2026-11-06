@@ -1,9 +1,18 @@
 package mcjty.ariente.blocks.storagecube;
 
 import mcjty.ariente.Ariente;
+import mcjty.ariente.api.ICityAI;
+import mcjty.ariente.api.ICityEquipment;
+import mcjty.ariente.api.IStorageTile;
+import mcjty.ariente.blocks.utility.ILockTarget;
 import mcjty.ariente.gui.GuiHelp;
+import mcjty.ariente.items.BlueprintItem;
+import mcjty.ariente.items.KeyCardItem;
 import mcjty.ariente.network.ArienteMessages;
+import mcjty.ariente.recipes.BlueprintRecipeRegistry;
+import mcjty.ariente.security.IKeyCardSlot;
 import mcjty.ariente.setup.Registration;
+import mcjty.ariente.sounds.ModSounds;
 import mcjty.hologui.api.IGuiComponent;
 import mcjty.hologui.api.IGuiComponentRegistry;
 import mcjty.hologui.api.IGuiTile;
@@ -19,13 +28,16 @@ import net.minecraft.core.Direction;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.nbt.ListTag;
 import net.minecraft.nbt.Tag;
+import net.minecraft.resources.ResourceLocation;
 import net.minecraft.server.level.ServerPlayer;
+import net.minecraft.sounds.SoundSource;
 import net.minecraft.world.InteractionHand;
 import net.minecraft.world.InteractionResult;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.Item;
 import net.minecraft.world.level.block.Block;
+import net.minecraft.world.level.Level;
 import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.level.material.MapColor;
 import net.minecraft.world.phys.BlockHitResult;
@@ -34,6 +46,7 @@ import net.minecraftforge.common.capabilities.Capability;
 import net.minecraftforge.common.capabilities.ForgeCapabilities;
 import net.minecraftforge.common.util.LazyOptional;
 import net.minecraftforge.items.IItemHandler;
+import net.minecraftforge.registries.ForgeRegistries;
 
 import java.util.ArrayList;
 import java.util.Comparator;
@@ -44,7 +57,7 @@ import java.util.UUID;
 
 import static mcjty.lib.container.SlotDefinition.generic;
 
-public class StorageCubeTile extends TickingTileEntity implements IGuiTile {
+public class StorageCubeTile extends TickingTileEntity implements IGuiTile, ICityEquipment, IStorageTile, IKeyCardSlot, ILockTarget {
 
     public static final int MAX_SLOTS = 120;
     public static final int PREVIEW_SIZE = 16;
@@ -55,6 +68,8 @@ public class StorageCubeTile extends TickingTileEntity implements IGuiTile {
     private List<Preview> preview = List.of();
     private boolean previewDirty = true;
     private int paletteSize;
+    private boolean locked;
+    private String keyId;
 
     public StorageCubeTile(BlockPos pos, BlockState state) {
         super(Registration.HOLO_STORAGE_TILE.get(), pos, state);
@@ -84,6 +99,101 @@ public class StorageCubeTile extends TickingTileEntity implements IGuiTile {
 
     public GenericItemHandler getItems() {
         return items;
+    }
+
+    @Override
+    public boolean isLocked() {
+        return locked;
+    }
+
+    @Override
+    public void setLocked(boolean locked) {
+        if (this.locked == locked) {
+            return;
+        }
+        this.locked = locked;
+        if (locked && level != null && !level.isClientSide) {
+            for (Viewer viewer : viewers.values()) {
+                if (level.getEntity(viewer.entityId) instanceof HoloGuiEntity holo) {
+                    holo.discard();
+                }
+            }
+            viewers.clear();
+        }
+        markDirtyClient();
+    }
+
+    public String getKeyId() {
+        return keyId;
+    }
+
+    public void setKeyId(String keyId) {
+        this.keyId = keyId;
+        setChanged();
+    }
+
+    @Override
+    public void acceptKeyCard(ItemStack stack) {
+        if (level.isClientSide) {
+            return;
+        }
+        boolean accepted = KeyCardItem.getSecurityTags(stack).contains(keyId);
+        level.playSound(null, worldPosition, accepted ? ModSounds.buzzOk.get() : ModSounds.buzzError.get(),
+                SoundSource.BLOCKS, 1.0f, 1.0f);
+        if (accepted) {
+            setLocked(!locked);
+        }
+    }
+
+    @Override
+    public Map<String, Object> save() {
+        return null;
+    }
+
+    @Override
+    public void load(Map<String, Object> data) {
+    }
+
+    @Override
+    public void setup(ICityAI cityAI, Level world, boolean firstTime) {
+        if (firstTime) {
+            cityAI.fillLoot(this);
+            setKeyId(cityAI.getStorageKeyId());
+            setLocked(true);
+        }
+    }
+
+    @Override
+    public void setLoot(ResourceLocation id, int slot, boolean blueprint, int amount, int meta) {
+        ItemStack stack;
+        if (id == null) {
+            stack = BlueprintItem.makeBluePrint(BlueprintRecipeRegistry.getRandomRecipes().getRandom().getDestination());
+        } else {
+            Item item = ForgeRegistries.ITEMS.getValue(id);
+            if (item == null) {
+                return;
+            }
+            stack = blueprint ? BlueprintItem.makeBluePrint(new ItemStack(item)) : new ItemStack(item, amount);
+        }
+        items.setStackInSlot(slot, stack);
+    }
+
+    @Override
+    public void load(CompoundTag tag) {
+        super.load(tag);
+        CompoundTag info = tag.getCompound("Info");
+        locked = info.getBoolean("locked");
+        keyId = info.contains("keyId") ? info.getString("keyId") : null;
+    }
+
+    @Override
+    public void saveAdditional(CompoundTag tag) {
+        super.saveAdditional(tag);
+        CompoundTag info = getOrCreateInfo(tag);
+        info.putBoolean("locked", locked);
+        if (keyId != null) {
+            info.putString("keyId", keyId);
+        }
     }
 
     @Override
@@ -129,6 +239,9 @@ public class StorageCubeTile extends TickingTileEntity implements IGuiTile {
 
     @Override
     public IGuiComponent<?> createGui(String tag, IGuiComponentRegistry registry) {
+        if (locked) {
+            return Ariente.guiHandler.createNoAccessPanel();
+        }
         if (TAG_HELP.equals(tag)) {
             return GuiHelp.HOLO_STORAGE.createHelpGui(registry);
         }
@@ -141,7 +254,7 @@ public class StorageCubeTile extends TickingTileEntity implements IGuiTile {
     }
 
     public boolean canUse(ServerPlayer player, int entityId) {
-        return !isRemoved() && player.isAlive() && !player.isSpectator() && player.level() == level
+        return !locked && !isRemoved() && player.isAlive() && !player.isSpectator() && player.level() == level
                 && player.containerMenu == player.inventoryMenu
                 && player.distanceToSqr(worldPosition.getX() + .5, worldPosition.getY() + .5, worldPosition.getZ() + .5) <= 64
                 && level.getEntity(entityId) instanceof HoloGuiEntity holo && holo.isAlive()
@@ -165,14 +278,14 @@ public class StorageCubeTile extends TickingTileEntity implements IGuiTile {
 
     public void refresh(ServerPlayer player, int entityId) {
         Viewer viewer = viewers.get(new ViewerKey(player.getUUID(), entityId));
-        if (viewer != null && viewer.entityId == entityId) {
+        if (canUse(player, entityId) && viewer != null && viewer.entityId == entityId) {
             sendChanges(player, viewer, true);
         }
     }
 
     public void transfer(ServerPlayer player, int entityId, long revision, int source, int destination, int amount, boolean quick) {
         Viewer viewer = viewers.get(new ViewerKey(player.getUUID(), entityId));
-        if (viewer == null || viewer.entityId != entityId || viewer.revision != revision
+        if (!canUse(player, entityId) || viewer == null || viewer.entityId != entityId || viewer.revision != revision
                 || source < 0 || source >= viewer.snapshot.length
                 || !quick && (destination < 0 || destination >= viewer.snapshot.length)) {
             return;
@@ -294,6 +407,7 @@ public class StorageCubeTile extends TickingTileEntity implements IGuiTile {
 
     @Override
     public void saveClientDataToNBT(CompoundTag tag) {
+        tag.putBoolean("Locked", locked);
         ListTag entries = new ListTag();
         for (Preview entry : preview) {
             CompoundTag data = entry.stack().save(new CompoundTag());
@@ -305,6 +419,7 @@ public class StorageCubeTile extends TickingTileEntity implements IGuiTile {
 
     @Override
     public void loadClientDataFromNBT(CompoundTag tag) {
+        locked = tag.getBoolean("Locked");
         ListTag entries = tag.getList("Preview", Tag.TAG_COMPOUND);
         List<Preview> sample = new ArrayList<>();
         for (int i = 0; i < Math.min(PREVIEW_SIZE, entries.size()); i++) {

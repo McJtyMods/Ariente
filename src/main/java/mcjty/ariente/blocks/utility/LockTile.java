@@ -5,7 +5,6 @@ import mcjty.ariente.gui.GuiHelp;
 import mcjty.ariente.api.ICityAI;
 import mcjty.ariente.api.ICityEquipment;
 import mcjty.ariente.blocks.BlockProperties;
-import mcjty.ariente.blocks.utility.door.DoorMarkerTile;
 import mcjty.ariente.items.KeyCardItem;
 import mcjty.ariente.security.IKeyCardSlot;
 import mcjty.ariente.setup.Registration;
@@ -135,8 +134,8 @@ public class LockTile extends GenericTileEntity implements IGuiTile, IKeyCardSlo
                     for (int dz = -horizontalRange ; dz <= horizontalRange ; dz++) {
                         BlockPos p = worldPosition.offset(dx, dy, dz);
                         BlockEntity te = level.getBlockEntity(p);
-                        if (te instanceof DoorMarkerTile) { // @todo generalize!
-                            ((DoorMarkerTile) te).setLocked(l);
+                        if (te instanceof ILockTarget target) {
+                            target.setLocked(l);
                         }
                     }
                 }

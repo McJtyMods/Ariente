@@ -1,6 +1,7 @@
 package mcjty.ariente.blocks.generators;
 
 import mcjty.ariente.Ariente;
+import mcjty.ariente.gui.CompactNumber;
 import mcjty.ariente.api.IAlarmMode;
 import mcjty.ariente.api.IGenerator;
 import mcjty.ariente.cables.CableColor;
@@ -254,7 +255,7 @@ public class PosiriteGeneratorTile extends TickingTileEntity implements IGuiTile
                 .add(registry.stackIcon(0, 3, 1, 1).itemStack(new ItemStack(Registration.DUST_POSIRITE.get())))
 
                 .add(registry.icon(1, 3, 1, 1).icon(registry.image(WHITE_PLAYER)))
-                .add(registry.number(2, 3, 1, 1).color(registry.color(StyledColor.INFORMATION)).getter((p,h) -> HoloGuiTools.countItem(p, Registration.DUST_POSIRITE.get())))
+                .add(new CompactNumber(2, 3, 2, 1).color(registry.color(StyledColor.INFORMATION)).getter((p,h) -> HoloGuiTools.countItem(p, Registration.DUST_POSIRITE.get())))
 
                 .add(registry.iconButton(2, 4, 1, 1).icon(registry.image(GRAY_DOUBLE_ARROW_LEFT)).hover(registry.image(WHITE_DOUBLE_ARROW_LEFT))
                         .hitEvent((component, player, e, x, y) -> toPlayer(player, 64)))
@@ -266,7 +267,7 @@ public class PosiriteGeneratorTile extends TickingTileEntity implements IGuiTile
                         .hitEvent((component, player, e, x, y) -> toMachine(player, 64)))
 
                 .add(registry.stackIcon(5, 3, 1, 1).itemStack(new ItemStack(Registration.POSIRITE_GENERATOR.get())))
-                .add(registry.number(6, 3, 1, 1).color(registry.color(StyledColor.INFORMATION)).getter(this::countPosiriteGenerator))
+                .add(new CompactNumber(6, 3, 2, 1).color(registry.color(StyledColor.INFORMATION)).getter(this::countPosiriteGenerator))
 
                 .add(registry.iconChoice(7, 6, 1, 1)
                         .getter((player) -> getRSModeInt())

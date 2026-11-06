@@ -3,6 +3,9 @@ package mcjty.ariente;
 import mcjty.ariente.blocks.storagecube.StorageCubeTile;
 import mcjty.ariente.blocks.storagecube.StorageCubeTransfer;
 import mcjty.ariente.blocks.storagecube.StorageCubeSort;
+import mcjty.ariente.blocks.utility.ILockTarget;
+import mcjty.ariente.blocks.utility.LockTile;
+import mcjty.ariente.blocks.utility.wireless.WirelessLockTile;
 import mcjty.ariente.recipes.BlueprintRecipeRegistry;
 import mcjty.ariente.setup.Registration;
 import net.minecraft.core.BlockPos;
@@ -159,7 +162,7 @@ public class HoloStorageTests {
             var iron = tile.getPreview().stream().filter(entry -> entry.stack().is(Items.IRON_INGOT)).findFirst().orElseThrow();
             helper.assertTrue(iron.weight() == 96 && iron.stack().getCount() == 1, "Preview weights reflect total item counts");
             CompoundTag sync = tile.getUpdateTag();
-            helper.assertTrue(!sync.contains("Items") && !sync.contains("McItems") && sync.getAllKeys().equals(Set.of("Preview")),
+            helper.assertTrue(!sync.contains("Items") && !sync.contains("McItems") && sync.getAllKeys().equals(Set.of("Preview", "Locked")),
                     "Chunk watchers receive no real inventory or player data");
             StorageCubeTile client = new StorageCubeTile(tile.getBlockPos(), tile.getBlockState());
             client.handleUpdateTag(sync);
@@ -246,6 +249,35 @@ public class HoloStorageTests {
         ItemStack from = source < size ? tile.getItems().getStackInSlot(source) : player.getInventory().getItem(source - size);
         ItemStack to = destination < size ? tile.getItems().getStackInSlot(destination) : player.getInventory().getItem(destination - size);
         return StorageCubeTransfer.apply(tile, player, source, destination, amount, false, from.copy(), to.copy());
+    }
+
+    @GameTest(template = "empty")
+    public static void nearbyLocksControlEveryStorageTier(GameTestHelper helper) {
+        BlockPos pos = helper.absolutePos(new BlockPos(1, 1, 1));
+        BlockPos controller = pos.east(2);
+        for (Block block : List.of(Registration.STORAGE.get(), Registration.STORAGE_3X3.get(),
+                Registration.HOLO_STORAGE_1.get(), Registration.HOLO_STORAGE_2.get(), Registration.HOLO_STORAGE_3.get())) {
+            helper.getLevel().setBlockAndUpdate(pos, Blocks.AIR.defaultBlockState());
+            helper.getLevel().setBlockAndUpdate(pos, block.defaultBlockState());
+            ILockTarget target = (ILockTarget) helper.getLevel().getBlockEntity(pos);
+            helper.getLevel().setBlockAndUpdate(controller, Registration.LOCK.get().defaultBlockState());
+            LockTile lock = (LockTile) helper.getLevel().getBlockEntity(controller);
+            lock.setLocked(true);
+            helper.assertTrue(target.isLocked(), "Locks must control " + block);
+            lock.setHorizontalRange(1);
+            helper.assertTrue(!target.isLocked(), "Shrinking the range releases storage outside it");
+            lock.setHorizontalRange(3);
+            helper.assertTrue(target.isLocked(), "Expanding the range locks storage inside it");
+            helper.getLevel().removeBlock(controller, false);
+            helper.assertTrue(!target.isLocked(), "Removing the Lock releases storage");
+            helper.getLevel().setBlockAndUpdate(controller, Registration.WIRELESS_LOCK.get().defaultBlockState());
+            WirelessLockTile wireless = (WirelessLockTile) helper.getLevel().getBlockEntity(controller);
+            wireless.setLocked(true);
+            helper.assertTrue(target.isLocked(), "Wireless Locks must control " + block);
+            helper.getLevel().removeBlock(controller, false);
+            helper.assertTrue(!target.isLocked(), "Removing the Wireless Lock releases storage");
+        }
+        helper.succeed();
     }
 
     private static StorageCubeTile place(GameTestHelper helper, Block block) {

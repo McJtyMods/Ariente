@@ -1,6 +1,8 @@
 package mcjty.ariente.items;
 
 import mcjty.ariente.Ariente;
+import mcjty.ariente.gui.CompactNumber;
+import mcjty.ariente.gui.NumberFormatting;
 import mcjty.ariente.config.UtilityConfiguration;
 import mcjty.ariente.gui.GuiHelp;
 import mcjty.ariente.gui.HoloGuiTools;
@@ -172,7 +174,7 @@ public class EnergyHolderItem extends Item implements ITooltipSettings {
         IGuiComponentRegistry registry = Ariente.guiHandler.getComponentRegistry();
         IPanel panel = GuiHelp.ENERGY_HOLDER.createPanel(registry, entity -> entity.switchGui(ModGuis.GUI_ENERGY_HOLDER_HOLD))
                 .add(registry.text(0, .3, 8, 1).text("Shared equipment fuel").scale(.7f).color(registry.color(StyledColor.LABEL)))
-                .add(registry.text(0, 1.1, 8, 1).text(() -> "Stored power: " + formatStoredPower(findActiveHolder(player)))
+                .add(registry.text(0, 1.1, 8, 1).text(() -> "Stored power: " + NumberFormatting.compact(getStoredPower(findActiveHolder(player))))
                         .scale(.45f).color(registry.color(StyledColor.INFORMATION)));
 
         addDustControl(registry, panel, 2.3, Registration.DUST_NEGARITE.get(), "negarite");
@@ -186,7 +188,7 @@ public class EnergyHolderItem extends Item implements ITooltipSettings {
     private static void addDustControl(IGuiComponentRegistry registry, IPanel panel, double y, Item dust, String key) {
         panel.add(registry.stackIcon(0, y, 1, 1).itemStack(new ItemStack(dust)))
                 .add(registry.icon(1, y, 1, 1).icon(registry.image(WHITE_PLAYER)))
-                .add(registry.number(2, y, 1, 1).color(registry.color(StyledColor.INFORMATION))
+                .add(new CompactNumber(2, y, 2, 1).color(registry.color(StyledColor.INFORMATION))
                         .getter((p, h) -> HoloGuiTools.countItem(p, dust)))
                 .add(registry.iconButton(2, y + 1, 1, 1).icon(registry.image(GRAY_DOUBLE_ARROW_LEFT)).hover(registry.image(WHITE_DOUBLE_ARROW_LEFT))
                         .hitEvent((c, p, e, x, yy) -> removeFuel(p, dust, 64)))
@@ -197,7 +199,7 @@ public class EnergyHolderItem extends Item implements ITooltipSettings {
                 .add(registry.iconButton(6, y + 1, 1, 1).icon(registry.image(GRAY_DOUBLE_ARROW_RIGHT)).hover(registry.image(WHITE_DOUBLE_ARROW_RIGHT))
                         .hitEvent((c, p, e, x, yy) -> addFuel(p, dust, 64)))
                 .add(registry.stackIcon(5, y, 1, 1).itemStack(new ItemStack(Registration.ENERGY_HOLDER.get())))
-                .add(registry.number(6, y, 1, 1).color(registry.color(StyledColor.INFORMATION)).getter((p, h) -> count(p, key)));
+                .add(new CompactNumber(6, y, 2, 1).color(registry.color(StyledColor.INFORMATION)).getter((p, h) -> count(p, key)));
     }
 
     private static int getAutomatic(ItemStack stack) {

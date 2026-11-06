@@ -2,7 +2,7 @@ package mcjty.ariente.blocks.utility.door;
 
 import mcjty.ariente.Ariente;
 import mcjty.ariente.gui.GuiHelp;
-import mcjty.ariente.blocks.utility.ILockable;
+import mcjty.ariente.blocks.utility.ILockTarget;
 import mcjty.ariente.config.UtilityConfiguration;
 import mcjty.ariente.api.ISoldier;
 import mcjty.ariente.setup.Registration;
@@ -43,7 +43,7 @@ import static mcjty.ariente.compat.ArienteTOPDriver.DRIVER;
 import static mcjty.lib.builder.TooltipBuilder.header;
 import static mcjty.lib.builder.TooltipBuilder.key;
 
-public class DoorMarkerTile extends TickingTileEntity implements IGuiTile, ILockable {
+public class DoorMarkerTile extends TickingTileEntity implements IGuiTile, ILockTarget {
 
     public static final VoxelShape BLOCK_AABB = Shapes.box(0.0D, 0.0D, 0.0D, 1.0D, 1.0D/16.0, 1.0D);
     public static final VoxelShape OPEN_BLOCK_AABB = Shapes.empty();
@@ -180,6 +180,7 @@ public class DoorMarkerTile extends TickingTileEntity implements IGuiTile, ILock
         markDirtyClient();
     }
 
+    @Override
     public void setLocked(boolean locked) {
         this.locked = locked;
         if (locked) {

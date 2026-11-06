@@ -13,6 +13,9 @@ public class StorageCubeTransfer {
 
     public static boolean apply(StorageCubeTile tile, Player player, int source, int destination, int amount,
                                 boolean quick, ItemStack expectedSource, ItemStack expectedDestination) {
+        if (tile.isLocked()) {
+            return false;
+        }
         int size = tile.getItems().getSlots();
         IItemHandlerModifiable inventory = new RangedWrapper(new InvWrapper(player.getInventory()), 0, 36);
         CombinedInvWrapper all = new CombinedInvWrapper(tile.getItems(), inventory);

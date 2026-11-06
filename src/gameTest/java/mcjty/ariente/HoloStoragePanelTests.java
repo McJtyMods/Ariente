@@ -99,6 +99,37 @@ public class HoloStoragePanelTests {
                 "Each viewer receives their own player inventory");
     }
 
+    @GameTest(template = "empty")
+    public static void lockingClosesPanelsAndRejectsPendingActions(GameTestHelper helper) {
+        BlockPos pos = helper.absolutePos(new BlockPos(1, 1, 1));
+        helper.getLevel().setBlockAndUpdate(pos, Registration.HOLO_STORAGE_1.get().defaultBlockState());
+        StorageCubeTile tile = (StorageCubeTile) helper.getLevel().getBlockEntity(pos);
+        tile.getItems().setStackInSlot(0, new ItemStack(Items.DIAMOND, 5));
+        ServerPlayer player = player(helper, pos, "storage-lock");
+        HoloGuiEntity panel = open(helper, pos, player);
+        Capture data = (Capture) player.connection.connection;
+        tile.subscribe(player, panel.getId());
+        long revision = data.last().revision();
+        int updates = data.updates.size();
+        tile.setLocked(true);
+        helper.assertTrue(!panel.isAlive() && !tile.canUse(player, panel.getId()), "Locking closes an active panel");
+        tile.transfer(player, panel.getId(), revision, 0, tile.getItems().getSlots(), 5, true);
+        tile.sort(player, panel.getId(), revision, true);
+        tile.subscribe(player, panel.getId());
+        tile.refresh(player, panel.getId());
+        helper.assertTrue(tile.getItems().getStackInSlot(0).getCount() == 5 && player.getInventory().isEmpty(),
+                "A pending transfer cannot take items after locking");
+        helper.assertTrue(data.updates.size() == updates, "Locked cubes do not send inventory snapshots");
+        tile.setLocked(false);
+        HoloGuiEntity reopened = open(helper, pos, player);
+        tile.subscribe(player, reopened.getId());
+        tile.transfer(player, reopened.getId(), data.last().revision(), 0, tile.getItems().getSlots(), 5, true);
+        helper.assertTrue(tile.getItems().getStackInSlot(0).isEmpty() && player.getInventory().countItem(Items.DIAMOND) == 5,
+                "Unlocking restores transfers through a newly opened panel");
+        reopened.discard();
+        helper.succeed();
+    }
+
     private static class Capture extends Connection {
 
         private final List<PacketStorageCubeData> updates = new ArrayList<>();
