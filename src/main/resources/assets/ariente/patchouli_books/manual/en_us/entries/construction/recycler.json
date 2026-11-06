@@ -7,12 +7,17 @@
     {
       "type": "patchouli:text",
       "title": "Recover components",
-      "text": "Build a Recycler with a Constructor. It breaks down any Constructor product, including machines, devices, weapons and components. $(thing)You do not need its blueprint to recycle it.$(br2)Each operation returns about $(thing)75% of the recipe ingredients$(), rounded down overall. Some materials are always lost, so recycling never supplies the complete recipe needed to rebuild the consumed product. Recovery uses the direct recipe, without recursively dismantling its ingredients. Charge, upgrades and stored contents are not recovered."
+      "text": "Build a Recycler with a Constructor. It breaks down Constructor products and equipment modules. $(thing)You do not need a blueprint to recycle them.$(br2)Constructor products return about $(thing)75% of the recipe ingredients$(), rounded down overall. Some materials are always lost, so recycling never supplies the complete recipe needed to rebuild the consumed product. Recovery uses the direct recipe, without recursively dismantling its ingredients. Charge, upgrades and stored contents are not recovered."
     },
     {
       "type": "patchouli:text",
       "title": "Use the Recycler",
       "text": "Right-click to open the hologram. The input slot and ten output slots appear above your full inventory and separated hotbar. Double-click a bright inventory stack to insert it; double-click a machine stack to take it back.$(br2)An operation takes $(thing)2 seconds$() and uses $(thing)10 of each flux per tick$(). Processing pauses if power or room for all recovered components is missing. Recipes that make several products need a full batch in the input, such as eight cables.$(br2)Automation extracts from the $(thing)bottom and back$(). The back has the output panel texture. All other faces accept input."
+    },
+    {
+      "type": "patchouli:text",
+      "title": "Spare equipment modules",
+      "text": "Regeneration, Speed, Power, Scramble, Step Assist, Hover and Invisibility modules have no Constructor recipe.$(br2)Each can still be recycled into $(thing)one Circuit, one Silver Ingot and one Silicon$(). These modest breakdowns do not unlock crafting or add their blueprints.$(br2)Modules that have Constructor recipes keep their normal ingredient recovery."
     }
   ],
   "extra_recipe_mappings": {

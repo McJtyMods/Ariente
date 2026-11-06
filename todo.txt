@@ -16,3 +16,4 @@
 - Single platform with AI Core on?
 - Energy holder gui with big numbers overflow gui
 - Increase speed of purifier
+- Special crystals in one of the biomes

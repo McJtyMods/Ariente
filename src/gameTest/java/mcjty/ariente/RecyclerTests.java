@@ -15,6 +15,7 @@ import net.minecraft.gametest.framework.GameTest;
 import net.minecraft.gametest.framework.GameTestHelper;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.world.entity.player.Player;
+import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.Items;
 import net.minecraft.world.level.block.state.properties.BlockStateProperties;
@@ -61,6 +62,44 @@ public class RecyclerTests {
         weapon.setDamageValue(1);
         helper.assertTrue(Recycling.findRecipe(weapon) != null, "Used and tagged weapons do not need a pristine blueprint match");
         helper.assertTrue(Recycling.findRecipe(new ItemStack(Items.DIRT)) == null, "Non-Constructor products are rejected");
+        helper.succeed();
+    }
+
+    @GameTest(template = "empty")
+    public static void lootOnlyModulesRecycleWithoutBecomingCraftable(GameTestHelper helper) {
+        RecyclerTile tile = place(helper);
+        supplyPower(helper, tile);
+        IItemHandlerModifiable inventory = inventory(tile);
+        Item[] modules = {Registration.MODULE_REGENERATION.get(), Registration.MODULE_SPEED.get(),
+                Registration.MODULE_POWER.get(), Registration.MODULE_SCRAMBLE.get(), Registration.MODULE_STEPASSIST.get(),
+                Registration.MODULE_HOVER.get(), Registration.MODULE_INVISIBILITY.get()};
+        for (Item module : modules) {
+            ItemStack input = new ItemStack(module, 2);
+            input.getOrCreateTag().putBoolean("recycler_test", true);
+            helper.assertTrue(BlueprintRecipeRegistry.findRecipe(input) == null,
+                    "Recycling must not add a Constructor recipe for loot-only modules");
+            helper.assertTrue(BlueprintRecipeRegistry.getRecipes().stream()
+                            .noneMatch(recipe -> recipe.getDestination().is(module)),
+                    "Loot-only modules must stay out of the random blueprint catalog");
+            helper.assertTrue(Recycling.findRecipe(input) != null, "Every loot-only equipment module is recyclable");
+            for (int slot = 0; slot <= 10; slot++) {
+                inventory.setStackInSlot(slot, ItemStack.EMPTY);
+            }
+            helper.assertTrue(inventory.insertItem(0, input, false).isEmpty(), "The real Recycler accepts loot-only modules");
+            tick(tile, 40);
+            helper.assertTrue(inventory.getStackInSlot(0).getCount() == 1 && outputCount(inventory) == 3,
+                    "One module produces three ordinary components after one powered operation");
+            for (Item component : new Item[]{Registration.CIRCUIT.get(), Registration.INGOT_SILVER.get(), Registration.DUST_SILICON.get()}) {
+                int amount = 0;
+                for (int slot = 1; slot <= 10; slot++) {
+                    ItemStack output = inventory.getStackInSlot(slot);
+                    if (output.is(component)) {
+                        amount += output.getCount();
+                    }
+                }
+                helper.assertTrue(amount == 1, "Each module returns one circuit, one silver ingot and one silicon");
+            }
+        }
         helper.succeed();
     }
 

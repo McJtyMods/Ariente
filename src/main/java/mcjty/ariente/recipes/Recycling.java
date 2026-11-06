@@ -1,5 +1,8 @@
 package mcjty.ariente.recipes;
 
+import mcjty.ariente.items.modules.ArmorModuleItem;
+import mcjty.ariente.setup.Registration;
+import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemStack;
 import net.minecraftforge.items.ItemHandlerHelper;
 
@@ -7,8 +10,12 @@ import javax.annotation.Nullable;
 import java.util.ArrayList;
 import java.util.Comparator;
 import java.util.List;
+import java.util.Map;
+import java.util.concurrent.ConcurrentHashMap;
 
 public class Recycling {
+
+    private static final Map<Item, ConstructorRecipe> MODULE_RECIPES = new ConcurrentHashMap<>();
 
     @Nullable
     public static ConstructorRecipe findRecipe(ItemStack stack) {
@@ -19,8 +26,19 @@ public class Recycling {
                     return recipe;
                 }
             }
+            if (stack.getItem() instanceof ArmorModuleItem) {
+                return MODULE_RECIPES.computeIfAbsent(stack.getItem(), Recycling::moduleRecipe);
+            }
         }
         return null;
+    }
+
+    private static ConstructorRecipe moduleRecipe(Item module) {
+        // Recycling-only estimate: never register these in the Constructor or blueprint catalogs.
+        return new ConstructorRecipe(new ItemStack(module), 0,
+                new ItemStack(Registration.CIRCUIT.get()),
+                new ItemStack(Registration.INGOT_SILVER.get(), 2),
+                new ItemStack(Registration.DUST_SILICON.get()));
     }
 
     /** Recover floor(75% of a recipe's ingredients), with a guaranteed material deficit. */
