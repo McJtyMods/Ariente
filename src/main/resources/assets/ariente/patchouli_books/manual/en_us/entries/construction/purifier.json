@@ -13,7 +13,7 @@
     {
       "type": "patchouli:text",
       "title": "Recovery and time",
-      "text": "Default recovery per ore:$(li)1 tube: 2 raw, 8 seconds.$(li)2 tubes: 3 raw, 16 seconds.$(li)3 tubes: 4 raw, 24 seconds.$(li)4 tubes: 5 raw, 32 seconds.$(br2)An ore floats along the glass tube and gradually becomes raw metal. Red sparks race around each working tube, leaving fading trails. Smelt the raw metals into ingots normally."
+      "text": "Default recovery per ore:$(li)1 tube: 2 raw, 4 seconds.$(li)2 tubes: 3 raw, 8 seconds.$(li)3 tubes: 4 raw, 12 seconds.$(li)4 tubes: 5 raw, 16 seconds.$(br2)Set $(thing)power.purifierTicksPerTube$() in the server config to adjust timing (default 80 ticks per tube). Lower values process faster."
     },
     {
       "type": "patchouli:text",

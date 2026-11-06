@@ -37,8 +37,8 @@ public class PowerConfiguration {
                 .comment("Furnace recipe ticks processed per powered smelting tick (1 = vanilla speed)")
                 .defineInRange("smelterSpeed", 10, 1, 200);
 
-        PURIFIER_TICKS_PER_TUBE = SERVER_BUILDER.comment("Powered ticks to traverse each purifier tube (160 ticks = 8 seconds)")
-                .defineInRange("purifierTicksPerTube", 160, 1, 1000000);
+        PURIFIER_TICKS_PER_TUBE = SERVER_BUILDER.comment("Powered ticks to traverse each purifier tube; lower values process faster (80 ticks = 4 seconds)")
+                .defineInRange("purifierTicksPerTube", 80, 1, 1000000);
         PURIFIER_POWER_PER_TUBE = SERVER_BUILDER.comment("Amount of EACH flux consumed per active tick for EACH tube in the purifier line")
                 .defineInRange("purifierPowerPerTube", 400, 1, 1000000000);
         PURIFIER_MAX_TUBES = SERVER_BUILDER.comment("Maximum number of straight horizontal tubes between purifier endpoints")

@@ -55,12 +55,12 @@ machines stop advancing the animation and emitting particles.
 
 | Tubes | Raw per ore | Time | Each flux per active tick | Each flux per ore |
 | --- | --- | --- | --- | --- |
-| 1 | 2 | 8 seconds | 400 | 64,000 |
-| 2 | 3 | 16 seconds | 800 | 256,000 |
-| 3 | 4 | 24 seconds | 1,200 | 576,000 |
-| 4 | 5 | 32 seconds | 1,600 | 1,024,000 |
+| 1 | 2 | 4 seconds | 400 | 32,000 |
+| 2 | 3 | 8 seconds | 800 | 128,000 |
+| 3 | 4 | 12 seconds | 1,200 | 288,000 |
+| 4 | 5 | 16 seconds | 1,600 | 512,000 |
 
-Each tube adds 160 powered ticks and 400 of each flux per tick. Time and active
+Each tube adds 80 powered ticks and 400 of each flux per tick. Time and active
 power both grow with length, so total flux per ore grows quadratically.
 The existing power helper consumes equal amounts of negarite and posirite;
 combined connectors are supported. No flux is consumed while idle or blocked.
@@ -77,14 +77,16 @@ plus 500 per panel buildup step. Its 60 panels each need 100 buildup steps,
 for 3,000,000 of each flux to build a complete shield, excluding idle demand.
 These construction/repair costs already make it a substantial consumer.
 
-Existing world configs retain explicit values; set `purifierPowerPerTube = 400`
-and `smelterPowerPerTick = 200` to apply this balance to an existing test world.
+Existing world configs retain explicit values; set `purifierTicksPerTube = 80`,
+`purifierPowerPerTube = 400` and `smelterPowerPerTick = 200` under `[power]` in
+the world's `serverconfig/ariente-server.toml` to apply this balance to an
+existing test world. Lower `purifierTicksPerTube` values process faster.
 
 Server configuration under `power`:
 
 | Setting | Default | Meaning |
 | --- | --- | --- |
-| `purifierTicksPerTube` | 160 | Powered traversal ticks per tube |
+| `purifierTicksPerTube` | 80 | Powered traversal ticks per tube (4 seconds); lower values process faster |
 | `purifierPowerPerTube` | 400 | Each flux per active tick per tube |
 | `purifierMaxTubes` | 4 | Maximum supported straight-line length |
 | `purifierBaseYield` | 2 | Raw output with one tube |

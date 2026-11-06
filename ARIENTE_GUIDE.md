@@ -635,13 +635,13 @@ adjacent endpoint or tube when placed against it; they do not form bends.
 
 | Tubes | Raw metals per ore | Time per ore | Each flux per active tick | Each flux per ore |
 | --- | --- | --- | --- | --- |
-| 1 | 2 | 8 seconds | 400 | 64,000 |
-| 2 | 3 | 16 seconds | 800 | 256,000 |
-| 3 | 4 | 24 seconds | 1,200 | 576,000 |
-| 4 | 5 | 32 seconds | 1,600 | 1,024,000 |
+| 1 | 2 | 4 seconds | 400 | 32,000 |
+| 2 | 3 | 8 seconds | 800 | 128,000 |
+| 3 | 4 | 12 seconds | 1,200 | 288,000 |
+| 4 | 5 | 16 seconds | 1,600 | 512,000 |
 
 These are defaults. Supply **both fluxes at the Start**. Every extra tube adds
-160 powered ticks and 400 of each flux per active tick. An ore floats through
+80 powered ticks and 400 of each flux per active tick. An ore floats through
 the transparent tubes, gradually fading into raw metal. Each working tube has
 its own red particle streams orbiting with bright heads and fading trails.
 Smelt or blast the resulting raw metals into ingots normally; there is no dust
@@ -687,7 +687,10 @@ for each available length.
 
 Configure `power.purifierTicksPerTube`, `purifierPowerPerTube`,
 `purifierMaxTubes`, `purifierBaseYield`, and `purifierExtraYieldPerTube` in the
-server config. Client settings `purifier.ringPeriod`, `ringParticles`,
+world's `serverconfig/ariente-server.toml` under `[power]`. Timing defaults to
+`purifierTicksPerTube = 80` (4 seconds per tube); lower values process faster.
+Existing worlds retain their saved setting, so change it to 80 to use the new
+default there. Client settings `purifier.ringPeriod`, `ringParticles`,
 `ringStreams` and `ringTrailTicks` control orbit speed, density, stream count
 and trail lifetime. Recovery is capped at one normal stack.
 
