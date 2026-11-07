@@ -12,6 +12,7 @@ import mcjty.lib.blocks.RotationType;
 import mcjty.lib.builder.BlockBuilder;
 import mcjty.lib.tileentity.GenericTileEntity;
 import net.minecraft.core.BlockPos;
+import net.minecraft.nbt.CompoundTag;
 import net.minecraft.world.InteractionHand;
 import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.entity.player.Player;
@@ -30,14 +31,59 @@ public class LevelMarkerTile extends GenericTileEntity implements IGuiTile {
 
     private static final VoxelShape BLOCK_AABB = Shapes.box(0.0D, 0.0D, 0.0D, 1.0D, 1.0D/16.0, 1.0D);
 
+    private static final int MAX_NAME_LENGTH = 32;
+
+    private String floorName = "";
+
     @Override
     public IGuiComponent<?> createGui(String tag, IGuiComponentRegistry registry) {
         if (TAG_HELP.equals(tag)) {
             return GuiHelp.LEVEL_MARKER.createHelpGui(registry);
         }
-        // @todo implement this
         return GuiHelp.LEVEL_MARKER.createPanel(registry)
-                .add(registry.text(0, 2, 1, 1).text("Floor name (WIP)").color(registry.color(StyledColor.LABEL)));
+                .add(registry.text(.3, 1, 7.2, 1).text("Floor name").color(registry.color(StyledColor.LABEL)))
+                .add(registry.textEntry(.3, 2, 7.2, 1.2).name("floor_name").maxLength(MAX_NAME_LENGTH)
+                        .text(this::getFloorName).changed((player, entity, text) -> setFloorName(text)))
+                .add(registry.text(.3, 3.6, 7.2, .6).text("Esc / click outside saves the name.").scale(.35f))
+                .add(registry.text(.3, 4.3, 7.2, .6).text("Leave empty to show only the floor number.").scale(.3f));
+    }
+
+    public String getFloorName() {
+        return floorName;
+    }
+
+    public void setFloorName(String name) {
+        StringBuilder clean = new StringBuilder();
+        name.codePoints().map(c -> c == '\n' || c == '\r' || c == '\t' ? ' ' : c)
+                .filter(c -> !Character.isISOControl(c) && c != 167)
+                .limit(MAX_NAME_LENGTH).forEach(clean::appendCodePoint);
+        String value = clean.toString().strip();
+        if (!floorName.equals(value)) {
+            floorName = value;
+            markDirtyClient();
+        }
+    }
+
+    @Override
+    public void load(CompoundTag tag) {
+        super.load(tag);
+        floorName = tag.getString("FloorName");
+    }
+
+    @Override
+    public void saveAdditional(CompoundTag tag) {
+        super.saveAdditional(tag);
+        tag.putString("FloorName", floorName);
+    }
+
+    @Override
+    public void saveClientDataToNBT(CompoundTag tag) {
+        tag.putString("FloorName", floorName);
+    }
+
+    @Override
+    public void loadClientDataFromNBT(CompoundTag tag) {
+        floorName = tag.getString("FloorName");
     }
 
     public LevelMarkerTile(BlockPos pos, BlockState state) {

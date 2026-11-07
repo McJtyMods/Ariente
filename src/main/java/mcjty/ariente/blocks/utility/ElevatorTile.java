@@ -1,5 +1,6 @@
 package mcjty.ariente.blocks.utility;
 
+import mcjty.ariente.display.TextDisplayModule;
 import mcjty.ariente.gui.GuiHelp;
 import mcjty.lib.varia.SafeClientTools;
 import mcjty.ariente.Ariente;
@@ -42,6 +43,8 @@ public class ElevatorTile extends TickingTileEntity implements IGuiTile, ICityEq
     public static final String TAG_ELEVATOR = "elevator";
 
     private static final double FLOOR_TOLERANCE = 0.125;
+    private static final int VISIBLE_FLOORS = 5;
+    private static final int CURRENT_FLOOR_BORDER = 0xffa0a0a0;
 
     private AABB cachedBox = null;
 
@@ -50,7 +53,7 @@ public class ElevatorTile extends TickingTileEntity implements IGuiTile, ICityEq
     private Map<UUID, Integer> playerToHoloGui = new HashMap<>();
 
     // Client side only
-    private int moveToFloor = -1;
+    private Integer moveToFloor;
 
     public ElevatorTile(BlockPos pos, BlockState state) {
         super(Registration.ELEVATOR_TILE.get(), pos, state);
@@ -91,14 +94,17 @@ public class ElevatorTile extends TickingTileEntity implements IGuiTile, ICityEq
     public void tickClient() {
         Player clientPlayer = SafeClientTools.getClientPlayer();
         if (clientPlayer == null) {
-            moveToFloor = -1;
+            moveToFloor = null;
             return;
         }
         List<Integer> floors = findFloors();
         if (clientPlayer.getBoundingBox().intersects(getBeamBox())) {
             clientPlayer.hasImpulse = true;
             clientPlayer.fallDistance = 0;
-            if (floors.size() < 2) {
+            if (moveToFloor != null && !floors.contains(moveToFloor)) {
+                moveToFloor = null;
+            }
+            if (floors.size() < 2 && moveToFloor == null) {
                 double motionY;
                 if (clientPlayer.isShiftKeyDown()) {
                     motionY = -0.7;
@@ -111,34 +117,30 @@ public class ElevatorTile extends TickingTileEntity implements IGuiTile, ICityEq
                 Vec3 motion = clientPlayer.getDeltaMovement();
                 clientPlayer.setDeltaMovement(motion.x, motionY, motion.z);
             } else {
-                if (moveToFloor == -1) {
+                if (moveToFloor == null) {
+                    int index = -1;
                     if (clientPlayer.isShiftKeyDown()) {
-                        moveToFloor = findLowerFloor(floors, clientPlayer.getY());
+                        index = findLowerFloor(floors, clientPlayer.getY());
                     } else if (isJumpKeyDown()) {
-                        moveToFloor = findUpperFloor(floors, clientPlayer.getY());
-                    } else {
-                        moveToFloor = -1;
+                        index = findUpperFloor(floors, clientPlayer.getY());
                     }
-                    if (moveToFloor != -1) {
-                        clientPlayer.setPos(worldPosition.getX() + .5, clientPlayer.getY(), worldPosition.getZ() + .5);
+                    if (index != -1) {
+                        selectFloor(clientPlayer, floors.get(index));
                     }
                 }
-                if (moveToFloor >= floors.size()) {
-                    moveToFloor = -1;
-                }
-                if (moveToFloor != -1) {
+                if (moveToFloor != null) {
                     double motionY;
-                    if (Math.abs(clientPlayer.getY() - floors.get(moveToFloor)) <= FLOOR_TOLERANCE
-                            && alignWithFloor(clientPlayer, List.of(floors.get(moveToFloor)))) {
+                    if (Math.abs(clientPlayer.getY() - moveToFloor) <= FLOOR_TOLERANCE
+                            && alignWithFloor(clientPlayer, List.of(moveToFloor))) {
                         motionY = 0.0;
-                        moveToFloor = -1;
-                    } else if (clientPlayer.getY() > floors.get(moveToFloor)) {
-                        motionY = -Math.min(1.4, clientPlayer.getY() - floors.get(moveToFloor));
-                    } else if (clientPlayer.getY() < floors.get(moveToFloor)) {
-                        motionY = Math.min(1.0, floors.get(moveToFloor) - clientPlayer.getY());
+                        moveToFloor = null;
+                    } else if (clientPlayer.getY() > moveToFloor) {
+                        motionY = -Math.min(1.4, clientPlayer.getY() - moveToFloor);
+                    } else if (clientPlayer.getY() < moveToFloor) {
+                        motionY = Math.min(1.0, moveToFloor - clientPlayer.getY());
                     } else {
                         motionY = 0.0;
-                        moveToFloor = -1;
+                        moveToFloor = null;
                     }
                     Vec3 motion = clientPlayer.getDeltaMovement();
                     clientPlayer.setDeltaMovement(motion.x, motionY, motion.z);
@@ -149,8 +151,13 @@ public class ElevatorTile extends TickingTileEntity implements IGuiTile, ICityEq
                 }
             }
         } else {
-            moveToFloor = -1;
+            moveToFloor = null;
         }
+    }
+
+    private void selectFloor(Player player, int floor) {
+        moveToFloor = floor;
+        player.setPos(worldPosition.getX() + .5, player.getY(), worldPosition.getZ() + .5);
     }
 
     private boolean alignWithFloor(Player player, List<Integer> floors) {
@@ -352,39 +359,129 @@ public class ElevatorTile extends TickingTileEntity implements IGuiTile, ICityEq
             return GuiHelp.ELEVATOR.createHelpGui(registry, TAG_ELEVATOR);
         } else if (TAG_ELEVATOR.equals(tag)) {
             IPanel panel = GuiHelp.ELEVATOR.createPanel(registry, entity -> entity.switchTag(TAG_ELEVATOR + "_help"));
-            List<Integer> floors = findFloors();
-
-            if (!floors.isEmpty()) {
-                panel.add(registry.text(0, 0, 1, 1).text("Floor").color(registry.color(StyledColor.LABEL)));
-                int x = 0;
-                int y = 1;
-                int idx = 1;
-                for (Integer floor : floors) {
-                    int finalIdx = idx;
-                    panel.add(registry.button(x, y, 1, 1)
-                            .text("" + idx)
-                            .hitClientEvent((component, player, entity1, x1, y1) -> {
-                                moveToFloor = finalIdx - 1;
-                                player.setPos(worldPosition.getX() + .5, player.getY(), worldPosition.getZ() + .5);
-                            }));
-                    y++;
-                    if (y > 8) {
-                        y = 1;
-                        x++;
-                    }
-                    idx++;
-                }
-            } else {
-                panel.add(registry.text(0, 0, 1, 1).text("Jump: go up").color(registry.color(StyledColor.LABEL)))
-                        .add(registry.text(0, 1, 1, 1).text("Crouch: go down").color(registry.color(StyledColor.LABEL)));
+            FloorSelection selection = new FloorSelection();
+            IColor labelColor = registry.color(StyledColor.LABEL);
+            IColor currentColor = registry.color(StyledColor.INFORMATION);
+            panel.add(registry.text(.3, .2, 7.2, .8).text("Select floor").scale(.65f));
+            for (int row = 0; row < VISIBLE_FLOORS; row++) {
+                int index = row;
+                double y = 1.2 + row;
+                panel.add(registry.panel(.3, y, 6.2, .85).visible(() -> selection.hasFloor(index))
+                        .add(registry.button(.3, y, 6.2, .85).name("floor_" + row).text("")
+                                .borderColor(() -> selection.isCurrent(index) ? CURRENT_FLOOR_BORDER : -1)
+                                .hitClientEvent((c, player, entity, x, cy) -> selection.select(player, index)))
+                        .add(registry.text(.5, y + .2, 5.8, .6).name("floor_label_" + row)
+                                .text(() -> selection.label(index)).scale(.45f)
+                                .color(() -> selection.isCurrent(index) ? currentColor.getColor() : labelColor.getColor())));
             }
-
+            panel.add(registry.panel(6.8, 1.2, .9, 4.9).visible(() -> selection.floors().size() > VISIBLE_FLOORS)
+                    .add(registry.iconButton(6.8, 1.2, .9, .9).name("floors_up")
+                            .icon(registry.image(GRAY_ARROW_UP)).hover(registry.image(WHITE_ARROW_UP))
+                            .hitClientEvent((c, player, entity, x, y) -> selection.scroll(-1)))
+                    .add(registry.iconButton(6.8, 5.2, .9, .9).name("floors_down")
+                            .icon(registry.image(GRAY_ARROW_DOWN)).hover(registry.image(WHITE_ARROW_DOWN))
+                            .hitClientEvent((c, player, entity, x, y) -> selection.scroll(1))));
+            panel.add(registry.text(.3, 6.4, 7.2, .6).name("floor_range").text(selection::range).scale(.4f));
+            panel.add(registry.panel(.3, 1.2, 7.2, 2).visible(() -> selection.floors().isEmpty())
+                    .add(registry.text(.3, 1.2, 7.2, 1).text("Jump: go up").scale(.6f))
+                    .add(registry.text(.3, 2.2, 7.2, 1).text("Crouch: go down").scale(.6f)));
             return panel;
         } else {
             return GuiHelp.ELEVATOR.createPanel(registry)
                     .add(registry.integerSlider(.3, 3, 7.2, 1).name("elevator_height").label("Height").range(1, 256)
                             .getter((p, e) -> getHeight()).changed((p, e, value) -> changeHeight(value - getHeight())))
                     ;
+        }
+    }
+
+    // Each hologram has its own scroll position; refresh its floor heights once per tick.
+    private class FloorSelection {
+
+        private List<Integer> floors = Collections.emptyList();
+        private long scannedAt = Long.MIN_VALUE;
+        private int first;
+        private boolean initialized;
+
+        private List<Integer> floors() {
+            if (scannedAt != level.getGameTime()) {
+                scannedAt = level.getGameTime();
+                floors = findFloors();
+                if (!initialized && !floors.isEmpty()) {
+                    if (level.isClientSide) {
+                        Player player = SafeClientTools.getClientPlayer();
+                        if (player != null) {
+                            first = nearestFloor(player.getY()) - VISIBLE_FLOORS / 2;
+                        }
+                    }
+                    initialized = true;
+                }
+                first = Math.max(0, Math.min(first, floors.size() - VISIBLE_FLOORS));
+            }
+            return floors;
+        }
+
+        private boolean hasFloor(int row) {
+            floors();
+            return first + row < floors.size();
+        }
+
+        private int nearestFloor(double y) {
+            int nearest = -1;
+            for (int i = 0; i < floors.size(); i++) {
+                if (nearest == -1 || Math.abs(floors.get(i) - y) < Math.abs(floors.get(nearest) - y)) {
+                    nearest = i;
+                }
+            }
+            return nearest;
+        }
+
+        private int currentFloor() {
+            floors();
+            Player player = level.isClientSide ? SafeClientTools.getClientPlayer() : null;
+            return player == null ? -1 : nearestFloor(player.getY());
+        }
+
+        private boolean isCurrent(int row) {
+            return hasFloor(row) && first + row == currentFloor();
+        }
+
+        private void scroll(int direction) {
+            floors();
+            first = Math.max(0, Math.min(first + direction, floors.size() - VISIBLE_FLOORS));
+        }
+
+        private void select(Player player, int row) {
+            if (hasFloor(row)) {
+                selectFloor(player, floors.get(first + row));
+            }
+        }
+
+        private String range() {
+            int count = floors().size();
+            return count == 0 ? "No marked floors" : "Floors " + (first + 1) + "-" + Math.min(first + VISIBLE_FLOORS, count) + " / " + count;
+        }
+
+        private String label(int row) {
+            if (!hasFloor(row)) {
+                return "";
+            }
+            int index = first + row;
+            int y = floors.get(index);
+            String name = "";
+            for (int dx = -2; dx <= 2 && name.isEmpty(); dx++) {
+                for (int dz = -2; dz <= 2 && name.isEmpty(); dz++) {
+                    BlockEntity tile = level.getBlockEntity(new BlockPos(worldPosition.getX() + dx, y, worldPosition.getZ() + dz));
+                    if (tile instanceof LevelMarkerTile marker) {
+                        name = marker.getFloorName();
+                    }
+                }
+            }
+            String label = Integer.toString(index + 1) + (name.isEmpty() ? "" : ": " + name);
+            String shortened = label;
+            while (TextDisplayModule.lineWidth(shortened) > 116) {
+                shortened = shortened.substring(0, shortened.offsetByCodePoints(shortened.length(), -1));
+            }
+            return shortened.equals(label) ? label : shortened + "...";
         }
     }
 

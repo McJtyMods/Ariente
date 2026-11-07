@@ -1400,8 +1400,19 @@ is 9, adjustable through its hologram. Stand in the beam:
 - With multiple marked floors, jump/sneak select the next higher/lower floor;
   the associated hologram also provides floor selection.
 
-Height can be set from **1 to 256**. Level Marker floor-name editing is still a
-WIP panel; floor detection and numbered floor selection do not depend on naming.
+Height can be set from **1 to 256**. Right-click a Level Marker and click its
+**Floor name** field to type a name (up to 32 characters). Press **Esc** or click
+outside the field to save. Clear the field to return to a numbered floor.
+Names are saved with the marker and appear beside the floor numbers in the
+elevator hologram. If several markers share a landing height, its first named
+marker supplies the label; unnamed markers do not hide a name.
+
+The floor selector shows **five floors at a time**. Use its up/down arrows to
+scroll, then click a floor to travel there. The list opens near your current
+height, and each hologram keeps its own scroll position. Long names are shortened
+in the list; the marker retains the full name.
+The floor nearest your height has a **gray outline** around its row and brighter
+text. The highlight updates as you travel.
 
 The Elevator works automatically and requires no power supply.
 Keep the shaft and landings clear. This block is separate from the Flux Elevator
