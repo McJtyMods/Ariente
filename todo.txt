@@ -12,11 +12,6 @@
 - More plants, trees, structures and features in the Ariente world
 - For the power armor, what is the charge counter counting? It goes down and then starts again?
 - Much better loot in the more difficult dungeons
-- 'block.ariente.pattern' localization is missing
-- Single platform with AI Core on?
-- Energy holder gui with big numbers overflow gui
-- Increase speed of purifier
-- Special crystals in one of the biomes
-- Big cube needs more work in some areas!
 - Also boss in underground big dungeon?
-- Better elevator gui. Allow for floors to have names
+- Master soldier immune for lance?
+- Wireless button has wrong selection box

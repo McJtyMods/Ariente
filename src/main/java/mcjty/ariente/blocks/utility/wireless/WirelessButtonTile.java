@@ -1,6 +1,7 @@
 package mcjty.ariente.blocks.utility.wireless;
 
 import mcjty.ariente.blocks.BlockProperties;
+import mcjty.ariente.blocks.MountedPanelShapes;
 import mcjty.ariente.setup.Registration;
 import mcjty.ariente.sounds.ModSounds;
 import mcjty.lib.blocks.BaseBlock;
@@ -12,6 +13,7 @@ import net.minecraft.network.Connection;
 import net.minecraft.world.level.BlockGetter;
 import net.minecraft.world.level.block.Block;
 import net.minecraft.world.level.block.state.BlockState;
+import net.minecraft.world.level.block.state.properties.BlockStateProperties;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.network.protocol.game.ClientboundBlockEntityDataPacket;
@@ -22,7 +24,6 @@ import net.minecraft.world.InteractionHand;
 import net.minecraft.sounds.SoundSource;
 import net.minecraft.world.phys.BlockHitResult;
 import net.minecraft.world.phys.shapes.CollisionContext;
-import net.minecraft.world.phys.shapes.Shapes;
 import net.minecraft.world.phys.shapes.VoxelShape;
 import net.minecraft.world.level.Level;
 
@@ -34,7 +35,7 @@ public class WirelessButtonTile extends SignalChannelTileEntity {
     private boolean locked = false;
     private int prevIn = -1;
 
-    private static final VoxelShape BLOCK_AABB = Shapes.box(1.0D/16.0, 1.0D/16.0, 15.0D/16.0, 15.0D/16.0, 15.0D/16.0, 1.0D);
+    private static final MountedPanelShapes SHAPES = new MountedPanelShapes(2, 3);
 
     public WirelessButtonTile(BlockPos pos, BlockState state) {
         super(Registration.WIRELESS_BUTTON_TILE.get(), pos, state);
@@ -55,7 +56,7 @@ public class WirelessButtonTile extends SignalChannelTileEntity {
 
             @Override
             public VoxelShape getShape(BlockState state, BlockGetter reader, BlockPos pos, CollisionContext context) {
-                return BLOCK_AABB;
+                return SHAPES.get(state.getValue(BlockStateProperties.FACING));
             }
         };
     }
