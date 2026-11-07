@@ -7,7 +7,7 @@
     {
       "type": "patchouli:text",
       "title": "Recover components",
-      "text": "Build a Recycler with a Constructor. It breaks down Constructor products and equipment modules. $(thing)You do not need a blueprint to recycle them.$(br2)Constructor products return about $(thing)75% of the recipe ingredients$(), rounded down overall. Some materials are always lost, so recycling never supplies the complete recipe needed to rebuild the consumed product. Recovery uses the direct recipe, without recursively dismantling its ingredients. Charge, upgrades and stored contents are not recovered."
+      "text": "Build a Recycler with a Constructor. It breaks down Constructor products and equipment modules. $(thing)You do not need a blueprint to recycle them.$(br2)Constructor products return about $(thing)75% of the recipe ingredients$(), rounded down overall. Some materials are always lost, so recycling never supplies the complete recipe needed to rebuild the consumed product. Recovery uses the direct recipe, without recursively dismantling its ingredients. An installed $(thing)Extreme Circuit is always recovered$(). Other upgrades, charge and stored contents are not recovered. Extreme Circuits themselves cannot be recycled."
     },
     {
       "type": "patchouli:text",

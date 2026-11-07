@@ -1,0 +1,26 @@
+{
+  "name": "Extreme Circuit",
+  "icon": "ariente:extreme_circuit",
+  "category": "ariente:construction",
+  "sortnum": 8,
+  "pages": [
+    {
+      "type": "patchouli:spotlight",
+      "item": "ariente:extreme_circuit",
+      "text": "Defeat a $(thing)Core Guardian$() to obtain exactly $(thing)one Extreme Circuit$(). Looting does not increase this reward.$(br2)Right-click a powered Ariente machine with the circuit to install it. It reduces power usage by $(thing)50%$() and doubles operation speed where applicable. Each machine accepts only one circuit."
+    },
+    {
+      "type": "patchouli:text",
+      "title": "Upgraded machines",
+      "text": "Upgrade a Smelter, Recycler, Auto Constructor, Automation Field, Forcefield, Flux Charger or the $(thing)start$() of a Purifier line.$(br2)Power Combiners transfer twice as much flux and halve their transmission loss, from 2% to 1%.$(br2)The upgrade stays installed when you break and replace a machine. Recycling an upgraded machine $(thing)always returns its Extreme Circuit$(), in addition to normal component recovery. The circuit itself cannot be recycled."
+    },
+    {
+      "type": "patchouli:text",
+      "title": "Without Ariente World",
+      "text": "Without Ariente World, find an $(thing)extremely rare blueprint$() in dungeon loot and use a Constructor or Auto Constructor. The recipe needs a Nether Star, eight Advanced Circuits, four Flux Capacitors, four Netherite Ingots and large quantities of rare materials. Use JEI or the blueprint to see every ingredient.$(br2)The server setting $(thing)recipes.extremeCircuitRecipe$() accepts $(thing)DEFAULT$(), $(thing)YES$() or $(thing)NO$(). DEFAULT enables the recipe only without Ariente World. YES also enables it with Ariente World; NO disables it entirely."
+    }
+  ],
+  "extra_recipe_mappings": {
+    "ariente:extreme_circuit": 0
+  }
+}

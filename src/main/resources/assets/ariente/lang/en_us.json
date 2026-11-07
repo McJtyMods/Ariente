@@ -67,6 +67,12 @@
   "item.ariente.flux_capacitor": "Flux Capacitor",
   "item.ariente.circuit": "Circuit",
   "item.ariente.advanced_circuit": "Advanced Circuit",
+  "item.ariente.extreme_circuit": "Extreme Circuit",
+  "message.ariente.extreme_circuit.tooltip": "Right-click a powered Ariente machine: 50% less power, double operation speed",
+  "message.ariente.extreme_circuit.recovery": "One per machine. Always recovered when recycling the machine.",
+  "message.ariente.extreme_circuit.installed": "Extreme Circuit installed",
+  "message.ariente.extreme_circuit.already_installed": "This machine already has an Extreme Circuit",
+  "message.ariente.extreme_circuit.upgraded": "Extreme Circuit installed: 50% less power, double operation speed",
   "item.ariente.ariente_pearl": "Ariente Pearl",
   "item.ariente.energy_holder": "Energy Holder",
 

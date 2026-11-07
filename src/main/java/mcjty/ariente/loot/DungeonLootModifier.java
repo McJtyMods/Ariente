@@ -36,7 +36,7 @@ public class DungeonLootModifier extends LootModifier {
         RandomSource random = context.getRandom();
         double roll = random.nextDouble() * (100.0 + blueprints + results + 6.0 * suit);
         if (roll < blueprints + (double) results) {
-            ConstructorRecipe recipe = BlueprintRecipeRegistry.getRandomRecipe(random);
+            ConstructorRecipe recipe = BlueprintRecipeRegistry.getRandomRecipe(random, roll < blueprints);
             loot.add(roll < blueprints ? BlueprintItem.makeBluePrint(recipe.getDestination()) : recipe.getDestination().copy());
         } else if (roll < blueprints + (double) results + 6.0 * suit) {
             Item[] items = {Registration.POWERSUIT_CHEST.get(), Registration.POWERSUIT_FEET.get(), Registration.POWERSUIT_LEGS.get(),

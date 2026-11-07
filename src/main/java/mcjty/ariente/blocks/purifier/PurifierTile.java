@@ -1,5 +1,6 @@
 package mcjty.ariente.blocks.purifier;
 
+import mcjty.ariente.blocks.ExtremeMachineTile;
 import mcjty.ariente.Ariente;
 import mcjty.ariente.config.PowerConfiguration;
 import mcjty.ariente.gui.GuiHelp;
@@ -23,7 +24,6 @@ import mcjty.lib.container.ContainerFactory;
 import mcjty.lib.container.GenericItemHandler;
 import mcjty.lib.tileentity.Cap;
 import mcjty.lib.tileentity.CapType;
-import mcjty.lib.tileentity.TickingTileEntity;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
 import net.minecraft.nbt.CompoundTag;
@@ -48,7 +48,7 @@ import static mcjty.hologui.api.Icons.WHITE_ARROW_DOWN;
 import static mcjty.hologui.api.Icons.WHITE_ARROW_UP;
 import static mcjty.lib.container.SlotDefinition.generic;
 
-public class PurifierTile extends TickingTileEntity implements IGuiTile, IPowerReceiver, IPowerUser {
+public class PurifierTile extends ExtremeMachineTile implements IGuiTile, IPowerReceiver, IPowerUser {
 
     private static final ContainerFactory CONTAINER = new ContainerFactory(1).slot(generic().in().out(), 0, 0, 0);
 
@@ -89,6 +89,11 @@ public class PurifierTile extends TickingTileEntity implements IGuiTile, IPowerR
                 return RotationType.NONE;
             }
         };
+    }
+
+    @Override
+    public boolean acceptsExtremeCircuit() {
+        return isStart();
     }
 
     public boolean isStart() {
@@ -151,20 +156,20 @@ public class PurifierTile extends TickingTileEntity implements IGuiTile, IPowerR
                 if (!line.finish().canAccept(result)) {
                     status = "output";
                 } else {
-                    long cost = (long) tubeCount * PowerConfiguration.PURIFIER_POWER_PER_TUBE.get();
+                    long cost = powerCost((long) tubeCount * PowerConfiguration.PURIFIER_POWER_PER_TUBE.get());
                     if (!PowerReceiverSupport.consumePower(level, worldPosition, cost, true)) {
                         status = "power";
                     } else {
                         running = true;
                         usingPower = cost;
                         status = "working";
-                        progress++;
-                        if (progress >= tubeCount * PowerConfiguration.PURIFIER_TICKS_PER_TUBE.get()) {
+                        progress += operationSpeed();
+                        int duration = tubeCount * PowerConfiguration.PURIFIER_TICKS_PER_TUBE.get();
+                        while (progress >= duration && !items.getStackInSlot(0).isEmpty() && line.finish().canAccept(result)) {
                             ItemStack output = line.finish().items.getStackInSlot(0);
-                            result.grow(output.getCount());
-                            line.finish().items.setStackInSlot(0, result);
+                            line.finish().items.setStackInSlot(0, result.copyWithCount(output.getCount() + result.getCount()));
                             items.extractItem(0, 1, false);
-                            progress = 0;
+                            progress -= duration;
                             changed = true;
                         }
                         markDirtyQuick();

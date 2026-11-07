@@ -1,6 +1,7 @@
 package mcjty.ariente.compat;
 
 import mcjty.ariente.api.ISignalChannel;
+import mcjty.ariente.blocks.ExtremeMachineTile;
 import mcjty.ariente.blocks.aicore.AICoreTile;
 import mcjty.ariente.blocks.generators.NegariteGeneratorTile;
 import mcjty.ariente.blocks.generators.PosiriteGeneratorTile;
@@ -18,6 +19,7 @@ import mcjty.lib.compat.theoneprobe.TOPDriver;
 import mcjty.lib.varia.Tools;
 import mcjty.theoneprobe.api.*;
 import net.minecraft.world.entity.player.Player;
+import net.minecraft.network.chat.Component;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.level.block.Block;
 import net.minecraft.world.level.block.state.BlockState;
@@ -37,6 +39,9 @@ public class ArienteTOPDriver implements TOPDriver {
 
     @Override
     public void addProbeInfo(ProbeMode mode, IProbeInfo probeInfo, Player player, Level world, BlockState blockState, IProbeHitData data) {
+        if (world.getBlockEntity(data.getPos()) instanceof ExtremeMachineTile machine && machine.hasExtremeCircuit()) {
+            probeInfo.text(Component.translatable("message.ariente.extreme_circuit.upgraded"));
+        }
         ResourceLocation id = Tools.getId(blockState.getBlock());
         if (!drivers.containsKey(id)) {
             Block block = blockState.getBlock();

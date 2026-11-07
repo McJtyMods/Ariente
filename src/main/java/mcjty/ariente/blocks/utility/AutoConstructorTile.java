@@ -1,5 +1,6 @@
 package mcjty.ariente.blocks.utility;
 
+import mcjty.ariente.blocks.ExtremeMachineTile;
 import mcjty.ariente.Ariente;
 import mcjty.ariente.api.ICityAI;
 import mcjty.ariente.api.ICityEquipment;
@@ -23,7 +24,6 @@ import mcjty.lib.container.ContainerFactory;
 import mcjty.lib.container.GenericItemHandler;
 import mcjty.lib.tileentity.Cap;
 import mcjty.lib.tileentity.CapType;
-import mcjty.lib.tileentity.TickingTileEntity;
 import mcjty.lib.varia.OrientationTools;
 import mcjty.lib.varia.RedstoneMode;
 import net.minecraft.core.BlockPos;
@@ -61,7 +61,7 @@ import static mcjty.lib.builder.TooltipBuilder.header;
 import static mcjty.lib.builder.TooltipBuilder.key;
 import static mcjty.lib.container.SlotDefinition.generic;
 
-public class AutoConstructorTile extends TickingTileEntity implements IGuiTile, IPowerReceiver, ICityEquipment, IPowerUser {
+public class AutoConstructorTile extends ExtremeMachineTile implements IGuiTile, IPowerReceiver, ICityEquipment, IPowerUser {
 
     public static final int INGREDIENTS = 6*3;
     public static final int OUTPUT = 6;
@@ -140,10 +140,11 @@ public class AutoConstructorTile extends TickingTileEntity implements IGuiTile, 
                     || output.getCount() + result.getCount() > limit) {
                 continue;
             }
-            if (!PowerReceiverSupport.consumePower(level, worldPosition, 100, true)) {
+            long cost = powerCost(100 / operationSpeed());
+            if (!PowerReceiverSupport.consumePower(level, worldPosition, cost, true)) {
                 return;
             }
-            usingPower += 100;
+            usingPower += cost;
             for (int input = SLOT_INGREDIENTS; input < SLOT_INGREDIENTS + INGREDIENTS; input++) {
                 if (reserved[input] > 0) {
                     items.extractItem(input, reserved[input], false);
@@ -162,11 +163,11 @@ public class AutoConstructorTile extends TickingTileEntity implements IGuiTile, 
         boolean wasUsing = usingPower > 0;
         usingPower = 0;
         if (isMachineEnabled()) {
-            if (PowerReceiverSupport.consumePower(level, worldPosition, 10, true)) {
-                usingPower = 10;
+            if (PowerReceiverSupport.consumePower(level, worldPosition, powerCost(10), true)) {
+                usingPower = powerCost(10);
                 markDirtyQuick();
 
-                busyCounter--;
+                busyCounter -= operationSpeed();
                 if (busyCounter > 0) {
                     return;
                 }

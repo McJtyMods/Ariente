@@ -1,6 +1,7 @@
 package mcjty.ariente.recipes;
 
 import mcjty.ariente.items.modules.ArmorModuleItem;
+import mcjty.ariente.blocks.ExtremeMachineTile;
 import mcjty.ariente.setup.Registration;
 import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemStack;
@@ -19,6 +20,9 @@ public class Recycling {
 
     @Nullable
     public static ConstructorRecipe findRecipe(ItemStack stack) {
+        if (stack.is(Registration.EXTREME_CIRCUIT.get())) {
+            return null;
+        }
         if (!stack.isEmpty()) {
             for (ConstructorRecipe recipe : BlueprintRecipeRegistry.getRecipes()) {
                 // Charge, damage and installed modules do not require a separate blueprint.
@@ -39,6 +43,14 @@ public class Recycling {
                 new ItemStack(Registration.CIRCUIT.get()),
                 new ItemStack(Registration.INGOT_SILVER.get(), 2),
                 new ItemStack(Registration.DUST_SILICON.get()));
+    }
+
+    public static List<ItemStack> recover(ConstructorRecipe recipe, ItemStack input) {
+        List<ItemStack> result = recover(recipe);
+        if (ExtremeMachineTile.hasExtremeCircuit(input)) {
+            result.add(new ItemStack(Registration.EXTREME_CIRCUIT.get()));
+        }
+        return result;
     }
 
     /** Recover floor(75% of a recipe's ingredients), with a guaranteed material deficit. */

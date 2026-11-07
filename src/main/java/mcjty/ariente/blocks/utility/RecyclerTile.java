@@ -1,5 +1,6 @@
 package mcjty.ariente.blocks.utility;
 
+import mcjty.ariente.blocks.ExtremeMachineTile;
 import mcjty.ariente.Ariente;
 import mcjty.ariente.api.ICityAI;
 import mcjty.ariente.api.ICityEquipment;
@@ -22,7 +23,6 @@ import mcjty.lib.container.ContainerFactory;
 import mcjty.lib.container.GenericItemHandler;
 import mcjty.lib.tileentity.Cap;
 import mcjty.lib.tileentity.CapType;
-import mcjty.lib.tileentity.TickingTileEntity;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
 import net.minecraft.nbt.CompoundTag;
@@ -54,7 +54,7 @@ import static mcjty.lib.builder.TooltipBuilder.header;
 import static mcjty.lib.builder.TooltipBuilder.key;
 import static mcjty.lib.container.SlotDefinition.generic;
 
-public class RecyclerTile extends TickingTileEntity implements IGuiTile, IPowerReceiver, IPowerUser, ICityEquipment {
+public class RecyclerTile extends ExtremeMachineTile implements IGuiTile, IPowerReceiver, IPowerUser, ICityEquipment {
 
     public static final int SLOT_INPUT = 0;
     public static final int SLOT_OUTPUT = 1;
@@ -121,10 +121,10 @@ public class RecyclerTile extends TickingTileEntity implements IGuiTile, IPowerR
             markDirtyClient();
         }
         if (recipe != null && input.getCount() >= recipe.getDestination().getCount()) {
-            ItemStack[] outputs = planOutputs(recipe);
-            if (outputs != null && PowerReceiverSupport.consumePower(level, worldPosition, POWER_PER_TICK, true)) {
-                usingPower = POWER_PER_TICK;
-                progress++;
+            ItemStack[] outputs = planOutputs(recipe, input);
+            if (outputs != null && PowerReceiverSupport.consumePower(level, worldPosition, powerCost(POWER_PER_TICK), true)) {
+                usingPower = powerCost(POWER_PER_TICK);
+                progress += operationSpeed();
                 if (progress >= RECYCLE_TICKS) {
                     progress = 0;
                     items.extractItem(SLOT_INPUT, recipe.getDestination().getCount(), false);
@@ -144,12 +144,12 @@ public class RecyclerTile extends TickingTileEntity implements IGuiTile, IPowerR
     }
 
     @Nullable
-    private ItemStack[] planOutputs(ConstructorRecipe recipe) {
+    private ItemStack[] planOutputs(ConstructorRecipe recipe, ItemStack input) {
         ItemStack[] outputs = new ItemStack[OUTPUTS];
         for (int index = 0; index < OUTPUTS; index++) {
             outputs[index] = items.getStackInSlot(SLOT_OUTPUT + index).copy();
         }
-        for (ItemStack recovered : Recycling.recover(recipe)) {
+        for (ItemStack recovered : Recycling.recover(recipe, input)) {
             int remaining = recovered.getCount();
             // Fill compatible stacks before reserving an empty slot.
             for (int pass = 0; pass < 2; pass++) {

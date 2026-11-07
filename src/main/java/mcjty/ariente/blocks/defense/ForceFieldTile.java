@@ -1,5 +1,6 @@
 package mcjty.ariente.blocks.defense;
 
+import mcjty.ariente.blocks.ExtremeMachineTile;
 import mcjty.ariente.Ariente;
 import mcjty.ariente.gui.GuiHelp;
 import mcjty.ariente.api.*;
@@ -22,7 +23,6 @@ import mcjty.hologui.api.StyledColor;
 import mcjty.lib.blocks.BaseBlock;
 import mcjty.lib.blocks.RotationType;
 import mcjty.lib.builder.BlockBuilder;
-import mcjty.lib.tileentity.TickingTileEntity;
 import mcjty.lib.varia.RedstoneMode;
 import net.minecraft.core.BlockPos;
 import net.minecraft.nbt.CompoundTag;
@@ -49,7 +49,7 @@ import static mcjty.hologui.api.Icons.*;
 import static mcjty.lib.builder.TooltipBuilder.header;
 import static mcjty.lib.builder.TooltipBuilder.key;
 
-public class ForceFieldTile extends TickingTileEntity implements IGuiTile, ISoundProducer, IPowerReceiver, ICityEquipment, IAlarmMode, IForceFieldTile, IPowerUser {
+public class ForceFieldTile extends ExtremeMachineTile implements IGuiTile, ISoundProducer, IPowerReceiver, ICityEquipment, IAlarmMode, IForceFieldTile, IPowerUser {
 
     private final PanelInfo[] panelInfo = new PanelInfo[PentakisDodecahedron.MAX_TRIANGLES];
     private int[] panelDestroyTimeout = new int[PentakisDodecahedron.MAX_TRIANGLES];    // @todo persist to NBT?
@@ -153,7 +153,7 @@ public class ForceFieldTile extends TickingTileEntity implements IGuiTile, ISoun
     @Override
     public void tickServer() {
         usingPower = 0;
-        long desiredPower = calculateIdleUsage();
+        long desiredPower = powerCost(calculateIdleUsage());
         if ((!isMachineEnabled()) || !PowerReceiverSupport.consumePower(level, worldPosition, desiredPower, true)) {
             if (breakDownSkip > 0) {
                 breakDownSkip--;
@@ -389,9 +389,9 @@ public class ForceFieldTile extends TickingTileEntity implements IGuiTile, ISoun
                 int life = info.getLife();
                 if (life < 0) {
                     // Building up!
-                    if (PowerReceiverSupport.consumePower(level, worldPosition, PowerConfiguration.FORCEFIELD_BUILDUP_POWER.get(), true)) {
-                        usingPower += PowerConfiguration.FORCEFIELD_BUILDUP_POWER.get();
-                        life++;
+                    if (PowerReceiverSupport.consumePower(level, worldPosition, powerCost(PowerConfiguration.FORCEFIELD_BUILDUP_POWER.get()), true)) {
+                        usingPower += powerCost(PowerConfiguration.FORCEFIELD_BUILDUP_POWER.get());
+                        life = Math.min(0, life + operationSpeed());
                         if (life == 0) {
                             life = SHIELD_PANEL_LIFE;
                         }

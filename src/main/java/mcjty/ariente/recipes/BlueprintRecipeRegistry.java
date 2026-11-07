@@ -3,6 +3,7 @@ package mcjty.ariente.recipes;
 import net.minecraft.core.registries.Registries;
 import net.minecraft.util.RandomSource;
 import mcjty.ariente.api.MarbleColor;
+import mcjty.ariente.config.RecipeConfiguration;
 import mcjty.ariente.blocks.decorative.DecorativeBlockModule;
 import mcjty.ariente.setup.Registration;
 import mcjty.ariente.varia.WeightedRandom;
@@ -55,7 +56,10 @@ public class BlueprintRecipeRegistry {
             });
 
     private static List<ConstructorRecipe> recipes = new ArrayList<>();
+    private static List<ConstructorRecipe> availableRecipes;
+    private static boolean availableExtremeRecipe;
     private static WeightedRandom<ConstructorRecipe> randomRecipes = null;
+    private static boolean randomExtremeRecipe;
 
     // Materials
     // - Lithium (RARE): advanced circuits
@@ -132,6 +136,20 @@ public class BlueprintRecipeRegistry {
                 new ItemStack(Registration.INGOT_MANGANESE.get(), 1),
                 new ItemStack(Registration.DUST_NEGARITE.get(), 6),
                 new ItemStack(Registration.DUST_POSIRITE.get(), 6)
+        ));
+        recipes.add(new ConstructorRecipe(new ItemStack(Registration.EXTREME_CIRCUIT.get()), EXTREME,
+                new ItemStack(Items.NETHER_STAR),
+                new ItemStack(Registration.ADVANCED_CIRCUIT.get(), 8),
+                new ItemStack(Registration.FLUX_CAPACITOR.get(), 4),
+                new ItemStack(Registration.INGOT_LITHIUM.get(), 32),
+                new ItemStack(Registration.INGOT_PLATINUM.get(), 32),
+                new ItemStack(Registration.INGOT_MANGANESE.get(), 32),
+                new ItemStack(Registration.DUST_SILICON.get(), 32),
+                new ItemStack(Registration.DUST_NEGARITE.get(), 64),
+                new ItemStack(Registration.DUST_POSIRITE.get(), 64),
+                new ItemStack(Items.NETHERITE_INGOT, 4),
+                new ItemStack(Items.DIAMOND, 16),
+                new ItemStack(Items.ENDER_EYE, 8)
         ));
         recipes.add(new ConstructorRecipe(new ItemStack(Registration.MODULE_NIGHTVISION.get()), UNCOMMON,
                 new ItemStack(Registration.CIRCUIT.get(), 1),
@@ -569,7 +587,13 @@ public class BlueprintRecipeRegistry {
 
     public static List<ConstructorRecipe> getRecipes() {
         init();
-        return recipes;
+        boolean extremeRecipe = RecipeConfiguration.extremeCircuitRecipeEnabled();
+        if (availableRecipes == null || extremeRecipe != availableExtremeRecipe) {
+            availableExtremeRecipe = extremeRecipe;
+            availableRecipes = recipes.stream().filter(recipe -> extremeRecipe
+                    || !recipe.getDestination().is(Registration.EXTREME_CIRCUIT.get())).toList();
+        }
+        return availableRecipes;
     }
 
     public static ConstructorRecipe findRecipe(ItemStack destination) {
@@ -583,19 +607,27 @@ public class BlueprintRecipeRegistry {
     }
 
     public static ConstructorRecipe getRandomRecipe(RandomSource random) {
-        double total = getRecipes().stream().mapToDouble(ConstructorRecipe::getChance).sum();
+        return getRandomRecipe(random, true);
+    }
+
+    public static ConstructorRecipe getRandomRecipe(RandomSource random, boolean blueprint) {
+        List<ConstructorRecipe> available = getRecipes().stream()
+                .filter(recipe -> blueprint || !recipe.getDestination().is(Registration.EXTREME_CIRCUIT.get())).toList();
+        double total = available.stream().mapToDouble(ConstructorRecipe::getChance).sum();
         double roll = random.nextDouble() * total;
-        for (ConstructorRecipe recipe : getRecipes()) {
+        for (ConstructorRecipe recipe : available) {
             roll -= recipe.getChance();
             if (roll < 0) {
                 return recipe;
             }
         }
-        return getRecipes().get(getRecipes().size() - 1);
+        return available.get(available.size() - 1);
     }
 
     public static WeightedRandom<ConstructorRecipe> getRandomRecipes() {
-        if (randomRecipes == null) {
+        boolean extremeRecipe = RecipeConfiguration.extremeCircuitRecipeEnabled();
+        if (randomRecipes == null || extremeRecipe != randomExtremeRecipe) {
+            randomExtremeRecipe = extremeRecipe;
             randomRecipes = new WeightedRandom<>();
             for (ConstructorRecipe recipe : getRecipes()) {
                 randomRecipes.add(recipe, recipe.getChance());

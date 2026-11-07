@@ -1,5 +1,6 @@
 package mcjty.ariente.blocks.utility.autofield;
 
+import mcjty.ariente.blocks.ExtremeMachineTile;
 import mcjty.ariente.Ariente;
 import mcjty.ariente.config.UtilityConfiguration;
 import mcjty.ariente.gui.GuiHelp;
@@ -19,7 +20,6 @@ import mcjty.ariente.multipart.MultipartHelper;
 import mcjty.ariente.multipart.MultipartTE;
 import mcjty.lib.multipart.PartPos;
 import mcjty.lib.multipart.PartSlot;
-import mcjty.lib.tileentity.TickingTileEntity;
 import mcjty.lib.varia.OrientationTools;
 import net.minecraft.core.BlockPos;
 import net.minecraft.nbt.CompoundTag;
@@ -56,7 +56,7 @@ import static mcjty.hologui.api.Icons.*;
 import static mcjty.lib.builder.TooltipBuilder.header;
 import static mcjty.lib.builder.TooltipBuilder.key;
 
-public class AutoFieldTile extends TickingTileEntity implements IGuiTile, IPowerReceiver, IPowerUser {
+public class AutoFieldTile extends ExtremeMachineTile implements IGuiTile, IPowerReceiver, IPowerUser {
 
     private static final Set<AutoFieldTile> LOADED_FIELDS = Collections.synchronizedSet(Collections.newSetFromMap(new WeakHashMap<>()));
 
@@ -145,7 +145,7 @@ public class AutoFieldTile extends TickingTileEntity implements IGuiTile, IPower
         boolean hasWorkToDo = true;
         // As long as we have work to do and we have at least enough power to transfer a single item we
         // continue looping
-        while (hasWorkToDo && accumulatedPower >= UtilityConfiguration.AUTOFIELD_POWER_PER_OPERATION.get()) {
+        while (hasWorkToDo && accumulatedPower >= powerCost(UtilityConfiguration.AUTOFIELD_POWER_PER_OPERATION.get())) {
             sensorMeasurements.clear();
             hasWorkToDo = false;
             for (Map.Entry<PartPos, ProducerInfo.Producer> entry : producerInfo.getProducers().entrySet()) {
@@ -242,7 +242,7 @@ public class AutoFieldTile extends TickingTileEntity implements IGuiTile, IPower
             accumulatedPower = 0;
             return false;
         }
-        long toAccumulate = Math.min(availablePower, UtilityConfiguration.AUTOFIELD_ACCUMULATE_PER_TICK.get());
+        long toAccumulate = Math.min(powerBudget(availablePower), UtilityConfiguration.AUTOFIELD_ACCUMULATE_PER_TICK.get());
         long maxAccumulatedPower = UtilityConfiguration.AUTOFIELD_MAX_ACCUMULATED_POWER.get();
 
         if (accumulatedPower + toAccumulate > maxAccumulatedPower) {
@@ -250,15 +250,15 @@ public class AutoFieldTile extends TickingTileEntity implements IGuiTile, IPower
         }
 
         if (toAccumulate > 0) {
-            PowerReceiverSupport.consumerPowerNoCheck(level, worldPosition, toAccumulate, true);
-            usingPower = toAccumulate;
+            PowerReceiverSupport.consumerPowerNoCheck(level, worldPosition, powerCost(toAccumulate), true);
+            usingPower = powerCost(toAccumulate);
             accumulatedPower += toAccumulate;
         }
         return true;
     }
 
     private long computeNeededPower(ItemStack stack) {
-        return (long) (UtilityConfiguration.AUTOFIELD_POWER_PER_OPERATION.get() + (stack.getCount() - 1) * UtilityConfiguration.AUTOFIELD_FACTOR_PER_COMBINED_STACK.get());
+        return powerCost((long) (UtilityConfiguration.AUTOFIELD_POWER_PER_OPERATION.get() + (stack.getCount() - 1) * UtilityConfiguration.AUTOFIELD_FACTOR_PER_COMBINED_STACK.get()));
     }
 
     // Call client side to request render info

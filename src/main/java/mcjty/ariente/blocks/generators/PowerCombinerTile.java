@@ -1,5 +1,6 @@
 package mcjty.ariente.blocks.generators;
 
+import mcjty.ariente.blocks.ExtremeMachineTile;
 import mcjty.ariente.Ariente;
 import mcjty.ariente.gui.CompactNumber;
 import mcjty.ariente.cables.CableColor;
@@ -13,7 +14,6 @@ import mcjty.hologui.api.IGuiTile;
 import mcjty.hologui.api.StyledColor;
 import mcjty.lib.blocks.BaseBlock;
 import mcjty.lib.builder.BlockBuilder;
-import mcjty.lib.tileentity.TickingTileEntity;
 import mcjty.lib.varia.OrientationTools;
 import net.minecraft.core.Direction;
 import net.minecraft.world.InteractionResult;
@@ -30,7 +30,7 @@ import static mcjty.hologui.api.Icons.*;
 import static mcjty.lib.builder.TooltipBuilder.header;
 import static mcjty.lib.builder.TooltipBuilder.key;
 
-public class PowerCombinerTile extends TickingTileEntity implements IPowerReceiver, IGuiTile, IPowerUser {
+public class PowerCombinerTile extends ExtremeMachineTile implements IPowerReceiver, IGuiTile, IPowerUser {
 
     private long usingPower = 0;
 
@@ -58,7 +58,7 @@ public class PowerCombinerTile extends TickingTileEntity implements IPowerReceiv
     @Override
     public void tickServer() {
         usingPower = 0;
-        int transfer = (int) Math.min(powerTransfer, PowerReceiverSupport.getPowerAvailable(level, worldPosition, false));
+        int transfer = (int) Math.min((long) powerTransfer * operationSpeed(), PowerReceiverSupport.getPowerAvailable(level, worldPosition, false));
         if (transfer > 0 && PowerReceiverSupport.consumePower(level, worldPosition, transfer, false)) {
             usingPower = transfer;
             sendPower(transfer);
@@ -66,7 +66,8 @@ public class PowerCombinerTile extends TickingTileEntity implements IPowerReceiv
     }
 
     private int getPowerToTransfer(int transfer) {
-        return (int) (transfer * .98); // @todo configurable cost
+        // Only transmission loss is consumption; transferred flux must remain conserved.
+        return (int) (transfer * (hasExtremeCircuit() ? .99 : .98));
     }
 
     private void sendPower(int transfer) {

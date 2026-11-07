@@ -12,6 +12,7 @@ public class Config {
         PowerConfiguration.init(SERVER_BUILDER, CLIENT_BUILDER);
         UtilityConfiguration.init(SERVER_BUILDER, CLIENT_BUILDER);
         WorldgenConfiguration.init(SERVER_BUILDER, CLIENT_BUILDER);
+        RecipeConfiguration.init(SERVER_BUILDER);
 
         SERVER_CONFIG = SERVER_BUILDER.build();
         CLIENT_CONFIG = CLIENT_BUILDER.build();

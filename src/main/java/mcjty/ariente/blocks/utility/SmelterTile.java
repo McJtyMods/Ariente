@@ -1,5 +1,6 @@
 package mcjty.ariente.blocks.utility;
 
+import mcjty.ariente.blocks.ExtremeMachineTile;
 import mcjty.ariente.config.PowerConfiguration;
 import mcjty.ariente.power.IPowerReceiver;
 import mcjty.ariente.power.IPowerUser;
@@ -12,7 +13,6 @@ import mcjty.lib.container.ContainerFactory;
 import mcjty.lib.container.GenericItemHandler;
 import mcjty.lib.tileentity.Cap;
 import mcjty.lib.tileentity.CapType;
-import mcjty.lib.tileentity.TickingTileEntity;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
 import net.minecraft.nbt.CompoundTag;
@@ -52,7 +52,7 @@ import static mcjty.lib.builder.TooltipBuilder.header;
 import static mcjty.lib.builder.TooltipBuilder.key;
 import static mcjty.lib.container.SlotDefinition.generic;
 
-public class SmelterTile extends TickingTileEntity implements IPowerReceiver, IPowerUser {
+public class SmelterTile extends ExtremeMachineTile implements IPowerReceiver, IPowerUser {
 
     public static final int SLOT_INPUT = 0;
     public static final int SLOT_OUTPUT = 1;
@@ -199,14 +199,15 @@ public class SmelterTile extends TickingTileEntity implements IPowerReceiver, IP
             int limit = Math.min(items.getSlotLimit(SLOT_OUTPUT), result.getMaxStackSize());
             if (!result.isEmpty() && (output.isEmpty() || ItemHandlerHelper.canItemStacksStack(output, result))
                     && output.getCount() + result.getCount() <= limit
-                    && PowerReceiverSupport.consumePower(level, worldPosition, PowerConfiguration.SMELTER_POWER_PER_TICK.get(), true)) {
-                usingPower = PowerConfiguration.SMELTER_POWER_PER_TICK.get();
-                progress += PowerConfiguration.SMELTER_SPEED.get();
-                if (progress >= recipe.getCookingTime()) {
+                    && PowerReceiverSupport.consumePower(level, worldPosition, powerCost(PowerConfiguration.SMELTER_POWER_PER_TICK.get()), true)) {
+                usingPower = powerCost(PowerConfiguration.SMELTER_POWER_PER_TICK.get());
+                progress += PowerConfiguration.SMELTER_SPEED.get() * operationSpeed();
+                while (progress >= recipe.getCookingTime() && !items.getStackInSlot(SLOT_INPUT).isEmpty()
+                        && output.getCount() + result.getCount() <= limit) {
                     progress -= Math.max(1, recipe.getCookingTime());
                     items.extractItem(SLOT_INPUT, 1, false);
-                    result.grow(output.getCount());
-                    items.setStackInSlot(SLOT_OUTPUT, result);
+                    output = result.copyWithCount(output.getCount() + result.getCount());
+                    items.setStackInSlot(SLOT_OUTPUT, output);
                     markDirtyClient();
                 }
                 markDirtyQuick();

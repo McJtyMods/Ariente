@@ -40,6 +40,10 @@ public class RecyclerTests {
     @GameTest(template = "empty")
     public static void everyConstructorRecipeHasDeterministicLoss(GameTestHelper helper) {
         for (ConstructorRecipe recipe : BlueprintRecipeRegistry.getRecipes()) {
+            if (recipe.getDestination().is(Registration.EXTREME_CIRCUIT.get())) {
+                helper.assertTrue(Recycling.findRecipe(recipe.getDestination()) == null, "Extreme Circuits cannot be recycled");
+                continue;
+            }
             helper.assertTrue(Recycling.findRecipe(recipe.getDestination()) == recipe, "Every Constructor product is recyclable");
             List<ItemStack> recovered = Recycling.recover(recipe);
             List<ItemStack> again = Recycling.recover(recipe);

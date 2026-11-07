@@ -2,6 +2,7 @@ package mcjty.ariente;
 
 import net.minecraft.nbt.Tag;
 import mcjty.ariente.api.ArmorUpgradeType;
+import mcjty.ariente.blocks.ExtremeMachineTile;
 import mcjty.ariente.blocks.utility.ILockable;
 import mcjty.ariente.entities.levitator.FluxLevitatorEntity;
 import mcjty.ariente.entities.LaserEntity;
@@ -21,10 +22,12 @@ import net.minecraft.world.entity.EquipmentSlot;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.level.LevelAccessor;
 import net.minecraft.world.level.block.entity.BlockEntity;
+import net.minecraft.network.chat.Component;
 import net.minecraft.core.BlockPos;
 import net.minecraft.world.level.Level;
 import net.minecraftforge.event.TickEvent;
 import net.minecraftforge.event.entity.player.PlayerEvent;
+import net.minecraftforge.event.entity.player.ItemTooltipEvent;
 import net.minecraftforge.event.entity.living.LivingDeathEvent;
 import net.minecraftforge.event.entity.EntityJoinLevelEvent;
 import net.minecraftforge.event.entity.living.LivingDamageEvent;
@@ -36,6 +39,13 @@ import net.minecraftforge.eventbus.api.EventPriority;
 import net.minecraftforge.network.PacketDistributor;
 
 public class ForgeEventHandlers {
+
+    @SubscribeEvent
+    public void onItemTooltip(ItemTooltipEvent event) {
+        if (ExtremeMachineTile.hasExtremeCircuit(event.getItemStack())) {
+            event.getToolTip().add(Component.translatable("message.ariente.extreme_circuit.upgraded"));
+        }
+    }
 
     @SubscribeEvent
     public void onWorldTick(TickEvent.LevelTickEvent event) {

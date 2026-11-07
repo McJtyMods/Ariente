@@ -1,5 +1,6 @@
 package mcjty.ariente.blocks.utility;
 
+import mcjty.ariente.blocks.ExtremeMachineTile;
 import mcjty.ariente.entities.fluxship.FluxShipEnergy;
 import mcjty.ariente.entities.fluxship.FluxShipEntity;
 import mcjty.ariente.power.IPowerReceiver;
@@ -9,7 +10,6 @@ import mcjty.ariente.setup.Registration;
 import mcjty.lib.blocks.BaseBlock;
 import mcjty.lib.blocks.RotationType;
 import mcjty.lib.builder.BlockBuilder;
-import mcjty.lib.tileentity.TickingTileEntity;
 import net.minecraft.core.BlockPos;
 import net.minecraft.world.level.block.Block;
 import net.minecraft.world.level.block.state.BlockState;
@@ -22,7 +22,7 @@ import static mcjty.lib.builder.TooltipBuilder.header;
 import static mcjty.lib.builder.TooltipBuilder.key;
 
 /** A landing pad, fed by either separate polarity cables or a combined power network. */
-public class ChargerTile extends TickingTileEntity implements IPowerReceiver, IPowerUser {
+public class ChargerTile extends ExtremeMachineTile implements IPowerReceiver, IPowerUser {
 
     private long usingPower;
 
@@ -76,10 +76,12 @@ public class ChargerTile extends TickingTileEntity implements IPowerReceiver, IP
         FluxShipEntity ship = level.getEntitiesOfClass(FluxShipEntity.class, new AABB(worldPosition).inflate(1, 2, 1), this::isDocked)
                 .stream().findFirst().orElse(null);
         if (ship != null) {
-            int amount = (int) Math.min(available, Math.min(FluxShipEnergy.CHARGE_PER_TICK, FluxShipEnergy.CAPACITY - ship.getCharge()));
-            if (amount > 0 && PowerReceiverSupport.consumePower(level, worldPosition, amount, true)) {
+            int amount = (int) Math.min(Math.min(powerBudget(available), FluxShipEnergy.CAPACITY) * operationSpeed(),
+                    Math.min(FluxShipEnergy.CHARGE_PER_TICK * operationSpeed(), FluxShipEnergy.CAPACITY - ship.getCharge()));
+            long cost = powerCost((amount + operationSpeed() - 1) / operationSpeed());
+            if (amount > 0 && PowerReceiverSupport.consumePower(level, worldPosition, cost, true)) {
                 ship.setCharge(ship.getCharge() + amount);
-                usingPower = amount;
+                usingPower = cost;
             }
         }
     }

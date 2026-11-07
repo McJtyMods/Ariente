@@ -164,6 +164,7 @@ public class Items extends BaseItemModelProvider {
         itemGenerated(Registration.FLUX_CAPACITOR.get(), "item/tools/flux_capacitor");
         itemGenerated(Registration.CIRCUIT.get(), "item/tools/circuit");
         itemGenerated(Registration.ADVANCED_CIRCUIT.get(), "item/tools/advanced_circuit");
+        itemGenerated(Registration.EXTREME_CIRCUIT.get(), "item/tools/extreme_circuit");
         itemGenerated(Registration.ENERGY_HOLDER.get(), "item/tools/energy_holder");
 
         itemGenerated(Registration.POWERSUIT_CHEST.get(), "item/armor/powersuit_chest");
