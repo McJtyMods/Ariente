@@ -1,5 +1,6 @@
 package mcjty.ariente.blocks.utility.wireless;
 
+import mcjty.ariente.varia.LoadedChunks;
 import mcjty.ariente.Ariente;
 import mcjty.ariente.gui.CompactNumber;
 import mcjty.ariente.gui.GuiHelp;
@@ -130,11 +131,8 @@ public class WirelessLockTile extends SignalChannelTileEntity implements ILockab
                 for (int dy = -verticalRange ; dy <= verticalRange ; dy++) {
                     for (int dz = -horizontalRange ; dz <= horizontalRange ; dz++) {
                         BlockPos p = worldPosition.offset(dx, dy, dz);
-                        if (!level.hasChunkAt(p)) {
-                            continue;
-                        }
-                        BlockEntity te = level.getBlockEntity(p);
-                        if (te instanceof ILockTarget target) {
+                        BlockEntity te = LoadedChunks.getBlockEntity(level, p);
+                        if (te instanceof ILockTarget target && target.canBeControlledBy(null)) {
                             target.setLocked(l);
                         }
                     }

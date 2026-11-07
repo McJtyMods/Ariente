@@ -1,6 +1,7 @@
 package mcjty.ariente.cables;
 
 import mcjty.lib.varia.Tools;
+import mcjty.ariente.varia.LoadedChunks;
 import mcjty.ariente.api.ICityAI;
 import mcjty.ariente.api.ICityEquipment;
 import mcjty.ariente.facade.IFacadeSupport;
@@ -9,9 +10,11 @@ import mcjty.ariente.power.IPowerBlob;
 import mcjty.ariente.power.PowerSenderSupport;
 import mcjty.lib.tileentity.GenericTileEntity;
 import net.minecraft.core.BlockPos;
+import net.minecraft.core.Direction;
 import net.minecraft.network.protocol.game.ClientboundBlockEntityDataPacket;
 import net.minecraft.world.level.block.Block;
 import net.minecraft.world.level.block.entity.BlockEntityType;
+import net.minecraft.world.level.block.entity.BlockEntity;
 import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.network.Connection;
@@ -71,6 +74,21 @@ public abstract class GenericCableTileEntity extends GenericTileEntity implement
 
     @Override
     public void setup(ICityAI cityAI, Level world, boolean firstTime) {
+        for (Direction direction : Direction.values()) {
+            BlockPos neighborPos = worldPosition.relative(direction);
+            if ((worldPosition.getX() >> 4) == (neighborPos.getX() >> 4)
+                    && (worldPosition.getZ() >> 4) == (neighborPos.getZ() >> 4)) {
+                continue;
+            }
+            BlockEntity neighbor = LoadedChunks.getBlockEntity(world, neighborPos);
+            if (neighbor instanceof IPowerBlob blob && blob.getCableId() != getCableId()
+                    && (blob.getCableColor() == getCableColor() || blob.getCableColor() == CableColor.COMBINED
+                    || getCableColor() == CableColor.COMBINED)) {
+                // Rejoin networks when the next section arrives, without loading the rest of the city.
+                PowerSenderSupport.fixNetworks(world, worldPosition);
+                break;
+            }
+        }
     }
 
     @Override

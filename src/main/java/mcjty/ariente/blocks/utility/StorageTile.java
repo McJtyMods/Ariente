@@ -234,6 +234,11 @@ public class StorageTile extends GenericTileEntity implements IGuiTile, ICityEqu
         return keyId;
     }
 
+    @Override
+    public boolean canBeControlledBy(@Nullable String keyId) {
+        return this.keyId == null || this.keyId.isBlank() || this.keyId.equals(keyId);
+    }
+
     public void setKeyId(String keyId) {
         this.keyId = keyId;
         setChanged();
@@ -573,6 +578,9 @@ public class StorageTile extends GenericTileEntity implements IGuiTile, ICityEqu
         @Nonnull
         @Override
         public ItemStack insertItem(int slot, @Nonnull ItemStack stack, boolean simulate) {
+            if (locked) {
+                return stack;
+            }
             if (stack.isEmpty()) {
                 return ItemStack.EMPTY;
             }
@@ -662,7 +670,7 @@ public class StorageTile extends GenericTileEntity implements IGuiTile, ICityEqu
         @Nonnull
         @Override
         public ItemStack extractItem(int slot, int amount, boolean simulate) {
-            if (amount == 0)
+            if (locked || amount <= 0)
                 return ItemStack.EMPTY;
 
             ItemStack stackInSlot = getStackInSlot(slot);
@@ -691,6 +699,9 @@ public class StorageTile extends GenericTileEntity implements IGuiTile, ICityEqu
 
         @Override
         public boolean isItemValid(int index, @Nonnull ItemStack stack) {
+            if (locked) {
+                return false;
+            }
             int type = index / STACKS_PER_TYPE;
             if (stacks.get(type).isEmpty()) {
                 return true;

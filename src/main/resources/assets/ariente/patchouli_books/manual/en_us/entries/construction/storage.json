@@ -18,7 +18,7 @@
     {
       "type": "patchouli:text",
       "title": "Taking items out",
-      "text": "$(li)Left-click an item area to take one item.$(li)Sneak-left-click to take up to a stack.$(br2)Automation can also move items through the cube.$(br2)A locked cube opens its access panel instead. Present its matching storage Key Card to toggle the lock. A door card does not automatically grant storage access."
+      "text": "$(li)Left-click an item area to take one item.$(li)Sneak-left-click to take up to a stack.$(br2)Automation can move items through an unlocked cube. Locking blocks both insertion and extraction.$(br2)A locked cube opens its access panel instead. Present its matching storage Key Card to toggle the lock. A door card does not automatically grant storage access. Nearby controllers cannot override a cube with a different storage key."
     },
     {
       "type": "patchouli:text",

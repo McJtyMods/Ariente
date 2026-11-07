@@ -13,7 +13,6 @@ import net.minecraft.client.Minecraft;
 
 public class KeyBindings {
 
-    public static Binding fullHealth;
     public static Binding configureArmor;
     public static Binding armorHotkey1;
     public static Binding armorHotkey2;

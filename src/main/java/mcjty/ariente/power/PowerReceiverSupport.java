@@ -1,5 +1,6 @@
 package mcjty.ariente.power;
 
+import mcjty.ariente.varia.LoadedChunks;
 import mcjty.lib.varia.OrientationTools;
 import net.minecraft.core.BlockPos;
 import net.minecraft.world.level.block.entity.BlockEntity;
@@ -37,7 +38,7 @@ public class PowerReceiverSupport {
         Set<Integer> handled = new HashSet<>();
         for (Direction facing : OrientationTools.DIRECTION_VALUES) {
             BlockPos p = pos.relative(facing);
-            BlockEntity te = world.getBlockEntity(p);
+            BlockEntity te = LoadedChunks.getBlockEntity(world, p);
             if (te instanceof IPowerBlob) {
                 IPowerBlob blob = (IPowerBlob) te;
                 int id = blob.getCableId();
@@ -76,7 +77,7 @@ public class PowerReceiverSupport {
         long totalPosirite = 0;
         for (Direction facing : OrientationTools.DIRECTION_VALUES) {
             BlockPos p = pos.relative(facing);
-            BlockEntity te = world.getBlockEntity(p);
+            BlockEntity te = LoadedChunks.getBlockEntity(world, p);
             if (te instanceof IPowerBlob) {
                 IPowerBlob blob = (IPowerBlob) te;
                 if (blob.canSendPower()) {

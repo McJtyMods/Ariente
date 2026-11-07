@@ -1,5 +1,6 @@
 package mcjty.ariente.power;
 
+import mcjty.ariente.varia.LoadedChunks;
 import mcjty.ariente.cables.CableColor;
 import mcjty.lib.varia.OrientationTools;
 import net.minecraft.core.BlockPos;
@@ -40,7 +41,7 @@ public class PowerSenderSupport {
         setCableId(id);
         for (Direction facing : OrientationTools.DIRECTION_VALUES) {
             BlockPos p = pos.relative(facing);
-            BlockEntity te = world.getBlockEntity(p);
+            BlockEntity te = LoadedChunks.getBlockEntity(world, p);
             if (te instanceof IPowerBlob) {
                 IPowerBlob blob = (IPowerBlob) te;
                 CableColor cableColor = blob.getCableColor();
@@ -62,7 +63,7 @@ public class PowerSenderSupport {
             for (int dy = -1 ; dy <= 1 ; dy++) {
                 for (int dz = -1 ; dz <= 1 ; dz++) {
                     BlockPos p = pos.offset(dx, dy, dz);
-                    BlockEntity te = world.getBlockEntity(p);
+                    BlockEntity te = LoadedChunks.getBlockEntity(world, p);
                     if (te instanceof IPowerBlob) {
                         IPowerBlob blob = (IPowerBlob) te;
                         int cableId = blob.getCableId();
@@ -80,7 +81,7 @@ public class PowerSenderSupport {
             for (int dy = -1; dy <= 1; dy++) {
                 for (int dz = -1; dz <= 1; dz++) {
                     BlockPos p = pos.offset(dx, dy, dz);
-                    BlockEntity te = world.getBlockEntity(p);
+                    BlockEntity te = LoadedChunks.getBlockEntity(world, p);
                     if (te instanceof IPowerBlob) {
                         IPowerBlob blob = (IPowerBlob) te;
                         int cableId = blob.getCableId();

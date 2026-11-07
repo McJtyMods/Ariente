@@ -80,6 +80,8 @@ public class StorageTests {
             client.loadClientDataFromNBT(clientData);
             helper.assertTrue(restored.isLocked() && "storage-test".equals(restored.getKeyId()) && client.isLocked(),
                     "Save/load and client sync preserve locking");
+            helper.assertTrue(inventory(restored).extractItem(0, 1, false).isEmpty(), "Restored access locks block automation");
+            restored.setLocked(false);
             for (int type = 0; type < types; type++) {
                 ItemStack expected = taggedStack(type, 49);
                 helper.assertTrue(ItemStack.matches(restored.getTotalStack(type), expected)

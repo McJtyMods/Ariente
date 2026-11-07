@@ -4,6 +4,7 @@ import mcjty.ariente.api.IGenerator;
 import mcjty.ariente.blocks.generators.PowerCombinerTile;
 import mcjty.ariente.cables.CableColor;
 import mcjty.ariente.cables.GenericCableBlock;
+import mcjty.ariente.cables.GenericCableTileEntity;
 import mcjty.ariente.compat.ArienteTOPDriver;
 import mcjty.ariente.power.IPowerBlob;
 import mcjty.ariente.power.PowerSystem;
@@ -35,6 +36,33 @@ import java.util.List;
 @GameTestHolder(Ariente.MODID)
 @PrefixGameTestTemplate(false)
 public class GeneratorPowerTests {
+
+    @GameTest(template = "empty")
+    public static void cityCableSectionsRejoinAtLoadedChunkBorders(GameTestHelper helper) {
+        var level = helper.getLevel();
+        BlockPos origin = helper.absolutePos(BlockPos.ZERO);
+        BlockPos pos = new BlockPos(((origin.getX() >> 4) + 2) << 4, 250, origin.getZ() + 3);
+        level.getChunkAt(pos.west());
+        level.getChunkAt(pos);
+        level.setBlockAndUpdate(pos.west(), Registration.NETCABLE.get().defaultBlockState());
+        level.setBlockAndUpdate(pos, Registration.NETCABLE.get().defaultBlockState());
+        GenericCableTileEntity left = (GenericCableTileEntity) level.getBlockEntity(pos.west());
+        GenericCableTileEntity right = (GenericCableTileEntity) level.getBlockEntity(pos);
+        PowerSystem system = PowerSystem.getPowerSystem(level);
+        try {
+            for (boolean firstTime : List.of(true, false)) {
+                left.setCableId(system.allocateId());
+                right.setCableId(system.allocateId());
+                right.setup(null, level, firstTime);
+                helper.assertTrue(left.getCableId() >= 0 && left.getCableId() == right.getCableId(),
+                        "City cables must reconnect newly available sections on initial load and reload");
+            }
+        } finally {
+            level.removeBlock(pos.west(), false);
+            level.removeBlock(pos, false);
+        }
+        helper.succeed();
+    }
 
     @GameTest(template = "empty")
     public static void negariteProbeMatchesTankOutput(GameTestHelper helper) {

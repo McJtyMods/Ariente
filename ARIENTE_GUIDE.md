@@ -757,7 +757,8 @@ JEI shows the recipe and blueprint.
 | Interact with a locked cube | Open its access hologram instead of transferring normally. |
 
 The displayed icons and totals are synchronized to clients. Item automation sees
-the grouped inventory through an item-handler capability. A locked cube is an
+the grouped inventory through an item-handler capability. Locked cubes block
+automation insertion and extraction on every face. A locked cube is an
 access lock, not the drawer-style feature that remembers a filter in an empty
 slot. City Storage Cubes can contain loot and require that city's storage key.
 
@@ -777,6 +778,7 @@ Source: [Storage Cube](src/main/java/mcjty/ariente/blocks/utility/StorageTile.ja
 Holo Storage Cubes are glass devices with **30, 60 or 120 ordinary stack slots**.
 They accept any mixture of items, respecting each item's normal stack limit.
 All six faces allow insertion and extraction through the item handler capability.
+Locking blocks both automation operations, as well as player inventory transfers.
 They need no flux, and breaking a cube preserves its inventory in the dropped item.
 
 Right-click to open the holographic inventory. The upper grid shows a window of
@@ -964,7 +966,10 @@ tags or cloning a city's keys onto blank cards.
 
 ### Lock
 
-A Lock controls **Door Markers** within a configurable box around itself. The
+A Lock controls **Door Markers** and unkeyed **Storage Cubes**, including Holo
+Storage Cubes, within a configurable box around itself. A storage device with
+its own key only accepts a controller with that same key; an unrelated Lock or
+Wireless Lock cannot override city storage access. The
 current ranges are horizontal **1–20**, vertical **1–10**. This is not a general
 lock for every inventory or machine in the area. A matching key card toggles
 the Lock and its affected doors. A locked Lock's normal hologram denies access;

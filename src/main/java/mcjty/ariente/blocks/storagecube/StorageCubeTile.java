@@ -48,6 +48,7 @@ import net.minecraftforge.common.util.LazyOptional;
 import net.minecraftforge.items.IItemHandler;
 import net.minecraftforge.registries.ForgeRegistries;
 
+import javax.annotation.Nullable;
 import java.util.ArrayList;
 import java.util.Comparator;
 import java.util.HashMap;
@@ -80,11 +81,20 @@ public class StorageCubeTile extends TickingTileEntity implements IGuiTile, ICit
 
             @Override
             public ItemStack extractItem(int slot, int amount, boolean simulate) {
-                // Authored trophy loot requires its storage key, including when extracted by automation.
-                if (locked && lootTable != null) {
+                if (locked) {
                     return ItemStack.EMPTY;
                 }
                 return super.extractItem(slot, amount, simulate);
+            }
+
+            @Override
+            public ItemStack insertItem(int slot, ItemStack stack, boolean simulate) {
+                return locked ? stack : super.insertItem(slot, stack, simulate);
+            }
+
+            @Override
+            public boolean isItemValid(int slot, ItemStack stack) {
+                return !locked && super.isItemValid(slot, stack);
             }
 
             @Override
@@ -154,6 +164,11 @@ public class StorageCubeTile extends TickingTileEntity implements IGuiTile, ICit
 
     public String getKeyId() {
         return keyId;
+    }
+
+    @Override
+    public boolean canBeControlledBy(@Nullable String keyId) {
+        return this.keyId == null || this.keyId.isBlank() || this.keyId.equals(keyId);
     }
 
     public void setKeyId(String keyId) {

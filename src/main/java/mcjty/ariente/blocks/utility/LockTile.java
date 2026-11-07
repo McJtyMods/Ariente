@@ -1,5 +1,6 @@
 package mcjty.ariente.blocks.utility;
 
+import mcjty.ariente.varia.LoadedChunks;
 import mcjty.ariente.Ariente;
 import mcjty.ariente.gui.GuiHelp;
 import mcjty.ariente.api.ICityAI;
@@ -133,8 +134,8 @@ public class LockTile extends GenericTileEntity implements IGuiTile, IKeyCardSlo
                 for (int dy = -verticalRange ; dy <= verticalRange ; dy++) {
                     for (int dz = -horizontalRange ; dz <= horizontalRange ; dz++) {
                         BlockPos p = worldPosition.offset(dx, dy, dz);
-                        BlockEntity te = level.getBlockEntity(p);
-                        if (te instanceof ILockTarget target) {
+                        BlockEntity te = LoadedChunks.getBlockEntity(level, p);
+                        if (te instanceof ILockTarget target && target.canBeControlledBy(keyId)) {
                             target.setLocked(l);
                         }
                     }

@@ -35,7 +35,7 @@
     {
       "type": "patchouli:text",
       "title": "Locks and city access",
-      "text": "Nearby Locks and Wireless Locks can lock all three tiers, just like ordinary Storage Cubes. Locking closes open panels and blocks player transfers and breaking; item automation continues.$(br2)Cubes placed in dungeon templates receive loot and the city’s storage lock when its AI initializes. Use that city’s storage-access Key Card to toggle the lock, as with its 2×2 Storage Cubes. The final AI Core drops the storage-access reward."
+      "text": "Nearby Locks and Wireless Locks can control unkeyed cubes of all three tiers. A cube with its own storage key cannot be overridden by an unrelated controller. Locking closes open panels and blocks player transfers, breaking and automation insertion and extraction.$(br2)Cubes placed in dungeon templates receive loot and the city’s storage lock as their section loads. Use that city’s storage-access Key Card to toggle the lock, as with its 2×2 Storage Cubes. The final AI Core drops the storage-access reward."
     }
   ],
   "extra_recipe_mappings": {
