@@ -14,4 +14,3 @@
 - Much better loot in the more difficult dungeons
 - Also boss in underground big dungeon?
 - Master soldier immune for lance?
-- Wireless button has wrong selection box
