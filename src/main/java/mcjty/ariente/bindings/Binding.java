@@ -37,6 +37,10 @@ public class Binding {
         return binding.isDown();
     }
 
+    public void release() {
+        binding.setDown(false);
+    }
+
     public static void register(RegisterKeyMappingsEvent event) {
         KeyBindings.init();
         BINDINGS.forEach(binding -> event.register(binding.binding));

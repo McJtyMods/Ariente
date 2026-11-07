@@ -61,9 +61,13 @@ public class FluxShipClient {
     }
 
     public static String flightHint() {
-        return UtilityConfiguration.FLUX_SHIP_MOUSE_CONTROL.get()
-                ? "Mouse Pitch | " + KeyBindings.shipFreeLook.getKeyName() + " Look around"
-                : heightKeys() + " Rise/descend";
+        if (!UtilityConfiguration.FLUX_SHIP_MOUSE_CONTROL.get()) {
+            return heightKeys() + " Rise/descend";
+        }
+        if (FluxShipMouseControls.isLookingAround()) {
+            return "FREE LOOK | Release " + KeyBindings.shipFreeLook.getKeyName() + " to steer";
+        }
+        return KeyBindings.flyForward.getKeyName() + ": fly toward mouse | " + KeyBindings.shipFreeLook.getKeyName() + " Look around";
     }
 
     public static String dismountKey() {

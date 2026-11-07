@@ -1468,9 +1468,13 @@ it to board. It carries one pilot:
 
 Bindings can be changed in Controls. Existing saved fire bindings may retain V;
 reset Fire ship laser or bind it to Space to use the new default. Space no longer
-adds upward thrust. Mouse look steers the hull; hold Left Alt to look around
-without steering it. The mounted hologram shows actual travel speed in km/h,
-altitude as world Y, and your current key bindings. Its transparent pane and bright
+adds upward thrust. Hold W and look up to climb; mouse look steers the hull.
+Hold Left Alt to look around without steering. The cockpit explicitly marks
+**FREE LOOK** while that mode is active. Release the shown
+free-look key to steer toward the mouse again. Opening a menu or losing window
+focus clears that modifier so a missed key release cannot leave steering frozen.
+The mounted hologram shows actual travel speed in km/h, altitude as world Y,
+and your current key bindings. Its transparent pane and bright
 text leave the view ahead visible. Acceleration and turning build
 up gradually, with some momentum through turns. The hull banks into moving turns
 and pitches with climbs and descents, then levels as it brakes into a hover.

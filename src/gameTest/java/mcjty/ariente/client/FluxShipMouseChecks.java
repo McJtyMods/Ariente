@@ -2,9 +2,11 @@ package mcjty.ariente.client;
 
 import com.mojang.blaze3d.platform.InputConstants;
 import mcjty.ariente.Ariente;
+import mcjty.ariente.bindings.KeyBindings;
 import mcjty.ariente.config.UtilityConfiguration;
 import mcjty.ariente.entities.fluxship.FluxShipEntity;
 import mcjty.ariente.entities.fluxship.FluxShipClient;
+import mcjty.ariente.entities.fluxship.FluxShipMouseControls;
 import net.minecraft.client.KeyMapping;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.Screenshot;
@@ -22,6 +24,7 @@ public class FluxShipMouseChecks {
     private static float cruiseSpeed;
 
     public static void tick(Minecraft mc, FluxShipEntity ship, int tick) {
+        mc.setWindowActive(true);
         if (tick == 25) {
             require(UtilityConfiguration.FLUX_SHIP_MOUSE_CONTROL.get(), "Mouse flight must be enabled in this profile");
             altitude = ship.getY();
@@ -54,6 +57,7 @@ public class FluxShipMouseChecks {
         } else if (tick == 160) {
             require(Math.abs(Mth.wrapDegrees(ship.getYRot() - heading)) < 6 && Math.abs(ship.getXRot() - heldPitch) < 2,
                     "Alt free look must keep the ship's heading and flight pitch");
+            require(FluxShipClient.flightHint().startsWith("FREE LOOK"), "The cockpit must identify active free look");
             screenshot(mc, "ship-mouse-free-look");
             key(GLFW.GLFW_KEY_LEFT_ALT, false);
         } else if (tick == 165) {
@@ -77,9 +81,22 @@ public class FluxShipMouseChecks {
                             && Math.abs(Mth.wrapDegrees(ship.getYRot() - heading)) < 5,
                     "Opening a screen must stop steering and brake smoothly");
             mc.setScreen(null);
+        } else if (tick == 231) {
+            // A modifier's release can be lost while the game is unfocused.
+            key(GLFW.GLFW_KEY_LEFT_ALT, true);
+            mc.setWindowActive(false);
+            KeyBindings.tickShipControls();
+            require(!KeyBindings.shipFreeLook.isDown(), "Losing focus must release stale free-look input");
+            mc.setWindowActive(true);
+            var aim = FluxShipMouseControls.sample(ship, true, 0);
+            require(aim.steering() && !FluxShipClient.flightHint().startsWith("FREE LOOK"),
+                    "Returning to the game must restore mouse steering without another Alt press");
+            mc.player.turn(0, (-25 - mc.player.getXRot()) / .15);
+        } else if (tick == 280) {
+            require(ship.getXRot() < -23, "Mouse pitch must reach the server ship after recovering focus: " + ship.getXRot());
         } else if (tick == 380) {
             require(ship.getSpeed() == 0, "Releasing W must eventually settle into a hover");
-            Ariente.setup.getLogger().info("FLUX SHIP MOUSE CHECKS PASSED: real mouse turns, keyboard assist, climb/dive, bounded speed, camera pitch, Alt free look, screen gating and smooth braking");
+            Ariente.setup.getLogger().info("FLUX SHIP MOUSE CHECKS PASSED: real mouse turns, keyboard assist, climb/dive, bounded speed, camera pitch, Alt free look, focus recovery, screen gating and smooth braking");
             mc.stop();
         }
     }

@@ -26,6 +26,10 @@ public class FluxShipMouseControls {
             currentShip = ship;
             recenter(ship);
         }
+        if (!active) {
+            // A menu or focus change can consume the modifier's release event.
+            KeyBindings.shipFreeLook.release();
+        }
         boolean freeLook = !active || KeyBindings.shipFreeLook.isDown();
         ship.setLocalMouseControls(true, freeLook || keyboardTurn != 0);
         if (freeLook) {
@@ -42,6 +46,10 @@ public class FluxShipMouseControls {
         heldPitch = Mth.clamp(mc.player.getXRot(), -55, 55);
         mc.player.setXRot(heldPitch);
         return new Aim(true, true, mc.player.getYRot(), heldPitch);
+    }
+
+    public static boolean isLookingAround() {
+        return lookingAround;
     }
 
     private static void recenter(FluxShipEntity ship) {
