@@ -15,6 +15,8 @@ public class InstalledModule {
     private final int y;
     private int snapshotVersion;
     private CompoundTag snapshot = new CompoundTag();
+    private int receivedSnapshotVersion = -1;
+    private byte[] encodedSnapshot;
 
     public InstalledModule(ItemStack stack, int x, int y) {
         this.stack = stack.copyWithCount(1);
@@ -31,6 +33,8 @@ public class InstalledModule {
         InstalledModule replacement = new InstalledModule(configured, x, y);
         replacement.id = id;
         replacement.snapshot = snapshot;
+        replacement.snapshotVersion = snapshotVersion;
+        replacement.encodedSnapshot = encodedSnapshot;
         return replacement;
     }
 
@@ -38,6 +42,8 @@ public class InstalledModule {
         InstalledModule replacement = new InstalledModule(stack, x, y);
         replacement.id = id;
         replacement.snapshot = snapshot;
+        replacement.snapshotVersion = snapshotVersion;
+        replacement.encodedSnapshot = encodedSnapshot;
         return replacement;
     }
 
@@ -77,10 +83,40 @@ public class InstalledModule {
     public void updateSnapshot(CompoundTag snapshot) {
         this.snapshot = snapshot;
         snapshotVersion++;
+        encodedSnapshot = null;
     }
 
     public int snapshotVersion() {
         return snapshotVersion;
+    }
+
+    public int receivedSnapshotVersion() {
+        return receivedSnapshotVersion;
+    }
+
+    public void receiveSnapshot(int version, CompoundTag data) {
+        if (version > receivedSnapshotVersion) {
+            receivedSnapshotVersion = version;
+            updateSnapshot(data);
+        }
+    }
+
+    public void retainSnapshot(InstalledModule previous) {
+        snapshot = previous.snapshot;
+        snapshotVersion = previous.snapshotVersion;
+    }
+
+    public byte[] encodedSnapshot() {
+        if (encodedSnapshot == null) {
+            try {
+                encodedSnapshot = DisplayDataCodec.encode(snapshot);
+            } catch (RuntimeException e) {
+                CompoundTag status = new CompoundTag();
+                status.putString("Status", "Display snapshot exceeds size limit");
+                encodedSnapshot = DisplayDataCodec.encode(status);
+            }
+        }
+        return encodedSnapshot;
     }
 
     public boolean contains(int px, int py) {
@@ -93,9 +129,6 @@ public class InstalledModule {
         tag.put("Item", stack.save(new CompoundTag()));
         tag.putInt("X", x);
         tag.putInt("Y", y);
-        if (client) {
-            tag.put("Data", snapshot);
-        }
         return tag;
     }
 

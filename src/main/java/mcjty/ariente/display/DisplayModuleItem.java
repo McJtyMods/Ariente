@@ -55,8 +55,7 @@ public class DisplayModuleItem extends Item {
                     link.putLong("Pos", pos.asLong());
                     link.putInt("Side", context.getClickedFace().get3DDataValue());
                     link.putString("Block", ForgeRegistries.BLOCKS.getKey(context.getLevel().getBlockState(pos).getBlock()).toString());
-                    config(stack).put("Link", link);
-                    player.displayClientMessage(Component.literal("Linked to " + context.getLevel().getBlockState(pos).getBlock().getName().getString()), true);
+                    player.displayClientMessage(type.link(stack, link, context.getLevel().getBlockState(pos).getBlock().getName()), true);
                 } else {
                     player.displayClientMessage(Component.literal("This module cannot link to that block."), true);
                 }
@@ -72,7 +71,7 @@ public class DisplayModuleItem extends Item {
         ItemStack stack = player.getItemInHand(hand);
         if (!level.isClientSide) {
             if (player.isShiftKeyDown()) {
-                config(stack).remove("Link");
+                type.clearLinks(stack);
                 player.displayClientMessage(Component.literal("Module link cleared."), true);
             } else {
                 open(player, hand);
@@ -96,10 +95,6 @@ public class DisplayModuleItem extends Item {
     public void appendHoverText(ItemStack stack, @Nullable Level level, List<Component> lines, TooltipFlag flag) {
         lines.add(Component.literal("Right click: configure | Aim at display: install").withStyle(ChatFormatting.AQUA));
         lines.add(Component.literal("Sneak + right click: link | In air: clear link").withStyle(ChatFormatting.GRAY));
-        if (config(stack).contains("Link")) {
-            CompoundTag link = config(stack).getCompound("Link");
-            BlockPos pos = BlockPos.of(link.getLong("Pos"));
-            lines.add(Component.literal("Linked: " + pos.toShortString() + " (" + link.getString("Dimension") + ")").withStyle(ChatFormatting.GREEN));
-        }
+        type.appendLinkTooltip(stack, lines);
     }
 }

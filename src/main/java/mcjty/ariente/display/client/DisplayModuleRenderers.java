@@ -38,6 +38,7 @@ public class DisplayModuleRenderers {
         register(Registration.DISPLAY_STORAGE.get().type(), DisplayModuleRenderers::storage);
         register(Registration.DISPLAY_TEXT.get().type(), DisplayModuleRenderers::text);
         register(Registration.DISPLAY_ALIEN_TEXT.get().type(), DisplayModuleRenderers::alienText);
+        register(Registration.DISPLAY_CAMERA.get().type(), CameraDisplayRenderer::render);
         ResourceDisplayRenderers.init();
     }
 

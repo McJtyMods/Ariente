@@ -48,6 +48,7 @@ public class LootTables extends BaseLootTableProvider implements LootTableSubPro
         addStandardTable(Registration.ROUND_ROBIN_NODE.get(), Registration.ROUND_ROBIN_TILE.get());
         addStandardTable(Registration.SENSOR_ITEM_NODE.get(), Registration.SENSOR_ITEM_TILE.get());
         addSimpleTable(Registration.DISPLAY_BASE.get());
+        addSimpleTable(Registration.CAMERA.get());
         addStandardTable(Registration.DOOR_MARKER.get(), Registration.DOOR_MARKER_TILE.get());
         addStandardTable(Registration.SIGNAL_TRANSMITTER.get(), Registration.SIGNAL_TRANSMITTER_TILE.get());
         addStandardTable(Registration.SIGNAL_RECEIVER.get(), Registration.SIGNAL_RECEIVER_TILE.get());

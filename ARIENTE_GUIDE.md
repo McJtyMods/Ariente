@@ -536,6 +536,20 @@ The catalog's rarity weights are relative selection weights, not independent
 drop probabilities: Common=1, Uncommon=0.1, Rare=0.01, Extreme=0.001. A city's
 loot settings separately decide whether and how often to choose a blueprint.
 
+Blueprint tooltips also show their rarity tier. Place **three valid blueprints**
+in any arrangement in either crafting grid to consume them and receive one new
+pattern. All three input patterns are excluded. Blank or disabled patterns do
+not work. The output shows **Random Blueprint** until you take it; ordinary
+clicks and shift-clicks reveal the result immediately when the exchange is paid.
+
+The exchange averages tier numbers **Common=0, Uncommon=1, Rare=2, Extreme=3**,
+rounded to the nearest tier. It then moves down one tier with **10%** probability,
+up one tier with **20%**, and otherwise stays in the averaged tier. Moves past
+Common or Extreme remain at that endpoint. The result is chosen uniformly from
+the available patterns in that tier. If excluding the inputs empties that tier,
+the nearest nonempty tier is used, preferring the lower tier on a tie. Server
+recipe settings still apply, including the Extreme Circuit recipe setting.
+
 The active Constructor logic uses the hardcoded catalog in
 `BlueprintRecipeRegistry`. The `ariente:constructor` recipe serializer exists,
 but adding arbitrary JSON recipes is not equivalent to adding them to this

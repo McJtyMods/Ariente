@@ -111,6 +111,7 @@ public class BlockStates extends BaseBlockStateProvider {
         registerMarbleBricks();
         registerPattern();
         registerDoorMarker();
+        registerCamera();
         registerLevelMarker();
         registerFieldMarker();
         registerFences();
@@ -591,6 +592,25 @@ public class BlockStates extends BaseBlockStateProvider {
         horizontalOrientedBlock(Registration.DISPLAY_BASE.get(), display);
         BlockModelBuilder model = createdParentedModel("/utility/door_marker", thin, TXT_BLACKMARBLE, "top", TXT_DOOR_MARKER, "bottom", TXT_BLACKMARBLE);
         horizontalOrientedBlock(Registration.DOOR_MARKER.get(), model);
+    }
+
+    private void registerCamera() {
+        BlockModelBuilder plate = new BlockModelBuilder(modLoc("block/utility/camera_plate"), models().existingFileHelper);
+        plate.texture("plate", modLoc(TXT_MACHINETOP)).renderType("minecraft:solid")
+                .element().from(0, 0, 0).to(16, 1, 16).allFaces((direction, face) -> face.texture("#plate")).end();
+        BlockModelBuilder glass = new BlockModelBuilder(modLoc("block/utility/camera_glass"), models().existingFileHelper);
+        glass.texture("glass", modLoc("block/machines/camera_glass")).renderType("minecraft:translucent")
+                .element().from(4, 1, 4).to(12, 9, 12).allFaces((direction, face) -> face.texture("#glass").uvs(0, 0, 16, 16)).end();
+        BlockModelBuilder model = models().getBuilder(BLOCK_FOLDER + "/utility/camera")
+                .parent(models().getExistingFile(mcLoc("block/block")))
+                .texture("particle", modLoc(TXT_MACHINETOP))
+                .customLoader(CompositeModelBuilder::begin).child("plate", plate).child("glass", glass).end();
+        getVariantBuilder(Registration.CAMERA.get()).forAllStates(state -> {
+            Direction facing = state.getValue(BlockStateProperties.FACING);
+            int x = facing == UP ? 0 : facing == DOWN ? 180 : 90;
+            int y = facing.getAxis() == Direction.Axis.Y ? 0 : ((int) facing.toYRot() + 180) % 360;
+            return ConfiguredModel.builder().modelFile(model).rotationX(x).rotationY(y).build();
+        });
     }
 
     private void registerFieldMarker() {

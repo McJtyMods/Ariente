@@ -18,6 +18,16 @@
       "type": "patchouli:text",
       "title": "Load your library",
       "text": "Open Blueprint Storage and double-click its displayed slots to transfer blueprints between it and your inventory.$(br2)Blueprints stay in the library after crafting. Add more adjacent storage blocks for more patterns.$(br2)If you use JEI, look up a Constructor recipe to see its blueprint, ingredients and full output."
+    },
+    {
+      "type": "patchouli:crafting",
+      "recipe": "ariente:blueprint_exchange",
+      "text": "Place any three valid blueprints in a crafting grid, in any arrangement. They are consumed to give one different pattern. The result is revealed when you craft it, including with shift-click. Blank blueprints cannot be exchanged."
+    },
+    {
+      "type": "patchouli:text",
+      "title": "Blueprint rarity",
+      "text": "Tooltips show $(thing)Common, Uncommon, Rare or Extreme$(). Exchanging averages the three tier numbers (0, 1, 2, 3), rounded to the nearest tier. The result has a $(thing)10%$() chance to move one tier down, $(thing)20%$() to move up and otherwise stays in the same tier. Moves beyond the endpoints stay at that endpoint.$(br2)All three input patterns are excluded. If the chosen tier has no other patterns, the nearest available tier is used, preferring the lower tier on a tie. Disabled recipes cannot be awarded."
     }
   ],
   "extra_recipe_mappings": {

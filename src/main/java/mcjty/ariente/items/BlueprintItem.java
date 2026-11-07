@@ -11,6 +11,8 @@ import com.google.gson.JsonParser;
 import com.google.gson.JsonParseException;
 import mcjty.ariente.Ariente;
 import mcjty.ariente.recipes.BlueprintRecipeRegistry;
+import mcjty.ariente.recipes.BlueprintExchangeRecipe;
+import mcjty.ariente.recipes.BlueprintRarity;
 import mcjty.ariente.recipes.ConstructorRecipe;
 import mcjty.ariente.setup.Registration;
 import mcjty.lib.builder.TooltipBuilder;
@@ -24,6 +26,7 @@ import net.minecraft.world.item.ItemStack;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.level.Level;
+import net.minecraft.world.entity.Entity;
 import org.apache.commons.lang3.tuple.Pair;
 
 import javax.annotation.Nullable;
@@ -75,7 +78,35 @@ public class BlueprintItem extends Item implements ITooltipExtras, ITooltipSetti
     @Override
     public void appendHoverText(ItemStack stack, @Nullable Level worldIn, List<Component> tooltip, TooltipFlag flag) {
         super.appendHoverText(stack, worldIn, tooltip, flag);
+        if (BlueprintExchangeRecipe.isPreview(stack)) {
+            tooltip.add(Component.translatable("message.ariente.blueprint.exchange_preview"));
+            BlueprintRarity rarity = BlueprintExchangeRecipe.averageRarity(stack);
+            if (rarity != null) {
+                tooltip.add(Component.translatable("message.ariente.blueprint.average_rarity", rarity.displayName()));
+            }
+            return;
+        }
         tooltipBuilder.makeTooltip(Tools.getId(this), stack, tooltip, flag);
+        ConstructorRecipe recipe = BlueprintRecipeRegistry.findRecipe(getDestination(stack));
+        BlueprintRarity rarity = recipe == null ? null : BlueprintRarity.of(recipe);
+        if (rarity != null) {
+            tooltip.add(Component.translatable("message.ariente.blueprint.rarity", rarity.displayName()));
+        }
+    }
+
+    @Override
+    public Component getName(ItemStack stack) {
+        return BlueprintExchangeRecipe.isPreview(stack)
+                ? Component.translatable("item.ariente.random_blueprint") : super.getName(stack);
+    }
+
+    @Override
+    public void inventoryTick(ItemStack stack, Level level, Entity entity, int slot, boolean selected) {
+        super.inventoryTick(stack, level, entity, slot, selected);
+        // Also reveal paid outputs from crafting integrations that do not fire the player crafting event.
+        if (!level.isClientSide && BlueprintExchangeRecipe.isPreview(stack)) {
+            BlueprintExchangeRecipe.resolve(stack, level.random);
+        }
     }
 
     public static final ResourceLocation EMPTY_BLUEPRINT_MODEL = new ResourceLocation(Ariente.MODID, "empty_blueprint");
@@ -99,8 +130,15 @@ public class BlueprintItem extends Item implements ITooltipExtras, ITooltipSetti
         }
         try {
             JsonElement json = JsonParser.parseString(nbt.getString("destination"));
-            return json.isJsonObject() ? JSonTools.jsonToItemStack(json.getAsJsonObject()) : ItemStack.EMPTY;
-        } catch (JsonParseException | IllegalArgumentException | IllegalStateException e) {
+            if (!json.isJsonObject()) {
+                return ItemStack.EMPTY;
+            }
+            JsonObject object = json.getAsJsonObject();
+            if (!object.has("item") || !object.get("item").isJsonPrimitive() || !object.getAsJsonPrimitive("item").isString()) {
+                return ItemStack.EMPTY;
+            }
+            return JSonTools.jsonToItemStack(object);
+        } catch (JsonParseException | IllegalArgumentException | IllegalStateException | UnsupportedOperationException e) {
             return ItemStack.EMPTY;
         }
     }

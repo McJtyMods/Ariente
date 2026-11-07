@@ -3,6 +3,7 @@ package mcjty.ariente.compat.jei;
 import mcjty.ariente.Ariente;
 import mcjty.ariente.items.BlueprintItem;
 import mcjty.ariente.recipes.BlueprintRecipeRegistry;
+import mcjty.ariente.recipes.BlueprintExchangeRecipe;
 import mcjty.ariente.recipes.ConstructorRecipe;
 import mcjty.ariente.recipes.PurifyingRecipe;
 import mcjty.ariente.recipes.PurifierRecipes;
@@ -31,6 +32,9 @@ public class JeiPlugin implements IModPlugin {
     @Override
     public void registerItemSubtypes(ISubtypeRegistration registration) {
         registration.registerSubtypeInterpreter(Registration.BLUEPRINT.get(), (stack, context) -> {
+            if (BlueprintExchangeRecipe.isPreview(stack)) {
+                return "exchange";
+            }
             ConstructorRecipe recipe = BlueprintRecipeRegistry.findRecipe(BlueprintItem.getDestination(stack));
             return recipe == null ? "empty" : recipe.getId().toString();
         });

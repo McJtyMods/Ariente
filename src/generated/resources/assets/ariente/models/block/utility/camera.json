@@ -1,0 +1,129 @@
+{
+  "parent": "minecraft:block/block",
+  "children": {
+    "glass": {
+      "elements": [
+        {
+          "faces": {
+            "down": {
+              "texture": "#glass",
+              "uv": [
+                0.0,
+                0.0,
+                16.0,
+                16.0
+              ]
+            },
+            "east": {
+              "texture": "#glass",
+              "uv": [
+                0.0,
+                0.0,
+                16.0,
+                16.0
+              ]
+            },
+            "north": {
+              "texture": "#glass",
+              "uv": [
+                0.0,
+                0.0,
+                16.0,
+                16.0
+              ]
+            },
+            "south": {
+              "texture": "#glass",
+              "uv": [
+                0.0,
+                0.0,
+                16.0,
+                16.0
+              ]
+            },
+            "up": {
+              "texture": "#glass",
+              "uv": [
+                0.0,
+                0.0,
+                16.0,
+                16.0
+              ]
+            },
+            "west": {
+              "texture": "#glass",
+              "uv": [
+                0.0,
+                0.0,
+                16.0,
+                16.0
+              ]
+            }
+          },
+          "from": [
+            4,
+            1,
+            4
+          ],
+          "to": [
+            12,
+            9,
+            12
+          ]
+        }
+      ],
+      "render_type": "minecraft:translucent",
+      "textures": {
+        "glass": "ariente:block/machines/camera_glass"
+      }
+    },
+    "plate": {
+      "elements": [
+        {
+          "faces": {
+            "down": {
+              "texture": "#plate"
+            },
+            "east": {
+              "texture": "#plate"
+            },
+            "north": {
+              "texture": "#plate"
+            },
+            "south": {
+              "texture": "#plate"
+            },
+            "up": {
+              "texture": "#plate"
+            },
+            "west": {
+              "texture": "#plate"
+            }
+          },
+          "from": [
+            0,
+            0,
+            0
+          ],
+          "to": [
+            16,
+            1,
+            16
+          ]
+        }
+      ],
+      "render_type": "minecraft:solid",
+      "textures": {
+        "plate": "ariente:block/base/machinetop"
+      }
+    }
+  },
+  "item_render_order": [
+    "plate",
+    "glass"
+  ],
+  "loader": "forge:composite",
+  "textures": {
+    "particle": "ariente:block/base/machinetop"
+  }
+}

@@ -20,6 +20,7 @@ public class BlockTags extends BlockTagsProvider {
     @Override
     protected void addTags(HolderLookup.Provider provider) {
         addTag(net.minecraft.tags.BlockTags.MINEABLE_WITH_PICKAXE, Registration.DISPLAY_BASE.get());
+        addTag(net.minecraft.tags.BlockTags.MINEABLE_WITH_PICKAXE, Registration.CAMERA.get());
         addTag(net.minecraft.tags.BlockTags.MINEABLE_WITH_PICKAXE, Registration.SMELTER.get());
         addTag(net.minecraft.tags.BlockTags.MINEABLE_WITH_PICKAXE, Registration.RECYCLER.get());
         addTag(net.minecraft.tags.BlockTags.MINEABLE_WITH_PICKAXE, Registration.PURIFIER_START.get(), Registration.PURIFIER_FINISH.get(), Registration.PURIFIER_TUBE.get());

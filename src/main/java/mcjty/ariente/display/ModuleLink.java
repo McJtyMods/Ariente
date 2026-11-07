@@ -15,10 +15,13 @@ public record ModuleLink(Level level, BlockPos pos, Direction side, BlockEntity 
 
     public static ModuleLink resolve(Level current, ItemStack stack) {
         CompoundTag config = DisplayModuleItem.config(stack);
-        if (!config.contains("Link")) {
+        return resolve(current, config.getCompound("Link"));
+    }
+
+    public static ModuleLink resolve(Level current, CompoundTag link) {
+        if (link.isEmpty()) {
             return new ModuleLink(current, BlockPos.ZERO, Direction.UP, null, "Not linked");
         }
-        CompoundTag link = config.getCompound("Link");
         ResourceLocation dimension = ResourceLocation.tryParse(link.getString("Dimension"));
         Level target = dimension == null || current.getServer() == null ? null
                 : current.getServer().getLevel(ResourceKey.create(Registries.DIMENSION, dimension));

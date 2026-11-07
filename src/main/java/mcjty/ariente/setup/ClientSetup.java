@@ -4,6 +4,7 @@ import mcjty.ariente.blocks.purifier.client.PurifierTubeRenderer;
 import mcjty.ariente.blocks.purifier.client.PurifierRingParticle;
 
 import mcjty.ariente.display.client.DisplayClientEvents;
+import mcjty.ariente.display.client.CameraDisplayRenderer;
 import mcjty.ariente.display.client.DisplayModuleRenderers;
 import mcjty.ariente.blocks.storagecube.client.StorageCubeRenderer;
 import mcjty.ariente.display.client.DisplayRenderer;
@@ -75,6 +76,10 @@ public class ClientSetup {
     public static void additionalModels(ModelEvent.RegisterAdditional event) {
         event.register(FluxShipRender.MODEL);
         event.register(BlueprintRenderer.BASE_MODEL);
+    }
+
+    public static void modelsBaked(ModelEvent.BakingCompleted event) {
+        CameraDisplayRenderer.clearCache();
     }
 
     public static void initModels(ModelEvent.RegisterGeometryLoaders event) {

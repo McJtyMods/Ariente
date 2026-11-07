@@ -1,6 +1,7 @@
 {
   "values": [
     "ariente:display_base",
+    "ariente:camera",
     "ariente:smelter",
     "ariente:recycler",
     "ariente:purifier_start",

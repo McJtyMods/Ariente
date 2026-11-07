@@ -79,6 +79,7 @@ public class DisplayClientEvents {
     public void tick(TickEvent.ClientTickEvent event) {
         if (event.phase == TickEvent.Phase.END) {
             DisplayModuleDrag.tick();
+            DisplayDataReceiver.tick();
         }
     }
 

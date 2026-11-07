@@ -96,6 +96,8 @@ public class Items extends BaseItemModelProvider {
         itemGenerated(Registration.DISPLAY_FE.get(), "item/displaymodules/module_fe");
         itemGenerated(Registration.DISPLAY_TEXT.get(), "item/displaymodules/module_text");
         itemGenerated(Registration.DISPLAY_ALIEN_TEXT.get(), "item/displaymodules/module");
+        itemGenerated(Registration.DISPLAY_CAMERA.get(), "item/displaymodules/module_camera");
+        parentedItem(Registration.CAMERA_ITEM.get(), "block/utility/camera");
         parentedItem(Registration.DOOR_MARKER_ITEM.get(), "block/utility/door_marker");
         parentedItem(Registration.LEVEL_MARKER_ITEM.get(), "block/utility/level_marker");
         parentedItem(Registration.FIELD_MARKER_ITEM.get(), "block/utility/field_marker");

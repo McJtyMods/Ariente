@@ -5,6 +5,8 @@ import mcjty.ariente.blocks.purifier.PurifierTubeBlock;
 import mcjty.ariente.blocks.purifier.PurifierTubeTile;
 
 import mcjty.ariente.display.AlienTextDisplayModule;
+import mcjty.ariente.blocks.utility.camera.CameraTile;
+import mcjty.ariente.display.CameraDisplayModule;
 import mcjty.ariente.display.DisplayBaseTile;
 import mcjty.ariente.blocks.storagecube.StorageCubeTile;
 import mcjty.ariente.display.DisplayModuleItem;
@@ -299,6 +301,11 @@ public class Registration {
     public static final RegistryObject<DisplayModuleItem> DISPLAY_STORAGE = ITEMS.register("display_module_storage", () -> new DisplayModuleItem(new StorageDisplayModule()));
     public static final RegistryObject<DisplayModuleItem> DISPLAY_TEXT = ITEMS.register("display_module_text", () -> new DisplayModuleItem(new TextDisplayModule()));
     public static final RegistryObject<DisplayModuleItem> DISPLAY_ALIEN_TEXT = ITEMS.register("display_module_alien_text", () -> new DisplayModuleItem(new AlienTextDisplayModule()));
+
+    public static final RegistryObject<DisplayModuleItem> DISPLAY_CAMERA = ITEMS.register("display_module_camera", () -> new DisplayModuleItem(new CameraDisplayModule()));
+    public static final RegistryObject<BaseBlock> CAMERA = BLOCKS.register("camera", CameraTile::createBlock);
+    public static final RegistryObject<Item> CAMERA_ITEM = ITEMS.register("camera", () -> new BlockItem(CAMERA.get(), createStandardProperties()));
+    public static final RegistryObject<BlockEntityType<CameraTile>> CAMERA_TILE = TILES.register("camera", () -> BlockEntityType.Builder.of(CameraTile::new, CAMERA.get()).build(null));
 
     public static final RegistryObject<BaseBlock> DOOR_MARKER = BLOCKS.register("door_marker", DoorMarkerTile::createBlock);
     public static final RegistryObject<Item> DOOR_MARKER_ITEM = ITEMS.register("door_marker", () -> new BlockItem(DOOR_MARKER.get(), createStandardProperties()));

@@ -46,6 +46,31 @@
     },
     {
       "type": "patchouli:text",
+      "title": "Camera modules",
+      "text": "Make a $(item)Camera$() and $(item)Holographic Camera Module$() with their Constructor blueprints. Attach the camera to a floor, wall or ceiling. It scans connected space around obstacles in front of its mounting plate.$(br2)$(thing)Zoom$() sets the capture distance from 8–100 blocks, with a default of 30. Lower values give a closer view. Sneak-right-click cameras to link, choose Small, Medium or Large, then install the module. Views stay upright on every mounting."
+    },
+    {
+      "type": "patchouli:text",
+      "title": "Four camera links",
+      "text": "Sneak-right-click up to four different cameras with the same module. Each new link becomes the selected camera. Relinking an existing camera selects it without adding a duplicate. A fifth camera leaves the four links intact.$(br2)Use $(thing)Previous$() and $(thing)Next$() in the module GUI to select a feed; they wrap around the linked cameras. Installed modules switch immediately. Sneak-right-click in air to clear all links. Only the selected camera is captured."
+    },
+    {
+      "type": "patchouli:text",
+      "title": "Live camera views",
+      "text": "View rotation turns the scene around world up; View tilt sets the viewing angle. $(thing)Rotation speed$() ranges from 0–90 degrees per second: 0 stops rotation, and any positive value rotates continuously. New modules start stationary. Animation is smooth between captures.$(br2)Captures refresh once per second within 32 blocks of a display. Modules using the same camera and zoom share a capture. Cameras never load chunks; they work across dimensions when the source is loaded."
+    },
+    {
+      "type": "patchouli:text",
+      "title": "Reading camera scenes",
+      "text": "The cyan point marks the camera; cyan markers indicate players and orange markers other living creatures in the scanned space.$(br2)The camera shows surfaces around connected air, including behind pillars and around corners. Sealed caves and buried blocks stay hidden. An open passage or transparent window can expose a cave; closing a door or hatch can hide it again."
+    },
+    {
+      "type": "patchouli:text",
+      "title": "Camera limits",
+      "text": "The view uses block models; fluids and blocks with special renderers use simplified silhouettes. An unloaded or removed camera shows its status.$(br2)Scans retain up to 16384 surface blocks. When a large or intricate scene reaches the budget, the outer edge is cropped so terrain inside stays continuous. Internal fluid blocks do not consume the surface budget. Only already loaded terrain is shown."
+    },
+    {
+      "type": "patchouli:text",
       "title": "Text and color",
       "text": "Left-click the text area to type. Use normal arrow, Home/End, Backspace/Delete, selection and clipboard controls. Escape or clicking outside commits the edit and releases typing.$(br2)Adjust text size, or choose Color... to open a hue/shade picker. Selecting a shade or pressing Back returns to settings. The window’s X closes the whole panel."
     },

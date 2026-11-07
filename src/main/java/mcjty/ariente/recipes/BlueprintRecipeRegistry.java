@@ -12,6 +12,7 @@ import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.crafting.RecipeSerializer;
 import net.minecraft.world.item.crafting.RecipeType;
+import net.minecraft.world.item.crafting.SimpleCraftingRecipeSerializer;
 import net.minecraft.world.level.block.Blocks;
 import net.minecraftforge.registries.RegistryObject;
 import net.minecraftforge.fml.javafmlmod.FMLJavaModLoadingContext;
@@ -36,6 +37,9 @@ public class BlueprintRecipeRegistry {
 
     public static final RegistryObject<RecipeSerializer<ConstructorRecipe>> CONSTRUCTOR_RECIPES = RECIPE_SERIALIZERS.register("constructor",
             ConstructorRecipeSerializer::new);
+
+    public static final RegistryObject<SimpleCraftingRecipeSerializer<BlueprintExchangeRecipe>> BLUEPRINT_EXCHANGE =
+            RECIPE_SERIALIZERS.register("blueprint_exchange", () -> new SimpleCraftingRecipeSerializer<>(BlueprintExchangeRecipe::new));
 
     public static final ResourceLocation RECIPE_CONSTRUCTOR = new ResourceLocation(MODID, "constructor");
     public static final RegistryObject<RecipeSerializer<PurifyingRecipe>> PURIFYING_SERIALIZER = RECIPE_SERIALIZERS.register("purifying", PurifyingRecipe.Serializer::new);
@@ -112,6 +116,15 @@ public class BlueprintRecipeRegistry {
                 new ItemStack(Registration.CIRCUIT.get(), 1),
                 new ItemStack(Registration.DUST_SILICON.get(), 2),
                 new ItemStack(Items.GLOWSTONE_DUST, 1)));
+        recipes.add(new ConstructorRecipe(new ItemStack(Registration.DISPLAY_CAMERA.get()), COMMON,
+                new ItemStack(Registration.CIRCUIT.get(), 1),
+                new ItemStack(Registration.INGOT_SILVER.get(), 2),
+                new ItemStack(Items.ENDER_PEARL, 1)));
+        recipes.add(new ConstructorRecipe(new ItemStack(Registration.CAMERA.get()), COMMON,
+                new ItemStack(Registration.INGOT_SILVER.get(), 4),
+                new ItemStack(Registration.CIRCUIT.get(), 1),
+                new ItemStack(Items.GLASS, 4),
+                new ItemStack(Registration.DUST_SILICON.get(), 2)));
 
         recipes.add(new ConstructorRecipe(new ItemStack(Registration.FLUX_CAPACITOR.get()), RARE,
                 new ItemStack(Registration.INGOT_LITHIUM.get(), 2),

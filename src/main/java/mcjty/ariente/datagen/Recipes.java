@@ -1,6 +1,8 @@
 package mcjty.ariente.datagen;
 
 import mcjty.ariente.Ariente;
+import mcjty.ariente.recipes.BlueprintExchangeRecipe;
+import mcjty.ariente.recipes.BlueprintRecipeRegistry;
 import com.google.gson.JsonObject;
 import net.minecraft.world.item.crafting.RecipeSerializer;
 import net.minecraftforge.registries.ForgeRegistries;
@@ -33,6 +35,7 @@ public class Recipes extends BaseRecipeProvider {
 
     @Override
     protected void buildRecipes(Consumer<FinishedRecipe> consumer) {
+        blueprintExchange(consumer);
         build(consumer, ShapedRecipeBuilder.shaped(RecipeCategory.MISC, Registration.TABLET.get())
                         .define('I', Items.IRON_INGOT)
                         .define('P', Items.GLASS_PANE)
@@ -176,6 +179,39 @@ public class Recipes extends BaseRecipeProvider {
                         .define('M', DecorativeBlockModule.MARBLE_ITEMS.get(MarbleColor.BLACK).get())
                         .define('m', DecorativeBlockModule.MARBLE_ITEMS.get(MarbleColor.GRAY).get()),
                 "mMm", "MmM", "mMm");
+    }
+
+    private void blueprintExchange(Consumer<FinishedRecipe> consumer) {
+        ShapelessRecipeBuilder.shapeless(RecipeCategory.MISC, Registration.BLUEPRINT.get())
+                .requires(Registration.BLUEPRINT.get(), 3)
+                .unlockedBy("has_blueprint", has(Registration.BLUEPRINT.get()))
+                .save(recipe -> consumer.accept(new FinishedRecipe() {
+
+                    @Override
+                    public void serializeRecipeData(JsonObject json) {
+                        json.addProperty("category", "misc");
+                    }
+
+                    @Override
+                    public RecipeSerializer<?> getType() {
+                        return BlueprintRecipeRegistry.BLUEPRINT_EXCHANGE.get();
+                    }
+
+                    @Override
+                    public ResourceLocation getId() {
+                        return recipe.getId();
+                    }
+
+                    @Override
+                    public JsonObject serializeAdvancement() {
+                        return recipe.serializeAdvancement();
+                    }
+
+                    @Override
+                    public ResourceLocation getAdvancementId() {
+                        return recipe.getAdvancementId();
+                    }
+                }), BlueprintExchangeRecipe.ID);
     }
 
     private void metalProcessing(Consumer<FinishedRecipe> consumer, TagKey<Item> material, ItemLike result, String suffix) {

@@ -5,6 +5,7 @@ import mcjty.ariente.blocks.storagecube.PacketStorageCubeAction;
 import mcjty.ariente.blocks.storagecube.PacketStorageCubeData;
 import mcjty.ariente.display.PacketDisplayAction;
 import mcjty.ariente.display.PacketDisplayData;
+import mcjty.ariente.display.PacketRequestDisplayData;
 import mcjty.ariente.display.PacketDisplayGesture;
 import mcjty.ariente.display.PacketDisplayGestureResult;
 import mcjty.ariente.blocks.defense.PacketDamageForcefield;
@@ -31,7 +32,7 @@ import java.util.Optional;
 
 public class ArienteMessages {
 
-    private static final String PROTOCOL_VERSION = "10";
+    private static final String PROTOCOL_VERSION = "11";
 
     public static SimpleChannel INSTANCE;
 
@@ -70,6 +71,8 @@ public class ArienteMessages {
         // Client side
         net.registerMessage(id(), PacketDisplayData.class, PacketDisplayData::toBytes, PacketDisplayData::new,
                 PacketDisplayData::handle, Optional.of(NetworkDirection.PLAY_TO_CLIENT));
+        net.registerMessage(id(), PacketRequestDisplayData.class, PacketRequestDisplayData::toBytes, PacketRequestDisplayData::new,
+                PacketRequestDisplayData::handle, Optional.of(NetworkDirection.PLAY_TO_SERVER));
         net.registerMessage(id(), PacketDamageForcefield.class, PacketDamageForcefield::toBytes, PacketDamageForcefield::new, PacketDamageForcefield::handle, Optional.of(NetworkDirection.PLAY_TO_CLIENT));
         net.registerMessage(id(), PacketAutoFieldReturnRenderInfo.class, PacketAutoFieldReturnRenderInfo::toBytes, PacketAutoFieldReturnRenderInfo::new, PacketAutoFieldReturnRenderInfo::handle, Optional.of(NetworkDirection.PLAY_TO_CLIENT));
         net.registerMessage(id(), PacketPersonalForcefield.class, PacketPersonalForcefield::toBytes, PacketPersonalForcefield::new,

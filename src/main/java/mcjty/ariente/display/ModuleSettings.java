@@ -63,7 +63,7 @@ public class ModuleSettings {
         return config().contains(key) ? config().getBoolean(key) : fallback;
     }
 
-    private void edit(Player actor, IHoloGuiEntity gui, Consumer<CompoundTag> change) {
+    void edit(Player actor, IHoloGuiEntity gui, Consumer<CompoundTag> change) {
         if (stack().isEmpty()) {
             return;
         }

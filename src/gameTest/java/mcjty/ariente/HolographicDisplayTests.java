@@ -15,7 +15,6 @@ import net.minecraftforge.common.util.FakePlayer;
 import mcjty.ariente.display.DisplayModuleItem;
 import mcjty.ariente.display.DisplayModuleType;
 import mcjty.ariente.display.ModuleSettings;
-import mcjty.ariente.display.PacketDisplayData;
 import mcjty.ariente.display.PowerDisplayModule;
 import mcjty.ariente.display.StorageDisplayModule;
 import mcjty.ariente.items.BlueprintItem;
@@ -349,11 +348,9 @@ public class HolographicDisplayTests {
         client.loadClientDataFromNBT(initial);
         CompoundTag delta = new CompoundTag();
         delta.putLong("Usage", 1234);
-        client.applyReadings(new PacketDisplayData(pos, initial.getLong("Layout") + 1,
-                List.of(new PacketDisplayData.Entry(0, delta))));
+        client.applyReadings(initial.getLong("Layout") + 1, 0, 1, delta);
         helper.assertTrue(!client.modules().get(0).snapshot().contains("Usage"), "Stale or reordered readings cannot target a different module layout");
-        client.applyReadings(new PacketDisplayData(pos, initial.getLong("Layout"),
-                List.of(new PacketDisplayData.Entry(0, delta))));
+        client.applyReadings(initial.getLong("Layout"), 0, 1, delta);
         helper.assertTrue(client.modules().get(0).snapshot().getLong("Usage") == 1234, "Matching reading deltas update the existing module");
         helper.assertTrue(!client.saveWithoutMetadata().getList("Modules", Tag.TAG_COMPOUND).getCompound(0).contains("Data"), "Live readings never bloat persistent chunk data");
         helper.succeed();

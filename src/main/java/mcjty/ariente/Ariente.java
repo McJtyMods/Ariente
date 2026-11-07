@@ -50,6 +50,7 @@ public class Ariente implements IArienteMod {
             FMLJavaModLoadingContext.get().getModEventBus().addListener(ClientSetup::init);
             FMLJavaModLoadingContext.get().getModEventBus().addListener(ClientSetup::initModels);
             FMLJavaModLoadingContext.get().getModEventBus().addListener(ClientSetup::additionalModels);
+            FMLJavaModLoadingContext.get().getModEventBus().addListener(ClientSetup::modelsBaked);
             FMLJavaModLoadingContext.get().getModEventBus().addListener(ArienteRenderType::registerShaders);
             FMLJavaModLoadingContext.get().getModEventBus().addListener(ClientSetup::entityRenderers);
             FMLJavaModLoadingContext.get().getModEventBus().addListener(ClientSetup::particleProviders);

@@ -5,9 +5,19 @@ import com.mojang.blaze3d.vertex.VertexFormat;
 import mcjty.ariente.Ariente;
 import net.minecraft.client.renderer.GameRenderer;
 import net.minecraft.client.renderer.RenderType;
+import net.minecraft.client.renderer.texture.TextureAtlas;
 import net.minecraft.resources.ResourceLocation;
 
 public class DisplayRenderType extends RenderType {
+
+    public static final RenderType CAMERA = create("ariente_display_camera", DefaultVertexFormat.POSITION_TEX_COLOR,
+            VertexFormat.Mode.QUADS, 65536, false, false, CompositeState.builder()
+                    .setShaderState(new ShaderStateShard(GameRenderer::getPositionTexColorShader))
+                    .setTextureState(new TextureStateShard(TextureAtlas.LOCATION_BLOCKS, false, false))
+                    .setTransparencyState(TRANSLUCENT_TRANSPARENCY)
+                    .setCullState(NO_CULL)
+                    .setWriteMaskState(COLOR_WRITE)
+                    .createCompositeState(false));
 
     public static final RenderType ALIEN_FONT = create("ariente_alien_font", DefaultVertexFormat.POSITION_TEX_COLOR,
             VertexFormat.Mode.QUADS, 4096, false, false, CompositeState.builder()

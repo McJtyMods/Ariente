@@ -2,7 +2,6 @@ package mcjty.ariente.display;
 
 import mcjty.ariente.Ariente;
 import mcjty.ariente.gui.HoloGuiTools;
-import mcjty.ariente.network.ArienteMessages;
 import mcjty.ariente.setup.Registration;
 import mcjty.hologui.api.IGuiComponent;
 import mcjty.hologui.api.IGuiComponentRegistry;
@@ -18,8 +17,6 @@ import net.minecraft.nbt.ListTag;
 import net.minecraft.nbt.Tag;
 import net.minecraft.network.chat.Component;
 import net.minecraft.resources.ResourceLocation;
-import net.minecraft.server.level.ServerLevel;
-import net.minecraftforge.network.PacketDistributor;
 import net.minecraft.util.Mth;
 import net.minecraft.world.Containers;
 import net.minecraft.world.InteractionHand;
@@ -35,6 +32,7 @@ import net.minecraft.world.level.block.state.properties.BlockStateProperties;
 import net.minecraft.world.level.material.MapColor;
 import net.minecraft.world.phys.AABB;
 import net.minecraft.world.phys.BlockHitResult;
+import net.minecraft.world.phys.Vec3;
 import net.minecraft.world.phys.shapes.CollisionContext;
 import net.minecraft.world.phys.shapes.VoxelShape;
 
@@ -52,7 +50,7 @@ public class DisplayBaseTile extends TickingTileEntity implements IGuiTile {
     public static final int MAX_HEIGHT = 10;
     public static final int MAX_MODULES = 32;
     public static final VoxelShape SHAPE = Block.box(0, 0, 0, 16, 1, 16);
-    // Weak keys avoid retaining unloaded chunks or worlds. Used only for client ray targeting.
+    // Weak keys avoid retaining unloaded chunks or worlds. Used for client targeting and initial-data requests.
     public static final Set<DisplayBaseTile> LOADED = Collections.newSetFromMap(new WeakHashMap<>());
 
     private int height = 1;
@@ -61,6 +59,7 @@ public class DisplayBaseTile extends TickingTileEntity implements IGuiTile {
     private boolean reconcile = true;
     private DisplayAppearance appearance = DisplayAppearance.DEFAULT;
     private final List<InstalledModule> modules = new ArrayList<>();
+    private long nextDataRequest;
 
     public DisplayBaseTile(BlockPos pos, BlockState state) {
         super(Registration.DISPLAY_BASE_TILE.get(), pos, state);
@@ -216,6 +215,9 @@ public class DisplayBaseTile extends TickingTileEntity implements IGuiTile {
         InstalledModule replacement = module.reconfigured(configured);
         boolean fits = DisplayGeometry.canPlace(this, replacement.size(), replacement.x(), replacement.y(), module);
         if (fits) {
+            if (replacement.type().refreshOnConfiguration(module.stack(), configured)) {
+                replacement.refresh(level);
+            }
             modules.set(modules.indexOf(module), replacement);
         } else {
             modules.remove(module);
@@ -251,19 +253,19 @@ public class DisplayBaseTile extends TickingTileEntity implements IGuiTile {
         if (modules.isEmpty() || Math.floorMod(level.getGameTime() + worldPosition.asLong(), 20) != 0) {
             return;
         }
-        if (level.getNearestPlayer(worldPosition.getX() + .5, worldPosition.getY() + .5, worldPosition.getZ() + .5, 64, false) == null) {
+        Player observer = level.getNearestPlayer(worldPosition.getX() + .5, worldPosition.getY() + .5, worldPosition.getZ() + .5, 64, false);
+        if (observer == null) {
             return;
         }
-        List<PacketDisplayData.Entry> changes = new ArrayList<>();
+        double observerDistance = observer.distanceToSqr(Vec3.atCenterOf(worldPosition));
         for (int index = 0; index < modules.size(); index++) {
             InstalledModule module = modules.get(index);
-            if (module.refresh(level)) {
-                changes.add(new PacketDisplayData.Entry(index, module.snapshot()));
+            int distance = module.type().observationDistance();
+            if (observerDistance <= distance * distance) {
+                module.refresh(level);
+                // The sender deduplicates delivered versions and retries snapshots deferred by its byte budget.
+                DisplayDataSender.broadcast(this, index);
             }
-        }
-        if (!changes.isEmpty()) {
-            ArienteMessages.INSTANCE.send(PacketDistributor.TRACKING_CHUNK.with(() -> ((ServerLevel) level).getChunkAt(worldPosition)),
-                    new PacketDisplayData(worldPosition, layoutVersion, List.copyOf(changes)));
         }
     }
 
@@ -348,13 +350,32 @@ public class DisplayBaseTile extends TickingTileEntity implements IGuiTile {
         // Configuration is sent on edits; live module data has its own one-second sampler.
     }
 
-    public void applyReadings(PacketDisplayData packet) {
-        if (packet.layoutVersion() == layoutVersion) {
-            for (PacketDisplayData.Entry entry : packet.changes()) {
-                if (entry.index() >= 0 && entry.index() < modules.size()) {
-                    modules.get(entry.index()).updateSnapshot(entry.data());
-                }
+    public long layoutVersion() {
+        return layoutVersion;
+    }
+
+    public int requestReadings(Player player) {
+        if (level.getGameTime() < nextDataRequest) {
+            return 0;
+        }
+        double distance = player.distanceToSqr(worldPosition.getCenter());
+        int missing = 0;
+        for (int index = 0; index < modules.size(); index++) {
+            InstalledModule module = modules.get(index);
+            int range = module.type().observationDistance();
+            if (module.receivedSnapshotVersion() < 0 && distance <= range * range) {
+                missing |= 1 << index;
             }
+        }
+        if (missing != 0) {
+            nextDataRequest = level.getGameTime() + 100;
+        }
+        return missing;
+    }
+
+    public void applyReadings(long layout, int index, int version, CompoundTag data) {
+        if (layout == layoutVersion && index >= 0 && index < modules.size()) {
+            modules.get(index).receiveSnapshot(version, data);
         }
     }
 
@@ -377,11 +398,16 @@ public class DisplayBaseTile extends TickingTileEntity implements IGuiTile {
         revision = tag.getLong("Revision");
         height = tag.contains("Height") ? Mth.clamp(tag.getInt("Height"), 1, MAX_HEIGHT) : 1;
         appearance = DisplayAppearance.read(tag);
+        List<InstalledModule> previous = List.copyOf(modules);
         modules.clear();
+        nextDataRequest = 0;
         ListTag list = tag.getList("Modules", Tag.TAG_COMPOUND);
         for (int i = 0; i < Math.min(MAX_MODULES, list.size()); i++) {
             InstalledModule module = InstalledModule.load(list.getCompound(i));
             if (module != null) {
+                if (level != null && level.isClientSide) {
+                    previous.stream().filter(old -> old.id().equals(module.id())).findFirst().ifPresent(module::retainSnapshot);
+                }
                 modules.add(module);
             }
         }
