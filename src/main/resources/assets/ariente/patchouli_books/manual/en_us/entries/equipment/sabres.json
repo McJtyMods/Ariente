@@ -7,7 +7,7 @@
     {
       "type": "patchouli:text",
       "title": "Equip for the fight",
-      "text": "The Energy Sabre is a strong melee weapon. The Enhanced Energy Sabre adds module controls.$(br2)Hold the enhanced sabre in your main hand and use the armor configuration key to install and enable modules. Their power comes from the same carried $(l:ariente:equipment/fuel)Energy Holder$(/l) as your armor. Refill through the holder’s own panel or enable its Automatic collection mode."
+      "text": "The Energy Sabre is a strong melee weapon. The Enhanced Energy Sabre adds module controls. With ArienteWorld, soldiers rarely drop their carried weapons; look for blueprints and Storage Cube loot to equip yourself.$(br2)Hold the enhanced sabre in your main hand and use the armor configuration key to install and enable modules. Their power comes from the same carried $(l:ariente:equipment/fuel)Energy Holder$(/l) as your armor. Refill through the holder’s own panel or enable its Automatic collection mode."
     },
     {
       "type": "patchouli:text",

@@ -1,11 +1,10 @@
 package mcjty.ariente.blocks.utility.wireless;
 
-import mcjty.ariente.varia.LoadedChunks;
+import mcjty.ariente.security.AreaLocks;
 import mcjty.ariente.Ariente;
 import mcjty.ariente.gui.CompactNumber;
 import mcjty.ariente.gui.GuiHelp;
 import mcjty.ariente.blocks.utility.ILockable;
-import mcjty.ariente.blocks.utility.ILockTarget;
 import mcjty.ariente.setup.Registration;
 import mcjty.hologui.api.IGuiComponent;
 import mcjty.hologui.api.IGuiComponentRegistry;
@@ -23,7 +22,6 @@ import net.minecraft.world.level.block.Block;
 import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.network.Connection;
 import net.minecraft.world.level.block.state.StateDefinition;
-import net.minecraft.world.level.block.entity.BlockEntity;
 import net.minecraft.world.InteractionResult;
 import net.minecraft.world.phys.BlockHitResult;
 import net.minecraft.world.phys.shapes.CollisionContext;
@@ -49,6 +47,12 @@ public class WirelessLockTile extends SignalChannelTileEntity implements ILockab
 
     public WirelessLockTile(BlockPos pos, BlockState state) {
         super(Registration.WIRELESS_LOCK_TILE.get(), pos, state);
+    }
+
+    @Override
+    public void onLoad() {
+        super.onLoad();
+        AreaLocks.loaded(this);
     }
 
     public static BaseBlock createBlock() {
@@ -122,23 +126,7 @@ public class WirelessLockTile extends SignalChannelTileEntity implements ILockab
     }
 
     private void doLock(boolean l) {
-        if (level == null) {
-            // Safety because this can actually happen during worldgen/load
-            return;
-        }
-        if (!level.isClientSide) {
-            for (int dx = -horizontalRange ; dx <= horizontalRange ; dx++) {
-                for (int dy = -verticalRange ; dy <= verticalRange ; dy++) {
-                    for (int dz = -horizontalRange ; dz <= horizontalRange ; dz++) {
-                        BlockPos p = worldPosition.offset(dx, dy, dz);
-                        BlockEntity te = LoadedChunks.getBlockEntity(level, p);
-                        if (te instanceof ILockTarget target && target.canBeControlledBy(null)) {
-                            target.setLocked(l);
-                        }
-                    }
-                }
-            }
-        }
+        AreaLocks.update(this, horizontalRange, verticalRange, l, null);
     }
 
     public int getHorizontalRange() {
@@ -146,7 +134,6 @@ public class WirelessLockTile extends SignalChannelTileEntity implements ILockab
     }
 
     public void setHorizontalRange(int horizontalRange) {
-        doLock(false);
         this.horizontalRange = horizontalRange;
         markDirtyQuick();
         doLock(locked);
@@ -157,7 +144,6 @@ public class WirelessLockTile extends SignalChannelTileEntity implements ILockab
     }
 
     public void setVerticalRange(int verticalRange) {
-        doLock(false);
         this.verticalRange = verticalRange;
         markDirtyQuick();
         doLock(locked);
@@ -166,7 +152,7 @@ public class WirelessLockTile extends SignalChannelTileEntity implements ILockab
     @Override
     public void onReplaced(Level world, BlockPos pos, BlockState state, BlockState newstate) {
         if (state.getBlock() != newstate.getBlock()) {
-            doLock(false);
+            AreaLocks.remove(this);
         }
         super.onReplaced(world, pos, state, newstate);
     }

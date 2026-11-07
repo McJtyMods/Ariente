@@ -912,6 +912,14 @@ With tag matching disabled, filters require the same item. Damage and NBT flags
 are independent at both ends; NBT matching excludes durability because the
 damage flag controls that separately. Filter stack counts do not affect matching.
 
+Input Nodes also have recipe-aware categories. **Purifiable ores** matches the
+Ore Purifier's recipes, including automatic ore/raw-metal pairs and datapack
+overrides. Pair it with **Smeltable (skip purifiable ores)** on a Smelter to send
+ore through purification first and its raw-metal outputs through smelting next.
+The existing **Smeltable** category still accepts all furnace inputs for setups
+without a purifier. Item filters and blacklist mode apply alongside the category;
+an empty blacklist allows everything in that category.
+
 Round-robin modifiers fit behind Output Nodes and distribute batches among
 matching destinations. Breaking a node selects the visible part and keeps other
 parts in that block; its drop retains configuration. The hologram targets the

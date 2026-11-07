@@ -12,7 +12,7 @@
     {
       "type": "patchouli:text",
       "title": "Control nearby doors",
-      "text": "A Lock controls Door Markers, Storage Cubes and Holo Storage Cubes within its configured horizontal and vertical range. A matching Key Card toggles the lock and its targets.$(br2)Unlock the controller before adjusting its range sliders. Keep control areas separate so two Locks do not compete over one door or storage cube.$(br2)For a player-built switch-controlled entrance, use a Wireless Lock and Wireless Button."
+      "text": "A Lock controls Door Markers, Storage Cubes and Holo Storage Cubes within its configured horizontal and vertical range. A matching Key Card toggles the lock and its targets.$(br2)Unlock the controller before adjusting its range sliders. If control areas overlap, a door or storage cube stays locked while any authorized controller is locked. Storage with its own key accepts only a controller with the matching key.$(br2)Targets catch up with controller changes when their chunks load, including range changes and removed controllers.$(br2)For a player-built switch-controlled entrance, use a Wireless Lock and Wireless Button."
     }
   ],
   "extra_recipe_mappings": {

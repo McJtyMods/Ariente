@@ -17,7 +17,7 @@
     {
       "type": "patchouli:text",
       "title": "Obtain a lance",
-      "text": "Use the matching Energy Lance blueprint in a Constructor or Auto Constructor. The blueprint is reusable.$(br2)Materials: Energy Sabre, Advanced Circuit, 10 Silver Ingots, 5 Negarite Dust, 5 Posirite Dust, 2 Platinum Ingots and 2 Lithium Ingots.$(br2)With ArienteWorld installed, lances and their blueprints are rare Storage Cube loot. Some soldiers and guards carry them: use cover against their ranged fire."
+      "text": "Use the matching Energy Lance blueprint in a Constructor or Auto Constructor. The blueprint is reusable.$(br2)Materials: Energy Sabre, Advanced Circuit, 10 Silver Ingots, 5 Negarite Dust, 5 Posirite Dust, 2 Platinum Ingots and 2 Lithium Ingots.$(br2)With ArienteWorld installed, lances and their blueprints are rare Storage Cube loot. Some soldiers and guards carry them: use cover against their ranged fire. Carried weapons drop only exceptionally; blueprints and caches are the main acquisition routes."
     }
   ]
 }

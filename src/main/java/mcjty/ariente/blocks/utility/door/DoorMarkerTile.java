@@ -3,6 +3,7 @@ package mcjty.ariente.blocks.utility.door;
 import mcjty.ariente.Ariente;
 import mcjty.ariente.gui.GuiHelp;
 import mcjty.ariente.blocks.utility.ILockTarget;
+import mcjty.ariente.security.AreaLocks;
 import mcjty.ariente.config.UtilityConfiguration;
 import mcjty.ariente.api.ISoldier;
 import mcjty.ariente.setup.Registration;
@@ -62,6 +63,12 @@ public class DoorMarkerTile extends TickingTileEntity implements IGuiTile, ILock
 
     public DoorMarkerTile(BlockPos pos, BlockState state) {
         super(Registration.DOOR_MARKER_TILE.get(), pos, state);
+    }
+
+    @Override
+    public void onLoad() {
+        super.onLoad();
+        AreaLocks.loaded(this);
     }
 
     public static BaseBlock createBlock() {
@@ -237,6 +244,7 @@ public class DoorMarkerTile extends TickingTileEntity implements IGuiTile, ILock
     @Override
     public void load(CompoundTag tagCompound) {
         super.load(tagCompound);
+        AreaLocks.loadTarget(this, tagCompound);
         open = tagCompound.getBoolean("open");
         CompoundTag info = tagCompound.getCompound("Info");
         if (!info.isEmpty()) {
@@ -247,6 +255,7 @@ public class DoorMarkerTile extends TickingTileEntity implements IGuiTile, ILock
 
     @Override
     public void saveAdditional(CompoundTag tagCompound) {
+        AreaLocks.saveTarget(this, tagCompound);
         tagCompound.putBoolean("open", open);
         CompoundTag info = getOrCreateInfo(tagCompound);
         info.putInt("icon", iconIndex);

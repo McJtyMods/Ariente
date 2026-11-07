@@ -1,5 +1,6 @@
 package mcjty.ariente.blocks.utility.autofield;
 
+import mcjty.ariente.recipes.PurifierRecipes;
 import net.minecraft.world.SimpleContainer;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.crafting.RecipeType;
@@ -7,13 +8,15 @@ import net.minecraft.world.level.Level;
 
 import java.util.Locale;
 
-/** Disjoint processing destinations: furnace recipes take precedence over material groups. */
+/** Recipe-aware destinations; the optional purifier path precedes direct smelting. */
 public enum ItemFilterCategory {
     ALL("All items"),
     SMELTABLE("Smeltable"),
     WOOD("Wood (non-smeltable)"),
     INGOTS("Ingots (non-smeltable)"),
-    OTHER("Other (non-smeltable)");
+    OTHER("Other (non-smeltable)"),
+    PURIFIABLE("Purifiable ores"),
+    DIRECT_SMELTABLE("Smeltable (skip purifiable ores)");
 
     private final String title;
 
@@ -45,7 +48,13 @@ public enum ItemFilterCategory {
         if (this == ALL) {
             return true;
         }
+        if (this == PURIFIABLE) {
+            return PurifierRecipes.find(level, stack) != null;
+        }
         boolean smeltable = level.getRecipeManager().getRecipeFor(RecipeType.SMELTING, new SimpleContainer(stack), level).isPresent();
+        if (this == DIRECT_SMELTABLE) {
+            return smeltable && PurifierRecipes.find(level, stack) == null;
+        }
         if (this == SMELTABLE || smeltable) {
             return this == SMELTABLE && smeltable;
         }

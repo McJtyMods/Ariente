@@ -254,8 +254,9 @@ public class AutoFieldInventoryTests {
             ItemStack stack = new ItemStack(item);
             if (!stack.isEmpty()) {
                 int destinations = 0;
-                for (ItemFilterCategory category : ItemFilterCategory.values()) {
-                    if (category != ItemFilterCategory.ALL && category.matches(level, stack)) {
+                for (ItemFilterCategory category : List.of(ItemFilterCategory.SMELTABLE, ItemFilterCategory.WOOD,
+                        ItemFilterCategory.INGOTS, ItemFilterCategory.OTHER)) {
+                    if (category.matches(level, stack)) {
                         destinations++;
                     }
                 }
@@ -281,6 +282,22 @@ public class AutoFieldInventoryTests {
                         && consumers.getWantedStream(new ItemStack(Registration.DUST_NEGARITE.get())).count() == 0
                         && consumers.getWantedStream(new ItemStack(Registration.DUST_POSIRITE.get())).count() == 0,
                 "Saved categories and sample blacklists must prevent smeltables and fuel from entering other storage");
+        input.setInputCategory(ItemFilterCategory.PURIFIABLE);
+        input.load(input.saveWithoutMetadata());
+        helper.assertTrue(input.getInputCategory() == ItemFilterCategory.PURIFIABLE
+                        && new ConsumerInfo(level, nodes).getWantedStream(new ItemStack(Items.IRON_ORE)).count() == 1
+                        && new ConsumerInfo(level, nodes).getWantedStream(new ItemStack(Items.RAW_IRON)).count() == 0,
+                "A saved purifier route accepts ore blocks and leaves their raw products for the smelter");
+        input.setInputCategory(ItemFilterCategory.DIRECT_SMELTABLE);
+        input.load(input.saveWithoutMetadata());
+        consumers = new ConsumerInfo(level, nodes);
+        helper.assertTrue(input.getInputCategory() == ItemFilterCategory.DIRECT_SMELTABLE
+                        && consumers.getWantedStream(new ItemStack(Items.IRON_ORE)).count() == 0
+                        && consumers.getWantedStream(new ItemStack(Items.RAW_IRON)).count() == 1
+                        && consumers.getWantedStream(new ItemStack(Registration.ORE_NEGARITE.get())).count() == 1
+                        && ItemFilterCategory.SMELTABLE.matches(level, new ItemStack(Items.IRON_ORE)),
+                "Direct smelting must avoid purifier competition, accept raw metals/fuel ores and preserve existing smelter-only setups");
+        input.setInputCategory(ItemFilterCategory.OTHER);
         tag = input.saveWithoutMetadata();
         tag.getCompound("Info").putBoolean("inBlacklist", false);
         input.load(tag);

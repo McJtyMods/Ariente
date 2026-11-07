@@ -1,6 +1,6 @@
 package mcjty.ariente.blocks.utility;
 
-import mcjty.ariente.varia.LoadedChunks;
+import mcjty.ariente.security.AreaLocks;
 import mcjty.ariente.Ariente;
 import mcjty.ariente.gui.GuiHelp;
 import mcjty.ariente.api.ICityAI;
@@ -25,7 +25,6 @@ import net.minecraft.network.Connection;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.network.protocol.game.ClientboundBlockEntityDataPacket;
 import net.minecraft.world.level.block.state.StateDefinition;
-import net.minecraft.world.level.block.entity.BlockEntity;
 import net.minecraft.world.InteractionHand;
 import net.minecraft.core.BlockPos;
 import net.minecraft.world.phys.BlockHitResult;
@@ -55,6 +54,12 @@ public class LockTile extends GenericTileEntity implements IGuiTile, IKeyCardSlo
 
     public LockTile(BlockPos pos, BlockState state) {
         super(Registration.LOCK_TILE.get(), pos, state);
+    }
+
+    @Override
+    public void onLoad() {
+        super.onLoad();
+        AreaLocks.loaded(this);
     }
 
     public static BaseBlock createBlock() {
@@ -102,8 +107,11 @@ public class LockTile extends GenericTileEntity implements IGuiTile, IKeyCardSlo
         return horizontalRange;
     }
 
+    public int getHorizontalRange() {
+        return horizontalRange;
+    }
+
     public void setHorizontalRange(int horizontalRange) {
-        doLock(false);
         this.horizontalRange = horizontalRange;
         markDirtyQuick();
         doLock(locked);
@@ -113,8 +121,11 @@ public class LockTile extends GenericTileEntity implements IGuiTile, IKeyCardSlo
         return verticalRange;
     }
 
+    public int getVerticalRange() {
+        return verticalRange;
+    }
+
     public void setVerticalRange(int verticalRange) {
-        doLock(false);
         this.verticalRange = verticalRange;
         markDirtyQuick();
         doLock(locked);
@@ -123,25 +134,13 @@ public class LockTile extends GenericTileEntity implements IGuiTile, IKeyCardSlo
     @Override
     public void onReplaced(Level world, BlockPos pos, BlockState state, BlockState newstate) {
         if (!state.is(newstate.getBlock())) {
-            doLock(false);
+            AreaLocks.remove(this);
         }
         super.onReplaced(world, pos, state, newstate);
     }
 
     private void doLock(boolean l) {
-        if (level != null && !level.isClientSide) {
-            for (int dx = -horizontalRange ; dx <= horizontalRange ; dx++) {
-                for (int dy = -verticalRange ; dy <= verticalRange ; dy++) {
-                    for (int dz = -horizontalRange ; dz <= horizontalRange ; dz++) {
-                        BlockPos p = worldPosition.offset(dx, dy, dz);
-                        BlockEntity te = LoadedChunks.getBlockEntity(level, p);
-                        if (te instanceof ILockTarget target && target.canBeControlledBy(keyId)) {
-                            target.setLocked(l);
-                        }
-                    }
-                }
-            }
-        }
+        AreaLocks.update(this, horizontalRange, verticalRange, l, keyId);
     }
 
     @Override
@@ -224,6 +223,7 @@ public class LockTile extends GenericTileEntity implements IGuiTile, IKeyCardSlo
     public void setKeyId(String keyId) {
         this.keyId = keyId;
         setChanged();
+        doLock(locked);
     }
 
     @Override

@@ -10,6 +10,7 @@ import mcjty.ariente.network.ArienteMessages;
 import mcjty.ariente.recipes.BlueprintRecipeRegistry;
 import mcjty.ariente.recipes.ConstructorRecipe;
 import mcjty.ariente.security.IKeyCardSlot;
+import mcjty.ariente.security.AreaLocks;
 import mcjty.ariente.setup.Registration;
 import mcjty.ariente.sounds.ModSounds;
 import mcjty.hologui.api.IGuiComponent;
@@ -59,6 +60,7 @@ import static mcjty.lib.builder.TooltipBuilder.header;
 import static mcjty.lib.builder.TooltipBuilder.key;
 
 public class StorageTile extends GenericTileEntity implements IGuiTile, ICityEquipment, IKeyCardSlot, ILockTarget, IStorageTile {
+
     private boolean locked = false;
     private String keyId;
 
@@ -79,6 +81,12 @@ public class StorageTile extends GenericTileEntity implements IGuiTile, ICityEqu
         stacks = ItemStackList.create(getTypeCount());
         counts = new int[getTypeCount() * STACKS_PER_TYPE];
         totals = new int[getTypeCount()];
+    }
+
+    @Override
+    public void onLoad() {
+        super.onLoad();
+        AreaLocks.loaded(this);
     }
 
     public int getGridSize() {
@@ -158,6 +166,7 @@ public class StorageTile extends GenericTileEntity implements IGuiTile, ICityEqu
     @Override
     public void load(CompoundTag tagCompound) {
         super.load(tagCompound);
+        AreaLocks.loadTarget(this, tagCompound);
         CompoundTag info = tagCompound.getCompound("Info");
         if (!info.isEmpty()) {
             readDisplayData(info);
@@ -171,6 +180,7 @@ public class StorageTile extends GenericTileEntity implements IGuiTile, ICityEqu
 
     @Override
     public void saveAdditional(CompoundTag tagCompound) {
+        AreaLocks.saveTarget(this, tagCompound);
         CompoundTag info = getOrCreateInfo(tagCompound);
         writeDisplayData(info);
         if (keyId != null) {

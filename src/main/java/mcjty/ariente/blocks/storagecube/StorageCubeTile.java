@@ -11,6 +11,7 @@ import mcjty.ariente.items.KeyCardItem;
 import mcjty.ariente.network.ArienteMessages;
 import mcjty.ariente.recipes.BlueprintRecipeRegistry;
 import mcjty.ariente.security.IKeyCardSlot;
+import mcjty.ariente.security.AreaLocks;
 import mcjty.ariente.setup.Registration;
 import mcjty.ariente.sounds.ModSounds;
 import mcjty.hologui.api.IGuiComponent;
@@ -104,6 +105,12 @@ public class StorageCubeTile extends TickingTileEntity implements IGuiTile, ICit
             }
         };
         itemCapability = LazyOptional.of(() -> items);
+    }
+
+    @Override
+    public void onLoad() {
+        super.onLoad();
+        AreaLocks.loaded(this);
     }
 
     public static BaseBlock createBlock() {
@@ -225,6 +232,7 @@ public class StorageCubeTile extends TickingTileEntity implements IGuiTile, ICit
     @Override
     public void load(CompoundTag tag) {
         super.load(tag);
+        AreaLocks.loadTarget(this, tag);
         CompoundTag info = tag.getCompound("Info");
         locked = info.getBoolean("locked");
         keyId = info.contains("keyId") ? info.getString("keyId") : null;
@@ -234,6 +242,7 @@ public class StorageCubeTile extends TickingTileEntity implements IGuiTile, ICit
 
     @Override
     public void saveAdditional(CompoundTag tag) {
+        AreaLocks.saveTarget(this, tag);
         super.saveAdditional(tag);
         CompoundTag info = getOrCreateInfo(tag);
         info.putBoolean("locked", locked);
