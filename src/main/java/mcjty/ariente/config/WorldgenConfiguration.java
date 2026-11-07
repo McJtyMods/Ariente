@@ -12,6 +12,8 @@ public class WorldgenConfiguration {
     public static ForgeConfigSpec.IntValue OVERWORLD_LOOT_BLUEPRINTS;
     public static ForgeConfigSpec.IntValue OVERWORLD_LOOT_ITEMS;
     public static ForgeConfigSpec.IntValue OVERWORLD_LOOT_SUIT;
+    public static ForgeConfigSpec.IntValue STANDALONE_BLUEPRINT_MULTIPLIER;
+    public static ForgeConfigSpec.IntValue STANDALONE_BLUEPRINT_COUNT;
 
     public static void init(ForgeConfigSpec.Builder SERVER_BUILDER, ForgeConfigSpec.Builder CLIENT_BUILDER) {
         SERVER_BUILDER.comment("World generation settings").push(CATEGORY_WORLDGEN);
@@ -28,6 +30,12 @@ public class WorldgenConfiguration {
                 .comment("For overworld loot: weight for blueprint results (use 0 to disable)").defineInRange("overworldLootBlueprintResults", 0, 0, Integer.MAX_VALUE);
         OVERWORLD_LOOT_SUIT = SERVER_BUILDER
                 .comment("For overworld loot: weight for powersuit pieces (use 0 to disable)").defineInRange("overworldLootSuit", 0, 0, Integer.MAX_VALUE);
+        STANDALONE_BLUEPRINT_MULTIPLIER = SERVER_BUILDER
+                .comment("Without Ariente World: multiply the blueprint weight by this amount (default 20 gives an 80% chance with the default other weights)")
+                .defineInRange("standaloneBlueprintMultiplier", 20, 1, 1000);
+        STANDALONE_BLUEPRINT_COUNT = SERVER_BUILDER
+                .comment("Without Ariente World: blueprints per chest reward, including one core-machine pattern")
+                .defineInRange("standaloneBlueprintCount", 5, 1, 16);
 
         SERVER_BUILDER.pop();
     }

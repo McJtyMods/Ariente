@@ -28,6 +28,11 @@
       "type": "patchouli:text",
       "title": "Blueprint rarity",
       "text": "Tooltips show $(thing)Common, Uncommon, Rare or Extreme$(). Exchanging averages the three tier numbers (0, 1, 2, 3), rounded to the nearest tier. The result has a $(thing)10%$() chance to move one tier down, $(thing)20%$() to move up and otherwise stays in the same tier. Moves beyond the endpoints stay at that endpoint.$(br2)All three input patterns are excluded. If the chosen tier has no other patterns, the nearest available tier is used, preferring the lower tier on a tie. Disabled recipes cannot be awarded."
+    },
+    {
+      "type": "patchouli:text",
+      "title": "Without Ariente World",
+      "text": "Explore villages, shipwrecks, ocean ruins, buried treasure, strongholds and other vanilla structures. With default settings, supported chests have an $(thing)80% chance$() to add $(thing)five blueprints$(). One is a core machine or component pattern to help start your workshop.$(br2)The other four each roll 65% Common, 20% Uncommon, 13% Rare and 2% Extreme, then choose a random enabled recipe in that tier. Use duplicate patterns in the three-blueprint exchange.$(br2)These bonuses apply only without ArienteWorld; its city rewards keep their own balance."
     }
   ],
   "extra_recipe_mappings": {

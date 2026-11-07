@@ -1,6 +1,7 @@
 {
   "replace": false,
   "entries": [
-    "ariente:dungeon_loot"
+    "ariente:dungeon_loot",
+    "ariente:standalone_chest_loot"
   ]
 }

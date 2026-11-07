@@ -536,6 +536,16 @@ The catalog's rarity weights are relative selection weights, not independent
 drop probabilities: Common=1, Uncommon=0.1, Rare=0.01, Extreme=0.001. A city's
 loot settings separately decide whether and how often to choose a blueprint.
 
+Without ArienteWorld, supported vanilla exploration chests have an **80%** chance
+to add **five blueprints** with default settings. The first is a Circuit, Energy
+Holder, Negarite Generator, Posirite Generator, Smelter, Auto Constructor or
+Recycler pattern. Each remaining pattern chooses a tier with **65% Common,
+20% Uncommon, 13% Rare and 2% Extreme** probability, then a random enabled recipe
+within that tier. Surplus patterns can feed the three-blueprint exchange.
+The supported chests include villages, shipwrecks, ocean ruins, buried treasure,
+strongholds, temples, dungeons, mansions, outposts, ruined portals and ancient
+cities, plus the previously supported mineshafts, igloos and Nether fortresses.
+
 Blueprint tooltips also show their rarity tier. Place **three valid blueprints**
 in any arrangement in either crafting grid to consume them and receive one new
 pattern. All three input patterns are excluded. Blank or disabled patterns do
@@ -1535,6 +1545,8 @@ directory. Values below are defaults, not guaranteed server settings.
 | Ariente `damage` | `forcefieldDamage` | 19.0 | Contact damage. |
 | Ariente `worldgen` | `overworldOregen` | DEFAULT | Enables optional Overworld marble and seven resource ores. |
 | Ariente `worldgen` | `overworldDungeonLoot` | DEFAULT | Enables optional dungeon blueprints/equipment. |
+| Ariente `worldgen` | `standaloneBlueprintMultiplier` | 20 | Multiplies blueprint reward weight only without ArienteWorld. |
+| Ariente `worldgen` | `standaloneBlueprintCount` | 5 | Blueprints per standalone chest reward, including one core pattern (1–16). |
 | ArienteWorld `worldgen` | `overworldDungeonChance` | 0.002 | Per-chunk entrance candidacy. |
 | ArienteWorld `worldgen` | `cityDungeonChance` | 0.7 | Seeded chance per complex grid spot; 0 disables complexes and 1 fills all candidates. Choose before creating a world. Districts, routes and arrival portals remain. |
 | ArienteWorld `loot` | `soldierCitykeyChance` | 0.2 | City soldier key-card drop chance. |
@@ -1547,8 +1559,14 @@ and the movement hooks use them. Overworld ore and dungeon-loot settings accept
 YES/NO/DEFAULT; DEFAULT enables them when ArienteWorld is absent. Dungeon loot
 preserves vanilla drops and offers one extra weighted selection: no addition has
 weight 100, blueprints/results use their configured weights, and each of the six
-suit/sabre entries uses the suit weight. Defaults 20/0/0 give a one-in-six chance
-of a blueprint addition per supported chest; recipe rarity then selects its type.
+suit/sabre entries uses the suit weight. Without ArienteWorld, the default
+blueprint weight 20 is multiplied by 20, giving `400 / (100 + 400) = 80%`
+for a five-blueprint reward. The standalone tier shares replace the catalog's
+very steep loot weights for these rewards only. Zero blueprint weight still
+disables blueprint additions. With ArienteWorld, DEFAULT disables these rewards;
+explicit YES retains one blueprint per reward with the original weights and
+seven-table chest list. Neither the multiplier nor the larger chest list applies
+with the companion installed. Vanilla loot and city loot are preserved.
 
 Sources: [Ariente config classes](src/main/java/mcjty/ariente/config),
 [ArienteWorld config classes](../ArienteWorld/src/main/java/mcjty/arienteworld/config).
