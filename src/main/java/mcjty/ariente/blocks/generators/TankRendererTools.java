@@ -39,7 +39,7 @@ public class TankRendererTools {
     private static void vertex(VertexConsumer renderer, PoseStack stack, TextureAtlasSprite sprite, float x, float y, float z, float u, float v, int light, Vec3 normal) {
         renderer.addVertex(stack.last().pose(), x, y, z)
                 .setColor(1.0f, 1.0f, 1.0f, 1.0f)
-                .setUv(sprite.getU(u * 16), sprite.getV(v * 16))
+                .setUv(sprite.getU(u), sprite.getV(v))
                 .setOverlay(OverlayTexture.NO_OVERLAY)
                 .setLight(light)
                 .setNormal(stack.last(), (float) normal.x, (float) normal.y, (float) normal.z)

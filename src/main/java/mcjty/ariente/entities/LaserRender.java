@@ -51,10 +51,10 @@ public class LaserRender extends EntityRenderer<LaserEntity> {
             var activeCamera = Minecraft.getInstance().gameRenderer.getMainCamera();
             Vec3 right = new Vec3(activeCamera.getLeftVector()).scale(BEAM_WIDTH);
             Vec3 up = new Vec3(activeCamera.getUpVector()).scale(BEAM_WIDTH);
-            vertex(poses, vertices, right.add(up), sprite.getU(6), sprite.getV(5));
-            vertex(poses, vertices, right.scale(-1).add(up), sprite.getU(10), sprite.getV(5));
-            vertex(poses, vertices, right.scale(-1).subtract(up), sprite.getU(10), sprite.getV(11));
-            vertex(poses, vertices, right.subtract(up), sprite.getU(6), sprite.getV(11));
+            vertex(poses, vertices, right.add(up), sprite.getU(6 / 16f), sprite.getV(5 / 16f));
+            vertex(poses, vertices, right.scale(-1).add(up), sprite.getU(10 / 16f), sprite.getV(5 / 16f));
+            vertex(poses, vertices, right.scale(-1).subtract(up), sprite.getU(10 / 16f), sprite.getV(11 / 16f));
+            vertex(poses, vertices, right.subtract(up), sprite.getU(6 / 16f), sprite.getV(11 / 16f));
         }
         super.render(entity, yaw, partialTicks, poses, buffer, light);
     }

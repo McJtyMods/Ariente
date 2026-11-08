@@ -1,5 +1,6 @@
 package mcjty.ariente.display.client;
 
+import com.mojang.blaze3d.systems.RenderSystem;
 import com.mojang.blaze3d.vertex.PoseStack;
 import mcjty.ariente.client.WorldHolograms;
 import mcjty.ariente.display.DisplayBaseTile;
@@ -17,10 +18,9 @@ import net.neoforged.neoforge.client.event.ClientTickEvent;
 import net.neoforged.neoforge.client.event.InputEvent;
 import net.neoforged.neoforge.client.event.RenderLevelStageEvent;
 import net.neoforged.neoforge.network.PacketDistributor;
+import org.joml.Matrix4fStack;
 
 public class DisplayClientEvents {
-
-    private PoseStack worldPoses;
 
     public static DisplayGeometry.Hit pick(Player player) {
         DisplayGeometry.Hit nearest = null;
@@ -87,17 +87,23 @@ public class DisplayClientEvents {
 
     @SubscribeEvent
     public void render(RenderLevelStageEvent event) {
-        if (LiveCameraRenderer.isRendering()) {
+        if (LiveCameraRenderer.isRendering() || event.getStage() != RenderLevelStageEvent.Stage.AFTER_LEVEL) {
             return;
         }
-        if (event.getStage() == RenderLevelStageEvent.Stage.AFTER_BLOCK_ENTITIES) {
-            // AFTER_LEVEL supplies the projection pose in Forge 1.20.1; retain the world camera pose.
-            worldPoses = WorldHolograms.copy(event.getPoseStack());
-            return;
+        // 1.21 removes the camera matrix before AFTER_LEVEL; queued poses only contain block offsets.
+        Matrix4fStack modelView = RenderSystem.getModelViewStack();
+        modelView.pushMatrix();
+        modelView.mul(event.getModelViewMatrix());
+        RenderSystem.applyModelViewMatrix();
+        try {
+            renderWorld(event);
+        } finally {
+            modelView.popMatrix();
+            RenderSystem.applyModelViewMatrix();
         }
-        if (event.getStage() != RenderLevelStageEvent.Stage.AFTER_LEVEL) {
-            return;
-        }
+    }
+
+    private static void renderWorld(RenderLevelStageEvent event) {
         LiveCameraRenderer.beginFrame();
         WorldHolograms.renderWorld();
         Minecraft mc = Minecraft.getInstance();
@@ -105,14 +111,14 @@ public class DisplayClientEvents {
             return;
         }
         if (DisplayModuleDrag.active()) {
-            DisplayModuleDrag.render(worldPoses, mc.renderBuffers().bufferSource(), event.getCamera().getPosition());
+            DisplayModuleDrag.render(event.getPoseStack(), mc.renderBuffers().bufferSource(), event.getCamera().getPosition());
             return;
         }
         DisplayGeometry.Hit hit = pick(mc.player);
         if (hit == null) {
             return;
         }
-        drawPreview(mc, hit, worldPoses, event.getCamera().getPosition());
+        drawPreview(mc, hit, event.getPoseStack(), event.getCamera().getPosition());
     }
 
     private static void drawPreview(Minecraft mc, DisplayGeometry.Hit hit, PoseStack poses, Vec3 camera) {

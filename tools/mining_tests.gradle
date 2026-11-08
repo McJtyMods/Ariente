@@ -1,0 +1,35 @@
+// Run from MultiWorkspace with :ArienteWorld:runGameTestServer.
+gradle.afterProject { p ->
+    if (p.name == 'Ariente') {
+        p.sourceSets {
+            gameTest {
+                compileClasspath += p.sourceSets.main.output
+                runtimeClasspath += p.sourceSets.main.output
+                java.setIncludes(['mcjty/ariente/MiningTests.java'])
+                resources.setIncludes(['data/ariente/structure/empty.nbt'])
+            }
+        }
+        p.sourceSets.gameTest.output.classesDirs.setFrom(p.layout.buildDirectory.dir('verification/mining-test-classes'))
+        p.sourceSets.gameTest.output.resourcesDir = p.file('build/verification/mining-test-resources')
+        p.tasks.named('compileGameTestJava') {
+            destinationDirectory.set(p.layout.buildDirectory.dir('verification/mining-test-classes'))
+        }
+        p.tasks.named('processGameTestResources') {
+            destinationDir = p.file('build/verification/mining-test-resources')
+        }
+        p.configurations {
+            gameTestImplementation.extendsFrom implementation
+            gameTestRuntimeOnly.extendsFrom runtimeOnly
+        }
+    }
+    if (p.name == 'ArienteWorld') {
+        p.sourceSets.gameTest.java.setSrcDirs([])
+        p.sourceSets.gameTest.output.classesDirs.setFrom([])
+        p.runs {
+            gameTestServer {
+                workingDirectory p.file('build/verification/mining-tests')
+                systemProperty 'neoforge.enabledGameTestNamespaces', 'ariente'
+            }
+        }
+    }
+}

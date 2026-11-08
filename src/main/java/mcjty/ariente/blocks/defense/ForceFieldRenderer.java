@@ -160,13 +160,17 @@ public class ForceFieldRenderer {
         random.nextFloat();
         random.nextFloat();
 
-        BufferBuilder builder = Tesselator.getInstance().begin(VertexFormat.Mode.TRIANGLES, DefaultVertexFormat.POSITION_TEX_COLOR);
+        BufferBuilder builder = t.begin(VertexFormat.Mode.TRIANGLES, DefaultVertexFormat.POSITION_TEX_COLOR);
         for (PanelInfo info : panelInfo) {
             if (info != null) {
                 renderPanel(builder, matrix, pos, x, y, z, scale, info);
             }
         }
-        BufferUploader.drawWithShader(builder.buildOrThrow());
+        // Inactive and newly loaded fields can have no panel geometry yet.
+        MeshData mesh = builder.build();
+        if (mesh != null) {
+            BufferUploader.drawWithShader(mesh);
+        }
     }
 
     private static void tickDamageEffects(Matrix4f matrix, BlockPos pos, PanelInfo[] panelInfo, double x, double y, double z) {

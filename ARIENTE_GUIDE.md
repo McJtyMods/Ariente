@@ -308,6 +308,9 @@ every 11 game ticks, giving about **220 seconds** at 20 TPS. Further sightings
 refresh the alert. Keep the complex's
 footprint loaded: the current AI waits until its required chunks are loaded.
 
+An AI Core takes about **10 seconds to mine with an unenchanted netherite
+pickaxe**; vanilla tool, enchantment and status modifiers still apply.
+
 Destroy **every AI Core** to defeat the authored city's AI. Destroying the last
 valid core produces a card carrying that city's **storage access** key and marks
 the city dead. This stops that city AI; it does not erase surviving mobs or

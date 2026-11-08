@@ -32,9 +32,10 @@ public class AICoreTile extends ArienteBlockEntity implements IAlarmMode, IAICor
     }
 
     public static BaseBlock createBlock() {
+        // With proper pickaxe tags, hardness 60 gives unenchanted netherite a ten-second mining time.
         return new BaseBlock(new BlockBuilder()
                 .properties(Block.Properties.of().mapColor(MapColor.METAL)
-                        .strength(20.0f, 800).noOcclusion())
+                        .strength(60.0f, 800).noOcclusion())
                 .topDriver(DRIVER)
                 .tileEntitySupplier(AICoreTile::new)
         ) {

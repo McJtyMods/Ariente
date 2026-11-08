@@ -489,9 +489,17 @@ public class AutoFieldTile extends ExtremeMachineTile implements IGuiTile, IPowe
     }
 
     @SubscribeEvent
-    public void onFieldChunkChanged(ChunkEvent event) {
-        if ((event instanceof ChunkEvent.Load || event instanceof ChunkEvent.Unload)
-                && event.getLevel() == level && watchedChunks.contains(event.getChunk().getPos().toLong())) {
+    public void onFieldChunkLoad(ChunkEvent.Load event) {
+        onFieldChunkChanged(event);
+    }
+
+    @SubscribeEvent
+    public void onFieldChunkUnload(ChunkEvent.Unload event) {
+        onFieldChunkChanged(event);
+    }
+
+    private void onFieldChunkChanged(ChunkEvent event) {
+        if (event.getLevel() == level && watchedChunks.contains(event.getChunk().getPos().toLong())) {
             // Chunk load events can arrive before FULL status. Rebuild on the next controller tick.
             refreshField.set(true);
         }

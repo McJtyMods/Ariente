@@ -66,7 +66,7 @@ public class FluxShipExhaustRender {
                 double phase = seed + strand * Math.PI * 2 / STRANDS + engine * .7;
                 double length = (1 + 19 * strength) * (.87 + .13 * Math.sin(strand * 2.4 + engine));
                 // Like the tanks, stretch a horizontal strip of the power texture along the beam.
-                float v = sprite.getV((float) ((time * .025 + strand * .19 + engine * .37) % 1) * 16);
+                float v = sprite.getV((float) ((time * .025 + strand * .19 + engine * .37) % 1));
                 renderStrand(pose, vertices, sprite, v, nozzle, length, phase, time, strength, camera, cameraUp);
             }
         }

@@ -149,8 +149,8 @@ public class SurfaceQuad {
             }
             float su = tile < 0 ? u : ((tile % 4) + (u - qx * .5f) * 2) / 4;
             float sv = tile < 0 ? v : ((tile / 4) + (v - qy * .5f) * 2) / 4;
-            data[i * stride + 4] = Float.floatToRawIntBits(sprite.getU(su * 16));
-            data[i * stride + 5] = Float.floatToRawIntBits(sprite.getV(sv * 16));
+            data[i * stride + 4] = Float.floatToRawIntBits(sprite.getU(su));
+            data[i * stride + 5] = Float.floatToRawIntBits(sprite.getV(sv));
         }
         return withLight(new BakedQuad(data, original.getTintIndex(), original.getDirection(), sprite, original.isShade(), original.hasAmbientOcclusion()), light);
     }
@@ -163,8 +163,8 @@ public class SurfaceQuad {
         for (int i = 0; i < 4; i++) {
             float u = (Float.intBitsToFloat(vertices[i * stride + 4]) - from.getU0()) / (from.getU1() - from.getU0());
             float v = (Float.intBitsToFloat(vertices[i * stride + 5]) - from.getV0()) / (from.getV1() - from.getV0());
-            vertices[i * stride + 4] = Float.floatToRawIntBits(to.getU(u * 16));
-            vertices[i * stride + 5] = Float.floatToRawIntBits(to.getV(v * 16));
+            vertices[i * stride + 4] = Float.floatToRawIntBits(to.getU(u));
+            vertices[i * stride + 5] = Float.floatToRawIntBits(to.getV(v));
         }
         return new BakedQuad(vertices, original.getTintIndex(), original.getDirection(), to, original.isShade(), original.hasAmbientOcclusion());
     }
