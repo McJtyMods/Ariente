@@ -2,6 +2,31 @@
 
 Ariente is a mod about technology and exploration
 
+## Building and Jenkins
+
+For Minecraft 1.21.1 / NeoForge, select Java 21 and **Use Gradle Wrapper** in
+Jenkins (Gradle 8.14.2). Use tasks `clean build publish`, equivalent to:
+
+```sh
+./gradlew clean build publish
+```
+
+NeoGradle manages mapped dependencies through build tasks, so no ForgeGradle 5
+cache workaround is needed. Set `local_maven` to the Jenkins Maven repository
+directory, or override it with `-Pmavendir=...`. Without either setting, `publish`
+writes to the local Maven cache. The publication includes the mod jar, API jar
+and POM.
+
+Publish HoloGui first, then Ariente, then build ArienteWorld. Jenkins's
+`BUILD_NUMBER` is appended to each mod's published version. Pass
+`-Phologui_version=<published HoloGui version>` when building Ariente, and pass
+both that property and `-Pariente_version=<published Ariente version>` when
+building ArienteWorld. Include the build-number suffixes from the respective
+upstream jobs. An additional dependency repository can be supplied with
+`-Pariente_dependency_repository=<repository URL>`.
+
+## Gameplay and development
+
 See [the gameplay and systems guide](ARIENTE_GUIDE.md) for the Forge 1.20.1
 development port, including machines, power, progression, recipes, and current
 limitations.
