@@ -1174,7 +1174,18 @@ public class FluxLevitatorEntity extends Entity implements IFluxLevitatorEntity 
     @Override
     public InteractionResult interact(Player player, InteractionHand hand) {
         if (player.isShiftKeyDown()) {
-            return InteractionResult.PASS;
+            if (!isAlive() || getPassengers().stream().anyMatch(passenger -> !(passenger instanceof IHoloGuiEntity))) {
+                return InteractionResult.PASS;
+            }
+            if (!level().isClientSide) {
+                ItemStack stack = new ItemStack(Registration.FLUX_LEVITATOR.get());
+                if (hasCustomName()) {
+                    stack.setHoverName(getCustomName());
+                }
+                player.getInventory().placeItemBackInInventory(stack);
+                discard();
+            }
+            return InteractionResult.sidedSuccess(level().isClientSide);
         } else {
             if (!level().isClientSide) {
                 player.startRiding(this);

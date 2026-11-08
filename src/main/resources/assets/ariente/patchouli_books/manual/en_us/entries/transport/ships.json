@@ -27,7 +27,7 @@
     {
       "type": "patchouli:text",
       "title": "Cockpit view",
-      "text": "First-person banking can be reduced with utility.fluxShipCameraTilt (0 to 1) in ariente-client.toml.$(br2)The third-person camera stays upright. Mouse steering works there too; hold the free-look key to inspect the ship. The pilot model stays seated and tilts with the hull.$(br2)An unattended ship coasts and descends at about four blocks per second, including after reloads or when its pilot is defeated. It cannot avoid obstacles. Sneak-hit it to recover its item."
+      "text": "First-person banking can be reduced with utility.fluxShipCameraTilt (0 to 1) in ariente-client.toml.$(br2)The third-person camera stays upright. Mouse steering works there too; hold the free-look key to inspect the ship. The pilot model stays seated and tilts with the hull.$(br2)An unattended ship coasts and descends at about four blocks per second, including after reloads or when its pilot is defeated. It cannot avoid obstacles. Sneak-right-click an unoccupied ship to pick it up."
     },
     {
       "type": "patchouli:text",

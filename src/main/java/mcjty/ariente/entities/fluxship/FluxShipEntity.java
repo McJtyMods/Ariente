@@ -135,11 +135,16 @@ public class FluxShipEntity extends Entity {
 
     @Override
     public InteractionResult interact(Player player, InteractionHand hand) {
-        if (player.isShiftKeyDown() || getControllingPassenger() != null) {
+        if (!isAlive() || getControllingPassenger() != null) {
             return InteractionResult.PASS;
         }
         if (!level().isClientSide) {
-            player.startRiding(this);
+            if (player.isShiftKeyDown()) {
+                player.getInventory().placeItemBackInInventory(asItem());
+                discard();
+            } else {
+                player.startRiding(this);
+            }
         }
         return InteractionResult.sidedSuccess(level().isClientSide);
     }

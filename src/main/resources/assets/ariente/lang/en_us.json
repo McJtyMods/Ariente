@@ -82,7 +82,7 @@
   "message.ariente.extreme_circuit.recovery": "One per machine. Always recovered when recycling the machine.",
   "message.ariente.extreme_circuit.installed": "Extreme Circuit installed",
   "message.ariente.extreme_circuit.already_installed": "This machine already has an Extreme Circuit",
-  "message.ariente.extreme_circuit.upgraded": "Extreme Circuit installed: 50% less power, double operation speed",
+  "message.ariente.extreme_circuit.upgraded": "Extreme Circuit: -50% power, 2x speed",
   "item.ariente.ariente_pearl": "Ariente Pearl",
   "item.ariente.energy_holder": "Energy Holder",
 
@@ -304,7 +304,7 @@
   "message.ariente.flux_levitator.header": "Flux Levitator",
 
   "message.ariente.flux_ship.header": "Powered spacecraft with a forward laser",
-  "message.ariente.flux_ship.placement": "Use on clear ground to deploy; right-click the ship to board",
+  "message.ariente.flux_ship.placement": "Use on clear ground to deploy; right-click to board, sneak-right-click to pick up",
   "message.ariente.flux_ship.charging": "Recharge on a powered Flux Ship Charger",
   "message.ariente.flux_ship.no_space": "Not enough room to deploy the Flux Ship here",
   "message.ariente.flux_ship.placement_failed": "Unable to deploy the Flux Ship here",

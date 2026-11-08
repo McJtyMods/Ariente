@@ -12,7 +12,7 @@
     {
       "type": "patchouli:text",
       "title": "Drive the cart",
-      "text": "Hold $(k:key.forward) to accelerate along the track in the direction you face. Facing the other way first slows the cart through zero, then reverses it. Hold $(k:key.back) to brake gradually to a stop. Release the keys to keep your speed.$(br2)Both end panels also set speed; the red control stops instantly. Sneak to dismount.$(br2)Carts can start from rest on bends. Slow down before testing a new route. No generator connection is needed."
+      "text": "Hold $(k:key.forward) to accelerate along the track in the direction you face. Facing the other way first slows the cart through zero, then reverses it. Hold $(k:key.back) to brake gradually to a stop. Release the keys to keep your speed.$(br2)Both end panels also set speed; the red control stops instantly. Sneak to dismount. Sneak-right-click an unoccupied cart to pick it up.$(br2)Carts can start from rest on bends. Slow down before testing a new route. No generator connection is needed."
     }
   ],
   "extra_recipe_mappings": {
