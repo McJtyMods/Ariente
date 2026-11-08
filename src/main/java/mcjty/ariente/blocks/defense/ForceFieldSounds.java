@@ -5,8 +5,8 @@ import mcjty.ariente.sounds.ModSounds;
 import mcjty.ariente.sounds.SoundController;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.multiplayer.ClientLevel;
-import net.minecraft.world.entity.player.Player;
 import net.minecraft.core.BlockPos;
+import net.minecraft.world.entity.player.Player;
 
 public class ForceFieldSounds {
 
@@ -14,8 +14,10 @@ public class ForceFieldSounds {
         BlockPos pos = forcefield.getBlockPos();
         ClientLevel world = Minecraft.getInstance().level;
         Player player = Minecraft.getInstance().player;
-        double minDistance = 100000000000.0;
-        PanelInfo minInfo = null;
+        if (world == null || player == null || forcefield.getLevel() != world) {
+            return;
+        }
+        double minDistance = Double.POSITIVE_INFINITY;
         if (forcefield.entityNearField(player)) {
             for (PanelInfo info : forcefield.getPanelInfo()) {
                 if (info != null) {
@@ -23,7 +25,6 @@ public class ForceFieldSounds {
                         double sqdist = info.getSquaredDistance(player.position(), forcefield.getScaleDouble());
                         if (sqdist < minDistance) {
                             minDistance = sqdist;
-                            minInfo = info;
                         }
                     } else {
                         // Sound while building up? @todo

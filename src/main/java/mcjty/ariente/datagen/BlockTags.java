@@ -19,17 +19,15 @@ public class BlockTags extends BlockTagsProvider {
 
     @Override
     protected void addTags(HolderLookup.Provider provider) {
-        addTag(net.minecraft.tags.BlockTags.MINEABLE_WITH_PICKAXE, Registration.DISPLAY_BASE.get());
-        addTag(net.minecraft.tags.BlockTags.MINEABLE_WITH_PICKAXE, Registration.CAMERA.get());
-        addTag(net.minecraft.tags.BlockTags.MINEABLE_WITH_PICKAXE, Registration.SMELTER.get());
-        addTag(net.minecraft.tags.BlockTags.MINEABLE_WITH_PICKAXE, Registration.RECYCLER.get());
-        addTag(net.minecraft.tags.BlockTags.MINEABLE_WITH_PICKAXE, Registration.PURIFIER_START.get(), Registration.PURIFIER_FINISH.get(), Registration.PURIFIER_TUBE.get());
-        addTag(net.minecraft.tags.BlockTags.MINEABLE_WITH_PICKAXE, Registration.CHARGER.get());
-        addTag(net.minecraft.tags.BlockTags.MINEABLE_WITH_PICKAXE,
-                Registration.HOLO_STORAGE_1.get(), Registration.HOLO_STORAGE_2.get(), Registration.HOLO_STORAGE_3.get());
+        // Include the decorative variants and multipart/machine blocks as well as ores.
+        for (var entry : Registration.BLOCKS.getEntries()) {
+            Block block = entry.get();
+            if (block != Registration.FLUX_GLOW.get() && block != Registration.INVISIBLE_DOOR.get()) {
+                addTag(net.minecraft.tags.BlockTags.MINEABLE_WITH_PICKAXE, block);
+            }
+        }
         Block[] ores = {Registration.ORE_LITHIUM.get(), Registration.ORE_MANGANESE.get(), Registration.ORE_PLATINUM.get(),
                 Registration.ORE_SILVER.get(), Registration.ORE_SILICON.get(), Registration.ORE_NEGARITE.get(), Registration.ORE_POSIRITE.get()};
-        addTag(net.minecraft.tags.BlockTags.MINEABLE_WITH_PICKAXE, ores);
         addTag(net.minecraft.tags.BlockTags.NEEDS_STONE_TOOL, ores);
         addTag(Tags.Blocks.ORE_RATES_SINGULAR, Registration.ORE_LITHIUM.get(), Registration.ORE_MANGANESE.get(),
                 Registration.ORE_PLATINUM.get(), Registration.ORE_SILVER.get(), Registration.ORE_SILICON.get());
