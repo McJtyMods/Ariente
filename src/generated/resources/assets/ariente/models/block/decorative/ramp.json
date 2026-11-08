@@ -1,4 +1,5 @@
 {
+  "parent": "minecraft:block/block",
   "elements": [
     {
       "faces": {
@@ -164,6 +165,5 @@
   "textures": {
     "all": "ariente:block/marble/blackmarble",
     "particle": "#all"
-  },
-  "parent": "minecraft:block/block"
+  }
 }

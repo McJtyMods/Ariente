@@ -1,17 +1,16 @@
 package mcjty.ariente.display.client;
 
+import java.util.HashMap;
+import java.util.Map;
 import mcjty.ariente.display.DisplayBaseTile;
 import mcjty.ariente.display.DisplayDataAssembly;
 import mcjty.ariente.display.DisplayDataCodec;
 import mcjty.ariente.display.PacketDisplayData;
 import mcjty.ariente.display.PacketRequestDisplayData;
-import mcjty.ariente.network.ArienteMessages;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.multiplayer.ClientLevel;
 import net.minecraft.core.BlockPos;
-
-import java.util.HashMap;
-import java.util.Map;
+import net.neoforged.neoforge.network.PacketDistributor;
 
 public class DisplayDataReceiver {
 
@@ -77,7 +76,7 @@ public class DisplayDataReceiver {
             }
             int missing = base.requestReadings(mc.player);
             if (missing != 0) {
-                ArienteMessages.INSTANCE.sendToServer(new PacketRequestDisplayData(base.getBlockPos(), base.layoutVersion(), missing));
+                PacketDistributor.sendToServer(new PacketRequestDisplayData(base.getBlockPos(), base.layoutVersion(), missing));
                 if (++requested == 4) {
                     break;
                 }

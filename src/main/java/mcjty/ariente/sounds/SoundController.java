@@ -1,15 +1,14 @@
 package mcjty.ariente.sounds;
 
 import com.google.common.collect.Maps;
+import java.util.Map;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.resources.sounds.AbstractTickableSoundInstance;
-import net.minecraft.sounds.SoundEvent;
 import net.minecraft.core.BlockPos;
+import net.minecraft.sounds.SoundEvent;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.level.dimension.DimensionType;
 import org.apache.commons.lang3.tuple.Pair;
-
-import java.util.Map;
 
 public class SoundController {
 
@@ -40,7 +39,6 @@ public class SoundController {
     public static ForcefieldSound getForcefieldSoundAt(Level world, BlockPos pos){
         return forcefieldSounds.get(fromPosition(world, pos));
     }
-
 
     private static Pair<DimensionType, BlockPos> fromPosition(Level world, BlockPos producerPos){
         return Pair.of(world.dimensionType(), producerPos);

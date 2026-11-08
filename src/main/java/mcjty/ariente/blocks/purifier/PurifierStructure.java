@@ -1,5 +1,8 @@
 package mcjty.ariente.blocks.purifier;
 
+import java.util.ArrayList;
+import java.util.List;
+import javax.annotation.Nullable;
 import mcjty.ariente.config.PowerConfiguration;
 import mcjty.ariente.setup.Registration;
 import net.minecraft.core.BlockPos;
@@ -7,10 +10,6 @@ import net.minecraft.core.Direction;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.level.block.state.properties.BlockStateProperties;
-
-import javax.annotation.Nullable;
-import java.util.ArrayList;
-import java.util.List;
 
 public record PurifierStructure(Direction direction, List<BlockPos> tubes, PurifierTile finish) {
 

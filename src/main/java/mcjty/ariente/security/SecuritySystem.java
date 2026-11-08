@@ -1,17 +1,17 @@
 package mcjty.ariente.security;
 
-import mcjty.ariente.api.ISecuritySystem;
-import mcjty.lib.varia.LevelTools;
-import mcjty.lib.worlddata.AbstractWorldData;
-import net.minecraft.nbt.CompoundTag;
-import net.minecraft.world.level.Level;
-import net.minecraft.server.level.ServerLevel;
-
-import javax.annotation.Nonnull;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 import java.util.Random;
+import javax.annotation.Nonnull;
+import mcjty.ariente.api.ISecuritySystem;
+import mcjty.lib.varia.LevelTools;
+import mcjty.lib.worlddata.AbstractWorldData;
+import net.minecraft.core.HolderLookup;
+import net.minecraft.nbt.CompoundTag;
+import net.minecraft.server.level.ServerLevel;
+import net.minecraft.world.level.Level;
 
 public class SecuritySystem extends AbstractWorldData<SecuritySystem> implements ISecuritySystem {
 
@@ -61,7 +61,6 @@ public class SecuritySystem extends AbstractWorldData<SecuritySystem> implements
         return builder.toString();
     }
 
-
     @Nonnull
     public static SecuritySystem getSecuritySystem(Level world) {
         return getData(world, SecuritySystem::createSecuritySystem, () -> new SecuritySystem(), NAME);
@@ -78,7 +77,7 @@ public class SecuritySystem extends AbstractWorldData<SecuritySystem> implements
     }
 
     @Override
-    public CompoundTag save(CompoundTag compound) {
+    public CompoundTag save(CompoundTag compound, HolderLookup.Provider provider) {
         compound.putLong("lastSecurityID", lastSecurityID);
         return compound;
     }

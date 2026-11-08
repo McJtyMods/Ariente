@@ -4,9 +4,9 @@
       "model": "ariente:block/machines/power_combiner",
       "x": 90
     },
-    "facing=up": {
+    "facing=east": {
       "model": "ariente:block/machines/power_combiner",
-      "x": -90
+      "y": 90
     },
     "facing=north": {
       "model": "ariente:block/machines/power_combiner"
@@ -15,13 +15,13 @@
       "model": "ariente:block/machines/power_combiner",
       "y": 180
     },
+    "facing=up": {
+      "model": "ariente:block/machines/power_combiner",
+      "x": -90
+    },
     "facing=west": {
       "model": "ariente:block/machines/power_combiner",
       "y": 270
-    },
-    "facing=east": {
-      "model": "ariente:block/machines/power_combiner",
-      "y": 90
     }
   }
 }

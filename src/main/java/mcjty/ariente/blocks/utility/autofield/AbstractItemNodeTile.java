@@ -1,5 +1,6 @@
 package mcjty.ariente.blocks.utility.autofield;
 
+import java.util.function.BooleanSupplier;
 import mcjty.hologui.api.IGuiComponentRegistry;
 import mcjty.hologui.api.IHoloGuiEntity;
 import mcjty.hologui.api.components.IPanel;
@@ -10,9 +11,7 @@ import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.level.block.entity.BlockEntityType;
 import net.minecraft.world.level.block.state.BlockState;
-import net.minecraftforge.items.ItemHandlerHelper;
-
-import java.util.function.BooleanSupplier;
+import net.neoforged.neoforge.items.ItemHandlerHelper;
 
 public abstract class AbstractItemNodeTile extends AbstractNodeTile {
 

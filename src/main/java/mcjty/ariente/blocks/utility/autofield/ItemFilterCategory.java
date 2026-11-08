@@ -1,12 +1,11 @@
 package mcjty.ariente.blocks.utility.autofield;
 
+import java.util.Locale;
 import mcjty.ariente.recipes.PurifierRecipes;
-import net.minecraft.world.SimpleContainer;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.crafting.RecipeType;
+import net.minecraft.world.item.crafting.SingleRecipeInput;
 import net.minecraft.world.level.Level;
-
-import java.util.Locale;
 
 /** Recipe-aware destinations; the optional purifier path precedes direct smelting. */
 public enum ItemFilterCategory {
@@ -51,7 +50,7 @@ public enum ItemFilterCategory {
         if (this == PURIFIABLE) {
             return PurifierRecipes.find(level, stack) != null;
         }
-        boolean smeltable = level.getRecipeManager().getRecipeFor(RecipeType.SMELTING, new SimpleContainer(stack), level).isPresent();
+        boolean smeltable = level.getRecipeManager().getRecipeFor(RecipeType.SMELTING, new SingleRecipeInput(stack), level).isPresent();
         if (this == DIRECT_SMELTABLE) {
             return smeltable && PurifierRecipes.find(level, stack) == null;
         }
@@ -62,9 +61,9 @@ public enum ItemFilterCategory {
             String namespace = tag.location().getNamespace();
             String path = tag.location().getPath();
             return namespace.equals("minecraft") && (path.equals("logs") || path.equals("planks") || path.startsWith("wooden_"))
-                    || namespace.equals("forge") && (path.equals("rods/wooden") || path.equals("chests/wooden") || path.equals("fences/wooden"));
+                    || namespace.equals("c") && (path.equals("rods/wooden") || path.equals("chests/wooden") || path.equals("fences/wooden"));
         });
-        boolean ingot = stack.getTags().anyMatch(tag -> tag.location().getNamespace().equals("forge")
+        boolean ingot = stack.getTags().anyMatch(tag -> tag.location().getNamespace().equals("c")
                 && (tag.location().getPath().equals("ingots") || tag.location().getPath().startsWith("ingots/")));
         return switch (this) {
             case WOOD -> wood;

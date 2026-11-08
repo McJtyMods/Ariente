@@ -1,7 +1,7 @@
 {
   "parent": "minecraft:block/template_glass_pane_side",
   "textures": {
-    "pane": "ariente:block/decorative/marble_fence",
-    "edge": "ariente:block/decorative/marble_fence"
+    "edge": "ariente:block/decorative/marble_fence",
+    "pane": "ariente:block/decorative/marble_fence"
   }
 }

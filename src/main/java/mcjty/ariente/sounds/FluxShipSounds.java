@@ -1,22 +1,21 @@
 package mcjty.ariente.sounds;
 
+import java.util.IdentityHashMap;
+import java.util.Map;
+import javax.annotation.Nullable;
 import mcjty.ariente.Ariente;
 import mcjty.ariente.entities.fluxship.FluxShipEntity;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.sounds.SoundManager;
 import net.minecraft.sounds.SoundSource;
 import net.minecraft.world.entity.player.Player;
-import net.minecraftforge.api.distmarker.Dist;
-import net.minecraftforge.event.TickEvent;
-import net.minecraftforge.event.entity.EntityJoinLevelEvent;
-import net.minecraftforge.eventbus.api.SubscribeEvent;
-import net.minecraftforge.fml.common.Mod;
+import net.neoforged.api.distmarker.Dist;
+import net.neoforged.bus.api.SubscribeEvent;
+import net.neoforged.fml.common.EventBusSubscriber;
+import net.neoforged.neoforge.client.event.ClientTickEvent;
+import net.neoforged.neoforge.event.entity.EntityJoinLevelEvent;
 
-import javax.annotation.Nullable;
-import java.util.IdentityHashMap;
-import java.util.Map;
-
-@Mod.EventBusSubscriber(modid = Ariente.MODID, value = Dist.CLIENT)
+@EventBusSubscriber(modid = Ariente.MODID, value = Dist.CLIENT)
 public class FluxShipSounds {
 
     private static final Map<FluxShipEntity, EngineLoops> SHIPS = new IdentityHashMap<>();
@@ -30,9 +29,9 @@ public class FluxShipSounds {
     }
 
     @SubscribeEvent
-    public static void clientTick(TickEvent.ClientTickEvent event) {
+    public static void clientTick(ClientTickEvent.Post event) {
         Minecraft mc = Minecraft.getInstance();
-        if (event.phase != TickEvent.Phase.END || mc.level != null && mc.isPaused()) {
+        if (mc.level != null && mc.isPaused()) {
             return;
         }
         ticks++;

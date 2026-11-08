@@ -1,11 +1,13 @@
 package mcjty.ariente.blocks.utility.door;
 
+import java.util.List;
 import mcjty.ariente.Ariente;
-import mcjty.ariente.gui.GuiHelp;
-import mcjty.ariente.blocks.utility.ILockTarget;
-import mcjty.ariente.security.AreaLocks;
-import mcjty.ariente.config.UtilityConfiguration;
 import mcjty.ariente.api.ISoldier;
+import mcjty.ariente.blocks.ArienteBlockEntity;
+import mcjty.ariente.blocks.utility.ILockTarget;
+import mcjty.ariente.config.UtilityConfiguration;
+import mcjty.ariente.gui.GuiHelp;
+import mcjty.ariente.security.AreaLocks;
 import mcjty.ariente.setup.Registration;
 import mcjty.ariente.sounds.ModSounds;
 import mcjty.hologui.api.IGuiComponent;
@@ -14,37 +16,36 @@ import mcjty.hologui.api.IGuiTile;
 import mcjty.lib.blocks.BaseBlock;
 import mcjty.lib.blocks.RotationType;
 import mcjty.lib.builder.BlockBuilder;
-import mcjty.lib.tileentity.TickingTileEntity;
 import net.minecraft.core.BlockPos;
+import net.minecraft.core.Direction;
+import net.minecraft.core.HolderLookup;
 import net.minecraft.nbt.CompoundTag;
+import net.minecraft.sounds.SoundSource;
 import net.minecraft.world.InteractionHand;
 import net.minecraft.world.InteractionResult;
 import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.level.BlockGetter;
+import net.minecraft.world.level.Level;
 import net.minecraft.world.level.block.Block;
 import net.minecraft.world.level.block.Blocks;
+import net.minecraft.world.level.block.entity.BlockEntity;
 import net.minecraft.world.level.block.state.BlockState;
+import net.minecraft.world.level.block.state.StateDefinition;
 import net.minecraft.world.level.block.state.properties.BlockStateProperties;
 import net.minecraft.world.level.material.MapColor;
-import net.minecraft.world.level.block.entity.BlockEntity;
-import net.minecraft.core.Direction;
-import net.minecraft.sounds.SoundSource;
 import net.minecraft.world.level.pathfinder.PathComputationType;
 import net.minecraft.world.phys.AABB;
 import net.minecraft.world.phys.BlockHitResult;
 import net.minecraft.world.phys.shapes.CollisionContext;
-import net.minecraft.world.phys.shapes.VoxelShape;
 import net.minecraft.world.phys.shapes.Shapes;
-import net.minecraft.world.level.Level;
-
-import java.util.List;
+import net.minecraft.world.phys.shapes.VoxelShape;
 
 import static mcjty.ariente.compat.ArienteTOPDriver.DRIVER;
 import static mcjty.lib.builder.TooltipBuilder.header;
 import static mcjty.lib.builder.TooltipBuilder.key;
 
-public class DoorMarkerTile extends TickingTileEntity implements IGuiTile, ILockTarget {
+public class DoorMarkerTile extends ArienteBlockEntity implements IGuiTile, ILockTarget {
 
     public static final VoxelShape BLOCK_AABB = Shapes.box(0.0D, 0.0D, 0.0D, 1.0D, 1.0D/16.0, 1.0D);
     public static final VoxelShape OPEN_BLOCK_AABB = Shapes.empty();
@@ -81,6 +82,12 @@ public class DoorMarkerTile extends TickingTileEntity implements IGuiTile, ILock
                 .tileEntitySupplier(DoorMarkerTile::new)
         ) {
             @Override
+            protected void createBlockStateDefinition(StateDefinition.Builder<Block, BlockState> builder) {
+                super.createBlockStateDefinition(builder);
+                builder.add(BlockStateProperties.OPEN);
+            }
+
+            @Override
             public RotationType getRotationType() {
                 return RotationType.HORIZROTATION;
             }
@@ -97,8 +104,8 @@ public class DoorMarkerTile extends TickingTileEntity implements IGuiTile, ILock
 
             @Deprecated
             @Override
-            public boolean isPathfindable(BlockState state, BlockGetter world, BlockPos pos, PathComputationType pathType) {
-                return DoorMarkerTile.isPathfindable(state, world, pos, pathType);
+            public boolean isPathfindable(BlockState state, PathComputationType pathType) {
+                return DoorMarkerTile.isPathfindable(state, pathType);
             }
         };
     }
@@ -145,12 +152,12 @@ public class DoorMarkerTile extends TickingTileEntity implements IGuiTile, ILock
         for (int i = 0; i < UtilityConfiguration.MAX_DOOR_HEIGHT.get(); i++) {
             BlockState state = level.getBlockState(pos);
             if (state.is(Registration.INVISIBLE_DOOR.get())) {
-                if (state.getValue(BlockStateProperties.HORIZONTAL_FACING) != facing) {
-                    level.setBlock(pos, state.setValue(BlockStateProperties.HORIZONTAL_FACING, facing), Block.UPDATE_CLIENTS);
+                if (state.getValue(BlockStateProperties.HORIZONTAL_FACING) != facing || state.getValue(BlockStateProperties.OPEN) != open) {
+                    level.setBlock(pos, state.setValue(BlockStateProperties.HORIZONTAL_FACING, facing).setValue(BlockStateProperties.OPEN, open), Block.UPDATE_CLIENTS);
                 }
             } else if (state.isAir()) {
                 level.setBlock(pos, Registration.INVISIBLE_DOOR.get().defaultBlockState()
-                        .setValue(BlockStateProperties.HORIZONTAL_FACING, facing), Block.UPDATE_CLIENTS);
+                        .setValue(BlockStateProperties.HORIZONTAL_FACING, facing).setValue(BlockStateProperties.OPEN, open), Block.UPDATE_CLIENTS);
             } else {
                 return;
             }
@@ -183,6 +190,7 @@ public class DoorMarkerTile extends TickingTileEntity implements IGuiTile, ILock
             return;
         }
         open = o;
+        level.setBlock(worldPosition, getBlockState().setValue(BlockStateProperties.OPEN, o), Block.UPDATE_ALL);
         level.playSound(null, getBlockPos().getX(), getBlockPos().getY(), getBlockPos().getZ(), ModSounds.door.get(), SoundSource.BLOCKS, 0.6f, 1.0f);
         markDirtyClient();
     }
@@ -220,14 +228,8 @@ public class DoorMarkerTile extends TickingTileEntity implements IGuiTile, ILock
         this.lastTime = lastTime;
     }
 
-    public static boolean isPathfindable(BlockState state, BlockGetter world, BlockPos pos, PathComputationType pathType) {
-        BlockEntity te = world.getBlockEntity(pos);
-
-        if (te instanceof DoorMarkerTile door) {
-            return door.isOpen();
-        }
-
-        return false;
+    public static boolean isPathfindable(BlockState state, PathComputationType pathType) {
+        return pathType == PathComputationType.LAND && state.getValue(BlockStateProperties.OPEN);
     }
 
     public static VoxelShape getCollisionShape(BlockState blockState, BlockGetter world, BlockPos pos) {
@@ -242,8 +244,8 @@ public class DoorMarkerTile extends TickingTileEntity implements IGuiTile, ILock
     }
 
     @Override
-    public void load(CompoundTag tagCompound) {
-        super.load(tagCompound);
+    public void loadAdditional(CompoundTag tagCompound, HolderLookup.Provider provider) {
+        super.loadAdditional(tagCompound, provider);
         AreaLocks.loadTarget(this, tagCompound);
         open = tagCompound.getBoolean("open");
         CompoundTag info = tagCompound.getCompound("Info");
@@ -254,23 +256,23 @@ public class DoorMarkerTile extends TickingTileEntity implements IGuiTile, ILock
     }
 
     @Override
-    public void saveAdditional(CompoundTag tagCompound) {
+    public void saveAdditional(CompoundTag tagCompound, HolderLookup.Provider provider) {
         AreaLocks.saveTarget(this, tagCompound);
         tagCompound.putBoolean("open", open);
         CompoundTag info = getOrCreateInfo(tagCompound);
         info.putInt("icon", iconIndex);
         info.putBoolean("locked", locked);
-        super.saveAdditional(tagCompound);
+        super.saveAdditional(tagCompound, provider);
     }
 
     @Override
-    public void saveClientDataToNBT(CompoundTag tag) {
-        saveAdditional(tag);
+    public void saveClientDataToNBT(CompoundTag tag, HolderLookup.Provider provider) {
+        saveAdditional(tag, provider);
     }
 
     @Override
-    public void loadClientDataFromNBT(CompoundTag tag) {
-        load(tag);
+    public void loadClientDataFromNBT(CompoundTag tag, HolderLookup.Provider provider) {
+        loadAdditional(tag, provider);
     }
 
     @Override
@@ -279,7 +281,6 @@ public class DoorMarkerTile extends TickingTileEntity implements IGuiTile, ILock
         clearInvisibleBlocks();
     }
 
-    @Override
     public AABB getRenderBoundingBox() {
         if (renderBox == null) {
             renderBox = new AABB(getBlockPos()).inflate(.3);

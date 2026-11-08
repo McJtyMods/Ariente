@@ -1,56 +1,55 @@
 package mcjty.ariente.blocks.generators;
 
+import mcjty.ariente.power.*;
+import mcjty.hologui.api.*;
+import javax.annotation.Nonnull;
 import mcjty.ariente.Ariente;
-import mcjty.ariente.gui.CompactNumber;
 import mcjty.ariente.api.IAlarmMode;
 import mcjty.ariente.api.IGenerator;
+import mcjty.ariente.blocks.ArienteBlockEntity;
 import mcjty.ariente.blocks.BlockProperties;
 import mcjty.ariente.cables.CableColor;
+import mcjty.ariente.gui.CompactNumber;
 import mcjty.ariente.gui.GuiHelp;
 import mcjty.ariente.gui.HoloGuiTools;
-import mcjty.ariente.power.*;
 import mcjty.ariente.setup.Registration;
-import mcjty.hologui.api.*;
 import mcjty.lib.blocks.BaseBlock;
 import mcjty.lib.blocks.RotationType;
 import mcjty.lib.builder.BlockBuilder;
 import mcjty.lib.container.ContainerFactory;
 import mcjty.lib.container.GenericItemHandler;
-import mcjty.lib.tileentity.Cap;
-import mcjty.lib.tileentity.CapType;
-import mcjty.lib.tileentity.TickingTileEntity;
 import mcjty.lib.varia.RedstoneMode;
 import net.minecraft.core.BlockPos;
+import net.minecraft.core.Direction;
+import net.minecraft.core.HolderLookup;
 import net.minecraft.nbt.CompoundTag;
+import net.minecraft.network.Connection;
 import net.minecraft.network.protocol.game.ClientboundBlockEntityDataPacket;
 import net.minecraft.world.InteractionHand;
+import net.minecraft.world.InteractionResult;
+import net.minecraft.world.entity.LivingEntity;
+import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.level.block.Block;
 import net.minecraft.world.level.block.state.BlockState;
-import net.minecraft.world.entity.LivingEntity;
-import net.minecraft.world.entity.player.Player;
-import net.minecraft.network.Connection;
 import net.minecraft.world.level.block.state.StateDefinition;
-import net.minecraft.world.InteractionResult;
 import net.minecraft.world.phys.BlockHitResult;
-import net.minecraftforge.common.util.Lazy;
-
-import javax.annotation.Nonnull;
+import net.neoforged.neoforge.common.util.Lazy;
+import net.neoforged.neoforge.items.IItemHandler;
 
 import static mcjty.ariente.compat.ArienteTOPDriver.DRIVER;
 import static mcjty.hologui.api.Icons.*;
 import static mcjty.lib.builder.TooltipBuilder.header;
 import static mcjty.lib.builder.TooltipBuilder.key;
 
-public class NegariteGeneratorTile extends TickingTileEntity implements IGuiTile, IPowerBlob, IAlarmMode, IPowerSender, IGenerator {
+public class NegariteGeneratorTile extends ArienteBlockEntity implements IGuiTile, IPowerBlob, IAlarmMode, IPowerSender, IGenerator {
 
     public static final int POWERGEN = 1000;        // @todo configurable
 
-    public static final Lazy<ContainerFactory> CONTAINER_FACTORY = Lazy.of(() -> new ContainerFactory(1)); // @todo 1.14new ResourceLocation(Ariente.MODID, "gui/negarite_generator.gui"));
+    public static final Lazy<ContainerFactory> CONTAINER_FACTORY = Lazy.of(() -> new ContainerFactory(1)); // @todo 1.14ResourceLocation.fromNamespaceAndPath(Ariente.MODID, "gui/negarite_generator.gui"));
     public static final int SLOT_NEGARITE_INPUT = 0;
 
-    @Cap(type = CapType.ITEMS)
     private final GenericItemHandler items = createItemHandler();
 
     private final PowerSenderSupport powerBlobSupport = new PowerSenderSupport();
@@ -173,10 +172,10 @@ public class NegariteGeneratorTile extends TickingTileEntity implements IGuiTile
     }
 
     @Override
-    public void onDataPacket(Connection net, ClientboundBlockEntityDataPacket packet) {
+    public void onDataPacket(Connection net, ClientboundBlockEntityDataPacket packet, HolderLookup.Provider provider) {
         boolean working = isWorking();
 
-        super.onDataPacket(net, packet);
+        super.onDataPacket(net, packet, provider);
 
         if (level.isClientSide) {
             // If needed send a render update.
@@ -212,8 +211,8 @@ public class NegariteGeneratorTile extends TickingTileEntity implements IGuiTile
     }
 
     @Override
-    public void load(CompoundTag tagCompound) {
-        super.load(tagCompound);
+    public void loadAdditional(CompoundTag tagCompound, HolderLookup.Provider provider) {
+        super.loadAdditional(tagCompound, provider);
         powerBlobSupport.setCableId(tagCompound.getInt("cableId"));
         CompoundTag info = tagCompound.getCompound("Info");
         if (info.contains("dust")) {
@@ -222,20 +221,20 @@ public class NegariteGeneratorTile extends TickingTileEntity implements IGuiTile
     }
 
     @Override
-    public void saveAdditional(CompoundTag tagCompound) {
+    public void saveAdditional(CompoundTag tagCompound, HolderLookup.Provider provider) {
         tagCompound.putInt("cableId", powerBlobSupport.getCableId());
         getOrCreateInfo(tagCompound).putInt("dust", dustCounter);
-        super.saveAdditional(tagCompound);
+        super.saveAdditional(tagCompound, provider);
     }
 
     @Override
-    public void saveClientDataToNBT(CompoundTag tag) {
-        saveAdditional(tag);
+    public void saveClientDataToNBT(CompoundTag tag, HolderLookup.Provider provider) {
+        saveAdditional(tag, provider);
     }
 
     @Override
-    public void loadClientDataFromNBT(CompoundTag tag) {
-        load(tag);
+    public void loadClientDataFromNBT(CompoundTag tag, HolderLookup.Provider provider) {
+        loadAdditional(tag, provider);
     }
 
     @Override
@@ -287,7 +286,7 @@ public class NegariteGeneratorTile extends TickingTileEntity implements IGuiTile
     }
 
     private void changeMode() {
-        int current = rsMode.ordinal() + 1;
+        int current = getRSMode().ordinal() + 1;
         if (current >= RedstoneMode.values().length) {
             current = 0;
         }
@@ -390,4 +389,10 @@ public class NegariteGeneratorTile extends TickingTileEntity implements IGuiTile
 
         };
     }
+
+    @Override
+    public IItemHandler getAutomationHandler(Direction side) {
+        return items;
+    }
+
 }

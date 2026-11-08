@@ -16,21 +16,21 @@
       "model": "ariente:block/utility/input_item_node_tl",
       "x": -90
     },
-    "orientation=up_ne": {
-      "model": "ariente:block/utility/input_item_node_tr",
-      "x": 90
-    },
-    "orientation=up_nw": {
-      "model": "ariente:block/utility/input_item_node_tl",
-      "x": 90
-    },
-    "orientation=up_se": {
+    "orientation=east_dn": {
       "model": "ariente:block/utility/input_item_node_br",
-      "x": 90
+      "y": 270
     },
-    "orientation=up_sw": {
+    "orientation=east_ds": {
       "model": "ariente:block/utility/input_item_node_bl",
-      "x": 90
+      "y": 270
+    },
+    "orientation=east_un": {
+      "model": "ariente:block/utility/input_item_node_tr",
+      "y": 270
+    },
+    "orientation=east_us": {
+      "model": "ariente:block/utility/input_item_node_tl",
+      "y": 270
     },
     "orientation=north_de": {
       "model": "ariente:block/utility/input_item_node_bl",
@@ -60,6 +60,22 @@
     "orientation=south_uw": {
       "model": "ariente:block/utility/input_item_node_tl"
     },
+    "orientation=up_ne": {
+      "model": "ariente:block/utility/input_item_node_tr",
+      "x": 90
+    },
+    "orientation=up_nw": {
+      "model": "ariente:block/utility/input_item_node_tl",
+      "x": 90
+    },
+    "orientation=up_se": {
+      "model": "ariente:block/utility/input_item_node_br",
+      "x": 90
+    },
+    "orientation=up_sw": {
+      "model": "ariente:block/utility/input_item_node_bl",
+      "x": 90
+    },
     "orientation=west_dn": {
       "model": "ariente:block/utility/input_item_node_bl",
       "y": 90
@@ -75,22 +91,6 @@
     "orientation=west_us": {
       "model": "ariente:block/utility/input_item_node_tr",
       "y": 90
-    },
-    "orientation=east_dn": {
-      "model": "ariente:block/utility/input_item_node_br",
-      "y": 270
-    },
-    "orientation=east_ds": {
-      "model": "ariente:block/utility/input_item_node_bl",
-      "y": 270
-    },
-    "orientation=east_un": {
-      "model": "ariente:block/utility/input_item_node_tr",
-      "y": 270
-    },
-    "orientation=east_us": {
-      "model": "ariente:block/utility/input_item_node_tl",
-      "y": 270
     }
   }
 }

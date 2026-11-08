@@ -1,47 +1,47 @@
 package mcjty.ariente.blocks.utility.autofield;
 
+import java.util.Optional;
+import javax.annotation.Nonnull;
 import mcjty.ariente.Ariente;
+import mcjty.ariente.blocks.ArienteBlockEntity;
+import mcjty.ariente.multipart.MultipartHelper;
+import mcjty.ariente.multipart.MultipartTE;
 import mcjty.hologui.api.IEvent;
 import mcjty.hologui.api.IGuiComponentRegistry;
 import mcjty.hologui.api.IGuiTile;
 import mcjty.hologui.api.components.IIconChoice;
 import mcjty.hologui.api.components.IPanel;
-import mcjty.ariente.multipart.MultipartHelper;
-import mcjty.ariente.multipart.MultipartTE;
 import mcjty.lib.multipart.PartPos;
 import mcjty.lib.multipart.PartSlot;
-import mcjty.lib.tileentity.GenericTileEntity;
+import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
+import net.minecraft.core.HolderLookup;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.world.InteractionHand;
 import net.minecraft.world.InteractionResult;
+import net.minecraft.world.entity.LivingEntity;
+import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.DyeColor;
+import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.level.BlockGetter;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.level.block.Block;
 import net.minecraft.world.level.block.entity.BlockEntity;
 import net.minecraft.world.level.block.entity.BlockEntityType;
 import net.minecraft.world.level.block.state.BlockState;
-import net.minecraft.world.entity.LivingEntity;
-import net.minecraft.world.entity.player.Player;
-import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.level.block.state.properties.EnumProperty;
-import net.minecraft.core.BlockPos;
 import net.minecraft.world.phys.BlockHitResult;
 import net.minecraft.world.phys.shapes.Shapes;
 import net.minecraft.world.phys.shapes.VoxelShape;
-import net.minecraftforge.common.util.LazyOptional;
-import net.minecraftforge.common.capabilities.ForgeCapabilities;
-import net.minecraftforge.items.IItemHandler;
+import net.neoforged.neoforge.capabilities.Capabilities;
+import net.neoforged.neoforge.items.IItemHandler;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.lang3.tuple.Pair;
-
-import javax.annotation.Nonnull;
 
 import static mcjty.ariente.blocks.utility.autofield.NodeOrientation.*;
 import static mcjty.hologui.api.Icons.*;
 
-public abstract class AbstractNodeTile extends GenericTileEntity implements IGuiTile {
+public abstract class AbstractNodeTile extends ArienteBlockEntity implements IGuiTile {
 
     public static final EnumProperty<NodeOrientation> ORIENTATION = EnumProperty.create("orientation", NodeOrientation.class, NodeOrientation.values());
 
@@ -225,8 +225,8 @@ public abstract class AbstractNodeTile extends GenericTileEntity implements IGui
     }
 
     @Override
-    public void load(CompoundTag tagCompound) {
-        super.load(tagCompound);
+    public void loadAdditional(CompoundTag tagCompound, HolderLookup.Provider provider) {
+        super.loadAdditional(tagCompound, provider);
         CompoundTag info = tagCompound.getCompound("Info");
         if (!info.isEmpty()) {
             for (int i = 0; i < filters.length; i++) {
@@ -240,8 +240,8 @@ public abstract class AbstractNodeTile extends GenericTileEntity implements IGui
     }
 
     @Override
-    public void saveAdditional(CompoundTag tagCompound) {
-        super.saveAdditional(tagCompound);
+    public void saveAdditional(CompoundTag tagCompound, HolderLookup.Provider provider) {
+        super.saveAdditional(tagCompound, provider);
         CompoundTag info = getOrCreateInfo(tagCompound);
         for (int i = 0 ; i < filters.length ; i++) {
             if (filters[i] != null) {
@@ -313,20 +313,20 @@ public abstract class AbstractNodeTile extends GenericTileEntity implements IGui
     }
 
     @Nonnull
-    public LazyOptional<IItemHandler> getConnectedItemHandler(PartPos partPos) {
+    public Optional<IItemHandler> getConnectedItemHandler(PartPos partPos) {
         BlockState state = MultipartHelper.getBlockState(level, worldPosition, partPos.slot());
         if (state != null && state.getBlock() == getBlockState().getBlock()) {
             NodeOrientation orientation = state.getValue(ORIENTATION);
             Direction mainDirection = orientation.getMainDirection();
             BlockPos otherPos = worldPosition.relative(mainDirection);
             if (!level.hasChunkAt(otherPos)) {
-                return LazyOptional.empty();
+                return Optional.empty();
             }
             BlockEntity otherTe = level.getBlockEntity(otherPos);
             if (otherTe != null) {
-                return otherTe.getCapability(ForgeCapabilities.ITEM_HANDLER, mainDirection.getOpposite());
+                return Optional.ofNullable(level.getCapability(Capabilities.ItemHandler.BLOCK, otherPos, mainDirection.getOpposite()));
             }
         }
-        return LazyOptional.empty();
+        return Optional.empty();
     }
 }

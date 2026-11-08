@@ -6,6 +6,7 @@ import mcjty.lib.multipart.PartSlot;
 import mcjty.lib.tileentity.GenericTileEntity;
 import net.minecraft.advancements.CriteriaTriggers;
 import net.minecraft.core.BlockPos;
+import net.minecraft.core.component.DataComponents;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.sounds.SoundSource;
@@ -13,6 +14,7 @@ import net.minecraft.world.InteractionResult;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.BlockItem;
 import net.minecraft.world.item.ItemStack;
+import net.minecraft.world.item.component.CustomData;
 import net.minecraft.world.item.context.BlockPlaceContext;
 import net.minecraft.world.item.context.UseOnContext;
 import net.minecraft.world.level.Level;
@@ -88,9 +90,9 @@ public class MultipartItemBlock extends BlockItem {
             BlockEntity child = state.getBlock() instanceof EntityBlock block ? block.newBlockEntity(pos, state) : null;
             if (child != null) {
                 child.setLevel(level);
-                CompoundTag saved = BlockItem.getBlockEntityData(stack);
+                CompoundTag saved = stack.getOrDefault(DataComponents.BLOCK_ENTITY_DATA, CustomData.EMPTY).copyTag();
                 if (saved != null) {
-                    child.load(saved.copy());
+                    child.loadWithComponents(saved.copy(), level.registryAccess());
                 }
             }
             multipart.addPart(slot, state, child);

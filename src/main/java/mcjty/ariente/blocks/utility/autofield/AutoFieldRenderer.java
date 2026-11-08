@@ -2,32 +2,31 @@ package mcjty.ariente.blocks.utility.autofield;
 
 import com.mojang.blaze3d.vertex.PoseStack;
 import com.mojang.blaze3d.vertex.VertexConsumer;
-import net.minecraft.world.phys.Vec3;
+import java.util.Random;
 import mcjty.ariente.Ariente;
 import mcjty.ariente.client.ArienteRenderType;
-import mcjty.ariente.client.WorldHolograms;
 import mcjty.ariente.client.ArienteSpriteUploader;
+import mcjty.ariente.client.WorldHolograms;
 import mcjty.ariente.setup.Registration;
 import mcjty.lib.client.RenderSettings;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.renderer.MultiBufferSource;
+import net.minecraft.client.renderer.blockentity.BlockEntityRenderer;
 import net.minecraft.client.renderer.blockentity.BlockEntityRendererProvider;
 import net.minecraft.client.renderer.blockentity.BlockEntityRenderers;
-import net.minecraft.client.renderer.texture.TextureAtlasSprite;
 import net.minecraft.client.renderer.texture.OverlayTexture;
-import net.minecraft.client.renderer.blockentity.BlockEntityRenderer;
+import net.minecraft.client.renderer.texture.TextureAtlasSprite;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.phys.AABB;
-
-import java.util.Random;
+import net.minecraft.world.phys.Vec3;
 
 public class AutoFieldRenderer implements BlockEntityRenderer<AutoFieldTile> {
 
     public static final ResourceLocation BEAMS[] = new ResourceLocation[3];
     static {
-        BEAMS[0] = new ResourceLocation(Ariente.MODID, "autobeam1");
-        BEAMS[1] = new ResourceLocation(Ariente.MODID, "autobeam2");
-        BEAMS[2] = new ResourceLocation(Ariente.MODID, "autobeam3");
+        BEAMS[0] = ResourceLocation.fromNamespaceAndPath(Ariente.MODID, "autobeam1");
+        BEAMS[1] = ResourceLocation.fromNamespaceAndPath(Ariente.MODID, "autobeam2");
+        BEAMS[2] = ResourceLocation.fromNamespaceAndPath(Ariente.MODID, "autobeam3");
     }
 
     private Random random = new Random();
@@ -125,13 +124,13 @@ public class AutoFieldRenderer implements BlockEntityRenderer<AutoFieldTile> {
     private static void vertex(PoseStack stack, VertexConsumer vertices, Vec3 pos, Vec3 normal,
                                float u, float v, RenderSettings settings) {
         // The outline retains the complete NEW_ENTITY layout for renderer compatibility.
-        vertices.vertex(stack.last().pose(), (float) pos.x, (float) pos.y, (float) pos.z)
-                .color(settings.r(), settings.g(), settings.b(), settings.a())
-                .uv(u, v)
-                .overlayCoords(OverlayTexture.NO_OVERLAY)
-                .uv2(settings.brightness())
-                .normal(stack.last().normal(), (float) normal.x, (float) normal.y, (float) normal.z)
-                .endVertex();
+        vertices.addVertex(stack.last().pose(), (float) pos.x, (float) pos.y, (float) pos.z)
+                .setColor(settings.r(), settings.g(), settings.b(), settings.a())
+                .setUv(u, v)
+                .setOverlay(OverlayTexture.NO_OVERLAY)
+                .setLight(settings.brightness())
+                .setNormal(stack.last(), (float) normal.x, (float) normal.y, (float) normal.z)
+                ;
     }
 
     private void renderItemTransfers(PoseStack matrixStack, AutoFieldTile te, MultiBufferSource buffers) {

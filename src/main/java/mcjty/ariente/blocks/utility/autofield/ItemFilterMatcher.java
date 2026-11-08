@@ -1,12 +1,12 @@
 package mcjty.ariente.blocks.utility.autofield;
 
-import net.minecraft.nbt.CompoundTag;
-import net.minecraft.resources.ResourceLocation;
-import net.minecraft.world.item.ItemStack;
-
 import java.util.Objects;
 import java.util.Set;
 import java.util.stream.Collectors;
+import mcjty.ariente.items.ItemData;
+import net.minecraft.nbt.CompoundTag;
+import net.minecraft.resources.ResourceLocation;
+import net.minecraft.world.item.ItemStack;
 
 public class ItemFilterMatcher {
 
@@ -27,7 +27,7 @@ public class ItemFilterMatcher {
     }
 
     private static CompoundTag withoutDamage(ItemStack stack) {
-        CompoundTag tag = stack.hasTag() ? stack.getTag().copy() : new CompoundTag();
+        CompoundTag tag = ItemData.has(stack) ? ItemData.get(stack).copy() : new CompoundTag();
         tag.remove("Damage");
         return tag;
     }

@@ -1,49 +1,49 @@
 package mcjty.ariente.blocks.utility;
 
-import mcjty.ariente.security.AreaLocks;
-import mcjty.ariente.Ariente;
-import mcjty.ariente.gui.GuiHelp;
-import mcjty.ariente.api.ICityAI;
-import mcjty.ariente.api.ICityEquipment;
-import mcjty.ariente.blocks.BlockProperties;
-import mcjty.ariente.blocks.MountedPanelShapes;
-import mcjty.ariente.items.KeyCardItem;
-import mcjty.ariente.security.IKeyCardSlot;
-import mcjty.ariente.setup.Registration;
-import mcjty.ariente.sounds.ModSounds;
 import mcjty.hologui.api.*;
-import mcjty.lib.blocks.BaseBlock;
-import mcjty.lib.builder.BlockBuilder;
-import mcjty.lib.tileentity.GenericTileEntity;
-import net.minecraft.sounds.SoundSource;
-import net.minecraft.world.InteractionResult;
-import net.minecraft.world.entity.player.Player;
-import net.minecraft.world.item.ItemStack;
-import net.minecraft.world.level.Level;
-import net.minecraft.world.level.block.Block;
-import net.minecraft.world.level.block.state.BlockState;
-import net.minecraft.network.Connection;
-import net.minecraft.nbt.CompoundTag;
-import net.minecraft.network.protocol.game.ClientboundBlockEntityDataPacket;
-import net.minecraft.world.level.block.state.StateDefinition;
-import net.minecraft.world.level.block.state.properties.BlockStateProperties;
-import net.minecraft.world.InteractionHand;
-import net.minecraft.core.BlockPos;
-import net.minecraft.world.phys.BlockHitResult;
-import net.minecraft.world.phys.shapes.CollisionContext;
-import net.minecraft.world.phys.shapes.VoxelShape;
-import net.minecraft.world.level.BlockGetter;
-
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Set;
+import mcjty.ariente.Ariente;
+import mcjty.ariente.api.ICityAI;
+import mcjty.ariente.api.ICityEquipment;
+import mcjty.ariente.blocks.ArienteBlockEntity;
+import mcjty.ariente.blocks.BlockProperties;
+import mcjty.ariente.blocks.MountedPanelShapes;
+import mcjty.ariente.gui.GuiHelp;
+import mcjty.ariente.items.KeyCardItem;
+import mcjty.ariente.security.AreaLocks;
+import mcjty.ariente.security.IKeyCardSlot;
+import mcjty.ariente.setup.Registration;
+import mcjty.ariente.sounds.ModSounds;
+import mcjty.lib.blocks.BaseBlock;
+import mcjty.lib.builder.BlockBuilder;
+import net.minecraft.core.BlockPos;
+import net.minecraft.core.HolderLookup;
+import net.minecraft.nbt.CompoundTag;
+import net.minecraft.network.Connection;
+import net.minecraft.network.protocol.game.ClientboundBlockEntityDataPacket;
+import net.minecraft.sounds.SoundSource;
+import net.minecraft.world.InteractionHand;
+import net.minecraft.world.InteractionResult;
+import net.minecraft.world.entity.player.Player;
+import net.minecraft.world.item.ItemStack;
+import net.minecraft.world.level.BlockGetter;
+import net.minecraft.world.level.Level;
+import net.minecraft.world.level.block.Block;
+import net.minecraft.world.level.block.state.BlockState;
+import net.minecraft.world.level.block.state.StateDefinition;
+import net.minecraft.world.level.block.state.properties.BlockStateProperties;
+import net.minecraft.world.phys.BlockHitResult;
+import net.minecraft.world.phys.shapes.CollisionContext;
+import net.minecraft.world.phys.shapes.VoxelShape;
 
 import static mcjty.ariente.compat.ArienteTOPDriver.DRIVER;
 import static mcjty.hologui.api.Icons.*;
 import static mcjty.lib.builder.TooltipBuilder.header;
 import static mcjty.lib.builder.TooltipBuilder.key;
 
-public class LockTile extends GenericTileEntity implements IGuiTile, IKeyCardSlot, ICityEquipment, ILockable {
+public class LockTile extends ArienteBlockEntity implements IGuiTile, IKeyCardSlot, ICityEquipment, ILockable {
 
     private boolean locked = false;
     private String keyId;
@@ -90,10 +90,10 @@ public class LockTile extends GenericTileEntity implements IGuiTile, IKeyCardSlo
     }
 
     @Override
-    public void onDataPacket(Connection net, ClientboundBlockEntityDataPacket packet) {
+    public void onDataPacket(Connection net, ClientboundBlockEntityDataPacket packet, HolderLookup.Provider provider) {
         boolean locked = isLocked();
 
-        super.onDataPacket(net, packet);
+        super.onDataPacket(net, packet, provider);
 
         if (level.isClientSide) {
             // If needed send a render update.
@@ -186,8 +186,8 @@ public class LockTile extends GenericTileEntity implements IGuiTile, IKeyCardSlo
     }
 
     @Override
-    public void load(CompoundTag tag) {
-        super.load(tag);
+    public void loadAdditional(CompoundTag tag, HolderLookup.Provider provider) {
+        super.loadAdditional(tag, provider);
         CompoundTag info = tag.getCompound("Info");
         locked = info.getBoolean("locked");
         keyId = info.contains("keyId") ? info.getString("keyId") : null;
@@ -200,8 +200,8 @@ public class LockTile extends GenericTileEntity implements IGuiTile, IKeyCardSlo
     }
 
     @Override
-    public void saveAdditional(CompoundTag tag) {
-        super.saveAdditional(tag);
+    public void saveAdditional(CompoundTag tag, HolderLookup.Provider provider) {
+        super.saveAdditional(tag, provider);
         CompoundTag info = getOrCreateInfo(tag);
         info.putBoolean("locked", locked);
         info.putInt("horizontal", horizontalRange);
@@ -212,13 +212,13 @@ public class LockTile extends GenericTileEntity implements IGuiTile, IKeyCardSlo
     }
 
     @Override
-    public void saveClientDataToNBT(CompoundTag tag) {
-        saveAdditional(tag);
+    public void saveClientDataToNBT(CompoundTag tag, HolderLookup.Provider provider) {
+        saveAdditional(tag, provider);
     }
 
     @Override
-    public void loadClientDataFromNBT(CompoundTag tag) {
-        load(tag);
+    public void loadClientDataFromNBT(CompoundTag tag, HolderLookup.Provider provider) {
+        loadAdditional(tag, provider);
     }
 
     public void setKeyId(String keyId) {

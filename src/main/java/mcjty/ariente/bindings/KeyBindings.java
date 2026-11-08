@@ -1,15 +1,16 @@
 package mcjty.ariente.bindings;
 
-import mcjty.ariente.items.armor.PacketConfigureArmor;
-import mcjty.ariente.items.armor.PacketArmorHotkey;
-import org.lwjgl.glfw.GLFW;
 import mcjty.ariente.entities.fluxship.FluxShipEntity;
 import mcjty.ariente.entities.fluxship.FluxShipMouseControls;
 import mcjty.ariente.entities.fluxship.PacketShipAction;
 import mcjty.ariente.entities.levitator.FluxLevitatorEntity;
 import mcjty.ariente.entities.levitator.PacketLevitatorInput;
-import mcjty.ariente.network.ArienteMessages;
+import mcjty.ariente.items.armor.PacketArmorHotkey;
+import mcjty.ariente.items.armor.PacketConfigureArmor;
 import net.minecraft.client.Minecraft;
+import net.minecraft.network.protocol.common.custom.CustomPacketPayload;
+import net.neoforged.neoforge.network.PacketDistributor;
+import org.lwjgl.glfw.GLFW;
 
 public class KeyBindings {
 
@@ -29,8 +30,6 @@ public class KeyBindings {
     public static Binding shipFreeLook;
 
     public static void init() {
-
-
 
         // @todo 1.14
         configureArmor = Binding.create("key.configurearmor", GLFW.GLFW_KEY_0, () -> toServer(new PacketConfigureArmor()));
@@ -74,7 +73,7 @@ public class KeyBindings {
         }
     }
 
-    private static void toServer(Object packet) {
-        ArienteMessages.INSTANCE.sendToServer(packet);
+    private static void toServer(CustomPacketPayload packet) {
+        PacketDistributor.sendToServer(packet);
     }
 }

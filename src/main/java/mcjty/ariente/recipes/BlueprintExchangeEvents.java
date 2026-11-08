@@ -1,15 +1,16 @@
 package mcjty.ariente.recipes;
 
 import mcjty.ariente.Ariente;
+import mcjty.ariente.items.ItemData;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.ItemStack;
-import net.minecraftforge.event.entity.player.PlayerEvent;
-import net.minecraftforge.eventbus.api.EventPriority;
-import net.minecraftforge.eventbus.api.SubscribeEvent;
-import net.minecraftforge.fml.common.Mod;
+import net.neoforged.bus.api.EventPriority;
+import net.neoforged.bus.api.SubscribeEvent;
+import net.neoforged.fml.common.EventBusSubscriber;
+import net.neoforged.neoforge.event.entity.player.PlayerEvent;
 
-@Mod.EventBusSubscriber(modid = Ariente.MODID)
+@EventBusSubscriber(modid = Ariente.MODID)
 public class BlueprintExchangeEvents {
 
     @SubscribeEvent(priority = EventPriority.HIGHEST)
@@ -25,7 +26,7 @@ public class BlueprintExchangeEvents {
             ItemStack output = player.getInventory().getItem(slot);
             if (BlueprintExchangeRecipe.isPreview(output) && data.equals(BlueprintExchangeRecipe.previewData(output))) {
                 if (BlueprintExchangeRecipe.resolve(output, player.getRandom())) {
-                    crafted.setTag(output.getTag().copy());
+                    ItemData.set(crafted, ItemData.get(output).copy());
                 }
                 player.getInventory().setChanged();
                 return;

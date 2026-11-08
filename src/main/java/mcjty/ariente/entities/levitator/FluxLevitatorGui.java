@@ -1,8 +1,8 @@
 package mcjty.ariente.entities.levitator;
 
+import mcjty.ariente.Ariente;
 import mcjty.ariente.gui.GuiHelp;
 import mcjty.ariente.gui.ModGuis;
-import mcjty.ariente.Ariente;
 import mcjty.hologui.api.IGuiComponent;
 import mcjty.hologui.api.IGuiComponentRegistry;
 import mcjty.hologui.api.IHoloGuiEntity;

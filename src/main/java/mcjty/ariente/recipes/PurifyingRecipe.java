@@ -1,30 +1,31 @@
 package mcjty.ariente.recipes;
 
-import com.google.gson.JsonObject;
+import com.mojang.serialization.MapCodec;
+import com.mojang.serialization.codecs.RecordCodecBuilder;
+import net.minecraft.core.HolderLookup;
 import net.minecraft.core.NonNullList;
-import net.minecraft.core.RegistryAccess;
-import net.minecraft.network.FriendlyByteBuf;
+import net.minecraft.core.registries.BuiltInRegistries;
+import net.minecraft.network.RegistryFriendlyByteBuf;
+import net.minecraft.network.codec.StreamCodec;
 import net.minecraft.resources.ResourceLocation;
-import net.minecraft.util.GsonHelper;
-import net.minecraft.world.Container;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.crafting.Ingredient;
 import net.minecraft.world.item.crafting.Recipe;
 import net.minecraft.world.item.crafting.RecipeSerializer;
 import net.minecraft.world.item.crafting.RecipeType;
+import net.minecraft.world.item.crafting.SingleRecipeInput;
 import net.minecraft.world.level.Level;
-import net.minecraftforge.common.crafting.CraftingHelper;
 
 /** The result is one unit of raw metal; the purifier's tube count determines recovery. */
-public record PurifyingRecipe(ResourceLocation id, Ingredient ingredient, ItemStack result) implements Recipe<Container> {
+public record PurifyingRecipe(ResourceLocation id, Ingredient ingredient, ItemStack result) implements Recipe<SingleRecipeInput> {
 
     @Override
-    public boolean matches(Container inventory, Level level) {
+    public boolean matches(SingleRecipeInput inventory, Level level) {
         return ingredient.test(inventory.getItem(0));
     }
 
     @Override
-    public ItemStack assemble(Container inventory, RegistryAccess registries) {
+    public ItemStack assemble(SingleRecipeInput inventory, HolderLookup.Provider registries) {
         return result.copy();
     }
 
@@ -34,7 +35,7 @@ public record PurifyingRecipe(ResourceLocation id, Ingredient ingredient, ItemSt
     }
 
     @Override
-    public ItemStack getResultItem(RegistryAccess registries) {
+    public ItemStack getResultItem(HolderLookup.Provider registries) {
         return result.copy();
     }
 
@@ -48,7 +49,6 @@ public record PurifyingRecipe(ResourceLocation id, Ingredient ingredient, ItemSt
         return true;
     }
 
-    @Override
     public ResourceLocation getId() {
         return id;
     }
@@ -65,25 +65,25 @@ public record PurifyingRecipe(ResourceLocation id, Ingredient ingredient, ItemSt
 
     public static class Serializer implements RecipeSerializer<PurifyingRecipe> {
 
+        private static final MapCodec<PurifyingRecipe> CODEC = RecordCodecBuilder.mapCodec(instance -> instance.group(
+                Ingredient.CODEC_NONEMPTY.fieldOf("ingredient").forGetter(PurifyingRecipe::ingredient),
+                ItemStack.SINGLE_ITEM_CODEC.fieldOf("result").forGetter(PurifyingRecipe::result)
+        ).apply(instance, (ingredient, result) -> new PurifyingRecipe(BuiltInRegistries.ITEM.getKey(result.getItem()), ingredient, result)));
+        private static final StreamCodec<RegistryFriendlyByteBuf, PurifyingRecipe> STREAM_CODEC = StreamCodec.of(
+                (buffer, recipe) -> {
+                    buffer.writeResourceLocation(recipe.id());
+                    Ingredient.CONTENTS_STREAM_CODEC.encode(buffer, recipe.ingredient());
+                    ItemStack.STREAM_CODEC.encode(buffer, recipe.result());
+                }, buffer -> new PurifyingRecipe(buffer.readResourceLocation(), Ingredient.CONTENTS_STREAM_CODEC.decode(buffer), ItemStack.STREAM_CODEC.decode(buffer)));
+
         @Override
-        public PurifyingRecipe fromJson(ResourceLocation id, JsonObject json) {
-            Ingredient ingredient = Ingredient.fromJson(json.get("ingredient"));
-            ItemStack result = CraftingHelper.getItemStack(GsonHelper.getAsJsonObject(json, "result"), true);
-            if (ingredient.isEmpty() || result.isEmpty() || result.getCount() != 1) {
-                throw new IllegalArgumentException("Purifying recipes require an ingredient and exactly one raw-metal result unit: " + id);
-            }
-            return new PurifyingRecipe(id, ingredient, result);
+        public MapCodec<PurifyingRecipe> codec() {
+            return CODEC;
         }
 
         @Override
-        public PurifyingRecipe fromNetwork(ResourceLocation id, FriendlyByteBuf buffer) {
-            return new PurifyingRecipe(id, Ingredient.fromNetwork(buffer), buffer.readItem());
-        }
-
-        @Override
-        public void toNetwork(FriendlyByteBuf buffer, PurifyingRecipe recipe) {
-            recipe.ingredient().toNetwork(buffer);
-            buffer.writeItem(recipe.result());
+        public StreamCodec<RegistryFriendlyByteBuf, PurifyingRecipe> streamCodec() {
+            return STREAM_CODEC;
         }
     }
 }

@@ -2,17 +2,16 @@ package mcjty.ariente.datagen;
 
 import com.google.common.hash.Hashing;
 import com.mojang.blaze3d.platform.NativeImage;
+import java.io.IOException;
+import java.io.UncheckedIOException;
+import java.util.concurrent.CompletableFuture;
 import mcjty.ariente.Ariente;
 import net.minecraft.data.CachedOutput;
 import net.minecraft.data.DataProvider;
 import net.minecraft.data.PackOutput;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.server.packs.PackType;
-import net.minecraftforge.common.data.ExistingFileHelper;
-
-import java.io.IOException;
-import java.io.UncheckedIOException;
-import java.util.concurrent.CompletableFuture;
+import net.neoforged.neoforge.common.data.ExistingFileHelper;
 
 /** Projects the existing straight-beam stripe onto a continuous west-to-south turn. */
 public class FluxBeamTextures implements DataProvider {
@@ -21,7 +20,7 @@ public class FluxBeamTextures implements DataProvider {
 
     public FluxBeamTextures(PackOutput output, ExistingFileHelper helper) {
         this.output = output;
-        helper.trackGenerated(new ResourceLocation(Ariente.MODID, "block/machines/flux_bend_beam"),
+        helper.trackGenerated(ResourceLocation.fromNamespaceAndPath(Ariente.MODID, "block/machines/flux_bend_beam"),
                 PackType.CLIENT_RESOURCES, ".png", "textures");
     }
 

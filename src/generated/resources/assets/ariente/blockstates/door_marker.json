@@ -1,19 +1,34 @@
 {
   "variants": {
-    "facing=north": {
+    "facing=east,open=false": {
+      "model": "ariente:block/utility/door_marker",
+      "y": 90
+    },
+    "facing=east,open=true": {
+      "model": "ariente:block/utility/door_marker",
+      "y": 90
+    },
+    "facing=north,open=false": {
       "model": "ariente:block/utility/door_marker"
     },
-    "facing=south": {
+    "facing=north,open=true": {
+      "model": "ariente:block/utility/door_marker"
+    },
+    "facing=south,open=false": {
       "model": "ariente:block/utility/door_marker",
       "y": 180
     },
-    "facing=west": {
+    "facing=south,open=true": {
+      "model": "ariente:block/utility/door_marker",
+      "y": 180
+    },
+    "facing=west,open=false": {
       "model": "ariente:block/utility/door_marker",
       "y": 270
     },
-    "facing=east": {
+    "facing=west,open=true": {
       "model": "ariente:block/utility/door_marker",
-      "y": 90
+      "y": 270
     }
   }
 }

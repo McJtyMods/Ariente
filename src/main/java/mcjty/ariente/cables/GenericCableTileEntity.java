@@ -1,36 +1,35 @@
 package mcjty.ariente.cables;
 
-import mcjty.lib.varia.Tools;
-import mcjty.ariente.varia.LoadedChunks;
+import com.mojang.brigadier.exceptions.CommandSyntaxException;
+import java.util.HashMap;
+import java.util.Map;
+import javax.annotation.Nullable;
 import mcjty.ariente.api.ICityAI;
 import mcjty.ariente.api.ICityEquipment;
+import mcjty.ariente.blocks.ArienteBlockEntity;
 import mcjty.ariente.facade.IFacadeSupport;
 import mcjty.ariente.facade.MimicBlockSupport;
 import mcjty.ariente.power.IPowerBlob;
 import mcjty.ariente.power.PowerSenderSupport;
-import mcjty.lib.tileentity.GenericTileEntity;
+import mcjty.ariente.varia.LoadedChunks;
+import mcjty.lib.varia.Tools;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
-import net.minecraft.network.protocol.game.ClientboundBlockEntityDataPacket;
-import net.minecraft.world.level.block.Block;
-import net.minecraft.world.level.block.entity.BlockEntityType;
-import net.minecraft.world.level.block.entity.BlockEntity;
-import net.minecraft.world.level.block.state.BlockState;
-import net.minecraft.nbt.CompoundTag;
-import net.minecraft.network.Connection;
-import net.minecraft.resources.ResourceLocation;
-import net.minecraft.world.level.Level;
-import net.minecraftforge.registries.ForgeRegistries;
+import net.minecraft.core.HolderLookup;
 import net.minecraft.core.registries.BuiltInRegistries;
+import net.minecraft.nbt.CompoundTag;
 import net.minecraft.nbt.NbtUtils;
 import net.minecraft.nbt.TagParser;
-import com.mojang.brigadier.exceptions.CommandSyntaxException;
+import net.minecraft.network.Connection;
+import net.minecraft.network.protocol.game.ClientboundBlockEntityDataPacket;
+import net.minecraft.resources.ResourceLocation;
+import net.minecraft.world.level.Level;
+import net.minecraft.world.level.block.Block;
+import net.minecraft.world.level.block.entity.BlockEntity;
+import net.minecraft.world.level.block.entity.BlockEntityType;
+import net.minecraft.world.level.block.state.BlockState;
 
-import javax.annotation.Nullable;
-import java.util.HashMap;
-import java.util.Map;
-
-public abstract class GenericCableTileEntity extends GenericTileEntity implements IFacadeSupport, IPowerBlob, ICityEquipment {
+public abstract class GenericCableTileEntity extends ArienteBlockEntity implements IFacadeSupport, IPowerBlob, ICityEquipment {
 
     private final MimicBlockSupport mimicBlockSupport = new MimicBlockSupport();
     private final PowerSenderSupport powerBlobSupport = new PowerSenderSupport();
@@ -63,7 +62,7 @@ public abstract class GenericCableTileEntity extends GenericTileEntity implement
             }
         }
         if (data.get("mimic") instanceof String) {
-            Block mimic = ForgeRegistries.BLOCKS.getValue(new ResourceLocation((String) data.get("mimic")));
+            Block mimic = BuiltInRegistries.BLOCK.get(ResourceLocation.parse((String) data.get("mimic")));
             if (mimic == null) {
                 System.out.println("Something went wrong loading mimic state for: '" + data.get("mimic") + "'!");
             } else {
@@ -92,10 +91,10 @@ public abstract class GenericCableTileEntity extends GenericTileEntity implement
     }
 
     @Override
-    public void onDataPacket(Connection net, ClientboundBlockEntityDataPacket packet) {
+    public void onDataPacket(Connection net, ClientboundBlockEntityDataPacket packet, HolderLookup.Provider provider) {
         BlockState oldMimicBlock = mimicBlockSupport.getMimicBlock();
 
-        super.onDataPacket(net, packet);
+        super.onDataPacket(net, packet, provider);
 
         if (level.isClientSide) {
             // If needed send a render update.
@@ -144,28 +143,28 @@ public abstract class GenericCableTileEntity extends GenericTileEntity implement
     }
 
     @Override
-    public void load(CompoundTag tagCompound) {
-        super.load(tagCompound);
+    public void loadAdditional(CompoundTag tagCompound, HolderLookup.Provider provider) {
+        super.loadAdditional(tagCompound, provider);
         mimicBlockSupport.readFromNBT(tagCompound);
         powerBlobSupport.setCableId(tagCompound.contains("cableId") ? tagCompound.getInt("cableId") : -1);
     }
 
     @Override
-    public void saveAdditional(CompoundTag tagCompound) {
-        super.saveAdditional(tagCompound);
+    public void saveAdditional(CompoundTag tagCompound, HolderLookup.Provider provider) {
+        super.saveAdditional(tagCompound, provider);
         mimicBlockSupport.writeToNBT(tagCompound);
         tagCompound.putInt("cableId", powerBlobSupport.getCableId());
     }
 
     @Override
-    public void saveClientDataToNBT(CompoundTag tagCompound) {
-        super.saveClientDataToNBT(tagCompound);
+    public void saveClientDataToNBT(CompoundTag tagCompound, HolderLookup.Provider provider) {
+        super.saveClientDataToNBT(tagCompound, provider);
         mimicBlockSupport.writeToNBT(tagCompound);
     }
 
     @Override
-    public void loadClientDataFromNBT(CompoundTag tagCompound) {
-        super.loadClientDataFromNBT(tagCompound);
+    public void loadClientDataFromNBT(CompoundTag tagCompound, HolderLookup.Provider provider) {
+        super.loadClientDataFromNBT(tagCompound, provider);
         mimicBlockSupport.readFromNBT(tagCompound);
     }
 }

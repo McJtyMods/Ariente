@@ -1,10 +1,10 @@
 package mcjty.ariente.display;
 
+import java.util.UUID;
+import net.minecraft.core.HolderLookup;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.level.Level;
-
-import java.util.UUID;
 
 public class InstalledModule {
 
@@ -123,17 +123,17 @@ public class InstalledModule {
         return px >= x && px < x + size().width() && py >= y && py < y + size().height();
     }
 
-    public CompoundTag save(boolean client) {
+    public CompoundTag save(boolean client, HolderLookup.Provider provider) {
         CompoundTag tag = new CompoundTag();
         tag.putUUID("Id", id);
-        tag.put("Item", stack.save(new CompoundTag()));
+        tag.put("Item", stack.save(provider));
         tag.putInt("X", x);
         tag.putInt("Y", y);
         return tag;
     }
 
-    public static InstalledModule load(CompoundTag tag) {
-        ItemStack stack = ItemStack.of(tag.getCompound("Item"));
+    public static InstalledModule load(CompoundTag tag, HolderLookup.Provider provider) {
+        ItemStack stack = ItemStack.parseOptional(provider, tag.getCompound("Item"));
         if (!(stack.getItem() instanceof DisplayModuleItem) || tag.getInt("X") < 0 || tag.getInt("X") >= 64
                 || tag.getInt("Y") < 0 || tag.getInt("Y") >= 636) {
             return null;

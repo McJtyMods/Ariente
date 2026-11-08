@@ -1,23 +1,16 @@
 package mcjty.ariente.setup;
 
-import mcjty.ariente.blocks.purifier.client.PurifierTubeRenderer;
-import mcjty.ariente.blocks.purifier.client.PurifierRingParticle;
-
-import mcjty.ariente.display.client.DisplayClientEvents;
-import mcjty.ariente.display.client.CameraDisplayRenderer;
-import mcjty.ariente.display.client.DisplayModuleRenderers;
-import mcjty.ariente.blocks.storagecube.client.StorageCubeRenderer;
-import mcjty.ariente.display.client.DisplayRenderer;
-
-import mcjty.ariente.multipart.MultipartRenderer;
-import mcjty.ariente.items.BlueprintRenderer;
+import mcjty.ariente.Ariente;
 import mcjty.ariente.ClientForgeEventHandlers;
 import mcjty.ariente.bindings.KeyInputHandler;
 import mcjty.ariente.blocks.generators.NegariteTankRenderer;
 import mcjty.ariente.blocks.generators.PosiriteTankRenderer;
+import mcjty.ariente.blocks.purifier.client.PurifierRingParticle;
+import mcjty.ariente.blocks.purifier.client.PurifierTubeRenderer;
+import mcjty.ariente.blocks.storagecube.client.StorageCubeRenderer;
 import mcjty.ariente.blocks.utility.ElevatorRenderer;
-import mcjty.ariente.blocks.utility.StorageRenderer;
 import mcjty.ariente.blocks.utility.SmelterRenderer;
+import mcjty.ariente.blocks.utility.StorageRenderer;
 import mcjty.ariente.blocks.utility.WarperRenderer;
 import mcjty.ariente.blocks.utility.autofield.AutoFieldRenderer;
 import mcjty.ariente.blocks.utility.door.DoorMarkerRenderer;
@@ -25,24 +18,32 @@ import mcjty.ariente.blocks.utility.door.InvisibleDoorRenderer;
 import mcjty.ariente.cables.CableModelLoader;
 import mcjty.ariente.cables.CableRenderer;
 import mcjty.ariente.client.ArienteSpriteUploader;
+import mcjty.ariente.display.client.CameraDisplayRenderer;
+import mcjty.ariente.display.client.DisplayClientEvents;
+import mcjty.ariente.display.client.DisplayModuleRenderers;
+import mcjty.ariente.display.client.DisplayRenderer;
 import mcjty.ariente.entities.LaserRender;
 import mcjty.ariente.entities.RenderArientePearl;
 import mcjty.ariente.entities.fluxelevator.FluxElevatorRender;
-import mcjty.ariente.entities.fluxship.FluxShipRender;
 import mcjty.ariente.entities.fluxship.FluxShipPanelRender;
+import mcjty.ariente.entities.fluxship.FluxShipRender;
 import mcjty.ariente.entities.levitator.FluxLevitatorRender;
+import mcjty.ariente.items.BlueprintRenderer;
+import mcjty.ariente.multipart.MultipartRenderer;
 import net.minecraft.client.Minecraft;
-import net.minecraft.core.Direction;
 import net.minecraft.client.renderer.ItemBlockRenderTypes;
 import net.minecraft.client.renderer.RenderType;
+import net.minecraft.client.resources.model.ModelResourceLocation;
+import net.minecraft.core.Direction;
+import net.minecraft.resources.ResourceLocation;
 import net.minecraft.server.packs.resources.ReloadableResourceManager;
 import net.minecraft.server.packs.resources.ResourceManager;
-import net.minecraftforge.client.event.EntityRenderersEvent;
-import net.minecraftforge.client.event.ModelEvent;
-import net.minecraftforge.client.event.RegisterParticleProvidersEvent;
-import net.minecraftforge.common.MinecraftForge;
-import net.minecraftforge.eventbus.api.SubscribeEvent;
-import net.minecraftforge.fml.event.lifecycle.FMLClientSetupEvent;
+import net.neoforged.bus.api.SubscribeEvent;
+import net.neoforged.fml.event.lifecycle.FMLClientSetupEvent;
+import net.neoforged.neoforge.client.event.EntityRenderersEvent;
+import net.neoforged.neoforge.client.event.ModelEvent;
+import net.neoforged.neoforge.client.event.RegisterParticleProvidersEvent;
+import net.neoforged.neoforge.common.NeoForge;
 
 public class ClientSetup {
 
@@ -52,10 +53,10 @@ public class ClientSetup {
     }
 
     public static void init(FMLClientSetupEvent event) {
-        MinecraftForge.EVENT_BUS.register(new ClientForgeEventHandlers());
-        MinecraftForge.EVENT_BUS.register(new DisplayClientEvents());
+        NeoForge.EVENT_BUS.register(new ClientForgeEventHandlers());
+        NeoForge.EVENT_BUS.register(new DisplayClientEvents());
         DisplayModuleRenderers.init();
-        MinecraftForge.EVENT_BUS.register(new KeyInputHandler());
+        NeoForge.EVENT_BUS.register(new KeyInputHandler());
 
         NegariteTankRenderer.register();
         PosiriteTankRenderer.register();
@@ -74,8 +75,8 @@ public class ClientSetup {
     }
 
     public static void additionalModels(ModelEvent.RegisterAdditional event) {
-        event.register(FluxShipRender.MODEL);
-        event.register(BlueprintRenderer.BASE_MODEL);
+        event.register(ModelResourceLocation.standalone(FluxShipRender.MODEL));
+        event.register(ModelResourceLocation.standalone(BlueprintRenderer.BASE_MODEL));
     }
 
     public static void modelsBaked(ModelEvent.BakingCompleted event) {
@@ -83,7 +84,7 @@ public class ClientSetup {
     }
 
     public static void initModels(ModelEvent.RegisterGeometryLoaders event) {
-        event.register("cableloader", new CableModelLoader());
+        event.register(ResourceLocation.fromNamespaceAndPath(Ariente.MODID, "cableloader"), new CableModelLoader());
     }
 
     @SubscribeEvent

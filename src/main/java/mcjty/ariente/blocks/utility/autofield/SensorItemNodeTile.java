@@ -12,8 +12,9 @@ import mcjty.hologui.api.components.ITextChoice;
 import mcjty.lib.builder.BlockBuilder;
 import mcjty.lib.multipart.PartPos;
 import net.minecraft.core.BlockPos;
-import net.minecraft.world.item.DyeColor;
+import net.minecraft.core.HolderLookup;
 import net.minecraft.nbt.CompoundTag;
+import net.minecraft.world.item.DyeColor;
 import net.minecraft.world.level.block.state.BlockState;
 import org.apache.commons.lang3.tuple.Pair;
 
@@ -75,8 +76,8 @@ public class SensorItemNodeTile extends AbstractNodeTile {
     }
 
     @Override
-    public void load(CompoundTag tagCompound) {
-        super.load(tagCompound);
+    public void loadAdditional(CompoundTag tagCompound, HolderLookup.Provider provider) {
+        super.loadAdditional(tagCompound, provider);
         CompoundTag info = tagCompound.getCompound("Info");
         if (!info.isEmpty()) {
             if (info.contains("outColor")) {
@@ -88,8 +89,8 @@ public class SensorItemNodeTile extends AbstractNodeTile {
     }
 
     @Override
-    public void saveAdditional(CompoundTag tagCompound) {
-        super.saveAdditional(tagCompound);
+    public void saveAdditional(CompoundTag tagCompound, HolderLookup.Provider provider) {
+        super.saveAdditional(tagCompound, provider);
         CompoundTag info = getOrCreateInfo(tagCompound);
         info.putInt("outColor", outputColor[0].ordinal());
         info.putInt("op", operator);

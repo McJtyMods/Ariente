@@ -1,29 +1,37 @@
 package mcjty.ariente.network;
 
-import net.minecraft.network.FriendlyByteBuf;
+import net.minecraft.network.RegistryFriendlyByteBuf;
+import net.minecraft.network.codec.StreamCodec;
+import net.minecraft.network.protocol.common.custom.CustomPacketPayload;
+import net.minecraft.resources.ResourceLocation;
+import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.world.entity.player.Player;
-import net.minecraftforge.network.NetworkEvent;
+import net.neoforged.neoforge.network.handling.IPayloadContext;
 
-import java.util.function.Supplier;
+public class PacketHitForcefield implements CustomPacketPayload {
 
-public class PacketHitForcefield {
+    public static final Type<PacketHitForcefield> TYPE = new Type<>(ResourceLocation.fromNamespaceAndPath("ariente", "packet_hit_forcefield"));
+    public static final StreamCodec<RegistryFriendlyByteBuf, PacketHitForcefield> CODEC = StreamCodec.ofMember(PacketHitForcefield::toBytes, PacketHitForcefield::new);
 
-    public void toBytes(FriendlyByteBuf buf) {
+    @Override
+    public Type<? extends CustomPacketPayload> type() {
+        return TYPE;
+    }
+
+    public void toBytes(RegistryFriendlyByteBuf buf) {
     }
 
     public PacketHitForcefield() {
     }
 
-    public PacketHitForcefield(FriendlyByteBuf buf) {
+    public PacketHitForcefield(RegistryFriendlyByteBuf buf) {
     }
 
-    public void handle(Supplier<NetworkEvent.Context> supplier) {
-        NetworkEvent.Context ctx = supplier.get();
+    public void handle(IPayloadContext ctx) {
         ctx.enqueueWork(() -> {
-            Player playerEntity = ctx.getSender();
+            Player playerEntity = (ServerPlayer) ctx.player();
             // @todo
 
         });
-        ctx.setPacketHandled(true);
     }
 }

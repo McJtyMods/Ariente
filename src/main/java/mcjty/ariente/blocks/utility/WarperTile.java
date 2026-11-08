@@ -2,6 +2,7 @@ package mcjty.ariente.blocks.utility;
 
 import mcjty.ariente.Ariente;
 import mcjty.ariente.api.IWarper;
+import mcjty.ariente.blocks.ArienteBlockEntity;
 import mcjty.ariente.compat.arienteworld.ArienteWorldCompat;
 import mcjty.ariente.config.UtilityConfiguration;
 import mcjty.ariente.setup.Registration;
@@ -12,20 +13,21 @@ import mcjty.hologui.api.StyledColor;
 import mcjty.lib.blocks.BaseBlock;
 import mcjty.lib.blocks.RotationType;
 import mcjty.lib.builder.BlockBuilder;
-import mcjty.lib.tileentity.GenericTileEntity;
 import mcjty.lib.varia.TeleportationTools;
 import net.minecraft.core.BlockPos;
-import net.minecraft.server.level.ServerPlayer;
-import net.minecraft.server.level.ServerLevel;
-import net.minecraft.nbt.NbtUtils;
-import net.minecraft.world.level.levelgen.Heightmap;
+import net.minecraft.core.HolderLookup;
 import net.minecraft.nbt.CompoundTag;
+import net.minecraft.nbt.NbtUtils;
 import net.minecraft.resources.ResourceKey;
+import net.minecraft.server.level.ServerLevel;
+import net.minecraft.server.level.ServerPlayer;
+import net.minecraft.world.InteractionHand;
 import net.minecraft.world.InteractionResult;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.level.block.state.BlockState;
-import net.minecraft.world.InteractionHand;
+import net.minecraft.world.level.levelgen.Heightmap;
+import net.minecraft.world.level.portal.DimensionTransition;
 import net.minecraft.world.phys.AABB;
 import net.minecraft.world.phys.BlockHitResult;
 
@@ -33,7 +35,7 @@ import static mcjty.ariente.compat.ArienteTOPDriver.DRIVER;
 import static mcjty.lib.builder.TooltipBuilder.header;
 import static mcjty.lib.builder.TooltipBuilder.key;
 
-public class WarperTile extends GenericTileEntity implements IGuiTile, IWarper {
+public class WarperTile extends ArienteBlockEntity implements IGuiTile, IWarper {
 
     private AABB renderBox = null;
 
@@ -92,28 +94,28 @@ public class WarperTile extends GenericTileEntity implements IGuiTile, IWarper {
     }
 
     @Override
-    public void load(CompoundTag tagCompound) {
+    public void loadAdditional(CompoundTag tagCompound, HolderLookup.Provider provider) {
         CompoundTag info = tagCompound.getCompound("Info");
         if (info.contains("charges")) {
             charges = info.getInt("charges");
         }
-        super.load(tagCompound);
+        super.loadAdditional(tagCompound, provider);
     }
 
     @Override
-    public void saveAdditional(CompoundTag tagCompound) {
+    public void saveAdditional(CompoundTag tagCompound, HolderLookup.Provider provider) {
         getOrCreateInfo(tagCompound).putInt("charges", charges);
-        super.saveAdditional(tagCompound);
+        super.saveAdditional(tagCompound, provider);
     }
 
     @Override
-    public void saveClientDataToNBT(CompoundTag tag) {
-        saveAdditional(tag);
+    public void saveClientDataToNBT(CompoundTag tag, HolderLookup.Provider provider) {
+        saveAdditional(tag, provider);
     }
 
     @Override
-    public void loadClientDataFromNBT(CompoundTag tag) {
-        load(tag);
+    public void loadClientDataFromNBT(CompoundTag tag, HolderLookup.Provider provider) {
+        loadAdditional(tag, provider);
     }
 
     public int getChargePercentage() {
@@ -126,7 +128,6 @@ public class WarperTile extends GenericTileEntity implements IGuiTile, IWarper {
         return pct;
     }
 
-    @Override
     public AABB getRenderBoundingBox() {
         return getBeamBox();
     }
@@ -149,7 +150,7 @@ public class WarperTile extends GenericTileEntity implements IGuiTile, IWarper {
             ServerLevel overworld = serverPlayer.server.getLevel(Level.OVERWORLD);
             BlockPos destination = null;
             if (player.getPersistentData().contains("arienteReturn")) {
-                BlockPos source = NbtUtils.readBlockPos(player.getPersistentData().getCompound("arienteReturn"));
+                BlockPos source = NbtUtils.readBlockPos(player.getPersistentData(), "arienteReturn").orElseThrow();
                 overworld.getChunkAt(source);
                 if (overworld.getBlockState(source.below()).is(Registration.WARPER.get())
                         && overworld.isEmptyBlock(source) && overworld.isEmptyBlock(source.above())) {
@@ -159,11 +160,8 @@ public class WarperTile extends GenericTileEntity implements IGuiTile, IWarper {
             if (destination == null && serverPlayer.getRespawnDimension().equals(Level.OVERWORLD)
                     && serverPlayer.getRespawnPosition() != null) {
                 overworld.getChunkAt(serverPlayer.getRespawnPosition());
-                var respawn = ServerPlayer.findRespawnPositionAndUseSpawnBlock(overworld, serverPlayer.getRespawnPosition(),
-                        serverPlayer.getRespawnAngle(), serverPlayer.isRespawnForced(), true);
-                if (respawn.isPresent()) {
-                    destination = BlockPos.containing(respawn.get());
-                }
+                var respawn = serverPlayer.findRespawnPositionAndUseSpawnBlock(true, DimensionTransition.DO_NOTHING);
+                destination = BlockPos.containing(respawn.pos());
             }
             if (destination == null) {
                 BlockPos spawn = overworld.getSharedSpawnPos();

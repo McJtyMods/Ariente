@@ -1,14 +1,14 @@
 package mcjty.ariente.blocks.utility.autofield;
 
+import java.util.*;
+import javax.annotation.Nonnull;
+import javax.annotation.Nullable;
+import mcjty.ariente.items.ItemData;
 import mcjty.lib.multipart.PartPos;
 import mcjty.lib.multipart.PartSlot;
 import net.minecraft.core.BlockPos;
-import net.minecraft.network.FriendlyByteBuf;
+import net.minecraft.network.RegistryFriendlyByteBuf;
 import net.minecraft.world.item.ItemStack;
-
-import javax.annotation.Nonnull;
-import javax.annotation.Nullable;
-import java.util.*;
 
 public class AutoFieldRenderInfo {
 
@@ -67,7 +67,7 @@ public class AutoFieldRenderInfo {
         transfers.values().removeIf(Set::isEmpty);
     }
 
-    public void toBytes(FriendlyByteBuf buf) {
+    public void toBytes(RegistryFriendlyByteBuf buf) {
         buf.writeInt(transfers.size());
         for (Map.Entry<TransferPath, TreeSet<Transfer>> entry : transfers.entrySet()) {
             TransferPath path = entry.getKey();
@@ -78,12 +78,12 @@ public class AutoFieldRenderInfo {
             Set<Transfer> values = entry.getValue();
             buf.writeInt(values.size());
             for (Transfer transfer : entry.getValue()) {
-                buf.writeItem(transfer.stack);
+                ItemStack.OPTIONAL_STREAM_CODEC.encode(buf, transfer.stack);
             }
         }
     }
 
-    public void fromBytes(FriendlyByteBuf buf) {
+    public void fromBytes(RegistryFriendlyByteBuf buf) {
         transfers.clear();
         int size = buf.readInt();
         for (int i = 0 ; i < size ; i++) {
@@ -95,7 +95,7 @@ public class AutoFieldRenderInfo {
             TreeSet<Transfer> values = new TreeSet<>();
             int s = buf.readInt();
             for (int j = 0 ; j < s ; j++) {
-                values.add(new Transfer(buf.readItem(), j));
+                values.add(new Transfer(ItemStack.OPTIONAL_STREAM_CODEC.decode(buf), j));
             }
             transfers.put(path, values);
         }
@@ -168,7 +168,7 @@ public class AutoFieldRenderInfo {
 
         @Override
         public int hashCode() {
-            return Objects.hash(stack.getItem(), stack.getTag(), time);
+            return Objects.hash(stack.getItem(), ItemData.get(stack), time);
         }
     }
 

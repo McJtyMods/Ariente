@@ -1,12 +1,14 @@
 package mcjty.ariente.items;
 
+import java.util.List;
+import java.util.Locale;
 import mcjty.ariente.Ariente;
-import mcjty.ariente.gui.CompactNumber;
-import mcjty.ariente.gui.NumberFormatting;
 import mcjty.ariente.config.UtilityConfiguration;
+import mcjty.ariente.gui.CompactNumber;
 import mcjty.ariente.gui.GuiHelp;
 import mcjty.ariente.gui.HoloGuiTools;
 import mcjty.ariente.gui.ModGuis;
+import mcjty.ariente.gui.NumberFormatting;
 import mcjty.ariente.setup.Registration;
 import mcjty.hologui.api.IGuiComponent;
 import mcjty.hologui.api.IGuiComponentRegistry;
@@ -25,10 +27,6 @@ import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.TooltipFlag;
 import net.minecraft.world.level.Level;
-
-import javax.annotation.Nullable;
-import java.util.List;
-import java.util.Locale;
 
 import static mcjty.hologui.api.Icons.*;
 import static mcjty.lib.builder.TooltipBuilder.header;
@@ -57,7 +55,7 @@ public class EnergyHolderItem extends Item implements ITooltipSettings {
     }
 
     @Override
-    public void appendHoverText(ItemStack stack, @Nullable Level worldIn, List<Component> tooltip, TooltipFlag flag) {
+    public void appendHoverText(ItemStack stack, Item.TooltipContext worldIn, List<Component> tooltip, TooltipFlag flag) {
         super.appendHoverText(stack, worldIn, tooltip, flag);
         tooltipBuilder.makeTooltip(Tools.getId(this), stack, tooltip, flag);
     }
@@ -86,7 +84,7 @@ public class EnergyHolderItem extends Item implements ITooltipSettings {
         // Both efficiency rates divide this capacity exactly, so mixed equipment shares every last tick.
         long capacity = powerCapacity();
         long cost = Math.min(capacity, Math.max(1L, usage * (capacity / ticksPerPair)));
-        CompoundTag tag = holder.getOrCreateTag();
+        CompoundTag tag = ItemData.get(holder);
         long storedCapacity = tag.getLong("chargeCapacity");
         long charge = Math.max(0, Math.min(tag.getLong("charge"), storedCapacity));
         if (storedCapacity > 0 && storedCapacity != capacity) {
@@ -98,11 +96,19 @@ public class EnergyHolderItem extends Item implements ITooltipSettings {
                 return false;
             }
             tag.putInt("negarite", count(holder, "negarite") - 1);
+            ItemData.set(holder, tag);
+
             tag.putInt("posirite", count(holder, "posirite") - 1);
+            ItemData.set(holder, tag);
+
             charge += capacity;
         }
         tag.putLong("charge", charge - cost);
+        ItemData.set(holder, tag);
+
         tag.putLong("chargeCapacity", capacity);
+        ItemData.set(holder, tag);
+
         player.getInventory().setChanged();
         return true;
     }
@@ -121,7 +127,7 @@ public class EnergyHolderItem extends Item implements ITooltipSettings {
     }
 
     public static int getChargePercentage(ItemStack holder) {
-        CompoundTag tag = holder.getTag();
+        CompoundTag tag = ItemData.get(holder);
         if (tag == null || tag.getLong("chargeCapacity") <= 0) {
             return 0;
         }
@@ -134,7 +140,7 @@ public class EnergyHolderItem extends Item implements ITooltipSettings {
     public static long getStoredPower(ItemStack holder) {
         long pairs = Math.min(count(holder, "negarite"), count(holder, "posirite"));
         long power = pairs * POWER_PER_FUEL_PAIR;
-        CompoundTag tag = holder.getTag();
+        CompoundTag tag = ItemData.get(holder);
         if (tag == null || tag.getLong("chargeCapacity") <= 0) {
             return power;
         }
@@ -153,9 +159,11 @@ public class EnergyHolderItem extends Item implements ITooltipSettings {
                 || getAutomatic(stack) != MODE_AUTOMATIC || findActiveHolder(player) != stack) {
             return;
         }
-        CompoundTag tag = stack.getOrCreateTag();
+        CompoundTag tag = ItemData.get(stack);
         int index = Math.floorMod(tag.getInt("index"), player.getInventory().getContainerSize());
         tag.putInt("index", index + 1);
+        ItemData.set(stack, tag);
+
         ItemStack fuel = player.getInventory().getItem(index);
         if (fuel.is(Registration.DUST_NEGARITE.get()) || fuel.is(Registration.DUST_POSIRITE.get())) {
             addFuel(player, fuel.getItem(), fuel.getCount());
@@ -203,13 +211,13 @@ public class EnergyHolderItem extends Item implements ITooltipSettings {
     }
 
     private static int getAutomatic(ItemStack stack) {
-        return stack.hasTag() ? stack.getTag().getInt("mode") : MODE_MANUAL;
+        return ItemData.has(stack) ? ItemData.get(stack).getInt("mode") : MODE_MANUAL;
     }
 
     private static void changeAutomatic(Player player) {
         ItemStack holder = findActiveHolder(player);
         if (!holder.isEmpty()) {
-            holder.getOrCreateTag().putInt("mode", getAutomatic(holder) == MODE_MANUAL ? MODE_AUTOMATIC : MODE_MANUAL);
+            ItemData.update(holder, data -> data.putInt("mode", getAutomatic(holder) == MODE_MANUAL ? MODE_AUTOMATIC : MODE_MANUAL));
             syncInventory(player);
         }
     }
@@ -221,10 +229,10 @@ public class EnergyHolderItem extends Item implements ITooltipSettings {
         }
         String key = fuelKey(dust);
         int stored = count(holder, key);
-        int requested = Math.min(stored, Math.min(amount, dust.getMaxStackSize()));
+        int requested = Math.min(stored, Math.min(amount, new ItemStack(dust).getMaxStackSize()));
         ItemStack extracted = new ItemStack(dust, requested);
         player.getInventory().add(extracted);
-        holder.getOrCreateTag().putInt(key, stored - (requested - extracted.getCount()));
+        ItemData.update(holder, data -> data.putInt(key, stored - (requested - extracted.getCount())));
         syncInventory(player);
     }
 
@@ -248,7 +256,8 @@ public class EnergyHolderItem extends Item implements ITooltipSettings {
                 }
             }
         }
-        holder.getOrCreateTag().putInt(key, stored);
+        int storedFuel = stored;
+        ItemData.update(holder, data -> data.putInt(key, storedFuel));
         syncInventory(player);
     }
 
@@ -267,7 +276,7 @@ public class EnergyHolderItem extends Item implements ITooltipSettings {
     }
 
     public static int count(ItemStack stack, String key) {
-        return stack.hasTag() ? Math.max(0, stack.getTag().getInt(key)) : 0;
+        return ItemData.has(stack) ? Math.max(0, ItemData.get(stack).getInt(key)) : 0;
     }
 
     private static void syncInventory(Player player) {

@@ -2,7 +2,6 @@ package mcjty.ariente.items.armor;
 
 import mcjty.ariente.api.ArmorUpgradeType;
 import mcjty.ariente.items.modules.ModuleSupport;
-import mcjty.ariente.network.ArienteMessages;
 import mcjty.ariente.setup.Registration;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.tags.DamageTypeTags;
@@ -13,8 +12,8 @@ import net.minecraft.world.entity.EquipmentSlot;
 import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.entity.projectile.Projectile;
 import net.minecraft.world.item.ItemStack;
-import net.minecraftforge.event.entity.living.LivingDamageEvent;
-import net.minecraftforge.network.PacketDistributor;
+import net.neoforged.neoforge.event.entity.living.LivingDamageEvent;
+import net.neoforged.neoforge.network.PacketDistributor;
 
 public class PersonalForcefield {
 
@@ -47,9 +46,9 @@ public class PersonalForcefield {
         tag.putLong(LAST_HIT, lastHit);
     }
 
-    public static void absorb(LivingDamageEvent event) {
+    public static void absorb(LivingDamageEvent.Pre event) {
         LivingEntity entity = event.getEntity();
-        float damage = event.getAmount();
+        float damage = event.getNewDamage();
         if (entity.level().isClientSide || damage <= 0 || !isActive(entity)) {
             return;
         }
@@ -61,7 +60,7 @@ public class PersonalForcefield {
                 || source.is(DamageTypes.MAGIC) || source.is(DamageTypes.INDIRECT_MAGIC)) {
             absorbRanged(event, damage, coolingDown ? 0.5f : 1.0f);
         } else if (!source.is(DamageTypeTags.BYPASSES_ARMOR)) {
-            event.setAmount(damage * 0.5f);
+            event.setNewDamage(damage * 0.5f);
             if (!source.is(DamageTypes.THORNS) && source.getDirectEntity() instanceof LivingEntity attacker
                     && source.getEntity() == attacker && attacker != entity) {
                 attacker.hurt(entity.damageSources().thorns(entity), damage * 0.5f);
@@ -69,15 +68,15 @@ public class PersonalForcefield {
         }
     }
 
-    private static void absorbRanged(LivingDamageEvent event, float damage, float protection) {
+    private static void absorbRanged(LivingDamageEvent.Pre event, float damage, float protection) {
         LivingEntity entity = event.getEntity();
         float absorbed = damage * protection;
-        event.setAmount(damage - absorbed);
+        event.setNewDamage(damage - absorbed);
         // A blocked 24-damage advanced drone laser needs two seconds; ordinary arrows need half a second.
         int cooldown = Math.max(MIN_COOLDOWN_TICKS, Mth.ceil(absorbed * TICKS_PER_DAMAGE));
         long now = entity.level().getGameTime();
         updateState(entity, now + cooldown, now);
-        ArienteMessages.INSTANCE.send(PacketDistributor.TRACKING_ENTITY_AND_SELF.with(() -> entity),
+        PacketDistributor.sendToPlayersTrackingEntityAndSelf(entity,
                 new PacketPersonalForcefield(entity.getId(), now + cooldown, now));
     }
 }

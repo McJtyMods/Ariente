@@ -1,18 +1,28 @@
 package mcjty.ariente.blocks.defense;
 
-import net.minecraft.network.FriendlyByteBuf;
 import net.minecraft.core.BlockPos;
+import net.minecraft.network.RegistryFriendlyByteBuf;
+import net.minecraft.network.codec.StreamCodec;
+import net.minecraft.network.protocol.common.custom.CustomPacketPayload;
+import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.phys.Vec3;
-import net.minecraftforge.network.NetworkEvent;
+import net.neoforged.neoforge.network.handling.IPayloadContext;
 
-import java.util.function.Supplier;
+public class PacketDamageForcefield implements CustomPacketPayload {
 
-public class PacketDamageForcefield {
+    public static final Type<PacketDamageForcefield> TYPE = new Type<>(ResourceLocation.fromNamespaceAndPath("ariente", "packet_damage_forcefield"));
+    public static final StreamCodec<RegistryFriendlyByteBuf, PacketDamageForcefield> CODEC = StreamCodec.ofMember(PacketDamageForcefield::toBytes, PacketDamageForcefield::new);
+
+    @Override
+    public Type<? extends CustomPacketPayload> type() {
+        return TYPE;
+    }
+
     private BlockPos pos;
     private int index;
     private Vec3 intersection;
 
-    public void toBytes(FriendlyByteBuf buf) {
+    public void toBytes(RegistryFriendlyByteBuf buf) {
         buf.writeBlockPos(pos);
         buf.writeInt(index);
         buf.writeDouble(intersection.x);
@@ -23,7 +33,7 @@ public class PacketDamageForcefield {
     public PacketDamageForcefield() {
     }
 
-    public PacketDamageForcefield(FriendlyByteBuf buf) {
+    public PacketDamageForcefield(RegistryFriendlyByteBuf buf) {
         pos = buf.readBlockPos();
         index = buf.readInt();
         intersection = new Vec3(buf.readDouble(), buf.readDouble(), buf.readDouble());
@@ -35,11 +45,9 @@ public class PacketDamageForcefield {
         this.intersection = intersection;
     }
 
-    public void handle(Supplier<NetworkEvent.Context> supplier) {
-        NetworkEvent.Context ctx = supplier.get();
+    public void handle(IPayloadContext ctx) {
         ctx.enqueueWork(() -> {
             ForceFieldRenderer.damageField(pos, index, intersection);
         });
-        ctx.setPacketHandled(true);
     }
 }

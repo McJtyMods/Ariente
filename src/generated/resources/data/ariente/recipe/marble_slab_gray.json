@@ -1,0 +1,16 @@
+{
+  "type": "minecraft:crafting_shaped",
+  "category": "misc",
+  "key": {
+    "m": {
+      "item": "ariente:marble_gray"
+    }
+  },
+  "pattern": [
+    "mmm"
+  ],
+  "result": {
+    "count": 6,
+    "id": "ariente:marble_slab_gray"
+  }
+}

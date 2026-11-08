@@ -43,7 +43,7 @@
     "frame",
     "window"
   ],
-  "loader": "forge:composite",
+  "loader": "neoforge:composite",
   "textures": {
     "particle": "ariente:block/marble/blackmarble"
   }

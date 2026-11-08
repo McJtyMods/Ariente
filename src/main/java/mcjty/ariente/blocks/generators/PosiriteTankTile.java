@@ -1,6 +1,7 @@
 package mcjty.ariente.blocks.generators;
 
 import mcjty.ariente.api.IAlarmMode;
+import mcjty.ariente.blocks.ArienteBlockEntity;
 import mcjty.ariente.setup.Registration;
 import mcjty.hologui.api.IGuiComponent;
 import mcjty.hologui.api.IGuiComponentRegistry;
@@ -8,16 +9,15 @@ import mcjty.hologui.api.IGuiTile;
 import mcjty.hologui.api.StyledColor;
 import mcjty.lib.blocks.BaseBlock;
 import mcjty.lib.builder.BlockBuilder;
-import mcjty.lib.tileentity.GenericTileEntity;
 import net.minecraft.core.BlockPos;
-import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.level.block.entity.BlockEntity;
+import net.minecraft.world.level.block.state.BlockState;
 
 import static mcjty.ariente.compat.ArienteTOPDriver.DRIVER;
 import static mcjty.lib.builder.TooltipBuilder.header;
 import static mcjty.lib.builder.TooltipBuilder.key;
 
-public class PosiriteTankTile extends GenericTileEntity implements IGuiTile, IAlarmMode {
+public class PosiriteTankTile extends ArienteBlockEntity implements IGuiTile, IAlarmMode {
 
     public PosiriteTankTile(BlockPos pos, BlockState state) {
         super(Registration.POSIRITE_TANK_TILE.get(), pos, state);
@@ -31,7 +31,6 @@ public class PosiriteTankTile extends GenericTileEntity implements IGuiTile, IAl
                 .tileEntitySupplier(PosiriteTankTile::new)
         );
     }
-
 
     public boolean isWorking() {
         BlockPos p = worldPosition.below();

@@ -1,26 +1,25 @@
 package mcjty.ariente.items;
 
-import mcjty.lib.varia.Tools;
-import mcjty.ariente.entities.fluxship.FluxShipEntity;
+import java.util.List;
 import mcjty.ariente.entities.fluxship.FluxShipEnergy;
+import mcjty.ariente.entities.fluxship.FluxShipEntity;
 import mcjty.lib.builder.TooltipBuilder;
 import mcjty.lib.tooltips.ITooltipSettings;
+import mcjty.lib.varia.Tools;
 import net.minecraft.core.BlockPos;
+import net.minecraft.core.component.DataComponents;
 import net.minecraft.network.chat.Component;
 import net.minecraft.util.Mth;
+import net.minecraft.world.InteractionResult;
 import net.minecraft.world.entity.player.Player;
+import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.TooltipFlag;
-import net.minecraft.world.level.Level;
-import net.minecraft.world.item.Item;
 import net.minecraft.world.item.context.UseOnContext;
-import net.minecraft.world.InteractionResult;
+import net.minecraft.world.level.Level;
 
-import javax.annotation.Nullable;
-import java.util.List;
-
-import static mcjty.lib.builder.TooltipBuilder.header;
 import static mcjty.lib.builder.TooltipBuilder.general;
+import static mcjty.lib.builder.TooltipBuilder.header;
 
 public class FluxShipItem extends Item implements ITooltipSettings {
 
@@ -32,7 +31,7 @@ public class FluxShipItem extends Item implements ITooltipSettings {
     }
 
     @Override
-    public void appendHoverText(ItemStack stack, @Nullable Level worldIn, List<Component> tooltip, TooltipFlag flag) {
+    public void appendHoverText(ItemStack stack, Item.TooltipContext worldIn, List<Component> tooltip, TooltipFlag flag) {
         super.appendHoverText(stack, worldIn, tooltip, flag);
         tooltipBuilder.makeTooltip(Tools.getId(this), stack, tooltip, flag);
         int charge = getCharge(stack);
@@ -40,7 +39,7 @@ public class FluxShipItem extends Item implements ITooltipSettings {
     }
 
     public static int getCharge(ItemStack stack) {
-        return stack.hasTag() ? Mth.clamp(stack.getTag().getInt(FluxShipEnergy.CHARGE_TAG), 0, FluxShipEnergy.CAPACITY) : 0;
+        return ItemData.has(stack) ? Mth.clamp(ItemData.get(stack).getInt(FluxShipEnergy.CHARGE_TAG), 0, FluxShipEnergy.CAPACITY) : 0;
     }
 
     @Override
@@ -65,7 +64,7 @@ public class FluxShipItem extends Item implements ITooltipSettings {
             return InteractionResult.FAIL;
         }
         if (!world.isClientSide) {
-            if (stack.hasCustomHoverName()) {
+            if (stack.has(DataComponents.CUSTOM_NAME)) {
                 ship.setCustomName(stack.getHoverName());
             }
             if (!world.addFreshEntity(ship)) {

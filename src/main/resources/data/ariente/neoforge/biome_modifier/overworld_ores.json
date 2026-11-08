@@ -1,0 +1,15 @@
+{
+  "type": "neoforge:add_features",
+  "biomes": "#minecraft:is_overworld",
+  "features": [
+    "ariente:overworld_marble",
+    "ariente:overworld_lithium",
+    "ariente:overworld_manganese",
+    "ariente:overworld_platinum",
+    "ariente:overworld_silicon",
+    "ariente:overworld_silver",
+    "ariente:overworld_negarite",
+    "ariente:overworld_posirite"
+  ],
+  "step": "underground_ores"
+}

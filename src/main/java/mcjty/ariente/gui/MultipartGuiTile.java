@@ -1,13 +1,13 @@
 package mcjty.ariente.gui;
 
+import mcjty.ariente.multipart.MultipartTE;
 import mcjty.hologui.api.IGuiComponent;
 import mcjty.hologui.api.IGuiComponentRegistry;
 import mcjty.hologui.api.IGuiTile;
-import mcjty.ariente.multipart.MultipartTE;
 import mcjty.lib.multipart.PartSlot;
 import net.minecraft.core.BlockPos;
-import net.minecraft.world.level.block.entity.BlockEntity;
 import net.minecraft.world.level.Level;
+import net.minecraft.world.level.block.entity.BlockEntity;
 import org.apache.commons.lang3.StringUtils;
 
 public class MultipartGuiTile implements IGuiTile {

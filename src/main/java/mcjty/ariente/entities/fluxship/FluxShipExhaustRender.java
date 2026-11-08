@@ -1,6 +1,6 @@
 package mcjty.ariente.entities.fluxship;
 
-import com.mojang.blaze3d.vertex.BufferBuilder;
+import com.mojang.blaze3d.vertex.ByteBufferBuilder;
 import com.mojang.blaze3d.vertex.PoseStack;
 import com.mojang.blaze3d.vertex.VertexConsumer;
 import mcjty.ariente.Ariente;
@@ -15,10 +15,10 @@ import net.minecraft.util.Mth;
 import net.minecraft.world.entity.Entity;
 import net.minecraft.world.inventory.InventoryMenu;
 import net.minecraft.world.phys.Vec3;
-import net.minecraftforge.api.distmarker.Dist;
-import net.minecraftforge.client.event.RenderLevelStageEvent;
-import net.minecraftforge.eventbus.api.SubscribeEvent;
-import net.minecraftforge.fml.common.Mod;
+import net.neoforged.api.distmarker.Dist;
+import net.neoforged.bus.api.SubscribeEvent;
+import net.neoforged.fml.common.EventBusSubscriber;
+import net.neoforged.neoforge.client.event.RenderLevelStageEvent;
 import org.joml.Quaternionf;
 import org.joml.Vector3f;
 
@@ -26,12 +26,12 @@ import static mcjty.ariente.blocks.generators.NegariteTankRenderer.NEGARITE_BEAM
 import static mcjty.ariente.blocks.generators.PosiriteTankRenderer.POSIRITE_BEAM;
 
 /** Camera-facing power ribbons in the same rotating cabin frame as the hull. */
-@Mod.EventBusSubscriber(modid = Ariente.MODID, value = Dist.CLIENT)
+@EventBusSubscriber(modid = Ariente.MODID, value = Dist.CLIENT)
 public class FluxShipExhaustRender {
 
     private static final int STRANDS = 4;
     private static final int SEGMENTS = 24;
-    private static final MultiBufferSource.BufferSource EXHAUST_BUFFERS = MultiBufferSource.immediate(new BufferBuilder(32768));
+    private static final MultiBufferSource.BufferSource EXHAUST_BUFFERS = MultiBufferSource.immediate(new ByteBufferBuilder(32768));
 
     public static void render(FluxShipEntity ship, float partialTick, PoseStack pose) {
         render(ship, partialTick, pose, LiveCameraRenderer.buffersForView(EXHAUST_BUFFERS));
@@ -133,8 +133,8 @@ public class FluxShipExhaustRender {
 
     private static void vertex(PoseStack pose, VertexConsumer vertices, Vec3 point, float u, float v, float glow) {
         // ONE + ONE blending needs fading in RGB as well as alpha.
-        vertices.vertex(pose.last().pose(), (float) point.x, (float) point.y, (float) point.z)
-                .color(glow, glow, glow, glow).uv(u, v).overlayCoords(OverlayTexture.NO_OVERLAY)
-                .uv2(LightTexture.FULL_BRIGHT).normal(pose.last().normal(), 0, 1, 0).endVertex();
+        vertices.addVertex(pose.last().pose(), (float) point.x, (float) point.y, (float) point.z)
+                .setColor(glow, glow, glow, glow).setUv(u, v).setOverlay(OverlayTexture.NO_OVERLAY)
+                .setLight(LightTexture.FULL_BRIGHT).setNormal(pose.last(), 0, 1, 0);
     }
 }

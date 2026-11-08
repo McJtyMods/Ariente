@@ -1,24 +1,26 @@
 package mcjty.ariente.blocks.utility.door;
 
+import mcjty.ariente.blocks.ArienteBlockEntity;
 import mcjty.ariente.blocks.utility.ILockable;
 import mcjty.ariente.config.UtilityConfiguration;
 import mcjty.ariente.setup.Registration;
 import mcjty.lib.blocks.BaseBlock;
 import mcjty.lib.blocks.RotationType;
 import mcjty.lib.builder.BlockBuilder;
-import mcjty.lib.tileentity.GenericTileEntity;
 import net.minecraft.core.BlockPos;
 import net.minecraft.world.level.BlockGetter;
 import net.minecraft.world.level.block.Block;
 import net.minecraft.world.level.block.entity.BlockEntity;
 import net.minecraft.world.level.block.state.BlockState;
+import net.minecraft.world.level.block.state.StateDefinition;
+import net.minecraft.world.level.block.state.properties.BlockStateProperties;
 import net.minecraft.world.level.material.MapColor;
 import net.minecraft.world.level.pathfinder.PathComputationType;
 import net.minecraft.world.phys.shapes.CollisionContext;
 import net.minecraft.world.phys.shapes.Shapes;
 import net.minecraft.world.phys.shapes.VoxelShape;
 
-public class InvisibleDoorTile extends GenericTileEntity implements ILockable {
+public class InvisibleDoorTile extends ArienteBlockEntity implements ILockable {
 
     public InvisibleDoorTile(BlockPos pos, BlockState state) {
         super(Registration.INVISIBLE_DOOR_TILE.get(), pos, state);
@@ -30,6 +32,12 @@ public class InvisibleDoorTile extends GenericTileEntity implements ILockable {
                         .dynamicShape())
                 .tileEntitySupplier(InvisibleDoorTile::new)
         ) {
+            @Override
+            protected void createBlockStateDefinition(StateDefinition.Builder<Block, BlockState> builder) {
+                super.createBlockStateDefinition(builder);
+                builder.add(BlockStateProperties.OPEN);
+            }
+
             @Override
             public RotationType getRotationType() {
                 return RotationType.HORIZROTATION;
@@ -47,21 +55,14 @@ public class InvisibleDoorTile extends GenericTileEntity implements ILockable {
 
             @Deprecated
             @Override
-            public boolean isPathfindable(BlockState state, BlockGetter world, BlockPos pos, PathComputationType pathType) {
-                return InvisibleDoorTile.isPathfindable(state, world, pos, pathType);
+            public boolean isPathfindable(BlockState state, PathComputationType pathType) {
+                return InvisibleDoorTile.isPathfindable(state, pathType);
             }
         };
     }
 
-    public static boolean isPathfindable(BlockState state, BlockGetter world, BlockPos pos, PathComputationType pathType) {
-        BlockEntity te = world.getBlockEntity(pos);
-
-        if (te instanceof InvisibleDoorTile doorMarker) {
-            DoorMarkerTile door = doorMarker.findDoorMarker();
-            return door != null && door.isOpen();
-        }
-
-        return false;
+    public static boolean isPathfindable(BlockState state, PathComputationType pathType) {
+        return pathType == PathComputationType.LAND && state.getValue(BlockStateProperties.OPEN);
     }
 
     public static VoxelShape getCollisionShape(BlockState blockState, BlockGetter world, BlockPos pos) {

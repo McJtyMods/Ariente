@@ -4,47 +4,47 @@
       "model": "ariente:block/machines/wireless_lock_unlocked",
       "x": 90
     },
-    "facing=up,locked=false": {
-      "model": "ariente:block/machines/wireless_lock_unlocked",
-      "x": -90
-    },
-    "facing=north,locked=false": {
-      "model": "ariente:block/machines/wireless_lock_unlocked"
-    },
-    "facing=south,locked=false": {
-      "model": "ariente:block/machines/wireless_lock_unlocked",
-      "y": 180
-    },
-    "facing=west,locked=false": {
-      "model": "ariente:block/machines/wireless_lock_unlocked",
-      "y": 270
+    "facing=down,locked=true": {
+      "model": "ariente:block/machines/wireless_lock_locked",
+      "x": 90
     },
     "facing=east,locked=false": {
       "model": "ariente:block/machines/wireless_lock_unlocked",
       "y": 90
     },
-    "facing=down,locked=true": {
+    "facing=east,locked=true": {
       "model": "ariente:block/machines/wireless_lock_locked",
-      "x": 90
+      "y": 90
     },
-    "facing=up,locked=true": {
-      "model": "ariente:block/machines/wireless_lock_locked",
-      "x": -90
+    "facing=north,locked=false": {
+      "model": "ariente:block/machines/wireless_lock_unlocked"
     },
     "facing=north,locked=true": {
       "model": "ariente:block/machines/wireless_lock_locked"
+    },
+    "facing=south,locked=false": {
+      "model": "ariente:block/machines/wireless_lock_unlocked",
+      "y": 180
     },
     "facing=south,locked=true": {
       "model": "ariente:block/machines/wireless_lock_locked",
       "y": 180
     },
+    "facing=up,locked=false": {
+      "model": "ariente:block/machines/wireless_lock_unlocked",
+      "x": -90
+    },
+    "facing=up,locked=true": {
+      "model": "ariente:block/machines/wireless_lock_locked",
+      "x": -90
+    },
+    "facing=west,locked=false": {
+      "model": "ariente:block/machines/wireless_lock_unlocked",
+      "y": 270
+    },
     "facing=west,locked=true": {
       "model": "ariente:block/machines/wireless_lock_locked",
       "y": 270
-    },
-    "facing=east,locked=true": {
-      "model": "ariente:block/machines/wireless_lock_locked",
-      "y": 90
     }
   }
 }

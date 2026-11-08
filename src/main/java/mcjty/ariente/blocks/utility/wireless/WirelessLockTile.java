@@ -1,11 +1,12 @@
 package mcjty.ariente.blocks.utility.wireless;
 
-import mcjty.ariente.security.AreaLocks;
+import java.util.Map;
 import mcjty.ariente.Ariente;
 import mcjty.ariente.blocks.MountedPanelShapes;
+import mcjty.ariente.blocks.utility.ILockable;
 import mcjty.ariente.gui.CompactNumber;
 import mcjty.ariente.gui.GuiHelp;
-import mcjty.ariente.blocks.utility.ILockable;
+import mcjty.ariente.security.AreaLocks;
 import mcjty.ariente.setup.Registration;
 import mcjty.hologui.api.IGuiComponent;
 import mcjty.hologui.api.IGuiComponentRegistry;
@@ -13,25 +14,24 @@ import mcjty.hologui.api.IGuiTile;
 import mcjty.hologui.api.StyledColor;
 import mcjty.lib.blocks.BaseBlock;
 import mcjty.lib.builder.BlockBuilder;
-import mcjty.lib.varia.NBTTools;
 import net.minecraft.core.BlockPos;
+import net.minecraft.core.HolderLookup;
 import net.minecraft.nbt.CompoundTag;
+import net.minecraft.network.Connection;
 import net.minecraft.network.protocol.game.ClientboundBlockEntityDataPacket;
 import net.minecraft.world.InteractionHand;
+import net.minecraft.world.InteractionResult;
 import net.minecraft.world.entity.player.Player;
+import net.minecraft.world.item.component.CustomData;
+import net.minecraft.world.level.BlockGetter;
+import net.minecraft.world.level.Level;
 import net.minecraft.world.level.block.Block;
 import net.minecraft.world.level.block.state.BlockState;
-import net.minecraft.network.Connection;
 import net.minecraft.world.level.block.state.StateDefinition;
 import net.minecraft.world.level.block.state.properties.BlockStateProperties;
-import net.minecraft.world.InteractionResult;
 import net.minecraft.world.phys.BlockHitResult;
 import net.minecraft.world.phys.shapes.CollisionContext;
 import net.minecraft.world.phys.shapes.VoxelShape;
-import net.minecraft.world.level.BlockGetter;
-import net.minecraft.world.level.Level;
-
-import java.util.Map;
 
 import static mcjty.ariente.blocks.BlockProperties.LOCKED;
 import static mcjty.ariente.compat.ArienteTOPDriver.DRIVER;
@@ -59,7 +59,7 @@ public class WirelessLockTile extends SignalChannelTileEntity implements ILockab
     public static BaseBlock createBlock() {
         return new BaseBlock(new BlockBuilder()
                 .info(key("message.ariente.shiftmessage"))
-                .infoShift(header(), parameter("channel", NBTTools.intGetter("channel", -1)))
+                .infoShift(header(), parameter("channel", (stack -> { var tag = stack.getOrDefault(Registration.MACHINE_DATA.get(), CustomData.EMPTY).copyTag().getCompound("Info"); return Integer.toString(tag.contains("channel") ? tag.getInt("channel") : -1); })))
                 .topDriver(DRIVER)
                 .tileEntitySupplier(WirelessLockTile::new)
         ) {
@@ -97,10 +97,10 @@ public class WirelessLockTile extends SignalChannelTileEntity implements ILockab
     }
 
     @Override
-    public void onDataPacket(Connection net, ClientboundBlockEntityDataPacket packet) {
+    public void onDataPacket(Connection net, ClientboundBlockEntityDataPacket packet, HolderLookup.Provider provider) {
         boolean locked = isLocked();
 
-        super.onDataPacket(net, packet);
+        super.onDataPacket(net, packet, provider);
 
         if (level.isClientSide) {
             // If needed send a render update.
@@ -178,8 +178,8 @@ public class WirelessLockTile extends SignalChannelTileEntity implements ILockab
     }
 
     @Override
-    public void load(CompoundTag tagCompound) {
-        super.load(tagCompound);
+    public void loadAdditional(CompoundTag tagCompound, HolderLookup.Provider provider) {
+        super.loadAdditional(tagCompound, provider);
         locked = tagCompound.getBoolean("locked");
         CompoundTag info = tagCompound.getCompound("Info");
         if (!info.isEmpty()) {
@@ -193,9 +193,9 @@ public class WirelessLockTile extends SignalChannelTileEntity implements ILockab
     }
 
     @Override
-    public void saveAdditional(CompoundTag tagCompound) {
+    public void saveAdditional(CompoundTag tagCompound, HolderLookup.Provider provider) {
         tagCompound.putBoolean("locked", locked);
-        super.saveAdditional(tagCompound);
+        super.saveAdditional(tagCompound, provider);
         CompoundTag info = getOrCreateInfo(tagCompound);
         info.putInt("vertical", verticalRange);
         info.putInt("horizontal", horizontalRange);

@@ -1,5 +1,7 @@
 package mcjty.ariente.items.armor;
 
+import java.util.EnumMap;
+import java.util.Map;
 import mcjty.ariente.api.ArmorUpgradeType;
 import mcjty.ariente.blocks.defense.ForceFieldRenderer;
 import mcjty.ariente.items.modules.ModuleSupport;
@@ -14,10 +16,7 @@ import net.minecraft.client.model.geom.builders.PartDefinition;
 import net.minecraft.world.entity.EquipmentSlot;
 import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.item.ItemStack;
-import net.minecraftforge.client.extensions.common.IClientItemExtensions;
-
-import java.util.EnumMap;
-import java.util.Map;
+import net.neoforged.neoforge.client.extensions.common.IClientItemExtensions;
 
 /** Original 64x128 suit geometry, attached to the modern humanoid animation bones. */
 public class PowerSuitModel extends HumanoidModel<LivingEntity> {
@@ -29,7 +28,7 @@ public class PowerSuitModel extends HumanoidModel<LivingEntity> {
 
         @Override
         public HumanoidModel<?> getHumanoidArmorModel(LivingEntity entity, ItemStack stack, EquipmentSlot slot, HumanoidModel<?> original) {
-            if (slot.getType() != EquipmentSlot.Type.ARMOR) {
+            if (slot.getType() != EquipmentSlot.Type.HUMANOID_ARMOR) {
                 return original;
             }
             if (slot == EquipmentSlot.CHEST && ModuleSupport.hasWorkingUpgrade(stack, ArmorUpgradeType.FORCEFIELD)) {

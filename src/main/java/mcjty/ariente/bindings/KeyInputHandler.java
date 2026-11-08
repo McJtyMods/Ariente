@@ -1,15 +1,14 @@
 package mcjty.ariente.bindings;
 
-
-import net.minecraftforge.client.event.InputEvent;
-import net.minecraftforge.event.TickEvent;
-import net.minecraftforge.eventbus.api.SubscribeEvent;
+import net.neoforged.bus.api.SubscribeEvent;
+import net.neoforged.neoforge.client.event.ClientTickEvent;
+import net.neoforged.neoforge.client.event.InputEvent;
 
 public class KeyInputHandler {
 
     @SubscribeEvent
-    public void onClientTick(TickEvent.ClientTickEvent event) {
-        if (event.phase == TickEvent.Phase.END) {
+    public void onClientTick(ClientTickEvent.Post event) {
+        if (true) {
             KeyBindings.tickShipControls();
             KeyBindings.tickLevitatorControls();
         }

@@ -1,11 +1,9 @@
 package mcjty.ariente.blocks.utility.autofield;
 
+import javax.annotation.Nonnull;
 import mcjty.lib.varia.ItemStackList;
 import net.minecraft.world.item.ItemStack;
-import net.minecraftforge.items.IItemHandler;
-import net.minecraftforge.items.ItemHandlerHelper;
-
-import javax.annotation.Nonnull;
+import net.neoforged.neoforge.items.IItemHandler;
 
 public class SimpleItemHandler implements IItemHandler {
 
@@ -35,7 +33,7 @@ public class SimpleItemHandler implements IItemHandler {
     @Override
     public ItemStack insertItem(int slot, @Nonnull ItemStack stack, boolean simulate) {
         ItemStack originalStack = list.get(slot);
-        if (!originalStack.isEmpty() && !ItemHandlerHelper.canItemStacksStack(stack, originalStack)) {
+        if (!originalStack.isEmpty() && !ItemStack.isSameItemSameComponents(stack, originalStack)) {
             return stack;
         }
 

@@ -1,16 +1,20 @@
 package mcjty.ariente.blocks.utility;
 
+import java.util.Map;
+import java.util.Set;
+import javax.annotation.Nonnull;
+import javax.annotation.Nullable;
 import mcjty.ariente.Ariente;
 import mcjty.ariente.api.ICityAI;
 import mcjty.ariente.api.ICityEquipment;
 import mcjty.ariente.api.IStorageTile;
+import mcjty.ariente.blocks.ArienteBlockEntity;
 import mcjty.ariente.items.BlueprintItem;
 import mcjty.ariente.items.KeyCardItem;
-import mcjty.ariente.network.ArienteMessages;
 import mcjty.ariente.recipes.BlueprintRecipeRegistry;
 import mcjty.ariente.recipes.ConstructorRecipe;
-import mcjty.ariente.security.IKeyCardSlot;
 import mcjty.ariente.security.AreaLocks;
+import mcjty.ariente.security.IKeyCardSlot;
 import mcjty.ariente.setup.Registration;
 import mcjty.ariente.sounds.ModSounds;
 import mcjty.hologui.api.IGuiComponent;
@@ -19,13 +23,17 @@ import mcjty.hologui.api.IGuiTile;
 import mcjty.lib.blocks.BaseBlock;
 import mcjty.lib.blocks.RotationType;
 import mcjty.lib.builder.BlockBuilder;
-import mcjty.lib.tileentity.Cap;
-import mcjty.lib.tileentity.CapType;
-import mcjty.lib.tileentity.GenericTileEntity;
 import mcjty.lib.varia.ItemStackList;
+import net.minecraft.client.Minecraft;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
+import net.minecraft.core.HolderLookup;
+import net.minecraft.core.registries.BuiltInRegistries;
+import net.minecraft.nbt.CompoundTag;
+import net.minecraft.nbt.ListTag;
 import net.minecraft.nbt.Tag;
+import net.minecraft.network.Connection;
+import net.minecraft.network.protocol.game.ClientboundBlockEntityDataPacket;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.sounds.SoundSource;
 import net.minecraft.world.InteractionHand;
@@ -36,30 +44,19 @@ import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.level.block.Block;
 import net.minecraft.world.level.block.state.BlockState;
-import net.minecraft.client.Minecraft;
-import net.minecraft.nbt.CompoundTag;
-import net.minecraft.nbt.ListTag;
-import net.minecraft.network.Connection;
-import net.minecraft.network.protocol.game.ClientboundBlockEntityDataPacket;
 import net.minecraft.world.level.block.state.StateDefinition;
 import net.minecraft.world.phys.BlockHitResult;
 import net.minecraft.world.phys.HitResult;
 import net.minecraft.world.phys.Vec3;
-import net.minecraftforge.items.IItemHandler;
-import net.minecraftforge.items.IItemHandlerModifiable;
-import net.minecraftforge.items.ItemHandlerHelper;
-import net.minecraftforge.registries.ForgeRegistries;
-
-import javax.annotation.Nonnull;
-import javax.annotation.Nullable;
-import java.util.Map;
-import java.util.Set;
+import net.neoforged.neoforge.items.IItemHandler;
+import net.neoforged.neoforge.items.IItemHandlerModifiable;
+import net.neoforged.neoforge.network.PacketDistributor;
 
 import static mcjty.ariente.compat.ArienteTOPDriver.DRIVER;
 import static mcjty.lib.builder.TooltipBuilder.header;
 import static mcjty.lib.builder.TooltipBuilder.key;
 
-public class StorageTile extends GenericTileEntity implements IGuiTile, ICityEquipment, IKeyCardSlot, ILockTarget, IStorageTile {
+public class StorageTile extends ArienteBlockEntity implements IGuiTile, ICityEquipment, IKeyCardSlot, ILockTarget, IStorageTile {
 
     private boolean locked = false;
     private String keyId;
@@ -72,7 +69,6 @@ public class StorageTile extends GenericTileEntity implements IGuiTile, ICityEqu
     private final int[] counts;
     private final int[] totals;
 
-    @Cap(type = CapType.ITEMS)
     private final IItemHandler invHandler = new StorageItemHandler();
 
     public StorageTile(BlockPos pos, BlockState state) {
@@ -130,10 +126,10 @@ public class StorageTile extends GenericTileEntity implements IGuiTile, ICityEqu
     }
 
     @Override
-    public void onDataPacket(Connection net, ClientboundBlockEntityDataPacket packet) {
+    public void onDataPacket(Connection net, ClientboundBlockEntityDataPacket packet, HolderLookup.Provider provider) {
         boolean locked = isLocked();
 
-        super.onDataPacket(net, packet);
+        super.onDataPacket(net, packet, provider);
 
         if (level.isClientSide) {
             // If needed send a render update.
@@ -164,12 +160,12 @@ public class StorageTile extends GenericTileEntity implements IGuiTile, ICityEqu
     }
 
     @Override
-    public void load(CompoundTag tagCompound) {
-        super.load(tagCompound);
+    public void loadAdditional(CompoundTag tagCompound, HolderLookup.Provider provider) {
+        super.loadAdditional(tagCompound, provider);
         AreaLocks.loadTarget(this, tagCompound);
         CompoundTag info = tagCompound.getCompound("Info");
         if (!info.isEmpty()) {
-            readDisplayData(info);
+            readDisplayData(info, provider);
             if (info.contains("keyId")) {
                 keyId = info.getString("keyId");
             }
@@ -179,43 +175,43 @@ public class StorageTile extends GenericTileEntity implements IGuiTile, ICityEqu
     }
 
     @Override
-    public void saveAdditional(CompoundTag tagCompound) {
+    public void saveAdditional(CompoundTag tagCompound, HolderLookup.Provider provider) {
         AreaLocks.saveTarget(this, tagCompound);
         CompoundTag info = getOrCreateInfo(tagCompound);
-        writeDisplayData(info);
+        writeDisplayData(info, provider);
         if (keyId != null) {
             info.putString("keyId", keyId);
         }
         info.putIntArray("Counts", counts);
-        super.saveAdditional(tagCompound);
+        super.saveAdditional(tagCompound, provider);
     }
 
     @Override
-    public void saveClientDataToNBT(CompoundTag tagCompound) {
-        writeDisplayData(getOrCreateInfo(tagCompound));
+    public void saveClientDataToNBT(CompoundTag tagCompound, HolderLookup.Provider provider) {
+        writeDisplayData(getOrCreateInfo(tagCompound), provider);
     }
 
     @Override
-    public void loadClientDataFromNBT(CompoundTag tagCompound) {
-        readDisplayData(tagCompound.getCompound("Info"));
+    public void loadClientDataFromNBT(CompoundTag tagCompound, HolderLookup.Provider provider) {
+        readDisplayData(tagCompound.getCompound("Info"), provider);
     }
 
-    private void writeDisplayData(CompoundTag info) {
+    private void writeDisplayData(CompoundTag info, HolderLookup.Provider provider) {
         info.putBoolean("locked", locked);
         ListTag items = new ListTag();
         for (ItemStack stack : stacks) {
-            items.add(stack.save(new CompoundTag()));
+            items.add(stack.saveOptional(provider));
         }
         info.put("Items", items);
         info.putIntArray("Totals", totals.clone());
     }
 
-    private void readDisplayData(CompoundTag info) {
+    private void readDisplayData(CompoundTag info, HolderLookup.Provider provider) {
         locked = info.getBoolean("locked");
         ListTag items = info.getList("Items", Tag.TAG_COMPOUND);
         int[] syncedTotals = info.getIntArray("Totals");
         for (int i = 0; i < getTypeCount(); i++) {
-            stacks.set(i, ItemStack.of(items.getCompound(i)));
+            stacks.set(i, ItemStack.parseOptional(provider, items.getCompound(i)));
             totals[i] = i < syncedTotals.length ? syncedTotals[i] : 0;
         }
     }
@@ -320,7 +316,7 @@ public class StorageTile extends GenericTileEntity implements IGuiTile, ICityEqu
         if (!stack.isEmpty()) {
             if (player.getMainHandItem().isEmpty()) {
                 player.setItemInHand(InteractionHand.MAIN_HAND, stack);
-            } else if (ItemHandlerHelper.canItemStacksStack(player.getMainHandItem(), stack)) {
+            } else if (ItemStack.isSameItemSameComponents(player.getMainHandItem(), stack)) {
                 boolean added = player.getInventory().add(player.getInventory().selected, stack);
                 if (!added) {
                     if (!player.getInventory().add(stack)) {
@@ -384,7 +380,7 @@ public class StorageTile extends GenericTileEntity implements IGuiTile, ICityEqu
             if (mouseOver instanceof BlockHitResult) {
                 int index = getSlot((BlockHitResult) mouseOver, world);
                 if (index >= 0) {
-                    ArienteMessages.INSTANCE.sendToServer(new PacketClickStorage(pos, index));
+                    PacketDistributor.sendToServer(new PacketClickStorage(pos, index));
                 }
             }
         }
@@ -434,7 +430,7 @@ public class StorageTile extends GenericTileEntity implements IGuiTile, ICityEqu
     private static void placeAll(Player player, StorageTile te, int type, ItemStack heldItem) {
         for (int i = 0; i < player.getInventory().getContainerSize(); i++) {
             ItemStack stack = player.getInventory().getItem(i);
-            if (ItemHandlerHelper.canItemStacksStack(stack, heldItem)) {
+            if (ItemStack.isSameItemSameComponents(stack, heldItem)) {
                 ItemStack remaining = insertItem(te.invHandler, stack, type);
                 player.getInventory().setItem(i, remaining);
                 if (!remaining.isEmpty()) {
@@ -549,7 +545,7 @@ public class StorageTile extends GenericTileEntity implements IGuiTile, ICityEqu
             ItemStack blueprint = BlueprintItem.makeBluePrint(recipe.getDestination());
             initTotalStack(i, blueprint);
         } else {
-            Item item = ForgeRegistries.ITEMS.getValue(id);
+            Item item = BuiltInRegistries.ITEM.get(id);
             if (item != null) {
                 if (doBlueprint) {
                     // @todo 1.14 meta
@@ -601,7 +597,7 @@ public class StorageTile extends GenericTileEntity implements IGuiTile, ICityEqu
                 if (stackInSlot.getCount() >= Math.min(stackInSlot.getMaxStackSize(), getSlotLimit(slot)))
                     return stack;
 
-                if (!ItemHandlerHelper.canItemStacksStack(stack, stackInSlot))
+                if (!ItemStack.isSameItemSameComponents(stack, stackInSlot))
                     return stack;
 
                 if (!isItemValid(slot, stack))
@@ -716,7 +712,7 @@ public class StorageTile extends GenericTileEntity implements IGuiTile, ICityEqu
             if (stacks.get(type).isEmpty()) {
                 return true;
             } else {
-                return ItemHandlerHelper.canItemStacksStack(stacks.get(type), stack);
+                return ItemStack.isSameItemSameComponents(stacks.get(type), stack);
             }
         }
 
@@ -737,4 +733,10 @@ public class StorageTile extends GenericTileEntity implements IGuiTile, ICityEqu
             markDirtyClient();  // @todo is this really required?
         }
     }
+
+    @Override
+    public IItemHandler getAutomationHandler(Direction side) {
+        return invHandler;
+    }
+
 }

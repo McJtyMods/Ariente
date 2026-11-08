@@ -1,21 +1,25 @@
 package mcjty.ariente.items.modules;
 
+import java.util.Arrays;
+import java.util.List;
 import mcjty.ariente.api.ArmorUpgradeType;
-import mcjty.ariente.bindings.KeyBindings;
 import mcjty.ariente.api.IInhibitable;
+import mcjty.ariente.bindings.KeyBindings;
+import mcjty.ariente.items.ItemData;
 import mcjty.lib.builder.TooltipBuilder;
+import net.minecraft.core.Holder;
+import net.minecraft.core.component.DataComponents;
+import net.minecraft.core.registries.Registries;
 import net.minecraft.nbt.CompoundTag;
+import net.minecraft.resources.ResourceKey;
 import net.minecraft.world.effect.MobEffect;
 import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.enchantment.Enchantment;
-import net.minecraft.world.item.enchantment.EnchantmentHelper;
 import net.minecraft.world.item.enchantment.Enchantments;
+import net.minecraft.world.item.enchantment.ItemEnchantments;
 import net.minecraft.world.level.Level;
-
-import java.util.Arrays;
-import java.util.Map;
 
 import static mcjty.lib.builder.TooltipBuilder.*;
 
@@ -27,8 +31,8 @@ public class WeaponModuleSupport {
                 .infoShift(header(),
                         parameter("key", stack -> KeyBindings.configureArmor != null, stack -> KeyBindings.configureArmor.getDisplayName()),
                         repeatingParameter("module", stack -> Arrays.stream(ArmorUpgradeType.values())
-                                .filter(type -> stack.hasTag() && stack.getTag().contains(type.getModuleKey()))
-                                .map(type -> type.getDescription() + (stack.getTag().getBoolean(type.getModuleKey()) ? " (on)" : " (off)"))),
+                                .filter(type -> ItemData.has(stack) && ItemData.get(stack).contains(type.getModuleKey()))
+                                .map(type -> type.getDescription() + (ItemData.get(stack).getBoolean(type.getModuleKey()) ? " (on)" : " (off)"))),
                         parameter("power", stack -> {
                             var usage = ModuleSupport.getPowerUsage(stack);
                             return usage.getLeft() + " / " + usage.getRight();
@@ -43,8 +47,8 @@ public class WeaponModuleSupport {
             } else {
                 ModuleSupport.clearWorkingState(stack);
             }
-            updateModuleEnchantment(stack, ArmorUpgradeType.LOOTING, Enchantments.MOB_LOOTING);
-            updateModuleEnchantment(stack, ArmorUpgradeType.FIRE, Enchantments.FIRE_ASPECT);
+            updateModuleEnchantment(level, stack, ArmorUpgradeType.LOOTING, Enchantments.LOOTING);
+            updateModuleEnchantment(level, stack, ArmorUpgradeType.FIRE, Enchantments.FIRE_ASPECT);
         }
     }
 
@@ -55,35 +59,41 @@ public class WeaponModuleSupport {
         if (target instanceof IInhibitable inhibitable) {
             inhibitable.inhibitRegeneration(200);
         }
-        for (MobEffect effect : target.getActiveEffectsMap().keySet().toArray(MobEffect[]::new)) {
-            if (effect.isBeneficial()) {
+        for (Holder<MobEffect> effect : List.copyOf(target.getActiveEffectsMap().keySet())) {
+            if (effect.value().isBeneficial()) {
                 target.removeEffect(effect);
             }
         }
     }
 
-    private static void updateModuleEnchantment(ItemStack stack, ArmorUpgradeType type, Enchantment enchantment) {
-        CompoundTag tag = stack.getOrCreateTag();
+    private static void updateModuleEnchantment(Level level, ItemStack stack, ArmorUpgradeType type, ResourceKey<Enchantment> key) {
+        Holder<Enchantment> enchantment = level.registryAccess().registryOrThrow(Registries.ENCHANTMENT).getHolderOrThrow(key);
+        CompoundTag tag = ItemData.get(stack);
         String savedKey = "ariente_original_" + type.getName();
-        Map<Enchantment, Integer> enchantments = EnchantmentHelper.getEnchantments(stack);
+        ItemEnchantments original = stack.getOrDefault(DataComponents.ENCHANTMENTS, ItemEnchantments.EMPTY);
+        ItemEnchantments.Mutable enchantments = new ItemEnchantments.Mutable(original);
         if (ModuleSupport.hasWorkingUpgrade(stack, type)) {
             if (!tag.contains(savedKey)) {
-                tag.putInt(savedKey, enchantments.getOrDefault(enchantment, 0));
+                tag.putInt(savedKey, enchantments.getLevel(enchantment));
+                ItemData.set(stack, tag);
+
             }
-            enchantments.put(enchantment, Math.max(3, tag.getInt(savedKey)));
+            enchantments.set(enchantment, Math.max(3, tag.getInt(savedKey)));
         } else if (tag.contains(savedKey)) {
             // Restore only this module's enchantment, preserving other sources.
-            if (enchantments.getOrDefault(enchantment, 0) == Math.max(3, tag.getInt(savedKey))) {
+            if (enchantments.getLevel(enchantment) == Math.max(3, tag.getInt(savedKey))) {
                 if (tag.getInt(savedKey) > 0) {
-                    enchantments.put(enchantment, tag.getInt(savedKey));
+                    enchantments.set(enchantment, tag.getInt(savedKey));
                 } else {
-                    enchantments.remove(enchantment);
+                    enchantments.set(enchantment, 0);
                 }
             }
             tag.remove(savedKey);
+            ItemData.set(stack, tag);
+
         }
-        if (!enchantments.equals(EnchantmentHelper.getEnchantments(stack))) {
-            EnchantmentHelper.setEnchantments(enchantments, stack);
+        if (!enchantments.toImmutable().equals(original)) {
+            stack.set(DataComponents.ENCHANTMENTS, enchantments.toImmutable());
         }
     }
 }

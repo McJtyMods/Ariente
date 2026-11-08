@@ -1,8 +1,13 @@
 package mcjty.ariente.display;
 
+import java.util.List;
+import java.util.UUID;
+import java.util.function.Consumer;
 import mcjty.ariente.Ariente;
+import mcjty.ariente.items.ItemData;
 import net.minecraft.ChatFormatting;
 import net.minecraft.core.BlockPos;
+import net.minecraft.core.registries.BuiltInRegistries;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.network.chat.Component;
 import net.minecraft.world.InteractionHand;
@@ -14,11 +19,6 @@ import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.TooltipFlag;
 import net.minecraft.world.item.context.UseOnContext;
 import net.minecraft.world.level.Level;
-import net.minecraftforge.registries.ForgeRegistries;
-
-import javax.annotation.Nullable;
-import java.util.List;
-import java.util.UUID;
 
 public class DisplayModuleItem extends Item {
 
@@ -37,7 +37,13 @@ public class DisplayModuleItem extends Item {
         if (stack.isEmpty()) {
             return new CompoundTag();
         }
-        return stack.getOrCreateTagElement("Display");
+        return ItemData.section(stack, "Display");
+    }
+
+    public static void editConfig(ItemStack stack, Consumer<CompoundTag> change) {
+        CompoundTag config = config(stack);
+        change.accept(config);
+        ItemData.setSection(stack, "Display", config);
     }
 
     @Override
@@ -54,7 +60,7 @@ public class DisplayModuleItem extends Item {
                     link.putString("Dimension", context.getLevel().dimension().location().toString());
                     link.putLong("Pos", pos.asLong());
                     link.putInt("Side", context.getClickedFace().get3DDataValue());
-                    link.putString("Block", ForgeRegistries.BLOCKS.getKey(context.getLevel().getBlockState(pos).getBlock()).toString());
+                    link.putString("Block", BuiltInRegistries.BLOCK.getKey(context.getLevel().getBlockState(pos).getBlock()).toString());
                     player.displayClientMessage(type.link(stack, link, context.getLevel().getBlockState(pos).getBlock().getName()), true);
                 } else {
                     player.displayClientMessage(Component.literal("This module cannot link to that block."), true);
@@ -83,8 +89,8 @@ public class DisplayModuleItem extends Item {
     private void open(Player player, InteractionHand hand) {
         if (!player.level().isClientSide) {
             ItemStack stack = player.getItemInHand(hand);
-            if (!stack.getOrCreateTag().hasUUID("ModuleId")) {
-                stack.getTag().putUUID("ModuleId", UUID.randomUUID());
+            if (!ItemData.get(stack).hasUUID("ModuleId")) {
+                ItemData.update(stack, data -> data.putUUID("ModuleId", UUID.randomUUID()));
             }
             player.containerMenu.broadcastChanges();
             Ariente.guiHandler.openHoloGui(player, ModuleSettings.guiId(hand, false), 1);
@@ -92,7 +98,7 @@ public class DisplayModuleItem extends Item {
     }
 
     @Override
-    public void appendHoverText(ItemStack stack, @Nullable Level level, List<Component> lines, TooltipFlag flag) {
+    public void appendHoverText(ItemStack stack, Item.TooltipContext level, List<Component> lines, TooltipFlag flag) {
         lines.add(Component.literal("Right click: configure | Aim at display: install").withStyle(ChatFormatting.AQUA));
         lines.add(Component.literal("Sneak + right click: link | In air: clear link").withStyle(ChatFormatting.GRAY));
         type.appendLinkTooltip(stack, lines);

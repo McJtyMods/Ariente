@@ -1,0 +1,32 @@
+{
+  "parent": "minecraft:recipes/root",
+  "criteria": {
+    "has_the_recipe": {
+      "conditions": {
+        "recipe": "ariente:blueprint_storage"
+      },
+      "trigger": "minecraft:recipe_unlocked"
+    },
+    "silver": {
+      "conditions": {
+        "items": [
+          {
+            "items": "ariente:ingot_silver"
+          }
+        ]
+      },
+      "trigger": "minecraft:inventory_changed"
+    }
+  },
+  "requirements": [
+    [
+      "has_the_recipe",
+      "silver"
+    ]
+  ],
+  "rewards": {
+    "recipes": [
+      "ariente:blueprint_storage"
+    ]
+  }
+}

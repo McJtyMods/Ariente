@@ -1,9 +1,14 @@
 package mcjty.ariente.blocks.utility;
 
-import mcjty.ariente.blocks.ExtremeMachineTile;
+import java.util.EnumMap;
+import java.util.Map;
+import java.util.Objects;
+import javax.annotation.Nonnull;
+import javax.annotation.Nullable;
 import mcjty.ariente.Ariente;
 import mcjty.ariente.api.ICityAI;
 import mcjty.ariente.api.ICityEquipment;
+import mcjty.ariente.blocks.ExtremeMachineTile;
 import mcjty.ariente.gui.GuiHelp;
 import mcjty.ariente.gui.PlayerInventoryPanel;
 import mcjty.ariente.power.IPowerReceiver;
@@ -21,12 +26,10 @@ import mcjty.lib.blocks.RotationType;
 import mcjty.lib.builder.BlockBuilder;
 import mcjty.lib.container.ContainerFactory;
 import mcjty.lib.container.GenericItemHandler;
-import mcjty.lib.tileentity.Cap;
-import mcjty.lib.tileentity.CapType;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
+import net.minecraft.core.HolderLookup;
 import net.minecraft.nbt.CompoundTag;
-import net.minecraft.nbt.Tag;
 import net.minecraft.network.chat.Component;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.InteractionHand;
@@ -36,18 +39,8 @@ import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.phys.BlockHitResult;
-import net.minecraftforge.common.capabilities.Capability;
-import net.minecraftforge.common.capabilities.ForgeCapabilities;
-import net.minecraftforge.common.util.Lazy;
-import net.minecraftforge.common.util.LazyOptional;
-import net.minecraftforge.items.IItemHandler;
-import net.minecraftforge.items.ItemHandlerHelper;
-
-import javax.annotation.Nonnull;
-import javax.annotation.Nullable;
-import java.util.EnumMap;
-import java.util.Map;
-import java.util.Objects;
+import net.neoforged.neoforge.common.util.Lazy;
+import net.neoforged.neoforge.items.IItemHandler;
 
 import static mcjty.ariente.compat.ArienteTOPDriver.DRIVER;
 import static mcjty.lib.builder.TooltipBuilder.header;
@@ -65,7 +58,6 @@ public class RecyclerTile extends ExtremeMachineTile implements IGuiTile, IPower
             .slot(generic().in(), SLOT_INPUT, 0, 0)
             .box(generic().out(), SLOT_OUTPUT, 0, 0, 5, 2));
 
-    @Cap(type = CapType.ITEMS_AUTOMATION)
     private final GenericItemHandler items = new GenericItemHandler(this, CONTAINER_FACTORY.get()) {
 
         @Override
@@ -79,7 +71,7 @@ public class RecyclerTile extends ExtremeMachineTile implements IGuiTile, IPower
         }
     };
 
-    private final Map<Direction, LazyOptional<IItemHandler>> sidedHandlers = new EnumMap<>(Direction.class);
+    private final Map<Direction, IItemHandler> sidedHandlers = new EnumMap<>(Direction.class);
     private ResourceLocation recipeId;
     private int progress;
     private long usingPower;
@@ -155,7 +147,7 @@ public class RecyclerTile extends ExtremeMachineTile implements IGuiTile, IPower
             for (int pass = 0; pass < 2; pass++) {
                 for (int index = 0; index < OUTPUTS && remaining > 0; index++) {
                     ItemStack output = outputs[index];
-                    if ((pass == 0 && !output.isEmpty() && ItemHandlerHelper.canItemStacksStack(output, recovered))
+                    if ((pass == 0 && !output.isEmpty() && ItemStack.isSameItemSameComponents(output, recovered))
                             || (pass == 1 && output.isEmpty())) {
                         int limit = Math.min(items.getSlotLimit(SLOT_OUTPUT + index), recovered.getMaxStackSize());
                         int added = Math.min(remaining, limit - output.getCount());
@@ -230,8 +222,8 @@ public class RecyclerTile extends ExtremeMachineTile implements IGuiTile, IPower
     }
 
     @Override
-    protected void saveInfo(CompoundTag tag) {
-        super.saveInfo(tag);
+    protected void saveInfo(CompoundTag tag, HolderLookup.Provider provider) {
+        super.saveInfo(tag, provider);
         CompoundTag info = getOrCreateInfo(tag);
         info.putInt("recycleProgress", progress);
         if (recipeId != null) {
@@ -240,22 +232,22 @@ public class RecyclerTile extends ExtremeMachineTile implements IGuiTile, IPower
     }
 
     @Override
-    protected void loadInfo(CompoundTag tag) {
-        super.loadInfo(tag);
+    protected void loadInfo(CompoundTag tag, HolderLookup.Provider provider) {
+        super.loadInfo(tag, provider);
         CompoundTag info = tag.getCompound("Info");
         progress = Math.max(0, Math.min(RECYCLE_TICKS - 1, info.getInt("recycleProgress")));
         recipeId = ResourceLocation.tryParse(info.getString("recycleRecipe"));
     }
 
     @Override
-    public void saveClientDataToNBT(CompoundTag tag) {
-        tag.put("Items", items.serializeNBT());
+    public void saveClientDataToNBT(CompoundTag tag, HolderLookup.Provider provider) {
+        tag.put("Items", items.serializeNBT(provider));
         tag.putInt("recycleProgress", progress);
     }
 
     @Override
-    public void loadClientDataFromNBT(CompoundTag tag) {
-        items.deserializeNBT(tag.getList("Items", Tag.TAG_COMPOUND));
+    public void loadClientDataFromNBT(CompoundTag tag, HolderLookup.Provider provider) {
+        items.deserializeNBT(provider, tag.getCompound("Items"));
         progress = tag.getInt("recycleProgress");
     }
 
@@ -264,23 +256,11 @@ public class RecyclerTile extends ExtremeMachineTile implements IGuiTile, IPower
         markDirtyClient();
     }
 
-    @Nonnull
     @Override
-    public <T> LazyOptional<T> getCapability(@Nonnull Capability<T> cap, @Nullable Direction side) {
-        if (cap == ForgeCapabilities.ITEM_HANDLER && side != null) {
-            return sidedHandlers.computeIfAbsent(side, direction -> LazyOptional.of(() -> new SidedHandler(direction))).cast();
-        }
-        return super.getCapability(cap, side);
+    public IItemHandler getAutomationHandler(@Nullable Direction side) {
+        return side == null ? items : sidedHandlers.computeIfAbsent(side, SidedHandler::new);
     }
 
-    @Override
-    public void invalidateCaps() {
-        super.invalidateCaps();
-        sidedHandlers.values().forEach(LazyOptional::invalidate);
-        sidedHandlers.clear();
-    }
-
-    @Nullable
     @Override
     public Map<String, Object> save() {
         return null;

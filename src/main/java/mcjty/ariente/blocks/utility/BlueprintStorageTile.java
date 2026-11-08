@@ -1,13 +1,17 @@
 package mcjty.ariente.blocks.utility;
 
+import mcjty.hologui.api.*;
+import java.util.Map;
+import javax.annotation.Nonnull;
+import javax.annotation.Nullable;
 import mcjty.ariente.Ariente;
-import mcjty.ariente.gui.GuiHelp;
-import mcjty.ariente.gui.PlayerInventoryPanel;
 import mcjty.ariente.api.ICityAI;
 import mcjty.ariente.api.ICityEquipment;
+import mcjty.ariente.blocks.ArienteBlockEntity;
+import mcjty.ariente.gui.GuiHelp;
+import mcjty.ariente.gui.PlayerInventoryPanel;
 import mcjty.ariente.items.BlueprintItem;
 import mcjty.ariente.setup.Registration;
-import mcjty.hologui.api.*;
 import mcjty.hologui.api.components.IPlayerSlots;
 import mcjty.hologui.api.components.ISlots;
 import mcjty.lib.blocks.BaseBlock;
@@ -15,12 +19,10 @@ import mcjty.lib.blocks.RotationType;
 import mcjty.lib.builder.BlockBuilder;
 import mcjty.lib.container.ContainerFactory;
 import mcjty.lib.container.GenericItemHandler;
-import mcjty.lib.tileentity.Cap;
-import mcjty.lib.tileentity.CapType;
-import mcjty.lib.tileentity.GenericTileEntity;
 import net.minecraft.core.BlockPos;
+import net.minecraft.core.Direction;
+import net.minecraft.core.HolderLookup;
 import net.minecraft.nbt.CompoundTag;
-import net.minecraft.nbt.Tag;
 import net.minecraft.world.InteractionHand;
 import net.minecraft.world.InteractionResult;
 import net.minecraft.world.entity.player.Player;
@@ -28,12 +30,9 @@ import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.phys.BlockHitResult;
-import net.minecraftforge.common.util.Lazy;
-import net.minecraftforge.items.ItemHandlerHelper;
-
-import javax.annotation.Nonnull;
-import javax.annotation.Nullable;
-import java.util.Map;
+import net.neoforged.neoforge.common.util.Lazy;
+import net.neoforged.neoforge.items.IItemHandler;
+import net.neoforged.neoforge.items.ItemHandlerHelper;
 
 import static mcjty.ariente.compat.ArienteTOPDriver.DRIVER;
 import static mcjty.hologui.api.Icons.*;
@@ -41,14 +40,13 @@ import static mcjty.lib.builder.TooltipBuilder.header;
 import static mcjty.lib.builder.TooltipBuilder.key;
 import static mcjty.lib.container.SlotDefinition.generic;
 
-public class BlueprintStorageTile extends GenericTileEntity implements IGuiTile, ICityEquipment {
+public class BlueprintStorageTile extends ArienteBlockEntity implements IGuiTile, ICityEquipment {
 
     public static final int BLUEPRINTS = 6;
     public static final int SLOT_BLUEPRINT = 0;
     public static final Lazy<ContainerFactory> CONTAINER_FACTORY = Lazy.of(() -> new ContainerFactory(BLUEPRINTS)
             .box(generic().in().out(), SLOT_BLUEPRINT, 0, 0, BLUEPRINTS, 1));
 
-    @Cap(type = CapType.ITEMS_AUTOMATION)
     private final GenericItemHandler items = createItemHandler();
 
     public BlueprintStorageTile(BlockPos pos, BlockState state) {
@@ -162,13 +160,13 @@ public class BlueprintStorageTile extends GenericTileEntity implements IGuiTile,
     }
 
     @Override
-    public void saveClientDataToNBT(CompoundTag tag) {
-        tag.put("Items", items.serializeNBT());
+    public void saveClientDataToNBT(CompoundTag tag, HolderLookup.Provider provider) {
+        tag.put("Items", items.serializeNBT(provider));
     }
 
     @Override
-    public void loadClientDataFromNBT(CompoundTag tag) {
-        items.deserializeNBT(tag.getList("Items", Tag.TAG_COMPOUND));
+    public void loadClientDataFromNBT(CompoundTag tag, HolderLookup.Provider provider) {
+        items.deserializeNBT(provider, tag.getCompound("Items"));
     }
 
     @Override
@@ -192,4 +190,10 @@ public class BlueprintStorageTile extends GenericTileEntity implements IGuiTile,
             }
         };
     }
+
+    @Override
+    public IItemHandler getAutomationHandler(Direction side) {
+        return items;
+    }
+
 }

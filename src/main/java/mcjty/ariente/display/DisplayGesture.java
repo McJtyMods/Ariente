@@ -1,15 +1,14 @@
 package mcjty.ariente.display;
 
+import java.lang.ref.WeakReference;
+import java.util.Map;
+import java.util.UUID;
+import java.util.WeakHashMap;
 import mcjty.ariente.Ariente;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.world.phys.Vec3;
-
-import java.lang.ref.WeakReference;
-import java.util.Map;
-import java.util.UUID;
-import java.util.WeakHashMap;
 
 /** Server-side click/drag transaction. No module is moved until a valid release. */
 public class DisplayGesture {
@@ -25,7 +24,7 @@ public class DisplayGesture {
             return false;
         }
         InstalledModule module = source.findModule(id);
-        DisplayGeometry.Hit hit = DisplayGeometry.project(source, player, Math.min(8, player.getBlockReach()), look);
+        DisplayGeometry.Hit hit = DisplayGeometry.project(source, player, Math.min(8, player.blockInteractionRange()), look);
         if (module == null || hit == null || !module.contains(hit.x(), hit.y())
                 || !DisplayGeometry.fits(source, module.x(), module.y(), module.size())) {
             return false;
@@ -75,7 +74,7 @@ public class DisplayGesture {
         }
         DisplayBaseTile source = session.source.get();
         InstalledModule module = session.module.get();
-        DisplayGeometry.Hit release = DisplayGeometry.project(source, player, Math.min(8, player.getBlockReach()), look);
+        DisplayGeometry.Hit release = DisplayGeometry.project(source, player, Math.min(8, player.blockInteractionRange()), look);
         if (release == null) {
             return null;
         }

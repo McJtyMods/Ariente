@@ -1,5 +1,11 @@
 package mcjty.ariente.display.client;
 
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Locale;
+import java.util.Map;
+import java.util.WeakHashMap;
 import mcjty.ariente.display.AlienTextDisplayModule;
 import mcjty.ariente.display.DisplayModuleItem;
 import mcjty.ariente.display.DisplayModuleType;
@@ -8,17 +14,11 @@ import mcjty.ariente.display.PowerDisplayModule;
 import mcjty.ariente.display.StorageDisplayModule;
 import mcjty.ariente.display.TextDisplayModule;
 import mcjty.ariente.setup.Registration;
+import net.minecraft.client.Minecraft;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.nbt.ListTag;
 import net.minecraft.nbt.Tag;
 import net.minecraft.world.item.ItemStack;
-
-import java.util.HashMap;
-import java.util.List;
-import java.util.Locale;
-import java.util.Map;
-import java.util.ArrayList;
-import java.util.WeakHashMap;
 
 /** Client extension point. New modules register a server type and a matching renderer. */
 public class DisplayModuleRenderers {
@@ -141,7 +141,7 @@ public class DisplayModuleRenderers {
         if (saved == null || saved.version() != module.snapshotVersion()) {
             List<ItemStack> result = new ArrayList<>();
             for (int index = 0; index < items.size(); index++) {
-                result.add(ItemStack.of(items.getCompound(index).getCompound("Item")));
+                result.add(ItemStack.parseOptional(Minecraft.getInstance().level.registryAccess(), items.getCompound(index).getCompound("Item")));
             }
             saved = new ItemIcons(module.snapshotVersion(), result);
             ITEM_ICONS.put(module, saved);

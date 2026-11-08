@@ -1,0 +1,24 @@
+{
+  "type": "minecraft:crafting_shaped",
+  "category": "misc",
+  "key": {
+    "M": {
+      "item": "ariente:marble_black"
+    },
+    "g": {
+      "item": "minecraft:glowstone_dust"
+    },
+    "m": {
+      "item": "ariente:marble_darkblue"
+    }
+  },
+  "pattern": [
+    "MgM",
+    "mmm",
+    "MMM"
+  ],
+  "result": {
+    "count": 1,
+    "id": "ariente:blacktech_lines_glow"
+  }
+}

@@ -1,21 +1,18 @@
 package mcjty.ariente.items.modules;
 
+import java.util.List;
 import mcjty.ariente.Ariente;
 import mcjty.ariente.api.ArmorUpgradeType;
 import mcjty.lib.builder.TooltipBuilder;
 import mcjty.lib.tooltips.ITooltipSettings;
 import net.minecraft.ChatFormatting;
-import net.minecraft.network.chat.MutableComponent;
 import net.minecraft.network.chat.Component;
-import net.minecraft.world.entity.EquipmentSlot;
-import net.minecraft.world.item.TooltipFlag;
-import net.minecraft.world.item.Item;
+import net.minecraft.network.chat.MutableComponent;
 import net.minecraft.resources.ResourceLocation;
+import net.minecraft.world.entity.EquipmentSlot;
+import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemStack;
-import net.minecraft.world.level.Level;
-
-import javax.annotation.Nullable;
-import java.util.List;
+import net.minecraft.world.item.TooltipFlag;
 
 import static mcjty.lib.builder.TooltipBuilder.*;
 
@@ -41,11 +38,11 @@ public class ArmorModuleItem extends Item implements ITooltipSettings {
     }
 
     @Override
-    public void appendHoverText(ItemStack stack, @Nullable Level worldIn, List<Component> tooltip, TooltipFlag flag) {
+    public void appendHoverText(ItemStack stack, Item.TooltipContext worldIn, List<Component> tooltip, TooltipFlag flag) {
         super.appendHoverText(stack, worldIn, tooltip, flag);
         tooltip.add(Component.translatable("message.ariente.armormodule.effect." + type.getName()).withStyle(ChatFormatting.GRAY));
         tooltip.add(getInstallationDescription().withStyle(ChatFormatting.GRAY));
-        tooltipBuilder.makeTooltip(new ResourceLocation(Ariente.MODID, "armormodule"), stack, tooltip, flag);
+        tooltipBuilder.makeTooltip(ResourceLocation.fromNamespaceAndPath(Ariente.MODID, "armormodule"), stack, tooltip, flag);
     }
 
     public MutableComponent getInstallationDescription() {

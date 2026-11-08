@@ -1,7 +1,13 @@
 package mcjty.ariente.datagen;
 
-import mcjty.ariente.Ariente;
 import mcjty.ariente.api.*;
+import net.neoforged.neoforge.client.model.generators.*;
+import java.util.Arrays;
+import java.util.HashMap;
+import java.util.Map;
+import java.util.function.Function;
+import java.util.function.Supplier;
+import mcjty.ariente.Ariente;
 import mcjty.ariente.blocks.BlockProperties;
 import mcjty.ariente.blocks.decorative.DecorativeBlockModule;
 import mcjty.ariente.blocks.decorative.PatternBlock;
@@ -14,25 +20,18 @@ import mcjty.lib.blocks.BaseBlock;
 import mcjty.lib.datagen.BaseBlockStateProvider;
 import mcjty.lib.varia.OrientationTools;
 import net.minecraft.core.Direction;
+import net.minecraft.data.DataGenerator;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.level.block.Block;
 import net.minecraft.world.level.block.SlabBlock;
 import net.minecraft.world.level.block.state.properties.BlockStateProperties;
 import net.minecraft.world.level.block.state.properties.SlabType;
-import net.minecraftforge.common.data.ExistingFileHelper;
-import net.minecraftforge.registries.RegistryObject;
-import net.minecraft.data.DataGenerator;
-import net.minecraftforge.client.model.generators.*;
-import net.minecraftforge.client.model.generators.loaders.CompositeModelBuilder;
+import net.neoforged.neoforge.client.model.generators.loaders.CompositeModelBuilder;
+import net.neoforged.neoforge.common.data.ExistingFileHelper;
 import org.apache.commons.lang3.tuple.Pair;
 
-import java.util.Arrays;
-import java.util.HashMap;
-import java.util.Map;
-import java.util.function.Function;
-
 import static net.minecraft.core.Direction.*;
-import static net.minecraftforge.client.model.generators.ModelProvider.BLOCK_FOLDER;
+import static net.neoforged.neoforge.client.model.generators.ModelProvider.BLOCK_FOLDER;
 
 public class BlockStates extends BaseBlockStateProvider {
 
@@ -636,42 +635,42 @@ public class BlockStates extends BaseBlockStateProvider {
     }
 
     private void registerMarble() {
-        for (Map.Entry<MarbleColor, RegistryObject<BaseBlock>> entry : DecorativeBlockModule.MARBLE.entrySet()) {
+        for (Map.Entry<MarbleColor, Supplier<BaseBlock>> entry : DecorativeBlockModule.MARBLE.entrySet()) {
                 MarbleColor type = entry.getKey();
                 singleTextureBlock(entry.getValue().get(), BLOCK_FOLDER + "/decorative/marble_" + type.getSerializedName(), "block/marble/" + type.getTexture());
         }
     }
 
     private void registerMarbleSmooth() {
-        for (Map.Entry<MarbleColor, RegistryObject<BaseBlock>> entry : DecorativeBlockModule.MARBLE_SMOOTH.entrySet()) {
+        for (Map.Entry<MarbleColor, Supplier<BaseBlock>> entry : DecorativeBlockModule.MARBLE_SMOOTH.entrySet()) {
                 MarbleColor type = entry.getKey();
                 singleTextureBlock(entry.getValue().get(), BLOCK_FOLDER + "/decorative/marble_smooth_" + type.getSerializedName(), "block/marble/" + type.getTexture() + "_smooth");
         }
     }
 
     private void registerMarblePilar() {
-        for (Map.Entry<MarbleColor, RegistryObject<BaseBlock>> entry : DecorativeBlockModule.MARBLE_PILAR.entrySet()) {
+        for (Map.Entry<MarbleColor, Supplier<BaseBlock>> entry : DecorativeBlockModule.MARBLE_PILAR.entrySet()) {
                 MarbleColor type = entry.getKey();
                 singleTextureBlock(entry.getValue().get(), BLOCK_FOLDER + "/decorative/marble_pilar_" + type.getSerializedName(), "block/marble/" + type.getTexture() + "_pilar");
         }
     }
 
     private void registerMarbleBricks() {
-        for (Map.Entry<MarbleColor, RegistryObject<BaseBlock>> entry : DecorativeBlockModule.MARBLE_BRICKS.entrySet()) {
+        for (Map.Entry<MarbleColor, Supplier<BaseBlock>> entry : DecorativeBlockModule.MARBLE_BRICKS.entrySet()) {
                 MarbleColor type = entry.getKey();
                 singleTextureBlock(entry.getValue().get(), BLOCK_FOLDER + "/decorative/marble_bricks_" + type.getSerializedName(), "block/marble/" + type.getTexture() + "_bricks");
         }
     }
 
     private void registerMarbleTech() {
-        for (Map.Entry<MarbleType, RegistryObject<BaseBlock>> entry : DecorativeBlockModule.MARBLE_TECH.entrySet()) {
+        for (Map.Entry<MarbleType, Supplier<BaseBlock>> entry : DecorativeBlockModule.MARBLE_TECH.entrySet()) {
                 MarbleType type = entry.getKey();
                 singleTextureBlock(entry.getValue().get(), BLOCK_FOLDER + "/decorative/marbletech_" + type.getSerializedName(), "block/marbletech/" + type.getTexture());
         }
     }
 
     private void registerBlackTech() {
-        for (Map.Entry<TechType, RegistryObject<BaseBlock>> entry : DecorativeBlockModule.BLACK_TECH.entrySet()) {
+        for (Map.Entry<TechType, Supplier<BaseBlock>> entry : DecorativeBlockModule.BLACK_TECH.entrySet()) {
                 TechType type = entry.getKey();
                 singleTextureBlock(entry.getValue().get(), BLOCK_FOLDER + "/decorative/blacktech_" + type.getSerializedName(), "block/blacktech/" + type.getTexture());
         }

@@ -20,10 +20,10 @@ public class LaserRender extends EntityRenderer<LaserEntity> {
     private static final float BEAM_WIDTH = 0.08F;
 
     private static final ResourceLocation[] BEAMS = {
-            new ResourceLocation(Ariente.MODID, "negarite_laserbeam1"),
-            new ResourceLocation(Ariente.MODID, "negarite_laserbeam2"),
-            new ResourceLocation(Ariente.MODID, "negarite_laserbeam3"),
-            new ResourceLocation(Ariente.MODID, "negarite_laserbeam4")
+            ResourceLocation.fromNamespaceAndPath(Ariente.MODID, "negarite_laserbeam1"),
+            ResourceLocation.fromNamespaceAndPath(Ariente.MODID, "negarite_laserbeam2"),
+            ResourceLocation.fromNamespaceAndPath(Ariente.MODID, "negarite_laserbeam3"),
+            ResourceLocation.fromNamespaceAndPath(Ariente.MODID, "negarite_laserbeam4")
     };
 
     public LaserRender(EntityRendererProvider.Context context) {
@@ -60,9 +60,9 @@ public class LaserRender extends EntityRenderer<LaserEntity> {
     }
 
     private static void vertex(PoseStack poses, VertexConsumer vertices, Vec3 point, float u, float v) {
-        vertices.vertex(poses.last().pose(), (float) point.x, (float) point.y, (float) point.z).color(255, 255, 255, 255)
-                .uv(u, v).overlayCoords(OverlayTexture.NO_OVERLAY).uv2(LightTexture.FULL_BRIGHT)
-                .normal(poses.last().normal(), 0, 1, 0).endVertex();
+        vertices.addVertex(poses.last().pose(), (float) point.x, (float) point.y, (float) point.z).setColor(255, 255, 255, 255)
+                .setUv(u, v).setOverlay(OverlayTexture.NO_OVERLAY).setLight(LightTexture.FULL_BRIGHT)
+                .setNormal(poses.last(), 0, 1, 0);
     }
 
     @Override

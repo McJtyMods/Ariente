@@ -2,8 +2,8 @@ package mcjty.ariente.client;
 
 import com.mojang.blaze3d.systems.RenderSystem;
 import com.mojang.blaze3d.vertex.PoseStack;
+import javax.annotation.Nullable;
 import mcjty.ariente.Ariente;
-import net.minecraft.world.entity.Mob;
 import mcjty.ariente.items.EnergyLanceItem;
 import mcjty.ariente.items.LanceAim;
 import net.minecraft.client.Minecraft;
@@ -11,24 +11,24 @@ import net.minecraft.client.multiplayer.ClientLevel;
 import net.minecraft.client.renderer.block.model.ItemOverrides;
 import net.minecraft.client.resources.model.BakedModel;
 import net.minecraft.client.resources.model.ModelResourceLocation;
+import net.minecraft.resources.ResourceLocation;
 import net.minecraft.util.Mth;
 import net.minecraft.world.entity.LivingEntity;
+import net.minecraft.world.entity.Mob;
 import net.minecraft.world.item.ItemDisplayContext;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.phys.Vec3;
-import net.minecraftforge.api.distmarker.Dist;
-import net.minecraftforge.client.event.ModelEvent;
-import net.minecraftforge.client.event.RenderLevelStageEvent;
-import net.minecraftforge.client.model.BakedModelWrapper;
-import net.minecraftforge.eventbus.api.EventPriority;
-import net.minecraftforge.eventbus.api.SubscribeEvent;
-import net.minecraftforge.fml.common.Mod;
+import net.neoforged.api.distmarker.Dist;
+import net.neoforged.bus.api.EventPriority;
+import net.neoforged.bus.api.SubscribeEvent;
+import net.neoforged.fml.common.EventBusSubscriber;
+import net.neoforged.neoforge.client.event.ModelEvent;
+import net.neoforged.neoforge.client.event.RenderLevelStageEvent;
+import net.neoforged.neoforge.client.model.BakedModelWrapper;
 import org.joml.Matrix3f;
 import org.joml.Matrix4f;
 
-import javax.annotation.Nullable;
-
-@Mod.EventBusSubscriber(modid = Ariente.MODID, value = Dist.CLIENT, bus = Mod.EventBusSubscriber.Bus.MOD)
+@EventBusSubscriber(modid = Ariente.MODID, value = Dist.CLIENT, bus = EventBusSubscriber.Bus.MOD)
 public class LanceModel extends BakedModelWrapper<BakedModel> {
 
     private final LivingEntity holder;
@@ -40,7 +40,7 @@ public class LanceModel extends BakedModelWrapper<BakedModel> {
 
     @SubscribeEvent
     public static void bake(ModelEvent.ModifyBakingResult event) {
-        event.getModels().computeIfPresent(new ModelResourceLocation(Ariente.MODID, "energy_lance", "inventory"),
+        event.getModels().computeIfPresent(new ModelResourceLocation(ResourceLocation.fromNamespaceAndPath(Ariente.MODID, "energy_lance"), "inventory"),
                 (location, model) -> new LanceModel(model, null));
     }
 
@@ -94,7 +94,7 @@ public class LanceModel extends BakedModelWrapper<BakedModel> {
         return originalModel;
     }
 
-    @Mod.EventBusSubscriber(modid = Ariente.MODID, value = Dist.CLIENT)
+    @EventBusSubscriber(modid = Ariente.MODID, value = Dist.CLIENT)
     public static class WorldFrame {
 
         private static Matrix4f worldToClip;
@@ -114,7 +114,7 @@ public class LanceModel extends BakedModelWrapper<BakedModel> {
                     return;
                 }
                 camera = event.getCamera().getPosition();
-                partialTick = event.getPartialTick();
+                partialTick = event.getPartialTick().getGameTimeDeltaPartialTick(false);
                 renderingEntities = true;
             } else if (event.getStage() == RenderLevelStageEvent.Stage.AFTER_ENTITIES) {
                 renderingEntities = false;

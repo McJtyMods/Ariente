@@ -1,8 +1,8 @@
-Ariente native texture traits (Forge 1.20.1)
+Ariente native texture traits (NeoForge 1.21.1)
 
 Ariente implements the small set of rendering effects used by its own assets:
 connected quadrants, minimum texture brightness and cutout overlays. This is an
-independent implementation using Forge baked models and Minecraft's texture atlas.
+independent implementation using NeoForge baked models and Minecraft's texture atlas.
 It has no CTM dependency and includes no CTM implementation code.
 
 The existing supplemental images retain their original quadrant layout. The

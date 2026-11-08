@@ -1,12 +1,11 @@
 package mcjty.ariente.blocks.defense;
 
+import javax.annotation.Nullable;
 import mcjty.ariente.varia.Intersections;
 import mcjty.ariente.varia.Triangle;
 import net.minecraft.world.entity.Entity;
 import net.minecraft.world.phys.AABB;
 import net.minecraft.world.phys.Vec3;
-
-import javax.annotation.Nullable;
 
 import static mcjty.ariente.config.Config.SHIELD_PANEL_LIFE;
 

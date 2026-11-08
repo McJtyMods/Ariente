@@ -1,24 +1,34 @@
 package mcjty.ariente.blocks.utility.autofield;
 
-import net.minecraft.network.FriendlyByteBuf;
+import net.minecraft.core.BlockPos;
+import net.minecraft.network.RegistryFriendlyByteBuf;
+import net.minecraft.network.codec.StreamCodec;
+import net.minecraft.network.protocol.common.custom.CustomPacketPayload;
+import net.minecraft.resources.ResourceLocation;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.world.level.block.entity.BlockEntity;
-import net.minecraft.core.BlockPos;
-import net.minecraftforge.network.NetworkEvent;
+import net.neoforged.neoforge.network.handling.IPayloadContext;
 
-import java.util.function.Supplier;
+public class PacketAutoFieldRequestRenderInfo implements CustomPacketPayload {
 
-public class PacketAutoFieldRequestRenderInfo {
+    public static final Type<PacketAutoFieldRequestRenderInfo> TYPE = new Type<>(ResourceLocation.fromNamespaceAndPath("ariente", "packet_auto_field_request_render_info"));
+    public static final StreamCodec<RegistryFriendlyByteBuf, PacketAutoFieldRequestRenderInfo> CODEC = StreamCodec.ofMember(PacketAutoFieldRequestRenderInfo::toBytes, PacketAutoFieldRequestRenderInfo::new);
+
+    @Override
+    public Type<? extends CustomPacketPayload> type() {
+        return TYPE;
+    }
+
     private BlockPos pos;
 
-    public void toBytes(FriendlyByteBuf buf) {
+    public void toBytes(RegistryFriendlyByteBuf buf) {
         buf.writeBlockPos(pos);
     }
 
     public PacketAutoFieldRequestRenderInfo() {
     }
 
-    public PacketAutoFieldRequestRenderInfo(FriendlyByteBuf buf) {
+    public PacketAutoFieldRequestRenderInfo(RegistryFriendlyByteBuf buf) {
         pos = buf.readBlockPos();
     }
 
@@ -26,10 +36,9 @@ public class PacketAutoFieldRequestRenderInfo {
         this.pos = pos;
     }
 
-    public void handle(Supplier<NetworkEvent.Context> supplier) {
-        NetworkEvent.Context ctx = supplier.get();
+    public void handle(IPayloadContext ctx) {
         ctx.enqueueWork(() -> {
-            ServerPlayer player = ctx.getSender();
+            ServerPlayer player = (ServerPlayer) ctx.player();
             if (player == null || !player.level().hasChunkAt(pos) || player.distanceToSqr(pos.getCenter()) > 128 * 128) {
                 return;
             }
@@ -38,6 +47,5 @@ public class PacketAutoFieldRequestRenderInfo {
                 ((AutoFieldTile) te).renderInfoRequested();
             }
         });
-        ctx.setPacketHandled(true);
     }
 }

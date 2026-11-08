@@ -1,7 +1,7 @@
 package mcjty.ariente.compat.jei;
 
-import mcjty.ariente.config.PowerConfiguration;
 import mcjty.ariente.blocks.purifier.PurifierTile;
+import mcjty.ariente.config.PowerConfiguration;
 import mcjty.ariente.recipes.PurifyingRecipe;
 import mcjty.ariente.setup.Registration;
 import mezz.jei.api.constants.VanillaTypes;

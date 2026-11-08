@@ -1,0 +1,30 @@
+{
+  "type": "minecraft:crafting_shaped",
+  "category": "misc",
+  "key": {
+    "C": {
+      "item": "minecraft:chest"
+    },
+    "Q": {
+      "tag": "c:dusts/silicon"
+    },
+    "g": {
+      "item": "minecraft:glass_pane"
+    },
+    "m": {
+      "tag": "c:marble"
+    },
+    "s": {
+      "tag": "c:ingots/silver"
+    }
+  },
+  "pattern": [
+    "sgs",
+    "QCQ",
+    "mmm"
+  ],
+  "result": {
+    "count": 1,
+    "id": "ariente:blueprint_storage"
+  }
+}

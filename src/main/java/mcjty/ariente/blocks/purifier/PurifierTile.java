@@ -1,7 +1,9 @@
 package mcjty.ariente.blocks.purifier;
 
-import mcjty.ariente.blocks.ExtremeMachineTile;
+import java.util.List;
+import javax.annotation.Nullable;
 import mcjty.ariente.Ariente;
+import mcjty.ariente.blocks.ExtremeMachineTile;
 import mcjty.ariente.config.PowerConfiguration;
 import mcjty.ariente.gui.GuiHelp;
 import mcjty.ariente.gui.PlayerInventoryPanel;
@@ -14,7 +16,6 @@ import mcjty.ariente.setup.Registration;
 import mcjty.hologui.api.IGuiComponent;
 import mcjty.hologui.api.IGuiComponentRegistry;
 import mcjty.hologui.api.IGuiTile;
-import mcjty.hologui.api.IHoloGuiEntity;
 import mcjty.hologui.api.StyledColor;
 import mcjty.hologui.api.components.IPlayerSlots;
 import mcjty.lib.blocks.BaseBlock;
@@ -22,12 +23,10 @@ import mcjty.lib.blocks.RotationType;
 import mcjty.lib.builder.BlockBuilder;
 import mcjty.lib.container.ContainerFactory;
 import mcjty.lib.container.GenericItemHandler;
-import mcjty.lib.tileentity.Cap;
-import mcjty.lib.tileentity.CapType;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
+import net.minecraft.core.HolderLookup;
 import net.minecraft.nbt.CompoundTag;
-import net.minecraft.nbt.Tag;
 import net.minecraft.network.chat.Component;
 import net.minecraft.world.InteractionHand;
 import net.minecraft.world.InteractionResult;
@@ -36,10 +35,7 @@ import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.phys.BlockHitResult;
-import net.minecraftforge.items.ItemHandlerHelper;
-
-import javax.annotation.Nullable;
-import java.util.List;
+import net.neoforged.neoforge.items.IItemHandler;
 
 import static mcjty.ariente.compat.ArienteTOPDriver.DRIVER;
 import static mcjty.hologui.api.Icons.GRAY_ARROW_DOWN;
@@ -52,7 +48,6 @@ public class PurifierTile extends ExtremeMachineTile implements IGuiTile, IPower
 
     private static final ContainerFactory CONTAINER = new ContainerFactory(1).slot(generic().in().out(), 0, 0, 0);
 
-    @Cap(type = CapType.ITEMS_AUTOMATION)
     private final GenericItemHandler items = new GenericItemHandler(this, CONTAINER) {
 
         @Override
@@ -143,7 +138,7 @@ public class PurifierTile extends ExtremeMachineTile implements IGuiTile, IPower
                 direction = line.direction();
                 changed = true;
             }
-            if (!ItemStack.isSameItemSameTags(input, processingOre)) {
+            if (!ItemStack.isSameItemSameComponents(input, processingOre)) {
                 progress = 0;
                 processingOre = input.isEmpty() ? ItemStack.EMPTY : input.copyWithCount(1);
                 changed = true;
@@ -185,7 +180,7 @@ public class PurifierTile extends ExtremeMachineTile implements IGuiTile, IPower
 
     private boolean canAccept(ItemStack result) {
         ItemStack output = items.getStackInSlot(0);
-        return !result.isEmpty() && (output.isEmpty() || ItemHandlerHelper.canItemStacksStack(output, result))
+        return !result.isEmpty() && (output.isEmpty() || ItemStack.isSameItemSameComponents(output, result))
                 && output.getCount() + result.getCount() <= Math.min(items.getSlotLimit(0), result.getMaxStackSize());
     }
 
@@ -285,36 +280,36 @@ public class PurifierTile extends ExtremeMachineTile implements IGuiTile, IPower
     }
 
     @Override
-    protected void saveInfo(CompoundTag tag) {
-        super.saveInfo(tag);
+    protected void saveInfo(CompoundTag tag, HolderLookup.Provider provider) {
+        super.saveInfo(tag, provider);
         CompoundTag info = getOrCreateInfo(tag);
         info.putInt("purifierProgress", progress);
         info.putInt("purifierTubes", tubeCount);
         info.putInt("purifierDirection", direction.get3DDataValue());
-        info.put("purifierOre", processingOre.save(new CompoundTag()));
+        info.put("purifierOre", processingOre.saveOptional(provider));
     }
 
     @Override
-    protected void loadInfo(CompoundTag tag) {
-        super.loadInfo(tag);
+    protected void loadInfo(CompoundTag tag, HolderLookup.Provider provider) {
+        super.loadInfo(tag, provider);
         CompoundTag info = tag.getCompound("Info");
         progress = Math.max(0, info.getInt("purifierProgress"));
         tubeCount = Math.max(0, info.getInt("purifierTubes"));
         direction = Direction.from3DDataValue(info.getInt("purifierDirection"));
-        processingOre = ItemStack.of(info.getCompound("purifierOre"));
+        processingOre = ItemStack.parseOptional(provider, info.getCompound("purifierOre"));
     }
 
     @Override
-    public void saveClientDataToNBT(CompoundTag tag) {
-        tag.put("Items", items.serializeNBT());
+    public void saveClientDataToNBT(CompoundTag tag, HolderLookup.Provider provider) {
+        tag.put("Items", items.serializeNBT(provider));
         tag.putInt("Progress", progress);
         tag.putInt("Tubes", tubeCount);
         tag.putString("Status", status);
     }
 
     @Override
-    public void loadClientDataFromNBT(CompoundTag tag) {
-        items.deserializeNBT(tag.getList("Items", Tag.TAG_COMPOUND));
+    public void loadClientDataFromNBT(CompoundTag tag, HolderLookup.Provider provider) {
+        items.deserializeNBT(provider, tag.getCompound("Items"));
         progress = tag.getInt("Progress");
         tubeCount = tag.getInt("Tubes");
         status = tag.getString("Status");
@@ -323,4 +318,10 @@ public class PurifierTile extends ExtremeMachineTile implements IGuiTile, IPower
     @Override
     public void syncToClient() {
     }
+
+    @Override
+    public IItemHandler getAutomationHandler(Direction side) {
+        return items;
+    }
+
 }

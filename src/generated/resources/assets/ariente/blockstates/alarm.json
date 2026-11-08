@@ -1,73 +1,73 @@
 {
   "variants": {
-    "alarm=dead,facing=down": {
-      "model": "ariente:block/machines/alarm_dead",
-      "x": 90
-    },
-    "alarm=safe,facing=down": {
-      "model": "ariente:block/machines/alarm_safe",
-      "x": 90
-    },
     "alarm=alert,facing=down": {
       "model": "ariente:block/machines/alarm_alert",
       "x": 90
     },
-    "alarm=dead,facing=up": {
-      "model": "ariente:block/machines/alarm_dead",
-      "x": -90
-    },
-    "alarm=safe,facing=up": {
-      "model": "ariente:block/machines/alarm_safe",
-      "x": -90
-    },
-    "alarm=alert,facing=up": {
+    "alarm=alert,facing=east": {
       "model": "ariente:block/machines/alarm_alert",
-      "x": -90
-    },
-    "alarm=dead,facing=north": {
-      "model": "ariente:block/machines/alarm_dead"
-    },
-    "alarm=safe,facing=north": {
-      "model": "ariente:block/machines/alarm_safe"
+      "y": 90
     },
     "alarm=alert,facing=north": {
       "model": "ariente:block/machines/alarm_alert"
-    },
-    "alarm=dead,facing=south": {
-      "model": "ariente:block/machines/alarm_dead",
-      "y": 180
-    },
-    "alarm=safe,facing=south": {
-      "model": "ariente:block/machines/alarm_safe",
-      "y": 180
     },
     "alarm=alert,facing=south": {
       "model": "ariente:block/machines/alarm_alert",
       "y": 180
     },
-    "alarm=dead,facing=west": {
-      "model": "ariente:block/machines/alarm_dead",
-      "y": 270
-    },
-    "alarm=safe,facing=west": {
-      "model": "ariente:block/machines/alarm_safe",
-      "y": 270
+    "alarm=alert,facing=up": {
+      "model": "ariente:block/machines/alarm_alert",
+      "x": -90
     },
     "alarm=alert,facing=west": {
       "model": "ariente:block/machines/alarm_alert",
       "y": 270
     },
+    "alarm=dead,facing=down": {
+      "model": "ariente:block/machines/alarm_dead",
+      "x": 90
+    },
     "alarm=dead,facing=east": {
       "model": "ariente:block/machines/alarm_dead",
       "y": 90
+    },
+    "alarm=dead,facing=north": {
+      "model": "ariente:block/machines/alarm_dead"
+    },
+    "alarm=dead,facing=south": {
+      "model": "ariente:block/machines/alarm_dead",
+      "y": 180
+    },
+    "alarm=dead,facing=up": {
+      "model": "ariente:block/machines/alarm_dead",
+      "x": -90
+    },
+    "alarm=dead,facing=west": {
+      "model": "ariente:block/machines/alarm_dead",
+      "y": 270
+    },
+    "alarm=safe,facing=down": {
+      "model": "ariente:block/machines/alarm_safe",
+      "x": 90
     },
     "alarm=safe,facing=east": {
       "model": "ariente:block/machines/alarm_safe",
       "y": 90
     },
-    "alarm=alert,facing=east": {
-      "model": "ariente:block/machines/alarm_alert",
-      "y": 90
+    "alarm=safe,facing=north": {
+      "model": "ariente:block/machines/alarm_safe"
+    },
+    "alarm=safe,facing=south": {
+      "model": "ariente:block/machines/alarm_safe",
+      "y": 180
+    },
+    "alarm=safe,facing=up": {
+      "model": "ariente:block/machines/alarm_safe",
+      "x": -90
+    },
+    "alarm=safe,facing=west": {
+      "model": "ariente:block/machines/alarm_safe",
+      "y": 270
     }
   }
 }

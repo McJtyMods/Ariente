@@ -9,7 +9,7 @@ import net.minecraft.client.renderer.MultiBufferSource;
 import net.minecraft.client.renderer.texture.OverlayTexture;
 import net.minecraft.world.item.ItemDisplayContext;
 import net.minecraft.world.item.ItemStack;
-import net.minecraftforge.client.model.pipeline.VertexConsumerWrapper;
+import net.neoforged.neoforge.client.model.pipeline.VertexConsumerWrapper;
 
 import static mcjty.ariente.gui.InventoryLayout.*;
 
@@ -47,8 +47,8 @@ public class InventoryRenderer {
         MultiBufferSource itemBuffer = brightness == 1 ? buffer : type -> new VertexConsumerWrapper(buffer.getBuffer(type)) {
 
             @Override
-            public VertexConsumer color(int r, int g, int b, int a) {
-                return super.color((int) (r * brightness), (int) (g * brightness), (int) (b * brightness), a);
+            public VertexConsumer setColor(int r, int g, int b, int a) {
+                return super.setColor((int) (r * brightness), (int) (g * brightness), (int) (b * brightness), a);
             }
         };
         var renderer = Minecraft.getInstance().getItemRenderer();

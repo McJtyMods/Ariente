@@ -1,5 +1,7 @@
 package mcjty.ariente.cables;
 
+import javax.annotation.Nonnull;
+import javax.annotation.Nullable;
 import mcjty.ariente.blocks.generators.PowerCombinerTile;
 import mcjty.ariente.power.IPowerReceiver;
 import mcjty.ariente.power.IPowerSender;
@@ -7,18 +9,15 @@ import mcjty.ariente.setup.Registration;
 import mcjty.lib.compat.theoneprobe.TOPDriver;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
+import net.minecraft.world.item.Item;
+import net.minecraft.world.item.Items;
+import net.minecraft.world.item.context.BlockPlaceContext;
 import net.minecraft.world.level.BlockGetter;
+import net.minecraft.world.level.Level;
 import net.minecraft.world.level.block.Block;
 import net.minecraft.world.level.block.entity.BlockEntity;
 import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.level.material.MapColor;
-import net.minecraft.world.item.context.BlockPlaceContext;
-import net.minecraft.world.item.Item;
-import net.minecraft.world.item.Items;
-import net.minecraft.world.level.Level;
-
-import javax.annotation.Nonnull;
-import javax.annotation.Nullable;
 
 public class ConnectorBlock extends GenericCableBlock {
 

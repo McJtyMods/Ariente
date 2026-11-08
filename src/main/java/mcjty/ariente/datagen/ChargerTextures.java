@@ -2,17 +2,16 @@ package mcjty.ariente.datagen;
 
 import com.google.common.hash.Hashing;
 import com.mojang.blaze3d.platform.NativeImage;
+import java.io.IOException;
+import java.io.UncheckedIOException;
+import java.util.concurrent.CompletableFuture;
 import mcjty.ariente.Ariente;
 import net.minecraft.data.CachedOutput;
 import net.minecraft.data.DataProvider;
 import net.minecraft.data.PackOutput;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.server.packs.PackType;
-import net.minecraftforge.common.data.ExistingFileHelper;
-
-import java.io.IOException;
-import java.io.UncheckedIOException;
-import java.util.concurrent.CompletableFuture;
+import net.neoforged.neoforge.common.data.ExistingFileHelper;
 
 /** Keep the artist's first frame and housing intact; rotate only the radial field inside it. */
 public class ChargerTextures implements DataProvider {
@@ -23,7 +22,7 @@ public class ChargerTextures implements DataProvider {
     public ChargerTextures(PackOutput output, ExistingFileHelper helper) {
         this.output = output;
         for (String name : new String[]{"charger_active", "charger_glow", "charger_off"}) {
-            helper.trackGenerated(new ResourceLocation(Ariente.MODID, "block/machines/" + name),
+            helper.trackGenerated(ResourceLocation.fromNamespaceAndPath(Ariente.MODID, "block/machines/" + name),
                     PackType.CLIENT_RESOURCES, ".png", "textures");
         }
     }

@@ -1,20 +1,29 @@
 package mcjty.ariente.display.client;
 
-import com.mojang.blaze3d.vertex.VertexConsumer;
 import com.mojang.blaze3d.vertex.BufferBuilder;
+import com.mojang.blaze3d.vertex.ByteBufferBuilder;
 import com.mojang.blaze3d.vertex.DefaultVertexFormat;
+import com.mojang.blaze3d.vertex.MeshData;
 import com.mojang.blaze3d.vertex.VertexBuffer;
+import com.mojang.blaze3d.vertex.VertexConsumer;
 import com.mojang.blaze3d.vertex.VertexFormat;
 import com.mojang.blaze3d.vertex.VertexSorting;
+import java.util.ArrayList;
+import java.util.Comparator;
+import java.util.HashMap;
+import java.util.IdentityHashMap;
+import java.util.List;
+import java.util.Map;
+import java.util.WeakHashMap;
 import mcjty.ariente.blocks.utility.camera.CameraCapture;
 import mcjty.ariente.display.CameraDisplayModule;
 import mcjty.ariente.display.CameraView;
 import mcjty.ariente.display.CameraViewClipper;
 import mcjty.ariente.display.InstalledModule;
 import net.minecraft.client.Minecraft;
-import net.minecraft.client.renderer.block.model.BakedQuad;
 import net.minecraft.client.renderer.ItemBlockRenderTypes;
 import net.minecraft.client.renderer.RenderType;
+import net.minecraft.client.renderer.block.model.BakedQuad;
 import net.minecraft.client.renderer.texture.TextureAtlas;
 import net.minecraft.client.renderer.texture.TextureAtlasSprite;
 import net.minecraft.client.resources.model.BakedModel;
@@ -32,17 +41,9 @@ import net.minecraft.world.level.block.Blocks;
 import net.minecraft.world.level.block.RenderShape;
 import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.phys.Vec3;
-import net.minecraftforge.client.extensions.common.IClientFluidTypeExtensions;
-import net.minecraftforge.client.model.data.ModelData;
+import net.neoforged.neoforge.client.extensions.common.IClientFluidTypeExtensions;
+import net.neoforged.neoforge.client.model.data.ModelData;
 import org.joml.Matrix4f;
-
-import java.util.ArrayList;
-import java.util.Comparator;
-import java.util.HashMap;
-import java.util.IdentityHashMap;
-import java.util.List;
-import java.util.Map;
-import java.util.WeakHashMap;
 
 /**
  * Cached camera geometry. Orthographic views are projected onto the display plane;
@@ -54,7 +55,7 @@ public class CameraDisplayRenderer {
     private static final int MIN_VIEW_SPAN = 16;
     private static final Map<InstalledModule, Mesh> CACHE = new WeakHashMap<>();
     private static final Comparator<Face> DEPTH_ORDER = Comparator.comparingDouble(face -> face.depth);
-    private static final BufferBuilder PERSPECTIVE_VERTICES = new BufferBuilder(262144);
+    private static final ByteBufferBuilder PERSPECTIVE_MEMORY = new ByteBufferBuilder(262144);
 
     public static void clearCache() {
         CACHE.clear();
@@ -89,7 +90,7 @@ public class CameraDisplayRenderer {
             return;
         }
         Mesh mesh = CACHE.get(module);
-        double now = mc.level.getGameTime() + (double) mc.getFrameTime();
+        double now = mc.level.getGameTime() + (double) mc.getTimer().getGameTimeDeltaPartialTick(true);
         if (mesh == null || mesh.version != module.snapshotVersion()) {
             mesh = build(module, mesh == null ? now : mesh.startedAt);
             CACHE.put(module, mesh);
@@ -119,8 +120,8 @@ public class CameraDisplayRenderer {
             for (int i = 0; i < 4; i++) {
                 Point p = face.points[i];
                 int rgb = face.colors[i];
-                vertices.vertex(pose, face.screen[i * 2], face.screen[i * 2 + 1], .04f).uv(p.u(), p.v())
-                        .color(rgb >> 16 & 255, rgb >> 8 & 255, rgb & 255, 255).endVertex();
+                vertices.addVertex(pose, face.screen[i * 2], face.screen[i * 2 + 1], .04f).setUv(p.u(), p.v())
+                        .setColor(rgb >> 16 & 255, rgb >> 8 & 255, rgb & 255, 255);
             }
         }
         if (module.snapshot().getLongArray("Blocks").length == 0 && module.snapshot().getList("Entities", Tag.TAG_COMPOUND).isEmpty()) {
@@ -130,8 +131,8 @@ public class CameraDisplayRenderer {
 
     private static void clippedVertex(VertexConsumer vertices, Matrix4f pose, float[] data, int index) {
         int offset = index * CameraViewClipper.STRIDE;
-        vertices.vertex(pose, data[offset], data[offset + 1], .04f).uv(data[offset + 2], data[offset + 3])
-                .color((int) data[offset + 4], (int) data[offset + 5], (int) data[offset + 6], 255).endVertex();
+        vertices.addVertex(pose, data[offset], data[offset + 1], .04f).setUv(data[offset + 2], data[offset + 3])
+                .setColor((int) data[offset + 4], (int) data[offset + 5], (int) data[offset + 6], 255);
     }
 
     static CameraPerspectiveRenderer.Geometry perspectiveGeometry(InstalledModule module) {
@@ -145,7 +146,7 @@ public class CameraDisplayRenderer {
         if (faces.stream().noneMatch(face -> face.translucent == translucent)) {
             return new Part(null, null);
         }
-        PERSPECTIVE_VERTICES.begin(VertexFormat.Mode.QUADS, DefaultVertexFormat.POSITION_TEX_COLOR);
+        BufferBuilder vertices = new BufferBuilder(PERSPECTIVE_MEMORY, VertexFormat.Mode.QUADS, DefaultVertexFormat.POSITION_TEX_COLOR);
         for (Face face : faces) {
             if (face.translucent != translucent) {
                 continue;
@@ -153,23 +154,20 @@ public class CameraDisplayRenderer {
             for (int index = 0; index < 4; index++) {
                 Point point = face.points[index];
                 int color = face.colors[index];
-                PERSPECTIVE_VERTICES.vertex(point.x(), point.y(), point.z()).uv(point.u(), point.v())
-                        .color(color >> 16 & 255, color >> 8 & 255, color & 255, 255).endVertex();
+                vertices.addVertex(point.x(), point.y(), point.z()).setUv(point.u(), point.v())
+                        .setColor(color >> 16 & 255, color >> 8 & 255, color & 255, 255);
             }
         }
-        BufferBuilder.SortState sorting = null;
-        if (translucent) {
-            PERSPECTIVE_VERTICES.setQuadSorting(VertexSorting.DISTANCE_TO_ORIGIN);
-            sorting = PERSPECTIVE_VERTICES.getSortState();
-        }
+        MeshData mesh = vertices.buildOrThrow();
+        MeshData.SortState sorting = translucent ? mesh.sortQuads(PERSPECTIVE_MEMORY, VertexSorting.DISTANCE_TO_ORIGIN) : null;
         VertexBuffer buffer = new VertexBuffer(translucent ? VertexBuffer.Usage.DYNAMIC : VertexBuffer.Usage.STATIC);
         buffer.bind();
-        buffer.upload(PERSPECTIVE_VERTICES.end());
+        buffer.upload(mesh);
         VertexBuffer.unbind();
         return new Part(buffer, sorting);
     }
 
-    private record Part(VertexBuffer buffer, BufferBuilder.SortState sorting) {
+    private record Part(VertexBuffer buffer, MeshData.SortState sorting) {
     }
 
     private static Mesh build(InstalledModule module, double startedAt) {

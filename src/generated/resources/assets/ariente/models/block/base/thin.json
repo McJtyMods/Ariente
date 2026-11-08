@@ -2,6 +2,55 @@
   "parent": "minecraft:block/block",
   "elements": [
     {
+      "faces": {
+        "down": {
+          "cullface": "down",
+          "texture": "#bottom"
+        },
+        "east": {
+          "cullface": "east",
+          "texture": "#side",
+          "uv": [
+            0.0,
+            0.0,
+            16.0,
+            16.0
+          ]
+        },
+        "north": {
+          "cullface": "north",
+          "texture": "#side",
+          "uv": [
+            0.0,
+            0.0,
+            16.0,
+            16.0
+          ]
+        },
+        "south": {
+          "cullface": "south",
+          "texture": "#side",
+          "uv": [
+            0.0,
+            0.0,
+            16.0,
+            16.0
+          ]
+        },
+        "up": {
+          "texture": "#top"
+        },
+        "west": {
+          "cullface": "west",
+          "texture": "#side",
+          "uv": [
+            0.0,
+            0.0,
+            16.0,
+            16.0
+          ]
+        }
+      },
       "from": [
         0,
         0,
@@ -11,56 +60,7 @@
         16,
         1,
         16
-      ],
-      "faces": {
-        "down": {
-          "texture": "#bottom",
-          "cullface": "down"
-        },
-        "up": {
-          "texture": "#top"
-        },
-        "north": {
-          "texture": "#side",
-          "uv": [
-            0.0,
-            0.0,
-            16.0,
-            16.0
-          ],
-          "cullface": "north"
-        },
-        "south": {
-          "texture": "#side",
-          "uv": [
-            0.0,
-            0.0,
-            16.0,
-            16.0
-          ],
-          "cullface": "south"
-        },
-        "west": {
-          "texture": "#side",
-          "uv": [
-            0.0,
-            0.0,
-            16.0,
-            16.0
-          ],
-          "cullface": "west"
-        },
-        "east": {
-          "texture": "#side",
-          "uv": [
-            0.0,
-            0.0,
-            16.0,
-            16.0
-          ],
-          "cullface": "east"
-        }
-      }
+      ]
     }
   ],
   "textures": {

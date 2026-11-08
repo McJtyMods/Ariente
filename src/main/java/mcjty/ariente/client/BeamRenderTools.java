@@ -25,9 +25,9 @@ public class BeamRenderTools {
     }
 
     private static void vertex(PoseStack poses, VertexConsumer vertices, Vec3 pos, Vec3 normal, float u, float v) {
-        vertices.vertex(poses.last().pose(), (float) pos.x, (float) pos.y, (float) pos.z)
-                .color(255, 255, 255, 255)
-                .uv(u, v).overlayCoords(OverlayTexture.NO_OVERLAY).uv2(LightTexture.FULL_BRIGHT)
-                .normal(poses.last().normal(), (float) normal.x, (float) normal.y, (float) normal.z).endVertex();
+        vertices.addVertex(poses.last().pose(), (float) pos.x, (float) pos.y, (float) pos.z)
+                .setColor(255, 255, 255, 255)
+                .setUv(u, v).setOverlay(OverlayTexture.NO_OVERLAY).setLight(LightTexture.FULL_BRIGHT)
+                .setNormal(poses.last(), (float) normal.x, (float) normal.y, (float) normal.z);
     }
 }

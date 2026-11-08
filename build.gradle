@@ -1,49 +1,44 @@
 buildscript {
     repositories {
-        maven { url = 'https://maven.minecraftforge.net/' }
-        maven { url = 'https://maven.parchmentmc.org' }
-        maven { url = 'https://plugins.gradle.org/m2/' }
         maven { url = 'https://maven.firstdark.dev/releases' }
         mavenCentral()
         gradlePluginPortal()
     }
     dependencies {
-        classpath group: 'net.minecraftforge.gradle', name: 'ForgeGradle', version: '5.1.+', changing: true
-        classpath 'org.parchmentmc:librarian:1.+'
-        classpath 'com.hypherionmc.modutils:modpublisher:2.0.4'
+        classpath 'com.hypherionmc.modutils:modpublisher:2.2.1'
     }
+}
+
+plugins {
+    id 'java-library'
+    id 'eclipse'
+    id 'idea'
+    id 'maven-publish'
+    id 'net.neoforged.gradle.userdev' version '7.1.4'
 }
 
 apply plugin: 'com.hypherionmc.modutils.modpublisher'
-apply plugin: 'net.minecraftforge.gradle'
-apply plugin: 'org.parchmentmc.librarian.forgegradle'
-apply plugin: 'eclipse'
-apply plugin: 'maven-publish'
-if (project.file('../gradletools.gradle').exists()) {
-    apply from: '../gradletools.gradle'
-} else {
-    apply from: 'https://raw.githubusercontent.com/McJtyMods/MultiWorkspace/1.20_tech/gradletools.gradle'
-}
+
+def localGradleTools = [
+        project.findProperty('gradletools_path') ? file(project.property('gradletools_path')) : null,
+        rootProject.file('gradletools.gradle'),
+        file('../gradletools.gradle')
+].find { it != null && it.exists() }
+apply from: localGradleTools ?: 'https://raw.githubusercontent.com/McJtyMods/MultiWorkspace/1.21_neo/gradletools.gradle'
+
 
 group = "com.github.mcjty"
 archivesBaseName = "ariente"
-java.toolchain.languageVersion = JavaLanguageVersion.of(17)
+java.toolchain.languageVersion = JavaLanguageVersion.of(21)
+
+if (System.getenv('BUILD_NUMBER') != null) {
+    version += "-${System.getenv('BUILD_NUMBER')}"
+}
 
 repos()
-// An explicit staging repository allows standalone checks before dependencies are published.
-if (project.hasProperty('ariente_dependency_repository')) {
-    repositories.maven {
-        url = uri(project.property('ariente_dependency_repository'))
-        content {
-            includeGroup 'com.github.mcjty'
-        }
-    }
-}
-if (project.hasProperty('ariente_runs')) {
-    ext.enable_individual_runs = true
-}
-runs('ariente')
-jars('ariente')
+at()
+runs()
+jars()
 
 sourceSets.main.resources {
     srcDir 'src/generated/resources'
@@ -52,57 +47,79 @@ sourceSets.main.resources {
 dependencies {
     mc()
     jei()
+    patchouli()
     top()
     mcjtylib()
-    patchouli()
     if (findProject(':ModHoloGui') != null) {
-        implementation(project(':ModHoloGui')) { transitive = false }
+        implementation project(':ModHoloGui')
     } else {
-        implementation fg.deobf("com.github.mcjty:hologui:${hologui_version}") { transitive = false }
+        implementation("com.github.mcjty:hologui:${hologui_version}") { transitive = false }
     }
-
 }
 
-modpublisher(['the-one-probe', 'ariente-world', 'patchouli'], ['mcjtylib', 'hologui'],
-        ['the-one-probe', 'ariente-world', 'patchouli'], ['mcjtylib', 'hologui'], [])
+// Unpublished dependency artifacts can be staged for standalone verification.
+if (project.hasProperty('ariente_dependency_repository')) {
+    repositories.maven { url = uri(project.property('ariente_dependency_repository')) }
+}
 
-task apiJar(type: Jar) {
+modpublisher(['the-one-probe', 'ariente-world', 'patchouli'], ['mcjtylib', 'hologui'], ['the-one-probe', 'ariente-world', 'patchouli'], ['mcjtylib', 'hologui'], [])
+
+tasks.register('apiJar', Jar) {
     archiveClassifier = 'api'
-    from(sourceSets.main.output) {
-        include 'mcjty/ariente/api/**'
-    }
-}
-
-artifacts {
-    archives apiJar
+    from(sourceSets.main.output) { include 'mcjty/ariente/api/**' }
 }
 
 publishing {
     publications {
         mavenJava(MavenPublication) {
-            artifactId = archivesBaseName
             from components.java
-            artifact apiJar
+            artifact tasks.apiJar
+            artifactId = project.archivesBaseName
         }
     }
     repositories {
         if (project.hasProperty('mavendir')) {
-            maven { url mavendir }
+            maven { url = uri(project.property('mavendir')) }
+        } else if (System.getenv('local_maven') != null) {
+            maven { url = uri(System.getenv('local_maven')) }
         } else {
             mavenLocal()
         }
     }
 }
 
-tasks.withType(AbstractPublishToMaven).configureEach {
-    dependsOn 'reobfJar'
+subsystems {
+    parchment {
+        minecraftVersion = "${parchment_minecraft_version}"
+        mappingsVersion = "${parchment_version}"
+    }
 }
 
-// Resolve Forge/remapped libraries in this project; load local mod sources directly.
-configurations.implementation.dependencies.withType(ProjectDependency).configureEach { dependency ->
-    dependency.transitive = false
+// NeoGradle consumes local mod source sets in development, including transitive mod dependencies.
+def localMods = ['McJtyLib', 'TheOneProbe', 'ModHoloGui']
+localMods.findAll { findProject(":" + it) != null }.each { modName ->
+    evaluationDependsOn(":" + modName)
+    runs { configureEach { modSource project(":" + modName).sourceSets.main } }
 }
 
-if (project.hasProperty('ariente_runs')) {
-    apply from: 'gradle/verification.gradle'
+sourceSets {
+    gameTest {
+        compileClasspath += sourceSets.main.output
+        runtimeClasspath += sourceSets.main.output
+        java.include 'mcjty/ariente/StorageTests.java'
+        resources.include 'data/ariente/structure/empty.nbt'
+    }
+}
+configurations {
+    gameTestImplementation.extendsFrom implementation
+    gameTestRuntimeOnly.extendsFrom runtimeOnly
+}
+runs {
+    configureEach {
+        workingDirectory project.file("build/verification/${name}")
+    }
+    gameTestServer {
+        systemProperty "neoforge.enabledGameTestNamespaces", project.mod_id
+        modSource sourceSets.gameTest
+    }
 }

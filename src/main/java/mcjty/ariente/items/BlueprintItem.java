@@ -1,38 +1,36 @@
 package mcjty.ariente.items;
 
-import mcjty.lib.varia.Tools;
-import net.minecraftforge.client.extensions.common.IClientItemExtensions;
-import net.minecraft.client.Minecraft;
-import net.minecraft.client.renderer.BlockEntityWithoutLevelRenderer;
-import java.util.function.Consumer;
 import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
-import com.google.gson.JsonParser;
 import com.google.gson.JsonParseException;
+import com.google.gson.JsonParser;
+import java.util.Collections;
+import java.util.List;
+import java.util.function.Consumer;
+import java.util.stream.Collectors;
 import mcjty.ariente.Ariente;
-import mcjty.ariente.recipes.BlueprintRecipeRegistry;
 import mcjty.ariente.recipes.BlueprintExchangeRecipe;
 import mcjty.ariente.recipes.BlueprintRarity;
+import mcjty.ariente.recipes.BlueprintRecipeRegistry;
 import mcjty.ariente.recipes.ConstructorRecipe;
 import mcjty.ariente.setup.Registration;
 import mcjty.lib.builder.TooltipBuilder;
 import mcjty.lib.tooltips.ITooltipExtras;
 import mcjty.lib.tooltips.ITooltipSettings;
 import mcjty.lib.varia.JSonTools;
-import net.minecraft.network.chat.Component;
-import net.minecraft.world.item.Item;
-import net.minecraft.world.item.TooltipFlag;
-import net.minecraft.world.item.ItemStack;
+import mcjty.lib.varia.Tools;
+import net.minecraft.client.Minecraft;
+import net.minecraft.client.renderer.BlockEntityWithoutLevelRenderer;
 import net.minecraft.nbt.CompoundTag;
+import net.minecraft.network.chat.Component;
 import net.minecraft.resources.ResourceLocation;
-import net.minecraft.world.level.Level;
 import net.minecraft.world.entity.Entity;
+import net.minecraft.world.item.Item;
+import net.minecraft.world.item.ItemStack;
+import net.minecraft.world.item.TooltipFlag;
+import net.minecraft.world.level.Level;
+import net.neoforged.neoforge.client.extensions.common.IClientItemExtensions;
 import org.apache.commons.lang3.tuple.Pair;
-
-import javax.annotation.Nullable;
-import java.util.Collections;
-import java.util.List;
-import java.util.stream.Collectors;
 
 import static mcjty.lib.builder.TooltipBuilder.header;
 import static mcjty.lib.builder.TooltipBuilder.parameter;
@@ -76,7 +74,7 @@ public class BlueprintItem extends Item implements ITooltipExtras, ITooltipSetti
     }
 
     @Override
-    public void appendHoverText(ItemStack stack, @Nullable Level worldIn, List<Component> tooltip, TooltipFlag flag) {
+    public void appendHoverText(ItemStack stack, Item.TooltipContext worldIn, List<Component> tooltip, TooltipFlag flag) {
         super.appendHoverText(stack, worldIn, tooltip, flag);
         if (BlueprintExchangeRecipe.isPreview(stack)) {
             tooltip.add(Component.translatable("message.ariente.blueprint.exchange_preview"));
@@ -109,19 +107,20 @@ public class BlueprintItem extends Item implements ITooltipExtras, ITooltipSetti
         }
     }
 
-    public static final ResourceLocation EMPTY_BLUEPRINT_MODEL = new ResourceLocation(Ariente.MODID, "empty_blueprint");
+    public static final ResourceLocation EMPTY_BLUEPRINT_MODEL = ResourceLocation.fromNamespaceAndPath(Ariente.MODID, "empty_blueprint");
 
     public static ItemStack makeBluePrint(ItemStack destination) {
         ItemStack dest = new ItemStack(Registration.BLUEPRINT.get());
         CompoundTag nbt = new CompoundTag();
-        JsonObject json = JSonTools.itemStackToJson(destination);
+        JsonObject json = JSonTools.itemStackToJson(destination).getAsJsonObject();
         nbt.putString("destination", json.toString());
-        dest.setTag(nbt);
+        ItemData.set(dest, nbt);
+
         return dest;
     }
 
     public static ItemStack getDestination(ItemStack stack) {
-        CompoundTag nbt = stack.getTag();
+        CompoundTag nbt = ItemData.get(stack);
         if (nbt == null) {
             return ItemStack.EMPTY;
         }
@@ -134,7 +133,7 @@ public class BlueprintItem extends Item implements ITooltipExtras, ITooltipSetti
                 return ItemStack.EMPTY;
             }
             JsonObject object = json.getAsJsonObject();
-            if (!object.has("item") || !object.get("item").isJsonPrimitive() || !object.getAsJsonPrimitive("item").isString()) {
+            if (!object.has("id") || !object.get("id").isJsonPrimitive() || !object.getAsJsonPrimitive("id").isString()) {
                 return ItemStack.EMPTY;
             }
             return JSonTools.jsonToItemStack(object);

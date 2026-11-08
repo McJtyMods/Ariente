@@ -1,15 +1,14 @@
 package mcjty.ariente.gui;
 
+import java.util.function.Function;
+import javax.annotation.Nullable;
 import mcjty.ariente.Ariente;
+import mcjty.ariente.multipart.MultipartTE;
 import mcjty.hologui.api.IGuiTile;
 import mcjty.hologui.api.IHoloGuiHandler;
-import mcjty.ariente.multipart.MultipartTE;
 import mcjty.lib.varia.Logging;
 import net.minecraft.world.level.block.entity.BlockEntity;
-import net.minecraftforge.fml.InterModComms;
-
-import javax.annotation.Nullable;
-import java.util.function.Function;
+import net.neoforged.fml.InterModComms;
 
 public class HoloGuiCompatibility {
 
@@ -22,7 +21,6 @@ public class HoloGuiCompatibility {
         registered = true;
         InterModComms.sendTo("hologui", "getHoloHandler", GetHoloHandler::new);
     }
-
 
     public static class GetHoloHandler implements Function<IHoloGuiHandler, Void> {
 

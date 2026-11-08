@@ -1,9 +1,9 @@
 package mcjty.ariente.cables;
 
-import mcjty.ariente.facade.IFacadeSupport;
+import javax.annotation.Nonnull;
+import javax.annotation.Nullable;
 import mcjty.ariente.facade.FacadeItemBlock;
-import net.minecraft.world.entity.player.Player;
-import net.minecraft.world.level.material.FluidState;
+import mcjty.ariente.facade.IFacadeSupport;
 import mcjty.ariente.power.PowerSenderSupport;
 import mcjty.ariente.setup.Registration;
 import mcjty.lib.compat.theoneprobe.TOPInfoProvider;
@@ -11,29 +11,29 @@ import mcjty.lib.compat.waila.WailaInfoProvider;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
 import net.minecraft.world.entity.LivingEntity;
+import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.Items;
 import net.minecraft.world.item.context.BlockPlaceContext;
+import net.minecraft.world.level.BlockGetter;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.level.LevelAccessor;
+import net.minecraft.world.level.LevelReader;
 import net.minecraft.world.level.block.Block;
 import net.minecraft.world.level.block.EntityBlock;
 import net.minecraft.world.level.block.SoundType;
 import net.minecraft.world.level.block.entity.BlockEntity;
 import net.minecraft.world.level.block.state.BlockState;
-import net.minecraft.world.level.material.MapColor;
 import net.minecraft.world.level.block.state.StateDefinition;
 import net.minecraft.world.level.block.state.properties.EnumProperty;
+import net.minecraft.world.level.material.FluidState;
+import net.minecraft.world.level.material.MapColor;
 import net.minecraft.world.phys.shapes.BooleanOp;
 import net.minecraft.world.phys.shapes.CollisionContext;
 import net.minecraft.world.phys.shapes.Shapes;
 import net.minecraft.world.phys.shapes.VoxelShape;
-import net.minecraft.world.level.BlockGetter;
-import net.minecraftforge.client.model.data.ModelProperty;
-
-import javax.annotation.Nonnull;
-import javax.annotation.Nullable;
+import net.neoforged.neoforge.client.model.data.ModelProperty;
 
 public abstract class GenericCableBlock extends Block implements WailaInfoProvider, TOPInfoProvider, EntityBlock {
 
@@ -145,7 +145,7 @@ public abstract class GenericCableBlock extends Block implements WailaInfoProvid
     }
 
     @Override
-    public ItemStack getCloneItemStack(BlockGetter worldIn, BlockPos pos, BlockState state) {
+    public ItemStack getCloneItemStack(LevelReader worldIn, BlockPos pos, BlockState state) {
         return new ItemStack(getItem(state.getValue(COLOR)));
     }
 

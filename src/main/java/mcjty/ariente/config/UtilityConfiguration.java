@@ -1,32 +1,32 @@
 package mcjty.ariente.config;
 
-import net.minecraftforge.common.ForgeConfigSpec;
+import net.neoforged.neoforge.common.ModConfigSpec;
 
 public class UtilityConfiguration {
 
     private static final String CATEGORY_UTILITY = "utility";
 
-    public static ForgeConfigSpec.IntValue MAX_DOOR_HEIGHT;
-    public static ForgeConfigSpec.IntValue POWERSUIT_MAXPOWER;
-    public static ForgeConfigSpec.IntValue POWERSUIT_MAXPOWER_OPTIMIZED;
-    public static ForgeConfigSpec.IntValue POWERSUIT_TICKS;
-    public static ForgeConfigSpec.IntValue POWERSUIT_TICKS_OPTIMIZED;
-    public static ForgeConfigSpec.DoubleValue POWERSUIT_FLYVERTICAL_FACTOR;
-    public static ForgeConfigSpec.DoubleValue POWERSUIT_MAX_FORWARD_GROUND_SPEED;
-    public static ForgeConfigSpec.DoubleValue POWERSUIT_MAX_FORWARD_FLY_SPEED;
-    public static ForgeConfigSpec.DoubleValue POWERSUIT_MAX_BACK_GROUND_SPEED;
-    public static ForgeConfigSpec.DoubleValue POWERSUIT_MAX_BACK_FLY_SPEED;
-    public static ForgeConfigSpec.DoubleValue FLUX_SHIP_CAMERA_TILT;
-    public static ForgeConfigSpec.BooleanValue FLUX_SHIP_MOUSE_CONTROL;
+    public static ModConfigSpec.IntValue MAX_DOOR_HEIGHT;
+    public static ModConfigSpec.IntValue POWERSUIT_MAXPOWER;
+    public static ModConfigSpec.IntValue POWERSUIT_MAXPOWER_OPTIMIZED;
+    public static ModConfigSpec.IntValue POWERSUIT_TICKS;
+    public static ModConfigSpec.IntValue POWERSUIT_TICKS_OPTIMIZED;
+    public static ModConfigSpec.DoubleValue POWERSUIT_FLYVERTICAL_FACTOR;
+    public static ModConfigSpec.DoubleValue POWERSUIT_MAX_FORWARD_GROUND_SPEED;
+    public static ModConfigSpec.DoubleValue POWERSUIT_MAX_FORWARD_FLY_SPEED;
+    public static ModConfigSpec.DoubleValue POWERSUIT_MAX_BACK_GROUND_SPEED;
+    public static ModConfigSpec.DoubleValue POWERSUIT_MAX_BACK_FLY_SPEED;
+    public static ModConfigSpec.DoubleValue FLUX_SHIP_CAMERA_TILT;
+    public static ModConfigSpec.BooleanValue FLUX_SHIP_MOUSE_CONTROL;
 
-    public static ForgeConfigSpec.IntValue WARPER_MAX_CHARGES;
+    public static ModConfigSpec.IntValue WARPER_MAX_CHARGES;
 
-    public static ForgeConfigSpec.IntValue AUTOFIELD_POWER_PER_OPERATION;
-    public static ForgeConfigSpec.DoubleValue AUTOFIELD_FACTOR_PER_COMBINED_STACK;
-    public static ForgeConfigSpec.IntValue AUTOFIELD_ACCUMULATE_PER_TICK;
-    public static ForgeConfigSpec.IntValue AUTOFIELD_MAX_ACCUMULATED_POWER;
+    public static ModConfigSpec.IntValue AUTOFIELD_POWER_PER_OPERATION;
+    public static ModConfigSpec.DoubleValue AUTOFIELD_FACTOR_PER_COMBINED_STACK;
+    public static ModConfigSpec.IntValue AUTOFIELD_ACCUMULATE_PER_TICK;
+    public static ModConfigSpec.IntValue AUTOFIELD_MAX_ACCUMULATED_POWER;
 
-    public static void init(ForgeConfigSpec.Builder SERVER_BUILDER, ForgeConfigSpec.Builder CLIENT_BUILDER) {
+    public static void init(ModConfigSpec.Builder SERVER_BUILDER, ModConfigSpec.Builder CLIENT_BUILDER) {
         CLIENT_BUILDER.comment("Utility settings").push(CATEGORY_UTILITY);
         SERVER_BUILDER.comment("Utility settings").push(CATEGORY_UTILITY);
 

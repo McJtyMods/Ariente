@@ -25,7 +25,6 @@ public class Intersections {
         return c;
     }
 
-
     private static boolean testAxis(double a, double b, double fa, double fb, double va,
                              double vb, double wa, double wb, double ea, double eb) {
         double p0 = a * va + b * vb;

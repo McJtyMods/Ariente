@@ -1,21 +1,21 @@
 package mcjty.ariente.config;
 
 import mcjty.ariente.Ariente;
-import net.minecraftforge.common.ForgeConfigSpec;
+import net.neoforged.neoforge.common.ModConfigSpec;
 
 public class WorldgenConfiguration {
 
     private static final String CATEGORY_WORLDGEN = "worldgen";
 
-    public static ForgeConfigSpec.ConfigValue<YesNoDefault> OVERWORLD_OREGEN;
-    public static ForgeConfigSpec.ConfigValue<YesNoDefault> OVERWORLD_DUNGEON_LOOT;
-    public static ForgeConfigSpec.IntValue OVERWORLD_LOOT_BLUEPRINTS;
-    public static ForgeConfigSpec.IntValue OVERWORLD_LOOT_ITEMS;
-    public static ForgeConfigSpec.IntValue OVERWORLD_LOOT_SUIT;
-    public static ForgeConfigSpec.IntValue STANDALONE_BLUEPRINT_MULTIPLIER;
-    public static ForgeConfigSpec.IntValue STANDALONE_BLUEPRINT_COUNT;
+    public static ModConfigSpec.ConfigValue<YesNoDefault> OVERWORLD_OREGEN;
+    public static ModConfigSpec.ConfigValue<YesNoDefault> OVERWORLD_DUNGEON_LOOT;
+    public static ModConfigSpec.IntValue OVERWORLD_LOOT_BLUEPRINTS;
+    public static ModConfigSpec.IntValue OVERWORLD_LOOT_ITEMS;
+    public static ModConfigSpec.IntValue OVERWORLD_LOOT_SUIT;
+    public static ModConfigSpec.IntValue STANDALONE_BLUEPRINT_MULTIPLIER;
+    public static ModConfigSpec.IntValue STANDALONE_BLUEPRINT_COUNT;
 
-    public static void init(ForgeConfigSpec.Builder SERVER_BUILDER, ForgeConfigSpec.Builder CLIENT_BUILDER) {
+    public static void init(ModConfigSpec.Builder SERVER_BUILDER, ModConfigSpec.Builder CLIENT_BUILDER) {
         SERVER_BUILDER.comment("World generation settings").push(CATEGORY_WORLDGEN);
 
         OVERWORLD_OREGEN = SERVER_BUILDER

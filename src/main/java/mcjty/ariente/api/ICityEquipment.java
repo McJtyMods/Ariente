@@ -1,9 +1,8 @@
 package mcjty.ariente.api;
 
-import net.minecraft.world.level.Level;
-
-import javax.annotation.Nullable;
 import java.util.Map;
+import javax.annotation.Nullable;
+import net.minecraft.world.level.Level;
 
 public interface ICityEquipment {
 

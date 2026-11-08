@@ -1,21 +1,21 @@
 package mcjty.ariente.display;
 
+import java.util.Locale;
+import java.util.UUID;
+import java.util.function.Consumer;
 import mcjty.ariente.Ariente;
 import mcjty.ariente.gui.HoloGuiTools;
+import mcjty.ariente.items.ItemData;
 import mcjty.hologui.api.IGuiComponent;
 import mcjty.hologui.api.IGuiComponentRegistry;
 import mcjty.hologui.api.IHoloGuiEntity;
 import mcjty.hologui.api.components.IPanel;
 import net.minecraft.nbt.CompoundTag;
+import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.InteractionHand;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.level.Level;
-import net.minecraft.resources.ResourceLocation;
-
-import java.util.Locale;
-import java.util.UUID;
-import java.util.function.Consumer;
 
 /** A configuration session targets a held item or an installed module's stable identity. */
 public class ModuleSettings {
@@ -31,7 +31,7 @@ public class ModuleSettings {
         this.hand = hand;
         owner = null;
         item = (DisplayModuleItem) stack.getItem();
-        id = stack.getOrCreateTag().hasUUID("ModuleId") ? stack.getTag().getUUID("ModuleId") : new UUID(0, 0);
+        id = ItemData.get(stack).hasUUID("ModuleId") ? ItemData.get(stack).getUUID("ModuleId") : new UUID(0, 0);
     }
 
     private ModuleSettings(DisplayBaseTile owner, InstalledModule module) {
@@ -48,8 +48,8 @@ public class ModuleSettings {
             return owner.isRemoved() || module == null ? ItemStack.EMPTY : module.stack();
         }
         ItemStack stack = player.getItemInHand(hand);
-        return stack.getItem() == item && stack.hasTag() && stack.getTag().hasUUID("ModuleId")
-                && id.equals(stack.getTag().getUUID("ModuleId")) ? stack : ItemStack.EMPTY;
+        return stack.getItem() == item && ItemData.has(stack) && ItemData.get(stack).hasUUID("ModuleId")
+                && id.equals(ItemData.get(stack).getUUID("ModuleId")) ? stack : ItemStack.EMPTY;
     }
 
     public CompoundTag config() {
@@ -82,7 +82,7 @@ public class ModuleSettings {
                 gui.getEntity().discard();
             }
         } else if (actor == player) {
-            change.accept(config());
+            DisplayModuleItem.editConfig(stack(), change);
             player.getInventory().setChanged();
             player.containerMenu.broadcastChanges();
         }
@@ -171,7 +171,7 @@ public class ModuleSettings {
     }
 
     private static IGuiComponent<?> createPanel(IGuiComponentRegistry r, ModuleSettings settings, boolean color) {
-        IPanel panel = HoloGuiTools.createPanelWithHelp(r, new ResourceLocation(Ariente.MODID, "construction/displays"));
+        IPanel panel = HoloGuiTools.createPanelWithHelp(r, ResourceLocation.fromNamespaceAndPath(Ariente.MODID, "construction/displays"));
         panel.add(r.text(.3, 0, 8, 1).text(color ? "MODULE COLOR" : settings.item.type().title()).scale(.65f).color(0x76eaff));
         if (color) {
             panel.add(r.button(6.4, .1, 1.6, .65).name("color_close").text("Back").scale(.4f)

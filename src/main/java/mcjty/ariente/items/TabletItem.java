@@ -1,5 +1,7 @@
 package mcjty.ariente.items;
 
+import java.util.List;
+import javax.annotation.Nonnull;
 import mcjty.ariente.Ariente;
 import mcjty.ariente.setup.Registration;
 import mcjty.lib.compat.patchouli.PatchouliCompatibility;
@@ -14,13 +16,9 @@ import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.TooltipFlag;
 import net.minecraft.world.level.Level;
 
-import javax.annotation.Nonnull;
-import javax.annotation.Nullable;
-import java.util.List;
-
 public class TabletItem extends Item {
 
-    public static final ResourceLocation MANUAL = new ResourceLocation(Ariente.MODID, "manual");
+    public static final ResourceLocation MANUAL = ResourceLocation.fromNamespaceAndPath(Ariente.MODID, "manual");
 
     public TabletItem() {
         super(Registration.createStandardProperties().stacksTo(1));
@@ -36,7 +34,7 @@ public class TabletItem extends Item {
     }
 
     @Override
-    public void appendHoverText(ItemStack stack, @Nullable Level level, List<Component> tooltip, TooltipFlag flags) {
+    public void appendHoverText(ItemStack stack, Item.TooltipContext level, List<Component> tooltip, TooltipFlag flags) {
         tooltip.add(Component.translatable("item.ariente.tablet.tooltip"));
     }
 }

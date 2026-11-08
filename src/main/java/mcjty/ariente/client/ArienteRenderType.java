@@ -4,21 +4,18 @@ import com.mojang.blaze3d.platform.Lighting;
 import com.mojang.blaze3d.systems.RenderSystem;
 import com.mojang.blaze3d.vertex.DefaultVertexFormat;
 import com.mojang.blaze3d.vertex.VertexFormat;
-import net.minecraft.client.Minecraft;
-import net.minecraft.client.renderer.RenderType;
-import net.minecraft.client.renderer.Sheets;
-import net.minecraft.client.renderer.ShaderInstance;
-import net.minecraft.client.renderer.texture.TextureAtlas;
-import net.minecraft.resources.ResourceLocation;
-import net.minecraftforge.client.event.RegisterShadersEvent;
-import org.joml.Matrix3f;
-import org.joml.Matrix4f;
-import org.joml.Vector3f;
-
 import java.io.IOException;
 import java.io.UncheckedIOException;
 import java.util.IdentityHashMap;
 import java.util.Map;
+import net.minecraft.client.Minecraft;
+import net.minecraft.client.renderer.RenderType;
+import net.minecraft.client.renderer.ShaderInstance;
+import net.minecraft.client.renderer.Sheets;
+import net.minecraft.client.renderer.texture.TextureAtlas;
+import net.minecraft.resources.ResourceLocation;
+import net.neoforged.neoforge.client.event.RegisterShadersEvent;
+import org.joml.Vector3f;
 
 public class ArienteRenderType extends RenderType {
 
@@ -31,11 +28,11 @@ public class ArienteRenderType extends RenderType {
 
     public static void registerShaders(RegisterShadersEvent event) {
         try {
-            event.registerShader(new ShaderInstance(event.getResourceProvider(), new ResourceLocation("ariente", "beam"),
+            event.registerShader(new ShaderInstance(event.getResourceProvider(), ResourceLocation.fromNamespaceAndPath("ariente", "beam"),
                     DefaultVertexFormat.NEW_ENTITY), shader -> beamShader = shader);
-            event.registerShader(new ShaderInstance(event.getResourceProvider(), new ResourceLocation("ariente", "display_item"),
+            event.registerShader(new ShaderInstance(event.getResourceProvider(), ResourceLocation.fromNamespaceAndPath("ariente", "display_item"),
                     DefaultVertexFormat.NEW_ENTITY), shader -> displayItemShader = shader);
-            event.registerShader(new ShaderInstance(event.getResourceProvider(), new ResourceLocation("ariente", "field_marker"),
+            event.registerShader(new ShaderInstance(event.getResourceProvider(), ResourceLocation.fromNamespaceAndPath("ariente", "field_marker"),
                     DefaultVertexFormat.NEW_ENTITY), shader -> fieldMarkerShader = shader);
         } catch (IOException exception) {
             throw new UncheckedIOException("Could not load the Ariente shaders", exception);
@@ -76,11 +73,10 @@ public class ArienteRenderType extends RenderType {
         previousShipLight0 = new Vector3f(light0.get(0), light0.get(1), light0.get(2));
         previousShipLight1 = new Vector3f(light1.get(0), light1.get(1), light1.get(2));
         // Use only the camera rotation, never the hull's yaw, banking or translation.
-        Matrix4f view = new Matrix4f().set(new Matrix3f(RenderSystem.getInverseViewRotationMatrix()).invert());
         if (Minecraft.getInstance().level.effects().constantAmbientLight()) {
-            Lighting.setupNetherLevel(view);
+            Lighting.setupNetherLevel();
         } else {
-            Lighting.setupLevel(view);
+            Lighting.setupLevel();
         }
     }
 

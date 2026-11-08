@@ -1,12 +1,11 @@
 package mcjty.ariente.api;
 
 import com.google.common.collect.Maps;
-import net.minecraft.world.level.block.state.properties.EnumProperty;
-import net.minecraft.util.StringRepresentable;
-
-import javax.annotation.Nullable;
 import java.util.Locale;
 import java.util.Map;
+import javax.annotation.Nullable;
+import net.minecraft.util.StringRepresentable;
+import net.minecraft.world.level.block.state.properties.EnumProperty;
 
 public enum EnumFacingUpDown implements StringRepresentable {
     NORTH("north"),

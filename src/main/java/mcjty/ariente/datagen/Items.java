@@ -1,26 +1,25 @@
 package mcjty.ariente.datagen;
 
-import mcjty.lib.varia.Tools;
+import java.util.Map;
+import java.util.Map.Entry;
+import java.util.function.Supplier;
 import mcjty.ariente.Ariente;
 import mcjty.ariente.api.MarbleColor;
 import mcjty.ariente.api.MarbleType;
 import mcjty.ariente.api.TechType;
 import mcjty.ariente.blocks.decorative.DecorativeBlockModule;
 import mcjty.ariente.blocks.decorative.PatternType;
+import mcjty.ariente.items.BlockStateItem;
 import mcjty.ariente.setup.Registration;
 import mcjty.lib.blocks.BaseBlock;
-import mcjty.ariente.items.BlockStateItem;
 import mcjty.lib.datagen.BaseItemModelProvider;
+import mcjty.lib.varia.Tools;
 import net.minecraft.core.Direction;
-import net.minecraft.world.level.block.SlabBlock;
 import net.minecraft.data.DataGenerator;
 import net.minecraft.world.item.Item;
-import net.minecraftforge.common.data.ExistingFileHelper;
-import net.minecraftforge.client.model.generators.ModelFile;
-import net.minecraftforge.registries.RegistryObject;
-
-import java.util.Map;
-import java.util.Map.Entry;
+import net.minecraft.world.level.block.SlabBlock;
+import net.neoforged.neoforge.client.model.generators.ModelFile;
+import net.neoforged.neoforge.common.data.ExistingFileHelper;
 
 public class Items extends BaseItemModelProvider {
 
@@ -59,28 +58,28 @@ public class Items extends BaseItemModelProvider {
         connectorItem(Registration.CONNECTOR_COMBINED.get(), "combined");
         connectorItem(Registration.CONNECTOR_DATA.get(), "data");
 
-        for (Entry<TechType, RegistryObject<BaseBlock>> entry : DecorativeBlockModule.BLACK_TECH.entrySet()) {
+        for (Entry<TechType, Supplier<BaseBlock>> entry : DecorativeBlockModule.BLACK_TECH.entrySet()) {
             parentedBlock(entry.getValue().get(), "block/decorative/blacktech_" + entry.getKey().getSerializedName());
         }
-        for (Entry<MarbleType, RegistryObject<BaseBlock>> entry : DecorativeBlockModule.MARBLE_TECH.entrySet()) {
+        for (Entry<MarbleType, Supplier<BaseBlock>> entry : DecorativeBlockModule.MARBLE_TECH.entrySet()) {
             parentedBlock(entry.getValue().get(), "block/decorative/marbletech_" + entry.getKey().getSerializedName());
         }
-        for (Map.Entry<PatternType, RegistryObject<BlockStateItem>> entry : Registration.PATTERN_ITEMS.entrySet()) {
+        for (Map.Entry<PatternType, Supplier<BlockStateItem>> entry : Registration.PATTERN_ITEMS.entrySet()) {
             parentedItem(entry.getValue().get(), "block/decorative/pattern_" + entry.getKey().getSerializedName());
         }
-        for (Entry<MarbleColor, RegistryObject<BaseBlock>> entry : DecorativeBlockModule.MARBLE.entrySet()) {
+        for (Entry<MarbleColor, Supplier<BaseBlock>> entry : DecorativeBlockModule.MARBLE.entrySet()) {
             parentedBlock(entry.getValue().get(), "block/decorative/marble_" + entry.getKey().getSerializedName());
         }
-        for (Entry<MarbleColor, RegistryObject<BaseBlock>> entry : DecorativeBlockModule.MARBLE_SMOOTH.entrySet()) {
+        for (Entry<MarbleColor, Supplier<BaseBlock>> entry : DecorativeBlockModule.MARBLE_SMOOTH.entrySet()) {
             parentedBlock(entry.getValue().get(), "block/decorative/marble_smooth_" + entry.getKey().getSerializedName());
         }
-        for (Entry<MarbleColor, RegistryObject<BaseBlock>> entry : DecorativeBlockModule.MARBLE_PILAR.entrySet()) {
+        for (Entry<MarbleColor, Supplier<BaseBlock>> entry : DecorativeBlockModule.MARBLE_PILAR.entrySet()) {
             parentedBlock(entry.getValue().get(), "block/decorative/marble_pilar_" + entry.getKey().getSerializedName());
         }
-        for (Entry<MarbleColor, RegistryObject<BaseBlock>> entry : DecorativeBlockModule.MARBLE_BRICKS.entrySet()) {
+        for (Entry<MarbleColor, Supplier<BaseBlock>> entry : DecorativeBlockModule.MARBLE_BRICKS.entrySet()) {
             parentedBlock(entry.getValue().get(), "block/decorative/marble_bricks_" + entry.getKey().getSerializedName());
         }
-        for (Entry<MarbleColor, RegistryObject<SlabBlock>> entry : DecorativeBlockModule.MARBLE_SLAB.entrySet()) {
+        for (Entry<MarbleColor, Supplier<SlabBlock>> entry : DecorativeBlockModule.MARBLE_SLAB.entrySet()) {
             parentedBlock(entry.getValue().get(), "block/decorative/marble_slab_" + entry.getKey().getSerializedName());
         }
 

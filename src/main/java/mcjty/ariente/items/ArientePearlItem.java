@@ -1,6 +1,7 @@
 package mcjty.ariente.items;
 
-import mcjty.lib.varia.Tools;
+import java.util.List;
+import java.util.Random;
 import mcjty.ariente.blocks.utility.WarperTile;
 import mcjty.ariente.compat.arienteworld.ArienteWorldCompat;
 import mcjty.ariente.config.UtilityConfiguration;
@@ -8,6 +9,8 @@ import mcjty.ariente.entities.EntityArientePearl;
 import mcjty.ariente.setup.Registration;
 import mcjty.lib.builder.TooltipBuilder;
 import mcjty.lib.tooltips.ITooltipSettings;
+import mcjty.lib.varia.Tools;
+import net.minecraft.ChatFormatting;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
 import net.minecraft.core.particles.ParticleTypes;
@@ -22,17 +25,12 @@ import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.TooltipFlag;
 import net.minecraft.world.item.context.UseOnContext;
-import net.minecraft.world.level.Level;
-import net.minecraft.world.level.block.state.BlockState;
-import net.minecraft.world.level.block.entity.BlockEntity;
-import net.minecraft.world.phys.BlockHitResult;
 import net.minecraft.world.level.ClipContext;
+import net.minecraft.world.level.Level;
+import net.minecraft.world.level.block.entity.BlockEntity;
+import net.minecraft.world.level.block.state.BlockState;
+import net.minecraft.world.phys.BlockHitResult;
 import net.minecraft.world.phys.HitResult;
-import net.minecraft.ChatFormatting;
-
-import javax.annotation.Nullable;
-import java.util.List;
-import java.util.Random;
 
 import static mcjty.lib.builder.TooltipBuilder.header;
 
@@ -46,7 +44,7 @@ public class ArientePearlItem extends Item implements ITooltipSettings {
     }
 
     @Override
-    public void appendHoverText(ItemStack stack, @Nullable Level worldIn, List<Component> tooltip, TooltipFlag flagIn) {
+    public void appendHoverText(ItemStack stack, Item.TooltipContext worldIn, List<Component> tooltip, TooltipFlag flagIn) {
         super.appendHoverText(stack, worldIn, tooltip, flagIn);
         tooltipBuilder.makeTooltip(Tools.getId(this), stack, tooltip, flagIn);
     }
@@ -98,7 +96,6 @@ public class ArientePearlItem extends Item implements ITooltipSettings {
     public InteractionResult useOn(UseOnContext context) {
         return InteractionResult.PASS;
     }
-
 
     @Override
     public InteractionResultHolder<ItemStack> use(Level world, Player player, InteractionHand hand) {

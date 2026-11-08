@@ -1,3 +1,6 @@
+1.21-0.0.31-alpha:
+- Ported to Minecraft 1.21.1 on NeoForge.
+
 1.20-0.0.31-alpha:
 - Added the Ore Purifier: feed Silk Touch ore blocks into a Purifier Start and recover two to five raw metals at a Purifier Finish. Automatically supports tagged vanilla and modded ores with raw-material forms. One to four transparent tubes increase recovery, time and flux costs, with floating ores, a gradual raw-metal transformation, and rotating red particle rings. Includes holographic inventories, item automation, blueprints and JEI recipes. Each tube uses 400 of each flux per tick; four tubes need two generator tanks of each type for full speed, with slower operation on smaller supplies.
 - Lithium, Manganese, Platinum and Silver ores now drop raw metals with Fortune and Silk Touch support. Smelt or blast raw metals into ingots; ore blocks remain smeltable. Added shared Forge raw-material and ore-category tags.

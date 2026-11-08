@@ -1,5 +1,10 @@
 package mcjty.ariente.blocks.utility;
 
+import java.util.EnumMap;
+import java.util.Map;
+import java.util.Objects;
+import javax.annotation.Nonnull;
+import javax.annotation.Nullable;
 import mcjty.ariente.blocks.ExtremeMachineTile;
 import mcjty.ariente.config.PowerConfiguration;
 import mcjty.ariente.power.IPowerReceiver;
@@ -11,21 +16,19 @@ import mcjty.lib.blocks.RotationType;
 import mcjty.lib.builder.BlockBuilder;
 import mcjty.lib.container.ContainerFactory;
 import mcjty.lib.container.GenericItemHandler;
-import mcjty.lib.tileentity.Cap;
-import mcjty.lib.tileentity.CapType;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
+import net.minecraft.core.HolderLookup;
 import net.minecraft.nbt.CompoundTag;
-import net.minecraft.nbt.Tag;
 import net.minecraft.resources.ResourceLocation;
-import net.minecraft.world.Container;
 import net.minecraft.world.InteractionHand;
 import net.minecraft.world.InteractionResult;
-import net.minecraft.world.SimpleContainer;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.ItemStack;
+import net.minecraft.world.item.crafting.RecipeHolder;
 import net.minecraft.world.item.crafting.RecipeManager;
 import net.minecraft.world.item.crafting.RecipeType;
+import net.minecraft.world.item.crafting.SingleRecipeInput;
 import net.minecraft.world.item.crafting.SmeltingRecipe;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.level.block.Block;
@@ -33,18 +36,8 @@ import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.level.block.state.StateDefinition;
 import net.minecraft.world.phys.BlockHitResult;
 import net.minecraft.world.phys.Vec3;
-import net.minecraftforge.common.capabilities.Capability;
-import net.minecraftforge.common.capabilities.ForgeCapabilities;
-import net.minecraftforge.common.util.Lazy;
-import net.minecraftforge.common.util.LazyOptional;
-import net.minecraftforge.items.IItemHandler;
-import net.minecraftforge.items.ItemHandlerHelper;
-
-import javax.annotation.Nonnull;
-import javax.annotation.Nullable;
-import java.util.EnumMap;
-import java.util.Map;
-import java.util.Objects;
+import net.neoforged.neoforge.common.util.Lazy;
+import net.neoforged.neoforge.items.IItemHandler;
 
 import static mcjty.ariente.blocks.BlockProperties.WORKING;
 import static mcjty.ariente.compat.ArienteTOPDriver.DRIVER;
@@ -60,7 +53,6 @@ public class SmelterTile extends ExtremeMachineTile implements IPowerReceiver, I
             .slot(generic().in(), SLOT_INPUT, 0, 0)
             .slot(generic().out(), SLOT_OUTPUT, 0, 0));
 
-    @Cap(type = CapType.ITEMS_AUTOMATION)
     private final GenericItemHandler items = new GenericItemHandler(this, CONTAINER_FACTORY.get()) {
 
         @Override
@@ -74,8 +66,8 @@ public class SmelterTile extends ExtremeMachineTile implements IPowerReceiver, I
         }
     };
 
-    private final Map<Direction, LazyOptional<IItemHandler>> sidedHandlers = new EnumMap<>(Direction.class);
-    private final RecipeManager.CachedCheck<Container, SmeltingRecipe> recipeCheck = RecipeManager.createCheck(RecipeType.SMELTING);
+    private final Map<Direction, IItemHandler> sidedHandlers = new EnumMap<>(Direction.class);
+    private final RecipeManager.CachedCheck<SingleRecipeInput, SmeltingRecipe> recipeCheck = RecipeManager.createCheck(RecipeType.SMELTING);
     private ResourceLocation recipeId;
     private int progress;
     private long usingPower;
@@ -109,7 +101,7 @@ public class SmelterTile extends ExtremeMachineTile implements IPowerReceiver, I
             @Override
             public void attack(BlockState state, Level level, BlockPos pos, Player player) {
                 if (!level.isClientSide && level.getBlockEntity(pos) instanceof SmelterTile smelter
-                        && player.pick(player.getBlockReach(), 0, false) instanceof BlockHitResult hit
+                        && player.pick(player.blockInteractionRange(), 0, false) instanceof BlockHitResult hit
                         && hit.getBlockPos().equals(pos)) {
                     smelter.giveToPlayer(smelter.getSlot(hit), player);
                 }
@@ -175,36 +167,36 @@ public class SmelterTile extends ExtremeMachineTile implements IPowerReceiver, I
     }
 
     @Nullable
-    private SmeltingRecipe findRecipe(ItemStack stack) {
+    private RecipeHolder<SmeltingRecipe> findRecipe(ItemStack stack) {
         if (level == null || stack.isEmpty()) {
             return null;
         }
-        return recipeCheck.getRecipeFor(new SimpleContainer(stack), level).orElse(null);
+        return recipeCheck.getRecipeFor(new SingleRecipeInput(stack), level).orElse(null);
     }
 
     @Override
     public void tickServer() {
         long previousPower = usingPower;
         usingPower = 0;
-        SmeltingRecipe recipe = findRecipe(items.getStackInSlot(SLOT_INPUT));
-        ResourceLocation nextId = recipe == null ? null : recipe.getId();
+        var recipe = findRecipe(items.getStackInSlot(SLOT_INPUT));
+        ResourceLocation nextId = recipe == null ? null : recipe.id();
         if (!Objects.equals(nextId, recipeId)) {
             progress = 0;
             recipeId = nextId;
             markDirtyQuick();
         }
         if (recipe != null) {
-            ItemStack result = recipe.assemble(new SimpleContainer(items.getStackInSlot(SLOT_INPUT)), level.registryAccess());
+            ItemStack result = recipe.value().assemble(new SingleRecipeInput(items.getStackInSlot(SLOT_INPUT)), level.registryAccess());
             ItemStack output = items.getStackInSlot(SLOT_OUTPUT);
             int limit = Math.min(items.getSlotLimit(SLOT_OUTPUT), result.getMaxStackSize());
-            if (!result.isEmpty() && (output.isEmpty() || ItemHandlerHelper.canItemStacksStack(output, result))
+            if (!result.isEmpty() && (output.isEmpty() || ItemStack.isSameItemSameComponents(output, result))
                     && output.getCount() + result.getCount() <= limit
                     && PowerReceiverSupport.consumePower(level, worldPosition, powerCost(PowerConfiguration.SMELTER_POWER_PER_TICK.get()), true)) {
                 usingPower = powerCost(PowerConfiguration.SMELTER_POWER_PER_TICK.get());
                 progress += PowerConfiguration.SMELTER_SPEED.get() * operationSpeed();
-                while (progress >= recipe.getCookingTime() && !items.getStackInSlot(SLOT_INPUT).isEmpty()
+                while (progress >= recipe.value().getCookingTime() && !items.getStackInSlot(SLOT_INPUT).isEmpty()
                         && output.getCount() + result.getCount() <= limit) {
-                    progress -= Math.max(1, recipe.getCookingTime());
+                    progress -= Math.max(1, recipe.value().getCookingTime());
                     items.extractItem(SLOT_INPUT, 1, false);
                     output = result.copyWithCount(output.getCount() + result.getCount());
                     items.setStackInSlot(SLOT_OUTPUT, output);
@@ -228,8 +220,8 @@ public class SmelterTile extends ExtremeMachineTile implements IPowerReceiver, I
     }
 
     @Override
-    protected void saveInfo(CompoundTag tag) {
-        super.saveInfo(tag);
+    protected void saveInfo(CompoundTag tag, HolderLookup.Provider provider) {
+        super.saveInfo(tag, provider);
         CompoundTag info = getOrCreateInfo(tag);
         info.putInt("smeltProgress", progress);
         if (recipeId != null) {
@@ -238,37 +230,26 @@ public class SmelterTile extends ExtremeMachineTile implements IPowerReceiver, I
     }
 
     @Override
-    protected void loadInfo(CompoundTag tag) {
-        super.loadInfo(tag);
+    protected void loadInfo(CompoundTag tag, HolderLookup.Provider provider) {
+        super.loadInfo(tag, provider);
         CompoundTag info = tag.getCompound("Info");
         progress = Math.max(0, info.getInt("smeltProgress"));
         recipeId = ResourceLocation.tryParse(info.getString("smeltRecipe"));
     }
 
     @Override
-    public void saveClientDataToNBT(CompoundTag tag) {
-        tag.put("Items", items.serializeNBT());
+    public void saveClientDataToNBT(CompoundTag tag, HolderLookup.Provider provider) {
+        tag.put("Items", items.serializeNBT(provider));
     }
 
     @Override
-    public void loadClientDataFromNBT(CompoundTag tag) {
-        items.deserializeNBT(tag.getList("Items", Tag.TAG_COMPOUND));
-    }
-
-    @Nonnull
-    @Override
-    public <T> LazyOptional<T> getCapability(@Nonnull Capability<T> cap, @Nullable Direction side) {
-        if (cap == ForgeCapabilities.ITEM_HANDLER && side != null) {
-            return sidedHandlers.computeIfAbsent(side, direction -> LazyOptional.of(() -> new SidedHandler(direction))).cast();
-        }
-        return super.getCapability(cap, side);
+    public void loadClientDataFromNBT(CompoundTag tag, HolderLookup.Provider provider) {
+        items.deserializeNBT(provider, tag.getCompound("Items"));
     }
 
     @Override
-    public void invalidateCaps() {
-        super.invalidateCaps();
-        sidedHandlers.values().forEach(LazyOptional::invalidate);
-        sidedHandlers.clear();
+    public IItemHandler getAutomationHandler(@Nullable Direction side) {
+        return side == null ? items : sidedHandlers.computeIfAbsent(side, SidedHandler::new);
     }
 
     private class SidedHandler implements IItemHandler {

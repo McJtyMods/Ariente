@@ -1,5 +1,9 @@
 {
   "variants": {
+    "facing=east": {
+      "model": "ariente:block/utility/flux_beam",
+      "y": 90
+    },
     "facing=north": {
       "model": "ariente:block/utility/flux_beam"
     },
@@ -10,10 +14,6 @@
     "facing=west": {
       "model": "ariente:block/utility/flux_beam",
       "y": 270
-    },
-    "facing=east": {
-      "model": "ariente:block/utility/flux_beam",
-      "y": 90
     }
   }
 }

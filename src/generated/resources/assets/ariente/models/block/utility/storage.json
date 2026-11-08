@@ -1,14 +1,29 @@
 {
-  "textures": {
-    "front": "ariente:block/base/machineside",
-    "side": "ariente:block/base/machineside",
-    "sideIn": "ariente:block/marble/blackmarble",
-    "top": "ariente:block/base/machinetop",
-    "bottom": "ariente:block/base/machinebottom",
-    "particle": "#side"
-  },
+  "parent": "minecraft:block/block",
   "elements": [
     {
+      "faces": {
+        "down": {
+          "cullface": "down",
+          "texture": "#bottom"
+        },
+        "east": {
+          "cullface": "east",
+          "texture": "#side"
+        },
+        "south": {
+          "cullface": "south",
+          "texture": "#side"
+        },
+        "up": {
+          "cullface": "up",
+          "texture": "#top"
+        },
+        "west": {
+          "cullface": "west",
+          "texture": "#side"
+        }
+      },
       "from": [
         0,
         0,
@@ -18,31 +33,17 @@
         16,
         16,
         16
-      ],
-      "faces": {
-        "down": {
-          "texture": "#bottom",
-          "cullface": "down"
-        },
-        "up": {
-          "texture": "#top",
-          "cullface": "up"
-        },
-        "south": {
-          "texture": "#side",
-          "cullface": "south"
-        },
-        "west": {
-          "texture": "#side",
-          "cullface": "west"
-        },
-        "east": {
-          "texture": "#side",
-          "cullface": "east"
-        }
-      }
+      ]
     },
     {
+      "faces": {
+        "north": {
+          "texture": "#front"
+        },
+        "up": {
+          "texture": "#sideIn"
+        }
+      },
       "from": [
         0,
         0,
@@ -52,27 +53,9 @@
         16,
         1,
         2
-      ],
-      "faces": {
-        "up": {
-          "texture": "#sideIn"
-        },
-        "north": {
-          "texture": "#front"
-        }
-      }
+      ]
     },
     {
-      "from": [
-        0,
-        15,
-        0
-      ],
-      "to": [
-        16,
-        16,
-        2
-      ],
       "faces": {
         "down": {
           "texture": "#sideIn"
@@ -80,9 +63,27 @@
         "north": {
           "texture": "#front"
         }
-      }
+      },
+      "from": [
+        0,
+        15,
+        0
+      ],
+      "to": [
+        16,
+        16,
+        2
+      ]
     },
     {
+      "faces": {
+        "east": {
+          "texture": "#sideIn"
+        },
+        "north": {
+          "texture": "#front"
+        }
+      },
       "from": [
         0,
         1,
@@ -92,17 +93,17 @@
         1,
         15,
         2
-      ],
+      ]
+    },
+    {
       "faces": {
         "north": {
           "texture": "#front"
         },
-        "east": {
+        "west": {
           "texture": "#sideIn"
         }
-      }
-    },
-    {
+      },
       "from": [
         15,
         1,
@@ -112,17 +113,14 @@
         16,
         15,
         2
-      ],
-      "faces": {
-        "north": {
-          "texture": "#front"
-        },
-        "west": {
-          "texture": "#sideIn"
-        }
-      }
+      ]
     },
     {
+      "faces": {
+        "north": {
+          "texture": "#sideIn"
+        }
+      },
       "from": [
         1,
         1,
@@ -132,13 +130,15 @@
         15,
         15,
         2
-      ],
-      "faces": {
-        "north": {
-          "texture": "#sideIn"
-        }
-      }
+      ]
     }
   ],
-  "parent": "minecraft:block/block"
+  "textures": {
+    "bottom": "ariente:block/base/machinebottom",
+    "front": "ariente:block/base/machineside",
+    "particle": "#side",
+    "side": "ariente:block/base/machineside",
+    "sideIn": "ariente:block/marble/blackmarble",
+    "top": "ariente:block/base/machinetop"
+  }
 }

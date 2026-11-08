@@ -58,7 +58,7 @@
 
 # Ariente: gameplay and systems guide
 
-Minecraft **1.20.1 / Forge**, local `1.20` development branch. Reviewed **2026-10-31**.
+Minecraft **1.21.1 / NeoForge**, local `1.21_neo` development branch. Reviewed **2026-10-31**.
 
 This is a reference for Ariente and its ArienteWorld companion. It starts from the
 [original wiki](https://mcjty.eu/docs/mods/ariente), but the descriptions, numbers,
@@ -586,7 +586,7 @@ Installed blueprints are recipe references and are **not consumed by crafting**.
 
 The creative tab and JEI include one populated Blueprint per catalog recipe.
 JEI shows the required blueprint alongside the ingredients and full output. A populated Storage Cube blueprint can
-be made with this permission-level-2 command in **1.20.1**:
+be made with this permission-level-2 command in **1.21.1**:
 
 ```text
 /give @s ariente:blueprint{destination:'{"item":"ariente:storage"}'} 1
@@ -683,8 +683,8 @@ inventory**. Double-click a bright ore stack to insert at the Start, and
 double-click the upper slot to retrieve its contents. Arrow buttons also
 transfer items. Automation can insert at the Start and extract at the Finish
 on every face; the Finish rejects insertion. Raw metals and fuel ores are not
-purifier inputs. The purifier matches `forge:ores/<material>` item or block
-tags to `forge:raw_materials/<material>` item tags. Insertion needs neither
+purifier inputs. The purifier matches `c:ores/<material>` item or block
+tags to `c:raw_materials/<material>` item tags. Insertion needs neither
 power nor a completed line; both are only required for processing. Ores without
 raw-material forms, such as diamond, coal and redstone, are not supported.
 
@@ -905,9 +905,9 @@ setting is adjustable from **1 to 64**; it acts as a minimum batch size, so a
 source holding fewer items can wait rather than transfer a partial batch.
 
 The old **Ore Dictionary** icon now enables **material tag matching** at either
-node. It matches resource-specific Forge tags such as `forge:ingots/silver`,
+node. It matches resource-specific common tags such as `c:ingots/silver`,
 vanilla material families such as planks/logs/wool, and shared tags from other
-mods. Broad tags such as `forge:ingots` do not make iron and gold interchangeable.
+mods. Broad tags such as `c:ingots` do not make iron and gold interchangeable.
 With tag matching disabled, filters require the same item. Damage and NBT flags
 are independent at both ends; NBT matching excludes durability because the
 damage flag controls that separately. Filter stack counts do not affect matching.
@@ -1536,7 +1536,7 @@ asset-authoring reference.
 
 ## Configuration reference
 
-The configs are registered as Forge **server** and **client** configs. Normally
+The configs are registered as NeoForge **server** and **client** configs. Normally
 this means `ariente-server.toml` and `arienteworld-server.toml` under the world's
 `serverconfig` directory, with client files in the instance's `config`
 directory. Values below are defaults, not guaranteed server settings.
@@ -1611,7 +1611,7 @@ The seven resource ores replace both stone and deepslate; the original ore
 blocks/textures are used in both. These defaults extend the original Overworld
 ranges into modern deep terrain; ArienteWorld's own ore distributions are separate.
 
-To customize, make a Minecraft 1.20.1 datapack (`pack_format: 15`) and copy the
+To customize, make a Minecraft 1.21.1 datapack (`pack_format: 48`) and copy the
 files you want to change from
 [data/ariente/worldgen](src/main/resources/data/ariente/worldgen) into the same
 paths in your pack. For example:
@@ -1624,8 +1624,8 @@ paths in your pack. For example:
   height provider, or other vanilla placement modifiers. Its `feature` points to
   `ariente:overworld_negarite`.
 
-The Forge biome modifier
-`data/ariente/forge/biome_modifier/overworld_ores.json` adds all eight individual
+The NeoForge biome modifier
+`data/ariente/neoforge/biome_modifier/overworld_ores.json` adds all eight individual
 placed features to Overworld biomes at `underground_ores`. Override it to change
 biome selection or remove a distribution. The aggregate configured/placed key
 `ariente:overworld_ores` remains registered for explicit placement, but is not
@@ -1638,11 +1638,11 @@ to customize; restart after changing worldgen data.
 ### Ordinary crafting entry points
 
 Patterns are shown as three crafting-grid rows. Tag ingredients accept items
-actually present in the corresponding Forge item tag.
+actually present in the corresponding common item tag.
 
 | Output | Grid | Ingredients |
 | --- | --- | --- |
-| Ariente Pearl | `QQQ / QEQ / QQQ` | Q = Nether Quartz; E = an item in `forge:ender_pearls`. |
+| Ariente Pearl | `QQQ / QEQ / QQQ` | Q = Nether Quartz; E = an item in `c:ender_pearls`. |
 | Constructor | `III / IPI / SSS` | I = iron ingot tag; P = platinum ingot tag; S = silver ingot tag. |
 | Blueprint Storage | `SGS / QCQ / MMM` | S = silver ingot tag; G = Glass Pane; Q = silicon dust tag; C = Chest; M = ordinary marble tag, mixed colors accepted. |
 | Enhanced Energy Sabre | `LLL / LSL / LLL` | L = lithium ingot tag; S = ordinary Energy Sabre. |
@@ -1651,7 +1651,7 @@ The Constructor also has a blueprint recipe, separate from its ordinary
 crafting entry point. Raw Lithium, Raw Manganese, Raw Platinum and Raw Silver
 smelt into one ingot each; their ore blocks still smelt into one ingot as well.
 Both raw-metal and metal-ore recipes accept the corresponding material-specific
-Forge item tags (`forge:raw_materials/<metal>` and `forge:ores/<metal>`).
+common item tags (`c:raw_materials/<metal>` and `c:ores/<metal>`).
 Negarite and Posirite ores smelt into four dust each. Smelting takes 200 ticks;
 blasting takes 100 ticks with the same yields and zero experience. The Smelter
 uses the same furnace recipes and yields.
@@ -1754,7 +1754,7 @@ authored loot entry. Invisibility's installation control remains disabled.
 City0_0 and the large city5_1 layout have no authored Storage Cubes.
 
 Ordinary decorative recipes live in
-[generated recipe data](src/generated/resources/data/ariente/recipes).
+[generated recipe data](src/generated/resources/data/ariente/recipe).
 The blueprint tables are sourced from
 [BlueprintRecipeRegistry.java](src/main/java/mcjty/ariente/recipes/BlueprintRecipeRegistry.java).
 
@@ -1825,7 +1825,7 @@ Use these as the maintenance reference when updating the guide:
 | Holographic displays and extensible module types | [display](src/main/java/mcjty/ariente/display), [client rendering](src/main/java/mcjty/ariente/display/client). |
 | Shield geometry and damage | [defense](src/main/java/mcjty/ariente/blocks/defense). |
 | Equipment and module configuration | [items](src/main/java/mcjty/ariente/items), [upgrade types](src/main/java/mcjty/ariente/api/ArmorUpgradeType.java). |
-| Blueprint recipes and ordinary recipes | [catalog](src/main/java/mcjty/ariente/recipes/BlueprintRecipeRegistry.java), [ordinary JSON](src/generated/resources/data/ariente/recipes), [recipe generator](src/main/java/mcjty/ariente/datagen/Recipes.java). |
+| Blueprint recipes and ordinary recipes | [catalog](src/main/java/mcjty/ariente/recipes/BlueprintRecipeRegistry.java), [ordinary JSON](src/generated/resources/data/ariente/recipe), [recipe generator](src/main/java/mcjty/ariente/datagen/Recipes.java). |
 | World terrain/population | [dimension](../ArienteWorld/src/main/java/mcjty/arienteworld/dimension), [worldgen data](../ArienteWorld/src/main/resources/data/arienteworld/worldgen). |
 | Authored cities and loot settings | [city assets](../ArienteWorld/src/main/resources/assets/arienteworld/citydata), [city AI](../ArienteWorld/src/main/java/mcjty/arienteworld/ai/CityAI.java). |
 | Verified regressions | [Personal forcefield tests](src/gameTest/java/mcjty/ariente), [companion GameTests](../ArienteWorld/src/gameTest/java/mcjty/arienteworld). |

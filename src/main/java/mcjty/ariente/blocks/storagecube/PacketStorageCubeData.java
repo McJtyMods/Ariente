@@ -1,36 +1,43 @@
 package mcjty.ariente.blocks.storagecube;
 
-import mcjty.ariente.blocks.storagecube.client.StorageCubeClient;
-import net.minecraft.core.BlockPos;
-import net.minecraft.network.FriendlyByteBuf;
-import net.minecraft.world.item.ItemStack;
-import net.minecraftforge.api.distmarker.Dist;
-import net.minecraftforge.fml.DistExecutor;
-import net.minecraftforge.network.NetworkEvent;
-
 import java.util.ArrayList;
 import java.util.List;
-import java.util.function.Supplier;
+import mcjty.ariente.blocks.storagecube.client.StorageCubeClient;
+import net.minecraft.core.BlockPos;
+import net.minecraft.network.RegistryFriendlyByteBuf;
+import net.minecraft.network.codec.StreamCodec;
+import net.minecraft.network.protocol.common.custom.CustomPacketPayload;
+import net.minecraft.resources.ResourceLocation;
+import net.minecraft.world.item.ItemStack;
+import net.neoforged.neoforge.network.handling.IPayloadContext;
 
-public record PacketStorageCubeData(BlockPos pos, int entityId, int size, long revision, boolean reply, List<Entry> changes) {
+public record PacketStorageCubeData(BlockPos pos, int entityId, int size, long revision, boolean reply, List<Entry> changes) implements CustomPacketPayload {
 
-    public PacketStorageCubeData(FriendlyByteBuf buffer) {
+    public static final Type<PacketStorageCubeData> TYPE = new Type<>(ResourceLocation.fromNamespaceAndPath("ariente", "packet_storage_cube_data"));
+    public static final StreamCodec<RegistryFriendlyByteBuf, PacketStorageCubeData> CODEC = StreamCodec.ofMember(PacketStorageCubeData::toBytes, PacketStorageCubeData::new);
+
+    @Override
+    public Type<? extends CustomPacketPayload> type() {
+        return TYPE;
+    }
+
+    public PacketStorageCubeData(RegistryFriendlyByteBuf buffer) {
         this(buffer.readBlockPos(), buffer.readVarInt(), buffer.readVarInt(), buffer.readVarLong(), buffer.readBoolean(), readEntries(buffer));
     }
 
-    private static List<Entry> readEntries(FriendlyByteBuf buffer) {
+    private static List<Entry> readEntries(RegistryFriendlyByteBuf buffer) {
         int count = buffer.readVarInt();
         if (count < 0 || count > StorageCubeTile.MAX_SLOTS + 36) {
             throw new IllegalArgumentException("Invalid storage update size");
         }
         List<Entry> changes = new ArrayList<>(count);
         for (int i = 0; i < count; i++) {
-            changes.add(new Entry(buffer.readVarInt(), buffer.readItem()));
+            changes.add(new Entry(buffer.readVarInt(), ItemStack.OPTIONAL_STREAM_CODEC.decode(buffer)));
         }
         return changes;
     }
 
-    public void toBytes(FriendlyByteBuf buffer) {
+    public void toBytes(RegistryFriendlyByteBuf buffer) {
         buffer.writeBlockPos(pos);
         buffer.writeVarInt(entityId);
         buffer.writeVarInt(size);
@@ -39,14 +46,12 @@ public record PacketStorageCubeData(BlockPos pos, int entityId, int size, long r
         buffer.writeVarInt(changes.size());
         for (Entry entry : changes) {
             buffer.writeVarInt(entry.slot());
-            buffer.writeItem(entry.stack());
+            ItemStack.OPTIONAL_STREAM_CODEC.encode(buffer, entry.stack());
         }
     }
 
-    public void handle(Supplier<NetworkEvent.Context> supplier) {
-        NetworkEvent.Context context = supplier.get();
-        context.enqueueWork(() -> DistExecutor.unsafeRunWhenOn(Dist.CLIENT, () -> () -> StorageCubeClient.receive(this)));
-        context.setPacketHandled(true);
+    public void handle(IPayloadContext context) {
+        context.enqueueWork(() -> StorageCubeClient.receive(this));
     }
 
     public record Entry(int slot, ItemStack stack) {

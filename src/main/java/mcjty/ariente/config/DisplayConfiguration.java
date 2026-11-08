@@ -1,13 +1,13 @@
 package mcjty.ariente.config;
 
-import net.minecraftforge.common.ForgeConfigSpec;
+import net.neoforged.neoforge.common.ModConfigSpec;
 
 public class DisplayConfiguration {
 
-    public static ForgeConfigSpec.IntValue LIVE_CAMERA_TEXTURE_WIDTH;
-    public static ForgeConfigSpec.IntValue LIVE_CAMERA_FPS;
+    public static ModConfigSpec.IntValue LIVE_CAMERA_TEXTURE_WIDTH;
+    public static ModConfigSpec.IntValue LIVE_CAMERA_FPS;
 
-    public static void init(ForgeConfigSpec.Builder client) {
+    public static void init(ModConfigSpec.Builder client) {
         client.comment("Holographic display rendering settings").push("display");
         LIVE_CAMERA_TEXTURE_WIDTH = client
                 .comment("Live camera image width in pixels; height follows the display module's aspect ratio.",

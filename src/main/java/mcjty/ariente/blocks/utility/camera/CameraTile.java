@@ -1,6 +1,9 @@
 package mcjty.ariente.blocks.utility.camera;
 
+import java.util.HashMap;
+import java.util.Map;
 import mcjty.ariente.Ariente;
+import mcjty.ariente.blocks.ArienteBlockEntity;
 import mcjty.ariente.gui.HoloGuiTools;
 import mcjty.ariente.setup.Registration;
 import mcjty.hologui.api.IGuiComponent;
@@ -8,29 +11,26 @@ import mcjty.hologui.api.IGuiComponentRegistry;
 import mcjty.hologui.api.IGuiTile;
 import mcjty.lib.blocks.BaseBlock;
 import mcjty.lib.builder.BlockBuilder;
-import mcjty.lib.tileentity.GenericTileEntity;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
+import net.minecraft.core.HolderLookup;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.InteractionHand;
 import net.minecraft.world.InteractionResult;
 import net.minecraft.world.entity.player.Player;
-import net.minecraft.world.phys.BlockHitResult;
 import net.minecraft.world.item.context.BlockPlaceContext;
 import net.minecraft.world.level.BlockGetter;
 import net.minecraft.world.level.block.Block;
 import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.level.block.state.properties.BlockStateProperties;
 import net.minecraft.world.level.material.MapColor;
+import net.minecraft.world.phys.BlockHitResult;
 import net.minecraft.world.phys.shapes.CollisionContext;
 import net.minecraft.world.phys.shapes.Shapes;
 import net.minecraft.world.phys.shapes.VoxelShape;
 
-import java.util.HashMap;
-import java.util.Map;
-
-public class CameraTile extends GenericTileEntity implements IGuiTile {
+public class CameraTile extends ArienteBlockEntity implements IGuiTile {
 
     private boolean live;
     private BlockState capturedState;
@@ -90,7 +90,7 @@ public class CameraTile extends GenericTileEntity implements IGuiTile {
 
     @Override
     public IGuiComponent<?> createGui(String tag, IGuiComponentRegistry registry) {
-        return HoloGuiTools.createPanelWithHelp(registry, new ResourceLocation(Ariente.MODID, "construction/displays"))
+        return HoloGuiTools.createPanelWithHelp(registry, ResourceLocation.fromNamespaceAndPath(Ariente.MODID, "construction/displays"))
                 .add(registry.text(.3, 0, 7.2, 1).text("CAMERA").scale(.65f).color(0x76eaff))
                 .add(registry.textChoice(.3, 1.2, 7.2, .9).name("camera_mode").scale(.45f)
                         .addText("Mode: Holographic").addText("Mode: Live")
@@ -107,25 +107,25 @@ public class CameraTile extends GenericTileEntity implements IGuiTile {
     }
 
     @Override
-    public void saveAdditional(CompoundTag tag) {
-        super.saveAdditional(tag);
+    public void saveAdditional(CompoundTag tag, HolderLookup.Provider provider) {
+        super.saveAdditional(tag, provider);
         tag.putBoolean("LiveCamera", live);
     }
 
     @Override
-    public void load(CompoundTag tag) {
-        super.load(tag);
+    public void loadAdditional(CompoundTag tag, HolderLookup.Provider provider) {
+        super.loadAdditional(tag, provider);
         live = tag.getBoolean("LiveCamera");
         captures.clear();
     }
 
     @Override
-    public void saveClientDataToNBT(CompoundTag tag) {
+    public void saveClientDataToNBT(CompoundTag tag, HolderLookup.Provider provider) {
         tag.putBoolean("LiveCamera", live);
     }
 
     @Override
-    public void loadClientDataFromNBT(CompoundTag tag) {
+    public void loadClientDataFromNBT(CompoundTag tag, HolderLookup.Provider provider) {
         live = tag.getBoolean("LiveCamera");
         captures.clear();
     }

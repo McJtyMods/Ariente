@@ -1,18 +1,17 @@
 package mcjty.ariente.gui;
 
-import mcjty.ariente.items.TabletItem;
 import mcjty.hologui.api.*;
+import java.util.function.Consumer;
+import mcjty.ariente.items.TabletItem;
 import mcjty.hologui.api.components.IPanel;
 import mcjty.lib.compat.patchouli.PatchouliCompatibility;
 import mcjty.lib.setup.ModSetup;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.server.level.ServerPlayer;
-import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.entity.player.Inventory;
+import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemStack;
-
-import java.util.function.Consumer;
 
 import static mcjty.hologui.api.IGuiTile.TAG_HELP;
 import static mcjty.hologui.api.IGuiTile.TAG_MAIN;

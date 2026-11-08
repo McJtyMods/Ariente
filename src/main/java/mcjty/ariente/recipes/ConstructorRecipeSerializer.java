@@ -1,86 +1,42 @@
 package mcjty.ariente.recipes;
 
-import mcjty.lib.varia.Tools;
-import com.google.gson.JsonElement;
-import com.google.gson.JsonObject;
-import net.minecraft.util.GsonHelper;
-import net.minecraft.resources.ResourceLocation;
+import com.mojang.serialization.Codec;
+import com.mojang.serialization.MapCodec;
+import com.mojang.serialization.codecs.RecordCodecBuilder;
+import net.minecraft.core.registries.BuiltInRegistries;
+import net.minecraft.network.RegistryFriendlyByteBuf;
+import net.minecraft.network.codec.StreamCodec;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.crafting.RecipeSerializer;
-import net.minecraft.network.FriendlyByteBuf;
-import net.minecraftforge.registries.ForgeRegistries;
-
-import javax.annotation.Nullable;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Optional;
 
 public class ConstructorRecipeSerializer implements RecipeSerializer<ConstructorRecipe> {
 
+    private static final Codec<ItemStack> INPUT = RecordCodecBuilder.create(instance -> instance.group(
+            BuiltInRegistries.ITEM.byNameCodec().fieldOf("item").forGetter(ItemStack::getItem),
+            Codec.intRange(1, 99).optionalFieldOf("count", 1).forGetter(ItemStack::getCount)
+    ).apply(instance, ItemStack::new));
+    private static final MapCodec<ConstructorRecipe> CODEC = RecordCodecBuilder.mapCodec(instance -> instance.group(
+            BuiltInRegistries.ITEM.byNameCodec().fieldOf("result").forGetter(recipe -> recipe.getDestination().getItem()),
+            Codec.intRange(1, 99).optionalFieldOf("count", 1).forGetter(recipe -> recipe.getDestination().getCount()),
+            Codec.floatRange(0, 1).optionalFieldOf("chance", 1f).forGetter(ConstructorRecipe::getChance),
+            INPUT.listOf().fieldOf("input").forGetter(ConstructorRecipe::getIngredientList)
+    ).apply(instance, (item, count, chance, input) -> new ConstructorRecipe(new ItemStack(item, count), chance, input.toArray(ItemStack[]::new))));
+    private static final StreamCodec<RegistryFriendlyByteBuf, ConstructorRecipe> STREAM_CODEC = StreamCodec.of(
+            (buffer, recipe) -> {
+                buffer.writeResourceLocation(recipe.getId());
+                ItemStack.STREAM_CODEC.encode(buffer, recipe.getDestination());
+                buffer.writeFloat(recipe.getChance());
+                ItemStack.LIST_STREAM_CODEC.encode(buffer, recipe.getIngredientList());
+            }, buffer -> new ConstructorRecipe(buffer.readResourceLocation(), ItemStack.STREAM_CODEC.decode(buffer),
+                    buffer.readFloat(), ItemStack.LIST_STREAM_CODEC.decode(buffer).toArray(ItemStack[]::new)));
+
     @Override
-    public ConstructorRecipe fromJson(ResourceLocation recipeId, JsonObject json) {
-        float chance = GsonHelper.getAsFloat(json, "chance", 1.0f);
-
-        ResourceLocation resourcelocation = new ResourceLocation(GsonHelper.getAsString(json, "result"));
-        ItemStack output = new ItemStack(Optional.ofNullable(ForgeRegistries.ITEMS.getValue(resourcelocation)).orElseThrow(() -> new IllegalStateException("Item: " + GsonHelper.getAsString(json, "result") + " does not exist")));
-        int outputAmount = GsonHelper.getAsInt(json, "count", 1);
-        output.setCount(outputAmount);
-
-        JsonElement input = json.get("input");
-        List<ItemStack> inputItems = new ArrayList<>();
-        if (input.isJsonArray()) {
-            for (JsonElement element : input.getAsJsonArray()) {
-                JsonObject object = element.getAsJsonObject();
-                ItemStack item = ItemStack.EMPTY;
-                if (object.has("item")) {
-                    String inputStr = object.get("item").getAsString();
-                    ResourceLocation in = new ResourceLocation(inputStr);
-                    item = new ItemStack(Optional.ofNullable(ForgeRegistries.ITEMS.getValue(in)).orElseThrow(() -> new IllegalStateException("Item: " + inputStr + " does not exist")));
-                }
-                if (object.has("count")) {
-                    int count = object.get("count").getAsInt();
-                    item.setCount(count);
-                }
-                inputItems.add(item);
-            }
-        } else {
-            throw new IllegalStateException("Recipe " + recipeId.toString() + ": input is in wrong format or missing!");
-        }
-
-        return new ConstructorRecipe(recipeId, output, chance, inputItems.toArray(new ItemStack[inputItems.size()]));
-    }
-
-    @Nullable
-    @Override
-    public ConstructorRecipe fromNetwork(ResourceLocation recipeId, FriendlyByteBuf buffer) {
-        float chance = buffer.readFloat();
-        ResourceLocation resourcelocation = new ResourceLocation(buffer.readUtf(32767));
-        ItemStack output = new ItemStack(Optional.ofNullable(ForgeRegistries.ITEMS.getValue(resourcelocation)).orElseThrow(() -> new IllegalStateException("Item: " + resourcelocation.toString() + " does not exist")));
-        int count = buffer.readInt();
-        output.setCount(count);
-
-        List<ItemStack> inputItems = new ArrayList<>();
-        int size = buffer.readInt();
-        for (int i = 0 ; i < size ; i++) {
-            ResourceLocation rl = new ResourceLocation(buffer.readUtf(32767));
-            ItemStack input = new ItemStack(Optional.ofNullable(ForgeRegistries.ITEMS.getValue(rl)).orElseThrow(() -> new IllegalStateException("Item: " + rl.toString() + " does not exist")));
-            int inputCount = buffer.readInt();
-            input.setCount(inputCount);
-            inputItems.add(input);
-        }
-        return new ConstructorRecipe(recipeId, output, chance, inputItems.toArray(new ItemStack[inputItems.size()]));
+    public MapCodec<ConstructorRecipe> codec() {
+        return CODEC;
     }
 
     @Override
-    public void toNetwork(FriendlyByteBuf buffer, ConstructorRecipe recipe) {
-        buffer.writeFloat(recipe.getChance());
-        buffer.writeUtf(Tools.getId(recipe.getDestination().getItem()).toString());
-        buffer.writeInt(recipe.getDestination().getCount());
-        List<ItemStack> list = recipe.getIngredientList();
-        buffer.writeInt(list.size());
-        for (ItemStack stack : list) {
-            buffer.writeUtf(Tools.getId(stack.getItem()).toString());
-            buffer.writeInt(stack.getCount());
-        }
+    public StreamCodec<RegistryFriendlyByteBuf, ConstructorRecipe> streamCodec() {
+        return STREAM_CODEC;
     }
 }

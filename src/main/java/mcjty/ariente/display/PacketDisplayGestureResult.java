@@ -1,22 +1,29 @@
 package mcjty.ariente.display;
 
-import mcjty.ariente.display.client.DisplayModuleDrag;
-import net.minecraft.network.FriendlyByteBuf;
-import net.minecraft.core.BlockPos;
-import net.minecraftforge.api.distmarker.Dist;
-import net.minecraftforge.fml.DistExecutor;
-import net.minecraftforge.network.NetworkEvent;
-
 import java.util.UUID;
-import java.util.function.Supplier;
+import mcjty.ariente.display.client.DisplayModuleDrag;
+import net.minecraft.core.BlockPos;
+import net.minecraft.network.RegistryFriendlyByteBuf;
+import net.minecraft.network.codec.StreamCodec;
+import net.minecraft.network.protocol.common.custom.CustomPacketPayload;
+import net.minecraft.resources.ResourceLocation;
+import net.neoforged.neoforge.network.handling.IPayloadContext;
 
-public record PacketDisplayGestureResult(UUID ticket, BlockPos target, int x, int y) {
+public record PacketDisplayGestureResult(UUID ticket, BlockPos target, int x, int y) implements CustomPacketPayload {
 
-    public PacketDisplayGestureResult(FriendlyByteBuf buffer) {
+    public static final Type<PacketDisplayGestureResult> TYPE = new Type<>(ResourceLocation.fromNamespaceAndPath("ariente", "packet_display_gesture_result"));
+    public static final StreamCodec<RegistryFriendlyByteBuf, PacketDisplayGestureResult> CODEC = StreamCodec.ofMember(PacketDisplayGestureResult::toBytes, PacketDisplayGestureResult::new);
+
+    @Override
+    public Type<? extends CustomPacketPayload> type() {
+        return TYPE;
+    }
+
+    public PacketDisplayGestureResult(RegistryFriendlyByteBuf buffer) {
         this(buffer.readUUID(), buffer.readBoolean() ? buffer.readBlockPos() : null, buffer.readVarInt(), buffer.readVarInt());
     }
 
-    public void toBytes(FriendlyByteBuf buffer) {
+    public void toBytes(RegistryFriendlyByteBuf buffer) {
         buffer.writeUUID(ticket);
         buffer.writeBoolean(target != null);
         if (target != null) {
@@ -26,9 +33,7 @@ public record PacketDisplayGestureResult(UUID ticket, BlockPos target, int x, in
         buffer.writeVarInt(y);
     }
 
-    public void handle(Supplier<NetworkEvent.Context> supplier) {
-        NetworkEvent.Context context = supplier.get();
-        context.enqueueWork(() -> DistExecutor.unsafeRunWhenOn(Dist.CLIENT, () -> () -> DisplayModuleDrag.complete(ticket, target, x, y)));
-        context.setPacketHandled(true);
+    public void handle(IPayloadContext context) {
+        context.enqueueWork(() -> DisplayModuleDrag.complete(ticket, target, x, y));
     }
 }

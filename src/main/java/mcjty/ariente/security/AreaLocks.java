@@ -1,34 +1,34 @@
 package mcjty.ariente.security;
 
+import java.util.HashMap;
+import java.util.HashSet;
+import java.util.List;
+import java.util.Map;
+import java.util.Set;
+import javax.annotation.Nullable;
 import mcjty.ariente.Ariente;
 import mcjty.ariente.blocks.utility.ILockTarget;
 import mcjty.ariente.blocks.utility.LockTile;
 import mcjty.ariente.blocks.utility.wireless.WirelessLockTile;
 import mcjty.ariente.varia.LoadedChunks;
 import net.minecraft.core.BlockPos;
+import net.minecraft.core.HolderLookup;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.nbt.ListTag;
 import net.minecraft.nbt.Tag;
 import net.minecraft.server.TickTask;
 import net.minecraft.server.level.ServerLevel;
-import net.minecraft.world.level.block.entity.BlockEntity;
 import net.minecraft.world.level.ChunkPos;
+import net.minecraft.world.level.block.entity.BlockEntity;
 import net.minecraft.world.level.chunk.LevelChunk;
 import net.minecraft.world.level.saveddata.SavedData;
-import net.minecraftforge.event.TickEvent;
-import net.minecraftforge.event.level.ChunkEvent;
-import net.minecraftforge.eventbus.api.SubscribeEvent;
-import net.minecraftforge.fml.common.Mod;
-
-import javax.annotation.Nullable;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-import java.util.Set;
-import java.util.HashSet;
+import net.neoforged.bus.api.SubscribeEvent;
+import net.neoforged.fml.common.EventBusSubscriber;
+import net.neoforged.neoforge.event.level.ChunkEvent;
+import net.neoforged.neoforge.event.tick.LevelTickEvent;
 
 /** Keeps controller authority available without loading the controller's chunk. */
-@Mod.EventBusSubscriber(modid = Ariente.MODID)
+@EventBusSubscriber(modid = Ariente.MODID)
 public class AreaLocks extends SavedData {
 
     private static final String TARGET_STATE = "ArienteAreaLock";
@@ -37,7 +37,7 @@ public class AreaLocks extends SavedData {
     private final Set<ChunkPos> pendingChunks = new HashSet<>();
 
     public static AreaLocks get(ServerLevel level) {
-        return level.getDataStorage().computeIfAbsent(AreaLocks::load, AreaLocks::new, "ariente_area_locks");
+        return level.getDataStorage().computeIfAbsent(new SavedData.Factory<>(AreaLocks::new, (tag, provider) -> load(tag)), "ariente_area_locks");
     }
 
     public static void loaded(BlockEntity tile) {
@@ -49,8 +49,8 @@ public class AreaLocks extends SavedData {
     }
 
     @SubscribeEvent
-    public static void tick(TickEvent.LevelTickEvent event) {
-        if (event.phase == TickEvent.Phase.START && event.level instanceof ServerLevel level) {
+    public static void tick(LevelTickEvent.Pre event) {
+        if (event.getLevel() instanceof ServerLevel level) {
             AreaLocks locks = get(level);
             for (ChunkPos pos : List.copyOf(locks.pendingChunks)) {
                 LevelChunk chunk = level.getChunkSource().getChunkNow(pos.x, pos.z);
@@ -196,7 +196,7 @@ public class AreaLocks extends SavedData {
     }
 
     @Override
-    public CompoundTag save(CompoundTag tag) {
+    public CompoundTag save(CompoundTag tag, HolderLookup.Provider provider) {
         ListTag list = new ListTag();
         for (Controller controller : controllers.values()) {
             CompoundTag data = new CompoundTag();

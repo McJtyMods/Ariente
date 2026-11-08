@@ -1,29 +1,35 @@
 package mcjty.ariente.blocks.utility.door;
 
-import com.mojang.math.Axis;
 import com.mojang.blaze3d.vertex.PoseStack;
 import com.mojang.blaze3d.vertex.VertexConsumer;
-import org.joml.Matrix4f;
+import com.mojang.math.Axis;
 import mcjty.ariente.Ariente;
 import mcjty.ariente.client.ArienteRenderType;
 import mcjty.ariente.client.ArienteSpriteUploader;
 import mcjty.ariente.setup.Registration;
+import net.minecraft.client.renderer.MultiBufferSource;
+import net.minecraft.client.renderer.blockentity.BlockEntityRenderer;
 import net.minecraft.client.renderer.blockentity.BlockEntityRendererProvider;
 import net.minecraft.client.renderer.blockentity.BlockEntityRenderers;
+import net.minecraft.client.renderer.texture.TextureAtlasSprite;
 import net.minecraft.core.Direction;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.level.block.state.BlockState;
-import net.minecraft.client.renderer.MultiBufferSource;
-import net.minecraft.client.renderer.texture.TextureAtlasSprite;
-import net.minecraft.client.renderer.blockentity.BlockEntityRenderer;
+import net.minecraft.world.phys.AABB;
+import org.joml.Matrix4f;
 
 public class DoorMarkerRenderer implements BlockEntityRenderer<DoorMarkerTile> {
 
     protected BlockEntityRendererProvider.Context context;
-    public static final ResourceLocation DOOR_MARKER_TEXTURE = new ResourceLocation(Ariente.MODID, "doormarkers");
+    public static final ResourceLocation DOOR_MARKER_TEXTURE = ResourceLocation.fromNamespaceAndPath(Ariente.MODID, "doormarkers");
 
     public DoorMarkerRenderer(BlockEntityRendererProvider.Context pContext) {
         context = pContext;
+    }
+
+    @Override
+    public AABB getRenderBoundingBox(DoorMarkerTile tile) {
+        return tile.getRenderBoundingBox();
     }
 
     @Override
@@ -85,8 +91,8 @@ public class DoorMarkerRenderer implements BlockEntityRenderer<DoorMarkerTile> {
     }
 
     private static void vertex(VertexConsumer builder, PoseStack poses, float x, float y, float z, float u, float v, int light, float normalX) {
-        builder.vertex(poses.last().pose(), x, y, z).color(255, 255, 255, 255).uv(u, v).uv2(light)
-                .normal(poses.last().normal(), normalX, 0, 0).endVertex();
+        builder.addVertex(poses.last().pose(), x, y, z).setColor(255, 255, 255, 255).setUv(u, v).setLight(light)
+                .setNormal(poses.last(), normalX, 0, 0);
     }
 
     public static int getOpenphase(DoorMarkerTile te) {

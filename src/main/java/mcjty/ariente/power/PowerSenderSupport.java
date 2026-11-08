@@ -1,15 +1,14 @@
 package mcjty.ariente.power;
 
-import mcjty.ariente.varia.LoadedChunks;
+import java.util.HashSet;
+import java.util.Set;
 import mcjty.ariente.cables.CableColor;
+import mcjty.ariente.varia.LoadedChunks;
 import mcjty.lib.varia.OrientationTools;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
-import net.minecraft.world.level.block.entity.BlockEntity;
 import net.minecraft.world.level.Level;
-
-import java.util.HashSet;
-import java.util.Set;
+import net.minecraft.world.level.block.entity.BlockEntity;
 
 public class PowerSenderSupport {
 
@@ -51,7 +50,6 @@ public class PowerSenderSupport {
             }
         }
     }
-
 
     public static void fixNetworks(Level world, BlockPos pos) {
         PowerSystem powerSystem = PowerSystem.getPowerSystem(world);

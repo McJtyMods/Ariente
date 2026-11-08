@@ -1,24 +1,34 @@
 package mcjty.ariente.items.armor;
 
 import mcjty.ariente.items.modules.ModuleSupport;
-import net.minecraft.network.FriendlyByteBuf;
+import net.minecraft.network.RegistryFriendlyByteBuf;
+import net.minecraft.network.codec.StreamCodec;
+import net.minecraft.network.protocol.common.custom.CustomPacketPayload;
+import net.minecraft.resources.ResourceLocation;
+import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.world.entity.player.Player;
-import net.minecraftforge.network.NetworkEvent;
+import net.neoforged.neoforge.network.handling.IPayloadContext;
 
-import java.util.function.Supplier;
+public class PacketArmorHotkey implements CustomPacketPayload {
 
-public class PacketArmorHotkey {
+    public static final Type<PacketArmorHotkey> TYPE = new Type<>(ResourceLocation.fromNamespaceAndPath("ariente", "packet_armor_hotkey"));
+    public static final StreamCodec<RegistryFriendlyByteBuf, PacketArmorHotkey> CODEC = StreamCodec.ofMember(PacketArmorHotkey::toBytes, PacketArmorHotkey::new);
+
+    @Override
+    public Type<? extends CustomPacketPayload> type() {
+        return TYPE;
+    }
 
     private int index;
 
-    public void toBytes(FriendlyByteBuf buf) {
+    public void toBytes(RegistryFriendlyByteBuf buf) {
         buf.writeInt(index);
     }
 
     public PacketArmorHotkey() {
     }
 
-    public PacketArmorHotkey(FriendlyByteBuf buf) {
+    public PacketArmorHotkey(RegistryFriendlyByteBuf buf) {
         index = buf.readInt();
     }
 
@@ -26,12 +36,10 @@ public class PacketArmorHotkey {
         this.index = index;
     }
 
-    public void handle(Supplier<NetworkEvent.Context> supplier) {
-        NetworkEvent.Context ctx = supplier.get();
+    public void handle(IPayloadContext ctx) {
         ctx.enqueueWork(() -> {
-            Player playerEntity = ctx.getSender();
+            Player playerEntity = (ServerPlayer) ctx.player();
             ModuleSupport.receivedHotkey(playerEntity, index);
         });
-        ctx.setPacketHandled(true);
     }
 }

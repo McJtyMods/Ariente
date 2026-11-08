@@ -17,8 +17,8 @@
   ],
   "extra_recipe_mappings": {
     "ariente:marble_black": 0,
-    "ariente:flux_glow": 0,
-    "ariente:flat_light": 0,
+    "ariente:fluxglow": 0,
+    "ariente:flatlight": 0,
     "ariente:reinforced_marble": 0,
     "ariente:slope": 0
   }

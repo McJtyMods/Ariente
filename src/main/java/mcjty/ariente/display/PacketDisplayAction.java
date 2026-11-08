@@ -1,36 +1,44 @@
 package mcjty.ariente.display;
 
 import net.minecraft.core.BlockPos;
-import net.minecraft.network.FriendlyByteBuf;
+import net.minecraft.network.RegistryFriendlyByteBuf;
+import net.minecraft.network.codec.StreamCodec;
+import net.minecraft.network.protocol.common.custom.CustomPacketPayload;
+import net.minecraft.resources.ResourceLocation;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.world.InteractionHand;
-import net.minecraftforge.network.NetworkEvent;
-
-import java.util.function.Supplier;
+import net.neoforged.neoforge.network.handling.IPayloadContext;
 
 /** Sends intent only. The server redoes the ray, occlusion, footprint and overlap checks. */
-public record PacketDisplayAction(BlockPos base, InteractionHand hand, boolean leftClick) {
+public record PacketDisplayAction(BlockPos base, InteractionHand hand, boolean leftClick) implements CustomPacketPayload {
 
-    public PacketDisplayAction(FriendlyByteBuf buffer) {
+    public static final Type<PacketDisplayAction> TYPE = new Type<>(ResourceLocation.fromNamespaceAndPath("ariente", "packet_display_action"));
+    public static final StreamCodec<RegistryFriendlyByteBuf, PacketDisplayAction> CODEC = StreamCodec.ofMember(PacketDisplayAction::toBytes, PacketDisplayAction::new);
+
+    @Override
+    public Type<? extends CustomPacketPayload> type() {
+        return TYPE;
+    }
+
+    public PacketDisplayAction(RegistryFriendlyByteBuf buffer) {
         this(buffer.readBlockPos(), buffer.readEnum(InteractionHand.class), buffer.readBoolean());
     }
 
-    public void toBytes(FriendlyByteBuf buffer) {
+    public void toBytes(RegistryFriendlyByteBuf buffer) {
         buffer.writeBlockPos(base);
         buffer.writeEnum(hand);
         buffer.writeBoolean(leftClick);
     }
 
-    public void handle(Supplier<NetworkEvent.Context> supplier) {
-        NetworkEvent.Context context = supplier.get();
+    public void handle(IPayloadContext context) {
         context.enqueueWork(() -> {
-            ServerPlayer player = context.getSender();
+            ServerPlayer player = (ServerPlayer) context.player();
             if (player == null || player.isSpectator() || !player.level().hasChunkAt(base)
                     || !(player.level().getBlockEntity(base) instanceof DisplayBaseTile tile)
                     || !player.level().mayInteract(player, base)) {
                 return;
             }
-            DisplayGeometry.Hit hit = DisplayGeometry.intersect(tile, player, Math.min(8, player.getBlockReach()));
+            DisplayGeometry.Hit hit = DisplayGeometry.intersect(tile, player, Math.min(8, player.blockInteractionRange()));
             if (hit == null) {
                 return;
             }
@@ -49,6 +57,5 @@ public record PacketDisplayAction(BlockPos base, InteractionHand hand, boolean l
                         leftClick, module.x(), module.y());
             }
         });
-        context.setPacketHandled(true);
     }
 }

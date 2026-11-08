@@ -1,99 +1,103 @@
 package mcjty.ariente.datagen;
 
-import net.minecraft.data.loot.LootTableSubProvider;
-import net.minecraft.resources.ResourceLocation;
-import net.minecraft.world.level.storage.loot.LootTable;
-import net.minecraft.world.level.storage.loot.parameters.LootContextParamSets;
 import java.util.function.BiConsumer;
+import java.util.function.Supplier;
 import mcjty.ariente.blocks.decorative.DecorativeBlockModule;
 import mcjty.ariente.blocks.decorative.PatternBlock;
 import mcjty.ariente.setup.Registration;
 import mcjty.lib.blocks.BaseBlock;
 import mcjty.lib.datagen.BaseLootTableProvider;
+import net.minecraft.core.HolderLookup;
+import net.minecraft.data.loot.LootTableSubProvider;
+import net.minecraft.resources.ResourceKey;
 import net.minecraft.world.level.block.Block;
 import net.minecraft.world.level.block.SlabBlock;
-import net.minecraftforge.registries.RegistryObject;
+import net.minecraft.world.level.storage.loot.LootTable;
+import net.minecraft.world.level.storage.loot.parameters.LootContextParamSets;
 
 public class LootTables extends BaseLootTableProvider implements LootTableSubProvider {
 
-    public LootTables() {
+    private final HolderLookup.Provider provider;
+
+    public LootTables(HolderLookup.Provider provider) {
+        this.provider = provider;
         addTables();
     }
 
     @Override
-    public void generate(BiConsumer<ResourceLocation, LootTable.Builder> output) {
+    public void generate(BiConsumer<ResourceKey<LootTable>, LootTable.Builder> output) {
         generate(output, LootContextParamSets.BLOCK);
     }
 
     protected void addTables() {
-        addLootTable(Registration.ORE_LITHIUM.get(), BlockLootUtility.oreTable(Registration.ORE_LITHIUM.get(), Registration.RAW_LITHIUM.get()));
-        addLootTable(Registration.ORE_MANGANESE.get(), BlockLootUtility.oreTable(Registration.ORE_MANGANESE.get(), Registration.RAW_MANGANESE.get()));
-        addLootTable(Registration.ORE_PLATINUM.get(), BlockLootUtility.oreTable(Registration.ORE_PLATINUM.get(), Registration.RAW_PLATINUM.get()));
-        addLootTable(Registration.ORE_SILVER.get(), BlockLootUtility.oreTable(Registration.ORE_SILVER.get(), Registration.RAW_SILVER.get()));
+        addLootTable(Registration.ORE_LITHIUM.get(), BlockLootUtility.oreTable(provider, Registration.ORE_LITHIUM.get(), Registration.RAW_LITHIUM.get()));
+        addLootTable(Registration.ORE_MANGANESE.get(), BlockLootUtility.oreTable(provider, Registration.ORE_MANGANESE.get(), Registration.RAW_MANGANESE.get()));
+        addLootTable(Registration.ORE_PLATINUM.get(), BlockLootUtility.oreTable(provider, Registration.ORE_PLATINUM.get(), Registration.RAW_PLATINUM.get()));
+        addLootTable(Registration.ORE_SILVER.get(), BlockLootUtility.oreTable(provider, Registration.ORE_SILVER.get(), Registration.RAW_SILVER.get()));
         addSimpleTable(Registration.ORE_NEGARITE.get());
         addSimpleTable(Registration.ORE_POSIRITE.get());
-        addLootTable(Registration.ORE_SILICON.get(), BlockLootUtility.oreTable(Registration.ORE_SILICON.get(), Registration.DUST_SILICON.get()));
+        addLootTable(Registration.ORE_SILICON.get(), BlockLootUtility.oreTable(provider, Registration.ORE_SILICON.get(), Registration.DUST_SILICON.get()));
 
-        addStandardTable(Registration.AICORE.get(), Registration.AICORE_TILE.get());
-        addStandardTable(Registration.FORCEFIELD.get(), Registration.FORCEFIELD_TILE.get());
+        addStandardTable(Registration.AICORE.get(), Registration.MACHINE_DATA.get());
+        addStandardTable(Registration.FORCEFIELD.get(), Registration.MACHINE_DATA.get());
         addSimpleTable(Registration.NEGARITE_TANK.get());
         addSimpleTable(Registration.POSIRITE_TANK.get());
-        addStandardTable(Registration.NEGARITE_GENERATOR.get(), Registration.NEGARITE_GENERATOR_TILE.get());
-        addStandardTable(Registration.POSIRITE_GENERATOR.get(), Registration.POSIRITE_GENERATOR_TILE.get());
-        addStandardTable(Registration.POWER_COMBINER.get(), Registration.POWER_COMBINER_TILE.get());
-        addStandardTable(Registration.AUTOMATION_FIELD.get(), Registration.AUTOFIELD_TILE.get());
-        addStandardTable(Registration.FIELD_MARKER.get(), Registration.FIELD_MARKER_TILE.get());
-        addStandardTable(Registration.INPUT_ITEM_NODE.get(), Registration.INPUT_ITEM_TILE.get());
-        addStandardTable(Registration.OUTPUT_ITEM_NODE.get(), Registration.OUTPUT_ITEM_TILE.get());
-        addStandardTable(Registration.ROUND_ROBIN_NODE.get(), Registration.ROUND_ROBIN_TILE.get());
-        addStandardTable(Registration.SENSOR_ITEM_NODE.get(), Registration.SENSOR_ITEM_TILE.get());
+        addStandardTable(Registration.NEGARITE_GENERATOR.get(), Registration.MACHINE_DATA.get());
+        addStandardTable(Registration.POSIRITE_GENERATOR.get(), Registration.MACHINE_DATA.get());
+        addStandardTable(Registration.POWER_COMBINER.get(), Registration.MACHINE_DATA.get());
+        addStandardTable(Registration.AUTOMATION_FIELD.get(), Registration.MACHINE_DATA.get());
+        addStandardTable(Registration.FIELD_MARKER.get(), Registration.MACHINE_DATA.get());
+        addStandardTable(Registration.INPUT_ITEM_NODE.get(), Registration.MACHINE_DATA.get());
+        addStandardTable(Registration.OUTPUT_ITEM_NODE.get(), Registration.MACHINE_DATA.get());
+        addStandardTable(Registration.ROUND_ROBIN_NODE.get(), Registration.MACHINE_DATA.get());
+        addStandardTable(Registration.SENSOR_ITEM_NODE.get(), Registration.MACHINE_DATA.get());
         addSimpleTable(Registration.DISPLAY_BASE.get());
         addSimpleTable(Registration.CAMERA.get());
-        addStandardTable(Registration.DOOR_MARKER.get(), Registration.DOOR_MARKER_TILE.get());
-        addStandardTable(Registration.SIGNAL_TRANSMITTER.get(), Registration.SIGNAL_TRANSMITTER_TILE.get());
-        addStandardTable(Registration.SIGNAL_RECEIVER.get(), Registration.SIGNAL_RECEIVER_TILE.get());
-        addStandardTable(Registration.WIRELESS_BUTTON.get(), Registration.WIRELESS_BUTTON_TILE.get());
-        addStandardTable(Registration.WIRELESS_LOCK.get(), Registration.WIRELESS_LOCK_TILE.get());
+        addStandardTable(Registration.DOOR_MARKER.get(), Registration.MACHINE_DATA.get());
+        addStandardTable(Registration.SIGNAL_TRANSMITTER.get(), Registration.MACHINE_DATA.get());
+        addStandardTable(Registration.SIGNAL_RECEIVER.get(), Registration.MACHINE_DATA.get());
+        addStandardTable(Registration.WIRELESS_BUTTON.get(), Registration.MACHINE_DATA.get());
+        addStandardTable(Registration.WIRELESS_LOCK.get(), Registration.MACHINE_DATA.get());
         addSimpleTable(Registration.ALARM.get());
-        addStandardTable(Registration.AUTO_CONSTRUCTOR.get(), Registration.AUTO_CONSTRUCTOR_TILE.get());
-        addStandardTable(Registration.RECYCLER.get(), Registration.RECYCLER_TILE.get());
-        addStandardTable(Registration.BLUEPRINT_STORAGE.get(), Registration.BLUEPRINT_STORAGE_TILE.get());
+        addStandardTable(Registration.AUTO_CONSTRUCTOR.get(), Registration.MACHINE_DATA.get());
+        addStandardTable(Registration.RECYCLER.get(), Registration.MACHINE_DATA.get());
+        addStandardTable(Registration.BLUEPRINT_STORAGE.get(), Registration.MACHINE_DATA.get());
         addSimpleTable(Registration.CONSTRUCTOR.get());
-        addStandardTable(Registration.ELEVATOR.get(), Registration.ELEVATOR_TILE.get());
+        addStandardTable(Registration.ELEVATOR.get(), Registration.MACHINE_DATA.get());
         addSimpleTable(Registration.LEVEL_MARKER.get());
         addSimpleTable(Registration.FLUX_SLOPE_BEAM.get());
-        addStandardTable(Registration.LOCK.get(), Registration.LOCK_TILE.get());
-        addStandardTable(Registration.STORAGE.get(), Registration.STORAGE_TILE.get());
-        addStandardTable(Registration.STORAGE_3X3.get(), Registration.STORAGE_TILE.get());
-        addStandardTable(Registration.HOLO_STORAGE_1.get(), Registration.HOLO_STORAGE_TILE.get());
-        addStandardTable(Registration.HOLO_STORAGE_2.get(), Registration.HOLO_STORAGE_TILE.get());
-        addStandardTable(Registration.HOLO_STORAGE_3.get(), Registration.HOLO_STORAGE_TILE.get());
-        addStandardTable(Registration.SMELTER.get(), Registration.SMELTER_TILE.get());
-        addStandardTable(Registration.PURIFIER_START.get(), Registration.PURIFIER_TILE.get());
-        addStandardTable(Registration.PURIFIER_FINISH.get(), Registration.PURIFIER_TILE.get());
+        addStandardTable(Registration.LOCK.get(), Registration.MACHINE_DATA.get());
+        addStandardTable(Registration.STORAGE.get(), Registration.MACHINE_DATA.get());
+        addStandardTable(Registration.STORAGE_3X3.get(), Registration.MACHINE_DATA.get());
+        addStandardTable(Registration.HOLO_STORAGE_1.get(), Registration.MACHINE_DATA.get());
+        addStandardTable(Registration.HOLO_STORAGE_2.get(), Registration.MACHINE_DATA.get());
+        addStandardTable(Registration.HOLO_STORAGE_3.get(), Registration.MACHINE_DATA.get());
+        addStandardTable(Registration.SMELTER.get(), Registration.MACHINE_DATA.get());
+        addStandardTable(Registration.PURIFIER_START.get(), Registration.MACHINE_DATA.get());
+        addStandardTable(Registration.PURIFIER_FINISH.get(), Registration.MACHINE_DATA.get());
         addSimpleTable(Registration.PURIFIER_TUBE.get());
-        addStandardTable(Registration.CHARGER.get(), Registration.CHARGER_TILE.get());
-        addStandardTable(Registration.WARPER.get(), Registration.WARPER_TILE.get());
+        addStandardTable(Registration.CHARGER.get(), Registration.MACHINE_DATA.get());
+        addStandardTable(Registration.WARPER.get(), Registration.MACHINE_DATA.get());
 
-        for (RegistryObject<BaseBlock> entry : DecorativeBlockModule.BLACK_TECH.values()) {
+        for (Supplier<BaseBlock> entry : DecorativeBlockModule.BLACK_TECH.values()) {
             addSimpleTable(entry.get());
         }
-        for (RegistryObject<BaseBlock> entry : DecorativeBlockModule.MARBLE_TECH.values()) {
+        for (Supplier<BaseBlock> entry : DecorativeBlockModule.MARBLE_TECH.values()) {
             addSimpleTable(entry.get());
         }
-        for (RegistryObject<BaseBlock> entry : DecorativeBlockModule.MARBLE.values()) {
+        for (Supplier<BaseBlock> entry : DecorativeBlockModule.MARBLE.values()) {
             addSimpleTable(entry.get());
         }
-        for (RegistryObject<BaseBlock> entry : DecorativeBlockModule.MARBLE_SMOOTH.values()) {
+        for (Supplier<BaseBlock> entry : DecorativeBlockModule.MARBLE_SMOOTH.values()) {
             addSimpleTable(entry.get());
         }
-        for (RegistryObject<BaseBlock> entry : DecorativeBlockModule.MARBLE_PILAR.values()) {
+        for (Supplier<BaseBlock> entry : DecorativeBlockModule.MARBLE_PILAR.values()) {
             addSimpleTable(entry.get());
         }
-        for (RegistryObject<BaseBlock> entry : DecorativeBlockModule.MARBLE_BRICKS.values()) {
+        for (Supplier<BaseBlock> entry : DecorativeBlockModule.MARBLE_BRICKS.values()) {
             addSimpleTable(entry.get());
         }
-        for (RegistryObject<SlabBlock> entry : DecorativeBlockModule.MARBLE_SLAB.values()) {
+        for (Supplier<SlabBlock> entry : DecorativeBlockModule.MARBLE_SLAB.values()) {
             addSimpleSlab(entry.get());
         }
 
@@ -101,7 +105,7 @@ public class LootTables extends BaseLootTableProvider implements LootTableSubPro
     }
 
     protected void addSimpleSlab(Block block) {
-        lootTables.put(block, BlockLootUtility.slabTable(block));
+        lootTables.put(block, BlockLootUtility.slabTable(provider, block));
     }
 
     public String getName() {

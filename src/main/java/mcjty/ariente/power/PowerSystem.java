@@ -1,12 +1,12 @@
 package mcjty.ariente.power;
 
-import mcjty.lib.worlddata.AbstractWorldData;
-import net.minecraft.nbt.CompoundTag;
-import net.minecraft.world.level.Level;
-
-import javax.annotation.Nonnull;
 import java.util.HashMap;
 import java.util.Map;
+import javax.annotation.Nonnull;
+import mcjty.lib.worlddata.AbstractWorldData;
+import net.minecraft.core.HolderLookup;
+import net.minecraft.nbt.CompoundTag;
+import net.minecraft.world.level.Level;
 
 public class PowerSystem extends AbstractWorldData<PowerSystem> {
 
@@ -121,7 +121,7 @@ public class PowerSystem extends AbstractWorldData<PowerSystem> {
     }
 
     @Override
-    public CompoundTag save(CompoundTag compound) {
+    public CompoundTag save(CompoundTag compound, HolderLookup.Provider provider) {
         compound.putInt("lastId", lastId);
         return compound;
     }

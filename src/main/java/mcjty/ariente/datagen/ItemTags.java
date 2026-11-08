@@ -1,20 +1,19 @@
 package mcjty.ariente.datagen;
 
+import java.util.Collection;
 import java.util.concurrent.CompletableFuture;
-import net.minecraft.core.HolderLookup;
+import java.util.function.Supplier;
 import mcjty.ariente.Ariente;
 import mcjty.ariente.blocks.decorative.DecorativeBlockModule;
 import mcjty.ariente.setup.Registration;
-import net.minecraftforge.common.data.BlockTagsProvider;
+import net.minecraft.core.HolderLookup;
 import net.minecraft.data.PackOutput;
 import net.minecraft.data.tags.ItemTagsProvider;
-import net.minecraft.world.item.Item;
 import net.minecraft.tags.TagKey;
-import net.minecraftforge.common.Tags;
-import net.minecraftforge.registries.RegistryObject;
-import net.minecraftforge.common.data.ExistingFileHelper;
-
-import java.util.Collection;
+import net.minecraft.world.item.Item;
+import net.neoforged.neoforge.common.Tags;
+import net.neoforged.neoforge.common.data.BlockTagsProvider;
+import net.neoforged.neoforge.common.data.ExistingFileHelper;
 
 public class ItemTags extends ItemTagsProvider {
 
@@ -71,9 +70,9 @@ public class ItemTags extends ItemTagsProvider {
         addTag(Registration.TAG_MARBLE, DecorativeBlockModule.MARBLE_ITEMS.values());
     }
 
-    private void addTag(TagKey<Item> tag, Collection<RegistryObject<Item>> items) {
+    private void addTag(TagKey<Item> tag, Collection<Supplier<Item>> items) {
         var builder = tag(tag);
-        for (RegistryObject<Item> item : items) {
+        for (Supplier<Item> item : items) {
             builder.add(item.get());
         }
     }

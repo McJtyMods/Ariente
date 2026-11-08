@@ -1,17 +1,16 @@
 package mcjty.ariente.recipes;
 
-import net.minecraft.core.RegistryAccess;
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.List;
 import mcjty.lib.varia.Tools;
+import net.minecraft.core.HolderLookup;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.crafting.Recipe;
 import net.minecraft.world.item.crafting.RecipeSerializer;
 import net.minecraft.world.item.crafting.RecipeType;
 import net.minecraft.world.level.Level;
-
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.List;
 
 public class ConstructorRecipe implements Recipe<ConstructorContext> {
 
@@ -54,7 +53,7 @@ public class ConstructorRecipe implements Recipe<ConstructorContext> {
     }
 
     @Override
-    public ItemStack assemble(ConstructorContext inv, RegistryAccess registries) {
+    public ItemStack assemble(ConstructorContext inv, HolderLookup.Provider registries) {
         return destination.copy();
     }
 
@@ -64,11 +63,10 @@ public class ConstructorRecipe implements Recipe<ConstructorContext> {
     }
 
     @Override
-    public ItemStack getResultItem(RegistryAccess registries) {
+    public ItemStack getResultItem(HolderLookup.Provider registries) {
         return destination;
     }
 
-    @Override
     public ResourceLocation getId() {
         return id;
     }

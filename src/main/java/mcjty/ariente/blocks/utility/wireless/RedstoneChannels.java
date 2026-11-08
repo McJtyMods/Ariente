@@ -1,14 +1,14 @@
 package mcjty.ariente.blocks.utility.wireless;
 
+import java.util.HashMap;
+import java.util.Map;
 import mcjty.ariente.api.IRedstoneChannels;
 import mcjty.lib.worlddata.AbstractWorldData;
+import net.minecraft.core.HolderLookup;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.nbt.ListTag;
 import net.minecraft.nbt.Tag;
 import net.minecraft.world.level.Level;
-
-import java.util.HashMap;
-import java.util.Map;
 
 public class RedstoneChannels extends AbstractWorldData<RedstoneChannels> implements IRedstoneChannels {
 
@@ -72,7 +72,7 @@ public class RedstoneChannels extends AbstractWorldData<RedstoneChannels> implem
     }
 
     @Override
-    public CompoundTag save(CompoundTag tagCompound) {
+    public CompoundTag save(CompoundTag tagCompound, HolderLookup.Provider provider) {
         ListTag lst = new ListTag();
         for (Map.Entry<Integer, RedstoneChannel> entry : channels.entrySet()) {
             CompoundTag tc = new CompoundTag();

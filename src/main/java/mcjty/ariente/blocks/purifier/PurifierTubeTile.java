@@ -1,17 +1,18 @@
 package mcjty.ariente.blocks.purifier;
 
+import mcjty.ariente.blocks.ArienteBlockEntity;
 import mcjty.ariente.config.PowerConfiguration;
 import mcjty.ariente.setup.Registration;
-import mcjty.lib.tileentity.TickingTileEntity;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
+import net.minecraft.core.HolderLookup;
 import net.minecraft.core.particles.SimpleParticleType;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.level.block.state.BlockState;
 
 /** A tube only holds a visual snapshot. Its start block owns all processing and items. */
-public class PurifierTubeTile extends TickingTileEntity {
+public class PurifierTubeTile extends ArienteBlockEntity {
 
     public static final double RING_RADIUS = .4;
 
@@ -120,9 +121,9 @@ public class PurifierTubeTile extends TickingTileEntity {
     }
 
     @Override
-    public void saveClientDataToNBT(CompoundTag tag) {
-        tag.put("Ore", ore.save(new CompoundTag()));
-        tag.put("Raw", raw.save(new CompoundTag()));
+    public void saveClientDataToNBT(CompoundTag tag, HolderLookup.Provider provider) {
+        tag.put("Ore", ore.saveOptional(provider));
+        tag.put("Raw", raw.saveOptional(provider));
         tag.putInt("Direction", direction.get3DDataValue());
         tag.putInt("Index", index);
         tag.putInt("Tubes", tubeCount);
@@ -132,9 +133,9 @@ public class PurifierTubeTile extends TickingTileEntity {
     }
 
     @Override
-    public void loadClientDataFromNBT(CompoundTag tag) {
-        ore = ItemStack.of(tag.getCompound("Ore"));
-        raw = ItemStack.of(tag.getCompound("Raw"));
+    public void loadClientDataFromNBT(CompoundTag tag, HolderLookup.Provider provider) {
+        ore = ItemStack.parseOptional(provider, tag.getCompound("Ore"));
+        raw = ItemStack.parseOptional(provider, tag.getCompound("Raw"));
         direction = Direction.from3DDataValue(tag.getInt("Direction"));
         index = tag.getInt("Index");
         tubeCount = Math.max(1, tag.getInt("Tubes"));

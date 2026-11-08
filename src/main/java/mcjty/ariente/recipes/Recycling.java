@@ -1,18 +1,16 @@
 package mcjty.ariente.recipes;
 
-import mcjty.ariente.items.modules.ArmorModuleItem;
-import mcjty.ariente.blocks.ExtremeMachineTile;
-import mcjty.ariente.setup.Registration;
-import net.minecraft.world.item.Item;
-import net.minecraft.world.item.ItemStack;
-import net.minecraftforge.items.ItemHandlerHelper;
-
-import javax.annotation.Nullable;
 import java.util.ArrayList;
 import java.util.Comparator;
 import java.util.List;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
+import javax.annotation.Nullable;
+import mcjty.ariente.blocks.ExtremeMachineTile;
+import mcjty.ariente.items.modules.ArmorModuleItem;
+import mcjty.ariente.setup.Registration;
+import net.minecraft.world.item.Item;
+import net.minecraft.world.item.ItemStack;
 
 public class Recycling {
 
@@ -61,7 +59,7 @@ public class Recycling {
                 continue;
             }
             ItemStack existing = ingredients.stream()
-                    .filter(stack -> ItemHandlerHelper.canItemStacksStack(stack, ingredient)).findFirst().orElse(null);
+                    .filter(stack -> ItemStack.isSameItemSameComponents(stack, ingredient)).findFirst().orElse(null);
             if (existing == null) {
                 ingredients.add(ingredient.copy());
             } else {

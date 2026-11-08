@@ -1,13 +1,12 @@
 package mcjty.ariente.display;
 
+import java.util.ArrayList;
+import java.util.List;
 import mcjty.hologui.api.IGuiComponentRegistry;
 import mcjty.hologui.api.components.IPanel;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.util.Mth;
 import net.minecraft.world.item.ItemStack;
-
-import java.util.ArrayList;
-import java.util.List;
 
 public class TextDisplayModule implements DisplayModuleType {
 

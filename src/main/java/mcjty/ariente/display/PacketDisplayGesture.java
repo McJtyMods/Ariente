@@ -1,25 +1,33 @@
 package mcjty.ariente.display;
 
-import mcjty.ariente.network.ArienteMessages;
+import java.util.UUID;
 import net.minecraft.core.BlockPos;
-import net.minecraft.network.FriendlyByteBuf;
+import net.minecraft.network.RegistryFriendlyByteBuf;
+import net.minecraft.network.codec.StreamCodec;
+import net.minecraft.network.protocol.common.custom.CustomPacketPayload;
+import net.minecraft.resources.ResourceLocation;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.util.Mth;
 import net.minecraft.world.phys.Vec3;
-import net.minecraftforge.network.PacketDistributor;
-import net.minecraftforge.network.NetworkEvent;
-
-import java.util.UUID;
-import java.util.function.Supplier;
+import net.neoforged.neoforge.network.PacketDistributor;
+import net.neoforged.neoforge.network.handling.IPayloadContext;
 
 /** Drag positions stay local; only press, release, cancellation and infrequent keepalives are sent. */
-public record PacketDisplayGesture(BlockPos source, UUID module, UUID ticket, Action action, float yaw, float pitch, boolean dragged, boolean allowDrop) {
+public record PacketDisplayGesture(BlockPos source, UUID module, UUID ticket, Action action, float yaw, float pitch, boolean dragged, boolean allowDrop) implements CustomPacketPayload {
 
-    public PacketDisplayGesture(FriendlyByteBuf buffer) {
+    public static final Type<PacketDisplayGesture> TYPE = new Type<>(ResourceLocation.fromNamespaceAndPath("ariente", "packet_display_gesture"));
+    public static final StreamCodec<RegistryFriendlyByteBuf, PacketDisplayGesture> CODEC = StreamCodec.ofMember(PacketDisplayGesture::toBytes, PacketDisplayGesture::new);
+
+    @Override
+    public Type<? extends CustomPacketPayload> type() {
+        return TYPE;
+    }
+
+    public PacketDisplayGesture(RegistryFriendlyByteBuf buffer) {
         this(buffer.readBlockPos(), buffer.readUUID(), buffer.readUUID(), buffer.readEnum(Action.class), buffer.readFloat(), buffer.readFloat(), buffer.readBoolean(), buffer.readBoolean());
     }
 
-    public void toBytes(FriendlyByteBuf buffer) {
+    public void toBytes(RegistryFriendlyByteBuf buffer) {
         buffer.writeBlockPos(source);
         buffer.writeUUID(module);
         buffer.writeUUID(ticket);
@@ -30,10 +38,9 @@ public record PacketDisplayGesture(BlockPos source, UUID module, UUID ticket, Ac
         buffer.writeBoolean(allowDrop);
     }
 
-    public void handle(Supplier<NetworkEvent.Context> supplier) {
-        NetworkEvent.Context context = supplier.get();
+    public void handle(IPayloadContext context) {
         context.enqueueWork(() -> {
-            ServerPlayer player = context.getSender();
+            ServerPlayer player = (ServerPlayer) context.player();
             if (player == null) {
                 return;
             }
@@ -55,11 +62,10 @@ public record PacketDisplayGesture(BlockPos source, UUID module, UUID ticket, Ac
                 reply(player, DisplayGesture.finish(player, source, module, ticket, look, dragged, allowDrop));
             }
         });
-        context.setPacketHandled(true);
     }
 
     private void reply(ServerPlayer player, DisplayGeometry.DragPosition moved) {
-        ArienteMessages.INSTANCE.send(PacketDistributor.PLAYER.with(() -> player), new PacketDisplayGestureResult(ticket, moved == null ? null : moved.target().getBlockPos(),
+        PacketDistributor.sendToPlayer(player, new PacketDisplayGestureResult(ticket, moved == null ? null : moved.target().getBlockPos(),
                         moved == null ? 0 : moved.x(), moved == null ? 0 : moved.y()));
     }
 

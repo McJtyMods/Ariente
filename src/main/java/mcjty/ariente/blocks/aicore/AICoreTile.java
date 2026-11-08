@@ -4,23 +4,24 @@ import mcjty.ariente.api.IAICoreTile;
 import mcjty.ariente.api.IAlarmMode;
 import mcjty.ariente.api.ICityAI;
 import mcjty.ariente.api.ICityAISystem;
+import mcjty.ariente.blocks.ArienteBlockEntity;
 import mcjty.ariente.compat.arienteworld.ArienteWorldCompat;
 import mcjty.ariente.setup.Registration;
 import mcjty.lib.blocks.BaseBlock;
 import mcjty.lib.blocks.RotationType;
 import mcjty.lib.builder.BlockBuilder;
-import mcjty.lib.tileentity.TickingTileEntity;
+import net.minecraft.core.BlockPos;
+import net.minecraft.core.HolderLookup;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.world.level.ChunkPos;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.level.block.Block;
 import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.level.material.MapColor;
-import net.minecraft.core.BlockPos;
 
 import static mcjty.ariente.compat.ArienteTOPDriver.DRIVER;
 
-public class AICoreTile extends TickingTileEntity implements IAlarmMode, IAICoreTile {
+public class AICoreTile extends ArienteBlockEntity implements IAlarmMode, IAICoreTile {
 
     private ChunkPos cityCenter;
     private int tickCounter = 10;
@@ -100,15 +101,15 @@ public class AICoreTile extends TickingTileEntity implements IAlarmMode, IAICore
     }
 
     @Override
-    public void load(CompoundTag tagCompound) {
-        super.load(tagCompound);
+    public void loadAdditional(CompoundTag tagCompound, HolderLookup.Provider provider) {
+        super.loadAdditional(tagCompound, provider);
         CompoundTag info = tagCompound.getCompound("Info");
         cityName = info.getString("cityName");
     }
 
     @Override
-    public void saveAdditional(CompoundTag tagCompound) {
-        super.saveAdditional(tagCompound);
+    public void saveAdditional(CompoundTag tagCompound, HolderLookup.Provider provider) {
+        super.saveAdditional(tagCompound, provider);
         getOrCreateInfo(tagCompound).putString("cityName", cityName);
     }
 

@@ -1,17 +1,25 @@
 package mcjty.ariente.blocks.storagecube;
 
+import java.util.ArrayList;
+import java.util.Comparator;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+import java.util.UUID;
+import javax.annotation.Nullable;
 import mcjty.ariente.Ariente;
 import mcjty.ariente.api.ICityAI;
 import mcjty.ariente.api.ICityEquipment;
 import mcjty.ariente.api.IStorageTile;
+import mcjty.ariente.blocks.ArienteBlockEntity;
 import mcjty.ariente.blocks.utility.ILockTarget;
 import mcjty.ariente.gui.GuiHelp;
 import mcjty.ariente.items.BlueprintItem;
+import mcjty.ariente.items.ItemData;
 import mcjty.ariente.items.KeyCardItem;
-import mcjty.ariente.network.ArienteMessages;
 import mcjty.ariente.recipes.BlueprintRecipeRegistry;
-import mcjty.ariente.security.IKeyCardSlot;
 import mcjty.ariente.security.AreaLocks;
+import mcjty.ariente.security.IKeyCardSlot;
 import mcjty.ariente.setup.Registration;
 import mcjty.ariente.sounds.ModSounds;
 import mcjty.hologui.api.IGuiComponent;
@@ -23,9 +31,10 @@ import mcjty.lib.blocks.RotationType;
 import mcjty.lib.builder.BlockBuilder;
 import mcjty.lib.container.ContainerFactory;
 import mcjty.lib.container.GenericItemHandler;
-import mcjty.lib.tileentity.TickingTileEntity;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
+import net.minecraft.core.HolderLookup;
+import net.minecraft.core.registries.BuiltInRegistries;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.nbt.ListTag;
 import net.minecraft.nbt.Tag;
@@ -35,37 +44,24 @@ import net.minecraft.sounds.SoundSource;
 import net.minecraft.world.InteractionHand;
 import net.minecraft.world.InteractionResult;
 import net.minecraft.world.entity.player.Player;
-import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.Item;
-import net.minecraft.world.level.block.Block;
+import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.level.Level;
+import net.minecraft.world.level.block.Block;
 import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.level.material.MapColor;
 import net.minecraft.world.phys.BlockHitResult;
-import net.minecraftforge.network.PacketDistributor;
-import net.minecraftforge.common.capabilities.Capability;
-import net.minecraftforge.common.capabilities.ForgeCapabilities;
-import net.minecraftforge.common.util.LazyOptional;
-import net.minecraftforge.items.IItemHandler;
-import net.minecraftforge.registries.ForgeRegistries;
-
-import javax.annotation.Nullable;
-import java.util.ArrayList;
-import java.util.Comparator;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-import java.util.UUID;
+import net.neoforged.neoforge.items.IItemHandler;
+import net.neoforged.neoforge.network.PacketDistributor;
 
 import static mcjty.lib.container.SlotDefinition.generic;
 
-public class StorageCubeTile extends TickingTileEntity implements IGuiTile, ICityEquipment, IStorageTile, IKeyCardSlot, ILockTarget {
+public class StorageCubeTile extends ArienteBlockEntity implements IGuiTile, ICityEquipment, IStorageTile, IKeyCardSlot, ILockTarget {
 
     public static final int MAX_SLOTS = 120;
     public static final int PREVIEW_SIZE = 16;
 
     private final GenericItemHandler items;
-    private LazyOptional<IItemHandler> itemCapability;
     private final Map<ViewerKey, Viewer> viewers = new HashMap<>();
     private List<Preview> preview = List.of();
     private boolean previewDirty = true;
@@ -104,7 +100,6 @@ public class StorageCubeTile extends TickingTileEntity implements IGuiTile, ICit
                 previewDirty = true;
             }
         };
-        itemCapability = LazyOptional.of(() -> items);
     }
 
     @Override
@@ -220,7 +215,7 @@ public class StorageCubeTile extends TickingTileEntity implements IGuiTile, ICit
         if (id == null) {
             stack = BlueprintItem.makeBluePrint(BlueprintRecipeRegistry.getRandomRecipes().getRandom().getDestination());
         } else {
-            Item item = ForgeRegistries.ITEMS.getValue(id);
+            Item item = BuiltInRegistries.ITEM.get(id);
             if (item == null) {
                 return;
             }
@@ -230,8 +225,8 @@ public class StorageCubeTile extends TickingTileEntity implements IGuiTile, ICit
     }
 
     @Override
-    public void load(CompoundTag tag) {
-        super.load(tag);
+    public void loadAdditional(CompoundTag tag, HolderLookup.Provider provider) {
+        super.loadAdditional(tag, provider);
         AreaLocks.loadTarget(this, tag);
         CompoundTag info = tag.getCompound("Info");
         locked = info.getBoolean("locked");
@@ -241,9 +236,9 @@ public class StorageCubeTile extends TickingTileEntity implements IGuiTile, ICit
     }
 
     @Override
-    public void saveAdditional(CompoundTag tag) {
+    public void saveAdditional(CompoundTag tag, HolderLookup.Provider provider) {
         AreaLocks.saveTarget(this, tag);
-        super.saveAdditional(tag);
+        super.saveAdditional(tag, provider);
         CompoundTag info = getOrCreateInfo(tag);
         info.putBoolean("locked", locked);
         if (keyId != null) {
@@ -256,32 +251,20 @@ public class StorageCubeTile extends TickingTileEntity implements IGuiTile, ICit
     }
 
     @Override
-    public <T> LazyOptional<T> getCapability(Capability<T> capability, Direction side) {
-        return capability == ForgeCapabilities.ITEM_HANDLER ? itemCapability.cast() : super.getCapability(capability, side);
+    public IItemHandler getAutomationHandler(Direction side) {
+        return items;
     }
 
     @Override
-    public void invalidateCaps() {
-        super.invalidateCaps();
-        itemCapability.invalidate();
-    }
-
-    @Override
-    public void reviveCaps() {
-        super.reviveCaps();
-        itemCapability = LazyOptional.of(() -> items);
-    }
-
-    @Override
-    public CompoundTag getUpdateTag() {
+    public CompoundTag getUpdateTag(HolderLookup.Provider provider) {
         CompoundTag tag = new CompoundTag();
-        saveClientDataToNBT(tag);
+        saveClientDataToNBT(tag, provider);
         return tag;
     }
 
     @Override
-    public void handleUpdateTag(CompoundTag tag) {
-        loadClientDataFromNBT(tag);
+    public void handleUpdateTag(CompoundTag tag, HolderLookup.Provider provider) {
+        loadClientDataFromNBT(tag, provider);
     }
 
     public List<Preview> getPreview() {
@@ -388,7 +371,7 @@ public class StorageCubeTile extends TickingTileEntity implements IGuiTile, ICit
             if (!changes.isEmpty()) {
                 viewer.revision++;
             }
-            ArienteMessages.INSTANCE.send(PacketDistributor.PLAYER.with(() -> player),
+            PacketDistributor.sendToPlayer(player,
                     new PacketStorageCubeData(worldPosition, viewer.entityId, items.getSlots(), viewer.revision, force, changes));
         }
     }
@@ -421,7 +404,7 @@ public class StorageCubeTile extends TickingTileEntity implements IGuiTile, ICit
             }
             int index = -1;
             for (int j = 0; j < palette.size(); j++) {
-                if (ItemStack.isSameItemSameTags(stack, palette.get(j).stack())) {
+                if (ItemStack.isSameItemSameComponents(stack, palette.get(j).stack())) {
                     index = j;
                     break;
                 }
@@ -451,7 +434,7 @@ public class StorageCubeTile extends TickingTileEntity implements IGuiTile, ICit
         }
         // Stable ordering avoids updates caused only by the sampling order.
         sample.sort(Comparator.comparingInt((Preview entry) -> Item.getId(entry.stack().getItem()))
-                .thenComparing(entry -> entry.stack().hasTag() ? entry.stack().getTag().toString() : ""));
+                .thenComparing(entry -> ItemData.has(entry.stack()) ? ItemData.get(entry.stack()).toString() : ""));
         boolean changed = sample.size() != preview.size();
         for (int i = 0; !changed && i < sample.size(); i++) {
             changed = sample.get(i).weight() != preview.get(i).weight()
@@ -465,11 +448,11 @@ public class StorageCubeTile extends TickingTileEntity implements IGuiTile, ICit
     }
 
     @Override
-    public void saveClientDataToNBT(CompoundTag tag) {
+    public void saveClientDataToNBT(CompoundTag tag, HolderLookup.Provider provider) {
         tag.putBoolean("Locked", locked);
         ListTag entries = new ListTag();
         for (Preview entry : preview) {
-            CompoundTag data = entry.stack().save(new CompoundTag());
+            CompoundTag data = (CompoundTag) entry.stack().saveOptional(provider);
             data.putInt("Weight", entry.weight());
             entries.add(data);
         }
@@ -477,13 +460,13 @@ public class StorageCubeTile extends TickingTileEntity implements IGuiTile, ICit
     }
 
     @Override
-    public void loadClientDataFromNBT(CompoundTag tag) {
+    public void loadClientDataFromNBT(CompoundTag tag, HolderLookup.Provider provider) {
         locked = tag.getBoolean("Locked");
         ListTag entries = tag.getList("Preview", Tag.TAG_COMPOUND);
         List<Preview> sample = new ArrayList<>();
         for (int i = 0; i < Math.min(PREVIEW_SIZE, entries.size()); i++) {
             CompoundTag data = entries.getCompound(i);
-            ItemStack stack = ItemStack.of(data);
+            ItemStack stack = ItemStack.parseOptional(provider, data);
             if (!stack.isEmpty()) {
                 sample.add(new Preview(stack, Math.max(1, data.getInt("Weight"))));
             }

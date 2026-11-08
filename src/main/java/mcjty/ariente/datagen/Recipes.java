@@ -1,40 +1,45 @@
 package mcjty.ariente.datagen;
 
+import java.util.concurrent.CompletableFuture;
 import mcjty.ariente.Ariente;
-import mcjty.ariente.recipes.BlueprintExchangeRecipe;
-import mcjty.ariente.recipes.BlueprintRecipeRegistry;
-import com.google.gson.JsonObject;
-import net.minecraft.world.item.crafting.RecipeSerializer;
-import net.minecraftforge.registries.ForgeRegistries;
 import mcjty.ariente.api.MarbleColor;
 import mcjty.ariente.api.TechType;
 import mcjty.ariente.blocks.decorative.DecorativeBlockModule;
 import mcjty.ariente.blocks.decorative.PatternType;
+import mcjty.ariente.recipes.BlueprintExchangeRecipe;
 import mcjty.ariente.setup.Registration;
 import mcjty.lib.datagen.BaseRecipeProvider;
+import net.minecraft.advancements.Advancement;
+import net.minecraft.advancements.AdvancementHolder;
+import net.minecraft.core.HolderLookup;
+import net.minecraft.core.registries.BuiltInRegistries;
 import net.minecraft.data.DataGenerator;
-import net.minecraft.data.recipes.FinishedRecipe;
 import net.minecraft.data.recipes.RecipeCategory;
+import net.minecraft.data.recipes.RecipeOutput;
 import net.minecraft.data.recipes.ShapedRecipeBuilder;
-import net.minecraft.data.recipes.SimpleCookingRecipeBuilder;
-import net.minecraft.world.item.crafting.Ingredient;
-import net.minecraft.world.level.ItemLike;
 import net.minecraft.data.recipes.ShapelessRecipeBuilder;
-import net.minecraft.world.item.Items;
+import net.minecraft.data.recipes.SimpleCookingRecipeBuilder;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.tags.TagKey;
 import net.minecraft.world.item.Item;
-
-import java.util.function.Consumer;
+import net.minecraft.world.item.ItemStack;
+import net.minecraft.world.item.Items;
+import net.minecraft.world.item.crafting.BlastingRecipe;
+import net.minecraft.world.item.crafting.CraftingBookCategory;
+import net.minecraft.world.item.crafting.Ingredient;
+import net.minecraft.world.item.crafting.Recipe;
+import net.minecraft.world.item.crafting.SmeltingRecipe;
+import net.minecraft.world.level.ItemLike;
+import net.neoforged.neoforge.common.conditions.ICondition;
 
 public class Recipes extends BaseRecipeProvider {
 
-    public Recipes(DataGenerator generatorIn) {
-        super(generatorIn);
+    public Recipes(DataGenerator generatorIn, CompletableFuture<HolderLookup.Provider> provider) {
+        super(generatorIn, provider);
     }
 
     @Override
-    protected void buildRecipes(Consumer<FinishedRecipe> consumer) {
+    protected void buildRecipes(RecipeOutput consumer) {
         blueprintExchange(consumer);
         build(consumer, ShapedRecipeBuilder.shaped(RecipeCategory.MISC, Registration.TABLET.get())
                         .define('I', Items.IRON_INGOT)
@@ -77,7 +82,7 @@ public class Recipes extends BaseRecipeProvider {
                 "xxx", "xMx", "xxx");
 
         for (MarbleColor color : MarbleColor.VALUES) {
-            build(consumer, new ResourceLocation(Ariente.MODID, "marble_" + color.getSerializedName() + "_dye"), ShapelessRecipeBuilder.shapeless(RecipeCategory.MISC, DecorativeBlockModule.MARBLE_ITEMS.get(color).get())
+            build(consumer, ResourceLocation.fromNamespaceAndPath(Ariente.MODID, "marble_" + color.getSerializedName() + "_dye"), ShapelessRecipeBuilder.shapeless(RecipeCategory.MISC, DecorativeBlockModule.MARBLE_ITEMS.get(color).get())
                         .unlockedBy("marble", has(DecorativeBlockModule.MARBLE.get(color).get()))
                         .requires(Registration.TAG_MARBLE)
                         .requires(color.getColor().getTag()));
@@ -181,94 +186,63 @@ public class Recipes extends BaseRecipeProvider {
                 "mMm", "MmM", "mMm");
     }
 
-    private void blueprintExchange(Consumer<FinishedRecipe> consumer) {
+    private void blueprintExchange(RecipeOutput consumer) {
         ShapelessRecipeBuilder.shapeless(RecipeCategory.MISC, Registration.BLUEPRINT.get())
                 .requires(Registration.BLUEPRINT.get(), 3)
                 .unlockedBy("has_blueprint", has(Registration.BLUEPRINT.get()))
-                .save(recipe -> consumer.accept(new FinishedRecipe() {
+                .save(new RecipeOutput() {
 
                     @Override
-                    public void serializeRecipeData(JsonObject json) {
-                        json.addProperty("category", "misc");
+                    public Advancement.Builder advancement() {
+                        return consumer.advancement();
                     }
 
                     @Override
-                    public RecipeSerializer<?> getType() {
-                        return BlueprintRecipeRegistry.BLUEPRINT_EXCHANGE.get();
+                    public void accept(ResourceLocation id, Recipe<?> recipe, AdvancementHolder advancement, ICondition... conditions) {
+                        consumer.accept(id, new BlueprintExchangeRecipe(CraftingBookCategory.MISC), advancement, conditions);
                     }
-
-                    @Override
-                    public ResourceLocation getId() {
-                        return recipe.getId();
-                    }
-
-                    @Override
-                    public JsonObject serializeAdvancement() {
-                        return recipe.serializeAdvancement();
-                    }
-
-                    @Override
-                    public ResourceLocation getAdvancementId() {
-                        return recipe.getAdvancementId();
-                    }
-                }), BlueprintExchangeRecipe.ID);
+                }, BlueprintExchangeRecipe.ID);
     }
 
-    private void metalProcessing(Consumer<FinishedRecipe> consumer, TagKey<Item> material, ItemLike result, String suffix) {
-        String name = ForgeRegistries.ITEMS.getKey(result.asItem()).getPath();
+    private void metalProcessing(RecipeOutput consumer, TagKey<Item> material, ItemLike result, String suffix) {
+        String name = BuiltInRegistries.ITEM.getKey(result.asItem()).getPath();
         SimpleCookingRecipeBuilder.smelting(Ingredient.of(material), RecipeCategory.MISC, result, 0, 200)
                 .unlockedBy("has_material", has(material)).save(consumer,
-                        new ResourceLocation(Ariente.MODID, name + "_from_smelting" + suffix));
+                        ResourceLocation.fromNamespaceAndPath(Ariente.MODID, name + "_from_smelting" + suffix));
         SimpleCookingRecipeBuilder.blasting(Ingredient.of(material), RecipeCategory.MISC, result, 0, 100)
                 .unlockedBy("has_material", has(material)).save(consumer,
-                        new ResourceLocation(Ariente.MODID, name + "_from_blasting" + suffix));
+                        ResourceLocation.fromNamespaceAndPath(Ariente.MODID, name + "_from_blasting" + suffix));
     }
 
-    private void oreProcessing(Consumer<FinishedRecipe> consumer, ItemLike ore, ItemLike result, int count) {
-        String name = ForgeRegistries.ITEMS.getKey(result.asItem()).getPath();
+    private void oreProcessing(RecipeOutput consumer, ItemLike ore, ItemLike result, int count) {
+        String name = BuiltInRegistries.ITEM.getKey(result.asItem()).getPath();
         SimpleCookingRecipeBuilder.smelting(Ingredient.of(ore), RecipeCategory.MISC, result, 0, 200)
-                .unlockedBy("has_ore", has(ore)).save(recipe -> consumer.accept(withResultCount(recipe, count)),
-                        new ResourceLocation(Ariente.MODID, name + "_from_smelting"));
+                .unlockedBy("has_ore", has(ore)).save(withResultCount(consumer, count),
+                        ResourceLocation.fromNamespaceAndPath(Ariente.MODID, name + "_from_smelting"));
         SimpleCookingRecipeBuilder.blasting(Ingredient.of(ore), RecipeCategory.MISC, result, 0, 100)
-                .unlockedBy("has_ore", has(ore)).save(recipe -> consumer.accept(withResultCount(recipe, count)),
-                        new ResourceLocation(Ariente.MODID, name + "_from_blasting"));
+                .unlockedBy("has_ore", has(ore)).save(withResultCount(consumer, count),
+                        ResourceLocation.fromNamespaceAndPath(Ariente.MODID, name + "_from_blasting"));
     }
 
-    private FinishedRecipe withResultCount(FinishedRecipe recipe, int count) {
-        return new FinishedRecipe() {
+    private RecipeOutput withResultCount(RecipeOutput consumer, int count) {
+        return new RecipeOutput() {
 
             @Override
-            public void serializeRecipeData(JsonObject json) {
-                recipe.serializeRecipeData(json);
-                if (count > 1) {
-                    // Forge's cooking serializer accepts a full result stack, including its count.
-                    JsonObject result = new JsonObject();
-                    result.addProperty("item", json.get("result").getAsString());
-                    result.addProperty("count", count);
-                    json.add("result", result);
+            public Advancement.Builder advancement() {
+                return consumer.advancement();
+            }
+
+            @Override
+            public void accept(ResourceLocation id, Recipe<?> recipe, AdvancementHolder advancement, ICondition... conditions) {
+                if (recipe instanceof SmeltingRecipe cooking) {
+                    recipe = new SmeltingRecipe(cooking.getGroup(), cooking.category(), cooking.getIngredients().getFirst(),
+                            new ItemStack(cooking.getResultItem(null).getItem(), count), cooking.getExperience(), cooking.getCookingTime());
+                } else if (recipe instanceof BlastingRecipe cooking) {
+                    recipe = new BlastingRecipe(cooking.getGroup(), cooking.category(), cooking.getIngredients().getFirst(),
+                            new ItemStack(cooking.getResultItem(null).getItem(), count), cooking.getExperience(), cooking.getCookingTime());
                 }
-            }
-
-            @Override
-            public RecipeSerializer<?> getType() {
-                return recipe.getType();
-            }
-
-            @Override
-            public ResourceLocation getId() {
-                return recipe.getId();
-            }
-
-            @Override
-            public JsonObject serializeAdvancement() {
-                return recipe.serializeAdvancement();
-            }
-
-            @Override
-            public ResourceLocation getAdvancementId() {
-                return recipe.getAdvancementId();
+                consumer.accept(id, recipe, advancement, conditions);
             }
         };
     }
-
 }

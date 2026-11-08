@@ -1,28 +1,28 @@
 package mcjty.ariente.datagen;
 
-import net.minecraft.world.level.block.Block;
-import net.minecraft.world.item.Item;
-import net.minecraft.world.level.storage.loot.LootTable;
+import java.util.Set;
+import net.minecraft.core.HolderLookup;
 import net.minecraft.data.loot.BlockLootSubProvider;
 import net.minecraft.world.flag.FeatureFlags;
-
-import java.util.Set;
+import net.minecraft.world.item.Item;
+import net.minecraft.world.level.block.Block;
+import net.minecraft.world.level.storage.loot.LootTable;
 
 public class BlockLootUtility extends BlockLootSubProvider {
 
-    private BlockLootUtility() {
-        super(Set.of(), FeatureFlags.REGISTRY.allFlags());
+    private BlockLootUtility(HolderLookup.Provider provider) {
+        super(Set.of(), FeatureFlags.REGISTRY.allFlags(), provider);
     }
 
     @Override
     protected void generate() {
     }
 
-    public static LootTable.Builder oreTable(Block block, Item drop) {
-        return new BlockLootUtility().createOreDrop(block, drop);
+    public static LootTable.Builder oreTable(HolderLookup.Provider provider, Block block, Item drop) {
+        return new BlockLootUtility(provider).createOreDrop(block, drop);
     }
 
-    public static LootTable.Builder slabTable(Block block) {
-        return new BlockLootUtility().createSlabItemTable(block);
+    public static LootTable.Builder slabTable(HolderLookup.Provider provider, Block block) {
+        return new BlockLootUtility(provider).createSlabItemTable(block);
     }
 }

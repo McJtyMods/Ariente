@@ -1,19 +1,19 @@
 package mcjty.ariente.oregen;
 
+import java.util.function.Supplier;
 import mcjty.ariente.Ariente;
+import net.minecraft.core.registries.BuiltInRegistries;
 import net.minecraft.world.level.levelgen.feature.Feature;
-import net.minecraftforge.fml.javafmlmod.FMLJavaModLoadingContext;
-import net.minecraftforge.registries.DeferredRegister;
-import net.minecraftforge.registries.ForgeRegistries;
-import net.minecraftforge.registries.RegistryObject;
+import net.neoforged.bus.api.IEventBus;
+import net.neoforged.neoforge.registries.DeferredRegister;
 
 public class WorldGen {
 
-    private static final DeferredRegister<Feature<?>> FEATURES = DeferredRegister.create(ForgeRegistries.FEATURES, Ariente.MODID);
-    public static final RegistryObject<ArienteOreGen> OVERWORLD_ORES = FEATURES.register("overworld_ores", ArienteOreGen::new);
-    public static final RegistryObject<OverworldOreGroup> OVERWORLD_ORE_GROUP = FEATURES.register("overworld_ore_group", OverworldOreGroup::new);
+    private static final DeferredRegister<Feature<?>> FEATURES = DeferredRegister.create(BuiltInRegistries.FEATURE, Ariente.MODID);
+    public static final Supplier<ArienteOreGen> OVERWORLD_ORES = FEATURES.register("overworld_ores", ArienteOreGen::new);
+    public static final Supplier<OverworldOreGroup> OVERWORLD_ORE_GROUP = FEATURES.register("overworld_ore_group", OverworldOreGroup::new);
 
-    public static void register() {
-        FEATURES.register(FMLJavaModLoadingContext.get().getModEventBus());
+    public static void register(IEventBus bus) {
+        FEATURES.register(bus);
     }
 }

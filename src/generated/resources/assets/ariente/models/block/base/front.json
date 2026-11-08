@@ -1,13 +1,33 @@
 {
   "parent": "minecraft:block/block",
-  "textures": {
-    "side": "ariente:block/base/machineside",
-    "bottom": "ariente:block/base/machinebottom",
-    "top": "ariente:block/base/machinetop",
-    "particle": "#front"
-  },
   "elements": [
     {
+      "faces": {
+        "down": {
+          "cullface": "down",
+          "texture": "#bottom"
+        },
+        "east": {
+          "cullface": "east",
+          "texture": "#side"
+        },
+        "north": {
+          "cullface": "north",
+          "texture": "#front"
+        },
+        "south": {
+          "cullface": "south",
+          "texture": "#side"
+        },
+        "up": {
+          "cullface": "up",
+          "texture": "#top"
+        },
+        "west": {
+          "cullface": "west",
+          "texture": "#side"
+        }
+      },
       "from": [
         0,
         0,
@@ -17,33 +37,13 @@
         16,
         16,
         16
-      ],
-      "faces": {
-        "down": {
-          "texture": "#bottom",
-          "cullface": "down"
-        },
-        "up": {
-          "texture": "#top",
-          "cullface": "up"
-        },
-        "north": {
-          "texture": "#front",
-          "cullface": "north"
-        },
-        "south": {
-          "texture": "#side",
-          "cullface": "south"
-        },
-        "west": {
-          "texture": "#side",
-          "cullface": "west"
-        },
-        "east": {
-          "texture": "#side",
-          "cullface": "east"
-        }
-      }
+      ]
     }
-  ]
+  ],
+  "textures": {
+    "bottom": "ariente:block/base/machinebottom",
+    "particle": "#front",
+    "side": "ariente:block/base/machineside",
+    "top": "ariente:block/base/machinetop"
+  }
 }

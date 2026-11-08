@@ -1,38 +1,39 @@
 package mcjty.ariente.blocks.utility.wireless;
 
-import mcjty.ariente.blocks.BlockProperties;
-import net.minecraft.world.level.block.state.properties.BooleanProperty;
+import java.util.HashMap;
+import java.util.Map;
+import javax.annotation.Nullable;
 import mcjty.ariente.api.ICityAI;
 import mcjty.ariente.api.ICityEquipment;
 import mcjty.ariente.api.ISignalChannel;
+import mcjty.ariente.blocks.ArienteBlockEntity;
+import mcjty.ariente.blocks.BlockProperties;
+import mcjty.ariente.items.ItemData;
 import mcjty.ariente.setup.Registration;
 import mcjty.lib.blocks.BaseBlock;
 import mcjty.lib.blocks.RotationType;
-import mcjty.lib.tileentity.TickingTileEntity;
 import mcjty.lib.varia.Logging;
 import net.minecraft.ChatFormatting;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
+import net.minecraft.core.HolderLookup;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.world.InteractionHand;
+import net.minecraft.world.entity.player.Player;
+import net.minecraft.world.item.BlockItem;
 import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.level.BlockGetter;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.level.block.Block;
 import net.minecraft.world.level.block.Blocks;
-import net.minecraft.world.level.block.entity.BlockEntity;
-import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.level.block.RedStoneWireBlock;
-import net.minecraft.world.entity.player.Player;
-import net.minecraft.world.item.BlockItem;
+import net.minecraft.world.level.block.entity.BlockEntity;
 import net.minecraft.world.level.block.entity.BlockEntityType;
+import net.minecraft.world.level.block.state.BlockState;
+import net.minecraft.world.level.block.state.properties.BooleanProperty;
 
-import javax.annotation.Nullable;
-import java.util.HashMap;
-import java.util.Map;
-
-public abstract class SignalChannelTileEntity extends TickingTileEntity implements ICityEquipment, ISignalChannel {
+public abstract class SignalChannelTileEntity extends ArienteBlockEntity implements ICityEquipment, ISignalChannel {
     protected int channel = -1;
     protected int powerOutput = 0;
 
@@ -105,8 +106,8 @@ public abstract class SignalChannelTileEntity extends TickingTileEntity implemen
     }
 
     @Override
-    public void load(CompoundTag tagCompound) {
-        super.load(tagCompound);
+    public void loadAdditional(CompoundTag tagCompound, HolderLookup.Provider provider) {
+        super.loadAdditional(tagCompound, provider);
         CompoundTag info = tagCompound.getCompound("Info");
         if (!info.isEmpty()) {
             channel = info.getInt("channel");
@@ -115,11 +116,11 @@ public abstract class SignalChannelTileEntity extends TickingTileEntity implemen
     }
 
     @Override
-    public void saveAdditional(CompoundTag tagCompound) {
+    public void saveAdditional(CompoundTag tagCompound, HolderLookup.Provider provider) {
         CompoundTag info = getOrCreateInfo(tagCompound);
         info.putInt("channel", channel);
         info.putInt("desired", desiredChannel);
-        super.saveAdditional(tagCompound);
+        super.saveAdditional(tagCompound, provider);
     }
 
     public static boolean onBlockActivatedInt(Level world, BlockPos pos, Player player, InteractionHand hand) {
@@ -135,11 +136,13 @@ public abstract class SignalChannelTileEntity extends TickingTileEntity implemen
         if (te instanceof SignalChannelTileEntity) {
             if(!world.isClientSide) {
                 SignalChannelTileEntity rcte = (SignalChannelTileEntity)te;
-                CompoundTag tagCompound = stack.getOrCreateTag();
+                CompoundTag tagCompound = ItemData.get(stack);
                 int channel;
                 if(!player.isShiftKeyDown()) {
                     channel = rcte.getChannel(true);
                     tagCompound.putInt("channel", channel);
+                    ItemData.set(stack, tagCompound);
+
                 } else {
                     if (tagCompound.contains("channel")) {
                         channel = tagCompound.getInt("channel");
@@ -150,6 +153,8 @@ public abstract class SignalChannelTileEntity extends TickingTileEntity implemen
                         RedstoneChannels redstoneChannels = RedstoneChannels.getChannels(world);
                         channel = redstoneChannels.newChannel();
                         tagCompound.putInt("channel", channel);
+                        ItemData.set(stack, tagCompound);
+
                     }
                     rcte.setChannel(channel);
                 }

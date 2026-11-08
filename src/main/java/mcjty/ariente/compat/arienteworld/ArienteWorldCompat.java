@@ -1,13 +1,12 @@
 package mcjty.ariente.compat.arienteworld;
 
+import java.util.function.Function;
+import javax.annotation.Nullable;
 import mcjty.ariente.api.IArienteWorld;
 import mcjty.ariente.api.ICityAISystem;
 import mcjty.lib.varia.Logging;
 import net.minecraft.world.level.Level;
-import net.minecraftforge.fml.InterModComms;
-
-import javax.annotation.Nullable;
-import java.util.function.Function;
+import net.neoforged.fml.InterModComms;
 
 public class ArienteWorldCompat {
 

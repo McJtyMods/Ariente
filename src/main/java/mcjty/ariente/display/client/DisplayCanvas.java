@@ -25,10 +25,10 @@ public record DisplayCanvas(PoseStack poses, MultiBufferSource buffer) {
         int g = argb >> 8 & 255;
         int b = argb & 255;
         int a = argb >>> 24;
-        vertices.vertex(pose, x, y + height, 0).color(r, g, b, a).endVertex();
-        vertices.vertex(pose, x + width, y + height, 0).color(r, g, b, a).endVertex();
-        vertices.vertex(pose, x + width, y, 0).color(r, g, b, a).endVertex();
-        vertices.vertex(pose, x, y, 0).color(r, g, b, a).endVertex();
+        vertices.addVertex(pose, x, y + height, 0).setColor(r, g, b, a);
+        vertices.addVertex(pose, x + width, y + height, 0).setColor(r, g, b, a);
+        vertices.addVertex(pose, x + width, y, 0).setColor(r, g, b, a);
+        vertices.addVertex(pose, x, y, 0).setColor(r, g, b, a);
     }
 
     public void border(float x, float y, float width, float height, int color) {
@@ -56,10 +56,10 @@ public record DisplayCanvas(PoseStack poses, MultiBufferSource buffer) {
         int r = rgb >> 16 & 255;
         int g = rgb >> 8 & 255;
         int b = rgb & 255;
-        vertices.vertex(pose, x, y + size, .06f).uv(u, v + .25f).color(r, g, b, 255).endVertex();
-        vertices.vertex(pose, x + size, y + size, .06f).uv(u + .25f, v + .25f).color(r, g, b, 255).endVertex();
-        vertices.vertex(pose, x + size, y, .06f).uv(u + .25f, v).color(r, g, b, 255).endVertex();
-        vertices.vertex(pose, x, y, .06f).uv(u, v).color(r, g, b, 255).endVertex();
+        vertices.addVertex(pose, x, y + size, .06f).setUv(u, v + .25f).setColor(r, g, b, 255);
+        vertices.addVertex(pose, x + size, y + size, .06f).setUv(u + .25f, v + .25f).setColor(r, g, b, 255);
+        vertices.addVertex(pose, x + size, y, .06f).setUv(u + .25f, v).setColor(r, g, b, 255);
+        vertices.addVertex(pose, x, y, .06f).setUv(u, v).setColor(r, g, b, 255);
     }
 
     public void item(ItemStack stack, float x, float y) {

@@ -1,26 +1,26 @@
 package mcjty.ariente;
 
-import mcjty.ariente.bindings.Binding;
 import mcjty.ariente.api.IArienteMod;
 import mcjty.ariente.api.IArienteSystem;
 import mcjty.ariente.apiimpl.ArienteSystem;
+import mcjty.ariente.bindings.Binding;
 import mcjty.ariente.blocks.decorative.DecorativeBlockModule;
+import mcjty.ariente.client.ArienteRenderType;
 import mcjty.ariente.config.Config;
+import mcjty.ariente.network.ArienteMessages;
 import mcjty.ariente.recipes.BlueprintRecipeRegistry;
 import mcjty.ariente.setup.ClientSetup;
-import mcjty.ariente.client.ArienteRenderType;
 import mcjty.ariente.setup.ModSetup;
 import mcjty.ariente.setup.Registration;
 import mcjty.hologui.api.IHoloGuiHandler;
 import mcjty.lib.modules.Modules;
-import net.minecraftforge.api.distmarker.Dist;
-import net.minecraftforge.client.event.RegisterColorHandlersEvent;
-import net.minecraftforge.eventbus.api.EventPriority;
-import net.minecraftforge.fml.DistExecutor;
-import net.minecraftforge.fml.ModLoadingContext;
-import net.minecraftforge.fml.common.Mod;
-import net.minecraftforge.fml.config.ModConfig;
-import net.minecraftforge.fml.javafmlmod.FMLJavaModLoadingContext;
+import net.neoforged.api.distmarker.Dist;
+import net.neoforged.bus.api.EventPriority;
+import net.neoforged.bus.api.IEventBus;
+import net.neoforged.fml.ModContainer;
+import net.neoforged.fml.common.Mod;
+import net.neoforged.fml.config.ModConfig;
+import net.neoforged.neoforge.client.event.RegisterColorHandlersEvent;
 
 @Mod(Ariente.MODID)
 public class Ariente implements IArienteMod {
@@ -34,29 +34,30 @@ public class Ariente implements IArienteMod {
     public static IHoloGuiHandler guiHandler;
     public static IArienteSystem arienteSystem = new ArienteSystem();
 
-    public Ariente() {
+    public Ariente(ModContainer mod, IEventBus bus, Dist dist) {
         instance = this;
         setupModules();
 
-        ModLoadingContext.get().registerConfig(ModConfig.Type.CLIENT, Config.CLIENT_CONFIG);
-        ModLoadingContext.get().registerConfig(ModConfig.Type.SERVER, Config.SERVER_CONFIG);
+        mod.registerConfig(ModConfig.Type.CLIENT, Config.CLIENT_CONFIG);
+        mod.registerConfig(ModConfig.Type.SERVER, Config.SERVER_CONFIG);
 
-        Registration.register();
-        BlueprintRecipeRegistry.register();
+        Registration.register(bus);
+        BlueprintRecipeRegistry.register(bus);
         // The following is needed to make sure our SpriteUploader is setup at exactly the right moment
 
-        FMLJavaModLoadingContext.get().getModEventBus().addListener(setup::init);
-        DistExecutor.unsafeRunWhenOn(Dist.CLIENT, () -> () -> {
-            FMLJavaModLoadingContext.get().getModEventBus().addListener(ClientSetup::init);
-            FMLJavaModLoadingContext.get().getModEventBus().addListener(ClientSetup::initModels);
-            FMLJavaModLoadingContext.get().getModEventBus().addListener(ClientSetup::additionalModels);
-            FMLJavaModLoadingContext.get().getModEventBus().addListener(ClientSetup::modelsBaked);
-            FMLJavaModLoadingContext.get().getModEventBus().addListener(ArienteRenderType::registerShaders);
-            FMLJavaModLoadingContext.get().getModEventBus().addListener(ClientSetup::entityRenderers);
-            FMLJavaModLoadingContext.get().getModEventBus().addListener(ClientSetup::particleProviders);
-            FMLJavaModLoadingContext.get().getModEventBus().addListener(Binding::register);
-            FMLJavaModLoadingContext.get().getModEventBus().addListener(EventPriority.NORMAL, false, RegisterColorHandlersEvent.Block.class, event -> ClientSetup.setupSpriteUploader());
-        });
+        bus.addListener(setup::init);
+        bus.addListener(ArienteMessages::registerMessages);
+        if (dist.isClient()) {
+            bus.addListener(ClientSetup::init);
+            bus.addListener(ClientSetup::initModels);
+            bus.addListener(ClientSetup::additionalModels);
+            bus.addListener(ClientSetup::modelsBaked);
+            bus.addListener(ArienteRenderType::registerShaders);
+            bus.addListener(ClientSetup::entityRenderers);
+            bus.addListener(ClientSetup::particleProviders);
+            bus.addListener(Binding::register);
+            bus.addListener(EventPriority.NORMAL, false, RegisterColorHandlersEvent.Block.class, event -> ClientSetup.setupSpriteUploader());
+        }
     }
 
     private void setupModules() {

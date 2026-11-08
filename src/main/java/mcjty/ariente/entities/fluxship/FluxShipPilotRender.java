@@ -2,24 +2,23 @@ package mcjty.ariente.entities.fluxship;
 
 import com.mojang.blaze3d.vertex.PoseStack;
 import com.mojang.math.Axis;
+import java.util.IdentityHashMap;
+import java.util.Map;
 import mcjty.ariente.Ariente;
 import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.phys.Vec3;
-import net.minecraftforge.api.distmarker.Dist;
-import net.minecraftforge.client.event.RenderPlayerEvent;
-import net.minecraftforge.client.event.RenderLivingEvent;
-import net.minecraftforge.eventbus.api.EventPriority;
-import net.minecraftforge.eventbus.api.SubscribeEvent;
-import net.minecraftforge.fml.common.Mod;
+import net.neoforged.api.distmarker.Dist;
+import net.neoforged.bus.api.EventPriority;
+import net.neoforged.bus.api.SubscribeEvent;
+import net.neoforged.fml.common.EventBusSubscriber;
+import net.neoforged.neoforge.client.event.RenderLivingEvent;
+import net.neoforged.neoforge.client.event.RenderPlayerEvent;
 import org.joml.Matrix3f;
 import org.joml.Matrix4f;
 
-import java.util.IdentityHashMap;
-import java.util.Map;
-
 /** Seat the rendered pilot in the cabin without changing their camera or control direction. */
-@Mod.EventBusSubscriber(modid = Ariente.MODID, value = Dist.CLIENT)
+@EventBusSubscriber(modid = Ariente.MODID, value = Dist.CLIENT)
 public class FluxShipPilotRender {
 
     private static final Map<LivingEntity, PilotPose> ACTIVE = new IdentityHashMap<>();
@@ -43,7 +42,7 @@ public class FluxShipPilotRender {
         ACTIVE.put(player, new PilotPose(player.yBodyRot, player.yBodyRotO, player.yHeadRot, player.yHeadRotO,
                 player.getXRot(), player.xRotO, new Matrix4f(pose.last().pose()), new Matrix3f(pose.last().normal())));
         float heading = ship.getFlightYaw(partialTick);
-        double seatHeight = ship.getPassengersRidingOffset() + player.getMyRidingOffset();
+        double seatHeight = ship.getPassengersRidingOffset() + (-player.getVehicleAttachmentPoint(ship).y);
         Vec3 seat = ship.getPosition(partialTick).add(0, .5, 0)
                 .add(ship.rotateCabinOffset(new Vec3(0, seatHeight - .5, 0), partialTick));
         Vec3 correction = seat.subtract(player.getPosition(partialTick));

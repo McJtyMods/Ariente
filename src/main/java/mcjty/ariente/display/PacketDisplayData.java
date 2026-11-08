@@ -2,16 +2,23 @@ package mcjty.ariente.display;
 
 import mcjty.ariente.display.client.DisplayDataReceiver;
 import net.minecraft.core.BlockPos;
-import net.minecraft.network.FriendlyByteBuf;
-import net.minecraftforge.api.distmarker.Dist;
-import net.minecraftforge.fml.DistExecutor;
-import net.minecraftforge.network.NetworkEvent;
-
-import java.util.function.Supplier;
+import net.minecraft.network.RegistryFriendlyByteBuf;
+import net.minecraft.network.codec.StreamCodec;
+import net.minecraft.network.protocol.common.custom.CustomPacketPayload;
+import net.minecraft.resources.ResourceLocation;
+import net.neoforged.neoforge.network.handling.IPayloadContext;
 
 /** One bounded fragment of one module snapshot. Layouts travel separately in block entity updates. */
 public record PacketDisplayData(BlockPos pos, long layoutVersion, int index, int snapshotVersion,
-                                int totalBytes, int offset, byte[] data) {
+                                int totalBytes, int offset, byte[] data) implements CustomPacketPayload {
+
+    public static final Type<PacketDisplayData> TYPE = new Type<>(ResourceLocation.fromNamespaceAndPath("ariente", "packet_display_data"));
+    public static final StreamCodec<RegistryFriendlyByteBuf, PacketDisplayData> CODEC = StreamCodec.ofMember(PacketDisplayData::toBytes, PacketDisplayData::new);
+
+    @Override
+    public Type<? extends CustomPacketPayload> type() {
+        return TYPE;
+    }
 
     public PacketDisplayData {
         if (index < 0 || index >= DisplayBaseTile.MAX_MODULES || snapshotVersion < 0
@@ -22,12 +29,12 @@ public record PacketDisplayData(BlockPos pos, long layoutVersion, int index, int
         }
     }
 
-    public PacketDisplayData(FriendlyByteBuf buffer) {
+    public PacketDisplayData(RegistryFriendlyByteBuf buffer) {
         this(buffer.readBlockPos(), buffer.readLong(), buffer.readUnsignedByte(), buffer.readVarInt(),
                 buffer.readVarInt(), buffer.readVarInt(), buffer.readByteArray(DisplayDataCodec.FRAGMENT_BYTES));
     }
 
-    public void toBytes(FriendlyByteBuf buffer) {
+    public void toBytes(RegistryFriendlyByteBuf buffer) {
         buffer.writeBlockPos(pos);
         buffer.writeLong(layoutVersion);
         buffer.writeByte(index);
@@ -37,9 +44,7 @@ public record PacketDisplayData(BlockPos pos, long layoutVersion, int index, int
         buffer.writeByteArray(data);
     }
 
-    public void handle(Supplier<NetworkEvent.Context> supplier) {
-        NetworkEvent.Context context = supplier.get();
-        context.enqueueWork(() -> DistExecutor.unsafeRunWhenOn(Dist.CLIENT, () -> () -> DisplayDataReceiver.receive(this)));
-        context.setPacketHandled(true);
+    public void handle(IPayloadContext context) {
+        context.enqueueWork(() -> DisplayDataReceiver.receive(this));
     }
 }

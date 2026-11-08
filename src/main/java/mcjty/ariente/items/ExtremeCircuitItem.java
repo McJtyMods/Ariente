@@ -1,5 +1,6 @@
 package mcjty.ariente.items;
 
+import java.util.List;
 import mcjty.ariente.blocks.ExtremeMachineTile;
 import net.minecraft.network.chat.Component;
 import net.minecraft.world.InteractionResult;
@@ -9,10 +10,6 @@ import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.Rarity;
 import net.minecraft.world.item.TooltipFlag;
 import net.minecraft.world.item.context.UseOnContext;
-import net.minecraft.world.level.Level;
-
-import javax.annotation.Nullable;
-import java.util.List;
 
 public class ExtremeCircuitItem extends Item {
 
@@ -42,7 +39,7 @@ public class ExtremeCircuitItem extends Item {
     }
 
     @Override
-    public void appendHoverText(ItemStack stack, @Nullable Level level, List<Component> tooltip, TooltipFlag flag) {
+    public void appendHoverText(ItemStack stack, Item.TooltipContext level, List<Component> tooltip, TooltipFlag flag) {
         tooltip.add(Component.translatable("message.ariente.extreme_circuit.tooltip"));
         tooltip.add(Component.translatable("message.ariente.extreme_circuit.recovery"));
     }

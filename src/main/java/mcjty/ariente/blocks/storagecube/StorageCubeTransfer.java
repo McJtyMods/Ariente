@@ -2,12 +2,12 @@ package mcjty.ariente.blocks.storagecube;
 
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.ItemStack;
-import net.minecraftforge.items.IItemHandler;
-import net.minecraftforge.items.IItemHandlerModifiable;
-import net.minecraftforge.items.ItemHandlerHelper;
-import net.minecraftforge.items.wrapper.CombinedInvWrapper;
-import net.minecraftforge.items.wrapper.InvWrapper;
-import net.minecraftforge.items.wrapper.RangedWrapper;
+import net.neoforged.neoforge.items.IItemHandler;
+import net.neoforged.neoforge.items.IItemHandlerModifiable;
+import net.neoforged.neoforge.items.ItemHandlerHelper;
+import net.neoforged.neoforge.items.wrapper.CombinedInvWrapper;
+import net.neoforged.neoforge.items.wrapper.InvWrapper;
+import net.neoforged.neoforge.items.wrapper.RangedWrapper;
 
 public class StorageCubeTransfer {
 
@@ -41,7 +41,7 @@ public class StorageCubeTransfer {
                 return false;
             }
             int moved = Math.min(amount, from.getCount());
-            if (to.isEmpty() || ItemStack.isSameItemSameTags(from, to)) {
+            if (to.isEmpty() || ItemStack.isSameItemSameComponents(from, to)) {
                 moved = Math.min(moved, Math.min(all.getSlotLimit(destination), from.getMaxStackSize()) - to.getCount());
                 if (moved <= 0) {
                     return false;

@@ -1,6 +1,6 @@
 package mcjty.ariente.blocks.generators;
 
-import com.mojang.blaze3d.vertex.BufferBuilder;
+import com.mojang.blaze3d.vertex.ByteBufferBuilder;
 import com.mojang.blaze3d.vertex.PoseStack;
 import com.mojang.blaze3d.vertex.VertexConsumer;
 import mcjty.ariente.Ariente;
@@ -9,21 +9,21 @@ import mcjty.ariente.display.client.LiveCameraRenderer;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.renderer.LightTexture;
 import net.minecraft.client.renderer.MultiBufferSource;
-import net.minecraft.client.renderer.texture.TextureAtlasSprite;
 import net.minecraft.client.renderer.texture.OverlayTexture;
+import net.minecraft.client.renderer.texture.TextureAtlasSprite;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.inventory.InventoryMenu;
 import net.minecraft.world.phys.Vec3;
-import net.minecraftforge.api.distmarker.Dist;
-import net.minecraftforge.client.event.RenderLevelStageEvent;
-import net.minecraftforge.eventbus.api.SubscribeEvent;
-import net.minecraftforge.fml.common.Mod;
+import net.neoforged.api.distmarker.Dist;
+import net.neoforged.bus.api.SubscribeEvent;
+import net.neoforged.fml.common.EventBusSubscriber;
+import net.neoforged.neoforge.client.event.RenderLevelStageEvent;
 
-@Mod.EventBusSubscriber(modid = Ariente.MODID, value = Dist.CLIENT)
+@EventBusSubscriber(modid = Ariente.MODID, value = Dist.CLIENT)
 public class TankRendererTools {
 
     // Keep every tank's glass and beam in one sorted batch, independently of other entity renderers.
-    private static final MultiBufferSource.BufferSource WORLD_TANKS = MultiBufferSource.immediate(new BufferBuilder(4096));
+    private static final MultiBufferSource.BufferSource WORLD_TANKS = MultiBufferSource.immediate(new ByteBufferBuilder(4096));
 
     public static void renderWorldTank(PoseStack stack, ResourceLocation beam, ResourceLocation window, boolean working, long gameTime, Vec3 cameraOffset, int light) {
         renderTank(stack, LiveCameraRenderer.buffersForView(WORLD_TANKS), beam, window, working, gameTime, cameraOffset, light);
@@ -37,13 +37,13 @@ public class TankRendererTools {
     }
 
     private static void vertex(VertexConsumer renderer, PoseStack stack, TextureAtlasSprite sprite, float x, float y, float z, float u, float v, int light, Vec3 normal) {
-        renderer.vertex(stack.last().pose(), x, y, z)
-                .color(1.0f, 1.0f, 1.0f, 1.0f)
-                .uv(sprite.getU(u * 16), sprite.getV(v * 16))
-                .overlayCoords(OverlayTexture.NO_OVERLAY)
-                .uv2(light)
-                .normal(stack.last().normal(), (float) normal.x, (float) normal.y, (float) normal.z)
-                .endVertex();
+        renderer.addVertex(stack.last().pose(), x, y, z)
+                .setColor(1.0f, 1.0f, 1.0f, 1.0f)
+                .setUv(sprite.getU(u * 16), sprite.getV(v * 16))
+                .setOverlay(OverlayTexture.NO_OVERLAY)
+                .setLight(light)
+                .setNormal(stack.last(), (float) normal.x, (float) normal.y, (float) normal.z)
+                ;
     }
 
     public static void renderTank(PoseStack stack, MultiBufferSource buffer, ResourceLocation beam, ResourceLocation window, boolean working, long gameTime, Vec3 cameraOffset, int light) {

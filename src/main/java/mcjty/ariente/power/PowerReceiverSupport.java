@@ -1,14 +1,13 @@
 package mcjty.ariente.power;
 
+import java.util.HashSet;
+import java.util.Set;
 import mcjty.ariente.varia.LoadedChunks;
 import mcjty.lib.varia.OrientationTools;
 import net.minecraft.core.BlockPos;
-import net.minecraft.world.level.block.entity.BlockEntity;
 import net.minecraft.core.Direction;
 import net.minecraft.world.level.Level;
-
-import java.util.HashSet;
-import java.util.Set;
+import net.minecraft.world.level.block.entity.BlockEntity;
 
 public class PowerReceiverSupport {
 

@@ -1,8 +1,12 @@
 package mcjty.ariente.items.armor;
 
+import java.util.HashMap;
+import java.util.Map;
+import java.util.WeakHashMap;
 import mcjty.ariente.api.ArmorUpgradeType;
 import mcjty.ariente.items.modules.ModuleSupport;
 import mcjty.ariente.setup.Registration;
+import net.minecraft.core.Holder;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.world.effect.MobEffect;
 import net.minecraft.world.effect.MobEffectInstance;
@@ -11,14 +15,10 @@ import net.minecraft.world.entity.EquipmentSlot;
 import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.item.ItemStack;
 
-import java.util.HashMap;
-import java.util.Map;
-import java.util.WeakHashMap;
-
 /** Tracks effects supplied by the suit without removing a potion supplied by another source. */
 public class PowerSuitEffects {
 
-    private static final Map<LivingEntity, Map<MobEffect, OwnedEffect>> EFFECTS = new WeakHashMap<>();
+    private static final Map<LivingEntity, Map<Holder<MobEffect>, OwnedEffect>> EFFECTS = new WeakHashMap<>();
 
     public static void tick(LivingEntity entity) {
         update(entity, EquipmentSlot.HEAD, ArmorUpgradeType.NIGHTVISION, MobEffects.NIGHT_VISION, 400, 1);
@@ -26,12 +26,12 @@ public class PowerSuitEffects {
         update(entity, EquipmentSlot.CHEST, ArmorUpgradeType.REGENERATION, MobEffects.REGENERATION, 100, 2);
     }
 
-    private static void update(LivingEntity entity, EquipmentSlot slot, ArmorUpgradeType type, MobEffect effect, int duration, int amplifier) {
+    private static void update(LivingEntity entity, EquipmentSlot slot, ArmorUpgradeType type, Holder<MobEffect> effect, int duration, int amplifier) {
         ItemStack stack = entity.getItemBySlot(slot);
         boolean active = entity.isAlive() && stack.is(slot == EquipmentSlot.HEAD
                 ? Registration.POWERSUIT_HEAD.get() : Registration.POWERSUIT_CHEST.get())
                 && ModuleSupport.hasWorkingUpgrade(stack, type);
-        Map<MobEffect, OwnedEffect> owned = EFFECTS.computeIfAbsent(entity, e -> new HashMap<>());
+        Map<Holder<MobEffect>, OwnedEffect> owned = EFFECTS.computeIfAbsent(entity, e -> new HashMap<>());
         OwnedEffect previous = owned.get(effect);
         MobEffectInstance current = entity.getEffect(effect);
         if (previous != null && !previous.matches(current)) {
@@ -58,7 +58,7 @@ public class PowerSuitEffects {
     }
 
     public static void clear(LivingEntity entity) {
-        Map<MobEffect, OwnedEffect> owned = EFFECTS.remove(entity);
+        Map<Holder<MobEffect>, OwnedEffect> owned = EFFECTS.remove(entity);
         if (owned != null) {
             owned.forEach((effect, previous) -> {
                 if (previous.matches(entity.getEffect(effect))) {
@@ -68,12 +68,12 @@ public class PowerSuitEffects {
         }
     }
 
-    private static void removeOwnedEffect(LivingEntity entity, MobEffect effect) {
+    private static void removeOwnedEffect(LivingEntity entity, Holder<MobEffect> effect) {
         // Vanilla keeps weaker effects in a hidden chain. Preserve that chain when our boost stops.
-        CompoundTag tag = entity.getEffect(effect).save(new CompoundTag());
+        CompoundTag tag = (CompoundTag) entity.getEffect(effect).save();
         entity.removeEffect(effect);
-        if (tag.contains("HiddenEffect")) {
-            MobEffectInstance hidden = MobEffectInstance.load(tag.getCompound("HiddenEffect"));
+        if (tag.contains("hidden_effect")) {
+            MobEffectInstance hidden = MobEffectInstance.load(tag.getCompound("hidden_effect"));
             if (hidden != null && hidden.getDuration() > 0) {
                 entity.addEffect(hidden);
             }

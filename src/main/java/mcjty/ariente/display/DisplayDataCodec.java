@@ -30,7 +30,7 @@ public class DisplayDataCodec {
         }
         FriendlyByteBuf buffer = new FriendlyByteBuf(Unpooled.wrappedBuffer(bytes));
         try {
-            CompoundTag result = buffer.readNbt(new NbtAccounter(NBT_QUOTA));
+            CompoundTag result = (CompoundTag) buffer.readNbt(NbtAccounter.create(NBT_QUOTA));
             if (result == null || buffer.isReadable()) {
                 throw new IllegalArgumentException("Invalid display snapshot data");
             }

@@ -1,15 +1,16 @@
 package mcjty.ariente.blocks.defense;
 
-import mcjty.ariente.blocks.ExtremeMachineTile;
-import mcjty.ariente.Ariente;
-import mcjty.ariente.gui.GuiHelp;
 import mcjty.ariente.api.*;
+import java.util.*;
+import javax.annotation.Nullable;
+import mcjty.ariente.Ariente;
+import mcjty.ariente.blocks.ExtremeMachineTile;
 import mcjty.ariente.compat.arienteworld.ArienteWorldCompat;
 import mcjty.ariente.config.Config;
 import mcjty.ariente.config.DamageConfiguration;
 import mcjty.ariente.config.PowerConfiguration;
+import mcjty.ariente.gui.GuiHelp;
 import mcjty.ariente.items.KeyCardItem;
-import mcjty.ariente.network.ArienteMessages;
 import mcjty.ariente.power.IPowerReceiver;
 import mcjty.ariente.power.IPowerUser;
 import mcjty.ariente.power.PowerReceiverSupport;
@@ -25,23 +26,22 @@ import mcjty.lib.blocks.RotationType;
 import mcjty.lib.builder.BlockBuilder;
 import mcjty.lib.varia.RedstoneMode;
 import net.minecraft.core.BlockPos;
+import net.minecraft.core.HolderLookup;
 import net.minecraft.nbt.CompoundTag;
+import net.minecraft.server.level.ServerLevel;
+import net.minecraft.world.InteractionHand;
 import net.minecraft.world.InteractionResult;
+import net.minecraft.world.entity.Entity;
+import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.entity.projectile.Projectile;
 import net.minecraft.world.level.ChunkPos;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.level.block.state.BlockState;
-import net.minecraft.world.entity.Entity;
-import net.minecraft.world.entity.LivingEntity;
-import net.minecraft.world.InteractionHand;
 import net.minecraft.world.phys.AABB;
 import net.minecraft.world.phys.BlockHitResult;
 import net.minecraft.world.phys.Vec3;
-import net.minecraftforge.network.PacketDistributor;
-
-import javax.annotation.Nullable;
-import java.util.*;
+import net.neoforged.neoforge.network.PacketDistributor;
 
 import static mcjty.ariente.compat.ArienteTOPDriver.DRIVER;
 import static mcjty.ariente.config.Config.SHIELD_PANEL_LIFE;
@@ -281,7 +281,7 @@ public class ForceFieldTile extends ExtremeMachineTile implements IGuiTile, ISou
                                     }
                                 }
 
-                                ArienteMessages.INSTANCE.send(PacketDistributor.DIMENSION.with(() -> level.dimension()),
+                                PacketDistributor.sendToPlayersInDimension((ServerLevel) level,
                                         new PacketDamageForcefield(worldPosition, info.getIndex(), intersection));
                             }
                             changed = true;
@@ -447,8 +447,8 @@ public class ForceFieldTile extends ExtremeMachineTile implements IGuiTile, ISou
     }
 
     @Override
-    public void load(CompoundTag tagCompound) {
-        super.load(tagCompound);
+    public void loadAdditional(CompoundTag tagCompound, HolderLookup.Provider provider) {
+        super.loadAdditional(tagCompound, provider);
         CompoundTag info = tagCompound.getCompound("Info");
         if (info.contains("scale")) {
             setScale(info.getInt("scale"));
@@ -468,8 +468,8 @@ public class ForceFieldTile extends ExtremeMachineTile implements IGuiTile, ISou
     }
 
     @Override
-    public void saveAdditional(CompoundTag tagCompound) {
-        super.saveAdditional(tagCompound);
+    public void saveAdditional(CompoundTag tagCompound, HolderLookup.Provider provider) {
+        super.saveAdditional(tagCompound, provider);
         int[] lifeIdx = new int[PentakisDodecahedron.MAX_TRIANGLES];
         int i = 0;
         for (PanelInfo info : panelInfo) {
@@ -485,13 +485,13 @@ public class ForceFieldTile extends ExtremeMachineTile implements IGuiTile, ISou
     }
 
     @Override
-    public void saveClientDataToNBT(CompoundTag tagCompound) {
-        saveAdditional(tagCompound);
+    public void saveClientDataToNBT(CompoundTag tagCompound, HolderLookup.Provider provider) {
+        saveAdditional(tagCompound, provider);
     }
 
     @Override
-    public void loadClientDataFromNBT(CompoundTag tagCompound) {
-        load(tagCompound);
+    public void loadClientDataFromNBT(CompoundTag tagCompound, HolderLookup.Provider provider) {
+        loadAdditional(tagCompound, provider);
     }
 
     @Override
@@ -516,7 +516,7 @@ public class ForceFieldTile extends ExtremeMachineTile implements IGuiTile, ISou
     }
 
     private void changeMode() {
-        int current = rsMode.ordinal() + 1;
+        int current = getRSMode().ordinal() + 1;
         if (current >= RedstoneMode.values().length) {
             current = 0;
         }

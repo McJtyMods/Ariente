@@ -1,6 +1,9 @@
 package mcjty.ariente.gui;
 
 import com.mojang.blaze3d.vertex.PoseStack;
+import java.util.Locale;
+import java.util.function.BiFunction;
+import java.util.function.Function;
 import mcjty.hologui.api.IColor;
 import mcjty.hologui.api.IHoloGuiEntity;
 import mcjty.hologui.api.components.INumber;
@@ -8,10 +11,6 @@ import mcjty.hologui.gui.HoloGuiRenderTools;
 import mcjty.hologui.gui.components.AbstractHoloComponent;
 import net.minecraft.client.renderer.MultiBufferSource;
 import net.minecraft.world.entity.player.Player;
-
-import java.util.Locale;
-import java.util.function.BiFunction;
-import java.util.function.Function;
 
 public class CompactNumber extends AbstractHoloComponent<INumber> implements INumber {
 

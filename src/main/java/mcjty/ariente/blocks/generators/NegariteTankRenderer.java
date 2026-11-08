@@ -14,8 +14,8 @@ import net.minecraft.world.phys.Vec3;
 public class NegariteTankRenderer implements BlockEntityRenderer<NegariteTankTile> {
 
     protected BlockEntityRendererProvider.Context context;
-    public static final ResourceLocation NEGARITE_BEAM = new ResourceLocation(Ariente.MODID, "block/machines/negarite_beam");
-    public static final ResourceLocation NEGARITE_WINDOW = new ResourceLocation(Ariente.MODID, "block/machines/negarite_tank_window");
+    public static final ResourceLocation NEGARITE_BEAM = ResourceLocation.fromNamespaceAndPath(Ariente.MODID, "block/machines/negarite_beam");
+    public static final ResourceLocation NEGARITE_WINDOW = ResourceLocation.fromNamespaceAndPath(Ariente.MODID, "block/machines/negarite_tank_window");
 
     public NegariteTankRenderer(BlockEntityRendererProvider.Context pContext) {
         context = pContext;

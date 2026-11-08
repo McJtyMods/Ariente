@@ -122,7 +122,7 @@
     "plate",
     "glass"
   ],
-  "loader": "forge:composite",
+  "loader": "neoforge:composite",
   "textures": {
     "particle": "ariente:block/base/machinetop"
   }

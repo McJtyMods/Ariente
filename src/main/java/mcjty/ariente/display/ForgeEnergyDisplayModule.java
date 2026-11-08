@@ -8,8 +8,8 @@ import net.minecraft.nbt.CompoundTag;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.level.block.entity.BlockEntity;
-import net.minecraftforge.common.capabilities.ForgeCapabilities;
-import net.minecraftforge.energy.IEnergyStorage;
+import net.neoforged.neoforge.capabilities.Capabilities;
+import net.neoforged.neoforge.energy.IEnergyStorage;
 
 public class ForgeEnergyDisplayModule extends ResourceDisplayModule {
 
@@ -26,8 +26,8 @@ public class ForgeEnergyDisplayModule extends ResourceDisplayModule {
     }
 
     public static IEnergyStorage energy(BlockEntity tile, Direction side) {
-        IEnergyStorage handler = tile.getCapability(ForgeCapabilities.ENERGY, side).orElse(null);
-        return handler != null ? handler : tile.getCapability(ForgeCapabilities.ENERGY).orElse(null);
+        IEnergyStorage handler = tile.getLevel().getCapability(Capabilities.EnergyStorage.BLOCK, tile.getBlockPos(), side);
+        return handler != null ? handler : tile.getLevel().getCapability(Capabilities.EnergyStorage.BLOCK, tile.getBlockPos(), null);
     }
 
     @Override

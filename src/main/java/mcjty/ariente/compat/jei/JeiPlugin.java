@@ -2,12 +2,11 @@ package mcjty.ariente.compat.jei;
 
 import mcjty.ariente.Ariente;
 import mcjty.ariente.items.BlueprintItem;
-import mcjty.ariente.recipes.BlueprintRecipeRegistry;
 import mcjty.ariente.recipes.BlueprintExchangeRecipe;
+import mcjty.ariente.recipes.BlueprintRecipeRegistry;
 import mcjty.ariente.recipes.ConstructorRecipe;
-import mcjty.ariente.recipes.PurifyingRecipe;
 import mcjty.ariente.recipes.PurifierRecipes;
-import net.minecraft.client.Minecraft;
+import mcjty.ariente.recipes.PurifyingRecipe;
 import mcjty.ariente.setup.Registration;
 import mezz.jei.api.IModPlugin;
 import mezz.jei.api.recipe.RecipeType;
@@ -15,6 +14,7 @@ import mezz.jei.api.registration.IRecipeCatalystRegistration;
 import mezz.jei.api.registration.IRecipeCategoryRegistration;
 import mezz.jei.api.registration.IRecipeRegistration;
 import mezz.jei.api.registration.ISubtypeRegistration;
+import net.minecraft.client.Minecraft;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.item.ItemStack;
 
@@ -26,7 +26,7 @@ public class JeiPlugin implements IModPlugin {
 
     @Override
     public ResourceLocation getPluginUid() {
-        return new ResourceLocation(Ariente.MODID, "constructor");
+        return ResourceLocation.fromNamespaceAndPath(Ariente.MODID, "constructor");
     }
 
     @Override

@@ -10,9 +10,9 @@ import net.minecraft.nbt.Tag;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.level.block.entity.BlockEntity;
-import net.minecraftforge.common.capabilities.ForgeCapabilities;
-import net.minecraftforge.fluids.FluidStack;
-import net.minecraftforge.fluids.capability.IFluidHandler;
+import net.neoforged.neoforge.capabilities.Capabilities;
+import net.neoforged.neoforge.fluids.FluidStack;
+import net.neoforged.neoforge.fluids.capability.IFluidHandler;
 
 public class FluidDisplayModule extends ResourceDisplayModule {
 
@@ -39,8 +39,8 @@ public class FluidDisplayModule extends ResourceDisplayModule {
     }
 
     public static IFluidHandler fluids(BlockEntity tile, Direction side) {
-        IFluidHandler handler = tile.getCapability(ForgeCapabilities.FLUID_HANDLER, side).orElse(null);
-        return handler != null ? handler : tile.getCapability(ForgeCapabilities.FLUID_HANDLER).orElse(null);
+        IFluidHandler handler = tile.getLevel().getCapability(Capabilities.FluidHandler.BLOCK, tile.getBlockPos(), side);
+        return handler != null ? handler : tile.getLevel().getCapability(Capabilities.FluidHandler.BLOCK, tile.getBlockPos(), null);
     }
 
     @Override
@@ -76,14 +76,14 @@ public class FluidDisplayModule extends ResourceDisplayModule {
             FluidStack fluid = handler.getFluidInTank(tank).copy();
             CompoundTag entry = new CompoundTag();
             entry.putInt("Tank", tank + 1);
-            entry.put("Fluid", fluid.writeToNBT(new CompoundTag()));
+            entry.put("Fluid", fluid.saveOptional(level.registryAccess()));
             entry.putLong("Amount", fluid.isEmpty() ? 0 : Math.max(0, fluid.getAmount()));
             entry.putLong("Capacity", Math.max(0, handler.getTankCapacity(tank)));
             if (mode(stack) == 2) {
                 CompoundTag last = new CompoundTag();
                 for (int index = 0; index < old.size(); index++) {
                     CompoundTag candidate = old.getCompound(index);
-                    FluidStack oldFluid = FluidStack.loadFluidStackFromNBT(candidate.getCompound("HistoryFluid"));
+                    FluidStack oldFluid = FluidStack.parseOptional(level.registryAccess(), candidate.getCompound("HistoryFluid"));
                     // Do not join histories of different tanks or different fluids.
                     if (candidate.getInt("Tank") == tank + 1 && (fluid.isEmpty() || oldFluid.isEmpty() || fluid.isFluidEqual(oldFluid))) {
                         last = candidate;
@@ -91,7 +91,7 @@ public class FluidDisplayModule extends ResourceDisplayModule {
                     }
                 }
                 entry.put("HistoryFluid", fluid.isEmpty() ? last.getCompound("HistoryFluid").copy()
-                        : fluid.writeToNBT(new CompoundTag()));
+                        : fluid.saveOptional(level.registryAccess()));
                 appendHistory(entry, last, entry.getLong("Amount"));
             }
             readings.add(entry);

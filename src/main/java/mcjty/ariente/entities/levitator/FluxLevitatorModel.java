@@ -54,7 +54,7 @@ public class FluxLevitatorModel<T extends Entity> extends EntityModel<T> {
     }
 
     @Override
-    public void renderToBuffer(PoseStack poses, VertexConsumer buffer, int light, int overlay, float red, float green, float blue, float alpha) {
-        root.render(poses, buffer, light, overlay, red, green, blue, alpha);
+    public void renderToBuffer(PoseStack poses, VertexConsumer buffer, int light, int overlay, int color) {
+        root.render(poses, buffer, light, overlay, color);
     }
 }

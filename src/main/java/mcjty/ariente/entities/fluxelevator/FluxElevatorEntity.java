@@ -1,7 +1,10 @@
 package mcjty.ariente.entities.fluxelevator;
 
-import net.minecraft.world.entity.LivingEntity;
-import net.minecraft.network.protocol.game.ClientGamePacketListener;
+import net.minecraft.world.entity.EntityDimensions;
+import java.util.List;
+import java.util.Optional;
+import java.util.UUID;
+import javax.annotation.Nullable;
 import mcjty.ariente.Ariente;
 import mcjty.ariente.gui.ModGuis;
 import mcjty.ariente.setup.Registration;
@@ -9,38 +12,31 @@ import mcjty.hologui.api.CloseStrategy;
 import mcjty.hologui.api.IHoloGuiEntity;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
+import net.minecraft.core.component.DataComponents;
 import net.minecraft.nbt.CompoundTag;
-import net.minecraft.network.protocol.Packet;
 import net.minecraft.network.syncher.EntityDataAccessor;
+import net.minecraft.network.syncher.EntityDataSerializers;
 import net.minecraft.network.syncher.SynchedEntityData;
-import net.minecraft.server.level.ServerLevel;
 import net.minecraft.util.Mth;
+import net.minecraft.world.InteractionHand;
 import net.minecraft.world.InteractionResult;
 import net.minecraft.world.damagesource.DamageSource;
 import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.EntityType;
+import net.minecraft.world.entity.LivingEntity;
+import net.minecraft.world.entity.MoverType;
 import net.minecraft.world.entity.animal.IronGolem;
 import net.minecraft.world.entity.player.Player;
-import net.minecraft.world.level.block.Block;
-import net.minecraft.world.level.block.state.BlockState;
-import net.minecraft.world.entity.MoverType;
 import net.minecraft.world.item.ItemStack;
-import net.minecraft.network.syncher.EntityDataSerializers;
-import net.minecraft.server.MinecraftServer;
-import net.minecraft.world.level.block.state.properties.BlockStateProperties;
-import net.minecraft.world.level.block.state.properties.RailShape;
-import net.minecraft.world.InteractionHand;
-import net.minecraft.world.phys.AABB;
-import net.minecraft.world.phys.Vec3;
 import net.minecraft.world.level.GameRules;
 import net.minecraft.world.level.Level;
-import net.minecraftforge.network.NetworkHooks;
+import net.minecraft.world.level.block.Block;
+import net.minecraft.world.level.block.state.BlockState;
+import net.minecraft.world.level.block.state.properties.BlockStateProperties;
+import net.minecraft.world.level.block.state.properties.RailShape;
+import net.minecraft.world.phys.AABB;
+import net.minecraft.world.phys.Vec3;
 import org.apache.commons.lang3.tuple.Pair;
-
-import javax.annotation.Nullable;
-import java.util.List;
-import java.util.Optional;
-import java.util.UUID;
 
 public class FluxElevatorEntity extends Entity {
 
@@ -90,11 +86,6 @@ public class FluxElevatorEntity extends Entity {
     @Override
     public LivingEntity getControllingPassenger() {
         return null;
-    }
-
-    @Override
-    public Packet<ClientGamePacketListener> getAddEntityPacket() {
-        return NetworkHooks.getEntitySpawningPacket(this);
     }
 
     @Override
@@ -176,10 +167,10 @@ public class FluxElevatorEntity extends Entity {
     }
 
     @Override
-    protected void defineSynchedData() {
-        this.entityData.define(SPEED, Integer.valueOf(0));
-        this.entityData.define(DAMAGE, Float.valueOf(0.0F));
-        this.entityData.define(HOLO, Optional.empty());
+    protected void defineSynchedData(SynchedEntityData.Builder builder) {
+        builder.define(SPEED, Integer.valueOf(0));
+        builder.define(DAMAGE, Float.valueOf(0.0F));
+        builder.define(HOLO, Optional.empty());
     }
 
     // @todo 1.16 @Override
@@ -200,6 +191,10 @@ public class FluxElevatorEntity extends Entity {
     }
 
     @Override
+    protected Vec3 getPassengerAttachmentPoint(Entity passenger, EntityDimensions dimensions, float scale) {
+        return new Vec3(0, getPassengersRidingOffset(), 0);
+    }
+
     public double getPassengersRidingOffset() {
         return 0.0D;
     }
@@ -248,7 +243,7 @@ public class FluxElevatorEntity extends Entity {
             ItemStack itemstack = new ItemStack(Registration.FLUX_LEVITATOR.get(), 1);
 
             if (this.hasCustomName()) {
-                itemstack.setHoverName(this.getCustomName());
+                itemstack.set(DataComponents.CUSTOM_NAME, this.getCustomName());
             }
 
             this.spawnAtLocation(itemstack, 0.0F);
@@ -279,8 +274,6 @@ public class FluxElevatorEntity extends Entity {
         if (this.getY() < -64.0D) {
             this.onBelowWorld();
         }
-
-        handlePortal();
 
         if (this.level().isClientSide) {
             onUpdateClient();
@@ -377,45 +370,6 @@ public class FluxElevatorEntity extends Entity {
     private void onUpdateClient() {
         this.setPos(this.getX(), this.getY(), this.getZ());
         this.setRot(this.getYRot(), this.getXRot());
-    }
-
-    private void handlePortal() {
-        if (!this.level().isClientSide && this.level() instanceof ServerLevel) {
-            MinecraftServer minecraftserver = this.level().getServer();
-            int i = this.getPortalWaitTime();
-
-            if (this.isInsidePortal) {
-                if (minecraftserver.isNetherEnabled()) {
-                    if (!this.isPassenger() && this.portalTime++ >= i) {
-                        this.portalTime = i;
-                        this.timeUntilPortal = this.getDimensionChangingDelay();
-                        ServerLevel id;
-
-                        if (this.level().dimension() == Level.NETHER) {
-                            id = minecraftserver.getLevel(Level.OVERWORLD);
-                        } else {
-                            id = minecraftserver.getLevel(Level.NETHER);
-                        }
-
-                        this.changeDimension(id);
-                    }
-
-                    this.isInsidePortal = false;
-                }
-            } else {
-                if (this.portalTime > 0) {
-                    this.portalTime -= 4;
-                }
-
-                if (this.portalTime < 0) {
-                    this.portalTime = 0;
-                }
-            }
-
-            if (this.timeUntilPortal > 0) {
-                --this.timeUntilPortal;
-            }
-        }
     }
 
     public void updateHoloGui() {
@@ -837,7 +791,7 @@ public class FluxElevatorEntity extends Entity {
     }
 
     @Override
-    public void lerpTo(double x, double y, double z, float yaw, float pitch, int posRotationIncrements, boolean teleport) {
+    public void lerpTo(double x, double y, double z, float yaw, float pitch, int posRotationIncrements) {
         setDeltaMovement(velocityX, velocityY, velocityZ);
 
         updateHoloGui();

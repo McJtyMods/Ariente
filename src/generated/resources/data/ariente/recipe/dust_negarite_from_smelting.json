@@ -1,0 +1,13 @@
+{
+  "type": "minecraft:smelting",
+  "category": "misc",
+  "cookingtime": 200,
+  "experience": 0.0,
+  "ingredient": {
+    "item": "ariente:negarite"
+  },
+  "result": {
+    "count": 4,
+    "id": "ariente:dust_negarite"
+  }
+}

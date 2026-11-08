@@ -1,15 +1,16 @@
 package mcjty.ariente.entities.fluxship;
 
+import javax.annotation.Nullable;
 import mcjty.ariente.api.IFluxShipPilot;
 import mcjty.ariente.entities.LaserEntity;
 import mcjty.ariente.gui.ModGuis;
+import mcjty.ariente.items.ItemData;
 import mcjty.ariente.setup.Registration;
 import mcjty.hologui.api.CloseStrategy;
 import mcjty.hologui.api.IHoloGuiEntity;
 import mcjty.hologui.gui.HoloGuiEntity;
+import net.minecraft.core.component.DataComponents;
 import net.minecraft.nbt.CompoundTag;
-import net.minecraft.network.protocol.Packet;
-import net.minecraft.network.protocol.game.ClientGamePacketListener;
 import net.minecraft.network.syncher.EntityDataAccessor;
 import net.minecraft.network.syncher.EntityDataSerializers;
 import net.minecraft.network.syncher.SynchedEntityData;
@@ -26,10 +27,7 @@ import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.phys.AABB;
 import net.minecraft.world.phys.Vec3;
-import net.minecraftforge.network.NetworkHooks;
 import org.joml.Vector3f;
-
-import javax.annotation.Nullable;
 
 public class FluxShipEntity extends Entity {
 
@@ -187,9 +185,9 @@ public class FluxShipEntity extends Entity {
 
     public ItemStack asItem() {
         ItemStack stack = new ItemStack(Registration.FLUX_SHIP.get());
-        stack.getOrCreateTag().putInt(FluxShipEnergy.CHARGE_TAG, getCharge());
+        ItemData.update(stack, data -> data.putInt(FluxShipEnergy.CHARGE_TAG, getCharge()));
         if (hasCustomName()) {
-            stack.setHoverName(getCustomName());
+            stack.set(DataComponents.CUSTOM_NAME, getCustomName());
         }
         return stack;
     }
@@ -236,7 +234,7 @@ public class FluxShipEntity extends Entity {
             passenger.setXRot(getXRot());
         } else {
             // Keep the seated player's eyes in the cabin as the hull tilts.
-            double eyeHeight = getPassengersRidingOffset() + passenger.getMyRidingOffset() + passenger.getEyeHeight();
+            double eyeHeight = getPassengersRidingOffset() + (-passenger.getVehicleAttachmentPoint(this).y) + passenger.getEyeHeight();
             Vec3 seat = rotateCabinOffset(new Vec3(0, eyeHeight - .5, 0)).add(0, .5 - passenger.getEyeHeight(), 0);
             moveFunction.accept(passenger, getX() + seat.x, getY() + seat.y, getZ() + seat.z);
             if (level().isClientSide && lastPilotTurnTick != tickCount
@@ -282,7 +280,6 @@ public class FluxShipEntity extends Entity {
         return !level().isClientSide;
     }
 
-    @Override
     public double getPassengersRidingOffset() {
         return 0.4;
     }
@@ -342,7 +339,7 @@ public class FluxShipEntity extends Entity {
     }
 
     @Override
-    public void lerpTo(double x, double y, double z, float yaw, float pitch, int steps, boolean teleport) {
+    public void lerpTo(double x, double y, double z, float yaw, float pitch, int steps) {
         lerpTarget = new Vec3(x, y, z);
         remoteMotion.accept(lerpTarget);
         // Attitude uses full-precision synced data, independent of position packets
@@ -493,14 +490,14 @@ public class FluxShipEntity extends Entity {
     }
 
     @Override
-    protected void defineSynchedData() {
-        entityData.define(BANK, 0f);
-        entityData.define(PITCH, 0f);
-        entityData.define(YAW, 0f);
-        entityData.define(SPEED, 0f);
-        entityData.define(MOTION, new Vector3f());
-        entityData.define(MOUSE_FLIGHT, false);
-        entityData.define(CHARGE, FluxShipEnergy.CAPACITY);
+    protected void defineSynchedData(SynchedEntityData.Builder builder) {
+        builder.define(BANK, 0f);
+        builder.define(PITCH, 0f);
+        builder.define(YAW, 0f);
+        builder.define(SPEED, 0f);
+        builder.define(MOTION, new Vector3f());
+        builder.define(MOUSE_FLIGHT, false);
+        builder.define(CHARGE, FluxShipEnergy.CAPACITY);
     }
 
     @Override
@@ -536,11 +533,6 @@ public class FluxShipEntity extends Entity {
     @Override
     protected void addAdditionalSaveData(CompoundTag tag) {
         tag.putInt(FluxShipEnergy.CHARGE_TAG, getCharge());
-    }
-
-    @Override
-    public Packet<ClientGamePacketListener> getAddEntityPacket() {
-        return NetworkHooks.getEntitySpawningPacket(this);
     }
 
     @Override

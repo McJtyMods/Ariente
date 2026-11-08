@@ -1,7 +1,16 @@
 package mcjty.ariente.client;
 
-import com.mojang.blaze3d.vertex.BufferBuilder;
+import com.mojang.blaze3d.vertex.ByteBufferBuilder;
 import com.mojang.blaze3d.vertex.PoseStack;
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.Comparator;
+import java.util.IdentityHashMap;
+import java.util.LinkedHashMap;
+import java.util.List;
+import java.util.Map;
+import java.util.Set;
+import java.util.function.Consumer;
 import mcjty.ariente.display.client.LiveCameraRenderer;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.renderer.MultiBufferSource;
@@ -9,27 +18,18 @@ import net.minecraft.client.renderer.RenderType;
 import net.minecraft.world.level.block.entity.BlockEntity;
 import net.minecraft.world.phys.Vec3;
 
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.Comparator;
-import java.util.IdentityHashMap;
-import java.util.List;
-import java.util.Map;
-import java.util.Set;
-import java.util.function.Consumer;
-
 /** Composite world-space holograms after the scene, without translucent depth writes. */
 public class WorldHolograms {
 
     private static final List<Entry> PENDING = new ArrayList<>();
     private static final Set<BlockEntity> QUEUED = Collections.newSetFromMap(new IdentityHashMap<>());
     // Foil requests two consumers at once, so glint cannot share the fallback builder.
-    private static final MultiBufferSource.BufferSource BUFFERS = MultiBufferSource.immediateWithBuffers(Map.of(
-            RenderType.glint(), new BufferBuilder(256),
-            RenderType.glintDirect(), new BufferBuilder(256),
-            RenderType.glintTranslucent(), new BufferBuilder(256),
-            RenderType.entityGlint(), new BufferBuilder(256),
-            RenderType.entityGlintDirect(), new BufferBuilder(256)), new BufferBuilder(4096));
+    private static final MultiBufferSource.BufferSource BUFFERS = MultiBufferSource.immediateWithBuffers(new LinkedHashMap<>(Map.of(
+            RenderType.glint(), new ByteBufferBuilder(256),
+
+            RenderType.glintTranslucent(), new ByteBufferBuilder(256),
+            RenderType.entityGlint(), new ByteBufferBuilder(256),
+            RenderType.entityGlintDirect(), new ByteBufferBuilder(256))), new ByteBufferBuilder(4096));
 
     public static boolean begin(BlockEntity owner) {
         return !LiveCameraRenderer.isRendering() && QUEUED.add(owner);

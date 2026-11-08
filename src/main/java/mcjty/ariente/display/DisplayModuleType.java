@@ -1,17 +1,16 @@
 package mcjty.ariente.display;
 
+import java.util.List;
 import mcjty.hologui.api.IGuiComponentRegistry;
 import mcjty.hologui.api.components.IPanel;
+import net.minecraft.ChatFormatting;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
 import net.minecraft.nbt.CompoundTag;
-import net.minecraft.ChatFormatting;
 import net.minecraft.network.chat.Component;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.level.Level;
-
-import java.util.List;
 
 /** Server-safe extension point. Rendering is registered separately on the client. */
 public interface DisplayModuleType {
@@ -29,12 +28,12 @@ public interface DisplayModuleType {
     }
 
     default Component link(ItemStack stack, CompoundTag link, Component targetName) {
-        DisplayModuleItem.config(stack).put("Link", link);
+        DisplayModuleItem.editConfig(stack, config -> config.put("Link", link));
         return Component.literal("Linked to " + targetName.getString());
     }
 
     default void clearLinks(ItemStack stack) {
-        DisplayModuleItem.config(stack).remove("Link");
+        DisplayModuleItem.editConfig(stack, config -> config.remove("Link"));
     }
 
     default void appendLinkTooltip(ItemStack stack, List<Component> lines) {

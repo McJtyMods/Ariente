@@ -22,7 +22,7 @@ public class JeiConstructorRecipeCategory implements IRecipeCategory<Constructor
     private final IDrawable icon;
 
     public JeiConstructorRecipeCategory(IGuiHelper helper) {
-        background = helper.createDrawable(new ResourceLocation(Ariente.MODID, "textures/gui/recipe_background.png"), 0, 0, 160, 80);
+        background = helper.createDrawable(ResourceLocation.fromNamespaceAndPath(Ariente.MODID, "textures/gui/recipe_background.png"), 0, 0, 160, 80);
         icon = helper.createDrawableIngredient(VanillaTypes.ITEM_STACK, new ItemStack(Registration.CONSTRUCTOR.get()));
     }
 

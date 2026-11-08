@@ -1,20 +1,20 @@
 package mcjty.ariente.display.client;
 
-import mcjty.ariente.display.FluidDisplayModule;
-import mcjty.ariente.display.InstalledModule;
-import mcjty.ariente.display.ResourceDisplayModule;
-import mcjty.ariente.setup.Registration;
-import net.minecraft.nbt.CompoundTag;
-import net.minecraft.nbt.ListTag;
-import net.minecraft.nbt.Tag;
-import net.minecraft.world.item.ItemStack;
-import net.minecraftforge.fluids.FluidStack;
-
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Locale;
 import java.util.Map;
 import java.util.WeakHashMap;
+import mcjty.ariente.display.FluidDisplayModule;
+import mcjty.ariente.display.InstalledModule;
+import mcjty.ariente.display.ResourceDisplayModule;
+import mcjty.ariente.setup.Registration;
+import net.minecraft.client.Minecraft;
+import net.minecraft.nbt.CompoundTag;
+import net.minecraft.nbt.ListTag;
+import net.minecraft.nbt.Tag;
+import net.minecraft.world.item.ItemStack;
+import net.neoforged.neoforge.fluids.FluidStack;
 
 public class ResourceDisplayRenderers {
 
@@ -92,7 +92,7 @@ public class ResourceDisplayRenderers {
         if (saved == null || saved.version() != module.snapshotVersion()) {
             List<String> names = new ArrayList<>();
             for (int index = 0; index < tanks.size(); index++) {
-                FluidStack fluid = FluidStack.loadFluidStackFromNBT(tanks.getCompound(index).getCompound("Fluid"));
+                FluidStack fluid = FluidStack.parseOptional(Minecraft.getInstance().level.registryAccess(), tanks.getCompound(index).getCompound("Fluid"));
                 names.add(fluid.isEmpty() ? "Empty" : fluid.getDisplayName().getString());
             }
             saved = new FluidNames(module.snapshotVersion(), names);

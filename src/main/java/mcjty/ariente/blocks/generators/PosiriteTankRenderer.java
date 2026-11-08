@@ -14,8 +14,8 @@ import net.minecraft.world.phys.Vec3;
 public class PosiriteTankRenderer implements BlockEntityRenderer<PosiriteTankTile> {
 
     protected BlockEntityRendererProvider.Context context;
-    public static final ResourceLocation POSIRITE_BEAM = new ResourceLocation(Ariente.MODID, "block/machines/posirite_beam");
-    public static final ResourceLocation POSIRITE_WINDOW = new ResourceLocation(Ariente.MODID, "block/machines/posirite_tank_window");
+    public static final ResourceLocation POSIRITE_BEAM = ResourceLocation.fromNamespaceAndPath(Ariente.MODID, "block/machines/posirite_beam");
+    public static final ResourceLocation POSIRITE_WINDOW = ResourceLocation.fromNamespaceAndPath(Ariente.MODID, "block/machines/posirite_tank_window");
 
     public PosiriteTankRenderer(BlockEntityRendererProvider.Context pContext) {
         context = pContext;

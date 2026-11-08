@@ -5,6 +5,7 @@ import mcjty.ariente.Ariente;
 import mcjty.ariente.api.ArmorUpgradeType;
 import mcjty.ariente.entities.fluxship.FluxShipEnergy;
 import mcjty.ariente.items.EnergyHolderItem;
+import mcjty.ariente.items.ItemData;
 import mcjty.ariente.setup.Registration;
 import net.minecraft.commands.CommandSourceStack;
 import net.minecraft.commands.Commands;
@@ -14,11 +15,11 @@ import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.world.entity.EquipmentSlot;
 import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemStack;
-import net.minecraftforge.event.RegisterCommandsEvent;
-import net.minecraftforge.eventbus.api.SubscribeEvent;
-import net.minecraftforge.fml.common.Mod;
+import net.neoforged.bus.api.SubscribeEvent;
+import net.neoforged.fml.common.EventBusSubscriber;
+import net.neoforged.neoforge.event.RegisterCommandsEvent;
 
-@Mod.EventBusSubscriber(modid = Ariente.MODID)
+@EventBusSubscriber(modid = Ariente.MODID)
 public class ModCommands {
 
     private static final int FUEL_PAIRS = 1_000_000;
@@ -34,7 +35,7 @@ public class ModCommands {
         ServerPlayer player = source.getPlayerOrException();
         equip(player, EquipmentSlot.HEAD, armor(Registration.POWERSUIT_HEAD.get()));
         ItemStack chest = armor(Registration.POWERSUIT_CHEST.get(), ArmorUpgradeType.REGENERATION);
-        chest.getOrCreateTag().putBoolean(ArmorUpgradeType.FORCEFIELD.getModuleKey(), false);
+        ItemData.update(chest, data -> data.putBoolean(ArmorUpgradeType.FORCEFIELD.getModuleKey(), false));
         equip(player, EquipmentSlot.CHEST, chest);
         equip(player, EquipmentSlot.LEGS, armor(Registration.POWERSUIT_LEGS.get()));
         equip(player, EquipmentSlot.FEET, armor(Registration.POWERSUIT_FEET.get(), ArmorUpgradeType.FEATHERFALLING));
@@ -43,16 +44,24 @@ public class ModCommands {
         equip(player, EquipmentSlot.OFFHAND, ItemStack.EMPTY);
 
         ItemStack holder = new ItemStack(Registration.ENERGY_HOLDER.get());
-        CompoundTag fuel = holder.getOrCreateTag();
+        CompoundTag fuel = ItemData.get(holder);
         fuel.putInt("negarite", FUEL_PAIRS);
+        ItemData.set(holder, fuel);
+
         fuel.putInt("posirite", FUEL_PAIRS);
+        ItemData.set(holder, fuel);
+
         fuel.putLong("chargeCapacity", EnergyHolderItem.powerCapacity());
+        ItemData.set(holder, fuel);
+
         fuel.putLong("charge", EnergyHolderItem.powerCapacity());
+        ItemData.set(holder, fuel);
+
         // Put the fueled holder first so an older empty holder cannot take priority.
         int holderSlot = player.getInventory().selected == 0 ? 1 : 0;
         hotbar(player, holderSlot, holder);
         ItemStack ship = new ItemStack(Registration.FLUX_SHIP.get());
-        ship.getOrCreateTag().putInt(FluxShipEnergy.CHARGE_TAG, FluxShipEnergy.CAPACITY);
+        ItemData.update(ship, data -> data.putInt(FluxShipEnergy.CHARGE_TAG, FluxShipEnergy.CAPACITY));
         int slot = 0;
         for (ItemStack stack : new ItemStack[]{new ItemStack(Registration.ENERGY_LANCE.get()), ship}) {
             while (slot == player.getInventory().selected || slot == holderSlot) {
@@ -69,11 +78,17 @@ public class ModCommands {
 
     private static ItemStack armor(Item item, ArmorUpgradeType... modules) {
         ItemStack stack = new ItemStack(item);
-        CompoundTag tag = stack.getOrCreateTag();
+        CompoundTag tag = ItemData.get(stack);
         tag.putBoolean(ArmorUpgradeType.ENERGY.getModuleKey(), true);
+        ItemData.set(stack, tag);
+
         tag.putBoolean(ArmorUpgradeType.ARMOR.getModuleKey(), true);
+        ItemData.set(stack, tag);
+
         for (ArmorUpgradeType type : modules) {
             tag.putBoolean(type.getModuleKey(), true);
+            ItemData.set(stack, tag);
+
         }
         return stack;
     }

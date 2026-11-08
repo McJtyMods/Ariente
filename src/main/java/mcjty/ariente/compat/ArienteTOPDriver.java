@@ -1,5 +1,8 @@
 package mcjty.ariente.compat;
 
+import mcjty.theoneprobe.api.*;
+import java.util.HashMap;
+import java.util.Map;
 import mcjty.ariente.api.ISignalChannel;
 import mcjty.ariente.blocks.ExtremeMachineTile;
 import mcjty.ariente.blocks.aicore.AICoreTile;
@@ -17,16 +20,12 @@ import mcjty.ariente.setup.Registration;
 import mcjty.lib.compat.theoneprobe.McJtyLibTOPDriver;
 import mcjty.lib.compat.theoneprobe.TOPDriver;
 import mcjty.lib.varia.Tools;
-import mcjty.theoneprobe.api.*;
-import net.minecraft.world.entity.player.Player;
 import net.minecraft.network.chat.Component;
+import net.minecraft.resources.ResourceLocation;
+import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.level.block.Block;
 import net.minecraft.world.level.block.state.BlockState;
-import net.minecraft.resources.ResourceLocation;
-
-import java.util.HashMap;
-import java.util.Map;
 
 import static mcjty.theoneprobe.api.TextStyleClass.INFO;
 import static mcjty.theoneprobe.api.TextStyleClass.WARNING;

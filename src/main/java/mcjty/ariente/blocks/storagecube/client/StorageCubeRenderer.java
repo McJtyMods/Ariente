@@ -3,6 +3,9 @@ package mcjty.ariente.blocks.storagecube.client;
 import com.mojang.blaze3d.vertex.PoseStack;
 import com.mojang.blaze3d.vertex.VertexConsumer;
 import com.mojang.math.Axis;
+import java.util.List;
+import java.util.Map;
+import java.util.WeakHashMap;
 import mcjty.ariente.blocks.storagecube.StorageCubeTile;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.renderer.LightTexture;
@@ -15,11 +18,7 @@ import net.minecraft.util.Mth;
 import net.minecraft.util.RandomSource;
 import net.minecraft.world.item.ItemDisplayContext;
 import net.minecraft.world.item.ItemStack;
-import net.minecraftforge.client.model.pipeline.VertexConsumerWrapper;
-
-import java.util.List;
-import java.util.Map;
-import java.util.WeakHashMap;
+import net.neoforged.neoforge.client.model.pipeline.VertexConsumerWrapper;
 
 /** Eight cached icons per visible cube. No entities, packets, inventory scans or per-frame random sampling. */
 public class StorageCubeRenderer implements BlockEntityRenderer<StorageCubeTile> {
@@ -73,8 +72,8 @@ public class StorageCubeRenderer implements BlockEntityRenderer<StorageCubeTile>
                 return new VertexConsumerWrapper(buffer.getBuffer(translucent)) {
 
                     @Override
-                    public VertexConsumer color(int r, int g, int b, int a) {
-                        return super.color(r, g, b, Mth.clamp((int) (a * alpha), 0, 255));
+                    public VertexConsumer setColor(int r, int g, int b, int a) {
+                        return super.setColor(r, g, b, Mth.clamp((int) (a * alpha), 0, 255));
                     }
                 };
             };
@@ -123,7 +122,7 @@ public class StorageCubeRenderer implements BlockEntityRenderer<StorageCubeTile>
 
         private boolean visible(ItemStack stack) {
             for (Icon icon : icons) {
-                if (icon != null && ItemStack.isSameItemSameTags(icon.stack, stack)) {
+                if (icon != null && ItemStack.isSameItemSameComponents(icon.stack, stack)) {
                     return true;
                 }
             }

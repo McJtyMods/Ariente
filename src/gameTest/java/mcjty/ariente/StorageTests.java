@@ -1,7 +1,9 @@
 package mcjty.ariente;
 
+import java.util.List;
 import mcjty.ariente.blocks.utility.StorageTile;
 import mcjty.ariente.items.BlueprintItem;
+import mcjty.ariente.items.ItemData;
 import mcjty.ariente.recipes.BlueprintRecipeRegistry;
 import mcjty.ariente.setup.Registration;
 import mcjty.lib.blocks.BaseBlock;
@@ -16,12 +18,10 @@ import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.Items;
 import net.minecraft.world.level.block.state.properties.BlockStateProperties;
 import net.minecraft.world.phys.Vec3;
-import net.minecraftforge.common.capabilities.ForgeCapabilities;
-import net.minecraftforge.gametest.GameTestHolder;
-import net.minecraftforge.gametest.PrefixGameTestTemplate;
-import net.minecraftforge.items.IItemHandler;
-
-import java.util.List;
+import net.neoforged.neoforge.capabilities.Capabilities;
+import net.neoforged.neoforge.gametest.GameTestHolder;
+import net.neoforged.neoforge.gametest.PrefixGameTestTemplate;
+import net.neoforged.neoforge.items.IItemHandler;
 
 @GameTestHolder(Ariente.MODID)
 @PrefixGameTestTemplate(false)
@@ -50,7 +50,7 @@ public class StorageTests {
                         && tile.getTotalStack(type).getCount() == 4095, "Extraction updates only its group's total");
             }
             for (Direction side : Direction.values()) {
-                helper.assertTrue(tile.getCapability(ForgeCapabilities.ITEM_HANDLER, side).orElseThrow(IllegalStateException::new)
+                helper.assertTrue(tile.getLevel().getCapability(Capabilities.ItemHandler.BLOCK, tile.getBlockPos(), side)
                         .getSlots() == types * 64, "Every side exposes the complete grouped inventory");
             }
         }
@@ -67,17 +67,17 @@ public class StorageTests {
             }
             tile.setKeyId("storage-test");
             tile.setLocked(true);
-            CompoundTag saved = tile.saveWithoutMetadata();
+            CompoundTag saved = tile.saveWithoutMetadata(helper.getLevel().registryAccess());
             int types = tile.getTypeCount();
             helper.assertTrue(saved.getCompound("Info").getIntArray("Counts").length == types * 64,
                     "Saved counts retain the original format and the variant's capacity");
             StorageTile restored = new StorageTile(tile.getBlockPos(), tile.getBlockState());
             restored.setLevel(helper.getLevel());
-            restored.load(saved);
+            restored.loadWithComponents(saved, helper.getLevel().registryAccess());
             CompoundTag clientData = new CompoundTag();
-            tile.saveClientDataToNBT(clientData);
+            tile.saveClientDataToNBT(clientData, helper.getLevel().registryAccess());
             StorageTile client = new StorageTile(tile.getBlockPos(), tile.getBlockState());
-            client.loadClientDataFromNBT(clientData);
+            client.loadClientDataFromNBT(clientData, helper.getLevel().registryAccess());
             helper.assertTrue(restored.isLocked() && "storage-test".equals(restored.getKeyId()) && client.isLocked(),
                     "Save/load and client sync preserve locking");
             helper.assertTrue(inventory(restored).extractItem(0, 1, false).isEmpty(), "Restored access locks block automation");
@@ -97,7 +97,7 @@ public class StorageTests {
     public static void frontSelectionAndTransfersFollowAllSixFacings(GameTestHelper helper) {
         for (BaseBlock block : variants()) {
             StorageTile tile = place(helper, block);
-            Player player = helper.makeMockSurvivalPlayer();
+            Player player = helper.makeMockPlayer(net.minecraft.world.level.GameType.SURVIVAL);
             int size = tile.getGridSize();
             for (Direction front : Direction.values()) {
                 helper.getLevel().setBlockAndUpdate(tile.getBlockPos(), tile.getBlockState().setValue(BlockStateProperties.FACING, front));
@@ -145,6 +145,41 @@ public class StorageTests {
         helper.succeed();
     }
 
+    @GameTest(template = "empty")
+    public static void machineDropComponentsPreserveInventoryAndLock(GameTestHelper helper) {
+        StorageTile tile = place(helper, Registration.STORAGE.get());
+        inventory(tile).insertItem(0, taggedStack(7, 23), false);
+        tile.setKeyId("component-round-trip");
+        tile.setLocked(true);
+        ItemStack drop = net.minecraft.world.level.block.Block.getDrops(tile.getBlockState(), helper.getLevel(),
+                tile.getBlockPos(), tile).stream().filter(stack -> stack.is(Registration.STORAGE.get().asItem())).findFirst().orElseThrow();
+        helper.assertTrue(drop.has(Registration.MACHINE_DATA.get()), "Machine loot copies its persistent component");
+        ItemStack decoded = ItemStack.parse(helper.getLevel().registryAccess(), drop.save(helper.getLevel().registryAccess())).orElseThrow();
+        StorageTile restored = new StorageTile(tile.getBlockPos(), tile.getBlockState());
+        restored.setLevel(helper.getLevel());
+        restored.applyComponentsFromItemStack(decoded);
+        helper.assertTrue(restored.isLocked() && "component-round-trip".equals(restored.getKeyId()), "Placement restores lock settings");
+        helper.assertTrue(ItemStack.matches(restored.getTotalStack(0), taggedStack(7, 23)), "Dropped and placed machines retain full item components and counts");
+        helper.succeed();
+    }
+
+    @GameTest(template = "empty")
+    public static void itemComponentsUseCopyOnWrite(GameTestHelper helper) {
+        ItemStack original = new ItemStack(Registration.ENERGY_HOLDER.get());
+        ItemData.update(original, tag -> tag.putInt("mode", 1));
+        ItemStack copy = original.copy();
+        ItemData.update(copy, tag -> tag.putInt("mode", 2));
+        ItemData.get(original).putInt("mode", 99);
+        helper.assertTrue(ItemData.get(original).getInt("mode") == 1 && ItemData.get(copy).getInt("mode") == 2,
+                "Stack copies and read snapshots cannot mutate each other's component state");
+        ItemStack module = new ItemStack(Registration.DISPLAY_TEXT.get());
+        mcjty.ariente.display.DisplayModuleItem.editConfig(module, config -> config.putString("Text", "Saved hologram"));
+        ItemStack decoded = ItemStack.parse(helper.getLevel().registryAccess(), module.save(helper.getLevel().registryAccess())).orElseThrow();
+        helper.assertTrue("Saved hologram".equals(mcjty.ariente.display.DisplayModuleItem.config(decoded).getString("Text")),
+                "Display configuration survives item serialization");
+        helper.succeed();
+    }
+
     private static Vec3 frontHit(Direction front, double x, double y) {
         return switch (front) {
             case NORTH -> new Vec3(1 - x, y, 0);
@@ -168,12 +203,12 @@ public class StorageTests {
     }
 
     private static IItemHandler inventory(StorageTile tile) {
-        return tile.getCapability(ForgeCapabilities.ITEM_HANDLER).orElseThrow(IllegalStateException::new);
+        return tile.getAutomationHandler(null);
     }
 
     private static ItemStack taggedStack(int type, int count) {
         ItemStack stack = new ItemStack(Items.STONE, count);
-        stack.getOrCreateTag().putInt("StorageType", type);
+        ItemData.update(stack, tag -> tag.putInt("StorageType", type));
         return stack;
     }
 }

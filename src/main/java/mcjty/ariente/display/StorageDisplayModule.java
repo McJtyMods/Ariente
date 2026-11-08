@@ -1,5 +1,12 @@
 package mcjty.ariente.display;
 
+import java.util.ArrayList;
+import java.util.Comparator;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+import java.util.WeakHashMap;
+import mcjty.ariente.items.ItemData;
 import mcjty.hologui.api.IGuiComponentRegistry;
 import mcjty.hologui.api.components.IPanel;
 import net.minecraft.core.BlockPos;
@@ -12,16 +19,9 @@ import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.level.block.entity.BlockEntity;
-import net.minecraftforge.common.capabilities.ForgeCapabilities;
-import net.minecraftforge.items.IItemHandler;
-import net.minecraftforge.items.wrapper.InvWrapper;
-
-import java.util.ArrayList;
-import java.util.Comparator;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-import java.util.WeakHashMap;
+import net.neoforged.neoforge.capabilities.Capabilities;
+import net.neoforged.neoforge.items.IItemHandler;
+import net.neoforged.neoforge.items.wrapper.InvWrapper;
 
 public class StorageDisplayModule implements DisplayModuleType {
 
@@ -61,9 +61,9 @@ public class StorageDisplayModule implements DisplayModuleType {
     }
 
     public static IItemHandler inventory(BlockEntity tile, Direction side) {
-        IItemHandler handler = tile.getCapability(ForgeCapabilities.ITEM_HANDLER, side).orElse(null);
+        IItemHandler handler = tile.getLevel().getCapability(Capabilities.ItemHandler.BLOCK, tile.getBlockPos(), side);
         if (handler == null) {
-            handler = tile.getCapability(ForgeCapabilities.ITEM_HANDLER).orElse(null);
+            handler = tile.getLevel().getCapability(Capabilities.ItemHandler.BLOCK, tile.getBlockPos(), null);
         }
         return handler != null ? handler : tile instanceof Container container ? new InvWrapper(container) : null;
     }
@@ -92,7 +92,7 @@ public class StorageDisplayModule implements DisplayModuleType {
         for (int slot = 0; slot < inventory.getSlots(); slot++) {
             ItemStack stack = inventory.getStackInSlot(slot);
             if (!stack.isEmpty()) {
-                StackKey stackKey = new StackKey(stack.getItem(), stack.getTag());
+                StackKey stackKey = new StackKey(stack.getItem(), ItemData.get(stack));
                 ItemCount count = counts.get(stackKey);
                 counts.put(stackKey, count == null ? new ItemCount(stack.copyWithCount(1), stack.getCount())
                         : new ItemCount(count.stack(), count.count() + stack.getCount()));
@@ -101,7 +101,7 @@ public class StorageDisplayModule implements DisplayModuleType {
         List<ItemCount> sorted = new ArrayList<>(counts.values());
         sorted.sort(Comparator.comparingLong(ItemCount::count).reversed()
                 .thenComparing(count -> count.stack().getDescriptionId())
-                .thenComparing(count -> String.valueOf(count.stack().getTag())));
+                .thenComparing(count -> String.valueOf(ItemData.get(count.stack()))));
         saved = new InventorySnapshot(now, sorted, "");
         cache.put(key, saved);
         return saved;
@@ -127,7 +127,7 @@ public class StorageDisplayModule implements DisplayModuleType {
         for (int index = page * count; index < Math.min(snapshot.items().size(), (page + 1) * count); index++) {
             ItemCount item = snapshot.items().get(index);
             CompoundTag entry = new CompoundTag();
-            entry.put("Item", item.stack().save(new CompoundTag()));
+            entry.put("Item", item.stack().save(level.registryAccess()));
             entry.putLong("Count", item.count());
             items.add(entry);
         }

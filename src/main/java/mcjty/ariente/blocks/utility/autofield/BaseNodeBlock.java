@@ -1,24 +1,23 @@
 package mcjty.ariente.blocks.utility.autofield;
 
-import mcjty.lib.blocks.BaseBlock;
+import javax.annotation.Nonnull;
+import javax.annotation.Nullable;
 import mcjty.ariente.setup.Registration;
-import net.minecraft.world.phys.shapes.Shapes;
+import mcjty.lib.blocks.BaseBlock;
 import mcjty.lib.blocks.RotationType;
 import mcjty.lib.builder.BlockBuilder;
 import mcjty.lib.multipart.PartSlot;
 import net.minecraft.core.BlockPos;
+import net.minecraft.world.item.context.BlockPlaceContext;
 import net.minecraft.world.level.BlockGetter;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.level.block.Block;
 import net.minecraft.world.level.block.state.BlockState;
-import net.minecraft.world.item.context.BlockPlaceContext;
 import net.minecraft.world.level.block.state.StateDefinition;
 import net.minecraft.world.phys.Vec3;
 import net.minecraft.world.phys.shapes.CollisionContext;
+import net.minecraft.world.phys.shapes.Shapes;
 import net.minecraft.world.phys.shapes.VoxelShape;
-
-import javax.annotation.Nonnull;
-import javax.annotation.Nullable;
 
 public class BaseNodeBlock extends BaseBlock {
 

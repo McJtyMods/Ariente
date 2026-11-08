@@ -1,31 +1,30 @@
 package mcjty.ariente.cables;
 
-import net.minecraft.client.renderer.block.model.ItemTransforms;
 import com.google.common.base.Function;
-import mcjty.ariente.Ariente;
-import mcjty.lib.client.AbstractDynamicBakedModel;
-import net.minecraft.client.renderer.block.model.BakedQuad;
-import net.minecraft.client.resources.model.BakedModel;
-import net.minecraft.resources.ResourceLocation;
-import net.minecraft.world.level.block.state.BlockState;
-import net.minecraft.client.Minecraft;
-import net.minecraft.client.renderer.RenderType;
-import net.minecraft.client.renderer.block.model.ItemOverrides;
-import net.minecraft.client.renderer.texture.TextureAtlasSprite;
-import net.minecraft.core.Direction;
-import net.minecraft.world.phys.Vec3;
-import net.minecraft.core.BlockPos;
-import net.minecraft.world.level.BlockAndTintGetter;
-import net.minecraftforge.client.model.data.ModelProperty;
-import net.minecraftforge.client.model.data.ModelData;
-import net.minecraftforge.client.ChunkRenderTypeSet;
-
-import javax.annotation.Nonnull;
-import javax.annotation.Nullable;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
+import javax.annotation.Nonnull;
+import javax.annotation.Nullable;
+import mcjty.ariente.Ariente;
+import mcjty.lib.client.AbstractDynamicBakedModel;
+import net.minecraft.client.Minecraft;
+import net.minecraft.client.renderer.RenderType;
+import net.minecraft.client.renderer.block.model.BakedQuad;
+import net.minecraft.client.renderer.block.model.ItemOverrides;
+import net.minecraft.client.renderer.block.model.ItemTransforms;
+import net.minecraft.client.renderer.texture.TextureAtlasSprite;
+import net.minecraft.client.resources.model.BakedModel;
+import net.minecraft.core.BlockPos;
+import net.minecraft.core.Direction;
+import net.minecraft.resources.ResourceLocation;
 import net.minecraft.util.RandomSource;
+import net.minecraft.world.level.BlockAndTintGetter;
+import net.minecraft.world.level.block.state.BlockState;
+import net.minecraft.world.phys.Vec3;
+import net.neoforged.neoforge.client.ChunkRenderTypeSet;
+import net.neoforged.neoforge.client.model.data.ModelData;
+import net.neoforged.neoforge.client.model.data.ModelProperty;
 
 import static mcjty.ariente.cables.CablePatterns.SpriteIdx.*;
 import static mcjty.ariente.cables.ConnectorType.BLOCK;
@@ -74,16 +73,16 @@ public class GenericCableBakedModel extends AbstractDynamicBakedModel {
                 int i = color.ordinal();
                 String typeName = color.getSerializedName();
                 tt[i] = new CableTextures();
-                tt[i].spriteConnector = getTexture(new ResourceLocation(Ariente.MODID, "block/cables/" + typeName + "/connector"));
-                tt[i].spriteNormalCable = getTexture(new ResourceLocation(Ariente.MODID, "block/cables/" + typeName + "/normal_netcable"));
-                tt[i].spriteNoneCable = getTexture(new ResourceLocation(Ariente.MODID, "block/cables/" + typeName + "/normal_none_netcable"));
-                tt[i].spriteEndCable = getTexture(new ResourceLocation(Ariente.MODID, "block/cables/" + typeName + "/normal_end_netcable"));
-                tt[i].spriteCornerCable = getTexture(new ResourceLocation(Ariente.MODID, "block/cables/" + typeName + "/normal_corner_netcable"));
-                tt[i].spriteThreeCable = getTexture(new ResourceLocation(Ariente.MODID, "block/cables/" + typeName + "/normal_three_netcable"));
-                tt[i].spriteCrossCable = getTexture(new ResourceLocation(Ariente.MODID, "block/cables/" + typeName + "/normal_cross_netcable"));
+                tt[i].spriteConnector = getTexture(ResourceLocation.fromNamespaceAndPath(Ariente.MODID, "block/cables/" + typeName + "/connector"));
+                tt[i].spriteNormalCable = getTexture(ResourceLocation.fromNamespaceAndPath(Ariente.MODID, "block/cables/" + typeName + "/normal_netcable"));
+                tt[i].spriteNoneCable = getTexture(ResourceLocation.fromNamespaceAndPath(Ariente.MODID, "block/cables/" + typeName + "/normal_none_netcable"));
+                tt[i].spriteEndCable = getTexture(ResourceLocation.fromNamespaceAndPath(Ariente.MODID, "block/cables/" + typeName + "/normal_end_netcable"));
+                tt[i].spriteCornerCable = getTexture(ResourceLocation.fromNamespaceAndPath(Ariente.MODID, "block/cables/" + typeName + "/normal_corner_netcable"));
+                tt[i].spriteThreeCable = getTexture(ResourceLocation.fromNamespaceAndPath(Ariente.MODID, "block/cables/" + typeName + "/normal_three_netcable"));
+                tt[i].spriteCrossCable = getTexture(ResourceLocation.fromNamespaceAndPath(Ariente.MODID, "block/cables/" + typeName + "/normal_cross_netcable"));
             }
 
-            spriteSide = getTexture(new ResourceLocation(Ariente.MODID, "block/cables/connector_side"));
+            spriteSide = getTexture(ResourceLocation.fromNamespaceAndPath(Ariente.MODID, "block/cables/connector_side"));
             cableTextures = tt;
         }
     }

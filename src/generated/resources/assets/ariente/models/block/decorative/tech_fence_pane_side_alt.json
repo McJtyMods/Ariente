@@ -1,7 +1,7 @@
 {
   "parent": "minecraft:block/template_glass_pane_side_alt",
   "textures": {
-    "pane": "ariente:block/decorative/tech_fence",
-    "edge": "ariente:block/decorative/tech_fence"
+    "edge": "ariente:block/decorative/tech_fence",
+    "pane": "ariente:block/decorative/tech_fence"
   }
 }

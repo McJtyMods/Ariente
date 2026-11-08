@@ -1,12 +1,12 @@
 package mcjty.ariente.blocks.generators;
 
-import mcjty.ariente.blocks.ExtremeMachineTile;
+import mcjty.ariente.power.*;
 import mcjty.ariente.Ariente;
-import mcjty.ariente.gui.CompactNumber;
+import mcjty.ariente.blocks.ExtremeMachineTile;
 import mcjty.ariente.cables.CableColor;
 import mcjty.ariente.cables.ConnectorTileEntity;
+import mcjty.ariente.gui.CompactNumber;
 import mcjty.ariente.gui.GuiHelp;
-import mcjty.ariente.power.*;
 import mcjty.ariente.setup.Registration;
 import mcjty.hologui.api.IGuiComponent;
 import mcjty.hologui.api.IGuiComponentRegistry;
@@ -15,14 +15,15 @@ import mcjty.hologui.api.StyledColor;
 import mcjty.lib.blocks.BaseBlock;
 import mcjty.lib.builder.BlockBuilder;
 import mcjty.lib.varia.OrientationTools;
+import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
-import net.minecraft.world.InteractionResult;
-import net.minecraft.world.level.block.entity.BlockEntity;
-import net.minecraft.world.level.block.state.BlockState;
-import net.minecraft.world.entity.player.Player;
+import net.minecraft.core.HolderLookup;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.world.InteractionHand;
-import net.minecraft.core.BlockPos;
+import net.minecraft.world.InteractionResult;
+import net.minecraft.world.entity.player.Player;
+import net.minecraft.world.level.block.entity.BlockEntity;
+import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.phys.BlockHitResult;
 
 import static mcjty.ariente.compat.ArienteTOPDriver.DRIVER;
@@ -124,8 +125,8 @@ public class PowerCombinerTile extends ExtremeMachineTile implements IPowerRecei
     }
 
     @Override
-    public void load(CompoundTag tagCompound) {
-        super.load(tagCompound);
+    public void loadAdditional(CompoundTag tagCompound, HolderLookup.Provider provider) {
+        super.loadAdditional(tagCompound, provider);
         CompoundTag info = tagCompound.getCompound("Info");
         if (info.contains("transfer")) {
             powerTransfer = info.getInt("transfer");
@@ -133,19 +134,19 @@ public class PowerCombinerTile extends ExtremeMachineTile implements IPowerRecei
     }
 
     @Override
-    public void saveAdditional(CompoundTag tagCompound) {
-        super.saveAdditional(tagCompound);
+    public void saveAdditional(CompoundTag tagCompound, HolderLookup.Provider provider) {
+        super.saveAdditional(tagCompound, provider);
         getOrCreateInfo(tagCompound).putInt("transfer", powerTransfer);
     }
 
     @Override
-    public void saveClientDataToNBT(CompoundTag tag) {
-        saveAdditional(tag);
+    public void saveClientDataToNBT(CompoundTag tag, HolderLookup.Provider provider) {
+        saveAdditional(tag, provider);
     }
 
     @Override
-    public void loadClientDataFromNBT(CompoundTag tag) {
-        load(tag);
+    public void loadClientDataFromNBT(CompoundTag tag, HolderLookup.Provider provider) {
+        loadAdditional(tag, provider);
     }
 
     @Override

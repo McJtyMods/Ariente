@@ -1,24 +1,25 @@
 package mcjty.ariente.blocks.utility;
 
 import mcjty.ariente.api.AlarmType;
-import mcjty.ariente.blocks.MountedPanelShapes;
-import net.minecraft.world.level.block.state.properties.BlockStateProperties;
 import mcjty.ariente.api.IAlarmTile;
+import mcjty.ariente.blocks.ArienteBlockEntity;
+import mcjty.ariente.blocks.MountedPanelShapes;
 import mcjty.ariente.setup.Registration;
 import mcjty.ariente.sounds.ModSounds;
 import mcjty.lib.blocks.BaseBlock;
 import mcjty.lib.builder.BlockBuilder;
-import mcjty.lib.tileentity.TickingTileEntity;
+import net.minecraft.core.BlockPos;
+import net.minecraft.core.HolderLookup;
+import net.minecraft.nbt.CompoundTag;
+import net.minecraft.network.Connection;
 import net.minecraft.network.protocol.game.ClientboundBlockEntityDataPacket;
 import net.minecraft.sounds.SoundSource;
 import net.minecraft.world.level.BlockGetter;
 import net.minecraft.world.level.block.Block;
 import net.minecraft.world.level.block.state.BlockState;
-import net.minecraft.nbt.CompoundTag;
-import net.minecraft.network.Connection;
-import net.minecraft.world.level.block.state.properties.EnumProperty;
 import net.minecraft.world.level.block.state.StateDefinition;
-import net.minecraft.core.BlockPos;
+import net.minecraft.world.level.block.state.properties.BlockStateProperties;
+import net.minecraft.world.level.block.state.properties.EnumProperty;
 import net.minecraft.world.phys.shapes.CollisionContext;
 import net.minecraft.world.phys.shapes.VoxelShape;
 
@@ -26,7 +27,7 @@ import static mcjty.ariente.compat.ArienteTOPDriver.DRIVER;
 import static mcjty.lib.builder.TooltipBuilder.header;
 import static mcjty.lib.builder.TooltipBuilder.key;
 
-public class AlarmTile extends TickingTileEntity implements IAlarmTile {
+public class AlarmTile extends ArienteBlockEntity implements IAlarmTile {
 
     private static final MountedPanelShapes SHAPES = new MountedPanelShapes(2, 3);
 
@@ -84,9 +85,9 @@ public class AlarmTile extends TickingTileEntity implements IAlarmTile {
     }
 
     @Override
-    public void onDataPacket(Connection net, ClientboundBlockEntityDataPacket packet) {
+    public void onDataPacket(Connection net, ClientboundBlockEntityDataPacket packet, HolderLookup.Provider provider) {
         AlarmType type = alarmType;
-        super.onDataPacket(net, packet);
+        super.onDataPacket(net, packet, provider);
 
         if (level.isClientSide) {
             // If needed send a render update.
@@ -98,14 +99,14 @@ public class AlarmTile extends TickingTileEntity implements IAlarmTile {
     }
 
     @Override
-    public void load(CompoundTag tagCompound) {
-        super.load(tagCompound);
+    public void loadAdditional(CompoundTag tagCompound, HolderLookup.Provider provider) {
+        super.loadAdditional(tagCompound, provider);
         alarmType = AlarmType.values()[tagCompound.getInt("alarm")];
     }
 
     @Override
-    public void saveAdditional(CompoundTag tagCompound) {
+    public void saveAdditional(CompoundTag tagCompound, HolderLookup.Provider provider) {
         tagCompound.putInt("alarm", alarmType.ordinal());
-        super.saveAdditional(tagCompound);
+        super.saveAdditional(tagCompound, provider);
     }
 }

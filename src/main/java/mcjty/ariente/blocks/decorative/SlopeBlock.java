@@ -1,19 +1,18 @@
 package mcjty.ariente.blocks.decorative;
 
+import javax.annotation.Nullable;
 import mcjty.ariente.api.EnumFacingUpDown;
 import mcjty.lib.blocks.BaseBlock;
 import mcjty.lib.blocks.RotationType;
 import mcjty.lib.builder.BlockBuilder;
+import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
+import net.minecraft.world.item.context.BlockPlaceContext;
 import net.minecraft.world.level.LevelAccessor;
+import net.minecraft.world.level.block.Rotation;
 import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.level.block.state.properties.Property;
 import net.minecraft.world.level.material.MapColor;
-import net.minecraft.world.item.context.BlockPlaceContext;
-import net.minecraft.world.level.block.Rotation;
-import net.minecraft.core.BlockPos;
-
-import javax.annotation.Nullable;
 
 public class SlopeBlock extends BaseBlock {
 

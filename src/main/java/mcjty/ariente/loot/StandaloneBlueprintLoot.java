@@ -1,5 +1,9 @@
 package mcjty.ariente.loot;
 
+import java.util.ArrayList;
+import java.util.EnumMap;
+import java.util.List;
+import java.util.Map;
 import mcjty.ariente.items.BlueprintItem;
 import mcjty.ariente.recipes.BlueprintRarity;
 import mcjty.ariente.recipes.BlueprintRecipeRegistry;
@@ -7,11 +11,6 @@ import mcjty.ariente.recipes.ConstructorRecipe;
 import mcjty.ariente.setup.Registration;
 import net.minecraft.util.RandomSource;
 import net.minecraft.world.item.ItemStack;
-
-import java.util.ArrayList;
-import java.util.EnumMap;
-import java.util.List;
-import java.util.Map;
 
 /** Standalone exploration needs a usable library without relying on city-specific reward tables. */
 public final class StandaloneBlueprintLoot {

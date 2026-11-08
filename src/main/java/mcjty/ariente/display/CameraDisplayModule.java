@@ -1,21 +1,21 @@
 package mcjty.ariente.display;
 
+import java.util.ArrayList;
+import java.util.List;
 import mcjty.ariente.blocks.utility.camera.CameraCapture;
 import mcjty.ariente.blocks.utility.camera.CameraTile;
+import mcjty.ariente.items.ItemData;
 import mcjty.hologui.api.IGuiComponentRegistry;
 import mcjty.hologui.api.components.IPanel;
+import net.minecraft.ChatFormatting;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.nbt.ListTag;
 import net.minecraft.nbt.Tag;
-import net.minecraft.ChatFormatting;
 import net.minecraft.network.chat.Component;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.level.Level;
-
-import java.util.ArrayList;
-import java.util.List;
 
 public class CameraDisplayModule implements DisplayModuleType {
 
@@ -143,6 +143,7 @@ public class CameraDisplayModule implements DisplayModuleType {
         config.put("Cameras", tags);
         config.putInt("CameraIndex", selected);
         config.remove("Link");
+        ItemData.setSection(stack, "Display", config);
         return Component.literal("Camera " + (selected + 1) + "/" + cameras.size() + " linked: " + BlockPos.of(link.getLong("Pos")).toShortString());
     }
 
@@ -152,6 +153,7 @@ public class CameraDisplayModule implements DisplayModuleType {
         config.remove("Link");
         config.remove("Cameras");
         config.remove("CameraIndex");
+        ItemData.setSection(stack, "Display", config);
     }
 
     @Override

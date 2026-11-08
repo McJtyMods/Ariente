@@ -1,15 +1,14 @@
 package mcjty.ariente.items.armor;
 
+import java.util.Map;
+import java.util.UUID;
+import java.util.WeakHashMap;
 import mcjty.ariente.Ariente;
 import mcjty.ariente.gui.ModGuis;
 import mcjty.hologui.api.IHoloGuiEntity;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.player.Player;
-
-import java.util.Map;
-import java.util.UUID;
-import java.util.WeakHashMap;
 
 public class PowerArmorConfiguration {
 

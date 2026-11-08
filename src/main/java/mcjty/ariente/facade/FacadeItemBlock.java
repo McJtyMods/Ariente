@@ -1,36 +1,36 @@
 package mcjty.ariente.facade;
 
-import net.minecraft.core.registries.BuiltInRegistries;
-import net.minecraft.client.Minecraft;
-import net.minecraft.client.renderer.BlockEntityWithoutLevelRenderer;
-import net.minecraftforge.client.extensions.common.IClientItemExtensions;
+import java.util.List;
 import java.util.function.Consumer;
-import mcjty.lib.varia.Tools;
+import javax.annotation.Nonnull;
+import mcjty.ariente.items.ItemData;
 import mcjty.lib.builder.TooltipBuilder;
 import mcjty.lib.tooltips.ITooltipSettings;
+import mcjty.lib.varia.Tools;
+import net.minecraft.client.Minecraft;
+import net.minecraft.client.renderer.BlockEntityWithoutLevelRenderer;
 import net.minecraft.core.BlockPos;
+import net.minecraft.core.registries.BuiltInRegistries;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.nbt.NbtUtils;
 import net.minecraft.network.chat.Component;
 import net.minecraft.sounds.SoundSource;
+import net.minecraft.world.InteractionHand;
+import net.minecraft.world.InteractionResult;
+import net.minecraft.world.entity.player.Player;
+import net.minecraft.world.item.BlockItem;
+import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemStack;
+import net.minecraft.world.item.TooltipFlag;
+import net.minecraft.world.item.context.BlockPlaceContext;
+import net.minecraft.world.item.context.UseOnContext;
+import net.minecraft.world.level.Level;
 import net.minecraft.world.level.block.Block;
 import net.minecraft.world.level.block.Blocks;
 import net.minecraft.world.level.block.SoundType;
-import net.minecraft.world.level.block.state.BlockState;
-import net.minecraft.world.item.TooltipFlag;
-import net.minecraft.world.entity.player.Player;
-import net.minecraft.world.item.BlockItem;
-import net.minecraft.world.item.context.BlockPlaceContext;
-import net.minecraft.world.item.context.UseOnContext;
 import net.minecraft.world.level.block.entity.BlockEntity;
-import net.minecraft.world.InteractionResult;
-import net.minecraft.world.InteractionHand;
-import net.minecraft.world.level.Level;
-
-import javax.annotation.Nonnull;
-import javax.annotation.Nullable;
-import java.util.List;
+import net.minecraft.world.level.block.state.BlockState;
+import net.neoforged.neoforge.client.extensions.common.IClientItemExtensions;
 
 import static mcjty.lib.builder.TooltipBuilder.*;
 
@@ -42,7 +42,7 @@ public class FacadeItemBlock extends BlockItem implements ITooltipSettings {
                     parameter("info", FacadeItemBlock::isMimicing, FacadeItemBlock::getMimicingString));
 
     private static boolean isMimicing(ItemStack stack) {
-        return stack.hasTag() && stack.getTag().contains("mimic");
+        return ItemData.has(stack) && ItemData.get(stack).contains("mimic");
     }
 
     private static String getMimicingString(ItemStack stack) {
@@ -71,20 +71,21 @@ public class FacadeItemBlock extends BlockItem implements ITooltipSettings {
     }
 
     @Override
-    public void appendHoverText(ItemStack stack, @Nullable Level worldIn, List<Component> tooltip, TooltipFlag flag) {
+    public void appendHoverText(ItemStack stack, Item.TooltipContext worldIn, List<Component> tooltip, TooltipFlag flag) {
         super.appendHoverText(stack, worldIn, tooltip, flag);
         tooltipBuilder.makeTooltip(Tools.getId(this), stack, tooltip, flag);
     }
 
     public static void setMimicBlock(@Nonnull ItemStack item, BlockState mimicBlock) {
-        CompoundTag tagCompound = item.getOrCreateTag();
+        CompoundTag tagCompound = ItemData.get(item);
         CompoundTag nbt = NbtUtils.writeBlockState(mimicBlock);
         tagCompound.put("mimic", nbt);
-        item.setTag(tagCompound);
+        ItemData.set(item, tagCompound);
+
     }
 
     public static BlockState getMimicBlock(@Nonnull ItemStack stack) {
-        CompoundTag tagCompound = stack.getTag();
+        CompoundTag tagCompound = ItemData.get(stack);
         if (tagCompound == null || !tagCompound.contains("mimic")) {
             return Blocks.COBBLESTONE.defaultBlockState();
         } else {

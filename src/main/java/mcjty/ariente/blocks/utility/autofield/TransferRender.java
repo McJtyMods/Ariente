@@ -1,18 +1,17 @@
 package mcjty.ariente.blocks.utility.autofield;
 
-import net.minecraft.client.Minecraft;
-import net.minecraft.client.renderer.MultiBufferSource;
-import net.minecraft.world.item.ItemDisplayContext;
-import net.minecraft.client.renderer.texture.OverlayTexture;
-import com.mojang.math.Axis;
 import com.mojang.blaze3d.vertex.PoseStack;
+import com.mojang.math.Axis;
+import java.util.Random;
 import mcjty.lib.multipart.PartSlot;
 import mcjty.lib.spline.CatmullRomSpline;
+import net.minecraft.client.Minecraft;
+import net.minecraft.client.renderer.MultiBufferSource;
+import net.minecraft.client.renderer.texture.OverlayTexture;
 import net.minecraft.core.BlockPos;
+import net.minecraft.world.item.ItemDisplayContext;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.phys.Vec3;
-
-import java.util.Random;
 
 // A single item transfer render in progress
 public class TransferRender {
@@ -122,7 +121,6 @@ public class TransferRender {
         matrixStack.popPose();
     }
 
-
     private static Vec3 getPos(PartSlot slot) {
         double d = .3;
         double e = .7;
@@ -192,6 +190,5 @@ public class TransferRender {
         }
         return Vec3.ZERO;
     }
-
 
 }

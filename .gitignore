@@ -3,3 +3,8 @@ build/
 out/
 run/
 *.log
+
+src/generated/resources/.cache/
+runs/
+logs/
+crash-reports/

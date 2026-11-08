@@ -2,13 +2,16 @@ package mcjty.ariente.blocks.storagecube.client;
 
 import com.mojang.blaze3d.vertex.PoseStack;
 import com.mojang.math.Axis;
+import java.util.Arrays;
+import java.util.HashMap;
+import java.util.Iterator;
+import java.util.Map;
 import mcjty.ariente.Ariente;
 import mcjty.ariente.blocks.storagecube.PacketStorageCubeAction;
 import mcjty.ariente.blocks.storagecube.PacketStorageCubeData;
 import mcjty.ariente.blocks.storagecube.StorageCubePanel;
 import mcjty.ariente.blocks.storagecube.StorageCubeTile;
 import mcjty.ariente.gui.client.InventoryRenderer;
-import mcjty.ariente.network.ArienteMessages;
 import mcjty.hologui.api.IGuiComponent;
 import mcjty.hologui.api.IHoloGuiEntity;
 import mcjty.hologui.gui.HoloGuiEntity;
@@ -17,17 +20,13 @@ import net.minecraft.client.Minecraft;
 import net.minecraft.client.renderer.MultiBufferSource;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.phys.EntityHitResult;
-import net.minecraftforge.api.distmarker.Dist;
-import net.minecraftforge.client.event.InputEvent;
-import net.minecraftforge.event.TickEvent;
-import net.minecraftforge.event.entity.player.PlayerInteractEvent;
-import net.minecraftforge.eventbus.api.SubscribeEvent;
-import net.minecraftforge.fml.common.Mod;
-
-import java.util.Arrays;
-import java.util.HashMap;
-import java.util.Iterator;
-import java.util.Map;
+import net.neoforged.api.distmarker.Dist;
+import net.neoforged.bus.api.SubscribeEvent;
+import net.neoforged.fml.common.EventBusSubscriber;
+import net.neoforged.neoforge.client.event.ClientTickEvent;
+import net.neoforged.neoforge.client.event.InputEvent;
+import net.neoforged.neoforge.event.entity.player.PlayerInteractEvent;
+import net.neoforged.neoforge.network.PacketDistributor;
 
 import static mcjty.ariente.blocks.storagecube.PacketStorageCubeAction.Action.*;
 import static mcjty.ariente.gui.InventoryLayout.*;
@@ -35,7 +34,7 @@ import static mcjty.ariente.gui.client.InventoryRenderer.count;
 import static mcjty.ariente.gui.client.InventoryRenderer.item;
 import static mcjty.hologui.api.IGuiTile.TAG_HELP;
 
-@Mod.EventBusSubscriber(modid = Ariente.MODID, value = Dist.CLIENT)
+@EventBusSubscriber(modid = Ariente.MODID, value = Dist.CLIENT)
 public class StorageCubeClient {
 
     private static final double STORAGE_Y = .7;
@@ -93,7 +92,7 @@ public class StorageCubeClient {
     }
 
     private static void send(PacketStorageCubeAction packet) {
-        ArienteMessages.INSTANCE.sendToServer(packet);
+        PacketDistributor.sendToServer(packet);
     }
 
     public static void receive(PacketStorageCubeData packet) {
@@ -236,10 +235,7 @@ public class StorageCubeClient {
     }
 
     @SubscribeEvent
-    public static void tick(TickEvent.ClientTickEvent event) {
-        if (event.phase != TickEvent.Phase.END) {
-            return;
-        }
+    public static void tick(ClientTickEvent.Post event) {
         Minecraft mc = Minecraft.getInstance();
         for (Iterator<State> iterator = VIEWS.values().iterator(); iterator.hasNext();) {
             State view = iterator.next();

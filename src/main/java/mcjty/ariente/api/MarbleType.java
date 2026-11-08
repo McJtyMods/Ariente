@@ -1,7 +1,7 @@
 package mcjty.ariente.api;
 
-import net.minecraft.world.level.block.state.properties.EnumProperty;
 import net.minecraft.util.StringRepresentable;
+import net.minecraft.world.level.block.state.properties.EnumProperty;
 
 public enum MarbleType implements StringRepresentable {
     VARIATION1("variation1", "marbletech1"),

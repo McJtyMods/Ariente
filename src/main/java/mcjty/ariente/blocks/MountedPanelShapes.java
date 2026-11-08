@@ -1,10 +1,9 @@
 package mcjty.ariente.blocks;
 
+import java.util.Map;
 import net.minecraft.core.Direction;
 import net.minecraft.world.level.block.Block;
 import net.minecraft.world.phys.shapes.VoxelShape;
-
-import java.util.Map;
 
 /** Bounds of a mounted panel, rotated using the block model's facing convention. */
 public class MountedPanelShapes {

@@ -1,18 +1,17 @@
 package mcjty.ariente.datagen;
 
+import java.util.List;
+import java.util.Set;
 import mcjty.ariente.Ariente;
 import net.minecraft.data.DataGenerator;
 import net.minecraft.data.PackOutput;
 import net.minecraft.data.loot.LootTableProvider;
 import net.minecraft.world.level.storage.loot.parameters.LootContextParamSets;
-import net.minecraftforge.data.event.GatherDataEvent;
-import net.minecraftforge.eventbus.api.SubscribeEvent;
-import net.minecraftforge.fml.common.Mod;
+import net.neoforged.bus.api.SubscribeEvent;
+import net.neoforged.fml.common.EventBusSubscriber;
+import net.neoforged.neoforge.data.event.GatherDataEvent;
 
-import java.util.List;
-import java.util.Set;
-
-@Mod.EventBusSubscriber(modid = Ariente.MODID, bus = Mod.EventBusSubscriber.Bus.MOD)
+@EventBusSubscriber(modid = Ariente.MODID, bus = EventBusSubscriber.Bus.MOD)
 public class DataGenerators {
 
     @SubscribeEvent
@@ -20,9 +19,9 @@ public class DataGenerators {
         DataGenerator generator = event.getGenerator();
         PackOutput output = generator.getPackOutput();
         BlockTags blockTags = new BlockTags(output, event.getLookupProvider(), event.getExistingFileHelper());
-        generator.addProvider(event.includeServer(), new Recipes(generator));
+        generator.addProvider(event.includeServer(), new Recipes(generator, event.getLookupProvider()));
         generator.addProvider(event.includeServer(), new LootTableProvider(output, Set.of(),
-                List.of(new LootTableProvider.SubProviderEntry(LootTables::new, LootContextParamSets.BLOCK))));
+                List.of(new LootTableProvider.SubProviderEntry(provider -> new LootTables(provider), LootContextParamSets.BLOCK)), event.getLookupProvider()));
         generator.addProvider(event.includeServer(), blockTags);
         generator.addProvider(event.includeServer(), new ItemTags(output, event.getLookupProvider(), blockTags, event.getExistingFileHelper()));
         generator.addProvider(event.includeClient(), new FluxBeamTextures(output, event.getExistingFileHelper()));

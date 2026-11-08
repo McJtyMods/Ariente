@@ -76,10 +76,10 @@ public class SmelterRenderer implements BlockEntityRenderer<SmelterTile> {
         int color = 0x55666666;
         Matrix4f matrix = poses.last().pose();
         VertexConsumer vertices = buffer.getBuffer(RenderType.gui());
-        vertices.vertex(matrix, center - halfSize, -halfSize, -.004f).color(color).endVertex();
-        vertices.vertex(matrix, center + halfSize, -halfSize, -.004f).color(color).endVertex();
-        vertices.vertex(matrix, center + halfSize, halfSize, -.004f).color(color).endVertex();
-        vertices.vertex(matrix, center - halfSize, halfSize, -.004f).color(color).endVertex();
+        vertices.addVertex(matrix, center - halfSize, -halfSize, -.004f).setColor(color);
+        vertices.addVertex(matrix, center + halfSize, -halfSize, -.004f).setColor(color);
+        vertices.addVertex(matrix, center + halfSize, halfSize, -.004f).setColor(color);
+        vertices.addVertex(matrix, center - halfSize, halfSize, -.004f).setColor(color);
     }
 
     public static void register() {

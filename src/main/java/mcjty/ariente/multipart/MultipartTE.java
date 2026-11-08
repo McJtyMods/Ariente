@@ -1,10 +1,13 @@
 package mcjty.ariente.multipart;
 
+import java.util.EnumMap;
+import java.util.Map;
 import mcjty.ariente.blocks.utility.autofield.AutoFieldTile;
 import mcjty.lib.multipart.IPartBlock;
 import mcjty.lib.multipart.PartSlot;
 import mcjty.lib.tileentity.GenericTileEntity;
 import net.minecraft.core.BlockPos;
+import net.minecraft.core.HolderLookup;
 import net.minecraft.core.registries.BuiltInRegistries;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.nbt.ListTag;
@@ -18,11 +21,8 @@ import net.minecraft.world.level.block.Blocks;
 import net.minecraft.world.level.block.EntityBlock;
 import net.minecraft.world.level.block.entity.BlockEntity;
 import net.minecraft.world.level.block.state.BlockState;
-import net.minecraftforge.client.model.data.ModelData;
-import net.minecraftforge.client.model.data.ModelProperty;
-
-import java.util.EnumMap;
-import java.util.Map;
+import net.neoforged.neoforge.client.model.data.ModelData;
+import net.neoforged.neoforge.client.model.data.ModelProperty;
 
 import static mcjty.ariente.setup.Registration.TYPE_MULTIPART;
 
@@ -100,17 +100,17 @@ public class MultipartTE extends BlockEntity {
     }
 
     @Override
-    public void onDataPacket(Connection connection, ClientboundBlockEntityDataPacket packet) {
+    public void onDataPacket(Connection connection, ClientboundBlockEntityDataPacket packet, HolderLookup.Provider provider) {
         if (packet.getTag() != null) {
-            load(packet.getTag());
+            loadAdditional(packet.getTag(), provider);
             requestModelDataUpdate();
             level.sendBlockUpdated(worldPosition, getBlockState(), getBlockState(), Block.UPDATE_CLIENTS);
         }
     }
 
     @Override
-    public CompoundTag getUpdateTag() {
-        return saveWithoutMetadata();
+    public CompoundTag getUpdateTag(HolderLookup.Provider provider) {
+        return saveWithoutMetadata(level.registryAccess());
     }
 
     @Override
@@ -132,8 +132,8 @@ public class MultipartTE extends BlockEntity {
     }
 
     @Override
-    public void load(CompoundTag compound) {
-        super.load(compound);
+    public void loadAdditional(CompoundTag compound, HolderLookup.Provider provider) {
+        super.loadAdditional(compound, provider);
         Map<PartSlot, Part> loaded = new EnumMap<>(PartSlot.class);
         version = compound.getInt("version");
         ListTag list = compound.getList("parts", Tag.TAG_COMPOUND);
@@ -153,7 +153,7 @@ public class MultipartTE extends BlockEntity {
                 if (level != null) {
                     tile.setLevel(level);
                 }
-                tile.load(tag.getCompound("te"));
+                tile.loadWithComponents(tag.getCompound("te"), provider);
             }
             loaded.put(slot, new Part(state, tile));
         }
@@ -198,14 +198,14 @@ public class MultipartTE extends BlockEntity {
     }
 
     @Override
-    public void saveAdditional(CompoundTag compound) {
-        super.saveAdditional(compound);
+    public void saveAdditional(CompoundTag compound, HolderLookup.Provider provider) {
+        super.saveAdditional(compound, provider);
         ListTag list = new ListTag();
         parts.forEach((slot, part) -> {
             CompoundTag tag = NbtUtils.writeBlockState(part.state);
             tag.putString("slot", slot.name());
             if (part.tileEntity != null) {
-                tag.put("te", part.tileEntity.saveWithoutMetadata());
+                tag.put("te", part.tileEntity.saveWithoutMetadata(level.registryAccess()));
             }
             list.add(tag);
         });

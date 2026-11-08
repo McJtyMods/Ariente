@@ -2,9 +2,9 @@ package mcjty.ariente.entities.fluxship;
 
 import mcjty.ariente.Ariente;
 import mcjty.ariente.gui.CompactNumber;
+import mcjty.hologui.api.IColor;
 import mcjty.hologui.api.IGuiComponent;
 import mcjty.hologui.api.IGuiComponentRegistry;
-import mcjty.hologui.api.IColor;
 import net.minecraft.util.Mth;
 import net.minecraft.world.entity.player.Player;
 

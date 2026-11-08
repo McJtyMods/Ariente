@@ -2,6 +2,7 @@ package mcjty.ariente.display.client;
 
 import com.mojang.blaze3d.vertex.PoseStack;
 import com.mojang.math.Axis;
+import java.util.List;
 import mcjty.ariente.client.WorldHolograms;
 import mcjty.ariente.display.DisplayAppearance;
 import mcjty.ariente.display.DisplayBackground;
@@ -15,9 +16,8 @@ import net.minecraft.client.renderer.blockentity.BlockEntityRenderer;
 import net.minecraft.client.renderer.blockentity.BlockEntityRendererProvider;
 import net.minecraft.core.Direction;
 import net.minecraft.world.item.ItemStack;
+import net.minecraft.world.phys.AABB;
 import net.minecraft.world.phys.Vec3;
-
-import java.util.List;
 
 public class DisplayRenderer implements BlockEntityRenderer<DisplayBaseTile> {
 
@@ -30,6 +30,11 @@ public class DisplayRenderer implements BlockEntityRenderer<DisplayBaseTile> {
         poses.translate(.5 - right.getStepX() * .5, tile.getHeight(), .5 - right.getStepZ() * .5);
         poses.mulPose(Axis.YP.rotationDegrees(-normal.toYRot()));
         poses.scale(1 / 64f, -1 / 64f, 1 / 64f);
+    }
+
+    @Override
+    public AABB getRenderBoundingBox(DisplayBaseTile tile) {
+        return tile.getRenderBoundingBox();
     }
 
     @Override

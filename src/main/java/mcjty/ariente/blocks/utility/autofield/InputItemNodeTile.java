@@ -10,6 +10,7 @@ import mcjty.hologui.api.components.IPanel;
 import mcjty.lib.builder.BlockBuilder;
 import mcjty.lib.varia.ItemStackList;
 import net.minecraft.core.BlockPos;
+import net.minecraft.core.HolderLookup;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.world.ContainerHelper;
 import net.minecraft.world.level.block.state.BlockState;
@@ -35,12 +36,12 @@ public class InputItemNodeTile extends AbstractItemNodeTile {
     }
 
     @Override
-    public void load(CompoundTag tagCompound) {
-        super.load(tagCompound);
+    public void loadAdditional(CompoundTag tagCompound, HolderLookup.Provider provider) {
+        super.loadAdditional(tagCompound, provider);
         inputFilter.clear();
         CompoundTag info = tagCompound.getCompound("Info");
         inputCategory = ItemFilterCategory.fromId(info.getString("inCategory"));
-        ContainerHelper.loadAllItems(info.getCompound("input"), inputFilter);
+        ContainerHelper.loadAllItems(info.getCompound("input"), inputFilter, provider);
         if (!info.isEmpty()) {
             inputDamage = info.getBoolean("inDamage");
             inputNbt = info.getBoolean("inNBT");
@@ -50,10 +51,10 @@ public class InputItemNodeTile extends AbstractItemNodeTile {
     }
 
     @Override
-    public void saveAdditional(CompoundTag tagCompound) {
-        super.saveAdditional(tagCompound);
+    public void saveAdditional(CompoundTag tagCompound, HolderLookup.Provider provider) {
+        super.saveAdditional(tagCompound, provider);
         CompoundTag info = getOrCreateInfo(tagCompound);
-        info.put("input", ContainerHelper.saveAllItems(new CompoundTag(), inputFilter));
+        info.put("input", ContainerHelper.saveAllItems(new CompoundTag(), inputFilter, provider));
         info.putBoolean("inDamage", inputDamage);
         info.putBoolean("inNBT", inputNbt);
         // Keep the legacy key so existing tag filters retain their settings.

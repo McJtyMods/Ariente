@@ -1,17 +1,18 @@
 package mcjty.ariente.network;
 
+import javax.annotation.Nonnull;
 import mcjty.ariente.Ariente;
+import mcjty.ariente.blocks.defense.PacketDamageForcefield;
 import mcjty.ariente.blocks.storagecube.PacketStorageCubeAction;
 import mcjty.ariente.blocks.storagecube.PacketStorageCubeData;
-import mcjty.ariente.display.PacketDisplayAction;
-import mcjty.ariente.display.PacketDisplayData;
-import mcjty.ariente.display.PacketRequestDisplayData;
-import mcjty.ariente.display.PacketDisplayGesture;
-import mcjty.ariente.display.PacketDisplayGestureResult;
-import mcjty.ariente.blocks.defense.PacketDamageForcefield;
 import mcjty.ariente.blocks.utility.PacketClickStorage;
 import mcjty.ariente.blocks.utility.autofield.PacketAutoFieldRequestRenderInfo;
 import mcjty.ariente.blocks.utility.autofield.PacketAutoFieldReturnRenderInfo;
+import mcjty.ariente.display.PacketDisplayAction;
+import mcjty.ariente.display.PacketDisplayData;
+import mcjty.ariente.display.PacketDisplayGesture;
+import mcjty.ariente.display.PacketDisplayGestureResult;
+import mcjty.ariente.display.PacketRequestDisplayData;
 import mcjty.ariente.entities.fluxship.PacketShipAction;
 import mcjty.ariente.entities.levitator.PacketLevitatorInput;
 import mcjty.ariente.items.armor.PacketArmorHotkey;
@@ -20,86 +21,48 @@ import mcjty.ariente.items.armor.PacketPersonalForcefield;
 import mcjty.lib.network.PacketSendClientCommand;
 import mcjty.lib.network.PacketSendServerCommand;
 import mcjty.lib.typed.TypedMap;
-import net.minecraft.resources.ResourceLocation;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.world.entity.player.Player;
-import net.minecraftforge.network.NetworkDirection;
-import net.minecraftforge.network.NetworkRegistry;
-import net.minecraftforge.network.simple.SimpleChannel;
-
-import javax.annotation.Nonnull;
-import java.util.Optional;
+import net.neoforged.neoforge.network.PacketDistributor;
+import net.neoforged.neoforge.network.event.RegisterPayloadHandlersEvent;
+import net.neoforged.neoforge.network.registration.PayloadRegistrar;
 
 public class ArienteMessages {
 
-    private static final String PROTOCOL_VERSION = "11";
-
-    public static SimpleChannel INSTANCE;
-
-    public static void registerMessages(String name) {
-        SimpleChannel net = NetworkRegistry.ChannelBuilder
-                .named(new ResourceLocation(Ariente.MODID, name))
-                .networkProtocolVersion(() -> PROTOCOL_VERSION)
-                .clientAcceptedVersions(PROTOCOL_VERSION::equals)
-                .serverAcceptedVersions(PROTOCOL_VERSION::equals)
-                .simpleChannel();
-
-
-        INSTANCE = net;
-
-        net.registerMessage(id(), PacketStorageCubeAction.class, PacketStorageCubeAction::toBytes, PacketStorageCubeAction::new,
-                PacketStorageCubeAction::handle, Optional.of(NetworkDirection.PLAY_TO_SERVER));
-        net.registerMessage(id(), PacketStorageCubeData.class, PacketStorageCubeData::toBytes, PacketStorageCubeData::new,
-                PacketStorageCubeData::handle, Optional.of(NetworkDirection.PLAY_TO_CLIENT));
-
-        net.registerMessage(id(), PacketDisplayAction.class, PacketDisplayAction::toBytes, PacketDisplayAction::new,
-                PacketDisplayAction::handle, Optional.of(NetworkDirection.PLAY_TO_SERVER));
-
-        net.registerMessage(id(), PacketDisplayGesture.class, PacketDisplayGesture::toBytes, PacketDisplayGesture::new,
-                PacketDisplayGesture::handle, Optional.of(NetworkDirection.PLAY_TO_SERVER));
-        net.registerMessage(id(), PacketDisplayGestureResult.class, PacketDisplayGestureResult::toBytes, PacketDisplayGestureResult::new,
-                PacketDisplayGestureResult::handle, Optional.of(NetworkDirection.PLAY_TO_CLIENT));
-
-        // Server side
-        net.registerMessage(id(), PacketClickStorage.class, PacketClickStorage::toBytes, PacketClickStorage::new, PacketClickStorage::handle, Optional.of(NetworkDirection.PLAY_TO_SERVER));
-        net.registerMessage(id(), PacketHitForcefield.class, PacketHitForcefield::toBytes, PacketHitForcefield::new, PacketHitForcefield::handle, Optional.of(NetworkDirection.PLAY_TO_SERVER));
-        net.registerMessage(id(), PacketConfigureArmor.class, PacketConfigureArmor::toBytes, PacketConfigureArmor::new, PacketConfigureArmor::handle, Optional.of(NetworkDirection.PLAY_TO_SERVER));
-        net.registerMessage(id(), PacketArmorHotkey.class, PacketArmorHotkey::toBytes, PacketArmorHotkey::new, PacketArmorHotkey::handle, Optional.of(NetworkDirection.PLAY_TO_SERVER));
-        net.registerMessage(id(), PacketShipAction.class, PacketShipAction::toBytes, PacketShipAction::new, PacketShipAction::handle, Optional.of(NetworkDirection.PLAY_TO_SERVER));
-        net.registerMessage(id(), PacketAutoFieldRequestRenderInfo.class, PacketAutoFieldRequestRenderInfo::toBytes, PacketAutoFieldRequestRenderInfo::new, PacketAutoFieldRequestRenderInfo::handle, Optional.of(NetworkDirection.PLAY_TO_SERVER));
-
-        // Client side
-        net.registerMessage(id(), PacketDisplayData.class, PacketDisplayData::toBytes, PacketDisplayData::new,
-                PacketDisplayData::handle, Optional.of(NetworkDirection.PLAY_TO_CLIENT));
-        net.registerMessage(id(), PacketRequestDisplayData.class, PacketRequestDisplayData::toBytes, PacketRequestDisplayData::new,
-                PacketRequestDisplayData::handle, Optional.of(NetworkDirection.PLAY_TO_SERVER));
-        net.registerMessage(id(), PacketDamageForcefield.class, PacketDamageForcefield::toBytes, PacketDamageForcefield::new, PacketDamageForcefield::handle, Optional.of(NetworkDirection.PLAY_TO_CLIENT));
-        net.registerMessage(id(), PacketAutoFieldReturnRenderInfo.class, PacketAutoFieldReturnRenderInfo::toBytes, PacketAutoFieldReturnRenderInfo::new, PacketAutoFieldReturnRenderInfo::handle, Optional.of(NetworkDirection.PLAY_TO_CLIENT));
-        net.registerMessage(id(), PacketPersonalForcefield.class, PacketPersonalForcefield::toBytes, PacketPersonalForcefield::new,
-                PacketPersonalForcefield::handle, Optional.of(NetworkDirection.PLAY_TO_CLIENT));
-        net.registerMessage(id(), PacketLevitatorInput.class, PacketLevitatorInput::toBytes, PacketLevitatorInput::new,
-                PacketLevitatorInput::handle, Optional.of(NetworkDirection.PLAY_TO_SERVER));
-    }
-
-    private static int packetId = 0;
-
-    private static int id() {
-        return packetId++;
+    public static void registerMessages(RegisterPayloadHandlersEvent event) {
+        PayloadRegistrar registrar = event.registrar("ariente").versioned("1");
+        registrar.playToServer(PacketStorageCubeAction.TYPE, PacketStorageCubeAction.CODEC, PacketStorageCubeAction::handle);
+        registrar.playToClient(PacketStorageCubeData.TYPE, PacketStorageCubeData.CODEC, PacketStorageCubeData::handle);
+        registrar.playToServer(PacketDisplayAction.TYPE, PacketDisplayAction.CODEC, PacketDisplayAction::handle);
+        registrar.playToServer(PacketDisplayGesture.TYPE, PacketDisplayGesture.CODEC, PacketDisplayGesture::handle);
+        registrar.playToClient(PacketDisplayGestureResult.TYPE, PacketDisplayGestureResult.CODEC, PacketDisplayGestureResult::handle);
+        registrar.playToServer(PacketClickStorage.TYPE, PacketClickStorage.CODEC, PacketClickStorage::handle);
+        registrar.playToServer(PacketHitForcefield.TYPE, PacketHitForcefield.CODEC, PacketHitForcefield::handle);
+        registrar.playToServer(PacketConfigureArmor.TYPE, PacketConfigureArmor.CODEC, PacketConfigureArmor::handle);
+        registrar.playToServer(PacketArmorHotkey.TYPE, PacketArmorHotkey.CODEC, PacketArmorHotkey::handle);
+        registrar.playToServer(PacketShipAction.TYPE, PacketShipAction.CODEC, PacketShipAction::handle);
+        registrar.playToServer(PacketAutoFieldRequestRenderInfo.TYPE, PacketAutoFieldRequestRenderInfo.CODEC, PacketAutoFieldRequestRenderInfo::handle);
+        registrar.playToClient(PacketDisplayData.TYPE, PacketDisplayData.CODEC, PacketDisplayData::handle);
+        registrar.playToServer(PacketRequestDisplayData.TYPE, PacketRequestDisplayData.CODEC, PacketRequestDisplayData::handle);
+        registrar.playToClient(PacketDamageForcefield.TYPE, PacketDamageForcefield.CODEC, PacketDamageForcefield::handle);
+        registrar.playToClient(PacketAutoFieldReturnRenderInfo.TYPE, PacketAutoFieldReturnRenderInfo.CODEC, PacketAutoFieldReturnRenderInfo::handle);
+        registrar.playToClient(PacketPersonalForcefield.TYPE, PacketPersonalForcefield.CODEC, PacketPersonalForcefield::handle);
+        registrar.playToServer(PacketLevitatorInput.TYPE, PacketLevitatorInput.CODEC, PacketLevitatorInput::handle);
     }
 
     public static void sendToServer(String command, @Nonnull TypedMap.Builder argumentBuilder) {
-        INSTANCE.sendToServer(new PacketSendServerCommand(Ariente.MODID, command, argumentBuilder.build()));
+        PacketDistributor.sendToServer(PacketSendServerCommand.create(Ariente.MODID, command, argumentBuilder.build()));
     }
 
     public static void sendToServer(String command) {
-        INSTANCE.sendToServer(new PacketSendServerCommand(Ariente.MODID, command, TypedMap.EMPTY));
+        PacketDistributor.sendToServer(PacketSendServerCommand.create(Ariente.MODID, command, TypedMap.EMPTY));
     }
 
     public static void sendToClient(Player player, String command, @Nonnull TypedMap.Builder argumentBuilder) {
-        INSTANCE.sendTo(new PacketSendClientCommand(Ariente.MODID, command, argumentBuilder.build()), ((ServerPlayer)player).connection.connection, NetworkDirection.PLAY_TO_CLIENT);
+        PacketDistributor.sendToPlayer((ServerPlayer) player, PacketSendClientCommand.create(Ariente.MODID, command, argumentBuilder.build()));
     }
 
     public static void sendToClient(Player player, String command) {
-        INSTANCE.sendTo(new PacketSendClientCommand(Ariente.MODID, command, TypedMap.EMPTY), ((ServerPlayer)player).connection.connection, NetworkDirection.PLAY_TO_CLIENT);
+        PacketDistributor.sendToPlayer((ServerPlayer) player, PacketSendClientCommand.create(Ariente.MODID, command, TypedMap.EMPTY));
     }
 }

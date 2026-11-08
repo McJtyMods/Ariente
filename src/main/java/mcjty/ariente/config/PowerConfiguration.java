@@ -1,28 +1,27 @@
 package mcjty.ariente.config;
 
-import net.minecraftforge.common.ForgeConfigSpec;
-
 import java.util.List;
+import net.neoforged.neoforge.common.ModConfigSpec;
 
 public class PowerConfiguration {
 
     private static final String CATEGORY_POWER = "power";
 
-    public static ForgeConfigSpec.IntValue FORCEFIELD_BUILDUP_POWER;
-    public static ForgeConfigSpec.IntValue SMELTER_POWER_PER_TICK;
-    public static ForgeConfigSpec.IntValue SMELTER_SPEED;
-    public static ForgeConfigSpec.IntValue PURIFIER_TICKS_PER_TUBE;
-    public static ForgeConfigSpec.IntValue PURIFIER_POWER_PER_TUBE;
-    public static ForgeConfigSpec.IntValue PURIFIER_MAX_TUBES;
-    public static ForgeConfigSpec.IntValue PURIFIER_BASE_YIELD;
-    public static ForgeConfigSpec.IntValue PURIFIER_EXTRA_YIELD;
-    public static ForgeConfigSpec.IntValue PURIFIER_RING_PERIOD;
-    public static ForgeConfigSpec.IntValue PURIFIER_RING_PARTICLES;
-    public static ForgeConfigSpec.IntValue PURIFIER_RING_STREAMS;
-    public static ForgeConfigSpec.IntValue PURIFIER_RING_TRAIL_TICKS;
-    public static ForgeConfigSpec.ConfigValue<List<? extends String>> PURIFIER_PREFERRED_OUTPUT_MODS;
+    public static ModConfigSpec.IntValue FORCEFIELD_BUILDUP_POWER;
+    public static ModConfigSpec.IntValue SMELTER_POWER_PER_TICK;
+    public static ModConfigSpec.IntValue SMELTER_SPEED;
+    public static ModConfigSpec.IntValue PURIFIER_TICKS_PER_TUBE;
+    public static ModConfigSpec.IntValue PURIFIER_POWER_PER_TUBE;
+    public static ModConfigSpec.IntValue PURIFIER_MAX_TUBES;
+    public static ModConfigSpec.IntValue PURIFIER_BASE_YIELD;
+    public static ModConfigSpec.IntValue PURIFIER_EXTRA_YIELD;
+    public static ModConfigSpec.IntValue PURIFIER_RING_PERIOD;
+    public static ModConfigSpec.IntValue PURIFIER_RING_PARTICLES;
+    public static ModConfigSpec.IntValue PURIFIER_RING_STREAMS;
+    public static ModConfigSpec.IntValue PURIFIER_RING_TRAIL_TICKS;
+    public static ModConfigSpec.ConfigValue<List<? extends String>> PURIFIER_PREFERRED_OUTPUT_MODS;
 
-    public static void init(ForgeConfigSpec.Builder SERVER_BUILDER, ForgeConfigSpec.Builder CLIENT_BUILDER) {
+    public static void init(ModConfigSpec.Builder SERVER_BUILDER, ModConfigSpec.Builder CLIENT_BUILDER) {
         SERVER_BUILDER.comment("Power settings").push(CATEGORY_POWER);
 
         FORCEFIELD_BUILDUP_POWER = SERVER_BUILDER

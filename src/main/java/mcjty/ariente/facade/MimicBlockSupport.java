@@ -1,16 +1,14 @@
 package mcjty.ariente.facade;
 
+import javax.annotation.Nullable;
 import mcjty.lib.varia.Tools;
-import net.minecraft.resources.ResourceLocation;
 import net.minecraft.core.registries.BuiltInRegistries;
+import net.minecraft.nbt.CompoundTag;
 import net.minecraft.nbt.NbtUtils;
+import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.level.block.Block;
 import net.minecraft.world.level.block.Blocks;
 import net.minecraft.world.level.block.state.BlockState;
-import net.minecraft.nbt.CompoundTag;
-import net.minecraftforge.registries.ForgeRegistries;
-
-import javax.annotation.Nullable;
 
 public class MimicBlockSupport {
 
@@ -31,7 +29,7 @@ public class MimicBlockSupport {
             mimicBlock = NbtUtils.readBlockState(BuiltInRegistries.BLOCK.asLookup(), tagCompound.getCompound("mimicState"));
         } else if (tagCompound.contains("regName")) {
             String regName = tagCompound.getString("regName");
-            Block value = ForgeRegistries.BLOCKS.getValue(new ResourceLocation(regName));
+            Block value = BuiltInRegistries.BLOCK.get(ResourceLocation.parse(regName));
             if (value == null) {
                 mimicBlock = Blocks.COBBLESTONE.defaultBlockState();
             } else {

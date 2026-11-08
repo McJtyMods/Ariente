@@ -1,44 +1,44 @@
 package mcjty.ariente.blocks.utility;
 
-import mcjty.ariente.display.TextDisplayModule;
-import mcjty.ariente.gui.GuiHelp;
-import mcjty.lib.varia.SafeClientTools;
+import mcjty.hologui.api.*;
+import java.util.*;
+import javax.annotation.Nullable;
 import mcjty.ariente.Ariente;
 import mcjty.ariente.api.ICityAI;
 import mcjty.ariente.api.ICityEquipment;
 import mcjty.ariente.api.IElevator;
+import mcjty.ariente.blocks.ArienteBlockEntity;
+import mcjty.ariente.display.TextDisplayModule;
+import mcjty.ariente.gui.GuiHelp;
 import mcjty.ariente.setup.Registration;
-import mcjty.hologui.api.*;
 import mcjty.hologui.api.components.IPanel;
 import mcjty.lib.blocks.BaseBlock;
 import mcjty.lib.blocks.RotationType;
 import mcjty.lib.builder.BlockBuilder;
-import mcjty.lib.tileentity.TickingTileEntity;
+import mcjty.lib.varia.SafeClientTools;
 import net.minecraft.core.BlockPos;
+import net.minecraft.core.HolderLookup;
 import net.minecraft.nbt.CompoundTag;
+import net.minecraft.network.Connection;
 import net.minecraft.network.protocol.game.ClientboundBlockEntityDataPacket;
+import net.minecraft.world.InteractionHand;
+import net.minecraft.world.InteractionResult;
 import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.player.Player;
+import net.minecraft.world.level.Level;
 import net.minecraft.world.level.block.Block;
-import net.minecraft.world.level.block.state.BlockState;
-import net.minecraft.network.Connection;
 import net.minecraft.world.level.block.entity.BlockEntity;
-import net.minecraft.world.InteractionResult;
-import net.minecraft.world.InteractionHand;
+import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.phys.AABB;
 import net.minecraft.world.phys.BlockHitResult;
 import net.minecraft.world.phys.Vec3;
-import net.minecraft.world.level.Level;
-
-import javax.annotation.Nullable;
-import java.util.*;
 
 import static mcjty.ariente.compat.ArienteTOPDriver.DRIVER;
 import static mcjty.hologui.api.Icons.*;
 import static mcjty.lib.builder.TooltipBuilder.header;
 import static mcjty.lib.builder.TooltipBuilder.key;
 
-public class ElevatorTile extends TickingTileEntity implements IGuiTile, ICityEquipment, IElevator {
+public class ElevatorTile extends ArienteBlockEntity implements IGuiTile, ICityEquipment, IElevator {
 
     public static final String TAG_ELEVATOR = "elevator";
 
@@ -280,10 +280,10 @@ public class ElevatorTile extends TickingTileEntity implements IGuiTile, ICityEq
     }
 
     @Override
-    public void onDataPacket(Connection net, ClientboundBlockEntityDataPacket packet) {
+    public void onDataPacket(Connection net, ClientboundBlockEntityDataPacket packet, HolderLookup.Provider provider) {
         int oldheight = height;
 
-        super.onDataPacket(net, packet);
+        super.onDataPacket(net, packet, provider);
 
         if (getLevel().isClientSide) {
             // If needed send a render update.
@@ -314,8 +314,8 @@ public class ElevatorTile extends TickingTileEntity implements IGuiTile, ICityEq
     }
 
     @Override
-    public void load(CompoundTag tagCompound) {
-        super.load(tagCompound);
+    public void loadAdditional(CompoundTag tagCompound, HolderLookup.Provider provider) {
+        super.loadAdditional(tagCompound, provider);
         CompoundTag info = tagCompound.getCompound("Info");
         if (info.contains("height")) {
             height = info.getInt("height");
@@ -324,22 +324,21 @@ public class ElevatorTile extends TickingTileEntity implements IGuiTile, ICityEq
     }
 
     @Override
-    public void saveAdditional(CompoundTag tagCompound) {
+    public void saveAdditional(CompoundTag tagCompound, HolderLookup.Provider provider) {
         getOrCreateInfo(tagCompound).putInt("height", height);
-        super.saveAdditional(tagCompound);
+        super.saveAdditional(tagCompound, provider);
     }
 
     @Override
-    public void saveClientDataToNBT(CompoundTag tag) {
-        saveAdditional(tag);
+    public void saveClientDataToNBT(CompoundTag tag, HolderLookup.Provider provider) {
+        saveAdditional(tag, provider);
     }
 
     @Override
-    public void loadClientDataFromNBT(CompoundTag tag) {
-        load(tag);
+    public void loadClientDataFromNBT(CompoundTag tag, HolderLookup.Provider provider) {
+        loadAdditional(tag, provider);
     }
 
-    @Override
     public AABB getRenderBoundingBox() {
         return getBeamBox();
     }

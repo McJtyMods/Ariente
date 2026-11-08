@@ -1,14 +1,13 @@
 package mcjty.ariente.blocks.utility.autofield;
 
-import mcjty.ariente.multipart.MultipartHelper;
-import mcjty.lib.multipart.PartPos;
-import net.minecraft.world.item.ItemStack;
-import net.minecraft.world.level.Level;
-
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Set;
 import java.util.stream.Stream;
+import mcjty.ariente.multipart.MultipartHelper;
+import mcjty.lib.multipart.PartPos;
+import net.minecraft.world.item.ItemStack;
+import net.minecraft.world.level.Level;
 
 public class ConsumerInfo {
 

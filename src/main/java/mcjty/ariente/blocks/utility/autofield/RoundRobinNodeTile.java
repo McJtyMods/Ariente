@@ -1,28 +1,29 @@
 package mcjty.ariente.blocks.utility.autofield;
 
 import mcjty.ariente.Ariente;
-import mcjty.ariente.setup.Registration;
+import mcjty.ariente.blocks.ArienteBlockEntity;
 import mcjty.ariente.multipart.MultipartTE;
+import mcjty.ariente.setup.Registration;
 import mcjty.lib.multipart.PartSlot;
-import mcjty.lib.tileentity.GenericTileEntity;
+import net.minecraft.core.BlockPos;
+import net.minecraft.core.Direction;
+import net.minecraft.core.HolderLookup;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.world.InteractionHand;
+import net.minecraft.world.InteractionResult;
+import net.minecraft.world.entity.LivingEntity;
+import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.level.block.entity.BlockEntity;
 import net.minecraft.world.level.block.state.BlockState;
-import net.minecraft.world.entity.LivingEntity;
-import net.minecraft.world.entity.player.Player;
-import net.minecraft.world.InteractionResult;
-import net.minecraft.core.Direction;
 import net.minecraft.world.phys.AABB;
-import net.minecraft.core.BlockPos;
 import net.minecraft.world.phys.BlockHitResult;
 
 import static mcjty.ariente.blocks.utility.autofield.AbstractNodeTile.ORIENTATION;
 import static mcjty.ariente.blocks.utility.autofield.NodeOrientation.*;
 
-public class RoundRobinNodeTile extends GenericTileEntity {
+public class RoundRobinNodeTile extends ArienteBlockEntity {
 
     private int index = 0;
 
@@ -188,14 +189,14 @@ public class RoundRobinNodeTile extends GenericTileEntity {
     }
 
     @Override
-    public void load(CompoundTag tagCompound) {
-        super.load(tagCompound);
+    public void loadAdditional(CompoundTag tagCompound, HolderLookup.Provider provider) {
+        super.loadAdditional(tagCompound, provider);
         index = tagCompound.getInt("index");
     }
 
     @Override
-    public void saveAdditional(CompoundTag tagCompound) {
-        super.saveAdditional(tagCompound);
+    public void saveAdditional(CompoundTag tagCompound, HolderLookup.Provider provider) {
+        super.saveAdditional(tagCompound, provider);
         tagCompound.putInt("index", index);
     }
 

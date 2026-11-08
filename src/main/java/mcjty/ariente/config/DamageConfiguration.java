@@ -1,14 +1,14 @@
 package mcjty.ariente.config;
 
-import net.minecraftforge.common.ForgeConfigSpec;
+import net.neoforged.neoforge.common.ModConfigSpec;
 
 public class DamageConfiguration {
 
     private static final String CATEGORY_DAMAGE = "damage";
 
-    public static ForgeConfigSpec.DoubleValue FORCEFIELD_DAMAGE;
+    public static ModConfigSpec.DoubleValue FORCEFIELD_DAMAGE;
 
-    public static void init(ForgeConfigSpec.Builder SERVER_BUILDER, ForgeConfigSpec.Builder CLIENT_BUILDER) {
+    public static void init(ModConfigSpec.Builder SERVER_BUILDER, ModConfigSpec.Builder CLIENT_BUILDER) {
         SERVER_BUILDER.comment("Damage settings").push(CATEGORY_DAMAGE);
 
         FORCEFIELD_DAMAGE = SERVER_BUILDER

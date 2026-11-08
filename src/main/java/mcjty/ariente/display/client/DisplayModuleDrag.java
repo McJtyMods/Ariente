@@ -1,19 +1,18 @@
 package mcjty.ariente.display.client;
 
 import com.mojang.blaze3d.vertex.PoseStack;
+import java.util.UUID;
 import mcjty.ariente.display.DisplayBaseTile;
 import mcjty.ariente.display.DisplayGeometry;
 import mcjty.ariente.display.InstalledModule;
 import mcjty.ariente.display.PacketDisplayGesture;
-import mcjty.ariente.network.ArienteMessages;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.renderer.MultiBufferSource;
-import net.minecraft.core.Direction;
 import net.minecraft.core.BlockPos;
+import net.minecraft.core.Direction;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.phys.Vec3;
-
-import java.util.UUID;
+import net.neoforged.neoforge.network.PacketDistributor;
 
 /** Local drag preview; authoritative state changes only when the server accepts the release. */
 public class DisplayModuleDrag {
@@ -27,7 +26,7 @@ public class DisplayModuleDrag {
     public static void begin(DisplayGeometry.ModuleHit hit) {
         Minecraft mc = Minecraft.getInstance();
         DisplayGeometry.Hit start = DisplayGeometry.project(hit.owner(), mc.player,
-                Math.min(8, mc.player.getBlockReach()), mc.player.getLookAngle());
+                Math.min(8, mc.player.blockInteractionRange()), mc.player.getLookAngle());
         if (start == null) {
             return;
         }
@@ -38,7 +37,7 @@ public class DisplayModuleDrag {
     private static void send(PacketDisplayGesture.Action action) {
         Minecraft mc = Minecraft.getInstance();
         if (gesture != null && mc.getConnection() != null && mc.player != null) {
-            ArienteMessages.INSTANCE.sendToServer(new PacketDisplayGesture(gesture.source.getBlockPos(), gesture.module.id(),
+            PacketDistributor.sendToServer(new PacketDisplayGesture(gesture.source.getBlockPos(), gesture.module.id(),
                     gesture.ticket, action, mc.player.getYRot(), mc.player.getXRot(), gesture.dragged, gesture.valid));
         }
     }
@@ -70,7 +69,7 @@ public class DisplayModuleDrag {
         }
         InstalledModule current = gesture.source.findModule(gesture.module.id());
         if (current == null || current.x() != gesture.module.x() || current.y() != gesture.module.y()
-                || !ItemStack.isSameItemSameTags(current.stack(), gesture.originalStack)
+                || !ItemStack.isSameItemSameComponents(current.stack(), gesture.originalStack)
                 || gesture.source.getHeight() != gesture.height || DisplayGeometry.facing(gesture.source) != gesture.facing) {
             cancel();
             return;
@@ -93,7 +92,7 @@ public class DisplayModuleDrag {
             return;
         }
         DisplayGeometry.Hit cursor = DisplayGeometry.project(gesture.source, mc.player,
-                Math.min(8, mc.player.getBlockReach()), mc.player.getLookAngle());
+                Math.min(8, mc.player.blockInteractionRange()), mc.player.getLookAngle());
         if (cursor == null) {
             gesture.dragged = true;
             gesture.valid = false;

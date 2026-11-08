@@ -1,11 +1,10 @@
 package mcjty.ariente.display;
 
+import java.util.ArrayList;
+import java.util.List;
 import mcjty.hologui.api.IGuiComponentRegistry;
 import mcjty.hologui.api.components.IPanel;
 import net.minecraft.world.item.ItemStack;
-
-import java.util.ArrayList;
-import java.util.List;
 
 /** Decorative, salvage-only text using the sixteen symbols of the alien alphabet. */
 public class AlienTextDisplayModule implements DisplayModuleType {

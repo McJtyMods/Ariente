@@ -6,17 +6,17 @@ import mcjty.ariente.display.DisplayBaseTile;
 import mcjty.ariente.display.DisplayGeometry;
 import mcjty.ariente.display.DisplayModuleItem;
 import mcjty.ariente.display.PacketDisplayAction;
-import mcjty.ariente.network.ArienteMessages;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.renderer.MultiBufferSource;
 import net.minecraft.world.InteractionHand;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.phys.HitResult;
 import net.minecraft.world.phys.Vec3;
-import net.minecraftforge.client.event.InputEvent;
-import net.minecraftforge.client.event.RenderLevelStageEvent;
-import net.minecraftforge.eventbus.api.SubscribeEvent;
-import net.minecraftforge.event.TickEvent;
+import net.neoforged.bus.api.SubscribeEvent;
+import net.neoforged.neoforge.client.event.ClientTickEvent;
+import net.neoforged.neoforge.client.event.InputEvent;
+import net.neoforged.neoforge.client.event.RenderLevelStageEvent;
+import net.neoforged.neoforge.network.PacketDistributor;
 
 public class DisplayClientEvents {
 
@@ -24,7 +24,7 @@ public class DisplayClientEvents {
 
     public static DisplayGeometry.Hit pick(Player player) {
         DisplayGeometry.Hit nearest = null;
-        double reach = Math.min(8, player.getBlockReach());
+        double reach = Math.min(8, player.blockInteractionRange());
         for (DisplayBaseTile base : DisplayBaseTile.LOADED) {
             if (base.isRemoved() || base.getLevel() != player.level()
                     || base.getBlockPos().distToCenterSqr(player.getX(), player.getY(), player.getZ()) > 400) {
@@ -70,14 +70,14 @@ public class DisplayClientEvents {
             if (event.isUseItem() && !mc.player.isShiftKeyDown() && module != null) {
                 DisplayModuleDrag.begin(module);
             } else {
-                ArienteMessages.INSTANCE.sendToServer(new PacketDisplayAction(hit.tile().getBlockPos(), selected, event.isAttack()));
+                PacketDistributor.sendToServer(new PacketDisplayAction(hit.tile().getBlockPos(), selected, event.isAttack()));
             }
         }
     }
 
     @SubscribeEvent
-    public void tick(TickEvent.ClientTickEvent event) {
-        if (event.phase == TickEvent.Phase.END) {
+    public void tick(ClientTickEvent.Post event) {
+        if (true) {
             DisplayModuleDrag.tick();
             DisplayDataReceiver.tick();
             CameraPerspectiveRenderer.tick();

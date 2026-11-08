@@ -1,12 +1,21 @@
 package mcjty.ariente.entities.levitator;
 
-import net.minecraft.network.FriendlyByteBuf;
+import net.minecraft.network.RegistryFriendlyByteBuf;
+import net.minecraft.network.codec.StreamCodec;
+import net.minecraft.network.protocol.common.custom.CustomPacketPayload;
+import net.minecraft.resources.ResourceLocation;
 import net.minecraft.server.level.ServerPlayer;
-import net.minecraftforge.network.NetworkEvent;
+import net.neoforged.neoforge.network.handling.IPayloadContext;
 
-import java.util.function.Supplier;
+public class PacketLevitatorInput implements CustomPacketPayload {
 
-public class PacketLevitatorInput {
+    public static final Type<PacketLevitatorInput> TYPE = new Type<>(ResourceLocation.fromNamespaceAndPath("ariente", "packet_levitator_input"));
+    public static final StreamCodec<RegistryFriendlyByteBuf, PacketLevitatorInput> CODEC = StreamCodec.ofMember(PacketLevitatorInput::toBytes, PacketLevitatorInput::new);
+
+    @Override
+    public Type<? extends CustomPacketPayload> type() {
+        return TYPE;
+    }
 
     private final int input;
 
@@ -14,22 +23,20 @@ public class PacketLevitatorInput {
         this.input = input;
     }
 
-    public PacketLevitatorInput(FriendlyByteBuf buffer) {
+    public PacketLevitatorInput(RegistryFriendlyByteBuf buffer) {
         this(buffer.readByte());
     }
 
-    public void toBytes(FriendlyByteBuf buffer) {
+    public void toBytes(RegistryFriendlyByteBuf buffer) {
         buffer.writeByte(input);
     }
 
-    public void handle(Supplier<NetworkEvent.Context> supplier) {
-        NetworkEvent.Context context = supplier.get();
+    public void handle(IPayloadContext context) {
         context.enqueueWork(() -> {
-            ServerPlayer player = context.getSender();
+            ServerPlayer player = (ServerPlayer) context.player();
             if (player != null && player.getVehicle() instanceof FluxLevitatorEntity cart) {
                 cart.handleInput(player, input);
             }
         });
-        context.setPacketHandled(true);
     }
 }

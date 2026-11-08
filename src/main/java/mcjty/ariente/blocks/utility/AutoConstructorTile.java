@@ -1,9 +1,15 @@
 package mcjty.ariente.blocks.utility;
 
-import mcjty.ariente.blocks.ExtremeMachineTile;
+import mcjty.hologui.api.*;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Map;
+import javax.annotation.Nonnull;
+import javax.annotation.Nullable;
 import mcjty.ariente.Ariente;
 import mcjty.ariente.api.ICityAI;
 import mcjty.ariente.api.ICityEquipment;
+import mcjty.ariente.blocks.ExtremeMachineTile;
 import mcjty.ariente.gui.GuiHelp;
 import mcjty.ariente.gui.PlayerInventoryPanel;
 import mcjty.ariente.items.BlueprintItem;
@@ -11,10 +17,9 @@ import mcjty.ariente.power.IPowerReceiver;
 import mcjty.ariente.power.IPowerUser;
 import mcjty.ariente.power.PowerReceiverSupport;
 import mcjty.ariente.recipes.BlueprintRecipeRegistry;
-import mcjty.ariente.recipes.ConstructorRecipe;
 import mcjty.ariente.recipes.ConstructorCrafting;
+import mcjty.ariente.recipes.ConstructorRecipe;
 import mcjty.ariente.setup.Registration;
-import mcjty.hologui.api.*;
 import mcjty.hologui.api.components.IPlayerSlots;
 import mcjty.hologui.api.components.ISlots;
 import mcjty.lib.blocks.BaseBlock;
@@ -22,35 +27,28 @@ import mcjty.lib.blocks.RotationType;
 import mcjty.lib.builder.BlockBuilder;
 import mcjty.lib.container.ContainerFactory;
 import mcjty.lib.container.GenericItemHandler;
-import mcjty.lib.tileentity.Cap;
-import mcjty.lib.tileentity.CapType;
 import mcjty.lib.varia.OrientationTools;
 import mcjty.lib.varia.RedstoneMode;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
+import net.minecraft.core.HolderLookup;
 import net.minecraft.nbt.CompoundTag;
-import net.minecraft.nbt.Tag;
-import net.minecraft.world.InteractionHand;
-import net.minecraft.world.entity.player.Player;
-import net.minecraft.world.item.ItemStack;
-import net.minecraft.world.level.Level;
-import net.minecraft.world.level.block.Block;
-import net.minecraft.world.level.block.state.BlockState;
-import net.minecraft.world.item.Items;
 import net.minecraft.network.Connection;
 import net.minecraft.network.protocol.game.ClientboundBlockEntityDataPacket;
-import net.minecraft.world.level.block.state.StateDefinition;
-import net.minecraft.world.level.block.entity.BlockEntity;
+import net.minecraft.world.InteractionHand;
 import net.minecraft.world.InteractionResult;
+import net.minecraft.world.entity.player.Player;
+import net.minecraft.world.item.ItemStack;
+import net.minecraft.world.item.Items;
+import net.minecraft.world.level.Level;
+import net.minecraft.world.level.block.Block;
+import net.minecraft.world.level.block.entity.BlockEntity;
+import net.minecraft.world.level.block.state.BlockState;
+import net.minecraft.world.level.block.state.StateDefinition;
 import net.minecraft.world.phys.BlockHitResult;
-import net.minecraftforge.common.util.Lazy;
-import net.minecraftforge.items.ItemHandlerHelper;
-
-import javax.annotation.Nonnull;
-import javax.annotation.Nullable;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Map;
+import net.neoforged.neoforge.common.util.Lazy;
+import net.neoforged.neoforge.items.IItemHandler;
+import net.neoforged.neoforge.items.ItemHandlerHelper;
 
 import static mcjty.ariente.blocks.BlockProperties.WORKING;
 import static mcjty.ariente.blocks.utility.BlueprintStorageTile.BLUEPRINTS;
@@ -71,7 +69,6 @@ public class AutoConstructorTile extends ExtremeMachineTile implements IGuiTile,
             .box(generic().in(), SLOT_INGREDIENTS, 0, 0, 6, 3)
             .box(generic().out(), SLOT_OUTPUT, 0, 0, OUTPUT, 1));
 
-    @Cap(type = CapType.ITEMS_AUTOMATION)
     private final GenericItemHandler items = createItemHandler();
 
     public static String TAG_INGREDIENTS = "ingredients";
@@ -136,7 +133,7 @@ public class AutoConstructorTile extends ExtremeMachineTile implements IGuiTile,
         for (int slot = SLOT_OUTPUT; slot < SLOT_OUTPUT + OUTPUT; slot++) {
             ItemStack output = items.getStackInSlot(slot);
             int limit = Math.min(result.getMaxStackSize(), items.getSlotLimit(slot));
-            if ((!output.isEmpty() && !ItemHandlerHelper.canItemStacksStack(result, output))
+            if ((!output.isEmpty() && !ItemStack.isSameItemSameComponents(result, output))
                     || output.getCount() + result.getCount() > limit) {
                 continue;
             }
@@ -214,10 +211,10 @@ public class AutoConstructorTile extends ExtremeMachineTile implements IGuiTile,
     }
 
     @Override
-    public void onDataPacket(Connection net, ClientboundBlockEntityDataPacket packet) {
+    public void onDataPacket(Connection net, ClientboundBlockEntityDataPacket packet, HolderLookup.Provider provider) {
         boolean working = isWorking();
 
-        super.onDataPacket(net, packet);
+        super.onDataPacket(net, packet, provider);
 
         if (level.isClientSide) {
             // If needed send a render update.
@@ -233,17 +230,17 @@ public class AutoConstructorTile extends ExtremeMachineTile implements IGuiTile,
     }
 
     @Override
-    public void load(CompoundTag tagCompound) {
-        super.load(tagCompound);
+    public void loadAdditional(CompoundTag tagCompound, HolderLookup.Provider provider) {
+        super.loadAdditional(tagCompound, provider);
         craftIndex = tagCompound.getInt("craftIndex");
         busyCounter = tagCompound.getInt("busy");
     }
 
     @Override
-    public void saveAdditional(CompoundTag tagCompound) {
+    public void saveAdditional(CompoundTag tagCompound, HolderLookup.Provider provider) {
         tagCompound.putInt("craftIndex", craftIndex);
         tagCompound.putInt("busy", busyCounter);
-        super.saveAdditional(tagCompound);
+        super.saveAdditional(tagCompound, provider);
     }
 
     @Nullable
@@ -394,7 +391,7 @@ public class AutoConstructorTile extends ExtremeMachineTile implements IGuiTile,
     }
 
     private void changeMode() {
-        int current = rsMode.ordinal() + 1;
+        int current = getRSMode().ordinal() + 1;
         if (current >= RedstoneMode.values().length) {
             current = 0;
         }
@@ -403,13 +400,13 @@ public class AutoConstructorTile extends ExtremeMachineTile implements IGuiTile,
     }
 
     @Override
-    public void saveClientDataToNBT(CompoundTag tag) {
-        tag.put("Items", items.serializeNBT());
+    public void saveClientDataToNBT(CompoundTag tag, HolderLookup.Provider provider) {
+        tag.put("Items", items.serializeNBT(provider));
     }
 
     @Override
-    public void loadClientDataFromNBT(CompoundTag tag) {
-        items.deserializeNBT(tag.getList("Items", Tag.TAG_COMPOUND));
+    public void loadClientDataFromNBT(CompoundTag tag, HolderLookup.Provider provider) {
+        items.deserializeNBT(provider, tag.getCompound("Items"));
     }
 
     @Override
@@ -434,4 +431,10 @@ public class AutoConstructorTile extends ExtremeMachineTile implements IGuiTile,
             }
         };
     }
+
+    @Override
+    public IItemHandler getAutomationHandler(Direction side) {
+        return items;
+    }
+
 }

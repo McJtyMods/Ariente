@@ -1,11 +1,10 @@
 package mcjty.ariente.cables;
 
+import javax.annotation.Nullable;
 import net.minecraft.world.item.BlockItem;
 import net.minecraft.world.item.context.BlockPlaceContext;
 import net.minecraft.world.level.block.Block;
 import net.minecraft.world.level.block.state.BlockState;
-
-import javax.annotation.Nullable;
 
 public class CableBlockItem extends BlockItem {
 

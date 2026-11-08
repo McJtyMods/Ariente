@@ -1,7 +1,7 @@
 package mcjty.ariente.entities.fluxship;
 
+import com.mojang.blaze3d.vertex.ByteBufferBuilder;
 import com.mojang.blaze3d.vertex.PoseStack;
-import com.mojang.blaze3d.vertex.BufferBuilder;
 import com.mojang.blaze3d.vertex.VertexConsumer;
 import com.mojang.math.Axis;
 import mcjty.ariente.display.client.DisplayCanvas;
@@ -16,12 +16,12 @@ import net.minecraft.client.renderer.entity.EntityRendererProvider;
 import net.minecraft.network.chat.Component;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.phys.Vec3;
-import net.minecraftforge.client.model.pipeline.VertexConsumerWrapper;
+import net.neoforged.neoforge.client.model.pipeline.VertexConsumerWrapper;
 
 /** Rotate the cockpit instruments in the same cabin frame as the hull. */
 public class FluxShipPanelRender extends EntityRenderer<HoloGuiEntity> {
 
-    private static final MultiBufferSource.BufferSource GUI_BUFFERS = MultiBufferSource.immediate(new BufferBuilder(4096));
+    private static final MultiBufferSource.BufferSource GUI_BUFFERS = MultiBufferSource.immediate(new ByteBufferBuilder(4096));
 
     public FluxShipPanelRender(EntityRendererProvider.Context context) {
         super(context);
@@ -79,8 +79,8 @@ public class FluxShipPanelRender extends EntityRenderer<HoloGuiEntity> {
             gui.render(pose, type -> new VertexConsumerWrapper(buffers.getBuffer(type)) {
 
                 @Override
-                public VertexConsumer color(int red, int green, int blue, int alpha) {
-                    return super.color(8, 16, 24, alpha);
+                public VertexConsumer setColor(int red, int green, int blue, int alpha) {
+                    return super.setColor(8, 16, 24, alpha);
                 }
             }, mc.player, panel, -1, -1);
             pose.popPose();

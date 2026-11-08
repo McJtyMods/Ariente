@@ -1,53 +1,50 @@
 package mcjty.ariente.entities;
 
 import mcjty.ariente.Ariente;
-import mcjty.ariente.entities.fluxship.FluxShipLaser;
-import mcjty.hologui.api.IHoloGuiEntity;
-import net.minecraft.core.registries.Registries;
-import net.minecraft.resources.ResourceKey;
-import net.minecraft.resources.ResourceLocation;
-import net.minecraft.world.damagesource.DamageType;
-import net.minecraft.network.protocol.game.ClientGamePacketListener;
-import net.minecraft.network.FriendlyByteBuf;
+import mcjty.ariente.api.ArmorUpgradeType;
 import mcjty.ariente.api.IForceFieldTile;
 import mcjty.ariente.api.IForcefieldImmunity;
-import mcjty.ariente.setup.Registration;
-import mcjty.ariente.sounds.ModSounds;
-import mcjty.ariente.api.ArmorUpgradeType;
+import mcjty.ariente.entities.fluxship.FluxShipLaser;
+import mcjty.ariente.items.LanceAim;
 import mcjty.ariente.items.modules.ModuleSupport;
 import mcjty.ariente.items.modules.WeaponModuleSupport;
-import mcjty.ariente.items.LanceAim;
+import mcjty.ariente.setup.Registration;
+import mcjty.ariente.sounds.ModSounds;
+import mcjty.hologui.api.IHoloGuiEntity;
 import net.minecraft.core.particles.ParticleTypes;
+import net.minecraft.core.registries.Registries;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.nbt.ListTag;
-import net.minecraft.util.Mth;
-import net.minecraft.world.entity.EntityType;
-import net.minecraft.world.entity.LivingEntity;
-import net.minecraft.world.entity.Entity;
-import net.minecraft.world.item.ItemStack;
-import net.minecraft.world.item.enchantment.EnchantmentHelper;
-import net.minecraft.world.item.enchantment.Enchantments;
-import net.minecraft.world.entity.projectile.Projectile;
-import net.minecraft.world.entity.projectile.ProjectileUtil;
-import net.minecraft.network.protocol.Packet;
+import net.minecraft.network.RegistryFriendlyByteBuf;
 import net.minecraft.network.syncher.EntityDataAccessor;
 import net.minecraft.network.syncher.EntityDataSerializers;
 import net.minecraft.network.syncher.SynchedEntityData;
-import net.minecraft.world.damagesource.DamageSource;
+import net.minecraft.resources.ResourceKey;
+import net.minecraft.resources.ResourceLocation;
 import net.minecraft.sounds.SoundSource;
+import net.minecraft.util.Mth;
+import net.minecraft.world.damagesource.DamageSource;
+import net.minecraft.world.damagesource.DamageType;
+import net.minecraft.world.entity.Entity;
+import net.minecraft.world.entity.EntityType;
+import net.minecraft.world.entity.LivingEntity;
+import net.minecraft.world.entity.projectile.Projectile;
+import net.minecraft.world.entity.projectile.ProjectileUtil;
+import net.minecraft.world.item.ItemStack;
+import net.minecraft.world.item.enchantment.Enchantments;
 import net.minecraft.world.level.Level;
+import net.minecraft.world.phys.AABB;
 import net.minecraft.world.phys.EntityHitResult;
 import net.minecraft.world.phys.HitResult;
 import net.minecraft.world.phys.Vec3;
-import net.minecraft.world.phys.AABB;
-import net.minecraftforge.network.NetworkHooks;
-import net.minecraftforge.entity.IEntityAdditionalSpawnData;
+import net.neoforged.neoforge.entity.IEntityWithComplexSpawn;
+import net.neoforged.neoforge.event.EventHooks;
 import org.joml.Vector3f;
 
-public class LaserEntity extends Projectile implements IForcefieldImmunity, IEntityAdditionalSpawnData {
+public class LaserEntity extends Projectile implements IForcefieldImmunity, IEntityWithComplexSpawn {
 
     public static final ResourceKey<DamageType> SHIP_DAMAGE = ResourceKey.create(Registries.DAMAGE_TYPE,
-            new ResourceLocation(Ariente.MODID, "ship_laser"));
+            ResourceLocation.fromNamespaceAndPath(Ariente.MODID, "ship_laser"));
 
     private static final EntityDataAccessor<Float> SPAWN_YAW = SynchedEntityData.<Float>defineId(LaserEntity.class, EntityDataSerializers.FLOAT);
     private static final EntityDataAccessor<Float> SPAWN_PITCH = SynchedEntityData.<Float>defineId(LaserEntity.class, EntityDataSerializers.FLOAT);
@@ -69,25 +66,20 @@ public class LaserEntity extends Projectile implements IForcefieldImmunity, IEnt
 
     private boolean soundPlayed;
 
-    @Override
-    public Packet<ClientGamePacketListener> getAddEntityPacket() {
-        return NetworkHooks.getEntitySpawningPacket(this);
-    }
-
     public LaserEntity(EntityType<? extends LaserEntity> type, Level worldIn) {
         super(type, worldIn);
     }
 
     @Override
-    public void onAddedToWorld() {
-        super.onAddedToWorld();
+    public void onAddedToLevel() {
+        super.onAddedToLevel();
         if (launchPosition == null) {
             launchPosition = position();
         }
     }
 
     @Override
-    public void writeSpawnData(FriendlyByteBuf buffer) {
+    public void writeSpawnData(RegistryFriendlyByteBuf buffer) {
         Vec3 start = launchPosition == null ? position() : launchPosition;
         buffer.writeDouble(start.x);
         buffer.writeDouble(start.y);
@@ -100,7 +92,7 @@ public class LaserEntity extends Projectile implements IForcefieldImmunity, IEnt
     }
 
     @Override
-    public void readSpawnData(FriendlyByteBuf buffer) {
+    public void readSpawnData(RegistryFriendlyByteBuf buffer) {
         launchPosition = new Vec3(buffer.readDouble(), buffer.readDouble(), buffer.readDouble());
         shipShot = buffer.readBoolean();
         // Vanilla spawn packets clamp velocity to 3.9 blocks/tick; the cannon must outrun the ship.
@@ -115,13 +107,13 @@ public class LaserEntity extends Projectile implements IForcefieldImmunity, IEnt
     }
 
     @Override
-    protected void defineSynchedData() {
-        this.entityData.define(SPAWN_YAW, 0.0f);
-        this.entityData.define(SPAWN_PITCH, 0.0f);
-        entityData.define(ACCELERATION_X, 0.0F);
-        entityData.define(ACCELERATION_Y, 0.0F);
-        entityData.define(ACCELERATION_Z, 0.0F);
-        entityData.define(SHIP_VELOCITY, new Vector3f());
+    protected void defineSynchedData(SynchedEntityData.Builder builder) {
+        builder.define(SPAWN_YAW, 0.0f);
+        builder.define(SPAWN_PITCH, 0.0f);
+        builder.define(ACCELERATION_X, 0.0F);
+        builder.define(ACCELERATION_Y, 0.0F);
+        builder.define(ACCELERATION_Z, 0.0F);
+        builder.define(SHIP_VELOCITY, new Vector3f());
     }
 
     @Override
@@ -248,8 +240,8 @@ public class LaserEntity extends Projectile implements IForcefieldImmunity, IEnt
         entity.damage = damage;
         ItemStack weapon = shooter.getMainHandItem();
         entity.inhibit = ModuleSupport.hasWorkingUpgrade(weapon, ArmorUpgradeType.INHIBIT);
-        entity.fireAspect = EnchantmentHelper.getItemEnchantmentLevel(Enchantments.FIRE_ASPECT, weapon);
-        entity.looting = EnchantmentHelper.getItemEnchantmentLevel(Enchantments.MOB_LOOTING, weapon);
+        entity.fireAspect = weapon.getEnchantmentLevel(shooter.registryAccess().registryOrThrow(Registries.ENCHANTMENT).getHolderOrThrow(Enchantments.FIRE_ASPECT));
+        entity.looting = weapon.getEnchantmentLevel(shooter.registryAccess().registryOrThrow(Registries.ENCHANTMENT).getHolderOrThrow(Enchantments.LOOTING));
         entity.setPos(shot.muzzle());
         entity.setDeltaMovement(aim.scale(1.8D));
         entity.setAcceleration(aim.scale(0.12D));
@@ -311,7 +303,7 @@ public class LaserEntity extends Projectile implements IForcefieldImmunity, IEnt
                     entity -> shipShot ? canHitEntity(entity) && !(entity instanceof LaserEntity) && !(entity instanceof IHoloGuiEntity)
                             : lanceShot ? canHitEntity(entity) : entity != this.shootingEntity || this.ticksInAir >= 25);
 
-            if (raytraceresult != null && !net.minecraftforge.event.ForgeEventFactory.onProjectileImpact(this, raytraceresult)) {
+            if (raytraceresult != null && !EventHooks.onProjectileImpact(this, raytraceresult)) {
                 this.onImpact(raytraceresult);
             }
 
@@ -358,11 +350,11 @@ public class LaserEntity extends Projectile implements IForcefieldImmunity, IEnt
             int previousFireTicks = target.getRemainingFireTicks();
             if (lanceShot && fireAspect > 0) {
                 // Ignite before damage so a killing shot can also produce cooked drops.
-                target.setSecondsOnFire(fireAspect * 4);
+                target.igniteForSeconds(fireAspect * 4);
             }
             DamageSource source = shipShot ? new DamageSource(level().registryAccess().registryOrThrow(Registries.DAMAGE_TYPE)
                     .getHolderOrThrow(SHIP_DAMAGE), this, shootingEntity) : damageSources().indirectMagic(this, shootingEntity);
-            boolean damaged = target.hurt(source, damage);
+            boolean damaged = LanceLooting.hurt(target, source, damage, isLanceShot() ? looting : 0);
             if (!damaged && lanceShot && fireAspect > 0) {
                 target.setRemainingFireTicks(previousFireTicks);
             }

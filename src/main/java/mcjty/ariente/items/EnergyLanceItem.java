@@ -1,8 +1,10 @@
 package mcjty.ariente.items;
 
-import mcjty.ariente.entities.LaserEntity;
-import mcjty.ariente.api.ISoldier;
+import java.util.List;
+import java.util.function.Consumer;
 import mcjty.ariente.api.ArmorUpgradeType;
+import mcjty.ariente.api.ISoldier;
+import mcjty.ariente.entities.LaserEntity;
 import mcjty.ariente.items.modules.ModuleSupport;
 import mcjty.ariente.items.modules.WeaponModuleSupport;
 import mcjty.lib.builder.TooltipBuilder;
@@ -22,11 +24,7 @@ import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.TooltipFlag;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.phys.Vec3;
-import net.minecraftforge.client.extensions.common.IClientItemExtensions;
-
-import javax.annotation.Nullable;
-import java.util.List;
-import java.util.function.Consumer;
+import net.neoforged.neoforge.client.extensions.common.IClientItemExtensions;
 
 public class EnergyLanceItem extends Item implements ITooltipSettings {
 
@@ -85,7 +83,7 @@ public class EnergyLanceItem extends Item implements ITooltipSettings {
     }
 
     @Override
-    public void appendHoverText(ItemStack stack, @Nullable Level level, List<Component> tooltip, TooltipFlag flag) {
+    public void appendHoverText(ItemStack stack, Item.TooltipContext level, List<Component> tooltip, TooltipFlag flag) {
         tooltipBuilder.makeTooltip(Tools.getId(this), stack, tooltip, flag);
         tooltip.add(Component.translatable("message.ariente.energy_lance.two_handed"));
     }

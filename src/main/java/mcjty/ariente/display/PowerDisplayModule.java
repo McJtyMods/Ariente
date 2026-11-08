@@ -1,5 +1,7 @@
 package mcjty.ariente.display;
 
+import java.util.HashSet;
+import java.util.Set;
 import mcjty.ariente.blocks.generators.NegariteGeneratorTile;
 import mcjty.ariente.blocks.generators.NegariteTankTile;
 import mcjty.ariente.blocks.generators.PosiriteGeneratorTile;
@@ -18,10 +20,6 @@ import net.minecraft.util.Mth;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.level.block.entity.BlockEntity;
-
-import java.util.HashSet;
-import java.util.Set;
-
 
 public class PowerDisplayModule implements DisplayModuleType {
 

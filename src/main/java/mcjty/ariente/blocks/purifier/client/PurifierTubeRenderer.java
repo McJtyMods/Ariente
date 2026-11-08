@@ -13,7 +13,7 @@ import net.minecraft.client.renderer.texture.OverlayTexture;
 import net.minecraft.client.renderer.texture.TextureAtlas;
 import net.minecraft.world.item.ItemDisplayContext;
 import net.minecraft.world.item.ItemStack;
-import net.minecraftforge.client.model.pipeline.VertexConsumerWrapper;
+import net.neoforged.neoforge.client.model.pipeline.VertexConsumerWrapper;
 
 public class PurifierTubeRenderer implements BlockEntityRenderer<PurifierTubeTile> {
 
@@ -58,8 +58,8 @@ public class PurifierTubeRenderer implements BlockEntityRenderer<PurifierTubeTil
         VertexConsumer vertices = new VertexConsumerWrapper(buffer.getBuffer(RenderType.entityTranslucent(TextureAtlas.LOCATION_BLOCKS))) {
 
             @Override
-            public VertexConsumer color(int red, int green, int blue, int opacity) {
-                return super.color(red, green, blue, Math.round(opacity * alpha));
+            public VertexConsumer setColor(int red, int green, int blue, int opacity) {
+                return super.setColor(red, green, blue, Math.round(opacity * alpha));
             }
         };
         Minecraft.getInstance().getItemRenderer().renderStatic(stack, ItemDisplayContext.GROUND, light,

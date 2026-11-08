@@ -1,13 +1,13 @@
 package mcjty.ariente.config;
 
 import mcjty.ariente.Ariente;
-import net.minecraftforge.common.ForgeConfigSpec;
+import net.neoforged.neoforge.common.ModConfigSpec;
 
 public class RecipeConfiguration {
 
-    public static ForgeConfigSpec.EnumValue<YesNoDefault> EXTREME_CIRCUIT_RECIPE;
+    public static ModConfigSpec.EnumValue<YesNoDefault> EXTREME_CIRCUIT_RECIPE;
 
-    public static void init(ForgeConfigSpec.Builder server) {
+    public static void init(ModConfigSpec.Builder server) {
         server.comment("Constructor recipe settings").push("recipes");
         EXTREME_CIRCUIT_RECIPE = server
                 .comment("Extreme Circuit recipe and blueprint: 'yes', 'no', or 'default' (only without Ariente World)")

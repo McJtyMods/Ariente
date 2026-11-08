@@ -10,6 +10,7 @@ import mcjty.hologui.api.StyledColor;
 import mcjty.hologui.api.components.IPanel;
 import mcjty.lib.varia.ItemStackList;
 import net.minecraft.core.BlockPos;
+import net.minecraft.core.HolderLookup;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.world.ContainerHelper;
 import net.minecraft.world.level.block.state.BlockState;
@@ -30,11 +31,11 @@ public class OutputItemNodeTile extends AbstractItemNodeTile {
     }
 
     @Override
-    public void load(CompoundTag tagCompound) {
-        super.load(tagCompound);
+    public void loadAdditional(CompoundTag tagCompound, HolderLookup.Provider provider) {
+        super.loadAdditional(tagCompound, provider);
         outputFilter.clear();
         CompoundTag info = tagCompound.getCompound("Info");
-        ContainerHelper.loadAllItems(info.getCompound("output"), outputFilter);
+        ContainerHelper.loadAllItems(info.getCompound("output"), outputFilter, provider);
         if (!info.isEmpty()) {
             outputDamage = info.getBoolean("outDamage");
             outputNbt = info.getBoolean("outNBT");
@@ -45,10 +46,10 @@ public class OutputItemNodeTile extends AbstractItemNodeTile {
     }
 
     @Override
-    public void saveAdditional(CompoundTag tagCompound) {
-        super.saveAdditional(tagCompound);
+    public void saveAdditional(CompoundTag tagCompound, HolderLookup.Provider provider) {
+        super.saveAdditional(tagCompound, provider);
         CompoundTag info = getOrCreateInfo(tagCompound);
-        info.put("output", ContainerHelper.saveAllItems(new CompoundTag(), outputFilter));
+        info.put("output", ContainerHelper.saveAllItems(new CompoundTag(), outputFilter, provider));
         info.putBoolean("outDamage", outputDamage);
         info.putBoolean("outNBT", outputNbt);
         // Keep the legacy key so existing tag filters retain their settings.

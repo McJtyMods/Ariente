@@ -4,12 +4,14 @@ import com.mojang.blaze3d.pipeline.RenderTarget;
 import com.mojang.blaze3d.pipeline.TextureTarget;
 import com.mojang.blaze3d.platform.GlStateManager;
 import com.mojang.blaze3d.systems.RenderSystem;
-import com.mojang.blaze3d.vertex.BufferBuilder;
-import com.mojang.blaze3d.vertex.DefaultVertexFormat;
+import com.mojang.blaze3d.vertex.ByteBufferBuilder;
+import com.mojang.blaze3d.vertex.MeshData;
 import com.mojang.blaze3d.vertex.VertexBuffer;
 import com.mojang.blaze3d.vertex.VertexConsumer;
-import com.mojang.blaze3d.vertex.VertexFormat;
 import com.mojang.blaze3d.vertex.VertexSorting;
+import java.util.LinkedHashMap;
+import java.util.Map;
+import java.util.UUID;
 import mcjty.ariente.display.CameraDisplayModule;
 import mcjty.ariente.display.CameraPerspective;
 import mcjty.ariente.display.CameraView;
@@ -24,10 +26,6 @@ import net.minecraft.world.phys.Vec3;
 import org.joml.Matrix4f;
 import org.lwjgl.opengl.GL11;
 import org.lwjgl.opengl.GL14;
-
-import java.util.LinkedHashMap;
-import java.util.Map;
-import java.util.UUID;
 
 /** GPU projection, texture interpolation and depth testing of the cached mesh; never renders the world again. */
 public class CameraPerspectiveRenderer {
@@ -61,7 +59,7 @@ public class CameraPerspectiveRenderer {
             scene.snapshot = module.snapshot();
         }
         int width = module.size().width() - 12, height = module.size().height() - 24;
-        double now = mc.level.getGameTime() + (double) mc.getFrameTime();
+        double now = mc.level.getGameTime() + (double) mc.getTimer().getGameTimeDeltaPartialTick(true);
         double yaw = CameraDisplayModule.viewYaw(module.stack(), now - scene.startedAt);
         int tilt = CameraDisplayModule.tilt(module.stack()), zoom = CameraDisplayModule.zoom(module.stack());
         if (scene.target == null || scene.target.width != width * RESOLUTION_SCALE || scene.target.height != height * RESOLUTION_SCALE
@@ -70,10 +68,10 @@ public class CameraPerspectiveRenderer {
         }
         Matrix4f pose = canvas.poses().last().pose();
         VertexConsumer vertices = canvas.buffer().getBuffer(scene.renderType);
-        vertices.vertex(pose, 6, 18 + height, .04f).uv(0, 0).color(255, 255, 255, 255).endVertex();
-        vertices.vertex(pose, 6 + width, 18 + height, .04f).uv(1, 0).color(255, 255, 255, 255).endVertex();
-        vertices.vertex(pose, 6 + width, 18, .04f).uv(1, 1).color(255, 255, 255, 255).endVertex();
-        vertices.vertex(pose, 6, 18, .04f).uv(0, 1).color(255, 255, 255, 255).endVertex();
+        vertices.addVertex(pose, 6, 18 + height, .04f).setUv(0, 0).setColor(255, 255, 255, 255);
+        vertices.addVertex(pose, 6 + width, 18 + height, .04f).setUv(1, 0).setColor(255, 255, 255, 255);
+        vertices.addVertex(pose, 6 + width, 18, .04f).setUv(1, 1).setColor(255, 255, 255, 255);
+        vertices.addVertex(pose, 6, 18, .04f).setUv(0, 1).setColor(255, 255, 255, 255);
     }
 
     public static void tick() {
@@ -105,12 +103,12 @@ public class CameraPerspectiveRenderer {
 
         private final VertexBuffer solid;
         private final VertexBuffer translucent;
-        private final BufferBuilder.SortState sorting;
-        private final BufferBuilder sortBuffer = new BufferBuilder(256);
+        private final MeshData.SortState sorting;
+        private final ByteBufferBuilder sortBuffer = new ByteBufferBuilder(256);
         private final Vec3 center;
         private final float radius;
 
-        Geometry(VertexBuffer solid, VertexBuffer translucent, BufferBuilder.SortState sorting, Vec3 center, float radius) {
+        Geometry(VertexBuffer solid, VertexBuffer translucent, MeshData.SortState sorting, Vec3 center, float radius) {
             this.solid = solid;
             this.translucent = translucent;
             this.sorting = sorting;
@@ -126,12 +124,9 @@ public class CameraPerspectiveRenderer {
                 solid.drawWithShader(camera.view(), camera.projection(), GameRenderer.getPositionTexColorShader());
             }
             if (translucent != null) {
-                sortBuffer.begin(VertexFormat.Mode.QUADS, DefaultVertexFormat.POSITION_TEX_COLOR);
-                sortBuffer.restoreSortState(sorting);
                 Vec3 eye = camera.eye();
-                sortBuffer.setQuadSorting(VertexSorting.byDistance((float) eye.x, (float) eye.y, (float) eye.z));
                 translucent.bind();
-                translucent.upload(sortBuffer.end());
+                translucent.uploadIndexBuffer(sorting.buildSortedIndexBuffer(sortBuffer, VertexSorting.byDistance((float) eye.x, (float) eye.y, (float) eye.z)));
                 RenderSystem.depthMask(false);
                 RenderSystem.enableBlend();
                 RenderSystem.blendFuncSeparate(GlStateManager.SourceFactor.SRC_ALPHA, GlStateManager.DestFactor.ONE_MINUS_SRC_ALPHA,
@@ -143,6 +138,7 @@ public class CameraPerspectiveRenderer {
 
         @Override
         public void close() {
+            sortBuffer.close();
             if (solid != null) {
                 solid.close();
             }

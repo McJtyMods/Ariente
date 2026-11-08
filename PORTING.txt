@@ -1,3 +1,7 @@
+HISTORICAL FORGE 1.20 HANDOFF
+For the current 1.21.1 / NeoForge target and actual verification, read ../ArienteWorld/PORT_1_21.md.
+The retained notes below describe the prior Forge port.
+
 ARIENTE - FORGE 1.20.1 PORT HANDOFF
 Updated: 2026-11-02
 

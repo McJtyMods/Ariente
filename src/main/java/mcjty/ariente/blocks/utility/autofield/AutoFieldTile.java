@@ -1,10 +1,14 @@
 package mcjty.ariente.blocks.utility.autofield;
 
-import mcjty.ariente.blocks.ExtremeMachineTile;
+import java.util.*;
+import java.util.concurrent.atomic.AtomicBoolean;
+import java.util.stream.Collectors;
 import mcjty.ariente.Ariente;
+import mcjty.ariente.blocks.ExtremeMachineTile;
 import mcjty.ariente.config.UtilityConfiguration;
 import mcjty.ariente.gui.GuiHelp;
-import mcjty.ariente.network.ArienteMessages;
+import mcjty.ariente.multipart.MultipartHelper;
+import mcjty.ariente.multipart.MultipartTE;
 import mcjty.ariente.power.IPowerReceiver;
 import mcjty.ariente.power.IPowerUser;
 import mcjty.ariente.power.PowerReceiverSupport;
@@ -12,44 +16,38 @@ import mcjty.ariente.setup.Registration;
 import mcjty.hologui.api.IGuiComponent;
 import mcjty.hologui.api.IGuiComponentRegistry;
 import mcjty.hologui.api.IGuiTile;
-import mcjty.hologui.api.StyledColor;
 import mcjty.lib.blocks.BaseBlock;
 import mcjty.lib.blocks.RotationType;
 import mcjty.lib.builder.BlockBuilder;
-import mcjty.ariente.multipart.MultipartHelper;
-import mcjty.ariente.multipart.MultipartTE;
 import mcjty.lib.multipart.PartPos;
 import mcjty.lib.multipart.PartSlot;
 import mcjty.lib.varia.OrientationTools;
 import net.minecraft.core.BlockPos;
+import net.minecraft.core.Direction;
+import net.minecraft.core.HolderLookup;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.network.Connection;
 import net.minecraft.network.protocol.game.ClientboundBlockEntityDataPacket;
-import net.minecraft.world.InteractionHand;
+import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.world.Containers;
-import net.minecraftforge.items.IItemHandler;
+import net.minecraft.world.InteractionHand;
 import net.minecraft.world.InteractionResult;
+import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.DyeColor;
 import net.minecraft.world.item.ItemStack;
-import net.minecraft.world.level.Level;
 import net.minecraft.world.level.ChunkPos;
+import net.minecraft.world.level.Level;
 import net.minecraft.world.level.block.Block;
 import net.minecraft.world.level.block.entity.BlockEntity;
 import net.minecraft.world.level.block.state.BlockState;
-import net.minecraft.world.entity.player.Player;
-import net.minecraft.server.level.ServerPlayer;
-import net.minecraft.core.Direction;
 import net.minecraft.world.phys.AABB;
 import net.minecraft.world.phys.BlockHitResult;
-import net.minecraftforge.network.NetworkDirection;
-import net.minecraftforge.items.ItemHandlerHelper;
-import net.minecraftforge.common.MinecraftForge;
-import net.minecraftforge.event.level.ChunkEvent;
-import net.minecraftforge.eventbus.api.SubscribeEvent;
-
-import java.util.*;
-import java.util.concurrent.atomic.AtomicBoolean;
-import java.util.stream.Collectors;
+import net.neoforged.bus.api.SubscribeEvent;
+import net.neoforged.neoforge.common.NeoForge;
+import net.neoforged.neoforge.event.level.ChunkEvent;
+import net.neoforged.neoforge.items.IItemHandler;
+import net.neoforged.neoforge.items.ItemHandlerHelper;
+import net.neoforged.neoforge.network.PacketDistributor;
 
 import static mcjty.ariente.compat.ArienteTOPDriver.DRIVER;
 import static mcjty.hologui.api.Icons.*;
@@ -266,7 +264,7 @@ public class AutoFieldTile extends ExtremeMachineTile implements IGuiTile, IPowe
         long time = System.currentTimeMillis();
         if (time > clientRenderInfoAge + 1000) {
             clientRenderInfoAge = time;
-            ArienteMessages.INSTANCE.sendToServer(new PacketAutoFieldRequestRenderInfo(worldPosition));
+            PacketDistributor.sendToServer(new PacketAutoFieldRequestRenderInfo(worldPosition));
         }
     }
 
@@ -283,7 +281,7 @@ public class AutoFieldTile extends ExtremeMachineTile implements IGuiTile, IPowe
             double dz = z - player.getZ();
 
             if (player.level() == level && dx * dx + dy * dy + dz * dz < radius * radius) {
-                ArienteMessages.INSTANCE.sendTo(info, ((ServerPlayer) player).connection.connection, NetworkDirection.PLAY_TO_CLIENT);
+                PacketDistributor.sendToPlayer((ServerPlayer) player, info);
             }
         }
     }
@@ -485,7 +483,7 @@ public class AutoFieldTile extends ExtremeMachineTile implements IGuiTile, IPowe
         invalidateBox();
         LOADED_FIELDS.add(this);
         if (!level.isClientSide && !listeningForChunks) {
-            MinecraftForge.EVENT_BUS.register(this);
+            NeoForge.EVENT_BUS.register(this);
             listeningForChunks = true;
         }
     }
@@ -502,7 +500,7 @@ public class AutoFieldTile extends ExtremeMachineTile implements IGuiTile, IPowe
     private void stopListeningForChunks() {
         LOADED_FIELDS.remove(this);
         if (listeningForChunks) {
-            MinecraftForge.EVENT_BUS.unregister(this);
+            NeoForge.EVENT_BUS.unregister(this);
             listeningForChunks = false;
         }
     }
@@ -725,8 +723,8 @@ public class AutoFieldTile extends ExtremeMachineTile implements IGuiTile, IPowe
     }
 
     @Override
-    public void load(CompoundTag tagCompound) {
-        super.load(tagCompound);
+    public void loadAdditional(CompoundTag tagCompound, HolderLookup.Provider provider) {
+        super.loadAdditional(tagCompound, provider);
         invalidateBox();
         CompoundTag info = tagCompound.getCompound("Info");
         if (!info.isEmpty()) {
@@ -738,12 +736,12 @@ public class AutoFieldTile extends ExtremeMachineTile implements IGuiTile, IPowe
     }
 
     @Override
-    public void saveAdditional(CompoundTag tagCompound) {
+    public void saveAdditional(CompoundTag tagCompound, HolderLookup.Provider provider) {
         tagCompound.putLong("accPower", accumulatedPower);
         getOrCreateInfo(tagCompound).putInt("height", height);
         getOrCreateInfo(tagCompound).putBoolean("renderItems", renderItems);
         getOrCreateInfo(tagCompound).putBoolean("renderOutline", renderOutline);
-        super.saveAdditional(tagCompound);
+        super.saveAdditional(tagCompound, provider);
     }
 
     @Override
@@ -751,16 +749,15 @@ public class AutoFieldTile extends ExtremeMachineTile implements IGuiTile, IPowe
         return usingPower;
     }
 
-    @Override
     public AABB getRenderBoundingBox() {
         return getRenderBox();
     }
 
     @Override
-    public void onDataPacket(Connection net, ClientboundBlockEntityDataPacket packet) {
+    public void onDataPacket(Connection net, ClientboundBlockEntityDataPacket packet, HolderLookup.Provider provider) {
         int oldheight = height;
 
-        super.onDataPacket(net, packet);
+        super.onDataPacket(net, packet, provider);
 
         if (level.isClientSide) {
             // If needed send a render update.

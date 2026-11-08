@@ -1,40 +1,39 @@
 package mcjty.ariente.recipes;
 
-import mcjty.ariente.Ariente;
-import mcjty.ariente.items.BlueprintItem;
-import mcjty.ariente.setup.Registration;
-import net.minecraft.core.NonNullList;
-import net.minecraft.core.RegistryAccess;
-import net.minecraft.nbt.CompoundTag;
-import net.minecraft.nbt.ListTag;
-import net.minecraft.nbt.StringTag;
-import net.minecraft.nbt.Tag;
-import net.minecraft.resources.ResourceLocation;
-import net.minecraft.util.RandomSource;
-import net.minecraft.world.Container;
-import net.minecraft.world.inventory.CraftingContainer;
-import net.minecraft.world.item.ItemStack;
-import net.minecraft.world.item.crafting.CraftingBookCategory;
-import net.minecraft.world.item.crafting.Ingredient;
-import net.minecraft.world.item.crafting.RecipeSerializer;
-import net.minecraft.world.item.crafting.ShapelessRecipe;
-import net.minecraft.world.level.Level;
-
-import javax.annotation.Nullable;
 import java.util.ArrayList;
 import java.util.Comparator;
 import java.util.EnumMap;
 import java.util.List;
 import java.util.Map;
 import java.util.UUID;
+import javax.annotation.Nullable;
+import mcjty.ariente.Ariente;
+import mcjty.ariente.items.BlueprintItem;
+import mcjty.ariente.items.ItemData;
+import mcjty.ariente.setup.Registration;
+import net.minecraft.core.HolderLookup;
+import net.minecraft.core.NonNullList;
+import net.minecraft.nbt.CompoundTag;
+import net.minecraft.nbt.ListTag;
+import net.minecraft.nbt.StringTag;
+import net.minecraft.nbt.Tag;
+import net.minecraft.resources.ResourceLocation;
+import net.minecraft.util.RandomSource;
+import net.minecraft.world.item.ItemStack;
+import net.minecraft.world.item.crafting.CraftingBookCategory;
+import net.minecraft.world.item.crafting.CraftingInput;
+import net.minecraft.world.item.crafting.Ingredient;
+import net.minecraft.world.item.crafting.RecipeSerializer;
+import net.minecraft.world.item.crafting.ShapelessRecipe;
+import net.minecraft.world.level.Level;
 
 public class BlueprintExchangeRecipe extends ShapelessRecipe {
 
-    public static final ResourceLocation ID = new ResourceLocation(Ariente.MODID, "blueprint_exchange");
+    public static final ResourceLocation ID = ResourceLocation.fromNamespaceAndPath(Ariente.MODID, "blueprint_exchange");
     private static final String EXCHANGE = "BlueprintExchange";
 
-    public BlueprintExchangeRecipe(ResourceLocation id, CraftingBookCategory category) {
-        super(id, "", category, preview(), ingredients());
+    public BlueprintExchangeRecipe(CraftingBookCategory category) {
+        super("", category, preview(), ingredients());
     }
 
     private static NonNullList<Ingredient> ingredients() {
@@ -50,34 +49,35 @@ public class BlueprintExchangeRecipe extends ShapelessRecipe {
     }
 
     @Override
-    public boolean matches(CraftingContainer input, Level level) {
+    public boolean matches(CraftingInput input, Level level) {
         return readInputs(input) != null;
     }
 
     @Override
-    public ItemStack assemble(CraftingContainer input, RegistryAccess registries) {
+    public ItemStack assemble(CraftingInput input, HolderLookup.Provider registries) {
         return createPreview(input);
     }
 
     private static ItemStack preview() {
         ItemStack stack = new ItemStack(Registration.BLUEPRINT.get());
-        stack.addTagElement(EXCHANGE, new CompoundTag());
+        ItemData.setSection(stack, EXCHANGE, new CompoundTag());
         return stack;
     }
 
-    static ItemStack createPreview(Container input) {
+    static ItemStack createPreview(CraftingInput input) {
         Exchange exchange = readInputs(input);
         if (exchange == null) {
             return ItemStack.EMPTY;
         }
         ItemStack stack = preview();
-        CompoundTag data = stack.getOrCreateTagElement(EXCHANGE);
+        CompoundTag data = ItemData.section(stack, EXCHANGE);
         // Identify the delivered copy on shift-click; this chooses no reward or rarity.
         data.putUUID("craft", UUID.randomUUID());
         data.putInt("tier", exchange.rarity().ordinal());
         ListTag excluded = new ListTag();
         exchange.excluded().forEach(id -> excluded.add(StringTag.valueOf(id.toString())));
         data.put("excluded", excluded);
+        ItemData.setSection(stack, EXCHANGE, data);
         return stack;
     }
 
@@ -87,7 +87,7 @@ public class BlueprintExchangeRecipe extends ShapelessRecipe {
 
     @Nullable
     static CompoundTag previewData(ItemStack stack) {
-        return stack.getTagElement(EXCHANGE);
+        return (ItemData.get(stack).contains(EXCHANGE) ? ItemData.section(stack, EXCHANGE) : null);
     }
 
     @Nullable
@@ -124,7 +124,7 @@ public class BlueprintExchangeRecipe extends ShapelessRecipe {
                 List<ConstructorRecipe> recipes = choices.get(BlueprintRarity.values()[candidate]);
                 if (recipes != null) {
                     ItemStack result = BlueprintItem.makeBluePrint(recipes.get(random.nextInt(recipes.size())).getDestination());
-                    stack.setTag(result.getTag());
+                    ItemData.set(stack, ItemData.get(result));
                     return true;
                 }
             }
@@ -133,10 +133,10 @@ public class BlueprintExchangeRecipe extends ShapelessRecipe {
     }
 
     @Nullable
-    private static Exchange readInputs(Container input) {
+    private static Exchange readInputs(CraftingInput input) {
         List<ResourceLocation> excluded = new ArrayList<>();
         int total = 0;
-        for (int slot = 0; slot < input.getContainerSize(); slot++) {
+        for (int slot = 0; slot < input.size(); slot++) {
             ItemStack stack = input.getItem(slot);
             if (stack.isEmpty()) {
                 continue;

@@ -1,12 +1,21 @@
 package mcjty.ariente.entities.fluxship;
 
-import net.minecraft.network.FriendlyByteBuf;
+import net.minecraft.network.RegistryFriendlyByteBuf;
+import net.minecraft.network.codec.StreamCodec;
+import net.minecraft.network.protocol.common.custom.CustomPacketPayload;
+import net.minecraft.resources.ResourceLocation;
 import net.minecraft.server.level.ServerPlayer;
-import net.minecraftforge.network.NetworkEvent;
+import net.neoforged.neoforge.network.handling.IPayloadContext;
 
-import java.util.function.Supplier;
+public class PacketShipAction implements CustomPacketPayload {
 
-public class PacketShipAction {
+    public static final Type<PacketShipAction> TYPE = new Type<>(ResourceLocation.fromNamespaceAndPath("ariente", "packet_ship_action"));
+    public static final StreamCodec<RegistryFriendlyByteBuf, PacketShipAction> CODEC = StreamCodec.ofMember(PacketShipAction::toBytes, PacketShipAction::new);
+
+    @Override
+    public Type<? extends CustomPacketPayload> type() {
+        return TYPE;
+    }
 
     private final int forward;
     private final int turn;
@@ -37,12 +46,12 @@ public class PacketShipAction {
         this.pitch = pitch;
     }
 
-    public PacketShipAction(FriendlyByteBuf buf) {
+    public PacketShipAction(RegistryFriendlyByteBuf buf) {
         this(buf.readByte(), buf.readByte(), buf.readByte(), buf.readBoolean(), buf.readBoolean(), buf.readBoolean(),
                 buf.readFloat(), buf.readFloat());
     }
 
-    public void toBytes(FriendlyByteBuf buf) {
+    public void toBytes(RegistryFriendlyByteBuf buf) {
         buf.writeByte(forward);
         buf.writeByte(turn);
         buf.writeByte(vertical);
@@ -53,14 +62,12 @@ public class PacketShipAction {
         buf.writeFloat(pitch);
     }
 
-    public void handle(Supplier<NetworkEvent.Context> supplier) {
-        NetworkEvent.Context context = supplier.get();
+    public void handle(IPayloadContext context) {
         context.enqueueWork(() -> {
-            ServerPlayer player = context.getSender();
+            ServerPlayer player = (ServerPlayer) context.player();
             if (player != null && player.getVehicle() instanceof FluxShipEntity ship) {
                 ship.handleInput(player, forward, turn, vertical, firing, mouseFlight, mouseSteering, yaw, pitch);
             }
         });
-        context.setPacketHandled(true);
     }
 }

@@ -6,12 +6,12 @@ import mcjty.lib.builder.BlockBuilder;
 import net.minecraft.core.BlockPos;
 import net.minecraft.util.StringRepresentable;
 import net.minecraft.world.item.ItemStack;
+import net.minecraft.world.level.LevelReader;
 import net.minecraft.world.level.block.Block;
 import net.minecraft.world.level.block.state.BlockState;
-import net.minecraft.world.level.material.MapColor;
-import net.minecraft.world.level.block.state.properties.EnumProperty;
 import net.minecraft.world.level.block.state.StateDefinition;
-import net.minecraft.world.level.BlockGetter;
+import net.minecraft.world.level.block.state.properties.EnumProperty;
+import net.minecraft.world.level.material.MapColor;
 
 public abstract class BaseVariantBlock<T extends Enum<T> & StringRepresentable> extends BaseBlock {
 
@@ -34,7 +34,7 @@ public abstract class BaseVariantBlock<T extends Enum<T> & StringRepresentable> 
 
     @SuppressWarnings({"NullableProblems", "deprecation"})
     @Override
-    public ItemStack getCloneItemStack(BlockGetter worldIn, BlockPos pos, BlockState state) {
+    public ItemStack getCloneItemStack(LevelReader worldIn, BlockPos pos, BlockState state) {
         return new ItemStack(this, 1); // @todo 1.14 META?, state.get(getProperty()).ordinal());
     }
 

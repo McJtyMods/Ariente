@@ -1,14 +1,21 @@
 package mcjty.ariente.items.armor;
 
 import mcjty.ariente.blocks.defense.ForceFieldRenderer;
-import net.minecraft.network.FriendlyByteBuf;
-import net.minecraftforge.api.distmarker.Dist;
-import net.minecraftforge.fml.DistExecutor;
-import net.minecraftforge.network.NetworkEvent;
+import net.minecraft.network.RegistryFriendlyByteBuf;
+import net.minecraft.network.codec.StreamCodec;
+import net.minecraft.network.protocol.common.custom.CustomPacketPayload;
+import net.minecraft.resources.ResourceLocation;
+import net.neoforged.neoforge.network.handling.IPayloadContext;
 
-import java.util.function.Supplier;
+public class PacketPersonalForcefield implements CustomPacketPayload {
 
-public class PacketPersonalForcefield {
+    public static final Type<PacketPersonalForcefield> TYPE = new Type<>(ResourceLocation.fromNamespaceAndPath("ariente", "packet_personal_forcefield"));
+    public static final StreamCodec<RegistryFriendlyByteBuf, PacketPersonalForcefield> CODEC = StreamCodec.ofMember(PacketPersonalForcefield::toBytes, PacketPersonalForcefield::new);
+
+    @Override
+    public Type<? extends CustomPacketPayload> type() {
+        return TYPE;
+    }
 
     private final int entityId;
     private final long cooldownUntil;
@@ -20,22 +27,19 @@ public class PacketPersonalForcefield {
         this.lastHit = lastHit;
     }
 
-    public PacketPersonalForcefield(FriendlyByteBuf buf) {
+    public PacketPersonalForcefield(RegistryFriendlyByteBuf buf) {
         entityId = buf.readVarInt();
         cooldownUntil = buf.readLong();
         lastHit = buf.readLong();
     }
 
-    public void toBytes(FriendlyByteBuf buf) {
+    public void toBytes(RegistryFriendlyByteBuf buf) {
         buf.writeVarInt(entityId);
         buf.writeLong(cooldownUntil);
         buf.writeLong(lastHit);
     }
 
-    public void handle(Supplier<NetworkEvent.Context> supplier) {
-        NetworkEvent.Context ctx = supplier.get();
-        ctx.enqueueWork(() -> DistExecutor.unsafeRunWhenOn(Dist.CLIENT,
-                () -> () -> ForceFieldRenderer.updatePersonalField(entityId, cooldownUntil, lastHit)));
-        ctx.setPacketHandled(true);
+    public void handle(IPayloadContext ctx) {
+        ctx.enqueueWork(() -> ForceFieldRenderer.updatePersonalField(entityId, cooldownUntil, lastHit));
     }
 }

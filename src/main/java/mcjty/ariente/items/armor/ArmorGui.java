@@ -2,10 +2,11 @@ package mcjty.ariente.items.armor;
 
 import mcjty.ariente.Ariente;
 import mcjty.ariente.gui.CompactNumber;
-import mcjty.ariente.gui.NumberFormatting;
 import mcjty.ariente.gui.GuiHelp;
 import mcjty.ariente.gui.ModGuis;
+import mcjty.ariente.gui.NumberFormatting;
 import mcjty.ariente.items.EnergyHolderItem;
+import mcjty.ariente.items.ItemData;
 import mcjty.ariente.items.modules.ArmorModuleItem;
 import mcjty.ariente.items.modules.ModuleSupport;
 import mcjty.ariente.setup.Registration;
@@ -192,13 +193,15 @@ public class ArmorGui {
             return;
         }
         ItemStack stack = player.getItemBySlot(slot);
-        CompoundTag compound = stack.getTag();
+        CompoundTag compound = ItemData.get(stack);
         int index = compound.getInt(moduleItem.getType().getHotkeyKey());
         index++;
         if (index >= 5) {
             index = 0;
         }
         compound.putInt(moduleItem.getType().getHotkeyKey(), index);
+        ItemData.set(stack, compound);
+
         syncEquipment(player);
     }
 
@@ -207,7 +210,7 @@ public class ArmorGui {
             return 0;
         }
         ItemStack stack = player.getItemBySlot(slot);
-        CompoundTag compound = stack.getTag();
+        CompoundTag compound = ItemData.get(stack);
         return compound.getInt(moduleItem.getType().getHotkeyKey());
     }
 
@@ -216,7 +219,7 @@ public class ArmorGui {
             return false;
         }
         ItemStack stack = player.getItemBySlot(slot);
-        CompoundTag compound = stack.getTag();
+        CompoundTag compound = ItemData.get(stack);
         return compound.getBoolean(moduleItem.getType().getModuleKey());
     }
 
@@ -239,10 +242,10 @@ public class ArmorGui {
         if (!isSupportedEquipment(stack, slot) || !moduleItem.getType().supportsSlot(slot)) {
             return false;
         }
-        if (!stack.hasTag()) {
+        if (!ItemData.has(stack)) {
             return false;
         }
-        CompoundTag compound = stack.getTag();
+        CompoundTag compound = ItemData.get(stack);
         return compound.contains(moduleItem.getType().getModuleKey());
     }
 
@@ -251,10 +254,14 @@ public class ArmorGui {
             return;
         }
         ItemStack stack = player.getItemBySlot(slot);
-        CompoundTag compound = stack.getTag();
+        CompoundTag compound = ItemData.get(stack);
         String key = moduleItem.getType().getModuleKey();
         compound.putBoolean(key, !compound.getBoolean(key));
+        ItemData.set(stack, compound);
+
         compound.putBoolean(moduleItem.getType().getWorkingKey(), false);
+        ItemData.set(stack, compound);
+
         syncEquipment(player);
     }
 
@@ -285,8 +292,10 @@ public class ArmorGui {
             }
             ItemStack moduleStack = player.getInventory().getItem(i);
             moduleStack.shrink(1);
-            CompoundTag compound = stack.getOrCreateTag();
+            CompoundTag compound = ItemData.get(stack);
             compound.putBoolean(moduleItem.getType().getModuleKey(), false);
+            ItemData.set(stack, compound);
+
             syncEquipment(player);
             return;
         } else {
@@ -296,11 +305,17 @@ public class ArmorGui {
                 player.spawnAtLocation(module, 1.05f);
             }
             ItemStack stack = player.getItemBySlot(slot);
-            CompoundTag compound = stack.getTag();
+            CompoundTag compound = ItemData.get(stack);
             String key = moduleItem.getType().getModuleKey();
             compound.remove(key);
+            ItemData.set(stack, compound);
+
             compound.remove(moduleItem.getType().getWorkingKey());
+            ItemData.set(stack, compound);
+
             compound.remove(moduleItem.getType().getHotkeyKey());
+            ItemData.set(stack, compound);
+
             syncEquipment(player);
         }
     }

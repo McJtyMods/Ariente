@@ -1,7 +1,7 @@
 package mcjty.ariente.entities.fluxelevator;
 
-import com.mojang.math.Axis;
 import com.mojang.blaze3d.vertex.PoseStack;
+import com.mojang.math.Axis;
 import net.minecraft.client.renderer.MultiBufferSource;
 import net.minecraft.client.renderer.entity.EntityRenderer;
 import net.minecraft.client.renderer.entity.EntityRendererProvider;
@@ -12,7 +12,7 @@ import net.minecraft.world.phys.Vec3;
 
 public class FluxElevatorRender extends EntityRenderer<FluxElevatorEntity> {
 
-    private static final ResourceLocation TEXTURE = new ResourceLocation("ariente:textures/entity/flux_levitator.png");
+    private static final ResourceLocation TEXTURE = ResourceLocation.parse("ariente:textures/entity/flux_levitator.png");
     private final FluxElevatorModel model = new FluxElevatorModel();
 
     public FluxElevatorRender(EntityRendererProvider.Context renderManagerIn) {
@@ -66,7 +66,7 @@ public class FluxElevatorRender extends EntityRenderer<FluxElevatorEntity> {
         }
 
         matrixStack.scale(-1, -1, 1);
-        model.renderToBuffer(matrixStack, buffer.getBuffer(model.renderType(TEXTURE)), packedLightIn, OverlayTexture.NO_OVERLAY, 1, 1, 1, 1);
+        model.renderToBuffer(matrixStack, buffer.getBuffer(model.renderType(TEXTURE)), packedLightIn, OverlayTexture.NO_OVERLAY, -1);
         matrixStack.popPose();
     }
 

@@ -1,27 +1,27 @@
 package mcjty.ariente.blocks.utility;
 
-import com.mojang.blaze3d.vertex.VertexConsumer;
-import net.minecraft.client.renderer.RenderType;
-import com.mojang.math.Axis;
 import com.mojang.blaze3d.vertex.*;
+import net.minecraft.client.renderer.*;
+import com.mojang.blaze3d.vertex.VertexConsumer;
+import com.mojang.math.Axis;
 import mcjty.ariente.client.ArienteRenderType;
 import mcjty.ariente.setup.Registration;
 import mcjty.lib.blocks.BaseBlock;
 import mcjty.lib.client.CustomRenderTypes;
+import net.minecraft.client.Minecraft;
+import net.minecraft.client.gui.Font;
+import net.minecraft.client.renderer.RenderType;
 import net.minecraft.client.renderer.blockentity.BlockEntityRenderer;
 import net.minecraft.client.renderer.blockentity.BlockEntityRendererProvider;
 import net.minecraft.client.renderer.blockentity.BlockEntityRenderers;
 import net.minecraft.client.renderer.entity.ItemRenderer;
+import net.minecraft.client.renderer.texture.OverlayTexture;
+import net.minecraft.client.resources.model.BakedModel;
+import net.minecraft.core.Direction;
+import net.minecraft.world.item.ItemDisplayContext;
+import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.level.block.Block;
 import net.minecraft.world.level.block.state.BlockState;
-import net.minecraft.client.Minecraft;
-import net.minecraft.client.gui.Font;
-import net.minecraft.client.renderer.*;
-import net.minecraft.client.resources.model.BakedModel;
-import net.minecraft.world.item.ItemDisplayContext;
-import net.minecraft.client.renderer.texture.OverlayTexture;
-import net.minecraft.world.item.ItemStack;
-import net.minecraft.core.Direction;
 import net.minecraft.world.phys.BlockHitResult;
 import net.minecraft.world.phys.HitResult;
 
@@ -188,10 +188,10 @@ public class StorageRenderer implements BlockEntityRenderer<StorageTile> {
     }
 
     private static void renderQuad(VertexConsumer builder, int x, int y, int width, int height, int r, int g, int b, double offset) {
-        builder.vertex(x, y, offset).color(r, g, b, 255).uv2(0xf000f0).endVertex();
-        builder.vertex(x, (y + height), offset).color(r, g, b, 255).uv2(0xf000f0).endVertex();
-        builder.vertex((x + width), (y + height), offset).color(r, g, b, 255).uv2(0xf000f0).endVertex();
-        builder.vertex((x + width), y, offset).color(r, g, b, 255).uv2(0xf000f0).endVertex();
+        builder.addVertex((float) x, (float) y, (float) offset).setColor(r, g, b, 255).setLight(0xf000f0);
+        builder.addVertex((float) x, (float) (y + height), (float) offset).setColor(r, g, b, 255).setLight(0xf000f0);
+        builder.addVertex((float) (x + width), (float) (y + height), (float) offset).setColor(r, g, b, 255).setLight(0xf000f0);
+        builder.addVertex((float) (x + width), (float) y, (float) offset).setColor(r, g, b, 255).setLight(0xf000f0);
     }
 
     public static void register() {
@@ -200,10 +200,10 @@ public class StorageRenderer implements BlockEntityRenderer<StorageTile> {
 
     private static void fill(PoseStack pose, MultiBufferSource buffer, float x0, float y0, float x1, float y1, int color, int light) {
         VertexConsumer vertices = buffer.getBuffer(RenderType.gui());
-        vertices.vertex(pose.last().pose(), x0, y1, 0).color(color).endVertex();
-        vertices.vertex(pose.last().pose(), x1, y1, 0).color(color).endVertex();
-        vertices.vertex(pose.last().pose(), x1, y0, 0).color(color).endVertex();
-        vertices.vertex(pose.last().pose(), x0, y0, 0).color(color).endVertex();
+        vertices.addVertex(pose.last().pose(), x0, y1, 0).setColor(color);
+        vertices.addVertex(pose.last().pose(), x1, y1, 0).setColor(color);
+        vertices.addVertex(pose.last().pose(), x1, y0, 0).setColor(color);
+        vertices.addVertex(pose.last().pose(), x0, y0, 0).setColor(color);
     }
 
 }

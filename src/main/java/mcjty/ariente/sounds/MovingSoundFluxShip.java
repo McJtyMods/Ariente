@@ -1,5 +1,6 @@
 package mcjty.ariente.sounds;
 
+import javax.annotation.Nullable;
 import mcjty.ariente.entities.fluxship.FluxShipEntity;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.resources.sounds.AbstractTickableSoundInstance;
@@ -8,8 +9,6 @@ import net.minecraft.sounds.SoundSource;
 import net.minecraft.util.Mth;
 import net.minecraft.util.RandomSource;
 import net.minecraft.world.entity.player.Player;
-
-import javax.annotation.Nullable;
 
 public class MovingSoundFluxShip extends AbstractTickableSoundInstance {
 

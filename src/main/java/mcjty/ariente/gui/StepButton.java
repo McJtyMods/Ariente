@@ -1,6 +1,7 @@
 package mcjty.ariente.gui;
 
 import com.mojang.blaze3d.vertex.PoseStack;
+import java.util.function.IntConsumer;
 import mcjty.hologui.api.IHoloGuiEntity;
 import mcjty.hologui.gui.HoloGuiRenderTools;
 import mcjty.hologui.gui.HoloGuiSounds;
@@ -9,10 +10,8 @@ import net.minecraft.client.renderer.MultiBufferSource;
 import net.minecraft.sounds.SoundSource;
 import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.player.Player;
-import net.minecraftforge.api.distmarker.Dist;
-import net.minecraftforge.api.distmarker.OnlyIn;
-
-import java.util.function.IntConsumer;
+import net.neoforged.api.distmarker.Dist;
+import net.neoforged.api.distmarker.OnlyIn;
 
 /** A compact, framed single or double arrow for an exact numeric adjustment. */
 public class StepButton extends AbstractHoloComponent<StepButton> {

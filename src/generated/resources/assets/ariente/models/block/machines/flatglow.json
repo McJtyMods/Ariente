@@ -1,21 +1,7 @@
 {
-  "textures": {
-    "back": "ariente:block/base/machinebottom",
-    "all": "ariente:block/machines/light_on",
-    "particle": "#all"
-  },
+  "parent": "minecraft:block/block",
   "elements": [
     {
-      "from": [
-        1,
-        1,
-        14
-      ],
-      "to": [
-        15,
-        15,
-        16
-      ],
       "faces": {
         "down": {
           "texture": "#all",
@@ -26,7 +12,7 @@
             16.0
           ]
         },
-        "up": {
+        "east": {
           "texture": "#all",
           "uv": [
             0.0,
@@ -53,7 +39,7 @@
             16.0
           ]
         },
-        "west": {
+        "up": {
           "texture": "#all",
           "uv": [
             0.0,
@@ -62,7 +48,7 @@
             16.0
           ]
         },
-        "east": {
+        "west": {
           "texture": "#all",
           "uv": [
             0.0,
@@ -71,8 +57,22 @@
             16.0
           ]
         }
-      }
+      },
+      "from": [
+        1,
+        1,
+        14
+      ],
+      "to": [
+        15,
+        15,
+        16
+      ]
     }
   ],
-  "parent": "minecraft:block/block"
+  "textures": {
+    "all": "ariente:block/machines/light_on",
+    "back": "ariente:block/base/machinebottom",
+    "particle": "#all"
+  }
 }

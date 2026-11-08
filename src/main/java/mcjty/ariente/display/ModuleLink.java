@@ -2,6 +2,7 @@ package mcjty.ariente.display;
 
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
+import net.minecraft.core.registries.BuiltInRegistries;
 import net.minecraft.core.registries.Registries;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.resources.ResourceKey;
@@ -9,7 +10,6 @@ import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.level.block.entity.BlockEntity;
-import net.minecraftforge.registries.ForgeRegistries;
 
 public record ModuleLink(Level level, BlockPos pos, Direction side, BlockEntity tile, String status) {
 
@@ -31,7 +31,7 @@ public record ModuleLink(Level level, BlockPos pos, Direction side, BlockEntity 
             return new ModuleLink(current, pos, side, null, "Target unloaded");
         }
         BlockEntity tile = target.getBlockEntity(pos);
-        if (tile == null || !link.getString("Block").equals(ForgeRegistries.BLOCKS.getKey(target.getBlockState(pos).getBlock()).toString())) {
+        if (tile == null || !link.getString("Block").equals(BuiltInRegistries.BLOCK.getKey(target.getBlockState(pos).getBlock()).toString())) {
             return new ModuleLink(target, pos, side, null, "Target missing");
         }
         return new ModuleLink(target, pos, side, tile, "");

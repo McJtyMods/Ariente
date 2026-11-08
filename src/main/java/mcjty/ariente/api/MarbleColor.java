@@ -1,7 +1,7 @@
 package mcjty.ariente.api;
 
-import net.minecraft.world.item.DyeColor;
 import net.minecraft.util.StringRepresentable;
+import net.minecraft.world.item.DyeColor;
 import net.minecraft.world.level.block.state.properties.EnumProperty;
 
 public enum MarbleColor implements StringRepresentable {

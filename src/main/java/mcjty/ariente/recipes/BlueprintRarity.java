@@ -1,9 +1,8 @@
 package mcjty.ariente.recipes;
 
+import javax.annotation.Nullable;
 import net.minecraft.ChatFormatting;
 import net.minecraft.network.chat.Component;
-
-import javax.annotation.Nullable;
 
 public enum BlueprintRarity {
     COMMON(BlueprintRecipeRegistry.COMMON, "common", ChatFormatting.WHITE),
