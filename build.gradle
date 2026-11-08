@@ -49,6 +49,14 @@ sourceSets.main.resources {
     srcDir 'src/generated/resources'
 }
 
+// ForgeGradle 5 resolves transformed Minecraft jars during project configuration.
+// Keep that dependency cache so `clean build` does not delete its own classpath.
+tasks.named('clean', Delete).configure {
+    setDelete(provider {
+        buildDir.listFiles()?.findAll { it != file('build/fg_cache') } ?: []
+    })
+}
+
 dependencies {
     mc()
     jei()
@@ -88,6 +96,11 @@ publishing {
     repositories {
         if (project.hasProperty('mavendir')) {
             maven { url mavendir }
+        } else if (System.getenv('local_maven') != null) {
+            maven {
+                name = 'local'
+                url = uri(System.getenv('local_maven'))
+            }
         } else {
             mavenLocal()
         }
