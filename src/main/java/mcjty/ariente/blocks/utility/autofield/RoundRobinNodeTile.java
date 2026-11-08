@@ -26,8 +26,8 @@ public class RoundRobinNodeTile extends GenericTileEntity {
 
     private int index = 0;
 
-    private static final float T = 0.1f;
-    private static final float A = 0.05F;
+    private static final float T = 2 / 16.0f;
+    private static final float A = 2 / 16.0f;
 
     private static final AABB AABB_DOWN_NW = new AABB(0.0+A, 0, 0.0+A,      0.5-A, T, 0.5-A);
     private static final AABB AABB_DOWN_NE = new AABB(0.5+A, 0, 0.0+A,      1.0-A, T, 0.5-A);

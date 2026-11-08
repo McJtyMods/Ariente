@@ -2,6 +2,7 @@ package mcjty.ariente.blocks.utility.wireless;
 
 import mcjty.ariente.security.AreaLocks;
 import mcjty.ariente.Ariente;
+import mcjty.ariente.blocks.MountedPanelShapes;
 import mcjty.ariente.gui.CompactNumber;
 import mcjty.ariente.gui.GuiHelp;
 import mcjty.ariente.blocks.utility.ILockable;
@@ -22,10 +23,10 @@ import net.minecraft.world.level.block.Block;
 import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.network.Connection;
 import net.minecraft.world.level.block.state.StateDefinition;
+import net.minecraft.world.level.block.state.properties.BlockStateProperties;
 import net.minecraft.world.InteractionResult;
 import net.minecraft.world.phys.BlockHitResult;
 import net.minecraft.world.phys.shapes.CollisionContext;
-import net.minecraft.world.phys.shapes.Shapes;
 import net.minecraft.world.phys.shapes.VoxelShape;
 import net.minecraft.world.level.BlockGetter;
 import net.minecraft.world.level.Level;
@@ -43,7 +44,7 @@ public class WirelessLockTile extends SignalChannelTileEntity implements ILockab
     private int horizontalRange = 5;
     private int verticalRange = 3;
 
-    private static final VoxelShape BLOCK_AABB = Shapes.box(1.0D/16.0, 1.0D/16.0, 15.0D/16.0, 15.0D/16.0, 15.0D/16.0, 1.0D);
+    private static final MountedPanelShapes SHAPES = new MountedPanelShapes(2, 3);
 
     public WirelessLockTile(BlockPos pos, BlockState state) {
         super(Registration.WIRELESS_LOCK_TILE.get(), pos, state);
@@ -70,7 +71,7 @@ public class WirelessLockTile extends SignalChannelTileEntity implements ILockab
 
             @Override
             public VoxelShape getShape(BlockState state, BlockGetter reader, BlockPos pos, CollisionContext context) {
-                return BLOCK_AABB;
+                return SHAPES.get(state.getValue(BlockStateProperties.FACING));
             }
         };
     }

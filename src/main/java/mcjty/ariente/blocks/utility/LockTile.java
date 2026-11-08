@@ -6,6 +6,7 @@ import mcjty.ariente.gui.GuiHelp;
 import mcjty.ariente.api.ICityAI;
 import mcjty.ariente.api.ICityEquipment;
 import mcjty.ariente.blocks.BlockProperties;
+import mcjty.ariente.blocks.MountedPanelShapes;
 import mcjty.ariente.items.KeyCardItem;
 import mcjty.ariente.security.IKeyCardSlot;
 import mcjty.ariente.setup.Registration;
@@ -25,12 +26,12 @@ import net.minecraft.network.Connection;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.network.protocol.game.ClientboundBlockEntityDataPacket;
 import net.minecraft.world.level.block.state.StateDefinition;
+import net.minecraft.world.level.block.state.properties.BlockStateProperties;
 import net.minecraft.world.InteractionHand;
 import net.minecraft.core.BlockPos;
 import net.minecraft.world.phys.BlockHitResult;
 import net.minecraft.world.phys.shapes.CollisionContext;
 import net.minecraft.world.phys.shapes.VoxelShape;
-import net.minecraft.world.phys.shapes.Shapes;
 import net.minecraft.world.level.BlockGetter;
 
 import java.util.HashMap;
@@ -50,7 +51,7 @@ public class LockTile extends GenericTileEntity implements IGuiTile, IKeyCardSlo
     private int horizontalRange = 5;
     private int verticalRange = 3;
 
-    private static final VoxelShape BLOCK_AABB = Shapes.box(1.0D/16.0, 1.0D/16.0, 15.0D/16.0, 15.0D/16.0, 15.0D/16.0, 1.0D);
+    private static final MountedPanelShapes SHAPES = new MountedPanelShapes(2, 3);
 
     public LockTile(BlockPos pos, BlockState state) {
         super(Registration.LOCK_TILE.get(), pos, state);
@@ -77,7 +78,7 @@ public class LockTile extends GenericTileEntity implements IGuiTile, IKeyCardSlo
 
             @Override
             public VoxelShape getShape(BlockState state, BlockGetter reader, BlockPos pos, CollisionContext context) {
-                return BLOCK_AABB;
+                return SHAPES.get(state.getValue(BlockStateProperties.FACING));
             }
         };
     }

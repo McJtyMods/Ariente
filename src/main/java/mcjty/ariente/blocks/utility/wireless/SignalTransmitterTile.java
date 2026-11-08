@@ -1,6 +1,7 @@
 package mcjty.ariente.blocks.utility.wireless;
 
 import mcjty.ariente.blocks.BlockProperties;
+import mcjty.ariente.blocks.MountedPanelShapes;
 import mcjty.ariente.setup.Registration;
 import mcjty.lib.blocks.BaseBlock;
 import mcjty.lib.builder.BlockBuilder;
@@ -14,12 +15,12 @@ import net.minecraft.world.level.block.Block;
 import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.world.level.block.state.StateDefinition;
+import net.minecraft.world.level.block.state.properties.BlockStateProperties;
 import net.minecraft.world.InteractionResult;
 import net.minecraft.world.InteractionHand;
 import net.minecraft.core.BlockPos;
 import net.minecraft.world.phys.BlockHitResult;
 import net.minecraft.world.phys.shapes.CollisionContext;
-import net.minecraft.world.phys.shapes.Shapes;
 import net.minecraft.world.phys.shapes.VoxelShape;
 
 import static mcjty.ariente.compat.ArienteTOPDriver.DRIVER;
@@ -30,7 +31,7 @@ public class SignalTransmitterTile extends SignalChannelTileEntity {
     private int prevIn = -1;
     private boolean publishPending = true;
 
-    private static final VoxelShape BLOCK_AABB = Shapes.box(1.0D/16.0, 1.0D/16.0, 15.0D/16.0, 15.0D/16.0, 15.0D/16.0, 1.0D);
+    private static final MountedPanelShapes SHAPES = new MountedPanelShapes(2, 3);
 
     public SignalTransmitterTile(BlockPos pos, BlockState state) {
         super(Registration.SIGNAL_TRANSMITTER_TILE.get(), pos, state);
@@ -51,7 +52,7 @@ public class SignalTransmitterTile extends SignalChannelTileEntity {
 
             @Override
             public VoxelShape getShape(BlockState state, BlockGetter reader, BlockPos pos, CollisionContext context) {
-                return BLOCK_AABB;
+                return SHAPES.get(state.getValue(BlockStateProperties.FACING));
             }
         };
     }

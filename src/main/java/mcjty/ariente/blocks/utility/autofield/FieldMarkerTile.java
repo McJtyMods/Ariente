@@ -16,12 +16,12 @@ import net.minecraft.nbt.CompoundTag;
 import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.level.BlockGetter;
 import net.minecraft.world.level.Level;
+import net.minecraft.world.level.block.Block;
 import net.minecraft.world.level.block.entity.BlockEntity;
 import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.phys.shapes.CollisionContext;
 import net.minecraft.world.phys.shapes.VoxelShape;
-import net.minecraft.world.phys.shapes.Shapes;
 
 import javax.annotation.Nonnull;
 import java.util.Objects;
@@ -30,7 +30,7 @@ public class FieldMarkerTile extends GenericTileEntity {
 
     private BlockPos autoFieldTile = null;
 
-    public static final VoxelShape FLAT_SHAPE = Shapes.box(0.0D, 0.0D, 0.0D, 1.0D, 0.1D, 1.0D);
+    public static final VoxelShape FLAT_SHAPE = Block.box(0, 0, 0, 16, 1, 16);
 
 
     public FieldMarkerTile(BlockPos pos, BlockState state) {
