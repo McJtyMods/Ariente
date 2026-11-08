@@ -81,11 +81,15 @@ public class DisplayClientEvents {
             DisplayModuleDrag.tick();
             DisplayDataReceiver.tick();
             CameraPerspectiveRenderer.tick();
+            LiveCameraRenderer.tick();
         }
     }
 
     @SubscribeEvent
     public void render(RenderLevelStageEvent event) {
+        if (LiveCameraRenderer.isRendering()) {
+            return;
+        }
         if (event.getStage() == RenderLevelStageEvent.Stage.AFTER_BLOCK_ENTITIES) {
             // AFTER_LEVEL supplies the projection pose in Forge 1.20.1; retain the world camera pose.
             worldPoses = WorldHolograms.copy(event.getPoseStack());
@@ -94,6 +98,7 @@ public class DisplayClientEvents {
         if (event.getStage() != RenderLevelStageEvent.Stage.AFTER_LEVEL) {
             return;
         }
+        LiveCameraRenderer.beginFrame();
         WorldHolograms.renderWorld();
         Minecraft mc = Minecraft.getInstance();
         if (mc.player == null || mc.screen != null) {

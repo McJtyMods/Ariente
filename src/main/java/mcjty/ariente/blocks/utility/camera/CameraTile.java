@@ -1,12 +1,22 @@
 package mcjty.ariente.blocks.utility.camera;
 
+import mcjty.ariente.Ariente;
+import mcjty.ariente.gui.HoloGuiTools;
 import mcjty.ariente.setup.Registration;
+import mcjty.hologui.api.IGuiComponent;
+import mcjty.hologui.api.IGuiComponentRegistry;
+import mcjty.hologui.api.IGuiTile;
 import mcjty.lib.blocks.BaseBlock;
 import mcjty.lib.builder.BlockBuilder;
 import mcjty.lib.tileentity.GenericTileEntity;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
 import net.minecraft.nbt.CompoundTag;
+import net.minecraft.resources.ResourceLocation;
+import net.minecraft.world.InteractionHand;
+import net.minecraft.world.InteractionResult;
+import net.minecraft.world.entity.player.Player;
+import net.minecraft.world.phys.BlockHitResult;
 import net.minecraft.world.item.context.BlockPlaceContext;
 import net.minecraft.world.level.BlockGetter;
 import net.minecraft.world.level.block.Block;
@@ -20,8 +30,9 @@ import net.minecraft.world.phys.shapes.VoxelShape;
 import java.util.HashMap;
 import java.util.Map;
 
-public class CameraTile extends GenericTileEntity {
+public class CameraTile extends GenericTileEntity implements IGuiTile {
 
+    private boolean live;
     private BlockState capturedState;
     private final Map<Integer, Capture> captures = new HashMap<>();
 
@@ -57,12 +68,77 @@ public class CameraTile extends GenericTileEntity {
         };
     }
 
+    public boolean isLive() {
+        return live;
+    }
+
+    public void setLive(boolean live) {
+        if (this.live != live) {
+            this.live = live;
+            captures.clear();
+            if (level != null && !level.isClientSide) {
+                markDirtyClient();
+            }
+        }
+    }
+
+    @Override
+    public InteractionResult onBlockActivated(BlockState state, Player player, InteractionHand hand, BlockHitResult hit) {
+        Ariente.guiHandler.openHoloGui(level, worldPosition, player);
+        return InteractionResult.SUCCESS;
+    }
+
+    @Override
+    public IGuiComponent<?> createGui(String tag, IGuiComponentRegistry registry) {
+        return HoloGuiTools.createPanelWithHelp(registry, new ResourceLocation(Ariente.MODID, "construction/displays"))
+                .add(registry.text(.3, 0, 7.2, 1).text("CAMERA").scale(.65f).color(0x76eaff))
+                .add(registry.textChoice(.3, 1.2, 7.2, .9).name("camera_mode").scale(.45f)
+                        .addText("Mode: Holographic").addText("Mode: Live")
+                        .getter(p -> live ? 1 : 0).hitEvent((c, p, e, x, y) -> setLive(!live)))
+                .add(registry.text(.3, 2.7, 7.2, .6).text("Holographic: a captured 3D scene.").scale(.37f))
+                .add(registry.text(.3, 3.5, 7.2, .6).text("Live: sky, terrain and actual entities.").scale(.35f))
+                .add(registry.text(.3, 4.5, 7.2, .6).text("Live starts looking away from the base.").scale(.35f))
+                .add(registry.text(.3, 5.3, 7.2, .6).text("Use Pan and Tilt on a linked module.").scale(.35f))
+                .add(registry.text(.3, 6.5, 7.2, .6).text("Live works nearby in your current dimension.").scale(.31f));
+    }
+
+    @Override
+    public void syncToClient() {
+    }
+
+    @Override
+    public void saveAdditional(CompoundTag tag) {
+        super.saveAdditional(tag);
+        tag.putBoolean("LiveCamera", live);
+    }
+
+    @Override
+    public void load(CompoundTag tag) {
+        super.load(tag);
+        live = tag.getBoolean("LiveCamera");
+        captures.clear();
+    }
+
+    @Override
+    public void saveClientDataToNBT(CompoundTag tag) {
+        tag.putBoolean("LiveCamera", live);
+    }
+
+    @Override
+    public void loadClientDataFromNBT(CompoundTag tag) {
+        live = tag.getBoolean("LiveCamera");
+        captures.clear();
+    }
+
     /** Demand driven: linked displays share one capture per second; the camera never ticks or loads chunks. */
     public CompoundTag capture() {
         return capture(CameraCapture.DEFAULT_RANGE);
     }
 
     public CompoundTag capture(int range) {
+        if (range < CameraCapture.MIN_RANGE || range > CameraCapture.MAX_RANGE) {
+            throw new IllegalArgumentException("Invalid camera range");
+        }
         long now = level.getGameTime();
         if (capturedState != getBlockState()) {
             captures.clear();
@@ -71,7 +147,18 @@ public class CameraTile extends GenericTileEntity {
         captures.entrySet().removeIf(entry -> now < entry.getValue().tick() || now - entry.getValue().tick() >= 20);
         Capture saved = captures.get(range);
         if (saved == null) {
-            saved = new Capture(now, CameraCapture.scan(level, worldPosition, getBlockState().getValue(BlockStateProperties.FACING), range));
+            CompoundTag data;
+            if (live) {
+                data = new CompoundTag();
+                data.putBoolean("Live", true);
+                data.putLong("Camera", worldPosition.asLong());
+                data.putString("Dimension", level.dimension().location().toString());
+                data.putInt("Facing", getBlockState().getValue(BlockStateProperties.FACING).get3DDataValue());
+                data.putInt("Range", range);
+            } else {
+                data = CameraCapture.scan(level, worldPosition, getBlockState().getValue(BlockStateProperties.FACING), range);
+            }
+            saved = new Capture(now, data);
             captures.put(range, saved);
         }
         return saved.data();

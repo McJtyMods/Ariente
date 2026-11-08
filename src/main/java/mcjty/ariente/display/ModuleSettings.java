@@ -10,6 +10,7 @@ import net.minecraft.nbt.CompoundTag;
 import net.minecraft.world.InteractionHand;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.ItemStack;
+import net.minecraft.world.level.Level;
 import net.minecraft.resources.ResourceLocation;
 
 import java.util.Locale;
@@ -53,6 +54,15 @@ public class ModuleSettings {
 
     public CompoundTag config() {
         return DisplayModuleItem.config(stack());
+    }
+
+    public Level level() {
+        return owner == null ? player.level() : owner.getLevel();
+    }
+
+    public CompoundTag snapshot() {
+        InstalledModule module = owner == null ? null : owner.findModule(id);
+        return module == null ? new CompoundTag() : module.snapshot();
     }
 
     public int number(String key, int fallback) {

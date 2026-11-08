@@ -6,8 +6,10 @@ import mcjty.ariente.display.CameraDisplayModule;
 import mcjty.ariente.display.CameraView;
 import mcjty.ariente.display.CameraViewClipper;
 import mcjty.ariente.display.CameraPerspective;
+import mcjty.ariente.display.LiveCameraView;
 import org.joml.Matrix4f;
 import org.joml.Vector4f;
+import org.joml.Vector3f;
 import mcjty.ariente.display.DisplayBaseTile;
 import mcjty.ariente.display.DisplayGeometry;
 import mcjty.ariente.display.DisplayModuleItem;
@@ -467,6 +469,89 @@ public class CameraDisplayTests {
 
     private static Vector4f project(Matrix4f transform, Vec3 point) {
         return transform.transform(new Vector4f((float) point.x, (float) point.y, (float) point.z, 1));
+    }
+
+    @GameTest(template = "empty")
+    public static void cameraModePersistsAndLiveSnapshotsContainOnlyTheSource(GameTestHelper helper) {
+        BlockPos pos = helper.absolutePos(new BlockPos(3, 6, 3));
+        CameraTile camera = camera(helper, pos, Direction.SOUTH);
+        helper.assertTrue(!camera.isLive(), "Existing cameras default to the holographic capture mode");
+        var gui = camera.createGui("", Ariente.guiHandler.getComponentRegistry());
+        var player = helper.makeMockSurvivalPlayer();
+        gui.findChild("camera_mode").orElseThrow().hit(player, null, 1, 1.6);
+        helper.assertTrue(camera.isLive(), "The camera hologui enables a live feed");
+        CompoundTag data = camera.capture(30);
+        helper.assertTrue(data.getBoolean("Live") && data.getLong("Camera") == pos.asLong()
+                && data.getInt("Facing") == Direction.SOUTH.get3DDataValue()
+                && data.getString("Dimension").equals(helper.getLevel().dimension().location().toString())
+                && !data.contains("Blocks") && !data.contains("Palette"), "Live modules receive source metadata instead of captured geometry");
+        CameraTile restored = new CameraTile(pos, camera.getBlockState());
+        restored.load(camera.saveWithoutMetadata());
+        helper.assertTrue(restored.isLive(), "The camera mode survives chunk saving");
+        CompoundTag update = camera.getUpdateTag();
+        CameraTile client = new CameraTile(pos, camera.getBlockState());
+        client.loadClientDataFromNBT(update);
+        helper.assertTrue(client.isLive(), "The camera mode is available to nearby clients");
+        gui.findChild("camera_mode").orElseThrow().hit(player, null, 1, 1.6);
+        helper.assertTrue(!camera.isLive() && !camera.capture(30).getBoolean("Live"), "Switching back restores the existing block capture");
+        helper.succeed();
+    }
+
+    @GameTest(template = "empty")
+    public static void liveViewStartsOutsideTheLensAndFacesAwayFromEveryBase(GameTestHelper helper) {
+        BlockPos pos = new BlockPos(10, 70, -10);
+        for (Direction facing : Direction.values()) {
+            Vec3 normal = Vec3.atLowerCornerOf(facing.getNormal());
+            LiveCameraView neutral = LiveCameraView.of(pos, facing, 0, 0);
+            helper.assertTrue(neutral.forward().distanceToSqr(normal) < .00001
+                    && Math.abs(neutral.eye().subtract(pos.getCenter()).dot(normal) - .125) < .00001,
+                    "Neutral live views face away from the mounting plate and start outside its glass for " + facing);
+            for (int pan : new int[]{-180, -90, 0, 90, 180}) {
+                for (int tilt : new int[]{-90, -45, 0, 45, 90}) {
+                    LiveCameraView view = LiveCameraView.of(pos, facing, pan, tilt);
+                    helper.assertTrue(Float.isFinite(view.yaw()) && Float.isFinite(view.pitch()) && Math.abs(view.forward().length() - 1) < .00001,
+                            "Pan and tilt remain well-defined on walls, floors and ceilings");
+                    Vector3f projected = view.rotation().transformDirection(new Vector3f((float) view.forward().x, (float) view.forward().y, (float) view.forward().z));
+                    helper.assertTrue(Math.abs(projected.x) < .00001 && Math.abs(projected.y) < .00001 && Math.abs(projected.z + 1) < .00001,
+                            "The world renderer looks along the requested camera direction, rather than backwards");
+                }
+            }
+            helper.assertTrue(LiveCameraView.of(pos, facing, 90, 0).forward().dot(normal) < .00001
+                    && LiveCameraView.of(pos, facing, 0, 90).forward().dot(normal) < .00001, "Both controls can turn the view away from its default direction");
+        }
+        helper.succeed();
+    }
+
+    @GameTest(template = "empty")
+    public static void liveModulesUseNeutralIndependentPanAndTiltControls(GameTestHelper helper) {
+        BlockPos source = helper.absolutePos(new BlockPos(3, 6, 3));
+        CameraTile camera = camera(helper, source, Direction.NORTH);
+        camera.setLive(true);
+        BlockPos pos = helper.absolutePos(new BlockPos(3, 2, 1));
+        helper.getLevel().setBlockAndUpdate(pos, Registration.DISPLAY_BASE.get().defaultBlockState()
+                .setValue(BlockStateProperties.HORIZONTAL_FACING, Direction.NORTH));
+        var base = (DisplayBaseTile) helper.getLevel().getBlockEntity(pos);
+        var player = helper.makeMockSurvivalPlayer();
+        player.setPos(pos.getCenter());
+        player.setItemInHand(InteractionHand.MAIN_HAND, linked(helper, source));
+        base.install(player, InteractionHand.MAIN_HAND, new DisplayGeometry.Hit(base, 0, 0, 1));
+        var module = base.modules().get(0);
+        var gui = base.createGui(ModuleSettings.installedTag(module.id(), false), Ariente.guiHandler.getComponentRegistry());
+        helper.assertTrue(CameraDisplayModule.livePan(module.stack()) == 0 && CameraDisplayModule.liveTilt(module.stack()) == 0
+                && gui.findChild("setting_Perspective").isEmpty() && gui.findChild("setting_Yaw").isEmpty(),
+                "Live controls start neutral and replace holographic orbit controls");
+        CompoundTag snapshot = module.snapshot();
+        gui.findChild("setting_LivePan").orElseThrow().hit(player, null, 7.4, 2.4);
+        gui.findChild("setting_LiveTilt").orElseThrow().hit(player, null, 7.4, 3.4);
+        module = base.findModule(module.id());
+        helper.assertTrue(CameraDisplayModule.livePan(module.stack()) == 1 && CameraDisplayModule.liveTilt(module.stack()) == 1
+                && module.snapshot() == snapshot && CameraDisplayModule.yaw(module.stack()) == 45 && CameraDisplayModule.tilt(module.stack()) == 30,
+                "Live view adjustments leave capture data and holographic settings intact");
+        camera.setLive(false);
+        module.refresh(helper.getLevel());
+        helper.assertTrue(gui.findChild("setting_Yaw").isPresent() && gui.findChild("setting_LivePan").isEmpty(),
+                "The existing controls return when a selected camera switches back to holographic mode");
+        helper.succeed();
     }
 
     @GameTest(template = "empty")

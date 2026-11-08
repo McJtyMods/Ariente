@@ -5,6 +5,7 @@ import com.mojang.blaze3d.vertex.PoseStack;
 import com.mojang.blaze3d.vertex.VertexConsumer;
 import mcjty.ariente.Ariente;
 import mcjty.ariente.client.ArienteRenderType;
+import mcjty.ariente.display.client.LiveCameraRenderer;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.renderer.LightTexture;
 import net.minecraft.client.renderer.MultiBufferSource;
@@ -25,7 +26,7 @@ public class TankRendererTools {
     private static final MultiBufferSource.BufferSource WORLD_TANKS = MultiBufferSource.immediate(new BufferBuilder(4096));
 
     public static void renderWorldTank(PoseStack stack, ResourceLocation beam, ResourceLocation window, boolean working, long gameTime, Vec3 cameraOffset, int light) {
-        renderTank(stack, WORLD_TANKS, beam, window, working, gameTime, cameraOffset, light);
+        renderTank(stack, LiveCameraRenderer.buffersForView(WORLD_TANKS), beam, window, working, gameTime, cameraOffset, light);
     }
 
     @SubscribeEvent

@@ -59,6 +59,7 @@ public class CameraDisplayRenderer {
     public static void clearCache() {
         CACHE.clear();
         CameraPerspectiveRenderer.clear();
+        LiveCameraRenderer.clear();
     }
 
     public static void render(DisplayCanvas canvas, InstalledModule module) {
@@ -77,6 +78,10 @@ public class CameraDisplayRenderer {
         }
         Minecraft mc = Minecraft.getInstance();
         if (mc.level == null) {
+            return;
+        }
+        if (module.snapshot().getBoolean("Live")) {
+            LiveCameraRenderer.render(canvas, module);
             return;
         }
         if (CameraDisplayModule.perspective(module.stack())) {

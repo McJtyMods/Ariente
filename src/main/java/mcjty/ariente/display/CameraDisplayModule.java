@@ -48,6 +48,28 @@ public class CameraDisplayModule implements DisplayModuleType {
         return DisplayModuleItem.config(stack).getBoolean("Perspective");
     }
 
+    public static int livePan(ItemStack stack) {
+        return StorageDisplayModule.setting(stack, "LivePan", 0, -180, 180);
+    }
+
+    public static int liveTilt(ItemStack stack) {
+        return StorageDisplayModule.setting(stack, "LiveTilt", 0, -90, 90);
+    }
+
+    private static boolean live(ModuleSettings settings) {
+        if (settings.snapshot().getBoolean("Live")) {
+            return true;
+        }
+        CompoundTag link = selectedCamera(settings.stack());
+        Level level = settings.level();
+        if (level.isClientSide) {
+            BlockPos pos = BlockPos.of(link.getLong("Pos"));
+            return level.dimension().location().toString().equals(link.getString("Dimension")) && level.hasChunkAt(pos)
+                    && level.getBlockEntity(pos) instanceof CameraTile camera && camera.isLive();
+        }
+        return ModuleLink.resolve(level, link).tile() instanceof CameraTile camera && camera.isLive();
+    }
+
     public static boolean autoRotate(ItemStack stack) {
         return rotationSpeed(stack) > 0;
     }
@@ -175,9 +197,20 @@ public class CameraDisplayModule implements DisplayModuleType {
 
     @Override
     public void configure(IGuiComponentRegistry r, IPanel panel, ModuleSettings settings) {
-        panel.add(r.textChoice(5.5, .15, 2, .6).name("setting_Perspective").scale(.28f)
+        IPanel holographic = r.panel(0, 0, 8, 7.2).visible(() -> !live(settings));
+        IPanel live = r.panel(0, 0, 8, 7.2).visible(() -> live(settings));
+        holographic.add(r.textChoice(5.5, .15, 2, .6).name("setting_Perspective").scale(.28f)
                 .addText("Orthographic").addText("Perspective").getter(p -> perspective(settings.stack()) ? 1 : 0)
                 .hitEvent((c, p, e, x, y) -> settings.toggle(p, e, "Perspective", false)));
+        live.add(r.text(5.5, .2, 2, .6).text("LIVE CAMERA").scale(.25f).color(0x76eaff));
+        live.add(r.integerSlider(.3, 2, 7.2, .95).name("setting_LivePan").label("Pan").suffix(" deg")
+                .range(-180, 180).getter((p, e) -> livePan(settings.stack()))
+                .changed((p, e, value) -> settings.setNumber(p, e, "LivePan", value)));
+        live.add(r.integerSlider(.3, 3, 7.2, .95).name("setting_LiveTilt").label("Tilt").suffix(" deg")
+                .range(-90, 90).getter((p, e) -> liveTilt(settings.stack()))
+                .changed((p, e, value) -> settings.setNumber(p, e, "LiveTilt", value)));
+        settings.addNumber(r, holographic, 2, "Yaw", "View rotation", 45, 0, 360);
+        settings.addNumber(r, holographic, 3, "Tilt", "View tilt", 30, 0, 90);
         panel.add(r.textChoice(.3, 1, 3.4, .7).name("setting_Size").scale(.38f)
                 .addText("Size: Small").addText("Size: Medium").addText("Size: Large")
                 .getter(p -> sizeIndex(settings.stack()))
@@ -200,8 +233,6 @@ public class CameraDisplayModule implements DisplayModuleType {
                         settings.setNumber(p, e, "CameraIndex", (cameraIndex(settings.stack()) + 1) % count);
                     }
                 }));
-        settings.addNumber(r, panel, 2, "Yaw", "View rotation", 45, 0, 360);
-        settings.addNumber(r, panel, 3, "Tilt", "View tilt", 30, 0, 90);
         panel.add(r.integerSlider(.3, 4, 7.2, .95).name("setting_Radius").label("Radius").suffix(" blocks")
                 .range(CameraCapture.MIN_RANGE, CameraCapture.MAX_RANGE).getter((p, e) -> radius(settings.stack()))
                 .changed((p, e, value) -> settings.edit(p, e, config -> {
@@ -217,5 +248,6 @@ public class CameraDisplayModule implements DisplayModuleType {
                     config.remove("AutoRotate");
                     config.putInt("RotationSpeed", value);
                 })));
+        panel.add(holographic, live);
     }
 }

@@ -13,6 +13,7 @@ public class Config {
         UtilityConfiguration.init(SERVER_BUILDER, CLIENT_BUILDER);
         WorldgenConfiguration.init(SERVER_BUILDER, CLIENT_BUILDER);
         RecipeConfiguration.init(SERVER_BUILDER);
+        DisplayConfiguration.init(CLIENT_BUILDER);
 
         SERVER_CONFIG = SERVER_BUILDER.build();
         CLIENT_CONFIG = CLIENT_BUILDER.build();

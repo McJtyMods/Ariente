@@ -2,6 +2,7 @@ package mcjty.ariente.client;
 
 import com.mojang.blaze3d.vertex.BufferBuilder;
 import com.mojang.blaze3d.vertex.PoseStack;
+import mcjty.ariente.display.client.LiveCameraRenderer;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.renderer.MultiBufferSource;
 import net.minecraft.client.renderer.RenderType;
@@ -31,7 +32,7 @@ public class WorldHolograms {
             RenderType.entityGlintDirect(), new BufferBuilder(256)), new BufferBuilder(4096));
 
     public static boolean begin(BlockEntity owner) {
-        return QUEUED.add(owner);
+        return !LiveCameraRenderer.isRendering() && QUEUED.add(owner);
     }
 
     public static PoseStack copy(PoseStack poses) {
@@ -42,7 +43,9 @@ public class WorldHolograms {
     }
 
     public static void add(Vec3 center, Consumer<MultiBufferSource.BufferSource> draw) {
-        PENDING.add(new Entry(center, draw));
+        if (!LiveCameraRenderer.isRendering()) {
+            PENDING.add(new Entry(center, draw));
+        }
     }
 
     public static void renderWorld() {

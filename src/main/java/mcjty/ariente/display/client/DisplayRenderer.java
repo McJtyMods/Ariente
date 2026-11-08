@@ -34,6 +34,9 @@ public class DisplayRenderer implements BlockEntityRenderer<DisplayBaseTile> {
 
     @Override
     public void render(DisplayBaseTile tile, float partialTick, PoseStack poses, MultiBufferSource buffer, int light, int overlay) {
+        if (LiveCameraRenderer.isRendering()) {
+            return;
+        }
         List<DisplayBaseTile> row = DisplayGeometry.row(tile);
         DisplayBaseTile first = row.get(0);
         if (!WorldHolograms.begin(first)) {

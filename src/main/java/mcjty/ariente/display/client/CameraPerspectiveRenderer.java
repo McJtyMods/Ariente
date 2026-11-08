@@ -211,10 +211,10 @@ public class CameraPerspectiveRenderer {
         }
     }
 
-    private record GlState(boolean depth, boolean depthMask, boolean cull, boolean blend, int depthFunc,
+    record GlState(boolean depth, boolean depthMask, boolean cull, boolean blend, int depthFunc,
                            int sourceRgb, int destRgb, int sourceAlpha, int destAlpha, int texture, float[] color) {
 
-        private static GlState capture() {
+        static GlState capture() {
             return new GlState(GL11.glIsEnabled(GL11.GL_DEPTH_TEST), GL11.glGetBoolean(GL11.GL_DEPTH_WRITEMASK),
                     GL11.glIsEnabled(GL11.GL_CULL_FACE), GL11.glIsEnabled(GL11.GL_BLEND), GL11.glGetInteger(GL11.GL_DEPTH_FUNC),
                     GL11.glGetInteger(GL14.GL_BLEND_SRC_RGB), GL11.glGetInteger(GL14.GL_BLEND_DST_RGB),
@@ -222,7 +222,7 @@ public class CameraPerspectiveRenderer {
                     RenderSystem.getShaderTexture(0), RenderSystem.getShaderColor().clone());
         }
 
-        private void restore() {
+        void restore() {
             if (depth) {
                 RenderSystem.enableDepthTest();
             } else {

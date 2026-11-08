@@ -5,6 +5,7 @@ import com.mojang.blaze3d.vertex.PoseStack;
 import com.mojang.blaze3d.vertex.VertexConsumer;
 import mcjty.ariente.Ariente;
 import mcjty.ariente.client.ArienteRenderType;
+import mcjty.ariente.display.client.LiveCameraRenderer;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.renderer.LightTexture;
 import net.minecraft.client.renderer.MultiBufferSource;
@@ -33,7 +34,7 @@ public class FluxShipExhaustRender {
     private static final MultiBufferSource.BufferSource EXHAUST_BUFFERS = MultiBufferSource.immediate(new BufferBuilder(32768));
 
     public static void render(FluxShipEntity ship, float partialTick, PoseStack pose) {
-        render(ship, partialTick, pose, EXHAUST_BUFFERS);
+        render(ship, partialTick, pose, LiveCameraRenderer.buffersForView(EXHAUST_BUFFERS));
     }
 
     public static void render(FluxShipEntity ship, float partialTick, PoseStack pose, MultiBufferSource buffers) {

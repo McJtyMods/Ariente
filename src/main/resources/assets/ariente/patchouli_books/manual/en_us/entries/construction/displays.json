@@ -51,6 +51,21 @@
     },
     {
       "type": "patchouli:text",
+      "title": "Live cameras",
+      "text": "Right-click the camera itself to switch between $(thing)Holographic$() and $(thing)Live$(). Holographic keeps the captured block scene. Live shows the nearby world from the lens, including sky, actual entities, lighting and weather, with normal visibility behind walls.$(br2)Live starts pointing away from the camera base on every mounting. The linked module's Pan and Tilt start at 0 and aim relative to that direction. Zoom changes the lens; rotation speed sweeps the view. Holographic orbit settings stay separate."
+    },
+    {
+      "type": "patchouli:text",
+      "title": "Live prototype limits",
+      "text": "Live cameras work in your current dimension, near your player, using terrain and entities already available to you. They do not load remote chunks or other dimensions. Move closer if a feed is unavailable. Shader packs must be switched off.$(br2)Live terrain reaches up to 64 blocks, within Radius and your loaded view. Matching views share an image; the prototype caches up to four views and updates at most one per rendered frame. Camera displays and configuration hologuis are hidden from live feeds to prevent feedback."
+    },
+    {
+      "type": "patchouli:text",
+      "title": "Live camera quality",
+      "text": "In $(thing)config/ariente-client.toml$(), the $(thing)[display]$() section controls live camera quality.$(br2)$(thing)liveCameraTextureWidth$() sets the image width from 128–2048 pixels (default 384). Height follows the module's proportions. $(thing)liveCameraFps$() sets a target of 1–120 updates per second (default 15). Higher settings cost more rendering time and memory.$(br2)Saved config changes apply to existing feeds when the file reloads. Actual refresh also depends on game FPS and the shared limit of one feed update per rendered frame."
+    },
+    {
+      "type": "patchouli:text",
       "title": "Four camera links",
       "text": "Sneak-right-click up to four different cameras with the same module. Each new link becomes the selected camera. Relinking an existing camera selects it without adding a duplicate. A fifth camera leaves the four links intact.$(br2)Use $(thing)<$() and $(thing)>$() beside the size selector in the module GUI to select a feed; they wrap around the linked cameras. Installed modules switch immediately. Sneak-right-click in air to clear all links. Only the selected camera is captured."
     },
