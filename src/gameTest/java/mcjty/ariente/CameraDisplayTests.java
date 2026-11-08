@@ -4,6 +4,10 @@ import mcjty.ariente.blocks.utility.camera.CameraCapture;
 import mcjty.ariente.blocks.utility.camera.CameraTile;
 import mcjty.ariente.display.CameraDisplayModule;
 import mcjty.ariente.display.CameraView;
+import mcjty.ariente.display.CameraViewClipper;
+import mcjty.ariente.display.CameraPerspective;
+import org.joml.Matrix4f;
+import org.joml.Vector4f;
 import mcjty.ariente.display.DisplayBaseTile;
 import mcjty.ariente.display.DisplayGeometry;
 import mcjty.ariente.display.DisplayModuleItem;
@@ -62,20 +66,22 @@ public class CameraDisplayTests {
     }
 
     @GameTest(template = "empty")
-    public static void sixMountingDirectionsCaptureOnlyTheFrontHemisphere(GameTestHelper helper) {
+    public static void sixMountingDirectionsOffsetTheCaptureOriginBehindTheBase(GameTestHelper helper) {
         BlockPos pos = helper.absolutePos(new BlockPos(3, 6, 3));
         Player player = helper.makeMockSurvivalPlayer();
         player.setItemInHand(InteractionHand.MAIN_HAND, new ItemStack(Registration.CAMERA.get()));
         for (Direction facing : Direction.values()) {
             CameraTile camera = camera(helper, pos, facing);
             BlockPos front = pos.relative(facing, 2), back = pos.relative(facing.getOpposite(), 2);
+            BlockPos excluded = pos.relative(facing.getOpposite(), 3);
             helper.getLevel().setBlockAndUpdate(pos.relative(facing), Blocks.AIR.defaultBlockState());
             helper.getLevel().setBlockAndUpdate(pos.relative(facing.getOpposite()), Blocks.AIR.defaultBlockState());
             helper.getLevel().setBlockAndUpdate(front, Blocks.DIAMOND_BLOCK.defaultBlockState());
             helper.getLevel().setBlockAndUpdate(back, Blocks.GOLD_BLOCK.defaultBlockState());
+            helper.getLevel().setBlockAndUpdate(excluded, Blocks.EMERALD_BLOCK.defaultBlockState());
             CompoundTag capture = camera.capture();
-            helper.assertTrue(contains(capture, front.subtract(pos)) && !contains(capture, back.subtract(pos)),
-                    "Only the front is captured for " + facing + ": state=" + camera.getBlockState() + ", capture=" + capture.getInt("Facing"));
+            helper.assertTrue(contains(capture, front.subtract(pos)) && contains(capture, back.subtract(pos)) && !contains(capture, excluded.subtract(pos)),
+                    "Capture starts two blocks behind the base for " + facing + ": state=" + camera.getBlockState() + ", capture=" + capture.getInt("Facing"));
             BlockPlaceContext placement = new BlockPlaceContext(player, InteractionHand.MAIN_HAND, player.getMainHandItem(),
                     new BlockHitResult(Vec3.atCenterOf(pos), facing, pos, false));
             helper.assertTrue(Registration.CAMERA.get().getStateForPlacement(placement).getValue(BlockStateProperties.FACING) == facing,
@@ -86,6 +92,7 @@ public class CameraDisplayTests {
                     && shape.max(facing.getAxis()) == (positive ? 9 / 16.0 : 1), "Collision shape follows " + facing);
             helper.getLevel().setBlockAndUpdate(front, Blocks.AIR.defaultBlockState());
             helper.getLevel().setBlockAndUpdate(back, Blocks.AIR.defaultBlockState());
+            helper.getLevel().setBlockAndUpdate(excluded, Blocks.AIR.defaultBlockState());
         }
         helper.succeed();
     }
@@ -159,6 +166,15 @@ public class CameraDisplayTests {
         UUID id = base.modules().get(0).id();
         helper.assertTrue(contains(base.findModule(id).snapshot(), new BlockPos(0, 2, 0)), "Installation immediately captures the scene");
         var gui = base.createGui(ModuleSettings.installedTag(id, false), Ariente.guiHandler.getComponentRegistry());
+        var sizeControl = gui.findChild("setting_Size").orElseThrow();
+        var previousControl = gui.findChild("camera_previous").orElseThrow();
+        var selectedControl = gui.findChild("camera_selected").orElseThrow();
+        var nextControl = gui.findChild("camera_next").orElseThrow();
+        helper.assertTrue(sizeControl.getX() + sizeControl.getW() < previousControl.getX()
+                && previousControl.getX() + previousControl.getW() < selectedControl.getX()
+                && selectedControl.getX() + selectedControl.getW() < nextControl.getX()
+                && sizeControl.getY() == previousControl.getY() && previousControl.getY() == nextControl.getY(),
+                "Size and camera selection fit on one compact row without overlapping");
         for (int size = 1; size <= 2; size++) {
             gui.findChild("setting_Size").orElseThrow().hit(player, null, 1, 1.4);
             helper.assertTrue(base.findModule(id).size().width() == 64 * (size + 1), "The holo GUI changes module size");
@@ -170,13 +186,13 @@ public class CameraDisplayTests {
         helper.assertTrue(!CameraDisplayModule.autoRotate(installed.stack()) && CameraDisplayModule.rotationSpeed(installed.stack()) == 0,
                 "New modules default to stationary views");
         helper.assertTrue(gui.findChild("setting_AutoRotate").isEmpty(), "Rotation speed replaces the old toggle");
-        gui.findChild("setting_Zoom").orElseThrow().hit(player, null, .4, 5);
-        gui.findChild("setting_RotationSpeed").orElseThrow().hit(player, null, 7.4, 6);
+        gui.findChild("setting_Radius").orElseThrow().hit(player, null, .4, 4.4);
+        gui.findChild("setting_RotationSpeed").orElseThrow().hit(player, null, 7.4, 6.4);
         installed = base.findModule(id);
         helper.assertTrue(CameraDisplayModule.autoRotate(installed.stack()) && CameraDisplayModule.rotationSpeed(installed.stack()) == 1,
                 "A positive speed enables rotation");
-        helper.assertTrue(CameraDisplayModule.zoom(installed.stack()) == 29 && !DisplayModuleItem.config(installed.stack()).contains("AutoRotate"),
-                "Zoom changes the capture distance, and editing speed removes the legacy toggle");
+        helper.assertTrue(CameraDisplayModule.radius(installed.stack()) == 29 && !DisplayModuleItem.config(installed.stack()).contains("AutoRotate"),
+                "Radius changes the capture distance, and editing speed removes the legacy toggle");
         helper.assertTrue(CameraDisplayModule.selectedCamera(installed.stack()).equals(originalLink), "Configuration preserves the camera link");
         helper.assertTrue(!installed.save(true).contains("Data"), "Camera images travel separately from the initial layout");
         ItemStack restored = InstalledModule.load(installed.save(false)).stack();
@@ -232,12 +248,13 @@ public class CameraDisplayTests {
         for (int y = 1; y < 50; y++) {
             helper.getLevel().setBlockAndUpdate(pos.above(y), Blocks.AIR.defaultBlockState());
         }
-        helper.getLevel().setBlockAndUpdate(pos.above(50), Blocks.DIAMOND_BLOCK.defaultBlockState());
-        helper.getLevel().setBlockAndUpdate(pos.above(51), Blocks.GOLD_BLOCK.defaultBlockState());
+        int reach = 50 - CameraCapture.ORIGIN_DISTANCE;
+        helper.getLevel().setBlockAndUpdate(pos.above(reach), Blocks.DIAMOND_BLOCK.defaultBlockState());
+        helper.getLevel().setBlockAndUpdate(pos.above(reach + 1), Blocks.GOLD_BLOCK.defaultBlockState());
         CompoundTag capture = CameraCapture.scan(helper.getLevel(), pos, Direction.UP, 50);
-        helper.assertTrue(contains(capture, new BlockPos(0, 50, 0)), "Terrain fifty blocks away is captured: origin=" + pos
-                + ", target=" + helper.getLevel().getBlockState(pos.above(50)) + ", blocks=" + capture.getLongArray("Blocks").length);
-        helper.assertTrue(!contains(capture, new BlockPos(0, 51, 0)), "Terrain beyond fifty blocks remains out of range");
+        helper.assertTrue(contains(capture, new BlockPos(0, reach, 0)), "Terrain fifty blocks from the shifted origin is captured: camera=" + pos
+                + ", target=" + helper.getLevel().getBlockState(pos.above(reach)) + ", blocks=" + capture.getLongArray("Blocks").length);
+        helper.assertTrue(!contains(capture, new BlockPos(0, reach + 1, 0)), "Terrain beyond the radius from the shifted origin remains out of range");
         for (int sign : new int[]{-1, 1}) {
             BlockPos offset = new BlockPos(50 * sign, -49 * sign, 48 * sign);
             long packed = CameraCapture.pack(offset, CameraCapture.MAX_BLOCKS - 1);
@@ -310,45 +327,146 @@ public class CameraDisplayTests {
                 "Installation samples the selected camera");
         helper.assertTrue(cameras[0].captures == 0 && cameras[1].captures == 0 && cameras[2].captures == 0, "Unselected cameras are not sampled");
         var gui = base.createGui(ModuleSettings.installedTag(id, false), Ariente.guiHandler.getComponentRegistry());
-        gui.findChild("camera_next").orElseThrow().hit(player, null, 6, 7);
+        gui.findChild("camera_next").orElseThrow().hit(player, null, 7.2, 1.3);
         helper.assertTrue(CameraDisplayModule.cameraIndex(base.findModule(id).stack()) == 0 && base.findModule(id).snapshot().getInt("Source") == 0,
                 "Next wraps from the fourth camera to the first and updates the feed immediately");
-        gui.findChild("camera_previous").orElseThrow().hit(player, null, 1, 7);
+        gui.findChild("camera_previous").orElseThrow().hit(player, null, 4.2, 1.3);
         helper.assertTrue(CameraDisplayModule.cameraIndex(base.findModule(id).stack()) == 3 && base.findModule(id).snapshot().getInt("Source") == 3,
                 "Previous wraps from the first camera to the fourth and updates immediately");
         helper.assertTrue(cameras[1].captures == 0 && cameras[2].captures == 0, "Switching leaves the other cameras idle");
-        gui.findChild("setting_Zoom").orElseThrow().hit(player, null, 7.4, 5);
-        helper.assertTrue(base.findModule(id).snapshot().getInt("Range") == 31, "Changing zoom updates the installed view immediately");
+        gui.findChild("setting_Radius").orElseThrow().hit(player, null, 7.4, 4.4);
+        helper.assertTrue(base.findModule(id).snapshot().getInt("Range") == 31, "Changing radius updates the installed view immediately");
+        int captures = cameras[3].captures;
+        CompoundTag snapshot = base.findModule(id).snapshot();
+        gui.findChild("setting_Zoom").orElseThrow().hit(player, null, 7.4, 5.4);
+        helper.assertTrue(CameraDisplayModule.zoom(base.findModule(id).stack()) == 110
+                && CameraDisplayModule.radius(base.findModule(id).stack()) == 31
+                && base.findModule(id).snapshot() == snapshot && cameras[3].captures == captures,
+                "Visual zoom changes magnification while preserving the radius and cached capture");
+        helper.assertTrue(!CameraDisplayModule.perspective(base.findModule(id).stack()), "Existing modules default to orthographic projection");
+        var projection = gui.findChild("setting_Perspective").orElseThrow();
+        helper.assertTrue(projection.getY() + projection.getH() < gui.findChild("setting_Size").orElseThrow().getY(),
+                "The projection selector fits in the header without using another slider row");
+        projection.hit(player, null, 6, .4);
+        helper.assertTrue(CameraDisplayModule.perspective(base.findModule(id).stack())
+                && base.findModule(id).snapshot() == snapshot && cameras[3].captures == captures,
+                "Perspective changes projection without recapturing or changing the radius");
+        helper.assertTrue(CameraDisplayModule.perspective(InstalledModule.load(base.findModule(id).save(false)).stack()),
+                "Perspective mode survives saving the configured module");
+        projection.hit(player, null, 6, .4);
+        helper.assertTrue(!CameraDisplayModule.perspective(base.findModule(id).stack()), "The projection selector returns to orthographic mode");
         helper.succeed();
     }
 
     @GameTest(template = "empty")
-    public static void zoomRangeCachingAndLegacyRotation(GameTestHelper helper) {
+    public static void radiusZoomCachingAndLegacyRotation(GameTestHelper helper) {
         ItemStack stack = new ItemStack(Registration.DISPLAY_CAMERA.get());
         CompoundTag config = DisplayModuleItem.config(stack);
-        helper.assertTrue(CameraDisplayModule.zoom(stack) == 30 && CameraDisplayModule.rotationSpeed(stack) == 0, "New modules use a 30-block zoom and no rotation");
+        helper.assertTrue(CameraDisplayModule.radius(stack) == 30 && CameraDisplayModule.zoom(stack) == 100 && CameraDisplayModule.rotationSpeed(stack) == 0, "New modules use a 30-block radius, 100% zoom and no rotation");
         config.putBoolean("AutoRotate", true);
         helper.assertTrue(CameraDisplayModule.rotationSpeed(stack) == 15, "Existing rotating modules retain their speed");
         config.putBoolean("AutoRotate", false);
         config.putInt("RotationSpeed", 45);
         helper.assertTrue(CameraDisplayModule.rotationSpeed(stack) == 0, "The old disabled toggle remains disabled until speed is edited");
         config.putInt("Zoom", Integer.MIN_VALUE);
-        helper.assertTrue(CameraDisplayModule.zoom(stack) == 8, "Zoom has an eight-block minimum");
+        helper.assertTrue(CameraDisplayModule.radius(stack) == 8, "Legacy capture distance has an eight-block minimum");
         config.putInt("Zoom", Integer.MAX_VALUE);
-        helper.assertTrue(CameraDisplayModule.zoom(stack) == 100, "Zoom has a hundred-block maximum");
+        helper.assertTrue(CameraDisplayModule.radius(stack) == 100 && CameraDisplayModule.zoom(stack) == 100, "Legacy Zoom remains a capture radius and does not magnify the view");
+        config.putInt("Radius", 37);
+        config.putInt("ViewZoom", 250);
+        helper.assertTrue(CameraDisplayModule.radius(stack) == 37 && CameraDisplayModule.zoom(stack) == 250,
+                "The renamed radius supersedes the legacy key and stays independent of visual zoom");
+        config.putInt("ViewZoom", Integer.MAX_VALUE);
+        helper.assertTrue(CameraDisplayModule.zoom(stack) == 800, "Visual zoom is bounded to eight times magnification");
+        config.putInt("ViewZoom", Integer.MIN_VALUE);
+        helper.assertTrue(CameraDisplayModule.zoom(stack) == 100, "The default zoom fits the whole captured scene");
         BlockPos pos = helper.absolutePos(new BlockPos(3, 220, 3));
         CameraTile camera = camera(helper, pos, Direction.UP);
-        helper.getLevel().setBlockAndUpdate(pos.above(100), Blocks.DIAMOND_BLOCK.defaultBlockState());
-        helper.getLevel().setBlockAndUpdate(pos.above(101), Blocks.GOLD_BLOCK.defaultBlockState());
+        helper.getLevel().setBlockAndUpdate(pos.above(100 - CameraCapture.ORIGIN_DISTANCE), Blocks.DIAMOND_BLOCK.defaultBlockState());
+        helper.getLevel().setBlockAndUpdate(pos.above(101 - CameraCapture.ORIGIN_DISTANCE), Blocks.GOLD_BLOCK.defaultBlockState());
         CompoundTag close = camera.capture(8), far = camera.capture(100);
-        helper.assertTrue(close == camera.capture(8) && far == camera.capture(100) && close != far, "Captures are shared independently for each zoom level");
-        helper.assertTrue(!contains(close, new BlockPos(0, 100, 0)) && contains(far, new BlockPos(0, 100, 0)), "A hundred-block zoom reaches terrain at that distance");
-        helper.assertTrue(!contains(far, new BlockPos(0, 101, 0)), "Terrain beyond the chosen zoom stays outside the capture");
+        helper.assertTrue(close == camera.capture(8) && far == camera.capture(100) && close != far, "Captures are shared independently for each capture radius");
+        helper.assertTrue(!contains(close, new BlockPos(0, 100 - CameraCapture.ORIGIN_DISTANCE, 0)) && contains(far, new BlockPos(0, 100 - CameraCapture.ORIGIN_DISTANCE, 0)), "A hundred-block radius is measured from the shifted origin");
+        helper.assertTrue(!contains(far, new BlockPos(0, 101 - CameraCapture.ORIGIN_DISTANCE, 0)), "Terrain beyond the chosen radius stays outside the capture");
         BlockPos corner = new BlockPos(-100, 99, -98);
         long packed = CameraCapture.pack(corner, CameraCapture.MAX_BLOCKS - 1);
         helper.assertTrue(CameraCapture.offset(packed).equals(corner) && CameraCapture.paletteId(packed) == CameraCapture.MAX_BLOCKS - 1,
                 "The larger coordinate encoding preserves coordinates and palette IDs");
         helper.succeed();
+    }
+
+    @GameTest(template = "empty")
+    public static void aBuriedCaptureOriginDoesNotExposeSealedCaves(GameTestHelper helper) {
+        BlockPos pos = helper.absolutePos(new BlockPos(3, 180, 3));
+        for (BlockPos block : BlockPos.betweenClosed(pos.offset(-5, -6, -5), pos.offset(5, -1, 5))) {
+            helper.getLevel().setBlock(block, Blocks.STONE.defaultBlockState(), 2);
+        }
+        for (BlockPos block : BlockPos.betweenClosed(pos.offset(-2, -4, -2), pos.offset(2, -2, 2))) {
+            helper.getLevel().setBlock(block, Blocks.AIR.defaultBlockState(), 2);
+        }
+        camera(helper, pos, Direction.UP);
+        helper.getLevel().setBlockAndUpdate(pos.offset(3, -2, 0), Blocks.GOLD_BLOCK.defaultBlockState());
+        CompoundTag data = CameraCapture.scan(helper.getLevel(), pos, Direction.UP, 8);
+        helper.assertTrue(contains(data, new BlockPos(0, -1, 0)), "The floor in front of the buried origin is visible");
+        helper.assertTrue(!contains(data, new BlockPos(3, -2, 0)), "Starting the radius below ground must not seed visibility inside a sealed cave");
+        helper.succeed();
+    }
+
+    @GameTest(template = "empty")
+    public static void magnifiedFacesAreCroppedWithoutStretchingTheirTextures(GameTestHelper helper) {
+        CameraViewClipper clipper = new CameraViewClipper();
+        clipper.begin();
+        clipper.vertex(-10, 0, 0, 0, 0);
+        clipper.vertex(10, 0, 1, 0, 0xffffff);
+        clipper.vertex(10, 10, 1, 1, 0xffffff);
+        clipper.vertex(-10, 10, 0, 1, 0);
+        int count = clipper.clip(0, 0, 10, 10);
+        helper.assertTrue(count == 4, "A face crossing the left boundary is cropped to a quad");
+        float[] vertices = clipper.vertices();
+        for (int index = 0; index < count; index++) {
+            int offset = index * CameraViewClipper.STRIDE;
+            helper.assertTrue(CameraViewClipper.outcode(vertices[offset], vertices[offset + 1], 0, 0, 10, 10) == 0,
+                    "Zoomed geometry stays inside the module viewport");
+            if (vertices[offset] == 0) {
+                helper.assertTrue(Math.abs(vertices[offset + 2] - .5) < .001 && Math.abs(vertices[offset + 4] - 127.5) < .001,
+                        "New edge vertices interpolate texture coordinates and colors instead of stretching the full texture");
+            }
+        }
+        clipper.begin();
+        clipper.vertex(-20, 0, 0, 0, 0);
+        clipper.vertex(-10, 0, 1, 0, 0);
+        clipper.vertex(-10, 10, 1, 1, 0);
+        clipper.vertex(-20, 10, 0, 1, 0);
+        helper.assertTrue(clipper.clip(0, 0, 10, 10) == 0, "Faces outside the magnified viewport are omitted");
+        helper.succeed();
+    }
+
+    @GameTest(template = "empty")
+    public static void perspectiveHasDepthAndZoomWithoutMovingTheCapture(GameTestHelper helper) {
+        for (int yaw = 0; yaw < 360; yaw += 45) {
+            for (int tilt : new int[]{0, 30, 90}) {
+                CameraView basis = CameraView.of(yaw, tilt);
+                CameraPerspective camera = CameraPerspective.of(Vec3.ZERO, 12, basis, 180, 132, 100);
+                Matrix4f transform = new Matrix4f(camera.projection()).mul(camera.view());
+                Vec3 right = basis.right();
+                Vec3 near = basis.direction().scale(5), far = basis.direction().scale(-5);
+                Vector4f a = project(transform, near.add(right)), b = project(transform, far.add(right));
+                helper.assertTrue(a.w > 0 && b.w > 0 && a.x / a.w > b.x / b.w,
+                        "Equal-size details nearer the eye appear larger in perspective at every rotation and tilt");
+                helper.assertTrue(a.z / a.w < b.z / b.w, "The depth buffer puts nearer surfaces in front");
+                CameraPerspective zoomed = CameraPerspective.of(Vec3.ZERO, 12, basis, 180, 132, 800);
+                Vector4f enlarged = project(new Matrix4f(zoomed.projection()).mul(zoomed.view()), near.add(right));
+                helper.assertTrue(camera.eye().equals(zoomed.eye()) && Math.abs(enlarged.x / enlarged.w / (a.x / a.w) - 8) < .001,
+                        "Visual zoom changes the lens while preserving the orbit and capture");
+                Vector4f behind = project(transform, camera.eye().add(basis.direction()));
+                helper.assertTrue(behind.w < 0, "Geometry behind the perspective eye lies outside the GPU clip volume");
+            }
+        }
+        helper.succeed();
+    }
+
+    private static Vector4f project(Matrix4f transform, Vec3 point) {
+        return transform.transform(new Vector4f((float) point.x, (float) point.y, (float) point.z, 1));
     }
 
     @GameTest(template = "empty")
@@ -386,7 +504,7 @@ public class CameraDisplayTests {
                 }
                 for (int x = -100; x <= 100; x++) {
                     for (int z = -100; z <= 100; z++) {
-                        if (x * x + z * z + 16 <= cutoff) {
+                        if (x * x + z * z + (4 + CameraCapture.ORIGIN_DISTANCE) * (4 + CameraCapture.ORIGIN_DISTANCE) <= cutoff) {
                             helper.assertTrue(included.contains(new BlockPos(x, -4, z)), "The terrain inside a cropped view must have no holes");
                         }
                     }

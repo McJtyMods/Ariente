@@ -2,7 +2,7 @@ package mcjty.ariente.display;
 
 import net.minecraft.world.phys.Vec3;
 
-/** A world-upright orthographic basis, independent of the camera's mounting direction. */
+/** A world-upright viewing basis, independent of the camera's mounting direction. */
 public record CameraView(Vec3 right, Vec3 up, Vec3 direction) {
 
     public static CameraView of(double yawDegrees, int tiltDegrees) {

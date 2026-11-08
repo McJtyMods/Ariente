@@ -39,6 +39,7 @@ public class CameraCapture {
     public static final int MAX_RANGE = 100;
     public static final int MAX_BLOCKS = 16384;
     public static final int MAX_ENTITIES = 16;
+    public static final int ORIGIN_DISTANCE = 2;
     // A radius-100 hemisphere contains fewer than 2,200,000 block centers.
     private static final int MAX_SPACE_CELLS = 2_200_000;
     private static final int FACE_MASK = 63;
@@ -62,11 +63,15 @@ public class CameraCapture {
         if (range < MIN_RANGE || range > MAX_RANGE) {
             throw new IllegalArgumentException("Invalid camera range");
         }
-        Vec3 center = Vec3.atCenterOf(camera);
+        BlockPos origin = camera.relative(normal, -ORIGIN_DISTANCE);
+        Vec3 center = Vec3.atCenterOf(origin);
+        Vec3 cameraCenter = Vec3.atCenterOf(camera);
         ConnectedView view = new ConnectedView(level, camera);
         ScanWorkspace workspace = WORKSPACE.get();
         Arrays.fill(workspace.cells, (byte) 0);
         workspace.fluids.clear();
+        // Seed at the lens, even when the shifted origin is buried in a wall or the ground.
+        // Visibility still follows connected space and cannot start inside a sealed cave.
         workspace.cells[ORIGIN] = (byte) (KNOWN | REACHED);
         workspace.queue[0] = ORIGIN;
         int tail = 1;
@@ -91,8 +96,11 @@ public class CameraCapture {
                     continue;
                 }
                 if ((flags & KNOWN) == 0) {
-                    if (nx * nx + ny * ny + nz * nz > rangeSquared
-                            || nx * normal.getStepX() + ny * normal.getStepY() + nz * normal.getStepZ() < 0) {
+                    int ox = nx + normal.getStepX() * ORIGIN_DISTANCE;
+                    int oy = ny + normal.getStepY() * ORIGIN_DISTANCE;
+                    int oz = nz + normal.getStepZ() * ORIGIN_DISTANCE;
+                    if (ox * ox + oy * oy + oz * oz > rangeSquared
+                            || ox * normal.getStepX() + oy * normal.getStepY() + oz * normal.getStepZ() < 0) {
                         workspace.cells[next] = (byte) (KNOWN | FACE_MASK);
                         continue;
                     }
@@ -133,7 +141,7 @@ public class CameraCapture {
                 continue;
             }
             surfaces.add(packed);
-            distances[distanceSquared(cell)]++;
+            distances[distanceSquared(cell, normal)]++;
         }
         int cutoff = rangeSquared;
         int count = surfaces.size();
@@ -149,12 +157,12 @@ public class CameraCapture {
         int index = 0;
         for (int i = 0; i < surfaces.size(); i++) {
             long packed = surfaces.getLong(i);
-            if (distanceSquared((int) (packed & 0xffffff)) <= cutoff) {
+            if (distanceSquared((int) (packed & 0xffffff), normal) <= cutoff) {
                 captured[index++] = packed;
             }
         }
         ListTag entities = new ListTag();
-        List<LivingEntity> nearby = level.getEntitiesOfClass(LivingEntity.class, new AABB(camera).inflate(range),
+        List<LivingEntity> nearby = level.getEntitiesOfClass(LivingEntity.class, new AABB(origin).inflate(range),
                 entity -> entity.isAlive() && !entity.isInvisible() && !entity.isSpectator());
         nearby.sort(Comparator.comparingDouble(entity -> entity.distanceToSqr(center)));
         for (LivingEntity entity : nearby) {
@@ -166,6 +174,7 @@ public class CameraCapture {
                 continue;
             }
             CompoundTag marker = new CompoundTag();
+            relative = target.subtract(cameraCenter);
             // Quantize moving markers to limit network churn; never transmit entity NBT or inventories.
             marker.putFloat("X", (float) (Math.round(relative.x * 8) / 8.0));
             marker.putFloat("Y", (float) (Math.round(relative.y * 8) / 8.0));
@@ -198,8 +207,10 @@ public class CameraCapture {
         return (int) (packed >>> 24);
     }
 
-    private static int distanceSquared(int cell) {
-        int x = (cell & 255) - 128, y = (cell >> 8 & 255) - 128, z = (cell >> 16 & 255) - 128;
+    private static int distanceSquared(int cell, Direction normal) {
+        int x = (cell & 255) - 128 + normal.getStepX() * ORIGIN_DISTANCE;
+        int y = (cell >> 8 & 255) - 128 + normal.getStepY() * ORIGIN_DISTANCE;
+        int z = (cell >> 16 & 255) - 128 + normal.getStepZ() * ORIGIN_DISTANCE;
         return x * x + y * y + z * z;
     }
 

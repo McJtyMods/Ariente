@@ -4,6 +4,3 @@
 - More plants, trees, structures and features in the Ariente world
 - Much better loot in the more difficult dungeons
 - Test the extreme circuit
-- Recreate the tutorial: filters have negarite/posirite for some reason?
-- Sneak right click to pick up ship
-- hologui has wrong translation key

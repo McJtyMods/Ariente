@@ -80,6 +80,7 @@ public class DisplayClientEvents {
         if (event.phase == TickEvent.Phase.END) {
             DisplayModuleDrag.tick();
             DisplayDataReceiver.tick();
+            CameraPerspectiveRenderer.tick();
         }
     }
 

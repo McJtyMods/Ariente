@@ -44,6 +44,10 @@ public class CameraDisplayModule implements DisplayModuleType {
         return StorageDisplayModule.setting(stack, "Tilt", 30, 0, 90);
     }
 
+    public static boolean perspective(ItemStack stack) {
+        return DisplayModuleItem.config(stack).getBoolean("Perspective");
+    }
+
     public static boolean autoRotate(ItemStack stack) {
         return rotationSpeed(stack) > 0;
     }
@@ -57,7 +61,12 @@ public class CameraDisplayModule implements DisplayModuleType {
     }
 
     public static int zoom(ItemStack stack) {
-        return StorageDisplayModule.setting(stack, "Zoom", CameraCapture.DEFAULT_RANGE, CameraCapture.MIN_RANGE, CameraCapture.MAX_RANGE);
+        return StorageDisplayModule.setting(stack, "ViewZoom", 100, 100, 800);
+    }
+
+    public static int radius(ItemStack stack) {
+        int legacy = StorageDisplayModule.setting(stack, "Zoom", CameraCapture.DEFAULT_RANGE, CameraCapture.MIN_RANGE, CameraCapture.MAX_RANGE);
+        return StorageDisplayModule.setting(stack, "Radius", legacy, CameraCapture.MIN_RANGE, CameraCapture.MAX_RANGE);
     }
 
     /** Elapsed client ticks include the partial tick so animation stays smooth between captures. */
@@ -132,12 +141,14 @@ public class CameraDisplayModule implements DisplayModuleType {
                     + " (" + link.getString("Dimension") + ")").withStyle(i == cameraIndex(stack) ? ChatFormatting.GREEN : ChatFormatting.GRAY));
         }
         lines.add(Component.literal("Link up to 4 cameras; select one in the module GUI.").withStyle(ChatFormatting.GRAY));
-        lines.add(Component.literal("Zoom: " + zoom(stack) + " blocks").withStyle(ChatFormatting.GRAY));
+        lines.add(Component.literal("Radius: " + radius(stack) + " blocks").withStyle(ChatFormatting.GRAY));
+        lines.add(Component.literal("Zoom: " + zoom(stack) + "%").withStyle(ChatFormatting.GRAY));
+        lines.add(Component.literal(perspective(stack) ? "Projection: Perspective" : "Projection: Orthographic").withStyle(ChatFormatting.GRAY));
     }
 
     @Override
     public boolean refreshOnConfiguration(ItemStack before, ItemStack after) {
-        return !selectedCamera(before).equals(selectedCamera(after)) || zoom(before) != zoom(after);
+        return !selectedCamera(before).equals(selectedCamera(after)) || radius(before) != radius(after);
     }
 
     @Override
@@ -155,7 +166,7 @@ public class CameraDisplayModule implements DisplayModuleType {
     public CompoundTag sample(Level level, ItemStack stack, CompoundTag previous) {
         ModuleLink link = ModuleLink.resolve(level, selectedCamera(stack));
         if (link.tile() instanceof CameraTile camera) {
-            return camera.capture(zoom(stack));
+            return camera.capture(radius(stack));
         }
         CompoundTag result = new CompoundTag();
         result.putString("Status", link.tile() == null ? link.status() : "Camera missing");
@@ -164,38 +175,47 @@ public class CameraDisplayModule implements DisplayModuleType {
 
     @Override
     public void configure(IGuiComponentRegistry r, IPanel panel, ModuleSettings settings) {
-        panel.add(r.textChoice(.3, 1, 7.2, .85).name("setting_Size").scale(.48f)
+        panel.add(r.textChoice(5.5, .15, 2, .6).name("setting_Perspective").scale(.28f)
+                .addText("Orthographic").addText("Perspective").getter(p -> perspective(settings.stack()) ? 1 : 0)
+                .hitEvent((c, p, e, x, y) -> settings.toggle(p, e, "Perspective", false)));
+        panel.add(r.textChoice(.3, 1, 3.4, .7).name("setting_Size").scale(.38f)
                 .addText("Size: Small").addText("Size: Medium").addText("Size: Large")
                 .getter(p -> sizeIndex(settings.stack()))
                 .hitEvent((c, p, e, x, y) -> settings.setNumber(p, e, "Size", (sizeIndex(settings.stack()) + 1) % 3)));
-        settings.addNumber(r, panel, 2.2, "Yaw", "View rotation", 45, 0, 360);
-        settings.addNumber(r, panel, 3.5, "Tilt", "View tilt", 30, 0, 90);
-        panel.add(r.integerSlider(.3, 4.65, 7.2, .95).name("setting_Zoom").label("Zoom").suffix(" blocks")
-                .range(CameraCapture.MIN_RANGE, CameraCapture.MAX_RANGE).getter((p, e) -> zoom(settings.stack()))
-                .changed((p, e, value) -> settings.setNumber(p, e, "Zoom", value)));
-        panel.add(r.integerSlider(.3, 5.65, 7.2, .95).name("setting_RotationSpeed").label("Rotation speed").suffix(" deg/s")
-                .range(0, 90).getter((p, e) -> rotationSpeed(settings.stack()))
-                .changed((p, e, value) -> settings.edit(p, e, config -> {
-                    config.remove("AutoRotate");
-                    config.putInt("RotationSpeed", value);
-                })));
-        panel.add(r.button(.3, 6.75, 2.15, .6).name("camera_previous").text("Previous").scale(.38f)
+        panel.add(r.button(3.9, 1, .6, .7).name("camera_previous").text("<").scale(.4f)
                 .hitEvent((c, p, e, x, y) -> {
                     int count = cameras(settings.stack()).size();
                     if (count > 0) {
                         settings.setNumber(p, e, "CameraIndex", Math.floorMod(cameraIndex(settings.stack()) - 1, count));
                     }
                 }));
-        panel.add(r.text(2.6, 6.75, 2.7, .6).text(() -> {
+        panel.add(r.text(4.6, 1.1, 2.1, .5).name("camera_selected").text(() -> {
             int count = cameras(settings.stack()).size();
             return count == 0 ? "Not linked" : "Camera " + (cameraIndex(settings.stack()) + 1) + "/" + count;
-        }).scale(.38f));
-        panel.add(r.button(5.45, 6.75, 2.05, .6).name("camera_next").text("Next").scale(.38f)
+        }).scale(.3f));
+        panel.add(r.button(6.9, 1, .6, .7).name("camera_next").text(">").scale(.4f)
                 .hitEvent((c, p, e, x, y) -> {
                     int count = cameras(settings.stack()).size();
                     if (count > 0) {
                         settings.setNumber(p, e, "CameraIndex", (cameraIndex(settings.stack()) + 1) % count);
                     }
                 }));
+        settings.addNumber(r, panel, 2, "Yaw", "View rotation", 45, 0, 360);
+        settings.addNumber(r, panel, 3, "Tilt", "View tilt", 30, 0, 90);
+        panel.add(r.integerSlider(.3, 4, 7.2, .95).name("setting_Radius").label("Radius").suffix(" blocks")
+                .range(CameraCapture.MIN_RANGE, CameraCapture.MAX_RANGE).getter((p, e) -> radius(settings.stack()))
+                .changed((p, e, value) -> settings.edit(p, e, config -> {
+                    config.putInt("Radius", value);
+                    config.remove("Zoom");
+                })));
+        panel.add(r.integerSlider(.3, 5, 7.2, .95).name("setting_Zoom").label("Zoom").suffix("%")
+                .range(100, 800).step(10).getter((p, e) -> zoom(settings.stack()))
+                .changed((p, e, value) -> settings.setNumber(p, e, "ViewZoom", value)));
+        panel.add(r.integerSlider(.3, 6, 7.2, .95).name("setting_RotationSpeed").label("Rotation speed").suffix(" deg/s")
+                .range(0, 90).getter((p, e) -> rotationSpeed(settings.stack()))
+                .changed((p, e, value) -> settings.edit(p, e, config -> {
+                    config.remove("AutoRotate");
+                    config.putInt("RotationSpeed", value);
+                })));
     }
 }
