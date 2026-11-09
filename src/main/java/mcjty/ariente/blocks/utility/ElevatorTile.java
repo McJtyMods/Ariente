@@ -340,7 +340,8 @@ public class ElevatorTile extends ArienteBlockEntity implements IGuiTile, ICityE
     }
 
     public AABB getRenderBoundingBox() {
-        return getBeamBox();
+        // Animated beams start below the block and extend above the transport column.
+        return getBeamBox().inflate(0.05, 1.05, 0.05);
     }
 
     private AABB getBeamBox() {

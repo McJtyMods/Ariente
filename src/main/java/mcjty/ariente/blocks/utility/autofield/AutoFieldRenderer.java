@@ -37,6 +37,11 @@ public class AutoFieldRenderer implements BlockEntityRenderer<AutoFieldTile> {
     }
 
     @Override
+    public AABB getRenderBoundingBox(AutoFieldTile tile) {
+        return tile.getRenderBoundingBox();
+    }
+
+    @Override
     public void render(AutoFieldTile te, float partialTicks, PoseStack matrixStack, MultiBufferSource buffer, int combinedLightIn, int combinedOverlayIn) {
         AABB box = te.getFieldBox();
         if (box == null) {

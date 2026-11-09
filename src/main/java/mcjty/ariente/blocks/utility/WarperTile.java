@@ -129,7 +129,8 @@ public class WarperTile extends ArienteBlockEntity implements IGuiTile, IWarper 
     }
 
     public AABB getRenderBoundingBox() {
-        return getBeamBox();
+        // The lowest animated beam starts one block below the warper.
+        return getBeamBox().expandTowards(0, -1, 0).inflate(0.05);
     }
 
     public void warp(Player player) {

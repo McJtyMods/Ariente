@@ -1,0 +1,23 @@
+// From the workspace, use :ArienteWorld:runClient -I Ariente/tools/render_bounds_checks.gradle.
+// Supply -Prender_bounds_directory=<disposable client directory> containing saves/RenderBounds.
+gradle.afterProject { p ->
+    if (p.name == 'Ariente') {
+        p.sourceSets.gameTest.java.setIncludes(['mcjty/ariente/client/RenderBoundsChecks.java'])
+        def classes = p.layout.buildDirectory.dir('verification/render-bounds-checks/test-classes')
+        p.tasks.named('compileGameTestJava').configure { destinationDirectory.set(classes) }
+        p.sourceSets.gameTest.output.classesDirs.setFrom(classes)
+    }
+    if (p.name == 'ArienteWorld') {
+        p.runs {
+            client {
+                modSource p.project(':Ariente').sourceSets.gameTest
+                workingDirectory p.file(p.property('render_bounds_directory'))
+                systemProperty 'ariente.renderBoundsCheck', 'true'
+                arguments.addAll '--quickPlaySingleplayer', 'RenderBounds', '--width', '800', '--height', '600'
+            }
+        }
+        p.tasks.withType(JavaExec).configureEach {
+            if (name == 'runClient') dependsOn p.project(':Ariente').tasks.named('gameTestClasses')
+        }
+    }
+}

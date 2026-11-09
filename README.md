@@ -59,6 +59,19 @@ It checks all physical blocks, the decorative variants against cobblestone,
 the AI Core's 200-tick target and existing ore tool tiers. Test outputs and the
 disposable server world are isolated under `build/verification/`.
 
+The equipment regression runs `/ariente equip`, checks the installed modules and
+power budgets, then uses all four armor panels to remove, reinstall, activate
+and hotkey-toggle the modules. It includes the installed but disabled forcefield,
+weapon module installation and rejection of armor in the wrong slot. Run from
+`Multi21_neo` with Java 21:
+
+```sh
+TMPDIR=/var/tmp ./gradlew -I Ariente/tools/equipment_tests.gradle :Ariente:runGameTestServer
+```
+
+Outputs use `Ariente/build/verification/equipment-tests/`. The 1.21.1 equip
+command and armor panels pass this check without gameplay code changes.
+
 
 Development target: Minecraft 1.21.1, NeoForge 21.1.215, Java 21, branch `1.21_neo`.
 Build with `./gradlew build` standalone, or `./gradlew :Ariente:build` from MultiWorkspace.

@@ -758,7 +758,16 @@ public class AutoFieldTile extends ExtremeMachineTile implements IGuiTile, IPowe
     }
 
     public AABB getRenderBoundingBox() {
-        return getRenderBox();
+        // Beam billboards extend beyond the marker outline in every viewing direction.
+        AABB box = getRenderBox().inflate(0.125);
+        if (transferRenders != null) {
+            for (TransferRender transfer : transferRenders) {
+                if (transfer != null) {
+                    box = box.minmax(transfer.getRenderBoundingBox());
+                }
+            }
+        }
+        return box;
     }
 
     @Override

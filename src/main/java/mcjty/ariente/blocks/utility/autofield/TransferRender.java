@@ -11,6 +11,7 @@ import net.minecraft.client.renderer.texture.OverlayTexture;
 import net.minecraft.core.BlockPos;
 import net.minecraft.world.item.ItemDisplayContext;
 import net.minecraft.world.item.ItemStack;
+import net.minecraft.world.phys.AABB;
 import net.minecraft.world.phys.Vec3;
 
 // A single item transfer render in progress
@@ -19,6 +20,7 @@ public class TransferRender {
     private final long duration;
     private final ItemStack stack;
     private final CatmullRomSpline<AnimatedPoint> spline;
+    private final AABB renderBox;
 
     private static class AnimatedPoint {
         private final double x;
@@ -96,6 +98,18 @@ public class TransferRender {
 
         spline.insertPoint(point10.withSize(0.4), 0.2f, 1);
         spline.insertPoint(point90.withSize(0.4), 0.8f, 3);
+
+        AABB controls = new AABB(sta, end).minmax(new AABB(mid, mid))
+                .minmax(new AABB(point10.x, point10.y, point10.z, point90.x, point90.y, point90.z));
+        // Catmull-Rom can overshoot its controls, including extrapolated end controls.
+        // A quarter of each control span plus the item radius bounds the complete animation.
+        renderBox = controls.inflate(controls.getXsize() * 0.25 + 0.5,
+                        controls.getYsize() * 0.25 + 0.5, controls.getZsize() * 0.25 + 0.5)
+                .move(relative.getX(), relative.getY(), relative.getZ());
+    }
+
+    public AABB getRenderBoundingBox() {
+        return renderBox;
     }
 
     public boolean render(PoseStack matrixStack, MultiBufferSource buffers) {
