@@ -52,11 +52,7 @@ dependencies {
     jei()
     top()
     mcjtylib()
-    if (findProject(':ModHoloGui') != null) {
-        implementation project(':ModHoloGui')
-    } else {
-        implementation("com.github.mcjty:hologui-fabric:${hologui_version}") { transitive = false }
-    }
+    hologui()
 }
 
 modpublisher(['the-one-probe', 'ariente-world', 'patchouli'], ['mcjtylib', 'hologui'], ['the-one-probe', 'ariente-world', 'patchouli'], ['mcjtylib', 'hologui'], [])
