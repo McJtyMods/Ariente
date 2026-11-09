@@ -42,7 +42,7 @@ public class FluxShipPilotRender {
         ACTIVE.put(player, new PilotPose(player.yBodyRot, player.yBodyRotO, player.yHeadRot, player.yHeadRotO,
                 player.getXRot(), player.xRotO, new Matrix4f(pose.last().pose()), new Matrix3f(pose.last().normal())));
         float heading = ship.getFlightYaw(partialTick);
-        double seatHeight = ship.getPassengersRidingOffset() + (-player.getVehicleAttachmentPoint(ship).y);
+        double seatHeight = ship.getPilotSeatHeight(player);
         Vec3 seat = ship.getPosition(partialTick).add(0, .5, 0)
                 .add(ship.rotateCabinOffset(new Vec3(0, seatHeight - .5, 0), partialTick));
         Vec3 correction = seat.subtract(player.getPosition(partialTick));

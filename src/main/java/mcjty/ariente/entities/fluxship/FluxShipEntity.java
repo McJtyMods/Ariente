@@ -234,7 +234,7 @@ public class FluxShipEntity extends Entity {
             passenger.setXRot(getXRot());
         } else {
             // Keep the seated player's eyes in the cabin as the hull tilts.
-            double eyeHeight = getPassengersRidingOffset() + (-passenger.getVehicleAttachmentPoint(this).y) + passenger.getEyeHeight();
+            double eyeHeight = getPilotSeatHeight(passenger) + passenger.getEyeHeight();
             Vec3 seat = rotateCabinOffset(new Vec3(0, eyeHeight - .5, 0)).add(0, .5 - passenger.getEyeHeight(), 0);
             moveFunction.accept(passenger, getX() + seat.x, getY() + seat.y, getZ() + seat.z);
             if (level().isClientSide && lastPilotTurnTick != tickCount
@@ -278,6 +278,11 @@ public class FluxShipEntity extends Entity {
     public boolean isControlledByLocalInstance() {
         // Movement is simulated on the server. Do not send vanilla client vehicle-position packets.
         return !level().isClientSide;
+    }
+
+    public double getPilotSeatHeight(Entity pilot) {
+        // The hull uses the 1.20 player seat offset; newer vehicle attachments lower it by .25 blocks.
+        return getPassengersRidingOffset() - (pilot instanceof Player ? .35 : pilot.getVehicleAttachmentPoint(this).y);
     }
 
     public double getPassengersRidingOffset() {

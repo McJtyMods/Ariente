@@ -59,7 +59,7 @@ public class FluxShipLaser {
 
     private static double eyeHeight(FluxShipEntity ship) {
         LivingEntity pilot = ship.getControllingPassenger();
-        return pilot == null ? 1.67 : ship.getPassengersRidingOffset() + (-pilot.getVehicleAttachmentPoint(ship).y) + pilot.getEyeHeight();
+        return pilot == null ? 1.67 : ship.getPilotSeatHeight(pilot) + pilot.getEyeHeight();
     }
 
     public static Vec3 panelCenter(FluxShipEntity ship, float partialTick) {
