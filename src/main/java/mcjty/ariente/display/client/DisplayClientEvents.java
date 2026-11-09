@@ -114,7 +114,6 @@ public class DisplayClientEvents {
         } finally {
             modelView.popMatrix();
         }
-        LiveCameraRenderer.beginFrame();
     }
 
     private static void drawPreview(Minecraft mc, DisplayGeometry.Hit hit, PoseStack poses, Vec3 camera, MultiBufferSource buffer) {

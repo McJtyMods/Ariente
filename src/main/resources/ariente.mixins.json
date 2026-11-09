@@ -11,7 +11,8 @@
   "client": [
     "client.MinecraftMixin",
     "client.LivingEntityRendererMixin",
-    "client.CameraMixin"
+    "client.CameraMixin",
+    "client.LevelRendererMixin"
   ],
   "injectors": {
     "defaultRequire": 1

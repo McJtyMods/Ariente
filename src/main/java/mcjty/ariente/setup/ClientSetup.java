@@ -117,7 +117,7 @@ public class ClientSetup implements ClientModInitializer {
             var model = PowerSuitModel.forSlot(slot);
 
             model.setupAnim(state);
-            var texture = Identifier.parse("ariente:textures/models/armor/powersuit.png");
+            var texture = Identifier.parse("ariente:textures/entity/equipment/humanoid/powersuit.png");
             collector.submitModel(model, state, poses, RenderTypes.armorCutoutNoCull(texture),
                     light, OverlayTexture.NO_OVERLAY, -1, null, state.outlineColor, null);
         }, Registration.POWERSUIT_HEAD.get(), Registration.POWERSUIT_CHEST.get(), Registration.POWERSUIT_LEGS.get(), Registration.POWERSUIT_FEET.get());

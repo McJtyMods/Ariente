@@ -50,8 +50,9 @@ public final class LiveCameraRenderer {
     }
 
     public static void beginFrame() {
-        // Refresh after the main world finishes rendering, outside its block-entity
-        // iterators. A nested extraction may remove stale globally rendered tiles.
+        if (rendering || Minecraft.getInstance().level == null || Minecraft.getInstance().player == null) return;
+        // Refresh after the complete player render, outside its frame graph
+        // and block-entity iterators, just as on newer renderer versions.
         Map.Entry<Key, Feed> oldest = null;
         for (var entry : FEEDS.entrySet()) {
             if (entry.getValue().requestedFrame == frame
