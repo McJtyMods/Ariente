@@ -3,7 +3,7 @@ package mcjty.ariente.blocks.utility.door;
 import com.mojang.blaze3d.vertex.PoseStack;
 import com.mojang.math.Axis;
 import mcjty.ariente.setup.Registration;
-import net.minecraft.client.renderer.MultiBufferSource;
+import mcjty.lib.client.RenderBufferSource;
 import mcjty.ariente.client.ExtractedBlockRenderer;
 import net.minecraft.client.renderer.blockentity.BlockEntityRendererProvider;
 import net.minecraft.client.renderer.blockentity.BlockEntityRenderers;
@@ -19,7 +19,7 @@ public class InvisibleDoorRenderer extends ExtractedBlockRenderer<InvisibleDoorT
     }
 
     @Override
-    public void render(InvisibleDoorTile te, float partialTicks, PoseStack matrixStack, MultiBufferSource buffer, int combinedLightIn, int combinedOverlayIn) {
+    public void render(InvisibleDoorTile te, float partialTicks, PoseStack matrixStack, RenderBufferSource buffer, int combinedLightIn, int combinedOverlayIn) {
         BlockState state = te.getLevel().getBlockState(te.getBlockPos());
         if (state.getBlock() != Registration.INVISIBLE_DOOR.get()) {
             return;

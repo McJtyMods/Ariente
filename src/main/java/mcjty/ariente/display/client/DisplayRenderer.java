@@ -11,7 +11,7 @@ import mcjty.ariente.display.DisplayGeometry;
 import mcjty.ariente.display.DisplayModuleItem;
 import mcjty.ariente.display.DisplayModuleType;
 import mcjty.ariente.display.InstalledModule;
-import net.minecraft.client.renderer.MultiBufferSource;
+import mcjty.lib.client.RenderBufferSource;
 import mcjty.ariente.client.ExtractedBlockRenderer;
 import net.minecraft.client.renderer.blockentity.BlockEntityRendererProvider;
 import net.minecraft.core.Direction;
@@ -38,7 +38,7 @@ public class DisplayRenderer extends ExtractedBlockRenderer<DisplayBaseTile> {
     }
 
     @Override
-    public void render(DisplayBaseTile tile, float partialTick, PoseStack poses, MultiBufferSource buffer, int light, int overlay) {
+    public void render(DisplayBaseTile tile, float partialTick, PoseStack poses, RenderBufferSource buffer, int light, int overlay) {
         if (LiveCameraRenderer.isRendering()) {
             return;
         }
@@ -55,7 +55,7 @@ public class DisplayRenderer extends ExtractedBlockRenderer<DisplayBaseTile> {
         WorldHolograms.add(center, buffers -> renderRow(first, row, snapshot, buffers));
     }
 
-    private static void renderRow(DisplayBaseTile tile, List<DisplayBaseTile> row, PoseStack poses, MultiBufferSource buffer) {
+    private static void renderRow(DisplayBaseTile tile, List<DisplayBaseTile> row, PoseStack poses, RenderBufferSource buffer) {
         poses.pushPose();
         transform(poses, tile);
         DisplayCanvas c = new DisplayCanvas(poses, buffer);
@@ -93,7 +93,7 @@ public class DisplayRenderer extends ExtractedBlockRenderer<DisplayBaseTile> {
         poses.popPose();
     }
 
-    public static void preview(DisplayGeometry.Hit hit, ItemStack held, PoseStack poses, MultiBufferSource buffer) {
+    public static void preview(DisplayGeometry.Hit hit, ItemStack held, PoseStack poses, RenderBufferSource buffer) {
         if (!(held.getItem() instanceof DisplayModuleItem item)) {
             return;
         }

@@ -295,7 +295,7 @@ public class ForceFieldTile extends ExtremeMachineTile implements IGuiTile, ISou
                     if (info != null && info.getLife() > 0) {
                         if (info.testCollisionEntity(entity, getScaleDouble())) {
                             entity.hurt(entity.damageSources().generic(), (float) (double) DamageConfiguration.FORCEFIELD_DAMAGE.get());
-                            ((LivingEntity)entity).knockback(1.0f, worldPosition.getX() - entity.getX(), worldPosition.getZ() - entity.getZ());
+                            ((LivingEntity)entity).knockback(1.0f, worldPosition.getX() - entity.getX(), worldPosition.getZ() - entity.getZ(), entity.damageSources().generic(), (float) (double) DamageConfiguration.FORCEFIELD_DAMAGE.get());
                         }
                     }
                 }

@@ -21,20 +21,20 @@ Ariente is a high-tech mod based on alien technology
 [[dependencies.ariente]]
     modId="neoforge"
     type="required"
-    versionRange="[26.1.2.99,)"
+    versionRange="[26.2.0.75,)"
     # An ordering relationship for the dependency - BEFORE or AFTER required if the relationship is not mandatory
     ordering="NONE"
     side="BOTH"
 [[dependencies.ariente]]
     modId="mcjtylib"
     type="required"
-    versionRange="[26.1.2-10.0.2,)"
+    versionRange="[26.2-10.0.3,)"
     ordering="AFTER"
     side="BOTH"
 [[dependencies.ariente]]
     modId="hologui"
     type="required"
-    versionRange="[26.1.2-0.0.10-beta,)"
+    versionRange="[26.2-0.0.10-beta,)"
     ordering="AFTER"
     side="BOTH"
 
@@ -48,6 +48,6 @@ Ariente is a high-tech mod based on alien technology
 [[dependencies.ariente]]
     modId="minecraft"
     type="required"
-    versionRange="[26.1.2]"
+    versionRange="[26.2]"
     ordering="NONE"
     side="BOTH"

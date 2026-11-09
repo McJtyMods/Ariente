@@ -7,7 +7,7 @@ import mcjty.ariente.Ariente;
 import mcjty.ariente.client.ArienteRenderType;
 import mcjty.ariente.client.ArienteSpriteUploader;
 import mcjty.ariente.setup.Registration;
-import net.minecraft.client.renderer.MultiBufferSource;
+import mcjty.lib.client.RenderBufferSource;
 import mcjty.ariente.client.ExtractedBlockRenderer;
 import net.minecraft.client.renderer.blockentity.BlockEntityRendererProvider;
 import net.minecraft.client.renderer.blockentity.BlockEntityRenderers;
@@ -33,7 +33,7 @@ public class DoorMarkerRenderer extends ExtractedBlockRenderer<DoorMarkerTile> {
     }
 
     @Override
-    public void render(DoorMarkerTile te, float partialTicks, PoseStack matrixStack, MultiBufferSource buffer, int combinedLightIn, int combinedOverlayIn) {
+    public void render(DoorMarkerTile te, float partialTicks, PoseStack matrixStack, RenderBufferSource buffer, int combinedLightIn, int combinedOverlayIn) {
         BlockState state = te.getLevel().getBlockState(te.getBlockPos());
         if (state.getBlock() != Registration.DOOR_MARKER.get()) {
             return;
@@ -56,7 +56,7 @@ public class DoorMarkerRenderer extends ExtractedBlockRenderer<DoorMarkerTile> {
         matrixStack.popPose();
     }
 
-    public static void renderDoorSegment(PoseStack matrixStack, MultiBufferSource buffer, int openphase, int iconIndex, int combinedLightIn, int combinedOverlayIn) {
+    public static void renderDoorSegment(PoseStack matrixStack, RenderBufferSource buffer, int openphase, int iconIndex, int combinedLightIn, int combinedOverlayIn) {
 
         TextureAtlasSprite sprite = ArienteSpriteUploader.INSTANCE.getSprite(DOOR_MARKER_TEXTURE);
 

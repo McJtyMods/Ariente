@@ -1,9 +1,9 @@
 package mcjty.ariente.client;
 
+import com.mojang.blaze3d.PrimitiveTopology;
 import com.mojang.blaze3d.vertex.BufferBuilder;
 import com.mojang.blaze3d.vertex.DefaultVertexFormat;
 import com.mojang.blaze3d.vertex.PoseStack;
-import com.mojang.blaze3d.vertex.VertexFormat;
 import mcjty.ariente.Ariente;
 import mcjty.ariente.entities.fluxship.FluxShipEntity;
 import mcjty.ariente.entities.fluxship.FluxShipExhaustRender;
@@ -111,7 +111,7 @@ public class FluxShipExhaustChecks {
         require(negarite.contents().name().equals(NEGARITE_BEAM) && posirite.contents().name().equals(POSIRITE_BEAM),
                 "The original tank beam textures must be present in the block atlas");
         BufferBuilder builder = new BufferBuilder(32768);
-        builder.begin(VertexFormat.Mode.QUADS, DefaultVertexFormat.NEW_ENTITY);
+        builder.begin(PrimitiveTopology.QUADS, DefaultVertexFormat.NEW_ENTITY);
         FluxShipExhaustRender.render(ship, partialTick, new PoseStack(), type -> {
             require(type == ArienteRenderType.SHIP_EXHAUST, "All strands must share the additive exhaust pass");
             return builder;

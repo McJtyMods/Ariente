@@ -1,11 +1,11 @@
 package mcjty.ariente.client;
 
+import com.mojang.blaze3d.PrimitiveTopology;
 import com.mojang.authlib.GameProfile;
 import com.mojang.blaze3d.audio.OggAudioStream;
 import com.mojang.blaze3d.vertex.BufferBuilder;
 import com.mojang.blaze3d.vertex.DefaultVertexFormat;
 import com.mojang.blaze3d.vertex.PoseStack;
-import com.mojang.blaze3d.vertex.VertexFormat;
 import mcjty.ariente.Ariente;
 import mcjty.ariente.entities.levitator.FluxLevitatorEntity;
 import mcjty.ariente.entities.levitator.FluxLevitatorModel;
@@ -36,7 +36,7 @@ public class FluxCartModelAndSoundChecks {
 
     private static void checkGeometry() {
         BufferBuilder builder = new BufferBuilder(16384);
-        builder.begin(VertexFormat.Mode.QUADS, DefaultVertexFormat.NEW_ENTITY);
+        builder.begin(PrimitiveTopology.QUADS, DefaultVertexFormat.NEW_ENTITY);
         new FluxLevitatorModel<>().renderToBuffer(new PoseStack(), builder, 0, 0, 1, 1, 1, 1);
         var rendered = builder.end();
         List<Vec3> vertices = new ArrayList<>();

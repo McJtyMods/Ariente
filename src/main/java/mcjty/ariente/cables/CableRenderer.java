@@ -11,7 +11,7 @@ import mcjty.ariente.client.ArienteRenderType;
 import mcjty.ariente.client.ArienteSpriteUploader;
 import mcjty.lib.client.RenderHelper;
 import net.minecraft.client.Minecraft;
-import net.minecraft.client.renderer.MultiBufferSource;
+import mcjty.lib.client.RenderBufferSource;
 import mcjty.ariente.client.ExtractedBlockRenderer;
 import net.minecraft.client.renderer.blockentity.BlockEntityRendererProvider;
 import net.minecraft.client.renderer.blockentity.BlockEntityRenderers;
@@ -106,7 +106,7 @@ public class CableRenderer extends ExtractedBlockRenderer<GenericCableTileEntity
     }
 
     @Override
-    public void render(GenericCableTileEntity te, float partialTicks, PoseStack matrixStack, MultiBufferSource buffer, int combinedLightIn, int combinedOverlayIn) {
+    public void render(GenericCableTileEntity te, float partialTicks, PoseStack matrixStack, RenderBufferSource buffer, int combinedLightIn, int combinedOverlayIn) {
         if (true) { // @todo only when it has power
             BlockState state = te.getLevel().getBlockState(te.getBlockPos());
             Block block = state.getBlock();
@@ -131,7 +131,7 @@ public class CableRenderer extends ExtractedBlockRenderer<GenericCableTileEntity
                 int tex = te.getBlockPos().getX();
                 int tey = te.getBlockPos().getY();
                 int tez = te.getBlockPos().getZ();
-                Vec3 projectedView = Minecraft.getInstance().gameRenderer.getMainCamera().position().add(-tex, -tey, -tez);
+                Vec3 projectedView = Minecraft.getInstance().gameRenderer.mainCamera().position().add(-tex, -tey, -tez);
                 Vec3 player = new Vec3((float)projectedView.x, (float)projectedView.y, (float)projectedView.z);
 
                 PoseStack matrix = matrixStack;

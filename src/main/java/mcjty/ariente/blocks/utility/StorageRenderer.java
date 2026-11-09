@@ -1,5 +1,6 @@
 package mcjty.ariente.blocks.utility;
 
+import mcjty.lib.client.RenderBufferSource;
 import mcjty.ariente.client.ArienteRenderHelper;
 import mcjty.hologui.gui.HoloGuiRenderType;
 import com.mojang.blaze3d.vertex.*;
@@ -33,7 +34,7 @@ public class StorageRenderer extends ExtractedBlockRenderer<StorageTile> {
     }
 
     @Override
-    public void render(StorageTile te, float partialTicks, PoseStack matrixStack, MultiBufferSource buffer, int combinedLightIn, int combinedOverlayIn) {
+    public void render(StorageTile te, float partialTicks, PoseStack matrixStack, RenderBufferSource buffer, int combinedLightIn, int combinedOverlayIn) {
         HitResult mouseOver = Minecraft.getInstance().hitResult;
         int index;
         if (mouseOver instanceof BlockHitResult && te.getBlockPos().equals(((BlockHitResult) mouseOver).getBlockPos())) {
@@ -94,7 +95,7 @@ public class StorageRenderer extends ExtractedBlockRenderer<StorageTile> {
         return 9 + (te.getGridSize() - 2) * 3 + slot / te.getGridSize() * 25;
     }
 
-    private void renderSlotHilight(PoseStack matrixStack, MultiBufferSource buffer, StorageTile te, int index) {
+    private void renderSlotHilight(PoseStack matrixStack, RenderBufferSource buffer, StorageTile te, int index) {
         matrixStack.pushPose();
 
         float factor = 4.0f / te.getGridSize();
@@ -117,13 +118,13 @@ public class StorageRenderer extends ExtractedBlockRenderer<StorageTile> {
         matrixStack.popPose();
     }
 
-    private void renderSlots(PoseStack matrixStack, MultiBufferSource buffer, StorageTile te) {
+    private void renderSlots(PoseStack matrixStack, RenderBufferSource buffer, StorageTile te) {
         float factor = 4.0f / te.getGridSize();
         float f3 = 0.0075F;
         matrixStack.translate(-0.5F, 0.5F, -0.15F);
         matrixStack.scale(f3 * factor, -f3 * factor, 0.0001f);
 
-        MultiBufferSource itemBuffer = type -> buffer.getBuffer(ArienteRenderType.displayItem(type));
+        RenderBufferSource itemBuffer = type -> buffer.getBuffer(ArienteRenderType.displayItem(type));
 
         for (int i = 0; i < te.getTypeCount(); i++) {
             ItemStack stack = te.getTotalStack(i);
@@ -147,7 +148,7 @@ public class StorageRenderer extends ExtractedBlockRenderer<StorageTile> {
         }
     }
 
-    private int renderSlotOverlay(PoseStack matrixStack, MultiBufferSource buffer, Font fontRenderer, int currenty, ItemStack itm, int x, int lightmapValue) {
+    private int renderSlotOverlay(PoseStack matrixStack, RenderBufferSource buffer, Font fontRenderer, int currenty, ItemStack itm, int x, int lightmapValue) {
         if (!itm.isEmpty()) {
             int size = itm.getCount();
             if (size > 1) {
@@ -161,7 +162,7 @@ public class StorageRenderer extends ExtractedBlockRenderer<StorageTile> {
                 } else {
                     s1 = String.valueOf(size / 1000000000) + "g";
                 }
-                fontRenderer.drawInBatch(s1, x + 19 - 2 - fontRenderer.width(s1), currenty + 6 + 3, 0xffffffff, false, matrixStack.last().pose(), buffer, Font.DisplayMode.NORMAL, 0, lightmapValue);
+                ArienteRenderHelper.text(matrixStack, buffer, s1, x + 19 - 2 - fontRenderer.width(s1), currenty + 6 + 3, 0xffffffff, false, lightmapValue);
             }
 
             if (itm.getItem().isBarVisible(itm)) {
@@ -195,7 +196,7 @@ public class StorageRenderer extends ExtractedBlockRenderer<StorageTile> {
         BlockEntityRenderers.register(Registration.STORAGE_TILE.get(), StorageRenderer::new);
     }
 
-    private static void fill(PoseStack pose, MultiBufferSource buffer, float x0, float y0, float x1, float y1, int color, int light) {
+    private static void fill(PoseStack pose, RenderBufferSource buffer, float x0, float y0, float x1, float y1, int color, int light) {
         VertexConsumer vertices = buffer.getBuffer(HoloGuiRenderType.HOLOGUI_COLOR);
         vertices.addVertex(pose.last().pose(), x0, y1, 0).setColor(color);
         vertices.addVertex(pose.last().pose(), x1, y1, 0).setColor(color);

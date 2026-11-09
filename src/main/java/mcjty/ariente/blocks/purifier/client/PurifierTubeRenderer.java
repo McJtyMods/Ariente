@@ -4,7 +4,7 @@ import mcjty.ariente.client.ArienteRenderHelper;
 import com.mojang.blaze3d.vertex.PoseStack;
 import com.mojang.math.Axis;
 import mcjty.ariente.blocks.purifier.PurifierTubeTile;
-import net.minecraft.client.renderer.MultiBufferSource;
+import mcjty.lib.client.RenderBufferSource;
 import mcjty.ariente.client.ExtractedBlockRenderer;
 import net.minecraft.client.renderer.blockentity.BlockEntityRendererProvider;
 import net.minecraft.client.renderer.texture.OverlayTexture;
@@ -17,7 +17,7 @@ public class PurifierTubeRenderer extends ExtractedBlockRenderer<PurifierTubeTil
     }
 
     @Override
-    public void render(PurifierTubeTile tube, float partialTicks, PoseStack poses, MultiBufferSource buffer, int light, int overlay) {
+    public void render(PurifierTubeTile tube, float partialTicks, PoseStack poses, RenderBufferSource buffer, int light, int overlay) {
         if (tube.getOre().isEmpty()) {
             return;
         }
@@ -45,7 +45,7 @@ public class PurifierTubeRenderer extends ExtractedBlockRenderer<PurifierTubeTil
     }
 
     private void renderItem(PurifierTubeTile tube, ItemStack stack, float alpha, float scale,
-                            PoseStack poses, MultiBufferSource buffer, int light) {
+                            PoseStack poses, RenderBufferSource buffer, int light) {
         if (alpha <= .001f || stack.isEmpty()) {
             return;
         }

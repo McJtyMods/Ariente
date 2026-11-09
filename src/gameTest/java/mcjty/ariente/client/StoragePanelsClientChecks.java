@@ -14,7 +14,7 @@ import net.minecraft.client.CameraType;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.Screenshot;
 import net.minecraft.client.renderer.LightTexture;
-import net.minecraft.client.renderer.MultiBufferSource;
+import mcjty.lib.client.RenderBufferSource;
 import net.minecraft.core.BlockPos;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.Items;
@@ -51,7 +51,7 @@ public class StoragePanelsClientChecks {
     public static void tick(TickEvent.ClientTickEvent event) {
         Minecraft mc = Minecraft.getInstance();
         if (!Boolean.getBoolean("ariente.storagePanelsCheck") || event.phase != TickEvent.Phase.END
-                || mc.player == null || mc.level == null || mc.getSingleplayerServer() == null || mc.getOverlay() != null) {
+                || mc.player == null || mc.level == null || mc.getSingleplayerServer() == null || mc.gui.overlay() != null) {
             return;
         }
         require(failure == null, "Server fixture failed: " + failure);
@@ -59,7 +59,7 @@ public class StoragePanelsClientChecks {
             started = true;
             mc.options.pauseOnLostFocus = false;
             mc.options.setCameraType(CameraType.FIRST_PERSON);
-            mc.setScreen(null);
+            mc.gui.setScreen(null);
             mc.mouseHandler.releaseMouse();
             UUID id = mc.player.getUUID();
             server(mc, () -> {
@@ -162,7 +162,7 @@ public class StoragePanelsClientChecks {
             return;
         }
         Minecraft mc = Minecraft.getInstance();
-        try (var screenshot = Screenshot.takeScreenshot(mc.getMainRenderTarget())) {
+        try (var screenshot = Screenshot.takeScreenshot(mc.gameRenderer.mainRenderTarget())) {
             screenshot.writeToFile(mc.gameDirectory.toPath().resolve("storage-panels-world-" + capture + ".png"));
         } catch (Exception error) {
             throw new IllegalStateException(error);
@@ -194,7 +194,7 @@ public class StoragePanelsClientChecks {
             PoseStack poses = new PoseStack();
             poses.translate(0, -.5, -2);
             poses.mulPose(Axis.YP.rotationDegrees(holo.getViewYRot(mc.getFrameTime()) - 180));
-            var buffers = MultiBufferSource.immediate(new BufferBuilder(4096));
+            var buffers = RenderBufferSource.immediate(new BufferBuilder(4096));
             mc.getEntityRenderDispatcher().getRenderer(holo).render(holo, 0, 0, poses, buffers, LightTexture.FULL_BRIGHT);
             buffers.endBatch();
             try (var screenshot = Screenshot.takeScreenshot(target)) {
@@ -225,7 +225,7 @@ public class StoragePanelsClientChecks {
             RenderSystem.setProjectionMatrix(projection, sorting);
             modelView.popPose();
             RenderSystem.applyModelViewMatrix();
-            mc.getMainRenderTarget().bindWrite(true);
+            mc.gameRenderer.mainRenderTarget().bindWrite(true);
         }
     }
 

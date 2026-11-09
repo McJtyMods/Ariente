@@ -7,6 +7,7 @@ import mcjty.ariente.Ariente;
 import mcjty.ariente.blocks.decorative.DecorativeBlockModule;
 import mcjty.ariente.setup.Registration;
 import net.minecraft.core.HolderLookup;
+import net.minecraft.core.registries.BuiltInRegistries;
 import net.minecraft.data.PackOutput;
 import net.neoforged.neoforge.common.data.ItemTagsProvider;
 import net.minecraft.tags.TagKey;
@@ -75,13 +76,15 @@ public class ItemTags extends ItemTagsProvider {
     private void addTag(TagKey<Item> tag, Collection<Supplier<Item>> items) {
         var builder = tag(tag);
         for (Supplier<Item> item : items) {
-            builder.add(item.get());
+            builder.add(BuiltInRegistries.ITEM.getResourceKey(item.get()).orElseThrow());
         }
     }
 
     private void addTag(TagKey<Item> tag, Item... items) {
-        tag(tag)
-                .add(items);
+        var builder = tag(tag);
+        for (Item item : items) {
+            builder.add(BuiltInRegistries.ITEM.getResourceKey(item).orElseThrow());
+        }
     }
 
     @Override

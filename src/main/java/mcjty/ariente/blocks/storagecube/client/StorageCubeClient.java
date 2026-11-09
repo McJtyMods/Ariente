@@ -1,5 +1,6 @@
 package mcjty.ariente.blocks.storagecube.client;
 
+import net.minecraft.world.phys.Vec3;
 import net.neoforged.neoforge.client.network.ClientPacketDistributor;
 import com.mojang.blaze3d.vertex.PoseStack;
 import com.mojang.math.Axis;
@@ -18,7 +19,7 @@ import mcjty.hologui.api.IHoloGuiEntity;
 import mcjty.hologui.gui.HoloGuiEntity;
 import mcjty.hologui.gui.HoloGuiRenderTools;
 import net.minecraft.client.Minecraft;
-import net.minecraft.client.renderer.MultiBufferSource;
+import mcjty.lib.client.RenderBufferSource;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.phys.EntityHitResult;
 import net.neoforged.api.distmarker.Dist;
@@ -57,7 +58,7 @@ public class StorageCubeClient {
         Minecraft mc = Minecraft.getInstance();
         if (mc.player == null || !mc.player.isAlive() || mc.player.isSpectator()
                 || mc.level != tile.getLevel() || !holo.isAlive() || tile.isRemoved() || tile.isLocked()
-                || mc.player.distanceToSqr(holo) > 64 || mc.player.distanceToSqr(tile.getBlockPos().getCenter()) > 64) {
+                || mc.player.distanceToSqr(holo) > 64 || mc.player.distanceToSqr(Vec3.atCenterOf(tile.getBlockPos())) > 64) {
             return null;
         }
         State view = VIEWS.get(holo.getId());
@@ -119,7 +120,7 @@ public class StorageCubeClient {
     @SubscribeEvent
     public static void input(InputEvent.InteractionKeyMappingTriggered event) {
         Minecraft mc = Minecraft.getInstance();
-        if (mc.player == null || mc.screen != null || !(event.isAttack() || event.isUseItem())) {
+        if (mc.player == null || mc.gui.screen() != null || !(event.isAttack() || event.isUseItem())) {
             return;
         }
         boolean targeted = mc.hitResult instanceof EntityHitResult hit && hit.getEntity() instanceof HoloGuiEntity holo
@@ -240,7 +241,7 @@ public class StorageCubeClient {
         for (Iterator<State> iterator = VIEWS.values().iterator(); iterator.hasNext();) {
             State view = iterator.next();
             if (mc.player == null || mc.level != view.tile.getLevel() || !view.holo.isAlive() || view.tile.isRemoved()
-                    || mc.player.distanceToSqr(view.holo) > 64 || mc.player.distanceToSqr(view.tile.getBlockPos().getCenter()) > 64
+                    || mc.player.distanceToSqr(view.holo) > 64 || mc.player.distanceToSqr(Vec3.atCenterOf(view.tile.getBlockPos())) > 64
                     || !mc.player.isAlive() || mc.player.isSpectator() || TAG_HELP.equals(view.holo.getTag()) || !view.holo.getGuiId().isEmpty()
                     || view.pending && ++view.pendingTicks > 60) {
                 unsubscribe(view);
@@ -252,7 +253,7 @@ public class StorageCubeClient {
         if (state == null) {
             return;
         }
-        if (mc.screen != null) {
+        if (mc.gui.screen() != null) {
             state.selected = -1;
             state.pressed = false;
             state.fastScrollDirection = 0;
@@ -297,7 +298,7 @@ public class StorageCubeClient {
         return playerSlot < 0 ? -1 : view.size + playerSlot;
     }
 
-    public static void render(StorageCubeTile tile, PoseStack poses, MultiBufferSource buffer, IHoloGuiEntity entity, double x, double y) {
+    public static void render(StorageCubeTile tile, PoseStack poses, RenderBufferSource buffer, IHoloGuiEntity entity, double x, double y) {
         if (!(entity instanceof HoloGuiEntity holo)) {
             return;
         }
@@ -349,7 +350,7 @@ public class StorageCubeClient {
         }
     }
 
-    private static void sortButton(PoseStack poses, MultiBufferSource buffer, double x, double width, String label,
+    private static void sortButton(PoseStack poses, RenderBufferSource buffer, double x, double width, String label,
                                    boolean hover, State view) {
         boolean enabled = view != null && view.loaded && !view.pending;
         HoloGuiRenderTools.renderControl(poses, buffer, x, SORT_Y, width, SORT_HEIGHT, enabled && hover);
@@ -357,17 +358,17 @@ public class StorageCubeClient {
                 label, enabled ? hover ? 0xe2fbff : 0x9edce9 : 0x486078, .32f);
     }
 
-    private static void cell(PoseStack poses, MultiBufferSource buffer, State view, int slot, double x, double y, boolean hover) {
+    private static void cell(PoseStack poses, RenderBufferSource buffer, State view, int slot, double x, double y, boolean hover) {
         ItemStack stack = view.stacks[slot];
         int count = stack.getCount() - (view.selected == slot ? view.amount : 0);
         InventoryRenderer.cell(poses, buffer, x, y, stack, count, hover);
     }
 
-    private static void text(PoseStack poses, MultiBufferSource buffer, double x, double y, String text, float scale, int color) {
+    private static void text(PoseStack poses, RenderBufferSource buffer, double x, double y, String text, float scale, int color) {
         HoloGuiRenderTools.renderText(poses, buffer, x, y, text, color, scale);
     }
 
-    public static void tooltip(StorageCubeTile tile, IHoloGuiEntity holo, PoseStack poses, MultiBufferSource buffer, double x, double y) {
+    public static void tooltip(StorageCubeTile tile, IHoloGuiEntity holo, PoseStack poses, RenderBufferSource buffer, double x, double y) {
         State view = VIEWS.get(holo.getEntity().getId());
         if (view == null || view.tile != tile || view.selected >= 0) {
             return;

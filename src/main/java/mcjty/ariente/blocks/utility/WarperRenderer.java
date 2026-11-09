@@ -10,7 +10,7 @@ import mcjty.ariente.client.ArienteRenderType;
 import mcjty.ariente.client.BeamRenderTools;
 import mcjty.ariente.setup.Registration;
 import net.minecraft.client.Minecraft;
-import net.minecraft.client.renderer.MultiBufferSource;
+import mcjty.lib.client.RenderBufferSource;
 import mcjty.ariente.client.ExtractedBlockRenderer;
 import net.minecraft.client.renderer.blockentity.BlockEntityRendererProvider;
 import net.minecraft.client.renderer.blockentity.BlockEntityRenderers;
@@ -39,14 +39,14 @@ public class WarperRenderer extends ExtractedBlockRenderer<WarperTile> {
     }
 
     @Override
-    public void render(WarperTile te, float partialTicks, PoseStack matrixStack, MultiBufferSource buffer, int combinedLightIn, int combinedOverlayIn) {
+    public void render(WarperTile te, float partialTicks, PoseStack matrixStack, RenderBufferSource buffer, int combinedLightIn, int combinedOverlayIn) {
         Identifier beamIcon = HALO;
 
         Minecraft mc = Minecraft.getInstance();
         int tex = te.getBlockPos().getX();
         int tey = te.getBlockPos().getY();
         int tez = te.getBlockPos().getZ();
-        Vec3 projectedView = mc.gameRenderer.getMainCamera().position().add(-tex, -tey, -tez);
+        Vec3 projectedView = mc.gameRenderer.mainCamera().position().add(-tex, -tey, -tez);
         Vec3 player = new Vec3((float)projectedView.x, (float)projectedView.y, (float)projectedView.z);
 
         long tt = System.currentTimeMillis() / 100;

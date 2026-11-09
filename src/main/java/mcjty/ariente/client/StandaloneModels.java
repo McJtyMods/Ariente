@@ -5,7 +5,7 @@ import com.mojang.blaze3d.vertex.QuadInstance;
 import java.util.HashMap;
 import java.util.Map;
 import net.minecraft.client.Minecraft;
-import net.minecraft.client.renderer.MultiBufferSource;
+import mcjty.lib.client.RenderBufferSource;
 import net.minecraft.client.renderer.rendertype.RenderType;
 import net.minecraft.client.resources.model.geometry.QuadCollection;
 import net.minecraft.resources.Identifier;
@@ -29,7 +29,7 @@ public final class StandaloneModels {
         return Minecraft.getInstance().getModelManager().getStandaloneModel(KEYS.get(id));
     }
 
-    public static void render(Identifier id, PoseStack poses, MultiBufferSource buffer, RenderType type, int light, int overlay) {
+    public static void render(Identifier id, PoseStack poses, RenderBufferSource buffer, RenderType type, int light, int overlay) {
         var quads = get(id);
         var output = buffer.getBuffer(type);
         QuadInstance instance = new QuadInstance();

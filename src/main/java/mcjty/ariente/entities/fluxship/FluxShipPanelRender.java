@@ -8,8 +8,15 @@ import mcjty.ariente.display.client.DisplayCanvas;
 import mcjty.hologui.api.IGuiComponent;
 import mcjty.hologui.gui.HoloGuiEntity;
 import mcjty.hologui.gui.HoloGuiEntityRender;
+import mcjty.hologui.gui.HoloRenderBatch;
+import mcjty.hologui.gui.OrderedSubmitCollector;
+import java.util.function.BiConsumer;
+import net.minecraft.client.gui.Font;
+import net.minecraft.client.renderer.SubmitNodeCollector;
+import net.minecraft.client.renderer.rendertype.RenderType;
+import net.minecraft.util.FormattedCharSequence;
 import net.minecraft.client.Minecraft;
-import net.minecraft.client.renderer.MultiBufferSource;
+import mcjty.lib.client.RenderBufferSource;
 import net.minecraft.client.renderer.entity.EntityRendererProvider;
 import net.minecraft.network.chat.Component;
 import net.minecraft.resources.Identifier;
@@ -24,7 +31,7 @@ public class FluxShipPanelRender extends ExtractedEntityRenderer<HoloGuiEntity> 
     }
 
     @Override
-    public void render(HoloGuiEntity panel, float yaw, float partialTick, PoseStack pose, MultiBufferSource buffers, int light) {
+    public void render(HoloGuiEntity panel, float yaw, float partialTick, PoseStack pose, RenderBufferSource buffers, int light) {
         pose.pushPose();
         if (panel.getVehicle() instanceof FluxShipEntity ship) {
             // A passenger's independent position/rotation packets must not move the
@@ -42,7 +49,7 @@ public class FluxShipPanelRender extends ExtractedEntityRenderer<HoloGuiEntity> 
         pose.popPose();
     }
 
-    private static void renderInstruments(HoloGuiEntity panel, FluxShipEntity ship, float partialTick, PoseStack pose, MultiBufferSource buffers) {
+    private static void renderInstruments(HoloGuiEntity panel, FluxShipEntity ship, float partialTick, PoseStack pose, RenderBufferSource buffers) {
         Minecraft mc = Minecraft.getInstance();
         pose.translate(0, .5, 0);
         float scale = 1 - (1 - panel.getScale()) * 1.6f;
@@ -70,13 +77,37 @@ public class FluxShipPanelRender extends ExtractedEntityRenderer<HoloGuiEntity> 
             // dark shadow so clouds and bright terrain remain visible behind it.
             pose.pushPose();
             pose.translate(.002, -.002, .009);
-            gui.render(pose, type -> new VertexConsumerWrapper(buffers.getBuffer(type)) {
+            HoloRenderBatch shadow = new HoloRenderBatch() {
 
                 @Override
-                public VertexConsumer setColor(int red, int green, int blue, int alpha) {
-                    return super.setColor(8, 16, 24, alpha);
+                public VertexConsumer getBuffer(RenderType type) {
+                    return new VertexConsumerWrapper(buffers.getBuffer(type)) {
+
+                        @Override
+                        public VertexConsumer setColor(int red, int green, int blue, int alpha) {
+                            return super.setColor(8, 16, 24, alpha);
+                        }
+                    };
                 }
-            }, mc.player, panel, -1, -1);
+
+                @Override
+                public void command(PoseStack poses, BiConsumer<PoseStack, SubmitNodeCollector> command) {
+                    ((HoloRenderBatch) buffers).command(poses, (base, collector) -> command.accept(base,
+                            new OrderedSubmitCollector(collector) {
+
+                                @Override
+                                public void submitText(PoseStack textPose, float x, float y, FormattedCharSequence text,
+                                                       boolean dropShadow, Font.DisplayMode mode, int light,
+                                                       int color, int background, int outline) {
+                                    FormattedCharSequence darkText = sink -> text.accept((index, style, codePoint) ->
+                                            sink.accept(index, style.withColor(0x081018), codePoint));
+                                    super.submitText(textPose, x, y, darkText, dropShadow, mode, light,
+                                            color & 0xff000000 | 0x081018, background, outline);
+                                }
+                            }));
+                }
+            };
+            gui.render(pose, shadow, mc.player, panel, -1, -1);
             pose.popPose();
             pose.translate(0, 0, .01);
             gui.render(pose, buffers, mc.player, panel, -1, -1);

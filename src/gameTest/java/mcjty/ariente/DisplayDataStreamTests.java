@@ -1,5 +1,6 @@
 package mcjty.ariente;
 
+import net.minecraft.world.phys.Vec3;
 import io.netty.buffer.Unpooled;
 import mcjty.ariente.blocks.utility.camera.CameraCapture;
 import mcjty.ariente.display.DisplayBaseTile;
@@ -162,7 +163,7 @@ public class DisplayDataStreamTests {
         layout.put("Modules", modules);
         client.loadClientDataFromNBT(layout);
         var player = helper.makeMockSurvivalPlayer();
-        player.setPos(pos.getCenter());
+        player.setPos(Vec3.atCenterOf(pos));
         helper.assertTrue(client.requestReadings(player) == 1023, "Initial synchronization requests all ten feeds");
         helper.assertTrue(client.requestReadings(player) == 0, "Retries are throttled");
         for (int index = 0; index < 6; index++) {

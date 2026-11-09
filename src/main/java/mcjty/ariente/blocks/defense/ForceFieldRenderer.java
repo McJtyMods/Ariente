@@ -1,9 +1,10 @@
 package mcjty.ariente.blocks.defense;
 
+import com.mojang.blaze3d.PrimitiveTopology;
 import com.mojang.blaze3d.vertex.*;
 import java.util.*;
 import mcjty.ariente.client.ArienteRenderType;
-import net.minecraft.client.renderer.MultiBufferSource;
+import mcjty.lib.client.RenderBufferSource;
 import mcjty.ariente.Ariente;
 import mcjty.ariente.items.armor.PersonalForcefield;
 import mcjty.ariente.varia.Triangle;
@@ -74,7 +75,7 @@ public class ForceFieldRenderer {
     private static long randomSeedCounter = 0;
     private static ClientLevel lastLevel;
 
-    public static void renderForceFields(PoseStack poseStack, MultiBufferSource buffer, float partialTicks) {
+    public static void renderForceFields(PoseStack poseStack, RenderBufferSource buffer, float partialTicks) {
         Minecraft minecraft = Minecraft.getInstance();
         ClientLevel world = minecraft.level;
         if (world != lastLevel) {
@@ -86,7 +87,7 @@ public class ForceFieldRenderer {
         if (world == null) {
             return;
         }
-        Vec3 camera = minecraft.gameRenderer.getMainCamera().position();
+        Vec3 camera = minecraft.gameRenderer.mainCamera().position();
         Matrix4f matrix = poseStack.last().pose();
             for (var candidate : world.entitiesForRendering()) {
                 if (candidate instanceof LivingEntity living && PersonalForcefield.isActive(living)) {
@@ -113,7 +114,7 @@ public class ForceFieldRenderer {
                 float alpha = firstPerson ? 0.09f + flash * 0.08f * recoveryFade
                         : 0.2f + (0.25f + flash * 0.3f) * recoveryFade;
                 // This shader discards vertex alpha below 0.1; its color modulator is applied after that cutoff.
-                VertexConsumer builder = buffer.getBuffer(ArienteRenderType.forceField(FORCEFIELD, VertexFormat.Mode.TRIANGLES));
+                VertexConsumer builder = buffer.getBuffer(ArienteRenderType.forceField(FORCEFIELD, PrimitiveTopology.TRIANGLES));
                 for (int i = 0; i < PentakisDodecahedron.MAX_TRIANGLES; i++) {
                     doRender(builder, matrix, new PanelInfo(i, pos.x, pos.y, pos.z), pos.x - camera.x,
                             pos.y + 1 - camera.y, pos.z - camera.z, 1.2, 1, 1 - red * 0.95f, 1 - red * 0.95f, alpha);
@@ -140,12 +141,12 @@ public class ForceFieldRenderer {
             }
     }
 
-    private static void renderPanels(Matrix4f matrix, BlockPos pos, MultiBufferSource buffer, double x, double y, double z, double scale, PanelInfo[] panelInfo) {
+    private static void renderPanels(Matrix4f matrix, BlockPos pos, RenderBufferSource buffer, double x, double y, double z, double scale, PanelInfo[] panelInfo) {
         random.setSeed(randomSeedCounter);
         random.nextFloat();
         random.nextFloat();
 
-        VertexConsumer builder = buffer.getBuffer(ArienteRenderType.forceField(FORCEFIELD, VertexFormat.Mode.TRIANGLES));
+        VertexConsumer builder = buffer.getBuffer(ArienteRenderType.forceField(FORCEFIELD, PrimitiveTopology.TRIANGLES));
         for (PanelInfo info : panelInfo) {
             if (info != null) {
                 renderPanel(builder, matrix, pos, x, y, z, scale, info);
@@ -153,7 +154,7 @@ public class ForceFieldRenderer {
         }
     }
 
-    private static void tickDamageEffects(Matrix4f matrix, MultiBufferSource buffer, BlockPos pos, PanelInfo[] panelInfo, double x, double y, double z) {
+    private static void tickDamageEffects(Matrix4f matrix, RenderBufferSource buffer, BlockPos pos, PanelInfo[] panelInfo, double x, double y, double z) {
         for (PanelInfo info : panelInfo) {
             if (info != null) {
                 Pair<BlockPos, Integer> key = Pair.of(pos, info.getIndex());
@@ -170,7 +171,7 @@ public class ForceFieldRenderer {
                     e0 = e0.normalize();
                     Vec3 e1 = e0.cross(n).normalize();
 
-                    VertexConsumer builder = buffer.getBuffer(ArienteRenderType.forceField(FORCEFIELD_HIT, VertexFormat.Mode.QUADS));
+                    VertexConsumer builder = buffer.getBuffer(ArienteRenderType.forceField(FORCEFIELD_HIT, PrimitiveTopology.QUADS));
 
                     float a = damage.damage;
                     float sc = 2.0f;
@@ -235,9 +236,9 @@ public class ForceFieldRenderer {
         }
     }
 
-    public static void doRender(MultiBufferSource buffer, PanelInfo info, double x, double y, double z, double scale,
+    public static void doRender(RenderBufferSource buffer, PanelInfo info, double x, double y, double z, double scale,
                                 float r, float g, float b, float a) {
-        VertexConsumer builder = buffer.getBuffer(ArienteRenderType.forceField(FORCEFIELD, VertexFormat.Mode.TRIANGLES));
+        VertexConsumer builder = buffer.getBuffer(ArienteRenderType.forceField(FORCEFIELD, PrimitiveTopology.TRIANGLES));
         doRender(builder, new Matrix4f(), info, x, y, z, scale, r, g, b, a);
     }
 

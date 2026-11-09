@@ -1,5 +1,6 @@
 package mcjty.ariente.display;
 
+import net.minecraft.world.phys.Vec3;
 import java.util.Arrays;
 import java.util.HashMap;
 import java.util.LinkedHashMap;
@@ -34,7 +35,7 @@ public class DisplayDataSender {
 
     public static void request(ServerPlayer player, PacketRequestDisplayData request) {
         ServerLevel level = player.level();
-        if (player.distanceToSqr(request.pos().getCenter()) > 64 * 64 || !level.hasChunkAt(request.pos())
+        if (player.distanceToSqr(Vec3.atCenterOf(request.pos())) > 64 * 64 || !level.hasChunkAt(request.pos())
                 || !(level.getBlockEntity(request.pos()) instanceof DisplayBaseTile base)
                 || base.layoutVersion() != request.layoutVersion()
                 || !level.getChunkSource().chunkMap.getPlayers(ChunkPos.containing(request.pos()), false).contains(player)) {
@@ -79,7 +80,7 @@ public class DisplayDataSender {
 
     private static boolean observed(ServerPlayer player, DisplayBaseTile base, InstalledModule module) {
         int distance = module.type().observationDistance();
-        return player.distanceToSqr(base.getBlockPos().getCenter()) <= distance * distance;
+        return player.distanceToSqr(Vec3.atCenterOf(base.getBlockPos())) <= distance * distance;
     }
 
     private static void enqueue(ServerPlayer player, DisplayBaseTile base, int index, boolean requested) {

@@ -4,6 +4,7 @@ import java.util.concurrent.CompletableFuture;
 import mcjty.ariente.Ariente;
 import mcjty.ariente.setup.Registration;
 import net.minecraft.core.HolderLookup;
+import net.minecraft.core.registries.BuiltInRegistries;
 import net.minecraft.data.PackOutput;
 import net.minecraft.tags.TagKey;
 import net.minecraft.world.level.block.Block;
@@ -51,8 +52,10 @@ public class BlockTags extends BlockTagsProvider {
     }
 
     private void addTag(TagKey<Block> tag, Block... items) {
-        tag(tag)
-                .add(items);
+        var builder = tag(tag);
+        for (Block item : items) {
+            builder.add(BuiltInRegistries.BLOCK.getResourceKey(item).orElseThrow());
+        }
     }
 
     @Override

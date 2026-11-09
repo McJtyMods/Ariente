@@ -6,7 +6,7 @@ import com.mojang.blaze3d.vertex.VertexConsumer;
 import mcjty.ariente.Ariente;
 import mcjty.ariente.client.ArienteRenderType;
 import net.minecraft.util.LightCoordsUtil;
-import net.minecraft.client.renderer.MultiBufferSource;
+import mcjty.lib.client.RenderBufferSource;
 import net.minecraft.client.renderer.texture.OverlayTexture;
 import net.minecraft.client.renderer.texture.TextureAtlasSprite;
 import net.minecraft.resources.Identifier;
@@ -27,7 +27,7 @@ public class TankRendererTools {
                 ;
     }
 
-    public static void renderTank(PoseStack stack, MultiBufferSource buffer, Identifier beam, Identifier window, boolean working, long gameTime, Vec3 cameraOffset, int light) {
+    public static void renderTank(PoseStack stack, RenderBufferSource buffer, Identifier beam, Identifier window, boolean working, long gameTime, Vec3 cameraOffset, int light) {
         // Glass and beams must be sorted together rather than drawing chunk glass over the beam.
         VertexConsumer builder = buffer.getBuffer(ArienteRenderType.TANK_CONTENTS);
         TextureAtlasSprite glass = AbstractDynamicBakedModel.getTexture(window);

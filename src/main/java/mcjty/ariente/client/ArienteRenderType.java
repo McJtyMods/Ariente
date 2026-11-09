@@ -1,11 +1,11 @@
 package mcjty.ariente.client;
 
+import com.mojang.blaze3d.PrimitiveTopology;
 import java.util.HashMap;
 import java.util.Map;
 
 import com.mojang.blaze3d.pipeline.BlendFunction;
 import com.mojang.blaze3d.vertex.DefaultVertexFormat;
-import com.mojang.blaze3d.vertex.VertexFormat;
 import com.mojang.blaze3d.pipeline.ColorTargetState;
 import com.mojang.blaze3d.pipeline.DepthStencilState;
 import com.mojang.blaze3d.pipeline.RenderPipeline;
@@ -33,24 +33,24 @@ public final class ArienteRenderType {
     public static final RenderType ARIENTE_TRANSLUCENT = type("translucent", ArienteSpriteUploader.ARIENTE_ATLAS, BlendFunction.TRANSLUCENT, false, true, true);
     public static final RenderType ARIENTE_ADDITIVE = type("additive", ArienteSpriteUploader.ARIENTE_ATLAS, BlendFunction.ADDITIVE, true, false, false);
 
-    private static final RenderPipeline FIELD_TRIANGLES = fieldPipeline("field_triangles", VertexFormat.Mode.TRIANGLES);
-    private static final RenderPipeline FIELD_QUADS = fieldPipeline("field_quads", VertexFormat.Mode.QUADS);
+    private static final RenderPipeline FIELD_TRIANGLES = fieldPipeline("field_triangles", PrimitiveTopology.TRIANGLES);
+    private static final RenderPipeline FIELD_QUADS = fieldPipeline("field_quads", PrimitiveTopology.QUADS);
     private static final Map<String, RenderType> FIELDS = new HashMap<>();
 
-    private static RenderPipeline fieldPipeline(String name, VertexFormat.Mode mode) {
-        var pipeline = RenderPipeline.builder(RenderPipelines.MATRICES_PROJECTION_SNIPPET)
+    private static RenderPipeline fieldPipeline(String name, PrimitiveTopology mode) {
+        var pipeline = RenderPipeline.builder(RenderPipelines.GUI_TEXTURED_SNIPPET)
                 .withLocation(Identifier.fromNamespaceAndPath("ariente", "pipeline/" + name))
                 .withVertexShader("core/position_tex_color").withFragmentShader("core/position_tex_color")
-                .withSampler("Sampler0").withVertexFormat(DefaultVertexFormat.POSITION_TEX_COLOR, mode)
+                .withVertexBinding(0, DefaultVertexFormat.POSITION_TEX_COLOR).withPrimitiveTopology(mode)
                 .withCull(false).withColorTargetState(new ColorTargetState(BlendFunction.TRANSLUCENT))
-                .withDepthStencilState(new DepthStencilState(CompareOp.LESS_THAN_OR_EQUAL, false)).build();
+                .withDepthStencilState(new DepthStencilState(CompareOp.GREATER_THAN_OR_EQUAL, false)).build();
         PIPELINES.add(pipeline);
         return pipeline;
     }
 
-    public static RenderType forceField(Identifier texture, VertexFormat.Mode mode) {
+    public static RenderType forceField(Identifier texture, PrimitiveTopology mode) {
         return FIELDS.computeIfAbsent(texture + "/" + mode, key -> RenderType.create("ariente_forcefield",
-                RenderSetup.builder(mode == VertexFormat.Mode.TRIANGLES ? FIELD_TRIANGLES : FIELD_QUADS)
+                RenderSetup.builder(mode == PrimitiveTopology.TRIANGLES ? FIELD_TRIANGLES : FIELD_QUADS)
                         .withTexture("Sampler0", texture).createRenderSetup()));
     }
 
@@ -61,7 +61,7 @@ public final class ArienteRenderType {
         var builder = RenderPipeline.builder(RenderPipelines.ENTITY_SNIPPET)
                 .withLocation(Identifier.fromNamespaceAndPath("ariente", "pipeline/" + name))
                 .withShaderDefine("NO_CARDINAL_LIGHTING").withShaderDefine("NO_OVERLAY")
-                .withCull(false).withDepthStencilState(new DepthStencilState(CompareOp.LESS_THAN_OR_EQUAL, writeDepth));
+                .withCull(false).withDepthStencilState(new DepthStencilState(CompareOp.GREATER_THAN_OR_EQUAL, writeDepth));
         if (blend != null) {
             builder.withColorTargetState(new ColorTargetState(blend));
         }

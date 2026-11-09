@@ -40,14 +40,49 @@ weapon module installation and rejection of armor in the wrong slot. Run from
 TMPDIR=/var/tmp ./gradlew -I ../Ariente_neo/tools/equipment_tests.gradle :Ariente:runGameTestServer
 ```
 
-Outputs use `Ariente_neo/build/verification/equipment-tests/`. The 26.1.2 GUI
+Outputs use `Ariente_neo/build/verification/equipment-tests/`. The 26.2 GUI
 resolves armor slots through the player's equipment rules; NeoForge's optional
 item slot override alone does not identify ordinary equippable armor. Existing
 module data, activation states and hotkeys are preserved.
 
-Development target: Minecraft 26.1.2, NeoForge 26.1.2.99, Java 25, branch `26.1.2_neo`.
+Development target: Minecraft 26.2, NeoForge 26.2.0.75, Java 25, branch `26.2_neo`.
 Build with `./gradlew build` standalone, or `./gradlew :Ariente:build` from MultiWorkspace.
-The workspace uses the included McJtyLib and The One Probe sources. These ports require McJtyLib **26.1.2-10.0.2** or newer. Ariente and ArienteWorld also use included HoloGui/Ariente sources. Published Maven artifacts are standalone fallbacks.
+The workspace uses the included McJtyLib and The One Probe sources. These ports require McJtyLib **26.2-10.0.3** or newer. Ariente and ArienteWorld also use included HoloGui/Ariente sources. Published Maven artifacts are standalone fallbacks.
 Unpublished port dependencies can be provided with `-Pariente_dependency_repository=<repository URL>`; `-Pgradletools_path=<file>` selects an explicit shared Gradle script.
 
-The [26.1.2 port report](../ArienteWorld_neo/PORT_26_1_2.md) documents current commands and validation. Earlier Forge fixture commands in this file are historical.
+The [earlier 26.1.2 port report](../ArienteWorld_neo/PORT_26_1_2.md) records the previous port’s migration and validation history. Earlier Forge fixture commands in this file are historical.
+
+### Minecraft 26.2 port
+
+This branch carries the latest committed 26.1.2 NeoForge implementation forward.
+Holograms and procedural geometry use extracted batches and native 26.2 staged
+vertex buffers; render submissions, screen access, camera extraction, colored
+vanilla content and tag generators use the 26.2 APIs. World effects follow the
+reversed depth buffer. The snapshot camera retains its own forward-depth projection.
+
+Live cameras select loaded terrain through the mounted lens without moving the
+player's chunk storage or changing its occlusion graph. Terrain fades completely
+at the configured block radius, including the eight- and sixteen-block ranges,
+so distant chunk edges do not flicker or leave black silhouettes.
+
+Patchouli has no listed Minecraft 26.2 release. The tablet/manual remains optional
+and reports its unavailability; this branch does not load an older Patchouli jar.
+McJtyLib 26.2-10.0.3 supplies the model helpers required by these ports. Publish
+McJtyLib, HoloGui and Ariente in that order before distributing the standalone
+companion. Maven fallbacks use the matching 26.2 versions.
+
+From `../Multi_neo`, with Java 25 selected:
+
+```sh
+./gradlew :McJtyLib:build :ModHoloGui:build :Ariente:build :ArienteWorld:build :workspace:build
+./gradlew :Ariente:runClientData :ArienteWorld:runClientData
+./gradlew :ArienteWorld:runGameTestServer
+```
+
+The existing ArienteWorld `PORT_26_1_2.md` report and its recorded results apply to the previous
+Minecraft branch. Minecraft 26.2 validation is recorded below.
+
+Workspace and standalone builds, both data generators, ten native GameTests,
+McJtyLib's 11 JUnit tests, the integrated client smoke and the tutorial's camera
+checks pass on 26.2. See the [ArienteWorld validation notes](../ArienteWorld_neo/README.md#minecraft-262-port)
+for the test scope and playable Tutorial save.

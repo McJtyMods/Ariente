@@ -11,7 +11,7 @@ import mcjty.ariente.Ariente;
 import mcjty.ariente.client.ArienteRenderType;
 import net.minecraft.client.Minecraft;
 import net.minecraft.util.LightCoordsUtil;
-import net.minecraft.client.renderer.MultiBufferSource;
+import mcjty.lib.client.RenderBufferSource;
 import net.minecraft.client.renderer.texture.OverlayTexture;
 import net.minecraft.client.renderer.texture.TextureAtlasSprite;
 import net.minecraft.util.Mth;
@@ -32,7 +32,7 @@ public class FluxShipExhaustRender {
     private static final int STRANDS = 4;
     private static final int SEGMENTS = 24;
 
-    public static void render(FluxShipEntity ship, float partialTick, PoseStack pose, MultiBufferSource buffers) {
+    public static void render(FluxShipEntity ship, float partialTick, PoseStack pose, RenderBufferSource buffers) {
         Minecraft mc = Minecraft.getInstance();
         Entity viewer = mc.getCameraEntity();
         float strength = ship.getExhaustStrength(partialTick);
@@ -40,13 +40,13 @@ public class FluxShipExhaustRender {
             return;
         }
 
-        Vec3 cameraOffset = mc.gameRenderer.getMainCamera().position()
+        Vec3 cameraOffset = mc.gameRenderer.mainCamera().position()
                 .subtract(ship.getPosition(partialTick)).subtract(0, .5, 0);
         Quaternionf inverseHull = new Quaternionf().rotationY(-ship.getFlightYaw(partialTick) * Mth.DEG_TO_RAD)
                 .rotateX(ship.getFlightPitch(partialTick) * Mth.DEG_TO_RAD)
                 .rotateZ(ship.getBank(partialTick) * Mth.DEG_TO_RAD).conjugate();
         Vec3 camera = new Vec3(inverseHull.transform(cameraOffset.toVector3f()));
-        Vec3 cameraUp = new Vec3(inverseHull.transform(new Vector3f(mc.gameRenderer.getMainCamera().upVector())));
+        Vec3 cameraUp = new Vec3(inverseHull.transform(new Vector3f(mc.gameRenderer.mainCamera().upVector())));
         double time = ship.level().getGameTime() + partialTick;
         double seed = (ship.getUUID().getLeastSignificantBits() & 65535) * Math.PI * 2 / 65536;
         Function<Identifier, TextureAtlasSprite> atlas = id -> mc.getAtlasManager().get(new SpriteId(TextureAtlas.LOCATION_BLOCKS, id));

@@ -4,7 +4,7 @@ import com.mojang.blaze3d.vertex.PoseStack;
 import mcjty.ariente.blocks.storagecube.client.StorageCubeClient;
 import mcjty.hologui.api.IHoloGuiEntity;
 import mcjty.hologui.gui.components.AbstractHoloComponent;
-import net.minecraft.client.renderer.MultiBufferSource;
+import mcjty.lib.client.RenderBufferSource;
 import net.minecraft.world.entity.player.Player;
 
 /** The server component holds no mutable player state. All transfers use validated atomic actions. */
@@ -19,12 +19,12 @@ public class StorageCubePanel extends AbstractHoloComponent<StorageCubePanel> {
     }
 
     @Override
-    public void render(PoseStack poses, MultiBufferSource buffer, Player player, IHoloGuiEntity holo, double x, double y) {
+    public void render(PoseStack poses, RenderBufferSource buffer, Player player, IHoloGuiEntity holo, double x, double y) {
         StorageCubeClient.render(tile, poses, buffer, holo, x, y);
     }
 
     @Override
-    public void renderTooltip(PoseStack poses, MultiBufferSource buffer, Player player, IHoloGuiEntity holo, double x, double y) {
+    public void renderTooltip(PoseStack poses, RenderBufferSource buffer, Player player, IHoloGuiEntity holo, double x, double y) {
         StorageCubeClient.tooltip(tile, holo, poses, buffer, x, y);
     }
 }

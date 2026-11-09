@@ -1,5 +1,6 @@
 package mcjty.ariente.display.client;
 
+import net.minecraft.world.item.DyeColor;
 import net.minecraft.client.renderer.block.dispatch.BlockStateModel;
 import net.minecraft.client.renderer.block.dispatch.BlockStateModelPart;
 import net.minecraft.client.model.geom.builders.UVPair;
@@ -241,7 +242,7 @@ public class CameraDisplayRenderer {
             }
         }
         // Living entities are conspicuous moving markers, independent of client entity tracking.
-        var white = mc.getModelManager().getBlockStateModelSet().get(Blocks.WHITE_CONCRETE.defaultBlockState()).particleMaterial().sprite();
+        var white = mc.getModelManager().getBlockStateModelSet().get(Blocks.CONCRETE.pick(DyeColor.WHITE).defaultBlockState()).particleMaterial().sprite();
         ListTag entities = data.getListOrEmpty("Entities");
         for (int i = 0; i < Math.min(CameraCapture.MAX_ENTITIES, entities.size()); i++) {
             CompoundTag entity = entities.getCompoundOrEmpty(i);

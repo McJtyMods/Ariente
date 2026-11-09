@@ -7,7 +7,7 @@ import com.mojang.blaze3d.vertex.PoseStack;
 import com.mojang.math.Axis;
 import mcjty.ariente.client.ArienteRenderType;
 import net.minecraft.client.Minecraft;
-import net.minecraft.client.renderer.MultiBufferSource;
+import mcjty.lib.client.RenderBufferSource;
 import net.minecraft.client.renderer.entity.EntityRenderer;
 import net.minecraft.client.renderer.entity.EntityRendererProvider;
 import net.minecraft.client.renderer.texture.OverlayTexture;
@@ -24,7 +24,7 @@ public class FluxShipRender extends ExtractedEntityRenderer<FluxShipEntity> {
     }
 
     @Override
-    public void render(FluxShipEntity ship, float yaw, float partialTick, PoseStack pose, MultiBufferSource buffers, int light) {
+    public void render(FluxShipEntity ship, float yaw, float partialTick, PoseStack pose, RenderBufferSource buffers, int light) {
         pose.pushPose();
         pose.translate(0, .5, 0);
         pose.mulPose(Axis.YP.rotationDegrees(-ship.getFlightYaw(partialTick)));

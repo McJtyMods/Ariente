@@ -68,7 +68,7 @@ public class DisplayClientChecks {
     public static void tick(TickEvent.ClientTickEvent event) {
         Minecraft mc = Minecraft.getInstance();
         if (!Boolean.getBoolean("ariente.displayClientCheck") || event.phase != TickEvent.Phase.END
-                || mc.player == null || mc.level == null || mc.getSingleplayerServer() == null || mc.getOverlay() != null) {
+                || mc.player == null || mc.level == null || mc.getSingleplayerServer() == null || mc.gui.overlay() != null) {
             return;
         }
         require(failure == null, "Fixture failed: " + failure);
@@ -78,7 +78,7 @@ public class DisplayClientChecks {
             mc.options.pauseOnLostFocus = false;
             mc.options.setCameraType(CameraType.FIRST_PERSON);
             mc.options.hideGui = false;
-            mc.setScreen(null);
+            mc.gui.setScreen(null);
             mc.mouseHandler.releaseMouse();
             UUID playerId = mc.player.getUUID();
             mc.getSingleplayerServer().execute(() -> {
@@ -249,19 +249,19 @@ public class DisplayClientChecks {
             // Use the real attack path: both client focus and server edit authorization.
             mc.gameMode.attack(mc.player, holo);
         } else if (ticks == 135) {
-            require(mc.screen instanceof TextEntryScreen, "Clicking a hologui text field must focus text entry");
-            mc.screen.keyPressed(GLFW.GLFW_KEY_HOME, 0, 0);
-            mc.screen.charTyped('!', 0);
-            mc.screen.keyPressed(GLFW.GLFW_KEY_DELETE, 0, 0);
-            mc.screen.keyPressed(GLFW.GLFW_KEY_END, 0, 0);
-            mc.screen.keyPressed(GLFW.GLFW_KEY_ENTER, 0, 0);
-            mc.screen.charTyped('O', 0);
-            mc.screen.charTyped('K', 0);
+            require(mc.gui.screen() instanceof TextEntryScreen, "Clicking a hologui text field must focus text entry");
+            mc.gui.screen().keyPressed(GLFW.GLFW_KEY_HOME, 0, 0);
+            mc.gui.screen().charTyped('!', 0);
+            mc.gui.screen().keyPressed(GLFW.GLFW_KEY_DELETE, 0, 0);
+            mc.gui.screen().keyPressed(GLFW.GLFW_KEY_END, 0, 0);
+            mc.gui.screen().keyPressed(GLFW.GLFW_KEY_ENTER, 0, 0);
+            mc.gui.screen().charTyped('O', 0);
+            mc.gui.screen().charTyped('K', 0);
             capture = "display-text-editor";
         } else if (ticks == 140) {
-            mc.screen.keyPressed(GLFW.GLFW_KEY_ESCAPE, 0, 0);
+            mc.gui.screen().keyPressed(GLFW.GLFW_KEY_ESCAPE, 0, 0);
         } else if (ticks == 150) {
-            require(mc.screen == null, "Escape must leave keyboard focus");
+            require(mc.gui.screen() == null, "Escape must leave keyboard focus");
             mc.mouseHandler.releaseMouse();
             mc.getSingleplayerServer().execute(() -> {
                 var player = mc.getSingleplayerServer().getPlayerList().getPlayer(mc.player.getUUID());
@@ -335,16 +335,16 @@ public class DisplayClientChecks {
         } else if (ticks == 265) {
             mc.gameMode.attack(mc.player, gui(mc));
         } else if (ticks == 275) {
-            require(mc.screen instanceof TextEntryScreen, "Installed text supports keyboard editing with empty hands");
-            mc.screen.keyPressed(GLFW.GLFW_KEY_END, 0, 0);
+            require(mc.gui.screen() instanceof TextEntryScreen, "Installed text supports keyboard editing with empty hands");
+            mc.gui.screen().keyPressed(GLFW.GLFW_KEY_END, 0, 0);
             for (int index = 0; index < 7; index++) {
-                mc.screen.keyPressed(GLFW.GLFW_KEY_BACKSPACE, 0, 0);
+                mc.gui.screen().keyPressed(GLFW.GLFW_KEY_BACKSPACE, 0, 0);
             }
             for (char letter : "STATUS".toCharArray()) {
-                mc.screen.charTyped(letter, 0);
+                mc.gui.screen().charTyped(letter, 0);
             }
         } else if (ticks == 285) {
-            mc.screen.keyPressed(GLFW.GLFW_KEY_ESCAPE, 0, 0);
+            mc.gui.screen().keyPressed(GLFW.GLFW_KEY_ESCAPE, 0, 0);
         } else if (ticks == 295) {
             mc.mouseHandler.releaseMouse();
             var base = (DisplayBaseTile) mc.level.getBlockEntity(new BlockPos(3, 200, 0));
@@ -735,7 +735,7 @@ public class DisplayClientChecks {
             return;
         }
         Minecraft mc = Minecraft.getInstance();
-        try (var screenshot = Screenshot.takeScreenshot(mc.getMainRenderTarget())) {
+        try (var screenshot = Screenshot.takeScreenshot(mc.gameRenderer.mainRenderTarget())) {
             screenshot.writeToFile(mc.gameDirectory.toPath().resolve(capture + ".png"));
         } catch (Exception error) {
             throw new IllegalStateException(error);

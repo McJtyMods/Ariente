@@ -1,10 +1,10 @@
 package mcjty.ariente.display.client;
 
-import com.mojang.blaze3d.vertex.ByteBufferBuilder;
 
 import com.mojang.blaze3d.ProjectionType;
 import com.mojang.blaze3d.pipeline.RenderTarget;
 import com.mojang.blaze3d.pipeline.TextureTarget;
+import com.mojang.blaze3d.GpuFormat;
 import com.mojang.blaze3d.systems.RenderSystem;
 import com.mojang.blaze3d.vertex.VertexConsumer;
 import java.util.ArrayList;
@@ -19,13 +19,14 @@ import mcjty.ariente.display.CameraView;
 import mcjty.ariente.display.InstalledModule;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.multiplayer.ClientLevel;
-import net.minecraft.client.renderer.MultiBufferSource;
+import mcjty.lib.client.RenderBufferSource;
 import net.minecraft.client.renderer.ProjectionMatrixBuffer;
 import net.minecraft.client.renderer.rendertype.RenderType;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.resources.Identifier;
 import net.minecraft.world.phys.Vec3;
 import org.joml.Matrix4f;
+import org.joml.Vector4f;
 import org.joml.Vector3f;
 
 /** Snapshot geometry is projected into a managed target using the game's GPU pipelines. */
@@ -133,8 +134,7 @@ public final class CameraPerspectiveRenderer {
         }
 
         private void draw(CameraPerspective camera) {
-            try (var memory = new ByteBufferBuilder(262144)) {
-            var buffers = MultiBufferSource.immediate(memory);
+            try (var buffers = RenderBufferSource.immediate()) {
             var solid = buffers.getBuffer(DisplayRenderType.scene(false));
             for (Quad quad : quads) if (!quad.translucent()) quad.emit(solid, camera.view());
             buffers.endBatch();
@@ -173,7 +173,7 @@ public final class CameraPerspectiveRenderer {
 
         private void update(int width, int height, double yaw, int tilt, int zoom) {
             if (target == null) {
-                target = new TextureTarget("Ariente snapshot camera", width * RESOLUTION_SCALE, height * RESOLUTION_SCALE, true);
+                target = new TextureTarget("Ariente snapshot camera", width * RESOLUTION_SCALE, height * RESOLUTION_SCALE, true, GpuFormat.RGBA8_UNORM);
                 texture = Identifier.fromNamespaceAndPath("ariente", "snapshot_camera/" + nextTexture++);
                 Minecraft.getInstance().getTextureManager().register(texture, new RenderTargetTexture(target));
                 renderType = DisplayRenderType.cameraImage(texture);
@@ -188,7 +188,7 @@ public final class CameraPerspectiveRenderer {
             RenderSystem.getModelViewStack().pushMatrix();
             RenderSystem.getModelViewStack().identity();
             try {
-                RenderSystem.getDevice().createCommandEncoder().clearColorAndDepthTextures(target.getColorTexture(), 0, target.getDepthTexture(), 1);
+                RenderSystem.getDevice().createCommandEncoder().clearColorAndDepthTextures(target.getColorTexture(), new Vector4f(), target.getDepthTexture(), 1);
                 RenderSystem.outputColorTextureOverride = target.getColorTextureView();
                 RenderSystem.outputDepthTextureOverride = target.getDepthTextureView();
                 CameraPerspective camera = CameraPerspective.of(geometry.center, geometry.radius, CameraView.of(yaw, tilt), width, height, zoom);

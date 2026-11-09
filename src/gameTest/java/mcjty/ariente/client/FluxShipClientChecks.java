@@ -1,5 +1,6 @@
 package mcjty.ariente.client;
 
+import net.minecraft.world.item.DyeColor;
 import com.mojang.blaze3d.platform.InputConstants;
 import mcjty.ariente.Ariente;
 import mcjty.ariente.bindings.KeyBindings;
@@ -127,7 +128,7 @@ public class FluxShipClientChecks {
     public static void tick(TickEvent.ClientTickEvent event) {
         Minecraft mc = Minecraft.getInstance();
         if (!Boolean.getBoolean("ariente.shipClientCheck") || event.phase != TickEvent.Phase.END
-                || mc.player == null || mc.level == null || mc.getSingleplayerServer() == null || mc.getOverlay() != null) {
+                || mc.player == null || mc.level == null || mc.getSingleplayerServer() == null || mc.gui.overlay() != null) {
             return;
         }
         require(failure == null, "Server fixture failed: " + failure);
@@ -139,7 +140,7 @@ public class FluxShipClientChecks {
             mc.options.setCameraType(CameraType.FIRST_PERSON);
             mc.options.graphicsMode().set(Boolean.getBoolean("ariente.shipExhaustFabulous") ? GraphicsStatus.FABULOUS : GraphicsStatus.FANCY);
             mc.levelRenderer.allChanged();
-            mc.setScreen(null);
+            mc.gui.setScreen(null);
             mc.mouseHandler.releaseMouse();
             UUID playerId = mc.player.getUUID();
             mc.getSingleplayerServer().execute(() -> {
@@ -159,7 +160,7 @@ public class FluxShipClientChecks {
                     if (!tutorial) {
                         for (BlockPos pos : BlockPos.betweenClosed(-40, 199, -40, 40, 199, 60)) {
                             level.setBlock(pos, (pos.getX() % 8 == 0 || pos.getZ() % 8 == 0 ? Blocks.LIGHT_BLUE_CONCRETE
-                                    : Blocks.WHITE_CONCRETE).defaultBlockState(), 2);
+                                    : Blocks.CONCRETE.pick(DyeColor.WHITE)).defaultBlockState(), 2);
                         }
                     }
                     var player = server.getPlayerList().getPlayer(playerId);
@@ -353,7 +354,7 @@ public class FluxShipClientChecks {
     private static Vector3f cockpitProjection(Minecraft mc, FluxShipEntity ship, float partialTick) {
         Vec3 center = FluxShipLaser.panelCenter(ship, partialTick);
         Vec3 relative = center.subtract(mc.player.getEyePosition(partialTick));
-        var angles = new ViewportEvent.ComputeCameraAngles(mc.gameRenderer, mc.gameRenderer.getMainCamera(), partialTick,
+        var angles = new ViewportEvent.ComputeCameraAngles(mc.gameRenderer, mc.gameRenderer.mainCamera(), partialTick,
                 mc.player.getViewYRot(partialTick), mc.player.getViewXRot(partialTick), 0);
         FluxShipClient.cameraAngles(angles);
         Vector3f view = new Quaternionf().rotationZ(angles.getRoll() * Mth.DEG_TO_RAD)
@@ -364,7 +365,7 @@ public class FluxShipClientChecks {
     }
 
     private static void checkCameraOptions(Minecraft mc, FluxShipEntity ship) {
-        var camera = mc.gameRenderer.getMainCamera();
+        var camera = mc.gameRenderer.mainCamera();
         float yaw = Mth.rotLerp(1, ship.yRotO, ship.getYRot());
         var sideways = new ViewportEvent.ComputeCameraAngles(mc.gameRenderer, camera, 1, yaw + 90, 0, 0);
         FluxShipClient.cameraAngles(sideways);
@@ -382,7 +383,7 @@ public class FluxShipClientChecks {
     }
 
     private static void screenshot(Minecraft mc, String name) {
-        try (var screenshot = Screenshot.takeScreenshot(mc.getMainRenderTarget())) {
+        try (var screenshot = Screenshot.takeScreenshot(mc.gameRenderer.mainRenderTarget())) {
             screenshot.writeToFile(mc.gameDirectory.toPath().resolve(name + ".png"));
         } catch (Exception error) {
             throw new IllegalStateException(error);

@@ -15,7 +15,7 @@ import mcjty.hologui.gui.HoloGuiEntity;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.Screenshot;
 import net.minecraft.client.renderer.LightTexture;
-import net.minecraft.client.renderer.MultiBufferSource;
+import mcjty.lib.client.RenderBufferSource;
 import net.minecraft.core.BlockPos;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.Items;
@@ -50,14 +50,14 @@ public class ConstructionInventoryClientChecks {
     public static void tick(TickEvent.ClientTickEvent event) {
         var mc = Minecraft.getInstance();
         if (!Boolean.getBoolean("ariente.constructionInventoryCheck") || event.phase != TickEvent.Phase.END
-                || mc.player == null || mc.level == null || mc.getSingleplayerServer() == null || mc.getOverlay() != null) {
+                || mc.player == null || mc.level == null || mc.getSingleplayerServer() == null || mc.gui.overlay() != null) {
             return;
         }
         require(failure == null, "Server fixture failed: " + failure);
         if (!started) {
             started = true;
             mc.options.pauseOnLostFocus = false;
-            mc.setScreen(null);
+            mc.gui.setScreen(null);
             mc.mouseHandler.releaseMouse();
             var id = mc.player.getUUID();
             server(() -> {
@@ -147,7 +147,7 @@ public class ConstructionInventoryClientChecks {
                     poses.translate(0, 0, -2);
                     poses.mulPose(Axis.YP.rotationDegrees(angle));
                     poses.translate(0, -.5, 0);
-                    var buffers = MultiBufferSource.immediate(new BufferBuilder(4096));
+                    var buffers = RenderBufferSource.immediate(new BufferBuilder(4096));
                     mc.getEntityRenderDispatcher().getRenderer(holo).render(holo, 0, 0, poses, buffers, LightTexture.FULL_BRIGHT);
                     buffers.endBatch();
                     try (var screenshot = Screenshot.takeScreenshot(target)) {
@@ -184,7 +184,7 @@ public class ConstructionInventoryClientChecks {
             RenderSystem.setProjectionMatrix(projection, sorting);
             modelView.popPose();
             RenderSystem.applyModelViewMatrix();
-            mc.getMainRenderTarget().bindWrite(true);
+            mc.gameRenderer.mainRenderTarget().bindWrite(true);
         }
     }
 

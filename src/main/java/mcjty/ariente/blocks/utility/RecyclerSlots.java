@@ -4,7 +4,7 @@ import com.mojang.blaze3d.vertex.PoseStack;
 import mcjty.ariente.gui.client.InventoryRenderer;
 import mcjty.hologui.api.IHoloGuiEntity;
 import mcjty.hologui.gui.components.HoloSlots;
-import net.minecraft.client.renderer.MultiBufferSource;
+import mcjty.lib.client.RenderBufferSource;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.ItemStack;
 import net.neoforged.neoforge.items.IItemHandler;
@@ -43,7 +43,7 @@ public class RecyclerSlots extends HoloSlots {
 
     @Override
 
-    public void render(PoseStack poses, MultiBufferSource buffer, Player player, IHoloGuiEntity holo, double cursorX, double cursorY) {
+    public void render(PoseStack poses, RenderBufferSource buffer, Player player, IHoloGuiEntity holo, double cursorX, double cursorY) {
         int hovered = getSelectedPair(player, cursorX, cursorY).getRight();
         for (int row = 0; row < rows; row++) {
             for (int column = 0; column < columns; column++) {

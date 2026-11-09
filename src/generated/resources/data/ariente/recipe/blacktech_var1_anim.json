@@ -1,6 +1,5 @@
 {
   "type": "minecraft:crafting_shaped",
-  "category": "misc",
   "key": {
     "M": "ariente:marble_black",
     "m": "ariente:marble_darkblue"

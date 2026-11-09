@@ -6,7 +6,7 @@ import net.minecraft.client.renderer.block.model.BlockDisplayContext;
 
 import com.mojang.blaze3d.vertex.PoseStack;
 import net.minecraft.client.Minecraft;
-import net.minecraft.client.renderer.MultiBufferSource;
+import mcjty.lib.client.RenderBufferSource;
 import mcjty.ariente.client.ExtractedBlockRenderer;
 import net.minecraft.client.renderer.blockentity.BlockEntityRendererProvider;
 
@@ -16,7 +16,7 @@ public class MultipartRenderer extends ExtractedBlockRenderer<MultipartTE> {
     }
 
     @Override
-    public void render(MultipartTE tile, float partialTick, PoseStack pose, MultiBufferSource buffers, int light, int overlay) {
+    public void render(MultipartTE tile, float partialTick, PoseStack pose, RenderBufferSource buffers, int light, int overlay) {
         for (MultipartTE.Part part : tile.getParts().values()) {
             var state = new BlockModelRenderState();
             Minecraft.getInstance().getBlockModelResolver().update(state, part.getState(),

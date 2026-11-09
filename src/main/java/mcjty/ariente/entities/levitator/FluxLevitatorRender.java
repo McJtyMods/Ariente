@@ -3,7 +3,7 @@ package mcjty.ariente.entities.levitator;
 import mcjty.ariente.client.ExtractedEntityRenderer;
 import com.mojang.blaze3d.vertex.PoseStack;
 import com.mojang.math.Axis;
-import net.minecraft.client.renderer.MultiBufferSource;
+import mcjty.lib.client.RenderBufferSource;
 import net.minecraft.client.renderer.entity.EntityRenderer;
 import net.minecraft.client.renderer.entity.EntityRendererProvider;
 import net.minecraft.client.renderer.texture.OverlayTexture;
@@ -22,7 +22,7 @@ public class FluxLevitatorRender extends ExtractedEntityRenderer<FluxLevitatorEn
     }
 
     @Override
-    public void render(FluxLevitatorEntity entity, float entityYaw, float partialTicks, PoseStack matrixStack, MultiBufferSource buffer, int packedLightIn) {
+    public void render(FluxLevitatorEntity entity, float entityYaw, float partialTicks, PoseStack matrixStack, RenderBufferSource buffer, int packedLightIn) {
         matrixStack.pushPose();
 
         double interX = entity.xOld + (entity.getX() - entity.xOld) * partialTicks;

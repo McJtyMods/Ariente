@@ -6,7 +6,7 @@ import mcjty.hologui.api.IHoloGuiEntity;
 import mcjty.hologui.api.IImage;
 import mcjty.hologui.gui.HoloGuiRenderTools;
 import mcjty.hologui.gui.components.HoloPlayerSlots;
-import net.minecraft.client.renderer.MultiBufferSource;
+import mcjty.lib.client.RenderBufferSource;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.ItemStack;
 import org.apache.commons.lang3.tuple.Pair;
@@ -54,7 +54,7 @@ public class PlayerInventoryPanel extends HoloPlayerSlots {
     }
 
     @Override
-    public void render(PoseStack poses, MultiBufferSource buffer, Player player, IHoloGuiEntity holo, double cursorX, double cursorY) {
+    public void render(PoseStack poses, RenderBufferSource buffer, Player player, IHoloGuiEntity holo, double cursorX, double cursorY) {
         InventoryRenderer.header(poses, buffer, hint);
         int hovered = getSelectedPair(player, cursorX, cursorY).getRight();
         for (int row = 0; row < 4; row++) {

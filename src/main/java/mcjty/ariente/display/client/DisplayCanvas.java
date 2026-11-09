@@ -6,7 +6,7 @@ import com.mojang.blaze3d.vertex.VertexConsumer;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.Font;
 import net.minecraft.util.LightCoordsUtil;
-import net.minecraft.client.renderer.MultiBufferSource;
+import mcjty.lib.client.RenderBufferSource;
 import net.minecraft.client.renderer.texture.OverlayTexture;
 import net.minecraft.world.item.ItemDisplayContext;
 import net.minecraft.world.item.ItemStack;
@@ -14,7 +14,7 @@ import org.joml.Matrix4f;
 
 /** Drawing in display pixels (64 per block), with the origin at the top left. */
 
-public record DisplayCanvas(PoseStack poses, MultiBufferSource buffer) {
+public record DisplayCanvas(PoseStack poses, RenderBufferSource buffer) {
 
     public void fill(float x, float y, float width, float height, int argb) {
         if ((argb >>> 24) == 0 || width <= 0 || height <= 0) {
@@ -45,7 +45,7 @@ public record DisplayCanvas(PoseStack poses, MultiBufferSource buffer) {
         poses.scale(scale, scale, scale);
         Font font = Minecraft.getInstance().font;
         String fitted = font.plainSubstrByWidth(text, Math.max(1, (int) (maxWidth / scale)));
-        font.drawInBatch(fitted, 0, 0, 0xff000000 | rgb, false, poses.last().pose(), buffer, Font.DisplayMode.NORMAL, 0, LightCoordsUtil.FULL_BRIGHT);
+        ArienteRenderHelper.text(poses, buffer, fitted, 0, 0, 0xff000000 | rgb, false, LightCoordsUtil.FULL_BRIGHT);
         poses.popPose();
     }
 

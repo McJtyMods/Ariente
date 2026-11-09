@@ -80,14 +80,14 @@ public final class LanceModel implements ItemModel, SpecialModelRenderer<LanceMo
                 .m00((float) right.x).m01((float) right.y).m02((float) right.z)
                 .m10((float) direction.x).m11((float) direction.y).m12((float) direction.z)
                 .m20((float) normal.x).m21((float) normal.y).m22((float) normal.z);
-        var camera = mc.gameRenderer.getGameRenderState().levelRenderState.cameraRenderState;
+        var camera = mc.gameRenderer.gameRenderState().levelRenderState.cameraRenderState;
         float scale = firstPerson ? .75f : 1;
         Vec3 origin = aim.muzzle().subtract(direction.scale(1.5 * scale)).subtract(camera.pos);
         Matrix4f transform = new Matrix4f().translation((float) origin.x, (float) origin.y, (float) origin.z).mul(orientation)
                 .scale(scale).translate(-.5f, -.5f, -.5f);
         Matrix4f handCorrection = null;
         if (firstPerson) {
-            var window = mc.gameRenderer.getGameRenderState().windowRenderState;
+            var window = mc.gameRenderer.gameRenderState().windowRenderState;
             Matrix4f handProjection = new Matrix4f().perspective(camera.hudFov * Mth.DEG_TO_RAD,
                     (float) window.width / window.height, .05f, 100);
             handCorrection = handProjection.invert().mul(camera.projectionMatrix).mul(camera.viewRotationMatrix);
@@ -109,7 +109,7 @@ public final class LanceModel implements ItemModel, SpecialModelRenderer<LanceMo
         PoseStack aimed = new PoseStack();
         Matrix4f transform = new Matrix4f();
         if (state.handCorrection() != null) {
-            transform.set(RenderSystem.getModelViewMatrix()).invert().mul(state.handCorrection());
+            transform.set(RenderSystem.getModelViewMatrixCopy()).invert().mul(state.handCorrection());
         }
         transform.mul(state.transform());
         aimed.last().pose().set(transform);

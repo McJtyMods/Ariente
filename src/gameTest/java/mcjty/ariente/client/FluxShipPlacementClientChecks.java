@@ -46,16 +46,16 @@ public class FluxShipPlacementClientChecks {
         if (!Boolean.getBoolean("ariente.shipPlacementCheck") || event.phase != TickEvent.Phase.END) {
             return;
         }
-        if (!started && mc.screen != null) {
+        if (!started && mc.gui.screen() != null) {
             // Only this isolated opt-in test may confirm its own experimental-dimensions screen.
-            for (var child : mc.screen.children()) {
+            for (var child : mc.gui.screen().children()) {
                 if (child instanceof Button button && button.getMessage().getString().equals("Proceed")) {
                     button.onPress();
                     return;
                 }
             }
         }
-        if (mc.player == null || mc.level == null || mc.getSingleplayerServer() == null || mc.getOverlay() != null) {
+        if (mc.player == null || mc.level == null || mc.getSingleplayerServer() == null || mc.gui.overlay() != null) {
             return;
         }
         require(failure == null, "Server placement check failed: " + failure);
@@ -64,7 +64,7 @@ public class FluxShipPlacementClientChecks {
             mc.options.pauseOnLostFocus = false;
             mc.options.setCameraType(CameraType.FIRST_PERSON);
             mc.player.getInventory().selected = 0;
-            mc.setScreen(null);
+            mc.gui.setScreen(null);
             mc.mouseHandler.releaseMouse();
             prepare(mc);
             return;
@@ -101,7 +101,7 @@ public class FluxShipPlacementClientChecks {
             require(ships.get(0).getCharge() == 4321 && ships.get(0).getY() >= 199.99,
                     "The ship must remain above ground and retain the item's battery: charge=" + ships.get(0).getCharge()
                             + ", position=" + ships.get(0).position() + ", pilot=" + ships.get(0).getControllingPassenger());
-            try (var screenshot = Screenshot.takeScreenshot(mc.getMainRenderTarget())) {
+            try (var screenshot = Screenshot.takeScreenshot(mc.gameRenderer.mainRenderTarget())) {
                 screenshot.writeToFile(mc.gameDirectory.toPath().resolve("ship-placement-" + scenario + ".png"));
             } catch (Exception error) {
                 throw new IllegalStateException(error);

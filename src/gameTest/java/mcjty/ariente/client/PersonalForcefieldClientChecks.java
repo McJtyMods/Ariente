@@ -1,5 +1,6 @@
 package mcjty.ariente.client;
 
+import net.minecraft.world.item.DyeColor;
 import mcjty.ariente.Ariente;
 import mcjty.ariente.api.ArmorUpgradeType;
 import mcjty.ariente.entities.LaserEntity;
@@ -54,7 +55,7 @@ public class PersonalForcefieldClientChecks {
         Minecraft mc = Minecraft.getInstance();
         if (!Boolean.getBoolean("ariente.forcefieldClientCheck") || event.phase != TickEvent.Phase.END
                 || mc.player == null || mc.level == null || mc.getSingleplayerServer() == null
-                || mc.screen != null || mc.getOverlay() != null || mc.isPaused()) {
+                || mc.gui.screen() != null || mc.gui.overlay() != null || mc.isPaused()) {
             return;
         }
         var server = mc.getSingleplayerServer();
@@ -72,9 +73,9 @@ public class PersonalForcefieldClientChecks {
                 level.setDayTime(6000);
                 level.getEntitiesOfClass(Skeleton.class, new AABB(-10, 200, -10, 10, 208, 10)).forEach(Skeleton::discard);
                 for (BlockPos pos : BlockPos.betweenClosed(-10, 200, -10, 10, 207, 10)) {
-                    var block = pos.getY() == 200 ? Blocks.WHITE_CONCRETE : Blocks.AIR;
+                    var block = pos.getY() == 200 ? Blocks.CONCRETE.pick(DyeColor.WHITE) : Blocks.AIR;
                     if (pos.getZ() == -5 && pos.getY() <= 205) {
-                        block = (pos.getX() + pos.getY()) % 2 == 0 ? Blocks.WHITE_CONCRETE : Blocks.LIGHT_GRAY_CONCRETE;
+                        block = (pos.getX() + pos.getY()) % 2 == 0 ? Blocks.CONCRETE.pick(DyeColor.WHITE) : Blocks.LIGHT_GRAY_CONCRETE;
                     }
                     level.setBlock(pos, block.defaultBlockState(), 2);
                 }
@@ -192,7 +193,7 @@ public class PersonalForcefieldClientChecks {
         }
         Minecraft mc = Minecraft.getInstance();
         var directory = mc.gameDirectory.toPath().resolve("screenshots/forcefield");
-        try (var screenshot = Screenshot.takeScreenshot(mc.getMainRenderTarget())) {
+        try (var screenshot = Screenshot.takeScreenshot(mc.gameRenderer.mainRenderTarget())) {
             Files.createDirectories(directory);
             screenshot.writeToFile(directory.resolve(capture + ".png"));
             if (capture.startsWith("third-person") && !capture.endsWith("ready")) {

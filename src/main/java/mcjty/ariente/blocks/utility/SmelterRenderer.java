@@ -9,7 +9,7 @@ import mcjty.ariente.client.ArienteRenderType;
 import mcjty.ariente.setup.Registration;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.Font;
-import net.minecraft.client.renderer.MultiBufferSource;
+import mcjty.lib.client.RenderBufferSource;
 import mcjty.ariente.client.ExtractedBlockRenderer;
 import net.minecraft.client.renderer.blockentity.BlockEntityRendererProvider;
 import net.minecraft.client.renderer.blockentity.BlockEntityRenderers;
@@ -25,7 +25,7 @@ public class SmelterRenderer extends ExtractedBlockRenderer<SmelterTile> {
     }
 
     @Override
-    public void render(SmelterTile tile, float partialTicks, PoseStack poses, MultiBufferSource buffer, int light, int overlay) {
+    public void render(SmelterTile tile, float partialTicks, PoseStack poses, RenderBufferSource buffer, int light, int overlay) {
         poses.pushPose();
         poses.translate(.5, .5, .5);
         poses.mulPose(Axis.YP.rotationDegrees(switch (Registration.SMELTER.get().getFrontDirection(tile.getBlockState())) {
@@ -36,7 +36,7 @@ public class SmelterRenderer extends ExtractedBlockRenderer<SmelterTile> {
         }));
         poses.translate(0, 0, .385);
         renderSlotHighlight(tile, poses, buffer);
-        MultiBufferSource itemBuffer = type -> buffer.getBuffer(ArienteRenderType.displayItem(type));
+        RenderBufferSource itemBuffer = type -> buffer.getBuffer(ArienteRenderType.displayItem(type));
         for (int slot = 0; slot < 2; slot++) {
             ItemStack stack = tile.getStack(slot);
             if (stack.isEmpty()) {
@@ -53,15 +53,14 @@ public class SmelterRenderer extends ExtractedBlockRenderer<SmelterTile> {
                 String count = Integer.toString(stack.getCount());
                 poses.translate(.125, -.065, .005);
                 poses.scale(.005f, -.005f, .005f);
-                font.drawInBatch(count, -font.width(count), 0, 0xffffffff, true, poses.last().pose(), buffer,
-                        Font.DisplayMode.NORMAL, 0, 0xf000f0);
+                ArienteRenderHelper.text(poses, buffer, count, -font.width(count), 0, 0xffffffff, true, 0xf000f0);
             }
             poses.popPose();
         }
         poses.popPose();
     }
 
-    private void renderSlotHighlight(SmelterTile tile, PoseStack poses, MultiBufferSource buffer) {
+    private void renderSlotHighlight(SmelterTile tile, PoseStack poses, RenderBufferSource buffer) {
         if (!(Minecraft.getInstance().hitResult instanceof BlockHitResult hit)) {
             return;
         }

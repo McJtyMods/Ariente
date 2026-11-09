@@ -5,7 +5,7 @@ import com.mojang.blaze3d.vertex.PoseStack;
 import mcjty.hologui.gui.HoloGuiRenderTools;
 import net.minecraft.client.Minecraft;
 import net.minecraft.util.LightCoordsUtil;
-import net.minecraft.client.renderer.MultiBufferSource;
+import mcjty.lib.client.RenderBufferSource;
 import net.minecraft.client.renderer.texture.OverlayTexture;
 import net.minecraft.world.item.ItemDisplayContext;
 import net.minecraft.world.item.ItemStack;
@@ -14,16 +14,16 @@ import static mcjty.ariente.gui.InventoryLayout.*;
 
 public class InventoryRenderer {
 
-    public static void header(PoseStack poses, MultiBufferSource buffer, String hint) {
+    public static void header(PoseStack poses, RenderBufferSource buffer, String hint) {
         HoloGuiRenderTools.renderLine(poses, buffer, GRID_X, PLAYER_Y - .85, GRID_X + WIDTH, PLAYER_Y - .85, .02, 0x487b9c);
         HoloGuiRenderTools.renderText(poses, buffer, GRID_X, PLAYER_Y - .6, "Inventory    " + hint, 0xffb8f4ff, .3f);
     }
 
-    public static void cell(PoseStack poses, MultiBufferSource buffer, double x, double y, ItemStack stack, int amount, boolean highlight) {
+    public static void cell(PoseStack poses, RenderBufferSource buffer, double x, double y, ItemStack stack, int amount, boolean highlight) {
         cell(poses, buffer, x, y, stack, amount, highlight, true);
     }
 
-    public static void cell(PoseStack poses, MultiBufferSource buffer, double x, double y, ItemStack stack, int amount, boolean highlight, boolean enabled) {
+    public static void cell(PoseStack poses, RenderBufferSource buffer, double x, double y, ItemStack stack, int amount, boolean highlight, boolean enabled) {
         HoloGuiRenderTools.renderBorder(poses, buffer, x, y, CELL, CELL,
                 enabled ? (highlight ? 190 : 75) : 45, enabled ? 160 : 80, enabled ? 200 : 100, 170);
         if (amount > 0) {
@@ -34,11 +34,11 @@ public class InventoryRenderer {
         }
     }
 
-    public static void item(PoseStack poses, MultiBufferSource buffer, double x, double y, ItemStack stack) {
+    public static void item(PoseStack poses, RenderBufferSource buffer, double x, double y, ItemStack stack) {
         item(poses, buffer, x, y, stack, 1);
     }
 
-    private static void item(PoseStack poses, MultiBufferSource buffer, double x, double y, ItemStack stack, float brightness) {
+    private static void item(PoseStack poses, RenderBufferSource buffer, double x, double y, ItemStack stack, float brightness) {
         // Keep icons aligned to the borders even in the lower inventory rows.
         poses.pushPose();
         poses.translate((x + .36) * .1 - .42, .42 - (y + .34) * .1, .004);
@@ -48,11 +48,11 @@ public class InventoryRenderer {
         poses.popPose();
     }
 
-    public static void count(PoseStack poses, MultiBufferSource buffer, double x, double y, int amount) {
+    public static void count(PoseStack poses, RenderBufferSource buffer, double x, double y, int amount) {
         count(poses, buffer, x, y, amount, 0xffffffff);
     }
 
-    private static void count(PoseStack poses, MultiBufferSource buffer, double x, double y, int amount, int color) {
+    private static void count(PoseStack poses, RenderBufferSource buffer, double x, double y, int amount, int color) {
         String label = Integer.toString(amount);
         var font = Minecraft.getInstance().font;
         // Account for renderText's .2-unit inset when aligning inside the slot.

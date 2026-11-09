@@ -16,7 +16,7 @@ import net.minecraft.client.Minecraft;
 import net.minecraft.client.Screenshot;
 import net.minecraft.client.renderer.GameRenderer;
 import net.minecraft.client.renderer.LightTexture;
-import net.minecraft.client.renderer.MultiBufferSource;
+import mcjty.lib.client.RenderBufferSource;
 import net.minecraft.client.renderer.RenderType;
 import net.minecraft.client.renderer.texture.OverlayTexture;
 import net.minecraft.world.inventory.InventoryMenu;
@@ -79,7 +79,7 @@ public class FluxShipLightingChecks {
             RenderSystem.setShaderFogStart(fogStart);
             RenderSystem.setShaderFogEnd(fogEnd);
             target.destroyBuffers();
-            mc.getMainRenderTarget().bindWrite(true);
+            mc.gameRenderer.mainRenderTarget().bindWrite(true);
         }
     }
 
@@ -100,7 +100,7 @@ public class FluxShipLightingChecks {
         PoseStack poses = new PoseStack();
         poses.last().pose().set(view);
         poses.last().normal().set(new Matrix3f(view));
-        MultiBufferSource.BufferSource buffers = MultiBufferSource.immediate(new BufferBuilder(32768));
+        RenderBufferSource.Immediate buffers = RenderBufferSource.immediate(new BufferBuilder(32768));
         if (legacy) {
             poses.translate(0, .5, 0);
             poses.mulPose(Axis.YP.rotationDegrees(-ship.getFlightYaw(.5f)));

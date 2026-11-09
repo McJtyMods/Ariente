@@ -8,7 +8,7 @@ import mcjty.ariente.display.DisplayGeometry;
 import mcjty.ariente.display.InstalledModule;
 import mcjty.ariente.display.PacketDisplayGesture;
 import net.minecraft.client.Minecraft;
-import net.minecraft.client.renderer.MultiBufferSource;
+import mcjty.lib.client.RenderBufferSource;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
 import net.minecraft.world.item.ItemStack;
@@ -48,7 +48,7 @@ public class DisplayModuleDrag {
     }
 
     private static boolean contextValid(Minecraft mc) {
-        return mc.player != null && mc.level == gesture.source.getLevel() && mc.screen == null
+        return mc.player != null && mc.level == gesture.source.getLevel() && mc.gui.screen() == null
                 && !mc.player.isSpectator() && !gesture.source.isRemoved();
     }
 
@@ -145,7 +145,7 @@ public class DisplayModuleDrag {
         return gesture != null && gesture.dragged && gesture.module.id().equals(module);
     }
 
-    public static void render(PoseStack poses, MultiBufferSource buffer, Vec3 camera) {
+    public static void render(PoseStack poses, RenderBufferSource buffer, Vec3 camera) {
         if (gesture == null || !contextValid(Minecraft.getInstance())) {
             return;
         }

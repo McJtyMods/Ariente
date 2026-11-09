@@ -29,7 +29,7 @@ public class BlockInventoryInput {
             event.setSwingHand(false);
             return;
         }
-        if (mc.player == null || mc.level == null || mc.screen != null || !mc.player.isCreative()
+        if (mc.player == null || mc.level == null || mc.gui.screen() != null || !mc.player.isCreative()
                 || !(mc.hitResult instanceof BlockHitResult hit)) {
             return;
         }
@@ -46,7 +46,7 @@ public class BlockInventoryInput {
     public static void tick(ClientTickEvent.Post event) {
         if (true) {
             Minecraft mc = Minecraft.getInstance();
-            if (mc.player == null || mc.level == null || mc.screen != null || !mc.options.keyAttack.isDown()) {
+            if (mc.player == null || mc.level == null || mc.gui.screen() != null || !mc.options.keyAttack.isDown()) {
                 consumingAttack = false;
             }
         }

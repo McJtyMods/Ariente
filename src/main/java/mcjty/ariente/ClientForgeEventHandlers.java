@@ -72,8 +72,8 @@ public class ClientForgeEventHandlers {
         boolean flight = hasUpgrade(player, EquipmentSlot.CHEST, Registration.POWERSUIT_CHEST.get(), ArmorUpgradeType.FLIGHT);
         if (flight) {
             boolean hover = hasUpgrade(player, EquipmentSlot.CHEST, Registration.POWERSUIT_CHEST.get(), ArmorUpgradeType.HOVER);
-            boolean jump = mc.screen == null && mc.options.keyJump.isDown();
-            boolean sneak = mc.screen == null && mc.options.keyShift.isDown();
+            boolean jump = mc.gui.screen() == null && mc.options.keyJump.isDown();
+            boolean sneak = mc.gui.screen() == null && mc.options.keyShift.isDown();
             if (jump || hover) {
                 double vertical = jump ? UtilityConfiguration.POWERSUIT_FLYVERTICAL_FACTOR.get()
                         : sneak ? -UtilityConfiguration.POWERSUIT_FLYVERTICAL_FACTOR.get() : 0;
@@ -81,7 +81,7 @@ public class ClientForgeEventHandlers {
                 player.fallDistance = 0;
             }
         }
-        if (mc.screen == null && hasUpgrade(player, EquipmentSlot.LEGS, Registration.POWERSUIT_LEGS.get(), ArmorUpgradeType.SPEED)) {
+        if (mc.gui.screen() == null && hasUpgrade(player, EquipmentSlot.LEGS, Registration.POWERSUIT_LEGS.get(), ArmorUpgradeType.SPEED)) {
             if (mc.options.keyUp.isDown()) {
                 handleSpeed(player, .5, UtilityConfiguration.POWERSUIT_MAX_FORWARD_GROUND_SPEED.get(),
                         UtilityConfiguration.POWERSUIT_MAX_FORWARD_FLY_SPEED.get(), flight);

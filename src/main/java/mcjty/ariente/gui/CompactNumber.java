@@ -9,7 +9,7 @@ import mcjty.hologui.api.IHoloGuiEntity;
 import mcjty.hologui.api.components.INumber;
 import mcjty.hologui.gui.HoloGuiRenderTools;
 import mcjty.hologui.gui.components.AbstractHoloComponent;
-import net.minecraft.client.renderer.MultiBufferSource;
+import mcjty.lib.client.RenderBufferSource;
 import net.minecraft.world.entity.player.Player;
 
 public class CompactNumber extends AbstractHoloComponent<INumber> implements INumber {
@@ -46,13 +46,13 @@ public class CompactNumber extends AbstractHoloComponent<INumber> implements INu
     }
 
     @Override
-    public void render(PoseStack poses, MultiBufferSource buffer, Player player, IHoloGuiEntity holo, double cursorX, double cursorY) {
+    public void render(PoseStack poses, RenderBufferSource buffer, Player player, IHoloGuiEntity holo, double cursorX, double cursorY) {
         HoloGuiRenderTools.renderFittedText(poses, buffer, x, y + .1,
                 NumberFormatting.compact(getter.apply(player, holo)), colorGetter.apply(player), .7f, w);
     }
 
     @Override
-    public void renderTooltip(PoseStack poses, MultiBufferSource buffer, Player player, IHoloGuiEntity holo, double cursorX, double cursorY) {
+    public void renderTooltip(PoseStack poses, RenderBufferSource buffer, Player player, IHoloGuiEntity holo, double cursorX, double cursorY) {
         int value = getter.apply(player, holo);
         if (value > -1000 && value < 1000) {
             return;

@@ -50,11 +50,11 @@ public final class RenderBoundsChecks {
         }
         Minecraft mc = Minecraft.getInstance();
         mc.options.pauseOnLostFocus = false;
-        if (mc.screen instanceof PauseScreen) {
-            mc.setScreen(null);
+        if (mc.gui.screen() instanceof PauseScreen) {
+            mc.gui.setScreen(null);
         }
-        if (mc.player == null && mc.screen != null) {
-            for (var child : mc.screen.children()) {
+        if (mc.player == null && mc.gui.screen() != null) {
+            for (var child : mc.gui.screen().children()) {
                 if (child instanceof Button button && button != accepted && (button.getMessage().getString().equals("Proceed")
                         || button.getMessage().getString().equals("Continue") || button.getMessage().getString().equals("I know what I'm doing!"))) {
                     accepted = button;
@@ -63,7 +63,7 @@ public final class RenderBoundsChecks {
                 }
             }
         }
-        if (mc.player == null || mc.level == null || mc.getOverlay() != null) {
+        if (mc.player == null || mc.level == null || mc.gui.overlay() != null) {
             require(++waiting < 2400, "Client never entered the render-bounds fixture");
             return;
         }

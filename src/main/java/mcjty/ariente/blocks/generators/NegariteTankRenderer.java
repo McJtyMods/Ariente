@@ -4,7 +4,7 @@ import com.mojang.blaze3d.vertex.PoseStack;
 import mcjty.ariente.Ariente;
 import mcjty.ariente.setup.Registration;
 import net.minecraft.client.Minecraft;
-import net.minecraft.client.renderer.MultiBufferSource;
+import mcjty.lib.client.RenderBufferSource;
 import mcjty.ariente.client.ExtractedBlockRenderer;
 import net.minecraft.client.renderer.blockentity.BlockEntityRendererProvider;
 import net.minecraft.client.renderer.blockentity.BlockEntityRenderers;
@@ -22,8 +22,8 @@ public class NegariteTankRenderer extends ExtractedBlockRenderer<NegariteTankTil
     }
 
     @Override
-    public void render(NegariteTankTile te, float partialTicks, PoseStack matrixStack, MultiBufferSource buffer, int combinedLightIn, int combinedOverlayIn) {
-        Vec3 cameraOffset = Minecraft.getInstance().gameRenderer.getMainCamera().position()
+    public void render(NegariteTankTile te, float partialTicks, PoseStack matrixStack, RenderBufferSource buffer, int combinedLightIn, int combinedOverlayIn) {
+        Vec3 cameraOffset = Minecraft.getInstance().gameRenderer.mainCamera().position()
                 .subtract(Vec3.atCenterOf(te.getBlockPos()));
         TankRendererTools.renderTank(matrixStack, buffer, NEGARITE_BEAM, NEGARITE_WINDOW, te.isWorking(), te.getLevel().getGameTime(), cameraOffset, combinedLightIn);
     }

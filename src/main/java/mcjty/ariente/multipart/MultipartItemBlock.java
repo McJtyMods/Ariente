@@ -5,7 +5,7 @@ import mcjty.ariente.setup.Registration;
 import mcjty.lib.multipart.IPartBlock;
 import mcjty.lib.multipart.PartSlot;
 import mcjty.lib.tileentity.GenericTileEntity;
-import net.minecraft.advancements.CriteriaTriggers;
+import net.minecraft.advancements.triggers.CriteriaTriggers;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.component.DataComponents;
 import net.minecraft.server.level.ServerPlayer;

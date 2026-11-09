@@ -68,7 +68,7 @@ public class PurifierClientChecks implements IModPlugin {
     public static void tick(TickEvent.ClientTickEvent event) {
         Minecraft mc = Minecraft.getInstance();
         if (!Boolean.getBoolean("ariente.purifierClientCheck") || event.phase != TickEvent.Phase.END
-                || mc.player == null || mc.level == null || mc.getSingleplayerServer() == null || mc.getOverlay() != null) {
+                || mc.player == null || mc.level == null || mc.getSingleplayerServer() == null || mc.gui.overlay() != null) {
             return;
         }
         require(failure == null, "Purifier fixture failed: " + failure);
@@ -76,7 +76,7 @@ public class PurifierClientChecks implements IModPlugin {
             started = true;
             mc.options.pauseOnLostFocus = false;
             mc.options.setCameraType(CameraType.FIRST_PERSON);
-            mc.setScreen(null);
+            mc.gui.setScreen(null);
             mc.mouseHandler.releaseMouse();
             var id = mc.player.getUUID();
             mc.getSingleplayerServer().execute(() -> {
@@ -241,7 +241,7 @@ public class PurifierClientChecks implements IModPlugin {
         }
         Minecraft mc = Minecraft.getInstance();
         require(GL11.glGetError() == GL11.GL_NO_ERROR, "Purifier rendering must not produce OpenGL errors");
-        try (var screenshot = Screenshot.takeScreenshot(mc.getMainRenderTarget())) {
+        try (var screenshot = Screenshot.takeScreenshot(mc.gameRenderer.mainRenderTarget())) {
             screenshot.writeToFile(mc.gameDirectory.toPath().resolve(capture + ".png"));
         } catch (Exception error) {
             throw new IllegalStateException(error);

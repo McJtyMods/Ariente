@@ -14,7 +14,7 @@ import net.minecraft.client.CameraType;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.Screenshot;
 import net.minecraft.client.renderer.LightTexture;
-import net.minecraft.client.renderer.MultiBufferSource;
+import mcjty.lib.client.RenderBufferSource;
 import net.minecraft.core.BlockPos;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.network.chat.Component;
@@ -58,7 +58,7 @@ public class HoloStorageClientChecks {
     public static void tick(TickEvent.ClientTickEvent event) {
         Minecraft mc = Minecraft.getInstance();
         if (!Boolean.getBoolean("ariente.holoStorageClientCheck") || event.phase != TickEvent.Phase.END
-                || mc.player == null || mc.level == null || mc.getSingleplayerServer() == null || mc.getOverlay() != null) {
+                || mc.player == null || mc.level == null || mc.getSingleplayerServer() == null || mc.gui.overlay() != null) {
             return;
         }
         require(failure == null, "Server check failed: " + failure);
@@ -67,7 +67,7 @@ public class HoloStorageClientChecks {
             mc.options.pauseOnLostFocus = false;
             mc.options.setCameraType(CameraType.FIRST_PERSON);
             mc.options.hideGui = false;
-            mc.setScreen(null);
+            mc.gui.setScreen(null);
             mc.mouseHandler.releaseMouse();
             UUID id = mc.player.getUUID();
             server(mc, () -> {
@@ -237,10 +237,10 @@ public class HoloStorageClientChecks {
         } else if (ticks == 1010) {
             pressControl(mc);
         } else if (ticks == 1035) {
-            require(mc.screen instanceof GuiBookEntry book
+            require(mc.gui.screen() instanceof GuiBookEntry book
                     && book.getEntry().getId().equals(new ResourceLocation(Ariente.MODID, "construction/holo_storage")),
                     "The question mark must open the correct Patchouli entry");
-            mc.setScreen(null);
+            mc.gui.setScreen(null);
         } else if (ticks == 1040) {
             UUID playerId = mc.player.getUUID();
             server(mc, () -> {
@@ -405,7 +405,7 @@ public class HoloStorageClientChecks {
             return;
         }
         Minecraft mc = Minecraft.getInstance();
-        try (var screenshot = Screenshot.takeScreenshot(mc.getMainRenderTarget())) {
+        try (var screenshot = Screenshot.takeScreenshot(mc.gameRenderer.mainRenderTarget())) {
             screenshot.writeToFile(mc.gameDirectory.toPath().resolve(capture + ".png"));
         } catch (Exception error) {
             throw new IllegalStateException(error);
@@ -447,7 +447,7 @@ public class HoloStorageClientChecks {
                 poses.translate(0, 0, -2);
                 poses.mulPose(Axis.YP.rotationDegrees(angle));
                 poses.translate(0, -.5, 0);
-                var buffers = MultiBufferSource.immediate(new BufferBuilder(4096));
+                var buffers = RenderBufferSource.immediate(new BufferBuilder(4096));
                 mc.getEntityRenderDispatcher().getRenderer(holo).render(holo, 0, 0, poses, buffers, LightTexture.FULL_BRIGHT);
                 buffers.endBatch();
                 try (var screenshot = Screenshot.takeScreenshot(target)) {
@@ -461,7 +461,7 @@ public class HoloStorageClientChecks {
             RenderSystem.setProjectionMatrix(oldProjection, oldSorting);
             modelView.popPose();
             RenderSystem.applyModelViewMatrix();
-            mc.getMainRenderTarget().bindWrite(true);
+            mc.gameRenderer.mainRenderTarget().bindWrite(true);
         }
     }
 

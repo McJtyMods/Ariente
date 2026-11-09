@@ -86,12 +86,12 @@ public class FluxCartKeyboardChecks {
         } else if (tick == 270) {
             require(cart.getSpeed() == 0, "Back must stop the reversed cart");
             mc.options.keyDown.setDown(false);
-            mc.setScreen(new ChatScreen(""));
+            mc.gui.setScreen(new ChatScreen(""));
             mc.options.keyUp.setDown(true);
         } else if (tick == 290) {
             require(cart.getSpeed() == 0, "Typing in chat must not accelerate the cart");
             mc.options.keyUp.setDown(false);
-            mc.setScreen(null);
+            mc.gui.setScreen(null);
             mc.options.keyUp.setDown(true);
             mc.options.keyDown.setDown(true);
         } else if (tick == 310) {

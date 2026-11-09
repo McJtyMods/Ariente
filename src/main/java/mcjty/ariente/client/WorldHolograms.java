@@ -11,7 +11,7 @@ import java.util.function.Consumer;
 import mcjty.ariente.display.client.LiveCameraRenderer;
 import mcjty.hologui.gui.HoloRenderBatch;
 import net.minecraft.client.Minecraft;
-import net.minecraft.client.renderer.MultiBufferSource;
+import mcjty.lib.client.RenderBufferSource;
 import net.minecraft.client.renderer.SubmitNodeStorage;
 import net.minecraft.client.renderer.feature.FeatureRenderDispatcher;
 import net.minecraft.core.BlockPos;
@@ -52,7 +52,7 @@ public final class WorldHolograms {
         return copy;
     }
 
-    public static void add(Vec3 center, Consumer<MultiBufferSource> draw) {
+    public static void add(Vec3 center, Consumer<RenderBufferSource> draw) {
         if (LiveCameraRenderer.isRendering()) return;
         HoloRenderBatch batch = new HoloRenderBatch();
         draw.accept(batch);
@@ -79,11 +79,10 @@ public final class WorldHolograms {
         activeFrame = null;
         if (frame == null || frame.entries().isEmpty()) return;
         Minecraft mc = Minecraft.getInstance();
-        var buffers = mc.renderBuffers();
+        var buffers = mc.gameRenderer.renderBuffers();
         if (features == null) {
             storage = new SubmitNodeStorage();
-            features = new FeatureRenderDispatcher(storage, mc.getModelManager(), buffers.bufferSource(), mc.getAtlasManager(),
-                    buffers.outlineBufferSource(), buffers.crumblingBufferSource(), mc.font, mc.gameRenderer.getGameRenderState());
+            features = new FeatureRenderDispatcher(buffers, mc.getModelManager(), mc.getAtlasManager(), mc.font, mc.gameRenderer.gameRenderState());
         }
         List<Entry> entries = new ArrayList<>(frame.entries());
         entries.sort(Comparator.comparingDouble((Entry entry) -> entry.center().distanceToSqr(frame.camera())).reversed());
@@ -92,11 +91,8 @@ public final class WorldHolograms {
             if (entry.origin() != null) poses.translate(entry.origin().getX() - frame.camera().x,
                     entry.origin().getY() - frame.camera().y, entry.origin().getZ() - frame.camera().z);
             entry.batch().submit(poses, storage);
-            features.renderAllFeatures();
-            buffers.bufferSource().endBatch();
+            features.renderAllFeatures(storage);
         }
-        features.endFrame();
-        storage.endFrame();
     }
 
     private record Frame(List<Entry> entries, Vec3 camera) {

@@ -1,8 +1,5 @@
 {
   "type": "minecraft:blasting",
-  "category": "misc",
-  "cookingtime": 100,
-  "experience": 0.0,
   "ingredient": "#c:raw_materials/manganese",
   "result": {
     "id": "ariente:ingot_manganese"

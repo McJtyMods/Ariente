@@ -68,7 +68,7 @@ public class FluxShipChargingClientChecks {
     public static void tick(TickEvent.ClientTickEvent event) {
         Minecraft mc = Minecraft.getInstance();
         if (!Boolean.getBoolean("ariente.shipChargerCheck") || event.phase != TickEvent.Phase.END
-                || mc.level == null || mc.player == null || mc.getSingleplayerServer() == null || mc.getOverlay() != null) {
+                || mc.level == null || mc.player == null || mc.getSingleplayerServer() == null || mc.gui.overlay() != null) {
             return;
         }
         if (!started) {
@@ -78,7 +78,7 @@ public class FluxShipChargingClientChecks {
             mc.options.renderDistance().set(12);
             mc.options.graphicsMode().set(Boolean.getBoolean("ariente.chargerFabulous") ? GraphicsStatus.FABULOUS : GraphicsStatus.FANCY);
             mc.levelRenderer.allChanged();
-            mc.setScreen(null);
+            mc.gui.setScreen(null);
             mc.mouseHandler.releaseMouse();
             UUID playerId = mc.player.getUUID();
             mc.getSingleplayerServer().execute(() -> setup(mc, playerId));
@@ -220,7 +220,7 @@ public class FluxShipChargingClientChecks {
     }
 
     private static void screenshot(Minecraft mc, String name) {
-        try (var image = Screenshot.takeScreenshot(mc.getMainRenderTarget())) {
+        try (var image = Screenshot.takeScreenshot(mc.gameRenderer.mainRenderTarget())) {
             if (name.startsWith("ship-patrol-exhaust")) {
                 int yellow = 0;
                 int cyan = 0;

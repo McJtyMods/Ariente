@@ -8,7 +8,7 @@ import java.util.Map;
 import java.util.WeakHashMap;
 import mcjty.ariente.blocks.storagecube.StorageCubeTile;
 import net.minecraft.util.LightCoordsUtil;
-import net.minecraft.client.renderer.MultiBufferSource;
+import mcjty.lib.client.RenderBufferSource;
 import mcjty.ariente.client.ExtractedBlockRenderer;
 import net.minecraft.client.renderer.blockentity.BlockEntityRendererProvider;
 import net.minecraft.client.renderer.texture.OverlayTexture;
@@ -30,7 +30,7 @@ public class StorageCubeRenderer extends ExtractedBlockRenderer<StorageCubeTile>
     }
 
     @Override
-    public void render(StorageCubeTile tile, float partialTicks, PoseStack poses, MultiBufferSource buffer, int light, int overlay) {
+    public void render(StorageCubeTile tile, float partialTicks, PoseStack poses, RenderBufferSource buffer, int light, int overlay) {
         List<StorageCubeTile.Preview> preview = tile.getPreview();
         if (preview.isEmpty()) {
             animations.remove(tile);

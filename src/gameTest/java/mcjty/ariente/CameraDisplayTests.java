@@ -504,7 +504,7 @@ public class CameraDisplayTests {
             Vec3 normal = Vec3.atLowerCornerOf(facing.getNormal());
             LiveCameraView neutral = LiveCameraView.of(pos, facing, 0, 0);
             helper.assertTrue(neutral.forward().distanceToSqr(normal) < .00001
-                    && Math.abs(neutral.eye().subtract(pos.getCenter()).dot(normal) - .125) < .00001,
+                    && Math.abs(neutral.eye().subtract(Vec3.atCenterOf(pos)).dot(normal) - .125) < .00001,
                     "Neutral live views face away from the mounting plate and start outside its glass for " + facing);
             for (int pan : new int[]{-180, -90, 0, 90, 180}) {
                 for (int tilt : new int[]{-90, -45, 0, 45, 90}) {
@@ -532,7 +532,7 @@ public class CameraDisplayTests {
                 .setValue(BlockStateProperties.HORIZONTAL_FACING, Direction.NORTH));
         var base = (DisplayBaseTile) helper.getLevel().getBlockEntity(pos);
         var player = helper.makeMockSurvivalPlayer();
-        player.setPos(pos.getCenter());
+        player.setPos(Vec3.atCenterOf(pos));
         player.setItemInHand(InteractionHand.MAIN_HAND, linked(helper, source));
         base.install(player, InteractionHand.MAIN_HAND, new DisplayGeometry.Hit(base, 0, 0, 1));
         var module = base.modules().get(0);

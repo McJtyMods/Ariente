@@ -1,5 +1,6 @@
 package mcjty.ariente.client;
 
+import net.minecraft.world.item.DyeColor;
 import mcjty.ariente.Ariente;
 import mcjty.ariente.entities.levitator.FluxLevitatorEntity;
 import mcjty.ariente.setup.Registration;
@@ -48,7 +49,7 @@ public class FluxCartClientChecks {
         Minecraft mc = Minecraft.getInstance();
         if (!Boolean.getBoolean("ariente.fluxClientCheck") || event.phase != TickEvent.Phase.END
                 || mc.player == null || mc.level == null || mc.getSingleplayerServer() == null
-                || mc.getOverlay() != null) {
+                || mc.gui.overlay() != null) {
             return;
         }
         require(failure == null, "Server fixture failed: " + failure);
@@ -56,7 +57,7 @@ public class FluxCartClientChecks {
             started = true;
             mc.options.pauseOnLostFocus = false;
             mc.options.setCameraType(CameraType.FIRST_PERSON);
-            mc.setScreen(null);
+            mc.gui.setScreen(null);
             mc.mouseHandler.releaseMouse();
             var uuid = mc.player.getUUID();
             mc.getSingleplayerServer().execute(() -> {
@@ -69,7 +70,7 @@ public class FluxCartClientChecks {
                     level.getEntitiesOfClass(FluxLevitatorEntity.class, new AABB(-3, 198, -161, 3, 206, 161))
                             .forEach(FluxLevitatorEntity::discard);
                     for (BlockPos pos : BlockPos.betweenClosed(-2, 199, -160, 2, 204, 160)) {
-                        level.setBlock(pos, pos.getY() == 199 ? Blocks.WHITE_CONCRETE.defaultBlockState()
+                        level.setBlock(pos, pos.getY() == 199 ? Blocks.CONCRETE.pick(DyeColor.WHITE).defaultBlockState()
                                 : Blocks.AIR.defaultBlockState(), 2);
                     }
                     var beam = Registration.FLUX_BEAM.get().defaultBlockState()
@@ -126,7 +127,7 @@ public class FluxCartClientChecks {
             require(minStep > .55 && maxStep < .65, "Steady travel must have no stalls or jumps: " + minStep + ".." + maxStep);
             String result = "Mounted panel samples=" + samples + ", maximum within-frame drift=" + maxPanelDrift
                     + ", steady movement per tick=" + minStep + ".." + maxStep + "\n";
-            try (var screenshot = Screenshot.takeScreenshot(mc.getMainRenderTarget())) {
+            try (var screenshot = Screenshot.takeScreenshot(mc.gameRenderer.mainRenderTarget())) {
                 screenshot.writeToFile(mc.gameDirectory.toPath().resolve("flux-cart.png"));
                 Files.writeString(mc.gameDirectory.toPath().resolve("flux-cart-check.txt"), result);
             } catch (Exception error) {
@@ -157,7 +158,7 @@ public class FluxCartClientChecks {
             mc.player.setYRot(-45);
             mc.player.setXRot(25);
         } else if (ticks == 760) {
-            try (var screenshot = Screenshot.takeScreenshot(mc.getMainRenderTarget())) {
+            try (var screenshot = Screenshot.takeScreenshot(mc.gameRenderer.mainRenderTarget())) {
                 screenshot.writeToFile(mc.gameDirectory.toPath().resolve("flux-cart-exterior.png"));
             } catch (Exception error) {
                 throw new IllegalStateException(error);
@@ -210,7 +211,7 @@ public class FluxCartClientChecks {
                 level.getEntitiesOfClass(FluxLevitatorEntity.class, new AABB(7, 198, -1, 26, 206, 18))
                         .forEach(FluxLevitatorEntity::discard);
                 for (BlockPos pos : BlockPos.betweenClosed(7, 199, -1, 25, 204, 17)) {
-                    level.setBlock(pos, pos.getY() == 199 ? Blocks.WHITE_CONCRETE.defaultBlockState()
+                    level.setBlock(pos, pos.getY() == 199 ? Blocks.CONCRETE.pick(DyeColor.WHITE).defaultBlockState()
                             : Blocks.AIR.defaultBlockState(), 2);
                 }
                 var eastWest = Registration.FLUX_BEAM.get().defaultBlockState();

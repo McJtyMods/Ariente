@@ -6,7 +6,7 @@ import com.mojang.math.Axis;
 import java.util.Random;
 import mcjty.lib.multipart.PartSlot;
 import mcjty.lib.spline.CatmullRomSpline;
-import net.minecraft.client.renderer.MultiBufferSource;
+import mcjty.lib.client.RenderBufferSource;
 import net.minecraft.client.renderer.texture.OverlayTexture;
 import net.minecraft.core.BlockPos;
 import net.minecraft.world.item.ItemDisplayContext;
@@ -112,7 +112,7 @@ public class TransferRender {
         return renderBox;
     }
 
-    public boolean render(PoseStack matrixStack, MultiBufferSource buffers) {
+    public boolean render(PoseStack matrixStack, RenderBufferSource buffers) {
         long time = System.currentTimeMillis();
         if (time > startTime+duration) {
             return false;
@@ -125,7 +125,7 @@ public class TransferRender {
         return true;
     }
 
-    private void renderStack(PoseStack matrixStack, ItemStack stack, Vec3 pos, double rotation, double size, MultiBufferSource buffers) {
+    private void renderStack(PoseStack matrixStack, ItemStack stack, Vec3 pos, double rotation, double size, RenderBufferSource buffers) {
         matrixStack.pushPose();
         matrixStack.translate(pos.x, pos.y, pos.z);
         matrixStack.mulPose(Axis.YP.rotationDegrees((float) rotation));

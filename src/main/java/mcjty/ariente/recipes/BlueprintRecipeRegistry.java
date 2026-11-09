@@ -1,5 +1,6 @@
 package mcjty.ariente.recipes;
 
+import net.minecraft.world.item.DyeColor;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.function.Supplier;
@@ -230,7 +231,7 @@ public class BlueprintRecipeRegistry {
                 new ItemStack(Registration.CIRCUIT.get(), 1),
                 new ItemStack(Registration.INGOT_SILVER.get(), 1),
                 new ItemStack(Registration.DUST_SILICON.get(), 1),
-                new ItemStack(Items.BLUE_DYE, 10) // @todo 1.14 DyeColor.BLUE.getMetadata())
+                new ItemStack(Items.DYE.pick(DyeColor.BLUE), 10) // @todo 1.14 DyeColor.BLUE.getMetadata())
         ));
         recipes.add(new ConstructorRecipe(new ItemStack(Registration.FLUX_LEVITATOR.get()), UNCOMMON,
                 new ItemStack(Registration.CIRCUIT.get(), 1),

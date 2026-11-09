@@ -2,7 +2,7 @@ package mcjty.ariente.client;
 
 import com.mojang.blaze3d.vertex.PoseStack;
 import mcjty.hologui.gui.HoloRenderBatch;
-import net.minecraft.client.renderer.MultiBufferSource;
+import mcjty.lib.client.RenderBufferSource;
 import net.minecraft.client.renderer.SubmitNodeCollector;
 import net.minecraft.client.renderer.blockentity.BlockEntityRenderer;
 import net.minecraft.client.renderer.blockentity.state.BlockEntityRenderState;
@@ -36,7 +36,7 @@ public abstract class ExtractedBlockRenderer<T extends BlockEntity> implements B
         }
     }
 
-    public abstract void render(T tile, float partialTick, PoseStack poses, MultiBufferSource buffer, int light, int overlay);
+    public abstract void render(T tile, float partialTick, PoseStack poses, RenderBufferSource buffer, int light, int overlay);
 
     @Override
     public void submit(State state, PoseStack poses, SubmitNodeCollector collector, CameraRenderState camera) {

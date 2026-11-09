@@ -1,11 +1,15 @@
 package mcjty.ariente.display.client;
 
+import net.minecraft.world.phys.Vec3;
 import com.mojang.blaze3d.pipeline.RenderTarget;
 import com.mojang.blaze3d.pipeline.TextureTarget;
+import com.mojang.blaze3d.GpuFormat;
 import com.mojang.blaze3d.ProjectionType;
 import com.mojang.blaze3d.resource.GraphicsResourceAllocator;
 import com.mojang.blaze3d.systems.RenderSystem;
 import com.mojang.blaze3d.vertex.VertexConsumer;
+import java.util.ArrayList;
+import java.util.Comparator;
 import java.util.LinkedHashMap;
 import java.util.Map;
 import mcjty.ariente.blocks.utility.camera.CameraTile;
@@ -18,7 +22,9 @@ import net.minecraft.client.Minecraft;
 import net.minecraft.client.TextureFilteringMethod;
 import net.minecraft.client.multiplayer.ClientLevel;
 import net.minecraft.client.renderer.GlobalSettingsUniform;
-import net.minecraft.client.renderer.MultiBufferSource;
+import net.minecraft.client.renderer.LevelRenderer;
+import net.minecraft.util.Mth;
+import mcjty.lib.client.RenderBufferSource;
 import net.minecraft.client.renderer.ProjectionMatrixBuffer;
 import net.minecraft.client.renderer.fog.FogRenderer;
 import net.minecraft.client.renderer.rendertype.RenderType;
@@ -45,7 +51,7 @@ public final class LiveCameraRenderer {
         return rendering;
     }
 
-    public static MultiBufferSource buffersForView(MultiBufferSource buffers) {
+    public static RenderBufferSource buffersForView(RenderBufferSource buffers) {
         return buffers;
     }
 
@@ -86,7 +92,7 @@ public final class LiveCameraRenderer {
         }
         BlockPos source = BlockPos.of(snapshot.getLongOr("Camera", 0));
         if (!mc.level.hasChunkAt(source) || !(mc.level.getBlockEntity(source) instanceof CameraTile camera)
-                || mc.player.distanceToSqr(source.getCenter()) > 96 * 96 || mc.levelRenderer.viewArea == null) {
+                || mc.player.distanceToSqr(Vec3.atCenterOf(source)) > 96 * 96 || mc.levelRenderer.viewArea == null) {
             status(canvas, module, "Move closer to the camera");
             return;
         }
@@ -186,18 +192,24 @@ public final class LiveCameraRenderer {
             Minecraft mc = Minecraft.getInstance();
             int height = Math.max(1, Math.round((float) imageWidth * key.height() / key.width()));
             if (target == null) {
-                target = new TextureTarget("Ariente live camera", imageWidth, height, true);
+                target = new TextureTarget("Ariente live camera", imageWidth, height, true, GpuFormat.RGBA8_UNORM);
                 texture = Identifier.fromNamespaceAndPath("ariente", "live_camera/" + nextTexture++);
                 mc.getTextureManager().register(texture, new RenderTargetTexture(target));
                 renderType = DisplayRenderType.cameraImage(texture);
                 projection = new ProjectionMatrixBuffer("Ariente live camera");
+                var previousFog = RenderSystem.getShaderFog();
                 fog = new FogRenderer();
+                RenderSystem.setShaderFog(previousFog);
                 globals = new GlobalSettingsUniform();
             } else if (target.width != imageWidth || target.height != height) target.resize(imageWidth, height);
             var renderer = mc.levelRenderer;
-            Camera originalCamera = mc.gameRenderer.getMainCamera();
-            RenderTarget originalTarget = mc.getMainRenderTarget();
+            Camera originalCamera = mc.gameRenderer.mainCamera();
+            RenderTarget originalTarget = mc.gameRenderer.mainRenderTarget();
             LevelRenderState originalState = renderer.levelRenderState;
+            var originalSections = new ArrayList<>(renderer.visibleSections());
+            var originalNearbySections = new ArrayList<>(renderer.nearbyVisibleSections());
+            var originalSky = renderer.skyRenderer();
+            RenderTarget originalSkyTarget = originalSky == null ? null : originalSky.renderTarget;
             var oldProjection = RenderSystem.getProjectionMatrixBuffer();
             var oldProjectionType = RenderSystem.getProjectionType();
             var oldFog = RenderSystem.getShaderFog();
@@ -213,29 +225,63 @@ public final class LiveCameraRenderer {
                 LiveCameraView view = LiveCameraView.of(key.source(), key.facing(), pan, key.tilt());
                 float fov = (float) Math.toDegrees(2 * Math.atan(Math.tan(Math.toRadians(35)) * 100 / key.zoom()));
                 var state = new LevelRenderState();
-                camera.configure(view, fov, imageWidth, height, key.radius(), state.cameraRenderState, partialTick);
+                camera.configure(view, fov, imageWidth, height, key.radius(), state.cameraRenderState, partialTick, false);
+                // Extraction needs a frozen culling view to leave player caches
+                // untouched. Keep the active render camera uncaptured: vanilla
+                // otherwise draws the captured frustum as coloured debug planes.
+                Lens extractionCamera = new Lens();
+                extractionCamera.configure(view, fov, imageWidth, height, key.radius(), new CameraRenderState(), partialTick, true);
                 // Terrain subtracts the camera origin stored in the global UBO.
                 // A separate buffer keeps this view independent of player movement.
                 globals.update(imageWidth, height, mc.options.glintStrength().get(), mc.level.getGameTime(),
                         mc.getDeltaTracker(), 0, view.eye(), mc.options.textureFiltering().get() == TextureFilteringMethod.RGSS);
                 mc.gameRenderer.mainCamera = camera;
-                mc.mainRenderTarget = target;
+                mc.gameRenderer.mainRenderTarget = target;
+                // 26.2's sky renderer retains its target instead of looking up
+                // GameRenderer's current target for each sky pass.
+                if (originalSky != null) {
+                    originalSky.renderTarget = target;
+                }
                 renderer.levelRenderState = state;
+                mc.levelExtractor.levelRenderState = state;
                 camera.extractRenderState(state.cameraRenderState, partialTick);
                 state.cameraRenderState.fogType = camera.getFluidInCamera();
-                state.cameraRenderState.fogData = fog.setupFog(camera, Math.max(2, key.radius() / 16), mc.getDeltaTracker(), 0, mc.level);
-                fog.updateBuffer(state.cameraRenderState.fogData);
-                renderer.update(camera);
-                renderer.extractLevel(mc.getDeltaTracker(), camera, partialTick);
+                var cameraFog = fog.setupFog(camera, Math.max(2, (key.radius() + 15) / 16), mc.getDeltaTracker(), 0, mc.level);
+                // Native fog accepts whole chunks. Finish its fade at the actual
+                // block radius, including the eight/sixteen-block camera ranges.
+                cameraFog.renderDistanceEnd = Math.min(cameraFog.renderDistanceEnd, key.radius());
+                cameraFog.renderDistanceStart = Math.min(cameraFog.renderDistanceStart,
+                        key.radius() - Mth.clamp(key.radius() / 10f, 4, 64));
+                state.cameraRenderState.fogData = cameraFog;
+                fog.updateBuffer(cameraFog);
+                selectCameraSections(renderer, camera, key.radius());
+                mc.levelExtractor.extract(mc.getDeltaTracker(), extractionCamera, partialTick);
                 RenderSystem.setProjectionMatrix(projection.getBuffer(state.cameraRenderState.projectionMatrix), ProjectionType.PERSPECTIVE);
-                renderer.renderLevel(GraphicsResourceAllocator.UNPOOLED, mc.getDeltaTracker(), false, state.cameraRenderState,
+                // The level state supplies the lens geometry, sky and entity poses.
+                // Keep native terrain maintenance anchored to the player's storage;
+                // moving it to each lens resets edge chunks and races the player's
+                // asynchronous occlusion graph on every camera refresh.
+                var terrainCamera = new CameraRenderState();
+                extractionCamera.extractRenderState(terrainCamera, partialTick);
+                terrainCamera.fogType = state.cameraRenderState.fogType;
+                terrainCamera.fogData = cameraFog;
+                terrainCamera.pos = originalCamera.position();
+                terrainCamera.blockPos = originalCamera.blockPosition();
+                renderer.render(GraphicsResourceAllocator.UNPOOLED, mc.getDeltaTracker(), false, terrainCamera,
                         state.cameraRenderState.viewRotationMatrix, fog.getBuffer(FogRenderer.FogMode.WORLD),
-                        state.cameraRenderState.fogData.color, true, state.chunkSectionsToRender);
+                        state.cameraRenderState.fogData.color, true);
             } finally {
                 renderer.levelRenderState = originalState;
-                mc.mainRenderTarget = originalTarget;
+                renderer.clearVisibleSections();
+                renderer.visibleSections().addAll(originalSections);
+                renderer.nearbyVisibleSections().addAll(originalNearbySections);
+                mc.levelExtractor.levelRenderState = originalState;
+                mc.gameRenderer.mainRenderTarget = originalTarget;
+                var sky = renderer.skyRenderer();
+                if (sky != null) {
+                    sky.renderTarget = sky == originalSky ? originalSkyTarget : originalTarget;
+                }
                 mc.gameRenderer.mainCamera = originalCamera;
-                renderer.update(originalCamera);
                 mc.getEntityRenderDispatcher().prepare(originalCamera, mc.crosshairPickEntity);
                 mc.getBlockEntityRenderDispatcher().prepare(originalCamera.position());
                 RenderSystem.outputColorTextureOverride = oldColor;
@@ -244,8 +290,33 @@ public final class LiveCameraRenderer {
                 RenderSystem.setShaderFog(oldFog);
                 RenderSystem.setGlobalSettingsUniform(oldGlobals);
                 RenderSystem.getModelViewStack().popMatrix();
+                fog.endFrame();
                 rendering = false;
             }
+        }
+
+        private static void selectCameraSections(LevelRenderer renderer, Lens camera, int radius) {
+            // The player's occlusion graph may hide sections which the mounted
+            // lens can see. Read compiled sections from the loaded view area
+            // directly, without changing that graph or its cached frustum.
+            renderer.clearVisibleSections();
+            BlockPos origin = camera.blockPosition();
+            int margin = radius + 16;
+            int minY = Math.max(renderer.viewArea().minSectionY(), (origin.getY() - margin) >> 4);
+            int maxY = Math.min(renderer.viewArea().maxSectionY(), (origin.getY() + margin) >> 4);
+            for (int x = (origin.getX() - margin) >> 4; x <= (origin.getX() + margin) >> 4; x++) {
+                for (int z = (origin.getZ() - margin) >> 4; z <= (origin.getZ() + margin) >> 4; z++) {
+                    for (int y = minY; y <= maxY; y++) {
+                        var section = renderer.viewArea().getRenderSectionAt(new BlockPos(x << 4, y << 4, z << 4));
+                        if (section != null && camera.getCullFrustum().isVisible(section.getBoundingBox())) {
+                            renderer.visibleSections().add(section);
+                            renderer.nearbyVisibleSections().add(section);
+                        }
+                    }
+                }
+            }
+            renderer.visibleSections().sort(Comparator.comparingDouble(section ->
+                    section.getBoundingBox().getCenter().distanceToSqr(camera.position())));
         }
 
         @Override
@@ -261,7 +332,7 @@ public final class LiveCameraRenderer {
     private static final class Lens extends Camera {
 
         private void configure(LiveCameraView view, float fov, int width, int height, int radius,
-                               CameraRenderState state, float partialTick) {
+                               CameraRenderState state, float partialTick, boolean capture) {
             Minecraft mc = Minecraft.getInstance();
             setLevel(mc.level);
             setEntity(mc.player);
@@ -274,6 +345,11 @@ public final class LiveCameraRenderer {
             // Minecraft's projection distance and limit terrain with the frustum.
             setupPerspective(.05f, state.depthFar, fov, width, height);
             Matrix4f projection = new Matrix4f().perspective((float) Math.toRadians(fov), (float) width / height, .05f, radius + 16);
+            // A captured lens frustum prevents extraction/rendering from updating
+            // the player's cached visibility or scheduling a different graph.
+            if (capture) {
+                captureFrustum();
+            }
             prepareCullFrustum(getViewRotationMatrix(new Matrix4f()), projection, view.eye());
         }
 

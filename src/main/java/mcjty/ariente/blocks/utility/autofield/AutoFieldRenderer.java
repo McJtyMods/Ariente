@@ -10,7 +10,7 @@ import mcjty.ariente.client.WorldHolograms;
 import mcjty.ariente.setup.Registration;
 import mcjty.lib.client.RenderSettings;
 import net.minecraft.client.Minecraft;
-import net.minecraft.client.renderer.MultiBufferSource;
+import mcjty.lib.client.RenderBufferSource;
 import mcjty.ariente.client.ExtractedBlockRenderer;
 import net.minecraft.client.renderer.blockentity.BlockEntityRendererProvider;
 import net.minecraft.client.renderer.blockentity.BlockEntityRenderers;
@@ -42,7 +42,7 @@ public class AutoFieldRenderer extends ExtractedBlockRenderer<AutoFieldTile> {
     }
 
     @Override
-    public void render(AutoFieldTile te, float partialTicks, PoseStack matrixStack, MultiBufferSource buffer, int combinedLightIn, int combinedOverlayIn) {
+    public void render(AutoFieldTile te, float partialTicks, PoseStack matrixStack, RenderBufferSource buffer, int combinedLightIn, int combinedOverlayIn) {
         AABB box = te.getFieldBox();
         if (box == null) {
             return;
@@ -55,11 +55,11 @@ public class AutoFieldRenderer extends ExtractedBlockRenderer<AutoFieldTile> {
         }
     }
 
-    public static void renderOutline(AutoFieldTile tile, PoseStack poses, MultiBufferSource buffer) {
+    public static void renderOutline(AutoFieldTile tile, PoseStack poses, RenderBufferSource buffer) {
         renderBeamBox(tile, poses, tile.getFieldBox(), buffer, false);
     }
 
-    private static void renderBeamBox(AutoFieldTile te, PoseStack matrixStack, AABB box, MultiBufferSource buffer, boolean deferred) {
+    private static void renderBeamBox(AutoFieldTile te, PoseStack matrixStack, AABB box, RenderBufferSource buffer, boolean deferred) {
         Minecraft mc = Minecraft.getInstance();
 
         TextureAtlasSprite sprite = ArienteSpriteUploader.INSTANCE.getSprite(BEAMS[(int) (te.getLevel().getGameTime() % 3)]);
@@ -67,7 +67,7 @@ public class AutoFieldRenderer extends ExtractedBlockRenderer<AutoFieldTile> {
         int tex = te.getBlockPos().getX();
         int tey = te.getBlockPos().getY();
         int tez = te.getBlockPos().getZ();
-        Vec3 projectedView = mc.gameRenderer.getMainCamera().position().add(-tex, -tey, -tez);
+        Vec3 projectedView = mc.gameRenderer.mainCamera().position().add(-tex, -tey, -tez);
         Vec3 player = new Vec3((float)projectedView.x, (float)projectedView.y, (float)projectedView.z);
 
         float mx = (float) box.minX - tex;
@@ -101,7 +101,7 @@ public class AutoFieldRenderer extends ExtractedBlockRenderer<AutoFieldTile> {
         emitBeam(te, matrixStack, buffer, deferred, sprite, new Vec3(mx, my, pz), new Vec3(mx, py, pz), player, settings);
     }
 
-    private static void emitBeam(AutoFieldTile tile, PoseStack poses, MultiBufferSource buffer, boolean deferred,
+    private static void emitBeam(AutoFieldTile tile, PoseStack poses, RenderBufferSource buffer, boolean deferred,
                                  TextureAtlasSprite sprite, Vec3 start, Vec3 end, Vec3 camera, RenderSettings settings) {
         if (deferred) {
             Vec3 center = Vec3.atLowerCornerOf(tile.getBlockPos()).add(start.add(end).scale(.5));
@@ -138,7 +138,7 @@ public class AutoFieldRenderer extends ExtractedBlockRenderer<AutoFieldTile> {
                 ;
     }
 
-    private void renderItemTransfers(PoseStack matrixStack, AutoFieldTile te, MultiBufferSource buffers) {
+    private void renderItemTransfers(PoseStack matrixStack, AutoFieldTile te, RenderBufferSource buffers) {
         te.clientRequestRenderInfo();
 
         TransferRender[] transferRenders = te.getTransferRenders();

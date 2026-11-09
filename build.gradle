@@ -25,14 +25,14 @@ def localGradleTools = [
         file('../Multi_neo/gradletools.gradle'),
         file('gradletools.gradle')
 ].find { it != null && it.isFile() }
-apply from: localGradleTools ?: 'https://raw.githubusercontent.com/McJtyMods/MultiWorkspace/26.1.2_neo/gradletools.gradle'
+apply from: localGradleTools ?: 'https://raw.githubusercontent.com/McJtyMods/MultiWorkspace/26.2_neo/gradletools.gradle'
 
 
 
 group = "com.github.mcjty"
 base.archivesName = "ariente"
 java.toolchain.languageVersion = JavaLanguageVersion.of(25)
-neo_version = '26.1.2.99'
+neo_version = '26.2.0.75'
 
 if (System.getenv('BUILD_NUMBER') != null) {
     version += "-${System.getenv('BUILD_NUMBER')}"
@@ -50,7 +50,7 @@ sourceSets.main.resources {
 dependencies {
     mc()
     jei()
-    patchouli()
+    // Patchouli has no compatible 26.2 release; the manual remains optional.
     top()
     mcjtylib()
     if (findProject(':ModHoloGui') != null) {
@@ -65,7 +65,7 @@ if (project.hasProperty('ariente_dependency_repository')) {
     repositories.maven { url = uri(project.property('ariente_dependency_repository')) }
 }
 
-modpublisher(['the-one-probe', 'ariente-world', 'patchouli'], ['mcjtylib', 'hologui'], ['the-one-probe', 'ariente-world', 'patchouli'], ['mcjtylib', 'hologui'], [])
+modpublisher(['the-one-probe', 'ariente-world'], ['mcjtylib', 'hologui'], ['the-one-probe', 'ariente-world'], ['mcjtylib', 'hologui'], [])
 
 tasks.register('apiJar', Jar) {
     archiveClassifier = 'api'

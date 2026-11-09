@@ -12,7 +12,7 @@ import mcjty.ariente.display.DisplayGeometry;
 import mcjty.ariente.display.DisplayModuleItem;
 import mcjty.ariente.display.PacketDisplayAction;
 import net.minecraft.client.Minecraft;
-import net.minecraft.client.renderer.MultiBufferSource;
+import mcjty.lib.client.RenderBufferSource;
 import net.minecraft.world.InteractionHand;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.phys.HitResult;
@@ -50,7 +50,7 @@ public class DisplayClientEvents {
     @SubscribeEvent
     public void input(InputEvent.InteractionKeyMappingTriggered event) {
         Minecraft mc = Minecraft.getInstance();
-        if (mc.player == null || mc.screen != null || !(event.isUseItem() || event.isAttack())) {
+        if (mc.player == null || mc.gui.screen() != null || !(event.isUseItem() || event.isAttack())) {
             return;
         }
         if (DisplayModuleDrag.active()) {
@@ -92,7 +92,7 @@ public class DisplayClientEvents {
     public void extract(ExtractLevelRenderStateEvent event) {
         if (LiveCameraRenderer.isRendering()) return;
         Minecraft mc = Minecraft.getInstance();
-        if (mc.player != null && mc.screen == null) {
+        if (mc.player != null && mc.gui.screen() == null) {
             HoloRenderBatch batch = new HoloRenderBatch();
             PoseStack poses = new PoseStack();
             if (DisplayModuleDrag.active()) {
@@ -125,7 +125,7 @@ public class DisplayClientEvents {
         LiveCameraRenderer.beginFrame();
     }
 
-    private static void drawPreview(Minecraft mc, DisplayGeometry.Hit hit, PoseStack poses, Vec3 camera, MultiBufferSource buffer) {
+    private static void drawPreview(Minecraft mc, DisplayGeometry.Hit hit, PoseStack poses, Vec3 camera, RenderBufferSource buffer) {
         InteractionHand hand = mc.player.getMainHandItem().getItem() instanceof DisplayModuleItem
                 ? InteractionHand.MAIN_HAND : InteractionHand.OFF_HAND;
         if (mc.player.getItemInHand(hand).getItem() instanceof DisplayModuleItem && !mc.player.isShiftKeyDown()) {

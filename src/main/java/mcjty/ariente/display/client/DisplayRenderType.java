@@ -1,12 +1,12 @@
 package mcjty.ariente.display.client;
 
+import com.mojang.blaze3d.PrimitiveTopology;
 import com.mojang.blaze3d.pipeline.BlendFunction;
 import com.mojang.blaze3d.pipeline.ColorTargetState;
 import com.mojang.blaze3d.pipeline.DepthStencilState;
 import com.mojang.blaze3d.pipeline.RenderPipeline;
 import com.mojang.blaze3d.platform.CompareOp;
 import com.mojang.blaze3d.vertex.DefaultVertexFormat;
-import com.mojang.blaze3d.vertex.VertexFormat;
 import java.util.function.Function;
 import net.minecraft.client.renderer.RenderPipelines;
 import net.minecraft.client.renderer.rendertype.RenderType;
@@ -22,7 +22,7 @@ public final class DisplayRenderType {
     private static final RenderPipeline CAMERA_IMAGE = imagePipeline("camera", BlendFunction.TRANSLUCENT_PREMULTIPLIED_ALPHA);
     private static final RenderPipeline COLOR = RenderPipeline.builder(RenderPipelines.DEBUG_FILLED_SNIPPET)
             .withLocation(Identifier.fromNamespaceAndPath("ariente", "pipeline/display_color"))
-            .withCull(false).withDepthStencilState(new DepthStencilState(CompareOp.LESS_THAN_OR_EQUAL, false)).build();
+            .withCull(false).withDepthStencilState(new DepthStencilState(CompareOp.GREATER_THAN_OR_EQUAL, false)).build();
     private static final Function<Identifier, RenderType> CAMERAS = Util.memoize(texture -> image(texture, CAMERA_IMAGE));
     public static final RenderType CAMERA = image(TextureAtlas.LOCATION_BLOCKS, IMAGE);
     public static final RenderType ALIEN_FONT = image(Identifier.fromNamespaceAndPath("ariente", "textures/effects/alientfont.png"), IMAGE);
@@ -32,10 +32,10 @@ public final class DisplayRenderType {
     private static final RenderPipeline SCENE_TRANSLUCENT = scenePipeline("translucent", true);
 
     private static RenderPipeline scenePipeline(String name, boolean translucent) {
-        return RenderPipeline.builder(RenderPipelines.MATRICES_PROJECTION_SNIPPET)
+        return RenderPipeline.builder(RenderPipelines.GUI_TEXTURED_SNIPPET)
                 .withLocation(Identifier.fromNamespaceAndPath("ariente", "pipeline/snapshot_" + name))
                 .withVertexShader("core/position_tex_color").withFragmentShader("core/position_tex_color")
-                .withVertexFormat(DefaultVertexFormat.POSITION_TEX_COLOR, VertexFormat.Mode.QUADS).withSampler("Sampler0")
+                .withVertexBinding(0, DefaultVertexFormat.POSITION_TEX_COLOR).withPrimitiveTopology(PrimitiveTopology.QUADS)
                 .withCull(false).withColorTargetState(translucent ? new ColorTargetState(BlendFunction.TRANSLUCENT) : ColorTargetState.DEFAULT)
                 .withDepthStencilState(new DepthStencilState(CompareOp.LESS_THAN_OR_EQUAL, !translucent)).build();
     }
@@ -51,12 +51,12 @@ public final class DisplayRenderType {
     }
 
     private static RenderPipeline imagePipeline(String name, BlendFunction blend) {
-        return RenderPipeline.builder(RenderPipelines.MATRICES_PROJECTION_SNIPPET)
+        return RenderPipeline.builder(RenderPipelines.GUI_TEXTURED_SNIPPET)
                 .withLocation(Identifier.fromNamespaceAndPath("ariente", "pipeline/display_" + name))
                 .withVertexShader("core/position_tex_color").withFragmentShader("core/position_tex_color")
-                .withVertexFormat(DefaultVertexFormat.POSITION_TEX_COLOR, VertexFormat.Mode.QUADS).withSampler("Sampler0")
+                .withVertexBinding(0, DefaultVertexFormat.POSITION_TEX_COLOR).withPrimitiveTopology(PrimitiveTopology.QUADS)
                 .withCull(false).withColorTargetState(new ColorTargetState(blend))
-                .withDepthStencilState(new DepthStencilState(CompareOp.LESS_THAN_OR_EQUAL, false)).build();
+                .withDepthStencilState(new DepthStencilState(CompareOp.GREATER_THAN_OR_EQUAL, false)).build();
     }
 
     private static RenderType image(Identifier texture, RenderPipeline pipeline) {

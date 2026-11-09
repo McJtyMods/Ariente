@@ -1,5 +1,6 @@
 package mcjty.ariente.blocks.utility.autofield;
 
+import net.minecraft.world.phys.Vec3;
 import net.minecraft.core.BlockPos;
 import net.minecraft.network.RegistryFriendlyByteBuf;
 import net.minecraft.network.codec.StreamCodec;
@@ -39,7 +40,7 @@ public class PacketAutoFieldRequestRenderInfo implements CustomPacketPayload {
     public void handle(IPayloadContext ctx) {
         ctx.enqueueWork(() -> {
             ServerPlayer player = (ServerPlayer) ctx.player();
-            if (player == null || !player.level().hasChunkAt(pos) || player.distanceToSqr(pos.getCenter()) > 128 * 128) {
+            if (player == null || !player.level().hasChunkAt(pos) || player.distanceToSqr(Vec3.atCenterOf(pos)) > 128 * 128) {
                 return;
             }
             BlockEntity te = player.level().getBlockEntity(pos);

@@ -4,7 +4,7 @@ import com.mojang.blaze3d.vertex.PoseStack;
 import mcjty.ariente.Ariente;
 import mcjty.ariente.client.ArienteRenderType;
 import net.minecraft.client.Minecraft;
-import net.minecraft.client.renderer.MultiBufferSource;
+import mcjty.lib.client.RenderBufferSource;
 import mcjty.ariente.client.StandaloneModels;
 import net.minecraft.resources.Identifier;
 import net.neoforged.api.distmarker.Dist;
@@ -22,7 +22,7 @@ public class FluxShipWeaponRender {
         StandaloneModels.register(event, MODEL);
     }
 
-    public static void render(PoseStack pose, MultiBufferSource buffers, int light, int overlay) {
+    public static void render(PoseStack pose, RenderBufferSource buffers, int light, int overlay) {
         Minecraft mc = Minecraft.getInstance();
         pose.pushPose();
         pose.translate(FluxShipLaser.MOUNT.x, FluxShipLaser.MOUNT.y, FluxShipLaser.MOUNT.z);

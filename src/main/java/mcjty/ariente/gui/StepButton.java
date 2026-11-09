@@ -6,7 +6,7 @@ import mcjty.hologui.api.IHoloGuiEntity;
 import mcjty.hologui.gui.HoloGuiRenderTools;
 import mcjty.hologui.gui.HoloGuiSounds;
 import mcjty.hologui.gui.components.AbstractHoloComponent;
-import net.minecraft.client.renderer.MultiBufferSource;
+import mcjty.lib.client.RenderBufferSource;
 import net.minecraft.sounds.SoundSource;
 import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.player.Player;
@@ -25,7 +25,7 @@ public class StepButton extends AbstractHoloComponent<StepButton> {
 
     @Override
 
-    public void render(PoseStack poses, MultiBufferSource buffer, Player player, IHoloGuiEntity holo, double cursorX, double cursorY) {
+    public void render(PoseStack poses, RenderBufferSource buffer, Player player, IHoloGuiEntity holo, double cursorX, double cursorY) {
         boolean hovered = isInside(cursorX, cursorY);
         HoloGuiRenderTools.renderControl(poses, buffer, x, y, w, h, hovered);
         int color = hovered ? 0xffffff : 0xc1f5ff;

@@ -40,7 +40,7 @@ public class BlockInventoryClientChecks {
     public static void tick(TickEvent.ClientTickEvent event) throws Exception {
         Minecraft mc = Minecraft.getInstance();
         if (!Boolean.getBoolean("ariente.blockInventoryCheck") || event.phase != TickEvent.Phase.END
-                || mc.player == null || mc.level == null || mc.getSingleplayerServer() == null || mc.getOverlay() != null) {
+                || mc.player == null || mc.level == null || mc.getSingleplayerServer() == null || mc.gui.overlay() != null) {
             return;
         }
         require(failure == null, "Server fixture failed: " + failure);
@@ -49,7 +49,7 @@ public class BlockInventoryClientChecks {
             ready = false;
             ticks = 0;
             mc.options.pauseOnLostFocus = false;
-            mc.setScreen(null);
+            mc.gui.setScreen(null);
             mc.mouseHandler.releaseMouse();
             mc.options.keyAttack.setDown(false);
             var id = mc.player.getUUID();

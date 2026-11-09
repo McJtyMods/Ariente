@@ -360,7 +360,7 @@ public class DisplayBaseTile extends ArienteBlockEntity implements IGuiTile {
         if (level.getGameTime() < nextDataRequest) {
             return 0;
         }
-        double distance = player.distanceToSqr(worldPosition.getCenter());
+        double distance = player.distanceToSqr(Vec3.atCenterOf(worldPosition));
         int missing = 0;
         for (int index = 0; index < modules.size(); index++) {
             InstalledModule module = modules.get(index);

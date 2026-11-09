@@ -37,7 +37,7 @@ public class FluxShipMouseChecks {
                             && ship.getY() > altitude + 5 && ship.getSpeed() > 90 && ship.getSpeed() < 104.1,
                     "Vanilla mouse turn must steer, climb and bank the actual server ship: yaw=" + ship.getYRot()
                             + ", pitch=" + ship.getXRot() + ", speed=" + ship.getSpeed());
-            var angles = new ViewportEvent.ComputeCameraAngles(mc.gameRenderer, mc.gameRenderer.getMainCamera(), 1,
+            var angles = new ViewportEvent.ComputeCameraAngles(mc.gameRenderer, mc.gameRenderer.mainCamera(), 1,
                     mc.player.getYRot(), mc.player.getXRot(), 0);
             FluxShipClient.cameraAngles(angles);
             require(angles.getPitch() == mc.player.getXRot(), "Mouse flight must not double the hull pitch in the camera");
@@ -73,14 +73,14 @@ public class FluxShipMouseChecks {
             heading = ship.getYRot();
             cruiseSpeed = ship.getSpeed();
             key(GLFW.GLFW_KEY_W, false);
-            mc.setScreen(new InventoryScreen(mc.player));
+            mc.gui.setScreen(new InventoryScreen(mc.player));
         } else if (tick == 210) {
             mc.player.turn(90 / .15, 0);
         } else if (tick == 230) {
             require(ship.getSpeed() > 0 && ship.getSpeed() < cruiseSpeed * .4
                             && Math.abs(Mth.wrapDegrees(ship.getYRot() - heading)) < 5,
                     "Opening a screen must stop steering and brake smoothly");
-            mc.setScreen(null);
+            mc.gui.setScreen(null);
         } else if (tick == 231) {
             // A modifier's release can be lost while the game is unfocused.
             key(GLFW.GLFW_KEY_LEFT_ALT, true);
@@ -106,7 +106,7 @@ public class FluxShipMouseChecks {
     }
 
     private static void screenshot(Minecraft mc, String name) {
-        try (var image = Screenshot.takeScreenshot(mc.getMainRenderTarget())) {
+        try (var image = Screenshot.takeScreenshot(mc.gameRenderer.mainRenderTarget())) {
             image.writeToFile(mc.gameDirectory.toPath().resolve(name + ".png"));
         } catch (Exception error) {
             throw new IllegalStateException(error);

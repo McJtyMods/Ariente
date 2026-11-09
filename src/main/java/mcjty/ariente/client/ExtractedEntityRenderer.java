@@ -6,7 +6,7 @@ import net.minecraft.world.phys.AABB;
 
 import com.mojang.blaze3d.vertex.PoseStack;
 import mcjty.hologui.gui.HoloRenderBatch;
-import net.minecraft.client.renderer.MultiBufferSource;
+import mcjty.lib.client.RenderBufferSource;
 import net.minecraft.client.renderer.SubmitNodeCollector;
 import net.minecraft.client.renderer.entity.EntityRenderer;
 import net.minecraft.client.renderer.entity.EntityRendererProvider;
@@ -48,7 +48,7 @@ public abstract class ExtractedEntityRenderer<T extends Entity> extends EntityRe
         render(entity, entity.getViewYRot(partialTick), partialTick, new PoseStack(), state.batch, state.lightCoords);
     }
 
-    public void render(T entity, float yaw, float partialTick, PoseStack poses, MultiBufferSource buffer, int light) {
+    public void render(T entity, float yaw, float partialTick, PoseStack poses, RenderBufferSource buffer, int light) {
     }
 
     public abstract Identifier getTextureLocation(T entity);
