@@ -126,7 +126,12 @@ public class FluxShipPanelRender extends ExtractedEntityRenderer<HoloGuiEntity> 
         float charge = ship.getChargeRatio();
         int color = charge <= .1f ? 0xffff6050 : charge <= .25f ? 0xffffcf60 : 0xff70edff;
         canvas.fill(-.465f, -.475f, .93f, .035f, 0xd0081820);
+        // The opaque charge fill must be closer than its translucent background.
+        // Coplanar quads fight in the depth buffer as the cockpit view moves.
+        canvas.poses().pushPose();
+        canvas.poses().translate(0, 0, .001f);
         canvas.fill(-.46f, -.47f, .92f * charge, .025f, color);
+        canvas.poses().popPose();
         // Text uses font pixel coordinates, while this canvas is in cockpit coordinates with Y upwards.
         canvas.poses().pushPose();
         canvas.poses().translate(-.46f, -.405f, .001f);
