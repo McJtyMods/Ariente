@@ -4,3 +4,8 @@
 - More plants, trees, structures and features in the Ariente world
 - Much better loot in the more difficult dungeons
 - Test the extreme circuit
+- Big cube:
+    - Add doorways at the ends of the four corridors at the bottom
+    - The boss retracts to the center if the player goes too far away
+- Flux ship/cart: the one probe problem
+- Mobs in some of the dungeons are overwhelming (like floating spaceship)

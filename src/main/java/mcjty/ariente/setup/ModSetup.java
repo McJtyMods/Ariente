@@ -1,6 +1,7 @@
 package mcjty.ariente.setup;
 
 import mcjty.ariente.ForgeEventHandlers;
+import mcjty.ariente.compat.ArienteTOPCompatibility;
 import mcjty.ariente.compat.arienteworld.ArienteWorldCompat;
 import mcjty.ariente.gui.HoloGuiCompatibility;
 import mcjty.ariente.network.ArienteMessages;
@@ -32,6 +33,7 @@ public class ModSetup extends DefaultModSetup {
 
         MainCompatHandler.registerWaila();
         MainCompatHandler.registerTOP();
+        ArienteTOPCompatibility.register();
         HoloGuiCompatibility.register();
     }
 }
