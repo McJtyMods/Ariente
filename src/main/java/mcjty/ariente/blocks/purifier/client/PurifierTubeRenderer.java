@@ -31,7 +31,7 @@ public class PurifierTubeRenderer extends ExtractedBlockRenderer<PurifierTubeTil
         poses.pushPose();
         poses.translate(.5 + tube.getDirection().getStepX() * along, .5 + Math.sin(time * .06) * .025,
                 .5 + tube.getDirection().getStepZ() * along);
-        poses.mulPose(Axis.YP.rotationDegrees((float) time));
+        poses.rotate(Axis.YP.rotationDegrees((float) time));
         renderItem(tube, tube.getOre(), 1 - fraction, .75f, poses, buffer, light);
         int count = Math.min(5, tube.getRaw().getCount());
         for (int i = 0; i < count; i++) {

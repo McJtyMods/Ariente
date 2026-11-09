@@ -1,6 +1,6 @@
 package mcjty.ariente.client;
 
-import com.mojang.blaze3d.PrimitiveTopology;
+import com.mojang.renderpearl.api.pipeline.PrimitiveTopology;
 import com.mojang.authlib.GameProfile;
 import com.mojang.blaze3d.audio.OggAudioStream;
 import com.mojang.blaze3d.vertex.BufferBuilder;

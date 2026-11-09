@@ -53,8 +53,8 @@ public class FluxElevatorRender extends ExtractedEntityRenderer<FluxElevatorEnti
         }
 
         matrixStack.translate(0, .375, 0);
-        matrixStack.mulPose(Axis.YP.rotationDegrees(180.0F - entityYaw));
-        matrixStack.mulPose(Axis.ZP.rotationDegrees(-pitch));
+        matrixStack.rotate(Axis.YP.rotationDegrees(180.0F - entityYaw));
+        matrixStack.rotate(Axis.ZP.rotationDegrees(-pitch));
         float f5 = 0 - partialTicks;    // @todo
         float f6 = entity.getDamage() - partialTicks;
 
@@ -63,7 +63,7 @@ public class FluxElevatorRender extends ExtractedEntityRenderer<FluxElevatorEnti
         }
 
         if (f5 > 0.0F) {
-            matrixStack.mulPose(Axis.XP.rotationDegrees(Mth.sin(f5) * f5 * f6 / 10.0F * 0));
+            matrixStack.rotate(Axis.XP.rotationDegrees(Mth.sin(f5) * f5 * f6 / 10.0F * 0));
         }
 
         matrixStack.scale(-1, -1, 1);

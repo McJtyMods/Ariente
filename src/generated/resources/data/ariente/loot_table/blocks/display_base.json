@@ -9,7 +9,7 @@
         }
       ],
       "name": "display_base",
-      "rolls": 1.0
+      "rolls": 1
     }
   ],
   "random_sequence": "ariente:blocks/display_base"

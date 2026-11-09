@@ -3,7 +3,7 @@
   "criteria": {
     "has_the_recipe": {
       "conditions": {
-        "recipe": "ariente:marble_slab_lime"
+        "recipes": "ariente:marble_slab_lime"
       },
       "trigger": "minecraft:recipe_unlocked"
     },

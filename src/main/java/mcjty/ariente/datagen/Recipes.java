@@ -1,8 +1,5 @@
 package mcjty.ariente.datagen;
 
-import net.minecraft.data.recipes.RecipeProvider;
-import net.minecraft.data.PackOutput;
-import java.util.concurrent.CompletableFuture;
 import mcjty.ariente.Ariente;
 import mcjty.ariente.api.MarbleColor;
 import mcjty.ariente.api.TechType;
@@ -13,7 +10,11 @@ import mcjty.ariente.setup.Registration;
 import mcjty.lib.datagen.BaseRecipeProvider;
 import net.minecraft.advancements.Advancement;
 import net.minecraft.advancements.AdvancementHolder;
-import net.minecraft.core.HolderLookup;
+import net.minecraft.core.HolderGetter;
+import net.minecraft.core.Registry;
+import net.minecraft.core.Holder;
+import java.util.stream.Stream;
+import net.minecraft.data.worldgen.BootstrapContext;
 import net.minecraft.core.registries.BuiltInRegistries;
 import net.minecraft.data.recipes.RecipeCategory;
 import net.minecraft.data.recipes.RecipeOutput;
@@ -36,8 +37,8 @@ import net.neoforged.neoforge.common.conditions.ICondition;
 
 public class Recipes extends BaseRecipeProvider {
 
-    public Recipes(HolderLookup.Provider provider, RecipeOutput output) {
-        super(provider, output);
+    public Recipes(BootstrapContext<Recipe<?>> recipes, BootstrapContext<Advancement> advancements) {
+        super(recipes, advancements);
     }
 
     @Override
@@ -206,8 +207,13 @@ public class Recipes extends BaseRecipeProvider {
                     }
 
                     @Override
-                    public void includeRootAdvancement() {
-                        consumer.includeRootAdvancement();
+                    public <S> HolderGetter<S> lookup(ResourceKey<? extends Registry<? extends S>> key) {
+                        return consumer.lookup(key);
+                    }
+
+                    @Override
+                    public <S> Stream<Holder.Reference<S>> listContextElements(ResourceKey<? extends Registry<? extends S>> key) {
+                        return consumer.listContextElements(key);
                     }
                 }, ResourceKey.create(Registries.RECIPE, BlueprintExchangeRecipe.ID));
     }
@@ -231,20 +237,4 @@ public class Recipes extends BaseRecipeProvider {
                 .unlockedBy("has_ore", has(ore)).save(consumer, "ariente:" + name + "_from_blasting");
     }
 
-    public static class Runner extends RecipeProvider.Runner {
-
-        public Runner(PackOutput output, CompletableFuture<HolderLookup.Provider> lookup) {
-            super(output, lookup);
-        }
-
-        @Override
-        protected RecipeProvider createRecipeProvider(HolderLookup.Provider lookup, RecipeOutput output) {
-            return new Recipes(lookup, output);
-        }
-
-        @Override
-        public String getName() {
-            return "Ariente recipes";
-        }
-    }
 }

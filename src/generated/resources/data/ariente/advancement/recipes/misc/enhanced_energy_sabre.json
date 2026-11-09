@@ -3,7 +3,7 @@
   "criteria": {
     "has_the_recipe": {
       "conditions": {
-        "recipe": "ariente:enhanced_energy_sabre"
+        "recipes": "ariente:enhanced_energy_sabre"
       },
       "trigger": "minecraft:recipe_unlocked"
     },

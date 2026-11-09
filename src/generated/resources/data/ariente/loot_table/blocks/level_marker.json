@@ -9,7 +9,7 @@
         }
       ],
       "name": "level_marker",
-      "rolls": 1.0
+      "rolls": 1
     }
   ],
   "random_sequence": "ariente:blocks/level_marker"

@@ -3,7 +3,7 @@
   "criteria": {
     "has_the_recipe": {
       "conditions": {
-        "recipe": "ariente:marble_red_dye"
+        "recipes": "ariente:marble_red_dye"
       },
       "trigger": "minecraft:recipe_unlocked"
     },

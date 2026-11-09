@@ -1,5 +1,6 @@
 {
   "type": "minecraft:blasting",
+  "cookingtime": 100,
   "ingredient": "#c:ores/lithium",
   "result": {
     "id": "ariente:ingot_lithium"

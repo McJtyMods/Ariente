@@ -1,5 +1,7 @@
 package mcjty.ariente.blocks.utility;
 
+import net.neoforged.neoforge.transfer.IndexModifier;
+import mcjty.lib.varia.InventoryTools;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -60,8 +62,7 @@ import net.minecraft.world.level.block.state.StateDefinition;
 import net.minecraft.world.phys.BlockHitResult;
 import net.minecraft.world.phys.HitResult;
 import net.minecraft.world.phys.Vec3;
-import net.neoforged.neoforge.items.IItemHandler;
-import net.neoforged.neoforge.items.IItemHandlerModifiable;
+
 
 import static mcjty.ariente.compat.ArienteTOPDriver.DRIVER;
 import static mcjty.lib.builder.TooltipBuilder.header;
@@ -80,7 +81,7 @@ public class StorageTile extends ArienteBlockEntity implements IGuiTile, ICityEq
     private final int[] counts;
     private final int[] totals;
 
-    private final IItemHandler invHandler = new StorageItemHandler();
+    private final ResourceHandler<ItemResource> invHandler = new StorageItemHandler();
 
     public StorageTile(BlockPos pos, BlockState state) {
         super(mcjty.ariente.setup.Registration.STORAGE_TILE.get(), pos, state);
@@ -457,13 +458,13 @@ public class StorageTile extends ArienteBlockEntity implements IGuiTile, ICityEq
     }
 
     @Nonnull
-    private static ItemStack insertItem(IItemHandler dest, @Nonnull ItemStack stack, int type) {
+    private static ItemStack insertItem(ResourceHandler<ItemResource> dest, @Nonnull ItemStack stack, int type) {
         if (dest == null || stack.isEmpty()) {
             return stack;
         }
 
         for (int i = type * STACKS_PER_TYPE; i < (type + 1) * STACKS_PER_TYPE; i++) {
-            stack = dest.insertItem(i, stack, false);
+            stack = InventoryTools.insertItem(dest, i, stack, false);
             if (stack.isEmpty()) {
                 return ItemStack.EMPTY;
             }
@@ -580,7 +581,12 @@ public class StorageTile extends ArienteBlockEntity implements IGuiTile, ICityEq
     private record InventorySnapshot(List<ItemStack> stacks, int[] counts, int[] totals) {
     }
 
-    private class StorageItemHandler implements IItemHandlerModifiable, ResourceHandler<ItemResource> {
+    private class StorageItemHandler implements ResourceHandler<ItemResource>, IndexModifier<ItemResource> {
+
+        @Override
+        public void set(int index, ItemResource resource, int amount) {
+            setStackInSlot(index, resource.toStack(amount));
+        }
 
         private final SnapshotJournal<InventorySnapshot> journal = new SnapshotJournal<>() {
 
@@ -657,14 +663,12 @@ public class StorageTile extends ArienteBlockEntity implements IGuiTile, ICityEq
             }
         }
 
-        @Override
-        public int getSlots() {
+                public int getSlots() {
             return getTypeCount() * STACKS_PER_TYPE;
         }
 
         @Nonnull
-        @Override
-        public ItemStack getStackInSlot(int index) {
+                public ItemStack getStackInSlot(int index) {
             if (counts[index] == 0) {
                 return ItemStack.EMPTY;
             } else {
@@ -678,8 +682,7 @@ public class StorageTile extends ArienteBlockEntity implements IGuiTile, ICityEq
         }
 
         @Nonnull
-        @Override
-        public ItemStack insertItem(int slot, @Nonnull ItemStack stack, boolean simulate) {
+                public ItemStack insertItem(int slot, @Nonnull ItemStack stack, boolean simulate) {
             if (locked) {
                 return stack;
             }
@@ -770,8 +773,7 @@ public class StorageTile extends ArienteBlockEntity implements IGuiTile, ICityEq
         }
 
         @Nonnull
-        @Override
-        public ItemStack extractItem(int slot, int amount, boolean simulate) {
+                public ItemStack extractItem(int slot, int amount, boolean simulate) {
             if (locked || amount <= 0)
                 return ItemStack.EMPTY;
 
@@ -794,13 +796,11 @@ public class StorageTile extends ArienteBlockEntity implements IGuiTile, ICityEq
             }
         }
 
-        @Override
-        public int getSlotLimit(int slot) {
+                public int getSlotLimit(int slot) {
             return 64;
         }
 
-        @Override
-        public boolean isItemValid(int index, @Nonnull ItemStack stack) {
+                public boolean isItemValid(int index, @Nonnull ItemStack stack) {
             if (locked) {
                 return false;
             }
@@ -812,8 +812,7 @@ public class StorageTile extends ArienteBlockEntity implements IGuiTile, ICityEq
             }
         }
 
-        @Override
-        public void setStackInSlot(int index, @Nonnull ItemStack stack) {
+                public void setStackInSlot(int index, @Nonnull ItemStack stack) {
             // We assume here that the actual stack is valid for this slot
             int type = index / STACKS_PER_TYPE;
             totals[type] -= counts[index];
@@ -831,7 +830,7 @@ public class StorageTile extends ArienteBlockEntity implements IGuiTile, ICityEq
     }
 
     @Override
-    public IItemHandler getAutomationHandler(Direction side) {
+    public ResourceHandler<ItemResource> getAutomationHandler(Direction side) {
         return invHandler;
     }
 

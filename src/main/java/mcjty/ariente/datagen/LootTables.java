@@ -1,32 +1,28 @@
 package mcjty.ariente.datagen;
 
-import java.util.function.BiConsumer;
 import java.util.function.Supplier;
 import mcjty.ariente.blocks.decorative.DecorativeBlockModule;
 import mcjty.ariente.blocks.decorative.PatternBlock;
 import mcjty.ariente.setup.Registration;
 import mcjty.lib.blocks.BaseBlock;
 import mcjty.lib.datagen.BaseLootTableProvider;
-import net.minecraft.core.HolderLookup;
 import net.minecraft.data.loot.LootTableSubProvider;
-import net.minecraft.resources.ResourceKey;
 import net.minecraft.world.level.block.Block;
 import net.minecraft.world.level.block.SlabBlock;
-import net.minecraft.world.level.storage.loot.LootTable;
 import net.minecraft.world.level.storage.loot.parameters.LootContextParamSets;
 
 public class LootTables extends BaseLootTableProvider implements LootTableSubProvider {
 
-    private final HolderLookup.Provider provider;
+    private final LootTableSubProvider.Context provider;
 
-    public LootTables(HolderLookup.Provider provider) {
+    public LootTables(LootTableSubProvider.Context provider) {
         this.provider = provider;
         addTables();
     }
 
     @Override
-    public void generate(BiConsumer<ResourceKey<LootTable>, LootTable.Builder> output) {
-        generate(output, LootContextParamSets.BLOCK);
+    public void run() {
+        generate(provider::accept, LootContextParamSets.BLOCK);
     }
 
     protected void addTables() {

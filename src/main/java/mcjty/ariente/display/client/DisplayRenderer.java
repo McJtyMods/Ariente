@@ -28,7 +28,7 @@ public class DisplayRenderer extends ExtractedBlockRenderer<DisplayBaseTile> {
         Direction normal = DisplayGeometry.facing(tile);
         Direction right = normal.getCounterClockWise();
         poses.translate(.5 - right.getStepX() * .5, tile.getHeight(), .5 - right.getStepZ() * .5);
-        poses.mulPose(Axis.YP.rotationDegrees(-normal.toYRot()));
+        poses.rotate(Axis.YP.rotationDegrees(-normal.toYRot()));
         poses.scale(1 / 64f, -1 / 64f, 1 / 64f);
     }
 

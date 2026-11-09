@@ -1,5 +1,6 @@
 {
   "type": "minecraft:blasting",
+  "cookingtime": 100,
   "ingredient": "#c:ores/platinum",
   "result": {
     "id": "ariente:ingot_platinum"

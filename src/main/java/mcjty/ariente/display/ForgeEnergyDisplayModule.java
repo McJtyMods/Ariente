@@ -10,7 +10,7 @@ import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.level.block.entity.BlockEntity;
 import net.neoforged.neoforge.capabilities.Capabilities;
-import net.neoforged.neoforge.energy.IEnergyStorage;
+import net.neoforged.neoforge.transfer.energy.EnergyHandler;
 
 public class ForgeEnergyDisplayModule extends ResourceDisplayModule {
 
@@ -26,8 +26,8 @@ public class ForgeEnergyDisplayModule extends ResourceDisplayModule {
         return new Size(128, 24 + rows * 10 + (mode(stack) == 1 ? 12 : mode(stack) == 2 ? 40 : 0));
     }
 
-    public static IEnergyStorage energy(BlockEntity tile, Direction side) {
-        IEnergyStorage handler = CapabilityTools.energyHandler(tile.getLevel().getCapability(Capabilities.Energy.BLOCK, tile.getBlockPos(), side));
+    public static EnergyHandler energy(BlockEntity tile, Direction side) {
+        EnergyHandler handler = CapabilityTools.energyHandler(tile.getLevel().getCapability(Capabilities.Energy.BLOCK, tile.getBlockPos(), side));
         return handler != null ? handler : CapabilityTools.energyHandler(tile.getLevel().getCapability(Capabilities.Energy.BLOCK, tile.getBlockPos(), null));
     }
 
@@ -45,15 +45,15 @@ public class ForgeEnergyDisplayModule extends ResourceDisplayModule {
             data.putString("Status", link.status());
             return data;
         }
-        IEnergyStorage handler = energy(link.tile(), link.side());
+        EnergyHandler handler = energy(link.tile(), link.side());
         if (handler == null) {
             data.putString("Status", "FE storage unavailable");
             return data;
         }
         data.putString("Name", link.tile().getBlockState().getBlock().getName().getString());
-        long amount = Math.max(0, handler.getEnergyStored());
+        long amount = Math.max(0, handler.getAmountAsLong());
         data.putLong("Amount", amount);
-        data.putLong("Capacity", Math.max(0, handler.getMaxEnergyStored()));
+        data.putLong("Capacity", Math.max(0, handler.getCapacityAsLong()));
         long now = link.level().getGameTime();
         data.putLong("Tick", now);
         // This is net buffer change, not separately measured input or output.

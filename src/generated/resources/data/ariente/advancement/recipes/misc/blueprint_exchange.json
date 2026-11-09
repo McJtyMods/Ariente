@@ -13,7 +13,7 @@
     },
     "has_the_recipe": {
       "conditions": {
-        "recipe": "ariente:blueprint_exchange"
+        "recipes": "ariente:blueprint_exchange"
       },
       "trigger": "minecraft:recipe_unlocked"
     }

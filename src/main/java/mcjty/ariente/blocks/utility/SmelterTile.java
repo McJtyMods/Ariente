@@ -1,5 +1,8 @@
 package mcjty.ariente.blocks.utility;
 
+import net.minecraft.util.Prediction;
+import mcjty.lib.varia.InventoryTools;
+import net.neoforged.neoforge.transfer.item.ItemUtil;
 import net.neoforged.neoforge.transfer.ResourceHandler;
 import net.neoforged.neoforge.transfer.item.ItemResource;
 import net.neoforged.neoforge.transfer.transaction.TransactionContext;
@@ -44,7 +47,6 @@ import net.minecraft.world.level.block.state.StateDefinition;
 import net.minecraft.world.phys.BlockHitResult;
 import net.minecraft.world.phys.Vec3;
 import net.neoforged.neoforge.common.util.Lazy;
-import net.neoforged.neoforge.items.IItemHandler;
 
 import static mcjty.ariente.blocks.BlockProperties.WORKING;
 import static mcjty.ariente.compat.ArienteTOPDriver.DRIVER;
@@ -62,8 +64,7 @@ public class SmelterTile extends ExtremeMachineTile implements IPowerReceiver, I
 
     private final GenericItemHandler items = new GenericItemHandler(this, CONTAINER_FACTORY.get()) {
 
-        @Override
-        public boolean isItemValid(int slot, @Nonnull ItemStack stack) {
+                public boolean isItemValid(int slot, @Nonnull ItemStack stack) {
             return slot == SLOT_INPUT && findRecipe(stack) != null;
         }
 
@@ -73,7 +74,7 @@ public class SmelterTile extends ExtremeMachineTile implements IPowerReceiver, I
         }
     };
 
-    private final Map<Direction, IItemHandler> sidedHandlers = new EnumMap<>(Direction.class);
+    private final Map<Direction, ResourceHandler<ItemResource>> sidedHandlers = new EnumMap<>(Direction.class);
     private final RecipeManager.CachedCheck<SingleRecipeInput, SmeltingRecipe> recipeCheck = RecipeManager.createCheck(RecipeType.SMELTING);
     private Identifier recipeId;
     private int progress;
@@ -117,7 +118,7 @@ public class SmelterTile extends ExtremeMachineTile implements IPowerReceiver, I
     }
 
     public ItemStack getStack(int slot) {
-        return items.getStackInSlot(slot);
+        return ItemUtil.getStack(items, slot);
     }
 
     public int getSlot(BlockHitResult hit) {
@@ -153,7 +154,7 @@ public class SmelterTile extends ExtremeMachineTile implements IPowerReceiver, I
             if (held.isEmpty()) {
                 giveToPlayer(slot, player);
             } else if (slot == SLOT_INPUT) {
-                player.setItemInHand(hand, items.insertItem(SLOT_INPUT, held, false));
+                player.setItemInHand(hand, InventoryTools.insertItem(items, SLOT_INPUT, held, false));
                 player.containerMenu.broadcastChanges();
             }
         }
@@ -164,10 +165,10 @@ public class SmelterTile extends ExtremeMachineTile implements IPowerReceiver, I
         if (slot != SLOT_INPUT && slot != SLOT_OUTPUT) {
             return;
         }
-        ItemStack taken = items.extractItem(slot, player.isShiftKeyDown() ? 64 : 1, false);
+        ItemStack taken = InventoryTools.extractItem(items, slot, player.isShiftKeyDown() ? 64 : 1, false);
         if (!taken.isEmpty()) {
             if (!player.getInventory().add(taken)) {
-                player.drop(taken, false);
+                player.drop(taken, false, Prediction.SERVER_ONLY);
             }
             player.containerMenu.broadcastChanges();
         }
@@ -185,7 +186,7 @@ public class SmelterTile extends ExtremeMachineTile implements IPowerReceiver, I
     public void tickServer() {
         long previousPower = usingPower;
         usingPower = 0;
-        var recipe = findRecipe(items.getStackInSlot(SLOT_INPUT));
+        var recipe = findRecipe(ItemUtil.getStack(items, SLOT_INPUT));
         Identifier nextId = recipe == null ? null : recipe.id().identifier();
         if (!Objects.equals(nextId, recipeId)) {
             progress = 0;
@@ -193,18 +194,18 @@ public class SmelterTile extends ExtremeMachineTile implements IPowerReceiver, I
             markDirtyQuick();
         }
         if (recipe != null) {
-            ItemStack result = recipe.value().assemble(new SingleRecipeInput(items.getStackInSlot(SLOT_INPUT)));
-            ItemStack output = items.getStackInSlot(SLOT_OUTPUT);
+            ItemStack result = recipe.value().assemble(new SingleRecipeInput(ItemUtil.getStack(items, SLOT_INPUT)));
+            ItemStack output = ItemUtil.getStack(items, SLOT_OUTPUT);
             int limit = Math.min(items.getSlotLimit(SLOT_OUTPUT), result.getMaxStackSize());
             if (!result.isEmpty() && (output.isEmpty() || ItemStack.isSameItemSameComponents(output, result))
                     && output.getCount() + result.getCount() <= limit
                     && PowerReceiverSupport.consumePower(level, worldPosition, powerCost(PowerConfiguration.SMELTER_POWER_PER_TICK.get()), true)) {
                 usingPower = powerCost(PowerConfiguration.SMELTER_POWER_PER_TICK.get());
                 progress += PowerConfiguration.SMELTER_SPEED.get() * operationSpeed();
-                while (progress >= recipe.value().cookingTime() && !items.getStackInSlot(SLOT_INPUT).isEmpty()
+                while (progress >= recipe.value().cookingTime() && !ItemUtil.getStack(items, SLOT_INPUT).isEmpty()
                         && output.getCount() + result.getCount() <= limit) {
                     progress -= Math.max(1, recipe.value().cookingTime());
-                    items.extractItem(SLOT_INPUT, 1, false);
+                    InventoryTools.extractItem(items, SLOT_INPUT, 1, false);
                     output = result.copyWithCount(output.getCount() + result.getCount());
                     items.setStackInSlot(SLOT_OUTPUT, output);
                     markDirtyClient();
@@ -255,11 +256,11 @@ public class SmelterTile extends ExtremeMachineTile implements IPowerReceiver, I
     }
 
     @Override
-    public IItemHandler getAutomationHandler(@Nullable Direction side) {
+    public ResourceHandler<ItemResource> getAutomationHandler(@Nullable Direction side) {
         return side == null ? items : sidedHandlers.computeIfAbsent(side, SidedHandler::new);
     }
 
-    private class SidedHandler implements IItemHandler, ResourceHandler<ItemResource> {
+    private class SidedHandler implements ResourceHandler<ItemResource> {
 
         private final Direction side;
 
@@ -313,36 +314,30 @@ public class SmelterTile extends ExtremeMachineTile implements IPowerReceiver, I
             return isOutput() ? items.extract(mapped(index), resource, amount, transaction) : 0;
         }
 
-        @Override
-        public int getSlots() {
+                public int getSlots() {
             return 1;
         }
 
         @Nonnull
-        @Override
-        public ItemStack getStackInSlot(int slot) {
+                public ItemStack getStackInSlot(int slot) {
             return slot == 0 ? items.getStackInSlot(isOutput() ? SLOT_OUTPUT : SLOT_INPUT) : ItemStack.EMPTY;
         }
 
         @Nonnull
-        @Override
-        public ItemStack insertItem(int slot, @Nonnull ItemStack stack, boolean simulate) {
-            return isItemValid(slot, stack) ? items.insertItem(SLOT_INPUT, stack, simulate) : stack;
+                public ItemStack insertItem(int slot, @Nonnull ItemStack stack, boolean simulate) {
+            return isItemValid(slot, stack) ? InventoryTools.insertItem(items, SLOT_INPUT, stack, simulate) : stack;
         }
 
         @Nonnull
-        @Override
-        public ItemStack extractItem(int slot, int amount, boolean simulate) {
-            return slot == 0 && isOutput() ? items.extractItem(SLOT_OUTPUT, amount, simulate) : ItemStack.EMPTY;
+                public ItemStack extractItem(int slot, int amount, boolean simulate) {
+            return slot == 0 && isOutput() ? InventoryTools.extractItem(items, SLOT_OUTPUT, amount, simulate) : ItemStack.EMPTY;
         }
 
-        @Override
-        public int getSlotLimit(int slot) {
+                public int getSlotLimit(int slot) {
             return slot == 0 ? 64 : 0;
         }
 
-        @Override
-        public boolean isItemValid(int slot, @Nonnull ItemStack stack) {
+                public boolean isItemValid(int slot, @Nonnull ItemStack stack) {
             return slot == 0 && !isOutput() && items.isItemValid(SLOT_INPUT, stack);
         }
     }

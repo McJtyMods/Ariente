@@ -3,7 +3,7 @@
   "criteria": {
     "has_the_recipe": {
       "conditions": {
-        "recipe": "ariente:blacktech_var1_anim"
+        "recipes": "ariente:blacktech_var1_anim"
       },
       "trigger": "minecraft:recipe_unlocked"
     },

@@ -38,10 +38,10 @@ public class FluxShipPanelRender extends ExtractedEntityRenderer<HoloGuiEntity> 
             // dashboard relative to the cabin between client ticks.
             Vec3 correction = ship.getPanelPosition(partialTick).subtract(panel.getPosition(partialTick));
             pose.translate(correction.x, correction.y, correction.z);
-            pose.mulPose(Axis.YP.rotationDegrees(-ship.getFlightYaw(partialTick)));
-            pose.mulPose(Axis.XP.rotationDegrees(ship.getFlightPitch(partialTick)));
-            pose.mulPose(Axis.ZP.rotationDegrees(ship.getBank(partialTick)));
-            pose.mulPose(Axis.YP.rotationDegrees(180));
+            pose.rotate(Axis.YP.rotationDegrees(-ship.getFlightYaw(partialTick)));
+            pose.rotate(Axis.XP.rotationDegrees(ship.getFlightPitch(partialTick)));
+            pose.rotate(Axis.ZP.rotationDegrees(ship.getBank(partialTick)));
+            pose.rotate(Axis.YP.rotationDegrees(180));
             renderInstruments(panel, ship, partialTick, pose, buffers);
         } else {
             HoloGuiEntityRender.renderPanel(panel, partialTick, pose, buffers);

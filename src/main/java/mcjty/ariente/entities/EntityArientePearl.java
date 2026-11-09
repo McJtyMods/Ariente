@@ -175,7 +175,7 @@ public class EntityArientePearl extends Entity implements ItemSupplier {
                 if (this.shatterOrDrop) {
                     this.level().addFreshEntity(new ItemEntity(this.level(), this.getX(), this.getY(), this.getZ(), new ItemStack(mcjty.ariente.setup.Registration.ARIENTE_PEARL.get())));
                 } else {
-                    this.level().levelEvent(2003, new BlockPos(this.blockPosition()), 0);
+                    this.level().levelEvent(2003, this.blockPosition(), 0);
                 }
             }
         }

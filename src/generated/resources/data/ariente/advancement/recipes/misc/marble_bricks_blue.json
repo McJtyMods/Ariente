@@ -3,7 +3,7 @@
   "criteria": {
     "has_the_recipe": {
       "conditions": {
-        "recipe": "ariente:marble_bricks_blue"
+        "recipes": "ariente:marble_bricks_blue"
       },
       "trigger": "minecraft:recipe_unlocked"
     },

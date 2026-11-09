@@ -1,23 +1,33 @@
 package mcjty.ariente.oregen;
 
+import com.mojang.serialization.MapCodec;
+import java.util.List;
 import mcjty.ariente.config.WorldgenConfiguration;
+import net.minecraft.core.BlockPos;
+import net.minecraft.util.RandomSource;
 import net.minecraft.world.level.Level;
-import net.minecraft.world.level.levelgen.feature.Feature;
-import net.minecraft.world.level.levelgen.feature.FeaturePlaceContext;
-import net.minecraft.world.level.levelgen.feature.configurations.OreConfiguration;
+import net.minecraft.world.level.WorldGenLevel;
+import net.minecraft.world.level.chunk.ChunkGenerator;
+import net.minecraft.world.level.levelgen.feature.BlockReplacement;
+import net.minecraft.world.level.levelgen.feature.OreFeature;
+import net.minecraft.world.level.levelgen.feature.AbstractOreFeature;
 
-public class ArienteOreGen extends Feature<OreConfiguration> {
+public class ArienteOreGen extends AbstractOreFeature {
 
-    public ArienteOreGen() {
-        super(OreConfiguration.CODEC);
+    public static final MapCodec<ArienteOreGen> CODEC = makeCodec(ArienteOreGen::new);
+
+    public ArienteOreGen(List<BlockReplacement> targets, int size, float discardChanceOnAirExposure) {
+        super(targets, size, discardChanceOnAirExposure);
     }
 
     @Override
-    public boolean place(FeaturePlaceContext<OreConfiguration> context) {
-        if (context.level().getLevel().dimension() != Level.OVERWORLD || !WorldgenConfiguration.doWorldGen()) {
-            return false;
-        }
-        // Decode distributions from datapacks; read the world config only at placement time.
-        return Feature.ORE.place(context.config(), context.level(), context.chunkGenerator(), context.random(), context.origin());
+    public MapCodec<? extends AbstractOreFeature> codec() {
+        return CODEC;
+    }
+
+    @Override
+    public boolean place(WorldGenLevel level, ChunkGenerator generator, RandomSource random, BlockPos origin) {
+        return level.getLevel().dimension() == Level.OVERWORLD && WorldgenConfiguration.doWorldGen()
+                && new OreFeature(targetStates, size, discardChanceOnAirExposure).place(level, generator, random, origin);
     }
 }

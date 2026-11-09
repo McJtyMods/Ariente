@@ -3,7 +3,7 @@
   "criteria": {
     "has_the_recipe": {
       "conditions": {
-        "recipe": "ariente:blacktech_lines"
+        "recipes": "ariente:blacktech_lines"
       },
       "trigger": "minecraft:recipe_unlocked"
     },

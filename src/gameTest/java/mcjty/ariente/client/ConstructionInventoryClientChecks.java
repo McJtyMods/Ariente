@@ -145,7 +145,7 @@ public class ConstructionInventoryClientChecks {
                     target.bindWrite(true);
                     var poses = new PoseStack();
                     poses.translate(0, 0, -2);
-                    poses.mulPose(Axis.YP.rotationDegrees(angle));
+                    poses.rotate(Axis.YP.rotationDegrees(angle));
                     poses.translate(0, -.5, 0);
                     var buffers = RenderBufferSource.immediate(new BufferBuilder(4096));
                     mc.getEntityRenderDispatcher().getRenderer(holo).render(holo, 0, 0, poses, buffers, LightTexture.FULL_BRIGHT);

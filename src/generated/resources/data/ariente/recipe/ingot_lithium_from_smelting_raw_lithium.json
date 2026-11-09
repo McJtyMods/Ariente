@@ -1,5 +1,6 @@
 {
   "type": "minecraft:smelting",
+  "cookingtime": 200,
   "ingredient": "#c:raw_materials/lithium",
   "result": {
     "id": "ariente:ingot_lithium"

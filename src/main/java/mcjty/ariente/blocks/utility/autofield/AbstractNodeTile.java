@@ -35,7 +35,8 @@ import net.minecraft.world.phys.BlockHitResult;
 import net.minecraft.world.phys.shapes.Shapes;
 import net.minecraft.world.phys.shapes.VoxelShape;
 import net.neoforged.neoforge.capabilities.Capabilities;
-import net.neoforged.neoforge.items.IItemHandler;
+import net.neoforged.neoforge.transfer.ResourceHandler;
+import net.neoforged.neoforge.transfer.item.ItemResource;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.lang3.tuple.Pair;
 
@@ -314,7 +315,7 @@ public abstract class AbstractNodeTile extends ArienteBlockEntity implements IGu
     }
 
     @Nonnull
-    public Optional<IItemHandler> getConnectedItemHandler(PartPos partPos) {
+    public Optional<ResourceHandler<ItemResource>> getConnectedItemHandler(PartPos partPos) {
         BlockState state = MultipartHelper.getBlockState(level, worldPosition, partPos.slot());
         if (state != null && state.getBlock() == getBlockState().getBlock()) {
             NodeOrientation orientation = state.getValue(ORIENTATION);

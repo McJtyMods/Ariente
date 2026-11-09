@@ -1,3 +1,6 @@
+26.3-0.0.31-alpha:
+- Ported to Minecraft 26.3 on NeoForge.
+
 26.2-0.0.31-alpha:
 - Ported to Minecraft 26.2 on NeoForge.
 

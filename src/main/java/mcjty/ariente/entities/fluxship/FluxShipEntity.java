@@ -1,7 +1,9 @@
 package mcjty.ariente.entities.fluxship;
 
+import net.minecraft.util.Prediction;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.world.entity.InterpolationHandler;
+import net.minecraft.world.entity.PositionPath;
 import org.joml.Vector3fc;
 import com.mojang.serialization.MapCodec;
 import net.minecraft.world.level.storage.ValueInput;
@@ -35,15 +37,19 @@ import net.minecraft.world.phys.Vec3;
 import org.joml.Vector3f;
 
 public class FluxShipEntity extends Entity {
-    private final InterpolationHandler networkInterpolation = new InterpolationHandler(this, handler -> {
-        Vec3 target = handler.position();
-        lerpTo(target.x, target.y, target.z, handler.yRot(), handler.xRot(), 3);
-        handler.cancel();
-    });
-
     @Override
-    public InterpolationHandler getInterpolation() {
-        return networkInterpolation;
+    protected InterpolationHandler createInterpolationHandler() {
+        return new InterpolationHandler.NoOpInterpolationHandler() {
+
+            @Override
+            public boolean interpolateTo(PositionPath position, float yRot, float xRot, boolean hasRotation) {
+                if (position != null) {
+                    Vec3 target = position.endPosition();
+                    lerpTo(target.x, target.y, target.z, hasRotation ? yRot : getYRot(), hasRotation ? xRot : getXRot(), 3);
+                }
+                return true;
+            }
+        };
     }
 
     private static final EntityDataAccessor<Float> BANK = SynchedEntityData.defineId(FluxShipEntity.class, EntityDataSerializers.FLOAT);
@@ -154,7 +160,7 @@ public class FluxShipEntity extends Entity {
         }
         if (!level().isClientSide()) {
             if (player.isShiftKeyDown()) {
-                player.getInventory().placeItemBackInInventory(asItem());
+                player.getInventory().placeItemBackInInventory(asItem(), Prediction.SERVER_ONLY);
                 discard();
             } else {
                 player.startRiding(this);

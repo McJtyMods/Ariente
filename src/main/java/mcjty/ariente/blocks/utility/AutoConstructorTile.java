@@ -1,5 +1,6 @@
 package mcjty.ariente.blocks.utility;
 
+import net.neoforged.neoforge.transfer.item.ItemUtil;
 import net.minecraft.world.level.storage.ValueInput;
 import net.minecraft.world.level.block.state.BlockBehaviour;
 import net.minecraft.world.level.material.MapColor;
@@ -49,8 +50,9 @@ import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.level.block.state.StateDefinition;
 import net.minecraft.world.phys.BlockHitResult;
 import net.neoforged.neoforge.common.util.Lazy;
-import net.neoforged.neoforge.items.IItemHandler;
-import net.neoforged.neoforge.items.ItemHandlerHelper;
+import net.neoforged.neoforge.transfer.ResourceHandler;
+import net.neoforged.neoforge.transfer.item.ItemResource;
+import mcjty.lib.varia.InventoryTools;
 
 import static mcjty.ariente.blocks.BlockProperties.WORKING;
 import static mcjty.ariente.blocks.utility.BlueprintStorageTile.BLUEPRINTS;
@@ -133,7 +135,7 @@ public class AutoConstructorTile extends ExtremeMachineTile implements IGuiTile,
         }
         ItemStack result = recipe.getDestination();
         for (int slot = SLOT_OUTPUT; slot < SLOT_OUTPUT + OUTPUT; slot++) {
-            ItemStack output = items.getStackInSlot(slot);
+            ItemStack output = ItemUtil.getStack(items, slot);
             int limit = Math.min(result.getMaxStackSize(), items.getSlotLimit(slot));
             if ((!output.isEmpty() && !ItemStack.isSameItemSameComponents(result, output))
                     || output.getCount() + result.getCount() > limit) {
@@ -146,7 +148,7 @@ public class AutoConstructorTile extends ExtremeMachineTile implements IGuiTile,
             usingPower += cost;
             for (int input = SLOT_INGREDIENTS; input < SLOT_INGREDIENTS + INGREDIENTS; input++) {
                 if (reserved[input] > 0) {
-                    items.extractItem(input, reserved[input], false);
+                    InventoryTools.extractItem(items, input, reserved[input], false);
                 }
             }
             ItemStack crafted = result.copy();
@@ -191,7 +193,7 @@ public class AutoConstructorTile extends ExtremeMachineTile implements IGuiTile,
                 BlueprintStorageTile blueprints = storageTiles.get((ci / BLUEPRINTS) % storageTiles.size());
                 int index = ci % BLUEPRINTS;
                 GenericItemHandler helper = blueprints.getItems();
-                ItemStack blueprintStack = helper.getStackInSlot(SLOT_BLUEPRINT + index);
+                ItemStack blueprintStack = ItemUtil.getStack(helper, SLOT_BLUEPRINT + index);
                 if (blueprintStack.isEmpty()) {
                     // Nothing to do. Decrease busyCounter so we skip to the next blueprint faster
                     busyCounter = 3;
@@ -335,7 +337,7 @@ public class AutoConstructorTile extends ExtremeMachineTile implements IGuiTile,
                 BlueprintStorageTile blueprints = (BlueprintStorageTile) te;
                 GenericItemHandler helper = blueprints.getItems();
                 for (int i = SLOT_BLUEPRINT; i < SLOT_BLUEPRINT + BLUEPRINTS; i++) {
-                    ItemStack blueprintStack = helper.getStackInSlot(i);
+                    ItemStack blueprintStack = ItemUtil.getStack(helper, i);
                     if (!blueprintStack.isEmpty()) {
                         ItemStack destination = BlueprintItem.getDestination(blueprintStack);
                         ConstructorRecipe recipe = BlueprintRecipeRegistry.findRecipe(destination);
@@ -358,10 +360,10 @@ public class AutoConstructorTile extends ExtremeMachineTile implements IGuiTile,
             if (component instanceof ISlots) {
                 int selected = ((ISlots) component).getSelected();
                 if (selected != -1) {
-                    ItemStack extracted = items.extractItem(selected, 64, false);
+                    ItemStack extracted = InventoryTools.extractItem(items, selected, 64, false);
                     if (!extracted.isEmpty()) {
                         if (!player.getInventory().add(extracted)) {
-                            items.insertItem(selected, extracted, false);
+                            InventoryTools.insertItem(items, selected, extracted, false);
                         } else {
                             ((ISlots) component).setSelection(-1);
                         }
@@ -380,7 +382,7 @@ public class AutoConstructorTile extends ExtremeMachineTile implements IGuiTile,
                 if (selected != -1) {
                     ItemStack extracted = player.getInventory().getItem(selected);
                     if (!extracted.isEmpty() && isIngredient(extracted)) {
-                        ItemStack notInserted = ItemHandlerHelper.insertItem(items, extracted, false);
+                        ItemStack notInserted = InventoryTools.insertItem(items, extracted, false);
                         player.getInventory().setItem(selected, notInserted);
                         if (notInserted.isEmpty()) {
                             ((IPlayerSlots) component).setSelection(-1);
@@ -435,7 +437,7 @@ public class AutoConstructorTile extends ExtremeMachineTile implements IGuiTile,
     }
 
     @Override
-    public IItemHandler getAutomationHandler(Direction side) {
+    public ResourceHandler<ItemResource> getAutomationHandler(Direction side) {
         return items;
     }
 

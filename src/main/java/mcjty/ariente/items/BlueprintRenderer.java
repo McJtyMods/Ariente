@@ -38,8 +38,8 @@ public final class BlueprintRenderer implements SpecialModelRenderer<BlueprintRe
         poses.pushPose();
         poses.translate(.5, .5, .65);
         poses.scale(.5f, .5f, .5f);
-        poses.mulPose(Axis.XP.rotationDegrees(30));
-        poses.mulPose(Axis.YP.rotationDegrees(state.rotation()));
+        poses.rotate(Axis.XP.rotationDegrees(30));
+        poses.rotate(Axis.YP.rotationDegrees(state.rotation()));
         state.item().submit(poses, collector, light, overlay, outline);
         poses.popPose();
     }

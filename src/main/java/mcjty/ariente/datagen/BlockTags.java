@@ -22,6 +22,10 @@ public class BlockTags extends BlockTagsProvider {
         // Include the decorative variants and multipart/machine blocks as well as ores.
         for (var entry : Registration.BLOCKS.getEntries()) {
             Block block = entry.get();
+            // 26.3 uses tags for heightmaps, fluid barriers and teleport surfaces.
+            if (block.defaultBlockState().isSolid()) {
+                addTag(net.minecraft.tags.BlockTags.BLOCKS_MOTION_NO_LEAVES, block);
+            }
             if (block != Registration.FLUX_GLOW.get() && block != Registration.INVISIBLE_DOOR.get()) {
                 addTag(net.minecraft.tags.BlockTags.MINEABLE_WITH_PICKAXE, block);
             }

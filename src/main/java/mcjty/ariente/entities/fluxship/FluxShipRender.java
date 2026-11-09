@@ -27,11 +27,11 @@ public class FluxShipRender extends ExtractedEntityRenderer<FluxShipEntity> {
     public void render(FluxShipEntity ship, float yaw, float partialTick, PoseStack pose, RenderBufferSource buffers, int light) {
         pose.pushPose();
         pose.translate(0, .5, 0);
-        pose.mulPose(Axis.YP.rotationDegrees(-ship.getFlightYaw(partialTick)));
-        pose.mulPose(Axis.XP.rotationDegrees(ship.getFlightPitch(partialTick)));
-        pose.mulPose(Axis.ZP.rotationDegrees(ship.getBank(partialTick)));
+        pose.rotate(Axis.YP.rotationDegrees(-ship.getFlightYaw(partialTick)));
+        pose.rotate(Axis.XP.rotationDegrees(ship.getFlightPitch(partialTick)));
+        pose.rotate(Axis.ZP.rotationDegrees(ship.getBank(partialTick)));
         pose.pushPose();
-        pose.mulPose(Axis.YP.rotationDegrees(-90));
+        pose.rotate(Axis.YP.rotationDegrees(-90));
         Minecraft mc = Minecraft.getInstance();
         int overlay = OverlayTexture.pack(OverlayTexture.u(0), OverlayTexture.v(ship.getHurtTime() > 0));
         StandaloneModels.render(MODEL, pose, buffers, ArienteRenderType.SHIP_HULL, light, overlay);

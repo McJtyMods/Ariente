@@ -21,6 +21,7 @@ import net.minecraft.client.resources.model.ModelBaker;
 import net.minecraft.client.resources.model.ResolvableModel;
 import net.minecraft.client.resources.model.ResolvedModel;
 import net.minecraft.client.resources.model.geometry.BakedQuad;
+import net.minecraft.client.resources.model.geometry.ItemQuads;
 import net.minecraft.client.resources.model.geometry.QuadCollection;
 import net.minecraft.client.resources.model.sprite.TextureSlots;
 import net.minecraft.resources.Identifier;
@@ -114,7 +115,7 @@ public final class LanceModel implements ItemModel, SpecialModelRenderer<LanceMo
         transform.mul(state.transform());
         aimed.last().pose().set(transform);
         aimed.last().normal().set(new Matrix3f(transform).invert().transpose());
-        collector.submitItem(aimed, state.context(), light, overlay, outline, new int[0], quads,
+        collector.submitItem(aimed, state.context(), light, overlay, outline, new int[0], ItemQuads.split(quads),
                 foil ? ItemStackRenderState.FoilType.STANDARD : ItemStackRenderState.FoilType.NONE);
     }
 

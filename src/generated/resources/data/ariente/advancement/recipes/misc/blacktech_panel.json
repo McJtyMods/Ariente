@@ -3,7 +3,7 @@
   "criteria": {
     "has_the_recipe": {
       "conditions": {
-        "recipe": "ariente:blacktech_panel"
+        "recipes": "ariente:blacktech_panel"
       },
       "trigger": "minecraft:recipe_unlocked"
     },

@@ -23,7 +23,7 @@ public class Binding {
     private Binding(String name, int keyCode, Runnable callable) {
         this.name = name;
         this.callable = callable;
-        binding = new KeyMapping(name, KeyConflictContext.IN_GAME, InputConstants.Type.KEYSYM, keyCode, CATEGORY);
+        binding = new KeyMapping(name, KeyConflictContext.IN_GAME, InputConstants.Type.KEYBOARD, keyCode, CATEGORY);
     }
 
     public static Binding create(String name, int keyCode, Runnable callable) {

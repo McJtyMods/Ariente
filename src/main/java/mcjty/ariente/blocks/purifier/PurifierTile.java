@@ -1,5 +1,7 @@
 package mcjty.ariente.blocks.purifier;
 
+import mcjty.lib.varia.InventoryTools;
+import net.neoforged.neoforge.transfer.item.ItemUtil;
 import mcjty.ariente.items.ItemData;
 import net.minecraft.world.level.block.state.BlockBehaviour;
 import net.minecraft.world.level.material.MapColor;
@@ -38,7 +40,8 @@ import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.phys.BlockHitResult;
-import net.neoforged.neoforge.items.IItemHandler;
+import net.neoforged.neoforge.transfer.ResourceHandler;
+import net.neoforged.neoforge.transfer.item.ItemResource;
 
 import static mcjty.ariente.compat.ArienteTOPDriver.DRIVER;
 import static mcjty.hologui.api.Icons.GRAY_ARROW_DOWN;
@@ -129,7 +132,7 @@ public class PurifierTile extends ExtremeMachineTile implements IGuiTile, IPower
         running = false;
         usingPower = 0;
         PurifierStructure line = PurifierStructure.find(level, worldPosition);
-        ItemStack input = items.getStackInSlot(0);
+        ItemStack input = ItemUtil.getStack(items, 0);
         PurifyingRecipe recipe = findRecipe(input);
         boolean changed = false;
         if (line == null) {
@@ -163,10 +166,10 @@ public class PurifierTile extends ExtremeMachineTile implements IGuiTile, IPower
                         status = "working";
                         progress += operationSpeed();
                         int duration = tubeCount * PowerConfiguration.PURIFIER_TICKS_PER_TUBE.get();
-                        while (progress >= duration && !items.getStackInSlot(0).isEmpty() && line.finish().canAccept(result)) {
-                            ItemStack output = line.finish().items.getStackInSlot(0);
+                        while (progress >= duration && !ItemUtil.getStack(items, 0).isEmpty() && line.finish().canAccept(result)) {
+                            ItemStack output = ItemUtil.getStack(line.finish().items, 0);
                             line.finish().items.setStackInSlot(0, result.copyWithCount(output.getCount() + result.getCount()));
-                            items.extractItem(0, 1, false);
+                            InventoryTools.extractItem(items, 0, 1, false);
                             progress -= duration;
                             changed = true;
                         }
@@ -182,7 +185,7 @@ public class PurifierTile extends ExtremeMachineTile implements IGuiTile, IPower
     }
 
     private boolean canAccept(ItemStack result) {
-        ItemStack output = items.getStackInSlot(0);
+        ItemStack output = ItemUtil.getStack(items, 0);
         return !result.isEmpty() && (output.isEmpty() || ItemStack.isSameItemSameComponents(output, result))
                 && output.getCount() + result.getCount() <= Math.min(items.getSlotLimit(0), result.getMaxStackSize());
     }
@@ -258,7 +261,7 @@ public class PurifierTile extends ExtremeMachineTile implements IGuiTile, IPower
             return;
         }
         ItemStack input = player.getInventory().getItem(slot);
-        player.getInventory().setItem(slot, items.insertItem(0, input, false));
+        player.getInventory().setItem(slot, InventoryTools.insertItem(items, 0, input, false));
         player.getInventory().setChanged();
         player.containerMenu.broadcastChanges();
     }
@@ -267,7 +270,7 @@ public class PurifierTile extends ExtremeMachineTile implements IGuiTile, IPower
         if (!canInteract(player)) {
             return;
         }
-        ItemStack stored = items.getStackInSlot(0);
+        ItemStack stored = ItemUtil.getStack(items, 0);
         if (!stored.isEmpty()) {
             ItemStack remaining = stored.copy();
             player.getInventory().add(remaining);
@@ -323,7 +326,7 @@ public class PurifierTile extends ExtremeMachineTile implements IGuiTile, IPower
     }
 
     @Override
-    public IItemHandler getAutomationHandler(Direction side) {
+    public ResourceHandler<ItemResource> getAutomationHandler(Direction side) {
         return items;
     }
 

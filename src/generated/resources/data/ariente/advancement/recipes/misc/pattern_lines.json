@@ -3,7 +3,7 @@
   "criteria": {
     "has_the_recipe": {
       "conditions": {
-        "recipe": "ariente:pattern_lines"
+        "recipes": "ariente:pattern_lines"
       },
       "trigger": "minecraft:recipe_unlocked"
     },

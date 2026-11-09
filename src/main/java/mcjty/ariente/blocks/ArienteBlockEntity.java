@@ -23,7 +23,6 @@ import net.minecraft.world.level.storage.ValueOutput;
 import net.minecraft.world.item.component.CustomData;
 import net.minecraft.world.level.block.entity.BlockEntityType;
 import net.minecraft.world.level.block.state.BlockState;
-import net.neoforged.neoforge.items.IItemHandler;
 
 /** Ariente machine state layered on McJtyLib's registry-aware block entities. */
 public class ArienteBlockEntity extends TickingTileEntity {
@@ -51,14 +50,14 @@ public class ArienteBlockEntity extends TickingTileEntity {
     }
 
     @Nullable
-    public IItemHandler getAutomationHandler(@Nullable Direction side) {
+    public ResourceHandler<ItemResource> getAutomationHandler(@Nullable Direction side) {
         return null;
     }
 
     @Nullable
     @SuppressWarnings("unchecked")
     public ResourceHandler<ItemResource> getItemResourceHandler(@Nullable Direction side) {
-        IItemHandler handler = getAutomationHandler(side);
+        ResourceHandler<ItemResource> handler = getAutomationHandler(side);
         return handler == null ? null : (ResourceHandler<ItemResource>) handler;
     }
 

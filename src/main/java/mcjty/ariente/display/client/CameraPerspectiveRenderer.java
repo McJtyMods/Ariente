@@ -4,7 +4,7 @@ package mcjty.ariente.display.client;
 import com.mojang.blaze3d.ProjectionType;
 import com.mojang.blaze3d.pipeline.RenderTarget;
 import com.mojang.blaze3d.pipeline.TextureTarget;
-import com.mojang.blaze3d.GpuFormat;
+import com.mojang.renderpearl.api.GpuFormat;
 import com.mojang.blaze3d.systems.RenderSystem;
 import com.mojang.blaze3d.vertex.VertexConsumer;
 import java.util.ArrayList;
@@ -133,8 +133,8 @@ public final class CameraPerspectiveRenderer {
             this.radius = radius;
         }
 
-        private void draw(CameraPerspective camera) {
-            try (var buffers = RenderBufferSource.immediate()) {
+        private void draw(CameraPerspective camera, RenderTarget target) {
+            try (var buffers = RenderBufferSource.immediate(target)) {
             var solid = buffers.getBuffer(DisplayRenderType.scene(false));
             for (Quad quad : quads) if (!quad.translucent()) quad.emit(solid, camera.view());
             buffers.endBatch();
@@ -173,7 +173,7 @@ public final class CameraPerspectiveRenderer {
 
         private void update(int width, int height, double yaw, int tilt, int zoom) {
             if (target == null) {
-                target = new TextureTarget("Ariente snapshot camera", width * RESOLUTION_SCALE, height * RESOLUTION_SCALE, true, GpuFormat.RGBA8_UNORM);
+                target = new TextureTarget("Ariente snapshot camera", width * RESOLUTION_SCALE, height * RESOLUTION_SCALE, GpuFormat.RGBA8_UNORM, GpuFormat.D32_FLOAT);
                 texture = Identifier.fromNamespaceAndPath("ariente", "snapshot_camera/" + nextTexture++);
                 Minecraft.getInstance().getTextureManager().register(texture, new RenderTargetTexture(target));
                 renderType = DisplayRenderType.cameraImage(texture);
@@ -183,23 +183,17 @@ public final class CameraPerspectiveRenderer {
             }
             var oldProjection = RenderSystem.getProjectionMatrixBuffer();
             var oldType = RenderSystem.getProjectionType();
-            var oldColor = RenderSystem.outputColorTextureOverride;
-            var oldDepth = RenderSystem.outputDepthTextureOverride;
             RenderSystem.getModelViewStack().pushMatrix();
             RenderSystem.getModelViewStack().identity();
             try {
                 RenderSystem.getDevice().createCommandEncoder().clearColorAndDepthTextures(target.getColorTexture(), new Vector4f(), target.getDepthTexture(), 1);
-                RenderSystem.outputColorTextureOverride = target.getColorTextureView();
-                RenderSystem.outputDepthTextureOverride = target.getDepthTextureView();
                 CameraPerspective camera = CameraPerspective.of(geometry.center, geometry.radius, CameraView.of(yaw, tilt), width, height, zoom);
                 RenderSystem.setProjectionMatrix(projection.getBuffer(camera.projection()), ProjectionType.PERSPECTIVE);
-                geometry.draw(camera);
+                geometry.draw(camera, target);
                 this.yaw = yaw;
                 this.tilt = tilt;
                 this.zoom = zoom;
             } finally {
-                RenderSystem.outputColorTextureOverride = oldColor;
-                RenderSystem.outputDepthTextureOverride = oldDepth;
                 RenderSystem.setProjectionMatrix(oldProjection, oldType);
                 RenderSystem.getModelViewStack().popMatrix();
             }

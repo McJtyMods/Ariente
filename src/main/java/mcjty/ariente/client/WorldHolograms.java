@@ -1,5 +1,8 @@
 package mcjty.ariente.client;
 
+import com.mojang.blaze3d.systems.RenderSystem;
+import java.util.Optional;
+import java.util.OptionalDouble;
 import com.mojang.blaze3d.vertex.PoseStack;
 import java.util.ArrayList;
 import java.util.Collections;
@@ -91,7 +94,13 @@ public final class WorldHolograms {
             if (entry.origin() != null) poses.translate(entry.origin().getX() - frame.camera().x,
                     entry.origin().getY() - frame.camera().y, entry.origin().getZ() - frame.camera().z);
             entry.batch().submit(poses, storage);
-            features.renderAllFeatures(storage);
+            var target = mc.gameRenderer.mainRenderTarget();
+            try (var prepared = features.prepareFrame(storage);
+                 var pass = RenderSystem.getDevice().createCommandEncoder().createRenderPass(
+                         () -> "Ariente holograms", target.getColorTextureView(), Optional.empty(),
+                         target.getDepthTextureView(), OptionalDouble.empty())) {
+                FeatureRenderDispatcher.renderAllFeatures(pass, prepared);
+            }
         }
     }
 

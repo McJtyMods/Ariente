@@ -193,7 +193,7 @@ public class StoragePanelsClientChecks {
             target.bindWrite(true);
             PoseStack poses = new PoseStack();
             poses.translate(0, -.5, -2);
-            poses.mulPose(Axis.YP.rotationDegrees(holo.getViewYRot(mc.getFrameTime()) - 180));
+            poses.rotate(Axis.YP.rotationDegrees(holo.getViewYRot(mc.getFrameTime()) - 180));
             var buffers = RenderBufferSource.immediate(new BufferBuilder(4096));
             mc.getEntityRenderDispatcher().getRenderer(holo).render(holo, 0, 0, poses, buffers, LightTexture.FULL_BRIGHT);
             buffers.endBatch();

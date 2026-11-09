@@ -128,7 +128,7 @@ public class TransferRender {
     private void renderStack(PoseStack matrixStack, ItemStack stack, Vec3 pos, double rotation, double size, RenderBufferSource buffers) {
         matrixStack.pushPose();
         matrixStack.translate(pos.x, pos.y, pos.z);
-        matrixStack.mulPose(Axis.YP.rotationDegrees((float) rotation));
+        matrixStack.rotate(Axis.YP.rotationDegrees((float) rotation));
         matrixStack.scale((float) size, (float) size, (float) size);
         ArienteRenderHelper.item(matrixStack, buffers, stack, ItemDisplayContext.GROUND, 0xf000f0, OverlayTexture.NO_OVERLAY);
 

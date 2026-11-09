@@ -13,7 +13,7 @@
     },
     "has_the_recipe": {
       "conditions": {
-        "recipe": "ariente:ingot_manganese_from_smelting_raw_manganese"
+        "recipes": "ariente:ingot_manganese_from_smelting_raw_manganese"
       },
       "trigger": "minecraft:recipe_unlocked"
     }

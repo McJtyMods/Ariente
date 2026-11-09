@@ -13,7 +13,7 @@
     },
     "has_the_recipe": {
       "conditions": {
-        "recipe": "ariente:dust_negarite_from_blasting"
+        "recipes": "ariente:dust_negarite_from_blasting"
       },
       "trigger": "minecraft:recipe_unlocked"
     }

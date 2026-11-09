@@ -58,8 +58,8 @@ public class StorageCubeRenderer extends ExtractedBlockRenderer<StorageCubeTile>
             poses.translate(icon.x + .035 * Math.sin(now * .013 + icon.phase),
                     icon.y + .05 * Math.sin(now * .018 + icon.phase * 2),
                     icon.z + .035 * Math.cos(now * .015 + icon.phase));
-            poses.mulPose(Axis.YP.rotationDegrees((float) (now * .3 + icon.phase * 60)));
-            poses.mulPose(Axis.ZP.rotationDegrees((float) (5 * Math.sin(now * .02 + icon.phase))));
+            poses.rotate(Axis.YP.rotationDegrees((float) (now * .3 + icon.phase * 60)));
+            poses.rotate(Axis.ZP.rotationDegrees((float) (5 * Math.sin(now * .02 + icon.phase))));
             poses.scale(.17f, .17f, .17f);
             ArienteRenderHelper.item(poses, buffer, icon.stack, ItemDisplayContext.FIXED,
                     LightCoordsUtil.FULL_BRIGHT, OverlayTexture.NO_OVERLAY, 1, alpha);

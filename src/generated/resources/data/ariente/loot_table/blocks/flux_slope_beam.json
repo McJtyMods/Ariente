@@ -9,7 +9,7 @@
         }
       ],
       "name": "flux_slope_beam",
-      "rolls": 1.0
+      "rolls": 1
     }
   ],
   "random_sequence": "ariente:blocks/flux_slope_beam"

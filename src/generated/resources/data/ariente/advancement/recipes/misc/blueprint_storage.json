@@ -3,7 +3,7 @@
   "criteria": {
     "has_the_recipe": {
       "conditions": {
-        "recipe": "ariente:blueprint_storage"
+        "recipes": "ariente:blueprint_storage"
       },
       "trigger": "minecraft:recipe_unlocked"
     },

@@ -103,10 +103,10 @@ public class FluxShipLightingChecks {
         RenderBufferSource.Immediate buffers = RenderBufferSource.immediate(new BufferBuilder(32768));
         if (legacy) {
             poses.translate(0, .5, 0);
-            poses.mulPose(Axis.YP.rotationDegrees(-ship.getFlightYaw(.5f)));
-            poses.mulPose(Axis.XP.rotationDegrees(ship.getFlightPitch(.5f)));
-            poses.mulPose(Axis.ZP.rotationDegrees(ship.getBank(.5f)));
-            poses.mulPose(Axis.YP.rotationDegrees(-90));
+            poses.rotate(Axis.YP.rotationDegrees(-ship.getFlightYaw(.5f)));
+            poses.rotate(Axis.XP.rotationDegrees(ship.getFlightPitch(.5f)));
+            poses.rotate(Axis.ZP.rotationDegrees(ship.getBank(.5f)));
+            poses.rotate(Axis.YP.rotationDegrees(-90));
             mc.getBlockRenderer().getModelRenderer().renderModel(poses.last(),
                     buffers.getBuffer(RenderType.entityCutoutNoCull(InventoryMenu.BLOCK_ATLAS)), null,
                     mc.getModelManager().getModel(FluxShipRender.MODEL), 1, 1, 1, LightTexture.FULL_BRIGHT, OverlayTexture.NO_OVERLAY);

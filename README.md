@@ -45,14 +45,14 @@ resolves armor slots through the player's equipment rules; NeoForge's optional
 item slot override alone does not identify ordinary equippable armor. Existing
 module data, activation states and hotkeys are preserved.
 
-Development target: Minecraft 26.2, NeoForge 26.2.0.75, Java 25, branch `26.2_neo`.
+Development target: Minecraft 26.3, NeoForge 26.3.0.83, Java 25, branch `26.3_neo`.
 Build with `./gradlew build` standalone, or `./gradlew :Ariente:build` from MultiWorkspace.
-The workspace uses the included McJtyLib and The One Probe sources. These ports require McJtyLib **26.2-10.0.3** or newer. Ariente and ArienteWorld also use included HoloGui/Ariente sources. Published Maven artifacts are standalone fallbacks.
+The workspace uses the included McJtyLib and The One Probe sources. These ports require McJtyLib **26.3-11.0.4** or newer. Ariente and ArienteWorld also use included HoloGui/Ariente sources. Published Maven artifacts are standalone fallbacks.
 Unpublished port dependencies can be provided with `-Pariente_dependency_repository=<repository URL>`; `-Pgradletools_path=<file>` selects an explicit shared Gradle script.
 
 The [earlier 26.1.2 port report](../ArienteWorld_neo/PORT_26_1_2.md) records the previous port’s migration and validation history. Earlier Forge fixture commands in this file are historical.
 
-### Minecraft 26.2 port
+### Minecraft 26.2 port (previous branch)
 
 This branch carries the latest committed 26.1.2 NeoForge implementation forward.
 Holograms and procedural geometry use extracted batches and native 26.2 staged
@@ -86,3 +86,9 @@ Workspace and standalone builds, both data generators, ten native GameTests,
 McJtyLib's 11 JUnit tests, the integrated client smoke and the tutorial's camera
 checks pass on 26.2. See the [ArienteWorld validation notes](../ArienteWorld_neo/README.md#minecraft-262-port)
 for the test scope and playable Tutorial save.
+
+### Minecraft 26.3 port
+
+This branch ports the committed 26.2 NeoForge sources and tutorial tooling to
+26.3. See the [26.3 port and verification report](../ArienteWorld_neo/PORT_26_3.md) for the
+current build commands, tutorial save, test results and remaining manual checks.

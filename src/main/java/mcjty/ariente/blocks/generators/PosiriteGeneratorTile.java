@@ -1,5 +1,7 @@
 package mcjty.ariente.blocks.generators;
 
+import mcjty.lib.varia.InventoryTools;
+import net.neoforged.neoforge.transfer.item.ItemUtil;
 import net.minecraft.world.level.storage.ValueInput;
 import net.minecraft.world.level.block.state.BlockBehaviour;
 import net.minecraft.world.level.material.MapColor;
@@ -37,7 +39,8 @@ import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.level.block.state.StateDefinition;
 import net.minecraft.world.phys.BlockHitResult;
 import net.neoforged.neoforge.common.util.Lazy;
-import net.neoforged.neoforge.items.IItemHandler;
+import net.neoforged.neoforge.transfer.ResourceHandler;
+import net.neoforged.neoforge.transfer.item.ItemResource;
 
 import static mcjty.ariente.blocks.BlockProperties.WORKING;
 import static mcjty.ariente.compat.ArienteTOPDriver.DRIVER;
@@ -100,7 +103,7 @@ public class PosiriteGeneratorTile extends ArienteBlockEntity implements IGuiTil
 
     @Override
     public void feedDust(int amount) {
-        if (items.getStackInSlot(NegariteGeneratorTile.SLOT_NEGARITE_INPUT).isEmpty()) {
+        if (ItemUtil.getStack(items, NegariteGeneratorTile.SLOT_NEGARITE_INPUT).isEmpty()) {
             items.setStackInSlot(NegariteGeneratorTile.SLOT_NEGARITE_INPUT, new ItemStack(mcjty.ariente.setup.Registration.DUST_POSIRITE.get(), amount));
             markDirtyClient();
         }
@@ -131,7 +134,7 @@ public class PosiriteGeneratorTile extends ArienteBlockEntity implements IGuiTil
             sendPower();
         } else {
             if (canProceed()) {
-                items.getStackInSlot(SLOT_POSIRITE_INPUT).shrink(1);
+                ItemUtil.getStack(items, SLOT_POSIRITE_INPUT).shrink(1);
                 dustCounter = 600;
                 markDirtyClient();
                 sendPower();
@@ -140,7 +143,7 @@ public class PosiriteGeneratorTile extends ArienteBlockEntity implements IGuiTil
     }
 
     private boolean canProceed() {
-        ItemStack stack = items.getStackInSlot(SLOT_POSIRITE_INPUT);
+        ItemStack stack = ItemUtil.getStack(items, SLOT_POSIRITE_INPUT);
         return !stack.isEmpty() && stack.getItem() == mcjty.ariente.setup.Registration.DUST_POSIRITE.get();
     }
 
@@ -289,11 +292,11 @@ public class PosiriteGeneratorTile extends ArienteBlockEntity implements IGuiTil
     }
 
     private void toPlayer(Player player, int amount) {
-        ItemStack stack = items.extractItem(SLOT_POSIRITE_INPUT, amount, false);
+        ItemStack stack = InventoryTools.extractItem(items, SLOT_POSIRITE_INPUT, amount, false);
         if ((!stack.isEmpty()) && player.getInventory().add(stack)) {
             markDirtyClient();
         } else {
-            ItemStack stillThere = items.getStackInSlot(SLOT_POSIRITE_INPUT);
+            ItemStack stillThere = ItemUtil.getStack(items, SLOT_POSIRITE_INPUT);
             if (stillThere.isEmpty()) {
                 stillThere = stack;
             } else {
@@ -305,7 +308,7 @@ public class PosiriteGeneratorTile extends ArienteBlockEntity implements IGuiTil
 
     private void toMachine(Player player, int amount) {
         ItemStack toTransfer = ItemStack.EMPTY;
-        ItemStack stackInSlot = items.getStackInSlot(SLOT_POSIRITE_INPUT);
+        ItemStack stackInSlot = ItemUtil.getStack(items, SLOT_POSIRITE_INPUT);
         if (!stackInSlot.isEmpty()) {
             amount = Math.min(amount, 64 - stackInSlot.getCount());    // @todo item specific max stacksize
         }
@@ -344,10 +347,10 @@ public class PosiriteGeneratorTile extends ArienteBlockEntity implements IGuiTil
     }
 
     public Integer countPosiriteGenerator(Player player, IHoloGuiEntity holo) {
-        int size = items.getSlots();
+        int size = items.size();
         int cnt = 0;
         for (int i = 0 ; i < size ; i++) {
-            ItemStack stack = items.getStackInSlot(i);
+            ItemStack stack = ItemUtil.getStack(items, i);
             if (!stack.isEmpty() && stack.getItem() == mcjty.ariente.setup.Registration.DUST_POSIRITE.get()) {
                 cnt += stack.getCount();
             }
@@ -385,7 +388,7 @@ public class PosiriteGeneratorTile extends ArienteBlockEntity implements IGuiTil
     }
 
     @Override
-    public IItemHandler getAutomationHandler(Direction side) {
+    public ResourceHandler<ItemResource> getAutomationHandler(Direction side) {
         return items;
     }
 

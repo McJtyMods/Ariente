@@ -3,7 +3,7 @@
   "criteria": {
     "has_the_recipe": {
       "conditions": {
-        "recipe": "ariente:constructor"
+        "recipes": "ariente:constructor"
       },
       "trigger": "minecraft:recipe_unlocked"
     },

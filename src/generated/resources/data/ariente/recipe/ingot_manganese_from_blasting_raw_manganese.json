@@ -1,5 +1,6 @@
 {
   "type": "minecraft:blasting",
+  "cookingtime": 100,
   "ingredient": "#c:raw_materials/manganese",
   "result": {
     "id": "ariente:ingot_manganese"

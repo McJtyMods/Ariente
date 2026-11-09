@@ -9,7 +9,7 @@
         }
       ],
       "name": "purifier_tube",
-      "rolls": 1.0
+      "rolls": 1
     }
   ],
   "random_sequence": "ariente:blocks/purifier_tube"

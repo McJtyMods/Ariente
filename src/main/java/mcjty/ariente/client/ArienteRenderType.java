@@ -1,18 +1,20 @@
 package mcjty.ariente.client;
 
-import com.mojang.blaze3d.PrimitiveTopology;
+import com.mojang.renderpearl.api.pipeline.PrimitiveTopology;
 import java.util.HashMap;
 import java.util.Map;
 
-import com.mojang.blaze3d.pipeline.BlendFunction;
+import com.mojang.renderpearl.api.pipeline.BlendFunction;
 import com.mojang.blaze3d.vertex.DefaultVertexFormat;
-import com.mojang.blaze3d.pipeline.ColorTargetState;
-import com.mojang.blaze3d.pipeline.DepthStencilState;
-import com.mojang.blaze3d.pipeline.RenderPipeline;
-import com.mojang.blaze3d.platform.CompareOp;
+import com.mojang.renderpearl.api.pipeline.ColorTargetState;
+import com.mojang.renderpearl.api.pipeline.DepthStencilState;
+import com.mojang.renderpearl.api.pipeline.RenderPipeline;
+import com.mojang.renderpearl.api.pipeline.CompareOp;
 import java.util.ArrayList;
 import java.util.List;
 import net.minecraft.client.renderer.RenderPipelines;
+import net.minecraft.client.renderer.BindGroupLayouts;
+import net.minecraft.client.renderer.oit.OitPipelineSet;
 import net.minecraft.client.renderer.rendertype.RenderSetup;
 import net.minecraft.client.renderer.rendertype.RenderType;
 import net.minecraft.client.renderer.rendertype.RenderTypes;
@@ -23,6 +25,7 @@ import net.neoforged.neoforge.client.event.RegisterRenderPipelinesEvent;
 public final class ArienteRenderType {
 
     private static final List<RenderPipeline> PIPELINES = new ArrayList<>();
+    private static final List<OitPipelineSet> OIT_PIPELINES = new ArrayList<>();
     public static final RenderType SHIP_HULL = RenderTypes.entityCutout(TextureAtlas.LOCATION_BLOCKS);
     public static final RenderType TANK_CONTENTS = type("tank_contents", TextureAtlas.LOCATION_BLOCKS, BlendFunction.TRANSLUCENT, false, true, true);
     public static final RenderType FIELD_MARKER = type("field_marker", TextureAtlas.LOCATION_BLOCKS, null, false, true, true);
@@ -35,6 +38,8 @@ public final class ArienteRenderType {
 
     private static final RenderPipeline FIELD_TRIANGLES = fieldPipeline("field_triangles", PrimitiveTopology.TRIANGLES);
     private static final RenderPipeline FIELD_QUADS = fieldPipeline("field_quads", PrimitiveTopology.QUADS);
+    private static final OitPipelineSet FIELD_TRIANGLES_OIT = fieldOitPipeline("field_triangles", PrimitiveTopology.TRIANGLES);
+    private static final OitPipelineSet FIELD_QUADS_OIT = fieldOitPipeline("field_quads", PrimitiveTopology.QUADS);
     private static final Map<String, RenderType> FIELDS = new HashMap<>();
 
     private static RenderPipeline fieldPipeline(String name, PrimitiveTopology mode) {
@@ -48,9 +53,19 @@ public final class ArienteRenderType {
         return pipeline;
     }
 
+    private static OitPipelineSet fieldOitPipeline(String name, PrimitiveTopology mode) {
+        var pipelines = OitPipelineSet.builder(Identifier.fromNamespaceAndPath("ariente", name), RenderPipeline.builder()
+                .withBindGroupLayout(BindGroupLayouts.DYNAMIC_TRANSFORMS).withBindGroupLayout(BindGroupLayouts.SAMPLER0)
+                .withVertexShader("core/position_tex_color").withFragmentShader(Identifier.parse("hologui:image"))
+                .withVertexBinding(0, DefaultVertexFormat.POSITION_TEX_COLOR).withPrimitiveTopology(mode).withCull(false)).build();
+        OIT_PIPELINES.add(pipelines);
+        return pipelines;
+    }
+
     public static RenderType forceField(Identifier texture, PrimitiveTopology mode) {
         return FIELDS.computeIfAbsent(texture + "/" + mode, key -> RenderType.create("ariente_forcefield",
                 RenderSetup.builder(mode == PrimitiveTopology.TRIANGLES ? FIELD_TRIANGLES : FIELD_QUADS)
+                        .setOitPipelines(mode == PrimitiveTopology.TRIANGLES ? FIELD_TRIANGLES_OIT : FIELD_QUADS_OIT)
                         .withTexture("Sampler0", texture).createRenderSetup()));
     }
 
@@ -58,13 +73,11 @@ public final class ArienteRenderType {
     }
 
     private static RenderType type(String name, Identifier texture, BlendFunction blend, boolean glow, boolean writeDepth, boolean lightmap) {
-        var builder = RenderPipeline.builder(RenderPipelines.ENTITY_SNIPPET)
+        var builder = RenderPipeline.builder(lightmap ? RenderPipelines.ENTITY_SNIPPET : RenderPipelines.ENTITY_NO_LIGHTMAP_SNIPPET)
                 .withLocation(Identifier.fromNamespaceAndPath("ariente", "pipeline/" + name))
                 .withShaderDefine("NO_CARDINAL_LIGHTING").withShaderDefine("NO_OVERLAY")
                 .withCull(false).withDepthStencilState(new DepthStencilState(CompareOp.GREATER_THAN_OR_EQUAL, writeDepth));
-        if (blend != null) {
-            builder.withColorTargetState(new ColorTargetState(blend));
-        }
+        builder.withColorTargetState(blend == null ? ColorTargetState.DEFAULT : new ColorTargetState(blend));
         if (!lightmap) {
             builder.withShaderDefine("EMISSIVE");
         }
@@ -74,6 +87,23 @@ public final class ArienteRenderType {
         RenderPipeline pipeline = builder.build();
         PIPELINES.add(pipeline);
         var setup = RenderSetup.builder(pipeline).withTexture("Sampler0", texture);
+        if (blend != null) {
+            var oitBuilder = RenderPipeline.builder()
+                    .withBindGroupLayout(BindGroupLayouts.DYNAMIC_TRANSFORMS).withBindGroupLayout(BindGroupLayouts.FOG)
+                    .withBindGroupLayout(BindGroupLayouts.SAMPLER0)
+                    .withVertexShader("core/entity").withFragmentShader("core/entity")
+                    .withVertexBinding(0, DefaultVertexFormat.ENTITY).withPrimitiveTopology(PrimitiveTopology.QUADS)
+                    .withShaderDefine("NO_CARDINAL_LIGHTING").withShaderDefine("NO_OVERLAY")
+                    .withShaderDefine("ALPHA_CUTOUT", 0.0f).withCull(false);
+            if (!lightmap) oitBuilder.withShaderDefine("EMISSIVE");
+            if (blend == BlendFunction.ADDITIVE) oitBuilder.withShaderDefine("OIT_ADDITIVE");
+            if (glow) oitBuilder.withFragmentShader(Identifier.parse("ariente:beam"));
+            var oit = OitPipelineSet.builder(Identifier.fromNamespaceAndPath("ariente", name), oitBuilder);
+            if (lightmap) oit.withAccumulateModifier(accumulate -> accumulate.withBindGroupLayout(BindGroupLayouts.SAMPLER2));
+            var pipelines = oit.build();
+            OIT_PIPELINES.add(pipelines);
+            setup.setOitPipelines(pipelines);
+        }
         if (blend == BlendFunction.TRANSLUCENT) {
             setup.sortOnUpload();
         }
@@ -89,5 +119,6 @@ public final class ArienteRenderType {
 
     public static void registerShaders(RegisterRenderPipelinesEvent event) {
         PIPELINES.forEach(event::registerPipeline);
+        OIT_PIPELINES.forEach(event::registerOitPipelineSet);
     }
 }

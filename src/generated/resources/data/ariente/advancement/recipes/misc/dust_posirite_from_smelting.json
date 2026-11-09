@@ -13,7 +13,7 @@
     },
     "has_the_recipe": {
       "conditions": {
-        "recipe": "ariente:dust_posirite_from_smelting"
+        "recipes": "ariente:dust_posirite_from_smelting"
       },
       "trigger": "minecraft:recipe_unlocked"
     }

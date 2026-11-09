@@ -11,6 +11,8 @@ import mcjty.ariente.recipes.BlueprintRecipeRegistry;
 import mcjty.ariente.recipes.ConstructorRecipe;
 import mcjty.ariente.setup.Registration;
 import net.minecraft.util.RandomSource;
+import net.minecraft.core.Holder;
+import java.util.Optional;
 import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.level.storage.loot.LootContext;
@@ -26,15 +28,15 @@ public class DungeonLootModifier extends LootModifier {
 
     private final boolean standaloneOnly;
 
-    public DungeonLootModifier(LootItemCondition[] conditions) {
+    public DungeonLootModifier(Optional<Holder<LootItemCondition>> conditions) {
         this(conditions, IGlobalLootModifier.DEFAULT_PRIORITY, false);
     }
 
-    public DungeonLootModifier(LootItemCondition[] conditions, boolean standaloneOnly) {
+    public DungeonLootModifier(Optional<Holder<LootItemCondition>> conditions, boolean standaloneOnly) {
         this(conditions, IGlobalLootModifier.DEFAULT_PRIORITY, standaloneOnly);
     }
 
-    public DungeonLootModifier(LootItemCondition[] conditions, int priority, boolean standaloneOnly) {
+    public DungeonLootModifier(Optional<Holder<LootItemCondition>> conditions, int priority, boolean standaloneOnly) {
         super(conditions, priority);
         this.standaloneOnly = standaloneOnly;
     }

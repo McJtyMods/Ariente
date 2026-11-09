@@ -213,12 +213,13 @@ public class CameraDisplayRenderer {
                     }
                     var tintSource = quad.materialInfo().isTinted() ? mc.getBlockColors().getTintSource(state, quad.materialInfo().tintIndex()) : null;
                     int tint = tintSource == null ? -1 : tintSource.color(state);
-                    float shade = quad.materialInfo().shade() ? switch (quad.direction()) {
+                    Direction shadeDirection = quad.materialInfo().shadeDirectionOverride();
+                    float shade = switch (shadeDirection == null ? quad.direction() : shadeDirection) {
                         case DOWN -> .55f;
                         case NORTH, SOUTH -> .8f;
                         case WEST, EAST -> .65f;
                         case UP -> 1;
-                    } : 1;
+                    };
 
                     Point[] points = new Point[4];
                     int[] colors = new int[4];

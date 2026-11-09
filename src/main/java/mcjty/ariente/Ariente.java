@@ -41,7 +41,7 @@ public class Ariente implements IArienteMod {
         setupModules();
 
         mod.registerConfig(ModConfig.Type.CLIENT, Config.CLIENT_CONFIG);
-        mod.registerConfig(ModConfig.Type.SERVER, Config.SERVER_CONFIG);
+        mod.registerConfig(ModConfig.Type.SYNCED, Config.SERVER_CONFIG, "ariente-server.toml");
 
         Registration.register(bus);
         BlueprintRecipeRegistry.register(bus);

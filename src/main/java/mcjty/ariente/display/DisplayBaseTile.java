@@ -1,5 +1,6 @@
 package mcjty.ariente.display;
 
+import net.minecraft.util.Prediction;
 import mcjty.ariente.varia.Messages;
 import net.minecraft.world.level.block.state.BlockBehaviour;
 import net.minecraft.world.level.block.SoundType;
@@ -170,7 +171,7 @@ public class DisplayBaseTile extends ArienteBlockEntity implements IGuiTile {
         if (modules.remove(module)) {
             ItemStack stack = module.stack().copy();
             if (!player.getInventory().add(stack)) {
-                player.drop(stack, false);
+                player.drop(stack, false, Prediction.SERVER_ONLY);
             }
             changed();
         }
@@ -224,7 +225,7 @@ public class DisplayBaseTile extends ArienteBlockEntity implements IGuiTile {
         } else {
             modules.remove(module);
             if (!player.getInventory().add(configured)) {
-                player.drop(configured, false);
+                player.drop(configured, false, Prediction.SERVER_ONLY);
             }
             Messages.player(player, Component.literal("The module no longer fits and has been returned to you."), true);
         }

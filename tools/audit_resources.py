@@ -75,8 +75,8 @@ def main():
                         reference(sound, 'sounds', '.ogg')
                     elif sound.get('type', 'file') == 'file':
                         reference(sound['name'], 'sounds', '.ogg')
-    if docs['pack.mcmeta']['pack']['min_format'] != 88:
-        errors.append('Expected Minecraft 26.2 resource pack format 88')
+    if docs['pack.mcmeta']['pack']['min_format'] != [97, 1]:
+        errors.append('Expected Minecraft 26.3 resource pack format 97.1')
     if args.generated:
         generated = list(args.generated.rglob('*.json'))
         if not generated:

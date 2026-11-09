@@ -14,7 +14,7 @@ plugins {
     id 'eclipse'
     id 'idea'
     id 'maven-publish'
-    id 'net.neoforged.gradle.userdev' version '7.1.38'
+    id 'net.neoforged.gradle.userdev' version '7.1.39'
 }
 
 apply plugin: 'com.hypherionmc.modutils.modpublisher'
@@ -25,14 +25,14 @@ def localGradleTools = [
         file('../Multi_neo/gradletools.gradle'),
         file('gradletools.gradle')
 ].find { it != null && it.isFile() }
-apply from: localGradleTools ?: 'https://raw.githubusercontent.com/McJtyMods/MultiWorkspace/26.2_neo/gradletools.gradle'
+apply from: localGradleTools ?: 'https://raw.githubusercontent.com/McJtyMods/MultiWorkspace/26.3_neo/gradletools.gradle'
 
 
 
 group = "com.github.mcjty"
 base.archivesName = "ariente"
 java.toolchain.languageVersion = JavaLanguageVersion.of(25)
-neo_version = '26.2.0.75'
+neo_version = '26.3.0.83'
 
 if (System.getenv('BUILD_NUMBER') != null) {
     version += "-${System.getenv('BUILD_NUMBER')}"
@@ -50,7 +50,7 @@ sourceSets.main.resources {
 dependencies {
     mc()
     jei()
-    // Patchouli has no compatible 26.2 release; the manual remains optional.
+    // Patchouli has no compatible 26.3 release; the manual remains optional.
     top()
     mcjtylib()
     if (findProject(':ModHoloGui') != null) {

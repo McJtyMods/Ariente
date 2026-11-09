@@ -1,5 +1,6 @@
 {
   "type": "minecraft:smelting",
+  "cookingtime": 200,
   "ingredient": "ariente:posirite",
   "result": {
     "count": 4,

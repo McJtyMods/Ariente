@@ -61,10 +61,10 @@ public class StorageRenderer extends ExtractedBlockRenderer<StorageTile> {
         matrixStack.translate(x + 0.5F, y + 0.75F, z + 0.5F);
 
         if (facing == Direction.UP) {
-            matrixStack.mulPose(Axis.XP.rotationDegrees(-90.0F));
+            matrixStack.rotate(Axis.XP.rotationDegrees(-90.0F));
             matrixStack.translate(0.0F, 0.0F, -0.68F);
         } else if (facing == Direction.DOWN) {
-            matrixStack.mulPose(Axis.XP.rotationDegrees(90.0F));
+            matrixStack.rotate(Axis.XP.rotationDegrees(90.0F));
             matrixStack.translate(0.0F, 0.0F, -.184F);
         } else {
             float rotY = 0.0F;
@@ -75,7 +75,7 @@ public class StorageRenderer extends ExtractedBlockRenderer<StorageTile> {
             } else if (facing == Direction.EAST) {
                 rotY = -90.0F;
             }
-            matrixStack.mulPose(Axis.YP.rotationDegrees(-rotY));
+            matrixStack.rotate(Axis.YP.rotationDegrees(-rotY));
             matrixStack.translate(0.0F, -0.2500F, -0.4375F);
         }
 

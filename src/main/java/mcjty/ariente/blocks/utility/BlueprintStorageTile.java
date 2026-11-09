@@ -33,8 +33,9 @@ import net.minecraft.world.level.Level;
 import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.phys.BlockHitResult;
 import net.neoforged.neoforge.common.util.Lazy;
-import net.neoforged.neoforge.items.IItemHandler;
-import net.neoforged.neoforge.items.ItemHandlerHelper;
+import net.neoforged.neoforge.transfer.ResourceHandler;
+import net.neoforged.neoforge.transfer.item.ItemResource;
+import mcjty.lib.varia.InventoryTools;
 
 import static mcjty.ariente.compat.ArienteTOPDriver.DRIVER;
 import static mcjty.hologui.api.Icons.*;
@@ -128,10 +129,10 @@ public class BlueprintStorageTile extends ArienteBlockEntity implements IGuiTile
             if (component instanceof ISlots) {
                 int selected = ((ISlots) component).getSelected();
                 if (selected != -1) {
-                    ItemStack extracted = items.extractItem(selected, 64, false);
+                    ItemStack extracted = InventoryTools.extractItem(items, selected, 64, false);
                     if (!extracted.isEmpty()) {
                         if (!player.getInventory().add(extracted)) {
-                            items.insertItem(selected, extracted, false);
+                            InventoryTools.insertItem(items, selected, extracted, false);
                         } else {
                             ((ISlots) component).setSelection(-1);
                         }
@@ -149,7 +150,7 @@ public class BlueprintStorageTile extends ArienteBlockEntity implements IGuiTile
                 if (selected != -1) {
                     ItemStack extracted = player.getInventory().getItem(selected);
                     if (extracted.getItem() instanceof BlueprintItem) {
-                        ItemStack notInserted = ItemHandlerHelper.insertItem(items, extracted, false);
+                        ItemStack notInserted = InventoryTools.insertItem(items, extracted, false);
                         player.getInventory().setItem(selected, notInserted);
                         if (notInserted.isEmpty()) {
                             ((IPlayerSlots) component).setSelection(-1);
@@ -194,7 +195,7 @@ public class BlueprintStorageTile extends ArienteBlockEntity implements IGuiTile
     }
 
     @Override
-    public IItemHandler getAutomationHandler(Direction side) {
+    public ResourceHandler<ItemResource> getAutomationHandler(Direction side) {
         return items;
     }
 

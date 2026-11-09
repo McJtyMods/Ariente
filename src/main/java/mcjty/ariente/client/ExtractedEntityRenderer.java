@@ -26,14 +26,14 @@ public abstract class ExtractedEntityRenderer<T extends Entity> extends EntityRe
     }
 
     @Override
-    protected AABB getBoundingBoxForCulling(T entity) {
+    protected AABB getBoundingBoxForCulling(T entity, float partialTick) {
         if (entity instanceof LaserEntity laser) {
             return laser.getBoundingBoxForCulling();
         }
         if (entity instanceof FluxShipEntity ship) {
             return ship.getBoundingBoxForCulling();
         }
-        return super.getBoundingBoxForCulling(entity);
+        return super.getBoundingBoxForCulling(entity, partialTick);
     }
 
     @Override

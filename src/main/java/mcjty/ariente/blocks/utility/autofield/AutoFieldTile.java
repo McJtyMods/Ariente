@@ -48,8 +48,9 @@ import net.minecraft.world.phys.BlockHitResult;
 import net.neoforged.bus.api.SubscribeEvent;
 import net.neoforged.neoforge.common.NeoForge;
 import net.neoforged.neoforge.event.level.ChunkEvent;
-import net.neoforged.neoforge.items.IItemHandler;
-import net.neoforged.neoforge.items.ItemHandlerHelper;
+import net.neoforged.neoforge.transfer.ResourceHandler;
+import net.neoforged.neoforge.transfer.item.ItemResource;
+import mcjty.lib.varia.InventoryTools;
 import net.neoforged.neoforge.network.PacketDistributor;
 
 import static mcjty.ariente.compat.ArienteTOPDriver.DRIVER;
@@ -181,8 +182,8 @@ public class AutoFieldTile extends ExtremeMachineTile implements IGuiTile, IPowe
         AtomicBoolean didSomeWork = new AtomicBoolean(false);
         producingItemNode.getConnectedItemHandler(sourcePos).ifPresent(h -> {
             int minStackSize = producer.getMinStackSize();
-            for (int i = 0; i < h.getSlots(); i++) {
-                ItemStack stack = h.extractItem(i, minStackSize, true);
+            for (int i = 0; i < h.size(); i++) {
+                ItemStack stack = InventoryTools.extractItem(h, i, minStackSize, true);
                 if (!stack.isEmpty()) {
                     if (stack.getCount() >= minStackSize) {
                         long neededPower = computeNeededPower(stack);
@@ -206,7 +207,7 @@ public class AutoFieldTile extends ExtremeMachineTile implements IGuiTile, IPowe
                                         }
                                     }
                                     PartPos destPos = destinations.get(index);
-                                    ItemStack extracted = h.extractItem(finalI, minStackSize, false);
+                                    ItemStack extracted = InventoryTools.extractItem(h, finalI, minStackSize, false);
                                     if (extracted.isEmpty()) {
                                         continue;
                                     }
@@ -329,7 +330,7 @@ public class AutoFieldTile extends ExtremeMachineTile implements IGuiTile, IPowe
         InputItemNodeTile itemNode = getInputItemNodeAt(partPos);
         if (itemNode != null && canNodeWork(itemNode)) {
             return itemNode.getConnectedItemHandler(partPos).map(h -> {
-                ItemStack remainer = ItemHandlerHelper.insertItem(h, stack, true);
+                ItemStack remainer = InventoryTools.insertItem(h, stack, true);
                 return remainer.isEmpty();
             }).orElse(false);
         }
@@ -339,13 +340,13 @@ public class AutoFieldTile extends ExtremeMachineTile implements IGuiTile, IPowe
     private ItemStack doInsert(PartPos sourcePos, PartPos destPos, ItemStack stack) {
         InputItemNodeTile node = getInputItemNodeAt(destPos);
         return node == null ? stack : node.getConnectedItemHandler(destPos)
-                .map(handler -> ItemHandlerHelper.insertItem(handler, stack, false)).orElse(stack);
+                .map(handler -> InventoryTools.insertItem(handler, stack, false)).orElse(stack);
     }
 
-    private void returnToSource(IItemHandler source, int slot, ItemStack stack, PartPos pos) {
+    private void returnToSource(ResourceHandler<ItemResource> source, int slot, ItemStack stack, PartPos pos) {
         if (!stack.isEmpty()) {
-            ItemStack remaining = source.insertItem(slot, stack, false);
-            remaining = ItemHandlerHelper.insertItem(source, remaining, false);
+            ItemStack remaining = InventoryTools.insertItem(source, slot, stack, false);
+            remaining = InventoryTools.insertItem(source, remaining, false);
             if (!remaining.isEmpty()) {
                 Containers.dropItemStack(level, pos.pos().getX() + .5, pos.pos().getY() + .5, pos.pos().getZ() + .5, remaining);
             }

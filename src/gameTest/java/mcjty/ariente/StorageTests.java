@@ -1,5 +1,6 @@
 package mcjty.ariente;
 
+import mcjty.lib.varia.InventoryTools;
 import mcjty.ariente.display.DisplayModuleItem;
 import net.minecraft.core.registries.Registries;
 import net.minecraft.gametest.framework.FunctionGameTestInstance;
@@ -34,7 +35,8 @@ import net.minecraft.world.item.Items;
 import net.minecraft.world.level.block.state.properties.BlockStateProperties;
 import net.minecraft.world.phys.Vec3;
 import net.neoforged.neoforge.capabilities.Capabilities;
-import net.neoforged.neoforge.items.IItemHandler;
+import net.neoforged.neoforge.transfer.ResourceHandler;
+import net.neoforged.neoforge.transfer.item.ItemResource;
 
 @EventBusSubscriber(modid = Ariente.MODID)
 public class StorageTests {
@@ -88,21 +90,21 @@ public class StorageTests {
         for (BaseBlock block : variants()) {
             StorageTile tile = place(helper, block);
             int types = block == Registration.STORAGE.get() ? 4 : 9;
-            IItemHandler inventory = inventory(tile);
-            check(helper, tile.getTypeCount() == types && inventory.getSlots() == types * 64,
+            ResourceHandler<ItemResource> inventory = inventory(tile);
+            check(helper, tile.getTypeCount() == types && inventory.size() == types * 64,
                     "Original and 3x3 cubes expose four and nine groups of 64 stack slots");
             for (int type = 0; type < types; type++) {
                 ItemStack stack = taggedStack(type, 64);
                 for (int offset = 0; offset < 64; offset++) {
-                    check(helper, inventory.insertItem(type * 64 + offset, stack.copy(), false).isEmpty(),
+                    check(helper, InventoryTools.insertItem(inventory, type * 64 + offset, stack.copy(), false).isEmpty(),
                             "Every slot in type " + type + " accepts its own item");
                 }
                 check(helper, tile.getTotalStack(type).getCount() == 4096, "Every area holds 4096 stackable items");
-                check(helper, inventory.insertItem(type * 64, stack, false).getCount() == 64, "Full areas reject overflow");
-                check(helper, !inventory.isItemValid(type * 64, taggedStack(type + 100, 1)), "Groups keep separate item data");
-                check(helper, inventory.extractItem(type * 64, 1, true).getCount() == 1
+                check(helper, InventoryTools.insertItem(inventory, type * 64, stack, false).getCount() == 64, "Full areas reject overflow");
+                check(helper, !inventory.isValid(type * 64, ItemResource.of(taggedStack(type + 100, 1))), "Groups keep separate item data");
+                check(helper, InventoryTools.extractItem(inventory, type * 64, 1, true).getCount() == 1
                         && tile.getTotalStack(type).getCount() == 4096, "Simulated extraction keeps totals unchanged");
-                check(helper, inventory.extractItem(type * 64, 1, false).getCount() == 1
+                check(helper, InventoryTools.extractItem(inventory, type * 64, 1, false).getCount() == 1
                         && tile.getTotalStack(type).getCount() == 4095, "Extraction updates only its group's total");
             }
             for (Direction side : Direction.values()) {
@@ -116,8 +118,8 @@ public class StorageTests {
         for (BaseBlock block : variants()) {
             StorageTile tile = place(helper, block);
             for (int type = 0; type < tile.getTypeCount(); type++) {
-                inventory(tile).insertItem(type * 64, taggedStack(type, 32), false);
-                inventory(tile).insertItem(type * 64 + 63, taggedStack(type, 17), false);
+                InventoryTools.insertItem(inventory(tile), type * 64, taggedStack(type, 32), false);
+                InventoryTools.insertItem(inventory(tile), type * 64 + 63, taggedStack(type, 17), false);
             }
             tile.setKeyId("storage-test");
             tile.setLocked(true);
@@ -134,13 +136,13 @@ public class StorageTests {
             client.loadClientDataFromNBT(clientData, helper.getLevel().registryAccess());
             check(helper, restored.isLocked() && "storage-test".equals(restored.getKeyId()) && client.isLocked(),
                     "Save/load and client sync preserve locking");
-            check(helper, inventory(restored).extractItem(0, 1, false).isEmpty(), "Restored access locks block automation");
+            check(helper, InventoryTools.extractItem(inventory(restored), 0, 1, false).isEmpty(), "Restored access locks block automation");
             restored.setLocked(false);
             for (int type = 0; type < types; type++) {
                 ItemStack expected = taggedStack(type, 49);
                 check(helper, ItemStack.matches(restored.getTotalStack(type), expected)
                         && ItemStack.matches(client.getTotalStack(type), expected), "Every area's item, data and total survive sync");
-                check(helper, ItemStack.matches(inventory(restored).extractItem(type * 64 + 63, 64, false), taggedStack(type, 17)),
+                check(helper, ItemStack.matches(InventoryTools.extractItem(inventory(restored), type * 64 + 63, 64, false), taggedStack(type, 17)),
                         "Save/load preserves the last physical stack of every group");
             }
         }
@@ -199,7 +201,7 @@ public class StorageTests {
 
     public static void machineDropComponentsPreserveInventoryAndLock(GameTestHelper helper) {
         StorageTile tile = place(helper, Registration.STORAGE.get());
-        inventory(tile).insertItem(0, taggedStack(7, 23), false);
+        InventoryTools.insertItem(inventory(tile), 0, taggedStack(7, 23), false);
         tile.setKeyId("component-round-trip");
         tile.setLocked(true);
         ItemStack drop = Block.getDrops(tile.getBlockState(), helper.getLevel(),
@@ -252,7 +254,7 @@ public class StorageTests {
         return (StorageTile) helper.getLevel().getBlockEntity(pos);
     }
 
-    private static IItemHandler inventory(StorageTile tile) {
+    private static ResourceHandler<ItemResource> inventory(StorageTile tile) {
         return tile.getAutomationHandler(null);
     }
 

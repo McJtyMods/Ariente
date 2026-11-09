@@ -3,7 +3,7 @@
   "criteria": {
     "has_the_recipe": {
       "conditions": {
-        "recipe": "ariente:marble_pilar_red"
+        "recipes": "ariente:marble_pilar_red"
       },
       "trigger": "minecraft:recipe_unlocked"
     },

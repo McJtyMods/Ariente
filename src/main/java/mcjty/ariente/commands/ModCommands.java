@@ -1,5 +1,6 @@
 package mcjty.ariente.commands;
 
+import net.minecraft.util.Prediction;
 import net.minecraft.server.permissions.Permissions;
 
 import com.mojang.brigadier.exceptions.CommandSyntaxException;
@@ -98,12 +99,12 @@ public class ModCommands {
     private static void equip(ServerPlayer player, EquipmentSlot slot, ItemStack stack) {
         ItemStack previous = player.getItemBySlot(slot);
         player.setItemSlot(slot, stack);
-        player.getInventory().placeItemBackInInventory(previous);
+        player.getInventory().placeItemBackInInventory(previous, Prediction.SERVER_ONLY);
     }
 
     private static void hotbar(ServerPlayer player, int slot, ItemStack stack) {
         ItemStack previous = player.getInventory().getItem(slot);
         player.getInventory().setItem(slot, stack);
-        player.getInventory().placeItemBackInInventory(previous);
+        player.getInventory().placeItemBackInInventory(previous, Prediction.SERVER_ONLY);
     }
 }

@@ -5,20 +5,18 @@
       "entries": [
         {
           "type": "minecraft:item",
-          "functions": [
-            {
-              "block": "ariente:pattern",
-              "function": "minecraft:copy_state",
-              "properties": [
-                "type"
-              ]
-            }
-          ],
+          "modifier": {
+            "type": "minecraft:copy_state",
+            "block": "ariente:pattern",
+            "properties": [
+              "type"
+            ]
+          },
           "name": "ariente:pattern_lines"
         }
       ],
       "name": "pattern",
-      "rolls": 1.0
+      "rolls": 1
     }
   ],
   "random_sequence": "ariente:blocks/pattern"

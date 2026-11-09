@@ -44,7 +44,7 @@ public class DoorMarkerRenderer extends ExtractedBlockRenderer<DoorMarkerTile> {
         Direction frontDirection = Registration.DOOR_MARKER.get().getFrontDirection(state);
         if (Direction.NORTH.equals(frontDirection) || Direction.SOUTH.equals(frontDirection)) {
             matrixStack.translate(0, 0, .5);
-            matrixStack.mulPose(Axis.YP.rotationDegrees(90));
+            matrixStack.rotate(Axis.YP.rotationDegrees(90));
         } else {
             matrixStack.translate(.5, 0, 0);
         }

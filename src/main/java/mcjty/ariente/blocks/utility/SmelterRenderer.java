@@ -28,7 +28,7 @@ public class SmelterRenderer extends ExtractedBlockRenderer<SmelterTile> {
     public void render(SmelterTile tile, float partialTicks, PoseStack poses, RenderBufferSource buffer, int light, int overlay) {
         poses.pushPose();
         poses.translate(.5, .5, .5);
-        poses.mulPose(Axis.YP.rotationDegrees(switch (Registration.SMELTER.get().getFrontDirection(tile.getBlockState())) {
+        poses.rotate(Axis.YP.rotationDegrees(switch (Registration.SMELTER.get().getFrontDirection(tile.getBlockState())) {
             case SOUTH -> 0;
             case WEST -> -90;
             case EAST -> 90;

@@ -3,7 +3,7 @@ package mcjty.ariente.display.client;
 import net.minecraft.world.phys.Vec3;
 import com.mojang.blaze3d.pipeline.RenderTarget;
 import com.mojang.blaze3d.pipeline.TextureTarget;
-import com.mojang.blaze3d.GpuFormat;
+import com.mojang.renderpearl.api.GpuFormat;
 import com.mojang.blaze3d.ProjectionType;
 import com.mojang.blaze3d.resource.GraphicsResourceAllocator;
 import com.mojang.blaze3d.systems.RenderSystem;
@@ -192,7 +192,7 @@ public final class LiveCameraRenderer {
             Minecraft mc = Minecraft.getInstance();
             int height = Math.max(1, Math.round((float) imageWidth * key.height() / key.width()));
             if (target == null) {
-                target = new TextureTarget("Ariente live camera", imageWidth, height, true, GpuFormat.RGBA8_UNORM);
+                target = new TextureTarget("Ariente live camera", imageWidth, height, GpuFormat.RGBA8_UNORM, GpuFormat.D32_FLOAT);
                 texture = Identifier.fromNamespaceAndPath("ariente", "live_camera/" + nextTexture++);
                 mc.getTextureManager().register(texture, new RenderTargetTexture(target));
                 renderType = DisplayRenderType.cameraImage(texture);
@@ -214,8 +214,6 @@ public final class LiveCameraRenderer {
             var oldProjectionType = RenderSystem.getProjectionType();
             var oldFog = RenderSystem.getShaderFog();
             var oldGlobals = RenderSystem.getGlobalSettingsUniform();
-            var oldColor = RenderSystem.outputColorTextureOverride;
-            var oldDepth = RenderSystem.outputDepthTextureOverride;
             RenderSystem.getModelViewStack().pushMatrix();
             RenderSystem.getModelViewStack().identity();
             rendering = true;
@@ -234,17 +232,17 @@ public final class LiveCameraRenderer {
                 // Terrain subtracts the camera origin stored in the global UBO.
                 // A separate buffer keeps this view independent of player movement.
                 globals.update(imageWidth, height, mc.options.glintStrength().get(), mc.level.getGameTime(),
-                        mc.getDeltaTracker(), 0, view.eye(), mc.options.textureFiltering().get() == TextureFilteringMethod.RGSS);
+                        partialTick, 0, view.eye(), mc.options.textureFiltering().get() == TextureFilteringMethod.RGSS);
                 mc.gameRenderer.mainCamera = camera;
                 mc.gameRenderer.mainRenderTarget = target;
-                // 26.2's sky renderer retains its target instead of looking up
+                // The sky renderer retains its target instead of looking up
                 // GameRenderer's current target for each sky pass.
                 if (originalSky != null) {
                     originalSky.renderTarget = target;
                 }
                 renderer.levelRenderState = state;
                 mc.levelExtractor.levelRenderState = state;
-                camera.extractRenderState(state.cameraRenderState, partialTick);
+                camera.extractRenderState(state.cameraRenderState, mc.getDeltaTracker());
                 state.cameraRenderState.fogType = camera.getFluidInCamera();
                 var cameraFog = fog.setupFog(camera, Math.max(2, (key.radius() + 15) / 16), mc.getDeltaTracker(), 0, mc.level);
                 // Native fog accepts whole chunks. Finish its fade at the actual
@@ -262,14 +260,13 @@ public final class LiveCameraRenderer {
                 // moving it to each lens resets edge chunks and races the player's
                 // asynchronous occlusion graph on every camera refresh.
                 var terrainCamera = new CameraRenderState();
-                extractionCamera.extractRenderState(terrainCamera, partialTick);
+                extractionCamera.extractRenderState(terrainCamera, mc.getDeltaTracker());
                 terrainCamera.fogType = state.cameraRenderState.fogType;
                 terrainCamera.fogData = cameraFog;
                 terrainCamera.pos = originalCamera.position();
                 terrainCamera.blockPos = originalCamera.blockPosition();
-                renderer.render(GraphicsResourceAllocator.UNPOOLED, mc.getDeltaTracker(), false, terrainCamera,
-                        state.cameraRenderState.viewRotationMatrix, fog.getBuffer(FogRenderer.FogMode.WORLD),
-                        state.cameraRenderState.fogData.color, true);
+                renderer.render(GraphicsResourceAllocator.UNPOOLED, false, terrainCamera,
+                        fog.getBuffer(FogRenderer.FogMode.WORLD), state.cameraRenderState.fogData.color, true, false);
             } finally {
                 renderer.levelRenderState = originalState;
                 renderer.clearVisibleSections();
@@ -284,8 +281,6 @@ public final class LiveCameraRenderer {
                 mc.gameRenderer.mainCamera = originalCamera;
                 mc.getEntityRenderDispatcher().prepare(originalCamera, mc.crosshairPickEntity);
                 mc.getBlockEntityRenderDispatcher().prepare(originalCamera.position());
-                RenderSystem.outputColorTextureOverride = oldColor;
-                RenderSystem.outputDepthTextureOverride = oldDepth;
                 RenderSystem.setProjectionMatrix(oldProjection, oldProjectionType);
                 RenderSystem.setShaderFog(oldFog);
                 RenderSystem.setGlobalSettingsUniform(oldGlobals);
@@ -337,7 +332,7 @@ public final class LiveCameraRenderer {
             setLevel(mc.level);
             setEntity(mc.player);
             update(mc.getDeltaTracker());
-            extractRenderState(state, partialTick);
+            extractRenderState(state, Minecraft.getInstance().getDeltaTracker());
             setPosition(view.eye());
             setRotation(view.yaw(), view.pitch(), 0);
             attributeProbe().tick(mc.level, view.eye());

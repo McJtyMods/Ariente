@@ -3,7 +3,7 @@
   "criteria": {
     "has_the_recipe": {
       "conditions": {
-        "recipe": "ariente:marble_smooth_blue"
+        "recipes": "ariente:marble_smooth_blue"
       },
       "trigger": "minecraft:recipe_unlocked"
     },

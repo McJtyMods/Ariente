@@ -306,7 +306,7 @@ public class StorageCubeClient {
         text(poses, buffer, .4, -.3, "Storage", .46f, 0xffb8f4ff);
         sortButton(poses, buffer, SORT_NAME_X, SORT_NAME_WIDTH, "A-Z", sortAt(x, y) == SORT_NAME, view);
         sortButton(poses, buffer, SORT_COUNT_X, SORT_COUNT_WIDTH, "Count", sortAt(x, y) == SORT_COUNT, view);
-        text(poses, buffer, 5.15, -.2, tile.getItems().getSlots() + " stacks", .3f, 0xff9acde0);
+        text(poses, buffer, 5.15, -.2, tile.getItems().size() + " stacks", .3f, 0xff9acde0);
         if (view == null || !view.loaded) {
             text(poses, buffer, 1, 2, "Loading inventory - stay near the cube", .35f, 0xffdddddd);
             return;
@@ -389,8 +389,8 @@ public class StorageCubeClient {
         }
         poses.pushPose();
         poses.scale(.004f, .004f, .004f);
-        poses.mulPose(Axis.YP.rotationDegrees(180));
-        poses.mulPose(Axis.ZP.rotationDegrees(180));
+        poses.rotate(Axis.YP.rotationDegrees(180));
+        poses.rotate(Axis.ZP.rotationDegrees(180));
         poses.translate(0, 0, -25);
         HoloGuiRenderTools.renderToolTip(poses, buffer, view.stacks[slot], (int) (x * 30 - 120),
                 (int) (y * 30 - 95), (stack, lines) -> {});
@@ -421,7 +421,7 @@ public class StorageCubeClient {
         private State(StorageCubeTile tile, HoloGuiEntity holo) {
             this.tile = tile;
             this.holo = holo;
-            size = tile.getItems().getSlots();
+            size = tile.getItems().size();
             stacks = new ItemStack[size + 36];
             Arrays.fill(stacks, ItemStack.EMPTY);
         }

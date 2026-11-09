@@ -3,7 +3,7 @@
   "criteria": {
     "has_the_recipe": {
       "conditions": {
-        "recipe": "ariente:tablet"
+        "recipes": "ariente:tablet"
       },
       "trigger": "minecraft:recipe_unlocked"
     },

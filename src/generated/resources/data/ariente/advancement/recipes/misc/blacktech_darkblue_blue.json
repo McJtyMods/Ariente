@@ -3,7 +3,7 @@
   "criteria": {
     "has_the_recipe": {
       "conditions": {
-        "recipe": "ariente:blacktech_darkblue_blue"
+        "recipes": "ariente:blacktech_darkblue_blue"
       },
       "trigger": "minecraft:recipe_unlocked"
     },
