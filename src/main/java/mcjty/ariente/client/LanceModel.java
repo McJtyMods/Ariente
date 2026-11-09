@@ -2,71 +2,70 @@ package mcjty.ariente.client;
 
 import com.mojang.blaze3d.systems.RenderSystem;
 import com.mojang.blaze3d.vertex.PoseStack;
-import javax.annotation.Nullable;
-import mcjty.ariente.Ariente;
+import com.mojang.serialization.MapCodec;
+import java.util.List;
+import java.util.function.Consumer;
 import mcjty.ariente.items.EnergyLanceItem;
 import mcjty.ariente.items.LanceAim;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.multiplayer.ClientLevel;
-import net.minecraft.client.renderer.block.model.ItemOverrides;
-import net.minecraft.client.resources.model.BakedModel;
-import net.minecraft.client.resources.model.ModelResourceLocation;
-import net.minecraft.resources.ResourceLocation;
+import net.minecraft.client.renderer.SubmitNodeCollector;
+import net.minecraft.client.renderer.block.dispatch.BlockModelRotation;
+import net.minecraft.client.renderer.item.CuboidItemModelWrapper;
+import net.minecraft.client.renderer.item.ItemModel;
+import net.minecraft.client.renderer.item.ItemModelResolver;
+import net.minecraft.client.renderer.item.ItemStackRenderState;
+import net.minecraft.client.renderer.item.ModelRenderProperties;
+import net.minecraft.client.renderer.special.SpecialModelRenderer;
+import net.minecraft.client.resources.model.ModelBaker;
+import net.minecraft.client.resources.model.ResolvableModel;
+import net.minecraft.client.resources.model.ResolvedModel;
+import net.minecraft.client.resources.model.geometry.BakedQuad;
+import net.minecraft.client.resources.model.geometry.QuadCollection;
+import net.minecraft.client.resources.model.sprite.TextureSlots;
+import net.minecraft.resources.Identifier;
 import net.minecraft.util.Mth;
+import net.minecraft.world.entity.ItemOwner;
 import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.entity.Mob;
 import net.minecraft.world.item.ItemDisplayContext;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.phys.Vec3;
-import net.neoforged.api.distmarker.Dist;
-import net.neoforged.bus.api.EventPriority;
-import net.neoforged.bus.api.SubscribeEvent;
-import net.neoforged.fml.common.EventBusSubscriber;
-import net.neoforged.neoforge.client.event.ModelEvent;
-import net.neoforged.neoforge.client.event.RenderLevelStageEvent;
-import net.neoforged.neoforge.client.model.BakedModelWrapper;
+import net.neoforged.neoforge.client.event.RegisterItemModelsEvent;
 import org.joml.Matrix3f;
 import org.joml.Matrix4f;
+import org.joml.Matrix4fc;
+import org.joml.Vector3fc;
 
-@EventBusSubscriber(modid = Ariente.MODID, value = Dist.CLIENT, bus = EventBusSubscriber.Bus.MOD)
-public class LanceModel extends BakedModelWrapper<BakedModel> {
+/** Extract owner-dependent aiming once; submitted geometry never reads a live entity. */
+public final class LanceModel implements ItemModel, SpecialModelRenderer<LanceModel.AimState> {
 
-    private final LivingEntity holder;
+    private final CuboidItemModelWrapper fallback;
+    private final List<BakedQuad> quads;
+    private final Vector3fc[] extents;
 
-    private LanceModel(BakedModel original, @Nullable LivingEntity holder) {
-        super(original);
-        this.holder = holder;
+    private LanceModel(QuadCollection geometry, ModelRenderProperties properties, Matrix4fc transform) {
+        fallback = new CuboidItemModelWrapper(List.of(), geometry, properties, transform);
+        quads = geometry.getAll();
+        extents = CuboidItemModelWrapper.computeExtents(quads);
     }
 
-    @SubscribeEvent
-    public static void bake(ModelEvent.ModifyBakingResult event) {
-        event.getModels().computeIfPresent(new ModelResourceLocation(ResourceLocation.fromNamespaceAndPath(Ariente.MODID, "energy_lance"), "inventory"),
-                (location, model) -> new LanceModel(model, null));
-    }
-
-    @Override
-    public ItemOverrides getOverrides() {
-        return new ItemOverrides() {
-
-            @Override
-            public BakedModel resolve(BakedModel model, ItemStack stack, @Nullable ClientLevel level,
-                                      @Nullable LivingEntity entity, int seed) {
-                BakedModel resolved = originalModel.getOverrides().resolve(originalModel, stack, level, entity, seed);
-                return new LanceModel(resolved == null ? originalModel : resolved, entity);
-            }
-        };
+    public static void register(RegisterItemModelsEvent event) {
+        event.register(Identifier.parse("ariente:lance"), Unbaked.CODEC);
     }
 
     @Override
-    public BakedModel applyTransform(ItemDisplayContext context, PoseStack poses, boolean leftHand) {
-        boolean firstPerson = context.firstPerson() && holder == Minecraft.getInstance().player;
+    public void update(ItemStackRenderState output, ItemStack item, ItemModelResolver resolver, ItemDisplayContext context,
+                       ClientLevel level, ItemOwner owner, int seed) {
+        Minecraft mc = Minecraft.getInstance();
+        LivingEntity holder = owner == null ? null : owner.asLivingEntity();
+        boolean firstPerson = context.firstPerson() && holder == mc.player;
         boolean thirdPerson = context == ItemDisplayContext.THIRD_PERSON_RIGHT_HAND || context == ItemDisplayContext.THIRD_PERSON_LEFT_HAND;
-        if (holder == null || !EnergyLanceItem.canFire(holder) || WorldFrame.worldToClip == null
-                || !(firstPerson || thirdPerson && WorldFrame.renderingEntities)) {
-            return originalModel.applyTransform(context, poses, leftHand);
+        if (holder == null || !EnergyLanceItem.canFire(holder) || !(firstPerson || thirdPerson)) {
+            fallback.update(output, item, resolver, context, level, owner, seed);
+            return;
         }
-
-        float partialTick = WorldFrame.partialTick;
+        float partialTick = mc.getDeltaTracker().getGameTimeDeltaPartialTick(false);
         Vec3 eye = holder.getEyePosition(partialTick);
         Vec3 forward = holder.getViewVector(partialTick);
         if (holder instanceof Mob mob && mob.getTarget() != null) {
@@ -81,44 +80,76 @@ public class LanceModel extends BakedModelWrapper<BakedModel> {
                 .m00((float) right.x).m01((float) right.y).m02((float) right.z)
                 .m10((float) direction.x).m11((float) direction.y).m12((float) direction.z)
                 .m20((float) normal.x).m21((float) normal.y).m22((float) normal.z);
-        float scale = firstPerson ? .75F : 1;
-        // ItemRenderer subsequently subtracts (0.5, 0.5, 0.5); the model's tip is at (0.5, 2, 0.5).
-        Vec3 origin = aim.muzzle().subtract(direction.scale(1.5D * scale)).subtract(WorldFrame.camera);
-
-        // Retain the world's projection even in the hand pass, which can use a different FOV and model-view matrix.
-        Matrix4f transform = new Matrix4f(RenderSystem.getProjectionMatrix()).mul(RenderSystem.getModelViewMatrix()).invert()
-                .mul(WorldFrame.worldToClip).translate((float) origin.x, (float) origin.y, (float) origin.z)
-                .mul(orientation).scale(scale);
-        poses.last().pose().set(transform);
-        poses.last().normal().set(new Matrix3f(transform).invert().transpose());
-        return originalModel;
+        var camera = mc.gameRenderer.getGameRenderState().levelRenderState.cameraRenderState;
+        float scale = firstPerson ? .75f : 1;
+        Vec3 origin = aim.muzzle().subtract(direction.scale(1.5 * scale)).subtract(camera.pos);
+        Matrix4f transform = new Matrix4f().translation((float) origin.x, (float) origin.y, (float) origin.z).mul(orientation)
+                .scale(scale).translate(-.5f, -.5f, -.5f);
+        Matrix4f handCorrection = null;
+        if (firstPerson) {
+            var window = mc.gameRenderer.getGameRenderState().windowRenderState;
+            Matrix4f handProjection = new Matrix4f().perspective(camera.hudFov * Mth.DEG_TO_RAD,
+                    (float) window.width / window.height, .05f, 100);
+            handCorrection = handProjection.invert().mul(camera.projectionMatrix).mul(camera.viewRotationMatrix);
+        }
+        output.setAnimated();
+        var layer = output.newLayer();
+        layer.setExtents(() -> extents);
+        layer.setupSpecialModel(this, new AimState(transform, handCorrection, context));
+        if (item.hasFoil()) {
+            layer.setFoilType(ItemStackRenderState.FoilType.STANDARD);
+        }
     }
 
-    @EventBusSubscriber(modid = Ariente.MODID, value = Dist.CLIENT)
-    public static class WorldFrame {
+    public record AimState(Matrix4f transform, Matrix4f handCorrection, ItemDisplayContext context) {
+    }
 
-        private static Matrix4f worldToClip;
-        private static Vec3 camera;
-        private static float partialTick;
-        private static boolean renderingEntities;
+    @Override
+    public void submit(AimState state, PoseStack poses, SubmitNodeCollector collector, int light, int overlay, boolean foil, int outline) {
+        PoseStack aimed = new PoseStack();
+        Matrix4f transform = new Matrix4f();
+        if (state.handCorrection() != null) {
+            transform.set(RenderSystem.getModelViewMatrix()).invert().mul(state.handCorrection());
+        }
+        transform.mul(state.transform());
+        aimed.last().pose().set(transform);
+        aimed.last().normal().set(new Matrix3f(transform).invert().transpose());
+        collector.submitItem(aimed, state.context(), light, overlay, outline, new int[0], quads,
+                foil ? ItemStackRenderState.FoilType.STANDARD : ItemStackRenderState.FoilType.NONE);
+    }
 
-        @SubscribeEvent(priority = EventPriority.HIGHEST)
-        public static void renderStage(RenderLevelStageEvent event) {
-            if (event.getStage() == RenderLevelStageEvent.Stage.AFTER_SKY) {
-                // Sky renderers can replace RenderSystem's projection; the event retains the world projection.
-                worldToClip = new Matrix4f(event.getProjectionMatrix()).mul(RenderSystem.getModelViewMatrix())
-                        .mul(event.getPoseStack().last().pose());
-                if (!worldToClip.isFinite()) {
-                    worldToClip = null;
-                    renderingEntities = false;
-                    return;
-                }
-                camera = event.getCamera().getPosition();
-                partialTick = event.getPartialTick().getGameTimeDeltaPartialTick(false);
-                renderingEntities = true;
-            } else if (event.getStage() == RenderLevelStageEvent.Stage.AFTER_ENTITIES) {
-                renderingEntities = false;
-            }
+    @Override
+    public void getExtents(Consumer<Vector3fc> output) {
+        for (Vector3fc extent : extents) {
+            output.accept(extent);
+        }
+    }
+
+    @Override
+    public AimState extractArgument(ItemStack stack) {
+        return null;
+    }
+
+    public record Unbaked(Identifier model) implements ItemModel.Unbaked {
+        public static final MapCodec<Unbaked> CODEC = Identifier.CODEC.fieldOf("model").xmap(Unbaked::new, Unbaked::model);
+
+        @Override
+        public void resolveDependencies(ResolvableModel.Resolver resolver) {
+            resolver.markDependency(model);
+        }
+
+        @Override
+        public ItemModel bake(ItemModel.BakingContext context, Matrix4fc transform) {
+            ModelBaker baker = context.blockModelBaker();
+            ResolvedModel resolved = baker.getModel(model);
+            TextureSlots slots = resolved.getTopTextureSlots();
+            return new LanceModel(resolved.bakeTopGeometry(slots, baker, BlockModelRotation.IDENTITY),
+                    ModelRenderProperties.fromResolvedModel(baker, resolved, slots), transform);
+        }
+
+        @Override
+        public MapCodec<Unbaked> type() {
+            return CODEC;
         }
     }
 }

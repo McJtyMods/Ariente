@@ -1,0 +1,7 @@
+{
+  "parent": "minecraft:block/template_glass_pane_noside",
+  "textures": {
+    "edge": "ariente:block/decorative/glass_fence",
+    "pane": "ariente:block/decorative/glass_fence"
+  }
+}

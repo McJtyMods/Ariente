@@ -1,12 +1,13 @@
 package mcjty.ariente.display;
 
+import mcjty.ariente.items.ItemData;
+import mcjty.lib.varia.CapabilityTools;
 import mcjty.hologui.api.IGuiComponentRegistry;
 import mcjty.hologui.api.components.IPanel;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.nbt.ListTag;
-import net.minecraft.nbt.Tag;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.level.block.entity.BlockEntity;
@@ -39,8 +40,8 @@ public class FluidDisplayModule extends ResourceDisplayModule {
     }
 
     public static IFluidHandler fluids(BlockEntity tile, Direction side) {
-        IFluidHandler handler = tile.getLevel().getCapability(Capabilities.FluidHandler.BLOCK, tile.getBlockPos(), side);
-        return handler != null ? handler : tile.getLevel().getCapability(Capabilities.FluidHandler.BLOCK, tile.getBlockPos(), null);
+        IFluidHandler handler = CapabilityTools.fluidHandler(tile.getLevel().getCapability(Capabilities.Fluid.BLOCK, tile.getBlockPos(), side));
+        return handler != null ? handler : CapabilityTools.fluidHandler(tile.getLevel().getCapability(Capabilities.Fluid.BLOCK, tile.getBlockPos(), null));
     }
 
     @Override
@@ -71,28 +72,28 @@ public class FluidDisplayModule extends ResourceDisplayModule {
         data.putString("Name", link.tile().getBlockState().getBlock().getName().getString());
         data.putInt("TankCount", tanks);
         ListTag readings = new ListTag();
-        ListTag old = previous.getList("Tanks", Tag.TAG_COMPOUND);
+        ListTag old = previous.getListOrEmpty("Tanks");
         for (int tank = first; tank < Math.min(tanks, first + rows(stack)); tank++) {
             FluidStack fluid = handler.getFluidInTank(tank).copy();
             CompoundTag entry = new CompoundTag();
             entry.putInt("Tank", tank + 1);
-            entry.put("Fluid", fluid.saveOptional(level.registryAccess()));
+            entry.put("Fluid", ItemData.encodeFluid(level.registryAccess(), fluid));
             entry.putLong("Amount", fluid.isEmpty() ? 0 : Math.max(0, fluid.getAmount()));
             entry.putLong("Capacity", Math.max(0, handler.getTankCapacity(tank)));
             if (mode(stack) == 2) {
                 CompoundTag last = new CompoundTag();
                 for (int index = 0; index < old.size(); index++) {
-                    CompoundTag candidate = old.getCompound(index);
-                    FluidStack oldFluid = FluidStack.parseOptional(level.registryAccess(), candidate.getCompound("HistoryFluid"));
+                    CompoundTag candidate = old.getCompoundOrEmpty(index);
+                    FluidStack oldFluid = ItemData.decodeFluid(level.registryAccess(), candidate.getCompoundOrEmpty("HistoryFluid"));
                     // Do not join histories of different tanks or different fluids.
-                    if (candidate.getInt("Tank") == tank + 1 && (fluid.isEmpty() || oldFluid.isEmpty() || fluid.isFluidEqual(oldFluid))) {
+                    if (candidate.getIntOr("Tank", 0) == tank + 1 && (fluid.isEmpty() || oldFluid.isEmpty() || FluidStack.isSameFluidSameComponents(fluid, oldFluid))) {
                         last = candidate;
                         break;
                     }
                 }
-                entry.put("HistoryFluid", fluid.isEmpty() ? last.getCompound("HistoryFluid").copy()
-                        : fluid.saveOptional(level.registryAccess()));
-                appendHistory(entry, last, entry.getLong("Amount"));
+                entry.put("HistoryFluid", fluid.isEmpty() ? last.getCompoundOrEmpty("HistoryFluid").copy()
+                        : ItemData.encodeFluid(level.registryAccess(), fluid));
+                appendHistory(entry, last, entry.getLongOr("Amount", 0));
             }
             readings.add(entry);
         }

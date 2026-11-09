@@ -1,5 +1,9 @@
 package mcjty.ariente.blocks.generators;
 
+import net.minecraft.world.level.storage.ValueInput;
+import net.minecraft.world.level.block.state.BlockBehaviour;
+import net.minecraft.world.level.material.MapColor;
+import net.minecraft.world.level.block.SoundType;
 import mcjty.ariente.power.*;
 import mcjty.hologui.api.*;
 import javax.annotation.Nonnull;
@@ -11,7 +15,6 @@ import mcjty.ariente.cables.CableColor;
 import mcjty.ariente.gui.CompactNumber;
 import mcjty.ariente.gui.GuiHelp;
 import mcjty.ariente.gui.HoloGuiTools;
-import mcjty.ariente.setup.Registration;
 import mcjty.lib.blocks.BaseBlock;
 import mcjty.lib.blocks.RotationType;
 import mcjty.lib.builder.BlockBuilder;
@@ -23,7 +26,6 @@ import net.minecraft.core.Direction;
 import net.minecraft.core.HolderLookup;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.network.Connection;
-import net.minecraft.network.protocol.game.ClientboundBlockEntityDataPacket;
 import net.minecraft.world.InteractionHand;
 import net.minecraft.world.InteractionResult;
 import net.minecraft.world.entity.LivingEntity;
@@ -48,7 +50,7 @@ public class PosiriteGeneratorTile extends ArienteBlockEntity implements IGuiTil
     public static final int POWERGEN = 1000;        // @todo configurable
 
     public static final int SLOT_POSIRITE_INPUT = 0;
-    public static final Lazy<ContainerFactory> CONTAINER_FACTORY = Lazy.of(() -> new ContainerFactory(1));//@todo 1.14ResourceLocation.fromNamespaceAndPath(Ariente.MODID, "gui/posirite_generator.gui"));
+    public static final Lazy<ContainerFactory> CONTAINER_FACTORY = Lazy.of(() -> new ContainerFactory(1));//@todo 1.14Identifier.fromNamespaceAndPath(Ariente.MODID, "gui/posirite_generator.gui"));
     private final PowerSenderSupport powerBlobSupport = new PowerSenderSupport();
 
     private final GenericItemHandler items = createItemHandler();
@@ -57,11 +59,11 @@ public class PosiriteGeneratorTile extends ArienteBlockEntity implements IGuiTil
     private int dustCounter;        // Number of ticks before the current dust depletes
 
     public PosiriteGeneratorTile(BlockPos pos, BlockState state) {
-        super(Registration.POSIRITE_GENERATOR_TILE.get(), pos, state);
+        super(mcjty.ariente.setup.Registration.POSIRITE_GENERATOR_TILE.get(), pos, state);
     }
 
-    public static BaseBlock createBlock() {
-        return new BaseBlock(new BlockBuilder()
+    public static BaseBlock createBlock(BlockBehaviour.Properties properties) {
+        return new BaseBlock(new BlockBuilder().properties(properties.mapColor(MapColor.METAL).strength(2.0f).requiresCorrectToolForDrops().sound(SoundType.METAL))
                 .info(key("message.ariente.shiftmessage"))
                 .infoShift(header())
                 .topDriver(DRIVER)
@@ -99,7 +101,7 @@ public class PosiriteGeneratorTile extends ArienteBlockEntity implements IGuiTil
     @Override
     public void feedDust(int amount) {
         if (items.getStackInSlot(NegariteGeneratorTile.SLOT_NEGARITE_INPUT).isEmpty()) {
-            items.setStackInSlot(NegariteGeneratorTile.SLOT_NEGARITE_INPUT, new ItemStack(Registration.DUST_POSIRITE.get(), amount));
+            items.setStackInSlot(NegariteGeneratorTile.SLOT_NEGARITE_INPUT, new ItemStack(mcjty.ariente.setup.Registration.DUST_POSIRITE.get(), amount));
             markDirtyClient();
         }
     }
@@ -139,7 +141,7 @@ public class PosiriteGeneratorTile extends ArienteBlockEntity implements IGuiTil
 
     private boolean canProceed() {
         ItemStack stack = items.getStackInSlot(SLOT_POSIRITE_INPUT);
-        return !stack.isEmpty() && stack.getItem() == Registration.DUST_POSIRITE.get();
+        return !stack.isEmpty() && stack.getItem() == mcjty.ariente.setup.Registration.DUST_POSIRITE.get();
     }
 
     private void sendPower() {
@@ -180,12 +182,12 @@ public class PosiriteGeneratorTile extends ArienteBlockEntity implements IGuiTil
     }
 
     @Override
-    public void onDataPacket(Connection net, ClientboundBlockEntityDataPacket packet, HolderLookup.Provider provider) {
+    public void onDataPacket(Connection net, ValueInput input) {
         boolean working = isWorking();
 
-        super.onDataPacket(net, packet, provider);
+        super.onDataPacket(net, input);
 
-        if (level.isClientSide) {
+        if (level.isClientSide()) {
             // If needed send a render update.
             boolean newWorking = isWorking();
             if (newWorking != working) {
@@ -205,10 +207,10 @@ public class PosiriteGeneratorTile extends ArienteBlockEntity implements IGuiTil
     @Override
     public void loadAdditional(CompoundTag tagCompound, HolderLookup.Provider provider) {
         super.loadAdditional(tagCompound, provider);
-        powerBlobSupport.setCableId(tagCompound.getInt("cableId"));
-        CompoundTag info = tagCompound.getCompound("Info");
+        powerBlobSupport.setCableId(tagCompound.getIntOr("cableId", 0));
+        CompoundTag info = tagCompound.getCompoundOrEmpty("Info");
         if (info.contains("dust")) {
-            dustCounter = info.getInt("dust");
+            dustCounter = info.getIntOr("dust", 0);
         }
     }
 
@@ -251,10 +253,10 @@ public class PosiriteGeneratorTile extends ArienteBlockEntity implements IGuiTil
         }
         return GuiHelp.GENERATORS.createPanel(registry)
                 .add(registry.text(0, 0, 8, 1).text("Posirite").color(registry.color(StyledColor.LABEL)))
-                .add(registry.stackIcon(0, 3, 1, 1).itemStack(new ItemStack(Registration.DUST_POSIRITE.get())))
+                .add(registry.stackIcon(0, 3, 1, 1).itemStack(new ItemStack(mcjty.ariente.setup.Registration.DUST_POSIRITE.get())))
 
                 .add(registry.icon(1, 3, 1, 1).icon(registry.image(WHITE_PLAYER)))
-                .add(new CompactNumber(2, 3, 2, 1).color(registry.color(StyledColor.INFORMATION)).getter((p,h) -> HoloGuiTools.countItem(p, Registration.DUST_POSIRITE.get())))
+                .add(new CompactNumber(2, 3, 2, 1).color(registry.color(StyledColor.INFORMATION)).getter((p,h) -> HoloGuiTools.countItem(p, mcjty.ariente.setup.Registration.DUST_POSIRITE.get())))
 
                 .add(registry.iconButton(2, 4, 1, 1).icon(registry.image(GRAY_DOUBLE_ARROW_LEFT)).hover(registry.image(WHITE_DOUBLE_ARROW_LEFT))
                         .hitEvent((component, player, e, x, y) -> toPlayer(player, 64)))
@@ -265,7 +267,7 @@ public class PosiriteGeneratorTile extends ArienteBlockEntity implements IGuiTil
                 .add(registry.iconButton(6, 4, 1, 1).icon(registry.image(GRAY_DOUBLE_ARROW_RIGHT)).hover(registry.image(WHITE_DOUBLE_ARROW_RIGHT))
                         .hitEvent((component, player, e, x, y) -> toMachine(player, 64)))
 
-                .add(registry.stackIcon(5, 3, 1, 1).itemStack(new ItemStack(Registration.POSIRITE_GENERATOR.get())))
+                .add(registry.stackIcon(5, 3, 1, 1).itemStack(new ItemStack(mcjty.ariente.setup.Registration.POSIRITE_GENERATOR.get())))
                 .add(new CompactNumber(6, 3, 2, 1).color(registry.color(StyledColor.INFORMATION)).getter(this::countPosiriteGenerator))
 
                 .add(registry.iconChoice(7, 6, 1, 1)
@@ -310,7 +312,7 @@ public class PosiriteGeneratorTile extends ArienteBlockEntity implements IGuiTil
 
         for (int i = 0 ; i < player.getInventory().getContainerSize() ; i++) {
             ItemStack stack = player.getInventory().getItem(i);
-            if (stack.getItem() == Registration.DUST_POSIRITE.get()) {
+            if (stack.getItem() == mcjty.ariente.setup.Registration.DUST_POSIRITE.get()) {
                 ItemStack splitted = stack.split(amount);
                 if ((!splitted.isEmpty())) {
                     if (toTransfer.isEmpty()) {
@@ -346,7 +348,7 @@ public class PosiriteGeneratorTile extends ArienteBlockEntity implements IGuiTil
         int cnt = 0;
         for (int i = 0 ; i < size ; i++) {
             ItemStack stack = items.getStackInSlot(i);
-            if (!stack.isEmpty() && stack.getItem() == Registration.DUST_POSIRITE.get()) {
+            if (!stack.isEmpty() && stack.getItem() == mcjty.ariente.setup.Registration.DUST_POSIRITE.get()) {
                 cnt += stack.getCount();
             }
         }
@@ -357,7 +359,7 @@ public class PosiriteGeneratorTile extends ArienteBlockEntity implements IGuiTil
     public void onBlockPlacedBy(Level world, BlockPos pos, BlockState state, LivingEntity placer, ItemStack stack) {
         super.onBlockPlacedBy(world, pos, state, placer, stack);
         super.onBlockPlacedBy(world, pos, state, placer, stack);
-        if (!world.isClientSide) {
+        if (!world.isClientSide()) {
             PowerSenderSupport.fixNetworks(world, pos);
         }
     }
@@ -365,7 +367,7 @@ public class PosiriteGeneratorTile extends ArienteBlockEntity implements IGuiTil
     @Override
     public void onReplaced(Level world, BlockPos pos, BlockState state, BlockState newstate) {
         super.onReplaced(world, pos, state, newstate);
-        if (!this.level.isClientSide) {
+        if (!this.level.isClientSide()) {
             PowerSenderSupport.fixNetworks(this.level, pos);
         }
     }
@@ -375,7 +377,7 @@ public class PosiriteGeneratorTile extends ArienteBlockEntity implements IGuiTil
             @Override
             public boolean isItemValid(int slot, @Nonnull ItemStack stack) {
                 if (slot == SLOT_POSIRITE_INPUT) {
-                    return stack.getItem() == Registration.DUST_POSIRITE.get();
+                    return stack.getItem() == mcjty.ariente.setup.Registration.DUST_POSIRITE.get();
                 }
                 return true;
             }

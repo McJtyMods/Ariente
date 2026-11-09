@@ -1,21 +1,17 @@
 package mcjty.ariente.blocks.purifier.client;
 
+import mcjty.ariente.client.ArienteRenderHelper;
 import com.mojang.blaze3d.vertex.PoseStack;
-import com.mojang.blaze3d.vertex.VertexConsumer;
 import com.mojang.math.Axis;
 import mcjty.ariente.blocks.purifier.PurifierTubeTile;
-import net.minecraft.client.Minecraft;
 import net.minecraft.client.renderer.MultiBufferSource;
-import net.minecraft.client.renderer.RenderType;
-import net.minecraft.client.renderer.blockentity.BlockEntityRenderer;
+import mcjty.ariente.client.ExtractedBlockRenderer;
 import net.minecraft.client.renderer.blockentity.BlockEntityRendererProvider;
 import net.minecraft.client.renderer.texture.OverlayTexture;
-import net.minecraft.client.renderer.texture.TextureAtlas;
 import net.minecraft.world.item.ItemDisplayContext;
 import net.minecraft.world.item.ItemStack;
-import net.neoforged.neoforge.client.model.pipeline.VertexConsumerWrapper;
 
-public class PurifierTubeRenderer implements BlockEntityRenderer<PurifierTubeTile> {
+public class PurifierTubeRenderer extends ExtractedBlockRenderer<PurifierTubeTile> {
 
     public PurifierTubeRenderer(BlockEntityRendererProvider.Context context) {
     }
@@ -55,15 +51,7 @@ public class PurifierTubeRenderer implements BlockEntityRenderer<PurifierTubeTil
         }
         poses.pushPose();
         poses.scale(scale, scale, scale);
-        VertexConsumer vertices = new VertexConsumerWrapper(buffer.getBuffer(RenderType.entityTranslucent(TextureAtlas.LOCATION_BLOCKS))) {
-
-            @Override
-            public VertexConsumer setColor(int red, int green, int blue, int opacity) {
-                return super.setColor(red, green, blue, Math.round(opacity * alpha));
-            }
-        };
-        Minecraft.getInstance().getItemRenderer().renderStatic(stack, ItemDisplayContext.GROUND, light,
-                OverlayTexture.NO_OVERLAY, poses, type -> vertices, tube.getLevel(), 0);
+        ArienteRenderHelper.item(poses, buffer, stack, ItemDisplayContext.GROUND, light, OverlayTexture.NO_OVERLAY, 1, alpha);
         poses.popPose();
     }
 }

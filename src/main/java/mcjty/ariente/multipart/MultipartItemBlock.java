@@ -1,5 +1,6 @@
 package mcjty.ariente.multipart;
 
+import net.minecraft.world.item.Item;
 import mcjty.ariente.setup.Registration;
 import mcjty.lib.multipart.IPartBlock;
 import mcjty.lib.multipart.PartSlot;
@@ -7,14 +8,12 @@ import mcjty.lib.tileentity.GenericTileEntity;
 import net.minecraft.advancements.CriteriaTriggers;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.component.DataComponents;
-import net.minecraft.nbt.CompoundTag;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.sounds.SoundSource;
 import net.minecraft.world.InteractionResult;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.BlockItem;
 import net.minecraft.world.item.ItemStack;
-import net.minecraft.world.item.component.CustomData;
 import net.minecraft.world.item.context.BlockPlaceContext;
 import net.minecraft.world.item.context.UseOnContext;
 import net.minecraft.world.level.Level;
@@ -26,8 +25,8 @@ import net.minecraft.world.level.block.state.BlockState;
 
 public class MultipartItemBlock extends BlockItem {
 
-    public MultipartItemBlock(Block block) {
-        this(block, new Properties());
+    public MultipartItemBlock(Item.Properties properties, Block block) {
+        this(block, properties);
     }
 
     public MultipartItemBlock(Block block, Properties properties) {
@@ -77,7 +76,7 @@ public class MultipartItemBlock extends BlockItem {
         } else if (!level.getBlockState(pos).canBeReplaced(context)) {
             return InteractionResult.FAIL;
         }
-        if (!level.isClientSide) {
+        if (!level.isClientSide()) {
             if (!(existing instanceof MultipartTE)) {
                 if (!level.setBlockAndUpdate(pos, Registration.MULTIPART_BLOCK.get().defaultBlockState())) {
                     return InteractionResult.FAIL;
@@ -90,9 +89,9 @@ public class MultipartItemBlock extends BlockItem {
             BlockEntity child = state.getBlock() instanceof EntityBlock block ? block.newBlockEntity(pos, state) : null;
             if (child != null) {
                 child.setLevel(level);
-                CompoundTag saved = stack.getOrDefault(DataComponents.BLOCK_ENTITY_DATA, CustomData.EMPTY).copyTag();
+                var saved = stack.get(DataComponents.BLOCK_ENTITY_DATA);
                 if (saved != null) {
-                    child.loadWithComponents(saved.copy(), level.registryAccess());
+                    saved.loadInto(child, level.registryAccess());
                 }
             }
             multipart.addPart(slot, state, child);
@@ -109,6 +108,6 @@ public class MultipartItemBlock extends BlockItem {
         }
         SoundType sound = state.getSoundType(level, pos, player);
         level.playSound(player, pos, sound.getPlaceSound(), SoundSource.BLOCKS, (sound.getVolume() + 1) / 2, sound.getPitch() * .8F);
-        return InteractionResult.sidedSuccess(level.isClientSide);
+        return InteractionResult.SUCCESS;
     }
 }

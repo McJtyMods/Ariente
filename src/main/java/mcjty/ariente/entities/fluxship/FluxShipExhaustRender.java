@@ -1,24 +1,24 @@
 package mcjty.ariente.entities.fluxship;
 
-import com.mojang.blaze3d.vertex.ByteBufferBuilder;
+import java.util.function.Function;
+import net.minecraft.client.renderer.texture.TextureAtlas;
+import net.minecraft.client.resources.model.sprite.SpriteId;
+import net.minecraft.resources.Identifier;
+
 import com.mojang.blaze3d.vertex.PoseStack;
 import com.mojang.blaze3d.vertex.VertexConsumer;
 import mcjty.ariente.Ariente;
 import mcjty.ariente.client.ArienteRenderType;
-import mcjty.ariente.display.client.LiveCameraRenderer;
 import net.minecraft.client.Minecraft;
-import net.minecraft.client.renderer.LightTexture;
+import net.minecraft.util.LightCoordsUtil;
 import net.minecraft.client.renderer.MultiBufferSource;
 import net.minecraft.client.renderer.texture.OverlayTexture;
 import net.minecraft.client.renderer.texture.TextureAtlasSprite;
 import net.minecraft.util.Mth;
 import net.minecraft.world.entity.Entity;
-import net.minecraft.world.inventory.InventoryMenu;
 import net.minecraft.world.phys.Vec3;
 import net.neoforged.api.distmarker.Dist;
-import net.neoforged.bus.api.SubscribeEvent;
 import net.neoforged.fml.common.EventBusSubscriber;
-import net.neoforged.neoforge.client.event.RenderLevelStageEvent;
 import org.joml.Quaternionf;
 import org.joml.Vector3f;
 
@@ -31,11 +31,6 @@ public class FluxShipExhaustRender {
 
     private static final int STRANDS = 4;
     private static final int SEGMENTS = 24;
-    private static final MultiBufferSource.BufferSource EXHAUST_BUFFERS = MultiBufferSource.immediate(new ByteBufferBuilder(32768));
-
-    public static void render(FluxShipEntity ship, float partialTick, PoseStack pose) {
-        render(ship, partialTick, pose, LiveCameraRenderer.buffersForView(EXHAUST_BUFFERS));
-    }
 
     public static void render(FluxShipEntity ship, float partialTick, PoseStack pose, MultiBufferSource buffers) {
         Minecraft mc = Minecraft.getInstance();
@@ -45,16 +40,16 @@ public class FluxShipExhaustRender {
             return;
         }
 
-        Vec3 cameraOffset = mc.gameRenderer.getMainCamera().getPosition()
+        Vec3 cameraOffset = mc.gameRenderer.getMainCamera().position()
                 .subtract(ship.getPosition(partialTick)).subtract(0, .5, 0);
         Quaternionf inverseHull = new Quaternionf().rotationY(-ship.getFlightYaw(partialTick) * Mth.DEG_TO_RAD)
                 .rotateX(ship.getFlightPitch(partialTick) * Mth.DEG_TO_RAD)
                 .rotateZ(ship.getBank(partialTick) * Mth.DEG_TO_RAD).conjugate();
         Vec3 camera = new Vec3(inverseHull.transform(cameraOffset.toVector3f()));
-        Vec3 cameraUp = new Vec3(inverseHull.transform(new Vector3f(mc.gameRenderer.getMainCamera().getUpVector())));
+        Vec3 cameraUp = new Vec3(inverseHull.transform(new Vector3f(mc.gameRenderer.getMainCamera().upVector())));
         double time = ship.level().getGameTime() + partialTick;
         double seed = (ship.getUUID().getLeastSignificantBits() & 65535) * Math.PI * 2 / 65536;
-        var atlas = mc.getTextureAtlas(InventoryMenu.BLOCK_ATLAS);
+        Function<Identifier, TextureAtlasSprite> atlas = id -> mc.getAtlasManager().get(new SpriteId(TextureAtlas.LOCATION_BLOCKS, id));
         TextureAtlasSprite negarite = atlas.apply(NEGARITE_BEAM);
         TextureAtlasSprite posirite = atlas.apply(POSIRITE_BEAM);
         VertexConsumer vertices = buffers.getBuffer(ArienteRenderType.SHIP_EXHAUST);
@@ -69,13 +64,6 @@ public class FluxShipExhaustRender {
                 float v = sprite.getV((float) ((time * .025 + strand * .19 + engine * .37) % 1));
                 renderStrand(pose, vertices, sprite, v, nozzle, length, phase, time, strength, camera, cameraUp);
             }
-        }
-    }
-
-    @SubscribeEvent
-    public static void renderStage(RenderLevelStageEvent event) {
-        if (event.getStage() == RenderLevelStageEvent.Stage.AFTER_PARTICLES) {
-            EXHAUST_BUFFERS.endBatch();
         }
     }
 
@@ -135,6 +123,6 @@ public class FluxShipExhaustRender {
         // ONE + ONE blending needs fading in RGB as well as alpha.
         vertices.addVertex(pose.last().pose(), (float) point.x, (float) point.y, (float) point.z)
                 .setColor(glow, glow, glow, glow).setUv(u, v).setOverlay(OverlayTexture.NO_OVERLAY)
-                .setLight(LightTexture.FULL_BRIGHT).setNormal(pose.last(), 0, 1, 0);
+                .setLight(LightCoordsUtil.FULL_BRIGHT).setNormal(pose.last(), 0, 1, 0);
     }
 }

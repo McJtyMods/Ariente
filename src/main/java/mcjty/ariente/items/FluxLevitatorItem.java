@@ -1,5 +1,9 @@
 package mcjty.ariente.items;
 
+import java.util.ArrayList;
+
+import net.minecraft.world.item.component.TooltipDisplay;
+import java.util.function.Consumer;
 import java.util.List;
 import mcjty.ariente.entities.levitator.FluxLevitatorEntity;
 import mcjty.lib.builder.TooltipBuilder;
@@ -26,13 +30,19 @@ public class FluxLevitatorItem extends Item implements ITooltipSettings {
     private final TooltipBuilder tooltipBuilder = new TooltipBuilder()
             .info(header());
 
-    public FluxLevitatorItem() {
-        super(new Properties().stacksTo(1));
+    public FluxLevitatorItem(Item.Properties properties) {
+        super(properties.stacksTo(1));
     }
 
     @Override
+    public void appendHoverText(ItemStack stack, Item.TooltipContext context, TooltipDisplay display, Consumer<Component> output, TooltipFlag flag) {
+        List<Component> lines = new ArrayList<>();
+        appendHoverText(stack, context, lines, flag);
+        lines.forEach(output);
+    }
+
     public void appendHoverText(ItemStack stack, Item.TooltipContext worldIn, List<Component> tooltip, TooltipFlag flag) {
-        super.appendHoverText(stack, worldIn, tooltip, flag);
+
         tooltipBuilder.makeTooltip(Tools.getId(this), stack, tooltip, flag);
     }
 
@@ -49,11 +59,11 @@ public class FluxLevitatorItem extends Item implements ITooltipSettings {
         } else {
             ItemStack itemstack = player.getItemInHand(hand);
 
-            if (!world.isClientSide) {
+            if (!world.isClientSide()) {
                 RailShape dir = FluxLevitatorEntity.getBeamDirection(state);
                 double d0 = 0.0D;
 
-                if (dir.isAscending()) {
+                if (dir.isSlope()) {
                     d0 = 0.5D;
                 }
 

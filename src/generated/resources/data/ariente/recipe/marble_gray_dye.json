@@ -2,15 +2,10 @@
   "type": "minecraft:crafting_shapeless",
   "category": "misc",
   "ingredients": [
-    {
-      "tag": "c:marble"
-    },
-    {
-      "tag": "c:dyes/gray"
-    }
+    "#c:marble",
+    "#c:dyes/gray"
   ],
   "result": {
-    "count": 1,
     "id": "ariente:marble_gray"
   }
 }

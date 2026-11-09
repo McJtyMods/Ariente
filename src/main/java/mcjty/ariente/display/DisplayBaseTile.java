@@ -1,5 +1,8 @@
 package mcjty.ariente.display;
 
+import mcjty.ariente.varia.Messages;
+import net.minecraft.world.level.block.state.BlockBehaviour;
+import net.minecraft.world.level.block.SoundType;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Comparator;
@@ -11,7 +14,6 @@ import java.util.function.Consumer;
 import mcjty.ariente.Ariente;
 import mcjty.ariente.blocks.ArienteBlockEntity;
 import mcjty.ariente.gui.HoloGuiTools;
-import mcjty.ariente.setup.Registration;
 import mcjty.hologui.api.IGuiComponent;
 import mcjty.hologui.api.IGuiComponentRegistry;
 import mcjty.hologui.api.IGuiTile;
@@ -23,9 +25,8 @@ import net.minecraft.core.BlockPos;
 import net.minecraft.core.HolderLookup;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.nbt.ListTag;
-import net.minecraft.nbt.Tag;
 import net.minecraft.network.chat.Component;
-import net.minecraft.resources.ResourceLocation;
+import net.minecraft.resources.Identifier;
 import net.minecraft.util.Mth;
 import net.minecraft.world.Containers;
 import net.minecraft.world.InteractionHand;
@@ -62,12 +63,12 @@ public class DisplayBaseTile extends ArienteBlockEntity implements IGuiTile {
     private long nextDataRequest;
 
     public DisplayBaseTile(BlockPos pos, BlockState state) {
-        super(Registration.DISPLAY_BASE_TILE.get(), pos, state);
+        super(mcjty.ariente.setup.Registration.DISPLAY_BASE_TILE.get(), pos, state);
     }
 
-    public static BaseBlock createBlock() {
-        return new BaseBlock(new BlockBuilder()
-                .properties(Block.Properties.of().mapColor(MapColor.METAL).strength(2).noOcclusion())
+    public static BaseBlock createBlock(BlockBehaviour.Properties properties) {
+        return new BaseBlock(new BlockBuilder().properties(properties.mapColor(MapColor.METAL).strength(2.0f).requiresCorrectToolForDrops().sound(SoundType.METAL))
+                .properties(properties.mapColor(MapColor.METAL).strength(2).noOcclusion())
                 .tileEntitySupplier(DisplayBaseTile::new)) {
 
             @Override
@@ -85,7 +86,7 @@ public class DisplayBaseTile extends ArienteBlockEntity implements IGuiTile {
     @Override
     public void onLoad() {
         super.onLoad();
-        if (level.isClientSide) {
+        if (level.isClientSide()) {
             LOADED.add(this);
         }
     }
@@ -108,7 +109,7 @@ public class DisplayBaseTile extends ArienteBlockEntity implements IGuiTile {
 
     @Override
     public void onBlockPlacedBy(Level level, BlockPos pos, BlockState state, LivingEntity placer, ItemStack stack) {
-        if (!level.isClientSide) {
+        if (!level.isClientSide()) {
             List<DisplayBaseTile> row = DisplayGeometry.row(this);
             int maxHeight = row.stream().mapToInt(DisplayBaseTile::getHeight).max().orElse(1);
             DisplayBaseTile existing = DisplayGeometry.neighbor(this, -1);
@@ -136,7 +137,7 @@ public class DisplayBaseTile extends ArienteBlockEntity implements IGuiTile {
         List<DisplayBaseTile> row = DisplayGeometry.row(this);
         for (DisplayBaseTile base : row) {
             if (base.modules.stream().anyMatch(module -> module.y() + module.size().height() > newHeight * 64 - 4)) {
-                player.displayClientMessage(Component.literal("Remove modules below the new display height first."), true);
+                Messages.player(player, Component.literal("Remove modules below the new display height first."), true);
                 return;
             }
         }
@@ -180,6 +181,7 @@ public class DisplayBaseTile extends ArienteBlockEntity implements IGuiTile {
     }
 
     /** Move atomically: rejected drops leave both bases and the player's inventory untouched. */
+
     public boolean moveModule(Player player, InstalledModule module, DisplayBaseTile target, int x, int y) {
         if (!modules.contains(module) || isRemoved() || target == null || target.isRemoved() || player.isSpectator()
                 || player.level() != level || !level.hasChunkAt(worldPosition) || level.getBlockEntity(worldPosition) != this
@@ -224,7 +226,7 @@ public class DisplayBaseTile extends ArienteBlockEntity implements IGuiTile {
             if (!player.getInventory().add(configured)) {
                 player.drop(configured, false);
             }
-            player.displayClientMessage(Component.literal("The module no longer fits and has been returned to you."), true);
+            Messages.player(player, Component.literal("The module no longer fits and has been returned to you."), true);
         }
         changed();
         return fits;
@@ -271,7 +273,7 @@ public class DisplayBaseTile extends ArienteBlockEntity implements IGuiTile {
 
     @Override
     public void onReplaced(Level level, BlockPos pos, BlockState state, BlockState replacement) {
-        if (level.isClientSide || state.is(replacement.getBlock())
+        if (level.isClientSide() || state.is(replacement.getBlock())
                 && state.getValue(BlockStateProperties.HORIZONTAL_FACING) == replacement.getValue(BlockStateProperties.HORIZONTAL_FACING)) {
             return;
         }
@@ -308,7 +310,7 @@ public class DisplayBaseTile extends ArienteBlockEntity implements IGuiTile {
         if (ModuleSettings.isInstalledTag(tag)) {
             return ModuleSettings.createInstalled(this, tag, registry);
         }
-        IPanel panel = HoloGuiTools.createPanelWithHelp(registry, ResourceLocation.fromNamespaceAndPath(Ariente.MODID, "construction/displays"));
+        IPanel panel = HoloGuiTools.createPanelWithHelp(registry, Identifier.fromNamespaceAndPath(Ariente.MODID, "construction/displays"));
         if ("surface-color".equals(tag)) {
             panel.add(registry.text(.3, 0, 8, 1).text("SURFACE COLOR").scale(.65f).color(0x76eaff));
             panel.add(registry.button(6.4, .1, 1.6, .65).name("color_close").text("Back").scale(.4f)
@@ -393,19 +395,19 @@ public class DisplayBaseTile extends ArienteBlockEntity implements IGuiTile {
 
     private void read(CompoundTag tag, HolderLookup.Provider provider) {
         if (tag.contains("Layout")) {
-            layoutVersion = tag.getLong("Layout");
+            layoutVersion = tag.getLongOr("Layout", 0);
         }
-        revision = tag.getLong("Revision");
-        height = tag.contains("Height") ? Mth.clamp(tag.getInt("Height"), 1, MAX_HEIGHT) : 1;
+        revision = tag.getLongOr("Revision", 0);
+        height = tag.contains("Height") ? Mth.clamp(tag.getIntOr("Height", 0), 1, MAX_HEIGHT) : 1;
         appearance = DisplayAppearance.read(tag);
         List<InstalledModule> previous = List.copyOf(modules);
         modules.clear();
         nextDataRequest = 0;
-        ListTag list = tag.getList("Modules", Tag.TAG_COMPOUND);
+        ListTag list = tag.getListOrEmpty("Modules");
         for (int i = 0; i < Math.min(MAX_MODULES, list.size()); i++) {
-            InstalledModule module = InstalledModule.load(list.getCompound(i), provider);
+            InstalledModule module = InstalledModule.load(list.getCompoundOrEmpty(i), provider);
             if (module != null) {
-                if (level != null && level.isClientSide) {
+                if (level != null && level.isClientSide()) {
                     previous.stream().filter(old -> old.id().equals(module.id())).findFirst().ifPresent(module::retainSnapshot);
                 }
                 modules.add(module);

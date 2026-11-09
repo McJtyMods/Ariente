@@ -1,5 +1,7 @@
 package mcjty.ariente.blocks.utility.door;
 
+import net.minecraft.world.level.block.state.BlockBehaviour;
+import net.minecraft.world.level.block.SoundType;
 import java.util.List;
 import mcjty.ariente.Ariente;
 import mcjty.ariente.api.ISoldier;
@@ -8,7 +10,6 @@ import mcjty.ariente.blocks.utility.ILockTarget;
 import mcjty.ariente.config.UtilityConfiguration;
 import mcjty.ariente.gui.GuiHelp;
 import mcjty.ariente.security.AreaLocks;
-import mcjty.ariente.setup.Registration;
 import mcjty.ariente.sounds.ModSounds;
 import mcjty.hologui.api.IGuiComponent;
 import mcjty.hologui.api.IGuiComponentRegistry;
@@ -63,7 +64,7 @@ public class DoorMarkerTile extends ArienteBlockEntity implements IGuiTile, ILoc
     private long lastTime = -1;  // For rendering
 
     public DoorMarkerTile(BlockPos pos, BlockState state) {
-        super(Registration.DOOR_MARKER_TILE.get(), pos, state);
+        super(mcjty.ariente.setup.Registration.DOOR_MARKER_TILE.get(), pos, state);
     }
 
     @Override
@@ -72,9 +73,9 @@ public class DoorMarkerTile extends ArienteBlockEntity implements IGuiTile, ILoc
         AreaLocks.loaded(this);
     }
 
-    public static BaseBlock createBlock() {
-        return new BaseBlock(new BlockBuilder()
-                .properties(Block.Properties.of().mapColor(MapColor.METAL)
+    public static BaseBlock createBlock(BlockBehaviour.Properties properties) {
+        return new BaseBlock(new BlockBuilder().properties(properties.mapColor(MapColor.METAL).strength(2.0f).requiresCorrectToolForDrops().sound(SoundType.METAL))
+                .properties(properties.mapColor(MapColor.METAL)
                         .dynamicShape())
                 .info(key("message.ariente.shiftmessage"))
                 .infoShift(header())
@@ -151,12 +152,12 @@ public class DoorMarkerTile extends ArienteBlockEntity implements IGuiTile, ILoc
         BlockPos pos = worldPosition.above();
         for (int i = 0; i < UtilityConfiguration.MAX_DOOR_HEIGHT.get(); i++) {
             BlockState state = level.getBlockState(pos);
-            if (state.is(Registration.INVISIBLE_DOOR.get())) {
+            if (state.is(mcjty.ariente.setup.Registration.INVISIBLE_DOOR.get())) {
                 if (state.getValue(BlockStateProperties.HORIZONTAL_FACING) != facing || state.getValue(BlockStateProperties.OPEN) != open) {
                     level.setBlock(pos, state.setValue(BlockStateProperties.HORIZONTAL_FACING, facing).setValue(BlockStateProperties.OPEN, open), Block.UPDATE_CLIENTS);
                 }
             } else if (state.isAir()) {
-                level.setBlock(pos, Registration.INVISIBLE_DOOR.get().defaultBlockState()
+                level.setBlock(pos, mcjty.ariente.setup.Registration.INVISIBLE_DOOR.get().defaultBlockState()
                         .setValue(BlockStateProperties.HORIZONTAL_FACING, facing).setValue(BlockStateProperties.OPEN, open), Block.UPDATE_CLIENTS);
             } else {
                 return;
@@ -168,7 +169,7 @@ public class DoorMarkerTile extends ArienteBlockEntity implements IGuiTile, ILoc
     private void clearInvisibleBlocks() {
         BlockPos p = worldPosition.above();
         for (int i = 0 ; i < UtilityConfiguration.MAX_DOOR_HEIGHT.get() ; i++) {
-            if (level.getBlockState(p).getBlock() == Registration.INVISIBLE_DOOR.get()) {
+            if (level.getBlockState(p).getBlock() == mcjty.ariente.setup.Registration.INVISIBLE_DOOR.get()) {
                 level.setBlockAndUpdate(p, Blocks.AIR.defaultBlockState());
             } else {
                 return;
@@ -179,7 +180,7 @@ public class DoorMarkerTile extends ArienteBlockEntity implements IGuiTile, ILoc
 
     private Direction getFacing() {
         BlockState state = level.getBlockState(worldPosition);
-        if (state.getBlock() != Registration.DOOR_MARKER.get()) {
+        if (state.getBlock() != mcjty.ariente.setup.Registration.DOOR_MARKER.get()) {
             return null;
         }
         return state.getValue(BlockStateProperties.HORIZONTAL_FACING);
@@ -247,11 +248,11 @@ public class DoorMarkerTile extends ArienteBlockEntity implements IGuiTile, ILoc
     public void loadAdditional(CompoundTag tagCompound, HolderLookup.Provider provider) {
         super.loadAdditional(tagCompound, provider);
         AreaLocks.loadTarget(this, tagCompound);
-        open = tagCompound.getBoolean("open");
-        CompoundTag info = tagCompound.getCompound("Info");
+        open = tagCompound.getBooleanOr("open", false);
+        CompoundTag info = tagCompound.getCompoundOrEmpty("Info");
         if (!info.isEmpty()) {
-            iconIndex = info.getInt("icon");
-            locked = info.getBoolean("locked");
+            iconIndex = info.getIntOr("icon", 0);
+            locked = info.getBooleanOr("locked", false);
         }
     }
 

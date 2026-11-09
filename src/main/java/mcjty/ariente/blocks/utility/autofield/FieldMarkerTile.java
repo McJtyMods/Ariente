@@ -1,11 +1,13 @@
 package mcjty.ariente.blocks.utility.autofield;
 
+import net.minecraft.world.level.block.state.BlockBehaviour;
+import net.minecraft.world.level.material.MapColor;
+import net.minecraft.world.level.block.SoundType;
 import java.util.Objects;
 import javax.annotation.Nonnull;
 import mcjty.ariente.blocks.ArienteBlockEntity;
 import mcjty.ariente.multipart.MultipartHelper;
 import mcjty.ariente.multipart.MultipartTE;
-import mcjty.ariente.setup.Registration;
 import mcjty.lib.blocks.BaseBlock;
 import mcjty.lib.blocks.RotationType;
 import mcjty.lib.builder.BlockBuilder;
@@ -33,11 +35,11 @@ public class FieldMarkerTile extends ArienteBlockEntity {
     public static final VoxelShape FLAT_SHAPE = Block.box(0, 0, 0, 16, 1, 16);
 
     public FieldMarkerTile(BlockPos pos, BlockState state) {
-        super(Registration.FIELD_MARKER_TILE.get(), pos, state);
+        super(mcjty.ariente.setup.Registration.FIELD_MARKER_TILE.get(), pos, state);
     }
 
-    public static BaseBlock createBlock() {
-        return new BaseBlock(new BlockBuilder()
+    public static BaseBlock createBlock(BlockBehaviour.Properties properties) {
+        return new BaseBlock(new BlockBuilder().properties(properties.mapColor(MapColor.METAL).strength(2.0f).requiresCorrectToolForDrops().sound(SoundType.METAL))
                 .tileEntitySupplier(FieldMarkerTile::new)
         ) {
             @Override
@@ -136,7 +138,7 @@ public class FieldMarkerTile extends ArienteBlockEntity {
     }
 
     public BlockPos getAutoFieldTile() {
-        if (autoFieldTile != null && level != null && !level.isClientSide && level.hasChunkAt(autoFieldTile)
+        if (autoFieldTile != null && level != null && !level.isClientSide() && level.hasChunkAt(autoFieldTile)
                 && !(level.getBlockEntity(autoFieldTile) instanceof AutoFieldTile)) {
             setAutoFieldTile(null);
         }
@@ -146,7 +148,7 @@ public class FieldMarkerTile extends ArienteBlockEntity {
     @Override
     public void loadAdditional(CompoundTag tagCompound, HolderLookup.Provider provider) {
         super.loadAdditional(tagCompound, provider);
-        CompoundTag info = tagCompound.getCompound("Info");
+        CompoundTag info = tagCompound.getCompoundOrEmpty("Info");
         autoFieldTile = info.contains("autofield") ? BlockPosTools.read(info, "autofield") : null;
     }
 

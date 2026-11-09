@@ -4,13 +4,13 @@ import com.mojang.blaze3d.vertex.PoseStack;
 import com.mojang.math.Axis;
 import mcjty.ariente.setup.Registration;
 import net.minecraft.client.renderer.MultiBufferSource;
-import net.minecraft.client.renderer.blockentity.BlockEntityRenderer;
+import mcjty.ariente.client.ExtractedBlockRenderer;
 import net.minecraft.client.renderer.blockentity.BlockEntityRendererProvider;
 import net.minecraft.client.renderer.blockentity.BlockEntityRenderers;
 import net.minecraft.core.Direction;
 import net.minecraft.world.level.block.state.BlockState;
 
-public class InvisibleDoorRenderer implements BlockEntityRenderer<InvisibleDoorTile> {
+public class InvisibleDoorRenderer extends ExtractedBlockRenderer<InvisibleDoorTile> {
 
     protected BlockEntityRendererProvider.Context context;
 

@@ -1,5 +1,7 @@
 package mcjty.ariente.compat.jei;
 
+import net.minecraft.client.gui.GuiGraphicsExtractor;
+
 import mcjty.ariente.Ariente;
 import mcjty.ariente.items.BlueprintItem;
 import mcjty.ariente.recipes.ConstructorRecipe;
@@ -13,7 +15,7 @@ import mezz.jei.api.recipe.RecipeIngredientRole;
 import mezz.jei.api.recipe.RecipeType;
 import mezz.jei.api.recipe.category.IRecipeCategory;
 import net.minecraft.network.chat.Component;
-import net.minecraft.resources.ResourceLocation;
+import net.minecraft.resources.Identifier;
 import net.minecraft.world.item.ItemStack;
 
 public class JeiConstructorRecipeCategory implements IRecipeCategory<ConstructorRecipe> {
@@ -22,7 +24,7 @@ public class JeiConstructorRecipeCategory implements IRecipeCategory<Constructor
     private final IDrawable icon;
 
     public JeiConstructorRecipeCategory(IGuiHelper helper) {
-        background = helper.createDrawable(ResourceLocation.fromNamespaceAndPath(Ariente.MODID, "textures/gui/recipe_background.png"), 0, 0, 160, 80);
+        background = helper.createDrawable(Identifier.fromNamespaceAndPath(Ariente.MODID, "textures/gui/recipe_background.png"), 0, 0, 160, 80);
         icon = helper.createDrawableIngredient(VanillaTypes.ITEM_STACK, new ItemStack(Registration.CONSTRUCTOR.get()));
     }
 
@@ -37,8 +39,18 @@ public class JeiConstructorRecipeCategory implements IRecipeCategory<Constructor
     }
 
     @Override
-    public IDrawable getBackground() {
-        return background;
+    public int getWidth() {
+        return background.getWidth();
+    }
+
+    @Override
+    public int getHeight() {
+        return background.getHeight();
+    }
+
+    @Override
+    public void draw(ConstructorRecipe recipe, mezz.jei.api.gui.ingredient.IRecipeSlotsView slots, GuiGraphicsExtractor graphics, double mouseX, double mouseY) {
+        background.draw(graphics);
     }
 
     @Override
@@ -52,9 +64,9 @@ public class JeiConstructorRecipeCategory implements IRecipeCategory<Constructor
             builder.addSlot(RecipeIngredientRole.INPUT, 23 + (index / 3) * 18, 14 + (index % 3) * 18)
                     .addItemStack(recipe.getIngredientList().get(index));
         }
-        builder.addSlot(RecipeIngredientRole.CATALYST, 126, 14)
+        builder.addSlot(RecipeIngredientRole.CRAFTING_STATION, 126, 14)
                 .addItemStack(BlueprintItem.makeBluePrint(recipe.getDestination()))
-                .addTooltipCallback((view, tooltip) -> tooltip.add(Component.translatable("jei.ariente.blueprint_required")));
+                .addRichTooltipCallback((view, tooltip) -> tooltip.add(Component.translatable("jei.ariente.blueprint_required")));
         builder.addSlot(RecipeIngredientRole.OUTPUT, 126, 50).addItemStack(recipe.getDestination());
     }
 }

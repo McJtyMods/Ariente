@@ -1,5 +1,10 @@
 package mcjty.ariente.items;
 
+import java.util.ArrayList;
+
+import mcjty.ariente.varia.Messages;
+import net.minecraft.world.item.component.TooltipDisplay;
+import java.util.function.Consumer;
 import java.util.List;
 import java.util.Random;
 import mcjty.ariente.blocks.utility.WarperTile;
@@ -19,7 +24,7 @@ import net.minecraft.sounds.SoundEvents;
 import net.minecraft.sounds.SoundSource;
 import net.minecraft.world.InteractionHand;
 import net.minecraft.world.InteractionResult;
-import net.minecraft.world.InteractionResultHolder;
+import net.minecraft.world.InteractionResult;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemStack;
@@ -39,13 +44,19 @@ public class ArientePearlItem extends Item implements ITooltipSettings {
     private final TooltipBuilder tooltipBuilder = new TooltipBuilder()
             .info(header());
 
-    public ArientePearlItem() {
-        super(new Properties().stacksTo(16));
+    public ArientePearlItem(Item.Properties properties) {
+        super(properties.stacksTo(16));
     }
 
     @Override
+    public void appendHoverText(ItemStack stack, Item.TooltipContext context, TooltipDisplay display, Consumer<Component> output, TooltipFlag flag) {
+        List<Component> lines = new ArrayList<>();
+        appendHoverText(stack, context, lines, flag);
+        lines.forEach(output);
+    }
+
     public void appendHoverText(ItemStack stack, Item.TooltipContext worldIn, List<Component> tooltip, TooltipFlag flagIn) {
-        super.appendHoverText(stack, worldIn, tooltip, flagIn);
+
         tooltipBuilder.makeTooltip(Tools.getId(this), stack, tooltip, flagIn);
     }
 
@@ -60,7 +71,7 @@ public class ArientePearlItem extends Item implements ITooltipSettings {
         ItemStack itemstack = player.getItemInHand(hand);
 
         if (player.mayUseItemAt(pos.relative(facing), facing, itemstack) && state.getBlock() == Registration.WARPER.get()) {
-            if (world.isClientSide) {
+            if (world.isClientSide()) {
                 return InteractionResult.SUCCESS;
             } else {
                 BlockEntity te = world.getBlockEntity(pos);
@@ -68,12 +79,12 @@ public class ArientePearlItem extends Item implements ITooltipSettings {
                     WarperTile warper = (WarperTile) te;
                     int charges = warper.getCharges();
                     if (charges >= UtilityConfiguration.WARPER_MAX_CHARGES.get()) {
-                        player.displayClientMessage(Component.literal("Already fully charged!"), false);
+                        Messages.player(player, Component.literal("Already fully charged!"), false);
                         return InteractionResult.SUCCESS;
                     }
                     warper.setCharges(charges+1);
                     int pct = warper.getChargePercentage();
-                    player.displayClientMessage(Component.literal("Charged to " + pct + "%"), false);
+                    Messages.player(player, Component.literal("Charged to " + pct + "%"), false);
                 }
                 itemstack.shrink(1);
 
@@ -98,24 +109,24 @@ public class ArientePearlItem extends Item implements ITooltipSettings {
     }
 
     @Override
-    public InteractionResultHolder<ItemStack> use(Level world, Player player, InteractionHand hand) {
+    public InteractionResult use(Level world, Player player, InteractionHand hand) {
         ItemStack itemstack = player.getItemInHand(hand);
 
         if (world.dimension() != Level.OVERWORLD) {
-            if (world.isClientSide) {
-                player.displayClientMessage(Component.literal(ChatFormatting.RED + "Doesn't work in this dimension!"), false);
+            if (world.isClientSide()) {
+                Messages.player(player, Component.literal(ChatFormatting.RED + "Doesn't work in this dimension!"), false);
             }
-            return new InteractionResultHolder<>(InteractionResult.FAIL, itemstack);
+            return InteractionResult.FAIL;
         }
 
         HitResult raytraceresult = Item.getPlayerPOVHitResult(world, player, ClipContext.Fluid.NONE);
 
         if (raytraceresult instanceof BlockHitResult && raytraceresult.getType() == HitResult.Type.BLOCK && world.getBlockState(((BlockHitResult) raytraceresult).getBlockPos()).getBlock() == Registration.WARPER.get()) {
-            return new InteractionResultHolder<>(InteractionResult.PASS, itemstack);
+            return InteractionResult.PASS;
         } else {
             player.startUsingItem(hand);
 
-            if (!world.isClientSide) {
+            if (!world.isClientSide()) {
                 BlockPos blockpos = ArienteWorldCompat.getArienteWorld().getNearestDungeon(world, player.blockPosition());
 
                 if (blockpos != null) {
@@ -130,13 +141,13 @@ public class ArientePearlItem extends Item implements ITooltipSettings {
                         itemstack.shrink(1);
                     }
 
-                    return new InteractionResultHolder<>(InteractionResult.SUCCESS, itemstack);
+                    return InteractionResult.SUCCESS;
                 } else {
-                    player.displayClientMessage(Component.literal("Can't find any nearby Ariente dungeon!"), false);
+                    Messages.player(player, Component.literal("Can't find any nearby Ariente dungeon!"), false);
                 }
             }
 
-            return new InteractionResultHolder<>(InteractionResult.SUCCESS, itemstack);
+            return InteractionResult.SUCCESS;
         }
     }
 

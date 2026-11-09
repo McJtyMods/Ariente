@@ -1,6 +1,5 @@
 package mcjty.ariente.cables;
 
-import mcjty.ariente.setup.Registration;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
 import net.minecraft.core.HolderLookup;
@@ -13,7 +12,7 @@ public class ConnectorTileEntity extends GenericCableTileEntity {
     private int powerOut[] = new int[] { 0, 0, 0, 0, 0, 0 };
 
     public ConnectorTileEntity(BlockPos pos, BlockState state) {
-        super(Registration.CONNECTOR_TILE.get(), pos, state);
+        super(mcjty.ariente.setup.Registration.CONNECTOR_TILE.get(), pos, state);
     }
 
     public int getPowerOut(Direction side) {
@@ -29,7 +28,7 @@ public class ConnectorTileEntity extends GenericCableTileEntity {
         }
         this.powerOut[side.ordinal()] = powerOut;
         setChanged();
-        level.neighborChanged(worldPosition.relative(side), this.getBlockState().getBlock(), this.worldPosition); // @todo 1.14 is this right?
+        level.neighborChanged(worldPosition.relative(side), this.getBlockState().getBlock(), null); // @todo 1.14 is this right?
     }
 
     @Override
@@ -48,12 +47,12 @@ public class ConnectorTileEntity extends GenericCableTileEntity {
     @Override
     public void loadAdditional(CompoundTag tagCompound, HolderLookup.Provider provider) {
         super.loadAdditional(tagCompound, provider);
-        inputFromSide = tagCompound.getIntArray("inputs");
+        inputFromSide = tagCompound.getIntArray("inputs").orElseGet(() -> new int[0]);
         if (inputFromSide.length != 6) {
             inputFromSide = new int[] { 0, 0, 0, 0, 0, 0 };
         }
         for (int i = 0 ; i < 6 ; i++) {
-            powerOut[i] = tagCompound.getByte("p" + i);
+            powerOut[i] = tagCompound.getByteOr("p" + i, (byte) 0);
         }
     }
 

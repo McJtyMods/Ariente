@@ -5,17 +5,17 @@ import mcjty.ariente.Ariente;
 import mcjty.ariente.setup.Registration;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.renderer.MultiBufferSource;
-import net.minecraft.client.renderer.blockentity.BlockEntityRenderer;
+import mcjty.ariente.client.ExtractedBlockRenderer;
 import net.minecraft.client.renderer.blockentity.BlockEntityRendererProvider;
 import net.minecraft.client.renderer.blockentity.BlockEntityRenderers;
-import net.minecraft.resources.ResourceLocation;
+import net.minecraft.resources.Identifier;
 import net.minecraft.world.phys.Vec3;
 
-public class NegariteTankRenderer implements BlockEntityRenderer<NegariteTankTile> {
+public class NegariteTankRenderer extends ExtractedBlockRenderer<NegariteTankTile> {
 
     protected BlockEntityRendererProvider.Context context;
-    public static final ResourceLocation NEGARITE_BEAM = ResourceLocation.fromNamespaceAndPath(Ariente.MODID, "block/machines/negarite_beam");
-    public static final ResourceLocation NEGARITE_WINDOW = ResourceLocation.fromNamespaceAndPath(Ariente.MODID, "block/machines/negarite_tank_window");
+    public static final Identifier NEGARITE_BEAM = Identifier.fromNamespaceAndPath(Ariente.MODID, "block/machines/negarite_beam");
+    public static final Identifier NEGARITE_WINDOW = Identifier.fromNamespaceAndPath(Ariente.MODID, "block/machines/negarite_tank_window");
 
     public NegariteTankRenderer(BlockEntityRendererProvider.Context pContext) {
         context = pContext;
@@ -23,9 +23,9 @@ public class NegariteTankRenderer implements BlockEntityRenderer<NegariteTankTil
 
     @Override
     public void render(NegariteTankTile te, float partialTicks, PoseStack matrixStack, MultiBufferSource buffer, int combinedLightIn, int combinedOverlayIn) {
-        Vec3 cameraOffset = Minecraft.getInstance().gameRenderer.getMainCamera().getPosition()
+        Vec3 cameraOffset = Minecraft.getInstance().gameRenderer.getMainCamera().position()
                 .subtract(Vec3.atCenterOf(te.getBlockPos()));
-        TankRendererTools.renderWorldTank(matrixStack, NEGARITE_BEAM, NEGARITE_WINDOW, te.isWorking(), te.getLevel().getGameTime(), cameraOffset, combinedLightIn);
+        TankRendererTools.renderTank(matrixStack, buffer, NEGARITE_BEAM, NEGARITE_WINDOW, te.isWorking(), te.getLevel().getGameTime(), cameraOffset, combinedLightIn);
     }
 
     public static void register() {

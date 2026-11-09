@@ -9,12 +9,11 @@ import net.minecraft.tags.TagKey;
 import net.minecraft.world.level.block.Block;
 import net.neoforged.neoforge.common.Tags;
 import net.neoforged.neoforge.common.data.BlockTagsProvider;
-import net.neoforged.neoforge.common.data.ExistingFileHelper;
 
 public class BlockTags extends BlockTagsProvider {
 
-    public BlockTags(PackOutput generator, CompletableFuture<HolderLookup.Provider> lookup, ExistingFileHelper helper) {
-        super(generator, lookup, Ariente.MODID, helper);
+    public BlockTags(PackOutput generator, CompletableFuture<HolderLookup.Provider> lookup) {
+        super(generator, lookup, Ariente.MODID);
     }
 
     @Override

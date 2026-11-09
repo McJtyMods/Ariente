@@ -1,5 +1,8 @@
 package mcjty.ariente.blocks.generators;
 
+import net.minecraft.world.level.block.state.BlockBehaviour;
+import net.minecraft.world.level.material.MapColor;
+import net.minecraft.world.level.block.SoundType;
 import mcjty.ariente.power.*;
 import mcjty.ariente.Ariente;
 import mcjty.ariente.blocks.ExtremeMachineTile;
@@ -7,7 +10,6 @@ import mcjty.ariente.cables.CableColor;
 import mcjty.ariente.cables.ConnectorTileEntity;
 import mcjty.ariente.gui.CompactNumber;
 import mcjty.ariente.gui.GuiHelp;
-import mcjty.ariente.setup.Registration;
 import mcjty.hologui.api.IGuiComponent;
 import mcjty.hologui.api.IGuiComponentRegistry;
 import mcjty.hologui.api.IGuiTile;
@@ -38,11 +40,11 @@ public class PowerCombinerTile extends ExtremeMachineTile implements IPowerRecei
     private int powerTransfer = 1000;
 
     public PowerCombinerTile(BlockPos pos, BlockState state) {
-        super(Registration.POWER_COMBINER_TILE.get(), pos, state);
+        super(mcjty.ariente.setup.Registration.POWER_COMBINER_TILE.get(), pos, state);
     }
 
-    public static BaseBlock createBlock() {
-        return new BaseBlock(new BlockBuilder()
+    public static BaseBlock createBlock(BlockBehaviour.Properties properties) {
+        return new BaseBlock(new BlockBuilder().properties(properties.mapColor(MapColor.METAL).strength(2.0f).requiresCorrectToolForDrops().sound(SoundType.METAL))
                 .info(key("message.ariente.shiftmessage"))
                 .infoShift(header())
                 .topDriver(DRIVER)
@@ -127,9 +129,9 @@ public class PowerCombinerTile extends ExtremeMachineTile implements IPowerRecei
     @Override
     public void loadAdditional(CompoundTag tagCompound, HolderLookup.Provider provider) {
         super.loadAdditional(tagCompound, provider);
-        CompoundTag info = tagCompound.getCompound("Info");
+        CompoundTag info = tagCompound.getCompoundOrEmpty("Info");
         if (info.contains("transfer")) {
-            powerTransfer = info.getInt("transfer");
+            powerTransfer = info.getIntOr("transfer", 0);
         }
     }
 

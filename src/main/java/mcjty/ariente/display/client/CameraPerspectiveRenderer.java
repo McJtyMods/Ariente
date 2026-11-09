@@ -1,15 +1,16 @@
 package mcjty.ariente.display.client;
 
+import com.mojang.blaze3d.vertex.ByteBufferBuilder;
+
+import com.mojang.blaze3d.ProjectionType;
 import com.mojang.blaze3d.pipeline.RenderTarget;
 import com.mojang.blaze3d.pipeline.TextureTarget;
-import com.mojang.blaze3d.platform.GlStateManager;
 import com.mojang.blaze3d.systems.RenderSystem;
-import com.mojang.blaze3d.vertex.ByteBufferBuilder;
-import com.mojang.blaze3d.vertex.MeshData;
-import com.mojang.blaze3d.vertex.VertexBuffer;
 import com.mojang.blaze3d.vertex.VertexConsumer;
-import com.mojang.blaze3d.vertex.VertexSorting;
+import java.util.ArrayList;
+import java.util.Comparator;
 import java.util.LinkedHashMap;
+import java.util.List;
 import java.util.Map;
 import java.util.UUID;
 import mcjty.ariente.display.CameraDisplayModule;
@@ -18,22 +19,23 @@ import mcjty.ariente.display.CameraView;
 import mcjty.ariente.display.InstalledModule;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.multiplayer.ClientLevel;
-import net.minecraft.client.renderer.GameRenderer;
-import net.minecraft.client.renderer.RenderType;
-import net.minecraft.client.renderer.texture.TextureAtlas;
+import net.minecraft.client.renderer.MultiBufferSource;
+import net.minecraft.client.renderer.ProjectionMatrixBuffer;
+import net.minecraft.client.renderer.rendertype.RenderType;
 import net.minecraft.nbt.CompoundTag;
+import net.minecraft.resources.Identifier;
 import net.minecraft.world.phys.Vec3;
 import org.joml.Matrix4f;
-import org.lwjgl.opengl.GL11;
-import org.lwjgl.opengl.GL14;
+import org.joml.Vector3f;
 
-/** GPU projection, texture interpolation and depth testing of the cached mesh; never renders the world again. */
-public class CameraPerspectiveRenderer {
+/** Snapshot geometry is projected into a managed target using the game's GPU pipelines. */
+public final class CameraPerspectiveRenderer {
 
     private static final int MAX_SCENES = 16;
     private static final int RESOLUTION_SCALE = 3;
     private static final Map<UUID, Scene> SCENES = new LinkedHashMap<>(16, .75f, true);
     private static ClientLevel currentLevel;
+    private static int nextTexture;
 
     public static void render(DisplayCanvas canvas, InstalledModule module) {
         Minecraft mc = Minecraft.getInstance();
@@ -59,7 +61,7 @@ public class CameraPerspectiveRenderer {
             scene.snapshot = module.snapshot();
         }
         int width = module.size().width() - 12, height = module.size().height() - 24;
-        double now = mc.level.getGameTime() + (double) mc.getTimer().getGameTimeDeltaPartialTick(true);
+        double now = mc.level.getGameTime() + (double) mc.getDeltaTracker().getGameTimeDeltaPartialTick(true);
         double yaw = CameraDisplayModule.viewYaw(module.stack(), now - scene.startedAt);
         int tilt = CameraDisplayModule.tilt(module.stack()), zoom = CameraDisplayModule.zoom(module.stack());
         if (scene.target == null || scene.target.width != width * RESOLUTION_SCALE || scene.target.height != height * RESOLUTION_SCALE
@@ -92,69 +94,74 @@ public class CameraPerspectiveRenderer {
 
     public static void clear() {
         if (!RenderSystem.isOnRenderThread()) {
-            RenderSystem.recordRenderCall(CameraPerspectiveRenderer::clear);
+            Minecraft.getInstance().execute(CameraPerspectiveRenderer::clear);
             return;
         }
         SCENES.values().forEach(Scene::close);
         SCENES.clear();
     }
 
-    static class Geometry implements AutoCloseable {
+    record Quad(float[] vertices, int[] colors, boolean translucent) {
 
-        private final VertexBuffer solid;
-        private final VertexBuffer translucent;
-        private final MeshData.SortState sorting;
-        private final ByteBufferBuilder sortBuffer = new ByteBufferBuilder(256);
+        private float depth(CameraPerspective camera) {
+            float x = 0, y = 0, z = 0;
+            for (int i = 0; i < 4; i++) {
+                x += vertices[i * 5];
+                y += vertices[i * 5 + 1];
+                z += vertices[i * 5 + 2];
+            }
+            return camera.view().transformPosition(x / 4, y / 4, z / 4, new Vector3f()).z;
+        }
+
+        private void emit(VertexConsumer output, Matrix4f view) {
+            for (int i = 0; i < 4; i++) {
+                output.addVertex(view, vertices[i * 5], vertices[i * 5 + 1], vertices[i * 5 + 2])
+                        .setUv(vertices[i * 5 + 3], vertices[i * 5 + 4]).setColor(0xff000000 | colors[i]);
+            }
+        }
+    }
+
+    static class Geometry implements AutoCloseable {
+        private final List<Quad> quads;
         private final Vec3 center;
         private final float radius;
 
-        Geometry(VertexBuffer solid, VertexBuffer translucent, MeshData.SortState sorting, Vec3 center, float radius) {
-            this.solid = solid;
-            this.translucent = translucent;
-            this.sorting = sorting;
+        Geometry(List<Quad> quads, Vec3 center, float radius) {
+            this.quads = quads;
             this.center = center;
             this.radius = radius;
         }
 
         private void draw(CameraPerspective camera) {
-            if (solid != null) {
-                RenderSystem.disableBlend();
-                RenderSystem.depthMask(true);
-                solid.bind();
-                solid.drawWithShader(camera.view(), camera.projection(), GameRenderer.getPositionTexColorShader());
+            try (var memory = new ByteBufferBuilder(262144)) {
+            var buffers = MultiBufferSource.immediate(memory);
+            var solid = buffers.getBuffer(DisplayRenderType.scene(false));
+            for (Quad quad : quads) if (!quad.translucent()) quad.emit(solid, camera.view());
+            buffers.endBatch();
+            List<Quad> translucent = new ArrayList<>();
+            for (Quad quad : quads) if (quad.translucent()) translucent.add(quad);
+            translucent.sort(Comparator.comparingDouble(quad -> quad.depth(camera)));
+            if (!translucent.isEmpty()) {
+                var output = buffers.getBuffer(DisplayRenderType.scene(true));
+                for (Quad quad : translucent) quad.emit(output, camera.view());
+                buffers.endBatch();
             }
-            if (translucent != null) {
-                Vec3 eye = camera.eye();
-                translucent.bind();
-                translucent.uploadIndexBuffer(sorting.buildSortedIndexBuffer(sortBuffer, VertexSorting.byDistance((float) eye.x, (float) eye.y, (float) eye.z)));
-                RenderSystem.depthMask(false);
-                RenderSystem.enableBlend();
-                RenderSystem.blendFuncSeparate(GlStateManager.SourceFactor.SRC_ALPHA, GlStateManager.DestFactor.ONE_MINUS_SRC_ALPHA,
-                        GlStateManager.SourceFactor.ONE, GlStateManager.DestFactor.ONE_MINUS_SRC_ALPHA);
-                translucent.drawWithShader(camera.view(), camera.projection(), GameRenderer.getPositionTexColorShader());
             }
-            VertexBuffer.unbind();
         }
 
         @Override
         public void close() {
-            sortBuffer.close();
-            if (solid != null) {
-                solid.close();
-            }
-            if (translucent != null) {
-                translucent.close();
-            }
         }
     }
 
-    private static class Scene implements AutoCloseable {
-
+    private static final class Scene implements AutoCloseable {
         private final double startedAt;
         private CompoundTag snapshot;
         private Geometry geometry;
         private RenderTarget target;
         private RenderType renderType;
+        private Identifier texture;
+        private ProjectionMatrixBuffer projection;
         private double yaw = Double.NaN;
         private int tilt;
         private int zoom;
@@ -165,80 +172,44 @@ public class CameraPerspectiveRenderer {
         }
 
         private void update(int width, int height, double yaw, int tilt, int zoom) {
-            GlState state = GlState.capture();
+            if (target == null) {
+                target = new TextureTarget("Ariente snapshot camera", width * RESOLUTION_SCALE, height * RESOLUTION_SCALE, true);
+                texture = Identifier.fromNamespaceAndPath("ariente", "snapshot_camera/" + nextTexture++);
+                Minecraft.getInstance().getTextureManager().register(texture, new RenderTargetTexture(target));
+                renderType = DisplayRenderType.cameraImage(texture);
+                projection = new ProjectionMatrixBuffer("Ariente snapshot camera");
+            } else if (target.width != width * RESOLUTION_SCALE || target.height != height * RESOLUTION_SCALE) {
+                target.resize(width * RESOLUTION_SCALE, height * RESOLUTION_SCALE);
+            }
+            var oldProjection = RenderSystem.getProjectionMatrixBuffer();
+            var oldType = RenderSystem.getProjectionType();
+            var oldColor = RenderSystem.outputColorTextureOverride;
+            var oldDepth = RenderSystem.outputDepthTextureOverride;
+            RenderSystem.getModelViewStack().pushMatrix();
+            RenderSystem.getModelViewStack().identity();
             try {
-                RenderSystem.depthMask(true);
-                if (target == null) {
-                    target = new TextureTarget(width * RESOLUTION_SCALE, height * RESOLUTION_SCALE, true, Minecraft.ON_OSX);
-                    target.setClearColor(0, 0, 0, 0);
-                    target.setFilterMode(GL11.GL_LINEAR);
-                    renderType = DisplayRenderType.cameraImage(target::getColorTextureId);
-                } else if (target.width != width * RESOLUTION_SCALE || target.height != height * RESOLUTION_SCALE) {
-                    target.resize(width * RESOLUTION_SCALE, height * RESOLUTION_SCALE, Minecraft.ON_OSX);
-                    target.setFilterMode(GL11.GL_LINEAR);
-                }
-                target.clear(Minecraft.ON_OSX);
-                target.bindWrite(true);
-                RenderSystem.enableDepthTest();
-                RenderSystem.depthFunc(GL11.GL_LEQUAL);
-                RenderSystem.disableCull();
-                RenderSystem.setShaderColor(1, 1, 1, 1);
-                RenderSystem.setShaderTexture(0, TextureAtlas.LOCATION_BLOCKS);
+                RenderSystem.getDevice().createCommandEncoder().clearColorAndDepthTextures(target.getColorTexture(), 0, target.getDepthTexture(), 1);
+                RenderSystem.outputColorTextureOverride = target.getColorTextureView();
+                RenderSystem.outputDepthTextureOverride = target.getDepthTextureView();
                 CameraPerspective camera = CameraPerspective.of(geometry.center, geometry.radius, CameraView.of(yaw, tilt), width, height, zoom);
+                RenderSystem.setProjectionMatrix(projection.getBuffer(camera.projection()), ProjectionType.PERSPECTIVE);
                 geometry.draw(camera);
                 this.yaw = yaw;
                 this.tilt = tilt;
                 this.zoom = zoom;
             } finally {
-                Minecraft.getInstance().getMainRenderTarget().bindWrite(true);
-                state.restore();
+                RenderSystem.outputColorTextureOverride = oldColor;
+                RenderSystem.outputDepthTextureOverride = oldDepth;
+                RenderSystem.setProjectionMatrix(oldProjection, oldType);
+                RenderSystem.getModelViewStack().popMatrix();
             }
         }
 
         @Override
         public void close() {
-            if (geometry != null) {
-                geometry.close();
-            }
-            if (target != null) {
-                target.destroyBuffers();
-                Minecraft.getInstance().getMainRenderTarget().bindWrite(false);
-            }
-        }
-    }
-
-    record GlState(boolean depth, boolean depthMask, boolean cull, boolean blend, int depthFunc,
-                           int sourceRgb, int destRgb, int sourceAlpha, int destAlpha, int texture, float[] color) {
-
-        static GlState capture() {
-            return new GlState(GL11.glIsEnabled(GL11.GL_DEPTH_TEST), GL11.glGetBoolean(GL11.GL_DEPTH_WRITEMASK),
-                    GL11.glIsEnabled(GL11.GL_CULL_FACE), GL11.glIsEnabled(GL11.GL_BLEND), GL11.glGetInteger(GL11.GL_DEPTH_FUNC),
-                    GL11.glGetInteger(GL14.GL_BLEND_SRC_RGB), GL11.glGetInteger(GL14.GL_BLEND_DST_RGB),
-                    GL11.glGetInteger(GL14.GL_BLEND_SRC_ALPHA), GL11.glGetInteger(GL14.GL_BLEND_DST_ALPHA),
-                    RenderSystem.getShaderTexture(0), RenderSystem.getShaderColor().clone());
-        }
-
-        void restore() {
-            if (depth) {
-                RenderSystem.enableDepthTest();
-            } else {
-                RenderSystem.disableDepthTest();
-            }
-            if (cull) {
-                RenderSystem.enableCull();
-            } else {
-                RenderSystem.disableCull();
-            }
-            if (blend) {
-                RenderSystem.enableBlend();
-            } else {
-                RenderSystem.disableBlend();
-            }
-            RenderSystem.depthMask(depthMask);
-            RenderSystem.depthFunc(depthFunc);
-            RenderSystem.blendFuncSeparate(sourceRgb, destRgb, sourceAlpha, destAlpha);
-            RenderSystem.setShaderTexture(0, texture);
-            RenderSystem.setShaderColor(color[0], color[1], color[2], color[3]);
+            if (texture != null) Minecraft.getInstance().getTextureManager().release(texture);
+            if (target != null) target.destroyBuffers();
+            if (projection != null) projection.close();
         }
     }
 }

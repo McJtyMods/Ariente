@@ -15,7 +15,7 @@ import mezz.jei.api.registration.IRecipeCategoryRegistration;
 import mezz.jei.api.registration.IRecipeRegistration;
 import mezz.jei.api.registration.ISubtypeRegistration;
 import net.minecraft.client.Minecraft;
-import net.minecraft.resources.ResourceLocation;
+import net.minecraft.resources.Identifier;
 import net.minecraft.world.item.ItemStack;
 
 @mezz.jei.api.JeiPlugin
@@ -25,8 +25,8 @@ public class JeiPlugin implements IModPlugin {
     public static final RecipeType<PurifyingRecipe> PURIFYING = RecipeType.create(Ariente.MODID, "purifying", PurifyingRecipe.class);
 
     @Override
-    public ResourceLocation getPluginUid() {
-        return ResourceLocation.fromNamespaceAndPath(Ariente.MODID, "constructor");
+    public Identifier getPluginUid() {
+        return Identifier.fromNamespaceAndPath(Ariente.MODID, "constructor");
     }
 
     @Override

@@ -1,10 +1,11 @@
 package mcjty.ariente.items.armor;
 
+import net.minecraft.client.renderer.entity.state.HumanoidRenderState;
+import net.minecraft.client.resources.model.EquipmentClientInfo;
+import net.minecraft.client.model.Model;
+import net.minecraft.core.component.DataComponents;
 import java.util.EnumMap;
 import java.util.Map;
-import mcjty.ariente.api.ArmorUpgradeType;
-import mcjty.ariente.blocks.defense.ForceFieldRenderer;
-import mcjty.ariente.items.modules.ModuleSupport;
 import net.minecraft.client.model.HumanoidModel;
 import net.minecraft.client.model.geom.ModelPart;
 import net.minecraft.client.model.geom.PartPose;
@@ -14,12 +15,11 @@ import net.minecraft.client.model.geom.builders.LayerDefinition;
 import net.minecraft.client.model.geom.builders.MeshDefinition;
 import net.minecraft.client.model.geom.builders.PartDefinition;
 import net.minecraft.world.entity.EquipmentSlot;
-import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.item.ItemStack;
 import net.neoforged.neoforge.client.extensions.common.IClientItemExtensions;
 
 /** Original 64x128 suit geometry, attached to the modern humanoid animation bones. */
-public class PowerSuitModel extends HumanoidModel<LivingEntity> {
+public class PowerSuitModel extends HumanoidModel<HumanoidRenderState> {
 
     private static final Map<EquipmentSlot, PowerSuitModel> MODELS = new EnumMap<>(EquipmentSlot.class);
     private static final CubeDeformation INFLATION = new CubeDeformation(.01f);
@@ -27,12 +27,10 @@ public class PowerSuitModel extends HumanoidModel<LivingEntity> {
     public static final IClientItemExtensions EXTENSIONS = new IClientItemExtensions() {
 
         @Override
-        public HumanoidModel<?> getHumanoidArmorModel(LivingEntity entity, ItemStack stack, EquipmentSlot slot, HumanoidModel<?> original) {
+        public Model getHumanoidArmorModel(ItemStack stack, EquipmentClientInfo.LayerType layer, Model original) {
+            EquipmentSlot slot = stack.get(DataComponents.EQUIPPABLE).slot();
             if (slot.getType() != EquipmentSlot.Type.HUMANOID_ARMOR) {
                 return original;
-            }
-            if (slot == EquipmentSlot.CHEST && ModuleSupport.hasWorkingUpgrade(stack, ArmorUpgradeType.FORCEFIELD)) {
-                ForceFieldRenderer.personalForcefields.add(entity);
             }
             return MODELS.computeIfAbsent(slot, piece -> new PowerSuitModel(createLayer(piece).bakeRoot()));
         }
@@ -46,7 +44,7 @@ public class PowerSuitModel extends HumanoidModel<LivingEntity> {
         MeshDefinition mesh = new MeshDefinition();
         PartDefinition root = mesh.getRoot();
         PartDefinition head = root.addOrReplaceChild("head", CubeListBuilder.create(), PartPose.ZERO);
-        root.addOrReplaceChild("hat", CubeListBuilder.create(), PartPose.ZERO);
+        head.addOrReplaceChild("hat", CubeListBuilder.create(), PartPose.ZERO);
         PartDefinition body = root.addOrReplaceChild("body", CubeListBuilder.create(), PartPose.ZERO);
         PartDefinition leftArm = root.addOrReplaceChild("left_arm", CubeListBuilder.create(), PartPose.offset(5, 2, 0));
         PartDefinition rightArm = root.addOrReplaceChild("right_arm", CubeListBuilder.create(), PartPose.offset(-5, 2, 0));

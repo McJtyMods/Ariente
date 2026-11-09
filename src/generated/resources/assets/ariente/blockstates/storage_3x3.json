@@ -17,7 +17,7 @@
     },
     "facing=up": {
       "model": "ariente:block/utility/storage_3x3",
-      "x": -90
+      "x": 270
     },
     "facing=west": {
       "model": "ariente:block/utility/storage_3x3",

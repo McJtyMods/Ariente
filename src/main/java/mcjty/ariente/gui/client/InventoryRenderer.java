@@ -1,15 +1,14 @@
 package mcjty.ariente.gui.client;
 
+import mcjty.ariente.client.ArienteRenderHelper;
 import com.mojang.blaze3d.vertex.PoseStack;
-import com.mojang.blaze3d.vertex.VertexConsumer;
 import mcjty.hologui.gui.HoloGuiRenderTools;
 import net.minecraft.client.Minecraft;
-import net.minecraft.client.renderer.LightTexture;
+import net.minecraft.util.LightCoordsUtil;
 import net.minecraft.client.renderer.MultiBufferSource;
 import net.minecraft.client.renderer.texture.OverlayTexture;
 import net.minecraft.world.item.ItemDisplayContext;
 import net.minecraft.world.item.ItemStack;
-import net.neoforged.neoforge.client.model.pipeline.VertexConsumerWrapper;
 
 import static mcjty.ariente.gui.InventoryLayout.*;
 
@@ -44,16 +43,8 @@ public class InventoryRenderer {
         poses.pushPose();
         poses.translate((x + .36) * .1 - .42, .42 - (y + .34) * .1, .004);
         poses.scale(.063f, .063f, .000063f);
-        MultiBufferSource itemBuffer = brightness == 1 ? buffer : type -> new VertexConsumerWrapper(buffer.getBuffer(type)) {
-
-            @Override
-            public VertexConsumer setColor(int r, int g, int b, int a) {
-                return super.setColor((int) (r * brightness), (int) (g * brightness), (int) (b * brightness), a);
-            }
-        };
-        var renderer = Minecraft.getInstance().getItemRenderer();
-        renderer.render(stack, ItemDisplayContext.GUI, false, poses, itemBuffer, LightTexture.FULL_BRIGHT,
-                OverlayTexture.NO_OVERLAY, renderer.getModel(stack, null, null, 1));
+        ArienteRenderHelper.item(poses, buffer, stack, ItemDisplayContext.GUI, LightCoordsUtil.FULL_BRIGHT,
+                OverlayTexture.NO_OVERLAY, brightness, 1);
         poses.popPose();
     }
 

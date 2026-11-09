@@ -139,10 +139,11 @@ public class DisplayGeometry {
     }
 
     /** Project onto the screen plane, including coordinates beyond its edges for invalid drag previews. */
+
     public static Hit project(DisplayBaseTile tile, Player player, double reach, Vec3 look) {
         Vec3 eye = player.getEyePosition();
         Direction facing = facing(tile);
-        Vec3 normal = Vec3.atLowerCornerOf(facing.getNormal());
+        Vec3 normal = Vec3.atLowerCornerOf(facing.getUnitVec3i());
         double denominator = look.dot(normal);
         // Only the front side is interactive; avoid parallel rays and hits behind the player.
         if (denominator >= -.0001) {
@@ -154,7 +155,7 @@ public class DisplayGeometry {
             return null;
         }
         Vec3 point = eye.add(look.scale(distance));
-        Vec3 right = Vec3.atLowerCornerOf(facing.getCounterClockWise().getNormal());
+        Vec3 right = Vec3.atLowerCornerOf(facing.getCounterClockWise().getUnitVec3i());
         int x = (int) Math.floor((point.subtract(center).dot(right) + .5) * PIXELS);
         int y = (int) Math.floor((tile.getBlockPos().getY() + tile.getHeight() - point.y) * PIXELS);
         BlockHitResult obstruction = tile.getLevel().clip(new ClipContext(eye, point, ClipContext.Block.COLLIDER,

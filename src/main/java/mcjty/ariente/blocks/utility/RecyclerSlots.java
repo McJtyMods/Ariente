@@ -7,8 +7,6 @@ import mcjty.hologui.gui.components.HoloSlots;
 import net.minecraft.client.renderer.MultiBufferSource;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.ItemStack;
-import net.neoforged.api.distmarker.Dist;
-import net.neoforged.api.distmarker.OnlyIn;
 import net.neoforged.neoforge.items.IItemHandler;
 import org.apache.commons.lang3.tuple.Pair;
 
@@ -44,7 +42,7 @@ public class RecyclerSlots extends HoloSlots {
     }
 
     @Override
-    @OnlyIn(Dist.CLIENT)
+
     public void render(PoseStack poses, MultiBufferSource buffer, Player player, IHoloGuiEntity holo, double cursorX, double cursorY) {
         int hovered = getSelectedPair(player, cursorX, cursorY).getRight();
         for (int row = 0; row < rows; row++) {

@@ -1,5 +1,6 @@
 package mcjty.ariente.display;
 
+import mcjty.lib.varia.CapabilityTools;
 import java.util.ArrayList;
 import java.util.Comparator;
 import java.util.HashMap;
@@ -35,7 +36,7 @@ public class StorageDisplayModule implements DisplayModuleType {
 
     public static int setting(ItemStack stack, String key, int fallback, int min, int max) {
         CompoundTag config = DisplayModuleItem.config(stack);
-        return Mth.clamp(config.contains(key) ? config.getInt(key) : fallback, min, max);
+        return Mth.clamp(config.contains(key) ? config.getIntOr(key, 0) : fallback, min, max);
     }
 
     public static int count(ItemStack stack) {
@@ -47,7 +48,7 @@ public class StorageDisplayModule implements DisplayModuleType {
     }
 
     public static boolean grid(ItemStack stack) {
-        return DisplayModuleItem.config(stack).getBoolean("Grid");
+        return DisplayModuleItem.config(stack).getBooleanOr("Grid", false);
     }
 
     @Override
@@ -61,9 +62,9 @@ public class StorageDisplayModule implements DisplayModuleType {
     }
 
     public static IItemHandler inventory(BlockEntity tile, Direction side) {
-        IItemHandler handler = tile.getLevel().getCapability(Capabilities.ItemHandler.BLOCK, tile.getBlockPos(), side);
+        IItemHandler handler = CapabilityTools.itemHandler(tile.getLevel().getCapability(Capabilities.Item.BLOCK, tile.getBlockPos(), side));
         if (handler == null) {
-            handler = tile.getLevel().getCapability(Capabilities.ItemHandler.BLOCK, tile.getBlockPos(), null);
+            handler = CapabilityTools.itemHandler(tile.getLevel().getCapability(Capabilities.Item.BLOCK, tile.getBlockPos(), null));
         }
         return handler != null ? handler : tile instanceof Container container ? new InvWrapper(container) : null;
     }
@@ -100,7 +101,7 @@ public class StorageDisplayModule implements DisplayModuleType {
         }
         List<ItemCount> sorted = new ArrayList<>(counts.values());
         sorted.sort(Comparator.comparingLong(ItemCount::count).reversed()
-                .thenComparing(count -> count.stack().getDescriptionId())
+                .thenComparing(count -> count.stack().getItem().getDescriptionId())
                 .thenComparing(count -> String.valueOf(ItemData.get(count.stack()))));
         saved = new InventorySnapshot(now, sorted, "");
         cache.put(key, saved);
@@ -127,7 +128,7 @@ public class StorageDisplayModule implements DisplayModuleType {
         for (int index = page * count; index < Math.min(snapshot.items().size(), (page + 1) * count); index++) {
             ItemCount item = snapshot.items().get(index);
             CompoundTag entry = new CompoundTag();
-            entry.put("Item", item.stack().save(level.registryAccess()));
+            entry.put("Item", ItemData.encode(level.registryAccess(), item.stack()));
             entry.putLong("Count", item.count());
             items.add(entry);
         }

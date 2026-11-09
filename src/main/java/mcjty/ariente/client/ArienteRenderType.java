@@ -1,175 +1,93 @@
 package mcjty.ariente.client;
 
-import com.mojang.blaze3d.platform.Lighting;
-import com.mojang.blaze3d.systems.RenderSystem;
+import java.util.HashMap;
+import java.util.Map;
+
+import com.mojang.blaze3d.pipeline.BlendFunction;
 import com.mojang.blaze3d.vertex.DefaultVertexFormat;
 import com.mojang.blaze3d.vertex.VertexFormat;
-import java.io.IOException;
-import java.io.UncheckedIOException;
-import java.util.IdentityHashMap;
-import java.util.Map;
-import net.minecraft.client.Minecraft;
-import net.minecraft.client.renderer.RenderType;
-import net.minecraft.client.renderer.ShaderInstance;
-import net.minecraft.client.renderer.Sheets;
+import com.mojang.blaze3d.pipeline.ColorTargetState;
+import com.mojang.blaze3d.pipeline.DepthStencilState;
+import com.mojang.blaze3d.pipeline.RenderPipeline;
+import com.mojang.blaze3d.platform.CompareOp;
+import java.util.ArrayList;
+import java.util.List;
+import net.minecraft.client.renderer.RenderPipelines;
+import net.minecraft.client.renderer.rendertype.RenderSetup;
+import net.minecraft.client.renderer.rendertype.RenderType;
+import net.minecraft.client.renderer.rendertype.RenderTypes;
 import net.minecraft.client.renderer.texture.TextureAtlas;
-import net.minecraft.resources.ResourceLocation;
-import net.neoforged.neoforge.client.event.RegisterShadersEvent;
-import org.joml.Vector3f;
+import net.minecraft.resources.Identifier;
+import net.neoforged.neoforge.client.event.RegisterRenderPipelinesEvent;
 
-public class ArienteRenderType extends RenderType {
+public final class ArienteRenderType {
 
-    private static ShaderInstance beamShader;
-    private static ShaderInstance displayItemShader;
-    private static ShaderInstance fieldMarkerShader;
-    private static final Map<RenderType, RenderType> DISPLAY_ITEMS = new IdentityHashMap<>();
-    private static Vector3f previousShipLight0;
-    private static Vector3f previousShipLight1;
+    private static final List<RenderPipeline> PIPELINES = new ArrayList<>();
+    public static final RenderType SHIP_HULL = RenderTypes.entityCutout(TextureAtlas.LOCATION_BLOCKS);
+    public static final RenderType TANK_CONTENTS = type("tank_contents", TextureAtlas.LOCATION_BLOCKS, BlendFunction.TRANSLUCENT, false, true, true);
+    public static final RenderType FIELD_MARKER = type("field_marker", TextureAtlas.LOCATION_BLOCKS, null, false, true, true);
+    public static final RenderType FIELD_OUTLINE = type("field_outline", ArienteSpriteUploader.ARIENTE_ATLAS, BlendFunction.ADDITIVE, true, false, false);
+    public static final RenderType BEAM = type("beam", TextureAtlas.LOCATION_BLOCKS, BlendFunction.ADDITIVE, true, true, false);
+    public static final RenderType SHIP_EXHAUST = type("ship_exhaust", TextureAtlas.LOCATION_BLOCKS, BlendFunction.ADDITIVE, true, false, false);
+    public static final RenderType ARIENTE_SOLID = type("solid", ArienteSpriteUploader.ARIENTE_ATLAS, null, false, true, true);
+    public static final RenderType ARIENTE_TRANSLUCENT = type("translucent", ArienteSpriteUploader.ARIENTE_ATLAS, BlendFunction.TRANSLUCENT, false, true, true);
+    public static final RenderType ARIENTE_ADDITIVE = type("additive", ArienteSpriteUploader.ARIENTE_ATLAS, BlendFunction.ADDITIVE, true, false, false);
 
-    public static void registerShaders(RegisterShadersEvent event) {
-        try {
-            event.registerShader(new ShaderInstance(event.getResourceProvider(), ResourceLocation.fromNamespaceAndPath("ariente", "beam"),
-                    DefaultVertexFormat.NEW_ENTITY), shader -> beamShader = shader);
-            event.registerShader(new ShaderInstance(event.getResourceProvider(), ResourceLocation.fromNamespaceAndPath("ariente", "display_item"),
-                    DefaultVertexFormat.NEW_ENTITY), shader -> displayItemShader = shader);
-            event.registerShader(new ShaderInstance(event.getResourceProvider(), ResourceLocation.fromNamespaceAndPath("ariente", "field_marker"),
-                    DefaultVertexFormat.NEW_ENTITY), shader -> fieldMarkerShader = shader);
-        } catch (IOException exception) {
-            throw new UncheckedIOException("Could not load the Ariente shaders", exception);
+    private static final RenderPipeline FIELD_TRIANGLES = fieldPipeline("field_triangles", VertexFormat.Mode.TRIANGLES);
+    private static final RenderPipeline FIELD_QUADS = fieldPipeline("field_quads", VertexFormat.Mode.QUADS);
+    private static final Map<String, RenderType> FIELDS = new HashMap<>();
+
+    private static RenderPipeline fieldPipeline(String name, VertexFormat.Mode mode) {
+        var pipeline = RenderPipeline.builder(RenderPipelines.MATRICES_PROJECTION_SNIPPET)
+                .withLocation(Identifier.fromNamespaceAndPath("ariente", "pipeline/" + name))
+                .withVertexShader("core/position_tex_color").withFragmentShader("core/position_tex_color")
+                .withSampler("Sampler0").withVertexFormat(DefaultVertexFormat.POSITION_TEX_COLOR, mode)
+                .withCull(false).withColorTargetState(new ColorTargetState(BlendFunction.TRANSLUCENT))
+                .withDepthStencilState(new DepthStencilState(CompareOp.LESS_THAN_OR_EQUAL, false)).build();
+        PIPELINES.add(pipeline);
+        return pipeline;
+    }
+
+    public static RenderType forceField(Identifier texture, VertexFormat.Mode mode) {
+        return FIELDS.computeIfAbsent(texture + "/" + mode, key -> RenderType.create("ariente_forcefield",
+                RenderSetup.builder(mode == VertexFormat.Mode.TRIANGLES ? FIELD_TRIANGLES : FIELD_QUADS)
+                        .withTexture("Sampler0", texture).createRenderSetup()));
+    }
+
+    private ArienteRenderType() {
+    }
+
+    private static RenderType type(String name, Identifier texture, BlendFunction blend, boolean glow, boolean writeDepth, boolean lightmap) {
+        var builder = RenderPipeline.builder(RenderPipelines.ENTITY_SNIPPET)
+                .withLocation(Identifier.fromNamespaceAndPath("ariente", "pipeline/" + name))
+                .withShaderDefine("NO_CARDINAL_LIGHTING").withShaderDefine("NO_OVERLAY")
+                .withCull(false).withDepthStencilState(new DepthStencilState(CompareOp.LESS_THAN_OR_EQUAL, writeDepth));
+        if (blend != null) {
+            builder.withColorTargetState(new ColorTargetState(blend));
         }
+        if (!lightmap) {
+            builder.withShaderDefine("EMISSIVE");
+        }
+        if (glow) {
+            builder.withFragmentShader(Identifier.fromNamespaceAndPath("ariente", "beam"));
+        }
+        RenderPipeline pipeline = builder.build();
+        PIPELINES.add(pipeline);
+        var setup = RenderSetup.builder(pipeline).withTexture("Sampler0", texture);
+        if (blend == BlendFunction.TRANSLUCENT) {
+            setup.sortOnUpload();
+        }
+        if (lightmap) {
+            setup.useLightmap();
+        }
+        return RenderType.create("ariente_" + name, setup.createRenderSetup());
     }
 
     public static RenderType displayItem(RenderType type) {
-        // Glint and other passes with different vertex formats keep their own shaders.
-        if (type.format() != DefaultVertexFormat.NEW_ENTITY) {
-            return type;
-        }
-        // Keep translucent icons on the display's framebuffer in Fabulous mode.
-        RenderType itemType = type == Sheets.translucentItemSheet() ? Sheets.translucentCullBlockSheet() : type;
-        return DISPLAY_ITEMS.computeIfAbsent(itemType, original -> new ArienteRenderType("ariente_display_item",
-                original.format(), original.mode(), original.bufferSize(), original.affectsCrumbling(), true,
-                () -> {
-                    original.setupRenderState();
-                    RenderSystem.setShader(() -> displayItemShader);
-                }, original::clearRenderState));
+        return type;
     }
 
-    // Dummy
-    public ArienteRenderType(String name, VertexFormat format, VertexFormat.Mode mode, int p_173181_, boolean p_173182_, boolean p_173183_, Runnable setup, Runnable clear) {
-        super(name, format, mode, p_173181_, p_173182_, p_173183_, setup, clear);
+    public static void registerShaders(RegisterRenderPipelinesEvent event) {
+        PIPELINES.forEach(event::registerPipeline);
     }
-
-    public static final TextureStateShard ARIENTE_TEXTURE_STATE = new TextureStateShard(ArienteSpriteUploader.ARIENTE_ATLAS, false, false);
-
-    private static void setupShipLighting() {
-        ShaderInstance shader = RenderSystem.getShader();
-        if (shader == null || shader.LIGHT0_DIRECTION == null || shader.LIGHT1_DIRECTION == null) {
-            return;
-        }
-        // Read the current global directions through the shader so they can be restored exactly.
-        RenderSystem.setupShaderLights(shader);
-        var light0 = shader.LIGHT0_DIRECTION.getFloatBuffer();
-        var light1 = shader.LIGHT1_DIRECTION.getFloatBuffer();
-        previousShipLight0 = new Vector3f(light0.get(0), light0.get(1), light0.get(2));
-        previousShipLight1 = new Vector3f(light1.get(0), light1.get(1), light1.get(2));
-        // Use only the camera rotation, never the hull's yaw, banking or translation.
-        if (Minecraft.getInstance().level.effects().constantAmbientLight()) {
-            Lighting.setupNetherLevel();
-        } else {
-            Lighting.setupLevel();
-        }
-    }
-
-    private static void clearShipLighting() {
-        if (previousShipLight0 != null) {
-            RenderSystem.setShaderLights(previousShipLight0, previousShipLight1);
-            previousShipLight0 = previousShipLight1 = null;
-        }
-    }
-
-    // The hull is drawn later than its vertices are collected. Nearby GUIs must not choose its lighting.
-    public static final RenderType SHIP_HULL = create("ariente_ship_hull", DefaultVertexFormat.NEW_ENTITY,
-            VertexFormat.Mode.QUADS, 4096, true, false, CompositeState.builder()
-                    .setShaderState(RENDERTYPE_ENTITY_CUTOUT_NO_CULL_SHADER)
-                    .setTextureState(new TextureStateShard(TextureAtlas.LOCATION_BLOCKS, false, false))
-                    .setLightmapState(LIGHTMAP)
-                    .setOverlayState(OVERLAY)
-                    .setCullState(NO_CULL)
-                    .setLayeringState(new LayeringStateShard("ship_world_lighting", ArienteRenderType::setupShipLighting,
-                            ArienteRenderType::clearShipLighting))
-                    .createCompositeState(true));
-
-    // Use the lightmap without item/entity directional lighting for the glass and emissive beam.
-    public static final RenderType TANK_CONTENTS = create("ariente_tank_contents", DefaultVertexFormat.NEW_ENTITY,
-            VertexFormat.Mode.QUADS, 4096, false, true, CompositeState.builder()
-                    .setShaderState(new ShaderStateShard(() -> fieldMarkerShader))
-                    .setTextureState(new TextureStateShard(TextureAtlas.LOCATION_BLOCKS, false, false))
-                    .setLightmapState(LIGHTMAP)
-                    .setOverlayState(OVERLAY)
-                    .setTransparencyState(TRANSLUCENT_TRANSPARENCY)
-                    .createCompositeState(false));
-
-    public static final RenderType FIELD_MARKER = create("ariente_field_marker", DefaultVertexFormat.NEW_ENTITY,
-            VertexFormat.Mode.QUADS, 4096, false, false, CompositeState.builder()
-                    .setShaderState(new ShaderStateShard(() -> fieldMarkerShader))
-                    .setTextureState(new TextureStateShard(TextureAtlas.LOCATION_BLOCKS, false, false))
-                    .setLightmapState(LIGHTMAP)
-                    .setOverlayState(OVERLAY)
-                    .createCompositeState(false));
-
-    public static final RenderType FIELD_OUTLINE = create("ariente_field_outline", DefaultVertexFormat.NEW_ENTITY,
-            VertexFormat.Mode.QUADS, 4096, false, false, CompositeState.builder()
-                    .setShaderState(new ShaderStateShard(() -> beamShader))
-                    .setTextureState(ARIENTE_TEXTURE_STATE)
-                    .setTransparencyState(ADDITIVE_TRANSPARENCY)
-                    .setWriteMaskState(COLOR_WRITE)
-                    .setCullState(NO_CULL)
-                    .createCompositeState(false));
-
-    public static final RenderType BEAM = create("ariente_beam", DefaultVertexFormat.NEW_ENTITY, VertexFormat.Mode.QUADS, 4096, false, true,
-            CompositeState.builder()
-                    .setShaderState(new ShaderStateShard(() -> beamShader))
-                    .setTextureState(new TextureStateShard(TextureAtlas.LOCATION_BLOCKS, false, false))
-                    .setTransparencyState(ADDITIVE_TRANSPARENCY)
-                    .setWriteMaskState(COLOR_DEPTH_WRITE)
-                    .setCullState(NO_CULL)
-                    .createCompositeState(false));
-
-    // Add the glow after particles, including their Fabulous target, without occluding other strands.
-    public static final RenderType SHIP_EXHAUST = create("ariente_ship_exhaust", DefaultVertexFormat.NEW_ENTITY,
-            VertexFormat.Mode.QUADS, 32768, false, false, CompositeState.builder()
-                    .setShaderState(new ShaderStateShard(() -> beamShader))
-                    .setTextureState(new TextureStateShard(TextureAtlas.LOCATION_BLOCKS, false, false))
-                    .setTransparencyState(ADDITIVE_TRANSPARENCY)
-                    .setDepthTestState(LEQUAL_DEPTH_TEST)
-                    .setWriteMaskState(COLOR_WRITE)
-                    .setCullState(NO_CULL)
-                    .setOutputState(PARTICLES_TARGET)
-                    .createCompositeState(false));
-
-    public static final RenderType ARIENTE_SOLID = create("ariente_solid", DefaultVertexFormat.BLOCK, VertexFormat.Mode.QUADS, 2097152, true, false,
-            CompositeState.builder()
-                    .setShaderState(RENDERTYPE_CUTOUT_SHADER)
-                    .setLightmapState(LIGHTMAP)
-                    .setTextureState(ARIENTE_TEXTURE_STATE)
-                    .createCompositeState(true));
-
-    public static final RenderType ARIENTE_TRANSLUCENT = create("ariente_translucent", DefaultVertexFormat.BLOCK, VertexFormat.Mode.QUADS, 262144, true, true,
-            CompositeState.builder()
-                    .setShaderState(RENDERTYPE_TRANSLUCENT_SHADER)
-                    .setLightmapState(LIGHTMAP)
-                    .setCullState(NO_CULL)
-                    .setTransparencyState(TRANSLUCENT_TRANSPARENCY)
-                    .setTextureState(ARIENTE_TEXTURE_STATE)
-                    .createCompositeState(true));
-
-    // Entity geometry must not inherit the terrain shader's ChunkOffset uniform.
-    public static final RenderType ARIENTE_ADDITIVE = create("ariente_additive", DefaultVertexFormat.NEW_ENTITY, VertexFormat.Mode.QUADS, 256, false, false,
-            CompositeState.builder()
-                    .setShaderState(RENDERTYPE_EYES_SHADER)
-                    .setCullState(NO_CULL)
-                    .setTransparencyState(ADDITIVE_TRANSPARENCY)
-                    .setWriteMaskState(COLOR_WRITE)
-                    .setTextureState(ARIENTE_TEXTURE_STATE)
-                    .createCompositeState(false));
 }

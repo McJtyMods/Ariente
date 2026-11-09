@@ -1,5 +1,8 @@
 package mcjty.ariente.blocks.utility;
 
+import net.minecraft.world.level.block.state.BlockBehaviour;
+import net.minecraft.world.level.material.MapColor;
+import net.minecraft.world.level.block.SoundType;
 import mcjty.lib.builder.BlockBuilder;
 import net.minecraft.core.BlockPos;
 import net.minecraft.world.item.context.BlockPlaceContext;
@@ -15,8 +18,8 @@ public class FluxSlopeBeamBlock extends BaseBeamBlock {
 
     private final VoxelShape[] slopes = new VoxelShape[4];
 
-    public FluxSlopeBeamBlock() {
-        super(new BlockBuilder(), false);
+    public FluxSlopeBeamBlock(BlockBehaviour.Properties properties) {
+        super(new BlockBuilder().properties(properties.mapColor(MapColor.METAL).strength(2.0f).requiresCorrectToolForDrops().sound(SoundType.METAL)), false);
         VoxelShape shape = Shapes.empty();
         for (int step = 0; step < 16; step++) {
             shape = Shapes.or(shape, box(5, 15 - step, step, 11, 19 - step, step + 1));

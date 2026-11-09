@@ -11,12 +11,12 @@ public abstract class ResourceDisplayModule implements DisplayModuleType {
 
     public static int number(ItemStack stack, String key, int fallback, int min, int max) {
         CompoundTag config = DisplayModuleItem.config(stack);
-        return Mth.clamp(config.contains(key) ? config.getInt(key) : fallback, min, max);
+        return Mth.clamp(config.contains(key) ? config.getIntOr(key, 0) : fallback, min, max);
     }
 
     public static boolean flag(ItemStack stack, String key, boolean fallback) {
         CompoundTag config = DisplayModuleItem.config(stack);
-        return config.contains(key) ? config.getBoolean(key) : fallback;
+        return config.contains(key) ? config.getBooleanOr(key, false) : fallback;
     }
 
     public static int mode(ItemStack stack) {
@@ -31,7 +31,7 @@ public abstract class ResourceDisplayModule implements DisplayModuleType {
     }
 
     protected static void appendHistory(CompoundTag data, CompoundTag previous, long amount) {
-        long[] old = previous.getLongArray("History");
+        long[] old = previous.getLongArray("History").orElseGet(() -> new long[0]);
         int length = Math.min(32, old.length + 1);
         long[] history = new long[length];
         int keep = length - 1;

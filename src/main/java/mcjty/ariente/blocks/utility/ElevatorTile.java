@@ -1,5 +1,9 @@
 package mcjty.ariente.blocks.utility;
 
+import net.minecraft.world.level.storage.ValueInput;
+import net.minecraft.world.level.block.state.BlockBehaviour;
+import net.minecraft.world.level.material.MapColor;
+import net.minecraft.world.level.block.SoundType;
 import mcjty.hologui.api.*;
 import java.util.*;
 import javax.annotation.Nullable;
@@ -10,7 +14,6 @@ import mcjty.ariente.api.IElevator;
 import mcjty.ariente.blocks.ArienteBlockEntity;
 import mcjty.ariente.display.TextDisplayModule;
 import mcjty.ariente.gui.GuiHelp;
-import mcjty.ariente.setup.Registration;
 import mcjty.hologui.api.components.IPanel;
 import mcjty.lib.blocks.BaseBlock;
 import mcjty.lib.blocks.RotationType;
@@ -20,7 +23,6 @@ import net.minecraft.core.BlockPos;
 import net.minecraft.core.HolderLookup;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.network.Connection;
-import net.minecraft.network.protocol.game.ClientboundBlockEntityDataPacket;
 import net.minecraft.world.InteractionHand;
 import net.minecraft.world.InteractionResult;
 import net.minecraft.world.entity.Entity;
@@ -56,11 +58,11 @@ public class ElevatorTile extends ArienteBlockEntity implements IGuiTile, ICityE
     private Integer moveToFloor;
 
     public ElevatorTile(BlockPos pos, BlockState state) {
-        super(Registration.ELEVATOR_TILE.get(), pos, state);
+        super(mcjty.ariente.setup.Registration.ELEVATOR_TILE.get(), pos, state);
     }
 
-    public static BaseBlock createBlock() {
-        return new BaseBlock(new BlockBuilder()
+    public static BaseBlock createBlock(BlockBehaviour.Properties properties) {
+        return new BaseBlock(new BlockBuilder().properties(properties.mapColor(MapColor.METAL).strength(2.0f).requiresCorrectToolForDrops().sound(SoundType.METAL))
                 .info(key("message.ariente.shiftmessage"))
                 .infoShift(header())
                 .topDriver(DRIVER)
@@ -84,7 +86,6 @@ public class ElevatorTile extends ArienteBlockEntity implements IGuiTile, ICityE
         List<Player> players = level.getEntitiesOfClass(Player.class, getBeamBox());
         for (Player player : players) {
             openOrMoveHoloGui(player);
-            player.hasImpulse = true;
             player.fallDistance = 0;
         }
         removeStaleHoloEntries();
@@ -99,7 +100,6 @@ public class ElevatorTile extends ArienteBlockEntity implements IGuiTile, ICityE
         }
         List<Integer> floors = findFloors();
         if (clientPlayer.getBoundingBox().intersects(getBeamBox())) {
-            clientPlayer.hasImpulse = true;
             clientPlayer.fallDistance = 0;
             if (moveToFloor != null && !floors.contains(moveToFloor)) {
                 moveToFloor = null;
@@ -280,12 +280,12 @@ public class ElevatorTile extends ArienteBlockEntity implements IGuiTile, ICityE
     }
 
     @Override
-    public void onDataPacket(Connection net, ClientboundBlockEntityDataPacket packet, HolderLookup.Provider provider) {
+    public void onDataPacket(Connection net, ValueInput input) {
         int oldheight = height;
 
-        super.onDataPacket(net, packet, provider);
+        super.onDataPacket(net, input);
 
-        if (getLevel().isClientSide) {
+        if (getLevel().isClientSide()) {
             // If needed send a render update.
             if (oldheight != height) {
                 level.sendBlockUpdated(worldPosition, getBlockState(), getBlockState(), Block.UPDATE_ALL);
@@ -316,9 +316,9 @@ public class ElevatorTile extends ArienteBlockEntity implements IGuiTile, ICityE
     @Override
     public void loadAdditional(CompoundTag tagCompound, HolderLookup.Provider provider) {
         super.loadAdditional(tagCompound, provider);
-        CompoundTag info = tagCompound.getCompound("Info");
+        CompoundTag info = tagCompound.getCompoundOrEmpty("Info");
         if (info.contains("height")) {
-            height = info.getInt("height");
+            height = info.getIntOr("height", 0);
         }
         cachedBox = null;
     }
@@ -340,7 +340,8 @@ public class ElevatorTile extends ArienteBlockEntity implements IGuiTile, ICityE
     }
 
     public AABB getRenderBoundingBox() {
-        return getBeamBox();
+        // Animated beams start below the block and extend above the transport column.
+        return getBeamBox().inflate(0.05, 1.05, 0.05);
     }
 
     private AABB getBeamBox() {
@@ -406,7 +407,7 @@ public class ElevatorTile extends ArienteBlockEntity implements IGuiTile, ICityE
                 scannedAt = level.getGameTime();
                 floors = findFloors();
                 if (!initialized && !floors.isEmpty()) {
-                    if (level.isClientSide) {
+                    if (level.isClientSide()) {
                         Player player = SafeClientTools.getClientPlayer();
                         if (player != null) {
                             first = nearestFloor(player.getY()) - VISIBLE_FLOORS / 2;
@@ -436,7 +437,7 @@ public class ElevatorTile extends ArienteBlockEntity implements IGuiTile, ICityE
 
         private int currentFloor() {
             floors();
-            Player player = level.isClientSide ? SafeClientTools.getClientPlayer() : null;
+            Player player = level.isClientSide() ? SafeClientTools.getClientPlayer() : null;
             return player == null ? -1 : nearestFloor(player.getY());
         }
 

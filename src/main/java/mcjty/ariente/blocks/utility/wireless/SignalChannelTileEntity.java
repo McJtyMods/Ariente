@@ -9,7 +9,6 @@ import mcjty.ariente.api.ISignalChannel;
 import mcjty.ariente.blocks.ArienteBlockEntity;
 import mcjty.ariente.blocks.BlockProperties;
 import mcjty.ariente.items.ItemData;
-import mcjty.ariente.setup.Registration;
 import mcjty.lib.blocks.BaseBlock;
 import mcjty.lib.blocks.RotationType;
 import mcjty.lib.varia.Logging;
@@ -45,10 +44,10 @@ public abstract class SignalChannelTileEntity extends ArienteBlockEntity impleme
 
     static boolean isRedstoneChannelItem(Item item) {
         return (item instanceof BlockItem &&
-                (((BlockItem)item).getBlock() == Registration.SIGNAL_TRANSMITTER.get()
-                        || ((BlockItem)item).getBlock() == Registration.SIGNAL_RECEIVER.get()
-                        || ((BlockItem)item).getBlock() == Registration.WIRELESS_LOCK.get()
-                        || ((BlockItem)item).getBlock() == Registration.WIRELESS_BUTTON.get()));
+                (((BlockItem)item).getBlock() == mcjty.ariente.setup.Registration.SIGNAL_TRANSMITTER.get()
+                        || ((BlockItem)item).getBlock() == mcjty.ariente.setup.Registration.SIGNAL_RECEIVER.get()
+                        || ((BlockItem)item).getBlock() == mcjty.ariente.setup.Registration.WIRELESS_LOCK.get()
+                        || ((BlockItem)item).getBlock() == mcjty.ariente.setup.Registration.WIRELESS_BUTTON.get()));
     }
 
     public int getPowerOutput() {
@@ -64,7 +63,7 @@ public abstract class SignalChannelTileEntity extends ArienteBlockEntity impleme
         setChanged();
         BlockState state = level.getBlockState(worldPosition);
         Direction outputSide = getFacing(state).getOpposite();
-        getLevel().neighborChanged(this.worldPosition.relative(outputSide), this.getBlockState().getBlock(), this.worldPosition);
+        getLevel().neighborChanged(this.worldPosition.relative(outputSide), this.getBlockState().getBlock(), null);
         markDirtyClient();
     }
 
@@ -73,7 +72,7 @@ public abstract class SignalChannelTileEntity extends ArienteBlockEntity impleme
     }
 
     protected void setVisualState(BooleanProperty property, boolean value) {
-        if (level != null && !level.isClientSide) {
+        if (level != null && !level.isClientSide()) {
             BlockState state = level.getBlockState(worldPosition);
             if (state.hasProperty(property) && state.getValue(property) != value) {
                 level.setBlockAndUpdate(worldPosition, state.setValue(property, value));
@@ -108,10 +107,10 @@ public abstract class SignalChannelTileEntity extends ArienteBlockEntity impleme
     @Override
     public void loadAdditional(CompoundTag tagCompound, HolderLookup.Provider provider) {
         super.loadAdditional(tagCompound, provider);
-        CompoundTag info = tagCompound.getCompound("Info");
+        CompoundTag info = tagCompound.getCompoundOrEmpty("Info");
         if (!info.isEmpty()) {
-            channel = info.getInt("channel");
-            desiredChannel = info.getInt("desired");
+            channel = info.getIntOr("channel", 0);
+            desiredChannel = info.getIntOr("desired", 0);
         }
     }
 
@@ -134,7 +133,7 @@ public abstract class SignalChannelTileEntity extends ArienteBlockEntity impleme
     public static void setChannel(Level world, BlockPos pos, Player player, ItemStack stack) {
         BlockEntity te = world.getBlockEntity(pos);
         if (te instanceof SignalChannelTileEntity) {
-            if(!world.isClientSide) {
+            if(!world.isClientSide()) {
                 SignalChannelTileEntity rcte = (SignalChannelTileEntity)te;
                 CompoundTag tagCompound = ItemData.get(stack);
                 int channel;
@@ -145,7 +144,7 @@ public abstract class SignalChannelTileEntity extends ArienteBlockEntity impleme
 
                 } else {
                     if (tagCompound.contains("channel")) {
-                        channel = tagCompound.getInt("channel");
+                        channel = tagCompound.getIntOr("channel", 0);
                     } else {
                         channel = -1;
                     }

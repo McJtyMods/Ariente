@@ -1,0 +1,14 @@
+{
+  "layers": {
+    "humanoid": [
+      {
+        "texture": "ariente:powersuit"
+      }
+    ],
+    "humanoid_leggings": [
+      {
+        "texture": "ariente:powersuit"
+      }
+    ]
+  }
+}

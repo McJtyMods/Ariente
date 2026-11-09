@@ -2,12 +2,8 @@
   "type": "minecraft:crafting_shaped",
   "category": "misc",
   "key": {
-    "M": {
-      "item": "ariente:marble_black"
-    },
-    "m": {
-      "item": "ariente:marble_red"
-    }
+    "M": "ariente:marble_black",
+    "m": "ariente:marble_red"
   },
   "pattern": [
     "MMM",
@@ -15,7 +11,6 @@
     "MMM"
   ],
   "result": {
-    "count": 1,
     "id": "ariente:blacktech_red_lines"
   }
 }

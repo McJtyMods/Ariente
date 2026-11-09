@@ -27,11 +27,15 @@ public class DungeonLootModifier extends LootModifier {
     private final boolean standaloneOnly;
 
     public DungeonLootModifier(LootItemCondition[] conditions) {
-        this(conditions, false);
+        this(conditions, IGlobalLootModifier.DEFAULT_PRIORITY, false);
     }
 
     public DungeonLootModifier(LootItemCondition[] conditions, boolean standaloneOnly) {
-        super(conditions);
+        this(conditions, IGlobalLootModifier.DEFAULT_PRIORITY, standaloneOnly);
+    }
+
+    public DungeonLootModifier(LootItemCondition[] conditions, int priority, boolean standaloneOnly) {
+        super(conditions, priority);
         this.standaloneOnly = standaloneOnly;
     }
 

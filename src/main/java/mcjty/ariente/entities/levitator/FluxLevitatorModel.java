@@ -1,21 +1,22 @@
 package mcjty.ariente.entities.levitator;
 
-import com.mojang.blaze3d.vertex.PoseStack;
-import com.mojang.blaze3d.vertex.VertexConsumer;
-import net.minecraft.client.model.EntityModel;
+import net.minecraft.client.model.Model;
+import net.minecraft.client.renderer.rendertype.RenderTypes;
+import net.minecraft.util.Unit;
 import net.minecraft.client.model.geom.ModelPart;
 import net.minecraft.client.model.geom.PartPose;
 import net.minecraft.client.model.geom.builders.CubeListBuilder;
 import net.minecraft.client.model.geom.builders.LayerDefinition;
 import net.minecraft.client.model.geom.builders.MeshDefinition;
 import net.minecraft.util.Mth;
-import net.minecraft.world.entity.Entity;
 
-public class FluxLevitatorModel<T extends Entity> extends EntityModel<T> {
-
-    private final ModelPart root;
+public class FluxLevitatorModel extends Model<Unit> {
 
     public FluxLevitatorModel() {
+        super(createRoot(), RenderTypes::entityCutout);
+    }
+
+    private static ModelPart createRoot() {
         // Preserve the original Tabula rotations: the floor and roof lie flat, and
         // the end panels and sloping supports face inward around the passenger.
         MeshDefinition mesh = new MeshDefinition();
@@ -39,7 +40,7 @@ public class FluxLevitatorModel<T extends Entity> extends EntityModel<T> {
                 PartPose.offsetAndRotation(0.0F, 4.0F, 0.0F, Mth.HALF_PI, 0, 0));
         mesh.getRoot().addOrReplaceChild("sideModelsT", CubeListBuilder.create().texOffs(0, 10).addBox(-14.0F, -8.0F, 15.0F, 28, 16, 2),
                 PartPose.offsetAndRotation(0.0F, 0.0F, 0.0F, Mth.HALF_PI, 0, 0));
-        root = LayerDefinition.create(mesh, 64, 32).bakeRoot();
+        ModelPart root = LayerDefinition.create(mesh, 64, 32).bakeRoot();
         root.getChild("sideModels5").xScale = 1.5f;
         root.getChild("sideModels4").xScale = 1.5f;
         root.getChild("sideModelsB").xScale = 1.5f;
@@ -47,14 +48,6 @@ public class FluxLevitatorModel<T extends Entity> extends EntityModel<T> {
         root.getChild("sideModelsB").yScale = 1.2f;
         root.getChild("sideModelsT").xScale = 1.35f;
         root.getChild("sideModelsT").yScale = 1.1f;
-    }
-
-    @Override
-    public void setupAnim(T entity, float limbSwing, float limbSwingAmount, float age, float yaw, float pitch) {
-    }
-
-    @Override
-    public void renderToBuffer(PoseStack poses, VertexConsumer buffer, int light, int overlay, int color) {
-        root.render(poses, buffer, light, overlay, color);
+        return root;
     }
 }

@@ -1,5 +1,9 @@
 package mcjty.ariente.display.client;
 
+import mcjty.hologui.gui.HoloRenderBatch;
+import net.neoforged.neoforge.client.event.ExtractLevelRenderStateEvent;
+import net.neoforged.neoforge.client.event.SubmitCustomGeometryEvent;
+import net.neoforged.neoforge.client.network.ClientPacketDistributor;
 import com.mojang.blaze3d.systems.RenderSystem;
 import com.mojang.blaze3d.vertex.PoseStack;
 import mcjty.ariente.client.WorldHolograms;
@@ -17,7 +21,6 @@ import net.neoforged.bus.api.SubscribeEvent;
 import net.neoforged.neoforge.client.event.ClientTickEvent;
 import net.neoforged.neoforge.client.event.InputEvent;
 import net.neoforged.neoforge.client.event.RenderLevelStageEvent;
-import net.neoforged.neoforge.network.PacketDistributor;
 import org.joml.Matrix4fStack;
 
 public class DisplayClientEvents {
@@ -70,7 +73,7 @@ public class DisplayClientEvents {
             if (event.isUseItem() && !mc.player.isShiftKeyDown() && module != null) {
                 DisplayModuleDrag.begin(module);
             } else {
-                PacketDistributor.sendToServer(new PacketDisplayAction(hit.tile().getBlockPos(), selected, event.isAttack()));
+                ClientPacketDistributor.sendToServer(new PacketDisplayAction(hit.tile().getBlockPos(), selected, event.isAttack()));
             }
         }
     }
@@ -86,52 +89,51 @@ public class DisplayClientEvents {
     }
 
     @SubscribeEvent
-    public void render(RenderLevelStageEvent event) {
-        if (LiveCameraRenderer.isRendering() || event.getStage() != RenderLevelStageEvent.Stage.AFTER_LEVEL) {
-            return;
+    public void extract(ExtractLevelRenderStateEvent event) {
+        if (LiveCameraRenderer.isRendering()) return;
+        Minecraft mc = Minecraft.getInstance();
+        if (mc.player != null && mc.screen == null) {
+            HoloRenderBatch batch = new HoloRenderBatch();
+            PoseStack poses = new PoseStack();
+            if (DisplayModuleDrag.active()) {
+                DisplayModuleDrag.render(poses, batch, event.getCamera().position());
+            } else {
+                DisplayGeometry.Hit hit = pick(mc.player);
+                if (hit != null) drawPreview(mc, hit, poses, event.getCamera().position(), batch);
+            }
+            WorldHolograms.addRelative(event.getCamera().position(), batch);
         }
-        // 1.21 removes the camera matrix before AFTER_LEVEL; queued poses only contain block offsets.
+        WorldHolograms.finishExtraction(event);
+    }
+
+    @SubscribeEvent
+    public void capture(SubmitCustomGeometryEvent event) {
+        WorldHolograms.captureFrame(event);
+    }
+
+    @SubscribeEvent
+    public void render(RenderLevelStageEvent.AfterLevel event) {
+        if (LiveCameraRenderer.isRendering()) return;
         Matrix4fStack modelView = RenderSystem.getModelViewStack();
         modelView.pushMatrix();
-        modelView.mul(event.getModelViewMatrix());
-        RenderSystem.applyModelViewMatrix();
+        modelView.set(event.getModelViewMatrix());
         try {
-            renderWorld(event);
+            WorldHolograms.renderWorld();
         } finally {
             modelView.popMatrix();
-            RenderSystem.applyModelViewMatrix();
         }
-    }
-
-    private static void renderWorld(RenderLevelStageEvent event) {
         LiveCameraRenderer.beginFrame();
-        WorldHolograms.renderWorld();
-        Minecraft mc = Minecraft.getInstance();
-        if (mc.player == null || mc.screen != null) {
-            return;
-        }
-        if (DisplayModuleDrag.active()) {
-            DisplayModuleDrag.render(event.getPoseStack(), mc.renderBuffers().bufferSource(), event.getCamera().getPosition());
-            return;
-        }
-        DisplayGeometry.Hit hit = pick(mc.player);
-        if (hit == null) {
-            return;
-        }
-        drawPreview(mc, hit, event.getPoseStack(), event.getCamera().getPosition());
     }
 
-    private static void drawPreview(Minecraft mc, DisplayGeometry.Hit hit, PoseStack poses, Vec3 camera) {
+    private static void drawPreview(Minecraft mc, DisplayGeometry.Hit hit, PoseStack poses, Vec3 camera, MultiBufferSource buffer) {
         InteractionHand hand = mc.player.getMainHandItem().getItem() instanceof DisplayModuleItem
                 ? InteractionHand.MAIN_HAND : InteractionHand.OFF_HAND;
         if (mc.player.getItemInHand(hand).getItem() instanceof DisplayModuleItem && !mc.player.isShiftKeyDown()) {
-            MultiBufferSource.BufferSource buffer = mc.renderBuffers().bufferSource();
             poses.pushPose();
             poses.translate(hit.tile().getBlockPos().getX() - camera.x, hit.tile().getBlockPos().getY() - camera.y,
                     hit.tile().getBlockPos().getZ() - camera.z);
             DisplayRenderer.preview(hit, mc.player.getItemInHand(hand), poses, buffer);
             poses.popPose();
-            buffer.endBatch();
         }
     }
 }

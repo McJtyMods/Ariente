@@ -1,0 +1,22 @@
+// Run from MultiWorkspace with :Ariente:runGameTestServer.
+gradle.afterProject { p ->
+    if (p.name == 'Ariente') {
+        p.sourceSets.gameTest.java.setIncludes(['mcjty/ariente/EquipmentModuleTests.java'])
+        p.sourceSets.gameTest.resources.setIncludes(['data/ariente/structure/empty.nbt'])
+        p.sourceSets.gameTest.output.classesDirs.setFrom(p.layout.buildDirectory.dir('verification/equipment-test-classes'))
+        p.sourceSets.gameTest.output.resourcesDir = p.file('build/verification/equipment-test-resources')
+        p.tasks.named('compileGameTestJava') {
+            destinationDirectory.set(p.layout.buildDirectory.dir('verification/equipment-test-classes'))
+        }
+        p.tasks.named('processGameTestResources') {
+            destinationDir = p.file('build/verification/equipment-test-resources')
+        }
+        p.runs {
+            gameTestServer {
+                workingDirectory p.file('build/verification/equipment-tests')
+                systemProperty 'neoforge.enabledGameTestNamespaces', 'ariente'
+                systemProperty 'forge.logging.console.level', 'info'
+            }
+        }
+    }
+}

@@ -12,35 +12,35 @@ import mcjty.ariente.client.ArienteSpriteUploader;
 import mcjty.lib.client.RenderHelper;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.renderer.MultiBufferSource;
-import net.minecraft.client.renderer.blockentity.BlockEntityRenderer;
+import mcjty.ariente.client.ExtractedBlockRenderer;
 import net.minecraft.client.renderer.blockentity.BlockEntityRendererProvider;
 import net.minecraft.client.renderer.blockentity.BlockEntityRenderers;
 import net.minecraft.client.renderer.texture.TextureAtlasSprite;
-import net.minecraft.resources.ResourceLocation;
+import net.minecraft.resources.Identifier;
 import net.minecraft.world.level.block.Block;
 import net.minecraft.world.level.block.entity.BlockEntityType;
 import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.phys.Vec3;
 
-public class CableRenderer implements BlockEntityRenderer<GenericCableTileEntity> {
+public class CableRenderer extends ExtractedBlockRenderer<GenericCableTileEntity> {
 
     private Random random = new Random();
-    private static ResourceLocation negarite_laserbeams[] = new ResourceLocation[4];
-    private static ResourceLocation posirite_laserbeams[] = new ResourceLocation[4];
-    private static ResourceLocation data_laserbeams[] = new ResourceLocation[4];
+    private static Identifier negarite_laserbeams[] = new Identifier[4];
+    private static Identifier posirite_laserbeams[] = new Identifier[4];
+    private static Identifier data_laserbeams[] = new Identifier[4];
 
-    public static final ResourceLocation NEGARITE_LASERBEAM_1 = ResourceLocation.fromNamespaceAndPath(Ariente.MODID, "negarite_laserbeam1");
-    public static final ResourceLocation NEGARITE_LASERBEAM_2 = ResourceLocation.fromNamespaceAndPath(Ariente.MODID, "negarite_laserbeam2");
-    public static final ResourceLocation NEGARITE_LASERBEAM_3 = ResourceLocation.fromNamespaceAndPath(Ariente.MODID, "negarite_laserbeam3");
-    public static final ResourceLocation NEGARITE_LASERBEAM_4 = ResourceLocation.fromNamespaceAndPath(Ariente.MODID, "negarite_laserbeam4");
-    public static final ResourceLocation POSIRITE_LASERBEAM_1 = ResourceLocation.fromNamespaceAndPath(Ariente.MODID, "posirite_laserbeam1");
-    public static final ResourceLocation POSIRITE_LASERBEAM_2 = ResourceLocation.fromNamespaceAndPath(Ariente.MODID, "posirite_laserbeam2");
-    public static final ResourceLocation POSIRITE_LASERBEAM_3 = ResourceLocation.fromNamespaceAndPath(Ariente.MODID, "posirite_laserbeam3");
-    public static final ResourceLocation POSIRITE_LASERBEAM_4 = ResourceLocation.fromNamespaceAndPath(Ariente.MODID, "posirite_laserbeam4");
-    public static final ResourceLocation DATA_LASERBEAM_1 = ResourceLocation.fromNamespaceAndPath(Ariente.MODID, "data_laserbeam1");
-    public static final ResourceLocation DATA_LASERBEAM_2 = ResourceLocation.fromNamespaceAndPath(Ariente.MODID, "data_laserbeam2");
-    public static final ResourceLocation DATA_LASERBEAM_3 = ResourceLocation.fromNamespaceAndPath(Ariente.MODID, "data_laserbeam3");
-    public static final ResourceLocation DATA_LASERBEAM_4 = ResourceLocation.fromNamespaceAndPath(Ariente.MODID, "data_laserbeam4");
+    public static final Identifier NEGARITE_LASERBEAM_1 = Identifier.fromNamespaceAndPath(Ariente.MODID, "negarite_laserbeam1");
+    public static final Identifier NEGARITE_LASERBEAM_2 = Identifier.fromNamespaceAndPath(Ariente.MODID, "negarite_laserbeam2");
+    public static final Identifier NEGARITE_LASERBEAM_3 = Identifier.fromNamespaceAndPath(Ariente.MODID, "negarite_laserbeam3");
+    public static final Identifier NEGARITE_LASERBEAM_4 = Identifier.fromNamespaceAndPath(Ariente.MODID, "negarite_laserbeam4");
+    public static final Identifier POSIRITE_LASERBEAM_1 = Identifier.fromNamespaceAndPath(Ariente.MODID, "posirite_laserbeam1");
+    public static final Identifier POSIRITE_LASERBEAM_2 = Identifier.fromNamespaceAndPath(Ariente.MODID, "posirite_laserbeam2");
+    public static final Identifier POSIRITE_LASERBEAM_3 = Identifier.fromNamespaceAndPath(Ariente.MODID, "posirite_laserbeam3");
+    public static final Identifier POSIRITE_LASERBEAM_4 = Identifier.fromNamespaceAndPath(Ariente.MODID, "posirite_laserbeam4");
+    public static final Identifier DATA_LASERBEAM_1 = Identifier.fromNamespaceAndPath(Ariente.MODID, "data_laserbeam1");
+    public static final Identifier DATA_LASERBEAM_2 = Identifier.fromNamespaceAndPath(Ariente.MODID, "data_laserbeam2");
+    public static final Identifier DATA_LASERBEAM_3 = Identifier.fromNamespaceAndPath(Ariente.MODID, "data_laserbeam3");
+    public static final Identifier DATA_LASERBEAM_4 = Identifier.fromNamespaceAndPath(Ariente.MODID, "data_laserbeam4");
 
     static {
         negarite_laserbeams[0] = NEGARITE_LASERBEAM_1;
@@ -111,7 +111,7 @@ public class CableRenderer implements BlockEntityRenderer<GenericCableTileEntity
             BlockState state = te.getLevel().getBlockState(te.getBlockPos());
             Block block = state.getBlock();
             if (block instanceof GenericCableBlock) {
-                ResourceLocation txt;
+                Identifier txt;
                 switch (te.getCableColor()) {
                     case NEGARITE:
                         txt = negarite_laserbeams[random.nextInt(4)];
@@ -131,7 +131,7 @@ public class CableRenderer implements BlockEntityRenderer<GenericCableTileEntity
                 int tex = te.getBlockPos().getX();
                 int tey = te.getBlockPos().getY();
                 int tez = te.getBlockPos().getZ();
-                Vec3 projectedView = Minecraft.getInstance().gameRenderer.getMainCamera().getPosition().add(-tex, -tey, -tez);
+                Vec3 projectedView = Minecraft.getInstance().gameRenderer.getMainCamera().position().add(-tex, -tey, -tez);
                 Vec3 player = new Vec3((float)projectedView.x, (float)projectedView.y, (float)projectedView.z);
 
                 PoseStack matrix = matrixStack;

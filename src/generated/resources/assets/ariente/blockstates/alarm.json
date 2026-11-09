@@ -17,7 +17,7 @@
     },
     "alarm=alert,facing=up": {
       "model": "ariente:block/machines/alarm_alert",
-      "x": -90
+      "x": 270
     },
     "alarm=alert,facing=west": {
       "model": "ariente:block/machines/alarm_alert",
@@ -40,7 +40,7 @@
     },
     "alarm=dead,facing=up": {
       "model": "ariente:block/machines/alarm_dead",
-      "x": -90
+      "x": 270
     },
     "alarm=dead,facing=west": {
       "model": "ariente:block/machines/alarm_dead",
@@ -63,7 +63,7 @@
     },
     "alarm=safe,facing=up": {
       "model": "ariente:block/machines/alarm_safe",
-      "x": -90
+      "x": 270
     },
     "alarm=safe,facing=west": {
       "model": "ariente:block/machines/alarm_safe",

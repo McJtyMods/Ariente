@@ -38,9 +38,9 @@ public interface DisplayModuleType {
 
     default void appendLinkTooltip(ItemStack stack, List<Component> lines) {
         if (DisplayModuleItem.config(stack).contains("Link")) {
-            CompoundTag link = DisplayModuleItem.config(stack).getCompound("Link");
-            BlockPos pos = BlockPos.of(link.getLong("Pos"));
-            lines.add(Component.literal("Linked: " + pos.toShortString() + " (" + link.getString("Dimension") + ")").withStyle(ChatFormatting.GREEN));
+            CompoundTag link = DisplayModuleItem.config(stack).getCompoundOrEmpty("Link");
+            BlockPos pos = BlockPos.of(link.getLongOr("Pos", 0));
+            lines.add(Component.literal("Linked: " + pos.toShortString() + " (" + link.getStringOr("Dimension", "") + ")").withStyle(ChatFormatting.GREEN));
         }
     }
 

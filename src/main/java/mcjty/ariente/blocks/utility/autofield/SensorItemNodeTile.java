@@ -1,8 +1,11 @@
 package mcjty.ariente.blocks.utility.autofield;
 
+import net.minecraft.world.level.block.state.BlockBehaviour;
+import net.minecraft.world.level.material.MapColor;
+import net.minecraft.world.level.block.SoundType;
+import net.minecraft.world.item.Item;
 import mcjty.ariente.gui.GuiHelp;
 import mcjty.ariente.gui.StepButton;
-import mcjty.ariente.setup.Registration;
 import mcjty.hologui.api.IGuiComponent;
 import mcjty.hologui.api.IGuiComponentRegistry;
 import mcjty.hologui.api.StyledColor;
@@ -27,11 +30,11 @@ public class SensorItemNodeTile extends AbstractNodeTile {
     private static String[] operators = new String[] { "<",  "<=", ">", ">=", "=", "<>" };
 
     public SensorItemNodeTile(BlockPos pos, BlockState state) {
-        super(Registration.SENSOR_ITEM_TILE.get(), pos, state);
+        super(mcjty.ariente.setup.Registration.SENSOR_ITEM_TILE.get(), pos, state);
     }
 
-    public static BaseNodeBlock createBlock() {
-        return new BaseNodeBlock(new BlockBuilder()
+    public static BaseNodeBlock createBlock(BlockBehaviour.Properties properties) {
+        return new BaseNodeBlock(new BlockBuilder().properties(properties.mapColor(MapColor.METAL).strength(2.0f).requiresCorrectToolForDrops().sound(SoundType.METAL))
                 .tileEntitySupplier(SensorItemNodeTile::new));
     }
 
@@ -78,13 +81,13 @@ public class SensorItemNodeTile extends AbstractNodeTile {
     @Override
     public void loadAdditional(CompoundTag tagCompound, HolderLookup.Provider provider) {
         super.loadAdditional(tagCompound, provider);
-        CompoundTag info = tagCompound.getCompound("Info");
+        CompoundTag info = tagCompound.getCompoundOrEmpty("Info");
         if (!info.isEmpty()) {
             if (info.contains("outColor")) {
-                outputColor[0] = DyeColor.values()[info.getInt("outColor")];
+                outputColor[0] = DyeColor.values()[info.getIntOr("outColor", 0)];
             }
-            operator = info.getInt("op");
-            amount = info.getInt("amount");
+            operator = info.getIntOr("op", 0);
+            amount = info.getIntOr("amount", 0);
         }
     }
 

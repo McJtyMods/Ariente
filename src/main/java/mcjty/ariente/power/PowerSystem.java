@@ -1,5 +1,6 @@
 package mcjty.ariente.power;
 
+import mcjty.ariente.varia.SavedDataMigration;
 import java.util.HashMap;
 import java.util.Map;
 import javax.annotation.Nonnull;
@@ -10,7 +11,7 @@ import net.minecraft.world.level.Level;
 
 public class PowerSystem extends AbstractWorldData<PowerSystem> {
 
-    private static final String NAME = "ArientePowerSystem";
+    private static final String NAME = "ariente:power_system";
 
     private int lastId = 0;
     private Map<Integer, PowerBlob> powerBlobs = new HashMap<>();
@@ -107,6 +108,7 @@ public class PowerSystem extends AbstractWorldData<PowerSystem> {
 
     @Nonnull
     public static PowerSystem getPowerSystem(Level world) {
+        SavedDataMigration.migrateGlobal(world, NAME, "ArientePowerSystem");
         return getData(world, PowerSystem::createPowerSystem, () -> new PowerSystem(), NAME);
     }
 
@@ -117,7 +119,7 @@ public class PowerSystem extends AbstractWorldData<PowerSystem> {
     }
 
     public void load(CompoundTag nbt) {
-        lastId = nbt.getInt("lastId");
+        lastId = nbt.getIntOr("lastId", 0);
     }
 
     @Override

@@ -9,7 +9,7 @@ import net.minecraft.world.entity.ai.attributes.AttributeModifier;
 import net.minecraft.world.entity.ai.attributes.Attributes;
 import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemStack;
-import net.minecraft.world.item.Tiers;
+import net.minecraft.world.item.ToolMaterial;
 import net.minecraft.world.item.component.ItemAttributeModifiers;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.level.block.state.BlockState;
@@ -19,16 +19,16 @@ public class EnergySabreItem extends Item {
     public static final float BASE_DAMAGE = 12.0F;
 
     protected final float attackDamage;
-    private final Tiers tier;
+    private final ToolMaterial tier;
 
-    public EnergySabreItem() {
-        super(new Properties().stacksTo(1).durability(Tiers.DIAMOND.getUses()));
-        this.tier = Tiers.DIAMOND;
+    public EnergySabreItem(Item.Properties properties) {
+        super(properties.stacksTo(1).durability(ToolMaterial.DIAMOND.durability()));
+        this.tier = ToolMaterial.DIAMOND;
         this.attackDamage = BASE_DAMAGE;
     }
 
     public float getAttackDamage() {
-        return this.tier.getAttackDamageBonus();
+        return this.tier.attackDamageBonus();
     }
 
     @Override
@@ -37,9 +37,8 @@ public class EnergySabreItem extends Item {
     }
 
     @Override
-    public boolean hurtEnemy(ItemStack stack, LivingEntity target, LivingEntity attacker) {
+    public void hurtEnemy(ItemStack stack, LivingEntity target, LivingEntity attacker) {
         stack.hurtAndBreak(1, attacker, EquipmentSlot.MAINHAND);
-        return true;
     }
 
     @Override
@@ -55,9 +54,8 @@ public class EnergySabreItem extends Item {
         return false;
     }
 
-    @Override
     public int getEnchantmentValue() {
-        return this.tier.getEnchantmentValue();
+        return this.tier.enchantmentValue();
     }
 
     public String getToolMaterialName() {

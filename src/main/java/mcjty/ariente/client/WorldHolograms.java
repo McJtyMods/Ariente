@@ -1,35 +1,46 @@
 package mcjty.ariente.client;
 
-import com.mojang.blaze3d.vertex.ByteBufferBuilder;
 import com.mojang.blaze3d.vertex.PoseStack;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Comparator;
 import java.util.IdentityHashMap;
-import java.util.LinkedHashMap;
 import java.util.List;
-import java.util.Map;
 import java.util.Set;
 import java.util.function.Consumer;
 import mcjty.ariente.display.client.LiveCameraRenderer;
+import mcjty.hologui.gui.HoloRenderBatch;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.renderer.MultiBufferSource;
-import net.minecraft.client.renderer.RenderType;
+import net.minecraft.client.renderer.SubmitNodeStorage;
+import net.minecraft.client.renderer.feature.FeatureRenderDispatcher;
+import net.minecraft.core.BlockPos;
+import net.minecraft.resources.Identifier;
+import net.minecraft.util.context.ContextKey;
 import net.minecraft.world.level.block.entity.BlockEntity;
 import net.minecraft.world.phys.Vec3;
+import net.neoforged.neoforge.client.event.ExtractLevelRenderStateEvent;
+import net.neoforged.neoforge.client.event.SubmitCustomGeometryEvent;
 
-/** Composite world-space holograms after the scene, without translucent depth writes. */
-public class WorldHolograms {
+/** Deferred overlays contain only extracted geometry and item render state. */
+public final class WorldHolograms {
 
+    private static final ContextKey<Frame> FRAME = new ContextKey<>(Identifier.fromNamespaceAndPath("ariente", "holograms"));
     private static final List<Entry> PENDING = new ArrayList<>();
     private static final Set<BlockEntity> QUEUED = Collections.newSetFromMap(new IdentityHashMap<>());
-    // Foil requests two consumers at once, so glint cannot share the fallback builder.
-    private static final MultiBufferSource.BufferSource BUFFERS = MultiBufferSource.immediateWithBuffers(new LinkedHashMap<>(Map.of(
-            RenderType.glint(), new ByteBufferBuilder(256),
+    private static BlockPos extractionOrigin;
+    private static Frame activeFrame;
+    private static FeatureRenderDispatcher features;
+    private static SubmitNodeStorage storage;
 
-            RenderType.glintTranslucent(), new ByteBufferBuilder(256),
-            RenderType.entityGlint(), new ByteBufferBuilder(256),
-            RenderType.entityGlintDirect(), new ByteBufferBuilder(256))), new ByteBufferBuilder(4096));
+    private WorldHolograms() {
+    }
+
+    public static BlockPos origin(BlockPos origin) {
+        BlockPos previous = extractionOrigin;
+        extractionOrigin = origin;
+        return previous;
+    }
 
     public static boolean begin(BlockEntity owner) {
         return !LiveCameraRenderer.isRendering() && QUEUED.add(owner);
@@ -37,45 +48,60 @@ public class WorldHolograms {
 
     public static PoseStack copy(PoseStack poses) {
         PoseStack copy = new PoseStack();
-        copy.last().pose().set(poses.last().pose());
-        copy.last().normal().set(poses.last().normal());
+        copy.last().set(poses.last());
         return copy;
     }
 
-    public static void add(Vec3 center, Consumer<MultiBufferSource.BufferSource> draw) {
-        if (!LiveCameraRenderer.isRendering()) {
-            PENDING.add(new Entry(center, draw));
-        }
+    public static void add(Vec3 center, Consumer<MultiBufferSource> draw) {
+        if (LiveCameraRenderer.isRendering()) return;
+        HoloRenderBatch batch = new HoloRenderBatch();
+        draw.accept(batch);
+        PENDING.add(new Entry(center, extractionOrigin, batch));
+    }
+
+    public static void addRelative(Vec3 center, HoloRenderBatch batch) {
+        PENDING.add(new Entry(center, null, batch));
+    }
+
+    public static void finishExtraction(ExtractLevelRenderStateEvent event) {
+        if (LiveCameraRenderer.isRendering()) return;
+        event.getRenderState().setRenderData(FRAME, new Frame(List.copyOf(PENDING), event.getCamera().position()));
+        PENDING.clear();
+        QUEUED.clear();
+    }
+
+    public static void captureFrame(SubmitCustomGeometryEvent event) {
+        if (!LiveCameraRenderer.isRendering()) activeFrame = event.getLevelRenderState().getRenderData(FRAME);
     }
 
     public static void renderWorld() {
-        if (PENDING.isEmpty()) {
-            return;
-        }
+        Frame frame = activeFrame;
+        activeFrame = null;
+        if (frame == null || frame.entries().isEmpty()) return;
         Minecraft mc = Minecraft.getInstance();
-        // Fabulous composites a full-screen quad into the main depth attachment.
-        // The particle target retains the scene's original opaque depth for world-space overlays.
-        if (Minecraft.useShaderTransparency() && mc.levelRenderer.getParticlesTarget() != null) {
-            mc.getMainRenderTarget().copyDepthFrom(mc.levelRenderer.getParticlesTarget());
+        var buffers = mc.renderBuffers();
+        if (features == null) {
+            storage = new SubmitNodeStorage();
+            features = new FeatureRenderDispatcher(storage, mc.getModelManager(), buffers.bufferSource(), mc.getAtlasManager(),
+                    buffers.outlineBufferSource(), buffers.crumblingBufferSource(), mc.font, mc.gameRenderer.getGameRenderState());
         }
-        mc.getMainRenderTarget().bindWrite(false);
-        render();
+        List<Entry> entries = new ArrayList<>(frame.entries());
+        entries.sort(Comparator.comparingDouble((Entry entry) -> entry.center().distanceToSqr(frame.camera())).reversed());
+        for (Entry entry : entries) {
+            PoseStack poses = new PoseStack();
+            if (entry.origin() != null) poses.translate(entry.origin().getX() - frame.camera().x,
+                    entry.origin().getY() - frame.camera().y, entry.origin().getZ() - frame.camera().z);
+            entry.batch().submit(poses, storage);
+            features.renderAllFeatures();
+            buffers.bufferSource().endBatch();
+        }
+        features.endFrame();
+        storage.endFrame();
     }
 
-    public static void render() {
-        Vec3 camera = Minecraft.getInstance().gameRenderer.getMainCamera().getPosition();
-        PENDING.sort(Comparator.comparingDouble((Entry entry) -> entry.center().distanceToSqr(camera)).reversed());
-        try {
-            for (Entry entry : PENDING) {
-                entry.draw().accept(BUFFERS);
-                BUFFERS.endBatch();
-            }
-        } finally {
-            PENDING.clear();
-            QUEUED.clear();
-        }
+    private record Frame(List<Entry> entries, Vec3 camera) {
     }
 
-    private record Entry(Vec3 center, Consumer<MultiBufferSource.BufferSource> draw) {
+    private record Entry(Vec3 center, BlockPos origin, HoloRenderBatch batch) {
     }
 }

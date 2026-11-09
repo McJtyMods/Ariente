@@ -1,5 +1,10 @@
 package mcjty.ariente.blocks.utility.autofield;
 
+import net.minecraft.world.level.storage.ValueInput;
+import net.minecraft.world.level.block.state.BlockBehaviour;
+import net.minecraft.world.level.material.MapColor;
+import net.minecraft.world.level.block.SoundType;
+import net.neoforged.neoforge.client.network.ClientPacketDistributor;
 import java.util.*;
 import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.stream.Collectors;
@@ -12,7 +17,6 @@ import mcjty.ariente.multipart.MultipartTE;
 import mcjty.ariente.power.IPowerReceiver;
 import mcjty.ariente.power.IPowerUser;
 import mcjty.ariente.power.PowerReceiverSupport;
-import mcjty.ariente.setup.Registration;
 import mcjty.hologui.api.IGuiComponent;
 import mcjty.hologui.api.IGuiComponentRegistry;
 import mcjty.hologui.api.IGuiTile;
@@ -27,7 +31,6 @@ import net.minecraft.core.Direction;
 import net.minecraft.core.HolderLookup;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.network.Connection;
-import net.minecraft.network.protocol.game.ClientboundBlockEntityDataPacket;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.world.Containers;
 import net.minecraft.world.InteractionHand;
@@ -93,11 +96,11 @@ public class AutoFieldTile extends ExtremeMachineTile implements IGuiTile, IPowe
     private long usingPower = 0;
 
     public AutoFieldTile(BlockPos pos, BlockState state) {
-        super(Registration.AUTOFIELD_TILE.get(), pos, state);
+        super(mcjty.ariente.setup.Registration.AUTOFIELD_TILE.get(), pos, state);
     }
 
-    public static BaseBlock createBlock() {
-        return new BaseBlock(new BlockBuilder()
+    public static BaseBlock createBlock(BlockBehaviour.Properties properties) {
+        return new BaseBlock(new BlockBuilder().properties(properties.mapColor(MapColor.METAL).strength(2.0f).requiresCorrectToolForDrops().sound(SoundType.METAL))
                 .info(key("message.ariente.shiftmessage"))
                 .infoShift(header())
                 .topDriver(DRIVER)
@@ -264,7 +267,7 @@ public class AutoFieldTile extends ExtremeMachineTile implements IGuiTile, IPowe
         long time = System.currentTimeMillis();
         if (time > clientRenderInfoAge + 1000) {
             clientRenderInfoAge = time;
-            PacketDistributor.sendToServer(new PacketAutoFieldRequestRenderInfo(worldPosition));
+            ClientPacketDistributor.sendToServer(new PacketAutoFieldRequestRenderInfo(worldPosition));
         }
     }
 
@@ -482,7 +485,7 @@ public class AutoFieldTile extends ExtremeMachineTile implements IGuiTile, IPowe
         super.onLoad();
         invalidateBox();
         LOADED_FIELDS.add(this);
-        if (!level.isClientSide && !listeningForChunks) {
+        if (!level.isClientSide() && !listeningForChunks) {
             NeoForge.EVENT_BUS.register(this);
             listeningForChunks = true;
         }
@@ -499,7 +502,7 @@ public class AutoFieldTile extends ExtremeMachineTile implements IGuiTile, IPowe
     }
 
     private void onFieldChunkChanged(ChunkEvent event) {
-        if (event.getLevel() == level && watchedChunks.contains(event.getChunk().getPos().toLong())) {
+        if (event.getLevel() == level && watchedChunks.contains(event.getChunk().getPos().pack())) {
             // Chunk load events can arrive before FULL status. Rebuild on the next controller tick.
             refreshField.set(true);
         }
@@ -656,12 +659,12 @@ public class AutoFieldTile extends ExtremeMachineTile implements IGuiTile, IPowe
             BlockPos pos = todo.poll();
             for (Direction facing : OrientationTools.HORIZONTAL_DIRECTION_VALUES) {
                 BlockPos p = pos.relative(facing);
-                chunks.add(ChunkPos.asLong(p.getX() >> 4, p.getZ() >> 4));
+                chunks.add(ChunkPos.pack(p.getX() >> 4, p.getZ() >> 4));
                 if (!markers.contains(p)) {
                     BlockEntity te = level.hasChunkAt(p) ? level.getBlockEntity(p) : null;
                     if (te instanceof MultipartTE) {
                         BlockState state = MultipartHelper.getBlockState(level, p, PartSlot.DOWN);
-                        if (state != null && state.getBlock() == Registration.FIELD_MARKER.get()) {
+                        if (state != null && state.getBlock() == mcjty.ariente.setup.Registration.FIELD_MARKER.get()) {
                             if (fieldBox == null) {
                                 fieldBox = new AABB(p).expandTowards(0, height, 0);
                             } else {
@@ -681,9 +684,9 @@ public class AutoFieldTile extends ExtremeMachineTile implements IGuiTile, IPowe
 
         linkedMarkers.removeIf(pos -> !markers.contains(pos) && clearMarkerLink(pos));
         linkedMarkers.addAll(markers);
-        linkedMarkers.forEach(pos -> chunks.add(ChunkPos.asLong(pos.getX() >> 4, pos.getZ() >> 4)));
+        linkedMarkers.forEach(pos -> chunks.add(ChunkPos.pack(pos.getX() >> 4, pos.getZ() >> 4)));
         calculateFieldColumns();
-        fieldColumns.forEach(pos -> chunks.add(ChunkPos.asLong(pos.getX() >> 4, pos.getZ() >> 4)));
+        fieldColumns.forEach(pos -> chunks.add(ChunkPos.pack(pos.getX() >> 4, pos.getZ() >> 4)));
         watchedChunks = Set.copyOf(chunks);
 
         renderBox = new AABB(getBlockPos());
@@ -734,13 +737,13 @@ public class AutoFieldTile extends ExtremeMachineTile implements IGuiTile, IPowe
     public void loadAdditional(CompoundTag tagCompound, HolderLookup.Provider provider) {
         super.loadAdditional(tagCompound, provider);
         invalidateBox();
-        CompoundTag info = tagCompound.getCompound("Info");
+        CompoundTag info = tagCompound.getCompoundOrEmpty("Info");
         if (!info.isEmpty()) {
-            height = info.getInt("height");
-            renderItems = info.getBoolean("renderItems");
-            renderOutline = info.getBoolean("renderOutline");
+            height = info.getIntOr("height", 0);
+            renderItems = info.getBooleanOr("renderItems", false);
+            renderOutline = info.getBooleanOr("renderOutline", false);
         }
-        accumulatedPower = tagCompound.getLong("accPower");
+        accumulatedPower = tagCompound.getLongOr("accPower", 0);
     }
 
     @Override
@@ -758,16 +761,25 @@ public class AutoFieldTile extends ExtremeMachineTile implements IGuiTile, IPowe
     }
 
     public AABB getRenderBoundingBox() {
-        return getRenderBox();
+        // Beam billboards extend beyond the marker outline in every viewing direction.
+        AABB box = getRenderBox().inflate(0.125);
+        if (transferRenders != null) {
+            for (TransferRender transfer : transferRenders) {
+                if (transfer != null) {
+                    box = box.minmax(transfer.getRenderBoundingBox());
+                }
+            }
+        }
+        return box;
     }
 
     @Override
-    public void onDataPacket(Connection net, ClientboundBlockEntityDataPacket packet, HolderLookup.Provider provider) {
+    public void onDataPacket(Connection net, ValueInput input) {
         int oldheight = height;
 
-        super.onDataPacket(net, packet, provider);
+        super.onDataPacket(net, input);
 
-        if (level.isClientSide) {
+        if (level.isClientSide()) {
             // If needed send a render update.
             if (oldheight != height) {
                 level.sendBlockUpdated(worldPosition, getBlockState(), getBlockState(), Block.UPDATE_ALL);

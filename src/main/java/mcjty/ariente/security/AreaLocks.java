@@ -1,5 +1,8 @@
 package mcjty.ariente.security;
 
+import mcjty.ariente.varia.SavedDataMigration;
+import net.minecraft.world.level.saveddata.SavedDataType;
+import net.minecraft.resources.Identifier;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
@@ -37,13 +40,15 @@ public class AreaLocks extends SavedData {
     private final Set<ChunkPos> pendingChunks = new HashSet<>();
 
     public static AreaLocks get(ServerLevel level) {
-        return level.getDataStorage().computeIfAbsent(new SavedData.Factory<>(AreaLocks::new, (tag, provider) -> load(tag)), "ariente_area_locks");
+        Identifier id = Identifier.withDefaultNamespace("ariente_area_locks");
+        SavedDataMigration.migrate(level, id, "ariente_area_locks");
+        return level.getDataStorage().computeIfAbsent(new SavedDataType<>(id, AreaLocks::new, CompoundTag.CODEC.xmap(AreaLocks::load, data -> data.save(new CompoundTag(), level.registryAccess()))));
     }
 
     public static void loaded(BlockEntity tile) {
         if (tile.getLevel() instanceof ServerLevel level) {
             // onLoad can run before a chunk is promoted to FULL. Reconcile after promotion.
-            level.getServer().tell(new TickTask(level.getServer().getTickCount(),
+            level.getServer().schedule(new TickTask(level.getServer().getTickCount(),
                     () -> get(level).pending.add(tile.getBlockPos().immutable())));
         }
     }
@@ -53,7 +58,7 @@ public class AreaLocks extends SavedData {
         if (event.getLevel() instanceof ServerLevel level) {
             AreaLocks locks = get(level);
             for (ChunkPos pos : List.copyOf(locks.pendingChunks)) {
-                LevelChunk chunk = level.getChunkSource().getChunkNow(pos.x, pos.z);
+                LevelChunk chunk = level.getChunkSource().getChunkNow(pos.x(), pos.z());
                 if (chunk != null) {
                     locks.pending.addAll(chunk.getBlockEntitiesPos());
                     locks.pendingChunks.remove(pos);
@@ -80,20 +85,20 @@ public class AreaLocks extends SavedData {
     public static void chunkLoaded(ChunkEvent.Load event) {
         if (event.getLevel() instanceof ServerLevel level) {
             ChunkPos pos = event.getChunk().getPos();
-            level.getServer().tell(new TickTask(level.getServer().getTickCount(),
+            level.getServer().schedule(new TickTask(level.getServer().getTickCount(),
                     () -> get(level).pendingChunks.add(pos)));
         }
     }
 
     public static void saveTarget(BlockEntity tile, CompoundTag tag) {
-        if (tile.getPersistentData().contains(TARGET_STATE, Tag.TAG_COMPOUND)) {
-            tag.put(TARGET_STATE, tile.getPersistentData().getCompound(TARGET_STATE).copy());
+        if (tile.getPersistentData().contains(TARGET_STATE)) {
+            tag.put(TARGET_STATE, tile.getPersistentData().getCompoundOrEmpty(TARGET_STATE).copy());
         }
     }
 
     public static void loadTarget(BlockEntity tile, CompoundTag tag) {
-        if (tag.contains(TARGET_STATE, Tag.TAG_COMPOUND)) {
-            tile.getPersistentData().put(TARGET_STATE, tag.getCompound(TARGET_STATE).copy());
+        if (tag.contains(TARGET_STATE)) {
+            tile.getPersistentData().put(TARGET_STATE, tag.getCompoundOrEmpty(TARGET_STATE).copy());
         } else {
             tile.getPersistentData().remove(TARGET_STATE);
         }
@@ -166,15 +171,15 @@ public class AreaLocks extends SavedData {
             if (authority.key() != null) {
                 state.putString("key", authority.key());
             }
-            if (!data.contains(TARGET_STATE, Tag.TAG_COMPOUND) || !state.equals(data.getCompound(TARGET_STATE))) {
+            if (!data.contains(TARGET_STATE) || !state.equals(data.getCompoundOrEmpty(TARGET_STATE))) {
                 data.put(TARGET_STATE, state);
                 tile.setChanged();
             }
             // An overlapping unlocked controller cannot override another authorized locked one.
             target.setLocked(locked);
-        } else if (data.contains(TARGET_STATE, Tag.TAG_COMPOUND)) {
-            CompoundTag previous = data.getCompound(TARGET_STATE);
-            String key = previous.contains("key") ? previous.getString("key") : null;
+        } else if (data.contains(TARGET_STATE)) {
+            CompoundTag previous = data.getCompoundOrEmpty(TARGET_STATE);
+            String key = previous.contains("key") ? previous.getStringOr("key", "") : null;
             data.remove(TARGET_STATE);
             tile.setChanged();
             // Rekeying a target must not let a former controller release its new lock.
@@ -186,16 +191,15 @@ public class AreaLocks extends SavedData {
 
     private static AreaLocks load(CompoundTag tag) {
         AreaLocks locks = new AreaLocks();
-        for (Tag entry : tag.getList("controllers", Tag.TAG_COMPOUND)) {
+        for (Tag entry : tag.getListOrEmpty("controllers")) {
             CompoundTag data = (CompoundTag) entry;
-            BlockPos pos = BlockPos.of(data.getLong("pos"));
-            locks.controllers.put(pos, new Controller(pos, data.getInt("horizontal"), data.getInt("vertical"),
-                    data.getBoolean("locked"), data.contains("key") ? data.getString("key") : null));
+            BlockPos pos = BlockPos.of(data.getLongOr("pos", 0));
+            locks.controllers.put(pos, new Controller(pos, data.getIntOr("horizontal", 0), data.getIntOr("vertical", 0),
+                    data.getBooleanOr("locked", false), data.contains("key") ? data.getStringOr("key", "") : null));
         }
         return locks;
     }
 
-    @Override
     public CompoundTag save(CompoundTag tag, HolderLookup.Provider provider) {
         ListTag list = new ListTag();
         for (Controller controller : controllers.values()) {

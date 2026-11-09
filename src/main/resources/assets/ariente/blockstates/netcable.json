@@ -1,5 +1,7 @@
 {
   "variants": {
-    "": { "model": "ariente:block/cable" }
+    "": {
+      "type": "ariente:cable"
+    }
   }
 }

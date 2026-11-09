@@ -1,8 +1,10 @@
 package mcjty.ariente.blocks.utility.wireless;
 
+import net.minecraft.world.level.block.state.BlockBehaviour;
+import net.minecraft.world.level.material.MapColor;
+import net.minecraft.world.level.block.SoundType;
 import mcjty.ariente.blocks.BlockProperties;
 import mcjty.ariente.blocks.MountedPanelShapes;
-import mcjty.ariente.setup.Registration;
 import mcjty.lib.blocks.BaseBlock;
 import mcjty.lib.builder.BlockBuilder;
 import net.minecraft.core.BlockPos;
@@ -35,13 +37,13 @@ public class SignalTransmitterTile extends SignalChannelTileEntity {
     private static final MountedPanelShapes SHAPES = new MountedPanelShapes(2, 3);
 
     public SignalTransmitterTile(BlockPos pos, BlockState state) {
-        super(Registration.SIGNAL_TRANSMITTER_TILE.get(), pos, state);
+        super(mcjty.ariente.setup.Registration.SIGNAL_TRANSMITTER_TILE.get(), pos, state);
     }
 
-    public static BaseBlock createBlock() {
-        return new BaseBlock(new BlockBuilder()
+    public static BaseBlock createBlock(BlockBehaviour.Properties properties) {
+        return new BaseBlock(new BlockBuilder().properties(properties.mapColor(MapColor.METAL).strength(2.0f).requiresCorrectToolForDrops().sound(SoundType.METAL))
                 .info(key("message.ariente.shiftmessage"))
-                .infoShift(header(), parameter("channel", (stack -> { var tag = stack.getOrDefault(Registration.MACHINE_DATA.get(), CustomData.EMPTY).copyTag().getCompound("Info"); return Integer.toString(tag.contains("channel") ? tag.getInt("channel") : -1); })))
+                .infoShift(header(), parameter("channel", (stack -> { var tag = stack.getOrDefault(mcjty.ariente.setup.Registration.MACHINE_DATA.get(), CustomData.EMPTY).copyTag().getCompoundOrEmpty("Info"); return Integer.toString(tag.contains("channel") ? tag.getIntOr("channel", 0) : -1); })))
                 .topDriver(DRIVER)
                 .tileEntitySupplier(SignalTransmitterTile::new)
         ) {
@@ -77,7 +79,7 @@ public class SignalTransmitterTile extends SignalChannelTileEntity {
     }
 
     public void update() {
-        if (level == null || level.isClientSide) {
+        if (level == null || level.isClientSide()) {
             return;
         }
 
@@ -100,7 +102,7 @@ public class SignalTransmitterTile extends SignalChannelTileEntity {
     @Override
     public void loadAdditional(CompoundTag tagCompound, HolderLookup.Provider provider) {
         super.loadAdditional(tagCompound, provider);
-        prevIn = tagCompound.getInt("prevIn");
+        prevIn = tagCompound.getIntOr("prevIn", 0);
         publishPending = true;
     }
 
@@ -112,7 +114,7 @@ public class SignalTransmitterTile extends SignalChannelTileEntity {
 
     @Override
     public void onBlockPlacedBy(Level world, BlockPos pos, BlockState state, LivingEntity placer, ItemStack stack) {
-        if (!world.isClientSide) {
+        if (!world.isClientSide()) {
             // @todo double check
             update();
         }

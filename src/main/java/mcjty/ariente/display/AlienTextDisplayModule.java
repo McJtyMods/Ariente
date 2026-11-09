@@ -27,7 +27,7 @@ public class AlienTextDisplayModule implements DisplayModuleType {
 
     public static List<String> lines(ItemStack stack) {
         var config = DisplayModuleItem.config(stack);
-        String text = config.contains("Text") ? config.getString("Text") : DEFAULT_TEXT;
+        String text = config.contains("Text") ? config.getStringOr("Text", "") : DEFAULT_TEXT;
         int scale = TextDisplayModule.scale(stack);
         int maxColumns = 488 / (GLYPH_ADVANCE * scale);
         int maxLines = 60 / scale;
@@ -64,7 +64,7 @@ public class AlienTextDisplayModule implements DisplayModuleType {
     @Override
     public void configure(IGuiComponentRegistry r, IPanel panel, ModuleSettings settings) {
         panel.add(r.textEntry(.3, 1, 7.2, 3.3).name("display_text").maxLength(1024)
-                .text(() -> settings.config().contains("Text") ? settings.config().getString("Text") : DEFAULT_TEXT)
+                .text(() -> settings.config().contains("Text") ? settings.config().getStringOr("Text", "") : DEFAULT_TEXT)
                 .changed((player, entity, text) -> settings.text(player, entity, "Text", text)));
         settings.addNumber(r, panel, 4.8, "Scale", "Text size", 1, 1, 4);
         settings.addColorButton(r, panel, 5.8);

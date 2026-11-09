@@ -14,7 +14,7 @@ import mezz.jei.api.recipe.RecipeIngredientRole;
 import mezz.jei.api.recipe.RecipeType;
 import mezz.jei.api.recipe.category.IRecipeCategory;
 import net.minecraft.client.Minecraft;
-import net.minecraft.client.gui.GuiGraphics;
+import net.minecraft.client.gui.GuiGraphicsExtractor;
 import net.minecraft.network.chat.Component;
 import net.minecraft.world.item.ItemStack;
 
@@ -39,8 +39,13 @@ public class JeiPurifyingRecipeCategory implements IRecipeCategory<PurifyingReci
     }
 
     @Override
-    public IDrawable getBackground() {
-        return background;
+    public int getWidth() {
+        return background.getWidth();
+    }
+
+    @Override
+    public int getHeight() {
+        return background.getHeight();
     }
 
     @Override
@@ -55,19 +60,20 @@ public class JeiPurifyingRecipeCategory implements IRecipeCategory<PurifyingReci
             int count = tubes;
             builder.addSlot(RecipeIngredientRole.OUTPUT, 148, 18 + (tubes - 1) * 22)
                     .addItemStack(recipe.result().copyWithCount(PurifierTile.yieldForTubes(tubes)))
-                    .addTooltipCallback((view, tooltip) -> tooltip.add(Component.translatable("jei.ariente.purifying_cost", count,
+                    .addRichTooltipCallback((view, tooltip) -> tooltip.add(Component.translatable("jei.ariente.purifying_cost", count,
                             count * PowerConfiguration.PURIFIER_TICKS_PER_TUBE.get() / 20.0,
                             (long) count * PowerConfiguration.PURIFIER_POWER_PER_TUBE.get())));
         }
     }
 
     @Override
-    public void draw(PurifyingRecipe recipe, IRecipeSlotsView slots, GuiGraphics graphics, double mouseX, double mouseY) {
+    public void draw(PurifyingRecipe recipe, IRecipeSlotsView slots, GuiGraphicsExtractor graphics, double mouseX, double mouseY) {
+        background.draw(graphics);
         var font = Minecraft.getInstance().font;
-        graphics.drawString(font, Component.translatable("jei.ariente.purifying_header"), 30, 2, 0x404040, false);
+        graphics.text(font, Component.translatable("jei.ariente.purifying_header"), 30, 2, 0xff404040, false);
         for (int tubes = 1; tubes <= PowerConfiguration.PURIFIER_MAX_TUBES.get(); tubes++) {
-            graphics.drawString(font, Component.translatable("jei.ariente.purifying_row", tubes,
-                    tubes * PowerConfiguration.PURIFIER_TICKS_PER_TUBE.get() / 20.0), 30, 22 + (tubes - 1) * 22, 0x404040, false);
+            graphics.text(font, Component.translatable("jei.ariente.purifying_row", tubes,
+                    tubes * PowerConfiguration.PURIFIER_TICKS_PER_TUBE.get() / 20.0), 30, 22 + (tubes - 1) * 22, 0xff404040, false);
         }
     }
 }

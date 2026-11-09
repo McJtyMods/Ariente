@@ -1,5 +1,6 @@
 package mcjty.ariente.cables;
 
+import net.minecraft.world.level.storage.ValueInput;
 import com.mojang.brigadier.exceptions.CommandSyntaxException;
 import java.util.HashMap;
 import java.util.Map;
@@ -21,8 +22,7 @@ import net.minecraft.nbt.CompoundTag;
 import net.minecraft.nbt.NbtUtils;
 import net.minecraft.nbt.TagParser;
 import net.minecraft.network.Connection;
-import net.minecraft.network.protocol.game.ClientboundBlockEntityDataPacket;
-import net.minecraft.resources.ResourceLocation;
+import net.minecraft.resources.Identifier;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.level.block.Block;
 import net.minecraft.world.level.block.entity.BlockEntity;
@@ -55,14 +55,14 @@ public abstract class GenericCableTileEntity extends ArienteBlockEntity implemen
     public void load(Map<String, Object> data) {
         if (data.get("mimicState") instanceof String encoded) {
             try {
-                mimicBlockSupport.setMimicBlock(NbtUtils.readBlockState(BuiltInRegistries.BLOCK.asLookup(), TagParser.parseTag(encoded)));
+                mimicBlockSupport.setMimicBlock(NbtUtils.readBlockState(BuiltInRegistries.BLOCK, TagParser.parseCompoundFully(encoded)));
                 return;
             } catch (CommandSyntaxException exception) {
                 throw new IllegalArgumentException("Invalid facade state in city equipment", exception);
             }
         }
         if (data.get("mimic") instanceof String) {
-            Block mimic = BuiltInRegistries.BLOCK.get(ResourceLocation.parse((String) data.get("mimic")));
+            Block mimic = BuiltInRegistries.BLOCK.getValue(Identifier.parse((String) data.get("mimic")));
             if (mimic == null) {
                 System.out.println("Something went wrong loading mimic state for: '" + data.get("mimic") + "'!");
             } else {
@@ -91,12 +91,12 @@ public abstract class GenericCableTileEntity extends ArienteBlockEntity implemen
     }
 
     @Override
-    public void onDataPacket(Connection net, ClientboundBlockEntityDataPacket packet, HolderLookup.Provider provider) {
+    public void onDataPacket(Connection net, ValueInput input) {
         BlockState oldMimicBlock = mimicBlockSupport.getMimicBlock();
 
-        super.onDataPacket(net, packet, provider);
+        super.onDataPacket(net, input);
 
-        if (level.isClientSide) {
+        if (level.isClientSide()) {
             // If needed send a render update.
             if (mimicBlockSupport.getMimicBlock() != oldMimicBlock) {
                 level.sendBlockUpdated(worldPosition, getBlockState(), getBlockState(), Block.UPDATE_ALL);
@@ -146,7 +146,7 @@ public abstract class GenericCableTileEntity extends ArienteBlockEntity implemen
     public void loadAdditional(CompoundTag tagCompound, HolderLookup.Provider provider) {
         super.loadAdditional(tagCompound, provider);
         mimicBlockSupport.readFromNBT(tagCompound);
-        powerBlobSupport.setCableId(tagCompound.contains("cableId") ? tagCompound.getInt("cableId") : -1);
+        powerBlobSupport.setCableId(tagCompound.contains("cableId") ? tagCompound.getIntOr("cableId", 0) : -1);
     }
 
     @Override

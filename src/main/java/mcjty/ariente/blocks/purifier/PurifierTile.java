@@ -1,5 +1,9 @@
 package mcjty.ariente.blocks.purifier;
 
+import mcjty.ariente.items.ItemData;
+import net.minecraft.world.level.block.state.BlockBehaviour;
+import net.minecraft.world.level.material.MapColor;
+import net.minecraft.world.level.block.SoundType;
 import java.util.List;
 import javax.annotation.Nullable;
 import mcjty.ariente.Ariente;
@@ -12,7 +16,6 @@ import mcjty.ariente.power.IPowerUser;
 import mcjty.ariente.power.PowerReceiverSupport;
 import mcjty.ariente.recipes.PurifierRecipes;
 import mcjty.ariente.recipes.PurifyingRecipe;
-import mcjty.ariente.setup.Registration;
 import mcjty.hologui.api.IGuiComponent;
 import mcjty.hologui.api.IGuiComponentRegistry;
 import mcjty.hologui.api.IGuiTile;
@@ -73,11 +76,11 @@ public class PurifierTile extends ExtremeMachineTile implements IGuiTile, IPower
     private List<BlockPos> shownTubes = List.of();
 
     public PurifierTile(BlockPos pos, BlockState state) {
-        super(Registration.PURIFIER_TILE.get(), pos, state);
+        super(mcjty.ariente.setup.Registration.PURIFIER_TILE.get(), pos, state);
     }
 
-    public static BaseBlock createBlock() {
-        return new BaseBlock(new BlockBuilder().topDriver(DRIVER).tileEntitySupplier(PurifierTile::new)) {
+    public static BaseBlock createBlock(BlockBehaviour.Properties properties) {
+        return new BaseBlock(new BlockBuilder().properties(properties.mapColor(MapColor.METAL).strength(2.0f).requiresCorrectToolForDrops().sound(SoundType.METAL)).topDriver(DRIVER).tileEntitySupplier(PurifierTile::new)) {
 
             @Override
             public RotationType getRotationType() {
@@ -92,7 +95,7 @@ public class PurifierTile extends ExtremeMachineTile implements IGuiTile, IPower
     }
 
     public boolean isStart() {
-        return getBlockState().is(Registration.PURIFIER_START.get());
+        return getBlockState().is(mcjty.ariente.setup.Registration.PURIFIER_START.get());
     }
 
     public GenericItemHandler getItems() {
@@ -275,7 +278,7 @@ public class PurifierTile extends ExtremeMachineTile implements IGuiTile, IPower
     }
 
     private boolean canInteract(Player player) {
-        return !level.isClientSide && player.level() == level && !isRemoved()
+        return !level.isClientSide() && player.level() == level && !isRemoved()
                 && player.distanceToSqr(worldPosition.getX() + .5, worldPosition.getY() + .5, worldPosition.getZ() + .5) <= 64;
     }
 
@@ -286,17 +289,17 @@ public class PurifierTile extends ExtremeMachineTile implements IGuiTile, IPower
         info.putInt("purifierProgress", progress);
         info.putInt("purifierTubes", tubeCount);
         info.putInt("purifierDirection", direction.get3DDataValue());
-        info.put("purifierOre", processingOre.saveOptional(provider));
+        info.put("purifierOre", ItemData.encode(provider, processingOre));
     }
 
     @Override
     protected void loadInfo(CompoundTag tag, HolderLookup.Provider provider) {
         super.loadInfo(tag, provider);
-        CompoundTag info = tag.getCompound("Info");
-        progress = Math.max(0, info.getInt("purifierProgress"));
-        tubeCount = Math.max(0, info.getInt("purifierTubes"));
-        direction = Direction.from3DDataValue(info.getInt("purifierDirection"));
-        processingOre = ItemStack.parseOptional(provider, info.getCompound("purifierOre"));
+        CompoundTag info = tag.getCompoundOrEmpty("Info");
+        progress = Math.max(0, info.getIntOr("purifierProgress", 0));
+        tubeCount = Math.max(0, info.getIntOr("purifierTubes", 0));
+        direction = Direction.from3DDataValue(info.getIntOr("purifierDirection", 0));
+        processingOre = ItemData.decode(provider, info.getCompoundOrEmpty("purifierOre"));
     }
 
     @Override
@@ -309,10 +312,10 @@ public class PurifierTile extends ExtremeMachineTile implements IGuiTile, IPower
 
     @Override
     public void loadClientDataFromNBT(CompoundTag tag, HolderLookup.Provider provider) {
-        items.deserializeNBT(provider, tag.getCompound("Items"));
-        progress = tag.getInt("Progress");
-        tubeCount = tag.getInt("Tubes");
-        status = tag.getString("Status");
+        items.deserializeNBT(provider, tag.getCompoundOrEmpty("Items"));
+        progress = tag.getIntOr("Progress", 0);
+        tubeCount = tag.getIntOr("Tubes", 0);
+        status = tag.getStringOr("Status", "");
     }
 
     @Override

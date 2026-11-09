@@ -1,5 +1,9 @@
 package mcjty.ariente.facade;
 
+import java.util.ArrayList;
+
+import mcjty.ariente.varia.Messages;
+import net.minecraft.world.item.component.TooltipDisplay;
 import java.util.List;
 import java.util.function.Consumer;
 import javax.annotation.Nonnull;
@@ -7,8 +11,6 @@ import mcjty.ariente.items.ItemData;
 import mcjty.lib.builder.TooltipBuilder;
 import mcjty.lib.tooltips.ITooltipSettings;
 import mcjty.lib.varia.Tools;
-import net.minecraft.client.Minecraft;
-import net.minecraft.client.renderer.BlockEntityWithoutLevelRenderer;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.registries.BuiltInRegistries;
 import net.minecraft.nbt.CompoundTag;
@@ -30,7 +32,6 @@ import net.minecraft.world.level.block.Blocks;
 import net.minecraft.world.level.block.SoundType;
 import net.minecraft.world.level.block.entity.BlockEntity;
 import net.minecraft.world.level.block.state.BlockState;
-import net.neoforged.neoforge.client.extensions.common.IClientItemExtensions;
 
 import static mcjty.lib.builder.TooltipBuilder.*;
 
@@ -49,30 +50,20 @@ public class FacadeItemBlock extends BlockItem implements ITooltipSettings {
         return isMimicing(stack) ? getMimicBlock(stack).getBlock().getName().getString() : "<unset>";
     }
 
-    public FacadeItemBlock(FacadeBlock block) {
-        super(block, new Properties()
+    public FacadeItemBlock(Item.Properties properties, FacadeBlock block) {
+        super(block, properties
                 );
     }
 
     @Override
-    public void initializeClient(Consumer<IClientItemExtensions> consumer) {
-        consumer.accept(new IClientItemExtensions() {
-            private FacadeRenderer renderer;
-
-            @Override
-            public BlockEntityWithoutLevelRenderer getCustomRenderer() {
-                if (renderer == null) {
-                    Minecraft mc = Minecraft.getInstance();
-                    renderer = new FacadeRenderer(mc.getBlockEntityRenderDispatcher(), mc.getEntityModels());
-                }
-                return renderer;
-            }
-        });
+    public void appendHoverText(ItemStack stack, Item.TooltipContext context, TooltipDisplay display, Consumer<Component> output, TooltipFlag flag) {
+        List<Component> lines = new ArrayList<>();
+        appendHoverText(stack, context, lines, flag);
+        lines.forEach(output);
     }
 
-    @Override
     public void appendHoverText(ItemStack stack, Item.TooltipContext worldIn, List<Component> tooltip, TooltipFlag flag) {
-        super.appendHoverText(stack, worldIn, tooltip, flag);
+
         tooltipBuilder.makeTooltip(Tools.getId(this), stack, tooltip, flag);
     }
 
@@ -89,7 +80,7 @@ public class FacadeItemBlock extends BlockItem implements ITooltipSettings {
         if (tagCompound == null || !tagCompound.contains("mimic")) {
             return Blocks.COBBLESTONE.defaultBlockState();
         } else {
-            return NbtUtils.readBlockState(BuiltInRegistries.BLOCK.asLookup(), tagCompound.getCompound("mimic"));
+            return NbtUtils.readBlockState(BuiltInRegistries.BLOCK, tagCompound.getCompoundOrEmpty("mimic"));
         }
     }
 
@@ -118,23 +109,23 @@ public class FacadeItemBlock extends BlockItem implements ITooltipSettings {
             if (te instanceof IFacadeSupport) {
                 IFacadeSupport facadeSupport = (IFacadeSupport) te;
                 if (facadeSupport.getMimicBlock() == null) {
-                    if (!world.isClientSide) {
+                    if (!world.isClientSide()) {
                         facadeSupport.setMimicBlock(getMimicBlock(itemstack));
                     }
                     SoundType soundtype = world.getBlockState(pos).getBlock().getSoundType(world.getBlockState(pos), world, pos, player);
                     world.playSound(player, pos, soundtype.getPlaceSound(), SoundSource.BLOCKS, (soundtype.getVolume() + 1.0F) / 2.0F, soundtype.getPitch() * 0.8F);
-                    if (!world.isClientSide && !player.getAbilities().instabuild) {
+                    if (!world.isClientSide() && !player.getAbilities().instabuild) {
                         itemstack.shrink(1);
                     }
                 } else {
                     return InteractionResult.FAIL;
                 }
             } else {
-                if (!world.isClientSide) {
+                if (!world.isClientSide()) {
                     setMimicBlock(itemstack, state);
                 }
-                if (world.isClientSide) {
-                    player.displayClientMessage(Component.literal("Facade is now mimicking ").append(block.getName()), false);
+                if (world.isClientSide()) {
+                    Messages.player(player, Component.literal("Facade is now mimicking ").append(block.getName()), false);
                 }
             }
             return InteractionResult.SUCCESS;

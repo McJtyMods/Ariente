@@ -1,29 +1,30 @@
 package mcjty.ariente.entities;
 
+import mcjty.ariente.client.ExtractedEntityRenderer;
 import com.mojang.blaze3d.vertex.PoseStack;
 import com.mojang.blaze3d.vertex.VertexConsumer;
 import mcjty.ariente.Ariente;
 import mcjty.ariente.client.ArienteRenderType;
 import mcjty.ariente.client.ArienteSpriteUploader;
 import net.minecraft.client.Minecraft;
-import net.minecraft.client.renderer.LightTexture;
+import net.minecraft.util.LightCoordsUtil;
 import net.minecraft.client.renderer.MultiBufferSource;
 import net.minecraft.client.renderer.entity.EntityRenderer;
 import net.minecraft.client.renderer.entity.EntityRendererProvider;
 import net.minecraft.client.renderer.texture.OverlayTexture;
-import net.minecraft.resources.ResourceLocation;
+import net.minecraft.resources.Identifier;
 import net.minecraft.util.Mth;
 import net.minecraft.world.phys.Vec3;
 
-public class LaserRender extends EntityRenderer<LaserEntity> {
+public class LaserRender extends ExtractedEntityRenderer<LaserEntity> {
 
     private static final float BEAM_WIDTH = 0.08F;
 
-    private static final ResourceLocation[] BEAMS = {
-            ResourceLocation.fromNamespaceAndPath(Ariente.MODID, "negarite_laserbeam1"),
-            ResourceLocation.fromNamespaceAndPath(Ariente.MODID, "negarite_laserbeam2"),
-            ResourceLocation.fromNamespaceAndPath(Ariente.MODID, "negarite_laserbeam3"),
-            ResourceLocation.fromNamespaceAndPath(Ariente.MODID, "negarite_laserbeam4")
+    private static final Identifier[] BEAMS = {
+            Identifier.fromNamespaceAndPath(Ariente.MODID, "negarite_laserbeam1"),
+            Identifier.fromNamespaceAndPath(Ariente.MODID, "negarite_laserbeam2"),
+            Identifier.fromNamespaceAndPath(Ariente.MODID, "negarite_laserbeam3"),
+            Identifier.fromNamespaceAndPath(Ariente.MODID, "negarite_laserbeam4")
     };
 
     public LaserRender(EntityRendererProvider.Context context) {
@@ -35,7 +36,7 @@ public class LaserRender extends EntityRenderer<LaserEntity> {
         Vec3 direction = entity.getBeamDirection();
         Vec3 origin = new Vec3(Mth.lerp(partialTicks, entity.xOld, entity.getX()),
                 Mth.lerp(partialTicks, entity.yOld, entity.getY()), Mth.lerp(partialTicks, entity.zOld, entity.getZ()));
-        Vec3 camera = Minecraft.getInstance().gameRenderer.getMainCamera().getPosition().subtract(origin);
+        Vec3 camera = Minecraft.getInstance().gameRenderer.getMainCamera().position().subtract(origin);
         var sprite = ArienteSpriteUploader.INSTANCE.getSprite(BEAMS[(entity.tickCount / 2) % BEAMS.length]);
         VertexConsumer vertices = buffer.getBuffer(ArienteRenderType.ARIENTE_ADDITIVE);
         if (camera.cross(direction).lengthSqr() > 1.0E-10D * camera.lengthSqr()) {
@@ -49,8 +50,8 @@ public class LaserRender extends EntityRenderer<LaserEntity> {
             vertex(poses, vertices, tail.subtract(side), sprite.getU0(), sprite.getV1());
         } else {
             var activeCamera = Minecraft.getInstance().gameRenderer.getMainCamera();
-            Vec3 right = new Vec3(activeCamera.getLeftVector()).scale(BEAM_WIDTH);
-            Vec3 up = new Vec3(activeCamera.getUpVector()).scale(BEAM_WIDTH);
+            Vec3 right = new Vec3(activeCamera.leftVector()).scale(BEAM_WIDTH);
+            Vec3 up = new Vec3(activeCamera.upVector()).scale(BEAM_WIDTH);
             vertex(poses, vertices, right.add(up), sprite.getU(6 / 16f), sprite.getV(5 / 16f));
             vertex(poses, vertices, right.scale(-1).add(up), sprite.getU(10 / 16f), sprite.getV(5 / 16f));
             vertex(poses, vertices, right.scale(-1).subtract(up), sprite.getU(10 / 16f), sprite.getV(11 / 16f));
@@ -61,19 +62,19 @@ public class LaserRender extends EntityRenderer<LaserEntity> {
 
     private static void vertex(PoseStack poses, VertexConsumer vertices, Vec3 point, float u, float v) {
         vertices.addVertex(poses.last().pose(), (float) point.x, (float) point.y, (float) point.z).setColor(255, 255, 255, 255)
-                .setUv(u, v).setOverlay(OverlayTexture.NO_OVERLAY).setLight(LightTexture.FULL_BRIGHT)
+                .setUv(u, v).setOverlay(OverlayTexture.NO_OVERLAY).setLight(LightCoordsUtil.FULL_BRIGHT)
                 .setNormal(poses.last(), 0, 1, 0);
     }
 
     @Override
-    public ResourceLocation getTextureLocation(LaserEntity entity) {
+    public Identifier getTextureLocation(LaserEntity entity) {
         return ArienteSpriteUploader.ARIENTE_ATLAS;
     }
 
     public static class Factory implements EntityRendererProvider<LaserEntity> {
 
         @Override
-        public EntityRenderer<LaserEntity> create(Context context) {
+        public EntityRenderer<LaserEntity, ?> create(Context context) {
             return new LaserRender(context);
         }
     }

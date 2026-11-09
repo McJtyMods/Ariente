@@ -5,6 +5,10 @@ import net.minecraft.world.level.block.state.properties.EnumProperty;
 
 public class PatternBlock extends BaseVariantBlock<PatternType> {
 
+    public PatternBlock(Properties properties) {
+        super(properties);
+    }
+
     public static final EnumProperty<PatternType> TYPE = EnumProperty.create("type", PatternType.class);
 
     @Override

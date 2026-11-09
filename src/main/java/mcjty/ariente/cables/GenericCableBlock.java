@@ -1,5 +1,10 @@
 package mcjty.ariente.cables;
 
+import net.minecraft.util.RandomSource;
+import net.minecraft.world.level.ScheduledTickAccess;
+
+import net.minecraft.server.level.ServerLevel;
+import net.minecraft.world.level.block.state.BlockBehaviour;
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 import mcjty.ariente.facade.FacadeItemBlock;
@@ -18,7 +23,6 @@ import net.minecraft.world.item.Items;
 import net.minecraft.world.item.context.BlockPlaceContext;
 import net.minecraft.world.level.BlockGetter;
 import net.minecraft.world.level.Level;
-import net.minecraft.world.level.LevelAccessor;
 import net.minecraft.world.level.LevelReader;
 import net.minecraft.world.level.block.Block;
 import net.minecraft.world.level.block.EntityBlock;
@@ -33,7 +37,7 @@ import net.minecraft.world.phys.shapes.BooleanOp;
 import net.minecraft.world.phys.shapes.CollisionContext;
 import net.minecraft.world.phys.shapes.Shapes;
 import net.minecraft.world.phys.shapes.VoxelShape;
-import net.neoforged.neoforge.client.model.data.ModelProperty;
+import net.neoforged.neoforge.model.data.ModelProperty;
 
 public abstract class GenericCableBlock extends Block implements WailaInfoProvider, TOPInfoProvider, EntityBlock {
 
@@ -64,8 +68,8 @@ public abstract class GenericCableBlock extends Block implements WailaInfoProvid
     private static final VoxelShape SHAPE_BLOCK_UP = Shapes.box(.2, .9, .2, .8, 1, .8);
     private static final VoxelShape SHAPE_BLOCK_DOWN = Shapes.box(.2, 0, .2, .8, .1, .8);
 
-    public GenericCableBlock(MapColor material) {
-        super(Properties.of().mapColor(material)
+    public GenericCableBlock(BlockBehaviour.Properties properties, MapColor material) {
+        super(properties.mapColor(material)
                 .sound(SoundType.METAL)
                 .strength(1.0f)
         );
@@ -145,7 +149,7 @@ public abstract class GenericCableBlock extends Block implements WailaInfoProvid
     }
 
     @Override
-    public ItemStack getCloneItemStack(LevelReader worldIn, BlockPos pos, BlockState state) {
+    public ItemStack getCloneItemStack(LevelReader worldIn, BlockPos pos, BlockState state, boolean includeData) {
         return new ItemStack(getItem(state.getValue(COLOR)));
     }
 
@@ -174,9 +178,9 @@ public abstract class GenericCableBlock extends Block implements WailaInfoProvid
     }
 
     @Override
-    public boolean onDestroyedByPlayer(BlockState state, Level world, BlockPos pos, Player player, boolean willHarvest, FluidState fluid) {
+    public boolean onDestroyedByPlayer(BlockState state, Level world, BlockPos pos, Player player, ItemStack tool, boolean willHarvest, FluidState fluid) {
         if (world.getBlockEntity(pos) instanceof IFacadeSupport facade && facade.getMimicBlock() != null) {
-            if (!world.isClientSide) {
+            if (!world.isClientSide()) {
                 ItemStack drop = new ItemStack(Registration.FACADE_ITEM.get());
                 FacadeItemBlock.setMimicBlock(drop, facade.getMimicBlock());
                 facade.setMimicBlock(null);
@@ -186,13 +190,13 @@ public abstract class GenericCableBlock extends Block implements WailaInfoProvid
             }
             return false;
         }
-        return super.onDestroyedByPlayer(state, world, pos, player, willHarvest, fluid);
+        return super.onDestroyedByPlayer(state, world, pos, player, tool, willHarvest, fluid);
     }
 
     @Override
     public void setPlacedBy(Level world, BlockPos pos, BlockState state, LivingEntity placer, ItemStack stack) {
         super.setPlacedBy(world, pos, state, placer, stack);
-        if (!world.isClientSide) {
+        if (!world.isClientSide()) {
             PowerSenderSupport.fixNetworks(world, pos);
         }
         BlockState blockState = calculateState(world, pos, state);
@@ -202,11 +206,9 @@ public abstract class GenericCableBlock extends Block implements WailaInfoProvid
     }
 
     @Override
-    public void onRemove(BlockState state, Level world, BlockPos pos, BlockState newState, boolean isMoving) {
-        super.onRemove(state, world, pos, newState, isMoving);
-        if (!state.is(newState.getBlock()) && !world.isClientSide) {
-            PowerSenderSupport.fixNetworks(world, pos);
-        }
+    public void affectNeighborsAfterRemoval(BlockState state, ServerLevel world, BlockPos pos, boolean moving) {
+        super.affectNeighborsAfterRemoval(state, world, pos, moving);
+        PowerSenderSupport.fixNetworks(world, pos);
     }
 
     @Override
@@ -267,7 +269,7 @@ public abstract class GenericCableBlock extends Block implements WailaInfoProvid
     }
 
     @Override
-    public BlockState updateShape(BlockState state, Direction direction, BlockState neighbourState, LevelAccessor world, BlockPos current, BlockPos offset) {
+    public BlockState updateShape(BlockState state, LevelReader world, ScheduledTickAccess ticks, BlockPos current, Direction direction, BlockPos offset, BlockState neighbourState, RandomSource random) {
         return calculateState(world, current, state);
     }
 

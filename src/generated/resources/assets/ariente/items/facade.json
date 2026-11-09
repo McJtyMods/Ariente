@@ -1,0 +1,9 @@
+{
+  "model": {
+    "type": "minecraft:special",
+    "base": "ariente:item/facade_base",
+    "model": {
+      "type": "ariente:facade"
+    }
+  }
+}

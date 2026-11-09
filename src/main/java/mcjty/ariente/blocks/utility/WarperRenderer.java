@@ -1,5 +1,8 @@
 package mcjty.ariente.blocks.utility;
 
+import net.minecraft.client.renderer.texture.TextureAtlas;
+import net.minecraft.client.resources.model.sprite.SpriteId;
+
 import com.mojang.blaze3d.vertex.PoseStack;
 import com.mojang.blaze3d.vertex.VertexConsumer;
 import mcjty.ariente.Ariente;
@@ -8,18 +11,17 @@ import mcjty.ariente.client.BeamRenderTools;
 import mcjty.ariente.setup.Registration;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.renderer.MultiBufferSource;
-import net.minecraft.client.renderer.blockentity.BlockEntityRenderer;
+import mcjty.ariente.client.ExtractedBlockRenderer;
 import net.minecraft.client.renderer.blockentity.BlockEntityRendererProvider;
 import net.minecraft.client.renderer.blockentity.BlockEntityRenderers;
 import net.minecraft.client.renderer.texture.TextureAtlasSprite;
-import net.minecraft.resources.ResourceLocation;
-import net.minecraft.world.inventory.InventoryMenu;
+import net.minecraft.resources.Identifier;
 import net.minecraft.world.phys.AABB;
 import net.minecraft.world.phys.Vec3;
 
-public class WarperRenderer implements BlockEntityRenderer<WarperTile> {
+public class WarperRenderer extends ExtractedBlockRenderer<WarperTile> {
 
-    public static final ResourceLocation HALO = ResourceLocation.fromNamespaceAndPath(Ariente.MODID, "block/machines/warper_beam");
+    public static final Identifier HALO = Identifier.fromNamespaceAndPath(Ariente.MODID, "block/machines/warper_beam");
 
     protected BlockEntityRendererProvider.Context context;
 
@@ -38,13 +40,13 @@ public class WarperRenderer implements BlockEntityRenderer<WarperTile> {
 
     @Override
     public void render(WarperTile te, float partialTicks, PoseStack matrixStack, MultiBufferSource buffer, int combinedLightIn, int combinedOverlayIn) {
-        ResourceLocation beamIcon = HALO;
+        Identifier beamIcon = HALO;
 
         Minecraft mc = Minecraft.getInstance();
         int tex = te.getBlockPos().getX();
         int tey = te.getBlockPos().getY();
         int tez = te.getBlockPos().getZ();
-        Vec3 projectedView = mc.gameRenderer.getMainCamera().getPosition().add(-tex, -tey, -tez);
+        Vec3 projectedView = mc.gameRenderer.getMainCamera().position().add(-tex, -tey, -tez);
         Vec3 player = new Vec3((float)projectedView.x, (float)projectedView.y, (float)projectedView.z);
 
         long tt = System.currentTimeMillis() / 100;
@@ -52,7 +54,7 @@ public class WarperRenderer implements BlockEntityRenderer<WarperTile> {
         float height = 2;
 
         VertexConsumer builder = buffer.getBuffer(ArienteRenderType.BEAM);
-        TextureAtlasSprite sprite = mc.getTextureAtlas(InventoryMenu.BLOCK_ATLAS).apply(beamIcon);
+        TextureAtlasSprite sprite = mc.getAtlasManager().get(new SpriteId(TextureAtlas.LOCATION_BLOCKS, beamIcon));
 
         for (int i = 0; i < 10; i++) {
             int ii = i % 10;
@@ -69,7 +71,7 @@ public class WarperRenderer implements BlockEntityRenderer<WarperTile> {
     }
 
     @Override
-    public boolean shouldRenderOffScreen(WarperTile te) {
+    public boolean shouldRenderOffScreen() {
         return true;
     }
 

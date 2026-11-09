@@ -29,11 +29,11 @@ public class PersonalForcefield {
     }
 
     public static long getCooldownUntil(LivingEntity entity) {
-        return entity.getPersistentData().getLong(COOLDOWN_UNTIL);
+        return entity.getPersistentData().getLongOr(COOLDOWN_UNTIL, 0);
     }
 
     public static long getLastHit(LivingEntity entity) {
-        return entity.getPersistentData().getLong(LAST_HIT);
+        return entity.getPersistentData().getLongOr(LAST_HIT, 0);
     }
 
     public static boolean isCoolingDown(LivingEntity entity) {
@@ -49,7 +49,7 @@ public class PersonalForcefield {
     public static void absorb(LivingDamageEvent.Pre event) {
         LivingEntity entity = event.getEntity();
         float damage = event.getNewDamage();
-        if (entity.level().isClientSide || damage <= 0 || !isActive(entity)) {
+        if (entity.level().isClientSide() || damage <= 0 || !isActive(entity)) {
             return;
         }
         DamageSource source = event.getSource();

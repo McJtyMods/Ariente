@@ -1,5 +1,8 @@
 package mcjty.ariente.blocks.defense;
 
+import net.minecraft.world.level.block.state.BlockBehaviour;
+import net.minecraft.world.level.material.MapColor;
+import net.minecraft.world.level.block.SoundType;
 import mcjty.ariente.api.*;
 import java.util.*;
 import javax.annotation.Nullable;
@@ -14,7 +17,6 @@ import mcjty.ariente.items.KeyCardItem;
 import mcjty.ariente.power.IPowerReceiver;
 import mcjty.ariente.power.IPowerUser;
 import mcjty.ariente.power.PowerReceiverSupport;
-import mcjty.ariente.setup.Registration;
 import mcjty.ariente.sounds.ISoundProducer;
 import mcjty.ariente.varia.Triangle;
 import mcjty.hologui.api.IGuiComponent;
@@ -64,15 +66,15 @@ public class ForceFieldTile extends ExtremeMachineTile implements IGuiTile, ISou
     private static int[] shuffledIndices = null;
 
     public ForceFieldTile(BlockPos pos, BlockState state) {
-        super(Registration.FORCEFIELD_TILE.get(), pos, state);
+        super(mcjty.ariente.setup.Registration.FORCEFIELD_TILE.get(), pos, state);
         for (int i = 0 ; i < PentakisDodecahedron.MAX_TRIANGLES ; i++) {
             panelInfo[i] = null;
             panelDestroyTimeout[i] = 0;
         }
     }
 
-    public static BaseBlock createBlock() {
-        return new BaseBlock(new BlockBuilder()
+    public static BaseBlock createBlock(BlockBehaviour.Properties properties) {
+        return new BaseBlock(new BlockBuilder().properties(properties.mapColor(MapColor.METAL).strength(2.0f).requiresCorrectToolForDrops().sound(SoundType.METAL))
                 .info(key("message.ariente.shiftmessage"))
                 .infoShift(header())
                 .topDriver(DRIVER)
@@ -321,7 +323,7 @@ public class ForceFieldTile extends ExtremeMachineTile implements IGuiTile, ISou
     public void setRemoved() {
         // Removal also runs during chunk unload; sending updates would reload the chunk.
         Arrays.fill(panelInfo, null);
-        if (level != null && level.isClientSide) {
+        if (level != null && level.isClientSide()) {
             ForceFieldRenderer.unregister(worldPosition);
         }
         super.setRemoved();
@@ -449,14 +451,14 @@ public class ForceFieldTile extends ExtremeMachineTile implements IGuiTile, ISou
     @Override
     public void loadAdditional(CompoundTag tagCompound, HolderLookup.Provider provider) {
         super.loadAdditional(tagCompound, provider);
-        CompoundTag info = tagCompound.getCompound("Info");
+        CompoundTag info = tagCompound.getCompoundOrEmpty("Info");
         if (info.contains("scale")) {
-            setScale(info.getInt("scale"));
+            setScale(info.getIntOr("scale", 0));
         }
         for (int i = 0 ; i < panelInfo.length ; i++) {
             panelInfo[i] = null;
         }
-        int[] lifeIdx = tagCompound.getIntArray("life");
+        int[] lifeIdx = tagCompound.getIntArray("life").orElseGet(() -> new int[0]);
         for (int i = 0 ; i < Math.min(lifeIdx.length, panelInfo.length) ; i++) {
             if (lifeIdx[i] == 0) {
                 panelInfo[i] = null;

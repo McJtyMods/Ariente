@@ -1,5 +1,11 @@
 package mcjty.ariente.items;
 
+import java.util.ArrayList;
+
+import net.minecraft.server.level.ServerLevel;
+import net.minecraft.world.entity.EquipmentSlot;
+import net.minecraft.world.item.component.TooltipDisplay;
+import java.util.function.Consumer;
 import java.util.List;
 import java.util.Locale;
 import mcjty.ariente.Ariente;
@@ -20,7 +26,7 @@ import mcjty.lib.varia.Tools;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.network.chat.Component;
 import net.minecraft.world.InteractionHand;
-import net.minecraft.world.InteractionResultHolder;
+import net.minecraft.world.InteractionResult;
 import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.Item;
@@ -45,8 +51,8 @@ public class EnergyHolderItem extends Item implements ITooltipSettings {
                     parameter("power", EnergyHolderItem::formatStoredPower),
                     parameter("mode", stack -> getAutomatic(stack) == MODE_MANUAL ? "Manual" : "Automatic"));
 
-    public EnergyHolderItem() {
-        super(new Properties().stacksTo(1));
+    public EnergyHolderItem(Item.Properties properties) {
+        super(properties.stacksTo(1));
     }
 
     @Override
@@ -55,12 +61,19 @@ public class EnergyHolderItem extends Item implements ITooltipSettings {
     }
 
     @Override
+    public void appendHoverText(ItemStack stack, Item.TooltipContext context, TooltipDisplay display, Consumer<Component> output, TooltipFlag flag) {
+        List<Component> lines = new ArrayList<>();
+        appendHoverText(stack, context, lines, flag);
+        lines.forEach(output);
+    }
+
     public void appendHoverText(ItemStack stack, Item.TooltipContext worldIn, List<Component> tooltip, TooltipFlag flag) {
-        super.appendHoverText(stack, worldIn, tooltip, flag);
+
         tooltipBuilder.makeTooltip(Tools.getId(this), stack, tooltip, flag);
     }
 
     /** A held holder takes priority; otherwise the first holder in the inventory supplies the pool. */
+
     public static ItemStack findActiveHolder(Player player) {
         if (player.getMainHandItem().is(Registration.ENERGY_HOLDER.get())) {
             return player.getMainHandItem();
@@ -68,7 +81,7 @@ public class EnergyHolderItem extends Item implements ITooltipSettings {
         if (player.getOffhandItem().is(Registration.ENERGY_HOLDER.get())) {
             return player.getOffhandItem();
         }
-        for (ItemStack stack : player.getInventory().items) {
+        for (ItemStack stack : player.getInventory().getNonEquipmentItems()) {
             if (stack.is(Registration.ENERGY_HOLDER.get())) {
                 return stack;
             }
@@ -78,15 +91,15 @@ public class EnergyHolderItem extends Item implements ITooltipSettings {
 
     public static boolean consumePower(Player player, int usage, int ticksPerPair) {
         ItemStack holder = findActiveHolder(player);
-        if (player.level().isClientSide || holder.isEmpty()) {
+        if (player.level().isClientSide() || holder.isEmpty()) {
             return false;
         }
         // Both efficiency rates divide this capacity exactly, so mixed equipment shares every last tick.
         long capacity = powerCapacity();
         long cost = Math.min(capacity, Math.max(1L, usage * (capacity / ticksPerPair)));
         CompoundTag tag = ItemData.get(holder);
-        long storedCapacity = tag.getLong("chargeCapacity");
-        long charge = Math.max(0, Math.min(tag.getLong("charge"), storedCapacity));
+        long storedCapacity = tag.getLongOr("chargeCapacity", 0);
+        long charge = Math.max(0, Math.min(tag.getLongOr("charge", 0), storedCapacity));
         if (storedCapacity > 0 && storedCapacity != capacity) {
             charge = Math.round((double) charge / storedCapacity * capacity);
         }
@@ -128,24 +141,25 @@ public class EnergyHolderItem extends Item implements ITooltipSettings {
 
     public static int getChargePercentage(ItemStack holder) {
         CompoundTag tag = ItemData.get(holder);
-        if (tag == null || tag.getLong("chargeCapacity") <= 0) {
+        if (tag == null || tag.getLongOr("chargeCapacity", 0) <= 0) {
             return 0;
         }
-        long capacity = tag.getLong("chargeCapacity");
-        long charge = Math.max(0, Math.min(capacity, tag.getLong("charge")));
+        long capacity = tag.getLongOr("chargeCapacity", 0);
+        long charge = Math.max(0, Math.min(capacity, tag.getLongOr("charge", 0)));
         return (int) ((charge * 100 + capacity - 1) / capacity);
     }
 
     /** Counts usable fuel pairs and the remaining charge using a fixed display unit. */
+
     public static long getStoredPower(ItemStack holder) {
         long pairs = Math.min(count(holder, "negarite"), count(holder, "posirite"));
         long power = pairs * POWER_PER_FUEL_PAIR;
         CompoundTag tag = ItemData.get(holder);
-        if (tag == null || tag.getLong("chargeCapacity") <= 0) {
+        if (tag == null || tag.getLongOr("chargeCapacity", 0) <= 0) {
             return power;
         }
-        long capacity = tag.getLong("chargeCapacity");
-        long charge = Math.max(0, Math.min(capacity, tag.getLong("charge")));
+        long capacity = tag.getLongOr("chargeCapacity", 0);
+        long charge = Math.max(0, Math.min(capacity, tag.getLongOr("charge", 0)));
         return power + charge * POWER_PER_FUEL_PAIR / capacity;
     }
 
@@ -154,13 +168,13 @@ public class EnergyHolderItem extends Item implements ITooltipSettings {
     }
 
     @Override
-    public void inventoryTick(ItemStack stack, Level level, Entity entity, int itemSlot, boolean selected) {
-        if (level.isClientSide || !(entity instanceof Player player)
+    public void inventoryTick(ItemStack stack, ServerLevel level, Entity entity, EquipmentSlot itemSlot) {
+        if (level.isClientSide() || !(entity instanceof Player player)
                 || getAutomatic(stack) != MODE_AUTOMATIC || findActiveHolder(player) != stack) {
             return;
         }
         CompoundTag tag = ItemData.get(stack);
-        int index = Math.floorMod(tag.getInt("index"), player.getInventory().getContainerSize());
+        int index = Math.floorMod(tag.getIntOr("index", 0), player.getInventory().getContainerSize());
         tag.putInt("index", index + 1);
         ItemData.set(stack, tag);
 
@@ -171,11 +185,11 @@ public class EnergyHolderItem extends Item implements ITooltipSettings {
     }
 
     @Override
-    public InteractionResultHolder<ItemStack> use(Level level, Player player, InteractionHand hand) {
-        if (!level.isClientSide) {
+    public InteractionResult use(Level level, Player player, InteractionHand hand) {
+        if (!level.isClientSide()) {
             Ariente.guiHandler.openHoloGui(player, ModGuis.GUI_ENERGY_HOLDER, 1f);
         }
-        return InteractionResultHolder.sidedSuccess(player.getItemInHand(hand), level.isClientSide);
+        return InteractionResult.SUCCESS;
     }
 
     public static IGuiComponent<?> createGui(Player player) {
@@ -211,7 +225,7 @@ public class EnergyHolderItem extends Item implements ITooltipSettings {
     }
 
     private static int getAutomatic(ItemStack stack) {
-        return ItemData.has(stack) ? ItemData.get(stack).getInt("mode") : MODE_MANUAL;
+        return ItemData.has(stack) ? ItemData.get(stack).getIntOr("mode", 0) : MODE_MANUAL;
     }
 
     private static void changeAutomatic(Player player) {
@@ -224,7 +238,7 @@ public class EnergyHolderItem extends Item implements ITooltipSettings {
 
     public static void removeFuel(Player player, Item dust, int amount) {
         ItemStack holder = findActiveHolder(player);
-        if (player.level().isClientSide || holder.isEmpty() || amount <= 0) {
+        if (player.level().isClientSide() || holder.isEmpty() || amount <= 0) {
             return;
         }
         String key = fuelKey(dust);
@@ -238,7 +252,7 @@ public class EnergyHolderItem extends Item implements ITooltipSettings {
 
     public static void addFuel(Player player, Item dust, int amount) {
         ItemStack holder = findActiveHolder(player);
-        if (player.level().isClientSide || holder.isEmpty() || amount <= 0) {
+        if (player.level().isClientSide() || holder.isEmpty() || amount <= 0) {
             return;
         }
         String key = fuelKey(dust);
@@ -276,7 +290,7 @@ public class EnergyHolderItem extends Item implements ITooltipSettings {
     }
 
     public static int count(ItemStack stack, String key) {
-        return ItemData.has(stack) ? Math.max(0, ItemData.get(stack).getInt(key)) : 0;
+        return ItemData.has(stack) ? Math.max(0, ItemData.get(stack).getIntOr(key, 0)) : 0;
     }
 
     private static void syncInventory(Player player) {

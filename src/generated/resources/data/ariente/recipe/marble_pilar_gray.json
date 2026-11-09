@@ -2,9 +2,7 @@
   "type": "minecraft:crafting_shaped",
   "category": "misc",
   "key": {
-    "m": {
-      "item": "ariente:marble_gray"
-    }
+    "m": "ariente:marble_gray"
   },
   "pattern": [
     "m",

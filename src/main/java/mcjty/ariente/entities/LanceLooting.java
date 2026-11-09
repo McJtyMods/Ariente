@@ -1,5 +1,7 @@
 package mcjty.ariente.entities;
 
+import net.minecraft.server.level.ServerLevel;
+
 import mcjty.ariente.Ariente;
 import net.minecraft.world.damagesource.DamageSource;
 import net.minecraft.world.entity.Entity;
@@ -25,7 +27,7 @@ public final class LanceLooting {
             if (source.getEntity() instanceof LivingEntity owner && looting > 0) {
                 ACTIVE.set(new Shot(owner.getMainHandItem(), looting));
             }
-            return target.hurt(source, damage);
+            return target.hurtServer((ServerLevel) target.level(), source, damage);
         } finally {
             if (previous == null) {
                 ACTIVE.remove();

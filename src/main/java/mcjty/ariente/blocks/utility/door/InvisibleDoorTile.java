@@ -1,9 +1,10 @@
 package mcjty.ariente.blocks.utility.door;
 
+import net.minecraft.world.level.block.state.BlockBehaviour;
+import net.minecraft.world.level.block.SoundType;
 import mcjty.ariente.blocks.ArienteBlockEntity;
 import mcjty.ariente.blocks.utility.ILockable;
 import mcjty.ariente.config.UtilityConfiguration;
-import mcjty.ariente.setup.Registration;
 import mcjty.lib.blocks.BaseBlock;
 import mcjty.lib.blocks.RotationType;
 import mcjty.lib.builder.BlockBuilder;
@@ -23,12 +24,12 @@ import net.minecraft.world.phys.shapes.VoxelShape;
 public class InvisibleDoorTile extends ArienteBlockEntity implements ILockable {
 
     public InvisibleDoorTile(BlockPos pos, BlockState state) {
-        super(Registration.INVISIBLE_DOOR_TILE.get(), pos, state);
+        super(mcjty.ariente.setup.Registration.INVISIBLE_DOOR_TILE.get(), pos, state);
     }
 
-    public static BaseBlock createBlock() {
-        return new BaseBlock(new BlockBuilder()
-                .properties(Block.Properties.of().mapColor(MapColor.METAL)
+    public static BaseBlock createBlock(BlockBehaviour.Properties properties) {
+        return new BaseBlock(new BlockBuilder().properties(properties.mapColor(MapColor.METAL).strength(2.0f).requiresCorrectToolForDrops().sound(SoundType.METAL))
+                .properties(properties.mapColor(MapColor.METAL)
                         .dynamicShape())
                 .tileEntitySupplier(InvisibleDoorTile::new)
         ) {

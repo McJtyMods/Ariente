@@ -14,8 +14,8 @@ ROOT = Path(__file__).resolve().parents[1]
 
 def main():
     parser = argparse.ArgumentParser(description=__doc__)
-    parser.add_argument('--generated', type=Path, help='isolated full runData output')
-    parser.add_argument('--jar', type=Path, help='reobfuscated release jar')
+    parser.add_argument('--generated', type=Path, help='isolated runClientData output')
+    parser.add_argument('--jar', type=Path, help='NeoForge release jar')
     args = parser.parse_args()
     files = {}
     errors = []
@@ -75,8 +75,8 @@ def main():
                         reference(sound, 'sounds', '.ogg')
                     elif sound.get('type', 'file') == 'file':
                         reference(sound['name'], 'sounds', '.ogg')
-    if docs['pack.mcmeta']['pack']['pack_format'] != 15:
-        errors.append('Expected Minecraft 1.20.1 resource pack format 15')
+    if docs['pack.mcmeta']['pack']['min_format'] != 84:
+        errors.append('Expected Minecraft 26.1.2 resource pack format 84')
     if args.generated:
         generated = list(args.generated.rglob('*.json'))
         if not generated:
@@ -95,6 +95,8 @@ def main():
     if args.jar:
         with ZipFile(args.jar) as jar:
             names = jar.namelist()
+            if any(name.startswith('.cache/') for name in names):
+                errors.append('Datagen cache in release jar')
             if len(names) != len(set(names)):
                 errors.append('Duplicate jar entries')
             for name, path in files.items():
@@ -102,12 +104,12 @@ def main():
                     errors.append(f'Jar resource missing or stale: {name}')
             if any('/gameTest/' in n or n.endswith('Tests.class') for n in names):
                 errors.append('Test classes in release jar')
-            for name in ('mcjty/ariente/Ariente.class', 'META-INF/mods.toml', 'META-INF/accesstransformer.cfg'):
+            for name in ('mcjty/ariente/Ariente.class', 'META-INF/neoforge.mods.toml', 'META-INF/accesstransformer.cfg'):
                 if name not in names:
                     errors.append(f'Missing jar entry: {name}')
             equipment_code = jar.read('mcjty/ariente/ForgeEventHandlers.class')
-            if b'getItemBySlot' in equipment_code or b'm_6844_' not in equipment_code:
-                errors.append('Release jar must contain reobfuscated 1.20.1 bytecode; run build/reobfJar after development runs')
+            if int.from_bytes(equipment_code[6:8], 'big') != 69:
+                errors.append('Release jar must target Java 25')
             version = next(line.split('=', 1)[1] for line in (ROOT / 'gradle.properties').read_text().splitlines()
                            if line.startswith('version='))
             if f'Implementation-Version: {version}\r\n' not in jar.read('META-INF/MANIFEST.MF').decode():

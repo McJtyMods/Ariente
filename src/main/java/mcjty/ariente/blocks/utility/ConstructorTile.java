@@ -1,5 +1,10 @@
 package mcjty.ariente.blocks.utility;
 
+import net.minecraft.server.level.ServerLevel;
+
+import net.minecraft.world.level.block.state.BlockBehaviour;
+import net.minecraft.world.level.material.MapColor;
+import net.minecraft.world.level.block.SoundType;
 import mcjty.hologui.api.*;
 import java.util.List;
 import java.util.Map;
@@ -14,14 +19,13 @@ import mcjty.ariente.items.BlueprintItem;
 import mcjty.ariente.recipes.BlueprintRecipeRegistry;
 import mcjty.ariente.recipes.ConstructorCrafting;
 import mcjty.ariente.recipes.ConstructorRecipe;
-import mcjty.ariente.setup.Registration;
 import mcjty.lib.blocks.BaseBlock;
 import mcjty.lib.blocks.RotationType;
 import mcjty.lib.builder.BlockBuilder;
 import mcjty.lib.varia.SafeClientTools;
 import net.minecraft.ChatFormatting;
 import net.minecraft.core.BlockPos;
-import net.minecraft.resources.ResourceLocation;
+import net.minecraft.resources.Identifier;
 import net.minecraft.world.InteractionHand;
 import net.minecraft.world.InteractionResult;
 import net.minecraft.world.entity.player.Player;
@@ -40,7 +44,7 @@ public class ConstructorTile extends ArienteBlockEntity implements IGuiTile, ICi
 
     private BlueprintItemHandler blueprintItemHandler = null;
 
-    public static final ResourceLocation CROSS = ResourceLocation.fromNamespaceAndPath("hologui", "textures/gui/cross.png");
+    public static final Identifier CROSS = Identifier.fromNamespaceAndPath("hologui", "textures/gui/cross.png");
 
     @Override
     protected boolean needsRedstoneMode() {
@@ -48,11 +52,11 @@ public class ConstructorTile extends ArienteBlockEntity implements IGuiTile, ICi
     }
 
     public ConstructorTile(BlockPos pos, BlockState state) {
-        super(Registration.CONSTRUCTOR_TILE.get(), pos, state);
+        super(mcjty.ariente.setup.Registration.CONSTRUCTOR_TILE.get(), pos, state);
     }
 
-    public static BaseBlock createBlock() {
-        return new BaseBlock(new BlockBuilder()
+    public static BaseBlock createBlock(BlockBehaviour.Properties properties) {
+        return new BaseBlock(new BlockBuilder().properties(properties.mapColor(MapColor.METAL).strength(2.0f).requiresCorrectToolForDrops().sound(SoundType.METAL))
                 .info(key("message.ariente.shiftmessage"))
                 .infoShift(header())
                 .topDriver(DRIVER)
@@ -109,7 +113,7 @@ public class ConstructorTile extends ArienteBlockEntity implements IGuiTile, ICi
     }
 
     private boolean canCraft(Player player, ItemStack blueprintStack) {
-        if (player == null || !blueprintStack.is(Registration.BLUEPRINT.get())) {
+        if (player == null || !blueprintStack.is(mcjty.ariente.setup.Registration.BLUEPRINT.get())) {
             return false;
         }
         ConstructorRecipe recipe = BlueprintRecipeRegistry.findRecipe(BlueprintItem.getDestination(blueprintStack));
@@ -134,7 +138,7 @@ public class ConstructorTile extends ArienteBlockEntity implements IGuiTile, ICi
         }
         ItemStack result = recipe.getDestination().copy();
         if (!player.getInventory().add(result)) {
-            player.spawnAtLocation(result, 1.05f);
+            player.spawnAtLocation((ServerLevel) player.level(), result, 1.05f);
         }
         markDirtyClient();
         player.inventoryMenu.broadcastChanges();
@@ -156,7 +160,7 @@ public class ConstructorTile extends ArienteBlockEntity implements IGuiTile, ICi
         return GuiHelp.CONSTRUCTOR.createPanel(registry)
                 .add(registry.text(0, -.2, 8, 1).text("Craft").color(registry.color(StyledColor.LABEL)))
 
-                .add(registry.stackIcon(0, 2, 1, 1).itemStack(new ItemStack(Registration.CONSTRUCTOR.get())))
+                .add(registry.stackIcon(0, 2, 1, 1).itemStack(new ItemStack(mcjty.ariente.setup.Registration.CONSTRUCTOR.get())))
                 .add(registry.slots(1.5, 1, 6, 3)
                         .name("outputslots")
                         .doubleClickEvent((component, player, entity, x, y, stack, index) -> attemptCraft(player, stack))

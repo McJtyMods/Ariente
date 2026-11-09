@@ -1,12 +1,13 @@
 package mcjty.ariente.blocks.aicore;
 
+import net.minecraft.world.level.block.state.BlockBehaviour;
+import net.minecraft.world.level.block.SoundType;
 import mcjty.ariente.api.IAICoreTile;
 import mcjty.ariente.api.IAlarmMode;
 import mcjty.ariente.api.ICityAI;
 import mcjty.ariente.api.ICityAISystem;
 import mcjty.ariente.blocks.ArienteBlockEntity;
 import mcjty.ariente.compat.arienteworld.ArienteWorldCompat;
-import mcjty.ariente.setup.Registration;
 import mcjty.lib.blocks.BaseBlock;
 import mcjty.lib.blocks.RotationType;
 import mcjty.lib.builder.BlockBuilder;
@@ -15,7 +16,6 @@ import net.minecraft.core.HolderLookup;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.world.level.ChunkPos;
 import net.minecraft.world.level.Level;
-import net.minecraft.world.level.block.Block;
 import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.level.material.MapColor;
 
@@ -28,13 +28,13 @@ public class AICoreTile extends ArienteBlockEntity implements IAlarmMode, IAICor
     private String cityName = "";
 
     public AICoreTile(BlockPos pos, BlockState state) {
-        super(Registration.AICORE_TILE.get(), pos, state);
+        super(mcjty.ariente.setup.Registration.AICORE_TILE.get(), pos, state);
     }
 
-    public static BaseBlock createBlock() {
+    public static BaseBlock createBlock(BlockBehaviour.Properties properties) {
         // With proper pickaxe tags, hardness 60 gives unenchanted netherite a ten-second mining time.
-        return new BaseBlock(new BlockBuilder()
-                .properties(Block.Properties.of().mapColor(MapColor.METAL)
+        return new BaseBlock(new BlockBuilder().properties(properties.mapColor(MapColor.METAL).strength(2.0f).requiresCorrectToolForDrops().sound(SoundType.METAL))
+                .properties(properties.mapColor(MapColor.METAL)
                         .strength(60.0f, 800).noOcclusion())
                 .topDriver(DRIVER)
                 .tileEntitySupplier(AICoreTile::new)
@@ -84,7 +84,7 @@ public class AICoreTile extends ArienteBlockEntity implements IAlarmMode, IAICor
     @Override
     public void onReplaced(Level world, BlockPos pos, BlockState state, BlockState newstate) {
         super.onReplaced(world, pos, state, newstate);
-        if (!this.level.isClientSide) {
+        if (!this.level.isClientSide()) {
             if (getCityCenter() != null) {
                 ICityAISystem cityAISystem = ArienteWorldCompat.getCityAISystem(world);
                 ICityAI cityAI = cityAISystem.getCityAI(cityCenter);
@@ -104,8 +104,8 @@ public class AICoreTile extends ArienteBlockEntity implements IAlarmMode, IAICor
     @Override
     public void loadAdditional(CompoundTag tagCompound, HolderLookup.Provider provider) {
         super.loadAdditional(tagCompound, provider);
-        CompoundTag info = tagCompound.getCompound("Info");
-        cityName = info.getString("cityName");
+        CompoundTag info = tagCompound.getCompoundOrEmpty("Info");
+        cityName = info.getStringOr("cityName", "");
     }
 
     @Override

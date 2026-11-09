@@ -2,12 +2,8 @@
   "type": "minecraft:crafting_shaped",
   "category": "misc",
   "key": {
-    "m": {
-      "item": "minecraft:quartz"
-    },
-    "o": {
-      "tag": "c:ender_pearls"
-    }
+    "m": "minecraft:quartz",
+    "o": "#c:ender_pearls"
   },
   "pattern": [
     "mmm",
@@ -15,7 +11,6 @@
     "mmm"
   ],
   "result": {
-    "count": 1,
     "id": "ariente:ariente_pearl"
   }
 }

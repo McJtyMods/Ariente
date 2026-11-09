@@ -1,5 +1,6 @@
 package mcjty.ariente.display.client;
 
+import mcjty.ariente.items.ItemData;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Locale;
@@ -12,7 +13,6 @@ import mcjty.ariente.setup.Registration;
 import net.minecraft.client.Minecraft;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.nbt.ListTag;
-import net.minecraft.nbt.Tag;
 import net.minecraft.world.item.ItemStack;
 import net.neoforged.neoforge.fluids.FluidStack;
 
@@ -29,7 +29,7 @@ public class ResourceDisplayRenderers {
 
     private static boolean status(DisplayCanvas c, CompoundTag data, int width) {
         if (data.contains("Status")) {
-            c.text(data.getString("Status"), 6, 20, 0xffbc7a, .6f, width - 12);
+            c.text(data.getStringOr("Status", ""), 6, 20, 0xffbc7a, .6f, width - 12);
             return true;
         }
         return false;
@@ -56,23 +56,23 @@ public class ResourceDisplayRenderers {
         CompoundTag data = module.snapshot();
         ItemStack stack = module.stack();
         int width = module.size().width();
-        DisplayModuleRenderers.panel(c, module, "FE / " + data.getString("Name"));
+        DisplayModuleRenderers.panel(c, module, "FE / " + data.getStringOr("Name", ""));
         if (status(c, data, width)) {
             return;
         }
         int y = 20;
-        c.text("Stored " + energyAmount(data.getLong("Amount"), stack), 6, y, WHITE, .65f, width - 12);
+        c.text("Stored " + energyAmount(data.getLongOr("Amount", 0), stack), 6, y, WHITE, .65f, width - 12);
         y += 10;
         if (ResourceDisplayModule.flag(stack, "Capacity", true)) {
-            c.text("Capacity " + energyAmount(data.getLong("Capacity"), stack), 6, y, WHITE, .65f, width - 12);
+            c.text("Capacity " + energyAmount(data.getLongOr("Capacity", 0), stack), 6, y, WHITE, .65f, width - 12);
             y += 10;
         }
         if (ResourceDisplayModule.flag(stack, "Percent", true)) {
-            c.text("Filled " + percentage(data.getLong("Amount"), data.getLong("Capacity")), 6, y, CYAN, .65f, width - 12);
+            c.text("Filled " + percentage(data.getLongOr("Amount", 0), data.getLongOr("Capacity", 0)), 6, y, CYAN, .65f, width - 12);
             y += 10;
         }
         if (ResourceDisplayModule.flag(stack, "Rate", false)) {
-            c.text("Net " + (data.contains("Rate") ? String.format(Locale.ROOT, "%+.1f FE/t", data.getDouble("Rate")) : "n/a"),
+            c.text("Net " + (data.contains("Rate") ? String.format(Locale.ROOT, "%+.1f FE/t", data.getDoubleOr("Rate", 0)) : "n/a"),
                     6, y, WHITE, .65f, width - 12);
             y += 10;
         }
@@ -83,31 +83,31 @@ public class ResourceDisplayRenderers {
         CompoundTag data = module.snapshot();
         ItemStack stack = module.stack();
         int width = module.size().width();
-        DisplayModuleRenderers.panel(c, module, "FLUID / " + data.getString("Name"));
+        DisplayModuleRenderers.panel(c, module, "FLUID / " + data.getStringOr("Name", ""));
         if (status(c, data, width)) {
             return;
         }
-        ListTag tanks = data.getList("Tanks", Tag.TAG_COMPOUND);
+        ListTag tanks = data.getListOrEmpty("Tanks");
         FluidNames saved = FLUID_NAMES.get(module);
         if (saved == null || saved.version() != module.snapshotVersion()) {
             List<String> names = new ArrayList<>();
             for (int index = 0; index < tanks.size(); index++) {
-                FluidStack fluid = FluidStack.parseOptional(Minecraft.getInstance().level.registryAccess(), tanks.getCompound(index).getCompound("Fluid"));
-                names.add(fluid.isEmpty() ? "Empty" : fluid.getDisplayName().getString());
+                FluidStack fluid = ItemData.decodeFluid(Minecraft.getInstance().level.registryAccess(), tanks.getCompoundOrEmpty(index).getCompoundOrEmpty("Fluid"));
+                names.add(fluid.isEmpty() ? "Empty" : fluid.getHoverName().getString());
             }
             saved = new FluidNames(module.snapshotVersion(), names);
             FLUID_NAMES.put(module, saved);
         }
         for (int index = 0; index < Math.min(tanks.size(), FluidDisplayModule.rows(stack)); index++) {
-            CompoundTag tank = tanks.getCompound(index);
+            CompoundTag tank = tanks.getCompoundOrEmpty(index);
             int y = 20 + index * FluidDisplayModule.rowHeight(stack);
-            c.text("Tank " + tank.getInt("Tank") + "/" + data.getInt("TankCount") + ": " + saved.names().get(index),
+            c.text("Tank " + tank.getIntOr("Tank", 0) + "/" + data.getIntOr("TankCount", 0) + ": " + saved.names().get(index),
                     6, y, CYAN, .6f, width - 12);
-            String amount = fluidAmount(tank.getLong("Amount"), stack);
+            String amount = fluidAmount(tank.getLongOr("Amount", 0), stack);
             if (ResourceDisplayModule.flag(stack, "Capacity", true)) {
-                amount += " / " + fluidAmount(tank.getLong("Capacity"), stack);
+                amount += " / " + fluidAmount(tank.getLongOr("Capacity", 0), stack);
             }
-            amount += " (" + percentage(tank.getLong("Amount"), tank.getLong("Capacity")) + ")";
+            amount += " (" + percentage(tank.getLongOr("Amount", 0), tank.getLongOr("Capacity", 0)) + ")";
             c.text(amount, 6, y + 10, WHITE, .55f, width - 12);
             chart(c, tank, stack, 6, y + 21, width - 12);
         }
@@ -117,13 +117,13 @@ public class ResourceDisplayRenderers {
         int mode = ResourceDisplayModule.mode(stack);
         int color = 0xff000000 | color(stack);
         if (mode == 1) {
-            long capacity = data.getLong("Capacity");
-            float fraction = capacity <= 0 ? 0 : (float) Math.min(1, data.getLong("Amount") / (double) capacity);
+            long capacity = data.getLongOr("Capacity", 0);
+            float fraction = capacity <= 0 ? 0 : (float) Math.min(1, data.getLongOr("Amount", 0) / (double) capacity);
             c.fill(x, y, width, 5, 0xff183748);
             c.fill(x, y, width * fraction, 5, color);
         } else if (mode == 2) {
-            long[] history = data.getLongArray("History");
-            long max = Math.max(1, data.getLong("Capacity"));
+            long[] history = data.getLongArray("History").orElseGet(() -> new long[0]);
+            long max = Math.max(1, data.getLongOr("Capacity", 0));
             for (long value : history) {
                 max = Math.max(max, value);
             }

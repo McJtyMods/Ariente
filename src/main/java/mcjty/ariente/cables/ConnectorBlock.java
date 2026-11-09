@@ -1,5 +1,8 @@
 package mcjty.ariente.cables;
 
+import net.minecraft.world.level.redstone.Orientation;
+
+import net.minecraft.world.level.block.state.BlockBehaviour;
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 import mcjty.ariente.blocks.generators.PowerCombinerTile;
@@ -23,8 +26,8 @@ public class ConnectorBlock extends GenericCableBlock {
 
     public static final String CONNECTOR = "connector";
 
-    public ConnectorBlock() {
-        super(MapColor.METAL);
+    public ConnectorBlock(BlockBehaviour.Properties properties) {
+        super(properties, MapColor.METAL);
     }
 
     @Nullable
@@ -55,7 +58,7 @@ public class ConnectorBlock extends GenericCableBlock {
     }
 
     @Override
-    public void neighborChanged(BlockState state, Level world, BlockPos pos, Block blockIn, BlockPos fromPos, boolean isMoving) {
+    public void neighborChanged(BlockState state, Level world, BlockPos pos, Block blockIn, Orientation orientation, boolean isMoving) {
         checkRedstone(world, pos);
     }
 

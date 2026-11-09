@@ -1,6 +1,21 @@
 {
   "variants": {
-    "": {
+    "facing=down": {
+      "model": "ariente:block/decorative/marble_pilar_black"
+    },
+    "facing=east": {
+      "model": "ariente:block/decorative/marble_pilar_black"
+    },
+    "facing=north": {
+      "model": "ariente:block/decorative/marble_pilar_black"
+    },
+    "facing=south": {
+      "model": "ariente:block/decorative/marble_pilar_black"
+    },
+    "facing=up": {
+      "model": "ariente:block/decorative/marble_pilar_black"
+    },
+    "facing=west": {
       "model": "ariente:block/decorative/marble_pilar_black"
     }
   }

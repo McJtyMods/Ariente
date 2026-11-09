@@ -1,11 +1,16 @@
 package mcjty.ariente.entities.fluxship;
 
+import net.minecraft.server.level.ServerLevel;
+import net.minecraft.world.entity.InterpolationHandler;
+import org.joml.Vector3fc;
+import com.mojang.serialization.MapCodec;
+import net.minecraft.world.level.storage.ValueInput;
+import net.minecraft.world.level.storage.ValueOutput;
 import javax.annotation.Nullable;
 import mcjty.ariente.api.IFluxShipPilot;
 import mcjty.ariente.entities.LaserEntity;
 import mcjty.ariente.gui.ModGuis;
 import mcjty.ariente.items.ItemData;
-import mcjty.ariente.setup.Registration;
 import mcjty.hologui.api.CloseStrategy;
 import mcjty.hologui.api.IHoloGuiEntity;
 import mcjty.hologui.gui.HoloGuiEntity;
@@ -30,12 +35,22 @@ import net.minecraft.world.phys.Vec3;
 import org.joml.Vector3f;
 
 public class FluxShipEntity extends Entity {
+    private final InterpolationHandler networkInterpolation = new InterpolationHandler(this, handler -> {
+        Vec3 target = handler.position();
+        lerpTo(target.x, target.y, target.z, handler.yRot(), handler.xRot(), 3);
+        handler.cancel();
+    });
+
+    @Override
+    public InterpolationHandler getInterpolation() {
+        return networkInterpolation;
+    }
 
     private static final EntityDataAccessor<Float> BANK = SynchedEntityData.defineId(FluxShipEntity.class, EntityDataSerializers.FLOAT);
     private static final EntityDataAccessor<Float> PITCH = SynchedEntityData.defineId(FluxShipEntity.class, EntityDataSerializers.FLOAT);
     private static final EntityDataAccessor<Float> YAW = SynchedEntityData.defineId(FluxShipEntity.class, EntityDataSerializers.FLOAT);
     private static final EntityDataAccessor<Float> SPEED = SynchedEntityData.defineId(FluxShipEntity.class, EntityDataSerializers.FLOAT);
-    private static final EntityDataAccessor<Vector3f> MOTION = SynchedEntityData.defineId(FluxShipEntity.class, EntityDataSerializers.VECTOR3);
+    private static final EntityDataAccessor<Vector3fc> MOTION = SynchedEntityData.defineId(FluxShipEntity.class, EntityDataSerializers.VECTOR3);
     private static final EntityDataAccessor<Boolean> MOUSE_FLIGHT = SynchedEntityData.defineId(FluxShipEntity.class, EntityDataSerializers.BOOLEAN);
     private static final EntityDataAccessor<Integer> CHARGE = SynchedEntityData.defineId(FluxShipEntity.class, EntityDataSerializers.INT);
     private static final double MAX_SPEED = 5.2;
@@ -81,7 +96,7 @@ public class FluxShipEntity extends Entity {
     }
 
     public static FluxShipEntity create(Level level, double x, double y, double z) {
-        FluxShipEntity ship = new FluxShipEntity(Registration.ENTITY_FLUX_SHIP.get(), level);
+        FluxShipEntity ship = new FluxShipEntity(mcjty.ariente.setup.Registration.ENTITY_FLUX_SHIP.get(), level);
         ship.setPos(x, y, z);
         ship.setDeltaMovement(Vec3.ZERO);
         return ship;
@@ -120,8 +135,9 @@ public class FluxShipEntity extends Entity {
     }
 
     /** Companion-mod pilots request flight; the ship still limits turns, pitch and acceleration. */
+
     public void flyTowards(LivingEntity pilot, Vec3 direction, double speed) {
-        if (!level().isClientSide && pilot instanceof IFluxShipPilot && pilot == getControllingPassenger()
+        if (!level().isClientSide() && pilot instanceof IFluxShipPilot && pilot == getControllingPassenger()
                 && direction.lengthSqr() > .000001 && Double.isFinite(direction.lengthSqr()) && Double.isFinite(speed)) {
             flightDirection = direction.normalize();
             flightSpeed = Mth.clamp(speed, 0, MAX_SPEED);
@@ -132,11 +148,11 @@ public class FluxShipEntity extends Entity {
     }
 
     @Override
-    public InteractionResult interact(Player player, InteractionHand hand) {
+    public InteractionResult interact(Player player, InteractionHand hand, Vec3 location) {
         if (!isAlive() || getControllingPassenger() != null) {
             return InteractionResult.PASS;
         }
-        if (!level().isClientSide) {
+        if (!level().isClientSide()) {
             if (player.isShiftKeyDown()) {
                 player.getInventory().placeItemBackInInventory(asItem());
                 discard();
@@ -144,7 +160,7 @@ public class FluxShipEntity extends Entity {
                 player.startRiding(this);
             }
         }
-        return InteractionResult.sidedSuccess(level().isClientSide);
+        return InteractionResult.SUCCESS;
     }
 
     @Override
@@ -167,6 +183,7 @@ public class FluxShipEntity extends Entity {
     }
 
     /** Actual travel speed, in blocks per second, including climbing and collisions. */
+
     public float getSpeed() {
         return entityData.get(SPEED);
     }
@@ -184,7 +201,7 @@ public class FluxShipEntity extends Entity {
     }
 
     public ItemStack asItem() {
-        ItemStack stack = new ItemStack(Registration.FLUX_SHIP.get());
+        ItemStack stack = new ItemStack(mcjty.ariente.setup.Registration.FLUX_SHIP.get());
         ItemData.update(stack, data -> data.putInt(FluxShipEnergy.CHARGE_TAG, getCharge()));
         if (hasCustomName()) {
             stack.set(DataComponents.CUSTOM_NAME, getCustomName());
@@ -209,6 +226,7 @@ public class FluxShipEntity extends Entity {
     }
 
     /** Cabin coordinates use +Z forward, matching the flight and render rotations. */
+
     public Vec3 rotateCabinOffset(Vec3 offset) {
         return rotateCabinOffset(offset, 1);
     }
@@ -237,7 +255,7 @@ public class FluxShipEntity extends Entity {
             double eyeHeight = getPassengersRidingOffset() + (-passenger.getVehicleAttachmentPoint(this).y) + passenger.getEyeHeight();
             Vec3 seat = rotateCabinOffset(new Vec3(0, eyeHeight - .5, 0)).add(0, .5 - passenger.getEyeHeight(), 0);
             moveFunction.accept(passenger, getX() + seat.x, getY() + seat.y, getZ() + seat.z);
-            if (level().isClientSide && lastPilotTurnTick != tickCount
+            if (level().isClientSide() && lastPilotTurnTick != tickCount
                     && (!(passenger instanceof Player player) || !player.isLocalPlayer() || !localMouseFlight || localFollowHull)) {
                 // The passenger has now copied its previous rotation. Apply the turn
                 // here so its camera interpolates with the hull rather than jumping ahead.
@@ -258,13 +276,13 @@ public class FluxShipEntity extends Entity {
 
     private void ensureHoloGui() {
         if (getHoloGui() == null) {
-            HoloGuiEntity panel = new HoloGuiEntity(Registration.ENTITY_SHIP_PANEL.get(), level());
+            HoloGuiEntity panel = new HoloGuiEntity(mcjty.ariente.setup.Registration.ENTITY_SHIP_PANEL.get(), level());
             panel.setGuiId(ModGuis.GUI_FLUX_SHIP);
             panel.setScale(.85f);
             panel.setCloseStrategy(CloseStrategy.NEVER);
             panel.setPos(position());
             level().addFreshEntity(panel);
-            panel.startRiding(this, true);
+            panel.startRiding(this, true, true);
             positionRider(panel);
             panel.xOld = panel.xo = panel.getX();
             panel.yOld = panel.yo = panel.getY();
@@ -275,9 +293,14 @@ public class FluxShipEntity extends Entity {
     }
 
     @Override
-    public boolean isControlledByLocalInstance() {
+    public boolean isClientAuthoritative() {
         // Movement is simulated on the server. Do not send vanilla client vehicle-position packets.
-        return !level().isClientSide;
+        return false;
+    }
+
+    @Override
+    protected boolean isLocalClientAuthoritative() {
+        return false;
     }
 
     public double getPassengersRidingOffset() {
@@ -285,22 +308,22 @@ public class FluxShipEntity extends Entity {
     }
 
     @Override
-    public boolean hurt(DamageSource source, float amount) {
+    public boolean hurtServer(ServerLevel serverLevel, DamageSource source, float amount) {
         LivingEntity pilot = getControllingPassenger();
         if (pilot instanceof IFluxShipPilot || pilot != null && source.is(LaserEntity.SHIP_DAMAGE)) {
             // Return fire reaches NPC pilots; cannon hits also reach players inside their own ships.
             boolean laser = source.getDirectEntity() instanceof LaserEntity || source.is(LaserEntity.SHIP_DAMAGE);
-            boolean damaged = pilot.hurt(source, pilot instanceof IFluxShipPilot && laser ? amount * .5f : amount);
-            if (damaged && !level().isClientSide) {
+            boolean damaged = pilot.hurtServer(serverLevel, source, pilot instanceof IFluxShipPilot && laser ? amount * .5f : amount);
+            if (damaged && !level().isClientSide()) {
                 hurtTime = 10;
                 level().broadcastEntityEvent(this, (byte) 2);
             }
             return damaged;
         }
         if (source.getEntity() instanceof Player player && player.isShiftKeyDown() && getControllingPassenger() == null) {
-            if (!level().isClientSide) {
+            if (!level().isClientSide()) {
                 if (!player.getAbilities().instabuild) {
-                    spawnAtLocation(asItem());
+                    spawnAtLocation((ServerLevel) level(), asItem());
                 }
                 discard();
             }
@@ -338,8 +361,7 @@ public class FluxShipEntity extends Entity {
         super.remove(reason);
     }
 
-    @Override
-    public void lerpTo(double x, double y, double z, float yaw, float pitch, int steps) {
+    private void lerpTo(double x, double y, double z, float yaw, float pitch, int steps) {
         lerpTarget = new Vec3(x, y, z);
         remoteMotion.accept(lerpTarget);
         // Attitude uses full-precision synced data, independent of position packets
@@ -356,13 +378,13 @@ public class FluxShipEntity extends Entity {
         previousBank = bank;
         previousExhaustStrength = exhaustStrength;
         float oldYaw = getYRot();
-        if (level().isClientSide) {
+        if (level().isClientSide()) {
             boolean remote = !(getControllingPassenger() instanceof Player player && player.isLocalPlayer());
             if (remote) {
                 if (!wasRemote) {
                     remoteMotion.reset(lerpSteps > 0 ? lerpTarget : position());
                 }
-                Vector3f motion = entityData.get(MOTION);
+                Vector3f motion = new Vector3f(entityData.get(MOTION));
                 Vec3 next = remoteMotion.advance(position(), new Vec3(motion.x, motion.y, motion.z));
                 boolean teleport = next.distanceToSqr(position()) > 64 * 64;
                 setPos(next);
@@ -500,9 +522,8 @@ public class FluxShipEntity extends Entity {
         builder.define(CHARGE, FluxShipEnergy.CAPACITY);
     }
 
-    @Override
-    protected void readAdditionalSaveData(CompoundTag tag) {
-        setCharge(tag.contains(FluxShipEnergy.CHARGE_TAG) ? tag.getInt(FluxShipEnergy.CHARGE_TAG) : FluxShipEnergy.CAPACITY);
+    protected void readEntityData(CompoundTag tag) {
+        setCharge(tag.contains(FluxShipEnergy.CHARGE_TAG) ? tag.getIntOr(FluxShipEnergy.CHARGE_TAG, 0) : FluxShipEnergy.CAPACITY);
         // Clear transient controls; an unattended ship resumes its gentle descent on the next tick.
         setDeltaMovement(Vec3.ZERO);
         forward = turn = vertical = inputTimeout = lerpSteps = 0;
@@ -530,14 +551,25 @@ public class FluxShipEntity extends Entity {
         xRotO = 0;
     }
 
-    @Override
-    protected void addAdditionalSaveData(CompoundTag tag) {
+    protected void writeEntityData(CompoundTag tag) {
         tag.putInt(FluxShipEnergy.CHARGE_TAG, getCharge());
     }
 
-    @Override
     public AABB getBoundingBoxForCulling() {
         // Keep the rear exhaust visible when the hull itself is just outside the view.
         return getBoundingBox().inflate(26);
     }
+
+    @Override
+    public void readAdditionalSaveData(ValueInput input) {
+        readEntityData(input.read(MapCodec.assumeMapUnsafe(CompoundTag.CODEC)).orElseGet(CompoundTag::new));
+    }
+
+    @Override
+    public void addAdditionalSaveData(ValueOutput output) {
+        CompoundTag tag = new CompoundTag();
+        writeEntityData(tag);
+        output.store(tag);
+    }
+
 }

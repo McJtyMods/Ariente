@@ -1,8 +1,8 @@
 package mcjty.ariente.blocks.purifier;
 
+import mcjty.ariente.items.ItemData;
 import mcjty.ariente.blocks.ArienteBlockEntity;
 import mcjty.ariente.config.PowerConfiguration;
-import mcjty.ariente.setup.Registration;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
 import net.minecraft.core.HolderLookup;
@@ -28,7 +28,7 @@ public class PurifierTubeTile extends ArienteBlockEntity {
     private long updateTime;
 
     public PurifierTubeTile(BlockPos pos, BlockState state) {
-        super(Registration.PURIFIER_TUBE_TILE.get(), pos, state);
+        super(mcjty.ariente.setup.Registration.PURIFIER_TUBE_TILE.get(), pos, state);
     }
 
     public void setVisuals(BlockPos controller, Direction direction, int index, int tubeCount, ItemStack ore,
@@ -80,7 +80,7 @@ public class PurifierTubeTile extends ArienteBlockEntity {
         double angularSpeed = direction.getAxisDirection().getStep() * Math.PI * 2 / PowerConfiguration.PURIFIER_RING_PERIOD.get();
         double phase = level.getGameTime() * angularSpeed + index * .7;
         SimpleParticleType type = direction.getAxis() == Direction.Axis.X
-                ? Registration.PURIFIER_RING_X.get() : Registration.PURIFIER_RING_Z.get();
+                ? mcjty.ariente.setup.Registration.PURIFIER_RING_X.get() : mcjty.ariente.setup.Registration.PURIFIER_RING_Z.get();
         for (int point = 0; point < particles; point++) {
             double angle = phase + (point % streams) * Math.PI * 2 / streams
                     - direction.getAxisDirection().getStep() * (point / streams) * .08;
@@ -122,8 +122,8 @@ public class PurifierTubeTile extends ArienteBlockEntity {
 
     @Override
     public void saveClientDataToNBT(CompoundTag tag, HolderLookup.Provider provider) {
-        tag.put("Ore", ore.saveOptional(provider));
-        tag.put("Raw", raw.saveOptional(provider));
+        tag.put("Ore", ItemData.encode(provider, ore));
+        tag.put("Raw", ItemData.encode(provider, raw));
         tag.putInt("Direction", direction.get3DDataValue());
         tag.putInt("Index", index);
         tag.putInt("Tubes", tubeCount);
@@ -134,14 +134,14 @@ public class PurifierTubeTile extends ArienteBlockEntity {
 
     @Override
     public void loadClientDataFromNBT(CompoundTag tag, HolderLookup.Provider provider) {
-        ore = ItemStack.parseOptional(provider, tag.getCompound("Ore"));
-        raw = ItemStack.parseOptional(provider, tag.getCompound("Raw"));
-        direction = Direction.from3DDataValue(tag.getInt("Direction"));
-        index = tag.getInt("Index");
-        tubeCount = Math.max(1, tag.getInt("Tubes"));
-        progress = tag.getInt("Progress");
-        duration = Math.max(1, tag.getInt("Duration"));
-        running = tag.getBoolean("Running");
+        ore = ItemData.decode(provider, tag.getCompoundOrEmpty("Ore"));
+        raw = ItemData.decode(provider, tag.getCompoundOrEmpty("Raw"));
+        direction = Direction.from3DDataValue(tag.getIntOr("Direction", 0));
+        index = tag.getIntOr("Index", 0);
+        tubeCount = Math.max(1, tag.getIntOr("Tubes", 0));
+        progress = tag.getIntOr("Progress", 0);
+        duration = Math.max(1, tag.getIntOr("Duration", 0));
+        running = tag.getBooleanOr("Running", false);
         updateTime = level == null ? 0 : level.getGameTime();
     }
 }

@@ -3,11 +3,8 @@
   "category": "misc",
   "cookingtime": 200,
   "experience": 0.0,
-  "ingredient": {
-    "tag": "c:raw_materials/manganese"
-  },
+  "ingredient": "#c:raw_materials/manganese",
   "result": {
-    "count": 1,
     "id": "ariente:ingot_manganese"
   }
 }

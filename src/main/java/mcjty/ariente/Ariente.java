@@ -1,5 +1,9 @@
 package mcjty.ariente;
 
+import mcjty.ariente.client.LanceModel;
+import mcjty.ariente.entities.fluxship.FluxShipPilotRender;
+
+import mcjty.ariente.display.client.DisplayRenderType;
 import mcjty.ariente.api.IArienteMod;
 import mcjty.ariente.api.IArienteSystem;
 import mcjty.ariente.apiimpl.ArienteSystem;
@@ -15,12 +19,10 @@ import mcjty.ariente.setup.Registration;
 import mcjty.hologui.api.IHoloGuiHandler;
 import mcjty.lib.modules.Modules;
 import net.neoforged.api.distmarker.Dist;
-import net.neoforged.bus.api.EventPriority;
 import net.neoforged.bus.api.IEventBus;
 import net.neoforged.fml.ModContainer;
 import net.neoforged.fml.common.Mod;
 import net.neoforged.fml.config.ModConfig;
-import net.neoforged.neoforge.client.event.RegisterColorHandlersEvent;
 
 @Mod(Ariente.MODID)
 public class Ariente implements IArienteMod {
@@ -49,14 +51,19 @@ public class Ariente implements IArienteMod {
         bus.addListener(ArienteMessages::registerMessages);
         if (dist.isClient()) {
             bus.addListener(ClientSetup::init);
+            bus.addListener(LanceModel::register);
+            bus.addListener(FluxShipPilotRender::registerModifiers);
             bus.addListener(ClientSetup::initModels);
             bus.addListener(ClientSetup::additionalModels);
             bus.addListener(ClientSetup::modelsBaked);
             bus.addListener(ArienteRenderType::registerShaders);
+            bus.addListener(DisplayRenderType::registerPipelines);
             bus.addListener(ClientSetup::entityRenderers);
             bus.addListener(ClientSetup::particleProviders);
             bus.addListener(Binding::register);
-            bus.addListener(EventPriority.NORMAL, false, RegisterColorHandlersEvent.Block.class, event -> ClientSetup.setupSpriteUploader());
+            bus.addListener(ClientSetup::setupSpriteUploader);
+            bus.addListener(ClientSetup::specialModels);
+            bus.addListener(ClientSetup::itemExtensions);
         }
     }
 

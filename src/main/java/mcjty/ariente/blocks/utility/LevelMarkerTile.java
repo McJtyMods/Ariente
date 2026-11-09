@@ -1,9 +1,11 @@
 package mcjty.ariente.blocks.utility;
 
+import net.minecraft.world.level.block.state.BlockBehaviour;
+import net.minecraft.world.level.material.MapColor;
+import net.minecraft.world.level.block.SoundType;
 import mcjty.ariente.Ariente;
 import mcjty.ariente.blocks.ArienteBlockEntity;
 import mcjty.ariente.gui.GuiHelp;
-import mcjty.ariente.setup.Registration;
 import mcjty.hologui.api.IGuiComponent;
 import mcjty.hologui.api.IGuiComponentRegistry;
 import mcjty.hologui.api.IGuiTile;
@@ -68,7 +70,7 @@ public class LevelMarkerTile extends ArienteBlockEntity implements IGuiTile {
     @Override
     public void loadAdditional(CompoundTag tag, HolderLookup.Provider provider) {
         super.loadAdditional(tag, provider);
-        floorName = tag.getString("FloorName");
+        floorName = tag.getStringOr("FloorName", "");
     }
 
     @Override
@@ -84,15 +86,15 @@ public class LevelMarkerTile extends ArienteBlockEntity implements IGuiTile {
 
     @Override
     public void loadClientDataFromNBT(CompoundTag tag, HolderLookup.Provider provider) {
-        floorName = tag.getString("FloorName");
+        floorName = tag.getStringOr("FloorName", "");
     }
 
     public LevelMarkerTile(BlockPos pos, BlockState state) {
-        super(Registration.LEVEL_MARKER_TILE.get(), pos, state);
+        super(mcjty.ariente.setup.Registration.LEVEL_MARKER_TILE.get(), pos, state);
     }
 
-    public static BaseBlock createBlock() {
-        return new BaseBlock(new BlockBuilder()
+    public static BaseBlock createBlock(BlockBehaviour.Properties properties) {
+        return new BaseBlock(new BlockBuilder().properties(properties.mapColor(MapColor.METAL).strength(2.0f).requiresCorrectToolForDrops().sound(SoundType.METAL))
                 .info(key("message.ariente.shiftmessage"))
                 .infoShift(header())
                 .topDriver(DRIVER)

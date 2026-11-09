@@ -17,8 +17,8 @@ public class BlockInventoryInteraction {
     }
 
     public static boolean extract(Player player, BlockPos pos, int slot) {
-        if (player.level().isClientSide || !player.isAlive() || player.isSpectator() || slot < 0
-                || !player.canInteractWithBlock(pos, 0)
+        if (player.level().isClientSide() || !player.isAlive() || player.isSpectator() || slot < 0
+                || !player.isWithinBlockInteractionRange(pos, 0)
                 || !(player.pick(player.blockInteractionRange(), 1, false) instanceof BlockHitResult hit)
                 || !hit.getBlockPos().equals(pos) || getSlot(player.level(), hit) != slot) {
             return false;

@@ -1,5 +1,6 @@
 package mcjty.ariente.display.client;
 
+import net.neoforged.neoforge.client.network.ClientPacketDistributor;
 import com.mojang.blaze3d.vertex.PoseStack;
 import java.util.UUID;
 import mcjty.ariente.display.DisplayBaseTile;
@@ -12,7 +13,6 @@ import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.phys.Vec3;
-import net.neoforged.neoforge.network.PacketDistributor;
 
 /** Local drag preview; authoritative state changes only when the server accepts the release. */
 public class DisplayModuleDrag {
@@ -37,7 +37,7 @@ public class DisplayModuleDrag {
     private static void send(PacketDisplayGesture.Action action) {
         Minecraft mc = Minecraft.getInstance();
         if (gesture != null && mc.getConnection() != null && mc.player != null) {
-            PacketDistributor.sendToServer(new PacketDisplayGesture(gesture.source.getBlockPos(), gesture.module.id(),
+            ClientPacketDistributor.sendToServer(new PacketDisplayGesture(gesture.source.getBlockPos(), gesture.module.id(),
                     gesture.ticket, action, mc.player.getYRot(), mc.player.getXRot(), gesture.dragged, gesture.valid));
         }
     }
@@ -145,7 +145,7 @@ public class DisplayModuleDrag {
         return gesture != null && gesture.dragged && gesture.module.id().equals(module);
     }
 
-    public static void render(PoseStack poses, MultiBufferSource.BufferSource buffer, Vec3 camera) {
+    public static void render(PoseStack poses, MultiBufferSource buffer, Vec3 camera) {
         if (gesture == null || !contextValid(Minecraft.getInstance())) {
             return;
         }
@@ -177,7 +177,6 @@ public class DisplayModuleDrag {
                     position.y() + module.size().height() + 1, rgb, .55f, module.size().width() - 4);
         }
         poses.popPose();
-        buffer.endBatch();
     }
 
     private static class Gesture {

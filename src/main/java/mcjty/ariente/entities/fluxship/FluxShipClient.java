@@ -18,7 +18,7 @@ public class FluxShipClient {
     @SubscribeEvent
     public static void cameraAngles(ViewportEvent.ComputeCameraAngles event) {
         Minecraft mc = Minecraft.getInstance();
-        if (!mc.options.getCameraType().isFirstPerson() || event.getCamera().getEntity() != mc.player
+        if (!mc.options.getCameraType().isFirstPerson() || event.getCamera().entity() != mc.player
                 || mc.player == null || !(mc.player.getVehicle() instanceof FluxShipEntity ship)) {
             return;
         }

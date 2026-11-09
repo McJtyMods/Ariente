@@ -2,7 +2,7 @@ package mcjty.ariente.client;
 
 import com.mojang.blaze3d.vertex.PoseStack;
 import com.mojang.blaze3d.vertex.VertexConsumer;
-import net.minecraft.client.renderer.LightTexture;
+import net.minecraft.util.LightCoordsUtil;
 import net.minecraft.client.renderer.texture.OverlayTexture;
 import net.minecraft.client.renderer.texture.TextureAtlasSprite;
 import net.minecraft.world.phys.Vec3;
@@ -27,7 +27,7 @@ public class BeamRenderTools {
     private static void vertex(PoseStack poses, VertexConsumer vertices, Vec3 pos, Vec3 normal, float u, float v) {
         vertices.addVertex(poses.last().pose(), (float) pos.x, (float) pos.y, (float) pos.z)
                 .setColor(255, 255, 255, 255)
-                .setUv(u, v).setOverlay(OverlayTexture.NO_OVERLAY).setLight(LightTexture.FULL_BRIGHT)
+                .setUv(u, v).setOverlay(OverlayTexture.NO_OVERLAY).setLight(LightCoordsUtil.FULL_BRIGHT)
                 .setNormal(poses.last(), (float) normal.x, (float) normal.y, (float) normal.z);
     }
 }

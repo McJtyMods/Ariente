@@ -1,10 +1,10 @@
 package mcjty.ariente.display;
 
 import net.minecraft.nbt.CompoundTag;
-import net.minecraft.nbt.Tag;
 import net.minecraft.util.Mth;
 
 /** Immutable surface settings shared by every base in a joined display. */
+
 public record DisplayAppearance(DisplayBackground type, int color, int transparency, boolean border) {
 
     public static final int DEFAULT_COLOR = 0xdcf3fa;
@@ -60,16 +60,16 @@ public record DisplayAppearance(DisplayBackground type, int color, int transpare
     }
 
     public static DisplayAppearance read(CompoundTag tag) {
-        if (tag.contains("Appearance", Tag.TAG_COMPOUND)) {
-            CompoundTag appearance = tag.getCompound("Appearance");
-            return new DisplayAppearance(appearance.contains("Type") ? DisplayBackground.from(appearance.getInt("Type")) : DEFAULT.type,
-                    appearance.contains("Color") ? appearance.getInt("Color") : DEFAULT_COLOR,
-                    appearance.contains("Transparency") ? appearance.getInt("Transparency") : DEFAULT_TRANSPARENCY,
-                    !appearance.contains("Border") || appearance.getBoolean("Border"));
+        if (tag.contains("Appearance")) {
+            CompoundTag appearance = tag.getCompoundOrEmpty("Appearance");
+            return new DisplayAppearance(appearance.contains("Type") ? DisplayBackground.from(appearance.getIntOr("Type", 0)) : DEFAULT.type,
+                    appearance.contains("Color") ? appearance.getIntOr("Color", 0) : DEFAULT_COLOR,
+                    appearance.contains("Transparency") ? appearance.getIntOr("Transparency", 0) : DEFAULT_TRANSPARENCY,
+                    !appearance.contains("Border") || appearance.getBooleanOr("Border", false));
         }
         // The former Background field combined six presets. Preserve their appearance when upgrading saves.
         if (tag.contains("Background")) {
-            return switch (Math.floorMod(tag.getInt("Background"), 6)) {
+            return switch (Math.floorMod(tag.getIntOr("Background", 0), 6)) {
                 case 0 -> DEFAULT.withType(DisplayBackground.INVISIBLE).withBorder(false);
                 case 2 -> DEFAULT.withType(DisplayBackground.SOLID).withColor(0x000000);
                 case 3 -> DEFAULT.withType(DisplayBackground.SOLID).withColor(0xffffff);

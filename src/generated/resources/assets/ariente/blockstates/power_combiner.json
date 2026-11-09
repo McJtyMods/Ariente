@@ -17,7 +17,7 @@
     },
     "facing=up": {
       "model": "ariente:block/machines/power_combiner",
-      "x": -90
+      "x": 270
     },
     "facing=west": {
       "model": "ariente:block/machines/power_combiner",

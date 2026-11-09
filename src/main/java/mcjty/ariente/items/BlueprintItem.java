@@ -1,5 +1,10 @@
 package mcjty.ariente.items;
 
+import java.util.ArrayList;
+
+import net.minecraft.server.level.ServerLevel;
+import net.minecraft.world.entity.EquipmentSlot;
+import net.minecraft.world.item.component.TooltipDisplay;
 import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
 import com.google.gson.JsonParseException;
@@ -19,17 +24,13 @@ import mcjty.lib.tooltips.ITooltipExtras;
 import mcjty.lib.tooltips.ITooltipSettings;
 import mcjty.lib.varia.JSonTools;
 import mcjty.lib.varia.Tools;
-import net.minecraft.client.Minecraft;
-import net.minecraft.client.renderer.BlockEntityWithoutLevelRenderer;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.network.chat.Component;
-import net.minecraft.resources.ResourceLocation;
+import net.minecraft.resources.Identifier;
 import net.minecraft.world.entity.Entity;
 import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.TooltipFlag;
-import net.minecraft.world.level.Level;
-import net.neoforged.neoforge.client.extensions.common.IClientItemExtensions;
 import org.apache.commons.lang3.tuple.Pair;
 
 import static mcjty.lib.builder.TooltipBuilder.header;
@@ -40,26 +41,10 @@ public class BlueprintItem extends Item implements ITooltipExtras, ITooltipSetti
     private final TooltipBuilder tooltipBuilder = new TooltipBuilder()
             .info(header(), parameter("info", stack -> getDestination(stack).getHoverName().getString()));
 
-    public BlueprintItem() {
-        super(new Properties()
+    public BlueprintItem(Item.Properties properties) {
+        super(properties
                 // @todo 1.18 .setISTER(BlueprintRenderer::createRenderer)
                 .stacksTo(1));
-    }
-
-    @Override
-    public void initializeClient(Consumer<IClientItemExtensions> consumer) {
-        consumer.accept(new IClientItemExtensions() {
-            private BlueprintRenderer renderer;
-
-            @Override
-            public BlockEntityWithoutLevelRenderer getCustomRenderer() {
-                if (renderer == null) {
-                    Minecraft mc = Minecraft.getInstance();
-                    renderer = new BlueprintRenderer(mc.getBlockEntityRenderDispatcher(), mc.getEntityModels());
-                }
-                return renderer;
-            }
-        });
     }
 
     @Override
@@ -74,8 +59,14 @@ public class BlueprintItem extends Item implements ITooltipExtras, ITooltipSetti
     }
 
     @Override
+    public void appendHoverText(ItemStack stack, Item.TooltipContext context, TooltipDisplay display, Consumer<Component> output, TooltipFlag flag) {
+        List<Component> lines = new ArrayList<>();
+        appendHoverText(stack, context, lines, flag);
+        lines.forEach(output);
+    }
+
     public void appendHoverText(ItemStack stack, Item.TooltipContext worldIn, List<Component> tooltip, TooltipFlag flag) {
-        super.appendHoverText(stack, worldIn, tooltip, flag);
+
         if (BlueprintExchangeRecipe.isPreview(stack)) {
             tooltip.add(Component.translatable("message.ariente.blueprint.exchange_preview"));
             BlueprintRarity rarity = BlueprintExchangeRecipe.averageRarity(stack);
@@ -99,15 +90,15 @@ public class BlueprintItem extends Item implements ITooltipExtras, ITooltipSetti
     }
 
     @Override
-    public void inventoryTick(ItemStack stack, Level level, Entity entity, int slot, boolean selected) {
-        super.inventoryTick(stack, level, entity, slot, selected);
+    public void inventoryTick(ItemStack stack, ServerLevel level, Entity entity, EquipmentSlot slot) {
+        super.inventoryTick(stack, level, entity, slot);
         // Also reveal paid outputs from crafting integrations that do not fire the player crafting event.
-        if (!level.isClientSide && BlueprintExchangeRecipe.isPreview(stack)) {
-            BlueprintExchangeRecipe.resolve(stack, level.random);
+        if (!level.isClientSide() && BlueprintExchangeRecipe.isPreview(stack)) {
+            BlueprintExchangeRecipe.resolve(stack, level.getRandom());
         }
     }
 
-    public static final ResourceLocation EMPTY_BLUEPRINT_MODEL = ResourceLocation.fromNamespaceAndPath(Ariente.MODID, "empty_blueprint");
+    public static final Identifier EMPTY_BLUEPRINT_MODEL = Identifier.fromNamespaceAndPath(Ariente.MODID, "empty_blueprint");
 
     public static ItemStack makeBluePrint(ItemStack destination) {
         ItemStack dest = new ItemStack(Registration.BLUEPRINT.get());
@@ -128,7 +119,7 @@ public class BlueprintItem extends Item implements ITooltipExtras, ITooltipSetti
             return ItemStack.EMPTY;
         }
         try {
-            JsonElement json = JsonParser.parseString(nbt.getString("destination"));
+            JsonElement json = JsonParser.parseString(nbt.getStringOr("destination", ""));
             if (!json.isJsonObject()) {
                 return ItemStack.EMPTY;
             }

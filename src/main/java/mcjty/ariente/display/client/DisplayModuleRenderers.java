@@ -1,5 +1,6 @@
 package mcjty.ariente.display.client;
 
+import mcjty.ariente.items.ItemData;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -17,7 +18,6 @@ import mcjty.ariente.setup.Registration;
 import net.minecraft.client.Minecraft;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.nbt.ListTag;
-import net.minecraft.nbt.Tag;
 import net.minecraft.world.item.ItemStack;
 
 /** Client extension point. New modules register a server type and a matching renderer. */
@@ -79,9 +79,9 @@ public class DisplayModuleRenderers {
         CompoundTag data = module.snapshot();
         ItemStack stack = module.stack();
         int width = module.size().width();
-        panel(c, module, "POWER / " + data.getString("Name"));
+        panel(c, module, "POWER / " + data.getStringOr("Name", ""));
         if (data.contains("Status")) {
-            c.text(data.getString("Status"), 6, 20, 0xffbc7a, .6f, width - 12);
+            c.text(data.getStringOr("Status", ""), 6, 20, 0xffbc7a, .6f, width - 12);
             return;
         }
         int y = 20;
@@ -89,20 +89,20 @@ public class DisplayModuleRenderers {
         String[] labels = {"Flux ", "Use ", "Gen ", "Fuel "};
         for (int index = 0; index < keys.length; index++) {
             if (PowerDisplayModule.flag(stack, keys[index], index < 2)) {
-                String value = data.contains(keys[index]) ? index == 3 ? amount(data.getInt("Fuel") / 20) + "s"
-                        : amount(data.getLong(keys[index])) + (index == 0 ? "" : "/t") : "n/a";
+                String value = data.contains(keys[index]) ? index == 3 ? amount(data.getIntOr("Fuel", 0) / 20) + "s"
+                        : amount(data.getLongOr(keys[index], 0)) + (index == 0 ? "" : "/t") : "n/a";
                 c.text(labels[index] + value, 6, y, WHITE, .65f, width - 12);
                 y += 10;
             }
         }
         if (PowerDisplayModule.mode(stack) == 1) {
             c.fill(6, y + 2, width - 12, 5, 0xff183748);
-            long available = data.getLong("Available");
-            long usage = data.getLong("Usage");
+            long available = data.getLongOr("Available", 0);
+            long usage = data.getLongOr("Usage", 0);
             float fraction = (float) (usage == 0 ? available > 0 ? 1 : 0 : Math.min(1, available / (double) Math.max(1, usage)));
             c.fill(6, y + 2, (width - 12) * fraction, 5, 0xff63e8cb);
         } else if (PowerDisplayModule.mode(stack) == 2) {
-            long[] history = data.getLongArray("History");
+            long[] history = data.getLongArray("History").orElseGet(() -> new long[0]);
             long max = 1;
             for (long value : history) {
                 max = Math.max(max, value);
@@ -127,12 +127,12 @@ public class DisplayModuleRenderers {
         ItemStack stack = module.stack();
         boolean grid = StorageDisplayModule.grid(stack);
         int width = module.size().width();
-        panel(c, module, grid ? "STORAGE " + data.getInt("Page") + "/" + data.getInt("Pages") : "MOST STORED");
+        panel(c, module, grid ? "STORAGE " + data.getIntOr("Page", 0) + "/" + data.getIntOr("Pages", 0) : "MOST STORED");
         if (data.contains("Status")) {
-            c.text(data.getString("Status"), 6, 20, 0xffbc7a, .65f, width - 12);
+            c.text(data.getStringOr("Status", ""), 6, 20, 0xffbc7a, .65f, width - 12);
             return;
         }
-        ListTag items = data.getList("Items", Tag.TAG_COMPOUND);
+        ListTag items = data.getListOrEmpty("Items");
         if (items.isEmpty()) {
             c.text("Empty inventory", 6, 20, CYAN, .6f, width - 12);
         }
@@ -141,19 +141,19 @@ public class DisplayModuleRenderers {
         if (saved == null || saved.version() != module.snapshotVersion()) {
             List<ItemStack> result = new ArrayList<>();
             for (int index = 0; index < items.size(); index++) {
-                result.add(ItemStack.parseOptional(Minecraft.getInstance().level.registryAccess(), items.getCompound(index).getCompound("Item")));
+                result.add(ItemData.decode(Minecraft.getInstance().level.registryAccess(), items.getCompoundOrEmpty(index).getCompoundOrEmpty("Item")));
             }
             saved = new ItemIcons(module.snapshotVersion(), result);
             ITEM_ICONS.put(module, saved);
         }
         List<ItemStack> icons = saved.icons();
         for (int index = 0; index < items.size(); index++) {
-            CompoundTag entry = items.getCompound(index);
+            CompoundTag entry = items.getCompoundOrEmpty(index);
             ItemStack item = icons.get(index);
             int x = grid ? 6 + index % cols * 24 : 6;
             int y = grid ? 20 + index / cols * 24 : 19 + index * 20;
             c.item(item, x, y);
-            String count = amount(entry.getLong("Count"));
+            String count = amount(entry.getLongOr("Count", 0));
             if (grid) {
                 c.text(count, x, y + 17, WHITE, .5f, 22);
             } else {
@@ -165,7 +165,7 @@ public class DisplayModuleRenderers {
 
     private static void text(DisplayCanvas c, InstalledModule module) {
         CompoundTag config = DisplayModuleItem.config(module.stack());
-        int color = config.contains("Color") ? config.getInt("Color") : 0xb8f4ff;
+        int color = config.contains("Color") ? config.getIntOr("Color", 0) : 0xb8f4ff;
         int scale = TextDisplayModule.scale(module.stack());
         List<String> lines = TEXT_LINES.computeIfAbsent(module, key -> TextDisplayModule.lines(key.stack()));
         for (int line = 0; line < lines.size(); line++) {
@@ -175,7 +175,7 @@ public class DisplayModuleRenderers {
 
     private static void alienText(DisplayCanvas c, InstalledModule module) {
         CompoundTag config = DisplayModuleItem.config(module.stack());
-        int color = config.contains("Color") ? config.getInt("Color") : 0xb8f4ff;
+        int color = config.contains("Color") ? config.getIntOr("Color", 0) : 0xb8f4ff;
         int scale = TextDisplayModule.scale(module.stack());
         List<String> lines = TEXT_LINES.computeIfAbsent(module, key -> AlienTextDisplayModule.lines(key.stack()));
         for (int line = 0; line < lines.size(); line++) {

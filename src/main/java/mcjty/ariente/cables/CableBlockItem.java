@@ -27,10 +27,4 @@ public class CableBlockItem extends BlockItem {
         }
     }
 
-    @Override
-    public String getDescriptionId() {
-        // We don't want the translation key of the block
-        return super.getOrCreateDescriptionId();
-    }
-
 }

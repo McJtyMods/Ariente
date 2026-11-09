@@ -1,5 +1,6 @@
 package mcjty.ariente.client;
 
+import net.neoforged.neoforge.client.network.ClientPacketDistributor;
 import mcjty.ariente.Ariente;
 import mcjty.ariente.blocks.utility.BlockInventoryInteraction;
 import mcjty.ariente.blocks.utility.PacketClickStorage;
@@ -10,7 +11,6 @@ import net.neoforged.bus.api.SubscribeEvent;
 import net.neoforged.fml.common.EventBusSubscriber;
 import net.neoforged.neoforge.client.event.ClientTickEvent;
 import net.neoforged.neoforge.client.event.InputEvent;
-import net.neoforged.neoforge.network.PacketDistributor;
 
 /** Creative slot clicks consume the attack gesture before Minecraft can break a block. */
 @EventBusSubscriber(modid = Ariente.MODID, value = Dist.CLIENT)
@@ -38,7 +38,7 @@ public class BlockInventoryInput {
             consumingAttack = true;
             event.setCanceled(true);
             event.setSwingHand(false);
-            PacketDistributor.sendToServer(new PacketClickStorage(hit.getBlockPos(), slot));
+            ClientPacketDistributor.sendToServer(new PacketClickStorage(hit.getBlockPos(), slot));
         }
     }
 

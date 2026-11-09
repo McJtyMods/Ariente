@@ -3,13 +3,13 @@ package mcjty.ariente.entities.fluxship;
 import net.minecraft.network.RegistryFriendlyByteBuf;
 import net.minecraft.network.codec.StreamCodec;
 import net.minecraft.network.protocol.common.custom.CustomPacketPayload;
-import net.minecraft.resources.ResourceLocation;
+import net.minecraft.resources.Identifier;
 import net.minecraft.server.level.ServerPlayer;
 import net.neoforged.neoforge.network.handling.IPayloadContext;
 
 public class PacketShipAction implements CustomPacketPayload {
 
-    public static final Type<PacketShipAction> TYPE = new Type<>(ResourceLocation.fromNamespaceAndPath("ariente", "packet_ship_action"));
+    public static final Type<PacketShipAction> TYPE = new Type<>(Identifier.fromNamespaceAndPath("ariente", "packet_ship_action"));
     public static final StreamCodec<RegistryFriendlyByteBuf, PacketShipAction> CODEC = StreamCodec.ofMember(PacketShipAction::toBytes, PacketShipAction::new);
 
     @Override

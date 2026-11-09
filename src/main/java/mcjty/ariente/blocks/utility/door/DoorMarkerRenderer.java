@@ -8,20 +8,20 @@ import mcjty.ariente.client.ArienteRenderType;
 import mcjty.ariente.client.ArienteSpriteUploader;
 import mcjty.ariente.setup.Registration;
 import net.minecraft.client.renderer.MultiBufferSource;
-import net.minecraft.client.renderer.blockentity.BlockEntityRenderer;
+import mcjty.ariente.client.ExtractedBlockRenderer;
 import net.minecraft.client.renderer.blockentity.BlockEntityRendererProvider;
 import net.minecraft.client.renderer.blockentity.BlockEntityRenderers;
 import net.minecraft.client.renderer.texture.TextureAtlasSprite;
 import net.minecraft.core.Direction;
-import net.minecraft.resources.ResourceLocation;
+import net.minecraft.resources.Identifier;
 import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.phys.AABB;
 import org.joml.Matrix4f;
 
-public class DoorMarkerRenderer implements BlockEntityRenderer<DoorMarkerTile> {
+public class DoorMarkerRenderer extends ExtractedBlockRenderer<DoorMarkerTile> {
 
     protected BlockEntityRendererProvider.Context context;
-    public static final ResourceLocation DOOR_MARKER_TEXTURE = ResourceLocation.fromNamespaceAndPath(Ariente.MODID, "doormarkers");
+    public static final Identifier DOOR_MARKER_TEXTURE = Identifier.fromNamespaceAndPath(Ariente.MODID, "doormarkers");
 
     public DoorMarkerRenderer(BlockEntityRendererProvider.Context pContext) {
         context = pContext;

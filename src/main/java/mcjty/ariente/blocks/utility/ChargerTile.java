@@ -1,12 +1,14 @@
 package mcjty.ariente.blocks.utility;
 
+import net.minecraft.world.level.block.state.BlockBehaviour;
+import net.minecraft.world.level.material.MapColor;
+import net.minecraft.world.level.block.SoundType;
 import mcjty.ariente.blocks.ExtremeMachineTile;
 import mcjty.ariente.entities.fluxship.FluxShipEnergy;
 import mcjty.ariente.entities.fluxship.FluxShipEntity;
 import mcjty.ariente.power.IPowerReceiver;
 import mcjty.ariente.power.IPowerUser;
 import mcjty.ariente.power.PowerReceiverSupport;
-import mcjty.ariente.setup.Registration;
 import mcjty.lib.blocks.BaseBlock;
 import mcjty.lib.blocks.RotationType;
 import mcjty.lib.builder.BlockBuilder;
@@ -27,11 +29,11 @@ public class ChargerTile extends ExtremeMachineTile implements IPowerReceiver, I
     private long usingPower;
 
     public ChargerTile(BlockPos pos, BlockState state) {
-        super(Registration.CHARGER_TILE.get(), pos, state);
+        super(mcjty.ariente.setup.Registration.CHARGER_TILE.get(), pos, state);
     }
 
-    public static BaseBlock createBlock() {
-        return new BaseBlock(new BlockBuilder()
+    public static BaseBlock createBlock(BlockBehaviour.Properties properties) {
+        return new BaseBlock(new BlockBuilder().properties(properties.mapColor(MapColor.METAL).strength(2.0f).requiresCorrectToolForDrops().sound(SoundType.METAL))
                 .info(key("message.ariente.shiftmessage"))
                 .infoShift(header())
                 .topDriver(DRIVER)

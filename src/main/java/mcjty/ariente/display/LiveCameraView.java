@@ -6,6 +6,7 @@ import net.minecraft.world.phys.Vec3;
 import org.joml.Matrix4f;
 
 /** Pan and tilt are relative to the mounted lens. Zero always looks away from its base. */
+
 public record LiveCameraView(Vec3 eye, Vec3 forward, float yaw, float pitch) {
 
     public Matrix4f rotation() {
@@ -14,7 +15,7 @@ public record LiveCameraView(Vec3 eye, Vec3 forward, float yaw, float pitch) {
     }
 
     public static LiveCameraView of(BlockPos pos, Direction facing, double panDegrees, double tiltDegrees) {
-        Vec3 normal = Vec3.atLowerCornerOf(facing.getNormal());
+        Vec3 normal = Vec3.atLowerCornerOf(facing.getUnitVec3i());
         Vec3 up = facing.getAxis() == Direction.Axis.Y
                 ? new Vec3(0, 0, facing == Direction.UP ? -1 : 1) : new Vec3(0, 1, 0);
         Vec3 right = normal.cross(up);

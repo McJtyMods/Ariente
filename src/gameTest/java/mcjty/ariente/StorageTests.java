@@ -1,5 +1,21 @@
 package mcjty.ariente;
 
+import mcjty.ariente.display.DisplayModuleItem;
+import net.minecraft.core.registries.Registries;
+import net.minecraft.gametest.framework.FunctionGameTestInstance;
+import net.minecraft.gametest.framework.TestData;
+import net.minecraft.network.chat.Component;
+import net.minecraft.resources.Identifier;
+import net.minecraft.resources.ResourceKey;
+import net.minecraft.util.ProblemReporter;
+import net.minecraft.world.level.GameType;
+import net.minecraft.world.level.block.Block;
+import net.minecraft.world.level.storage.TagValueInput;
+import net.neoforged.bus.api.SubscribeEvent;
+import net.neoforged.fml.common.EventBusSubscriber;
+import net.neoforged.neoforge.event.RegisterGameTestsEvent;
+import net.neoforged.neoforge.registries.RegisterEvent;
+
 import java.util.List;
 import mcjty.ariente.blocks.utility.StorageTile;
 import mcjty.ariente.items.BlueprintItem;
@@ -9,7 +25,6 @@ import mcjty.ariente.setup.Registration;
 import mcjty.lib.blocks.BaseBlock;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
-import net.minecraft.gametest.framework.GameTest;
 import net.minecraft.gametest.framework.GameTestHelper;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.world.InteractionHand;
@@ -19,45 +34,84 @@ import net.minecraft.world.item.Items;
 import net.minecraft.world.level.block.state.properties.BlockStateProperties;
 import net.minecraft.world.phys.Vec3;
 import net.neoforged.neoforge.capabilities.Capabilities;
-import net.neoforged.neoforge.gametest.GameTestHolder;
-import net.neoforged.neoforge.gametest.PrefixGameTestTemplate;
 import net.neoforged.neoforge.items.IItemHandler;
 
-@GameTestHolder(Ariente.MODID)
-@PrefixGameTestTemplate(false)
+@EventBusSubscriber(modid = Ariente.MODID)
 public class StorageTests {
 
-    @GameTest(template = "empty")
+    @SubscribeEvent
+    public static void functions(RegisterEvent event) {
+        event.register(Registries.TEST_FUNCTION, registry -> {
+            registry.register(Identifier.parse("ariente:both_variants_keep_sixty_four_stacks_per_type"), StorageTests::bothVariantsKeepSixtyFourStacksPerType);
+            registry.register(Identifier.parse("ariente:save_and_client_sync_preserve_every_area"), StorageTests::saveAndClientSyncPreserveEveryArea);
+            registry.register(Identifier.parse("ariente:front_selection_and_transfers_follow_all_six_facings"), StorageTests::frontSelectionAndTransfersFollowAllSixFacings);
+            registry.register(Identifier.parse("ariente:both_blueprints_resolve_to_their_own_cube"), StorageTests::bothBlueprintsResolveToTheirOwnCube);
+            registry.register(Identifier.parse("ariente:machine_drop_components_preserve_inventory_and_lock"), StorageTests::machineDropComponentsPreserveInventoryAndLock);
+            registry.register(Identifier.parse("ariente:item_components_use_copy_on_write"), StorageTests::itemComponentsUseCopyOnWrite);
+        });
+    }
+
+    @SubscribeEvent
+    public static void tests(RegisterGameTestsEvent event) {
+        var environment = event.registerEnvironment(Identifier.parse("ariente:port"));
+        event.registerTest(Identifier.parse("ariente:both_variants_keep_sixty_four_stacks_per_type"), data ->
+                new FunctionGameTestInstance(ResourceKey.create(
+                        Registries.TEST_FUNCTION, Identifier.parse("ariente:both_variants_keep_sixty_four_stacks_per_type")), data),
+                new TestData<>(environment, Identifier.parse("ariente:empty"), 200, 0, true));
+        event.registerTest(Identifier.parse("ariente:save_and_client_sync_preserve_every_area"), data ->
+                new FunctionGameTestInstance(ResourceKey.create(
+                        Registries.TEST_FUNCTION, Identifier.parse("ariente:save_and_client_sync_preserve_every_area")), data),
+                new TestData<>(environment, Identifier.parse("ariente:empty"), 200, 0, true));
+        event.registerTest(Identifier.parse("ariente:front_selection_and_transfers_follow_all_six_facings"), data ->
+                new FunctionGameTestInstance(ResourceKey.create(
+                        Registries.TEST_FUNCTION, Identifier.parse("ariente:front_selection_and_transfers_follow_all_six_facings")), data),
+                new TestData<>(environment, Identifier.parse("ariente:empty"), 200, 0, true));
+        event.registerTest(Identifier.parse("ariente:both_blueprints_resolve_to_their_own_cube"), data ->
+                new FunctionGameTestInstance(ResourceKey.create(
+                        Registries.TEST_FUNCTION, Identifier.parse("ariente:both_blueprints_resolve_to_their_own_cube")), data),
+                new TestData<>(environment, Identifier.parse("ariente:empty"), 200, 0, true));
+        event.registerTest(Identifier.parse("ariente:machine_drop_components_preserve_inventory_and_lock"), data ->
+                new FunctionGameTestInstance(ResourceKey.create(
+                        Registries.TEST_FUNCTION, Identifier.parse("ariente:machine_drop_components_preserve_inventory_and_lock")), data),
+                new TestData<>(environment, Identifier.parse("ariente:empty"), 200, 0, true));
+        event.registerTest(Identifier.parse("ariente:item_components_use_copy_on_write"), data ->
+                new FunctionGameTestInstance(ResourceKey.create(
+                        Registries.TEST_FUNCTION, Identifier.parse("ariente:item_components_use_copy_on_write")), data),
+                new TestData<>(environment, Identifier.parse("ariente:empty"), 200, 0, true));
+    }
+
+    private static void check(GameTestHelper helper, boolean condition, String message) {
+        helper.assertTrue(condition, Component.literal(message));
+    }
+
     public static void bothVariantsKeepSixtyFourStacksPerType(GameTestHelper helper) {
         for (BaseBlock block : variants()) {
             StorageTile tile = place(helper, block);
             int types = block == Registration.STORAGE.get() ? 4 : 9;
             IItemHandler inventory = inventory(tile);
-            helper.assertTrue(tile.getTypeCount() == types && inventory.getSlots() == types * 64,
+            check(helper, tile.getTypeCount() == types && inventory.getSlots() == types * 64,
                     "Original and 3x3 cubes expose four and nine groups of 64 stack slots");
             for (int type = 0; type < types; type++) {
                 ItemStack stack = taggedStack(type, 64);
                 for (int offset = 0; offset < 64; offset++) {
-                    helper.assertTrue(inventory.insertItem(type * 64 + offset, stack.copy(), false).isEmpty(),
+                    check(helper, inventory.insertItem(type * 64 + offset, stack.copy(), false).isEmpty(),
                             "Every slot in type " + type + " accepts its own item");
                 }
-                helper.assertTrue(tile.getTotalStack(type).getCount() == 4096, "Every area holds 4096 stackable items");
-                helper.assertTrue(inventory.insertItem(type * 64, stack, false).getCount() == 64, "Full areas reject overflow");
-                helper.assertTrue(!inventory.isItemValid(type * 64, taggedStack(type + 100, 1)), "Groups keep separate item data");
-                helper.assertTrue(inventory.extractItem(type * 64, 1, true).getCount() == 1
+                check(helper, tile.getTotalStack(type).getCount() == 4096, "Every area holds 4096 stackable items");
+                check(helper, inventory.insertItem(type * 64, stack, false).getCount() == 64, "Full areas reject overflow");
+                check(helper, !inventory.isItemValid(type * 64, taggedStack(type + 100, 1)), "Groups keep separate item data");
+                check(helper, inventory.extractItem(type * 64, 1, true).getCount() == 1
                         && tile.getTotalStack(type).getCount() == 4096, "Simulated extraction keeps totals unchanged");
-                helper.assertTrue(inventory.extractItem(type * 64, 1, false).getCount() == 1
+                check(helper, inventory.extractItem(type * 64, 1, false).getCount() == 1
                         && tile.getTotalStack(type).getCount() == 4095, "Extraction updates only its group's total");
             }
             for (Direction side : Direction.values()) {
-                helper.assertTrue(tile.getLevel().getCapability(Capabilities.ItemHandler.BLOCK, tile.getBlockPos(), side)
-                        .getSlots() == types * 64, "Every side exposes the complete grouped inventory");
+                check(helper, tile.getLevel().getCapability(Capabilities.Item.BLOCK, tile.getBlockPos(), side).size() == types * 64, "Every side exposes the complete grouped inventory");
             }
         }
         helper.succeed();
     }
 
-    @GameTest(template = "empty")
     public static void saveAndClientSyncPreserveEveryArea(GameTestHelper helper) {
         for (BaseBlock block : variants()) {
             StorageTile tile = place(helper, block);
@@ -69,35 +123,34 @@ public class StorageTests {
             tile.setLocked(true);
             CompoundTag saved = tile.saveWithoutMetadata(helper.getLevel().registryAccess());
             int types = tile.getTypeCount();
-            helper.assertTrue(saved.getCompound("Info").getIntArray("Counts").length == types * 64,
+            check(helper, saved.getCompoundOrEmpty("Info").getIntArray("Counts").orElseGet(() -> new int[0]).length == types * 64,
                     "Saved counts retain the original format and the variant's capacity");
             StorageTile restored = new StorageTile(tile.getBlockPos(), tile.getBlockState());
             restored.setLevel(helper.getLevel());
-            restored.loadWithComponents(saved, helper.getLevel().registryAccess());
+            restored.loadWithComponents(TagValueInput.create(ProblemReporter.DISCARDING, helper.getLevel().registryAccess(), saved));
             CompoundTag clientData = new CompoundTag();
             tile.saveClientDataToNBT(clientData, helper.getLevel().registryAccess());
             StorageTile client = new StorageTile(tile.getBlockPos(), tile.getBlockState());
             client.loadClientDataFromNBT(clientData, helper.getLevel().registryAccess());
-            helper.assertTrue(restored.isLocked() && "storage-test".equals(restored.getKeyId()) && client.isLocked(),
+            check(helper, restored.isLocked() && "storage-test".equals(restored.getKeyId()) && client.isLocked(),
                     "Save/load and client sync preserve locking");
-            helper.assertTrue(inventory(restored).extractItem(0, 1, false).isEmpty(), "Restored access locks block automation");
+            check(helper, inventory(restored).extractItem(0, 1, false).isEmpty(), "Restored access locks block automation");
             restored.setLocked(false);
             for (int type = 0; type < types; type++) {
                 ItemStack expected = taggedStack(type, 49);
-                helper.assertTrue(ItemStack.matches(restored.getTotalStack(type), expected)
+                check(helper, ItemStack.matches(restored.getTotalStack(type), expected)
                         && ItemStack.matches(client.getTotalStack(type), expected), "Every area's item, data and total survive sync");
-                helper.assertTrue(ItemStack.matches(inventory(restored).extractItem(type * 64 + 63, 64, false), taggedStack(type, 17)),
+                check(helper, ItemStack.matches(inventory(restored).extractItem(type * 64 + 63, 64, false), taggedStack(type, 17)),
                         "Save/load preserves the last physical stack of every group");
             }
         }
         helper.succeed();
     }
 
-    @GameTest(template = "empty")
     public static void frontSelectionAndTransfersFollowAllSixFacings(GameTestHelper helper) {
         for (BaseBlock block : variants()) {
             StorageTile tile = place(helper, block);
-            Player player = helper.makeMockPlayer(net.minecraft.world.level.GameType.SURVIVAL);
+            Player player = helper.makeMockPlayer(GameType.SURVIVAL);
             int size = tile.getGridSize();
             for (Direction front : Direction.values()) {
                 helper.getLevel().setBlockAndUpdate(tile.getBlockPos(), tile.getBlockState().setValue(BlockStateProperties.FACING, front));
@@ -106,26 +159,26 @@ public class StorageTests {
                     double y = size == 2 ? .745 - (type / size) * .375 : .8 - (type / size) * .25;
                     Vec3 hit = frontHit(front, x, y);
                     Vec3 worldHit = hit.add(Vec3.atLowerCornerOf(tile.getBlockPos()));
-                    helper.assertTrue(StorageTile.getSlot(helper.getLevel(), tile.getBlockPos(), front, worldHit) == type,
+                    check(helper, StorageTile.getSlot(helper.getLevel(), tile.getBlockPos(), front, worldHit) == type,
                             "Rendered area " + type + " selects itself facing " + front);
-                    helper.assertTrue(StorageTile.getSlot(helper.getLevel(), tile.getBlockPos(), front.getOpposite(), worldHit) == -1,
+                    check(helper, StorageTile.getSlot(helper.getLevel(), tile.getBlockPos(), front.getOpposite(), worldHit) == -1,
                             "Other faces cannot select a front area");
                     player.setItemInHand(InteractionHand.MAIN_HAND, taggedStack(type, 3));
                     StorageTile.onActivate(helper.getLevel(), tile.getBlockPos(), player, front, hit.x, hit.y, hit.z);
-                    helper.assertTrue(player.getMainHandItem().isEmpty() && tile.getTotalStack(type).getCount() == 3,
+                    check(helper, player.getMainHandItem().isEmpty() && tile.getTotalStack(type).getCount() == 3,
                             "Right-click inserts into the selected area");
                     tile.giveToPlayer(type, player);
-                    helper.assertTrue(player.getMainHandItem().getCount() == 1 && tile.getTotalStack(type).getCount() == 2,
+                    check(helper, player.getMainHandItem().getCount() == 1 && tile.getTotalStack(type).getCount() == 2,
                             "Left-click retrieves one item");
                     player.setItemInHand(InteractionHand.MAIN_HAND, ItemStack.EMPTY);
                     player.setShiftKeyDown(true);
                     tile.giveToPlayer(type, player);
-                    helper.assertTrue(player.getMainHandItem().getCount() == 2 && tile.getTotalStack(type).isEmpty(),
+                    check(helper, player.getMainHandItem().getCount() == 2 && tile.getTotalStack(type).isEmpty(),
                             "Sneak-left-click retrieves the remaining stack");
                     player.setShiftKeyDown(false);
                 }
                 Vec3 bottom = frontHit(front, .5, .05).add(Vec3.atLowerCornerOf(tile.getBlockPos()));
-                helper.assertTrue(StorageTile.getSlot(helper.getLevel(), tile.getBlockPos(), front, bottom) == -1,
+                check(helper, StorageTile.getSlot(helper.getLevel(), tile.getBlockPos(), front, bottom) == -1,
                         "The lower strip still opens the access panel");
             }
             tile.giveToPlayer(-1, player);
@@ -134,48 +187,45 @@ public class StorageTests {
         helper.succeed();
     }
 
-    @GameTest(template = "empty")
     public static void bothBlueprintsResolveToTheirOwnCube(GameTestHelper helper) {
         for (BaseBlock block : variants()) {
             ItemStack blueprint = BlueprintItem.makeBluePrint(new ItemStack(block));
             var recipe = BlueprintRecipeRegistry.findRecipe(BlueprintItem.getDestination(blueprint));
-            helper.assertTrue(recipe != null && recipe.getDestination().is(block.asItem()),
+            check(helper, recipe != null && recipe.getDestination().is(block.asItem()),
                     "Each cube has its own populated blueprint and Constructor recipe");
         }
         helper.succeed();
     }
 
-    @GameTest(template = "empty")
     public static void machineDropComponentsPreserveInventoryAndLock(GameTestHelper helper) {
         StorageTile tile = place(helper, Registration.STORAGE.get());
         inventory(tile).insertItem(0, taggedStack(7, 23), false);
         tile.setKeyId("component-round-trip");
         tile.setLocked(true);
-        ItemStack drop = net.minecraft.world.level.block.Block.getDrops(tile.getBlockState(), helper.getLevel(),
+        ItemStack drop = Block.getDrops(tile.getBlockState(), helper.getLevel(),
                 tile.getBlockPos(), tile).stream().filter(stack -> stack.is(Registration.STORAGE.get().asItem())).findFirst().orElseThrow();
-        helper.assertTrue(drop.has(Registration.MACHINE_DATA.get()), "Machine loot copies its persistent component");
-        ItemStack decoded = ItemStack.parse(helper.getLevel().registryAccess(), drop.save(helper.getLevel().registryAccess())).orElseThrow();
+        check(helper, drop.has(Registration.MACHINE_DATA.get()), "Machine loot copies its persistent component");
+        ItemStack decoded = ItemData.decode(helper.getLevel().registryAccess(), ItemData.encode(helper.getLevel().registryAccess(), drop));
         StorageTile restored = new StorageTile(tile.getBlockPos(), tile.getBlockState());
         restored.setLevel(helper.getLevel());
         restored.applyComponentsFromItemStack(decoded);
-        helper.assertTrue(restored.isLocked() && "component-round-trip".equals(restored.getKeyId()), "Placement restores lock settings");
-        helper.assertTrue(ItemStack.matches(restored.getTotalStack(0), taggedStack(7, 23)), "Dropped and placed machines retain full item components and counts");
+        check(helper, restored.isLocked() && "component-round-trip".equals(restored.getKeyId()), "Placement restores lock settings");
+        check(helper, ItemStack.matches(restored.getTotalStack(0), taggedStack(7, 23)), "Dropped and placed machines retain full item components and counts");
         helper.succeed();
     }
 
-    @GameTest(template = "empty")
     public static void itemComponentsUseCopyOnWrite(GameTestHelper helper) {
         ItemStack original = new ItemStack(Registration.ENERGY_HOLDER.get());
         ItemData.update(original, tag -> tag.putInt("mode", 1));
         ItemStack copy = original.copy();
         ItemData.update(copy, tag -> tag.putInt("mode", 2));
         ItemData.get(original).putInt("mode", 99);
-        helper.assertTrue(ItemData.get(original).getInt("mode") == 1 && ItemData.get(copy).getInt("mode") == 2,
+        check(helper, ItemData.get(original).getIntOr("mode", 0) == 1 && ItemData.get(copy).getIntOr("mode", 0) == 2,
                 "Stack copies and read snapshots cannot mutate each other's component state");
         ItemStack module = new ItemStack(Registration.DISPLAY_TEXT.get());
-        mcjty.ariente.display.DisplayModuleItem.editConfig(module, config -> config.putString("Text", "Saved hologram"));
-        ItemStack decoded = ItemStack.parse(helper.getLevel().registryAccess(), module.save(helper.getLevel().registryAccess())).orElseThrow();
-        helper.assertTrue("Saved hologram".equals(mcjty.ariente.display.DisplayModuleItem.config(decoded).getString("Text")),
+        DisplayModuleItem.editConfig(module, config -> config.putString("Text", "Saved hologram"));
+        ItemStack decoded = ItemData.decode(helper.getLevel().registryAccess(), ItemData.encode(helper.getLevel().registryAccess(), module));
+        check(helper, "Saved hologram".equals(DisplayModuleItem.config(decoded).getStringOr("Text", "")),
                 "Display configuration survives item serialization");
         helper.succeed();
     }

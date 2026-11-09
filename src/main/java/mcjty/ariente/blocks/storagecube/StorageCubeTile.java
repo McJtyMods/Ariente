@@ -1,5 +1,10 @@
 package mcjty.ariente.blocks.storagecube;
 
+import com.mojang.serialization.MapCodec;
+import net.minecraft.world.level.storage.ValueInput;
+
+import net.minecraft.world.level.block.state.BlockBehaviour;
+import net.minecraft.world.level.block.SoundType;
 import java.util.ArrayList;
 import java.util.Comparator;
 import java.util.HashMap;
@@ -20,7 +25,6 @@ import mcjty.ariente.items.KeyCardItem;
 import mcjty.ariente.recipes.BlueprintRecipeRegistry;
 import mcjty.ariente.security.AreaLocks;
 import mcjty.ariente.security.IKeyCardSlot;
-import mcjty.ariente.setup.Registration;
 import mcjty.ariente.sounds.ModSounds;
 import mcjty.hologui.api.IGuiComponent;
 import mcjty.hologui.api.IGuiComponentRegistry;
@@ -37,8 +41,7 @@ import net.minecraft.core.HolderLookup;
 import net.minecraft.core.registries.BuiltInRegistries;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.nbt.ListTag;
-import net.minecraft.nbt.Tag;
-import net.minecraft.resources.ResourceLocation;
+import net.minecraft.resources.Identifier;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.sounds.SoundSource;
 import net.minecraft.world.InteractionHand;
@@ -47,7 +50,6 @@ import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.level.Level;
-import net.minecraft.world.level.block.Block;
 import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.level.material.MapColor;
 import net.minecraft.world.phys.BlockHitResult;
@@ -68,12 +70,12 @@ public class StorageCubeTile extends ArienteBlockEntity implements IGuiTile, ICi
     private int paletteSize;
     private boolean locked;
     private String keyId;
-    private ResourceLocation lootTable;
+    private Identifier lootTable;
     private boolean lootGenerated;
 
     public StorageCubeTile(BlockPos pos, BlockState state) {
-        super(Registration.HOLO_STORAGE_TILE.get(), pos, state);
-        int size = state.is(Registration.HOLO_STORAGE_3.get()) ? 120 : state.is(Registration.HOLO_STORAGE_2.get()) ? 60 : 30;
+        super(mcjty.ariente.setup.Registration.HOLO_STORAGE_TILE.get(), pos, state);
+        int size = state.is(mcjty.ariente.setup.Registration.HOLO_STORAGE_3.get()) ? 120 : state.is(mcjty.ariente.setup.Registration.HOLO_STORAGE_2.get()) ? 60 : 30;
         items = new GenericItemHandler(this, new ContainerFactory(size).box(generic().in().out(), 0, 0, 0, size, 1)) {
 
             @Override
@@ -108,9 +110,9 @@ public class StorageCubeTile extends ArienteBlockEntity implements IGuiTile, ICi
         AreaLocks.loaded(this);
     }
 
-    public static BaseBlock createBlock() {
-        return new BaseBlock(new BlockBuilder()
-                .properties(Block.Properties.of().mapColor(MapColor.METAL).strength(5, 30).noOcclusion())
+    public static BaseBlock createBlock(BlockBehaviour.Properties properties) {
+        return new BaseBlock(new BlockBuilder().properties(properties.mapColor(MapColor.METAL).strength(2.0f).requiresCorrectToolForDrops().sound(SoundType.METAL))
+                .properties(properties.mapColor(MapColor.METAL).strength(5, 30).noOcclusion())
                 .tileEntitySupplier(StorageCubeTile::new)) {
 
             @Override
@@ -124,11 +126,11 @@ public class StorageCubeTile extends ArienteBlockEntity implements IGuiTile, ICi
         return items;
     }
 
-    public ResourceLocation getLootTable() {
+    public Identifier getLootTable() {
         return lootTable;
     }
 
-    public void setLootTable(ResourceLocation lootTable) {
+    public void setLootTable(Identifier lootTable) {
         this.lootTable = lootTable;
         setChanged();
     }
@@ -153,7 +155,7 @@ public class StorageCubeTile extends ArienteBlockEntity implements IGuiTile, ICi
             return;
         }
         this.locked = locked;
-        if (locked && level != null && !level.isClientSide) {
+        if (locked && level != null && !level.isClientSide()) {
             for (Viewer viewer : viewers.values()) {
                 if (level.getEntity(viewer.entityId) instanceof HoloGuiEntity holo) {
                     holo.discard();
@@ -180,7 +182,7 @@ public class StorageCubeTile extends ArienteBlockEntity implements IGuiTile, ICi
 
     @Override
     public void acceptKeyCard(ItemStack stack) {
-        if (level.isClientSide) {
+        if (level.isClientSide()) {
             return;
         }
         boolean accepted = KeyCardItem.getSecurityTags(stack).contains(keyId);
@@ -210,12 +212,12 @@ public class StorageCubeTile extends ArienteBlockEntity implements IGuiTile, ICi
     }
 
     @Override
-    public void setLoot(ResourceLocation id, int slot, boolean blueprint, int amount, int meta) {
+    public void setLoot(Identifier id, int slot, boolean blueprint, int amount, int meta) {
         ItemStack stack;
         if (id == null) {
             stack = BlueprintItem.makeBluePrint(BlueprintRecipeRegistry.getRandomRecipes().getRandom().getDestination());
         } else {
-            Item item = BuiltInRegistries.ITEM.get(id);
+            Item item = BuiltInRegistries.ITEM.getValue(id);
             if (item == null) {
                 return;
             }
@@ -228,11 +230,11 @@ public class StorageCubeTile extends ArienteBlockEntity implements IGuiTile, ICi
     public void loadAdditional(CompoundTag tag, HolderLookup.Provider provider) {
         super.loadAdditional(tag, provider);
         AreaLocks.loadTarget(this, tag);
-        CompoundTag info = tag.getCompound("Info");
-        locked = info.getBoolean("locked");
-        keyId = info.contains("keyId") ? info.getString("keyId") : null;
-        lootTable = info.contains("lootTable") ? ResourceLocation.tryParse(info.getString("lootTable")) : null;
-        lootGenerated = info.getBoolean("lootGenerated");
+        CompoundTag info = tag.getCompoundOrEmpty("Info");
+        locked = info.getBooleanOr("locked", false);
+        keyId = info.contains("keyId") ? info.getStringOr("keyId", "") : null;
+        lootTable = info.contains("lootTable") ? Identifier.tryParse(info.getStringOr("lootTable", "")) : null;
+        lootGenerated = info.getBooleanOr("lootGenerated", false);
     }
 
     @Override
@@ -263,8 +265,8 @@ public class StorageCubeTile extends ArienteBlockEntity implements IGuiTile, ICi
     }
 
     @Override
-    public void handleUpdateTag(CompoundTag tag, HolderLookup.Provider provider) {
-        loadClientDataFromNBT(tag, provider);
+    public void handleUpdateTag(ValueInput input) {
+        loadClientDataFromNBT(input.read(MapCodec.assumeMapUnsafe(CompoundTag.CODEC)).orElseGet(CompoundTag::new), level.registryAccess());
     }
 
     public List<Preview> getPreview() {
@@ -273,10 +275,10 @@ public class StorageCubeTile extends ArienteBlockEntity implements IGuiTile, ICi
 
     @Override
     public InteractionResult onBlockActivated(BlockState state, Player player, InteractionHand hand, BlockHitResult result) {
-        if (!level.isClientSide && hand == InteractionHand.MAIN_HAND) {
+        if (!level.isClientSide() && hand == InteractionHand.MAIN_HAND) {
             Ariente.guiHandler.openHoloGui(level, worldPosition, player);
         }
-        return InteractionResult.sidedSuccess(level.isClientSide);
+        return InteractionResult.SUCCESS;
     }
 
     @Override
@@ -423,7 +425,7 @@ public class StorageCubeTile extends ArienteBlockEntity implements IGuiTile, ICi
             palette.clear();
         }
         while (!palette.isEmpty() && sample.size() < PREVIEW_SIZE) {
-            int roll = level.random.nextInt(palette.stream().mapToInt(Preview::weight).sum());
+            int roll = level.getRandom().nextInt(palette.stream().mapToInt(Preview::weight).sum());
             for (int i = 0; i < palette.size(); i++) {
                 roll -= palette.get(i).weight();
                 if (roll < 0) {
@@ -452,7 +454,7 @@ public class StorageCubeTile extends ArienteBlockEntity implements IGuiTile, ICi
         tag.putBoolean("Locked", locked);
         ListTag entries = new ListTag();
         for (Preview entry : preview) {
-            CompoundTag data = (CompoundTag) entry.stack().saveOptional(provider);
+            CompoundTag data = (CompoundTag) ItemData.encode(provider, entry.stack());
             data.putInt("Weight", entry.weight());
             entries.add(data);
         }
@@ -461,14 +463,14 @@ public class StorageCubeTile extends ArienteBlockEntity implements IGuiTile, ICi
 
     @Override
     public void loadClientDataFromNBT(CompoundTag tag, HolderLookup.Provider provider) {
-        locked = tag.getBoolean("Locked");
-        ListTag entries = tag.getList("Preview", Tag.TAG_COMPOUND);
+        locked = tag.getBooleanOr("Locked", false);
+        ListTag entries = tag.getListOrEmpty("Preview");
         List<Preview> sample = new ArrayList<>();
         for (int i = 0; i < Math.min(PREVIEW_SIZE, entries.size()); i++) {
-            CompoundTag data = entries.getCompound(i);
-            ItemStack stack = ItemStack.parseOptional(provider, data);
+            CompoundTag data = entries.getCompoundOrEmpty(i);
+            ItemStack stack = ItemData.decode(provider, data);
             if (!stack.isEmpty()) {
-                sample.add(new Preview(stack, Math.max(1, data.getInt("Weight"))));
+                sample.add(new Preview(stack, Math.max(1, data.getIntOr("Weight", 0))));
             }
         }
         preview = List.copyOf(sample);

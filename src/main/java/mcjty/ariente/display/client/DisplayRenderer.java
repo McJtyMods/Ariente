@@ -12,14 +12,14 @@ import mcjty.ariente.display.DisplayModuleItem;
 import mcjty.ariente.display.DisplayModuleType;
 import mcjty.ariente.display.InstalledModule;
 import net.minecraft.client.renderer.MultiBufferSource;
-import net.minecraft.client.renderer.blockentity.BlockEntityRenderer;
+import mcjty.ariente.client.ExtractedBlockRenderer;
 import net.minecraft.client.renderer.blockentity.BlockEntityRendererProvider;
 import net.minecraft.core.Direction;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.phys.AABB;
 import net.minecraft.world.phys.Vec3;
 
-public class DisplayRenderer implements BlockEntityRenderer<DisplayBaseTile> {
+public class DisplayRenderer extends ExtractedBlockRenderer<DisplayBaseTile> {
 
     public DisplayRenderer(BlockEntityRendererProvider.Context context) {
     }
@@ -51,11 +51,11 @@ public class DisplayRenderer implements BlockEntityRenderer<DisplayBaseTile> {
         snapshot.translate(first.getBlockPos().getX() - tile.getBlockPos().getX(), 0,
                 first.getBlockPos().getZ() - tile.getBlockPos().getZ());
         Vec3 center = Vec3.atCenterOf(first.getBlockPos()).add(Vec3.atLowerCornerOf(DisplayGeometry.facing(first)
-                .getCounterClockWise().getNormal()).scale((row.size() - 1) / 2.0)).add(0, (first.getHeight() - 1) / 2.0, 0);
+                .getCounterClockWise().getUnitVec3i()).scale((row.size() - 1) / 2.0)).add(0, (first.getHeight() - 1) / 2.0, 0);
         WorldHolograms.add(center, buffers -> renderRow(first, row, snapshot, buffers));
     }
 
-    private static void renderRow(DisplayBaseTile tile, List<DisplayBaseTile> row, PoseStack poses, MultiBufferSource.BufferSource buffer) {
+    private static void renderRow(DisplayBaseTile tile, List<DisplayBaseTile> row, PoseStack poses, MultiBufferSource buffer) {
         poses.pushPose();
         transform(poses, tile);
         DisplayCanvas c = new DisplayCanvas(poses, buffer);
@@ -64,7 +64,6 @@ public class DisplayRenderer implements BlockEntityRenderer<DisplayBaseTile> {
         DisplayAppearance appearance = tile.appearance();
         // One joined surface, flushed before every module, including modules spanning bases.
         c.fill(0, 0, width, height, appearance.surfaceColor());
-        buffer.endBatch();
         poses.translate(0, 0, .02);
         // A continuous surface with restrained scan lines and optional illuminated perimeter rails.
         if (appearance.type() == DisplayBackground.TRANSPARENT && appearance.alpha() > 0) {
@@ -79,7 +78,6 @@ public class DisplayRenderer implements BlockEntityRenderer<DisplayBaseTile> {
             c.fill(width - 6, 0, 6, 1.5f, 0xffc0fbff);
             c.fill(width - 6, height - 1.5f, 6, 1.5f, 0xffc0fbff);
         }
-        buffer.endBatch();
         poses.translate(0, 0, .1);
         for (int column = 0; column < row.size(); column++) {
             DisplayBaseTile owner = row.get(column);
@@ -88,7 +86,6 @@ public class DisplayRenderer implements BlockEntityRenderer<DisplayBaseTile> {
                     poses.pushPose();
                     poses.translate(column * 64 + module.x(), module.y(), 0);
                     DisplayModuleRenderers.render(c, module);
-                    buffer.endBatch();
                     poses.popPose();
                 }
             }
@@ -114,7 +111,7 @@ public class DisplayRenderer implements BlockEntityRenderer<DisplayBaseTile> {
     }
 
     @Override
-    public boolean shouldRenderOffScreen(DisplayBaseTile tile) {
+    public boolean shouldRenderOffScreen() {
         return true;
     }
 

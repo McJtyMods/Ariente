@@ -1,5 +1,7 @@
 package mcjty.ariente;
 
+import net.neoforged.neoforge.event.level.block.BreakBlockEvent;
+
 import mcjty.ariente.api.ArmorUpgradeType;
 import mcjty.ariente.blocks.ExtremeMachineTile;
 import mcjty.ariente.blocks.utility.ILockable;
@@ -13,7 +15,6 @@ import mcjty.ariente.power.PowerSystem;
 import mcjty.ariente.setup.Registration;
 import mcjty.ariente.sounds.FluxLevitatorSounds;
 import net.minecraft.core.BlockPos;
-import net.minecraft.nbt.Tag;
 import net.minecraft.network.chat.Component;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.world.entity.Entity;
@@ -31,7 +32,6 @@ import net.neoforged.neoforge.event.entity.living.LivingDeathEvent;
 import net.neoforged.neoforge.event.entity.living.LivingFallEvent;
 import net.neoforged.neoforge.event.entity.player.ItemTooltipEvent;
 import net.neoforged.neoforge.event.entity.player.PlayerEvent;
-import net.neoforged.neoforge.event.level.BlockEvent;
 import net.neoforged.neoforge.event.tick.LevelTickEvent;
 import net.neoforged.neoforge.event.tick.PlayerTickEvent;
 import net.neoforged.neoforge.network.PacketDistributor;
@@ -47,14 +47,14 @@ public class ForgeEventHandlers {
 
     @SubscribeEvent
     public void onWorldTick(LevelTickEvent.Pre event) {
-        if (!event.getLevel().isClientSide && event.getLevel().dimension() == Level.OVERWORLD) {
+        if (!event.getLevel().isClientSide() && event.getLevel().dimension() == Level.OVERWORLD) {
             PowerSystem.getPowerSystem(event.getLevel()).tick();
         }
     }
 
     @SubscribeEvent
     public void onPlayerTick(PlayerTickEvent.Post event) {
-        if (!event.getEntity().level().isClientSide) {
+        if (!event.getEntity().level().isClientSide()) {
             PowerSuitEffects.tick(event.getEntity());
             if (event.getEntity() instanceof ServerPlayer player && player.isAlive() && !player.isPassenger()
                     && player.getItemBySlot(EquipmentSlot.CHEST).is(Registration.POWERSUIT_CHEST.get())
@@ -73,8 +73,8 @@ public class ForgeEventHandlers {
     @SubscribeEvent
     public void onPlayerClone(PlayerEvent.Clone event) {
         var original = event.getOriginal().getPersistentData();
-        if (original.contains("arienteReturn", Tag.TAG_COMPOUND)) {
-            event.getEntity().getPersistentData().put("arienteReturn", original.getCompound("arienteReturn").copy());
+        if (original.contains("arienteReturn")) {
+            event.getEntity().getPersistentData().put("arienteReturn", original.getCompoundOrEmpty("arienteReturn").copy());
         }
     }
 
@@ -127,7 +127,7 @@ public class ForgeEventHandlers {
         }
     }
 
-    private void onBlockBreakNormal(BlockEvent.BreakEvent event) {
+    private void onBlockBreakNormal(BreakBlockEvent event) {
         LevelAccessor world = event.getLevel();
         BlockPos pos = event.getPos();
         BlockEntity te = world.getBlockEntity(pos);
@@ -141,7 +141,7 @@ public class ForgeEventHandlers {
     @SubscribeEvent
     public void onEntityJoin(EntityJoinLevelEvent event) {
         Level world = event.getLevel();
-        if (world.isClientSide) {
+        if (world.isClientSide()) {
             Entity entity = event.getEntity();
             if (entity instanceof FluxLevitatorEntity) {
                 FluxLevitatorSounds.playMovingSoundClient((FluxLevitatorEntity) entity);
@@ -150,7 +150,7 @@ public class ForgeEventHandlers {
     }
 
     @SubscribeEvent
-    public void onBlockBreak(BlockEvent.BreakEvent event) {
+    public void onBlockBreak(BreakBlockEvent event) {
         onBlockBreakNormal(event);
     }
 

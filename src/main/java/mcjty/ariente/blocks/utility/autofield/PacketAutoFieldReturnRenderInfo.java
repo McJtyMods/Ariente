@@ -5,13 +5,13 @@ import net.minecraft.core.BlockPos;
 import net.minecraft.network.RegistryFriendlyByteBuf;
 import net.minecraft.network.codec.StreamCodec;
 import net.minecraft.network.protocol.common.custom.CustomPacketPayload;
-import net.minecraft.resources.ResourceLocation;
+import net.minecraft.resources.Identifier;
 import net.minecraft.world.level.block.entity.BlockEntity;
 import net.neoforged.neoforge.network.handling.IPayloadContext;
 
 public class PacketAutoFieldReturnRenderInfo implements CustomPacketPayload {
 
-    public static final Type<PacketAutoFieldReturnRenderInfo> TYPE = new Type<>(ResourceLocation.fromNamespaceAndPath("ariente", "packet_auto_field_return_render_info"));
+    public static final Type<PacketAutoFieldReturnRenderInfo> TYPE = new Type<>(Identifier.fromNamespaceAndPath("ariente", "packet_auto_field_return_render_info"));
     public static final StreamCodec<RegistryFriendlyByteBuf, PacketAutoFieldReturnRenderInfo> CODEC = StreamCodec.ofMember(PacketAutoFieldReturnRenderInfo::toBytes, PacketAutoFieldReturnRenderInfo::new);
 
     @Override

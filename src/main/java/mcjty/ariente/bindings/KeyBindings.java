@@ -1,5 +1,6 @@
 package mcjty.ariente.bindings;
 
+import net.neoforged.neoforge.client.network.ClientPacketDistributor;
 import mcjty.ariente.entities.fluxship.FluxShipEntity;
 import mcjty.ariente.entities.fluxship.FluxShipMouseControls;
 import mcjty.ariente.entities.fluxship.PacketShipAction;
@@ -9,7 +10,6 @@ import mcjty.ariente.items.armor.PacketArmorHotkey;
 import mcjty.ariente.items.armor.PacketConfigureArmor;
 import net.minecraft.client.Minecraft;
 import net.minecraft.network.protocol.common.custom.CustomPacketPayload;
-import net.neoforged.neoforge.network.PacketDistributor;
 import org.lwjgl.glfw.GLFW;
 
 public class KeyBindings {
@@ -74,6 +74,6 @@ public class KeyBindings {
     }
 
     private static void toServer(CustomPacketPayload packet) {
-        PacketDistributor.sendToServer(packet);
+        ClientPacketDistributor.sendToServer(packet);
     }
 }

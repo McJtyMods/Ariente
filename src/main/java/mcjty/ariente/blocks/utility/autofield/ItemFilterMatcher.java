@@ -5,7 +5,7 @@ import java.util.Set;
 import java.util.stream.Collectors;
 import mcjty.ariente.items.ItemData;
 import net.minecraft.nbt.CompoundTag;
-import net.minecraft.resources.ResourceLocation;
+import net.minecraft.resources.Identifier;
 import net.minecraft.world.item.ItemStack;
 
 public class ItemFilterMatcher {
@@ -32,9 +32,9 @@ public class ItemFilterMatcher {
         return tag;
     }
 
-    private static Set<ResourceLocation> materialTags(ItemStack stack) {
+    private static Set<Identifier> materialTags(ItemStack stack) {
         // Broad groups such as forge:ingots and ores_in_ground/stone are not material equivalence.
-        return stack.getTags().map(tag -> tag.location()).filter(id -> switch (id.getNamespace()) {
+        return stack.typeHolder().tags().map(tag -> tag.location()).filter(id -> switch (id.getNamespace()) {
             case "minecraft" -> VANILLA_MATERIALS.contains(id.getPath());
             case "forge" -> id.getPath().contains("/") && FORGE_MATERIALS.contains(id.getPath().substring(0, id.getPath().indexOf('/')));
             default -> true;

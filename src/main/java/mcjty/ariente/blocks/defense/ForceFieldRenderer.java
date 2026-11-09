@@ -2,15 +2,15 @@ package mcjty.ariente.blocks.defense;
 
 import com.mojang.blaze3d.vertex.*;
 import java.util.*;
-import com.mojang.blaze3d.systems.RenderSystem;
+import mcjty.ariente.client.ArienteRenderType;
+import net.minecraft.client.renderer.MultiBufferSource;
 import mcjty.ariente.Ariente;
 import mcjty.ariente.items.armor.PersonalForcefield;
 import mcjty.ariente.varia.Triangle;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.multiplayer.ClientLevel;
-import net.minecraft.client.renderer.GameRenderer;
 import net.minecraft.core.BlockPos;
-import net.minecraft.resources.ResourceLocation;
+import net.minecraft.resources.Identifier;
 import net.minecraft.util.Mth;
 import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.phys.Vec3;
@@ -19,8 +19,8 @@ import org.joml.Matrix4f;
 
 public class ForceFieldRenderer {
 
-    public static final ResourceLocation FORCEFIELD = ResourceLocation.fromNamespaceAndPath(Ariente.MODID, "textures/effects/forcefield.png");
-    private static final ResourceLocation FORCEFIELD_HIT = ResourceLocation.fromNamespaceAndPath(Ariente.MODID, "textures/effects/forcefield_hit.png");
+    public static final Identifier FORCEFIELD = Identifier.fromNamespaceAndPath(Ariente.MODID, "textures/effects/forcefield.png");
+    private static final Identifier FORCEFIELD_HIT = Identifier.fromNamespaceAndPath(Ariente.MODID, "textures/effects/forcefield_hit.png");
     private static final float FIELD_ALPHA = 0.3f;
     private static final float PERSONAL_RECOVERY_FADE_TICKS = 3;
     private static final Set<BlockPos> forceFields = new HashSet<>();    // A set of force fields that are in render range
@@ -74,7 +74,7 @@ public class ForceFieldRenderer {
     private static long randomSeedCounter = 0;
     private static ClientLevel lastLevel;
 
-    public static void renderForceFields(PoseStack poseStack, float partialTicks) {
+    public static void renderForceFields(PoseStack poseStack, MultiBufferSource buffer, float partialTicks) {
         Minecraft minecraft = Minecraft.getInstance();
         ClientLevel world = minecraft.level;
         if (world != lastLevel) {
@@ -86,18 +86,13 @@ public class ForceFieldRenderer {
         if (world == null) {
             return;
         }
-        Vec3 camera = minecraft.gameRenderer.getMainCamera().getPosition();
+        Vec3 camera = minecraft.gameRenderer.getMainCamera().position();
         Matrix4f matrix = poseStack.last().pose();
-        RenderSystem.enableBlend();
-        RenderSystem.defaultBlendFunc();
-        RenderSystem.enableDepthTest();
-        RenderSystem.depthMask(false);
-        RenderSystem.enableCull();
-        RenderSystem.setShader(GameRenderer::getPositionTexColorShader);
-        RenderSystem.setShaderColor(1, 1, 1, 1);
-        try {
-            Tesselator tessellator = Tesselator.getInstance();
-            RenderSystem.setShaderTexture(0, FORCEFIELD);
+            for (var candidate : world.entitiesForRendering()) {
+                if (candidate instanceof LivingEntity living && PersonalForcefield.isActive(living)) {
+                    personalForcefields.add(living);
+                }
+            }
             // The local player's armor model is not rendered in first person.
             if (minecraft.options.getCameraType().isFirstPerson() && minecraft.getCameraEntity() instanceof LivingEntity viewer
                     && PersonalForcefield.isActive(viewer)) {
@@ -118,15 +113,12 @@ public class ForceFieldRenderer {
                 float alpha = firstPerson ? 0.09f + flash * 0.08f * recoveryFade
                         : 0.2f + (0.25f + flash * 0.3f) * recoveryFade;
                 // This shader discards vertex alpha below 0.1; its color modulator is applied after that cutoff.
-                RenderSystem.setShaderColor(1, 1, 1, alpha);
-                BufferBuilder builder = Tesselator.getInstance().begin(VertexFormat.Mode.TRIANGLES, DefaultVertexFormat.POSITION_TEX_COLOR);
+                VertexConsumer builder = buffer.getBuffer(ArienteRenderType.forceField(FORCEFIELD, VertexFormat.Mode.TRIANGLES));
                 for (int i = 0; i < PentakisDodecahedron.MAX_TRIANGLES; i++) {
                     doRender(builder, matrix, new PanelInfo(i, pos.x, pos.y, pos.z), pos.x - camera.x,
-                            pos.y + 1 - camera.y, pos.z - camera.z, 1.2, 1, 1 - red * 0.95f, 1 - red * 0.95f, 1);
+                            pos.y + 1 - camera.y, pos.z - camera.z, 1.2, 1, 1 - red * 0.95f, 1 - red * 0.95f, alpha);
                 }
-                BufferUploader.drawWithShader(builder.buildOrThrow());
             }
-            RenderSystem.setShaderColor(1, 1, 1, 1);
             personalForcefields.clear();
 
             Iterator<BlockPos> iterator = forceFields.iterator();
@@ -142,39 +134,26 @@ public class ForceFieldRenderer {
                 double z = pos.getZ() + .5 - camera.z;
                 PanelInfo[] panels = forcefield.getPanelInfo();
                 randomSeedCounter++;
-                RenderSystem.setShaderTexture(0, FORCEFIELD);
-                renderPanels(matrix, pos, tessellator, x, y, z, forcefield.getScaleDouble(), panels);
-                renderPanels(matrix, pos, tessellator, x, y + 1, z, .5, panels);
-                tickDamageEffects(matrix, pos, panels, .5 - camera.x, .5 - camera.y, .5 - camera.z);
+                renderPanels(matrix, pos, buffer, x, y, z, forcefield.getScaleDouble(), panels);
+                renderPanels(matrix, pos, buffer, x, y + 1, z, .5, panels);
+                tickDamageEffects(matrix, buffer, pos, panels, .5 - camera.x, .5 - camera.y, .5 - camera.z);
             }
-        } finally {
-            RenderSystem.depthMask(true);
-            RenderSystem.enableCull();
-            RenderSystem.disableBlend();
-            RenderSystem.setShaderColor(1, 1, 1, 1);
-        }
     }
 
-    private static void renderPanels(Matrix4f matrix, BlockPos pos, Tesselator t, double x, double y, double z, double scale, PanelInfo[] panelInfo) {
+    private static void renderPanels(Matrix4f matrix, BlockPos pos, MultiBufferSource buffer, double x, double y, double z, double scale, PanelInfo[] panelInfo) {
         random.setSeed(randomSeedCounter);
         random.nextFloat();
         random.nextFloat();
 
-        BufferBuilder builder = t.begin(VertexFormat.Mode.TRIANGLES, DefaultVertexFormat.POSITION_TEX_COLOR);
+        VertexConsumer builder = buffer.getBuffer(ArienteRenderType.forceField(FORCEFIELD, VertexFormat.Mode.TRIANGLES));
         for (PanelInfo info : panelInfo) {
             if (info != null) {
                 renderPanel(builder, matrix, pos, x, y, z, scale, info);
             }
         }
-        // Inactive and newly loaded fields can have no panel geometry yet.
-        MeshData mesh = builder.build();
-        if (mesh != null) {
-            BufferUploader.drawWithShader(mesh);
-        }
     }
 
-    private static void tickDamageEffects(Matrix4f matrix, BlockPos pos, PanelInfo[] panelInfo, double x, double y, double z) {
-        RenderSystem.setShaderTexture(0, FORCEFIELD_HIT);
+    private static void tickDamageEffects(Matrix4f matrix, MultiBufferSource buffer, BlockPos pos, PanelInfo[] panelInfo, double x, double y, double z) {
         for (PanelInfo info : panelInfo) {
             if (info != null) {
                 Pair<BlockPos, Integer> key = Pair.of(pos, info.getIndex());
@@ -191,8 +170,7 @@ public class ForceFieldRenderer {
                     e0 = e0.normalize();
                     Vec3 e1 = e0.cross(n).normalize();
 
-                    Tesselator t = Tesselator.getInstance();
-                    BufferBuilder builder = t.begin(VertexFormat.Mode.QUADS, DefaultVertexFormat.POSITION_TEX_COLOR);
+                    VertexConsumer builder = buffer.getBuffer(ArienteRenderType.forceField(FORCEFIELD_HIT, VertexFormat.Mode.QUADS));
 
                     float a = damage.damage;
                     float sc = 2.0f;
@@ -214,7 +192,6 @@ public class ForceFieldRenderer {
                     builder.addVertex(matrix, (float) (x + v2.x), (float) (y + v2.y), (float) (z + v2.z)).setUv(1, 0).setColor(1, 1, 1, a);
                     builder.addVertex(matrix, (float) (x + v1.x), (float) (y + v1.y), (float) (z + v1.z)).setUv(1, 1).setColor(1, 1, 1, a);
                     builder.addVertex(matrix, (float) (x + v0.x), (float) (y + v0.y), (float) (z + v0.z)).setUv(0, 1).setColor(1, 1, 1, a);
-                    BufferUploader.drawWithShader(builder.buildOrThrow());
 
                     long ticks = System.currentTimeMillis();
                     long prevTicks = damage.prevticks;
@@ -232,7 +209,7 @@ public class ForceFieldRenderer {
         }
     }
 
-    private static void renderPanel(BufferBuilder builder, Matrix4f matrix, BlockPos pos, double x, double y, double z, double scale, PanelInfo info) {
+    private static void renderPanel(VertexConsumer builder, Matrix4f matrix, BlockPos pos, double x, double y, double z, double scale, PanelInfo info) {
         int life = info.getLife();
         float l = 1.0f - Math.min(1.0f, - life / 50.0f);
         if (life >= 0 || random.nextFloat() < (l / 20.0f)) {
@@ -258,14 +235,13 @@ public class ForceFieldRenderer {
         }
     }
 
-    public static void doRender(PanelInfo info, double x, double y, double z, double scale,
+    public static void doRender(MultiBufferSource buffer, PanelInfo info, double x, double y, double z, double scale,
                                 float r, float g, float b, float a) {
-        BufferBuilder builder = Tesselator.getInstance().begin(VertexFormat.Mode.TRIANGLES, DefaultVertexFormat.POSITION_TEX_COLOR);
+        VertexConsumer builder = buffer.getBuffer(ArienteRenderType.forceField(FORCEFIELD, VertexFormat.Mode.TRIANGLES));
         doRender(builder, new Matrix4f(), info, x, y, z, scale, r, g, b, a);
-        BufferUploader.drawWithShader(builder.buildOrThrow());
     }
 
-    private static void doRender(BufferBuilder builder, Matrix4f matrix, PanelInfo info, double x, double y, double z, double scale,
+    private static void doRender(VertexConsumer builder, Matrix4f matrix, PanelInfo info, double x, double y, double z, double scale,
                                  float r, float g, float b, float a) {
         int index = info.getIndex();
         Triangle triangle = PentakisDodecahedron.getTriangle(index);

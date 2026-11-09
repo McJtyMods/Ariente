@@ -1,5 +1,6 @@
 package mcjty.ariente.blocks.utility.wireless;
 
+import mcjty.ariente.varia.SavedDataMigration;
 import java.util.HashMap;
 import java.util.Map;
 import mcjty.ariente.api.IRedstoneChannels;
@@ -7,12 +8,11 @@ import mcjty.lib.worlddata.AbstractWorldData;
 import net.minecraft.core.HolderLookup;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.nbt.ListTag;
-import net.minecraft.nbt.Tag;
 import net.minecraft.world.level.Level;
 
 public class RedstoneChannels extends AbstractWorldData<RedstoneChannels> implements IRedstoneChannels {
 
-    private static final String REDSTONE_CHANNELS_NAME = "ArienteRedstoneChannels";
+    private static final String REDSTONE_CHANNELS_NAME = "ariente:redstone_channels";
 
     private int lastId = 0;
 
@@ -23,6 +23,7 @@ public class RedstoneChannels extends AbstractWorldData<RedstoneChannels> implem
     }
 
     public static RedstoneChannels getChannels(Level world) {
+        SavedDataMigration.migrateGlobal(world, REDSTONE_CHANNELS_NAME, "ArienteRedstoneChannels");
         return getData(world, RedstoneChannels::createChannels, () -> new RedstoneChannels(), REDSTONE_CHANNELS_NAME);
     }
 
@@ -58,17 +59,17 @@ public class RedstoneChannels extends AbstractWorldData<RedstoneChannels> implem
 
     public void load(CompoundTag tagCompound) {
         channels.clear();
-        ListTag lst = tagCompound.getList("channels", Tag.TAG_COMPOUND);
+        ListTag lst = tagCompound.getListOrEmpty("channels");
         for (int i = 0 ; i < lst.size() ; i++) {
-            CompoundTag tc = lst.getCompound(i);
-            int channel = tc.getInt("channel");
-            int v = tc.getInt("value");
+            CompoundTag tc = lst.getCompoundOrEmpty(i);
+            int channel = tc.getIntOr("channel", 0);
+            int v = tc.getIntOr("value", 0);
 
             RedstoneChannel value = new RedstoneChannel();
             value.value = v;
             channels.put(channel, value);
         }
-        lastId = tagCompound.getInt("lastId");
+        lastId = tagCompound.getIntOr("lastId", 0);
     }
 
     @Override

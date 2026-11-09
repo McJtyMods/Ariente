@@ -1,5 +1,9 @@
 package mcjty.ariente.items.modules;
 
+import java.util.ArrayList;
+
+import net.minecraft.world.item.component.TooltipDisplay;
+import java.util.function.Consumer;
 import java.util.List;
 import mcjty.ariente.Ariente;
 import mcjty.ariente.api.ArmorUpgradeType;
@@ -8,7 +12,7 @@ import mcjty.lib.tooltips.ITooltipSettings;
 import net.minecraft.ChatFormatting;
 import net.minecraft.network.chat.Component;
 import net.minecraft.network.chat.MutableComponent;
-import net.minecraft.resources.ResourceLocation;
+import net.minecraft.resources.Identifier;
 import net.minecraft.world.entity.EquipmentSlot;
 import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemStack;
@@ -32,17 +36,23 @@ public class ArmorModuleItem extends Item implements ITooltipSettings {
         return type.getPowerUsage() == -1;
     }
 
-    public ArmorModuleItem(ArmorUpgradeType type) {
-        super(new Properties());
+    public ArmorModuleItem(Item.Properties properties, ArmorUpgradeType type) {
+        super(properties);
         this.type = type;
     }
 
     @Override
+    public void appendHoverText(ItemStack stack, Item.TooltipContext context, TooltipDisplay display, Consumer<Component> output, TooltipFlag flag) {
+        List<Component> lines = new ArrayList<>();
+        appendHoverText(stack, context, lines, flag);
+        lines.forEach(output);
+    }
+
     public void appendHoverText(ItemStack stack, Item.TooltipContext worldIn, List<Component> tooltip, TooltipFlag flag) {
-        super.appendHoverText(stack, worldIn, tooltip, flag);
+
         tooltip.add(Component.translatable("message.ariente.armormodule.effect." + type.getName()).withStyle(ChatFormatting.GRAY));
         tooltip.add(getInstallationDescription().withStyle(ChatFormatting.GRAY));
-        tooltipBuilder.makeTooltip(ResourceLocation.fromNamespaceAndPath(Ariente.MODID, "armormodule"), stack, tooltip, flag);
+        tooltipBuilder.makeTooltip(Identifier.fromNamespaceAndPath(Ariente.MODID, "armormodule"), stack, tooltip, flag);
     }
 
     public MutableComponent getInstallationDescription() {

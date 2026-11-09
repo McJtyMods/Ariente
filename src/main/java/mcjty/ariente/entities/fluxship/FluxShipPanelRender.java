@@ -1,6 +1,6 @@
 package mcjty.ariente.entities.fluxship;
 
-import com.mojang.blaze3d.vertex.ByteBufferBuilder;
+import mcjty.ariente.client.ExtractedEntityRenderer;
 import com.mojang.blaze3d.vertex.PoseStack;
 import com.mojang.blaze3d.vertex.VertexConsumer;
 import com.mojang.math.Axis;
@@ -8,20 +8,16 @@ import mcjty.ariente.display.client.DisplayCanvas;
 import mcjty.hologui.api.IGuiComponent;
 import mcjty.hologui.gui.HoloGuiEntity;
 import mcjty.hologui.gui.HoloGuiEntityRender;
-import mcjty.hologui.gui.HoloGuiRenderTools;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.renderer.MultiBufferSource;
-import net.minecraft.client.renderer.entity.EntityRenderer;
 import net.minecraft.client.renderer.entity.EntityRendererProvider;
 import net.minecraft.network.chat.Component;
-import net.minecraft.resources.ResourceLocation;
+import net.minecraft.resources.Identifier;
 import net.minecraft.world.phys.Vec3;
 import net.neoforged.neoforge.client.model.pipeline.VertexConsumerWrapper;
 
 /** Rotate the cockpit instruments in the same cabin frame as the hull. */
-public class FluxShipPanelRender extends EntityRenderer<HoloGuiEntity> {
-
-    private static final MultiBufferSource.BufferSource GUI_BUFFERS = MultiBufferSource.immediate(new ByteBufferBuilder(4096));
+public class FluxShipPanelRender extends ExtractedEntityRenderer<HoloGuiEntity> {
 
     public FluxShipPanelRender(EntityRendererProvider.Context context) {
         super(context);
@@ -39,16 +35,15 @@ public class FluxShipPanelRender extends EntityRenderer<HoloGuiEntity> {
             pose.mulPose(Axis.XP.rotationDegrees(ship.getFlightPitch(partialTick)));
             pose.mulPose(Axis.ZP.rotationDegrees(ship.getBank(partialTick)));
             pose.mulPose(Axis.YP.rotationDegrees(180));
-            renderInstruments(panel, ship, partialTick, pose);
+            renderInstruments(panel, ship, partialTick, pose, buffers);
         } else {
-            HoloGuiEntityRender.doActualRender(panel, pose, buffers);
+            HoloGuiEntityRender.renderPanel(panel, partialTick, pose, buffers);
         }
         pose.popPose();
     }
 
-    private static void renderInstruments(HoloGuiEntity panel, FluxShipEntity ship, float partialTick, PoseStack pose) {
+    private static void renderInstruments(HoloGuiEntity panel, FluxShipEntity ship, float partialTick, PoseStack pose, MultiBufferSource buffers) {
         Minecraft mc = Minecraft.getInstance();
-        MultiBufferSource buffers = type -> GUI_BUFFERS.getBuffer(HoloGuiRenderTools.guiRenderType(type));
         pose.translate(0, .5, 0);
         float scale = 1 - (1 - panel.getScale()) * 1.6f;
         pose.scale(scale, scale, scale);
@@ -69,7 +64,6 @@ public class FluxShipPanelRender extends EntityRenderer<HoloGuiEntity> {
         pose.translate(0, 0, .001);
         crosshair(canvas, sightX, sightY, .003f, 0xffb8f4ff);
         pose.popPose();
-        GUI_BUFFERS.endBatch();
         IGuiComponent<?> gui = panel.getGui(mc.player);
         if (gui != null) {
             // The instruments are read-only. Keep their text opaque and add a
@@ -86,7 +80,6 @@ public class FluxShipPanelRender extends EntityRenderer<HoloGuiEntity> {
             pose.popPose();
             pose.translate(0, 0, .01);
             gui.render(pose, buffers, mc.player, panel, -1, -1);
-            GUI_BUFFERS.endBatch();
         }
     }
 
@@ -114,7 +107,7 @@ public class FluxShipPanelRender extends EntityRenderer<HoloGuiEntity> {
     }
 
     @Override
-    public ResourceLocation getTextureLocation(HoloGuiEntity panel) {
+    public Identifier getTextureLocation(HoloGuiEntity panel) {
         return null;
     }
 }

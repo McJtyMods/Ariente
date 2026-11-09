@@ -1,5 +1,13 @@
 package mcjty.ariente.setup;
 
+import net.neoforged.neoforge.client.event.RegisterTextureAtlasesEvent;
+import net.minecraft.client.resources.model.sprite.AtlasManager;
+import net.neoforged.neoforge.client.event.RegisterBlockStateModels;
+import net.neoforged.neoforge.client.event.RegisterSpecialModelRendererEvent;
+import net.neoforged.neoforge.client.extensions.common.RegisterClientExtensionsEvent;
+import mcjty.ariente.items.BlueprintRenderer;
+import mcjty.ariente.facade.FacadeRenderer;
+import mcjty.ariente.items.armor.PowerSuitModel;
 import mcjty.ariente.Ariente;
 import mcjty.ariente.ClientForgeEventHandlers;
 import mcjty.ariente.bindings.KeyInputHandler;
@@ -30,14 +38,9 @@ import mcjty.ariente.entities.fluxship.FluxShipRender;
 import mcjty.ariente.entities.levitator.FluxLevitatorRender;
 import mcjty.ariente.items.BlueprintRenderer;
 import mcjty.ariente.multipart.MultipartRenderer;
-import net.minecraft.client.Minecraft;
-import net.minecraft.client.renderer.ItemBlockRenderTypes;
-import net.minecraft.client.renderer.RenderType;
-import net.minecraft.client.resources.model.ModelResourceLocation;
+import mcjty.ariente.client.StandaloneModels;
 import net.minecraft.core.Direction;
-import net.minecraft.resources.ResourceLocation;
-import net.minecraft.server.packs.resources.ReloadableResourceManager;
-import net.minecraft.server.packs.resources.ResourceManager;
+import net.minecraft.resources.Identifier;
 import net.neoforged.bus.api.SubscribeEvent;
 import net.neoforged.fml.event.lifecycle.FMLClientSetupEvent;
 import net.neoforged.neoforge.client.event.EntityRenderersEvent;
@@ -70,21 +73,18 @@ public class ClientSetup {
         CableRenderer.register(Registration.NETCABLE_TILE.get());
         CableRenderer.register(Registration.CONNECTOR_TILE.get());
 
-        ItemBlockRenderTypes.setRenderLayer(Registration.GLASS_FENCE.get(), RenderType.translucent());
-        ItemBlockRenderTypes.setRenderLayer(Registration.BLUE_GLASS_FENCE.get(), RenderType.translucent());
     }
 
-    public static void additionalModels(ModelEvent.RegisterAdditional event) {
-        event.register(ModelResourceLocation.standalone(FluxShipRender.MODEL));
-        event.register(ModelResourceLocation.standalone(BlueprintRenderer.BASE_MODEL));
+    public static void additionalModels(ModelEvent.RegisterStandalone event) {
+        StandaloneModels.register(event, FluxShipRender.MODEL);
     }
 
     public static void modelsBaked(ModelEvent.BakingCompleted event) {
         CameraDisplayRenderer.clearCache();
     }
 
-    public static void initModels(ModelEvent.RegisterGeometryLoaders event) {
-        event.register(ResourceLocation.fromNamespaceAndPath(Ariente.MODID, "cableloader"), new CableModelLoader());
+    public static void initModels(RegisterBlockStateModels event) {
+        event.registerModel(Identifier.fromNamespaceAndPath(Ariente.MODID, "cable"), CableModelLoader.CODEC);
     }
 
     @SubscribeEvent
@@ -102,11 +102,19 @@ public class ClientSetup {
         event.registerEntityRenderer(Registration.ENTITY_PEARL.get(), RenderArientePearl.FACTORY);
     }
 
-    public static void setupSpriteUploader() {
-        ResourceManager resourceManager = Minecraft.getInstance().getResourceManager();
-        if (resourceManager instanceof ReloadableResourceManager) {
-            ArienteSpriteUploader.INSTANCE = new ArienteSpriteUploader(Minecraft.getInstance().getTextureManager());
-            ((ReloadableResourceManager) resourceManager).registerReloadListener(ArienteSpriteUploader.INSTANCE);
-        }
+    public static void setupSpriteUploader(RegisterTextureAtlasesEvent event) {
+        event.register(new AtlasManager.AtlasConfig(ArienteSpriteUploader.ARIENTE_ATLAS,
+                ArienteSpriteUploader.ATLAS_ID, false));
+    }
+
+    public static void specialModels(RegisterSpecialModelRendererEvent event) {
+        event.register(Identifier.fromNamespaceAndPath("ariente", "blueprint"), BlueprintRenderer.Unbaked.CODEC);
+        event.register(Identifier.fromNamespaceAndPath("ariente", "facade"), FacadeRenderer.Unbaked.CODEC);
+    }
+
+    public static void itemExtensions(RegisterClientExtensionsEvent event) {
+        event.registerItem(PowerSuitModel.EXTENSIONS, Registration.POWERSUIT_HEAD.get(), Registration.POWERSUIT_CHEST.get(),
+                Registration.POWERSUIT_LEGS.get(), Registration.POWERSUIT_FEET.get());
+        Registration.ENERGY_LANCE.get().initializeClient(extension -> event.registerItem(extension, Registration.ENERGY_LANCE.get()));
     }
 }

@@ -4,14 +4,14 @@ import net.minecraft.core.BlockPos;
 import net.minecraft.network.RegistryFriendlyByteBuf;
 import net.minecraft.network.codec.StreamCodec;
 import net.minecraft.network.protocol.common.custom.CustomPacketPayload;
-import net.minecraft.resources.ResourceLocation;
+import net.minecraft.resources.Identifier;
 import net.minecraft.server.level.ServerPlayer;
 import net.neoforged.neoforge.network.handling.IPayloadContext;
 
 /** Requested after the client has applied a layout, including layouts received with a chunk. */
 public record PacketRequestDisplayData(BlockPos pos, long layoutVersion, int modules) implements CustomPacketPayload {
 
-    public static final Type<PacketRequestDisplayData> TYPE = new Type<>(ResourceLocation.fromNamespaceAndPath("ariente", "packet_request_display_data"));
+    public static final Type<PacketRequestDisplayData> TYPE = new Type<>(Identifier.fromNamespaceAndPath("ariente", "packet_request_display_data"));
     public static final StreamCodec<RegistryFriendlyByteBuf, PacketRequestDisplayData> CODEC = StreamCodec.ofMember(PacketRequestDisplayData::toBytes, PacketRequestDisplayData::new);
 
     @Override

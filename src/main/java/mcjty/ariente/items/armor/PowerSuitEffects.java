@@ -1,5 +1,7 @@
 package mcjty.ariente.items.armor;
 
+import net.minecraft.nbt.NbtOps;
+
 import java.util.HashMap;
 import java.util.Map;
 import java.util.WeakHashMap;
@@ -70,10 +72,13 @@ public class PowerSuitEffects {
 
     private static void removeOwnedEffect(LivingEntity entity, Holder<MobEffect> effect) {
         // Vanilla keeps weaker effects in a hidden chain. Preserve that chain when our boost stops.
-        CompoundTag tag = (CompoundTag) entity.getEffect(effect).save();
+        var ops = entity.registryAccess().createSerializationContext(NbtOps.INSTANCE);
+        CompoundTag tag = (CompoundTag) MobEffectInstance.CODEC.encodeStart(ops, entity.getEffect(effect)).getOrThrow();
         entity.removeEffect(effect);
         if (tag.contains("hidden_effect")) {
-            MobEffectInstance hidden = MobEffectInstance.load(tag.getCompound("hidden_effect"));
+            CompoundTag hiddenTag = tag.getCompoundOrEmpty("hidden_effect").copy();
+            hiddenTag.put("id", tag.get("id"));
+            MobEffectInstance hidden = MobEffectInstance.CODEC.parse(ops, hiddenTag).result().orElse(null);
             if (hidden != null && hidden.getDuration() > 0) {
                 entity.addEffect(hidden);
             }

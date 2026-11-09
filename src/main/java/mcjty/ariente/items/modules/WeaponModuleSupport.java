@@ -32,7 +32,7 @@ public class WeaponModuleSupport {
                         parameter("key", stack -> KeyBindings.configureArmor != null, stack -> KeyBindings.configureArmor.getDisplayName()),
                         repeatingParameter("module", stack -> Arrays.stream(ArmorUpgradeType.values())
                                 .filter(type -> ItemData.has(stack) && ItemData.get(stack).contains(type.getModuleKey()))
-                                .map(type -> type.getDescription() + (ItemData.get(stack).getBoolean(type.getModuleKey()) ? " (on)" : " (off)"))),
+                                .map(type -> type.getDescription() + (ItemData.get(stack).getBooleanOr(type.getModuleKey(), false) ? " (on)" : " (off)"))),
                         parameter("power", stack -> {
                             var usage = ModuleSupport.getPowerUsage(stack);
                             return usage.getLeft() + " / " + usage.getRight();
@@ -41,7 +41,7 @@ public class WeaponModuleSupport {
     }
 
     public static void inventoryTick(ItemStack stack, Level level, Entity entity, boolean usable) {
-        if (!level.isClientSide && entity instanceof LivingEntity living) {
+        if (!level.isClientSide() && entity instanceof LivingEntity living) {
             if (usable && living.isAlive() && living.getMainHandItem() == stack) {
                 ModuleSupport.updateWorkingState(stack, living);
             } else {
@@ -53,7 +53,7 @@ public class WeaponModuleSupport {
     }
 
     public static void inhibit(LivingEntity target) {
-        if (target.level().isClientSide) {
+        if (target.level().isClientSide()) {
             return;
         }
         if (target instanceof IInhibitable inhibitable) {
@@ -67,7 +67,7 @@ public class WeaponModuleSupport {
     }
 
     private static void updateModuleEnchantment(Level level, ItemStack stack, ArmorUpgradeType type, ResourceKey<Enchantment> key) {
-        Holder<Enchantment> enchantment = level.registryAccess().registryOrThrow(Registries.ENCHANTMENT).getHolderOrThrow(key);
+        Holder<Enchantment> enchantment = level.registryAccess().lookupOrThrow(Registries.ENCHANTMENT).getOrThrow(key);
         CompoundTag tag = ItemData.get(stack);
         String savedKey = "ariente_original_" + type.getName();
         ItemEnchantments original = stack.getOrDefault(DataComponents.ENCHANTMENTS, ItemEnchantments.EMPTY);
@@ -78,12 +78,12 @@ public class WeaponModuleSupport {
                 ItemData.set(stack, tag);
 
             }
-            enchantments.set(enchantment, Math.max(3, tag.getInt(savedKey)));
+            enchantments.set(enchantment, Math.max(3, tag.getIntOr(savedKey, 0)));
         } else if (tag.contains(savedKey)) {
             // Restore only this module's enchantment, preserving other sources.
-            if (enchantments.getLevel(enchantment) == Math.max(3, tag.getInt(savedKey))) {
-                if (tag.getInt(savedKey) > 0) {
-                    enchantments.set(enchantment, tag.getInt(savedKey));
+            if (enchantments.getLevel(enchantment) == Math.max(3, tag.getIntOr(savedKey, 0))) {
+                if (tag.getIntOr(savedKey, 0) > 0) {
+                    enchantments.set(enchantment, tag.getIntOr(savedKey, 0));
                 } else {
                     enchantments.set(enchantment, 0);
                 }

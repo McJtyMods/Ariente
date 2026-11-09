@@ -1,5 +1,9 @@
 package mcjty.ariente.blocks.utility;
 
+import net.minecraft.world.level.storage.ValueInput;
+import net.minecraft.world.level.block.state.BlockBehaviour;
+import net.minecraft.world.level.material.MapColor;
+import net.minecraft.world.level.block.SoundType;
 import mcjty.hologui.api.*;
 import java.util.HashMap;
 import java.util.Map;
@@ -14,7 +18,6 @@ import mcjty.ariente.gui.GuiHelp;
 import mcjty.ariente.items.KeyCardItem;
 import mcjty.ariente.security.AreaLocks;
 import mcjty.ariente.security.IKeyCardSlot;
-import mcjty.ariente.setup.Registration;
 import mcjty.ariente.sounds.ModSounds;
 import mcjty.lib.blocks.BaseBlock;
 import mcjty.lib.builder.BlockBuilder;
@@ -22,7 +25,6 @@ import net.minecraft.core.BlockPos;
 import net.minecraft.core.HolderLookup;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.network.Connection;
-import net.minecraft.network.protocol.game.ClientboundBlockEntityDataPacket;
 import net.minecraft.sounds.SoundSource;
 import net.minecraft.world.InteractionHand;
 import net.minecraft.world.InteractionResult;
@@ -54,7 +56,7 @@ public class LockTile extends ArienteBlockEntity implements IGuiTile, IKeyCardSl
     private static final MountedPanelShapes SHAPES = new MountedPanelShapes(2, 3);
 
     public LockTile(BlockPos pos, BlockState state) {
-        super(Registration.LOCK_TILE.get(), pos, state);
+        super(mcjty.ariente.setup.Registration.LOCK_TILE.get(), pos, state);
     }
 
     @Override
@@ -63,8 +65,8 @@ public class LockTile extends ArienteBlockEntity implements IGuiTile, IKeyCardSl
         AreaLocks.loaded(this);
     }
 
-    public static BaseBlock createBlock() {
-        return new BaseBlock(new BlockBuilder()
+    public static BaseBlock createBlock(BlockBehaviour.Properties properties) {
+        return new BaseBlock(new BlockBuilder().properties(properties.mapColor(MapColor.METAL).strength(2.0f).requiresCorrectToolForDrops().sound(SoundType.METAL))
                 .info(key("message.ariente.shiftmessage"))
                 .infoShift(header())
                 .topDriver(DRIVER)
@@ -90,12 +92,12 @@ public class LockTile extends ArienteBlockEntity implements IGuiTile, IKeyCardSl
     }
 
     @Override
-    public void onDataPacket(Connection net, ClientboundBlockEntityDataPacket packet, HolderLookup.Provider provider) {
+    public void onDataPacket(Connection net, ValueInput input) {
         boolean locked = isLocked();
 
-        super.onDataPacket(net, packet, provider);
+        super.onDataPacket(net, input);
 
-        if (level.isClientSide) {
+        if (level.isClientSide()) {
             // If needed send a render update.
             boolean newLocked = isLocked();
             if (newLocked != locked) {
@@ -154,7 +156,7 @@ public class LockTile extends ArienteBlockEntity implements IGuiTile, IKeyCardSl
             return;
         }
         this.locked = locked;
-        if (level != null && !level.isClientSide) {
+        if (level != null && !level.isClientSide()) {
             BlockState state = level.getBlockState(worldPosition);
             if (state.hasProperty(BlockProperties.LOCKED)) {
                 level.setBlockAndUpdate(worldPosition, state.setValue(BlockProperties.LOCKED, locked));
@@ -165,7 +167,7 @@ public class LockTile extends ArienteBlockEntity implements IGuiTile, IKeyCardSl
     }
 
     public void toggleLock() {
-        if (!level.isClientSide) {
+        if (!level.isClientSide()) {
             setLocked(!locked);
         }
     }
@@ -188,14 +190,14 @@ public class LockTile extends ArienteBlockEntity implements IGuiTile, IKeyCardSl
     @Override
     public void loadAdditional(CompoundTag tag, HolderLookup.Provider provider) {
         super.loadAdditional(tag, provider);
-        CompoundTag info = tag.getCompound("Info");
-        locked = info.getBoolean("locked");
-        keyId = info.contains("keyId") ? info.getString("keyId") : null;
+        CompoundTag info = tag.getCompoundOrEmpty("Info");
+        locked = info.getBooleanOr("locked", false);
+        keyId = info.contains("keyId") ? info.getStringOr("keyId", "") : null;
         if (info.contains("horizontal")) {
-            horizontalRange = info.getInt("horizontal");
+            horizontalRange = info.getIntOr("horizontal", 0);
         }
         if (info.contains("vertical")) {
-            verticalRange = info.getInt("vertical");
+            verticalRange = info.getIntOr("vertical", 0);
         }
     }
 

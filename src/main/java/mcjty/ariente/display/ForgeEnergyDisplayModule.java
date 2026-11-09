@@ -1,5 +1,6 @@
 package mcjty.ariente.display;
 
+import mcjty.lib.varia.CapabilityTools;
 import mcjty.hologui.api.IGuiComponentRegistry;
 import mcjty.hologui.api.components.IPanel;
 import net.minecraft.core.BlockPos;
@@ -26,8 +27,8 @@ public class ForgeEnergyDisplayModule extends ResourceDisplayModule {
     }
 
     public static IEnergyStorage energy(BlockEntity tile, Direction side) {
-        IEnergyStorage handler = tile.getLevel().getCapability(Capabilities.EnergyStorage.BLOCK, tile.getBlockPos(), side);
-        return handler != null ? handler : tile.getLevel().getCapability(Capabilities.EnergyStorage.BLOCK, tile.getBlockPos(), null);
+        IEnergyStorage handler = CapabilityTools.energyHandler(tile.getLevel().getCapability(Capabilities.Energy.BLOCK, tile.getBlockPos(), side));
+        return handler != null ? handler : CapabilityTools.energyHandler(tile.getLevel().getCapability(Capabilities.Energy.BLOCK, tile.getBlockPos(), null));
     }
 
     @Override
@@ -56,9 +57,9 @@ public class ForgeEnergyDisplayModule extends ResourceDisplayModule {
         long now = link.level().getGameTime();
         data.putLong("Tick", now);
         // This is net buffer change, not separately measured input or output.
-        long elapsed = now - previous.getLong("Tick");
+        long elapsed = now - previous.getLongOr("Tick", 0);
         if (previous.contains("Tick") && elapsed > 0 && elapsed <= 40) {
-            data.putDouble("Rate", (amount - previous.getLong("Amount")) / (double) elapsed);
+            data.putDouble("Rate", (amount - previous.getLongOr("Amount", 0)) / (double) elapsed);
         }
         if (mode(stack) == 2) {
             appendHistory(data, previous, amount);

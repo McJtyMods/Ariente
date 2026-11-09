@@ -1,5 +1,6 @@
 package mcjty.ariente.security;
 
+import mcjty.ariente.varia.SavedDataMigration;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
@@ -15,7 +16,7 @@ import net.minecraft.world.level.Level;
 
 public class SecuritySystem extends AbstractWorldData<SecuritySystem> implements ISecuritySystem {
 
-    private static final String NAME = "ArienteSecurity";
+    private static final String NAME = "ariente:security";
 
     private long lastSecurityID = 1;
 
@@ -63,6 +64,7 @@ public class SecuritySystem extends AbstractWorldData<SecuritySystem> implements
 
     @Nonnull
     public static SecuritySystem getSecuritySystem(Level world) {
+        SavedDataMigration.migrateGlobal(world, NAME, "ArienteSecurity");
         return getData(world, SecuritySystem::createSecuritySystem, () -> new SecuritySystem(), NAME);
     }
 
@@ -73,7 +75,7 @@ public class SecuritySystem extends AbstractWorldData<SecuritySystem> implements
     }
 
     public void load(CompoundTag compound) {
-        lastSecurityID = compound.getLong("lastSecurityID");
+        lastSecurityID = compound.getLongOr("lastSecurityID", 0);
     }
 
     @Override

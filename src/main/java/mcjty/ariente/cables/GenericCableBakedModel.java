@@ -1,30 +1,23 @@
 package mcjty.ariente.cables;
 
+import mcjty.ariente.client.SnapshotModelPart;
+import net.minecraft.client.renderer.block.dispatch.BlockStateModelPart;
+import net.minecraft.client.resources.model.sprite.Material;
 import com.google.common.base.Function;
 import java.util.ArrayList;
-import java.util.Collections;
 import java.util.List;
-import javax.annotation.Nonnull;
-import javax.annotation.Nullable;
 import mcjty.ariente.Ariente;
 import mcjty.lib.client.AbstractDynamicBakedModel;
 import net.minecraft.client.Minecraft;
-import net.minecraft.client.renderer.RenderType;
-import net.minecraft.client.renderer.block.model.BakedQuad;
-import net.minecraft.client.renderer.block.model.ItemOverrides;
-import net.minecraft.client.renderer.block.model.ItemTransforms;
+import net.minecraft.client.resources.model.geometry.BakedQuad;
 import net.minecraft.client.renderer.texture.TextureAtlasSprite;
-import net.minecraft.client.resources.model.BakedModel;
 import net.minecraft.core.BlockPos;
-import net.minecraft.core.Direction;
-import net.minecraft.resources.ResourceLocation;
+import net.minecraft.resources.Identifier;
 import net.minecraft.util.RandomSource;
-import net.minecraft.world.level.BlockAndTintGetter;
+import net.minecraft.client.renderer.block.BlockAndTintGetter;
 import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.phys.Vec3;
-import net.neoforged.neoforge.client.ChunkRenderTypeSet;
-import net.neoforged.neoforge.client.model.data.ModelData;
-import net.neoforged.neoforge.client.model.data.ModelProperty;
+import net.neoforged.neoforge.model.data.ModelProperty;
 
 import static mcjty.ariente.cables.CablePatterns.SpriteIdx.*;
 import static mcjty.ariente.cables.ConnectorType.BLOCK;
@@ -73,16 +66,16 @@ public class GenericCableBakedModel extends AbstractDynamicBakedModel {
                 int i = color.ordinal();
                 String typeName = color.getSerializedName();
                 tt[i] = new CableTextures();
-                tt[i].spriteConnector = getTexture(ResourceLocation.fromNamespaceAndPath(Ariente.MODID, "block/cables/" + typeName + "/connector"));
-                tt[i].spriteNormalCable = getTexture(ResourceLocation.fromNamespaceAndPath(Ariente.MODID, "block/cables/" + typeName + "/normal_netcable"));
-                tt[i].spriteNoneCable = getTexture(ResourceLocation.fromNamespaceAndPath(Ariente.MODID, "block/cables/" + typeName + "/normal_none_netcable"));
-                tt[i].spriteEndCable = getTexture(ResourceLocation.fromNamespaceAndPath(Ariente.MODID, "block/cables/" + typeName + "/normal_end_netcable"));
-                tt[i].spriteCornerCable = getTexture(ResourceLocation.fromNamespaceAndPath(Ariente.MODID, "block/cables/" + typeName + "/normal_corner_netcable"));
-                tt[i].spriteThreeCable = getTexture(ResourceLocation.fromNamespaceAndPath(Ariente.MODID, "block/cables/" + typeName + "/normal_three_netcable"));
-                tt[i].spriteCrossCable = getTexture(ResourceLocation.fromNamespaceAndPath(Ariente.MODID, "block/cables/" + typeName + "/normal_cross_netcable"));
+                tt[i].spriteConnector = getTexture(Identifier.fromNamespaceAndPath(Ariente.MODID, "block/cables/" + typeName + "/connector"));
+                tt[i].spriteNormalCable = getTexture(Identifier.fromNamespaceAndPath(Ariente.MODID, "block/cables/" + typeName + "/normal_netcable"));
+                tt[i].spriteNoneCable = getTexture(Identifier.fromNamespaceAndPath(Ariente.MODID, "block/cables/" + typeName + "/normal_none_netcable"));
+                tt[i].spriteEndCable = getTexture(Identifier.fromNamespaceAndPath(Ariente.MODID, "block/cables/" + typeName + "/normal_end_netcable"));
+                tt[i].spriteCornerCable = getTexture(Identifier.fromNamespaceAndPath(Ariente.MODID, "block/cables/" + typeName + "/normal_corner_netcable"));
+                tt[i].spriteThreeCable = getTexture(Identifier.fromNamespaceAndPath(Ariente.MODID, "block/cables/" + typeName + "/normal_three_netcable"));
+                tt[i].spriteCrossCable = getTexture(Identifier.fromNamespaceAndPath(Ariente.MODID, "block/cables/" + typeName + "/normal_cross_netcable"));
             }
 
-            spriteSide = getTexture(ResourceLocation.fromNamespaceAndPath(Ariente.MODID, "block/cables/connector_side"));
+            spriteSide = getTexture(Identifier.fromNamespaceAndPath(Ariente.MODID, "block/cables/connector_side"));
             cableTextures = tt;
         }
     }
@@ -131,55 +124,27 @@ public class GenericCableBakedModel extends AbstractDynamicBakedModel {
     }
 
     @Override
-    public ModelData getModelData(BlockAndTintGetter level, BlockPos pos, BlockState state, ModelData data) {
-        ModelData.Builder builder = data.derive();
-        if (state.getBlock() instanceof GenericCableBlock cable) {
-            // Structures and older saves may still contain the unconnected default state.
-            builder.with(CONNECTIONS, cable.calculateState(level, pos, state));
-        }
-        if (level.getBlockEntity(pos) instanceof GenericCableTileEntity tile) {
-            builder.with(GenericCableBlock.FACADEID, tile.getMimicBlock());
-        }
-        return builder.build();
-    }
-
-    @Override
-    public ChunkRenderTypeSet getRenderTypes(BlockState state, RandomSource random, ModelData data) {
-        BlockState facade = data.get(GenericCableBlock.FACADEID);
+    public void collectParts(BlockAndTintGetter level, BlockPos pos, BlockState state, RandomSource random, List<BlockStateModelPart> parts) {
+        if (!(state.getBlock() instanceof GenericCableBlock cable)) return;
+        BlockState facade = level.getModelData(pos).get(GenericCableBlock.FACADEID);
         if (facade != null) {
-            BakedModel model = Minecraft.getInstance().getBlockRenderer().getBlockModel(facade);
-            return model.getRenderTypes(facade, random, ModelData.EMPTY);
+            Minecraft.getInstance().getModelManager().getBlockStateModelSet().get(facade).collectParts(level, pos, facade, random, parts);
+            return;
         }
-        return ChunkRenderTypeSet.of(RenderType.cutout());
+        BlockState connections = cable.calculateState(level, pos, state);
+        parts.add(SnapshotModelPart.unculled(geometry(connections), particleMaterial()));
     }
 
-    @Nonnull
     @Override
-    public List<BakedQuad> getQuads(@Nullable BlockState state, @Nullable Direction side, @Nonnull RandomSource rand, @Nonnull ModelData extraData, @Nullable RenderType layer) {
-        if (state == null) {
-            return Collections.emptyList();
-        }
+    public Material.Baked particleMaterial() {
+        initTextures();
+        return new Material.Baked(cableTextures[CableColor.NEGARITE.ordinal()].spriteNormalCable, false);
+    }
 
-        BlockState connections = extraData.get(CONNECTIONS);
-        if (connections != null) {
-            state = connections;
-        }
-        BlockState facadeId = extraData.get(GenericCableBlock.FACADEID);
-        if (facadeId != null) {
-            BlockState facadeState = facadeId; // @todo 1.18 facadeId.getBlockState();
-            if (layer == null || Minecraft.getInstance().getBlockRenderer().getBlockModel(facadeState).getRenderTypes(facadeState, rand, ModelData.EMPTY).contains(layer)) { // always render in the null layer or the block-breaking textures don't show up
-                BakedModel model = Minecraft.getInstance().getBlockRenderer().getBlockModelShaper().getBlockModel(facadeState);
-                try {
-                    return new ArrayList<>(model.getQuads(facadeState, side, rand, ModelData.EMPTY, layer));
-                } catch (Exception e) {
-                }
-            }
-            return Collections.emptyList();
-        }
-
+    private List<BakedQuad> geometry(BlockState state) {
         List<BakedQuad> quads = new ArrayList<>();
 
-        if (side == null && (layer == null || layer.equals(RenderType.cutout()))) {
+        {
 
             // Called with the blockstate from our block. Here we get the values of the six properties and pass that to
             // our baked model implementation.
@@ -353,51 +318,6 @@ public class GenericCableBakedModel extends AbstractDynamicBakedModel {
         }
 
         return quads;
-    }
-
-    @Override
-    public boolean useAmbientOcclusion() {
-        return true;
-    }
-
-    @Override
-    public boolean isGui3d() {
-        return false;
-    }
-
-    @Override
-    public boolean isCustomRenderer() {
-        return false;
-    }
-
-    @Override
-    public TextureAtlasSprite getParticleIcon() {
-        initTextures();
-        return cableTextures[CableColor.NEGARITE.ordinal()].spriteNormalCable;
-    }
-
-    @Override
-    public TextureAtlasSprite getParticleIcon(ModelData data) {
-        BlockState facade = data.get(GenericCableBlock.FACADEID);
-        if (facade != null) {
-            return Minecraft.getInstance().getBlockRenderer().getBlockModel(facade).getParticleIcon();
-        }
-        BlockState state = data.get(CONNECTIONS);
-        if (state != null) {
-            initTextures();
-            return cableTextures[state.getValue(GenericCableBlock.COLOR).ordinal()].spriteNormalCable;
-        }
-        return getParticleIcon();
-    }
-
-    @Override
-    public ItemTransforms getTransforms() {
-        return ItemTransforms.NO_TRANSFORMS;
-    }
-
-    @Override
-    public ItemOverrides getOverrides() {
-        return ItemOverrides.EMPTY;
     }
 
 }

@@ -1,6 +1,21 @@
 {
   "variants": {
-    "": {
+    "facing=down": {
+      "model": "ariente:block/decorative/blacktech_dots"
+    },
+    "facing=east": {
+      "model": "ariente:block/decorative/blacktech_dots"
+    },
+    "facing=north": {
+      "model": "ariente:block/decorative/blacktech_dots"
+    },
+    "facing=south": {
+      "model": "ariente:block/decorative/blacktech_dots"
+    },
+    "facing=up": {
+      "model": "ariente:block/decorative/blacktech_dots"
+    },
+    "facing=west": {
       "model": "ariente:block/decorative/blacktech_dots"
     }
   }

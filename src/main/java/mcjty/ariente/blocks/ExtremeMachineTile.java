@@ -1,6 +1,5 @@
 package mcjty.ariente.blocks;
 
-import mcjty.ariente.setup.Registration;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.HolderLookup;
 import net.minecraft.nbt.CompoundTag;
@@ -50,8 +49,8 @@ public abstract class ExtremeMachineTile extends ArienteBlockEntity {
     }
 
     public static boolean hasExtremeCircuit(ItemStack stack) {
-        CompoundTag data = stack.getOrDefault(Registration.MACHINE_DATA.get(), CustomData.EMPTY).copyTag();
-        return data != null && data.getCompound("Info").getBoolean(EXTREME_CIRCUIT);
+        CompoundTag data = stack.getOrDefault(mcjty.ariente.setup.Registration.MACHINE_DATA.get(), CustomData.EMPTY).copyTag();
+        return data != null && data.getCompoundOrEmpty("Info").getBooleanOr(EXTREME_CIRCUIT, false);
     }
 
     @Override
@@ -63,6 +62,6 @@ public abstract class ExtremeMachineTile extends ArienteBlockEntity {
     @Override
     protected void loadInfo(CompoundTag tag, HolderLookup.Provider provider) {
         super.loadInfo(tag, provider);
-        extreme = tag.getCompound("Info").getBoolean(EXTREME_CIRCUIT);
+        extreme = tag.getCompoundOrEmpty("Info").getBooleanOr(EXTREME_CIRCUIT, false);
     }
 }

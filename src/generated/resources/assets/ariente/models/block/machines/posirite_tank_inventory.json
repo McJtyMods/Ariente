@@ -22,27 +22,22 @@
             }
           },
           "from": [
-            1,
-            0,
-            1
+            1.0,
+            0.0,
+            1.0
           ],
           "to": [
-            15,
-            16,
-            15
+            15.0,
+            16.0,
+            15.0
           ]
         }
       ],
-      "render_type": "minecraft:translucent",
       "textures": {
         "window": "ariente:block/machines/posirite_tank_window"
       }
     }
   },
-  "item_render_order": [
-    "frame",
-    "window"
-  ],
   "loader": "neoforge:composite",
   "textures": {
     "particle": "ariente:block/marble/blackmarble"

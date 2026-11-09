@@ -5,14 +5,14 @@ import net.minecraft.core.BlockPos;
 import net.minecraft.network.RegistryFriendlyByteBuf;
 import net.minecraft.network.codec.StreamCodec;
 import net.minecraft.network.protocol.common.custom.CustomPacketPayload;
-import net.minecraft.resources.ResourceLocation;
+import net.minecraft.resources.Identifier;
 import net.neoforged.neoforge.network.handling.IPayloadContext;
 
 /** One bounded fragment of one module snapshot. Layouts travel separately in block entity updates. */
 public record PacketDisplayData(BlockPos pos, long layoutVersion, int index, int snapshotVersion,
                                 int totalBytes, int offset, byte[] data) implements CustomPacketPayload {
 
-    public static final Type<PacketDisplayData> TYPE = new Type<>(ResourceLocation.fromNamespaceAndPath("ariente", "packet_display_data"));
+    public static final Type<PacketDisplayData> TYPE = new Type<>(Identifier.fromNamespaceAndPath("ariente", "packet_display_data"));
     public static final StreamCodec<RegistryFriendlyByteBuf, PacketDisplayData> CODEC = StreamCodec.ofMember(PacketDisplayData::toBytes, PacketDisplayData::new);
 
     @Override

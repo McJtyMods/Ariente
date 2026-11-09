@@ -1,5 +1,8 @@
 package mcjty.ariente.blocks.purifier;
 
+import net.minecraft.world.level.block.state.BlockBehaviour;
+import net.minecraft.world.level.material.MapColor;
+import net.minecraft.world.level.block.SoundType;
 import mcjty.ariente.setup.Registration;
 import mcjty.lib.blocks.BaseBlock;
 import mcjty.lib.blocks.RotationType;
@@ -28,8 +31,8 @@ public class PurifierTubeBlock extends BaseBlock {
             Block.box(0, 4, 4, 16, 12, 12),
             Block.box(0, 6, 3, 16, 10, 13));
 
-    public PurifierTubeBlock() {
-        super(new BlockBuilder().properties(Properties.of().strength(3).noOcclusion()).tileEntitySupplier(PurifierTubeTile::new));
+    public PurifierTubeBlock(BlockBehaviour.Properties properties) {
+        super(new BlockBuilder().properties(properties.mapColor(MapColor.METAL).strength(2.0f).requiresCorrectToolForDrops().sound(SoundType.METAL)).properties(properties.strength(3).noOcclusion()).tileEntitySupplier(PurifierTubeTile::new));
         registerDefaultState(defaultBlockState().setValue(BlockStateProperties.HORIZONTAL_AXIS, Direction.Axis.Z));
     }
 

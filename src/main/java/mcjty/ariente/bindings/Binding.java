@@ -1,5 +1,7 @@
 package mcjty.ariente.bindings;
 
+import net.minecraft.resources.Identifier;
+
 import com.mojang.blaze3d.platform.InputConstants;
 import java.util.ArrayList;
 import java.util.List;
@@ -10,6 +12,8 @@ import net.neoforged.neoforge.client.settings.KeyConflictContext;
 
 public class Binding {
 
+    private static final KeyMapping.Category CATEGORY = new KeyMapping.Category(Identifier.parse("ariente:controls"));
+
     private final String name;
     private final KeyMapping binding;
     private final Runnable callable;
@@ -19,7 +23,7 @@ public class Binding {
     private Binding(String name, int keyCode, Runnable callable) {
         this.name = name;
         this.callable = callable;
-        binding = new KeyMapping(name, KeyConflictContext.IN_GAME, InputConstants.Type.KEYSYM, keyCode, "key.categories.ariente");
+        binding = new KeyMapping(name, KeyConflictContext.IN_GAME, InputConstants.Type.KEYSYM, keyCode, CATEGORY);
     }
 
     public static Binding create(String name, int keyCode, Runnable callable) {
@@ -41,6 +45,7 @@ public class Binding {
     }
 
     public static void register(RegisterKeyMappingsEvent event) {
+        event.registerCategory(CATEGORY);
         KeyBindings.init();
         BINDINGS.forEach(binding -> event.register(binding.binding));
     }

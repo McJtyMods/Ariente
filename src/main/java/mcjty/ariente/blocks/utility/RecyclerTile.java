@@ -1,5 +1,12 @@
 package mcjty.ariente.blocks.utility;
 
+import net.neoforged.neoforge.transfer.ResourceHandler;
+import net.neoforged.neoforge.transfer.item.ItemResource;
+import net.neoforged.neoforge.transfer.transaction.TransactionContext;
+import net.neoforged.neoforge.transfer.TransferPreconditions;
+import net.minecraft.world.level.block.state.BlockBehaviour;
+import net.minecraft.world.level.material.MapColor;
+import net.minecraft.world.level.block.SoundType;
 import java.util.EnumMap;
 import java.util.Map;
 import java.util.Objects;
@@ -16,7 +23,6 @@ import mcjty.ariente.power.IPowerUser;
 import mcjty.ariente.power.PowerReceiverSupport;
 import mcjty.ariente.recipes.ConstructorRecipe;
 import mcjty.ariente.recipes.Recycling;
-import mcjty.ariente.setup.Registration;
 import mcjty.hologui.api.IGuiComponent;
 import mcjty.hologui.api.IGuiComponentRegistry;
 import mcjty.hologui.api.IGuiTile;
@@ -31,7 +37,7 @@ import net.minecraft.core.Direction;
 import net.minecraft.core.HolderLookup;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.network.chat.Component;
-import net.minecraft.resources.ResourceLocation;
+import net.minecraft.resources.Identifier;
 import net.minecraft.world.InteractionHand;
 import net.minecraft.world.InteractionResult;
 import net.minecraft.world.entity.player.Player;
@@ -72,16 +78,16 @@ public class RecyclerTile extends ExtremeMachineTile implements IGuiTile, IPower
     };
 
     private final Map<Direction, IItemHandler> sidedHandlers = new EnumMap<>(Direction.class);
-    private ResourceLocation recipeId;
+    private Identifier recipeId;
     private int progress;
     private long usingPower;
 
     public RecyclerTile(BlockPos pos, BlockState state) {
-        super(Registration.RECYCLER_TILE.get(), pos, state);
+        super(mcjty.ariente.setup.Registration.RECYCLER_TILE.get(), pos, state);
     }
 
-    public static BaseBlock createBlock() {
-        return new BaseBlock(new BlockBuilder()
+    public static BaseBlock createBlock(BlockBehaviour.Properties properties) {
+        return new BaseBlock(new BlockBuilder().properties(properties.mapColor(MapColor.METAL).strength(2.0f).requiresCorrectToolForDrops().sound(SoundType.METAL))
                 .info(key("message.ariente.shiftmessage"))
                 .infoShift(header())
                 .topDriver(DRIVER)
@@ -106,7 +112,7 @@ public class RecyclerTile extends ExtremeMachineTile implements IGuiTile, IPower
         usingPower = 0;
         ItemStack input = items.getStackInSlot(SLOT_INPUT);
         ConstructorRecipe recipe = Recycling.findRecipe(input);
-        ResourceLocation nextId = recipe == null ? null : recipe.getId();
+        Identifier nextId = recipe == null ? null : recipe.getId();
         if (!Objects.equals(nextId, recipeId)) {
             recipeId = nextId;
             progress = 0;
@@ -217,7 +223,7 @@ public class RecyclerTile extends ExtremeMachineTile implements IGuiTile, IPower
     }
 
     private boolean canInteract(Player player) {
-        return level != null && !level.isClientSide && player.level() == level && !isRemoved()
+        return level != null && !level.isClientSide() && player.level() == level && !isRemoved()
                 && player.distanceToSqr(worldPosition.getX() + .5, worldPosition.getY() + .5, worldPosition.getZ() + .5) <= 64;
     }
 
@@ -234,9 +240,9 @@ public class RecyclerTile extends ExtremeMachineTile implements IGuiTile, IPower
     @Override
     protected void loadInfo(CompoundTag tag, HolderLookup.Provider provider) {
         super.loadInfo(tag, provider);
-        CompoundTag info = tag.getCompound("Info");
-        progress = Math.max(0, Math.min(RECYCLE_TICKS - 1, info.getInt("recycleProgress")));
-        recipeId = ResourceLocation.tryParse(info.getString("recycleRecipe"));
+        CompoundTag info = tag.getCompoundOrEmpty("Info");
+        progress = Math.max(0, Math.min(RECYCLE_TICKS - 1, info.getIntOr("recycleProgress", 0)));
+        recipeId = Identifier.tryParse(info.getStringOr("recycleRecipe", ""));
     }
 
     @Override
@@ -247,8 +253,8 @@ public class RecyclerTile extends ExtremeMachineTile implements IGuiTile, IPower
 
     @Override
     public void loadClientDataFromNBT(CompoundTag tag, HolderLookup.Provider provider) {
-        items.deserializeNBT(provider, tag.getCompound("Items"));
-        progress = tag.getInt("recycleProgress");
+        items.deserializeNBT(provider, tag.getCompoundOrEmpty("Items"));
+        progress = tag.getIntOr("recycleProgress", 0);
     }
 
     @Override
@@ -274,7 +280,7 @@ public class RecyclerTile extends ExtremeMachineTile implements IGuiTile, IPower
     public void setup(ICityAI cityAI, Level world, boolean firstTime) {
     }
 
-    private class SidedHandler implements IItemHandler {
+    private class SidedHandler implements IItemHandler, ResourceHandler<ItemResource> {
 
         private final Direction side;
 
@@ -283,7 +289,49 @@ public class RecyclerTile extends ExtremeMachineTile implements IGuiTile, IPower
         }
 
         private boolean isOutput() {
-            return side == Direction.DOWN || side == Registration.RECYCLER.get().getFrontDirection(getBlockState()).getOpposite();
+            return side == Direction.DOWN || side == mcjty.ariente.setup.Registration.RECYCLER.get().getFrontDirection(getBlockState()).getOpposite();
+        }
+
+        private int mapped(int index) {
+            if (index < 0 || index >= size()) throw new IndexOutOfBoundsException(index);
+            return isOutput() ? SLOT_OUTPUT + index : SLOT_INPUT;
+        }
+
+        @Override
+        public int size() {
+            return getSlots();
+        }
+
+        @Override
+        public ItemResource getResource(int index) {
+            return items.getResource(mapped(index));
+        }
+
+        @Override
+        public long getAmountAsLong(int index) {
+            return items.getAmountAsLong(mapped(index));
+        }
+
+        @Override
+        public long getCapacityAsLong(int index, ItemResource resource) {
+            return items.getCapacityAsLong(mapped(index), resource);
+        }
+
+        @Override
+        public boolean isValid(int index, ItemResource resource) {
+            return !isOutput() && items.isValid(mapped(index), resource);
+        }
+
+        @Override
+        public int insert(int index, ItemResource resource, int amount, TransactionContext transaction) {
+            TransferPreconditions.checkNonEmptyNonNegative(resource, amount);
+            return isValid(index, resource) ? items.insert(mapped(index), resource, amount, transaction) : 0;
+        }
+
+        @Override
+        public int extract(int index, ItemResource resource, int amount, TransactionContext transaction) {
+            TransferPreconditions.checkNonEmptyNonNegative(resource, amount);
+            return isOutput() ? items.extract(mapped(index), resource, amount, transaction) : 0;
         }
 
         @Override

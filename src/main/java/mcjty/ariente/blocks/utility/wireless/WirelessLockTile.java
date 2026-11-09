@@ -1,5 +1,9 @@
 package mcjty.ariente.blocks.utility.wireless;
 
+import net.minecraft.world.level.storage.ValueInput;
+import net.minecraft.world.level.block.state.BlockBehaviour;
+import net.minecraft.world.level.material.MapColor;
+import net.minecraft.world.level.block.SoundType;
 import java.util.Map;
 import mcjty.ariente.Ariente;
 import mcjty.ariente.blocks.MountedPanelShapes;
@@ -7,7 +11,6 @@ import mcjty.ariente.blocks.utility.ILockable;
 import mcjty.ariente.gui.CompactNumber;
 import mcjty.ariente.gui.GuiHelp;
 import mcjty.ariente.security.AreaLocks;
-import mcjty.ariente.setup.Registration;
 import mcjty.hologui.api.IGuiComponent;
 import mcjty.hologui.api.IGuiComponentRegistry;
 import mcjty.hologui.api.IGuiTile;
@@ -18,7 +21,6 @@ import net.minecraft.core.BlockPos;
 import net.minecraft.core.HolderLookup;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.network.Connection;
-import net.minecraft.network.protocol.game.ClientboundBlockEntityDataPacket;
 import net.minecraft.world.InteractionHand;
 import net.minecraft.world.InteractionResult;
 import net.minecraft.world.entity.player.Player;
@@ -47,7 +49,7 @@ public class WirelessLockTile extends SignalChannelTileEntity implements ILockab
     private static final MountedPanelShapes SHAPES = new MountedPanelShapes(2, 3);
 
     public WirelessLockTile(BlockPos pos, BlockState state) {
-        super(Registration.WIRELESS_LOCK_TILE.get(), pos, state);
+        super(mcjty.ariente.setup.Registration.WIRELESS_LOCK_TILE.get(), pos, state);
     }
 
     @Override
@@ -56,10 +58,10 @@ public class WirelessLockTile extends SignalChannelTileEntity implements ILockab
         AreaLocks.loaded(this);
     }
 
-    public static BaseBlock createBlock() {
-        return new BaseBlock(new BlockBuilder()
+    public static BaseBlock createBlock(BlockBehaviour.Properties properties) {
+        return new BaseBlock(new BlockBuilder().properties(properties.mapColor(MapColor.METAL).strength(2.0f).requiresCorrectToolForDrops().sound(SoundType.METAL))
                 .info(key("message.ariente.shiftmessage"))
-                .infoShift(header(), parameter("channel", (stack -> { var tag = stack.getOrDefault(Registration.MACHINE_DATA.get(), CustomData.EMPTY).copyTag().getCompound("Info"); return Integer.toString(tag.contains("channel") ? tag.getInt("channel") : -1); })))
+                .infoShift(header(), parameter("channel", (stack -> { var tag = stack.getOrDefault(mcjty.ariente.setup.Registration.MACHINE_DATA.get(), CustomData.EMPTY).copyTag().getCompoundOrEmpty("Info"); return Integer.toString(tag.contains("channel") ? tag.getIntOr("channel", 0) : -1); })))
                 .topDriver(DRIVER)
                 .tileEntitySupplier(WirelessLockTile::new)
         ) {
@@ -97,12 +99,12 @@ public class WirelessLockTile extends SignalChannelTileEntity implements ILockab
     }
 
     @Override
-    public void onDataPacket(Connection net, ClientboundBlockEntityDataPacket packet, HolderLookup.Provider provider) {
+    public void onDataPacket(Connection net, ValueInput input) {
         boolean locked = isLocked();
 
-        super.onDataPacket(net, packet, provider);
+        super.onDataPacket(net, input);
 
-        if (level.isClientSide) {
+        if (level.isClientSide()) {
             // If needed send a render update.
             boolean newLocked = isLocked();
             if (newLocked != locked) {
@@ -180,14 +182,14 @@ public class WirelessLockTile extends SignalChannelTileEntity implements ILockab
     @Override
     public void loadAdditional(CompoundTag tagCompound, HolderLookup.Provider provider) {
         super.loadAdditional(tagCompound, provider);
-        locked = tagCompound.getBoolean("locked");
-        CompoundTag info = tagCompound.getCompound("Info");
+        locked = tagCompound.getBooleanOr("locked", false);
+        CompoundTag info = tagCompound.getCompoundOrEmpty("Info");
         if (!info.isEmpty()) {
             if (info.contains("vertical")) {
-                verticalRange = info.getInt("vertical");
+                verticalRange = info.getIntOr("vertical", 0);
             }
             if (info.contains("horizontal")) {
-                horizontalRange = info.getInt("horizontal");
+                horizontalRange = info.getIntOr("horizontal", 0);
             }
         }
     }

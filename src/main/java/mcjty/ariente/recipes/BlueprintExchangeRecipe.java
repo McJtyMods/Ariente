@@ -1,5 +1,6 @@
 package mcjty.ariente.recipes;
 
+import net.minecraft.core.UUIDUtil;
 import java.util.ArrayList;
 import java.util.Comparator;
 import java.util.EnumMap;
@@ -11,40 +12,29 @@ import mcjty.ariente.Ariente;
 import mcjty.ariente.items.BlueprintItem;
 import mcjty.ariente.items.ItemData;
 import mcjty.ariente.setup.Registration;
-import net.minecraft.core.HolderLookup;
-import net.minecraft.core.NonNullList;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.nbt.ListTag;
 import net.minecraft.nbt.StringTag;
-import net.minecraft.nbt.Tag;
-import net.minecraft.resources.ResourceLocation;
+import net.minecraft.resources.Identifier;
 import net.minecraft.util.RandomSource;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.crafting.CraftingBookCategory;
 import net.minecraft.world.item.crafting.CraftingInput;
-import net.minecraft.world.item.crafting.Ingredient;
 import net.minecraft.world.item.crafting.RecipeSerializer;
-import net.minecraft.world.item.crafting.ShapelessRecipe;
+import net.minecraft.world.item.crafting.CustomRecipe;
 import net.minecraft.world.level.Level;
 
-public class BlueprintExchangeRecipe extends ShapelessRecipe {
+public class BlueprintExchangeRecipe extends CustomRecipe {
 
-    public static final ResourceLocation ID = ResourceLocation.fromNamespaceAndPath(Ariente.MODID, "blueprint_exchange");
+    public static final Identifier ID = Identifier.fromNamespaceAndPath(Ariente.MODID, "blueprint_exchange");
     private static final String EXCHANGE = "BlueprintExchange";
 
     public BlueprintExchangeRecipe(CraftingBookCategory category) {
-        super("", category, preview(), ingredients());
-    }
 
-    private static NonNullList<Ingredient> ingredients() {
-        Ingredient blueprint = Ingredient.of(BlueprintRecipeRegistry.getRecipes().stream()
-                .filter(recipe -> BlueprintRarity.of(recipe) != null)
-                .map(recipe -> BlueprintItem.makeBluePrint(recipe.getDestination())));
-        return NonNullList.of(Ingredient.EMPTY, blueprint, blueprint, blueprint);
     }
 
     @Override
-    public RecipeSerializer<?> getSerializer() {
+    public RecipeSerializer<BlueprintExchangeRecipe> getSerializer() {
         return BlueprintRecipeRegistry.BLUEPRINT_EXCHANGE.get();
     }
 
@@ -54,7 +44,7 @@ public class BlueprintExchangeRecipe extends ShapelessRecipe {
     }
 
     @Override
-    public ItemStack assemble(CraftingInput input, HolderLookup.Provider registries) {
+    public ItemStack assemble(CraftingInput input) {
         return createPreview(input);
     }
 
@@ -72,7 +62,7 @@ public class BlueprintExchangeRecipe extends ShapelessRecipe {
         ItemStack stack = preview();
         CompoundTag data = ItemData.section(stack, EXCHANGE);
         // Identify the delivered copy on shift-click; this chooses no reward or rarity.
-        data.putUUID("craft", UUID.randomUUID());
+        data.store("craft", UUIDUtil.CODEC, UUID.randomUUID());
         data.putInt("tier", exchange.rarity().ordinal());
         ListTag excluded = new ListTag();
         exchange.excluded().forEach(id -> excluded.add(StringTag.valueOf(id.toString())));
@@ -97,6 +87,7 @@ public class BlueprintExchangeRecipe extends ShapelessRecipe {
     }
 
     /** Resolve a paid crafting result, never the result-slot preview. */
+
     public static boolean resolve(ItemStack stack, RandomSource random) {
         Exchange exchange = readPreview(stack);
         if (exchange == null) {
@@ -134,7 +125,7 @@ public class BlueprintExchangeRecipe extends ShapelessRecipe {
 
     @Nullable
     private static Exchange readInputs(CraftingInput input) {
-        List<ResourceLocation> excluded = new ArrayList<>();
+        List<Identifier> excluded = new ArrayList<>();
         int total = 0;
         for (int slot = 0; slot < input.size(); slot++) {
             ItemStack stack = input.getItem(slot);
@@ -155,24 +146,24 @@ public class BlueprintExchangeRecipe extends ShapelessRecipe {
         if (excluded.size() != 3) {
             return null;
         }
-        excluded.sort(Comparator.comparing(ResourceLocation::toString));
+        excluded.sort(Comparator.comparing(Identifier::toString));
         return new Exchange(BlueprintRarity.values()[Math.round(total / 3.0f)], List.copyOf(excluded));
     }
 
     @Nullable
     private static Exchange readPreview(ItemStack stack) {
         CompoundTag data = previewData(stack);
-        if (!isPreview(stack) || data == null || !data.hasUUID("craft") || !data.contains("tier", Tag.TAG_INT)) {
+        if (!isPreview(stack) || data == null || !data.read("craft", UUIDUtil.CODEC).isPresent() || !data.contains("tier")) {
             return null;
         }
-        int tier = data.getInt("tier");
-        ListTag ids = data.getList("excluded", Tag.TAG_STRING);
+        int tier = data.getIntOr("tier", 0);
+        ListTag ids = data.getListOrEmpty("excluded");
         if (tier < 0 || tier >= BlueprintRarity.values().length || ids.size() != 3) {
             return null;
         }
-        List<ResourceLocation> excluded = new ArrayList<>();
+        List<Identifier> excluded = new ArrayList<>();
         for (int index = 0; index < ids.size(); index++) {
-            ResourceLocation id = ResourceLocation.tryParse(ids.getString(index));
+            Identifier id = Identifier.tryParse(ids.getStringOr(index, ""));
             if (id == null) {
                 return null;
             }
@@ -181,6 +172,6 @@ public class BlueprintExchangeRecipe extends ShapelessRecipe {
         return new Exchange(BlueprintRarity.values()[tier], excluded);
     }
 
-    private record Exchange(BlueprintRarity rarity, List<ResourceLocation> excluded) {
+    private record Exchange(BlueprintRarity rarity, List<Identifier> excluded) {
     }
 }

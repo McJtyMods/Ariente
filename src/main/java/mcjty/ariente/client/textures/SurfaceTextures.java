@@ -1,14 +1,18 @@
 package mcjty.ariente.client.textures;
 
-import com.google.gson.JsonObject;
+import net.minecraft.core.registries.BuiltInRegistries;
+
 import java.io.IOException;
 import java.io.UncheckedIOException;
 import java.util.HashMap;
 import java.util.Map;
 import mcjty.ariente.Ariente;
-import net.minecraft.client.resources.model.BakedModel;
-import net.minecraft.resources.ResourceLocation;
-import net.minecraft.server.packs.metadata.MetadataSectionSerializer;
+import net.minecraft.client.renderer.block.dispatch.BlockStateModel;
+import net.minecraft.resources.Identifier;
+import net.minecraft.server.packs.metadata.MetadataSectionType;
+import com.mojang.serialization.Codec;
+import com.mojang.serialization.codecs.RecordCodecBuilder;
+import java.util.Optional;
 import net.minecraft.server.packs.resources.ResourceManager;
 import net.minecraft.server.packs.resources.SimplePreparableReloadListener;
 import net.minecraft.util.profiling.ProfilerFiller;
@@ -16,27 +20,27 @@ import net.neoforged.api.distmarker.Dist;
 import net.neoforged.bus.api.SubscribeEvent;
 import net.neoforged.fml.common.EventBusSubscriber;
 import net.neoforged.neoforge.client.event.ModelEvent;
-import net.neoforged.neoforge.client.event.RegisterClientReloadListenersEvent;
+import net.neoforged.neoforge.client.event.AddClientReloadListenersEvent;
 
 /** Only the texture traits used by Ariente: quadrant connections, cutout and minimum light. */
-@EventBusSubscriber(modid = Ariente.MODID, value = Dist.CLIENT, bus = EventBusSubscriber.Bus.MOD)
-public class SurfaceTextures extends SimplePreparableReloadListener<Map<ResourceLocation, SurfaceTextures.Rule>> {
+@EventBusSubscriber(modid = Ariente.MODID, value = Dist.CLIENT)
+public class SurfaceTextures extends SimplePreparableReloadListener<Map<Identifier, SurfaceTextures.Rule>> {
 
-    public record Rule(ResourceLocation connectedTexture, int light, boolean cutout, ResourceLocation glowTexture) {
+    public record Rule(Identifier connectedTexture, int light, boolean cutout, Identifier glowTexture) {
     }
 
     private static volatile int generation;
-    private static volatile Map<ResourceLocation, Rule> rules = Map.of();
+    private static volatile Map<Identifier, Rule> rules = Map.of();
 
     @SubscribeEvent
-    public static void register(RegisterClientReloadListenersEvent event) {
-        event.registerReloadListener(new SurfaceTextures());
+    public static void register(AddClientReloadListenersEvent event) {
+        event.addListener(Identifier.fromNamespaceAndPath(Ariente.MODID, "surfaces"), new SurfaceTextures());
     }
 
     @SubscribeEvent
     public static void wrapModels(ModelEvent.ModifyBakingResult event) {
-        Map<BakedModel, BakedModel> wrappers = new HashMap<>();
-        event.getModels().replaceAll((id, model) -> id.id().getNamespace().equals(Ariente.MODID)
+        Map<BlockStateModel, BlockStateModel> wrappers = new HashMap<>();
+        event.getBakingResult().blockStateModels().replaceAll((state, model) -> BuiltInRegistries.BLOCK.getKey(state.getBlock()).getNamespace().equals(Ariente.MODID)
                 ? wrappers.computeIfAbsent(model, SurfaceModel::new) : model);
     }
 
@@ -44,42 +48,30 @@ public class SurfaceTextures extends SimplePreparableReloadListener<Map<Resource
         return generation;
     }
 
-    public static Rule get(ResourceLocation texture) {
+    public static Rule get(Identifier texture) {
         return rules.get(texture);
     }
 
-    private static final MetadataSectionSerializer<Rule> METADATA = new MetadataSectionSerializer<>() {
-
-        @Override
-        public String getMetadataSectionName() {
-            return "ariente";
-        }
-
-        @Override
-        public Rule fromJson(JsonObject data) {
-            ResourceLocation connected = data.has("connected_texture") ? ResourceLocation.parse(data.get("connected_texture").getAsString()) : null;
-            ResourceLocation glow = data.has("glow_texture") ? ResourceLocation.parse(data.get("glow_texture").getAsString()) : null;
-            int light = data.has("light") ? data.get("light").getAsInt() : 0;
-            if (light < 0 || light > 15) {
-                throw new IllegalArgumentException("Texture light must be between 0 and 15");
-            }
-            String layer = data.has("layer") ? data.get("layer").getAsString() : "default";
-            if (!layer.equals("default") && !layer.equals("cutout")) {
-                throw new IllegalArgumentException("Unsupported Ariente texture layer: " + layer);
-            }
-            return new Rule(connected, light, layer.equals("cutout"), glow);
-        }
-    };
+    private static final Codec<Rule> RULE_CODEC = RecordCodecBuilder.create(instance -> instance.group(
+            Identifier.CODEC.optionalFieldOf("connected_texture").forGetter(rule -> Optional.ofNullable(rule.connectedTexture())),
+            Codec.intRange(0, 15).optionalFieldOf("light", 0).forGetter(Rule::light),
+            Codec.STRING.optionalFieldOf("layer", "default").forGetter(rule -> rule.cutout() ? "cutout" : "default"),
+            Identifier.CODEC.optionalFieldOf("glow_texture").forGetter(rule -> Optional.ofNullable(rule.glowTexture()))
+    ).apply(instance, (connected, light, layer, glow) -> {
+        if (!layer.equals("default") && !layer.equals("cutout")) throw new IllegalArgumentException("Unsupported Ariente layer: " + layer);
+        return new Rule(connected.orElse(null), light, layer.equals("cutout"), glow.orElse(null));
+    }));
+    private static final MetadataSectionType<Rule> METADATA = new MetadataSectionType<>("ariente", RULE_CODEC);
 
     @Override
-    protected Map<ResourceLocation, Rule> prepare(ResourceManager resources, ProfilerFiller profiler) {
-        Map<ResourceLocation, Rule> loaded = new HashMap<>();
+    protected Map<Identifier, Rule> prepare(ResourceManager resources, ProfilerFiller profiler) {
+        Map<Identifier, Rule> loaded = new HashMap<>();
         resources.listResources("textures/block", id -> id.getNamespace().equals(Ariente.MODID) && id.getPath().endsWith(".png"))
                 .forEach((id, resource) -> {
                     try {
                         resource.metadata().getSection(METADATA).ifPresent(rule -> {
                             String path = id.getPath().substring("textures/".length(), id.getPath().length() - ".png".length());
-                            loaded.put(ResourceLocation.fromNamespaceAndPath(id.getNamespace(), path), rule);
+                            loaded.put(Identifier.fromNamespaceAndPath(id.getNamespace(), path), rule);
                         });
                     } catch (IOException e) {
                         throw new UncheckedIOException("Cannot read texture traits: " + id, e);
@@ -89,7 +81,7 @@ public class SurfaceTextures extends SimplePreparableReloadListener<Map<Resource
     }
 
     @Override
-    protected void apply(Map<ResourceLocation, Rule> loaded, ResourceManager resources, ProfilerFiller profiler) {
+    protected void apply(Map<Identifier, Rule> loaded, ResourceManager resources, ProfilerFiller profiler) {
         rules = loaded;
         generation++;
         SurfaceQuad.clearCache();

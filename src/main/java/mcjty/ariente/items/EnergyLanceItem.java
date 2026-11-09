@@ -1,5 +1,11 @@
 package mcjty.ariente.items;
 
+import java.util.ArrayList;
+
+import mcjty.ariente.varia.Messages;
+import net.minecraft.server.level.ServerLevel;
+import net.minecraft.world.entity.EquipmentSlot;
+import net.minecraft.world.item.component.TooltipDisplay;
 import java.util.List;
 import java.util.function.Consumer;
 import mcjty.ariente.api.ArmorUpgradeType;
@@ -14,7 +20,7 @@ import net.minecraft.client.model.HumanoidModel;
 import net.minecraft.network.chat.Component;
 import net.minecraft.stats.Stats;
 import net.minecraft.world.InteractionHand;
-import net.minecraft.world.InteractionResultHolder;
+import net.minecraft.world.InteractionResult;
 import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.entity.ai.attributes.Attributes;
@@ -34,8 +40,8 @@ public class EnergyLanceItem extends Item implements ITooltipSettings {
 
     private final TooltipBuilder tooltipBuilder = WeaponModuleSupport.createTooltipBuilder();
 
-    public EnergyLanceItem() {
-        super(new Properties().stacksTo(1));
+    public EnergyLanceItem(Item.Properties properties) {
+        super(properties.stacksTo(1));
     }
 
     public static boolean canFire(LivingEntity shooter) {
@@ -53,28 +59,28 @@ public class EnergyLanceItem extends Item implements ITooltipSettings {
     }
 
     public static boolean fire(LivingEntity shooter, Vec3 direction) {
-        if (shooter.level().isClientSide || !canFire(shooter) || direction.lengthSqr() < 1.0E-7D) {
+        if (shooter.level().isClientSide() || !canFire(shooter) || direction.lengthSqr() < 1.0E-7D) {
             return false;
         }
         return shooter.level().addFreshEntity(LaserEntity.createLanceShot(shooter.level(), shooter, direction, getShotDamage(shooter)));
     }
 
     @Override
-    public InteractionResultHolder<ItemStack> use(Level level, Player player, InteractionHand hand) {
+    public InteractionResult use(Level level, Player player, InteractionHand hand) {
         ItemStack stack = player.getItemInHand(hand);
         if (hand != InteractionHand.MAIN_HAND || !canFire(player)) {
-            player.displayClientMessage(Component.translatable("message.ariente.energy_lance.two_handed"), true);
-            return InteractionResultHolder.fail(stack);
+            Messages.player(player, Component.translatable("message.ariente.energy_lance.two_handed"), true);
+            return InteractionResult.FAIL;
         }
-        if (player.getCooldowns().isOnCooldown(this)) {
-            return InteractionResultHolder.fail(stack);
+        if (player.getCooldowns().isOnCooldown(player.getItemInHand(hand))) {
+            return InteractionResult.FAIL;
         }
-        if (!level.isClientSide && fire(player, player.getLookAngle())) {
-            player.getCooldowns().addCooldown(this, SHOT_INTERVAL);
+        if (!level.isClientSide() && fire(player, player.getLookAngle())) {
+            player.getCooldowns().addCooldown(player.getItemInHand(hand), SHOT_INTERVAL);
             player.awardStat(Stats.ITEM_USED.get(this));
         }
         // Keep the muzzle steady when firing instead of playing the melee swing animation.
-        return InteractionResultHolder.consume(stack);
+        return InteractionResult.CONSUME;
     }
 
     @Override
@@ -83,13 +89,19 @@ public class EnergyLanceItem extends Item implements ITooltipSettings {
     }
 
     @Override
+    public void appendHoverText(ItemStack stack, Item.TooltipContext context, TooltipDisplay display, Consumer<Component> output, TooltipFlag flag) {
+        List<Component> lines = new ArrayList<>();
+        appendHoverText(stack, context, lines, flag);
+        lines.forEach(output);
+    }
+
     public void appendHoverText(ItemStack stack, Item.TooltipContext level, List<Component> tooltip, TooltipFlag flag) {
         tooltipBuilder.makeTooltip(Tools.getId(this), stack, tooltip, flag);
         tooltip.add(Component.translatable("message.ariente.energy_lance.two_handed"));
     }
 
     @Override
-    public void inventoryTick(ItemStack stack, Level level, Entity entity, int itemSlot, boolean selected) {
+    public void inventoryTick(ItemStack stack, ServerLevel level, Entity entity, EquipmentSlot itemSlot) {
         WeaponModuleSupport.inventoryTick(stack, level, entity, entity instanceof LivingEntity living && living.getOffhandItem().isEmpty());
     }
 
@@ -98,7 +110,6 @@ public class EnergyLanceItem extends Item implements ITooltipSettings {
         return false;
     }
 
-    @Override
     public void initializeClient(Consumer<IClientItemExtensions> consumer) {
         consumer.accept(new IClientItemExtensions() {
 

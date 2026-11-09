@@ -2,12 +2,9 @@
   "type": "minecraft:crafting_shapeless",
   "category": "misc",
   "ingredients": [
-    {
-      "item": "ariente:marble_blue"
-    }
+    "ariente:marble_blue"
   ],
   "result": {
-    "count": 1,
     "id": "ariente:marble_smooth_blue"
   }
 }

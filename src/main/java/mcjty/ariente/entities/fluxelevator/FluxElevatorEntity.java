@@ -1,13 +1,17 @@
 package mcjty.ariente.entities.fluxelevator;
 
+import net.minecraft.server.level.ServerLevel;
+import net.minecraft.world.entity.InterpolationHandler;
+import com.mojang.serialization.MapCodec;
+import net.minecraft.world.level.storage.ValueInput;
+import net.minecraft.world.level.storage.ValueOutput;
+import net.minecraft.core.UUIDUtil;
 import net.minecraft.world.entity.EntityDimensions;
 import java.util.List;
-import java.util.Optional;
 import java.util.UUID;
 import javax.annotation.Nullable;
 import mcjty.ariente.Ariente;
 import mcjty.ariente.gui.ModGuis;
-import mcjty.ariente.setup.Registration;
 import mcjty.hologui.api.CloseStrategy;
 import mcjty.hologui.api.IHoloGuiEntity;
 import net.minecraft.core.BlockPos;
@@ -25,10 +29,10 @@ import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.EntityType;
 import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.entity.MoverType;
-import net.minecraft.world.entity.animal.IronGolem;
+import net.minecraft.world.entity.animal.golem.IronGolem;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.ItemStack;
-import net.minecraft.world.level.GameRules;
+import net.minecraft.world.level.gamerules.GameRules;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.level.block.Block;
 import net.minecraft.world.level.block.state.BlockState;
@@ -39,10 +43,20 @@ import net.minecraft.world.phys.Vec3;
 import org.apache.commons.lang3.tuple.Pair;
 
 public class FluxElevatorEntity extends Entity {
+    private final InterpolationHandler networkInterpolation = new InterpolationHandler(this, handler -> {
+        Vec3 target = handler.position();
+        lerpTo(target.x, target.y, target.z, handler.yRot(), handler.xRot(), 3);
+        handler.cancel();
+    });
+
+    @Override
+    public InterpolationHandler getInterpolation() {
+        return networkInterpolation;
+    }
 
     private static final EntityDataAccessor<Integer> SPEED = SynchedEntityData.defineId(FluxElevatorEntity.class, EntityDataSerializers.INT);
     private static final EntityDataAccessor<Float> DAMAGE = SynchedEntityData.defineId(FluxElevatorEntity.class, EntityDataSerializers.FLOAT);
-    private static final EntityDataAccessor<Optional<UUID>> HOLO = SynchedEntityData.defineId(FluxElevatorEntity.class, EntityDataSerializers.OPTIONAL_UUID);
+    private static final EntityDataAccessor<String> HOLO = SynchedEntityData.defineId(FluxElevatorEntity.class, EntityDataSerializers.STRING);
     public static final float MAX_SPEED = 1.2f;
 
     private double velocityX;
@@ -108,7 +122,7 @@ public class FluxElevatorEntity extends Entity {
                     }
                 }
             }
-            if (holoGui == null && !level().isClientSide ) {
+            if (holoGui == null && !level().isClientSide() ) {
                 IHoloGuiEntity holoGui = Ariente.guiHandler.openHoloGuiRelative(this, new Vec3(0, .5, 1), ModGuis.GUI_ELEVATOR);
                 holoGui.setScale(0.75f);
                 holoGui.setCloseStrategy(CloseStrategy.NEVER);
@@ -121,7 +135,7 @@ public class FluxElevatorEntity extends Entity {
     }
 
     public static FluxElevatorEntity create(Level worldIn, double x, double y, double z) {
-        FluxElevatorEntity entity = new FluxElevatorEntity(Registration.ENTITY_ELEVATOR.get(), worldIn);
+        FluxElevatorEntity entity = new FluxElevatorEntity(mcjty.ariente.setup.Registration.ENTITY_ELEVATOR.get(), worldIn);
         entity.setPos(x, y, z);
         entity.setDeltaMovement(0, 0, 0);
         entity.xo = x;
@@ -137,23 +151,18 @@ public class FluxElevatorEntity extends Entity {
     }
 
     @Override
-    public void moveTo(double x, double y, double z, float yaw, float pitch) {
-        super.moveTo(x, y, z, yaw, pitch);
-        updateHoloGui();        // @todo check if needed
-    }
-
-    @Override
-    public void absMoveTo(double x, double y, double z, float yaw, float pitch) {
-        super.absMoveTo(x, y, z, yaw, pitch);
+    public void snapTo(double x, double y, double z, float yaw, float pitch) {
+        super.snapTo(x, y, z, yaw, pitch);
         updateHoloGui();        // @todo check if needed
     }
 
     public void setHoloUUID(UUID holoFront) {
-        this.entityData.set(HOLO, Optional.ofNullable(holoFront));
+        this.entityData.set(HOLO, holoFront == null ? "" : holoFront.toString());
     }
 
     public UUID getHoloUUID() {
-        return (UUID) ((Optional) this.entityData.get(HOLO)).orElse(null);
+        String id = entityData.get(HOLO);
+        return id.isEmpty() ? null : UUID.fromString(id);
     }
 
     // @todo 1.18 @Override
@@ -170,7 +179,7 @@ public class FluxElevatorEntity extends Entity {
     protected void defineSynchedData(SynchedEntityData.Builder builder) {
         builder.define(SPEED, Integer.valueOf(0));
         builder.define(DAMAGE, Float.valueOf(0.0F));
-        builder.define(HOLO, Optional.empty());
+        builder.define(HOLO, "");
     }
 
     // @todo 1.16 @Override
@@ -200,9 +209,9 @@ public class FluxElevatorEntity extends Entity {
     }
 
     @Override
-    public boolean hurt(DamageSource source, float amount) {
-        if (!this.level().isClientSide && this.isAlive()) {
-            if (this.isInvulnerableTo(source)) {
+    public boolean hurtServer(ServerLevel serverLevel, DamageSource source, float amount) {
+        if (!this.level().isClientSide() && this.isAlive()) {
+            if (this.isInvulnerableToBase(source)) {
                 return false;
             } else {
                 this.markHurt();
@@ -239,14 +248,14 @@ public class FluxElevatorEntity extends Entity {
     public void killLevitator(DamageSource source) {
         this.remove(RemovalReason.KILLED);
 
-        if (this.level().getGameRules().getBoolean(GameRules.RULE_DOENTITYDROPS)) {
-            ItemStack itemstack = new ItemStack(Registration.FLUX_LEVITATOR.get(), 1);
+        if (((ServerLevel) level()).getGameRules().get(GameRules.ENTITY_DROPS)) {
+            ItemStack itemstack = new ItemStack(mcjty.ariente.setup.Registration.FLUX_LEVITATOR.get(), 1);
 
             if (this.hasCustomName()) {
                 itemstack.set(DataComponents.CUSTOM_NAME, this.getCustomName());
             }
 
-            this.spawnAtLocation(itemstack, 0.0F);
+            this.spawnAtLocation((ServerLevel) level(), itemstack, 0.0F);
         }
     }
 
@@ -275,7 +284,7 @@ public class FluxElevatorEntity extends Entity {
             this.onBelowWorld();
         }
 
-        if (this.level().isClientSide) {
+        if (this.level().isClientSide()) {
             onUpdateClient();
         } else {
             onUpdateServer();
@@ -316,7 +325,7 @@ public class FluxElevatorEntity extends Entity {
         }
         setDeltaMovement(motionX, motionY, motionZ);
 
-        this.checkInsideBlocks();
+        this.applyEffectsFromBlocks();
         this.setXRot(0.0F);
         double dx = this.xo - this.getX();
         double dz = this.zo - this.getZ();
@@ -338,7 +347,7 @@ public class FluxElevatorEntity extends Entity {
     }
 
     private boolean isValidBeamBlock(Block block) {
-        return block == Registration.FLUX_BEAM.get() || block == Registration.FLUX_BEND_BEAM.get();
+        return block == mcjty.ariente.setup.Registration.FLUX_BEAM.get() || block == mcjty.ariente.setup.Registration.FLUX_BEND_BEAM.get();
     }
 
     private void handleEntityCollision() {
@@ -389,7 +398,7 @@ public class FluxElevatorEntity extends Entity {
             double y = vec3d.y + .38;
             double z = vec3d.z;
 
-            holo.getEntity().moveTo(x, y, z, yaw, pitch);
+            holo.getEntity().snapTo(x, y, z, yaw, pitch);
             holo.getEntity().teleportTo(x, y, z);
         }
     }
@@ -560,7 +569,7 @@ public class FluxElevatorEntity extends Entity {
     }
 
     public static RailShape getBeamDirection(BlockState state) {
-        if (state.getBlock() == Registration.FLUX_BEAM.get()) {
+        if (state.getBlock() == mcjty.ariente.setup.Registration.FLUX_BEAM.get()) {
             Direction facing = state.getValue(BlockStateProperties.HORIZONTAL_FACING);
             if (facing == Direction.NORTH || facing == Direction.SOUTH) {
                 return RailShape.EAST_WEST;
@@ -655,7 +664,7 @@ public class FluxElevatorEntity extends Entity {
             RailShape dir = getBeamDirection(state);
             y = floorY;
 
-            if (dir.isAscending()) {
+            if ((dir == RailShape.ASCENDING_EAST || dir == RailShape.ASCENDING_WEST || dir == RailShape.ASCENDING_NORTH || dir == RailShape.ASCENDING_SOUTH)) {
                 y = (floorY + 1);
             }
 
@@ -694,28 +703,25 @@ public class FluxElevatorEntity extends Entity {
         this.desiredDestination = desiredDestination;
     }
 
-    @Override
     public AABB getBoundingBoxForCulling() {
         return this.getBoundingBox();
     }
 
-    @Override
-    protected void readAdditionalSaveData(CompoundTag compound) {
-        if (compound.hasUUID("holo")) {
-            setHoloUUID(compound.getUUID("holo"));
+    protected void readEntityData(CompoundTag compound) {
+        if (compound.read("holo", UUIDUtil.CODEC).isPresent()) {
+            setHoloUUID(compound.read("holo", UUIDUtil.CODEC).orElse(null));
         }
-        changeSpeed(compound.getInt("speed"));
+        changeSpeed(compound.getIntOr("speed", 0));
         if (compound.contains("desiredDestX")) {
-            desiredDestination = new BlockPos(compound.getInt("desiredDestX"),
-                    compound.getInt("desiredDestY"),
-                    compound.getInt("desiredDestZ"));
+            desiredDestination = new BlockPos(compound.getIntOr("desiredDestX", 0),
+                    compound.getIntOr("desiredDestY", 0),
+                    compound.getIntOr("desiredDestZ", 0));
         }
     }
 
-    @Override
-    protected void addAdditionalSaveData(CompoundTag compound) {
+    protected void writeEntityData(CompoundTag compound) {
         if (getHoloUUID() != null) {
-            compound.putUUID("holo", getHoloUUID());
+            compound.store("holo", UUIDUtil.CODEC, getHoloUUID());
         }
         compound.putInt("speed", getSpeed());
         if (desiredDestination != null) {
@@ -727,7 +733,7 @@ public class FluxElevatorEntity extends Entity {
 
     @Override
     public void push(Entity entityIn) {
-        if (!this.level().isClientSide) {
+        if (!this.level().isClientSide()) {
             if (!entityIn.noPhysics && !this.noPhysics) {
                 if (!this.hasPassenger(entityIn)) {
                     double dx = entityIn.getX() - this.getX();
@@ -790,8 +796,7 @@ public class FluxElevatorEntity extends Entity {
         }
     }
 
-    @Override
-    public void lerpTo(double x, double y, double z, float yaw, float pitch, int posRotationIncrements) {
+    private void lerpTo(double x, double y, double z, float yaw, float pitch, int posRotationIncrements) {
         setDeltaMovement(velocityX, velocityY, velocityZ);
 
         updateHoloGui();
@@ -802,7 +807,10 @@ public class FluxElevatorEntity extends Entity {
     }
 
     @Override
-    public void lerpMotion(double x, double y, double z) {
+    public void lerpMotion(Vec3 movement) {
+        double x = movement.x;
+        double y = movement.y;
+        double z = movement.z;
         setDeltaMovement(x, y, z);
         this.velocityX = x;
         this.velocityY = y;
@@ -814,11 +822,11 @@ public class FluxElevatorEntity extends Entity {
     }
 
     @Override
-    public InteractionResult interact(Player player, InteractionHand hand) {
+    public InteractionResult interact(Player player, InteractionHand hand, Vec3 location) {
         if (player.isShiftKeyDown()) {
             return InteractionResult.PASS;
         } else {
-            if (!this.level().isClientSide) {
+            if (!this.level().isClientSide()) {
                 player.startRiding(this);
             }
 
@@ -867,4 +875,17 @@ public class FluxElevatorEntity extends Entity {
         mZ = Mth.clamp(mZ, -max, max);
         this.move(MoverType.SELF, new Vec3(mX, 0.0D, mZ));
     }
+
+    @Override
+    public void readAdditionalSaveData(ValueInput input) {
+        readEntityData(input.read(MapCodec.assumeMapUnsafe(CompoundTag.CODEC)).orElseGet(CompoundTag::new));
+    }
+
+    @Override
+    public void addAdditionalSaveData(ValueOutput output) {
+        CompoundTag tag = new CompoundTag();
+        writeEntityData(tag);
+        output.store(tag);
+    }
+
 }

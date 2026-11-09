@@ -1,0 +1,6 @@
+{
+  "model": {
+    "type": "ariente:lance",
+    "model": "ariente:item/energy_lance"
+  }
+}

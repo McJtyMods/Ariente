@@ -1,7 +1,11 @@
 package mcjty.ariente.recipes;
 
+import net.minecraft.resources.ResourceKey;
+import net.minecraft.world.item.crafting.Recipe;
+import net.neoforged.neoforge.event.OnDatapackSyncEvent;
+
+import net.minecraft.server.level.ServerLevel;
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.Comparator;
 import java.util.HashMap;
 import java.util.HashSet;
@@ -14,7 +18,7 @@ import mcjty.ariente.Ariente;
 import mcjty.ariente.config.PowerConfiguration;
 import net.minecraft.core.Holder;
 import net.minecraft.core.registries.BuiltInRegistries;
-import net.minecraft.resources.ResourceLocation;
+import net.minecraft.resources.Identifier;
 import net.minecraft.tags.TagKey;
 import net.minecraft.world.item.BlockItem;
 import net.minecraft.world.item.Item;
@@ -33,6 +37,16 @@ import net.neoforged.neoforge.event.TagsUpdatedEvent;
 public class PurifierRecipes {
 
     private static volatile Snapshot snapshot;
+    private static volatile List<PurifyingRecipe> clientRecipes = List.of();
+
+    @SubscribeEvent
+    public static void sync(OnDatapackSyncEvent event) {
+        event.sendRecipes(BlueprintRecipeRegistry.PURIFYING.get());
+    }
+
+    public static void receivedRecipes(List<PurifyingRecipe> recipes) {
+        clientRecipes = List.copyOf(recipes);
+    }
 
     @SubscribeEvent
     public static synchronized void tagsUpdated(TagsUpdatedEvent event) {
@@ -44,20 +58,23 @@ public class PurifierRecipes {
         if (stack.isEmpty()) {
             return null;
         }
-        PurifyingRecipe explicit = level.getRecipeManager().getRecipeFor(BlueprintRecipeRegistry.PURIFYING.get(),
-                new SingleRecipeInput(stack), level).map(RecipeHolder::value).orElse(null);
+        PurifyingRecipe explicit = ((ServerLevel) level).recipeAccess().getRecipeFor(BlueprintRecipeRegistry.PURIFYING.get(),
+                new SingleRecipeInput(stack), level, (ResourceKey<Recipe<?>>) null).map(RecipeHolder::value).orElse(null);
         return explicit != null ? explicit : getSnapshot().byItem().get(stack.getItem());
     }
 
     /** Includes the same automatic conversions as the machine, excluding inputs overridden by JSON. */
+
     public static List<PurifyingRecipe> getRecipes(Level level) {
-        List<PurifyingRecipe> explicit = level.getRecipeManager().getAllRecipesFor(BlueprintRecipeRegistry.PURIFYING.get()).stream().map(RecipeHolder::value).toList();
+        List<PurifyingRecipe> explicit = level instanceof ServerLevel server
+                ? server.recipeAccess().recipeMap().byType(BlueprintRecipeRegistry.PURIFYING.get()).stream().map(RecipeHolder::value).toList()
+                : clientRecipes;
         List<PurifyingRecipe> recipes = new ArrayList<>(explicit);
         for (PurifyingRecipe automatic : getSnapshot().recipes()) {
-            List<ItemStack> inputs = Arrays.stream(automatic.ingredient().getItems())
+            List<ItemStack> inputs = automatic.ingredient().items().map(holder -> new ItemStack(holder.value()))
                     .filter(stack -> explicit.stream().noneMatch(recipe -> recipe.ingredient().test(stack))).toList();
             if (!inputs.isEmpty()) {
-                recipes.add(new PurifyingRecipe(automatic.id(), Ingredient.of(inputs.stream()), automatic.result().copy()));
+                recipes.add(new PurifyingRecipe(automatic.id(), Ingredient.of(inputs.stream().map(ItemStack::getItem)), automatic.result().copy()));
             }
         }
         return List.copyOf(recipes);
@@ -80,9 +97,9 @@ public class PurifierRecipes {
     }
 
     private static Snapshot discover(List<String> preferred) {
-        Set<ResourceLocation> oreTags = new TreeSet<>();
-        BuiltInRegistries.ITEM.getTagNames().map(TagKey::location).filter(PurifierRecipes::isOreTag).forEach(oreTags::add);
-        BuiltInRegistries.BLOCK.getTagNames().map(TagKey::location).filter(PurifierRecipes::isOreTag).forEach(oreTags::add);
+        Set<Identifier> oreTags = new TreeSet<>();
+        BuiltInRegistries.ITEM.listTagIds().map(TagKey::location).filter(PurifierRecipes::isOreTag).forEach(oreTags::add);
+        BuiltInRegistries.BLOCK.listTagIds().map(TagKey::location).filter(PurifierRecipes::isOreTag).forEach(oreTags::add);
         Comparator<Item> outputOrder = Comparator.<Item>comparingInt(item -> {
             int index = preferred.indexOf(BuiltInRegistries.ITEM.getKey(item).getNamespace());
             return index < 0 ? preferred.size() : index;
@@ -90,18 +107,18 @@ public class PurifierRecipes {
         Map<Item, Item> outputs = new HashMap<>();
         Set<Item> ambiguous = new HashSet<>();
         List<PurifyingRecipe> candidates = new ArrayList<>();
-        for (ResourceLocation oreTag : oreTags) {
+        for (Identifier oreTag : oreTags) {
             String material = oreTag.getPath().substring("ores/".length());
-            TagKey<Item> rawTag = TagKey.create(BuiltInRegistries.ITEM.key(), ResourceLocation.fromNamespaceAndPath("c", "raw_materials/" + material));
-            Item raw = BuiltInRegistries.ITEM.getTag(rawTag).stream().flatMap(set -> set.stream()).map(Holder::value).min(outputOrder).orElse(null);
+            TagKey<Item> rawTag = TagKey.create(BuiltInRegistries.ITEM.key(), Identifier.fromNamespaceAndPath("c", "raw_materials/" + material));
+            Item raw = BuiltInRegistries.ITEM.get(rawTag).stream().flatMap(set -> set.stream()).map(Holder::value).min(outputOrder).orElse(null);
             if (raw == null) {
                 continue;
             }
             Set<Item> ores = new TreeSet<>(Comparator.comparing(item -> BuiltInRegistries.ITEM.getKey(item).toString()));
             TagKey<Item> itemTag = TagKey.create(BuiltInRegistries.ITEM.key(), oreTag);
-            BuiltInRegistries.ITEM.getTag(itemTag).stream().flatMap(set -> set.stream()).map(Holder::value).filter(item -> item instanceof BlockItem).forEach(ores::add);
+            BuiltInRegistries.ITEM.get(itemTag).stream().flatMap(set -> set.stream()).map(Holder::value).filter(item -> item instanceof BlockItem).forEach(ores::add);
             TagKey<Block> blockTag = TagKey.create(BuiltInRegistries.BLOCK.key(), oreTag);
-            BuiltInRegistries.BLOCK.getTag(blockTag).stream().flatMap(set -> set.stream()).map(Holder::value).map(Block::asItem)
+            BuiltInRegistries.BLOCK.get(blockTag).stream().flatMap(set -> set.stream()).map(Holder::value).map(Block::asItem)
                     .filter(item -> item instanceof BlockItem).forEach(ores::add);
             for (Item ore : ores) {
                 Item previous = outputs.putIfAbsent(ore, raw);
@@ -110,17 +127,17 @@ public class PurifierRecipes {
                 }
             }
             if (!ores.isEmpty()) {
-                candidates.add(new PurifyingRecipe(ResourceLocation.fromNamespaceAndPath(Ariente.MODID, "automatic_purifying/" + material),
-                        Ingredient.of(ores.stream().map(ItemStack::new)), new ItemStack(raw)));
+                candidates.add(new PurifyingRecipe(Identifier.fromNamespaceAndPath(Ariente.MODID, "automatic_purifying/" + material),
+                        Ingredient.of(ores.stream()), new ItemStack(raw)));
             }
         }
         Map<Item, PurifyingRecipe> byItem = new HashMap<>();
         List<PurifyingRecipe> recipes = new ArrayList<>();
         for (PurifyingRecipe candidate : candidates) {
-            List<ItemStack> inputs = Arrays.stream(candidate.ingredient().getItems())
+            List<ItemStack> inputs = candidate.ingredient().items().map(holder -> new ItemStack(holder.value()))
                     .filter(stack -> !ambiguous.contains(stack.getItem()) && !byItem.containsKey(stack.getItem())).toList();
             if (!inputs.isEmpty()) {
-                PurifyingRecipe recipe = new PurifyingRecipe(candidate.id(), Ingredient.of(inputs.stream()), candidate.result());
+                PurifyingRecipe recipe = new PurifyingRecipe(candidate.id(), Ingredient.of(inputs.stream().map(ItemStack::getItem)), candidate.result());
                 inputs.forEach(stack -> byItem.put(stack.getItem(), recipe));
                 recipes.add(recipe);
             }
@@ -128,7 +145,7 @@ public class PurifierRecipes {
         return new Snapshot(preferred, Map.copyOf(byItem), List.copyOf(recipes));
     }
 
-    private static boolean isOreTag(ResourceLocation tag) {
+    private static boolean isOreTag(Identifier tag) {
         return tag.getNamespace().equals("c") && tag.getPath().startsWith("ores/");
     }
 

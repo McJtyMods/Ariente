@@ -1,13 +1,17 @@
 package mcjty.ariente.entities.levitator;
 
+import net.minecraft.server.level.ServerLevel;
+import net.minecraft.world.entity.InterpolationHandler;
+import com.mojang.serialization.MapCodec;
+import net.minecraft.world.level.storage.ValueInput;
+import net.minecraft.world.level.storage.ValueOutput;
+import net.minecraft.core.UUIDUtil;
 import java.util.List;
-import java.util.Optional;
 import java.util.UUID;
 import javax.annotation.Nullable;
 import mcjty.ariente.Ariente;
 import mcjty.ariente.api.IFluxLevitatorEntity;
 import mcjty.ariente.gui.ModGuis;
-import mcjty.ariente.setup.Registration;
 import mcjty.hologui.api.CloseStrategy;
 import mcjty.hologui.api.IHoloGuiEntity;
 import net.minecraft.core.BlockPos;
@@ -25,10 +29,10 @@ import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.EntityType;
 import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.entity.MoverType;
-import net.minecraft.world.entity.animal.IronGolem;
+import net.minecraft.world.entity.animal.golem.IronGolem;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.ItemStack;
-import net.minecraft.world.level.GameRules;
+import net.minecraft.world.level.gamerules.GameRules;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.level.block.Block;
 import net.minecraft.world.level.block.state.BlockState;
@@ -39,13 +43,23 @@ import net.minecraft.world.phys.Vec3;
 import org.apache.commons.lang3.tuple.Pair;
 
 public class FluxLevitatorEntity extends Entity implements IFluxLevitatorEntity {
+    private final InterpolationHandler networkInterpolation = new InterpolationHandler(this, handler -> {
+        Vec3 target = handler.position();
+        lerpTo(target.x, target.y, target.z, handler.yRot(), handler.xRot(), 3);
+        handler.cancel();
+    });
+
+    @Override
+    public InterpolationHandler getInterpolation() {
+        return networkInterpolation;
+    }
 
     private static final EntityDataAccessor<Integer> ROLLING_AMPLITUDE = SynchedEntityData.defineId(FluxLevitatorEntity.class, EntityDataSerializers.INT);
     private static final EntityDataAccessor<Integer> ROLLING_DIRECTION = SynchedEntityData.defineId(FluxLevitatorEntity.class, EntityDataSerializers.INT);
     private static final EntityDataAccessor<Integer> SPEED = SynchedEntityData.defineId(FluxLevitatorEntity.class, EntityDataSerializers.INT);
     private static final EntityDataAccessor<Float> DAMAGE = SynchedEntityData.defineId(FluxLevitatorEntity.class, EntityDataSerializers.FLOAT);
-    private static final EntityDataAccessor<Optional<UUID>> HOLO_FRONT = SynchedEntityData.defineId(FluxLevitatorEntity.class, EntityDataSerializers.OPTIONAL_UUID);
-    private static final EntityDataAccessor<Optional<UUID>> HOLO_BACK = SynchedEntityData.defineId(FluxLevitatorEntity.class, EntityDataSerializers.OPTIONAL_UUID);
+    private static final EntityDataAccessor<String> HOLO_FRONT = SynchedEntityData.defineId(FluxLevitatorEntity.class, EntityDataSerializers.STRING);
+    private static final EntityDataAccessor<String> HOLO_BACK = SynchedEntityData.defineId(FluxLevitatorEntity.class, EntityDataSerializers.STRING);
 
     private boolean isInReverse;
     private static final int[][][] MATRIX = new int[][][]{
@@ -181,7 +195,7 @@ public class FluxLevitatorEntity extends Entity implements IFluxLevitatorEntity 
                     }
                 }
             }
-            if (holoGuiFront == null && !level().isClientSide ) {
+            if (holoGuiFront == null && !level().isClientSide() ) {
                 holoGuiFront = createHoloGui(1);
             }
         }
@@ -202,7 +216,7 @@ public class FluxLevitatorEntity extends Entity implements IFluxLevitatorEntity 
                     }
                 }
             }
-            if (holoGuiBack == null && !level().isClientSide ) {
+            if (holoGuiBack == null && !level().isClientSide() ) {
                 holoGuiBack = createHoloGui(-1);
             }
         }
@@ -231,7 +245,7 @@ public class FluxLevitatorEntity extends Entity implements IFluxLevitatorEntity 
     }
 
     public static FluxLevitatorEntity create(Level worldIn, double x, double y, double z) {
-        FluxLevitatorEntity entity = new FluxLevitatorEntity(Registration.ENTITY_FLUX_LEVITATOR.get(), worldIn);
+        FluxLevitatorEntity entity = new FluxLevitatorEntity(mcjty.ariente.setup.Registration.ENTITY_FLUX_LEVITATOR.get(), worldIn);
         entity.setPos(x, y, z);
         entity.setDeltaMovement(0, 0, 0);
         entity.xo = x;
@@ -241,19 +255,21 @@ public class FluxLevitatorEntity extends Entity implements IFluxLevitatorEntity 
     }
 
     public void setHoloFrontUUID(UUID holoFront) {
-        this.entityData.set(HOLO_FRONT, Optional.ofNullable(holoFront));
+        this.entityData.set(HOLO_FRONT, holoFront == null ? "" : holoFront.toString());
     }
 
     public UUID getHoloFrontUUID() {
-        return (UUID) ((Optional) this.entityData.get(HOLO_FRONT)).orElse(null);
+        String id = entityData.get(HOLO_FRONT);
+        return id.isEmpty() ? null : UUID.fromString(id);
     }
 
     public void setHoloBackUUID(UUID holoBack) {
-        this.entityData.set(HOLO_BACK, Optional.ofNullable(holoBack));
+        this.entityData.set(HOLO_BACK, holoBack == null ? "" : holoBack.toString());
     }
 
     public UUID getHoloBackUUID() {
-        return (UUID) ((Optional) this.entityData.get(HOLO_BACK)).orElse(null);
+        String id = entityData.get(HOLO_BACK);
+        return id.isEmpty() ? null : UUID.fromString(id);
     }
 
     @Override
@@ -272,8 +288,8 @@ public class FluxLevitatorEntity extends Entity implements IFluxLevitatorEntity 
         builder.define(ROLLING_DIRECTION, 0);
         builder.define(SPEED, 0);
         builder.define(DAMAGE, 0.0F);
-        builder.define(HOLO_FRONT, Optional.empty());
-        builder.define(HOLO_BACK, Optional.empty());
+        builder.define(HOLO_FRONT, "");
+        builder.define(HOLO_BACK, "");
     }
 
     // @todo 1.16 @Override
@@ -298,9 +314,9 @@ public class FluxLevitatorEntity extends Entity implements IFluxLevitatorEntity 
     }
 
     @Override
-    public boolean hurt(DamageSource source, float amount) {
-        if (!level().isClientSide && this.isAlive()) {
-            if (this.isInvulnerableTo(source)) {
+    public boolean hurtServer(ServerLevel serverLevel, DamageSource source, float amount) {
+        if (!level().isClientSide() && this.isAlive()) {
+            if (this.isInvulnerableToBase(source)) {
                 return false;
             } else {
                 this.setRollingDirection(-this.getRollingDirection());
@@ -344,14 +360,14 @@ public class FluxLevitatorEntity extends Entity implements IFluxLevitatorEntity 
     public void killLevitator(DamageSource source) {
         this.remove(RemovalReason.KILLED);
 
-        if (level().getGameRules().getBoolean(GameRules.RULE_DOENTITYDROPS)) {
-            ItemStack itemstack = new ItemStack(Registration.FLUX_LEVITATOR.get(), 1);
+        if (((ServerLevel) level()).getGameRules().get(GameRules.ENTITY_DROPS)) {
+            ItemStack itemstack = new ItemStack(mcjty.ariente.setup.Registration.FLUX_LEVITATOR.get(), 1);
 
             if (this.hasCustomName()) {
                 itemstack.set(DataComponents.CUSTOM_NAME, this.getCustomName());
             }
 
-            this.spawnAtLocation(itemstack, 0.0F);
+            this.spawnAtLocation((ServerLevel) level(), itemstack, 0.0F);
         }
     }
 
@@ -388,7 +404,7 @@ public class FluxLevitatorEntity extends Entity implements IFluxLevitatorEntity 
             this.onBelowWorld();
         }
 
-        if (level().isClientSide) {
+        if (level().isClientSide()) {
             onUpdateClient();
         } else {
             onUpdateServer();
@@ -430,7 +446,7 @@ public class FluxLevitatorEntity extends Entity implements IFluxLevitatorEntity 
             this.moveDerailedLevitator();
         }
 
-        this.checkInsideBlocks();
+        this.applyEffectsFromBlocks();
         this.setXRot(0.0F);
         double dx = this.xo - this.getX();
         double dz = this.zo - this.getZ();
@@ -462,8 +478,8 @@ public class FluxLevitatorEntity extends Entity implements IFluxLevitatorEntity 
     }
 
     public static boolean isValidBeamBlock(Block block) {
-        return block == Registration.FLUX_BEAM.get() || block == Registration.FLUX_BEND_BEAM.get()
-                || block == Registration.FLUX_SLOPE_BEAM.get();
+        return block == mcjty.ariente.setup.Registration.FLUX_BEAM.get() || block == mcjty.ariente.setup.Registration.FLUX_BEND_BEAM.get()
+                || block == mcjty.ariente.setup.Registration.FLUX_SLOPE_BEAM.get();
     }
 
     private void handleEntityCollision() {
@@ -594,7 +610,7 @@ public class FluxLevitatorEntity extends Entity implements IFluxLevitatorEntity 
 
         RailShape dir = getBeamDirection(state);
 
-        if (dir.isAscending()) {
+        if ((dir == RailShape.ASCENDING_EAST || dir == RailShape.ASCENDING_WEST || dir == RailShape.ASCENDING_NORTH || dir == RailShape.ASCENDING_SOUTH)) {
             // Move above the high endpoint before projecting back onto the incline.
             // This also clears the support block under the next, higher beam.
             setPos(getX(), pos.getY() + 1, getZ());
@@ -703,7 +719,7 @@ public class FluxLevitatorEntity extends Entity implements IFluxLevitatorEntity 
     }
 
     private void handleLivingMotion(int speed, RailShape dir) {
-        boolean straight = dir == RailShape.NORTH_SOUTH || dir == RailShape.EAST_WEST || dir.isAscending();
+        boolean straight = dir == RailShape.NORTH_SOUTH || dir == RailShape.EAST_WEST || (dir == RailShape.ASCENDING_EAST || dir == RailShape.ASCENDING_WEST || dir == RailShape.ASCENDING_NORTH || dir == RailShape.ASCENDING_SOUTH);
         double maxMotion = Math.abs(speed / (straight ? 25.0 : 200.0));
         double motion = getDeltaMovement().horizontalDistance();
         if (motion < .0001) {
@@ -777,7 +793,7 @@ public class FluxLevitatorEntity extends Entity implements IFluxLevitatorEntity 
 
     public static RailShape getBeamDirection(BlockState state) {
         Direction facing = state.getValue(BlockStateProperties.HORIZONTAL_FACING);
-        if (state.is(Registration.FLUX_SLOPE_BEAM.get())) {
+        if (state.is(mcjty.ariente.setup.Registration.FLUX_SLOPE_BEAM.get())) {
             return switch (facing) {
                 case NORTH -> RailShape.ASCENDING_NORTH;
                 case SOUTH -> RailShape.ASCENDING_SOUTH;
@@ -785,7 +801,7 @@ public class FluxLevitatorEntity extends Entity implements IFluxLevitatorEntity 
                 case EAST -> RailShape.ASCENDING_EAST;
                 default -> throw new IllegalArgumentException("Flux slopes must face horizontally");
             };
-        } else if (state.getBlock() == Registration.FLUX_BEAM.get()) {
+        } else if (state.getBlock() == mcjty.ariente.setup.Registration.FLUX_BEAM.get()) {
             if (facing == Direction.NORTH || facing == Direction.SOUTH) {
                 return RailShape.EAST_WEST;
             } else {
@@ -881,7 +897,7 @@ public class FluxLevitatorEntity extends Entity implements IFluxLevitatorEntity 
             RailShape dir = getBeamDirection(state);
             y = floorY;
 
-            if (dir.isAscending()) {
+            if ((dir == RailShape.ASCENDING_EAST || dir == RailShape.ASCENDING_WEST || dir == RailShape.ASCENDING_NORTH || dir == RailShape.ASCENDING_SOUTH)) {
                 y++;
             }
 
@@ -971,33 +987,31 @@ public class FluxLevitatorEntity extends Entity implements IFluxLevitatorEntity 
         this.desiredDestination = desiredDestination;
     }
 
-    @Override
-    protected void readAdditionalSaveData(CompoundTag compound) {
-        forwardDirection = new Vec3(compound.getDouble("forwardDirectionX"), 0,
-                compound.getDouble("forwardDirectionZ")).normalize();
-        if (compound.hasUUID("holoFront")) {
-            setHoloFrontUUID(compound.getUUID("holoFront"));
+    protected void readEntityData(CompoundTag compound) {
+        forwardDirection = new Vec3(compound.getDoubleOr("forwardDirectionX", 0), 0,
+                compound.getDoubleOr("forwardDirectionZ", 0)).normalize();
+        if (compound.read("holoFront", UUIDUtil.CODEC).isPresent()) {
+            setHoloFrontUUID(compound.read("holoFront", UUIDUtil.CODEC).orElse(null));
         }
-        if (compound.hasUUID("holoBack")) {
-            setHoloBackUUID(compound.getUUID("holoBack"));
+        if (compound.read("holoBack", UUIDUtil.CODEC).isPresent()) {
+            setHoloBackUUID(compound.read("holoBack", UUIDUtil.CODEC).orElse(null));
         }
-        changeSpeed(compound.getInt("speed"));
+        changeSpeed(compound.getIntOr("speed", 0));
         if (compound.contains("desiredDestX")) {
-            desiredDestination = new BlockPos(compound.getInt("desiredDestX"),
-                    compound.getInt("desiredDestY"),
-                    compound.getInt("desiredDestZ"));
+            desiredDestination = new BlockPos(compound.getIntOr("desiredDestX", 0),
+                    compound.getIntOr("desiredDestY", 0),
+                    compound.getIntOr("desiredDestZ", 0));
         }
     }
 
-    @Override
-    protected void addAdditionalSaveData(CompoundTag compound) {
+    protected void writeEntityData(CompoundTag compound) {
         compound.putDouble("forwardDirectionX", forwardDirection.x);
         compound.putDouble("forwardDirectionZ", forwardDirection.z);
         if (getHoloFrontUUID() != null) {
-            compound.putUUID("holoFront", getHoloFrontUUID());
+            compound.store("holoFront", UUIDUtil.CODEC, getHoloFrontUUID());
         }
         if (getHoloBackUUID() != null) {
-            compound.putUUID("holoBack", getHoloBackUUID());
+            compound.store("holoBack", UUIDUtil.CODEC, getHoloBackUUID());
         }
         compound.putInt("speed", getSpeed());
         if (desiredDestination != null) {
@@ -1009,7 +1023,7 @@ public class FluxLevitatorEntity extends Entity implements IFluxLevitatorEntity 
 
     @Override
     public void push(Entity entityIn) {
-        if (!level().isClientSide) {
+        if (!level().isClientSide()) {
             if (!entityIn.noPhysics && !this.noPhysics) {
                 if (!this.hasPassenger(entityIn)) {
                     double dx = entityIn.getX() - this.getX();
@@ -1076,8 +1090,7 @@ public class FluxLevitatorEntity extends Entity implements IFluxLevitatorEntity 
         }
     }
 
-    @Override
-    public void lerpTo(double x, double y, double z, float yaw, float pitch, int posRotationIncrements) {
+    private void lerpTo(double x, double y, double z, float yaw, float pitch, int posRotationIncrements) {
         this.levitatorX = x;
         this.levitatorY = y;
         this.levitatorZ = z;
@@ -1092,7 +1105,10 @@ public class FluxLevitatorEntity extends Entity implements IFluxLevitatorEntity 
     }
 
     @Override
-    public void lerpMotion(double x, double y, double z) {
+    public void lerpMotion(Vec3 movement) {
+        double x = movement.x;
+        double y = movement.y;
+        double z = movement.z;
         setDeltaMovement(x, y, z);
         this.velocityX = x;
         this.velocityY = y;
@@ -1120,22 +1136,22 @@ public class FluxLevitatorEntity extends Entity implements IFluxLevitatorEntity 
     }
 
     @Override
-    public InteractionResult interact(Player player, InteractionHand hand) {
+    public InteractionResult interact(Player player, InteractionHand hand, Vec3 location) {
         if (player.isShiftKeyDown()) {
             if (!isAlive() || getPassengers().stream().anyMatch(passenger -> !(passenger instanceof IHoloGuiEntity))) {
                 return InteractionResult.PASS;
             }
-            if (!level().isClientSide) {
-                ItemStack stack = new ItemStack(Registration.FLUX_LEVITATOR.get());
+            if (!level().isClientSide()) {
+                ItemStack stack = new ItemStack(mcjty.ariente.setup.Registration.FLUX_LEVITATOR.get());
                 if (hasCustomName()) {
                     stack.set(DataComponents.CUSTOM_NAME, getCustomName());
                 }
                 player.getInventory().placeItemBackInInventory(stack);
                 discard();
             }
-            return InteractionResult.sidedSuccess(level().isClientSide);
+            return InteractionResult.SUCCESS;
         } else {
-            if (!level().isClientSide) {
+            if (!level().isClientSide()) {
                 player.startRiding(this);
             }
 
@@ -1163,7 +1179,7 @@ public class FluxLevitatorEntity extends Entity implements IFluxLevitatorEntity 
         }
 
         float railMaxSpeed = MAX_CART_SPEED_ON_RAIL;
-        if (state.is(Registration.FLUX_BEND_BEAM.get()) || getBeamDirection(state).isAscending()) {
+        if (state.is(mcjty.ariente.setup.Registration.FLUX_BEND_BEAM.get()) || (getBeamDirection(state).getSerializedName().startsWith("ascending_"))) {
             railMaxSpeed = .4f;
         } else {
             Direction ahead = Math.abs(forwardDirection.x) > Math.abs(forwardDirection.z)
@@ -1173,8 +1189,8 @@ public class FluxLevitatorEntity extends Entity implements IFluxLevitatorEntity 
             for (int distance = 1; distance <= 2; distance++) {
                 BlockState next = level().getBlockState(pos.relative(ahead, distance));
                 BlockState below = level().getBlockState(pos.relative(ahead, distance).below());
-                if (next.is(Registration.FLUX_BEND_BEAM.get()) || next.is(Registration.FLUX_SLOPE_BEAM.get())
-                        || below.is(Registration.FLUX_SLOPE_BEAM.get())) {
+                if (next.is(mcjty.ariente.setup.Registration.FLUX_BEND_BEAM.get()) || next.is(mcjty.ariente.setup.Registration.FLUX_SLOPE_BEAM.get())
+                        || below.is(mcjty.ariente.setup.Registration.FLUX_SLOPE_BEAM.get())) {
                     railMaxSpeed = .4f;
                     break;
                 }
@@ -1201,4 +1217,17 @@ public class FluxLevitatorEntity extends Entity implements IFluxLevitatorEntity 
         mZ = Mth.clamp(mZ, -max, max);
         this.move(MoverType.SELF, new Vec3(mX, 0.0D, mZ));
     }
+
+    @Override
+    public void readAdditionalSaveData(ValueInput input) {
+        readEntityData(input.read(MapCodec.assumeMapUnsafe(CompoundTag.CODEC)).orElseGet(CompoundTag::new));
+    }
+
+    @Override
+    public void addAdditionalSaveData(ValueOutput output) {
+        CompoundTag tag = new CompoundTag();
+        writeEntityData(tag);
+        output.store(tag);
+    }
+
 }

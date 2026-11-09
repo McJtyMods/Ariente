@@ -1,5 +1,10 @@
 package mcjty.ariente;
 
+import com.mojang.blaze3d.vertex.PoseStack;
+import mcjty.hologui.gui.HoloRenderBatch;
+import net.minecraft.resources.Identifier;
+import net.minecraft.util.context.ContextKey;
+import net.neoforged.neoforge.client.network.ClientPacketDistributor;
 import net.neoforged.neoforge.client.event.*;
 import mcjty.ariente.api.ArmorUpgradeType;
 import mcjty.ariente.blocks.defense.ForceFieldRenderer;
@@ -19,20 +24,27 @@ import net.neoforged.bus.api.SubscribeEvent;
 import net.neoforged.neoforge.client.event.ClientTickEvent;
 import net.neoforged.neoforge.event.entity.EntityMountEvent;
 import net.neoforged.neoforge.event.entity.player.PlayerInteractEvent;
-import net.neoforged.neoforge.network.PacketDistributor;
 
 public class ClientForgeEventHandlers {
 
+    private static final ContextKey<HoloRenderBatch> FIELDS = new ContextKey<>(Identifier.fromNamespaceAndPath("ariente", "forcefields"));
+
     @SubscribeEvent
-    public void onRenderWorldEvent(RenderLevelStageEvent event) {
-        if (event.getStage() == RenderLevelStageEvent.Stage.AFTER_TRANSLUCENT_BLOCKS) {
-            ForceFieldRenderer.renderForceFields(event.getPoseStack(), event.getPartialTick().getGameTimeDeltaPartialTick(false));
-        }
+    public void extractForcefields(ExtractLevelRenderStateEvent event) {
+        HoloRenderBatch batch = new HoloRenderBatch();
+        ForceFieldRenderer.renderForceFields(new PoseStack(), batch, event.getDeltaTracker().getGameTimeDeltaPartialTick(false));
+        event.getRenderState().setRenderData(FIELDS, batch);
+    }
+
+    @SubscribeEvent
+    public void submitForcefields(SubmitCustomGeometryEvent event) {
+        HoloRenderBatch batch = event.getLevelRenderState().getRenderData(FIELDS);
+        if (batch != null) batch.submit(event.getPoseStack(), event.getSubmitNodeCollector());
     }
 
     @SubscribeEvent
     public void onEntityMount(EntityMountEvent event) {
-        if (event.isMounting() && event.getLevel().isClientSide && event.getEntityBeingMounted() instanceof FluxLevitatorEntity) {
+        if (event.isMounting() && event.getLevel().isClientSide() && event.getEntityBeingMounted() instanceof FluxLevitatorEntity) {
             FluxLevitatorEntity levitator = (FluxLevitatorEntity) event.getEntityBeingMounted();
             if (event.getEntityMounting() instanceof Player) {
                 FluxLevitatorSounds.playMovingSoundClientInside((Player) event.getEntityMounting(), levitator);
@@ -43,7 +55,7 @@ public class ClientForgeEventHandlers {
     @SubscribeEvent
     public void onLeftClickEmpty(PlayerInteractEvent.LeftClickEmpty empty) {
         // This event is only called clientside. Tell the server
-        PacketDistributor.sendToServer(new PacketHitForcefield());
+        ClientPacketDistributor.sendToServer(new PacketHitForcefield());
     }
 
     @SubscribeEvent

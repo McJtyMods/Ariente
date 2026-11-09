@@ -1,5 +1,6 @@
 package mcjty.ariente.blocks.utility;
 
+import mcjty.lib.client.AbstractDynamicBakedModel;
 import com.mojang.blaze3d.vertex.PoseStack;
 import com.mojang.blaze3d.vertex.VertexConsumer;
 import mcjty.ariente.Ariente;
@@ -8,19 +9,18 @@ import mcjty.ariente.client.BeamRenderTools;
 import mcjty.ariente.setup.Registration;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.renderer.MultiBufferSource;
-import net.minecraft.client.renderer.blockentity.BlockEntityRenderer;
+import mcjty.ariente.client.ExtractedBlockRenderer;
 import net.minecraft.client.renderer.blockentity.BlockEntityRendererProvider;
 import net.minecraft.client.renderer.blockentity.BlockEntityRenderers;
 import net.minecraft.client.renderer.texture.TextureAtlasSprite;
-import net.minecraft.resources.ResourceLocation;
-import net.minecraft.world.inventory.InventoryMenu;
+import net.minecraft.resources.Identifier;
 import net.minecraft.world.phys.AABB;
 import net.minecraft.world.phys.Vec3;
 
-public class ElevatorRenderer implements BlockEntityRenderer<ElevatorTile> {
+public class ElevatorRenderer extends ExtractedBlockRenderer<ElevatorTile> {
 
     protected BlockEntityRendererProvider.Context context;
-    public static final ResourceLocation ELEVATOR_BEAM = ResourceLocation.fromNamespaceAndPath(Ariente.MODID, "block/machines/elevator_beam");
+    public static final Identifier ELEVATOR_BEAM = Identifier.fromNamespaceAndPath(Ariente.MODID, "block/machines/elevator_beam");
 
     public ElevatorRenderer(BlockEntityRendererProvider.Context pContext) {
         context = pContext;
@@ -37,12 +37,12 @@ public class ElevatorRenderer implements BlockEntityRenderer<ElevatorTile> {
 
     @Override
     public void render(ElevatorTile te, float partialTicks, PoseStack matrixStack, MultiBufferSource buffer, int combinedLightIn, int combinedOverlayIn) {
-        TextureAtlasSprite sprite = Minecraft.getInstance().getTextureAtlas(InventoryMenu.BLOCK_ATLAS).apply(ELEVATOR_BEAM);
+        TextureAtlasSprite sprite = AbstractDynamicBakedModel.getTexture(ELEVATOR_BEAM);
 
         int tex = te.getBlockPos().getX();
         int tey = te.getBlockPos().getY();
         int tez = te.getBlockPos().getZ();
-        Vec3 projectedView = Minecraft.getInstance().gameRenderer.getMainCamera().getPosition().add(-tex, -tey, -tez);
+        Vec3 projectedView = Minecraft.getInstance().gameRenderer.getMainCamera().position().add(-tex, -tey, -tez);
         Vec3 player = new Vec3((float)projectedView.x, (float)projectedView.y, (float)projectedView.z);
 
         long tt = System.currentTimeMillis() / 100;
@@ -66,7 +66,7 @@ public class ElevatorRenderer implements BlockEntityRenderer<ElevatorTile> {
     }
 
     @Override
-    public boolean shouldRenderOffScreen(ElevatorTile te) {
+    public boolean shouldRenderOffScreen() {
         return true;
     }
 

@@ -2,12 +2,8 @@
   "type": "minecraft:crafting_shaped",
   "category": "misc",
   "key": {
-    "M": {
-      "item": "ariente:energy_sabre"
-    },
-    "x": {
-      "tag": "c:ingots/lithium"
-    }
+    "M": "ariente:energy_sabre",
+    "x": "#c:ingots/lithium"
   },
   "pattern": [
     "xxx",
@@ -15,7 +11,6 @@
     "xxx"
   ],
   "result": {
-    "count": 1,
     "id": "ariente:enhanced_energy_sabre"
   }
 }

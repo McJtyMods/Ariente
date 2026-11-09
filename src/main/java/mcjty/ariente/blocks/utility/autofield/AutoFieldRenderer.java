@@ -11,22 +11,22 @@ import mcjty.ariente.setup.Registration;
 import mcjty.lib.client.RenderSettings;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.renderer.MultiBufferSource;
-import net.minecraft.client.renderer.blockentity.BlockEntityRenderer;
+import mcjty.ariente.client.ExtractedBlockRenderer;
 import net.minecraft.client.renderer.blockentity.BlockEntityRendererProvider;
 import net.minecraft.client.renderer.blockentity.BlockEntityRenderers;
 import net.minecraft.client.renderer.texture.OverlayTexture;
 import net.minecraft.client.renderer.texture.TextureAtlasSprite;
-import net.minecraft.resources.ResourceLocation;
+import net.minecraft.resources.Identifier;
 import net.minecraft.world.phys.AABB;
 import net.minecraft.world.phys.Vec3;
 
-public class AutoFieldRenderer implements BlockEntityRenderer<AutoFieldTile> {
+public class AutoFieldRenderer extends ExtractedBlockRenderer<AutoFieldTile> {
 
-    public static final ResourceLocation BEAMS[] = new ResourceLocation[3];
+    public static final Identifier BEAMS[] = new Identifier[3];
     static {
-        BEAMS[0] = ResourceLocation.fromNamespaceAndPath(Ariente.MODID, "autobeam1");
-        BEAMS[1] = ResourceLocation.fromNamespaceAndPath(Ariente.MODID, "autobeam2");
-        BEAMS[2] = ResourceLocation.fromNamespaceAndPath(Ariente.MODID, "autobeam3");
+        BEAMS[0] = Identifier.fromNamespaceAndPath(Ariente.MODID, "autobeam1");
+        BEAMS[1] = Identifier.fromNamespaceAndPath(Ariente.MODID, "autobeam2");
+        BEAMS[2] = Identifier.fromNamespaceAndPath(Ariente.MODID, "autobeam3");
     }
 
     private Random random = new Random();
@@ -34,6 +34,11 @@ public class AutoFieldRenderer implements BlockEntityRenderer<AutoFieldTile> {
 
     public AutoFieldRenderer(BlockEntityRendererProvider.Context pContext) {
         context = pContext;
+    }
+
+    @Override
+    public AABB getRenderBoundingBox(AutoFieldTile tile) {
+        return tile.getRenderBoundingBox();
     }
 
     @Override
@@ -62,7 +67,7 @@ public class AutoFieldRenderer implements BlockEntityRenderer<AutoFieldTile> {
         int tex = te.getBlockPos().getX();
         int tey = te.getBlockPos().getY();
         int tez = te.getBlockPos().getZ();
-        Vec3 projectedView = mc.gameRenderer.getMainCamera().getPosition().add(-tex, -tey, -tez);
+        Vec3 projectedView = mc.gameRenderer.getMainCamera().position().add(-tex, -tey, -tez);
         Vec3 player = new Vec3((float)projectedView.x, (float)projectedView.y, (float)projectedView.z);
 
         float mx = (float) box.minX - tex;
@@ -161,7 +166,7 @@ public class AutoFieldRenderer implements BlockEntityRenderer<AutoFieldTile> {
     }
 
     @Override
-    public boolean shouldRenderOffScreen(AutoFieldTile te) {
+    public boolean shouldRenderOffScreen() {
         return true;
     }
 

@@ -2,15 +2,9 @@
   "type": "minecraft:crafting_shaped",
   "category": "misc",
   "key": {
-    "i": {
-      "tag": "c:ingots/iron"
-    },
-    "l": {
-      "tag": "c:ingots/silver"
-    },
-    "s": {
-      "tag": "c:ingots/platinum"
-    }
+    "i": "#c:ingots/iron",
+    "l": "#c:ingots/silver",
+    "s": "#c:ingots/platinum"
   },
   "pattern": [
     "iii",
@@ -18,7 +12,6 @@
     "lll"
   ],
   "result": {
-    "count": 1,
     "id": "ariente:constructor"
   }
 }

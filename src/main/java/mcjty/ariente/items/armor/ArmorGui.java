@@ -1,5 +1,7 @@
 package mcjty.ariente.items.armor;
 
+import net.minecraft.server.level.ServerLevel;
+
 import mcjty.ariente.Ariente;
 import mcjty.ariente.gui.CompactNumber;
 import mcjty.ariente.gui.GuiHelp;
@@ -194,7 +196,7 @@ public class ArmorGui {
         }
         ItemStack stack = player.getItemBySlot(slot);
         CompoundTag compound = ItemData.get(stack);
-        int index = compound.getInt(moduleItem.getType().getHotkeyKey());
+        int index = compound.getIntOr(moduleItem.getType().getHotkeyKey(), 0);
         index++;
         if (index >= 5) {
             index = 0;
@@ -211,7 +213,7 @@ public class ArmorGui {
         }
         ItemStack stack = player.getItemBySlot(slot);
         CompoundTag compound = ItemData.get(stack);
-        return compound.getInt(moduleItem.getType().getHotkeyKey());
+        return compound.getIntOr(moduleItem.getType().getHotkeyKey(), 0);
     }
 
     private static Boolean isModuleActivated(Player player, EquipmentSlot slot, ArmorModuleItem moduleItem) {
@@ -220,11 +222,11 @@ public class ArmorGui {
         }
         ItemStack stack = player.getItemBySlot(slot);
         CompoundTag compound = ItemData.get(stack);
-        return compound.getBoolean(moduleItem.getType().getModuleKey());
+        return compound.getBooleanOr(moduleItem.getType().getModuleKey(), false);
     }
 
     private static Boolean hasModuleAndCheckPlayerToo(Player player, EquipmentSlot slot, ArmorModuleItem moduleItem) {
-        if (!isSupportedEquipment(player.getItemBySlot(slot), slot)) {
+        if (!isSupportedEquipment(player, slot)) {
             return null;
         }
         if (hasModule(player, slot, moduleItem)) {
@@ -239,7 +241,7 @@ public class ArmorGui {
 
     private static Boolean hasModule(Player player, EquipmentSlot slot, ArmorModuleItem moduleItem) {
         ItemStack stack = player.getItemBySlot(slot);
-        if (!isSupportedEquipment(stack, slot) || !moduleItem.getType().supportsSlot(slot)) {
+        if (!isSupportedEquipment(player, slot) || !moduleItem.getType().supportsSlot(slot)) {
             return false;
         }
         if (!ItemData.has(stack)) {
@@ -256,7 +258,7 @@ public class ArmorGui {
         ItemStack stack = player.getItemBySlot(slot);
         CompoundTag compound = ItemData.get(stack);
         String key = moduleItem.getType().getModuleKey();
-        compound.putBoolean(key, !compound.getBoolean(key));
+        compound.putBoolean(key, !compound.getBooleanOr(key, false));
         ItemData.set(stack, compound);
 
         compound.putBoolean(moduleItem.getType().getWorkingKey(), false);
@@ -276,7 +278,7 @@ public class ArmorGui {
     }
 
     private static void toggleModuleInstall(Player player, EquipmentSlot slot, ArmorModuleItem moduleItem) {
-        if (!isSupportedEquipment(player.getItemBySlot(slot), slot) || !moduleItem.getType().supportsSlot(slot)) {
+        if (!isSupportedEquipment(player, slot) || !moduleItem.getType().supportsSlot(slot)) {
             return;
         }
         if (!hasModule(player, slot, moduleItem)) {
@@ -302,7 +304,7 @@ public class ArmorGui {
             // Remove installed module
             ItemStack module = new ItemStack(moduleItem);
             if (!player.getInventory().add(module)) {
-                player.spawnAtLocation(module, 1.05f);
+                player.spawnAtLocation((ServerLevel) player.level(), module, 1.05f);
             }
             ItemStack stack = player.getItemBySlot(slot);
             CompoundTag compound = ItemData.get(stack);
@@ -320,9 +322,10 @@ public class ArmorGui {
         }
     }
 
-    private static boolean isSupportedEquipment(ItemStack stack, EquipmentSlot slot) {
-        if (stack.getItem() instanceof PowerSuit suit) {
-            return suit.getEquipmentSlot() == slot;
+    private static boolean isSupportedEquipment(Player player, EquipmentSlot slot) {
+        ItemStack stack = player.getItemBySlot(slot);
+        if (stack.getItem() instanceof PowerSuit) {
+            return player.getEquipmentSlotForItem(stack) == slot;
         }
         return slot == EquipmentSlot.MAINHAND && ModuleSupport.isModularWeapon(stack);
     }

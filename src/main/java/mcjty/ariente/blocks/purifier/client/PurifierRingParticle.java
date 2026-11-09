@@ -5,16 +5,16 @@ import mcjty.ariente.config.PowerConfiguration;
 import net.minecraft.client.multiplayer.ClientLevel;
 import net.minecraft.client.particle.Particle;
 import net.minecraft.client.particle.ParticleProvider;
-import net.minecraft.client.particle.ParticleRenderType;
 import net.minecraft.client.particle.SpriteSet;
-import net.minecraft.client.particle.TextureSheetParticle;
-import net.minecraft.client.renderer.LightTexture;
+import net.minecraft.client.particle.SingleQuadParticle;
+import net.minecraft.util.LightCoordsUtil;
+import net.minecraft.util.RandomSource;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
 import net.minecraft.core.particles.SimpleParticleType;
 
 /** A red spark follows a circular path, rather than drifting away from its emission point. */
-public class PurifierRingParticle extends TextureSheetParticle {
+public class PurifierRingParticle extends SingleQuadParticle {
 
     private static final float SIZE_SCALE = 1.3f;
 
@@ -29,7 +29,7 @@ public class PurifierRingParticle extends TextureSheetParticle {
 
     public PurifierRingParticle(ClientLevel level, double x, double y, double z, double angle, double radius,
                                 double angularSpeed, Direction.Axis axis, SpriteSet sprites) {
-        super(level, x, y, z);
+        super(level, x, y, z, sprites.get(level.getRandom()));
         centerX = x;
         centerY = y;
         centerZ = z;
@@ -42,7 +42,7 @@ public class PurifierRingParticle extends TextureSheetParticle {
         hasPhysics = false;
         quadSize = .045f * SIZE_SCALE;
         setColor(1, .25f, .025f);
-        pickSprite(sprites);
+
         updateOrbit();
         xo = this.x;
         yo = this.y;
@@ -73,13 +73,13 @@ public class PurifierRingParticle extends TextureSheetParticle {
     }
 
     @Override
-    public int getLightColor(float partialTick) {
-        return LightTexture.FULL_BRIGHT;
+    public int getLightCoords(float partialTick) {
+        return LightCoordsUtil.FULL_BRIGHT;
     }
 
     @Override
-    public ParticleRenderType getRenderType() {
-        return ParticleRenderType.PARTICLE_SHEET_TRANSLUCENT;
+    public SingleQuadParticle.Layer getLayer() {
+        return SingleQuadParticle.Layer.TRANSLUCENT;
     }
 
     public static class Provider implements ParticleProvider<SimpleParticleType> {
@@ -94,7 +94,7 @@ public class PurifierRingParticle extends TextureSheetParticle {
 
         @Override
         public Particle createParticle(SimpleParticleType type, ClientLevel level, double x, double y, double z,
-                                       double angle, double radius, double angularSpeed) {
+                                       double angle, double radius, double angularSpeed, RandomSource random) {
             return new PurifierRingParticle(level, x, y, z, angle, radius, angularSpeed, axis, sprites);
         }
     }

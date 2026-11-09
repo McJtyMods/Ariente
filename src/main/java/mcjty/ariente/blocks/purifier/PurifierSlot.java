@@ -7,8 +7,6 @@ import mcjty.hologui.gui.components.HoloSlots;
 import net.minecraft.client.renderer.MultiBufferSource;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.ItemStack;
-import net.neoforged.api.distmarker.Dist;
-import net.neoforged.api.distmarker.OnlyIn;
 import net.neoforged.neoforge.items.IItemHandler;
 
 import static mcjty.ariente.gui.InventoryLayout.CELL;
@@ -26,7 +24,7 @@ public class PurifierSlot extends HoloSlots {
     }
 
     @Override
-    @OnlyIn(Dist.CLIENT)
+
     public void render(PoseStack poses, MultiBufferSource buffer, Player player, IHoloGuiEntity holo, double cursorX, double cursorY) {
         ItemStack stack = items.getStackInSlot(0);
         InventoryRenderer.cell(poses, buffer, x, y, stack, stack.getCount(), selected == 0 || isInside(cursorX, cursorY));

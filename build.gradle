@@ -14,7 +14,7 @@ plugins {
     id 'eclipse'
     id 'idea'
     id 'maven-publish'
-    id 'net.neoforged.gradle.userdev' version '7.1.4'
+    id 'net.neoforged.gradle.userdev' version '7.1.38'
 }
 
 apply plugin: 'com.hypherionmc.modutils.modpublisher'
@@ -22,14 +22,17 @@ apply plugin: 'com.hypherionmc.modutils.modpublisher'
 def localGradleTools = [
         project.findProperty('gradletools_path') ? file(project.property('gradletools_path')) : null,
         rootProject.file('gradletools.gradle'),
-        file('../gradletools.gradle')
-].find { it != null && it.exists() }
-apply from: localGradleTools ?: 'https://raw.githubusercontent.com/McJtyMods/MultiWorkspace/1.21_neo/gradletools.gradle'
+        file('../Multi_neo/gradletools.gradle'),
+        file('gradletools.gradle')
+].find { it != null && it.isFile() }
+apply from: localGradleTools ?: 'https://raw.githubusercontent.com/McJtyMods/MultiWorkspace/26.1.2_neo/gradletools.gradle'
+
 
 
 group = "com.github.mcjty"
-archivesBaseName = "ariente"
-java.toolchain.languageVersion = JavaLanguageVersion.of(21)
+base.archivesName = "ariente"
+java.toolchain.languageVersion = JavaLanguageVersion.of(25)
+neo_version = '26.1.2.99'
 
 if (System.getenv('BUILD_NUMBER') != null) {
     version += "-${System.getenv('BUILD_NUMBER')}"
@@ -74,7 +77,7 @@ publishing {
         mavenJava(MavenPublication) {
             from components.java
             artifact tasks.apiJar
-            artifactId = project.archivesBaseName
+            artifactId = base.archivesName.get()
         }
     }
     repositories {
@@ -88,12 +91,6 @@ publishing {
     }
 }
 
-subsystems {
-    parchment {
-        minecraftVersion = "${parchment_minecraft_version}"
-        mappingsVersion = "${parchment_version}"
-    }
-}
 
 // NeoGradle consumes local mod source sets in development, including transitive mod dependencies.
 def localMods = ['McJtyLib', 'TheOneProbe', 'ModHoloGui']
@@ -121,5 +118,14 @@ runs {
     gameTestServer {
         systemProperty "neoforge.enabledGameTestNamespaces", project.mod_id
         modSource sourceSets.gameTest
+    }
+}
+
+// FML must load the included checkouts, including fixtures, instead of choosing duplicate dependency jars.
+tasks.withType(JavaExec).configureEach {
+    doFirst {
+        def sourceJars = localMods.collect { findProject(":" + it) }.findAll { it != null }
+                .collect { it.tasks.named('jar', Jar).get().archiveFile.get().asFile } as Set
+        classpath = classpath.filter { !sourceJars.contains(it) }
     }
 }

@@ -1,6 +1,21 @@
 {
   "variants": {
-    "": {
+    "facing=down": {
+      "model": "ariente:block/decorative/marble_smooth_blue"
+    },
+    "facing=east": {
+      "model": "ariente:block/decorative/marble_smooth_blue"
+    },
+    "facing=north": {
+      "model": "ariente:block/decorative/marble_smooth_blue"
+    },
+    "facing=south": {
+      "model": "ariente:block/decorative/marble_smooth_blue"
+    },
+    "facing=up": {
+      "model": "ariente:block/decorative/marble_smooth_blue"
+    },
+    "facing=west": {
       "model": "ariente:block/decorative/marble_smooth_blue"
     }
   }

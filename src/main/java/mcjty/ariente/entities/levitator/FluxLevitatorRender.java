@@ -1,19 +1,20 @@
 package mcjty.ariente.entities.levitator;
 
+import mcjty.ariente.client.ExtractedEntityRenderer;
 import com.mojang.blaze3d.vertex.PoseStack;
 import com.mojang.math.Axis;
 import net.minecraft.client.renderer.MultiBufferSource;
 import net.minecraft.client.renderer.entity.EntityRenderer;
 import net.minecraft.client.renderer.entity.EntityRendererProvider;
 import net.minecraft.client.renderer.texture.OverlayTexture;
-import net.minecraft.resources.ResourceLocation;
+import net.minecraft.resources.Identifier;
 import net.minecraft.util.Mth;
 import net.minecraft.world.phys.Vec3;
 
-public class FluxLevitatorRender extends EntityRenderer<FluxLevitatorEntity> {
+public class FluxLevitatorRender extends ExtractedEntityRenderer<FluxLevitatorEntity> {
 
-    private static final ResourceLocation TEXTURE = ResourceLocation.parse("ariente:textures/entity/flux_levitator.png");
-    private final FluxLevitatorModel<FluxLevitatorEntity> model = new FluxLevitatorModel<>();
+    private static final Identifier TEXTURE = Identifier.parse("ariente:textures/entity/flux_levitator.png");
+    private final FluxLevitatorModel model = new FluxLevitatorModel();
 
     public FluxLevitatorRender(EntityRendererProvider.Context renderManagerIn) {
         super(renderManagerIn);
@@ -74,14 +75,14 @@ public class FluxLevitatorRender extends EntityRenderer<FluxLevitatorEntity> {
     }
 
     @Override
-    public ResourceLocation getTextureLocation(FluxLevitatorEntity entity) {
+    public Identifier getTextureLocation(FluxLevitatorEntity entity) {
         return TEXTURE;
     }
 
     public static class Factory implements EntityRendererProvider<FluxLevitatorEntity> {
 
         @Override
-        public EntityRenderer<FluxLevitatorEntity> create(EntityRendererProvider.Context manager) {
+        public EntityRenderer<FluxLevitatorEntity, ?> create(EntityRendererProvider.Context manager) {
             return new FluxLevitatorRender(manager);
         }
     }

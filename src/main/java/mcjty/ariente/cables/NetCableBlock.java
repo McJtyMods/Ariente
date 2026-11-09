@@ -1,5 +1,6 @@
 package mcjty.ariente.cables;
 
+import net.minecraft.world.level.block.state.BlockBehaviour;
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 import mcjty.lib.compat.theoneprobe.TOPDriver;
@@ -16,12 +17,12 @@ public class NetCableBlock extends GenericCableBlock {
 
     public static final String NETCABLE = "netcable";
 
-    public NetCableBlock() {
-        this(MapColor.WOOL);
+    public NetCableBlock(BlockBehaviour.Properties properties) {
+        this(properties, MapColor.WOOL);
     }
 
-    public NetCableBlock(MapColor material) {
-        super(material);
+    public NetCableBlock(BlockBehaviour.Properties properties, MapColor material) {
+        super(properties, material);
     }
 
     @Override

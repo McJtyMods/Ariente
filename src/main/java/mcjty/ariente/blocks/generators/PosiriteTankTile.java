@@ -1,8 +1,10 @@
 package mcjty.ariente.blocks.generators;
 
+import net.minecraft.world.level.block.state.BlockBehaviour;
+import net.minecraft.world.level.material.MapColor;
+import net.minecraft.world.level.block.SoundType;
 import mcjty.ariente.api.IAlarmMode;
 import mcjty.ariente.blocks.ArienteBlockEntity;
-import mcjty.ariente.setup.Registration;
 import mcjty.hologui.api.IGuiComponent;
 import mcjty.hologui.api.IGuiComponentRegistry;
 import mcjty.hologui.api.IGuiTile;
@@ -20,11 +22,11 @@ import static mcjty.lib.builder.TooltipBuilder.key;
 public class PosiriteTankTile extends ArienteBlockEntity implements IGuiTile, IAlarmMode {
 
     public PosiriteTankTile(BlockPos pos, BlockState state) {
-        super(Registration.POSIRITE_TANK_TILE.get(), pos, state);
+        super(mcjty.ariente.setup.Registration.POSIRITE_TANK_TILE.get(), pos, state);
     }
 
-    public static BaseBlock createBlock() {
-        return new TankBlock(new BlockBuilder()
+    public static BaseBlock createBlock(BlockBehaviour.Properties properties) {
+        return new TankBlock(new BlockBuilder().properties(properties.mapColor(MapColor.METAL).strength(2.0f).requiresCorrectToolForDrops().sound(SoundType.METAL))
                 .info(key("message.ariente.shiftmessage"))
                 .infoShift(header())
                 .topDriver(DRIVER)
@@ -35,7 +37,7 @@ public class PosiriteTankTile extends ArienteBlockEntity implements IGuiTile, IA
     public boolean isWorking() {
         BlockPos p = worldPosition.below();
         BlockState state = level.getBlockState(p);
-        while (state.getBlock() == Registration.POSIRITE_TANK.get()) {
+        while (state.getBlock() == mcjty.ariente.setup.Registration.POSIRITE_TANK.get()) {
             p = p.below();
             state = level.getBlockState(p);
         }

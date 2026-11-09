@@ -3,13 +3,13 @@ package mcjty.ariente.entities.levitator;
 import net.minecraft.network.RegistryFriendlyByteBuf;
 import net.minecraft.network.codec.StreamCodec;
 import net.minecraft.network.protocol.common.custom.CustomPacketPayload;
-import net.minecraft.resources.ResourceLocation;
+import net.minecraft.resources.Identifier;
 import net.minecraft.server.level.ServerPlayer;
 import net.neoforged.neoforge.network.handling.IPayloadContext;
 
 public class PacketLevitatorInput implements CustomPacketPayload {
 
-    public static final Type<PacketLevitatorInput> TYPE = new Type<>(ResourceLocation.fromNamespaceAndPath("ariente", "packet_levitator_input"));
+    public static final Type<PacketLevitatorInput> TYPE = new Type<>(Identifier.fromNamespaceAndPath("ariente", "packet_levitator_input"));
     public static final StreamCodec<RegistryFriendlyByteBuf, PacketLevitatorInput> CODEC = StreamCodec.ofMember(PacketLevitatorInput::toBytes, PacketLevitatorInput::new);
 
     @Override

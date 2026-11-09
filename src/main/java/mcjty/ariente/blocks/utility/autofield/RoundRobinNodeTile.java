@@ -3,7 +3,6 @@ package mcjty.ariente.blocks.utility.autofield;
 import mcjty.ariente.Ariente;
 import mcjty.ariente.blocks.ArienteBlockEntity;
 import mcjty.ariente.multipart.MultipartTE;
-import mcjty.ariente.setup.Registration;
 import mcjty.lib.multipart.PartSlot;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
@@ -56,7 +55,7 @@ public class RoundRobinNodeTile extends ArienteBlockEntity {
     private static final AABB AABB_EAST_US = new AABB(1-T, 0.5+A, 0.5+A,    1, 1.0-A, 1.0-A);
 
     public RoundRobinNodeTile(BlockPos pos, BlockState state) {
-        super(Registration.ROUND_ROBIN_TILE.get(), pos, state);
+        super(mcjty.ariente.setup.Registration.ROUND_ROBIN_TILE.get(), pos, state);
     }
 
     @Override
@@ -191,7 +190,7 @@ public class RoundRobinNodeTile extends ArienteBlockEntity {
     @Override
     public void loadAdditional(CompoundTag tagCompound, HolderLookup.Provider provider) {
         super.loadAdditional(tagCompound, provider);
-        index = tagCompound.getInt("index");
+        index = tagCompound.getIntOr("index", 0);
     }
 
     @Override

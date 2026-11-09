@@ -12,6 +12,7 @@ import net.minecraft.world.phys.HitResult;
 import net.minecraft.world.phys.Vec3;
 
 /** The held model and projectile share a muzzle and sightline, including nearby obstructions. */
+
 public record LanceAim(Vec3 muzzle, Vec3 direction) {
 
     public static LanceAim calculate(LivingEntity shooter, Vec3 direction) {
@@ -45,7 +46,7 @@ public record LanceAim(Vec3 muzzle, Vec3 direction) {
         if (target instanceof BlockHitResult block && target.getType() == HitResult.Type.BLOCK) {
             // Aim just inside the face so a converging, offset shot cannot skim past
             // an exact block edge because of floating-point rounding.
-            sight = sight.subtract(Vec3.atLowerCornerOf(block.getDirection().getNormal()).scale(.001D));
+            sight = sight.subtract(Vec3.atLowerCornerOf(block.getDirection().getUnitVec3i()).scale(.001D));
         }
         Vec3 shotDirection = sight.subtract(muzzle).normalize();
         return new LanceAim(muzzle, shotDirection.lengthSqr() < 1.0E-7D ? aim : shotDirection);

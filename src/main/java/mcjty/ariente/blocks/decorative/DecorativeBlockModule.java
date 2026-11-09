@@ -1,12 +1,13 @@
 package mcjty.ariente.blocks.decorative;
 
+import net.minecraft.world.level.block.SoundType;
+
 import com.google.common.collect.ImmutableMap;
 import java.util.Map;
 import java.util.function.Supplier;
 import mcjty.ariente.api.MarbleColor;
 import mcjty.ariente.api.MarbleType;
 import mcjty.ariente.api.TechType;
-import mcjty.ariente.setup.Registration;
 import mcjty.lib.blocks.BaseBlock;
 import mcjty.lib.builder.BlockBuilder;
 import mcjty.lib.modules.IModule;
@@ -57,7 +58,7 @@ public class DecorativeBlockModule implements IModule {
         ImmutableMap.Builder<T, Supplier<BaseBlock>> builder = new ImmutableMap.Builder<>();
 
         for (T variant: variants) {
-            builder.put(variant, BLOCKS.register(prefix + variant.getSerializedName(), () -> new BaseBlock(new BlockBuilder())));
+            builder.put(variant, BLOCKS.registerBlock(prefix + variant.getSerializedName(), properties -> new BaseBlock(new BlockBuilder().properties(properties.mapColor(MapColor.METAL).strength(2).requiresCorrectToolForDrops().sound(SoundType.METAL)))));
         }
 
         return builder.build();
@@ -67,7 +68,7 @@ public class DecorativeBlockModule implements IModule {
         ImmutableMap.Builder<T, Supplier<SlabBlock>> builder = new ImmutableMap.Builder<>();
 
         for (T variant: variants) {
-            builder.put(variant, BLOCKS.register(prefix + variant.getSerializedName(), () -> new SlabBlock(properties)));
+            builder.put(variant, BLOCKS.registerBlock(prefix + variant.getSerializedName(), registered -> new SlabBlock(registered.mapColor(MapColor.STONE).strength(2, 4))));
         }
 
         return builder.build();
@@ -78,7 +79,7 @@ public class DecorativeBlockModule implements IModule {
 
         for (T variant: variants) {
             String name = prefix + variant.getSerializedName();
-            builder.put(variant, ITEMS.register(name, () -> new BlockItem(blocks.get(variant).get(), Registration.createStandardProperties())));
+            builder.put(variant, ITEMS.registerItem(name, properties -> new BlockItem(blocks.get(variant).get(), properties.useBlockDescriptionPrefix())));
         }
 
         return builder.build();

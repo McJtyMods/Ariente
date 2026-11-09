@@ -1,5 +1,7 @@
 package mcjty.ariente.multipart;
 
+import net.minecraft.world.level.storage.TagValueOutput;
+import net.minecraft.util.ProblemReporter;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
@@ -38,7 +40,6 @@ import net.minecraft.world.level.storage.loot.LootParams;
 import net.minecraft.world.level.storage.loot.parameters.LootContextParams;
 import net.minecraft.world.phys.AABB;
 import net.minecraft.world.phys.BlockHitResult;
-import net.minecraft.world.phys.HitResult;
 import net.minecraft.world.phys.Vec3;
 import net.minecraft.world.phys.shapes.BooleanOp;
 import net.minecraft.world.phys.shapes.CollisionContext;
@@ -50,8 +51,8 @@ public class MultipartBlock extends Block implements WailaInfoProvider, TOPInfoP
     public static final AABB AABB_EMPTY = new AABB(0, 0, 0, 0, 0, 0);
     public static final AABB AABB_CENTER = new AABB(.4, .4, .4, .6, .6, .6);
 
-    public MultipartBlock() {
-        super(BlockBehaviour.Properties.of().mapColor(MapColor.METAL)
+    public MultipartBlock(BlockBehaviour.Properties properties) {
+        super(properties.mapColor(MapColor.METAL)
                 .strength(2.0f)
                 .noOcclusion()
                 .sound(SoundType.METAL));
@@ -59,7 +60,7 @@ public class MultipartBlock extends Block implements WailaInfoProvider, TOPInfoP
 
     @Override
     public RenderShape getRenderShape(BlockState state) {
-        return RenderShape.ENTITYBLOCK_ANIMATED;
+        return RenderShape.INVISIBLE;
     }
 
     @Nullable
@@ -69,8 +70,8 @@ public class MultipartBlock extends Block implements WailaInfoProvider, TOPInfoP
     }
 
     @Override
-    public ItemStack getCloneItemStack(BlockState state, HitResult target, LevelReader world, BlockPos pos, Player player) {
-        MultipartTE.Part part = getHitPart(state, world, pos, player.getEyePosition(0), target.getLocation());
+    public ItemStack getCloneItemStack(LevelReader world, BlockPos pos, BlockState state, boolean includeData, Player player) {
+        MultipartTE.Part part = getHitPart(state, world, pos, player.getEyePosition(0), player.getEyePosition(0).add(player.getLookAngle().scale(player.blockInteractionRange())));
         if (part != null) {
             return new ItemStack(part.getState().getBlock().asItem());
         } else {
@@ -81,7 +82,7 @@ public class MultipartBlock extends Block implements WailaInfoProvider, TOPInfoP
     @Nonnull
     @Override
     @Deprecated
-    public ItemStack getCloneItemStack(@Nonnull LevelReader worldIn, @Nonnull BlockPos pos, @Nonnull BlockState state) {
+    public ItemStack getCloneItemStack(@Nonnull LevelReader worldIn, @Nonnull BlockPos pos, @Nonnull BlockState state, boolean includeData) {
         return ItemStack.EMPTY;
     }
 
@@ -109,8 +110,8 @@ public class MultipartBlock extends Block implements WailaInfoProvider, TOPInfoP
     @Nonnull
     @Override
     @Deprecated
-    public VoxelShape getOcclusionShape(@Nonnull BlockState state, @Nonnull BlockGetter world, @Nonnull BlockPos pos) {
-        return combinePartShapes(world, pos, s -> s.getOcclusionShape(world, pos));
+    public VoxelShape getOcclusionShape(@Nonnull BlockState state) {
+        return Shapes.empty();
     }
 
     private VoxelShape combinePartShapes(BlockGetter world, BlockPos pos, Function<BlockState, VoxelShape> shapeGetter) {
@@ -186,14 +187,16 @@ public class MultipartBlock extends Block implements WailaInfoProvider, TOPInfoP
         ItemStack stack = new ItemStack(part.getState().getBlock());
         BlockEntity child = part.getBlockEntity();
         if (child != null && !stack.isEmpty()) {
-            BlockItem.setBlockEntityData(stack, child.getType(), child.saveWithoutMetadata(child.getLevel().registryAccess()));
+            var output = TagValueOutput.createWithContext(ProblemReporter.DISCARDING, child.getLevel().registryAccess());
+            output.store(child.saveWithoutMetadata(child.getLevel().registryAccess()));
+            BlockItem.setBlockEntityData(stack, child.getType(), output);
         }
         return stack;
     }
 
     @Override
-    public boolean onDestroyedByPlayer(BlockState state, Level world, BlockPos pos, Player player, boolean willHarvest, FluidState fluid) {
-        if (world.isClientSide || !(world.getBlockEntity(pos) instanceof MultipartTE multipart)) {
+    public boolean onDestroyedByPlayer(BlockState state, Level world, BlockPos pos, Player player, ItemStack tool, boolean willHarvest, FluidState fluid) {
+        if (world.isClientSide() || !(world.getBlockEntity(pos) instanceof MultipartTE multipart)) {
             return false;
         }
         Vec3 start = player.getEyePosition();
@@ -219,18 +222,6 @@ public class MultipartBlock extends Block implements WailaInfoProvider, TOPInfoP
             multipart.getParts().values().forEach(part -> drops.add(getPartStack(part)));
         }
         return drops;
-    }
-
-    @Override
-    public void onRemove(BlockState state, Level level, BlockPos pos, BlockState next, boolean moving) {
-        if (!state.is(next.getBlock()) && level.getBlockEntity(pos) instanceof MultipartTE multipart) {
-            for (MultipartTE.Part part : multipart.getParts().values()) {
-                if (part.getBlockEntity() instanceof GenericTileEntity generic) {
-                    generic.onReplaced(level, pos, part.getState(), next);
-                }
-            }
-        }
-        super.onRemove(state, level, pos, next, moving);
     }
 
     @Override

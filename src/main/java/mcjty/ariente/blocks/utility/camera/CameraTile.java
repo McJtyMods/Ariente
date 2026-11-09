@@ -1,11 +1,12 @@
 package mcjty.ariente.blocks.utility.camera;
 
+import net.minecraft.world.level.block.state.BlockBehaviour;
+import net.minecraft.world.level.block.SoundType;
 import java.util.HashMap;
 import java.util.Map;
 import mcjty.ariente.Ariente;
 import mcjty.ariente.blocks.ArienteBlockEntity;
 import mcjty.ariente.gui.HoloGuiTools;
-import mcjty.ariente.setup.Registration;
 import mcjty.hologui.api.IGuiComponent;
 import mcjty.hologui.api.IGuiComponentRegistry;
 import mcjty.hologui.api.IGuiTile;
@@ -15,7 +16,7 @@ import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
 import net.minecraft.core.HolderLookup;
 import net.minecraft.nbt.CompoundTag;
-import net.minecraft.resources.ResourceLocation;
+import net.minecraft.resources.Identifier;
 import net.minecraft.world.InteractionHand;
 import net.minecraft.world.InteractionResult;
 import net.minecraft.world.entity.player.Player;
@@ -37,12 +38,12 @@ public class CameraTile extends ArienteBlockEntity implements IGuiTile {
     private final Map<Integer, Capture> captures = new HashMap<>();
 
     public CameraTile(BlockPos pos, BlockState state) {
-        super(Registration.CAMERA_TILE.get(), pos, state);
+        super(mcjty.ariente.setup.Registration.CAMERA_TILE.get(), pos, state);
     }
 
-    public static BaseBlock createBlock() {
-        return new BaseBlock(new BlockBuilder()
-                .properties(Block.Properties.of().mapColor(MapColor.METAL).strength(2).noOcclusion())
+    public static BaseBlock createBlock(BlockBehaviour.Properties properties) {
+        return new BaseBlock(new BlockBuilder().properties(properties.mapColor(MapColor.METAL).strength(2.0f).requiresCorrectToolForDrops().sound(SoundType.METAL))
+                .properties(properties.mapColor(MapColor.METAL).strength(2).noOcclusion())
                 .tileEntitySupplier(CameraTile::new)) {
 
             @Override
@@ -76,7 +77,7 @@ public class CameraTile extends ArienteBlockEntity implements IGuiTile {
         if (this.live != live) {
             this.live = live;
             captures.clear();
-            if (level != null && !level.isClientSide) {
+            if (level != null && !level.isClientSide()) {
                 markDirtyClient();
             }
         }
@@ -90,7 +91,7 @@ public class CameraTile extends ArienteBlockEntity implements IGuiTile {
 
     @Override
     public IGuiComponent<?> createGui(String tag, IGuiComponentRegistry registry) {
-        return HoloGuiTools.createPanelWithHelp(registry, ResourceLocation.fromNamespaceAndPath(Ariente.MODID, "construction/displays"))
+        return HoloGuiTools.createPanelWithHelp(registry, Identifier.fromNamespaceAndPath(Ariente.MODID, "construction/displays"))
                 .add(registry.text(.3, 0, 7.2, 1).text("CAMERA").scale(.65f).color(0x76eaff))
                 .add(registry.textChoice(.3, 1.2, 7.2, .9).name("camera_mode").scale(.45f)
                         .addText("Mode: Holographic").addText("Mode: Live")
@@ -115,7 +116,7 @@ public class CameraTile extends ArienteBlockEntity implements IGuiTile {
     @Override
     public void loadAdditional(CompoundTag tag, HolderLookup.Provider provider) {
         super.loadAdditional(tag, provider);
-        live = tag.getBoolean("LiveCamera");
+        live = tag.getBooleanOr("LiveCamera", false);
         captures.clear();
     }
 
@@ -126,11 +127,12 @@ public class CameraTile extends ArienteBlockEntity implements IGuiTile {
 
     @Override
     public void loadClientDataFromNBT(CompoundTag tag, HolderLookup.Provider provider) {
-        live = tag.getBoolean("LiveCamera");
+        live = tag.getBooleanOr("LiveCamera", false);
         captures.clear();
     }
 
     /** Demand driven: linked displays share one capture per second; the camera never ticks or loads chunks. */
+
     public CompoundTag capture() {
         return capture(CameraCapture.DEFAULT_RANGE);
     }
@@ -152,7 +154,7 @@ public class CameraTile extends ArienteBlockEntity implements IGuiTile {
                 data = new CompoundTag();
                 data.putBoolean("Live", true);
                 data.putLong("Camera", worldPosition.asLong());
-                data.putString("Dimension", level.dimension().location().toString());
+                data.putString("Dimension", level.dimension().identifier().toString());
                 data.putInt("Facing", getBlockState().getValue(BlockStateProperties.FACING).get3DDataValue());
                 data.putInt("Range", range);
             } else {

@@ -1,8 +1,12 @@
 package mcjty.ariente.blocks.utility.autofield;
 
+import mcjty.ariente.items.ItemData;
+
+import net.minecraft.world.level.block.state.BlockBehaviour;
+import net.minecraft.world.level.material.MapColor;
+import net.minecraft.world.level.block.SoundType;
 import mcjty.ariente.gui.GuiHelp;
 import mcjty.ariente.gui.PlayerInventoryPanel;
-import mcjty.ariente.setup.Registration;
 import mcjty.hologui.api.IGuiComponent;
 import mcjty.hologui.api.IGuiComponentRegistry;
 import mcjty.hologui.api.StyledColor;
@@ -12,7 +16,6 @@ import mcjty.lib.varia.ItemStackList;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.HolderLookup;
 import net.minecraft.nbt.CompoundTag;
-import net.minecraft.world.ContainerHelper;
 import net.minecraft.world.level.block.state.BlockState;
 import org.apache.commons.lang3.tuple.Pair;
 
@@ -27,11 +30,11 @@ public class InputItemNodeTile extends AbstractItemNodeTile {
     private ItemFilterCategory inputCategory = ItemFilterCategory.ALL;
 
     public InputItemNodeTile(BlockPos pos, BlockState state) {
-        super(Registration.INPUT_ITEM_TILE.get(), pos, state);
+        super(mcjty.ariente.setup.Registration.INPUT_ITEM_TILE.get(), pos, state);
     }
 
-    public static BaseNodeBlock createBlock() {
-        return new BaseNodeBlock(new BlockBuilder()
+    public static BaseNodeBlock createBlock(BlockBehaviour.Properties properties) {
+        return new BaseNodeBlock(new BlockBuilder().properties(properties.mapColor(MapColor.METAL).strength(2.0f).requiresCorrectToolForDrops().sound(SoundType.METAL))
                 .tileEntitySupplier(InputItemNodeTile::new));
     }
 
@@ -39,14 +42,14 @@ public class InputItemNodeTile extends AbstractItemNodeTile {
     public void loadAdditional(CompoundTag tagCompound, HolderLookup.Provider provider) {
         super.loadAdditional(tagCompound, provider);
         inputFilter.clear();
-        CompoundTag info = tagCompound.getCompound("Info");
-        inputCategory = ItemFilterCategory.fromId(info.getString("inCategory"));
-        ContainerHelper.loadAllItems(info.getCompound("input"), inputFilter, provider);
+        CompoundTag info = tagCompound.getCompoundOrEmpty("Info");
+        inputCategory = ItemFilterCategory.fromId(info.getStringOr("inCategory", ""));
+        ItemData.loadItems(info.getCompoundOrEmpty("input"), inputFilter, provider);
         if (!info.isEmpty()) {
-            inputDamage = info.getBoolean("inDamage");
-            inputNbt = info.getBoolean("inNBT");
-            inputTags = info.getBoolean("inOre");
-            inputBlacklist = info.getBoolean("inBlacklist");
+            inputDamage = info.getBooleanOr("inDamage", false);
+            inputNbt = info.getBooleanOr("inNBT", false);
+            inputTags = info.getBooleanOr("inOre", false);
+            inputBlacklist = info.getBooleanOr("inBlacklist", false);
         }
     }
 
@@ -54,7 +57,7 @@ public class InputItemNodeTile extends AbstractItemNodeTile {
     public void saveAdditional(CompoundTag tagCompound, HolderLookup.Provider provider) {
         super.saveAdditional(tagCompound, provider);
         CompoundTag info = getOrCreateInfo(tagCompound);
-        info.put("input", ContainerHelper.saveAllItems(new CompoundTag(), inputFilter, provider));
+        info.put("input", ItemData.saveItems(inputFilter, provider));
         info.putBoolean("inDamage", inputDamage);
         info.putBoolean("inNBT", inputNbt);
         // Keep the legacy key so existing tag filters retain their settings.

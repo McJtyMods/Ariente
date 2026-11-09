@@ -1,5 +1,6 @@
 package mcjty.ariente.blocks.utility.autofield;
 
+import mcjty.lib.varia.CapabilityTools;
 import java.util.Optional;
 import javax.annotation.Nonnull;
 import mcjty.ariente.Ariente;
@@ -227,11 +228,11 @@ public abstract class AbstractNodeTile extends ArienteBlockEntity implements IGu
     @Override
     public void loadAdditional(CompoundTag tagCompound, HolderLookup.Provider provider) {
         super.loadAdditional(tagCompound, provider);
-        CompoundTag info = tagCompound.getCompound("Info");
+        CompoundTag info = tagCompound.getCompoundOrEmpty("Info");
         if (!info.isEmpty()) {
             for (int i = 0; i < filters.length; i++) {
                 if (info.contains("f" + i)) {
-                    filters[i] = DyeColor.values()[info.getInt("f" + i)];
+                    filters[i] = DyeColor.values()[info.getIntOr("f" + i, 0)];
                 } else {
                     filters[i] = null;
                 }
@@ -324,7 +325,7 @@ public abstract class AbstractNodeTile extends ArienteBlockEntity implements IGu
             }
             BlockEntity otherTe = level.getBlockEntity(otherPos);
             if (otherTe != null) {
-                return Optional.ofNullable(level.getCapability(Capabilities.ItemHandler.BLOCK, otherPos, mainDirection.getOpposite()));
+                return Optional.ofNullable(CapabilityTools.itemHandler(level.getCapability(Capabilities.Item.BLOCK, otherPos, mainDirection.getOpposite())));
             }
         }
         return Optional.empty();

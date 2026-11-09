@@ -18,7 +18,7 @@ public class BlueprintExchangeEvents {
         Player player = event.getEntity();
         ItemStack crafted = event.getCrafting();
         CompoundTag data = BlueprintExchangeRecipe.previewData(crafted);
-        if (player.level().isClientSide || data == null) {
+        if (player.level().isClientSide() || data == null) {
             return;
         }
         // Shift-click delivers a copy before firing this event with another copy of the result.

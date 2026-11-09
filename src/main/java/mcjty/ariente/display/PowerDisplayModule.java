@@ -32,11 +32,11 @@ public class PowerDisplayModule implements DisplayModuleType {
 
     public static boolean flag(ItemStack stack, String key, boolean fallback) {
         CompoundTag config = DisplayModuleItem.config(stack);
-        return config.contains(key) ? config.getBoolean(key) : fallback;
+        return config.contains(key) ? config.getBooleanOr(key, false) : fallback;
     }
 
     public static int mode(ItemStack stack) {
-        return Mth.clamp(DisplayModuleItem.config(stack).getInt("Mode"), 0, 2);
+        return Mth.clamp(DisplayModuleItem.config(stack).getIntOr("Mode", 0), 0, 2);
     }
 
     @Override
@@ -107,9 +107,9 @@ public class PowerDisplayModule implements DisplayModuleType {
         }
         if (mode(stack) == 2) {
             // One sample per second; history is bounded and never saved to chunk NBT.
-            long value = flag(stack, "Usage", true) && data.contains("Usage") ? data.getLong("Usage")
-                    : data.contains("Output") ? data.getLong("Output") : data.getLong("Available");
-            long[] old = previous.getLongArray("History");
+            long value = flag(stack, "Usage", true) && data.contains("Usage") ? data.getLongOr("Usage", 0)
+                    : data.contains("Output") ? data.getLongOr("Output", 0) : data.getLongOr("Available", 0);
+            long[] old = previous.getLongArray("History").orElseGet(() -> new long[0]);
             int length = Math.min(32, old.length + 1);
             long[] history = new long[length];
             int keep = Math.min(old.length, length - 1);

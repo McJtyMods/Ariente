@@ -1,10 +1,13 @@
 package mcjty.ariente.blocks.utility;
 
+import net.minecraft.world.level.storage.ValueInput;
+import net.minecraft.world.level.block.state.BlockBehaviour;
+import net.minecraft.world.level.material.MapColor;
+import net.minecraft.world.level.block.SoundType;
 import mcjty.ariente.api.AlarmType;
 import mcjty.ariente.api.IAlarmTile;
 import mcjty.ariente.blocks.ArienteBlockEntity;
 import mcjty.ariente.blocks.MountedPanelShapes;
-import mcjty.ariente.setup.Registration;
 import mcjty.ariente.sounds.ModSounds;
 import mcjty.lib.blocks.BaseBlock;
 import mcjty.lib.builder.BlockBuilder;
@@ -12,7 +15,6 @@ import net.minecraft.core.BlockPos;
 import net.minecraft.core.HolderLookup;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.network.Connection;
-import net.minecraft.network.protocol.game.ClientboundBlockEntityDataPacket;
 import net.minecraft.sounds.SoundSource;
 import net.minecraft.world.level.BlockGetter;
 import net.minecraft.world.level.block.Block;
@@ -37,11 +39,11 @@ public class AlarmTile extends ArienteBlockEntity implements IAlarmTile {
     private int soundTicker = 0;
 
     public AlarmTile(BlockPos pos, BlockState state) {
-        super(Registration.ALARM_TILE.get(), pos, state);
+        super(mcjty.ariente.setup.Registration.ALARM_TILE.get(), pos, state);
     }
 
-    public static BaseBlock createBlock() {
-        return new BaseBlock(new BlockBuilder()
+    public static BaseBlock createBlock(BlockBehaviour.Properties properties) {
+        return new BaseBlock(new BlockBuilder().properties(properties.mapColor(MapColor.METAL).strength(2.0f).requiresCorrectToolForDrops().sound(SoundType.METAL))
                 .info(key("message.ariente.shiftmessage"))
                 .infoShift(header())
                 .topDriver(DRIVER)
@@ -85,11 +87,11 @@ public class AlarmTile extends ArienteBlockEntity implements IAlarmTile {
     }
 
     @Override
-    public void onDataPacket(Connection net, ClientboundBlockEntityDataPacket packet, HolderLookup.Provider provider) {
+    public void onDataPacket(Connection net, ValueInput input) {
         AlarmType type = alarmType;
-        super.onDataPacket(net, packet, provider);
+        super.onDataPacket(net, input);
 
-        if (level.isClientSide) {
+        if (level.isClientSide()) {
             // If needed send a render update.
             AlarmType newType = alarmType;
             if (newType != type) {
@@ -101,7 +103,7 @@ public class AlarmTile extends ArienteBlockEntity implements IAlarmTile {
     @Override
     public void loadAdditional(CompoundTag tagCompound, HolderLookup.Provider provider) {
         super.loadAdditional(tagCompound, provider);
-        alarmType = AlarmType.values()[tagCompound.getInt("alarm")];
+        alarmType = AlarmType.values()[tagCompound.getIntOr("alarm", 0)];
     }
 
     @Override

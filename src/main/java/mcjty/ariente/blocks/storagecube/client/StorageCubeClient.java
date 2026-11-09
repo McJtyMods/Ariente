@@ -1,5 +1,6 @@
 package mcjty.ariente.blocks.storagecube.client;
 
+import net.neoforged.neoforge.client.network.ClientPacketDistributor;
 import com.mojang.blaze3d.vertex.PoseStack;
 import com.mojang.math.Axis;
 import java.util.Arrays;
@@ -26,7 +27,6 @@ import net.neoforged.fml.common.EventBusSubscriber;
 import net.neoforged.neoforge.client.event.ClientTickEvent;
 import net.neoforged.neoforge.client.event.InputEvent;
 import net.neoforged.neoforge.event.entity.player.PlayerInteractEvent;
-import net.neoforged.neoforge.network.PacketDistributor;
 
 import static mcjty.ariente.blocks.storagecube.PacketStorageCubeAction.Action.*;
 import static mcjty.ariente.gui.InventoryLayout.*;
@@ -92,7 +92,7 @@ public class StorageCubeClient {
     }
 
     private static void send(PacketStorageCubeAction packet) {
-        PacketDistributor.sendToServer(packet);
+        ClientPacketDistributor.sendToServer(packet);
     }
 
     public static void receive(PacketStorageCubeData packet) {
@@ -229,7 +229,7 @@ public class StorageCubeClient {
 
     @SubscribeEvent
     public static void blockAttack(PlayerInteractEvent.LeftClickBlock event) {
-        if (event.getLevel().isClientSide && state != null && state.pressed) {
+        if (event.getLevel().isClientSide() && state != null && state.pressed) {
             event.setCanceled(true);
         }
     }

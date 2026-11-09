@@ -1,8 +1,11 @@
 package mcjty.ariente.blocks.utility.wireless;
 
+import net.minecraft.world.level.storage.ValueInput;
+import net.minecraft.world.level.block.state.BlockBehaviour;
+import net.minecraft.world.level.material.MapColor;
+import net.minecraft.world.level.block.SoundType;
 import mcjty.ariente.blocks.BlockProperties;
 import mcjty.ariente.blocks.MountedPanelShapes;
-import mcjty.ariente.setup.Registration;
 import mcjty.ariente.sounds.ModSounds;
 import mcjty.lib.blocks.BaseBlock;
 import mcjty.lib.builder.BlockBuilder;
@@ -10,7 +13,6 @@ import net.minecraft.core.BlockPos;
 import net.minecraft.core.HolderLookup;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.network.Connection;
-import net.minecraft.network.protocol.game.ClientboundBlockEntityDataPacket;
 import net.minecraft.sounds.SoundSource;
 import net.minecraft.world.InteractionHand;
 import net.minecraft.world.InteractionResult;
@@ -39,13 +41,13 @@ public class WirelessButtonTile extends SignalChannelTileEntity {
     private static final MountedPanelShapes SHAPES = new MountedPanelShapes(2, 3);
 
     public WirelessButtonTile(BlockPos pos, BlockState state) {
-        super(Registration.WIRELESS_BUTTON_TILE.get(), pos, state);
+        super(mcjty.ariente.setup.Registration.WIRELESS_BUTTON_TILE.get(), pos, state);
     }
 
-    public static BaseBlock createBlock() {
-        return new BaseBlock(new BlockBuilder()
+    public static BaseBlock createBlock(BlockBehaviour.Properties properties) {
+        return new BaseBlock(new BlockBuilder().properties(properties.mapColor(MapColor.METAL).strength(2.0f).requiresCorrectToolForDrops().sound(SoundType.METAL))
                 .info(key("message.ariente.shiftmessage"))
-                .infoShift(header(), parameter("channel", (stack -> { var tag = stack.getOrDefault(Registration.MACHINE_DATA.get(), CustomData.EMPTY).copyTag().getCompound("Info"); return Integer.toString(tag.contains("channel") ? tag.getInt("channel") : -1); })))
+                .infoShift(header(), parameter("channel", (stack -> { var tag = stack.getOrDefault(mcjty.ariente.setup.Registration.MACHINE_DATA.get(), CustomData.EMPTY).copyTag().getCompoundOrEmpty("Info"); return Integer.toString(tag.contains("channel") ? tag.getIntOr("channel", 0) : -1); })))
                 .topDriver(DRIVER)
                 .tileEntitySupplier(WirelessButtonTile::new)
         ) {
@@ -75,12 +77,12 @@ public class WirelessButtonTile extends SignalChannelTileEntity {
     }
 
     @Override
-    public void onDataPacket(Connection net, ClientboundBlockEntityDataPacket packet, HolderLookup.Provider provider) {
+    public void onDataPacket(Connection net, ValueInput input) {
         boolean locked = isLocked();
 
-        super.onDataPacket(net, packet, provider);
+        super.onDataPacket(net, input);
 
-        if (level.isClientSide) {
+        if (level.isClientSide()) {
             // If needed send a render update.
             boolean newLocked = isLocked();
             if (newLocked != locked) {
@@ -94,7 +96,7 @@ public class WirelessButtonTile extends SignalChannelTileEntity {
     }
 
     public void setLocked(boolean locked) {
-        if (level == null || level.isClientSide) {
+        if (level == null || level.isClientSide()) {
             return;
         }
         this.locked = locked;
@@ -104,7 +106,7 @@ public class WirelessButtonTile extends SignalChannelTileEntity {
     }
 
     private void publish() {
-        if (level != null && !level.isClientSide) {
+        if (level != null && !level.isClientSide()) {
             setVisualState(BlockProperties.POWER, !locked);
             if (channel != -1) {
                 RedstoneChannels channels = RedstoneChannels.getChannels(level);
@@ -126,7 +128,7 @@ public class WirelessButtonTile extends SignalChannelTileEntity {
         } else {
             BlockEntity te = world.getBlockEntity(pos);
             if (te instanceof WirelessButtonTile) {
-                if (!world.isClientSide) {
+                if (!world.isClientSide()) {
                     world.playSound(null, pos, ModSounds.buzzOk.get(), SoundSource.BLOCKS, 1.0f, 1.0f);
                 }
                 ((WirelessButtonTile) te).toggleLock();
@@ -136,7 +138,7 @@ public class WirelessButtonTile extends SignalChannelTileEntity {
     }
 
     public void toggleLock() {
-        if (!level.isClientSide) {
+        if (!level.isClientSide()) {
             setLocked(!locked);
         }
     }
@@ -144,10 +146,10 @@ public class WirelessButtonTile extends SignalChannelTileEntity {
     @Override
     public void loadAdditional(CompoundTag tagCompound, HolderLookup.Provider provider) {
         super.loadAdditional(tagCompound, provider);
-        prevIn = tagCompound.getInt("prevIn");
-        CompoundTag info = tagCompound.getCompound("Info");
+        prevIn = tagCompound.getIntOr("prevIn", 0);
+        CompoundTag info = tagCompound.getCompoundOrEmpty("Info");
         if (info.contains("locked")) {
-            locked = info.getBoolean("locked");
+            locked = info.getBooleanOr("locked", false);
         }
     }
 

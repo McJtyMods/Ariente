@@ -1,5 +1,10 @@
 package mcjty.ariente.datagen;
 
+import com.google.gson.JsonObject;
+import com.google.gson.JsonParser;
+
+import net.minecraft.resources.Identifier;
+
 import java.util.Map;
 import java.util.Map.Entry;
 import java.util.function.Supplier;
@@ -18,13 +23,12 @@ import net.minecraft.core.Direction;
 import net.minecraft.data.DataGenerator;
 import net.minecraft.world.item.Item;
 import net.minecraft.world.level.block.SlabBlock;
-import net.neoforged.neoforge.client.model.generators.ModelFile;
-import net.neoforged.neoforge.common.data.ExistingFileHelper;
+import mcjty.lib.datagen.model.ModelFile;
 
 public class Items extends BaseItemModelProvider {
 
-    public Items(DataGenerator generator, ExistingFileHelper existingFileHelper) {
-        super(generator, Ariente.MODID, existingFileHelper);
+    public Items(DataGenerator generator) {
+        super(generator, Ariente.MODID);
     }
 
     @Override
@@ -156,8 +160,8 @@ public class Items extends BaseItemModelProvider {
         parentedItem(Registration.ENERGY_LANCE.get(), "item/weapons/energy_lance");
         itemHandheld(Registration.ENHANCED_ENERGY_SABRE.get(), "item/weapons/enhanced_energy_sabre");
         itemGenerated(Registration.KEY_CARD.get(), "item/tools/key_card");
-        getBuilder("facade").parent(new ModelFile.UncheckedModelFile("ariente:item/facade_base"));
-        getBuilder("blueprint").parent(new ModelFile.UncheckedModelFile("minecraft:builtin/entity"));
+        getBuilder("facade").parent(new ModelFile.UncheckedModelFile(Identifier.parse("ariente:item/facade_base")));
+        getBuilder("blueprint").parent(new ModelFile.UncheckedModelFile(Identifier.parse("ariente:item/blueprint_base")));
         itemGenerated(Registration.ARIENTE_PEARL.get(), "item/tools/ariente_pearl");
         itemGenerated(Registration.TABLET.get(), "item/tools/tablet");
         itemGenerated(Registration.FLUX_LEVITATOR.get(), "item/tools/flux_levitator");
@@ -209,10 +213,20 @@ public class Items extends BaseItemModelProvider {
                 .texture("pane", modLoc(texture))
                 .texture("edge", modLoc(texture + "_top"))
                 .texture("particle", "#pane")
-                .renderType("minecraft:cutout")
+
                 .element().from(0, 0, 7).to(16, 16, 9)
                 .allFaces((direction, face) -> face.texture(direction.getAxis() == Direction.Axis.Z ? "#pane" : "#edge"))
                 .end();
+    }
+
+    @Override
+    protected JsonObject itemDefinitionFor(Identifier model) {
+        return switch (model.getPath()) {
+            case "item/facade" -> JsonParser.parseString("{\"model\": {\"type\": \"minecraft:special\", \"base\": \"ariente:item/facade_base\", \"model\": {\"type\": \"ariente:facade\"}}}").getAsJsonObject();
+            case "item/blueprint" -> JsonParser.parseString("{\"model\": {\"type\": \"minecraft:composite\", \"models\": [{\"type\": \"minecraft:model\", \"model\": \"ariente:item/blueprint_base\"}, {\"type\": \"minecraft:special\", \"base\": \"ariente:item/blueprint_base\", \"model\": {\"type\": \"ariente:blueprint\"}}]}}").getAsJsonObject();
+            case "item/energy_lance" -> JsonParser.parseString("{\"model\": {\"type\": \"ariente:lance\", \"model\": \"ariente:item/energy_lance\"}}").getAsJsonObject();
+            default -> super.itemDefinitionFor(model);
+        };
     }
 
     @Override

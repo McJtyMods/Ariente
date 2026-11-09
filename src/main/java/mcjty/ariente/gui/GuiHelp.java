@@ -6,7 +6,7 @@ import mcjty.hologui.api.IGuiComponent;
 import mcjty.hologui.api.IGuiComponentRegistry;
 import mcjty.hologui.api.IHoloGuiEntity;
 import mcjty.hologui.api.components.IPanel;
-import net.minecraft.resources.ResourceLocation;
+import net.minecraft.resources.Identifier;
 
 /** Manual destinations and legacy built-in help pages. */
 public enum GuiHelp {
@@ -248,11 +248,11 @@ public enum GuiHelp {
             "Sneak to dismount.",
             "No generator connection is needed.");
 
-    private final ResourceLocation entry;
+    private final Identifier entry;
     private final String[] lines;
 
     GuiHelp(String entry, String... lines) {
-        this.entry = ResourceLocation.fromNamespaceAndPath(Ariente.MODID, entry);
+        this.entry = Identifier.fromNamespaceAndPath(Ariente.MODID, entry);
         this.lines = lines;
     }
 

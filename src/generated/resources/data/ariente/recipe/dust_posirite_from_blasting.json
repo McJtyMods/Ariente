@@ -3,9 +3,7 @@
   "category": "misc",
   "cookingtime": 100,
   "experience": 0.0,
-  "ingredient": {
-    "item": "ariente:posirite"
-  },
+  "ingredient": "ariente:posirite",
   "result": {
     "count": 4,
     "id": "ariente:dust_posirite"

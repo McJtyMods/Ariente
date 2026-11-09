@@ -51,7 +51,6 @@
   "item.ariente.dust_negarite": "Negarite Dust",
   "item.ariente.dust_posirite": "Posirite Dust",
   "item.ariente.silicon": "Silicon",
-
   "item.ariente.energy_sabre": "Energy Sabre",
   "item.ariente.energy_lance": "Energy Lance",
   "message.ariente.energy_lance.header": "Right-click to fire a laser; 30% stronger than an Energy Sabre",
@@ -85,7 +84,6 @@
   "message.ariente.extreme_circuit.upgraded": "Extreme Circuit: -50% power, 2x speed",
   "item.ariente.ariente_pearl": "Ariente Pearl",
   "item.ariente.energy_holder": "Energy Holder",
-
   "block.ariente.lithiumore": "Lithium Ore",
   "block.ariente.manganeseore": "Manganese Ore",
   "block.ariente.siliconore": "Silicon Ore",
@@ -93,12 +91,10 @@
   "block.ariente.platinumore": "Platinum Ore",
   "block.ariente.posirite": "Posirite Ore",
   "block.ariente.negarite": "Negarite Ore",
-
   "item.ariente.powersuit_head": "Power Helmet",
   "item.ariente.powersuit_chest": "Power Chestplate",
   "item.ariente.powersuit_legs": "Power Leggings",
   "item.ariente.powersuit_feet": "Power Boots",
-
   "item.ariente.module_armor": "Armor Upgrade Module",
   "item.ariente.module_energy": "Energy Upgrade Module",
   "item.ariente.module_featherfalling": "Featherfalling Upgrade Module",
@@ -115,7 +111,6 @@
   "item.ariente.module_power": "Power Sabre Module",
   "item.ariente.module_looting": "Looting Sabre Module",
   "item.ariente.module_fire": "Fire Sabre Module",
-
   "item.ariente.netcable_negarite": "Negarite Cable",
   "item.ariente.netcable_posirite": "Posirite Cable",
   "item.ariente.netcable_data": "Data Cable",
@@ -124,15 +119,12 @@
   "item.ariente.connector_negarite": "Negarite Connector",
   "item.ariente.connector_data": "Data Connector",
   "item.ariente.connector_combined": "Combined Connector",
-
   "block.ariente.pattern.dots": "Dots Pattern",
   "block.ariente.pattern.lines": "Lines Pattern",
-
   "block.ariente.reinforced_marble": "Reinforced Marble",
   "block.ariente.flux_beam": "Flux Beam",
   "block.ariente.flux_bend_beam": "Flux Bend Beam",
   "block.ariente.flux_slope_beam": "Flux Slope Beam",
-
   "block.ariente.blacktech_dots": "Tech Block Dots",
   "block.ariente.blacktech_lines": "Tech Block Lines",
   "block.ariente.blacktech_var1": "Tech Block Variation 1",
@@ -146,12 +138,9 @@
   "block.ariente.blacktech_dots2": "Tech Block Dots Variation",
   "block.ariente.blacktech_var1_anim": "Tech Block Variation 2",
   "block.ariente.blacktech_red_var1_anim": "Tech Block Variation 3",
-
   "block.ariente.marbletech_variation1": "Marble Pattern 1",
   "block.ariente.marbletech_variation2": "Marble Pattern 2",
   "block.ariente.marbletech_variation3": "Marble Pattern 3",
-
-
   "block.ariente.constructor": "Constructor",
   "block.ariente.auto_constructor": "Auto Constructor",
   "block.ariente.recycler": "Recycler",
@@ -188,14 +177,12 @@
   "block.ariente.flatlight": "Flat Light",
   "block.ariente.fluxglow": "Flux Glow",
   "block.ariente.aicore": "AI Core",
-
   "block.ariente.ramp": "Ramp",
   "block.ariente.slope": "Slope",
   "block.ariente.glass_fence": "Green Glass Fence",
   "block.ariente.blue_glass_fence": "Blue Glass Fence",
   "block.ariente.marble_fence": "Marble Fence",
   "block.ariente.tech_fence": "Tech Fence",
-
   "block.ariente.marble_gray": "Gray Marble",
   "block.ariente.marble_white": "White Marble",
   "block.ariente.marble_blue": "Blue Marble",
@@ -203,7 +190,6 @@
   "block.ariente.marble_lime": "Lime Marble",
   "block.ariente.marble_red": "Red Marble",
   "block.ariente.marble_darkblue": "Dark Blue Marble",
-
   "block.ariente.marble_smooth_gray": "Gray Smooth Marble",
   "block.ariente.marble_smooth_white": "White Smooth Marble",
   "block.ariente.marble_smooth_blue": "Blue Smooth Marble",
@@ -211,7 +197,6 @@
   "block.ariente.marble_smooth_lime": "Lime Smooth Marble",
   "block.ariente.marble_smooth_red": "Red Smooth Marble",
   "block.ariente.marble_smooth_darkblue": "Dark Blue Smooth Marble",
-
   "block.ariente.marble_pilar_gray": "Gray Marble Pilar",
   "block.ariente.marble_pilar_white": "White Marble Pilar",
   "block.ariente.marble_pilar_blue": "Blue Marble Pilar",
@@ -219,7 +204,6 @@
   "block.ariente.marble_pilar_lime": "Lime Marble Pilar",
   "block.ariente.marble_pilar_red": "Red Marble Pilar",
   "block.ariente.marble_pilar_darkblue": "Dark Blue Marble Pilar",
-
   "block.ariente.marble_bricks_gray": "Gray Marble Bricks",
   "block.ariente.marble_bricks_white": "White Marble Bricks",
   "block.ariente.marble_bricks_blue": "Blue Marble Bricks",
@@ -227,7 +211,6 @@
   "block.ariente.marble_bricks_lime": "Lime Marble Bricks",
   "block.ariente.marble_bricks_red": "Red Marble Bricks",
   "block.ariente.marble_bricks_darkblue": "Dark Blue Marble Bricks",
-
   "block.ariente.marble_slab_gray": "Gray Marble Slab",
   "block.ariente.marble_slab_white": "White Marble Slab",
   "block.ariente.marble_slab_blue": "Blue Marble Slab",
@@ -235,7 +218,6 @@
   "block.ariente.marble_slab_lime": "Lime Marble Slab",
   "block.ariente.marble_slab_red": "Red Marble Slab",
   "block.ariente.marble_slab_darkblue": "Dark Blue Marble Slab",
-
   "entity.ariente_laser": "Laser",
   "entity.ariente_flux_levitator": "Flux Levitator",
   "entity.ariente_flux_elevator": "Flux Elevator",
@@ -243,34 +225,26 @@
   "entity.ariente.ariente_flux_ship": "Flux Ship",
   "entity.ariente.flux_ship_panel": "Flux Ship Instruments",
   "entity.ariente_pearl": "Warp Locator",
-
   "itemGroup.ariente": "Ariente",
-
   "_comment": "Messages",
   "message.ariente.shiftmessage": "<Press Shift>",
-
   "message.ariente.facade.header": "This block can mimic other blocks and be used to cover Ariente cables",
   "message.ariente.facade.gold": "Right or sneak-right click on block to mimic. Right or sneak-right click on cable/connector to hide",
   "message.ariente.facade.info": "Mimicing: ",
-
   "message.ariente.ariente_pearl.header": "With this item you can locate the mystical Ariente dungeons and charge them",
-
   "message.ariente.flux_capacitor.header": "The Flux Capacitor is a crafting ingredient for some of the Ariente machines",
   "message.ariente.circuit.header": "The Circuit is a crafting ingredient for some of the Ariente machines",
   "message.ariente.advanced_circuit.header": "The Advanced Circuit is a crafting ingredient for some of the Ariente machines",
-
   "message.ariente.energy_holder.header": "Shared power supply for equipped armor and weapons",
   "message.ariente.energy_holder.negarite": "Negarite: ",
   "message.ariente.energy_holder.posirite": "Posirite: ",
   "message.ariente.energy_holder.power": "Stored power: ",
   "message.ariente.equipment.shared_power": "Powered by a carried Energy Holder",
   "message.ariente.energy_holder.mode": "Mode: ",
-
   "message.ariente.enhanced_energy_sabre.header": "Modular energy sabre",
   "message.ariente.enhanced_energy_sabre.key": "Configuration key: ",
   "message.ariente.enhanced_energy_sabre.module": "Module: ",
   "message.ariente.enhanced_energy_sabre.power": "Power Usage: ",
-
   "message.ariente.armormodule.header": "Fits: %s",
   "message.ariente.armormodule.equipment.armor_weapons": "Armor, Enhanced Sabre, Lance",
   "message.ariente.armormodule.equipment.armor": "Power armor",
@@ -297,23 +271,18 @@
   "message.ariente.armormodule.effect.hover": "Holds altitude while Flight is active",
   "message.ariente.armormodule.gold": "Uses no power",
   "message.ariente.armormodule.info": "Power: ",
-
   "message.ariente.blueprint.header": "This item can be used as a recipe holder for other items. It's used by the Constructor and Auto Constructor",
   "message.ariente.blueprint.info": "Result: ",
-
   "message.ariente.flux_levitator.header": "Flux Levitator",
-
   "message.ariente.flux_ship.header": "Powered spacecraft with a forward laser",
   "message.ariente.flux_ship.placement": "Use on clear ground to deploy; right-click to board, sneak-right-click to pick up",
   "message.ariente.flux_ship.charging": "Recharge on a powered Flux Ship Charger",
   "message.ariente.flux_ship.no_space": "Not enough room to deploy the Flux Ship here",
   "message.ariente.flux_ship.placement_failed": "Unable to deploy the Flux Ship here",
-
   "message.ariente.key_card.header": "Security card. This card can give you access to unlock storages or press certain locked buttons",
   "message.ariente.key_card.gold": "This card is empty",
   "message.ariente.key_card.info": "Description: ",
   "message.ariente.key_card.tag": "Tag: ",
-
   "message.ariente.forcefield.header": "Forcefield generator",
   "message.ariente.storage.header": "Can store large amounts of 4 different item types",
   "message.ariente.storage_3x3.header": "Can store large amounts of 9 different item types",
@@ -326,19 +295,14 @@
   "message.ariente.warper.header": "Warp to nearby warpers",
   "message.ariente.alarm.header": "City status",
   "message.ariente.lock.header": "Lock",
-
   "message.ariente.wireless_lock.header": "Wireless Lock",
   "message.ariente.wireless_lock.channel": "Channel: ",
-
   "message.ariente.wireless_button.header": "Wireless Button. Right click on a transmitter for receiver to link",
   "message.ariente.wireless_button.channel": "Channel: ",
-
   "message.ariente.signal_receiver.header": "This logic block sends redstone signals from a linked transmitter. Right click on a transmitter (or other receiver) to link",
   "message.ariente.signal_receiver.channel": "Channel: ",
-
   "message.ariente.signal_transmitter.header": "This logic block accepts redstone signals and sends them out wirelessly to linked receivers. Place down to create a channel or else right click on receiver/transmitter to use that channel",
   "message.ariente.signal_transmitter.channel": "Channel: ",
-
   "message.ariente.elevator.header": "Move up and down",
   "message.ariente.reinforced_marble.header": "A very strong kind of marble",
   "message.ariente.level_marker.header": "Mark levels for the elevator",
@@ -352,7 +316,7 @@
   "message.ariente.recycler.insert_hint": "Double-click bright items to recycle",
   "message.ariente.blueprint_storage.header": "Blueprint Storage",
   "message.ariente.automation_field.header": "Automation Field",
-
   "jei.ariente.constructor": "Constructor",
-  "jei.ariente.blueprint_required": "Place this blueprint in an adjacent Blueprint Storage"
+  "jei.ariente.blueprint_required": "Place this blueprint in an adjacent Blueprint Storage",
+  "key.category.ariente.controls": "Ariente"
 }

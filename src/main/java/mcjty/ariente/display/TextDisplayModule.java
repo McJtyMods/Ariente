@@ -17,7 +17,7 @@ public class TextDisplayModule implements DisplayModuleType {
 
     public static int scale(ItemStack stack) {
         CompoundTag tag = DisplayModuleItem.config(stack);
-        return tag.contains("Scale") ? Mth.clamp(tag.getInt("Scale"), 1, 4) : 1;
+        return tag.contains("Scale") ? Mth.clamp(tag.getIntOr("Scale", 0), 1, 4) : 1;
     }
 
     private static int glyphWidth(int point) {
@@ -44,7 +44,7 @@ public class TextDisplayModule implements DisplayModuleType {
     }
 
     public static List<String> lines(ItemStack stack) {
-        String text = DisplayModuleItem.config(stack).getString("Text");
+        String text = DisplayModuleItem.config(stack).getStringOr("Text", "");
         List<String> lines = new ArrayList<>();
         int maxWidth = 488 / scale(stack);
         for (String paragraph : text.split("\\n", -1)) {
@@ -76,7 +76,7 @@ public class TextDisplayModule implements DisplayModuleType {
     @Override
     public void configure(IGuiComponentRegistry r, IPanel panel, ModuleSettings settings) {
         panel.add(r.textEntry(.3, 1, 7.2, 3.3).name("display_text").maxLength(1024)
-                .text(() -> settings.config().getString("Text"))
+                .text(() -> settings.config().getStringOr("Text", ""))
                 .changed((player, entity, text) -> settings.text(player, entity, "Text", text)));
         settings.addColorButton(r, panel, 5.8);
         settings.addNumber(r, panel, 4.8, "Scale", "Text size", 1, 1, 4);

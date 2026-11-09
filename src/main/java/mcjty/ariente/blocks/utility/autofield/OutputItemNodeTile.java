@@ -1,9 +1,10 @@
 package mcjty.ariente.blocks.utility.autofield;
 
+import mcjty.ariente.items.ItemData;
+
 import mcjty.ariente.gui.GuiHelp;
 import mcjty.ariente.gui.PlayerInventoryPanel;
 import mcjty.ariente.gui.StepButton;
-import mcjty.ariente.setup.Registration;
 import mcjty.hologui.api.IGuiComponent;
 import mcjty.hologui.api.IGuiComponentRegistry;
 import mcjty.hologui.api.StyledColor;
@@ -12,7 +13,6 @@ import mcjty.lib.varia.ItemStackList;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.HolderLookup;
 import net.minecraft.nbt.CompoundTag;
-import net.minecraft.world.ContainerHelper;
 import net.minecraft.world.level.block.state.BlockState;
 import org.apache.commons.lang3.tuple.Pair;
 
@@ -27,21 +27,21 @@ public class OutputItemNodeTile extends AbstractItemNodeTile {
     private int outputStackSize = 1;
 
     public OutputItemNodeTile(BlockPos pos, BlockState state) {
-        super(Registration.OUTPUT_ITEM_TILE.get(), pos, state);
+        super(mcjty.ariente.setup.Registration.OUTPUT_ITEM_TILE.get(), pos, state);
     }
 
     @Override
     public void loadAdditional(CompoundTag tagCompound, HolderLookup.Provider provider) {
         super.loadAdditional(tagCompound, provider);
         outputFilter.clear();
-        CompoundTag info = tagCompound.getCompound("Info");
-        ContainerHelper.loadAllItems(info.getCompound("output"), outputFilter, provider);
+        CompoundTag info = tagCompound.getCompoundOrEmpty("Info");
+        ItemData.loadItems(info.getCompoundOrEmpty("output"), outputFilter, provider);
         if (!info.isEmpty()) {
-            outputDamage = info.getBoolean("outDamage");
-            outputNbt = info.getBoolean("outNBT");
-            outputTags = info.getBoolean("outOre");
-            outputBlacklist = info.getBoolean("outBlacklist");
-            outputStackSize = info.getInt("outSS");
+            outputDamage = info.getBooleanOr("outDamage", false);
+            outputNbt = info.getBooleanOr("outNBT", false);
+            outputTags = info.getBooleanOr("outOre", false);
+            outputBlacklist = info.getBooleanOr("outBlacklist", false);
+            outputStackSize = info.getIntOr("outSS", 0);
         }
     }
 
@@ -49,7 +49,7 @@ public class OutputItemNodeTile extends AbstractItemNodeTile {
     public void saveAdditional(CompoundTag tagCompound, HolderLookup.Provider provider) {
         super.saveAdditional(tagCompound, provider);
         CompoundTag info = getOrCreateInfo(tagCompound);
-        info.put("output", ContainerHelper.saveAllItems(new CompoundTag(), outputFilter, provider));
+        info.put("output", ItemData.saveItems(outputFilter, provider));
         info.putBoolean("outDamage", outputDamage);
         info.putBoolean("outNBT", outputNbt);
         // Keep the legacy key so existing tag filters retain their settings.

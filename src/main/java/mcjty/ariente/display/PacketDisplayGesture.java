@@ -5,7 +5,7 @@ import net.minecraft.core.BlockPos;
 import net.minecraft.network.RegistryFriendlyByteBuf;
 import net.minecraft.network.codec.StreamCodec;
 import net.minecraft.network.protocol.common.custom.CustomPacketPayload;
-import net.minecraft.resources.ResourceLocation;
+import net.minecraft.resources.Identifier;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.util.Mth;
 import net.minecraft.world.phys.Vec3;
@@ -15,7 +15,7 @@ import net.neoforged.neoforge.network.handling.IPayloadContext;
 /** Drag positions stay local; only press, release, cancellation and infrequent keepalives are sent. */
 public record PacketDisplayGesture(BlockPos source, UUID module, UUID ticket, Action action, float yaw, float pitch, boolean dragged, boolean allowDrop) implements CustomPacketPayload {
 
-    public static final Type<PacketDisplayGesture> TYPE = new Type<>(ResourceLocation.fromNamespaceAndPath("ariente", "packet_display_gesture"));
+    public static final Type<PacketDisplayGesture> TYPE = new Type<>(Identifier.fromNamespaceAndPath("ariente", "packet_display_gesture"));
     public static final StreamCodec<RegistryFriendlyByteBuf, PacketDisplayGesture> CODEC = StreamCodec.ofMember(PacketDisplayGesture::toBytes, PacketDisplayGesture::new);
 
     @Override

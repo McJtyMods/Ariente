@@ -1,5 +1,7 @@
 package mcjty.ariente.commands;
 
+import net.minecraft.server.permissions.Permissions;
+
 import com.mojang.brigadier.exceptions.CommandSyntaxException;
 import mcjty.ariente.Ariente;
 import mcjty.ariente.api.ArmorUpgradeType;
@@ -27,7 +29,7 @@ public class ModCommands {
     @SubscribeEvent
     public static void register(RegisterCommandsEvent event) {
         event.getDispatcher().register(Commands.literal(Ariente.MODID)
-                .requires(source -> source.hasPermission(2))
+                .requires(source -> source.permissions().hasPermission(Permissions.COMMANDS_GAMEMASTER))
                 .then(Commands.literal("equip").executes(context -> equip(context.getSource()))));
     }
 
@@ -58,13 +60,13 @@ public class ModCommands {
         ItemData.set(holder, fuel);
 
         // Put the fueled holder first so an older empty holder cannot take priority.
-        int holderSlot = player.getInventory().selected == 0 ? 1 : 0;
+        int holderSlot = player.getInventory().getSelectedSlot() == 0 ? 1 : 0;
         hotbar(player, holderSlot, holder);
         ItemStack ship = new ItemStack(Registration.FLUX_SHIP.get());
         ItemData.update(ship, data -> data.putInt(FluxShipEnergy.CHARGE_TAG, FluxShipEnergy.CAPACITY));
         int slot = 0;
         for (ItemStack stack : new ItemStack[]{new ItemStack(Registration.ENERGY_LANCE.get()), ship}) {
-            while (slot == player.getInventory().selected || slot == holderSlot) {
+            while (slot == player.getInventory().getSelectedSlot() || slot == holderSlot) {
                 slot++;
             }
             hotbar(player, slot++, stack);

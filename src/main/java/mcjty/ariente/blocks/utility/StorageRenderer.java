@@ -1,5 +1,7 @@
 package mcjty.ariente.blocks.utility;
 
+import mcjty.ariente.client.ArienteRenderHelper;
+import mcjty.hologui.gui.HoloGuiRenderType;
 import com.mojang.blaze3d.vertex.*;
 import net.minecraft.client.renderer.*;
 import com.mojang.blaze3d.vertex.VertexConsumer;
@@ -10,13 +12,10 @@ import mcjty.lib.blocks.BaseBlock;
 import mcjty.lib.client.CustomRenderTypes;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.Font;
-import net.minecraft.client.renderer.RenderType;
-import net.minecraft.client.renderer.blockentity.BlockEntityRenderer;
+import mcjty.ariente.client.ExtractedBlockRenderer;
 import net.minecraft.client.renderer.blockentity.BlockEntityRendererProvider;
 import net.minecraft.client.renderer.blockentity.BlockEntityRenderers;
-import net.minecraft.client.renderer.entity.ItemRenderer;
 import net.minecraft.client.renderer.texture.OverlayTexture;
-import net.minecraft.client.resources.model.BakedModel;
 import net.minecraft.core.Direction;
 import net.minecraft.world.item.ItemDisplayContext;
 import net.minecraft.world.item.ItemStack;
@@ -25,7 +24,7 @@ import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.phys.BlockHitResult;
 import net.minecraft.world.phys.HitResult;
 
-public class StorageRenderer implements BlockEntityRenderer<StorageTile> {
+public class StorageRenderer extends ExtractedBlockRenderer<StorageTile> {
 
     protected BlockEntityRendererProvider.Context context;
 
@@ -124,7 +123,6 @@ public class StorageRenderer implements BlockEntityRenderer<StorageTile> {
         matrixStack.translate(-0.5F, 0.5F, -0.15F);
         matrixStack.scale(f3 * factor, -f3 * factor, 0.0001f);
 
-        ItemRenderer itemRender = Minecraft.getInstance().getItemRenderer();
         MultiBufferSource itemBuffer = type -> buffer.getBuffer(ArienteRenderType.displayItem(type));
 
         for (int i = 0; i < te.getTypeCount(); i++) {
@@ -133,9 +131,8 @@ public class StorageRenderer implements BlockEntityRenderer<StorageTile> {
                 matrixStack.pushPose();
                 matrixStack.translate(slotX(te, i) + 8, slotY(te, i) + 8, 0);
                 matrixStack.scale(16, -16, 16);
-                BakedModel ibakedmodel = itemRender.getModel(stack, Minecraft.getInstance().level, null, 1);
                 int lightmapValue = 0xf000f0;
-                itemRender.render(stack, ItemDisplayContext.GUI, false, matrixStack, itemBuffer, lightmapValue, OverlayTexture.NO_OVERLAY, ibakedmodel);
+                ArienteRenderHelper.item(matrixStack, buffer, stack, ItemDisplayContext.GUI, lightmapValue, OverlayTexture.NO_OVERLAY);
                 matrixStack.popPose();
             }
         }
@@ -164,7 +161,7 @@ public class StorageRenderer implements BlockEntityRenderer<StorageTile> {
                 } else {
                     s1 = String.valueOf(size / 1000000000) + "g";
                 }
-                fontRenderer.drawInBatch(s1, x + 19 - 2 - fontRenderer.width(s1), currenty + 6 + 3, 16777215, false, matrixStack.last().pose(), buffer, Font.DisplayMode.NORMAL, 0, lightmapValue);
+                fontRenderer.drawInBatch(s1, x + 19 - 2 - fontRenderer.width(s1), currenty + 6 + 3, 0xffffffff, false, matrixStack.last().pose(), buffer, Font.DisplayMode.NORMAL, 0, lightmapValue);
             }
 
             if (itm.getItem().isBarVisible(itm)) {
@@ -199,7 +196,7 @@ public class StorageRenderer implements BlockEntityRenderer<StorageTile> {
     }
 
     private static void fill(PoseStack pose, MultiBufferSource buffer, float x0, float y0, float x1, float y1, int color, int light) {
-        VertexConsumer vertices = buffer.getBuffer(RenderType.gui());
+        VertexConsumer vertices = buffer.getBuffer(HoloGuiRenderType.HOLOGUI_COLOR);
         vertices.addVertex(pose.last().pose(), x0, y1, 0).setColor(color);
         vertices.addVertex(pose.last().pose(), x1, y1, 0).setColor(color);
         vertices.addVertex(pose.last().pose(), x1, y0, 0).setColor(color);

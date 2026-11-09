@@ -1,7 +1,7 @@
 package mcjty.ariente.datagen;
 
 import mcjty.ariente.api.*;
-import net.neoforged.neoforge.client.model.generators.*;
+import mcjty.lib.datagen.model.*;
 import java.util.Arrays;
 import java.util.HashMap;
 import java.util.Map;
@@ -21,17 +21,17 @@ import mcjty.lib.datagen.BaseBlockStateProvider;
 import mcjty.lib.varia.OrientationTools;
 import net.minecraft.core.Direction;
 import net.minecraft.data.DataGenerator;
-import net.minecraft.resources.ResourceLocation;
+import net.minecraft.resources.Identifier;
 import net.minecraft.world.level.block.Block;
 import net.minecraft.world.level.block.SlabBlock;
 import net.minecraft.world.level.block.state.properties.BlockStateProperties;
 import net.minecraft.world.level.block.state.properties.SlabType;
-import net.neoforged.neoforge.client.model.generators.loaders.CompositeModelBuilder;
-import net.neoforged.neoforge.common.data.ExistingFileHelper;
+import mcjty.lib.datagen.model.CompositeModelBuilder;
+
 import org.apache.commons.lang3.tuple.Pair;
 
 import static net.minecraft.core.Direction.*;
-import static net.neoforged.neoforge.client.model.generators.ModelProvider.BLOCK_FOLDER;
+import static mcjty.lib.datagen.model.ModelProvider.BLOCK_FOLDER;
 
 public class BlockStates extends BaseBlockStateProvider {
 
@@ -80,8 +80,8 @@ public class BlockStates extends BaseBlockStateProvider {
     public static final String TXT_AICORE_WINDOW = "block/machines/aicore_window";
     public static final String TXT_LIGHT_ON = "block/machines/light_on";
 
-    public BlockStates(DataGenerator gen, ExistingFileHelper exFileHelper) {
-        super(gen, Ariente.MODID, exFileHelper);
+    public BlockStates(DataGenerator gen) {
+        super(gen, Ariente.MODID);
     }
 
     private BlockModelBuilder flatglow;
@@ -313,9 +313,9 @@ public class BlockStates extends BaseBlockStateProvider {
     private BlockModelBuilder storageModel(String name) {
         BlockModelBuilder model = models().withExistingParent(BLOCK_FOLDER + "/utility/" + name, mcLoc("block/block"))
                 .texture("particle", "#side");
-        ResourceLocation sideTxt = modLoc(TXT_MACHINESIDE);
-        ResourceLocation topTxt = modLoc(TXT_MACHINETOP);
-        ResourceLocation botTxt = modLoc(TXT_MACHINEBOTTOM);
+        Identifier sideTxt = modLoc(TXT_MACHINESIDE);
+        Identifier topTxt = modLoc(TXT_MACHINETOP);
+        Identifier botTxt = modLoc(TXT_MACHINEBOTTOM);
         model.element()
                 .from(0, 0, 0).to(16, 16, 16)
                 .face(SOUTH).cullface(SOUTH).texture("#side").end()
@@ -384,7 +384,7 @@ public class BlockStates extends BaseBlockStateProvider {
                 .parent(models().getExistingFile(mcLoc("block/block")))
                 .texture("glass", mcLoc("block/glass"))
                 .texture("particle", mcLoc("block/glass"))
-                .renderType("minecraft:translucent");
+                ;
         // Eight glass facets form a hollow tube; the rotating field band is entirely particles.
         for (int rotation : new int[]{0, 45}) {
             for (Direction face : new Direction[]{UP, DOWN, EAST, WEST}) {
@@ -456,16 +456,16 @@ public class BlockStates extends BaseBlockStateProvider {
                 .parent(models().getExistingFile(mcLoc("block/block")))
                 .texture("particle", modLoc(TXT_BLACKMARBLE))
                 .texture("frame", modLoc(TXT_BLACKMARBLE))
-                .renderType("minecraft:solid");
+                ;
         createFrame(frame, "#frame", 1f, top, bottom);
         return frame;
     }
 
     private void tankItemModel(String prefix, BlockModelBuilder frameModel) {
         String name = BLOCK_FOLDER + "/machines/" + prefix + "_tank_inventory";
-        BlockModelBuilder frame = new BlockModelBuilder(modLoc(name + "_frame"), models().existingFileHelper)
+        BlockModelBuilder frame = new BlockModelBuilder(modLoc(name + "_frame"))
                 .parent(frameModel);
-        BlockModelBuilder window = new BlockModelBuilder(modLoc(name + "_window"), models().existingFileHelper);
+        BlockModelBuilder window = new BlockModelBuilder(modLoc(name + "_window"));
         window.element().from(1, 0, 1).to(15, 16, 15)
                 .face(EAST).texture("#window").end()
                 .face(WEST).texture("#window").end()
@@ -473,7 +473,7 @@ public class BlockStates extends BaseBlockStateProvider {
                 .face(NORTH).texture("#window").end()
                 .end()
                 .texture("window", modLoc(BLOCK_FOLDER + "/machines/" + prefix + "_tank_window"))
-                .renderType("minecraft:translucent");
+                ;
 
         models().getBuilder(name)
                 .parent(models().getExistingFile(mcLoc("block/block")))
@@ -561,7 +561,7 @@ public class BlockStates extends BaseBlockStateProvider {
     private void registerMarbleSlabs() {
         for (MarbleColor color : MarbleColor.VALUES) {
             VariantBlockStateBuilder builder = getVariantBuilder(DecorativeBlockModule.MARBLE_SLAB.get(color).get());
-            ResourceLocation marble = modLoc("block/marble/" + color.getSerializedName() + "marble_smooth");
+            Identifier marble = modLoc("block/marble/" + color.getSerializedName() + "marble_smooth");
             String name = BLOCK_FOLDER + "/decorative/marble_slab_" + color.getSerializedName();
             builder
                     .partialState().with(SlabBlock.TYPE, SlabType.BOTTOM).addModels(new ConfiguredModel(models().slab(name, marble, marble, marble)))
@@ -594,11 +594,11 @@ public class BlockStates extends BaseBlockStateProvider {
     }
 
     private void registerCamera() {
-        BlockModelBuilder plate = new BlockModelBuilder(modLoc("block/utility/camera_plate"), models().existingFileHelper);
-        plate.texture("plate", modLoc(TXT_MACHINETOP)).renderType("minecraft:solid")
+        BlockModelBuilder plate = new BlockModelBuilder(modLoc("block/utility/camera_plate"));
+        plate.texture("plate", modLoc(TXT_MACHINETOP))
                 .element().from(0, 0, 0).to(16, 1, 16).allFaces((direction, face) -> face.texture("#plate")).end();
-        BlockModelBuilder glass = new BlockModelBuilder(modLoc("block/utility/camera_glass"), models().existingFileHelper);
-        glass.texture("glass", modLoc("block/machines/camera_glass")).renderType("minecraft:translucent")
+        BlockModelBuilder glass = new BlockModelBuilder(modLoc("block/utility/camera_glass"));
+        glass.texture("glass", modLoc("block/machines/camera_glass"))
                 .element().from(4, 1, 4).to(12, 9, 12).allFaces((direction, face) -> face.texture("#glass").uvs(0, 0, 16, 16)).end();
         BlockModelBuilder model = models().getBuilder(BLOCK_FOLDER + "/utility/camera")
                 .parent(models().getExistingFile(mcLoc("block/block")))
@@ -693,9 +693,9 @@ public class BlockStates extends BaseBlockStateProvider {
     }
 
     private void registerAICore() {
-        BlockModelBuilder frame = new BlockModelBuilder(modLoc("block/aicore_frame"), models().existingFileHelper);
+        BlockModelBuilder frame = new BlockModelBuilder(modLoc("block/aicore_frame"));
         createFrame(frame, "#frame", 2f);
-        frame.texture("frame", modLoc(TXT_BLACKMARBLE)).renderType("minecraft:solid");
+        frame.texture("frame", modLoc(TXT_BLACKMARBLE));
         simpleBlock(Registration.AICORE.get(), coreModel("aicore", frame));
         registerHoloStorage(Registration.HOLO_STORAGE_1.get(), 1);
         registerHoloStorage(Registration.HOLO_STORAGE_2.get(), 2);
@@ -704,7 +704,7 @@ public class BlockStates extends BaseBlockStateProvider {
 
     private void registerHoloStorage(BaseBlock block, int tier) {
         String name = "holo_storage_" + tier;
-        BlockModelBuilder frame = new BlockModelBuilder(modLoc("block/" + name + "_frame"), models().existingFileHelper);
+        BlockModelBuilder frame = new BlockModelBuilder(modLoc("block/" + name + "_frame"));
         for (float x : new float[]{0, 14}) {
             for (float z : new float[]{0, 14}) {
                 storageFrameBar(frame, x, 0, z, x + 2, 16, z + 2);
@@ -718,7 +718,7 @@ public class BlockStates extends BaseBlockStateProvider {
         }
         frame.texture("frame", modLoc("block/machines/storage_tier" + tier))
                 .texture("inner", modLoc(TXT_BLACKMARBLE))
-                .renderType("minecraft:solid");
+                ;
         simpleBlock(block, coreModel(name, frame));
     }
 
@@ -735,9 +735,9 @@ public class BlockStates extends BaseBlockStateProvider {
     }
 
     private BlockModelBuilder coreModel(String name, BlockModelBuilder frame) {
-        BlockModelBuilder window = new BlockModelBuilder(modLoc("block/" + name + "_glass"), models().existingFileHelper);
+        BlockModelBuilder window = new BlockModelBuilder(modLoc("block/" + name + "_glass"));
         innerCube(window, "#window", 2, 2, 2, 14, 14, 14);
-        window.texture("window", modLoc(TXT_AICORE_WINDOW)).renderType("minecraft:translucent");
+        window.texture("window", modLoc(TXT_AICORE_WINDOW));
         return models().getBuilder(BLOCK_FOLDER + "/" + name)
                 .parent(models().getExistingFile(mcLoc("block/block")))
                 .texture("particle", modLoc(TXT_BLACKMARBLE))
@@ -891,7 +891,7 @@ public class BlockStates extends BaseBlockStateProvider {
                 .texture("empty", modLoc("block/base/empty_glow"));
     }
 
-    private void slabBlock(VariantBlockStateBuilder builder, String name, ResourceLocation doubleslab, ResourceLocation side, ResourceLocation bottom, ResourceLocation top) {
+    private void slabBlock(VariantBlockStateBuilder builder, String name, Identifier doubleslab, Identifier side, Identifier bottom, Identifier top) {
         slabBlock(builder, models().slab(name, side, bottom, top), models().slabTop(name + "_top", side, bottom, top), models().getExistingFile(doubleslab));
     }
 
@@ -926,8 +926,8 @@ public class BlockStates extends BaseBlockStateProvider {
     }
 
     private void registerNode(String nodeName, BaseBlock block) {
-        ResourceLocation texture = modLoc(TXT_MACHINEBOTTOM);
-        ResourceLocation frontTexture = modLoc("block/machines/" + nodeName + "_node");
+        Identifier texture = modLoc(TXT_MACHINEBOTTOM);
+        Identifier frontTexture = modLoc("block/machines/" + nodeName + "_node");
         Map<String, BlockModelBuilder> modelMap = getPartModelMap(pair -> models().getBuilder("block/utility/" + nodeName + "_node_" + pair.getKey())
                 .parent(pair.getValue())
                 .texture("front", frontTexture)

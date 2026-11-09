@@ -1,5 +1,8 @@
 package mcjty.ariente.blocks.utility;
 
+import net.minecraft.world.level.block.state.BlockBehaviour;
+import net.minecraft.world.level.material.MapColor;
+import net.minecraft.world.level.block.SoundType;
 import mcjty.hologui.api.*;
 import java.util.Map;
 import javax.annotation.Nonnull;
@@ -11,7 +14,6 @@ import mcjty.ariente.blocks.ArienteBlockEntity;
 import mcjty.ariente.gui.GuiHelp;
 import mcjty.ariente.gui.PlayerInventoryPanel;
 import mcjty.ariente.items.BlueprintItem;
-import mcjty.ariente.setup.Registration;
 import mcjty.hologui.api.components.IPlayerSlots;
 import mcjty.hologui.api.components.ISlots;
 import mcjty.lib.blocks.BaseBlock;
@@ -50,11 +52,11 @@ public class BlueprintStorageTile extends ArienteBlockEntity implements IGuiTile
     private final GenericItemHandler items = createItemHandler();
 
     public BlueprintStorageTile(BlockPos pos, BlockState state) {
-        super(Registration.BLUEPRINT_STORAGE_TILE.get(), pos, state);
+        super(mcjty.ariente.setup.Registration.BLUEPRINT_STORAGE_TILE.get(), pos, state);
     }
 
-    public static BaseBlock createBlock() {
-        return new BaseBlock(new BlockBuilder()
+    public static BaseBlock createBlock(BlockBehaviour.Properties properties) {
+        return new BaseBlock(new BlockBuilder().properties(properties.mapColor(MapColor.METAL).strength(2.0f).requiresCorrectToolForDrops().sound(SoundType.METAL))
                 .info(key("message.ariente.shiftmessage"))
                 .infoShift(header())
                 .topDriver(DRIVER)
@@ -103,7 +105,7 @@ public class BlueprintStorageTile extends ArienteBlockEntity implements IGuiTile
         return GuiHelp.BLUEPRINT_STORAGE.createPanel(registry)
                 .add(registry.text(0, 0, 8, 1).text("Blueprints").color(registry.color(StyledColor.LABEL)))
 
-                .add(registry.stackIcon(0, 1.2, 1, 1).itemStack(new ItemStack(Registration.CONSTRUCTOR.get())))
+                .add(registry.stackIcon(0, 1.2, 1, 1).itemStack(new ItemStack(mcjty.ariente.setup.Registration.CONSTRUCTOR.get())))
                 .add(registry.slots(1.5, 1.2, 6, 1)
                         .name("slots")
                         .doubleClickEvent((component, player, entity, x, y, stack, index) -> transferToPlayer(player, entity))
@@ -166,7 +168,7 @@ public class BlueprintStorageTile extends ArienteBlockEntity implements IGuiTile
 
     @Override
     public void loadClientDataFromNBT(CompoundTag tag, HolderLookup.Provider provider) {
-        items.deserializeNBT(provider, tag.getCompound("Items"));
+        items.deserializeNBT(provider, tag.getCompoundOrEmpty("Items"));
     }
 
     @Override
@@ -179,14 +181,14 @@ public class BlueprintStorageTile extends ArienteBlockEntity implements IGuiTile
             @Override
             protected void onUpdate(int index, ItemStack stack) {
                 super.onUpdate(index, stack);
-                if (level != null && !level.isClientSide) {
+                if (level != null && !level.isClientSide()) {
                     markDirtyClient();
                 }
             }
 
             @Override
             public boolean isItemValid(int slot, @Nonnull ItemStack stack) {
-                return stack.getItem() == Registration.BLUEPRINT.get();
+                return stack.getItem() == mcjty.ariente.setup.Registration.BLUEPRINT.get();
             }
         };
     }

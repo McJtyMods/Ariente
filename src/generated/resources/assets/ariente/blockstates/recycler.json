@@ -5,7 +5,8 @@
       "y": 90
     },
     "facing=north": {
-      "model": "ariente:block/machines/recycler"
+      "model": "ariente:block/machines/recycler",
+      "y": 0
     },
     "facing=south": {
       "model": "ariente:block/machines/recycler",

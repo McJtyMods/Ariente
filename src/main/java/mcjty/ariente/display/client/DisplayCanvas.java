@@ -1,11 +1,11 @@
 package mcjty.ariente.display.client;
 
+import mcjty.ariente.client.ArienteRenderHelper;
 import com.mojang.blaze3d.vertex.PoseStack;
 import com.mojang.blaze3d.vertex.VertexConsumer;
-import mcjty.ariente.client.ArienteRenderType;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.Font;
-import net.minecraft.client.renderer.LightTexture;
+import net.minecraft.util.LightCoordsUtil;
 import net.minecraft.client.renderer.MultiBufferSource;
 import net.minecraft.client.renderer.texture.OverlayTexture;
 import net.minecraft.world.item.ItemDisplayContext;
@@ -13,6 +13,7 @@ import net.minecraft.world.item.ItemStack;
 import org.joml.Matrix4f;
 
 /** Drawing in display pixels (64 per block), with the origin at the top left. */
+
 public record DisplayCanvas(PoseStack poses, MultiBufferSource buffer) {
 
     public void fill(float x, float y, float width, float height, int argb) {
@@ -44,7 +45,7 @@ public record DisplayCanvas(PoseStack poses, MultiBufferSource buffer) {
         poses.scale(scale, scale, scale);
         Font font = Minecraft.getInstance().font;
         String fitted = font.plainSubstrByWidth(text, Math.max(1, (int) (maxWidth / scale)));
-        font.drawInBatch(fitted, 0, 0, rgb, false, poses.last().pose(), buffer, Font.DisplayMode.NORMAL, 0, LightTexture.FULL_BRIGHT);
+        font.drawInBatch(fitted, 0, 0, 0xff000000 | rgb, false, poses.last().pose(), buffer, Font.DisplayMode.NORMAL, 0, LightCoordsUtil.FULL_BRIGHT);
         poses.popPose();
     }
 
@@ -66,9 +67,7 @@ public record DisplayCanvas(PoseStack poses, MultiBufferSource buffer) {
         poses.pushPose();
         poses.translate(x + 8, y + 8, .18);
         poses.scale(16, -16, .01f);
-        Minecraft.getInstance().getItemRenderer().renderStatic(stack, ItemDisplayContext.GUI,
-                LightTexture.FULL_BRIGHT, OverlayTexture.NO_OVERLAY, poses,
-                type -> buffer.getBuffer(ArienteRenderType.displayItem(type)), Minecraft.getInstance().level, 0);
+        ArienteRenderHelper.item(poses, buffer, stack, ItemDisplayContext.GUI, LightCoordsUtil.FULL_BRIGHT, OverlayTexture.NO_OVERLAY);
         poses.popPose();
     }
 }

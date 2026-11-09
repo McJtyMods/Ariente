@@ -1,5 +1,12 @@
 package mcjty.ariente.entities;
 
+import net.minecraft.nbt.DoubleTag;
+
+import net.minecraft.server.level.ServerLevel;
+import org.joml.Vector3fc;
+import com.mojang.serialization.MapCodec;
+import net.minecraft.world.level.storage.ValueInput;
+import net.minecraft.world.level.storage.ValueOutput;
 import mcjty.ariente.Ariente;
 import mcjty.ariente.api.ArmorUpgradeType;
 import mcjty.ariente.api.IForceFieldTile;
@@ -8,7 +15,6 @@ import mcjty.ariente.entities.fluxship.FluxShipLaser;
 import mcjty.ariente.items.LanceAim;
 import mcjty.ariente.items.modules.ModuleSupport;
 import mcjty.ariente.items.modules.WeaponModuleSupport;
-import mcjty.ariente.setup.Registration;
 import mcjty.ariente.sounds.ModSounds;
 import mcjty.hologui.api.IHoloGuiEntity;
 import net.minecraft.core.particles.ParticleTypes;
@@ -20,7 +26,7 @@ import net.minecraft.network.syncher.EntityDataAccessor;
 import net.minecraft.network.syncher.EntityDataSerializers;
 import net.minecraft.network.syncher.SynchedEntityData;
 import net.minecraft.resources.ResourceKey;
-import net.minecraft.resources.ResourceLocation;
+import net.minecraft.resources.Identifier;
 import net.minecraft.sounds.SoundSource;
 import net.minecraft.util.Mth;
 import net.minecraft.world.damagesource.DamageSource;
@@ -44,14 +50,14 @@ import org.joml.Vector3f;
 public class LaserEntity extends Projectile implements IForcefieldImmunity, IEntityWithComplexSpawn {
 
     public static final ResourceKey<DamageType> SHIP_DAMAGE = ResourceKey.create(Registries.DAMAGE_TYPE,
-            ResourceLocation.fromNamespaceAndPath(Ariente.MODID, "ship_laser"));
+            Identifier.fromNamespaceAndPath(Ariente.MODID, "ship_laser"));
 
     private static final EntityDataAccessor<Float> SPAWN_YAW = SynchedEntityData.<Float>defineId(LaserEntity.class, EntityDataSerializers.FLOAT);
     private static final EntityDataAccessor<Float> SPAWN_PITCH = SynchedEntityData.<Float>defineId(LaserEntity.class, EntityDataSerializers.FLOAT);
     private static final EntityDataAccessor<Float> ACCELERATION_X = SynchedEntityData.defineId(LaserEntity.class, EntityDataSerializers.FLOAT);
     private static final EntityDataAccessor<Float> ACCELERATION_Y = SynchedEntityData.defineId(LaserEntity.class, EntityDataSerializers.FLOAT);
     private static final EntityDataAccessor<Float> ACCELERATION_Z = SynchedEntityData.defineId(LaserEntity.class, EntityDataSerializers.FLOAT);
-    private static final EntityDataAccessor<Vector3f> SHIP_VELOCITY = SynchedEntityData.defineId(LaserEntity.class, EntityDataSerializers.VECTOR3);
+    private static final EntityDataAccessor<Vector3fc> SHIP_VELOCITY = SynchedEntityData.defineId(LaserEntity.class, EntityDataSerializers.VECTOR3);
 
     private LivingEntity shootingEntity;
     private int ticksAlive;
@@ -119,27 +125,30 @@ public class LaserEntity extends Projectile implements IForcefieldImmunity, IEnt
     @Override
     public void setDeltaMovement(Vec3 velocity) {
         super.setDeltaMovement(velocity);
-        if (shipShot && !level().isClientSide) {
+        if (shipShot && !level().isClientSide()) {
             entityData.set(SHIP_VELOCITY, velocity.toVector3f());
         }
     }
 
     @Override
-    public void lerpMotion(double x, double y, double z) {
+    public void lerpMotion(Vec3 movement) {
+        double x = movement.x;
+        double y = movement.y;
+        double z = movement.z;
         // Pairing and later velocity packets also clamp each component. Use the full synced vector.
         if (shipShot) {
-            Vector3f velocity = entityData.get(SHIP_VELOCITY);
-            super.lerpMotion(velocity.x, velocity.y, velocity.z);
+            Vector3f velocity = new Vector3f(entityData.get(SHIP_VELOCITY));
+            super.lerpMotion(new Vec3(velocity.x, velocity.y, velocity.z));
         } else {
-            super.lerpMotion(x, y, z);
+            super.lerpMotion(new Vec3(x, y, z));
         }
     }
 
     @Override
     public void onSyncedDataUpdated(EntityDataAccessor<?> key) {
         super.onSyncedDataUpdated(key);
-        if (key.equals(SHIP_VELOCITY) && shipShot && level().isClientSide) {
-            Vector3f velocity = entityData.get(SHIP_VELOCITY);
+        if (key.equals(SHIP_VELOCITY) && shipShot && level().isClientSide()) {
+            Vector3f velocity = new Vector3f(entityData.get(SHIP_VELOCITY));
             setDeltaMovement(velocity.x, velocity.y, velocity.z);
         }
     }
@@ -200,15 +209,14 @@ public class LaserEntity extends Projectile implements IForcefieldImmunity, IEnt
         return direction.lengthSqr() < 1.0E-7D ? getLookAngle() : direction.normalize();
     }
 
-    @Override
     public AABB getBoundingBoxForCulling() {
         // The visible trail extends behind the projectile's collision box.
         return getBoundingBox().inflate(2.1D);
     }
 
     public static LaserEntity create(Level worldIn, double x, double y, double z, double accelX, double accelY, double accelZ) {
-        LaserEntity entity = new LaserEntity(Registration.ENTITY_LASER.get(), worldIn);
-        entity.moveTo(x, y, z, entity.getYRot(), entity.getXRot());
+        LaserEntity entity = new LaserEntity(mcjty.ariente.setup.Registration.ENTITY_LASER.get(), worldIn);
+        entity.snapTo(x, y, z, entity.getYRot(), entity.getXRot());
         entity.setPos(x, y, z);
         entity.setAcceleration(new Vec3(accelX, accelY, accelZ).normalize().scale(0.1D));
         entity.setLaunchRotation();
@@ -216,10 +224,10 @@ public class LaserEntity extends Projectile implements IForcefieldImmunity, IEnt
     }
 
     public static LaserEntity create(Level worldIn, LivingEntity shooter, double accelX, double accelY, double accelZ) {
-        LaserEntity entity = new LaserEntity(Registration.ENTITY_LASER.get(), worldIn);
+        LaserEntity entity = new LaserEntity(mcjty.ariente.setup.Registration.ENTITY_LASER.get(), worldIn);
         entity.shootingEntity = shooter;
         entity.setOwner(shooter);
-        entity.moveTo(shooter.getX(), shooter.getY(), shooter.getZ(), shooter.getYRot(), shooter.getXRot());
+        entity.snapTo(shooter.getX(), shooter.getY(), shooter.getZ(), shooter.getYRot(), shooter.getXRot());
         entity.setPos(entity.getX(), entity.getY(), entity.getZ());
         entity.setDeltaMovement(0, 0, 0);
         accelX = accelX + entity.random.nextGaussian() * 0.4D;
@@ -231,7 +239,7 @@ public class LaserEntity extends Projectile implements IForcefieldImmunity, IEnt
     }
 
     public static LaserEntity createLanceShot(Level level, LivingEntity shooter, Vec3 direction, float damage) {
-        LaserEntity entity = new LaserEntity(Registration.ENTITY_LASER.get(), level);
+        LaserEntity entity = new LaserEntity(mcjty.ariente.setup.Registration.ENTITY_LASER.get(), level);
         LanceAim shot = LanceAim.calculate(shooter, direction);
         Vec3 aim = shot.direction();
         entity.shootingEntity = shooter;
@@ -240,8 +248,8 @@ public class LaserEntity extends Projectile implements IForcefieldImmunity, IEnt
         entity.damage = damage;
         ItemStack weapon = shooter.getMainHandItem();
         entity.inhibit = ModuleSupport.hasWorkingUpgrade(weapon, ArmorUpgradeType.INHIBIT);
-        entity.fireAspect = weapon.getEnchantmentLevel(shooter.registryAccess().registryOrThrow(Registries.ENCHANTMENT).getHolderOrThrow(Enchantments.FIRE_ASPECT));
-        entity.looting = weapon.getEnchantmentLevel(shooter.registryAccess().registryOrThrow(Registries.ENCHANTMENT).getHolderOrThrow(Enchantments.LOOTING));
+        entity.fireAspect = weapon.getEnchantmentLevel(shooter.registryAccess().lookupOrThrow(Registries.ENCHANTMENT).getOrThrow(Enchantments.FIRE_ASPECT));
+        entity.looting = weapon.getEnchantmentLevel(shooter.registryAccess().lookupOrThrow(Registries.ENCHANTMENT).getOrThrow(Enchantments.LOOTING));
         entity.setPos(shot.muzzle());
         entity.setDeltaMovement(aim.scale(1.8D));
         entity.setAcceleration(aim.scale(0.12D));
@@ -254,7 +262,7 @@ public class LaserEntity extends Projectile implements IForcefieldImmunity, IEnt
     }
 
     public static LaserEntity createShipShot(Level level, LivingEntity pilot, Vec3 muzzle, Vec3 direction, float damage) {
-        LaserEntity entity = new LaserEntity(Registration.ENTITY_LASER.get(), level);
+        LaserEntity entity = new LaserEntity(mcjty.ariente.setup.Registration.ENTITY_LASER.get(), level);
         entity.shootingEntity = pilot;
         entity.setOwner(pilot);
         entity.shipShot = true;
@@ -278,7 +286,7 @@ public class LaserEntity extends Projectile implements IForcefieldImmunity, IEnt
     public void baseTick() {
         super.baseTick();
 
-        if (!level().isClientSide && !soundPlayed) {
+        if (!level().isClientSide() && !soundPlayed) {
             soundPlayed = true;
             level().playSound(null, getX(), getY(), getZ(), ModSounds.laser.get(), SoundSource.HOSTILE, 5.0f, 1.0f);
         }
@@ -286,7 +294,7 @@ public class LaserEntity extends Projectile implements IForcefieldImmunity, IEnt
 
     @Override
     public void tick() {
-        if (!level().isClientSide && (lanceShot || shipShot)) {
+        if (!level().isClientSide() && (lanceShot || shipShot)) {
             if (++ticksAlive > (shipShot ? FluxShipLaser.SHOT_LIFETIME : 100)) {
                 discard();
                 return;
@@ -295,7 +303,7 @@ public class LaserEntity extends Projectile implements IForcefieldImmunity, IEnt
                 shootingEntity = owner;
             }
         }
-        if (this.level().isClientSide || (this.shootingEntity == null || this.shootingEntity.isAlive()) && this.level().hasChunkAt(this.blockPosition())) {
+        if (this.level().isClientSide() || (this.shootingEntity == null || this.shootingEntity.isAlive()) && this.level().hasChunkAt(this.blockPosition())) {
             super.tick();
 
             ++this.ticksInAir;
@@ -345,15 +353,15 @@ public class LaserEntity extends Projectile implements IForcefieldImmunity, IEnt
     }
 
     protected void onImpact(HitResult result) {
-        if (!level().isClientSide && result instanceof EntityHitResult hit) {
+        if (!level().isClientSide() && result instanceof EntityHitResult hit) {
             Entity target = hit.getEntity();
             int previousFireTicks = target.getRemainingFireTicks();
             if (lanceShot && fireAspect > 0) {
                 // Ignite before damage so a killing shot can also produce cooked drops.
                 target.igniteForSeconds(fireAspect * 4);
             }
-            DamageSource source = shipShot ? new DamageSource(level().registryAccess().registryOrThrow(Registries.DAMAGE_TYPE)
-                    .getHolderOrThrow(SHIP_DAMAGE), this, shootingEntity) : damageSources().indirectMagic(this, shootingEntity);
+            DamageSource source = shipShot ? new DamageSource(level().registryAccess().lookupOrThrow(Registries.DAMAGE_TYPE)
+                    .getOrThrow(SHIP_DAMAGE), this, shootingEntity) : damageSources().indirectMagic(this, shootingEntity);
             boolean damaged = LanceLooting.hurt(target, source, damage, isLanceShot() ? looting : 0);
             if (!damaged && lanceShot && fireAspect > 0) {
                 target.setRemainingFireTicks(previousFireTicks);
@@ -362,14 +370,13 @@ public class LaserEntity extends Projectile implements IForcefieldImmunity, IEnt
                 WeaponModuleSupport.inhibit(living);
             }
             this.remove(RemovalReason.DISCARDED);
-        } else if (!level().isClientSide && (lanceShot || shipShot) && result.getType() == HitResult.Type.BLOCK) {
+        } else if (!level().isClientSide() && (lanceShot || shipShot) && result.getType() == HitResult.Type.BLOCK) {
             discard();
         }
     }
 
-    @Override
-    public void addAdditionalSaveData(CompoundTag compound) {
-        super.addAdditionalSaveData(compound);
+    public void writeEntityData(CompoundTag compound) {
+
         compound.put("direction", this.newDoubleList(new double[]{this.getDeltaMovement().x, this.getDeltaMovement().y, this.getDeltaMovement().z}));
         Vec3 acceleration = getAcceleration();
         compound.put("power", this.newDoubleList(new double[]{acceleration.x, acceleration.y, acceleration.z}));
@@ -384,34 +391,33 @@ public class LaserEntity extends Projectile implements IForcefieldImmunity, IEnt
         compound.putInt("lanceLooting", looting);
     }
 
-    @Override
-    public void readAdditionalSaveData(CompoundTag compound) {
-        super.readAdditionalSaveData(compound);
-        damage = compound.contains("damage") ? compound.getFloat("damage") : 10.0F;
-        lanceShot = compound.getBoolean("lanceShot");
-        shipShot = compound.getBoolean("shipShot");
-        inhibit = compound.getBoolean("lanceInhibit");
-        fireAspect = compound.getInt("lanceFire");
-        looting = compound.getInt("lanceLooting");
-        if (compound.contains("power", 9)) {
-            ListTag nbttaglist = compound.getList("power", 6);
+    public void readEntityData(CompoundTag compound) {
+
+        damage = compound.contains("damage") ? compound.getFloatOr("damage", 0) : 10.0F;
+        lanceShot = compound.getBooleanOr("lanceShot", false);
+        shipShot = compound.getBooleanOr("shipShot", false);
+        inhibit = compound.getBooleanOr("lanceInhibit", false);
+        fireAspect = compound.getIntOr("lanceFire", 0);
+        looting = compound.getIntOr("lanceLooting", 0);
+        if (compound.contains("power")) {
+            ListTag nbttaglist = compound.getListOrEmpty("power");
 
             if (nbttaglist.size() == 3) {
-                setAcceleration(new Vec3(nbttaglist.getDouble(0), nbttaglist.getDouble(1), nbttaglist.getDouble(2)));
+                setAcceleration(new Vec3(nbttaglist.getDoubleOr(0, 0), nbttaglist.getDoubleOr(1, 0), nbttaglist.getDoubleOr(2, 0)));
             }
         }
 
-        this.ticksAlive = compound.getInt("life");
+        this.ticksAlive = compound.getIntOr("life", 0);
 
-        if (compound.contains("direction", 9) && compound.getList("direction", 6).size() == 3) {
-            ListTag lst = compound.getList("direction", 6);
-            setDeltaMovement(lst.getDouble(0), lst.getDouble(1), lst.getDouble(2));
+        if (compound.contains("direction") && compound.getListOrEmpty("direction").size() == 3) {
+            ListTag lst = compound.getListOrEmpty("direction");
+            setDeltaMovement(lst.getDoubleOr(0, 0), lst.getDoubleOr(1, 0), lst.getDoubleOr(2, 0));
         } else {
             this.remove(RemovalReason.DISCARDED);
         }
 
-        float yaw = compound.getFloat("spawnYaw");
-        float pitch = compound.getFloat("spawnPitch");
+        float yaw = compound.getFloatOr("spawnYaw", 0);
+        float pitch = compound.getFloatOr("spawnPitch", 0);
         setSpawnYawPitch(yaw, pitch);
     }
 
@@ -426,8 +432,8 @@ public class LaserEntity extends Projectile implements IForcefieldImmunity, IEnt
     }
 
     @Override
-    public boolean hurt(DamageSource source, float amount) {
-        if (this.isInvulnerableTo(source)) {
+    public boolean hurtServer(ServerLevel serverLevel, DamageSource source, float amount) {
+        if (this.isInvulnerableToBase(source)) {
             return false;
         } else {
             this.markHurt();
@@ -456,4 +462,23 @@ public class LaserEntity extends Projectile implements IForcefieldImmunity, IEnt
         return 1.0F;
     }
 
+    @Override
+    public void readAdditionalSaveData(ValueInput input) {
+        super.readAdditionalSaveData(input);
+        readEntityData(input.read(MapCodec.assumeMapUnsafe(CompoundTag.CODEC)).orElseGet(CompoundTag::new));
+    }
+
+    @Override
+    public void addAdditionalSaveData(ValueOutput output) {
+        super.addAdditionalSaveData(output);
+        CompoundTag tag = new CompoundTag();
+        writeEntityData(tag);
+        output.store(tag);
+    }
+
+    private static ListTag newDoubleList(double[] values) {
+        ListTag list = new ListTag();
+        for (double value : values) list.add(DoubleTag.valueOf(value));
+        return list;
+    }
 }

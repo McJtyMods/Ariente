@@ -1,12 +1,15 @@
 package mcjty.ariente.blocks.generators;
 
+import net.minecraft.util.RandomSource;
+import net.minecraft.world.level.ScheduledTickAccess;
+
 import mcjty.lib.blocks.BaseBlock;
 import mcjty.lib.blocks.RotationType;
 import mcjty.lib.builder.BlockBuilder;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
 import net.minecraft.world.item.context.BlockPlaceContext;
-import net.minecraft.world.level.LevelAccessor;
+import net.minecraft.world.level.LevelReader;
 import net.minecraft.world.level.block.Block;
 import net.minecraft.world.level.block.SoundType;
 import net.minecraft.world.level.block.state.BlockState;
@@ -19,9 +22,8 @@ import static mcjty.ariente.blocks.BlockProperties.UPPER;
 public class TankBlock extends BaseBlock {
 
     public TankBlock(BlockBuilder builder) {
-        super(builder.properties(Properties.of().mapColor(MapColor.METAL).strength(2.0f)
-                .requiresCorrectToolForDrops().sound(SoundType.METAL).noOcclusion()
-                .hasPostProcess((state, level, pos) -> true)));
+        super(builder.properties(builder.getProperties().mapColor(MapColor.METAL).strength(2.0f)
+                .requiresCorrectToolForDrops().sound(SoundType.METAL).noOcclusion()));
         registerDefaultState(defaultBlockState().setValue(UPPER, false).setValue(LOWER, false));
     }
 
@@ -45,12 +47,12 @@ public class TankBlock extends BaseBlock {
     }
 
     @Override
-    public BlockState updateShape(BlockState state, Direction direction, BlockState adjacent, LevelAccessor level, BlockPos pos, BlockPos adjacentPos) {
+    public BlockState updateShape(BlockState state, LevelReader level, ScheduledTickAccess ticks, BlockPos pos, Direction direction, BlockPos adjacentPos, BlockState adjacent, RandomSource random) {
         if (direction == Direction.UP) {
             return state.setValue(UPPER, adjacent.is(this));
         } else if (direction == Direction.DOWN) {
             return state.setValue(LOWER, adjacent.is(this));
         }
-        return super.updateShape(state, direction, adjacent, level, pos, adjacentPos);
+        return super.updateShape(state, level, ticks, pos, direction, adjacentPos, adjacent, random);
     }
 }

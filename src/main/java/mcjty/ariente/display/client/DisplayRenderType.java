@@ -1,62 +1,77 @@
 package mcjty.ariente.display.client;
 
-import com.mojang.blaze3d.platform.GlStateManager;
-import com.mojang.blaze3d.systems.RenderSystem;
+import com.mojang.blaze3d.pipeline.BlendFunction;
+import com.mojang.blaze3d.pipeline.ColorTargetState;
+import com.mojang.blaze3d.pipeline.DepthStencilState;
+import com.mojang.blaze3d.pipeline.RenderPipeline;
+import com.mojang.blaze3d.platform.CompareOp;
 import com.mojang.blaze3d.vertex.DefaultVertexFormat;
 import com.mojang.blaze3d.vertex.VertexFormat;
-import java.util.function.IntSupplier;
-import mcjty.ariente.Ariente;
-import net.minecraft.client.renderer.GameRenderer;
-import net.minecraft.client.renderer.RenderType;
+import java.util.function.Function;
+import net.minecraft.client.renderer.RenderPipelines;
+import net.minecraft.client.renderer.rendertype.RenderType;
+import net.minecraft.client.renderer.rendertype.RenderSetup;
 import net.minecraft.client.renderer.texture.TextureAtlas;
-import net.minecraft.resources.ResourceLocation;
+import net.minecraft.resources.Identifier;
+import net.minecraft.util.Util;
+import net.neoforged.neoforge.client.event.RegisterRenderPipelinesEvent;
 
-public class DisplayRenderType extends RenderType {
+public final class DisplayRenderType {
 
-    public static RenderType cameraImage(IntSupplier texture) {
-        return create("ariente_camera_image", DefaultVertexFormat.POSITION_TEX_COLOR, VertexFormat.Mode.QUADS,
-                256, false, false, CompositeState.builder()
-                        .setShaderState(new ShaderStateShard(GameRenderer::getPositionTexColorShader))
-                        .setTextureState(new EmptyTextureStateShard(() -> RenderSystem.setShaderTexture(0, texture.getAsInt()), () -> {}))
-                        .setTransparencyState(new TransparencyStateShard("camera_image", () -> {
-                            RenderSystem.enableBlend();
-                            RenderSystem.blendFuncSeparate(GlStateManager.SourceFactor.ONE, GlStateManager.DestFactor.ONE_MINUS_SRC_ALPHA,
-                                    GlStateManager.SourceFactor.ONE, GlStateManager.DestFactor.ONE_MINUS_SRC_ALPHA);
-                        }, () -> {
-                            RenderSystem.disableBlend();
-                            RenderSystem.defaultBlendFunc();
-                        }))
-                        .setCullState(NO_CULL).setWriteMaskState(COLOR_WRITE).createCompositeState(false));
+    private static final RenderPipeline IMAGE = imagePipeline("image", BlendFunction.TRANSLUCENT);
+    private static final RenderPipeline CAMERA_IMAGE = imagePipeline("camera", BlendFunction.TRANSLUCENT_PREMULTIPLIED_ALPHA);
+    private static final RenderPipeline COLOR = RenderPipeline.builder(RenderPipelines.DEBUG_FILLED_SNIPPET)
+            .withLocation(Identifier.fromNamespaceAndPath("ariente", "pipeline/display_color"))
+            .withCull(false).withDepthStencilState(new DepthStencilState(CompareOp.LESS_THAN_OR_EQUAL, false)).build();
+    private static final Function<Identifier, RenderType> CAMERAS = Util.memoize(texture -> image(texture, CAMERA_IMAGE));
+    public static final RenderType CAMERA = image(TextureAtlas.LOCATION_BLOCKS, IMAGE);
+    public static final RenderType ALIEN_FONT = image(Identifier.fromNamespaceAndPath("ariente", "textures/effects/alientfont.png"), IMAGE);
+    public static final RenderType SURFACE = RenderType.create("ariente_display", RenderSetup.builder(COLOR).createRenderSetup());
+
+    private static final RenderPipeline SCENE_SOLID = scenePipeline("solid", false);
+    private static final RenderPipeline SCENE_TRANSLUCENT = scenePipeline("translucent", true);
+
+    private static RenderPipeline scenePipeline(String name, boolean translucent) {
+        return RenderPipeline.builder(RenderPipelines.MATRICES_PROJECTION_SNIPPET)
+                .withLocation(Identifier.fromNamespaceAndPath("ariente", "pipeline/snapshot_" + name))
+                .withVertexShader("core/position_tex_color").withFragmentShader("core/position_tex_color")
+                .withVertexFormat(DefaultVertexFormat.POSITION_TEX_COLOR, VertexFormat.Mode.QUADS).withSampler("Sampler0")
+                .withCull(false).withColorTargetState(translucent ? new ColorTargetState(BlendFunction.TRANSLUCENT) : ColorTargetState.DEFAULT)
+                .withDepthStencilState(new DepthStencilState(CompareOp.LESS_THAN_OR_EQUAL, !translucent)).build();
     }
 
-    public static final RenderType CAMERA = create("ariente_display_camera", DefaultVertexFormat.POSITION_TEX_COLOR,
-            VertexFormat.Mode.QUADS, 65536, false, false, CompositeState.builder()
-                    .setShaderState(new ShaderStateShard(GameRenderer::getPositionTexColorShader))
-                    .setTextureState(new TextureStateShard(TextureAtlas.LOCATION_BLOCKS, false, false))
-                    .setTransparencyState(TRANSLUCENT_TRANSPARENCY)
-                    .setCullState(NO_CULL)
-                    .setWriteMaskState(COLOR_WRITE)
-                    .createCompositeState(false));
+    private static final RenderType SCENE_SOLID_TYPE = image(TextureAtlas.LOCATION_BLOCKS, SCENE_SOLID);
+    private static final RenderType SCENE_TRANSLUCENT_TYPE = image(TextureAtlas.LOCATION_BLOCKS, SCENE_TRANSLUCENT);
 
-    public static final RenderType ALIEN_FONT = create("ariente_alien_font", DefaultVertexFormat.POSITION_TEX_COLOR,
-            VertexFormat.Mode.QUADS, 4096, false, false, CompositeState.builder()
-                    .setShaderState(new ShaderStateShard(GameRenderer::getPositionTexColorShader))
-                    .setTextureState(new TextureStateShard(ResourceLocation.fromNamespaceAndPath(Ariente.MODID, "textures/effects/alientfont.png"), false, false))
-                    .setTransparencyState(TRANSLUCENT_TRANSPARENCY)
-                    .setCullState(NO_CULL)
-                    .setWriteMaskState(COLOR_WRITE)
-                    .createCompositeState(false));
+    public static RenderType scene(boolean translucent) {
+        return translucent ? SCENE_TRANSLUCENT_TYPE : SCENE_SOLID_TYPE;
+    }
 
-    public static final RenderType SURFACE = create("ariente_display", DefaultVertexFormat.POSITION_COLOR,
-            VertexFormat.Mode.QUADS, 4096, false, false, CompositeState.builder()
-                    .setShaderState(POSITION_COLOR_SHADER)
-                    .setTransparencyState(TRANSLUCENT_TRANSPARENCY)
-                    .setCullState(NO_CULL)
-                    .setWriteMaskState(COLOR_WRITE)
-                    .createCompositeState(false));
+    private DisplayRenderType() {
+    }
 
-    private DisplayRenderType(String name, VertexFormat format, VertexFormat.Mode mode, int size,
-                              boolean crumbling, boolean sort, Runnable setup, Runnable clear) {
-        super(name, format, mode, size, crumbling, sort, setup, clear);
+    private static RenderPipeline imagePipeline(String name, BlendFunction blend) {
+        return RenderPipeline.builder(RenderPipelines.MATRICES_PROJECTION_SNIPPET)
+                .withLocation(Identifier.fromNamespaceAndPath("ariente", "pipeline/display_" + name))
+                .withVertexShader("core/position_tex_color").withFragmentShader("core/position_tex_color")
+                .withVertexFormat(DefaultVertexFormat.POSITION_TEX_COLOR, VertexFormat.Mode.QUADS).withSampler("Sampler0")
+                .withCull(false).withColorTargetState(new ColorTargetState(blend))
+                .withDepthStencilState(new DepthStencilState(CompareOp.LESS_THAN_OR_EQUAL, false)).build();
+    }
+
+    private static RenderType image(Identifier texture, RenderPipeline pipeline) {
+        return RenderType.create("ariente_display_image", RenderSetup.builder(pipeline).withTexture("Sampler0", texture).createRenderSetup());
+    }
+
+    public static RenderType cameraImage(Identifier texture) {
+        return CAMERAS.apply(texture);
+    }
+
+    public static void registerPipelines(RegisterRenderPipelinesEvent event) {
+        event.registerPipeline(IMAGE);
+        event.registerPipeline(CAMERA_IMAGE);
+        event.registerPipeline(COLOR);
+        event.registerPipeline(SCENE_SOLID);
+        event.registerPipeline(SCENE_TRANSLUCENT);
     }
 }

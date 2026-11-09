@@ -1,0 +1,18 @@
+{
+  "model": {
+    "type": "minecraft:composite",
+    "models": [
+      {
+        "type": "minecraft:model",
+        "model": "ariente:item/blueprint_base"
+      },
+      {
+        "type": "minecraft:special",
+        "base": "ariente:item/blueprint_base",
+        "model": {
+          "type": "ariente:blueprint"
+        }
+      }
+    ]
+  }
+}

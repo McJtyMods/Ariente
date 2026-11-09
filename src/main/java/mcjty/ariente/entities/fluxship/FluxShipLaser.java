@@ -46,7 +46,7 @@ public class FluxShipLaser {
     }
 
     public static boolean fire(FluxShipEntity ship, LivingEntity pilot, int cooldown) {
-        if (ship.level().isClientSide || cooldown > 0 || ship.getControllingPassenger() != pilot || !pilot.isAlive()) {
+        if (ship.level().isClientSide() || cooldown > 0 || ship.getControllingPassenger() != pilot || !pilot.isAlive()) {
             return false;
         }
         return ship.level().addFreshEntity(LaserEntity.createShipShot(ship.level(), pilot,

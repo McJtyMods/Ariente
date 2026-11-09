@@ -27,17 +27,17 @@ public class DisplayDataSender {
 
     public static void broadcast(DisplayBaseTile base, int index) {
         ServerLevel level = (ServerLevel) base.getLevel();
-        for (ServerPlayer player : level.getChunkSource().chunkMap.getPlayers(new ChunkPos(base.getBlockPos()), false)) {
+        for (ServerPlayer player : level.getChunkSource().chunkMap.getPlayers(ChunkPos.containing(base.getBlockPos()), false)) {
             enqueue(player, base, index, false);
         }
     }
 
     public static void request(ServerPlayer player, PacketRequestDisplayData request) {
-        ServerLevel level = player.serverLevel();
+        ServerLevel level = player.level();
         if (player.distanceToSqr(request.pos().getCenter()) > 64 * 64 || !level.hasChunkAt(request.pos())
                 || !(level.getBlockEntity(request.pos()) instanceof DisplayBaseTile base)
                 || base.layoutVersion() != request.layoutVersion()
-                || !level.getChunkSource().chunkMap.getPlayers(new ChunkPos(request.pos()), false).contains(player)) {
+                || !level.getChunkSource().chunkMap.getPlayers(ChunkPos.containing(request.pos()), false).contains(player)) {
             return;
         }
         PlayerQueue queue = queue(player);
@@ -71,7 +71,7 @@ public class DisplayDataSender {
     private static PlayerQueue queue(ServerPlayer player) {
         PlayerQueue queue = QUEUES.get(player);
         if (queue == null || queue.level != player.level()) {
-            queue = new PlayerQueue(player.serverLevel());
+            queue = new PlayerQueue(player.level());
             QUEUES.put(player, queue);
         }
         return queue;

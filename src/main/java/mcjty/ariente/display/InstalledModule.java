@@ -1,5 +1,7 @@
 package mcjty.ariente.display;
 
+import mcjty.ariente.items.ItemData;
+import net.minecraft.core.UUIDUtil;
 import java.util.UUID;
 import net.minecraft.core.HolderLookup;
 import net.minecraft.nbt.CompoundTag;
@@ -125,24 +127,24 @@ public class InstalledModule {
 
     public CompoundTag save(boolean client, HolderLookup.Provider provider) {
         CompoundTag tag = new CompoundTag();
-        tag.putUUID("Id", id);
-        tag.put("Item", stack.save(provider));
+        tag.store("Id", UUIDUtil.CODEC, id);
+        tag.put("Item", ItemData.encode(provider, stack));
         tag.putInt("X", x);
         tag.putInt("Y", y);
         return tag;
     }
 
     public static InstalledModule load(CompoundTag tag, HolderLookup.Provider provider) {
-        ItemStack stack = ItemStack.parseOptional(provider, tag.getCompound("Item"));
-        if (!(stack.getItem() instanceof DisplayModuleItem) || tag.getInt("X") < 0 || tag.getInt("X") >= 64
-                || tag.getInt("Y") < 0 || tag.getInt("Y") >= 636) {
+        ItemStack stack = ItemData.decode(provider, tag.getCompoundOrEmpty("Item"));
+        if (!(stack.getItem() instanceof DisplayModuleItem) || tag.getIntOr("X", 0) < 0 || tag.getIntOr("X", 0) >= 64
+                || tag.getIntOr("Y", 0) < 0 || tag.getIntOr("Y", 0) >= 636) {
             return null;
         }
-        InstalledModule module = new InstalledModule(stack, tag.getInt("X"), tag.getInt("Y"));
-        if (tag.hasUUID("Id")) {
-            module.id = tag.getUUID("Id");
+        InstalledModule module = new InstalledModule(stack, tag.getIntOr("X", 0), tag.getIntOr("Y", 0));
+        if (tag.read("Id", UUIDUtil.CODEC).isPresent()) {
+            module.id = tag.read("Id", UUIDUtil.CODEC).orElse(null);
         }
-        module.snapshot = tag.getCompound("Data");
+        module.snapshot = tag.getCompoundOrEmpty("Data");
         return module;
     }
 }

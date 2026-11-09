@@ -5,7 +5,7 @@ import mcjty.lib.varia.Tools;
 import net.minecraft.core.registries.BuiltInRegistries;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.nbt.NbtUtils;
-import net.minecraft.resources.ResourceLocation;
+import net.minecraft.resources.Identifier;
 import net.minecraft.world.level.block.Block;
 import net.minecraft.world.level.block.Blocks;
 import net.minecraft.world.level.block.state.BlockState;
@@ -26,10 +26,10 @@ public class MimicBlockSupport {
 
     public void readFromNBT(CompoundTag tagCompound) {
         if (tagCompound.contains("mimicState")) {
-            mimicBlock = NbtUtils.readBlockState(BuiltInRegistries.BLOCK.asLookup(), tagCompound.getCompound("mimicState"));
+            mimicBlock = NbtUtils.readBlockState(BuiltInRegistries.BLOCK, tagCompound.getCompoundOrEmpty("mimicState"));
         } else if (tagCompound.contains("regName")) {
-            String regName = tagCompound.getString("regName");
-            Block value = BuiltInRegistries.BLOCK.get(ResourceLocation.parse(regName));
+            String regName = tagCompound.getStringOr("regName", "");
+            Block value = BuiltInRegistries.BLOCK.getValue(Identifier.parse(regName));
             if (value == null) {
                 mimicBlock = Blocks.COBBLESTONE.defaultBlockState();
             } else {

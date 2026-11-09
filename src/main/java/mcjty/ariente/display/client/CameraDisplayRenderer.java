@@ -1,13 +1,10 @@
 package mcjty.ariente.display.client;
 
-import com.mojang.blaze3d.vertex.BufferBuilder;
+import net.minecraft.client.renderer.block.dispatch.BlockStateModel;
+import net.minecraft.client.renderer.block.dispatch.BlockStateModelPart;
+import net.minecraft.client.model.geom.builders.UVPair;
 import com.mojang.blaze3d.vertex.ByteBufferBuilder;
-import com.mojang.blaze3d.vertex.DefaultVertexFormat;
-import com.mojang.blaze3d.vertex.MeshData;
-import com.mojang.blaze3d.vertex.VertexBuffer;
 import com.mojang.blaze3d.vertex.VertexConsumer;
-import com.mojang.blaze3d.vertex.VertexFormat;
-import com.mojang.blaze3d.vertex.VertexSorting;
 import java.util.ArrayList;
 import java.util.Comparator;
 import java.util.HashMap;
@@ -21,28 +18,21 @@ import mcjty.ariente.display.CameraView;
 import mcjty.ariente.display.CameraViewClipper;
 import mcjty.ariente.display.InstalledModule;
 import net.minecraft.client.Minecraft;
-import net.minecraft.client.renderer.ItemBlockRenderTypes;
-import net.minecraft.client.renderer.RenderType;
-import net.minecraft.client.renderer.block.model.BakedQuad;
-import net.minecraft.client.renderer.texture.TextureAtlas;
+import net.minecraft.client.resources.model.geometry.BakedQuad;
 import net.minecraft.client.renderer.texture.TextureAtlasSprite;
-import net.minecraft.client.resources.model.BakedModel;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
 import net.minecraft.core.registries.Registries;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.nbt.ListTag;
 import net.minecraft.nbt.NbtUtils;
-import net.minecraft.nbt.Tag;
 import net.minecraft.util.RandomSource;
-import net.minecraft.world.level.BlockAndTintGetter;
+import net.minecraft.client.renderer.block.BlockAndTintGetter;
 import net.minecraft.world.level.EmptyBlockGetter;
 import net.minecraft.world.level.block.Blocks;
 import net.minecraft.world.level.block.RenderShape;
 import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.phys.Vec3;
-import net.neoforged.neoforge.client.extensions.common.IClientFluidTypeExtensions;
-import net.neoforged.neoforge.client.model.data.ModelData;
 import org.joml.Matrix4f;
 
 /**
@@ -68,7 +58,7 @@ public class CameraDisplayRenderer {
         DisplayModuleRenderers.panel(canvas, module, count == 0 ? "CAMERA" : "CAMERA " + (CameraDisplayModule.cameraIndex(module.stack()) + 1) + "/" + count);
         int width = module.size().width();
         if (module.snapshot().contains("Status")) {
-            canvas.text(module.snapshot().getString("Status"), 6, 21, 0xffbc7a, .5f, width - 12);
+            canvas.text(module.snapshot().getStringOr("Status", ""), 6, 21, 0xffbc7a, .5f, width - 12);
             return;
         }
         Matrix4f pose = canvas.poses().last().pose();
@@ -81,7 +71,7 @@ public class CameraDisplayRenderer {
         if (mc.level == null) {
             return;
         }
-        if (module.snapshot().getBoolean("Live")) {
+        if (module.snapshot().getBooleanOr("Live", false)) {
             LiveCameraRenderer.render(canvas, module);
             return;
         }
@@ -90,7 +80,7 @@ public class CameraDisplayRenderer {
             return;
         }
         Mesh mesh = CACHE.get(module);
-        double now = mc.level.getGameTime() + (double) mc.getTimer().getGameTimeDeltaPartialTick(true);
+        double now = mc.level.getGameTime() + (double) mc.getDeltaTracker().getGameTimeDeltaPartialTick(true);
         if (mesh == null || mesh.version != module.snapshotVersion()) {
             mesh = build(module, mesh == null ? now : mesh.startedAt);
             CACHE.put(module, mesh);
@@ -124,7 +114,7 @@ public class CameraDisplayRenderer {
                         .setColor(rgb >> 16 & 255, rgb >> 8 & 255, rgb & 255, 255);
             }
         }
-        if (module.snapshot().getLongArray("Blocks").length == 0 && module.snapshot().getList("Entities", Tag.TAG_COMPOUND).isEmpty()) {
+        if (module.snapshot().getLongArray("Blocks").orElseGet(() -> new long[0]).length == 0 && module.snapshot().getListOrEmpty("Entities").isEmpty()) {
             canvas.text("No terrain in range", 6, module.size().height() - 11, 0x83eaff, .45f, width - 12);
         }
     }
@@ -137,49 +127,32 @@ public class CameraDisplayRenderer {
 
     static CameraPerspectiveRenderer.Geometry perspectiveGeometry(InstalledModule module) {
         Mesh mesh = build(module, 0);
-        Part solid = upload(mesh.faces, false);
-        Part translucent = upload(mesh.faces, true);
-        return new CameraPerspectiveRenderer.Geometry(solid.buffer(), translucent.buffer(), translucent.sorting(), mesh.center, mesh.radius);
-    }
-
-    private static Part upload(List<Face> faces, boolean translucent) {
-        if (faces.stream().noneMatch(face -> face.translucent == translucent)) {
-            return new Part(null, null);
-        }
-        BufferBuilder vertices = new BufferBuilder(PERSPECTIVE_MEMORY, VertexFormat.Mode.QUADS, DefaultVertexFormat.POSITION_TEX_COLOR);
-        for (Face face : faces) {
-            if (face.translucent != translucent) {
-                continue;
+        List<CameraPerspectiveRenderer.Quad> quads = new ArrayList<>();
+        for (Face face : mesh.faces) {
+            float[] vertices = new float[20];
+            for (int i = 0; i < 4; i++) {
+                Point p = face.points[i];
+                vertices[i * 5] = p.x();
+                vertices[i * 5 + 1] = p.y();
+                vertices[i * 5 + 2] = p.z();
+                vertices[i * 5 + 3] = p.u();
+                vertices[i * 5 + 4] = p.v();
             }
-            for (int index = 0; index < 4; index++) {
-                Point point = face.points[index];
-                int color = face.colors[index];
-                vertices.addVertex(point.x(), point.y(), point.z()).setUv(point.u(), point.v())
-                        .setColor(color >> 16 & 255, color >> 8 & 255, color & 255, 255);
-            }
+            quads.add(new CameraPerspectiveRenderer.Quad(vertices, face.colors.clone(), face.translucent));
         }
-        MeshData mesh = vertices.buildOrThrow();
-        MeshData.SortState sorting = translucent ? mesh.sortQuads(PERSPECTIVE_MEMORY, VertexSorting.DISTANCE_TO_ORIGIN) : null;
-        VertexBuffer buffer = new VertexBuffer(translucent ? VertexBuffer.Usage.DYNAMIC : VertexBuffer.Usage.STATIC);
-        buffer.bind();
-        buffer.upload(mesh);
-        VertexBuffer.unbind();
-        return new Part(buffer, sorting);
-    }
-
-    private record Part(VertexBuffer buffer, MeshData.SortState sorting) {
+        return new CameraPerspectiveRenderer.Geometry(List.copyOf(quads), mesh.center, mesh.radius);
     }
 
     private static Mesh build(InstalledModule module, double startedAt) {
         Minecraft mc = Minecraft.getInstance();
         CompoundTag data = module.snapshot();
-        ListTag paletteTag = data.getList("Palette", Tag.TAG_COMPOUND);
+        ListTag paletteTag = data.getListOrEmpty("Palette");
         List<BlockState> palette = new ArrayList<>();
         for (int i = 0; i < Math.min(CameraCapture.MAX_BLOCKS, paletteTag.size()); i++) {
-            palette.add(NbtUtils.readBlockState(mc.level.holderLookup(Registries.BLOCK), paletteTag.getCompound(i)));
+            palette.add(NbtUtils.readBlockState(mc.level.holderLookup(Registries.BLOCK), paletteTag.getCompoundOrEmpty(i)));
         }
         Map<BlockPos, BlockState> scene = new HashMap<>();
-        long[] blocks = data.getLongArray("Blocks");
+        long[] blocks = data.getLongArray("Blocks").orElseGet(() -> new long[0]);
         for (int i = 0; i < Math.min(CameraCapture.MAX_BLOCKS, blocks.length); i++) {
             int id = CameraCapture.paletteId(blocks[i]);
             if (id < palette.size()) {
@@ -200,23 +173,25 @@ public class CameraDisplayRenderer {
                 layerStart = faces.size();
             }
             BlockState state = entry.getValue();
-            BakedModel model = mc.getBlockRenderer().getBlockModel(state);
+            BlockStateModel model = mc.getModelManager().getBlockStateModelSet().get(state);
+            List<BlockStateModelPart> parts = new ArrayList<>();
+            model.collectParts(BlockAndTintGetter.EMPTY, pos, state, random, parts);
             boolean translucent = translucentStates.computeIfAbsent(state,
-                    key -> model.getRenderTypes(key, random, ModelData.EMPTY).contains(RenderType.translucent()));
+                    key -> (model.materialFlags() & BakedQuad.FLAG_TRANSLUCENT) != 0);
             if (state.getRenderShape() != RenderShape.MODEL) {
                 // Fluids and blocks with special renderers use a textured silhouette, never a live renderer.
                 if (!state.getFluidState().isEmpty()) {
                     var fluid = state.getFluidState();
-                    var visuals = IClientFluidTypeExtensions.of(fluid);
-                    var sprite = mc.getTextureAtlas(TextureAtlas.LOCATION_BLOCKS).apply(visuals.getStillTexture());
+                    var visuals = mc.getModelManager().getFluidStateModelSet().get(fluid).fluidTintSource();
+                    var sprite = mc.getModelManager().getFluidStateModelSet().get(fluid).stillMaterial().sprite();
                     box(faces, pos.getX() - .5, pos.getY() - .5, pos.getZ() - .5,
-                            pos.getX() + .5, pos.getY() - .5 + fluid.getOwnHeight(), pos.getZ() + .5, sprite, visuals.getTintColor(),
-                            ItemBlockRenderTypes.getRenderLayer(fluid) == RenderType.translucent());
+                            pos.getX() + .5, pos.getY() - .5 + fluid.getOwnHeight(), pos.getZ() + .5, sprite, visuals == null ? -1 : visuals.color(fluid),
+                            sprite.transparency().hasTranslucent());
                 } else if (!state.getShape(EmptyBlockGetter.INSTANCE, pos).isEmpty()) {
                     var bounds = state.getShape(EmptyBlockGetter.INSTANCE, pos).bounds();
                     box(faces, pos.getX() + bounds.minX - .5, pos.getY() + bounds.minY - .5, pos.getZ() + bounds.minZ - .5,
                             pos.getX() + bounds.maxX - .5, pos.getY() + bounds.maxY - .5, pos.getZ() + bounds.maxZ - .5,
-                            model.getParticleIcon(ModelData.EMPTY), 0xffffff, translucent);
+                            model.particleMaterial().sprite(), 0xffffff, translucent);
                 }
                 if (faces.size() > MAX_QUADS) {
                     faces.subList(layerStart, faces.size()).clear();
@@ -227,35 +202,34 @@ public class CameraDisplayRenderer {
             for (int side = 0; side <= 6; side++) {
                 Direction direction = side == 6 ? null : Direction.values()[side];
                 BlockState neighbor = direction == null ? null : scene.get(pos.relative(direction));
-                if (neighbor != null && neighbor.isSolidRender(EmptyBlockGetter.INSTANCE, pos.relative(direction))) {
+                if (neighbor != null && neighbor.isSolidRender()) {
                     continue;
                 }
                 random.setSeed(state.getSeed(pos));
-                for (BakedQuad quad : model.getQuads(state, direction, random, ModelData.EMPTY, null)) {
+                for (var part : parts) for (BakedQuad quad : part.getQuads(direction)) {
                     if (faces.size() > MAX_QUADS) {
                         break;
                     }
-                    int tint = quad.isTinted() ? mc.getBlockColors().getColor(state, (BlockAndTintGetter) null, null, quad.getTintIndex()) : 0xffffff;
-                    float shade = quad.isShade() ? switch (quad.getDirection()) {
+                    var tintSource = quad.materialInfo().isTinted() ? mc.getBlockColors().getTintSource(state, quad.materialInfo().tintIndex()) : null;
+                    int tint = tintSource == null ? -1 : tintSource.color(state);
+                    float shade = quad.materialInfo().shade() ? switch (quad.direction()) {
                         case DOWN -> .55f;
                         case NORTH, SOUTH -> .8f;
                         case WEST, EAST -> .65f;
                         case UP -> 1;
                     } : 1;
-                    int[] source = quad.getVertices();
-                    int stride = source.length / 4;
+
                     Point[] points = new Point[4];
                     int[] colors = new int[4];
                     for (int i = 0; i < 4; i++) {
-                        int index = i * stride;
-                        points[i] = new Point(pos.getX() + Float.intBitsToFloat(source[index]) - .5f,
-                                pos.getY() + Float.intBitsToFloat(source[index + 1]) - .5f,
-                                pos.getZ() + Float.intBitsToFloat(source[index + 2]) - .5f,
-                                Float.intBitsToFloat(source[index + 4]), Float.intBitsToFloat(source[index + 5]));
-                        int baked = source[index + 3];
-                        colors[i] = (int) ((baked & 255) * (tint >> 16 & 255) / 255f * shade) << 16
+                        var position = quad.position(i);
+                        long uv = quad.packedUV(i);
+                        points[i] = new Point(pos.getX() + position.x() - .5f, pos.getY() + position.y() - .5f,
+                                pos.getZ() + position.z() - .5f, UVPair.unpackU(uv), UVPair.unpackV(uv));
+                        int baked = quad.bakedColors().color(i);
+                        colors[i] = (int) ((baked >> 16 & 255) * (tint >> 16 & 255) / 255f * shade) << 16
                                 | (int) ((baked >> 8 & 255) * (tint >> 8 & 255) / 255f * shade) << 8
-                                | (int) ((baked >> 16 & 255) * (tint & 255) / 255f * shade);
+                                | (int) ((baked & 255) * (tint & 255) / 255f * shade);
                     }
                     faces.add(new Face(points, colors, translucent));
                 }
@@ -267,12 +241,12 @@ public class CameraDisplayRenderer {
             }
         }
         // Living entities are conspicuous moving markers, independent of client entity tracking.
-        var white = mc.getBlockRenderer().getBlockModel(Blocks.WHITE_CONCRETE.defaultBlockState()).getParticleIcon();
-        ListTag entities = data.getList("Entities", Tag.TAG_COMPOUND);
+        var white = mc.getModelManager().getBlockStateModelSet().get(Blocks.WHITE_CONCRETE.defaultBlockState()).particleMaterial().sprite();
+        ListTag entities = data.getListOrEmpty("Entities");
         for (int i = 0; i < Math.min(CameraCapture.MAX_ENTITIES, entities.size()); i++) {
-            CompoundTag entity = entities.getCompound(i);
-            float x = entity.getFloat("X"), y = entity.getFloat("Y"), z = entity.getFloat("Z");
-            box(faces, x - .2, y - .4, z - .2, x + .2, y + .4, z + .2, white, entity.getInt("Color"), false);
+            CompoundTag entity = entities.getCompoundOrEmpty(i);
+            float x = entity.getFloatOr("X", 0), y = entity.getFloatOr("Y", 0), z = entity.getFloatOr("Z", 0);
+            box(faces, x - .2, y - .4, z - .2, x + .2, y + .4, z + .2, white, entity.getIntOr("Color", 0), false);
         }
         box(faces, -.15, -.15, -.15, .15, .15, .15, white, 0x77ffff, false);
         return new Mesh(module.snapshotVersion(), faces, startedAt);

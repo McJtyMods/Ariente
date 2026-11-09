@@ -10,13 +10,15 @@ import mcjty.ariente.setup.Registration;
 import mcjty.ariente.varia.WeightedRandom;
 import net.minecraft.core.registries.BuiltInRegistries;
 import net.minecraft.core.registries.Registries;
-import net.minecraft.resources.ResourceLocation;
+import net.minecraft.resources.Identifier;
 import net.minecraft.util.RandomSource;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.Items;
 import net.minecraft.world.item.crafting.RecipeSerializer;
 import net.minecraft.world.item.crafting.RecipeType;
-import net.minecraft.world.item.crafting.SimpleCraftingRecipeSerializer;
+import com.mojang.serialization.MapCodec;
+import net.minecraft.network.codec.StreamCodec;
+import net.minecraft.world.item.crafting.CraftingBookCategory;
 import net.minecraft.world.level.block.Blocks;
 import net.neoforged.bus.api.IEventBus;
 import net.neoforged.neoforge.registries.DeferredRegister;
@@ -34,13 +36,14 @@ public class BlueprintRecipeRegistry {
     }
 
     public static final Supplier<RecipeSerializer<ConstructorRecipe>> CONSTRUCTOR_RECIPES = RECIPE_SERIALIZERS.register("constructor",
-            ConstructorRecipeSerializer::new);
+            () -> new RecipeSerializer<>(ConstructorRecipeSerializer.CODEC, ConstructorRecipeSerializer.STREAM_CODEC));
 
-    public static final Supplier<SimpleCraftingRecipeSerializer<BlueprintExchangeRecipe>> BLUEPRINT_EXCHANGE =
-            RECIPE_SERIALIZERS.register("blueprint_exchange", () -> new SimpleCraftingRecipeSerializer<>(BlueprintExchangeRecipe::new));
+    public static final Supplier<RecipeSerializer<BlueprintExchangeRecipe>> BLUEPRINT_EXCHANGE =
+            RECIPE_SERIALIZERS.register("blueprint_exchange", () -> new RecipeSerializer<>(MapCodec.unit(() -> new BlueprintExchangeRecipe(CraftingBookCategory.MISC)), StreamCodec.of((buffer, recipe) -> {}, buffer -> new BlueprintExchangeRecipe(CraftingBookCategory.MISC))));
 
-    public static final ResourceLocation RECIPE_CONSTRUCTOR = ResourceLocation.fromNamespaceAndPath(MODID, "constructor");
-    public static final Supplier<RecipeSerializer<PurifyingRecipe>> PURIFYING_SERIALIZER = RECIPE_SERIALIZERS.register("purifying", PurifyingRecipe.Serializer::new);
+    public static final Identifier RECIPE_CONSTRUCTOR = Identifier.fromNamespaceAndPath(MODID, "constructor");
+    public static final Supplier<RecipeSerializer<PurifyingRecipe>> PURIFYING_SERIALIZER = RECIPE_SERIALIZERS.register("purifying", () -> new RecipeSerializer<>(PurifyingRecipe.Serializer.CODEC, PurifyingRecipe.Serializer.STREAM_CODEC));
+
     public static final Supplier<RecipeType<PurifyingRecipe>> PURIFYING = RECIPE_TYPES.register("purifying", () -> new RecipeType<PurifyingRecipe>() {
 
         @Override

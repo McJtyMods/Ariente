@@ -1,6 +1,13 @@
 package mcjty.ariente.entities;
 
-import mcjty.ariente.setup.Registration;
+import net.minecraft.server.level.ServerLevel;
+import net.minecraft.world.damagesource.DamageSource;
+
+import net.minecraft.world.phys.Vec3;
+
+import com.mojang.serialization.MapCodec;
+import net.minecraft.world.level.storage.ValueInput;
+import net.minecraft.world.level.storage.ValueOutput;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.particles.ParticleTypes;
 import net.minecraft.nbt.CompoundTag;
@@ -28,11 +35,11 @@ public class EntityArientePearl extends Entity implements ItemSupplier {
 
     @Override
     public ItemStack getItem() {
-        return new ItemStack(Registration.ARIENTE_PEARL.get());
+        return new ItemStack(mcjty.ariente.setup.Registration.ARIENTE_PEARL.get());
     }
 
     public static EntityArientePearl create(Level worldIn, double x, double y, double z) {
-        EntityArientePearl entity = new EntityArientePearl(Registration.ENTITY_PEARL.get(), worldIn);
+        EntityArientePearl entity = new EntityArientePearl(mcjty.ariente.setup.Registration.ENTITY_PEARL.get(), worldIn);
         entity.despawnTimer = 0;
         entity.setPos(x, y, z);
         return entity;
@@ -77,7 +84,10 @@ public class EntityArientePearl extends Entity implements ItemSupplier {
     }
 
     @Override
-    public void lerpMotion(double x, double y, double z) {
+    public void lerpMotion(Vec3 movement) {
+        double x = movement.x;
+        double y = movement.y;
+        double z = movement.z;
         setDeltaMovement(x, y, z);
 
         if (this.xRotO == 0.0F && this.yRotO == 0.0F) {
@@ -121,7 +131,7 @@ public class EntityArientePearl extends Entity implements ItemSupplier {
         this.setXRot(this.xRotO + (this.getXRot() - this.xRotO) * 0.2F);
         this.setYRot(this.yRotO + (this.getYRot() - this.yRotO) * 0.2F);
 
-        if (!this.level().isClientSide) {
+        if (!this.level().isClientSide()) {
             double d0 = this.targetX - this.getX();
             double d1 = this.targetZ - this.getZ();
             float f1 = (float) Math.sqrt(d0 * d0 + d1 * d1);
@@ -154,16 +164,16 @@ public class EntityArientePearl extends Entity implements ItemSupplier {
             this.level().addParticle(ParticleTypes.PORTAL, this.getX() - motionX * 0.25D + this.random.nextDouble() * 0.6D - 0.3D, this.getY() - motionY * 0.25D - 0.5D, this.getZ() - motionZ * 0.25D + this.random.nextDouble() * 0.6D - 0.3D, motionX, motionY, motionZ);
         }
 
-        if (!this.level().isClientSide) {
+        if (!this.level().isClientSide()) {
             this.setPos(this.getX(), this.getY(), this.getZ());
             ++this.despawnTimer;
 
-            if (this.despawnTimer > 80 && !this.level().isClientSide) {
+            if (this.despawnTimer > 80 && !this.level().isClientSide()) {
                 this.playSound(SoundEvents.ENDER_EYE_DEATH, 1.0F, 1.0F);
                 this.remove(RemovalReason.DISCARDED);
 
                 if (this.shatterOrDrop) {
-                    this.level().addFreshEntity(new ItemEntity(this.level(), this.getX(), this.getY(), this.getZ(), new ItemStack(Registration.ARIENTE_PEARL.get())));
+                    this.level().addFreshEntity(new ItemEntity(this.level(), this.getX(), this.getY(), this.getZ(), new ItemStack(mcjty.ariente.setup.Registration.ARIENTE_PEARL.get())));
                 } else {
                     this.level().levelEvent(2003, new BlockPos(this.blockPosition()), 0);
                 }
@@ -171,12 +181,10 @@ public class EntityArientePearl extends Entity implements ItemSupplier {
         }
     }
 
-    @Override
-    public void addAdditionalSaveData(CompoundTag compound) {
+    public void writeEntityData(CompoundTag compound) {
     }
 
-    @Override
-    public void readAdditionalSaveData(CompoundTag compound) {
+    public void readEntityData(CompoundTag compound) {
     }
 
     public float getBrightness() {
@@ -185,6 +193,23 @@ public class EntityArientePearl extends Entity implements ItemSupplier {
 
     @Override
     public boolean isAttackable() {
+        return false;
+    }
+
+    @Override
+    public void readAdditionalSaveData(ValueInput input) {
+        readEntityData(input.read(MapCodec.assumeMapUnsafe(CompoundTag.CODEC)).orElseGet(CompoundTag::new));
+    }
+
+    @Override
+    public void addAdditionalSaveData(ValueOutput output) {
+        CompoundTag tag = new CompoundTag();
+        writeEntityData(tag);
+        output.store(tag);
+    }
+
+    @Override
+    public boolean hurtServer(ServerLevel level, DamageSource source, float damage) {
         return false;
     }
 }

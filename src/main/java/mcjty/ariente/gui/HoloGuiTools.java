@@ -6,7 +6,7 @@ import mcjty.ariente.items.TabletItem;
 import mcjty.hologui.api.components.IPanel;
 import mcjty.lib.compat.patchouli.PatchouliCompatibility;
 import mcjty.lib.setup.ModSetup;
-import net.minecraft.resources.ResourceLocation;
+import net.minecraft.resources.Identifier;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.world.entity.player.Inventory;
 import net.minecraft.world.entity.player.Player;
@@ -31,11 +31,11 @@ public class HoloGuiTools {
         return cnt;
     }
 
-    public static IPanel createPanelWithHelp(IGuiComponentRegistry registry, ResourceLocation entry) {
+    public static IPanel createPanelWithHelp(IGuiComponentRegistry registry, Identifier entry) {
         return createPanelWithHelp(registry, entry, entity -> entity.switchTag(TAG_HELP));
     }
 
-    public static IPanel createPanelWithHelp(IGuiComponentRegistry registry, ResourceLocation entry, Consumer<IHoloGuiEntity> switchHelp) {
+    public static IPanel createPanelWithHelp(IGuiComponentRegistry registry, Identifier entry, Consumer<IHoloGuiEntity> switchHelp) {
         IPanel panel = registry.panel(0, 0, 8, 8);
         if (ModSetup.patchouli && entry != null) {
             panel.help((component, player, entity, x, y) -> {

@@ -1,5 +1,6 @@
 package mcjty.ariente.network;
 
+import net.neoforged.neoforge.client.network.ClientPacketDistributor;
 import javax.annotation.Nonnull;
 import mcjty.ariente.Ariente;
 import mcjty.ariente.blocks.defense.PacketDamageForcefield;
@@ -51,11 +52,11 @@ public class ArienteMessages {
     }
 
     public static void sendToServer(String command, @Nonnull TypedMap.Builder argumentBuilder) {
-        PacketDistributor.sendToServer(PacketSendServerCommand.create(Ariente.MODID, command, argumentBuilder.build()));
+        ClientPacketDistributor.sendToServer(PacketSendServerCommand.create(Ariente.MODID, command, argumentBuilder.build()));
     }
 
     public static void sendToServer(String command) {
-        PacketDistributor.sendToServer(PacketSendServerCommand.create(Ariente.MODID, command, TypedMap.EMPTY));
+        ClientPacketDistributor.sendToServer(PacketSendServerCommand.create(Ariente.MODID, command, TypedMap.EMPTY));
     }
 
     public static void sendToClient(Player player, String command, @Nonnull TypedMap.Builder argumentBuilder) {

@@ -1,5 +1,9 @@
 package mcjty.ariente.items;
 
+import java.util.ArrayList;
+
+import net.minecraft.world.item.component.TooltipDisplay;
+import java.util.function.Consumer;
 import java.util.Collections;
 import java.util.HashSet;
 import java.util.List;
@@ -14,7 +18,6 @@ import net.minecraft.core.BlockPos;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.nbt.ListTag;
 import net.minecraft.nbt.StringTag;
-import net.minecraft.nbt.Tag;
 import net.minecraft.network.chat.Component;
 import net.minecraft.world.InteractionHand;
 import net.minecraft.world.InteractionResult;
@@ -36,8 +39,8 @@ public class KeyCardItem extends Item implements ITooltipSettings {
                     parameter("info", stack -> getDescription(stack) != null, KeyCardItem::getDescription),
                     repeatingParameter("tag", stack -> getSecurityTags(stack).stream()));
 
-    public KeyCardItem() {
-        super(new Properties().stacksTo(1));
+    public KeyCardItem(Item.Properties properties) {
+        super(properties.stacksTo(1));
     }
 
     public static boolean hasPlayerKeycard(Player player, String tag) {
@@ -53,8 +56,14 @@ public class KeyCardItem extends Item implements ITooltipSettings {
     }
 
     @Override
+    public void appendHoverText(ItemStack stack, Item.TooltipContext context, TooltipDisplay display, Consumer<Component> output, TooltipFlag flag) {
+        List<Component> lines = new ArrayList<>();
+        appendHoverText(stack, context, lines, flag);
+        lines.forEach(output);
+    }
+
     public void appendHoverText(ItemStack stack, Item.TooltipContext worldIn, List<Component> tooltip, TooltipFlag flag) {
-        super.appendHoverText(stack, worldIn, tooltip, flag);
+
         tooltipBuilder.makeTooltip(Tools.getId(this), stack, tooltip, flag);
     }
 
@@ -82,9 +91,9 @@ public class KeyCardItem extends Item implements ITooltipSettings {
         }
         Set<String> tags = new HashSet<>();
         CompoundTag compound = ItemData.get(stack);
-        ListTag tagList = compound.getList("tags", Tag.TAG_STRING);
+        ListTag tagList = compound.getListOrEmpty("tags");
         for (int i = 0; i < tagList.size(); i++) {
-            String tag = tagList.getString(i);
+            String tag = tagList.getStringOr(i, "");
             tags.add(tag);
         }
         return tags;
@@ -95,9 +104,9 @@ public class KeyCardItem extends Item implements ITooltipSettings {
             return false;
         }
         CompoundTag compound = ItemData.get(stack);
-        ListTag tagList = compound.getList("tags", Tag.TAG_STRING);
+        ListTag tagList = compound.getListOrEmpty("tags");
         for (int i = 0; i < tagList.size(); i++) {
-            String t = tagList.getString(i);
+            String t = tagList.getStringOr(i, "");
             if (tag.equals(t)) {
                 return true;
             }
@@ -121,7 +130,7 @@ public class KeyCardItem extends Item implements ITooltipSettings {
             return null;
         }
         if (ItemData.get(stack).contains("description")) {
-            return ItemData.get(stack).getString("description");
+            return ItemData.get(stack).getStringOr("description", "");
         }
         return null;
     }

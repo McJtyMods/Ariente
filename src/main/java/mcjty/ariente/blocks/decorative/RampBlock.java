@@ -1,5 +1,7 @@
 package mcjty.ariente.blocks.decorative;
 
+import net.minecraft.world.level.block.state.BlockBehaviour;
+import net.minecraft.world.level.block.SoundType;
 import mcjty.lib.blocks.BaseBlock;
 import mcjty.lib.blocks.RotationType;
 import mcjty.lib.builder.BlockBuilder;
@@ -42,9 +44,9 @@ public class RampBlock extends BaseBlock {
     public static final VoxelShape AABB_EAST5 = Shapes.box(0.0D, 0.8D, 0.0D, 0.2D, 1.0D, 1.0D);
     public static final VoxelShape SHAPE_EAST = Shapes.or(AABB_EAST1, AABB_EAST2, AABB_EAST3, AABB_EAST4, AABB_EAST5);
 
-    public RampBlock() {
-        super(new BlockBuilder()
-                .properties(Properties.of().mapColor(MapColor.STONE).strength(2.0f, 4.0f).noOcclusion())
+    public RampBlock(BlockBehaviour.Properties properties) {
+        super(new BlockBuilder().properties(properties.mapColor(MapColor.METAL).strength(2.0f).requiresCorrectToolForDrops().sound(SoundType.METAL))
+                .properties(properties.mapColor(MapColor.STONE).strength(2.0f, 4.0f).noOcclusion())
                 // @todo 1.18 .harvestLevel(ToolType.PICKAXE, 1)
         );
     }

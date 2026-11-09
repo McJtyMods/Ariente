@@ -1,6 +1,15 @@
 {
   "variants": {
-    "": {
+    "facing=east": {
+      "model": "ariente:block/machines/forcefield"
+    },
+    "facing=north": {
+      "model": "ariente:block/machines/forcefield"
+    },
+    "facing=south": {
+      "model": "ariente:block/machines/forcefield"
+    },
+    "facing=west": {
       "model": "ariente:block/machines/forcefield"
     }
   }

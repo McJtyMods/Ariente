@@ -1,11 +1,13 @@
 package mcjty.ariente.blocks.utility;
 
+import net.minecraft.world.level.block.state.BlockBehaviour;
+import net.minecraft.world.level.material.MapColor;
+import net.minecraft.world.level.block.SoundType;
 import mcjty.ariente.Ariente;
 import mcjty.ariente.api.IWarper;
 import mcjty.ariente.blocks.ArienteBlockEntity;
 import mcjty.ariente.compat.arienteworld.ArienteWorldCompat;
 import mcjty.ariente.config.UtilityConfiguration;
-import mcjty.ariente.setup.Registration;
 import mcjty.hologui.api.IGuiComponent;
 import mcjty.hologui.api.IGuiComponentRegistry;
 import mcjty.hologui.api.IGuiTile;
@@ -17,7 +19,6 @@ import mcjty.lib.varia.TeleportationTools;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.HolderLookup;
 import net.minecraft.nbt.CompoundTag;
-import net.minecraft.nbt.NbtUtils;
 import net.minecraft.resources.ResourceKey;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.server.level.ServerPlayer;
@@ -27,7 +28,7 @@ import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.level.levelgen.Heightmap;
-import net.minecraft.world.level.portal.DimensionTransition;
+import net.minecraft.world.level.portal.TeleportTransition;
 import net.minecraft.world.phys.AABB;
 import net.minecraft.world.phys.BlockHitResult;
 
@@ -42,12 +43,12 @@ public class WarperTile extends ArienteBlockEntity implements IGuiTile, IWarper 
     private int charges = 0;
 
     public WarperTile(BlockPos pos, BlockState state) {
-        super(Registration.WARPER_TILE.get(), pos, state);
+        super(mcjty.ariente.setup.Registration.WARPER_TILE.get(), pos, state);
     }
 
-    public static BaseBlock createBlock() {
-        return new BaseBlock(new BlockBuilder()
-                .properties(BlockBuilder.STANDARD_IRON.lightLevel((light) -> { return 8; }))
+    public static BaseBlock createBlock(BlockBehaviour.Properties properties) {
+        return new BaseBlock(new BlockBuilder().properties(properties.mapColor(MapColor.METAL).strength(2.0f).requiresCorrectToolForDrops().sound(SoundType.METAL))
+                .properties(properties.lightLevel((light) -> { return 8; }))
                 .info(key("message.ariente.shiftmessage"))
                 .infoShift(header())
                 .topDriver(DRIVER)
@@ -95,9 +96,9 @@ public class WarperTile extends ArienteBlockEntity implements IGuiTile, IWarper 
 
     @Override
     public void loadAdditional(CompoundTag tagCompound, HolderLookup.Provider provider) {
-        CompoundTag info = tagCompound.getCompound("Info");
+        CompoundTag info = tagCompound.getCompoundOrEmpty("Info");
         if (info.contains("charges")) {
-            charges = info.getInt("charges");
+            charges = info.getIntOr("charges", 0);
         }
         super.loadAdditional(tagCompound, provider);
     }
@@ -129,7 +130,8 @@ public class WarperTile extends ArienteBlockEntity implements IGuiTile, IWarper 
     }
 
     public AABB getRenderBoundingBox() {
-        return getBeamBox();
+        // The lowest animated beam starts one block below the warper.
+        return getBeamBox().expandTowards(0, -1, 0).inflate(0.05);
     }
 
     public void warp(Player player) {
@@ -143,28 +145,28 @@ public class WarperTile extends ArienteBlockEntity implements IGuiTile, IWarper 
         if (level.dimension().equals(Level.OVERWORLD)) {
             BlockPos destination = ArienteWorldCompat.getArienteWorld().getNearestTeleportationSpot(player.blockPosition());
             // Remember the source entrance so the return trip works without a bed.
-            player.getPersistentData().put("arienteReturn", NbtUtils.writeBlockPos(worldPosition.above()));
+            player.getPersistentData().store("arienteReturn", BlockPos.CODEC, worldPosition.above());
             TeleportationTools.teleportToDimension(player, ArienteWorldCompat.getArienteWorld().getDimension(),
                     destination.getX() + .5, destination.getY(), destination.getZ() + .5);
         } else if (level.dimension().equals(ArienteWorldCompat.getArienteWorld().getDimension())) {
-            ServerLevel overworld = serverPlayer.server.getLevel(Level.OVERWORLD);
+            ServerLevel overworld = serverPlayer.level().getServer().getLevel(Level.OVERWORLD);
             BlockPos destination = null;
             if (player.getPersistentData().contains("arienteReturn")) {
-                BlockPos source = NbtUtils.readBlockPos(player.getPersistentData(), "arienteReturn").orElseThrow();
+                BlockPos source = player.getPersistentData().read("arienteReturn", BlockPos.CODEC).orElseThrow();
                 overworld.getChunkAt(source);
-                if (overworld.getBlockState(source.below()).is(Registration.WARPER.get())
+                if (overworld.getBlockState(source.below()).is(mcjty.ariente.setup.Registration.WARPER.get())
                         && overworld.isEmptyBlock(source) && overworld.isEmptyBlock(source.above())) {
                     destination = source;
                 }
             }
-            if (destination == null && serverPlayer.getRespawnDimension().equals(Level.OVERWORLD)
-                    && serverPlayer.getRespawnPosition() != null) {
-                overworld.getChunkAt(serverPlayer.getRespawnPosition());
-                var respawn = serverPlayer.findRespawnPositionAndUseSpawnBlock(true, DimensionTransition.DO_NOTHING);
-                destination = BlockPos.containing(respawn.pos());
+            if (destination == null && serverPlayer.getRespawnConfig() != null
+                    && serverPlayer.getRespawnConfig().respawnData().dimension().equals(Level.OVERWORLD)) {
+                overworld.getChunkAt(serverPlayer.getRespawnConfig().respawnData().pos());
+                var respawn = serverPlayer.findRespawnPositionAndUseSpawnBlock(true, TeleportTransition.DO_NOTHING);
+                destination = BlockPos.containing(respawn.position());
             }
             if (destination == null) {
-                BlockPos spawn = overworld.getSharedSpawnPos();
+                BlockPos spawn = overworld.getRespawnData().pos();
                 overworld.getChunkAt(spawn);
                 destination = overworld.getHeightmapPos(Heightmap.Types.MOTION_BLOCKING_NO_LEAVES, spawn);
             }

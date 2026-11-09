@@ -1,5 +1,9 @@
 package mcjty.ariente.blocks.utility;
 
+import net.minecraft.world.level.storage.ValueInput;
+import net.minecraft.world.level.block.state.BlockBehaviour;
+import net.minecraft.world.level.material.MapColor;
+import net.minecraft.world.level.block.SoundType;
 import mcjty.hologui.api.*;
 import java.util.ArrayList;
 import java.util.List;
@@ -19,7 +23,6 @@ import mcjty.ariente.power.PowerReceiverSupport;
 import mcjty.ariente.recipes.BlueprintRecipeRegistry;
 import mcjty.ariente.recipes.ConstructorCrafting;
 import mcjty.ariente.recipes.ConstructorRecipe;
-import mcjty.ariente.setup.Registration;
 import mcjty.hologui.api.components.IPlayerSlots;
 import mcjty.hologui.api.components.ISlots;
 import mcjty.lib.blocks.BaseBlock;
@@ -34,7 +37,6 @@ import net.minecraft.core.Direction;
 import net.minecraft.core.HolderLookup;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.network.Connection;
-import net.minecraft.network.protocol.game.ClientboundBlockEntityDataPacket;
 import net.minecraft.world.InteractionHand;
 import net.minecraft.world.InteractionResult;
 import net.minecraft.world.entity.player.Player;
@@ -78,11 +80,11 @@ public class AutoConstructorTile extends ExtremeMachineTile implements IGuiTile,
     private int busyCounter = 0;
 
     public AutoConstructorTile(BlockPos pos, BlockState state) {
-        super(Registration.AUTO_CONSTRUCTOR_TILE.get(), pos, state);
+        super(mcjty.ariente.setup.Registration.AUTO_CONSTRUCTOR_TILE.get(), pos, state);
     }
 
-    public static BaseBlock createBlock() {
-        return new BaseBlock(new BlockBuilder()
+    public static BaseBlock createBlock(BlockBehaviour.Properties properties) {
+        return new BaseBlock(new BlockBuilder().properties(properties.mapColor(MapColor.METAL).strength(2.0f).requiresCorrectToolForDrops().sound(SoundType.METAL))
                 .info(key("message.ariente.shiftmessage"))
                 .infoShift(header())
                 .topDriver(DRIVER)
@@ -118,7 +120,7 @@ public class AutoConstructorTile extends ExtremeMachineTile implements IGuiTile,
     }
 
     private void attemptCraft(ItemStack blueprintStack) {
-        if (!blueprintStack.is(Registration.BLUEPRINT.get())) {
+        if (!blueprintStack.is(mcjty.ariente.setup.Registration.BLUEPRINT.get())) {
             return;
         }
         ConstructorRecipe recipe = BlueprintRecipeRegistry.findRecipe(BlueprintItem.getDestination(blueprintStack));
@@ -211,12 +213,12 @@ public class AutoConstructorTile extends ExtremeMachineTile implements IGuiTile,
     }
 
     @Override
-    public void onDataPacket(Connection net, ClientboundBlockEntityDataPacket packet, HolderLookup.Provider provider) {
+    public void onDataPacket(Connection net, ValueInput input) {
         boolean working = isWorking();
 
-        super.onDataPacket(net, packet, provider);
+        super.onDataPacket(net, input);
 
-        if (level.isClientSide) {
+        if (level.isClientSide()) {
             // If needed send a render update.
             boolean newWorking = isWorking();
             if (newWorking != working) {
@@ -232,8 +234,8 @@ public class AutoConstructorTile extends ExtremeMachineTile implements IGuiTile,
     @Override
     public void loadAdditional(CompoundTag tagCompound, HolderLookup.Provider provider) {
         super.loadAdditional(tagCompound, provider);
-        craftIndex = tagCompound.getInt("craftIndex");
-        busyCounter = tagCompound.getInt("busy");
+        craftIndex = tagCompound.getIntOr("craftIndex", 0);
+        busyCounter = tagCompound.getIntOr("busy", 0);
     }
 
     @Override
@@ -287,7 +289,7 @@ public class AutoConstructorTile extends ExtremeMachineTile implements IGuiTile,
 
                 .add(registry.text(0, 5, 1, 1).text("Output").color(registry.color(StyledColor.LABEL)))
 
-                .add(registry.stackIcon(0, 6.5, 1, 1).itemStack(new ItemStack(Registration.CONSTRUCTOR.get())))
+                .add(registry.stackIcon(0, 6.5, 1, 1).itemStack(new ItemStack(mcjty.ariente.setup.Registration.CONSTRUCTOR.get())))
                 .add(registry.slots(1.5, 6.5, 6, 1)
                         .name("outputslots")
                         .withAmount()
@@ -406,7 +408,7 @@ public class AutoConstructorTile extends ExtremeMachineTile implements IGuiTile,
 
     @Override
     public void loadClientDataFromNBT(CompoundTag tag, HolderLookup.Provider provider) {
-        items.deserializeNBT(provider, tag.getCompound("Items"));
+        items.deserializeNBT(provider, tag.getCompoundOrEmpty("Items"));
     }
 
     @Override
@@ -420,14 +422,14 @@ public class AutoConstructorTile extends ExtremeMachineTile implements IGuiTile,
             @Override
             protected void onUpdate(int index, ItemStack stack) {
                 super.onUpdate(index, stack);
-                if (level != null && !level.isClientSide) {
+                if (level != null && !level.isClientSide()) {
                     markDirtyClient();
                 }
             }
 
             @Override
             public boolean isItemValid(int slot, @Nonnull ItemStack stack) {
-                return slot < SLOT_OUTPUT && stack.getItem() != Registration.BLUEPRINT.get();
+                return slot < SLOT_OUTPUT && stack.getItem() != mcjty.ariente.setup.Registration.BLUEPRINT.get();
             }
         };
     }

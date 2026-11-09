@@ -1,5 +1,7 @@
 package mcjty.ariente.blocks.utility;
 
+import mcjty.ariente.client.ArienteRenderHelper;
+import mcjty.hologui.gui.HoloGuiRenderType;
 import com.mojang.blaze3d.vertex.PoseStack;
 import com.mojang.blaze3d.vertex.VertexConsumer;
 import com.mojang.math.Axis;
@@ -8,18 +10,16 @@ import mcjty.ariente.setup.Registration;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.Font;
 import net.minecraft.client.renderer.MultiBufferSource;
-import net.minecraft.client.renderer.RenderType;
-import net.minecraft.client.renderer.blockentity.BlockEntityRenderer;
+import mcjty.ariente.client.ExtractedBlockRenderer;
 import net.minecraft.client.renderer.blockentity.BlockEntityRendererProvider;
 import net.minecraft.client.renderer.blockentity.BlockEntityRenderers;
-import net.minecraft.client.renderer.entity.ItemRenderer;
 import net.minecraft.client.renderer.texture.OverlayTexture;
 import net.minecraft.world.item.ItemDisplayContext;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.phys.BlockHitResult;
 import org.joml.Matrix4f;
 
-public class SmelterRenderer implements BlockEntityRenderer<SmelterTile> {
+public class SmelterRenderer extends ExtractedBlockRenderer<SmelterTile> {
 
     public SmelterRenderer(BlockEntityRendererProvider.Context context) {
     }
@@ -36,7 +36,6 @@ public class SmelterRenderer implements BlockEntityRenderer<SmelterTile> {
         }));
         poses.translate(0, 0, .385);
         renderSlotHighlight(tile, poses, buffer);
-        ItemRenderer renderer = Minecraft.getInstance().getItemRenderer();
         MultiBufferSource itemBuffer = type -> buffer.getBuffer(ArienteRenderType.displayItem(type));
         for (int slot = 0; slot < 2; slot++) {
             ItemStack stack = tile.getStack(slot);
@@ -47,15 +46,14 @@ public class SmelterRenderer implements BlockEntityRenderer<SmelterTile> {
             poses.translate(slot == SmelterTile.SLOT_INPUT ? -4.25 / 16 : 4.25 / 16, 0, 0);
             poses.pushPose();
             poses.scale(.22f, .22f, .0001f);
-            renderer.render(stack, ItemDisplayContext.GUI, false, poses, itemBuffer, 0xf000f0,
-                    OverlayTexture.NO_OVERLAY, renderer.getModel(stack, tile.getLevel(), null, 1));
+            ArienteRenderHelper.item(poses, buffer, stack, ItemDisplayContext.GUI, 0xf000f0, OverlayTexture.NO_OVERLAY);
             poses.popPose();
             if (stack.getCount() > 1) {
                 Font font = Minecraft.getInstance().font;
                 String count = Integer.toString(stack.getCount());
                 poses.translate(.125, -.065, .005);
                 poses.scale(.005f, -.005f, .005f);
-                font.drawInBatch(count, -font.width(count), 0, 0xffffff, true, poses.last().pose(), buffer,
+                font.drawInBatch(count, -font.width(count), 0, 0xffffffff, true, poses.last().pose(), buffer,
                         Font.DisplayMode.NORMAL, 0, 0xf000f0);
             }
             poses.popPose();
@@ -75,7 +73,7 @@ public class SmelterRenderer implements BlockEntityRenderer<SmelterTile> {
         float halfSize = 2f / 16;
         int color = 0x55666666;
         Matrix4f matrix = poses.last().pose();
-        VertexConsumer vertices = buffer.getBuffer(RenderType.gui());
+        VertexConsumer vertices = buffer.getBuffer(HoloGuiRenderType.HOLOGUI_COLOR);
         vertices.addVertex(matrix, center - halfSize, -halfSize, -.004f).setColor(color);
         vertices.addVertex(matrix, center + halfSize, -halfSize, -.004f).setColor(color);
         vertices.addVertex(matrix, center + halfSize, halfSize, -.004f).setColor(color);

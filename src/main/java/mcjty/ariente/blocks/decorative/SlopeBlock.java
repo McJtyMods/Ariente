@@ -1,5 +1,7 @@
 package mcjty.ariente.blocks.decorative;
 
+import net.minecraft.world.level.block.state.BlockBehaviour;
+import net.minecraft.world.level.block.SoundType;
 import javax.annotation.Nullable;
 import mcjty.ariente.api.EnumFacingUpDown;
 import mcjty.lib.blocks.BaseBlock;
@@ -18,9 +20,9 @@ public class SlopeBlock extends BaseBlock {
 
     private static final Property[] PROPERTIES = {EnumFacingUpDown.FACING};
 
-    public SlopeBlock() {
-        super(new BlockBuilder()
-                .properties(Properties.of().mapColor(MapColor.STONE).strength(2.0f, 4.0f).noOcclusion())
+    public SlopeBlock(BlockBehaviour.Properties properties) {
+        super(new BlockBuilder().properties(properties.mapColor(MapColor.METAL).strength(2.0f).requiresCorrectToolForDrops().sound(SoundType.METAL))
+                .properties(properties.mapColor(MapColor.STONE).strength(2.0f, 4.0f).noOcclusion())
                 // @todo 1.18 .harvestLevel(ToolType.PICKAXE, 1)
         );
     }

@@ -1,5 +1,13 @@
 package mcjty.ariente.blocks.utility;
 
+import net.neoforged.neoforge.transfer.ResourceHandler;
+import net.neoforged.neoforge.transfer.item.ItemResource;
+import net.neoforged.neoforge.transfer.transaction.TransactionContext;
+import net.neoforged.neoforge.transfer.TransferPreconditions;
+import net.minecraft.server.level.ServerLevel;
+import net.minecraft.world.level.block.state.BlockBehaviour;
+import net.minecraft.world.level.material.MapColor;
+import net.minecraft.world.level.block.SoundType;
 import java.util.EnumMap;
 import java.util.Map;
 import java.util.Objects;
@@ -10,7 +18,6 @@ import mcjty.ariente.config.PowerConfiguration;
 import mcjty.ariente.power.IPowerReceiver;
 import mcjty.ariente.power.IPowerUser;
 import mcjty.ariente.power.PowerReceiverSupport;
-import mcjty.ariente.setup.Registration;
 import mcjty.lib.blocks.BaseBlock;
 import mcjty.lib.blocks.RotationType;
 import mcjty.lib.builder.BlockBuilder;
@@ -20,7 +27,7 @@ import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
 import net.minecraft.core.HolderLookup;
 import net.minecraft.nbt.CompoundTag;
-import net.minecraft.resources.ResourceLocation;
+import net.minecraft.resources.Identifier;
 import net.minecraft.world.InteractionHand;
 import net.minecraft.world.InteractionResult;
 import net.minecraft.world.entity.player.Player;
@@ -68,16 +75,16 @@ public class SmelterTile extends ExtremeMachineTile implements IPowerReceiver, I
 
     private final Map<Direction, IItemHandler> sidedHandlers = new EnumMap<>(Direction.class);
     private final RecipeManager.CachedCheck<SingleRecipeInput, SmeltingRecipe> recipeCheck = RecipeManager.createCheck(RecipeType.SMELTING);
-    private ResourceLocation recipeId;
+    private Identifier recipeId;
     private int progress;
     private long usingPower;
 
     public SmelterTile(BlockPos pos, BlockState state) {
-        super(Registration.SMELTER_TILE.get(), pos, state);
+        super(mcjty.ariente.setup.Registration.SMELTER_TILE.get(), pos, state);
     }
 
-    public static BaseBlock createBlock() {
-        return new BaseBlock(new BlockBuilder()
+    public static BaseBlock createBlock(BlockBehaviour.Properties properties) {
+        return new BaseBlock(new BlockBuilder().properties(properties.mapColor(MapColor.METAL).strength(2.0f).requiresCorrectToolForDrops().sound(SoundType.METAL))
                 .info(key("message.ariente.shiftmessage"))
                 .infoShift(header())
                 .topDriver(DRIVER)
@@ -100,7 +107,7 @@ public class SmelterTile extends ExtremeMachineTile implements IPowerReceiver, I
 
             @Override
             public void attack(BlockState state, Level level, BlockPos pos, Player player) {
-                if (!level.isClientSide && level.getBlockEntity(pos) instanceof SmelterTile smelter
+                if (!level.isClientSide() && level.getBlockEntity(pos) instanceof SmelterTile smelter
                         && player.pick(player.blockInteractionRange(), 0, false) instanceof BlockHitResult hit
                         && hit.getBlockPos().equals(pos)) {
                     smelter.giveToPlayer(smelter.getSlot(hit), player);
@@ -114,7 +121,7 @@ public class SmelterTile extends ExtremeMachineTile implements IPowerReceiver, I
     }
 
     public int getSlot(BlockHitResult hit) {
-        Direction front = Registration.SMELTER.get().getFrontDirection(getBlockState());
+        Direction front = mcjty.ariente.setup.Registration.SMELTER.get().getFrontDirection(getBlockState());
         if (hit.getDirection() != front || !hit.getBlockPos().equals(worldPosition)) {
             return -1;
         }
@@ -141,7 +148,7 @@ public class SmelterTile extends ExtremeMachineTile implements IPowerReceiver, I
         if (slot < 0) {
             return InteractionResult.PASS;
         }
-        if (!level.isClientSide) {
+        if (!level.isClientSide()) {
             ItemStack held = player.getItemInHand(hand);
             if (held.isEmpty()) {
                 giveToPlayer(slot, player);
@@ -150,7 +157,7 @@ public class SmelterTile extends ExtremeMachineTile implements IPowerReceiver, I
                 player.containerMenu.broadcastChanges();
             }
         }
-        return InteractionResult.sidedSuccess(level.isClientSide);
+        return InteractionResult.SUCCESS;
     }
 
     public void giveToPlayer(int slot, Player player) {
@@ -171,7 +178,7 @@ public class SmelterTile extends ExtremeMachineTile implements IPowerReceiver, I
         if (level == null || stack.isEmpty()) {
             return null;
         }
-        return recipeCheck.getRecipeFor(new SingleRecipeInput(stack), level).orElse(null);
+        return recipeCheck.getRecipeFor(new SingleRecipeInput(stack), (ServerLevel) level).orElse(null);
     }
 
     @Override
@@ -179,14 +186,14 @@ public class SmelterTile extends ExtremeMachineTile implements IPowerReceiver, I
         long previousPower = usingPower;
         usingPower = 0;
         var recipe = findRecipe(items.getStackInSlot(SLOT_INPUT));
-        ResourceLocation nextId = recipe == null ? null : recipe.id();
+        Identifier nextId = recipe == null ? null : recipe.id().identifier();
         if (!Objects.equals(nextId, recipeId)) {
             progress = 0;
             recipeId = nextId;
             markDirtyQuick();
         }
         if (recipe != null) {
-            ItemStack result = recipe.value().assemble(new SingleRecipeInput(items.getStackInSlot(SLOT_INPUT)), level.registryAccess());
+            ItemStack result = recipe.value().assemble(new SingleRecipeInput(items.getStackInSlot(SLOT_INPUT)));
             ItemStack output = items.getStackInSlot(SLOT_OUTPUT);
             int limit = Math.min(items.getSlotLimit(SLOT_OUTPUT), result.getMaxStackSize());
             if (!result.isEmpty() && (output.isEmpty() || ItemStack.isSameItemSameComponents(output, result))
@@ -194,9 +201,9 @@ public class SmelterTile extends ExtremeMachineTile implements IPowerReceiver, I
                     && PowerReceiverSupport.consumePower(level, worldPosition, powerCost(PowerConfiguration.SMELTER_POWER_PER_TICK.get()), true)) {
                 usingPower = powerCost(PowerConfiguration.SMELTER_POWER_PER_TICK.get());
                 progress += PowerConfiguration.SMELTER_SPEED.get() * operationSpeed();
-                while (progress >= recipe.value().getCookingTime() && !items.getStackInSlot(SLOT_INPUT).isEmpty()
+                while (progress >= recipe.value().cookingTime() && !items.getStackInSlot(SLOT_INPUT).isEmpty()
                         && output.getCount() + result.getCount() <= limit) {
-                    progress -= Math.max(1, recipe.value().getCookingTime());
+                    progress -= Math.max(1, recipe.value().cookingTime());
                     items.extractItem(SLOT_INPUT, 1, false);
                     output = result.copyWithCount(output.getCount() + result.getCount());
                     items.setStackInSlot(SLOT_OUTPUT, output);
@@ -232,9 +239,9 @@ public class SmelterTile extends ExtremeMachineTile implements IPowerReceiver, I
     @Override
     protected void loadInfo(CompoundTag tag, HolderLookup.Provider provider) {
         super.loadInfo(tag, provider);
-        CompoundTag info = tag.getCompound("Info");
-        progress = Math.max(0, info.getInt("smeltProgress"));
-        recipeId = ResourceLocation.tryParse(info.getString("smeltRecipe"));
+        CompoundTag info = tag.getCompoundOrEmpty("Info");
+        progress = Math.max(0, info.getIntOr("smeltProgress", 0));
+        recipeId = Identifier.tryParse(info.getStringOr("smeltRecipe", ""));
     }
 
     @Override
@@ -244,7 +251,7 @@ public class SmelterTile extends ExtremeMachineTile implements IPowerReceiver, I
 
     @Override
     public void loadClientDataFromNBT(CompoundTag tag, HolderLookup.Provider provider) {
-        items.deserializeNBT(provider, tag.getCompound("Items"));
+        items.deserializeNBT(provider, tag.getCompoundOrEmpty("Items"));
     }
 
     @Override
@@ -252,7 +259,7 @@ public class SmelterTile extends ExtremeMachineTile implements IPowerReceiver, I
         return side == null ? items : sidedHandlers.computeIfAbsent(side, SidedHandler::new);
     }
 
-    private class SidedHandler implements IItemHandler {
+    private class SidedHandler implements IItemHandler, ResourceHandler<ItemResource> {
 
         private final Direction side;
 
@@ -261,7 +268,49 @@ public class SmelterTile extends ExtremeMachineTile implements IPowerReceiver, I
         }
 
         private boolean isOutput() {
-            return side == Direction.DOWN || side == Registration.SMELTER.get().getFrontDirection(getBlockState()).getOpposite();
+            return side == Direction.DOWN || side == mcjty.ariente.setup.Registration.SMELTER.get().getFrontDirection(getBlockState()).getOpposite();
+        }
+
+        private int mapped(int index) {
+            if (index < 0 || index >= size()) throw new IndexOutOfBoundsException(index);
+            return isOutput() ? SLOT_OUTPUT : SLOT_INPUT;
+        }
+
+        @Override
+        public int size() {
+            return getSlots();
+        }
+
+        @Override
+        public ItemResource getResource(int index) {
+            return items.getResource(mapped(index));
+        }
+
+        @Override
+        public long getAmountAsLong(int index) {
+            return items.getAmountAsLong(mapped(index));
+        }
+
+        @Override
+        public long getCapacityAsLong(int index, ItemResource resource) {
+            return items.getCapacityAsLong(mapped(index), resource);
+        }
+
+        @Override
+        public boolean isValid(int index, ItemResource resource) {
+            return !isOutput() && items.isValid(mapped(index), resource);
+        }
+
+        @Override
+        public int insert(int index, ItemResource resource, int amount, TransactionContext transaction) {
+            TransferPreconditions.checkNonEmptyNonNegative(resource, amount);
+            return isValid(index, resource) ? items.insert(mapped(index), resource, amount, transaction) : 0;
+        }
+
+        @Override
+        public int extract(int index, ItemResource resource, int amount, TransactionContext transaction) {
+            TransferPreconditions.checkNonEmptyNonNegative(resource, amount);
+            return isOutput() ? items.extract(mapped(index), resource, amount, transaction) : 0;
         }
 
         @Override

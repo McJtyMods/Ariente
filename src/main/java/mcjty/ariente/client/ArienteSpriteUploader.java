@@ -1,23 +1,22 @@
 package mcjty.ariente.client;
 
 import mcjty.ariente.Ariente;
+import net.minecraft.client.Minecraft;
 import net.minecraft.client.renderer.texture.TextureAtlasSprite;
-import net.minecraft.client.renderer.texture.TextureManager;
-import net.minecraft.client.resources.TextureAtlasHolder;
-import net.minecraft.resources.ResourceLocation;
+import net.minecraft.client.resources.model.sprite.SpriteId;
+import net.minecraft.resources.Identifier;
 
-public class ArienteSpriteUploader extends TextureAtlasHolder {
+/** The game's atlas manager owns loading, animation and resource reloads. */
+public final class ArienteSpriteUploader {
 
-    public static ArienteSpriteUploader INSTANCE;
+    public static final ArienteSpriteUploader INSTANCE = new ArienteSpriteUploader();
+    public static final Identifier ARIENTE_ATLAS = Identifier.fromNamespaceAndPath(Ariente.MODID, "textures/atlas/ariente.png");
+    public static final Identifier ATLAS_ID = Identifier.fromNamespaceAndPath(Ariente.MODID, "ariente");
 
-    public static final ResourceLocation ARIENTE_ATLAS = ResourceLocation.fromNamespaceAndPath(Ariente.MODID, "textures/atlas/ariente.png");
-
-    public ArienteSpriteUploader(TextureManager textureManager) {
-        super(textureManager, ARIENTE_ATLAS, ResourceLocation.fromNamespaceAndPath(Ariente.MODID, "ariente"));
+    private ArienteSpriteUploader() {
     }
 
-    @Override
-    public TextureAtlasSprite getSprite(ResourceLocation location) {
-        return super.getSprite(location);
+    public TextureAtlasSprite getSprite(Identifier location) {
+        return Minecraft.getInstance().getAtlasManager().get(new SpriteId(ARIENTE_ATLAS, location));
     }
 }

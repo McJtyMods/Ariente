@@ -39,9 +39,9 @@ public class ModuleSupport {
         if (!armorStack.isEmpty() && armorStack.getItem() == armorItem && ItemData.has(armorStack)) {
             CompoundTag compound = ItemData.get(armorStack);
             for (ArmorUpgradeType type : ArmorUpgradeType.VALUES) {
-                int idx = compound.getInt(type.getHotkeyKey());
+                int idx = compound.getIntOr(type.getHotkeyKey(), 0);
                 if (compound.contains(type.getModuleKey()) && idx == index) {
-                    boolean on = compound.getBoolean(type.getModuleKey());
+                    boolean on = compound.getBooleanOr(type.getModuleKey(), false);
                     on = !on;
                     compound.putBoolean(type.getModuleKey(), on);
                     ItemData.set(armorStack, compound);
@@ -58,7 +58,7 @@ public class ModuleSupport {
         if (stack.isEmpty() || !ItemData.has(stack)) {
             return false;
         }
-        return ItemData.get(stack).getBoolean(type.getModuleKey()) && ItemData.get(stack).getBoolean(type.getWorkingKey());
+        return ItemData.get(stack).getBooleanOr(type.getModuleKey(), false) && ItemData.get(stack).getBooleanOr(type.getWorkingKey(), false);
     }
 
     @Nonnull
@@ -72,7 +72,7 @@ public class ModuleSupport {
         for (ArmorUpgradeType type : ArmorUpgradeType.VALUES) {
             String key = "module_" + type.getName();
             if (compound.contains(key)) {
-                boolean activated = compound.getBoolean(key);
+                boolean activated = compound.getBooleanOr(key, false);
                 if (activated) {
                     if (type.getPowerUsage() > 0) {
                         power += type.getPowerUsage();
@@ -99,7 +99,7 @@ public class ModuleSupport {
         if (tag != null) {
             for (ArmorUpgradeType type : ArmorUpgradeType.VALUES) {
                 if (tag.contains(type.getModuleKey())) {
-                    tag.putBoolean(type.getWorkingKey(), powered && tag.getBoolean(type.getModuleKey()));
+                    tag.putBoolean(type.getWorkingKey(), powered && tag.getBooleanOr(type.getModuleKey(), false));
                     ItemData.set(stack, tag);
 
                 } else {
@@ -127,15 +127,15 @@ public class ModuleSupport {
         }
         // City soldiers receive fuel from their AI rather than a player's inventory.
         CompoundTag tag = ItemData.get(stack);
-        int power = tag.getInt("power");
+        int power = tag.getIntOr("power", 0);
         if (power <= 0) {
-            if (tag.getInt("negarite") <= 0 || tag.getInt("posirite") <= 0) {
+            if (tag.getIntOr("negarite", 0) <= 0 || tag.getIntOr("posirite", 0) <= 0) {
                 return false;
             }
-            tag.putInt("negarite", tag.getInt("negarite") - 1);
+            tag.putInt("negarite", tag.getIntOr("negarite", 0) - 1);
             ItemData.set(stack, tag);
 
-            tag.putInt("posirite", tag.getInt("posirite") - 1);
+            tag.putInt("posirite", tag.getIntOr("posirite", 0) - 1);
             ItemData.set(stack, tag);
 
             power = Math.max(1, ticks / usage.getLeft());

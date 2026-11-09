@@ -1,5 +1,20 @@
 package mcjty.ariente.blocks.utility;
 
+import java.util.ArrayList;
+import java.util.List;
+
+import net.neoforged.neoforge.transfer.ResourceHandler;
+import net.neoforged.neoforge.transfer.item.ItemResource;
+import net.neoforged.neoforge.transfer.transaction.TransactionContext;
+import net.neoforged.neoforge.transfer.TransferPreconditions;
+import net.neoforged.neoforge.transfer.transaction.SnapshotJournal;
+import net.minecraft.server.level.ServerLevel;
+import net.minecraft.world.level.storage.ValueInput;
+import mcjty.ariente.items.ItemData;
+import net.minecraft.world.level.block.state.BlockBehaviour;
+import net.minecraft.world.level.material.MapColor;
+import net.minecraft.world.level.block.SoundType;
+import net.neoforged.neoforge.client.network.ClientPacketDistributor;
 import java.util.Map;
 import java.util.Set;
 import javax.annotation.Nonnull;
@@ -15,7 +30,6 @@ import mcjty.ariente.recipes.BlueprintRecipeRegistry;
 import mcjty.ariente.recipes.ConstructorRecipe;
 import mcjty.ariente.security.AreaLocks;
 import mcjty.ariente.security.IKeyCardSlot;
-import mcjty.ariente.setup.Registration;
 import mcjty.ariente.sounds.ModSounds;
 import mcjty.hologui.api.IGuiComponent;
 import mcjty.hologui.api.IGuiComponentRegistry;
@@ -31,10 +45,8 @@ import net.minecraft.core.HolderLookup;
 import net.minecraft.core.registries.BuiltInRegistries;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.nbt.ListTag;
-import net.minecraft.nbt.Tag;
 import net.minecraft.network.Connection;
-import net.minecraft.network.protocol.game.ClientboundBlockEntityDataPacket;
-import net.minecraft.resources.ResourceLocation;
+import net.minecraft.resources.Identifier;
 import net.minecraft.sounds.SoundSource;
 import net.minecraft.world.InteractionHand;
 import net.minecraft.world.InteractionResult;
@@ -50,7 +62,6 @@ import net.minecraft.world.phys.HitResult;
 import net.minecraft.world.phys.Vec3;
 import net.neoforged.neoforge.items.IItemHandler;
 import net.neoforged.neoforge.items.IItemHandlerModifiable;
-import net.neoforged.neoforge.network.PacketDistributor;
 
 import static mcjty.ariente.compat.ArienteTOPDriver.DRIVER;
 import static mcjty.lib.builder.TooltipBuilder.header;
@@ -72,8 +83,8 @@ public class StorageTile extends ArienteBlockEntity implements IGuiTile, ICityEq
     private final IItemHandler invHandler = new StorageItemHandler();
 
     public StorageTile(BlockPos pos, BlockState state) {
-        super(Registration.STORAGE_TILE.get(), pos, state);
-        gridSize = state.is(Registration.STORAGE_3X3.get()) ? 3 : 2;
+        super(mcjty.ariente.setup.Registration.STORAGE_TILE.get(), pos, state);
+        gridSize = state.is(mcjty.ariente.setup.Registration.STORAGE_3X3.get()) ? 3 : 2;
         stacks = ItemStackList.create(getTypeCount());
         counts = new int[getTypeCount() * STACKS_PER_TYPE];
         totals = new int[getTypeCount()];
@@ -93,8 +104,8 @@ public class StorageTile extends ArienteBlockEntity implements IGuiTile, ICityEq
         return gridSize * gridSize;
     }
 
-    public static BaseBlock createBlock() {
-        return new BaseBlock(new BlockBuilder()
+    public static BaseBlock createBlock(BlockBehaviour.Properties properties) {
+        return new BaseBlock(new BlockBuilder().properties(properties.mapColor(MapColor.METAL).strength(2.0f).requiresCorrectToolForDrops().sound(SoundType.METAL))
                 .info(key("message.ariente.shiftmessage"))
                 .infoShift(header())
                 .topDriver(DRIVER)
@@ -126,12 +137,12 @@ public class StorageTile extends ArienteBlockEntity implements IGuiTile, ICityEq
     }
 
     @Override
-    public void onDataPacket(Connection net, ClientboundBlockEntityDataPacket packet, HolderLookup.Provider provider) {
+    public void onDataPacket(Connection net, ValueInput input) {
         boolean locked = isLocked();
 
-        super.onDataPacket(net, packet, provider);
+        super.onDataPacket(net, input);
 
-        if (level.isClientSide) {
+        if (level.isClientSide()) {
             // If needed send a render update.
             boolean newLocked = isLocked();
             if (newLocked != locked) {
@@ -163,13 +174,13 @@ public class StorageTile extends ArienteBlockEntity implements IGuiTile, ICityEq
     public void loadAdditional(CompoundTag tagCompound, HolderLookup.Provider provider) {
         super.loadAdditional(tagCompound, provider);
         AreaLocks.loadTarget(this, tagCompound);
-        CompoundTag info = tagCompound.getCompound("Info");
+        CompoundTag info = tagCompound.getCompoundOrEmpty("Info");
         if (!info.isEmpty()) {
             readDisplayData(info, provider);
             if (info.contains("keyId")) {
-                keyId = info.getString("keyId");
+                keyId = info.getStringOr("keyId", "");
             }
-            int[] cc = info.getIntArray("Counts");
+            int[] cc = info.getIntArray("Counts").orElseGet(() -> new int[0]);
             System.arraycopy(cc, 0, counts, 0, Math.min(cc.length, counts.length));
         }
     }
@@ -193,25 +204,25 @@ public class StorageTile extends ArienteBlockEntity implements IGuiTile, ICityEq
 
     @Override
     public void loadClientDataFromNBT(CompoundTag tagCompound, HolderLookup.Provider provider) {
-        readDisplayData(tagCompound.getCompound("Info"), provider);
+        readDisplayData(tagCompound.getCompoundOrEmpty("Info"), provider);
     }
 
     private void writeDisplayData(CompoundTag info, HolderLookup.Provider provider) {
         info.putBoolean("locked", locked);
         ListTag items = new ListTag();
         for (ItemStack stack : stacks) {
-            items.add(stack.saveOptional(provider));
+            items.add(ItemData.encode(provider, stack));
         }
         info.put("Items", items);
         info.putIntArray("Totals", totals.clone());
     }
 
     private void readDisplayData(CompoundTag info, HolderLookup.Provider provider) {
-        locked = info.getBoolean("locked");
-        ListTag items = info.getList("Items", Tag.TAG_COMPOUND);
-        int[] syncedTotals = info.getIntArray("Totals");
+        locked = info.getBooleanOr("locked", false);
+        ListTag items = info.getListOrEmpty("Items");
+        int[] syncedTotals = info.getIntArray("Totals").orElseGet(() -> new int[0]);
         for (int i = 0; i < getTypeCount(); i++) {
-            stacks.set(i, ItemStack.parseOptional(provider, items.getCompound(i)));
+            stacks.set(i, ItemData.decode(provider, items.getCompoundOrEmpty(i)));
             totals[i] = i < syncedTotals.length ? syncedTotals[i] : 0;
         }
     }
@@ -231,7 +242,7 @@ public class StorageTile extends ArienteBlockEntity implements IGuiTile, ICityEq
     }
 
     public void toggleLock() {
-        if (!level.isClientSide) {
+        if (!level.isClientSide()) {
             setLocked(!locked);
         }
     }
@@ -317,15 +328,15 @@ public class StorageTile extends ArienteBlockEntity implements IGuiTile, ICityEq
             if (player.getMainHandItem().isEmpty()) {
                 player.setItemInHand(InteractionHand.MAIN_HAND, stack);
             } else if (ItemStack.isSameItemSameComponents(player.getMainHandItem(), stack)) {
-                boolean added = player.getInventory().add(player.getInventory().selected, stack);
+                boolean added = player.getInventory().add(player.getInventory().getSelectedSlot(), stack);
                 if (!added) {
                     if (!player.getInventory().add(stack)) {
-                        player.spawnAtLocation(stack, 1.05f);
+                        player.spawnAtLocation((ServerLevel) level, stack, 1.05f);
                     }
                 }
             } else {
                 if (!player.getInventory().add(stack)) {
-                    player.spawnAtLocation(stack, 1.05f);
+                    player.spawnAtLocation((ServerLevel) level, stack, 1.05f);
                 }
             }
             player.containerMenu.broadcastChanges();
@@ -374,13 +385,13 @@ public class StorageTile extends ArienteBlockEntity implements IGuiTile, ICityEq
     }
 
     public static void onClick(Level world, BlockPos pos, Player player) {
-        if (world.isClientSide) {
+        if (world.isClientSide()) {
             // On client. We find out what part of the block was hit and send that to the server.
             HitResult mouseOver = Minecraft.getInstance().hitResult;
             if (mouseOver instanceof BlockHitResult) {
                 int index = getSlot((BlockHitResult) mouseOver, world);
                 if (index >= 0) {
-                    PacketDistributor.sendToServer(new PacketClickStorage(pos, index));
+                    ClientPacketDistributor.sendToServer(new PacketClickStorage(pos, index));
                 }
             }
         }
@@ -395,7 +406,7 @@ public class StorageTile extends ArienteBlockEntity implements IGuiTile, ICityEq
         BaseBlock block = (BaseBlock) te.getBlockState().getBlock();
         Direction k = block.getFrontDirection(te.getBlockState());
         if (side == k) {
-            if (!world.isClientSide) {
+            if (!world.isClientSide()) {
                 if (te.isLocked()) {
                     Ariente.guiHandler.openHoloGui(world, pos, player);
                     return true;
@@ -538,14 +549,14 @@ public class StorageTile extends ArienteBlockEntity implements IGuiTile, ICityEq
     }
 
     @Override
-    public void setLoot(ResourceLocation id, int i, boolean doBlueprint, int amount, int meta) {
+    public void setLoot(Identifier id, int i, boolean doBlueprint, int amount, int meta) {
         if (id == null) {
             // Random blueprint
             ConstructorRecipe recipe = BlueprintRecipeRegistry.getRandomRecipes().getRandom();
             ItemStack blueprint = BlueprintItem.makeBluePrint(recipe.getDestination());
             initTotalStack(i, blueprint);
         } else {
-            Item item = BuiltInRegistries.ITEM.get(id);
+            Item item = BuiltInRegistries.ITEM.getValue(id);
             if (item != null) {
                 if (doBlueprint) {
                     // @todo 1.14 meta
@@ -559,7 +570,92 @@ public class StorageTile extends ArienteBlockEntity implements IGuiTile, ICityEq
         }
     }
 
-    private class StorageItemHandler implements IItemHandlerModifiable {
+    private boolean storageTransaction;
+
+    @Override
+    public void markDirtyClient() {
+        if (!storageTransaction) super.markDirtyClient();
+    }
+
+    private record InventorySnapshot(List<ItemStack> stacks, int[] counts, int[] totals) {
+    }
+
+    private class StorageItemHandler implements IItemHandlerModifiable, ResourceHandler<ItemResource> {
+
+        private final SnapshotJournal<InventorySnapshot> journal = new SnapshotJournal<>() {
+
+            @Override
+            protected InventorySnapshot createSnapshot() {
+                List<ItemStack> copies = new ArrayList<>();
+                for (int i = 0; i < stacks.size(); i++) copies.add(stacks.get(i).copy());
+                return new InventorySnapshot(copies, counts.clone(), totals.clone());
+            }
+
+            @Override
+            protected void revertToSnapshot(InventorySnapshot snapshot) {
+                for (int i = 0; i < stacks.size(); i++) stacks.set(i, snapshot.stacks().get(i));
+                System.arraycopy(snapshot.counts(), 0, counts, 0, counts.length);
+                System.arraycopy(snapshot.totals(), 0, totals, 0, totals.length);
+            }
+
+            @Override
+            protected void onRootCommit(InventorySnapshot before) {
+                markDirtyClient();
+            }
+        };
+
+        @Override
+        public int size() {
+            return getSlots();
+        }
+
+        @Override
+        public ItemResource getResource(int index) {
+            return ItemResource.of(getStackInSlot(index));
+        }
+
+        @Override
+        public long getAmountAsLong(int index) {
+            return getStackInSlot(index).getCount();
+        }
+
+        @Override
+        public long getCapacityAsLong(int index, ItemResource resource) {
+            return getSlotLimit(index);
+        }
+
+        @Override
+        public boolean isValid(int index, ItemResource resource) {
+            return isItemValid(index, resource.toStack());
+        }
+
+        @Override
+        public int insert(int index, ItemResource resource, int amount, TransactionContext transaction) {
+            TransferPreconditions.checkNonEmptyNonNegative(resource, amount);
+            ItemStack incoming = resource.toStack(amount);
+            int inserted = amount - insertItem(index, incoming, true).getCount();
+            if (inserted == 0) return 0;
+            journal.updateSnapshots(transaction);
+            storageTransaction = true;
+            try {
+                return amount - insertItem(index, incoming, false).getCount();
+            } finally {
+                storageTransaction = false;
+            }
+        }
+
+        @Override
+        public int extract(int index, ItemResource resource, int amount, TransactionContext transaction) {
+            TransferPreconditions.checkNonEmptyNonNegative(resource, amount);
+            if (!resource.matches(getStackInSlot(index)) || amount == 0 || locked) return 0;
+            journal.updateSnapshots(transaction);
+            storageTransaction = true;
+            try {
+                return extractItem(index, amount, false).getCount();
+            } finally {
+                storageTransaction = false;
+            }
+        }
 
         @Override
         public int getSlots() {

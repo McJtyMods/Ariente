@@ -4,12 +4,12 @@ import mcjty.ariente.blocks.defense.ForceFieldRenderer;
 import net.minecraft.network.RegistryFriendlyByteBuf;
 import net.minecraft.network.codec.StreamCodec;
 import net.minecraft.network.protocol.common.custom.CustomPacketPayload;
-import net.minecraft.resources.ResourceLocation;
+import net.minecraft.resources.Identifier;
 import net.neoforged.neoforge.network.handling.IPayloadContext;
 
 public class PacketPersonalForcefield implements CustomPacketPayload {
 
-    public static final Type<PacketPersonalForcefield> TYPE = new Type<>(ResourceLocation.fromNamespaceAndPath("ariente", "packet_personal_forcefield"));
+    public static final Type<PacketPersonalForcefield> TYPE = new Type<>(Identifier.fromNamespaceAndPath("ariente", "packet_personal_forcefield"));
     public static final StreamCodec<RegistryFriendlyByteBuf, PacketPersonalForcefield> CODEC = StreamCodec.ofMember(PacketPersonalForcefield::toBytes, PacketPersonalForcefield::new);
 
     @Override

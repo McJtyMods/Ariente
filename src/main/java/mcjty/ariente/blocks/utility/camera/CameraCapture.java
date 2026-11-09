@@ -49,7 +49,7 @@ public class CameraCapture {
     private static final ThreadLocal<ScanWorkspace> WORKSPACE = ThreadLocal.withInitial(ScanWorkspace::new);
 
     public static boolean inFront(Vec3 relative, Direction normal) {
-        return relative.dot(Vec3.atLowerCornerOf(normal.getNormal())) >= 0;
+        return relative.dot(Vec3.atLowerCornerOf(normal.getUnitVec3i())) >= 0;
     }
 
     public static CompoundTag scan(Level level, BlockPos camera, Direction normal) {
@@ -57,6 +57,7 @@ public class CameraCapture {
     }
 
     /** The explicit range also permits comparing capture costs. */
+
     public static CompoundTag scan(Level level, BlockPos camera, Direction normal, int range) {
         if (range < MIN_RANGE || range > MAX_RANGE) {
             throw new IllegalArgumentException("Invalid camera range");
@@ -232,7 +233,7 @@ public class CameraCapture {
             return saved;
         }
         int mask = 0;
-        if (state.isSolidRender(view, pos)) {
+        if (state.isSolidRender()) {
             mask = FACE_MASK;
         } else {
             VoxelShape shape = state.getVisualShape(view, pos, CollisionContext.empty());
@@ -306,8 +307,8 @@ public class CameraCapture {
         }
 
         @Override
-        public int getMinBuildHeight() {
-            return level.getMinBuildHeight();
+        public int getMinY() {
+            return level.getMinY();
         }
     }
 }

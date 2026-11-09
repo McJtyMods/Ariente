@@ -1,5 +1,10 @@
 package mcjty.ariente.multipart;
 
+import com.mojang.serialization.MapCodec;
+import net.minecraft.world.level.storage.ValueInput;
+import net.minecraft.world.level.storage.ValueOutput;
+import net.minecraft.world.level.storage.TagValueInput;
+import net.minecraft.util.ProblemReporter;
 import java.util.EnumMap;
 import java.util.Map;
 import mcjty.ariente.blocks.utility.autofield.AutoFieldTile;
@@ -12,7 +17,6 @@ import net.minecraft.core.registries.BuiltInRegistries;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.nbt.ListTag;
 import net.minecraft.nbt.NbtUtils;
-import net.minecraft.nbt.Tag;
 import net.minecraft.network.Connection;
 import net.minecraft.network.protocol.game.ClientboundBlockEntityDataPacket;
 import net.minecraft.world.level.Level;
@@ -21,8 +25,8 @@ import net.minecraft.world.level.block.Blocks;
 import net.minecraft.world.level.block.EntityBlock;
 import net.minecraft.world.level.block.entity.BlockEntity;
 import net.minecraft.world.level.block.state.BlockState;
-import net.neoforged.neoforge.client.model.data.ModelData;
-import net.neoforged.neoforge.client.model.data.ModelProperty;
+import net.neoforged.neoforge.model.data.ModelData;
+import net.neoforged.neoforge.model.data.ModelProperty;
 
 import static mcjty.ariente.setup.Registration.TYPE_MULTIPART;
 
@@ -100,9 +104,9 @@ public class MultipartTE extends BlockEntity {
     }
 
     @Override
-    public void onDataPacket(Connection connection, ClientboundBlockEntityDataPacket packet, HolderLookup.Provider provider) {
-        if (packet.getTag() != null) {
-            loadAdditional(packet.getTag(), provider);
+    public void onDataPacket(Connection connection, ValueInput input) {
+        {
+            loadAdditional(input);
             requestModelDataUpdate();
             level.sendBlockUpdated(worldPosition, getBlockState(), getBlockState(), Block.UPDATE_CLIENTS);
         }
@@ -132,15 +136,17 @@ public class MultipartTE extends BlockEntity {
     }
 
     @Override
-    public void loadAdditional(CompoundTag compound, HolderLookup.Provider provider) {
-        super.loadAdditional(compound, provider);
+    public void loadAdditional(ValueInput input) {
+        super.loadAdditional(input);
+        CompoundTag compound = input.read(MapCodec.assumeMapUnsafe(CompoundTag.CODEC)).orElseGet(CompoundTag::new);
+        HolderLookup.Provider provider = input.lookup();
         Map<PartSlot, Part> loaded = new EnumMap<>(PartSlot.class);
-        version = compound.getInt("version");
-        ListTag list = compound.getList("parts", Tag.TAG_COMPOUND);
+        version = compound.getIntOr("version", 0);
+        ListTag list = compound.getListOrEmpty("parts");
         for (int i = 0; i < list.size(); i++) {
-            CompoundTag tag = list.getCompound(i);
-            PartSlot slot = PartSlot.byName(tag.getString("slot"));
-            BlockState state = NbtUtils.readBlockState(BuiltInRegistries.BLOCK.asLookup(), tag);
+            CompoundTag tag = list.getCompoundOrEmpty(i);
+            PartSlot slot = PartSlot.byName(tag.getStringOr("slot", ""));
+            BlockState state = NbtUtils.readBlockState(BuiltInRegistries.BLOCK, tag);
             if (slot == null || !(state.getBlock() instanceof IPartBlock) || loaded.containsKey(slot)) {
                 continue;
             }
@@ -153,7 +159,7 @@ public class MultipartTE extends BlockEntity {
                 if (level != null) {
                     tile.setLevel(level);
                 }
-                tile.loadWithComponents(tag.getCompound("te"), provider);
+                tile.loadWithComponents(TagValueInput.create(ProblemReporter.DISCARDING, provider, tag.getCompoundOrEmpty("te")));
             }
             loaded.put(slot, new Part(state, tile));
         }
@@ -198,8 +204,14 @@ public class MultipartTE extends BlockEntity {
     }
 
     @Override
+    protected void saveAdditional(ValueOutput output) {
+        super.saveAdditional(output);
+        CompoundTag tag = new CompoundTag();
+        saveAdditional(tag, level.registryAccess());
+        output.store(tag);
+    }
+
     public void saveAdditional(CompoundTag compound, HolderLookup.Provider provider) {
-        super.saveAdditional(compound, provider);
         ListTag list = new ListTag();
         parts.forEach((slot, part) -> {
             CompoundTag tag = NbtUtils.writeBlockState(part.state);
@@ -211,5 +223,15 @@ public class MultipartTE extends BlockEntity {
         });
         compound.put("parts", list);
         compound.putInt("version", version);
+    }
+
+    @Override
+    public void preRemoveSideEffects(BlockPos pos, BlockState state) {
+        for (Part part : parts.values()) {
+            if (part.getBlockEntity() instanceof GenericTileEntity generic) {
+                generic.onReplaced(level, pos, part.getState(), level.getBlockState(pos));
+            }
+        }
+        super.preRemoveSideEffects(pos, state);
     }
 }

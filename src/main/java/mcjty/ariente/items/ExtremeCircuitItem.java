@@ -1,5 +1,10 @@
 package mcjty.ariente.items;
 
+import java.util.ArrayList;
+
+import mcjty.ariente.varia.Messages;
+import net.minecraft.world.item.component.TooltipDisplay;
+import java.util.function.Consumer;
 import java.util.List;
 import mcjty.ariente.blocks.ExtremeMachineTile;
 import net.minecraft.network.chat.Component;
@@ -13,8 +18,8 @@ import net.minecraft.world.item.context.UseOnContext;
 
 public class ExtremeCircuitItem extends Item {
 
-    public ExtremeCircuitItem() {
-        super(new Properties().stacksTo(64).rarity(Rarity.EPIC));
+    public ExtremeCircuitItem(Item.Properties properties) {
+        super(properties.stacksTo(64).rarity(Rarity.EPIC));
     }
 
     @Override
@@ -25,20 +30,26 @@ public class ExtremeCircuitItem extends Item {
                 || !machine.acceptsExtremeCircuit()) {
             return InteractionResult.PASS;
         }
-        if (!context.getLevel().isClientSide) {
+        if (!context.getLevel().isClientSide()) {
             if (machine.installExtremeCircuit()) {
                 if (!player.getAbilities().instabuild) {
                     stack.shrink(1);
                 }
-                player.displayClientMessage(Component.translatable("message.ariente.extreme_circuit.installed"), true);
+                Messages.player(player, Component.translatable("message.ariente.extreme_circuit.installed"), true);
             } else {
-                player.displayClientMessage(Component.translatable("message.ariente.extreme_circuit.already_installed"), true);
+                Messages.player(player, Component.translatable("message.ariente.extreme_circuit.already_installed"), true);
             }
         }
-        return InteractionResult.sidedSuccess(context.getLevel().isClientSide);
+        return InteractionResult.SUCCESS;
     }
 
     @Override
+    public void appendHoverText(ItemStack stack, Item.TooltipContext context, TooltipDisplay display, Consumer<Component> output, TooltipFlag flag) {
+        List<Component> lines = new ArrayList<>();
+        appendHoverText(stack, context, lines, flag);
+        lines.forEach(output);
+    }
+
     public void appendHoverText(ItemStack stack, Item.TooltipContext level, List<Component> tooltip, TooltipFlag flag) {
         tooltip.add(Component.translatable("message.ariente.extreme_circuit.tooltip"));
         tooltip.add(Component.translatable("message.ariente.extreme_circuit.recovery"));

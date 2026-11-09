@@ -1,27 +1,23 @@
 package mcjty.ariente.blocks.storagecube.client;
 
+import mcjty.ariente.client.ArienteRenderHelper;
 import com.mojang.blaze3d.vertex.PoseStack;
-import com.mojang.blaze3d.vertex.VertexConsumer;
 import com.mojang.math.Axis;
 import java.util.List;
 import java.util.Map;
 import java.util.WeakHashMap;
 import mcjty.ariente.blocks.storagecube.StorageCubeTile;
-import net.minecraft.client.Minecraft;
-import net.minecraft.client.renderer.LightTexture;
+import net.minecraft.util.LightCoordsUtil;
 import net.minecraft.client.renderer.MultiBufferSource;
-import net.minecraft.client.renderer.Sheets;
-import net.minecraft.client.renderer.blockentity.BlockEntityRenderer;
+import mcjty.ariente.client.ExtractedBlockRenderer;
 import net.minecraft.client.renderer.blockentity.BlockEntityRendererProvider;
 import net.minecraft.client.renderer.texture.OverlayTexture;
-import net.minecraft.util.Mth;
 import net.minecraft.util.RandomSource;
 import net.minecraft.world.item.ItemDisplayContext;
 import net.minecraft.world.item.ItemStack;
-import net.neoforged.neoforge.client.model.pipeline.VertexConsumerWrapper;
 
 /** Eight cached icons per visible cube. No entities, packets, inventory scans or per-frame random sampling. */
-public class StorageCubeRenderer implements BlockEntityRenderer<StorageCubeTile> {
+public class StorageCubeRenderer extends ExtractedBlockRenderer<StorageCubeTile> {
 
     private final Map<StorageCubeTile, Animation> animations = new WeakHashMap<>();
 
@@ -65,20 +61,8 @@ public class StorageCubeRenderer implements BlockEntityRenderer<StorageCubeTile>
             poses.mulPose(Axis.YP.rotationDegrees((float) (now * .3 + icon.phase * 60)));
             poses.mulPose(Axis.ZP.rotationDegrees((float) (5 * Math.sin(now * .02 + icon.phase))));
             poses.scale(.17f, .17f, .17f);
-            MultiBufferSource fading = type -> {
-                // Atlas item passes must blend for alpha to fade, including ordinary solid blocks.
-                var translucent = type == Sheets.solidBlockSheet() || type == Sheets.cutoutBlockSheet()
-                        || type == Sheets.translucentItemSheet() ? Sheets.translucentCullBlockSheet() : type;
-                return new VertexConsumerWrapper(buffer.getBuffer(translucent)) {
-
-                    @Override
-                    public VertexConsumer setColor(int r, int g, int b, int a) {
-                        return super.setColor(r, g, b, Mth.clamp((int) (a * alpha), 0, 255));
-                    }
-                };
-            };
-            Minecraft.getInstance().getItemRenderer().renderStatic(icon.stack, ItemDisplayContext.FIXED,
-                    LightTexture.FULL_BRIGHT, OverlayTexture.NO_OVERLAY, poses, fading, tile.getLevel(), 0);
+            ArienteRenderHelper.item(poses, buffer, icon.stack, ItemDisplayContext.FIXED,
+                    LightCoordsUtil.FULL_BRIGHT, OverlayTexture.NO_OVERLAY, 1, alpha);
             poses.popPose();
         }
     }

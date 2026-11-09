@@ -12,7 +12,6 @@ import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.nbt.ListTag;
-import net.minecraft.nbt.Tag;
 import net.minecraft.network.chat.Component;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.level.Level;
@@ -45,7 +44,7 @@ public class CameraDisplayModule implements DisplayModuleType {
     }
 
     public static boolean perspective(ItemStack stack) {
-        return DisplayModuleItem.config(stack).getBoolean("Perspective");
+        return DisplayModuleItem.config(stack).getBooleanOr("Perspective", false);
     }
 
     public static int livePan(ItemStack stack) {
@@ -57,14 +56,14 @@ public class CameraDisplayModule implements DisplayModuleType {
     }
 
     private static boolean live(ModuleSettings settings) {
-        if (settings.snapshot().getBoolean("Live")) {
+        if (settings.snapshot().getBooleanOr("Live", false)) {
             return true;
         }
         CompoundTag link = selectedCamera(settings.stack());
         Level level = settings.level();
-        if (level.isClientSide) {
-            BlockPos pos = BlockPos.of(link.getLong("Pos"));
-            return level.dimension().location().toString().equals(link.getString("Dimension")) && level.hasChunkAt(pos)
+        if (level.isClientSide()) {
+            BlockPos pos = BlockPos.of(link.getLongOr("Pos", 0));
+            return level.dimension().identifier().toString().equals(link.getStringOr("Dimension", "")) && level.hasChunkAt(pos)
                     && level.getBlockEntity(pos) instanceof CameraTile camera && camera.isLive();
         }
         return ModuleLink.resolve(level, link).tile() instanceof CameraTile camera && camera.isLive();
@@ -76,10 +75,10 @@ public class CameraDisplayModule implements DisplayModuleType {
 
     public static int rotationSpeed(ItemStack stack) {
         CompoundTag config = DisplayModuleItem.config(stack);
-        if (config.contains("AutoRotate") && !config.getBoolean("AutoRotate")) {
+        if (config.contains("AutoRotate") && !config.getBooleanOr("AutoRotate", false)) {
             return 0;
         }
-        return StorageDisplayModule.setting(stack, "RotationSpeed", config.getBoolean("AutoRotate") ? 15 : 0, 0, 90);
+        return StorageDisplayModule.setting(stack, "RotationSpeed", config.getBooleanOr("AutoRotate", false) ? 15 : 0, 0, 90);
     }
 
     public static int zoom(ItemStack stack) {
@@ -92,20 +91,21 @@ public class CameraDisplayModule implements DisplayModuleType {
     }
 
     /** Elapsed client ticks include the partial tick so animation stays smooth between captures. */
+
     public static double viewYaw(ItemStack stack, double elapsedTicks) {
         return autoRotate(stack) ? (yaw(stack) + Math.max(0, elapsedTicks) * rotationSpeed(stack) / 20) % 360 : yaw(stack);
     }
 
     public static List<CompoundTag> cameras(ItemStack stack) {
         CompoundTag config = DisplayModuleItem.config(stack);
-        ListTag tags = config.getList("Cameras", Tag.TAG_COMPOUND);
+        ListTag tags = config.getListOrEmpty("Cameras");
         List<CompoundTag> cameras = new ArrayList<>();
         for (int i = 0; i < Math.min(MAX_CAMERAS, tags.size()); i++) {
-            cameras.add(tags.getCompound(i));
+            cameras.add(tags.getCompoundOrEmpty(i));
         }
         // Modules linked before multiple-camera support keep their original camera.
         if (cameras.isEmpty() && config.contains("Link")) {
-            cameras.add(config.getCompound("Link"));
+            cameras.add(config.getCompoundOrEmpty("Link"));
         }
         return cameras;
     }
@@ -125,7 +125,7 @@ public class CameraDisplayModule implements DisplayModuleType {
         int selected = -1;
         for (int i = 0; i < cameras.size(); i++) {
             CompoundTag existing = cameras.get(i);
-            if (existing.getLong("Pos") == link.getLong("Pos") && existing.getString("Dimension").equals(link.getString("Dimension"))) {
+            if (existing.getLongOr("Pos", 0) == link.getLongOr("Pos", 0) && existing.getStringOr("Dimension", "").equals(link.getStringOr("Dimension", ""))) {
                 selected = i;
                 break;
             }
@@ -144,7 +144,7 @@ public class CameraDisplayModule implements DisplayModuleType {
         config.putInt("CameraIndex", selected);
         config.remove("Link");
         ItemData.setSection(stack, "Display", config);
-        return Component.literal("Camera " + (selected + 1) + "/" + cameras.size() + " linked: " + BlockPos.of(link.getLong("Pos")).toShortString());
+        return Component.literal("Camera " + (selected + 1) + "/" + cameras.size() + " linked: " + BlockPos.of(link.getLongOr("Pos", 0)).toShortString());
     }
 
     @Override
@@ -161,8 +161,8 @@ public class CameraDisplayModule implements DisplayModuleType {
         List<CompoundTag> cameras = cameras(stack);
         for (int i = 0; i < cameras.size(); i++) {
             CompoundTag link = cameras.get(i);
-            lines.add(Component.literal("Camera " + (i + 1) + "/" + cameras.size() + ": " + BlockPos.of(link.getLong("Pos")).toShortString()
-                    + " (" + link.getString("Dimension") + ")").withStyle(i == cameraIndex(stack) ? ChatFormatting.GREEN : ChatFormatting.GRAY));
+            lines.add(Component.literal("Camera " + (i + 1) + "/" + cameras.size() + ": " + BlockPos.of(link.getLongOr("Pos", 0)).toShortString()
+                    + " (" + link.getStringOr("Dimension", "") + ")").withStyle(i == cameraIndex(stack) ? ChatFormatting.GREEN : ChatFormatting.GRAY));
         }
         lines.add(Component.literal("Link up to 4 cameras; select one in the module GUI.").withStyle(ChatFormatting.GRAY));
         lines.add(Component.literal("Radius: " + radius(stack) + " blocks").withStyle(ChatFormatting.GRAY));

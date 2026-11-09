@@ -1,5 +1,5 @@
 {
-  "parent": "minecraft:builtin/entity",
+  "parent": "minecraft:block/block",
   "display": {
     "gui": {
       "rotation": [
@@ -73,5 +73,8 @@
         0.4
       ]
     }
+  },
+  "textures": {
+    "particle": "ariente:block/machines/storage_tier1"
   }
 }
