@@ -3,7 +3,6 @@ package mcjty.ariente.blocks.purifier;
 import net.minecraft.world.level.block.state.BlockBehaviour;
 import net.minecraft.world.level.material.MapColor;
 import net.minecraft.world.level.block.SoundType;
-import mcjty.ariente.setup.Registration;
 import mcjty.lib.blocks.BaseBlock;
 import mcjty.lib.blocks.RotationType;
 import mcjty.lib.builder.BlockBuilder;
@@ -63,7 +62,7 @@ public class PurifierTubeBlock extends BaseBlock {
 
     private boolean connectsTo(BlockPlaceContext context, Direction direction) {
         BlockState state = context.getLevel().getBlockState(context.getClickedPos().relative(direction));
-        return state.is(Registration.PURIFIER_START.get()) || state.is(Registration.PURIFIER_FINISH.get())
+        return state.is(mcjty.ariente.setup.Registration.PURIFIER_START.get()) || state.is(mcjty.ariente.setup.Registration.PURIFIER_FINISH.get())
                 || PurifierStructure.isTube(state, direction);
     }
 

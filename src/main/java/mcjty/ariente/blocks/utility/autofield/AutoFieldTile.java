@@ -1,10 +1,12 @@
 package mcjty.ariente.blocks.utility.autofield;
 
+import net.minecraft.world.level.chunk.LevelChunk;
+
 import net.minecraft.world.level.storage.ValueInput;
 import net.minecraft.world.level.block.state.BlockBehaviour;
 import net.minecraft.world.level.material.MapColor;
 import net.minecraft.world.level.block.SoundType;
-import net.neoforged.neoforge.client.network.ClientPacketDistributor;
+import mcjty.lib.network.ClientNetworking;
 import java.util.*;
 import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.stream.Collectors;
@@ -45,13 +47,9 @@ import net.minecraft.world.level.block.entity.BlockEntity;
 import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.phys.AABB;
 import net.minecraft.world.phys.BlockHitResult;
-import net.neoforged.bus.api.SubscribeEvent;
-import net.neoforged.neoforge.common.NeoForge;
-import net.neoforged.neoforge.event.level.ChunkEvent;
-import net.neoforged.neoforge.transfer.ResourceHandler;
-import net.neoforged.neoforge.transfer.item.ItemResource;
-import mcjty.lib.varia.InventoryTools;
-import net.neoforged.neoforge.network.PacketDistributor;
+import mcjty.lib.container.IItemHandler;
+import mcjty.lib.container.ItemHandlerHelper;
+import mcjty.ariente.network.Packets;
 
 import static mcjty.ariente.compat.ArienteTOPDriver.DRIVER;
 import static mcjty.hologui.api.Icons.*;
@@ -182,8 +180,8 @@ public class AutoFieldTile extends ExtremeMachineTile implements IGuiTile, IPowe
         AtomicBoolean didSomeWork = new AtomicBoolean(false);
         producingItemNode.getConnectedItemHandler(sourcePos).ifPresent(h -> {
             int minStackSize = producer.getMinStackSize();
-            for (int i = 0; i < h.size(); i++) {
-                ItemStack stack = InventoryTools.extractItem(h, i, minStackSize, true);
+            for (int i = 0; i < h.getSlots(); i++) {
+                ItemStack stack = h.extractItem(i, minStackSize, true);
                 if (!stack.isEmpty()) {
                     if (stack.getCount() >= minStackSize) {
                         long neededPower = computeNeededPower(stack);
@@ -207,7 +205,7 @@ public class AutoFieldTile extends ExtremeMachineTile implements IGuiTile, IPowe
                                         }
                                     }
                                     PartPos destPos = destinations.get(index);
-                                    ItemStack extracted = InventoryTools.extractItem(h, finalI, minStackSize, false);
+                                    ItemStack extracted = h.extractItem(finalI, minStackSize, false);
                                     if (extracted.isEmpty()) {
                                         continue;
                                     }
@@ -268,7 +266,7 @@ public class AutoFieldTile extends ExtremeMachineTile implements IGuiTile, IPowe
         long time = System.currentTimeMillis();
         if (time > clientRenderInfoAge + 1000) {
             clientRenderInfoAge = time;
-            ClientPacketDistributor.sendToServer(new PacketAutoFieldRequestRenderInfo(worldPosition));
+            ClientNetworking.sendToServer(new PacketAutoFieldRequestRenderInfo(worldPosition));
         }
     }
 
@@ -285,7 +283,7 @@ public class AutoFieldTile extends ExtremeMachineTile implements IGuiTile, IPowe
             double dz = z - player.getZ();
 
             if (player.level() == level && dx * dx + dy * dy + dz * dz < radius * radius) {
-                PacketDistributor.sendToPlayer((ServerPlayer) player, info);
+                Packets.sendToPlayer((ServerPlayer) player, info);
             }
         }
     }
@@ -330,7 +328,7 @@ public class AutoFieldTile extends ExtremeMachineTile implements IGuiTile, IPowe
         InputItemNodeTile itemNode = getInputItemNodeAt(partPos);
         if (itemNode != null && canNodeWork(itemNode)) {
             return itemNode.getConnectedItemHandler(partPos).map(h -> {
-                ItemStack remainer = InventoryTools.insertItem(h, stack, true);
+                ItemStack remainer = ItemHandlerHelper.insertItem(h, stack, true);
                 return remainer.isEmpty();
             }).orElse(false);
         }
@@ -340,13 +338,13 @@ public class AutoFieldTile extends ExtremeMachineTile implements IGuiTile, IPowe
     private ItemStack doInsert(PartPos sourcePos, PartPos destPos, ItemStack stack) {
         InputItemNodeTile node = getInputItemNodeAt(destPos);
         return node == null ? stack : node.getConnectedItemHandler(destPos)
-                .map(handler -> InventoryTools.insertItem(handler, stack, false)).orElse(stack);
+                .map(handler -> ItemHandlerHelper.insertItem(handler, stack, false)).orElse(stack);
     }
 
-    private void returnToSource(ResourceHandler<ItemResource> source, int slot, ItemStack stack, PartPos pos) {
+    private void returnToSource(IItemHandler source, int slot, ItemStack stack, PartPos pos) {
         if (!stack.isEmpty()) {
-            ItemStack remaining = InventoryTools.insertItem(source, slot, stack, false);
-            remaining = InventoryTools.insertItem(source, remaining, false);
+            ItemStack remaining = source.insertItem(slot, stack, false);
+            remaining = ItemHandlerHelper.insertItem(source, remaining, false);
             if (!remaining.isEmpty()) {
                 Containers.dropItemStack(level, pos.pos().getX() + .5, pos.pos().getY() + .5, pos.pos().getZ() + .5, remaining);
             }
@@ -487,32 +485,21 @@ public class AutoFieldTile extends ExtremeMachineTile implements IGuiTile, IPowe
         invalidateBox();
         LOADED_FIELDS.add(this);
         if (!level.isClientSide() && !listeningForChunks) {
-            NeoForge.EVENT_BUS.register(this);
             listeningForChunks = true;
         }
     }
 
-    @SubscribeEvent
-    public void onFieldChunkLoad(ChunkEvent.Load event) {
-        onFieldChunkChanged(event);
-    }
-
-    @SubscribeEvent
-    public void onFieldChunkUnload(ChunkEvent.Unload event) {
-        onFieldChunkChanged(event);
-    }
-
-    private void onFieldChunkChanged(ChunkEvent event) {
-        if (event.getLevel() == level && watchedChunks.contains(event.getChunk().getPos().pack())) {
-            // Chunk load events can arrive before FULL status. Rebuild on the next controller tick.
-            refreshField.set(true);
+    public static void chunkChanged(Level world, LevelChunk chunk) {
+        for (AutoFieldTile field : List.copyOf(LOADED_FIELDS)) {
+            if (field.level == world && field.watchedChunks.contains(chunk.getPos().pack())) {
+                field.refreshField.set(true);
+            }
         }
     }
 
     private void stopListeningForChunks() {
         LOADED_FIELDS.remove(this);
         if (listeningForChunks) {
-            NeoForge.EVENT_BUS.unregister(this);
             listeningForChunks = false;
         }
     }
@@ -564,6 +551,7 @@ public class AutoFieldTile extends ExtremeMachineTile implements IGuiTile, IPowe
     // Interior nodes need no marker below them, so notify loaded controllers covering this position.
     public static void notifyField(Level world, BlockPos pos) {
         List<AutoFieldTile> fields;
+
         synchronized (LOADED_FIELDS) {
             fields = List.copyOf(LOADED_FIELDS);
         }

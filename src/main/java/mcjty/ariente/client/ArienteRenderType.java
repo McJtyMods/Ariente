@@ -20,7 +20,6 @@ import net.minecraft.client.renderer.rendertype.RenderType;
 import net.minecraft.client.renderer.rendertype.RenderTypes;
 import net.minecraft.client.renderer.texture.TextureAtlas;
 import net.minecraft.resources.Identifier;
-import net.neoforged.neoforge.client.event.RegisterRenderPipelinesEvent;
 
 public final class ArienteRenderType {
 
@@ -54,7 +53,7 @@ public final class ArienteRenderType {
     }
 
     private static OitPipelineSet fieldOitPipeline(String name, PrimitiveTopology mode) {
-        var pipelines = OitPipelineSet.builder(Identifier.fromNamespaceAndPath("ariente", name), RenderPipeline.builder()
+        var pipelines = OitPipelineSet.builder("ariente_" + name, RenderPipeline.builder()
                 .withBindGroupLayout(BindGroupLayouts.DYNAMIC_TRANSFORMS).withBindGroupLayout(BindGroupLayouts.SAMPLER0)
                 .withVertexShader("core/position_tex_color").withFragmentShader(Identifier.parse("hologui:image"))
                 .withVertexBinding(0, DefaultVertexFormat.POSITION_TEX_COLOR).withPrimitiveTopology(mode).withCull(false)).build();
@@ -98,7 +97,7 @@ public final class ArienteRenderType {
             if (!lightmap) oitBuilder.withShaderDefine("EMISSIVE");
             if (blend == BlendFunction.ADDITIVE) oitBuilder.withShaderDefine("OIT_ADDITIVE");
             if (glow) oitBuilder.withFragmentShader(Identifier.parse("ariente:beam"));
-            var oit = OitPipelineSet.builder(Identifier.fromNamespaceAndPath("ariente", name), oitBuilder);
+            var oit = OitPipelineSet.builder("ariente_" + name, oitBuilder);
             if (lightmap) oit.withAccumulateModifier(accumulate -> accumulate.withBindGroupLayout(BindGroupLayouts.SAMPLER2));
             var pipelines = oit.build();
             OIT_PIPELINES.add(pipelines);
@@ -117,8 +116,8 @@ public final class ArienteRenderType {
         return type;
     }
 
-    public static void registerShaders(RegisterRenderPipelinesEvent event) {
-        PIPELINES.forEach(event::registerPipeline);
-        OIT_PIPELINES.forEach(event::registerOitPipelineSet);
+    public static void registerShaders() {
+        PIPELINES.forEach(RenderPipelines::register);
+        OIT_PIPELINES.forEach(RenderPipelines::register);
     }
 }

@@ -1,13 +1,14 @@
 package mcjty.ariente.blocks;
 
+import mcjty.lib.varia.RegistryLookup;
+
 import com.mojang.datafixers.util.Pair;
 import com.mojang.serialization.Codec;
 import com.mojang.serialization.DataResult;
 import com.mojang.serialization.DynamicOps;
 import net.minecraft.resources.RegistryOps;
-import net.neoforged.neoforge.common.CommonHooks;
-import net.neoforged.neoforge.transfer.ResourceHandler;
-import net.neoforged.neoforge.transfer.item.ItemResource;
+import mcjty.lib.container.IndexedStorage;
+import net.fabricmc.fabric.api.transfer.v1.item.ItemVariant;
 import net.minecraft.core.component.DataComponentGetter;
 import javax.annotation.Nullable;
 import mcjty.lib.container.GenericItemHandler;
@@ -23,6 +24,7 @@ import net.minecraft.world.level.storage.ValueOutput;
 import net.minecraft.world.item.component.CustomData;
 import net.minecraft.world.level.block.entity.BlockEntityType;
 import net.minecraft.world.level.block.state.BlockState;
+import mcjty.lib.container.IItemHandler;
 
 /** Ariente machine state layered on McJtyLib's registry-aware block entities. */
 public class ArienteBlockEntity extends TickingTileEntity {
@@ -35,7 +37,7 @@ public class ArienteBlockEntity extends TickingTileEntity {
                 return DataResult.error(() -> "Ariente machine saves require a registry context");
             }
             CompoundTag tag = new CompoundTag();
-            machine.saveAdditional(tag, CommonHooks.extractLookupProvider(registryOps));
+            machine.saveAdditional(tag, RegistryLookup.from(registryOps));
             return CompoundTag.CODEC.encode(tag, ops, prefix);
         }
 
@@ -50,15 +52,15 @@ public class ArienteBlockEntity extends TickingTileEntity {
     }
 
     @Nullable
-    public ResourceHandler<ItemResource> getAutomationHandler(@Nullable Direction side) {
+    public IItemHandler getAutomationHandler(@Nullable Direction side) {
         return null;
     }
 
     @Nullable
     @SuppressWarnings("unchecked")
-    public ResourceHandler<ItemResource> getItemResourceHandler(@Nullable Direction side) {
-        ResourceHandler<ItemResource> handler = getAutomationHandler(side);
-        return handler == null ? null : (ResourceHandler<ItemResource>) handler;
+    public IndexedStorage<ItemVariant> getItemVariantHandler(@Nullable Direction side) {
+        IItemHandler handler = getAutomationHandler(side);
+        return handler == null ? null : (IndexedStorage<ItemVariant>) handler;
     }
 
     @Override

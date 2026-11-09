@@ -11,7 +11,7 @@ import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.level.block.entity.BlockEntityType;
 import net.minecraft.world.level.block.state.BlockState;
-import mcjty.lib.varia.InventoryTools;
+import mcjty.lib.container.ItemHandlerHelper;
 
 public abstract class AbstractItemNodeTile extends AbstractNodeTile {
 
@@ -36,7 +36,7 @@ public abstract class AbstractItemNodeTile extends AbstractNodeTile {
                 if (selected != -1) {
                     ItemStack extracted = player.getInventory().getItem(selected);
                     if (!extracted.isEmpty()) {
-                        InventoryTools.insertItem(filter, extracted, false);
+                        ItemHandlerHelper.insertItem(filter, extracted, false);
                         notifyField();
                     }
                 }

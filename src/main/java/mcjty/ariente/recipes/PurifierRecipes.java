@@ -1,8 +1,8 @@
 package mcjty.ariente.recipes;
 
+import net.minecraft.core.registries.Registries;
 import net.minecraft.resources.ResourceKey;
 import net.minecraft.world.item.crafting.Recipe;
-import net.neoforged.neoforge.event.OnDatapackSyncEvent;
 
 import net.minecraft.server.level.ServerLevel;
 import java.util.ArrayList;
@@ -28,28 +28,18 @@ import net.minecraft.world.item.crafting.RecipeHolder;
 import net.minecraft.world.item.crafting.SingleRecipeInput;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.level.block.Block;
-import net.neoforged.bus.api.SubscribeEvent;
-import net.neoforged.fml.common.EventBusSubscriber;
-import net.neoforged.neoforge.event.TagsUpdatedEvent;
 
 /** Discovers ore/raw pairs from shared tags. Explicit datapack recipes take precedence. */
-@EventBusSubscriber(modid = Ariente.MODID)
 public class PurifierRecipes {
 
     private static volatile Snapshot snapshot;
     private static volatile List<PurifyingRecipe> clientRecipes = List.of();
 
-    @SubscribeEvent
-    public static void sync(OnDatapackSyncEvent event) {
-        event.sendRecipes(BlueprintRecipeRegistry.PURIFYING.get());
-    }
-
     public static void receivedRecipes(List<PurifyingRecipe> recipes) {
         clientRecipes = List.copyOf(recipes);
     }
 
-    @SubscribeEvent
-    public static synchronized void tagsUpdated(TagsUpdatedEvent event) {
+    public static synchronized void tagsUpdated() {
         snapshot = null;
     }
 
@@ -67,7 +57,7 @@ public class PurifierRecipes {
 
     public static List<PurifyingRecipe> getRecipes(Level level) {
         List<PurifyingRecipe> explicit = level instanceof ServerLevel server
-                ? server.recipeAccess().recipeMap().byType(BlueprintRecipeRegistry.PURIFYING.get()).stream().map(RecipeHolder::value).toList()
+                ? server.recipeAccess().getRecipes().stream().map(RecipeHolder::value).filter(recipe -> recipe instanceof PurifyingRecipe).map(recipe -> (PurifyingRecipe) recipe).toList()
                 : clientRecipes;
         List<PurifyingRecipe> recipes = new ArrayList<>(explicit);
         for (PurifyingRecipe automatic : getSnapshot().recipes()) {
@@ -86,6 +76,7 @@ public class PurifierRecipes {
         if (current != null && current.preferred().equals(preferred)) {
             return current;
         }
+
         synchronized (PurifierRecipes.class) {
             current = snapshot;
             if (current == null || !current.preferred().equals(preferred)) {

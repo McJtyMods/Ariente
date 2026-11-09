@@ -8,8 +8,7 @@ import mcjty.lib.varia.Logging;
 import mcjty.theoneprobe.api.ITheOneProbe;
 import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.player.Player;
-import net.neoforged.fml.InterModComms;
-import net.neoforged.fml.ModList;
+import net.fabricmc.loader.api.FabricLoader;
 
 import java.lang.reflect.InvocationTargetException;
 import java.util.function.BiPredicate;
@@ -23,9 +22,9 @@ public final class ArienteTOPCompatibility {
     }
 
     public static void register() {
-        if (!registered && ModList.get().isLoaded("theoneprobe")) {
+        if (!registered && FabricLoader.getInstance().isModLoaded("theoneprobe")) {
             registered = true;
-            InterModComms.sendTo("theoneprobe", "getTheOneProbe", GetTheOneProbe::new);
+
         }
     }
 

@@ -1,5 +1,7 @@
 package mcjty.ariente.datagen;
 
+import net.fabricmc.fabric.api.datagen.v1.FabricPackOutput;
+
 import mcjty.ariente.api.*;
 import mcjty.lib.datagen.model.*;
 import java.util.Arrays;
@@ -80,7 +82,7 @@ public class BlockStates extends BaseBlockStateProvider {
     public static final String TXT_AICORE_WINDOW = "block/machines/aicore_window";
     public static final String TXT_LIGHT_ON = "block/machines/light_on";
 
-    public BlockStates(DataGenerator gen) {
+    public BlockStates(FabricPackOutput gen) {
         super(gen, Ariente.MODID);
     }
 
@@ -396,6 +398,7 @@ public class BlockStates extends BaseBlockStateProvider {
                     case DOWN -> pane.from(low, 3, 0).to(high, 3, 16);
                     case EAST -> pane.from(13, low, 0).to(13, high, 16);
                     case WEST -> pane.from(3, low, 0).to(3, high, 16);
+
                     default -> throw new IllegalStateException();
                 }
                 pane.rotation().origin(8, 8, 8).axis(Direction.Axis.Z).angle(rotation).end();
@@ -531,6 +534,7 @@ public class BlockStates extends BaseBlockStateProvider {
                     case SOUTH -> 90;
                     case WEST -> 180;
                     case NORTH -> 270;
+
                     default -> throw new IllegalArgumentException("Flux slopes must face horizontally");
                 }).build());
 

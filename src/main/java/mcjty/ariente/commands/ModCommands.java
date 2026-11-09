@@ -1,5 +1,7 @@
 package mcjty.ariente.commands;
 
+import com.mojang.brigadier.CommandDispatcher;
+
 import net.minecraft.util.Prediction;
 import net.minecraft.server.permissions.Permissions;
 
@@ -18,18 +20,13 @@ import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.world.entity.EquipmentSlot;
 import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemStack;
-import net.neoforged.bus.api.SubscribeEvent;
-import net.neoforged.fml.common.EventBusSubscriber;
-import net.neoforged.neoforge.event.RegisterCommandsEvent;
 
-@EventBusSubscriber(modid = Ariente.MODID)
 public class ModCommands {
 
     private static final int FUEL_PAIRS = 1_000_000;
 
-    @SubscribeEvent
-    public static void register(RegisterCommandsEvent event) {
-        event.getDispatcher().register(Commands.literal(Ariente.MODID)
+    public static void register(CommandDispatcher<CommandSourceStack> dispatcher) {
+        dispatcher.register(Commands.literal(Ariente.MODID)
                 .requires(source -> source.permissions().hasPermission(Permissions.COMMANDS_GAMEMASTER))
                 .then(Commands.literal("equip").executes(context -> equip(context.getSource()))));
     }

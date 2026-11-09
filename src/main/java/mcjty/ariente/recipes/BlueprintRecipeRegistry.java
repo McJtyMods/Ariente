@@ -21,19 +21,18 @@ import com.mojang.serialization.MapCodec;
 import net.minecraft.network.codec.StreamCodec;
 import net.minecraft.world.item.crafting.CraftingBookCategory;
 import net.minecraft.world.level.block.Blocks;
-import net.neoforged.bus.api.IEventBus;
-import net.neoforged.neoforge.registries.DeferredRegister;
+import mcjty.lib.setup.DeferredRegister;
 
 import static mcjty.ariente.Ariente.MODID;
 
 public class BlueprintRecipeRegistry {
-    public static final DeferredRegister<RecipeSerializer<?>> RECIPE_SERIALIZERS = DeferredRegister.create(BuiltInRegistries.RECIPE_SERIALIZER, MODID);
+    public static final DeferredRegister<RecipeSerializer<?>> RECIPE_SERIALIZERS = DeferredRegister.create(Registries.RECIPE_SERIALIZER, MODID);
 
     public static final DeferredRegister<RecipeType<?>> RECIPE_TYPES = DeferredRegister.create(Registries.RECIPE_TYPE, MODID);
 
-    public static void register(IEventBus bus) {
-        RECIPE_TYPES.register(bus);
-        RECIPE_SERIALIZERS.register(bus);
+    public static void register() {
+        RECIPE_TYPES.register();
+        RECIPE_SERIALIZERS.register();
     }
 
     public static final Supplier<RecipeSerializer<ConstructorRecipe>> CONSTRUCTOR_RECIPES = RECIPE_SERIALIZERS.register("constructor",

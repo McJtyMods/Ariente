@@ -1,5 +1,7 @@
 package mcjty.ariente.bindings;
 
+import net.fabricmc.fabric.api.client.keymapping.v1.KeyMappingHelper;
+
 import net.minecraft.resources.Identifier;
 
 import com.mojang.blaze3d.platform.InputConstants;
@@ -7,12 +9,10 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
 import net.minecraft.client.KeyMapping;
-import net.neoforged.neoforge.client.event.RegisterKeyMappingsEvent;
-import net.neoforged.neoforge.client.settings.KeyConflictContext;
 
 public class Binding {
 
-    private static final KeyMapping.Category CATEGORY = new KeyMapping.Category(Identifier.parse("ariente:controls"));
+    private static final KeyMapping.Category CATEGORY = KeyMapping.Category.register(Identifier.parse("ariente:controls"));
 
     private final String name;
     private final KeyMapping binding;
@@ -23,7 +23,7 @@ public class Binding {
     private Binding(String name, int keyCode, Runnable callable) {
         this.name = name;
         this.callable = callable;
-        binding = new KeyMapping(name, KeyConflictContext.IN_GAME, InputConstants.Type.KEYBOARD, keyCode, CATEGORY);
+        binding = new KeyMapping(name, InputConstants.Type.KEYBOARD, keyCode, CATEGORY);
     }
 
     public static Binding create(String name, int keyCode, Runnable callable) {
@@ -44,10 +44,9 @@ public class Binding {
         binding.setDown(false);
     }
 
-    public static void register(RegisterKeyMappingsEvent event) {
-        event.registerCategory(CATEGORY);
+    public static void register() {
         KeyBindings.init();
-        BINDINGS.forEach(binding -> event.register(binding.binding));
+        BINDINGS.forEach(binding -> KeyMappingHelper.registerKeyMapping(binding.binding));
     }
 
     public static void checkBindings() {

@@ -24,7 +24,7 @@ import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.TooltipFlag;
 import net.minecraft.world.item.component.ItemAttributeModifiers;
 
-public class EnhancedEnergySabreItem extends EnergySabreItem implements ITooltipSettings {
+public class EnhancedEnergySabreItem extends EnergySabreItem implements ITooltipSettings , AttributeItem {
 
     private final TooltipBuilder tooltipBuilder = WeaponModuleSupport.createTooltipBuilder();
 
@@ -61,7 +61,6 @@ public class EnhancedEnergySabreItem extends EnergySabreItem implements ITooltip
         tooltipBuilder.makeTooltip(Tools.getId(this), stack, tooltip, flag);
     }
 
-    @Override
     public boolean shouldCauseReequipAnimation(ItemStack oldStack, ItemStack newStack, boolean slotChanged) {
         return false;
     }

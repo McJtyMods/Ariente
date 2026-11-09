@@ -9,7 +9,7 @@ import net.minecraft.network.codec.StreamCodec;
 import net.minecraft.network.protocol.common.custom.CustomPacketPayload;
 import net.minecraft.resources.Identifier;
 import net.minecraft.world.item.ItemStack;
-import net.neoforged.neoforge.network.handling.IPayloadContext;
+import mcjty.lib.network.PayloadContext;
 
 public record PacketStorageCubeData(BlockPos pos, int entityId, int size, long revision, boolean reply, List<Entry> changes) implements CustomPacketPayload {
 
@@ -50,7 +50,7 @@ public record PacketStorageCubeData(BlockPos pos, int entityId, int size, long r
         }
     }
 
-    public void handle(IPayloadContext context) {
+    public void handle(PayloadContext context) {
         context.enqueueWork(() -> StorageCubeClient.receive(this));
     }
 

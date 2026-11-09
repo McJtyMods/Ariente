@@ -180,9 +180,9 @@ public class SurfaceQuad {
 
     private static BakedQuad copy(BakedQuad source, Vector3fc[] positions, long[] uvs, TextureAtlasSprite sprite, int light) {
         var info = source.materialInfo();
-        var material = BakedQuad.MaterialInfo.of(new Material.Baked(sprite, false), sprite.transparency(),
-                info.tintIndex(), light == 0 ? info.shadeDirectionOverride() : Direction.UP, Math.max(light, info.lightEmission()), light == 0 && info.ambientOcclusion());
+        var material = BakedQuad.MaterialInfo.of(new Material.Baked(sprite, false), sprite.transparency(), info.tintIndex(),
+                light == 0 ? info.shadeDirectionOverride() : Direction.UP, Math.max(light, info.lightEmission()));
         return new BakedQuad(positions[0], positions[1], positions[2], positions[3], uvs[0], uvs[1], uvs[2], uvs[3],
-                source.direction(), material, source.bakedNormals(), source.bakedColors());
+                source.direction(), material);
     }
 }

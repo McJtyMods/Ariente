@@ -27,7 +27,6 @@ public class DoorMarkerRenderer extends ExtractedBlockRenderer<DoorMarkerTile> {
         context = pContext;
     }
 
-    @Override
     public AABB getRenderBoundingBox(DoorMarkerTile tile) {
         return tile.getRenderBoundingBox();
     }

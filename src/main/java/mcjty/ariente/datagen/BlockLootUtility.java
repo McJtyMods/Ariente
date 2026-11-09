@@ -15,7 +15,7 @@ public class BlockLootUtility extends BlockLootSubProvider {
     }
 
     @Override
-    protected void generate() {
+    public void generate() {
     }
 
     public static LootTable.Builder oreTable(LootTableSubProvider.Context provider, Block block, Item drop) {

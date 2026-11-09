@@ -1,5 +1,6 @@
 package mcjty.ariente.facade;
 
+import net.minecraft.core.registries.Registries;
 import java.util.ArrayList;
 
 import mcjty.ariente.varia.Messages;
@@ -112,7 +113,7 @@ public class FacadeItemBlock extends BlockItem implements ITooltipSettings {
                     if (!world.isClientSide()) {
                         facadeSupport.setMimicBlock(getMimicBlock(itemstack));
                     }
-                    SoundType soundtype = world.getBlockState(pos).getBlock().getSoundType(world.getBlockState(pos), world, pos, player);
+                    SoundType soundtype = world.getBlockState(pos).getSoundType();
                     world.playSound(player, pos, soundtype.getPlaceSound(), SoundSource.BLOCKS, (soundtype.getVolume() + 1.0F) / 2.0F, soundtype.getPitch() * 0.8F);
                     if (!world.isClientSide() && !player.getAbilities().instabuild) {
                         itemstack.shrink(1);

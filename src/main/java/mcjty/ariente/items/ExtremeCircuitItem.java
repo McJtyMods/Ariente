@@ -16,7 +16,7 @@ import net.minecraft.world.item.Rarity;
 import net.minecraft.world.item.TooltipFlag;
 import net.minecraft.world.item.context.UseOnContext;
 
-public class ExtremeCircuitItem extends Item {
+public class ExtremeCircuitItem extends Item  implements EarlyUseItem {
 
     public ExtremeCircuitItem(Item.Properties properties) {
         super(properties.stacksTo(64).rarity(Rarity.EPIC));

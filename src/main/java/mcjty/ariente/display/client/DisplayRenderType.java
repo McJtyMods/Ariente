@@ -16,7 +16,6 @@ import net.minecraft.client.renderer.rendertype.RenderSetup;
 import net.minecraft.client.renderer.texture.TextureAtlas;
 import net.minecraft.resources.Identifier;
 import net.minecraft.util.Util;
-import net.neoforged.neoforge.client.event.RegisterRenderPipelinesEvent;
 
 public final class DisplayRenderType {
 
@@ -27,10 +26,16 @@ public final class DisplayRenderType {
             .withCull(false).withDepthStencilState(new DepthStencilState(CompareOp.GREATER_THAN_OR_EQUAL, false)).build();
     private static final OitPipelineSet IMAGE_OIT = imageOitPipeline("display_image", false);
     private static final OitPipelineSet CAMERA_IMAGE_OIT = imageOitPipeline("display_camera", true);
+    private static final RenderPipeline OPAQUE_COLOR = RenderPipeline.builder(RenderPipelines.DEBUG_FILLED_SNIPPET)
+            .withLocation(Identifier.fromNamespaceAndPath("ariente", "pipeline/display_opaque_color"))
+            .withCull(false).withColorTargetState(ColorTargetState.DEFAULT)
+            .withDepthStencilState(new DepthStencilState(CompareOp.GREATER_THAN_OR_EQUAL, true)).build();
     private static final Function<Identifier, RenderType> CAMERAS = Util.memoize(texture -> image(texture, CAMERA_IMAGE));
     public static final RenderType CAMERA = image(TextureAtlas.LOCATION_BLOCKS, IMAGE);
     public static final RenderType ALIEN_FONT = image(Identifier.fromNamespaceAndPath("ariente", "textures/effects/alientfont.png"), IMAGE);
     public static final RenderType SURFACE = RenderType.create("ariente_display", RenderSetup.builder(COLOR).setOitPipelines(RenderPipelines.OIT_DEBUG_QUADS).createRenderSetup());
+    public static final RenderType OPAQUE_SURFACE = RenderType.create("ariente_display_opaque",
+            RenderSetup.builder(OPAQUE_COLOR).createRenderSetup());
 
     private static final RenderPipeline SCENE_SOLID = scenePipeline("solid", false);
     private static final RenderPipeline SCENE_TRANSLUCENT = scenePipeline("translucent", true);
@@ -70,7 +75,7 @@ public final class DisplayRenderType {
                 .withVertexBinding(0, DefaultVertexFormat.POSITION_TEX_COLOR).withPrimitiveTopology(PrimitiveTopology.QUADS)
                 .withCull(false);
         if (premultiplied) builder.withShaderDefine("PREMULTIPLIED_ALPHA");
-        return OitPipelineSet.builder(Identifier.fromNamespaceAndPath("ariente", name), builder).build();
+        return OitPipelineSet.builder("ariente_" + name, builder).build();
     }
 
     private static RenderType image(Identifier texture, RenderPipeline pipeline) {
@@ -84,13 +89,14 @@ public final class DisplayRenderType {
         return CAMERAS.apply(texture);
     }
 
-    public static void registerPipelines(RegisterRenderPipelinesEvent event) {
-        event.registerPipeline(IMAGE);
-        event.registerPipeline(CAMERA_IMAGE);
-        event.registerPipeline(COLOR);
-        event.registerPipeline(SCENE_SOLID);
-        event.registerPipeline(SCENE_TRANSLUCENT);
-        event.registerOitPipelineSet(IMAGE_OIT);
-        event.registerOitPipelineSet(CAMERA_IMAGE_OIT);
+    public static void registerPipelines() {
+        RenderPipelines.register(IMAGE);
+        RenderPipelines.register(CAMERA_IMAGE);
+        RenderPipelines.register(COLOR);
+        RenderPipelines.register(OPAQUE_COLOR);
+        RenderPipelines.register(SCENE_SOLID);
+        RenderPipelines.register(SCENE_TRANSLUCENT);
+        RenderPipelines.register(IMAGE_OIT);
+        RenderPipelines.register(CAMERA_IMAGE_OIT);
     }
 }

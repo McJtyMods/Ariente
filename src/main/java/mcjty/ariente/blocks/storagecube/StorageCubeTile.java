@@ -1,6 +1,7 @@
 package mcjty.ariente.blocks.storagecube;
 
-import net.neoforged.neoforge.transfer.item.ItemUtil;
+
+import net.minecraft.core.registries.Registries;
 import com.mojang.serialization.MapCodec;
 import net.minecraft.world.level.storage.ValueInput;
 
@@ -54,9 +55,8 @@ import net.minecraft.world.level.Level;
 import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.level.material.MapColor;
 import net.minecraft.world.phys.BlockHitResult;
-import net.neoforged.neoforge.transfer.ResourceHandler;
-import net.neoforged.neoforge.transfer.item.ItemResource;
-import net.neoforged.neoforge.network.PacketDistributor;
+import mcjty.lib.container.IItemHandler;
+import mcjty.ariente.network.Packets;
 
 import static mcjty.lib.container.SlotDefinition.generic;
 
@@ -255,18 +255,15 @@ public class StorageCubeTile extends ArienteBlockEntity implements IGuiTile, ICi
     }
 
     @Override
-    public ResourceHandler<ItemResource> getAutomationHandler(Direction side) {
+    public IItemHandler getAutomationHandler(Direction side) {
         return items;
     }
 
     @Override
     public CompoundTag getUpdateTag(HolderLookup.Provider provider) {
-        CompoundTag tag = new CompoundTag();
-        saveClientDataToNBT(tag, provider);
-        return tag;
+        return super.getUpdateTag(provider);
     }
 
-    @Override
     public void handleUpdateTag(ValueInput input) {
         loadClientDataFromNBT(input.read(MapCodec.assumeMapUnsafe(CompoundTag.CODEC)).orElseGet(CompoundTag::new), level.registryAccess());
     }
@@ -352,8 +349,8 @@ public class StorageCubeTile extends ArienteBlockEntity implements IGuiTile, ICi
         if (!canUse(player, entityId) || viewer == null || viewer.entityId != entityId || viewer.revision != revision) {
             return;
         }
-        for (int slot = 0; slot < items.size(); slot++) {
-            if (viewer.snapshot[slot] == null || !ItemStack.matches(ItemUtil.getStack(items, slot), viewer.snapshot[slot])) {
+        for (int slot = 0; slot < items.getSlots(); slot++) {
+            if (viewer.snapshot[slot] == null || !ItemStack.matches(items.getStackInSlot(slot), viewer.snapshot[slot])) {
                 // Automation or another viewer changed the inventory since this sort was requested.
                 return;
             }
@@ -364,8 +361,8 @@ public class StorageCubeTile extends ArienteBlockEntity implements IGuiTile, ICi
 
     private void sendChanges(ServerPlayer player, Viewer viewer, boolean force) {
         List<PacketStorageCubeData.Entry> changes = new ArrayList<>();
-        for (int i = 0; i < items.size() + 36; i++) {
-            ItemStack stack = i < items.size() ? ItemUtil.getStack(items, i) : player.getInventory().getItem(i - items.size());
+        for (int i = 0; i < items.getSlots() + 36; i++) {
+            ItemStack stack = i < items.getSlots() ? items.getStackInSlot(i) : player.getInventory().getItem(i - items.getSlots());
             if (viewer.snapshot[i] == null || !ItemStack.matches(stack, viewer.snapshot[i])) {
                 viewer.snapshot[i] = stack.copy();
                 changes.add(new PacketStorageCubeData.Entry(i, stack.copy()));
@@ -375,8 +372,8 @@ public class StorageCubeTile extends ArienteBlockEntity implements IGuiTile, ICi
             if (!changes.isEmpty()) {
                 viewer.revision++;
             }
-            PacketDistributor.sendToPlayer(player,
-                    new PacketStorageCubeData(worldPosition, viewer.entityId, items.size(), viewer.revision, force, changes));
+            Packets.sendToPlayer(player,
+                    new PacketStorageCubeData(worldPosition, viewer.entityId, items.getSlots(), viewer.revision, force, changes));
         }
     }
 
@@ -401,8 +398,8 @@ public class StorageCubeTile extends ArienteBlockEntity implements IGuiTile, ICi
 
     private void updatePreview() {
         List<Preview> palette = new ArrayList<>();
-        for (int i = 0; i < items.size(); i++) {
-            ItemStack stack = ItemUtil.getStack(items, i);
+        for (int i = 0; i < items.getSlots(); i++) {
+            ItemStack stack = items.getStackInSlot(i);
             if (stack.isEmpty()) {
                 continue;
             }
@@ -487,7 +484,7 @@ public class StorageCubeTile extends ArienteBlockEntity implements IGuiTile, ICi
     private class Viewer {
 
         private final int entityId;
-        private final ItemStack[] snapshot = new ItemStack[items.size() + 36];
+        private final ItemStack[] snapshot = new ItemStack[items.getSlots() + 36];
         private long deadline;
         private long revision;
 

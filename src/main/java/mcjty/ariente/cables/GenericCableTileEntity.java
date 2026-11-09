@@ -1,5 +1,6 @@
 package mcjty.ariente.cables;
 
+import net.minecraft.core.registries.Registries;
 import net.minecraft.world.level.storage.ValueInput;
 import com.mojang.brigadier.exceptions.CommandSyntaxException;
 import java.util.HashMap;

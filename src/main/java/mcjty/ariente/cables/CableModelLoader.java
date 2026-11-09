@@ -1,25 +1,34 @@
 package mcjty.ariente.cables;
 
-import com.mojang.serialization.MapCodec;
+import java.util.List;
+
+import mcjty.ariente.setup.Registration;
+import net.fabricmc.fabric.api.client.model.loading.v1.ModelLoadingPlugin;
 import net.minecraft.client.renderer.block.dispatch.BlockStateModel;
 import net.minecraft.client.resources.model.ModelBaker;
 import net.minecraft.client.resources.model.ResolvableModel;
-import net.neoforged.neoforge.client.model.block.CustomUnbakedBlockStateModel;
+import net.minecraft.world.level.block.state.BlockState;
 
-public record CableModelLoader() implements CustomUnbakedBlockStateModel {
-    public static final MapCodec<CableModelLoader> CODEC = MapCodec.unit(CableModelLoader::new);
+/** Resolve cable geometry before Minecraft groups visually equivalent block states. */
+public final class CableModelLoader {
 
-    @Override
-    public BlockStateModel bake(ModelBaker baker) {
-        return new GenericCableBakedModel();
-    }
+    public static void register() {
+        ModelLoadingPlugin.register(plugin -> {
+            var model = new GenericCableBakedModel();
+            var root = new BlockStateModel.UnbakedRoot() {
+                @Override
+                public BlockStateModel bake(BlockState state, ModelBaker baker) { return model; }
 
-    @Override
-    public MapCodec<CableModelLoader> codec() {
-        return CODEC;
-    }
+                @Override
+                public Object visualEqualityGroup(BlockState state) { return state; }
 
-    @Override
-    public void resolveDependencies(ResolvableModel.Resolver resolver) {
+                @Override
+                public void resolveDependencies(ResolvableModel.Resolver resolver) { }
+            };
+            for (var block : List.of(Registration.NETCABLE.get(), Registration.CONNECTOR.get(), Registration.FACADE.get())) {
+                plugin.registerBlockStateResolver(block, context ->
+                        context.block().getStateDefinition().getPossibleStates().forEach(state -> context.setModel(state, root)));
+            }
+        });
     }
 }

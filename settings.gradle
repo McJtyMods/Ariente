@@ -3,10 +3,23 @@ pluginManagement {
         mavenLocal()
         gradlePluginPortal()
         maven { url = 'https://maven.firstdark.dev/releases' }
-        maven { url = 'https://maven.neoforged.net/releases' }
+        maven { url = 'https://maven.fabricmc.net' }
     }
 }
 
 plugins {
     id 'org.gradle.toolchains.foojay-resolver-convention' version '1.0.0'
+}
+
+rootProject.name = 'Ariente'
+
+// Use sibling source dependencies when available; Maven remains the standalone fallback.
+def localMods = ['McJtyLib', 'TheOneProbe', 'ModHoloGui']
+localMods.each { mod ->
+    def configured = providers.gradleProperty("mod.${mod}").orNull
+    def checkout = configured ? file(configured) : file("../${mod}_fabric")
+    if (new File(checkout, 'build.gradle').isFile()) {
+        include mod
+        project(":${mod}").projectDir = checkout
+    }
 }

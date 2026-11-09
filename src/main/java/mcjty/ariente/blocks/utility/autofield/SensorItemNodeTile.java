@@ -1,6 +1,6 @@
 package mcjty.ariente.blocks.utility.autofield;
 
-import net.neoforged.neoforge.transfer.item.ItemUtil;
+
 import net.minecraft.world.level.block.state.BlockBehaviour;
 import net.minecraft.world.level.material.MapColor;
 import net.minecraft.world.level.block.SoundType;
@@ -68,8 +68,8 @@ public class SensorItemNodeTile extends AbstractNodeTile {
     public boolean sense(PartPos sensorPos) {
         return getConnectedItemHandler(sensorPos).map(h -> {
             int cnt = 0;
-            for (int i = 0 ; i < h.size() ; i++) {
-                cnt += ItemUtil.getStack(h, i).getCount();
+            for (int i = 0 ; i < h.getSlots() ; i++) {
+                cnt += h.getStackInSlot(i).getCount();
                 Boolean earlyCheck = checkOperatorEarly(cnt);
                 if (earlyCheck != null) {
                     return earlyCheck;

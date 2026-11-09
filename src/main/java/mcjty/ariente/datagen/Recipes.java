@@ -1,5 +1,7 @@
 package mcjty.ariente.datagen;
 
+import net.minecraft.world.item.crafting.SmeltingRecipe;
+import net.minecraft.world.item.crafting.BlastingRecipe;
 import mcjty.ariente.Ariente;
 import mcjty.ariente.api.MarbleColor;
 import mcjty.ariente.api.TechType;
@@ -33,16 +35,18 @@ import net.minecraft.world.item.crafting.CraftingBookCategory;
 import net.minecraft.world.item.crafting.Ingredient;
 import net.minecraft.world.item.crafting.Recipe;
 import net.minecraft.world.level.ItemLike;
-import net.neoforged.neoforge.common.conditions.ICondition;
 
 public class Recipes extends BaseRecipeProvider {
 
+    private final HolderGetter<Item> items;
+
     public Recipes(BootstrapContext<Recipe<?>> recipes, BootstrapContext<Advancement> advancements) {
         super(recipes, advancements);
+        items = recipes.lookup(Registries.ITEM);
     }
 
     @Override
-    protected void buildRecipes() {
+    public void buildRecipes() {
         RecipeOutput consumer = output;
         blueprintExchange(consumer);
         build(consumer, ShapedRecipeBuilder.shaped(items, RecipeCategory.MISC, Registration.TABLET.get())
@@ -89,7 +93,7 @@ public class Recipes extends BaseRecipeProvider {
             build(consumer, Identifier.fromNamespaceAndPath(Ariente.MODID, "marble_" + color.getSerializedName() + "_dye"), ShapelessRecipeBuilder.shapeless(items, RecipeCategory.MISC, DecorativeBlockModule.MARBLE_ITEMS.get(color).get())
                         .unlockedBy("marble", has(DecorativeBlockModule.MARBLE.get(color).get()))
                         .requires(Registration.TAG_MARBLE)
-                        .requires(color.getColor().getTag()));
+                        .requires(TagKey.create(Registries.ITEM, Identifier.parse("c:dyes/" + color.getColor().getName()))));
             build(consumer, ShapelessRecipeBuilder.shapeless(items, RecipeCategory.MISC, DecorativeBlockModule.MARBLE_SMOOTH_ITEMS.get(color).get())
                         .unlockedBy("marble", has(DecorativeBlockModule.MARBLE.get(color).get()))
                         .requires(DecorativeBlockModule.MARBLE_ITEMS.get(color).get()));
@@ -202,8 +206,8 @@ public class Recipes extends BaseRecipeProvider {
                     }
 
                     @Override
-                    public void accept(ResourceKey<Recipe<?>> id, Recipe<?> recipe, AdvancementHolder advancement, ICondition... conditions) {
-                        consumer.accept(id, new BlueprintExchangeRecipe(CraftingBookCategory.MISC), advancement, conditions);
+                    public void accept(ResourceKey<Recipe<?>> id, Recipe<?> recipe, AdvancementHolder advancement) {
+                        consumer.accept(id, new BlueprintExchangeRecipe(CraftingBookCategory.MISC), advancement);
                     }
 
                     @Override
@@ -231,9 +235,9 @@ public class Recipes extends BaseRecipeProvider {
     private void oreProcessing(RecipeOutput consumer, ItemLike ore, ItemLike result, int count) {
         String name = BuiltInRegistries.ITEM.getKey(result.asItem()).getPath();
         ItemStackTemplate output = new ItemStackTemplate(result.asItem(), count);
-        SimpleCookingRecipeBuilder.smelting(Ingredient.of(ore), RecipeCategory.MISC, CookingBookCategory.MISC, output, 0, 200)
+        new SimpleCookingRecipeBuilder(RecipeCategory.MISC, CookingBookCategory.MISC, output, Ingredient.of(ore), 0, 200, SmeltingRecipe::new)
                 .unlockedBy("has_ore", has(ore)).save(consumer, "ariente:" + name + "_from_smelting");
-        SimpleCookingRecipeBuilder.blasting(Ingredient.of(ore), RecipeCategory.MISC, CookingBookCategory.MISC, output, 0, 100)
+        new SimpleCookingRecipeBuilder(RecipeCategory.MISC, CookingBookCategory.MISC, output, Ingredient.of(ore), 0, 100, BlastingRecipe::new)
                 .unlockedBy("has_ore", has(ore)).save(consumer, "ariente:" + name + "_from_blasting");
     }
 

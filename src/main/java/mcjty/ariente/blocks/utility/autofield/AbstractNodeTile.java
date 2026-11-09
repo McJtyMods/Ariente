@@ -1,5 +1,7 @@
 package mcjty.ariente.blocks.utility.autofield;
 
+import net.fabricmc.fabric.api.transfer.v1.item.ItemStorage;
+
 import mcjty.lib.varia.CapabilityTools;
 import java.util.Optional;
 import javax.annotation.Nonnull;
@@ -34,9 +36,7 @@ import net.minecraft.world.level.block.state.properties.EnumProperty;
 import net.minecraft.world.phys.BlockHitResult;
 import net.minecraft.world.phys.shapes.Shapes;
 import net.minecraft.world.phys.shapes.VoxelShape;
-import net.neoforged.neoforge.capabilities.Capabilities;
-import net.neoforged.neoforge.transfer.ResourceHandler;
-import net.neoforged.neoforge.transfer.item.ItemResource;
+import mcjty.lib.container.IItemHandler;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.lang3.tuple.Pair;
 
@@ -315,7 +315,7 @@ public abstract class AbstractNodeTile extends ArienteBlockEntity implements IGu
     }
 
     @Nonnull
-    public Optional<ResourceHandler<ItemResource>> getConnectedItemHandler(PartPos partPos) {
+    public Optional<IItemHandler> getConnectedItemHandler(PartPos partPos) {
         BlockState state = MultipartHelper.getBlockState(level, worldPosition, partPos.slot());
         if (state != null && state.getBlock() == getBlockState().getBlock()) {
             NodeOrientation orientation = state.getValue(ORIENTATION);
@@ -326,7 +326,7 @@ public abstract class AbstractNodeTile extends ArienteBlockEntity implements IGu
             }
             BlockEntity otherTe = level.getBlockEntity(otherPos);
             if (otherTe != null) {
-                return Optional.ofNullable(CapabilityTools.itemHandler(level.getCapability(Capabilities.Item.BLOCK, otherPos, mainDirection.getOpposite())));
+                return Optional.ofNullable(CapabilityTools.itemHandler(ItemStorage.SIDED.find(level, otherPos, mainDirection.getOpposite())));
             }
         }
         return Optional.empty();

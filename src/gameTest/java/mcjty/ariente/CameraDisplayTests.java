@@ -16,7 +16,6 @@ import mcjty.ariente.display.DisplayModuleItem;
 import mcjty.ariente.display.InstalledModule;
 import mcjty.ariente.display.ModuleSettings;
 import mcjty.ariente.recipes.BlueprintRecipeRegistry;
-import mcjty.ariente.setup.Registration;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
 import net.minecraft.gametest.framework.GameTest;
@@ -47,7 +46,7 @@ import java.util.UUID;
 public class CameraDisplayTests {
 
     private static CameraTile camera(GameTestHelper helper, BlockPos pos, Direction normal) {
-        helper.getLevel().setBlockAndUpdate(pos, Registration.CAMERA.get().defaultBlockState().setValue(BlockStateProperties.FACING, normal));
+        helper.getLevel().setBlockAndUpdate(pos, mcjty.ariente.setup.Registration.CAMERA.get().defaultBlockState().setValue(BlockStateProperties.FACING, normal));
         return (CameraTile) helper.getLevel().getBlockEntity(pos);
     }
 
@@ -56,13 +55,13 @@ public class CameraDisplayTests {
     }
 
     private static ItemStack linked(GameTestHelper helper, BlockPos pos) {
-        ItemStack stack = new ItemStack(Registration.DISPLAY_CAMERA.get());
+        ItemStack stack = new ItemStack(mcjty.ariente.setup.Registration.DISPLAY_CAMERA.get());
         Player player = helper.makeMockSurvivalPlayer();
         player.setItemInHand(InteractionHand.MAIN_HAND, stack);
         player.setShiftKeyDown(true);
         UseOnContext context = new UseOnContext(player, InteractionHand.MAIN_HAND,
                 new BlockHitResult(Vec3.atCenterOf(pos), Direction.UP, pos, false));
-        helper.assertTrue(Registration.DISPLAY_CAMERA.get().onItemUseFirst(stack, context) == InteractionResult.SUCCESS, "Sneak click links the module");
+        helper.assertTrue(mcjty.ariente.setup.Registration.DISPLAY_CAMERA.get().onItemUseFirst(stack, context) == InteractionResult.SUCCESS, "Sneak click links the module");
         helper.assertTrue(!CameraDisplayModule.cameras(stack).isEmpty(), "The link is stored on the module");
         return stack;
     }
@@ -71,7 +70,7 @@ public class CameraDisplayTests {
     public static void sixMountingDirectionsOffsetTheCaptureOriginBehindTheBase(GameTestHelper helper) {
         BlockPos pos = helper.absolutePos(new BlockPos(3, 6, 3));
         Player player = helper.makeMockSurvivalPlayer();
-        player.setItemInHand(InteractionHand.MAIN_HAND, new ItemStack(Registration.CAMERA.get()));
+        player.setItemInHand(InteractionHand.MAIN_HAND, new ItemStack(mcjty.ariente.setup.Registration.CAMERA.get()));
         for (Direction facing : Direction.values()) {
             CameraTile camera = camera(helper, pos, facing);
             BlockPos front = pos.relative(facing, 2), back = pos.relative(facing.getOpposite(), 2);
@@ -86,7 +85,7 @@ public class CameraDisplayTests {
                     "Capture starts two blocks behind the base for " + facing + ": state=" + camera.getBlockState() + ", capture=" + capture.getInt("Facing"));
             BlockPlaceContext placement = new BlockPlaceContext(player, InteractionHand.MAIN_HAND, player.getMainHandItem(),
                     new BlockHitResult(Vec3.atCenterOf(pos), facing, pos, false));
-            helper.assertTrue(Registration.CAMERA.get().getStateForPlacement(placement).getValue(BlockStateProperties.FACING) == facing,
+            helper.assertTrue(mcjty.ariente.setup.Registration.CAMERA.get().getStateForPlacement(placement).getValue(BlockStateProperties.FACING) == facing,
                     "Placement follows the clicked face for " + facing);
             var shape = CameraTile.shape(facing);
             boolean positive = facing.getAxisDirection() == Direction.AxisDirection.POSITIVE;
@@ -130,7 +129,7 @@ public class CameraDisplayTests {
         BlockPos pos = helper.absolutePos(new BlockPos(3, 6, 3));
         CameraTile camera = camera(helper, pos, Direction.UP);
         ItemStack first = linked(helper, pos), second = linked(helper, pos);
-        CameraDisplayModule type = (CameraDisplayModule) Registration.DISPLAY_CAMERA.get().type();
+        CameraDisplayModule type = (CameraDisplayModule) mcjty.ariente.setup.Registration.DISPLAY_CAMERA.get().type();
         CompoundTag initial = type.sample(helper.getLevel(), first, new CompoundTag());
         helper.getLevel().setBlockAndUpdate(pos.above(2), Blocks.DIAMOND_BLOCK.defaultBlockState());
         helper.assertTrue(type.sample(helper.getLevel(), second, new CompoundTag()) == initial, "Modules share the same cached capture");
@@ -152,7 +151,7 @@ public class CameraDisplayTests {
         BlockPos basePos = helper.absolutePos(new BlockPos(3, 2, 1));
         for (int i = 0; i < 3; i++) {
             BlockPos pos = basePos.west(i);
-            helper.getLevel().setBlockAndUpdate(pos, Registration.DISPLAY_BASE.get().defaultBlockState().setValue(BlockStateProperties.HORIZONTAL_FACING, Direction.NORTH));
+            helper.getLevel().setBlockAndUpdate(pos, mcjty.ariente.setup.Registration.DISPLAY_BASE.get().defaultBlockState().setValue(BlockStateProperties.HORIZONTAL_FACING, Direction.NORTH));
             CompoundTag tag = new CompoundTag();
             tag.putInt("Height", 3);
             ((DisplayBaseTile) helper.getLevel().getBlockEntity(pos)).load(tag);
@@ -200,8 +199,8 @@ public class CameraDisplayTests {
         ItemStack restored = InstalledModule.load(installed.save(false)).stack();
         helper.assertTrue(CameraDisplayModule.autoRotate(restored) && CameraDisplayModule.rotationSpeed(restored) == 1,
                 "Automatic rotation and speed survive saving the module");
-        helper.assertTrue(BlueprintRecipeRegistry.findRecipe(new ItemStack(Registration.CAMERA.get())) != null
-                && BlueprintRecipeRegistry.findRecipe(new ItemStack(Registration.DISPLAY_CAMERA.get())) != null, "Both components have Constructor recipes");
+        helper.assertTrue(BlueprintRecipeRegistry.findRecipe(new ItemStack(mcjty.ariente.setup.Registration.CAMERA.get())) != null
+                && BlueprintRecipeRegistry.findRecipe(new ItemStack(mcjty.ariente.setup.Registration.DISPLAY_CAMERA.get())) != null, "Both components have Constructor recipes");
         helper.succeed();
     }
 
@@ -214,7 +213,7 @@ public class CameraDisplayTests {
                         "World up stays vertical and points up at every viewing rotation and tilt");
             }
         }
-        ItemStack stack = new ItemStack(Registration.DISPLAY_CAMERA.get());
+        ItemStack stack = new ItemStack(mcjty.ariente.setup.Registration.DISPLAY_CAMERA.get());
         helper.assertTrue(CameraDisplayModule.viewYaw(stack, 100) == CameraDisplayModule.yaw(stack), "Manual views remain stationary");
         CompoundTag config = DisplayModuleItem.config(stack);
         config.putBoolean("AutoRotate", true);
@@ -238,7 +237,7 @@ public class CameraDisplayTests {
         BlockPos unloaded = new BlockPos(3_000_000, 100, 3_000_000);
         helper.assertTrue(!helper.getLevel().hasChunkAt(unloaded), "The remote chunk starts unloaded");
         CameraDisplayModule.selectedCamera(stack).putLong("Pos", unloaded.asLong());
-        CompoundTag result = Registration.DISPLAY_CAMERA.get().type().sample(helper.getLevel(), stack, new CompoundTag());
+        CompoundTag result = mcjty.ariente.setup.Registration.DISPLAY_CAMERA.get().type().sample(helper.getLevel(), stack, new CompoundTag());
         helper.assertTrue(result.getString("Status").equals("Target unloaded") && !helper.getLevel().hasChunkAt(unloaded), "Sampling reports offline and keeps the chunk unloaded");
         helper.succeed();
     }
@@ -283,19 +282,19 @@ public class CameraDisplayTests {
         player.setItemInHand(InteractionHand.MAIN_HAND, stack);
         for (int i = 1; i < 5; i++) {
             BlockPos target = pos.east(i * 2);
-            Registration.DISPLAY_CAMERA.get().onItemUseFirst(stack, new UseOnContext(player, InteractionHand.MAIN_HAND,
+            mcjty.ariente.setup.Registration.DISPLAY_CAMERA.get().onItemUseFirst(stack, new UseOnContext(player, InteractionHand.MAIN_HAND,
                     new BlockHitResult(Vec3.atCenterOf(target), Direction.UP, target, false)));
         }
         helper.assertTrue(CameraDisplayModule.cameras(stack).size() == 4 && CameraDisplayModule.cameraIndex(stack) == 3,
                 "Four cameras are retained and a fifth cannot replace one");
         helper.assertTrue(CameraDisplayModule.cameras(stack).get(0).equals(first), "Adding cameras migrates the original link");
-        Registration.DISPLAY_CAMERA.get().onItemUseFirst(stack, new UseOnContext(player, InteractionHand.MAIN_HAND,
+        mcjty.ariente.setup.Registration.DISPLAY_CAMERA.get().onItemUseFirst(stack, new UseOnContext(player, InteractionHand.MAIN_HAND,
                 new BlockHitResult(Vec3.atCenterOf(pos), Direction.NORTH, pos, false)));
         helper.assertTrue(CameraDisplayModule.cameras(stack).size() == 4 && CameraDisplayModule.cameraIndex(stack) == 0,
                 "Relinking a camera selects it without consuming another slot, regardless of the clicked side");
         ItemStack restored = ItemStack.of(stack.save(new CompoundTag()));
         helper.assertTrue(CameraDisplayModule.cameras(restored).equals(CameraDisplayModule.cameras(stack)), "All four links survive saving the item");
-        Registration.DISPLAY_CAMERA.get().use(helper.getLevel(), player, InteractionHand.MAIN_HAND);
+        mcjty.ariente.setup.Registration.DISPLAY_CAMERA.get().use(helper.getLevel(), player, InteractionHand.MAIN_HAND);
         helper.assertTrue(CameraDisplayModule.cameras(stack).isEmpty() && !DisplayModuleItem.config(stack).contains("Link"), "Sneak use in air clears all camera links");
         helper.succeed();
     }
@@ -304,8 +303,8 @@ public class CameraDisplayTests {
     public static void previousAndNextSwitchImmediatelyAndSampleOnlyTheSelectedCamera(GameTestHelper helper) {
         BlockPos pos = helper.absolutePos(new BlockPos(1, 6, 3));
         CountingCamera[] cameras = new CountingCamera[4];
-        CameraDisplayModule type = (CameraDisplayModule) Registration.DISPLAY_CAMERA.get().type();
-        ItemStack stack = new ItemStack(Registration.DISPLAY_CAMERA.get());
+        CameraDisplayModule type = (CameraDisplayModule) mcjty.ariente.setup.Registration.DISPLAY_CAMERA.get().type();
+        ItemStack stack = new ItemStack(mcjty.ariente.setup.Registration.DISPLAY_CAMERA.get());
         for (int i = 0; i < 4; i++) {
             BlockPos target = pos.east(i * 2);
             camera(helper, target, Direction.UP);
@@ -315,10 +314,10 @@ public class CameraDisplayTests {
             link.putString("Dimension", helper.getLevel().dimension().location().toString());
             link.putLong("Pos", target.asLong());
             link.putString("Block", "ariente:camera");
-            type.link(stack, link, Registration.CAMERA.get().getName());
+            type.link(stack, link, mcjty.ariente.setup.Registration.CAMERA.get().getName());
         }
         BlockPos basePos = helper.absolutePos(new BlockPos(3, 2, 1));
-        helper.getLevel().setBlockAndUpdate(basePos, Registration.DISPLAY_BASE.get().defaultBlockState().setValue(BlockStateProperties.HORIZONTAL_FACING, Direction.NORTH));
+        helper.getLevel().setBlockAndUpdate(basePos, mcjty.ariente.setup.Registration.DISPLAY_BASE.get().defaultBlockState().setValue(BlockStateProperties.HORIZONTAL_FACING, Direction.NORTH));
         DisplayBaseTile base = (DisplayBaseTile) helper.getLevel().getBlockEntity(basePos);
         Player player = helper.makeMockSurvivalPlayer();
         player.setPos(Vec3.atCenterOf(basePos));
@@ -362,7 +361,7 @@ public class CameraDisplayTests {
 
     @GameTest(template = "empty")
     public static void radiusZoomCachingAndLegacyRotation(GameTestHelper helper) {
-        ItemStack stack = new ItemStack(Registration.DISPLAY_CAMERA.get());
+        ItemStack stack = new ItemStack(mcjty.ariente.setup.Registration.DISPLAY_CAMERA.get());
         CompoundTag config = DisplayModuleItem.config(stack);
         helper.assertTrue(CameraDisplayModule.radius(stack) == 30 && CameraDisplayModule.zoom(stack) == 100 && CameraDisplayModule.rotationSpeed(stack) == 0, "New modules use a 30-block radius, 100% zoom and no rotation");
         config.putBoolean("AutoRotate", true);
@@ -528,7 +527,7 @@ public class CameraDisplayTests {
         CameraTile camera = camera(helper, source, Direction.NORTH);
         camera.setLive(true);
         BlockPos pos = helper.absolutePos(new BlockPos(3, 2, 1));
-        helper.getLevel().setBlockAndUpdate(pos, Registration.DISPLAY_BASE.get().defaultBlockState()
+        helper.getLevel().setBlockAndUpdate(pos, mcjty.ariente.setup.Registration.DISPLAY_BASE.get().defaultBlockState()
                 .setValue(BlockStateProperties.HORIZONTAL_FACING, Direction.NORTH));
         var base = (DisplayBaseTile) helper.getLevel().getBlockEntity(pos);
         var player = helper.makeMockSurvivalPlayer();
@@ -679,7 +678,7 @@ public class CameraDisplayTests {
         private int captures;
 
         private CountingCamera(BlockPos pos, int source) {
-            super(pos, Registration.CAMERA.get().defaultBlockState().setValue(BlockStateProperties.FACING, Direction.UP));
+            super(pos, mcjty.ariente.setup.Registration.CAMERA.get().defaultBlockState().setValue(BlockStateProperties.FACING, Direction.UP));
             this.source = source;
         }
 

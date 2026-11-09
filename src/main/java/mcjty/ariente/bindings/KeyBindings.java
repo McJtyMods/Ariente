@@ -1,6 +1,6 @@
 package mcjty.ariente.bindings;
 
-import net.neoforged.neoforge.client.network.ClientPacketDistributor;
+import mcjty.lib.network.ClientNetworking;
 import mcjty.ariente.entities.fluxship.FluxShipEntity;
 import mcjty.ariente.entities.fluxship.FluxShipMouseControls;
 import mcjty.ariente.entities.fluxship.PacketShipAction;
@@ -74,6 +74,6 @@ public class KeyBindings {
     }
 
     private static void toServer(CustomPacketPayload packet) {
-        ClientPacketDistributor.sendToServer(packet);
+        ClientNetworking.sendToServer(packet);
     }
 }

@@ -11,7 +11,6 @@ import mcjty.ariente.blocks.utility.WarperTile;
 import mcjty.ariente.compat.arienteworld.ArienteWorldCompat;
 import mcjty.ariente.config.UtilityConfiguration;
 import mcjty.ariente.entities.EntityArientePearl;
-import mcjty.ariente.setup.Registration;
 import mcjty.lib.builder.TooltipBuilder;
 import mcjty.lib.tooltips.ITooltipSettings;
 import mcjty.lib.varia.Tools;
@@ -23,7 +22,6 @@ import net.minecraft.network.chat.Component;
 import net.minecraft.sounds.SoundEvents;
 import net.minecraft.sounds.SoundSource;
 import net.minecraft.world.InteractionHand;
-import net.minecraft.world.InteractionResult;
 import net.minecraft.world.InteractionResult;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.Item;
@@ -39,7 +37,7 @@ import net.minecraft.world.phys.HitResult;
 
 import static mcjty.lib.builder.TooltipBuilder.header;
 
-public class ArientePearlItem extends Item implements ITooltipSettings {
+public class ArientePearlItem extends Item implements ITooltipSettings , EarlyUseItem {
     private static Random random = new Random();
     private final TooltipBuilder tooltipBuilder = new TooltipBuilder()
             .info(header());
@@ -70,7 +68,7 @@ public class ArientePearlItem extends Item implements ITooltipSettings {
         BlockState state = world.getBlockState(pos);
         ItemStack itemstack = player.getItemInHand(hand);
 
-        if (player.mayUseItemAt(pos.relative(facing), facing, itemstack) && state.getBlock() == Registration.WARPER.get()) {
+        if (player.mayUseItemAt(pos.relative(facing), facing, itemstack) && state.getBlock() == mcjty.ariente.setup.Registration.WARPER.get()) {
             if (world.isClientSide()) {
                 return InteractionResult.SUCCESS;
             } else {
@@ -121,7 +119,7 @@ public class ArientePearlItem extends Item implements ITooltipSettings {
 
         HitResult raytraceresult = Item.getPlayerPOVHitResult(world, player, ClipContext.Fluid.NONE);
 
-        if (raytraceresult instanceof BlockHitResult && raytraceresult.getType() == HitResult.Type.BLOCK && world.getBlockState(((BlockHitResult) raytraceresult).getBlockPos()).getBlock() == Registration.WARPER.get()) {
+        if (raytraceresult instanceof BlockHitResult && raytraceresult.getType() == HitResult.Type.BLOCK && world.getBlockState(((BlockHitResult) raytraceresult).getBlockPos()).getBlock() == mcjty.ariente.setup.Registration.WARPER.get()) {
             return InteractionResult.PASS;
         } else {
             player.startUsingItem(hand);

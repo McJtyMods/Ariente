@@ -1,7 +1,6 @@
 package mcjty.ariente.blocks.utility;
 
-import mcjty.lib.varia.InventoryTools;
-import net.neoforged.neoforge.transfer.item.ItemUtil;
+
 import net.minecraft.server.level.ServerLevel;
 
 import net.minecraft.world.level.block.state.BlockBehaviour;
@@ -35,9 +34,8 @@ import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.phys.BlockHitResult;
-import net.neoforged.neoforge.transfer.ResourceHandler;
-import net.neoforged.neoforge.transfer.item.ItemResource;
-import net.neoforged.neoforge.transfer.item.VanillaContainerWrapper;
+import mcjty.lib.container.IItemHandler;
+import mcjty.lib.container.InvWrapper;
 
 import static mcjty.ariente.compat.ArienteTOPDriver.DRIVER;
 import static mcjty.lib.builder.TooltipBuilder.header;
@@ -120,7 +118,7 @@ public class ConstructorTile extends ArienteBlockEntity implements IGuiTile, ICi
             return false;
         }
         ConstructorRecipe recipe = BlueprintRecipeRegistry.findRecipe(BlueprintItem.getDestination(blueprintStack));
-        return recipe != null && ConstructorCrafting.planIngredients(recipe, VanillaContainerWrapper.of(player.getInventory()),
+        return recipe != null && ConstructorCrafting.planIngredients(recipe, new InvWrapper(player.getInventory()),
                 0, player.getInventory().getContainerSize()) != null;
     }
 
@@ -129,14 +127,14 @@ public class ConstructorTile extends ArienteBlockEntity implements IGuiTile, ICi
             return;
         }
         ConstructorRecipe recipe = BlueprintRecipeRegistry.findRecipe(BlueprintItem.getDestination(blueprintStack));
-        var inventory = VanillaContainerWrapper.of(player.getInventory());
-        int[] reserved = ConstructorCrafting.planIngredients(recipe, inventory, 0, inventory.size());
+        var inventory = new InvWrapper(player.getInventory());
+        int[] reserved = ConstructorCrafting.planIngredients(recipe, inventory, 0, inventory.getSlots());
         if (reserved == null) {
             return;
         }
         for (int slot = 0; slot < reserved.length; slot++) {
             if (reserved[slot] > 0) {
-                InventoryTools.extractItem(inventory, slot, reserved[slot], false);
+                inventory.extractItem(slot, reserved[slot], false);
             }
         }
         ItemStack result = recipe.getDestination().copy();
@@ -209,9 +207,9 @@ public class ConstructorTile extends ArienteBlockEntity implements IGuiTile, ICi
 
     private boolean isIngredient(ItemStack stack) {
         // @todo optimize!
-        ResourceHandler<ItemResource> handler = getItemHandler();
-        for (int i = 0; i < handler.size(); i++) {
-            ItemStack blueprintStack = ItemUtil.getStack(handler, i);
+        IItemHandler handler = getItemHandler();
+        for (int i = 0; i < handler.getSlots(); i++) {
+            ItemStack blueprintStack = handler.getStackInSlot(i);
             if (!blueprintStack.isEmpty()) {
                 ItemStack destination = BlueprintItem.getDestination(blueprintStack);
                 ConstructorRecipe recipe = BlueprintRecipeRegistry.findRecipe(destination);
@@ -227,7 +225,7 @@ public class ConstructorTile extends ArienteBlockEntity implements IGuiTile, ICi
         return false;
     }
 
-    private ResourceHandler<ItemResource> getItemHandler() {
+    private IItemHandler getItemHandler() {
         // Get a virtual item handler with all collected slots from blueprint storages around this
         if (blueprintItemHandler == null) {
             blueprintItemHandler = new BlueprintItemHandler(level, worldPosition);

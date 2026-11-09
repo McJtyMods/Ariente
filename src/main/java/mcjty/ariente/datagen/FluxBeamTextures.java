@@ -1,7 +1,6 @@
 package mcjty.ariente.datagen;
 
 import com.google.common.hash.Hashing;
-import com.mojang.blaze3d.platform.NativeImage;
 import java.io.IOException;
 import java.io.UncheckedIOException;
 import java.util.concurrent.CompletableFuture;
@@ -23,8 +22,8 @@ public class FluxBeamTextures implements DataProvider {
     public CompletableFuture<?> run(CachedOutput cache) {
         return CompletableFuture.runAsync(() -> {
             try (var input = Ariente.class.getResourceAsStream("/assets/ariente/textures/block/machines/flux_beam.png");
-                 NativeImage strip = NativeImage.read(input);
-                 NativeImage bend = new NativeImage(64, 64, false)) {
+                 PngImage strip = PngImage.read(input);
+                 PngImage bend = new PngImage(64, 64, false)) {
                 for (int x = 0; x < 64; x++) {
                     for (int z = 0; z < 64; z++) {
                         double dx = (x + .5) / 4 - 8;

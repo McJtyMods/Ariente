@@ -14,8 +14,8 @@ ROOT = Path(__file__).resolve().parents[1]
 
 def main():
     parser = argparse.ArgumentParser(description=__doc__)
-    parser.add_argument('--generated', type=Path, help='isolated runClientData output')
-    parser.add_argument('--jar', type=Path, help='NeoForge release jar')
+    parser.add_argument('--generated', type=Path, help='isolated runDatagen output')
+    parser.add_argument('--jar', type=Path, help='Fabric release jar')
     args = parser.parse_args()
     files = {}
     errors = []
@@ -57,13 +57,15 @@ def main():
 
     for name, doc in docs.items():
         if '/models/' in name:
-            if doc.get('loader') == 'forge:obj':
+            if doc.get('fabric:type') == 'ariente:obj':
                 namespace, path = doc['model'].split(':', 1)
                 if namespace == 'ariente' and f'assets/{namespace}/{path}' not in files:
                     errors.append(f'Missing OBJ: {doc["model"]}')
             if 'parent' in doc:
                 reference(doc['parent'], 'models', '.json')
             for texture in doc.get('textures', {}).values():
+                if isinstance(texture, dict):
+                    texture = texture['sprite']
                 if not texture.startswith('#'):
                     reference(texture, 'textures', '.png')
         if '/blockstates/' in name:
@@ -100,11 +102,21 @@ def main():
             if len(names) != len(set(names)):
                 errors.append('Duplicate jar entries')
             for name, path in files.items():
-                if name not in names or jar.read(name) != path.read_bytes():
+                expected = path.read_bytes()
+                if name == 'fabric.mod.json':
+                    version = next(line.split('=', 1)[1] for line in (ROOT / 'gradle.properties').read_text().splitlines() if line.startswith('version='))
+                    expected = expected.replace(b'${version}', version.encode())
+                actual = jar.read(name) if name in names else None
+                if name == 'fabric.mod.json' and actual is not None:
+                    metadata = json.loads(actual)
+                    metadata.pop('jars', None)
+                    actual = json.dumps(metadata, sort_keys=True).encode()
+                    expected = json.dumps(json.loads(expected), sort_keys=True).encode()
+                if actual != expected:
                     errors.append(f'Jar resource missing or stale: {name}')
             if any('/gameTest/' in n or n.endswith('Tests.class') for n in names):
                 errors.append('Test classes in release jar')
-            for name in ('mcjty/ariente/Ariente.class', 'META-INF/neoforge.mods.toml', 'META-INF/accesstransformer.cfg'):
+            for name in ('mcjty/ariente/Ariente.class', 'fabric.mod.json', 'ariente.accesswidener', 'ariente.mixins.json'):
                 if name not in names:
                     errors.append(f'Missing jar entry: {name}')
             equipment_code = jar.read('mcjty/ariente/ForgeEventHandlers.class')

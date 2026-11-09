@@ -1,11 +1,10 @@
 package mcjty.ariente.blocks.utility;
 
-import mcjty.lib.varia.InventoryTools;
-import net.neoforged.neoforge.transfer.item.ItemUtil;
-import net.neoforged.neoforge.transfer.ResourceHandler;
-import net.neoforged.neoforge.transfer.item.ItemResource;
-import net.neoforged.neoforge.transfer.transaction.TransactionContext;
-import net.neoforged.neoforge.transfer.TransferPreconditions;
+
+import mcjty.lib.container.IndexedStorage;
+import net.fabricmc.fabric.api.transfer.v1.item.ItemVariant;
+import net.fabricmc.fabric.api.transfer.v1.transaction.TransactionContext;
+import net.fabricmc.fabric.api.transfer.v1.storage.StoragePreconditions;
 import net.minecraft.world.level.block.state.BlockBehaviour;
 import net.minecraft.world.level.material.MapColor;
 import net.minecraft.world.level.block.SoundType;
@@ -47,7 +46,8 @@ import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.phys.BlockHitResult;
-import net.neoforged.neoforge.common.util.Lazy;
+import mcjty.lib.varia.Lazy;
+import mcjty.lib.container.IItemHandler;
 
 import static mcjty.ariente.compat.ArienteTOPDriver.DRIVER;
 import static mcjty.lib.builder.TooltipBuilder.header;
@@ -67,7 +67,8 @@ public class RecyclerTile extends ExtremeMachineTile implements IGuiTile, IPower
 
     private final GenericItemHandler items = new GenericItemHandler(this, CONTAINER_FACTORY.get()) {
 
-                public boolean isItemValid(int slot, @Nonnull ItemStack stack) {
+        @Override
+        public boolean isItemValid(int slot, @Nonnull ItemStack stack) {
             return slot == SLOT_INPUT && Recycling.findRecipe(stack) != null;
         }
 
@@ -77,7 +78,7 @@ public class RecyclerTile extends ExtremeMachineTile implements IGuiTile, IPower
         }
     };
 
-    private final Map<Direction, ResourceHandler<ItemResource>> sidedHandlers = new EnumMap<>(Direction.class);
+    private final Map<Direction, IItemHandler> sidedHandlers = new EnumMap<>(Direction.class);
     private Identifier recipeId;
     private int progress;
     private long usingPower;
@@ -110,7 +111,7 @@ public class RecyclerTile extends ExtremeMachineTile implements IGuiTile, IPower
     public void tickServer() {
         long previousPower = usingPower;
         usingPower = 0;
-        ItemStack input = ItemUtil.getStack(items, SLOT_INPUT);
+        ItemStack input = items.getStackInSlot(SLOT_INPUT);
         ConstructorRecipe recipe = Recycling.findRecipe(input);
         Identifier nextId = recipe == null ? null : recipe.getId();
         if (!Objects.equals(nextId, recipeId)) {
@@ -125,7 +126,7 @@ public class RecyclerTile extends ExtremeMachineTile implements IGuiTile, IPower
                 progress += operationSpeed();
                 if (progress >= RECYCLE_TICKS) {
                     progress = 0;
-                    InventoryTools.extractItem(items, SLOT_INPUT, recipe.getDestination().getCount(), false);
+                    items.extractItem(SLOT_INPUT, recipe.getDestination().getCount(), false);
                     for (int index = 0; index < OUTPUTS; index++) {
                         items.setStackInSlot(SLOT_OUTPUT + index, outputs[index]);
                     }
@@ -145,7 +146,7 @@ public class RecyclerTile extends ExtremeMachineTile implements IGuiTile, IPower
     private ItemStack[] planOutputs(ConstructorRecipe recipe, ItemStack input) {
         ItemStack[] outputs = new ItemStack[OUTPUTS];
         for (int index = 0; index < OUTPUTS; index++) {
-            outputs[index] = ItemUtil.getStack(items, SLOT_OUTPUT + index).copy();
+            outputs[index] = items.getStackInSlot(SLOT_OUTPUT + index).copy();
         }
         for (ItemStack recovered : Recycling.recover(recipe, input)) {
             int remaining = recovered.getCount();
@@ -204,7 +205,7 @@ public class RecyclerTile extends ExtremeMachineTile implements IGuiTile, IPower
             return;
         }
         ItemStack stack = player.getInventory().getItem(slot);
-        player.getInventory().setItem(slot, InventoryTools.insertItem(items, SLOT_INPUT, stack, false));
+        player.getInventory().setItem(slot, items.insertItem(SLOT_INPUT, stack, false));
         player.getInventory().setChanged();
         player.containerMenu.broadcastChanges();
     }
@@ -213,7 +214,7 @@ public class RecyclerTile extends ExtremeMachineTile implements IGuiTile, IPower
         if (!canInteract(player) || slot < SLOT_INPUT || slot >= SLOT_OUTPUT + OUTPUTS) {
             return;
         }
-        ItemStack remaining = ItemUtil.getStack(items, slot).copy();
+        ItemStack remaining = items.getStackInSlot(slot).copy();
         if (!remaining.isEmpty()) {
             player.getInventory().add(remaining);
             items.setStackInSlot(slot, remaining);
@@ -263,7 +264,7 @@ public class RecyclerTile extends ExtremeMachineTile implements IGuiTile, IPower
     }
 
     @Override
-    public ResourceHandler<ItemResource> getAutomationHandler(@Nullable Direction side) {
+    public IItemHandler getAutomationHandler(@Nullable Direction side) {
         return side == null ? items : sidedHandlers.computeIfAbsent(side, SidedHandler::new);
     }
 
@@ -280,7 +281,7 @@ public class RecyclerTile extends ExtremeMachineTile implements IGuiTile, IPower
     public void setup(ICityAI cityAI, Level world, boolean firstTime) {
     }
 
-    private class SidedHandler implements ResourceHandler<ItemResource> {
+    private class SidedHandler implements IItemHandler, IndexedStorage<ItemVariant> {
 
         private final Direction side;
 
@@ -303,7 +304,7 @@ public class RecyclerTile extends ExtremeMachineTile implements IGuiTile, IPower
         }
 
         @Override
-        public ItemResource getResource(int index) {
+        public ItemVariant getResource(int index) {
             return items.getResource(mapped(index));
         }
 
@@ -313,51 +314,57 @@ public class RecyclerTile extends ExtremeMachineTile implements IGuiTile, IPower
         }
 
         @Override
-        public long getCapacityAsLong(int index, ItemResource resource) {
+        public long getCapacityAsLong(int index, ItemVariant resource) {
             return items.getCapacityAsLong(mapped(index), resource);
         }
 
         @Override
-        public boolean isValid(int index, ItemResource resource) {
+        public boolean isValid(int index, ItemVariant resource) {
             return !isOutput() && items.isValid(mapped(index), resource);
         }
 
         @Override
-        public int insert(int index, ItemResource resource, int amount, TransactionContext transaction) {
-            TransferPreconditions.checkNonEmptyNonNegative(resource, amount);
+        public long insert(int index, ItemVariant resource, long amount, TransactionContext transaction) {
+            StoragePreconditions.notBlankNotNegative(resource, amount);
             return isValid(index, resource) ? items.insert(mapped(index), resource, amount, transaction) : 0;
         }
 
         @Override
-        public int extract(int index, ItemResource resource, int amount, TransactionContext transaction) {
-            TransferPreconditions.checkNonEmptyNonNegative(resource, amount);
+        public long extract(int index, ItemVariant resource, long amount, TransactionContext transaction) {
+            StoragePreconditions.notBlankNotNegative(resource, amount);
             return isOutput() ? items.extract(mapped(index), resource, amount, transaction) : 0;
         }
 
-                public int getSlots() {
+        @Override
+        public int getSlots() {
             return isOutput() ? OUTPUTS : 1;
         }
 
         @Nonnull
-                public ItemStack getStackInSlot(int slot) {
+        @Override
+        public ItemStack getStackInSlot(int slot) {
             return slot >= 0 && slot < getSlots() ? items.getStackInSlot(isOutput() ? SLOT_OUTPUT + slot : SLOT_INPUT) : ItemStack.EMPTY;
         }
 
         @Nonnull
-                public ItemStack insertItem(int slot, @Nonnull ItemStack stack, boolean simulate) {
-            return isItemValid(slot, stack) ? InventoryTools.insertItem(items, SLOT_INPUT, stack, simulate) : stack;
+        @Override
+        public ItemStack insertItem(int slot, @Nonnull ItemStack stack, boolean simulate) {
+            return isItemValid(slot, stack) ? items.insertItem(SLOT_INPUT, stack, simulate) : stack;
         }
 
         @Nonnull
-                public ItemStack extractItem(int slot, int amount, boolean simulate) {
-            return isOutput() && slot >= 0 && slot < OUTPUTS ? InventoryTools.extractItem(items, SLOT_OUTPUT + slot, amount, simulate) : ItemStack.EMPTY;
+        @Override
+        public ItemStack extractItem(int slot, int amount, boolean simulate) {
+            return isOutput() && slot >= 0 && slot < OUTPUTS ? items.extractItem(SLOT_OUTPUT + slot, amount, simulate) : ItemStack.EMPTY;
         }
 
-                public int getSlotLimit(int slot) {
+        @Override
+        public int getSlotLimit(int slot) {
             return slot >= 0 && slot < getSlots() ? 64 : 0;
         }
 
-                public boolean isItemValid(int slot, @Nonnull ItemStack stack) {
+        @Override
+        public boolean isItemValid(int slot, @Nonnull ItemStack stack) {
             return !isOutput() && slot == 0 && items.isItemValid(SLOT_INPUT, stack);
         }
     }

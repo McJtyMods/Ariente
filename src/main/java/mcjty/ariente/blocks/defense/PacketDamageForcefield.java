@@ -6,7 +6,7 @@ import net.minecraft.network.codec.StreamCodec;
 import net.minecraft.network.protocol.common.custom.CustomPacketPayload;
 import net.minecraft.resources.Identifier;
 import net.minecraft.world.phys.Vec3;
-import net.neoforged.neoforge.network.handling.IPayloadContext;
+import mcjty.lib.network.PayloadContext;
 
 public class PacketDamageForcefield implements CustomPacketPayload {
 
@@ -45,7 +45,7 @@ public class PacketDamageForcefield implements CustomPacketPayload {
         this.intersection = intersection;
     }
 
-    public void handle(IPayloadContext ctx) {
+    public void handle(PayloadContext ctx) {
         ctx.enqueueWork(() -> {
             ForceFieldRenderer.damageField(pos, index, intersection);
         });

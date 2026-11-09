@@ -6,12 +6,11 @@ import mcjty.ariente.api.IArienteWorld;
 import mcjty.ariente.api.ICityAISystem;
 import mcjty.lib.varia.Logging;
 import net.minecraft.world.level.Level;
-import net.neoforged.fml.InterModComms;
 
 public class ArienteWorldCompat {
 
     public static void register() {
-        InterModComms.sendTo("arienteworld", "getArienteWorld", ArienteWorldCompat.GetArienteWorld::new);
+
     }
 
     public static ICityAISystem getCityAISystem(Level world) {

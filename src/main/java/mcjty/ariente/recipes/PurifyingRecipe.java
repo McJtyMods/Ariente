@@ -1,5 +1,6 @@
 package mcjty.ariente.recipes;
 
+import net.minecraft.core.registries.Registries;
 import net.minecraft.world.item.crafting.PlacementInfo;
 import net.minecraft.world.item.crafting.RecipeBookCategory;
 import net.minecraft.world.item.crafting.RecipeBookCategories;

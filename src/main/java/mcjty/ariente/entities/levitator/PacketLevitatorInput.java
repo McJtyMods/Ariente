@@ -5,7 +5,7 @@ import net.minecraft.network.codec.StreamCodec;
 import net.minecraft.network.protocol.common.custom.CustomPacketPayload;
 import net.minecraft.resources.Identifier;
 import net.minecraft.server.level.ServerPlayer;
-import net.neoforged.neoforge.network.handling.IPayloadContext;
+import mcjty.lib.network.PayloadContext;
 
 public class PacketLevitatorInput implements CustomPacketPayload {
 
@@ -31,7 +31,7 @@ public class PacketLevitatorInput implements CustomPacketPayload {
         buffer.writeByte(input);
     }
 
-    public void handle(IPayloadContext context) {
+    public void handle(PayloadContext context) {
         context.enqueueWork(() -> {
             ServerPlayer player = (ServerPlayer) context.player();
             if (player != null && player.getVehicle() instanceof FluxLevitatorEntity cart) {

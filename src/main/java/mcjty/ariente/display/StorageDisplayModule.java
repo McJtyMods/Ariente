@@ -1,6 +1,7 @@
 package mcjty.ariente.display;
 
-import net.neoforged.neoforge.transfer.item.ItemUtil;
+import net.fabricmc.fabric.api.transfer.v1.item.ItemStorage;
+
 import mcjty.lib.varia.CapabilityTools;
 import java.util.ArrayList;
 import java.util.Comparator;
@@ -21,10 +22,8 @@ import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.level.block.entity.BlockEntity;
-import net.neoforged.neoforge.capabilities.Capabilities;
-import net.neoforged.neoforge.transfer.ResourceHandler;
-import net.neoforged.neoforge.transfer.item.ItemResource;
-import net.neoforged.neoforge.transfer.item.VanillaContainerWrapper;
+import mcjty.lib.container.IItemHandler;
+import mcjty.lib.container.InvWrapper;
 
 public class StorageDisplayModule implements DisplayModuleType {
 
@@ -63,12 +62,12 @@ public class StorageDisplayModule implements DisplayModuleType {
         return new Size(128, 20 + count * 20);
     }
 
-    public static ResourceHandler<ItemResource> inventory(BlockEntity tile, Direction side) {
-        ResourceHandler<ItemResource> handler = CapabilityTools.itemHandler(tile.getLevel().getCapability(Capabilities.Item.BLOCK, tile.getBlockPos(), side));
+    public static IItemHandler inventory(BlockEntity tile, Direction side) {
+        IItemHandler handler = CapabilityTools.itemHandler(ItemStorage.SIDED.find(tile.getLevel(), tile.getBlockPos(), side));
         if (handler == null) {
-            handler = CapabilityTools.itemHandler(tile.getLevel().getCapability(Capabilities.Item.BLOCK, tile.getBlockPos(), null));
+            handler = CapabilityTools.itemHandler(ItemStorage.SIDED.find(tile.getLevel(), tile.getBlockPos(), null));
         }
-        return handler != null ? handler : tile instanceof Container container ? VanillaContainerWrapper.of(container) : null;
+        return handler != null ? handler : tile instanceof Container container ? new InvWrapper(container) : null;
     }
 
     @Override
@@ -87,13 +86,13 @@ public class StorageDisplayModule implements DisplayModuleType {
         if (saved != null) {
             return saved;
         }
-        ResourceHandler<ItemResource> inventory = inventory(link.tile(), link.side());
+        IItemHandler inventory = inventory(link.tile(), link.side());
         if (inventory == null) {
             return new InventorySnapshot(now, List.of(), "Inventory unavailable");
         }
         Map<StackKey, ItemCount> counts = new HashMap<>();
-        for (int slot = 0; slot < inventory.size(); slot++) {
-            ItemStack stack = ItemUtil.getStack(inventory, slot);
+        for (int slot = 0; slot < inventory.getSlots(); slot++) {
+            ItemStack stack = inventory.getStackInSlot(slot);
             if (!stack.isEmpty()) {
                 StackKey stackKey = new StackKey(stack.getItem(), ItemData.get(stack));
                 ItemCount count = counts.get(stackKey);

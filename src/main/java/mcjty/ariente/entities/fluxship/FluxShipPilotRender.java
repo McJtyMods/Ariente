@@ -1,5 +1,8 @@
 package mcjty.ariente.entities.fluxship;
 
+import com.mojang.blaze3d.vertex.PoseStack;
+
+import mcjty.ariente.client.RenderData;
 import com.google.common.reflect.TypeToken;
 import com.mojang.math.Axis;
 import mcjty.ariente.Ariente;
@@ -10,23 +13,15 @@ import net.minecraft.resources.Identifier;
 import net.minecraft.util.context.ContextKey;
 import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.phys.Vec3;
-import net.neoforged.api.distmarker.Dist;
-import net.neoforged.bus.api.EventPriority;
-import net.neoforged.bus.api.SubscribeEvent;
-import net.neoforged.fml.common.EventBusSubscriber;
-import net.neoforged.neoforge.client.event.RenderLivingEvent;
-import net.neoforged.neoforge.client.renderstate.RegisterRenderStateModifiersEvent;
 import org.joml.Matrix4f;
 
 /** Seat the rendered pilot in the cabin without changing their camera or control direction. */
-@EventBusSubscriber(modid = Ariente.MODID, value = Dist.CLIENT)
 public class FluxShipPilotRender {
 
     private static final ContextKey<Matrix4f> PILOT_POSE = new ContextKey<>(Identifier.parse("ariente:pilot_pose"));
 
-    public static void registerModifiers(RegisterRenderStateModifiersEvent event) {
-        event.registerEntityModifier(new TypeToken<LivingEntityRenderer<LivingEntity, LivingEntityRenderState, ?>>() {}, (entity, state) -> {
-            state.setRenderData(PILOT_POSE, null);
+    public static void extract(LivingEntity entity, LivingEntityRenderState state) {
+            RenderData.set(state, PILOT_POSE, null);
             if (entity.getVehicle() instanceof FluxShipEntity ship) {
                 float partialTick = Minecraft.getInstance().getDeltaTracker().getGameTimeDeltaPartialTick(false);
                 float heading = ship.getFlightYaw(partialTick);
@@ -39,27 +34,24 @@ public class FluxShipPilotRender {
                         .rotate(Axis.XP.rotationDegrees(ship.getFlightPitch(partialTick)))
                         .rotate(Axis.ZP.rotationDegrees(ship.getBank(partialTick)))
                         .rotate(Axis.YP.rotationDegrees(heading));
-                state.setRenderData(PILOT_POSE, transform);
+                RenderData.set(state, PILOT_POSE, transform);
                 state.bodyRot = heading;
                 state.yRot = 0;
                 state.xRot = 0;
             }
-        });
     }
 
-    @SubscribeEvent(priority = EventPriority.LOWEST)
-    public static void beforeLiving(RenderLivingEvent.Pre<?, ?, ?> event) {
-        Matrix4f transform = event.getRenderState().getRenderData(PILOT_POSE);
+    public static void beforeLiving(LivingEntityRenderState state, PoseStack poses) {
+        Matrix4f transform = RenderData.get(state, PILOT_POSE);
         if (transform != null) {
-            event.getPoseStack().pushPose();
-            event.getPoseStack().mulPose(transform);
+            poses.pushPose();
+            poses.mulPose(transform);
         }
     }
 
-    @SubscribeEvent(priority = EventPriority.HIGHEST)
-    public static void afterLiving(RenderLivingEvent.Post<?, ?, ?> event) {
-        if (event.getRenderState().getRenderData(PILOT_POSE) != null) {
-            event.getPoseStack().popPose();
+    public static void afterLiving(LivingEntityRenderState state, PoseStack poses) {
+        if (RenderData.get(state, PILOT_POSE) != null) {
+            poses.popPose();
         }
     }
 }

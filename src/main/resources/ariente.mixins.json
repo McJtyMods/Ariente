@@ -1,0 +1,20 @@
+{
+  "required": true,
+  "package": "mcjty.ariente.mixin",
+  "compatibilityLevel": "JAVA_25",
+  "mixins": [
+    "LivingEntityMixin",
+    "ResultSlotMixin",
+    "EnchantmentHelperMixin",
+    "ItemStackMixin"
+  ],
+  "client": [
+    "client.MinecraftMixin",
+    "client.LivingEntityRendererMixin",
+    "client.CameraMixin",
+    "client.LevelRendererMixin"
+  ],
+  "injectors": {
+    "defaultRequire": 1
+  }
+}

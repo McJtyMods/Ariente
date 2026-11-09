@@ -1,5 +1,8 @@
 package mcjty.ariente.display.client;
 
+import net.fabricmc.fabric.api.transfer.v1.client.fluid.FluidVariantRendering;
+import net.fabricmc.fabric.api.transfer.v1.fluid.FluidVariant;
+
 import net.minecraft.world.item.DyeColor;
 import net.minecraft.client.renderer.block.dispatch.BlockStateModel;
 import net.minecraft.client.renderer.block.dispatch.BlockStateModelPart;
@@ -176,17 +179,17 @@ public class CameraDisplayRenderer {
             BlockState state = entry.getValue();
             BlockStateModel model = mc.getModelManager().getBlockStateModelSet().get(state);
             List<BlockStateModelPart> parts = new ArrayList<>();
-            model.collectParts(BlockAndTintGetter.EMPTY, pos, state, random, parts);
+            model.collectParts(random, parts);
             boolean translucent = translucentStates.computeIfAbsent(state,
                     key -> (model.materialFlags() & BakedQuad.FLAG_TRANSLUCENT) != 0);
             if (state.getRenderShape() != RenderShape.MODEL) {
                 // Fluids and blocks with special renderers use a textured silhouette, never a live renderer.
                 if (!state.getFluidState().isEmpty()) {
                     var fluid = state.getFluidState();
-                    var visuals = mc.getModelManager().getFluidStateModelSet().get(fluid).fluidTintSource();
+                    int fluidColor = FluidVariantRendering.getColor(FluidVariant.of(fluid.getType()));
                     var sprite = mc.getModelManager().getFluidStateModelSet().get(fluid).stillMaterial().sprite();
                     box(faces, pos.getX() - .5, pos.getY() - .5, pos.getZ() - .5,
-                            pos.getX() + .5, pos.getY() - .5 + fluid.getOwnHeight(), pos.getZ() + .5, sprite, visuals == null ? -1 : visuals.color(fluid),
+                            pos.getX() + .5, pos.getY() - .5 + fluid.getOwnHeight(), pos.getZ() + .5, sprite, fluidColor,
                             sprite.transparency().hasTranslucent());
                 } else if (!state.getShape(EmptyBlockGetter.INSTANCE, pos).isEmpty()) {
                     var bounds = state.getShape(EmptyBlockGetter.INSTANCE, pos).bounds();
@@ -228,7 +231,7 @@ public class CameraDisplayRenderer {
                         long uv = quad.packedUV(i);
                         points[i] = new Point(pos.getX() + position.x() - .5f, pos.getY() + position.y() - .5f,
                                 pos.getZ() + position.z() - .5f, UVPair.unpackU(uv), UVPair.unpackV(uv));
-                        int baked = quad.bakedColors().color(i);
+                        int baked = -1;
                         colors[i] = (int) ((baked >> 16 & 255) * (tint >> 16 & 255) / 255f * shade) << 16
                                 | (int) ((baked >> 8 & 255) * (tint >> 8 & 255) / 255f * shade) << 8
                                 | (int) ((baked & 255) * (tint & 255) / 255f * shade);

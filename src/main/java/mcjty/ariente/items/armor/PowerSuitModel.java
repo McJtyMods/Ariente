@@ -16,7 +16,6 @@ import net.minecraft.client.model.geom.builders.MeshDefinition;
 import net.minecraft.client.model.geom.builders.PartDefinition;
 import net.minecraft.world.entity.EquipmentSlot;
 import net.minecraft.world.item.ItemStack;
-import net.neoforged.neoforge.client.extensions.common.IClientItemExtensions;
 
 /** Original 64x128 suit geometry, attached to the modern humanoid animation bones. */
 public class PowerSuitModel extends HumanoidModel<HumanoidRenderState> {
@@ -24,17 +23,9 @@ public class PowerSuitModel extends HumanoidModel<HumanoidRenderState> {
     private static final Map<EquipmentSlot, PowerSuitModel> MODELS = new EnumMap<>(EquipmentSlot.class);
     private static final CubeDeformation INFLATION = new CubeDeformation(.01f);
 
-    public static final IClientItemExtensions EXTENSIONS = new IClientItemExtensions() {
-
-        @Override
-        public Model getHumanoidArmorModel(ItemStack stack, EquipmentClientInfo.LayerType layer, Model original) {
-            EquipmentSlot slot = stack.get(DataComponents.EQUIPPABLE).slot();
-            if (slot.getType() != EquipmentSlot.Type.HUMANOID_ARMOR) {
-                return original;
-            }
-            return MODELS.computeIfAbsent(slot, piece -> new PowerSuitModel(createLayer(piece).bakeRoot()));
-        }
-    };
+    public static PowerSuitModel forSlot(EquipmentSlot slot) {
+        return MODELS.computeIfAbsent(slot, piece -> new PowerSuitModel(createLayer(piece).bakeRoot()));
+    }
 
     public PowerSuitModel(ModelPart root) {
         super(root);
@@ -86,6 +77,7 @@ public class PowerSuitModel extends HumanoidModel<HumanoidRenderState> {
                 rightLeg.addOrReplaceChild("boot", CubeListBuilder.create().texOffs(0, 77)
                         .addBox(-2.95f, 6, -2.5f, 5, 6, 5, INFLATION), PartPose.ZERO);
             }
+
             default -> throw new IllegalArgumentException("Not an armor slot: " + slot);
         }
         return LayerDefinition.create(mesh, 64, 128);

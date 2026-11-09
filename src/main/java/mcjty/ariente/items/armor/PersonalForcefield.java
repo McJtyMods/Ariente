@@ -1,5 +1,6 @@
 package mcjty.ariente.items.armor;
 
+import mcjty.lib.varia.PersistentData;
 import mcjty.ariente.api.ArmorUpgradeType;
 import mcjty.ariente.items.modules.ModuleSupport;
 import mcjty.ariente.setup.Registration;
@@ -12,8 +13,7 @@ import net.minecraft.world.entity.EquipmentSlot;
 import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.entity.projectile.Projectile;
 import net.minecraft.world.item.ItemStack;
-import net.neoforged.neoforge.event.entity.living.LivingDamageEvent;
-import net.neoforged.neoforge.network.PacketDistributor;
+import mcjty.ariente.network.Packets;
 
 public class PersonalForcefield {
 
@@ -29,11 +29,11 @@ public class PersonalForcefield {
     }
 
     public static long getCooldownUntil(LivingEntity entity) {
-        return entity.getPersistentData().getLongOr(COOLDOWN_UNTIL, 0);
+        return PersistentData.get(entity).getLongOr(COOLDOWN_UNTIL, 0);
     }
 
     public static long getLastHit(LivingEntity entity) {
-        return entity.getPersistentData().getLongOr(LAST_HIT, 0);
+        return PersistentData.get(entity).getLongOr(LAST_HIT, 0);
     }
 
     public static boolean isCoolingDown(LivingEntity entity) {
@@ -41,12 +41,12 @@ public class PersonalForcefield {
     }
 
     public static void updateState(LivingEntity entity, long cooldownUntil, long lastHit) {
-        CompoundTag tag = entity.getPersistentData();
+        CompoundTag tag = PersistentData.get(entity);
         tag.putLong(COOLDOWN_UNTIL, cooldownUntil);
         tag.putLong(LAST_HIT, lastHit);
     }
 
-    public static void absorb(LivingDamageEvent.Pre event) {
+    public static void absorb(DamageContext event) {
         LivingEntity entity = event.getEntity();
         float damage = event.getNewDamage();
         if (entity.level().isClientSide() || damage <= 0 || !isActive(entity)) {
@@ -68,7 +68,7 @@ public class PersonalForcefield {
         }
     }
 
-    private static void absorbRanged(LivingDamageEvent.Pre event, float damage, float protection) {
+    private static void absorbRanged(DamageContext event, float damage, float protection) {
         LivingEntity entity = event.getEntity();
         float absorbed = damage * protection;
         event.setNewDamage(damage - absorbed);
@@ -76,7 +76,7 @@ public class PersonalForcefield {
         int cooldown = Math.max(MIN_COOLDOWN_TICKS, Mth.ceil(absorbed * TICKS_PER_DAMAGE));
         long now = entity.level().getGameTime();
         updateState(entity, now + cooldown, now);
-        PacketDistributor.sendToPlayersTrackingEntityAndSelf(entity,
+        Packets.sendToPlayersTrackingEntityAndSelf(entity,
                 new PacketPersonalForcefield(entity.getId(), now + cooldown, now));
     }
 }

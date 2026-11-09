@@ -6,7 +6,6 @@ import mcjty.ariente.display.FluidDisplayModule;
 import mcjty.ariente.display.ForgeEnergyDisplayModule;
 import mcjty.ariente.items.BlueprintItem;
 import mcjty.ariente.recipes.BlueprintRecipeRegistry;
-import mcjty.ariente.setup.Registration;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
 import net.minecraft.gametest.framework.GameTest;
@@ -57,8 +56,8 @@ public class ResourceDisplayTests {
     @GameTest(template = "empty")
     public static void readsMachineReservoirsWithoutTransferringFluid(GameTestHelper helper) {
         ProbeChest machine = machine(helper);
-        ItemStack stack = linked(helper, machine, Registration.DISPLAY_FLUIDS.get());
-        DisplayModuleType module = Registration.DISPLAY_FLUIDS.get().type();
+        ItemStack stack = linked(helper, machine, mcjty.ariente.setup.Registration.DISPLAY_FLUIDS.get());
+        DisplayModuleType module = mcjty.ariente.setup.Registration.DISPLAY_FLUIDS.get().type();
         helper.assertTrue(module.canLink(helper.getLevel(), machine.getBlockPos(), Direction.NORTH), "An internal machine reservoir can be linked");
         machine.fluid.contents[0].getOrCreateTag().putInt("Quality", 1);
         CompoundTag data = module.sample(helper.getLevel(), stack, new CompoundTag());
@@ -83,7 +82,7 @@ public class ResourceDisplayTests {
     @GameTest(template = "empty")
     public static void respectsClickedSideAndSupportsUnsidedStorage(GameTestHelper helper) {
         ProbeChest machine = machine(helper);
-        for (DisplayModuleType module : new DisplayModuleType[]{Registration.DISPLAY_FLUIDS.get().type(), Registration.DISPLAY_FE.get().type()}) {
+        for (DisplayModuleType module : new DisplayModuleType[]{mcjty.ariente.setup.Registration.DISPLAY_FLUIDS.get().type(), mcjty.ariente.setup.Registration.DISPLAY_FE.get().type()}) {
             helper.assertTrue(module.canLink(helper.getLevel(), machine.getBlockPos(), Direction.NORTH), "The exposed face is linkable");
             helper.assertTrue(!module.canLink(helper.getLevel(), machine.getBlockPos(), Direction.SOUTH), "Other sided handlers are not silently substituted");
         }
@@ -91,7 +90,7 @@ public class ResourceDisplayTests {
         helper.assertTrue(FluidDisplayModule.fluids(machine, Direction.SOUTH) == machine.fluid
                 && ForgeEnergyDisplayModule.energy(machine, Direction.SOUTH) == machine.energy, "Unsided storage is a fallback for both capabilities");
         machine.available = false;
-        for (DisplayModuleItem item : new DisplayModuleItem[]{Registration.DISPLAY_FLUIDS.get(), Registration.DISPLAY_FE.get()}) {
+        for (DisplayModuleItem item : new DisplayModuleItem[]{mcjty.ariente.setup.Registration.DISPLAY_FLUIDS.get(), mcjty.ariente.setup.Registration.DISPLAY_FE.get()}) {
             helper.assertTrue(item.type().sample(helper.getLevel(), linked(helper, machine, item), new CompoundTag()).contains("Status"),
                     "Lost capabilities produce an offline status");
         }
@@ -101,10 +100,10 @@ public class ResourceDisplayTests {
     @GameTest(template = "empty")
     public static void fluidHistoryFollowsTankAndFluidIdentity(GameTestHelper helper) {
         ProbeChest machine = machine(helper);
-        ItemStack stack = linked(helper, machine, Registration.DISPLAY_FLUIDS.get());
+        ItemStack stack = linked(helper, machine, mcjty.ariente.setup.Registration.DISPLAY_FLUIDS.get());
         CompoundTag settings = DisplayModuleItem.config(stack);
         settings.putInt("Mode", 2);
-        DisplayModuleType module = Registration.DISPLAY_FLUIDS.get().type();
+        DisplayModuleType module = mcjty.ariente.setup.Registration.DISPLAY_FLUIDS.get().type();
         CompoundTag data = new CompoundTag();
         for (int reading = 0; reading < 40; reading++) {
             data = module.sample(helper.getLevel(), stack, data);
@@ -128,9 +127,9 @@ public class ResourceDisplayTests {
     @GameTest(template = "empty")
     public static void readsForgeEnergyAndMeasuresNetChange(GameTestHelper helper) {
         ProbeChest machine = machine(helper);
-        ItemStack stack = linked(helper, machine, Registration.DISPLAY_FE.get());
+        ItemStack stack = linked(helper, machine, mcjty.ariente.setup.Registration.DISPLAY_FE.get());
         DisplayModuleItem.config(stack).putInt("Mode", 2);
-        DisplayModuleType module = Registration.DISPLAY_FE.get().type();
+        DisplayModuleType module = mcjty.ariente.setup.Registration.DISPLAY_FE.get().type();
         CompoundTag data = module.sample(helper.getLevel(), stack, new CompoundTag());
         helper.assertTrue(data.getLong("Amount") == 1000 && data.getLong("Capacity") == 10000 && !data.contains("Rate"),
                 "FE sampling reads stored energy and capacity without inventing an initial rate");
@@ -155,7 +154,7 @@ public class ResourceDisplayTests {
 
     @GameTest(template = "empty")
     public static void blueprintsAndFootprintsCoverBothModules(GameTestHelper helper) {
-        for (DisplayModuleItem item : new DisplayModuleItem[]{Registration.DISPLAY_FLUIDS.get(), Registration.DISPLAY_FE.get()}) {
+        for (DisplayModuleItem item : new DisplayModuleItem[]{mcjty.ariente.setup.Registration.DISPLAY_FLUIDS.get(), mcjty.ariente.setup.Registration.DISPLAY_FE.get()}) {
             ItemStack stack = new ItemStack(item);
             helper.assertTrue(BlueprintRecipeRegistry.findRecipe(stack) != null && BlueprintItem.getDestination(BlueprintItem.makeBluePrint(stack)).is(item),
                     "Each module has a working Constructor blueprint");

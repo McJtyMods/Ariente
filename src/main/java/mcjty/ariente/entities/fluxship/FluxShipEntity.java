@@ -1,5 +1,6 @@
 package mcjty.ariente.entities.fluxship;
 
+
 import net.minecraft.util.Prediction;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.world.entity.InterpolationHandler;
@@ -580,7 +581,7 @@ public class FluxShipEntity extends Entity {
     public void addAdditionalSaveData(ValueOutput output) {
         CompoundTag tag = new CompoundTag();
         writeEntityData(tag);
-        output.store(tag);
+        output.store(MapCodec.assumeMapUnsafe(CompoundTag.CODEC), tag);
     }
 
 }

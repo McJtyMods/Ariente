@@ -1,21 +1,16 @@
 package mcjty.ariente.bindings;
 
-import net.neoforged.bus.api.SubscribeEvent;
-import net.neoforged.neoforge.client.event.ClientTickEvent;
-import net.neoforged.neoforge.client.event.InputEvent;
 
 public class KeyInputHandler {
 
-    @SubscribeEvent
-    public void onClientTick(ClientTickEvent.Post event) {
+    public void onClientTick() {
         if (true) {
             KeyBindings.tickShipControls();
             KeyBindings.tickLevitatorControls();
         }
     }
 
-    @SubscribeEvent
-    public void onKeyInput(InputEvent.Key event) {
+    public void onKeyInput() {
         Binding.checkBindings();
     }
 }

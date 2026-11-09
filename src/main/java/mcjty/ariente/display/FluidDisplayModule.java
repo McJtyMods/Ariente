@@ -1,5 +1,7 @@
 package mcjty.ariente.display;
 
+import net.fabricmc.fabric.api.transfer.v1.fluid.FluidStorage;
+
 import mcjty.ariente.items.ItemData;
 import mcjty.lib.varia.CapabilityTools;
 import mcjty.hologui.api.IGuiComponentRegistry;
@@ -11,10 +13,8 @@ import net.minecraft.nbt.ListTag;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.level.block.entity.BlockEntity;
-import net.neoforged.neoforge.capabilities.Capabilities;
-import net.neoforged.neoforge.fluids.FluidStack;
-import net.neoforged.neoforge.transfer.ResourceHandler;
-import net.neoforged.neoforge.transfer.fluid.FluidResource;
+import mcjty.lib.varia.FluidStack;
+import mcjty.lib.varia.IFluidHandler;
 
 public class FluidDisplayModule extends ResourceDisplayModule {
 
@@ -40,9 +40,9 @@ public class FluidDisplayModule extends ResourceDisplayModule {
         return new Size(128, 24 + rows(stack) * rowHeight(stack));
     }
 
-    public static ResourceHandler<FluidResource> fluids(BlockEntity tile, Direction side) {
-        ResourceHandler<FluidResource> handler = CapabilityTools.fluidHandler(tile.getLevel().getCapability(Capabilities.Fluid.BLOCK, tile.getBlockPos(), side));
-        return handler != null ? handler : CapabilityTools.fluidHandler(tile.getLevel().getCapability(Capabilities.Fluid.BLOCK, tile.getBlockPos(), null));
+    public static IFluidHandler fluids(BlockEntity tile, Direction side) {
+        IFluidHandler handler = CapabilityTools.fluidHandler(FluidStorage.SIDED.find(tile.getLevel(), tile.getBlockPos(), side));
+        return handler != null ? handler : CapabilityTools.fluidHandler(FluidStorage.SIDED.find(tile.getLevel(), tile.getBlockPos(), null));
     }
 
     @Override
@@ -59,13 +59,13 @@ public class FluidDisplayModule extends ResourceDisplayModule {
             data.putString("Status", link.status());
             return data;
         }
-        ResourceHandler<FluidResource> handler = fluids(link.tile(), link.side());
+        IFluidHandler handler = fluids(link.tile(), link.side());
         if (handler == null) {
             data.putString("Status", "Fluid storage unavailable");
             return data;
         }
         int first = number(stack, "Tank", 1, 1, 9999) - 1;
-        int tanks = handler.size();
+        int tanks = handler.getTanks();
         if (first >= tanks) {
             data.putString("Status", tanks == 0 ? "No fluid tanks" : "Selected tank unavailable");
             return data;
@@ -75,12 +75,12 @@ public class FluidDisplayModule extends ResourceDisplayModule {
         ListTag readings = new ListTag();
         ListTag old = previous.getListOrEmpty("Tanks");
         for (int tank = first; tank < Math.min(tanks, first + rows(stack)); tank++) {
-            FluidStack fluid = handler.getResource(tank).toStack((int) handler.getAmountAsLong(tank));
+            FluidStack fluid = handler.getFluidInTank(tank).copy();
             CompoundTag entry = new CompoundTag();
             entry.putInt("Tank", tank + 1);
             entry.put("Fluid", ItemData.encodeFluid(level.registryAccess(), fluid));
             entry.putLong("Amount", fluid.isEmpty() ? 0 : Math.max(0, fluid.getAmount()));
-            entry.putLong("Capacity", Math.max(0, handler.getCapacityAsLong(tank, handler.getResource(tank))));
+            entry.putLong("Capacity", Math.max(0, handler.getTankCapacity(tank)));
             if (mode(stack) == 2) {
                 CompoundTag last = new CompoundTag();
                 for (int index = 0; index < old.size(); index++) {

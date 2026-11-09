@@ -1,5 +1,8 @@
 package mcjty.ariente.display;
 
+import mcjty.ariente.items.EarlyUseItem;
+
+import net.minecraft.core.registries.Registries;
 import java.util.ArrayList;
 
 import mcjty.ariente.varia.Messages;
@@ -17,7 +20,6 @@ import net.minecraft.nbt.CompoundTag;
 import net.minecraft.network.chat.Component;
 import net.minecraft.world.InteractionHand;
 import net.minecraft.world.InteractionResult;
-import net.minecraft.world.InteractionResult;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemStack;
@@ -25,7 +27,7 @@ import net.minecraft.world.item.TooltipFlag;
 import net.minecraft.world.item.context.UseOnContext;
 import net.minecraft.world.level.Level;
 
-public class DisplayModuleItem extends Item {
+public class DisplayModuleItem extends Item  implements EarlyUseItem {
 
     private final DisplayModuleType type;
 

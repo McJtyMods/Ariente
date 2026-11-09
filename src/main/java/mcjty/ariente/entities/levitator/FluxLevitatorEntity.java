@@ -1,5 +1,6 @@
 package mcjty.ariente.entities.levitator;
 
+
 import net.minecraft.util.Prediction;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.world.entity.InterpolationHandler;
@@ -805,6 +806,7 @@ public class FluxLevitatorEntity extends Entity implements IFluxLevitatorEntity 
                 case SOUTH -> RailShape.ASCENDING_SOUTH;
                 case WEST -> RailShape.ASCENDING_WEST;
                 case EAST -> RailShape.ASCENDING_EAST;
+
                 default -> throw new IllegalArgumentException("Flux slopes must face horizontally");
             };
         } else if (state.getBlock() == mcjty.ariente.setup.Registration.FLUX_BEAM.get()) {
@@ -1233,7 +1235,7 @@ public class FluxLevitatorEntity extends Entity implements IFluxLevitatorEntity 
     public void addAdditionalSaveData(ValueOutput output) {
         CompoundTag tag = new CompoundTag();
         writeEntityData(tag);
-        output.store(tag);
+        output.store(MapCodec.assumeMapUnsafe(CompoundTag.CODEC), tag);
     }
 
 }

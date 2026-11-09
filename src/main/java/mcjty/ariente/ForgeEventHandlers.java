@@ -1,157 +1,114 @@
 package mcjty.ariente;
 
-import net.neoforged.neoforge.event.level.block.BreakBlockEvent;
+import mcjty.ariente.facade.FacadeItemBlock;
+import mcjty.ariente.facade.IFacadeSupport;
+import mcjty.ariente.items.EarlyUseItem;
+import mcjty.ariente.multipart.MultipartBlock;
+import net.fabricmc.fabric.api.event.player.PlayerPickItemEvents;
+import net.fabricmc.fabric.api.event.player.UseBlockCallback;
+import net.minecraft.world.InteractionResult;
+import net.minecraft.world.item.ItemStack;
+import net.minecraft.world.item.context.UseOnContext;
+import net.minecraft.world.level.block.Block;
 
 import mcjty.ariente.api.ArmorUpgradeType;
-import mcjty.ariente.blocks.ExtremeMachineTile;
 import mcjty.ariente.blocks.utility.ILockable;
-import mcjty.ariente.entities.levitator.FluxLevitatorEntity;
+import mcjty.ariente.blocks.utility.autofield.AutoFieldTile;
+import mcjty.ariente.commands.ModCommands;
+import mcjty.ariente.display.DisplayDataSender;
 import mcjty.ariente.items.armor.PacketPersonalForcefield;
 import mcjty.ariente.items.armor.PersonalForcefield;
-import mcjty.ariente.items.armor.PowerSuit;
 import mcjty.ariente.items.armor.PowerSuitEffects;
 import mcjty.ariente.items.modules.ModuleSupport;
+import mcjty.ariente.network.Packets;
 import mcjty.ariente.power.PowerSystem;
+import mcjty.ariente.recipes.PurifierRecipes;
+import mcjty.ariente.security.AreaLocks;
 import mcjty.ariente.setup.Registration;
-import mcjty.ariente.sounds.FluxLevitatorSounds;
-import net.minecraft.core.BlockPos;
-import net.minecraft.network.chat.Component;
+import net.fabricmc.fabric.api.command.v2.CommandRegistrationCallback;
+import net.fabricmc.fabric.api.event.lifecycle.v1.ServerTickEvents;
+import net.fabricmc.fabric.api.event.lifecycle.v1.ServerChunkEvents;
+import net.fabricmc.fabric.api.event.lifecycle.v1.ServerLifecycleEvents;
+import net.fabricmc.fabric.api.event.player.PlayerBlockBreakEvents;
+import net.fabricmc.fabric.api.entity.event.v1.ServerLivingEntityEvents;
+import net.fabricmc.fabric.api.entity.event.v1.ServerEntityLevelChangeEvents;
+import net.fabricmc.fabric.api.networking.v1.ServerPlayConnectionEvents;
+import net.fabricmc.fabric.api.networking.v1.EntityTrackingEvents;
 import net.minecraft.server.level.ServerPlayer;
-import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.EquipmentSlot;
 import net.minecraft.world.entity.LivingEntity;
-import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.level.Level;
-import net.minecraft.world.level.LevelAccessor;
-import net.minecraft.world.level.block.entity.BlockEntity;
-import net.neoforged.bus.api.EventPriority;
-import net.neoforged.bus.api.SubscribeEvent;
-import net.neoforged.neoforge.event.entity.EntityJoinLevelEvent;
-import net.neoforged.neoforge.event.entity.living.LivingDamageEvent;
-import net.neoforged.neoforge.event.entity.living.LivingDeathEvent;
-import net.neoforged.neoforge.event.entity.living.LivingFallEvent;
-import net.neoforged.neoforge.event.entity.player.ItemTooltipEvent;
-import net.neoforged.neoforge.event.entity.player.PlayerEvent;
-import net.neoforged.neoforge.event.tick.LevelTickEvent;
-import net.neoforged.neoforge.event.tick.PlayerTickEvent;
-import net.neoforged.neoforge.network.PacketDistributor;
 
-public class ForgeEventHandlers {
+public final class ForgeEventHandlers {
 
-    @SubscribeEvent
-    public void onItemTooltip(ItemTooltipEvent event) {
-        if (ExtremeMachineTile.hasExtremeCircuit(event.getItemStack())) {
-            event.getToolTip().add(Component.translatable("message.ariente.extreme_circuit.upgraded"));
-        }
+    private ForgeEventHandlers() {
     }
 
-    @SubscribeEvent
-    public void onWorldTick(LevelTickEvent.Pre event) {
-        if (!event.getLevel().isClientSide() && event.getLevel().dimension() == Level.OVERWORLD) {
-            PowerSystem.getPowerSystem(event.getLevel()).tick();
-        }
-    }
-
-    @SubscribeEvent
-    public void onPlayerTick(PlayerTickEvent.Post event) {
-        if (!event.getEntity().level().isClientSide()) {
-            PowerSuitEffects.tick(event.getEntity());
-            if (event.getEntity() instanceof ServerPlayer player && player.isAlive() && !player.isPassenger()
-                    && player.getItemBySlot(EquipmentSlot.CHEST).is(Registration.POWERSUIT_CHEST.get())
-                    && ModuleSupport.hasWorkingUpgrade(player.getItemBySlot(EquipmentSlot.CHEST), ArmorUpgradeType.FLIGHT)) {
-                player.connection.aboveGroundTickCount = 0;
-                player.fallDistance = 0;
+    public static void register() {
+        UseBlockCallback.EVENT.register((player, level, hand, hit) -> {
+            var stack = player.getItemInHand(hand);
+            return stack.getItem() instanceof EarlyUseItem item
+                    ? item.onItemUseFirst(stack, new UseOnContext(player, hand, hit))
+                    : InteractionResult.PASS;
+        });
+        CommandRegistrationCallback.EVENT.register((dispatcher, context, environment) -> ModCommands.register(dispatcher));
+        ServerTickEvents.START_LEVEL_TICK.register(level -> {
+            if (level.dimension() == Level.OVERWORLD) PowerSystem.getPowerSystem(level).tick();
+            AreaLocks.tick(level);
+        });
+        ServerTickEvents.END_SERVER_TICK.register(server -> {
+            DisplayDataSender.tick();
+            for (ServerPlayer player : server.getPlayerList().getPlayers()) {
+                PowerSuitEffects.tick(player);
+                if (player.isAlive() && !player.isPassenger()
+                        && player.getItemBySlot(EquipmentSlot.CHEST).is(Registration.POWERSUIT_CHEST.get())
+                        && ModuleSupport.hasWorkingUpgrade(player.getItemBySlot(EquipmentSlot.CHEST), ArmorUpgradeType.FLIGHT)) {
+                    player.connection.aboveGroundTickCount = 0;
+                    player.fallDistance = 0;
+                }
             }
-        }
-    }
-
-    @SubscribeEvent
-    public void onPlayerLogout(PlayerEvent.PlayerLoggedOutEvent event) {
-        PowerSuitEffects.clear(event.getEntity());
-    }
-
-    @SubscribeEvent
-    public void onPlayerClone(PlayerEvent.Clone event) {
-        var original = event.getOriginal().getPersistentData();
-        if (original.contains("arienteReturn")) {
-            event.getEntity().getPersistentData().put("arienteReturn", original.getCompoundOrEmpty("arienteReturn").copy());
-        }
-    }
-
-    @SubscribeEvent
-    public void onLivingDeath(LivingDeathEvent event) {
-        PowerSuitEffects.clear(event.getEntity());
-    }
-
-    @SubscribeEvent
-    public void onLivingFall(LivingFallEvent event) {
-        ItemStack feetStack = event.getEntity().getItemBySlot(EquipmentSlot.FEET);
-        if (feetStack.getItem() == Registration.POWERSUIT_FEET.get()) {
-            if (ModuleSupport.hasWorkingUpgrade(feetStack, ArmorUpgradeType.FEATHERFALLING)) {
-                event.setCanceled(true);
+        });
+        ServerPlayConnectionEvents.DISCONNECT.register((handler, server) -> {
+            PowerSuitEffects.clear(handler.player);
+            DisplayDataSender.logout(handler.player);
+        });
+        ServerPlayConnectionEvents.JOIN.register((handler, sender, server) -> syncPersonalField(handler.player));
+        ServerEntityLevelChangeEvents.AFTER_PLAYER_CHANGE_LEVEL.register((player, origin, destination) -> syncPersonalField(player));
+        ServerLivingEntityEvents.AFTER_DEATH.register((entity, source) -> PowerSuitEffects.clear(entity));
+        EntityTrackingEvents.START_TRACKING.register((entity, player) -> {
+            if (entity instanceof LivingEntity living && PersonalForcefield.isCoolingDown(living)) {
+                Packets.sendToPlayer(player, new PacketPersonalForcefield(living.getId(), PersonalForcefield.getCooldownUntil(living), PersonalForcefield.getLastHit(living)));
             }
-        }
+        });
+        PlayerBlockBreakEvents.BEFORE.register((level, player, pos, state, tile) -> {
+            if (tile instanceof ILockable lock && lock.isLocked()) return false;
+            if (state.getBlock() instanceof MultipartBlock multipart) {
+                return multipart.onDestroyedByPlayer(state, level, pos, player, player.getMainHandItem(), !player.isCreative(), level.getFluidState(pos));
+            }
+            if (tile instanceof IFacadeSupport facade && facade.getMimicBlock() != null) {
+                var drop = new ItemStack(Registration.FACADE_ITEM.get());
+                FacadeItemBlock.setMimicBlock(drop, facade.getMimicBlock());
+                facade.setMimicBlock(null);
+                if (!player.isCreative()) Block.popResource(level, pos, drop);
+                return false;
+            }
+            return true;
+        });
+        PlayerPickItemEvents.BLOCK.register((player, pos, state, includeData) ->
+                state.getBlock() instanceof MultipartBlock multipart
+                        ? multipart.getCloneItemStack(player.level(), pos, state, includeData, player) : null);
+        ServerChunkEvents.CHUNK_LOAD.register((level, chunk, generated) -> {
+            AreaLocks.chunkLoaded(level, chunk);
+            AutoFieldTile.chunkChanged(level, chunk);
+        });
+        ServerChunkEvents.CHUNK_UNLOAD.register(AutoFieldTile::chunkChanged);
+        ServerLifecycleEvents.END_DATA_PACK_RELOAD.register((server, resources, success) -> PurifierRecipes.tagsUpdated());
+        ServerLifecycleEvents.SERVER_STOPPED.register(server -> DisplayDataSender.stopped());
     }
 
-    @SubscribeEvent(priority = EventPriority.LOWEST)
-    public void onDamage(LivingDamageEvent.Pre event) {
-        PowerSuit.absorbEnergyDamage(event);
-        PersonalForcefield.absorb(event);
-    }
-
-    @SubscribeEvent
-    public void onStartTracking(PlayerEvent.StartTracking event) {
-        if (event.getEntity() instanceof ServerPlayer player && event.getTarget() instanceof LivingEntity entity
-                && PersonalForcefield.isCoolingDown(entity)) {
-            PacketDistributor.sendToPlayer(player,
-                    new PacketPersonalForcefield(entity.getId(), PersonalForcefield.getCooldownUntil(entity),
-                            PersonalForcefield.getLastHit(entity)));
-        }
-    }
-
-    @SubscribeEvent
-    public void onPlayerLogin(PlayerEvent.PlayerLoggedInEvent event) {
-        syncPersonalField(event.getEntity());
-    }
-
-    @SubscribeEvent
-    public void onPlayerChangedDimension(PlayerEvent.PlayerChangedDimensionEvent event) {
-        syncPersonalField(event.getEntity());
-    }
-
-    private void syncPersonalField(LivingEntity entity) {
+    private static void syncPersonalField(LivingEntity entity) {
         if (entity instanceof ServerPlayer player && PersonalForcefield.isCoolingDown(entity)) {
-            PacketDistributor.sendToPlayer(player,
-                    new PacketPersonalForcefield(entity.getId(), PersonalForcefield.getCooldownUntil(entity),
-                            PersonalForcefield.getLastHit(entity)));
+            Packets.sendToPlayer(player, new PacketPersonalForcefield(entity.getId(), PersonalForcefield.getCooldownUntil(entity), PersonalForcefield.getLastHit(entity)));
         }
     }
-
-    private void onBlockBreakNormal(BreakBlockEvent event) {
-        LevelAccessor world = event.getLevel();
-        BlockPos pos = event.getPos();
-        BlockEntity te = world.getBlockEntity(pos);
-        if (te instanceof ILockable) {
-            if (((ILockable) te).isLocked()) {
-                event.setCanceled(true);
-            }
-        }
-    }
-
-    @SubscribeEvent
-    public void onEntityJoin(EntityJoinLevelEvent event) {
-        Level world = event.getLevel();
-        if (world.isClientSide()) {
-            Entity entity = event.getEntity();
-            if (entity instanceof FluxLevitatorEntity) {
-                FluxLevitatorSounds.playMovingSoundClient((FluxLevitatorEntity) entity);
-            }
-        }
-    }
-
-    @SubscribeEvent
-    public void onBlockBreak(BreakBlockEvent event) {
-        onBlockBreakNormal(event);
-    }
-
 }

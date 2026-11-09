@@ -1,5 +1,8 @@
 package mcjty.ariente.datagen;
 
+import net.fabricmc.fabric.api.datagen.v1.FabricPackOutput;
+import net.minecraft.data.tags.TagsProvider;
+
 import java.util.concurrent.CompletableFuture;
 import mcjty.ariente.Ariente;
 import mcjty.ariente.setup.Registration;
@@ -8,13 +11,14 @@ import net.minecraft.core.registries.BuiltInRegistries;
 import net.minecraft.data.PackOutput;
 import net.minecraft.tags.TagKey;
 import net.minecraft.world.level.block.Block;
-import net.neoforged.neoforge.common.Tags;
-import net.neoforged.neoforge.common.data.BlockTagsProvider;
+import mcjty.ariente.datagen.CommonTags;
 
-public class BlockTags extends BlockTagsProvider {
+import net.minecraft.core.registries.Registries;
 
-    public BlockTags(PackOutput generator, CompletableFuture<HolderLookup.Provider> lookup) {
-        super(generator, lookup, Ariente.MODID);
+public class BlockTags extends TagsProvider<Block> {
+
+    public BlockTags(FabricPackOutput generator, CompletableFuture<HolderLookup.Provider> lookup) {
+        super(generator, Registries.BLOCK, lookup);
     }
 
     @Override
@@ -33,12 +37,12 @@ public class BlockTags extends BlockTagsProvider {
         Block[] ores = {Registration.ORE_LITHIUM.get(), Registration.ORE_MANGANESE.get(), Registration.ORE_PLATINUM.get(),
                 Registration.ORE_SILVER.get(), Registration.ORE_SILICON.get(), Registration.ORE_NEGARITE.get(), Registration.ORE_POSIRITE.get()};
         addTag(net.minecraft.tags.BlockTags.NEEDS_STONE_TOOL, ores);
-        addTag(Tags.Blocks.ORE_RATES_SINGULAR, Registration.ORE_LITHIUM.get(), Registration.ORE_MANGANESE.get(),
+        addTag(CommonTags.Blocks.ORE_RATES_SINGULAR, Registration.ORE_LITHIUM.get(), Registration.ORE_MANGANESE.get(),
                 Registration.ORE_PLATINUM.get(), Registration.ORE_SILVER.get(), Registration.ORE_SILICON.get());
-        addTag(Tags.Blocks.ORE_RATES_DENSE, Registration.ORE_NEGARITE.get(), Registration.ORE_POSIRITE.get());
-        addTag(Tags.Blocks.ORES_IN_GROUND_STONE, ores);
+        addTag(CommonTags.Blocks.ORE_RATES_DENSE, Registration.ORE_NEGARITE.get(), Registration.ORE_POSIRITE.get());
+        addTag(CommonTags.Blocks.ORES_IN_GROUND_STONE, ores);
 
-        addTag(Tags.Blocks.ORES,
+        addTag(CommonTags.Blocks.ORES,
                 Registration.ORE_POSIRITE.get(),
                 Registration.ORE_NEGARITE.get(),
                 Registration.ORE_SILICON.get(),
@@ -62,8 +66,4 @@ public class BlockTags extends BlockTagsProvider {
         }
     }
 
-    @Override
-    public String getName() {
-        return "Ariente Block Tags";
-    }
 }
