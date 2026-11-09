@@ -30,7 +30,7 @@ public class FluxShipPilotRender {
             if (entity.getVehicle() instanceof FluxShipEntity ship) {
                 float partialTick = Minecraft.getInstance().getDeltaTracker().getGameTimeDeltaPartialTick(false);
                 float heading = ship.getFlightYaw(partialTick);
-                double seatHeight = ship.getPassengersRidingOffset() - entity.getVehicleAttachmentPoint(ship).y;
+                double seatHeight = ship.getPilotSeatHeight(entity);
                 Vec3 seat = ship.getPosition(partialTick).add(0, .5, 0)
                         .add(ship.rotateCabinOffset(new Vec3(0, seatHeight - .5, 0), partialTick));
                 Vec3 correction = seat.subtract(entity.getPosition(partialTick));
