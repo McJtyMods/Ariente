@@ -104,6 +104,7 @@ sourceSets {
         compileClasspath += sourceSets.main.output
         runtimeClasspath += sourceSets.main.output
         java.include 'mcjty/ariente/StorageTests.java'
+        java.include 'mcjty/ariente/FluxShipCockpitTests.java'
         resources.include 'data/ariente/structure/empty.nbt'
     }
 }
