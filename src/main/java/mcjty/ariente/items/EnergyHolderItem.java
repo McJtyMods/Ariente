@@ -15,7 +15,6 @@ import mcjty.ariente.gui.GuiHelp;
 import mcjty.ariente.gui.HoloGuiTools;
 import mcjty.ariente.gui.ModGuis;
 import mcjty.ariente.gui.NumberFormatting;
-import mcjty.ariente.setup.Registration;
 import mcjty.hologui.api.IGuiComponent;
 import mcjty.hologui.api.IGuiComponentRegistry;
 import mcjty.hologui.api.StyledColor;
@@ -55,7 +54,6 @@ public class EnergyHolderItem extends Item implements ITooltipSettings {
         super(properties.stacksTo(1));
     }
 
-    @Override
     public boolean shouldCauseReequipAnimation(ItemStack oldStack, ItemStack newStack, boolean slotChanged) {
         return oldStack.getItem() != newStack.getItem();
     }
@@ -75,14 +73,14 @@ public class EnergyHolderItem extends Item implements ITooltipSettings {
     /** A held holder takes priority; otherwise the first holder in the inventory supplies the pool. */
 
     public static ItemStack findActiveHolder(Player player) {
-        if (player.getMainHandItem().is(Registration.ENERGY_HOLDER.get())) {
+        if (player.getMainHandItem().is(mcjty.ariente.setup.Registration.ENERGY_HOLDER.get())) {
             return player.getMainHandItem();
         }
-        if (player.getOffhandItem().is(Registration.ENERGY_HOLDER.get())) {
+        if (player.getOffhandItem().is(mcjty.ariente.setup.Registration.ENERGY_HOLDER.get())) {
             return player.getOffhandItem();
         }
         for (ItemStack stack : player.getInventory().getNonEquipmentItems()) {
-            if (stack.is(Registration.ENERGY_HOLDER.get())) {
+            if (stack.is(mcjty.ariente.setup.Registration.ENERGY_HOLDER.get())) {
                 return stack;
             }
         }
@@ -179,7 +177,7 @@ public class EnergyHolderItem extends Item implements ITooltipSettings {
         ItemData.set(stack, tag);
 
         ItemStack fuel = player.getInventory().getItem(index);
-        if (fuel.is(Registration.DUST_NEGARITE.get()) || fuel.is(Registration.DUST_POSIRITE.get())) {
+        if (fuel.is(mcjty.ariente.setup.Registration.DUST_NEGARITE.get()) || fuel.is(mcjty.ariente.setup.Registration.DUST_POSIRITE.get())) {
             addFuel(player, fuel.getItem(), fuel.getCount());
         }
     }
@@ -199,8 +197,8 @@ public class EnergyHolderItem extends Item implements ITooltipSettings {
                 .add(registry.text(0, 1.1, 8, 1).text(() -> "Stored power: " + NumberFormatting.compact(getStoredPower(findActiveHolder(player))))
                         .scale(.45f).color(registry.color(StyledColor.INFORMATION)));
 
-        addDustControl(registry, panel, 2.3, Registration.DUST_NEGARITE.get(), "negarite");
-        addDustControl(registry, panel, 4.7, Registration.DUST_POSIRITE.get(), "posirite");
+        addDustControl(registry, panel, 2.3, mcjty.ariente.setup.Registration.DUST_NEGARITE.get(), "negarite");
+        addDustControl(registry, panel, 4.7, mcjty.ariente.setup.Registration.DUST_POSIRITE.get(), "posirite");
         panel.add(registry.textChoice(0, 7, 7.2, .9).scale(.55f).addText("Manual").addText("Automatic")
                 .getter(p -> getAutomatic(findActiveHolder(p)))
                 .hitEvent((component, p, entity, x, y) -> changeAutomatic(p)));
@@ -220,7 +218,7 @@ public class EnergyHolderItem extends Item implements ITooltipSettings {
                         .hitEvent((c, p, e, x, yy) -> addFuel(p, dust, 1)))
                 .add(registry.iconButton(6, y + 1, 1, 1).icon(registry.image(GRAY_DOUBLE_ARROW_RIGHT)).hover(registry.image(WHITE_DOUBLE_ARROW_RIGHT))
                         .hitEvent((c, p, e, x, yy) -> addFuel(p, dust, 64)))
-                .add(registry.stackIcon(5, y, 1, 1).itemStack(new ItemStack(Registration.ENERGY_HOLDER.get())))
+                .add(registry.stackIcon(5, y, 1, 1).itemStack(new ItemStack(mcjty.ariente.setup.Registration.ENERGY_HOLDER.get())))
                 .add(new CompactNumber(6, y, 2, 1).color(registry.color(StyledColor.INFORMATION)).getter((p, h) -> count(p, key)));
     }
 
@@ -276,10 +274,10 @@ public class EnergyHolderItem extends Item implements ITooltipSettings {
     }
 
     private static String fuelKey(Item dust) {
-        if (dust == Registration.DUST_NEGARITE.get()) {
+        if (dust == mcjty.ariente.setup.Registration.DUST_NEGARITE.get()) {
             return "negarite";
         }
-        if (dust == Registration.DUST_POSIRITE.get()) {
+        if (dust == mcjty.ariente.setup.Registration.DUST_POSIRITE.get()) {
             return "posirite";
         }
         throw new IllegalArgumentException("Not an equipment fuel: " + dust);

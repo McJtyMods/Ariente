@@ -10,7 +10,6 @@ import java.util.List;
 import java.util.Set;
 import javax.annotation.Nullable;
 import mcjty.ariente.security.IKeyCardSlot;
-import mcjty.ariente.setup.Registration;
 import mcjty.lib.builder.TooltipBuilder;
 import mcjty.lib.tooltips.ITooltipSettings;
 import mcjty.lib.varia.Tools;
@@ -31,7 +30,7 @@ import net.minecraft.world.level.block.entity.BlockEntity;
 
 import static mcjty.lib.builder.TooltipBuilder.*;
 
-public class KeyCardItem extends Item implements ITooltipSettings {
+public class KeyCardItem extends Item implements ITooltipSettings , EarlyUseItem {
 
     private final TooltipBuilder tooltipBuilder = new TooltipBuilder()
             .info(header(),
@@ -46,7 +45,7 @@ public class KeyCardItem extends Item implements ITooltipSettings {
     public static boolean hasPlayerKeycard(Player player, String tag) {
         for (int i = 0 ; i < player.getInventory().getContainerSize() ; i++) {
             ItemStack stack = player.getInventory().getItem(i);
-            if (!stack.isEmpty() && stack.getItem() == Registration.KEY_CARD.get()) {
+            if (!stack.isEmpty() && stack.getItem() == mcjty.ariente.setup.Registration.KEY_CARD.get()) {
                 if (hasSecurityTag(stack, tag)) {
                     return true;
                 }

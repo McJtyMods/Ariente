@@ -1,5 +1,6 @@
 package mcjty.ariente.multipart;
 
+import net.minecraft.core.registries.Registries;
 import com.mojang.serialization.MapCodec;
 import net.minecraft.world.level.storage.ValueInput;
 import net.minecraft.world.level.storage.ValueOutput;
@@ -25,14 +26,11 @@ import net.minecraft.world.level.block.Blocks;
 import net.minecraft.world.level.block.EntityBlock;
 import net.minecraft.world.level.block.entity.BlockEntity;
 import net.minecraft.world.level.block.state.BlockState;
-import net.neoforged.neoforge.model.data.ModelData;
-import net.neoforged.neoforge.model.data.ModelProperty;
 
 import static mcjty.ariente.setup.Registration.TYPE_MULTIPART;
 
-public class MultipartTE extends BlockEntity {
+public class MultipartTE extends GenericTileEntity {
 
-    public static final ModelProperty<Map<PartSlot, Part>> PARTS = new ModelProperty<>();
 
     public static class Part {
         private final BlockState state;
@@ -98,16 +96,11 @@ public class MultipartTE extends BlockEntity {
         return parts;
     }
 
-    @Override
-    public ModelData getModelData() {
-        return ModelData.builder().with(PARTS, parts).build();
-    }
 
     @Override
     public void onDataPacket(Connection connection, ValueInput input) {
         {
             loadAdditional(input);
-            requestModelDataUpdate();
             level.sendBlockUpdated(worldPosition, getBlockState(), getBlockState(), Block.UPDATE_CLIENTS);
         }
     }
@@ -125,7 +118,6 @@ public class MultipartTE extends BlockEntity {
     public void markDirtyClient() {
         setChanged();
         if (level != null) {
-            requestModelDataUpdate();
             BlockState state = level.getBlockState(worldPosition);
             level.sendBlockUpdated(worldPosition, state, state, Block.UPDATE_ALL);
         }
@@ -208,7 +200,7 @@ public class MultipartTE extends BlockEntity {
         super.saveAdditional(output);
         CompoundTag tag = new CompoundTag();
         saveAdditional(tag, level.registryAccess());
-        output.store(tag);
+        output.store(MapCodec.assumeMapUnsafe(CompoundTag.CODEC), tag);
     }
 
     public void saveAdditional(CompoundTag compound, HolderLookup.Provider provider) {

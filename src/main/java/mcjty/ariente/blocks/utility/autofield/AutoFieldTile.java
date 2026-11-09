@@ -1,10 +1,12 @@
 package mcjty.ariente.blocks.utility.autofield;
 
+import net.minecraft.world.level.chunk.LevelChunk;
+
 import net.minecraft.world.level.storage.ValueInput;
 import net.minecraft.world.level.block.state.BlockBehaviour;
 import net.minecraft.world.level.material.MapColor;
 import net.minecraft.world.level.block.SoundType;
-import net.neoforged.neoforge.client.network.ClientPacketDistributor;
+import mcjty.lib.network.ClientNetworking;
 import java.util.*;
 import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.stream.Collectors;
@@ -45,12 +47,9 @@ import net.minecraft.world.level.block.entity.BlockEntity;
 import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.phys.AABB;
 import net.minecraft.world.phys.BlockHitResult;
-import net.neoforged.bus.api.SubscribeEvent;
-import net.neoforged.neoforge.common.NeoForge;
-import net.neoforged.neoforge.event.level.ChunkEvent;
-import net.neoforged.neoforge.items.IItemHandler;
-import net.neoforged.neoforge.items.ItemHandlerHelper;
-import net.neoforged.neoforge.network.PacketDistributor;
+import mcjty.lib.container.IItemHandler;
+import mcjty.lib.container.ItemHandlerHelper;
+import mcjty.ariente.network.Packets;
 
 import static mcjty.ariente.compat.ArienteTOPDriver.DRIVER;
 import static mcjty.hologui.api.Icons.*;
@@ -267,7 +266,7 @@ public class AutoFieldTile extends ExtremeMachineTile implements IGuiTile, IPowe
         long time = System.currentTimeMillis();
         if (time > clientRenderInfoAge + 1000) {
             clientRenderInfoAge = time;
-            ClientPacketDistributor.sendToServer(new PacketAutoFieldRequestRenderInfo(worldPosition));
+            ClientNetworking.sendToServer(new PacketAutoFieldRequestRenderInfo(worldPosition));
         }
     }
 
@@ -284,7 +283,7 @@ public class AutoFieldTile extends ExtremeMachineTile implements IGuiTile, IPowe
             double dz = z - player.getZ();
 
             if (player.level() == level && dx * dx + dy * dy + dz * dz < radius * radius) {
-                PacketDistributor.sendToPlayer((ServerPlayer) player, info);
+                Packets.sendToPlayer((ServerPlayer) player, info);
             }
         }
     }
@@ -486,32 +485,21 @@ public class AutoFieldTile extends ExtremeMachineTile implements IGuiTile, IPowe
         invalidateBox();
         LOADED_FIELDS.add(this);
         if (!level.isClientSide() && !listeningForChunks) {
-            NeoForge.EVENT_BUS.register(this);
             listeningForChunks = true;
         }
     }
 
-    @SubscribeEvent
-    public void onFieldChunkLoad(ChunkEvent.Load event) {
-        onFieldChunkChanged(event);
-    }
-
-    @SubscribeEvent
-    public void onFieldChunkUnload(ChunkEvent.Unload event) {
-        onFieldChunkChanged(event);
-    }
-
-    private void onFieldChunkChanged(ChunkEvent event) {
-        if (event.getLevel() == level && watchedChunks.contains(event.getChunk().getPos().pack())) {
-            // Chunk load events can arrive before FULL status. Rebuild on the next controller tick.
-            refreshField.set(true);
+    public static void chunkChanged(Level world, LevelChunk chunk) {
+        for (AutoFieldTile field : List.copyOf(LOADED_FIELDS)) {
+            if (field.level == world && field.watchedChunks.contains(chunk.getPos().pack())) {
+                field.refreshField.set(true);
+            }
         }
     }
 
     private void stopListeningForChunks() {
         LOADED_FIELDS.remove(this);
         if (listeningForChunks) {
-            NeoForge.EVENT_BUS.unregister(this);
             listeningForChunks = false;
         }
     }
@@ -563,6 +551,7 @@ public class AutoFieldTile extends ExtremeMachineTile implements IGuiTile, IPowe
     // Interior nodes need no marker below them, so notify loaded controllers covering this position.
     public static void notifyField(Level world, BlockPos pos) {
         List<AutoFieldTile> fields;
+
         synchronized (LOADED_FIELDS) {
             fields = List.copyOf(LOADED_FIELDS);
         }

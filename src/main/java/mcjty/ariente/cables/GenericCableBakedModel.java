@@ -17,7 +17,6 @@ import net.minecraft.util.RandomSource;
 import net.minecraft.client.renderer.block.BlockAndTintGetter;
 import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.phys.Vec3;
-import net.neoforged.neoforge.model.data.ModelProperty;
 
 import static mcjty.ariente.cables.CablePatterns.SpriteIdx.*;
 import static mcjty.ariente.cables.ConnectorType.BLOCK;
@@ -25,7 +24,6 @@ import static mcjty.ariente.cables.ConnectorType.CABLE;
 
 public class GenericCableBakedModel extends AbstractDynamicBakedModel {
 
-    private static final ModelProperty<BlockState> CONNECTIONS = new ModelProperty<>();
 
     public static class CableTextures {
         private TextureAtlasSprite spriteConnector;
@@ -126,9 +124,9 @@ public class GenericCableBakedModel extends AbstractDynamicBakedModel {
     @Override
     public void collectParts(BlockAndTintGetter level, BlockPos pos, BlockState state, RandomSource random, List<BlockStateModelPart> parts) {
         if (!(state.getBlock() instanceof GenericCableBlock cable)) return;
-        BlockState facade = level.getModelData(pos).get(GenericCableBlock.FACADEID);
+        BlockState facade = level.getBlockEntityRenderData(pos) instanceof BlockState mimic ? mimic : null;
         if (facade != null) {
-            Minecraft.getInstance().getModelManager().getBlockStateModelSet().get(facade).collectParts(level, pos, facade, random, parts);
+            Minecraft.getInstance().getModelManager().getBlockStateModelSet().get(facade).collectParts(random, parts);
             return;
         }
         BlockState connections = cable.calculateState(level, pos, state);

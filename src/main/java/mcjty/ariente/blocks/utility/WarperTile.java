@@ -1,5 +1,7 @@
 package mcjty.ariente.blocks.utility;
 
+
+import mcjty.lib.varia.PersistentData;
 import net.minecraft.world.level.block.state.BlockBehaviour;
 import net.minecraft.world.level.material.MapColor;
 import net.minecraft.world.level.block.SoundType;
@@ -145,14 +147,14 @@ public class WarperTile extends ArienteBlockEntity implements IGuiTile, IWarper 
         if (level.dimension().equals(Level.OVERWORLD)) {
             BlockPos destination = ArienteWorldCompat.getArienteWorld().getNearestTeleportationSpot(player.blockPosition());
             // Remember the source entrance so the return trip works without a bed.
-            player.getPersistentData().store("arienteReturn", BlockPos.CODEC, worldPosition.above());
+            PersistentData.get(player).store("arienteReturn", BlockPos.CODEC, worldPosition.above());
             TeleportationTools.teleportToDimension(player, ArienteWorldCompat.getArienteWorld().getDimension(),
                     destination.getX() + .5, destination.getY(), destination.getZ() + .5);
         } else if (level.dimension().equals(ArienteWorldCompat.getArienteWorld().getDimension())) {
             ServerLevel overworld = serverPlayer.level().getServer().getLevel(Level.OVERWORLD);
             BlockPos destination = null;
-            if (player.getPersistentData().contains("arienteReturn")) {
-                BlockPos source = player.getPersistentData().read("arienteReturn", BlockPos.CODEC).orElseThrow();
+            if (PersistentData.get(player).contains("arienteReturn")) {
+                BlockPos source = PersistentData.get(player).read("arienteReturn", BlockPos.CODEC).orElseThrow();
                 overworld.getChunkAt(source);
                 if (overworld.getBlockState(source.below()).is(mcjty.ariente.setup.Registration.WARPER.get())
                         && overworld.isEmptyBlock(source) && overworld.isEmptyBlock(source.above())) {

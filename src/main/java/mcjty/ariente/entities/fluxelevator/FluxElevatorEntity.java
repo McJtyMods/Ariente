@@ -1,5 +1,6 @@
 package mcjty.ariente.entities.fluxelevator;
 
+
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.world.entity.InterpolationHandler;
 import com.mojang.serialization.MapCodec;
@@ -885,7 +886,7 @@ public class FluxElevatorEntity extends Entity {
     public void addAdditionalSaveData(ValueOutput output) {
         CompoundTag tag = new CompoundTag();
         writeEntityData(tag);
-        output.store(tag);
+        output.store(MapCodec.assumeMapUnsafe(CompoundTag.CODEC), tag);
     }
 
 }

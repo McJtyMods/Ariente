@@ -1,5 +1,11 @@
 package mcjty.ariente.entities;
 
+import net.minecraft.network.protocol.Packet;
+import net.minecraft.network.protocol.game.ClientGamePacketListener;
+import net.minecraft.network.protocol.game.ClientboundAddEntityPacket;
+import net.minecraft.server.level.ServerEntity;
+import net.minecraft.world.item.enchantment.EnchantmentHelper;
+
 import net.minecraft.nbt.DoubleTag;
 
 import net.minecraft.server.level.ServerLevel;
@@ -43,11 +49,9 @@ import net.minecraft.world.phys.AABB;
 import net.minecraft.world.phys.EntityHitResult;
 import net.minecraft.world.phys.HitResult;
 import net.minecraft.world.phys.Vec3;
-import net.neoforged.neoforge.entity.IEntityWithComplexSpawn;
-import net.neoforged.neoforge.event.EventHooks;
 import org.joml.Vector3f;
 
-public class LaserEntity extends Projectile implements IForcefieldImmunity, IEntityWithComplexSpawn {
+public class LaserEntity extends Projectile implements IForcefieldImmunity {
 
     public static final ResourceKey<DamageType> SHIP_DAMAGE = ResourceKey.create(Registries.DAMAGE_TYPE,
             Identifier.fromNamespaceAndPath(Ariente.MODID, "ship_laser"));
@@ -76,15 +80,12 @@ public class LaserEntity extends Projectile implements IForcefieldImmunity, IEnt
         super(type, worldIn);
     }
 
-    @Override
     public void onAddedToLevel() {
-        super.onAddedToLevel();
         if (launchPosition == null) {
             launchPosition = position();
         }
     }
 
-    @Override
     public void writeSpawnData(RegistryFriendlyByteBuf buffer) {
         Vec3 start = launchPosition == null ? position() : launchPosition;
         buffer.writeDouble(start.x);
@@ -97,7 +98,6 @@ public class LaserEntity extends Projectile implements IForcefieldImmunity, IEnt
         buffer.writeDouble(velocity.z);
     }
 
-    @Override
     public void readSpawnData(RegistryFriendlyByteBuf buffer) {
         launchPosition = new Vec3(buffer.readDouble(), buffer.readDouble(), buffer.readDouble());
         shipShot = buffer.readBoolean();
@@ -105,6 +105,18 @@ public class LaserEntity extends Projectile implements IForcefieldImmunity, IEnt
         Vec3 velocity = new Vec3(buffer.readDouble(), buffer.readDouble(), buffer.readDouble());
         entityData.set(SHIP_VELOCITY, velocity.toVector3f());
         setDeltaMovement(velocity);
+    }
+
+    @Override
+    public Packet<ClientGamePacketListener> getAddEntityPacket(ServerEntity tracked) {
+        return new ClientboundAddEntityPacket(this, tracked, shipShot ? 1 : 0);
+    }
+
+    @Override
+    public void recreateFromPacket(ClientboundAddEntityPacket packet) {
+        super.recreateFromPacket(packet);
+        shipShot = packet.getData() == 1;
+        launchPosition = position();
     }
 
     public double getBeamLength(Vec3 head) {
@@ -248,8 +260,8 @@ public class LaserEntity extends Projectile implements IForcefieldImmunity, IEnt
         entity.damage = damage;
         ItemStack weapon = shooter.getMainHandItem();
         entity.inhibit = ModuleSupport.hasWorkingUpgrade(weapon, ArmorUpgradeType.INHIBIT);
-        entity.fireAspect = weapon.getEnchantmentLevel(shooter.registryAccess().lookupOrThrow(Registries.ENCHANTMENT).getOrThrow(Enchantments.FIRE_ASPECT));
-        entity.looting = weapon.getEnchantmentLevel(shooter.registryAccess().lookupOrThrow(Registries.ENCHANTMENT).getOrThrow(Enchantments.LOOTING));
+        entity.fireAspect = EnchantmentHelper.getItemEnchantmentLevel(shooter.registryAccess().lookupOrThrow(Registries.ENCHANTMENT).getOrThrow(Enchantments.FIRE_ASPECT), weapon);
+        entity.looting = EnchantmentHelper.getItemEnchantmentLevel(shooter.registryAccess().lookupOrThrow(Registries.ENCHANTMENT).getOrThrow(Enchantments.LOOTING), weapon);
         entity.setPos(shot.muzzle());
         entity.setDeltaMovement(aim.scale(1.8D));
         entity.setAcceleration(aim.scale(0.12D));
@@ -311,7 +323,7 @@ public class LaserEntity extends Projectile implements IForcefieldImmunity, IEnt
                     entity -> shipShot ? canHitEntity(entity) && !(entity instanceof LaserEntity) && !(entity instanceof IHoloGuiEntity)
                             : lanceShot ? canHitEntity(entity) : entity != this.shootingEntity || this.ticksInAir >= 25);
 
-            if (raytraceresult != null && !EventHooks.onProjectileImpact(this, raytraceresult)) {
+            if (raytraceresult != null) {
                 this.onImpact(raytraceresult);
             }
 
@@ -473,7 +485,7 @@ public class LaserEntity extends Projectile implements IForcefieldImmunity, IEnt
         super.addAdditionalSaveData(output);
         CompoundTag tag = new CompoundTag();
         writeEntityData(tag);
-        output.store(tag);
+        output.store(MapCodec.assumeMapUnsafe(CompoundTag.CODEC), tag);
     }
 
     private static ListTag newDoubleList(double[] values) {

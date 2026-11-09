@@ -1,5 +1,7 @@
 package mcjty.ariente.display;
 
+import net.fabricmc.fabric.api.transfer.v1.fluid.FluidStorage;
+
 import mcjty.ariente.items.ItemData;
 import mcjty.lib.varia.CapabilityTools;
 import mcjty.hologui.api.IGuiComponentRegistry;
@@ -11,9 +13,8 @@ import net.minecraft.nbt.ListTag;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.level.block.entity.BlockEntity;
-import net.neoforged.neoforge.capabilities.Capabilities;
-import net.neoforged.neoforge.fluids.FluidStack;
-import net.neoforged.neoforge.fluids.capability.IFluidHandler;
+import mcjty.lib.varia.FluidStack;
+import mcjty.lib.varia.IFluidHandler;
 
 public class FluidDisplayModule extends ResourceDisplayModule {
 
@@ -40,8 +41,8 @@ public class FluidDisplayModule extends ResourceDisplayModule {
     }
 
     public static IFluidHandler fluids(BlockEntity tile, Direction side) {
-        IFluidHandler handler = CapabilityTools.fluidHandler(tile.getLevel().getCapability(Capabilities.Fluid.BLOCK, tile.getBlockPos(), side));
-        return handler != null ? handler : CapabilityTools.fluidHandler(tile.getLevel().getCapability(Capabilities.Fluid.BLOCK, tile.getBlockPos(), null));
+        IFluidHandler handler = CapabilityTools.fluidHandler(FluidStorage.SIDED.find(tile.getLevel(), tile.getBlockPos(), side));
+        return handler != null ? handler : CapabilityTools.fluidHandler(FluidStorage.SIDED.find(tile.getLevel(), tile.getBlockPos(), null));
     }
 
     @Override

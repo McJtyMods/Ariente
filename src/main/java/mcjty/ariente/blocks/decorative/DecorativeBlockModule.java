@@ -18,9 +18,6 @@ import net.minecraft.world.level.block.Block;
 import net.minecraft.world.level.block.SlabBlock;
 import net.minecraft.world.level.block.state.BlockBehaviour.Properties;
 import net.minecraft.world.level.material.MapColor;
-import net.neoforged.bus.api.IEventBus;
-import net.neoforged.fml.event.lifecycle.FMLClientSetupEvent;
-import net.neoforged.fml.event.lifecycle.FMLCommonSetupEvent;
 
 import static mcjty.ariente.setup.Registration.BLOCKS;
 import static mcjty.ariente.setup.Registration.ITEMS;
@@ -86,17 +83,17 @@ public class DecorativeBlockModule implements IModule {
     }
 
     @Override
-    public void init(FMLCommonSetupEvent event) {
+    public void init() {
         // no-op
     }
 
     @Override
-    public void initClient(FMLClientSetupEvent event) {
+    public void initClient() {
         // no-op
     }
 
     @Override
-    public void initConfig(IEventBus bus) {
+    public void initConfig() {
         // no-op
     }
 }

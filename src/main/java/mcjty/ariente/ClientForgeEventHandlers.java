@@ -1,11 +1,13 @@
 package mcjty.ariente;
 
+import net.fabricmc.fabric.api.client.rendering.v1.level.LevelExtractionContext;
+import net.fabricmc.fabric.api.client.rendering.v1.level.LevelRenderContext;
+import mcjty.ariente.client.RenderData;
 import com.mojang.blaze3d.vertex.PoseStack;
 import mcjty.hologui.gui.HoloRenderBatch;
 import net.minecraft.resources.Identifier;
 import net.minecraft.util.context.ContextKey;
-import net.neoforged.neoforge.client.network.ClientPacketDistributor;
-import net.neoforged.neoforge.client.event.*;
+import mcjty.lib.network.ClientNetworking;
 import mcjty.ariente.api.ArmorUpgradeType;
 import mcjty.ariente.blocks.defense.ForceFieldRenderer;
 import mcjty.ariente.config.UtilityConfiguration;
@@ -20,46 +22,30 @@ import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.phys.Vec3;
-import net.neoforged.bus.api.SubscribeEvent;
-import net.neoforged.neoforge.client.event.ClientTickEvent;
-import net.neoforged.neoforge.event.entity.EntityMountEvent;
-import net.neoforged.neoforge.event.entity.player.PlayerInteractEvent;
 
 public class ClientForgeEventHandlers {
 
     private static final ContextKey<HoloRenderBatch> FIELDS = new ContextKey<>(Identifier.fromNamespaceAndPath("ariente", "forcefields"));
 
-    @SubscribeEvent
-    public void extractForcefields(ExtractLevelRenderStateEvent event) {
+    public void extractForcefields(LevelExtractionContext event) {
         HoloRenderBatch batch = new HoloRenderBatch();
-        ForceFieldRenderer.renderForceFields(new PoseStack(), batch, event.getDeltaTracker().getGameTimeDeltaPartialTick(false));
-        event.getRenderState().setRenderData(FIELDS, batch);
+        ForceFieldRenderer.renderForceFields(new PoseStack(), batch, event.deltaTracker().getGameTimeDeltaPartialTick(false));
+        RenderData.set(event.levelState(), FIELDS, batch);
     }
 
-    @SubscribeEvent
-    public void submitForcefields(SubmitCustomGeometryEvent event) {
-        HoloRenderBatch batch = event.getLevelRenderState().getRenderData(FIELDS);
-        if (batch != null) batch.submit(event.getPoseStack(), event.getSubmitNodeCollector());
+    public void submitForcefields(LevelRenderContext event) {
+        HoloRenderBatch batch = RenderData.get(event.levelState(), FIELDS);
+        if (batch != null) batch.submit(event.poseStack(), event.submitNodeCollector());
     }
 
-    @SubscribeEvent
-    public void onEntityMount(EntityMountEvent event) {
-        if (event.isMounting() && event.getLevel().isClientSide() && event.getEntityBeingMounted() instanceof FluxLevitatorEntity) {
-            FluxLevitatorEntity levitator = (FluxLevitatorEntity) event.getEntityBeingMounted();
-            if (event.getEntityMounting() instanceof Player) {
-                FluxLevitatorSounds.playMovingSoundClientInside((Player) event.getEntityMounting(), levitator);
-            }
-        }
-    }
 
-    @SubscribeEvent
-    public void onLeftClickEmpty(PlayerInteractEvent.LeftClickEmpty empty) {
+
+    public void onLeftClickEmpty() {
         // This event is only called clientside. Tell the server
-        ClientPacketDistributor.sendToServer(new PacketHitForcefield());
+        ClientNetworking.sendToServer(new PacketHitForcefield());
     }
 
-    @SubscribeEvent
-    public void onClientTick(ClientTickEvent.Pre event) {
+    public void onClientTick() {
         Minecraft mc = Minecraft.getInstance();
         if (mc.isPaused() || mc.player == null) {
             return;

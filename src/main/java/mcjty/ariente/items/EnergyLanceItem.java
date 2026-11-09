@@ -30,7 +30,6 @@ import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.TooltipFlag;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.phys.Vec3;
-import net.neoforged.neoforge.client.extensions.common.IClientItemExtensions;
 
 public class EnergyLanceItem extends Item implements ITooltipSettings {
 
@@ -83,7 +82,6 @@ public class EnergyLanceItem extends Item implements ITooltipSettings {
         return InteractionResult.CONSUME;
     }
 
-    @Override
     public boolean onLeftClickEntity(ItemStack stack, Player player, Entity entity) {
         return !player.getOffhandItem().isEmpty();
     }
@@ -105,18 +103,9 @@ public class EnergyLanceItem extends Item implements ITooltipSettings {
         WeaponModuleSupport.inventoryTick(stack, level, entity, entity instanceof LivingEntity living && living.getOffhandItem().isEmpty());
     }
 
-    @Override
     public boolean shouldCauseReequipAnimation(ItemStack oldStack, ItemStack newStack, boolean slotChanged) {
         return false;
     }
 
-    public void initializeClient(Consumer<IClientItemExtensions> consumer) {
-        consumer.accept(new IClientItemExtensions() {
 
-            @Override
-            public HumanoidModel.ArmPose getArmPose(LivingEntity entity, InteractionHand hand, ItemStack stack) {
-                return hand == InteractionHand.MAIN_HAND && canFire(entity) ? HumanoidModel.ArmPose.CROSSBOW_HOLD : null;
-            }
-        });
-    }
 }

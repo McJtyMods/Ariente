@@ -1,5 +1,9 @@
 package mcjty.ariente.client;
 
+import net.minecraft.client.renderer.RenderBuffers;
+
+import net.fabricmc.fabric.api.client.rendering.v1.level.LevelRenderContext;
+import net.fabricmc.fabric.api.client.rendering.v1.level.LevelExtractionContext;
 import com.mojang.blaze3d.vertex.PoseStack;
 import java.util.ArrayList;
 import java.util.Collections;
@@ -19,8 +23,6 @@ import net.minecraft.resources.Identifier;
 import net.minecraft.util.context.ContextKey;
 import net.minecraft.world.level.block.entity.BlockEntity;
 import net.minecraft.world.phys.Vec3;
-import net.neoforged.neoforge.client.event.ExtractLevelRenderStateEvent;
-import net.neoforged.neoforge.client.event.SubmitCustomGeometryEvent;
 
 /** Deferred overlays contain only extracted geometry and item render state. */
 public final class WorldHolograms {
@@ -32,6 +34,7 @@ public final class WorldHolograms {
     private static Frame activeFrame;
     private static FeatureRenderDispatcher features;
     private static SubmitNodeStorage storage;
+    private static RenderBuffers overlayBuffers;
 
     private WorldHolograms() {
     }
@@ -63,15 +66,15 @@ public final class WorldHolograms {
         PENDING.add(new Entry(center, null, batch));
     }
 
-    public static void finishExtraction(ExtractLevelRenderStateEvent event) {
+    public static void finishExtraction(LevelExtractionContext event) {
         if (LiveCameraRenderer.isRendering()) return;
-        event.getRenderState().setRenderData(FRAME, new Frame(List.copyOf(PENDING), event.getCamera().position()));
+        RenderData.set(event.levelState(), FRAME, new Frame(List.copyOf(PENDING), event.camera().position()));
         PENDING.clear();
         QUEUED.clear();
     }
 
-    public static void captureFrame(SubmitCustomGeometryEvent event) {
-        if (!LiveCameraRenderer.isRendering()) activeFrame = event.getLevelRenderState().getRenderData(FRAME);
+    public static void captureFrame(LevelRenderContext event) {
+        if (!LiveCameraRenderer.isRendering()) activeFrame = RenderData.get(event.levelState(), FRAME);
     }
 
     public static void renderWorld() {
@@ -79,7 +82,8 @@ public final class WorldHolograms {
         activeFrame = null;
         if (frame == null || frame.entries().isEmpty()) return;
         Minecraft mc = Minecraft.getInstance();
-        var buffers = mc.gameRenderer.renderBuffers();
+        if (overlayBuffers == null) overlayBuffers = new RenderBuffers(1);
+        var buffers = overlayBuffers;
         if (features == null) {
             storage = new SubmitNodeStorage();
             features = new FeatureRenderDispatcher(buffers, mc.getModelManager(), mc.getAtlasManager(), mc.font, mc.gameRenderer.gameRenderState());
@@ -92,6 +96,7 @@ public final class WorldHolograms {
                     entry.origin().getY() - frame.camera().y, entry.origin().getZ() - frame.camera().z);
             entry.batch().submit(poses, storage);
             features.renderAllFeatures(storage);
+            buffers.endFrame();
         }
     }
 

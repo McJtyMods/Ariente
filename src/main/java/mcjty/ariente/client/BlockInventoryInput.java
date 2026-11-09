@@ -1,25 +1,18 @@
 package mcjty.ariente.client;
 
-import net.neoforged.neoforge.client.network.ClientPacketDistributor;
+import mcjty.lib.network.ClientNetworking;
 import mcjty.ariente.Ariente;
 import mcjty.ariente.blocks.utility.BlockInventoryInteraction;
 import mcjty.ariente.blocks.utility.PacketClickStorage;
 import net.minecraft.client.Minecraft;
 import net.minecraft.world.phys.BlockHitResult;
-import net.neoforged.api.distmarker.Dist;
-import net.neoforged.bus.api.SubscribeEvent;
-import net.neoforged.fml.common.EventBusSubscriber;
-import net.neoforged.neoforge.client.event.ClientTickEvent;
-import net.neoforged.neoforge.client.event.InputEvent;
 
 /** Creative slot clicks consume the attack gesture before Minecraft can break a block. */
-@EventBusSubscriber(modid = Ariente.MODID, value = Dist.CLIENT)
 public class BlockInventoryInput {
 
     private static boolean consumingAttack;
 
-    @SubscribeEvent
-    public static void attack(InputEvent.InteractionKeyMappingTriggered event) {
+    public static void attack(InputGesture event) {
         if (!event.isAttack()) {
             return;
         }
@@ -38,12 +31,11 @@ public class BlockInventoryInput {
             consumingAttack = true;
             event.setCanceled(true);
             event.setSwingHand(false);
-            ClientPacketDistributor.sendToServer(new PacketClickStorage(hit.getBlockPos(), slot));
+            ClientNetworking.sendToServer(new PacketClickStorage(hit.getBlockPos(), slot));
         }
     }
 
-    @SubscribeEvent
-    public static void tick(ClientTickEvent.Post event) {
+    public static void tick() {
         if (true) {
             Minecraft mc = Minecraft.getInstance();
             if (mc.player == null || mc.level == null || mc.gui.screen() != null || !mc.options.keyAttack.isDown()) {

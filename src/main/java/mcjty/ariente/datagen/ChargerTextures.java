@@ -1,7 +1,6 @@
 package mcjty.ariente.datagen;
 
 import com.google.common.hash.Hashing;
-import com.mojang.blaze3d.platform.NativeImage;
 import java.io.IOException;
 import java.io.UncheckedIOException;
 import java.util.concurrent.CompletableFuture;
@@ -24,10 +23,10 @@ public class ChargerTextures implements DataProvider {
     public CompletableFuture<?> run(CachedOutput cache) {
         return CompletableFuture.runAsync(() -> {
             try (var input = Ariente.class.getResourceAsStream("/assets/ariente/textures/block/machines/charger.png");
-                 NativeImage source = NativeImage.read(input);
-                 NativeImage active = new NativeImage(source.getWidth(), source.getHeight() * FRAMES, false);
-                 NativeImage glow = new NativeImage(source.getWidth(), source.getHeight() * FRAMES, true);
-                 NativeImage off = new NativeImage(source.getWidth(), source.getHeight(), false)) {
+                 PngImage source = PngImage.read(input);
+                 PngImage active = new PngImage(source.getWidth(), source.getHeight() * FRAMES, false);
+                 PngImage glow = new PngImage(source.getWidth(), source.getHeight() * FRAMES, true);
+                 PngImage off = new PngImage(source.getWidth(), source.getHeight(), false)) {
                 int size = source.getWidth();
                 int edge = size / 8;
                 double center = (size - 1) / 2.0;
@@ -60,7 +59,7 @@ public class ChargerTextures implements DataProvider {
         });
     }
 
-    private static int sample(NativeImage image, double x, double y, int edge) {
+    private static int sample(PngImage image, double x, double y, int edge) {
         x = Math.max(edge, Math.min(image.getWidth() - edge - 1, x));
         y = Math.max(edge, Math.min(image.getHeight() - edge - 1, y));
         int x0 = (int) x;
@@ -78,7 +77,7 @@ public class ChargerTextures implements DataProvider {
         return result;
     }
 
-    private void write(CachedOutput cache, String name, NativeImage image) throws IOException {
+    private void write(CachedOutput cache, String name, PngImage image) throws IOException {
         byte[] png = PngData.encode(image);
         cache.writeIfNeeded(output.getOutputFolder().resolve("assets/ariente/textures/block/machines/" + name + ".png"),
                 png, Hashing.sha1().hashBytes(png));

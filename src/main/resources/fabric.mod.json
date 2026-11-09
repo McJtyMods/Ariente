@@ -1,0 +1,48 @@
+{
+  "schemaVersion": 1,
+  "id": "ariente",
+  "version": "${version}",
+  "name": "Ariente",
+  "description": "Alien technology and exploration",
+  "authors": [
+    "McJty"
+  ],
+  "contact": {
+    "sources": "https://github.com/McJtyMods/Ariente",
+    "issues": "https://github.com/McJtyMods/Ariente/issues"
+  },
+  "license": "MIT",
+  "environment": "*",
+  "entrypoints": {
+    "main": [
+      "mcjty.ariente.Ariente"
+    ],
+    "client": [
+      "mcjty.ariente.setup.ClientSetup"
+    ],
+    "fabric-datagen": [
+      "mcjty.ariente.datagen.DataGenerators"
+    ],
+    "theoneprobe": [
+      "mcjty.ariente.compat.ArienteTOPPlugin"
+    ]
+  },
+  "depends": {
+    "fabricloader": ">=0.19.3",
+    "minecraft": "~26.2",
+    "java": ">=25",
+    "fabric-api": ">=0.155.2+26.2",
+    "forgeconfigapiport": ">=26.2.1",
+    "team_reborn_energy": ">=5.0.0",
+    "mcjtylib": ">=26.2-10.0.3-fabric",
+    "hologui": ">=26.2-0.0.10-beta-fabric"
+  },
+  "suggests": {
+    "theoneprobe": "*",
+    "jei": "*"
+  },
+  "mixins": [
+    "ariente.mixins.json"
+  ],
+  "accessWidener": "ariente.accesswidener"
+}

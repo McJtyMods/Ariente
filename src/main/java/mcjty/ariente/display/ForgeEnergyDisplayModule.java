@@ -1,5 +1,7 @@
 package mcjty.ariente.display;
 
+import team.reborn.energy.api.EnergyStorage;
+
 import mcjty.lib.varia.CapabilityTools;
 import mcjty.hologui.api.IGuiComponentRegistry;
 import mcjty.hologui.api.components.IPanel;
@@ -9,8 +11,7 @@ import net.minecraft.nbt.CompoundTag;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.level.block.entity.BlockEntity;
-import net.neoforged.neoforge.capabilities.Capabilities;
-import net.neoforged.neoforge.energy.IEnergyStorage;
+import mcjty.lib.varia.IEnergyStorage;
 
 public class ForgeEnergyDisplayModule extends ResourceDisplayModule {
 
@@ -27,8 +28,8 @@ public class ForgeEnergyDisplayModule extends ResourceDisplayModule {
     }
 
     public static IEnergyStorage energy(BlockEntity tile, Direction side) {
-        IEnergyStorage handler = CapabilityTools.energyHandler(tile.getLevel().getCapability(Capabilities.Energy.BLOCK, tile.getBlockPos(), side));
-        return handler != null ? handler : CapabilityTools.energyHandler(tile.getLevel().getCapability(Capabilities.Energy.BLOCK, tile.getBlockPos(), null));
+        IEnergyStorage handler = CapabilityTools.energyHandler(EnergyStorage.SIDED.find(tile.getLevel(), tile.getBlockPos(), side));
+        return handler != null ? handler : CapabilityTools.energyHandler(EnergyStorage.SIDED.find(tile.getLevel(), tile.getBlockPos(), null));
     }
 
     @Override

@@ -7,7 +7,7 @@ import net.minecraft.network.codec.StreamCodec;
 import net.minecraft.network.protocol.common.custom.CustomPacketPayload;
 import net.minecraft.resources.Identifier;
 import net.minecraft.world.level.block.entity.BlockEntity;
-import net.neoforged.neoforge.network.handling.IPayloadContext;
+import mcjty.lib.network.PayloadContext;
 
 public class PacketAutoFieldReturnRenderInfo implements CustomPacketPayload {
 
@@ -41,7 +41,7 @@ public class PacketAutoFieldReturnRenderInfo implements CustomPacketPayload {
         this.renderInfo = renderInfo;
     }
 
-    public void handle(IPayloadContext ctx) {
+    public void handle(PayloadContext ctx) {
         ctx.enqueueWork(() -> {
             BlockEntity te = Minecraft.getInstance().level.getBlockEntity(pos);
             if (te instanceof AutoFieldTile) {

@@ -7,7 +7,7 @@ import mcjty.hologui.gui.components.HoloSlots;
 import mcjty.lib.client.RenderBufferSource;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.ItemStack;
-import net.neoforged.neoforge.items.IItemHandler;
+import mcjty.lib.container.IItemHandler;
 
 import static mcjty.ariente.gui.InventoryLayout.CELL;
 

@@ -6,7 +6,7 @@ import net.minecraft.network.RegistryFriendlyByteBuf;
 import net.minecraft.network.codec.StreamCodec;
 import net.minecraft.network.protocol.common.custom.CustomPacketPayload;
 import net.minecraft.resources.Identifier;
-import net.neoforged.neoforge.network.handling.IPayloadContext;
+import mcjty.lib.network.PayloadContext;
 
 /** One bounded fragment of one module snapshot. Layouts travel separately in block entity updates. */
 public record PacketDisplayData(BlockPos pos, long layoutVersion, int index, int snapshotVersion,
@@ -44,7 +44,7 @@ public record PacketDisplayData(BlockPos pos, long layoutVersion, int index, int
         buffer.writeByteArray(data);
     }
 
-    public void handle(IPayloadContext context) {
+    public void handle(PayloadContext context) {
         context.enqueueWork(() -> DisplayDataReceiver.receive(this));
     }
 }

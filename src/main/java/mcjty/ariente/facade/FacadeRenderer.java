@@ -17,13 +17,13 @@ public final class FacadeRenderer implements SpecialModelRenderer<BlockModelRend
     @Override
     public BlockModelRenderState extractArgument(ItemStack stack) {
         BlockModelRenderState state = new BlockModelRenderState();
-        Minecraft.getInstance().getBlockModelResolver().update(state, FacadeItemBlock.getMimicBlock(stack), BlockDisplayContext.create());
+        Minecraft.getInstance().getModelManager().getBlockModelSet().get(FacadeItemBlock.getMimicBlock(stack)).update(state, FacadeItemBlock.getMimicBlock(stack), BlockDisplayContext.create(), 0);
         return state;
     }
 
     @Override
     public void submit(BlockModelRenderState state, PoseStack poses, SubmitNodeCollector collector, int light, int overlay, boolean foil, int outline) {
-        state.submitMultiLayer(poses, collector, light, overlay, outline);
+        state.submit(poses, collector, light, overlay, outline);
     }
 
     @Override

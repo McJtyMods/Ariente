@@ -8,7 +8,6 @@ import javax.annotation.Nullable;
 import mcjty.ariente.blocks.generators.PowerCombinerTile;
 import mcjty.ariente.power.IPowerReceiver;
 import mcjty.ariente.power.IPowerSender;
-import mcjty.ariente.setup.Registration;
 import mcjty.lib.compat.theoneprobe.TOPDriver;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
@@ -46,13 +45,13 @@ public class ConnectorBlock extends GenericCableBlock {
     protected Item getItem(CableColor color) {
         switch (color) {
             case NEGARITE:
-                return Registration.CONNECTOR_NEGARITE.get();
+                return mcjty.ariente.setup.Registration.CONNECTOR_NEGARITE.get();
             case POSIRITE:
-                return Registration.CONNECTOR_POSIRITE.get();
+                return mcjty.ariente.setup.Registration.CONNECTOR_POSIRITE.get();
             case COMBINED:
-                return Registration.CONNECTOR_COMBINED.get();
+                return mcjty.ariente.setup.Registration.CONNECTOR_COMBINED.get();
             case DATA:
-                return Registration.CONNECTOR_DATA.get();
+                return mcjty.ariente.setup.Registration.CONNECTOR_DATA.get();
         };
         return Items.AIR;
     }

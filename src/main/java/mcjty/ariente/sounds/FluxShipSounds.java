@@ -1,5 +1,7 @@
 package mcjty.ariente.sounds;
 
+import net.minecraft.world.entity.Entity;
+
 import java.util.IdentityHashMap;
 import java.util.Map;
 import javax.annotation.Nullable;
@@ -9,27 +11,19 @@ import net.minecraft.client.Minecraft;
 import net.minecraft.client.sounds.SoundManager;
 import net.minecraft.sounds.SoundSource;
 import net.minecraft.world.entity.player.Player;
-import net.neoforged.api.distmarker.Dist;
-import net.neoforged.bus.api.SubscribeEvent;
-import net.neoforged.fml.common.EventBusSubscriber;
-import net.neoforged.neoforge.client.event.ClientTickEvent;
-import net.neoforged.neoforge.event.entity.EntityJoinLevelEvent;
 
-@EventBusSubscriber(modid = Ariente.MODID, value = Dist.CLIENT)
 public class FluxShipSounds {
 
     private static final Map<FluxShipEntity, EngineLoops> SHIPS = new IdentityHashMap<>();
     private static int ticks;
 
-    @SubscribeEvent
-    public static void entityJoined(EntityJoinLevelEvent event) {
-        if (event.getLevel().isClientSide() && event.getEntity() instanceof FluxShipEntity ship) {
+    public static void entityJoined(Entity entity) {
+        if (entity.level().isClientSide() && entity instanceof FluxShipEntity ship) {
             SHIPS.computeIfAbsent(ship, key -> new EngineLoops());
         }
     }
 
-    @SubscribeEvent
-    public static void clientTick(ClientTickEvent.Post event) {
+    public static void clientTick() {
         Minecraft mc = Minecraft.getInstance();
         if (mc.level != null && mc.isPaused()) {
             return;

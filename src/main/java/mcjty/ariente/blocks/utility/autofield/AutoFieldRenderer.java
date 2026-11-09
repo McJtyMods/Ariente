@@ -36,7 +36,6 @@ public class AutoFieldRenderer extends ExtractedBlockRenderer<AutoFieldTile> {
         context = pContext;
     }
 
-    @Override
     public AABB getRenderBoundingBox(AutoFieldTile tile) {
         return tile.getRenderBoundingBox();
     }

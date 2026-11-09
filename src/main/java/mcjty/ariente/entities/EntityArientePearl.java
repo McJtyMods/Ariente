@@ -1,5 +1,6 @@
 package mcjty.ariente.entities;
 
+
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.world.damagesource.DamageSource;
 
@@ -205,7 +206,7 @@ public class EntityArientePearl extends Entity implements ItemSupplier {
     public void addAdditionalSaveData(ValueOutput output) {
         CompoundTag tag = new CompoundTag();
         writeEntityData(tag);
-        output.store(tag);
+        output.store(MapCodec.assumeMapUnsafe(CompoundTag.CODEC), tag);
     }
 
     @Override

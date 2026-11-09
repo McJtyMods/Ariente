@@ -17,8 +17,6 @@ import net.minecraft.client.renderer.texture.TextureAtlasSprite;
 import net.minecraft.util.Mth;
 import net.minecraft.world.entity.Entity;
 import net.minecraft.world.phys.Vec3;
-import net.neoforged.api.distmarker.Dist;
-import net.neoforged.fml.common.EventBusSubscriber;
 import org.joml.Quaternionf;
 import org.joml.Vector3f;
 
@@ -26,7 +24,6 @@ import static mcjty.ariente.blocks.generators.NegariteTankRenderer.NEGARITE_BEAM
 import static mcjty.ariente.blocks.generators.PosiriteTankRenderer.POSIRITE_BEAM;
 
 /** Camera-facing power ribbons in the same rotating cabin frame as the hull. */
-@EventBusSubscriber(modid = Ariente.MODID, value = Dist.CLIENT)
 public class FluxShipExhaustRender {
 
     private static final int STRANDS = 4;

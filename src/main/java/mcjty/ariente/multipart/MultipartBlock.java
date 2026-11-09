@@ -1,5 +1,8 @@
 package mcjty.ariente.multipart;
 
+import com.mojang.serialization.MapCodec;
+import net.minecraft.nbt.CompoundTag;
+
 import net.minecraft.world.level.storage.TagValueOutput;
 import net.minecraft.util.ProblemReporter;
 import java.util.ArrayList;
@@ -69,7 +72,6 @@ public class MultipartBlock extends Block implements WailaInfoProvider, TOPInfoP
         return new MultipartTE(pos, state);
     }
 
-    @Override
     public ItemStack getCloneItemStack(LevelReader world, BlockPos pos, BlockState state, boolean includeData, Player player) {
         MultipartTE.Part part = getHitPart(state, world, pos, player.getEyePosition(0), player.getEyePosition(0).add(player.getLookAngle().scale(player.blockInteractionRange())));
         if (part != null) {
@@ -188,13 +190,12 @@ public class MultipartBlock extends Block implements WailaInfoProvider, TOPInfoP
         BlockEntity child = part.getBlockEntity();
         if (child != null && !stack.isEmpty()) {
             var output = TagValueOutput.createWithContext(ProblemReporter.DISCARDING, child.getLevel().registryAccess());
-            output.store(child.saveWithoutMetadata(child.getLevel().registryAccess()));
+            output.store(MapCodec.assumeMapUnsafe(CompoundTag.CODEC), child.saveWithoutMetadata(child.getLevel().registryAccess()));
             BlockItem.setBlockEntityData(stack, child.getType(), output);
         }
         return stack;
     }
 
-    @Override
     public boolean onDestroyedByPlayer(BlockState state, Level world, BlockPos pos, Player player, ItemStack tool, boolean willHarvest, FluidState fluid) {
         if (world.isClientSide() || !(world.getBlockEntity(pos) instanceof MultipartTE multipart)) {
             return false;

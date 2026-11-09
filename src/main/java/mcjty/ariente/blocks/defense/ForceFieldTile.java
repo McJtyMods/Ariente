@@ -1,5 +1,6 @@
 package mcjty.ariente.blocks.defense;
 
+
 import net.minecraft.world.level.block.state.BlockBehaviour;
 import net.minecraft.world.level.material.MapColor;
 import net.minecraft.world.level.block.SoundType;
@@ -43,7 +44,7 @@ import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.phys.AABB;
 import net.minecraft.world.phys.BlockHitResult;
 import net.minecraft.world.phys.Vec3;
-import net.neoforged.neoforge.network.PacketDistributor;
+import mcjty.ariente.network.Packets;
 
 import static mcjty.ariente.compat.ArienteTOPDriver.DRIVER;
 import static mcjty.ariente.config.Config.SHIELD_PANEL_LIFE;
@@ -283,7 +284,7 @@ public class ForceFieldTile extends ExtremeMachineTile implements IGuiTile, ISou
                                     }
                                 }
 
-                                PacketDistributor.sendToPlayersInDimension((ServerLevel) level,
+                                Packets.sendToPlayersInDimension((ServerLevel) level,
                                         new PacketDamageForcefield(worldPosition, info.getIndex(), intersection));
                             }
                             changed = true;

@@ -1,5 +1,6 @@
 package mcjty.ariente.facade;
 
+import net.minecraft.core.registries.Registries;
 import javax.annotation.Nullable;
 import mcjty.lib.varia.Tools;
 import net.minecraft.core.registries.BuiltInRegistries;

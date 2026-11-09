@@ -21,7 +21,7 @@ import net.minecraft.client.renderer.entity.EntityRendererProvider;
 import net.minecraft.network.chat.Component;
 import net.minecraft.resources.Identifier;
 import net.minecraft.world.phys.Vec3;
-import net.neoforged.neoforge.client.model.pipeline.VertexConsumerWrapper;
+import mcjty.ariente.client.VertexConsumerWrapper;
 
 /** Rotate the cockpit instruments in the same cabin frame as the hull. */
 public class FluxShipPanelRender extends ExtractedEntityRenderer<HoloGuiEntity> {

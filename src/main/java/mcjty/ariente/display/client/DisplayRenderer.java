@@ -32,7 +32,6 @@ public class DisplayRenderer extends ExtractedBlockRenderer<DisplayBaseTile> {
         poses.scale(1 / 64f, -1 / 64f, 1 / 64f);
     }
 
-    @Override
     public AABB getRenderBoundingBox(DisplayBaseTile tile) {
         return tile.getRenderBoundingBox();
     }

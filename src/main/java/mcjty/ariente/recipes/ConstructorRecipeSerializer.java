@@ -1,5 +1,6 @@
 package mcjty.ariente.recipes;
 
+import net.minecraft.core.registries.Registries;
 import net.minecraft.network.codec.ByteBufCodecs;
 
 import com.mojang.serialization.Codec;

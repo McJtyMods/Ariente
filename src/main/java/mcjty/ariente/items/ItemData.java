@@ -3,7 +3,7 @@ package mcjty.ariente.items;
 import mcjty.lib.varia.ItemStackList;
 import net.minecraft.nbt.ListTag;
 
-import net.neoforged.neoforge.fluids.FluidStack;
+import mcjty.lib.varia.FluidStack;
 import java.util.function.Consumer;
 import net.minecraft.core.component.DataComponents;
 import net.minecraft.core.HolderLookup;

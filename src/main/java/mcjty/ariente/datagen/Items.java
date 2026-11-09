@@ -1,5 +1,7 @@
 package mcjty.ariente.datagen;
 
+import net.fabricmc.fabric.api.datagen.v1.FabricPackOutput;
+
 import com.google.gson.JsonObject;
 import com.google.gson.JsonParser;
 
@@ -27,7 +29,7 @@ import mcjty.lib.datagen.model.ModelFile;
 
 public class Items extends BaseItemModelProvider {
 
-    public Items(DataGenerator generator) {
+    public Items(FabricPackOutput generator) {
         super(generator, Ariente.MODID);
     }
 
@@ -225,6 +227,7 @@ public class Items extends BaseItemModelProvider {
             case "item/facade" -> JsonParser.parseString("{\"model\": {\"type\": \"minecraft:special\", \"base\": \"ariente:item/facade_base\", \"model\": {\"type\": \"ariente:facade\"}}}").getAsJsonObject();
             case "item/blueprint" -> JsonParser.parseString("{\"model\": {\"type\": \"minecraft:composite\", \"models\": [{\"type\": \"minecraft:model\", \"model\": \"ariente:item/blueprint_base\"}, {\"type\": \"minecraft:special\", \"base\": \"ariente:item/blueprint_base\", \"model\": {\"type\": \"ariente:blueprint\"}}]}}").getAsJsonObject();
             case "item/energy_lance" -> JsonParser.parseString("{\"model\": {\"type\": \"ariente:lance\", \"model\": \"ariente:item/energy_lance\"}}").getAsJsonObject();
+
             default -> super.itemDefinitionFor(model);
         };
     }

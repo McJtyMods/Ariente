@@ -56,8 +56,9 @@ public final class LiveCameraRenderer {
     }
 
     public static void beginFrame() {
-        // Refresh after the main world finishes rendering, outside its block-entity
-        // iterators. A nested extraction may remove stale globally rendered tiles.
+        if (rendering || Minecraft.getInstance().level == null || Minecraft.getInstance().player == null) return;
+        // LevelRenderer's return hook runs after every pass and PreparedFrame.close().
+        // Refreshing from END_MAIN would re-enter the still-active player frame.
         Map.Entry<Key, Feed> oldest = null;
         for (var entry : FEEDS.entrySet()) {
             if (entry.getValue().requestedFrame == frame
@@ -339,7 +340,7 @@ public final class LiveCameraRenderer {
             update(mc.getDeltaTracker());
             extractRenderState(state, partialTick);
             setPosition(view.eye());
-            setRotation(view.yaw(), view.pitch(), 0);
+            setRotation(view.yaw(), view.pitch());
             attributeProbe().tick(mc.level, view.eye());
             // The sky uses geometry beyond the terrain capture radius. Retain
             // Minecraft's projection distance and limit terrain with the frustum.

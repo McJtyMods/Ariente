@@ -1,5 +1,5 @@
 HISTORICAL FORGE 1.20 HANDOFF
-For the current 26.1.2 / NeoForge target and actual verification, read ../ArienteWorld_neo/PORT_26_1_2.md.
+For the current 26.2 / Fabric target and tutorial verification, read README.md.
 The retained notes below describe the prior Forge port.
 
 ARIENTE - FORGE 1.20.1 PORT HANDOFF

@@ -4,7 +4,6 @@ import com.mojang.authlib.GameProfile;
 import com.mojang.blaze3d.audio.OggAudioStream;
 import mcjty.ariente.Ariente;
 import mcjty.ariente.entities.fluxship.FluxShipEntity;
-import mcjty.ariente.setup.Registration;
 import mcjty.ariente.sounds.FluxShipSounds;
 import mcjty.ariente.sounds.MovingSoundFluxShip;
 import net.minecraft.client.Minecraft;
@@ -163,7 +162,7 @@ public class FluxShipSoundChecks {
         private float strength;
 
         private TestShip(Minecraft mc) {
-            super(Registration.ENTITY_FLUX_SHIP.get(), mc.level);
+            super(mcjty.ariente.setup.Registration.ENTITY_FLUX_SHIP.get(), mc.level);
             setPos(mc.player.getX() + 4, mc.player.getY(), mc.player.getZ());
         }
 

@@ -1,123 +1,110 @@
 {
   "parent": "minecraft:block/block",
-  "children": {
-    "glass": {
-      "elements": [
-        {
-          "faces": {
-            "down": {
-              "texture": "#glass",
-              "uv": [
-                0.0,
-                0.0,
-                16.0,
-                16.0
-              ]
-            },
-            "east": {
-              "texture": "#glass",
-              "uv": [
-                0.0,
-                0.0,
-                16.0,
-                16.0
-              ]
-            },
-            "north": {
-              "texture": "#glass",
-              "uv": [
-                0.0,
-                0.0,
-                16.0,
-                16.0
-              ]
-            },
-            "south": {
-              "texture": "#glass",
-              "uv": [
-                0.0,
-                0.0,
-                16.0,
-                16.0
-              ]
-            },
-            "up": {
-              "texture": "#glass",
-              "uv": [
-                0.0,
-                0.0,
-                16.0,
-                16.0
-              ]
-            },
-            "west": {
-              "texture": "#glass",
-              "uv": [
-                0.0,
-                0.0,
-                16.0,
-                16.0
-              ]
-            }
-          },
-          "from": [
-            4.0,
-            1.0,
-            4.0
-          ],
-          "to": [
-            12.0,
-            9.0,
-            12.0
-          ]
+  "elements": [
+    {
+      "faces": {
+        "down": {
+          "texture": "#plate_plate"
+        },
+        "east": {
+          "texture": "#plate_plate"
+        },
+        "north": {
+          "texture": "#plate_plate"
+        },
+        "south": {
+          "texture": "#plate_plate"
+        },
+        "up": {
+          "texture": "#plate_plate"
+        },
+        "west": {
+          "texture": "#plate_plate"
         }
+      },
+      "from": [
+        0.0,
+        0.0,
+        0.0
       ],
-      "textures": {
-        "glass": "ariente:block/machines/camera_glass"
-      }
+      "to": [
+        16.0,
+        1.0,
+        16.0
+      ]
     },
-    "plate": {
-      "elements": [
-        {
-          "faces": {
-            "down": {
-              "texture": "#plate"
-            },
-            "east": {
-              "texture": "#plate"
-            },
-            "north": {
-              "texture": "#plate"
-            },
-            "south": {
-              "texture": "#plate"
-            },
-            "up": {
-              "texture": "#plate"
-            },
-            "west": {
-              "texture": "#plate"
-            }
-          },
-          "from": [
+    {
+      "faces": {
+        "down": {
+          "texture": "#glass_glass",
+          "uv": [
             0.0,
             0.0,
-            0.0
-          ],
-          "to": [
             16.0,
-            1.0,
+            16.0
+          ]
+        },
+        "east": {
+          "texture": "#glass_glass",
+          "uv": [
+            0.0,
+            0.0,
+            16.0,
+            16.0
+          ]
+        },
+        "north": {
+          "texture": "#glass_glass",
+          "uv": [
+            0.0,
+            0.0,
+            16.0,
+            16.0
+          ]
+        },
+        "south": {
+          "texture": "#glass_glass",
+          "uv": [
+            0.0,
+            0.0,
+            16.0,
+            16.0
+          ]
+        },
+        "up": {
+          "texture": "#glass_glass",
+          "uv": [
+            0.0,
+            0.0,
+            16.0,
+            16.0
+          ]
+        },
+        "west": {
+          "texture": "#glass_glass",
+          "uv": [
+            0.0,
+            0.0,
+            16.0,
             16.0
           ]
         }
+      },
+      "from": [
+        4.0,
+        1.0,
+        4.0
       ],
-      "textures": {
-        "plate": "ariente:block/base/machinetop"
-      }
+      "to": [
+        12.0,
+        9.0,
+        12.0
+      ]
     }
-  },
-  "loader": "neoforge:composite",
+  ],
   "textures": {
-    "particle": "ariente:block/base/machinetop"
+    "glass_glass": "ariente:block/machines/camera_glass",
+    "particle": "ariente:block/base/machinetop",
+    "plate_plate": "ariente:block/base/machinetop"
   }
 }

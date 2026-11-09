@@ -1,5 +1,7 @@
 package mcjty.ariente.display;
 
+import net.fabricmc.fabric.api.transfer.v1.item.ItemStorage;
+
 import mcjty.lib.varia.CapabilityTools;
 import java.util.ArrayList;
 import java.util.Comparator;
@@ -20,9 +22,8 @@ import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.level.block.entity.BlockEntity;
-import net.neoforged.neoforge.capabilities.Capabilities;
-import net.neoforged.neoforge.items.IItemHandler;
-import net.neoforged.neoforge.items.wrapper.InvWrapper;
+import mcjty.lib.container.IItemHandler;
+import mcjty.lib.container.InvWrapper;
 
 public class StorageDisplayModule implements DisplayModuleType {
 
@@ -62,9 +63,9 @@ public class StorageDisplayModule implements DisplayModuleType {
     }
 
     public static IItemHandler inventory(BlockEntity tile, Direction side) {
-        IItemHandler handler = CapabilityTools.itemHandler(tile.getLevel().getCapability(Capabilities.Item.BLOCK, tile.getBlockPos(), side));
+        IItemHandler handler = CapabilityTools.itemHandler(ItemStorage.SIDED.find(tile.getLevel(), tile.getBlockPos(), side));
         if (handler == null) {
-            handler = CapabilityTools.itemHandler(tile.getLevel().getCapability(Capabilities.Item.BLOCK, tile.getBlockPos(), null));
+            handler = CapabilityTools.itemHandler(ItemStorage.SIDED.find(tile.getLevel(), tile.getBlockPos(), null));
         }
         return handler != null ? handler : tile instanceof Container container ? new InvWrapper(container) : null;
     }

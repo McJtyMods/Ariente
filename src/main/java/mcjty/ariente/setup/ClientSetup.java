@@ -1,10 +1,25 @@
 package mcjty.ariente.setup;
 
-import net.neoforged.neoforge.client.event.RegisterTextureAtlasesEvent;
+import mcjty.ariente.bindings.Binding;
+import mcjty.ariente.client.ArienteRenderType;
+import mcjty.ariente.client.FabricClientEvents;
+import mcjty.ariente.client.LanceModel;
+import mcjty.ariente.client.ObjModelLoader;
+import mcjty.ariente.client.textures.SurfaceTextures;
+import mcjty.ariente.display.client.DisplayRenderType;
+import mcjty.ariente.entities.fluxship.FluxShipWeaponRender;
+import mcjty.ariente.network.ClientMessages;
+import net.fabricmc.api.ClientModInitializer;
+import net.fabricmc.fabric.api.client.particle.v1.ParticleProviderRegistry;
+import net.fabricmc.fabric.api.client.rendering.v1.ArmorRenderer;
+import net.fabricmc.fabric.api.client.rendering.v1.AtlasRegistry;
+import net.fabricmc.fabric.api.client.rendering.v1.BlockEntityRendererRegistry;
+import net.fabricmc.fabric.api.client.rendering.v1.EntityRendererRegistry;
+import net.minecraft.client.renderer.rendertype.RenderTypes;
+import net.minecraft.client.renderer.special.SpecialModelRenderers;
+import net.minecraft.client.renderer.texture.OverlayTexture;
+
 import net.minecraft.client.resources.model.sprite.AtlasManager;
-import net.neoforged.neoforge.client.event.RegisterBlockStateModels;
-import net.neoforged.neoforge.client.event.RegisterSpecialModelRendererEvent;
-import net.neoforged.neoforge.client.extensions.common.RegisterClientExtensionsEvent;
 import mcjty.ariente.items.BlueprintRenderer;
 import mcjty.ariente.facade.FacadeRenderer;
 import mcjty.ariente.items.armor.PowerSuitModel;
@@ -36,30 +51,21 @@ import mcjty.ariente.entities.fluxelevator.FluxElevatorRender;
 import mcjty.ariente.entities.fluxship.FluxShipPanelRender;
 import mcjty.ariente.entities.fluxship.FluxShipRender;
 import mcjty.ariente.entities.levitator.FluxLevitatorRender;
-import mcjty.ariente.items.BlueprintRenderer;
 import mcjty.ariente.multipart.MultipartRenderer;
 import mcjty.ariente.client.StandaloneModels;
 import net.minecraft.core.Direction;
 import net.minecraft.resources.Identifier;
-import net.neoforged.bus.api.SubscribeEvent;
-import net.neoforged.fml.event.lifecycle.FMLClientSetupEvent;
-import net.neoforged.neoforge.client.event.EntityRenderersEvent;
-import net.neoforged.neoforge.client.event.ModelEvent;
-import net.neoforged.neoforge.client.event.RegisterParticleProvidersEvent;
-import net.neoforged.neoforge.common.NeoForge;
 
-public class ClientSetup {
+public class ClientSetup implements ClientModInitializer {
 
-    public static void particleProviders(RegisterParticleProvidersEvent event) {
-        event.registerSpriteSet(Registration.PURIFIER_RING_X.get(), sprites -> new PurifierRingParticle.Provider(sprites, Direction.Axis.X));
-        event.registerSpriteSet(Registration.PURIFIER_RING_Z.get(), sprites -> new PurifierRingParticle.Provider(sprites, Direction.Axis.Z));
+    public static void particleProviders() {
+        ParticleProviderRegistry.getInstance().register(Registration.PURIFIER_RING_X.get(), sprites -> new PurifierRingParticle.Provider(sprites, Direction.Axis.X));
+        ParticleProviderRegistry.getInstance().register(Registration.PURIFIER_RING_Z.get(), sprites -> new PurifierRingParticle.Provider(sprites, Direction.Axis.Z));
     }
 
-    public static void init(FMLClientSetupEvent event) {
-        NeoForge.EVENT_BUS.register(new ClientForgeEventHandlers());
-        NeoForge.EVENT_BUS.register(new DisplayClientEvents());
+    public static void init() {
+
         DisplayModuleRenderers.init();
-        NeoForge.EVENT_BUS.register(new KeyInputHandler());
 
         NegariteTankRenderer.register();
         PosiriteTankRenderer.register();
@@ -75,46 +81,66 @@ public class ClientSetup {
 
     }
 
-    public static void additionalModels(ModelEvent.RegisterStandalone event) {
-        StandaloneModels.register(event, FluxShipRender.MODEL);
+    public static void additionalModels() {
+        StandaloneModels.register(FluxShipRender.MODEL);
     }
 
-    public static void modelsBaked(ModelEvent.BakingCompleted event) {
+    public static void modelsBaked() {
         CameraDisplayRenderer.clearCache();
     }
 
-    public static void initModels(RegisterBlockStateModels event) {
-        event.registerModel(Identifier.fromNamespaceAndPath(Ariente.MODID, "cable"), CableModelLoader.CODEC);
+    public static void entityRenderers() {
+        BlockEntityRendererRegistry.register(Registration.DISPLAY_BASE_TILE.get(), DisplayRenderer::new);
+        BlockEntityRendererRegistry.register(Registration.PURIFIER_TUBE_TILE.get(), PurifierTubeRenderer::new);
+        BlockEntityRendererRegistry.register(Registration.HOLO_STORAGE_TILE.get(), StorageCubeRenderer::new);
+        BlockEntityRendererRegistry.register(Registration.TYPE_MULTIPART.get(), MultipartRenderer::new);
+        EntityRendererRegistry.register(Registration.ENTITY_LASER.get(), new LaserRender.Factory());
+        EntityRendererRegistry.register(Registration.ENTITY_FLUX_LEVITATOR.get(), new FluxLevitatorRender.Factory());
+        EntityRendererRegistry.register(Registration.ENTITY_ELEVATOR.get(), new FluxElevatorRender.Factory());
+        EntityRendererRegistry.register(Registration.ENTITY_FLUX_SHIP.get(), new FluxShipRender.Factory());
+        EntityRendererRegistry.register(Registration.ENTITY_SHIP_PANEL.get(), FluxShipPanelRender::new);
+        EntityRendererRegistry.register(Registration.ENTITY_PEARL.get(), RenderArientePearl.FACTORY);
     }
 
-    @SubscribeEvent
-    public static void entityRenderers(EntityRenderersEvent.RegisterRenderers event)
-    {
-        event.registerBlockEntityRenderer(Registration.DISPLAY_BASE_TILE.get(), DisplayRenderer::new);
-        event.registerBlockEntityRenderer(Registration.PURIFIER_TUBE_TILE.get(), PurifierTubeRenderer::new);
-        event.registerBlockEntityRenderer(Registration.HOLO_STORAGE_TILE.get(), StorageCubeRenderer::new);
-        event.registerBlockEntityRenderer(Registration.TYPE_MULTIPART.get(), MultipartRenderer::new);
-        event.registerEntityRenderer(Registration.ENTITY_LASER.get(), new LaserRender.Factory());
-        event.registerEntityRenderer(Registration.ENTITY_FLUX_LEVITATOR.get(), new FluxLevitatorRender.Factory());
-        event.registerEntityRenderer(Registration.ENTITY_ELEVATOR.get(), new FluxElevatorRender.Factory());
-        event.registerEntityRenderer(Registration.ENTITY_FLUX_SHIP.get(), new FluxShipRender.Factory());
-        event.registerEntityRenderer(Registration.ENTITY_SHIP_PANEL.get(), FluxShipPanelRender::new);
-        event.registerEntityRenderer(Registration.ENTITY_PEARL.get(), RenderArientePearl.FACTORY);
-    }
-
-    public static void setupSpriteUploader(RegisterTextureAtlasesEvent event) {
-        event.register(new AtlasManager.AtlasConfig(ArienteSpriteUploader.ARIENTE_ATLAS,
+    public static void setupSpriteUploader() {
+        AtlasRegistry.register(new AtlasManager.AtlasConfig(ArienteSpriteUploader.ARIENTE_ATLAS,
                 ArienteSpriteUploader.ATLAS_ID, false));
     }
 
-    public static void specialModels(RegisterSpecialModelRendererEvent event) {
-        event.register(Identifier.fromNamespaceAndPath("ariente", "blueprint"), BlueprintRenderer.Unbaked.CODEC);
-        event.register(Identifier.fromNamespaceAndPath("ariente", "facade"), FacadeRenderer.Unbaked.CODEC);
+    public static void specialModels() {
+        SpecialModelRenderers.ID_MAPPER.put(Identifier.fromNamespaceAndPath("ariente", "blueprint"), BlueprintRenderer.Unbaked.CODEC);
+        SpecialModelRenderers.ID_MAPPER.put(Identifier.fromNamespaceAndPath("ariente", "facade"), FacadeRenderer.Unbaked.CODEC);
     }
 
-    public static void itemExtensions(RegisterClientExtensionsEvent event) {
-        event.registerItem(PowerSuitModel.EXTENSIONS, Registration.POWERSUIT_HEAD.get(), Registration.POWERSUIT_CHEST.get(),
-                Registration.POWERSUIT_LEGS.get(), Registration.POWERSUIT_FEET.get());
-        Registration.ENERGY_LANCE.get().initializeClient(extension -> event.registerItem(extension, Registration.ENERGY_LANCE.get()));
+    private static void registerArmor() {
+        ArmorRenderer.register((poses, collector, stack, state, slot, light, context) -> {
+            var model = PowerSuitModel.forSlot(slot);
+
+            model.setupAnim(state);
+            var texture = Identifier.parse("ariente:textures/entity/equipment/humanoid/powersuit.png");
+            collector.submitModel(model, state, poses, RenderTypes.armorCutoutNoCull(texture),
+                    light, OverlayTexture.NO_OVERLAY, -1, null, state.outlineColor, null);
+        }, Registration.POWERSUIT_HEAD.get(), Registration.POWERSUIT_CHEST.get(), Registration.POWERSUIT_LEGS.get(), Registration.POWERSUIT_FEET.get());
+    }
+
+    @Override
+    public void onInitializeClient() {
+        init();
+        entityRenderers();
+        particleProviders();
+        setupSpriteUploader();
+        specialModels();
+        registerArmor();
+        additionalModels();
+        FluxShipWeaponRender.registerModel();
+        LanceModel.register();
+        ArienteRenderType.registerShaders();
+        DisplayRenderType.registerPipelines();
+        CableModelLoader.register();
+        ObjModelLoader.register();
+        SurfaceTextures.register();
+        Binding.register();
+        ClientMessages.register();
+        FabricClientEvents.register();
     }
 }

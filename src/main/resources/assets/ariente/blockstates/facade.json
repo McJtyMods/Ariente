@@ -1,5 +1,1 @@
-{
-  "variants": {
-    "": { "type": "ariente:cable" }
-  }
-}
+{"variants":{"":{"model":"ariente:block/base/empty"}}}

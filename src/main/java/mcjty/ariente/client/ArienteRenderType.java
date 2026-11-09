@@ -18,7 +18,6 @@ import net.minecraft.client.renderer.rendertype.RenderType;
 import net.minecraft.client.renderer.rendertype.RenderTypes;
 import net.minecraft.client.renderer.texture.TextureAtlas;
 import net.minecraft.resources.Identifier;
-import net.neoforged.neoforge.client.event.RegisterRenderPipelinesEvent;
 
 public final class ArienteRenderType {
 
@@ -87,7 +86,7 @@ public final class ArienteRenderType {
         return type;
     }
 
-    public static void registerShaders(RegisterRenderPipelinesEvent event) {
-        PIPELINES.forEach(event::registerPipeline);
+    public static void registerShaders() {
+        PIPELINES.forEach(RenderPipelines::register);
     }
 }

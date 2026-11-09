@@ -5,18 +5,13 @@ import mcjty.ariente.bindings.KeyBindings;
 import mcjty.ariente.config.UtilityConfiguration;
 import net.minecraft.client.Minecraft;
 import net.minecraft.util.Mth;
-import net.neoforged.api.distmarker.Dist;
-import net.neoforged.bus.api.SubscribeEvent;
-import net.neoforged.fml.common.EventBusSubscriber;
-import net.neoforged.neoforge.client.event.ViewportEvent;
+import mcjty.ariente.client.CameraAngles;
 import org.joml.Quaternionf;
 import org.joml.Vector3f;
 
-@EventBusSubscriber(modid = Ariente.MODID, value = Dist.CLIENT)
 public class FluxShipClient {
 
-    @SubscribeEvent
-    public static void cameraAngles(ViewportEvent.ComputeCameraAngles event) {
+    public static void cameraAngles(CameraAngles event) {
         Minecraft mc = Minecraft.getInstance();
         if (!mc.options.getCameraType().isFirstPerson() || event.getCamera().entity() != mc.player
                 || mc.player == null || !(mc.player.getVehicle() instanceof FluxShipEntity ship)) {

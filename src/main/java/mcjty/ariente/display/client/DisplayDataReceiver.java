@@ -1,6 +1,6 @@
 package mcjty.ariente.display.client;
 
-import net.neoforged.neoforge.client.network.ClientPacketDistributor;
+import mcjty.lib.network.ClientNetworking;
 import java.util.HashMap;
 import java.util.Map;
 import mcjty.ariente.display.DisplayBaseTile;
@@ -76,7 +76,7 @@ public class DisplayDataReceiver {
             }
             int missing = base.requestReadings(mc.player);
             if (missing != 0) {
-                ClientPacketDistributor.sendToServer(new PacketRequestDisplayData(base.getBlockPos(), base.layoutVersion(), missing));
+                ClientNetworking.sendToServer(new PacketRequestDisplayData(base.getBlockPos(), base.layoutVersion(), missing));
                 if (++requested == 4) {
                     break;
                 }

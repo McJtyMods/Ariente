@@ -10,7 +10,6 @@ import javax.annotation.Nullable;
 import mcjty.ariente.facade.FacadeItemBlock;
 import mcjty.ariente.facade.IFacadeSupport;
 import mcjty.ariente.power.PowerSenderSupport;
-import mcjty.ariente.setup.Registration;
 import mcjty.lib.compat.theoneprobe.TOPInfoProvider;
 import mcjty.lib.compat.waila.WailaInfoProvider;
 import net.minecraft.core.BlockPos;
@@ -37,7 +36,6 @@ import net.minecraft.world.phys.shapes.BooleanOp;
 import net.minecraft.world.phys.shapes.CollisionContext;
 import net.minecraft.world.phys.shapes.Shapes;
 import net.minecraft.world.phys.shapes.VoxelShape;
-import net.neoforged.neoforge.model.data.ModelProperty;
 
 public abstract class GenericCableBlock extends Block implements WailaInfoProvider, TOPInfoProvider, EntityBlock {
 
@@ -49,7 +47,6 @@ public abstract class GenericCableBlock extends Block implements WailaInfoProvid
     public static final EnumProperty<ConnectorType> UP = EnumProperty.<ConnectorType>create("up", ConnectorType.class);
     public static final EnumProperty<ConnectorType> DOWN = EnumProperty.<ConnectorType>create("down", ConnectorType.class);
 
-    public static final ModelProperty<BlockState> FACADEID = new ModelProperty<>();
     public static final EnumProperty<CableColor> COLOR = EnumProperty.<CableColor>create("color", CableColor.class);
 
     private static VoxelShape[] shapeCache = null;
@@ -156,13 +153,13 @@ public abstract class GenericCableBlock extends Block implements WailaInfoProvid
     protected Item getItem(CableColor color) {
         switch (color) {
             case NEGARITE:
-                return Registration.NETCABLE_NEGARITE.get();
+                return mcjty.ariente.setup.Registration.NETCABLE_NEGARITE.get();
             case POSIRITE:
-                return Registration.NETCABLE_POSIRITE.get();
+                return mcjty.ariente.setup.Registration.NETCABLE_POSIRITE.get();
             case COMBINED:
-                return Registration.NETCABLE_COMBINED.get();
+                return mcjty.ariente.setup.Registration.NETCABLE_COMBINED.get();
             case DATA:
-                return Registration.NETCABLE_DATA.get();
+                return mcjty.ariente.setup.Registration.NETCABLE_DATA.get();
         };
         return Items.AIR;
     }
@@ -175,22 +172,6 @@ public abstract class GenericCableBlock extends Block implements WailaInfoProvid
         } else {
             return null;
         }
-    }
-
-    @Override
-    public boolean onDestroyedByPlayer(BlockState state, Level world, BlockPos pos, Player player, ItemStack tool, boolean willHarvest, FluidState fluid) {
-        if (world.getBlockEntity(pos) instanceof IFacadeSupport facade && facade.getMimicBlock() != null) {
-            if (!world.isClientSide()) {
-                ItemStack drop = new ItemStack(Registration.FACADE_ITEM.get());
-                FacadeItemBlock.setMimicBlock(drop, facade.getMimicBlock());
-                facade.setMimicBlock(null);
-                if (!player.getAbilities().instabuild) {
-                    popResource(world, pos, drop);
-                }
-            }
-            return false;
-        }
-        return super.onDestroyedByPlayer(state, world, pos, player, tool, willHarvest, fluid);
     }
 
     @Override
