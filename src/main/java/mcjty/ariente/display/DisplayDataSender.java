@@ -1,5 +1,7 @@
 package mcjty.ariente.display;
 
+import net.minecraft.world.entity.player.Player;
+
 import java.util.Arrays;
 import java.util.HashMap;
 import java.util.LinkedHashMap;
@@ -9,15 +11,9 @@ import net.minecraft.core.BlockPos;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.world.level.ChunkPos;
-import net.neoforged.bus.api.SubscribeEvent;
-import net.neoforged.fml.common.EventBusSubscriber;
-import net.neoforged.neoforge.event.entity.player.PlayerEvent;
-import net.neoforged.neoforge.event.server.ServerStoppedEvent;
-import net.neoforged.neoforge.event.tick.ServerTickEvent;
-import net.neoforged.neoforge.network.PacketDistributor;
+import mcjty.ariente.network.Packets;
 
 /** A fair, bounded per-player stream. The normal channel is sufficient because every message is small. */
-@EventBusSubscriber(modid = Ariente.MODID)
 public class DisplayDataSender {
 
     public static final int PACKETS_PER_TICK = 4;
@@ -115,8 +111,7 @@ public class DisplayDataSender {
         }
     }
 
-    @SubscribeEvent
-    public static void tick(ServerTickEvent.Post event) {
+    public static void tick() {
         QUEUES.entrySet().removeIf(entry -> entry.getKey().hasDisconnected() || entry.getKey().level() != entry.getValue().level);
         QUEUES.forEach((player, queue) -> {
             for (int sent = 0; sent < PACKETS_PER_TICK && !queue.pending.isEmpty(); sent++) {
@@ -129,7 +124,7 @@ public class DisplayDataSender {
                     continue;
                 }
                 int end = Math.min(pending.bytes.length, pending.offset + DisplayDataCodec.FRAGMENT_BYTES);
-                PacketDistributor.sendToPlayer(player,
+                Packets.sendToPlayer(player,
                         new PacketDisplayData(key.pos(), pending.layout, pending.index, pending.version,
                                 pending.bytes.length, pending.offset, Arrays.copyOfRange(pending.bytes, pending.offset, end)));
                 pending.offset = end;
@@ -153,13 +148,11 @@ public class DisplayDataSender {
         });
     }
 
-    @SubscribeEvent
-    public static void logout(PlayerEvent.PlayerLoggedOutEvent event) {
-        QUEUES.remove(event.getEntity());
+    public static void logout(Player player) {
+        QUEUES.remove(player);
     }
 
-    @SubscribeEvent
-    public static void stopped(ServerStoppedEvent event) {
+    public static void stopped() {
         QUEUES.clear();
     }
 

@@ -1,20 +1,22 @@
 package mcjty.ariente.blocks.utility;
 
+
+import net.minecraft.core.registries.Registries;
 import java.util.ArrayList;
 import java.util.List;
 
-import net.neoforged.neoforge.transfer.ResourceHandler;
-import net.neoforged.neoforge.transfer.item.ItemResource;
-import net.neoforged.neoforge.transfer.transaction.TransactionContext;
-import net.neoforged.neoforge.transfer.TransferPreconditions;
-import net.neoforged.neoforge.transfer.transaction.SnapshotJournal;
+import mcjty.lib.container.IndexedStorage;
+import net.fabricmc.fabric.api.transfer.v1.item.ItemVariant;
+import net.fabricmc.fabric.api.transfer.v1.transaction.TransactionContext;
+import net.fabricmc.fabric.api.transfer.v1.storage.StoragePreconditions;
+import net.fabricmc.fabric.api.transfer.v1.transaction.base.SnapshotParticipant;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.world.level.storage.ValueInput;
 import mcjty.ariente.items.ItemData;
 import net.minecraft.world.level.block.state.BlockBehaviour;
 import net.minecraft.world.level.material.MapColor;
 import net.minecraft.world.level.block.SoundType;
-import net.neoforged.neoforge.client.network.ClientPacketDistributor;
+import mcjty.lib.network.ClientNetworking;
 import java.util.Map;
 import java.util.Set;
 import javax.annotation.Nonnull;
@@ -60,8 +62,8 @@ import net.minecraft.world.level.block.state.StateDefinition;
 import net.minecraft.world.phys.BlockHitResult;
 import net.minecraft.world.phys.HitResult;
 import net.minecraft.world.phys.Vec3;
-import net.neoforged.neoforge.items.IItemHandler;
-import net.neoforged.neoforge.items.IItemHandlerModifiable;
+import mcjty.lib.container.IItemHandler;
+import mcjty.lib.container.IItemHandlerModifiable;
 
 import static mcjty.ariente.compat.ArienteTOPDriver.DRIVER;
 import static mcjty.lib.builder.TooltipBuilder.header;
@@ -391,7 +393,7 @@ public class StorageTile extends ArienteBlockEntity implements IGuiTile, ICityEq
             if (mouseOver instanceof BlockHitResult) {
                 int index = getSlot((BlockHitResult) mouseOver, world);
                 if (index >= 0) {
-                    ClientPacketDistributor.sendToServer(new PacketClickStorage(pos, index));
+                    ClientNetworking.sendToServer(new PacketClickStorage(pos, index));
                 }
             }
         }
@@ -580,9 +582,9 @@ public class StorageTile extends ArienteBlockEntity implements IGuiTile, ICityEq
     private record InventorySnapshot(List<ItemStack> stacks, int[] counts, int[] totals) {
     }
 
-    private class StorageItemHandler implements IItemHandlerModifiable, ResourceHandler<ItemResource> {
+    private class StorageItemHandler implements IItemHandlerModifiable, IndexedStorage<ItemVariant> {
 
-        private final SnapshotJournal<InventorySnapshot> journal = new SnapshotJournal<>() {
+        private final SnapshotParticipant<InventorySnapshot> journal = new SnapshotParticipant<>() {
 
             @Override
             protected InventorySnapshot createSnapshot() {
@@ -592,14 +594,14 @@ public class StorageTile extends ArienteBlockEntity implements IGuiTile, ICityEq
             }
 
             @Override
-            protected void revertToSnapshot(InventorySnapshot snapshot) {
+            protected void readSnapshot(InventorySnapshot snapshot) {
                 for (int i = 0; i < stacks.size(); i++) stacks.set(i, snapshot.stacks().get(i));
                 System.arraycopy(snapshot.counts(), 0, counts, 0, counts.length);
                 System.arraycopy(snapshot.totals(), 0, totals, 0, totals.length);
             }
 
             @Override
-            protected void onRootCommit(InventorySnapshot before) {
+            protected void onFinalCommit() {
                 markDirtyClient();
             }
         };
@@ -610,8 +612,8 @@ public class StorageTile extends ArienteBlockEntity implements IGuiTile, ICityEq
         }
 
         @Override
-        public ItemResource getResource(int index) {
-            return ItemResource.of(getStackInSlot(index));
+        public ItemVariant getResource(int index) {
+            return ItemVariant.of(getStackInSlot(index));
         }
 
         @Override
@@ -620,20 +622,20 @@ public class StorageTile extends ArienteBlockEntity implements IGuiTile, ICityEq
         }
 
         @Override
-        public long getCapacityAsLong(int index, ItemResource resource) {
+        public long getCapacityAsLong(int index, ItemVariant resource) {
             return getSlotLimit(index);
         }
 
         @Override
-        public boolean isValid(int index, ItemResource resource) {
+        public boolean isValid(int index, ItemVariant resource) {
             return isItemValid(index, resource.toStack());
         }
 
         @Override
-        public int insert(int index, ItemResource resource, int amount, TransactionContext transaction) {
-            TransferPreconditions.checkNonEmptyNonNegative(resource, amount);
-            ItemStack incoming = resource.toStack(amount);
-            int inserted = amount - insertItem(index, incoming, true).getCount();
+        public long insert(int index, ItemVariant resource, long amount, TransactionContext transaction) {
+            StoragePreconditions.notBlankNotNegative(resource, amount);
+            ItemStack incoming = resource.toStack((int) Math.min(Integer.MAX_VALUE, amount));
+            long inserted = amount - insertItem(index, incoming, true).getCount();
             if (inserted == 0) return 0;
             journal.updateSnapshots(transaction);
             storageTransaction = true;
@@ -645,13 +647,13 @@ public class StorageTile extends ArienteBlockEntity implements IGuiTile, ICityEq
         }
 
         @Override
-        public int extract(int index, ItemResource resource, int amount, TransactionContext transaction) {
-            TransferPreconditions.checkNonEmptyNonNegative(resource, amount);
+        public long extract(int index, ItemVariant resource, long amount, TransactionContext transaction) {
+            StoragePreconditions.notBlankNotNegative(resource, amount);
             if (!resource.matches(getStackInSlot(index)) || amount == 0 || locked) return 0;
             journal.updateSnapshots(transaction);
             storageTransaction = true;
             try {
-                return extractItem(index, amount, false).getCount();
+                return extractItem(index, (int) Math.min(Integer.MAX_VALUE, amount), false).getCount();
             } finally {
                 storageTransaction = false;
             }

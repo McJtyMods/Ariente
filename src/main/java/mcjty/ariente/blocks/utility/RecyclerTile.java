@@ -1,9 +1,10 @@
 package mcjty.ariente.blocks.utility;
 
-import net.neoforged.neoforge.transfer.ResourceHandler;
-import net.neoforged.neoforge.transfer.item.ItemResource;
-import net.neoforged.neoforge.transfer.transaction.TransactionContext;
-import net.neoforged.neoforge.transfer.TransferPreconditions;
+
+import mcjty.lib.container.IndexedStorage;
+import net.fabricmc.fabric.api.transfer.v1.item.ItemVariant;
+import net.fabricmc.fabric.api.transfer.v1.transaction.TransactionContext;
+import net.fabricmc.fabric.api.transfer.v1.storage.StoragePreconditions;
 import net.minecraft.world.level.block.state.BlockBehaviour;
 import net.minecraft.world.level.material.MapColor;
 import net.minecraft.world.level.block.SoundType;
@@ -45,8 +46,8 @@ import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.phys.BlockHitResult;
-import net.neoforged.neoforge.common.util.Lazy;
-import net.neoforged.neoforge.items.IItemHandler;
+import mcjty.lib.varia.Lazy;
+import mcjty.lib.container.IItemHandler;
 
 import static mcjty.ariente.compat.ArienteTOPDriver.DRIVER;
 import static mcjty.lib.builder.TooltipBuilder.header;
@@ -280,7 +281,7 @@ public class RecyclerTile extends ExtremeMachineTile implements IGuiTile, IPower
     public void setup(ICityAI cityAI, Level world, boolean firstTime) {
     }
 
-    private class SidedHandler implements IItemHandler, ResourceHandler<ItemResource> {
+    private class SidedHandler implements IItemHandler, IndexedStorage<ItemVariant> {
 
         private final Direction side;
 
@@ -303,7 +304,7 @@ public class RecyclerTile extends ExtremeMachineTile implements IGuiTile, IPower
         }
 
         @Override
-        public ItemResource getResource(int index) {
+        public ItemVariant getResource(int index) {
             return items.getResource(mapped(index));
         }
 
@@ -313,24 +314,24 @@ public class RecyclerTile extends ExtremeMachineTile implements IGuiTile, IPower
         }
 
         @Override
-        public long getCapacityAsLong(int index, ItemResource resource) {
+        public long getCapacityAsLong(int index, ItemVariant resource) {
             return items.getCapacityAsLong(mapped(index), resource);
         }
 
         @Override
-        public boolean isValid(int index, ItemResource resource) {
+        public boolean isValid(int index, ItemVariant resource) {
             return !isOutput() && items.isValid(mapped(index), resource);
         }
 
         @Override
-        public int insert(int index, ItemResource resource, int amount, TransactionContext transaction) {
-            TransferPreconditions.checkNonEmptyNonNegative(resource, amount);
+        public long insert(int index, ItemVariant resource, long amount, TransactionContext transaction) {
+            StoragePreconditions.notBlankNotNegative(resource, amount);
             return isValid(index, resource) ? items.insert(mapped(index), resource, amount, transaction) : 0;
         }
 
         @Override
-        public int extract(int index, ItemResource resource, int amount, TransactionContext transaction) {
-            TransferPreconditions.checkNonEmptyNonNegative(resource, amount);
+        public long extract(int index, ItemVariant resource, long amount, TransactionContext transaction) {
+            StoragePreconditions.notBlankNotNegative(resource, amount);
             return isOutput() ? items.extract(mapped(index), resource, amount, transaction) : 0;
         }
 

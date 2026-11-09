@@ -1,5 +1,7 @@
 package mcjty.ariente.blocks.storagecube;
 
+
+import net.minecraft.core.registries.Registries;
 import com.mojang.serialization.MapCodec;
 import net.minecraft.world.level.storage.ValueInput;
 
@@ -53,8 +55,8 @@ import net.minecraft.world.level.Level;
 import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.level.material.MapColor;
 import net.minecraft.world.phys.BlockHitResult;
-import net.neoforged.neoforge.items.IItemHandler;
-import net.neoforged.neoforge.network.PacketDistributor;
+import mcjty.lib.container.IItemHandler;
+import mcjty.ariente.network.Packets;
 
 import static mcjty.lib.container.SlotDefinition.generic;
 
@@ -259,12 +261,9 @@ public class StorageCubeTile extends ArienteBlockEntity implements IGuiTile, ICi
 
     @Override
     public CompoundTag getUpdateTag(HolderLookup.Provider provider) {
-        CompoundTag tag = new CompoundTag();
-        saveClientDataToNBT(tag, provider);
-        return tag;
+        return super.getUpdateTag(provider);
     }
 
-    @Override
     public void handleUpdateTag(ValueInput input) {
         loadClientDataFromNBT(input.read(MapCodec.assumeMapUnsafe(CompoundTag.CODEC)).orElseGet(CompoundTag::new), level.registryAccess());
     }
@@ -373,7 +372,7 @@ public class StorageCubeTile extends ArienteBlockEntity implements IGuiTile, ICi
             if (!changes.isEmpty()) {
                 viewer.revision++;
             }
-            PacketDistributor.sendToPlayer(player,
+            Packets.sendToPlayer(player,
                     new PacketStorageCubeData(worldPosition, viewer.entityId, items.getSlots(), viewer.revision, force, changes));
         }
     }

@@ -18,7 +18,6 @@ import mcjty.ariente.recipes.BlueprintExchangeRecipe;
 import mcjty.ariente.recipes.BlueprintRarity;
 import mcjty.ariente.recipes.BlueprintRecipeRegistry;
 import mcjty.ariente.recipes.ConstructorRecipe;
-import mcjty.ariente.setup.Registration;
 import mcjty.lib.builder.TooltipBuilder;
 import mcjty.lib.tooltips.ITooltipExtras;
 import mcjty.lib.tooltips.ITooltipSettings;
@@ -101,7 +100,7 @@ public class BlueprintItem extends Item implements ITooltipExtras, ITooltipSetti
     public static final Identifier EMPTY_BLUEPRINT_MODEL = Identifier.fromNamespaceAndPath(Ariente.MODID, "empty_blueprint");
 
     public static ItemStack makeBluePrint(ItemStack destination) {
-        ItemStack dest = new ItemStack(Registration.BLUEPRINT.get());
+        ItemStack dest = new ItemStack(mcjty.ariente.setup.Registration.BLUEPRINT.get());
         CompoundTag nbt = new CompoundTag();
         JsonObject json = JSonTools.itemStackToJson(destination).getAsJsonObject();
         nbt.putString("destination", json.toString());

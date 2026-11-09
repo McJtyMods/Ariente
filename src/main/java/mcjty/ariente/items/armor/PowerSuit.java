@@ -1,5 +1,7 @@
 package mcjty.ariente.items.armor;
 
+import mcjty.ariente.items.AttributeItem;
+
 import java.util.ArrayList;
 import net.minecraft.core.component.DataComponents;
 import net.minecraft.resources.ResourceKey;
@@ -33,11 +35,9 @@ import net.minecraft.world.entity.ai.attributes.Attributes;
 import net.minecraft.world.entity.projectile.Projectile;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.world.item.component.ItemAttributeModifiers;
-import net.neoforged.neoforge.client.extensions.common.IClientItemExtensions;
-import net.neoforged.neoforge.event.entity.living.LivingDamageEvent;
 import org.apache.commons.lang3.tuple.Pair;
 
-public class PowerSuit extends Item {
+public class PowerSuit extends Item  implements AttributeItem {
 
     private final EquipmentSlot slot;
 
@@ -60,7 +60,6 @@ public class PowerSuit extends Item {
         return false;
     }
 
-    @Override
     public int getMaxDamage(ItemStack stack) {
         return 0;
     }
@@ -70,7 +69,7 @@ public class PowerSuit extends Item {
         boolean upgraded = ModuleSupport.hasWorkingUpgrade(stack, ArmorUpgradeType.ARMOR);
         EquipmentSlotGroup group = EquipmentSlotGroup.bySlot(slot);
         Identifier id = Identifier.fromNamespaceAndPath(Ariente.MODID, "armor_" + slot.getName());
-        ItemAttributeModifiers modifiers = super.getDefaultAttributeModifiers(stack)
+        ItemAttributeModifiers modifiers = ItemAttributeModifiers.EMPTY
                 .withModifierAdded(Attributes.ARMOR, new AttributeModifier(id, upgraded ? 6 : 0, AttributeModifier.Operation.ADD_VALUE), group)
                 .withModifierAdded(Attributes.ARMOR_TOUGHNESS, new AttributeModifier(id, upgraded ? 4 : 0, AttributeModifier.Operation.ADD_VALUE), group);
         if (slot == EquipmentSlot.FEET && ModuleSupport.hasWorkingUpgrade(stack, ArmorUpgradeType.STEPASSIST)) {
@@ -80,7 +79,7 @@ public class PowerSuit extends Item {
         return modifiers;
     }
 
-    public static void absorbEnergyDamage(LivingDamageEvent.Pre event) {
+    public static void absorbEnergyDamage(DamageContext event) {
         LivingEntity entity = event.getEntity();
         DamageSource source = event.getSource();
         if (entity.level().isClientSide() || event.getNewDamage() <= 0 || !source.is(DamageTypeTags.BYPASSES_ARMOR)
@@ -104,9 +103,7 @@ public class PowerSuit extends Item {
         }
     }
 
-    public void initializeClient(Consumer<IClientItemExtensions> consumer) {
-        consumer.accept(PowerSuitModel.EXTENSIONS);
-    }
+
 
     @Override
     public void inventoryTick(ItemStack stack, ServerLevel world, Entity entity, EquipmentSlot itemSlot) {

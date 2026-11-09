@@ -1,5 +1,11 @@
 package mcjty.ariente.client.textures;
 
+import mcjty.ariente.cables.GenericCableBakedModel;
+import net.fabricmc.fabric.api.client.model.loading.v1.ModelLoadingPlugin;
+import net.fabricmc.fabric.api.resource.v1.ResourceLoader;
+import net.minecraft.server.packs.PackType;
+
+import net.minecraft.core.registries.Registries;
 import net.minecraft.core.registries.BuiltInRegistries;
 
 import java.io.IOException;
@@ -16,14 +22,8 @@ import java.util.Optional;
 import net.minecraft.server.packs.resources.ResourceManager;
 import net.minecraft.server.packs.resources.SimplePreparableReloadListener;
 import net.minecraft.util.profiling.ProfilerFiller;
-import net.neoforged.api.distmarker.Dist;
-import net.neoforged.bus.api.SubscribeEvent;
-import net.neoforged.fml.common.EventBusSubscriber;
-import net.neoforged.neoforge.client.event.ModelEvent;
-import net.neoforged.neoforge.client.event.AddClientReloadListenersEvent;
 
 /** Only the texture traits used by Ariente: quadrant connections, cutout and minimum light. */
-@EventBusSubscriber(modid = Ariente.MODID, value = Dist.CLIENT)
 public class SurfaceTextures extends SimplePreparableReloadListener<Map<Identifier, SurfaceTextures.Rule>> {
 
     public record Rule(Identifier connectedTexture, int light, boolean cutout, Identifier glowTexture) {
@@ -32,16 +32,14 @@ public class SurfaceTextures extends SimplePreparableReloadListener<Map<Identifi
     private static volatile int generation;
     private static volatile Map<Identifier, Rule> rules = Map.of();
 
-    @SubscribeEvent
-    public static void register(AddClientReloadListenersEvent event) {
-        event.addListener(Identifier.fromNamespaceAndPath(Ariente.MODID, "surfaces"), new SurfaceTextures());
-    }
-
-    @SubscribeEvent
-    public static void wrapModels(ModelEvent.ModifyBakingResult event) {
-        Map<BlockStateModel, BlockStateModel> wrappers = new HashMap<>();
-        event.getBakingResult().blockStateModels().replaceAll((state, model) -> BuiltInRegistries.BLOCK.getKey(state.getBlock()).getNamespace().equals(Ariente.MODID)
-                ? wrappers.computeIfAbsent(model, SurfaceModel::new) : model);
+    public static void register() {
+        ResourceLoader.get(PackType.CLIENT_RESOURCES)
+                .registerReloadListener(Identifier.fromNamespaceAndPath(Ariente.MODID, "surfaces"), new SurfaceTextures());
+        ModelLoadingPlugin.register(plugin ->
+                plugin.modifyBlockModelAfterBake().register((model, context) ->
+                        BuiltInRegistries.BLOCK.getKey(context.state().getBlock()).getNamespace().equals(Ariente.MODID)
+                                && !(model instanceof GenericCableBakedModel)
+                                ? new SurfaceModel(model) : model));
     }
 
     public static int getGeneration() {

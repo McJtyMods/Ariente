@@ -1,7 +1,6 @@
 package mcjty.ariente.multipart;
 
 import net.minecraft.world.item.Item;
-import mcjty.ariente.setup.Registration;
 import mcjty.lib.multipart.IPartBlock;
 import mcjty.lib.multipart.PartSlot;
 import mcjty.lib.tileentity.GenericTileEntity;
@@ -78,7 +77,7 @@ public class MultipartItemBlock extends BlockItem {
         }
         if (!level.isClientSide()) {
             if (!(existing instanceof MultipartTE)) {
-                if (!level.setBlockAndUpdate(pos, Registration.MULTIPART_BLOCK.get().defaultBlockState())) {
+                if (!level.setBlockAndUpdate(pos, mcjty.ariente.setup.Registration.MULTIPART_BLOCK.get().defaultBlockState())) {
                     return InteractionResult.FAIL;
                 }
                 existing = level.getBlockEntity(pos);
@@ -106,7 +105,7 @@ public class MultipartItemBlock extends BlockItem {
                 stack.shrink(1);
             }
         }
-        SoundType sound = state.getSoundType(level, pos, player);
+        SoundType sound = state.getSoundType();
         level.playSound(player, pos, sound.getPlaceSound(), SoundSource.BLOCKS, (sound.getVolume() + 1) / 2, sound.getPitch() * .8F);
         return InteractionResult.SUCCESS;
     }

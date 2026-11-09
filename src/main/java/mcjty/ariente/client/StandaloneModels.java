@@ -1,5 +1,7 @@
 package mcjty.ariente.client;
 
+import net.minecraft.client.renderer.block.dispatch.BlockModelRotation;
+
 import com.mojang.blaze3d.vertex.PoseStack;
 import com.mojang.blaze3d.vertex.QuadInstance;
 import java.util.HashMap;
@@ -9,24 +11,24 @@ import net.minecraft.client.renderer.MultiBufferSource;
 import net.minecraft.client.renderer.rendertype.RenderType;
 import net.minecraft.client.resources.model.geometry.QuadCollection;
 import net.minecraft.resources.Identifier;
-import net.neoforged.neoforge.client.event.ModelEvent;
-import net.neoforged.neoforge.client.model.standalone.SimpleUnbakedStandaloneModel;
-import net.neoforged.neoforge.client.model.standalone.StandaloneModelKey;
+import net.fabricmc.fabric.api.client.model.loading.v1.ModelLoadingPlugin;
+import net.fabricmc.fabric.api.client.model.loading.v1.SimpleUnbakedExtraModel;
+import net.fabricmc.fabric.api.client.model.loading.v1.ExtraModelKey;
 
 public final class StandaloneModels {
 
-    private static final Map<Identifier, StandaloneModelKey<QuadCollection>> KEYS = new HashMap<>();
+    private static final Map<Identifier, ExtraModelKey<QuadCollection>> KEYS = new HashMap<>();
 
     private StandaloneModels() {
     }
 
-    public static void register(ModelEvent.RegisterStandalone event, Identifier id) {
-        var key = KEYS.computeIfAbsent(id, name -> new StandaloneModelKey<>(name::toString));
-        event.register(key, SimpleUnbakedStandaloneModel.quadCollection(id));
+    public static void register(Identifier id) {
+        var key = KEYS.computeIfAbsent(id, name -> ExtraModelKey.create(name::toString));
+        ModelLoadingPlugin.register(plugin -> plugin.addModel(key, new SimpleUnbakedExtraModel<>(id, (model, baker) -> model.bakeTopGeometry(model.getTopTextureSlots(), baker, BlockModelRotation.IDENTITY))));
     }
 
     public static QuadCollection get(Identifier id) {
-        return Minecraft.getInstance().getModelManager().getStandaloneModel(KEYS.get(id));
+        return Minecraft.getInstance().getModelManager().getModel(KEYS.get(id));
     }
 
     public static void render(Identifier id, PoseStack poses, MultiBufferSource buffer, RenderType type, int light, int overlay) {

@@ -2,7 +2,7 @@ package mcjty.ariente.recipes;
 
 import javax.annotation.Nullable;
 import net.minecraft.world.item.ItemStack;
-import net.neoforged.neoforge.items.IItemHandler;
+import mcjty.lib.container.IItemHandler;
 
 public class ConstructorCrafting {
 

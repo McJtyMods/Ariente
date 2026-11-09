@@ -1,5 +1,7 @@
 package mcjty.ariente.client;
 
+import net.fabricmc.fabric.api.client.rendering.v1.level.LevelRenderContext;
+import net.fabricmc.fabric.api.client.rendering.v1.level.LevelExtractionContext;
 import com.mojang.blaze3d.vertex.PoseStack;
 import java.util.ArrayList;
 import java.util.Collections;
@@ -19,8 +21,6 @@ import net.minecraft.resources.Identifier;
 import net.minecraft.util.context.ContextKey;
 import net.minecraft.world.level.block.entity.BlockEntity;
 import net.minecraft.world.phys.Vec3;
-import net.neoforged.neoforge.client.event.ExtractLevelRenderStateEvent;
-import net.neoforged.neoforge.client.event.SubmitCustomGeometryEvent;
 
 /** Deferred overlays contain only extracted geometry and item render state. */
 public final class WorldHolograms {
@@ -63,15 +63,15 @@ public final class WorldHolograms {
         PENDING.add(new Entry(center, null, batch));
     }
 
-    public static void finishExtraction(ExtractLevelRenderStateEvent event) {
+    public static void finishExtraction(LevelExtractionContext event) {
         if (LiveCameraRenderer.isRendering()) return;
-        event.getRenderState().setRenderData(FRAME, new Frame(List.copyOf(PENDING), event.getCamera().position()));
+        RenderData.set(event.levelState(), FRAME, new Frame(List.copyOf(PENDING), event.camera().position()));
         PENDING.clear();
         QUEUED.clear();
     }
 
-    public static void captureFrame(SubmitCustomGeometryEvent event) {
-        if (!LiveCameraRenderer.isRendering()) activeFrame = event.getLevelRenderState().getRenderData(FRAME);
+    public static void captureFrame(LevelRenderContext event) {
+        if (!LiveCameraRenderer.isRendering()) activeFrame = RenderData.get(event.levelState(), FRAME);
     }
 
     public static void renderWorld() {

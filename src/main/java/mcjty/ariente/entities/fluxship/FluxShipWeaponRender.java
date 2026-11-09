@@ -7,19 +7,13 @@ import net.minecraft.client.Minecraft;
 import net.minecraft.client.renderer.MultiBufferSource;
 import mcjty.ariente.client.StandaloneModels;
 import net.minecraft.resources.Identifier;
-import net.neoforged.api.distmarker.Dist;
-import net.neoforged.bus.api.SubscribeEvent;
-import net.neoforged.fml.common.EventBusSubscriber;
-import net.neoforged.neoforge.client.event.ModelEvent;
 
-@EventBusSubscriber(modid = Ariente.MODID, value = Dist.CLIENT)
 public class FluxShipWeaponRender {
 
     public static final Identifier MODEL = Identifier.fromNamespaceAndPath(Ariente.MODID, "entity/flux_ship_laser");
 
-    @SubscribeEvent
-    public static void registerModel(ModelEvent.RegisterStandalone event) {
-        StandaloneModels.register(event, MODEL);
+    public static void registerModel() {
+        StandaloneModels.register(MODEL);
     }
 
     public static void render(PoseStack pose, MultiBufferSource buffers, int light, int overlay) {

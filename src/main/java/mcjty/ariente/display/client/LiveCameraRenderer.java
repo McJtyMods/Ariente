@@ -268,7 +268,7 @@ public final class LiveCameraRenderer {
             update(mc.getDeltaTracker());
             extractRenderState(state, partialTick);
             setPosition(view.eye());
-            setRotation(view.yaw(), view.pitch(), 0);
+            setRotation(view.yaw(), view.pitch());
             attributeProbe().tick(mc.level, view.eye());
             // The sky uses geometry beyond the terrain capture radius. Retain
             // Minecraft's projection distance and limit terrain with the frustum.

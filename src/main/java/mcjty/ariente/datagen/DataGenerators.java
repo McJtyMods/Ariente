@@ -2,31 +2,24 @@ package mcjty.ariente.datagen;
 
 import java.util.List;
 import java.util.Set;
-import mcjty.ariente.Ariente;
-import net.minecraft.data.DataGenerator;
-import net.minecraft.data.PackOutput;
+import net.fabricmc.fabric.api.datagen.v1.DataGeneratorEntrypoint;
+import net.fabricmc.fabric.api.datagen.v1.FabricDataGenerator;
 import net.minecraft.data.loot.LootTableProvider;
 import net.minecraft.world.level.storage.loot.parameters.LootContextParamSets;
-import net.neoforged.bus.api.SubscribeEvent;
-import net.neoforged.fml.common.EventBusSubscriber;
-import net.neoforged.neoforge.data.event.GatherDataEvent;
 
-@EventBusSubscriber(modid = Ariente.MODID)
-public class DataGenerators {
+public class DataGenerators implements DataGeneratorEntrypoint {
 
-    @SubscribeEvent
-    public static void gatherData(GatherDataEvent.Client event) {
-        DataGenerator generator = event.getGenerator();
-        PackOutput output = generator.getPackOutput();
-        BlockTags blockTags = new BlockTags(output, event.getLookupProvider());
-        generator.addProvider(true, new Recipes.Runner(output, event.getLookupProvider()));
-        generator.addProvider(true, new LootTableProvider(output, Set.of(),
-                List.of(new LootTableProvider.SubProviderEntry(provider -> new LootTables(provider), LootContextParamSets.BLOCK)), event.getLookupProvider()));
-        generator.addProvider(true, blockTags);
-        generator.addProvider(true, new ItemTags(output, event.getLookupProvider(), blockTags));
-        generator.addProvider(true, new FluxBeamTextures(output));
-        generator.addProvider(true, new ChargerTextures(output));
-        generator.addProvider(true, new BlockStates(generator));
-        generator.addProvider(true, new Items(generator));
+    @Override
+    public void onInitializeDataGenerator(FabricDataGenerator generator) {
+        var pack = generator.createPack();
+        pack.addProvider(Recipes.Runner::new);
+        pack.addProvider((output, lookup) -> new LootTableProvider(output, Set.of(),
+                List.of(new LootTableProvider.SubProviderEntry(LootTables::new, LootContextParamSets.BLOCK)), lookup));
+        pack.addProvider(BlockTags::new);
+        pack.addProvider((output, lookup) -> new ItemTags(output, lookup, null));
+        pack.addProvider((FabricDataGenerator.Pack.Factory<FluxBeamTextures>) FluxBeamTextures::new);
+        pack.addProvider((FabricDataGenerator.Pack.Factory<ChargerTextures>) ChargerTextures::new);
+        pack.addProvider(BlockStates::new);
+        pack.addProvider(Items::new);
     }
 }

@@ -1,45 +1,421 @@
 {
   "parent": "minecraft:block/block",
-  "children": {
-    "frame": {
-      "parent": "ariente:block/machines/posirite_tank_both"
-    },
-    "window": {
-      "elements": [
-        {
-          "faces": {
-            "east": {
-              "texture": "#window"
-            },
-            "north": {
-              "texture": "#window"
-            },
-            "south": {
-              "texture": "#window"
-            },
-            "west": {
-              "texture": "#window"
-            }
-          },
-          "from": [
-            1.0,
-            0.0,
-            1.0
-          ],
-          "to": [
-            15.0,
-            16.0,
-            15.0
-          ]
+  "elements": [
+    {
+      "faces": {
+        "down": {
+          "texture": "#frame_frame"
+        },
+        "east": {
+          "texture": "#frame_frame"
+        },
+        "north": {
+          "texture": "#frame_frame"
+        },
+        "south": {
+          "texture": "#frame_frame"
+        },
+        "up": {
+          "texture": "#frame_frame"
+        },
+        "west": {
+          "texture": "#frame_frame"
         }
+      },
+      "from": [
+        0.0,
+        0.0,
+        0.0
       ],
-      "textures": {
-        "window": "ariente:block/machines/posirite_tank_window"
-      }
+      "to": [
+        1.0,
+        16.0,
+        1.0
+      ]
+    },
+    {
+      "faces": {
+        "down": {
+          "texture": "#frame_frame"
+        },
+        "east": {
+          "texture": "#frame_frame"
+        },
+        "north": {
+          "texture": "#frame_frame"
+        },
+        "south": {
+          "texture": "#frame_frame"
+        },
+        "up": {
+          "texture": "#frame_frame"
+        },
+        "west": {
+          "texture": "#frame_frame"
+        }
+      },
+      "from": [
+        15.0,
+        0.0,
+        0.0
+      ],
+      "to": [
+        16.0,
+        16.0,
+        1.0
+      ]
+    },
+    {
+      "faces": {
+        "down": {
+          "texture": "#frame_frame"
+        },
+        "east": {
+          "texture": "#frame_frame"
+        },
+        "north": {
+          "texture": "#frame_frame"
+        },
+        "south": {
+          "texture": "#frame_frame"
+        },
+        "up": {
+          "texture": "#frame_frame"
+        },
+        "west": {
+          "texture": "#frame_frame"
+        }
+      },
+      "from": [
+        0.0,
+        0.0,
+        15.0
+      ],
+      "to": [
+        1.0,
+        16.0,
+        16.0
+      ]
+    },
+    {
+      "faces": {
+        "down": {
+          "texture": "#frame_frame"
+        },
+        "east": {
+          "texture": "#frame_frame"
+        },
+        "north": {
+          "texture": "#frame_frame"
+        },
+        "south": {
+          "texture": "#frame_frame"
+        },
+        "up": {
+          "texture": "#frame_frame"
+        },
+        "west": {
+          "texture": "#frame_frame"
+        }
+      },
+      "from": [
+        15.0,
+        0.0,
+        15.0
+      ],
+      "to": [
+        16.0,
+        16.0,
+        16.0
+      ]
+    },
+    {
+      "faces": {
+        "down": {
+          "texture": "#frame_frame"
+        },
+        "east": {
+          "texture": "#frame_frame"
+        },
+        "north": {
+          "texture": "#frame_frame"
+        },
+        "south": {
+          "texture": "#frame_frame"
+        },
+        "up": {
+          "texture": "#frame_frame"
+        },
+        "west": {
+          "texture": "#frame_frame"
+        }
+      },
+      "from": [
+        1.0,
+        15.0,
+        0.0
+      ],
+      "to": [
+        15.0,
+        16.0,
+        1.0
+      ]
+    },
+    {
+      "faces": {
+        "down": {
+          "texture": "#frame_frame"
+        },
+        "east": {
+          "texture": "#frame_frame"
+        },
+        "north": {
+          "texture": "#frame_frame"
+        },
+        "south": {
+          "texture": "#frame_frame"
+        },
+        "up": {
+          "texture": "#frame_frame"
+        },
+        "west": {
+          "texture": "#frame_frame"
+        }
+      },
+      "from": [
+        1.0,
+        15.0,
+        15.0
+      ],
+      "to": [
+        15.0,
+        16.0,
+        16.0
+      ]
+    },
+    {
+      "faces": {
+        "down": {
+          "texture": "#frame_frame"
+        },
+        "east": {
+          "texture": "#frame_frame"
+        },
+        "north": {
+          "texture": "#frame_frame"
+        },
+        "south": {
+          "texture": "#frame_frame"
+        },
+        "up": {
+          "texture": "#frame_frame"
+        },
+        "west": {
+          "texture": "#frame_frame"
+        }
+      },
+      "from": [
+        0.0,
+        15.0,
+        1.0
+      ],
+      "to": [
+        1.0,
+        16.0,
+        15.0
+      ]
+    },
+    {
+      "faces": {
+        "down": {
+          "texture": "#frame_frame"
+        },
+        "east": {
+          "texture": "#frame_frame"
+        },
+        "north": {
+          "texture": "#frame_frame"
+        },
+        "south": {
+          "texture": "#frame_frame"
+        },
+        "up": {
+          "texture": "#frame_frame"
+        },
+        "west": {
+          "texture": "#frame_frame"
+        }
+      },
+      "from": [
+        15.0,
+        15.0,
+        1.0
+      ],
+      "to": [
+        16.0,
+        16.0,
+        15.0
+      ]
+    },
+    {
+      "faces": {
+        "down": {
+          "texture": "#frame_frame"
+        },
+        "east": {
+          "texture": "#frame_frame"
+        },
+        "north": {
+          "texture": "#frame_frame"
+        },
+        "south": {
+          "texture": "#frame_frame"
+        },
+        "up": {
+          "texture": "#frame_frame"
+        },
+        "west": {
+          "texture": "#frame_frame"
+        }
+      },
+      "from": [
+        1.0,
+        0.0,
+        0.0
+      ],
+      "to": [
+        15.0,
+        1.0,
+        1.0
+      ]
+    },
+    {
+      "faces": {
+        "down": {
+          "texture": "#frame_frame"
+        },
+        "east": {
+          "texture": "#frame_frame"
+        },
+        "north": {
+          "texture": "#frame_frame"
+        },
+        "south": {
+          "texture": "#frame_frame"
+        },
+        "up": {
+          "texture": "#frame_frame"
+        },
+        "west": {
+          "texture": "#frame_frame"
+        }
+      },
+      "from": [
+        1.0,
+        0.0,
+        15.0
+      ],
+      "to": [
+        15.0,
+        1.0,
+        16.0
+      ]
+    },
+    {
+      "faces": {
+        "down": {
+          "texture": "#frame_frame"
+        },
+        "east": {
+          "texture": "#frame_frame"
+        },
+        "north": {
+          "texture": "#frame_frame"
+        },
+        "south": {
+          "texture": "#frame_frame"
+        },
+        "up": {
+          "texture": "#frame_frame"
+        },
+        "west": {
+          "texture": "#frame_frame"
+        }
+      },
+      "from": [
+        0.0,
+        0.0,
+        1.0
+      ],
+      "to": [
+        1.0,
+        1.0,
+        15.0
+      ]
+    },
+    {
+      "faces": {
+        "down": {
+          "texture": "#frame_frame"
+        },
+        "east": {
+          "texture": "#frame_frame"
+        },
+        "north": {
+          "texture": "#frame_frame"
+        },
+        "south": {
+          "texture": "#frame_frame"
+        },
+        "up": {
+          "texture": "#frame_frame"
+        },
+        "west": {
+          "texture": "#frame_frame"
+        }
+      },
+      "from": [
+        15.0,
+        0.0,
+        1.0
+      ],
+      "to": [
+        16.0,
+        1.0,
+        15.0
+      ]
+    },
+    {
+      "faces": {
+        "east": {
+          "texture": "#window_window"
+        },
+        "north": {
+          "texture": "#window_window"
+        },
+        "south": {
+          "texture": "#window_window"
+        },
+        "west": {
+          "texture": "#window_window"
+        }
+      },
+      "from": [
+        1.0,
+        0.0,
+        1.0
+      ],
+      "to": [
+        15.0,
+        16.0,
+        15.0
+      ]
     }
-  },
-  "loader": "neoforge:composite",
+  ],
   "textures": {
-    "particle": "ariente:block/marble/blackmarble"
+    "frame_frame": "ariente:block/marble/blackmarble",
+    "frame_particle": "ariente:block/marble/blackmarble",
+    "particle": "ariente:block/marble/blackmarble",
+    "window_window": "ariente:block/machines/posirite_tank_window"
   }
 }

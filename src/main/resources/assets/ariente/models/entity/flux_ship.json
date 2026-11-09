@@ -1,9 +1,9 @@
 {
-  "loader": "neoforge:obj",
   "model": "ariente:models/entity/flux_ship.obj",
   "flip_v": true,
   "textures": {
     "hull": "ariente:entity/flux_ship",
     "particle": "#hull"
-  }
+  },
+  "fabric:type": "ariente:obj"
 }

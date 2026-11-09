@@ -1,5 +1,7 @@
 package mcjty.ariente.client;
 
+import net.minecraft.client.renderer.item.ItemModels;
+
 import com.mojang.blaze3d.systems.RenderSystem;
 import com.mojang.blaze3d.vertex.PoseStack;
 import com.mojang.serialization.MapCodec;
@@ -31,7 +33,6 @@ import net.minecraft.world.entity.Mob;
 import net.minecraft.world.item.ItemDisplayContext;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.phys.Vec3;
-import net.neoforged.neoforge.client.event.RegisterItemModelsEvent;
 import org.joml.Matrix3f;
 import org.joml.Matrix4f;
 import org.joml.Matrix4fc;
@@ -50,8 +51,8 @@ public final class LanceModel implements ItemModel, SpecialModelRenderer<LanceMo
         extents = CuboidItemModelWrapper.computeExtents(quads);
     }
 
-    public static void register(RegisterItemModelsEvent event) {
-        event.register(Identifier.parse("ariente:lance"), Unbaked.CODEC);
+    public static void register() {
+        ItemModels.ID_MAPPER.put(Identifier.parse("ariente:lance"), Unbaked.CODEC);
     }
 
     @Override

@@ -1,6 +1,6 @@
 package mcjty.ariente.display.client;
 
-import net.neoforged.neoforge.client.network.ClientPacketDistributor;
+import mcjty.lib.network.ClientNetworking;
 import com.mojang.blaze3d.vertex.PoseStack;
 import java.util.UUID;
 import mcjty.ariente.display.DisplayBaseTile;
@@ -37,7 +37,7 @@ public class DisplayModuleDrag {
     private static void send(PacketDisplayGesture.Action action) {
         Minecraft mc = Minecraft.getInstance();
         if (gesture != null && mc.getConnection() != null && mc.player != null) {
-            ClientPacketDistributor.sendToServer(new PacketDisplayGesture(gesture.source.getBlockPos(), gesture.module.id(),
+            ClientNetworking.sendToServer(new PacketDisplayGesture(gesture.source.getBlockPos(), gesture.module.id(),
                     gesture.ticket, action, mc.player.getYRot(), mc.player.getXRot(), gesture.dragged, gesture.valid));
         }
     }

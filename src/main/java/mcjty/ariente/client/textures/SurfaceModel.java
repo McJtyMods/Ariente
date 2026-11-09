@@ -1,5 +1,7 @@
 package mcjty.ariente.client.textures;
 
+import net.fabricmc.fabric.api.client.renderer.v1.model.FabricBlockStateModel;
+
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
@@ -13,9 +15,9 @@ import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
 import net.minecraft.util.RandomSource;
 import net.minecraft.world.level.block.state.BlockState;
-import net.neoforged.neoforge.client.model.DelegateBlockStateModel;
+import mcjty.ariente.client.DelegateModel;
 
-public final class SurfaceModel extends DelegateBlockStateModel {
+public final class SurfaceModel extends DelegateModel {
 
     private volatile int generation = -1;
     private final Map<QuadKey, List<BakedQuad>> cache = new ConcurrentHashMap<>();
@@ -50,7 +52,7 @@ public final class SurfaceModel extends DelegateBlockStateModel {
             if (level.getBlockState(pos.offset(x, y, z)).is(state.getBlock())) neighbors |= bit(x, y, z);
         }
         List<BlockStateModelPart> parts = new ArrayList<>();
-        delegate.collectParts(level, pos, state, random, parts);
+        delegate.collectParts(random, parts);
         for (var part : parts) {
             List<List<BakedQuad>> faces = new ArrayList<>(7);
             for (int face = 0; face < 7; face++) {
@@ -78,8 +80,8 @@ public final class SurfaceModel extends DelegateBlockStateModel {
     }
 
     @Override
-    public int materialFlags(BlockAndTintGetter level, BlockPos pos, BlockState state) {
+    public int materialFlags(BlockAndTintGetter level, BlockPos pos, BlockState state, RandomSource random) {
         // Supplemental material alpha can add translucency to an otherwise opaque base model.
-        return delegate.materialFlags(level, pos, state) | BakedQuad.FLAG_TRANSLUCENT;
+        return ((FabricBlockStateModel) delegate).materialFlags(level, pos, state, random) | BakedQuad.FLAG_TRANSLUCENT;
     }
 }

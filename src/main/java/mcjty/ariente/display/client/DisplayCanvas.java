@@ -20,7 +20,7 @@ public record DisplayCanvas(PoseStack poses, MultiBufferSource buffer) {
         if ((argb >>> 24) == 0 || width <= 0 || height <= 0) {
             return;
         }
-        VertexConsumer vertices = buffer.getBuffer(DisplayRenderType.SURFACE);
+        VertexConsumer vertices = buffer.getBuffer((argb >>> 24) == 255 ? DisplayRenderType.OPAQUE_SURFACE : DisplayRenderType.SURFACE);
         Matrix4f pose = poses.last().pose();
         int r = argb >> 16 & 255;
         int g = argb >> 8 & 255;

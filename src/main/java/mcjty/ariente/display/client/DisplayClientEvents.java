@@ -1,9 +1,10 @@
 package mcjty.ariente.display.client;
 
+import net.fabricmc.fabric.api.client.rendering.v1.level.LevelRenderContext;
+import net.fabricmc.fabric.api.client.rendering.v1.level.LevelExtractionContext;
+import mcjty.ariente.client.InputGesture;
 import mcjty.hologui.gui.HoloRenderBatch;
-import net.neoforged.neoforge.client.event.ExtractLevelRenderStateEvent;
-import net.neoforged.neoforge.client.event.SubmitCustomGeometryEvent;
-import net.neoforged.neoforge.client.network.ClientPacketDistributor;
+import mcjty.lib.network.ClientNetworking;
 import com.mojang.blaze3d.systems.RenderSystem;
 import com.mojang.blaze3d.vertex.PoseStack;
 import mcjty.ariente.client.WorldHolograms;
@@ -17,10 +18,6 @@ import net.minecraft.world.InteractionHand;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.phys.HitResult;
 import net.minecraft.world.phys.Vec3;
-import net.neoforged.bus.api.SubscribeEvent;
-import net.neoforged.neoforge.client.event.ClientTickEvent;
-import net.neoforged.neoforge.client.event.InputEvent;
-import net.neoforged.neoforge.client.event.RenderLevelStageEvent;
 import org.joml.Matrix4fStack;
 
 public class DisplayClientEvents {
@@ -47,8 +44,7 @@ public class DisplayClientEvents {
         return nearest;
     }
 
-    @SubscribeEvent
-    public void input(InputEvent.InteractionKeyMappingTriggered event) {
+    public void input(InputGesture event) {
         Minecraft mc = Minecraft.getInstance();
         if (mc.player == null || mc.screen != null || !(event.isUseItem() || event.isAttack())) {
             return;
@@ -73,13 +69,12 @@ public class DisplayClientEvents {
             if (event.isUseItem() && !mc.player.isShiftKeyDown() && module != null) {
                 DisplayModuleDrag.begin(module);
             } else {
-                ClientPacketDistributor.sendToServer(new PacketDisplayAction(hit.tile().getBlockPos(), selected, event.isAttack()));
+                ClientNetworking.sendToServer(new PacketDisplayAction(hit.tile().getBlockPos(), selected, event.isAttack()));
             }
         }
     }
 
-    @SubscribeEvent
-    public void tick(ClientTickEvent.Post event) {
+    public void tick() {
         if (true) {
             DisplayModuleDrag.tick();
             DisplayDataReceiver.tick();
@@ -88,35 +83,32 @@ public class DisplayClientEvents {
         }
     }
 
-    @SubscribeEvent
-    public void extract(ExtractLevelRenderStateEvent event) {
+    public void extract(LevelExtractionContext event) {
         if (LiveCameraRenderer.isRendering()) return;
         Minecraft mc = Minecraft.getInstance();
         if (mc.player != null && mc.screen == null) {
             HoloRenderBatch batch = new HoloRenderBatch();
             PoseStack poses = new PoseStack();
             if (DisplayModuleDrag.active()) {
-                DisplayModuleDrag.render(poses, batch, event.getCamera().position());
+                DisplayModuleDrag.render(poses, batch, event.camera().position());
             } else {
                 DisplayGeometry.Hit hit = pick(mc.player);
-                if (hit != null) drawPreview(mc, hit, poses, event.getCamera().position(), batch);
+                if (hit != null) drawPreview(mc, hit, poses, event.camera().position(), batch);
             }
-            WorldHolograms.addRelative(event.getCamera().position(), batch);
+            WorldHolograms.addRelative(event.camera().position(), batch);
         }
         WorldHolograms.finishExtraction(event);
     }
 
-    @SubscribeEvent
-    public void capture(SubmitCustomGeometryEvent event) {
+    public void capture(LevelRenderContext event) {
         WorldHolograms.captureFrame(event);
     }
 
-    @SubscribeEvent
-    public void render(RenderLevelStageEvent.AfterLevel event) {
+    public void render(LevelRenderContext event) {
         if (LiveCameraRenderer.isRendering()) return;
         Matrix4fStack modelView = RenderSystem.getModelViewStack();
         modelView.pushMatrix();
-        modelView.set(event.getModelViewMatrix());
+        modelView.set(event.levelState().cameraRenderState.viewRotationMatrix);
         try {
             WorldHolograms.renderWorld();
         } finally {

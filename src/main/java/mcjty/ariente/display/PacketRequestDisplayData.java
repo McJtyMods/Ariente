@@ -6,7 +6,7 @@ import net.minecraft.network.codec.StreamCodec;
 import net.minecraft.network.protocol.common.custom.CustomPacketPayload;
 import net.minecraft.resources.Identifier;
 import net.minecraft.server.level.ServerPlayer;
-import net.neoforged.neoforge.network.handling.IPayloadContext;
+import mcjty.lib.network.PayloadContext;
 
 /** Requested after the client has applied a layout, including layouts received with a chunk. */
 public record PacketRequestDisplayData(BlockPos pos, long layoutVersion, int modules) implements CustomPacketPayload {
@@ -29,7 +29,7 @@ public record PacketRequestDisplayData(BlockPos pos, long layoutVersion, int mod
         buffer.writeInt(modules);
     }
 
-    public void handle(IPayloadContext context) {
+    public void handle(PayloadContext context) {
         context.enqueueWork(() -> {
             if ((ServerPlayer) context.player() != null) {
                 DisplayDataSender.request((ServerPlayer) context.player(), this);

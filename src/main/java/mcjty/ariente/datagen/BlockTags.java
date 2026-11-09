@@ -7,13 +7,15 @@ import net.minecraft.core.HolderLookup;
 import net.minecraft.data.PackOutput;
 import net.minecraft.tags.TagKey;
 import net.minecraft.world.level.block.Block;
-import net.neoforged.neoforge.common.Tags;
-import net.neoforged.neoforge.common.data.BlockTagsProvider;
+import mcjty.ariente.datagen.CommonTags;
+import net.minecraft.data.tags.IntrinsicHolderTagsProvider;
+import net.minecraft.core.registries.Registries;
+import net.minecraft.core.registries.BuiltInRegistries;
 
-public class BlockTags extends BlockTagsProvider {
+public class BlockTags extends IntrinsicHolderTagsProvider<Block> {
 
     public BlockTags(PackOutput generator, CompletableFuture<HolderLookup.Provider> lookup) {
-        super(generator, lookup, Ariente.MODID);
+        super(generator, Registries.BLOCK, lookup, value -> BuiltInRegistries.BLOCK.getResourceKey(value).orElseThrow());
     }
 
     @Override
@@ -28,12 +30,12 @@ public class BlockTags extends BlockTagsProvider {
         Block[] ores = {Registration.ORE_LITHIUM.get(), Registration.ORE_MANGANESE.get(), Registration.ORE_PLATINUM.get(),
                 Registration.ORE_SILVER.get(), Registration.ORE_SILICON.get(), Registration.ORE_NEGARITE.get(), Registration.ORE_POSIRITE.get()};
         addTag(net.minecraft.tags.BlockTags.NEEDS_STONE_TOOL, ores);
-        addTag(Tags.Blocks.ORE_RATES_SINGULAR, Registration.ORE_LITHIUM.get(), Registration.ORE_MANGANESE.get(),
+        addTag(CommonTags.Blocks.ORE_RATES_SINGULAR, Registration.ORE_LITHIUM.get(), Registration.ORE_MANGANESE.get(),
                 Registration.ORE_PLATINUM.get(), Registration.ORE_SILVER.get(), Registration.ORE_SILICON.get());
-        addTag(Tags.Blocks.ORE_RATES_DENSE, Registration.ORE_NEGARITE.get(), Registration.ORE_POSIRITE.get());
-        addTag(Tags.Blocks.ORES_IN_GROUND_STONE, ores);
+        addTag(CommonTags.Blocks.ORE_RATES_DENSE, Registration.ORE_NEGARITE.get(), Registration.ORE_POSIRITE.get());
+        addTag(CommonTags.Blocks.ORES_IN_GROUND_STONE, ores);
 
-        addTag(Tags.Blocks.ORES,
+        addTag(CommonTags.Blocks.ORES,
                 Registration.ORE_POSIRITE.get(),
                 Registration.ORE_NEGARITE.get(),
                 Registration.ORE_SILICON.get(),

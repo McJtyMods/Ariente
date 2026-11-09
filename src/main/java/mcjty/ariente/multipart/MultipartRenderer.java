@@ -19,10 +19,9 @@ public class MultipartRenderer extends ExtractedBlockRenderer<MultipartTE> {
     public void render(MultipartTE tile, float partialTick, PoseStack pose, MultiBufferSource buffers, int light, int overlay) {
         for (MultipartTE.Part part : tile.getParts().values()) {
             var state = new BlockModelRenderState();
-            Minecraft.getInstance().getBlockModelResolver().update(state, part.getState(),
-                    BlockDisplayContext.create());
+            Minecraft.getInstance().getModelManager().getBlockModelSet().get(part.getState()).update(state, part.getState(), BlockDisplayContext.create(), 0);
             ((HoloRenderBatch) buffers).command(pose,
-                    (saved, collector) -> state.submitMultiLayer(saved, collector, light, overlay, 0));
+                    (saved, collector) -> state.submit(saved, collector, light, overlay, 0));
         }
     }
 }
