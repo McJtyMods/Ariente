@@ -17,17 +17,20 @@ directory, or override it with `-Pmavendir=...`. Without either setting, `publis
 writes to the local Maven cache. The publication includes the mod jar, API jar
 and POM.
 
-Publish HoloGui first, then Ariente, then build ArienteWorld. Standalone builds
-select HoloGui `1.21-2.0.0+`, accepting Jenkins revisions of that release.
-Jenkins's `BUILD_NUMBER` is appended to each mod's published version. To pin a
-specific revision, set `hologui_version` in both Ariente and ArienteWorld, or pass
-`-Phologui_version=<complete published HoloGui version>`, including its build
-number. An additional dependency repository can be supplied with
-`-Pariente_dependency_repository=<repository URL>`.
+Standalone compilation uses the published Jenkins HoloGui artifact
+`1.21-0.0.10-beta-6`. This compilation version is independent of the runtime
+minimum `1.21-2.0.0` declared in `neoforge.mods.toml`. Jenkins's `BUILD_NUMBER`
+is part of the Maven artifact version; it does not need to match the release
+uploaded by ReleaseMe. All dependency artifact versions are centralized in the
+matching MultiWorkspace `gradletools.gradle`; do not override them in the mod's
+`gradle.properties`.
 
-ArienteWorld similarly selects Ariente `1.21-2.0.0+`. Publish that release to
-Maven before building ArienteWorld. It can be pinned with
-`-Pariente_version=<complete published Ariente version>`.
+ArienteWorld similarly compiles against the published Ariente artifact
+`1.21-0.0.31-alpha-2`, while requiring Ariente `1.21-2.0.0` at runtime. Release
+HoloGui first, then Ariente, then ArienteWorld. A new Jenkins publication is not
+required when those existing compilation artifacts provide the needed API.
+An additional compilation repository can be supplied with
+`-Pariente_dependency_repository=<repository URL>`.
 
 ## Gameplay and development
 
