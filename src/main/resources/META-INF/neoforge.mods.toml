@@ -34,7 +34,7 @@ Ariente is a high-tech mod based on alien technology
 [[dependencies.ariente]]
     modId="hologui"
     type="required"
-    versionRange="[26.2-0.0.10-beta,)"
+    versionRange="[26.2-4.0.0,)"
     ordering="AFTER"
     side="BOTH"
 
