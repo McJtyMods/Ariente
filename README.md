@@ -18,18 +18,16 @@ writes to the local Maven cache. The publication includes the mod jar, API jar
 and POM.
 
 Publish HoloGui first, then Ariente, then build ArienteWorld. Standalone builds
-currently use the published HoloGui version `1.21-0.0.10-beta-6`. Jenkins's
-`BUILD_NUMBER` is appended to each mod's published version. When updating this
-dependency, update `hologui_version` in both Ariente and ArienteWorld. It can also
-be overridden with `-Phologui_version=<published HoloGui version>` in either job.
-Include the build-number suffix from the upstream HoloGui job. An additional
-dependency repository can be supplied with
+select HoloGui `1.21-2.0.0+`, accepting Jenkins revisions of that release.
+Jenkins's `BUILD_NUMBER` is appended to each mod's published version. To pin a
+specific revision, set `hologui_version` in both Ariente and ArienteWorld, or pass
+`-Phologui_version=<complete published HoloGui version>`, including its build
+number. An additional dependency repository can be supplied with
 `-Pariente_dependency_repository=<repository URL>`.
 
-After Ariente's Jenkins build succeeds, set ArienteWorld's `ariente_version` to
-that build's complete published version, or pass
-`-Pariente_version=<published Ariente version>` when building ArienteWorld. The
-unnumbered base version is not published by Jenkins.
+ArienteWorld similarly selects Ariente `1.21-2.0.0+`. Publish that release to
+Maven before building ArienteWorld. It can be pinned with
+`-Pariente_version=<complete published Ariente version>`.
 
 ## Gameplay and development
 
